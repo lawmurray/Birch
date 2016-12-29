@@ -1,0 +1,154 @@
+%{
+#include "parser.hpp"
+#include "lexer.hpp"
+#include "build/Compiler.hpp"
+
+#define YY_USER_ACTION yycount();
+
+extern bi::Compiler* compiler;
+int yyline = 0, yycol = 0;
+
+void yyerror(const char *msg) {
+  yylocation();
+  std::cerr << msg << '\n';
+  exit(-1);
+}
+
+void yywarn(const char *msg) {
+  yylocation();
+  std::cerr << msg << '\n';
+}
+
+void yylocation() {
+  /* the format here matches that of g++ and clang++ such that Eclipse,
+   * when parsing the error output, is able to annotate lines within the
+   * editor */
+  if (compiler->file) {
+    std::cerr << compiler->file->path;
+    /*if (yylloc.last_line > yylloc.first_line) {
+      std::cerr << " lines " << yylloc.first_line << "-" << yylloc.last_line;
+    } else {*/
+      std::cerr << ':' << yylloc.first_line;
+      /*if (yylloc.last_column > yylloc.first_column) {
+        std::cerr << " columns " << yylloc.first_column << "-" << yylloc.last_column;
+      } else {*/
+        std::cerr << ':' << yylloc.first_column;
+      //}
+      std::cerr << ": ";
+    //}
+  }
+}
+
+void yycount() {
+  yylloc.first_line = yyline;
+  yylloc.first_column = yycol;
+
+  for (int i = 0; yytext[i] != '\0'; ++i) {
+    if (yytext[i] == '\n') {
+      ++yyline;
+      yycol = 1;
+    } else if (yytext[i] == '\t') {
+      yycol += 8 - (yycol % 8);
+    } else {
+      ++yycol;
+    }
+  }
+
+  yylloc.last_line = yyline;
+  yylloc.last_column = yycol;
+}
+
+void yyreset() {
+  yyline = 1;
+  yycol = 1;
+}
+
+%}
+
+%option noyywrap
+
+%x COMMENT_EOL COMMENT_INLINE DOUBLE_BRACE
+
+D                                  [0-9]
+L                                  [a-zA-Z_]
+G                                  (α|β|γ|δ|ε|ζ|η|θ|ι|κ|λ|μ|ν|ο|π|ρ|σ|τ|υ|φ|χ|ψ|ω|Γ|Δ|Θ|Λ|Π|Σ|Υ|Φ|Ψ|Ω)
+H                                  [a-fA-F0-9]
+E                                  [Ee][+-]?{D}+
+FS                                 (f|F|l|L)
+IS                                 (u|U|l|L)*
+
+%%
+
+[ \t\n]
+
+"//"                                { BEGIN(COMMENT_EOL); }
+<COMMENT_EOL>"\n"                   { BEGIN(INITIAL); }
+<COMMENT_EOL>.                      { }
+
+"/*"                                { BEGIN(COMMENT_INLINE); }
+<COMMENT_INLINE>"*/"                { BEGIN(INITIAL); }
+<COMMENT_INLINE>"\n"                { }
+<COMMENT_INLINE>.                   { }
+
+"{{"                                { BEGIN(DOUBLE_BRACE); return DOUBLE_BRACE_OPEN; }
+<DOUBLE_BRACE>"}}"                  { BEGIN(INITIAL); return DOUBLE_BRACE_CLOSE; }
+<DOUBLE_BRACE>"\n"                  { yylval.valString = yytext; return RAW; }
+<DOUBLE_BRACE>.                     { yylval.valString = yytext; return RAW; }
+
+"import"                            { return IMPORT; }
+"program"                           { return PROG; }
+"model"                             { return MODEL; }
+"function"                          { return FUNC; }
+"if"                                { return IF; }
+"else"                              { return ELSE; }
+"while"                             { return WHILE; }
+"cpp"                               { return CPP; }
+"hpp"                               { return HPP; }
+"this"                              { return THIS; }
+"Any"                               { return ANY; }
+
+"true"                              { yylval.valBool = true; return BOOL_LITERAL; }
+"false"                             { yylval.valBool = false; return BOOL_LITERAL; }
+
+({L}|{G})({L}|{G}|{D})*             { yylval.valString = yytext; return NAME; }
+
+0[xX]{H}+{IS}?                      { yylval.valInt = atoi(yytext); return INT_LITERAL; }
+0{D}+{IS}?                          { yylval.valInt = atoi(yytext); return INT_LITERAL; }
+{D}+{IS}?                           { yylval.valInt = atoi(yytext); return INT_LITERAL; }
+{D}+{E}{FS}?                        { yylval.valReal = atof(yytext); return REAL_LITERAL; }
+{D}+\.{D}+({E})?{FS}?               { yylval.valReal = atof(yytext); return REAL_LITERAL; }
+\"(\.|[^\"])*\"                     { yylval.valString = yytext; return STRING_LITERAL; }
+\'(\.|[^\'])*\'                     { yylval.valString = yytext; return STRING_LITERAL; }
+
+"->"                                { return RIGHT_OP; }
+"<-"                                { return LEFT_OP; } 
+"~>"                                { return PUSH_OP; }
+"<~"                                { return PULL_OP; } 
+"~"                                 { return '~'; }
+".."                                { return RANGE_OP; }
+"!"                                 { return '!'; }
+"&&"                                { return AND_OP; }
+"||"                                { return OR_OP; }
+"<"                                 { return '<'; }
+">"                                 { return '>'; }
+"<="                                { return LE_OP; }
+">="                                { return GE_OP; }
+"=="                                { return EQ_OP; }
+"!="                                { return NE_OP; }
+"+"                                 { return '+'; }
+"-"                                 { return '-'; }
+"*"                                 { return '*'; }
+"/"                                 { return '/'; }
+";"                                 { return ';'; }
+"{"                                 { return '{'; }
+"}"                                 { return '}'; }
+","                                 { return ','; }
+":"                                 { return ':'; }
+"="                                 { return '='; }
+"("                                 { return '('; }
+")"                                 { return ')'; }
+"["                                 { return '['; }
+"]"                                 { return ']'; }
+"."                                 { return '.'; }
+
+%%

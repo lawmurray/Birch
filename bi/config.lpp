@@ -1,0 +1,19 @@
+%{
+/**
+ * @file
+ *
+ * Lexer for command-line options in config files.
+ */
+#include "config.hpp"
+%}
+
+%option noyywrap
+
+%%
+
+\"(\.|[^\"])*\"                  { return 1; }
+\'(\.|[^\'])*\'                  { return 1; }
+[^ \t\n]+                        { return 1; }
+[ \t\n]
+
+%%
