@@ -1,0 +1,4 @@
+/**
+ * String.
+ */
+model String;
