@@ -52,7 +52,3 @@ public:
   std::list<const Expression*> args;
 };
 }
-
-inline bi::FuncReference::~FuncReference() {
-  //
-}

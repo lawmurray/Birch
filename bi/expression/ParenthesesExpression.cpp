@@ -14,6 +14,10 @@ bi::ParenthesesExpression::ParenthesesExpression(Expression* expr, shared_ptr<Lo
   assert(expr);
 }
 
+bi::ParenthesesExpression::~ParenthesesExpression() {
+  //
+}
+
 bi::Expression* bi::ParenthesesExpression::strip() {
   return expr->strip();
 }

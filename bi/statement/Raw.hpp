@@ -44,7 +44,3 @@ public:
   std::string raw;
 };
 }
-
-inline bi::Raw::~Raw() {
-  //
-}

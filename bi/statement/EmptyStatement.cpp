@@ -11,6 +11,10 @@ bi::Statement* bi::EmptyStatement::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
+bi::EmptyStatement::~EmptyStatement() {
+  //
+}
+
 void bi::EmptyStatement::acceptModify(Modifier* visitor) {
   visitor->modify(this);
 }

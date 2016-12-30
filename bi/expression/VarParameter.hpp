@@ -52,7 +52,3 @@ public:
   unique_ptr<Expression> value;
 };
 }
-
-inline bi::VarParameter::~VarParameter() {
-  //
-}

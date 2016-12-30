@@ -33,12 +33,3 @@ public:
   unique_ptr<Type> type;
 };
 }
-
-inline bi::Typed::Typed(Type* type) :
-    type(type) {
-  //
-}
-
-inline bi::Typed::~Typed() {
-  //
-}

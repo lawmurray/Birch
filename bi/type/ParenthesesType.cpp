@@ -14,6 +14,10 @@ bi::ParenthesesType::ParenthesesType(Type* type, shared_ptr<Location> loc) :
   assert(type);
 }
 
+bi::ParenthesesType::~ParenthesesType() {
+  //
+}
+
 bi::Type* bi::ParenthesesType::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }

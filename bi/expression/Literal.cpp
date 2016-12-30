@@ -18,6 +18,11 @@ bi::Literal<T1>::Literal(const T1& value, const std::string& str, Type* type,
 }
 
 template<class T1>
+bi::Literal<T1>::~Literal() {
+  //
+}
+
+template<class T1>
 bi::Expression* bi::Literal<T1>::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }

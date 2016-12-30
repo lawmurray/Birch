@@ -10,6 +10,10 @@ bi::EmptyType::EmptyType(shared_ptr<Location> loc) :
   //
 }
 
+bi::EmptyType::~EmptyType() {
+  //
+}
+
 bi::Type* bi::EmptyType::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }
@@ -20,6 +24,10 @@ void bi::EmptyType::acceptModify(Modifier* visitor) {
 
 void bi::EmptyType::accept(Visitor* visitor) const {
   return visitor->visit(this);
+}
+
+bi::EmptyType::operator bool() const {
+  return false;
 }
 
 bool bi::EmptyType::operator<=(Type& o) {

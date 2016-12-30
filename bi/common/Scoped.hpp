@@ -3,6 +3,7 @@
  */
 #pragma once
 
+#include "bi/common/Scope.hpp"
 #include "bi/primitive/shared_ptr.hpp"
 
 namespace bi {
@@ -16,13 +17,6 @@ class Scope;
 class Scoped {
 public:
   /**
-   * Constructor.
-   *
-   * @param scope Scope.
-   */
-  Scoped();
-
-  /**
    * Destructor.
    */
   virtual ~Scoped() = 0;
@@ -32,14 +26,4 @@ public:
    */
   shared_ptr<Scope> scope;
 };
-}
-
-#include "bi/common/Scope.hpp"
-
-inline bi::Scoped::Scoped() {
-  //
-}
-
-inline bi::Scoped::~Scoped() {
-  //
 }

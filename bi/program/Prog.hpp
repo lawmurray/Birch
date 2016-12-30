@@ -72,32 +72,3 @@ public:
   bool operator!=(Prog& o);
 };
 }
-
-inline bi::Prog::Prog(shared_ptr<Location> loc) :
-    Located(loc) {
-  //
-}
-
-inline bi::Prog::~Prog() {
-  //
-}
-
-inline bi::Prog::operator bool() const {
-  return true;
-}
-
-inline bool bi::Prog::operator<(Prog& o) {
-  return *this <= o && *this != o;
-}
-
-inline bool bi::Prog::operator>(Prog& o) {
-  return o <= *this && o != *this;
-}
-
-inline bool bi::Prog::operator>=(Prog& o) {
-  return o <= *this;
-}
-
-inline bool bi::Prog::operator!=(Prog& o) {
-  return !(*this == o);
-}

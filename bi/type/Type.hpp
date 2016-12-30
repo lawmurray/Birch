@@ -89,35 +89,3 @@ public:
   bool assignable;
 };
 }
-
-inline bi::Type::~Type() {
-  //
-}
-
-inline bi::Type::operator bool() const {
-  return true;
-}
-
-inline bool bi::Type::builtin() const {
-  return false;
-}
-
-inline int bi::Type::count() const {
-  return 0;
-}
-
-inline bool bi::Type::operator<(const Type& o) const {
-  return *this <= o && *this != o;
-}
-
-inline bool bi::Type::operator>(const Type& o) const {
-  return o <= *this && o != *this;
-}
-
-inline bool bi::Type::operator>=(const Type& o) const {
-  return o <= *this;
-}
-
-inline bool bi::Type::operator!=(const Type& o) const {
-  return !(*this == o);
-}

@@ -12,6 +12,10 @@ bi::Import::Import(shared_ptr<Path> path, File* file, shared_ptr<Location> loc) 
   //
 }
 
+bi::Import::~Import() {
+  //
+}
+
 bi::Statement* bi::Import::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }

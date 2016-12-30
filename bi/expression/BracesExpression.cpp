@@ -13,6 +13,10 @@ bi::BracesExpression::BracesExpression(Statement* stmt,
   //
 }
 
+bi::BracesExpression::~BracesExpression() {
+  //
+}
+
 bi::Expression* bi::BracesExpression::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }

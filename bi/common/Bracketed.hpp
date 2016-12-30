@@ -7,8 +7,6 @@
 #include "bi/expression/EmptyExpression.hpp"
 #include "bi/primitive/unique_ptr.hpp"
 
-#include <cassert>
-
 namespace bi {
 /**
  * Object with brackets.
@@ -34,14 +32,4 @@ public:
    */
   unique_ptr<Expression> brackets;
 };
-}
-
-inline bi::Bracketed::Bracketed(Expression* brackets) :
-    brackets(brackets) {
-  /* pre-condition */
-  assert(brackets);
-}
-
-inline bi::Bracketed::~Bracketed() {
-  //
 }

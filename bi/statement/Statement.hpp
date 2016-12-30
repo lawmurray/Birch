@@ -74,32 +74,3 @@ public:
   bool operator!=(Statement& o);
 };
 }
-
-inline bi::Statement::Statement(shared_ptr<Location> loc) :
-    Located(loc) {
-  //
-}
-
-inline bi::Statement::~Statement() {
-  //
-}
-
-inline bi::Statement::operator bool() const {
-  return true;
-}
-
-inline bool bi::Statement::operator<(Statement& o) {
-  return *this <= o && *this != o;
-}
-
-inline bool bi::Statement::operator>(Statement& o) {
-  return o <= *this && o != *this;
-}
-
-inline bool bi::Statement::operator>=(Statement& o) {
-  return o <= *this;
-}
-
-inline bool bi::Statement::operator!=(Statement& o) {
-  return !(*this == o);
-}

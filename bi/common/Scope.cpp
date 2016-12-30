@@ -14,6 +14,10 @@ bi::Scope::Scope(shared_ptr<Scope> outer) :
   //
 }
 
+bi::Scope::~Scope() {
+  //
+}
+
 bool bi::Scope::contains(VarParameter* param) {
   return vars.contains(param);
 }

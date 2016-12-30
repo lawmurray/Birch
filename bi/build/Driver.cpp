@@ -267,7 +267,7 @@ void bi::Driver::run(const std::string& prog) {
   char* msg;
   prog_t* fcn;
 
-  path so = packageName;
+  path so = std::string("lib") + packageName;
 #ifdef __APPLE__
   so.replace_extension(".dylib");
 #else

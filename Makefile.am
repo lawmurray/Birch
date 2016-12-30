@@ -29,16 +29,24 @@ birchc_SOURCES = \
   bi/build/misc.cpp \
   bi/common/Based.cpp \
   bi/common/Binary.cpp \
+  bi/common/Braced.cpp \
+  bi/common/Bracketed.cpp \
+  bi/common/Conditioned.cpp \
   bi/common/Dictionary.cpp \
   bi/common/Formed.cpp \
   bi/common/List.cpp \
+  bi/common/Located.cpp \
   bi/common/Location.cpp \
   bi/common/Name.cpp \
+  bi/common/Named.cpp \
   bi/common/OverloadedDictionary.cpp \
   bi/common/Parameter.cpp \
   bi/common/Parenthesised.cpp \
   bi/common/Path.cpp \
+  bi/common/Reference.cpp \
   bi/common/Scope.cpp \
+  bi/common/Scoped.cpp \
+  bi/common/Typed.cpp \
   bi/exception/AmbiguousReferenceException.cpp \
   bi/exception/CompilerException.cpp \
   bi/exception/CyclicImportException.cpp \
@@ -81,6 +89,7 @@ birchc_SOURCES = \
   bi/io/indentable_ostream.cpp \
   bi/primitive/encode.cpp \
   bi/primitive/signature_less_equal.cpp \
+  bi/program/Prog.cpp \
   bi/program/ProgParameter.cpp \
   bi/program/ProgReference.cpp \
   bi/statement/Conditional.cpp \
@@ -91,6 +100,7 @@ birchc_SOURCES = \
   bi/statement/Import.cpp \
   bi/statement/Loop.cpp \
   bi/statement/Raw.cpp \
+  bi/statement/Statement.cpp \
   bi/type/EmptyType.cpp \
   bi/type/ModelParameter.cpp \
   bi/type/ModelReference.cpp \
@@ -169,6 +179,7 @@ nobase_include_HEADERS = bi/data/Array.hpp \
   bi/exception/MemoryException.hpp \
   bi/exception/NetCDFException.hpp \
   bi/exception/UnknownOptionException.hpp \
+  bi/primitive/rv.hpp \
   bi/bi.hpp
 
 dist_noinst_SCRIPTS = autogen.sh

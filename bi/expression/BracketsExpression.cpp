@@ -17,6 +17,10 @@ bi::BracketsExpression::BracketsExpression(Expression* expr,
   //
 }
 
+bi::BracketsExpression::~BracketsExpression() {
+  //
+}
+
 bi::Expression* bi::BracketsExpression::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }

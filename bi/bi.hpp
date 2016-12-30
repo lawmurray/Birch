@@ -12,6 +12,7 @@
 #include "bi/exception/MemoryException.hpp"
 #include "bi/exception/NetCDFException.hpp"
 #include "bi/exception/UnknownOptionException.hpp"
+#include "bi/primitive/rv.hpp"
 
 #include <utility>
 #include <getopt.h>

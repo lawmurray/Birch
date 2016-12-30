@@ -32,12 +32,3 @@ public:
   shared_ptr<Location> loc;
 };
 }
-
-inline bi::Located::Located(shared_ptr<Location> loc) :
-    loc(loc) {
-  //
-}
-
-inline bi::Located::~Located() {
-  //
-}

@@ -15,6 +15,10 @@ bi::Raw::Raw(shared_ptr<Name> name, const std::string& raw,
   boost::algorithm::trim_left(this->raw);
 }
 
+bi::Raw::~Raw() {
+  //
+}
+
 bi::Statement* bi::Raw::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }

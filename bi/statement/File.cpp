@@ -10,6 +10,10 @@ bi::File::File(const std::string& path, Statement* imports, Statement* root) :
   //
 }
 
+bi::File::~File() {
+  //
+}
+
 bi::File* bi::File::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }

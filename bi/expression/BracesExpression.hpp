@@ -42,7 +42,3 @@ public:
   unique_ptr<Statement> stmt;
 };
 }
-
-inline bi::BracesExpression::~BracesExpression() {
-  //
-}

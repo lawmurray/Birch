@@ -77,8 +77,3 @@ typedef Literal<double> RealLiteral;
  */
 typedef Literal<std::string> StringLiteral;
 }
-
-template<class T1>
-inline bi::Literal<T1>::~Literal() {
-  //
-}

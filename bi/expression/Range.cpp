@@ -14,6 +14,10 @@ bi::Range::Range(Expression* left, Expression* right,
   //
 }
 
+bi::Range::~Range() {
+  //
+}
+
 bi::Expression* bi::Range::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }

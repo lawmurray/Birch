@@ -33,7 +33,3 @@ public:
   virtual bool operator==(const Expression& o) const;
 };
 }
-
-inline bi::EmptyExpression::~EmptyExpression() {
-  //
-}

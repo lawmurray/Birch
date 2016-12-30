@@ -140,7 +140,3 @@ ParameterType* bi::Scope::resolveDefer(const ReferenceType* ref) {
     throw UnresolvedReferenceException(ref);
   }
 }
-
-inline bi::Scope::~Scope() {
-  //
-}

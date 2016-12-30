@@ -37,17 +37,3 @@ public:
   shared_ptr<Name> name;
 };
 }
-
-inline bi::Named::Named() :
-    name(new bi::Name()) {
-  //
-}
-
-inline bi::Named::Named(shared_ptr<Name> name) :
-    name(name) {
-  //
-}
-
-inline bi::Named::~Named() {
-  //
-}

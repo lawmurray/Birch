@@ -4,7 +4,7 @@
 #pragma once
 
 #include "bi/statement/Statement.hpp"
-#include "bi/statement/Conditioned.hpp"
+#include "bi/common/Conditioned.hpp"
 #include "bi/common/Braced.hpp"
 #include "bi/common/Scoped.hpp"
 
@@ -38,8 +38,4 @@ public:
   virtual bool operator<=(Statement& o);
   virtual bool operator==(const Statement& o) const;
 };
-}
-
-inline bi::Loop::~Loop() {
-  //
 }

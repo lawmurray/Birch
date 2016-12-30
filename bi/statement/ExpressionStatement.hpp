@@ -40,7 +40,3 @@ public:
   unique_ptr<Expression> expr;
 };
 }
-
-inline bi::ExpressionStatement::~ExpressionStatement() {
-  //
-}

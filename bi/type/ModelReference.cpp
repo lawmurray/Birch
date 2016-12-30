@@ -21,6 +21,10 @@ bi::ModelReference::ModelReference(shared_ptr<Name> name, const int ndims,
   //
 }
 
+bi::ModelReference::~ModelReference() {
+  //
+}
+
 bi::Type* bi::ModelReference::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }

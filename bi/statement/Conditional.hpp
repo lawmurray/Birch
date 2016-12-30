@@ -4,7 +4,7 @@
 #pragma once
 
 #include "bi/statement/Statement.hpp"
-#include "bi/statement/Conditioned.hpp"
+#include "bi/common/Conditioned.hpp"
 #include "bi/expression/EmptyExpression.hpp"
 #include "bi/common/Braced.hpp"
 #include "bi/common/Scoped.hpp"
@@ -49,8 +49,4 @@ public:
    */
   unique_ptr<Expression> falseBraces;
 };
-}
-
-inline bi::Conditional::~Conditional() {
-  //
 }

@@ -12,6 +12,10 @@ bi::EmptyExpression::EmptyExpression() {
   //
 }
 
+bi::EmptyExpression::~EmptyExpression() {
+  //
+}
+
 bi::Expression* bi::EmptyExpression::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }

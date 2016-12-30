@@ -108,27 +108,3 @@ public:
   bool operator!=(Expression& o);
 };
 }
-
-inline bi::Expression::~Expression() {
-  //
-}
-
-inline bi::Expression::operator bool() const {
-  return true;
-}
-
-inline bool bi::Expression::operator<(Expression& o) {
-  return *this <= o && o != *this;
-}
-
-inline bool bi::Expression::operator>(Expression& o) {
-  return o <= *this && o != *this;
-}
-
-inline bool bi::Expression::operator>=(Expression& o) {
-  return o <= *this;
-}
-
-inline bool bi::Expression::operator!=(Expression& o) {
-  return !(*this == o);
-}

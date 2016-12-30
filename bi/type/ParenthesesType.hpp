@@ -40,7 +40,3 @@ public:
   unique_ptr<Type> type;
 };
 }
-
-inline bi::ParenthesesType::~ParenthesesType() {
-  //
-}

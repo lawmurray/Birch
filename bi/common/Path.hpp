@@ -66,23 +66,3 @@ public:
   unique_ptr<Path> tail;
 };
 }
-
-inline bi::Path::~Path() {
-  //
-}
-
-inline bool bi::Path::operator<(Path& o) {
-  return *this <= o && *this != o;
-}
-
-inline bool bi::Path::operator>(Path& o) {
-  return !(*this <= o);
-}
-
-inline bool bi::Path::operator>=(Path& o) {
-  return !(*this < o);
-}
-
-inline bool bi::Path::operator!=(Path& o) {
-  return !(*this == o);
-}

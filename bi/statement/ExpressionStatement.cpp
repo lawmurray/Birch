@@ -13,6 +13,10 @@ bi::ExpressionStatement::ExpressionStatement(Expression* expr,
   //
 }
 
+bi::ExpressionStatement::~ExpressionStatement() {
+  //
+}
+
 bi::Statement* bi::ExpressionStatement::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }

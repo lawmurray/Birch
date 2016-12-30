@@ -63,7 +63,3 @@ public:
   int ndims;
 };
 }
-
-inline bi::ModelReference::~ModelReference() {
-  //
-}

@@ -14,6 +14,10 @@ bi::Traversal::Traversal(Expression* left, Expression* right,
   //
 }
 
+bi::Traversal::~Traversal() {
+  //
+}
+
 bi::Expression* bi::Traversal::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }

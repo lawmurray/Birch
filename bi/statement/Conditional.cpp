@@ -15,6 +15,10 @@ bi::Conditional::Conditional(Expression* cond, Expression* braces,
   assert(falseBraces);
 }
 
+bi::Conditional::~Conditional() {
+  //
+}
+
 bi::Statement* bi::Conditional::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }

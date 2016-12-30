@@ -35,11 +35,3 @@ public:
   virtual bool operator==(const Type& o) const;
 };
 }
-
-inline bi::EmptyType::~EmptyType() {
-  //
-}
-
-inline bi::EmptyType::operator bool() const {
-  return false;
-}

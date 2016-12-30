@@ -12,6 +12,10 @@ bi::Loop::Loop(Expression* cond, Expression* braces, shared_ptr<Location> loc) :
   //
 }
 
+bi::Loop::~Loop() {
+  //
+}
+
 bi::Statement* bi::Loop::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }

@@ -33,13 +33,3 @@ public:
   unique_ptr<Expression> braces;
 };
 }
-
-inline bi::Braced::Braced(Expression* braces) :
-    braces(braces) {
-  /* pre-condition */
-  assert(braces);
-}
-
-inline bi::Braced::~Braced() {
-  //
-}

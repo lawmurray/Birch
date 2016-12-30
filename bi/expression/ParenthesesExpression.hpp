@@ -45,7 +45,3 @@ public:
   unique_ptr<Expression> expr;
 };
 }
-
-inline bi::ParenthesesExpression::~ParenthesesExpression() {
-  //
-}

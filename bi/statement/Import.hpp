@@ -48,7 +48,3 @@ public:
   File* file;
 };
 }
-
-inline bi::Import::~Import() {
-  //
-}

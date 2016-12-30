@@ -18,6 +18,10 @@ bi::Expression::Expression(shared_ptr<Location> loc) :
   //
 }
 
+bi::Expression::~Expression() {
+  //
+}
+
 bool bi::Expression::isPrimary() const {
   IsPrimary visitor;
   this->accept(&visitor);
@@ -44,4 +48,24 @@ int bi::Expression::tupleDims() const {
   TupleSizer visitor;
   this->accept(&visitor);
   return visitor.dims;
+}
+
+inline bi::Expression::operator bool() const {
+  return true;
+}
+
+bool bi::Expression::operator<(Expression& o) {
+  return *this <= o && o != *this;
+}
+
+bool bi::Expression::operator>(Expression& o) {
+  return o <= *this && o != *this;
+}
+
+bool bi::Expression::operator>=(Expression& o) {
+  return o <= *this;
+}
+
+bool bi::Expression::operator!=(Expression& o) {
+  return !(*this == o);
 }

@@ -28,7 +28,3 @@ public:
   virtual bool operator==(const Statement& o) const;
 };
 }
-
-inline bi::EmptyStatement::~EmptyStatement() {
-  //
-}

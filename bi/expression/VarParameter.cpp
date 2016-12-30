@@ -17,6 +17,10 @@ bi::VarParameter::VarParameter(shared_ptr<Name> name, Type* type,
   this->arg = this;
 }
 
+bi::VarParameter::~VarParameter() {
+  //
+}
+
 bi::Expression* bi::VarParameter::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }

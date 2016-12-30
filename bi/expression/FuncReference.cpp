@@ -18,6 +18,10 @@ bi::FuncReference::FuncReference(shared_ptr<Name> name, Expression* parens,
   //
 }
 
+bi::FuncReference::~FuncReference() {
+  //
+}
+
 bi::Expression* bi::FuncReference::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }

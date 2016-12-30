@@ -32,13 +32,3 @@ public:
   unique_ptr<Expression> cond;
 };
 }
-
-inline bi::Conditioned::Conditioned(Expression* cond) :
-    cond(cond) {
-  /* pre-condition */
-  assert(cond);
-}
-
-inline bi::Conditioned::~Conditioned() {
-  //
-}
