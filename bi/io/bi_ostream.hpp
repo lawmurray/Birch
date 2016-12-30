@@ -28,6 +28,7 @@ public:
   virtual void visit(const TypeList* o);
   virtual void visit(const ParenthesesExpression* o);
   virtual void visit(const BracesExpression* o);
+  virtual void visit(const RandomVariable* o);
   virtual void visit(const Range* o);
   virtual void visit(const Traversal* o);
   virtual void visit(const This* o);

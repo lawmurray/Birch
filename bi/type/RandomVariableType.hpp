@@ -4,28 +4,30 @@
 #pragma once
 
 #include "bi/type/Type.hpp"
-#include "bi/primitive/unique_ptr.hpp"
+#include "bi/common/Binary.hpp"
 
 namespace bi {
 /**
- * Tuple type.
+ * Random variable type.
  *
  * @ingroup compiler_type
  */
-class ParenthesesType: public Type {
+class RandomVariableType: public Type, public TypeBinary {
 public:
   /**
    * Constructor.
    *
-   * @param type Type in parentheses.
+   * @param left Variate type.
+   * @param right Model type.
    * @param loc Location.
    */
-  ParenthesesType(Type* type, shared_ptr<Location> loc = nullptr);
+  RandomVariableType(Type* left, Type* right, shared_ptr<Location> loc =
+      nullptr);
 
   /**
    * Destructor.
    */
-  virtual ~ParenthesesType();
+  virtual ~RandomVariableType();
 
   virtual Type* acceptClone(Cloner* visitor) const;
   virtual void acceptModify(Modifier* visitor);
@@ -33,10 +35,5 @@ public:
 
   virtual bool operator<=(Type& o);
   virtual bool operator==(const Type& o) const;
-
-  /**
-   * Expression inside parentheses.
-   */
-  unique_ptr<Type> type;
 };
 }

@@ -65,6 +65,11 @@ void bi::Modifier::modify(BracketsExpression* o) {
   o->brackets->acceptModify(this);
 }
 
+void bi::Modifier::modify(RandomVariable* o) {
+  o->left->acceptModify(this);
+  o->right->acceptModify(this);
+}
+
 void bi::Modifier::modify(Range* o) {
   o->left->acceptModify(this);
   o->right->acceptModify(this);
@@ -170,6 +175,11 @@ void bi::Modifier::modify(ProgDeclaration* o) {
 
 void bi::Modifier::modify(ParenthesesType* o) {
   o->type->acceptModify(this);
+}
+
+void bi::Modifier::modify(RandomVariableType* o) {
+  o->left->acceptModify(this);
+  o->right->acceptModify(this);
 }
 
 void bi::Modifier::modify(TypeList* o) {

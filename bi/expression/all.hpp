@@ -12,6 +12,7 @@
 #include "bi/expression/FuncReference.hpp"
 #include "bi/expression/Literal.hpp"
 #include "bi/expression/ParenthesesExpression.hpp"
+#include "bi/expression/RandomVariable.hpp"
 #include "bi/expression/Range.hpp"
 #include "bi/expression/This.hpp"
 #include "bi/expression/Traversal.hpp"

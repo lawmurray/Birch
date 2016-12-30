@@ -36,6 +36,7 @@ public:
   virtual void modify(ParenthesesExpression* o);
   virtual void modify(BracesExpression* o);
   virtual void modify(BracketsExpression* o);
+  virtual void modify(RandomVariable* o);
   virtual void modify(Range* o);
   virtual void modify(Traversal* o);
   virtual void modify(This* o);
@@ -62,6 +63,7 @@ public:
   virtual void modify(ProgDeclaration* o);
 
   virtual void modify(ParenthesesType* o);
+  virtual void modify(RandomVariableType* o);
   virtual void modify(TypeList* o);
 };
 }

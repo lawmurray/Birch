@@ -63,6 +63,10 @@ void bi::IsPrimary::visit(const BracketsExpression* o) {
   result = false;
 }
 
+void bi::IsPrimary::visit(const RandomVariable* o) {
+  result = false;
+}
+
 void bi::IsPrimary::visit(const Range* o) {
   result = false;
 }

@@ -13,6 +13,8 @@
 #include "bi/exception/NetCDFException.hpp"
 #include "bi/exception/UnknownOptionException.hpp"
 #include "bi/primitive/rv.hpp"
+#include "bi/primitive/shared_ptr.hpp"
+#include "bi/primitive/unique_ptr.hpp"
 
 #include <utility>
 #include <getopt.h>

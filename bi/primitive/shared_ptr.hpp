@@ -22,9 +22,14 @@ public:
   shared_ptr();
 
   /**
-   * Constructor.
+   * Constructor from raw pointer.
    */
   shared_ptr(T* ptr);
+
+  /**
+   * Constructor from STL smart pointer.
+   */
+  shared_ptr(std::shared_ptr<T> ptr);
 
   /**
    * Copy constructor.
@@ -93,6 +98,11 @@ private:
    */
   std::shared_ptr<T> ptr;
 };
+
+template<class T, class ...Args>
+shared_ptr<T> make_shared(Args... args) {
+  return shared_ptr<T>(std::make_shared<T>(args...));
+}
 }
 
 template<class T>
@@ -103,6 +113,12 @@ bi::shared_ptr<T>::shared_ptr() :
 
 template<class T>
 bi::shared_ptr<T>::shared_ptr(T* ptr) :
+    ptr(ptr) {
+  //
+}
+
+template<class T>
+bi::shared_ptr<T>::shared_ptr(std::shared_ptr<T> ptr) :
     ptr(ptr) {
   //
 }

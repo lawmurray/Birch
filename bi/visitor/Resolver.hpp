@@ -37,6 +37,7 @@ public:
   virtual void modify(ExpressionList* o);
   virtual void modify(ParenthesesExpression* o);
   virtual void modify(BracesExpression* o);
+  virtual void modify(RandomVariable* o);
   virtual void modify(Range* o);
   virtual void modify(Traversal* o);
   virtual void modify(This* o);

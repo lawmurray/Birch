@@ -55,6 +55,11 @@ bi::Expression* bi::Cloner::clone(const BracketsExpression* o) {
       o->brackets->acceptClone(this), o->loc);
 }
 
+bi::Expression* bi::Cloner::clone(const RandomVariable* o) {
+  return new RandomVariable(o->left->acceptClone(this),
+      o->right->acceptClone(this), o->loc);
+}
+
 bi::Expression* bi::Cloner::clone(const Range* o) {
   return new Range(o->left->acceptClone(this), o->right->acceptClone(this),
       o->loc);
@@ -156,6 +161,11 @@ bi::Statement* bi::Cloner::clone(const ProgDeclaration* o) {
 
 bi::Type* bi::Cloner::clone(const ParenthesesType* o) {
   return new ParenthesesType(o->type->acceptClone(this), o->loc);
+}
+
+bi::Type* bi::Cloner::clone(const RandomVariableType* o) {
+  return new RandomVariableType(o->left->acceptClone(this),
+      o->right->acceptClone(this), o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const TypeList* o) {

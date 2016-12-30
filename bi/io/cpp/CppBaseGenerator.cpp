@@ -81,6 +81,10 @@ void bi::CppBaseGenerator::visit(const BracketsExpression* o) {
   middle(o->expr << "(bi::make_view(" << o->brackets << "))");
 }
 
+void bi::CppBaseGenerator::visit(const RandomVariable* o) {
+  middle("auto tmp_ = bi::make_shared<" << o->type << ">(" << o->left << ", [&]() -> " << o->right->type << " { return " << o->right << "; })");
+}
+
 void bi::CppBaseGenerator::visit(const Range* o) {
   middle("bi::make_range(" << o->left << ", " << o->right << ')');
 }
@@ -268,4 +272,10 @@ void bi::CppBaseGenerator::visit(const EmptyType* o) {
 
 void bi::CppBaseGenerator::visit(const ParenthesesType* o) {
   middle("std::tuple<" << o->type << ">");
+}
+
+void bi::CppBaseGenerator::visit(const RandomVariableType* o) {
+  middle("bi::rv<");
+  middle(o->left << ',' << o->right);
+  middle(">");
 }

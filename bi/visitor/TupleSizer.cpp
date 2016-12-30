@@ -44,6 +44,10 @@ void bi::TupleSizer::visit(const BracketsExpression* o) {
   ++size;
 }
 
+void bi::TupleSizer::visit(const RandomVariable* o) {
+  ++size;
+}
+
 void bi::TupleSizer::visit(const Range* o) {
   ++size;
   ++dims;

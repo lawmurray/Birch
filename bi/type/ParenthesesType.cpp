@@ -31,6 +31,13 @@ void bi::ParenthesesType::accept(Visitor* visitor) const {
 }
 
 bool bi::ParenthesesType::operator<=(Type& o) {
+  try {
+    ParenthesesType& o1 = dynamic_cast<ParenthesesType&>(o);
+    return *type <= *o1.type;
+  } catch (std::bad_cast e) {
+    //
+  }
+
   /* parentheses may be used unnecessarily in situations where precedence is
    * clear anyway; accommodate these by making their use optional in
    * matches */

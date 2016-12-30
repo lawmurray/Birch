@@ -66,6 +66,7 @@ birchc_SOURCES = \
   bi/expression/FuncReference.cpp \
   bi/expression/Literal.cpp \
   bi/expression/ParenthesesExpression.cpp \
+  bi/expression/RandomVariable.cpp \
   bi/expression/Range.cpp \
   bi/expression/This.cpp \
   bi/expression/Traversal.cpp \
@@ -105,6 +106,7 @@ birchc_SOURCES = \
   bi/type/ModelParameter.cpp \
   bi/type/ModelReference.cpp \
   bi/type/ParenthesesType.cpp \
+  bi/type/RandomVariableType.cpp \
   bi/type/Type.cpp \
   bi/visitor/Cloner.cpp \
   bi/visitor/Gatherer.cpp \
@@ -180,6 +182,8 @@ nobase_include_HEADERS = bi/data/Array.hpp \
   bi/exception/NetCDFException.hpp \
   bi/exception/UnknownOptionException.hpp \
   bi/primitive/rv.hpp \
+  bi/primitive/shared_ptr.hpp \
+  bi/primitive/unique_ptr.hpp \
   bi/bi.hpp
 
 dist_noinst_SCRIPTS = autogen.sh

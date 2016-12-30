@@ -51,6 +51,12 @@ void bi::Resolver::modify(BracesExpression* o) {
   Modifier::modify(o);
 }
 
+void bi::Resolver::modify(RandomVariable* o) {
+  Modifier::modify(o);
+  o->type = new RandomVariableType(o->left->type->acceptClone(&cloner),
+      o->right->type->acceptClone(&cloner));
+}
+
 void bi::Resolver::modify(Range* o) {
   Modifier::modify(o);
 }
