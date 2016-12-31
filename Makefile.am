@@ -190,7 +190,7 @@ nobase_include_HEADERS = bi/data/Array.hpp \
 
 dist_noinst_SCRIPTS = autogen.sh
 dist_pkgdata_DATA = \
-  share/.gitignore \
+  share/gitignore \
   share/ax_cxx_compile_stdcxx.m4 \
   share/ax_cxx_compile_stdcxx_11.m4 \
   share/ax_cxx_compile_stdcxx_14.m4 \
