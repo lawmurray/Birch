@@ -12,7 +12,7 @@
 bi::RandomParameter::RandomParameter(Expression* left, Expression* right,
     shared_ptr<Location> loc) :
     Expression(loc), ExpressionBinary(left, right) {
-  this->name = new Name(uniqueName(this));
+  this->name = new Name(uniqueName(left));
 }
 
 bi::RandomParameter::~RandomParameter() {

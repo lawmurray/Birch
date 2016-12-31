@@ -57,5 +57,6 @@ ParameterType* bi::Dictionary<ParameterType,ReferenceType>::resolve(
  */
 template class bi::Dictionary<bi::VarParameter,bi::VarReference>;
 template class bi::Dictionary<bi::FuncParameter,bi::FuncReference>;
+template class bi::Dictionary<bi::RandomParameter,bi::RandomReference>;
 template class bi::Dictionary<bi::ModelParameter,bi::ModelReference>;
 template class bi::Dictionary<bi::ProgParameter,bi::ProgReference>;

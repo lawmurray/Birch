@@ -4,6 +4,7 @@
 #include "bi/expression/RandomReference.hpp"
 
 #include "bi/expression/RandomParameter.hpp"
+#include "bi/primitive/encode.hpp"
 #include "bi/visitor/all.hpp"
 
 #include <typeinfo>
@@ -14,6 +15,10 @@ bi::RandomReference::RandomReference(shared_ptr<Name> name,
     Named(name),
     Reference(target) {
   //
+}
+
+bi::RandomReference::RandomReference(Expression* expr) {
+  this->name = new Name(uniqueName(expr));
 }
 
 bi::RandomReference::~RandomReference() {

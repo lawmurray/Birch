@@ -4,7 +4,7 @@
 #pragma once
 
 #include "bi/expression/FuncParameter.hpp"
-#include "bi/expression/RandomParameter.hpp"
+#include "bi/expression/Expression.hpp"
 
 #include <string>
 
@@ -41,7 +41,7 @@ std::string uniqueName(const FuncParameter* o);
 /**
  * Generate a unique name for a random parameter.
  */
-std::string uniqueName(const RandomParameter* o);
+std::string uniqueName(const Expression* o);
 
 /**
  * Generate internal name. This is the original name, with any characters

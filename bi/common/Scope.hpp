@@ -6,23 +6,19 @@
 #include "bi/common/Dictionary.hpp"
 #include "bi/common/OverloadedDictionary.hpp"
 #include "bi/common/Named.hpp"
-#include "bi/primitive/pointer_less.hpp"
-
-#include <map>
 
 namespace bi {
 class VarParameter;
 class FuncParameter;
+class RandomParameter;
 class ModelParameter;
 class ProgParameter;
 
 class VarReference;
 class FuncReference;
+class RandomReference;
 class ModelReference;
 class ProgReference;
-
-class Expression;
-class RandomParameter;
 
 /**
  * Scope.
@@ -53,6 +49,7 @@ public:
    */
   bool contains(VarParameter* param);
   bool contains(FuncParameter* param);
+  bool contains(RandomParameter* param);
   bool contains(ModelParameter* param);
   bool contains(ProgParameter* param);
 
@@ -76,17 +73,8 @@ public:
    */
   VarParameter* resolve(const VarReference* ref);
   FuncParameter* resolve(const FuncReference* ref);
+  RandomParameter* resolve(const RandomReference* ref);
   ModelParameter* resolve(const ModelReference* ref);
-
-  /**
-   * Can this expression be substituted by a random variable?
-   */
-  bool substitutable(Expression* expr);
-
-  /**
-   * Get random variable which which to substitute this expression.
-   */
-  RandomParameter* substitute(Expression* expr);
 
   /**
    * Import from another scope into this scope.
@@ -113,12 +101,8 @@ public:
   Dictionary<VarParameter,VarReference> vars;
   Dictionary<ModelParameter,ModelReference> models;
   OverloadedDictionary<FuncParameter,FuncReference> funcs;
+  Dictionary<RandomParameter,RandomReference> randoms;
   Dictionary<ProgParameter,ProgReference> progs;
-
-  /**
-   * Random variables.
-   */
-  std::map<Expression*,RandomParameter*,pointer_less> randoms;
 
 private:
   /**

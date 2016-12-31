@@ -27,6 +27,13 @@ public:
       const RandomParameter* target = nullptr);
 
   /**
+   * Construct from expression.
+   *
+   * @param expr Expression.
+   */
+  RandomReference(Expression* expr);
+
+  /**
    * Destructor.
    */
   virtual ~RandomReference();

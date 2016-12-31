@@ -90,13 +90,13 @@ std::string bi::uniqueName(const FuncParameter* o) {
   return buf.str();
 }
 
-std::string bi::uniqueName(const RandomParameter* o) {
+std::string bi::uniqueName(const Expression* o) {
   std::stringstream buf;
   std::string decoded, encoded;
 
   /* encode */
   bi::bih_ostream stream(buf);
-  stream << o->left;
+  stream << o;
   decoded = buf.str();
   encode32(decoded, encoded);
 

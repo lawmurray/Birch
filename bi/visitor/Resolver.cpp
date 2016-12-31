@@ -106,15 +106,15 @@ bi::Expression* bi::Resolver::modify(VarReference* o) {
   o->type->assignable = o->target->type->assignable;
 
   /* substitute with random variable if possible */
-  Expression* result;
-  if (inner()->substitutable(o)) {
-    RandomParameter* target = inner()->substitute(o);
-    result = new RandomReference(target->name, o->loc, target);
-    result->type = target->type->acceptClone(&cloner)->acceptModify(this);
-  } else {
-    result = o;
+  RandomReference* random = new RandomReference(o);
+  try {
+    random->target = inner()->resolve(random);
+    random->type = random->target->type->acceptClone(&cloner)->acceptModify(this);
+    return random;
+  } catch (UnresolvedReferenceException e) {
+    delete random;
+    return o;
   }
-  return result;
 }
 
 bi::Expression* bi::Resolver::modify(FuncReference* o) {
