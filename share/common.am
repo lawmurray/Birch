@@ -1,0 +1,16 @@
+##
+## @file
+##
+
+# compile and link flags
+ACLOCAL_AMFLAGS = -I m4
+
+if ENABLE_STD
+BIRCHFLAGS = --enable-std
+else
+BIRCHFLAGS = --disable-std
+endif
+
+# pattern for *.bi files
+%.cpp %.hpp: %.bi $(BIRCHC)
+	$(BIRCHC) $(BIRCHFLAGS) $(CPPFLAGS) -o $@ $<

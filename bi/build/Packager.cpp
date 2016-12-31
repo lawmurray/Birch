@@ -113,14 +113,14 @@ void bi::Packager::create() {
   create_directory("bi");
   path biPath("bi");
   if (force) {
-    copy_with_force(find(share_dirs, ".gitignore"), ".gitignore");
+    copy_with_force(find(share_dirs, "gitignore"), ".gitignore");
     copy_with_force(find(share_dirs, "LICENSE"), "LICENSE");
     copy_with_force(find(share_dirs, "Makefile"), "Makefile");
     copy_with_force(find(share_dirs, "MANIFEST"), "MANIFEST");
     copy_with_force(find(share_dirs, "README.md"), "README.md");
     copy_with_force(find(share_dirs, "VERSION.md"), "VERSION.md");
   } else {
-    copy_with_prompt(find(share_dirs, ".gitignore"), ".gitignore");
+    copy_with_prompt(find(share_dirs, "gitignore"), ".gitignore");
     copy_with_prompt(find(share_dirs, "LICENSE"), "LICENSE");
     copy_with_prompt(find(share_dirs, "Makefile"), "Makefile");
     copy_with_prompt(find(share_dirs, "MANIFEST"), "MANIFEST");
