@@ -68,11 +68,6 @@ void bi::IsRich::visit(const BracketsExpression* o) {
   result = true;
 }
 
-void bi::IsRich::visit(const RandomVariable* o) {
-  //Visitor::visit(o);
-  result = true;
-}
-
 void bi::IsRich::visit(const Range* o) {
   //Visitor::visit(o);
   result = true;
@@ -97,6 +92,10 @@ void bi::IsRich::visit(const FuncReference* o) {
   result = true;
 }
 
+void bi::IsRich::visit(const RandomReference* o) {
+  Visitor::visit(o);
+}
+
 void bi::IsRich::visit(const ModelReference* o) {
   Visitor::visit(o);
 }
@@ -106,6 +105,11 @@ void bi::IsRich::visit(const VarParameter* o) {
 }
 
 void bi::IsRich::visit(const FuncParameter* o) {
+  //Visitor::visit(o);
+  result = true;
+}
+
+void bi::IsRich::visit(const RandomParameter* o) {
   //Visitor::visit(o);
   result = true;
 }

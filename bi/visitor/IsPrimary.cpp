@@ -63,10 +63,6 @@ void bi::IsPrimary::visit(const BracketsExpression* o) {
   result = false;
 }
 
-void bi::IsPrimary::visit(const RandomVariable* o) {
-  result = false;
-}
-
 void bi::IsPrimary::visit(const Range* o) {
   result = false;
 }
@@ -87,6 +83,10 @@ void bi::IsPrimary::visit(const FuncReference* o) {
   result = true;
 }
 
+void bi::IsPrimary::visit(const RandomReference* o) {
+  result = true;
+}
+
 void bi::IsPrimary::visit(const ModelReference* o) {
   result = false;
 }
@@ -97,6 +97,10 @@ void bi::IsPrimary::visit(const VarParameter* o) {
 
 void bi::IsPrimary::visit(const FuncParameter* o) {
   result = true;
+}
+
+void bi::IsPrimary::visit(const RandomParameter* o) {
+  result = false;
 }
 
 void bi::IsPrimary::visit(const ModelParameter* o) {

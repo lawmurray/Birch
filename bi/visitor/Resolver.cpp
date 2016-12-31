@@ -7,8 +7,7 @@
 #include "bi/exception/all.hpp"
 
 bi::Resolver::Resolver(shared_ptr<Scope> scope) :
-    inInputs(false),
-    inRandom(false) {
+    inInputs(false) {
   if (scope) {
     push(scope);
   }
@@ -47,16 +46,6 @@ bi::Expression* bi::Resolver::modify(ParenthesesExpression* o) {
   Modifier::modify(o);
   o->type = new ParenthesesType(o->expr->type->acceptClone(&cloner));
   o->type = o->type->acceptModify(this);
-  return o;
-}
-
-bi::Expression* bi::Resolver::modify(RandomVariable* o) {
-  Modifier::modify(o);
-  o->type = new RandomVariableType(o->left->type->acceptClone(&cloner),
-      o->right->type->acceptClone(&cloner));
-  if (!inRandom) {
-    inner()->addRandom(o);
-  }
   return o;
 }
 
@@ -116,12 +105,12 @@ bi::Expression* bi::Resolver::modify(VarReference* o) {
   o->type = o->target->type->acceptClone(&cloner)->acceptModify(this);
   o->type->assignable = o->target->type->assignable;
 
-  /* replace with random variable if possible */
+  /* substitute with random variable if possible */
   Expression* result;
-  if (!inRandom && inner()->containsRandom(o)) {
-    inRandom = true;
-    result = o;
-    inRandom = false;
+  if (inner()->substitutable(o)) {
+    RandomParameter* target = inner()->substitute(o);
+    result = new RandomReference(target->name, o->loc, target);
+    result->type = target->type->acceptClone(&cloner)->acceptModify(this);
   } else {
     result = o;
   }
@@ -150,6 +139,11 @@ bi::Expression* bi::Resolver::modify(FuncReference* o) {
     o->args.push_back((*iter)->arg);
   }
 
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(RandomReference* o) {
+  assert(false);
   return o;
 }
 
@@ -194,6 +188,14 @@ bi::Expression* bi::Resolver::modify(FuncParameter* o) {
   o->result->accept(&gatherer2);
   o->outputs = gatherer2.gathered;
 
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(RandomParameter* o) {
+  Modifier::modify(o);
+  o->type = new RandomType(o->left->type->acceptClone(&cloner),
+      o->right->type->acceptClone(&cloner));
+  inner()->add(o);
   return o;
 }
 

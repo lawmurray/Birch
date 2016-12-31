@@ -4,6 +4,7 @@
 #pragma once
 
 #include "bi/expression/FuncParameter.hpp"
+#include "bi/expression/RandomParameter.hpp"
 
 #include <string>
 
@@ -36,6 +37,11 @@ unsigned char decode32(const unsigned char c);
  * Generate a unique name for a function parameter.
  */
 std::string uniqueName(const FuncParameter* o);
+
+/**
+ * Generate a unique name for a random parameter.
+ */
+std::string uniqueName(const RandomParameter* o);
 
 /**
  * Generate internal name. This is the original name, with any characters

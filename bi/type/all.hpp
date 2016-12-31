@@ -9,4 +9,4 @@
 #include "bi/type/ModelParameter.hpp"
 #include "bi/type/ModelReference.hpp"
 #include "bi/type/ParenthesesType.hpp"
-#include "bi/type/RandomVariableType.hpp"
+#include "bi/type/RandomType.hpp"

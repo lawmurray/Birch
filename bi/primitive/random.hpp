@@ -13,7 +13,7 @@ namespace bi {
  * @tparam Model Model type.
  */
 template<class Variate, class Model>
-class rv {
+class random {
 public:
   /**
    * Constructor.
@@ -21,12 +21,12 @@ public:
    * @param x Location in which to write variate, once simulated.
    * @param expr The model, as a lambda function.
    */
-  rv(Variate& x, std::function<Model()> expr);
+  random(Variate& x, std::function<Model()> expr);
 
   /**
    * Destructor.
    */
-  ~rv();
+  ~random();
 
   /**
    * Cast to variate.
@@ -87,7 +87,7 @@ private:
 }
 
 template<class Variate, class Model>
-bi::rv<Variate,Model>::rv(Variate& x, std::function<Model()> expr) :
+bi::random<Variate,Model>::random(Variate& x, std::function<Model()> expr) :
     x(x),
     expr(expr),
     p(expr()),
@@ -98,7 +98,7 @@ bi::rv<Variate,Model>::rv(Variate& x, std::function<Model()> expr) :
 }
 
 template<class Variate, class Model>
-bi::rv<Variate,Model>::~rv() {
+bi::random<Variate,Model>::~random() {
   if (!marginalised) {
     marginalise();
   }
@@ -111,7 +111,7 @@ bi::rv<Variate,Model>::~rv() {
 }
 
 template<class Variate, class Model>
-bi::rv<Variate,Model>::operator Variate&() {
+bi::random<Variate,Model>::operator Variate&() {
   if (!marginalised) {
     marginalise();
   }
@@ -122,9 +122,9 @@ bi::rv<Variate,Model>::operator Variate&() {
 }
 
 template<class Variate, class Model>
-bi::rv<Variate,Model>::operator Model&() {
+bi::random<Variate,Model>::operator Model&() {
   /* pre-condition */
-  assert(!simulated); // model has expired once variate has simulated
+  assert(!simulated);  // model has expired once variate has simulated
 
   if (!marginalised) {
     marginalise();
@@ -133,7 +133,7 @@ bi::rv<Variate,Model>::operator Model&() {
 }
 
 template<class Variate, class Model>
-void bi::rv<Variate,Model>::marginalise() {
+void bi::random<Variate,Model>::marginalise() {
   /* pre-condition */
   assert(!marginalised);
 
@@ -141,21 +141,18 @@ void bi::rv<Variate,Model>::marginalise() {
   marginalised = true;
 }
 
-#include <iostream>
-
 template<class Variate, class Model>
-void bi::rv<Variate,Model>::simulate() {
+void bi::random<Variate,Model>::simulate() {
   /* pre-condition */
   assert(marginalised);
   assert(!simulated);
 
-  std::cerr << "Simulate\n" << std::endl;
   x = sim_(p);
   simulated = true;
 }
 
 template<class Variate, class Model>
-void bi::rv<Variate,Model>::condition() {
+void bi::random<Variate,Model>::condition() {
   /* pre-condition */
   assert(simulated);
   assert(!conditioned);

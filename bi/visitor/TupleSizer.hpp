@@ -32,7 +32,6 @@ public:
   virtual void visit(const ExpressionList* o);
   virtual void visit(const ParenthesesExpression* o);
   virtual void visit(const BracesExpression* o);
-  virtual void visit(const RandomVariable* o);
   virtual void visit(const Range* o);
   virtual void visit(const Traversal* o);
   virtual void visit(const This* o);
@@ -40,10 +39,12 @@ public:
 
   virtual void visit(const VarReference* o);
   virtual void visit(const FuncReference* o);
+  virtual void visit(const RandomReference* o);
   virtual void visit(const ProgReference* o);
 
   virtual void visit(const VarParameter* o);
   virtual void visit(const FuncParameter* o);
+  virtual void visit(const RandomParameter* o);
   virtual void visit(const ProgParameter* o);
 
   /**

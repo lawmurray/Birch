@@ -81,10 +81,6 @@ void bi::CppBaseGenerator::visit(const BracketsExpression* o) {
   middle(o->expr << "(bi::make_view(" << o->brackets << "))");
 }
 
-void bi::CppBaseGenerator::visit(const RandomVariable* o) {
-  middle("auto tmp_ = bi::make_shared<" << o->type << ">(" << o->left << ", [&]() -> " << o->right->type << " { return " << o->right << "; })");
-}
-
 void bi::CppBaseGenerator::visit(const Range* o) {
   middle("bi::make_range(" << o->left << ", " << o->right << ')');
 }
@@ -143,6 +139,10 @@ void bi::CppBaseGenerator::visit(const FuncReference* o) {
     }
     middle(')');
   }
+}
+
+void bi::CppBaseGenerator::visit(const RandomReference* o) {
+  middle(o->name);
 }
 
 void bi::CppBaseGenerator::visit(const ModelReference* o) {
@@ -230,6 +230,12 @@ void bi::CppBaseGenerator::visit(const FuncParameter* o) {
   }
 }
 
+void bi::CppBaseGenerator::visit(const RandomParameter* o) {
+  middle(o->type << ' ' << o->name << '(');
+  middle(o->left << ", [&]() -> " << o->right->type << " { return " << o->right << "; }");
+  middle(')');
+}
+
 void bi::CppBaseGenerator::visit(const ExpressionStatement* o) {
   line(o->expr << ';');
 }
@@ -274,8 +280,8 @@ void bi::CppBaseGenerator::visit(const ParenthesesType* o) {
   middle("std::tuple<" << o->type << ">");
 }
 
-void bi::CppBaseGenerator::visit(const RandomVariableType* o) {
-  middle("bi::rv<");
+void bi::CppBaseGenerator::visit(const RandomType* o) {
+  middle("bi::random<");
   middle(o->left << ',' << o->right);
   middle(">");
 }

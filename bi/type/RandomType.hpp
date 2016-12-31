@@ -12,7 +12,7 @@ namespace bi {
  *
  * @ingroup compiler_type
  */
-class RandomVariableType: public Type, public TypeBinary {
+class RandomType: public Type, public TypeBinary {
 public:
   /**
    * Constructor.
@@ -21,13 +21,13 @@ public:
    * @param right Model type.
    * @param loc Location.
    */
-  RandomVariableType(Type* left, Type* right, shared_ptr<Location> loc =
+  RandomType(Type* left, Type* right, shared_ptr<Location> loc =
       nullptr);
 
   /**
    * Destructor.
    */
-  virtual ~RandomVariableType();
+  virtual ~RandomType();
 
   virtual Type* acceptClone(Cloner* visitor) const;
   virtual Type* acceptModify(Modifier* visitor);

@@ -65,11 +65,6 @@ void bi::Visitor::visit(const BracketsExpression* o) {
   o->brackets->accept(this);
 }
 
-void bi::Visitor::visit(const RandomVariable* o) {
-  o->left->accept(this);
-  o->right->accept(this);
-}
-
 void bi::Visitor::visit(const Range* o) {
   o->left->accept(this);
   o->right->accept(this);
@@ -93,6 +88,10 @@ void bi::Visitor::visit(const FuncReference* o) {
   o->parens->accept(this);
 }
 
+void bi::Visitor::visit(const RandomReference* o) {
+  o->name->accept(this);
+}
+
 void bi::Visitor::visit(const ModelReference* o) {
   o->name->accept(this);
   o->brackets->accept(this);
@@ -114,6 +113,11 @@ void bi::Visitor::visit(const FuncParameter* o) {
   o->parens->accept(this);
   o->result->accept(this);
   o->braces->accept(this);
+}
+
+void bi::Visitor::visit(const RandomParameter* o) {
+  o->left->accept(this);
+  o->right->accept(this);
 }
 
 void bi::Visitor::visit(const ModelParameter* o) {
@@ -177,7 +181,7 @@ void bi::Visitor::visit(const ParenthesesType* o) {
   o->type->accept(this);
 }
 
-void bi::Visitor::visit(const RandomVariableType* o) {
+void bi::Visitor::visit(const RandomType* o) {
   o->left->accept(this);
   o->right->accept(this);
 }

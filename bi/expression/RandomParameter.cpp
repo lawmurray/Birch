@@ -1,38 +1,39 @@
 /**
  * @file
  */
-#include "bi/expression/RandomVariable.hpp"
+#include "bi/expression/RandomParameter.hpp"
 
 #include "bi/expression/VarParameter.hpp"
 #include "bi/visitor/all.hpp"
+#include "bi/primitive/encode.hpp"
 
 #include <typeinfo>
 
-bi::RandomVariable::RandomVariable(Expression* left, Expression* right,
+bi::RandomParameter::RandomParameter(Expression* left, Expression* right,
     shared_ptr<Location> loc) :
     Expression(loc), ExpressionBinary(left, right) {
+  this->name = new Name(uniqueName(this));
+}
+
+bi::RandomParameter::~RandomParameter() {
   //
 }
 
-bi::RandomVariable::~RandomVariable() {
-  //
-}
-
-bi::Expression* bi::RandomVariable::acceptClone(Cloner* visitor) const {
+bi::Expression* bi::RandomParameter::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-bi::Expression* bi::RandomVariable::acceptModify(Modifier* visitor) {
+bi::Expression* bi::RandomParameter::acceptModify(Modifier* visitor) {
   return visitor->modify(this);
 }
 
-void bi::RandomVariable::accept(Visitor* visitor) const {
+void bi::RandomParameter::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }
 
-bool bi::RandomVariable::operator<=(Expression& o) {
+bool bi::RandomParameter::operator<=(Expression& o) {
   try {
-    RandomVariable& o1 = dynamic_cast<RandomVariable&>(o);
+    RandomParameter& o1 = dynamic_cast<RandomParameter&>(o);
     return *left <= *o1.left && *right <= *o1.right;
   } catch (std::bad_cast e) {
     //
@@ -58,9 +59,9 @@ bool bi::RandomVariable::operator<=(Expression& o) {
   return false;
 }
 
-bool bi::RandomVariable::operator==(const Expression& o) const {
+bool bi::RandomParameter::operator==(const Expression& o) const {
   try {
-    const RandomVariable& o1 = dynamic_cast<const RandomVariable&>(o);
+    const RandomParameter& o1 = dynamic_cast<const RandomParameter&>(o);
     return *left == *o1.left && *right == *o1.right;
   } catch (std::bad_cast e) {
     //

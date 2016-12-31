@@ -8,7 +8,7 @@
 #include <sstream>
 
 bi::PreviousRandomException::PreviousRandomException(
-    RandomVariable* random, RandomVariable* prev) {
+    RandomParameter* random, RandomParameter* prev) {
   std::stringstream base;
   bih_ostream buf(base);
   if (random->loc) {

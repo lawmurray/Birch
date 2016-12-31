@@ -34,18 +34,19 @@ public:
   virtual Expression* clone(const ParenthesesExpression* o);
   virtual Expression* clone(const BracesExpression* o);
   virtual Expression* clone(const BracketsExpression* o);
-  virtual Expression* clone(const RandomVariable* o);
   virtual Expression* clone(const Range* o);
   virtual Expression* clone(const Traversal* o);
   virtual Expression* clone(const This* o);
 
   virtual Expression* clone(const VarReference* o);
   virtual Expression* clone(const FuncReference* o);
+  virtual Expression* clone(const RandomReference* o);
   virtual Type* clone(const ModelReference* o);
   virtual Prog* clone(const ProgReference* o);
 
   virtual Expression* clone(const VarParameter* o);
   virtual Expression* clone(const FuncParameter* o);
+  virtual Expression* clone(const RandomParameter* o);
   virtual Type* clone(const ModelParameter* o);
   virtual Prog* clone(const ProgParameter* o);
 
@@ -61,7 +62,7 @@ public:
   virtual Statement* clone(const ProgDeclaration* o);
 
   virtual Type* clone(const ParenthesesType* o);
-  virtual Type* clone(const RandomVariableType* o);
+  virtual Type* clone(const RandomType* o);
   virtual Type* clone(const TypeList* o);
 };
 }

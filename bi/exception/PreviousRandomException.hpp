@@ -4,7 +4,7 @@
 #pragma once
 
 #include "bi/exception/CompilerException.hpp"
-#include "bi/expression/RandomVariable.hpp"
+#include "bi/expression/RandomParameter.hpp"
 
 namespace bi {
 /**
@@ -16,6 +16,6 @@ struct PreviousRandomException: public CompilerException {
   /**
    * Constructor.
    */
-  PreviousRandomException(RandomVariable* random, RandomVariable* prev);
+  PreviousRandomException(RandomParameter* random, RandomParameter* prev);
 };
 }

@@ -50,6 +50,13 @@ void bi::Scope::add(ProgParameter* prog) {
   progs.add(prog);
 }
 
+void bi::Scope::add(RandomParameter* random) {
+  auto result = randoms.insert(std::make_pair(random->left.get(), random));
+  if (!result.second) {
+    throw PreviousRandomException(random, result.first->second);
+  }
+}
+
 bi::VarParameter* bi::Scope::resolve(const VarReference* ref) {
   try {
     return vars.resolve(ref);
@@ -74,22 +81,14 @@ bi::ModelParameter* bi::Scope::resolve(const ModelReference* ref) {
   }
 }
 
-bool bi::Scope::containsRandom(Expression* variate) {
-  return randoms.find(variate) != randoms.end();
+bool bi::Scope::substitutable(Expression* expr) {
+  return randoms.find(expr) != randoms.end();
 }
 
-void bi::Scope::addRandom(RandomVariable* random) {
-  auto result = randoms.insert(std::make_pair(random->left.get(), random));
-  if (!result.second) {
-    throw PreviousRandomException(random, result.first->second);
-  }
-}
-
-bi::RandomVariable* bi::Scope::resolveRandom(Expression* variate) {
-  /* pre-condition */
-  assert(containsRandom(variate));
-
-  return randoms.find(variate)->second;
+bi::RandomParameter* bi::Scope::substitute(Expression* expr) {
+  auto iter = randoms.find(expr);
+  assert(iter != randoms.end());
+  return iter->second;
 }
 
 void bi::Scope::import(shared_ptr<Scope> scope) {

@@ -23,5 +23,6 @@ bi::Reference<Target>::~Reference() {
  */
 template class bi::Reference<bi::VarParameter>;
 template class bi::Reference<bi::FuncParameter>;
+template class bi::Reference<bi::RandomParameter>;
 template class bi::Reference<bi::ModelParameter>;
 template class bi::Reference<bi::ProgParameter>;

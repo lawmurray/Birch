@@ -22,7 +22,7 @@ class ModelReference;
 class ProgReference;
 
 class Expression;
-class RandomVariable;
+class RandomParameter;
 
 /**
  * Scope.
@@ -57,17 +57,18 @@ public:
   bool contains(ProgParameter* param);
 
   /**
-   * Add declaration.
+   * Add parameter.
    *
-   * @param param Declaration.
+   * @param param Parameter.
    */
   void add(VarParameter* param);
   void add(FuncParameter* param);
+  void add(RandomParameter* random);
   void add(ModelParameter* param);
   void add(ProgParameter* param);
 
   /**
-   * Resolve a reference.
+   * Resolve a reference to a parameter.
    *
    * @param ref Reference to resolve.
    *
@@ -78,19 +79,14 @@ public:
   ModelParameter* resolve(const ModelReference* ref);
 
   /**
-   * Does the scope contain a random variable for this reference?
+   * Can this expression be substituted by a random variable?
    */
-  bool containsRandom(Expression* variate);
+  bool substitutable(Expression* expr);
 
   /**
-   * Add a random variable.
+   * Get random variable which which to substitute this expression.
    */
-  void addRandom(RandomVariable* rv);
-
-  /**
-   * Resolve a random variable.
-   */
-  RandomVariable* resolveRandom(Expression* variate);
+  RandomParameter* substitute(Expression* expr);
 
   /**
    * Import from another scope into this scope.
@@ -122,7 +118,7 @@ public:
   /**
    * Random variables.
    */
-  std::map<Expression*,RandomVariable*,pointer_less> randoms;
+  std::map<Expression*,RandomParameter*,pointer_less> randoms;
 
 private:
   /**

@@ -36,7 +36,6 @@ public:
 
   virtual Expression* modify(ExpressionList* o);
   virtual Expression*  modify(ParenthesesExpression* o);
-  virtual Expression*  modify(RandomVariable* o);
   virtual Expression*  modify(Range* o);
   virtual Expression*  modify(Traversal* o);
   virtual Expression*  modify(This* o);
@@ -44,10 +43,12 @@ public:
 
   virtual Expression*  modify(VarReference* o);
   virtual Expression*  modify(FuncReference* o);
+  virtual Expression*  modify(RandomReference* o);
   virtual Type* modify(ModelReference* o);
 
   virtual Expression*  modify(VarParameter* o);
   virtual Expression*  modify(FuncParameter* o);
+  virtual Expression*  modify(RandomParameter* o);
   virtual Prog* modify(ProgParameter* o);
   virtual Type* modify(ModelParameter* o);
 
@@ -123,11 +124,6 @@ protected:
    * Are we in the input parameters of a function?
    */
   bool inInputs;
-
-  /**
-   * Are we in a replacement with a random variable?
-   */
-  bool inRandom;
 
   /**
    * Auxiliary visitors.

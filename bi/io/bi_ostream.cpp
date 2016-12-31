@@ -59,7 +59,7 @@ void bi::bi_ostream::visit(const BracesExpression* o) {
   *this << indent << '}';
 }
 
-void bi::bi_ostream::visit(const RandomVariable* o) {
+void bi::bi_ostream::visit(const RandomParameter* o) {
   *this << o->left << " ~ " << o->right;
 }
 

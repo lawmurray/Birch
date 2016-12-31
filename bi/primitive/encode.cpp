@@ -90,6 +90,23 @@ std::string bi::uniqueName(const FuncParameter* o) {
   return buf.str();
 }
 
+std::string bi::uniqueName(const RandomParameter* o) {
+  std::stringstream buf;
+  std::string decoded, encoded;
+
+  /* encode */
+  bi::bih_ostream stream(buf);
+  stream << o->left;
+  decoded = buf.str();
+  encode32(decoded, encoded);
+
+  /* construct unique name */
+  buf.str("");
+  buf << "rv_" << encoded << '_';
+
+  return buf.str();
+}
+
 std::string bi::internalName(const FuncParameter* o) {
   /* translations */
   static std::regex reg;
