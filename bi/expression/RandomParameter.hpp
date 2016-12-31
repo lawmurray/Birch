@@ -7,6 +7,7 @@
 #include "bi/common/Named.hpp"
 #include "bi/common/Binary.hpp"
 #include "bi/common/Parameter.hpp"
+#include "bi/expression/FuncReference.hpp"
 
 namespace bi {
 /**
@@ -23,11 +24,17 @@ public:
    * Constructor.
    *
    * @param left Left operand.
+   * @param op Operator.
    * @param right Right operand.
    * @param loc Location.
    */
-  RandomParameter(Expression* left, Expression* right,
+  RandomParameter(Expression* left, shared_ptr<Name> op, Expression* right,
       shared_ptr<Location> loc = nullptr);
+
+  /**
+   * Constructor.
+   */
+  RandomParameter(FuncReference* ref);
 
   /**
    * Destructor.
@@ -40,5 +47,10 @@ public:
 
   virtual bool operator<=(Expression& o);
   virtual bool operator==(const Expression& o) const;
+
+  /**
+   * Operator.
+   */
+  shared_ptr<Name> op;
 };
 }

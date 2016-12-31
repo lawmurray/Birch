@@ -9,10 +9,19 @@
 
 #include <typeinfo>
 
-bi::RandomParameter::RandomParameter(Expression* left, Expression* right,
-    shared_ptr<Location> loc) :
-    Expression(loc), ExpressionBinary(left, right) {
+bi::RandomParameter::RandomParameter(Expression* left, shared_ptr<Name> op,
+    Expression* right, shared_ptr<Location> loc) :
+    Expression(loc),
+    ExpressionBinary(left, right),
+    op(op) {
   this->name = new Name(uniqueName(left));
+}
+
+bi::RandomParameter::RandomParameter(FuncReference* ref) :
+    Expression(ref->loc),
+    ExpressionBinary(ref->releaseLeft(), ref->releaseRight()),
+    op(ref->name) {
+  this->name = new Name(uniqueName(this->left.get()));
 }
 
 bi::RandomParameter::~RandomParameter() {
@@ -34,7 +43,7 @@ void bi::RandomParameter::accept(Visitor* visitor) const {
 bool bi::RandomParameter::operator<=(Expression& o) {
   try {
     RandomParameter& o1 = dynamic_cast<RandomParameter&>(o);
-    return *left <= *o1.left && *right <= *o1.right;
+    return *left <= *o1.left && *op == *o1.op && *right <= *o1.right;
   } catch (std::bad_cast e) {
     //
   }
@@ -62,7 +71,7 @@ bool bi::RandomParameter::operator<=(Expression& o) {
 bool bi::RandomParameter::operator==(const Expression& o) const {
   try {
     const RandomParameter& o1 = dynamic_cast<const RandomParameter&>(o);
-    return *left == *o1.left && *right == *o1.right;
+    return *left == *o1.left && *op == *o1.op && *right == *o1.right;
   } catch (std::bad_cast e) {
     //
   }

@@ -97,7 +97,7 @@
 %type <valName> multiplicative_operator additive_operator
 %type <valName> relational_operator
 %type <valName> equality_operator logical_and_operator logical_or_operator
-%type <valName> assignment_operator pull_operator sim_operator
+%type <valName> sim_operator assignment_operator
 %type <valName> base_less_operator base_equal_operator
 %type <valName> name path_name
 %type <valPath> path
@@ -241,8 +241,6 @@ var_parameter
 func_parameter
     : expression RIGHT_OP parameter_expression func_braces  { $$ = convert_ref($1, $3, $4, make_loc(@$)); }
     | expression RIGHT_OP parameter_expression ';'          { $$ = convert_ref($1, $3, make_empty(), make_loc(@$)); }
-    | expression PUSH_OP parameter_expression func_braces   { $$ = convert_ref(make_unary(new bi::Name("~"), $1), $3, $4, make_loc(@$)); }
-    | expression PUSH_OP parameter_expression ';'           { $$ = convert_ref(make_unary(new bi::Name("~"), $1), $3, make_empty(), make_loc(@$)); }
     | expression func_braces                                { $$ = convert_ref($1, make_empty(), $2, make_loc(@$)); }
     | expression ';'                                        { $$ = convert_ref($1, make_empty(), make_empty(), make_loc(@$)); }
     ;
@@ -447,25 +445,22 @@ logical_or_expression
 
 sim_operator
     : '~'      { $$ = new bi::Name("~", make_loc(@$)); }
+    | PULL_OP  { $$ = new bi::Name("<~", make_loc(@$)); }
+    | PUSH_OP  { $$ = new bi::Name("~>", make_loc(@$)); }
     ;
 
 sim_expression
     : logical_or_expression
-    | logical_or_expression sim_operator sim_expression  { $$ = new bi::RandomParameter($1, $3, make_loc(@$)); }
+    | logical_or_expression sim_operator sim_expression  { $$ = make_assign($1, $2, $3, make_loc(@$)); }
     ;
 
 assignment_operator
     : LEFT_OP  { $$ = new bi::Name("<-", make_loc(@$)); }
     ;
     
-pull_operator
-    : PULL_OP  { $$ = new bi::Name("<-", make_loc(@$)); }
-    ;
-    
 assignment_expression
     : sim_expression
     | sim_expression assignment_operator assignment_expression  { $$ = make_assign($1, $2, $3, make_loc(@$)); }
-    | sim_expression pull_operator assignment_expression        { $$ = make_assign($1, $2, make_unary(new bi::Name("~"), $3), make_loc(@$)); }
     ;
 
 list_operator

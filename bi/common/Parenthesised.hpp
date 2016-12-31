@@ -41,6 +41,16 @@ public:
   const Expression* getRight() const;
 
   /**
+   * As getLeft(), but releases ownership.
+   */
+  Expression* releaseLeft();
+
+  /**
+   * As getRight(), but releases ownership.
+   */
+  Expression* releaseRight();
+
+  /**
    * Expression in parentheses.
    */
   unique_ptr<Expression> parens;

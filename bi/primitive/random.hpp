@@ -147,7 +147,7 @@ void bi::random<Variate,Model>::simulate() {
   assert(marginalised);
   assert(!simulated);
 
-  x = sim_(p);
+  pull_(x, p);
   simulated = true;
 }
 

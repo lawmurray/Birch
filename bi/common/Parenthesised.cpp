@@ -26,3 +26,15 @@ const bi::Expression* bi::Parenthesised::getRight() const {
   assert(expr);
   return expr->tail.get();
 }
+
+bi::Expression* bi::Parenthesised::releaseLeft() {
+  ExpressionList* expr = dynamic_cast<ExpressionList*>(parens->strip());
+  assert(expr);
+  return expr->head.release();
+}
+
+bi::Expression* bi::Parenthesised::releaseRight() {
+  ExpressionList* expr = dynamic_cast<ExpressionList*>(parens->strip());
+  assert(expr);
+  return expr->tail.release();
+}

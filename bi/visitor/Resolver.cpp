@@ -108,8 +108,7 @@ bi::Expression* bi::Resolver::modify(VarReference* o) {
   /* substitute with random variable if possible */
   RandomReference* random = new RandomReference(o);
   try {
-    random->target = inner()->resolve(random);
-    random->type = random->target->type->acceptClone(&cloner)->acceptModify(this);
+    random->acceptModify(this);
     return random;
   } catch (UnresolvedReferenceException e) {
     delete random;
@@ -118,32 +117,43 @@ bi::Expression* bi::Resolver::modify(VarReference* o) {
 }
 
 bi::Expression* bi::Resolver::modify(FuncReference* o) {
+  /* substitute with random variable if possible */
+  if (*o->name == "<~") {
+    RandomParameter* random = new RandomParameter(o);
+    random->acceptModify(this);
+    return random;
+  } else {
+    shared_ptr<Scope> scope = inner();
+    Modifier::modify(o);
+    o->target = scope->resolve(o);
+    o->type = o->target->type->acceptClone(&cloner)->acceptModify(this);
+    o->form = o->target->form;
+
+    if (o->isAssignment()) {
+      if (inInputs) {
+        o->getLeft()->type->assignable = true;
+      } else if (!o->getLeft()->type->assignable) {
+        throw NotAssignable(o);
+      }
+    }
+
+    Gatherer<VarParameter> gatherer;
+    o->target->parens->accept(&gatherer);
+    for (auto iter = gatherer.gathered.begin(); iter != gatherer.gathered.end();
+        ++iter) {
+      o->args.push_back((*iter)->arg);
+    }
+
+    return o;
+  }
+}
+
+bi::Expression* bi::Resolver::modify(RandomReference* o) {
   shared_ptr<Scope> scope = inner();
   Modifier::modify(o);
   o->target = scope->resolve(o);
   o->type = o->target->type->acceptClone(&cloner)->acceptModify(this);
-  o->form = o->target->form;
-
-  if (o->isAssignment()) {
-    if (inInputs) {
-      o->getLeft()->type->assignable = true;
-    } else if (!o->getLeft()->type->assignable) {
-      throw NotAssignable(o);
-    }
-  }
-
-  Gatherer<VarParameter> gatherer;
-  o->target->parens->accept(&gatherer);
-  for (auto iter = gatherer.gathered.begin(); iter != gatherer.gathered.end();
-      ++iter) {
-    o->args.push_back((*iter)->arg);
-  }
-
-  return o;
-}
-
-bi::Expression* bi::Resolver::modify(RandomReference* o) {
-  assert(false);
+  o->type->assignable = true;
   return o;
 }
 

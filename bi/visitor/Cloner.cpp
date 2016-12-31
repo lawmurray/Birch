@@ -102,7 +102,7 @@ bi::Expression* bi::Cloner::clone(const FuncParameter* o) {
 }
 
 bi::Expression* bi::Cloner::clone(const RandomParameter* o) {
-  return new RandomParameter(o->left->acceptClone(this),
+  return new RandomParameter(o->left->acceptClone(this), o->op,
       o->right->acceptClone(this), o->loc);
 }
 
