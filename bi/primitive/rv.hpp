@@ -141,12 +141,15 @@ void bi::rv<Variate,Model>::marginalise() {
   marginalised = true;
 }
 
+#include <iostream>
+
 template<class Variate, class Model>
 void bi::rv<Variate,Model>::simulate() {
   /* pre-condition */
   assert(marginalised);
   assert(!simulated);
 
+  std::cerr << "Simulate\n" << std::endl;
   x = sim_(p);
   simulated = true;
 }

@@ -3,6 +3,10 @@
  */
 #include "bi/exception/PreviousDeclarationException.hpp"
 
+#include "bi/expression/VarParameter.hpp"
+#include "bi/expression/FuncParameter.hpp"
+#include "bi/type/ModelParameter.hpp"
+#include "bi/program/ProgParameter.hpp"
 #include "bi/io/bih_ostream.hpp"
 
 #include <sstream>
@@ -28,8 +32,8 @@ bi::PreviousDeclarationException::PreviousDeclarationException(
 template bi::PreviousDeclarationException::PreviousDeclarationException(
     VarParameter* param, VarParameter* prev);
 template bi::PreviousDeclarationException::PreviousDeclarationException(
-    ModelParameter* param, ModelParameter* prev);
-template bi::PreviousDeclarationException::PreviousDeclarationException(
     FuncParameter* param, FuncParameter* prev);
+template bi::PreviousDeclarationException::PreviousDeclarationException(
+    ModelParameter* param, ModelParameter* prev);
 template bi::PreviousDeclarationException::PreviousDeclarationException(
     ProgParameter* param, ProgParameter* prev);

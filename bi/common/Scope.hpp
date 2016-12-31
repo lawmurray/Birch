@@ -6,9 +6,9 @@
 #include "bi/common/Dictionary.hpp"
 #include "bi/common/OverloadedDictionary.hpp"
 #include "bi/common/Named.hpp"
+#include "bi/primitive/pointer_less.hpp"
 
-#include <list>
-#include <set>
+#include <map>
 
 namespace bi {
 class VarParameter;
@@ -20,6 +20,9 @@ class VarReference;
 class FuncReference;
 class ModelReference;
 class ProgReference;
+
+class Expression;
+class RandomVariable;
 
 /**
  * Scope.
@@ -75,6 +78,21 @@ public:
   ModelParameter* resolve(const ModelReference* ref);
 
   /**
+   * Does the scope contain a random variable for this reference?
+   */
+  bool containsRandom(Expression* variate);
+
+  /**
+   * Add a random variable.
+   */
+  void addRandom(RandomVariable* rv);
+
+  /**
+   * Resolve a random variable.
+   */
+  RandomVariable* resolveRandom(Expression* variate);
+
+  /**
    * Import from another scope into this scope.
    *
    * @param scope Scope to import.
@@ -100,6 +118,11 @@ public:
   Dictionary<ModelParameter,ModelReference> models;
   OverloadedDictionary<FuncParameter,FuncReference> funcs;
   Dictionary<ProgParameter,ProgReference> progs;
+
+  /**
+   * Random variables.
+   */
+  std::map<Expression*,RandomVariable*,pointer_less> randoms;
 
 private:
   /**

@@ -54,6 +54,7 @@ birchc_SOURCES = \
   bi/exception/FileNotFoundException.cpp \
   bi/exception/NotAssignable.cpp \
   bi/exception/PreviousDeclarationException.cpp \
+  bi/exception/PreviousRandomException.cpp \
   bi/exception/ThisException.cpp \
   bi/exception/TraversalException.cpp \
   bi/exception/UnresolvedReferenceException.cpp \

@@ -17,8 +17,7 @@ size_t bi::Dictionary<ParameterType,ReferenceType>::size() const {
 template<class ParameterType, class ReferenceType>
 bool bi::Dictionary<ParameterType,ReferenceType>::contains(
     const ParameterType* param) const {
-  auto iter = unordered.find(param->name->str());
-  return iter != unordered.end();
+  return unordered.find(param->name->str()) != unordered.end();
 }
 
 template<class ParameterType, class ReferenceType>

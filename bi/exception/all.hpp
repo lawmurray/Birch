@@ -14,6 +14,7 @@
 #include "bi/exception/NetCDFException.hpp"
 #include "bi/exception/NotAssignable.hpp"
 #include "bi/exception/PreviousDeclarationException.hpp"
+#include "bi/exception/PreviousRandomException.hpp"
 #include "bi/exception/ThisException.hpp"
 #include "bi/exception/TraversalException.hpp"
 #include "bi/exception/UnknownOptionException.hpp"

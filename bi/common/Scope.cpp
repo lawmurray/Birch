@@ -74,6 +74,24 @@ bi::ModelParameter* bi::Scope::resolve(const ModelReference* ref) {
   }
 }
 
+bool bi::Scope::containsRandom(Expression* variate) {
+  return randoms.find(variate) != randoms.end();
+}
+
+void bi::Scope::addRandom(RandomVariable* random) {
+  auto result = randoms.insert(std::make_pair(random->left.get(), random));
+  if (!result.second) {
+    throw PreviousRandomException(random, result.first->second);
+  }
+}
+
+bi::RandomVariable* bi::Scope::resolveRandom(Expression* variate) {
+  /* pre-condition */
+  assert(containsRandom(variate));
+
+  return randoms.find(variate)->second;
+}
+
 void bi::Scope::import(shared_ptr<Scope> scope) {
   imports.insert(scope.get());
 }

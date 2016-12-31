@@ -55,6 +55,7 @@ void bi::Resolver::modify(RandomVariable* o) {
   Modifier::modify(o);
   o->type = new RandomVariableType(o->left->type->acceptClone(&cloner),
       o->right->type->acceptClone(&cloner));
+  inner()->addRandom(o);
 }
 
 void bi::Resolver::modify(Range* o) {
