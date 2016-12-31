@@ -18,10 +18,13 @@ public:
   /**
    * Constructor.
    *
-   * @param x Location in which to write variate, once simulated.
-   * @param expr The model, as a lambda function.
+   * @param x Variate.
+   * @param expr Model expression.
+   * @param pull Pull expression.
+   * @param push Push expression.
    */
-  random(Variate& x, std::function<Model()> expr);
+  random(Variate& x, std::function<Model()> expr, std::function<void()> pull,
+      std::function<void()> push);
 
   /**
    * Destructor.
@@ -33,130 +36,46 @@ public:
    */
   operator Variate&();
 
-  /**
-   * Cast to model.
-   */
-  operator Model&();
-
 private:
-  /**
-   * Variate.
-   */
   Variate& x;
-
-  /**
-   * Expression evaluate to give model.
-   */
   std::function<Model()> expr;
+  std::function<void()> pull;
+  std::function<void()> push;
 
-  /**
-   * Model.
-   */
-  Model p;
-
-  /**
-   * Marginalise forward.
-   */
-  void marginalise();
-
-  /**
-   * Simulate.
-   */
-  void simulate();
-
-  /**
-   * Condition backward.
-   */
-  void condition();
-
-  /**
-   * Has the model been created?
-   */
-  bool marginalised;
-
-  /**
-   * Has the variate been simulated?
-   */
-  bool simulated;
-
-  /**
-   * Have dependencies been conditioned?
-   */
-  bool conditioned;
+  bool pulled;
+  bool pushed;
 };
 }
 
 template<class Variate, class Model>
-bi::random<Variate,Model>::random(Variate& x, std::function<Model()> expr) :
+bi::random<Variate,Model>::random(Variate& x, std::function<Model()> expr,
+    std::function<void()> pull, std::function<void()> push) :
     x(x),
     expr(expr),
-    p(expr()),
-    marginalised(true),
-    simulated(false),
-    conditioned(false) {
+    pull(pull),
+    push(push),
+    pulled(false),
+    pushed(false) {
   //
 }
 
 template<class Variate, class Model>
 bi::random<Variate,Model>::~random() {
-  if (!marginalised) {
-    marginalise();
+  if (!pulled) {
+    pull();
+    pulled = true;
   }
-  if (!simulated) {
-    simulate();
-  }
-  if (!conditioned) {
-    condition();
+  if (!pushed) {
+    push();
+    pushed = true;
   }
 }
 
 template<class Variate, class Model>
 bi::random<Variate,Model>::operator Variate&() {
-  if (!marginalised) {
-    marginalise();
-  }
-  if (!simulated) {
-    simulate();
+  if (!pulled) {
+    pull();
+    pulled = true;
   }
   return x;
-}
-
-template<class Variate, class Model>
-bi::random<Variate,Model>::operator Model&() {
-  /* pre-condition */
-  assert(!simulated);  // model has expired once variate has simulated
-
-  if (!marginalised) {
-    marginalise();
-  }
-  return p;
-}
-
-template<class Variate, class Model>
-void bi::random<Variate,Model>::marginalise() {
-  /* pre-condition */
-  assert(!marginalised);
-
-  //p = expr();
-  marginalised = true;
-}
-
-template<class Variate, class Model>
-void bi::random<Variate,Model>::simulate() {
-  /* pre-condition */
-  assert(marginalised);
-  assert(!simulated);
-
-  pull_(x, p);
-  simulated = true;
-}
-
-template<class Variate, class Model>
-void bi::random<Variate,Model>::condition() {
-  /* pre-condition */
-  assert(simulated);
-  assert(!conditioned);
-
-  //sim_(x, p);
-  conditioned = true;
 }

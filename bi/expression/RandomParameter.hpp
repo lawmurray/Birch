@@ -52,5 +52,15 @@ public:
    * Operator.
    */
   shared_ptr<Name> op;
+
+  /**
+   * Pull method.
+   */
+  unique_ptr<Expression> pull;
+
+  /**
+   * Push method.
+   */
+  unique_ptr<Expression> push;
 };
 }

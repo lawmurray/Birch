@@ -14,14 +14,14 @@ bi::RandomParameter::RandomParameter(Expression* left, shared_ptr<Name> op,
     Expression(loc),
     ExpressionBinary(left, right),
     op(op) {
-  this->name = new Name(uniqueName(left));
+  name = new Name(uniqueName(left));
 }
 
 bi::RandomParameter::RandomParameter(FuncReference* ref) :
     Expression(ref->loc),
     ExpressionBinary(ref->releaseLeft(), ref->releaseRight()),
     op(ref->name) {
-  this->name = new Name(uniqueName(this->left.get()));
+  name = new Name(uniqueName(left.get()));
 }
 
 bi::RandomParameter::~RandomParameter() {

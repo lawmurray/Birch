@@ -232,8 +232,14 @@ void bi::CppBaseGenerator::visit(const FuncParameter* o) {
 
 void bi::CppBaseGenerator::visit(const RandomParameter* o) {
   middle(o->type << ' ' << o->name << '(');
-  middle(o->left << ", [&]() -> " << o->right->type << " { return " << o->right << "; }");
-  middle(')');
+  finish(o->left << ",");
+  in();
+  in();
+  line("[&]() -> " << o->right->type << " { return " << o->right << "; },");
+  line("[&]() { " << o->pull << "; },");
+  start("[&]() { " << o->push << "; })");
+  out();
+  out();
 }
 
 void bi::CppBaseGenerator::visit(const ExpressionStatement* o) {

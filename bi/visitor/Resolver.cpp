@@ -7,7 +7,7 @@
 #include "bi/exception/all.hpp"
 
 bi::Resolver::Resolver(shared_ptr<Scope> scope) :
-    inInputs(false) {
+    inInputs(false), inRandom(false) {
   if (scope) {
     push(scope);
   }
@@ -117,18 +117,26 @@ bi::Expression* bi::Resolver::modify(VarReference* o) {
 }
 
 bi::Expression* bi::Resolver::modify(FuncReference* o) {
+  shared_ptr<Scope> scope = inner();
+  Modifier::modify(o);
+  o->target = scope->resolve(o);
+  o->type = o->target->type->acceptClone(&cloner)->acceptModify(this);
+  o->form = o->target->form;
+
   /* substitute with random variable if possible */
-  if (*o->name == "<~") {
-    RandomParameter* random = new RandomParameter(o);
+  if (!inInputs && !inRandom && (*o->name == "<~" || *o->name == "~>")) {
+    inRandom = true;
+    RandomParameter* random = new RandomParameter(
+        o->getLeft()->acceptClone(&cloner), new Name("~"),
+        o->getRight()->acceptClone(&cloner), o->loc);
+    o->name = new Name("<~");
+    random->pull = o->acceptClone(&cloner);
+    o->name = new Name("~>");
+    random->push = o->acceptClone(&cloner);
     random->acceptModify(this);
+    inRandom = false;
     return random;
   } else {
-    shared_ptr<Scope> scope = inner();
-    Modifier::modify(o);
-    o->target = scope->resolve(o);
-    o->type = o->target->type->acceptClone(&cloner)->acceptModify(this);
-    o->form = o->target->form;
-
     if (o->isAssignment()) {
       if (inInputs) {
         o->getLeft()->type->assignable = true;
@@ -139,8 +147,8 @@ bi::Expression* bi::Resolver::modify(FuncReference* o) {
 
     Gatherer<VarParameter> gatherer;
     o->target->parens->accept(&gatherer);
-    for (auto iter = gatherer.gathered.begin(); iter != gatherer.gathered.end();
-        ++iter) {
+    for (auto iter = gatherer.gathered.begin();
+        iter != gatherer.gathered.end(); ++iter) {
       o->args.push_back((*iter)->arg);
     }
 
