@@ -23,8 +23,8 @@ bi::Statement* bi::Raw::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-void bi::Raw::acceptModify(Modifier* visitor) {
-  visitor->modify(this);
+bi::Statement* bi::Raw::acceptModify(Modifier* visitor) {
+  return visitor->modify(this);
 }
 
 void bi::Raw::accept(Visitor* visitor) const {

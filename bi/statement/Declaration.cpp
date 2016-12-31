@@ -24,8 +24,8 @@ bi::Statement* bi::Declaration<T>::acceptClone(Cloner* visitor) const {
 }
 
 template<class T>
-void bi::Declaration<T>::acceptModify(Modifier* visitor) {
-  visitor->modify(this);
+bi::Statement* bi::Declaration<T>::acceptModify(Modifier* visitor) {
+  return visitor->modify(this);
 }
 
 template<class T>

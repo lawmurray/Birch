@@ -25,8 +25,8 @@ bi::Expression* bi::VarParameter::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-void bi::VarParameter::acceptModify(Modifier* visitor) {
-  visitor->modify(this);
+bi::Expression* bi::VarParameter::acceptModify(Modifier* visitor) {
+  return visitor->modify(this);
 }
 
 void bi::VarParameter::accept(Visitor* visitor) const {

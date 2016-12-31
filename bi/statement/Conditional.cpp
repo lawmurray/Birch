@@ -23,8 +23,8 @@ bi::Statement* bi::Conditional::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-void bi::Conditional::acceptModify(Modifier* visitor) {
-  visitor->modify(this);
+bi::Statement* bi::Conditional::acceptModify(Modifier* visitor) {
+  return visitor->modify(this);
 }
 
 void bi::Conditional::accept(Visitor* visitor) const {

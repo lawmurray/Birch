@@ -39,7 +39,7 @@ public:
   virtual ~ProgReference();
 
   virtual Prog* acceptClone(Cloner* visitor) const;
-  virtual void acceptModify(Modifier* visitor);
+  virtual Prog* acceptModify(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
   virtual bool operator<=(Prog& o);

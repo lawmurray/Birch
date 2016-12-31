@@ -28,8 +28,8 @@ bi::Expression* bi::Literal<T1>::acceptClone(Cloner* visitor) const {
 }
 
 template<class T1>
-void bi::Literal<T1>::acceptModify(Modifier* visitor) {
-  visitor->modify(this);
+bi::Expression* bi::Literal<T1>::acceptModify(Modifier* visitor) {
+  return visitor->modify(this);
 }
 
 template<class T1>

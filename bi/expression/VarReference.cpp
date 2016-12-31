@@ -22,8 +22,8 @@ bi::Expression* bi::VarReference::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-void bi::VarReference::acceptModify(Modifier* visitor) {
-  visitor->modify(this);
+bi::Expression* bi::VarReference::acceptModify(Modifier* visitor) {
+  return visitor->modify(this);
 }
 
 void bi::VarReference::accept(Visitor* visitor) const {

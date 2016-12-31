@@ -26,8 +26,8 @@ bi::Expression* bi::FuncReference::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-void bi::FuncReference::acceptModify(Modifier* visitor) {
-  visitor->modify(this);
+bi::Expression* bi::FuncReference::acceptModify(Modifier* visitor) {
+  return visitor->modify(this);
 }
 
 void bi::FuncReference::accept(Visitor* visitor) const {

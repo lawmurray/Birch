@@ -51,7 +51,7 @@ public:
   virtual int count() const;
 
   virtual Type* acceptClone(Cloner* visitor) const;
-  virtual void acceptModify(Modifier* visitor);
+  virtual Type* acceptModify(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
   virtual bool operator<=(Type& o);

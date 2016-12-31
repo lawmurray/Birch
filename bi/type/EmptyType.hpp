@@ -26,7 +26,7 @@ public:
   virtual ~EmptyType();
 
   virtual Type* acceptClone(Cloner* visitor) const;
-  virtual void acceptModify(Modifier* visitor);
+  virtual Type* acceptModify(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
   virtual operator bool() const;

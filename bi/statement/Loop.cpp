@@ -20,8 +20,8 @@ bi::Statement* bi::Loop::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-void bi::Loop::acceptModify(Modifier* visitor) {
-  visitor->modify(this);
+bi::Statement* bi::Loop::acceptModify(Modifier* visitor) {
+  return visitor->modify(this);
 }
 
 void bi::Loop::accept(Visitor* visitor) const {

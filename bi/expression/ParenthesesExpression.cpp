@@ -26,8 +26,8 @@ bi::Expression* bi::ParenthesesExpression::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-void bi::ParenthesesExpression::acceptModify(Modifier* visitor) {
-  visitor->modify(this);
+bi::Expression* bi::ParenthesesExpression::acceptModify(Modifier* visitor) {
+  return visitor->modify(this);
 }
 
 void bi::ParenthesesExpression::accept(Visitor* visitor) const {

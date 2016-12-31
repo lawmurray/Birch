@@ -22,8 +22,8 @@ bi::Expression* bi::RandomVariable::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-void bi::RandomVariable::acceptModify(Modifier* visitor) {
-  visitor->modify(this);
+bi::Expression* bi::RandomVariable::acceptModify(Modifier* visitor) {
+  return visitor->modify(this);
 }
 
 void bi::RandomVariable::accept(Visitor* visitor) const {

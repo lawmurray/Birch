@@ -42,7 +42,7 @@ public:
   virtual int rangeCount() const;
 
   virtual T* acceptClone(Cloner* visitor) const;
-  virtual void acceptModify(Modifier* visitor);
+  virtual T* acceptModify(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
   virtual bool operator<=(T& o);

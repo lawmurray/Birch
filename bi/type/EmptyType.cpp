@@ -18,8 +18,8 @@ bi::Type* bi::EmptyType::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-void bi::EmptyType::acceptModify(Modifier* visitor) {
-  visitor->modify(this);
+bi::Type* bi::EmptyType::acceptModify(Modifier* visitor) {
+  return visitor->modify(this);
 }
 
 void bi::EmptyType::accept(Visitor* visitor) const {

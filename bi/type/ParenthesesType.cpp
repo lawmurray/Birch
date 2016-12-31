@@ -22,8 +22,8 @@ bi::Type* bi::ParenthesesType::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-void bi::ParenthesesType::acceptModify(Modifier* visitor) {
-  visitor->modify(this);
+bi::Type* bi::ParenthesesType::acceptModify(Modifier* visitor) {
+  return visitor->modify(this);
 }
 
 void bi::ParenthesesType::accept(Visitor* visitor) const {

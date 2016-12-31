@@ -34,29 +34,27 @@ public:
    */
   virtual void modify(File* file);
 
-  virtual void modify(ExpressionList* o);
-  virtual void modify(ParenthesesExpression* o);
-  virtual void modify(BracesExpression* o);
-  virtual void modify(RandomVariable* o);
-  virtual void modify(Range* o);
-  virtual void modify(Traversal* o);
-  virtual void modify(This* o);
-  virtual void modify(BracketsExpression* o);
+  virtual Expression* modify(ExpressionList* o);
+  virtual Expression*  modify(ParenthesesExpression* o);
+  virtual Expression*  modify(RandomVariable* o);
+  virtual Expression*  modify(Range* o);
+  virtual Expression*  modify(Traversal* o);
+  virtual Expression*  modify(This* o);
+  virtual Expression*  modify(BracketsExpression* o);
 
-  virtual void modify(VarReference* o);
-  virtual void modify(FuncReference* o);
-  virtual void modify(ModelReference* o);
+  virtual Expression*  modify(VarReference* o);
+  virtual Expression*  modify(FuncReference* o);
+  virtual Type* modify(ModelReference* o);
 
-  virtual void modify(VarParameter* o);
-  virtual void modify(FuncParameter* o);
-  virtual void modify(ProgParameter* o);
-  virtual void modify(ModelParameter* o);
+  virtual Expression*  modify(VarParameter* o);
+  virtual Expression*  modify(FuncParameter* o);
+  virtual Prog* modify(ProgParameter* o);
+  virtual Type* modify(ModelParameter* o);
 
-  virtual void modify(Import* o);
-  virtual void modify(ExpressionStatement* o);
-  virtual void modify(VarDeclaration* o);
-  virtual void modify(Conditional* o);
-  virtual void modify(Loop* o);
+  virtual Statement* modify(Import* o);
+  virtual Statement* modify(VarDeclaration* o);
+  virtual Statement* modify(Conditional* o);
+  virtual Statement* modify(Loop* o);
 
 protected:
   /**
@@ -125,6 +123,11 @@ protected:
    * Are we in the input parameters of a function?
    */
   bool inInputs;
+
+  /**
+   * Are we in a replacement with a random variable?
+   */
+  bool inRandom;
 
   /**
    * Auxiliary visitors.

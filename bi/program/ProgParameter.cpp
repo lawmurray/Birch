@@ -18,8 +18,8 @@ bi::Prog* bi::ProgParameter::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-void bi::ProgParameter::acceptModify(Modifier* visitor) {
-  visitor->modify(this);
+bi::Prog* bi::ProgParameter::acceptModify(Modifier* visitor) {
+  return visitor->modify(this);
 }
 
 void bi::ProgParameter::accept(Visitor* visitor) const {

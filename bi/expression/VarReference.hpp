@@ -34,7 +34,7 @@ public:
   virtual ~VarReference();
 
   virtual Expression* acceptClone(Cloner* visitor) const;
-  virtual void acceptModify(Modifier* visitor);
+  virtual Expression* acceptModify(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
   virtual bool operator<=(Expression& o);

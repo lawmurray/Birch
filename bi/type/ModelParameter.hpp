@@ -54,7 +54,7 @@ public:
   const std::list<FuncParameter*>& funcs() const;
 
   virtual Type* acceptClone(Cloner* visitor) const;
-  virtual void acceptModify(Modifier* visitor);
+  virtual Type* acceptModify(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
   bool builtin() const;

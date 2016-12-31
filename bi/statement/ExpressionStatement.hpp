@@ -28,7 +28,7 @@ public:
   virtual ~ExpressionStatement();
 
   virtual Statement* acceptClone(Cloner* visitor) const;
-  virtual void acceptModify(Modifier* visitor);
+  virtual Statement* acceptModify(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
   virtual bool operator<=(Statement& o);

@@ -22,8 +22,8 @@ bi::Expression* bi::Range::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-void bi::Range::acceptModify(Modifier* visitor) {
-  visitor->modify(this);
+bi::Expression* bi::Range::acceptModify(Modifier* visitor) {
+  return visitor->modify(this);
 }
 
 void bi::Range::accept(Visitor* visitor) const {

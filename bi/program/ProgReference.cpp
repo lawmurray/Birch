@@ -17,8 +17,8 @@ bi::Prog* bi::ProgReference::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-void bi::ProgReference::acceptModify(Modifier* visitor) {
-  visitor->modify(this);
+bi::Prog* bi::ProgReference::acceptModify(Modifier* visitor) {
+  return visitor->modify(this);
 }
 
 void bi::ProgReference::accept(Visitor* visitor) const {

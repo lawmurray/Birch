@@ -23,8 +23,8 @@ bi::Type* bi::RandomVariableType::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-void bi::RandomVariableType::acceptModify(Modifier* visitor) {
-  visitor->modify(this);
+bi::Type* bi::RandomVariableType::acceptModify(Modifier* visitor) {
+  return visitor->modify(this);
 }
 
 void bi::RandomVariableType::accept(Visitor* visitor) const {

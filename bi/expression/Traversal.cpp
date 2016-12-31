@@ -22,8 +22,8 @@ bi::Expression* bi::Traversal::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-void bi::Traversal::acceptModify(Modifier* visitor) {
-  visitor->modify(this);
+bi::Expression* bi::Traversal::acceptModify(Modifier* visitor) {
+  return visitor->modify(this);
 }
 
 void bi::Traversal::accept(Visitor* visitor) const {

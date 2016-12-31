@@ -53,8 +53,8 @@ T* bi::List<T>::acceptClone(Cloner* visitor) const {
 }
 
 template<class T>
-void bi::List<T>::acceptModify(Modifier* visitor) {
-  visitor->modify(this);
+T* bi::List<T>::acceptModify(Modifier* visitor) {
+  return visitor->modify(this);
 }
 
 template<class T>

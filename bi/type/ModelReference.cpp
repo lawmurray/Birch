@@ -29,8 +29,8 @@ bi::Type* bi::ModelReference::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-void bi::ModelReference::acceptModify(Modifier* visitor) {
-  visitor->modify(this);
+bi::Type* bi::ModelReference::acceptModify(Modifier* visitor) {
+  return visitor->modify(this);
 }
 
 void bi::ModelReference::accept(Visitor* visitor) const {

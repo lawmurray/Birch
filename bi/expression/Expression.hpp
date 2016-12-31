@@ -54,7 +54,7 @@ public:
    *
    * @return Modified expression.
    */
-  virtual void acceptModify(Modifier* visitor) = 0;
+  virtual Expression* acceptModify(Modifier* visitor) = 0;
 
   /**
    * Accept read-only visitor.

@@ -25,8 +25,8 @@ bi::Expression* bi::BracketsExpression::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-void bi::BracketsExpression::acceptModify(Modifier* visitor) {
-  visitor->modify(this);
+bi::Expression* bi::BracketsExpression::acceptModify(Modifier* visitor) {
+  return visitor->modify(this);
 }
 
 void bi::BracketsExpression::accept(Visitor* visitor) const {

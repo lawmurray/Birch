@@ -40,8 +40,8 @@ bi::Type* bi::ModelParameter::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-void bi::ModelParameter::acceptModify(Modifier* visitor) {
-  visitor->modify(this);
+bi::Type* bi::ModelParameter::acceptModify(Modifier* visitor) {
+  return visitor->modify(this);
 }
 
 void bi::ModelParameter::accept(Visitor* visitor) const {

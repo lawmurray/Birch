@@ -7,16 +7,16 @@
 
 #include <typeinfo>
 
-bi::Statement* bi::EmptyStatement::acceptClone(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 bi::EmptyStatement::~EmptyStatement() {
   //
 }
 
-void bi::EmptyStatement::acceptModify(Modifier* visitor) {
-  visitor->modify(this);
+bi::Statement* bi::EmptyStatement::acceptClone(Cloner* visitor) const {
+  return visitor->clone(this);
+}
+
+bi::Statement* bi::EmptyStatement::acceptModify(Modifier* visitor) {
+  return visitor->modify(this);
 }
 
 void bi::EmptyStatement::accept(Visitor* visitor) const {

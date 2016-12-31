@@ -45,7 +45,7 @@ public:
    *
    * @return Modified statement.
    */
-  virtual void acceptModify(Modifier* visitor) = 0;
+  virtual Statement* acceptModify(Modifier* visitor) = 0;
 
   /**
    * Accept read-only visitor.

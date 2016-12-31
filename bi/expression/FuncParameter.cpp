@@ -33,8 +33,8 @@ bi::Expression* bi::FuncParameter::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-void bi::FuncParameter::acceptModify(Modifier* visitor) {
-  visitor->modify(this);
+bi::Expression* bi::FuncParameter::acceptModify(Modifier* visitor) {
+  return visitor->modify(this);
 }
 
 void bi::FuncParameter::accept(Visitor* visitor) const {

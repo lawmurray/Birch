@@ -21,8 +21,8 @@ bi::Statement* bi::ExpressionStatement::acceptClone(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-void bi::ExpressionStatement::acceptModify(Modifier* visitor) {
-  visitor->modify(this);
+bi::Statement* bi::ExpressionStatement::acceptModify(Modifier* visitor) {
+  return visitor->modify(this);
 }
 
 void bi::ExpressionStatement::accept(Visitor* visitor) const {
