@@ -135,10 +135,7 @@ bi::Expression* bi::Modifier::modify(FuncParameter* o) {
 
 bi::Expression* bi::Modifier::modify(RandomParameter* o) {
   o->left = o->left->acceptModify(this);
-  o->op->acceptModify(this);
   o->right = o->right->acceptModify(this);
-  o->pull = o->pull->acceptModify(this);
-  o->push = o->push->acceptModify(this);
   return o;
 }
 

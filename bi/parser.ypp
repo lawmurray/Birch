@@ -97,7 +97,7 @@
 %type <valName> multiplicative_operator additive_operator
 %type <valName> relational_operator
 %type <valName> equality_operator logical_and_operator logical_or_operator
-%type <valName> sim_operator assignment_operator
+%type <valName> push_operator sim_operator assignment_operator
 %type <valName> base_less_operator base_equal_operator
 %type <valName> name path_name
 %type <valPath> path
@@ -119,7 +119,7 @@
 %type <valExpression> multiplicative_expression additive_expression
 %type <valExpression> range_expression relational_expression
 %type <valExpression> equality_expression logical_and_expression logical_or_expression
-%type <valExpression> list_expression sim_expression assignment_expression
+%type <valExpression> list_expression push_expression sim_expression assignment_expression
 %type <valExpression> expression optional_expression
 
 %type <valExpression> option options optional_options parens_options
@@ -443,19 +443,27 @@ logical_or_expression
     | logical_or_expression logical_or_operator logical_and_expression  { $$ = make_binary($1, $2, $3, make_loc(@$)); }
     ;
 
+push_operator
+    : PUSH_OP  { $$ = new bi::Name("~>", make_loc(@$)); }
+    ;
+
+push_expression
+    : logical_or_expression
+    | logical_or_expression push_operator push_expression  { $$ = make_binary($1, $2, $3, make_loc(@$)); }
+    ;
+
 sim_operator
-    : '~'      { $$ = new bi::Name("~", make_loc(@$)); }
-    | PULL_OP  { $$ = new bi::Name("<~", make_loc(@$)); }
-    | PUSH_OP  { $$ = new bi::Name("~>", make_loc(@$)); }
+    : '~'  { $$ = new bi::Name("~", make_loc(@$)); }
     ;
 
 sim_expression
-    : logical_or_expression
-    | logical_or_expression sim_operator sim_expression  { $$ = make_assign($1, $2, $3, make_loc(@$)); }
+    : push_expression
+    | push_expression sim_operator sim_expression  { $$ = new bi::RandomParameter($1, $3, make_loc(@$)); }
     ;
 
 assignment_operator
     : LEFT_OP  { $$ = new bi::Name("<-", make_loc(@$)); }
+    | PULL_OP  { $$ = new bi::Name("<~", make_loc(@$)); }
     ;
     
 assignment_expression

@@ -126,11 +126,6 @@ protected:
   bool inInputs;
 
   /**
-   * Are we in the handling of a random parameter?
-   */
-  bool inRandom;
-
-  /**
    * Auxiliary visitors.
    */
   Cloner cloner;

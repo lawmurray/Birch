@@ -24,11 +24,10 @@ public:
    * Constructor.
    *
    * @param left Left operand.
-   * @param op Operator.
    * @param right Right operand.
    * @param loc Location.
    */
-  RandomParameter(Expression* left, shared_ptr<Name> op, Expression* right,
+  RandomParameter(Expression* left, Expression* right,
       shared_ptr<Location> loc = nullptr);
 
   /**
@@ -47,11 +46,6 @@ public:
 
   virtual bool operator<=(Expression& o);
   virtual bool operator==(const Expression& o) const;
-
-  /**
-   * Operator.
-   */
-  shared_ptr<Name> op;
 
   /**
    * Pull method.

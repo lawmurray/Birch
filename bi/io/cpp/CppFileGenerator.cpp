@@ -81,7 +81,7 @@ void bi::CppFileGenerator::visit(const ModelParameter* o) {
     if (header) {
       ModelReference* base = dynamic_cast<ModelReference*>(o->base.get());
       assert(base);
-      line("template<class Group>");
+      line("template<class Group = StackGroup>");
       line("using " << o->name << " = " << base->name << "<Group>;");
     }
   } else {

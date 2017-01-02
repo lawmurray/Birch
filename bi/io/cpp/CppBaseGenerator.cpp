@@ -17,19 +17,19 @@ bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
 }
 
 void bi::CppBaseGenerator::visit(const BoolLiteral* o) {
-  *this << "bi::Boolean<bi::StackGroup>((unsigned char)" << o->str << ')';
+  *this << "bi::Boolean<>((unsigned char)" << o->str << ')';
 }
 
 void bi::CppBaseGenerator::visit(const IntLiteral* o) {
-  *this << "bi::Integer<bi::StackGroup>((int64_t)" << o->str << ')';
+  *this << "bi::Integer<>((int64_t)" << o->str << ')';
 }
 
 void bi::CppBaseGenerator::visit(const RealLiteral* o) {
-  *this << "bi::Real<bi::StackGroup>((double)" << o->str << ')';
+  *this << "bi::Real<>((double)" << o->str << ')';
 }
 
 void bi::CppBaseGenerator::visit(const StringLiteral* o) {
-  *this << "bi::String<bi::StackGroup>(" << o->str << ')';
+  *this << "bi::String<>(" << o->str << ')';
 }
 
 void bi::CppBaseGenerator::visit(const Name* o) {
@@ -128,7 +128,7 @@ void bi::CppBaseGenerator::visit(const FuncReference* o) {
   } else {
     middle(o->target->unique);
     if (o->isConstructor()) {
-      middle("<StackGroup>");
+      middle("<>");
     }
     middle('(');
     for (auto iter = o->args.begin(); iter != o->args.end(); ++iter) {
@@ -150,7 +150,7 @@ void bi::CppBaseGenerator::visit(const ModelReference* o) {
     middle("bi::Array<" << o->name << "<bi::HeapGroup>,");
     middle("typename bi::DefaultFrame<" << o->count() << ">::type>");
   } else {
-    middle("bi::" << o->name << "<bi::StackGroup>");
+    middle("bi::" << o->name << "<>");
   }
 }
 

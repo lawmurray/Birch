@@ -17,7 +17,7 @@ void bi::CppParameterGenerator::visit(const ModelReference* o) {
   if (o->count() > 0) {
     middle("DefaultArray<" << o->name << "<HeapGroup>&," << o->count() << '>');
   } else {
-    middle(o->name << "<StackGroup>&");
+    middle(o->name << "<>&");
   }
 }
 

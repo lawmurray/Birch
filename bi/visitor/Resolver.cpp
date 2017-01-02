@@ -7,7 +7,7 @@
 #include "bi/exception/all.hpp"
 
 bi::Resolver::Resolver(shared_ptr<Scope> scope) :
-    inInputs(false), inRandom(false) {
+    inInputs(false) {
   if (scope) {
     push(scope);
   }
@@ -123,37 +123,22 @@ bi::Expression* bi::Resolver::modify(FuncReference* o) {
   o->type = o->target->type->acceptClone(&cloner)->acceptModify(this);
   o->form = o->target->form;
 
-  /* substitute with random variable if possible */
-  if (!inInputs && !inRandom && (*o->name == "<~" || *o->name == "~>")) {
-    inRandom = true;
-    RandomParameter* random = new RandomParameter(
-        o->getLeft()->acceptClone(&cloner), new Name("~"),
-        o->getRight()->acceptClone(&cloner), o->loc);
-    o->name = new Name("<~");
-    random->pull = o->acceptClone(&cloner);
-    o->name = new Name("~>");
-    random->push = o->acceptClone(&cloner);
-    random->acceptModify(this);
-    inRandom = false;
-    return random;
-  } else {
-    if (o->isAssignment()) {
-      if (inInputs) {
-        o->getLeft()->type->assignable = true;
-      } else if (!o->getLeft()->type->assignable) {
-        throw NotAssignable(o);
-      }
+  if (o->isAssignment()) {
+    if (inInputs) {
+      o->getLeft()->type->assignable = true;
+    } else if (!o->getLeft()->type->assignable) {
+      throw NotAssignable(o);
     }
-
-    Gatherer<VarParameter> gatherer;
-    o->target->parens->accept(&gatherer);
-    for (auto iter = gatherer.gathered.begin();
-        iter != gatherer.gathered.end(); ++iter) {
-      o->args.push_back((*iter)->arg);
-    }
-
-    return o;
   }
+
+  Gatherer<VarParameter> gatherer;
+  o->target->parens->accept(&gatherer);
+  for (auto iter = gatherer.gathered.begin(); iter != gatherer.gathered.end();
+      ++iter) {
+    o->args.push_back((*iter)->arg);
+  }
+
+  return o;
 }
 
 bi::Expression* bi::Resolver::modify(RandomReference* o) {
@@ -211,9 +196,23 @@ bi::Expression* bi::Resolver::modify(FuncParameter* o) {
 
 bi::Expression* bi::Resolver::modify(RandomParameter* o) {
   Modifier::modify(o);
+  o->left->type->assignable = true;
+  o->right->type->assignable = true;
   o->type = new RandomType(o->left->type->acceptClone(&cloner),
       o->right->type->acceptClone(&cloner));
+  o->type->acceptModify(this);
   inner()->add(o);
+
+  if (!inInputs) {
+    o->pull = new FuncReference(o->left->acceptClone(&cloner), new Name("<~"),
+        o->right->acceptClone(&cloner));
+    o->pull->acceptModify(this);
+
+    o->push = new FuncReference(o->left->acceptClone(&cloner), new Name("~>"),
+        o->right->acceptClone(&cloner));
+    o->push->acceptModify(this);
+  }
+
   return o;
 }
 

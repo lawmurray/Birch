@@ -31,7 +31,7 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
   if (!o->builtin()) {
     /* start boilerplate */
     if (header) {
-      line("template<class Group>");
+      line("template<class Group = StackGroup>");
       start("class " << o->name);
       if (*o->base) {
         middle(" : public " << o->base);
