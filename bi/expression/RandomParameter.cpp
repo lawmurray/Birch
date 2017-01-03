@@ -47,13 +47,13 @@ bool bi::RandomParameter::operator<=(Expression& o) {
   }
   try {
     VarParameter& o1 = dynamic_cast<VarParameter&>(o);
-    return *left->type <= *o1.type && o1.capture(left.get());
+    return *type <= *o1.type && o1.capture(this);
   } catch (std::bad_cast e) {
     //
   }
   try {
     VarReference& o1 = dynamic_cast<VarReference&>(o);
-    return *left->type <= *o1.type && o1.check(left.get());
+    return *type <= *o1.type && o1.check(this);
   } catch (std::bad_cast e) {
     //
   }

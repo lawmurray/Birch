@@ -366,7 +366,6 @@ unary_operator
     : '+'  { $$ = new bi::Name("+", make_loc(@$)); }
     | '-'  { $$ = new bi::Name("-", make_loc(@$)); }
     | '!'  { $$ = new bi::Name("!", make_loc(@$)); }
-    | '~'  { $$ = new bi::Name("~", make_loc(@$)); }
     ;
 
 unary_expression

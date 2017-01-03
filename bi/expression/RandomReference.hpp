@@ -38,11 +38,22 @@ public:
    */
   virtual ~RandomReference();
 
+
   virtual Expression* acceptClone(Cloner* visitor) const;
   virtual Expression* acceptModify(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
   virtual bool operator<=(Expression& o);
   virtual bool operator==(const Expression& o) const;
+
+  /**
+   * Reference for the variate.
+   */
+  unique_ptr<Expression> x;
+
+  /**
+   * Reference for the model.
+   */
+  unique_ptr<Expression> m;
 };
 }

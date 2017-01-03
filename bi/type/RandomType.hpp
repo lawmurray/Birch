@@ -5,6 +5,7 @@
 
 #include "bi/type/Type.hpp"
 #include "bi/common/Binary.hpp"
+#include "bi/common/Scoped.hpp"
 
 namespace bi {
 /**
@@ -12,7 +13,7 @@ namespace bi {
  *
  * @ingroup compiler_type
  */
-class RandomType: public Type, public TypeBinary {
+class RandomType: public Type, public Scoped, public TypeBinary {
 public:
   /**
    * Constructor.
@@ -21,8 +22,7 @@ public:
    * @param right Model type.
    * @param loc Location.
    */
-  RandomType(Type* left, Type* right, shared_ptr<Location> loc =
-      nullptr);
+  RandomType(Type* left, Type* right, shared_ptr<Location> loc = nullptr);
 
   /**
    * Destructor.
@@ -35,5 +35,15 @@ public:
 
   virtual bool operator<=(Type& o);
   virtual bool operator==(const Type& o) const;
+
+  /**
+   * Member variable for the variate.
+   */
+  unique_ptr<Expression> x;
+
+  /**
+   * Member variable for the model.
+   */
+  unique_ptr<Expression> m;
 };
 }

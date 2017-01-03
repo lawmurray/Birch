@@ -57,6 +57,8 @@ public:
   virtual Statement* modify(Conditional* o);
   virtual Statement* modify(Loop* o);
 
+  virtual Type* modify(RandomType* o);
+
 protected:
   /**
    * Innermost scope.

@@ -46,7 +46,8 @@ bool bi::RandomReference::operator<=(Expression& o) {
   }
   try {
     RandomParameter& o1 = dynamic_cast<RandomParameter&>(o);
-    return *type <= *o1.type && o1.capture(this);
+    return *x <= *o1.left && *m <= *o1.right && *type <= *o1.type
+        && o1.capture(this);
   } catch (std::bad_cast e) {
     //
   }

@@ -19,12 +19,10 @@ public:
    * Constructor.
    *
    * @param x Variate.
-   * @param expr Model expression.
-   * @param pull Pull expression.
+   * @param m Model.
    * @param push Push expression.
    */
-  random(Variate& x, std::function<Model()> expr, std::function<void()> pull,
-      std::function<void()> push);
+  random(Variate& x, const Model& m, std::function<void()> push);
 
   /**
    * Destructor.
@@ -36,10 +34,10 @@ public:
    */
   operator Variate&();
 
-private:
   Variate& x;
-  std::function<Model()> expr;
-  std::function<void()> pull;
+  Model m;
+
+private:
   std::function<void()> push;
 
   bool pulled;
@@ -48,11 +46,10 @@ private:
 }
 
 template<class Variate, class Model>
-bi::random<Variate,Model>::random(Variate& x, std::function<Model()> expr,
-    std::function<void()> pull, std::function<void()> push) :
+bi::random<Variate,Model>::random(Variate& x, const Model& m,
+    std::function<void()> push) :
     x(x),
-    expr(expr),
-    pull(pull),
+    m(m),
     push(push),
     pulled(false),
     pushed(false) {
@@ -62,7 +59,7 @@ bi::random<Variate,Model>::random(Variate& x, std::function<Model()> expr,
 template<class Variate, class Model>
 bi::random<Variate,Model>::~random() {
   if (!pulled) {
-    pull();
+    pull_(x, m);
     pulled = true;
   }
   if (!pushed) {
@@ -74,7 +71,7 @@ bi::random<Variate,Model>::~random() {
 template<class Variate, class Model>
 bi::random<Variate,Model>::operator Variate&() {
   if (!pulled) {
-    pull();
+    pull_(x, m);
     pulled = true;
   }
   return x;

@@ -56,11 +56,16 @@ bi::Expression* bi::Resolver::modify(Range* o) {
 
 bi::Expression* bi::Resolver::modify(Traversal* o) {
   o->left = o->left->acceptModify(this);
-  ModelReference* type = dynamic_cast<ModelReference*>(o->left->type.get());
-  if (!type) {
-    throw TraversalException(o);
+
+  ModelReference* ref = dynamic_cast<ModelReference*>(o->left->type.get());
+  if (ref) {
+    traverseScope = ref->target->scope;
+  } else {
+    RandomType* random = dynamic_cast<RandomType*>(o->left->type.get());
+    if (random) {
+      traverseScope = random->scope;
+    }
   }
-  traverseScope = type->target->scope;
   if (!traverseScope) {
     throw TraversalException(o);
   }
@@ -109,11 +114,18 @@ bi::Expression* bi::Resolver::modify(VarReference* o) {
   RandomReference* random = new RandomReference(o);
   try {
     random->acceptModify(this);
-    return random;
   } catch (UnresolvedReferenceException e) {
     delete random;
     return o;
   }
+
+  random->x = new Traversal(new RandomReference(random->name),
+      new VarReference(new Name("x")));
+  random->x->acceptModify(this);
+  random->m = new Traversal(new RandomReference(random->name),
+      new VarReference(new Name("m")));
+  random->m->acceptModify(this);
+  return random;
 }
 
 bi::Expression* bi::Resolver::modify(FuncReference* o) {
@@ -196,12 +208,15 @@ bi::Expression* bi::Resolver::modify(FuncParameter* o) {
 
 bi::Expression* bi::Resolver::modify(RandomParameter* o) {
   Modifier::modify(o);
-  o->left->type->assignable = true;
+  if (!inInputs && !o->left->type->assignable) {
+    throw NotAssignable(o->left.get());
+  } else {
+    o->left->type->assignable = true;
+  }
   o->right->type->assignable = true;
   o->type = new RandomType(o->left->type->acceptClone(&cloner),
       o->right->type->acceptClone(&cloner));
   o->type->acceptModify(this);
-  inner()->add(o);
 
   if (!inInputs) {
     o->pull = new FuncReference(o->left->acceptClone(&cloner), new Name("<~"),
@@ -212,6 +227,8 @@ bi::Expression* bi::Resolver::modify(RandomParameter* o) {
         o->right->acceptClone(&cloner));
     o->push->acceptModify(this);
   }
+
+  inner()->add(o);
 
   return o;
 }
@@ -295,6 +312,19 @@ bi::Statement* bi::Resolver::modify(Loop* o) {
   Modifier::modify(o);
   o->scope = pop();
   ///@todo Check that condition is of type Boolean
+  return o;
+}
+
+bi::Type* bi::Resolver::modify(RandomType* o) {
+  push();
+  Modifier::modify(o);
+
+  o->x = new VarParameter(new Name("x"), o->left->acceptClone(&cloner));
+  o->x->acceptModify(this);
+  o->m = new VarParameter(new Name("m"), o->right->acceptClone(&cloner));
+  o->m->acceptModify(this);
+
+  o->scope = pop();
   return o;
 }
 
