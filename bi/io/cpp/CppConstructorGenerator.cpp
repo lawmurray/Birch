@@ -29,7 +29,7 @@ void bi::CppConstructorGenerator::visit(const ModelParameter* o) {
   if (header) {
     line("template<class Frame = EmptyFrame>");
     start(o->name->str() << '(');
-    if (*o->parens) {
+    if (!o->parens->isEmpty()) {
       aux << o->parens->strip();
       middle(", ");
     }
@@ -40,7 +40,7 @@ void bi::CppConstructorGenerator::visit(const ModelParameter* o) {
     finish(" :");
     in();
     in();
-    if (*o->base) {
+    if (!o->base->isEmpty()) {
       aux << o->base;
       finish(',');
     }
@@ -70,7 +70,7 @@ void bi::CppConstructorGenerator::initialise(const VarDeclaration* o) {
   CppBaseGenerator aux(base, level, header);
   finish(',');
   start(o->param->name->str() << "(");
-  if (*o->param->parens->strip() && o->param->type->count() == 0) {
+  if (!o->param->parens->strip()->isEmpty() && o->param->type->count() == 0) {
     aux << o->param->parens->strip();
     middle(", ");
   }
@@ -83,7 +83,7 @@ void bi::CppConstructorGenerator::initialise(const VarDeclaration* o) {
     middle("childGroup");
   }
   middle("(this->group, \"" << o->param->name->str() << "\")");
-  if (*o->param->parens->strip() && o->param->type->count() > 0) {
+  if (!o->param->parens->strip()->isEmpty() && o->param->type->count() > 0) {
     middle(", ");
     aux << o->param->value->strip();
   }
@@ -92,7 +92,7 @@ void bi::CppConstructorGenerator::initialise(const VarDeclaration* o) {
 
 void bi::CppConstructorGenerator::assign(const VarDeclaration* o) {
   CppBaseGenerator aux(base, level, header);
-  if (*o->param->value) {
+  if (!o->param->value->isEmpty()) {
     start(o->param->name->str() << " = ");
     aux << o->param->value;
     finish(';');

@@ -53,14 +53,11 @@ public:
    */
   const std::list<FuncParameter*>& funcs() const;
 
-  virtual Type* acceptClone(Cloner* visitor) const;
-  virtual Type* acceptModify(Modifier* visitor);
+  virtual Type* accept(Cloner* visitor) const;
+  virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
   bool builtin() const;
-
-  virtual bool operator<=(Type& o);
-  virtual bool operator==(const Type& o) const;
 
   /**
    * Constructor.
@@ -71,5 +68,9 @@ public:
    * Assignment operator.
    */
   shared_ptr<FuncParameter> assignment;
+
+  virtual bool dispatch(Type& o);
+  virtual bool le(ModelParameter& o);
+  virtual bool le(EmptyType& o);
 };
 }

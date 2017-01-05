@@ -71,10 +71,10 @@ public:
    *
    * @return Target of the reference.
    */
-  VarParameter* resolve(const VarReference* ref);
-  FuncParameter* resolve(const FuncReference* ref);
-  RandomParameter* resolve(const RandomReference* ref);
-  ModelParameter* resolve(const ModelReference* ref);
+  VarParameter* resolve(VarReference* ref);
+  FuncParameter* resolve(FuncReference* ref);
+  RandomParameter* resolve(RandomReference* ref);
+  ModelParameter* resolve(ModelReference* ref);
 
   /**
    * Import from another scope into this scope.
@@ -109,12 +109,12 @@ private:
    * Defer resolution to outer or imported scopes.
    */
   template<class ParameterType, class ReferenceType>
-  ParameterType* resolveDefer(const ReferenceType* ref);
+  ParameterType* resolveDefer(ReferenceType* ref);
 };
 }
 
 template<class ParameterType, class ReferenceType>
-ParameterType* bi::Scope::resolveDefer(const ReferenceType* ref) {
+ParameterType* bi::Scope::resolveDefer(ReferenceType* ref) {
   ParameterType* target = nullptr;
 
   /* check imported scopes first; this means that within the scope of a model

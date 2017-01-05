@@ -42,7 +42,7 @@ void bi::CppFileGenerator::visit(const File* o) {
 
   /* imports */
   *this << o->imports;
-  if (header && *o->imports) {
+  if (header && !o->imports->isEmpty()) {
     line("");
   }
 
@@ -69,7 +69,7 @@ void bi::CppFileGenerator::visit(const VarDeclaration* o) {
     line("extern " << o->param->type << ' ' << o->param->name << ';');
   } else {
     start(o->param->type << " bi::" << o->param->name);
-    if (*o->param->value) {
+    if (!o->param->value->isEmpty()) {
       middle(" = " << o->param->value);
     }
     finish(';');
@@ -204,7 +204,7 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
     }
 
     /* body of program */
-    if (*o->braces) {
+    if (!o->braces->isEmpty()) {
       CppBaseGenerator aux(base, level, header);
       aux << o->braces;
     }

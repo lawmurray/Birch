@@ -10,6 +10,9 @@ class Cloner;
 class Modifier;
 class Visitor;
 
+class ProgParameter;
+class ProgReference;
+
 /**
  * Program.
  *
@@ -34,7 +37,7 @@ public:
    *
    * @return Cloned (and potentially modified) statement.
    */
-  virtual Prog* acceptClone(Cloner* visitor) const = 0;
+  virtual Prog* accept(Cloner* visitor) const = 0;
 
   /**
    * Accept modifying visitor.
@@ -43,7 +46,7 @@ public:
    *
    * @return Modified statement.
    */
-  virtual Prog* acceptModify(Modifier* visitor) = 0;
+  virtual Prog* accept(Modifier* visitor) = 0;
 
   /**
    * Accept read-only visitor.
@@ -53,22 +56,15 @@ public:
   virtual void accept(Visitor* visitor) const = 0;
 
   /*
-   * Bool cast to check for non-empty statement.
+   * Partial order comparison operator for comparing programs in terms of
+   * specialisation. These double-dispatch to the #le, #gt, #eq and #ne
+   * functions below, which can be implemented for specific types in derived
+   * classes.
    */
-  virtual operator bool() const;
-
-  /*
-   * Partial order comparison operators for comparing statements in terms of
-   * specialisation.
-   *
-   * The first two are the most commonly used, and so overridden by derived
-   * classes. The remainder are expressed in terms of these.
-   */
-  virtual bool operator<=(Prog& o) = 0;
-  virtual bool operator==(const Prog& o) const = 0;
-  bool operator<(Prog& o);
-  bool operator>(Prog& o);
-  bool operator>=(Prog& o);
-  bool operator!=(Prog& o);
+  bool operator<=(Prog& o);
+  bool operator==(Prog& o);
+  virtual bool dispatch(Prog& o) = 0;
+  virtual bool le(ProgParameter& o);
+  virtual bool le(ProgReference& o);
 };
 }

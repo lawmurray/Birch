@@ -5,6 +5,7 @@
 
 #include "bi/statement/Statement.hpp"
 #include "bi/expression/Expression.hpp"
+#include "bi/common/Unary.hpp"
 
 namespace bi {
 /**
@@ -12,31 +13,26 @@ namespace bi {
  *
  * @ingroup compiler_statement
  */
-class ExpressionStatement: public Statement {
+class ExpressionStatement: public Statement, public ExpressionUnary {
 public:
   /**
    * Constructor.
    *
-   * @param expr Expression.
+   * @param single Expression.
    * @param loc Location.
    */
-  ExpressionStatement(Expression* expr, shared_ptr<Location> loc = nullptr);
+  ExpressionStatement(Expression* single, shared_ptr<Location> loc = nullptr);
 
   /**
    * Destructor.
    */
   virtual ~ExpressionStatement();
 
-  virtual Statement* acceptClone(Cloner* visitor) const;
-  virtual Statement* acceptModify(Modifier* visitor);
+  virtual Statement* accept(Cloner* visitor) const;
+  virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
-  virtual bool operator<=(Statement& o);
-  virtual bool operator==(const Statement& o) const;
-
-  /**
-   * Expression.
-   */
-  unique_ptr<Expression> expr;
+  virtual bool dispatch(Statement& o);
+  virtual bool le(ExpressionStatement& o);
 };
 }

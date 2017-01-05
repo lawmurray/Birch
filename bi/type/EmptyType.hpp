@@ -25,13 +25,13 @@ public:
    */
   virtual ~EmptyType();
 
-  virtual Type* acceptClone(Cloner* visitor) const;
-  virtual Type* acceptModify(Modifier* visitor);
+  virtual Type* accept(Cloner* visitor) const;
+  virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
-  virtual operator bool() const;
+  virtual bool isEmpty() const;
 
-  virtual bool operator<=(Type& o);
-  virtual bool operator==(const Type& o) const;
+  virtual bool dispatch(Type& o);
+  virtual bool le(EmptyType& o);
 };
 }

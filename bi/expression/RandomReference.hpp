@@ -6,6 +6,8 @@
 #include "bi/expression/Expression.hpp"
 #include "bi/expression/RandomParameter.hpp"
 #include "bi/common/Reference.hpp"
+#include "bi/expression/VarParameter.hpp"
+#include "bi/expression/VarReference.hpp"
 
 namespace bi {
 /**
@@ -39,21 +41,24 @@ public:
   virtual ~RandomReference();
 
 
-  virtual Expression* acceptClone(Cloner* visitor) const;
-  virtual Expression* acceptModify(Modifier* visitor);
+  virtual Expression* accept(Cloner* visitor) const;
+  virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
-  virtual bool operator<=(Expression& o);
-  virtual bool operator==(const Expression& o) const;
+  /**
+   * Left (variate) side of the random variable.
+   */
+  unique_ptr<Expression> left;
 
   /**
-   * Reference for the variate.
+   * Right (model) side of the random variable.
    */
-  unique_ptr<Expression> x;
+  unique_ptr<Expression> right;
 
-  /**
-   * Reference for the model.
-   */
-  unique_ptr<Expression> m;
+  virtual bool dispatch(Expression& o);
+  virtual bool le(RandomParameter& o);
+  virtual bool le(RandomReference& o);
+  virtual bool le(VarParameter& o);
+  virtual bool le(VarReference& o);
 };
 }

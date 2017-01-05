@@ -9,6 +9,7 @@
 #include "bi/common/Reference.hpp"
 #include "bi/common/Parenthesised.hpp"
 #include "bi/common/Formed.hpp"
+#include "bi/expression/VarParameter.hpp"
 
 #include <list>
 
@@ -52,16 +53,19 @@ public:
    */
   virtual ~FuncReference();
 
-  virtual Expression* acceptClone(Cloner* visitor) const;
-  virtual Expression* acceptModify(Modifier* visitor);
+  virtual Expression* accept(Cloner* visitor) const;
+  virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
-
-  virtual bool operator<=(Expression& o);
-  virtual bool operator==(const Expression& o) const;
 
   /**
    * Arguments.
    */
   std::list<const Expression*> args;
+
+  virtual bool dispatch(Expression& o);
+  virtual bool le(FuncParameter& o);
+  virtual bool le(FuncReference& o);
+  virtual bool le(VarParameter& o);
+  virtual bool le(VarReference& o);
 };
 }

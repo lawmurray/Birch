@@ -8,21 +8,21 @@
 
 #include <typeinfo>
 
-bi::ParenthesesType::ParenthesesType(Type* type, shared_ptr<Location> loc) :
-    Type(loc), type(type) {
-  /* pre-condition */
-  assert(type);
+bi::ParenthesesType::ParenthesesType(Type* single, shared_ptr<Location> loc) :
+    Type(loc),
+    TypeUnary(single) {
+  //
 }
 
 bi::ParenthesesType::~ParenthesesType() {
   //
 }
 
-bi::Type* bi::ParenthesesType::acceptClone(Cloner* visitor) const {
+bi::Type* bi::ParenthesesType::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-bi::Type* bi::ParenthesesType::acceptModify(Modifier* visitor) {
+bi::Type* bi::ParenthesesType::accept(Modifier* visitor) {
   return visitor->modify(this);
 }
 
@@ -30,20 +30,30 @@ void bi::ParenthesesType::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::ParenthesesType::operator<=(Type& o) {
-  try {
-    ParenthesesType& o1 = dynamic_cast<ParenthesesType&>(o);
-    return *type <= *o1.type;
-  } catch (std::bad_cast e) {
-    //
-  }
-
-  /* parentheses may be used unnecessarily in situations where precedence is
-   * clear anyway; accommodate these by making their use optional in
-   * matches */
-  return *type <= o;
+bool bi::ParenthesesType::dispatch(Type& o) {
+  return o.le(*this) || single->dispatch(o);
 }
 
-bool bi::ParenthesesType::operator==(const Type& o) const {
-  return *type == o;
+bool bi::ParenthesesType::le(EmptyType& o) {
+  return *single <= o;
+}
+
+bool bi::ParenthesesType::le(List<Type>& o) {
+  return *single <= o;
+}
+
+bool bi::ParenthesesType::le(ModelParameter& o) {
+  return *single <= o;
+}
+
+bool bi::ParenthesesType::le(ModelReference& o) {
+  return *single <= o;
+}
+
+bool bi::ParenthesesType::le(ParenthesesType& o) {
+  return *single <= *o.single;
+}
+
+bool bi::ParenthesesType::le(RandomType& o) {
+  return *single <= o;
 }

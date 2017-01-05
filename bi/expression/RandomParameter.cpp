@@ -9,8 +9,8 @@
 
 #include <typeinfo>
 
-bi::RandomParameter::RandomParameter(Expression* left,
-    Expression* right, shared_ptr<Location> loc) :
+bi::RandomParameter::RandomParameter(Expression* left, Expression* right,
+    shared_ptr<Location> loc) :
     Expression(loc),
     ExpressionBinary(left, right) {
   name = new Name(uniqueName(left));
@@ -26,11 +26,11 @@ bi::RandomParameter::~RandomParameter() {
   //
 }
 
-bi::Expression* bi::RandomParameter::acceptClone(Cloner* visitor) const {
+bi::Expression* bi::RandomParameter::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-bi::Expression* bi::RandomParameter::acceptModify(Modifier* visitor) {
+bi::Expression* bi::RandomParameter::accept(Modifier* visitor) {
   return visitor->modify(this);
 }
 
@@ -38,40 +38,18 @@ void bi::RandomParameter::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }
 
-bool bi::RandomParameter::operator<=(Expression& o) {
-  try {
-    RandomParameter& o1 = dynamic_cast<RandomParameter&>(o);
-    return *left <= *o1.left && *right <= *o1.right;
-  } catch (std::bad_cast e) {
-    //
-  }
-  try {
-    VarParameter& o1 = dynamic_cast<VarParameter&>(o);
-    return *type <= *o1.type && o1.capture(this);
-  } catch (std::bad_cast e) {
-    //
-  }
-  try {
-    VarReference& o1 = dynamic_cast<VarReference&>(o);
-    return *type <= *o1.type && o1.check(this);
-  } catch (std::bad_cast e) {
-    //
-  }
-  try {
-    ParenthesesExpression& o1 = dynamic_cast<ParenthesesExpression&>(o);
-    return *this <= *o1.expr;
-  } catch (std::bad_cast e) {
-    //
-  }
-  return false;
+bool bi::RandomParameter::dispatch(Expression& o) {
+  return o.le(*this);
 }
 
-bool bi::RandomParameter::operator==(const Expression& o) const {
-  try {
-    const RandomParameter& o1 = dynamic_cast<const RandomParameter&>(o);
-    return *left == *o1.left && *right == *o1.right;
-  } catch (std::bad_cast e) {
-    //
-  }
-  return false;
+bool bi::RandomParameter::le(RandomParameter& o) {
+  return *left <= *o.left && *right <= *o.right;
+}
+
+bool bi::RandomParameter::le(VarParameter& o) {
+  return *type <= *o.type && o.capture(this);
+}
+
+bool bi::RandomParameter::le(VarReference& o) {
+  return *type <= *o.type && o.check(this);
 }

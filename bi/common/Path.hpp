@@ -35,7 +35,7 @@ public:
    */
   virtual ~Path();
 
-  virtual void acceptModify(Modifier* visitor);
+  virtual void accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
   virtual bool operator<=(Path& o);

@@ -10,6 +10,13 @@ class Cloner;
 class Modifier;
 class Visitor;
 
+class EmptyType;
+template<class T> class List;
+class ModelParameter;
+class ModelReference;
+class ParenthesesType;
+class RandomType;
+
 /**
  * Type.
  *
@@ -36,7 +43,7 @@ public:
    *
    * @return Cloned (and potentially modified) type.
    */
-  virtual Type* acceptClone(Cloner* visitor) const = 0;
+  virtual Type* accept(Cloner* visitor) const = 0;
 
   /**
    * Accept modifying visitor.
@@ -45,7 +52,7 @@ public:
    *
    * @return Modified type.
    */
-  virtual Type* acceptModify(Modifier* visitor) = 0;
+  virtual Type* accept(Modifier* visitor) = 0;
 
   /**
    * Accept read-only visitor.
@@ -55,9 +62,9 @@ public:
   virtual void accept(Visitor* visitor) const = 0;
 
   /**
-   * Bool cast to check for non-empty Type.
+   * Is this an empty type?
    */
-  virtual operator bool() const;
+  virtual bool isEmpty() const;
 
   /**
    * Is this a built-in type?
@@ -69,23 +76,25 @@ public:
    */
   virtual int count() const;
 
-  /*
-   * Partial order comparison operators for comparing types in terms of
-   * specialisation.
-   *
-   * The first two are the most commonly used, and so overridden by derived
-   * classes. The remainder are expressed in terms of these.
-   */
-  virtual bool operator<=(Type& o) = 0;
-  virtual bool operator==(const Type& o) const = 0;
-  bool operator<(const Type& o) const;
-  bool operator>(const Type& o) const;
-  bool operator>=(const Type& o) const;
-  bool operator!=(const Type& o) const;
-
   /**
    * Is this type assignable?
    */
   bool assignable;
+
+  /*
+   * Partial order comparison operators for comparing types in terms of
+   * specialisation. These double-dispatch to the #le, #gt, #eq and #ne
+   * functions below, which can be implemented for specific types in derived
+   * classes.
+   */
+  bool operator<=(Type& o);
+  bool operator==(Type& o);
+  virtual bool dispatch(Type& o) = 0;
+  virtual bool le(EmptyType& o);
+  virtual bool le(List<Type>& o);
+  virtual bool le(ModelParameter& o);
+  virtual bool le(ModelReference& o);
+  virtual bool le(ParenthesesType& o);
+  virtual bool le(RandomType& o);
 };
 }

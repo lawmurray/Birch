@@ -41,12 +41,9 @@ public:
    */
   virtual int rangeCount() const;
 
-  virtual T* acceptClone(Cloner* visitor) const;
-  virtual T* acceptModify(Modifier* visitor);
+  virtual T* accept(Cloner* visitor) const;
+  virtual T* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
-
-  virtual bool operator<=(T& o);
-  virtual bool operator==(const T& o) const;
 
   /**
    * Left operand.
@@ -57,6 +54,9 @@ public:
    * Right operand.
    */
   unique_ptr<T> tail;
+
+  virtual bool dispatch(T& o);
+  virtual bool le(List<T>& o);
 };
 
 /**

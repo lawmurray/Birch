@@ -41,11 +41,11 @@ const std::string& bi::Name::str() const {
   return name;
 }
 
-bi::Name::operator bool() const {
-  return !name.empty();
+bool bi::Name::isEmpty() const {
+  return name.empty();
 }
 
-void bi::Name::acceptModify(Modifier* visitor) {
+void bi::Name::accept(Modifier* visitor) {
   visitor->modify(this);
 }
 

@@ -4,6 +4,8 @@
 #pragma once
 
 #include "bi/expression/Expression.hpp"
+#include "bi/expression/VarParameter.hpp"
+#include "bi/expression/VarReference.hpp"
 
 #include <string>
 
@@ -24,19 +26,17 @@ public:
    * @param type Type.
    * @param loc Location.
    */
-  Literal(const T1& value, const std::string& str, Type* type, shared_ptr<Location> loc = nullptr);
+  Literal(const T1& value, const std::string& str, Type* type,
+      shared_ptr<Location> loc = nullptr);
 
   /**
    * Destructor.
    */
   virtual ~Literal();
 
-  virtual Expression* acceptClone(Cloner* visitor) const;
-  virtual Expression* acceptModify(Modifier* visitor);
+  virtual Expression* accept(Cloner* visitor) const;
+  virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
-
-  virtual bool operator<=(Expression& o);
-  virtual bool operator==(const Expression& o) const;
 
   /**
    * Value.
@@ -47,6 +47,11 @@ public:
    * Preferred string encoding of value.
    */
   std::string str;
+
+  virtual bool dispatch(Expression& o);
+  virtual bool le(Literal<T1>& o);
+  virtual bool le(VarParameter& o);
+  virtual bool le(VarReference& o);
 };
 
 /**
@@ -61,7 +66,7 @@ typedef Literal<bool> BoolLiteral;
  *
  * @ingroup compiler_expression
  */
-typedef Literal<int32_t> IntLiteral;
+typedef Literal<int64_t> IntLiteral;
 
 /**
  * Floating point literal.

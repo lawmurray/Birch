@@ -29,13 +29,13 @@ public:
    * @p o?
    */
   template<class T>
-  bool check(const T* o) const;
+  bool check(T* o);
 
   /**
    * Are these references canonically the same?
    */
   template<class T>
-  bool canon(const Reference<T>* o) const;
+  bool canon(Reference<T>* o);
 
   /**
    * Target.
@@ -46,10 +46,10 @@ public:
 
 template<class Target>
 template<class T>
-bool bi::Reference<Target>::check(const T* o) const {
+bool bi::Reference<Target>::check(T* o) {
   /* either this reference points to a parameter that captured something
    * equal to @p o earlier... */
-  bool result = *target->arg == *o;
+  bool result = false /* *target->arg == *o*/;
 
   /* ...or this reference points to a parameter that captured another
    * parameter earlier, and o is a reference to that second parameter
@@ -62,6 +62,6 @@ bool bi::Reference<Target>::check(const T* o) const {
 
 template<class Target>
 template<class T>
-bool bi::Reference<Target>::canon(const Reference<T>* o) const {
+bool bi::Reference<Target>::canon(Reference<T>* o) {
   return target == o->target;
 }

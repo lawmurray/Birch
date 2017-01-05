@@ -63,22 +63,22 @@ void bi::CppBaseGenerator::visit(const TypeList* o) {
 }
 
 void bi::CppBaseGenerator::visit(const ParenthesesExpression* o) {
-  if (o->expr->tupleSize() > 1) {
+  if (o->single->tupleSize() > 1) {
     middle("std::make_tuple");
   }
-  middle('(' << o->expr << ')');
+  middle('(' << o->single << ')');
 }
 
 void bi::CppBaseGenerator::visit(const BracesExpression* o) {
   //finish('{');
   //in();
-  *this << o->stmt;
+  *this << o->single;
   //out();
   //start('}');
 }
 
 void bi::CppBaseGenerator::visit(const BracketsExpression* o) {
-  middle(o->expr << "(bi::make_view(" << o->brackets << "))");
+  middle(o->single << "(bi::make_view(" << o->brackets << "))");
 }
 
 void bi::CppBaseGenerator::visit(const Range* o) {
@@ -156,10 +156,10 @@ void bi::CppBaseGenerator::visit(const ModelReference* o) {
 
 void bi::CppBaseGenerator::visit(const VarParameter* o) {
   middle(o->type << ' ' << o->name);
-  if (*o->parens || o->type->count() > 0) {
+  if (!o->parens->isEmpty() || o->type->count() > 0) {
     middle('(');
   }
-  if (*o->parens) {
+  if (!o->parens->isEmpty()) {
     middle(o->parens->strip());
     if (o->type->count() > 0) {
       middle(", ");
@@ -169,20 +169,20 @@ void bi::CppBaseGenerator::visit(const VarParameter* o) {
     ModelReference* type = dynamic_cast<ModelReference*>(o->type.get());
     assert(type);
     middle("make_frame(" << type->brackets << ")");
-    if (*o->value) {
+    if (!o->value->isEmpty()) {
       middle(", " << o->value->strip());
     }
   }
-  if (*o->parens || o->type->count() > 0) {
+  if (!o->parens->isEmpty() || o->type->count() > 0) {
     middle(')');
   }
-  if (*o->value) {
+  if (!o->value->isEmpty()) {
     middle(" = " << o->value);
   }
 }
 
 void bi::CppBaseGenerator::visit(const FuncParameter* o) {
-  if (*o->braces) {
+  if (!o->braces->isEmpty()) {
     /* template parameters */
     CppTemplateParameterGenerator auxTemplateParameter(base, level, header);
     auxTemplateParameter << o;
@@ -219,7 +219,7 @@ void bi::CppBaseGenerator::visit(const FuncParameter* o) {
       *this << o->braces;
 
       /* return statement */
-      if (*o->result) {
+      if (!o->result->isEmpty()) {
         CppReturnGenerator aux(base, level, header);
         aux << o;
       }
@@ -241,7 +241,7 @@ void bi::CppBaseGenerator::visit(const RandomParameter* o) {
 }
 
 void bi::CppBaseGenerator::visit(const ExpressionStatement* o) {
-  line(o->expr << ';');
+  line(o->single << ';');
 }
 
 void bi::CppBaseGenerator::visit(const Conditional* o) {
@@ -249,7 +249,7 @@ void bi::CppBaseGenerator::visit(const Conditional* o) {
   in();
   *this << o->braces;
   out();
-  if (*o->falseBraces) {
+  if (o->falseBraces->isEmpty()) {
     line("} else {");
     in();
     *this << o->falseBraces;
@@ -281,7 +281,7 @@ void bi::CppBaseGenerator::visit(const EmptyType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const ParenthesesType* o) {
-  middle("std::tuple<" << o->type << ">");
+  middle("std::tuple<" << o->single << ">");
 }
 
 void bi::CppBaseGenerator::visit(const RandomType* o) {

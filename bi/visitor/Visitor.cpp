@@ -53,15 +53,15 @@ void bi::Visitor::visit(const StatementList* o) {
 }
 
 void bi::Visitor::visit(const ParenthesesExpression* o) {
-  o->expr->accept(this);
+  o->single->accept(this);
 }
 
 void bi::Visitor::visit(const BracesExpression* o) {
-  o->stmt->accept(this);
+  o->single->accept(this);
 }
 
 void bi::Visitor::visit(const BracketsExpression* o) {
-  o->expr->accept(this);
+  o->single->accept(this);
   o->brackets->accept(this);
 }
 
@@ -143,7 +143,7 @@ void bi::Visitor::visit(const Import* o) {
 }
 
 void bi::Visitor::visit(const ExpressionStatement* o) {
-  o->expr->accept(this);
+  o->single->accept(this);
 }
 
 void bi::Visitor::visit(const Conditional* o) {
@@ -178,7 +178,7 @@ void bi::Visitor::visit(const ProgDeclaration* o) {
 }
 
 void bi::Visitor::visit(const ParenthesesType* o) {
-  o->type->accept(this);
+  o->single->accept(this);
 }
 
 void bi::Visitor::visit(const RandomType* o) {

@@ -10,15 +10,18 @@
 
 bi::ProgParameter::ProgParameter(shared_ptr<Name> name, Expression* parens,
     Expression* braces, shared_ptr<Location> loc) :
-    Prog(loc), Named(name), Parenthesised(parens), Braced(braces) {
+    Prog(loc),
+    Named(name),
+    Parenthesised(parens),
+    Braced(braces) {
   this->arg = this;
 }
 
-bi::Prog* bi::ProgParameter::acceptClone(Cloner* visitor) const {
+bi::Prog* bi::ProgParameter::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-bi::Prog* bi::ProgParameter::acceptModify(Modifier* visitor) {
+bi::Prog* bi::ProgParameter::accept(Modifier* visitor) {
   return visitor->modify(this);
 }
 
@@ -26,22 +29,10 @@ void bi::ProgParameter::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::ProgParameter::operator<=(Prog& o) {
-  try {
-    ProgParameter& o1 = dynamic_cast<ProgParameter&>(o);
-    return *parens <= *o1.parens && *braces <= *o1.braces && o1.capture(this);
-  } catch (std::bad_cast e) {
-    //
-  }
-  return false;
+bool bi::ProgParameter::dispatch(Prog& o) {
+  return o.le(*this);
 }
 
-bool bi::ProgParameter::operator==(const Prog& o) const {
-  try {
-    const ProgParameter& o1 = dynamic_cast<const ProgParameter&>(o);
-    return *parens == *o1.parens && *braces == *o1.braces;
-  } catch (std::bad_cast e) {
-    //
-  }
-  return false;
+bool bi::ProgParameter::le(ProgParameter& o) {
+  return *parens <= *o.parens && *braces <= *o.braces && o.capture(this);
 }

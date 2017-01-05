@@ -18,7 +18,7 @@ inline bi::Path::~Path() {
   //
 }
 
-void bi::Path::acceptModify(Modifier* visitor) {
+void bi::Path::accept(Modifier* visitor) {
   visitor->modify(this);
 }
 

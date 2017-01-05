@@ -13,8 +13,8 @@ bi::Type::~Type() {
   //
 }
 
-bi::Type::operator bool() const {
-  return true;
+bool bi::Type::isEmpty() const {
+  return false;
 }
 
 bool bi::Type::builtin() const {
@@ -25,18 +25,35 @@ int bi::Type::count() const {
   return 0;
 }
 
-bool bi::Type::operator<(const Type& o) const {
-  return *this <= o && *this != o;
+bool bi::Type::operator<=(Type& o) {
+  return o.dispatch(*this);
 }
 
-bool bi::Type::operator>(const Type& o) const {
-  return o <= *this && o != *this;
+
+bool bi::Type::operator==(Type& o) {
+  return *this <= o && o <= *this;
 }
 
-bool bi::Type::operator>=(const Type& o) const {
-  return o <= *this;
+bool bi::Type::le(EmptyType& o) {
+  return false;
 }
 
-bool bi::Type::operator!=(const Type& o) const {
-  return !(*this == o);
+bool bi::Type::le(List<Type>& o) {
+  return false;
+}
+
+bool bi::Type::le(ModelParameter& o) {
+  return false;
+}
+
+bool bi::Type::le(ModelReference& o) {
+  return false;
+}
+
+bool bi::Type::le(ParenthesesType& o) {
+  return false;
+}
+
+bool bi::Type::le(RandomType& o) {
+  return false;
 }

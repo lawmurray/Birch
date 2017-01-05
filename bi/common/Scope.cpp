@@ -58,7 +58,7 @@ void bi::Scope::add(RandomParameter* random) {
   randoms.add(random);
 }
 
-bi::VarParameter* bi::Scope::resolve(const VarReference* ref) {
+bi::VarParameter* bi::Scope::resolve(VarReference* ref) {
   try {
     return vars.resolve(ref);
   } catch (UnresolvedReferenceException e) {
@@ -66,7 +66,7 @@ bi::VarParameter* bi::Scope::resolve(const VarReference* ref) {
   }
 }
 
-bi::FuncParameter* bi::Scope::resolve(const FuncReference* ref) {
+bi::FuncParameter* bi::Scope::resolve(FuncReference* ref) {
   try {
     return funcs.resolve(ref);
   } catch (UnresolvedReferenceException e) {
@@ -74,7 +74,7 @@ bi::FuncParameter* bi::Scope::resolve(const FuncReference* ref) {
   }
 }
 
-bi::RandomParameter* bi::Scope::resolve(const RandomReference* ref) {
+bi::RandomParameter* bi::Scope::resolve(RandomReference* ref) {
   try {
     return randoms.resolve(ref);
   } catch (UnresolvedReferenceException e) {
@@ -82,7 +82,7 @@ bi::RandomParameter* bi::Scope::resolve(const RandomReference* ref) {
   }
 }
 
-bi::ModelParameter* bi::Scope::resolve(const ModelReference* ref) {
+bi::ModelParameter* bi::Scope::resolve(ModelReference* ref) {
   try {
     return models.resolve(ref);
   } catch (UnresolvedReferenceException e) {

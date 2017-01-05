@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Object with left and right operands.
  *
- * @ingroup compiler_type
+ * @ingroup compiler_common
  */
 template<class T>
 class Binary {

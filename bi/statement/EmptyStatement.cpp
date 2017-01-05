@@ -11,11 +11,11 @@ bi::EmptyStatement::~EmptyStatement() {
   //
 }
 
-bi::Statement* bi::EmptyStatement::acceptClone(Cloner* visitor) const {
+bi::Statement* bi::EmptyStatement::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-bi::Statement* bi::EmptyStatement::acceptModify(Modifier* visitor) {
+bi::Statement* bi::EmptyStatement::accept(Modifier* visitor) {
   return visitor->modify(this);
 }
 
@@ -23,26 +23,14 @@ void bi::EmptyStatement::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bi::EmptyStatement::operator bool() const {
-  return false;
+bool bi::EmptyStatement::isEmpty() const {
+  return true;
 }
 
-bool bi::EmptyStatement::operator<=(Statement& o) {
-  try {
-    EmptyStatement& o1 = dynamic_cast<EmptyStatement&>(o);
-    return true;
-  } catch (std::bad_cast e) {
-    //
-  }
-  return false;
+bool bi::EmptyStatement::dispatch(Statement& o) {
+  return o.le(*this);
 }
 
-bool bi::EmptyStatement::operator==(const Statement& o) const {
-  try {
-    const EmptyStatement& o1 = dynamic_cast<const EmptyStatement&>(o);
-    return true;
-  } catch (std::bad_cast e) {
-    //
-  }
-  return false;
+bool bi::EmptyStatement::le(EmptyStatement& o) {
+  return true;
 }

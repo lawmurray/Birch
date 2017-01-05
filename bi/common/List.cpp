@@ -9,9 +9,9 @@
 #include <type_traits>
 
 template<class T>
-bi::List<T>::List(T* head, T* tail,
-    shared_ptr<Location> loc) :
-    head(head), tail(tail) {
+bi::List<T>::List(T* head, T* tail, shared_ptr<Location> loc) :
+    head(head),
+    tail(tail) {
   /* pre-conditions */
   assert(head);
   assert(tail);
@@ -48,12 +48,12 @@ int bi::List<T>::rangeCount() const {
 }
 
 template<class T>
-T* bi::List<T>::acceptClone(Cloner* visitor) const {
+T* bi::List<T>::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
 template<class T>
-T* bi::List<T>::acceptModify(Modifier* visitor) {
+T* bi::List<T>::accept(Modifier* visitor) {
   return visitor->modify(this);
 }
 
@@ -63,33 +63,13 @@ void bi::List<T>::accept(Visitor* visitor) const {
 }
 
 template<class T>
-bool bi::List<T>::operator<=(T& o) {
-  try {
-    List<T>& o1 = dynamic_cast<List<T>&>(o);
-    return *head <= *o1.head && *tail <= *o1.tail;
-  } catch (std::bad_cast e) {
-    //
-  }
-  if (std::is_same<T,Expression>::value) {
-    try {
-      ParenthesesExpression& o1 = dynamic_cast<ParenthesesExpression&>(o);
-      return *this <= *o1.expr;
-    } catch (std::bad_cast e) {
-      //
-    }
-  }
-  return false;
+bool bi::List<T>::dispatch(T& o) {
+  return o.le(*this);
 }
 
 template<class T>
-bool bi::List<T>::operator==(const T& o) const {
-  try {
-    const List<T>& o1 = dynamic_cast<const List<T>&>(o);
-    return *head == *o1.head && *tail == *o1.tail;
-  } catch (std::bad_cast e) {
-    //
-  }
-  return false;
+bool bi::List<T>::le(List<T>& o) {
+  return *head <= *o.head && *tail <= *o.tail;
 }
 
 /*

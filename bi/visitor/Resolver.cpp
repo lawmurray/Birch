@@ -25,8 +25,8 @@ void bi::Resolver::modify(File* o) {
     o->scope = new Scope();
     files.push(o);
     push(o->scope);
-    o->imports = o->imports->acceptModify(this);
-    o->root = o->root->acceptModify(this);
+    o->imports = o->imports->accept(this);
+    o->root = o->root->accept(this);
     undefer();
     pop();
     files.pop();
@@ -36,16 +36,16 @@ void bi::Resolver::modify(File* o) {
 
 bi::Expression* bi::Resolver::modify(ExpressionList* o) {
   Modifier::modify(o);
-  o->type = new TypeList(o->head->type->acceptClone(&cloner),
-      o->tail->type->acceptClone(&cloner));
-  o->type = o->type->acceptModify(this);
+  o->type = new TypeList(o->head->type->accept(&cloner),
+      o->tail->type->accept(&cloner));
+  o->type = o->type->accept(this);
   return o;
 }
 
 bi::Expression* bi::Resolver::modify(ParenthesesExpression* o) {
   Modifier::modify(o);
-  o->type = new ParenthesesType(o->expr->type->acceptClone(&cloner));
-  o->type = o->type->acceptModify(this);
+  o->type = new ParenthesesType(o->single->type->accept(&cloner));
+  o->type = o->type->accept(this);
   return o;
 }
 
@@ -55,7 +55,7 @@ bi::Expression* bi::Resolver::modify(Range* o) {
 }
 
 bi::Expression* bi::Resolver::modify(Traversal* o) {
-  o->left = o->left->acceptModify(this);
+  o->left = o->left->accept(this);
 
   ModelReference* ref = dynamic_cast<ModelReference*>(o->left->type.get());
   if (ref) {
@@ -69,8 +69,8 @@ bi::Expression* bi::Resolver::modify(Traversal* o) {
   if (!traverseScope) {
     throw TraversalException(o);
   }
-  o->right = o->right->acceptModify(this);
-  o->type = o->right->type->acceptClone(&cloner)->acceptModify(this);
+  o->right = o->right->accept(this);
+  o->type = o->right->type->accept(&cloner)->accept(this);
   return o;
 }
 
@@ -88,7 +88,7 @@ bi::Expression* bi::Resolver::modify(This* o) {
 bi::Expression* bi::Resolver::modify(BracketsExpression* o) {
   Modifier::modify(o);
 
-  ModelReference* ref = dynamic_cast<ModelReference*>(o->expr->type.get());
+  ModelReference* ref = dynamic_cast<ModelReference*>(o->single->type.get());
   assert(ref);  ///@todo Exception
 
   const int typeSize = ref->ndims;
@@ -98,7 +98,7 @@ bi::Expression* bi::Resolver::modify(BracketsExpression* o) {
   assert(typeSize == indexSize);  ///@todo Exception
   ref = new ModelReference(ref->name, indexDims);
 
-  o->type = ref->acceptModify(this);
+  o->type = ref->accept(this);
 
   return o;
 }
@@ -107,24 +107,18 @@ bi::Expression* bi::Resolver::modify(VarReference* o) {
   shared_ptr<Scope> scope = inner();
   Modifier::modify(o);
   o->target = scope->resolve(o);
-  o->type = o->target->type->acceptClone(&cloner)->acceptModify(this);
+  o->type = o->target->type->accept(&cloner)->accept(this);
   o->type->assignable = o->target->type->assignable;
 
   /* substitute with random variable if possible */
   RandomReference* random = new RandomReference(o);
   try {
-    random->acceptModify(this);
+    random->accept(this);
   } catch (UnresolvedReferenceException e) {
     delete random;
     return o;
   }
 
-  random->x = new Traversal(new RandomReference(random->name),
-      new VarReference(new Name("x")));
-  random->x->acceptModify(this);
-  random->m = new Traversal(new RandomReference(random->name),
-      new VarReference(new Name("m")));
-  random->m->acceptModify(this);
   return random;
 }
 
@@ -132,7 +126,7 @@ bi::Expression* bi::Resolver::modify(FuncReference* o) {
   shared_ptr<Scope> scope = inner();
   Modifier::modify(o);
   o->target = scope->resolve(o);
-  o->type = o->target->type->acceptClone(&cloner)->acceptModify(this);
+  o->type = o->target->type->accept(&cloner)->accept(this);
   o->form = o->target->form;
 
   if (o->isAssignment()) {
@@ -157,7 +151,7 @@ bi::Expression* bi::Resolver::modify(RandomReference* o) {
   shared_ptr<Scope> scope = inner();
   Modifier::modify(o);
   o->target = scope->resolve(o);
-  o->type = o->target->type->acceptClone(&cloner)->acceptModify(this);
+  o->type = o->target->type->accept(&cloner)->accept(this);
   o->type->assignable = true;
   return o;
 }
@@ -174,7 +168,7 @@ bi::Expression* bi::Resolver::modify(VarParameter* o) {
   if (!inInputs) {
     o->type->assignable = true;
   }
-  if (*o->name) {
+  if (!o->name->isEmpty()) {
     inner()->add(o);
   }
   return o;
@@ -183,10 +177,10 @@ bi::Expression* bi::Resolver::modify(VarParameter* o) {
 bi::Expression* bi::Resolver::modify(FuncParameter* o) {
   push();
   inInputs = true;
-  o->parens = o->parens->acceptModify(this);
+  o->parens = o->parens->accept(this);
   inInputs = false;
-  o->result = o->result->acceptModify(this);
-  o->type = o->result->type->acceptClone(&cloner)->acceptModify(this);
+  o->result = o->result->accept(this);
+  o->type = o->result->type->accept(&cloner)->accept(this);
   defer(o->braces.get());
   o->scope = pop();
   inner()->add(o);
@@ -214,18 +208,18 @@ bi::Expression* bi::Resolver::modify(RandomParameter* o) {
     o->left->type->assignable = true;
   }
   o->right->type->assignable = true;
-  o->type = new RandomType(o->left->type->acceptClone(&cloner),
-      o->right->type->acceptClone(&cloner));
-  o->type->acceptModify(this);
+  o->type = new RandomType(o->left->type->accept(&cloner),
+      o->right->type->accept(&cloner));
+  o->type->accept(this);
 
   if (!inInputs) {
-    o->pull = new FuncReference(o->left->acceptClone(&cloner), new Name("<~"),
-        o->right->acceptClone(&cloner));
-    o->pull->acceptModify(this);
+    o->pull = new FuncReference(o->left->accept(&cloner), new Name("<~"),
+        o->right->accept(&cloner));
+    o->pull->accept(this);
 
-    o->push = new FuncReference(o->left->acceptClone(&cloner), new Name("~>"),
-        o->right->acceptClone(&cloner));
-    o->push->acceptModify(this);
+    o->push = new FuncReference(o->left->accept(&cloner), new Name("~>"),
+        o->right->accept(&cloner));
+    o->push->accept(this);
   }
 
   inner()->add(o);
@@ -235,7 +229,7 @@ bi::Expression* bi::Resolver::modify(RandomParameter* o) {
 
 bi::Prog* bi::Resolver::modify(ProgParameter* o) {
   push();
-  o->parens = o->parens->acceptModify(this);
+  o->parens = o->parens->accept(this);
   defer(o->braces.get());
   o->scope = pop();
   inner()->add(o);
@@ -249,23 +243,23 @@ bi::Prog* bi::Resolver::modify(ProgParameter* o) {
 
 bi::Type* bi::Resolver::modify(ModelParameter* o) {
   push();
-  o->parens = o->parens->acceptModify(this);
-  o->base = o->base->acceptModify(this);
+  o->parens = o->parens->accept(this);
+  o->base = o->base->accept(this);
   models.push(o);
-  o->braces = o->braces->acceptModify(this);
+  o->braces = o->braces->accept(this);
   models.pop();
   o->scope = pop();
   inner()->add(o);
 
   if (*o->op != "=") {
     /* create constructor */
-    Expression* parens1 = o->parens->acceptClone(&cloner);
+    Expression* parens1 = o->parens->accept(&cloner);
     VarParameter* result1 = new VarParameter(new Name(),
         new ModelReference(o->name, 0, o));
     o->constructor = new FuncParameter(o->name, parens1, result1,
         new EmptyExpression(), CONSTRUCTOR);
     o->constructor =
-        dynamic_cast<FuncParameter*>(o->constructor->acceptModify(this));
+        dynamic_cast<FuncParameter*>(o->constructor->accept(this));
     assert(o->constructor);
 
     /* create assignment operator */
@@ -279,7 +273,7 @@ bi::Type* bi::Resolver::modify(ModelParameter* o) {
         new ModelReference(o->name, 0, o));
     o->assignment = new FuncParameter(new Name("<-"), parens2, result2,
         new EmptyExpression(), ASSIGNMENT_OPERATOR);
-    o->assignment = dynamic_cast<FuncParameter*>(o->assignment->acceptModify(
+    o->assignment = dynamic_cast<FuncParameter*>(o->assignment->accept(
         this));
     assert(o->assignment);
   }
@@ -288,7 +282,7 @@ bi::Type* bi::Resolver::modify(ModelParameter* o) {
 }
 
 bi::Statement* bi::Resolver::modify(Import* o) {
-  o->file->acceptModify(this);
+  o->file->accept(this);
   inner()->import(o->file->scope);
   return o;
 }
@@ -319,10 +313,10 @@ bi::Type* bi::Resolver::modify(RandomType* o) {
   push();
   Modifier::modify(o);
 
-  o->x = new VarParameter(new Name("x"), o->left->acceptClone(&cloner));
-  o->x->acceptModify(this);
-  o->m = new VarParameter(new Name("m"), o->right->acceptClone(&cloner));
-  o->m->acceptModify(this);
+  o->x = new VarParameter(new Name("x"), o->left->accept(&cloner));
+  o->x->accept(this);
+  o->m = new VarParameter(new Name("m"), o->right->accept(&cloner));
+  o->m->accept(this);
 
   o->scope = pop();
   return o;
@@ -377,7 +371,7 @@ void bi::Resolver::undefer() {
 
       push(scope);
       models.push(model);
-      o->acceptModify(this);
+      o->accept(this);
       models.pop();
       pop();
       ++iter;

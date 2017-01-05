@@ -75,9 +75,9 @@ public:
   /**
    * Is this name non-empty?
    */
-  operator bool() const;
+  bool isEmpty() const;
 
-  virtual void acceptModify(Modifier* visitor);
+  virtual void accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
   virtual bool operator<=(const Name& o) const;

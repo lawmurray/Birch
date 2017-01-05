@@ -26,7 +26,7 @@ void bi::CppAssignmentGenerator::visit(const ModelParameter* o) {
   } else {
     finish(" {");
     in();
-    if (*o->base) {
+    if (!o->base->isEmpty()) {
       CppBaseGenerator aux(base, level, header);
       aux << o->base;
       finish("::operator=(o);");
@@ -52,7 +52,7 @@ void bi::CppAssignmentGenerator::visit(const ModelParameter* o) {
     middle(" operator=(const " << o->name->str() << "<Group1>& o)");
     finish(" {");
     in();
-    if (*o->base) {
+    if (!o->base->isEmpty()) {
       CppBaseGenerator aux(base, level, header);
       aux << o->base;
       finish("::operator=(o);");

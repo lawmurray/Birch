@@ -43,7 +43,7 @@ void bi::Dictionary<ParameterType,ReferenceType>::add(ParameterType* param) {
 
 template<class ParameterType, class ReferenceType>
 ParameterType* bi::Dictionary<ParameterType,ReferenceType>::resolve(
-    const ReferenceType* ref) {
+    ReferenceType* ref) {
   auto iter = unordered.find(ref->name->str());
   if (iter != unordered.end() && *ref <= *iter->second) {
     return iter->second;

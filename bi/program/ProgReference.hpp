@@ -38,12 +38,13 @@ public:
    */
   virtual ~ProgReference();
 
-  virtual Prog* acceptClone(Cloner* visitor) const;
-  virtual Prog* acceptModify(Modifier* visitor);
+  virtual Prog* accept(Cloner* visitor) const;
+  virtual Prog* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
-  virtual bool operator<=(Prog& o);
-  virtual bool operator==(const Prog& o) const;
+  virtual bool dispatch(Prog& o);
+  virtual bool le(ProgParameter& o);
+  virtual bool le(ProgReference& o);
 };
 }
 

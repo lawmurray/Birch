@@ -46,12 +46,9 @@ public:
    */
   virtual ~FuncParameter();
 
-  virtual Expression* acceptClone(Cloner* visitor) const;
-  virtual Expression* acceptModify(Modifier* visitor);
+  virtual Expression* accept(Cloner* visitor) const;
+  virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
-
-  virtual bool operator<=(Expression& o);
-  virtual bool operator==(const Expression& o) const;
 
   /**
    * Result expression.
@@ -72,5 +69,8 @@ public:
    * Output parameters
    */
   std::list<const VarParameter*> outputs;
+
+  virtual bool dispatch(Expression& o);
+  virtual bool le(FuncParameter& o);
 };
 }

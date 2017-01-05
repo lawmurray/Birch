@@ -11,7 +11,9 @@
 
 bi::Raw::Raw(shared_ptr<Name> name, const std::string& raw,
     shared_ptr<Location> loc) :
-    Statement(loc), Named(name), raw(raw) {
+    Statement(loc),
+    Named(name),
+    raw(raw) {
   boost::algorithm::trim_left(this->raw);
 }
 
@@ -19,11 +21,11 @@ bi::Raw::~Raw() {
   //
 }
 
-bi::Statement* bi::Raw::acceptClone(Cloner* visitor) const {
+bi::Statement* bi::Raw::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-bi::Statement* bi::Raw::acceptModify(Modifier* visitor) {
+bi::Statement* bi::Raw::accept(Modifier* visitor) {
   return visitor->modify(this);
 }
 
@@ -31,22 +33,10 @@ void bi::Raw::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::Raw::operator<=(Statement& o) {
-  try {
-    Raw& o1 = dynamic_cast<Raw&>(o);
-    return raw.compare(o1.raw) == 0;
-  } catch (std::bad_cast e) {
-    //
-  }
-  return false;
+bool bi::Raw::dispatch(Statement& o) {
+  return o.le(*this);
 }
 
-bool bi::Raw::operator==(const Statement& o) const {
-  try {
-    const Raw& o1 = dynamic_cast<const Raw&>(o);
-    return raw.compare(o1.raw) == 0;
-  } catch (std::bad_cast e) {
-    //
-  }
-  return false;
+bool bi::Raw::le(Raw& o) {
+  return raw.compare(o.raw) == 0;
 }

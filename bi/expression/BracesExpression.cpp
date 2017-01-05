@@ -7,9 +7,10 @@
 
 #include <typeinfo>
 
-bi::BracesExpression::BracesExpression(Statement* stmt,
+bi::BracesExpression::BracesExpression(Statement* single,
     shared_ptr<Location> loc) :
-    Expression(loc), stmt(stmt) {
+    Expression(loc),
+    StatementUnary(single) {
   //
 }
 
@@ -17,11 +18,11 @@ bi::BracesExpression::~BracesExpression() {
   //
 }
 
-bi::Expression* bi::BracesExpression::acceptClone(Cloner* visitor) const {
+bi::Expression* bi::BracesExpression::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-bi::Expression* bi::BracesExpression::acceptModify(Modifier* visitor) {
+bi::Expression* bi::BracesExpression::accept(Modifier* visitor) {
   return visitor->modify(this);
 }
 
@@ -29,28 +30,10 @@ void bi::BracesExpression::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::BracesExpression::operator<=(Expression& o) {
-  try {
-    BracesExpression& o1 = dynamic_cast<BracesExpression&>(o);
-    return *stmt <= *o1.stmt && *type <= *o1.type;
-  } catch (std::bad_cast e) {
-    //
-  }
-  try {
-    ParenthesesExpression& o1 = dynamic_cast<ParenthesesExpression&>(o);
-    return *this <= *o1.expr;
-  } catch (std::bad_cast e) {
-    //
-  }
-  return false;
+bool bi::BracesExpression::dispatch(Expression& o) {
+  return o.le(*this);
 }
 
-bool bi::BracesExpression::operator==(const Expression& o) const {
-  try {
-    const BracesExpression& o1 = dynamic_cast<const BracesExpression&>(o);
-    return *stmt == *o1.stmt && *type == *o1.type;
-  } catch (std::bad_cast e) {
-    //
-  }
-  return false;
+bool bi::BracesExpression::le(BracesExpression& o) {
+  return *single <= *o.single && *type <= *o.type;
 }

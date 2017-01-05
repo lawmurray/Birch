@@ -12,22 +12,18 @@ bi::Prog::~Prog() {
   //
 }
 
-bi::Prog::operator bool() const {
-  return true;
+bool bi::Prog::operator<=(Prog& o) {
+  return o.dispatch(*this);
 }
 
-bool bi::Prog::operator<(Prog& o) {
-  return *this <= o && *this != o;
+bool bi::Prog::operator==(Prog& o) {
+  return *this <= o && o <= *this;
 }
 
-bool bi::Prog::operator>(Prog& o) {
-  return o <= *this && o != *this;
+bool bi::Prog::le(ProgParameter& o) {
+  return false;
 }
 
-bool bi::Prog::operator>=(Prog& o) {
-  return o <= *this;
-}
-
-bool bi::Prog::operator!=(Prog& o) {
-  return !(*this == o);
+bool bi::Prog::le(ProgReference& o) {
+  return false;
 }

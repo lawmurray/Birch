@@ -56,7 +56,7 @@ public:
    * If the reference is resolved, updates the target of the reference and
    * returns true, otherwise returns false.
    */
-  ParameterType* resolve(const ReferenceType* ref);
+  ParameterType* resolve(ReferenceType* ref);
 
   /**
    * Declarations within this outer, stored by partial order based on

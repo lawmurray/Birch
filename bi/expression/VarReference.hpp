@@ -32,11 +32,12 @@ public:
    */
   virtual ~VarReference();
 
-  virtual Expression* acceptClone(Cloner* visitor) const;
-  virtual Expression* acceptModify(Modifier* visitor);
+  virtual Expression* accept(Cloner* visitor) const;
+  virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
-  virtual bool operator<=(Expression& o);
-  virtual bool operator==(const Expression& o) const;
+  virtual bool dispatch(Expression& o);
+  virtual bool le(VarParameter& o);
+  virtual bool le(VarReference& o);
 };
 }

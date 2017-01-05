@@ -36,11 +36,11 @@ const std::list<bi::FuncParameter*>& bi::ModelParameter::funcs() const {
   return scope->funcs.ordered;
 }
 
-bi::Type* bi::ModelParameter::acceptClone(Cloner* visitor) const {
+bi::Type* bi::ModelParameter::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-bi::Type* bi::ModelParameter::acceptModify(Modifier* visitor) {
+bi::Type* bi::ModelParameter::accept(Modifier* visitor) {
   return visitor->modify(this);
 }
 
@@ -52,32 +52,18 @@ bool bi::ModelParameter::builtin() const {
   if (*op == "=") {
     return base->builtin();
   } else {
-    return !*braces;
+    return braces->isEmpty();
   }
 }
 
-bool bi::ModelParameter::operator<=(Type& o) {
-  try {
-    ModelParameter& o1 = dynamic_cast<ModelParameter&>(o);
-    return *parens <= *o1.parens && *base <= *o1.base && o1.capture(this);
-  } catch (std::bad_cast e) {
-    //
-  }
-  try {
-    ParenthesesType& o1 = dynamic_cast<ParenthesesType&>(o);
-    return *this <= *o1.type;
-  } catch (std::bad_cast e) {
-    //
-  }
-  return false;
+bool bi::ModelParameter::dispatch(Type& o) {
+  return o.le(*this);
 }
 
-bool bi::ModelParameter::operator==(const Type& o) const {
-  try {
-    const ModelParameter& o1 = dynamic_cast<const ModelParameter&>(o);
-    return *parens == *o1.parens && *base == *o1.base;
-  } catch (std::bad_cast e) {
-    //
-  }
-  return false;
+bool bi::ModelParameter::le(ModelParameter& o) {
+  return *parens <= *o.parens && *base <= *o.base && o.capture(this);
+}
+
+bool bi::ModelParameter::le(EmptyType& o) {
+  return true;
 }

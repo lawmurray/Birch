@@ -1,9 +1,3 @@
-##
-## @file
-##
-## @author Lawrence Murray <murray@stats.ox.ac.uk>
-##
-
 AUTOMAKE_OPTIONS = subdir-objects
 
 # Flex/Bison setup
@@ -47,6 +41,7 @@ birchc_SOURCES = \
   bi/common/Scope.cpp \
   bi/common/Scoped.cpp \
   bi/common/Typed.cpp \
+  bi/common/Unary.cpp \
   bi/exception/AmbiguousReferenceException.cpp \
   bi/exception/CompilerException.cpp \
   bi/exception/CyclicImportException.cpp \

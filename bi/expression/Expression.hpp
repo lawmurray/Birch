@@ -6,10 +6,28 @@
 #include "bi/common/Typed.hpp"
 #include "bi/common/Located.hpp"
 
+#include <cassert>
+
 namespace bi {
 class Cloner;
 class Modifier;
 class Visitor;
+
+class BracesExpression;
+class BracketsExpression;
+class EmptyExpression;
+template<class T> class List;
+class FuncParameter;
+class FuncReference;
+template<class T> class Literal;
+class ParenthesesExpression;
+class RandomParameter;
+class RandomReference;
+class Range;
+class This;
+class Traversal;
+class VarParameter;
+class VarReference;
 
 /**
  * Expression.
@@ -45,7 +63,7 @@ public:
    *
    * @return Cloned (and potentially modified) expression.
    */
-  virtual Expression* acceptClone(Cloner* visitor) const = 0;
+  virtual Expression* accept(Cloner* visitor) const = 0;
 
   /**
    * Accept modifying visitor.
@@ -54,7 +72,7 @@ public:
    *
    * @return Modified expression.
    */
-  virtual Expression* acceptModify(Modifier* visitor) = 0;
+  virtual Expression* accept(Modifier* visitor) = 0;
 
   /**
    * Accept read-only visitor.
@@ -63,10 +81,10 @@ public:
    */
   virtual void accept(Visitor* visitor) const = 0;
 
-  /*
-   * Bool cast to check for non-empty expression.
+  /**
+   * Is expression empty?
    */
-  virtual operator bool() const;
+  virtual bool isEmpty() const;
 
   /**
    * Is this a primary expression?
@@ -94,17 +112,30 @@ public:
   virtual int tupleDims() const;
 
   /*
-   * Partial order comparison operators for comparing expressions in terms of
-   * specialisation.
-   *
-   * The first two are the most commonly used, and so overridden by derived
-   * classes. The remainder are expressed in terms of these.
+   * Partial order comparison operator for comparing expressions in terms of
+   * specialisation. These double-dispatch to the #le functions below, which
+   * can be implemented for specific types in derived classes.
    */
-  virtual bool operator<=(Expression& o) = 0;
-  virtual bool operator==(const Expression& o) const = 0;
-  bool operator<(Expression& o);
-  bool operator>(Expression& o);
-  bool operator>=(Expression& o);
-  bool operator!=(Expression& o);
+  bool operator<=(Expression& o);
+  bool operator==(Expression& o);
+  virtual bool dispatch(Expression& o) = 0;
+  virtual bool le(BracesExpression& o);
+  virtual bool le(BracketsExpression& o);
+  virtual bool le(EmptyExpression& o);
+  virtual bool le(List<Expression>& o);
+  virtual bool le(FuncParameter& o);
+  virtual bool le(FuncReference& o);
+  virtual bool le(Literal<bool>& o);
+  virtual bool le(Literal<int64_t>& o);
+  virtual bool le(Literal<double>& o);
+  virtual bool le(Literal<std::string>& o);
+  virtual bool le(ParenthesesExpression& o);
+  virtual bool le(RandomParameter& o);
+  virtual bool le(RandomReference& o);
+  virtual bool le(Range& o);
+  virtual bool le(This& o);
+  virtual bool le(Traversal& o);
+  virtual bool le(VarParameter& o);
+  virtual bool le(VarReference& o);
 };
 }

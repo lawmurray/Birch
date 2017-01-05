@@ -37,16 +37,16 @@ public:
    */
   virtual ~Conditional();
 
-  virtual Statement* acceptClone(Cloner* visitor) const;
-  virtual Statement* acceptModify(Modifier* visitor);
+  virtual Statement* accept(Cloner* visitor) const;
+  virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
-
-  virtual bool operator<=(Statement& o);
-  virtual bool operator==(const Statement& o) const;
 
   /**
    * Block if condition is false. May be empty if there is no else clause.
    */
   unique_ptr<Expression> falseBraces;
+
+  virtual bool dispatch(Statement& o);
+  virtual bool le(Conditional& o);
 };
 }

@@ -48,13 +48,13 @@ void bi::bi_ostream::visit(const TypeList* o) {
 }
 
 void bi::bi_ostream::visit(const ParenthesesExpression* o) {
-  *this << '(' << o->expr << ')';
+  *this << '(' << o->single << ')';
 }
 
 void bi::bi_ostream::visit(const BracesExpression* o) {
   *this << "{\n";
   in();
-  *this << o->stmt;
+  *this << o->single;
   out();
   *this << indent << '}';
 }
@@ -76,7 +76,7 @@ void bi::bi_ostream::visit(const This* o) {
 }
 
 void bi::bi_ostream::visit(const BracketsExpression* o) {
-  *this << o->expr << '[' << o->brackets << ']';
+  *this << o->single << '[' << o->brackets << ']';
 }
 
 void bi::bi_ostream::visit(const VarReference* o) {
@@ -93,7 +93,7 @@ void bi::bi_ostream::visit(const FuncReference* o) {
 
 void bi::bi_ostream::visit(const ModelReference* o) {
   *this << o->name;
-  if (*o->brackets) {
+  if (!o->brackets->isEmpty()) {
     *this << '[' << o->brackets << ']';
   } else if (o->count() > 0) {
     *this << '[';
@@ -113,10 +113,10 @@ void bi::bi_ostream::visit(const ProgReference* o) {
 
 void bi::bi_ostream::visit(const VarParameter* o) {
   *this << o->name << ':' << o->type;
-  if (*o->parens) {
+  if (!o->parens->isEmpty()) {
     *this << o->parens;
   }
-  if (*o->value) {
+  if (!o->value->isEmpty()) {
     *this << " <- " << o->value;
   }
 }
@@ -129,24 +129,24 @@ void bi::bi_ostream::visit(const FuncParameter* o) {
   } else {
     *this << o->name << o->parens;
   }
-  if (*o->result) {
+  if (!o->result->isEmpty()) {
     *this << " -> " << o->result;
   }
 }
 
 void bi::bi_ostream::visit(const ModelParameter* o) {
   *this << o->name;
-  if (*o->parens) {
+  if (!o->parens->isEmpty()) {
     *this << o->parens;
   }
-  if (*o->base) {
+  if (!o->base->isEmpty()) {
     *this << ' ' << o->op << ' ' << o->base;
   }
 }
 
 void bi::bi_ostream::visit(const ProgParameter* o) {
   *this << o->name << o->parens;
-  if (!header && *o->braces) {
+  if (!header && !o->braces->isEmpty()) {
     *this << o->braces;
   } else {
     *this << ';';
@@ -154,7 +154,7 @@ void bi::bi_ostream::visit(const ProgParameter* o) {
 }
 
 void bi::bi_ostream::visit(const ParenthesesType* o) {
-  *this << '(' << o->type << ')';
+  *this << '(' << o->single << ')';
 }
 
 void bi::bi_ostream::visit(const File* o) {
@@ -166,12 +166,12 @@ void bi::bi_ostream::visit(const Import* o) {
 }
 
 void bi::bi_ostream::visit(const ExpressionStatement* o) {
-  *this << indent << o->expr << '\n';
+  *this << indent << o->single << '\n';
 }
 
 void bi::bi_ostream::visit(const Conditional* o) {
   *this << indent << "if " << o->cond << ' ' << o->braces;
-  if (*o->falseBraces) {
+  if (!o->falseBraces->isEmpty()) {
     *this << " else " << o->falseBraces;
   }
   *this << '\n';
@@ -193,7 +193,7 @@ void bi::bi_ostream::visit(const VarDeclaration* o) {
 
 void bi::bi_ostream::visit(const FuncDeclaration* o) {
   *this << indent << "function " << o->param;
-  if (!header && *o->param->braces) {
+  if (!header && !o->param->braces->isEmpty()) {
     *this << o->param->braces;
   } else {
     *this << ';';
@@ -203,7 +203,7 @@ void bi::bi_ostream::visit(const FuncDeclaration* o) {
 
 void bi::bi_ostream::visit(const ModelDeclaration* o) {
   *this << indent << "model " << o->param;
-  if (*o->param->braces) {
+  if (!o->param->braces->isEmpty()) {
     *this << o->param->braces;
   } else {
     *this << ';';
@@ -213,7 +213,7 @@ void bi::bi_ostream::visit(const ModelDeclaration* o) {
 
 void bi::bi_ostream::visit(const ProgDeclaration* o) {
   *this << indent << "program " << o->param;
-  if (!header && *o->param->braces) {
+  if (!header && !o->param->braces->isEmpty()) {
     *this << o->param->braces;
   } else {
     *this << ';';

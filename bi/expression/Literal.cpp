@@ -23,12 +23,12 @@ bi::Literal<T1>::~Literal() {
 }
 
 template<class T1>
-bi::Expression* bi::Literal<T1>::acceptClone(Cloner* visitor) const {
+bi::Expression* bi::Literal<T1>::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
 template<class T1>
-bi::Expression* bi::Literal<T1>::acceptModify(Modifier* visitor) {
+bi::Expression* bi::Literal<T1>::accept(Modifier* visitor) {
   return visitor->modify(this);
 }
 
@@ -38,49 +38,29 @@ void bi::Literal<T1>::accept(Visitor* visitor) const {
 }
 
 template<class T1>
-bool bi::Literal<T1>::operator<=(Expression& o) {
-  try {
-    const Literal<T1>& o1 = dynamic_cast<const Literal<T1>&>(o);
-    return value == o1.value && *type <= *o1.type;
-  } catch (std::bad_cast e) {
-    //
-  }
-  try {
-    VarParameter& o1 = dynamic_cast<VarParameter&>(o);
-    return *type <= *o1.type && o1.capture(this);
-  } catch (std::bad_cast e) {
-    //
-  }
-  try {
-    VarReference& o1 = dynamic_cast<VarReference&>(o);
-    return *type <= *o1.type && o1.check(this);
-  } catch (std::bad_cast e) {
-    //
-  }
-  try {
-    ParenthesesExpression& o1 = dynamic_cast<ParenthesesExpression&>(o);
-    return *this <= *o1.expr;
-  } catch (std::bad_cast e) {
-    //
-  }
-  return false;
+bool bi::Literal<T1>::dispatch(Expression& o) {
+  return o.le(*this);
 }
 
 template<class T1>
-bool bi::Literal<T1>::operator==(const Expression& o) const {
-  try {
-    const Literal<T1>& o1 = dynamic_cast<const Literal<T1>&>(o);
-    return value == o1.value && *type == *o1.type;
-  } catch (std::bad_cast e) {
-    //
-  }
-  return false;
+bool bi::Literal<T1>::le(Literal<T1>& o) {
+  return value == o.value && *type <= *o.type;
+}
+
+template<class T1>
+bool bi::Literal<T1>::le(VarParameter& o) {
+  return *type <= *o.type && o.capture(this);
+}
+
+template<class T1>
+bool bi::Literal<T1>::le(VarReference& o) {
+  return *type <= *o.type && o.check(this);
 }
 
 /*
  * Explicit instantiations.
  */
 template class bi::Literal<bool>;
-template class bi::Literal<int32_t>;
+template class bi::Literal<int64_t>;
 template class bi::Literal<double>;
 template class bi::Literal<std::string>;

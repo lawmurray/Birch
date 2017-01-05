@@ -33,7 +33,7 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
     if (header) {
       line("template<class Group = StackGroup>");
       start("class " << o->name);
-      if (*o->base) {
+      if (!o->base->isEmpty()) {
         middle(" : public " << o->base);
       }
       finish(" {");
@@ -126,7 +126,7 @@ void bi::CppModelGenerator::visit(const VarParameter* o) {
 }
 
 void bi::CppModelGenerator::visit(const FuncParameter* o) {
-  if (*o->braces) {
+  if (!o->braces->isEmpty()) {
     /* class template parameters */
     if (!header) {
       line("template<class Group>");
@@ -172,7 +172,7 @@ void bi::CppModelGenerator::visit(const FuncParameter* o) {
       auxBase << o->braces;
 
       /* return statement */
-      if (*o->result) {
+      if (!o->result->isEmpty()) {
         CppReturnGenerator auxReturn(base, level, header);
         auxReturn << o;
       }

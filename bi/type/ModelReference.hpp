@@ -8,6 +8,7 @@
 #include "bi/expression/EmptyExpression.hpp"
 #include "bi/common/Bracketed.hpp"
 #include "bi/common/Reference.hpp"
+#include "bi/type/EmptyType.hpp"
 
 namespace bi {
 /**
@@ -50,16 +51,18 @@ public:
   virtual bool builtin() const;
   virtual int count() const;
 
-  virtual Type* acceptClone(Cloner* visitor) const;
-  virtual Type* acceptModify(Modifier* visitor);
+  virtual Type* accept(Cloner* visitor) const;
+  virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
-
-  virtual bool operator<=(Type& o);
-  virtual bool operator==(const Type& o) const;
 
   /**
    * Number of dimensions.
    */
   int ndims;
+
+  virtual bool dispatch(Type& o);
+  virtual bool le(ModelParameter& o);
+  virtual bool le(ModelReference& o);
+  virtual bool le(EmptyType& o);
 };
 }

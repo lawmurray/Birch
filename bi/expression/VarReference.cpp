@@ -10,7 +10,9 @@
 
 bi::VarReference::VarReference(shared_ptr<Name> name,
     shared_ptr<Location> loc, const VarParameter* target) :
-    Expression(loc), Named(name), Reference(target) {
+    Expression(loc),
+    Named(name),
+    Reference(target) {
   //
 }
 
@@ -18,11 +20,11 @@ bi::VarReference::~VarReference() {
   //
 }
 
-bi::Expression* bi::VarReference::acceptClone(Cloner* visitor) const {
+bi::Expression* bi::VarReference::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-bi::Expression* bi::VarReference::acceptModify(Modifier* visitor) {
+bi::Expression* bi::VarReference::accept(Modifier* visitor) {
   return visitor->modify(this);
 }
 
@@ -30,44 +32,19 @@ void bi::VarReference::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::VarReference::operator<=(Expression& o) {
-  if (!target) {
-    /* not yet bound */
-    try {
-      VarParameter& o1 = dynamic_cast<VarParameter&>(o);
-      return o1.capture(this);
-    } catch (std::bad_cast e) {
-      //
-    }
-  } else {
-    try {
-      VarReference& o1 = dynamic_cast<VarReference&>(o);
-      return *type <= *o1.type && (o1.canon(this) || o1.check(this));
-    } catch (std::bad_cast e) {
-      //
-    }
-    try {
-      VarParameter& o1 = dynamic_cast<VarParameter&>(o);
-      return *type <= *o1.type && o1.capture(this);
-    } catch (std::bad_cast e) {
-      //
-    }
-  }
-  try {
-    ParenthesesExpression& o1 = dynamic_cast<ParenthesesExpression&>(o);
-    return *this <= *o1.expr;
-  } catch (std::bad_cast e) {
-    //
-  }
-  return false;
+bool bi::VarReference::dispatch(Expression& o) {
+  return o.le(*this);
 }
 
-bool bi::VarReference::operator==(const Expression& o) const {
-  try {
-    const VarReference& o1 = dynamic_cast<const VarReference&>(o);
-    return *type == *o1.type && o1.canon(this);
-  } catch (std::bad_cast e) {
-    //
+bool bi::VarReference::le(VarParameter& o) {
+  if (!target) {
+    /* not yet bound */
+    return o.capture(this);
+  } else {
+    return *type <= *o.type && o.capture(this);
   }
-  return false;
+}
+
+bool bi::VarReference::le(VarReference& o) {
+  return *type <= *o.type && (o.canon(this) || o.check(this));
 }

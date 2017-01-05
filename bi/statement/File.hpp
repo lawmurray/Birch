@@ -38,8 +38,8 @@ public:
    */
   virtual ~File();
 
-  File* acceptClone(Cloner* visitor) const;
-  void acceptModify(Modifier* visitor);
+  File* accept(Cloner* visitor) const;
+  void accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
   /**

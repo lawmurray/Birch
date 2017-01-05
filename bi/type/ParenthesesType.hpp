@@ -4,6 +4,7 @@
 #pragma once
 
 #include "bi/type/Type.hpp"
+#include "bi/common/Unary.hpp"
 #include "bi/primitive/unique_ptr.hpp"
 
 namespace bi {
@@ -12,31 +13,31 @@ namespace bi {
  *
  * @ingroup compiler_type
  */
-class ParenthesesType: public Type {
+class ParenthesesType: public Type, public TypeUnary {
 public:
   /**
    * Constructor.
    *
-   * @param type Type in parentheses.
+   * @param single Type in parentheses.
    * @param loc Location.
    */
-  ParenthesesType(Type* type, shared_ptr<Location> loc = nullptr);
+  ParenthesesType(Type* single, shared_ptr<Location> loc = nullptr);
 
   /**
    * Destructor.
    */
   virtual ~ParenthesesType();
 
-  virtual Type* acceptClone(Cloner* visitor) const;
-  virtual Type* acceptModify(Modifier* visitor);
+  virtual Type* accept(Cloner* visitor) const;
+  virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
-  virtual bool operator<=(Type& o);
-  virtual bool operator==(const Type& o) const;
-
-  /**
-   * Expression inside parentheses.
-   */
-  unique_ptr<Type> type;
+  virtual bool dispatch(Type& o);
+  virtual bool le(EmptyType& o);
+  virtual bool le(List<Type>& o);
+  virtual bool le(ModelParameter& o);
+  virtual bool le(ModelReference& o);
+  virtual bool le(ParenthesesType& o);
+  virtual bool le(RandomType& o);
 };
 }

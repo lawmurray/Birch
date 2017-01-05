@@ -14,11 +14,11 @@ bi::File::~File() {
   //
 }
 
-bi::File* bi::File::acceptClone(Cloner* visitor) const {
+bi::File* bi::File::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-void bi::File::acceptModify(Modifier* visitor) {
+void bi::File::accept(Modifier* visitor) {
   visitor->modify(this);
 }
 

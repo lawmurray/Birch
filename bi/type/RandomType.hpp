@@ -29,12 +29,9 @@ public:
    */
   virtual ~RandomType();
 
-  virtual Type* acceptClone(Cloner* visitor) const;
-  virtual Type* acceptModify(Modifier* visitor);
+  virtual Type* accept(Cloner* visitor) const;
+  virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
-
-  virtual bool operator<=(Type& o);
-  virtual bool operator==(const Type& o) const;
 
   /**
    * Member variable for the variate.
@@ -45,5 +42,12 @@ public:
    * Member variable for the model.
    */
   unique_ptr<Expression> m;
+
+  virtual bool dispatch(Type& o);
+  virtual bool le(EmptyType& o);
+  virtual bool le(List<Type>& o);
+  virtual bool le(ModelParameter& o);
+  virtual bool le(ModelReference& o);
+  virtual bool le(RandomType& o);
 };
 }

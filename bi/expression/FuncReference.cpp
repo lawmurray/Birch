@@ -32,11 +32,11 @@ bi::FuncReference::~FuncReference() {
   //
 }
 
-bi::Expression* bi::FuncReference::acceptClone(Cloner* visitor) const {
+bi::Expression* bi::FuncReference::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-bi::Expression* bi::FuncReference::acceptModify(Modifier* visitor) {
+bi::Expression* bi::FuncReference::accept(Modifier* visitor) {
   return visitor->modify(this);
 }
 
@@ -44,51 +44,28 @@ void bi::FuncReference::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::FuncReference::operator<=(Expression& o) {
-  if (!target) {
-    /* not yet bound */
-    try {
-      FuncParameter& o1 = dynamic_cast<FuncParameter&>(o);
-      return *parens <= *o1.parens && o1.capture(this);
-    } catch (std::bad_cast e) {
-      //
-    }
-  } else {
-    try {
-      FuncReference& o1 = dynamic_cast<FuncReference&>(o);
-      return *parens <= *o1.parens && *type <= *o1.type
-          && (o1.canon(this) || o1.check(this));
-    } catch (std::bad_cast e) {
-      //
-    }
-    try {
-      FuncParameter& o1 = dynamic_cast<FuncParameter&>(o);
-      return *parens <= *o1.parens && *type <= *o1.type && o1.capture(this);
-    } catch (std::bad_cast e) {
-      //
-    }
-    try {
-      VarParameter& o1 = dynamic_cast<VarParameter&>(o);
-      return *type <= *o1.type && o1.capture(this);
-    } catch (std::bad_cast e) {
-      //
-    }
-  }
-  try {
-    ParenthesesExpression& o1 = dynamic_cast<ParenthesesExpression&>(o);
-    return *this <= *o1.expr;
-  } catch (std::bad_cast e) {
-    //
-  }
-  return false;
+bool bi::FuncReference::dispatch(Expression& o) {
+  return o.le(*this);
 }
 
-bool bi::FuncReference::operator==(const Expression& o) const {
-  try {
-    const FuncReference& o1 = dynamic_cast<const FuncReference&>(o);
-    return *parens == *o1.parens && *type == *o1.type && o1.canon(this);
-  } catch (std::bad_cast e) {
-    //
+bool bi::FuncReference::le(FuncParameter& o) {
+  if (!target) {
+    /* not yet bound */
+    return *parens <= *o.parens && o.capture(this);
+  } else {
+    return *parens <= *o.parens && *type <= *o.type && o.capture(this);
   }
-  return false;
+}
+
+bool bi::FuncReference::le(FuncReference& o) {
+  return *parens <= *o.parens && *type <= *o.type
+      && (o.canon(this) || o.check(this));
+}
+
+bool bi::FuncReference::le(VarParameter& o) {
+  return *type <= *o.type && o.capture(this);
+}
+
+bool bi::FuncReference::le(VarReference& o) {
+  return *type <= *o.type && o.check(this);
 }

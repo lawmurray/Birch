@@ -22,11 +22,11 @@ void bi::CppMoveConstructorGenerator::visit(const ModelParameter* o) {
   if (header) {
     finish(";\n");
   } else {
-    if (*o->base || o->vars().size() > 0) {
+    if (!o->base->isEmpty() || o->vars().size() > 0) {
       finish(" :");
       in();
       in();
-      if (*o->base) {
+      if (!o->base->isEmpty()) {
         CppBaseGenerator aux(base, level, header);
         aux << o->base;
         finish("(o),");

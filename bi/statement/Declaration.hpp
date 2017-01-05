@@ -32,17 +32,17 @@ public:
    */
   virtual ~Declaration();
 
-  virtual Statement* acceptClone(Cloner* visitor) const;
-  virtual Statement* acceptModify(Modifier* visitor);
+  virtual Statement* accept(Cloner* visitor) const;
+  virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
-
-  virtual bool operator<=(Statement& o);
-  virtual bool operator==(const Statement& o) const;
 
   /**
    * Parameter.
    */
   unique_ptr<T> param;
+
+  virtual bool dispatch(Statement& o);
+  virtual bool le(Declaration<T>& o);
 };
 
 typedef Declaration<VarParameter> VarDeclaration;

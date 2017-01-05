@@ -5,6 +5,10 @@
 
 #include "bi/expression/Expression.hpp"
 #include "bi/common/Bracketed.hpp"
+#include "bi/common/Unary.hpp"
+#include "bi/expression/BracketsExpression.hpp"
+#include "bi/expression/VarParameter.hpp"
+#include "bi/expression/VarReference.hpp"
 #include "bi/primitive/unique_ptr.hpp"
 
 namespace bi {
@@ -13,16 +17,16 @@ namespace bi {
  *
  * @ingroup compiler_expression
  */
-class BracketsExpression: public Expression, public Bracketed {
+class BracketsExpression: public Expression, public ExpressionUnary, public Bracketed {
 public:
   /**
    * Constructor.
    *
-   * @param expr Expression.
+   * @param single Expression.
    * @param brackets Brackets.
    * @param loc Location.
    */
-  BracketsExpression(Expression* expr, Expression* brackets,
+  BracketsExpression(Expression* single, Expression* brackets,
       shared_ptr<Location> loc = nullptr);
 
   /**
@@ -30,16 +34,13 @@ public:
    */
   virtual ~BracketsExpression();
 
-  virtual Expression* acceptClone(Cloner* visitor) const;
-  virtual Expression* acceptModify(Modifier* visitor);
+  virtual Expression* accept(Cloner* visitor) const;
+  virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
-  virtual bool operator<=(Expression& o);
-  virtual bool operator==(const Expression& o) const;
-
-  /**
-   * Left operand.
-   */
-  unique_ptr<Expression> expr;
+  virtual bool dispatch(Expression& o);
+  virtual bool le(BracketsExpression& o);
+  virtual bool le(VarParameter& o);
+  virtual bool le(VarReference& o);
 };
 }

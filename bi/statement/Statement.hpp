@@ -10,6 +10,20 @@ class Cloner;
 class Modifier;
 class Visitor;
 
+class Conditional;
+template<class T> class Declaration;
+class EmptyStatement;
+class ExpressionStatement;
+class Import;
+template<class T> class List;
+class Loop;
+class Raw;
+
+class VarParameter;
+class FuncParameter;
+class ModelParameter;
+class ProgParameter;
+
 /**
  * Statement.
  *
@@ -36,7 +50,7 @@ public:
    *
    * @return Cloned (and potentially modified) statement.
    */
-  virtual Statement* acceptClone(Cloner* visitor) const = 0;
+  virtual Statement* accept(Cloner* visitor) const = 0;
 
   /**
    * Accept modifying visitor.
@@ -45,7 +59,7 @@ public:
    *
    * @return Modified statement.
    */
-  virtual Statement* acceptModify(Modifier* visitor) = 0;
+  virtual Statement* accept(Modifier* visitor) = 0;
 
   /**
    * Accept read-only visitor.
@@ -55,22 +69,29 @@ public:
   virtual void accept(Visitor* visitor) const = 0;
 
   /*
-   * Bool cast to check for non-empty statement.
+   * Is statement empty?
    */
-  virtual operator bool() const;
+  virtual bool isEmpty() const;
 
   /*
    * Partial order comparison operators for comparing statements in terms of
-   * specialisation.
-   *
-   * The first two are the most commonly used, and so overridden by derived
-   * classes. The remainder are expressed in terms of these.
+   * specialisation. These double-dispatch to the #le, #gt, #eq and #ne
+   * functions below, which can be implemented for specific types in derived
+   * classes.
    */
-  virtual bool operator<=(Statement& o) = 0;
-  virtual bool operator==(const Statement& o) const = 0;
-  bool operator<(Statement& o);
-  bool operator>(Statement& o);
-  bool operator>=(Statement& o);
-  bool operator!=(Statement& o);
+  bool operator<=(Statement& o);
+  bool operator==(Statement& o);
+  virtual bool dispatch(Statement& o) = 0;
+  virtual bool le(Conditional& o);
+  virtual bool le(Declaration<VarParameter>& o);
+  virtual bool le(Declaration<FuncParameter>& o);
+  virtual bool le(Declaration<ProgParameter>& o);
+  virtual bool le(Declaration<ModelParameter>& o);
+  virtual bool le(EmptyStatement& o);
+  virtual bool le(ExpressionStatement& o);
+  virtual bool le(Import& o);
+  virtual bool le(List<Statement>& o);
+  virtual bool le(Loop& o);
+  virtual bool le(Raw& o);
 };
 }

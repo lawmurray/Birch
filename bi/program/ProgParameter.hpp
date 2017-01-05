@@ -39,17 +39,17 @@ public:
    */
   virtual ~ProgParameter();
 
-  virtual Prog* acceptClone(Cloner* visitor) const;
-  virtual Prog* acceptModify(Modifier* visitor);
+  virtual Prog* accept(Cloner* visitor) const;
+  virtual Prog* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
-
-  virtual bool operator<=(Prog& o);
-  virtual bool operator==(const Prog& o) const;
 
   /**
    * Input parameters
    */
   std::list<const VarParameter*> inputs;
+
+  virtual bool dispatch(Prog& o);
+  virtual bool le(ProgParameter& o);
 };
 }
 

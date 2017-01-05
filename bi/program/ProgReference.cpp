@@ -9,15 +9,18 @@
 
 bi::ProgReference::ProgReference(shared_ptr<Name> name, Expression* parens,
     shared_ptr<Location> loc, const ProgParameter* target) :
-    Prog(loc), Named(name), Parenthesised(parens), Reference(target) {
+    Prog(loc),
+    Named(name),
+    Parenthesised(parens),
+    Reference(target) {
   //
 }
 
-bi::Prog* bi::ProgReference::acceptClone(Cloner* visitor) const {
+bi::Prog* bi::ProgReference::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-bi::Prog* bi::ProgReference::acceptModify(Modifier* visitor) {
+bi::Prog* bi::ProgReference::accept(Modifier* visitor) {
   return visitor->modify(this);
 }
 
@@ -25,38 +28,19 @@ void bi::ProgReference::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::ProgReference::operator<=(Prog& o) {
-  if (!target) {
-    /* not yet bound */
-    try {
-      ProgParameter& o1 = dynamic_cast<ProgParameter&>(o);
-      return *parens <= *o1.parens;
-    } catch (std::bad_cast e) {
-      //
-    }
-  } else {
-    try {
-      ProgReference& o1 = dynamic_cast<ProgReference&>(o);
-      return *parens <= *o1.parens && (o1.canon(this) || o1.check(this));
-    } catch (std::bad_cast e) {
-      //
-    }
-    try {
-      ProgParameter& o1 = dynamic_cast<ProgParameter&>(o);
-      return *parens <= *o1.parens && o1.capture(this);
-    } catch (std::bad_cast e) {
-      //
-    }
-  }
-  return false;
+bool bi::ProgReference::dispatch(Prog& o) {
+  return o.le(*this);
 }
 
-bool bi::ProgReference::operator==(const Prog& o) const {
-  try {
-    const ProgReference& o1 = dynamic_cast<const ProgReference&>(o);
-    return *parens == *o1.parens && o1.canon(this);
-  } catch (std::bad_cast e) {
-    //
+bool bi::ProgReference::le(ProgParameter& o) {
+  if (!target) {
+    /* not yet bound */
+    return *parens <= *o.parens;
+  } else {
+    return *parens <= *o.parens && o.capture(this);
   }
-  return false;
+}
+
+bool bi::ProgReference::le(ProgReference& o) {
+  return *parens <= *o.parens && (o.canon(this) || o.check(this));
 }

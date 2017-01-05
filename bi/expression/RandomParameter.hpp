@@ -8,6 +8,8 @@
 #include "bi/common/Binary.hpp"
 #include "bi/common/Parameter.hpp"
 #include "bi/expression/FuncReference.hpp"
+#include "bi/expression/VarParameter.hpp"
+#include "bi/expression/VarReference.hpp"
 
 namespace bi {
 /**
@@ -40,12 +42,9 @@ public:
    */
   virtual ~RandomParameter();
 
-  virtual Expression* acceptClone(Cloner* visitor) const;
-  virtual Expression* acceptModify(Modifier* visitor);
+  virtual Expression* accept(Cloner* visitor) const;
+  virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
-
-  virtual bool operator<=(Expression& o);
-  virtual bool operator==(const Expression& o) const;
 
   /**
    * Pull method.
@@ -56,5 +55,10 @@ public:
    * Push method.
    */
   unique_ptr<Expression> push;
+
+  virtual bool dispatch(Expression& o);
+  virtual bool le(RandomParameter& o);
+  virtual bool le(VarParameter& o);
+  virtual bool le(VarReference& o);
 };
 }

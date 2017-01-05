@@ -117,7 +117,7 @@ void bi::Compiler::parse() {
 void bi::Compiler::process() {
   Resolver resolver;
   for (auto iter = files.begin(); iter != files.end(); ++iter) {
-    iter->second->acceptModify(&resolver);
+    iter->second->accept(&resolver);
   }
 }
 

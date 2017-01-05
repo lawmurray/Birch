@@ -10,7 +10,7 @@ bi::CppOutputGenerator::CppOutputGenerator(std::ostream& base,
 }
 
 void bi::CppOutputGenerator::visit(const FuncParameter* o) {
-  if (*o->result) {
+  if (!o->result->isEmpty()) {
     for (auto iter = o->outputs.begin(); iter != o->outputs.end(); ++iter) {
       line(*iter << ';');
     }

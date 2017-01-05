@@ -21,11 +21,11 @@ bi::VarParameter::~VarParameter() {
   //
 }
 
-bi::Expression* bi::VarParameter::acceptClone(Cloner* visitor) const {
+bi::Expression* bi::VarParameter::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-bi::Expression* bi::VarParameter::acceptModify(Modifier* visitor) {
+bi::Expression* bi::VarParameter::accept(Modifier* visitor) {
   return visitor->modify(this);
 }
 
@@ -33,28 +33,10 @@ void bi::VarParameter::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::VarParameter::operator<=(Expression& o) {
-  try {
-    VarParameter& o1 = dynamic_cast<VarParameter&>(o);
-    return *type <= *o1.type && o1.capture(this);
-  } catch (std::bad_cast e) {
-    //
-  }
-  try {
-    ParenthesesExpression& o1 = dynamic_cast<ParenthesesExpression&>(o);
-    return *this <= *o1.expr;
-  } catch (std::bad_cast e) {
-    //
-  }
-  return false;
+bool bi::VarParameter::dispatch(Expression& o) {
+  return o.le(*this);
 }
 
-bool bi::VarParameter::operator==(const Expression& o) const {
-  try {
-    const VarParameter& o1 = dynamic_cast<const VarParameter&>(o);
-    return *type == *o1.type;
-  } catch (std::bad_cast e) {
-    //
-  }
-  return false;
+bool bi::VarParameter::le(VarParameter& o) {
+  return *type <= *o.type && o.capture(this);
 }

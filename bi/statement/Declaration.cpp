@@ -9,7 +9,8 @@
 
 template<class T>
 bi::Declaration<T>::Declaration(T* param, shared_ptr<Location> loc) :
-    Statement(loc), param(param) {
+    Statement(loc),
+    param(param) {
   assert(param);
 }
 
@@ -19,12 +20,12 @@ inline bi::Declaration<T>::~Declaration() {
 }
 
 template<class T>
-bi::Statement* bi::Declaration<T>::acceptClone(Cloner* visitor) const {
+bi::Statement* bi::Declaration<T>::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
 template<class T>
-bi::Statement* bi::Declaration<T>::acceptModify(Modifier* visitor) {
+bi::Statement* bi::Declaration<T>::accept(Modifier* visitor) {
   return visitor->modify(this);
 }
 
@@ -34,25 +35,13 @@ void bi::Declaration<T>::accept(Visitor* visitor) const {
 }
 
 template<class T>
-bool bi::Declaration<T>::operator<=(Statement& o) {
-  try {
-    Declaration<T>& o1 = dynamic_cast<Declaration<T>&>(o);
-    return *param <= *o1.param;
-  } catch (std::bad_cast e) {
-    //
-  }
-  return false;
+bool bi::Declaration<T>::dispatch(Statement& o) {
+  return o.le(*this);
 }
 
 template<class T>
-bool bi::Declaration<T>::operator==(const Statement& o) const {
-  try {
-    const Declaration<T>& o1 = dynamic_cast<const Declaration<T>&>(o);
-    return *param == *o1.param;
-  } catch (std::bad_cast e) {
-    //
-  }
-  return false;
+bool bi::Declaration<T>::le(Declaration<T>& o) {
+  return *param <= *o.param;
 }
 
 /*

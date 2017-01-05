@@ -9,7 +9,7 @@
 namespace bi {
 /**
  * Type for sizes and indexing arithmetic. While size_t would be more usual,
- * int64_6 (or int32_t) allows direct translation from the standard types in
+ * int64_t (or int32_t) allows direct translation from the standard types in
  * code.
  */
 typedef int64_t int_t;
