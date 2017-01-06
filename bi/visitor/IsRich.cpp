@@ -83,6 +83,10 @@ void bi::IsRich::visit(const This* o) {
   result = true;
 }
 
+void bi::IsRich::visit(const RandomRight* o) {
+  Visitor::visit(o);
+}
+
 void bi::IsRich::visit(const VarReference* o) {
   Visitor::visit(o);
 }

@@ -163,14 +163,15 @@ void bi::NetCDFGroup::create(PrimitiveValue<Type,NetCDFGroup>& value,
   /* pre-condition */
   assert(name);
 
-  std::fill(value.view.offsets.begin(), value.view.offsets.end(), 0);
-  frame.lengths(value.view.lengths.data());
-  frame.strides(value.view.strides.data());
+  std::fill(value.convolved.offsets.begin(), value.convolved.offsets.end(),
+      0);
+  frame.lengths(value.convolved.lengths.data());
+  frame.strides(value.convolved.strides.data());
 
   if (mode == NEW || mode == REPLACE) {
-    value.varid = createVar<Type>(name, value.view.lengths);
+    value.varid = createVar<Type>(name, value.convolved.lengths);
   } else {
-    value.varid = mapVar<Type>(name, value.view.lengths);
+    value.varid = mapVar<Type>(name, value.convolved.lengths);
   }
 }
 

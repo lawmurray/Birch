@@ -49,7 +49,7 @@ bool bi::FuncReference::dispatch(Expression& o) {
 }
 
 bool bi::FuncReference::le(FuncReference& o) {
-  return *parens <= *o.parens && target == o.target;
+  return *parens <= *o.parens && target && target == o.target;
 }
 
 bool bi::FuncReference::le(FuncParameter& o) {

@@ -89,6 +89,10 @@ void bi::CppBaseGenerator::visit(const This* o) {
   middle("*this");
 }
 
+void bi::CppBaseGenerator::visit(const RandomRight* o) {
+  middle(o->name << ".m");
+}
+
 void bi::CppBaseGenerator::visit(const Member* o) {
   const This* left = dynamic_cast<const This*>(o->left.get());
   if (left) {

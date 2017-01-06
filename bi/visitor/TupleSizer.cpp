@@ -57,6 +57,10 @@ void bi::TupleSizer::visit(const This* o) {
   ++size;
 }
 
+void bi::TupleSizer::visit(const RandomRight* o) {
+  ++size;
+}
+
 void bi::TupleSizer::visit(const VarReference* o) {
   ++size;
 }

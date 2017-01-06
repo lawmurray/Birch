@@ -14,11 +14,12 @@ bi::RandomReference::RandomReference(shared_ptr<Name> name,
     Expression(loc),
     Named(name),
     Reference(target) {
-  //
+  right = new RandomRight(name);
 }
 
 bi::RandomReference::RandomReference(Expression* expr) {
   name = new Name(uniqueName(expr));
+  right = new RandomRight(name);
 }
 
 bi::RandomReference::~RandomReference() {
@@ -42,12 +43,17 @@ bool bi::RandomReference::dispatch(Expression& o) {
 }
 
 bool bi::RandomReference::le(RandomReference& o) {
-  return *type <= *o.type && target == o.target;
+  return target && target == o.target;
 }
 
 bool bi::RandomReference::le(RandomParameter& o) {
-  return *left <= *o.left && *right <= *o.right && *type <= *o.type
-      && o.capture(this);
+  if (!target) {
+    /* not yet bound */
+    return o.capture(this);
+  } else {
+    return *target->left <= *o.left && *right <= *o.right
+        && o.capture(this);
+  }
 }
 
 bool bi::RandomReference::le(VarParameter& o) {

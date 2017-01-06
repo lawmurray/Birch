@@ -73,6 +73,8 @@ bi::random<Variate,Model>::operator Variate&() {
   if (!pulled) {
     pull_(x, m);
     pulled = true;
+    push();
+    pushed = true;
   }
   return x;
 }

@@ -31,6 +31,7 @@ public:
   virtual void visit(const Range* o);
   virtual void visit(const Member* o);
   virtual void visit(const This* o);
+  virtual void visit(const RandomRight* o);
 
   virtual void visit(const VarReference* o);
   virtual void visit(const FuncReference* o);

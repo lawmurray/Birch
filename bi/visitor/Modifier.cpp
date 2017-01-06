@@ -90,6 +90,10 @@ bi::Expression* bi::Modifier::modify(This* o) {
   return o;
 }
 
+bi::Expression* bi::Modifier::modify(RandomRight* o) {
+  return o;
+}
+
 bi::Expression* bi::Modifier::modify(VarReference* o) {
   o->name->accept(this);
   return o;

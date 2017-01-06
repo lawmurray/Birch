@@ -154,6 +154,7 @@ bi::Expression* bi::Resolver::modify(RandomReference* o) {
   resolve(o, membershipScope);
   o->type = o->target->type->accept(&cloner)->accept(this);
   o->type->assignable = true;
+  o->right->type = o->target->right->type->accept(&cloner)->accept(this);
   return o;
 }
 

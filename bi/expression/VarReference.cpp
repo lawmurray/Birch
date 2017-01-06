@@ -37,7 +37,7 @@ bool bi::VarReference::dispatch(Expression& o) {
 }
 
 bool bi::VarReference::le(VarReference& o) {
-  return *type <= *o.type && target == o.target;
+  return target && target == o.target;
 }
 
 bool bi::VarReference::le(VarParameter& o) {

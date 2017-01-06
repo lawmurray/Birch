@@ -42,6 +42,15 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
       line("typedef Group group_type;\n");
     }
 
+    /* default constructor */
+    if (header) {
+      line(o->name << "() {");
+      in();
+      line("//");
+      out();
+      line("}\n");
+    }
+
     /* constructor */
     CppConstructorGenerator auxConstructor(base, level, header);
     auxConstructor << o;

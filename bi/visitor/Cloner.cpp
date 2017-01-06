@@ -69,6 +69,10 @@ bi::Expression* bi::Cloner::clone(const This* o) {
   return new This(o->loc);
 }
 
+bi::Expression* bi::Cloner::clone(const RandomRight* o) {
+  return new RandomRight(o->name, o->loc);
+}
+
 bi::Expression* bi::Cloner::clone(const VarReference* o) {
   return new VarReference(o->name, o->loc);
 }

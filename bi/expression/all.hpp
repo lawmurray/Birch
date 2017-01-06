@@ -14,6 +14,7 @@
 #include "bi/expression/ParenthesesExpression.hpp"
 #include "bi/expression/RandomParameter.hpp"
 #include "bi/expression/RandomReference.hpp"
+#include "bi/expression/RandomRight.hpp"
 #include "bi/expression/Range.hpp"
 #include "bi/expression/This.hpp"
 #include "bi/expression/Member.hpp"

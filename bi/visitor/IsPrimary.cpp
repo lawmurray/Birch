@@ -75,6 +75,10 @@ void bi::IsPrimary::visit(const This* o) {
   result = true;
 }
 
+void bi::IsPrimary::visit(const RandomRight* o) {
+  result = true;
+}
+
 void bi::IsPrimary::visit(const VarReference* o) {
   result = true;
 }

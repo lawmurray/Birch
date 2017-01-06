@@ -39,15 +39,9 @@ public:
    */
   virtual ~RandomReference();
 
-
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
-
-  /**
-   * Left (variate) side of the random variable.
-   */
-  unique_ptr<Expression> left;
 
   /**
    * Right (model) side of the random variable.

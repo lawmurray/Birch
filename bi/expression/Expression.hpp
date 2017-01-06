@@ -24,6 +24,7 @@ class Member;
 class ParenthesesExpression;
 class RandomParameter;
 class RandomReference;
+class RandomRight;
 class Range;
 class This;
 class VarParameter;
@@ -133,6 +134,7 @@ public:
   virtual bool le(ParenthesesExpression& o);
   virtual bool le(RandomParameter& o);
   virtual bool le(RandomReference& o);
+  virtual bool le(RandomRight& o);
   virtual bool le(Range& o);
   virtual bool le(This& o);
   virtual bool le(VarParameter& o);

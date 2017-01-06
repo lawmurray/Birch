@@ -74,6 +74,10 @@ void bi::Visitor::visit(const This* o) {
   //
 }
 
+void bi::Visitor::visit(const RandomRight* o) {
+  //
+}
+
 void bi::Visitor::visit(const Member* o) {
   o->left->accept(this);
   o->right->accept(this);

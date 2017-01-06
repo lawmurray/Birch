@@ -64,6 +64,7 @@ birchc_SOURCES = \
   bi/expression/ParenthesesExpression.cpp \
   bi/expression/RandomParameter.cpp \
   bi/expression/RandomReference.cpp \
+  bi/expression/RandomRight.cpp \
   bi/expression/Range.cpp \
   bi/expression/This.cpp \
   bi/expression/Member.cpp \

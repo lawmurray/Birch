@@ -114,6 +114,10 @@ bool bi::Expression::le(RandomReference& o) {
   return false;
 }
 
+bool bi::Expression::le(RandomRight& o) {
+  return false;
+}
+
 bool bi::Expression::le(Range& o) {
   return false;
 }
