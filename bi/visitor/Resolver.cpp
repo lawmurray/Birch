@@ -6,8 +6,9 @@
 #include "bi/visitor/Gatherer.hpp"
 #include "bi/exception/all.hpp"
 
-bi::Resolver::Resolver(shared_ptr<Scope> scope) :
-    inInputs(false) {
+bi::Resolver::Resolver(Scope* scope) :
+    inInputs(false),
+    traverseScope(nullptr) {
   if (scope) {
     push(scope);
   }
@@ -24,7 +25,7 @@ void bi::Resolver::modify(File* o) {
     o->state = File::RESOLVING;
     o->scope = new Scope();
     files.push(o);
-    push(o->scope);
+    push(o->scope.get());
     o->imports = o->imports->accept(this);
     o->root = o->root->accept(this);
     undefer();
@@ -59,11 +60,11 @@ bi::Expression* bi::Resolver::modify(Traversal* o) {
 
   ModelReference* ref = dynamic_cast<ModelReference*>(o->left->type.get());
   if (ref) {
-    traverseScope = ref->target->scope;
+    traverseScope = ref->target->scope.get();
   } else {
     RandomType* random = dynamic_cast<RandomType*>(o->left->type.get());
     if (random) {
-      traverseScope = random->scope;
+      traverseScope = random->scope.get();
     }
   }
   if (!traverseScope) {
@@ -104,9 +105,9 @@ bi::Expression* bi::Resolver::modify(BracketsExpression* o) {
 }
 
 bi::Expression* bi::Resolver::modify(VarReference* o) {
-  shared_ptr<Scope> scope = inner();
+  Scope* membershipScope = takeMembershipScope();
   Modifier::modify(o);
-  o->target = scope->resolve(o);
+  resolve(o, membershipScope);
   o->type = o->target->type->accept(&cloner)->accept(this);
   o->type->assignable = o->target->type->assignable;
 
@@ -123,9 +124,9 @@ bi::Expression* bi::Resolver::modify(VarReference* o) {
 }
 
 bi::Expression* bi::Resolver::modify(FuncReference* o) {
-  shared_ptr<Scope> scope = inner();
+  Scope* membershipScope = takeMembershipScope();
   Modifier::modify(o);
-  o->target = scope->resolve(o);
+  resolve(o, membershipScope);
   o->type = o->target->type->accept(&cloner)->accept(this);
   o->form = o->target->form;
 
@@ -148,18 +149,18 @@ bi::Expression* bi::Resolver::modify(FuncReference* o) {
 }
 
 bi::Expression* bi::Resolver::modify(RandomReference* o) {
-  shared_ptr<Scope> scope = inner();
+  Scope* membershipScope = takeMembershipScope();
   Modifier::modify(o);
-  o->target = scope->resolve(o);
+  resolve(o, membershipScope);
   o->type = o->target->type->accept(&cloner)->accept(this);
   o->type->assignable = true;
   return o;
 }
 
 bi::Type* bi::Resolver::modify(ModelReference* o) {
-  shared_ptr<Scope> scope = inner();
+  Scope* membershipScope = takeMembershipScope();
   Modifier::modify(o);
-  o->target = scope->resolve(o);
+  resolve(o, membershipScope);
   return o;
 }
 
@@ -169,7 +170,7 @@ bi::Expression* bi::Resolver::modify(VarParameter* o) {
     o->type->assignable = true;
   }
   if (!o->name->isEmpty()) {
-    inner()->add(o);
+    top()->add(o);
   }
   return o;
 }
@@ -183,7 +184,7 @@ bi::Expression* bi::Resolver::modify(FuncParameter* o) {
   o->type = o->result->type->accept(&cloner)->accept(this);
   defer(o->braces.get());
   o->scope = pop();
-  inner()->add(o);
+  top()->add(o);
 
   if (o->isAssignment()) {
     o->getLeft()->type->assignable = true;
@@ -222,7 +223,7 @@ bi::Expression* bi::Resolver::modify(RandomParameter* o) {
     o->push->accept(this);
   }
 
-  inner()->add(o);
+  top()->add(o);
 
   return o;
 }
@@ -232,7 +233,7 @@ bi::Prog* bi::Resolver::modify(ProgParameter* o) {
   o->parens = o->parens->accept(this);
   defer(o->braces.get());
   o->scope = pop();
-  inner()->add(o);
+  top()->add(o);
 
   Gatherer<VarParameter> gatherer1;
   o->parens->accept(&gatherer1);
@@ -249,7 +250,7 @@ bi::Type* bi::Resolver::modify(ModelParameter* o) {
   o->braces = o->braces->accept(this);
   models.pop();
   o->scope = pop();
-  inner()->add(o);
+  top()->add(o);
 
   if (*o->op != "=") {
     /* create constructor */
@@ -273,8 +274,7 @@ bi::Type* bi::Resolver::modify(ModelParameter* o) {
         new ModelReference(o->name, 0, o));
     o->assignment = new FuncParameter(new Name("<-"), parens2, result2,
         new EmptyExpression(), ASSIGNMENT_OPERATOR);
-    o->assignment = dynamic_cast<FuncParameter*>(o->assignment->accept(
-        this));
+    o->assignment = dynamic_cast<FuncParameter*>(o->assignment->accept(this));
     assert(o->assignment);
   }
 
@@ -283,7 +283,7 @@ bi::Type* bi::Resolver::modify(ModelParameter* o) {
 
 bi::Statement* bi::Resolver::modify(Import* o) {
   o->file->accept(this);
-  inner()->import(o->file->scope);
+  top()->import(o->file->scope.get());
   return o;
 }
 
@@ -322,42 +322,55 @@ bi::Type* bi::Resolver::modify(RandomType* o) {
   return o;
 }
 
-bi::shared_ptr<bi::Scope> bi::Resolver::inner() {
-  shared_ptr<Scope> scope = nullptr;
-  if (traverseScope) {
-    scope = traverseScope;
-    traverseScope = nullptr;
-  } else if (scopes.size() > 0) {
-    scope = scopes.top();
-  }
-
-  /* post-condition */
-  assert(scope);
-
+bi::Scope* bi::Resolver::takeMembershipScope() {
+  Scope* scope = traverseScope;
+  traverseScope = nullptr;
   return scope;
 }
 
-void bi::Resolver::push(shared_ptr<Scope> scope) {
+bi::Scope* bi::Resolver::top() {
+  return scopes.back();
+}
+
+void bi::Resolver::push(Scope* scope) {
   if (scope) {
-    scopes.push(scope);
+    scopes.push_back(scope);
   } else {
-    scopes.push(new Scope(inner()));
+    scopes.push_back(new Scope());
   }
 }
 
-bi::shared_ptr<bi::Scope> bi::Resolver::pop() {
+bi::Scope* bi::Resolver::pop() {
   /* pre-conditions */
   assert(scopes.size() > 0);
 
-  shared_ptr<Scope> res = scopes.top();
-  scopes.pop();
+  Scope* res = scopes.back();
+  scopes.pop_back();
   return res;
+}
+
+template<class ReferenceType>
+void bi::Resolver::resolve(ReferenceType* ref, Scope* scope) {
+  if (scope) {
+    /* use provided scope, usually a membership scope */
+    ref->target = scope->resolve(ref);
+  } else {
+    /* use current stack of scopes */
+    ref->target = nullptr;
+    for (auto iter = scopes.rbegin(); !ref->target && iter != scopes.rend();
+        ++iter) {
+      ref->target = (*iter)->resolve(ref);
+    }
+  }
+  if (!ref->target) {
+    throw UnresolvedReferenceException(ref);
+  }
 }
 
 void bi::Resolver::defer(Expression* o) {
   if (files.size() == 1) {
     /* can ignore bodies in imported files */
-    defers.push_back(std::make_tuple(o, inner(), model()));
+    defers.push_back(std::make_tuple(o, top(), model()));
   }
 }
 
@@ -387,3 +400,8 @@ bi::ModelParameter* bi::Resolver::model() {
     return models.top();
   }
 }
+
+template void bi::Resolver::resolve(VarReference* ref, Scope* scope);
+template void bi::Resolver::resolve(FuncReference* ref, Scope* scope);
+template void bi::Resolver::resolve(RandomReference* ref, Scope* scope);
+template void bi::Resolver::resolve(ModelReference* ref, Scope* scope);

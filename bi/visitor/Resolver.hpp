@@ -22,7 +22,7 @@ public:
    *
    * @param scope Root scope.
    */
-  Resolver(shared_ptr<Scope> scope = new Scope());
+  Resolver(Scope* scope = nullptr);
 
   /**
    * Destructor.
@@ -61,23 +61,43 @@ public:
 
 protected:
   /**
-   * Innermost scope.
+   * Take the membership scope, if it exists.
+   *
+   * @return The membership scope, or nullptr if there is no membership scope
+   * at present.
    */
-  shared_ptr<Scope> inner();
+  Scope* takeMembershipScope();
 
   /**
-   * Push a scope on the stack.
+   * Top of the stack of containing scopes.
+   */
+  Scope* top();
+
+  /**
+   * Push a scope on the stack of containing scopes.
    *
    * @param scope Scope.
    *
    * If @p scope is @c nullptr, a new scope is created.
    */
-  void push(shared_ptr<Scope> scope = nullptr);
+  void push(Scope* scope = nullptr);
 
   /**
-   * Pop a scope from the stack.
+   * Pop a scope from the stack of containing scopes.
    */
-  shared_ptr<Scope> pop();
+  Scope* pop();
+
+  /**
+   * Resolve a reference.
+   *
+   * @tparam ReferenceType Reference type.
+   *
+   * @param ref The reference.
+   * @param scope The membership scope, if it is to be used for lookup,
+   * otherwise the containing scope is used.
+   */
+  template<class ReferenceType>
+  void resolve(ReferenceType* ref, Scope* scope = nullptr);
 
   /**
    * Defer visit.
@@ -100,7 +120,7 @@ protected:
   /**
    * Scope stack.
    */
-  std::stack<shared_ptr<Scope>> scopes;
+  std::list<Scope*> scopes;
 
   /**
    * Model stack.
@@ -115,12 +135,12 @@ protected:
   /**
    * Scope for traversing model members.
    */
-  shared_ptr<Scope> traverseScope;
+  Scope* traverseScope;
 
   /**
    * Deferred functions, binary and unary operators.
    */
-  std::list<std::tuple<Expression*,shared_ptr<Scope>,ModelParameter*> > defers;
+  std::list<std::tuple<Expression*,Scope*,ModelParameter*> > defers;
 
   /**
    * Are we in the input parameters of a function?

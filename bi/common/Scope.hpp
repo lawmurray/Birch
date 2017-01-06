@@ -28,18 +28,6 @@ class ProgReference;
 class Scope {
 public:
   /**
-   * Constructor.
-   *
-   * @param outer Containing (outer) scope.
-   */
-  Scope(shared_ptr<Scope> outer = nullptr);
-
-  /**
-   * Destructor.
-   */
-  virtual ~Scope();
-
-  /**
    * Does the scope contain the declaration?
    *
    * @param param Declaration.
@@ -81,12 +69,7 @@ public:
    *
    * @param scope Scope to import.
    */
-  void import(shared_ptr<Scope> scope);
-
-  /**
-   * Scope that encloses this one.
-   */
-  shared_ptr<Scope> outer;
+  void import(Scope* scope);
 
   /**
    * Imported scopes.
@@ -106,7 +89,7 @@ public:
 
 private:
   /**
-   * Defer resolution to outer or imported scopes.
+   * Defer resolution to imported scopes.
    */
   template<class ParameterType, class ReferenceType>
   ParameterType* resolveDefer(ReferenceType* ref);
@@ -116,30 +99,10 @@ private:
 template<class ParameterType, class ReferenceType>
 ParameterType* bi::Scope::resolveDefer(ReferenceType* ref) {
   ParameterType* target = nullptr;
-
-  /* check imported scopes first; this means that within the scope of a model
-   * that inherits from another, the parent model is checked before the outer
-   * scope; for files this doesn't matter, as their scope scope is always a
-   * root scope */
   auto iter = imports.begin();
   while (!target && iter != imports.end()) {
-    try {
-      target = (*iter)->resolve(ref);
-    } catch (UnresolvedReferenceException e) {
-      //
-    }
+    target = (*iter)->resolve(ref);
     ++iter;
   }
-  if (!target && outer) {
-    try {
-      target = outer->resolve(ref);
-    } catch (UnresolvedReferenceException e) {
-      //
-    }
-  }
-  if (target) {
-    return target;
-  } else {
-    throw UnresolvedReferenceException(ref);
-  }
+  return target;
 }

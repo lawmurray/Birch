@@ -4,7 +4,7 @@
 #pragma once
 
 #include "bi/common/Scope.hpp"
-#include "bi/primitive/shared_ptr.hpp"
+#include "bi/primitive/unique_ptr.hpp"
 
 namespace bi {
 class Scope;
@@ -24,6 +24,6 @@ public:
   /**
    * Scope.
    */
-  shared_ptr<Scope> scope;
+  unique_ptr<Scope> scope;
 };
 }

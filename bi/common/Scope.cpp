@@ -9,15 +9,6 @@
 #include "bi/exception/all.hpp"
 #include "bi/visitor/Cloner.hpp"
 
-bi::Scope::Scope(shared_ptr<Scope> outer) :
-    outer(outer) {
-  //
-}
-
-bi::Scope::~Scope() {
-  //
-}
-
 bool bi::Scope::contains(VarParameter* param) {
   return vars.contains(param);
 }
@@ -90,6 +81,6 @@ bi::ModelParameter* bi::Scope::resolve(ModelReference* ref) {
   }
 }
 
-void bi::Scope::import(shared_ptr<Scope> scope) {
-  imports.insert(scope.get());
+void bi::Scope::import(Scope* scope) {
+  imports.insert(scope);
 }
