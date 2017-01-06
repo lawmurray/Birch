@@ -1,10 +1,5 @@
 cpp {{
-#ifdef __CUDACC__
-#include "math_functions.h"
-#undef isnan // macro to be replaced with a function
-#else
 #include <cmath>
-#endif
 }}
 
 /**
