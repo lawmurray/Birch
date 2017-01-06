@@ -75,7 +75,7 @@ bool bi::ModelReference::le(ModelReference& o) {
     /* compare with canonical type */
     return *this <= *o.target->base && *brackets <= *o.brackets/* && ndims == o.ndims*/;
   } else {
-    return o.canon(this) || o.check(this) || *target->base <= o;
+    return target == o.target || *target->base <= o;
   }
 }
 

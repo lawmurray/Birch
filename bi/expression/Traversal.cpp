@@ -42,7 +42,3 @@ bool bi::Traversal::le(Traversal& o) {
 bool bi::Traversal::le(VarParameter& o) {
   return *type <= *o.type && o.capture(this);
 }
-
-bool bi::Traversal::le(VarReference& o) {
-  return *type <= *o.type && o.check(this);
-}

@@ -8,7 +8,6 @@
 #include "bi/common/Unary.hpp"
 #include "bi/expression/BracketsExpression.hpp"
 #include "bi/expression/VarParameter.hpp"
-#include "bi/expression/VarReference.hpp"
 #include "bi/primitive/unique_ptr.hpp"
 
 namespace bi {
@@ -41,6 +40,5 @@ public:
   virtual bool dispatch(Expression& o);
   virtual bool le(BracketsExpression& o);
   virtual bool le(VarParameter& o);
-  virtual bool le(VarReference& o);
 };
 }

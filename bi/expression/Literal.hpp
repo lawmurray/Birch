@@ -5,7 +5,6 @@
 
 #include "bi/expression/Expression.hpp"
 #include "bi/expression/VarParameter.hpp"
-#include "bi/expression/VarReference.hpp"
 
 #include <string>
 
@@ -51,7 +50,6 @@ public:
   virtual bool dispatch(Expression& o);
   virtual bool le(Literal<T1>& o);
   virtual bool le(VarParameter& o);
-  virtual bool le(VarReference& o);
 };
 
 /**

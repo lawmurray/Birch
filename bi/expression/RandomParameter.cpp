@@ -49,7 +49,3 @@ bool bi::RandomParameter::le(RandomParameter& o) {
 bool bi::RandomParameter::le(VarParameter& o) {
   return *type <= *o.type && o.capture(this);
 }
-
-bool bi::RandomParameter::le(VarReference& o) {
-  return *type <= *o.type && o.check(this);
-}

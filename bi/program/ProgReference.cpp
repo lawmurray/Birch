@@ -42,5 +42,5 @@ bool bi::ProgReference::le(ProgParameter& o) {
 }
 
 bool bi::ProgReference::le(ProgReference& o) {
-  return *parens <= *o.parens && (o.canon(this) || o.check(this));
+  return *parens <= *o.parens && target == o.target;
 }

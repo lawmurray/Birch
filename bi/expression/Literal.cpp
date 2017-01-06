@@ -52,11 +52,6 @@ bool bi::Literal<T1>::le(VarParameter& o) {
   return *type <= *o.type && o.capture(this);
 }
 
-template<class T1>
-bool bi::Literal<T1>::le(VarReference& o) {
-  return *type <= *o.type && o.check(this);
-}
-
 /*
  * Explicit instantiations.
  */

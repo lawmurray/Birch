@@ -7,7 +7,6 @@
 #include "bi/expression/RandomParameter.hpp"
 #include "bi/common/Reference.hpp"
 #include "bi/expression/VarParameter.hpp"
-#include "bi/expression/VarReference.hpp"
 
 namespace bi {
 /**
@@ -59,6 +58,5 @@ public:
   virtual bool le(RandomParameter& o);
   virtual bool le(RandomReference& o);
   virtual bool le(VarParameter& o);
-  virtual bool le(VarReference& o);
 };
 }

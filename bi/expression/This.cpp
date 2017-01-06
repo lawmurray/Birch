@@ -39,7 +39,3 @@ bool bi::This::le(This& o) {
 bool bi::This::le(VarParameter& o) {
   return *type <= *o.type && o.capture(this);
 }
-
-bool bi::This::le(VarReference& o) {
-  return *type <= *o.type && o.check(this);
-}

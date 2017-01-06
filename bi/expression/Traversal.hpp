@@ -6,7 +6,6 @@
 #include "bi/expression/Expression.hpp"
 #include "bi/common/Binary.hpp"
 #include "bi/expression/VarParameter.hpp"
-#include "bi/expression/VarReference.hpp"
 
 namespace bi {
 /**
@@ -38,6 +37,5 @@ public:
   virtual bool dispatch(Expression& o);
   virtual bool le(Traversal& o);
   virtual bool le(VarParameter& o);
-  virtual bool le(VarReference& o);
 };
 }

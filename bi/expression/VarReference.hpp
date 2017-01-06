@@ -37,7 +37,7 @@ public:
   virtual void accept(Visitor* visitor) const;
 
   virtual bool dispatch(Expression& o);
-  virtual bool le(VarParameter& o);
   virtual bool le(VarReference& o);
+  virtual bool le(VarParameter& o);
 };
 }

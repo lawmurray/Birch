@@ -48,6 +48,10 @@ bool bi::FuncReference::dispatch(Expression& o) {
   return o.le(*this);
 }
 
+bool bi::FuncReference::le(FuncReference& o) {
+  return *parens <= *o.parens && target == o.target;
+}
+
 bool bi::FuncReference::le(FuncParameter& o) {
   if (!target) {
     /* not yet bound */
@@ -57,15 +61,6 @@ bool bi::FuncReference::le(FuncParameter& o) {
   }
 }
 
-bool bi::FuncReference::le(FuncReference& o) {
-  return *parens <= *o.parens && *type <= *o.type
-      && (o.canon(this) || o.check(this));
-}
-
 bool bi::FuncReference::le(VarParameter& o) {
   return *type <= *o.type && o.capture(this);
-}
-
-bool bi::FuncReference::le(VarReference& o) {
-  return *type <= *o.type && o.check(this);
 }

@@ -108,5 +108,5 @@ bool bi::ParenthesesExpression::le(VarParameter& o) {
 }
 
 bool bi::ParenthesesExpression::le(VarReference& o) {
-  return (*type <= *o.type && o.check(this)) || *single <= o;
+  return *single <= o;
 }

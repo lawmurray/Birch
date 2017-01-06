@@ -41,7 +41,3 @@ bool bi::BracketsExpression::le(BracketsExpression& o) {
 bool bi::BracketsExpression::le(VarParameter& o) {
   return *type <= *o.type && o.capture(this);
 }
-
-bool bi::BracketsExpression::le(VarReference& o) {
-  return *type <= *o.type && o.check(this);
-}

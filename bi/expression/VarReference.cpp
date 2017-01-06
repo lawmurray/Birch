@@ -36,6 +36,10 @@ bool bi::VarReference::dispatch(Expression& o) {
   return o.le(*this);
 }
 
+bool bi::VarReference::le(VarReference& o) {
+  return *type <= *o.type && target == o.target;
+}
+
 bool bi::VarReference::le(VarParameter& o) {
   if (!target) {
     /* not yet bound */
@@ -43,8 +47,4 @@ bool bi::VarReference::le(VarParameter& o) {
   } else {
     return *type <= *o.type && o.capture(this);
   }
-}
-
-bool bi::VarReference::le(VarReference& o) {
-  return *type <= *o.type && (o.canon(this) || o.check(this));
 }

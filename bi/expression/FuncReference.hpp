@@ -63,9 +63,8 @@ public:
   std::list<const Expression*> args;
 
   virtual bool dispatch(Expression& o);
-  virtual bool le(FuncParameter& o);
   virtual bool le(FuncReference& o);
+  virtual bool le(FuncParameter& o);
   virtual bool le(VarParameter& o);
-  virtual bool le(VarReference& o);
 };
 }

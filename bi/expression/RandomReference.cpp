@@ -41,19 +41,15 @@ bool bi::RandomReference::dispatch(Expression& o) {
   return o.le(*this);
 }
 
+bool bi::RandomReference::le(RandomReference& o) {
+  return *type <= *o.type && target == o.target;
+}
+
 bool bi::RandomReference::le(RandomParameter& o) {
   return *left <= *o.left && *right <= *o.right && *type <= *o.type
       && o.capture(this);
 }
 
-bool bi::RandomReference::le(RandomReference& o) {
-  return *type <= *o.type && (o.canon(this) || o.check(this));
-}
-
 bool bi::RandomReference::le(VarParameter& o) {
   return *type <= *o.type && o.capture(this);
-}
-
-bool bi::RandomReference::le(VarReference& o) {
-  return *type <= *o.type && o.check(this);
 }
