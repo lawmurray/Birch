@@ -67,7 +67,7 @@ void bi::bi_ostream::visit(const Range* o) {
   *this << o->left << ".." << o->right;
 }
 
-void bi::bi_ostream::visit(const Traversal* o) {
+void bi::bi_ostream::visit(const Member* o) {
   *this << o->left << '.' << o->right;
 }
 

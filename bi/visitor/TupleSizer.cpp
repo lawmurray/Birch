@@ -49,7 +49,7 @@ void bi::TupleSizer::visit(const Range* o) {
   ++dims;
 }
 
-void bi::TupleSizer::visit(const Traversal* o) {
+void bi::TupleSizer::visit(const Member* o) {
   ++size;
 }
 

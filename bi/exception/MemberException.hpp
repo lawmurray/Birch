@@ -12,10 +12,10 @@ namespace bi {
  *
  * @ingroup compiler_exception
  */
-struct TraversalException: public CompilerException {
+struct MemberException: public CompilerException {
   /**
    * Constructor.
    */
-  TraversalException(const Expression* expr);
+  MemberException(const Expression* expr);
 };
 }

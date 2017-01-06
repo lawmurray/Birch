@@ -29,7 +29,7 @@ public:
   virtual void visit(const BracesExpression* o);
   virtual void visit(const BracketsExpression* o);
   virtual void visit(const Range* o);
-  virtual void visit(const Traversal* o);
+  virtual void visit(const Member* o);
   virtual void visit(const This* o);
 
   virtual void visit(const VarReference* o);

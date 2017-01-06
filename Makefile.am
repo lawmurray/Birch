@@ -47,11 +47,11 @@ birchc_SOURCES = \
   bi/exception/CyclicImportException.cpp \
   bi/exception/Exception.cpp \
   bi/exception/FileNotFoundException.cpp \
-  bi/exception/NotAssignable.cpp \
+  bi/exception/MemberException.cpp \
+  bi/exception/NotAssignableException.cpp \
   bi/exception/PreviousDeclarationException.cpp \
   bi/exception/PreviousRandomException.cpp \
   bi/exception/ThisException.cpp \
-  bi/exception/TraversalException.cpp \
   bi/exception/UnresolvedReferenceException.cpp \
   bi/exception/UnsupportedOptionTypeException.cpp \
   bi/expression/BracesExpression.cpp \
@@ -66,7 +66,7 @@ birchc_SOURCES = \
   bi/expression/RandomReference.cpp \
   bi/expression/Range.cpp \
   bi/expression/This.cpp \
-  bi/expression/Traversal.cpp \
+  bi/expression/Member.cpp \
   bi/expression/VarParameter.cpp \
   bi/expression/VarReference.cpp \
   bi/io/cpp/CppAssignmentGenerator.cpp \

@@ -73,7 +73,7 @@ void bi::IsRich::visit(const Range* o) {
   result = true;
 }
 
-void bi::IsRich::visit(const Traversal* o) {
+void bi::IsRich::visit(const Member* o) {
   //Visitor::visit(o);
   result = true;
 }

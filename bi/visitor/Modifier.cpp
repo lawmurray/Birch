@@ -80,7 +80,7 @@ bi::Expression* bi::Modifier::modify(Range* o) {
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(Traversal* o) {
+bi::Expression* bi::Modifier::modify(Member* o) {
   o->left = o->left->accept(this);
   o->right = o->right->accept(this);
   return o;

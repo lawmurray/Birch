@@ -20,12 +20,12 @@ template<class T> class List;
 class FuncParameter;
 class FuncReference;
 template<class T> class Literal;
+class Member;
 class ParenthesesExpression;
 class RandomParameter;
 class RandomReference;
 class Range;
 class This;
-class Traversal;
 class VarParameter;
 class VarReference;
 
@@ -129,12 +129,12 @@ public:
   virtual bool le(Literal<int64_t>& o);
   virtual bool le(Literal<double>& o);
   virtual bool le(Literal<std::string>& o);
+  virtual bool le(Member& o);
   virtual bool le(ParenthesesExpression& o);
   virtual bool le(RandomParameter& o);
   virtual bool le(RandomReference& o);
   virtual bool le(Range& o);
   virtual bool le(This& o);
-  virtual bool le(Traversal& o);
   virtual bool le(VarParameter& o);
   virtual bool le(VarReference& o);
 };

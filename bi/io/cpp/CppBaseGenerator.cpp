@@ -89,7 +89,7 @@ void bi::CppBaseGenerator::visit(const This* o) {
   middle("*this");
 }
 
-void bi::CppBaseGenerator::visit(const Traversal* o) {
+void bi::CppBaseGenerator::visit(const Member* o) {
   const This* left = dynamic_cast<const This*>(o->left.get());
   if (left) {
     // tidier this way

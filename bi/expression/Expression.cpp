@@ -122,7 +122,7 @@ bool bi::Expression::le(This& o) {
   return false;
 }
 
-bool bi::Expression::le(Traversal& o) {
+bool bi::Expression::le(Member& o) {
   return false;
 }
 

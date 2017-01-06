@@ -79,6 +79,10 @@ bool bi::ParenthesesExpression::le(Literal<std::string>& o) {
   return *single <= o;
 }
 
+bool bi::ParenthesesExpression::le(Member& o) {
+  return *single <= o;
+}
+
 bool bi::ParenthesesExpression::le(ParenthesesExpression& o) {
   return *single <= *o.single;
 }
@@ -96,10 +100,6 @@ bool bi::ParenthesesExpression::le(Range& o) {
 }
 
 bool bi::ParenthesesExpression::le(This& o) {
-  return *single <= o;
-}
-
-bool bi::ParenthesesExpression::le(Traversal& o) {
   return *single <= o;
 }
 

@@ -12,10 +12,10 @@ namespace bi {
  *
  * @ingroup compiler_exception
  */
-struct NotAssignable: public CompilerException {
+struct NotAssignableException: public CompilerException {
   /**
    * Constructor.
    */
-  NotAssignable(const Expression* expr);
+  NotAssignableException(const Expression* expr);
 };
 }

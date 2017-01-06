@@ -37,7 +37,7 @@ public:
   virtual Expression* modify(ExpressionList* o);
   virtual Expression*  modify(ParenthesesExpression* o);
   virtual Expression*  modify(Range* o);
-  virtual Expression*  modify(Traversal* o);
+  virtual Expression*  modify(Member* o);
   virtual Expression*  modify(This* o);
   virtual Expression*  modify(BracketsExpression* o);
 
@@ -118,7 +118,7 @@ protected:
   ModelParameter* model();
 
   /**
-   * Scope stack.
+   * Stack of containing scopes.
    */
   std::list<Scope*> scopes;
 
@@ -133,9 +133,9 @@ protected:
   std::stack<File*> files;
 
   /**
-   * Scope for traversing model members.
+   * Scope for resolution of model members.
    */
-  Scope* traverseScope;
+  Scope* membershipScope;
 
   /**
    * Deferred functions, binary and unary operators.

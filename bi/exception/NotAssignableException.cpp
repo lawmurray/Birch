@@ -1,13 +1,13 @@
 /**
  * @file
  */
-#include "bi/exception/NotAssignable.hpp"
+#include "bi/exception/NotAssignableException.hpp"
 
 #include "bi/io/bih_ostream.hpp"
 
 #include <sstream>
 
-bi::NotAssignable::NotAssignable(const Expression* expr) {
+bi::NotAssignableException::NotAssignableException(const Expression* expr) {
   std::stringstream base;
   bih_ostream buf(base);
   if (expr->loc) {

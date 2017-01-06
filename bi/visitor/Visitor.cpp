@@ -74,7 +74,7 @@ void bi::Visitor::visit(const This* o) {
   //
 }
 
-void bi::Visitor::visit(const Traversal* o) {
+void bi::Visitor::visit(const Member* o) {
   o->left->accept(this);
   o->right->accept(this);
 }

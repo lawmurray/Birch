@@ -16,7 +16,7 @@
 #include "bi/expression/RandomReference.hpp"
 #include "bi/expression/Range.hpp"
 #include "bi/expression/This.hpp"
-#include "bi/expression/Traversal.hpp"
+#include "bi/expression/Member.hpp"
 #include "bi/expression/VarParameter.hpp"
 #include "bi/expression/VarReference.hpp"
 

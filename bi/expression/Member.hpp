@@ -9,11 +9,11 @@
 
 namespace bi {
 /**
- * Traversal expression.
+ * Membership operator expression.
  *
  * @ingroup compiler_expression
  */
-class Traversal: public Expression, public ExpressionBinary {
+class Member: public Expression, public ExpressionBinary {
 public:
   /**
    * Constructor.
@@ -22,20 +22,20 @@ public:
    * @param right Right operand.
    * @param loc Location.
    */
-  Traversal(Expression* left, Expression* right, shared_ptr<Location> loc =
+  Member(Expression* left, Expression* right, shared_ptr<Location> loc =
       nullptr);
 
   /**
    * Destructor.
    */
-  virtual ~Traversal();
+  virtual ~Member();
 
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
   virtual bool dispatch(Expression& o);
-  virtual bool le(Traversal& o);
+  virtual bool le(Member& o);
   virtual bool le(VarParameter& o);
 };
 }

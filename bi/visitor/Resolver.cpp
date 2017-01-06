@@ -8,7 +8,7 @@
 
 bi::Resolver::Resolver(Scope* scope) :
     inInputs(false),
-    traverseScope(nullptr) {
+    membershipScope(nullptr) {
   if (scope) {
     push(scope);
   }
@@ -55,20 +55,20 @@ bi::Expression* bi::Resolver::modify(Range* o) {
   return o;
 }
 
-bi::Expression* bi::Resolver::modify(Traversal* o) {
+bi::Expression* bi::Resolver::modify(Member* o) {
   o->left = o->left->accept(this);
 
   ModelReference* ref = dynamic_cast<ModelReference*>(o->left->type.get());
   if (ref) {
-    traverseScope = ref->target->scope.get();
+    membershipScope = ref->target->scope.get();
   } else {
     RandomType* random = dynamic_cast<RandomType*>(o->left->type.get());
     if (random) {
-      traverseScope = random->scope.get();
+      membershipScope = random->scope.get();
     }
   }
-  if (!traverseScope) {
-    throw TraversalException(o);
+  if (!membershipScope) {
+    throw MemberException(o);
   }
   o->right = o->right->accept(this);
   o->type = o->right->type->accept(&cloner)->accept(this);
@@ -134,7 +134,7 @@ bi::Expression* bi::Resolver::modify(FuncReference* o) {
     if (inInputs) {
       o->getLeft()->type->assignable = true;
     } else if (!o->getLeft()->type->assignable) {
-      throw NotAssignable(o);
+      throw NotAssignableException(o);
     }
   }
 
@@ -204,7 +204,7 @@ bi::Expression* bi::Resolver::modify(FuncParameter* o) {
 bi::Expression* bi::Resolver::modify(RandomParameter* o) {
   Modifier::modify(o);
   if (!inInputs && !o->left->type->assignable) {
-    throw NotAssignable(o->left.get());
+    throw NotAssignableException(o->left.get());
   } else {
     o->left->type->assignable = true;
   }
@@ -323,8 +323,8 @@ bi::Type* bi::Resolver::modify(RandomType* o) {
 }
 
 bi::Scope* bi::Resolver::takeMembershipScope() {
-  Scope* scope = traverseScope;
-  traverseScope = nullptr;
+  Scope* scope = membershipScope;
+  membershipScope = nullptr;
   return scope;
 }
 

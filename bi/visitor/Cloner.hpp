@@ -35,7 +35,7 @@ public:
   virtual Expression* clone(const BracesExpression* o);
   virtual Expression* clone(const BracketsExpression* o);
   virtual Expression* clone(const Range* o);
-  virtual Expression* clone(const Traversal* o);
+  virtual Expression* clone(const Member* o);
   virtual Expression* clone(const This* o);
 
   virtual Expression* clone(const VarReference* o);

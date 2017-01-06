@@ -60,8 +60,8 @@ bi::Expression* bi::Cloner::clone(const Range* o) {
       o->loc);
 }
 
-bi::Expression* bi::Cloner::clone(const Traversal* o) {
-  return new Traversal(o->left->accept(this),
+bi::Expression* bi::Cloner::clone(const Member* o) {
+  return new Member(o->left->accept(this),
       o->right->accept(this), o->loc);
 }
 

@@ -67,7 +67,7 @@ void bi::IsPrimary::visit(const Range* o) {
   result = false;
 }
 
-void bi::IsPrimary::visit(const Traversal* o) {
+void bi::IsPrimary::visit(const Member* o) {
   result = false;
 }
 
