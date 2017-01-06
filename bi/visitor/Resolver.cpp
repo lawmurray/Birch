@@ -71,7 +71,9 @@ bi::Expression* bi::Resolver::modify(Member* o) {
     throw MemberException(o);
   }
   o->right = o->right->accept(this);
+  o->right->type->assignable = o->left->type->assignable;
   o->type = o->right->type->accept(&cloner)->accept(this);
+  o->type->assignable = o->right->type->assignable;
   return o;
 }
 
