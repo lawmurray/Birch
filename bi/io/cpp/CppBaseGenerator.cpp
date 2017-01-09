@@ -289,7 +289,7 @@ void bi::CppBaseGenerator::visit(const ParenthesesType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const RandomType* o) {
-  middle("bi::random<");
+  middle("bi::Random<");
   middle(o->left << ',' << o->right);
   middle(">");
 }

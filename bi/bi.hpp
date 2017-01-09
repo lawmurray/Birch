@@ -12,7 +12,9 @@
 #include "bi/exception/MemoryException.hpp"
 #include "bi/exception/NetCDFException.hpp"
 #include "bi/exception/UnknownOptionException.hpp"
-#include "bi/primitive/random.hpp"
+#include "bi/random/Expirable.hpp"
+#include "bi/random/Random.hpp"
+#include "bi/random/RandomStack.hpp"
 #include "bi/primitive/shared_ptr.hpp"
 #include "bi/primitive/unique_ptr.hpp"
 
