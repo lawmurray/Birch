@@ -5,22 +5,30 @@ import assert;
 /**
  * Gamma distribution.
  */
-model Gamma(k1:Real, θ1:Real) {
+model Gamma {
   /**
    * Shape.
    */
-  k:Real <- k1;
+  k:Real;
   
   /**
    * Scale.
    */
-  θ:Real <- θ1;
+  θ:Real;
+}
+
+/**
+ * Create.
+ */
+function Gamma(k:Real, θ:Real) -> m:Gamma {
+  m.k <- k;
+  m.θ <- θ;
 }
 
 /**
  * Simulate.
  */
-function m:Gamma ~> x:Real {
+function x:Real <~ m:Gamma {
   cpp {{
   x = std::gamma_distribution<double>(m.k, m.θ)(rng);
   }}
@@ -29,14 +37,14 @@ function m:Gamma ~> x:Real {
 /**
  * Evaluate pdf.
  */
-function x:Real ~ m:Gamma -> l:Real {
-  l <- exp(log(x ~ m));
+function x:Real ~> m:Gamma -> l:Real {
+  l <- exp(log(x ~> m));
 }
 
 /**
  * Evaluate log-pdf.
  */
-function log(x:Real ~ m:Gamma) -> ll:Real {
+function log(x:Real ~> m:Gamma) -> ll:Real {
   logZ:Real <- lgamma(m.k) + m.k*log(m.θ);
   ll <- (m.k - 1.0)*log(x) - x/m.θ - logZ;
 }

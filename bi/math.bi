@@ -1,17 +1,18 @@
 cpp {{
 #include <cmath>
+#include <cstdint>
 }}
 
 /**
- * Types
- * -----
+ * Built-in types
+ * --------------
  */
 model Boolean;
 model Real64;
 model Real32 < Real64;
-model Real = Real64;
 model Integer64;
 model Integer32 < Integer64;
+model Real = Real64;
 model Integer = Integer64;
 
 /**

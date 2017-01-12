@@ -1,44 +1,54 @@
 import math;
 import random;
 import assert;
-import distribution.gamma;
-import distribution.bernoulli;
+import distribution.Gamma;
+import distribution.Bernoulli;
 
 /**
  * Beta distribution.
  */
-model Beta(α1:Real, β1:Real) {
+model Beta {
   /**
    * First shape parameter.
    */
-  α:Real <- α1;
-  
+  α:Real;
+
   /**
    * Second shape parameter.
    */
-  β:Real <- β1;
+  β:Real;
+}
+
+/**
+ * Create.
+ */
+function Beta(α:Real, β:Real) -> m:Beta {
+  m.α <- α;
+  m.β <- β;
 }
 
 /**
  * Simulate.
  */
-function m:Beta ~> x:Real {
-  u:Real <~ Gamma(m.α, 1.0);
-  v:Real <~ Gamma(m.β, 1.0);
+function x:Real <~ m:Beta {
+  u:Real;
+  v:Real;
+  u <~ Gamma(m.α, 1.0);
+  v <~ Gamma(m.β, 1.0);
   x <- u/(u + v);
 }
 
 /**
  * Evaluate pdf.
  */
-function x:Real ~ m:Beta -> l:Real {
-  l <- exp(log(x ~ m));
+function x:Real ~> m:Beta -> l:Real {
+  l <- exp(log(x ~> m));
 }
 
 /**
  * Evaluate log-pdf.
  */
-function log(x:Real ~ m:Beta) -> ll:Real {
+function log(x:Real ~> m:Beta) -> ll:Real {
   /* pre-condition */
   require(0.0 < x && x < 1.0);
 

@@ -4,22 +4,30 @@ import random;
 /**
  * Uniform distribution.
  */
-model Uniform(l1:Real, u1:Real) {
+model Uniform {
   /**
    * Lower bound.
    */
-  l:Real <- l1;
+  l:Real;
   
   /**
    * Upper bound.
    */
-  u:Real <- u1;
+  u:Real;
+}
+
+/**
+ * Create.
+ */
+function Uniform(l:Real, u:Real) -> m:Uniform {
+  m.l <- l;
+  m.u <- u;
 }
 
 /**
  * Simulate.
  */
-function m:Uniform ~> x:Real {
+function x:Real <~ m:Uniform {
   cpp {{
   x = std::uniform_real_distribution<double>(m.l, m.u)(rng);
   }}
@@ -28,7 +36,7 @@ function m:Uniform ~> x:Real {
 /**
  * Evaluate pdf.
  */
-function x:Real ~ m:Uniform -> l:Real {
+function x:Real ~> m:Uniform -> l:Real {
   if (x >= m.l && x <= m.u) {
     l <- 1.0/(m.u - m.l);
   } else {

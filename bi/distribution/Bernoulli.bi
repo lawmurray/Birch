@@ -1,22 +1,29 @@
 import math;
 import random;
 import assert;
-import distribution.uniform;
+import distribution.Uniform;
 
 /**
  * Bernoulli distribution.
  */
-model Bernoulli(ρ1:Real) {
+model Bernoulli {
   /**
    * Probability of a true result.
    */
-  ρ:Real <- ρ1;
+  ρ:Real;
+}
+
+/**
+ * Create.
+ */
+function Bernoulli(ρ:Real) -> m:Bernoulli {
+  m.ρ <- ρ;
 }
 
 /**
  * Simulate.
  */
-function m:Bernoulli ~> x:Boolean {
+function x:Boolean <~ m:Bernoulli {
   cpp {{
   x = static_cast<unsigned char>(std::bernoulli_distribution(m.ρ)(rng));
   }}
@@ -25,7 +32,7 @@ function m:Bernoulli ~> x:Boolean {
 /**
  * Evaluate pmf.
  */
-function x:Boolean ~ m:Bernoulli -> l:Real {
+function x:Boolean ~> m:Bernoulli -> l:Real {
   if (x) {
     l <- m.ρ;
   } else {
