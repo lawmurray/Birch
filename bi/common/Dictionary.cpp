@@ -47,9 +47,8 @@ ParameterType* bi::Dictionary<ParameterType,ReferenceType>::resolve(
   auto iter = unordered.find(ref->name->str());
   if (iter != unordered.end() && *ref <= *iter->second) {
     return iter->second;
-  } else {
-    throw UnresolvedReferenceException(ref);
   }
+  return nullptr;
 }
 
 /*

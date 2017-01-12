@@ -97,7 +97,7 @@
 %type <valName> multiplicative_operator additive_operator
 %type <valName> relational_operator
 %type <valName> equality_operator logical_and_operator logical_or_operator
-%type <valName> push_operator sim_operator assignment_operator
+%type <valName> push_operator assignment_operator
 %type <valName> base_less_operator base_equal_operator
 %type <valName> name path_name
 %type <valPath> path
@@ -111,7 +111,7 @@
 %type <valProg> prog_parameter
 
 %type <valType> model_reference model_parameter base
-%type <valType> any_type parens_type primary_type list_type type
+%type <valType> any_type parens_type primary_type random_type list_type type
 
 %type <valExpression> parameter_expression reference_expression this_expression
 %type <valExpression> parens_expression member_expression primary_expression
@@ -119,7 +119,7 @@
 %type <valExpression> multiplicative_expression additive_expression
 %type <valExpression> range_expression relational_expression
 %type <valExpression> equality_expression logical_and_expression logical_or_expression
-%type <valExpression> list_expression push_expression sim_expression assignment_expression
+%type <valExpression> list_expression push_expression assignment_expression
 %type <valExpression> expression optional_expression
 
 %type <valExpression> option options optional_options parens_options
@@ -131,8 +131,7 @@
 %type <valStatement> func_statement func_statements optional_func_statements
 %type <valStatement> model_statement model_statements optional_model_statements
 %type <valStatement> prog_statement prog_statements optional_prog_statements
-%type <valStatement> import imports optional_imports
-%type <valStatement> first_file_statement file_statement file_statements optional_file_statements
+%type <valStatement> import file_statement file_statements optional_file_statements
 
 %locations
 
@@ -309,9 +308,14 @@ primary_type
     | any_type
     ;
 
-list_type
+random_type
     : primary_type
-    | primary_type ',' list_type  { $$ = new bi::TypeList($1, $3, make_loc(@$)); }
+    | primary_type '~' random_type  { $$ = new bi::RandomType($1, $3, make_loc(@$)); }
+    ;
+
+list_type
+    : random_type
+    | random_type ',' list_type  { $$ = new bi::TypeList($1, $3, make_loc(@$)); }
     ;
 
 type
@@ -451,23 +455,15 @@ push_expression
     | logical_or_expression push_operator push_expression  { $$ = make_binary($1, $2, $3, make_loc(@$)); }
     ;
 
-sim_operator
-    : '~'  { $$ = new bi::Name("~", make_loc(@$)); }
-    ;
-
-sim_expression
-    : push_expression
-    | push_expression sim_operator sim_expression  { $$ = new bi::RandomParameter($1, $3, make_loc(@$)); }
-    ;
-
 assignment_operator
     : LEFT_OP  { $$ = new bi::Name("<-", make_loc(@$)); }
     | PULL_OP  { $$ = new bi::Name("<~", make_loc(@$)); }
+    | '~'      { $$ = new bi::Name("~", make_loc(@$)); }
     ;
     
 assignment_expression
-    : sim_expression
-    | sim_expression assignment_operator assignment_expression  { $$ = make_assign($1, $2, $3, make_loc(@$)); }
+    : push_expression
+    | push_expression assignment_operator assignment_expression  { $$ = make_assign($1, $2, $3, make_loc(@$)); }
     ;
 
 list_operator
@@ -619,29 +615,11 @@ optional_prog_statements
 
 import
     : IMPORT path ';'  { $$ = new bi::Import($2, compiler->import($2), make_loc(@$)); }
-    | cpp
-    | hpp
-    ;
-
-imports
-    : import imports  { $$ = new bi::StatementList($1, $2, make_loc(@$)); }
-    | import
-    ;
-
-optional_imports
-    : imports
-    |          {$$ = new bi::EmptyStatement(); }
-    ;
-
-first_file_statement  /* means cpp and hpp statements prefer to attach to imports */
-    : var_declaration
-    | func_declaration
-    | prog_declaration
-    | model_declaration
     ;
     
 file_statement
-    : cpp
+    : import
+    | cpp
     | hpp
     | var_declaration
     | func_declaration
@@ -655,13 +633,12 @@ file_statements
     ;
 
 optional_file_statements
-    : first_file_statement file_statements  { $$ = new bi::StatementList($1, $2, make_loc(@$)); }
-    | first_file_statement
-    |                                       { $$ = new bi::EmptyStatement(); }
+    : file_statements
+    |                  { $$ = new bi::EmptyStatement(); }
     ;
     
 file
-    : optional_imports optional_file_statements  { compiler->setRoot($1, $2); }
+    : optional_file_statements  { compiler->setRoot($1); }
     ;
     
 %%

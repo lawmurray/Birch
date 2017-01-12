@@ -127,15 +127,14 @@ void bi::Compiler::gen() {
   }
 }
 
-void bi::Compiler::setRoot(Statement* imports, Statement* root) {
+void bi::Compiler::setRoot(Statement* root) {
   if (std) {
     Import* import = new Import(new Path(new Name("standard")),
         files[standard]);
-    file->imports = new StatementList(import, imports);
+    file->root = new StatementList(import, root);
   } else {
-    file->imports = imports;
+    file->root = root;
   }
-  file->root = root;
 }
 
 bi::File* bi::Compiler::import(const Path* path) {

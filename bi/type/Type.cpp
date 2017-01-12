@@ -17,6 +17,10 @@ bool bi::Type::isEmpty() const {
   return false;
 }
 
+bi::Type* bi::Type::strip() {
+  return this;
+}
+
 bool bi::Type::builtin() const {
   return false;
 }

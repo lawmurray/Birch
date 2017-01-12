@@ -169,7 +169,7 @@ bi::Type* bi::Resolver::modify(ModelReference* o) {
 
 bi::Expression* bi::Resolver::modify(VarParameter* o) {
   Modifier::modify(o);
-  if (!inInputs) {
+  if (!inInputs || dynamic_cast<RandomType*>(o->type->strip())) {
     o->type->assignable = true;
   }
   if (!o->name->isEmpty()) {
@@ -257,14 +257,14 @@ bi::Type* bi::Resolver::modify(ModelParameter* o) {
 
   if (*o->op != "=") {
     /* create constructor */
-    Expression* parens1 = o->parens->accept(&cloner);
-    VarParameter* result1 = new VarParameter(new Name(),
-        new ModelReference(o->name, 0, o));
-    o->constructor = new FuncParameter(o->name, parens1, result1,
-        new EmptyExpression(), CONSTRUCTOR);
-    o->constructor =
-        dynamic_cast<FuncParameter*>(o->constructor->accept(this));
-    assert(o->constructor);
+    //Expression* parens1 = o->parens->accept(&cloner);
+    ///VarParameter* result1 = new VarParameter(new Name(),
+    //    new ModelReference(o->name, 0, o));
+    //o->constructor = new FuncParameter(o->name, parens1, result1,
+    //    new EmptyExpression(), CONSTRUCTOR);
+    //o->constructor =
+    //    dynamic_cast<FuncParameter*>(o->constructor->accept(this));
+    //assert(o->constructor);
 
     /* create assignment operator */
     Expression* right = new VarParameter(new Name(),
@@ -315,6 +315,8 @@ bi::Statement* bi::Resolver::modify(Loop* o) {
 bi::Type* bi::Resolver::modify(RandomType* o) {
   push();
   Modifier::modify(o);
+  o->left->assignable = true;
+  o->right->assignable = true;
 
   o->x = new VarParameter(new Name("x"), o->left->accept(&cloner));
   o->x->accept(this);

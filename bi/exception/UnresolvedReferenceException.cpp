@@ -19,8 +19,8 @@ bi::UnresolvedReferenceException::UnresolvedReferenceException(
   if (ref->loc) {
     buf << ref->loc;
   }
-  //buf << "note: in\n";
-  //buf << ref << '\n';
+  buf << "note: in\n";
+  buf << ref << '\n';
 
   msg = base.str();
 }

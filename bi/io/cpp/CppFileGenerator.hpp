@@ -20,6 +20,7 @@ public:
   virtual void visit(const Import* o);
 
   virtual void visit(const VarDeclaration* o);
+  virtual void visit(const FuncParameter* o);
   virtual void visit(const ModelParameter* o);
   virtual void visit(const ProgParameter* o);
 

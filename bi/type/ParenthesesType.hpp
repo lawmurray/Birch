@@ -28,6 +28,8 @@ public:
    */
   virtual ~ParenthesesType();
 
+  virtual Type* strip();
+
   virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;

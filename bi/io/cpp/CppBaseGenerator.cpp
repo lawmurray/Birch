@@ -3,10 +3,6 @@
  */
 #include "bi/io/cpp/CppBaseGenerator.hpp"
 
-#include "bi/io/cpp/CppTemplateParameterGenerator.hpp"
-#include "bi/io/cpp/CppParameterGenerator.hpp"
-#include "bi/io/cpp/CppOutputGenerator.hpp"
-#include "bi/io/cpp/CppReturnGenerator.hpp"
 #include "bi/io/cpp/misc.hpp"
 
 bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
@@ -17,19 +13,19 @@ bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
 }
 
 void bi::CppBaseGenerator::visit(const BoolLiteral* o) {
-  *this << "bi::Boolean<>((unsigned char)" << o->str << ')';
+  *this << "bi::model::Boolean<>((unsigned char)" << o->str << ')';
 }
 
 void bi::CppBaseGenerator::visit(const IntLiteral* o) {
-  *this << "bi::Integer<>((int64_t)" << o->str << ')';
+  *this << "bi::model::Integer<>((int64_t)" << o->str << ')';
 }
 
 void bi::CppBaseGenerator::visit(const RealLiteral* o) {
-  *this << "bi::Real<>((double)" << o->str << ')';
+  *this << "bi::model::Real<>((double)" << o->str << ')';
 }
 
 void bi::CppBaseGenerator::visit(const StringLiteral* o) {
-  *this << "bi::String<>(" << o->str << ')';
+  *this << "bi::model::String<>(" << o->str << ')';
 }
 
 void bi::CppBaseGenerator::visit(const Name* o) {
@@ -130,7 +126,7 @@ void bi::CppBaseGenerator::visit(const FuncReference* o) {
     auto iter = o->args.begin();
     middle(translate(o->name->str()) << ' ' << *iter);
   } else {
-    middle(o->target->unique);
+    middle("bi::function::" << o->target->unique);
     if (o->isConstructor()) {
       middle("<>");
     }
@@ -151,10 +147,10 @@ void bi::CppBaseGenerator::visit(const RandomReference* o) {
 
 void bi::CppBaseGenerator::visit(const ModelReference* o) {
   if (o->count() > 0) {
-    middle("bi::Array<" << o->name << "<bi::HeapGroup>,");
+    middle("bi::Array<bi::model::" << o->name << "<bi::HeapGroup>,");
     middle("typename bi::DefaultFrame<" << o->count() << ">::type>");
   } else {
-    middle("bi::" << o->name << "<>");
+    middle("bi::model::" << o->name << "<>");
   }
 }
 
@@ -182,55 +178,6 @@ void bi::CppBaseGenerator::visit(const VarParameter* o) {
   }
   if (!o->value->isEmpty()) {
     middle(" = " << o->value);
-  }
-}
-
-void bi::CppBaseGenerator::visit(const FuncParameter* o) {
-  if (!o->braces->isEmpty()) {
-    /* template parameters */
-    CppTemplateParameterGenerator auxTemplateParameter(base, level, header);
-    auxTemplateParameter << o;
-
-    /* type */
-    start(o->type << ' ');
-
-    /* name */
-    if (!header) {
-      middle("bi::");
-    }
-    if ((o->isBinary() || o->isUnary()) && isTranslatable(o->name->str())
-        && !o->parens->isRich()) {
-      middle("operator" << translate(o->name->str()));
-    } else {
-      middle(o->unique);
-    }
-
-    /* parameters */
-    CppParameterGenerator auxParameter(base, level, header);
-    auxParameter << o;
-
-    if (header) {
-      finish(';');
-    } else {
-      finish(" {");
-      in();
-
-      /* output parameters */
-      CppOutputGenerator aux(base, level, header);
-      aux << o;
-
-      /* body */
-      *this << o->braces;
-
-      /* return statement */
-      if (!o->result->isEmpty()) {
-        CppReturnGenerator aux(base, level, header);
-        aux << o;
-      }
-
-      out();
-      finish("}\n");
-    }
   }
 }
 
@@ -285,7 +232,11 @@ void bi::CppBaseGenerator::visit(const EmptyType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const ParenthesesType* o) {
-  middle("std::tuple<" << o->single << ">");
+  if (dynamic_cast<TypeList*>(o->single->strip())) {
+    middle("std::tuple<" << o->single->strip() << ">");
+  } else {
+    middle(o->single);
+  }
 }
 
 void bi::CppBaseGenerator::visit(const RandomType* o) {

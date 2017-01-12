@@ -54,10 +54,10 @@ public:
   File* import(const Path* path);
 
   /**
-   * Set the imports and root statement of the file, adding an import for the
+   * Set the root statement of the file, adding an import for the
    * standard library if requested.
    */
-  void setRoot(Statement* imports, Statement* root);
+  void setRoot(Statement* root);
 
   /**
    * Current file being parsed (needed by GNU Bison parser).

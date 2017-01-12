@@ -4,7 +4,11 @@
 #include "bi/io/cpp/CppFileGenerator.hpp"
 
 #include "bi/io/cpp/CppModelGenerator.hpp"
+#include "bi/io/cpp/CppTemplateParameterGenerator.hpp"
+#include "bi/io/cpp/CppParameterGenerator.hpp"
+#include "bi/io/cpp/CppOutputGenerator.hpp"
 #include "bi/io/cpp/CppReturnGenerator.hpp"
+#include "bi/io/cpp/misc.hpp"
 #include "bi/program/all.hpp"
 #include "bi/exception/all.hpp"
 
@@ -40,22 +44,8 @@ void bi::CppFileGenerator::visit(const File* o) {
     line("#include \"" << file.filename().string() << "\"\n");
   }
 
-  /* imports */
-  *this << o->imports;
-  if (header && !o->imports->isEmpty()) {
-    line("");
-  }
-
   /* main code */
-  if (header) {
-    line("namespace bi {");
-  } else {
-    //line("using namespace bi;\n");
-  }
   *this << o->root;
-  if (header) {
-    line('}');
-  }
 }
 
 void bi::CppFileGenerator::visit(const Import* o) {
@@ -66,7 +56,9 @@ void bi::CppFileGenerator::visit(const Import* o) {
 
 void bi::CppFileGenerator::visit(const VarDeclaration* o) {
   if (header) {
+    line("namespace bi {");
     line("extern " << o->param->type << ' ' << o->param->name << ';');
+    line("}\n");
   } else {
     start(o->param->type << " bi::" << o->param->name);
     if (!o->param->value->isEmpty()) {
@@ -76,26 +68,126 @@ void bi::CppFileGenerator::visit(const VarDeclaration* o) {
   }
 }
 
+void bi::CppFileGenerator::visit(const FuncParameter* o) {
+  if (!o->braces->isEmpty()) {
+    bool op = (o->isUnary() || o->isBinary()) && isTranslatable(o->name->str());
+    // ^ prefix and infix operators go in bi namespace, not bi::function
+
+    if (header) {
+      line("namespace bi {");
+      if (!op) {
+        in();
+        line("namespace function {");
+        out();
+      }
+    }
+
+    /* template parameters */
+    CppTemplateParameterGenerator auxTemplateParameter(base, level, header);
+    auxTemplateParameter << o;
+
+    /* type */
+    start(o->type << ' ');
+
+    /* name */
+    if (!header) {
+      middle("bi::");
+      if (!op) {
+        middle("function::");
+      }
+    }
+    if ((o->isBinary() || o->isUnary()) && isTranslatable(o->name->str())
+        && !o->parens->isRich()) {
+      middle("operator" << translate(o->name->str()));
+    } else {
+      middle(o->unique);
+    }
+
+    /* parameters */
+    CppParameterGenerator auxParameter(base, level, header);
+    auxParameter << o;
+
+    if (header) {
+      finish(';');
+    } else {
+      finish(" {");
+      in();
+
+      /* output parameters */
+      CppOutputGenerator auxOutput(base, level, header);
+      auxOutput << o;
+
+      /* body */
+      CppBaseGenerator aux(base, level, header);
+      aux << o->braces;
+
+      /* return statement */
+      if (!o->result->isEmpty()) {
+        CppReturnGenerator auxReturn(base, level, header);
+        auxReturn << o;
+      }
+
+      out();
+      finish("}\n");
+    }
+    if (header) {
+      if (!op) {
+        in();
+        line("}");
+        out();
+      }
+      line("}\n");
+    }
+  }
+}
+
 void bi::CppFileGenerator::visit(const ModelParameter* o) {
   if (*o->op == "=") {
     if (header) {
       ModelReference* base = dynamic_cast<ModelReference*>(o->base.get());
       assert(base);
+      line("namespace bi {");
+      in();
+      line("namespace model {");
+      out();
       line("template<class Group = StackGroup>");
       line("using " << o->name << " = " << base->name << "<Group>;");
+      in();
+      line("}");
+      out();
+      line("}\n");
     }
-  } else {
+  } else if (!o->braces->isEmpty()) {
+    if (header) {
+      line("namespace bi {");
+      in();
+      line("namespace model {");
+      out();
+    }
     CppModelGenerator auxModel(base, level, header);
     auxModel << o;
+    if (header) {
+      in();
+      line("}");
+      out();
+      line("}\n");
+    }
   }
 }
 
 void bi::CppFileGenerator::visit(const ProgParameter* o) {
   if (header) {
-    line("void " << o->name << "_(int argc, char** argv);");
+    line("namespace bi {");
+    in();
+    line("namespace program {");
+    out();
     line("extern \"C\" void " << o->name << "(int argc, char** argv);");
+    in();
+    line("}");
+    out();
+    line("}\n");
   } else {
-    line("void bi::" << o->name << "_(int argc, char** argv) {");
+    line("void bi::program::" << o->name << "(int argc, char** argv) {");
     in();
     if (o->inputs.size() > 0) {
       /* option variables */
@@ -209,12 +301,6 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
       aux << o->braces;
     }
 
-    out();
-    line("}\n");
-
-    line("extern \"C\" void " << o->name << "(int argc, char** argv) {");
-    in();
-    line("bi::" << o->name << "_(argc, argv);");
     out();
     line("}\n");
   }

@@ -50,35 +50,35 @@ void bi::Scope::add(RandomParameter* random) {
 }
 
 bi::VarParameter* bi::Scope::resolve(VarReference* ref) {
-  try {
-    return vars.resolve(ref);
-  } catch (UnresolvedReferenceException e) {
-    return resolveDefer<VarParameter,VarReference>(ref);
+  VarParameter* result = vars.resolve(ref);
+  if (!result) {
+    result = resolveDefer<VarParameter,VarReference>(ref);
   }
+  return result;
 }
 
 bi::FuncParameter* bi::Scope::resolve(FuncReference* ref) {
-  try {
-    return funcs.resolve(ref);
-  } catch (UnresolvedReferenceException e) {
-    return resolveDefer<FuncParameter,FuncReference>(ref);
+  FuncParameter* result = funcs.resolve(ref);
+  if (!result) {
+    result = resolveDefer<FuncParameter,FuncReference>(ref);
   }
+  return result;
 }
 
 bi::RandomParameter* bi::Scope::resolve(RandomReference* ref) {
-  try {
-    return randoms.resolve(ref);
-  } catch (UnresolvedReferenceException e) {
-    return resolveDefer<RandomParameter,RandomReference>(ref);
+  RandomParameter* result = randoms.resolve(ref);
+  if (!result) {
+    result = resolveDefer<RandomParameter,RandomReference>(ref);
   }
+  return result;
 }
 
 bi::ModelParameter* bi::Scope::resolve(ModelReference* ref) {
-  try {
-    return models.resolve(ref);
-  } catch (UnresolvedReferenceException e) {
-    return resolveDefer<ModelParameter,ModelReference>(ref);
+  ModelParameter* result = models.resolve(ref);
+  if (!result) {
+    result = resolveDefer<ModelParameter,ModelReference>(ref);
   }
+  return result;
 }
 
 void bi::Scope::import(Scope* scope) {

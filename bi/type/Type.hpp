@@ -67,6 +67,11 @@ public:
   virtual bool isEmpty() const;
 
   /**
+   * Strip parentheses.
+   */
+  virtual Type* strip();
+
+  /**
    * Is this a built-in type?
    */
   virtual bool builtin() const;

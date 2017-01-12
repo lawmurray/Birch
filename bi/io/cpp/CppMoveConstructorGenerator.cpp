@@ -14,7 +14,7 @@ bi::CppMoveConstructorGenerator::CppMoveConstructorGenerator(std::ostream& base,
 void bi::CppMoveConstructorGenerator::visit(const ModelParameter* o) {
   if (!header) {
     line("template<class Group>");
-    start("bi::" << o->name->str() << "<Group>::");
+    start("bi::model::" << o->name->str() << "<Group>::");
   } else {
     start("");
   }

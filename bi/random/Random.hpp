@@ -15,21 +15,30 @@ namespace bi {
  * @tparam Model Model type.
  */
 template<class Variate, class Model>
-class Random : public Expirable {
+class Random: public Expirable {
 public:
   /**
    * Constructor.
+   */
+  Random();
+
+  /**
+   * Initialise.
    *
-   * @param x Variate.
    * @param m Model.
    * @param push Push expression.
    */
-  Random(Variate& x, const Model& m, std::function<void()> push);
+  void init(const Model& m, std::function<void()> push);
 
   /**
-   * Destructor.
+   * Assign to variate.
    */
-  ~Random();
+  Random<Variate,Model>& operator=(const Variate& o);
+
+  /**
+   * Assign to model.
+   */
+  Random<Variate,Model>& operator=(const Model& o);
 
   /**
    * Cast to variate.
@@ -37,56 +46,108 @@ public:
   operator Variate&();
 
   /**
+   * Cast to filtered distribution.
+   */
+  operator Model&();
+
+  /**
    * Expire the random variable.
    */
   virtual void expire();
 
-  Variate& x;
+  /**
+   * The variate.
+   */
+  Variate x;
+
+  /**
+   * The filtered distribution of the random variable.
+   */
   Model m;
 
 private:
   /**
    * Push function.
    */
-  std::function<void()> push;
+  std::function<void(const Variate&)> push;
 
   /**
    * Position in random variable stack.
    */
   int pos;
+
+  /**
+   * Is the variate missing?
+   */
+  bool missing;
 };
 }
 
 #include "bi/random/RandomStack.hpp"
 
 template<class Variate, class Model>
-bi::Random<Variate,Model>::Random(Variate& x, const Model& m,
-    std::function<void()> push) :
-    x(x),
-    m(m),
-    push(push),
-    pos(randomStack.push(this)){
+bi::Random<Variate,Model>::Random() :
+    pos(-1),
+    missing(true) {
   //
 }
 
 template<class Variate, class Model>
-bi::Random<Variate,Model>::~Random() {
-  if (!isExpired()) {
-    randomStack.pop(pos);
+void bi::Random<Variate,Model>::init(const Model& m,
+    std::function<void()> push) {
+  this->m = m;
+  this->push = push;
+
+  if (!missing) {
+    /* push immediately */
+    push(x);
+  } else {
+    /* lazy sampling */
+    this->pos = randomStack.push(this);
   }
+}
+
+template<class Variate, class Model>
+bi::Random<Variate,Model>& bi::Random<Variate,Model>::operator=(
+    const Variate& o) {
+  x = o;
+  missing = false;
+  return *this;
+}
+
+template<class Variate, class Model>
+bi::Random<Variate,Model>& bi::Random<Variate,Model>::operator=(
+    const Model& o) {
+  /* pre-condition */
+  assert(missing);
+
+  m = o;
+  return *this;
 }
 
 template<class Variate, class Model>
 bi::Random<Variate,Model>::operator Variate&() {
-  if (!isExpired()) {
+  if (missing) {
     randomStack.pop(pos);
   }
+  assert(!missing);
   return x;
 }
 
 template<class Variate, class Model>
+bi::Random<Variate,Model>::operator Model&() {
+  /* pre-condition */
+  assert(missing);
+
+  return m;
+}
+
+template<class Variate, class Model>
 void bi::Random<Variate,Model>::expire() {
-  Expirable::expire();
+  /* pre-condition */
+  assert(missing);
+
   pull_(x, m);
-  push();
+  missing = false;
+  push(x);
 }

@@ -60,12 +60,12 @@ ParameterType* bi::OverloadedDictionary<ParameterType,ReferenceType>::resolve(
     const ReferenceType* ref) {
   auto iter = overloaded.find(ref->name->str());
   if (iter == overloaded.end()) {
-    throw UnresolvedReferenceException(ref);
+    return nullptr;
   } else {
     std::list<ParameterType*> matches;
     iter->second.find(ref, matches);
     if (matches.size() == 0) {
-      throw UnresolvedReferenceException(ref);
+      return nullptr;
     } else if (matches.size() > 1) {
       throw AmbiguousReferenceException(ref, matches);
     } else {

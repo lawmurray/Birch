@@ -10,6 +10,7 @@
 #include <cstdint>
 
 namespace bi {
+  namespace model {
 /**
  * Built-in boolean type.
  */
@@ -47,4 +48,5 @@ using Real32 = PrimitiveValue<float,Group>;
 template<class Group = StackGroup>
 using String = PrimitiveValue<const char*,Group>;
 
+  }
 }

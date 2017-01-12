@@ -18,7 +18,7 @@ void bi::CppAssignmentGenerator::visit(const ModelParameter* o) {
   } else {
     line("template<class Group>");
     start(
-        "bi::" << o->name->str() << "<Group>& bi::" << o->name->str() << "<Group>::");
+        "bi::model::" << o->name->str() << "<Group>& bi::model::" << o->name->str() << "<Group>::");
   }
   middle("operator=(const " << o->name->str() << "<Group>& o)");
   if (header) {

@@ -107,9 +107,9 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
 
     /* explicit template specialisations */
     if (!header) {
-      line("template class bi::" << o->name << "<bi::StackGroup>;");
-      line("template class bi::" << o->name << "<bi::HeapGroup>;");
-      line("template class bi::" << o->name << "<bi::NetCDFGroup>;");
+      line("template class bi::model::" << o->name << "<bi::StackGroup>;");
+      line("template class bi::model::" << o->name << "<bi::HeapGroup>;");
+      line("template class bi::model::" << o->name << "<bi::NetCDFGroup>;");
       line("");
     }
   }
@@ -117,10 +117,20 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
 
 void bi::CppModelGenerator::visit(const ModelReference* o) {
   if (o->count() > 0) {
-    middle("bi::DefaultArray<" << o->name);
+    if (!header) {
+      middle("bi::");
+    }
+    middle("DefaultArray<");
+    if (!header) {
+      middle("bi::model::");
+    }
+    middle(o->name);
     middle("<decltype(arrayGroup(group))>," << o->count() << '>');
   } else {
-    middle("bi::" << o->name << "<decltype(childGroup(group))>");
+    if (!header) {
+      middle("bi::model::");
+    }
+    middle(o->name << "<decltype(childGroup(group))>");
   }
 }
 
@@ -153,7 +163,7 @@ void bi::CppModelGenerator::visit(const FuncParameter* o) {
 
     /* name */
     if (!header) {
-      middle("bi::" << model->name << "<Group>::");
+      middle("bi::model::" << model->name << "<Group>::");
     }
     if ((o->isBinary() || o->isUnary()) && isTranslatable(o->name->str())
         && !o->parens->isRich()) {

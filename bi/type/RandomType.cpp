@@ -35,19 +35,19 @@ bool bi::RandomType::dispatch(Type& o) {
 }
 
 bool bi::RandomType::le(EmptyType& o) {
-  return *left <= o;
+  return *left <= o || *right <= o;
 }
 
 bool bi::RandomType::le(List<Type>& o) {
-  return *left <= o;
+  return *left <= o || *right <= o;
 }
 
 bool bi::RandomType::le(ModelReference& o) {
-  return *left <= o;
+  return *left <= o || *right <= o;
 }
 
 bool bi::RandomType::le(ModelParameter& o) {
-  return *left <= o;
+  return *left <= o || *right <= o;
 }
 
 bool bi::RandomType::le(RandomType& o) {

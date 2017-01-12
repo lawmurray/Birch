@@ -18,6 +18,10 @@ bi::ParenthesesType::~ParenthesesType() {
   //
 }
 
+bi::Type* bi::ParenthesesType::strip() {
+  return single->strip();
+}
+
 bi::Type* bi::ParenthesesType::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
