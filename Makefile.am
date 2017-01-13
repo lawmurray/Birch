@@ -50,7 +50,6 @@ birchc_SOURCES = \
   bi/exception/MemberException.cpp \
   bi/exception/NotAssignableException.cpp \
   bi/exception/PreviousDeclarationException.cpp \
-  bi/exception/PreviousRandomException.cpp \
   bi/exception/ThisException.cpp \
   bi/exception/UnresolvedReferenceException.cpp \
   bi/exception/UnsupportedOptionTypeException.cpp \
@@ -62,9 +61,7 @@ birchc_SOURCES = \
   bi/expression/FuncReference.cpp \
   bi/expression/Literal.cpp \
   bi/expression/ParenthesesExpression.cpp \
-  bi/expression/RandomParameter.cpp \
-  bi/expression/RandomReference.cpp \
-  bi/expression/RandomRight.cpp \
+  bi/expression/RandomInit.cpp \
   bi/expression/Range.cpp \
   bi/expression/This.cpp \
   bi/expression/Member.cpp \

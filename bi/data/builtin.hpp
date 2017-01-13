@@ -50,3 +50,34 @@ using String = PrimitiveValue<const char*,Group>;
 
   }
 }
+
+namespace bi {
+/**
+ * Convenience function for literals.
+ */
+inline bi::model::Boolean<> make_bool(const unsigned char x) {
+  return bi::model::Boolean<>(x);
+}
+
+/**
+ * Convenience function for literals.
+ */
+inline bi::model::Integer64<> make_int(const int64_t x) {
+  return bi::model::Integer64<>(x);
+}
+
+/**
+ * Convenience function for literals.
+ */
+inline bi::model::Real64<> make_real(const double x) {
+  return bi::model::Real64<>(x);
+}
+
+/**
+ * Convenience function for literals.
+ */
+inline bi::model::String<> make_string(const char* x) {
+  return bi::model::String<>(x);
+}
+
+}

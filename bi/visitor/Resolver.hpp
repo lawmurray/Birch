@@ -39,16 +39,15 @@ public:
   virtual Expression*  modify(Range* o);
   virtual Expression*  modify(Member* o);
   virtual Expression*  modify(This* o);
+  virtual Expression*  modify(RandomInit* o);
   virtual Expression*  modify(BracketsExpression* o);
 
   virtual Expression*  modify(VarReference* o);
   virtual Expression*  modify(FuncReference* o);
-  virtual Expression*  modify(RandomReference* o);
   virtual Type* modify(ModelReference* o);
 
   virtual Expression*  modify(VarParameter* o);
   virtual Expression*  modify(FuncParameter* o);
-  virtual Expression*  modify(RandomParameter* o);
   virtual Prog* modify(ProgParameter* o);
   virtual Type* modify(ModelParameter* o);
 

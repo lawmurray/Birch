@@ -15,11 +15,11 @@ void bi::Visitor::visit(const EmptyType* o) {
   //
 }
 
-void bi::Visitor::visit(const BoolLiteral* o) {
+void bi::Visitor::visit(const BooleanLiteral* o) {
   o->type->accept(this);
 }
 
-void bi::Visitor::visit(const IntLiteral* o) {
+void bi::Visitor::visit(const IntegerLiteral* o) {
   o->type->accept(this);
 }
 
@@ -74,8 +74,9 @@ void bi::Visitor::visit(const This* o) {
   //
 }
 
-void bi::Visitor::visit(const RandomRight* o) {
-  //
+void bi::Visitor::visit(const RandomInit* o) {
+  o->left->accept(this);
+  o->right->accept(this);
 }
 
 void bi::Visitor::visit(const Member* o) {
@@ -90,10 +91,6 @@ void bi::Visitor::visit(const VarReference* o) {
 void bi::Visitor::visit(const FuncReference* o) {
   o->name->accept(this);
   o->parens->accept(this);
-}
-
-void bi::Visitor::visit(const RandomReference* o) {
-  o->name->accept(this);
 }
 
 void bi::Visitor::visit(const ModelReference* o) {
@@ -117,11 +114,6 @@ void bi::Visitor::visit(const FuncParameter* o) {
   o->parens->accept(this);
   o->result->accept(this);
   o->braces->accept(this);
-}
-
-void bi::Visitor::visit(const RandomParameter* o) {
-  o->left->accept(this);
-  o->right->accept(this);
 }
 
 void bi::Visitor::visit(const ModelParameter* o) {

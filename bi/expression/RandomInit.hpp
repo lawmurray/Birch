@@ -4,36 +4,48 @@
 #pragma once
 
 #include "bi/expression/Expression.hpp"
-#include "bi/common/Named.hpp"
+#include "bi/common/Binary.hpp"
 #include "bi/expression/VarParameter.hpp"
 
 namespace bi {
 /**
- * Self-reference to an object.
+ * Random variable expression.
  *
  * @ingroup compiler_expression
  */
-class RandomRight: public Expression, public Named {
+class RandomInit: public Expression, public ExpressionBinary {
 public:
   /**
    * Constructor.
    *
-   * @param name Name.
+   * @param left Left operand.
+   * @param right Right operand.
    * @param loc Location.
    */
-  RandomRight(shared_ptr<Name> name, shared_ptr<Location> loc = nullptr);
+  RandomInit(Expression* left, Expression* right, shared_ptr<Location> loc =
+      nullptr);
 
   /**
    * Destructor.
    */
-  virtual ~RandomRight();
+  virtual ~RandomInit();
 
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
+  /**
+   * Pull method.
+   */
+  unique_ptr<Expression> pull;
+
+  /**
+   * Push method.
+   */
+  unique_ptr<Expression> push;
+
   virtual bool dispatch(Expression& o);
-  virtual bool le(RandomRight& o);
+  virtual bool le(RandomInit& o);
   virtual bool le(VarParameter& o);
 };
 }

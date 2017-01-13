@@ -47,14 +47,13 @@ public:
   virtual bool le(List<Expression>& o);
   virtual bool le(FuncParameter& o);
   virtual bool le(FuncReference& o);
-  virtual bool le(Literal<bool>& o);
+  virtual bool le(Literal<unsigned char>& o);
   virtual bool le(Literal<int64_t>& o);
   virtual bool le(Literal<double>& o);
-  virtual bool le(Literal<std::string>& o);
+  virtual bool le(Literal<const char*>& o);
   virtual bool le(Member& o);
   virtual bool le(ParenthesesExpression& o);
-  virtual bool le(RandomParameter& o);
-  virtual bool le(RandomReference& o);
+  virtual bool le(RandomInit& o);
   virtual bool le(Range& o);
   virtual bool le(This& o);
   virtual bool le(VarParameter& o);

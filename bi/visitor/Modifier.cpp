@@ -15,12 +15,12 @@ bi::Type* bi::Modifier::modify(EmptyType* o) {
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(BoolLiteral* o) {
+bi::Expression* bi::Modifier::modify(BooleanLiteral* o) {
   o->type = o->type->accept(this);
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(IntLiteral* o) {
+bi::Expression* bi::Modifier::modify(IntegerLiteral* o) {
   o->type = o->type->accept(this);
   return o;
 }
@@ -90,7 +90,9 @@ bi::Expression* bi::Modifier::modify(This* o) {
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(RandomRight* o) {
+bi::Expression* bi::Modifier::modify(RandomInit* o) {
+  o->left = o->left->accept(this);
+  o->right = o->right->accept(this);
   return o;
 }
 
@@ -102,11 +104,6 @@ bi::Expression* bi::Modifier::modify(VarReference* o) {
 bi::Expression* bi::Modifier::modify(FuncReference* o) {
   o->name->accept(this);
   o->parens = o->parens->accept(this);
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(RandomReference* o) {
-  o->name->accept(this);
   return o;
 }
 
@@ -134,12 +131,6 @@ bi::Expression* bi::Modifier::modify(FuncParameter* o) {
   o->parens = o->parens->accept(this);
   o->result = o->result->accept(this);
   o->braces = o->braces->accept(this);
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(RandomParameter* o) {
-  o->left = o->left->accept(this);
-  o->right = o->right->accept(this);
   return o;
 }
 

@@ -11,11 +11,11 @@ void bi::TupleSizer::visit(const EmptyExpression* o) {
   //
 }
 
-void bi::TupleSizer::visit(const BoolLiteral* o) {
+void bi::TupleSizer::visit(const BooleanLiteral* o) {
   ++size;
 }
 
-void bi::TupleSizer::visit(const IntLiteral* o) {
+void bi::TupleSizer::visit(const IntegerLiteral* o) {
   ++size;
 }
 
@@ -57,7 +57,7 @@ void bi::TupleSizer::visit(const This* o) {
   ++size;
 }
 
-void bi::TupleSizer::visit(const RandomRight* o) {
+void bi::TupleSizer::visit(const RandomInit* o) {
   ++size;
 }
 
@@ -66,10 +66,6 @@ void bi::TupleSizer::visit(const VarReference* o) {
 }
 
 void bi::TupleSizer::visit(const FuncReference* o) {
-  ++size;
-}
-
-void bi::TupleSizer::visit(const RandomReference* o) {
   ++size;
 }
 
@@ -82,10 +78,6 @@ void bi::TupleSizer::visit(const VarParameter* o) {
 }
 
 void bi::TupleSizer::visit(const FuncParameter* o) {
-  ++size;
-}
-
-void bi::TupleSizer::visit(const RandomParameter* o) {
   ++size;
 }
 

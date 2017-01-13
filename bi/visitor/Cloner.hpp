@@ -25,8 +25,8 @@ public:
   virtual Statement* clone(const EmptyStatement* o);
   virtual Type* clone(const EmptyType* o);
 
-  virtual Expression* clone(const BoolLiteral* o);
-  virtual Expression* clone(const IntLiteral* o);
+  virtual Expression* clone(const BooleanLiteral* o);
+  virtual Expression* clone(const IntegerLiteral* o);
   virtual Expression* clone(const RealLiteral* o);
   virtual Expression* clone(const StringLiteral* o);
   virtual Expression* clone(const ExpressionList* o);
@@ -37,17 +37,15 @@ public:
   virtual Expression* clone(const Range* o);
   virtual Expression* clone(const Member* o);
   virtual Expression* clone(const This* o);
-  virtual Expression* clone(const RandomRight* o);
+  virtual Expression* clone(const RandomInit* o);
 
   virtual Expression* clone(const VarReference* o);
   virtual Expression* clone(const FuncReference* o);
-  virtual Expression* clone(const RandomReference* o);
   virtual Type* clone(const ModelReference* o);
   virtual Prog* clone(const ProgReference* o);
 
   virtual Expression* clone(const VarParameter* o);
   virtual Expression* clone(const FuncParameter* o);
-  virtual Expression* clone(const RandomParameter* o);
   virtual Type* clone(const ModelParameter* o);
   virtual Prog* clone(const ProgParameter* o);
 

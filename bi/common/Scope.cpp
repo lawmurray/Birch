@@ -17,10 +17,6 @@ bool bi::Scope::contains(FuncParameter* param) {
   return funcs.contains(param);
 }
 
-bool bi::Scope::contains(RandomParameter* param) {
-  return randoms.contains(param);
-}
-
 bool bi::Scope::contains(ModelParameter* param) {
   return models.contains(param);
 }
@@ -45,10 +41,6 @@ void bi::Scope::add(ProgParameter* prog) {
   progs.add(prog);
 }
 
-void bi::Scope::add(RandomParameter* random) {
-  randoms.add(random);
-}
-
 bi::VarParameter* bi::Scope::resolve(VarReference* ref) {
   VarParameter* result = vars.resolve(ref);
   if (!result) {
@@ -61,14 +53,6 @@ bi::FuncParameter* bi::Scope::resolve(FuncReference* ref) {
   FuncParameter* result = funcs.resolve(ref);
   if (!result) {
     result = resolveDefer<FuncParameter,FuncReference>(ref);
-  }
-  return result;
-}
-
-bi::RandomParameter* bi::Scope::resolve(RandomReference* ref) {
-  RandomParameter* result = randoms.resolve(ref);
-  if (!result) {
-    result = resolveDefer<RandomParameter,RandomReference>(ref);
   }
   return result;
 }

@@ -98,23 +98,11 @@ bool bi::Expression::le(Literal<double>& o) {
   return false;
 }
 
-bool bi::Expression::le(Literal<std::string>& o) {
+bool bi::Expression::le(Literal<const char*>& o) {
   return false;
 }
 
 bool bi::Expression::le(ParenthesesExpression& o) {
-  return false;
-}
-
-bool bi::Expression::le(RandomParameter& o) {
-  return false;
-}
-
-bool bi::Expression::le(RandomReference& o) {
-  return false;
-}
-
-bool bi::Expression::le(RandomRight& o) {
   return false;
 }
 
@@ -127,6 +115,10 @@ bool bi::Expression::le(This& o) {
 }
 
 bool bi::Expression::le(Member& o) {
+  return false;
+}
+
+bool bi::Expression::le(RandomInit& o) {
   return false;
 }
 

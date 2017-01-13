@@ -97,7 +97,7 @@
 %type <valName> multiplicative_operator additive_operator
 %type <valName> relational_operator
 %type <valName> equality_operator logical_and_operator logical_or_operator
-%type <valName> push_operator assignment_operator
+%type <valName> push_operator assignment_operator random_operator
 %type <valName> base_less_operator base_equal_operator
 %type <valName> name path_name
 %type <valPath> path
@@ -165,11 +165,11 @@ path
  ***************************************************************************/
 
 bool_literal
-    : BOOL_LITERAL  { $$ = new bi::BoolLiteral($1, yytext, new bi::ModelReference(new bi::Name("Boolean")), make_loc(@$)); }
+    : BOOL_LITERAL  { $$ = new bi::BooleanLiteral($1, yytext, new bi::ModelReference(new bi::Name("Boolean")), make_loc(@$)); }
     ;
 
 int_literal
-    : INT_LITERAL  { $$ = new bi::IntLiteral($1, yytext, new bi::ModelReference(new bi::Name("Integer")), make_loc(@$)); }
+    : INT_LITERAL  { $$ = new bi::IntegerLiteral($1, yytext, new bi::ModelReference(new bi::Name("Integer")), make_loc(@$)); }
     ;
 
 real_literal
@@ -458,12 +458,16 @@ push_expression
 assignment_operator
     : LEFT_OP  { $$ = new bi::Name("<-", make_loc(@$)); }
     | PULL_OP  { $$ = new bi::Name("<~", make_loc(@$)); }
-    | '~'      { $$ = new bi::Name("~", make_loc(@$)); }
+    ;
+
+random_operator
+    : '~'      { $$ = new bi::Name("~", make_loc(@$)); }
     ;
     
 assignment_expression
     : push_expression
     | push_expression assignment_operator assignment_expression  { $$ = make_assign($1, $2, $3, make_loc(@$)); }
+    | push_expression random_operator assignment_expression      { $$ = new bi::RandomInit($1, $3, make_loc(@$)); }
     ;
 
 list_operator

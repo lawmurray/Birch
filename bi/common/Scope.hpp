@@ -10,13 +10,11 @@
 namespace bi {
 class VarParameter;
 class FuncParameter;
-class RandomParameter;
 class ModelParameter;
 class ProgParameter;
 
 class VarReference;
 class FuncReference;
-class RandomReference;
 class ModelReference;
 class ProgReference;
 
@@ -37,7 +35,6 @@ public:
    */
   bool contains(VarParameter* param);
   bool contains(FuncParameter* param);
-  bool contains(RandomParameter* param);
   bool contains(ModelParameter* param);
   bool contains(ProgParameter* param);
 
@@ -48,7 +45,6 @@ public:
    */
   void add(VarParameter* param);
   void add(FuncParameter* param);
-  void add(RandomParameter* random);
   void add(ModelParameter* param);
   void add(ProgParameter* param);
 
@@ -61,7 +57,6 @@ public:
    */
   VarParameter* resolve(VarReference* ref);
   FuncParameter* resolve(FuncReference* ref);
-  RandomParameter* resolve(RandomReference* ref);
   ModelParameter* resolve(ModelReference* ref);
 
   /**
@@ -84,7 +79,6 @@ public:
   Dictionary<VarParameter,VarReference> vars;
   Dictionary<ModelParameter,ModelReference> models;
   OverloadedDictionary<FuncParameter,FuncReference> funcs;
-  Dictionary<RandomParameter,RandomReference> randoms;
   Dictionary<ProgParameter,ProgReference> progs;
 
 private:

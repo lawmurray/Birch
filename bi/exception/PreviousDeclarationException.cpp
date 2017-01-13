@@ -34,8 +34,6 @@ template bi::PreviousDeclarationException::PreviousDeclarationException(
 template bi::PreviousDeclarationException::PreviousDeclarationException(
     FuncParameter* param, FuncParameter* prev);
 template bi::PreviousDeclarationException::PreviousDeclarationException(
-    RandomParameter* param, RandomParameter* prev);
-template bi::PreviousDeclarationException::PreviousDeclarationException(
     ModelParameter* param, ModelParameter* prev);
 template bi::PreviousDeclarationException::PreviousDeclarationException(
     ProgParameter* param, ProgParameter* prev);

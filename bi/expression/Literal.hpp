@@ -57,14 +57,14 @@ public:
  *
  * @ingroup compiler_expression
  */
-typedef Literal<bool> BoolLiteral;
+typedef Literal<bool> BooleanLiteral;
 
 /**
  * Integer literal.
  *
  * @ingroup compiler_expression
  */
-typedef Literal<int64_t> IntLiteral;
+typedef Literal<int64_t> IntegerLiteral;
 
 /**
  * Floating point literal.
@@ -78,5 +78,5 @@ typedef Literal<double> RealLiteral;
  *
  * @ingroup compiler_expression
  */
-typedef Literal<std::string> StringLiteral;
+typedef Literal<const char*> StringLiteral;
 }

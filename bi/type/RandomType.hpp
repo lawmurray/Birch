@@ -5,7 +5,6 @@
 
 #include "bi/type/Type.hpp"
 #include "bi/common/Binary.hpp"
-#include "bi/common/Scoped.hpp"
 
 namespace bi {
 /**
@@ -13,7 +12,7 @@ namespace bi {
  *
  * @ingroup compiler_type
  */
-class RandomType: public Type, public Scoped, public TypeBinary {
+class RandomType: public Type, public TypeBinary {
 public:
   /**
    * Constructor.
@@ -32,16 +31,6 @@ public:
   virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
-
-  /**
-   * Member variable for the variate.
-   */
-  unique_ptr<Expression> x;
-
-  /**
-   * Member variable for the model.
-   */
-  unique_ptr<Expression> m;
 
   virtual bool dispatch(Type& o);
   virtual bool le(EmptyType& o);

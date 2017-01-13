@@ -62,12 +62,6 @@ bi::Expression* bi::Resolver::modify(Member* o) {
   if (ref) {
     membershipScope = ref->target->scope.get();
   } else {
-    RandomType* random = dynamic_cast<RandomType*>(o->left->type.get());
-    if (random) {
-      membershipScope = random->scope.get();
-    }
-  }
-  if (!membershipScope) {
     throw MemberException(o);
   }
   o->right = o->right->accept(this);
@@ -85,6 +79,26 @@ bi::Expression* bi::Resolver::modify(This* o) {
     o->type = new ModelReference(model()->name, new EmptyExpression(),
         nullptr, model());
   }
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(RandomInit* o) {
+  Modifier::modify(o);
+  if (!inInputs && !o->left->type->assignable) {
+    throw NotAssignableException(o->left.get());
+  }
+  o->type = o->left->type->accept(&cloner)->accept(this);
+
+  if (!inInputs) {
+    o->pull = new FuncReference(o->left->accept(&cloner), new Name("<~"),
+        o->right->accept(&cloner));
+    o->pull->accept(this);
+
+    o->push = new FuncReference(o->left->accept(&cloner), new Name("~>"),
+        o->right->accept(&cloner));
+    o->push->accept(this);
+  }
+
   return o;
 }
 
@@ -113,16 +127,7 @@ bi::Expression* bi::Resolver::modify(VarReference* o) {
   o->type = o->target->type->accept(&cloner)->accept(this);
   o->type->assignable = o->target->type->assignable;
 
-  /* substitute with random variable if possible */
-  RandomReference* random = new RandomReference(o);
-  try {
-    random->accept(this);
-  } catch (UnresolvedReferenceException e) {
-    delete random;
-    return o;
-  }
-
-  return random;
+  return o;
 }
 
 bi::Expression* bi::Resolver::modify(FuncReference* o) {
@@ -147,16 +152,6 @@ bi::Expression* bi::Resolver::modify(FuncReference* o) {
     o->args.push_back((*iter)->arg);
   }
 
-  return o;
-}
-
-bi::Expression* bi::Resolver::modify(RandomReference* o) {
-  Scope* membershipScope = takeMembershipScope();
-  Modifier::modify(o);
-  resolve(o, membershipScope);
-  o->type = o->target->type->accept(&cloner)->accept(this);
-  o->type->assignable = true;
-  o->right->type = o->target->right->type->accept(&cloner)->accept(this);
   return o;
 }
 
@@ -200,33 +195,6 @@ bi::Expression* bi::Resolver::modify(FuncParameter* o) {
   Gatherer<VarParameter> gatherer2;
   o->result->accept(&gatherer2);
   o->outputs = gatherer2.gathered;
-
-  return o;
-}
-
-bi::Expression* bi::Resolver::modify(RandomParameter* o) {
-  Modifier::modify(o);
-  if (!inInputs && !o->left->type->assignable) {
-    throw NotAssignableException(o->left.get());
-  } else {
-    o->left->type->assignable = true;
-  }
-  o->right->type->assignable = true;
-  o->type = new RandomType(o->left->type->accept(&cloner),
-      o->right->type->accept(&cloner));
-  o->type->accept(this);
-
-  if (!inInputs) {
-    o->pull = new FuncReference(o->left->accept(&cloner), new Name("<~"),
-        o->right->accept(&cloner));
-    o->pull->accept(this);
-
-    o->push = new FuncReference(o->left->accept(&cloner), new Name("~>"),
-        o->right->accept(&cloner));
-    o->push->accept(this);
-  }
-
-  top()->add(o);
 
   return o;
 }
@@ -313,17 +281,9 @@ bi::Statement* bi::Resolver::modify(Loop* o) {
 }
 
 bi::Type* bi::Resolver::modify(RandomType* o) {
-  push();
   Modifier::modify(o);
   o->left->assignable = true;
   o->right->assignable = true;
-
-  o->x = new VarParameter(new Name("x"), o->left->accept(&cloner));
-  o->x->accept(this);
-  o->m = new VarParameter(new Name("m"), o->right->accept(&cloner));
-  o->m->accept(this);
-
-  o->scope = pop();
   return o;
 }
 
@@ -408,5 +368,4 @@ bi::ModelParameter* bi::Resolver::model() {
 
 template void bi::Resolver::resolve(VarReference* ref, Scope* scope);
 template void bi::Resolver::resolve(FuncReference* ref, Scope* scope);
-template void bi::Resolver::resolve(RandomReference* ref, Scope* scope);
 template void bi::Resolver::resolve(ModelReference* ref, Scope* scope);

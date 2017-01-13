@@ -15,12 +15,12 @@ bi::Type* bi::Cloner::clone(const EmptyType* o) {
   return new EmptyType();
 }
 
-bi::Expression* bi::Cloner::clone(const BoolLiteral* o) {
-  return new BoolLiteral(o->value, o->str, o->type->accept(this), o->loc);
+bi::Expression* bi::Cloner::clone(const BooleanLiteral* o) {
+  return new BooleanLiteral(o->value, o->str, o->type->accept(this), o->loc);
 }
 
-bi::Expression* bi::Cloner::clone(const IntLiteral* o) {
-  return new IntLiteral(o->value, o->str, o->type->accept(this), o->loc);
+bi::Expression* bi::Cloner::clone(const IntegerLiteral* o) {
+  return new IntegerLiteral(o->value, o->str, o->type->accept(this), o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const RealLiteral* o) {
@@ -28,18 +28,17 @@ bi::Expression* bi::Cloner::clone(const RealLiteral* o) {
 }
 
 bi::Expression* bi::Cloner::clone(const StringLiteral* o) {
-  return new StringLiteral(o->value, o->str, o->type->accept(this),
-      o->loc);
+  return new StringLiteral(o->value, o->str, o->type->accept(this), o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const ExpressionList* o) {
-  return new ExpressionList(o->head->accept(this),
-      o->tail->accept(this), o->loc);
+  return new ExpressionList(o->head->accept(this), o->tail->accept(this),
+      o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const StatementList* o) {
-  return new StatementList(o->head->accept(this),
-      o->tail->accept(this), o->loc);
+  return new StatementList(o->head->accept(this), o->tail->accept(this),
+      o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const ParenthesesExpression* o) {
@@ -56,21 +55,19 @@ bi::Expression* bi::Cloner::clone(const BracketsExpression* o) {
 }
 
 bi::Expression* bi::Cloner::clone(const Range* o) {
-  return new Range(o->left->accept(this), o->right->accept(this),
-      o->loc);
+  return new Range(o->left->accept(this), o->right->accept(this), o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const Member* o) {
-  return new Member(o->left->accept(this),
-      o->right->accept(this), o->loc);
+  return new Member(o->left->accept(this), o->right->accept(this), o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const This* o) {
   return new This(o->loc);
 }
 
-bi::Expression* bi::Cloner::clone(const RandomRight* o) {
-  return new RandomRight(o->name, o->loc);
+bi::Expression* bi::Cloner::clone(const RandomInit* o) {
+  return new RandomInit(o->left->accept(this), o->right->accept(this), o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const VarReference* o) {
@@ -78,12 +75,7 @@ bi::Expression* bi::Cloner::clone(const VarReference* o) {
 }
 
 bi::Expression* bi::Cloner::clone(const FuncReference* o) {
-  return new FuncReference(o->name, o->parens->accept(this), o->form,
-      o->loc);
-}
-
-bi::Expression* bi::Cloner::clone(const RandomReference* o) {
-  return new RandomReference(o->name, o->loc);
+  return new FuncReference(o->name, o->parens->accept(this), o->form, o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const ModelReference* o) {
@@ -101,13 +93,7 @@ bi::Expression* bi::Cloner::clone(const VarParameter* o) {
 
 bi::Expression* bi::Cloner::clone(const FuncParameter* o) {
   return new FuncParameter(o->name, o->parens->accept(this),
-      o->result->accept(this), o->braces->accept(this), o->form,
-      o->loc);
-}
-
-bi::Expression* bi::Cloner::clone(const RandomParameter* o) {
-  return new RandomParameter(o->left->accept(this),
-      o->right->accept(this), o->loc);
+      o->result->accept(this), o->braces->accept(this), o->form, o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const ModelParameter* o) {
@@ -121,8 +107,7 @@ bi::Prog* bi::Cloner::clone(const ProgParameter* o) {
 }
 
 bi::File* bi::Cloner::clone(const File* o) {
-  return new File(o->path, o->imports->accept(this),
-      o->root->accept(this));
+  return new File(o->path, o->imports->accept(this), o->root->accept(this));
 }
 
 bi::Statement* bi::Cloner::clone(const Import* o) {
@@ -134,13 +119,12 @@ bi::Statement* bi::Cloner::clone(const ExpressionStatement* o) {
 }
 
 bi::Statement* bi::Cloner::clone(const Conditional* o) {
-  return new Conditional(o->cond->accept(this),
-      o->braces->accept(this), o->falseBraces->accept(this), o->loc);
+  return new Conditional(o->cond->accept(this), o->braces->accept(this),
+      o->falseBraces->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const Loop* o) {
-  return new Loop(o->cond->accept(this), o->braces->accept(this),
-      o->loc);
+  return new Loop(o->cond->accept(this), o->braces->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const Raw* o) {
@@ -172,11 +156,9 @@ bi::Type* bi::Cloner::clone(const ParenthesesType* o) {
 }
 
 bi::Type* bi::Cloner::clone(const RandomType* o) {
-  return new RandomType(o->left->accept(this),
-      o->right->accept(this), o->loc);
+  return new RandomType(o->left->accept(this), o->right->accept(this), o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const TypeList* o) {
-  return new TypeList(o->head->accept(this), o->tail->accept(this),
-      o->loc);
+  return new TypeList(o->head->accept(this), o->tail->accept(this), o->loc);
 }

@@ -11,11 +11,11 @@ bi::bi_ostream::bi_ostream(std::ostream& base, const int level,
   //   places
 }
 
-void bi::bi_ostream::visit(const BoolLiteral* o) {
+void bi::bi_ostream::visit(const BooleanLiteral* o) {
   *this << o->str;
 }
 
-void bi::bi_ostream::visit(const IntLiteral* o) {
+void bi::bi_ostream::visit(const IntegerLiteral* o) {
   *this << o->str;
 }
 
@@ -59,10 +59,6 @@ void bi::bi_ostream::visit(const BracesExpression* o) {
   *this << indent << '}';
 }
 
-void bi::bi_ostream::visit(const RandomParameter* o) {
-  *this << o->left << " ~ " << o->right;
-}
-
 void bi::bi_ostream::visit(const Range* o) {
   *this << o->left << ".." << o->right;
 }
@@ -73,6 +69,10 @@ void bi::bi_ostream::visit(const Member* o) {
 
 void bi::bi_ostream::visit(const This* o) {
   *this << "this";
+}
+
+void bi::bi_ostream::visit(const RandomInit* o) {
+  *this << o->left << " ~ " << o->right;
 }
 
 void bi::bi_ostream::visit(const BracketsExpression* o) {

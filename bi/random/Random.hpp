@@ -18,6 +18,16 @@ template<class Variate, class Model>
 class Random: public Expirable {
 public:
   /**
+   * Pull function type.
+   */
+  typedef std::function<void(Random<Variate,Model>&)> pull_type;
+
+  /**
+   * Push function type.
+   */
+  typedef std::function<void()> push_type;
+
+  /**
    * Constructor.
    */
   Random();
@@ -26,9 +36,10 @@ public:
    * Initialise.
    *
    * @param m Model.
-   * @param push Push expression.
+   * @param pull Pull lambda.
+   * @param push Push lambda.
    */
-  void init(const Model& m, std::function<void()> push);
+  void init(const Model& m, pull_type pull, push_type push);
 
   /**
    * Assign to variate.
@@ -67,9 +78,14 @@ public:
 
 private:
   /**
-   * Push function.
+   * Pull lambda.
    */
-  std::function<void(const Variate&)> push;
+  pull_type pull;
+
+  /**
+   * Push lambda.
+   */
+  push_type push;
 
   /**
    * Position in random variable stack.
@@ -94,13 +110,14 @@ bi::Random<Variate,Model>::Random() :
 
 template<class Variate, class Model>
 void bi::Random<Variate,Model>::init(const Model& m,
-    std::function<void()> push) {
+    pull_type pull, push_type push) {
   this->m = m;
+  this->pull = pull;
   this->push = push;
 
   if (!missing) {
     /* push immediately */
-    push(x);
+    push();
   } else {
     /* lazy sampling */
     this->pos = randomStack.push(this);
@@ -147,7 +164,7 @@ void bi::Random<Variate,Model>::expire() {
   /* pre-condition */
   assert(missing);
 
-  pull_(x, m);
+  pull(*this);
   missing = false;
-  push(x);
+  push();
 }

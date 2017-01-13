@@ -58,4 +58,4 @@ bool bi::Literal<T1>::le(VarParameter& o) {
 template class bi::Literal<bool>;
 template class bi::Literal<int64_t>;
 template class bi::Literal<double>;
-template class bi::Literal<std::string>;
+template class bi::Literal<const char*>;

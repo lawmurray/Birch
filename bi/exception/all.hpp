@@ -14,7 +14,6 @@
 #include "bi/exception/MemoryException.hpp"
 #include "bi/exception/NetCDFException.hpp"
 #include "bi/exception/PreviousDeclarationException.hpp"
-#include "bi/exception/PreviousRandomException.hpp"
 #include "bi/exception/ThisException.hpp"
 #include "bi/exception/UnknownOptionException.hpp"
 #include "bi/exception/UnresolvedReferenceException.hpp"

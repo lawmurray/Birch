@@ -63,7 +63,7 @@ bool bi::ParenthesesExpression::le(FuncReference& o) {
   return *single <= o;
 }
 
-bool bi::ParenthesesExpression::le(Literal<bool>& o) {
+bool bi::ParenthesesExpression::le(Literal<unsigned char>& o) {
   return *single <= o;
 }
 
@@ -75,7 +75,7 @@ bool bi::ParenthesesExpression::le(Literal<double>& o) {
   return *single <= o;
 }
 
-bool bi::ParenthesesExpression::le(Literal<std::string>& o) {
+bool bi::ParenthesesExpression::le(Literal<const char*>& o) {
   return *single <= o;
 }
 
@@ -87,11 +87,7 @@ bool bi::ParenthesesExpression::le(ParenthesesExpression& o) {
   return *single <= *o.single;
 }
 
-bool bi::ParenthesesExpression::le(RandomParameter& o) {
-  return *single <= o;
-}
-
-bool bi::ParenthesesExpression::le(RandomReference& o) {
+bool bi::ParenthesesExpression::le(RandomInit& o) {
   return *single <= o;
 }
 

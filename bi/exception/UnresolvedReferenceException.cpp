@@ -30,8 +30,6 @@ template bi::UnresolvedReferenceException::UnresolvedReferenceException(
 template bi::UnresolvedReferenceException::UnresolvedReferenceException(
     const FuncReference* ref);
 template bi::UnresolvedReferenceException::UnresolvedReferenceException(
-    const RandomReference* ref);
-template bi::UnresolvedReferenceException::UnresolvedReferenceException(
     const ModelReference* ref);
 template bi::UnresolvedReferenceException::UnresolvedReferenceException(
     const ProgReference* ref);

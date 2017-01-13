@@ -15,11 +15,11 @@ void bi::IsPrimary::visit(const EmptyStatement* o) {
   result = true;
 }
 
-void bi::IsPrimary::visit(const BoolLiteral* o) {
+void bi::IsPrimary::visit(const BooleanLiteral* o) {
   result = true;
 }
 
-void bi::IsPrimary::visit(const IntLiteral* o) {
+void bi::IsPrimary::visit(const IntegerLiteral* o) {
   result = true;
 }
 
@@ -75,7 +75,7 @@ void bi::IsPrimary::visit(const This* o) {
   result = true;
 }
 
-void bi::IsPrimary::visit(const RandomRight* o) {
+void bi::IsPrimary::visit(const RandomInit* o) {
   result = true;
 }
 
@@ -84,10 +84,6 @@ void bi::IsPrimary::visit(const VarReference* o) {
 }
 
 void bi::IsPrimary::visit(const FuncReference* o) {
-  result = true;
-}
-
-void bi::IsPrimary::visit(const RandomReference* o) {
   result = true;
 }
 
@@ -101,10 +97,6 @@ void bi::IsPrimary::visit(const VarParameter* o) {
 
 void bi::IsPrimary::visit(const FuncParameter* o) {
   result = true;
-}
-
-void bi::IsPrimary::visit(const RandomParameter* o) {
-  result = false;
 }
 
 void bi::IsPrimary::visit(const ModelParameter* o) {

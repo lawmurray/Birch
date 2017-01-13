@@ -15,11 +15,11 @@ void bi::IsRich::visit(const EmptyStatement* o) {
   Visitor::visit(o);
 }
 
-void bi::IsRich::visit(const BoolLiteral* o) {
+void bi::IsRich::visit(const BooleanLiteral* o) {
   Visitor::visit(o);
 }
 
-void bi::IsRich::visit(const IntLiteral* o) {
+void bi::IsRich::visit(const IntegerLiteral* o) {
   Visitor::visit(o);
 }
 
@@ -83,8 +83,9 @@ void bi::IsRich::visit(const This* o) {
   result = true;
 }
 
-void bi::IsRich::visit(const RandomRight* o) {
-  Visitor::visit(o);
+void bi::IsRich::visit(const RandomInit* o) {
+  //Visitor::visit(o);
+  result = true;
 }
 
 void bi::IsRich::visit(const VarReference* o) {
@@ -96,10 +97,6 @@ void bi::IsRich::visit(const FuncReference* o) {
   result = true;
 }
 
-void bi::IsRich::visit(const RandomReference* o) {
-  Visitor::visit(o);
-}
-
 void bi::IsRich::visit(const ModelReference* o) {
   Visitor::visit(o);
 }
@@ -109,11 +106,6 @@ void bi::IsRich::visit(const VarParameter* o) {
 }
 
 void bi::IsRich::visit(const FuncParameter* o) {
-  //Visitor::visit(o);
-  result = true;
-}
-
-void bi::IsRich::visit(const RandomParameter* o) {
   //Visitor::visit(o);
   result = true;
 }

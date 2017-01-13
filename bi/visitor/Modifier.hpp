@@ -25,8 +25,8 @@ public:
   virtual Statement* modify(EmptyStatement* o);
   virtual Type* modify(EmptyType* o);
 
-  virtual Expression* modify(BoolLiteral* o);
-  virtual Expression* modify(IntLiteral* o);
+  virtual Expression* modify(BooleanLiteral* o);
+  virtual Expression* modify(IntegerLiteral* o);
   virtual Expression* modify(RealLiteral* o);
   virtual Expression* modify(StringLiteral* o);
   virtual void modify(Name* o);
@@ -39,17 +39,15 @@ public:
   virtual Expression* modify(Range* o);
   virtual Expression* modify(Member* o);
   virtual Expression* modify(This* o);
-  virtual Expression* modify(RandomRight* o);
+  virtual Expression* modify(RandomInit* o);
 
   virtual Expression* modify(VarReference* o);
   virtual Expression* modify(FuncReference* o);
-  virtual Expression* modify(RandomReference* o);
   virtual Type* modify(ModelReference* o);
   virtual Prog* modify(ProgReference* o);
 
   virtual Expression* modify(VarParameter* o);
   virtual Expression* modify(FuncParameter* o);
-  virtual Expression* modify(RandomParameter* o);
   virtual Type* modify(ModelParameter* o);
   virtual Prog* modify(ProgParameter* o);
 

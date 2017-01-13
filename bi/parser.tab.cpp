@@ -1701,13 +1701,13 @@ yyreduce:
 
   case 9:
 #line 158 "parser.ypp" /* yacc.c:1661  */
-    { (yyval.valExpression) = new bi::BoolLiteral((yyvsp[0].valBool), yytext, new bi::ModelReference(new bi::Name("Boolean")), make_loc((yyloc))); }
+    { (yyval.valExpression) = new bi::BooleanLiteral((yyvsp[0].valBool), yytext, new bi::ModelReference(new bi::Name("Boolean")), make_loc((yyloc))); }
 #line 1706 "parser.tab.cpp" /* yacc.c:1661  */
     break;
 
   case 10:
 #line 162 "parser.ypp" /* yacc.c:1661  */
-    { (yyval.valExpression) = new bi::IntLiteral((yyvsp[0].valInt), yytext, new bi::ModelReference(new bi::Name("Integer")), make_loc((yyloc))); }
+    { (yyval.valExpression) = new bi::IntegerLiteral((yyvsp[0].valInt), yytext, new bi::ModelReference(new bi::Name("Integer")), make_loc((yyloc))); }
 #line 1712 "parser.tab.cpp" /* yacc.c:1661  */
     break;
 

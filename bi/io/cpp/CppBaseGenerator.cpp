@@ -12,20 +12,20 @@ bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
   //
 }
 
-void bi::CppBaseGenerator::visit(const BoolLiteral* o) {
-  *this << "bi::model::Boolean<>((unsigned char)" << o->str << ')';
+void bi::CppBaseGenerator::visit(const BooleanLiteral* o) {
+  *this << "bi::make_bool(" << o->str << ')';
 }
 
-void bi::CppBaseGenerator::visit(const IntLiteral* o) {
-  *this << "bi::model::Integer<>((int64_t)" << o->str << ')';
+void bi::CppBaseGenerator::visit(const IntegerLiteral* o) {
+  *this << "bi::make_int(" << o->str << ')';
 }
 
 void bi::CppBaseGenerator::visit(const RealLiteral* o) {
-  *this << "bi::model::Real<>((double)" << o->str << ')';
+  *this << "bi::make_real(" << o->str << ')';
 }
 
 void bi::CppBaseGenerator::visit(const StringLiteral* o) {
-  *this << "bi::model::String<>(" << o->str << ')';
+  *this << "bi::make_string(" << o->str << ')';
 }
 
 void bi::CppBaseGenerator::visit(const Name* o) {
@@ -85,8 +85,19 @@ void bi::CppBaseGenerator::visit(const This* o) {
   middle("*this");
 }
 
-void bi::CppBaseGenerator::visit(const RandomRight* o) {
-  middle(o->name << ".m");
+void bi::CppBaseGenerator::visit(const RandomInit* o) {
+  finish(o->left << ".init(" << o->right << ",");
+  in();
+  in();
+  line("[](" << o->left->type << "& rv) {");
+  in();
+  line("pull_(rv.x, rv.m);");
+  out();
+  line("}, [&]() { ");
+  in();
+  line(o->push << ';');
+  out();
+  start("})");
 }
 
 void bi::CppBaseGenerator::visit(const Member* o) {
@@ -109,24 +120,26 @@ void bi::CppBaseGenerator::visit(const FuncReference* o) {
     assert(o->args.size() == 2);
     auto arg1 = *o->args.begin();
     auto arg2 = *(++o->args.begin());
-    if (arg1->isPrimary()) {
-      middle(arg1);
-    } else {
-      middle('(' << arg1 << ')');
-    }
+    //if (arg1->isPrimary()) {
+    middle(arg1);
+    //} else {
+    //  middle('(' << arg1 << ')');
+    //}
     middle(' ' << translate(o->name->str()) << ' ');
-    if (arg2->isPrimary()) {
-      middle(arg2);
-    } else {
-      middle('(' << arg2 << ')');
-    }
+    //if (arg2->isPrimary()) {
+    middle(arg2);
+    //} else {
+    //  middle('(' << arg2 << ')');
+    //}
   } else if (o->isUnary() && isTranslatable(o->name->str())
       && !o->target->parens->isRich()) {
     assert(o->args.size() == 1);
     auto iter = o->args.begin();
     middle(translate(o->name->str()) << ' ' << *iter);
   } else {
-    middle("bi::function::" << o->target->unique);
+    middle("bi::");
+    //middle("function::");
+    middle(o->target->unique);
     if (o->isConstructor()) {
       middle("<>");
     }
@@ -139,10 +152,6 @@ void bi::CppBaseGenerator::visit(const FuncReference* o) {
     }
     middle(')');
   }
-}
-
-void bi::CppBaseGenerator::visit(const RandomReference* o) {
-  middle(o->name);
 }
 
 void bi::CppBaseGenerator::visit(const ModelReference* o) {
@@ -179,16 +188,6 @@ void bi::CppBaseGenerator::visit(const VarParameter* o) {
   if (!o->value->isEmpty()) {
     middle(" = " << o->value);
   }
-}
-
-void bi::CppBaseGenerator::visit(const RandomParameter* o) {
-  middle(o->type << ' ' << o->name << '(');
-  finish(o->left << ", " << o->right << ",");
-  in();
-  in();
-  start("[&]() { " << o->push << "; })");
-  out();
-  out();
 }
 
 void bi::CppBaseGenerator::visit(const ExpressionStatement* o) {

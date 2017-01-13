@@ -75,11 +75,11 @@ void bi::CppFileGenerator::visit(const FuncParameter* o) {
 
     if (header) {
       line("namespace bi {");
-      if (!op) {
-        in();
-        line("namespace function {");
-        out();
-      }
+      //if (!op) {
+      //  in();
+      //  line("namespace function {");
+      //  out();
+      //}
     }
 
     /* template parameters */
@@ -92,9 +92,9 @@ void bi::CppFileGenerator::visit(const FuncParameter* o) {
     /* name */
     if (!header) {
       middle("bi::");
-      if (!op) {
-        middle("function::");
-      }
+      //if (!op) {
+      //  middle("function::");
+      //}
     }
     if ((o->isBinary() || o->isUnary()) && isTranslatable(o->name->str())
         && !o->parens->isRich()) {
@@ -131,11 +131,11 @@ void bi::CppFileGenerator::visit(const FuncParameter* o) {
       finish("}\n");
     }
     if (header) {
-      if (!op) {
-        in();
-        line("}");
-        out();
-      }
+      //if (!op) {
+      //  in();
+      //  line("}");
+      //  out();
+      //}
       line("}\n");
     }
   }
