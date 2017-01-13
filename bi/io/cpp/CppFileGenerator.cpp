@@ -17,6 +17,7 @@
 
 #include <sstream>
 #include <iomanip>
+#include <typeinfo>
 
 bi::CppFileGenerator::CppFileGenerator(std::ostream& base, const int level,
     const bool header) :
@@ -70,7 +71,8 @@ void bi::CppFileGenerator::visit(const VarDeclaration* o) {
 
 void bi::CppFileGenerator::visit(const FuncParameter* o) {
   if (!o->braces->isEmpty()) {
-    bool op = (o->isUnary() || o->isBinary()) && isTranslatable(o->name->str());
+    bool op = (o->isUnary() || o->isBinary())
+        && isTranslatable(o->name->str());
     // ^ prefix and infix operators go in bi namespace, not bi::function
 
     if (header) {
@@ -264,17 +266,24 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
         finish(':');
         in();
         start(name << " = ");
-        auto type = dynamic_cast<ModelReference*>((*iter)->type.get());
-        assert(type);
-        auto& typeName = type->name->str();
-        if (typeName.compare("Boolean") == 0) {
-          middle("atoi(optarg)");
-        } else if (typeName.compare("Integer") == 0) {
-          middle("atoi(optarg)");
-        } else if (typeName.compare("Real") == 0) {
-          middle("atof(optarg)");
-        } else if (typeName.compare("String") == 0) {
-          middle("optarg");
+        Type* type = (*iter)->type->strip();
+
+        if (typeid(*type) == typeid(RandomType)) {
+          type = dynamic_cast<const RandomType*>(type)->left.get();
+        }
+        if (typeid(*type) == typeid(ModelReference)) {
+          std::string typeName = dynamic_cast<const ModelReference*>(type)->name->str();
+          if (typeName.compare("Boolean") == 0) {
+            middle("bi::make_bool(atoi(optarg))");
+          } else if (typeName.compare("Integer") == 0) {
+            middle("bi::make_int(atoi(optarg))");
+          } else if (typeName.compare("Real") == 0) {
+            middle("bi::make_real(atof(optarg))");
+          } else if (typeName.compare("String") == 0) {
+            middle("bi::make_string(optarg)");
+          } else {
+            throw UnsupportedOptionTypeException(type);
+          }
         } else {
           throw UnsupportedOptionTypeException(type);
         }

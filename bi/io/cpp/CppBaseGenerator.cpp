@@ -115,22 +115,19 @@ void bi::CppBaseGenerator::visit(const VarReference* o) {
 }
 
 void bi::CppBaseGenerator::visit(const FuncReference* o) {
-  if (o->isBinary() && isTranslatable(o->name->str())
+  if (*o->name == "<-") {
+    //if (*o->getLeft()->type <= *o->getRight()->type) {
+      middle(o->getLeft() << " = " <<  o->getRight());
+    //} else {
+    //  middle("bi::" << o->target->unique);
+    //  middle('(' << o->getLeft() << ", " << o->getRight() << ')');
+    //}
+  } else if (o->isBinary() && isTranslatable(o->name->str())
       && !o->target->parens->isRich()) {
-    assert(o->args.size() == 2);
-    auto arg1 = *o->args.begin();
-    auto arg2 = *(++o->args.begin());
     //if (arg1->isPrimary()) {
-    middle(arg1);
-    //} else {
-    //  middle('(' << arg1 << ')');
-    //}
+    middle(o->getLeft());
     middle(' ' << translate(o->name->str()) << ' ');
-    //if (arg2->isPrimary()) {
-    middle(arg2);
-    //} else {
-    //  middle('(' << arg2 << ')');
-    //}
+    middle(o->getRight());
   } else if (o->isUnary() && isTranslatable(o->name->str())
       && !o->target->parens->isRich()) {
     assert(o->args.size() == 1);
