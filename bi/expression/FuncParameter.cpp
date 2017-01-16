@@ -18,11 +18,7 @@ bi::FuncParameter::FuncParameter(shared_ptr<Name> name, Expression* parens,
     Formed(form),
     result(result) {
   this->arg = this;
-  if (parens->isRich()) {
-    this->unique = new Name(uniqueName(this));
-  } else {
-    this->unique = new Name(internalName(this));
-  }
+  this->mangled = new Name(mangle(this));
 }
 
 bi::FuncParameter::~FuncParameter() {

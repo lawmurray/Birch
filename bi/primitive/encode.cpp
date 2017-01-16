@@ -3,7 +3,7 @@
  */
 #include "bi/primitive/encode.hpp"
 
-#include "bi/io/bih_ostream.hpp"
+#include "bi/io/mangler_ostream.hpp"
 #include "bi/expression/all.hpp"
 
 #include <iostream>
@@ -73,41 +73,27 @@ unsigned char bi::decode32(const unsigned char c) {
   return d;
 }
 
-std::string bi::uniqueName(const FuncParameter* o) {
+std::string bi::mangle(const FuncParameter* o) {
   std::stringstream buf;
   std::string decoded, encoded;
 
   /* encode */
-  bi::bih_ostream stream(buf);
-  stream << o->parens;
+  bi::mangler_ostream stream(buf);
+  stream << o->parens->strip();
   decoded = buf.str();
   encode32(decoded, encoded);
 
   /* construct unique name */
   buf.str("");
-  buf << internalName(o) << '_' << encoded << '_';
+  buf << internalise(o);
+  if (encoded.length() > 0) {
+    buf << '_' << encoded << '_';
+  }
 
   return buf.str();
 }
 
-std::string bi::uniqueName(const Expression* o) {
-  std::stringstream buf;
-  std::string decoded, encoded;
-
-  /* encode */
-  bi::bih_ostream stream(buf);
-  stream << o;
-  decoded = buf.str();
-  encode32(decoded, encoded);
-
-  /* construct unique name */
-  buf.str("");
-  buf << "rv_" << encoded << '_';
-
-  return buf.str();
-}
-
-std::string bi::internalName(const FuncParameter* o) {
+std::string bi::internalise(const FuncParameter* o) {
   /* translations */
   static std::regex reg;
   static std::unordered_map<std::string,std::string> ops, greeks;

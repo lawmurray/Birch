@@ -98,6 +98,8 @@ void bi::CppBaseGenerator::visit(const RandomInit* o) {
   line(o->push << ';');
   out();
   start("})");
+  out();
+  out();
 }
 
 void bi::CppBaseGenerator::visit(const Member* o) {
@@ -119,7 +121,7 @@ void bi::CppBaseGenerator::visit(const FuncReference* o) {
     //if (*o->getLeft()->type <= *o->getRight()->type) {
       middle(o->getLeft() << " = " <<  o->getRight());
     //} else {
-    //  middle("bi::" << o->target->unique);
+    //  middle("bi::" << o->target->mangled);
     //  middle('(' << o->getLeft() << ", " << o->getRight() << ')');
     //}
   } else if (o->isBinary() && isTranslatable(o->name->str())
@@ -136,7 +138,7 @@ void bi::CppBaseGenerator::visit(const FuncReference* o) {
   } else {
     middle("bi::");
     //middle("function::");
-    middle(o->target->unique);
+    middle(o->target->mangled);
     if (o->isConstructor()) {
       middle("<>");
     }

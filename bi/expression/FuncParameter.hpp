@@ -56,9 +56,9 @@ public:
   unique_ptr<Expression> result;
 
   /**
-   * Unique name.
+   * Mangled name.
    */
-  shared_ptr<Name> unique;
+  shared_ptr<Name> mangled;
 
   /**
    * Input parameters

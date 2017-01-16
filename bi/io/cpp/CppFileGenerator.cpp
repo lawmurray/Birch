@@ -102,7 +102,7 @@ void bi::CppFileGenerator::visit(const FuncParameter* o) {
         && !o->parens->isRich()) {
       middle("operator" << translate(o->name->str()));
     } else {
-      middle(o->unique);
+      middle(o->mangled);
     }
 
     /* parameters */

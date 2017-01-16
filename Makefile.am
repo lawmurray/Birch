@@ -83,6 +83,7 @@ birchc_SOURCES = \
   bi/io/bi_ostream.cpp \
   bi/io/cpp_ostream.cpp \
   bi/io/indentable_ostream.cpp \
+  bi/io/mangler_ostream.cpp \
   bi/primitive/encode.cpp \
   bi/primitive/signature_less_equal.cpp \
   bi/program/Prog.cpp \
