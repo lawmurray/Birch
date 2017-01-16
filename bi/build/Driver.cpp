@@ -293,32 +293,34 @@ void bi::Driver::run(const std::string& prog) {
 }
 
 void bi::Driver::install() {
-  /* command */
-  std::stringstream cmd;
-  cmd << "make install";
-  if (force) {
-    cmd << " --always-make";
+  if (!dry_build) {
+    /* command */
+    std::stringstream cmd;
+    cmd << "make install";
+    if (force) {
+      cmd << " --always-make";
+    }
+
+    if (verbose) {
+      std::cerr << cmd.str() << std::endl;
+    } else {
+      cmd << " > install.log 2>&1";
+    }
+
+    /* change into build dir */
+    current_path(build_dir);
+
+    int ret = system(cmd.str().c_str());
+    if (ret == -1) {
+      throw DriverException("make install failed to execute.");
+    } else if (ret != 0) {
+      throw DriverException((std::stringstream() <<
+          "make install died with signal " << ret << ". See " << (build_dir / "install.log").string() << " for details.").str());
+    }
+
+    /* change back to original working dir */
+    current_path(work_dir);
   }
-
-  if (verbose) {
-    std::cerr << cmd.str() << std::endl;
-  } else {
-    cmd << " > install.log 2>&1";
-  }
-
-  /* change into build dir */
-  current_path(build_dir);
-
-  int ret = system(cmd.str().c_str());
-  if (ret == -1) {
-    throw DriverException("make install failed to execute.");
-  } else if (ret != 0) {
-    throw DriverException((std::stringstream() <<
-        "make install died with signal " << ret << ". See " << (build_dir / "install.log").string() << " for details.").str());
-  }
-
-  /* change back to original working dir */
-  current_path(work_dir);
 }
 
 void bi::Driver::uninstall() {
@@ -682,10 +684,12 @@ void bi::Driver::make() {
 }
 
 void bi::Driver::unlock() {
-  if (isLocked) {
-    lockFile.unlock();
+  if (!dry_build) {
+    if (isLocked) {
+      lockFile.unlock();
+    }
+    isLocked = false;
   }
-  isLocked = false;
 }
 
 void bi::Driver::lock() {
