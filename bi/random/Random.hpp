@@ -62,6 +62,11 @@ public:
   operator Model&();
 
   /**
+   * Is the value missing?
+   */
+  bool isMissing() const;
+
+  /**
    * Expire the random variable.
    */
   virtual void expire();
@@ -157,6 +162,11 @@ bi::Random<Variate,Model>::operator Model&() {
   assert(missing);
 
   return m;
+}
+
+template<class Variate, class Model>
+inline bool bi::Random<Variate,Model>::isMissing() const {
+  return missing;
 }
 
 template<class Variate, class Model>
