@@ -63,12 +63,12 @@ void bi::List<T>::accept(Visitor* visitor) const {
 }
 
 template<class T>
-bool bi::List<T>::dispatch(T& o) {
+bi::possibly bi::List<T>::dispatch(T& o) {
   return o.le(*this);
 }
 
 template<class T>
-bool bi::List<T>::le(List<T>& o) {
+bi::possibly bi::List<T>::le(List<T>& o) {
   return *head <= *o.head && *tail <= *o.tail;
 }
 

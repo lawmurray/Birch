@@ -42,12 +42,8 @@ public:
   virtual Prog* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
-  virtual bool dispatch(Prog& o);
-  virtual bool le(ProgParameter& o);
-  virtual bool le(ProgReference& o);
+  virtual possibly dispatch(Prog& o);
+  virtual possibly le(ProgParameter& o);
+  virtual possibly le(ProgReference& o);
 };
-}
-
-inline bi::ProgReference::~ProgReference() {
-  //
 }

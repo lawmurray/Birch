@@ -4,6 +4,7 @@
 #pragma once
 
 #include "bi/common/Located.hpp"
+#include "bi/primitive/possibly.hpp"
 
 namespace bi {
 class Cloner;
@@ -79,19 +80,19 @@ public:
    * functions below, which can be implemented for specific types in derived
    * classes.
    */
-  bool operator<=(Statement& o);
-  bool operator==(Statement& o);
-  virtual bool dispatch(Statement& o) = 0;
-  virtual bool le(Conditional& o);
-  virtual bool le(Declaration<VarParameter>& o);
-  virtual bool le(Declaration<FuncParameter>& o);
-  virtual bool le(Declaration<ProgParameter>& o);
-  virtual bool le(Declaration<ModelParameter>& o);
-  virtual bool le(EmptyStatement& o);
-  virtual bool le(ExpressionStatement& o);
-  virtual bool le(Import& o);
-  virtual bool le(List<Statement>& o);
-  virtual bool le(Loop& o);
-  virtual bool le(Raw& o);
+  possibly operator<=(Statement& o);
+  possibly operator==(Statement& o);
+  virtual possibly dispatch(Statement& o) = 0;
+  virtual possibly le(Conditional& o);
+  virtual possibly le(Declaration<VarParameter>& o);
+  virtual possibly le(Declaration<FuncParameter>& o);
+  virtual possibly le(Declaration<ProgParameter>& o);
+  virtual possibly le(Declaration<ModelParameter>& o);
+  virtual possibly le(EmptyStatement& o);
+  virtual possibly le(ExpressionStatement& o);
+  virtual possibly le(Import& o);
+  virtual possibly le(List<Statement>& o);
+  virtual possibly le(Loop& o);
+  virtual possibly le(Raw& o);
 };
 }

@@ -44,8 +44,8 @@ public:
    */
   unique_ptr<Expression> push;
 
-  virtual bool dispatch(Expression& o);
-  virtual bool le(RandomInit& o);
-  virtual bool le(VarParameter& o);
+  virtual possibly dispatch(Expression& o);
+  virtual possibly le(RandomInit& o);
+  virtual possibly le(VarParameter& o);
 };
 }

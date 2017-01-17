@@ -37,10 +37,10 @@ void bi::FuncParameter::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::FuncParameter::dispatch(Expression& o) {
+bi::possibly bi::FuncParameter::dispatch(Expression& o) {
   return o.le(*this);
 }
 
-bool bi::FuncParameter::le(FuncParameter& o) {
+bi::possibly bi::FuncParameter::le(FuncParameter& o) {
   return *parens <= *o.parens && *type <= *o.type && o.capture(this);
 }

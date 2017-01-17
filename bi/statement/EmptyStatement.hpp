@@ -24,7 +24,7 @@ public:
 
   virtual bool isEmpty() const;
 
-  virtual bool dispatch(Statement& o);
-  virtual bool le(EmptyStatement& o);
+  virtual possibly dispatch(Statement& o);
+  virtual possibly le(EmptyStatement& o);
 };
 }

@@ -55,8 +55,8 @@ public:
    */
   unique_ptr<T> tail;
 
-  virtual bool dispatch(T& o);
-  virtual bool le(List<T>& o);
+  virtual possibly dispatch(T& o);
+  virtual possibly le(List<T>& o);
 };
 
 /**

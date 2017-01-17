@@ -48,11 +48,7 @@ public:
    */
   std::list<const VarParameter*> inputs;
 
-  virtual bool dispatch(Prog& o);
-  virtual bool le(ProgParameter& o);
+  virtual possibly dispatch(Prog& o);
+  virtual possibly le(ProgParameter& o);
 };
-}
-
-inline bi::ProgParameter::~ProgParameter() {
-  //
 }

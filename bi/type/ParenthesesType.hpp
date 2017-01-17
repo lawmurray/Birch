@@ -34,12 +34,12 @@ public:
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
-  virtual bool dispatch(Type& o);
-  virtual bool le(EmptyType& o);
-  virtual bool le(List<Type>& o);
-  virtual bool le(ModelParameter& o);
-  virtual bool le(ModelReference& o);
-  virtual bool le(ParenthesesType& o);
-  virtual bool le(RandomType& o);
+  virtual possibly dispatch(Type& o);
+  virtual possibly le(EmptyType& o);
+  virtual possibly le(List<Type>& o);
+  virtual possibly le(ModelParameter& o);
+  virtual possibly le(ModelReference& o);
+  virtual possibly le(ParenthesesType& o);
+  virtual possibly le(RandomType& o);
 };
 }

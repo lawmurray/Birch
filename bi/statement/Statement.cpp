@@ -16,54 +16,54 @@ bool bi::Statement::isEmpty() const {
   return false;
 }
 
-bool bi::Statement::operator<=(Statement& o) {
+bi::possibly bi::Statement::operator<=(Statement& o) {
   return o.dispatch(*this);
 }
 
-bool bi::Statement::operator==(Statement& o) {
+bi::possibly bi::Statement::operator==(Statement& o) {
   return *this <= o && o <= *this;
 }
 
-bool bi::Statement::le(Conditional& o) {
-  return false;
+bi::possibly bi::Statement::le(Conditional& o) {
+  return untrue;
 }
 
-bool bi::Statement::le(Declaration<VarParameter>& o) {
-  return false;
+bi::possibly bi::Statement::le(Declaration<VarParameter>& o) {
+  return untrue;
 }
 
-bool bi::Statement::le(Declaration<FuncParameter>& o) {
-  return false;
+bi::possibly bi::Statement::le(Declaration<FuncParameter>& o) {
+  return untrue;
 }
 
-bool bi::Statement::le(Declaration<ProgParameter>& o) {
-  return false;
+bi::possibly bi::Statement::le(Declaration<ProgParameter>& o) {
+  return untrue;
 }
 
-bool bi::Statement::le(Declaration<ModelParameter>& o) {
-  return false;
+bi::possibly bi::Statement::le(Declaration<ModelParameter>& o) {
+  return untrue;
 }
 
-bool bi::Statement::le(EmptyStatement& o) {
-  return false;
+bi::possibly bi::Statement::le(EmptyStatement& o) {
+  return untrue;
 }
 
-bool bi::Statement::le(ExpressionStatement& o) {
-  return false;
+bi::possibly bi::Statement::le(ExpressionStatement& o) {
+  return untrue;
 }
 
-bool bi::Statement::le(Import& o) {
-  return false;
+bi::possibly bi::Statement::le(Import& o) {
+  return untrue;
 }
 
-bool bi::Statement::le(List<Statement>& o) {
-  return false;
+bi::possibly bi::Statement::le(List<Statement>& o) {
+  return untrue;
 }
 
-bool bi::Statement::le(Loop& o) {
-  return false;
+bi::possibly bi::Statement::le(Loop& o) {
+  return untrue;
 }
 
-bool bi::Statement::le(Raw& o) {
-  return false;
+bi::possibly bi::Statement::le(Raw& o) {
+  return untrue;
 }

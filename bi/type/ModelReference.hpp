@@ -60,9 +60,9 @@ public:
    */
   int ndims;
 
-  virtual bool dispatch(Type& o);
-  virtual bool le(ModelParameter& o);
-  virtual bool le(ModelReference& o);
-  virtual bool le(EmptyType& o);
+  virtual possibly dispatch(Type& o);
+  virtual possibly le(ModelParameter& o);
+  virtual possibly le(ModelReference& o);
+  virtual possibly le(EmptyType& o);
 };
 }

@@ -30,14 +30,14 @@ void bi::BracketsExpression::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }
 
-bool bi::BracketsExpression::dispatch(Expression& o) {
+bi::possibly bi::BracketsExpression::dispatch(Expression& o) {
   return o.le(*this);
 }
 
-bool bi::BracketsExpression::le(BracketsExpression& o) {
+bi::possibly bi::BracketsExpression::le(BracketsExpression& o) {
   return *single <= *o.single && *brackets <= *o.brackets;
 }
 
-bool bi::BracketsExpression::le(VarParameter& o) {
+bi::possibly bi::BracketsExpression::le(VarParameter& o) {
   return *type <= *o.type && o.capture(this);
 }

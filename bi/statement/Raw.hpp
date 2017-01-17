@@ -40,7 +40,7 @@ public:
    */
   std::string raw;
 
-  virtual bool dispatch(Statement& o);
-  virtual bool le(Raw& o);
+  virtual possibly dispatch(Statement& o);
+  virtual possibly le(Raw& o);
 };
 }

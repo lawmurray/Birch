@@ -30,10 +30,10 @@ bool bi::EmptyType::isEmpty() const {
   return true;
 }
 
-bool bi::EmptyType::dispatch(Type& o) {
+bi::possibly bi::EmptyType::dispatch(Type& o) {
   return o.le(*this);
 }
 
-bool bi::EmptyType::le(EmptyType& o) {
-  return true;
+bi::possibly bi::EmptyType::le(EmptyType& o) {
+  return definite;
 }

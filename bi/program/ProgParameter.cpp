@@ -17,6 +17,10 @@ bi::ProgParameter::ProgParameter(shared_ptr<Name> name, Expression* parens,
   this->arg = this;
 }
 
+bi::ProgParameter::~ProgParameter() {
+  //
+}
+
 bi::Prog* bi::ProgParameter::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
@@ -29,10 +33,10 @@ void bi::ProgParameter::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::ProgParameter::dispatch(Prog& o) {
+bi::possibly bi::ProgParameter::dispatch(Prog& o) {
   return o.le(*this);
 }
 
-bool bi::ProgParameter::le(ProgParameter& o) {
+bi::possibly bi::ProgParameter::le(ProgParameter& o) {
   return *parens <= *o.parens && *braces <= *o.braces && o.capture(this);
 }

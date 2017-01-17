@@ -57,11 +57,11 @@ int bi::ModelReference::count() const {
   return ndims;
 }
 
-bool bi::ModelReference::dispatch(Type& o) {
+bi::possibly bi::ModelReference::dispatch(Type& o) {
   return o.le(*this);
 }
 
-bool bi::ModelReference::le(ModelParameter& o) {
+bi::possibly bi::ModelReference::le(ModelParameter& o) {
   if (!target) {
     /* not yet bound */
     return o.capture(this);
@@ -70,15 +70,15 @@ bool bi::ModelReference::le(ModelParameter& o) {
   }
 }
 
-bool bi::ModelReference::le(ModelReference& o) {
+bi::possibly bi::ModelReference::le(ModelReference& o) {
   if (*o.target->op == "=") {
     /* compare with canonical type */
     return *this <= *o.target->base && *brackets <= *o.brackets/* && ndims == o.ndims*/;
   } else {
-    return target == o.target || *target->base <= o;
+    return possibly(target == o.target) || *target->base <= o;
   }
 }
 
-bool bi::ModelReference::le(EmptyType& o) {
-  return true;
+bi::possibly bi::ModelReference::le(EmptyType& o) {
+  return definite;
 }

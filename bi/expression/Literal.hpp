@@ -47,9 +47,9 @@ public:
    */
   std::string str;
 
-  virtual bool dispatch(Expression& o);
-  virtual bool le(Literal<T1>& o);
-  virtual bool le(VarParameter& o);
+  virtual possibly dispatch(Expression& o);
+  virtual possibly le(Literal<T1>& o);
+  virtual possibly le(VarParameter& o);
 };
 
 /**

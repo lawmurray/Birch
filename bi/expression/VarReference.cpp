@@ -32,15 +32,15 @@ void bi::VarReference::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::VarReference::dispatch(Expression& o) {
+bi::possibly bi::VarReference::dispatch(Expression& o) {
   return o.le(*this);
 }
 
-bool bi::VarReference::le(VarReference& o) {
-  return target && target == o.target;
+bi::possibly bi::VarReference::le(VarReference& o) {
+  return possibly(target != nullptr) && possibly(target == o.target);
 }
 
-bool bi::VarReference::le(VarParameter& o) {
+bi::possibly bi::VarReference::le(VarParameter& o) {
   if (!target) {
     /* not yet bound */
     return o.capture(this);

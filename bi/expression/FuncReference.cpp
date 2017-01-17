@@ -44,15 +44,15 @@ void bi::FuncReference::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::FuncReference::dispatch(Expression& o) {
+bi::possibly bi::FuncReference::dispatch(Expression& o) {
   return o.le(*this);
 }
 
-bool bi::FuncReference::le(FuncReference& o) {
-  return *parens <= *o.parens && target && target == o.target;
+bi::possibly bi::FuncReference::le(FuncReference& o) {
+  return *parens <= *o.parens && possibly(target != nullptr) && possibly(target == o.target);
 }
 
-bool bi::FuncReference::le(FuncParameter& o) {
+bi::possibly bi::FuncReference::le(FuncParameter& o) {
   if (!target) {
     /* not yet bound */
     return *parens <= *o.parens && o.capture(this);
@@ -61,6 +61,6 @@ bool bi::FuncReference::le(FuncParameter& o) {
   }
 }
 
-bool bi::FuncReference::le(VarParameter& o) {
+bi::possibly bi::FuncReference::le(VarParameter& o) {
   return *type <= *o.type && o.capture(this);
 }

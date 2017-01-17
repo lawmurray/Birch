@@ -31,10 +31,10 @@ void bi::Range::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }
 
-bool bi::Range::dispatch(Expression& o) {
+bi::possibly bi::Range::dispatch(Expression& o) {
   return o.le(*this);
 }
 
-bool bi::Range::le(Range& o) {
+bi::possibly bi::Range::le(Range& o) {
   return *left <= *o.left && *right <= *o.right;
 }

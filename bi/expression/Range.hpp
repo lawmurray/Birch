@@ -33,7 +33,7 @@ public:
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
-  virtual bool dispatch(Expression& o);
-  virtual bool le(Range& o);
+  virtual possibly dispatch(Expression& o);
+  virtual possibly le(Range& o);
 };
 }

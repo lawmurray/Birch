@@ -31,10 +31,10 @@ bool bi::EmptyExpression::isEmpty() const {
   return true;
 }
 
-bool bi::EmptyExpression::dispatch(Expression& o) {
+bi::possibly bi::EmptyExpression::dispatch(Expression& o) {
   return o.le(*this);
 }
 
-bool bi::EmptyExpression::le(EmptyExpression& o) {
+bi::possibly bi::EmptyExpression::le(EmptyExpression& o) {
   return *type <= *o.type;
 }

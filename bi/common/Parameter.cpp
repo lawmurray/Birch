@@ -21,12 +21,13 @@ bi::Parameter<Argument>::~Parameter() {
 }
 
 template<class Argument>
-bool bi::Parameter<Argument>::capture(Argument* arg) {
+bi::possibly bi::Parameter<Argument>::capture(Argument* arg) {
   /* pre-condition */
   assert(arg);
 
   this->arg = arg;
-  return true;
+
+  return definite;
 }
 
 /*

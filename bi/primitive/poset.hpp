@@ -12,8 +12,6 @@ namespace bi {
 /**
  * Partially ordered set.
  *
- * @ingroup primitive_container
- *
  * @tparam T Value type.
  * @tparam Compare Comparison functor.
  */

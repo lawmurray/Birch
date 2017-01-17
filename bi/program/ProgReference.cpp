@@ -16,6 +16,10 @@ bi::ProgReference::ProgReference(shared_ptr<Name> name, Expression* parens,
   //
 }
 
+bi::ProgReference::~ProgReference() {
+  //
+}
+
 bi::Prog* bi::ProgReference::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
@@ -28,11 +32,11 @@ void bi::ProgReference::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::ProgReference::dispatch(Prog& o) {
+bi::possibly bi::ProgReference::dispatch(Prog& o) {
   return o.le(*this);
 }
 
-bool bi::ProgReference::le(ProgParameter& o) {
+bi::possibly bi::ProgReference::le(ProgParameter& o) {
   if (!target) {
     /* not yet bound */
     return *parens <= *o.parens;
@@ -41,6 +45,6 @@ bool bi::ProgReference::le(ProgParameter& o) {
   }
 }
 
-bool bi::ProgReference::le(ProgReference& o) {
-  return *parens <= *o.parens && target == o.target;
+bi::possibly bi::ProgReference::le(ProgReference& o) {
+  return *parens <= *o.parens && possibly(target == o.target);
 }

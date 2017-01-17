@@ -5,6 +5,7 @@
 
 #include "bi/common/Typed.hpp"
 #include "bi/common/Located.hpp"
+#include "bi/primitive/possibly.hpp"
 
 #include <cassert>
 
@@ -115,25 +116,25 @@ public:
    * specialisation. These double-dispatch to the #le functions below, which
    * can be implemented for specific types in derived classes.
    */
-  bool operator<=(Expression& o);
-  bool operator==(Expression& o);
-  virtual bool dispatch(Expression& o) = 0;
-  virtual bool le(BracesExpression& o);
-  virtual bool le(BracketsExpression& o);
-  virtual bool le(EmptyExpression& o);
-  virtual bool le(List<Expression>& o);
-  virtual bool le(FuncParameter& o);
-  virtual bool le(FuncReference& o);
-  virtual bool le(Literal<bool>& o);
-  virtual bool le(Literal<int64_t>& o);
-  virtual bool le(Literal<double>& o);
-  virtual bool le(Literal<const char*>& o);
-  virtual bool le(Member& o);
-  virtual bool le(ParenthesesExpression& o);
-  virtual bool le(RandomInit& o);
-  virtual bool le(Range& o);
-  virtual bool le(This& o);
-  virtual bool le(VarParameter& o);
-  virtual bool le(VarReference& o);
+  possibly operator<=(Expression& o);
+  possibly operator==(Expression& o);
+  virtual possibly dispatch(Expression& o) = 0;
+  virtual possibly le(BracesExpression& o);
+  virtual possibly le(BracketsExpression& o);
+  virtual possibly le(EmptyExpression& o);
+  virtual possibly le(List<Expression>& o);
+  virtual possibly le(FuncParameter& o);
+  virtual possibly le(FuncReference& o);
+  virtual possibly le(Literal<bool>& o);
+  virtual possibly le(Literal<int64_t>& o);
+  virtual possibly le(Literal<double>& o);
+  virtual possibly le(Literal<const char*>& o);
+  virtual possibly le(Member& o);
+  virtual possibly le(ParenthesesExpression& o);
+  virtual possibly le(RandomInit& o);
+  virtual possibly le(Range& o);
+  virtual possibly le(This& o);
+  virtual possibly le(VarParameter& o);
+  virtual possibly le(VarReference& o);
 };
 }

@@ -41,8 +41,8 @@ public:
    */
   unique_ptr<T> param;
 
-  virtual bool dispatch(Statement& o);
-  virtual bool le(Declaration<T>& o);
+  virtual possibly dispatch(Statement& o);
+  virtual possibly le(Declaration<T>& o);
 };
 
 typedef Declaration<VarParameter> VarDeclaration;

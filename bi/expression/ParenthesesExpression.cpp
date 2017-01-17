@@ -35,74 +35,74 @@ void bi::ParenthesesExpression::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::ParenthesesExpression::dispatch(Expression& o) {
+bi::possibly bi::ParenthesesExpression::dispatch(Expression& o) {
   return o.le(*this) || single->dispatch(o);
 }
 
-bool bi::ParenthesesExpression::le(BracesExpression& o) {
+bi::possibly bi::ParenthesesExpression::le(BracesExpression& o) {
   return *single <= o;
 }
 
-bool bi::ParenthesesExpression::le(BracketsExpression& o) {
+bi::possibly bi::ParenthesesExpression::le(BracketsExpression& o) {
   return *single <= o;
 }
 
-bool bi::ParenthesesExpression::le(EmptyExpression& o) {
+bi::possibly bi::ParenthesesExpression::le(EmptyExpression& o) {
   return *single <= o;
 }
 
-bool bi::ParenthesesExpression::le(List<Expression>& o) {
+bi::possibly bi::ParenthesesExpression::le(List<Expression>& o) {
   return *single <= o;
 }
 
-bool bi::ParenthesesExpression::le(FuncParameter& o) {
+bi::possibly bi::ParenthesesExpression::le(FuncParameter& o) {
   return *single <= o;
 }
 
-bool bi::ParenthesesExpression::le(FuncReference& o) {
+bi::possibly bi::ParenthesesExpression::le(FuncReference& o) {
   return *single <= o;
 }
 
-bool bi::ParenthesesExpression::le(Literal<unsigned char>& o) {
+bi::possibly bi::ParenthesesExpression::le(Literal<unsigned char>& o) {
   return *single <= o;
 }
 
-bool bi::ParenthesesExpression::le(Literal<int64_t>& o) {
+bi::possibly bi::ParenthesesExpression::le(Literal<int64_t>& o) {
   return *single <= o;
 }
 
-bool bi::ParenthesesExpression::le(Literal<double>& o) {
+bi::possibly bi::ParenthesesExpression::le(Literal<double>& o) {
   return *single <= o;
 }
 
-bool bi::ParenthesesExpression::le(Literal<const char*>& o) {
+bi::possibly bi::ParenthesesExpression::le(Literal<const char*>& o) {
   return *single <= o;
 }
 
-bool bi::ParenthesesExpression::le(Member& o) {
+bi::possibly bi::ParenthesesExpression::le(Member& o) {
   return *single <= o;
 }
 
-bool bi::ParenthesesExpression::le(ParenthesesExpression& o) {
+bi::possibly bi::ParenthesesExpression::le(ParenthesesExpression& o) {
   return *single <= *o.single;
 }
 
-bool bi::ParenthesesExpression::le(RandomInit& o) {
+bi::possibly bi::ParenthesesExpression::le(RandomInit& o) {
   return *single <= o;
 }
 
-bool bi::ParenthesesExpression::le(Range& o) {
+bi::possibly bi::ParenthesesExpression::le(Range& o) {
   return *single <= o;
 }
 
-bool bi::ParenthesesExpression::le(This& o) {
+bi::possibly bi::ParenthesesExpression::le(This& o) {
   return *single <= o;
 }
 
-bool bi::ParenthesesExpression::le(VarParameter& o) {
+bi::possibly bi::ParenthesesExpression::le(VarParameter& o) {
   return (*type <= *o.type && o.capture(this)) || *single <= o;
 }
 
-bool bi::ParenthesesExpression::le(VarReference& o) {
+bi::possibly bi::ParenthesesExpression::le(VarReference& o) {
   return *single <= o;
 }

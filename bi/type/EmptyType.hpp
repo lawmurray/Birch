@@ -31,7 +31,7 @@ public:
 
   virtual bool isEmpty() const;
 
-  virtual bool dispatch(Type& o);
-  virtual bool le(EmptyType& o);
+  virtual possibly dispatch(Type& o);
+  virtual possibly le(EmptyType& o);
 };
 }

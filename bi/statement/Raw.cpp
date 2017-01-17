@@ -33,10 +33,10 @@ void bi::Raw::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::Raw::dispatch(Statement& o) {
+bi::possibly bi::Raw::dispatch(Statement& o) {
   return o.le(*this);
 }
 
-bool bi::Raw::le(Raw& o) {
-  return raw.compare(o.raw) == 0;
+bi::possibly bi::Raw::le(Raw& o) {
+  return possibly(raw.compare(o.raw) == 0);
 }

@@ -30,26 +30,26 @@ void bi::RandomType::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::RandomType::dispatch(Type& o) {
+bi::possibly bi::RandomType::dispatch(Type& o) {
   return o.le(*this);
 }
 
-bool bi::RandomType::le(EmptyType& o) {
+bi::possibly bi::RandomType::le(EmptyType& o) {
   return *left <= o || *right <= o;
 }
 
-bool bi::RandomType::le(List<Type>& o) {
+bi::possibly bi::RandomType::le(List<Type>& o) {
   return *left <= o || *right <= o;
 }
 
-bool bi::RandomType::le(ModelReference& o) {
+bi::possibly bi::RandomType::le(ModelReference& o) {
   return *left <= o || *right <= o;
 }
 
-bool bi::RandomType::le(ModelParameter& o) {
+bi::possibly bi::RandomType::le(ModelParameter& o) {
   return *left <= o || *right <= o;
 }
 
-bool bi::RandomType::le(RandomType& o) {
+bi::possibly bi::RandomType::le(RandomType& o) {
   return *left <= *o.left && *right <= *o.right;
 }

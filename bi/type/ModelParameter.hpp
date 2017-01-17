@@ -69,8 +69,8 @@ public:
    */
   shared_ptr<FuncParameter> assignment;
 
-  virtual bool dispatch(Type& o);
-  virtual bool le(ModelParameter& o);
-  virtual bool le(EmptyType& o);
+  virtual possibly dispatch(Type& o);
+  virtual possibly le(ModelParameter& o);
+  virtual possibly le(EmptyType& o);
 };
 }

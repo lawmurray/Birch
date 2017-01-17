@@ -29,14 +29,14 @@ void bi::RandomInit::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }
 
-bool bi::RandomInit::dispatch(Expression& o) {
+bi::possibly bi::RandomInit::dispatch(Expression& o) {
   return o.le(*this);
 }
 
-bool bi::RandomInit::le(RandomInit& o) {
+bi::possibly bi::RandomInit::le(RandomInit& o) {
   return *left <= *o.left && *right <= *o.right;
 }
 
-bool bi::RandomInit::le(VarParameter& o) {
+bi::possibly bi::RandomInit::le(VarParameter& o) {
   return *type <= *o.type && o.capture(this);
 }

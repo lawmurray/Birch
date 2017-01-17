@@ -30,10 +30,10 @@ void bi::Loop::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::Loop::dispatch(Statement& o) {
+bi::possibly bi::Loop::dispatch(Statement& o) {
   return o.le(*this);
 }
 
-bool bi::Loop::le(Loop& o) {
+bi::possibly bi::Loop::le(Loop& o) {
   return *cond <= *o.cond && *braces <= *o.braces;
 }

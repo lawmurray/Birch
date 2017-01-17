@@ -56,14 +56,14 @@ bool bi::ModelParameter::builtin() const {
   }
 }
 
-bool bi::ModelParameter::dispatch(Type& o) {
+bi::possibly bi::ModelParameter::dispatch(Type& o) {
   return o.le(*this);
 }
 
-bool bi::ModelParameter::le(ModelParameter& o) {
+bi::possibly bi::ModelParameter::le(ModelParameter& o) {
   return *parens <= *o.parens && *base <= *o.base && o.capture(this);
 }
 
-bool bi::ModelParameter::le(EmptyType& o) {
-  return true;
+bi::possibly bi::ModelParameter::le(EmptyType& o) {
+  return definite;
 }

@@ -54,78 +54,78 @@ int bi::Expression::tupleDims() const {
   return visitor.dims;
 }
 
-bool bi::Expression::operator<=(Expression& o) {
+bi::possibly bi::Expression::operator<=(Expression& o) {
   return o.dispatch(*this);
 }
 
-bool bi::Expression::operator==(Expression& o) {
+bi::possibly bi::Expression::operator==(Expression& o) {
   return *this <= o && o <= *this;
 }
 
-bool bi::Expression::le(BracesExpression& o) {
-  return false;
+bi::possibly bi::Expression::le(BracesExpression& o) {
+  return untrue;
 }
 
-bool bi::Expression::le(BracketsExpression& o) {
-  return false;
+bi::possibly bi::Expression::le(BracketsExpression& o) {
+  return untrue;
 }
 
-bool bi::Expression::le(EmptyExpression& o) {
-  return false;
+bi::possibly bi::Expression::le(EmptyExpression& o) {
+  return untrue;
 }
 
-bool bi::Expression::le(List<Expression>& o) {
-  return false;
+bi::possibly bi::Expression::le(List<Expression>& o) {
+  return untrue;
 }
 
-bool bi::Expression::le(FuncParameter& o) {
-  return false;
+bi::possibly bi::Expression::le(FuncParameter& o) {
+  return untrue;
 }
 
-bool bi::Expression::le(FuncReference& o) {
-  return false;
+bi::possibly bi::Expression::le(FuncReference& o) {
+  return untrue;
 }
 
-bool bi::Expression::le(Literal<bool>& o) {
-  return false;
+bi::possibly bi::Expression::le(Literal<bool>& o) {
+  return untrue;
 }
 
-bool bi::Expression::le(Literal<int64_t>& o) {
-  return false;
+bi::possibly bi::Expression::le(Literal<int64_t>& o) {
+  return untrue;
 }
 
-bool bi::Expression::le(Literal<double>& o) {
-  return false;
+bi::possibly bi::Expression::le(Literal<double>& o) {
+  return untrue;
 }
 
-bool bi::Expression::le(Literal<const char*>& o) {
-  return false;
+bi::possibly bi::Expression::le(Literal<const char*>& o) {
+  return untrue;
 }
 
-bool bi::Expression::le(ParenthesesExpression& o) {
-  return false;
+bi::possibly bi::Expression::le(ParenthesesExpression& o) {
+  return untrue;
 }
 
-bool bi::Expression::le(Range& o) {
-  return false;
+bi::possibly bi::Expression::le(Range& o) {
+  return untrue;
 }
 
-bool bi::Expression::le(This& o) {
-  return false;
+bi::possibly bi::Expression::le(This& o) {
+  return untrue;
 }
 
-bool bi::Expression::le(Member& o) {
-  return false;
+bi::possibly bi::Expression::le(Member& o) {
+  return untrue;
 }
 
-bool bi::Expression::le(RandomInit& o) {
-  return false;
+bi::possibly bi::Expression::le(RandomInit& o) {
+  return untrue;
 }
 
-bool bi::Expression::le(VarParameter& o) {
-  return false;
+bi::possibly bi::Expression::le(VarParameter& o) {
+  return untrue;
 }
 
-bool bi::Expression::le(VarReference& o) {
-  return false;
+bi::possibly bi::Expression::le(VarReference& o) {
+  return untrue;
 }

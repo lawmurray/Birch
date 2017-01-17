@@ -46,7 +46,7 @@ public:
    */
   unique_ptr<Expression> falseBraces;
 
-  virtual bool dispatch(Statement& o);
-  virtual bool le(Conditional& o);
+  virtual possibly dispatch(Statement& o);
+  virtual possibly le(Conditional& o);
 };
 }
