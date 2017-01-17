@@ -51,7 +51,7 @@ public:
    * returns true, otherwise returns false. If there are multiple resolutions
    * that cannot be resolved through prioritisation, throws an exception.
    */
-  ParameterType* resolve(const ReferenceType* ref);
+  ParameterType* resolve(ReferenceType* ref);
 
   /**
    * Declarations within this outer, stored by partial order based on

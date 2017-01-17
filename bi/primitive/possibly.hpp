@@ -39,24 +39,17 @@ public:
   }
 
   /**
-   * Is this definitely true?
+   * Is this equal to another object?
    */
-  bool definite() const {
-    return state == DEFINITE;
+  bool operator==(const possibly& o) const {
+    return state == o.state;
   }
 
   /**
-   * Is this possibly, but not definitely, true?
+   * Is this not equal to another object?
    */
-  bool possible() const {
-    return state == POSSIBLE;
-  }
-
-  /**
-   * Is this definitely untrue?
-   */
-  bool untrue() const {
-    return state == UNTRUE;
+  bool operator!=(const possibly& o) const {
+    return state != o.state;
   }
 
   /**

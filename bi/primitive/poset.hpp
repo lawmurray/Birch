@@ -3,6 +3,8 @@
  */
 #pragma once
 
+#include "bi/primitive/possibly.hpp"
+
 #include <cstdlib>
 #include <vector>
 #include <set>
@@ -15,7 +17,7 @@ namespace bi {
  * @tparam T Value type.
  * @tparam Compare Comparison functor.
  */
-template<class T, class Compare = std::less<T> >
+template<class T, class Compare>
 class poset {
 public:
   /**
@@ -29,41 +31,41 @@ public:
   size_t size() const;
 
   /**
-   * For a singleton set, return the single element.
-   */
-  T& only();
-
-  /**
    * Does the set contain a given value?
    */
-  bool contains(T& val);
+  bool contains(T& value);
 
   /**
    * Get a given value.
    */
-  T get(T& val);
+  T get(T& value);
 
   /**
-   * Find what would be the parent vertices for a given value.
+   * Find the most-specific definite match(es) as well as more-specific
+   * possible matche(es).
    *
    * @tparam Comparable Type comparable to value type.
    * @tparam Container Container type with push_back() function.
    *
-   * @param val The value to find.
-   * @param[out] out Container in which to insert values of parent vertices.
+   * @param value The value.
+   * @param[out] definites Container to hold most-specific definite
+   * match(es).
+   * @param[out] possibles Container to hold more-specific possible
+   * match(es).
    */
   template<class Comparable, class Container>
-  void find(const Comparable& val, Container& out);
+  void match(const Comparable& value, Container& definites,
+      Container& possibles);
 
   /**
    * Insert vertex.
    *
-   * @param val Value at the vertex.
+   * @param value Value at the vertex.
    *
    * If the value equals that of another vertex, under the partial order
    * given, that vertex is overwritten.
    */
-  void insert(T& val);
+  void insert(T& value);
 
   /**
    * Output dot graph. Useful for diagnostic purposes.
@@ -76,11 +78,11 @@ private:
   /**
    * Add vertex.
    *
-   * @param val Value at the vertex.
+   * @param value Value at the vertex.
    *
    * @return Index of the vertex.
    */
-  int add_vertex(const T& val);
+  int add_vertex(const T& value);
 
   /**
    * Add edge.
@@ -98,11 +100,21 @@ private:
    */
   void remove_edge(const int y, const int v);
 
-  /*
-   * Sub-operations for find.
+  /**
+   * Sub-operation for match to find most-specific definite match.
+   *
+   * @return True if a definite match was made in the subgraph.
    */
   template<class Comparable, class Container>
-  void find(const int u, const Comparable& val, Container& out);
+  bool match_definites(const int u, const Comparable& value,
+      Container& definites);
+
+  /**
+   * Sub-operation for match to find most-specific definite match.
+   */
+  template<class Comparable, class Container>
+  void match_possibles(const int u, const Comparable& value,
+      Container& possibles);
 
   /*
    * Sub-operations for insert.
@@ -122,12 +134,12 @@ private:
   /**
    * Vertex values.
    */
-  std::vector<T> vals;
+  std::vector<T> values;
 
   /**
    * Vertex colours.
    */
-  std::vector<int> cols;
+  std::vector<int> colours;
 
   /**
    * Forward and backward edges.
@@ -147,7 +159,7 @@ private:
   /**
    * Current colour.
    */
-  int col;
+  int colour;
 };
 }
 
@@ -156,82 +168,76 @@ private:
 
 template<class T, class Compare>
 bi::poset<T,Compare>::poset() :
-    col(0) {
+    colour(0) {
   //
 }
 
 template<class T, class Compare>
 size_t bi::poset<T,Compare>::size() const {
-  return vals.size();
+  return values.size();
 }
 
 template<class T, class Compare>
-T& bi::poset<T,Compare>::only() {
+bool bi::poset<T,Compare>::contains(T& value) {
+  std::list<T> definites, possibles;
+  match(value, definites, possibles);
+  return definites.size() == 1
+      && compare(definites.front(), value) == definite
+      && compare(value, definites.front()) == definite;
+}
+
+template<class T, class Compare>
+T bi::poset<T,Compare>::get(T& value) {
   /* pre-condition */
-  assert(size() == 1);
+  assert(contains(value));
 
-  return vals.front();
-}
+  std::list<T> definites, possibles;
+  match(value, definites, possibles);
 
-template<class T, class Compare>
-bool bi::poset<T,Compare>::contains(T& val) {
-  std::list<T> out;
-  find(val, out);
-  return out.size() == 1 && compare(out.front(), val)
-      && compare(val, out.front());
-}
-
-template<class T, class Compare>
-T bi::poset<T,Compare>::get(T& val) {
-  /* pre-condition */
-  assert(contains(val));
-
-  std::list<T> out;
-  find(val, out);
-
-  return out.front();
+  return definites.front();
 }
 
 template<class T, class Compare>
 template<class Comparable, class Container>
-void bi::poset<T,Compare>::find(const Comparable& val, Container& out) {
-  ++col;
-  auto iter = roots.begin();
-  while (iter != roots.end()) {
-    cols[*iter] = col;
-    if (compare(val, vals[*iter])) {
-      find(*iter, val, out);
-    }
-    ++iter;
+void bi::poset<T,Compare>::match(const Comparable& value,
+    Container& definites, Container& possibles) {
+  ++colour;
+  for (auto iter = roots.begin(); iter != roots.end(); ++iter) {
+    match_definites(*iter, value, definites);
+  }
+
+  ++colour;
+  for (auto iter = roots.begin(); iter != roots.end(); ++iter) {
+    match_possibles(*iter, value, possibles);
   }
 }
 
 template<class T, class Compare>
-void bi::poset<T,Compare>::insert(T& val) {
+void bi::poset<T,Compare>::insert(T& value) {
   /* pre-condition */
-  assert(!contains(val));
+  assert(!contains(value));
 
-  const int v = add_vertex(val);
+  const int v = add_vertex(value);
   forward(v);
   backward(v);
   reduce();
 }
 
 template<class T, class Compare>
-int bi::poset<T,Compare>::add_vertex(const T& val) {
-  const int v = vals.size();
+int bi::poset<T,Compare>::add_vertex(const T& value) {
+  const int v = values.size();
 
-  vals.push_back(val);
+  values.push_back(value);
   forwards.push_back(set_type());
   backwards.push_back(set_type());
-  cols.push_back(col);
+  colours.push_back(colour);
   roots.insert(v);
   leaves.insert(v);
 
   /* post-condition */
-  assert(vals.size() == forwards.size());
-  assert(vals.size() == backwards.size());
-  assert(vals.size() == cols.size());
+  assert(values.size() == forwards.size());
+  assert(values.size() == backwards.size());
+  assert(values.size() == colours.size());
 
   return v;
 }
@@ -260,28 +266,58 @@ void bi::poset<T,Compare>::remove_edge(const int u, const int v) {
 
 template<class T, class Compare>
 template<class Comparable, class Container>
-void bi::poset<T,Compare>::find(const int u, const Comparable& val,
-    Container& out) {
+bool bi::poset<T,Compare>::match_definites(const int u,
+    const Comparable& value, Container& definites) {
   bool deeper = false;
-  auto iter = forwards[u].begin();
-  while (iter != forwards[u].end()) {
-    if (cols[*iter] < col) {
-      cols[*iter] = col;
-      if (compare(val, vals[*iter])) {
+  if (colours[u] < colour) {
+    /* not visited yet */
+    colours[u] = colour;
+    if (compare(value, values[u]) == definite) {
+      /* this vertex matcher, check if any vertices in the subgraph match
+       * more-specifically */
+      for (auto iter = forwards[u].begin(); iter != forwards[u].end();
+          ++iter) {
+        deeper = deeper || match_definites(*iter, value, definites);
+      }
+      if (!deeper) {
+        /* no more-specific matches in the subgraph beneath this vertex, so
+         * this is the most-specific match */
+        definites.push_back(values[u]);
         deeper = true;
-        find(*iter, val, out);
       }
     }
-    ++iter;
   }
-  if (!deeper) {
-    out.push_back(vals[u]);
+  return deeper;
+}
+
+template<class T, class Compare>
+template<class Comparable, class Container>
+void bi::poset<T,Compare>::match_possibles(const int u,
+    const Comparable& value, Container& possibles) {
+  if (colours[u] < colour) {
+    /* not visited yet */
+    colours[u] = colour;
+    possibly result = compare(value, values[u]);
+    if (result != untrue) {
+      /* either a definite or possible match, so continue searching through
+       * the subgraph */
+      for (auto iter = forwards[u].begin(); iter != forwards[u].end();
+          ++iter) {
+        match_possibles(*iter, value, possibles);
+      }
+    }
+    if (result == possible) {
+      /* if this was a possible (but not a definite) match, insert it in the
+       * output; note this is done after searching the subgraph, so that
+       * more-specific possible matches appear early in the output */
+      possibles.push_back(values[u]);
+    }
   }
 }
 
 template<class T, class Compare>
 void bi::poset<T,Compare>::forward(const int v) {
-  ++col;
+  ++colour;
   auto roots1 = roots;  // local copy as may be modified during iteration
   auto iter = roots1.begin();
   while (iter != roots1.end()) {
@@ -294,9 +330,9 @@ void bi::poset<T,Compare>::forward(const int v) {
 
 template<class T, class Compare>
 void bi::poset<T,Compare>::forward(const int u, const int v) {
-  if (cols[u] < col) {
-    cols[u] = col;
-    if (compare(vals[u], vals[v])) {
+  if (colours[u] < colour) {
+    colours[u] = colour;
+    if (compare(values[u], values[v]) == definite) {
       add_edge(v, u);
     } else {
       auto iter = forwards[u].begin();
@@ -310,7 +346,7 @@ void bi::poset<T,Compare>::forward(const int u, const int v) {
 
 template<class T, class Compare>
 void bi::poset<T,Compare>::backward(const int v) {
-  ++col;
+  ++colour;
   auto leaves1 = leaves;  // local copy as may be modified during iteration
   auto iter = leaves1.begin();
   while (iter != leaves1.end()) {
@@ -323,9 +359,9 @@ void bi::poset<T,Compare>::backward(const int v) {
 
 template<class T, class Compare>
 void bi::poset<T,Compare>::backward(const int u, const int v) {
-  if (cols[u] < col) {
-    cols[u] = col;
-    if (compare(vals[v], vals[u])) {
+  if (colours[u] < colour) {
+    colours[u] = colour;
+    if (compare(values[v], values[u]) == definite) {
       add_edge(u, v);
     } else {
       auto iter = backwards[u].begin();
@@ -339,7 +375,7 @@ void bi::poset<T,Compare>::backward(const int u, const int v) {
 
 template<class T, class Compare>
 void bi::poset<T,Compare>::reduce() {
-  set_type lroots(roots);
+  set_type lroots(roots);  // local copy as may change
   auto iter = lroots.begin();
   while (iter != lroots.end()) {
     reduce(*iter);
@@ -349,14 +385,14 @@ void bi::poset<T,Compare>::reduce() {
 
 template<class T, class Compare>
 void bi::poset<T,Compare>::reduce(const int u) {
-  int lcol = ++col;
+  int lcolour = ++colour;
   set_type lforwards(forwards[u]);
 
   /* depth first search discovery */
   auto iter = lforwards.begin();
   while (iter != lforwards.end()) {
-    if (cols[*iter] < lcol) {
-      cols[*iter] = lcol;
+    if (colours[*iter] < lcolour) {
+      colours[*iter] = lcolour;
     }
     reduce(*iter);
     ++iter;
@@ -365,7 +401,7 @@ void bi::poset<T,Compare>::reduce(const int u) {
   /* remove edges for children that were rediscovered */
   iter = lforwards.begin();
   while (iter != lforwards.end()) {
-    if (cols[*iter] > lcol) {  // rediscovered
+    if (colours[*iter] > lcolour) {  // rediscovered
       remove_edge(u, *iter);
     }
     ++iter;
@@ -374,7 +410,7 @@ void bi::poset<T,Compare>::reduce(const int u) {
 
 template<class T, class Compare>
 void bi::poset<T,Compare>::dot() {
-  ++col;
+  ++colour;
   std::cout << "digraph {" << std::endl;
   auto iter = roots.begin();
   while (iter != roots.end()) {
@@ -386,12 +422,12 @@ void bi::poset<T,Compare>::dot() {
 
 template<class T, class Compare>
 void bi::poset<T,Compare>::dot(const int u) {
-  if (cols[u] != col) {
-    cols[u] = col;
-    std::cout << "\"" << vals[u] << "\"" << std::endl;
+  if (colours[u] != colour) {
+    colours[u] = colour;
+    std::cout << "\"" << values[u] << "\"" << std::endl;
     auto iter = forwards[u].begin();
     while (iter != forwards[u].end()) {
-      std::cout << "\"" << vals[u] << "\" -> \"" << vals[*iter] << "\""
+      std::cout << "\"" << values[u] << "\" -> \"" << values[*iter] << "\""
           << std::endl;
       dot(*iter);
       ++iter;

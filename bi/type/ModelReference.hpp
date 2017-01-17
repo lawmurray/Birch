@@ -51,6 +51,11 @@ public:
   virtual bool builtin() const;
   virtual int count() const;
 
+  /**
+   * Does this model inherit from another?
+   */
+  virtual possibly isa(ModelReference& o);
+
   virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;

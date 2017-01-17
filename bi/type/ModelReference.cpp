@@ -57,6 +57,15 @@ int bi::ModelReference::count() const {
   return ndims;
 }
 
+bi::possibly bi::ModelReference::isa(ModelReference& o) {
+  bool result = target == o.target;
+  if (!result && target) {
+    ModelReference* ref = dynamic_cast<ModelReference*>(target->base.get());
+    result = ref && ref->isa(o);
+  }
+  return possibly(result);
+}
+
 bi::possibly bi::ModelReference::dispatch(Type& o) {
   return o.le(*this);
 }
@@ -72,10 +81,9 @@ bi::possibly bi::ModelReference::le(ModelParameter& o) {
 
 bi::possibly bi::ModelReference::le(ModelReference& o) {
   if (*o.target->op == "=") {
-    /* compare with canonical type */
-    return *this <= *o.target->base && *brackets <= *o.brackets/* && ndims == o.ndims*/;
+    return *this <= *o.target->base;  // compare with canonical type
   } else {
-    return possibly(target == o.target) || *target->base <= o;
+    return (isa(o) || (possible && o.isa(*this))) && *brackets <= *o.brackets;
   }
 }
 

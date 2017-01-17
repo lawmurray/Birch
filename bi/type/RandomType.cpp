@@ -35,21 +35,21 @@ bi::possibly bi::RandomType::dispatch(Type& o) {
 }
 
 bi::possibly bi::RandomType::le(EmptyType& o) {
-  return *left <= o || *right <= o;
+  return definite;
 }
 
 bi::possibly bi::RandomType::le(List<Type>& o) {
-  return *left <= o || *right <= o;
+  return *left <= o || (possible && *right <= o);
 }
 
 bi::possibly bi::RandomType::le(ModelReference& o) {
-  return *left <= o || *right <= o;
+  return *left <= o || (possible && *right <= o);
 }
 
 bi::possibly bi::RandomType::le(ModelParameter& o) {
-  return *left <= o || *right <= o;
+  return *left <= o || (possible && *right <= o);
 }
 
 bi::possibly bi::RandomType::le(RandomType& o) {
-  return *left <= *o.left && *right <= *o.right;
+  return possible && *left <= *o.left && *right <= *o.right;
 }
