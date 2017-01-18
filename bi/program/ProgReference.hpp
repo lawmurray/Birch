@@ -31,7 +31,7 @@ public:
    * @param loc Location.
    */
   ProgReference(shared_ptr<Name> name, Expression* parens,
-      shared_ptr<Location> loc = nullptr, const ProgParameter* target = nullptr);
+      shared_ptr<Location> loc = nullptr, ProgParameter* target = nullptr);
 
   /**
    * Destructor.

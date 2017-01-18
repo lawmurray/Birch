@@ -18,7 +18,7 @@ struct AmbiguousReferenceException: public CompilerException {
    * Constructor.
    */
   template<class ParameterType, class ReferenceType>
-  AmbiguousReferenceException(const ReferenceType* ref,
+  AmbiguousReferenceException(ReferenceType* ref,
       std::list<ParameterType*> matches);
 };
 }

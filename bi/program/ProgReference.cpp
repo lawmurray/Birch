@@ -8,7 +8,7 @@
 #include <typeinfo>
 
 bi::ProgReference::ProgReference(shared_ptr<Name> name, Expression* parens,
-    shared_ptr<Location> loc, const ProgParameter* target) :
+    shared_ptr<Location> loc, ProgParameter* target) :
     Prog(loc),
     Named(name),
     Parenthesised(parens),

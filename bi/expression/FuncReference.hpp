@@ -33,7 +33,7 @@ public:
    */
   FuncReference(shared_ptr<Name> name, Expression* parens,
       const FunctionForm form, shared_ptr<Location> loc = nullptr,
-      const FuncParameter* target = nullptr);
+      FuncParameter* target = nullptr);
 
   /**
    * Constructor for binary operator.
@@ -45,8 +45,7 @@ public:
    * @param target Target.
    */
   FuncReference(Expression* left, shared_ptr<Name> name, Expression* right,
-      shared_ptr<Location> loc = nullptr, const FuncParameter* target =
-          nullptr);
+      shared_ptr<Location> loc = nullptr, FuncParameter* target = nullptr);
 
   /**
    * Destructor.

@@ -25,7 +25,7 @@ public:
    * @param target Target.
    */
   VarReference(shared_ptr<Name> name, shared_ptr<Location> loc = nullptr,
-      const VarParameter* target = nullptr);
+      VarParameter* target = nullptr);
 
   /**
    * Destructor.

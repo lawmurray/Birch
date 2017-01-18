@@ -56,23 +56,25 @@ void bi::OverloadedDictionary<ParameterType,ReferenceType>::add(
 }
 
 template<class ParameterType, class ReferenceType>
-ParameterType* bi::OverloadedDictionary<ParameterType,ReferenceType>::resolve(
+void bi::OverloadedDictionary<ParameterType,ReferenceType>::resolve(
     ReferenceType* ref) {
   auto iter = overloaded.find(ref->name->str());
   if (iter == overloaded.end()) {
-    return nullptr;
+    ref->target = nullptr;
+    ref->alternatives.clear();
   } else {
     std::list<ParameterType*> definites, possibles;
     iter->second.match(ref, definites, possibles);
     if (definites.size() > 1) {
       throw AmbiguousReferenceException(ref, definites);
     } else if (definites.size() > 0) {
-      return definites.front();
+      ref->target = definites.front();
     } else if (possibles.size() > 0) {
-      return possibles.front();
+      ref->target = possibles.front();
     } else {
-      return nullptr;
+      ref->target = nullptr;
     }
+    ref->alternatives = possibles;
   }
 }
 

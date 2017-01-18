@@ -8,7 +8,7 @@
 #include "bi/type/ModelParameter.hpp"
 
 template<class Target>
-bi::Reference<Target>::Reference(const Target* target) :
+bi::Reference<Target>::Reference(Target* target) :
     target(target) {
   //
 }

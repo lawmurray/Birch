@@ -9,7 +9,7 @@
 
 bi::ModelReference::ModelReference(shared_ptr<Name> name,
     Expression* brackets, shared_ptr<Location> loc,
-    const ModelParameter* target) :
+    ModelParameter* target) :
     Type(loc),
     Named(name),
     Bracketed(brackets),
@@ -19,7 +19,7 @@ bi::ModelReference::ModelReference(shared_ptr<Name> name,
 }
 
 bi::ModelReference::ModelReference(shared_ptr<Name> name, const int ndims,
-    const ModelParameter* target) :
+    ModelParameter* target) :
     Named(name),
     Reference(target),
     ndims(ndims) {

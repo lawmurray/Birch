@@ -41,28 +41,25 @@ void bi::Scope::add(ProgParameter* prog) {
   progs.add(prog);
 }
 
-bi::VarParameter* bi::Scope::resolve(VarReference* ref) {
-  VarParameter* result = vars.resolve(ref);
-  if (!result) {
-    result = resolveDefer<VarParameter,VarReference>(ref);
+void bi::Scope::resolve(VarReference* ref) {
+  vars.resolve(ref);
+  if (!ref->target) {
+    resolveDefer<VarParameter,VarReference>(ref);
   }
-  return result;
 }
 
-bi::FuncParameter* bi::Scope::resolve(FuncReference* ref) {
-  FuncParameter* result = funcs.resolve(ref);
-  if (!result) {
-    result = resolveDefer<FuncParameter,FuncReference>(ref);
+void bi::Scope::resolve(FuncReference* ref) {
+  funcs.resolve(ref);
+  if (!ref->target) {
+    resolveDefer<FuncParameter,FuncReference>(ref);
   }
-  return result;
 }
 
-bi::ModelParameter* bi::Scope::resolve(ModelReference* ref) {
-  ModelParameter* result = models.resolve(ref);
-  if (!result) {
-    result = resolveDefer<ModelParameter,ModelReference>(ref);
+void bi::Scope::resolve(ModelReference* ref) {
+  models.resolve(ref);
+  if (!ref->target) {
+    resolveDefer<ModelParameter,ModelReference>(ref);
   }
-  return result;
 }
 
 void bi::Scope::import(Scope* scope) {

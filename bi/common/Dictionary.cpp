@@ -42,13 +42,15 @@ void bi::Dictionary<ParameterType,ReferenceType>::add(ParameterType* param) {
 }
 
 template<class ParameterType, class ReferenceType>
-ParameterType* bi::Dictionary<ParameterType,ReferenceType>::resolve(
+void bi::Dictionary<ParameterType,ReferenceType>::resolve(
     ReferenceType* ref) {
   auto iter = unordered.find(ref->name->str());
   if (iter != unordered.end() && *ref <= *iter->second) {
-    return iter->second;
+    ref->target = iter->second;
+  } else {
+    ref->target = nullptr;
   }
-  return nullptr;
+  ref->alternatives.clear();
 }
 
 /*

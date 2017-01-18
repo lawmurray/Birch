@@ -3,6 +3,8 @@
  */
 #pragma once
 
+#include <list>
+
 namespace bi {
 /**
  * Expression with a target (e.g. a reference).
@@ -17,7 +19,7 @@ public:
    *
    * @param target Target.
    */
-  Reference(const Target* target = nullptr);
+  Reference(Target* target = nullptr);
 
   /**
    * Destructor.
@@ -25,8 +27,15 @@ public:
   virtual ~Reference() = 0;
 
   /**
-   * Target.
+   * Target. This is the most-specific definite resolution to a parameter.
    */
-  const Target* target;
+  Target* target;
+
+  /**
+   * Alternatives. This is the list of more-specific possible resolutions
+   * that will be checked at runtime. It is only relevant for overloadable
+   * parameters (e.g. functions).
+   */
+  std::list<Target*> alternatives;
 };
 }

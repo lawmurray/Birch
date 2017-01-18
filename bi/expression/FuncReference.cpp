@@ -9,7 +9,7 @@
 
 bi::FuncReference::FuncReference(shared_ptr<Name> name, Expression* parens,
     const FunctionForm form, shared_ptr<Location> loc,
-    const FuncParameter* target) :
+    FuncParameter* target) :
     Expression(loc),
     Named(name),
     Reference<FuncParameter>(target),
@@ -19,7 +19,7 @@ bi::FuncReference::FuncReference(shared_ptr<Name> name, Expression* parens,
 }
 
 bi::FuncReference::FuncReference(Expression* left, shared_ptr<Name> name,
-    Expression* right, shared_ptr<Location> loc, const FuncParameter* target) :
+    Expression* right, shared_ptr<Location> loc, FuncParameter* target) :
     Expression(loc),
     Named(name),
     Reference<FuncParameter>(target),

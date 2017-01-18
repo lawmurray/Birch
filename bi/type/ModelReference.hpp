@@ -31,7 +31,7 @@ public:
    */
   ModelReference(shared_ptr<Name> name, Expression* brackets =
       new EmptyExpression(), shared_ptr<Location> loc = nullptr,
-      const ModelParameter* target = nullptr);
+      ModelParameter* target = nullptr);
 
   /**
    * Constructor.
@@ -41,7 +41,7 @@ public:
    * @param target Target.
    */
   ModelReference(shared_ptr<Name> name, const int ndims,
-      const ModelParameter* target = nullptr);
+      ModelParameter* target = nullptr);
 
   /**
    * Destructor.

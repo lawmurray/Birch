@@ -55,9 +55,9 @@ public:
    *
    * @return Target of the reference.
    */
-  VarParameter* resolve(VarReference* ref);
-  FuncParameter* resolve(FuncReference* ref);
-  ModelParameter* resolve(ModelReference* ref);
+  void resolve(VarReference* ref);
+  void resolve(FuncReference* ref);
+  void resolve(ModelReference* ref);
 
   /**
    * Import from another scope into this scope.
@@ -86,17 +86,15 @@ private:
    * Defer resolution to imported scopes.
    */
   template<class ParameterType, class ReferenceType>
-  ParameterType* resolveDefer(ReferenceType* ref);
+  void resolveDefer(ReferenceType* ref);
 };
 }
 
 template<class ParameterType, class ReferenceType>
-ParameterType* bi::Scope::resolveDefer(ReferenceType* ref) {
-  ParameterType* target = nullptr;
+void bi::Scope::resolveDefer(ReferenceType* ref) {
   auto iter = imports.begin();
-  while (!target && iter != imports.end()) {
-    target = (*iter)->resolve(ref);
+  while (!ref->target && iter != imports.end()) {
+    (*iter)->resolve(ref);
     ++iter;
   }
-  return target;
 }

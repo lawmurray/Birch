@@ -45,17 +45,16 @@ public:
    *
    * @param[in,out] ref The reference.
    *
-   * @return Target of the reference.
-   *
-   * If the reference is resolved, updates the target of the reference and
-   * returns true, otherwise returns false. If there are multiple resolutions
-   * that cannot be resolved through prioritisation, throws an exception.
+   * If the reference is resolved, updates the definite target of the
+   * reference as well as possible alternatives to be checked at runtime.
+   * Otherwise sets the definite target to `nullptr` and possible
+   * alterantives to the empty list. Only throws an exception if there are
+   * multiple definite targets.
    */
-  ParameterType* resolve(ReferenceType* ref);
+  void resolve(ReferenceType* ref);
 
   /**
-   * Declarations within this outer, stored by partial order based on
-   * specialisation. Makes for fast lookup when resolving references.
+   * Declarations by partial order.
    */
   map_type overloaded;
 };

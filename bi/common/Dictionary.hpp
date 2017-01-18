@@ -51,12 +51,10 @@ public:
    *
    * @param[in,out] ref The reference.
    *
-   * @return Target of the reference.
-   *
-   * If the reference is resolved, updates the target of the reference and
-   * returns true, otherwise returns false.
+   * If the reference is resolved, updates the target of the reference,
+   * otherwise sets it to `nullptr`.
    */
-  ParameterType* resolve(ReferenceType* ref);
+  void resolve(ReferenceType* ref);
 
   /**
    * Declarations within this outer, stored by partial order based on

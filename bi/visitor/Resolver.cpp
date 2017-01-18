@@ -233,7 +233,6 @@ bi::Type* bi::Resolver::modify(ModelParameter* o) {
     //o->constructor =
     //    dynamic_cast<FuncParameter*>(o->constructor->accept(this));
     //assert(o->constructor);
-
     /* create assignment operator */
     Expression* right = new VarParameter(new Name(),
         new ModelReference(o->name, 0, o));
@@ -318,13 +317,13 @@ template<class ReferenceType>
 void bi::Resolver::resolve(ReferenceType* ref, Scope* scope) {
   if (scope) {
     /* use provided scope, usually a membership scope */
-    ref->target = scope->resolve(ref);
+    scope->resolve(ref);
   } else {
     /* use current stack of scopes */
     ref->target = nullptr;
     for (auto iter = scopes.rbegin(); !ref->target && iter != scopes.rend();
         ++iter) {
-      ref->target = (*iter)->resolve(ref);
+      (*iter)->resolve(ref);
     }
   }
   if (!ref->target) {

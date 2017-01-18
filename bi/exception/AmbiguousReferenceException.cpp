@@ -9,7 +9,7 @@
 
 template<class ParameterType, class ReferenceType>
 bi::AmbiguousReferenceException::AmbiguousReferenceException(
-    const ReferenceType* ref, std::list<ParameterType*> matches) {
+    ReferenceType* ref, std::list<ParameterType*> matches) {
   std::stringstream base;
   bih_ostream buf(base);
   if (ref->loc) {
@@ -28,8 +28,8 @@ bi::AmbiguousReferenceException::AmbiguousReferenceException(
 }
 
 template bi::AmbiguousReferenceException::AmbiguousReferenceException(
-    const VarReference* ref, std::list<VarParameter*> matches);
+    VarReference* ref, std::list<VarParameter*> matches);
 template bi::AmbiguousReferenceException::AmbiguousReferenceException(
-    const FuncReference* ref, std::list<FuncParameter*> matches);
+    FuncReference* ref, std::list<FuncParameter*> matches);
 template bi::AmbiguousReferenceException::AmbiguousReferenceException(
-    const ModelReference* ref, std::list<ModelParameter*> matches);
+    ModelReference* ref, std::list<ModelParameter*> matches);
