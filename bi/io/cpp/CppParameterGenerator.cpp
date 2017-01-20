@@ -30,11 +30,10 @@ void bi::CppParameterGenerator::visit(const VarParameter* o) {
 void bi::CppParameterGenerator::visit(const FuncParameter* o) {
   middle('(');
   for (auto iter = o->inputs.begin(); iter != o->inputs.end(); ++iter) {
-    const VarParameter* param = *iter;
     if (iter != o->inputs.begin()) {
       middle(", ");
     }
-    middle(param);
+    middle(*iter);
   }
   middle(')');
 }

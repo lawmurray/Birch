@@ -7,6 +7,10 @@ bi::IsPrimary::IsPrimary() : result(true) {
   //
 }
 
+bi::IsPrimary::~IsPrimary() {
+  //
+}
+
 void bi::IsPrimary::visit(const EmptyExpression* o) {
   result = true;
 }

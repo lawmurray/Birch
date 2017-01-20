@@ -7,6 +7,7 @@
 #include "bi/common/Parenthesised.hpp"
 #include "bi/common/Braced.hpp"
 #include "bi/common/Named.hpp"
+#include "bi/common/Numbered.hpp"
 #include "bi/common/Scoped.hpp"
 #include "bi/common/Formed.hpp"
 #include "bi/common/Parameter.hpp"
@@ -21,6 +22,7 @@ namespace bi {
  */
 class FuncParameter: public Expression,
     public Named,
+    public Numbered,
     public Scoped,
     public Braced,
     public Parameter<Expression>,

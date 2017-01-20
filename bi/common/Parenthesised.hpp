@@ -4,6 +4,7 @@
 #pragma once
 
 #include "bi/expression/Expression.hpp"
+#include "bi/expression/EmptyExpression.hpp"
 #include "bi/primitive/unique_ptr.hpp"
 
 #include <cassert>
@@ -21,7 +22,7 @@ public:
    *
    * @param parens Parenthesised expression.
    */
-  Parenthesised(Expression* parens);
+  Parenthesised(Expression* parens = new EmptyExpression());
 
   /**
    * Destructor.

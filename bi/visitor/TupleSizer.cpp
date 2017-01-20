@@ -7,6 +7,11 @@ bi::TupleSizer::TupleSizer() : size(0), dims(0) {
   //
 }
 
+
+bi::TupleSizer::~TupleSizer() {
+  //
+}
+
 void bi::TupleSizer::visit(const EmptyExpression* o) {
   //
 }

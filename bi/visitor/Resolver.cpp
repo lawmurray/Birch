@@ -77,7 +77,7 @@ bi::Expression* bi::Resolver::modify(This* o) {
   } else {
     Modifier::modify(o);
     o->type = new ModelReference(model()->name, new EmptyExpression(),
-        nullptr, model());
+        new EmptyExpression(), nullptr, model());
   }
   return o;
 }

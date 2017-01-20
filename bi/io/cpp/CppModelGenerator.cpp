@@ -39,7 +39,11 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
       finish(" {");
       line("public:");
       in();
-      line("typedef Group group_type;\n");
+      line("typedef Group group_type;");
+      if (!o->base->isEmpty()) {
+        line("typedef " << o->base << " base_type;");
+      }
+      line("\n");
     }
 
     /* default constructor */
@@ -69,7 +73,7 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
 
     /* destructor */
     if (header) {
-      line("~" << o->name << "() {");
+      line("virtual ~" << o->name << "() {");
       in();
       line("//");
       out();
@@ -125,12 +129,12 @@ void bi::CppModelGenerator::visit(const ModelReference* o) {
       middle("bi::model::");
     }
     middle(o->name);
-    middle("<decltype(arrayGroup(group))>," << o->count() << '>');
+    middle("<typename Group::array_group_type>," << o->count() << '>');
   } else {
     if (!header) {
       middle("bi::model::");
     }
-    middle(o->name << "<decltype(childGroup(group))>");
+    middle(o->name << "<typename Group::child_group_type>");
   }
 }
 

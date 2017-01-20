@@ -3,6 +3,10 @@
  */
 #include "bi/visitor/Cloner.hpp"
 
+bi::Cloner::~Cloner() {
+  //
+}
+
 bi::Expression* bi::Cloner::clone(const EmptyExpression* o) {
   return new EmptyExpression();
 }
@@ -79,7 +83,8 @@ bi::Expression* bi::Cloner::clone(const FuncReference* o) {
 }
 
 bi::Type* bi::Cloner::clone(const ModelReference* o) {
-  return new ModelReference(o->name, o->brackets->accept(this), o->loc);
+  return new ModelReference(o->name, o->parens->accept(this),
+      o->brackets->accept(this), o->loc);
 }
 
 bi::Prog* bi::Cloner::clone(const ProgReference* o) {

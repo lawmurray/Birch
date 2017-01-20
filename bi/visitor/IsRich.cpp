@@ -7,6 +7,10 @@ bi::IsRich::IsRich() : result(false) {
   //
 }
 
+bi::IsRich::~IsRich() {
+  //
+}
+
 void bi::IsRich::visit(const EmptyExpression* o) {
   Visitor::visit(o);
 }

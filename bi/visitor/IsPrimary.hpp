@@ -68,7 +68,3 @@ public:
   bool result;
 };
 }
-
-inline bi::IsPrimary::~IsPrimary() {
-  //
-}

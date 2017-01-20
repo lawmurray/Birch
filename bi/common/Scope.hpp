@@ -60,6 +60,14 @@ public:
   void resolve(ModelReference* ref);
 
   /**
+   * Get the parents of a function in the partial order.
+   */
+  template<class Container>
+  void parents(FuncParameter* param, Container& parents) {
+    funcs.parents(param, parents);
+  }
+
+  /**
    * Import from another scope into this scope.
    *
    * @param scope Scope to import.

@@ -27,9 +27,7 @@ void bi::CppMoveConstructorGenerator::visit(const ModelParameter* o) {
       in();
       in();
       if (!o->base->isEmpty()) {
-        CppBaseGenerator aux(base, level, header);
-        aux << o->base;
-        finish("(o),");
+        finish("base_type(o),");
       }
       start("group(o.group)");
 

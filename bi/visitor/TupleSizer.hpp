@@ -57,7 +57,3 @@ public:
   int dims;
 };
 }
-
-inline bi::TupleSizer::~TupleSizer() {
-  //
-}

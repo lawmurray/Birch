@@ -7,11 +7,11 @@
 
 #include <typeinfo>
 
-bi::ModelReference::ModelReference(shared_ptr<Name> name,
-    Expression* brackets, shared_ptr<Location> loc,
-    ModelParameter* target) :
+bi::ModelReference::ModelReference(shared_ptr<Name> name, Expression* parens,
+    Expression* brackets, shared_ptr<Location> loc, ModelParameter* target) :
     Type(loc),
     Named(name),
+    Parenthesised(parens),
     Bracketed(brackets),
     Reference(target),
     ndims(brackets->tupleSize()) {
@@ -83,7 +83,8 @@ bi::possibly bi::ModelReference::le(ModelReference& o) {
   if (*o.target->op == "=") {
     return *this <= *o.target->base;  // compare with canonical type
   } else {
-    return (isa(o) || (possible && o.isa(*this))) && *brackets <= *o.brackets;
+    return (isa(o) || (possible && o.isa(*this))) && *parens <= *o.parens
+        && *brackets <= *o.brackets;
   }
 }
 

@@ -36,6 +36,18 @@ public:
   T get(T v);
 
   /**
+   * Get the children of a vertex.
+   */
+  template<class Container>
+  void children(T v, Container& children);
+
+  /**
+   * Get the parents of a vertex.
+   */
+  template<class Container>
+  void parents(T v, Container& parents);
+
+  /**
    * Find the most-specific definite match(es) as well as more-specific
    * possible matche(es).
    *
@@ -171,6 +183,24 @@ T bi::poset<T,Compare>::get(T v) {
 }
 
 template<class T, class Compare>
+template<class Container>
+void bi::poset<T,Compare>::parents(T v, Container& parents) {
+  auto range = backwards.equal_range(v);
+  for (auto iter = range.first; iter != range.second; ++iter) {
+    parents.push_back(iter->second);
+  }
+}
+
+template<class T, class Compare>
+template<class Container>
+void bi::poset<T,Compare>::children(T v, Container& children) {
+  auto range = forwards.equal_range(v);
+  for (auto iter = range.first; iter != range.second; ++iter) {
+    children.push_back(iter->second);
+  }
+}
+
+template<class T, class Compare>
 template<class Comparable, class Container>
 void bi::poset<T,Compare>::match(Comparable v, Container& definites,
     Container& possibles) {
@@ -282,9 +312,10 @@ bool bi::poset<T,Compare>::match_possibles(T u, Comparable v,
   if (colours[u] < colour) {
     /* not visited yet */
     colours[u] = colour;
-    if (compare(v, u) != untrue) {
-      /* this vertex matcher, check if any vertices in the subgraph match
-       * more-specifically */
+    possibly result = compare(v, u);
+    if (result != untrue) {
+      /* this vertex matches definitely or possibly, check if any vertices in
+       * the subgraph match more-specifically */
       auto range = forwards.equal_range(u);
       for (auto iter = range.first; iter != range.second; ++iter) {
         deeper = match_possibles(iter->second, v, possibles) || deeper;
@@ -293,7 +324,9 @@ bool bi::poset<T,Compare>::match_possibles(T u, Comparable v,
       if (!deeper) {
         /* no more-specific matches in the subgraph beneath this vertex, so
          * this is the most-specific match */
-        possibles.push_back(u);
+        if (result == possible) {
+          possibles.push_back(u);
+        }
         deeper = true;
       }
     }
@@ -319,12 +352,8 @@ void bi::poset<T,Compare>::forward(T u, T v) {
     if (compare(u, v) == definite) {
       add_edge(v, u);
     } else {
-      /* local copy of forward edges, as may change */
       std::list<T> forwards1;
-      auto range = forwards.equal_range(u);
-      for (auto iter = range.first; iter != range.second; ++iter) {
-        forwards1.push_back(iter->second);
-      }
+      children(u, forwards1);
       for (auto iter = forwards1.begin(); iter != forwards1.end(); ++iter) {
         forward(*iter, v);
       }
@@ -350,12 +379,8 @@ void bi::poset<T,Compare>::backward(T u, T v) {
     if (compare(v, u) == definite) {
       add_edge(u, v);
     } else {
-      /* local copy of backward edges, as may change */
       std::list<T> backwards1;
-      auto range = backwards.equal_range(u);
-      for (auto iter = range.first; iter != range.second; ++iter) {
-        backwards1.push_back(iter->second);
-      }
+      parents(u, backwards1);
       for (auto iter = backwards1.begin(); iter != backwards1.end(); ++iter) {
         backward(*iter, v);
       }

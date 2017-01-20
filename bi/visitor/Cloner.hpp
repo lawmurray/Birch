@@ -65,7 +65,3 @@ public:
   virtual Type* clone(const TypeList* o);
 };
 }
-
-inline bi::Cloner::~Cloner() {
-  //
-}

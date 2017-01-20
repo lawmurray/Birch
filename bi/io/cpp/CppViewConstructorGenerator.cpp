@@ -24,9 +24,7 @@ void bi::CppViewConstructorGenerator::visit(const ModelParameter* o) {
       in();
       in();
       if (!o->base->isEmpty()) {
-        CppBaseGenerator aux(base, level, header);
-        aux << o->base;
-        middle("(o, frame, view),");
+        middle("base_type(o, frame, view),");
       }
       start("group(o.group)");
 

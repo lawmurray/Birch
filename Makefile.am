@@ -33,6 +33,7 @@ birchc_SOURCES = \
   bi/common/Location.cpp \
   bi/common/Name.cpp \
   bi/common/Named.cpp \
+  bi/common/Numbered.cpp \
   bi/common/OverloadedDictionary.cpp \
   bi/common/Parameter.cpp \
   bi/common/Parenthesised.cpp \
@@ -72,6 +73,7 @@ birchc_SOURCES = \
   bi/io/cpp/CppConstructorGenerator.cpp \
   bi/io/cpp/CppCopyConstructorGenerator.cpp \
   bi/io/cpp/CppDispatchGenerator.cpp \
+  bi/io/cpp/CppDispatcherGenerator.cpp \
   bi/io/cpp/CppFileGenerator.cpp \
   bi/io/cpp/CppModelGenerator.cpp \
   bi/io/cpp/CppMoveConstructorGenerator.cpp \
@@ -107,6 +109,7 @@ birchc_SOURCES = \
   bi/type/RandomType.cpp \
   bi/type/Type.cpp \
   bi/visitor/Cloner.cpp \
+  bi/visitor/DispatchGatherer.cpp \
   bi/visitor/Gatherer.cpp \
   bi/visitor/IsPrimary.cpp \
   bi/visitor/IsRich.cpp \

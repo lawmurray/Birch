@@ -67,7 +67,3 @@ public:
   virtual void visit(const TypeList* o);
 };
 }
-
-inline bi::Visitor::~Visitor() {
-  //
-}

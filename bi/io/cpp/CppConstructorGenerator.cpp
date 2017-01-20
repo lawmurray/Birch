@@ -41,8 +41,14 @@ void bi::CppConstructorGenerator::visit(const ModelParameter* o) {
     in();
     in();
     if (!o->base->isEmpty()) {
-      aux << o->base;
-      finish(',');
+      start("base_type(");
+      ModelReference* base = dynamic_cast<ModelReference*>(o->base.get());
+      assert(base);
+      if (!base->parens->isEmpty()) {
+        aux << base->parens->strip();
+        middle(", ");
+      }
+      finish("frame, name, group),");
     }
     start("group(childGroup(group, name))");
 

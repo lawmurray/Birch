@@ -14,6 +14,9 @@ namespace bi {
  */
 class HeapGroup {
 public:
+  typedef HeapGroup child_group_type;
+  typedef HeapGroup array_group_type;
+
   template<class Value, class Frame = EmptyFrame>
   void create(PrimitiveValue<Value,HeapGroup>& value, const Frame& frame =
       EmptyFrame(), const char* name = nullptr);

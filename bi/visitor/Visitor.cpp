@@ -3,6 +3,10 @@
  */
 #include "bi/visitor/Visitor.hpp"
 
+bi::Visitor::~Visitor() {
+  //
+}
+
 void bi::Visitor::visit(const EmptyExpression* o) {
   //
 }
@@ -95,6 +99,7 @@ void bi::Visitor::visit(const FuncReference* o) {
 
 void bi::Visitor::visit(const ModelReference* o) {
   o->name->accept(this);
+  o->parens->accept(this);
   o->brackets->accept(this);
 }
 

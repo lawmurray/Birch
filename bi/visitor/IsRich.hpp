@@ -67,7 +67,3 @@ public:
   bool result;
 };
 }
-
-inline bi::IsRich::~IsRich() {
-  //
-}

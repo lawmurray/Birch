@@ -5,6 +5,7 @@
 
 #include "bi/io/cpp/CppModelGenerator.hpp"
 #include "bi/io/cpp/CppDispatchGenerator.hpp"
+#include "bi/io/cpp/CppDispatcherGenerator.hpp"
 #include "bi/io/cpp/CppTemplateParameterGenerator.hpp"
 #include "bi/io/cpp/CppParameterGenerator.hpp"
 #include "bi/io/cpp/CppOutputGenerator.hpp"
@@ -40,10 +41,14 @@ void bi::CppFileGenerator::visit(const File* o) {
     /* standard headers */
     line("#include \"bi/bi.hpp\"");
   } else {
-    /* include header file */
+    /* include main header file */
     boost::filesystem::path file(o->path);
     file.replace_extension(".hpp");
     line("#include \"" << file.filename().string() << "\"\n");
+
+    /* dispatcher code */
+    CppDispatcherGenerator auxDispatcher(o->scope.get(), base, level, header);
+    auxDispatcher << o;
   }
 
   /* main code */

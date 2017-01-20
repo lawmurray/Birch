@@ -6,6 +6,7 @@
 #include "bi/expression/Expression.hpp"
 #include "bi/expression/FuncParameter.hpp"
 #include "bi/common/Named.hpp"
+#include "bi/common/Numbered.hpp"
 #include "bi/common/Reference.hpp"
 #include "bi/common/Parenthesised.hpp"
 #include "bi/common/Formed.hpp"
@@ -19,8 +20,12 @@ namespace bi {
  *
  * @ingroup compiler_expression
  */
-class FuncReference: public Expression, public Named, public Reference<
-    FuncParameter>, public Parenthesised, public Formed {
+class FuncReference: public Expression,
+    public Named,
+    public Numbered,
+    public Reference<FuncParameter>,
+    public Parenthesised,
+    public Formed {
 public:
   /**
    * Constructor.

@@ -54,6 +54,17 @@ public:
   void resolve(ReferenceType* ref);
 
   /**
+   * Get the parents of a vertex in the partial order.
+   */
+  template<class Container>
+  void parents(ParameterType* param, Container& parents) {
+    auto iter = overloaded.find(param->name->str());
+    if (iter != overloaded.end()) {
+      iter->second.parents(param, parents);
+    }
+  }
+
+  /**
    * Declarations by partial order.
    */
   map_type overloaded;

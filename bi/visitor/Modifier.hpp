@@ -67,7 +67,3 @@ public:
   virtual Type* modify(TypeList* o);
 };
 }
-
-inline bi::Modifier::~Modifier() {
-  //
-}

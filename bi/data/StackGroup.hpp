@@ -10,6 +10,8 @@
 #include <vector>
 
 namespace bi {
+class HeapGroup;
+
 /**
  * Group for values on the stack.
  *
@@ -17,6 +19,9 @@ namespace bi {
  */
 class StackGroup {
 public:
+  typedef StackGroup child_group_type;
+  typedef HeapGroup array_group_type;
+
   template<class Type>
   void create(PrimitiveValue<Type,StackGroup>& value,
       const EmptyFrame& frame = EmptyFrame(), const char* name = nullptr);

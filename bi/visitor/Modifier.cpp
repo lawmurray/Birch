@@ -3,6 +3,10 @@
  */
 #include "bi/visitor/Modifier.hpp"
 
+bi::Modifier::~Modifier() {
+  //
+}
+
 bi::Expression* bi::Modifier::modify(EmptyExpression* o) {
   return o;
 }
@@ -109,6 +113,7 @@ bi::Expression* bi::Modifier::modify(FuncReference* o) {
 
 bi::Type* bi::Modifier::modify(ModelReference* o) {
   o->name->accept(this);
+  o->parens = o->parens->accept(this);
   o->brackets = o->brackets->accept(this);
   return o;
 }

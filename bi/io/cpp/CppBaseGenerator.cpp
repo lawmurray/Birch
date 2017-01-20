@@ -3,6 +3,7 @@
  */
 #include "bi/io/cpp/CppBaseGenerator.hpp"
 
+#include "bi/visitor/Gatherer.hpp"
 #include "bi/io/cpp/misc.hpp"
 
 bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
@@ -135,10 +136,31 @@ void bi::CppBaseGenerator::visit(const FuncReference* o) {
     assert(o->args.size() == 1);
     auto iter = o->args.begin();
     middle(translate(o->name->str()) << ' ' << *iter);
+  } else if (o->alternatives.size() > 0) {
+    finish("[&]() {");
+    in();
+    in();
+    for (auto iter = o->alternatives.begin(); iter != o->alternatives.end(); ++iter) {
+      start("try { return dispatch_" << (*iter)->number << "_(");
+      possibly result = *const_cast<FuncReference*>(o) <= **iter;  // needed to capture arguments
+      assert(result != untrue);
+      Gatherer<VarParameter> gatherer;
+      (*iter)->parens->accept(&gatherer);
+      for (auto iter2 = gatherer.gathered.begin(); iter2 != gatherer.gathered.end();
+          ++iter2) {
+        if (iter2 != gatherer.gathered.begin()) {
+          middle(", ");
+        }
+        middle((*iter2)->arg);
+      }
+      finish("); } catch (std::bad_cast) {}");
+    }
+    line("throw std::bad_cast();");
+    start("}()");
+    out();
+    out();
   } else {
-    middle("bi::");
-    //middle("function::");
-    middle(o->target->mangled);
+    middle("bi::" << o->target->mangled);
     if (o->isConstructor()) {
       middle("<>");
     }

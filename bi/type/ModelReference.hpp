@@ -6,6 +6,7 @@
 #include "bi/type/Type.hpp"
 #include "bi/type/ModelParameter.hpp"
 #include "bi/expression/EmptyExpression.hpp"
+#include "bi/common/Parenthesised.hpp"
 #include "bi/common/Bracketed.hpp"
 #include "bi/common/Reference.hpp"
 #include "bi/type/EmptyType.hpp"
@@ -18,6 +19,7 @@ namespace bi {
  */
 class ModelReference: public Type,
     public Named,
+    public Parenthesised,
     public Bracketed,
     public Reference<ModelParameter> {
 public:
@@ -25,13 +27,14 @@ public:
    * Constructor.
    *
    * @param name Name.
+   * @param parens Parentheses.
    * @param brackets Square brackets.
    * @param loc Location.
    * @param target Target.
    */
-  ModelReference(shared_ptr<Name> name, Expression* brackets =
-      new EmptyExpression(), shared_ptr<Location> loc = nullptr,
-      ModelParameter* target = nullptr);
+  ModelReference(shared_ptr<Name> name, Expression* parens =
+      new EmptyExpression(), Expression* brackets = new EmptyExpression(),
+      shared_ptr<Location> loc = nullptr, ModelParameter* target = nullptr);
 
   /**
    * Constructor.
