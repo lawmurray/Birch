@@ -19,10 +19,8 @@ class Resolver: public Modifier {
 public:
   /**
    * Constructor.
-   *
-   * @param scope Root scope.
    */
-  Resolver(Scope* scope = nullptr);
+  Resolver();
 
   /**
    * Destructor.

@@ -26,19 +26,35 @@ bool bi::Scope::contains(ProgParameter* param) {
 }
 
 void bi::Scope::add(VarParameter* param) {
-  vars.add(param);
+  if (vars.contains(param)) {
+    throw PreviousDeclarationException(param, vars.get(param));
+  } else {
+    vars.add(param);
+  }
 }
 
 void bi::Scope::add(FuncParameter* param) {
-  funcs.add(param);
+  if (funcs.contains(param)) {
+    throw PreviousDeclarationException(param, funcs.get(param));
+  } else {
+    funcs.add(param);
+  }
 }
 
 void bi::Scope::add(ModelParameter* param) {
-  models.add(param);
+  if (models.contains(param)) {
+    throw PreviousDeclarationException(param, models.get(param));
+  } else {
+    models.add(param);
+  }
 }
 
-void bi::Scope::add(ProgParameter* prog) {
-  progs.add(prog);
+void bi::Scope::add(ProgParameter* param) {
+  if (progs.contains(param)) {
+    throw PreviousDeclarationException(param, progs.get(param));
+  } else {
+    progs.add(param);
+  }
 }
 
 void bi::Scope::resolve(VarReference* ref) {
@@ -62,6 +78,13 @@ void bi::Scope::resolve(ModelReference* ref) {
   }
 }
 
+void bi::Scope::inherit(Scope* scope) {
+  bases.insert(scope);
+}
+
 void bi::Scope::import(Scope* scope) {
-  imports.insert(scope);
+  vars.merge(scope->vars);
+  funcs.merge(scope->funcs);
+  models.merge(scope->models);
+  progs.merge(scope->progs);
 }

@@ -19,7 +19,9 @@ void bi::CppViewConstructorGenerator::visit(const ModelParameter* o) {
     middle("(const " << o->name->str() << "<Group>& o");
     middle(", const Frame& frame");
     middle(", const View& view)");
-    if (!o->base->isEmpty() || o->vars().size() > 0) {
+    Gatherer<VarDeclaration> gatherer;
+    o->braces->accept(&gatherer);
+    if (!o->base->isEmpty() || gatherer.gathered.size() > 0) {
       finish(" :");
       in();
       in();
@@ -28,8 +30,6 @@ void bi::CppViewConstructorGenerator::visit(const ModelParameter* o) {
       }
       start("group(o.group)");
 
-      Gatherer<VarDeclaration> gatherer;
-      o->braces->accept(&gatherer);
       for (auto iter = gatherer.gathered.begin();
           iter != gatherer.gathered.end(); ++iter) {
         *this << *iter;

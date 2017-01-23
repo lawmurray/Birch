@@ -112,7 +112,7 @@ bi::Prog* bi::Cloner::clone(const ProgParameter* o) {
 }
 
 bi::File* bi::Cloner::clone(const File* o) {
-  return new File(o->path, o->imports->accept(this), o->root->accept(this));
+  return new File(o->path, o->root->accept(this));
 }
 
 bi::Statement* bi::Cloner::clone(const Import* o) {

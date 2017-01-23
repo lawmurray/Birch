@@ -25,26 +25,21 @@ public:
   typedef std::list<ParameterType*> list_type;
 
   /**
-   * Number of parameters.
-   */
-  size_t size() const;
-
-  /**
    * Does the dictionary contain the given parameter?
    */
-  bool contains(const ParameterType* param) const;
+  virtual bool contains(ParameterType* param);
 
   /**
    * If the dictionary contains the given parameter, retrieve its version.
    */
-  ParameterType* get(const ParameterType* param);
+  virtual ParameterType* get(ParameterType* param);
 
   /**
    * Add parameter.
    *
    * @param param The parameter.
    */
-  void add(ParameterType* param);
+  virtual void add(ParameterType* param);
 
   /**
    * Resolve reference.
@@ -54,10 +49,15 @@ public:
    * If the reference is resolved, updates the target of the reference,
    * otherwise sets it to `nullptr`.
    */
-  void resolve(ReferenceType* ref);
+  virtual void resolve(ReferenceType* ref);
 
   /**
-   * Declarations within this outer, stored by partial order based on
+   * Merge another overloaded dictionary into this one.
+   */
+  virtual void merge(Dictionary<ParameterType,ReferenceType>& o);
+
+  /**
+   * Declarations within this scope, stored by partial order based on
    * specialisation. Makes for fast lookup when resolving references.
    */
   map_type unordered;

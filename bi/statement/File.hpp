@@ -27,11 +27,9 @@ public:
    * Constructor.
    *
    * @param path File path.
-   * @param import Import statements at top of file.
-   * @param root Root statement of file (after imports).
+   * @param root Root statement of file.
    */
-  File(const std::string& path, Statement* imports = new EmptyStatement(),
-      Statement* root = new EmptyStatement());
+  File(const std::string& path, Statement* root = new EmptyStatement());
 
   /**
    * Destructor.
@@ -48,12 +46,7 @@ public:
   std::string path;
 
   /**
-   * Import statements.
-   */
-  unique_ptr<Statement> imports;
-
-  /**
-   * Root statement of file (after imports).
+   * Root statement of file.
    */
   unique_ptr<Statement> root;
 

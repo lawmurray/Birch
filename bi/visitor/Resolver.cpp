@@ -6,12 +6,10 @@
 #include "bi/visitor/Gatherer.hpp"
 #include "bi/exception/all.hpp"
 
-bi::Resolver::Resolver(Scope* scope) :
+bi::Resolver::Resolver() :
     inInputs(false),
     membershipScope(nullptr) {
-  if (scope) {
-    push(scope);
-  }
+  //
 }
 
 bi::Resolver::~Resolver() {
@@ -26,7 +24,6 @@ void bi::Resolver::modify(File* o) {
     o->scope = new Scope();
     files.push(o);
     push(o->scope.get());
-    o->imports = o->imports->accept(this);
     o->root = o->root->accept(this);
     undefer();
     pop();
@@ -333,28 +330,26 @@ void bi::Resolver::resolve(ReferenceType* ref, Scope* scope) {
 
 void bi::Resolver::defer(Expression* o) {
   if (files.size() == 1) {
-    /* can ignore bodies in imported files */
+    /* ignore bodies in imported files */
     defers.push_back(std::make_tuple(o, top(), model()));
   }
 }
 
 void bi::Resolver::undefer() {
-  if (files.size() == 1) {
-    auto iter = defers.begin();
-    while (iter != defers.end()) {
-      auto o = std::get<0>(*iter);
-      auto scope = std::get<1>(*iter);
-      auto model = std::get<2>(*iter);
+  auto iter = defers.begin();
+  while (iter != defers.end()) {
+    auto o = std::get<0>(*iter);
+    auto scope = std::get<1>(*iter);
+    auto model = std::get<2>(*iter);
 
-      push(scope);
-      models.push(model);
-      o->accept(this);
-      models.pop();
-      pop();
-      ++iter;
-    }
-    defers.clear();
+    push(scope);
+    models.push(model);
+    o->accept(this);
+    models.pop();
+    pop();
+    ++iter;
   }
+  defers.clear();
 }
 
 bi::ModelParameter* bi::Resolver::model() {

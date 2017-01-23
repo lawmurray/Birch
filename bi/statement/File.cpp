@@ -5,8 +5,10 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::File::File(const std::string& path, Statement* imports, Statement* root) :
-    path(path), imports(imports), root(root), state(UNRESOLVED) {
+bi::File::File(const std::string& path, Statement* root) :
+    path(path),
+    root(root),
+    state(UNRESOLVED) {
   //
 }
 

@@ -139,9 +139,9 @@ private:
   std::multimap<T,T> forwards, backwards;
 
   /**
-   * Roots and leaves.
+   * All vertices, roots and leaves.
    */
-  std::set<T> roots, leaves;
+  std::set<T> vertices, roots, leaves;
 
   /**
    * Comparison operator.
@@ -229,6 +229,7 @@ void bi::poset<T,Compare>::add_vertex(T v) {
   assert(!contains(v));
 
   colours.insert(std::make_pair(v, colour));
+  vertices.insert(v);
   roots.insert(v);
   leaves.insert(v);
 }

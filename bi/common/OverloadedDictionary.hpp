@@ -26,19 +26,19 @@ public:
   /**
    * Does the dictionary contain the given parameter?
    */
-  bool contains(ParameterType* param);
+  virtual bool contains(ParameterType* param);
 
   /**
    * If the dictionary contains the given parameter, retrieve its version.
    */
-  ParameterType* get(ParameterType* param);
+  virtual ParameterType* get(ParameterType* param);
 
   /**
    * Add parameter.
    *
    * @param param The parameter.
    */
-  void add(ParameterType* param);
+  virtual void add(ParameterType* param);
 
   /**
    * Resolve reference.
@@ -51,7 +51,7 @@ public:
    * alterantives to the empty list. Only throws an exception if there are
    * multiple definite targets.
    */
-  void resolve(ReferenceType* ref);
+  virtual void resolve(ReferenceType* ref);
 
   /**
    * Get the parents of a vertex in the partial order.

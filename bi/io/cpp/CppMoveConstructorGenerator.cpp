@@ -5,8 +5,8 @@
 #include "bi/io/cpp/CppBaseGenerator.hpp"
 #include "bi/visitor/Gatherer.hpp"
 
-bi::CppMoveConstructorGenerator::CppMoveConstructorGenerator(std::ostream& base,
-    const int level, const bool header) :
+bi::CppMoveConstructorGenerator::CppMoveConstructorGenerator(
+    std::ostream& base, const int level, const bool header) :
     indentable_ostream(base, level, header) {
   //
 }
@@ -22,7 +22,9 @@ void bi::CppMoveConstructorGenerator::visit(const ModelParameter* o) {
   if (header) {
     finish(";\n");
   } else {
-    if (!o->base->isEmpty() || o->vars().size() > 0) {
+    Gatherer<VarDeclaration> gatherer;
+    o->braces->accept(&gatherer);
+    if (!o->base->isEmpty() || gatherer.gathered.size() > 0) {
       finish(" :");
       in();
       in();
@@ -30,10 +32,8 @@ void bi::CppMoveConstructorGenerator::visit(const ModelParameter* o) {
         finish("base_type(o),");
       }
       start("group(o.group)");
-
-      Gatherer<VarDeclaration> gatherer;
-      o->braces->accept(&gatherer);
-      for (auto iter = gatherer.gathered.begin(); iter != gatherer.gathered.end(); ++iter) {
+      for (auto iter = gatherer.gathered.begin();
+          iter != gatherer.gathered.end(); ++iter) {
         *this << *iter;
       }
 

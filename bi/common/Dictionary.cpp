@@ -10,19 +10,14 @@
 #include "bi/exception/all.hpp"
 
 template<class ParameterType, class ReferenceType>
-size_t bi::Dictionary<ParameterType,ReferenceType>::size() const {
-  return ordered.size();
-}
-
-template<class ParameterType, class ReferenceType>
 bool bi::Dictionary<ParameterType,ReferenceType>::contains(
-    const ParameterType* param) const {
+    ParameterType* param) {
   return unordered.find(param->name->str()) != unordered.end();
 }
 
 template<class ParameterType, class ReferenceType>
 ParameterType* bi::Dictionary<ParameterType,ReferenceType>::get(
-    const ParameterType* param) {
+    ParameterType* param) {
   /* pre-condition */
   assert(contains(param));
 
@@ -31,11 +26,12 @@ ParameterType* bi::Dictionary<ParameterType,ReferenceType>::get(
 
 template<class ParameterType, class ReferenceType>
 void bi::Dictionary<ParameterType,ReferenceType>::add(ParameterType* param) {
+  /* pre-condition */
+  assert(!contains(param));
+
   /* store in unordered map */
   auto result = unordered.insert(std::make_pair(param->name->str(), param));
-  if (!result.second) {
-    throw PreviousDeclarationException(param, result.first->second);
-  }
+  assert(result.second);
 
   /* store in ordered list */
   ordered.push_back(param);
@@ -51,6 +47,16 @@ void bi::Dictionary<ParameterType,ReferenceType>::resolve(
     ref->target = nullptr;
   }
   ref->alternatives.clear();
+}
+
+template<class ParameterType, class ReferenceType>
+void bi::Dictionary<ParameterType,ReferenceType>::merge(
+    Dictionary<ParameterType,ReferenceType>& o) {
+  for (auto iter = o.ordered.begin(); iter != o.ordered.end(); ++iter) {
+    if (!contains(*iter)) {
+      add(*iter);
+    }
+  }
 }
 
 /*

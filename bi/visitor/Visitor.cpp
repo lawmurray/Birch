@@ -135,7 +135,6 @@ void bi::Visitor::visit(const ProgParameter* o) {
 }
 
 void bi::Visitor::visit(const File* o) {
-  o->imports->accept(this);
   o->root->accept(this);
 }
 

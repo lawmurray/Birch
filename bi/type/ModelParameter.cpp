@@ -22,20 +22,6 @@ bi::ModelParameter::~ModelParameter() {
   //
 }
 
-const std::list<bi::VarParameter*>& bi::ModelParameter::vars() const {
-  /* pre-condition */
-  assert(scope);
-
-  return scope->vars.ordered;
-}
-
-const std::list<bi::FuncParameter*>& bi::ModelParameter::funcs() const {
-  /* pre-condition */
-  assert(scope);
-
-  return scope->funcs.ordered;
-}
-
 bi::Type* bi::ModelParameter::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

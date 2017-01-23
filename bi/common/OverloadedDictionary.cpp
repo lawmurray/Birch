@@ -29,13 +29,8 @@ ParameterType* bi::OverloadedDictionary<ParameterType,ReferenceType>::get(
 template<class ParameterType, class ReferenceType>
 void bi::OverloadedDictionary<ParameterType,ReferenceType>::add(
     ParameterType* param) {
-  // if any assertions fail here, either the unique names of functions, or
-  // the partial order on expressions, is not well-defined
-
-  /* check if already exists */
-  if (contains(param)) {
-    throw PreviousDeclarationException(param, get(param));
-  }
+  /* pre-condition */
+  assert(!contains(param));
 
   /* store in ordered list */
   this->ordered.push_back(param);
@@ -45,7 +40,6 @@ void bi::OverloadedDictionary<ParameterType,ReferenceType>::add(
   auto iter = overloaded.find(key);
   if (iter != overloaded.end()) {
     auto& val = iter->second;
-    assert(!val.contains(param));
     val.insert(param);
   } else {
     auto val = poset_type();

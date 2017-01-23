@@ -18,12 +18,14 @@ void bi::CppCopyConstructorGenerator::visit(const ModelParameter* o) {
   } else {
     start("");
   }
-  middle(
-      o->name->str() << "(const " << o->name->str() << "<Group>& o)");
+  middle(o->name->str() << "(const " << o->name->str() << "<Group>& o)");
   if (header) {
     finish(";\n");
   } else {
-    if (!o->base->isEmpty() || o->vars().size() > 0) {
+    Gatherer<VarDeclaration> gatherer;
+    o->braces->accept(&gatherer);
+
+    if (!o->base->isEmpty() || gatherer.gathered.size() > 0) {
       finish(" :");
       in();
       in();
@@ -32,9 +34,8 @@ void bi::CppCopyConstructorGenerator::visit(const ModelParameter* o) {
       }
       start("group(o.group)");
 
-      Gatherer<VarDeclaration> gatherer;
-      o->braces->accept(&gatherer);
-      for (auto iter = gatherer.gathered.begin(); iter != gatherer.gathered.end(); ++iter) {
+      for (auto iter = gatherer.gathered.begin();
+          iter != gatherer.gathered.end(); ++iter) {
         *this << *iter;
       }
 

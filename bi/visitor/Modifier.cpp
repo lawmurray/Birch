@@ -155,7 +155,6 @@ bi::Prog* bi::Modifier::modify(ProgParameter* o) {
 }
 
 void bi::Modifier::modify(File* o) {
-  o->imports = o->imports->accept(this);
   o->root = o->root->accept(this);
 }
 

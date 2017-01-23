@@ -68,18 +68,25 @@ public:
   }
 
   /**
-   * Import from another scope into this scope.
+   * Inherit another scope into this scope. This is used to import
+   * declarations from a base class into a derived class.
    *
-   * @param scope Scope to import.
+   * @param scope Scope to inherit.
+   */
+  void inherit(Scope* scope);
+
+  /**
+   * Import another scope into this scope. This is used to import
+   * declarations from one file into another file.
+   *
+   * @param scope Scope to inherit.
    */
   void import(Scope* scope);
 
   /**
-   * Imported scopes.
-   *
-   * Raw pointers used here to ensure uniqueness.
+   * Base scopes.
    */
-  std::set<Scope*> imports;
+  std::set<Scope*> bases;
 
   /**
    * Overloaded declarations, by name.
@@ -100,8 +107,8 @@ private:
 
 template<class ParameterType, class ReferenceType>
 void bi::Scope::resolveDefer(ReferenceType* ref) {
-  auto iter = imports.begin();
-  while (!ref->target && iter != imports.end()) {
+  auto iter = bases.begin();
+  while (!ref->target && iter != bases.end()) {
     (*iter)->resolve(ref);
     ++iter;
   }

@@ -43,16 +43,6 @@ public:
    */
   virtual ~ModelParameter();
 
-  /**
-   * Get all member variables.
-   */
-  const std::list<VarParameter*>& vars() const;
-
-  /**
-   * Get all member functions.
-   */
-  const std::list<FuncParameter*>& funcs() const;
-
   virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
