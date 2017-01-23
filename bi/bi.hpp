@@ -15,6 +15,7 @@
 #include "bi/random/Expirable.hpp"
 #include "bi/random/Random.hpp"
 #include "bi/random/RandomStack.hpp"
+#include "bi/primitive/cast.hpp"
 #include "bi/primitive/shared_ptr.hpp"
 #include "bi/primitive/unique_ptr.hpp"
 

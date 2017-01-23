@@ -120,7 +120,7 @@ void bi::CppBaseGenerator::visit(const VarReference* o) {
 void bi::CppBaseGenerator::visit(const FuncReference* o) {
   if (*o->name == "<-") {
     //if (*o->getLeft()->type <= *o->getRight()->type) {
-      middle(o->getLeft() << " = " <<  o->getRight());
+    middle(o->getLeft() << " = " << o->getRight());
     //} else {
     //  middle("bi::" << o->target->mangled);
     //  middle('(' << o->getLeft() << ", " << o->getRight() << ')');
@@ -136,18 +136,34 @@ void bi::CppBaseGenerator::visit(const FuncReference* o) {
     assert(o->args.size() == 1);
     auto iter = o->args.begin();
     middle(translate(o->name->str()) << ' ' << *iter);
-  } else if (o->alternatives.size() > 0) {
+  } else if (o->alternatives.size() == 1) {
+    auto iter = o->alternatives.begin();
+    middle("dispatch_" << (*iter)->number << "_(");
+    possibly result = *const_cast<FuncReference*>(o) <= **iter;  // needed to capture arguments
+    assert(result != untrue);
+    Gatherer<VarParameter> gatherer;
+    (*iter)->parens->accept(&gatherer);
+    for (auto iter2 = gatherer.gathered.begin();
+        iter2 != gatherer.gathered.end(); ++iter2) {
+      if (iter2 != gatherer.gathered.begin()) {
+        middle(", ");
+      }
+      middle((*iter2)->arg);
+    }
+    middle(')');
+  } else if (o->alternatives.size() > 1) {
     finish("[&]() {");
     in();
     in();
-    for (auto iter = o->alternatives.begin(); iter != o->alternatives.end(); ++iter) {
+    for (auto iter = o->alternatives.begin(); iter != o->alternatives.end();
+        ++iter) {
       start("try { return dispatch_" << (*iter)->number << "_(");
       possibly result = *const_cast<FuncReference*>(o) <= **iter;  // needed to capture arguments
       assert(result != untrue);
       Gatherer<VarParameter> gatherer;
       (*iter)->parens->accept(&gatherer);
-      for (auto iter2 = gatherer.gathered.begin(); iter2 != gatherer.gathered.end();
-          ++iter2) {
+      for (auto iter2 = gatherer.gathered.begin();
+          iter2 != gatherer.gathered.end(); ++iter2) {
         if (iter2 != gatherer.gathered.begin()) {
           middle(", ");
         }

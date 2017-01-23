@@ -24,6 +24,7 @@ bi::Driver::Driver(int argc, char** argv) :
     enable_std(true),
     enable_warnings(false),
     enable_assert(true),
+    enable_extra_debug(false),
     dry_build(false),
     dry_run(false),
     force(false),

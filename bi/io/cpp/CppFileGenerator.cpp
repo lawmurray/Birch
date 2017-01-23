@@ -4,7 +4,6 @@
 #include "bi/io/cpp/CppFileGenerator.hpp"
 
 #include "bi/io/cpp/CppModelGenerator.hpp"
-#include "bi/io/cpp/CppDispatchGenerator.hpp"
 #include "bi/io/cpp/CppDispatcherGenerator.hpp"
 #include "bi/io/cpp/CppTemplateParameterGenerator.hpp"
 #include "bi/io/cpp/CppParameterGenerator.hpp"
@@ -120,10 +119,6 @@ void bi::CppFileGenerator::visit(const FuncParameter* o) {
     } else {
       finish(" {");
       in();
-
-      /* dispatch code for expired random variables */
-      CppDispatchGenerator auxDispatch(base, level, header);
-      auxDispatch << o;
 
       /* output parameters */
       CppOutputGenerator auxOutput(base, level, header);

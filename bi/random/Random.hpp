@@ -52,12 +52,12 @@ public:
   Random<Variate,Model>& operator=(const Model& o);
 
   /**
-   * Cast to variate.
+   * Cast to variate type.
    */
   operator Variate&();
 
   /**
-   * Cast to filtered distribution.
+   * Cast to filtered distribution type.
    */
   operator Model&();
 
@@ -158,9 +158,9 @@ bi::Random<Variate,Model>::operator Variate&() {
 
 template<class Variate, class Model>
 bi::Random<Variate,Model>::operator Model&() {
-  /* pre-condition */
-  assert(missing);
-
+  if (!missing) {
+    throw std::bad_cast();
+  }
   return m;
 }
 

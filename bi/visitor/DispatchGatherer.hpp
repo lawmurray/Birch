@@ -14,11 +14,29 @@ namespace bi {
  */
 class DispatchGatherer : public Visitor {
 public:
+  /**
+   * Constructor.
+   *
+   * @param scope Scope for finding parents of functions.
+   */
+  DispatchGatherer(Scope* scope);
+
   virtual void visit(const FuncReference* o);
 
   /**
-   * Gathered possible matches.
+   * Gathered matches.
    */
   std::set<const FuncParameter*> gathered;
+
+private:
+  /**
+   * Insert function.
+   */
+  void insert(const FuncParameter* o);
+
+  /**
+   * Scope for finding parents of functions.
+   */
+  Scope* scope;
 };
 }

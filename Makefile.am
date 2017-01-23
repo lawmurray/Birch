@@ -72,7 +72,6 @@ birchc_SOURCES = \
   bi/io/cpp/CppBaseGenerator.cpp \
   bi/io/cpp/CppConstructorGenerator.cpp \
   bi/io/cpp/CppCopyConstructorGenerator.cpp \
-  bi/io/cpp/CppDispatchGenerator.cpp \
   bi/io/cpp/CppDispatcherGenerator.cpp \
   bi/io/cpp/CppFileGenerator.cpp \
   bi/io/cpp/CppModelGenerator.cpp \
@@ -184,6 +183,7 @@ nobase_include_HEADERS = bi/data/Array.hpp \
   bi/exception/MemoryException.hpp \
   bi/exception/NetCDFException.hpp \
   bi/exception/UnknownOptionException.hpp \
+  bi/primitive/cast.hpp \
   bi/primitive/shared_ptr.hpp \
   bi/primitive/unique_ptr.hpp \
   bi/random/Expirable.hpp \
