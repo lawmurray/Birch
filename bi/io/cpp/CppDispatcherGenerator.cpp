@@ -71,9 +71,9 @@ void bi::CppDispatcherGenerator::visit(const FuncParameter* o) {
     if (result == possible) {
       middle("dispatch_" << o->number << "_");
     } else {
-      middle("bi::" << o->name);
+      middle("bi::" << o->mangled);
     }
-    middle(" (");
+    middle('(');
     Gatherer<VarParameter> gatherer;
     (*iter)->parens->accept(&gatherer);
     for (auto iter2 = gatherer.gathered.begin(); iter2 != gatherer.gathered.end();
