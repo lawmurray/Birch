@@ -11,6 +11,7 @@ class Cloner;
 class Modifier;
 class Visitor;
 
+class BracketsType;
 class EmptyType;
 template<class T> class List;
 class ModelParameter;
@@ -96,6 +97,7 @@ public:
   possibly operator<=(Type& o);
   possibly operator==(Type& o);
   virtual possibly dispatch(Type& o) = 0;
+  virtual possibly le(BracketsType& o);
   virtual possibly le(EmptyType& o);
   virtual possibly le(List<Type>& o);
   virtual possibly le(ModelParameter& o);

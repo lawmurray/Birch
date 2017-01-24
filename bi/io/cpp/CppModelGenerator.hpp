@@ -19,6 +19,7 @@ public:
   virtual void visit(const Name* o);
   virtual void visit(const ModelParameter* o);
   virtual void visit(const ModelReference* o);
+  virtual void visit(const BracketsType* o);
 
   virtual void visit(const VarDeclaration* o);
   virtual void visit(const VarParameter* o);
@@ -31,5 +32,10 @@ protected:
    * The model being generated.
    */
   const ModelParameter* model;
+
+  /**
+   * Currently generating type for an array?
+   */
+  bool inArray;
 };
 }

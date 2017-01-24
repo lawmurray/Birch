@@ -11,15 +11,15 @@ bi::CppConstructorGenerator::CppConstructorGenerator(std::ostream& base,
   //
 }
 
-void bi::CppConstructorGenerator::visit(const ModelReference* o) {
+void bi::CppConstructorGenerator::visit(const BracketsType* o) {
+  middle("make_frame(");
   CppBaseGenerator aux(base, level, header);
-  if (o->count() > 0) {
-    middle("make_frame(");
-    aux << o->brackets;
-    middle(")*frame.lead");
-  } else {
-    middle("frame");
-  }
+  aux << o->brackets;
+  middle(")*frame.lead");
+}
+
+void bi::CppConstructorGenerator::visit(const ModelReference* o) {
+  middle("frame");
 }
 
 void bi::CppConstructorGenerator::visit(const ModelParameter* o) {

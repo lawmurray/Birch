@@ -17,7 +17,6 @@ public:
       const bool header = false);
 
   virtual void visit(const File* o);
-  virtual void visit(const ModelReference* o);
   virtual void visit(const VarParameter* o);
   virtual void visit(const FuncParameter* o);
 

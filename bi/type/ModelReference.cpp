@@ -5,24 +5,18 @@
 
 #include "bi/visitor/all.hpp"
 
-#include <typeinfo>
-
 bi::ModelReference::ModelReference(shared_ptr<Name> name, Expression* parens,
-    Expression* brackets, shared_ptr<Location> loc, ModelParameter* target) :
+    shared_ptr<Location> loc, ModelParameter* target) :
     Type(loc),
     Named(name),
     Parenthesised(parens),
-    Bracketed(brackets),
-    Reference(target),
-    ndims(brackets->tupleSize()) {
+    Reference(target) {
   //
 }
 
-bi::ModelReference::ModelReference(shared_ptr<Name> name, const int ndims,
-    ModelParameter* target) :
-    Named(name),
-    Reference(target),
-    ndims(ndims) {
+bi::ModelReference::ModelReference(ModelParameter* target) :
+    Named(target->name),
+    Reference(target) {
   //
 }
 
@@ -53,10 +47,6 @@ bool bi::ModelReference::builtin() const {
   }
 }
 
-int bi::ModelReference::count() const {
-  return ndims;
-}
-
 bi::possibly bi::ModelReference::isa(ModelReference& o) {
   bool result = target == o.target;
   if (!result && target) {
@@ -83,8 +73,7 @@ bi::possibly bi::ModelReference::le(ModelReference& o) {
   if (*o.target->op == "=") {
     return *this <= *o.target->base;  // compare with canonical type
   } else {
-    return (isa(o) || (possible && o.isa(*this))) && *parens <= *o.parens
-        && *brackets <= *o.brackets;
+    return (isa(o) || (possible && o.isa(*this))) && *parens <= *o.parens;
   }
 }
 

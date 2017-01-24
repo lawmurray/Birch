@@ -62,6 +62,7 @@ public:
   virtual Statement* modify(ModelDeclaration* o);
   virtual Statement* modify(ProgDeclaration* o);
 
+  virtual Type* modify(BracketsType* o);
   virtual Type* modify(ParenthesesType* o);
   virtual Type* modify(RandomType* o);
   virtual Type* modify(TypeList* o);

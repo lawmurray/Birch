@@ -9,7 +9,6 @@
 #include "bi/io/cpp/CppCopyConstructorGenerator.hpp"
 #include "bi/io/cpp/CppMoveConstructorGenerator.hpp"
 #include "bi/io/cpp/CppAssignmentGenerator.hpp"
-#include "bi/io/cpp/CppTemplateParameterGenerator.hpp"
 #include "bi/io/cpp/CppParameterGenerator.hpp"
 #include "bi/io/cpp/CppOutputGenerator.hpp"
 #include "bi/io/cpp/CppReturnGenerator.hpp"
@@ -18,7 +17,8 @@
 bi::CppModelGenerator::CppModelGenerator(std::ostream& base, const int level,
     const bool header) :
     indentable_ostream(base, level, header),
-    model(nullptr) {
+    model(nullptr),
+    inArray(false) {
   //
 }
 
@@ -120,22 +120,24 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
 }
 
 void bi::CppModelGenerator::visit(const ModelReference* o) {
-  if (o->count() > 0) {
-    if (!header) {
-      middle("bi::");
-    }
-    middle("DefaultArray<");
-    if (!header) {
-      middle("bi::model::");
-    }
-    middle(o->name);
-    middle("<typename Group::array_group_type>," << o->count() << '>');
-  } else {
-    if (!header) {
-      middle("bi::model::");
-    }
-    middle(o->name << "<typename Group::child_group_type>");
+  if (!header) {
+    middle("bi::model::");
   }
+  middle(o->name);
+  if (inArray) {
+    middle("<typename Group::array_group_type>");
+  } else {
+    middle("<typename Group::child_group_type>");
+  }
+}
+
+void bi::CppModelGenerator::visit(const BracketsType* o) {
+  if (!header) {
+    middle("bi::");
+  }
+  inArray = true;
+  middle("DefaultArray<" << o->single << ',' << o->count() << '>');
+  inArray = false;
 }
 
 void bi::CppModelGenerator::visit(const VarDeclaration* o) {
@@ -154,10 +156,6 @@ void bi::CppModelGenerator::visit(const FuncParameter* o) {
     if (!header) {
       line("template<class Group>");
     }
-
-    /* function template parameters */
-    CppTemplateParameterGenerator auxTemplateParameter(base, level, header);
-    auxTemplateParameter << o;
 
     /* type */
     start("");

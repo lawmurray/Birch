@@ -92,19 +92,7 @@ void bi::bi_ostream::visit(const FuncReference* o) {
 }
 
 void bi::bi_ostream::visit(const ModelReference* o) {
-  *this << o->name;
-  if (!o->brackets->isEmpty()) {
-    *this << '[' << o->brackets << ']';
-  } else if (o->count() > 0) {
-    *this << '[';
-    for (int i = 0; i < o->count(); ++i) {
-      if (i != 0) {
-        *this << ',';
-      }
-      *this << '0';
-    }
-    *this << ']';
-  }
+  *this << o->name << o->parens;
 }
 
 void bi::bi_ostream::visit(const ProgReference* o) {
@@ -150,6 +138,22 @@ void bi::bi_ostream::visit(const ProgParameter* o) {
     *this << o->braces;
   } else {
     *this << ';';
+  }
+}
+
+void bi::bi_ostream::visit(const BracketsType* o) {
+  *this << o->single;
+  if (!o->brackets->isEmpty()) {
+    *this << '[' << o->brackets << ']';
+  } else if (o->count() > 0) {
+    *this << '[';
+    for (int i = 0; i < o->count(); ++i) {
+      if (i != 0) {
+        *this << ',';
+      }
+      *this << '0';
+    }
+    *this << ']';
   }
 }
 

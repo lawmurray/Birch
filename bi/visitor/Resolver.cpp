@@ -74,7 +74,7 @@ bi::Expression* bi::Resolver::modify(This* o) {
   } else {
     Modifier::modify(o);
     o->type = new ModelReference(model()->name, new EmptyExpression(),
-        new EmptyExpression(), nullptr, model());
+        nullptr, model());
   }
   return o;
 }
@@ -102,17 +102,15 @@ bi::Expression* bi::Resolver::modify(RandomInit* o) {
 bi::Expression* bi::Resolver::modify(BracketsExpression* o) {
   Modifier::modify(o);
 
-  ModelReference* ref = dynamic_cast<ModelReference*>(o->single->type.get());
-  assert(ref);  ///@todo Exception
-
-  const int typeSize = ref->ndims;
+  const int typeSize = o->single->type->count();
   const int indexSize = o->brackets->tupleSize();
   const int indexDims = o->brackets->tupleDims();
-
   assert(typeSize == indexSize);  ///@todo Exception
-  ref = new ModelReference(ref->name, indexDims);
 
-  o->type = ref->accept(this);
+  BracketsType* type = dynamic_cast<BracketsType*>(o->single->type.get());
+  assert(type);
+  o->type = new BracketsType(type->single->accept(&cloner), indexDims);
+  o->type = o->type->accept(this);
 
   return o;
 }
@@ -230,15 +228,13 @@ bi::Type* bi::Resolver::modify(ModelParameter* o) {
     //o->constructor =
     //    dynamic_cast<FuncParameter*>(o->constructor->accept(this));
     //assert(o->constructor);
+
     /* create assignment operator */
-    Expression* right = new VarParameter(new Name(),
-        new ModelReference(o->name, 0, o));
-    Expression* left = new VarParameter(new Name(),
-        new ModelReference(o->name, 0, o));
+    Expression* right = new VarParameter(new Name(), new ModelReference(o));
+    Expression* left = new VarParameter(new Name(), new ModelReference(o));
     Expression* parens2 = new ParenthesesExpression(
         new ExpressionList(left, right));
-    Expression* result2 = new VarParameter(new Name(),
-        new ModelReference(o->name, 0, o));
+    Expression* result2 = new VarParameter(new Name(), new ModelReference(o));
     o->assignment = new FuncParameter(new Name("<-"), parens2, result2,
         new EmptyExpression(), ASSIGNMENT_OPERATOR);
     o->assignment = dynamic_cast<FuncParameter*>(o->assignment->accept(this));

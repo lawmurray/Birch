@@ -27,7 +27,7 @@ void bi::CppAssignmentGenerator::visit(const ModelParameter* o) {
     finish(" {");
     in();
     if (!o->base->isEmpty()) {
-      finish("base_type::operator=(o);");
+      line("base_type::operator=(o);");
     }
 
     Gatherer<VarDeclaration> gatherer;
@@ -51,9 +51,7 @@ void bi::CppAssignmentGenerator::visit(const ModelParameter* o) {
     finish(" {");
     in();
     if (!o->base->isEmpty()) {
-      CppBaseGenerator aux(base, level, header);
-      aux << o->base;
-      finish("::operator=(o);");
+      line("base_type::operator=(o);");
     }
 
     Gatherer<VarDeclaration> gatherer;

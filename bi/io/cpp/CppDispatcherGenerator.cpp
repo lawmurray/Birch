@@ -3,7 +3,6 @@
  */
 #include "bi/io/cpp/CppDispatcherGenerator.hpp"
 
-#include "bi/io/cpp/CppTemplateParameterGenerator.hpp"
 #include "bi/io/cpp/CppParameterGenerator.hpp"
 #include "bi/visitor/DispatchGatherer.hpp"
 #include "bi/visitor/Gatherer.hpp"
@@ -32,17 +31,6 @@ void bi::CppDispatcherGenerator::visit(const File* o) {
     if (*(*iter)->name != "<-") {
       *this << *iter;
     }
-  }
-}
-
-void bi::CppDispatcherGenerator::visit(const ModelReference* o) {
-  if (!o->assignable) {
-    middle("const ");
-  }
-  if (o->count() > 0) {
-    middle("DefaultArray<" << o->name << "<HeapGroup>," << o->count() << '>');
-  } else {
-    middle("bi::model::" << o->name << "<>");
   }
 }
 

@@ -105,7 +105,6 @@ IS                                 (u|U|l|L)*
 "cpp"                               { return CPP; }
 "hpp"                               { return HPP; }
 "this"                              { return THIS; }
-"Any"                               { return ANY; }
 
 "true"                              { yylval.valBool = true; return BOOL_LITERAL; }
 "false"                             { yylval.valBool = false; return BOOL_LITERAL; }

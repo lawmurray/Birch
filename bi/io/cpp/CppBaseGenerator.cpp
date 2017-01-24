@@ -9,7 +9,8 @@
 bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
     const bool header) :
     indentable_ostream(base, level),
-    header(header) {
+    header(header),
+    inArray(false) {
   //
 }
 
@@ -192,11 +193,14 @@ void bi::CppBaseGenerator::visit(const FuncReference* o) {
 }
 
 void bi::CppBaseGenerator::visit(const ModelReference* o) {
-  if (o->count() > 0) {
-    middle("bi::Array<bi::model::" << o->name << "<bi::HeapGroup>,");
-    middle("typename bi::DefaultFrame<" << o->count() << ">::type>");
+  if (!o->assignable && !inArray) {
+    middle("const ");
+  }
+  middle("bi::model::" << o->name);
+  if (inArray) {
+    middle("<bi::HeapGroup>");
   } else {
-    middle("bi::model::" << o->name << "<>");
+    middle("<>");
   }
 }
 
@@ -212,7 +216,7 @@ void bi::CppBaseGenerator::visit(const VarParameter* o) {
     }
   }
   if (o->type->count() > 0) {
-    ModelReference* type = dynamic_cast<ModelReference*>(o->type.get());
+    BracketsType* type = dynamic_cast<BracketsType*>(o->type.get());
     assert(type);
     middle("make_frame(" << type->brackets << ")");
     if (!o->value->isEmpty()) {
@@ -265,6 +269,16 @@ void bi::CppBaseGenerator::visit(const Raw* o) {
 
 void bi::CppBaseGenerator::visit(const EmptyType* o) {
   middle("void");
+}
+
+void bi::CppBaseGenerator::visit(const BracketsType* o) {
+  inArray = true;
+  if (!o->assignable) {
+    middle("const ");
+  }
+  middle("bi::Array<" << o->single << ',');
+  inArray = false;
+  middle("typename bi::DefaultFrame<" << o->count() << ">::type>");
 }
 
 void bi::CppBaseGenerator::visit(const ParenthesesType* o) {

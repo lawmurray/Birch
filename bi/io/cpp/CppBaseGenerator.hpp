@@ -45,6 +45,7 @@ public:
   virtual void visit(const Raw* o);
 
   virtual void visit(const EmptyType* o);
+  virtual void visit(const BracketsType* o);
   virtual void visit(const ParenthesesType* o);
   virtual void visit(const RandomType* o);
 
@@ -54,5 +55,9 @@ protected:
    */
   bool header;
 
+  /**
+   * Currently generating type for an array?
+   */
+  bool inArray;
 };
 }

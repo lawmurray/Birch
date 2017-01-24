@@ -100,7 +100,6 @@ void bi::Visitor::visit(const FuncReference* o) {
 void bi::Visitor::visit(const ModelReference* o) {
   o->name->accept(this);
   o->parens->accept(this);
-  o->brackets->accept(this);
 }
 
 void bi::Visitor::visit(const ProgReference* o) {
@@ -175,6 +174,11 @@ void bi::Visitor::visit(const ModelDeclaration* o) {
 
 void bi::Visitor::visit(const ProgDeclaration* o) {
   o->param->accept(this);
+}
+
+void bi::Visitor::visit(const BracketsType* o) {
+  o->single->accept(this);
+  o->brackets->accept(this);
 }
 
 void bi::Visitor::visit(const ParenthesesType* o) {

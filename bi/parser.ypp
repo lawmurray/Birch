@@ -104,14 +104,15 @@
 
 %type <valExpression> bool_literal int_literal real_literal string_literal
 %type <valExpression> literal
-%type <valExpression> parens optional_parens brackets optional_brackets
+%type <valExpression> parens optional_parens brackets
 %type <valExpression> braces func_braces model_braces prog_braces
 %type <valExpression> var_reference var_parameter
 %type <valExpression> func_reference func_parameter
 %type <valProg> prog_parameter
 
 %type <valType> model_reference model_parameter base
-%type <valType> any_type parens_type primary_type random_type list_type type
+%type <valType> brackets_type parens_type primary_type
+%type <valType> random_type list_type type
 
 %type <valExpression> parameter_expression reference_expression this_expression
 %type <valExpression> parens_expression member_expression primary_expression
@@ -205,11 +206,6 @@ brackets
     : '[' expression ']'  { $$ = $2; }
     ;
 
-optional_brackets
-   : brackets
-   |           { $$ = make_empty(); }
-   ;
-
 braces
     : '{' optional_statements '}'  { $$ = new bi::BracesExpression($2, make_loc(@$)); }
     ;
@@ -258,8 +254,7 @@ func_parameter
     ;
 
 base
-    : name parens  { $$ = new bi::ModelReference($1, $2, make_empty(), make_loc(@$)); }
-    | name         { $$ = new bi::ModelReference($1, make_empty(), make_empty(), make_loc(@$)); }
+    : name optional_parens  { $$ = new bi::ModelReference($1, $2, make_loc(@$)); }
     ;
 
 base_less_operator
@@ -299,7 +294,7 @@ func_reference
     ;
 
 model_reference
-    : name optional_parens optional_brackets  { $$ = new bi::ModelReference($1, $2, $3, make_loc(@$)); }
+    : name optional_parens  { $$ = new bi::ModelReference($1, $2, make_loc(@$)); }
     ;
 
 
@@ -311,19 +306,19 @@ parens_type
     : '(' type ')'  { $$ = new bi::ParenthesesType($2, make_loc(@$)); }
     ;
 
-any_type
-    : ANY  { $$ = new bi::EmptyType(); }
-    ;
-
 primary_type
     : model_reference
     | parens_type
-    | any_type
+    ;
+
+brackets_type
+    : primary_type
+    | primary_type brackets  { $$ = new bi::BracketsType($1, $2, make_loc(@$)); }
     ;
 
 random_type
-    : primary_type
-    | primary_type '~' random_type  { $$ = new bi::RandomType($1, $3, make_loc(@$)); }
+    : brackets_type
+    | brackets_type '~' random_type  { $$ = new bi::RandomType($1, $3, make_loc(@$)); }
     ;
 
 list_type

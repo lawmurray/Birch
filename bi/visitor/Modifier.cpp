@@ -114,7 +114,6 @@ bi::Expression* bi::Modifier::modify(FuncReference* o) {
 bi::Type* bi::Modifier::modify(ModelReference* o) {
   o->name->accept(this);
   o->parens = o->parens->accept(this);
-  o->brackets = o->brackets->accept(this);
   return o;
 }
 
@@ -206,6 +205,12 @@ bi::Statement* bi::Modifier::modify(ModelDeclaration* o) {
 bi::Statement* bi::Modifier::modify(ProgDeclaration* o) {
   o->param = dynamic_cast<ProgParameter*>(o->param->accept(this));
   assert(o->param);
+  return o;
+}
+
+bi::Type* bi::Modifier::modify(BracketsType* o) {
+  o->single = o->single->accept(this);
+  o->brackets = o->brackets->accept(this);
   return o;
 }
 

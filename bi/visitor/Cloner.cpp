@@ -83,8 +83,7 @@ bi::Expression* bi::Cloner::clone(const FuncReference* o) {
 }
 
 bi::Type* bi::Cloner::clone(const ModelReference* o) {
-  return new ModelReference(o->name, o->parens->accept(this),
-      o->brackets->accept(this), o->loc);
+  return new ModelReference(o->name, o->parens->accept(this), o->loc);
 }
 
 bi::Prog* bi::Cloner::clone(const ProgReference* o) {
@@ -154,6 +153,11 @@ bi::Statement* bi::Cloner::clone(const ModelDeclaration* o) {
 bi::Statement* bi::Cloner::clone(const ProgDeclaration* o) {
   return new ProgDeclaration(
       dynamic_cast<ProgParameter*>(o->param->accept(this)), o->loc);
+}
+
+bi::Type* bi::Cloner::clone(const BracketsType* o) {
+  return new BracketsType(o->single->accept(this), o->brackets->accept(this),
+      o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const ParenthesesType* o) {

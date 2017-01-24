@@ -27,7 +27,7 @@ public:
   virtual ~Conditioned() = 0;
 
   /**
-   * First statement in in brackets.
+   * Condition.
    */
   unique_ptr<Expression> cond;
 };

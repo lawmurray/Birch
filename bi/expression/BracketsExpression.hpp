@@ -6,7 +6,6 @@
 #include "bi/expression/Expression.hpp"
 #include "bi/common/Bracketed.hpp"
 #include "bi/common/Unary.hpp"
-#include "bi/expression/BracketsExpression.hpp"
 #include "bi/expression/VarParameter.hpp"
 #include "bi/primitive/unique_ptr.hpp"
 
@@ -16,7 +15,9 @@ namespace bi {
  *
  * @ingroup compiler_expression
  */
-class BracketsExpression: public Expression, public ExpressionUnary, public Bracketed {
+class BracketsExpression: public Expression,
+    public ExpressionUnary,
+    public Bracketed {
 public:
   /**
    * Constructor.

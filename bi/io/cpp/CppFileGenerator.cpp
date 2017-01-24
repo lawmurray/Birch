@@ -5,7 +5,6 @@
 
 #include "bi/io/cpp/CppModelGenerator.hpp"
 #include "bi/io/cpp/CppDispatcherGenerator.hpp"
-#include "bi/io/cpp/CppTemplateParameterGenerator.hpp"
 #include "bi/io/cpp/CppParameterGenerator.hpp"
 #include "bi/io/cpp/CppOutputGenerator.hpp"
 #include "bi/io/cpp/CppReturnGenerator.hpp"
@@ -88,10 +87,6 @@ void bi::CppFileGenerator::visit(const FuncParameter* o) {
       //  out();
       //}
     }
-
-    /* template parameters */
-    CppTemplateParameterGenerator auxTemplateParameter(base, level, header);
-    auxTemplateParameter << o;
 
     /* type */
     start(o->type << ' ');

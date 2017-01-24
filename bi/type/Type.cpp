@@ -38,6 +38,10 @@ bi::possibly bi::Type::operator==(Type& o) {
   return *this <= o && o <= *this;
 }
 
+bi::possibly bi::Type::le(BracketsType& o) {
+  return untrue;
+}
+
 bi::possibly bi::Type::le(EmptyType& o) {
   return untrue;
 }

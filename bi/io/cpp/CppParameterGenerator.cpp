@@ -9,17 +9,6 @@ bi::CppParameterGenerator::CppParameterGenerator(std::ostream& base,
   //
 }
 
-void bi::CppParameterGenerator::visit(const ModelReference* o) {
-  if (!o->assignable) {
-    middle("const ");
-  }
-  if (o->count() > 0) {
-    middle("DefaultArray<" << o->name << "<HeapGroup>," << o->count() << '>');
-  } else {
-    middle("bi::model::" << o->name << "<>");
-  }
-}
-
 void bi::CppParameterGenerator::visit(const VarParameter* o) {
   middle(o->type << "& " << o->name);
   if (!o->value->isEmpty()) {
