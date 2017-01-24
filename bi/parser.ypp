@@ -242,8 +242,8 @@ double_braces
  ***************************************************************************/
 
 var_parameter
-    : name ':' primary_type  { $$ = new bi::VarParameter($1, $3, make_empty(), make_empty(), make_loc(@$)); }
-    | ':' primary_type       { $$ = new bi::VarParameter(new bi::Name(), $2, make_empty(), make_empty(), make_loc(@$)); }
+    : name ':' brackets_type  { $$ = new bi::VarParameter($1, $3, make_empty(), make_empty(), make_loc(@$)); }
+    | ':' brackets_type       { $$ = new bi::VarParameter(new bi::Name(), $2, make_empty(), make_empty(), make_loc(@$)); }
     ;
 
 func_parameter

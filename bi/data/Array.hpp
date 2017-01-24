@@ -34,8 +34,8 @@ public:
    * Memory is allocated for the array, and is freed on destruction.
    */
   template<class ... Args>
-  Array(const Frame& frame, const char* name, const group_type& group,
-      Args ... args) :
+  Array(const Frame& frame, const char* name = nullptr,
+      const group_type& group = group_type(), Args ... args) :
       value(args..., frame, name, group),
       frame(frame) {
     //
@@ -141,7 +141,7 @@ public:
    */
   template<class View1>
   auto operator()(const View1& view) {
-    return viewReturn(Value(value, frame, view), frame(view));
+    return viewReturn(value(frame, view), frame(view));
   }
 
   /**
@@ -149,7 +149,7 @@ public:
    */
   template<class View1>
   auto operator()(const View1& view) const {
-    return viewReturn(Value(value, frame, view), frame(view));
+    return viewReturn(value(frame, view), frame(view));
   }
 
   /**

@@ -104,13 +104,18 @@ bi::Expression* bi::Resolver::modify(BracketsExpression* o) {
 
   const int typeSize = o->single->type->count();
   const int indexSize = o->brackets->tupleSize();
-  const int indexDims = o->brackets->tupleDims();
+  const int rangeDims = o->brackets->tupleDims();
   assert(typeSize == indexSize);  ///@todo Exception
 
   BracketsType* type = dynamic_cast<BracketsType*>(o->single->type.get());
   assert(type);
-  o->type = new BracketsType(type->single->accept(&cloner), indexDims);
-  o->type = o->type->accept(this);
+  if (rangeDims > 0) {
+    o->type = new BracketsType(type->single->accept(&cloner), rangeDims);
+    o->type = o->type->accept(this);
+  } else {
+    o->type = type->single->accept(&cloner)->accept(this);
+  }
+  o->type->assignable = o->single->type->assignable;
 
   return o;
 }

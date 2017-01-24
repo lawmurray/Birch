@@ -22,6 +22,7 @@ public:
   DispatchGatherer(Scope* scope);
 
   virtual void visit(const FuncReference* o);
+  virtual void visit(const RandomInit* o);
 
   /**
    * Gathered matches.
