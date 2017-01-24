@@ -66,3 +66,4 @@ template class bi::PrimitiveValue<int64_t,bi::HeapGroup>;
 template class bi::PrimitiveValue<int32_t,bi::HeapGroup>;
 template class bi::PrimitiveValue<float,bi::HeapGroup>;
 template class bi::PrimitiveValue<double,bi::HeapGroup>;
+template class bi::PrimitiveValue<std::function<void()>,bi::HeapGroup>;

@@ -4,6 +4,7 @@
 #pragma once
 
 #include <netcdf.h>
+#include <functional>
 #include <cstdlib>
 
 namespace bi {
@@ -60,6 +61,8 @@ void get(int ncid, int varid, const size_t start[], double* tp);
 void get(int ncid, int varid, const size_t start[], int32_t* tp);
 void get(int ncid, int varid, const size_t start[], int64_t* tp);
 void get(int ncid, int varid, const size_t start[], const char** tp);
+void get(int ncid, int varid, const size_t start[],
+    std::function<void()>* tp);
 
 void get(int ncid, int varid, const size_t start[], const size_t count[],
     unsigned char* tp);
@@ -73,6 +76,8 @@ void get(int ncid, int varid, const size_t start[], const size_t count[],
     int64_t* tp);
 void get(int ncid, int varid, const size_t start[], const size_t count[],
     const char** tp);
+void get(int ncid, int varid, const size_t start[], const size_t count[],
+    std::function<void()>* tp);
 //@}
 
 /**
@@ -85,6 +90,8 @@ void put(int ncid, int varid, const size_t start[], const double* tp);
 void put(int ncid, int varid, const size_t start[], const int32_t* tp);
 void put(int ncid, int varid, const size_t start[], const int64_t* tp);
 void put(int ncid, int varid, const size_t start[], const char** tp);
+void put(int ncid, int varid, const size_t start[],
+    const std::function<void()>* tp);
 
 void put(int ncid, int varid, const size_t start[], const size_t count[],
     const unsigned char* tp);
@@ -98,5 +105,7 @@ void put(int ncid, int varid, const size_t start[], const size_t count[],
     const int64_t* tp);
 void put(int ncid, int varid, const size_t start[], const size_t count[],
     const char** tp);
+void put(int ncid, int varid, const size_t start[], const size_t count[],
+    const std::function<void()>* tp);
 //@}
 }

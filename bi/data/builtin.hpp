@@ -8,6 +8,7 @@
 
 #include <utility>
 #include <cstdint>
+#include <functional>
 
 namespace bi {
   namespace model {
@@ -43,10 +44,16 @@ template<class Group = StackGroup>
 using Real32 = PrimitiveValue<float,Group>;
 
 /**
- * Built in string type.
+ * Built-in string type.
  */
 template<class Group = StackGroup>
 using String = PrimitiveValue<const char*,Group>;
+
+/**
+ * Built-in lambda type.
+ */
+template<class Group = StackGroup>
+using Lambda = PrimitiveValue<std::function<void()>,Group>;
 
   }
 }

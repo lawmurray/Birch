@@ -53,6 +53,11 @@ void bi::get(int ncid, int varid, const size_t start[], const char** tp) {
   assert(false);
 }
 
+void bi::get(int ncid, int varid, const size_t start[],
+    std::function<void()>* tp) {
+  assert(false);
+}
+
 void bi::get(int ncid, int varid, const size_t start[], const size_t count[],
     unsigned char* tp) {
   int status = nc_get_vara_uchar(ncid, varid, start, count, tp);
@@ -105,6 +110,11 @@ void bi::get(int ncid, int varid, const size_t start[], const size_t count[],
   assert(false);
 }
 
+void bi::get(int ncid, int varid, const size_t start[], const size_t count[],
+    std::function<void()>* tp) {
+  assert(false);
+}
+
 void bi::put(int ncid, int varid, const size_t start[],
     const unsigned char* tp) {
   int status = nc_put_var1_uchar(ncid, varid, start, tp);
@@ -149,6 +159,11 @@ void bi::put(int ncid, int varid, const size_t start[], const int64_t* tp) {
 }
 
 void bi::put(int ncid, int varid, const size_t start[], const char** tp) {
+  assert(false);
+}
+
+void bi::put(int ncid, int varid, const size_t start[],
+    const std::function<void()>* tp) {
   assert(false);
 }
 
@@ -201,5 +216,10 @@ void bi::put(int ncid, int varid, const size_t start[], const size_t count[],
 
 void bi::put(int ncid, int varid, const size_t start[], const size_t count[],
     const char** tp) {
+  assert(false);
+}
+
+void bi::put(int ncid, int varid, const size_t start[], const size_t count[],
+    const std::function<void()>* tp) {
   assert(false);
 }

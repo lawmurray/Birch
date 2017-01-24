@@ -90,3 +90,4 @@ template class bi::PrimitiveValue<int32_t,bi::StackGroup>;
 template class bi::PrimitiveValue<float,bi::StackGroup>;
 template class bi::PrimitiveValue<double,bi::StackGroup>;
 template class bi::PrimitiveValue<const char*,bi::StackGroup>;
+template class bi::PrimitiveValue<std::function<void()>,bi::StackGroup>;

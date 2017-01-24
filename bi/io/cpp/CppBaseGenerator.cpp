@@ -91,9 +91,9 @@ void bi::CppBaseGenerator::visit(const RandomInit* o) {
   finish(o->left << ".init(" << o->right << ",");
   in();
   in();
-  line("[](" << o->left->type << "& rv) {");
+  line("[&]() {");
   in();
-  line("pull_(rv.x, rv.m);");
+  line("pull_(" << o->left << ".x, " << o->left << ".m);");
   out();
   line("}, [&]() { ");
   in();
