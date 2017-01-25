@@ -25,50 +25,61 @@ void bi::CppConstructorGenerator::visit(const ModelReference* o) {
 void bi::CppConstructorGenerator::visit(const ModelParameter* o) {
   CppBaseGenerator aux(base, level, header);
 
-  /* constructor with lead */
-  if (header) {
-    line("template<class Frame = EmptyFrame>");
-    start(o->name->str() << '(');
-    if (!o->parens->isEmpty()) {
-      aux << o->parens->strip();
-      middle(", ");
-    }
-    middle("const Frame& frame = EmptyFrame()");
-    middle(", const char* name = nullptr");
-    middle(", const Group& group = Group()");
-    middle(')');
-    finish(" :");
-    in();
-    in();
-    if (!o->base->isEmpty()) {
-      start("base_type(");
-      ModelReference* base = dynamic_cast<ModelReference*>(o->base.get());
-      assert(base);
-      if (!base->parens->isEmpty()) {
-        aux << base->parens->strip();
+  /* two constructors are created here, one for nonempty frames, and one for
+   * empty frames, this helps with debugging by ensuring that there is not a
+   * catch-all constructor ("template<class Frame>") that can take any first
+   * argument */
+  for (int i = 0; i < 2; ++i) {
+    if (header) {
+      if (i == 0) {
+        line("template<class Tail, class Head>");
+      }
+      start(o->name->str() << '(');
+      if (!o->parens->isEmpty()) {
+        aux << o->parens->strip();
         middle(", ");
       }
-      finish("frame, name, group),");
-    }
-    start("group(childGroup(group, name))");
+      if (i == 0) {
+        middle("const NonemptyFrame<Tail,Head>& frame");
+      } else {
+        middle("const EmptyFrame& frame = EmptyFrame()");
+      }
+      middle(", const char* name = nullptr");
+      middle(", const Group& group = Group()");
+      middle(')');
+      finish(" :");
+      in();
+      in();
+      if (!o->base->isEmpty()) {
+        start("base_type(");
+        ModelReference* base = dynamic_cast<ModelReference*>(o->base.get());
+        assert(base);
+        if (!base->parens->isEmpty()) {
+          aux << base->parens->strip();
+          middle(", ");
+        }
+        finish("frame, name, group),");
+      }
+      start("group(childGroup(group, name))");
 
-    Gatherer<VarDeclaration> gatherer;
-    o->braces->accept(&gatherer);
-    for (auto iter = gatherer.gathered.begin();
-        iter != gatherer.gathered.end(); ++iter) {
-      initialise(*iter);
-    }
+      Gatherer<VarDeclaration> gatherer;
+      o->braces->accept(&gatherer);
+      for (auto iter = gatherer.gathered.begin();
+          iter != gatherer.gathered.end(); ++iter) {
+        initialise(*iter);
+      }
 
-    out();
-    out();
-    finish(" {");
-    in();
-    for (auto iter = gatherer.gathered.begin();
-        iter != gatherer.gathered.end(); ++iter) {
-      assign(*iter);
+      out();
+      out();
+      finish(" {");
+      in();
+      for (auto iter = gatherer.gathered.begin();
+          iter != gatherer.gathered.end(); ++iter) {
+        assign(*iter);
+      }
+      out();
+      line("}\n");
     }
-    out();
-    line("}\n");
   }
 }
 

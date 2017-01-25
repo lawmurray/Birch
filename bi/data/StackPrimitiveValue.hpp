@@ -27,41 +27,17 @@ public:
       nullptr, const StackGroup& group = StackGroup());
 
   /**
-   * Constructor from heap.
-   */
-  PrimitiveValue(const PrimitiveValue<Type,HeapGroup>& value);
-
-  /**
-   * Constructor from NetCDF file.
-   */
-  PrimitiveValue(const PrimitiveValue<Type,NetCDFGroup>& value);
-
-  /**
    * Constructor from value.
    */
-  explicit PrimitiveValue(const Type& value, const StackGroup& group =
-      StackGroup());
+  PrimitiveValue(const Type& value, const EmptyFrame& frame = EmptyFrame(),
+      const char* name = nullptr, const StackGroup& group = StackGroup());
 
   /**
-   * View constructor.
+   * Constructor from heap.
    */
-  PrimitiveValue(const PrimitiveValue<Type,StackGroup>& o,
-      const EmptyFrame& frame, const EmptyView& view);
-
-//  /**
-//   * Shallow copy constructor.
-//   */
-//  PrimitiveValue(const PrimitiveValue<Type,StackGroup>& o);
-//
-//  /**
-//   * Move constructor.
-//   */
-//  PrimitiveValue(PrimitiveValue<Type,StackGroup> && o);
-
-  /**
-   * Destructor.
-   */
-  ~PrimitiveValue();
+  PrimitiveValue(const PrimitiveValue<Type,HeapGroup>& value,
+      const EmptyFrame& frame = EmptyFrame(), const char* name = nullptr,
+      const StackGroup& group = StackGroup());
 
   /**
    * Assignment.

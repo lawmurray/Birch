@@ -22,6 +22,10 @@ public:
       EmptyFrame(), const char* name = nullptr);
 
   template<class Value, class Frame = EmptyFrame>
+  void create(PrimitiveValue<Value,HeapGroup>& value, const Value& init,
+      const Frame& frame = EmptyFrame(), const char* name = nullptr);
+
+  template<class Value, class Frame = EmptyFrame>
   void release(PrimitiveValue<Value,HeapGroup>& value, const Frame& frame =
       EmptyFrame());
 
@@ -46,6 +50,13 @@ void bi::HeapGroup::create(PrimitiveValue<Value,HeapGroup>& value,
   if (err != 0) {
     throw MemoryException("Aligned memory allocation failed.");
   }
+}
+
+template<class Value, class Frame>
+void bi::HeapGroup::create(PrimitiveValue<Value,HeapGroup>& value,
+    const Value& init, const Frame& frame, const char* name) {
+  create(value, frame, name);
+  std::fill(value.ptr, value.ptr + frame.lead, init);
 }
 
 template<class Value, class Frame>

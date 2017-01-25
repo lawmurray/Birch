@@ -5,11 +5,18 @@
 
 template<class Type>
 bi::PrimitiveValue<Type,bi::HeapGroup>::PrimitiveValue(
-    PrimitiveValue<Type,StackGroup>& o, const HeapGroup& group) :
-    ptr(&o.value),
+    const EmptyFrame& frame, const char* name, const HeapGroup& group) :
     group(group),
-    own(false) {
-  //
+    own(true) {
+  this->group.create(*this, frame, name);
+}
+
+template<class Type>
+bi::PrimitiveValue<Type,bi::HeapGroup>::PrimitiveValue(const Type& value,
+    const EmptyFrame& frame, const char* name, const HeapGroup& group) :
+    group(group),
+    own(true) {
+  this->group.create(*this, value, frame, name);
 }
 
 template<class Type>

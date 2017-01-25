@@ -5,59 +5,23 @@
 
 template<class Type>
 bi::PrimitiveValue<Type,bi::StackGroup>::PrimitiveValue(
-    const EmptyFrame& frame, const char* name, const StackGroup& group) :
-    group(group) {
-  this->group.create(*this, frame, name);
-}
-
-template<class Type>
-bi::PrimitiveValue<Type,bi::StackGroup>::PrimitiveValue(
-    const PrimitiveValue<Type,HeapGroup>& o) :
-    value(*o.ptr) {
+    const EmptyFrame& frame, const char* name, const StackGroup& group) {
   //
 }
 
 template<class Type>
-bi::PrimitiveValue<Type,bi::StackGroup>::PrimitiveValue(
-    const PrimitiveValue<Type,NetCDFGroup>& o) {
-  *this = o;
-}
-
-template<class Type>
 bi::PrimitiveValue<Type,bi::StackGroup>::PrimitiveValue(const Type& value,
-    const StackGroup& group) :
-    value(value),
-    group(group) {
-  this->group.create(*this);
+    const EmptyFrame& frame, const char* name, const StackGroup& group) :
+    PrimitiveValue(frame, name, group) {
+  copy(*this, value);
 }
 
 template<class Type>
 bi::PrimitiveValue<Type,bi::StackGroup>::PrimitiveValue(
-    const PrimitiveValue<Type,StackGroup>& o, const EmptyFrame& frame,
-    const EmptyView& view) :
-    value(o.value),
-    group(o.group) {
-}
-
-//template<class Type>
-//bi::PrimitiveValue<Type,bi::StackGroup>::PrimitiveValue(
-//    const PrimitiveValue<Type,StackGroup>& o) :
-//    value(o.value),
-//    group(o.group) {
-//  //
-//}
-//
-//template<class Type>
-//bi::PrimitiveValue<Type,bi::StackGroup>::PrimitiveValue(
-//    PrimitiveValue<Type,StackGroup> && o) :
-//    value(o.value),
-//    group(o.group) {
-//  //
-//}
-
-template<class Type>
-bi::PrimitiveValue<Type,bi::StackGroup>::~PrimitiveValue() {
-  group.release(*this);
+    const PrimitiveValue<Type,HeapGroup>& value, const EmptyFrame& frame,
+    const char* name, const StackGroup& group) :
+    PrimitiveValue(frame, name, group) {
+  copy(*this, value);
 }
 
 template<class Type>

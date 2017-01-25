@@ -4,6 +4,14 @@
 #include "bi/data/NetCDFPrimitiveValue.hpp"
 
 template<class Type>
+bi::PrimitiveValue<Type,bi::NetCDFGroup>::PrimitiveValue(
+    const EmptyFrame& frame, const char* name, const NetCDFGroup& group) :
+    convolved(frame),
+    group(group) {
+  this->group.create(*this, frame, name);
+}
+
+template<class Type>
 bi::PrimitiveValue<Type,bi::NetCDFGroup>::~PrimitiveValue() {
   group.release(*this);
 }

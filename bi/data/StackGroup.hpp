@@ -22,26 +22,28 @@ public:
   typedef StackGroup child_group_type;
   typedef HeapGroup array_group_type;
 
-  template<class Type>
+  template<class Type, class Frame = EmptyFrame>
   void create(PrimitiveValue<Type,StackGroup>& value,
-      const EmptyFrame& frame = EmptyFrame(), const char* name = nullptr);
+      const Frame& frame = EmptyFrame(), const char* name = nullptr);
 
-  template<class Type>
+  template<class Type, class Frame = EmptyFrame>
   void release(PrimitiveValue<Type,StackGroup>& value,
-      const EmptyFrame& frame = EmptyFrame());
+      const Frame& frame = EmptyFrame());
 };
 }
 
 #include "bi/data/StackPrimitiveValue.hpp"
 
-template<class Type>
+template<class Type, class Frame>
 void bi::StackGroup::create(PrimitiveValue<Type,StackGroup>& value,
-    const EmptyFrame& frame, const char* name) {
-  //
+    const Frame& frame, const char* name) {
+  /* pre-condition */
+  assert(frame.count() == 0);
 }
 
-template<class Type>
+template<class Type, class Frame>
 void bi::StackGroup::release(PrimitiveValue<Type,StackGroup>& value,
-    const EmptyFrame& frame) {
-  //
+    const Frame& frame) {
+  /* pre-condition */
+  assert(frame.count() == 0);
 }

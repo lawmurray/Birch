@@ -177,16 +177,21 @@ void bi::CppBaseGenerator::visit(const FuncReference* o) {
     out();
     out();
   } else {
+    possibly result = *const_cast<FuncReference*>(o) <= *o->target;  // needed to capture arguments
+    assert(result != untrue);
     middle("bi::" << o->target->mangled);
     if (o->isConstructor()) {
       middle("<>");
     }
     middle('(');
-    for (auto iter = o->args.begin(); iter != o->args.end(); ++iter) {
-      if (iter != o->args.begin()) {
+    Gatherer<VarParameter> gatherer;
+    o->target->parens->accept(&gatherer);
+    for (auto iter2 = gatherer.gathered.begin();
+        iter2 != gatherer.gathered.end(); ++iter2) {
+      if (iter2 != gatherer.gathered.begin()) {
         middle(", ");
       }
-      middle(*iter);
+      middle((*iter2)->arg);
     }
     middle(')');
   }
@@ -292,5 +297,8 @@ void bi::CppBaseGenerator::visit(const ParenthesesType* o) {
 void bi::CppBaseGenerator::visit(const RandomType* o) {
   middle("bi::Random<");
   middle(o->left << ',' << o->right);
+  if (inArray) {
+    middle(",bi::HeapGroup");
+  }
   middle(">");
 }

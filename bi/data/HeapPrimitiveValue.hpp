@@ -4,7 +4,7 @@
 #pragma once
 
 #include "bi/data/HeapGroup.hpp"
-#include "bi/data/StackPrimitiveValue.hpp"
+#include "bi/data/StackGroup.hpp"
 
 namespace bi {
 /**
@@ -22,15 +22,28 @@ public:
   /**
    * Constructor.
    */
-  template<class Frame = EmptyFrame>
-  PrimitiveValue(const Frame& frame = EmptyFrame(),
+  template<class Tail, class Head>
+  PrimitiveValue(const NonemptyFrame<Tail,Head>& frame, const char* name =
+      nullptr, const HeapGroup& group = HeapGroup());
+
+  /**
+   * Constructor.
+   */
+  PrimitiveValue(const EmptyFrame& frame = EmptyFrame(), const char* name =
+      nullptr, const HeapGroup& group = HeapGroup());
+
+  /**
+   * Constructor from value.
+   */
+  template<class Tail, class Head>
+  PrimitiveValue(const Type& value, const NonemptyFrame<Tail,Head>& frame,
       const char* name = nullptr, const HeapGroup& group = HeapGroup());
 
   /**
-   * Constructor from stack.
+   * Constructor from value.
    */
-  PrimitiveValue(PrimitiveValue<Type,StackGroup>& value,
-      const HeapGroup& group = HeapGroup());
+  PrimitiveValue(const Type& value, const EmptyFrame& frame = EmptyFrame(),
+      const char* name = nullptr, const HeapGroup& group = HeapGroup());
 
   /**
    * View constructor.
@@ -102,12 +115,23 @@ public:
 #include "bi/data/copy.hpp"
 
 template<class Type>
-template<class Frame>
-bi::PrimitiveValue<Type,bi::HeapGroup>::PrimitiveValue(const Frame& frame,
-    const char* name, const HeapGroup& group) :
+template<class Tail, class Head>
+bi::PrimitiveValue<Type,bi::HeapGroup>::PrimitiveValue(
+    const NonemptyFrame<Tail,Head>& frame, const char* name,
+    const HeapGroup& group) :
     group(group),
     own(true) {
   this->group.create(*this, frame, name);
+}
+
+template<class Type>
+template<class Tail, class Head>
+bi::PrimitiveValue<Type,bi::HeapGroup>::PrimitiveValue(const Type& value,
+    const NonemptyFrame<Tail,Head>& frame, const char* name,
+    const HeapGroup& group) :
+    group(group),
+    own(true) {
+  this->group.create(*this, value, frame, name);
 }
 
 template<class Type>

@@ -21,9 +21,15 @@ public:
   /**
    * Constructor.
    */
-  template<class Frame = EmptyFrame>
-  PrimitiveValue(const Frame& frame = EmptyFrame(),
-      const char* name = nullptr, const NetCDFGroup& group = NetCDFGroup());
+  template<class Tail, class Head>
+  PrimitiveValue(const NonemptyFrame<Tail,Head>& frame, const char* name =
+      nullptr, const NetCDFGroup& group = NetCDFGroup());
+
+  /**
+   * Constructor.
+   */
+  PrimitiveValue(const EmptyFrame& frame = EmptyFrame(), const char* name =
+      nullptr, const NetCDFGroup& group = NetCDFGroup());
 
   /**
    * View constructor.
@@ -90,9 +96,10 @@ public:
 #include "bi/data/copy.hpp"
 
 template<class Type>
-template<class Frame>
-bi::PrimitiveValue<Type,bi::NetCDFGroup>::PrimitiveValue(const Frame& frame,
-    const char* name, const NetCDFGroup& group) :
+template<class Tail, class Head>
+bi::PrimitiveValue<Type,bi::NetCDFGroup>::PrimitiveValue(
+    const NonemptyFrame<Tail,Head>& frame, const char* name,
+    const NetCDFGroup& group) :
     convolved(frame),
     group(group) {
   this->group.create(*this, frame, name);

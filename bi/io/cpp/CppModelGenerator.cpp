@@ -47,13 +47,13 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
     }
 
     /* default constructor */
-    if (header) {
-      line(o->name << "() {");
-      in();
-      line("//");
-      out();
-      line("}\n");
-    }
+    //if (header) {
+    //  line(o->name << "() {");
+    //  in();
+    //  line("//");
+    //  out();
+    //  line("}\n");
+    //}
 
     /* constructor */
     CppConstructorGenerator auxConstructor(base, level, header);
