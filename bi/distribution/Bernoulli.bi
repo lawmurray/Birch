@@ -23,7 +23,7 @@ function Bernoulli(ρ:Real) -> m:Bernoulli {
 /**
  * Simulate.
  */
-function x:Boolean <~ m:Bernoulli {
+function ~m:Bernoulli -> x:Boolean {
   cpp {{
   x = static_cast<unsigned char>(std::bernoulli_distribution(m.ρ)(rng));
   }}

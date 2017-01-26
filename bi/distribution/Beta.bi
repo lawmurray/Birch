@@ -30,7 +30,7 @@ function Beta(α:Real, β:Real) -> m:Beta {
 /**
  * Simulate.
  */
-function x:Real <~ m:Beta {
+function ~m:Beta -> x:Real {
   u:Real;
   v:Real;
   u <~ Gamma(m.α, 1.0);

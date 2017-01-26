@@ -9,11 +9,27 @@ cpp {{
  */
 model Boolean;
 model Real64;
-model Real32 < Real64;
+model Real32;
 model Integer64;
-model Integer32 < Integer64;
+model Integer32;
 model Real = Real64;
 model Integer = Integer64;
+
+/**
+ * Assignments
+ * -----------
+ */
+function x:Real32 <- y:Real64 -> x {
+  cpp{{
+  x = y;
+  }}
+}
+
+function x:Integer32 <- y:Integer64 -> x {
+  cpp{{
+  x = y;
+  }}
+}
 
 /**
  * Operators

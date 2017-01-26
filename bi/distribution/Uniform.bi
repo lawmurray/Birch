@@ -27,7 +27,7 @@ function Uniform(l:Real, u:Real) -> m:Uniform {
 /**
  * Simulate.
  */
-function x:Real <~ m:Uniform {
+function ~m:Uniform -> x:Real {
   cpp {{
   x = std::uniform_real_distribution<double>(m.l, m.u)(rng);
   }}

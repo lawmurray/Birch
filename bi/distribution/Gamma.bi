@@ -28,7 +28,7 @@ function Gamma(k:Real, θ:Real) -> m:Gamma {
 /**
  * Simulate.
  */
-function x:Real <~ m:Gamma {
+function ~m:Gamma -> x:Real {
   cpp {{
   x = std::gamma_distribution<double>(m.k, m.θ)(rng);
   }}

@@ -7,7 +7,6 @@ bi/distribution/Gaussian.bi
 bi/distribution/Uniform.bi
 bi/assert.bi
 bi/distribution.bi
-bi/hello.bi
 bi/io.bi
 bi/math.bi
 bi/primitive.bi
