@@ -20,6 +20,7 @@ class EmptyExpression;
 template<class T> class List;
 class FuncParameter;
 class FuncReference;
+class Index;
 template<class T> class Literal;
 class Member;
 class ParenthesesExpression;
@@ -125,6 +126,7 @@ public:
   virtual possibly le(List<Expression>& o);
   virtual possibly le(FuncParameter& o);
   virtual possibly le(FuncReference& o);
+  virtual possibly le(Index& o);
   virtual possibly le(Literal<bool>& o);
   virtual possibly le(Literal<int64_t>& o);
   virtual possibly le(Literal<double>& o);

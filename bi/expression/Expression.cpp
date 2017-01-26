@@ -86,6 +86,10 @@ bi::possibly bi::Expression::le(FuncReference& o) {
   return untrue;
 }
 
+bi::possibly bi::Expression::le(Index& o) {
+  return untrue;
+}
+
 bi::possibly bi::Expression::le(Literal<bool>& o) {
   return untrue;
 }

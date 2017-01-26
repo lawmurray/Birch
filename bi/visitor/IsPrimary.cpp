@@ -67,6 +67,10 @@ void bi::IsPrimary::visit(const BracketsExpression* o) {
   result = false;
 }
 
+void bi::IsPrimary::visit(const Index* o) {
+  result = false;
+}
+
 void bi::IsPrimary::visit(const Range* o) {
   result = false;
 }

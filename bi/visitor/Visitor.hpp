@@ -35,6 +35,7 @@ public:
   virtual void visit(const StatementList* o);
   virtual void visit(const ParenthesesExpression* o);
   virtual void visit(const BracesExpression* o);
+  virtual void visit(const Index* o);
   virtual void visit(const Range* o);
   virtual void visit(const Member* o);
   virtual void visit(const This* o);

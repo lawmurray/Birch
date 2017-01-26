@@ -118,10 +118,10 @@
 %type <valExpression> parens_expression member_expression primary_expression
 %type <valExpression> brackets_expression unary_expression
 %type <valExpression> multiplicative_expression additive_expression
-%type <valExpression> range_expression relational_expression
+%type <valExpression> relational_expression
 %type <valExpression> equality_expression logical_and_expression logical_or_expression
 %type <valExpression> list_expression push_expression assignment_expression
-%type <valExpression> expression optional_expression
+%type <valExpression> expression optional_expression index_expression index_list
 
 %type <valExpression> option options optional_options parens_options
 
@@ -355,9 +355,19 @@ primary_expression
     | this_expression
     ;
 
+index_expression
+    : assignment_expression RANGE_OP assignment_expression  { $$ = new bi::Range($1, $3, make_loc(@$)); }
+    | assignment_expression                                 { $$ = new bi::Index($1, make_loc(@$)); }
+    ;
+    
+index_list
+    : index_expression
+    | index_expression list_operator index_list  { $$ = new bi::ExpressionList($1, $3, make_loc(@$)); }
+    ;
+
 brackets_expression
     : primary_expression
-    | primary_expression brackets  { $$ = new bi::BracketsExpression($1, $2, make_loc(@$)); }
+    | primary_expression '[' index_list ']'  { $$ = new bi::BracketsExpression($1, $3, make_loc(@$)); }
     ;
 
 member_operator
@@ -406,15 +416,6 @@ additive_expression
     | additive_expression additive_operator multiplicative_expression  { $$ = make_binary($1, $2, $3, make_loc(@$)); }
     ;
 
-range_operator
-    : RANGE_OP
-    ;
-
-range_expression
-    : additive_expression
-    | additive_expression range_operator additive_expression  { $$ = new bi::Range($1, $3, make_loc(@$)); }
-    ;
-
 relational_operator
     : '<'    { $$ = new bi::Name("<", make_loc(@$)); }
     | '>'    { $$ = new bi::Name(">", make_loc(@$)); }
@@ -423,8 +424,8 @@ relational_operator
     ;
     
 relational_expression
-    : range_expression
-    | relational_expression relational_operator range_expression  { $$ = make_binary($1, $2, $3, make_loc(@$)); }
+    : additive_expression
+    | relational_expression relational_operator additive_expression  { $$ = make_binary($1, $2, $3, make_loc(@$)); }
     ;
 
 equality_operator

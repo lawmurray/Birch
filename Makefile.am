@@ -60,6 +60,7 @@ birchc_SOURCES = \
   bi/expression/Expression.cpp \
   bi/expression/FuncParameter.cpp \
   bi/expression/FuncReference.cpp \
+  bi/expression/Index.cpp \
   bi/expression/Literal.cpp \
   bi/expression/ParenthesesExpression.cpp \
   bi/expression/RandomInit.cpp \
@@ -174,6 +175,8 @@ nobase_include_HEADERS = bi/data/Array.hpp \
   bi/data/Offset.hpp \
   bi/data/PrimitiveValue.hpp \
   bi/data/Range.hpp \
+  bi/data/RefGroup.hpp \
+  bi/data/RefPrimitiveValue.hpp \
   bi/data/Span.hpp \
   bi/data/StackGroup.hpp \
   bi/data/StackPrimitiveValue.hpp \

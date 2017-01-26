@@ -79,6 +79,10 @@ void bi::CppBaseGenerator::visit(const BracketsExpression* o) {
   middle(o->single << "(bi::make_view(" << o->brackets << "))");
 }
 
+void bi::CppBaseGenerator::visit(const Index* o) {
+  middle("bi::make_index(" << o->single << ')');
+}
+
 void bi::CppBaseGenerator::visit(const Range* o) {
   middle("bi::make_range(" << o->left << ", " << o->right << ')');
 }
@@ -241,7 +245,7 @@ void bi::CppBaseGenerator::visit(const ExpressionStatement* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Conditional* o) {
-  line("if " << o->cond << " {");
+  line("if (static_cast<unsigned char>" << o->cond << ") {");
   in();
   *this << o->braces;
   out();
@@ -255,7 +259,7 @@ void bi::CppBaseGenerator::visit(const Conditional* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Loop* o) {
-  line("while " << o->cond << " {");
+  line("while (static_cast<unsigned char>" << o->cond << ") {");
   in();
   *this << o->braces;
   out();
@@ -295,10 +299,7 @@ void bi::CppBaseGenerator::visit(const ParenthesesType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const RandomType* o) {
-  middle("bi::Random<");
-  middle(o->left << ',' << o->right);
-  if (inArray) {
-    middle(",bi::HeapGroup");
-  }
-  middle(">");
+  inArray = true;
+  middle("bi::Random<" << o->left << ',' << o->right << ",bi::HeapGroup>");
+  inArray = false;
 }

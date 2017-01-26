@@ -72,6 +72,11 @@ void bi::IsRich::visit(const BracketsExpression* o) {
   result = true;
 }
 
+void bi::IsRich::visit(const Index* o) {
+  //Visitor::visit(o);
+  result = true;
+}
+
 void bi::IsRich::visit(const Range* o) {
   //Visitor::visit(o);
   result = true;

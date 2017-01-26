@@ -47,6 +47,12 @@ bi::Expression* bi::Resolver::modify(ParenthesesExpression* o) {
   return o;
 }
 
+bi::Expression* bi::Resolver::modify(Index* o) {
+  Modifier::modify(o);
+  o->type = o->single->type->accept(&cloner)->accept(this);
+  return o;
+}
+
 bi::Expression* bi::Resolver::modify(Range* o) {
   Modifier::modify(o);
   return o;
