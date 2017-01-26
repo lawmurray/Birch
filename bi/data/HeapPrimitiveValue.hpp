@@ -99,11 +99,6 @@ public:
   operator const Type&() const;
 
   /**
-   * Stack type conversion.
-   */
-  operator const PrimitiveValue<Type,StackGroup>() const;
-
-  /**
    * Underlying buffer.
    */
   Type* ptr;

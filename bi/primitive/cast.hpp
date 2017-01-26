@@ -35,7 +35,9 @@ struct cast_impl {
 template<class To, class From>
 struct cast_impl<To,From,false> {
   static To eval(From&& o) {
-    return dynamic_cast<To>(o);
+    /* static_cast first allows sideways casts, e.g. to change Group, dynamic
+     * cast then allows to case to more specific type. */
+    return dynamic_cast<To>(static_cast<To>(o));
   }
 };
 
