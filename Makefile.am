@@ -175,8 +175,6 @@ nobase_include_HEADERS = bi/data/Array.hpp \
   bi/data/Offset.hpp \
   bi/data/PrimitiveValue.hpp \
   bi/data/Range.hpp \
-  bi/data/RefGroup.hpp \
-  bi/data/RefPrimitiveValue.hpp \
   bi/data/Span.hpp \
   bi/data/StackGroup.hpp \
   bi/data/StackPrimitiveValue.hpp \
