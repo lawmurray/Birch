@@ -18,7 +18,6 @@ void bi::DispatchGatherer::visit(const FuncReference* o) {
 void bi::DispatchGatherer::visit(const RandomInit* o) {
   Visitor::visit(o);
   o->push->accept(this);
-  o->pull->accept(this);
 }
 
 void bi::DispatchGatherer::insert(const FuncParameter* o) {

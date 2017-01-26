@@ -19,6 +19,9 @@ class PrimitiveValue<Type,HeapGroup> {
 public:
   typedef HeapGroup group_type;
 
+  template<class Group>
+  using regroup_type = PrimitiveValue<Type,Group>;
+
   /**
    * Constructor.
    */
@@ -94,6 +97,11 @@ public:
    * Value type conversion.
    */
   operator const Type&() const;
+
+  /**
+   * Stack type conversion.
+   */
+  operator const PrimitiveValue<Type,StackGroup>() const;
 
   /**
    * Underlying buffer.

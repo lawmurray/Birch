@@ -93,7 +93,7 @@ void bi::CppBaseGenerator::visit(const RandomInit* o) {
   in();
   line("[&]() {");
   in();
-  line("pull_(" << o->left << ".x, " << o->left << ".m);");
+  line(o->left << ".x = sim_(" << o->left << ".m);");
   out();
   line("}, [&]() { ");
   in();

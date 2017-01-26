@@ -18,6 +18,9 @@ class PrimitiveValue<Type,NetCDFGroup> {
 public:
   typedef NetCDFGroup group_type;
 
+  template<class Group>
+  using regroup_type = PrimitiveValue<Type,Group>;
+
   /**
    * Constructor.
    */

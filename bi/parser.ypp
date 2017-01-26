@@ -97,7 +97,7 @@
 %type <valName> multiplicative_operator additive_operator
 %type <valName> relational_operator
 %type <valName> equality_operator logical_and_operator logical_or_operator
-%type <valName> push_operator assignment_operator random_operator
+%type <valName> push_operator assignment_operator
 %type <valName> base_less_operator base_equal_operator
 %type <valName> name path_name
 %type <valPath> path
@@ -378,6 +378,7 @@ unary_operator
     : '+'  { $$ = new bi::Name("+", make_loc(@$)); }
     | '-'  { $$ = new bi::Name("-", make_loc(@$)); }
     | '!'  { $$ = new bi::Name("!", make_loc(@$)); }
+    | '~'  { $$ = new bi::Name("~", make_loc(@$)); }
     ;
 
 unary_expression
@@ -465,17 +466,13 @@ push_expression
 
 assignment_operator
     : LEFT_OP  { $$ = new bi::Name("<-", make_loc(@$)); }
-    | PULL_OP  { $$ = new bi::Name("<~", make_loc(@$)); }
-    ;
-
-random_operator
-    : '~'      { $$ = new bi::Name("~", make_loc(@$)); }
     ;
     
 assignment_expression
     : push_expression
     | push_expression assignment_operator assignment_expression  { $$ = make_assign($1, $2, $3, make_loc(@$)); }
-    | push_expression random_operator assignment_expression      { $$ = new bi::RandomInit($1, $3, make_loc(@$)); }
+    | push_expression PULL_OP assignment_expression              { $$ = make_assign($1, new bi::Name("<-"), make_unary(new bi::Name("~"), $3, make_loc(@$)), make_loc(@$)); }
+    | push_expression '~' assignment_expression                  { $$ = new bi::RandomInit($1, $3, make_loc(@$)); }
     ;
 
 list_operator

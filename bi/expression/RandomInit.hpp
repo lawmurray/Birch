@@ -35,11 +35,6 @@ public:
   virtual void accept(Visitor* visitor) const;
 
   /**
-   * Pull method.
-   */
-  unique_ptr<Expression> pull;
-
-  /**
    * Push method.
    */
   unique_ptr<Expression> push;

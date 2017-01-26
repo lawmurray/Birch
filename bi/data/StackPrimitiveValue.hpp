@@ -20,6 +20,9 @@ class PrimitiveValue<Type,StackGroup> {
 public:
   typedef StackGroup group_type;
 
+  template<class Group>
+  using regroup_type = PrimitiveValue<Type,Group>;
+
   /**
    * Constructor.
    */

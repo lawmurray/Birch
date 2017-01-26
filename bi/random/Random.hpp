@@ -24,20 +24,12 @@ namespace bi {
 template<class Variate, class Model, class Group = StackGroup>
 class Random: public virtual Expirable {
 public:
-  /**
-   * Group type.
-   */
   typedef Group group_type;
-
-  /**
-   * Pull function type.
-   */
   typedef std::function<void()> pull_type;
-
-  /**
-   * Push function type.
-   */
   typedef std::function<void()> push_type;
+
+  template<class Group1>
+  using regroup_type = Random<Variate,Model,Group1>;
 
   /**
    * Constructor.
@@ -90,13 +82,16 @@ public:
   /**
    * Assign variate.
    */
-  Random<Variate,Model,Group>& operator=(const Variate& o);
+  template<class Group1>
+  Random<Variate,Model,Group>& operator=(
+      const typename Variate::template regroup_type<Group1>& o);
 
   /**
    * Assign model.
    */
-  template<class Model1>
-  Random<Variate,Model,Group>& operator=(const Model1& o);
+  template<class Group1>
+  Random<Variate,Model,Group>& operator=(
+      const typename Model::template regroup_type<Group1>& o);
 
   /**
    * View operator.
@@ -260,8 +255,9 @@ bi::Random<Variate,Model,Group>& bi::Random<Variate,Model,Group>::operator=(
 }
 
 template<class Variate, class Model, class Group>
+template<class Group1>
 bi::Random<Variate,Model,Group>& bi::Random<Variate,Model,Group>::operator=(
-    const Variate& o) {
+    const typename Variate::template regroup_type<Group1>& o) {
   x = o;
   missing = false;
 
@@ -269,9 +265,9 @@ bi::Random<Variate,Model,Group>& bi::Random<Variate,Model,Group>::operator=(
 }
 
 template<class Variate, class Model, class Group>
-template<class Model1>
+template<class Group1>
 bi::Random<Variate,Model,Group>& bi::Random<Variate,Model,Group>::operator=(
-    const Model1& o) {
+    const typename Model::template regroup_type<Group1>& o) {
   /* pre-condition */
   assert(isMissing());
 

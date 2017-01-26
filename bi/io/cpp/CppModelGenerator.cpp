@@ -43,17 +43,10 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
       if (!o->base->isEmpty()) {
         line("typedef " << o->base << " base_type;");
       }
-      line("\n");
+      line("");
+      line("template<class Group1>");
+      line("using regroup_type = " << o->name << "<Group1>;\n");
     }
-
-    /* default constructor */
-    //if (header) {
-    //  line(o->name << "() {");
-    //  in();
-    //  line("//");
-    //  out();
-    //  line("}\n");
-    //}
 
     /* constructor */
     CppConstructorGenerator auxConstructor(base, level, header);

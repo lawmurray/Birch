@@ -87,10 +87,6 @@ bi::Expression* bi::Resolver::modify(RandomInit* o) {
   o->type = o->left->type->accept(&cloner)->accept(this);
 
   if (!inInputs) {
-    o->pull = new FuncReference(o->left->accept(&cloner), new Name("<~"),
-        o->right->accept(&cloner));
-    o->pull->accept(this);
-
     o->push = new FuncReference(o->left->accept(&cloner), new Name("~>"),
         o->right->accept(&cloner));
     o->push->accept(this);
