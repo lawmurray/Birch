@@ -18,10 +18,10 @@ bi::PrimitiveValue<Type,bi::StackGroup>::PrimitiveValue(const Type& value,
 
 template<class Type>
 bi::PrimitiveValue<Type,bi::StackGroup>::PrimitiveValue(
-    const PrimitiveValue<Type,HeapGroup>& value, const EmptyFrame& frame,
+    const PrimitiveValue<Type,HeapGroup>& o, const EmptyFrame& frame,
     const char* name, const StackGroup& group) :
-    PrimitiveValue(frame, name, group) {
-  copy(*this, value);
+    value(*o.ptr) {
+  //
 }
 
 template<class Type>

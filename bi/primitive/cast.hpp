@@ -19,38 +19,29 @@ struct is_random {
 /**
  * @internal
  */
-template<class Variate, class Model>
-struct is_random<Random<Variate,Model>> {
+template<class Variate, class Model, class Group>
+struct is_random<Random<Variate,Model,Group>> {
   static const bool value = true;
 };
 
 /**
  * @internal
  */
-template<class To, class From, bool random>
+template<class To, class From, bool random_to, bool random_from>
 struct cast_impl {
   //
 };
 
 template<class To, class From>
-struct cast_impl<To,From,false> {
+struct cast_impl<To,From,false,false> {
   static To eval(From&& o) {
-    /* static_cast first allows sideways casts, e.g. to change Group, dynamic
-     * cast then allows to case to more specific type. */
-    return dynamic_cast<To>(static_cast<To>(o));
+    return dynamic_cast<To>(o);
   }
 };
 
 template<class To, class From>
-struct cast_impl<To,From,true> {
+struct cast_impl<To,From,true,true> {
   static To eval(From&& o) {
-    return static_cast<To>(o);
-  }
-};
-
-template<class To>
-struct cast_impl<To,To,true> {
-  static To eval(To&& o) {
     if (o.isMissing()) {
       return o;
     } else {
@@ -59,11 +50,20 @@ struct cast_impl<To,To,true> {
   }
 };
 
+template<class To, class From>
+struct cast_impl<To,From,false,true> {
+  static To eval(From&& o) {
+    return static_cast<To>(o);
+  }
+};
+
 /**
  * Cast object for multiple dispatch.
  */
 template<class To, class From>
 inline To cast(From&& o) {
-  return cast_impl<To,From,is_random<typename std::decay<From>::type>::value>::eval(o);
+  static constexpr bool random_to = is_random<typename std::decay<To>::type>::value;
+  static constexpr bool random_from = is_random<typename std::decay<From>::type>::value;
+  return cast_impl<To,From,random_to,random_from>::eval(o);
 }
 }

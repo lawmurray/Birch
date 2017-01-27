@@ -4,8 +4,6 @@
 #pragma once
 
 #include "bi/data/StackGroup.hpp"
-#include "bi/data/HeapPrimitiveValue.hpp"
-#include "bi/data/NetCDFPrimitiveValue.hpp"
 
 namespace bi {
 /**
@@ -38,7 +36,7 @@ public:
   /**
    * Constructor from heap.
    */
-  PrimitiveValue(const PrimitiveValue<Type,HeapGroup>& value,
+  PrimitiveValue(const PrimitiveValue<Type,HeapGroup>& o,
       const EmptyFrame& frame = EmptyFrame(), const char* name = nullptr,
       const StackGroup& group = StackGroup());
 
@@ -61,12 +59,12 @@ public:
   PrimitiveValue<Type,StackGroup>& operator=(const Type& o);
 
   /**
-   * Basic type conversion.
+   * Value type conversion.
    */
   operator Type&();
 
   /**
-   * Basic type conversion.
+   * Value type conversion.
    */
   operator const Type&() const;
 

@@ -16,7 +16,11 @@ public:
   /**
    * Push a random variable onto the stack and return its position.
    */
-  int push(Expirable* random);
+  template<class RandomType>
+  int push(RandomType* random) {
+    randoms.push(new RandomType(*random));
+    return randoms.size() - 1;
+  }
 
   /**
    * Pop all random variables down to and including the given position on the

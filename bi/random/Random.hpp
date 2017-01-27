@@ -57,12 +57,6 @@ public:
   Random(const Random<Variate,Model,Group>& o) = default;
 
   /**
-   * Generic copy constructor.
-   */
-  template<class Group1>
-  Random(const Random<Variate,Model,Group1>& o);
-
-  /**
    * Move constructor.
    */
   Random(Random<Variate,Model,Group> && o) = default;
@@ -75,15 +69,7 @@ public:
   /**
    * Assignment operator.
    */
-  Random<Variate,Model,Group>& operator=(
-      const Random<Variate,Model,Group>& o) = default;
-
-  /**
-   * Generic assignent operator.
-   */
-  template<class Variate1, class Model1, class Group1>
-  Random<Variate,Model,Group>& operator=(
-      const Random<Variate1,Model1,Group1>& o);
+  Random<Variate,Model,Group>& operator=(const Random<Variate,Model,Group>& o) = default;
 
   /**
    * Assign variate.
@@ -117,13 +103,13 @@ public:
   operator Model&();
 
   /**
-   * Cast to variate type.
+   * Generic cast to variate type.
    */
   template<class Group1>
   operator typename Variate::template regroup_type<Group1>() const;
 
   /**
-   * Cast to filtered distribution type.
+   * Generic cast to filtered distribution type.
    */
   template<class Group1>
   operator typename Model::template regroup_type<Group1>() const;
@@ -138,7 +124,7 @@ public:
    * @param push Push lambda.
    */
   template<class Model1>
-  void init(const Model1& m, pull_type pull, push_type push);
+  void init(const Model1& m, const pull_type& pull, const push_type& push);
 
   /**
    * Is the value missing?
@@ -197,10 +183,10 @@ bi::Random<Variate,Model,Group>::Random(const NonemptyFrame<Tail,Head>& frame,
     group(childGroup(group, name)),
     x(frame, "x", childGroup(this->group, "x")),
     m(frame, "m", childGroup(this->group, "m")),
-    pull(frame, "pull", childGroup(this->group, "pull")),
-    push(frame, "push", childGroup(this->group, "push")),
-    pos(-1, frame, "push", childGroup(this->group, "push")),
-    missing(true, frame, "push", childGroup(this->group, "push")) {
+    pull(nullptr, frame, "pull", childGroup(this->group, "pull")),
+    push(nullptr, frame, "push", childGroup(this->group, "push")),
+    pos(-1, frame, "pos", childGroup(this->group, "pos")),
+    missing(true, frame, "missing", childGroup(this->group, "missing")) {
 }
 
 template<class Variate, class Model, class Group>
@@ -209,10 +195,10 @@ bi::Random<Variate,Model,Group>::Random(const EmptyFrame& frame,
     group(childGroup(group, name)),
     x(frame, "x", childGroup(this->group, "x")),
     m(frame, "m", childGroup(this->group, "m")),
-    pull(frame, "pull", childGroup(this->group, "pull")),
-    push(frame, "push", childGroup(this->group, "push")),
-    pos(-1, frame, "push", childGroup(this->group, "push")),
-    missing(true, frame, "push", childGroup(this->group, "push")) {
+    pull(nullptr, frame, "pull", childGroup(this->group, "pull")),
+    push(nullptr, frame, "push", childGroup(this->group, "push")),
+    pos(-1, frame, "pos", childGroup(this->group, "pos")),
+    missing(true, frame, "missing", childGroup(this->group, "missing")) {
 }
 
 template<class Variate, class Model, class Group>
@@ -230,34 +216,8 @@ bi::Random<Variate,Model,Group>::Random(const Random<Variate,Model,Group>& o,
 }
 
 template<class Variate, class Model, class Group>
-template<class Group1>
-bi::Random<Variate,Model,Group>::Random(const Random<Variate,Model,Group1>& o) :
-    x(o.x),
-    m(o.m),
-    pull(o.pull),
-    push(o.push),
-    pos(o.pos),
-    missing(o.missing) {
-  //
-}
-
-template<class Variate, class Model, class Group>
 bi::Random<Variate,Model,Group>::~Random() {
   //
-}
-
-template<class Variate, class Model, class Group>
-template<class Variate1, class Model1, class Group1>
-bi::Random<Variate,Model,Group>& bi::Random<Variate,Model,Group>::operator=(
-    const Random<Variate1,Model1,Group1>& o) {
-  x = o.x;
-  m = o.m;
-  pull = o.pull;
-  push = o.push;
-  missing = o.missing;
-  pos = o.pos;
-
-  return *this;
 }
 
 template<class Variate, class Model, class Group>
@@ -327,24 +287,24 @@ bi::Random<Variate,Model,Group>::operator typename Model::template regroup_type<
 
 template<class Variate, class Model, class Group>
 template<class Model1>
-void bi::Random<Variate,Model,Group>::init(const Model1& m, pull_type pull,
-    push_type push) {
+void bi::Random<Variate,Model,Group>::init(const Model1& m,
+    const pull_type& pull, const push_type& push) {
   this->m = m;
   this->pull = pull;
   this->push = push;
-
   if (!isMissing()) {
     /* push immediately */
     static_cast<push_type>(this->push)();
   } else {
     /* lazy sampling */
     this->pos = randomStack.push(this);
+
   }
 }
 
 template<class Variate, class Model, class Group>
 inline bool bi::Random<Variate,Model,Group>::isMissing() const {
-  return static_cast<unsigned char>(missing);
+  return missing;
 }
 
 template<class Variate, class Model, class Group>
@@ -352,7 +312,7 @@ void bi::Random<Variate,Model,Group>::expire() {
   /* pre-condition */
   assert(isMissing());
 
-  static_cast<pull_type>(pull)();
   missing = false;
-  static_cast<push_type>(push)();
+  static_cast<pull_type&>(pull)();
+  static_cast<push_type&>(push)();
 }

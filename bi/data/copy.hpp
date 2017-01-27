@@ -6,6 +6,7 @@
 #pragma once
 
 #include "bi/data/StackGroup.hpp"
+#include "bi/data/RefGroup.hpp"
 #include "bi/data/HeapGroup.hpp"
 #include "bi/data/NetCDFGroup.hpp"
 #include "bi/data/Array.hpp"
@@ -98,6 +99,11 @@ void copy(PrimitiveValue<Type,StackGroup>& dst, const Type& src) {
 }
 
 template<class Type>
+void copy(PrimitiveValue<Type,RefGroup>& dst, const Type& src) {
+  dst.value = src;
+}
+
+template<class Type>
 void copy(PrimitiveValue<Type,HeapGroup>& dst, const Type& src) {
   *dst.ptr = src;
 }
@@ -115,6 +121,12 @@ void copy(PrimitiveValue<Type,NetCDFGroup>& dst, const Type& src) {
 template<class Type>
 void copy(PrimitiveValue<Type,StackGroup>& dst,
     const PrimitiveValue<Type,StackGroup>& src) {
+  dst.value = src.value;
+}
+
+template<class Type>
+void copy(PrimitiveValue<Type,StackGroup>& dst,
+    const PrimitiveValue<Type,RefGroup>& src) {
   dst.value = src.value;
 }
 
@@ -138,6 +150,12 @@ void copy(PrimitiveValue<Type,HeapGroup>& dst,
 
 template<class Type>
 void copy(PrimitiveValue<Type,HeapGroup>& dst,
+    const PrimitiveValue<Type,RefGroup>& src) {
+  *dst.ptr = src.value;
+}
+
+template<class Type>
+void copy(PrimitiveValue<Type,HeapGroup>& dst,
     const PrimitiveValue<Type,HeapGroup>& src) {
   *dst.ptr = *src.ptr;
 }
@@ -151,6 +169,12 @@ void copy(PrimitiveValue<Type,HeapGroup>& dst,
 template<class Type>
 void copy(PrimitiveValue<Type,NetCDFGroup>& dst,
     const PrimitiveValue<Type,StackGroup>& src) {
+  put(dst.group.ncid, dst.varid, dst.convolved.offsets.data(), &src.value);
+}
+
+template<class Type>
+void copy(PrimitiveValue<Type,NetCDFGroup>& dst,
+    const PrimitiveValue<Type,RefGroup>& src) {
   put(dst.group.ncid, dst.varid, dst.convolved.offsets.data(), &src.value);
 }
 

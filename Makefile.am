@@ -145,6 +145,8 @@ libbirch_la_SOURCES = \
   bi/data/NetCDFGroup.cpp \
   bi/data/NetCDFPrimitiveValue.cpp \
   bi/data/NetCDFView.cpp \
+  bi/data/RefGroup.cpp \
+  bi/data/RefPrimitiveValue.cpp \
   bi/data/StackGroup.cpp \
   bi/data/StackPrimitiveValue.cpp \
   bi/exception/Exception.cpp \

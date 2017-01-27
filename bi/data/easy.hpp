@@ -32,8 +32,9 @@ inline auto make_span(const int_t length) {
  *
  * @param index Index.
  */
-inline auto make_index(const int_t i) {
-  return Index<mutable_value>(i);
+template<class Value>
+inline auto make_index(const Value i) {
+  return Index<mutable_value>(static_cast<int_t>(i));
 }
 
 /**
@@ -44,8 +45,10 @@ inline auto make_index(const int_t i) {
  * @param start First index.
  * @param end Last index.
  */
-inline auto make_range(const int_t start, const int_t end) {
-  return Range<mutable_value,mutable_value,1>(start, end - start + 1);
+template<class Start, class End>
+inline auto make_range(const Start start, const End end) {
+  return Range<mutable_value,mutable_value,1>(static_cast<int_t>(start),
+      static_cast<int_t>(end - start + 1));
 }
 
 /**
@@ -69,6 +72,11 @@ auto make_frame(const Span<length_value,stride_value,lead_value>& arg) {
   auto tail = make_frame();
   auto head = arg;
   return NonemptyFrame<decltype(tail),decltype(head)>(tail, head);
+}
+
+template<class Group>
+inline auto make_frame(const model::Integer64<Group> arg) {
+  return make_frame(make_span(static_cast<int_t>(arg)));
 }
 
 inline auto make_frame(const int_t arg) {

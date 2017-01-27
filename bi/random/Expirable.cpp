@@ -3,5 +3,6 @@
  */
 #include "bi/random/Expirable.hpp"
 
-#include <cassert>
-
+bi::Expirable::~Expirable() {
+  //
+}

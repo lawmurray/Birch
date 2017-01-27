@@ -3,15 +3,13 @@
  */
 #include "bi/random/RandomStack.hpp"
 
-int bi::RandomStack::push(Expirable* random) {
-  randoms.push(random);
-  return randoms.size() - 1;
-}
-
 void bi::RandomStack::pop(const int pos) {
+  Expirable* top;
   while (randoms.size() > pos) {
-    randoms.top()->expire();
+    top = randoms.top();;
     randoms.pop();
+    top->expire();
+    delete top;
   }
 }
 

@@ -56,7 +56,7 @@ template<class Value, class Frame>
 void bi::HeapGroup::create(PrimitiveValue<Value,HeapGroup>& value,
     const Value& init, const Frame& frame, const char* name) {
   create(value, frame, name);
-  std::fill(value.ptr, value.ptr + frame.lead, init);
+  std::uninitialized_fill_n(value.ptr, frame.lead, init);
 }
 
 template<class Value, class Frame>
