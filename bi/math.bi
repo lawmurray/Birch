@@ -16,18 +16,30 @@ model Real = Real64;
 model Integer = Integer64;
 
 /**
- * Assignments
+ * Conversions
  * -----------
  */
-function x:Real32 <- y:Real64 -> x {
+function Real64(x:Real32) -> y:Real64 {
   cpp{{
-  x = y;
+  y = x;
   }}
 }
 
-function x:Integer32 <- y:Integer64 -> x {
+function Real32(x:Real64) -> y:Real32 {
   cpp{{
-  x = y;
+  y = static_cast<float>(x);
+  }}
+}
+
+function Integer64(x:Integer32) -> y:Integer64 {
+  cpp{{
+  y = x;
+  }}
+}
+
+function Integer32(x:Integer64) -> y:Integer32 {
+  cpp{{
+  y = static_cast<int32_t>(x);
   }}
 }
 
@@ -406,7 +418,7 @@ function nanlog(x:Real64) -> y:Real64 {
 
 function nanlog(x:Real32) -> y:Real32 {
   if (isnan(x)) {
-    y <- -inf;
+    y <- Real32(-inf);
   } else {
     y <- log(x);
   }
@@ -434,7 +446,7 @@ function nanexp(x:Real64) -> y:Real64 {
 
 function nanexp(x:Real32) -> y:Real32 {
   if (isnan(x)) {
-    y <- 0.0;
+    y <- Real32(0.0);
   } else {
     y <- exp(x);
   }
@@ -454,13 +466,13 @@ function max(x:Real32, y:Real32) -> z:Real32 {
 
 function max(x:Integer64, y:Integer64) -> z:Integer64 {
   cpp {{
-  z = std::max(x, y);
+  z = std::max(static_cast<int64_t>(x), static_cast<int64_t>(y));
   }}
 }
 
 function max(x:Integer32, y:Integer32) -> z:Integer32 {
   cpp {{
-  z = std::max(x, y);
+  z = std::max(static_cast<int32_t>(x), static_cast<int32_t>(y));
   }}
 }
 
@@ -478,13 +490,13 @@ function min(x:Real32, y:Real32) -> z:Real32 {
 
 function min(x:Integer64, y:Integer64) -> z:Integer64 {
   cpp {{
-  z = std::min(x, y);
+  z = std::min(static_cast<int64_t>(x), static_cast<int64_t>(y));
   }}
 }
 
 function min(x:Integer32, y:Integer32) -> z:Integer32 {
   cpp {{
-  z = std::min(x, y);
+  z = std::min(static_cast<int32_t>(x), static_cast<int32_t>(y));
   }}
 }
 
