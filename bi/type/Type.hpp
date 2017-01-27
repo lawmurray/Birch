@@ -69,6 +69,11 @@ public:
   virtual bool isEmpty() const;
 
   /**
+   * Is this a random type?
+   */
+  virtual bool isRandom() const;
+
+  /**
    * Strip parentheses.
    */
   virtual Type* strip();

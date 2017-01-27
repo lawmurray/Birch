@@ -112,6 +112,7 @@ birchc_SOURCES = \
   bi/visitor/DispatchGatherer.cpp \
   bi/visitor/Gatherer.cpp \
   bi/visitor/IsPrimary.cpp \
+  bi/visitor/IsRandom.cpp \
   bi/visitor/IsRich.cpp \
   bi/visitor/Modifier.cpp \
   bi/visitor/Resolver.cpp \

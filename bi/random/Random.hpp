@@ -90,7 +90,7 @@ public:
    */
   template<class Frame, class View>
   Random<Variate,Model,Group> operator()(const Frame& frame,
-      const View& view);
+      const View& view) const;
 
   /**
    * Cast to variate type.
@@ -244,7 +244,7 @@ bi::Random<Variate,Model,Group>& bi::Random<Variate,Model,Group>::operator=(
 template<class Variate, class Model, class Group>
 template<class Frame, class View>
 bi::Random<Variate,Model,Group> bi::Random<Variate,Model,Group>::operator()(
-    const Frame& frame, const View& view) {
+    const Frame& frame, const View& view) const {
   return Random<Variate,Model,Group>(*this, frame, view);
 }
 

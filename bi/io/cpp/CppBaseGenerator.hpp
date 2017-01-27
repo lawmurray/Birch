@@ -52,6 +52,11 @@ public:
 
 protected:
   /**
+   * Generate the capture for a lambda.
+   */
+  void genCapture(const Expression* o);
+
+  /**
    * Output header instead of source?
    */
   bool header;

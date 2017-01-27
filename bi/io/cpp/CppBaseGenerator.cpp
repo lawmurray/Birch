@@ -6,6 +6,8 @@
 #include "bi/visitor/Gatherer.hpp"
 #include "bi/io/cpp/misc.hpp"
 
+#include <unordered_set>
+
 bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
     const bool header) :
     indentable_ostream(base, level),
@@ -95,11 +97,14 @@ void bi::CppBaseGenerator::visit(const RandomInit* o) {
   finish(o->left << ".init(" << o->right << ",");
   in();
   in();
-  line("[&]() {");
+  genCapture(o->left.get());
+  finish("() {");
   in();
   line(o->left << ".x = sim_(" << o->left << ".m);");
   out();
-  line("}, [&]() { ");
+  start("}, ");
+  genCapture(o->push.get());
+  finish(" () { ");
   in();
   line(o->push << ';');
   out();
@@ -302,4 +307,28 @@ void bi::CppBaseGenerator::visit(const RandomType* o) {
   inArray = true;
   middle("bi::Random<" << o->left << ',' << o->right << ",bi::HeapGroup>");
   inArray = false;
+}
+
+void bi::CppBaseGenerator::genCapture(const Expression* o) {
+  /* for lambda, capture random variables by reference, others by value */
+  Gatherer<VarReference> gatherer;
+  o->accept(&gatherer);
+  std::unordered_set<std::string> done;
+
+  middle('[');
+  for (auto iter = gatherer.gathered.begin();
+      iter != gatherer.gathered.end(); ++iter) {
+    const VarReference* ref = *iter;
+    if (done.find(ref->name->str()) == done.end()) {
+      if (!done.empty()) {
+        middle(", ");
+      }
+      if (ref->type->isRandom()) {
+        middle('&');
+      }
+      middle(ref->name);
+      done.insert(ref->name->str());
+    }
+  }
+  middle(']');
 }

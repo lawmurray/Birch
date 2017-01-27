@@ -298,11 +298,11 @@ public:
    * View return.
    */
   template<class Value1, class Frame1>
-  auto viewReturn(const Value1& value, const Frame1& frame) {
+  auto viewReturn(const Value1& value, const Frame1& frame) const {
     return Array<Value1,Frame1>(value, frame);
   }
   template<class Value1>
-  auto viewReturn(const Value1& value, const EmptyFrame& frame) {
+  auto viewReturn(const Value1& value, const EmptyFrame& frame) const {
     return value;
   }
 };
