@@ -4,10 +4,5 @@ bi/linear_gaussian.bi
 bi/multiple_observations.bi
 bi/triplet.bi
 MANIFEST
-LICENSE
-META.yml
 README.md
 VERSION.md
-init.sh
-run.sh
-config.conf
