@@ -25,7 +25,7 @@ function Bernoulli(ρ:Real) -> m:Bernoulli {
  */
 function ~m:Bernoulli -> x:Boolean {
   cpp {{
-  x = static_cast<unsigned char>(std::bernoulli_distribution(m.ρ)(rng));
+  x = std::bernoulli_distribution(m.ρ)(rng);
   }}
 }
 

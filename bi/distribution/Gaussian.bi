@@ -1,5 +1,6 @@
 import math;
 import random;
+import io;
 
 /**
  * Gaussian distribution.

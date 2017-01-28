@@ -10,7 +10,7 @@ cpp {{
  */
 function print(value:String) {
   cpp {{
-  ::printf("%s", (const char*)(value));
+  ::printf("%s", value.c_str());
   }}
 }
 
@@ -19,7 +19,7 @@ function print(value:String) {
  */
 function print(value:Real) {
   cpp {{
-  ::printf("%f", double(value));
+  ::printf("%f", value);
   }}
 }
 
@@ -28,6 +28,6 @@ function print(value:Real) {
  */
 function print(value:Integer) {
   cpp {{
-  ::printf("%lld", int64_t(value));
+  ::printf("%lld", value);
   }}
 }

@@ -50,323 +50,73 @@ function Integer32(x:Integer64) -> y:Integer32 {
 /**
  * Real64 operators
  */
-function x:Real64 + y:Real64 -> z:Real64 {
-  cpp {{
-  z = (double)x + (double)y;
-  }}
-}
-
-function x:Real64 - y:Real64 -> z:Real64 {
-  cpp {{
-  z = (double)x - (double)y;
-  }}
-}
-
-function x:Real64 * y:Real64 -> z:Real64 {
-  cpp {{
-  z = (double)x * (double)y;
-  }}
-}
-
-function x:Real64 / y:Real64 -> z:Real64 {
-  cpp {{
-  z = (double)x / (double)y;
-  }}
-}
-
-function +x:Real64 -> z:Real64 {
-  cpp {{
-  z = +(double)x;
-  }}
-}
-
-function -x:Real64 -> z:Real64 {
-  cpp {{
-  z = -(double)x;
-  }}
-}
-
-function x:Real64 > y:Real64 -> z:Boolean {
-  cpp {{
-  z = (double)x > (double)y;
-  }}
-}
-
-function x:Real64 < y:Real64 -> z:Boolean {
-  cpp {{
-  z = (double)x < (double)y;
-  }}
-}
-
-function x:Real64 >= y:Real64 -> z:Boolean {
-  cpp {{
-  z = (double)x >= (double)y;
-  }}
-}
-
-function x:Real64 <= y:Real64 -> z:Boolean {
-  cpp {{
-  z = (double)x <= (double)y;
-  }}
-}
-
-function x:Real64 == y:Real64 -> z:Boolean {
-  cpp {{
-  z = (double)x == (double)y;
-  }}
-}
-
-function x:Real64 != y:Real64 -> z:Boolean {
-  cpp {{
-  z = (double)x != (double)y;
-  }}
-}
+function x:Real64 + y:Real64 -> z:Real64;
+function x:Real64 - y:Real64 -> z:Real64;
+function x:Real64 * y:Real64 -> z:Real64;
+function x:Real64 / y:Real64 -> z:Real64;
+function +x:Real64 -> z:Real64;
+function -x:Real64 -> z:Real64;
+function x:Real64 > y:Real64 -> z:Boolean;
+function x:Real64 < y:Real64 -> z:Boolean;
+function x:Real64 >= y:Real64 -> z:Boolean;
+function x:Real64 <= y:Real64 -> z:Boolean;
+function x:Real64 == y:Real64 -> z:Boolean;
+function x:Real64 != y:Real64 -> z:Boolean;
 
 /**
  * Real32 operators
  */
-function x:Real32 + y:Real32 -> z:Real32 {
-  cpp {{
-  z = (float)x + (float)y;
-  }}
-}
-
-function x:Real32 - y:Real32 -> z:Real32 {
-  cpp {{
-  z = (float)x - (float)y;
-  }}
-}
-
-function x:Real32 * y:Real32 -> z:Real32 {
-  cpp {{
-  z = (float)x * (float)y;
-  }}
-}
-
-function x:Real32 / y:Real32 -> z:Real32 {
-  cpp {{
-  z = (float)x / (float)y;
-  }}
-}
-
-function +x:Real32 -> z:Real32 {
-  cpp {{
-  z = +(float)x;
-  }}
-}
-
-function -x:Real32 -> z:Real32 {
-  cpp {{
-  z = -(float)x;
-  }}
-}
-
-function x:Real32 > y:Real32 -> z:Boolean {
-  cpp {{
-  z = (float)x > (float)y;
-  }}
-}
-
-function x:Real32 < y:Real32 -> z:Boolean {
-  cpp {{
-  z = (float)x < (float)y;
-  }}
-}
-
-function x:Real32 >= y:Real32 -> z:Boolean {
-  cpp {{
-  z = (float)x >= (float)y;
-  }}
-}
-
-function x:Real32 <= y:Real32 -> z:Boolean {
-  cpp {{
-  z = (float)x <= (float)y;
-  }}
-}
-
-function x:Real32 == y:Real32 -> z:Boolean {
-  cpp {{
-  z = (float)x == (float)y;
-  }}
-}
-
-function x:Real32 != y:Real32 -> z:Boolean {
-  cpp {{
-  z = (float)x != (float)y;
-  }}
-}
+function x:Real32 + y:Real32 -> z:Real32;
+function x:Real32 - y:Real32 -> z:Real32;
+function x:Real32 * y:Real32 -> z:Real32;
+function x:Real32 / y:Real32 -> z:Real32;
+function +x:Real32 -> z:Real32;
+function -x:Real32 -> z:Real32;
+function x:Real32 > y:Real32 -> z:Boolean;
+function x:Real32 < y:Real32 -> z:Boolean;
+function x:Real32 >= y:Real32 -> z:Boolean;
+function x:Real32 <= y:Real32 -> z:Boolean;
+function x:Real32 == y:Real32 -> z:Boolean;
+function x:Real32 != y:Real32 -> z:Boolean;
 
 /**
  * Integer64 operators
  */
-function x:Integer64 + y:Integer64 -> z:Integer64 {
-  cpp {{
-  z = (int64_t)x + (int64_t)y;
-  }}
-}
-
-function x:Integer64 - y:Integer64 -> z:Integer64 {
-  cpp {{
-  z = (int64_t)x - (int64_t)y;
-  }}
-}
-
-function x:Integer64 * y:Integer64 -> z:Integer64 {
-  cpp {{
-  z = (int64_t)x * (int64_t)y;
-  }}
-}
-
-function x:Integer64 / y:Integer64 -> z:Integer64 {
-  cpp {{
-  z = (int64_t)x / (int64_t)y;
-  }}
-}
-
-function +x:Integer64 -> z:Integer64 {
-  cpp {{
-  z = +(int64_t)x;
-  }}
-}
-
-function -x:Integer64 -> z:Integer64 {
-  cpp {{
-  z = -(int64_t)x;
-  }}
-}
-
-function x:Integer64 > y:Integer64 -> z:Boolean {
-  cpp {{
-  z = (int64_t)x > (int64_t)y;
-  }}
-}
-
-function x:Integer64 < y:Integer64 -> z:Boolean {
-  cpp {{
-  z = (int64_t)x < (int64_t)y;
-  }}
-}
-
-function x:Integer64 >= y:Integer64 -> z:Boolean {
-  cpp {{
-  z = (int64_t)x >= (int64_t)y;
-  }}
-}
-
-function x:Integer64 <= y:Integer64 -> z:Boolean {
-  cpp {{
-  z = (int64_t)x <= (int64_t)y;
-  }}
-}
-
-function x:Integer64 == y:Integer64 -> z:Boolean {
-  cpp {{
-  z = (int64_t)x == (int64_t)y;
-  }}
-}
-
-function x:Integer64 != y:Integer64 -> z:Boolean {
-  cpp {{
-  z = (int64_t)x != (int64_t)y;
-  }}
-}
+function x:Integer64 + y:Integer64 -> z:Integer64;
+function x:Integer64 - y:Integer64 -> z:Integer64;
+function x:Integer64 * y:Integer64 -> z:Integer64;
+function x:Integer64 / y:Integer64 -> z:Integer64;
+function +x:Integer64 -> z:Integer64;
+function -x:Integer64 -> z:Integer64;
+function x:Integer64 > y:Integer64 -> z:Boolean;
+function x:Integer64 < y:Integer64 -> z:Boolean;
+function x:Integer64 >= y:Integer64 -> z:Boolean;
+function x:Integer64 <= y:Integer64 -> z:Boolean;
+function x:Integer64 == y:Integer64 -> z:Boolean;
+function x:Integer64 != y:Integer64 -> z:Boolean;
 
 /**
  * Integer32 operators
  */
-function x:Integer32 + y:Integer32 -> z:Integer32 {
-  cpp {{
-  z = (int32_t)x + (int32_t)y;
-  }}
-}
-
-function x:Integer32 - y:Integer32 -> z:Integer32 {
-  cpp {{
-  z = (int32_t)x - (int32_t)y;
-  }}
-}
-
-function x:Integer32 * y:Integer32 -> z:Integer32 {
-  cpp {{
-  z = (int32_t)x * (int32_t)y;
-  }}
-}
-
-function x:Integer32 / y:Integer32 -> z:Integer32 {
-  cpp {{
-  z = (int32_t)x / (int32_t)y;
-  }}
-}
-
-function +x:Integer32 -> z:Integer32 {
-  cpp {{
-  z = +(int32_t)x;
-  }}
-}
-
-function -x:Integer32 -> z:Integer32 {
-  cpp {{
-  z = -(int32_t)x;
-  }}
-}
-
-function x:Integer32 > y:Integer32 -> z:Boolean {
-  cpp {{
-  z = (int32_t)x > (int32_t)y;
-  }}
-}
-
-function x:Integer32 < y:Integer32 -> z:Boolean {
-  cpp {{
-  z = (int32_t)x < (int32_t)y;
-  }}
-}
-
-function x:Integer32 >= y:Integer32 -> z:Boolean {
-  cpp {{
-  z = (int32_t)x >= (int32_t)y;
-  }}
-}
-
-function x:Integer32 <= y:Integer32 -> z:Boolean {
-  cpp {{
-  z = (int32_t)x <= (int32_t)y;
-  }}
-}
-
-function x:Integer32 == y:Integer32 -> z:Boolean {
-  cpp {{
-  z = (int32_t)x == (int32_t)y;
-  }}
-}
-
-function x:Integer32 != y:Integer32 -> z:Boolean {
-  cpp {{
-  z = (int32_t)x != (int32_t)y;
-  }}
-}
+function x:Integer32 + y:Integer32 -> z:Integer32;
+function x:Integer32 - y:Integer32 -> z:Integer32;
+function x:Integer32 * y:Integer32 -> z:Integer32;
+function x:Integer32 / y:Integer32 -> z:Integer32;
+function +x:Integer32 -> z:Integer32;
+function -x:Integer32 -> z:Integer32;
+function x:Integer32 > y:Integer32 -> z:Boolean;
+function x:Integer32 < y:Integer32 -> z:Boolean;
+function x:Integer32 >= y:Integer32 -> z:Boolean;
+function x:Integer32 <= y:Integer32 -> z:Boolean;
+function x:Integer32 == y:Integer32 -> z:Boolean;
+function x:Integer32 != y:Integer32 -> z:Boolean;
 
 /**
  * Boolean operators
  */
-function x:Boolean && y:Boolean -> z:Boolean {
-  cpp {{
-  z = (bool)x && (bool)y;
-  }}
-}
-
-function x:Boolean || y:Boolean -> z:Boolean {
-  cpp {{
-  z = (bool)x || (bool)y;
-  }}
-}
-
-function !x:Boolean -> z:Boolean {
-  cpp {{
-  z = !(bool)x;
-  }}
-}
+function x:Boolean && y:Boolean -> z:Boolean;
+function x:Boolean || y:Boolean -> z:Boolean;
+function !x:Boolean -> z:Boolean;
 
 /**
  * Functions
@@ -466,13 +216,13 @@ function max(x:Real32, y:Real32) -> z:Real32 {
 
 function max(x:Integer64, y:Integer64) -> z:Integer64 {
   cpp {{
-  z = std::max(static_cast<int64_t>(x), static_cast<int64_t>(y));
+  z = std::max(x, y);
   }}
 }
 
 function max(x:Integer32, y:Integer32) -> z:Integer32 {
   cpp {{
-  z = std::max(static_cast<int32_t>(x), static_cast<int32_t>(y));
+  z = std::max(x, y);
   }}
 }
 
@@ -490,13 +240,13 @@ function min(x:Real32, y:Real32) -> z:Real32 {
 
 function min(x:Integer64, y:Integer64) -> z:Integer64 {
   cpp {{
-  z = std::min(static_cast<int64_t>(x), static_cast<int64_t>(y));
+  z = std::min(x, y);
   }}
 }
 
 function min(x:Integer32, y:Integer32) -> z:Integer32 {
   cpp {{
-  z = std::min(static_cast<int32_t>(x), static_cast<int32_t>(y));
+  z = std::min(x, y);
   }}
 }
 
