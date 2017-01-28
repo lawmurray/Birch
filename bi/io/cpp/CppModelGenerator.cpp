@@ -7,7 +7,6 @@
 #include "bi/io/cpp/CppConstructorGenerator.hpp"
 #include "bi/io/cpp/CppViewConstructorGenerator.hpp"
 #include "bi/io/cpp/CppCopyConstructorGenerator.hpp"
-#include "bi/io/cpp/CppMoveConstructorGenerator.hpp"
 #include "bi/io/cpp/CppAssignmentGenerator.hpp"
 #include "bi/io/cpp/CppParameterGenerator.hpp"
 #include "bi/io/cpp/CppOutputGenerator.hpp"
@@ -31,7 +30,7 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
   if (!o->builtin()) {
     /* start boilerplate */
     if (header) {
-      line("template<class Group = StackGroup>");
+      line("template<class Group = MemoryGroup>");
       start("class " << o->name);
       if (!o->base->isEmpty()) {
         middle(" : public " << o->base);
@@ -44,25 +43,27 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
         line("typedef " << o->base << " base_type;");
       }
       line("");
-      line("template<class Group1>");
-      line("using regroup_type = " << o->name << "<Group1>;\n");
     }
 
     /* constructor */
     CppConstructorGenerator auxConstructor(base, level, header);
     auxConstructor << o;
 
-    /* view constructor */
-    CppViewConstructorGenerator auxViewConstructor(base, level, header);
-    auxViewConstructor << o;
-
     /* copy constructor */
+    if (header) {
+      line(o->name << "(const " << o->name << "<Group>& o) = default;\n");
+    }
     CppCopyConstructorGenerator auxCopyConstructor(base, level, header);
     auxCopyConstructor << o;
 
     /* move constructor */
-    CppMoveConstructorGenerator auxMoveConstructor(base, level, header);
-    auxMoveConstructor << o;
+    if (header) {
+      line(o->name << '(' << o->name << "<Group>&& o) = default;\n");
+    }
+
+    /* view constructor */
+    CppViewConstructorGenerator auxViewConstructor(base, level, header);
+    auxViewConstructor << o;
 
     /* destructor */
     if (header) {
@@ -73,9 +74,15 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
       line("}\n");
     }
 
-    /* assignment operator */
+    /* copy assignment operator */
     CppAssignmentGenerator auxAssignment(base, level, header);
     auxAssignment << o;
+
+    /* move assignment operator */
+    if (header) {
+      start(o->name->str() << "<Group>& ");
+      finish("operator=(" << o->name->str() << "<Group>&& o) = default;\n");
+    }
 
     /* view operator */
     if (header) {
@@ -104,8 +111,7 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
 
     /* explicit template specialisations */
     if (!header) {
-      line("template class bi::model::" << o->name << "<bi::StackGroup>;");
-      line("template class bi::model::" << o->name << "<bi::HeapGroup>;");
+      line("template class bi::model::" << o->name << "<bi::MemoryGroup>;");
       line("template class bi::model::" << o->name << "<bi::NetCDFGroup>;");
       line("");
     }
@@ -116,12 +122,7 @@ void bi::CppModelGenerator::visit(const ModelReference* o) {
   if (!header) {
     middle("bi::model::");
   }
-  middle(o->name);
-  if (inArray) {
-    middle("<typename Group::array_group_type>");
-  } else {
-    middle("<typename Group::child_group_type>");
-  }
+  middle(o->name << "<Group>");
 }
 
 void bi::CppModelGenerator::visit(const BracketsType* o) {
@@ -150,11 +151,10 @@ void bi::CppModelGenerator::visit(const FuncParameter* o) {
       line("template<class Group>");
     }
 
-    /* type */
+    /* return type */
     start("");
     CppBaseGenerator auxType(base, level, header);
-    auxType << o->type;
-    middle(' ');
+    auxType << o->type << ' ';
 
     /* name */
     if (!header) {
@@ -193,16 +193,6 @@ void bi::CppModelGenerator::visit(const FuncParameter* o) {
 
       out();
       finish("}\n");
-    }
-  }
-}
-
-void bi::CppModelGenerator::visit(const Raw* o) {
-  if ((header && o->name->str().compare("hpp") == 0)
-      || (!header && o->name->str().compare("cpp") == 0)) {
-    *this << o->raw;
-    if (!std::isspace(o->raw.back())) {
-      *this << ' ';
     }
   }
 }

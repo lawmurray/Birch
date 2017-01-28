@@ -12,21 +12,18 @@ namespace bi {
  *
  * @ingroup library
  */
-class HeapGroup {
+class MemoryGroup {
 public:
-  typedef HeapGroup child_group_type;
-  typedef HeapGroup array_group_type;
-
   template<class Value, class Frame = EmptyFrame>
-  void create(PrimitiveValue<Value,HeapGroup>& value, const Frame& frame =
+  void create(PrimitiveValue<Value,MemoryGroup>& value, const Frame& frame =
       EmptyFrame(), const char* name = nullptr);
 
   template<class Value, class Frame = EmptyFrame>
-  void create(PrimitiveValue<Value,HeapGroup>& value, const Value& init,
+  void create(PrimitiveValue<Value,MemoryGroup>& value, const Value& init,
       const Frame& frame = EmptyFrame(), const char* name = nullptr);
 
   template<class Value, class Frame = EmptyFrame>
-  void release(PrimitiveValue<Value,HeapGroup>& value, const Frame& frame =
+  void release(PrimitiveValue<Value,MemoryGroup>& value, const Frame& frame =
       EmptyFrame());
 
 private:
@@ -37,13 +34,13 @@ private:
 };
 }
 
-#include "bi/data/HeapPrimitiveValue.hpp"
+#include "bi/data/MemoryPrimitiveValue.hpp"
 #include "bi/exception/MemoryException.hpp"
 
 #include <cstdlib>
 
 template<class Value, class Frame>
-void bi::HeapGroup::create(PrimitiveValue<Value,HeapGroup>& value,
+void bi::MemoryGroup::create(PrimitiveValue<Value,MemoryGroup>& value,
     const Frame& frame, const char* name) {
   int err = posix_memalign((void**)&value.ptr, ALIGNMENT,
       frame.lead * sizeof(Value));
@@ -53,14 +50,14 @@ void bi::HeapGroup::create(PrimitiveValue<Value,HeapGroup>& value,
 }
 
 template<class Value, class Frame>
-void bi::HeapGroup::create(PrimitiveValue<Value,HeapGroup>& value,
+void bi::MemoryGroup::create(PrimitiveValue<Value,MemoryGroup>& value,
     const Value& init, const Frame& frame, const char* name) {
   create(value, frame, name);
   std::uninitialized_fill_n(value.ptr, frame.lead, init);
 }
 
 template<class Value, class Frame>
-void bi::HeapGroup::release(PrimitiveValue<Value,HeapGroup>& value,
+void bi::MemoryGroup::release(PrimitiveValue<Value,MemoryGroup>& value,
     const Frame& frame) {
   free(value.ptr);
 }

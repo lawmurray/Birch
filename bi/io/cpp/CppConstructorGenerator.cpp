@@ -93,12 +93,7 @@ void bi::CppConstructorGenerator::initialise(const VarDeclaration* o) {
   }
   middle(o->param->type);
   middle(", \"" << o->param->name->str() << "\"");
-  middle(", ");
-  if (o->param->type->count() > 0) {
-    middle("arrayGroup");
-  } else {
-    middle("childGroup");
-  }
+  middle(", childGroup");
   middle("(this->group, \"" << o->param->name->str() << "\")");
   if (!o->param->parens->strip()->isEmpty() && o->param->type->count() > 0) {
     middle(", ");

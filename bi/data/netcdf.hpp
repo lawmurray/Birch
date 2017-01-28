@@ -47,7 +47,7 @@ struct NetCDFValueType<int64_t> {
   static constexpr nc_type value = NC_INT64;
 };
 template<>
-struct NetCDFValueType<char*> {
+struct NetCDFValueType<const char*> {
   static constexpr nc_type value = NC_STRING;
 };
 

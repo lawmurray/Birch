@@ -11,7 +11,7 @@
 #include "bi/data/Frame.hpp"
 #include "bi/data/View.hpp"
 #include "bi/data/Array.hpp"
-#include "bi/data/HeapGroup.hpp"
+#include "bi/data/MemoryGroup.hpp"
 
 namespace bi {
 /**
@@ -222,9 +222,9 @@ auto make_view(const NonemptyView<Tail,Head>& tail, Arg arg, Args ... args) {
  *
  * @param frame Frame.
  */
-template<class Type, class Frame = EmptyFrame, class Group = HeapGroup>
+template<class Type, class Frame = EmptyFrame, class Group = MemoryGroup>
 auto make_array(const Frame& frame = EmptyFrame(), const char* name = nullptr,
-    const Group& group = HeapGroup()) {
+    const Group& group = MemoryGroup()) {
   return Array<PrimitiveValue<Type,Group>,Frame>(frame, name, group);
 }
 }

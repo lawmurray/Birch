@@ -18,9 +18,6 @@ class PrimitiveValue<Type,NetCDFGroup> {
 public:
   typedef NetCDFGroup group_type;
 
-  template<class Group>
-  using regroup_type = PrimitiveValue<Type,Group>;
-
   /**
    * Constructor.
    */
@@ -40,16 +37,6 @@ public:
   template<class Frame, class View>
   PrimitiveValue(const PrimitiveValue<Type,NetCDFGroup>& o,
       const Frame& frame, const View& view);
-
-//  /**
-//   * Shallow copy constructor.
-//   */
-//  PrimitiveValue(const PrimitiveValue<Type,NetCDFGroup>& o);
-//
-//  /**
-//   * Move constructor.
-//   */
-//  PrimitiveValue(PrimitiveValue<Type,NetCDFGroup> && o);
 
   /**
    * Destructor.

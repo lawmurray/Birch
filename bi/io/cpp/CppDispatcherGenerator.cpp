@@ -71,7 +71,11 @@ void bi::CppDispatcherGenerator::visit(const FuncParameter* o) {
       if (iter != o->inputs.begin()) {
         middle(", ");
       }
-      middle("bi::cast<" << (*iter)->type << "&>(" << (*iter)->name << ')');
+      middle("bi::cast<");
+      if (!(*iter)->type->assignable) {
+        middle("const ");
+      }
+      middle((*iter)->type << "&>(" << (*iter)->name << ')');
     }
     finish("); } catch (std::bad_cast) {}");
 

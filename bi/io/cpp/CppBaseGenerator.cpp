@@ -17,19 +17,19 @@ bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
 }
 
 void bi::CppBaseGenerator::visit(const BooleanLiteral* o) {
-  *this << "bi::make_bool(" << o->str << ')';
+  *this << o->str;
 }
 
 void bi::CppBaseGenerator::visit(const IntegerLiteral* o) {
-  *this << "bi::make_int(" << o->str << ')';
+  *this << o->str;
 }
 
 void bi::CppBaseGenerator::visit(const RealLiteral* o) {
-  *this << "bi::make_real(" << o->str << ')';
+  *this << o->str;
 }
 
 void bi::CppBaseGenerator::visit(const StringLiteral* o) {
-  *this << "bi::make_string(" << o->str << ')';
+  *this << o->str;
 }
 
 void bi::CppBaseGenerator::visit(const Name* o) {
@@ -137,7 +137,6 @@ void bi::CppBaseGenerator::visit(const FuncReference* o) {
     //}
   } else if (o->isBinary() && isTranslatable(o->name->str())
       && !o->target->parens->isRich()) {
-    //if (arg1->isPrimary()) {
     middle(o->getLeft());
     middle(' ' << translate(o->name->str()) << ' ');
     middle(o->getRight());
@@ -207,14 +206,24 @@ void bi::CppBaseGenerator::visit(const FuncReference* o) {
 }
 
 void bi::CppBaseGenerator::visit(const ModelReference* o) {
-  if (!o->assignable && !inArray) {
-    middle("const ");
-  }
-  middle("bi::model::" << o->name);
-  if (inArray) {
-    middle("<bi::HeapGroup>");
+  if (o->builtin() && !inArray) {
+    if (*o->name == "Boolean") {
+      middle("unsigned char");
+    } else if (*o->name == "Real64" || *o->name == "Real") {
+      middle("double");
+    } else if (*o->name == "Real32") {
+      middle("float");
+    } else if (*o->name == "Integer64" || *o->name == "Integer") {
+      middle("int64_t");
+    } else if (*o->name == "Integer32") {
+      middle("int32_t");
+    } else if (*o->name == "String") {
+      middle("std::string");
+    } else {
+      assert(false);
+    }
   } else {
-    middle("<>");
+    middle("bi::model::" << o->name << "<>");
   }
 }
 
@@ -250,11 +259,11 @@ void bi::CppBaseGenerator::visit(const ExpressionStatement* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Conditional* o) {
-  line("if (static_cast<unsigned char>" << o->cond << ") {");
+  line("if " << o->cond << " {");
   in();
   *this << o->braces;
   out();
-  if (o->falseBraces->isEmpty()) {
+  if (!o->falseBraces->isEmpty()) {
     line("} else {");
     in();
     *this << o->falseBraces;
@@ -264,7 +273,7 @@ void bi::CppBaseGenerator::visit(const Conditional* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Loop* o) {
-  line("while (static_cast<unsigned char>" << o->cond << ") {");
+  line("while " << o->cond << " {");
   in();
   *this << o->braces;
   out();
@@ -305,7 +314,7 @@ void bi::CppBaseGenerator::visit(const ParenthesesType* o) {
 
 void bi::CppBaseGenerator::visit(const RandomType* o) {
   inArray = true;
-  middle("bi::Random<" << o->left << ',' << o->right << ",bi::HeapGroup>");
+  middle("bi::Random<" << o->left << ',' << o->right << '>');
   inArray = false;
 }
 

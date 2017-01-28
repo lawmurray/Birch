@@ -81,22 +81,14 @@ void bi::CppFileGenerator::visit(const FuncParameter* o) {
 
     if (header) {
       line("namespace bi {");
-      //if (!op) {
-      //  in();
-      //  line("namespace function {");
-      //  out();
-      //}
     }
 
-    /* type */
+    /* return type */
     start(o->type << ' ');
 
     /* name */
     if (!header) {
       middle("bi::");
-      //if (!op) {
-      //  middle("function::");
-      //}
     }
     if ((o->isBinary() || o->isUnary()) && isTranslatable(o->name->str())
         && !o->parens->isRich()) {
@@ -152,7 +144,7 @@ void bi::CppFileGenerator::visit(const ModelParameter* o) {
       in();
       line("namespace model {");
       out();
-      line("template<class Group = StackGroup>");
+      line("template<class Group = MemoryGroup>");
       line("using " << o->name << " = " << base->name << "<Group>;");
       in();
       line("}");
@@ -274,13 +266,13 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
         if (typeid(*type) == typeid(ModelReference)) {
           std::string typeName = dynamic_cast<const ModelReference*>(type)->name->str();
           if (typeName.compare("Boolean") == 0) {
-            middle("bi::make_bool(atoi(optarg))");
+            middle("atoi(optarg)");
           } else if (typeName.compare("Integer") == 0) {
-            middle("bi::make_int(atoi(optarg))");
+            middle("atoi(optarg)");
           } else if (typeName.compare("Real") == 0) {
-            middle("bi::make_real(atof(optarg))");
+            middle("atof(optarg)");
           } else if (typeName.compare("String") == 0) {
-            middle("bi::make_string(optarg)");
+            middle("optarg");
           } else {
             throw UnsupportedOptionTypeException(type);
           }

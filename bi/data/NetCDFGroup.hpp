@@ -20,9 +20,6 @@ namespace bi {
  */
 class NetCDFGroup {
 public:
-  typedef NetCDFGroup child_group_type;
-  typedef NetCDFGroup array_group_type;
-
   /**
    * Construct as top-level NetCDF file.
    *

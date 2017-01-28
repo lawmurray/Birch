@@ -59,6 +59,37 @@ public:
   }
 
   /**
+   * Copy constructor.
+   *
+   * @param o Object.
+   * @param offset Offset into the underlying buffer of @p o.
+   */
+  Array(const Array<Value,Frame>& o) :
+      value(o.value, o.frame),
+      frame(o.frame) {
+    //
+  }
+
+  /**
+   * Generic copy constructor.
+   */
+  template<class Frame1>
+  Array(Array<Value,Frame1>& o) :
+      value(o.value, o.frame),
+      frame(o.frame) {
+    //
+  }
+
+  /**
+   * Move constructor.
+   */
+  Array(Array<Value,Frame> && o) :
+      value(o.value),
+      frame(o.frame) {
+    //
+  }
+
+  /**
    * View constructor.
    *
    * @tparam Frame1 Frame type.
@@ -76,37 +107,6 @@ public:
   }
 
   /**
-   * Shallow copy constructor.
-   *
-   * @param o Object.
-   * @param offset Offset into the underlying buffer of @p o.
-   */
-  Array(const Array<Value,Frame>& o) :
-      value(o.value),
-      frame(o.frame) {
-    //
-  }
-
-  /**
-   * Generic shallow copy constructor.
-   */
-  template<class Frame1>
-  Array(Array<Value,Frame1>& o) :
-      value(o.value),
-      frame(o.frame) {
-    //
-  }
-
-  /**
-   * Move constructor.
-   */
-  Array(Array<Value,Frame> && o) :
-      value(o.value),
-      frame(o.frame) {
-    //
-  }
-
-  /**
    * Destructor.
    */
   ~Array() {
@@ -114,18 +114,36 @@ public:
   }
 
   /**
-   * Deep assignment. The frames of the two arrays must conform.
+   * Copy assignment. The frames of the two arrays must conform.
    */
   Array<Value,Frame>& operator=(const Array<Value,Frame>& o) {
+    /* pre-condition */
+    assert(frame.conforms(o.frame));
+
     copy(*this, o);
     return *this;
   }
 
   /**
-   * Generic deep assignment. The frames of the two arrays must conform.
+   * Move assignment. The frames of the two arrays must conform.
+   */
+  Array<Value,Frame>& operator=(Array<Value,Frame>&& o) {
+    /* pre-condition */
+    assert(frame.conforms(o.frame));
+
+    std::swap(value, o.value);
+    std::swap(frame, o.frame);
+    return *this;
+  }
+
+  /**
+   * Generic assignment. The frames of the two arrays must conform.
    */
   template<class Value1, class Frame1>
   Array<Value,Frame>& operator=(const Array<Value1,Frame1>& o) {
+    /* pre-condition */
+    assert(frame.conforms(o.frame));
+
     copy(*this, o);
     return *this;
   }
@@ -143,6 +161,9 @@ public:
   auto operator()(const View1& view) {
     return viewReturn(value(frame, view), frame(view));
   }
+  auto& operator()(const EmptyView& view) {
+    return value;
+  }
 
   /**
    * View operator.
@@ -150,6 +171,9 @@ public:
   template<class View1>
   auto operator()(const View1& view) const {
     return viewReturn(value(frame, view), frame(view));
+  }
+  auto& operator()(const EmptyView& view) const {
+    return value;
   }
 
   /**
@@ -302,7 +326,7 @@ public:
     return Array<Value1,Frame1>(value, frame);
   }
   template<class Value1>
-  auto viewReturn(const Value1& value, const EmptyFrame& frame) const {
+  auto& viewReturn(const Value1& value, const EmptyFrame& frame) const {
     return value;
   }
 };

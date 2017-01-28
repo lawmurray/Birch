@@ -6,6 +6,7 @@
 #pragma once
 
 #include "bi/random/Random.hpp"
+#include "bi/data/MemoryPrimitiveValue.hpp"
 
 namespace bi {
 /**
@@ -32,6 +33,9 @@ struct cast_impl {
   //
 };
 
+/**
+ * Cast to derived type.
+ */
 template<class To, class From>
 struct cast_impl<To,From,false,false> {
   static To eval(From&& o) {
@@ -39,6 +43,20 @@ struct cast_impl<To,From,false,false> {
   }
 };
 
+/**
+ * Cast to built-in type.
+ */
+template<class From>
+struct cast_impl<const double&,From,false,false> {
+  static const double& eval(From&& o) {
+    return static_cast<const double&>(o);
+  }
+};
+
+/**
+ * Cast random to random (probably to the same type, but need to check if the
+ * random variable is eligible).
+ */
 template<class To, class From>
 struct cast_impl<To,From,true,true> {
   static To eval(From&& o) {
@@ -50,12 +68,27 @@ struct cast_impl<To,From,true,true> {
   }
 };
 
+/**
+ * Cast random to non-random.
+ */
 template<class To, class From>
 struct cast_impl<To,From,false,true> {
   static To eval(From&& o) {
     return static_cast<To>(o);
   }
 };
+
+/**
+ * Cast random to built-in type.
+ */
+template<class From>
+struct cast_impl<const double&,From,false,true> {
+  static const double& eval(From&& o) {
+    typedef typename std::decay<From>::type::group_type group_type;
+    return static_cast<const double&>(static_cast<PrimitiveValue<double,group_type>>(o));
+  }
+};
+
 
 /**
  * Cast object for multiple dispatch.

@@ -76,7 +76,6 @@ birchc_SOURCES = \
   bi/io/cpp/CppDispatcherGenerator.cpp \
   bi/io/cpp/CppFileGenerator.cpp \
   bi/io/cpp/CppModelGenerator.cpp \
-  bi/io/cpp/CppMoveConstructorGenerator.cpp \
   bi/io/cpp/CppOutputGenerator.cpp \
   bi/io/cpp/CppParameterGenerator.cpp \
   bi/io/cpp/CppReturnGenerator.cpp \
@@ -141,15 +140,11 @@ libbirch_la_SOURCES = \
   bi/data/copy.cpp \
   bi/data/group.cpp \
   bi/data/netcdf.cpp \
-  bi/data/HeapGroup.cpp \
-  bi/data/HeapPrimitiveValue.cpp \
+  bi/data/MemoryGroup.cpp \
+  bi/data/MemoryPrimitiveValue.cpp \
   bi/data/NetCDFGroup.cpp \
   bi/data/NetCDFPrimitiveValue.cpp \
   bi/data/NetCDFView.cpp \
-  bi/data/RefGroup.cpp \
-  bi/data/RefPrimitiveValue.cpp \
-  bi/data/StackGroup.cpp \
-  bi/data/StackPrimitiveValue.cpp \
   bi/exception/Exception.cpp \
   bi/exception/MemoryException.cpp \
   bi/exception/NetCDFException.cpp \
@@ -165,8 +160,8 @@ nobase_include_HEADERS = bi/data/Array.hpp \
   bi/data/easy.hpp \
   bi/data/group.hpp \
   bi/data/Frame.hpp \
-  bi/data/HeapGroup.hpp \
-  bi/data/HeapPrimitiveValue.hpp \
+  bi/data/MemoryGroup.hpp \
+  bi/data/MemoryPrimitiveValue.hpp \
   bi/data/Index.hpp \
   bi/data/Iterator.hpp \
   bi/data/Lead.hpp \
@@ -179,8 +174,6 @@ nobase_include_HEADERS = bi/data/Array.hpp \
   bi/data/PrimitiveValue.hpp \
   bi/data/Range.hpp \
   bi/data/Span.hpp \
-  bi/data/StackGroup.hpp \
-  bi/data/StackPrimitiveValue.hpp \
   bi/data/Stride.hpp \
   bi/data/View.hpp \
   bi/exception/Exception.hpp \

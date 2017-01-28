@@ -13,12 +13,11 @@ bi::CppCopyConstructorGenerator::CppCopyConstructorGenerator(
 
 void bi::CppCopyConstructorGenerator::visit(const ModelParameter* o) {
   if (header) {
-    /* default copy constructor */
-    line(o->name->str() << "(const " << o->name->str() << "<Group>& o) = default;\n");
-
-    /* generic copy constructor */
-    line("template<class Group1>");
-    start(o->name->str() << "(const " << o->name->str() << "<Group1>& o)");
+    line("template<class Frame>");
+    start(o->name->str() << "(const " << o->name->str() << "<Group>& o");
+    middle(", const Frame& frame = EmptyFrame()");
+    middle(", const char* name = nullptr");
+    middle(", const MemoryGroup& group = MemoryGroup())");
 
     Gatherer<VarDeclaration> gatherer;
     o->braces->accept(&gatherer);
@@ -28,7 +27,7 @@ void bi::CppCopyConstructorGenerator::visit(const ModelParameter* o) {
       in();
       in();
       if (!o->base->isEmpty()) {
-        finish("base_type(o)");
+        finish("base_type(o, frame, name, group)");
       }
       for (auto iter = gatherer.gathered.begin();
           iter != gatherer.gathered.end(); ++iter) {
@@ -49,5 +48,5 @@ void bi::CppCopyConstructorGenerator::visit(const ModelParameter* o) {
 }
 
 void bi::CppCopyConstructorGenerator::visit(const VarDeclaration* o) {
-  start(o->param->name->str() << "(o." << o->param->name->str() << ")");
+  start(o->param->name->str() << "(o." << o->param->name->str() << ", frame, name, group)");
 }

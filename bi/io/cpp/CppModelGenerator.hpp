@@ -20,12 +20,9 @@ public:
   virtual void visit(const ModelParameter* o);
   virtual void visit(const ModelReference* o);
   virtual void visit(const BracketsType* o);
-
   virtual void visit(const VarDeclaration* o);
   virtual void visit(const VarParameter* o);
   virtual void visit(const FuncParameter* o);
-
-  virtual void visit(const Raw* o);
 
 protected:
   /**

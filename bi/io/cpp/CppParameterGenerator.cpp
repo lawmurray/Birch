@@ -10,6 +10,9 @@ bi::CppParameterGenerator::CppParameterGenerator(std::ostream& base,
 }
 
 void bi::CppParameterGenerator::visit(const VarParameter* o) {
+  if (!o->type->assignable && !inArray) {
+    middle("const ");
+  }
   middle(o->type << "& " << o->name);
   if (!o->value->isEmpty()) {
     middle(" = " << o->value);

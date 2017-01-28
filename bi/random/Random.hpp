@@ -21,15 +21,12 @@ namespace bi {
  * Birch code. Eventually it may be possible to implement it directly in
  * Birch, but for now generics are required.
  */
-template<class Variate, class Model, class Group = StackGroup>
+template<class Variate, class Model, class Group = MemoryGroup>
 class Random: public virtual Expirable {
 public:
   typedef Group group_type;
   typedef std::function<void()> pull_type;
   typedef std::function<void()> push_type;
-
-  template<class Group1>
-  using regroup_type = Random<Variate,Model,Group1>;
 
   /**
    * Constructor.
@@ -67,30 +64,42 @@ public:
   virtual ~Random();
 
   /**
-   * Assignment operator.
+   * Copy assignment.
    */
   Random<Variate,Model,Group>& operator=(const Random<Variate,Model,Group>& o) = default;
 
   /**
-   * Assign variate.
+   * Move assignment.
    */
-  template<class Group1>
-  Random<Variate,Model,Group>& operator=(
-      const typename Variate::template regroup_type<Group1>& o);
+  Random<Variate,Model,Group>& operator=(Random<Variate,Model,Group>&& o) = default;
 
   /**
-   * Assign model.
+   * Variate copy assignment.
    */
-  template<class Group1>
-  Random<Variate,Model,Group>& operator=(
-      const typename Model::template regroup_type<Group1>& o);
+  Random<Variate,Model,Group>& operator=(const Variate& o) {
+    x = o;
+  }
 
   /**
-   * View operator.
+   * Variate move assignment.
    */
-  template<class Frame, class View>
-  Random<Variate,Model,Group> operator()(const Frame& frame,
-      const View& view) const;
+  Random<Variate,Model,Group>& operator=(Variate&& o) {
+    x = o;
+  }
+
+  /**
+   * Model copy assignment.
+   */
+  Random<Variate,Model,Group>& operator=(const Model& o) {
+    m = o;
+  }
+
+  /**
+   * Model move assignment.
+   */
+  Random<Variate,Model,Group>& operator=(Model&& o) {
+    m = o;
+  }
 
   /**
    * Cast to variate type.
@@ -102,17 +111,16 @@ public:
    */
   operator Model&();
 
-  /**
-   * Generic cast to variate type.
-   */
-  template<class Group1>
-  operator typename Variate::template regroup_type<Group1>() const;
+  operator double&() {
+    return static_cast<double&>(static_cast<PrimitiveValue<double,Group>&>(*this));
+  }
 
   /**
-   * Generic cast to filtered distribution type.
+   * View operator.
    */
-  template<class Group1>
-  operator typename Model::template regroup_type<Group1>() const;
+  template<class Frame, class View>
+  Random<Variate,Model,Group> operator()(const Frame& frame,
+      const View& view) const;
 
   /**
    * Initialise.
@@ -155,22 +163,22 @@ private:
   /**
    * Pull lambda.
    */
-  bi::model::Lambda<typename Group::child_group_type> pull;
+  bi::model::Lambda<Group> pull;
 
   /**
    * Push lambda.
    */
-  bi::model::Lambda<typename Group::child_group_type> push;
+  bi::model::Lambda<Group> push;
 
   /**
    * Position in random variable stack.
    */
-  bi::model::Integer32<typename Group::child_group_type> pos;
+  bi::model::Integer32<Group> pos;
 
   /**
    * Is the variate missing?
    */
-  bi::model::Boolean<typename Group::child_group_type> missing;
+  bi::model::Boolean<Group> missing;
 };
 }
 
@@ -221,27 +229,6 @@ bi::Random<Variate,Model,Group>::~Random() {
 }
 
 template<class Variate, class Model, class Group>
-template<class Group1>
-bi::Random<Variate,Model,Group>& bi::Random<Variate,Model,Group>::operator=(
-    const typename Variate::template regroup_type<Group1>& o) {
-  x = o;
-  missing = false;
-
-  return *this;
-}
-
-template<class Variate, class Model, class Group>
-template<class Group1>
-bi::Random<Variate,Model,Group>& bi::Random<Variate,Model,Group>::operator=(
-    const typename Model::template regroup_type<Group1>& o) {
-  /* pre-condition */
-  assert(isMissing());
-
-  m = o;
-  return *this;
-}
-
-template<class Variate, class Model, class Group>
 template<class Frame, class View>
 bi::Random<Variate,Model,Group> bi::Random<Variate,Model,Group>::operator()(
     const Frame& frame, const View& view) const {
@@ -259,26 +246,6 @@ bi::Random<Variate,Model,Group>::operator Variate&() {
 
 template<class Variate, class Model, class Group>
 bi::Random<Variate,Model,Group>::operator Model&() {
-  if (!isMissing()) {
-    throw std::bad_cast();
-  }
-  return m;
-}
-
-template<class Variate, class Model, class Group>
-template<class Group1>
-bi::Random<Variate,Model,Group>::operator typename Variate::template regroup_type<Group1>() const {
-  if (isMissing()) {
-    randomStack.pop(pos);
-  }
-  assert(!isMissing());
-
-  return x;
-}
-
-template<class Variate, class Model, class Group>
-template<class Group1>
-bi::Random<Variate,Model,Group>::operator typename Model::template regroup_type<Group1>() const {
   if (!isMissing()) {
     throw std::bad_cast();
   }
