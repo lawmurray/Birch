@@ -25,6 +25,7 @@ template<class Variate, class Model, class Group = MemoryGroup>
 class Random: public virtual Expirable {
 public:
   typedef Group group_type;
+  typedef Random<Variate,Model,Group> value_type;
   typedef std::function<void()> pull_type;
   typedef std::function<void()> push_type;
 
@@ -104,16 +105,12 @@ public:
   /**
    * Cast to variate type.
    */
-  operator Variate&();
+  operator typename Variate::value_type&();
 
   /**
    * Cast to filtered distribution type.
    */
   operator Model&();
-
-  operator double&() {
-    return static_cast<double&>(static_cast<PrimitiveValue<double,Group>&>(*this));
-  }
 
   /**
    * View operator.
@@ -236,7 +233,7 @@ bi::Random<Variate,Model,Group> bi::Random<Variate,Model,Group>::operator()(
 }
 
 template<class Variate, class Model, class Group>
-bi::Random<Variate,Model,Group>::operator Variate&() {
+bi::Random<Variate,Model,Group>::operator typename Variate::value_type&() {
   if (isMissing()) {
     randomStack.pop(pos);
   }

@@ -9,59 +9,92 @@
 #include "bi/data/MemoryPrimitiveValue.hpp"
 
 namespace bi {
-/**
- * @internal
- */
+enum TypeFlag {
+  IS_PRIMITIVE, IS_MODEL, IS_RANDOM
+};
+
 template<class T>
-struct is_random {
-  static const bool value = false;
+struct type_flag {
+  static const TypeFlag value =
+      std::is_class<T>::value ? IS_MODEL : IS_PRIMITIVE;
 };
 
-/**
- * @internal
- */
 template<class Variate, class Model, class Group>
-struct is_random<Random<Variate,Model,Group>> {
-  static const bool value = true;
+struct type_flag<Random<Variate,Model,Group>> {
+  static const TypeFlag value = IS_RANDOM;
 };
 
 /**
- * @internal
+ * Cast.
  */
-template<class To, class From, bool random_to, bool random_from>
+template<class To, class From, TypeFlag to_flag, TypeFlag from_flag>
 struct cast_impl {
-  //
+  static To eval(From&& o) {
+    throw std::bad_cast();
+  }
 };
 
-/**
- * Cast to derived type.
- */
 template<class To, class From>
-struct cast_impl<To,From,false,false> {
+struct cast_impl<To,From,IS_PRIMITIVE,IS_PRIMITIVE> {
+  static To eval(From&& o) {
+    return static_cast<To>(o);
+  }
+};
+
+template<class To, class From>
+struct cast_impl<To,From,IS_PRIMITIVE,IS_MODEL> {
+  static To eval(From&& o) {
+    return static_cast<To>(o);
+  }
+};
+
+template<class To, class From>
+struct cast_impl<To,From,IS_PRIMITIVE,IS_RANDOM> {
+  static To eval(From&& o) {
+    return static_cast<To>(o);
+  }
+};
+
+template<class To, class From>
+struct cast_impl<To,From,IS_MODEL,IS_PRIMITIVE> {
+  static To eval(From&& o) {
+    return std::bad_cast();
+  }
+};
+
+template<class To, class From>
+struct cast_impl<To,From,IS_MODEL,IS_MODEL> {
   static To eval(From&& o) {
     return dynamic_cast<To>(o);
   }
 };
 
-/**
- * Cast to built-in type.
- */
-template<class From>
-struct cast_impl<const double&,From,false,false> {
-  static const double& eval(From&& o) {
-    return static_cast<const double&>(o);
+template<class To, class From>
+struct cast_impl<To,From,IS_MODEL,IS_RANDOM> {
+  static To eval(From&& o) {
+    return static_cast<To>(o);
   }
 };
 
-/**
- * Cast random to random (probably to the same type, but need to check if the
- * random variable is eligible).
- */
 template<class To, class From>
-struct cast_impl<To,From,true,true> {
+struct cast_impl<To,From,IS_RANDOM,IS_PRIMITIVE> {
+  static To eval(From&& o) {
+    throw std::bad_cast();
+  }
+};
+
+template<class To, class From>
+struct cast_impl<To,From,IS_RANDOM,IS_MODEL> {
+  static To eval(From&& o) {
+    throw std::bad_cast();
+  }
+};
+
+template<class To, class From>
+struct cast_impl<To,From,IS_RANDOM,IS_RANDOM> {
   static To eval(From&& o) {
     if (o.isMissing()) {
-      return o;
+      return dynamic_cast<To>(o);
     } else {
       throw std::bad_cast();
     }
@@ -69,34 +102,14 @@ struct cast_impl<To,From,true,true> {
 };
 
 /**
- * Cast random to non-random.
- */
-template<class To, class From>
-struct cast_impl<To,From,false,true> {
-  static To eval(From&& o) {
-    return static_cast<To>(o);
-  }
-};
-
-/**
- * Cast random to built-in type.
- */
-template<class From>
-struct cast_impl<const double&,From,false,true> {
-  static const double& eval(From&& o) {
-    typedef typename std::decay<From>::type::group_type group_type;
-    return static_cast<const double&>(static_cast<PrimitiveValue<double,group_type>>(o));
-  }
-};
-
-
-/**
- * Cast object for multiple dispatch.
+ * Cast.
  */
 template<class To, class From>
 inline To cast(From&& o) {
-  static constexpr bool random_to = is_random<typename std::decay<To>::type>::value;
-  static constexpr bool random_from = is_random<typename std::decay<From>::type>::value;
-  return cast_impl<To,From,random_to,random_from>::eval(o);
+  static constexpr TypeFlag to_flag =
+      type_flag<typename std::decay<To>::type>::value;
+  static constexpr TypeFlag from_flag = type_flag<
+      typename std::decay<From>::type>::value;
+  return cast_impl<To,From,to_flag,from_flag>::eval(o);
 }
 }

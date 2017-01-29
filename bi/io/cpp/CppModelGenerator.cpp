@@ -39,6 +39,7 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
       line("public:");
       in();
       line("typedef Group group_type;");
+      line("typedef " << o->name << "<Group> value_type;");
       if (!o->base->isEmpty()) {
         line("typedef " << o->base << " base_type;");
       }

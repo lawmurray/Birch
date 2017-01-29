@@ -17,6 +17,7 @@ template<class Type>
 class PrimitiveValue<Type,MemoryGroup> {
 public:
   typedef MemoryGroup group_type;
+  typedef Type value_type;
 
   /**
    * Constructor.
