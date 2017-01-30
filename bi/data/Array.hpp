@@ -318,15 +318,19 @@ public:
   Frame frame;
 
   /**
-   * View return.
+   * Return value of view when result is an array.
    */
   template<class View1, class Frame1>
   auto viewReturn(const View1& view, const Frame1& frame) const {
-    return Array<decltype(value(frame, view)),Frame1>(value(frame, view), frame);
+    return Array<decltype(value(this->frame, view)),Frame1>(value(this->frame, view), frame);
   }
+
+  /**
+   * Return value of view when result is a scalar.
+   */
   template<class View1>
   auto viewReturn(const View1& view, const EmptyFrame& frame) const {
-    return value(frame, view);
+    return value(this->frame, view);
   }
 };
 

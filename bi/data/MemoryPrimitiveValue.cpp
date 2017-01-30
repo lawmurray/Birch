@@ -12,18 +12,18 @@ bi::PrimitiveValue<Type,bi::MemoryGroup>::PrimitiveValue(
 }
 
 template<class Type>
+bi::PrimitiveValue<Type,bi::MemoryGroup>::PrimitiveValue(const Type& value) :
+    own(true) {
+  this->group.create(*this, value);
+}
+
+template<class Type>
 bi::PrimitiveValue<Type,bi::MemoryGroup>::PrimitiveValue(
     const PrimitiveValue<Type,MemoryGroup>& o) :
     group(o.group),
     own(true) {
   this->group.create(*this);
   *this = o;
-}
-
-template<class Type>
-bi::PrimitiveValue<Type,bi::MemoryGroup>::PrimitiveValue(const Type& value) :
-    own(true) {
-  this->group.create(*this, value);
 }
 
 template<class Type>

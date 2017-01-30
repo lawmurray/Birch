@@ -176,7 +176,7 @@ auto make_view(const Index<offset_value>& arg, Args ... args) {
 
 template<class ... Args>
 auto make_view(const int_t arg, Args ... args) {
-  return make_view(make_view(arg), args...);
+  return make_view(make_index(arg), args...);
 }
 
 /*
