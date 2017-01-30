@@ -47,12 +47,5 @@ using Real32 = PrimitiveValue<float,Group>;
  */
 template<class Group>
 using String = PrimitiveValue<const char*,Group>;
-
-/**
- * Built-in lambda type.
- */
-template<class Group>
-using Lambda = PrimitiveValue<std::function<void()>,Group>;
-
   }
 }

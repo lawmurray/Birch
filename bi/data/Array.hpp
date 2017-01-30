@@ -159,7 +159,7 @@ public:
    */
   template<class View1>
   auto operator()(const View1& view) {
-    return viewReturn(value(frame, view), frame(view));
+    return viewReturn(view, frame(view));
   }
   auto& operator()(const EmptyView& view) {
     return value;
@@ -170,7 +170,7 @@ public:
    */
   template<class View1>
   auto operator()(const View1& view) const {
-    return viewReturn(value(frame, view), frame(view));
+    return viewReturn(view, frame(view));
   }
   auto& operator()(const EmptyView& view) const {
     return value;
@@ -271,7 +271,6 @@ public:
 
   /**
    * @name Iteration
-   *
    */
   //@{
   /**
@@ -321,13 +320,13 @@ public:
   /**
    * View return.
    */
-  template<class Value1, class Frame1>
-  auto viewReturn(const Value1& value, const Frame1& frame) const {
-    return Array<Value1,Frame1>(value, frame);
+  template<class View1, class Frame1>
+  auto viewReturn(const View1& view, const Frame1& frame) const {
+    return Array<decltype(value(frame, view)),Frame1>(value(frame, view), frame);
   }
-  template<class Value1>
-  auto& viewReturn(const Value1& value, const EmptyFrame& frame) const {
-    return value;
+  template<class View1>
+  auto viewReturn(const View1& view, const EmptyFrame& frame) const {
+    return value(frame, view);
   }
 };
 

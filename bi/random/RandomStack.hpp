@@ -3,9 +3,8 @@
  */
 #pragma once
 
-#include "bi/random/Expirable.hpp"
-
 #include <stack>
+#include <functional>
 
 namespace bi {
 /**
@@ -14,13 +13,14 @@ namespace bi {
 class RandomStack {
 public:
   /**
+   * Lambda type.
+   */
+  typedef std::function<void()> lambda_type;
+
+  /**
    * Push a random variable onto the stack and return its position.
    */
-  template<class RandomType>
-  int push(RandomType* random) {
-    randoms.push(new RandomType(*random));
-    return randoms.size() - 1;
-  }
+  int push(const lambda_type& pull, const lambda_type& push);
 
   /**
    * Pop all random variables down to and including the given position on the
@@ -30,9 +30,14 @@ public:
 
 private:
   /**
-   * Stack of random variables.
+   * Stack of pull functions.
    */
-  std::stack<Expirable*> randoms;
+  std::stack<lambda_type> pulls;
+
+  /**
+   * Stack of push functions.
+   */
+  std::stack<lambda_type> pushes;
 };
 }
 

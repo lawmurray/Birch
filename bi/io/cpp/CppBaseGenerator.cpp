@@ -94,13 +94,15 @@ void bi::CppBaseGenerator::visit(const This* o) {
 }
 
 void bi::CppBaseGenerator::visit(const RandomInit* o) {
-  finish(o->left << ".init(" << o->right << ",");
+  middle(o->left << ".init(" << o->right << ", ");
   in();
   in();
   genCapture(o->left.get());
   finish("() {");
   in();
-  line(o->left << ".x = sim_(" << o->left << ".m);");
+  line(o->left << " = sim_(" << o->left << ".m);");
+  // don't assign directly to .x here, as rv needs to update its missing
+  // state too
   out();
   start("}, ");
   genCapture(o->push.get());

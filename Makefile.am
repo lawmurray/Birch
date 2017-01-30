@@ -149,7 +149,6 @@ libbirch_la_SOURCES = \
   bi/exception/MemoryException.cpp \
   bi/exception/NetCDFException.cpp \
   bi/exception/UnknownOptionException.cpp \
-  bi/random/Expirable.cpp \
   bi/random/RandomStack.cpp
 libbirch_la_CXXFLAGS = $(AM_CXXFLAGS)
 
@@ -183,7 +182,6 @@ nobase_include_HEADERS = bi/data/Array.hpp \
   bi/primitive/cast.hpp \
   bi/primitive/shared_ptr.hpp \
   bi/primitive/unique_ptr.hpp \
-  bi/random/Expirable.hpp \
   bi/random/Random.hpp \
   bi/random/RandomStack.hpp \
   bi/bi.hpp
