@@ -8,13 +8,11 @@
 #include <typeinfo>
 
 bi::FuncReference::FuncReference(shared_ptr<Name> name, Expression* parens,
-    const FunctionForm form, shared_ptr<Location> loc,
-    FuncParameter* target) :
+    const FunctionForm form, shared_ptr<Location> loc, FuncParameter* target) :
     Expression(loc),
     Named(name),
     Reference<FuncParameter>(target),
-    Parenthesised(parens),
-    Formed(form) {
+    Formed(parens, form) {
   //
 }
 
@@ -23,8 +21,8 @@ bi::FuncReference::FuncReference(Expression* left, shared_ptr<Name> name,
     Expression(loc),
     Named(name),
     Reference<FuncParameter>(target),
-    Parenthesised(new ParenthesesExpression(new ExpressionList(left, right))),
-    Formed(BINARY_OPERATOR) {
+    Formed(new ParenthesesExpression(new ExpressionList(left, right)),
+        BINARY_OPERATOR) {
   //
 }
 
@@ -49,7 +47,8 @@ bi::possibly bi::FuncReference::dispatch(Expression& o) {
 }
 
 bi::possibly bi::FuncReference::le(FuncReference& o) {
-  return *parens <= *o.parens && possibly(target != nullptr) && possibly(target == o.target);
+  return *parens <= *o.parens && possibly(target != nullptr)
+      && possibly(target == o.target);
 }
 
 bi::possibly bi::FuncReference::le(FuncParameter& o) {

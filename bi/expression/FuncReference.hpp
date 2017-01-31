@@ -8,7 +8,6 @@
 #include "bi/common/Named.hpp"
 #include "bi/common/Numbered.hpp"
 #include "bi/common/Reference.hpp"
-#include "bi/common/Parenthesised.hpp"
 #include "bi/common/Formed.hpp"
 #include "bi/expression/VarParameter.hpp"
 
@@ -24,7 +23,6 @@ class FuncReference: public Expression,
     public Named,
     public Numbered,
     public Reference<FuncParameter>,
-    public Parenthesised,
     public Formed {
 public:
   /**

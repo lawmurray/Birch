@@ -14,27 +14,3 @@ bi::Parenthesised::Parenthesised(Expression* parens) :
 bi::Parenthesised::~Parenthesised() {
   //
 }
-
-const bi::Expression* bi::Parenthesised::getLeft() const {
-  ExpressionList* expr = dynamic_cast<ExpressionList*>(parens->strip());
-  assert(expr);
-  return expr->head.get();
-}
-
-const bi::Expression* bi::Parenthesised::getRight() const {
-  ExpressionList* expr = dynamic_cast<ExpressionList*>(parens->strip());
-  assert(expr);
-  return expr->tail.get();
-}
-
-bi::Expression* bi::Parenthesised::releaseLeft() {
-  ExpressionList* expr = dynamic_cast<ExpressionList*>(parens->strip());
-  assert(expr);
-  return expr->head.release();
-}
-
-bi::Expression* bi::Parenthesised::releaseRight() {
-  ExpressionList* expr = dynamic_cast<ExpressionList*>(parens->strip());
-  assert(expr);
-  return expr->tail.release();
-}

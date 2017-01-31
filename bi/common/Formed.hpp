@@ -3,6 +3,8 @@
  */
 #pragma once
 
+#include "bi/common/Parenthesised.hpp"
+
 namespace bi {
 /**
  * Function form flags.
@@ -17,15 +19,15 @@ enum FunctionForm {
  *
  * @ingroup compiler_expression
  */
-class Formed {
+class Formed : public Parenthesised {
 public:
   /**
    * Constructor.
    *
-   * @param op Operator giving relation to base type.
-   * @param base Base type.
+   * @param parens Parentheses.
+   * @param form Function form.
    */
-  Formed(const FunctionForm form);
+  Formed(Expression* parens, const FunctionForm form);
 
   /**
    * Destructor.
@@ -51,6 +53,18 @@ public:
    * Is this a constructor?
    */
   bool isConstructor() const;
+
+  /**
+   * If these parentheses were constructed for a binary operator, get the
+   * left operand. Otherwise undefined.
+   */
+  const Expression* getLeft() const;
+
+  /**
+   * If these parentheses were constructed for a binary or unary operator,
+   * get the right operand. Otherwise undefined.
+   */
+  const Expression* getRight() const;
 
   /**
    * Form.

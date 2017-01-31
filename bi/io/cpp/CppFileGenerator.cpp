@@ -75,10 +75,6 @@ void bi::CppFileGenerator::visit(const VarDeclaration* o) {
 
 void bi::CppFileGenerator::visit(const FuncParameter* o) {
   if (!o->braces->isEmpty()) {
-    bool op = (o->isUnary() || o->isBinary())
-        && isTranslatable(o->name->str());
-    // ^ prefix and infix operators go in bi namespace, not bi::function
-
     if (header) {
       line("namespace bi {");
     }
@@ -125,11 +121,6 @@ void bi::CppFileGenerator::visit(const FuncParameter* o) {
       finish("}\n");
     }
     if (header) {
-      //if (!op) {
-      //  in();
-      //  line("}");
-      //  out();
-      //}
       line("}\n");
     }
   }

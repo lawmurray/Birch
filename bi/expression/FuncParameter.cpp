@@ -14,8 +14,7 @@ bi::FuncParameter::FuncParameter(shared_ptr<Name> name, Expression* parens,
     Expression(loc),
     Named(name),
     Braced(braces),
-    Parenthesised(parens),
-    Formed(form),
+    Formed(parens, form),
     result(result) {
   this->arg = this;
   this->mangled = new Name(mangle(this));

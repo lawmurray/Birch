@@ -144,9 +144,7 @@ void bi::CppBaseGenerator::visit(const FuncReference* o) {
     middle(o->getRight());
   } else if (o->isUnary() && isTranslatable(o->name->str())
       && !o->target->parens->isRich()) {
-    assert(o->args.size() == 1);
-    auto iter = o->args.begin();
-    middle(translate(o->name->str()) << ' ' << *iter);
+    middle(translate(o->name->str()) << ' ' << o->getRight());
   } else if (o->alternatives.size() == 1) {
     auto iter = o->alternatives.begin();
     middle("dispatch_" << (*iter)->number << "_(");

@@ -50,7 +50,7 @@ typedef Unary<Expression> ExpressionUnary;
 typedef Unary<Statement> StatementUnary;
 
 /**
- * Type unnary.
+ * Type unary.
  *
  * @ingroup compiler_common
  */

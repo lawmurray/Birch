@@ -4,7 +4,6 @@
 #pragma once
 
 #include "bi/expression/Expression.hpp"
-#include "bi/common/Parenthesised.hpp"
 #include "bi/common/Braced.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Numbered.hpp"
@@ -26,7 +25,6 @@ class FuncParameter: public Expression,
     public Scoped,
     public Braced,
     public Parameter<Expression>,
-    public Parenthesised,
     public Formed {
 public:
   /**
@@ -40,8 +38,8 @@ public:
    * @param loc Location.
    */
   FuncParameter(shared_ptr<Name> name, Expression* parens, Expression* result,
-      Expression* braces, const FunctionForm form = FUNCTION, shared_ptr<Location> loc =
-          nullptr);
+      Expression* braces, const FunctionForm form = FUNCTION,
+      shared_ptr<Location> loc = nullptr);
 
   /**
    * Destructor.

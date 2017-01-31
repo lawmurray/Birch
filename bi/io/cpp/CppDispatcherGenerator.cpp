@@ -4,6 +4,7 @@
 #include "bi/io/cpp/CppDispatcherGenerator.hpp"
 
 #include "bi/io/cpp/CppParameterGenerator.hpp"
+#include "bi/io/cpp/misc.hpp"
 #include "bi/visitor/DispatchGatherer.hpp"
 #include "bi/visitor/Gatherer.hpp"
 
@@ -66,7 +67,15 @@ void bi::CppDispatcherGenerator::visit(const FuncParameter* o) {
   } else {
     finish(" {");
     in();
-    start("try { return bi::" << o->mangled << '(');
+    start("try { return bi::");
+    if ((o->isBinary() || o->isUnary()) && isTranslatable(o->name->str())
+        && !o->parens->isRich()) {
+      middle("operator" << translate(o->name->str()));
+    } else {
+      middle(o->mangled);
+    }
+    middle('(');
+
     for (auto iter = o->inputs.begin(); iter != o->inputs.end(); ++iter) {
       if (iter != o->inputs.begin()) {
         middle(", ");
