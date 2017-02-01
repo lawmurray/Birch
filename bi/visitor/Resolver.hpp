@@ -5,6 +5,7 @@
 
 #include "bi/visitor/Modifier.hpp"
 #include "bi/visitor/Cloner.hpp"
+#include "bi/visitor/Assigner.hpp"
 #include "bi/primitive/shared_ptr.hpp"
 
 #include <stack>
@@ -51,11 +52,10 @@ public:
   virtual Type* modify(ModelParameter* o);
 
   virtual Statement* modify(Import* o);
-  virtual Statement* modify(VarDeclaration* o);
   virtual Statement* modify(Conditional* o);
   virtual Statement* modify(Loop* o);
 
-  virtual Type* modify(RandomType* o);
+  virtual Type* modify(AssignableType* o);
 
 protected:
   /**
@@ -145,9 +145,10 @@ protected:
    */
   bool inInputs;
 
-  /**
+  /*
    * Auxiliary visitors.
    */
   Cloner cloner;
+  Assigner assigner;
 };
 }

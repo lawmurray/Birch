@@ -18,6 +18,14 @@ bi::ParenthesesType::~ParenthesesType() {
   //
 }
 
+bool bi::ParenthesesType::isBuiltin() const {
+  return single->isBuiltin();
+}
+
+bool bi::ParenthesesType::isModel() const {
+  return single->isModel();
+}
+
 bi::Type* bi::ParenthesesType::strip() {
   return single->strip();
 }
@@ -36,6 +44,14 @@ void bi::ParenthesesType::accept(Visitor* visitor) const {
 
 bi::possibly bi::ParenthesesType::dispatch(Type& o) {
   return o.le(*this) || single->dispatch(o);
+}
+
+bi::possibly bi::ParenthesesType::le(AssignableType& o) {
+  return *single <= *o.single;
+}
+
+bi::possibly bi::ParenthesesType::le(BracketsType& o) {
+  return *single <= o;
 }
 
 bi::possibly bi::ParenthesesType::le(EmptyType& o) {

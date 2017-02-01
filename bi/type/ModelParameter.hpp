@@ -35,8 +35,9 @@ public:
    * @param braces Braces.
    * @param loc Location.
    */
-  ModelParameter(shared_ptr<Name> name, Expression* parens, shared_ptr<Name> op,
-      Type* base, Expression* braces, shared_ptr<Location> loc = nullptr);
+  ModelParameter(shared_ptr<Name> name, Expression* parens,
+      shared_ptr<Name> op, Type* base, Expression* braces,
+      shared_ptr<Location> loc = nullptr);
 
   /**
    * Destructor.
@@ -47,7 +48,8 @@ public:
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
-  bool builtin() const;
+  bool isBuiltin() const;
+  bool isModel() const;
 
   /**
    * Constructor.
@@ -61,6 +63,8 @@ public:
 
   virtual possibly dispatch(Type& o);
   virtual possibly le(ModelParameter& o);
+  virtual possibly le(AssignableType& o);
+  virtual possibly le(ParenthesesType& o);
   virtual possibly le(EmptyType& o);
 };
 }

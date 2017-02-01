@@ -30,8 +30,8 @@ public:
    * @param target Target.
    */
   ModelReference(shared_ptr<Name> name, Expression* parens =
-      new EmptyExpression(),
-      shared_ptr<Location> loc = nullptr, ModelParameter* target = nullptr);
+      new EmptyExpression(), shared_ptr<Location> loc = nullptr,
+      ModelParameter* target = nullptr);
 
   /**
    * Constructor.
@@ -45,7 +45,8 @@ public:
    */
   virtual ~ModelReference();
 
-  virtual bool builtin() const;
+  virtual bool isBuiltin() const;
+  virtual bool isModel() const;
 
   /**
    * Does this model inherit from another?
@@ -59,6 +60,8 @@ public:
   virtual possibly dispatch(Type& o);
   virtual possibly le(ModelParameter& o);
   virtual possibly le(ModelReference& o);
+  virtual possibly le(ParenthesesType& o);
+  virtual possibly le(AssignableType& o);
   virtual possibly le(EmptyType& o);
 };
 }

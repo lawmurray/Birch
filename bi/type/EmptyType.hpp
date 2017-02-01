@@ -33,5 +33,7 @@ public:
 
   virtual possibly dispatch(Type& o);
   virtual possibly le(EmptyType& o);
+  virtual possibly le(AssignableType& o);
+  virtual possibly le(ParenthesesType& o);
 };
 }

@@ -27,7 +27,7 @@ void bi::CppModelGenerator::visit(const Name* o) {
 
 void bi::CppModelGenerator::visit(const ModelParameter* o) {
   model = o;
-  if (!o->builtin()) {
+  if (!o->isBuiltin()) {
     /* start boilerplate */
     if (header) {
       line("template<class Group = MemoryGroup>");

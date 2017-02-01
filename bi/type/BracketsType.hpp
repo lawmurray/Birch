@@ -14,9 +14,7 @@ namespace bi {
  *
  * @ingroup compiler_type
  */
-class BracketsType: public Type,
-    public TypeUnary,
-    public Bracketed {
+class BracketsType: public Type, public TypeUnary, public Bracketed {
 public:
   /**
    * Constructor.
@@ -25,8 +23,8 @@ public:
    * @param brackets Brackets.
    * @param loc Location.
    */
-  BracketsType(Type* single, Expression* brackets,
-      shared_ptr<Location> loc = nullptr);
+  BracketsType(Type* single, Expression* brackets, shared_ptr<Location> loc =
+      nullptr);
 
   /**
    * Constructor.
@@ -49,6 +47,8 @@ public:
 
   virtual possibly dispatch(Type& o);
   virtual possibly le(BracketsType& o);
+  virtual possibly le(AssignableType& o);
+  virtual possibly le(ParenthesesType& o);
 
   /**
    * Number of dimensions.

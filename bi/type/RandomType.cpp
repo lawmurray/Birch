@@ -34,22 +34,34 @@ bi::possibly bi::RandomType::dispatch(Type& o) {
   return o.le(*this);
 }
 
+bi::possibly bi::RandomType::le(AssignableType& o) {
+  return *this <= *o.single;
+}
+
+bi::possibly bi::RandomType::le(ParenthesesType& o) {
+  return *this <= *o.single;
+}
+
 bi::possibly bi::RandomType::le(EmptyType& o) {
-  return definite;
+  return possibly(!o.assignable || assignable);
 }
 
 bi::possibly bi::RandomType::le(List<Type>& o) {
-  return *left <= o || (possible && *right <= o);
+  return (*left <= o || (possible && *right <= o))
+      && (!o.assignable || assignable);
 }
 
 bi::possibly bi::RandomType::le(ModelReference& o) {
-  return *left <= o || (possible && *right <= o);
+  return (*left <= o || (possible && *right <= o))
+      && (!o.assignable || assignable);
 }
 
 bi::possibly bi::RandomType::le(ModelParameter& o) {
-  return *left <= o || (possible && *right <= o);
+  return (*left <= o || (possible && *right <= o))
+      && (!o.assignable || assignable);
 }
 
 bi::possibly bi::RandomType::le(RandomType& o) {
-  return possible && *left <= *o.left && *right <= *o.right;
+  return possible && *left <= *o.left && *right <= *o.right
+      && (!o.assignable || assignable);
 }

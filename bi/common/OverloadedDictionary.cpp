@@ -63,8 +63,8 @@ void bi::OverloadedDictionary<ParameterType,ReferenceType>::resolve(
       throw AmbiguousReferenceException(ref, definites);
     } else if (definites.size() > 0) {
       ref->target = definites.front();
-    } else if (possibles.size() > 0) {
-      ref->target = possibles.front();
+    //} else if (possibles.size() > 0) {
+    //  ref->target = possibles.front();
     } else {
       ref->target = nullptr;
     }

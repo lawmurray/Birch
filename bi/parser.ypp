@@ -111,7 +111,7 @@
 %type <valProg> prog_parameter
 
 %type <valType> model_reference model_parameter base
-%type <valType> brackets_type parens_type primary_type
+%type <valType> assignable_type brackets_type parens_type primary_type
 %type <valType> random_type list_type type
 
 %type <valExpression> parameter_expression reference_expression this_expression
@@ -242,8 +242,8 @@ double_braces
  ***************************************************************************/
 
 var_parameter
-    : name ':' brackets_type  { $$ = new bi::VarParameter($1, $3, make_empty(), make_empty(), make_loc(@$)); }
-    | ':' brackets_type       { $$ = new bi::VarParameter(new bi::Name(), $2, make_empty(), make_empty(), make_loc(@$)); }
+    : name ':' assignable_type  { $$ = new bi::VarParameter($1, $3, make_empty(), make_empty(), make_loc(@$)); }
+    | ':' assignable_type       { $$ = new bi::VarParameter(new bi::Name(), $2, make_empty(), make_empty(), make_loc(@$)); }
     ;
 
 func_parameter
@@ -316,9 +316,14 @@ brackets_type
     | primary_type brackets  { $$ = new bi::BracketsType($1, $2, make_loc(@$)); }
     ;
 
-random_type
+assignable_type
     : brackets_type
-    | brackets_type '~' random_type  { $$ = new bi::RandomType($1, $3, make_loc(@$)); }
+    | brackets_type '!'  { $$ = new bi::AssignableType($1, make_loc(@$)); }
+    ;
+
+random_type
+    : assignable_type
+    | assignable_type '~' assignable_type  { $$ = new bi::RandomType($1, $3, make_loc(@$)); }
     ;
 
 list_type

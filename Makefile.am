@@ -100,6 +100,7 @@ birchc_SOURCES = \
   bi/statement/Loop.cpp \
   bi/statement/Raw.cpp \
   bi/statement/Statement.cpp \
+  bi/type/AssignableType.cpp \
   bi/type/BracketsType.cpp \
   bi/type/EmptyType.cpp \
   bi/type/ModelParameter.cpp \
@@ -107,6 +108,7 @@ birchc_SOURCES = \
   bi/type/ParenthesesType.cpp \
   bi/type/RandomType.cpp \
   bi/type/Type.cpp \
+  bi/visitor/Assigner.cpp \
   bi/visitor/Cloner.cpp \
   bi/visitor/DispatchGatherer.cpp \
   bi/visitor/Gatherer.cpp \

@@ -206,7 +206,7 @@ void bi::CppBaseGenerator::visit(const FuncReference* o) {
 }
 
 void bi::CppBaseGenerator::visit(const ModelReference* o) {
-  if (o->builtin() && !inArray) {
+  if (o->isBuiltin() && !inArray) {
     if (*o->name == "Boolean") {
       middle("unsigned char");
     } else if (*o->name == "Real64" || *o->name == "Real") {

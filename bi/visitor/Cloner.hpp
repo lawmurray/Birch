@@ -61,6 +61,7 @@ public:
   virtual Statement* clone(const ModelDeclaration* o);
   virtual Statement* clone(const ProgDeclaration* o);
 
+  virtual Type* clone(const AssignableType* o);
   virtual Type* clone(const BracketsType* o);
   virtual Type* clone(const ParenthesesType* o);
   virtual Type* clone(const RandomType* o);

@@ -25,12 +25,16 @@ bool bi::Type::isRandom() const {
   return visitor.result;
 }
 
-bi::Type* bi::Type::strip() {
-  return this;
+bool bi::Type::isBuiltin() const {
+  return false;
 }
 
-bool bi::Type::builtin() const {
+bool bi::Type::isModel() const {
   return false;
+}
+
+bi::Type* bi::Type::strip() {
+  return this;
 }
 
 int bi::Type::count() const {
@@ -44,6 +48,10 @@ bi::possibly bi::Type::operator<=(Type& o) {
 
 bi::possibly bi::Type::operator==(Type& o) {
   return *this <= o && o <= *this;
+}
+
+bi::possibly bi::Type::le(AssignableType& o) {
+  return untrue;
 }
 
 bi::possibly bi::Type::le(BracketsType& o) {

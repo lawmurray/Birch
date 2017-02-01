@@ -145,6 +145,10 @@ void bi::bi_ostream::visit(const ProgParameter* o) {
   }
 }
 
+void bi::bi_ostream::visit(const AssignableType* o) {
+  *this << o->single << '!';
+}
+
 void bi::bi_ostream::visit(const BracketsType* o) {
   *this << o->single;
   if (!o->brackets->isEmpty()) {

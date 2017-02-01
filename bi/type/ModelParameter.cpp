@@ -34,11 +34,19 @@ void bi::ModelParameter::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::ModelParameter::builtin() const {
+bool bi::ModelParameter::isBuiltin() const {
   if (*op == "=") {
-    return base->builtin();
+    return base->isBuiltin();
   } else {
     return braces->isEmpty();
+  }
+}
+
+bool bi::ModelParameter::isModel() const {
+  if (*op == "=") {
+    return base->isModel();
+  } else {
+    return !braces->isEmpty();
   }
 }
 
@@ -47,9 +55,18 @@ bi::possibly bi::ModelParameter::dispatch(Type& o) {
 }
 
 bi::possibly bi::ModelParameter::le(ModelParameter& o) {
-  return *parens <= *o.parens && *base <= *o.base && o.capture(this);
+  return *parens <= *o.parens && *base <= *o.base
+      && (!o.assignable || assignable) && o.capture(this);
+}
+
+bi::possibly bi::ModelParameter::le(AssignableType& o) {
+  return *this <= *o.single;
+}
+
+bi::possibly bi::ModelParameter::le(ParenthesesType& o) {
+  return *this <= *o.single;
 }
 
 bi::possibly bi::ModelParameter::le(EmptyType& o) {
-  return definite;
+  return possibly(!o.assignable || assignable);
 }

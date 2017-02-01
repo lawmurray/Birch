@@ -16,7 +16,9 @@ bi::Statement* bi::Cloner::clone(const EmptyStatement* o) {
 }
 
 bi::Type* bi::Cloner::clone(const EmptyType* o) {
-  return new EmptyType();
+  Type* result = new EmptyType();
+  result->assignable = o->assignable;
+  return result;
 }
 
 bi::Expression* bi::Cloner::clone(const BooleanLiteral* o) {
@@ -87,7 +89,9 @@ bi::Expression* bi::Cloner::clone(const FuncReference* o) {
 }
 
 bi::Type* bi::Cloner::clone(const ModelReference* o) {
-  return new ModelReference(o->name, o->parens->accept(this), o->loc);
+  Type* result = new ModelReference(o->name, o->parens->accept(this), o->loc);
+  result->assignable = o->assignable;
+  return result;
 }
 
 bi::Prog* bi::Cloner::clone(const ProgReference* o) {
@@ -159,19 +163,35 @@ bi::Statement* bi::Cloner::clone(const ProgDeclaration* o) {
       dynamic_cast<ProgParameter*>(o->param->accept(this)), o->loc);
 }
 
+bi::Type* bi::Cloner::clone(const AssignableType* o) {
+  Type* result = new AssignableType(o->single->accept(this), o->loc);
+  result->assignable = o->assignable;
+  return result;
+}
+
 bi::Type* bi::Cloner::clone(const BracketsType* o) {
-  return new BracketsType(o->single->accept(this), o->brackets->accept(this),
-      o->loc);
+  Type* result = new BracketsType(o->single->accept(this),
+      o->brackets->accept(this), o->loc);
+  result->assignable = o->assignable;
+  return result;
 }
 
 bi::Type* bi::Cloner::clone(const ParenthesesType* o) {
-  return new ParenthesesType(o->single->accept(this), o->loc);
+  Type* result = new ParenthesesType(o->single->accept(this), o->loc);
+  result->assignable = o->assignable;
+  return result;
 }
 
 bi::Type* bi::Cloner::clone(const RandomType* o) {
-  return new RandomType(o->left->accept(this), o->right->accept(this), o->loc);
+  Type* result = new RandomType(o->left->accept(this), o->right->accept(this),
+      o->loc);
+  result->assignable = o->assignable;
+  return result;
 }
 
 bi::Type* bi::Cloner::clone(const TypeList* o) {
-  return new TypeList(o->head->accept(this), o->tail->accept(this), o->loc);
+  Type* result = new TypeList(o->head->accept(this), o->tail->accept(this),
+      o->loc);
+  result->assignable = o->assignable;
+  return result;
 }

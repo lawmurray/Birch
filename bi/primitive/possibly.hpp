@@ -53,14 +53,24 @@ public:
   }
 
   /**
-   * Logical and for possiblies.
+   * Logical and.
    */
   possibly operator&&(const possibly& o) const;
 
   /**
-   * Logical or for possiblies.
+   * Logical or.
    */
   possibly operator||(const possibly& o) const;
+
+  /**
+   * Logical and.
+   */
+  possibly operator&&(const bool& o) const;
+
+  /**
+   * Logical or.
+   */
+  possibly operator||(const bool& o) const;
 
   /**
    * Logical not for possiblies.

@@ -213,6 +213,11 @@ bi::Statement* bi::Modifier::modify(ProgDeclaration* o) {
   return o;
 }
 
+bi::Type* bi::Modifier::modify(AssignableType* o) {
+  o->single = o->single->accept(this);
+  return o;
+}
+
 bi::Type* bi::Modifier::modify(BracketsType* o) {
   o->single = o->single->accept(this);
   o->brackets = o->brackets->accept(this);

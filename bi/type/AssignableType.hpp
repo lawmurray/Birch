@@ -5,28 +5,27 @@
 
 #include "bi/type/Type.hpp"
 #include "bi/common/Unary.hpp"
-#include "bi/primitive/unique_ptr.hpp"
 
 namespace bi {
 /**
- * Tuple type.
+ * Modifier to force a type to be assignable.
  *
  * @ingroup compiler_type
  */
-class ParenthesesType: public Type, public TypeUnary {
+class AssignableType: public Type, public TypeUnary {
 public:
   /**
    * Constructor.
    *
-   * @param single Type in parentheses.
+   * @param single Type.
    * @param loc Location.
    */
-  ParenthesesType(Type* single, shared_ptr<Location> loc = nullptr);
+  AssignableType(Type* single, shared_ptr<Location> loc = nullptr);
 
   /**
    * Destructor.
    */
-  virtual ~ParenthesesType();
+  virtual ~AssignableType();
 
   bool isBuiltin() const;
   bool isModel() const;

@@ -61,16 +61,14 @@ bi::Expression* bi::Resolver::modify(Range* o) {
 bi::Expression* bi::Resolver::modify(Member* o) {
   o->left = o->left->accept(this);
 
-  ModelReference* ref = dynamic_cast<ModelReference*>(o->left->type.get());
+  ModelReference* ref = dynamic_cast<ModelReference*>(o->left->type->strip());
   if (ref) {
     membershipScope = ref->target->scope.get();
   } else {
     throw MemberException(o);
   }
   o->right = o->right->accept(this);
-  o->right->type->assignable = o->left->type->assignable;
   o->type = o->right->type->accept(&cloner)->accept(this);
-  o->type->assignable = o->right->type->assignable;
   return o;
 }
 
@@ -87,7 +85,7 @@ bi::Expression* bi::Resolver::modify(This* o) {
 
 bi::Expression* bi::Resolver::modify(RandomInit* o) {
   Modifier::modify(o);
-  if (!inInputs && !o->left->type->assignable) {
+  if (!o->left->type->assignable) {
     throw NotAssignableException(o->left.get());
   }
   o->type = o->left->type->accept(&cloner)->accept(this);
@@ -109,15 +107,17 @@ bi::Expression* bi::Resolver::modify(BracketsExpression* o) {
   const int rangeDims = o->brackets->tupleDims();
   assert(typeSize == indexSize);  ///@todo Exception
 
-  BracketsType* type = dynamic_cast<BracketsType*>(o->single->type.get());
+  BracketsType* type = dynamic_cast<BracketsType*>(o->single->type->strip());
   assert(type);
   if (rangeDims > 0) {
     o->type = new BracketsType(type->single->accept(&cloner), rangeDims);
     o->type = o->type->accept(this);
+    if (o->single->type->assignable) {
+      o->single->type->accept(&assigner);
+    }
   } else {
     o->type = type->single->accept(&cloner)->accept(this);
   }
-  o->type->assignable = o->single->type->assignable;
 
   return o;
 }
@@ -127,7 +127,6 @@ bi::Expression* bi::Resolver::modify(VarReference* o) {
   Modifier::modify(o);
   resolve(o, membershipScope);
   o->type = o->target->type->accept(&cloner)->accept(this);
-  o->type->assignable = o->target->type->assignable;
 
   return o;
 }
@@ -138,14 +137,6 @@ bi::Expression* bi::Resolver::modify(FuncReference* o) {
   resolve(o, membershipScope);
   o->type = o->target->type->accept(&cloner)->accept(this);
   o->form = o->target->form;
-
-  if (o->isAssignment()) {
-    if (inInputs) {
-      o->getLeft()->type->assignable = true;
-    } else if (!o->getLeft()->type->assignable) {
-      throw NotAssignableException(o);
-    }
-  }
 
   Gatherer<VarParameter> gatherer;
   o->target->parens->accept(&gatherer);
@@ -166,8 +157,8 @@ bi::Type* bi::Resolver::modify(ModelReference* o) {
 
 bi::Expression* bi::Resolver::modify(VarParameter* o) {
   Modifier::modify(o);
-  if (!inInputs || dynamic_cast<RandomType*>(o->type->strip())) {
-    o->type->assignable = true;
+  if (!inInputs) {
+    o->type->accept(&assigner);
   }
   if (!o->name->isEmpty()) {
     top()->add(o);
@@ -185,10 +176,6 @@ bi::Expression* bi::Resolver::modify(FuncParameter* o) {
   defer(o->braces.get());
   o->scope = pop();
   top()->add(o);
-
-  if (o->isAssignment()) {
-    o->getLeft()->type->assignable = true;
-  }
 
   Gatherer<VarParameter> gatherer1;
   o->parens->accept(&gatherer1);
@@ -235,10 +222,10 @@ bi::Type* bi::Resolver::modify(ModelParameter* o) {
     //o->constructor =
     //    dynamic_cast<FuncParameter*>(o->constructor->accept(this));
     //assert(o->constructor);
-
     /* create assignment operator */
     Expression* right = new VarParameter(new Name(), new ModelReference(o));
-    Expression* left = new VarParameter(new Name(), new ModelReference(o));
+    Expression* left = new VarParameter(new Name(),
+        new AssignableType(new ModelReference(o)));
     Expression* parens2 = new ParenthesesExpression(
         new ExpressionList(left, right));
     Expression* result2 = new VarParameter(new Name(), new ModelReference(o));
@@ -254,12 +241,6 @@ bi::Type* bi::Resolver::modify(ModelParameter* o) {
 bi::Statement* bi::Resolver::modify(Import* o) {
   o->file->accept(this);
   top()->import(o->file->scope.get());
-  return o;
-}
-
-bi::Statement* bi::Resolver::modify(VarDeclaration* o) {
-  Modifier::modify(o);
-  o->param->type->assignable = true;
   return o;
 }
 
@@ -279,10 +260,9 @@ bi::Statement* bi::Resolver::modify(Loop* o) {
   return o;
 }
 
-bi::Type* bi::Resolver::modify(RandomType* o) {
+bi::Type* bi::Resolver::modify(AssignableType* o) {
   Modifier::modify(o);
-  o->left->assignable = true;
-  o->right->assignable = true;
+  o->accept(&assigner);
   return o;
 }
 

@@ -33,6 +33,8 @@ public:
   virtual void accept(Visitor* visitor) const;
 
   virtual possibly dispatch(Type& o);
+  virtual possibly le(AssignableType& o);
+  virtual possibly le(ParenthesesType& o);
   virtual possibly le(EmptyType& o);
   virtual possibly le(List<Type>& o);
   virtual possibly le(ModelParameter& o);

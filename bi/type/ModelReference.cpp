@@ -36,14 +36,25 @@ void bi::ModelReference::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::ModelReference::builtin() const {
+bool bi::ModelReference::isBuiltin() const {
   /* pre-condition */
   assert(target);
 
   if (*target->op == "=") {
-    return target->base->builtin();
+    return target->base->isBuiltin();
   } else {
     return target->braces->isEmpty();
+  }
+}
+
+bool bi::ModelReference::isModel() const {
+  /* pre-condition */
+  assert(target);
+
+  if (*target->op == "=") {
+    return target->base->isModel();
+  } else {
+    return !target->braces->isEmpty();
   }
 }
 
@@ -73,10 +84,19 @@ bi::possibly bi::ModelReference::le(ModelReference& o) {
   if (*o.target->op == "=") {
     return *this <= *o.target->base;  // compare with canonical type
   } else {
-    return (isa(o) || (possible && o.isa(*this))) && *parens <= *o.parens;
+    return (isa(o) || (possible && o.isa(*this))) && *parens <= *o.parens
+        && (!o.assignable || assignable);
   }
 }
 
+bi::possibly bi::ModelReference::le(AssignableType& o) {
+  return *this <= *o.single;
+}
+
+bi::possibly bi::ModelReference::le(ParenthesesType& o) {
+  return *this <= *o.single;
+}
+
 bi::possibly bi::ModelReference::le(EmptyType& o) {
-  return definite;
+  return possibly(!o.assignable || assignable);
 }

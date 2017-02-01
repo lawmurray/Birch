@@ -11,6 +11,7 @@ class Cloner;
 class Modifier;
 class Visitor;
 
+class AssignableType;
 class BracketsType;
 class EmptyType;
 template<class T> class List;
@@ -74,14 +75,19 @@ public:
   virtual bool isRandom() const;
 
   /**
+   * Is this a built-in type?
+   */
+  virtual bool isBuiltin() const;
+
+  /**
+   * Is this a model type?
+   */
+  virtual bool isModel() const;
+
+  /**
    * Strip parentheses.
    */
   virtual Type* strip();
-
-  /**
-   * Is this a built-in type?
-   */
-  virtual bool builtin() const;
 
   /**
    * How many dimensions does this type have?
@@ -102,6 +108,7 @@ public:
   possibly operator<=(Type& o);
   possibly operator==(Type& o);
   virtual possibly dispatch(Type& o) = 0;
+  virtual possibly le(AssignableType& o);
   virtual possibly le(BracketsType& o);
   virtual possibly le(EmptyType& o);
   virtual possibly le(List<Type>& o);
