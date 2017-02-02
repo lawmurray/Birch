@@ -13,6 +13,9 @@ void bi::DispatchGatherer::visit(const FuncReference* o) {
       ++iter) {
     insert(*iter);
   }
+  if (o->alternatives.size() > 0 && o->target) {
+    insert(o->target);
+  }
 }
 
 void bi::DispatchGatherer::visit(const RandomInit* o) {

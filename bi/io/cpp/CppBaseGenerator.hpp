@@ -57,6 +57,11 @@ protected:
   void genCapture(const Expression* o);
 
   /**
+   * Generate the arguments for a function call.
+   */
+  void genArgs(Expression* ref, FuncParameter* param);
+
+  /**
    * Output header instead of source?
    */
   bool header;

@@ -94,18 +94,9 @@ void bi::CppDispatcherGenerator::visit(const FuncParameter* o) {
       start("try { return ");
       possibly result = *const_cast<FuncParameter*>(o) <= **iter;  // needed to capture arguments
       assert(result != untrue);
-      middle("dispatch_" << (*iter)->number << "_(");
-
-      Gatherer<VarParameter> gatherer;
-      (*iter)->parens->accept(&gatherer);
-      for (auto iter2 = gatherer.gathered.begin(); iter2 != gatherer.gathered.end();
-          ++iter2) {
-        if (iter2 != gatherer.gathered.begin()) {
-          middle(", ");
-        }
-        middle((*iter2)->arg);
-      }
-      finish("); } catch (std::bad_cast) {}");
+      middle("dispatch_" << (*iter)->number << '_');
+      genArgs(const_cast<FuncParameter*>(o), *iter);
+      finish("; } catch (std::bad_cast) {}");
     }
     line("throw std::bad_cast();");
     out();

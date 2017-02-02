@@ -131,12 +131,37 @@ void bi::CppBaseGenerator::visit(const VarReference* o) {
 
 void bi::CppBaseGenerator::visit(const FuncReference* o) {
   if (*o->name == "<-") {
-    //if (*o->getLeft()->type <= *o->getRight()->type) {
+    /* assignment operator */
     middle(o->getLeft() << " = " << o->getRight());
-    //} else {
-    //  middle("bi::" << o->target->mangled);
-    //  middle('(' << o->getLeft() << ", " << o->getRight() << ')');
-    //}
+  } else if (o->alternatives.size() > 0) {
+    /* dynamic dispatch */
+    if (o->alternatives.size() == 1 && !o->target) {
+      /* special case that can use direct call to dispatcher */
+      auto iter = o->alternatives.begin();
+      middle("dispatch_" << (*iter)->number << '_');
+      genArgs(const_cast<FuncReference*>(o), *iter);
+    } else {
+      /* other cases require lambda */
+      finish("[&]() {");
+      in();
+      in();
+      for (auto iter = o->alternatives.begin(); iter != o->alternatives.end();
+          ++iter) {
+        start("try { return dispatch_" << (*iter)->number << '_');
+        genArgs(const_cast<FuncReference*>(o), *iter);
+        finish("; } catch (std::bad_cast) {}");
+      }
+      if (o->target) {
+        start("return dispatch_" << o->target->number << '_');
+        genArgs(const_cast<FuncReference*>(o), o->target);
+        finish(';');
+      } else {
+        line("throw std::bad_cast();");
+      }
+      start("}()");
+      out();
+      out();
+    }
   } else if (o->isBinary() && isTranslatable(o->name->str())
       && !o->target->parens->isRich()) {
     middle(o->getLeft());
@@ -145,63 +170,12 @@ void bi::CppBaseGenerator::visit(const FuncReference* o) {
   } else if (o->isUnary() && isTranslatable(o->name->str())
       && !o->target->parens->isRich()) {
     middle(translate(o->name->str()) << ' ' << o->getRight());
-  } else if (o->alternatives.size() == 1) {
-    auto iter = o->alternatives.begin();
-    middle("dispatch_" << (*iter)->number << "_(");
-    possibly result = *const_cast<FuncReference*>(o) <= **iter;  // needed to capture arguments
-    assert(result != untrue);
-    Gatherer<VarParameter> gatherer;
-    (*iter)->parens->accept(&gatherer);
-    for (auto iter2 = gatherer.gathered.begin();
-        iter2 != gatherer.gathered.end(); ++iter2) {
-      if (iter2 != gatherer.gathered.begin()) {
-        middle(", ");
-      }
-      middle((*iter2)->arg);
-    }
-    middle(')');
-  } else if (o->alternatives.size() > 1) {
-    finish("[&]() {");
-    in();
-    in();
-    for (auto iter = o->alternatives.begin(); iter != o->alternatives.end();
-        ++iter) {
-      start("try { return dispatch_" << (*iter)->number << "_(");
-      possibly result = *const_cast<FuncReference*>(o) <= **iter;  // needed to capture arguments
-      assert(result != untrue);
-      Gatherer<VarParameter> gatherer;
-      (*iter)->parens->accept(&gatherer);
-      for (auto iter2 = gatherer.gathered.begin();
-          iter2 != gatherer.gathered.end(); ++iter2) {
-        if (iter2 != gatherer.gathered.begin()) {
-          middle(", ");
-        }
-        middle((*iter2)->arg);
-      }
-      finish("); } catch (std::bad_cast) {}");
-    }
-    line("throw std::bad_cast();");
-    start("}()");
-    out();
-    out();
   } else {
-    possibly result = *const_cast<FuncReference*>(o) <= *o->target;  // needed to capture arguments
-    assert(result != untrue);
     middle("bi::" << o->target->mangled);
     if (o->isConstructor()) {
       middle("<>");
     }
-    middle('(');
-    Gatherer<VarParameter> gatherer;
-    o->target->parens->accept(&gatherer);
-    for (auto iter2 = gatherer.gathered.begin();
-        iter2 != gatherer.gathered.end(); ++iter2) {
-      if (iter2 != gatherer.gathered.begin()) {
-        middle(", ");
-      }
-      middle((*iter2)->arg);
-    }
-    middle(')');
+    genArgs(const_cast<FuncReference*>(o), o->target);
   }
 }
 
@@ -325,8 +299,8 @@ void bi::CppBaseGenerator::genCapture(const Expression* o) {
   std::unordered_set<std::string> done;
 
   middle('[');
-  for (auto iter = gatherer.gathered.begin();
-      iter != gatherer.gathered.end(); ++iter) {
+  for (auto iter = gatherer.gathered.begin(); iter != gatherer.gathered.end();
+      ++iter) {
     const VarReference* ref = *iter;
     if (done.find(ref->name->str()) == done.end()) {
       if (!done.empty()) {
@@ -340,4 +314,22 @@ void bi::CppBaseGenerator::genCapture(const Expression* o) {
     }
   }
   middle(']');
+}
+
+void bi::CppBaseGenerator::genArgs(Expression* ref, FuncParameter* param) {
+  possibly result = *ref <= *param;  // needed to capture arguments
+  assert(result != untrue);
+
+  Gatherer<VarParameter> gatherer;
+  param->parens->accept(&gatherer);
+
+  middle('(');
+  for (auto iter = gatherer.gathered.begin(); iter != gatherer.gathered.end();
+      ++iter) {
+    if (iter != gatherer.gathered.begin()) {
+      middle(", ");
+    }
+    middle((*iter)->arg);
+  }
+  middle(')');
 }
