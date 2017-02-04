@@ -34,14 +34,6 @@ bi::possibly bi::RandomType::dispatch(Type& o) {
   return o.le(*this);
 }
 
-bi::possibly bi::RandomType::le(AssignableType& o) {
-  return *this <= *o.single;
-}
-
-bi::possibly bi::RandomType::le(ParenthesesType& o) {
-  return *this <= *o.single;
-}
-
 bi::possibly bi::RandomType::le(EmptyType& o) {
   return possibly(!o.assignable || assignable);
 }

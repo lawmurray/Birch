@@ -5,6 +5,8 @@
 
 #include "bi/visitor/all.hpp"
 
+#include <vector>
+#include <algorithm>
 #include <typeinfo>
 
 bi::FuncReference::FuncReference(shared_ptr<Name> name, Expression* parens,
@@ -46,18 +48,31 @@ bi::possibly bi::FuncReference::dispatch(Expression& o) {
   return o.le(*this);
 }
 
+#include "bi/io/bih_ostream.hpp"
+
 bi::possibly bi::FuncReference::le(FuncReference& o) {
-  return *parens <= *o.parens && possibly(target != nullptr)
-      && possibly(target == o.target);
+  /* intersection of possible targets */
+  std::vector<FuncParameter*> a1, a2, a3;
+  if (target != nullptr) {
+    a1.push_back(target);
+  }
+  if (o.target != nullptr) {
+    a2.push_back(o.target);
+  }
+  a1.insert(a1.end(), alternatives.begin(), alternatives.end());
+  a2.insert(a2.end(), o.alternatives.begin(), o.alternatives.end());
+  std::sort(a1.begin(), a1.end());
+  std::sort(a2.begin(), a2.end());
+  std::set_intersection(a1.begin(), a1.end(), a2.begin(), a2.end(),
+      std::inserter(a3, a3.end()));
+
+  return *parens <= *o.parens
+      && (possibly(target == o.target)
+          || (possible && possibly(a3.size() > 0)));
 }
 
 bi::possibly bi::FuncReference::le(FuncParameter& o) {
-  if (!target) {
-    /* not yet bound */
-    return *parens <= *o.parens && o.capture(this);
-  } else {
-    return *parens <= *o.parens && *type <= *o.type && o.capture(this);
-  }
+  return *parens <= *o.parens && o.capture(this);
 }
 
 bi::possibly bi::FuncReference::le(VarParameter& o) {

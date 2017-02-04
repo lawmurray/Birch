@@ -72,12 +72,7 @@ bi::possibly bi::ModelReference::dispatch(Type& o) {
 }
 
 bi::possibly bi::ModelReference::le(ModelParameter& o) {
-  if (!target) {
-    /* not yet bound */
-    return o.capture(this);
-  } else {
-    return *this <= *o.base && o.capture(this);
-  }
+  return o.capture(this);
 }
 
 bi::possibly bi::ModelReference::le(ModelReference& o) {
@@ -87,14 +82,6 @@ bi::possibly bi::ModelReference::le(ModelReference& o) {
     return (isa(o) || (possible && o.isa(*this))) && *parens <= *o.parens
         && (!o.assignable || assignable);
   }
-}
-
-bi::possibly bi::ModelReference::le(AssignableType& o) {
-  return *this <= *o.single;
-}
-
-bi::possibly bi::ModelReference::le(ParenthesesType& o) {
-  return *this <= *o.single;
 }
 
 bi::possibly bi::ModelReference::le(EmptyType& o) {

@@ -40,7 +40,7 @@ void bi::AssignableType::accept(Visitor* visitor) const {
 }
 
 bi::possibly bi::AssignableType::dispatch(Type& o) {
-  return o.le(*this);
+  return o.le(*this) || single->dispatch(o);
 }
 
 bi::possibly bi::AssignableType::le(AssignableType& o) {

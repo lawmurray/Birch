@@ -8,10 +8,10 @@
 
 bi::possibly bi::signature_less_equal::operator()(FuncParameter* o1,
     FuncParameter* o2) {
-  return *o1->parens <= *o2->parens;
+  return *o1 <= *o2;
 }
 
 bi::possibly bi::signature_less_equal::operator()(FuncReference* o1,
     FuncParameter* o2) {
-  return *o1->parens <= *o2->parens;
+  return *o1 <= *o2;
 }

@@ -63,8 +63,6 @@ public:
 
   virtual possibly dispatch(Type& o);
   virtual possibly le(ModelParameter& o);
-  virtual possibly le(AssignableType& o);
-  virtual possibly le(ParenthesesType& o);
   virtual possibly le(EmptyType& o);
 };
 }

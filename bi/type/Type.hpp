@@ -101,9 +101,7 @@ public:
 
   /*
    * Partial order comparison operators for comparing types in terms of
-   * specialisation. These double-dispatch to the #le, #gt, #eq and #ne
-   * functions below, which can be implemented for specific types in derived
-   * classes.
+   * specialisation.
    */
   possibly operator<=(Type& o);
   possibly operator==(Type& o);

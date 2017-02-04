@@ -59,14 +59,6 @@ bi::possibly bi::ModelParameter::le(ModelParameter& o) {
       && (!o.assignable || assignable) && o.capture(this);
 }
 
-bi::possibly bi::ModelParameter::le(AssignableType& o) {
-  return *this <= *o.single;
-}
-
-bi::possibly bi::ModelParameter::le(ParenthesesType& o) {
-  return *this <= *o.single;
-}
-
 bi::possibly bi::ModelParameter::le(EmptyType& o) {
   return possibly(!o.assignable || assignable);
 }

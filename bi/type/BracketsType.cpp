@@ -46,13 +46,5 @@ bi::possibly bi::BracketsType::dispatch(Type& o) {
 
 bi::possibly bi::BracketsType::le(BracketsType& o) {
   return *single <= *o.single && *brackets <= *o.brackets
-      && (!o.assignable || assignable);
-}
-
-bi::possibly bi::BracketsType::le(AssignableType& o) {
-  return *this <= *o.single;
-}
-
-bi::possibly bi::BracketsType::le(ParenthesesType& o) {
-  return *this <= *o.single;
+      && possibly(!o.assignable || assignable);
 }

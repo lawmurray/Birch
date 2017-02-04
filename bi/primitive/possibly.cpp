@@ -14,13 +14,21 @@ bi::possibly bi::possibly::operator||(const possibly& o) const {
 }
 
 bi::possibly bi::possibly::operator&&(const bool& o) const {
-  return possibly(std::min(state, possibly(o).state));
+  return *this && possibly(o);
 }
 
 bi::possibly bi::possibly::operator||(const bool& o) const {
-  return possibly(std::max(state, possibly(o).state));
+  return *this || possibly(o);
 }
 
 bi::possibly bi::possibly::operator!() const {
   return possibly(DEFINITE - state);
 }
+
+//bi::possibly bi::operator&&(const bool& o1, const possibly& o2) {
+//  return possibly(o1) && o2;
+//}
+
+//bi::possibly bi::operator||(const bool& o1, const possibly& o2) {
+//  return possibly(o1) || o2;
+//}

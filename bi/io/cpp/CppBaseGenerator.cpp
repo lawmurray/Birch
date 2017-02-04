@@ -106,7 +106,7 @@ void bi::CppBaseGenerator::visit(const RandomInit* o) {
   out();
   start("}, ");
   genCapture(o->push.get());
-  finish(" () { ");
+  finish("() {");
   in();
   line(o->push << ';');
   out();
@@ -135,33 +135,21 @@ void bi::CppBaseGenerator::visit(const FuncReference* o) {
     middle(o->getLeft() << " = " << o->getRight());
   } else if (o->alternatives.size() > 0) {
     /* dynamic dispatch */
-    if (o->alternatives.size() == 1 && !o->target) {
-      /* special case that can use direct call to dispatcher */
-      auto iter = o->alternatives.begin();
-      middle("dispatch_" << (*iter)->number << '_');
+    finish("[&]() {");
+    in();
+    in();
+    for (auto iter = o->alternatives.begin(); iter != o->alternatives.end();
+        ++iter) {
+      start("try { return dispatch_" << (*iter)->number << '_');
       genArgs(const_cast<FuncReference*>(o), *iter);
-    } else {
-      /* other cases require lambda */
-      finish("[&]() {");
-      in();
-      in();
-      for (auto iter = o->alternatives.begin(); iter != o->alternatives.end();
-          ++iter) {
-        start("try { return dispatch_" << (*iter)->number << '_');
-        genArgs(const_cast<FuncReference*>(o), *iter);
-        finish("; } catch (std::bad_cast) {}");
-      }
-      if (o->target) {
-        start("return dispatch_" << o->target->number << '_');
-        genArgs(const_cast<FuncReference*>(o), o->target);
-        finish(';');
-      } else {
-        line("throw std::bad_cast();");
-      }
-      start("}()");
-      out();
-      out();
+      finish("; } catch (std::bad_cast) {}");
     }
+    start("return dispatch_" << o->target->number << '_');
+    genArgs(const_cast<FuncReference*>(o), o->target);
+    finish(';');
+    start("}()");
+    out();
+    out();
   } else if (o->isBinary() && isTranslatable(o->name->str())
       && !o->target->parens->isRich()) {
     middle(o->getLeft());

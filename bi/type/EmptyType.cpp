@@ -37,11 +37,3 @@ bi::possibly bi::EmptyType::dispatch(Type& o) {
 bi::possibly bi::EmptyType::le(EmptyType& o) {
   return possibly(!o.assignable || assignable);
 }
-
-bi::possibly bi::EmptyType::le(AssignableType& o) {
-  return *this <= *o.single;
-}
-
-bi::possibly bi::EmptyType::le(ParenthesesType& o) {
-  return *this <= *o.single;
-}

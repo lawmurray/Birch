@@ -47,8 +47,6 @@ public:
 
   virtual possibly dispatch(Type& o);
   virtual possibly le(BracketsType& o);
-  virtual possibly le(AssignableType& o);
-  virtual possibly le(ParenthesesType& o);
 
   /**
    * Number of dimensions.

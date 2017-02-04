@@ -34,7 +34,7 @@ public:
   /**
    * Cast to boolean.
    */
-  operator bool() const {
+  explicit operator bool() const {
     return state == DEFINITE;
   }
 
@@ -83,6 +83,20 @@ private:
    */
   possibly_state state;
 };
+
+/**
+ * Logical with bool on left.
+ *
+ * @note Problematic with short-circuiting.
+ */
+//possibly operator&&(const bool& o1, const possibly& o2);
+
+/**
+ * Logical or with bool on left.
+ *
+ * @note Problematic with short-circuiting.
+ */
+//possibly operator||(const bool& o1, const possibly& o2);
 
 /*
  * Static possibilities.

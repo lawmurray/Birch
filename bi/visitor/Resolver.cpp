@@ -90,11 +90,9 @@ bi::Expression* bi::Resolver::modify(RandomInit* o) {
   }
   o->type = o->left->type->accept(&cloner)->accept(this);
 
-  if (!inInputs) {
-    o->push = new FuncReference(o->left->accept(&cloner), new Name("~>"),
-        o->right->accept(&cloner));
-    o->push->accept(this);
-  }
+  o->push = new FuncReference(o->left->accept(&cloner), new Name("~>"),
+      o->right->accept(&cloner));
+  o->push->accept(this);
 
   return o;
 }
@@ -136,6 +134,7 @@ bi::Expression* bi::Resolver::modify(FuncReference* o) {
   Modifier::modify(o);
   resolve(o, membershipScope);
   o->type = o->target->type->accept(&cloner)->accept(this);
+  o->type->assignable = false;  // rvalue
   o->form = o->target->form;
 
   Gatherer<VarParameter> gatherer;

@@ -41,5 +41,5 @@ bi::possibly bi::FuncParameter::dispatch(Expression& o) {
 }
 
 bi::possibly bi::FuncParameter::le(FuncParameter& o) {
-  return *parens <= *o.parens && *type <= *o.type && o.capture(this);
+  return *parens <= *o.parens && o.capture(this);
 }
