@@ -49,7 +49,7 @@ void bi::OverloadedDictionary<ParameterType,ReferenceType>::add(
   }
 
   /* store in possibles poset */
-  /*auto key2 = param->name->str();
+  auto key2 = param->name->str();
   auto iter2 = possibles.find(key2);
   if (iter2 != possibles.end()) {
     auto& val2 = iter2->second;
@@ -59,7 +59,7 @@ void bi::OverloadedDictionary<ParameterType,ReferenceType>::add(
     val2.insert(param);
     auto pair2 = std::make_pair(key2, val2);
     possibles.insert(pair2);
-  }*/
+  }
 }
 
 template<class ParameterType, class ReferenceType>

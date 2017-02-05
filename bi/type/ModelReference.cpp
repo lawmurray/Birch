@@ -110,7 +110,7 @@ bool bi::ModelReference::possibly(ModelParameter& o) {
 }
 
 bool bi::ModelReference::possibly(ModelReference& o) {
-  return canDowncast(o) && (!o.assignable || assignable);
+  return !canUpcast(o) && canDowncast(o) && (!o.assignable || assignable);
 }
 
 bool bi::ModelReference::possibly(EmptyType& o) {
