@@ -29,7 +29,10 @@ public:
 
   virtual bool isEmpty() const;
 
-  virtual possibly dispatch(Expression& o);
-  virtual possibly le(EmptyExpression& o);
+  virtual bool dispatchDefinitely(Expression& o);
+  virtual bool definitely(EmptyExpression& o);
+
+  virtual bool dispatchPossibly(Expression& o);
+  virtual bool possibly(EmptyExpression& o);
 };
 }

@@ -92,8 +92,8 @@ void bi::CppDispatcherGenerator::visit(const FuncParameter* o) {
     scope->parents(const_cast<FuncParameter*>(o), parents);
     for (auto iter = parents.begin(); iter != parents.end(); ++iter) {
       start("try { return ");
-      possibly result = *const_cast<FuncParameter*>(o) <= **iter;  // needed to capture arguments
-      assert(result != untrue);
+      bool result = const_cast<FuncParameter*>(o)->definitely(**iter);  // needed to capture arguments
+      assert(result);
       middle("dispatch_" << (*iter)->number << '_');
       genArgs(const_cast<FuncParameter*>(o), *iter);
       finish("; } catch (std::bad_cast) {}");

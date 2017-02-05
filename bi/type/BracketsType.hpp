@@ -45,8 +45,11 @@ public:
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
-  virtual possibly dispatch(Type& o);
-  virtual possibly le(BracketsType& o);
+  virtual bool dispatchDefinitely(Type& o);
+  virtual bool definitely(BracketsType& o);
+
+  virtual bool dispatchPossibly(Type& o);
+  virtual bool possibly(BracketsType& o);
 
   /**
    * Number of dimensions.

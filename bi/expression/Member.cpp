@@ -31,14 +31,26 @@ void bi::Member::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }
 
-bi::possibly bi::Member::dispatch(Expression& o) {
-  return o.le(*this);
+bool bi::Member::dispatchDefinitely(Expression& o) {
+  return o.definitely(*this);
 }
 
-bi::possibly bi::Member::le(Member& o) {
-  return *left <= *o.left && *right <= *o.right;
+bool bi::Member::definitely(Member& o) {
+  return left->definitely(*o.left) && right->definitely(*o.right);
 }
 
-bi::possibly bi::Member::le(VarParameter& o) {
-  return *type <= *o.type && o.capture(this);
+bool bi::Member::definitely(VarParameter& o) {
+  return type->definitely(*o.type) && o.capture(this);
+}
+
+bool bi::Member::dispatchPossibly(Expression& o) {
+  return o.possibly(*this);
+}
+
+bool bi::Member::possibly(Member& o) {
+  return left->possibly(*o.left) && right->possibly(*o.right);
+}
+
+bool bi::Member::possibly(VarParameter& o) {
+  return type->possibly(*o.type) && o.capture(this);
 }

@@ -30,15 +30,28 @@ void bi::Index::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }
 
-bi::possibly bi::Index::dispatch(Expression& o) {
-  return o.le(*this);
+bool bi::Index::dispatchDefinitely(Expression& o) {
+  return o.definitely(*this);
 }
 
-bi::possibly bi::Index::le(Index& o) {
-  return *single <= *o.single;
+bool bi::Index::definitely(Index& o) {
+  return single->definitely(*o.single);
 }
 
-bi::possibly bi::Index::le(VarParameter& o) {
+bool bi::Index::definitely(VarParameter& o) {
   /* transparent to capture */
-  return *single <= o;
+  return single->definitely(o);
+}
+
+bool bi::Index::dispatchPossibly(Expression& o) {
+  return o.possibly(*this);
+}
+
+bool bi::Index::possibly(Index& o) {
+  return single->possibly(*o.single);
+}
+
+bool bi::Index::possibly(VarParameter& o) {
+  /* transparent to capture */
+  return single->possibly(o);
 }

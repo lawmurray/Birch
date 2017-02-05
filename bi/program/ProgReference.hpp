@@ -42,8 +42,12 @@ public:
   virtual Prog* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
-  virtual possibly dispatch(Prog& o);
-  virtual possibly le(ProgParameter& o);
-  virtual possibly le(ProgReference& o);
+  virtual bool dispatchDefinitely(Prog& o);
+  virtual bool definitely(ProgParameter& o);
+  virtual bool definitely(ProgReference& o);
+
+  virtual bool dispatchPossibly(Prog& o);
+  virtual bool possibly(ProgParameter& o);
+  virtual bool possibly(ProgReference& o);
 };
 }

@@ -182,13 +182,6 @@ bi::Type* bi::Cloner::clone(const ParenthesesType* o) {
   return result;
 }
 
-bi::Type* bi::Cloner::clone(const RandomType* o) {
-  Type* result = new RandomType(o->left->accept(this), o->right->accept(this),
-      o->loc);
-  result->assignable = o->assignable;
-  return result;
-}
-
 bi::Type* bi::Cloner::clone(const TypeList* o) {
   Type* result = new TypeList(o->head->accept(this), o->tail->accept(this),
       o->loc);

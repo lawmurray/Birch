@@ -33,11 +33,20 @@ void bi::Conditional::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bi::possibly bi::Conditional::dispatch(Statement& o) {
-  return o.le(*this);
+bool bi::Conditional::dispatchDefinitely(Statement& o) {
+  return o.definitely(*this);
 }
 
-bi::possibly bi::Conditional::le(Conditional& o) {
-  return *cond <= *o.cond && *braces <= *o.braces
-      && *falseBraces <= *o.falseBraces;
+bool bi::Conditional::definitely(Conditional& o) {
+  return cond->definitely(*o.cond) && braces->definitely(*o.braces)
+      && falseBraces->definitely(*o.falseBraces);
+}
+
+bool bi::Conditional::dispatchPossibly(Statement& o) {
+  return o.possibly(*this);
+}
+
+bool bi::Conditional::possibly(Conditional& o) {
+  return cond->possibly(*o.cond) && braces->possibly(*o.braces)
+      && falseBraces->possibly(*o.falseBraces);
 }

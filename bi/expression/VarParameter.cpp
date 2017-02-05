@@ -33,10 +33,18 @@ void bi::VarParameter::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bi::possibly bi::VarParameter::dispatch(Expression& o) {
-  return o.le(*this);
+bool bi::VarParameter::dispatchDefinitely(Expression& o) {
+  return o.definitely(*this);
 }
 
-bi::possibly bi::VarParameter::le(VarParameter& o) {
-  return *type <= *o.type && o.capture(this);
+bool bi::VarParameter::definitely(VarParameter& o) {
+  return type->definitely(*o.type) && o.capture(this);
+}
+
+bool bi::VarParameter::dispatchPossibly(Expression& o) {
+  return o.possibly(*this);
+}
+
+bool bi::VarParameter::possibly(VarParameter& o) {
+  return type->possibly(*o.type) && o.capture(this);
 }

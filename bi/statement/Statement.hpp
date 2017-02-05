@@ -4,7 +4,6 @@
 #pragma once
 
 #include "bi/common/Located.hpp"
-#include "bi/primitive/possibly.hpp"
 
 namespace bi {
 class Cloner;
@@ -75,24 +74,34 @@ public:
   virtual bool isEmpty() const;
 
   /*
-   * Partial order comparison operators for comparing statements in terms of
-   * specialisation. These double-dispatch to the #le, #gt, #eq and #ne
-   * functions below, which can be implemented for specific types in derived
-   * classes.
+   * Double-dispatch partial order comparisons.
    */
-  possibly operator<=(Statement& o);
-  possibly operator==(Statement& o);
-  virtual possibly dispatch(Statement& o) = 0;
-  virtual possibly le(Conditional& o);
-  virtual possibly le(Declaration<VarParameter>& o);
-  virtual possibly le(Declaration<FuncParameter>& o);
-  virtual possibly le(Declaration<ProgParameter>& o);
-  virtual possibly le(Declaration<ModelParameter>& o);
-  virtual possibly le(EmptyStatement& o);
-  virtual possibly le(ExpressionStatement& o);
-  virtual possibly le(Import& o);
-  virtual possibly le(List<Statement>& o);
-  virtual possibly le(Loop& o);
-  virtual possibly le(Raw& o);
+  virtual bool definitely(Statement& o);
+  virtual bool dispatchDefinitely(Statement& o) = 0;
+  virtual bool definitely(Conditional& o);
+  virtual bool definitely(Declaration<VarParameter>& o);
+  virtual bool definitely(Declaration<FuncParameter>& o);
+  virtual bool definitely(Declaration<ProgParameter>& o);
+  virtual bool definitely(Declaration<ModelParameter>& o);
+  virtual bool definitely(EmptyStatement& o);
+  virtual bool definitely(ExpressionStatement& o);
+  virtual bool definitely(Import& o);
+  virtual bool definitely(List<Statement>& o);
+  virtual bool definitely(Loop& o);
+  virtual bool definitely(Raw& o);
+
+  virtual bool possibly(Statement& o);
+  virtual bool dispatchPossibly(Statement& o) = 0;
+  virtual bool possibly(Conditional& o);
+  virtual bool possibly(Declaration<VarParameter>& o);
+  virtual bool possibly(Declaration<FuncParameter>& o);
+  virtual bool possibly(Declaration<ProgParameter>& o);
+  virtual bool possibly(Declaration<ModelParameter>& o);
+  virtual bool possibly(EmptyStatement& o);
+  virtual bool possibly(ExpressionStatement& o);
+  virtual bool possibly(Import& o);
+  virtual bool possibly(List<Statement>& o);
+  virtual bool possibly(Loop& o);
+  virtual bool possibly(Raw& o);
 };
 }

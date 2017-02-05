@@ -30,10 +30,18 @@ void bi::ExpressionStatement::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bi::possibly bi::ExpressionStatement::dispatch(Statement& o) {
-  return o.le(*this);
+bool bi::ExpressionStatement::dispatchDefinitely(Statement& o) {
+  return o.definitely(*this);
 }
 
-bi::possibly bi::ExpressionStatement::le(ExpressionStatement& o) {
-  return *single <= *o.single;
+bool bi::ExpressionStatement::definitely(ExpressionStatement& o) {
+  return single->definitely(*o.single);
+}
+
+bool bi::ExpressionStatement::dispatchPossibly(Statement& o) {
+  return o.possibly(*this);
+}
+
+bool bi::ExpressionStatement::possibly(ExpressionStatement& o) {
+  return single->possibly(*o.single);
 }

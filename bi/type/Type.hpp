@@ -4,7 +4,6 @@
 #pragma once
 
 #include "bi/common/Located.hpp"
-#include "bi/primitive/possibly.hpp"
 
 namespace bi {
 class Cloner;
@@ -18,7 +17,6 @@ template<class T> class List;
 class ModelParameter;
 class ModelReference;
 class ParenthesesType;
-class RandomType;
 
 /**
  * Type.
@@ -70,11 +68,6 @@ public:
   virtual bool isEmpty() const;
 
   /**
-   * Is this a random type?
-   */
-  virtual bool isRandom() const;
-
-  /**
    * Is this a built-in type?
    */
   virtual bool isBuiltin() const;
@@ -100,19 +93,26 @@ public:
   bool assignable;
 
   /*
-   * Partial order comparison operators for comparing types in terms of
-   * specialisation.
+   * Double-dispatch partial order comparisons.
    */
-  possibly operator<=(Type& o);
-  possibly operator==(Type& o);
-  virtual possibly dispatch(Type& o) = 0;
-  virtual possibly le(AssignableType& o);
-  virtual possibly le(BracketsType& o);
-  virtual possibly le(EmptyType& o);
-  virtual possibly le(List<Type>& o);
-  virtual possibly le(ModelParameter& o);
-  virtual possibly le(ModelReference& o);
-  virtual possibly le(ParenthesesType& o);
-  virtual possibly le(RandomType& o);
+  virtual bool definitely(Type& o);
+  virtual bool dispatchDefinitely(Type& o) = 0;
+  virtual bool definitely(AssignableType& o);
+  virtual bool definitely(BracketsType& o);
+  virtual bool definitely(EmptyType& o);
+  virtual bool definitely(List<Type>& o);
+  virtual bool definitely(ModelParameter& o);
+  virtual bool definitely(ModelReference& o);
+  virtual bool definitely(ParenthesesType& o);
+
+  virtual bool possibly(Type& o);
+  virtual bool dispatchPossibly(Type& o) = 0;
+  virtual bool possibly(AssignableType& o);
+  virtual bool possibly(BracketsType& o);
+  virtual bool possibly(EmptyType& o);
+  virtual bool possibly(List<Type>& o);
+  virtual bool possibly(ModelParameter& o);
+  virtual bool possibly(ModelReference& o);
+  virtual bool possibly(ParenthesesType& o);
 };
 }

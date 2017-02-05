@@ -54,82 +54,154 @@ int bi::Expression::tupleDims() const {
   return visitor.dims;
 }
 
-bi::possibly bi::Expression::operator<=(Expression& o) {
-  return o.dispatch(*this);
+bool bi::Expression::definitely(Expression& o) {
+  return o.dispatchDefinitely(*this);
 }
 
-bi::possibly bi::Expression::operator==(Expression& o) {
-  return *this <= o && o <= *this;
+bool bi::Expression::definitely(BracesExpression& o) {
+  return false;
 }
 
-bi::possibly bi::Expression::le(BracesExpression& o) {
-  return untrue;
+bool bi::Expression::definitely(BracketsExpression& o) {
+  return false;
 }
 
-bi::possibly bi::Expression::le(BracketsExpression& o) {
-  return untrue;
+bool bi::Expression::definitely(EmptyExpression& o) {
+  return false;
 }
 
-bi::possibly bi::Expression::le(EmptyExpression& o) {
-  return untrue;
+bool bi::Expression::definitely(List<Expression>& o) {
+  return false;
 }
 
-bi::possibly bi::Expression::le(List<Expression>& o) {
-  return untrue;
+bool bi::Expression::definitely(FuncParameter& o) {
+  return false;
 }
 
-bi::possibly bi::Expression::le(FuncParameter& o) {
-  return untrue;
+bool bi::Expression::definitely(FuncReference& o) {
+  return false;
 }
 
-bi::possibly bi::Expression::le(FuncReference& o) {
-  return untrue;
+bool bi::Expression::definitely(Index& o) {
+  return false;
 }
 
-bi::possibly bi::Expression::le(Index& o) {
-  return untrue;
+bool bi::Expression::definitely(Literal<bool>& o) {
+  return false;
 }
 
-bi::possibly bi::Expression::le(Literal<bool>& o) {
-  return untrue;
+bool bi::Expression::definitely(Literal<int64_t>& o) {
+  return false;
 }
 
-bi::possibly bi::Expression::le(Literal<int64_t>& o) {
-  return untrue;
+bool bi::Expression::definitely(Literal<double>& o) {
+  return false;
 }
 
-bi::possibly bi::Expression::le(Literal<double>& o) {
-  return untrue;
+bool bi::Expression::definitely(Literal<const char*>& o) {
+  return false;
 }
 
-bi::possibly bi::Expression::le(Literal<const char*>& o) {
-  return untrue;
+bool bi::Expression::definitely(ParenthesesExpression& o) {
+  return false;
 }
 
-bi::possibly bi::Expression::le(ParenthesesExpression& o) {
-  return untrue;
+bool bi::Expression::definitely(Range& o) {
+  return false;
 }
 
-bi::possibly bi::Expression::le(Range& o) {
-  return untrue;
+bool bi::Expression::definitely(This& o) {
+  return false;
 }
 
-bi::possibly bi::Expression::le(This& o) {
-  return untrue;
+bool bi::Expression::definitely(Member& o) {
+  return false;
 }
 
-bi::possibly bi::Expression::le(Member& o) {
-  return untrue;
+bool bi::Expression::definitely(RandomInit& o) {
+  return false;
 }
 
-bi::possibly bi::Expression::le(RandomInit& o) {
-  return untrue;
+bool bi::Expression::definitely(VarParameter& o) {
+  return false;
 }
 
-bi::possibly bi::Expression::le(VarParameter& o) {
-  return untrue;
+bool bi::Expression::definitely(VarReference& o) {
+  return false;
 }
 
-bi::possibly bi::Expression::le(VarReference& o) {
-  return untrue;
+bool bi::Expression::possibly(Expression& o) {
+  return o.dispatchPossibly(*this);
+}
+
+bool bi::Expression::possibly(BracesExpression& o) {
+  return false;
+}
+
+bool bi::Expression::possibly(BracketsExpression& o) {
+  return false;
+}
+
+bool bi::Expression::possibly(EmptyExpression& o) {
+  return false;
+}
+
+bool bi::Expression::possibly(List<Expression>& o) {
+  return false;
+}
+
+bool bi::Expression::possibly(FuncParameter& o) {
+  return false;
+}
+
+bool bi::Expression::possibly(FuncReference& o) {
+  return false;
+}
+
+bool bi::Expression::possibly(Index& o) {
+  return false;
+}
+
+bool bi::Expression::possibly(Literal<bool>& o) {
+  return false;
+}
+
+bool bi::Expression::possibly(Literal<int64_t>& o) {
+  return false;
+}
+
+bool bi::Expression::possibly(Literal<double>& o) {
+  return false;
+}
+
+bool bi::Expression::possibly(Literal<const char*>& o) {
+  return false;
+}
+
+bool bi::Expression::possibly(ParenthesesExpression& o) {
+  return false;
+}
+
+bool bi::Expression::possibly(Range& o) {
+  return false;
+}
+
+bool bi::Expression::possibly(This& o) {
+  return false;
+}
+
+bool bi::Expression::possibly(Member& o) {
+  return false;
+}
+
+bool bi::Expression::possibly(RandomInit& o) {
+  return false;
+}
+
+bool bi::Expression::possibly(VarParameter& o) {
+  return false;
+}
+
+bool bi::Expression::possibly(VarReference& o) {
+  return false;
 }

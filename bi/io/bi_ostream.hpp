@@ -48,7 +48,6 @@ public:
   virtual void visit(const AssignableType* o);
   virtual void visit(const BracketsType* o);
   virtual void visit(const ParenthesesType* o);
-  virtual void visit(const RandomType* o);
 
   virtual void visit(const File* o);
   virtual void visit(const Import* o);

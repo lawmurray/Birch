@@ -193,11 +193,6 @@ void bi::Visitor::visit(const ParenthesesType* o) {
   o->single->accept(this);
 }
 
-void bi::Visitor::visit(const RandomType* o) {
-  o->left->accept(this);
-  o->right->accept(this);
-}
-
 void bi::Visitor::visit(const TypeList* o) {
   o->head->accept(this);
   o->tail->accept(this);

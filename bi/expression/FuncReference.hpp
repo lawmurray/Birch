@@ -64,9 +64,14 @@ public:
    */
   std::list<const Expression*> args;
 
-  virtual possibly dispatch(Expression& o);
-  virtual possibly le(FuncReference& o);
-  virtual possibly le(FuncParameter& o);
-  virtual possibly le(VarParameter& o);
+  virtual bool dispatchDefinitely(Expression& o);
+  virtual bool definitely(FuncReference& o);
+  virtual bool definitely(FuncParameter& o);
+  virtual bool definitely(VarParameter& o);
+
+  virtual bool dispatchPossibly(Expression& o);
+  virtual bool possibly(FuncReference& o);
+  virtual bool possibly(FuncParameter& o);
+  virtual bool possibly(VarParameter& o);
 };
 }

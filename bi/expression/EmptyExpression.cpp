@@ -31,10 +31,18 @@ bool bi::EmptyExpression::isEmpty() const {
   return true;
 }
 
-bi::possibly bi::EmptyExpression::dispatch(Expression& o) {
-  return o.le(*this);
+bool bi::EmptyExpression::dispatchDefinitely(Expression& o) {
+  return o.definitely(*this);
 }
 
-bi::possibly bi::EmptyExpression::le(EmptyExpression& o) {
-  return *type <= *o.type;
+bool bi::EmptyExpression::definitely(EmptyExpression& o) {
+  return type->definitely(*o.type);
+}
+
+bool bi::EmptyExpression::dispatchPossibly(Expression& o) {
+  return o.possibly(*this);
+}
+
+bool bi::EmptyExpression::possibly(EmptyExpression& o) {
+  return type->possibly(*o.type);
 }

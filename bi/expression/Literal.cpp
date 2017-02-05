@@ -38,18 +38,33 @@ void bi::Literal<T1>::accept(Visitor* visitor) const {
 }
 
 template<class T1>
-bi::possibly bi::Literal<T1>::dispatch(Expression& o) {
-  return o.le(*this);
+bool bi::Literal<T1>::dispatchDefinitely(Expression& o) {
+  return o.definitely(*this);
 }
 
 template<class T1>
-bi::possibly bi::Literal<T1>::le(Literal<T1>& o) {
-  return possibly(value == o.value) && *type <= *o.type;
+bool bi::Literal<T1>::definitely(Literal<T1>& o) {
+  return value == o.value && type->definitely(*o.type);
 }
 
 template<class T1>
-bi::possibly bi::Literal<T1>::le(VarParameter& o) {
-  return *type <= *o.type && o.capture(this);
+bool bi::Literal<T1>::definitely(VarParameter& o) {
+  return type->definitely(*o.type) && o.capture(this);
+}
+
+template<class T1>
+bool bi::Literal<T1>::dispatchPossibly(Expression& o) {
+  return o.possibly(*this);
+}
+
+template<class T1>
+bool bi::Literal<T1>::possibly(Literal<T1>& o) {
+  return value == o.value && type->possibly(*o.type);
+}
+
+template<class T1>
+bool bi::Literal<T1>::possibly(VarParameter& o) {
+  return type->possibly(*o.type) && o.capture(this);
 }
 
 /*

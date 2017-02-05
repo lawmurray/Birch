@@ -27,10 +27,18 @@ bool bi::EmptyStatement::isEmpty() const {
   return true;
 }
 
-bi::possibly bi::EmptyStatement::dispatch(Statement& o) {
-  return o.le(*this);
+bool bi::EmptyStatement::dispatchDefinitely(Statement& o) {
+  return o.definitely(*this);
 }
 
-bi::possibly bi::EmptyStatement::le(EmptyStatement& o) {
-  return definite;
+bool bi::EmptyStatement::definitely(EmptyStatement& o) {
+  return true;
+}
+
+bool bi::EmptyStatement::dispatchPossibly(Statement& o) {
+  return o.possibly(*this);
+}
+
+bool bi::EmptyStatement::possibly(EmptyStatement& o) {
+  return true;
 }

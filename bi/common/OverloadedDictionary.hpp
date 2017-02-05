@@ -5,9 +5,8 @@
 
 #include "bi/common/Dictionary.hpp"
 #include "bi/primitive/poset.hpp"
-#include "bi/primitive/signature_less_equal.hpp"
-#include "bi/exception/UnresolvedReferenceException.hpp"
-#include "bi/exception/AmbiguousReferenceException.hpp"
+#include "bi/primitive/definitely.hpp"
+#include "bi/primitive/possibly.hpp"
 
 namespace bi {
 /**
@@ -20,8 +19,11 @@ namespace bi {
 template<class ParameterType, class ReferenceType>
 class OverloadedDictionary: public Dictionary<ParameterType,ReferenceType> {
 public:
-  typedef poset<ParameterType*,signature_less_equal> poset_type;
-  typedef std::unordered_map<std::string,poset_type> map_type;
+  typedef poset<ParameterType*,definitely> definitely_poset_type;
+  typedef poset<ParameterType*,possibly> possibly_poset_type;
+
+  typedef std::unordered_map<std::string,definitely_poset_type> definitely_type;
+  typedef std::unordered_map<std::string,possibly_poset_type> possibly_type;
 
   /**
    * Does the dictionary contain the given parameter?
@@ -58,15 +60,20 @@ public:
    */
   template<class Container>
   void parents(ParameterType* param, Container& parents) {
-    auto iter = overloaded.find(param->name->str());
-    if (iter != overloaded.end()) {
+    auto iter = definites.find(param->name->str());
+    if (iter != definites.end()) {
       iter->second.parents(param, parents);
     }
   }
 
   /**
-   * Declarations by partial order.
+   * Declarations by definite order.
    */
-  map_type overloaded;
+  definitely_type definites;
+
+  /**
+   * Declarations by possible order.
+   */
+  possibly_type possibles;
 };
 }

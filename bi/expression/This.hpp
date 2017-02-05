@@ -30,8 +30,12 @@ public:
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
-  virtual possibly dispatch(Expression& o);
-  virtual possibly le(This& o);
-  virtual possibly le(VarParameter& o);
+  virtual bool dispatchDefinitely(Expression& o);
+  virtual bool definitely(This& o);
+  virtual bool definitely(VarParameter& o);
+
+  virtual bool dispatchPossibly(Expression& o);
+  virtual bool possibly(This& o);
+  virtual bool possibly(VarParameter& o);
 };
 }

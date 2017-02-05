@@ -251,9 +251,6 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
         start(name << " = ");
         Type* type = (*iter)->type->strip();
 
-        if (typeid(*type) == typeid(RandomType)) {
-          type = dynamic_cast<const RandomType*>(type)->left.get();
-        }
         if (typeid(*type) == typeid(ModelReference)) {
           std::string typeName = dynamic_cast<const ModelReference*>(type)->name->str();
           if (typeName.compare("Boolean") == 0) {

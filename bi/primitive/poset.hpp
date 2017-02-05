@@ -3,8 +3,6 @@
  */
 #pragma once
 
-#include "bi/primitive/possibly.hpp"
-
 #include <cstdlib>
 #include <set>
 #include <map>
@@ -48,20 +46,16 @@ public:
   void parents(T v, Container& parents);
 
   /**
-   * Find the most-specific definite match(es) as well as more-specific
-   * possible matche(es).
+   * Find the most-specific match(es).
    *
    * @tparam Comparable Type comparable to value type.
    * @tparam Container Container type with push_back() function.
    *
    * @param v The value.
-   * @param[out] definites Container to hold most-specific definite
-   * match(es).
-   * @param[out] possibles Container to hold more-specific possible
-   * match(es).
+   * @param[out] matches Container to hold matches.
    */
   template<class Comparable, class Container>
-  void match(Comparable v, Container& definites, Container& possibles);
+  void match(Comparable v, Container& marches);
 
   /**
    * Insert vertex.
@@ -100,18 +94,12 @@ private:
   void remove_edge(T u, T v);
 
   /**
-   * Sub-operation for match to find most-specific definite match.
+   * Sub-operation for match to find most-specific match.
    *
-   * @return True if a definite match was made in the subgraph.
+   * @return True if a match was made in the subgraph.
    */
   template<class Comparable, class Container>
-  bool match_definites(T u, Comparable v, Container& definites);
-
-  /**
-   * Sub-operation for match to find most-specific definite match.
-   */
-  template<class Comparable, class Container>
-  bool match_possibles(T u, Comparable v, Container& possibles);
+  bool match(T u, Comparable v, Container& matches);
 
   /*
    * Sub-operations for insert.
@@ -166,10 +154,10 @@ bi::poset<T,Compare>::poset() :
 
 template<class T, class Compare>
 bool bi::poset<T,Compare>::contains(T v) {
-  std::list<T> definites, possibles;
-  match(v, definites, possibles);
-  return definites.size() == 1 && definites.front() <= v
-      && v <= definites.front();
+  std::list<T> matches;
+  match(v, matches);
+  return matches.size() == 1 && compare(matches.front(), v)
+      && compare(v, matches.front());
 }
 
 template<class T, class Compare>
@@ -177,9 +165,9 @@ T bi::poset<T,Compare>::get(T v) {
   /* pre-condition */
   assert(contains(v));
 
-  std::list<T> definites, possibles;
-  match(v, definites, possibles);
-  return definites.front();
+  std::list<T> matches;
+  match(v, matches);
+  return matches.front();
 }
 
 template<class T, class Compare>
@@ -202,16 +190,10 @@ void bi::poset<T,Compare>::children(T v, Container& children) {
 
 template<class T, class Compare>
 template<class Comparable, class Container>
-void bi::poset<T,Compare>::match(Comparable v, Container& definites,
-    Container& possibles) {
+void bi::poset<T,Compare>::match(Comparable v, Container& matches) {
   ++colour;
   for (auto iter = roots.begin(); iter != roots.end(); ++iter) {
-    match_definites(*iter, v, definites);
-  }
-
-  ++colour;
-  for (auto iter = roots.begin(); iter != roots.end(); ++iter) {
-    match_possibles(*iter, v, possibles);
+    match(*iter, v, matches);
   }
 }
 
@@ -280,54 +262,24 @@ void bi::poset<T,Compare>::remove_edge(T u, T v) {
 
 template<class T, class Compare>
 template<class Comparable, class Container>
-bool bi::poset<T,Compare>::match_definites(T u, Comparable v,
-    Container& definites) {
+bool bi::poset<T,Compare>::match(T u, Comparable v,
+    Container& matches) {
   bool deeper = false;
   if (colours[u] < colour) {
     /* not visited yet */
     colours[u] = colour;
-    if (compare(v, u) == definite) {
+    if (compare(v, u)) {
       /* this vertex matches, check if any vertices in the subgraph match
        * more-specifically */
       auto range = forwards.equal_range(u);
       for (auto iter = range.first; iter != range.second; ++iter) {
-        deeper = match_definites(iter->second, v, definites) || deeper;
+        deeper = match(iter->second, v, matches) || deeper;
         // ^ do the || in this order to prevent short circuit
       }
       if (!deeper) {
         /* no more-specific matches in the subgraph beneath this vertex, so
          * this is the most-specific match */
-        definites.push_back(u);
-        deeper = true;
-      }
-    }
-  }
-  return deeper;
-}
-
-template<class T, class Compare>
-template<class Comparable, class Container>
-bool bi::poset<T,Compare>::match_possibles(T u, Comparable v,
-    Container& possibles) {
-  bool deeper = false;
-  if (colours[u] < colour) {
-    /* not visited yet */
-    colours[u] = colour;
-    possibly result = compare(v, u);
-    if (result != untrue) {
-      /* this vertex matches definitely or possibly, check if any vertices in
-       * the subgraph match more-specifically */
-      auto range = forwards.equal_range(u);
-      for (auto iter = range.first; iter != range.second; ++iter) {
-        deeper = match_possibles(iter->second, v, possibles) || deeper;
-        // ^ do the || in this order to prevent short circuit
-      }
-      if (!deeper) {
-        /* no more-specific matches in the subgraph beneath this vertex, so
-         * this is the most-specific match */
-        if (result == possible) {
-          possibles.push_back(u);
-        }
+        matches.push_back(u);
         deeper = true;
       }
     }
@@ -350,7 +302,7 @@ template<class T, class Compare>
 void bi::poset<T,Compare>::forward(T u, T v) {
   if (colours[u] < colour) {
     colours[u] = colour;
-    if (compare(u, v) == definite) {
+    if (compare(u, v)) {
       add_edge(v, u);
     } else {
       std::list<T> forwards1;
@@ -377,7 +329,7 @@ template<class T, class Compare>
 void bi::poset<T,Compare>::backward(T u, T v) {
   if (colours[u] < colour) {
     colours[u] = colour;
-    if (compare(v, u) == definite) {
+    if (compare(v, u)) {
       add_edge(u, v);
     } else {
       std::list<T> backwards1;

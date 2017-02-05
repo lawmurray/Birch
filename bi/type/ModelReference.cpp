@@ -58,32 +58,61 @@ bool bi::ModelReference::isModel() const {
   }
 }
 
-bi::possibly bi::ModelReference::isa(ModelReference& o) {
-  bool result = target == o.target;
-  if (!result && target) {
-    ModelReference* ref = dynamic_cast<ModelReference*>(target->base.get());
-    result = ref && ref->isa(o);
+bool bi::ModelReference::canUpcast(ModelReference& o) {
+  /* pre-condition */
+  assert(target && o.target);
+
+  if (*o.target->op == "=") {
+    ModelReference* ref =
+        dynamic_cast<ModelReference*>(o.target->base->strip());
+    return canUpcast(*ref);  // compare with canonical type
+  } else {
+    ModelReference* ref = dynamic_cast<ModelReference*>(target->base->strip());
+    return target == o.target || (ref && ref->canUpcast(o));
   }
-  return possibly(result);
 }
 
-bi::possibly bi::ModelReference::dispatch(Type& o) {
-  return o.le(*this);
+bool bi::ModelReference::canDowncast(ModelReference& o) {
+  /* pre-condition */
+  assert(target && o.target);
+
+  ModelReference* ref = dynamic_cast<ModelReference*>(o.target->base->strip());
+  if (*o.target->op == "=") {
+    return canDowncast(*ref);  // compare with canonical type
+  } else {
+    return target == o.target
+        || (*o.target->op != "~" && ref && canDowncast(*ref));
+  }
 }
 
-bi::possibly bi::ModelReference::le(ModelParameter& o) {
+bool bi::ModelReference::dispatchDefinitely(Type& o) {
+  return o.definitely(*this);
+}
+
+bool bi::ModelReference::definitely(ModelParameter& o) {
   return o.capture(this);
 }
 
-bi::possibly bi::ModelReference::le(ModelReference& o) {
-  if (*o.target->op == "=") {
-    return *this <= *o.target->base;  // compare with canonical type
-  } else {
-    return (isa(o) || (possible && o.isa(*this))) && *parens <= *o.parens
-        && (!o.assignable || assignable);
-  }
+bool bi::ModelReference::definitely(ModelReference& o) {
+  return canUpcast(o) && (!o.assignable || assignable);
 }
 
-bi::possibly bi::ModelReference::le(EmptyType& o) {
-  return possibly(!o.assignable || assignable);
+bool bi::ModelReference::definitely(EmptyType& o) {
+  return !o.assignable || assignable;
+}
+
+bool bi::ModelReference::dispatchPossibly(Type& o) {
+  return o.possibly(*this);
+}
+
+bool bi::ModelReference::possibly(ModelParameter& o) {
+  return o.capture(this);
+}
+
+bool bi::ModelReference::possibly(ModelReference& o) {
+  return canDowncast(o) && (!o.assignable || assignable);
+}
+
+bool bi::ModelReference::possibly(EmptyType& o) {
+  return !o.assignable || assignable;
 }

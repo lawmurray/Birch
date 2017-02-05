@@ -86,8 +86,6 @@ birchc_SOURCES = \
   bi/io/indentable_ostream.cpp \
   bi/io/mangler_ostream.cpp \
   bi/primitive/encode.cpp \
-  bi/primitive/possibly.cpp \
-  bi/primitive/signature_less_equal.cpp \
   bi/program/Prog.cpp \
   bi/program/ProgParameter.cpp \
   bi/program/ProgReference.cpp \
@@ -106,14 +104,12 @@ birchc_SOURCES = \
   bi/type/ModelParameter.cpp \
   bi/type/ModelReference.cpp \
   bi/type/ParenthesesType.cpp \
-  bi/type/RandomType.cpp \
   bi/type/Type.cpp \
   bi/visitor/Assigner.cpp \
   bi/visitor/Cloner.cpp \
   bi/visitor/DispatchGatherer.cpp \
   bi/visitor/Gatherer.cpp \
   bi/visitor/IsPrimary.cpp \
-  bi/visitor/IsRandom.cpp \
   bi/visitor/IsRich.cpp \
   bi/visitor/Modifier.cpp \
   bi/visitor/Resolver.cpp \

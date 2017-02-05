@@ -70,7 +70,10 @@ public:
    */
   std::list<const VarParameter*> outputs;
 
-  virtual possibly dispatch(Expression& o);
-  virtual possibly le(FuncParameter& o);
+  virtual bool dispatchDefinitely(Expression& o);
+  virtual bool definitely(FuncParameter& o);
+
+  virtual bool dispatchPossibly(Expression& o);
+  virtual bool possibly(FuncParameter& o);
 };
 }

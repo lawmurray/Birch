@@ -11,8 +11,8 @@
 template<class ParameterType, class ReferenceType>
 bool bi::OverloadedDictionary<ParameterType,ReferenceType>::contains(
     ParameterType* param) {
-  auto iter = overloaded.find(param->name->str());
-  return iter != overloaded.end() && iter->second.contains(param);
+  auto iter = definites.find(param->name->str());
+  return iter != definites.end() && iter->second.contains(param);
 }
 
 template<class ParameterType, class ReferenceType>
@@ -21,8 +21,8 @@ ParameterType* bi::OverloadedDictionary<ParameterType,ReferenceType>::get(
   /* pre-condition */
   assert(contains(param));
 
-  auto iter = overloaded.find(param->name->str());
-  assert(iter != overloaded.end());
+  auto iter = definites.find(param->name->str());
+  assert(iter != definites.end());
   return iter->second.get(param);
 }
 
@@ -35,39 +35,60 @@ void bi::OverloadedDictionary<ParameterType,ReferenceType>::add(
   /* store in ordered list */
   this->ordered.push_back(param);
 
-  /* store in poset */
-  auto key = param->name->str();
-  auto iter = overloaded.find(key);
-  if (iter != overloaded.end()) {
-    auto& val = iter->second;
-    val.insert(param);
+  /* store in definites poset */
+  auto key1 = param->name->str();
+  auto iter1 = definites.find(key1);
+  if (iter1 != definites.end()) {
+    auto& val1 = iter1->second;
+    val1.insert(param);
   } else {
-    auto val = poset_type();
-    val.insert(param);
-    auto pair = std::make_pair(key, val);
-    overloaded.insert(pair);
+    auto val1 = definitely_poset_type();
+    val1.insert(param);
+    auto pair1 = std::make_pair(key1, val1);
+    definites.insert(pair1);
   }
+
+  /* store in possibles poset */
+  /*auto key2 = param->name->str();
+  auto iter2 = possibles.find(key2);
+  if (iter2 != possibles.end()) {
+    auto& val2 = iter2->second;
+    val2.insert(param);
+  } else {
+    auto val2 = possibly_poset_type();
+    val2.insert(param);
+    auto pair2 = std::make_pair(key2, val2);
+    possibles.insert(pair2);
+  }*/
 }
 
 template<class ParameterType, class ReferenceType>
 void bi::OverloadedDictionary<ParameterType,ReferenceType>::resolve(
     ReferenceType* ref) {
-  auto iter = overloaded.find(ref->name->str());
-  if (iter == overloaded.end()) {
+  /* definite matches */
+  auto iter1 = definites.find(ref->name->str());
+  if (iter1 == definites.end()) {
     ref->target = nullptr;
-    ref->alternatives.clear();
   } else {
-    std::list<ParameterType*> definites, possibles;
-    iter->second.match(ref, definites, possibles);
+    std::list<ParameterType*> definites;
+    iter1->second.match(ref, definites);
     if (definites.size() > 1) {
       throw AmbiguousReferenceException(ref, definites);
     } else if (definites.size() == 1) {
       ref->target = definites.front();
-      ref->alternatives = possibles;
     } else {
       ref->target = nullptr;
-      ref->alternatives.clear();
     }
+  }
+
+  /* possible matches */
+  auto iter2 = possibles.find(ref->name->str());
+  if (iter2 == possibles.end()) {
+    ref->alternatives.clear();
+  } else {
+    std::list<ParameterType*> possibles;
+    iter2->second.match(ref, possibles);
+    ref->alternatives = possibles;
   }
 }
 

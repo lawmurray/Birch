@@ -49,17 +49,27 @@ public:
   virtual bool isModel() const;
 
   /**
-   * Does this model inherit from another?
+   * Can this type be upcast to another?
    */
-  virtual possibly isa(ModelReference& o);
+  bool canUpcast(ModelReference& o);
+
+  /**
+   * Can this type be downcast to another?
+   */
+  bool canDowncast(ModelReference& o);
 
   virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
-  virtual possibly dispatch(Type& o);
-  virtual possibly le(ModelParameter& o);
-  virtual possibly le(ModelReference& o);
-  virtual possibly le(EmptyType& o);
+  virtual bool dispatchDefinitely(Type& o);
+  virtual bool definitely(ModelParameter& o);
+  virtual bool definitely(ModelReference& o);
+  virtual bool definitely(EmptyType& o);
+
+  virtual bool dispatchPossibly(Type& o);
+  virtual bool possibly(ModelParameter& o);
+  virtual bool possibly(ModelReference& o);
+  virtual bool possibly(EmptyType& o);
 };
 }

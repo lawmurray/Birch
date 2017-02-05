@@ -40,7 +40,10 @@ public:
    */
   std::string raw;
 
-  virtual possibly dispatch(Statement& o);
-  virtual possibly le(Raw& o);
+  virtual bool dispatchDefinitely(Statement& o);
+  virtual bool definitely(Raw& o);
+
+  virtual bool dispatchPossibly(Statement& o);
+  virtual bool possibly(Raw& o);
 };
 }

@@ -3,8 +3,6 @@
  */
 #pragma once
 
-#include "bi/primitive/possibly.hpp"
-
 namespace bi {
 /**
  * Parameter.
@@ -33,7 +31,7 @@ public:
    *
    * @return True.
    */
-  possibly capture(Argument* arg);
+  bool capture(Argument* arg);
 
   /**
    * Argument.

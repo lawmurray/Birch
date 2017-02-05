@@ -31,10 +31,18 @@ void bi::Import::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bi::possibly bi::Import::dispatch(Statement& o) {
-  return o.le(*this);
+bool bi::Import::dispatchDefinitely(Statement& o) {
+  return o.definitely(*this);
 }
 
-bi::possibly bi::Import::le(Import& o) {
-  return possibly(*path == *o.path);
+bool bi::Import::definitely(Import& o) {
+  return *path == *o.path;
+}
+
+bool bi::Import::dispatchPossibly(Statement& o) {
+  return o.possibly(*this);
+}
+
+bool bi::Import::possibly(Import& o) {
+  return *path == *o.path;
 }

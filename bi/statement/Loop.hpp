@@ -35,7 +35,10 @@ public:
   virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
-  virtual possibly dispatch(Statement& o);
-  virtual possibly le(Loop& o);
+  virtual bool dispatchDefinitely(Statement& o);
+  virtual bool definitely(Loop& o);
+
+  virtual bool dispatchPossibly(Statement& o);
+  virtual bool possibly(Loop& o);
 };
 }

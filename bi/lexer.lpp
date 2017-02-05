@@ -122,7 +122,7 @@ IS                                 (u|U|l|L)*
 "->"                                { return RIGHT_OP; }
 "<-"                                { return LEFT_OP; } 
 "~>"                                { return PUSH_OP; }
-"<~"                                { return PULL_OP; } 
+"<~"                                { return PULL_OP; }
 "~"                                 { return '~'; }
 ".."                                { return RANGE_OP; }
 "!"                                 { return '!'; }

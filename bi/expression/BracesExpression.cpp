@@ -30,10 +30,18 @@ void bi::BracesExpression::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bi::possibly bi::BracesExpression::dispatch(Expression& o) {
-  return o.le(*this);
+bool bi::BracesExpression::dispatchDefinitely(Expression& o) {
+  return o.definitely(*this);
 }
 
-bi::possibly bi::BracesExpression::le(BracesExpression& o) {
-  return *single <= *o.single && *type <= *o.type;
+bool bi::BracesExpression::definitely(BracesExpression& o) {
+  return single->definitely(*o.single) && type->definitely(*o.type);
+}
+
+bool bi::BracesExpression::dispatchPossibly(Expression& o) {
+  return o.possibly(*this);
+}
+
+bool bi::BracesExpression::possibly(BracesExpression& o) {
+  return single->possibly(*o.single) && type->possibly(*o.type);
 }

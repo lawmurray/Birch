@@ -3,8 +3,6 @@
  */
 #include "bi/type/Type.hpp"
 
-#include "bi/visitor/IsRandom.hpp"
-
 bi::Type::Type(shared_ptr<Location> loc) :
     Located(loc),
     assignable(false) {
@@ -17,12 +15,6 @@ bi::Type::~Type() {
 
 bool bi::Type::isEmpty() const {
   return false;
-}
-
-bool bi::Type::isRandom() const {
-  IsRandom visitor;
-  this->accept(&visitor);
-  return visitor.result;
 }
 
 bool bi::Type::isBuiltin() const {
@@ -41,43 +33,66 @@ int bi::Type::count() const {
   return 0;
 }
 
-bi::possibly bi::Type::operator<=(Type& o) {
-  return o.dispatch(*this);
+bool bi::Type::definitely(Type& o) {
+  return o.dispatchDefinitely(*this);
 }
 
-
-bi::possibly bi::Type::operator==(Type& o) {
-  return *this <= o && o <= *this;
+bool bi::Type::definitely(AssignableType& o) {
+  return false;
 }
 
-bi::possibly bi::Type::le(AssignableType& o) {
-  return untrue;
+bool bi::Type::definitely(BracketsType& o) {
+  return false;
 }
 
-bi::possibly bi::Type::le(BracketsType& o) {
-  return untrue;
+bool bi::Type::definitely(EmptyType& o) {
+  return false;
 }
 
-bi::possibly bi::Type::le(EmptyType& o) {
-  return untrue;
+bool bi::Type::definitely(List<Type>& o) {
+  return false;
 }
 
-bi::possibly bi::Type::le(List<Type>& o) {
-  return untrue;
+bool bi::Type::definitely(ModelParameter& o) {
+  return false;
 }
 
-bi::possibly bi::Type::le(ModelParameter& o) {
-  return untrue;
+bool bi::Type::definitely(ModelReference& o) {
+  return false;
 }
 
-bi::possibly bi::Type::le(ModelReference& o) {
-  return untrue;
+bool bi::Type::definitely(ParenthesesType& o) {
+  return false;
 }
 
-bi::possibly bi::Type::le(ParenthesesType& o) {
-  return untrue;
+bool bi::Type::possibly(Type& o) {
+  return o.dispatchPossibly(*this);
 }
 
-bi::possibly bi::Type::le(RandomType& o) {
-  return untrue;
+bool bi::Type::possibly(AssignableType& o) {
+  return false;
+}
+
+bool bi::Type::possibly(BracketsType& o) {
+  return false;
+}
+
+bool bi::Type::possibly(EmptyType& o) {
+  return false;
+}
+
+bool bi::Type::possibly(List<Type>& o) {
+  return false;
+}
+
+bool bi::Type::possibly(ModelParameter& o) {
+  return false;
+}
+
+bool bi::Type::possibly(ModelReference& o) {
+  return false;
+}
+
+bool bi::Type::possibly(ParenthesesType& o) {
+  return false;
 }

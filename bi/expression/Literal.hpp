@@ -47,9 +47,13 @@ public:
    */
   std::string str;
 
-  virtual possibly dispatch(Expression& o);
-  virtual possibly le(Literal<T1>& o);
-  virtual possibly le(VarParameter& o);
+  virtual bool dispatchDefinitely(Expression& o);
+  virtual bool definitely(Literal<T1>& o);
+  virtual bool definitely(VarParameter& o);
+
+  virtual bool dispatchPossibly(Expression& o);
+  virtual bool possibly(Literal<T1>& o);
+  virtual bool possibly(VarParameter& o);
 };
 
 /**

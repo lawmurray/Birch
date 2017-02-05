@@ -5,7 +5,6 @@
 
 #include "bi/common/Typed.hpp"
 #include "bi/common/Located.hpp"
-#include "bi/primitive/possibly.hpp"
 
 #include <cassert>
 
@@ -113,30 +112,48 @@ public:
   virtual int tupleDims() const;
 
   /*
-   * Partial order comparison operator for comparing expressions in terms of
-   * specialisation. These double-dispatch to the #le functions below, which
-   * can be implemented for specific types in derived classes.
+   * Double-dispatch partial order comparisons.
    */
-  possibly operator<=(Expression& o);
-  possibly operator==(Expression& o);
-  virtual possibly dispatch(Expression& o) = 0;
-  virtual possibly le(BracesExpression& o);
-  virtual possibly le(BracketsExpression& o);
-  virtual possibly le(EmptyExpression& o);
-  virtual possibly le(List<Expression>& o);
-  virtual possibly le(FuncParameter& o);
-  virtual possibly le(FuncReference& o);
-  virtual possibly le(Index& o);
-  virtual possibly le(Literal<bool>& o);
-  virtual possibly le(Literal<int64_t>& o);
-  virtual possibly le(Literal<double>& o);
-  virtual possibly le(Literal<const char*>& o);
-  virtual possibly le(Member& o);
-  virtual possibly le(ParenthesesExpression& o);
-  virtual possibly le(RandomInit& o);
-  virtual possibly le(Range& o);
-  virtual possibly le(This& o);
-  virtual possibly le(VarParameter& o);
-  virtual possibly le(VarReference& o);
+  bool definitely(Expression& o);
+  virtual bool dispatchDefinitely(Expression& o) = 0;
+  virtual bool definitely(BracesExpression& o);
+  virtual bool definitely(BracketsExpression& o);
+  virtual bool definitely(EmptyExpression& o);
+  virtual bool definitely(List<Expression>& o);
+  virtual bool definitely(FuncParameter& o);
+  virtual bool definitely(FuncReference& o);
+  virtual bool definitely(Index& o);
+  virtual bool definitely(Literal<bool>& o);
+  virtual bool definitely(Literal<int64_t>& o);
+  virtual bool definitely(Literal<double>& o);
+  virtual bool definitely(Literal<const char*>& o);
+  virtual bool definitely(Member& o);
+  virtual bool definitely(ParenthesesExpression& o);
+  virtual bool definitely(RandomInit& o);
+  virtual bool definitely(Range& o);
+  virtual bool definitely(This& o);
+  virtual bool definitely(VarParameter& o);
+  virtual bool definitely(VarReference& o);
+
+  bool possibly(Expression& o);
+  virtual bool dispatchPossibly(Expression& o) = 0;
+  virtual bool possibly(BracesExpression& o);
+  virtual bool possibly(BracketsExpression& o);
+  virtual bool possibly(EmptyExpression& o);
+  virtual bool possibly(List<Expression>& o);
+  virtual bool possibly(FuncParameter& o);
+  virtual bool possibly(FuncReference& o);
+  virtual bool possibly(Index& o);
+  virtual bool possibly(Literal<bool>& o);
+  virtual bool possibly(Literal<int64_t>& o);
+  virtual bool possibly(Literal<double>& o);
+  virtual bool possibly(Literal<const char*>& o);
+  virtual bool possibly(Member& o);
+  virtual bool possibly(ParenthesesExpression& o);
+  virtual bool possibly(RandomInit& o);
+  virtual bool possibly(Range& o);
+  virtual bool possibly(This& o);
+  virtual bool possibly(VarParameter& o);
+  virtual bool possibly(VarReference& o);
 };
 }

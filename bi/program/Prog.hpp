@@ -4,7 +4,6 @@
 #pragma once
 
 #include "bi/common/Located.hpp"
-#include "bi/primitive/possibly.hpp"
 
 namespace bi {
 class Cloner;
@@ -57,15 +56,16 @@ public:
   virtual void accept(Visitor* visitor) const = 0;
 
   /*
-   * Partial order comparison operator for comparing programs in terms of
-   * specialisation. These double-dispatch to the #le, #gt, #eq and #ne
-   * functions below, which can be implemented for specific types in derived
-   * classes.
+   * Double-dispatch partial order comparisons.
    */
-  possibly operator<=(Prog& o);
-  possibly operator==(Prog& o);
-  virtual possibly dispatch(Prog& o) = 0;
-  virtual possibly le(ProgParameter& o);
-  virtual possibly le(ProgReference& o);
+  virtual bool definitely(Prog& o);
+  virtual bool dispatchDefinitely(Prog& o) = 0;
+  virtual bool definitely(ProgParameter& o);
+  virtual bool definitely(ProgReference& o);
+
+  virtual bool possibly(Prog& o);
+  virtual bool dispatchPossibly(Prog& o) = 0;
+  virtual bool possibly(ProgParameter& o);
+  virtual bool possibly(ProgReference& o);
 };
 }

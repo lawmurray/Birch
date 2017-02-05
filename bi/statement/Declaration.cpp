@@ -35,13 +35,23 @@ void bi::Declaration<T>::accept(Visitor* visitor) const {
 }
 
 template<class T>
-bi::possibly bi::Declaration<T>::dispatch(Statement& o) {
-  return o.le(*this);
+bool bi::Declaration<T>::dispatchDefinitely(Statement& o) {
+  return o.definitely(*this);
 }
 
 template<class T>
-bi::possibly bi::Declaration<T>::le(Declaration<T>& o) {
-  return *param <= *o.param;
+bool bi::Declaration<T>::definitely(Declaration<T>& o) {
+  return param->definitely(*o.param);
+}
+
+template<class T>
+bool bi::Declaration<T>::dispatchPossibly(Statement& o) {
+  return o.possibly(*this);
+}
+
+template<class T>
+bool bi::Declaration<T>::possibly(Declaration<T>& o) {
+  return param->possibly(*o.param);
 }
 
 /*

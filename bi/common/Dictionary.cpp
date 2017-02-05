@@ -41,7 +41,7 @@ template<class ParameterType, class ReferenceType>
 void bi::Dictionary<ParameterType,ReferenceType>::resolve(
     ReferenceType* ref) {
   auto iter = unordered.find(ref->name->str());
-  if (iter != unordered.end() && *ref <= *iter->second) {
+  if (iter != unordered.end() && ref->definitely(*iter->second)) {
     ref->target = iter->second;
   } else {
     ref->target = nullptr;

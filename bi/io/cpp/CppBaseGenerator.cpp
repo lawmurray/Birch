@@ -274,14 +274,8 @@ void bi::CppBaseGenerator::visit(const ParenthesesType* o) {
   }
 }
 
-void bi::CppBaseGenerator::visit(const RandomType* o) {
-  inArray = true;
-  middle("bi::Random<" << o->left << ',' << o->right << '>');
-  inArray = false;
-}
-
 void bi::CppBaseGenerator::genCapture(const Expression* o) {
-  /* for lambda, capture random variables by reference, others by value */
+  /* for lambda, capture assignable variables by reference, others by value */
   Gatherer<VarReference> gatherer;
   o->accept(&gatherer);
   std::unordered_set<std::string> done;
@@ -294,7 +288,7 @@ void bi::CppBaseGenerator::genCapture(const Expression* o) {
       if (!done.empty()) {
         middle(", ");
       }
-      if (ref->type->isRandom()) {
+      if (ref->type->assignable) {
         middle('&');
       }
       middle(ref->name);
@@ -305,8 +299,11 @@ void bi::CppBaseGenerator::genCapture(const Expression* o) {
 }
 
 void bi::CppBaseGenerator::genArgs(Expression* ref, FuncParameter* param) {
-  possibly result = *ref <= *param;  // needed to capture arguments
-  assert(result != untrue);
+  bool result = ref->definitely(*param);  // needed to capture arguments
+  if (!result) {
+    //result = ref->possibly(*param);
+    assert(result);
+  }
 
   Gatherer<VarParameter> gatherer;
   param->parens->accept(&gatherer);

@@ -32,19 +32,26 @@ void bi::ProgReference::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bi::possibly bi::ProgReference::dispatch(Prog& o) {
-  return o.le(*this);
+bool bi::ProgReference::dispatchDefinitely(Prog& o) {
+  return o.definitely(*this);
 }
 
-bi::possibly bi::ProgReference::le(ProgParameter& o) {
-  if (!target) {
-    /* not yet bound */
-    return *parens <= *o.parens;
-  } else {
-    return *parens <= *o.parens && o.capture(this);
-  }
+bool bi::ProgReference::definitely(ProgParameter& o) {
+  return parens->definitely(*o.parens) && o.capture(this);
 }
 
-bi::possibly bi::ProgReference::le(ProgReference& o) {
-  return *parens <= *o.parens && possibly(target == o.target);
+bool bi::ProgReference::definitely(ProgReference& o) {
+  return parens->definitely(*o.parens) && target == o.target;
+}
+
+bool bi::ProgReference::dispatchPossibly(Prog& o) {
+  return o.possibly(*this);
+}
+
+bool bi::ProgReference::possibly(ProgParameter& o) {
+  return parens->possibly(*o.parens) && o.capture(this);
+}
+
+bool bi::ProgReference::possibly(ProgReference& o) {
+  return parens->possibly(*o.parens) && target == o.target;
 }

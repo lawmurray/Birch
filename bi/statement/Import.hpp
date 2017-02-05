@@ -44,7 +44,10 @@ public:
    */
   File* file;
 
-  virtual possibly dispatch(Statement& o);
-  virtual possibly le(Import& o);
+  virtual bool dispatchDefinitely(Statement& o);
+  virtual bool definitely(Import& o);
+
+  virtual bool dispatchPossibly(Statement& o);
+  virtual bool possibly(Import& o);
 };
 }

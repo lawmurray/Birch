@@ -50,15 +50,28 @@ bool bi::ModelParameter::isModel() const {
   }
 }
 
-bi::possibly bi::ModelParameter::dispatch(Type& o) {
-  return o.le(*this);
+bool bi::ModelParameter::dispatchDefinitely(Type& o) {
+  return o.definitely(*this);
 }
 
-bi::possibly bi::ModelParameter::le(ModelParameter& o) {
-  return *parens <= *o.parens && *base <= *o.base
+bool bi::ModelParameter::definitely(ModelParameter& o) {
+  return parens->definitely(*o.parens) && base->definitely(*o.base)
       && (!o.assignable || assignable) && o.capture(this);
 }
 
-bi::possibly bi::ModelParameter::le(EmptyType& o) {
-  return possibly(!o.assignable || assignable);
+bool bi::ModelParameter::definitely(EmptyType& o) {
+  return !o.assignable || assignable;
+}
+
+bool bi::ModelParameter::dispatchPossibly(Type& o) {
+  return o.possibly(*this);
+}
+
+bool bi::ModelParameter::possibly(ModelParameter& o) {
+  return parens->possibly(*o.parens) && base->possibly(*o.base)
+      && (!o.assignable || assignable) && o.capture(this);
+}
+
+bool bi::ModelParameter::possibly(EmptyType& o) {
+  return !o.assignable || assignable;
 }

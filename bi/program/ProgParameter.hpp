@@ -48,7 +48,10 @@ public:
    */
   std::list<const VarParameter*> inputs;
 
-  virtual possibly dispatch(Prog& o);
-  virtual possibly le(ProgParameter& o);
+  virtual bool dispatchDefinitely(Prog& o);
+  virtual bool definitely(ProgParameter& o);
+
+  virtual bool dispatchPossibly(Prog& o);
+  virtual bool possibly(ProgParameter& o);
 };
 }

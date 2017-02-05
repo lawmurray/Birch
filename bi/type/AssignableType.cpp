@@ -39,38 +39,66 @@ void bi::AssignableType::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }
 
-bi::possibly bi::AssignableType::dispatch(Type& o) {
-  return o.le(*this) || single->dispatch(o);
+bool bi::AssignableType::dispatchDefinitely(Type& o) {
+  return o.definitely(*this) || single->dispatchDefinitely(o);
 }
 
-bi::possibly bi::AssignableType::le(AssignableType& o) {
-  return *single <= *o.single;
+bool bi::AssignableType::definitely(AssignableType& o) {
+  return single->definitely(*o.single);
 }
 
-bi::possibly bi::AssignableType::le(BracketsType& o) {
-  return *single <= o;
+bool bi::AssignableType::definitely(BracketsType& o) {
+  return single->definitely(o);
 }
 
-bi::possibly bi::AssignableType::le(EmptyType& o) {
-  return *single <= o;
+bool bi::AssignableType::definitely(EmptyType& o) {
+  return single->definitely(o);
 }
 
-bi::possibly bi::AssignableType::le(List<Type>& o) {
-  return *single <= o;
+bool bi::AssignableType::definitely(List<Type>& o) {
+  return single->definitely(o);
 }
 
-bi::possibly bi::AssignableType::le(ModelParameter& o) {
-  return *single <= o;
+bool bi::AssignableType::definitely(ModelParameter& o) {
+  return single->definitely(o);
 }
 
-bi::possibly bi::AssignableType::le(ModelReference& o) {
-  return *single <= o;
+bool bi::AssignableType::definitely(ModelReference& o) {
+  return single->definitely(o);
 }
 
-bi::possibly bi::AssignableType::le(ParenthesesType& o) {
-  return *single <= *o.single;
+bool bi::AssignableType::definitely(ParenthesesType& o) {
+  return single->definitely(*o.single);
 }
 
-bi::possibly bi::AssignableType::le(RandomType& o) {
-  return *single <= o;
+bool bi::AssignableType::dispatchPossibly(Type& o) {
+  return o.possibly(*this) || single->dispatchPossibly(o);
+}
+
+bool bi::AssignableType::possibly(AssignableType& o) {
+  return single->possibly(*o.single);
+}
+
+bool bi::AssignableType::possibly(BracketsType& o) {
+  return single->possibly(o);
+}
+
+bool bi::AssignableType::possibly(EmptyType& o) {
+  return single->possibly(o);
+}
+
+bool bi::AssignableType::possibly(List<Type>& o) {
+  return single->possibly(o);
+}
+
+bool bi::AssignableType::possibly(ModelParameter& o) {
+  return single->possibly(o);
+}
+
+bool bi::AssignableType::possibly(ModelReference& o) {
+  return single->possibly(o);
+}
+
+bool bi::AssignableType::possibly(ParenthesesType& o) {
+  return single->possibly(*o.single);
 }

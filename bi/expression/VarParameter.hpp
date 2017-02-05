@@ -48,7 +48,10 @@ public:
    */
   unique_ptr<Expression> value;
 
-  virtual possibly dispatch(Expression& o);
-  virtual possibly le(VarParameter& o);
+  virtual bool dispatchDefinitely(Expression& o);
+  virtual bool definitely(VarParameter& o);
+
+  virtual bool dispatchPossibly(Expression& o);
+  virtual bool possibly(VarParameter& o);
 };
 }

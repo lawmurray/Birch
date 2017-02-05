@@ -229,12 +229,6 @@ bi::Type* bi::Modifier::modify(ParenthesesType* o) {
   return o;
 }
 
-bi::Type* bi::Modifier::modify(RandomType* o) {
-  o->left = o->left->accept(this);
-  o->right = o->right->accept(this);
-  return o;
-}
-
 bi::Type* bi::Modifier::modify(TypeList* o) {
   o->head = o->head->accept(this);
   o->tail = o->tail->accept(this);

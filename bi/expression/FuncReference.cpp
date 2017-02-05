@@ -44,13 +44,27 @@ void bi::FuncReference::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bi::possibly bi::FuncReference::dispatch(Expression& o) {
-  return o.le(*this);
+bool bi::FuncReference::dispatchDefinitely(Expression& o) {
+  return o.definitely(*this);
 }
 
-#include "bi/io/bih_ostream.hpp"
+bool bi::FuncReference::definitely(FuncReference& o) {
+  return parens->definitely(*o.parens) && target == o.target;
+}
 
-bi::possibly bi::FuncReference::le(FuncReference& o) {
+bool bi::FuncReference::definitely(FuncParameter& o) {
+  return parens->definitely(*o.parens) && o.capture(this);
+}
+
+bool bi::FuncReference::definitely(VarParameter& o) {
+  return type->definitely(*o.type) && o.capture(this);
+}
+
+bool bi::FuncReference::dispatchPossibly(Expression& o) {
+  return o.possibly(*this);
+}
+
+bool bi::FuncReference::possibly(FuncReference& o) {
   /* intersection of possible targets */
   std::vector<FuncParameter*> a1, a2, a3;
   if (target != nullptr) {
@@ -66,15 +80,13 @@ bi::possibly bi::FuncReference::le(FuncReference& o) {
   std::set_intersection(a1.begin(), a1.end(), a2.begin(), a2.end(),
       std::inserter(a3, a3.end()));
 
-  return *parens <= *o.parens
-      && (possibly(target == o.target)
-          || (possible && possibly(a3.size() > 0)));
+  return parens->possibly(*o.parens) && a3.size() > 0;
 }
 
-bi::possibly bi::FuncReference::le(FuncParameter& o) {
-  return *parens <= *o.parens && o.capture(this);
+bool bi::FuncReference::possibly(FuncParameter& o) {
+  return parens->possibly(*o.parens) && o.capture(this);
 }
 
-bi::possibly bi::FuncReference::le(VarParameter& o) {
-  return *type <= *o.type && o.capture(this);
+bool bi::FuncReference::possibly(VarParameter& o) {
+  return type->possibly(*o.type) && o.capture(this);
 }
