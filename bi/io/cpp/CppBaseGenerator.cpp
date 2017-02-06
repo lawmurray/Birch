@@ -100,7 +100,7 @@ void bi::CppBaseGenerator::visit(const RandomInit* o) {
   genCapture(o->left.get());
   finish("() {");
   in();
-  line(o->left << " = sim_(" << o->left << ".m);");
+  line(o->left << " = sim_(" << o->left << ");");
   // don't assign directly to .x here, as rv needs to update its missing
   // state too
   out();

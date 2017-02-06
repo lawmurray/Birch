@@ -94,7 +94,7 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
     if (header) {
       line("template<class Frame, class View>");
       line(
-          o->name << "<Group> operator()(const Frame& frame, const View& view) {");
+          o->name << "<Group> operator()(const Frame& frame, const View& view) const {");
       in();
       line("return " << o->name << "<Group>(*this, frame, view);");
       out();
