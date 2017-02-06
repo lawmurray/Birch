@@ -97,6 +97,11 @@ public:
   virtual bool isRich() const;
 
   /**
+   * Does this function have an assignable parameter?
+   */
+  virtual bool hasAssignable() const;
+
+  /**
    * Strip parentheses.
    */
   virtual Expression* strip();

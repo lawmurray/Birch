@@ -7,15 +7,17 @@
 
 bi::CppParameterGenerator::CppParameterGenerator(std::ostream& base,
     const int level, const bool header) :
-    CppBaseGenerator(base, level, header) {
+    CppBaseGenerator(base, level, header), args(0) {
   //
 }
 
 void bi::CppParameterGenerator::visit(const VarParameter* o) {
-  if (!o->type->assignable && !inArray) {
-    middle("const ");
+  if (o->type->assignable) {
+    middle("Arg" << ++args << "_&& ");
+  } else {
+    middle("const " << o->type << "& ");
   }
-  middle(o->type << "& " << o->name);
+  middle(o->name);
   if (!o->value->isEmpty()) {
     middle(" = " << o->value);
   }

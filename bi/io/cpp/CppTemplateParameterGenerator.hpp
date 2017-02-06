@@ -7,13 +7,13 @@
 
 namespace bi {
 /**
- * C++ code generator for formal parameters.
+ * C++ code generator for formal template parameters.
  *
  * @ingroup compiler_io
  */
-class CppParameterGenerator: public CppBaseGenerator {
+class CppTemplateParameterGenerator: public CppBaseGenerator {
 public:
-  CppParameterGenerator(std::ostream& base, const int level = 0,
+  CppTemplateParameterGenerator(std::ostream& base, const int level = 0,
       const bool header = false);
 
   virtual void visit(const VarParameter* o);

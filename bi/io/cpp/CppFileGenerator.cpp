@@ -8,6 +8,7 @@
 #include "bi/io/cpp/CppParameterGenerator.hpp"
 #include "bi/io/cpp/CppOutputGenerator.hpp"
 #include "bi/io/cpp/CppReturnGenerator.hpp"
+#include "bi/io/cpp/CppTemplateParameterGenerator.hpp"
 #include "bi/io/cpp/misc.hpp"
 #include "bi/program/all.hpp"
 #include "bi/exception/all.hpp"
@@ -75,10 +76,14 @@ void bi::CppFileGenerator::visit(const VarDeclaration* o) {
 }
 
 void bi::CppFileGenerator::visit(const FuncParameter* o) {
-  if (!o->braces->isEmpty()) {
+  if (!o->braces->isEmpty() && (header || !o->parens->hasAssignable())) {
     if (header) {
       line("namespace bi {");
     }
+
+    /* template parameters */
+    CppTemplateParameterGenerator auxTemplateParameter(base, level, header);
+    auxTemplateParameter << o;
 
     /* return type */
     start(o->type << ' ');
@@ -98,7 +103,7 @@ void bi::CppFileGenerator::visit(const FuncParameter* o) {
     CppParameterGenerator auxParameter(base, level, header);
     auxParameter << o;
 
-    if (header) {
+    if (header && !o->parens->hasAssignable()) {
       finish(';');
     } else {
       finish(" {");

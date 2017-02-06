@@ -80,6 +80,7 @@ birchc_SOURCES = \
   bi/io/cpp/CppParameterGenerator.cpp \
   bi/io/cpp/CppRandomGenerator.cpp \
   bi/io/cpp/CppReturnGenerator.cpp \
+  bi/io/cpp/CppTemplateParameterGenerator.cpp \
   bi/io/cpp/CppViewConstructorGenerator.cpp \
   bi/io/cpp/misc.cpp \
   bi/io/bi_ostream.cpp \

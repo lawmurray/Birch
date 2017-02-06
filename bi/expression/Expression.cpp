@@ -7,6 +7,7 @@
 #include "bi/visitor/IsPrimary.hpp"
 #include "bi/visitor/IsRich.hpp"
 #include "bi/visitor/TupleSizer.hpp"
+#include "bi/visitor/Gatherer.hpp"
 
 bi::Expression::Expression(Type* type, shared_ptr<Location> loc) :
     Located(loc), Typed(type) {
@@ -36,6 +37,17 @@ bool bi::Expression::isRich() const {
   IsRich visitor;
   this->accept(&visitor);
   return visitor.result;
+}
+
+bool bi::Expression::hasAssignable() const {
+  Gatherer<VarParameter> gatherer;
+  accept(&gatherer);
+  for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
+    if ((*iter)->type->assignable) {
+      return true;
+    }
+  }
+  return false;
 }
 
 bi::Expression* bi::Expression::strip() {
