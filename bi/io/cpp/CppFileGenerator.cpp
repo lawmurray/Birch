@@ -11,6 +11,7 @@
 #include "bi/io/cpp/misc.hpp"
 #include "bi/program/all.hpp"
 #include "bi/exception/all.hpp"
+#include "bi/visitor/Gatherer.hpp"
 
 #include "boost/filesystem.hpp"
 #include "boost/algorithm/string.hpp"
@@ -172,11 +173,14 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
     out();
     line("}\n");
   } else {
+    Gatherer<VarParameter> gatherer;
+    o->parens->accept(&gatherer);
+
     line("void bi::program::" << o->name << "(int argc, char** argv) {");
     in();
-    if (o->inputs.size() > 0) {
+    if (gatherer.size() > 0) {
       /* option variables */
-      for (auto iter = o->inputs.begin(); iter != o->inputs.end(); ++iter) {
+      for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
         line(*iter << ';');
       }
       line("");
@@ -184,11 +188,11 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
       /* option flags */
       line("enum {");
       in();
-      for (auto iter = o->inputs.begin(); iter != o->inputs.end(); ++iter) {
+      for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
         std::string flag = (*iter)->name->str() + "_ARG";
         boost::to_upper(flag);
         start(flag);
-        if (iter == o->inputs.begin()) {
+        if (iter == gatherer.begin()) {
           middle(" = 256");
         }
         finish(',');
@@ -200,7 +204,7 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
       line("int c, option_index;");
       line("option long_options[] = {");
       in();
-      for (auto iter = o->inputs.begin(); iter != o->inputs.end(); ++iter) {
+      for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
         const std::string& name = (*iter)->name->str();
         if (name.length() > 1) {
           std::string flag = name + "_ARG";
@@ -218,7 +222,7 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
 
       /* short options */
       start("const char* short_options = \"");
-      for (auto iter = o->inputs.begin(); iter != o->inputs.end(); ++iter) {
+      for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
         const std::string& name = (*iter)->name->str();
         if (name.length() == 1) {
           middle(name << ':');
@@ -235,7 +239,7 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
       line("switch (c) {");
       in();
 
-      for (auto iter = o->inputs.begin(); iter != o->inputs.end(); ++iter) {
+      for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
         const std::string& name = (*iter)->name->str();
         std::string flag = name + "_ARG";
         boost::to_upper(flag);
@@ -250,9 +254,13 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
         in();
         start(name << " = ");
         Type* type = (*iter)->type->strip();
+        const ModelReference* ref = dynamic_cast<const ModelReference*>(type);
+        if (ref && ref->target->isRandom()) {
+          ref = dynamic_cast<const ModelReference*>(ref->target->base->strip());
+        }
 
-        if (typeid(*type) == typeid(ModelReference)) {
-          std::string typeName = dynamic_cast<const ModelReference*>(type)->name->str();
+        if (ref) {
+          std::string typeName = ref->name->str();
           if (typeName.compare("Boolean") == 0) {
             middle("atoi(optarg)");
           } else if (typeName.compare("Integer") == 0) {

@@ -8,6 +8,7 @@
 #include "bi/io/cpp/CppViewConstructorGenerator.hpp"
 #include "bi/io/cpp/CppCopyConstructorGenerator.hpp"
 #include "bi/io/cpp/CppAssignmentGenerator.hpp"
+#include "bi/io/cpp/CppRandomGenerator.hpp"
 #include "bi/io/cpp/CppParameterGenerator.hpp"
 #include "bi/io/cpp/CppOutputGenerator.hpp"
 #include "bi/io/cpp/CppReturnGenerator.hpp"
@@ -42,6 +43,10 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
       line("typedef " << o->name << "<Group> value_type;");
       if (o->isLess()) {
         line("typedef " << o->base << " base_type;");
+      }
+      if (o->isRandom()) {
+        line("typedef typename " << o->base << "::value_type variate_type;");
+        line("typedef std::function<void()> lambda_type;");
       }
       line("");
     }
@@ -96,6 +101,12 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
       line("}\n");
     }
 
+    /* random type requirements */
+    if (o->isRandom()) {
+      CppRandomGenerator auxRandom(base, level, header);
+      auxRandom << o;
+    }
+
     /* group member variable */
     if (header) {
       line("Group group;");
@@ -120,7 +131,7 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
     /* explicit template specialisations */
     if (!header) {
       line("template class bi::model::" << o->name << "<bi::MemoryGroup>;");
-      line("template class bi::model::" << o->name << "<bi::NetCDFGroup>;");
+      line("//template class bi::model::" << o->name << "<bi::NetCDFGroup>;");
       line("");
     }
   }

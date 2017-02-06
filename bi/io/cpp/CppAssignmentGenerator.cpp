@@ -21,16 +21,16 @@ void bi::CppAssignmentGenerator::visit(const ModelParameter* o) {
     /* generic assignment operator */
     line("template<class Group1>");
     start(o->name->str() << "<Group>&");
-    middle(" operator=(const " << o->name->str() << "<Group1>& o)");
+    middle(" operator=(const " << o->name->str() << "<Group1>& o_)");
     finish(" {");
     in();
     if (o->isLess()) {
-      line("base_type::operator=(o);");
+      line("base_type::operator=(o_);");
     }
     if (o->isRandom()) {
       assign(o->missing.get());
       assign(o->pos.get());
-      assign(o->x.get());
+      //assign(o->x.get());
     }
 
     Gatherer<VarDeclaration> gatherer;
@@ -47,5 +47,5 @@ void bi::CppAssignmentGenerator::visit(const ModelParameter* o) {
 }
 
 void bi::CppAssignmentGenerator::assign(const VarParameter* o) {
-  line(o->name->str() << " = o." << o->name->str() << ';');
+  line(o->name->str() << " = o_." << o->name->str() << ';');
 }

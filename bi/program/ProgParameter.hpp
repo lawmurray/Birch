@@ -43,11 +43,6 @@ public:
   virtual Prog* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
-  /**
-   * Input parameters
-   */
-  std::list<const VarParameter*> inputs;
-
   virtual bool dispatchDefinitely(Prog& o);
   virtual bool definitely(ProgParameter& o);
 

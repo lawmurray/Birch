@@ -17,6 +17,7 @@ template<class Type>
 class PrimitiveValue<Type,NetCDFGroup> {
 public:
   typedef NetCDFGroup group_type;
+  typedef Type value_type;
 
   /**
    * Constructor.

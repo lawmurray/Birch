@@ -208,9 +208,13 @@ bi::Type* bi::Resolver::modify(ModelParameter* o) {
     /* create random variable requirements */
     if (!o->base->isEmpty() && *o->op == "~") {
       o->missing = new VarParameter(new Name("missing_"),
-          new ModelReference(new Name("Boolean")));
+          new ModelReference(new Name("Boolean")), new EmptyExpression(),
+          new bi::BooleanLiteral(true, "true",
+              new bi::ModelReference(new bi::Name("Boolean"))));
       o->pos = new VarParameter(new Name("pos_"),
-          new ModelReference(new Name("Integer")));
+          new ModelReference(new Name("Integer")), new EmptyExpression(),
+          new bi::IntegerLiteral(-1, "-1",
+              new bi::ModelReference(new bi::Name("Integer"))));
       o->x = new VarParameter(new Name("x_"), o->base->accept(&cloner));
 
       o->missing->accept(this);

@@ -301,7 +301,7 @@ void bi::CppBaseGenerator::genCapture(const Expression* o) {
 void bi::CppBaseGenerator::genArgs(Expression* ref, FuncParameter* param) {
   bool result = ref->definitely(*param);  // needed to capture arguments
   if (!result) {
-    //result = ref->possibly(*param);
+    result = ref->possibly(*param);
     assert(result);
   }
 
