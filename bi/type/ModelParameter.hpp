@@ -50,16 +50,19 @@ public:
 
   bool isBuiltin() const;
   bool isModel() const;
-
-  /**
-   * Constructor.
-   */
-  shared_ptr<FuncParameter> constructor;
+  bool isLess() const;
+  bool isEqual() const;
+  bool isRandom() const;
 
   /**
    * Assignment operator.
    */
-  shared_ptr<FuncParameter> assignment;
+  unique_ptr<FuncParameter> assignment;
+
+  /**
+   * Random variable requirements.
+   */
+  unique_ptr<VarParameter> missing, pos, x;
 
   virtual bool dispatchDefinitely(Type& o);
   virtual bool definitely(ModelParameter& o);

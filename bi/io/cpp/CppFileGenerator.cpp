@@ -127,7 +127,7 @@ void bi::CppFileGenerator::visit(const FuncParameter* o) {
 }
 
 void bi::CppFileGenerator::visit(const ModelParameter* o) {
-  if (*o->op == "=") {
+  if (o->isEqual()) {
     if (header) {
       ModelReference* base = dynamic_cast<ModelReference*>(o->base.get());
       assert(base);

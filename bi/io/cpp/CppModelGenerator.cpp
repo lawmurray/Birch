@@ -32,7 +32,7 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
     if (header) {
       line("template<class Group = MemoryGroup>");
       start("class " << o->name);
-      if (!o->base->isEmpty()) {
+      if (o->isLess()) {
         middle(" : public " << o->base);
       }
       finish(" {");
@@ -40,7 +40,7 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
       in();
       line("typedef Group group_type;");
       line("typedef " << o->name << "<Group> value_type;");
-      if (!o->base->isEmpty()) {
+      if (o->isLess()) {
         line("typedef " << o->base << " base_type;");
       }
       line("");
@@ -99,6 +99,13 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
     /* group member variable */
     if (header) {
       line("Group group;");
+    }
+
+    /* random member variables */
+    if (header && o->isRandom()) {
+      line(o->missing << ';');
+      line(o->pos << ';');
+      line(o->x << ';');
     }
 
     /* member variables and functions */

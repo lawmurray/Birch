@@ -20,7 +20,7 @@ public:
   virtual void visit(const ModelReference* o);
   virtual void visit(const ModelParameter* o);
 
-  void initialise(const VarDeclaration* o);
-  void assign(const VarDeclaration* o);
+  void initialise(const VarParameter* o);
+  void assign(const VarParameter* o);
 };
 }

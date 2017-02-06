@@ -137,13 +137,6 @@ bi::Expression* bi::Resolver::modify(FuncReference* o) {
   o->type->assignable = false;  // rvalue
   o->form = o->target->form;
 
-  Gatherer<VarParameter> gatherer;
-  o->target->parens->accept(&gatherer);
-  for (auto iter = gatherer.gathered.begin(); iter != gatherer.gathered.end();
-      ++iter) {
-    o->args.push_back((*iter)->arg);
-  }
-
   return o;
 }
 
@@ -176,14 +169,6 @@ bi::Expression* bi::Resolver::modify(FuncParameter* o) {
   o->scope = pop();
   top()->add(o);
 
-  Gatherer<VarParameter> gatherer1;
-  o->parens->accept(&gatherer1);
-  o->inputs = gatherer1.gathered;
-
-  Gatherer<VarParameter> gatherer2;
-  o->result->accept(&gatherer2);
-  o->outputs = gatherer2.gathered;
-
   return o;
 }
 
@@ -193,10 +178,6 @@ bi::Prog* bi::Resolver::modify(ProgParameter* o) {
   defer(o->braces.get());
   o->scope = pop();
   top()->add(o);
-
-  Gatherer<VarParameter> gatherer1;
-  o->parens->accept(&gatherer1);
-  o->inputs = gatherer1.gathered;
 
   return o;
 }
@@ -212,15 +193,6 @@ bi::Type* bi::Resolver::modify(ModelParameter* o) {
   top()->add(o);
 
   if (*o->op != "=") {
-    /* create constructor */
-    //Expression* parens1 = o->parens->accept(&cloner);
-    ///VarParameter* result1 = new VarParameter(new Name(),
-    //    new ModelReference(o->name, 0, o));
-    //o->constructor = new FuncParameter(o->name, parens1, result1,
-    //    new EmptyExpression(), CONSTRUCTOR);
-    //o->constructor =
-    //    dynamic_cast<FuncParameter*>(o->constructor->accept(this));
-    //assert(o->constructor);
     /* create assignment operator */
     Expression* right = new VarParameter(new Name(), new ModelReference(o));
     Expression* left = new VarParameter(new Name(),
@@ -232,6 +204,19 @@ bi::Type* bi::Resolver::modify(ModelParameter* o) {
         new EmptyExpression(), ASSIGNMENT_OPERATOR);
     o->assignment = dynamic_cast<FuncParameter*>(o->assignment->accept(this));
     assert(o->assignment);
+
+    /* create random variable requirements */
+    if (!o->base->isEmpty() && *o->op == "~") {
+      o->missing = new VarParameter(new Name("missing_"),
+          new ModelReference(new Name("Boolean")));
+      o->pos = new VarParameter(new Name("pos_"),
+          new ModelReference(new Name("Integer")));
+      o->x = new VarParameter(new Name("x_"), o->base->accept(&cloner));
+
+      o->missing->accept(this);
+      o->pos->accept(this);
+      o->x->accept(this);
+    }
   }
 
   return o;

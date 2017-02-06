@@ -59,11 +59,6 @@ public:
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
-  /**
-   * Arguments.
-   */
-  std::list<const Expression*> args;
-
   virtual bool dispatchDefinitely(Expression& o);
   virtual bool definitely(FuncReference& o);
   virtual bool definitely(FuncParameter& o);

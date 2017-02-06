@@ -21,20 +21,22 @@ void bi::CppViewConstructorGenerator::visit(const ModelParameter* o) {
     middle(", const View& view)");
     Gatherer<VarDeclaration> gatherer;
     o->braces->accept(&gatherer);
-    if (!o->base->isEmpty() || gatherer.gathered.size() > 0) {
+    if (o->isLess() || o->isRandom() || gatherer.size() > 0) {
       finish(" :");
       in();
       in();
-      if (!o->base->isEmpty()) {
+      if (o->isLess()) {
         middle("base_type(o, frame, view),");
       }
       start("group(o.group)");
-
-      for (auto iter = gatherer.gathered.begin();
-          iter != gatherer.gathered.end(); ++iter) {
-        *this << *iter;
+      if (o->isRandom()) {
+        initialise(o->missing.get());
+        initialise(o->pos.get());
+        initialise(o->x.get());
       }
-
+      for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
+        initialise((*iter)->param.get());
+      }
       out();
       out();
     }
@@ -46,8 +48,8 @@ void bi::CppViewConstructorGenerator::visit(const ModelParameter* o) {
   }
 }
 
-void bi::CppViewConstructorGenerator::visit(const VarDeclaration* o) {
+void bi::CppViewConstructorGenerator::initialise(const VarParameter* o) {
   finish(',');
-  start(o->param->name->str());
-  middle("(o." << o->param->name->str() << ", frame, view)");
+  start(o->name->str());
+  middle("(o." << o->name->str() << ", frame, view)");
 }

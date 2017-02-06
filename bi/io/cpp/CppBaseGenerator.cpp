@@ -281,7 +281,7 @@ void bi::CppBaseGenerator::genCapture(const Expression* o) {
   std::unordered_set<std::string> done;
 
   middle('[');
-  for (auto iter = gatherer.gathered.begin(); iter != gatherer.gathered.end();
+  for (auto iter = gatherer.begin(); iter != gatherer.end();
       ++iter) {
     const VarReference* ref = *iter;
     if (done.find(ref->name->str()) == done.end()) {
@@ -309,9 +309,9 @@ void bi::CppBaseGenerator::genArgs(Expression* ref, FuncParameter* param) {
   param->parens->accept(&gatherer);
 
   middle('(');
-  for (auto iter = gatherer.gathered.begin(); iter != gatherer.gathered.end();
+  for (auto iter = gatherer.begin(); iter != gatherer.end();
       ++iter) {
-    if (iter != gatherer.gathered.begin()) {
+    if (iter != gatherer.begin()) {
       middle(", ");
     }
     middle((*iter)->arg);

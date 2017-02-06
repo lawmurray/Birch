@@ -8,9 +8,10 @@
 #include "bi/visitor/DispatchGatherer.hpp"
 #include "bi/visitor/Gatherer.hpp"
 
-bi::CppDispatcherGenerator::CppDispatcherGenerator(Scope* scope, std::ostream& base,
-    const int level, const bool header) :
-    CppBaseGenerator(base, level, header), scope(scope) {
+bi::CppDispatcherGenerator::CppDispatcherGenerator(Scope* scope,
+    std::ostream& base, const int level, const bool header) :
+    CppBaseGenerator(base, level, header),
+    scope(scope) {
   //
 }
 
@@ -19,16 +20,14 @@ void bi::CppDispatcherGenerator::visit(const File* o) {
   o->accept(&gatherer);
 
   header = true;
-  for (auto iter = gatherer.gathered.begin(); iter != gatherer.gathered.end();
-      ++iter) {
+  for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
     if (*(*iter)->name != "<-") {
       *this << *iter;
     }
   }
 
   header = false;
-  for (auto iter = gatherer.gathered.begin(); iter != gatherer.gathered.end();
-      ++iter) {
+  for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
     if (*(*iter)->name != "<-") {
       *this << *iter;
     }
@@ -40,9 +39,12 @@ void bi::CppDispatcherGenerator::visit(const VarParameter* o) {
 }
 
 void bi::CppDispatcherGenerator::visit(const FuncParameter* o) {
+  Gatherer<VarParameter> gatherer;
+  o->parens->accept(&gatherer);
+
   int i;
   start("template<");
-  for (i = 1; i <= o->inputs.size(); ++i) {
+  for (i = 1; i <= gatherer.size(); ++i) {
     if (i != 1) {
       middle(", ");
     }
@@ -55,8 +57,8 @@ void bi::CppDispatcherGenerator::visit(const FuncParameter* o) {
   start(o->type << " dispatch_" << o->number << "_(");
 
   i = 1;
-  for (auto iter = o->inputs.begin(); iter != o->inputs.end(); ++iter, ++i) {
-    if (iter != o->inputs.begin()) {
+  for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter, ++i) {
+    if (iter != gatherer.begin()) {
       middle(", ");
     }
     middle("T" << i << "&& " << (*iter)->name);
@@ -76,8 +78,8 @@ void bi::CppDispatcherGenerator::visit(const FuncParameter* o) {
     }
     middle('(');
 
-    for (auto iter = o->inputs.begin(); iter != o->inputs.end(); ++iter) {
-      if (iter != o->inputs.begin()) {
+    for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
+      if (iter != gatherer.begin()) {
         middle(", ");
       }
       middle("bi::cast<");

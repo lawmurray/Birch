@@ -29,8 +29,30 @@ public:
    */
   virtual ~Gatherer();
 
+  /**
+   * Begin iterator over gathered objects.
+   */
+  auto begin() {
+    return gathered.begin();
+  }
+
+  /**
+   * End iterator over gathered objects.
+   */
+  auto end() {
+    return gathered.end();
+  }
+
+  /**
+   * Number of items gathered.
+   */
+  auto size() {
+    return gathered.size();
+  }
+
   virtual void visit(const T* o);
 
+protected:
   /**
    * Predicate.
    */

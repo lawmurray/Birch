@@ -22,19 +22,28 @@ void bi::CppCopyConstructorGenerator::visit(const ModelParameter* o) {
     Gatherer<VarDeclaration> gatherer;
     o->braces->accept(&gatherer);
 
-    if (!o->base->isEmpty() || gatherer.gathered.size() > 0) {
+    if (o->isLess() || o->isRandom() || gatherer.size() > 0) {
       finish(" :");
       in();
       in();
-      if (!o->base->isEmpty()) {
+      if (o->isLess()) {
         finish("base_type(o, frame, name, group)");
       }
-      for (auto iter = gatherer.gathered.begin();
-          iter != gatherer.gathered.end(); ++iter) {
-        if (!o->base->isEmpty() || iter != gatherer.gathered.begin()) {
+      if (o->isRandom()) {
+        if (o->isLess()) {
           finish(',');
         }
-        *this << *iter;
+        initialise(o->missing.get());
+        finish(',');
+        initialise(o->pos.get());
+        finish(',');
+        initialise(o->x.get());
+      }
+      for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
+        if (o->isLess() || o->isRandom() || iter != gatherer.begin()) {
+          finish(',');
+        }
+        initialise((*iter)->param.get());
       }
       out();
       out();
@@ -47,6 +56,6 @@ void bi::CppCopyConstructorGenerator::visit(const ModelParameter* o) {
   }
 }
 
-void bi::CppCopyConstructorGenerator::visit(const VarDeclaration* o) {
-  start(o->param->name->str() << "(o." << o->param->name->str() << ", frame, name, group)");
+void bi::CppCopyConstructorGenerator::initialise(const VarParameter* o) {
+  start(o->name->str() << "(o." << o->name->str() << ", frame, name, group)");
 }

@@ -15,7 +15,8 @@ void bi::CppAssignmentGenerator::visit(const ModelParameter* o) {
   if (header) {
     /* basic assignment operator */
     start(o->name->str() << "<Group>& ");
-    finish("operator=(const " << o->name->str() << "<Group>& o) = default;\n");
+    finish(
+        "operator=(const " << o->name->str() << "<Group>& o) = default;\n");
 
     /* generic assignment operator */
     line("template<class Group1>");
@@ -23,15 +24,19 @@ void bi::CppAssignmentGenerator::visit(const ModelParameter* o) {
     middle(" operator=(const " << o->name->str() << "<Group1>& o)");
     finish(" {");
     in();
-    if (!o->base->isEmpty()) {
+    if (o->isLess()) {
       line("base_type::operator=(o);");
+    }
+    if (o->isRandom()) {
+      assign(o->missing.get());
+      assign(o->pos.get());
+      assign(o->x.get());
     }
 
     Gatherer<VarDeclaration> gatherer;
     o->braces->accept(&gatherer);
-    for (auto iter = gatherer.gathered.begin();
-        iter != gatherer.gathered.end(); ++iter) {
-      *this << *iter;
+    for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
+      assign((*iter)->param.get());
     }
 
     line("");
@@ -41,6 +46,6 @@ void bi::CppAssignmentGenerator::visit(const ModelParameter* o) {
   }
 }
 
-void bi::CppAssignmentGenerator::visit(const VarDeclaration* o) {
-  line(o->param->name->str() << " = o." << o->param->name->str() << ';');
+void bi::CppAssignmentGenerator::assign(const VarParameter* o) {
+  line(o->name->str() << " = o." << o->name->str() << ';');
 }

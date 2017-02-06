@@ -60,16 +60,6 @@ public:
    */
   shared_ptr<Name> mangled;
 
-  /**
-   * Input parameters
-   */
-  std::list<const VarParameter*> inputs;
-
-  /**
-   * Output parameters
-   */
-  std::list<const VarParameter*> outputs;
-
   virtual bool dispatchDefinitely(Expression& o);
   virtual bool definitely(FuncParameter& o);
 

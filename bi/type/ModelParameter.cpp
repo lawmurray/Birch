@@ -35,7 +35,7 @@ void bi::ModelParameter::accept(Visitor* visitor) const {
 }
 
 bool bi::ModelParameter::isBuiltin() const {
-  if (*op == "=") {
+  if (isEqual()) {
     return base->isBuiltin();
   } else {
     return braces->isEmpty();
@@ -43,11 +43,23 @@ bool bi::ModelParameter::isBuiltin() const {
 }
 
 bool bi::ModelParameter::isModel() const {
-  if (*op == "=") {
+  if (isEqual()) {
     return base->isModel();
   } else {
     return !braces->isEmpty();
   }
+}
+
+bool bi::ModelParameter::isLess() const {
+  return !base->isEmpty() && *op == "<";
+}
+
+bool bi::ModelParameter::isEqual() const {
+  return !base->isEmpty() && *op == "=";
+}
+
+bool bi::ModelParameter::isRandom() const {
+  return !base->isEmpty() && *op == "~";
 }
 
 bool bi::ModelParameter::dispatchDefinitely(Type& o) {

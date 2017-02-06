@@ -25,6 +25,9 @@ void bi::CppConstructorGenerator::visit(const ModelReference* o) {
 void bi::CppConstructorGenerator::visit(const ModelParameter* o) {
   CppBaseGenerator aux(base, level, header);
 
+  Gatherer<VarDeclaration> gatherer;
+  o->braces->accept(&gatherer);
+
   /* two constructors are created here, one for nonempty frames, and one for
    * empty frames, this helps with debugging by ensuring that there is not a
    * catch-all constructor ("template<class Frame>") that can take any first
@@ -50,7 +53,7 @@ void bi::CppConstructorGenerator::visit(const ModelParameter* o) {
       finish(" :");
       in();
       in();
-      if (!o->base->isEmpty()) {
+      if (o->isLess()) {
         start("base_type(");
         ModelReference* base = dynamic_cast<ModelReference*>(o->base.get());
         assert(base);
@@ -61,21 +64,35 @@ void bi::CppConstructorGenerator::visit(const ModelParameter* o) {
         finish("frame, name, group),");
       }
       start("group(childGroup(group, name))");
+      if (o->missing) {
+        initialise(o->missing.get());
+      }
+      if (o->pos) {
+        initialise(o->pos.get());
+      }
+      if (o->x) {
+        initialise(o->x.get());
+      }
 
-      Gatherer<VarDeclaration> gatherer;
-      o->braces->accept(&gatherer);
-      for (auto iter = gatherer.gathered.begin();
-          iter != gatherer.gathered.end(); ++iter) {
-        initialise(*iter);
+      for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
+        initialise((*iter)->param.get());
       }
 
       out();
       out();
       finish(" {");
       in();
-      for (auto iter = gatherer.gathered.begin();
-          iter != gatherer.gathered.end(); ++iter) {
-        assign(*iter);
+      if (o->missing) {
+        assign(o->missing.get());
+      }
+      if (o->pos) {
+        assign(o->pos.get());
+      }
+      if (o->x) {
+        assign(o->x.get());
+      }
+      for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
+        assign((*iter)->param.get());
       }
       out();
       line("}\n");
@@ -83,30 +100,30 @@ void bi::CppConstructorGenerator::visit(const ModelParameter* o) {
   }
 }
 
-void bi::CppConstructorGenerator::initialise(const VarDeclaration* o) {
+void bi::CppConstructorGenerator::initialise(const VarParameter* o) {
   CppBaseGenerator aux(base, level, header);
   finish(',');
-  start(o->param->name->str() << "(");
-  if (!o->param->parens->strip()->isEmpty() && o->param->type->count() == 0) {
-    aux << o->param->parens->strip();
+  start(o->name->str() << "(");
+  if (!o->parens->strip()->isEmpty() && o->type->count() == 0) {
+    aux << o->parens->strip();
     middle(", ");
   }
-  middle(o->param->type);
-  middle(", \"" << o->param->name->str() << "\"");
+  middle(o->type);
+  middle(", \"" << o->name->str() << "\"");
   middle(", childGroup");
-  middle("(this->group, \"" << o->param->name->str() << "\")");
-  if (!o->param->parens->strip()->isEmpty() && o->param->type->count() > 0) {
+  middle("(this->group, \"" << o->name->str() << "\")");
+  if (!o->parens->strip()->isEmpty() && o->type->count() > 0) {
     middle(", ");
-    aux << o->param->value->strip();
+    aux << o->value->strip();
   }
   middle(')');
 }
 
-void bi::CppConstructorGenerator::assign(const VarDeclaration* o) {
+void bi::CppConstructorGenerator::assign(const VarParameter* o) {
   CppBaseGenerator aux(base, level, header);
-  if (!o->param->value->isEmpty()) {
-    start(o->param->name->str() << " = ");
-    aux << o->param->value;
+  if (!o->value->isEmpty()) {
+    start(o->name->str() << " = ");
+    aux << o->value;
     finish(';');
   }
 }

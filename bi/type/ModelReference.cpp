@@ -40,7 +40,7 @@ bool bi::ModelReference::isBuiltin() const {
   /* pre-condition */
   assert(target);
 
-  if (*target->op == "=") {
+  if (target->isEqual()) {
     return target->base->isBuiltin();
   } else {
     return target->braces->isEmpty();
@@ -51,7 +51,7 @@ bool bi::ModelReference::isModel() const {
   /* pre-condition */
   assert(target);
 
-  if (*target->op == "=") {
+  if (target->isEqual()) {
     return target->base->isModel();
   } else {
     return !target->braces->isEmpty();
@@ -62,7 +62,7 @@ bool bi::ModelReference::canUpcast(ModelReference& o) {
   /* pre-condition */
   assert(target && o.target);
 
-  if (*o.target->op == "=") {
+  if (o.target->isEqual()) {
     ModelReference* ref =
         dynamic_cast<ModelReference*>(o.target->base->strip());
     return canUpcast(*ref);  // compare with canonical type
@@ -77,7 +77,7 @@ bool bi::ModelReference::canDowncast(ModelReference& o) {
   assert(target && o.target);
 
   ModelReference* ref = dynamic_cast<ModelReference*>(o.target->base->strip());
-  if (*o.target->op == "=") {
+  if (o.target->isEqual()) {
     return canDowncast(*ref);  // compare with canonical type
   } else {
     return target == o.target

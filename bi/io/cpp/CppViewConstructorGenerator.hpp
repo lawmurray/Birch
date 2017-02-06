@@ -17,6 +17,7 @@ public:
       const bool header = false);
 
   virtual void visit(const ModelParameter* o);
-  virtual void visit(const VarDeclaration* o);
+
+  void initialise(const VarParameter* o);
 };
 }

@@ -21,13 +21,29 @@ public:
    */
   DispatchGatherer(Scope* scope);
 
-  virtual void visit(const FuncReference* o);
-  virtual void visit(const RandomInit* o);
+  /**
+   * Begin iterator over gathered objects.
+   */
+  auto begin() {
+    return gathered.begin();
+  }
 
   /**
-   * Gathered matches.
+   * End iterator over gathered objects.
    */
-  std::set<const FuncParameter*> gathered;
+  auto end() {
+    return gathered.end();
+  }
+
+  /**
+   * Number of items gathered.
+   */
+  auto size() {
+    return gathered.size();
+  }
+
+  virtual void visit(const FuncReference* o);
+  virtual void visit(const RandomInit* o);
 
 private:
   /**
@@ -39,5 +55,10 @@ private:
    * Scope for finding parents of functions.
    */
   Scope* scope;
+
+  /**
+   * Gathered matches.
+   */
+  std::set<const FuncParameter*> gathered;
 };
 }
