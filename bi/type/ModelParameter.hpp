@@ -52,17 +52,11 @@ public:
   bool isModel() const;
   bool isLess() const;
   bool isEqual() const;
-  bool isRandom() const;
 
   /**
    * Assignment operator.
    */
   unique_ptr<FuncParameter> assignment;
-
-  /**
-   * Random variable requirements.
-   */
-  unique_ptr<VarParameter> missing, pos, x;
 
   virtual bool dispatchDefinitely(Type& o);
   virtual bool definitely(ModelParameter& o);

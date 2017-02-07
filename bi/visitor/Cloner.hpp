@@ -64,6 +64,7 @@ public:
   virtual Type* clone(const AssignableType* o);
   virtual Type* clone(const BracketsType* o);
   virtual Type* clone(const ParenthesesType* o);
+  virtual Type* clone(const RandomType* o);
   virtual Type* clone(const TypeList* o);
 };
 }

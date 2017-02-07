@@ -65,6 +65,10 @@ bool bi::Type::definitely(ParenthesesType& o) {
   return false;
 }
 
+bool bi::Type::definitely(RandomType& o) {
+  return false;
+}
+
 bool bi::Type::possibly(Type& o) {
   return o.dispatchPossibly(*this);
 }
@@ -94,5 +98,9 @@ bool bi::Type::possibly(ModelReference& o) {
 }
 
 bool bi::Type::possibly(ParenthesesType& o) {
+  return false;
+}
+
+bool bi::Type::possibly(RandomType& o) {
   return false;
 }

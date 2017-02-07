@@ -78,7 +78,6 @@ birchc_SOURCES = \
   bi/io/cpp/CppModelGenerator.cpp \
   bi/io/cpp/CppOutputGenerator.cpp \
   bi/io/cpp/CppParameterGenerator.cpp \
-  bi/io/cpp/CppRandomGenerator.cpp \
   bi/io/cpp/CppReturnGenerator.cpp \
   bi/io/cpp/CppTemplateParameterGenerator.cpp \
   bi/io/cpp/CppViewConstructorGenerator.cpp \
@@ -106,6 +105,7 @@ birchc_SOURCES = \
   bi/type/ModelParameter.cpp \
   bi/type/ModelReference.cpp \
   bi/type/ParenthesesType.cpp \
+  bi/type/RandomType.cpp \
   bi/type/Type.cpp \
   bi/visitor/Assigner.cpp \
   bi/visitor/Cloner.cpp \

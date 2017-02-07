@@ -69,7 +69,7 @@ void bi::CppDispatcherGenerator::visit(const FuncParameter* o) {
   } else {
     finish(" {");
     in();
-    start("try { return bi::");
+    start("return bi::");
     if ((o->isBinary() || o->isUnary()) && isTranslatable(o->name->str())
         && !o->parens->isRich()) {
       middle("operator" << translate(o->name->str()));
@@ -88,19 +88,8 @@ void bi::CppDispatcherGenerator::visit(const FuncParameter* o) {
       }
       middle((*iter)->type << "&>(" << (*iter)->name << ')');
     }
-    finish("); } catch (std::bad_cast) {}");
+    finish(");");
 
-    std::list<FuncParameter*> parents;
-    scope->parents(const_cast<FuncParameter*>(o), parents);
-    for (auto iter = parents.begin(); iter != parents.end(); ++iter) {
-      start("try { return ");
-      bool result = const_cast<FuncParameter*>(o)->definitely(**iter);  // needed to capture arguments
-      assert(result);
-      middle("dispatch_" << (*iter)->number << '_');
-      genArgs(const_cast<FuncParameter*>(o), *iter);
-      finish("; } catch (std::bad_cast) {}");
-    }
-    line("throw std::bad_cast();");
     out();
     finish("}\n");
   }

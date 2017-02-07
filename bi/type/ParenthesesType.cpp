@@ -74,6 +74,10 @@ bool bi::ParenthesesType::definitely(ParenthesesType& o) {
   return single->definitely(*o.single);
 }
 
+bool bi::ParenthesesType::definitely(RandomType& o) {
+  return single->definitely(o);
+}
+
 bool bi::ParenthesesType::dispatchPossibly(Type& o) {
   return o.possibly(*this) || single->dispatchPossibly(o);
 }
@@ -104,4 +108,8 @@ bool bi::ParenthesesType::possibly(ModelReference& o) {
 
 bool bi::ParenthesesType::possibly(ParenthesesType& o) {
   return single->possibly(*o.single);
+}
+
+bool bi::ParenthesesType::possibly(RandomType& o) {
+  return single->possibly(o);
 }

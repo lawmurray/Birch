@@ -100,7 +100,7 @@ public:
   /**
    * Cast to filtered distribution type.
    */
-  operator Model&();
+  explicit operator Model&();
 
   /**
    * View operator.

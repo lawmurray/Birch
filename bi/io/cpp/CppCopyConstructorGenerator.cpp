@@ -22,25 +22,15 @@ void bi::CppCopyConstructorGenerator::visit(const ModelParameter* o) {
     Gatherer<VarDeclaration> gatherer;
     o->braces->accept(&gatherer);
 
-    if (o->isLess() || o->isRandom() || gatherer.size() > 0) {
+    if (o->isLess() || gatherer.size() > 0) {
       finish(" :");
       in();
       in();
       if (o->isLess()) {
         finish("base_type(o, frame, name, group)");
       }
-      if (o->isRandom()) {
-        if (o->isLess()) {
-          finish(',');
-        }
-        initialise(o->missing.get());
-        finish(',');
-        initialise(o->pos.get());
-        finish(',');
-        initialise(o->x.get());
-      }
       for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
-        if (o->isLess() || o->isRandom() || iter != gatherer.begin()) {
+        if (o->isLess() || iter != gatherer.begin()) {
           finish(',');
         }
         initialise((*iter)->param.get());

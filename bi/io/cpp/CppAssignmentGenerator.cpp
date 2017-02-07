@@ -12,13 +12,40 @@ bi::CppAssignmentGenerator::CppAssignmentGenerator(std::ostream& base,
 }
 
 void bi::CppAssignmentGenerator::visit(const ModelParameter* o) {
-  if (header) {
-    /* basic assignment operator */
-    start(o->name->str() << "<Group>& ");
-    finish(
-        "operator=(const " << o->name->str() << "<Group>& o) = default;\n");
+  Gatherer<VarDeclaration> gatherer;
+  o->braces->accept(&gatherer);
 
-    /* generic assignment operator */
+  /* basic assignment operator */
+  if (!header) {
+    line("template<class Group>");
+    start("bi::model::");
+  } else {
+    start("");
+  }
+  middle(o->name->str() << "<Group>& ");
+  if (!header) {
+    middle("bi::model::" << o->name->str() << "<Group>::");
+  }
+  middle("operator=(const " << o->name->str() << "<Group>& o_)");
+  if (header) {
+    finish(';');
+  } else {
+    finish(" {");
+    in();
+    if (o->isLess()) {
+      line("base_type::operator=(o_);");
+    }
+    for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
+      assign((*iter)->param.get());
+    }
+    line("");
+    line("return *this;");
+    out();
+    line("}\n");
+  }
+
+  /* generic assignment operator */
+  if (header) {
     line("template<class Group1>");
     start(o->name->str() << "<Group>&");
     middle(" operator=(const " << o->name->str() << "<Group1>& o_)");
@@ -27,18 +54,9 @@ void bi::CppAssignmentGenerator::visit(const ModelParameter* o) {
     if (o->isLess()) {
       line("base_type::operator=(o_);");
     }
-    if (o->isRandom()) {
-      assign(o->missing.get());
-      assign(o->pos.get());
-      //assign(o->x.get());
-    }
-
-    Gatherer<VarDeclaration> gatherer;
-    o->braces->accept(&gatherer);
     for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
       assign((*iter)->param.get());
     }
-
     line("");
     line("return *this;");
     out();

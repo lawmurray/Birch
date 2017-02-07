@@ -80,8 +80,7 @@ bool bi::ModelReference::canDowncast(ModelReference& o) {
   if (o.target->isEqual()) {
     return canDowncast(*ref);  // compare with canonical type
   } else {
-    return target == o.target
-        || (*o.target->op != "~" && ref && canDowncast(*ref));
+    return target == o.target || (ref && canDowncast(*ref));
   }
 }
 
@@ -110,7 +109,7 @@ bool bi::ModelReference::possibly(ModelParameter& o) {
 }
 
 bool bi::ModelReference::possibly(ModelReference& o) {
-  return !canUpcast(o) && canDowncast(o) && (!o.assignable || assignable);
+  return o.canUpcast(*this) && (!o.assignable || assignable);
 }
 
 bool bi::ModelReference::possibly(EmptyType& o) {

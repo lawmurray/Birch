@@ -13,9 +13,6 @@ void bi::DispatchGatherer::visit(const FuncReference* o) {
       ++iter) {
     insert(*iter);
   }
-  if (o->alternatives.size() > 0 && o->target) {
-    insert(o->target);
-  }
 }
 
 void bi::DispatchGatherer::visit(const RandomInit* o) {
@@ -25,11 +22,6 @@ void bi::DispatchGatherer::visit(const RandomInit* o) {
 
 void bi::DispatchGatherer::insert(const FuncParameter* o) {
   gathered.insert(o);
-  std::list<FuncParameter*> parents;
-  scope->parents(const_cast<FuncParameter*>(o), parents);
-  for (auto iter = parents.begin(); iter != parents.end(); ++iter) {
-    insert(*iter);
-  }
 
   /*
    * Also need any functions used in the signatures of imported

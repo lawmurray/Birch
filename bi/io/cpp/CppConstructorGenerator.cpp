@@ -64,15 +64,6 @@ void bi::CppConstructorGenerator::visit(const ModelParameter* o) {
         finish("frame, name, group),");
       }
       start("group(childGroup(group, name))");
-      if (o->missing) {
-        initialise(o->missing.get());
-      }
-      if (o->pos) {
-        initialise(o->pos.get());
-      }
-      if (o->x) {
-        initialise(o->x.get());
-      }
 
       for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
         initialise((*iter)->param.get());
@@ -82,15 +73,6 @@ void bi::CppConstructorGenerator::visit(const ModelParameter* o) {
       out();
       finish(" {");
       in();
-      if (o->missing) {
-        assign(o->missing.get());
-      }
-      if (o->pos) {
-        assign(o->pos.get());
-      }
-      if (o->x) {
-        assign(o->x.get());
-      }
       for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
         assign((*iter)->param.get());
       }

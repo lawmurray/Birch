@@ -21,7 +21,7 @@ void bi::CppViewConstructorGenerator::visit(const ModelParameter* o) {
     middle(", const View& view)");
     Gatherer<VarDeclaration> gatherer;
     o->braces->accept(&gatherer);
-    if (o->isLess() || o->isRandom() || gatherer.size() > 0) {
+    if (o->isLess() || gatherer.size() > 0) {
       finish(" :");
       in();
       in();
@@ -29,11 +29,6 @@ void bi::CppViewConstructorGenerator::visit(const ModelParameter* o) {
         middle("base_type(o, frame, view),");
       }
       start("group(o.group)");
-      if (o->isRandom()) {
-        initialise(o->missing.get());
-        initialise(o->pos.get());
-        initialise(o->x.get());
-      }
       for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
         initialise((*iter)->param.get());
       }

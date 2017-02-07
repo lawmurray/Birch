@@ -18,6 +18,6 @@ public:
 
   virtual void visit(const ModelParameter* o);
 
-  void assign(const VarParameter* o);
+  virtual void assign(const VarParameter* o);
 };
 }

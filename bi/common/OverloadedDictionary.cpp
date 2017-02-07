@@ -88,6 +88,7 @@ void bi::OverloadedDictionary<ParameterType,ReferenceType>::resolve(
   } else {
     std::list<ParameterType*> possibles;
     iter2->second.match(ref, possibles);
+    possibles.remove(ref->target);
     ref->alternatives = possibles;
   }
 }

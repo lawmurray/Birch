@@ -260,8 +260,11 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
         start(name << " = ");
         Type* type = (*iter)->type->strip();
         const ModelReference* ref = dynamic_cast<const ModelReference*>(type);
-        if (ref && ref->target->isRandom()) {
-          ref = dynamic_cast<const ModelReference*>(ref->target->base->strip());
+        if (!ref) {
+          const RandomType* random = dynamic_cast<const RandomType*>(type);
+          if (random) {
+            ref = dynamic_cast<const ModelReference*>(random->left.get());
+          }
         }
 
         if (ref) {

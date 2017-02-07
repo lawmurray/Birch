@@ -156,6 +156,7 @@ template<class T, class Compare>
 bool bi::poset<T,Compare>::contains(T v) {
   std::list<T> matches;
   match(v, matches);
+
   return matches.size() == 1 && compare(matches.front(), v)
       && compare(v, matches.front());
 }
@@ -219,12 +220,14 @@ void bi::poset<T,Compare>::add_vertex(T v) {
 template<class T, class Compare>
 void bi::poset<T,Compare>::add_edge(T u, T v) {
   /* pre-condition */
-  assert(u != v);
+  //assert(u != v);
 
-  forwards.insert(std::make_pair(u, v));
-  backwards.insert(std::make_pair(v, u));
-  leaves.erase(u);
-  roots.erase(v);
+  //if (u != v) {
+    forwards.insert(std::make_pair(u, v));
+    backwards.insert(std::make_pair(v, u));
+    leaves.erase(u);
+    roots.erase(v);
+  //}
 }
 
 template<class T, class Compare>

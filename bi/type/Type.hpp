@@ -17,6 +17,7 @@ template<class T> class List;
 class ModelParameter;
 class ModelReference;
 class ParenthesesType;
+class RandomType;
 
 /**
  * Type.
@@ -104,6 +105,7 @@ public:
   virtual bool definitely(ModelParameter& o);
   virtual bool definitely(ModelReference& o);
   virtual bool definitely(ParenthesesType& o);
+  virtual bool definitely(RandomType& o);
 
   virtual bool possibly(Type& o);
   virtual bool dispatchPossibly(Type& o) = 0;
@@ -114,5 +116,6 @@ public:
   virtual bool possibly(ModelParameter& o);
   virtual bool possibly(ModelReference& o);
   virtual bool possibly(ParenthesesType& o);
+  virtual bool possibly(RandomType& o);
 };
 }
