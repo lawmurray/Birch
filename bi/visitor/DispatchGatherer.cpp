@@ -9,6 +9,7 @@ bi::DispatchGatherer::DispatchGatherer(Scope* scope) :
 }
 
 void bi::DispatchGatherer::visit(const FuncReference* o) {
+  Visitor::visit(o);
   for (auto iter = o->alternatives.begin(); iter != o->alternatives.end();
       ++iter) {
     insert(*iter);
@@ -21,6 +22,7 @@ void bi::DispatchGatherer::visit(const RandomInit* o) {
 }
 
 void bi::DispatchGatherer::insert(const FuncParameter* o) {
+  Visitor::visit(o);
   gathered.insert(o);
 
   /*
