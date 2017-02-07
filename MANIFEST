@@ -3,6 +3,7 @@ bi/multiple_dispatch.bi
 bi/hello_world.bi
 bi/linear_gaussian.bi
 bi/multiple_observations.bi
+bi/random_variable.bi
 bi/triplet.bi
 MANIFEST
 README.md
