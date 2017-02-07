@@ -300,7 +300,7 @@ void bi::CppBaseGenerator::genCapture(const Expression* o) {
       if (!done.empty()) {
         middle(", ");
       }
-      if (ref->type->assignable) {
+      if (ref->type->isRandom()) {
         middle('&');
       }
       middle(ref->name);

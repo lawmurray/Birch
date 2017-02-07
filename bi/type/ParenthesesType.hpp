@@ -28,8 +28,8 @@ public:
    */
   virtual ~ParenthesesType();
 
-  bool isBuiltin() const;
-  bool isModel() const;
+  virtual bool isBuiltin() const;
+  virtual bool isModel() const;
 
   virtual Type* strip();
 

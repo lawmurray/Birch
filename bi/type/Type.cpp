@@ -3,6 +3,8 @@
  */
 #include "bi/type/Type.hpp"
 
+#include "bi/visitor/IsRandom.hpp"
+
 bi::Type::Type(shared_ptr<Location> loc) :
     Located(loc),
     assignable(false) {
@@ -23,6 +25,12 @@ bool bi::Type::isBuiltin() const {
 
 bool bi::Type::isModel() const {
   return false;
+}
+
+bool bi::Type::isRandom() const {
+  IsRandom isRandom;
+  accept(&isRandom);
+  return isRandom.result;
 }
 
 bi::Type* bi::Type::strip() {
