@@ -107,6 +107,7 @@ birchc_SOURCES = \
   bi/type/ParenthesesType.cpp \
   bi/type/RandomType.cpp \
   bi/type/Type.cpp \
+  bi/type/VariantType.cpp \
   bi/visitor/Assigner.cpp \
   bi/visitor/Cloner.cpp \
   bi/visitor/DispatchGatherer.cpp \

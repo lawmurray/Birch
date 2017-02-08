@@ -42,74 +42,18 @@ void bi::ParenthesesType::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
+bool bi::ParenthesesType::definitely(Type& o) {
+  return single->definitely(o);
+}
+
 bool bi::ParenthesesType::dispatchDefinitely(Type& o) {
   return o.definitely(*this) || single->dispatchDefinitely(o);
 }
 
-bool bi::ParenthesesType::definitely(AssignableType& o) {
-  return single->definitely(*o.single);
-}
-
-bool bi::ParenthesesType::definitely(BracketsType& o) {
-  return single->definitely(o);
-}
-
-bool bi::ParenthesesType::definitely(EmptyType& o) {
-  return single->definitely(o);
-}
-
-bool bi::ParenthesesType::definitely(List<Type>& o) {
-  return single->definitely(o);
-}
-
-bool bi::ParenthesesType::definitely(ModelParameter& o) {
-  return single->definitely(o);
-}
-
-bool bi::ParenthesesType::definitely(ModelReference& o) {
-  return single->definitely(o);
-}
-
-bool bi::ParenthesesType::definitely(ParenthesesType& o) {
-  return single->definitely(*o.single);
-}
-
-bool bi::ParenthesesType::definitely(RandomType& o) {
-  return single->definitely(o);
+bool bi::ParenthesesType::possibly(Type& o) {
+  return single->possibly(o);
 }
 
 bool bi::ParenthesesType::dispatchPossibly(Type& o) {
   return o.possibly(*this) || single->dispatchPossibly(o);
-}
-
-bool bi::ParenthesesType::possibly(AssignableType& o) {
-  return single->possibly(*o.single);
-}
-
-bool bi::ParenthesesType::possibly(BracketsType& o) {
-  return single->possibly(o);
-}
-
-bool bi::ParenthesesType::possibly(EmptyType& o) {
-  return single->possibly(o);
-}
-
-bool bi::ParenthesesType::possibly(List<Type>& o) {
-  return single->possibly(o);
-}
-
-bool bi::ParenthesesType::possibly(ModelParameter& o) {
-  return single->possibly(o);
-}
-
-bool bi::ParenthesesType::possibly(ModelReference& o) {
-  return single->possibly(o);
-}
-
-bool bi::ParenthesesType::possibly(ParenthesesType& o) {
-  return single->possibly(*o.single);
-}
-
-bool bi::ParenthesesType::possibly(RandomType& o) {
-  return single->possibly(o);
 }

@@ -5,6 +5,8 @@
 
 #include "bi/visitor/Visitor.hpp"
 
+#include <set>
+
 namespace bi {
 /**
  * Gather all possible matches for function references that will need to be
@@ -14,13 +16,6 @@ namespace bi {
  */
 class DispatchGatherer : public Visitor {
 public:
-  /**
-   * Constructor.
-   *
-   * @param scope Scope for finding parents of functions.
-   */
-  DispatchGatherer(Scope* scope);
-
   /**
    * Begin iterator over gathered objects.
    */
@@ -50,11 +45,6 @@ private:
    * Insert function.
    */
   void insert(const FuncParameter* o);
-
-  /**
-   * Scope for finding parents of functions.
-   */
-  Scope* scope;
 
   /**
    * Gathered matches.

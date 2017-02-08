@@ -18,6 +18,7 @@ class ModelParameter;
 class ModelReference;
 class ParenthesesType;
 class RandomType;
+class VariantType;
 
 /**
  * Type.
@@ -111,6 +112,7 @@ public:
   virtual bool definitely(ModelReference& o);
   virtual bool definitely(ParenthesesType& o);
   virtual bool definitely(RandomType& o);
+  virtual bool definitely(VariantType& o);
 
   virtual bool possibly(Type& o);
   virtual bool dispatchPossibly(Type& o) = 0;
@@ -122,5 +124,6 @@ public:
   virtual bool possibly(ModelReference& o);
   virtual bool possibly(ParenthesesType& o);
   virtual bool possibly(RandomType& o);
+  virtual bool possibly(VariantType& o);
 };
 }

@@ -136,7 +136,7 @@ void bi::CppBaseGenerator::visit(const FuncReference* o) {
   } else {
     if (o->alternatives.size() > 0) {
       /* dynamic dispatch to alternative calls */
-      finish("[&]() {");
+      finish("[&]() -> " << o->type << " {");
       in();
       in();
       for (auto iter = o->alternatives.begin(); iter != o->alternatives.end();
@@ -145,31 +145,31 @@ void bi::CppBaseGenerator::visit(const FuncReference* o) {
         genArgs(const_cast<FuncReference*>(o), *iter);
         finish("; } catch (std::bad_cast) {}");
       }
-      start("return ");
-    }
 
-    /* definite call */
-    if (o->isBinary() && isTranslatable(o->name->str())
-        && !o->target->parens->isRich()) {
-      middle(o->getLeft());
-      middle(' ' << translate(o->name->str()) << ' ');
-      middle(o->getRight());
-    } else if (o->isUnary() && isTranslatable(o->name->str())
-        && !o->target->parens->isRich()) {
-      middle(translate(o->name->str()) << ' ' << o->getRight());
-    } else {
-      middle("bi::" << o->target->mangled);
-      if (o->isConstructor()) {
-        middle("<>");
-      }
+      /* definite call */
+      start("return dispatch_" << o->target->number << '_');
       genArgs(const_cast<FuncReference*>(o), o->target);
-    }
-
-    if (o->alternatives.size() > 0) {
       finish(';');
       start("}()");
       out();
       out();
+    } else {
+      /* definite call */
+      if (o->isBinary() && isTranslatable(o->name->str())
+          && !o->target->parens->isRich()) {
+        middle(o->getLeft());
+        middle(' ' << translate(o->name->str()) << ' ');
+        middle(o->getRight());
+      } else if (o->isUnary() && isTranslatable(o->name->str())
+          && !o->target->parens->isRich()) {
+        middle(translate(o->name->str()) << ' ' << o->getRight());
+      } else {
+        middle("bi::" << o->target->mangled);
+        if (o->isConstructor()) {
+          middle("<>");
+        }
+        genArgs(const_cast<FuncReference*>(o), o->target);
+      }
     }
   }
 }
@@ -285,6 +285,14 @@ void bi::CppBaseGenerator::visit(const RandomType* o) {
   inArray = true;
   middle("bi::Random<" << o->left << ',' << o->right << '>');
   inArray = false;
+}
+
+void bi::CppBaseGenerator::visit(const VariantType* o) {
+  middle("boost::variant<" << o->definite);
+  for (auto iter = o->possibles.begin(); iter != o->possibles.end(); ++iter) {
+    middle(',' << *iter);
+  }
+  middle(">");
 }
 
 void bi::CppBaseGenerator::genCapture(const Expression* o) {

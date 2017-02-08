@@ -8,9 +8,11 @@
 #include "bi/random/Random.hpp"
 #include "bi/data/MemoryPrimitiveValue.hpp"
 
+#include "boost/variant.hpp"
+
 namespace bi {
 enum TypeFlag {
-  IS_PRIMITIVE, IS_MODEL, IS_RANDOM
+  IS_PRIMITIVE, IS_MODEL, IS_RANDOM, IS_VARIANT
 };
 
 template<class T>
@@ -22,6 +24,11 @@ struct type_flag {
 template<class Variate, class Model, class Group>
 struct type_flag<Random<Variate,Model,Group>> {
   static const TypeFlag value = IS_RANDOM;
+};
+
+template<class... Types>
+struct type_flag<boost::variant<Types...>> {
+  static const TypeFlag value = IS_VARIANT;
 };
 
 /**
@@ -98,6 +105,13 @@ struct cast_impl<To,From,IS_RANDOM,IS_RANDOM> {
     } else {
       throw std::bad_cast();
     }
+  }
+};
+
+template<class To, class From, TypeFlag to_flag>
+struct cast_impl<To,From,to_flag,IS_VARIANT> {
+  static To eval(From&& o) {
+    return boost::get<To>(o);
   }
 };
 

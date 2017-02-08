@@ -39,74 +39,18 @@ void bi::AssignableType::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }
 
+bool bi::AssignableType::definitely(Type& o) {
+  return single->definitely(o);
+}
+
 bool bi::AssignableType::dispatchDefinitely(Type& o) {
-  return o.definitely(*this) || single->dispatchDefinitely(o);
+  return single->dispatchDefinitely(o);
 }
 
-bool bi::AssignableType::definitely(AssignableType& o) {
-  return single->definitely(*o.single);
-}
-
-bool bi::AssignableType::definitely(BracketsType& o) {
-  return single->definitely(o);
-}
-
-bool bi::AssignableType::definitely(EmptyType& o) {
-  return single->definitely(o);
-}
-
-bool bi::AssignableType::definitely(List<Type>& o) {
-  return single->definitely(o);
-}
-
-bool bi::AssignableType::definitely(ModelParameter& o) {
-  return single->definitely(o);
-}
-
-bool bi::AssignableType::definitely(ModelReference& o) {
-  return single->definitely(o);
-}
-
-bool bi::AssignableType::definitely(ParenthesesType& o) {
-  return single->definitely(*o.single);
-}
-
-bool bi::AssignableType::definitely(RandomType& o) {
-  return single->definitely(o);
+bool bi::AssignableType::possibly(Type& o) {
+  return single->possibly(o);
 }
 
 bool bi::AssignableType::dispatchPossibly(Type& o) {
-  return o.possibly(*this) || single->dispatchPossibly(o);
-}
-
-bool bi::AssignableType::possibly(AssignableType& o) {
-  return single->possibly(*o.single);
-}
-
-bool bi::AssignableType::possibly(BracketsType& o) {
-  return single->possibly(o);
-}
-
-bool bi::AssignableType::possibly(EmptyType& o) {
-  return single->possibly(o);
-}
-
-bool bi::AssignableType::possibly(List<Type>& o) {
-  return single->possibly(o);
-}
-
-bool bi::AssignableType::possibly(ModelParameter& o) {
-  return single->possibly(o);
-}
-
-bool bi::AssignableType::possibly(ModelReference& o) {
-  return single->possibly(o);
-}
-
-bool bi::AssignableType::possibly(ParenthesesType& o) {
-  return single->possibly(*o.single);
-}
-
-bool bi::AssignableType::possibly(RandomType& o) {
-  return single->possibly(o);
+  return single->dispatchPossibly(o);
 }

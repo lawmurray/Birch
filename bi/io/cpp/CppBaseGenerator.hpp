@@ -49,6 +49,7 @@ public:
   virtual void visit(const BracketsType* o);
   virtual void visit(const ParenthesesType* o);
   virtual void visit(const RandomType* o);
+  virtual void visit(const VariantType* o);
 
 protected:
   /**

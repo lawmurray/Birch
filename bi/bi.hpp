@@ -19,6 +19,8 @@
 #include "bi/primitive/shared_ptr.hpp"
 #include "bi/primitive/unique_ptr.hpp"
 
+#include "boost/variant.hpp"
+
 #include <utility>
 #include <getopt.h>
 

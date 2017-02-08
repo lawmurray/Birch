@@ -8,15 +8,14 @@
 #include "bi/visitor/DispatchGatherer.hpp"
 #include "bi/visitor/Gatherer.hpp"
 
-bi::CppDispatcherGenerator::CppDispatcherGenerator(Scope* scope,
-    std::ostream& base, const int level, const bool header) :
-    CppBaseGenerator(base, level, header),
-    scope(scope) {
+bi::CppDispatcherGenerator::CppDispatcherGenerator(std::ostream& base,
+    const int level, const bool header) :
+    CppBaseGenerator(base, level, header) {
   //
 }
 
 void bi::CppDispatcherGenerator::visit(const File* o) {
-  DispatchGatherer gatherer(o->scope.get());
+  DispatchGatherer gatherer;
   o->accept(&gatherer);
 
   header = true;
@@ -69,28 +68,42 @@ void bi::CppDispatcherGenerator::visit(const FuncParameter* o) {
   } else {
     finish(" {");
     in();
-    start("return bi::");
-    if ((o->isBinary() || o->isUnary()) && isTranslatable(o->name->str())
+    start("return ");
+
+    /* definite call */
+    if (o->isBinary() && isTranslatable(o->name->str())
         && !o->parens->isRich()) {
-      middle("operator" << translate(o->name->str()));
+      genArg(o->getLeft());
+      middle(' ' << translate(o->name->str()) << ' ');
+      genArg(o->getRight());
+    } else if (o->isUnary() && isTranslatable(o->name->str())
+        && !o->parens->isRich()) {
+      middle(translate(o->name->str()) << ' ');
+      genArg(o->getRight());
     } else {
-      middle(o->mangled);
-    }
-    middle('(');
-
-    for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
-      if (iter != gatherer.begin()) {
-        middle(", ");
+      middle("bi::" << o->mangled);
+      if (o->isConstructor()) {
+        middle("<>");
       }
-      middle("bi::cast<");
-      if (!(*iter)->type->assignable) {
-        middle("const ");
+      middle('(');
+      for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
+        if (iter != gatherer.begin()) {
+          middle(", ");
+        }
+        genArg(*iter);
       }
-      middle((*iter)->type << "&>(" << (*iter)->name << ')');
+      middle(")");
     }
-    finish(");");
-
+    finish(';');
     out();
     finish("}\n");
   }
+}
+
+void bi::CppDispatcherGenerator::genArg(const Expression* o) {
+  middle("bi::cast<");
+  if (!o->type->assignable) {
+    middle("const ");
+  }
+  middle(o->type << "&>(" << o << ')');
 }

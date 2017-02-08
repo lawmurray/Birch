@@ -7,8 +7,8 @@
 #include "bi/exception/all.hpp"
 
 bi::Resolver::Resolver() :
-    inInputs(false),
-    membershipScope(nullptr) {
+    membershipScope(nullptr),
+    inInputs(false) {
   //
 }
 
@@ -133,7 +133,24 @@ bi::Expression* bi::Resolver::modify(FuncReference* o) {
   Scope* membershipScope = takeMembershipScope();
   Modifier::modify(o);
   resolve(o, membershipScope);
-  o->type = o->target->type->accept(&cloner)->accept(this);
+
+  if (o->alternatives.size() > 0) {
+    /* may require a variant return type */
+    VariantType* variant = new VariantType(o->target->type.get());
+    for (auto iter = o->alternatives.begin(); iter != o->alternatives.end(); ++iter) {
+      variant->add((*iter)->type.get());
+    }
+    if (variant->size() > 1) {
+      /* use variant */
+      o->type = variant;
+    } else {
+      /* don't use variant */
+      delete variant;
+      o->type = o->target->type->accept(&cloner)->accept(this);
+    }
+  } else {
+    o->type = o->target->type->accept(&cloner)->accept(this);
+  }
   o->type->assignable = false;  // rvalue
   o->form = o->target->form;
 

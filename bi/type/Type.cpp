@@ -77,6 +77,10 @@ bool bi::Type::definitely(RandomType& o) {
   return false;
 }
 
+bool bi::Type::definitely(VariantType& o) {
+  assert(false);
+}
+
 bool bi::Type::possibly(Type& o) {
   return o.dispatchPossibly(*this);
 }
@@ -111,4 +115,8 @@ bool bi::Type::possibly(ParenthesesType& o) {
 
 bool bi::Type::possibly(RandomType& o) {
   return false;
+}
+
+bool bi::Type::possibly(VariantType& o) {
+  assert(false);
 }

@@ -36,24 +36,10 @@ public:
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
+  virtual bool definitely(Type& o);
   virtual bool dispatchDefinitely(Type& o);
-  virtual bool definitely(AssignableType& o);
-  virtual bool definitely(BracketsType& o);
-  virtual bool definitely(EmptyType& o);
-  virtual bool definitely(List<Type>& o);
-  virtual bool definitely(ModelParameter& o);
-  virtual bool definitely(ModelReference& o);
-  virtual bool definitely(ParenthesesType& o);
-  virtual bool definitely(RandomType& o);
 
+  virtual bool possibly(Type& o);
   virtual bool dispatchPossibly(Type& o);
-  virtual bool possibly(AssignableType& o);
-  virtual bool possibly(BracketsType& o);
-  virtual bool possibly(EmptyType& o);
-  virtual bool possibly(List<Type>& o);
-  virtual bool possibly(ModelParameter& o);
-  virtual bool possibly(ModelReference& o);
-  virtual bool possibly(ParenthesesType& o);
-  virtual bool possibly(RandomType& o);
 };
 }

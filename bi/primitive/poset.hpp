@@ -55,7 +55,19 @@ public:
    * @param[out] matches Container to hold matches.
    */
   template<class Comparable, class Container>
-  void match(Comparable v, Container& marches);
+  void match(Comparable v, Container& matches);
+
+  /**
+   * Find all matches.
+   *
+   * @tparam Comparable Type comparable to value type.
+   * @tparam Container Container type with push_back() function.
+   *
+   * @param v The value.
+   * @param[out] matches Container to hold matches.
+   */
+  template<class Comparable, class Container>
+  void match_all(Comparable v, Container& matches);
 
   /**
    * Insert vertex.
@@ -94,12 +106,16 @@ private:
   void remove_edge(T u, T v);
 
   /**
-   * Sub-operation for match to find most-specific match.
-   *
-   * @return True if a match was made in the subgraph.
+   * Sub-operation for match.
    */
   template<class Comparable, class Container>
   bool match(T u, Comparable v, Container& matches);
+
+  /**
+   * Sub-operation for match_all.
+   */
+  template<class Comparable, class Container>
+  void match_all(T u, Comparable v, Container& matches);
 
   /*
    * Sub-operations for insert.
@@ -199,6 +215,15 @@ void bi::poset<T,Compare>::match(Comparable v, Container& matches) {
 }
 
 template<class T, class Compare>
+template<class Comparable, class Container>
+void bi::poset<T,Compare>::match_all(Comparable v, Container& matches) {
+  ++colour;
+  for (auto iter = roots.begin(); iter != roots.end(); ++iter) {
+    match_all(*iter, v, matches);
+  }
+}
+
+template<class T, class Compare>
 void bi::poset<T,Compare>::insert(T v) {
   add_vertex(v);
   forward(v);
@@ -221,12 +246,11 @@ template<class T, class Compare>
 void bi::poset<T,Compare>::add_edge(T u, T v) {
   /* pre-condition */
   //assert(u != v);
-
   //if (u != v) {
-    forwards.insert(std::make_pair(u, v));
-    backwards.insert(std::make_pair(v, u));
-    leaves.erase(u);
-    roots.erase(v);
+  forwards.insert(std::make_pair(u, v));
+  backwards.insert(std::make_pair(v, u));
+  leaves.erase(u);
+  roots.erase(v);
   //}
 }
 
@@ -265,8 +289,7 @@ void bi::poset<T,Compare>::remove_edge(T u, T v) {
 
 template<class T, class Compare>
 template<class Comparable, class Container>
-bool bi::poset<T,Compare>::match(T u, Comparable v,
-    Container& matches) {
+bool bi::poset<T,Compare>::match(T u, Comparable v, Container& matches) {
   bool deeper = false;
   if (colours[u] < colour) {
     /* not visited yet */
@@ -288,6 +311,22 @@ bool bi::poset<T,Compare>::match(T u, Comparable v,
     }
   }
   return deeper;
+}
+
+template<class T, class Compare>
+template<class Comparable, class Container>
+void bi::poset<T,Compare>::match_all(T u, Comparable v, Container& matches) {
+  if (colours[u] < colour) {
+    /* not visited yet */
+    colours[u] = colour;
+    if (compare(v, u)) {
+      auto range = forwards.equal_range(u);
+      for (auto iter = range.first; iter != range.second; ++iter) {
+        match_all(iter->second, v, matches);
+      }
+      matches.push_back(u);
+    }
+  }
 }
 
 template<class T, class Compare>

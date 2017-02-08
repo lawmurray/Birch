@@ -68,5 +68,6 @@ public:
   virtual Type* modify(ParenthesesType* o);
   virtual Type* modify(RandomType* o);
   virtual Type* modify(TypeList* o);
+  virtual Type* modify(VariantType* o);
 };
 }

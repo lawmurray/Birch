@@ -47,7 +47,7 @@ void bi::CppFileGenerator::visit(const File* o) {
     line("#include \"" << file.filename().string() << "\"\n");
 
     /* dispatcher code */
-    CppDispatcherGenerator auxDispatcher(o->scope.get(), base, level, header);
+    CppDispatcherGenerator auxDispatcher(base, level, header);
     auxDispatcher << o;
   }
 

@@ -54,3 +54,9 @@ bi::Type* bi::Assigner::modify(TypeList* o) {
   o->assignable = true;
   return o;
 }
+
+bi::Type* bi::Assigner::modify(VariantType* o) {
+  Modifier::modify(o);
+  o->assignable = true;
+  return o;
+}

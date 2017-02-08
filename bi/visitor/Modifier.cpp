@@ -240,3 +240,7 @@ bi::Type* bi::Modifier::modify(TypeList* o) {
   o->tail = o->tail->accept(this);
   return o;
 }
+
+bi::Type* bi::Modifier::modify(VariantType* o) {
+  return o;
+}
