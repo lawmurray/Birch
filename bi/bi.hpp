@@ -12,7 +12,6 @@
 #include "bi/exception/MemoryException.hpp"
 #include "bi/exception/NetCDFException.hpp"
 #include "bi/exception/UnknownOptionException.hpp"
-#include "bi/random/Expirable.hpp"
 #include "bi/random/Random.hpp"
 #include "bi/random/RandomStack.hpp"
 #include "bi/primitive/cast.hpp"
