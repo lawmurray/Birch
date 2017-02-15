@@ -109,7 +109,8 @@ bool bi::ModelReference::possibly(ModelParameter& o) {
 }
 
 bool bi::ModelReference::possibly(ModelReference& o) {
-  return o.canUpcast(*this) && (!o.assignable || assignable);
+  //return o.canUpcast(*this) && (!o.assignable || assignable);
+  return canUpcast(o) && (!o.assignable || assignable);
 }
 
 bool bi::ModelReference::possibly(EmptyType& o) {

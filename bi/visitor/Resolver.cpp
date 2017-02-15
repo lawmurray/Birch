@@ -172,6 +172,7 @@ bi::Expression* bi::Resolver::modify(VarParameter* o) {
   if (!o->name->isEmpty()) {
     top()->add(o);
   }
+  ///@todo Check that o->value is of the correct type
   return o;
 }
 
