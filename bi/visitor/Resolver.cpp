@@ -90,9 +90,9 @@ bi::Expression* bi::Resolver::modify(RandomInit* o) {
   }
   o->type = o->left->type->accept(&cloner)->accept(this);
 
-  o->push = new FuncReference(o->left->accept(&cloner), new Name("~>"),
+  o->backward = new FuncReference(o->left->accept(&cloner), new Name("~>"),
       o->right->accept(&cloner));
-  o->push->accept(this);
+  o->backward->accept(this);
 
   return o;
 }
@@ -137,7 +137,8 @@ bi::Expression* bi::Resolver::modify(FuncReference* o) {
   if (o->alternatives.size() > 0) {
     /* may require a variant return type */
     VariantType* variant = new VariantType(o->target->type.get());
-    for (auto iter = o->alternatives.begin(); iter != o->alternatives.end(); ++iter) {
+    for (auto iter = o->alternatives.begin(); iter != o->alternatives.end();
+        ++iter) {
       variant->add((*iter)->type.get());
     }
     if (variant->size() > 1) {

@@ -102,8 +102,8 @@ std::string bi::internalise(const FuncParameter* o) {
   if (!init) {
     ops["->"] = "right";
     ops["<-"] = "left";
-    ops["~>"] = "push";
-    ops["<~"] = "pull";
+    ops["~>"] = "condition";
+    ops["<~"] = "simulate";
     ops["~"] = "sim";
     ops[".."] = "range";
     ops["!"] = "not";

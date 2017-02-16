@@ -22,7 +22,7 @@ public:
   typedef typename Value::group_type group_type;
 
   /**
-   * Constructor for new data.
+   * Constructor.
    *
    * @tparam ...Args Arbitrary types.
    *
@@ -42,39 +42,9 @@ public:
   }
 
   /**
-   * Constructor for existing data.
-   *
-   * @tparam Frame1 Frame type.
-   *
-   * @param value Value.
-   * @param frame Frame.
-   *
-   * Memory is not allocated for the array.
-   */
-  template<class Frame1>
-  Array(const Value& value, const Frame1& frame) :
-      value(value),
-      frame(frame) {
-    //
-  }
-
-  /**
    * Copy constructor.
-   *
-   * @param o Object.
-   * @param offset Offset into the underlying buffer of @p o.
    */
   Array(const Array<Value,Frame>& o) :
-      value(o.value, o.frame),
-      frame(o.frame) {
-    //
-  }
-
-  /**
-   * Generic copy constructor.
-   */
-  template<class Frame1>
-  Array(Array<Value,Frame1>& o) :
       value(o.value, o.frame),
       frame(o.frame) {
     //

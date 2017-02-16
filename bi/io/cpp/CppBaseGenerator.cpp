@@ -97,18 +97,15 @@ void bi::CppBaseGenerator::visit(const RandomInit* o) {
   middle(o->left << ".init(" << o->right << ", ");
   in();
   in();
-  genCapture(o->left.get());
-  finish("() {");
+  finish("[](const " << o->right->type << "& m_) {");
   in();
-  line(o->left << " = sim_(" << o->left << ".m);");
-  // don't assign directly to .x here, as rv needs to update its missing
-  // state too
+  line("return sim_(m_);");
   out();
   start("}, ");
-  genCapture(o->push.get());
-  finish("() {");
+  genCapture(o->backward.get());
+  finish("() -> double {");
   in();
-  line(o->push << ';');
+  line("return " << o->backward << ';');
   out();
   start("})");
   out();
@@ -283,7 +280,7 @@ void bi::CppBaseGenerator::visit(const ParenthesesType* o) {
 
 void bi::CppBaseGenerator::visit(const RandomType* o) {
   inArray = true;
-  middle("bi::Random<" << o->left << ',' << o->right << '>');
+  middle("bi::random_variable<" << o->left << ',' << o->right << '>');
   inArray = false;
 }
 

@@ -35,9 +35,9 @@ public:
   virtual void accept(Visitor* visitor) const;
 
   /**
-   * Push method.
+   * Backward function.
    */
-  unique_ptr<Expression> push;
+  unique_ptr<Expression> backward;
 
   virtual bool dispatchDefinitely(Expression& o);
   virtual bool definitely(RandomInit& o);

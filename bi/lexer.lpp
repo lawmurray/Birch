@@ -121,8 +121,8 @@ IS                                 (u|U|l|L)*
 
 "->"                                { return RIGHT_OP; }
 "<-"                                { return LEFT_OP; } 
-"~>"                                { return PUSH_OP; }
-"<~"                                { return PULL_OP; }
+"~>"                                { return CONDITION_OP; }
+"<~"                                { return SIMULATE_OP; }
 "~"                                 { return '~'; }
 ".."                                { return RANGE_OP; }
 "!"                                 { return '!'; }
