@@ -52,11 +52,11 @@ bi::PrimitiveValue<Type,bi::MemoryGroup>& bi::PrimitiveValue<Type,
 template<class Type>
 bi::PrimitiveValue<Type,bi::MemoryGroup>& bi::PrimitiveValue<Type,
     bi::MemoryGroup>::operator=(PrimitiveValue<Type,MemoryGroup> && o) {
-  if (ptr == o.ptr && o.own) {
+  if (ptr == o.ptr) {
     /* just take ownership */
-    assert(!own);  // there should only be one owner
-    own = true;
-    o.own = false;
+    if (!own) {
+      std::swap(own, o.own);
+    }
   } else {
     /* copy assignment */
     own = true;

@@ -298,17 +298,13 @@ void bi::CppBaseGenerator::genCapture(const Expression* o) {
   o->accept(&gatherer);
   std::unordered_set<std::string> done;
 
-  middle('[');
+  middle("[=");
   for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
     const VarReference* ref = *iter;
     if (done.find(ref->name->str()) == done.end()) {
-      if (!done.empty()) {
-        middle(", ");
-      }
       if (ref->type->isRandom()) {
-        middle('&');
+        middle(", &" << ref->name);
       }
-      middle(ref->name);
       done.insert(ref->name->str());
     }
   }

@@ -6,7 +6,6 @@
 #include "bi/io/mangler_ostream.hpp"
 #include "bi/expression/all.hpp"
 
-#include <iostream>
 #include <regex>
 #include <sstream>
 #include <cassert>

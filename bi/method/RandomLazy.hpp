@@ -84,7 +84,7 @@ template<class Variate, class Model, class Group>
 bi::RandomLazy<Variate,Model,Group>::RandomLazy(
     Random<Variate,Model,Group>& rv, const Model& m,
     const simulate_type& simulate, const backward_type& backward) :
-    rv(rv, false),  // shallow copy of random variable
+    rv(rv, false),  // shallow copy
     m(m),
     simulateFunction(simulate),
     backwardFunction(backward) {

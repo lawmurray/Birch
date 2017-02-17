@@ -8,8 +8,6 @@
 #include "bi/primitive/unique_ptr.hpp"
 #include "bi/primitive/shared_ptr.hpp"
 
-#include <iostream>
-
 #define line(x) *this << indent << x << '\n'
 #define start(x) *this << indent << x
 #define middle(x) *this << x

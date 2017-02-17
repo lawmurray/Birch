@@ -70,7 +70,13 @@ public:
   /**
    * Copy constructor.
    */
-  Random(const Random<Variate,Model,Group>& o) = default;
+  Random(const Random<Variate,Model,Group>& o) :
+      group(o.group),
+      x(o.x),
+      id(o.id),
+      state(o.state) {
+    //
+  }
 
   /**
    * Move constructor.
@@ -103,7 +109,7 @@ public:
   /**
    * Move assignment.
    */
-  Random<Variate,Model,Group>& operator=(Random<Variate,Model,Group>&& o) = default;
+  Random<Variate,Model,Group>& operator=(Random<Variate,Model,Group> && o) = default;
 
   /**
    * View operator.
@@ -117,7 +123,8 @@ public:
   /**
    * Variate copy assignment.
    */
-  Random<Variate,Model,Group>& operator=(const typename Variate::value_type& o);
+  Random<Variate,Model,Group>& operator=(
+      const typename Variate::value_type& o);
 
   /**
    * Cast to variate type.
@@ -125,9 +132,19 @@ public:
   operator typename Variate::value_type&();
 
   /**
+   * Cast to variate type.
+   */
+  operator const typename Variate::value_type&() const;
+
+  /**
    * Cast to model type.
    */
   explicit operator Model&();
+
+  /**
+   * Cast to model type.
+   */
+  explicit operator const Model&() const;
 
   /**
    * Initialise the random variable.
@@ -166,7 +183,11 @@ bi::Random<Variate,Model,Group>::~Random() {
   if (id >= 0) {
     /* random variable still persists in the method, extend its life by
      * giving ownership of it to the method */
-    auto lazy = dynamic_cast<RandomLazy<Variate,Model,Group>*>(method->get(id));
+    /// @todo This might be made more efficient, possibly problematic when,
+    /// e.g. indexing vectors of random variables, and this happens for every
+    /// index.
+    auto lazy =
+        dynamic_cast<RandomLazy<Variate,Model,Group>*>(method->get(id));
     lazy->rv = std::move(*this);
   }
 }
@@ -190,9 +211,30 @@ bi::Random<Variate,Model,Group>::operator typename Variate::value_type&() {
 }
 
 template<class Variate, class Model, class Group>
+bi::Random<Variate,Model,Group>::operator const typename Variate::value_type&() const {
+  if (state == MISSING) {
+    method->simulate(id);
+  }
+  assert(state != MISSING);
+  return x;
+}
+
+template<class Variate, class Model, class Group>
 bi::Random<Variate,Model,Group>::operator Model&() {
   if (id >= 0) {
-    auto lazy = dynamic_cast<RandomLazy<Variate,Model,Group>*>(method->get(id));
+    auto lazy =
+        dynamic_cast<RandomLazy<Variate,Model,Group>*>(method->get(id));
+    return lazy->m;
+  } else {
+    throw std::bad_cast();
+  }
+}
+
+template<class Variate, class Model, class Group>
+bi::Random<Variate,Model,Group>::operator const Model&() const {
+  if (id >= 0) {
+    auto lazy =
+        dynamic_cast<RandomLazy<Variate,Model,Group>*>(method->get(id));
     return lazy->m;
   } else {
     throw std::bad_cast();
