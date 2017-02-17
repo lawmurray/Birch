@@ -55,16 +55,6 @@ public:
   }
 
   /**
-   * Copy constructor.
-   */
-  Random(const Random<Variate,Model,Group>& o) = default;
-
-  /**
-   * Move constructor.
-   */
-  Random(Random<Variate,Model,Group> && o) = default;
-
-  /**
    * View constructor.
    */
   template<class Frame, class View>
@@ -76,6 +66,16 @@ public:
       state(o.state, frame, view) {
     //
   }
+
+  /**
+   * Copy constructor.
+   */
+  Random(const Random<Variate,Model,Group>& o) = default;
+
+  /**
+   * Move constructor.
+   */
+  Random(Random<Variate,Model,Group> && o) = default;
 
   /**
    * Generic copy constructor.
@@ -93,14 +93,17 @@ public:
   /**
    * Destructor.
    */
-  virtual ~Random() {
-    //
-  }
+  virtual ~Random();
 
   /**
    * Copy assignment.
    */
   Random<Variate,Model,Group>& operator=(const Random<Variate,Model,Group>& o) = default;
+
+  /**
+   * Move assignment.
+   */
+  Random<Variate,Model,Group>& operator=(Random<Variate,Model,Group>&& o) = default;
 
   /**
    * View operator.
@@ -114,7 +117,7 @@ public:
   /**
    * Variate copy assignment.
    */
-  Random<Variate,Model,Group>& operator=(const Variate& o);
+  Random<Variate,Model,Group>& operator=(const typename Variate::value_type& o);
 
   /**
    * Cast to variate type.
@@ -159,8 +162,18 @@ public:
 #include "bi/method/RandomLazy.hpp"
 
 template<class Variate, class Model, class Group>
+bi::Random<Variate,Model,Group>::~Random() {
+  if (id >= 0) {
+    /* random variable still persists in the method, extend its life by
+     * giving ownership of it to the method */
+    auto lazy = dynamic_cast<RandomLazy<Variate,Model,Group>*>(method->get(id));
+    lazy->rv = std::move(*this);
+  }
+}
+
+template<class Variate, class Model, class Group>
 bi::Random<Variate,Model,Group>& bi::Random<Variate,Model,Group>::operator=(
-    const Variate& o) {
+    const typename Variate::value_type& o) {
   x = o;
   state = ASSIGNED;
 
@@ -179,8 +192,8 @@ bi::Random<Variate,Model,Group>::operator typename Variate::value_type&() {
 template<class Variate, class Model, class Group>
 bi::Random<Variate,Model,Group>::operator Model&() {
   if (id >= 0) {
-    auto rv = dynamic_cast<RandomLazy<Variate,Model,Group>*>(method->get(id));
-    return rv->m;
+    auto lazy = dynamic_cast<RandomLazy<Variate,Model,Group>*>(method->get(id));
+    return lazy->m;
   } else {
     throw std::bad_cast();
   }

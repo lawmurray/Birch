@@ -34,13 +34,21 @@ public:
 
   /**
    * Value constructor.
+   *
+   * @internal Best to keep this explicit to avoid silently allocating
+   * memory unintentionally.
    */
-  PrimitiveValue(const Type& value);
+  explicit PrimitiveValue(const Type& value);
 
   /**
    * Copy constructor.
    */
   PrimitiveValue(const PrimitiveValue<Type,MemoryGroup>& o);
+
+  /**
+   * Move constructor.
+   */
+  PrimitiveValue(PrimitiveValue<Type,MemoryGroup> && o);
 
   /**
    * Copy constructor.
@@ -49,11 +57,6 @@ public:
   PrimitiveValue(const PrimitiveValue<Type,MemoryGroup>& o, const bool deep =
       true, const Frame& frame = EmptyFrame(), const char* name = nullptr,
       const MemoryGroup& group = MemoryGroup());
-
-  /**
-   * Move constructor.
-   */
-  PrimitiveValue(PrimitiveValue<Type,MemoryGroup> && o);
 
   /**
    * View constructor.
@@ -72,6 +75,12 @@ public:
    */
   PrimitiveValue<Type,MemoryGroup>& operator=(
       const PrimitiveValue<Type,MemoryGroup>& o);
+
+  /**
+   * Move assignment.
+   */
+  PrimitiveValue<Type,MemoryGroup>& operator=(
+      PrimitiveValue<Type,MemoryGroup> && o);
 
   /**
    * Generic assignment.

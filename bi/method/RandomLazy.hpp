@@ -24,7 +24,7 @@ public:
   /**
    * Simulate function type.
    */
-  typedef std::function<Variate(Model&)> simulate_type;
+  typedef std::function<typename Variate::value_type(Model&)> simulate_type;
 
   /**
    * Backward function type.

@@ -93,6 +93,13 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
     CppAssignmentGenerator auxAssignment(base, level, header);
     auxAssignment << o;
 
+    /* move assignment operator */
+    if (header) {
+      middle(o->name->str() << "<Group>& ");
+      middle("operator=(" << o->name->str() << "<Group>&& o_)");
+      middle(" = default;\n");
+    }
+
     /* group member variable */
     if (header) {
       line("Group group;");
