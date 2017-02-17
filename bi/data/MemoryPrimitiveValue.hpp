@@ -38,13 +38,6 @@ public:
   PrimitiveValue(const Type& value);
 
   /**
-   * Value constructor.
-   */
-  template<class Frame>
-  PrimitiveValue(const Type& value, const Frame& frame = EmptyFrame(),
-      const char* name = nullptr, const MemoryGroup& group = MemoryGroup());
-
-  /**
    * Copy constructor.
    */
   PrimitiveValue(const PrimitiveValue<Type,MemoryGroup>& o);
@@ -52,9 +45,9 @@ public:
   /**
    * Copy constructor.
    */
-  template<class Frame>
-  PrimitiveValue(const PrimitiveValue<Type,MemoryGroup>& o,
-      const Frame& frame = EmptyFrame(), const char* name = nullptr,
+  template<class Frame = EmptyFrame>
+  PrimitiveValue(const PrimitiveValue<Type,MemoryGroup>& o, const bool deep =
+      true, const Frame& frame = EmptyFrame(), const char* name = nullptr,
       const MemoryGroup& group = MemoryGroup());
 
   /**
@@ -79,12 +72,6 @@ public:
    */
   PrimitiveValue<Type,MemoryGroup>& operator=(
       const PrimitiveValue<Type,MemoryGroup>& o);
-
-  /**
-   * Move assignment.
-   */
-  PrimitiveValue<Type,MemoryGroup>& operator=(
-      PrimitiveValue<Type,MemoryGroup> && o);
 
   /**
    * Generic assignment.
@@ -139,20 +126,18 @@ bi::PrimitiveValue<Type,bi::MemoryGroup>::PrimitiveValue(
 
 template<class Type>
 template<class Frame>
-bi::PrimitiveValue<Type,bi::MemoryGroup>::PrimitiveValue(const Type& value,
-    const Frame& frame, const char* name, const MemoryGroup& group) :
-    group(group),
-    own(true) {
-  this->group.create(*this, value, frame, name);
-}
-
-template<class Type>
-template<class Frame>
 bi::PrimitiveValue<Type,bi::MemoryGroup>::PrimitiveValue(
-    const PrimitiveValue<Type,MemoryGroup>& o, const Frame& frame,
-    const char* name, const MemoryGroup& group) :
-    PrimitiveValue(frame, name, group) {
-  *this = o;
+    const PrimitiveValue<Type,MemoryGroup>& o, const bool deep,
+    const Frame& frame, const char* name, const MemoryGroup& group) :
+    group(group) {
+  if (deep) {
+    this->group.create(*this, frame, name);
+    own = true;
+    *this = o;
+  } else {
+    ptr = o.ptr;
+    own = false;
+  }
 }
 
 template<class Type>

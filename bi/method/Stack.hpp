@@ -19,9 +19,9 @@ public:
    */
   Stack();
 
-  int add(random_canonical* rv, const int state);
-  random_canonical* get(const int state);
-  void simulate(const int state);
+  int add(RandomInterface* rv);
+  RandomInterface* get(const int id);
+  void simulate(const int id);
 
 private:
   /**
@@ -33,7 +33,7 @@ private:
   /**
    * Canonical representations of random variables.
    */
-  std::stack<random_canonical*> canonicals;
+  std::stack<RandomInterface*> rvs;
 
   /**
    * Cumulative log-likelihood.

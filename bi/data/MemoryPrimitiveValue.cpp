@@ -14,13 +14,13 @@ bi::PrimitiveValue<Type,bi::MemoryGroup>::PrimitiveValue(
 template<class Type>
 bi::PrimitiveValue<Type,bi::MemoryGroup>::PrimitiveValue(const Type& value) :
     own(true) {
-  this->group.create(*this, value);
+  this->group.create(*this);
+  this->group.fill(*this, value);
 }
 
 template<class Type>
 bi::PrimitiveValue<Type,bi::MemoryGroup>::PrimitiveValue(
     const PrimitiveValue<Type,MemoryGroup>& o) :
-    group(o.group),
     own(true) {
   this->group.create(*this);
   *this = o;
@@ -51,15 +51,6 @@ bi::PrimitiveValue<Type,bi::MemoryGroup>& bi::PrimitiveValue<Type,
 
 template<class Type>
 bi::PrimitiveValue<Type,bi::MemoryGroup>& bi::PrimitiveValue<Type,
-    bi::MemoryGroup>::operator=(PrimitiveValue<Type,MemoryGroup> && o) {
-  std::swap(ptr, o.ptr);
-  std::swap(group, o.group);
-  std::swap(own, o.own);
-  return *this;
-}
-
-template<class Type>
-bi::PrimitiveValue<Type,bi::MemoryGroup>& bi::PrimitiveValue<Type,
     bi::MemoryGroup>::operator=(const Type& o) {
   copy(*this, o);
   return *this;
@@ -75,9 +66,11 @@ bi::PrimitiveValue<Type,bi::MemoryGroup>::operator const Type&() const {
   return *ptr;
 }
 
+#include "bi/method/RandomState.hpp"
+
 template class bi::PrimitiveValue<unsigned char,bi::MemoryGroup>;
 template class bi::PrimitiveValue<int64_t,bi::MemoryGroup>;
 template class bi::PrimitiveValue<int32_t,bi::MemoryGroup>;
 template class bi::PrimitiveValue<float,bi::MemoryGroup>;
 template class bi::PrimitiveValue<double,bi::MemoryGroup>;
-template class bi::PrimitiveValue<std::function<void()>,bi::MemoryGroup>;
+template class bi::PrimitiveValue<bi::RandomState,bi::MemoryGroup>;

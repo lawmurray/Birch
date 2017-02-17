@@ -13,10 +13,9 @@
 #include "bi/exception/NetCDFException.hpp"
 #include "bi/exception/UnknownOptionException.hpp"
 #include "bi/method/Method.hpp"
+#include "bi/method/Random.hpp"
 #include "bi/method/Stack.hpp"
 #include "bi/primitive/cast.hpp"
-#include "bi/primitive/random_canonical.hpp"
-#include "bi/primitive/random_variable.hpp"
 #include "bi/primitive/shared_ptr.hpp"
 #include "bi/primitive/unique_ptr.hpp"
 

@@ -5,7 +5,7 @@
  */
 #pragma once
 
-#include "bi/random/Random.hpp"
+#include "bi/method/Random.hpp"
 #include "bi/data/MemoryPrimitiveValue.hpp"
 
 #include "boost/variant.hpp"
@@ -100,7 +100,7 @@ struct cast_impl<To,From,IS_RANDOM,IS_MODEL> {
 template<class To, class From>
 struct cast_impl<To,From,IS_RANDOM,IS_RANDOM> {
   static To eval(From&& o) {
-    if (o.isMissing()) {
+    if (o.state == MISSING) {
       return dynamic_cast<To>(o);
     } else {
       throw std::bad_cast();

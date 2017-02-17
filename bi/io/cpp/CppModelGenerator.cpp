@@ -55,8 +55,6 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
     if (header) {
       line(o->name << "(const " << o->name << "<Group>& o) = default;\n");
     }
-    CppCopyConstructorGenerator auxCopyConstructor(base, level, header);
-    auxCopyConstructor << o;
 
     /* move constructor */
     if (header) {
@@ -67,6 +65,10 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
     CppViewConstructorGenerator auxViewConstructor(base, level, header);
     auxViewConstructor << o;
 
+    /* generic copy constructor */
+    CppCopyConstructorGenerator auxCopyConstructor(base, level, header);
+    auxCopyConstructor << o;
+
     /* destructor */
     if (header) {
       line("virtual ~" << o->name << "() {");
@@ -74,16 +76,6 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
       line("//");
       out();
       line("}\n");
-    }
-
-    /* copy assignment operator */
-    CppAssignmentGenerator auxAssignment(base, level, header);
-    auxAssignment << o;
-
-    /* move assignment operator */
-    if (header) {
-      start(o->name->str() << "<Group>& ");
-      finish("operator=(" << o->name->str() << "<Group>&& o) = default;\n");
     }
 
     /* view operator */
@@ -96,6 +88,10 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
       out();
       line("}\n");
     }
+
+    /* copy assignment operator */
+    CppAssignmentGenerator auxAssignment(base, level, header);
+    auxAssignment << o;
 
     /* group member variable */
     if (header) {

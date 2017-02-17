@@ -44,8 +44,8 @@ public:
   /**
    * Copy constructor.
    */
-  Array(const Array<Value,Frame>& o) :
-      value(o.value, o.frame),
+  Array(const Array<Value,Frame>& o, const bool deep = true) :
+      value(o.value, deep, o.frame),
       frame(o.frame) {
     //
   }
@@ -91,18 +91,6 @@ public:
     assert(frame.conforms(o.frame));
 
     copy(*this, o);
-    return *this;
-  }
-
-  /**
-   * Move assignment. The frames of the two arrays must conform.
-   */
-  Array<Value,Frame>& operator=(Array<Value,Frame>&& o) {
-    /* pre-condition */
-    assert(frame.conforms(o.frame));
-
-    std::swap(value, o.value);
-    std::swap(frame, o.frame);
     return *this;
   }
 

@@ -13,8 +13,9 @@ bi::CppCopyConstructorGenerator::CppCopyConstructorGenerator(
 
 void bi::CppCopyConstructorGenerator::visit(const ModelParameter* o) {
   if (header) {
-    line("template<class Frame>");
+    line("template<class Frame = EmptyFrame>");
     start(o->name->str() << "(const " << o->name->str() << "<Group>& o");
+    middle(", const bool deep = true");
     middle(", const Frame& frame = EmptyFrame()");
     middle(", const char* name = nullptr");
     middle(", const MemoryGroup& group = MemoryGroup())");
@@ -27,7 +28,7 @@ void bi::CppCopyConstructorGenerator::visit(const ModelParameter* o) {
       in();
       in();
       if (o->isLess()) {
-        finish("base_type(o, frame, name, group)");
+        finish("base_type(o, deep, frame, name, group)");
       }
       for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
         if (o->isLess() || iter != gatherer.begin()) {
@@ -47,5 +48,5 @@ void bi::CppCopyConstructorGenerator::visit(const ModelParameter* o) {
 }
 
 void bi::CppCopyConstructorGenerator::initialise(const VarParameter* o) {
-  start(o->name->str() << "(o." << o->name->str() << ", frame, name, group)");
+  start(o->name->str() << "(o." << o->name->str() << ", deep, frame, name, group)");
 }

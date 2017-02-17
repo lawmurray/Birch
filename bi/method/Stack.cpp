@@ -10,36 +10,46 @@ bi::Stack::Stack() :
   //
 }
 
-int bi::Stack::add(random_canonical* rv, const int state) {
-  if (state == -1) {
+int bi::Stack::add(RandomInterface* rv) {
+  if (rv->getState() == MISSING) {
+    rvs.push(rv);
+    return rvs.size() - 1;
+  } else {
     logLikelihood += rv->backward();
     delete rv;
-    return state;
-  } else {
-    canonicals.push(rv);
-    return canonicals.size() - 1;
+    return -1;
   }
 }
 
-bi::random_canonical* bi::Stack::get(const int state) {
-  pop(state + 1);
-  return canonicals.top();
-}
-
-void bi::Stack::simulate(const int state) {
-  pop(state);
-}
-
-void bi::Stack::pop(const int state) {
+bi::RandomInterface* bi::Stack::get(const int id) {
   /* pre-condition */
-  assert(state >= 0);
+  assert(0 <= id && id < rvs.size());
 
-  while (canonicals.size() > state) {
-    auto* rv = canonicals.top();
-    canonicals.pop();
+  pop(id + 1);
+  return rvs.top();
+}
 
+void bi::Stack::simulate(const int id) {
+  /* pre-condition */
+  assert(0 <= id && id < rvs.size());
+
+  pop(id);
+}
+
+void bi::Stack::pop(const int id) {
+  /* pre-condition */
+  assert(id >= 0);
+
+  while (rvs.size() > id) {
+    auto* rv = rvs.top();
+    rvs.pop();
+
+    assert(rv->getState() == MISSING);
     rv->simulate();
+    rv->setId(-1);
+    rv->setState(SIMULATED);
     logLikelihood += rv->backward();
+
     delete rv;
   }
 }

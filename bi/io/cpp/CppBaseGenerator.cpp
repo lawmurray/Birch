@@ -103,7 +103,7 @@ void bi::CppBaseGenerator::visit(const RandomInit* o) {
   out();
   start("}, ");
   genCapture(o->backward.get());
-  finish("() -> double {");
+  finish("() {");
   in();
   line("return " << o->backward << ';');
   out();
@@ -280,7 +280,7 @@ void bi::CppBaseGenerator::visit(const ParenthesesType* o) {
 
 void bi::CppBaseGenerator::visit(const RandomType* o) {
   inArray = true;
-  middle("bi::random_variable<" << o->left << ',' << o->right << '>');
+  middle("bi::Random<" << o->left << ',' << o->right << '>');
   inArray = false;
 }
 

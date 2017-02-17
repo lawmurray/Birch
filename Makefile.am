@@ -183,11 +183,12 @@ nobase_include_HEADERS = bi/data/Array.hpp \
   bi/exception/NetCDFException.hpp \
   bi/exception/UnknownOptionException.hpp \
   bi/method/Method.hpp \
+  bi/method/Random.hpp \
+  bi/method/RandomInterface.hpp \
+  bi/method/RandomLazy.hpp \
+  bi/method/RandomState.hpp \
   bi/method/Stack.hpp \
   bi/primitive/cast.hpp \
-  bi/primitive/random_canonical.hpp \
-  bi/primitive/random_canonical_impl.hpp \
-  bi/primitive/random_variable.hpp \
   bi/primitive/shared_ptr.hpp \
   bi/primitive/unique_ptr.hpp \
   bi/bi.hpp

@@ -3,7 +3,7 @@
  */
 #pragma once
 
-#include "bi/primitive/random_canonical.hpp"
+#include "bi/method/RandomInterface.hpp"
 
 namespace bi {
 /**
@@ -18,18 +18,26 @@ public:
 
   /**
    * Add a random variable.
+   *
+   * @param rv Random variable.
+   *
+   * @return Id assigned to the random variable.
    */
-  virtual int add(random_canonical* rv, const int state) = 0;
+  virtual int add(RandomInterface* rv) = 0;
 
   /**
    * Get a random variable.
+   *
+   * @param id Id of the random variable.
    */
-  virtual random_canonical* get(const int state) = 0;
+  virtual RandomInterface* get(const int id) = 0;
 
   /**
    * Simulate a random variable.
+   *
+   * @param id Id of the random variable.
    */
-  virtual void simulate(const int state) = 0;
+  virtual void simulate(const int id) = 0;
 };
 }
 
