@@ -9,8 +9,6 @@
 #include <cstring>
 
 namespace bi {
-class Cloner;
-class Modifier;
 class Visitor;
 
 /**
@@ -77,14 +75,9 @@ public:
    */
   bool isEmpty() const;
 
-  virtual void accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
-  virtual bool operator<=(const Name& o) const;
   virtual bool operator==(const Name& o) const;
-  bool operator<(const Name& o) const;
-  bool operator>(const Name& o) const;
-  bool operator>=(const Name& o) const;
   bool operator!=(const Name& o) const;
 
 private:

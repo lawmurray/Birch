@@ -3,10 +3,9 @@
  */
 #pragma once
 
-#include "bi/common/Dictionary.hpp"
 #include "bi/primitive/poset.hpp"
-#include "bi/primitive/definitely.hpp"
-#include "bi/primitive/possibly.hpp"
+
+#include <unordered_map>
 
 namespace bi {
 /**
@@ -14,16 +13,14 @@ namespace bi {
  *
  * @ingroup compiler_common
  *
- * @tparam ParameterType Parameter type.
+ * @tparam ParameterType Type of parameters.
+ * @tparam ReferenceType Type of references.
  */
-template<class ParameterType, class ReferenceType>
-class OverloadedDictionary: public Dictionary<ParameterType,ReferenceType> {
+template<class ParameterType, class ReferenceType, class CompareType>
+class OverloadedDictionary {
 public:
-  typedef poset<ParameterType*,definitely> definitely_poset_type;
-  typedef poset<ParameterType*,possibly> possibly_poset_type;
-
-  typedef std::unordered_map<std::string,definitely_poset_type> definitely_type;
-  typedef std::unordered_map<std::string,possibly_poset_type> possibly_type;
+  typedef poset<ParameterType*,CompareType> poset_type;
+  typedef std::unordered_map<std::string,poset_type> map_type;
 
   /**
    * Does the dictionary contain the given parameter?
@@ -43,37 +40,24 @@ public:
   virtual void add(ParameterType* param);
 
   /**
+   * Merge another overloaded dictionary into this one.
+   */
+  virtual void merge(
+      OverloadedDictionary<ParameterType,ReferenceType,CompareType>& o);
+
+  /**
    * Resolve reference.
    *
    * @param[in,out] ref The reference.
    *
-   * If the reference is resolved, updates the definite target of the
-   * reference as well as possible alternatives to be checked at runtime.
-   * Otherwise sets the definite target to `nullptr` and possible
-   * alterantives to the empty list. Only throws an exception if there are
-   * multiple definite targets.
+   * @return The parameter to which the reference can be resolved, or
+   * `nullptr` if the parameter cannot be resolved.
    */
-  virtual void resolve(ReferenceType* ref);
+  virtual ParameterType* resolve(ReferenceType* ref);
 
   /**
-   * Get the parents of a vertex in the partial order.
+   * Declarations by partial order.
    */
-  template<class Container>
-  void parents(ParameterType* param, Container& parents) {
-    auto iter = definites.find(param->name->str());
-    if (iter != definites.end()) {
-      iter->second.parents(param, parents);
-    }
-  }
-
-  /**
-   * Declarations by definite order.
-   */
-  definitely_type definites;
-
-  /**
-   * Declarations by possible order.
-   */
-  possibly_type possibles;
+  map_type params;
 };
 }

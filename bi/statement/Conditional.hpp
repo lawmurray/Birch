@@ -46,6 +46,9 @@ public:
    */
   unique_ptr<Expression> falseBraces;
 
+  using Statement::definitely;
+  using Statement::possibly;
+
   virtual bool dispatchDefinitely(Statement& o);
   virtual bool definitely(Conditional& o);
 

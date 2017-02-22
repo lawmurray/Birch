@@ -16,6 +16,7 @@ public:
   CppAssignmentGenerator(std::ostream& base, const int level = 0,
       const bool header = false);
 
+  using indentable_ostream::visit;
   virtual void visit(const ModelParameter* o);
 
   virtual void assign(const VarParameter* o);

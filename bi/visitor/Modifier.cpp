@@ -39,17 +39,6 @@ bi::Expression* bi::Modifier::modify(StringLiteral* o) {
   return o;
 }
 
-void bi::Modifier::modify(Name* o) {
-  //
-}
-
-void bi::Modifier::modify(Path* o) {
-  o->head->accept(this);
-  if (o->tail) {
-    o->tail->accept(this);
-  }
-}
-
 bi::Expression* bi::Modifier::modify(ExpressionList* o) {
   o->head = o->head->accept(this);
   o->tail = o->tail->accept(this);
@@ -75,6 +64,10 @@ bi::Expression* bi::Modifier::modify(BracesExpression* o) {
 bi::Expression* bi::Modifier::modify(BracketsExpression* o) {
   o->single = o->single->accept(this);
   o->brackets = o->brackets->accept(this);
+  return o;
+}
+
+bi::Expression* bi::Modifier::modify(Dispatcher* o) {
   return o;
 }
 
@@ -106,37 +99,31 @@ bi::Expression* bi::Modifier::modify(RandomInit* o) {
 }
 
 bi::Expression* bi::Modifier::modify(VarReference* o) {
-  o->name->accept(this);
   return o;
 }
 
 bi::Expression* bi::Modifier::modify(FuncReference* o) {
-  o->name->accept(this);
   o->parens = o->parens->accept(this);
   return o;
 }
 
 bi::Type* bi::Modifier::modify(ModelReference* o) {
-  o->name->accept(this);
   o->parens = o->parens->accept(this);
   return o;
 }
 
 bi::Prog* bi::Modifier::modify(ProgReference* o) {
-  o->name->accept(this);
   o->parens = o->parens->accept(this);
   return o;
 }
 
 bi::Expression* bi::Modifier::modify(VarParameter* o) {
-  o->name->accept(this);
   o->type = o->type->accept(this);
   o->value = o->value->accept(this);
   return o;
 }
 
 bi::Expression* bi::Modifier::modify(FuncParameter* o) {
-  o->name->accept(this);
   o->parens = o->parens->accept(this);
   o->result = o->result->accept(this);
   o->braces = o->braces->accept(this);
@@ -144,7 +131,6 @@ bi::Expression* bi::Modifier::modify(FuncParameter* o) {
 }
 
 bi::Type* bi::Modifier::modify(ModelParameter* o) {
-  o->name->accept(this);
   o->parens = o->parens->accept(this);
   o->base = o->base->accept(this);
   o->braces = o->braces->accept(this);
@@ -152,7 +138,6 @@ bi::Type* bi::Modifier::modify(ModelParameter* o) {
 }
 
 bi::Prog* bi::Modifier::modify(ProgParameter* o) {
-  o->name->accept(this);
   o->parens = o->parens->accept(this);
   o->braces = o->braces->accept(this);
   return o;
@@ -163,7 +148,6 @@ void bi::Modifier::modify(File* o) {
 }
 
 bi::Statement* bi::Modifier::modify(Import* o) {
-  o->path->accept(this);
   return o;
 }
 

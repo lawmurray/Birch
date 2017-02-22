@@ -5,95 +5,83 @@
 
 #include "bi/expression/FuncParameter.hpp"
 #include "bi/expression/FuncReference.hpp"
+#include "bi/expression/Dispatcher.hpp"
 #include "bi/exception/AmbiguousReferenceException.hpp"
 #include "bi/exception/PreviousDeclarationException.hpp"
 
-template<class ParameterType, class ReferenceType>
-bool bi::OverloadedDictionary<ParameterType,ReferenceType>::contains(
+template<class ParameterType, class ReferenceType, class CompareType>
+bool bi::OverloadedDictionary<ParameterType,ReferenceType,CompareType>::contains(
     ParameterType* param) {
-  auto iter = definites.find(param->name->str());
-  return iter != definites.end() && iter->second.contains(param);
+  auto iter = params.find(param->name->str());
+  return iter != params.end() && iter->second.contains(param);
 }
 
-template<class ParameterType, class ReferenceType>
-ParameterType* bi::OverloadedDictionary<ParameterType,ReferenceType>::get(
-    ParameterType* param) {
+template<class ParameterType, class ReferenceType, class CompareType>
+ParameterType* bi::OverloadedDictionary<ParameterType,ReferenceType,
+    CompareType>::get(ParameterType* param) {
   /* pre-condition */
   assert(contains(param));
 
-  auto iter = definites.find(param->name->str());
-  assert(iter != definites.end());
+  auto iter = params.find(param->name->str());
+  assert(iter != params.end());
   return iter->second.get(param);
 }
 
-template<class ParameterType, class ReferenceType>
-void bi::OverloadedDictionary<ParameterType,ReferenceType>::add(
+template<class ParameterType, class ReferenceType, class CompareType>
+void bi::OverloadedDictionary<ParameterType,ReferenceType,CompareType>::add(
     ParameterType* param) {
   /* pre-condition */
   assert(!contains(param));
 
-  /* store in ordered list */
-  this->ordered.push_back(param);
-
-  /* store in definites poset */
   auto key1 = param->name->str();
-  auto iter1 = definites.find(key1);
-  if (iter1 != definites.end()) {
+  auto iter1 = params.find(key1);
+  if (iter1 != params.end()) {
     auto& val1 = iter1->second;
     val1.insert(param);
   } else {
-    auto val1 = definitely_poset_type();
+    auto val1 = poset_type();
     val1.insert(param);
     auto pair1 = std::make_pair(key1, val1);
-    definites.insert(pair1);
-  }
-
-  /* store in possibles poset */
-  auto key2 = param->name->str();
-  auto iter2 = possibles.find(key2);
-  if (iter2 != possibles.end()) {
-    auto& val2 = iter2->second;
-    val2.insert(param);
-  } else {
-    auto val2 = possibly_poset_type();
-    val2.insert(param);
-    auto pair2 = std::make_pair(key2, val2);
-    possibles.insert(pair2);
+    params.insert(pair1);
   }
 }
 
-template<class ParameterType, class ReferenceType>
-void bi::OverloadedDictionary<ParameterType,ReferenceType>::resolve(
-    ReferenceType* ref) {
-  /* definite matches */
-  auto iter1 = definites.find(ref->name->str());
-  if (iter1 == definites.end()) {
-    ref->target = nullptr;
-  } else {
-    std::list<ParameterType*> definites;
-    iter1->second.match(ref, definites);
-    if (definites.size() > 1) {
-      throw AmbiguousReferenceException(ref, definites);
-    } else if (definites.size() == 1) {
-      ref->target = definites.front();
-    } else {
-      ref->target = nullptr;
+template<class ParameterType, class ReferenceType, class CompareType>
+void bi::OverloadedDictionary<ParameterType,ReferenceType,CompareType>::merge(
+    OverloadedDictionary<ParameterType,ReferenceType,CompareType>& o) {
+  for (auto iter1 = o.params.begin(); iter1 != o.params.end(); ++iter1) {
+    for (auto iter2 = iter1->second.begin(); iter2 != iter1->second.end();
+        ++iter2) {
+      if (!contains(*iter2)) {
+        add(*iter2);
+      }
     }
   }
+}
 
-  /* possible matches */
-  auto iter2 = possibles.find(ref->name->str());
-  if (iter2 == possibles.end()) {
-    ref->alternatives.clear();
+template<class ParameterType, class ReferenceType, class CompareType>
+ParameterType* bi::OverloadedDictionary<ParameterType,ReferenceType,
+    CompareType>::resolve(ReferenceType* ref) {
+  auto iter1 = params.find(ref->name->str());
+  if (iter1 == params.end()) {
+    return nullptr;
   } else {
-    std::list<ParameterType*> possibles;
-    iter2->second.match(ref, possibles);
-    possibles.remove(ref->target);
-    ref->alternatives = possibles;
+    std::list<ParameterType*> matches;
+    iter1->second.match(ref, matches);
+    if (matches.size() > 1) {
+      throw AmbiguousReferenceException(ref, matches);
+    } else if (matches.size() == 1) {
+      return matches.front();
+    } else {
+      return nullptr;
+    }
   }
 }
 
 /*
  * Explicit instantiations.
  */
-template class bi::OverloadedDictionary<bi::FuncParameter,bi::FuncReference>;
+template class bi::OverloadedDictionary<bi::FuncParameter,bi::FuncReference,
+    bi::definitely>;
+template class bi::OverloadedDictionary<bi::Dispatcher,bi::FuncReference,
+    bi::possibly>;

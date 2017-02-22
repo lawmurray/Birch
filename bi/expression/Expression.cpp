@@ -78,6 +78,10 @@ bool bi::Expression::definitely(BracketsExpression& o) {
   return false;
 }
 
+bool bi::Expression::definitely(Dispatcher& o) {
+  return false;
+}
+
 bool bi::Expression::definitely(EmptyExpression& o) {
   return false;
 }
@@ -151,6 +155,10 @@ bool bi::Expression::possibly(BracesExpression& o) {
 }
 
 bool bi::Expression::possibly(BracketsExpression& o) {
+  return false;
+}
+
+bool bi::Expression::possibly(Dispatcher& o) {
   return false;
 }
 

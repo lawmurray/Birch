@@ -7,6 +7,17 @@ bi::Visitor::~Visitor() {
   //
 }
 
+void bi::Visitor::visit(const Name* o) {
+  //
+}
+
+void bi::Visitor::visit(const Path* o) {
+  o->head->accept(this);
+  if (o->tail) {
+    o->tail->accept(this);
+  }
+}
+
 void bi::Visitor::visit(const EmptyExpression* o) {
   //
 }
@@ -35,17 +46,6 @@ void bi::Visitor::visit(const StringLiteral* o) {
   o->type->accept(this);
 }
 
-void bi::Visitor::visit(const Name* o) {
-  //
-}
-
-void bi::Visitor::visit(const Path* o) {
-  o->head->accept(this);
-  if (o->tail) {
-    o->tail->accept(this);
-  }
-}
-
 void bi::Visitor::visit(const ExpressionList* o) {
   o->head->accept(this);
   o->tail->accept(this);
@@ -67,6 +67,10 @@ void bi::Visitor::visit(const BracesExpression* o) {
 void bi::Visitor::visit(const BracketsExpression* o) {
   o->single->accept(this);
   o->brackets->accept(this);
+}
+
+void bi::Visitor::visit(const Dispatcher* o) {
+  //
 }
 
 void bi::Visitor::visit(const Index* o) {
@@ -93,46 +97,39 @@ void bi::Visitor::visit(const Member* o) {
 }
 
 void bi::Visitor::visit(const VarReference* o) {
-  o->name->accept(this);
+  //
 }
 
 void bi::Visitor::visit(const FuncReference* o) {
-  o->name->accept(this);
   o->parens->accept(this);
 }
 
 void bi::Visitor::visit(const ModelReference* o) {
-  o->name->accept(this);
   o->parens->accept(this);
 }
 
 void bi::Visitor::visit(const ProgReference* o) {
-  o->name->accept(this);
   o->parens->accept(this);
 }
 
 void bi::Visitor::visit(const VarParameter* o) {
-  o->name->accept(this);
   o->type->accept(this);
   o->value->accept(this);
 }
 
 void bi::Visitor::visit(const FuncParameter* o) {
-  o->name->accept(this);
   o->parens->accept(this);
   o->result->accept(this);
   o->braces->accept(this);
 }
 
 void bi::Visitor::visit(const ModelParameter* o) {
-  o->name->accept(this);
   o->parens->accept(this);
   o->base->accept(this);
   o->braces->accept(this);
 }
 
 void bi::Visitor::visit(const ProgParameter* o) {
-  o->name->accept(this);
   o->parens->accept(this);
   o->braces->accept(this);
 }

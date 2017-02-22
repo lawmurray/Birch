@@ -23,20 +23,20 @@ public:
    */
   virtual ~IsPrimary();
 
+  using Visitor::visit;
   virtual void visit(const EmptyExpression* o);
   virtual void visit(const EmptyStatement* o);
   virtual void visit(const BooleanLiteral* o);
   virtual void visit(const IntegerLiteral* o);
   virtual void visit(const RealLiteral* o);
   virtual void visit(const StringLiteral* o);
-  virtual void visit(const Name* o);
-  virtual void visit(const Path* o);
   virtual void visit(const ExpressionList* o);
   virtual void visit(const StatementList* o);
   virtual void visit(const TypeList* o);
   virtual void visit(const ParenthesesExpression* o);
   virtual void visit(const BracesExpression* o);
   virtual void visit(const BracketsExpression* o);
+  virtual void visit(const Dispatcher* o);
   virtual void visit(const Index* o);
   virtual void visit(const Range* o);
   virtual void visit(const Member* o);

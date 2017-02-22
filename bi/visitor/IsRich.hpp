@@ -23,6 +23,7 @@ public:
    */
   virtual ~IsRich();
 
+  using Visitor::visit;
   virtual void visit(const BracesExpression* o);
   virtual void visit(const BracketsExpression* o);
   virtual void visit(const Index* o);

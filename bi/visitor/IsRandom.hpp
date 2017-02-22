@@ -23,6 +23,7 @@ public:
    */
   virtual ~IsRandom();
 
+  using Visitor::visit;
   virtual void visit(const RandomType* o);
 
   /**

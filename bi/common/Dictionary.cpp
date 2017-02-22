@@ -12,7 +12,7 @@
 template<class ParameterType, class ReferenceType>
 bool bi::Dictionary<ParameterType,ReferenceType>::contains(
     ParameterType* param) {
-  return unordered.find(param->name->str()) != unordered.end();
+  return params.find(param->name->str()) != params.end();
 }
 
 template<class ParameterType, class ReferenceType>
@@ -21,7 +21,7 @@ ParameterType* bi::Dictionary<ParameterType,ReferenceType>::get(
   /* pre-condition */
   assert(contains(param));
 
-  return unordered.find(param->name->str())->second;
+  return params.find(param->name->str())->second;
 }
 
 template<class ParameterType, class ReferenceType>
@@ -29,32 +29,27 @@ void bi::Dictionary<ParameterType,ReferenceType>::add(ParameterType* param) {
   /* pre-condition */
   assert(!contains(param));
 
-  /* store in unordered map */
-  auto result = unordered.insert(std::make_pair(param->name->str(), param));
+  auto result = params.insert(std::make_pair(param->name->str(), param));
   assert(result.second);
-
-  /* store in ordered list */
-  ordered.push_back(param);
 }
 
 template<class ParameterType, class ReferenceType>
-void bi::Dictionary<ParameterType,ReferenceType>::resolve(
+ParameterType* bi::Dictionary<ParameterType,ReferenceType>::resolve(
     ReferenceType* ref) {
-  auto iter = unordered.find(ref->name->str());
-  if (iter != unordered.end() && ref->definitely(*iter->second)) {
-    ref->target = iter->second;
+  auto iter = params.find(ref->name->str());
+  if (iter != params.end() && ref->definitely(*iter->second)) {
+    return iter->second;
   } else {
-    ref->target = nullptr;
+    return nullptr;
   }
-  ref->alternatives.clear();
 }
 
 template<class ParameterType, class ReferenceType>
 void bi::Dictionary<ParameterType,ReferenceType>::merge(
     Dictionary<ParameterType,ReferenceType>& o) {
-  for (auto iter = o.ordered.begin(); iter != o.ordered.end(); ++iter) {
-    if (!contains(*iter)) {
-      add(*iter);
+  for (auto iter = o.params.begin(); iter != o.params.end(); ++iter) {
+    if (!contains(iter->second)) {
+      add(iter->second);
     }
   }
 }
@@ -63,6 +58,5 @@ void bi::Dictionary<ParameterType,ReferenceType>::merge(
  * Explicit instantiations.
  */
 template class bi::Dictionary<bi::VarParameter,bi::VarReference>;
-template class bi::Dictionary<bi::FuncParameter,bi::FuncReference>;
 template class bi::Dictionary<bi::ModelParameter,bi::ModelReference>;
 template class bi::Dictionary<bi::ProgParameter,bi::ProgReference>;

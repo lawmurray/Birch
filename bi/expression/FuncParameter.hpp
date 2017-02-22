@@ -11,8 +11,6 @@
 #include "bi/common/Formed.hpp"
 #include "bi/common/Parameter.hpp"
 
-#include <list>
-
 namespace bi {
 /**
  * Function parameter.
@@ -23,9 +21,9 @@ class FuncParameter: public Expression,
     public Named,
     public Numbered,
     public Scoped,
+    public Formed,
     public Braced,
-    public Parameter<Expression>,
-    public Formed {
+    public Parameter<Expression> {
 public:
   /**
    * Constructor.
@@ -59,6 +57,9 @@ public:
    * Mangled name.
    */
   shared_ptr<Name> mangled;
+
+  using Expression::definitely;
+  using Expression::possibly;
 
   virtual bool dispatchDefinitely(Expression& o);
   virtual bool definitely(FuncParameter& o);

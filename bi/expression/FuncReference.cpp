@@ -14,7 +14,8 @@ bi::FuncReference::FuncReference(shared_ptr<Name> name, Expression* parens,
     Expression(loc),
     Named(name),
     Reference<FuncParameter>(target),
-    Formed(parens, form) {
+    Formed(parens, form),
+    dispatcher(nullptr) {
   //
 }
 
@@ -24,7 +25,8 @@ bi::FuncReference::FuncReference(Expression* left, shared_ptr<Name> name,
     Named(name),
     Reference<FuncParameter>(target),
     Formed(new ParenthesesExpression(new ExpressionList(left, right)),
-        BINARY_OPERATOR) {
+        BINARY_OPERATOR),
+    dispatcher(nullptr) {
   //
 }
 
@@ -85,6 +87,10 @@ bool bi::FuncReference::possibly(FuncReference& o) {
 
 bool bi::FuncReference::possibly(FuncParameter& o) {
   return parens->possibly(*o.parens) && o.capture(this);
+}
+
+bool bi::FuncReference::possibly(Dispatcher& o) {
+  return possibly(*o.funcs.any());
 }
 
 bool bi::FuncReference::possibly(VarParameter& o) {

@@ -15,7 +15,7 @@ bi::Declaration<T>::Declaration(T* param, shared_ptr<Location> loc) :
 }
 
 template<class T>
-inline bi::Declaration<T>::~Declaration() {
+bi::Declaration<T>::~Declaration() {
   //
 }
 

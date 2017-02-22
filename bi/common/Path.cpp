@@ -14,21 +14,12 @@ bi::Path::Path(shared_ptr<Name> head, Path* tail, shared_ptr<Location> loc) :
   //
 }
 
-inline bi::Path::~Path() {
+bi::Path::~Path() {
   //
-}
-
-void bi::Path::accept(Modifier* visitor) {
-  visitor->modify(this);
 }
 
 void bi::Path::accept(Visitor* visitor) const {
   visitor->visit(this);
-}
-
-
-bool bi::Path::operator<=(Path& o) {
-  return *this == o;
 }
 
 bool bi::Path::operator==(const Path& o) const {
@@ -36,19 +27,7 @@ bool bi::Path::operator==(const Path& o) const {
       && ((!tail && !o.tail) || (tail && o.tail && *tail == *o.tail));
 }
 
-inline bool bi::Path::operator<(Path& o) {
-  return *this <= o && *this != o;
-}
-
-inline bool bi::Path::operator>(Path& o) {
-  return !(*this <= o);
-}
-
-inline bool bi::Path::operator>=(Path& o) {
-  return !(*this < o);
-}
-
-inline bool bi::Path::operator!=(Path& o) {
+bool bi::Path::operator!=(Path& o) {
   return !(*this == o);
 }
 

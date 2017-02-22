@@ -58,6 +58,9 @@ public:
    */
   unique_ptr<FuncParameter> assignment;
 
+  using Type::definitely;
+  using Type::possibly;
+
   virtual bool dispatchDefinitely(Type& o);
   virtual bool definitely(ModelParameter& o);
   virtual bool definitely(EmptyType& o);

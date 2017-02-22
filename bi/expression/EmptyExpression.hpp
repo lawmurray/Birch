@@ -29,6 +29,9 @@ public:
 
   virtual bool isEmpty() const;
 
+  using Expression::definitely;
+  using Expression::possibly;
+
   virtual bool dispatchDefinitely(Expression& o);
   virtual bool definitely(EmptyExpression& o);
 

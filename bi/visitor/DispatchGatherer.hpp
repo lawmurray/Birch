@@ -37,6 +37,7 @@ public:
     return gathered.size();
   }
 
+  using Visitor::visit;
   virtual void visit(const FuncReference* o);
   virtual void visit(const RandomInit* o);
 

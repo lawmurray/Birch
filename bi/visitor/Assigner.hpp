@@ -18,6 +18,8 @@ public:
    */
   virtual ~Assigner();
 
+  using Modifier::modify;
+
   virtual Type* modify(EmptyType* o);
   virtual Type* modify(ModelReference* o);
   virtual Type* modify(ModelParameter* o);

@@ -35,6 +35,9 @@ public:
   virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
+  using Statement::definitely;
+  using Statement::possibly;
+
   virtual bool dispatchDefinitely(Statement& o);
   virtual bool definitely(Loop& o);
 

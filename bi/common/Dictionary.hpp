@@ -22,7 +22,6 @@ template<class ParameterType, class ReferenceType>
 class Dictionary {
 public:
   typedef std::unordered_map<std::string,ParameterType*> map_type;
-  typedef std::list<ParameterType*> list_type;
 
   /**
    * Does the dictionary contain the given parameter?
@@ -46,26 +45,19 @@ public:
    *
    * @param[in,out] ref The reference.
    *
-   * If the reference is resolved, updates the target of the reference,
-   * otherwise sets it to `nullptr`.
+   * @return The parameter to which the reference can be resolved, or
+   * `nullptr` if the parameter cannot be resolved.
    */
-  virtual void resolve(ReferenceType* ref);
+  virtual ParameterType* resolve(ReferenceType* ref);
 
   /**
-   * Merge another overloaded dictionary into this one.
+   * Merge another dictionary into this one.
    */
   virtual void merge(Dictionary<ParameterType,ReferenceType>& o);
 
   /**
-   * Declarations within this scope, stored by partial order based on
-   * specialisation. Makes for fast lookup when resolving references.
+   * Declarations within this scope.
    */
-  map_type unordered;
-
-  /**
-   * Declarations within this outer, stored in order. Convenient for code
-   * generation.
-   */
-  list_type ordered;
+  map_type params;
 };
 }

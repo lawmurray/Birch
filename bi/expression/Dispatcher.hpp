@@ -4,57 +4,64 @@
 #pragma once
 
 #include "bi/expression/Expression.hpp"
-#include "bi/expression/EmptyExpression.hpp"
 #include "bi/common/Named.hpp"
-#include "bi/common/Parenthesised.hpp"
 #include "bi/common/Parameter.hpp"
-#include "bi/primitive/unique_ptr.hpp"
+#include "bi/primitive/poset.hpp"
+#include "bi/primitive/possibly.hpp"
 
 namespace bi {
 /**
- * Variable parameter.
+ * Dispatcher for runtime resolution of a function call.
  *
  * @ingroup compiler_expression
  */
-class VarParameter: public Expression,
+class Dispatcher: public Expression,
     public Named,
-    public Parenthesised,
     public Parameter<Expression> {
 public:
   /**
    * Constructor.
    *
    * @param name Name.
-   * @param type Type.
-   * @param parens Constructor arguments.
-   * @param value Initial value.
+   * @param mangled Mangled name of the pattern associated with the
+   * dispatcher.
    * @param loc Location.
    */
-  VarParameter(shared_ptr<Name> name, Type* type, Expression* parens =
-      new EmptyExpression(), Expression* value = new EmptyExpression(),
+  Dispatcher(shared_ptr<Name> name, shared_ptr<Name> mangled,
       shared_ptr<Location> loc = nullptr);
 
   /**
    * Destructor.
    */
-  virtual ~VarParameter();
+  virtual ~Dispatcher();
+
+  /**
+   * Insert a function into this dispatcher. The mangled name of the function
+   * must match the name of the dispatcher.
+   */
+  void insert(FuncParameter* func);
 
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
   /**
-   * Default/initial value.
+   * Mangled name.
    */
-  unique_ptr<Expression> value;
+  shared_ptr<Name> mangled;
+
+  /**
+   * Functions handled by this dispatcher.
+   */
+  poset<FuncParameter*,bi::possibly> funcs;
 
   using Expression::definitely;
   using Expression::possibly;
 
   virtual bool dispatchDefinitely(Expression& o);
-  virtual bool definitely(VarParameter& o);
+  virtual bool definitely(Dispatcher& o);
 
   virtual bool dispatchPossibly(Expression& o);
-  virtual bool possibly(VarParameter& o);
+  virtual bool possibly(Dispatcher& o);
 };
 }

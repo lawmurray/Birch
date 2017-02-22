@@ -35,14 +35,6 @@ void bi::IsPrimary::visit(const StringLiteral* o) {
   result = true;
 }
 
-void bi::IsPrimary::visit(const Name* o) {
-  result = true;
-}
-
-void bi::IsPrimary::visit(const Path* o) {
-  result = true;
-}
-
 void bi::IsPrimary::visit(const ExpressionList* o) {
   result = false;
 }
@@ -64,6 +56,10 @@ void bi::IsPrimary::visit(const BracesExpression* o) {
 }
 
 void bi::IsPrimary::visit(const BracketsExpression* o) {
+  result = false;
+}
+
+void bi::IsPrimary::visit(const Dispatcher* o) {
   result = false;
 }
 

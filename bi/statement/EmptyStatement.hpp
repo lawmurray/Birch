@@ -24,6 +24,9 @@ public:
 
   virtual bool isEmpty() const;
 
+  using Statement::definitely;
+  using Statement::possibly;
+
   virtual bool dispatchDefinitely(Statement& o);
   virtual bool definitely(EmptyStatement& o);
 

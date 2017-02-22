@@ -41,6 +41,9 @@ public:
    */
   unique_ptr<T> param;
 
+  using Statement::definitely;
+  using Statement::possibly;
+
   virtual bool dispatchDefinitely(Statement& o);
   virtual bool definitely(Declaration<T>& o);
 

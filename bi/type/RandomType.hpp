@@ -32,6 +32,9 @@ public:
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
+  using Type::definitely;
+  using Type::possibly;
+
   virtual bool dispatchDefinitely(Type& o);
   virtual bool definitely(EmptyType& o);
   virtual bool definitely(List<Type>& o);

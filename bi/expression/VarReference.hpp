@@ -36,6 +36,9 @@ public:
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
+  using Expression::definitely;
+  using Expression::possibly;
+
   virtual bool dispatchDefinitely(Expression& o);
   virtual bool definitely(VarReference& o);
   virtual bool definitely(VarParameter& o);

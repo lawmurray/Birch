@@ -38,6 +38,18 @@ void bi::Scope::add(FuncParameter* param) {
     throw PreviousDeclarationException(param, funcs.get(param));
   } else {
     funcs.add(param);
+
+    /* dispatcher */
+    Dispatcher* dispatcher = new Dispatcher(param->name, param->mangled);
+    dispatcher->insert(param);
+    if (dispatchers.contains(dispatcher)) {
+      Dispatcher* existing = dispatchers.get(dispatcher);
+      existing->insert(param);
+      delete dispatcher;
+    } else {
+      dispatchers.add(dispatcher);
+      ///@todo Clean up
+    }
   }
 }
 
@@ -58,21 +70,24 @@ void bi::Scope::add(ProgParameter* param) {
 }
 
 void bi::Scope::resolve(VarReference* ref) {
-  vars.resolve(ref);
+  ref->target = vars.resolve(ref);
   if (!ref->target) {
     resolveDefer<VarParameter,VarReference>(ref);
   }
 }
 
 void bi::Scope::resolve(FuncReference* ref) {
-  funcs.resolve(ref);
+  ref->target = funcs.resolve(ref);
   if (!ref->target) {
     resolveDefer<FuncParameter,FuncReference>(ref);
+  } else {
+    /* check for more-specific runtime resolutions */
+    ref->dispatcher = dispatchers.resolve(ref);
   }
 }
 
 void bi::Scope::resolve(ModelReference* ref) {
-  models.resolve(ref);
+  ref->target = models.resolve(ref);
   if (!ref->target) {
     resolveDefer<ModelParameter,ModelReference>(ref);
   }

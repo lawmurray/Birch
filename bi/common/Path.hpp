@@ -9,8 +9,6 @@
 #include "bi/primitive/unique_ptr.hpp"
 
 namespace bi {
-class Cloner;
-class Modifier;
 class Visitor;
 
 /**
@@ -35,14 +33,9 @@ public:
    */
   virtual ~Path();
 
-  virtual void accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
-  virtual bool operator<=(Path& o);
   virtual bool operator==(const Path& o) const;
-  bool operator<(Path& o);
-  bool operator>(Path& o);
-  bool operator>=(Path& o);
   bool operator!=(Path& o);
 
   /**

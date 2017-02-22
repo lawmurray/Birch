@@ -24,6 +24,13 @@ public:
   poset();
 
   /**
+   * Number of vertices in the poset.
+   */
+  auto size() const {
+    return vertices.size();
+  }
+
+  /**
    * Does the set contain an equivalent value?
    */
   bool contains(T v);
@@ -58,23 +65,39 @@ public:
   void match(Comparable v, Container& matches);
 
   /**
-   * Find all matches.
-   *
-   * @tparam Comparable Type comparable to value type.
-   * @tparam Container Container type with push_back() function.
-   *
-   * @param v The value.
-   * @param[out] matches Container to hold matches.
-   */
-  template<class Comparable, class Container>
-  void match_all(Comparable v, Container& matches);
-
-  /**
    * Insert vertex.
    *
    * @param v Value at the vertex.
    */
   void insert(T v);
+
+  /**
+   * Iterators.
+   */
+  auto begin() {
+    return vertices.begin();
+  }
+  auto end() {
+    return vertices.end();
+  }
+  auto begin() const {
+    return vertices.begin();
+  }
+  auto end() const {
+    return vertices.end();
+  }
+
+  /**
+   * Get an arbitrary element. This is used by e.g. Dispatcher to compare
+   * whole posets, where the comparison of any one element of one to any one
+   * element of the other yields the correct result.
+   */
+  auto any() {
+    return *begin();
+  }
+  auto any() const {
+    return *begin();
+  }
 
   /**
    * Output dot graph. Useful for diagnostic purposes.
@@ -110,12 +133,6 @@ private:
    */
   template<class Comparable, class Container>
   bool match(T u, Comparable v, Container& matches);
-
-  /**
-   * Sub-operation for match_all.
-   */
-  template<class Comparable, class Container>
-  void match_all(T u, Comparable v, Container& matches);
 
   /*
    * Sub-operations for insert.
@@ -215,15 +232,6 @@ void bi::poset<T,Compare>::match(Comparable v, Container& matches) {
 }
 
 template<class T, class Compare>
-template<class Comparable, class Container>
-void bi::poset<T,Compare>::match_all(Comparable v, Container& matches) {
-  ++colour;
-  for (auto iter = roots.begin(); iter != roots.end(); ++iter) {
-    match_all(*iter, v, matches);
-  }
-}
-
-template<class T, class Compare>
 void bi::poset<T,Compare>::insert(T v) {
   add_vertex(v);
   forward(v);
@@ -311,22 +319,6 @@ bool bi::poset<T,Compare>::match(T u, Comparable v, Container& matches) {
     }
   }
   return deeper;
-}
-
-template<class T, class Compare>
-template<class Comparable, class Container>
-void bi::poset<T,Compare>::match_all(T u, Comparable v, Container& matches) {
-  if (colours[u] < colour) {
-    /* not visited yet */
-    colours[u] = colour;
-    if (compare(v, u)) {
-      auto range = forwards.equal_range(u);
-      for (auto iter = range.first; iter != range.second; ++iter) {
-        match_all(iter->second, v, matches);
-      }
-      matches.push_back(u);
-    }
-  }
 }
 
 template<class T, class Compare>

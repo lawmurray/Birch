@@ -42,6 +42,9 @@ public:
   virtual Prog* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
+  using Prog::definitely;
+  using Prog::possibly;
+
   virtual bool dispatchDefinitely(Prog& o);
   virtual bool definitely(ProgParameter& o);
   virtual bool definitely(ProgReference& o);

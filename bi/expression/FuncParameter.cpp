@@ -3,18 +3,15 @@
  */
 #include "bi/expression/FuncParameter.hpp"
 
-#include "bi/expression/FuncReference.hpp"
 #include "bi/primitive/encode.hpp"
 #include "bi/visitor/all.hpp"
-
-#include <typeinfo>
 
 bi::FuncParameter::FuncParameter(shared_ptr<Name> name, Expression* parens,
     Expression* result, Expression* braces, const FunctionForm form, shared_ptr<Location> loc) :
     Expression(loc),
     Named(name),
-    Braced(braces),
     Formed(parens, form),
+    Braced(braces),
     result(result) {
   this->arg = this;
   this->mangled = new Name(mangle(this));

@@ -27,7 +27,7 @@ public:
    * @param parens Parentheses.
    * @param form Function form.
    */
-  Formed(Expression* parens, const FunctionForm form);
+  Formed(Expression* parens, const FunctionForm form = FUNCTION);
 
   /**
    * Destructor.

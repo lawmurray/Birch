@@ -50,6 +50,7 @@ public:
     return gathered.size();
   }
 
+  using Visitor::visit;
   virtual void visit(const T* o);
 
 protected:

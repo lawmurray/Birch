@@ -55,6 +55,9 @@ public:
    */
   unique_ptr<T> tail;
 
+  using T::definitely;
+  using T::possibly;
+
   virtual bool dispatchDefinitely(T& o);
   virtual bool definitely(List<T>& o);
 

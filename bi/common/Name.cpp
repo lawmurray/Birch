@@ -5,8 +5,6 @@
 
 #include "bi/visitor/all.hpp"
 
-#include <unordered_set>
-
 bi::Name::Name(const std::string& name, shared_ptr<Location> loc) :
     Located(loc), name(name) {
   //
@@ -45,32 +43,12 @@ bool bi::Name::isEmpty() const {
   return name.empty();
 }
 
-void bi::Name::accept(Modifier* visitor) {
-  visitor->modify(this);
-}
-
 void bi::Name::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::Name::operator<=(const Name& o) const {
-  return name.compare(o.name) == 0;
-}
-
 bool bi::Name::operator==(const Name& o) const {
   return name.compare(o.name) == 0;
-}
-
-bool bi::Name::operator<(const Name& o) const {
-  return *this <= o && *this != o;
-}
-
-bool bi::Name::operator>(const Name& o) const {
-  return !(*this <= o);
-}
-
-bool bi::Name::operator>=(const Name& o) const {
-  return !(*this < o);
 }
 
 bool bi::Name::operator!=(const Name& o) const {

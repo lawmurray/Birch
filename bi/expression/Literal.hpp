@@ -47,6 +47,9 @@ public:
    */
   std::string str;
 
+  using Expression::definitely;
+  using Expression::possibly;
+
   virtual bool dispatchDefinitely(Expression& o);
   virtual bool definitely(Literal<T1>& o);
   virtual bool definitely(VarParameter& o);

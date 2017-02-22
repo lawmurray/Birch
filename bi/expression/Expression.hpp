@@ -15,6 +15,7 @@ class Visitor;
 
 class BracesExpression;
 class BracketsExpression;
+class Dispatcher;
 class EmptyExpression;
 template<class T> class List;
 class FuncParameter;
@@ -123,6 +124,7 @@ public:
   virtual bool dispatchDefinitely(Expression& o) = 0;
   virtual bool definitely(BracesExpression& o);
   virtual bool definitely(BracketsExpression& o);
+  virtual bool definitely(Dispatcher& o);
   virtual bool definitely(EmptyExpression& o);
   virtual bool definitely(List<Expression>& o);
   virtual bool definitely(FuncParameter& o);
@@ -144,6 +146,7 @@ public:
   virtual bool dispatchPossibly(Expression& o) = 0;
   virtual bool possibly(BracesExpression& o);
   virtual bool possibly(BracketsExpression& o);
+  virtual bool possibly(Dispatcher& o);
   virtual bool possibly(EmptyExpression& o);
   virtual bool possibly(List<Expression>& o);
   virtual bool possibly(FuncParameter& o);

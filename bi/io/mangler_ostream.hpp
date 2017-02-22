@@ -17,6 +17,8 @@ public:
   mangler_ostream(std::ostream& base, const int level = 0, const bool header =
       false);
 
+  using bi_ostream::visit;
+
   virtual void visit(const ExpressionList* o);
   virtual void visit(const VarParameter* o);
 };

@@ -6,10 +6,13 @@
 #include "bi/common/Dictionary.hpp"
 #include "bi/common/OverloadedDictionary.hpp"
 #include "bi/common/Named.hpp"
+#include "bi/primitive/definitely.hpp"
+#include "bi/primitive/possibly.hpp"
 
 namespace bi {
 class VarParameter;
 class FuncParameter;
+class Dispatcher;
 class ModelParameter;
 class ProgParameter;
 
@@ -60,14 +63,6 @@ public:
   void resolve(ModelReference* ref);
 
   /**
-   * Get the parents of a function in the partial order.
-   */
-  template<class Container>
-  void parents(FuncParameter* param, Container& parents) {
-    funcs.parents(param, parents);
-  }
-
-  /**
    * Inherit another scope into this scope. This is used to import
    * declarations from a base class into a derived class.
    *
@@ -93,7 +88,8 @@ public:
    */
   Dictionary<VarParameter,VarReference> vars;
   Dictionary<ModelParameter,ModelReference> models;
-  OverloadedDictionary<FuncParameter,FuncReference> funcs;
+  OverloadedDictionary<FuncParameter,FuncReference,definitely> funcs;
+  OverloadedDictionary<Dispatcher,FuncReference,possibly> dispatchers;
   Dictionary<ProgParameter,ProgReference> progs;
 
 private:

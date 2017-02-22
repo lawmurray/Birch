@@ -16,6 +16,8 @@ public:
   CppModelGenerator(std::ostream& base, const int level = 0,
       const bool header = false);
 
+  using indentable_ostream::visit;
+
   virtual void visit(const Name* o);
   virtual void visit(const ModelParameter* o);
   virtual void visit(const ModelReference* o);

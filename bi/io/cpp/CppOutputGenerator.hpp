@@ -16,6 +16,8 @@ public:
   CppOutputGenerator(std::ostream& base, const int level = 0,
       const bool header = false);
 
+  using CppBaseGenerator::visit;
+
   virtual void visit(const FuncParameter* o);
 };
 }

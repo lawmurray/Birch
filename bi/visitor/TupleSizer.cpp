@@ -49,6 +49,10 @@ void bi::TupleSizer::visit(const BracketsExpression* o) {
   ++size;
 }
 
+void bi::TupleSizer::visit(const Dispatcher* o) {
+  ++size;
+}
+
 void bi::TupleSizer::visit(const Index* o) {
   ++size;
 }

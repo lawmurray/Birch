@@ -56,6 +56,7 @@ birchc_SOURCES = \
   bi/exception/UnsupportedOptionTypeException.cpp \
   bi/expression/BracesExpression.cpp \
   bi/expression/BracketsExpression.cpp \
+  bi/expression/Dispatcher.cpp \
   bi/expression/EmptyExpression.cpp \
   bi/expression/Expression.cpp \
   bi/expression/FuncParameter.cpp \

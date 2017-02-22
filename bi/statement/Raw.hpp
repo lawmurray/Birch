@@ -40,6 +40,9 @@ public:
    */
   std::string raw;
 
+  using Statement::definitely;
+  using Statement::possibly;
+
   virtual bool dispatchDefinitely(Statement& o);
   virtual bool definitely(Raw& o);
 

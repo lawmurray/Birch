@@ -16,6 +16,8 @@ public:
   bi_ostream(std::ostream& base, const int level = 0, const bool header =
       false);
 
+  using indentable_ostream::visit;
+
   virtual void visit(const BooleanLiteral* o);
   virtual void visit(const IntegerLiteral* o);
   virtual void visit(const RealLiteral* o);

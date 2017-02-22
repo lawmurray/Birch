@@ -40,6 +40,9 @@ public:
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
+  using Expression::definitely;
+  using Expression::possibly;
+
   virtual bool dispatchDefinitely(Expression& o);
   virtual bool definitely(BracesExpression& o);
   virtual bool definitely(BracketsExpression& o);

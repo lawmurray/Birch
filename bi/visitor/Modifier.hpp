@@ -29,13 +29,12 @@ public:
   virtual Expression* modify(IntegerLiteral* o);
   virtual Expression* modify(RealLiteral* o);
   virtual Expression* modify(StringLiteral* o);
-  virtual void modify(Name* o);
-  virtual void modify(Path* o);
   virtual Expression* modify(ExpressionList* o);
   virtual Statement* modify(StatementList* o);
   virtual Expression* modify(ParenthesesExpression* o);
   virtual Expression* modify(BracesExpression* o);
   virtual Expression* modify(BracketsExpression* o);
+  virtual Expression* modify(Dispatcher* o);
   virtual Expression* modify(Index* o);
   virtual Expression* modify(Range* o);
   virtual Expression* modify(Member* o);

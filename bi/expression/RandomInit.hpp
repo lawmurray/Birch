@@ -39,6 +39,9 @@ public:
    */
   unique_ptr<Expression> backward;
 
+  using Expression::definitely;
+  using Expression::possibly;
+
   virtual bool dispatchDefinitely(Expression& o);
   virtual bool definitely(RandomInit& o);
   virtual bool definitely(VarParameter& o);

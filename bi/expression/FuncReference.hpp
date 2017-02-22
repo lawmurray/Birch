@@ -10,6 +10,7 @@
 #include "bi/common/Reference.hpp"
 #include "bi/common/Formed.hpp"
 #include "bi/expression/VarParameter.hpp"
+#include "bi/expression/Dispatcher.hpp"
 
 #include <list>
 
@@ -59,6 +60,9 @@ public:
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
+  using Expression::definitely;
+  using Expression::possibly;
+
   virtual bool dispatchDefinitely(Expression& o);
   virtual bool definitely(FuncReference& o);
   virtual bool definitely(FuncParameter& o);
@@ -67,6 +71,12 @@ public:
   virtual bool dispatchPossibly(Expression& o);
   virtual bool possibly(FuncReference& o);
   virtual bool possibly(FuncParameter& o);
+  virtual bool possibly(Dispatcher& o);
   virtual bool possibly(VarParameter& o);
+
+  /**
+   * Runtime dispatcher.
+   */
+  Dispatcher* dispatcher;
 };
 }

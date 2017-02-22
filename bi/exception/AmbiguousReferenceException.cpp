@@ -28,8 +28,6 @@ bi::AmbiguousReferenceException::AmbiguousReferenceException(
 }
 
 template bi::AmbiguousReferenceException::AmbiguousReferenceException(
-    VarReference* ref, std::list<VarParameter*> matches);
-template bi::AmbiguousReferenceException::AmbiguousReferenceException(
     FuncReference* ref, std::list<FuncParameter*> matches);
 template bi::AmbiguousReferenceException::AmbiguousReferenceException(
-    ModelReference* ref, std::list<ModelParameter*> matches);
+    FuncReference* ref, std::list<Dispatcher*> matches);
