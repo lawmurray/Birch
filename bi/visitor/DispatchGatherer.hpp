@@ -43,13 +43,8 @@ public:
 
 private:
   /**
-   * Insert function.
-   */
-  void insert(const FuncParameter* o);
-
-  /**
    * Gathered matches.
    */
-  std::set<const FuncParameter*> gathered;
+  std::set<const Dispatcher*> gathered;
 };
 }

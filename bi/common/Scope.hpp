@@ -79,6 +79,11 @@ public:
   void import(Scope* scope);
 
   /**
+   * Get the parent of a dispatcher.
+   */
+  Dispatcher* parent(Dispatcher* o);
+
+  /**
    * Base scopes.
    */
   std::set<Scope*> bases;

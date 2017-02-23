@@ -15,6 +15,8 @@ bi::CppDispatcherGenerator::CppDispatcherGenerator(std::ostream& base,
 }
 
 void bi::CppDispatcherGenerator::visit(const File* o) {
+  scope = o->scope.get();
+
   DispatchGatherer gatherer;
   o->accept(&gatherer);
 
@@ -33,17 +35,9 @@ void bi::CppDispatcherGenerator::visit(const File* o) {
   }
 }
 
-void bi::CppDispatcherGenerator::visit(const VarParameter* o) {
-  middle(o->name);
-}
-
-void bi::CppDispatcherGenerator::visit(const FuncParameter* o) {
-  Gatherer<VarParameter> gatherer;
-  o->parens->accept(&gatherer);
-
-  int i;
+void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
   start("template<");
-  for (i = 1; i <= gatherer.size(); ++i) {
+  for (int i = 1; i <= o->types.size(); ++i) {
     if (i != 1) {
       middle(", ");
     }
@@ -53,14 +47,13 @@ void bi::CppDispatcherGenerator::visit(const FuncParameter* o) {
   if (header) {
     middle("static ");
   }
-  start(o->type << " dispatch_" << o->number << "_(");
+  start(o->type << " dispatch_" << o->mangled << "_" << o->number << "_(");
 
-  i = 1;
-  for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter, ++i) {
-    if (iter != gatherer.begin()) {
+  for (int i = 1; i <= o->types.size(); ++i) {
+    if (i != 1) {
       middle(", ");
     }
-    middle("T" << i << "&& " << (*iter)->name);
+    middle("T" << i << "&& o" << i);
   }
   middle(')');
   if (header) {
@@ -68,42 +61,62 @@ void bi::CppDispatcherGenerator::visit(const FuncParameter* o) {
   } else {
     finish(" {");
     in();
-    start("return ");
 
-    /* definite call */
-    if (o->isBinary() && isTranslatable(o->name->str())
-        && !o->parens->isRich()) {
-      genArg(o->getLeft());
-      middle(' ' << translate(o->name->str()) << ' ');
-      genArg(o->getRight());
-    } else if (o->isUnary() && isTranslatable(o->name->str())
-        && !o->parens->isRich()) {
-      middle(translate(o->name->str()) << ' ');
-      genArg(o->getRight());
-    } else {
-      middle("bi::" << o->mangled);
-      if (o->isConstructor()) {
-        middle("<>");
-      }
-      middle('(');
-      for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
-        if (iter != gatherer.begin()) {
-          middle(", ");
-        }
-        genArg(*iter);
-      }
-      middle(")");
+    /* try functions */
+    for (auto iter = o->funcs.begin(); iter != o->funcs.end(); ++iter) {
+      *this << *iter;
     }
-    finish(';');
+
+    /* defer to parent dispatcher */
+    Dispatcher* parent = scope->parent(const_cast<Dispatcher*>(o));
+    if (parent) {
+      line("// dispatch_" << parent->mangled << "_" << parent->number << "_");
+    }
     out();
-    finish("}\n");
+    line("}\n");
   }
 }
 
-void bi::CppDispatcherGenerator::genArg(const Expression* o) {
+void bi::CppDispatcherGenerator::visit(const FuncParameter* o) {
+  Gatherer<VarParameter> gatherer;
+  o->parens->accept(&gatherer);
+
+  start("try { return ");
+  if (o->isBinary() && isTranslatable(o->name->str())
+      && !o->parens->isRich()) {
+    genArg(o->getLeft(), 1);
+    middle(' ' << translate(o->name->str()) << ' ');
+    genArg(o->getRight(), 2);
+  } else if (o->isUnary() && isTranslatable(o->name->str())
+      && !o->parens->isRich()) {
+    middle(translate(o->name->str()) << ' ');
+    genArg(o->getRight(), 1);
+  } else {
+    middle("bi::" << o->mangled);
+    if (o->isConstructor()) {
+      middle("<>");
+    }
+    middle('(');
+    int i = 1;
+    for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter, ++i) {
+      if (iter != gatherer.begin()) {
+        middle(", ");
+      }
+      genArg(*iter, i);
+    }
+    middle(")");
+  }
+  finish("; } catch (std::bad_cast e) {}");
+}
+
+void bi::CppDispatcherGenerator::visit(const VarParameter* o) {
+  middle(o->name);
+}
+
+void bi::CppDispatcherGenerator::genArg(const Expression* o, const int i) {
   middle("bi::cast<");
   if (!o->type->assignable) {
     middle("const ");
   }
-  middle(o->type << "&>(" << o << ')');
+  middle(o->type << "&>(o" << i << ')');
 }

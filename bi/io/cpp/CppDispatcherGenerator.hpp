@@ -19,9 +19,16 @@ public:
   using CppBaseGenerator::visit;
 
   virtual void visit(const File* o);
-  virtual void visit(const VarParameter* o);
+  virtual void visit(const Dispatcher* o);
   virtual void visit(const FuncParameter* o);
+  virtual void visit(const VarParameter* o);
 
-  void genArg(const Expression* o);
+  void genArg(const Expression* o, const int i);
+
+private:
+  /**
+   * Scope of dispatchers of interest.
+   */
+  Scope* scope;
 };
 }

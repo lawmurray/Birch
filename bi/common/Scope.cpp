@@ -100,6 +100,18 @@ void bi::Scope::inherit(Scope* scope) {
 void bi::Scope::import(Scope* scope) {
   vars.merge(scope->vars);
   funcs.merge(scope->funcs);
+  dispatchers.merge(scope->dispatchers);
   models.merge(scope->models);
   progs.merge(scope->progs);
+}
+
+bi::Dispatcher* bi::Scope::parent(Dispatcher* dispatcher) {
+  std::list<Dispatcher*> parents;
+  dispatchers.parents(dispatcher, parents);
+  assert(parents.size() <= 1);
+  if (parents.size() == 1) {
+    return parents.front();
+  } else {
+    return nullptr;
+  }
 }

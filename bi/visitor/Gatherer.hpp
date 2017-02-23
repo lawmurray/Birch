@@ -19,7 +19,8 @@ public:
   /**
    * Constructor.
    *
-   * @predicate Optional predicate function to filter objects of type T.
+   * @param predicate Optional predicate function to filter objects of type
+   * T.
    */
   Gatherer(std::function<bool(const T*)> predicate =
       [](const T* o) -> bool {return true;});

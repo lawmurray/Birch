@@ -22,6 +22,12 @@ bi::VariantType::VariantType(Type* definite, shared_ptr<Location> loc) :
   //
 }
 
+bi::VariantType::VariantType(shared_ptr<Location> loc) :
+    Type(loc),
+    definite(nullptr) {
+  //
+}
+
 bi::VariantType::~VariantType() {
   //
 }

@@ -34,6 +34,13 @@ public:
   VariantType(Type* definite, shared_ptr<Location> loc = nullptr);
 
   /**
+   * Constructor.
+   *
+   * @param loc Location.
+   */
+  VariantType(shared_ptr<Location> loc = nullptr);
+
+  /**
    * Destructor.
    */
   virtual ~VariantType();

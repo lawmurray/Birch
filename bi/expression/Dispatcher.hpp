@@ -5,6 +5,7 @@
 
 #include "bi/expression/Expression.hpp"
 #include "bi/common/Named.hpp"
+#include "bi/common/Numbered.hpp"
 #include "bi/common/Parameter.hpp"
 #include "bi/primitive/poset.hpp"
 #include "bi/primitive/possibly.hpp"
@@ -17,6 +18,7 @@ namespace bi {
  */
 class Dispatcher: public Expression,
     public Named,
+    public Numbered,
     public Parameter<Expression> {
 public:
   /**
@@ -54,6 +56,11 @@ public:
    * Functions handled by this dispatcher.
    */
   poset<FuncParameter*,bi::possibly> funcs;
+
+  /**
+   * Parameter types.
+   */
+  std::list<Type*> types;
 
   using Expression::definitely;
   using Expression::possibly;
