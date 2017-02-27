@@ -50,6 +50,7 @@ public:
 
   virtual Expression*  modify(VarParameter* o);
   virtual Expression*  modify(FuncParameter* o);
+  virtual Expression*  modify(Dispatcher* o);
   virtual Prog* modify(ProgParameter* o);
   virtual Type* modify(ModelParameter* o);
 

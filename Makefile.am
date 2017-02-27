@@ -41,6 +41,7 @@ birchc_SOURCES = \
   bi/common/Reference.cpp \
   bi/common/Scope.cpp \
   bi/common/Scoped.cpp \
+  bi/common/Signature.cpp \
   bi/common/Typed.cpp \
   bi/common/Unary.cpp \
   bi/exception/AmbiguousReferenceException.cpp \

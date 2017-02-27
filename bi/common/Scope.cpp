@@ -38,18 +38,14 @@ void bi::Scope::add(FuncParameter* param) {
     throw PreviousDeclarationException(param, funcs.get(param));
   } else {
     funcs.add(param);
+  }
+}
 
-    /* dispatcher */
-    Dispatcher* dispatcher = new Dispatcher(param->name, param->mangled);
-    dispatcher->insert(param);
-    if (dispatchers.contains(dispatcher)) {
-      Dispatcher* existing = dispatchers.get(dispatcher);
-      existing->insert(param);
-      delete dispatcher;
-    } else {
-      dispatchers.add(dispatcher);
-      ///@todo Clean up
-    }
+void bi::Scope::add(Dispatcher* param) {
+  if (dispatchers.contains(param)) {
+    throw PreviousDeclarationException(param, dispatchers.get(param));
+  } else {
+    dispatchers.add(param);
   }
 }
 
@@ -81,8 +77,7 @@ void bi::Scope::resolve(FuncReference* ref) {
   if (!ref->target) {
     resolveDefer<FuncParameter,FuncReference>(ref);
   } else {
-    /* check for more-specific runtime resolutions */
-    ref->dispatcher = dispatchers.resolve(ref);
+    ref->dispatcher = resolveDispatcher(ref);
   }
 }
 
@@ -91,6 +86,24 @@ void bi::Scope::resolve(ModelReference* ref) {
   if (!ref->target) {
     resolveDefer<ModelParameter,ModelReference>(ref);
   }
+}
+
+bi::Dispatcher* bi::Scope::resolveDispatcher(FuncParameter* o) {
+  Dispatcher* dispatcher = dispatchers.resolve(o);
+
+  /* for a function to match a dispatcher, it must be possibly equivalent
+   * to all other functions contained in that dispatcher, and all of those
+   * functions must be possibly equivalent to it, the resolution above only
+   * does the former, the second condition below ensures the latter. */
+  if (dispatcher && dispatcher->possibly(*o)) {
+    return dispatcher;
+  } else {
+    return nullptr;
+  }
+}
+
+bi::Dispatcher* bi::Scope::resolveDispatcher(FuncReference* o) {
+  return dispatchers.resolve(o);
 }
 
 void bi::Scope::inherit(Scope* scope) {

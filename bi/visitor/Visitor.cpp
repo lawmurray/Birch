@@ -70,7 +70,8 @@ void bi::Visitor::visit(const BracketsExpression* o) {
 }
 
 void bi::Visitor::visit(const Dispatcher* o) {
-  //
+  o->parens->accept(this);
+  o->result->accept(this);
 }
 
 void bi::Visitor::visit(const Index* o) {
@@ -201,5 +202,7 @@ void bi::Visitor::visit(const TypeList* o) {
 }
 
 void bi::Visitor::visit(const VariantType* o) {
-  //
+  for (auto iter = o->types.begin(); iter != o->types.end(); ++iter) {
+    (*iter)->accept(this);
+  }
 }

@@ -4,8 +4,8 @@
 #pragma once
 
 #include "bi/expression/Expression.hpp"
-#include "bi/common/Named.hpp"
-#include "bi/common/Numbered.hpp"
+#include "bi/common/Signature.hpp"
+#include "bi/common/Scoped.hpp"
 #include "bi/common/Parameter.hpp"
 #include "bi/primitive/poset.hpp"
 #include "bi/primitive/possibly.hpp"
@@ -17,19 +17,19 @@ namespace bi {
  * @ingroup compiler_expression
  */
 class Dispatcher: public Expression,
-    public Named,
-    public Numbered,
+    public Signature,
+    public Scoped,
     public Parameter<Expression> {
 public:
   /**
    * Constructor.
    *
    * @param name Name.
-   * @param mangled Mangled name of the pattern associated with the
-   * dispatcher.
+   * @param parens Parentheses expression.
+   * @param result Result expression.
    * @param loc Location.
    */
-  Dispatcher(shared_ptr<Name> name, shared_ptr<Name> mangled,
+  Dispatcher(shared_ptr<Name> name, Expression* parens, Expression* result,
       shared_ptr<Location> loc = nullptr);
 
   /**
@@ -48,19 +48,9 @@ public:
   virtual void accept(Visitor* visitor) const;
 
   /**
-   * Mangled name.
-   */
-  shared_ptr<Name> mangled;
-
-  /**
    * Functions handled by this dispatcher.
    */
   poset<FuncParameter*,bi::possibly> funcs;
-
-  /**
-   * Parameter types.
-   */
-  std::list<Type*> types;
 
   using Expression::definitely;
   using Expression::possibly;
@@ -70,5 +60,12 @@ public:
 
   virtual bool dispatchPossibly(Expression& o);
   virtual bool possibly(Dispatcher& o);
+  virtual bool possibly(FuncParameter& o);
+
+private:
+  /**
+   * Update the variant types of parameters.
+   */
+  void update(Expression* o1, Expression* o2);
 };
 }

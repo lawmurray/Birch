@@ -6,11 +6,10 @@
 #include "bi/visitor/Gatherer.hpp"
 #include "bi/visitor/all.hpp"
 
-bi::Dispatcher::Dispatcher(shared_ptr<Name> name, shared_ptr<Name> mangled,
-    shared_ptr<Location> loc) :
+bi::Dispatcher::Dispatcher(shared_ptr<Name> name, Expression* parens,
+    Expression* result, shared_ptr<Location> loc) :
     Expression(loc),
-    Named(name),
-    mangled(mangled) {
+    Signature(name, parens, result) {
   this->arg = this;
 }
 
@@ -26,43 +25,41 @@ void bi::Dispatcher::insert(FuncParameter* o) {
   /* add function */
   funcs.insert(o);
 
-  /* update possible types of parameters */
-  Gatherer<VarParameter> gatherer;
-  o->parens->accept(&gatherer);
+  /* update variant types */
+  update(parens.get(), o->parens.get());
+  update(result.get(), o->result.get());
+}
 
-  if (funcs.size() == 1) {
+void bi::Dispatcher::update(Expression* o1, Expression* o2) {
+  assert(o1->possibly(*o2));
+  if (o1->possibly(*o2)) {  // capture arguments
+    Cloner cloner;
+    Gatherer<VarParameter> gatherer;
+
+    o2->accept(&gatherer);
     for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
-      types.push_back(o->type.get());
-    }
-  } else {
-    assert(gatherer.size() == types.size());
-    auto iter1 = gatherer.begin();
-    auto iter2 = types.begin();
-    for (; iter1 != gatherer.end(); ++iter1, ++iter2) {
-      auto type1 = (*iter1)->type.get();
-      auto type2 = *iter2;
-      VariantType* variant = dynamic_cast<VariantType*>(type2);
-
+      VarParameter* param = const_cast<VarParameter*>(*iter);
+      VariantType* variant = dynamic_cast<VariantType*>(param->type.get());
       if (variant) {
-        /* already a variant type, add this new type to the variant */
-        variant->add(type1);
-      } else if (type1->definitely(*type2) || type2->definitely(*type1)) {
+        /* this parameter already has a variant type, add the type of the
+         * argument to this */
+        variant->add(param->arg->type->accept(&cloner));
+      } else if (*param->type != *param->arg->type) {
         /* make a new variant type */
         variant = new VariantType();
-        variant->add(type1);
-        variant->add(type2);
-        *iter2 = variant;
-        ///@todo Clean up variant on exit
+        variant->add(param->type.release());
+        variant->add(param->arg->type->accept(&cloner));
+        param->type = variant;
       }
     }
   }
 }
 
-bi::Expression* bi::Dispatcher::accept(Cloner* visitor) const {
+bi::Expression * bi::Dispatcher::accept(Cloner * visitor) const {
   return visitor->clone(this);
 }
 
-bi::Expression* bi::Dispatcher::accept(Modifier* visitor) {
+bi::Expression * bi::Dispatcher::accept(Modifier * visitor) {
   return visitor->modify(this);
 }
 
@@ -75,13 +72,7 @@ bool bi::Dispatcher::dispatchDefinitely(Expression& o) {
 }
 
 bool bi::Dispatcher::definitely(Dispatcher& o) {
-  /* pre-conditions */
-  assert(funcs.size() > 0);
-  assert(o.funcs.size() > 0);
-
-  /* comparing any function in one dispatcher to any function in the other
-   * dispatcher is sufficient, as all should yield the same result */
-  return funcs.any()->definitely(*o.funcs.any()) && o.capture(this);
+  return parens->definitely(*o.parens) && o.capture(this);
 }
 
 bool bi::Dispatcher::dispatchPossibly(Expression& o) {
@@ -89,11 +80,9 @@ bool bi::Dispatcher::dispatchPossibly(Expression& o) {
 }
 
 bool bi::Dispatcher::possibly(Dispatcher& o) {
-  /* pre-conditions */
-  assert(funcs.size() > 0);
-  assert(o.funcs.size() > 0);
+  return parens->possibly(*o.parens) && o.capture(this);
+}
 
-  /* comparing any function in one dispatcher to any function in the other
-   * dispatcher is sufficient, as all should yield the same result */
-  return funcs.any()->possibly(*o.funcs.any()) && o.capture(this);
+bool bi::Dispatcher::possibly(FuncParameter& o) {
+  return parens->possibly(*o.parens) && o.capture(this);
 }

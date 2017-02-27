@@ -6,11 +6,9 @@
 #include "bi/expression/Expression.hpp"
 #include "bi/expression/FuncParameter.hpp"
 #include "bi/common/Named.hpp"
-#include "bi/common/Numbered.hpp"
-#include "bi/common/Reference.hpp"
+#include "bi/common/Parenthesised.hpp"
 #include "bi/common/Formed.hpp"
-#include "bi/expression/VarParameter.hpp"
-#include "bi/expression/Dispatcher.hpp"
+#include "bi/common/Reference.hpp"
 
 #include <list>
 
@@ -22,22 +20,23 @@ namespace bi {
  */
 class FuncReference: public Expression,
     public Named,
-    public Numbered,
-    public Reference<FuncParameter>,
-    public Formed {
+    public Parenthesised,
+    public Formed,
+    public Reference<FuncParameter> {
 public:
   /**
    * Constructor.
    *
    * @param name Name.
    * @param parens Expression in parentheses.
-   * @param form Function form.
+   * @param form Signature form.
    * @param loc Location.
    * @param target Target.
+   * @param dispatcher Dispatcher.
    */
   FuncReference(shared_ptr<Name> name, Expression* parens,
-      const FunctionForm form, shared_ptr<Location> loc = nullptr,
-      FuncParameter* target = nullptr);
+      const SignatureForm form, shared_ptr<Location> loc = nullptr,
+      FuncParameter* target = nullptr, Dispatcher* dispatcher = nullptr);
 
   /**
    * Constructor for binary operator.
@@ -45,11 +44,14 @@ public:
    * @param left Left operand.
    * @param name Operator.
    * @param right Right operand.
+   * @param form Signature form.
    * @param loc Location.
    * @param target Target.
+   * @param dispatcher Dispatcher.
    */
   FuncReference(Expression* left, shared_ptr<Name> name, Expression* right,
-      shared_ptr<Location> loc = nullptr, FuncParameter* target = nullptr);
+      const SignatureForm form, shared_ptr<Location> loc = nullptr,
+      FuncParameter* target = nullptr, Dispatcher* dispatcher = nullptr);
 
   /**
    * Destructor.
@@ -66,6 +68,7 @@ public:
   virtual bool dispatchDefinitely(Expression& o);
   virtual bool definitely(FuncReference& o);
   virtual bool definitely(FuncParameter& o);
+  virtual bool definitely(Dispatcher& o);
   virtual bool definitely(VarParameter& o);
 
   virtual bool dispatchPossibly(Expression& o);

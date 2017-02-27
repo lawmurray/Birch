@@ -120,3 +120,11 @@ bool bi::Type::possibly(RandomType& o) {
 bool bi::Type::possibly(VariantType& o) {
   assert(false);
 }
+
+bool bi::Type::operator==(Type& o) {
+  return definitely(o) && o.definitely(*this);
+}
+
+bool bi::Type::operator!=(Type& o) {
+  return !(*this == o);
+}

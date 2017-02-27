@@ -5,10 +5,8 @@
 
 #include "bi/expression/Expression.hpp"
 #include "bi/common/Braced.hpp"
-#include "bi/common/Named.hpp"
-#include "bi/common/Numbered.hpp"
+#include "bi/common/Signature.hpp"
 #include "bi/common/Scoped.hpp"
-#include "bi/common/Formed.hpp"
 #include "bi/common/Parameter.hpp"
 
 namespace bi {
@@ -18,10 +16,8 @@ namespace bi {
  * @ingroup compiler_expression
  */
 class FuncParameter: public Expression,
-    public Named,
-    public Numbered,
+    public Signature,
     public Scoped,
-    public Formed,
     public Braced,
     public Parameter<Expression> {
 public:
@@ -36,8 +32,8 @@ public:
    * @param loc Location.
    */
   FuncParameter(shared_ptr<Name> name, Expression* parens, Expression* result,
-      Expression* braces, const FunctionForm form = FUNCTION,
-      shared_ptr<Location> loc = nullptr);
+      Expression* braces, const SignatureForm form, shared_ptr<Location> loc =
+          nullptr);
 
   /**
    * Destructor.
@@ -48,23 +44,15 @@ public:
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
-  /**
-   * Result expression.
-   */
-  unique_ptr<Expression> result;
-
-  /**
-   * Mangled name.
-   */
-  shared_ptr<Name> mangled;
-
   using Expression::definitely;
   using Expression::possibly;
 
   virtual bool dispatchDefinitely(Expression& o);
   virtual bool definitely(FuncParameter& o);
+  virtual bool definitely(Dispatcher& o);
 
   virtual bool dispatchPossibly(Expression& o);
   virtual bool possibly(FuncParameter& o);
+  virtual bool possibly(Dispatcher& o);
 };
 }

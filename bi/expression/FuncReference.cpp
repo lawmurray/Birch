@@ -10,23 +10,26 @@
 #include <typeinfo>
 
 bi::FuncReference::FuncReference(shared_ptr<Name> name, Expression* parens,
-    const FunctionForm form, shared_ptr<Location> loc, FuncParameter* target) :
+    const SignatureForm form, shared_ptr<Location> loc, FuncParameter* target,
+    Dispatcher* dispatcher) :
     Expression(loc),
     Named(name),
+    Parenthesised(parens),
+    Formed(form),
     Reference<FuncParameter>(target),
-    Formed(parens, form),
-    dispatcher(nullptr) {
+    dispatcher(dispatcher) {
   //
 }
 
 bi::FuncReference::FuncReference(Expression* left, shared_ptr<Name> name,
-    Expression* right, shared_ptr<Location> loc, FuncParameter* target) :
+    Expression* right, const SignatureForm form, shared_ptr<Location> loc,
+    FuncParameter* target, Dispatcher* dispatcher) :
     Expression(loc),
     Named(name),
+    Parenthesised(new ParenthesesExpression(new ExpressionList(left, right))),
+    Formed(form),
     Reference<FuncParameter>(target),
-    Formed(new ParenthesesExpression(new ExpressionList(left, right)),
-        BINARY_OPERATOR),
-    dispatcher(nullptr) {
+    dispatcher(dispatcher) {
   //
 }
 
@@ -51,10 +54,14 @@ bool bi::FuncReference::dispatchDefinitely(Expression& o) {
 }
 
 bool bi::FuncReference::definitely(FuncReference& o) {
-  return parens->definitely(*o.parens) && target == o.target;
+  return parens->definitely(*o.parens);
 }
 
 bool bi::FuncReference::definitely(FuncParameter& o) {
+  return parens->definitely(*o.parens) && o.capture(this);
+}
+
+bool bi::FuncReference::definitely(Dispatcher& o) {
   return parens->definitely(*o.parens) && o.capture(this);
 }
 
@@ -67,22 +74,7 @@ bool bi::FuncReference::dispatchPossibly(Expression& o) {
 }
 
 bool bi::FuncReference::possibly(FuncReference& o) {
-  /* intersection of possible targets */
-  std::vector<FuncParameter*> a1, a2, a3;
-  if (target != nullptr) {
-    a1.push_back(target);
-  }
-  if (o.target != nullptr) {
-    a2.push_back(o.target);
-  }
-  a1.insert(a1.end(), alternatives.begin(), alternatives.end());
-  a2.insert(a2.end(), o.alternatives.begin(), o.alternatives.end());
-  std::sort(a1.begin(), a1.end());
-  std::sort(a2.begin(), a2.end());
-  std::set_intersection(a1.begin(), a1.end(), a2.begin(), a2.end(),
-      std::inserter(a3, a3.end()));
-
-  return parens->possibly(*o.parens) && a3.size() > 0;
+  return parens->possibly(*o.parens);
 }
 
 bool bi::FuncReference::possibly(FuncParameter& o) {
@@ -90,7 +82,7 @@ bool bi::FuncReference::possibly(FuncParameter& o) {
 }
 
 bool bi::FuncReference::possibly(Dispatcher& o) {
-  return possibly(*o.funcs.any());
+  return parens->possibly(*o.parens) && o.capture(this);
 }
 
 bool bi::FuncReference::possibly(VarParameter& o) {

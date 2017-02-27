@@ -61,7 +61,8 @@ bi::Expression* bi::Cloner::clone(const BracketsExpression* o) {
 }
 
 bi::Expression* bi::Cloner::clone(const Dispatcher* o) {
-  return new Dispatcher(o->name, o->mangled, o->loc);
+  return new Dispatcher(o->name, o->parens->accept(this),
+      o->result->accept(this), o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const Index* o) {
@@ -201,7 +202,7 @@ bi::Type* bi::Cloner::clone(const TypeList* o) {
 }
 
 bi::Type* bi::Cloner::clone(const VariantType* o) {
-  Type* result = new VariantType(o->definite, o->possibles, o->loc);
+  Type* result = new VariantType(o->types, o->loc);
   result->assignable = o->assignable;
   return result;
 }

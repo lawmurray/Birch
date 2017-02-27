@@ -72,7 +72,7 @@ unsigned char bi::decode32(const unsigned char c) {
   return d;
 }
 
-std::string bi::mangle(const FuncParameter* o) {
+std::string bi::mangle(const Signature* o) {
   std::stringstream buf;
   std::string decoded, encoded;
 
@@ -92,7 +92,7 @@ std::string bi::mangle(const FuncParameter* o) {
   return buf.str();
 }
 
-std::string bi::internalise(const FuncParameter* o) {
+std::string bi::internalise(const Signature* o) {
   /* translations */
   static std::regex reg;
   static std::unordered_map<std::string,std::string> ops, greeks;

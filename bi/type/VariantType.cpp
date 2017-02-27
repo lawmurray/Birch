@@ -8,23 +8,15 @@
 
 #include <algorithm>
 
-bi::VariantType::VariantType(Type* definite,
-    const std::list<Type*>& possibles, shared_ptr<Location> loc) :
+bi::VariantType::VariantType(const std::list<Type*>& types,
+    shared_ptr<Location> loc) :
     Type(loc),
-    definite(definite),
-    possibles(possibles) {
-  //
-}
-
-bi::VariantType::VariantType(Type* definite, shared_ptr<Location> loc) :
-    Type(loc),
-    definite(definite) {
+    types(types) {
   //
 }
 
 bi::VariantType::VariantType(shared_ptr<Location> loc) :
-    Type(loc),
-    definite(nullptr) {
+    Type(loc) {
   //
 }
 
@@ -33,19 +25,17 @@ bi::VariantType::~VariantType() {
 }
 
 void bi::VariantType::add(Type* o) {
-  auto f = [&](Type* possible) {
-    return possible->definitely(*o) || o->definitely(*possible);
+  auto f = [&](Type* type) {
+    return type->definitely(*o) || o->definitely(*type);
   };
-  bool exists = definite->definitely(*o) && o->definitely(*definite);
-  exists = exists || std::find_if(possibles.begin(), possibles.end(), f)
-          != possibles.end();
-  if (!exists) {
-    possibles.push_back(o);
+  auto iter = std::find_if(types.begin(), types.end(), f);
+  if (iter != types.end()) {
+    types.push_back(o);
   }
 }
 
 int bi::VariantType::size() const {
-  return possibles.size() + 1;
+  return types.size();
 }
 
 bi::Type* bi::VariantType::accept(Cloner* visitor) const {
@@ -61,27 +51,29 @@ void bi::VariantType::accept(Visitor* visitor) const {
 }
 
 bool bi::VariantType::definitely(Type& o) {
-  return definite->definitely(o);
+  auto f = [&](Type* type) {
+    return type->definitely(o);
+  };
+  return std::find_if(types.begin(), types.end(), f) != types.end();
 }
 
 bool bi::VariantType::dispatchDefinitely(Type& o) {
-  return definite->dispatchDefinitely(o);
+  auto f = [&](Type* type) {
+    return type->dispatchDefinitely(o);
+  };
+  return std::find_if(types.begin(), types.end(), f) != types.end();
 }
 
 bool bi::VariantType::possibly(Type& o) {
-  auto f = [&](Type* possible) {
-    return possible->definitely(o) || possible->possibly(o);
+  auto f = [&](Type* type) {
+    return type->possibly(o);
   };
-  return definite->possibly(o)
-      || std::find_if(possibles.begin(), possibles.end(), f)
-          != possibles.end();
+  return std::find_if(types.begin(), types.end(), f) != types.end();
 }
 
 bool bi::VariantType::dispatchPossibly(Type& o) {
-  auto f = [&](Type* possible) {
-    return possible->dispatchDefinitely(o) || possible->dispatchPossibly(o);
+  auto f = [&](Type* type) {
+    return type->dispatchPossibly(o);
   };
-  return definite->dispatchPossibly(o)
-      || std::find_if(possibles.begin(), possibles.end(), f)
-          != possibles.end();
+  return std::find_if(types.begin(), types.end(), f) != types.end();
 }

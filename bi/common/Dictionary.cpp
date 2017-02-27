@@ -9,23 +9,21 @@
 #include "bi/program/all.hpp"
 #include "bi/exception/all.hpp"
 
-template<class ParameterType, class ReferenceType>
-bool bi::Dictionary<ParameterType,ReferenceType>::contains(
-    ParameterType* param) {
+template<class ParameterType>
+bool bi::Dictionary<ParameterType>::contains(ParameterType* param) {
   return params.find(param->name->str()) != params.end();
 }
 
-template<class ParameterType, class ReferenceType>
-ParameterType* bi::Dictionary<ParameterType,ReferenceType>::get(
-    ParameterType* param) {
+template<class ParameterType>
+ParameterType* bi::Dictionary<ParameterType>::get(ParameterType* param) {
   /* pre-condition */
   assert(contains(param));
 
   return params.find(param->name->str())->second;
 }
 
-template<class ParameterType, class ReferenceType>
-void bi::Dictionary<ParameterType,ReferenceType>::add(ParameterType* param) {
+template<class ParameterType>
+void bi::Dictionary<ParameterType>::add(ParameterType* param) {
   /* pre-condition */
   assert(!contains(param));
 
@@ -33,20 +31,8 @@ void bi::Dictionary<ParameterType,ReferenceType>::add(ParameterType* param) {
   assert(result.second);
 }
 
-template<class ParameterType, class ReferenceType>
-ParameterType* bi::Dictionary<ParameterType,ReferenceType>::resolve(
-    ReferenceType* ref) {
-  auto iter = params.find(ref->name->str());
-  if (iter != params.end() && ref->definitely(*iter->second)) {
-    return iter->second;
-  } else {
-    return nullptr;
-  }
-}
-
-template<class ParameterType, class ReferenceType>
-void bi::Dictionary<ParameterType,ReferenceType>::merge(
-    Dictionary<ParameterType,ReferenceType>& o) {
+template<class ParameterType>
+void bi::Dictionary<ParameterType>::merge(Dictionary<ParameterType>& o) {
   for (auto iter = o.params.begin(); iter != o.params.end(); ++iter) {
     if (!contains(iter->second)) {
       add(iter->second);
@@ -57,6 +43,6 @@ void bi::Dictionary<ParameterType,ReferenceType>::merge(
 /*
  * Explicit instantiations.
  */
-template class bi::Dictionary<bi::VarParameter,bi::VarReference>;
-template class bi::Dictionary<bi::ModelParameter,bi::ModelReference>;
-template class bi::Dictionary<bi::ProgParameter,bi::ProgReference>;
+template class bi::Dictionary<bi::VarParameter>;
+template class bi::Dictionary<bi::ModelParameter>;
+template class bi::Dictionary<bi::ProgParameter>;

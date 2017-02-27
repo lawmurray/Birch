@@ -14,9 +14,9 @@ namespace bi {
  * @ingroup compiler_common
  *
  * @tparam ParameterType Type of parameters.
- * @tparam ReferenceType Type of references.
+ * @tparam CompareType Type of partial order comparison.
  */
-template<class ParameterType, class ReferenceType, class CompareType>
+template<class ParameterType, class CompareType>
 class OverloadedDictionary {
 public:
   typedef poset<ParameterType*,CompareType> poset_type;
@@ -54,7 +54,7 @@ public:
    * Merge another overloaded dictionary into this one.
    */
   void merge(
-      OverloadedDictionary<ParameterType,ReferenceType,CompareType>& o);
+      OverloadedDictionary<ParameterType,CompareType>& o);
 
   /**
    * Resolve reference.
@@ -64,6 +64,7 @@ public:
    * @return The parameter to which the reference can be resolved, or
    * `nullptr` if the parameter cannot be resolved.
    */
+  template<class ReferenceType>
   ParameterType* resolve(ReferenceType* ref);
 
   /**
@@ -71,4 +72,26 @@ public:
    */
   map_type params;
 };
+}
+
+#include "bi/exception/AmbiguousReferenceException.hpp"
+
+template<class ParameterType, class CompareType>
+template<class ReferenceType>
+ParameterType* bi::OverloadedDictionary<ParameterType,CompareType>::resolve(
+    ReferenceType* ref) {
+  auto iter1 = params.find(ref->name->str());
+  if (iter1 == params.end()) {
+    return nullptr;
+  } else {
+    std::list<ParameterType*> matches;
+    iter1->second.match(ref, matches);
+    if (matches.size() > 1) {
+      throw AmbiguousReferenceException(ref, matches);
+    } else if (matches.size() == 1) {
+      return matches.front();
+    } else {
+      return nullptr;
+    }
+  }
 }

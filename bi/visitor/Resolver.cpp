@@ -91,7 +91,7 @@ bi::Expression* bi::Resolver::modify(RandomInit* o) {
   o->type = o->left->type->accept(&cloner)->accept(this);
 
   o->backward = new FuncReference(o->left->accept(&cloner), new Name("~>"),
-      o->right->accept(&cloner));
+      o->right->accept(&cloner), BINARY_OPERATOR);
   o->backward->accept(this);
 
   return o;
@@ -133,27 +133,12 @@ bi::Expression* bi::Resolver::modify(FuncReference* o) {
   Scope* membershipScope = takeMembershipScope();
   Modifier::modify(o);
   resolve(o, membershipScope);
-
-  if (o->alternatives.size() > 0) {
-    /* may require a variant return type */
-    VariantType* variant = new VariantType(o->target->type.get());
-    for (auto iter = o->alternatives.begin(); iter != o->alternatives.end();
-        ++iter) {
-      variant->add((*iter)->type.get());
-    }
-    if (variant->size() > 1) {
-      /* use variant */
-      o->type = variant;
-    } else {
-      /* don't use variant */
-      delete variant;
-      o->type = o->target->type->accept(&cloner)->accept(this);
-    }
+  if (o->dispatcher) {
+    o->type = o->dispatcher->type->accept(&cloner)->accept(this);
   } else {
     o->type = o->target->type->accept(&cloner)->accept(this);
   }
   o->type->assignable = false;  // rvalue
-  o->form = o->target->form;
 
   return o;
 }
@@ -185,6 +170,30 @@ bi::Expression* bi::Resolver::modify(FuncParameter* o) {
   o->result = o->result->accept(this);
   o->type = o->result->type->accept(&cloner)->accept(this);
   defer(o->braces.get());
+  o->scope = pop();
+  top()->add(o);
+
+  /* dispatcher for this function */
+  Dispatcher* dispatcher = top()->resolveDispatcher(o);
+  if (dispatcher) {
+    dispatcher->insert(o);
+  } else {
+    Dispatcher* dispatcher = new Dispatcher(o->name,
+        o->parens->accept(&cloner), o->result->accept(&cloner));
+    dispatcher->accept(this);
+    dispatcher->insert(o);
+  }
+
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(Dispatcher* o) {
+  push();
+  inInputs = true;
+  o->parens = o->parens->accept(this);
+  inInputs = false;
+  o->result = o->result->accept(this);
+  o->type = o->result->type->accept(&cloner)->accept(this);
   o->scope = pop();
   top()->add(o);
 

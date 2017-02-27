@@ -48,6 +48,7 @@ public:
    */
   void add(VarParameter* param);
   void add(FuncParameter* param);
+  void add(Dispatcher* param);
   void add(ModelParameter* param);
   void add(ProgParameter* param);
 
@@ -61,6 +62,12 @@ public:
   void resolve(VarReference* ref);
   void resolve(FuncReference* ref);
   void resolve(ModelReference* ref);
+
+  /**
+   * Resolve a function reference or parameter to a dispatcher.
+   */
+  Dispatcher* resolveDispatcher(FuncParameter* o);
+  Dispatcher* resolveDispatcher(FuncReference* o);
 
   /**
    * Inherit another scope into this scope. This is used to import
@@ -91,11 +98,11 @@ public:
   /**
    * Overloaded declarations, by name.
    */
-  Dictionary<VarParameter,VarReference> vars;
-  Dictionary<ModelParameter,ModelReference> models;
-  OverloadedDictionary<FuncParameter,FuncReference,definitely> funcs;
-  OverloadedDictionary<Dispatcher,FuncReference,possibly> dispatchers;
-  Dictionary<ProgParameter,ProgReference> progs;
+  Dictionary<VarParameter> vars;
+  Dictionary<ModelParameter> models;
+  OverloadedDictionary<FuncParameter,definitely> funcs;
+  OverloadedDictionary<Dispatcher,possibly> dispatchers;
+  Dictionary<ProgParameter> progs;
 
 private:
   /**

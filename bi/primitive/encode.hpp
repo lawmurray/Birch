@@ -3,7 +3,7 @@
  */
 #pragma once
 
-#include "bi/expression/FuncParameter.hpp"
+#include "bi/common/Signature.hpp"
 #include "bi/expression/Expression.hpp"
 
 #include <string>
@@ -36,14 +36,14 @@ unsigned char decode32(const unsigned char c);
 /**
  * Generate a unique name for a function parameter.
  */
-std::string mangle(const FuncParameter* o);
+std::string mangle(const Signature* o);
 
 /**
  * Generate internal name. This is the original name, with any characters
  * outside the class [0-9a-zA-z_] translated to within that class, and an
  * underscore added to the end to avoid clashes with user variables.
  */
-std::string internalise(const FuncParameter* o);
+std::string internalise(const Signature* o);
 
 /**
  * Is character in the class [0-9a-zA-Z_]?

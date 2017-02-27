@@ -36,8 +36,12 @@ void bi::CppDispatcherGenerator::visit(const File* o) {
 }
 
 void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
+  Gatherer<VarParameter> gatherer;
+  o->parens->accept(&gatherer);
+
   start("template<");
-  for (int i = 1; i <= o->types.size(); ++i) {
+  int i = 1;
+  for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter, ++i) {
     if (i != 1) {
       middle(", ");
     }
@@ -49,11 +53,12 @@ void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
   }
   start(o->type << " dispatch_" << o->mangled << "_" << o->number << "_(");
 
-  for (int i = 1; i <= o->types.size(); ++i) {
+  i = 1;
+  for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter, ++i) {
     if (i != 1) {
       middle(", ");
     }
-    middle("T" << i << "&& o" << i);
+    middle("T" << i << "&& " << (*iter)->name);
   }
   middle(')');
   if (header) {
@@ -70,7 +75,22 @@ void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
     /* defer to parent dispatcher */
     Dispatcher* parent = scope->parent(const_cast<Dispatcher*>(o));
     if (parent) {
-      line("// dispatch_" << parent->mangled << "_" << parent->number << "_");
+      assert(const_cast<Dispatcher*>(o)->possibly(*parent));
+      const_cast<Dispatcher*>(o)->possibly(*parent);
+
+      Gatherer<VarParameter> gatherer;
+      parent->parens->accept(&gatherer);
+
+      start("return dispatch_" << parent->mangled << "_" << parent->number << "_(");
+      for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
+        if (iter != gatherer.begin()) {
+          middle(", ");
+        }
+        middle((*iter)->arg);
+      }
+      finish(");");
+    } else {
+      line("throw std::bad_cast();");
     }
     out();
     line("}\n");
@@ -118,5 +138,5 @@ void bi::CppDispatcherGenerator::genArg(const Expression* o, const int i) {
   if (!o->type->assignable) {
     middle("const ");
   }
-  middle(o->type << "&>(o" << i << ')');
+  middle(o->type << "&>(" << o << ')');
 }

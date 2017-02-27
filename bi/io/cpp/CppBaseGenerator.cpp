@@ -285,9 +285,12 @@ void bi::CppBaseGenerator::visit(const RandomType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const VariantType* o) {
-  middle("boost::variant<" << o->definite);
-  for (auto iter = o->possibles.begin(); iter != o->possibles.end(); ++iter) {
-    middle(',' << *iter);
+  middle("boost::variant<");
+  for (auto iter = o->types.begin(); iter != o->types.end(); ++iter) {
+    if (iter != o->types.begin()) {
+      middle(',');
+    }
+    middle(*iter);
   }
   middle(">");
 }

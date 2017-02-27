@@ -6,19 +6,17 @@
 #include "bi/expression/FuncParameter.hpp"
 #include "bi/expression/FuncReference.hpp"
 #include "bi/expression/Dispatcher.hpp"
-#include "bi/exception/AmbiguousReferenceException.hpp"
-#include "bi/exception/PreviousDeclarationException.hpp"
 
-template<class ParameterType, class ReferenceType, class CompareType>
-bool bi::OverloadedDictionary<ParameterType,ReferenceType,CompareType>::contains(
+template<class ParameterType, class CompareType>
+bool bi::OverloadedDictionary<ParameterType,CompareType>::contains(
     ParameterType* param) {
   auto iter = params.find(param->name->str());
   return iter != params.end() && iter->second.contains(param);
 }
 
-template<class ParameterType, class ReferenceType, class CompareType>
-ParameterType* bi::OverloadedDictionary<ParameterType,ReferenceType,
-    CompareType>::get(ParameterType* param) {
+template<class ParameterType, class CompareType>
+ParameterType* bi::OverloadedDictionary<ParameterType,CompareType>::get(
+    ParameterType* param) {
   /* pre-condition */
   assert(contains(param));
 
@@ -27,8 +25,8 @@ ParameterType* bi::OverloadedDictionary<ParameterType,ReferenceType,
   return iter->second.get(param);
 }
 
-template<class ParameterType, class ReferenceType, class CompareType>
-void bi::OverloadedDictionary<ParameterType,ReferenceType,CompareType>::add(
+template<class ParameterType, class CompareType>
+void bi::OverloadedDictionary<ParameterType,CompareType>::add(
     ParameterType* param) {
   /* pre-condition */
   assert(!contains(param));
@@ -46,9 +44,9 @@ void bi::OverloadedDictionary<ParameterType,ReferenceType,CompareType>::add(
   }
 }
 
-template<class ParameterType, class ReferenceType, class CompareType>
-void bi::OverloadedDictionary<ParameterType,ReferenceType,CompareType>::merge(
-    OverloadedDictionary<ParameterType,ReferenceType,CompareType>& o) {
+template<class ParameterType, class CompareType>
+void bi::OverloadedDictionary<ParameterType,CompareType>::merge(
+    OverloadedDictionary<ParameterType,CompareType>& o) {
   for (auto iter1 = o.params.begin(); iter1 != o.params.end(); ++iter1) {
     for (auto iter2 = iter1->second.begin(); iter2 != iter1->second.end();
         ++iter2) {
@@ -59,29 +57,8 @@ void bi::OverloadedDictionary<ParameterType,ReferenceType,CompareType>::merge(
   }
 }
 
-template<class ParameterType, class ReferenceType, class CompareType>
-ParameterType* bi::OverloadedDictionary<ParameterType,ReferenceType,
-    CompareType>::resolve(ReferenceType* ref) {
-  auto iter1 = params.find(ref->name->str());
-  if (iter1 == params.end()) {
-    return nullptr;
-  } else {
-    std::list<ParameterType*> matches;
-    iter1->second.match(ref, matches);
-    if (matches.size() > 1) {
-      throw AmbiguousReferenceException(ref, matches);
-    } else if (matches.size() == 1) {
-      return matches.front();
-    } else {
-      return nullptr;
-    }
-  }
-}
-
 /*
  * Explicit instantiations.
  */
-template class bi::OverloadedDictionary<bi::FuncParameter,bi::FuncReference,
-    bi::definitely>;
-template class bi::OverloadedDictionary<bi::Dispatcher,bi::FuncReference,
-    bi::possibly>;
+template class bi::OverloadedDictionary<bi::FuncParameter,bi::definitely>;
+template class bi::OverloadedDictionary<bi::Dispatcher,bi::possibly>;

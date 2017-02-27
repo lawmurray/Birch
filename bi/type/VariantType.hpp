@@ -18,20 +18,11 @@ public:
   /**
    * Constructor.
    *
-   * @param definite Definite type.
-   * @param possibles Possible types.
+   * @param types Types.
    * @param loc Location.
    */
-  VariantType(Type* definite, const std::list<Type*>& possibles,
-      shared_ptr<Location> loc = nullptr);
-
-  /**
-   * Constructor.
-   *
-   * @param definite Definite type.
-   * @param loc Location.
-   */
-  VariantType(Type* definite, shared_ptr<Location> loc = nullptr);
+  VariantType(const std::list<Type*>& types, shared_ptr<Location> loc =
+      nullptr);
 
   /**
    * Constructor.
@@ -69,13 +60,8 @@ public:
   virtual bool dispatchPossibly(Type& o);
 
   /**
-   * Definite type
-   */
-  Type* definite;
-
-  /**
    * Possible types.
    */
-  std::list<Type*> possibles;
+  std::list<Type*> types;
 };
 }

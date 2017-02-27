@@ -125,5 +125,11 @@ public:
   virtual bool possibly(ParenthesesType& o);
   virtual bool possibly(RandomType& o);
   virtual bool possibly(VariantType& o);
+
+  /**
+   * Operators for equality comparisons.
+   */
+  bool operator==(Type& o);
+  bool operator!=(Type& o);
 };
 }
