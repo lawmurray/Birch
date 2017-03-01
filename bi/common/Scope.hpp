@@ -9,6 +9,8 @@
 #include "bi/primitive/definitely.hpp"
 #include "bi/primitive/possibly.hpp"
 
+#include <set>
+
 namespace bi {
 class VarParameter;
 class FuncParameter;
