@@ -163,5 +163,11 @@ public:
   virtual bool possibly(This& o);
   virtual bool possibly(VarParameter& o);
   virtual bool possibly(VarReference& o);
+
+  /**
+   * Operators for equality comparisons.
+   */
+  bool operator==(Expression& o);
+  bool operator!=(Expression& o);
 };
 }

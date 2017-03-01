@@ -50,10 +50,6 @@ bool bi::RandomType::definitely(ModelParameter& o) {
   return left->definitely(o) && (!o.assignable || assignable);
 }
 
-bool bi::RandomType::definitely(RandomType& o) {
-  return left->definitely(*o.left) && (!o.assignable || assignable);
-}
-
 bool bi::RandomType::dispatchPossibly(Type& o) {
   return o.possibly(*this);
 }
@@ -63,21 +59,21 @@ bool bi::RandomType::possibly(EmptyType& o) {
 }
 
 bool bi::RandomType::possibly(List<Type>& o) {
-  return (left->possibly(o) || right->possibly(o) || right->definitely(o))
+  return (left->possibly(o) || right->possibly(o))
       && (!o.assignable || assignable);
 }
 
 bool bi::RandomType::possibly(ModelReference& o) {
-  return (left->possibly(o) || right->possibly(o) || right->definitely(o))
+  return (left->possibly(o) || right->possibly(o))
       && (!o.assignable || assignable);
 }
 
 bool bi::RandomType::possibly(ModelParameter& o) {
-  return (left->possibly(o) || right->possibly(o) || right->definitely(o))
+  return (left->possibly(o) || right->possibly(o))
       && (!o.assignable || assignable);
 }
 
 bool bi::RandomType::possibly(RandomType& o) {
-  return (left->possibly(*o.left) || right->possibly(*o.right)
-      || right->definitely(*o.right)) && (!o.assignable || assignable);
+  return left->possibly(*o.left) && right->possibly(*o.right)
+      && (!o.assignable || assignable);
 }

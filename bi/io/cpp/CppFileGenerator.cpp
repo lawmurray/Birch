@@ -269,13 +269,13 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
 
         if (ref) {
           std::string typeName = ref->name->str();
-          if (typeName.compare("Boolean") == 0) {
+          if (typeName == "Boolean") {
             middle("atoi(optarg)");
-          } else if (typeName.compare("Integer") == 0) {
+          } else if (typeName == "Integer") {
             middle("atoi(optarg)");
-          } else if (typeName.compare("Real") == 0) {
+          } else if (typeName == "Real") {
             middle("atof(optarg)");
-          } else if (typeName.compare("String") == 0) {
+          } else if (typeName == "String") {
             middle("optarg");
           } else {
             throw UnsupportedOptionTypeException(type);

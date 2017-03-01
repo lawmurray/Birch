@@ -26,10 +26,10 @@ bi::VariantType::~VariantType() {
 
 void bi::VariantType::add(Type* o) {
   auto f = [&](Type* type) {
-    return type->definitely(*o) || o->definitely(*type);
+    return *type == *o;
   };
   auto iter = std::find_if(types.begin(), types.end(), f);
-  if (iter != types.end()) {
+  if (iter == types.end()) {
     types.push_back(o);
   }
 }

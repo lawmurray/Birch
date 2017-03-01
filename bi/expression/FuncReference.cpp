@@ -62,7 +62,12 @@ bool bi::FuncReference::definitely(FuncParameter& o) {
 }
 
 bool bi::FuncReference::definitely(Dispatcher& o) {
-  return parens->definitely(*o.parens) && o.capture(this);
+  auto f = [&](FuncParameter* o1) {
+    return definitely(*o1);
+  };
+  auto iter = std::find_if(o.funcs.begin(), o.funcs.end(), f);
+  return iter != o.funcs.end() && parens->definitely(*o.parens)
+      && o.capture(this);
 }
 
 bool bi::FuncReference::definitely(VarParameter& o) {
@@ -82,7 +87,12 @@ bool bi::FuncReference::possibly(FuncParameter& o) {
 }
 
 bool bi::FuncReference::possibly(Dispatcher& o) {
-  return parens->possibly(*o.parens) && o.capture(this);
+  auto f = [&](FuncParameter* o1) {
+    return possibly(*o1);
+  };
+  auto iter = std::find_if(o.funcs.begin(), o.funcs.end(), f);
+  return iter != o.funcs.end() && parens->possibly(*o.parens)
+      && o.capture(this);
 }
 
 bool bi::FuncReference::possibly(VarParameter& o) {

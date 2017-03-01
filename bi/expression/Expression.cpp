@@ -225,3 +225,11 @@ bool bi::Expression::possibly(VarParameter& o) {
 bool bi::Expression::possibly(VarReference& o) {
   return false;
 }
+
+bool bi::Expression::operator==(Expression& o) {
+  return definitely(o) && o.definitely(*this);
+}
+
+bool bi::Expression::operator!=(Expression& o) {
+  return !(*this == o);
+}

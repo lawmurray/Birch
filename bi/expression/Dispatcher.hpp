@@ -60,11 +60,10 @@ public:
 
   virtual bool dispatchPossibly(Expression& o);
   virtual bool possibly(Dispatcher& o);
-  virtual bool possibly(FuncParameter& o);
 
 private:
   /**
-   * Update the variant types of parameters.
+   * Update the variant type of @p o2 with the type of @p o1.
    */
   void update(Expression* o1, Expression* o2);
 };

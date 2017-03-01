@@ -26,8 +26,8 @@ void bi::Dispatcher::insert(FuncParameter* o) {
   funcs.insert(o);
 
   /* update variant types */
-  update(parens.get(), o->parens.get());
-  update(result.get(), o->result.get());
+  update(o->parens.get(), parens.get());
+  update(o->result.get(), result.get());
 }
 
 void bi::Dispatcher::update(Expression* o1, Expression* o2) {
@@ -80,9 +80,5 @@ bool bi::Dispatcher::dispatchPossibly(Expression& o) {
 }
 
 bool bi::Dispatcher::possibly(Dispatcher& o) {
-  return parens->possibly(*o.parens) && o.capture(this);
-}
-
-bool bi::Dispatcher::possibly(FuncParameter& o) {
   return parens->possibly(*o.parens) && o.capture(this);
 }

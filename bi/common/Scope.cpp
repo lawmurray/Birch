@@ -78,6 +78,10 @@ void bi::Scope::resolve(FuncReference* ref) {
     resolveDefer<FuncParameter,FuncReference>(ref);
   } else {
     ref->dispatcher = resolveDispatcher(ref);
+    if (ref->dispatcher && ref->definitely(*ref->dispatcher)) {
+      /* no need for a dispatcher */
+      ref->dispatcher = nullptr;
+    }
   }
 }
 
