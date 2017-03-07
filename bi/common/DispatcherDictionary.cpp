@@ -29,9 +29,7 @@ void bi::DispatcherDictionary::add(Dispatcher* dispatcher) {
   /* pre-condition */
   assert(!contains(dispatcher));
 
-  auto result = dispatchers.insert(
-      std::make_pair(dispatcher->mangled->str(), dispatcher));
-  assert(result.second);
+  dispatchers.insert(std::make_pair(dispatcher->mangled->str(), dispatcher));
 }
 
 void bi::DispatcherDictionary::merge(DispatcherDictionary& o) {

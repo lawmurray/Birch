@@ -6,6 +6,9 @@
 #include "bi/visitor/Gatherer.hpp"
 #include "bi/visitor/all.hpp"
 
+#include <vector>
+#include <algorithm>
+
 bi::Dispatcher::Dispatcher(shared_ptr<Name> name, shared_ptr<Name> mangled,
     Dispatcher* parent) :
     Named(name),
@@ -42,5 +45,11 @@ void bi::Dispatcher::accept(Visitor* visitor) const {
 }
 
 bool bi::Dispatcher::operator==(const Dispatcher& o) const {
-  return false;
+  std::vector<FuncParameter*> funcs1, funcs2;
+  std::copy(funcs.begin(), funcs.end(), std::back_inserter(funcs1));
+  std::copy(o.funcs.begin(), o.funcs.end(), std::back_inserter(funcs2));
+  std::sort(funcs1.begin(), funcs1.end());
+  std::sort(funcs2.begin(), funcs2.end());
+
+  return funcs1 == funcs2 && parent == o.parent;
 }

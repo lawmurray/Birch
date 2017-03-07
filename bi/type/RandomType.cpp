@@ -74,6 +74,7 @@ bool bi::RandomType::possibly(ModelParameter& o) {
 }
 
 bool bi::RandomType::possibly(RandomType& o) {
-  return left->possibly(*o.left) && right->possibly(*o.right)
+  return (left->definitely(*o.left) || left->possibly(*o.left))
+      && (right->definitely(*o.right) || right->possibly(*o.right))
       && (!o.assignable || assignable);
 }

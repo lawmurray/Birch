@@ -58,7 +58,7 @@ public:
   /**
    * Functions handled by this dispatcher.
    */
-  poset<FuncParameter*,bi::possibly> funcs;
+  poset<FuncParameter*,bi::definitely> funcs;
 
   /**
    * Parent dispatcher.

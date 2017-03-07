@@ -272,7 +272,7 @@ bi::Dispatcher* bi::Resolver::modify(Dispatcher* o) {
       ++iter2;
       ++iter3;
     }
-    o->type = combine(func->result->type.get(), o->type.get());
+    o->type = combine(func->result->type.get(), o->type.release());
     ++iter;
   }
 
@@ -281,16 +281,17 @@ bi::Dispatcher* bi::Resolver::modify(Dispatcher* o) {
   if (o->paramTypes.size() == 0) {
     expr = new EmptyExpression();
   } else {
-    int i = 0;
+    int i = o->paramTypes.size();
     std::stringstream buf;
-    buf << "o" << ++i;
-    expr = new VarParameter(new Name(buf.str()), o->paramTypes.back());
+    buf << "o" << i--;
+    expr = new VarParameter(new Name(buf.str()), o->paramTypes.back()->accept(&cloner));
 
     auto iter = o->paramTypes.rbegin();
+    ++iter;
     while (iter != o->paramTypes.rend()) {
       std::stringstream buf;
-      buf << "o" << ++i;
-      VarParameter* param = new VarParameter(new Name(buf.str()), *iter);
+      buf << "o" << i--;
+      VarParameter* param = new VarParameter(new Name(buf.str()), (*iter)->accept(&cloner));
       expr = new ExpressionList(param, expr);
       ++iter;
     }
@@ -313,13 +314,13 @@ bi::Type* bi::Resolver::combine(Type* o1, Type* o2) {
   if (variant) {
     /* this parameter already has a variant type, add the type of the
      * argument to this */
-    variant->add(o1->accept(&cloner)->accept(this));
+    variant->add(o1);
     return variant;
   } else if (*o1 != *o2) {
     /* make a new variant type */
     variant = new VariantType();
     variant->add(o2);
-    variant->add(o1->accept(&cloner)->accept(this));
+    variant->add(o1);
     return variant;
   }
   return o2;
@@ -333,6 +334,10 @@ bi::Scope* bi::Resolver::takeMembershipScope() {
 
 bi::Scope* bi::Resolver::top() {
   return scopes.back();
+}
+
+bi::Scope* bi::Resolver::bottom() {
+  return scopes.front();
 }
 
 void bi::Resolver::push(Scope* scope) {
@@ -387,22 +392,36 @@ void bi::Resolver::resolve(FuncReference* ref, Scope* scope) {
       } else {
         /* different pattern to the current dispatcher... first finalise the
          * current dispatcher */
-        dispatcher->accept(this);
-        if (top()->contains(dispatcher)) {
+        dispatcher = dispatcher->accept(this);
+        if (bottom()->contains(dispatcher)) {
           /* reuse identical dispatcher in the scope */
-          Dispatcher* existing = scope->get(dispatcher);
+          Dispatcher* existing = bottom()->get(dispatcher);
           delete dispatcher;
           dispatcher = existing;
         } else {
           /* add current dispatcher to the scope */
-          top()->add(dispatcher);
+          bottom()->add(dispatcher);
         }
 
         /* create new dispatcher for the new pattern */
         dispatcher = new Dispatcher(param->name, param->mangled, dispatcher);
       }
     }
-    ref->dispatcher = dispatcher->accept(this);
+
+    /* finalise the last dispatcher */
+    dispatcher = dispatcher->accept(this);
+    if (bottom()->contains(dispatcher)) {
+      /* reuse identical dispatcher in the scope */
+      Dispatcher* existing = bottom()->get(dispatcher);
+      delete dispatcher;
+      dispatcher = existing;
+    } else {
+      /* add current dispatcher to the scope */
+      bottom()->add(dispatcher);
+    }
+
+    /* update reference to use most-specific dispatcher */
+    ref->dispatcher = dispatcher;
   }
 }
 

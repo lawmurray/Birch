@@ -16,7 +16,7 @@ class Dispatcher;
  */
 class DispatcherDictionary {
 public:
-  typedef std::unordered_map<std::string,Dispatcher*> map_type;
+  typedef std::unordered_multimap<std::string,Dispatcher*> map_type;
 
   /**
    * Does the dictionary contain the given dispatcher?

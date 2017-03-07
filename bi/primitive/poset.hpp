@@ -84,7 +84,7 @@ public:
    */
   void insert(T v);
 
-  /**
+  /*
    * Iterators.
    */
   auto begin() {
@@ -98,6 +98,18 @@ public:
   }
   auto end() const {
     return vertices.end();
+  }
+  auto rbegin() {
+    return vertices.rbegin();
+  }
+  auto rend() {
+    return vertices.rend();
+  }
+  auto rbegin() const {
+    return vertices.rbegin();
+  }
+  auto rend() const {
+    return vertices.rend();
   }
 
   /**

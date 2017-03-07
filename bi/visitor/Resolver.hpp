@@ -76,6 +76,11 @@ protected:
   Scope* top();
 
   /**
+   * Bottom of the stack of containing scopes.
+   */
+  Scope* bottom();
+
+  /**
    * Push a scope on the stack of containing scopes.
    *
    * @param scope Scope.

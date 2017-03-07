@@ -59,8 +59,8 @@ void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
     finish(" {");
     in();
 
-    /* try functions */
-    for (auto iter = o->funcs.begin(); iter != o->funcs.end(); ++iter) {
+    /* try functions, in topological order from most specific */
+    for (auto iter = o->funcs.rbegin(); iter != o->funcs.rend(); ++iter) {
       *this << *iter;
     }
 
@@ -78,7 +78,7 @@ void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
         if (iter != gatherer.begin()) {
           middle(", ");
         }
-        middle((*iter)->arg);
+        genArg((*iter)->arg, i);
       }
       finish(");");
     } else {
@@ -130,5 +130,5 @@ void bi::CppDispatcherGenerator::genArg(const Expression* o, const int i) {
   if (!o->type->assignable) {
     middle("const ");
   }
-  middle(o->type << "&>(" << o << ')');
+  middle(o->type << "&>(o" << i << ')');
 }
