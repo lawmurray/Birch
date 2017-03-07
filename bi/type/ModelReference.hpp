@@ -49,12 +49,12 @@ public:
   virtual bool isModel() const;
 
   /**
-   * Can this type be upcast to another?
+   * Is this type equal to or less than @p o by inheritance?
    */
   bool canUpcast(ModelReference& o);
 
   /**
-   * Can this type be downcast to another?
+   * Is this type greater than @p o by inheritance?
    */
   bool canDowncast(ModelReference& o);
 

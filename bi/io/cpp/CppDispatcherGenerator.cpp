@@ -5,7 +5,6 @@
 
 #include "bi/io/cpp/CppParameterGenerator.hpp"
 #include "bi/io/cpp/misc.hpp"
-#include "bi/visitor/DispatchGatherer.hpp"
 #include "bi/visitor/Gatherer.hpp"
 
 bi::CppDispatcherGenerator::CppDispatcherGenerator(std::ostream& base,
@@ -15,23 +14,16 @@ bi::CppDispatcherGenerator::CppDispatcherGenerator(std::ostream& base,
 }
 
 void bi::CppDispatcherGenerator::visit(const File* o) {
-  scope = o->scope.get();
-
-  DispatchGatherer gatherer;
-  o->accept(&gatherer);
-
   header = true;
-  for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
-    if (*(*iter)->name != "<-") {
-      *this << *iter;
-    }
+  for (auto iter = o->scope->dispatchers.begin();
+      iter != o->scope->dispatchers.end(); ++iter) {
+    *this << iter->second;
   }
 
   header = false;
-  for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
-    if (*(*iter)->name != "<-") {
-      *this << *iter;
-    }
+  for (auto iter = o->scope->dispatchers.begin();
+      iter != o->scope->dispatchers.end(); ++iter) {
+    *this << iter->second;
   }
 }
 
@@ -73,15 +65,15 @@ void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
     }
 
     /* defer to parent dispatcher */
-    Dispatcher* parent = scope->parent(const_cast<Dispatcher*>(o));
-    if (parent) {
-      assert(const_cast<Dispatcher*>(o)->possibly(*parent));
-      const_cast<Dispatcher*>(o)->possibly(*parent);
+    if (o->parent) {
+      assert(o->parens->possibly(*o->parent->parens));
+      o->parens->possibly(*o->parent->parens);
 
       Gatherer<VarParameter> gatherer;
-      parent->parens->accept(&gatherer);
+      o->parent->parens->accept(&gatherer);
 
-      start("return dispatch_" << parent->mangled << "_" << parent->number << "_(");
+      start(
+          "return dispatch_" << o->parent->mangled << "_" << o->parent->number << "_(");
       for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
         if (iter != gatherer.begin()) {
           middle(", ");

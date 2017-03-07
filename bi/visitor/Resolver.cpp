@@ -6,6 +6,8 @@
 #include "bi/visitor/Gatherer.hpp"
 #include "bi/exception/all.hpp"
 
+#include <sstream>
+
 bi::Resolver::Resolver() :
     membershipScope(nullptr),
     inInputs(false) {
@@ -173,30 +175,6 @@ bi::Expression* bi::Resolver::modify(FuncParameter* o) {
   o->scope = pop();
   top()->add(o);
 
-  /* dispatcher for this function */
-  Dispatcher* dispatcher = top()->resolveDispatcher(o);
-  if (dispatcher) {
-    dispatcher->insert(o);
-  } else {
-    Dispatcher* dispatcher = new Dispatcher(o->name,
-        o->parens->accept(&cloner), o->result->accept(&cloner));
-    dispatcher->accept(this);
-    dispatcher->insert(o);
-  }
-
-  return o;
-}
-
-bi::Expression* bi::Resolver::modify(Dispatcher* o) {
-  push();
-  inInputs = true;
-  o->parens = o->parens->accept(this);
-  inInputs = false;
-  o->result = o->result->accept(this);
-  o->type = o->result->type->accept(&cloner)->accept(this);
-  o->scope = pop();
-  top()->add(o);
-
   return o;
 }
 
@@ -265,6 +243,88 @@ bi::Type* bi::Resolver::modify(AssignableType* o) {
   return o;
 }
 
+bi::Dispatcher* bi::Resolver::modify(Dispatcher* o) {
+  /* pre-condition */
+  assert(o->funcs.size() > 0);
+
+  /* initialise with types of first function */
+  auto iter = o->funcs.begin();
+  FuncParameter* func = *iter;
+  Gatherer<VarParameter> gatherer;
+  func->parens->accept(&gatherer);
+  auto iter2 = gatherer.begin();
+  while (iter2 != gatherer.end()) {
+    o->paramTypes.push_back((*iter2)->type->accept(&cloner)->accept(this));
+    ++iter2;
+  }
+  o->type = func->result->type->accept(&cloner)->accept(this);
+  ++iter;
+
+  /* fill with types of remaining functions */
+  while (iter != o->funcs.end()) {
+    FuncParameter* func = *iter;
+    Gatherer<VarParameter> gatherer;
+    func->parens->accept(&gatherer);
+    auto iter2 = gatherer.begin();
+    auto iter3 = o->paramTypes.begin();
+    while (iter2 != gatherer.end() && iter3 != o->paramTypes.end()) {
+      *iter3 = combine((*iter2)->type.get(), *iter3);
+      ++iter2;
+      ++iter3;
+    }
+    o->type = combine(func->result->type.get(), o->type.get());
+    ++iter;
+  }
+
+  /* construct parentheses */
+  Expression* expr;
+  if (o->paramTypes.size() == 0) {
+    expr = new EmptyExpression();
+  } else {
+    int i = 0;
+    std::stringstream buf;
+    buf << "o" << ++i;
+    expr = new VarParameter(new Name(buf.str()), o->paramTypes.back());
+
+    auto iter = o->paramTypes.rbegin();
+    while (iter != o->paramTypes.rend()) {
+      std::stringstream buf;
+      buf << "o" << ++i;
+      VarParameter* param = new VarParameter(new Name(buf.str()), *iter);
+      expr = new ExpressionList(param, expr);
+      ++iter;
+    }
+  }
+  o->parens = new ParenthesesExpression(expr);
+
+  /* normal visit */
+  push();
+  inInputs = true;
+  o->parens = o->parens->accept(this);
+  inInputs = false;
+  o->type = o->type->accept(this);
+  o->scope = pop();
+
+  return o;
+}
+
+bi::Type* bi::Resolver::combine(Type* o1, Type* o2) {
+  VariantType* variant = dynamic_cast<VariantType*>(o2);
+  if (variant) {
+    /* this parameter already has a variant type, add the type of the
+     * argument to this */
+    variant->add(o1->accept(&cloner)->accept(this));
+    return variant;
+  } else if (*o1 != *o2) {
+    /* make a new variant type */
+    variant = new VariantType();
+    variant->add(o2);
+    variant->add(o1->accept(&cloner)->accept(this));
+    return variant;
+  }
+  return o2;
+}
+
 bi::Scope* bi::Resolver::takeMembershipScope() {
   Scope* scope = membershipScope;
   membershipScope = nullptr;
@@ -310,6 +370,42 @@ void bi::Resolver::resolve(ReferenceType* ref, Scope* scope) {
   }
 }
 
+void bi::Resolver::resolve(FuncReference* ref, Scope* scope) {
+  resolve<FuncReference>(ref, scope);
+  if (ref->possibles.size() > 0) {
+    /* sort out dispatchers */
+    FuncParameter* param = ref->target;
+    Dispatcher* dispatcher = new Dispatcher(param->name, param->mangled);
+    dispatcher->insert(param);
+
+    for (auto iter = ref->possibles.begin(); iter != ref->possibles.end();
+        ++iter) {
+      param = *iter;
+      if (*param->mangled == *dispatcher->mangled) {
+        /* same pattern as the current dispatcher */
+        dispatcher->insert(param);
+      } else {
+        /* different pattern to the current dispatcher... first finalise the
+         * current dispatcher */
+        dispatcher->accept(this);
+        if (top()->contains(dispatcher)) {
+          /* reuse identical dispatcher in the scope */
+          Dispatcher* existing = scope->get(dispatcher);
+          delete dispatcher;
+          dispatcher = existing;
+        } else {
+          /* add current dispatcher to the scope */
+          top()->add(dispatcher);
+        }
+
+        /* create new dispatcher for the new pattern */
+        dispatcher = new Dispatcher(param->name, param->mangled, dispatcher);
+      }
+    }
+    ref->dispatcher = dispatcher->accept(this);
+  }
+}
+
 void bi::Resolver::defer(Expression* o) {
   if (files.size() == 1) {
     /* ignore bodies in imported files */
@@ -343,5 +439,4 @@ bi::ModelParameter* bi::Resolver::model() {
 }
 
 template void bi::Resolver::resolve(VarReference* ref, Scope* scope);
-template void bi::Resolver::resolve(FuncReference* ref, Scope* scope);
 template void bi::Resolver::resolve(ModelReference* ref, Scope* scope);

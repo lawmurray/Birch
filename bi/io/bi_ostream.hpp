@@ -44,7 +44,6 @@ public:
 
   virtual void visit(const VarParameter* o);
   virtual void visit(const FuncParameter* o);
-  virtual void visit(const Dispatcher* o);
   virtual void visit(const ModelParameter* o);
   virtual void visit(const ProgParameter* o);
 

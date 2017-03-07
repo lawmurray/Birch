@@ -126,13 +126,6 @@ void bi::bi_ostream::visit(const FuncParameter* o) {
   }
 }
 
-void bi::bi_ostream::visit(const Dispatcher* o) {
-  *this << o->name << o->parens;
-  if (!o->result->isEmpty()) {
-    *this << " -> " << o->result;
-  }
-}
-
 void bi::bi_ostream::visit(const ModelParameter* o) {
   *this << o->name;
   if (!o->parens->isEmpty()) {

@@ -7,7 +7,6 @@
 
 #include "bi/expression/BracesExpression.hpp"
 #include "bi/expression/BracketsExpression.hpp"
-#include "bi/expression/Dispatcher.hpp"
 #include "bi/expression/EmptyExpression.hpp"
 #include "bi/expression/FuncParameter.hpp"
 #include "bi/expression/FuncReference.hpp"

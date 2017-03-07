@@ -33,17 +33,6 @@ public:
   ParameterType* get(ParameterType* param);
 
   /**
-   * Parents of a parameter.
-   */
-  template<class Container>
-  void parents(ParameterType* param, Container& parents) {
-    auto iter = params.find(param->name->str());
-    if (iter != params.end()) {
-      iter->second.parents(param, parents);
-    }
-  }
-
-  /**
    * Add parameter.
    *
    * @param param The parameter.
@@ -53,19 +42,27 @@ public:
   /**
    * Merge another overloaded dictionary into this one.
    */
-  void merge(
-      OverloadedDictionary<ParameterType,CompareType>& o);
+  void merge(OverloadedDictionary<ParameterType,CompareType>& o);
 
   /**
    * Resolve reference.
    *
-   * @param[in,out] ref The reference.
+   * @param ref The reference.
    *
-   * @return The parameter to which the reference can be resolved, or
-   * `nullptr` if the parameter cannot be resolved.
+   * @return The most-specific parameter to which the reference can be
+   * resolved, or `nullptr` if the parameter cannot be resolved.
    */
   template<class ReferenceType>
   ParameterType* resolve(ReferenceType* ref);
+
+  /**
+   * Resolve reference.
+   *
+   * @param ref The reference.
+   * @param[out] targets All matching targets.
+   */
+  template<class ReferenceType, class Container>
+  void resolve(ReferenceType* ref, Container& matches);
 
   /**
    * Declarations by partial order.
@@ -80,18 +77,26 @@ template<class ParameterType, class CompareType>
 template<class ReferenceType>
 ParameterType* bi::OverloadedDictionary<ParameterType,CompareType>::resolve(
     ReferenceType* ref) {
-  auto iter1 = params.find(ref->name->str());
-  if (iter1 == params.end()) {
-    return nullptr;
+  std::list<ParameterType*> matches;
+  auto iter = params.find(ref->name->str());
+  if (iter != params.end()) {
+    iter->second.match(ref, matches);
+  }
+  if (matches.size() > 1) {
+    throw AmbiguousReferenceException(ref, matches);
+  } else if (matches.size() == 1) {
+    return matches.front();
   } else {
-    std::list<ParameterType*> matches;
-    iter1->second.match(ref, matches);
-    if (matches.size() > 1) {
-      throw AmbiguousReferenceException(ref, matches);
-    } else if (matches.size() == 1) {
-      return matches.front();
-    } else {
-      return nullptr;
-    }
+    return nullptr;
+  }
+}
+
+template<class ParameterType, class CompareType>
+template<class ReferenceType, class Container>
+void bi::OverloadedDictionary<ParameterType,CompareType>::resolve(
+    ReferenceType* ref, Container& matches) {
+  auto iter = params.find(ref->name->str());
+  if (iter != params.end()) {
+    iter->second.match_all(ref, matches);
   }
 }

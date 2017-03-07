@@ -62,12 +62,12 @@ protected:
   /**
    * Generate the arguments for a function call.
    */
-  void genArgs(Expression* ref, FuncParameter* param);
+  void genArgs(FuncReference* ref, FuncParameter* param);
 
   /**
    * Generate the arguments for a dispatcher call.
    */
-  void genArgs(Expression* ref, Dispatcher* param);
+  void genArgs(FuncReference* ref, Dispatcher* param);
 
   /**
    * Output header instead of source?

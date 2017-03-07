@@ -34,7 +34,6 @@ public:
   virtual Expression* clone(const ParenthesesExpression* o);
   virtual Expression* clone(const BracesExpression* o);
   virtual Expression* clone(const BracketsExpression* o);
-  virtual Expression* clone(const Dispatcher* o);
   virtual Expression* clone(const Index* o);
   virtual Expression* clone(const Range* o);
   virtual Expression* clone(const Member* o);
@@ -68,5 +67,7 @@ public:
   virtual Type* clone(const RandomType* o);
   virtual Type* clone(const TypeList* o);
   virtual Type* clone(const VariantType* o);
+
+  virtual Dispatcher* clone(const Dispatcher* o);
 };
 }

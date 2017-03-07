@@ -67,12 +67,6 @@ bi::Expression* bi::Modifier::modify(BracketsExpression* o) {
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(Dispatcher* o) {
-  o->parens = o->parens->accept(this);
-  o->result = o->result->accept(this);
-  return o;
-}
-
 bi::Expression* bi::Modifier::modify(Index* o) {
   o->single = o->single->accept(this);
   return o;
@@ -231,5 +225,9 @@ bi::Type* bi::Modifier::modify(VariantType* o) {
   for (auto iter = o->types.begin(); iter != o->types.end(); ++iter) {
     *iter = (*iter)->accept(this);
   }
+  return o;
+}
+
+bi::Dispatcher* bi::Modifier::modify(Dispatcher* o) {
   return o;
 }

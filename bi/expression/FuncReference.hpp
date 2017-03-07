@@ -9,6 +9,7 @@
 #include "bi/common/Parenthesised.hpp"
 #include "bi/common/Formed.hpp"
 #include "bi/common/Reference.hpp"
+#include "bi/dispatcher/Dispatcher.hpp"
 
 #include <list>
 
@@ -32,11 +33,10 @@ public:
    * @param form Signature form.
    * @param loc Location.
    * @param target Target.
-   * @param dispatcher Dispatcher.
    */
   FuncReference(shared_ptr<Name> name, Expression* parens,
       const SignatureForm form, shared_ptr<Location> loc = nullptr,
-      FuncParameter* target = nullptr, Dispatcher* dispatcher = nullptr);
+      FuncParameter* target = nullptr);
 
   /**
    * Constructor for binary operator.
@@ -47,11 +47,10 @@ public:
    * @param form Signature form.
    * @param loc Location.
    * @param target Target.
-   * @param dispatcher Dispatcher.
    */
   FuncReference(Expression* left, shared_ptr<Name> name, Expression* right,
       const SignatureForm form, shared_ptr<Location> loc = nullptr,
-      FuncParameter* target = nullptr, Dispatcher* dispatcher = nullptr);
+      FuncParameter* target = nullptr);
 
   /**
    * Destructor.
@@ -68,17 +67,21 @@ public:
   virtual bool dispatchDefinitely(Expression& o);
   virtual bool definitely(FuncReference& o);
   virtual bool definitely(FuncParameter& o);
-  virtual bool definitely(Dispatcher& o);
   virtual bool definitely(VarParameter& o);
 
   virtual bool dispatchPossibly(Expression& o);
   virtual bool possibly(FuncReference& o);
   virtual bool possibly(FuncParameter& o);
-  virtual bool possibly(Dispatcher& o);
   virtual bool possibly(VarParameter& o);
 
   /**
-   * Runtime dispatcher.
+   * Possible function resolutions that will need to be checked at runtime.
+   */
+  std::list<FuncParameter*> possibles;
+
+  /**
+   * Dispatcher to be used for this function, or `nullptr` if no dispatcher
+   * is required.
    */
   Dispatcher* dispatcher;
 };

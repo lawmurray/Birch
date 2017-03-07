@@ -24,11 +24,5 @@ public:
   virtual void visit(const VarParameter* o);
 
   void genArg(const Expression* o, const int i);
-
-private:
-  /**
-   * Scope of dispatchers of interest.
-   */
-  Scope* scope;
 };
 }

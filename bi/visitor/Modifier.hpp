@@ -34,7 +34,6 @@ public:
   virtual Expression* modify(ParenthesesExpression* o);
   virtual Expression* modify(BracesExpression* o);
   virtual Expression* modify(BracketsExpression* o);
-  virtual Expression* modify(Dispatcher* o);
   virtual Expression* modify(Index* o);
   virtual Expression* modify(Range* o);
   virtual Expression* modify(Member* o);
@@ -68,5 +67,7 @@ public:
   virtual Type* modify(RandomType* o);
   virtual Type* modify(TypeList* o);
   virtual Type* modify(VariantType* o);
+
+  virtual Dispatcher* modify(Dispatcher* o);
 };
 }

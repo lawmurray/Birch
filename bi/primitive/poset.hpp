@@ -64,6 +64,20 @@ public:
   void match(Comparable v, Container& matches);
 
   /**
+   * Find all matches.
+   *
+   * @tparam Comparable Type comparable to value type.
+   * @tparam Container Container type with push_back() function.
+   *
+   * @param v The value.
+   * @param[out] matches Container to hold matches. Matches are inserted in
+   * topological order: for any pair of matches, the more-specific match
+   * appears first.
+   */
+  template<class Comparable, class Container>
+  void match_all(Comparable v, Container& matches);
+
+  /**
    * Insert vertex.
    *
    * @param v Value at the vertex.
@@ -121,6 +135,12 @@ private:
   template<class Comparable, class Container>
   bool match(T u, Comparable v, Container& matches);
 
+  /**
+   * Sub-operation for match_all.
+   */
+  template<class Comparable, class Container>
+  void match_all(T u, Comparable v, Container& matches);
+
   /*
    * Sub-operations for insert.
    */
@@ -130,11 +150,6 @@ private:
   void backward(T u, T v);
   void reduce();  // transitive reduction
   void reduce(T u);
-
-  /*
-   * Sub-operations for dot().
-   */
-  void dot(T u);
 
   /**
    * Vertices in topological order.
@@ -193,15 +208,6 @@ T bi::poset<T,Compare>::get(T v) {
 
 template<class T, class Compare>
 template<class Container>
-void bi::poset<T,Compare>::parents(T v, Container& parents) {
-  auto range = backwards.equal_range(v);
-  for (auto iter = range.first; iter != range.second; ++iter) {
-    parents.push_back(iter->second);
-  }
-}
-
-template<class T, class Compare>
-template<class Container>
 void bi::poset<T,Compare>::children(T v, Container& children) {
   auto range = forwards.equal_range(v);
   for (auto iter = range.first; iter != range.second; ++iter) {
@@ -210,12 +216,33 @@ void bi::poset<T,Compare>::children(T v, Container& children) {
 }
 
 template<class T, class Compare>
+template<class Container>
+void bi::poset<T,Compare>::parents(T v, Container& parents) {
+  auto range = backwards.equal_range(v);
+  for (auto iter = range.first; iter != range.second; ++iter) {
+    parents.push_back(iter->second);
+  }
+}
+
+template<class T, class Compare>
 template<class Comparable, class Container>
 void bi::poset<T,Compare>::match(Comparable v, Container& matches) {
+  matches.clear();
   ++colour;
   for (auto iter = vertices.begin();
       iter != vertices.end() && colours[*iter] < colour; ++iter) {
     match(*iter, v, matches);
+  }
+}
+
+template<class T, class Compare>
+template<class Comparable, class Container>
+void bi::poset<T,Compare>::match_all(Comparable v, Container& matches) {
+  matches.clear();
+  ++colour;
+  for (auto iter = vertices.begin();
+      iter != vertices.end() && colours[*iter] < colour; ++iter) {
+    match_all(*iter, v, matches);
   }
 }
 
@@ -251,6 +278,7 @@ void bi::poset<T,Compare>::add_vertex(T v) {
   }
   assert((l == 0 && u == 0) || l < u);
 
+  /* insert */
   auto iter = vertices.begin();
   std::advance(iter, u);
   vertices.insert(iter, v);
@@ -313,6 +341,22 @@ bool bi::poset<T,Compare>::match(T u, Comparable v, Container& matches) {
     }
   }
   return deeper;
+}
+
+template<class T, class Compare>
+template<class Comparable, class Container>
+void bi::poset<T,Compare>::match_all(T u, Comparable v, Container& matches) {
+  if (colours[u] < colour) {
+    /* not visited yet */
+    colours[u] = colour;
+    if (compare(v, u)) {
+      auto range = forwards.equal_range(u);
+      for (auto iter = range.first; iter != range.second; ++iter) {
+        match_all(iter->second, v, matches);
+      }
+      matches.push_back(u);
+    }
+  }
 }
 
 template<class T, class Compare>
@@ -410,20 +454,11 @@ void bi::poset<T,Compare>::dot() {
   ++colour;
   std::cout << "digraph {" << std::endl;
   for (auto iter = vertices.begin(); iter != vertices.end(); ++iter) {
-    dot(*iter);
+    std::cout << "  \"" << (*iter)->mangled->str() << "\"" << std::endl;
+  }
+  for (auto iter = forwards.begin(); iter != forwards.end(); ++iter) {
+    std::cout << "  \"" << iter->first->mangled->str() << "\" -> \""
+        << iter->second->mangled->str() << "\"" << std::endl;
   }
   std::cout << "}" << std::endl;
-}
-
-template<class T, class Compare>
-void bi::poset<T,Compare>::dot(T u) {
-  if (colours[u] != colour) {
-    colours[u] = colour;
-    std::cout << "\"" << u << "\"" << std::endl;
-    auto range = forwards.equal_range(u);
-    for (auto iter = range.first; iter != range.second; ++iter) {
-      std::cout << "\"" << u << "\" -> \"" << *iter << "\"" << std::endl;
-      ++iter;
-    }
-  }
 }

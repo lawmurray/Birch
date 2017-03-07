@@ -10,26 +10,25 @@
 #include <typeinfo>
 
 bi::FuncReference::FuncReference(shared_ptr<Name> name, Expression* parens,
-    const SignatureForm form, shared_ptr<Location> loc, FuncParameter* target,
-    Dispatcher* dispatcher) :
+    const SignatureForm form, shared_ptr<Location> loc, FuncParameter* target) :
     Expression(loc),
     Named(name),
     Parenthesised(parens),
     Formed(form),
     Reference<FuncParameter>(target),
-    dispatcher(dispatcher) {
+    dispatcher(nullptr) {
   //
 }
 
 bi::FuncReference::FuncReference(Expression* left, shared_ptr<Name> name,
     Expression* right, const SignatureForm form, shared_ptr<Location> loc,
-    FuncParameter* target, Dispatcher* dispatcher) :
+    FuncParameter* target) :
     Expression(loc),
     Named(name),
     Parenthesised(new ParenthesesExpression(new ExpressionList(left, right))),
     Formed(form),
     Reference<FuncParameter>(target),
-    dispatcher(dispatcher) {
+    dispatcher(nullptr) {
   //
 }
 
@@ -61,15 +60,6 @@ bool bi::FuncReference::definitely(FuncParameter& o) {
   return parens->definitely(*o.parens) && o.capture(this);
 }
 
-bool bi::FuncReference::definitely(Dispatcher& o) {
-  auto f = [&](FuncParameter* o1) {
-    return definitely(*o1);
-  };
-  auto iter = std::find_if(o.funcs.begin(), o.funcs.end(), f);
-  return iter != o.funcs.end() && parens->definitely(*o.parens)
-      && o.capture(this);
-}
-
 bool bi::FuncReference::definitely(VarParameter& o) {
   return type->definitely(*o.type) && o.capture(this);
 }
@@ -84,15 +74,6 @@ bool bi::FuncReference::possibly(FuncReference& o) {
 
 bool bi::FuncReference::possibly(FuncParameter& o) {
   return parens->possibly(*o.parens) && o.capture(this);
-}
-
-bool bi::FuncReference::possibly(Dispatcher& o) {
-  auto f = [&](FuncParameter* o1) {
-    return possibly(*o1);
-  };
-  auto iter = std::find_if(o.funcs.begin(), o.funcs.end(), f);
-  return iter != o.funcs.end() && parens->possibly(*o.parens)
-      && o.capture(this);
 }
 
 bool bi::FuncReference::possibly(VarParameter& o) {

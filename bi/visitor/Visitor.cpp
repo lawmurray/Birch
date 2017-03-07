@@ -70,8 +70,7 @@ void bi::Visitor::visit(const BracketsExpression* o) {
 }
 
 void bi::Visitor::visit(const Dispatcher* o) {
-  o->parens->accept(this);
-  o->result->accept(this);
+  //
 }
 
 void bi::Visitor::visit(const Index* o) {

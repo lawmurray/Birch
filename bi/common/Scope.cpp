@@ -14,7 +14,7 @@ bool bi::Scope::contains(VarParameter* param) {
 }
 
 bool bi::Scope::contains(FuncParameter* param) {
-  return funcs.contains(param);
+  return definites.contains(param);
 }
 
 bool bi::Scope::contains(ModelParameter* param) {
@@ -34,18 +34,11 @@ void bi::Scope::add(VarParameter* param) {
 }
 
 void bi::Scope::add(FuncParameter* param) {
-  if (funcs.contains(param)) {
-    throw PreviousDeclarationException(param, funcs.get(param));
+  if (definites.contains(param)) {
+    throw PreviousDeclarationException(param, definites.get(param));
   } else {
-    funcs.add(param);
-  }
-}
-
-void bi::Scope::add(Dispatcher* param) {
-  if (dispatchers.contains(param)) {
-    throw PreviousDeclarationException(param, dispatchers.get(param));
-  } else {
-    dispatchers.add(param);
+    definites.add(param);
+    possibles.add(param);
   }
 }
 
@@ -73,15 +66,11 @@ void bi::Scope::resolve(VarReference* ref) {
 }
 
 void bi::Scope::resolve(FuncReference* ref) {
-  ref->target = funcs.resolve(ref);
+  ref->target = definites.resolve(ref);
   if (!ref->target) {
     resolveDefer<FuncParameter,FuncReference>(ref);
   } else {
-    ref->dispatcher = resolveDispatcher(ref);
-    if (ref->dispatcher && ref->definitely(*ref->dispatcher)) {
-      /* no need for a dispatcher */
-      ref->dispatcher = nullptr;
-    }
+    possibles.resolve(ref, ref->possibles);
   }
 }
 
@@ -92,22 +81,16 @@ void bi::Scope::resolve(ModelReference* ref) {
   }
 }
 
-bi::Dispatcher* bi::Scope::resolveDispatcher(FuncParameter* o) {
-  Dispatcher* dispatcher = dispatchers.resolve(o);
-
-  /* for a function to match a dispatcher, it must be possibly equivalent
-   * to all other functions contained in that dispatcher, and all of those
-   * functions must be possibly equivalent to it, the resolution above only
-   * does the former, the second condition below ensures the latter. */
-  if (dispatcher && dispatcher->possibly(*o)) {
-    return dispatcher;
-  } else {
-    return nullptr;
-  }
+bool bi::Scope::contains(Dispatcher* dispatcher) {
+  return dispatchers.contains(dispatcher);
 }
 
-bi::Dispatcher* bi::Scope::resolveDispatcher(FuncReference* o) {
-  return dispatchers.resolve(o);
+void bi::Scope::add(Dispatcher* dispatcher) {
+  dispatchers.add(dispatcher);
+}
+
+bi::Dispatcher* bi::Scope::get(Dispatcher* dispatcher) {
+  return dispatchers.get(dispatcher);
 }
 
 void bi::Scope::inherit(Scope* scope) {
@@ -116,19 +99,8 @@ void bi::Scope::inherit(Scope* scope) {
 
 void bi::Scope::import(Scope* scope) {
   vars.merge(scope->vars);
-  funcs.merge(scope->funcs);
-  dispatchers.merge(scope->dispatchers);
+  definites.merge(scope->definites);
+  possibles.merge(scope->possibles);
   models.merge(scope->models);
   progs.merge(scope->progs);
-}
-
-bi::Dispatcher* bi::Scope::parent(Dispatcher* dispatcher) {
-  std::list<Dispatcher*> parents;
-  dispatchers.parents(dispatcher, parents);
-  assert(parents.size() <= 1);
-  if (parents.size() == 1) {
-    return parents.front();
-  } else {
-    return nullptr;
-  }
 }

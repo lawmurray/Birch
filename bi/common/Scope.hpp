@@ -5,6 +5,7 @@
 
 #include "bi/common/Dictionary.hpp"
 #include "bi/common/OverloadedDictionary.hpp"
+#include "bi/common/DispatcherDictionary.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/primitive/definitely.hpp"
 #include "bi/primitive/possibly.hpp"
@@ -14,7 +15,6 @@
 namespace bi {
 class VarParameter;
 class FuncParameter;
-class Dispatcher;
 class ModelParameter;
 class ProgParameter;
 
@@ -22,6 +22,8 @@ class VarReference;
 class FuncReference;
 class ModelReference;
 class ProgReference;
+
+class Dispatcher;
 
 /**
  * Scope.
@@ -31,9 +33,9 @@ class ProgReference;
 class Scope {
 public:
   /**
-   * Does the scope contain the declaration?
+   * Does the scope contain the parameter?
    *
-   * @param param Declaration.
+   * @param param Parameter.
    *
    * For functions, matching is done by signature. For all others, matching
    * is done by name only.
@@ -50,7 +52,6 @@ public:
    */
   void add(VarParameter* param);
   void add(FuncParameter* param);
-  void add(Dispatcher* param);
   void add(ModelParameter* param);
   void add(ProgParameter* param);
 
@@ -65,11 +66,12 @@ public:
   void resolve(FuncReference* ref);
   void resolve(ModelReference* ref);
 
-  /**
-   * Resolve a function reference or parameter to a dispatcher.
+  /*
+   * Dispatchers.
    */
-  Dispatcher* resolveDispatcher(FuncParameter* o);
-  Dispatcher* resolveDispatcher(FuncReference* o);
+  bool contains(Dispatcher* dispatcher);
+  void add(Dispatcher* dispatcher);
+  Dispatcher* get(Dispatcher* dispatcher);
 
   /**
    * Inherit another scope into this scope. This is used to import
@@ -88,23 +90,19 @@ public:
   void import(Scope* scope);
 
   /**
-   * Get the parent of a dispatcher.
-   */
-  Dispatcher* parent(Dispatcher* o);
-
-  /**
    * Base scopes.
    */
   std::set<Scope*> bases;
 
-  /**
-   * Overloaded declarations, by name.
+  /*
+   * Dictionaries.
    */
   Dictionary<VarParameter> vars;
   Dictionary<ModelParameter> models;
-  OverloadedDictionary<FuncParameter,definitely> funcs;
-  OverloadedDictionary<Dispatcher,possibly> dispatchers;
+  OverloadedDictionary<FuncParameter,definitely> definites;
+  OverloadedDictionary<FuncParameter,possibly> possibles;
   Dictionary<ProgParameter> progs;
+  DispatcherDictionary dispatchers;
 
 private:
   /**

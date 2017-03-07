@@ -50,7 +50,6 @@ public:
 
   virtual Expression*  modify(VarParameter* o);
   virtual Expression*  modify(FuncParameter* o);
-  virtual Expression*  modify(Dispatcher* o);
   virtual Prog* modify(ProgParameter* o);
   virtual Type* modify(ModelParameter* o);
 
@@ -59,6 +58,8 @@ public:
   virtual Statement* modify(Loop* o);
 
   virtual Type* modify(AssignableType* o);
+
+  virtual Dispatcher*  modify(Dispatcher* o);
 
 protected:
   /**
@@ -101,6 +102,15 @@ protected:
   void resolve(ReferenceType* ref, Scope* scope = nullptr);
 
   /**
+   * Resolve a function reference.
+   *
+   * @param ref The reference.
+   * @param scope The membership scope, if it is to be used for lookup,
+   * otherwise the containing scope is used.
+   */
+  void resolve(FuncReference* ref, Scope* scope = nullptr);
+
+  /**
    * Defer visit.
    *
    * @param o Braces to which to defer visit.
@@ -117,6 +127,13 @@ protected:
    * Innermost model.
    */
   ModelParameter* model();
+
+  /**
+   * Combine one type into another (possibly variant) type. Combines @p o1
+   * into @p o2 and returns the result. If the two types are identical,
+   * returns @p o2.
+   */
+  Type* combine(Type* o1, Type* o2);
 
   /**
    * Stack of containing scopes.

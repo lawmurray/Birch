@@ -49,10 +49,8 @@ public:
 
   virtual bool dispatchDefinitely(Expression& o);
   virtual bool definitely(FuncParameter& o);
-  virtual bool definitely(Dispatcher& o);
 
   virtual bool dispatchPossibly(Expression& o);
   virtual bool possibly(FuncParameter& o);
-  virtual bool possibly(Dispatcher& o);
 };
 }

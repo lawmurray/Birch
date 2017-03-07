@@ -29,7 +29,3 @@ bi::AmbiguousReferenceException::AmbiguousReferenceException(
 
 template bi::AmbiguousReferenceException::AmbiguousReferenceException(
     FuncReference* ref, std::list<FuncParameter*> matches);
-template bi::AmbiguousReferenceException::AmbiguousReferenceException(
-    FuncReference* ref, std::list<Dispatcher*> matches);
-template bi::AmbiguousReferenceException::AmbiguousReferenceException(
-    FuncParameter* ref, std::list<Dispatcher*> matches);

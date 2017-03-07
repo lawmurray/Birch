@@ -27,10 +27,12 @@ birchc_SOURCES = \
   bi/common/Bracketed.cpp \
   bi/common/Conditioned.cpp \
   bi/common/Dictionary.cpp \
+  bi/common/DispatcherDictionary.cpp \
   bi/common/Formed.cpp \
   bi/common/List.cpp \
   bi/common/Located.cpp \
   bi/common/Location.cpp \
+  bi/common/Mangled.cpp \
   bi/common/Name.cpp \
   bi/common/Named.cpp \
   bi/common/Numbered.cpp \
@@ -44,6 +46,7 @@ birchc_SOURCES = \
   bi/common/Signature.cpp \
   bi/common/Typed.cpp \
   bi/common/Unary.cpp \
+  bi/dispatcher/Dispatcher.cpp \
   bi/exception/AmbiguousReferenceException.cpp \
   bi/exception/CompilerException.cpp \
   bi/exception/CyclicImportException.cpp \
@@ -57,7 +60,6 @@ birchc_SOURCES = \
   bi/exception/UnsupportedOptionTypeException.cpp \
   bi/expression/BracesExpression.cpp \
   bi/expression/BracketsExpression.cpp \
-  bi/expression/Dispatcher.cpp \
   bi/expression/EmptyExpression.cpp \
   bi/expression/Expression.cpp \
   bi/expression/FuncParameter.cpp \
@@ -112,7 +114,6 @@ birchc_SOURCES = \
   bi/type/VariantType.cpp \
   bi/visitor/Assigner.cpp \
   bi/visitor/Cloner.cpp \
-  bi/visitor/DispatchGatherer.cpp \
   bi/visitor/Gatherer.cpp \
   bi/visitor/IsPrimary.cpp \
   bi/visitor/IsRandom.cpp \

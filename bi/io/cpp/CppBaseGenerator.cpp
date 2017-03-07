@@ -294,7 +294,7 @@ void bi::CppBaseGenerator::genCapture(const Expression* o) {
   middle(']');
 }
 
-void bi::CppBaseGenerator::genArgs(Expression* ref, FuncParameter* param) {
+void bi::CppBaseGenerator::genArgs(FuncReference* ref, FuncParameter* param) {
   bool result = ref->definitely(*param);  // needed to capture arguments
   assert(result);
   Gatherer<VarParameter> gatherer;
@@ -310,11 +310,10 @@ void bi::CppBaseGenerator::genArgs(Expression* ref, FuncParameter* param) {
   middle(')');
 }
 
-void bi::CppBaseGenerator::genArgs(Expression* ref, Dispatcher* param) {
-  bool result = ref->possibly(*param);  // needed to capture arguments
+void bi::CppBaseGenerator::genArgs(FuncReference* ref, Dispatcher* param) {
+  bool result = ref->parens->possibly(*param->parens);  // needed to capture arguments
   assert(result);
   Gatherer<VarParameter> gatherer;
-  param->parens->accept(&gatherer);
 
   middle('(');
   for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
