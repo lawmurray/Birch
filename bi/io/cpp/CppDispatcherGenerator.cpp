@@ -60,8 +60,41 @@ void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
     in();
 
     /* try functions, in topological order from most specific */
-    for (auto iter = o->funcs.rbegin(); iter != o->funcs.rend(); ++iter) {
-      *this << *iter;
+    for (auto iter = o->funcs.begin(); iter != o->funcs.end(); ++iter) {
+      FuncParameter* func = *iter;
+      assert(func->parens->possibly(*o->parens));
+      func->parens->possibly(*o->parens);
+
+      Gatherer<VarParameter> gatherer;
+      o->parens->accept(&gatherer);
+      auto iter1 = gatherer.begin();
+
+      start("try { return ");
+      if (func->isBinary() && isTranslatable(func->name->str())
+          && !func->parens->isRich()) {
+        genArg(*(iter1++), 1);
+        middle(' ' << translate(o->name->str()) << ' ');
+        genArg(*(iter1++), 2);
+      } else if (func->isUnary() && isTranslatable(func->name->str())
+          && !func->parens->isRich()) {
+        middle(translate(o->name->str()) << ' ');
+        genArg(*(iter1++), 1);
+      } else {
+        middle("bi::" << o->mangled);
+        if (func->isConstructor()) {
+          middle("<>");
+        }
+        middle('(');
+        int i = 1;
+        for (; iter1 != gatherer.end(); ++iter1, ++i) {
+          if (iter1 != gatherer.begin()) {
+            middle(", ");
+          }
+          genArg(*iter1, i);
+        }
+        middle(")");
+      }
+      finish("; } catch (std::bad_cast e) {}");
     }
 
     /* defer to parent dispatcher */
@@ -78,7 +111,7 @@ void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
         if (iter != gatherer.begin()) {
           middle(", ");
         }
-        genArg((*iter)->arg, i);
+        middle((*iter)->arg);
       }
       finish(");");
     } else {
@@ -90,45 +123,17 @@ void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
 }
 
 void bi::CppDispatcherGenerator::visit(const FuncParameter* o) {
-  Gatherer<VarParameter> gatherer;
-  o->parens->accept(&gatherer);
 
-  start("try { return ");
-  if (o->isBinary() && isTranslatable(o->name->str())
-      && !o->parens->isRich()) {
-    genArg(o->getLeft(), 1);
-    middle(' ' << translate(o->name->str()) << ' ');
-    genArg(o->getRight(), 2);
-  } else if (o->isUnary() && isTranslatable(o->name->str())
-      && !o->parens->isRich()) {
-    middle(translate(o->name->str()) << ' ');
-    genArg(o->getRight(), 1);
-  } else {
-    middle("bi::" << o->mangled);
-    if (o->isConstructor()) {
-      middle("<>");
-    }
-    middle('(');
-    int i = 1;
-    for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter, ++i) {
-      if (iter != gatherer.begin()) {
-        middle(", ");
-      }
-      genArg(*iter, i);
-    }
-    middle(")");
-  }
-  finish("; } catch (std::bad_cast e) {}");
 }
 
 void bi::CppDispatcherGenerator::visit(const VarParameter* o) {
   middle(o->name);
 }
 
-void bi::CppDispatcherGenerator::genArg(const Expression* o, const int i) {
+void bi::CppDispatcherGenerator::genArg(const VarParameter* o, const int i) {
   middle("bi::cast<");
-  if (!o->type->assignable) {
+  if (!o->arg->type->assignable) {
     middle("const ");
   }
-  middle(o->type << "&>(o" << i << ')');
+  middle(o->arg->type << "&>(" << o << ')');
 }

@@ -247,63 +247,36 @@ bi::Dispatcher* bi::Resolver::modify(Dispatcher* o) {
   /* pre-condition */
   assert(o->funcs.size() > 0);
 
+  push();
+
   /* initialise with types of first function */
   auto iter = o->funcs.begin();
   FuncParameter* func = *iter;
-  Gatherer<VarParameter> gatherer;
-  func->parens->accept(&gatherer);
-  auto iter2 = gatherer.begin();
-  while (iter2 != gatherer.end()) {
-    o->paramTypes.push_back((*iter2)->type->accept(&cloner)->accept(this));
-    ++iter2;
-  }
+
+  inInputs = true;
+  o->parens = func->parens->accept(&cloner)->accept(this);
+  inInputs = false;
   o->type = func->result->type->accept(&cloner)->accept(this);
-  ++iter;
+
+  Gatherer<VarParameter> gatherer1;
+  o->parens->accept(&gatherer1);
 
   /* fill with types of remaining functions */
   while (iter != o->funcs.end()) {
-    FuncParameter* func = *iter;
-    Gatherer<VarParameter> gatherer;
-    func->parens->accept(&gatherer);
-    auto iter2 = gatherer.begin();
-    auto iter3 = o->paramTypes.begin();
-    while (iter2 != gatherer.end() && iter3 != o->paramTypes.end()) {
-      *iter3 = combine((*iter2)->type.get(), *iter3);
+    func = *iter;
+    Gatherer<VarParameter> gatherer2;
+    func->parens->accept(&gatherer2);
+
+    auto iter1 = gatherer1.begin();
+    auto iter2 = gatherer2.begin();
+    while (iter1 != gatherer1.end() && iter2 != gatherer2.end()) {
+      (*iter1)->type = combine((*iter2)->type.get(), (*iter1)->type.release());
+      ++iter1;
       ++iter2;
-      ++iter3;
     }
     o->type = combine(func->result->type.get(), o->type.release());
     ++iter;
   }
-
-  /* construct parentheses */
-  Expression* expr;
-  if (o->paramTypes.size() == 0) {
-    expr = new EmptyExpression();
-  } else {
-    int i = o->paramTypes.size();
-    std::stringstream buf;
-    buf << "o" << i--;
-    expr = new VarParameter(new Name(buf.str()), o->paramTypes.back()->accept(&cloner));
-
-    auto iter = o->paramTypes.rbegin();
-    ++iter;
-    while (iter != o->paramTypes.rend()) {
-      std::stringstream buf;
-      buf << "o" << i--;
-      VarParameter* param = new VarParameter(new Name(buf.str()), (*iter)->accept(&cloner));
-      expr = new ExpressionList(param, expr);
-      ++iter;
-    }
-  }
-  o->parens = new ParenthesesExpression(expr);
-
-  /* normal visit */
-  push();
-  inInputs = true;
-  o->parens = o->parens->accept(this);
-  inInputs = false;
-  o->type = o->type->accept(this);
   o->scope = pop();
 
   return o;
@@ -316,7 +289,7 @@ bi::Type* bi::Resolver::combine(Type* o1, Type* o2) {
      * argument to this */
     variant->add(o1);
     return variant;
-  } else if (*o1 != *o2) {
+  } else if (!o1->equals(*o2)) {
     /* make a new variant type */
     variant = new VariantType();
     variant->add(o2);
@@ -383,7 +356,7 @@ void bi::Resolver::resolve(FuncReference* ref, Scope* scope) {
     Dispatcher* dispatcher = new Dispatcher(param->name, param->mangled);
     dispatcher->insert(param);
 
-    for (auto iter = ref->possibles.begin(); iter != ref->possibles.end();
+    for (auto iter = ref->possibles.rbegin(); iter != ref->possibles.rend();
         ++iter) {
       param = *iter;
       if (*param->mangled == *dispatcher->mangled) {
@@ -405,6 +378,7 @@ void bi::Resolver::resolve(FuncReference* ref, Scope* scope) {
 
         /* create new dispatcher for the new pattern */
         dispatcher = new Dispatcher(param->name, param->mangled, dispatcher);
+        dispatcher->insert(param);
       }
     }
 

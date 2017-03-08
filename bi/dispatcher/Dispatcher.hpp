@@ -66,11 +66,6 @@ public:
   Dispatcher* parent;
 
   /**
-   * Parameter types.
-   */
-  std::list<Type*> paramTypes;
-
-  /**
    * Result type.
    */
   unique_ptr<Type> type;

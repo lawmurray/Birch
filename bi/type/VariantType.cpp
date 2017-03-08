@@ -25,12 +25,13 @@ bi::VariantType::~VariantType() {
 }
 
 void bi::VariantType::add(Type* o) {
+  Type* o1 = o->strip();
   auto f = [&](Type* type) {
-    return *type == *o;
+    return o1->equals(*type);
   };
   auto iter = std::find_if(types.begin(), types.end(), f);
   if (iter == types.end()) {
-    types.push_back(o);
+    types.push_back(o1);
   }
 }
 

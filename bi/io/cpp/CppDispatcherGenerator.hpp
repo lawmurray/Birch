@@ -23,6 +23,6 @@ public:
   virtual void visit(const FuncParameter* o);
   virtual void visit(const VarParameter* o);
 
-  void genArg(const Expression* o, const int i);
+  void genArg(const VarParameter* o, const int i);
 };
 }

@@ -59,17 +59,17 @@ bool bi::RandomType::possibly(EmptyType& o) {
 }
 
 bool bi::RandomType::possibly(List<Type>& o) {
-  return (left->possibly(o) || right->possibly(o))
+  return (left->possibly(o) || right->possibly(o) || right->definitely(o))
       && (!o.assignable || assignable);
 }
 
 bool bi::RandomType::possibly(ModelReference& o) {
-  return (left->possibly(o) || right->possibly(o))
+  return (left->possibly(o) || right->possibly(o) || right->definitely(o))
       && (!o.assignable || assignable);
 }
 
 bool bi::RandomType::possibly(ModelParameter& o) {
-  return (left->possibly(o) || right->possibly(o))
+  return (left->possibly(o) || right->possibly(o) || right->definitely(o))
       && (!o.assignable || assignable);
 }
 
@@ -77,4 +77,18 @@ bool bi::RandomType::possibly(RandomType& o) {
   return (left->definitely(*o.left) || left->possibly(*o.left))
       && (right->definitely(*o.right) || right->possibly(*o.right))
       && (!o.assignable || assignable);
+}
+
+bool bi::RandomType::equals(Type& o) {
+  /* RandomType objects are never definitely equal; this override is
+   * something of a hack to ensure that, in the context of adding
+   * RandomType objects to VariantType objects, each type appears only
+   * once */
+  try {
+    RandomType& random = dynamic_cast<RandomType&>(*o.strip());
+    return left->equals(*random.left) && right->equals(*random.right)
+        && assignable == random.assignable;
+  } catch (std::bad_cast) {
+    return Type::equals(o);
+  }
 }

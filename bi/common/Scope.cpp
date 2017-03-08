@@ -9,6 +9,8 @@
 #include "bi/exception/all.hpp"
 #include "bi/visitor/Cloner.hpp"
 
+#include <vector>
+
 bool bi::Scope::contains(VarParameter* param) {
   return vars.contains(param);
 }
@@ -70,7 +72,16 @@ void bi::Scope::resolve(FuncReference* ref) {
   if (!ref->target) {
     resolveDefer<FuncParameter,FuncReference>(ref);
   } else {
-    possibles.resolve(ref, ref->possibles);
+    std::vector<FuncParameter*> definites1, possibles1;
+    definites.resolve(ref, definites1);
+    possibles.resolve(ref, possibles1);
+    std::sort(definites1.begin(), definites1.end());
+    std::sort(possibles1.begin(), possibles1.end());
+
+    ref->possibles.clear();
+    std::set_difference(possibles1.begin(), possibles1.end(),
+        definites1.begin(), definites1.end(),
+        std::back_inserter(ref->possibles));
   }
 }
 

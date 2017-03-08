@@ -73,17 +73,7 @@ bool bi::ModelReference::canUpcast(ModelReference& o) {
 }
 
 bool bi::ModelReference::canDowncast(ModelReference& o) {
-  /* pre-condition */
-  assert(target && o.target);
-
-  if (o.target->isEqual()) {
-    ModelReference* ref =
-        dynamic_cast<ModelReference*>(o.target->base->strip());
-    return canDowncast(*ref);  // compare with canonical type
-  } else {
-    ModelReference* ref = dynamic_cast<ModelReference*>(o.target->base->strip());
-    return ref && ref->canUpcast(*this);
-  }
+  return o.canUpcast(*this);
 }
 
 bool bi::ModelReference::dispatchDefinitely(Type& o) {

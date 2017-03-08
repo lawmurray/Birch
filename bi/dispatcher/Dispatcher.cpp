@@ -18,9 +18,7 @@ bi::Dispatcher::Dispatcher(shared_ptr<Name> name, shared_ptr<Name> mangled,
 }
 
 bi::Dispatcher::~Dispatcher() {
-  for (auto iter = paramTypes.begin(); iter != paramTypes.end(); ++iter) {
-    delete *iter;
-  }
+  //
 }
 
 void bi::Dispatcher::insert(FuncParameter* o) {

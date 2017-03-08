@@ -126,10 +126,9 @@ public:
   virtual bool possibly(RandomType& o);
   virtual bool possibly(VariantType& o);
 
-  /**
+  /*
    * Operators for equality comparisons.
    */
-  bool operator==(Type& o);
-  bool operator!=(Type& o);
+  virtual bool equals(Type& o);
 };
 }

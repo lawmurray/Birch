@@ -311,7 +311,7 @@ void bi::CppBaseGenerator::genArgs(FuncReference* ref, FuncParameter* param) {
 }
 
 void bi::CppBaseGenerator::genArgs(FuncReference* ref, Dispatcher* param) {
-  bool result = ref->parens->definitely(*param->parens);  // needed to capture arguments
+  bool result = ref->parens->possibly(*param->parens);  // needed to capture arguments
   assert(result);
   Gatherer<VarParameter> gatherer;
   param->parens->accept(&gatherer);

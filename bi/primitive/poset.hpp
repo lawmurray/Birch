@@ -71,8 +71,7 @@ public:
    *
    * @param v The value.
    * @param[out] matches Container to hold matches. Matches are inserted in
-   * topological order: for any pair of matches, the more-specific match
-   * appears first.
+   * topological order, more specific first.
    */
   template<class Comparable, class Container>
   void match_all(Comparable v, Container& matches);
@@ -85,7 +84,8 @@ public:
   void insert(T v);
 
   /*
-   * Iterators.
+   * Iterators over vertices. These iterate over vertices in a valid
+   * topological order. More specific first.
    */
   auto begin() {
     return vertices.begin();
@@ -119,9 +119,16 @@ public:
 
 private:
   /**
+   * Add colour.
+   *
+   * @param v Vertex.
+   */
+  void add_colour(T v);
+
+  /**
    * Add vertex.
    *
-   * @param v Value at the vertex.
+   * @param v Vertex.
    */
   void add_vertex(T v);
 
@@ -241,8 +248,8 @@ template<class Comparable, class Container>
 void bi::poset<T,Compare>::match(Comparable v, Container& matches) {
   matches.clear();
   ++colour;
-  for (auto iter = vertices.begin();
-      iter != vertices.end() && colours[*iter] < colour; ++iter) {
+  for (auto iter = rbegin(); iter != rend() && colours[*iter] < colour;
+      ++iter) {
     match(*iter, v, matches);
   }
 }
@@ -252,8 +259,8 @@ template<class Comparable, class Container>
 void bi::poset<T,Compare>::match_all(Comparable v, Container& matches) {
   matches.clear();
   ++colour;
-  for (auto iter = vertices.begin();
-      iter != vertices.end() && colours[*iter] < colour; ++iter) {
+  for (auto iter = rbegin(); iter != rend() && colours[*iter] < colour;
+      ++iter) {
     match_all(*iter, v, matches);
   }
 }
@@ -263,10 +270,16 @@ void bi::poset<T,Compare>::insert(T v) {
   /* pre-condition */
   assert(!contains(v));
 
+  add_colour(v);
   forward(v);
   backward(v);
   reduce();
   add_vertex(v);
+}
+
+template<class T, class Compare>
+void bi::poset<T,Compare>::add_colour(T v) {
+  colours.insert(std::make_pair(v, colour));
 }
 
 template<class T, class Compare>
@@ -279,27 +292,28 @@ void bi::poset<T,Compare>::add_vertex(T v) {
   ptrdiff_t l = 0, u = size();
 
   for (auto iter = parents1.begin(); iter != parents1.end(); ++iter) {
-    auto find = std::find(vertices.begin(), vertices.end(), *iter);
-    assert(find != vertices.end());
-    l = std::max(l, std::distance(vertices.begin(), find));
+    auto find = std::find(begin(), end(), *iter);
+    assert(find != end());
+    u = std::min(u, std::distance(begin(), find));
   }
   for (auto iter = children1.begin(); iter != children1.end(); ++iter) {
-    auto find = std::find(vertices.begin(), vertices.end(), *iter);
-    assert(find != vertices.end());
-    u = std::min(u, std::distance(vertices.begin(), find));
+    auto find = std::find(begin(), end(), *iter);
+    assert(find != end());
+    l = std::max(l, std::distance(begin(), find));
   }
   assert((l == 0 && u == 0) || l < u);
 
   /* insert */
-  auto iter = vertices.begin();
+  auto iter = begin();
   std::advance(iter, u);
   vertices.insert(iter, v);
-  colours.insert(std::make_pair(v, colour));
 }
 
 template<class T, class Compare>
 void bi::poset<T,Compare>::add_edge(T u, T v) {
   /* pre-condition */
+  assert(u != v);
+
   forwards.insert(std::make_pair(u, v));
   backwards.insert(std::make_pair(v, u));
 }
@@ -374,11 +388,10 @@ void bi::poset<T,Compare>::match_all(T u, Comparable v, Container& matches) {
 template<class T, class Compare>
 void bi::poset<T,Compare>::forward(T v) {
   ++colour;
-  for (auto iter = vertices.begin();
-      iter != vertices.end() && colours[*iter] < colour; ++iter) {
-    if (*iter != v) {
-      forward(*iter, v);
-    }
+  colours[v] = colour;
+  for (auto iter = begin(); iter != end() && colours[*iter] < colour;
+      ++iter) {
+    forward(*iter, v);
   }
 }
 
@@ -401,11 +414,10 @@ void bi::poset<T,Compare>::forward(T u, T v) {
 template<class T, class Compare>
 void bi::poset<T,Compare>::backward(T v) {
   ++colour;
-  for (auto iter = vertices.rbegin();
-      iter != vertices.rend() && colours[*iter] < colour; ++iter) {
-    if (*iter != v) {
-      backward(*iter, v);
-    }
+  colours[v] = colour;
+  for (auto iter = rbegin(); iter != rend() && colours[*iter] < colour;
+      ++iter) {
+    backward(*iter, v);
   }
 }
 
@@ -428,8 +440,8 @@ void bi::poset<T,Compare>::backward(T u, T v) {
 template<class T, class Compare>
 void bi::poset<T,Compare>::reduce() {
   int colour1 = ++colour;
-  for (auto iter = vertices.begin();
-      iter != vertices.end() && colours[*iter] < colour1; ++iter) {
+  for (auto iter = begin(); iter != end() && colours[*iter] < colour1;
+      ++iter) {
     reduce(*iter);
   }
 }
@@ -440,10 +452,7 @@ void bi::poset<T,Compare>::reduce(T u) {
 
   /* local copy of forward edges, as may change */
   std::list<T> forwards1;
-  auto range = forwards.equal_range(u);
-  for (auto iter = range.first; iter != range.second; ++iter) {
-    forwards1.push_back(iter->second);
-  }
+  children(u, forwards1);
 
   /* depth first search discovery */
   for (auto iter = forwards1.begin(); iter != forwards1.end(); ++iter) {

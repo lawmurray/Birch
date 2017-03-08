@@ -47,5 +47,7 @@ public:
   virtual bool possibly(ModelParameter& o);
   virtual bool possibly(ModelReference& o);
   virtual bool possibly(RandomType& o);
+
+  virtual bool equals(Type& o);
 };
 }
