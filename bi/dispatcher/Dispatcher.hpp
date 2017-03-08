@@ -9,8 +9,8 @@
 #include "bi/common/Parenthesised.hpp"
 #include "bi/common/Scoped.hpp"
 #include "bi/expression/FuncParameter.hpp"
-#include "bi/primitive/poset.hpp"
-#include "bi/primitive/possibly.hpp"
+
+#include <list>
 
 namespace bi {
 /**
@@ -44,7 +44,7 @@ public:
    * Insert a function into the dispatcher. The function pattern must match
    * that of the dispatcher.
    */
-  void insert(FuncParameter* func);
+  void push_front(FuncParameter* func);
 
   virtual Dispatcher* accept(Cloner* visitor) const;
   virtual Dispatcher* accept(Modifier* visitor);
@@ -56,9 +56,9 @@ public:
   bool operator==(const Dispatcher& o) const;
 
   /**
-   * Functions handled by this dispatcher.
+   * Functions in this dispatcher.
    */
-  poset<FuncParameter*,bi::definitely> funcs;
+  std::list<FuncParameter*> funcs;
 
   /**
    * Parent dispatcher.

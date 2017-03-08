@@ -14,13 +14,13 @@ enum RandomState {
   MISSING = 0,
 
   /**
-   * A known value has been assigned externally.
-   */
-  ASSIGNED,
-
-  /**
-   * A known value has been simulated internally.
+   * A known value that has been simulated internally.
    */
   SIMULATED,
+
+  /**
+   * A known value that has been assigned externally.
+   */
+  ASSIGNED
 };
 }

@@ -241,10 +241,13 @@ bi::Random<Variate,Model,Group>::operator const Model&() const {
   }
 }
 
+#include <iostream>
+
 template<class Variate, class Model, class Group>
 template<class SimulateType, class BackwardType>
 void bi::Random<Variate,Model,Group>::init(const Model& m,
     const SimulateType& simulate, const BackwardType& backward) {
   auto rv = new RandomLazy<Variate,Model,Group>(*this, m, simulate, backward);
   id = method->add(rv);
+  std::cerr << id << std::endl;
 }

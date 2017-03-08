@@ -270,7 +270,8 @@ bi::Dispatcher* bi::Resolver::modify(Dispatcher* o) {
     auto iter1 = gatherer1.begin();
     auto iter2 = gatherer2.begin();
     while (iter1 != gatherer1.end() && iter2 != gatherer2.end()) {
-      (*iter1)->type = combine((*iter2)->type.get(), (*iter1)->type.release());
+      (*iter1)->type = combine((*iter2)->type.get(),
+          (*iter1)->type.release());
       ++iter1;
       ++iter2;
     }
@@ -354,17 +355,13 @@ void bi::Resolver::resolve(FuncReference* ref, Scope* scope) {
     /* sort out dispatchers */
     FuncParameter* param = ref->target;
     Dispatcher* dispatcher = new Dispatcher(param->name, param->mangled);
-    dispatcher->insert(param);
+    dispatcher->push_front(param);
 
     for (auto iter = ref->possibles.rbegin(); iter != ref->possibles.rend();
         ++iter) {
       param = *iter;
-      if (*param->mangled == *dispatcher->mangled) {
-        /* same pattern as the current dispatcher */
-        dispatcher->insert(param);
-      } else {
-        /* different pattern to the current dispatcher... first finalise the
-         * current dispatcher */
+      if (*param->mangled != *dispatcher->mangled) {
+        /* finalise the current dispatcher */
         dispatcher = dispatcher->accept(this);
         if (bottom()->contains(dispatcher)) {
           /* reuse identical dispatcher in the scope */
@@ -376,10 +373,10 @@ void bi::Resolver::resolve(FuncReference* ref, Scope* scope) {
           bottom()->add(dispatcher);
         }
 
-        /* create new dispatcher for the new pattern */
+        /* create new dispatcher */
         dispatcher = new Dispatcher(param->name, param->mangled, dispatcher);
-        dispatcher->insert(param);
       }
+      dispatcher->push_front(param);
     }
 
     /* finalise the last dispatcher */

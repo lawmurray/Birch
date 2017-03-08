@@ -21,13 +21,13 @@ bi::Dispatcher::~Dispatcher() {
   //
 }
 
-void bi::Dispatcher::insert(FuncParameter* o) {
+void bi::Dispatcher::push_front(FuncParameter* o) {
   /* pre-condition */
   assert(*o->name == *name);
   assert(*o->mangled == *mangled);
 
   /* add function */
-  funcs.insert(o);
+  funcs.push_front(o);
 }
 
 bi::Dispatcher* bi::Dispatcher::accept(Cloner* visitor) const {
