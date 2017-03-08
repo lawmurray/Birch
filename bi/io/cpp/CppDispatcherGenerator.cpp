@@ -80,7 +80,7 @@ void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
         middle(translate(o->name->str()) << ' ');
         genArg(*(iter1++), 1);
       } else {
-        middle("bi::" << o->mangled);
+        middle("bi::" << func->mangled);
         if (func->isConstructor()) {
           middle("<>");
         }
