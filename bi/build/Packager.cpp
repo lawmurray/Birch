@@ -117,6 +117,7 @@ void bi::Packager::create() {
     copy_with_force(find(share_dirs, "LICENSE"), "LICENSE");
     copy_with_force(find(share_dirs, "Makefile"), "Makefile");
     copy_with_force(find(share_dirs, "MANIFEST"), "MANIFEST");
+    copy_with_force(find(share_dirs, "META.md"), "META.md");
     copy_with_force(find(share_dirs, "README.md"), "README.md");
     copy_with_force(find(share_dirs, "VERSION.md"), "VERSION.md");
   } else {
@@ -124,6 +125,7 @@ void bi::Packager::create() {
     copy_with_prompt(find(share_dirs, "LICENSE"), "LICENSE");
     copy_with_prompt(find(share_dirs, "Makefile"), "Makefile");
     copy_with_prompt(find(share_dirs, "MANIFEST"), "MANIFEST");
+    copy_with_prompt(find(share_dirs, "META.md"), "META.md");
     copy_with_prompt(find(share_dirs, "README.md"), "README.md");
     copy_with_prompt(find(share_dirs, "VERSION.md"), "VERSION.md");
   }
@@ -159,6 +161,14 @@ void bi::Packager::validate() {
         "no LICENSE file; create a LICENSE file containing the distribution license (e.g. GPL or BSD) of the package.");
   } else if (manifestFiles.find("LICENSE") == manifestFiles.end()) {
     warn("LICENSE file is not listed in MANIFEST file.");
+  }
+
+  /* check META.md */
+  if (!exists("META.md")) {
+    warn(
+        "no META.md file; create a META.md file documenting the package in Markdown format.");
+  } else if (manifestFiles.find("META.md") == manifestFiles.end()) {
+    warn("META.md file is not listed in MANIFEST file.");
   }
 
   /* check README.md */

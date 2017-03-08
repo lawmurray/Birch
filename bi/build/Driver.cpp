@@ -232,7 +232,7 @@ bi::Driver::Driver(int argc, char** argv) :
 
   /* package name */
   packageName = "birch_untitled";
-  ifstream metaStream("META.yml");
+  ifstream metaStream("META.md");
   std::regex reg("^name:\\s*(\\w+)$");
   std::smatch match;
   std::string line;
