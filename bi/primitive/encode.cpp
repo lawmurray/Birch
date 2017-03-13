@@ -99,10 +99,10 @@ std::string bi::internalise(const Signature* o) {
   static bool init = false;
 
   if (!init) {
-    ops["->"] = "right";
-    ops["<-"] = "left";
-    ops["~>"] = "condition";
+    ops["<-"] = "forward";
+    ops["->"] = "backward";
     ops["<~"] = "simulate";
+    ops["~>"] = "condition";
     ops["~"] = "sim";
     ops[".."] = "range";
     ops["!"] = "not";

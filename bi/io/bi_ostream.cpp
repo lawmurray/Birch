@@ -122,7 +122,7 @@ void bi::bi_ostream::visit(const FuncParameter* o) {
     *this << o->name << o->parens;
   }
   if (!o->result->isEmpty()) {
-    *this << " -> " << o->result;
+    *this << " => " << o->result;
   }
 }
 

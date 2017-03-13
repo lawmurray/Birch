@@ -169,6 +169,9 @@ bi::Expression* bi::Resolver::modify(FuncParameter* o) {
   inInputs = true;
   o->parens = o->parens->accept(this);
   inInputs = false;
+  if (o->isAssignment()) {
+    o->getLeft()->type->accept(&assigner);
+  }
   o->result = o->result->accept(this);
   o->type = o->result->type->accept(&cloner)->accept(this);
   defer(o->braces.get());

@@ -119,10 +119,11 @@ IS                                 (u|U|l|L)*
 \"(\.|[^\"])*\"                     { yylval.valString = yytext; return STRING_LITERAL; }
 \'(\.|[^\'])*\'                     { yylval.valString = yytext; return STRING_LITERAL; }
 
-"->"                                { return RIGHT_OP; }
-"<-"                                { return LEFT_OP; } 
-"~>"                                { return CONDITION_OP; }
+"=>"                                { return RESULT_OP; }
+"<-"                                { return FORWARD_OP; } 
+"->"                                { return BACKWARD_OP; }
 "<~"                                { return SIMULATE_OP; }
+"~>"                                { return CONDITION_OP; }
 "~"                                 { return '~'; }
 ".."                                { return RANGE_OP; }
 "!"                                 { return '!'; }

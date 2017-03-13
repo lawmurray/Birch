@@ -23,7 +23,6 @@ bool bi::isTranslatable(const std::string& op) {
     cppOps.insert("!");
     cppOps.insert("||");
     cppOps.insert("&&");
-    //cppOps.insert("<-");
 
     init = true;
   }
@@ -34,9 +33,5 @@ std::string bi::translate(const std::string& op) {
   /* pre-condition */
   assert(isTranslatable(op));
 
-  //if (op == "<-") {
-  //  return "=";
-  //} else {
-    return op;
-  //}
+  return op;
 }
