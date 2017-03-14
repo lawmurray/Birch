@@ -57,7 +57,6 @@ public:
    * Assignment operators.
    */
   unique_ptr<Expression> valueToValue;
-  unique_ptr<Expression> valueToLambda;
   unique_ptr<Expression> lambdaToLambda;
 
   using Type::definitely;

@@ -32,7 +32,7 @@ bool bi::LambdaType::isLambda() const {
 }
 
 bool bi::LambdaType::dispatchDefinitely(Type& o) {
-  return o.definitely(*this);
+  return o.definitely(*this) || result->dispatchDefinitely(o);
 }
 
 bool bi::LambdaType::definitely(LambdaType& o) {
@@ -40,7 +40,7 @@ bool bi::LambdaType::definitely(LambdaType& o) {
 }
 
 bool bi::LambdaType::dispatchPossibly(Type& o) {
-  return o.possibly(*this);
+  return o.possibly(*this) || result->dispatchPossibly(o);
 }
 
 bool bi::LambdaType::possibly(LambdaType& o) {

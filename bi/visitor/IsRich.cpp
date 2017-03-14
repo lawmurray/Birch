@@ -46,7 +46,3 @@ void bi::IsRich::visit(const VarReference* o) {
 void bi::IsRich::visit(const FuncReference* o) {
   result = true;
 }
-
-void bi::IsRich::visit(const AssignableType* o) {
-  result = true;
-}

@@ -60,15 +60,21 @@ protected:
    */
   void genCapture(const Expression* o);
 
-  /**
-   * Generate the arguments for a function call.
+  /*
+   * Generate function calls of various kinds.
    */
-  void genArgs(FuncReference* ref, FuncParameter* param);
+  void genCallFunction(FuncReference* o);
+  void genCallBinary(FuncReference* o);
+  void genCallUnary(FuncReference* o);
+  void genCallDispatcher(FuncReference* o);
 
   /**
-   * Generate the arguments for a dispatcher call.
+   * Generate a single argument for a function call.
+   *
+   * @param arg Argument.
+   * @param param Associated parameter.
    */
-  void genArgs(FuncReference* ref, Dispatcher* param);
+  void genArg(Expression* arg, VarParameter* param);
 
   /**
    * Output header instead of source?

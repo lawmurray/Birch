@@ -33,7 +33,6 @@ public:
   virtual void visit(const RandomInit* o);
   virtual void visit(const VarReference* o);
   virtual void visit(const FuncReference* o);
-  virtual void visit(const AssignableType* o);
 
   /**
    * Result.

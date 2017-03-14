@@ -21,6 +21,7 @@ birchc_LDADD = $(DEPS_LIBS)
 birchc_SOURCES = \
   bi/build/Compiler.cpp \
   bi/build/misc.cpp \
+  bi/capture/ArgumentCapturer.cpp \
   bi/common/Based.cpp \
   bi/common/Binary.cpp \
   bi/common/Braced.cpp \

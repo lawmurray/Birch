@@ -7,31 +7,36 @@
 #include <cassert>
 
 bool bi::isTranslatable(const std::string& op) {
-  static std::unordered_set<std::string> cppOps;
+  static std::unordered_set<std::string> ops;
   static bool init = false;
   if (!init) {
-    cppOps.insert("+");
-    cppOps.insert("-");
-    cppOps.insert("*");
-    cppOps.insert("/");
-    cppOps.insert("<");
-    cppOps.insert(">");
-    cppOps.insert("<=");
-    cppOps.insert(">=");
-    cppOps.insert("==");
-    cppOps.insert("!=");
-    cppOps.insert("!");
-    cppOps.insert("||");
-    cppOps.insert("&&");
+    ops.insert("+");
+    ops.insert("-");
+    ops.insert("*");
+    ops.insert("/");
+    ops.insert("<");
+    ops.insert(">");
+    ops.insert("<=");
+    ops.insert(">=");
+    ops.insert("==");
+    ops.insert("!=");
+    ops.insert("!");
+    ops.insert("||");
+    ops.insert("&&");
+    ops.insert("<-");
 
     init = true;
   }
-  return cppOps.find(op) != cppOps.end();
+  return ops.find(op) != ops.end();
 }
 
 std::string bi::translate(const std::string& op) {
   /* pre-condition */
   assert(isTranslatable(op));
 
-  return op;
+  if (op == "<-") {
+    return "=";
+  } else {
+    return op;
+  }
 }

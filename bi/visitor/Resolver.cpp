@@ -224,18 +224,6 @@ bi::Type* bi::Resolver::modify(ModelParameter* o) {
         new EmptyExpression(), ASSIGNMENT_OPERATOR);
     o->valueToValue = o->valueToValue->accept(this);
 
-    /* create value to lambda assignment operator */
-    Expression* left3 = new VarParameter(new Name(),
-        new AssignableType(new LambdaType(new ModelReference(o))));
-    Expression* right3 = new VarParameter(new Name(), new ModelReference(o));
-    Expression* parens3 = new ParenthesesExpression(
-        new ExpressionList(left3, right3));
-    Expression* result3 = new VarParameter(new Name(),
-        new LambdaType(new ModelReference(o)));
-    o->valueToLambda = new FuncParameter(new Name("<-"), parens3, result3,
-        new EmptyExpression(), ASSIGNMENT_OPERATOR);
-    o->valueToLambda = o->valueToLambda->accept(this);
-
     /* create lambda to lambda assignment operator */
     Expression* left4 = new VarParameter(new Name(),
         new AssignableType(new LambdaType(new ModelReference(o))));
