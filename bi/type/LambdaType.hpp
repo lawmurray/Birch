@@ -32,6 +32,8 @@ public:
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
+  virtual bool isLambda() const;
+
   using Type::definitely;
   using Type::possibly;
 

@@ -24,6 +24,6 @@ bool bi::Formed::isAssignment() const {
   return form == ASSIGNMENT_OPERATOR;
 }
 
-bool bi::Formed::isConstructor() const {
-  return form == CONSTRUCTOR;
+bool bi::Formed::isLambda() const {
+  return form == LAMBDA;
 }

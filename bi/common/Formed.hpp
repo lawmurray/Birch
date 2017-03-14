@@ -8,7 +8,11 @@ namespace bi {
  * Signature form flags.
  */
 enum SignatureForm {
-  FUNCTION, BINARY_OPERATOR, UNARY_OPERATOR, ASSIGNMENT_OPERATOR, CONSTRUCTOR
+  FUNCTION,
+  BINARY_OPERATOR,
+  UNARY_OPERATOR,
+  ASSIGNMENT_OPERATOR,
+  LAMBDA
 };
 
 /**
@@ -46,9 +50,9 @@ public:
   bool isAssignment() const;
 
   /**
-   * Is this a constructor?
+   * Is this a lambda function?
    */
-  bool isConstructor() const;
+  bool isLambda() const;
 
   /**
    * Form.

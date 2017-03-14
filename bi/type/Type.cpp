@@ -3,7 +3,7 @@
  */
 #include "bi/type/Type.hpp"
 
-#include "bi/visitor/IsRandom.hpp"
+#include <cassert>
 
 bi::Type::Type(shared_ptr<Location> loc) :
     Located(loc),
@@ -28,9 +28,11 @@ bool bi::Type::isModel() const {
 }
 
 bool bi::Type::isRandom() const {
-  IsRandom isRandom;
-  accept(&isRandom);
-  return isRandom.result;
+  return false;
+}
+
+bool bi::Type::isLambda() const {
+  return false;
 }
 
 bi::Type* bi::Type::strip() {

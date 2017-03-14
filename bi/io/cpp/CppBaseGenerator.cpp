@@ -144,9 +144,6 @@ void bi::CppBaseGenerator::visit(const FuncReference* o) {
       middle(translate(o->name->str()) << ' ' << o->getRight());
     } else {
       middle("bi::" << o->target->mangled);
-      if (o->isConstructor()) {
-        middle("<>");
-      }
       genArgs(const_cast<FuncReference*>(o), o->target);
     }
   }

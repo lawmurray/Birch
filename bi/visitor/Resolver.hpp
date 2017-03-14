@@ -168,7 +168,7 @@ protected:
   /**
    * Are we in the input parameters of a function?
    */
-  bool inInputs;
+  int inInputs;
 
   /*
    * Auxiliary visitors.

@@ -10,7 +10,7 @@
 
 bi::Resolver::Resolver() :
     membershipScope(nullptr),
-    inInputs(false) {
+    inInputs(0) {
   //
 }
 
@@ -160,15 +160,24 @@ bi::Expression* bi::Resolver::modify(VarParameter* o) {
   if (!o->name->isEmpty()) {
     top()->add(o);
   }
+  if (o->type->isLambda()) {
+    LambdaType* lambda = dynamic_cast<LambdaType*>(o->type->strip());
+    Expression* parens = new ParenthesesExpression();
+    Expression* result = new VarParameter(new Name(),
+        lambda->result->accept(&cloner));
+    o->func = new FuncParameter(o->name, parens, result,
+        new EmptyExpression(), LAMBDA);
+    o->func = o->func->accept(this);
+  }
   ///@todo Check that o->value is of the correct type
   return o;
 }
 
 bi::Expression* bi::Resolver::modify(FuncParameter* o) {
   push();
-  inInputs = true;
+  ++inInputs;
   o->parens = o->parens->accept(this);
-  inInputs = false;
+  --inInputs;
   if (o->isAssignment()) {
     o->getLeft()->type->accept(&assigner);
   }
@@ -176,7 +185,9 @@ bi::Expression* bi::Resolver::modify(FuncParameter* o) {
   o->type = o->result->type->accept(&cloner)->accept(this);
   defer(o->braces.get());
   o->scope = pop();
-  top()->add(o);
+  if (!o->name->isEmpty()) {
+    top()->add(o);
+  }
 
   return o;
 }
@@ -202,17 +213,41 @@ bi::Type* bi::Resolver::modify(ModelParameter* o) {
   top()->add(o);
 
   if (*o->op != "=") {
-    /* create assignment operator */
-    Expression* right = new VarParameter(new Name(), new ModelReference(o));
-    Expression* left = new VarParameter(new Name(),
+    /* create value to value assignment operator */
+    Expression* left2 = new VarParameter(new Name(),
         new AssignableType(new ModelReference(o)));
+    Expression* right2 = new VarParameter(new Name(), new ModelReference(o));
     Expression* parens2 = new ParenthesesExpression(
-        new ExpressionList(left, right));
+        new ExpressionList(left2, right2));
     Expression* result2 = new VarParameter(new Name(), new ModelReference(o));
-    o->assignment = new FuncParameter(new Name("<-"), parens2, result2,
+    o->valueToValue = new FuncParameter(new Name("<-"), parens2, result2,
         new EmptyExpression(), ASSIGNMENT_OPERATOR);
-    o->assignment = dynamic_cast<FuncParameter*>(o->assignment->accept(this));
-    assert(o->assignment);
+    o->valueToValue = o->valueToValue->accept(this);
+
+    /* create value to lambda assignment operator */
+    Expression* left3 = new VarParameter(new Name(),
+        new AssignableType(new LambdaType(new ModelReference(o))));
+    Expression* right3 = new VarParameter(new Name(), new ModelReference(o));
+    Expression* parens3 = new ParenthesesExpression(
+        new ExpressionList(left3, right3));
+    Expression* result3 = new VarParameter(new Name(),
+        new LambdaType(new ModelReference(o)));
+    o->valueToLambda = new FuncParameter(new Name("<-"), parens3, result3,
+        new EmptyExpression(), ASSIGNMENT_OPERATOR);
+    o->valueToLambda = o->valueToLambda->accept(this);
+
+    /* create lambda to lambda assignment operator */
+    Expression* left4 = new VarParameter(new Name(),
+        new AssignableType(new LambdaType(new ModelReference(o))));
+    Expression* right4 = new VarParameter(new Name(),
+        new LambdaType(new ModelReference(o)));
+    Expression* parens4 = new ParenthesesExpression(
+        new ExpressionList(left4, right4));
+    Expression* result4 = new VarParameter(new Name(),
+        new LambdaType(new ModelReference(o)));
+    o->lambdaToLambda = new FuncParameter(new Name("<-"), parens4, result4,
+        new EmptyExpression(), ASSIGNMENT_OPERATOR);
+    o->lambdaToLambda = o->lambdaToLambda->accept(this);
   }
 
   return o;
@@ -256,9 +291,9 @@ bi::Dispatcher* bi::Resolver::modify(Dispatcher* o) {
   auto iter = o->funcs.begin();
   FuncParameter* func = *iter;
 
-  inInputs = true;
+  ++inInputs;
   o->parens = func->parens->accept(&cloner)->accept(this);
-  inInputs = false;
+  --inInputs;
   o->type = func->result->type->accept(&cloner)->accept(this);
 
   Gatherer<VarParameter> gatherer1;

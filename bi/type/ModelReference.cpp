@@ -85,7 +85,7 @@ bool bi::ModelReference::definitely(ModelParameter& o) {
 }
 
 bool bi::ModelReference::definitely(ModelReference& o) {
-  return canUpcast(o) && (!o.assignable || assignable);
+  return canUpcast(o)/* && (!o.assignable || assignable)*/;
 }
 
 bool bi::ModelReference::definitely(EmptyType& o) {

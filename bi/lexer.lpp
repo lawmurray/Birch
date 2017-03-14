@@ -125,6 +125,7 @@ IS                                 (u|U|l|L)*
 "<~"                                { return SIMULATE_OP; }
 "~>"                                { return CONDITION_OP; }
 "~"                                 { return '~'; }
+"@"                                 { return '@'; }
 ".."                                { return RANGE_OP; }
 "!"                                 { return '!'; }
 "&&"                                { return AND_OP; }

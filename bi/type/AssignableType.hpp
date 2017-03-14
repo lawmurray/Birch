@@ -27,8 +27,10 @@ public:
    */
   virtual ~AssignableType();
 
-  bool isBuiltin() const;
-  bool isModel() const;
+  virtual bool isBuiltin() const;
+  virtual bool isModel() const;
+  virtual bool isRandom() const;
+  virtual bool isLambda() const;
 
   virtual Type* strip();
 

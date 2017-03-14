@@ -26,6 +26,14 @@ bool bi::ParenthesesType::isModel() const {
   return single->isModel();
 }
 
+bool bi::ParenthesesType::isRandom() const {
+  return single->isRandom();
+}
+
+bool bi::ParenthesesType::isLambda() const {
+  return single->isLambda();
+}
+
 bi::Type* bi::ParenthesesType::strip() {
   return single->strip();
 }

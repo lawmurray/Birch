@@ -53,10 +53,12 @@ public:
   bool isLess() const;
   bool isEqual() const;
 
-  /**
-   * Assignment operator.
+  /*
+   * Assignment operators.
    */
-  unique_ptr<FuncParameter> assignment;
+  unique_ptr<Expression> valueToValue;
+  unique_ptr<Expression> valueToLambda;
+  unique_ptr<Expression> lambdaToLambda;
 
   using Type::definitely;
   using Type::possibly;

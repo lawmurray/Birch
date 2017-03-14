@@ -86,6 +86,11 @@ public:
   virtual bool isRandom() const;
 
   /**
+   * Is this a lambda type?
+   */
+  virtual bool isLambda() const;
+
+  /**
    * Strip parentheses.
    */
   virtual Type* strip();

@@ -30,6 +30,8 @@ public:
 
   virtual bool isBuiltin() const;
   virtual bool isModel() const;
+  virtual bool isRandom() const;
+  virtual bool isLambda() const;
 
   virtual Type* strip();
 

@@ -27,18 +27,22 @@ void bi::LambdaType::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }
 
+bool bi::LambdaType::isLambda() const {
+  return true;
+}
+
 bool bi::LambdaType::dispatchDefinitely(Type& o) {
-  return o.dispatchDefinitely(*this);
+  return o.definitely(*this);
 }
 
 bool bi::LambdaType::definitely(LambdaType& o) {
-  return result->definitely(*o.result);
+  return result->definitely(*o.result) && (!o.assignable || assignable);
 }
 
 bool bi::LambdaType::dispatchPossibly(Type& o) {
-  return o.dispatchPossibly(*this);
+  return o.possibly(*this);
 }
 
 bool bi::LambdaType::possibly(LambdaType& o) {
-  return result->possibly(*o.result);
+  return result->possibly(*o.result) && (!o.assignable || assignable);
 }

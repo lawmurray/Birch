@@ -30,6 +30,10 @@ void bi::RandomType::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
+bool bi::RandomType::isRandom() const {
+  return true;
+}
+
 bool bi::RandomType::dispatchDefinitely(Type& o) {
   return o.definitely(*this);
 }

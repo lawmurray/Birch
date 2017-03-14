@@ -23,6 +23,14 @@ bool bi::AssignableType::isModel() const {
   return single->isModel();
 }
 
+bool bi::AssignableType::isRandom() const {
+  return single->isRandom();
+}
+
+bool bi::AssignableType::isLambda() const {
+  return single->isLambda();
+}
+
 bi::Type* bi::AssignableType::strip() {
   return single->strip();
 }

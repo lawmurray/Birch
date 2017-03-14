@@ -5,6 +5,7 @@
 
 #include "bi/expression/Expression.hpp"
 #include "bi/common/Unary.hpp"
+#include "bi/expression/EmptyExpression.hpp"
 #include "bi/primitive/unique_ptr.hpp"
 
 namespace bi {
@@ -24,7 +25,8 @@ public:
    * @param single Expression in parentheses.
    * @param loc Location.
    */
-  ParenthesesExpression(Expression* single, shared_ptr<Location> loc = nullptr);
+  ParenthesesExpression(Expression* single = new EmptyExpression(),
+      shared_ptr<Location> loc = nullptr);
 
   /**
    * Destructor.
