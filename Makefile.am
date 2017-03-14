@@ -106,6 +106,7 @@ birchc_SOURCES = \
   bi/type/AssignableType.cpp \
   bi/type/BracketsType.cpp \
   bi/type/EmptyType.cpp \
+  bi/type/LambdaType.cpp \
   bi/type/ModelParameter.cpp \
   bi/type/ModelReference.cpp \
   bi/type/ParenthesesType.cpp \

@@ -173,6 +173,10 @@ void bi::bi_ostream::visit(const RandomType* o) {
   *this << o->left << " ~ " << o->right;
 }
 
+void bi::bi_ostream::visit(const LambdaType* o) {
+  *this << '@' << o->result;
+}
+
 void bi::bi_ostream::visit(const File* o) {
   *this << o->root;
 }

@@ -215,6 +215,11 @@ bi::Type* bi::Modifier::modify(RandomType* o) {
   return o;
 }
 
+bi::Type* bi::Modifier::modify(LambdaType* o) {
+  o->result = o->result->accept(this);
+  return o;
+}
+
 bi::Type* bi::Modifier::modify(TypeList* o) {
   o->head = o->head->accept(this);
   o->tail = o->tail->accept(this);

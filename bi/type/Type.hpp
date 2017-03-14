@@ -13,6 +13,7 @@ class Visitor;
 class AssignableType;
 class BracketsType;
 class EmptyType;
+class LambdaType;
 template<class T> class List;
 class ModelParameter;
 class ModelReference;
@@ -107,6 +108,7 @@ public:
   virtual bool definitely(AssignableType& o);
   virtual bool definitely(BracketsType& o);
   virtual bool definitely(EmptyType& o);
+  virtual bool definitely(LambdaType& o);
   virtual bool definitely(List<Type>& o);
   virtual bool definitely(ModelParameter& o);
   virtual bool definitely(ModelReference& o);
@@ -119,6 +121,7 @@ public:
   virtual bool possibly(AssignableType& o);
   virtual bool possibly(BracketsType& o);
   virtual bool possibly(EmptyType& o);
+  virtual bool possibly(LambdaType& o);
   virtual bool possibly(List<Type>& o);
   virtual bool possibly(ModelParameter& o);
   virtual bool possibly(ModelReference& o);

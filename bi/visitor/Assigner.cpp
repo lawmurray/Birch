@@ -49,6 +49,12 @@ bi::Type* bi::Assigner::modify(RandomType* o) {
   return o;
 }
 
+bi::Type* bi::Assigner::modify(LambdaType* o) {
+  Modifier::modify(o);
+  o->assignable = true;
+  return o;
+}
+
 bi::Type* bi::Assigner::modify(TypeList* o) {
   Modifier::modify(o);
   o->assignable = true;

@@ -264,6 +264,10 @@ void bi::CppBaseGenerator::visit(const RandomType* o) {
   inArray = false;
 }
 
+void bi::CppBaseGenerator::visit(const LambdaType* o) {
+  middle("std::function<" << o->result << "()>");
+}
+
 void bi::CppBaseGenerator::visit(const VariantType* o) {
   middle("boost::variant<");
   for (auto iter = o->types.begin(); iter != o->types.end(); ++iter) {

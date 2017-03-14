@@ -57,6 +57,10 @@ bool bi::Type::definitely(EmptyType& o) {
   return false;
 }
 
+bool bi::Type::definitely(LambdaType& o) {
+  return false;
+}
+
 bool bi::Type::definitely(List<Type>& o) {
   return false;
 }
@@ -94,6 +98,10 @@ bool bi::Type::possibly(BracketsType& o) {
 }
 
 bool bi::Type::possibly(EmptyType& o) {
+  return false;
+}
+
+bool bi::Type::possibly(LambdaType& o) {
   return false;
 }
 

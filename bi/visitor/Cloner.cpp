@@ -189,6 +189,12 @@ bi::Type* bi::Cloner::clone(const RandomType* o) {
   return result;
 }
 
+bi::Type* bi::Cloner::clone(const LambdaType* o) {
+  Type* result = new LambdaType(o->result->accept(this), o->loc);
+  result->assignable = o->assignable;
+  return result;
+}
+
 bi::Type* bi::Cloner::clone(const TypeList* o) {
   Type* result = new TypeList(o->head->accept(this), o->tail->accept(this),
       o->loc);

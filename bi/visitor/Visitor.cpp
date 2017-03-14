@@ -195,6 +195,10 @@ void bi::Visitor::visit(const RandomType* o) {
   o->right->accept(this);
 }
 
+void bi::Visitor::visit(const LambdaType* o) {
+  o->result->accept(this);
+}
+
 void bi::Visitor::visit(const TypeList* o) {
   o->head->accept(this);
   o->tail->accept(this);

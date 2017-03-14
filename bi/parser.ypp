@@ -112,7 +112,8 @@
 
 %type <valType> model_reference model_parameter base
 %type <valType> brackets_type parens_type primary_type
-%type <valType> assignable_type random_type list_type type
+%type <valType> assignable_type random_type lambda_type
+%type <valType> list_type type
 
 %type <valExpression> parameter_expression reference_expression this_expression
 %type <valExpression> parens_expression member_expression primary_expression
@@ -316,9 +317,14 @@ brackets_type
     | primary_type brackets  { $$ = new bi::BracketsType($1, $2, make_loc(@$)); }
     ;
 
-assignable_type
+lambda_type
     : brackets_type
-    | brackets_type '!'  { $$ = new bi::AssignableType($1, make_loc(@$)); }
+    | '@' brackets_type  { $$ = new bi::LambdaType($2, make_loc(@$)); }
+    ;
+
+assignable_type
+    : lambda_type
+    | lambda_type '!'  { $$ = new bi::AssignableType($1, make_loc(@$)); }
     ;
 
 random_type
