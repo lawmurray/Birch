@@ -186,6 +186,7 @@ nobase_include_HEADERS = bi/data/Array.hpp \
   bi/exception/MemoryException.hpp \
   bi/exception/NetCDFException.hpp \
   bi/exception/UnknownOptionException.hpp \
+  bi/method/Lambda.hpp \
   bi/method/Method.hpp \
   bi/method/Random.hpp \
   bi/method/RandomInterface.hpp \

@@ -98,9 +98,9 @@ void bi::CppBaseGenerator::visit(const RandomInit* o) {
   middle(o->left << ".init(" << o->right << ", ");
   in();
   in();
-  finish("[](const " << o->right->type << "& m_) {");
+  finish("[&](const " << o->right->type << "& m_) {");
   in();
-  line("return sim_(m_);");
+  line("//return simulate_(" << o->left << ", m_);");
   out();
   start("}, ");
   genCapture(o->backward.get());
@@ -256,7 +256,7 @@ void bi::CppBaseGenerator::visit(const RandomType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const LambdaType* o) {
-  middle("std::function<" << o->result << "()>");
+  middle("bi::Lambda<" << o->result << '>');
 }
 
 void bi::CppBaseGenerator::visit(const VariantType* o) {
@@ -342,7 +342,7 @@ void bi::CppBaseGenerator::genCallDispatcher(FuncReference* o) {
 
 void bi::CppBaseGenerator::genArg(Expression* arg, VarParameter* param) {
   if (param->type->isLambda() && !arg->type->isLambda()) {
-    middle("[=] { return " << arg << "; }");
+    middle(param->type << "([=] { return " << arg << "; })");
   } else {
     middle(arg);
   }

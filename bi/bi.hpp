@@ -12,6 +12,7 @@
 #include "bi/exception/MemoryException.hpp"
 #include "bi/exception/NetCDFException.hpp"
 #include "bi/exception/UnknownOptionException.hpp"
+#include "bi/method/Lambda.hpp"
 #include "bi/method/Method.hpp"
 #include "bi/method/Random.hpp"
 #include "bi/method/Stack.hpp"
