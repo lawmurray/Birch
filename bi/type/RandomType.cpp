@@ -42,6 +42,10 @@ bool bi::RandomType::definitely(EmptyType& o) {
   return !o.assignable || assignable;
 }
 
+bool bi::RandomType::definitely(LambdaType& o) {
+  return left->definitely(o) && (!o.assignable || assignable);
+}
+
 bool bi::RandomType::definitely(List<Type>& o) {
   return left->definitely(o) && (!o.assignable || assignable);
 }
@@ -60,6 +64,11 @@ bool bi::RandomType::dispatchPossibly(Type& o) {
 
 bool bi::RandomType::possibly(EmptyType& o) {
   return !o.assignable || assignable;
+}
+
+bool bi::RandomType::possibly(LambdaType& o) {
+  return (left->possibly(o) || right->possibly(o))
+      && (!o.assignable || assignable);
 }
 
 bool bi::RandomType::possibly(List<Type>& o) {

@@ -84,7 +84,7 @@ bool bi::Type::definitely(RandomType& o) {
 }
 
 bool bi::Type::definitely(VariantType& o) {
-  assert(false);
+  return false;
 }
 
 bool bi::Type::possibly(Type& o) {
@@ -128,7 +128,7 @@ bool bi::Type::possibly(RandomType& o) {
 }
 
 bool bi::Type::possibly(VariantType& o) {
-  assert(false);
+  return false;
 }
 
 bool bi::Type::equals(Type& o) {

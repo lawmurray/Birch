@@ -51,11 +51,18 @@ void bi::VariantType::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::VariantType::definitely(Type& o) {
+bool bi::VariantType::definitelyAll(Type& o) {
   auto f = [&](Type* type) {
     return type->definitely(o);
   };
   return std::all_of(types.begin(), types.end(), f);
+}
+
+bool bi::VariantType::possiblyAny(Type& o) {
+  auto f = [&](Type* type) {
+    return type->possibly(o);
+  };
+  return std::any_of(types.begin(), types.end(), f);
 }
 
 bool bi::VariantType::dispatchDefinitely(Type& o) {
@@ -65,11 +72,44 @@ bool bi::VariantType::dispatchDefinitely(Type& o) {
   return std::all_of(types.begin(), types.end(), f);
 }
 
-bool bi::VariantType::possibly(Type& o) {
-  auto f = [&](Type* type) {
-    return type->possibly(o);
-  };
-  return std::any_of(types.begin(), types.end(), f);
+bool bi::VariantType::definitely(AssignableType& o) {
+  return definitelyAll(o);
+}
+
+bool bi::VariantType::definitely(BracketsType& o) {
+  return definitelyAll(o);
+}
+
+bool bi::VariantType::definitely(EmptyType& o) {
+  return definitelyAll(o);
+}
+
+bool bi::VariantType::definitely(LambdaType& o) {
+  return definitelyAll(o);
+}
+
+bool bi::VariantType::definitely(List<Type>& o) {
+  return definitelyAll(o);
+}
+
+bool bi::VariantType::definitely(ModelParameter& o) {
+  return definitelyAll(o);
+}
+
+bool bi::VariantType::definitely(ModelReference& o) {
+  return definitelyAll(o);
+}
+
+bool bi::VariantType::definitely(ParenthesesType& o) {
+  return definitelyAll(o);
+}
+
+bool bi::VariantType::definitely(RandomType& o) {
+  return definitelyAll(o);
+}
+
+bool bi::VariantType::definitely(VariantType& o) {
+  return definitelyAll(o);
 }
 
 bool bi::VariantType::dispatchPossibly(Type& o) {
@@ -77,4 +117,44 @@ bool bi::VariantType::dispatchPossibly(Type& o) {
     return type->dispatchPossibly(o);
   };
   return std::any_of(types.begin(), types.end(), f);
+}
+
+bool bi::VariantType::possibly(AssignableType& o) {
+  return possiblyAny(o);
+}
+
+bool bi::VariantType::possibly(BracketsType& o) {
+  return possiblyAny(o);
+}
+
+bool bi::VariantType::possibly(EmptyType& o) {
+  return possiblyAny(o);
+}
+
+bool bi::VariantType::possibly(LambdaType& o) {
+  return possiblyAny(o);
+}
+
+bool bi::VariantType::possibly(List<Type>& o) {
+  return possiblyAny(o);
+}
+
+bool bi::VariantType::possibly(ModelParameter& o) {
+  return possiblyAny(o);
+}
+
+bool bi::VariantType::possibly(ModelReference& o) {
+  return possiblyAny(o);
+}
+
+bool bi::VariantType::possibly(ParenthesesType& o) {
+  return possiblyAny(o);
+}
+
+bool bi::VariantType::possibly(RandomType& o) {
+  return possiblyAny(o);
+}
+
+bool bi::VariantType::possibly(VariantType& o) {
+  return possiblyAny(o);
 }
