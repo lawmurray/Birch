@@ -19,22 +19,29 @@ public:
   Lambda(const forward_type& forward = forward_type(),
       const backward_type& backward = backward_type()) :
       forward(forward),
-      backward(backward) {
+      backward(backward),
+      memoised(false) {
     //
   }
 
   /**
    * Evaluate forward lambda.
    */
-  Type operator()() const {
-    return forward();
+  const Type& operator()() const {
+    if (!memoised) {
+      /* allow memoisation to occur while const, to keep invisible */
+      auto self = const_cast<Lambda<Type>*>(this);
+      self->value = forward();
+      self->memoised = true;
+    }
+    return value;
   }
 
   /**
    * Evaluate backward lambda.
    */
   void operator()(const Type& o) const {
-    return forward(o);
+    backward(o);
   }
 
 private:
@@ -47,5 +54,15 @@ private:
    * Backward lambda.
    */
   backward_type backward;
+
+  /**
+   * Forward memoised value.
+   */
+  Type value;
+
+  /**
+   * Is the result of the forward lambda memoised?
+   */
+  bool memoised;
 };
 }
