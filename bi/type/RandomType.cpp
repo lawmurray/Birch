@@ -63,23 +63,22 @@ bool bi::RandomType::possibly(EmptyType& o) {
 }
 
 bool bi::RandomType::possibly(List<Type>& o) {
-  return (left->possibly(o) || right->possibly(o) || right->definitely(o))
+  return (left->possibly(o) || right->possibly(o))
       && (!o.assignable || assignable);
 }
 
 bool bi::RandomType::possibly(ModelReference& o) {
-  return (left->possibly(o) || right->possibly(o) || right->definitely(o))
+  return (left->possibly(o) || right->possibly(o))
       && (!o.assignable || assignable);
 }
 
 bool bi::RandomType::possibly(ModelParameter& o) {
-  return (left->possibly(o) || right->possibly(o) || right->definitely(o))
+  return (left->possibly(o) || right->possibly(o))
       && (!o.assignable || assignable);
 }
 
 bool bi::RandomType::possibly(RandomType& o) {
-  return (left->definitely(*o.left) || left->possibly(*o.left))
-      && (right->definitely(*o.right) || right->possibly(*o.right))
+  return left->possibly(*o.left) && right->possibly(*o.right)
       && (!o.assignable || assignable);
 }
 

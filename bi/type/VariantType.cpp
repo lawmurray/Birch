@@ -55,26 +55,26 @@ bool bi::VariantType::definitely(Type& o) {
   auto f = [&](Type* type) {
     return type->definitely(o);
   };
-  return std::find_if(types.begin(), types.end(), f) != types.end();
+  return std::all_of(types.begin(), types.end(), f);
 }
 
 bool bi::VariantType::dispatchDefinitely(Type& o) {
   auto f = [&](Type* type) {
     return type->dispatchDefinitely(o);
   };
-  return std::find_if(types.begin(), types.end(), f) != types.end();
+  return std::all_of(types.begin(), types.end(), f);
 }
 
 bool bi::VariantType::possibly(Type& o) {
   auto f = [&](Type* type) {
     return type->possibly(o);
   };
-  return std::find_if(types.begin(), types.end(), f) != types.end();
+  return std::any_of(types.begin(), types.end(), f);
 }
 
 bool bi::VariantType::dispatchPossibly(Type& o) {
   auto f = [&](Type* type) {
     return type->dispatchPossibly(o);
   };
-  return std::find_if(types.begin(), types.end(), f) != types.end();
+  return std::any_of(types.begin(), types.end(), f);
 }

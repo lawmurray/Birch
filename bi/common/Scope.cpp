@@ -72,16 +72,22 @@ void bi::Scope::resolve(FuncReference* ref) {
   if (!ref->target) {
     resolveDefer<FuncParameter,FuncReference>(ref);
   } else {
-    std::vector<FuncParameter*> definites1, possibles1;
+    /* find all definite and possible matches */
+    std::list<FuncParameter*> definites1, possibles1;
     definites.resolve(ref, definites1);
     possibles.resolve(ref, possibles1);
-    std::sort(definites1.begin(), definites1.end());
-    std::sort(possibles1.begin(), possibles1.end());
 
-    ref->possibles.clear();
-    std::set_difference(possibles1.begin(), possibles1.end(),
-        definites1.begin(), definites1.end(),
-        std::back_inserter(ref->possibles));
+    /* remove any definite matches in the list of possible matches, while
+     * preserving the order of possible matches (specifically, don't use
+     * std::set_difference(), as it requires sorting of the two lists first,
+     * which destroys the required order) */
+    for (auto iter = definites1.begin(); iter != definites1.end(); ++iter) {
+      auto find = std::find(possibles1.begin(), possibles1.end(), *iter);
+      if (find != possibles1.end()) {
+        possibles1.erase(find);
+      }
+    }
+    ref->possibles = possibles1;
   }
 }
 
