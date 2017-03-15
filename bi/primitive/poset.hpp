@@ -248,8 +248,7 @@ template<class Comparable, class Container>
 void bi::poset<T,Compare>::match(Comparable v, Container& matches) {
   matches.clear();
   ++colour;
-  for (auto iter = rbegin(); iter != rend() && colours[*iter] < colour;
-      ++iter) {
+  for (auto iter = rbegin(); iter != rend(); ++iter) {
     match(*iter, v, matches);
   }
 }
@@ -259,8 +258,7 @@ template<class Comparable, class Container>
 void bi::poset<T,Compare>::match_all(Comparable v, Container& matches) {
   matches.clear();
   ++colour;
-  for (auto iter = rbegin(); iter != rend() && colours[*iter] < colour;
-      ++iter) {
+  for (auto iter = rbegin(); iter != rend(); ++iter) {
     match_all(*iter, v, matches);
   }
 }
@@ -387,10 +385,8 @@ void bi::poset<T,Compare>::match_all(T u, Comparable v, Container& matches) {
 
 template<class T, class Compare>
 void bi::poset<T,Compare>::forward(T v) {
-  ++colour;
-  colours[v] = colour;
-  for (auto iter = begin(); iter != end() && colours[*iter] < colour;
-      ++iter) {
+  colours[v] = ++colour;
+  for (auto iter = begin(); iter != end(); ++iter) {
     forward(*iter, v);
   }
 }
@@ -413,10 +409,8 @@ void bi::poset<T,Compare>::forward(T u, T v) {
 
 template<class T, class Compare>
 void bi::poset<T,Compare>::backward(T v) {
-  ++colour;
-  colours[v] = colour;
-  for (auto iter = rbegin(); iter != rend() && colours[*iter] < colour;
-      ++iter) {
+  colours[v] = ++colour;
+  for (auto iter = rbegin(); iter != rend(); ++iter) {
     backward(*iter, v);
   }
 }
@@ -439,9 +433,7 @@ void bi::poset<T,Compare>::backward(T u, T v) {
 
 template<class T, class Compare>
 void bi::poset<T,Compare>::reduce() {
-  int colour1 = ++colour;
-  for (auto iter = begin(); iter != end() && colours[*iter] < colour1;
-      ++iter) {
+  for (auto iter = begin(); iter != end(); ++iter) {
     reduce(*iter);
   }
 }
