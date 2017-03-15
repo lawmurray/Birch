@@ -110,16 +110,16 @@ void bi::CppFileGenerator::visit(const FuncParameter* o) {
       in();
 
       /* output parameters */
-      CppOutputGenerator auxOutput(base, level, header);
+      CppOutputGenerator auxOutput(base, level, false);
       auxOutput << o;
 
       /* body */
-      CppBaseGenerator aux(base, level, header);
+      CppBaseGenerator aux(base, level, false);
       aux << o->braces;
 
       /* return statement */
       if (!o->result->isEmpty()) {
-        CppReturnGenerator auxReturn(base, level, header);
+        CppReturnGenerator auxReturn(base, level, false);
         auxReturn << o;
       }
 
