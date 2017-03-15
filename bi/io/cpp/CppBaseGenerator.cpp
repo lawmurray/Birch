@@ -98,11 +98,6 @@ void bi::CppBaseGenerator::visit(const RandomInit* o) {
   middle(o->left << ".init(" << o->right << ", ");
   in();
   in();
-  finish("[&](const " << o->right->type << "& m_) {");
-  in();
-  line("//return simulate_(" << o->left << ", m_);");
-  out();
-  start("}, ");
   genCapture(o->backward.get());
   finish("() {");
   in();
@@ -256,7 +251,9 @@ void bi::CppBaseGenerator::visit(const RandomType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const LambdaType* o) {
+  inArray = true;
   middle("bi::Lambda<" << o->result << '>');
+  inArray = false;
 }
 
 void bi::CppBaseGenerator::visit(const VariantType* o) {

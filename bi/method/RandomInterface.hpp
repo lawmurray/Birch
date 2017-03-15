@@ -24,9 +24,9 @@ public:
   virtual void simulate() = 0;
 
   /**
-   * Apply the backward function.
+   * Apply the observe function.
    */
-  virtual double backward() = 0;
+  virtual double observe() = 0;
 
   /**
    * Get the id of the random variable.

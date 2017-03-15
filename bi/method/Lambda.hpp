@@ -10,14 +10,14 @@ namespace bi {
 template<class Type>
 class Lambda {
 public:
-  typedef std::function<Type()> forward_type;
-  typedef std::function<void(const Type&)> backward_type;
+  typedef std::function<typename Type::value_type()> forward_type;
+  typedef std::function<void(const typename Type::value_type&)> backward_type;
 
   /**
    * Constructor.
    */
-  Lambda(const forward_type& forward = forward_type(),
-      const backward_type& backward = backward_type()) :
+  Lambda(const forward_type forward = forward_type(),
+      const backward_type backward = backward_type()) :
       forward(forward),
       backward(backward),
       memoised(false) {

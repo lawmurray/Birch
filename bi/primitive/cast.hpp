@@ -21,8 +21,8 @@ struct type_flag {
       std::is_class<T>::value ? IS_MODEL : IS_PRIMITIVE;
 };
 
-template<class Variate, class Model, class Group>
-struct type_flag<Random<Variate,Model,Group>> {
+template<class Variate, class Model>
+struct type_flag<Random<Variate,Model>> {
   static const TypeFlag value = IS_RANDOM;
 };
 

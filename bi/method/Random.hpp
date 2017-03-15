@@ -4,6 +4,7 @@
 #pragma once
 
 #include "bi/bi.hpp"
+#include "bi/method/RandomInterface.hpp"
 #include "bi/method/RandomState.hpp"
 
 #include <functional>
@@ -14,87 +15,24 @@ namespace bi {
  *
  * @tparam Variate Variate type.
  * @tparam Model Model type.
- * @tparam Group Group type.
  *
  * This is implemented using code similar to that generated for models by
  * the compiler itself so that it can act rather like it was specified in
  * Birch code. Eventually it may be possible to implement it directly in
  * Birch.
  */
-template<class Variate, class Model, class Group = MemoryGroup>
-class Random {
+template<class Variate, class Model>
+class Random: public virtual RandomInterface {
 public:
-  typedef Group group_type;
-  typedef Random<Variate,Model,Group> value_type;
+  /**
+   * Backward function type.
+   */
+  typedef std::function<double()> observe_type;
 
   /**
    * Constructor.
    */
-  template<class Tail, class Head>
-  Random(const NonemptyFrame<Tail,Head>& frame, const char* name = nullptr,
-      const Group& group = Group()) :
-      group(childGroup(group, name)),
-      x(frame, "x", childGroup(this->group, "x")),
-      id(frame, "id", childGroup(this->group, "id")),
-      state(frame, "state", childGroup(this->group, "state")) {
-    this->group.fill(id, -1, frame);
-    this->group.fill(state, MISSING, frame);
-  }
-
-  /**
-   * Constructor.
-   */
-  Random(const EmptyFrame& frame = EmptyFrame(), const char* name = nullptr,
-      const Group& group = Group()) :
-      group(childGroup(group, name)),
-      x(frame, "x", childGroup(this->group, "x")),
-      id(frame, "id", childGroup(this->group, "id")),
-      state(frame, "state", childGroup(this->group, "state")) {
-    this->group.fill(id, -1, frame);
-    this->group.fill(state, MISSING, frame);
-  }
-
-  /**
-   * View constructor.
-   */
-  template<class Frame, class View>
-  Random(const Random<Variate,Model,Group>& o, const Frame& frame,
-      const View& view) :
-      group(o.group),
-      x(o.x, frame, view),
-      id(o.id, frame, view),
-      state(o.state, frame, view) {
-    //
-  }
-
-  /**
-   * Copy constructor.
-   */
-  Random(const Random<Variate,Model,Group>& o) :
-      group(o.group),
-      x(o.x),
-      id(o.id),
-      state(o.state) {
-    //
-  }
-
-  /**
-   * Move constructor.
-   */
-  Random(Random<Variate,Model,Group> && o) = default;
-
-  /**
-   * Generic copy constructor.
-   */
-  template<class Frame = EmptyFrame>
-  Random(const Random<Variate,Model,Group>& o, const bool deep = true,
-      const Frame& frame = EmptyFrame(), const char* name = nullptr,
-      const MemoryGroup& group = MemoryGroup()) :
-      x(o.x, deep, frame, name, group),
-      id(o.id, deep, frame, name, group),
-      state(o.state, deep, frame, name, group) {
-    //
-  }
+  Random();
 
   /**
    * Destructor.
@@ -102,29 +40,9 @@ public:
   virtual ~Random();
 
   /**
-   * Copy assignment.
+   * Value assigment.
    */
-  Random<Variate,Model,Group>& operator=(const Random<Variate,Model,Group>& o) = default;
-
-  /**
-   * Move assignment.
-   */
-  Random<Variate,Model,Group>& operator=(Random<Variate,Model,Group> && o) = default;
-
-  /**
-   * View operator.
-   */
-  template<class Frame, class View>
-  Random<Variate,Model,Group> operator()(const Frame& frame,
-      const View& view) const {
-    return Random<Variate,Model,Group>(*this, frame, view);
-  }
-
-  /**
-   * Variate copy assignment.
-   */
-  Random<Variate,Model,Group>& operator=(
-      const typename Variate::value_type& o);
+  Random<Variate,Model>& operator=(const typename Variate::value_type& o);
 
   /**
    * Cast to variate type.
@@ -149,14 +67,22 @@ public:
   /**
    * Initialise the random variable.
    */
-  template<class SimulateType, class BackwardType>
-  void init(const Model& m, const SimulateType& simulate,
-      const BackwardType& backward);
+  void init(const Model& m, const observe_type& observeFunction);
+
+  /*
+   * RandomInterface requirements.
+   */
+  virtual void simulate();
+  virtual double observe();
+  virtual RandomState getState() const;
+  virtual void setState(const RandomState state);
+  virtual int getId() const;
+  virtual void setId(const int id);
 
   /**
-   * Group.
+   * Backward function.
    */
-  Group group;
+  observe_type observeFunction;
 
   /**
    * Variate.
@@ -164,36 +90,38 @@ public:
   Variate x;
 
   /**
+   * Model.
+   */
+  Model m;
+
+  /**
    * Random variable id, or -1 if this has not been assigned.
    */
-  bi::model::Integer32<Group> id;
+  int id;
 
   /**
    * Random variable state, taking one of the values of the enum State.
    */
-  bi::PrimitiveValue<RandomState,Group> state;
+  RandomState state;
 };
 }
 
 #include "bi/method/Method.hpp"
-#include "bi/method/RandomLazy.hpp"
 
-template<class Variate, class Model, class Group>
-bi::Random<Variate,Model,Group>::~Random() {
-  if (id >= 0) {
-    /* random variable still persists in the method, extend its life by
-     * giving ownership of it to the method */
-    /// @todo This might be made more efficient, possibly problematic when,
-    /// e.g. indexing vectors of random variables, and this happens for every
-    /// index.
-    auto lazy =
-        dynamic_cast<RandomLazy<Variate,Model,Group>*>(method->get(id));
-    lazy->rv = std::move(*this);
-  }
+template<class Variate, class Model>
+bi::Random<Variate,Model>::Random() :
+    id(-1),
+    state(MISSING) {
+  //
 }
 
-template<class Variate, class Model, class Group>
-bi::Random<Variate,Model,Group>& bi::Random<Variate,Model,Group>::operator=(
+template<class Variate, class Model>
+bi::Random<Variate,Model>::~Random() {
+  //
+}
+
+template<class Variate, class Model>
+bi::Random<Variate,Model>& bi::Random<Variate,Model>::operator=(
     const typename Variate::value_type& o) {
   x = o;
   state = ASSIGNED;
@@ -201,8 +129,8 @@ bi::Random<Variate,Model,Group>& bi::Random<Variate,Model,Group>::operator=(
   return *this;
 }
 
-template<class Variate, class Model, class Group>
-bi::Random<Variate,Model,Group>::operator typename Variate::value_type&() {
+template<class Variate, class Model>
+bi::Random<Variate,Model>::operator typename Variate::value_type&() {
   if (state == MISSING) {
     method->simulate(id);
   }
@@ -210,8 +138,8 @@ bi::Random<Variate,Model,Group>::operator typename Variate::value_type&() {
   return x;
 }
 
-template<class Variate, class Model, class Group>
-bi::Random<Variate,Model,Group>::operator const typename Variate::value_type&() const {
+template<class Variate, class Model>
+bi::Random<Variate,Model>::operator const typename Variate::value_type&() const {
   if (state == MISSING) {
     method->simulate(id);
   }
@@ -219,32 +147,58 @@ bi::Random<Variate,Model,Group>::operator const typename Variate::value_type&() 
   return x;
 }
 
-template<class Variate, class Model, class Group>
-bi::Random<Variate,Model,Group>::operator Model&() {
+template<class Variate, class Model>
+bi::Random<Variate,Model>::operator Model&() {
   if (id >= 0) {
-    auto lazy =
-        dynamic_cast<RandomLazy<Variate,Model,Group>*>(method->get(id));
-    return lazy->m;
+    return m;
   } else {
     throw std::bad_cast();
   }
 }
 
-template<class Variate, class Model, class Group>
-bi::Random<Variate,Model,Group>::operator const Model&() const {
+template<class Variate, class Model>
+bi::Random<Variate,Model>::operator const Model&() const {
   if (id >= 0) {
-    auto lazy =
-        dynamic_cast<RandomLazy<Variate,Model,Group>*>(method->get(id));
-    return lazy->m;
+    return m;
   } else {
     throw std::bad_cast();
   }
 }
 
-template<class Variate, class Model, class Group>
-template<class SimulateType, class BackwardType>
-void bi::Random<Variate,Model,Group>::init(const Model& m,
-    const SimulateType& simulate, const BackwardType& backward) {
-  auto rv = new RandomLazy<Variate,Model,Group>(*this, m, simulate, backward);
-  id = method->add(rv);
+template<class Variate, class Model>
+void bi::Random<Variate,Model>::init(const Model& m,
+    const observe_type& observeFunction) {
+  this->m = m;
+  this->observeFunction = observeFunction;
+  this->id = method->add(this);
+}
+
+template<class Variate, class Model>
+void bi::Random<Variate,Model>::simulate() {
+  simulate_(x, m);
+}
+
+template<class Variate, class Model>
+double bi::Random<Variate,Model>::observe() {
+  return observeFunction();
+}
+
+template<class Variate, class Model>
+int bi::Random<Variate,Model>::getId() const {
+  return this->id;
+}
+
+template<class Variate, class Model>
+void bi::Random<Variate,Model>::setId(const int id) {
+  this->id = id;
+}
+
+template<class Variate, class Model>
+bi::RandomState bi::Random<Variate,Model>::getState() const {
+  return this->state;
+}
+
+template<class Variate, class Model>
+void bi::Random<Variate,Model>::setState(const RandomState state) {
+  this->state = state;
 }

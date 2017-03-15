@@ -190,7 +190,6 @@ nobase_include_HEADERS = bi/data/Array.hpp \
   bi/method/Method.hpp \
   bi/method/Random.hpp \
   bi/method/RandomInterface.hpp \
-  bi/method/RandomLazy.hpp \
   bi/method/RandomState.hpp \
   bi/method/Stack.hpp \
   bi/primitive/cast.hpp \

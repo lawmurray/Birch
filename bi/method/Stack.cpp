@@ -15,8 +15,7 @@ int bi::Stack::add(RandomInterface* rv) {
     rvs.push(rv);
     return rvs.size() - 1;
   } else {
-    logLikelihood += rv->backward();
-    delete rv;
+    logLikelihood += rv->observe();
     return -1;
   }
 }
@@ -48,8 +47,6 @@ void bi::Stack::pop(const int id) {
     rv->simulate();
     rv->setId(-1);
     rv->setState(SIMULATED);
-    logLikelihood += rv->backward();
-
-    delete rv;
+    logLikelihood += rv->observe();
   }
 }
