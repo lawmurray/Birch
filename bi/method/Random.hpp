@@ -131,25 +131,23 @@ bi::Random<Variate,Model>& bi::Random<Variate,Model>::operator=(
 
 template<class Variate, class Model>
 bi::Random<Variate,Model>::operator typename Variate::value_type&() {
-  if (state == MISSING) {
+  if (id >= 0 && state == MISSING) {
     method->simulate(id);
   }
-  assert(state != MISSING);
   return x;
 }
 
 template<class Variate, class Model>
 bi::Random<Variate,Model>::operator const typename Variate::value_type&() const {
-  if (state == MISSING) {
+  if (id >= 0 && state == MISSING) {
     method->simulate(id);
   }
-  assert(state != MISSING);
   return x;
 }
 
 template<class Variate, class Model>
 bi::Random<Variate,Model>::operator Model&() {
-  if (id >= 0) {
+  if (id >= 0 && state == MISSING) {
     return m;
   } else {
     throw std::bad_cast();
@@ -158,7 +156,7 @@ bi::Random<Variate,Model>::operator Model&() {
 
 template<class Variate, class Model>
 bi::Random<Variate,Model>::operator const Model&() const {
-  if (id >= 0) {
+  if (id >= 0 && state == MISSING) {
     return m;
   } else {
     throw std::bad_cast();
