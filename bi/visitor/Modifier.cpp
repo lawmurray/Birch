@@ -88,6 +88,11 @@ bi::Expression* bi::Modifier::modify(This* o) {
   return o;
 }
 
+bi::Expression* bi::Modifier::modify(LambdaInit* o) {
+  o->single = o->single->accept(this);
+  return o;
+}
+
 bi::Expression* bi::Modifier::modify(RandomInit* o) {
   o->left = o->left->accept(this);
   o->right = o->right->accept(this);

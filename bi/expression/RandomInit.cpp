@@ -4,7 +4,6 @@
 #include "bi/expression/RandomInit.hpp"
 
 #include "bi/visitor/all.hpp"
-#include "bi/primitive/encode.hpp"
 
 bi::RandomInit::RandomInit(Expression* left, Expression* right,
     shared_ptr<Location> loc) :

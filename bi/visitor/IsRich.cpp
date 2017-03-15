@@ -35,6 +35,10 @@ void bi::IsRich::visit(const This* o) {
   result = true;
 }
 
+void bi::IsRich::visit(const LambdaInit* o) {
+  result = true;
+}
+
 void bi::IsRich::visit(const RandomInit* o) {
   result = true;
 }

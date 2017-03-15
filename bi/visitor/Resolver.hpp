@@ -41,6 +41,7 @@ public:
   virtual Expression*  modify(Range* o);
   virtual Expression*  modify(Member* o);
   virtual Expression*  modify(This* o);
+  virtual Expression*  modify(LambdaInit* o);
   virtual Expression*  modify(RandomInit* o);
   virtual Expression*  modify(BracketsExpression* o);
 

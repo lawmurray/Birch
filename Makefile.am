@@ -66,6 +66,7 @@ birchc_SOURCES = \
   bi/expression/FuncParameter.cpp \
   bi/expression/FuncReference.cpp \
   bi/expression/Index.cpp \
+  bi/expression/LambdaInit.cpp \
   bi/expression/Literal.cpp \
   bi/expression/ParenthesesExpression.cpp \
   bi/expression/RandomInit.cpp \
@@ -120,6 +121,7 @@ birchc_SOURCES = \
   bi/visitor/IsPrimary.cpp \
   bi/visitor/IsRich.cpp \
   bi/visitor/Modifier.cpp \
+  bi/visitor/Replacer.cpp \
   bi/visitor/Resolver.cpp \
   bi/visitor/TupleSizer.cpp \
   bi/visitor/Visitor.cpp \

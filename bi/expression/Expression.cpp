@@ -130,6 +130,10 @@ bool bi::Expression::definitely(Member& o) {
   return false;
 }
 
+bool bi::Expression::definitely(LambdaInit& o) {
+  return false;
+}
+
 bool bi::Expression::definitely(RandomInit& o) {
   return false;
 }
@@ -203,6 +207,10 @@ bool bi::Expression::possibly(This& o) {
 }
 
 bool bi::Expression::possibly(Member& o) {
+  return false;
+}
+
+bool bi::Expression::possibly(LambdaInit& o) {
   return false;
 }
 

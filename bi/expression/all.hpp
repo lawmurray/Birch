@@ -11,6 +11,7 @@
 #include "bi/expression/FuncParameter.hpp"
 #include "bi/expression/FuncReference.hpp"
 #include "bi/expression/Index.hpp"
+#include "bi/expression/LambdaInit.hpp"
 #include "bi/expression/Literal.hpp"
 #include "bi/expression/ParenthesesExpression.hpp"
 #include "bi/expression/RandomInit.hpp"

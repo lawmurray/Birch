@@ -87,6 +87,10 @@ bool bi::ParenthesesExpression::definitely(ParenthesesExpression& o) {
   return single->definitely(*o.single);
 }
 
+bool bi::ParenthesesExpression::definitely(LambdaInit& o) {
+  return single->definitely(o);
+}
+
 bool bi::ParenthesesExpression::definitely(RandomInit& o) {
   return single->definitely(o);
 }
@@ -157,6 +161,10 @@ bool bi::ParenthesesExpression::possibly(Member& o) {
 
 bool bi::ParenthesesExpression::possibly(ParenthesesExpression& o) {
   return single->possibly(*o.single);
+}
+
+bool bi::ParenthesesExpression::possibly(LambdaInit& o) {
+  return single->possibly(o);
 }
 
 bool bi::ParenthesesExpression::possibly(RandomInit& o) {

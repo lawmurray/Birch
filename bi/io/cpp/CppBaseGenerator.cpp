@@ -94,6 +94,10 @@ void bi::CppBaseGenerator::visit(const This* o) {
   middle("*this");
 }
 
+void bi::CppBaseGenerator::visit(const LambdaInit* o) {
+  middle(o->type << "([=] { return " << o->single << "; })");
+}
+
 void bi::CppBaseGenerator::visit(const RandomInit* o) {
   middle(o->left << ".init(" << o->right << ", ");
   in();
@@ -338,9 +342,5 @@ void bi::CppBaseGenerator::genCallDispatcher(FuncReference* o) {
 }
 
 void bi::CppBaseGenerator::genArg(Expression* arg, VarParameter* param) {
-  if (param->type->isLambda() && !arg->type->isLambda()) {
-    middle(param->type << "([=] { return " << arg << "; })");
-  } else {
-    middle(arg);
-  }
+  middle(arg);
 }

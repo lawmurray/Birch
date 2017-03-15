@@ -70,6 +70,10 @@ void bi::TupleSizer::visit(const This* o) {
   ++size;
 }
 
+void bi::TupleSizer::visit(const LambdaInit* o) {
+  ++size;
+}
+
 void bi::TupleSizer::visit(const RandomInit* o) {
   ++size;
 }

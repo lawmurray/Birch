@@ -75,6 +75,10 @@ void bi::bi_ostream::visit(const This* o) {
   *this << "this";
 }
 
+void bi::bi_ostream::visit(const LambdaInit* o) {
+  *this << o->single;
+}
+
 void bi::bi_ostream::visit(const RandomInit* o) {
   *this << o->left << " ~ " << o->right;
 }

@@ -20,6 +20,7 @@ template<class T> class List;
 class FuncParameter;
 class FuncReference;
 class Index;
+class LambdaInit;
 template<class T> class Literal;
 class Member;
 class ParenthesesExpression;
@@ -134,6 +135,7 @@ public:
   virtual bool definitely(Literal<const char*>& o);
   virtual bool definitely(Member& o);
   virtual bool definitely(ParenthesesExpression& o);
+  virtual bool definitely(LambdaInit& o);
   virtual bool definitely(RandomInit& o);
   virtual bool definitely(Range& o);
   virtual bool definitely(This& o);
@@ -155,6 +157,7 @@ public:
   virtual bool possibly(Literal<const char*>& o);
   virtual bool possibly(Member& o);
   virtual bool possibly(ParenthesesExpression& o);
+  virtual bool possibly(LambdaInit& o);
   virtual bool possibly(RandomInit& o);
   virtual bool possibly(Range& o);
   virtual bool possibly(This& o);

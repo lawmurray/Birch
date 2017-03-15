@@ -79,6 +79,10 @@ void bi::IsPrimary::visit(const This* o) {
   result = true;
 }
 
+void bi::IsPrimary::visit(const LambdaInit* o) {
+  result = true;
+}
+
 void bi::IsPrimary::visit(const RandomInit* o) {
   result = true;
 }

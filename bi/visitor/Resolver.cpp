@@ -3,7 +3,9 @@
  */
 #include "bi/visitor/Resolver.hpp"
 
+#include "bi/capture/ArgumentCapturer.hpp"
 #include "bi/visitor/Gatherer.hpp"
+#include "bi/visitor/Replacer.hpp"
 #include "bi/exception/all.hpp"
 
 #include <sstream>
@@ -85,6 +87,19 @@ bi::Expression* bi::Resolver::modify(This* o) {
   return o;
 }
 
+bi::Expression* bi::Resolver::modify(LambdaInit* o) {
+  Modifier::modify(o);
+  o->type = new LambdaType(o->single->type->accept(&cloner), o->single->type->loc);
+  o->type->accept(this);
+
+  //o->backward = new FuncReference(
+  //    new VarReference(new Name(), o->type->accept(&cloner)), new Name("->"),
+  //    o->single->accept(&cloner), BINARY_OPERATOR);
+  //o->backward->accept(this);
+
+  return o;
+}
+
 bi::Expression* bi::Resolver::modify(RandomInit* o) {
   Modifier::modify(o);
   if (!o->left->type->assignable) {
@@ -142,6 +157,18 @@ bi::Expression* bi::Resolver::modify(FuncReference* o) {
   }
   o->type->assignable = false;  // rvalue
 
+  /* implicitly convert arguments to lambdas where necessary */
+  ArgumentCapturer capturer(o, o->target);
+  for (auto iter = capturer.begin(); iter != capturer.end(); ++iter) {
+    Expression* arg = iter->first;
+    VarParameter* param = iter->second;
+    if (!arg->type->isLambda() && param->type->isLambda()) {
+      LambdaInit* lambda = new LambdaInit(arg->accept(&cloner), arg->loc);
+      Replacer replacer(arg, lambda);
+      o->accept(&replacer);
+      lambda->accept(this);
+    }
+  }
   return o;
 }
 
@@ -162,6 +189,7 @@ bi::Expression* bi::Resolver::modify(VarParameter* o) {
   }
   if (o->type->isLambda()) {
     LambdaType* lambda = dynamic_cast<LambdaType*>(o->type->strip());
+    assert(lambda);
     Expression* parens = new ParenthesesExpression();
     Expression* result = new VarParameter(new Name(),
         lambda->result->accept(&cloner));
@@ -183,7 +211,9 @@ bi::Expression* bi::Resolver::modify(FuncParameter* o) {
   }
   o->result = o->result->accept(this);
   o->type = o->result->type->accept(&cloner)->accept(this);
-  defer(o->braces.get());
+  if (!o->braces->isEmpty()) {
+    defer(o->braces.get());
+  }
   o->scope = pop();
   if (!o->name->isEmpty()) {
     top()->add(o);
@@ -225,17 +255,17 @@ bi::Type* bi::Resolver::modify(ModelParameter* o) {
     o->valueToValue = o->valueToValue->accept(this);
 
     /* create lambda to lambda assignment operator */
-    Expression* left4 = new VarParameter(new Name(),
-        new AssignableType(new LambdaType(new ModelReference(o))));
-    Expression* right4 = new VarParameter(new Name(),
-        new LambdaType(new ModelReference(o)));
-    Expression* parens4 = new ParenthesesExpression(
-        new ExpressionList(left4, right4));
-    Expression* result4 = new VarParameter(new Name(),
-        new LambdaType(new ModelReference(o)));
-    o->lambdaToLambda = new FuncParameter(new Name("<-"), parens4, result4,
-        new EmptyExpression(), ASSIGNMENT_OPERATOR);
-    o->lambdaToLambda = o->lambdaToLambda->accept(this);
+    /*Expression* left4 = new VarParameter(new Name(),
+     new AssignableType(new LambdaType(new ModelReference(o))));
+     Expression* right4 = new VarParameter(new Name(),
+     new LambdaType(new ModelReference(o)));
+     Expression* parens4 = new ParenthesesExpression(
+     new ExpressionList(left4, right4));
+     Expression* result4 = new VarParameter(new Name(),
+     new LambdaType(new ModelReference(o)));
+     o->lambdaToLambda = new FuncParameter(new Name("<-"), parens4, result4,
+     new EmptyExpression(), ASSIGNMENT_OPERATOR);
+     o->lambdaToLambda = o->lambdaToLambda->accept(this);*/
   }
 
   return o;

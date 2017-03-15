@@ -86,6 +86,10 @@ void bi::Visitor::visit(const This* o) {
   //
 }
 
+void bi::Visitor::visit(const LambdaInit* o) {
+  o->single->accept(this);
+}
+
 void bi::Visitor::visit(const RandomInit* o) {
   o->left->accept(this);
   o->right->accept(this);

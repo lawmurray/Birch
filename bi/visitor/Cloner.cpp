@@ -76,6 +76,10 @@ bi::Expression* bi::Cloner::clone(const This* o) {
   return new This(o->loc);
 }
 
+bi::Expression* bi::Cloner::clone(const LambdaInit* o) {
+  return new LambdaInit(o->single->accept(this), o->loc);
+}
+
 bi::Expression* bi::Cloner::clone(const RandomInit* o) {
   return new RandomInit(o->left->accept(this), o->right->accept(this), o->loc);
 }
