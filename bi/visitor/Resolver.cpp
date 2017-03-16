@@ -89,7 +89,8 @@ bi::Expression* bi::Resolver::modify(This* o) {
 
 bi::Expression* bi::Resolver::modify(LambdaInit* o) {
   Modifier::modify(o);
-  o->type = new LambdaType(o->single->type->accept(&cloner), o->single->type->loc);
+  o->type = new LambdaType(o->single->type->accept(&cloner),
+      o->single->type->loc);
   o->type->accept(this);
 
   //o->backward = new FuncReference(
@@ -305,21 +306,26 @@ bi::Dispatcher* bi::Resolver::modify(Dispatcher* o) {
 
   push();
 
-  /* initialise with types of first function */
   auto iter = o->funcs.begin();
-  FuncParameter* func = *iter;
-
   ++inInputs;
-  o->parens = func->parens->accept(&cloner)->accept(this);
+  o->parens = (*iter)->parens->accept(&cloner)->accept(this);
   --inInputs;
-  o->type = func->result->type->accept(&cloner)->accept(this);
 
+  if (o->parent) {
+    /* initialise with return type of parent */
+    o->type = o->parent->type->accept(&cloner)->accept(this);
+  } else {
+    /* initialise with return type of first function */
+    o->type = (*iter)->result->type->accept(&cloner)->accept(this);
+  }
+  ++iter;
+
+  /* fill with types of remaining functions */
   Gatherer<VarParameter> gatherer1;
   o->parens->accept(&gatherer1);
 
-  /* fill with types of remaining functions */
   while (iter != o->funcs.end()) {
-    func = *iter;
+    FuncParameter* func = *iter;
     Gatherer<VarParameter> gatherer2;
     func->parens->accept(&gatherer2);
 
@@ -347,9 +353,8 @@ bi::Type* bi::Resolver::combine(Type* o1, Type* o2) {
     variant->add(o1);
     return variant;
   } else if (!o1->equals(*o2)) {
-    /* make a new variant type */
-    variant = new VariantType();
-    variant->add(o2);
+    /* make a new variant type, assuming current type is definite */
+    variant = new VariantType(o2);
     variant->add(o1);
     return variant;
   }

@@ -232,9 +232,6 @@ bi::Type* bi::Modifier::modify(TypeList* o) {
 }
 
 bi::Type* bi::Modifier::modify(VariantType* o) {
-  for (auto iter = o->types.begin(); iter != o->types.end(); ++iter) {
-    *iter = (*iter)->accept(this);
-  }
   return o;
 }
 

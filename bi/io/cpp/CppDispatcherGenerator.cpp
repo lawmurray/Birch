@@ -131,5 +131,12 @@ void bi::CppDispatcherGenerator::genArg(const VarParameter* o, const int i) {
   if (!o->arg->type->assignable) {
     middle("const ");
   }
-  middle(o->arg->type << "&>(" << o << ')');
+  if (o->arg->type->isLambda()/* && !o->type->isLambda()*/) {
+    const LambdaType* lambda = dynamic_cast<const LambdaType*>(o->arg->type.get());
+    assert(lambda);
+    middle(lambda->result);
+  } else {
+    middle(o->arg->type);
+  }
+  middle("&>(" << o << ')');
 }

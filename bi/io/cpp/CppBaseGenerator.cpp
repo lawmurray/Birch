@@ -95,7 +95,7 @@ void bi::CppBaseGenerator::visit(const This* o) {
 }
 
 void bi::CppBaseGenerator::visit(const LambdaInit* o) {
-  middle(o->type << "([=] { return " << o->single << "; })");
+  middle(o->type << "([&] { return " << o->single << "; })");
 }
 
 void bi::CppBaseGenerator::visit(const RandomInit* o) {
@@ -261,11 +261,9 @@ void bi::CppBaseGenerator::visit(const LambdaType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const VariantType* o) {
-  middle("boost::variant<");
-  for (auto iter = o->types.begin(); iter != o->types.end(); ++iter) {
-    if (iter != o->types.begin()) {
-      middle(',');
-    }
+  middle("boost::variant<" << o->definite);
+  for (auto iter = o->possibles.begin(); iter != o->possibles.end(); ++iter) {
+    middle(',');
     middle(*iter);
   }
   middle(">");

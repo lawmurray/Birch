@@ -207,7 +207,7 @@ bi::Type* bi::Cloner::clone(const TypeList* o) {
 }
 
 bi::Type* bi::Cloner::clone(const VariantType* o) {
-  Type* result = new VariantType(o->types, o->loc);
+  Type* result = new VariantType(o->definite, o->possibles, o->loc);
   result->assignable = o->assignable;
   return result;
 }

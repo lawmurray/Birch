@@ -8,15 +8,11 @@
 
 #include <algorithm>
 
-bi::VariantType::VariantType(const std::list<Type*>& types,
-    shared_ptr<Location> loc) :
+bi::VariantType::VariantType(Type* definite,
+    const std::list<Type*>& possibles, shared_ptr<Location> loc) :
     Type(loc),
-    types(types) {
-  //
-}
-
-bi::VariantType::VariantType(shared_ptr<Location> loc) :
-    Type(loc) {
+    definite(definite),
+    possibles(possibles) {
   //
 }
 
@@ -29,14 +25,14 @@ void bi::VariantType::add(Type* o) {
   auto f = [&](Type* type) {
     return o1->equals(*type);
   };
-  auto iter = std::find_if(types.begin(), types.end(), f);
-  if (iter == types.end()) {
-    types.push_back(o1);
+  if (!o1->equals(*definite)
+      && !std::any_of(possibles.begin(), possibles.end(), f)) {
+    possibles.push_back(o1);
   }
 }
 
 int bi::VariantType::size() const {
-  return types.size();
+  return possibles.size() + 1;
 }
 
 bi::Type* bi::VariantType::accept(Cloner* visitor) const {
@@ -52,24 +48,23 @@ void bi::VariantType::accept(Visitor* visitor) const {
 }
 
 bool bi::VariantType::definitelyAll(Type& o) {
-  auto f = [&](Type* type) {
-    return type->definitely(o);
-  };
-  return std::all_of(types.begin(), types.end(), f);
+  return definite->definitely(o);
 }
 
 bool bi::VariantType::possiblyAny(Type& o) {
   auto f = [&](Type* type) {
     return type->possibly(o);
   };
-  return std::any_of(types.begin(), types.end(), f);
+  return definite->possibly(o)
+      || std::any_of(possibles.begin(), possibles.end(), f);
 }
 
 bool bi::VariantType::dispatchDefinitely(Type& o) {
   auto f = [&](Type* type) {
     return type->dispatchDefinitely(o);
   };
-  return std::all_of(types.begin(), types.end(), f);
+  return definite->dispatchDefinitely(o)
+      && std::all_of(possibles.begin(), possibles.end(), f);
 }
 
 bool bi::VariantType::definitely(AssignableType& o) {
@@ -116,7 +111,8 @@ bool bi::VariantType::dispatchPossibly(Type& o) {
   auto f = [&](Type* type) {
     return type->dispatchPossibly(o);
   };
-  return std::any_of(types.begin(), types.end(), f);
+  return definite->dispatchPossibly(o)
+      || std::any_of(possibles.begin(), possibles.end(), f);
 }
 
 bool bi::VariantType::possibly(AssignableType& o) {

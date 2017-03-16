@@ -209,7 +209,5 @@ void bi::Visitor::visit(const TypeList* o) {
 }
 
 void bi::Visitor::visit(const VariantType* o) {
-  for (auto iter = o->types.begin(); iter != o->types.end(); ++iter) {
-    (*iter)->accept(this);
-  }
+  //
 }

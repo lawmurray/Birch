@@ -17,42 +17,41 @@ public:
   /**
    * Constructor.
    */
-  Lambda(const forward_type forward = forward_type(),
-      const backward_type backward = backward_type()) :
+  Lambda(const forward_type forward = []() -> value_type { assert(false); },
+      const backward_type backward = [](const value_type&) { assert(false); }) :
       forward(forward),
-      backward(backward),
-      memoised(false) {
-    //
+      backward(backward) {
+        //
   }
 
   /**
    * Value constructor.
    */
   Lambda(const value_type& value) :
-      backward([&](const value_type& o) {this->value = o;}),
-      value(value),
-      memoised(true) {
+      forward([&]() { return value; }),
+      backward([&](const value_type& o) { const_cast<value_type&>(value) = o;}) {
     //
   }
 
   /**
    * Cast to value.
    */
-  operator const value_type&() const {
-    return (*this)();
+  operator const value_type() const {
+    return forward();
+  }
+
+  /**
+   * Cast to value.
+   */
+  operator value_type() {
+    return forward();
   }
 
   /**
    * Evaluate forward lambda.
    */
-  const value_type& operator()() const {
-    if (!memoised) {
-      /* allow memoisation to occur while const, to keep invisible */
-      auto self = const_cast<Lambda<ResultType>*>(this);
-      self->value = forward();
-      self->memoised = true;
-    }
-    return value;
+  const value_type operator()() const {
+    return forward();
   }
 
   /**
@@ -72,15 +71,5 @@ private:
    * Backward lambda.
    */
   backward_type backward;
-
-  /**
-   * Forward memoised value.
-   */
-  ResultType value;
-
-  /**
-   * Is the result of the forward lambda memoised?
-   */
-  bool memoised;
 };
 }
