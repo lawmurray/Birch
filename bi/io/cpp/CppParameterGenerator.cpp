@@ -36,3 +36,17 @@ void bi::CppParameterGenerator::visit(const FuncParameter* o) {
   }
   middle(')');
 }
+
+void bi::CppParameterGenerator::visit(const Dispatcher* o) {
+  Gatherer<VarParameter> gatherer;
+  o->parens->accept(&gatherer);
+
+  middle('(');
+  for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
+    if (iter != gatherer.begin()) {
+      middle(", ");
+    }
+    middle(*iter);
+  }
+  middle(')');
+}

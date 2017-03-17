@@ -10,7 +10,7 @@ namespace bi {
 template<class ResultType>
 class Lambda {
 public:
-  typedef typename ResultType::value_type value_type;
+  typedef typename value_type<ResultType>::type value_type;
   typedef std::function<value_type()> forward_type;
   typedef std::function<void(const value_type&)> backward_type;
 

@@ -127,7 +127,7 @@ bool bi::ParenthesesType::possibly(ModelReference& o) {
 }
 
 bool bi::ParenthesesType::possibly(ParenthesesType& o) {
-  return single->possibly(o);
+  return single->possibly(*o.single);
 }
 
 bool bi::ParenthesesType::possibly(RandomType& o) {

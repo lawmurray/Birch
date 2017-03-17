@@ -213,5 +213,6 @@ bi::Type* bi::Cloner::clone(const VariantType* o) {
 }
 
 bi::Dispatcher* bi::Cloner::clone(const Dispatcher* o) {
-  return new Dispatcher(o->name, o->mangled, o->parent);
+  return new Dispatcher(o->name, o->mangled, o->parens->accept(this),
+      o->parent);
 }

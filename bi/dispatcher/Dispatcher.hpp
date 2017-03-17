@@ -18,7 +18,7 @@ namespace bi {
  *
  * @ingroup compiler_expression
  */
-class Dispatcher : public Named,
+class Dispatcher: public Named,
     public Numbered,
     public Mangled,
     public Parenthesised,
@@ -30,10 +30,11 @@ public:
    * @param name Name.
    * @param mangled Mangled name associated with the pattern of this
    * dispatcher.
+   * @param parens Parentheses.
    * @param parent Parent dispatcher.
    */
   Dispatcher(shared_ptr<Name> name, shared_ptr<Name> mangled,
-      Dispatcher* parent = nullptr);
+      Expression* parens, Dispatcher* parent = nullptr);
 
   /**
    * Destructor.

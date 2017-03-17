@@ -58,6 +58,11 @@ bool bi::RandomType::definitely(ModelParameter& o) {
   return left->definitely(o) && (!o.assignable || assignable);
 }
 
+bool bi::RandomType::definitely(RandomType& o) {
+  return left->definitely(*o.left) && right->definitely(*o.right)
+      && (!o.assignable || assignable);
+}
+
 bool bi::RandomType::dispatchPossibly(Type& o) {
   return o.possibly(*this);
 }
@@ -89,18 +94,4 @@ bool bi::RandomType::possibly(ModelParameter& o) {
 bool bi::RandomType::possibly(RandomType& o) {
   return left->possibly(*o.left) && right->possibly(*o.right)
       && (!o.assignable || assignable);
-}
-
-bool bi::RandomType::equals(Type& o) {
-  /* RandomType objects are never definitely equal; this override is
-   * something of a hack to ensure that, in the context of adding
-   * RandomType objects to VariantType objects, each type appears only
-   * once */
-  try {
-    RandomType& random = dynamic_cast<RandomType&>(*o.strip());
-    return left->equals(*random.left) && right->equals(*random.right)
-        && assignable == random.assignable;
-  } catch (std::bad_cast) {
-    return Type::equals(o);
-  }
 }

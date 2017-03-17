@@ -43,6 +43,7 @@ public:
   virtual bool definitely(List<Type>& o);
   virtual bool definitely(ModelParameter& o);
   virtual bool definitely(ModelReference& o);
+  virtual bool definitely(RandomType& o);
 
   virtual bool dispatchPossibly(Type& o);
   virtual bool possibly(EmptyType& o);
@@ -51,7 +52,5 @@ public:
   virtual bool possibly(ModelParameter& o);
   virtual bool possibly(ModelReference& o);
   virtual bool possibly(RandomType& o);
-
-  virtual bool equals(Type& o);
 };
 }

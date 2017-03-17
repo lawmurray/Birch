@@ -135,6 +135,11 @@ protected:
   ModelParameter* model();
 
   /**
+   * Determine the parameter list for a dispatcher.
+   */
+  Expression* parameters(Expression* parens1, Expression* parens2);
+
+  /**
    * Combine one type into another (possibly variant) type. Combines @p o1
    * into @p o2 and returns the result. If the two types are identical,
    * returns @p o2.

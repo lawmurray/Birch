@@ -46,13 +46,21 @@ void bi::CppFileGenerator::visit(const File* o) {
     file.replace_extension(".hpp");
     line("#include \"" << file.filename().string() << "\"\n");
 
-    /* dispatcher code */
-    CppDispatcherGenerator auxDispatcher(base, level, header);
+    /* dispatcher header code */
+    CppDispatcherGenerator auxDispatcher(base, level, true);
     auxDispatcher << o;
+
+    line("");
   }
 
   /* main code */
   *this << o->root;
+
+  /* dispatcher source code */
+  if (!header) {
+    CppDispatcherGenerator auxDispatcher(base, level, false);
+    auxDispatcher << o;
+  }
 }
 
 void bi::CppFileGenerator::visit(const Import* o) {

@@ -305,28 +305,27 @@ bi::Dispatcher* bi::Resolver::modify(Dispatcher* o) {
   assert(o->funcs.size() > 0);
 
   push();
-
-  auto iter = o->funcs.begin();
   ++inInputs;
-  o->parens = (*iter)->parens->accept(&cloner)->accept(this);
+  o->parens = o->parens->accept(this);
   --inInputs;
 
+  auto iter = o->funcs.rbegin();
   if (o->parent) {
     /* initialise with return type of parent */
     o->type = o->parent->type->accept(&cloner)->accept(this);
   } else {
     /* initialise with return type of first function */
     o->type = (*iter)->result->type->accept(&cloner)->accept(this);
+    ++iter;
   }
-  ++iter;
 
   /* fill with types of remaining functions */
-  Gatherer<VarParameter> gatherer1;
-  o->parens->accept(&gatherer1);
+  //Gatherer<VarParameter> gatherer1;
+  //o->parens->accept(&gatherer1);
 
-  while (iter != o->funcs.end()) {
+  while (iter != o->funcs.rend()) {
     FuncParameter* func = *iter;
-    Gatherer<VarParameter> gatherer2;
+    /*Gatherer<VarParameter> gatherer2;
     func->parens->accept(&gatherer2);
 
     auto iter1 = gatherer1.begin();
@@ -336,13 +335,34 @@ bi::Dispatcher* bi::Resolver::modify(Dispatcher* o) {
           (*iter1)->type.release());
       ++iter1;
       ++iter2;
-    }
+    }*/
     o->type = combine(func->result->type.get(), o->type.release());
     ++iter;
   }
   o->scope = pop();
 
   return o;
+}
+
+bi::Expression* bi::Resolver::parameters(Expression* parens1,
+    Expression* parens2) {
+  ArgumentCapturer capturer(parens1, parens2);
+  Expression* parens3 = parens2->accept(&cloner);
+  Gatherer<VarParameter> gatherer;
+  parens3->accept(&gatherer);
+
+  /* replace types of parameters with types of arguments */
+  auto iter2 = capturer.begin();
+  auto iter3 = gatherer.begin();
+  while (iter2 != capturer.end() && iter3 != gatherer.end()) {
+    (*iter3)->type = iter2->first->type->accept(&cloner);
+    ++iter2;
+    ++iter3;
+  }
+  assert(iter2 == capturer.end());
+  assert(iter3 == gatherer.end());
+
+  return parens3;
 }
 
 bi::Type* bi::Resolver::combine(Type* o1, Type* o2) {
@@ -413,9 +433,9 @@ void bi::Resolver::resolve(ReferenceType* ref, Scope* scope) {
 void bi::Resolver::resolve(FuncReference* ref, Scope* scope) {
   resolve<FuncReference>(ref, scope);
   if (ref->possibles.size() > 0) {
-    /* sort out dispatchers */
     FuncParameter* param = ref->target;
-    Dispatcher* dispatcher = new Dispatcher(param->name, param->mangled);
+    Dispatcher* dispatcher = new Dispatcher(param->name, param->mangled,
+        parameters(ref->parens.get(), ref->target->parens.get()));
     dispatcher->push_front(param);
 
     for (auto iter = ref->possibles.rbegin(); iter != ref->possibles.rend();
@@ -435,7 +455,8 @@ void bi::Resolver::resolve(FuncReference* ref, Scope* scope) {
         }
 
         /* create new dispatcher */
-        dispatcher = new Dispatcher(param->name, param->mangled, dispatcher);
+        dispatcher = new Dispatcher(param->name, param->mangled,
+            parameters(ref->parens.get(), param->parens.get()), dispatcher);
       }
       dispatcher->push_front(param);
     }

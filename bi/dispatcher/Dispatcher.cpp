@@ -10,9 +10,10 @@
 #include <algorithm>
 
 bi::Dispatcher::Dispatcher(shared_ptr<Name> name, shared_ptr<Name> mangled,
-    Dispatcher* parent) :
+    Expression* parens, Dispatcher* parent) :
     Named(name),
     Mangled(mangled),
+    Parenthesised(parens),
     parent(parent) {
   //
 }
@@ -49,5 +50,5 @@ bool bi::Dispatcher::operator==(const Dispatcher& o) const {
   std::sort(funcs1.begin(), funcs1.end());
   std::sort(funcs2.begin(), funcs2.end());
 
-  return funcs1 == funcs2 && parent == o.parent;
+  return funcs1 == funcs2 && parent == o.parent && *parens == *o.parens;
 }

@@ -39,3 +39,19 @@ bi::ArgumentCapturer::ArgumentCapturer(const FuncReference* ref,
     gathered.push_back(std::make_pair((*iter)->arg, *iter));
   }
 }
+
+bi::ArgumentCapturer::ArgumentCapturer(const Expression* parens1,
+    const Expression* parens2) {
+  Expression* ref1 = const_cast<Expression*>(parens1);
+  Expression* param1 = const_cast<Expression*>(parens2);
+
+  bool result = ref1->possibly(*param1);
+  assert(result);
+
+  Gatherer<VarParameter> gatherer;
+  param1->accept(&gatherer);
+
+  for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
+    gathered.push_back(std::make_pair((*iter)->arg, *iter));
+  }
+}

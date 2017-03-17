@@ -4,6 +4,7 @@
 #include "bi/io/cpp/CppDispatcherGenerator.hpp"
 
 #include "bi/io/cpp/CppParameterGenerator.hpp"
+#include "bi/io/cpp/CppTemplateParameterGenerator.hpp"
 #include "bi/io/cpp/misc.hpp"
 #include "bi/visitor/Gatherer.hpp"
 
@@ -14,13 +15,6 @@ bi::CppDispatcherGenerator::CppDispatcherGenerator(std::ostream& base,
 }
 
 void bi::CppDispatcherGenerator::visit(const File* o) {
-  header = true;
-  for (auto iter = o->scope->dispatchers.begin();
-      iter != o->scope->dispatchers.end(); ++iter) {
-    *this << iter->second;
-  }
-
-  header = false;
   for (auto iter = o->scope->dispatchers.begin();
       iter != o->scope->dispatchers.end(); ++iter) {
     *this << iter->second;
@@ -31,30 +25,43 @@ void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
   Gatherer<VarParameter> gatherer;
   o->parens->accept(&gatherer);
 
-  start("template<");
-  int i = 1;
-  for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter, ++i) {
-    if (i != 1) {
-      middle(", ");
-    }
-    middle("class T" << i);
-  }
-  finish(">");
+  //start("template<");
+  //int i = 1;
+  //for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter, ++i) {
+  //  if (i != 1) {
+  //    middle(", ");
+  //  }
+  //  middle("class T" << i);
+  //}
+  //finish(">");
+
+  /* template parameters */
+  CppTemplateParameterGenerator auxTemplateParameter(base, level, header);
+  auxTemplateParameter << o;
+
   if (header) {
     middle("static ");
   }
-  start(o->type << " dispatch_" << o->mangled << "_" << o->number << "_(");
+  /* return type */
+  start(o->type << ' ');
 
-  i = 1;
-  for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter, ++i) {
-    if (i != 1) {
-      middle(", ");
-    }
-    middle("T" << i << "&& " << (*iter)->name);
-  }
-  middle(')');
+  /* name */
+  start("dispatch_" << o->mangled << "_" << o->number << '_');
+
+  /* parameters */
+  CppParameterGenerator auxParameter(base, level, header);
+  auxParameter << o;
+
+  //i = 1;
+  //for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter, ++i) {
+  //  if (i != 1) {
+  //    middle(", ");
+  //  }
+  //  middle(/*"T" << i << "&& "*/ "const " << (*iter)->type << "& " << (*iter)->name);
+  //}
+  //middle(')');
   if (header) {
-    finish(";\n");
+    finish(";");
   } else {
     finish(" {");
     in();
@@ -62,11 +69,11 @@ void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
     /* try functions, in topological order from most specific */
     for (auto iter = o->funcs.begin(); iter != o->funcs.end(); ++iter) {
       FuncParameter* func = *iter;
-      assert(func->parens->possibly(*o->parens));
-      func->parens->possibly(*o->parens);
+      bool result = o->parens->possibly(*func->parens);
+      assert(result);
 
       Gatherer<VarParameter> gatherer;
-      o->parens->accept(&gatherer);
+      func->parens->accept(&gatherer);
       auto iter1 = gatherer.begin();
 
       start("try { return ");
@@ -95,8 +102,8 @@ void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
 
     /* defer to parent dispatcher */
     if (o->parent) {
-      assert(o->parens->possibly(*o->parent->parens));
-      o->parens->possibly(*o->parent->parens);
+      bool result = o->parens->possibly(*o->parent->parens);
+      assert(result);
 
       Gatherer<VarParameter> gatherer;
       o->parent->parens->accept(&gatherer);
@@ -128,15 +135,15 @@ void bi::CppDispatcherGenerator::visit(const VarParameter* o) {
 
 void bi::CppDispatcherGenerator::genArg(const VarParameter* o, const int i) {
   middle("bi::cast<");
-  if (!o->arg->type->assignable) {
+  if (!o->type->assignable) {
     middle("const ");
   }
-  if (o->arg->type->isLambda()/* && !o->type->isLambda()*/) {
-    const LambdaType* lambda = dynamic_cast<const LambdaType*>(o->arg->type.get());
+  if (o->type->isLambda()/* && !o->type->arg->isLambda()*/) {
+    const LambdaType* lambda = dynamic_cast<const LambdaType*>(o->type.get());
     assert(lambda);
     middle(lambda->result);
   } else {
-    middle(o->arg->type);
+    middle(o->type);
   }
-  middle("&>(" << o << ')');
+  middle("&>(" << o->arg << ')');
 }

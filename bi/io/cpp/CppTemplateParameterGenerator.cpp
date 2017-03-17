@@ -33,3 +33,15 @@ void bi::CppTemplateParameterGenerator::visit(const FuncParameter* o) {
     finish('>');
   }
 }
+
+void bi::CppTemplateParameterGenerator::visit(const Dispatcher* o) {
+  Gatherer<VarParameter> gatherer;
+  o->parens->accept(&gatherer);
+
+  for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
+    middle(*iter);
+  }
+  if (args > 0) {
+    finish('>');
+  }
+}

@@ -51,3 +51,43 @@ template<class Group = MemoryGroup>
 using String = PrimitiveValue<const char*,Group>;
   }
 }
+
+namespace bi {
+/**
+ * Conversions from primitive types to C++ built-in types.
+ */
+template<class T>
+struct value_type {
+  typedef T type;
+};
+
+template<class Group>
+struct value_type<bi::model::Boolean<Group>> {
+  typedef typename bi::model::Boolean<Group>::value_type type;
+};
+
+template<class Group>
+struct value_type<bi::model::Integer64<Group>> {
+  typedef typename bi::model::Integer64<Group>::value_type type;
+};
+
+template<class Group>
+struct value_type<bi::model::Integer32<Group>> {
+  typedef typename bi::model::Integer32<Group>::value_type type;
+};
+
+template<class Group>
+struct value_type<bi::model::Real64<Group>> {
+  typedef typename bi::model::Real64<Group>::value_type type;
+};
+
+template<class Group>
+struct value_type<bi::model::Real32<Group>> {
+  typedef typename bi::model::Real32<Group>::value_type type;
+};
+
+template<class Group>
+struct value_type<bi::model::String<Group>> {
+  typedef typename bi::model::String<Group>::value_type type;
+};
+}

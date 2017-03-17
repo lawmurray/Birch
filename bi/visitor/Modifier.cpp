@@ -236,5 +236,6 @@ bi::Type* bi::Modifier::modify(VariantType* o) {
 }
 
 bi::Dispatcher* bi::Modifier::modify(Dispatcher* o) {
+  o->parens = o->parens->accept(this);
   return o;
 }

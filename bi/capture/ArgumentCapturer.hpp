@@ -33,6 +33,14 @@ public:
    */
   ArgumentCapturer(const FuncReference* ref, const Dispatcher* param);
 
+  /**
+   * Constructor.
+   *
+   * @param parens1 First parentheses.
+   * @param parens2 Second parentheses.
+   */
+  ArgumentCapturer(const Expression* parens1, const Expression* parens2);
+
   /*
    * Iterators over results.
    */
@@ -47,6 +55,18 @@ public:
   }
   auto end() const {
     return gathered.end();
+  }
+  auto rbegin() {
+    return gathered.rbegin();
+  }
+  auto rend() {
+    return gathered.rend();
+  }
+  auto rbegin() const {
+    return gathered.rbegin();
+  }
+  auto rend() const {
+    return gathered.rend();
   }
 
 private:

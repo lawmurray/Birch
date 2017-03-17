@@ -325,10 +325,10 @@ void bi::CppBaseGenerator::genCallUnary(FuncReference* o) {
 }
 
 void bi::CppBaseGenerator::genCallDispatcher(FuncReference* o) {
-  ArgumentCapturer capturer(o, o->dispatcher);
-
   middle("dispatch_" << o->dispatcher->mangled);
   middle("_" << o->dispatcher->number << "_");
+
+  ArgumentCapturer capturer(o, o->dispatcher);
   middle('(');
   for (auto iter = capturer.begin(); iter != capturer.end(); ++iter) {
     if (iter != capturer.begin()) {
