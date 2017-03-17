@@ -85,7 +85,11 @@ bool bi::ModelReference::definitely(ModelParameter& o) {
 }
 
 bool bi::ModelReference::definitely(ModelReference& o) {
-  return canUpcast(o)/* && (!o.assignable || assignable)*/;
+  return canUpcast(o) && (!o.assignable || assignable);
+}
+
+bool bi::ModelReference::definitely(LambdaType& o) {
+  return definitely(*o.result) && (!o.assignable || assignable);
 }
 
 bool bi::ModelReference::definitely(EmptyType& o) {
@@ -102,6 +106,10 @@ bool bi::ModelReference::possibly(ModelParameter& o) {
 
 bool bi::ModelReference::possibly(ModelReference& o) {
   return canDowncast(o) && (!o.assignable || assignable);
+}
+
+bool bi::ModelReference::possibly(LambdaType& o) {
+  return possibly(*o.result) && (!o.assignable || assignable);
 }
 
 bool bi::ModelReference::possibly(EmptyType& o) {

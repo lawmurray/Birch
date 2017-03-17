@@ -4,7 +4,9 @@
 #pragma once
 
 #include "bi/expression/Expression.hpp"
+#include "bi/common/Parenthesised.hpp"
 #include "bi/common/Unary.hpp"
+#include "bi/common/Scoped.hpp"
 #include "bi/expression/VarParameter.hpp"
 
 namespace bi {
@@ -13,15 +15,20 @@ namespace bi {
  *
  * @ingroup compiler_expression
  */
-class LambdaInit: public Expression, public ExpressionUnary {
+class LambdaInit: public Expression,
+    public Parenthesised,
+    public ExpressionUnary,
+    public Scoped {
 public:
   /**
    * Constructor.
    *
+   * @param parens Parentheses.
    * @param single Expression.
    * @param loc Location.
    */
-  LambdaInit(Expression* single, shared_ptr<Location> loc = nullptr);
+  LambdaInit(Expression* parens, Expression* single,
+      shared_ptr<Location> loc = nullptr);
 
   /**
    * Destructor.
@@ -31,11 +38,6 @@ public:
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
-
-  /**
-   * Backward function.
-   */
-  unique_ptr<Expression> backward;
 
   using Expression::definitely;
   using Expression::possibly;

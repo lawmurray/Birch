@@ -230,7 +230,7 @@ void bi::CppDispatcherGenerator::genArg(const Expression* arg,
   if (!param->type->assignable) {
     middle("const ");
   }
-  if (param->type->isLambda()/* && !o->type->arg->isLambda()*/) {
+  if (!arg->type->isLambda() && param->type->isLambda()) {
     const LambdaType* lambda =
         dynamic_cast<const LambdaType*>(param->type.get());
     assert(lambda);

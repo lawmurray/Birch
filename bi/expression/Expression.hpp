@@ -117,6 +117,12 @@ public:
    */
   virtual int tupleDims() const;
 
+  /**
+   * Backward expression (if any). Will be null, not EmptyExpression, if
+   * there is no backward expression.
+   */
+  unique_ptr<Expression> backward;
+
   /*
    * Double-dispatch partial order comparisons.
    */

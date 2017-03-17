@@ -34,11 +34,6 @@ public:
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
-  /**
-   * Backward function.
-   */
-  unique_ptr<Expression> backward;
-
   using Expression::definitely;
   using Expression::possibly;
 

@@ -50,9 +50,11 @@ public:
 
   virtual bool dispatchDefinitely(Type& o);
   virtual bool definitely(BracketsType& o);
+  virtual bool definitely(LambdaType& o);
 
   virtual bool dispatchPossibly(Type& o);
   virtual bool possibly(BracketsType& o);
+  virtual bool possibly(LambdaType& o);
 
   /**
    * Number of dimensions.

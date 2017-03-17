@@ -5,8 +5,10 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::LambdaInit::LambdaInit(Expression* single, shared_ptr<Location> loc) :
+bi::LambdaInit::LambdaInit(Expression* parens, Expression* single,
+    shared_ptr<Location> loc) :
     Expression(loc),
+    Parenthesised(parens),
     ExpressionUnary(single) {
   //
 }
@@ -32,7 +34,7 @@ bool bi::LambdaInit::dispatchDefinitely(Expression& o) {
 }
 
 bool bi::LambdaInit::definitely(LambdaInit& o) {
-  return single->definitely(*o.single);
+  return parens->definitely(*o.parens) && single->definitely(*o.single);
 }
 
 bool bi::LambdaInit::definitely(VarParameter& o) {
@@ -44,7 +46,7 @@ bool bi::LambdaInit::dispatchPossibly(Expression& o) {
 }
 
 bool bi::LambdaInit::possibly(LambdaInit& o) {
-  return single->possibly(*o.single);
+  return parens->possibly(*o.parens) && single->possibly(*o.single);
 }
 
 bool bi::LambdaInit::possibly(VarParameter& o) {

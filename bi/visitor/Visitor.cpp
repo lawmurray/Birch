@@ -87,6 +87,7 @@ void bi::Visitor::visit(const This* o) {
 }
 
 void bi::Visitor::visit(const LambdaInit* o) {
+  o->parens->accept(this);
   o->single->accept(this);
 }
 

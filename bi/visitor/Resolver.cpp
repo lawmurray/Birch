@@ -87,16 +87,17 @@ bi::Expression* bi::Resolver::modify(This* o) {
   return o;
 }
 
-bi::Expression* bi::Resolver::modify(LambdaInit* o) {
-  Modifier::modify(o);
-  o->type = new LambdaType(o->single->type->accept(&cloner),
-      o->single->type->loc);
-  o->type->accept(this);
+#include "bi/io/bi_ostream.hpp"
 
-  //o->backward = new FuncReference(
-  //    new VarReference(new Name(), o->type->accept(&cloner)), new Name("->"),
-  //    o->single->accept(&cloner), BINARY_OPERATOR);
-  //o->backward->accept(this);
+bi::Expression* bi::Resolver::modify(LambdaInit* o) {
+  push();
+  ++inInputs;
+  o->parens = o->parens->accept(this);
+  --inInputs;
+  o->single = o->single->accept(this);
+  o->type = new LambdaType(o->single->type->accept(&cloner));
+  o->type->accept(this);
+  o->scope = pop();
 
   return o;
 }
@@ -108,8 +109,16 @@ bi::Expression* bi::Resolver::modify(RandomInit* o) {
   }
   o->type = o->left->type->accept(&cloner)->accept(this);
 
-  o->backward = new FuncReference(o->left->accept(&cloner), new Name("~>"),
-      o->right->accept(&cloner), BINARY_OPERATOR);
+  assert(o->left->type->strip()->isRandom());
+  RandomType* random = dynamic_cast<RandomType*>(o->left->type->strip());
+  assert(random);
+
+  /* create backwards lambda */
+  Expression* parens = new ParenthesesExpression(
+      new VarParameter(new Name("o_"), random->left->accept(&cloner)));
+  Expression* single = new FuncReference(new VarReference(new Name("o_")),
+      new Name("~>"), o->right->accept(&cloner), BINARY_OPERATOR);
+  o->backward = new LambdaInit(parens, single);
   o->backward->accept(this);
 
   return o;
@@ -158,16 +167,22 @@ bi::Expression* bi::Resolver::modify(FuncReference* o) {
   }
   o->type->assignable = false;  // rvalue
 
-  /* implicitly convert arguments to lambdas where necessary */
-  ArgumentCapturer capturer(o, o->target);
-  for (auto iter = capturer.begin(); iter != capturer.end(); ++iter) {
-    Expression* arg = iter->first;
-    VarParameter* param = iter->second;
-    if (!arg->type->isLambda() && param->type->isLambda()) {
-      LambdaInit* lambda = new LambdaInit(arg->accept(&cloner), arg->loc);
-      Replacer replacer(arg, lambda);
-      o->accept(&replacer);
-      lambda->accept(this);
+  /* where arguments will be implicitly cast to lambdas, create backward
+   * functions (as long as this is not itself a backward function) */
+  if (*o->name != "->") {
+    ArgumentCapturer capturer(o, o->target);
+    for (auto iter = capturer.begin(); iter != capturer.end(); ++iter) {
+      Expression* arg = iter->first;
+      VarParameter* param = iter->second;
+      if (!arg->type->isLambda() && param->type->isLambda()) {
+        Expression* parens = new ParenthesesExpression(
+            new VarParameter(new Name("o_"), arg->type->accept(&cloner)));
+        Expression* single = new FuncReference(
+            new VarReference(new Name("o_")), new Name("->"),
+            arg->accept(&cloner), BINARY_OPERATOR);
+        arg->backward = new LambdaInit(parens, single);
+        arg->backward->accept(this);
+      }
     }
   }
   return o;
@@ -256,17 +271,17 @@ bi::Type* bi::Resolver::modify(ModelParameter* o) {
     o->valueToValue = o->valueToValue->accept(this);
 
     /* create lambda to lambda assignment operator */
-    /*Expression* left4 = new VarParameter(new Name(),
-     new AssignableType(new LambdaType(new ModelReference(o))));
-     Expression* right4 = new VarParameter(new Name(),
-     new LambdaType(new ModelReference(o)));
-     Expression* parens4 = new ParenthesesExpression(
-     new ExpressionList(left4, right4));
-     Expression* result4 = new VarParameter(new Name(),
-     new LambdaType(new ModelReference(o)));
-     o->lambdaToLambda = new FuncParameter(new Name("<-"), parens4, result4,
-     new EmptyExpression(), ASSIGNMENT_OPERATOR);
-     o->lambdaToLambda = o->lambdaToLambda->accept(this);*/
+    Expression* left4 = new VarParameter(new Name(),
+        new AssignableType(new LambdaType(new ModelReference(o))));
+    Expression* right4 = new VarParameter(new Name(),
+        new LambdaType(new ModelReference(o)));
+    Expression* parens4 = new ParenthesesExpression(
+        new ExpressionList(left4, right4));
+    Expression* result4 = new VarParameter(new Name(),
+        new LambdaType(new ModelReference(o)));
+    o->lambdaToLambda = new FuncParameter(new Name("<-"), parens4, result4,
+        new EmptyExpression(), ASSIGNMENT_OPERATOR);
+    o->lambdaToLambda = o->lambdaToLambda->accept(this);
   }
 
   return o;
@@ -320,22 +335,8 @@ bi::Dispatcher* bi::Resolver::modify(Dispatcher* o) {
   }
 
   /* fill with types of remaining functions */
-  //Gatherer<VarParameter> gatherer1;
-  //o->parens->accept(&gatherer1);
-
   while (iter != o->funcs.rend()) {
     FuncParameter* func = *iter;
-    /*Gatherer<VarParameter> gatherer2;
-    func->parens->accept(&gatherer2);
-
-    auto iter1 = gatherer1.begin();
-    auto iter2 = gatherer2.begin();
-    while (iter1 != gatherer1.end() && iter2 != gatherer2.end()) {
-      (*iter1)->type = combine((*iter2)->type.get(),
-          (*iter1)->type.release());
-      ++iter1;
-      ++iter2;
-    }*/
     o->type = combine(func->result->type.get(), o->type.release());
     ++iter;
   }

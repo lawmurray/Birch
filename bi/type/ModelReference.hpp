@@ -68,11 +68,13 @@ public:
   virtual bool dispatchDefinitely(Type& o);
   virtual bool definitely(ModelParameter& o);
   virtual bool definitely(ModelReference& o);
+  virtual bool definitely(LambdaType& o);
   virtual bool definitely(EmptyType& o);
 
   virtual bool dispatchPossibly(Type& o);
   virtual bool possibly(ModelParameter& o);
   virtual bool possibly(ModelReference& o);
+  virtual bool possibly(LambdaType& o);
   virtual bool possibly(EmptyType& o);
 };
 }

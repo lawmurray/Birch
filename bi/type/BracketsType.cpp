@@ -49,6 +49,10 @@ bool bi::BracketsType::definitely(BracketsType& o) {
       && (!o.assignable || assignable);
 }
 
+bool bi::BracketsType::definitely(LambdaType& o) {
+  return definitely(*o.result) && (!o.assignable || assignable);
+}
+
 bool bi::BracketsType::dispatchPossibly(Type& o) {
   return o.possibly(*this);
 }
@@ -56,4 +60,8 @@ bool bi::BracketsType::dispatchPossibly(Type& o) {
 bool bi::BracketsType::possibly(BracketsType& o) {
   return single->possibly(*o.single) && brackets->possibly(*o.brackets)
       && (!o.assignable || assignable);
+}
+
+bool bi::BracketsType::possibly(LambdaType& o) {
+  return possibly(*o.result) && (!o.assignable || assignable);
 }

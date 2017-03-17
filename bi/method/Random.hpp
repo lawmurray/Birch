@@ -25,9 +25,14 @@ template<class Variate, class Model>
 class Random: public virtual RandomInterface {
 public:
   /**
+   * Value type.
+   */
+  typedef typename value_type<Variate>::type value_type;
+
+  /**
    * Backward function type.
    */
-  typedef std::function<double()> observe_type;
+  typedef std::function<double(const value_type&)> observe_type;
 
   /**
    * Constructor.
@@ -42,17 +47,17 @@ public:
   /**
    * Value assigment.
    */
-  Random<Variate,Model>& operator=(const typename Variate::value_type& o);
+  Random<Variate,Model>& operator=(const value_type& o);
 
   /**
    * Cast to variate type.
    */
-  operator typename Variate::value_type&();
+  operator value_type&();
 
   /**
    * Cast to variate type.
    */
-  operator const typename Variate::value_type&() const;
+  operator const value_type&() const;
 
   /**
    * Cast to model type.
@@ -122,7 +127,7 @@ bi::Random<Variate,Model>::~Random() {
 
 template<class Variate, class Model>
 bi::Random<Variate,Model>& bi::Random<Variate,Model>::operator=(
-    const typename Variate::value_type& o) {
+    const value_type& o) {
   x = o;
   state = ASSIGNED;
 
@@ -130,7 +135,7 @@ bi::Random<Variate,Model>& bi::Random<Variate,Model>::operator=(
 }
 
 template<class Variate, class Model>
-bi::Random<Variate,Model>::operator typename Variate::value_type&() {
+bi::Random<Variate,Model>::operator value_type&() {
   if (id >= 0 && state == MISSING) {
     method->simulate(id);
   }
@@ -138,7 +143,7 @@ bi::Random<Variate,Model>::operator typename Variate::value_type&() {
 }
 
 template<class Variate, class Model>
-bi::Random<Variate,Model>::operator const typename Variate::value_type&() const {
+bi::Random<Variate,Model>::operator const value_type&() const {
   if (id >= 0 && state == MISSING) {
     method->simulate(id);
   }
@@ -178,7 +183,7 @@ void bi::Random<Variate,Model>::simulate() {
 
 template<class Variate, class Model>
 double bi::Random<Variate,Model>::observe() {
-  return observeFunction();
+  return observeFunction(x);
 }
 
 template<class Variate, class Model>
