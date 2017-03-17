@@ -45,6 +45,8 @@ public:
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
+  virtual bool isVariant() const;
+
   using Type::definitely;
   using Type::possibly;
 

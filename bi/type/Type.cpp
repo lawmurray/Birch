@@ -35,6 +35,10 @@ bool bi::Type::isLambda() const {
   return false;
 }
 
+bool bi::Type::isVariant() const {
+  return false;
+}
+
 bi::Type* bi::Type::strip() {
   return this;
 }

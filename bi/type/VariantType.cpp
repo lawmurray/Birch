@@ -47,6 +47,10 @@ void bi::VariantType::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
+bool bi::VariantType::isVariant() const {
+  return true;
+}
+
 bool bi::VariantType::definitelyAll(Type& o) {
   return definite->definitely(o);
 }

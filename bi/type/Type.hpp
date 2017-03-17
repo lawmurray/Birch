@@ -91,6 +91,11 @@ public:
   virtual bool isLambda() const;
 
   /**
+   * Is this a variant type?
+   */
+  virtual bool isVariant() const;
+
+  /**
    * Strip parentheses.
    */
   virtual Type* strip();

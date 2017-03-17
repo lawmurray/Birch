@@ -31,6 +31,13 @@ void bi::Dispatcher::push_front(FuncParameter* o) {
   funcs.push_front(o);
 }
 
+bool bi::Dispatcher::hasVariant() const {
+  Gatherer<VarParameter> gatherer;
+  parens->accept(&gatherer);
+  return std::any_of(gatherer.begin(), gatherer.end(),
+      [&](VarParameter* o) {return o->type->isVariant();});
+}
+
 bi::Dispatcher* bi::Dispatcher::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

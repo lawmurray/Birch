@@ -47,6 +47,11 @@ public:
    */
   void push_front(FuncParameter* func);
 
+  /**
+   * Does this dispatcher have a parameter of a variant type?
+   */
+  bool hasVariant() const;
+
   virtual Dispatcher* accept(Cloner* visitor) const;
   virtual Dispatcher* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
