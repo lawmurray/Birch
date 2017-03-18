@@ -95,7 +95,8 @@ void bi::CppBaseGenerator::visit(const This* o) {
 }
 
 void bi::CppBaseGenerator::visit(const LambdaInit* o) {
-  middle("[&](");
+  genCapture(o->single.get());
+  middle('(');
   Gatherer<VarParameter> gatherer;
   o->parens->accept(&gatherer);
   for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
@@ -103,7 +104,10 @@ void bi::CppBaseGenerator::visit(const LambdaInit* o) {
     if (iter != gatherer.begin()) {
       middle(", ");
     }
-    middle("const " << param->type << "& " << param->name);
+    if (!param->type->assignable) {
+      middle("const ");
+    }
+    middle(param->type << "& " << param->name);
   }
   middle(") { return " << o->single << "; }");
 }
@@ -341,7 +345,9 @@ void bi::CppBaseGenerator::genCallDispatcher(FuncReference* o) {
 
 void bi::CppBaseGenerator::genArg(Expression* arg, VarParameter* param) {
   if (!arg->type->isLambda() && param->type->isLambda()) {
-    middle(param->type << "([&]() { return " << arg << "; }");
+    middle(param->type << "(");
+    genCapture(arg);
+    middle(" { return " << arg << "; }");
     if (arg->backward) {
       middle(", " << arg->backward);
     }

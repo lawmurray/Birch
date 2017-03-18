@@ -40,7 +40,10 @@ void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
     for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
       VarParameter* param = *iter;
       if (!param->type->isVariant()) {
-        line("const " << param->type << "& " << param->name << ';');
+        if (!param->type->assignable) {
+          middle("const ");
+        }
+        line(param->type << "& " << param->name << ';');
       }
     }
     line("");
@@ -53,7 +56,10 @@ void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
         if (before) {
           middle(", ");
         }
-        middle("const " << param->type << "& " << param->name);
+        if (!param->type->assignable) {
+          middle("const ");
+        }
+        middle(param->type << "& " << param->name);
         before = true;
       }
     }
@@ -226,17 +232,24 @@ void bi::CppDispatcherGenerator::genBody(const Dispatcher* o) {
 
 void bi::CppDispatcherGenerator::genArg(const Expression* arg,
     const VarParameter* param) {
-  middle("bi::cast<");
-  if (!param->type->assignable) {
-    middle("const ");
-  }
-  if (!arg->type->isLambda() && param->type->isLambda()) {
-    const LambdaType* lambda =
-        dynamic_cast<const LambdaType*>(param->type.get());
-    assert(lambda);
-    middle(lambda->result);
+  Expression* arg1 = const_cast<Expression*>(arg);
+  VarParameter* param1 = const_cast<VarParameter*>(param);
+
+  if (!arg1->type->equals(*param1->type)) {
+    middle("bi::cast<");
+    if (!param1->type->assignable) {
+      middle("const ");
+    }
+    if (!arg1->type->isLambda() && param1->type->isLambda()) {
+      const LambdaType* lambda =
+          dynamic_cast<const LambdaType*>(param1->type.get());
+      assert(lambda);
+      middle(lambda->result);
+    } else {
+      middle(param1->type);
+    }
+    middle("&>(" << arg1 << ')');
   } else {
-    middle(param->type);
+    middle(arg1);
   }
-  middle("&>(" << arg << ')');
 }
