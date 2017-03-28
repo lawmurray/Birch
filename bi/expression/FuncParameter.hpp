@@ -36,6 +36,21 @@ public:
           nullptr);
 
   /**
+   * Constructor for binary operator.
+   *
+   * @param left Left operand.
+   * @param name Operator.
+   * @param right Right operand.
+   * @param result Result expression.
+   * @param braces Braces expression.
+   * @param form Signature form.
+   * @param loc Location.
+   */
+  FuncParameter(Expression* left, shared_ptr<Name> name, Expression* right,
+      Expression* result, Expression* braces, const SignatureForm form,
+      shared_ptr<Location> loc = nullptr);
+
+  /**
    * Destructor.
    */
   virtual ~FuncParameter();

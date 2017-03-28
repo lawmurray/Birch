@@ -40,10 +40,11 @@ void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
     for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
       VarParameter* param = *iter;
       if (!param->type->isVariant()) {
+        start("");
         if (!param->type->assignable) {
           middle("const ");
         }
-        line(param->type << "& " << param->name << ';');
+        finish(param->type << "& " << param->name << ';');
       }
     }
     line("");

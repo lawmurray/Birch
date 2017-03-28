@@ -30,9 +30,9 @@ public:
   typedef typename value_type<Variate>::type value_type;
 
   /**
-   * Backward function type.
+   * Backward lambda type.
    */
-  typedef std::function<double(const value_type&)> observe_type;
+  typedef Lambda<Variate> lambda_type;
 
   /**
    * Constructor.
@@ -72,7 +72,7 @@ public:
   /**
    * Initialise the random variable.
    */
-  void init(const Model& m, const observe_type& observeFunction);
+  void init(const Model& m, const lambda_type& lambda);
 
   /*
    * RandomInterface requirements.
@@ -85,9 +85,9 @@ public:
   virtual void setId(const int id);
 
   /**
-   * Backward function.
+   * Lambda function.
    */
-  observe_type observeFunction;
+  lambda_type lambda;
 
   /**
    * Variate.
@@ -170,20 +170,20 @@ bi::Random<Variate,Model>::operator const Model&() const {
 
 template<class Variate, class Model>
 void bi::Random<Variate,Model>::init(const Model& m,
-    const observe_type& observeFunction) {
+    const lambda_type& lambda) {
   this->m = m;
-  this->observeFunction = observeFunction;
+  this->lambda = lambda;
   this->id = method->add(this);
 }
 
 template<class Variate, class Model>
 void bi::Random<Variate,Model>::simulate() {
-  simulate_(x, m);
+  x = sim_(m);
 }
 
 template<class Variate, class Model>
 double bi::Random<Variate,Model>::observe() {
-  return observeFunction(x);
+  return lambda(x);
 }
 
 template<class Variate, class Model>

@@ -12,13 +12,13 @@ class Lambda {
 public:
   typedef typename value_type<ResultType>::type value_type;
   typedef std::function<value_type()> forward_type;
-  typedef std::function<void(const value_type&)> backward_type;
+  typedef std::function<double(const value_type&)> backward_type;
 
   /**
    * Constructor.
    */
   Lambda(const forward_type forward = []() -> value_type { assert(false); },
-      const backward_type backward = [](const value_type&) { assert(false); }) :
+      const backward_type backward = [](const value_type&) -> double { assert(false); }) :
       forward(forward),
       backward(backward) {
         //
@@ -28,8 +28,8 @@ public:
    * Value constructor.
    */
   Lambda(const value_type& value) :
-      forward([&]() { return value; }),
-      backward([&](const value_type& o) { const_cast<value_type&>(value) = o;}) {
+      forward([&]() -> value_type { return value; }),
+      backward([&](const value_type& o) -> double { const_cast<value_type&>(value) = o; return 0.0; }) {
     //
   }
 
@@ -57,7 +57,7 @@ public:
   /**
    * Evaluate backward lambda.
    */
-  void operator()(const value_type& o) const {
+  double operator()(const value_type& o) const {
     backward(o);
   }
 

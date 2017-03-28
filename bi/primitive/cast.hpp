@@ -10,7 +10,7 @@
 
 namespace bi {
 enum TypeFlag {
-  IS_PRIMITIVE, IS_MODEL, IS_RANDOM
+  IS_PRIMITIVE, IS_MODEL, IS_RANDOM, IS_LAMBDA
 };
 
 template<class T>
@@ -22,6 +22,11 @@ struct type_flag {
 template<class Variate, class Model>
 struct type_flag<Random<Variate,Model>> {
   static const TypeFlag value = IS_RANDOM;
+};
+
+template<class Result>
+struct type_flag<Lambda<Result>> {
+  static const TypeFlag value = IS_LAMBDA;
 };
 
 /**
@@ -56,6 +61,14 @@ struct cast_impl<To,From,IS_PRIMITIVE,IS_RANDOM> {
 };
 
 template<class To, class From>
+struct cast_impl<To,From,IS_PRIMITIVE,IS_LAMBDA> {
+  static To eval(From&& o) {
+    throw std::bad_cast();
+    //return static_cast<To>(o);
+  }
+};
+
+template<class To, class From>
 struct cast_impl<To,From,IS_MODEL,IS_PRIMITIVE> {
   static To eval(From&& o) {
     throw std::bad_cast();
@@ -71,6 +84,13 @@ struct cast_impl<To,From,IS_MODEL,IS_MODEL> {
 
 template<class To, class From>
 struct cast_impl<To,From,IS_MODEL,IS_RANDOM> {
+  static To eval(From&& o) {
+    return static_cast<To>(o);
+  }
+};
+
+template<class To, class From>
+struct cast_impl<To,From,IS_MODEL,IS_LAMBDA> {
   static To eval(From&& o) {
     return static_cast<To>(o);
   }
@@ -98,6 +118,41 @@ struct cast_impl<To,From,IS_RANDOM,IS_RANDOM> {
     } else {
       throw std::bad_cast();
     }
+  }
+};
+
+template<class To, class From>
+struct cast_impl<To,From,IS_RANDOM,IS_LAMBDA> {
+  static To eval(From&& o) {
+    throw std::bad_cast();
+  }
+};
+
+template<class To, class From>
+struct cast_impl<To,From,IS_LAMBDA,IS_PRIMITIVE> {
+  static To eval(From&& o) {
+    throw std::bad_cast();
+  }
+};
+
+template<class To, class From>
+struct cast_impl<To,From,IS_LAMBDA,IS_MODEL> {
+  static To eval(From&& o) {
+    throw std::bad_cast();
+  }
+};
+
+template<class To, class From>
+struct cast_impl<To,From,IS_LAMBDA,IS_RANDOM> {
+  static To eval(From&& o) {
+    throw std::bad_cast();
+  }
+};
+
+template<class To, class From>
+struct cast_impl<To,From,IS_LAMBDA,IS_LAMBDA> {
+  static To eval(From&& o) {
+    throw std::bad_cast();
   }
 };
 
