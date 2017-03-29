@@ -37,11 +37,11 @@ public:
 
   virtual bool isLambda() const;
 
-  virtual bool dispatchDefinitely(Type& o);
-  virtual bool definitely(LambdaType& o);
+  virtual bool dispatchDefinitely(const Type& o) const;
+  virtual bool definitely(const LambdaType& o) const;
 
-  virtual bool dispatchPossibly(Type& o);
-  virtual bool possibly(LambdaType& o);
+  virtual bool dispatchPossibly(const Type& o) const;
+  virtual bool possibly(const LambdaType& o) const;
 
   /**
    * Parameters type.

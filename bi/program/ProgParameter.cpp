@@ -33,20 +33,20 @@ void bi::ProgParameter::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::ProgParameter::dispatchDefinitely(Prog& o) {
+bool bi::ProgParameter::dispatchDefinitely(const Prog& o) const {
   return o.definitely(*this);
 }
 
-bool bi::ProgParameter::definitely(ProgParameter& o) {
+bool bi::ProgParameter::definitely(const ProgParameter& o) const {
   return parens->definitely(*o.parens) && braces->definitely(*o.braces)
      ;
 }
 
-bool bi::ProgParameter::dispatchPossibly(Prog& o) {
+bool bi::ProgParameter::dispatchPossibly(const Prog& o) const {
   return o.possibly(*this);
 }
 
-bool bi::ProgParameter::possibly(ProgParameter& o) {
+bool bi::ProgParameter::possibly(const ProgParameter& o) const {
   return parens->possibly(*o.parens) && braces->possibly(*o.braces)
      ;
 }

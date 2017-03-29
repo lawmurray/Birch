@@ -48,34 +48,34 @@ void bi::FuncReference::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::FuncReference::dispatchDefinitely(Expression& o) {
+bool bi::FuncReference::dispatchDefinitely(const Expression& o) const {
   return o.definitely(*this);
 }
 
-bool bi::FuncReference::definitely(FuncReference& o) {
+bool bi::FuncReference::definitely(const FuncReference& o) const {
   return parens->definitely(*o.parens);
 }
 
-bool bi::FuncReference::definitely(FuncParameter& o) {
+bool bi::FuncReference::definitely(const FuncParameter& o) const {
   return parens->definitely(*o.parens);
 }
 
-bool bi::FuncReference::definitely(VarParameter& o) {
+bool bi::FuncReference::definitely(const VarParameter& o) const {
   return type->definitely(*o.type);
 }
 
-bool bi::FuncReference::dispatchPossibly(Expression& o) {
+bool bi::FuncReference::dispatchPossibly(const Expression& o) const {
   return o.possibly(*this);
 }
 
-bool bi::FuncReference::possibly(FuncReference& o) {
+bool bi::FuncReference::possibly(const FuncReference& o) const {
   return parens->possibly(*o.parens);
 }
 
-bool bi::FuncReference::possibly(FuncParameter& o) {
+bool bi::FuncReference::possibly(const FuncParameter& o) const {
   return parens->possibly(*o.parens);
 }
 
-bool bi::FuncReference::possibly(VarParameter& o) {
+bool bi::FuncReference::possibly(const VarParameter& o) const {
   return type->possibly(*o.type);
 }

@@ -76,32 +76,32 @@ public:
   /*
    * Double-dispatch partial order comparisons.
    */
-  virtual bool definitely(Statement& o);
-  virtual bool dispatchDefinitely(Statement& o) = 0;
-  virtual bool definitely(Conditional& o);
-  virtual bool definitely(Declaration<VarParameter>& o);
-  virtual bool definitely(Declaration<FuncParameter>& o);
-  virtual bool definitely(Declaration<ProgParameter>& o);
-  virtual bool definitely(Declaration<ModelParameter>& o);
-  virtual bool definitely(EmptyStatement& o);
-  virtual bool definitely(ExpressionStatement& o);
-  virtual bool definitely(Import& o);
-  virtual bool definitely(List<Statement>& o);
-  virtual bool definitely(Loop& o);
-  virtual bool definitely(Raw& o);
+  virtual bool definitely(const Statement& o) const;
+  virtual bool dispatchDefinitely(const Statement& o) const = 0;
+  virtual bool definitely(const Conditional& o) const;
+  virtual bool definitely(const Declaration<VarParameter>& o) const;
+  virtual bool definitely(const Declaration<FuncParameter>& o) const;
+  virtual bool definitely(const Declaration<ProgParameter>& o) const;
+  virtual bool definitely(const Declaration<ModelParameter>& o) const;
+  virtual bool definitely(const EmptyStatement& o) const;
+  virtual bool definitely(const ExpressionStatement& o) const;
+  virtual bool definitely(const Import& o) const;
+  virtual bool definitely(const List<Statement>& o) const;
+  virtual bool definitely(const Loop& o) const;
+  virtual bool definitely(const Raw& o) const;
 
-  virtual bool possibly(Statement& o);
-  virtual bool dispatchPossibly(Statement& o) = 0;
-  virtual bool possibly(Conditional& o);
-  virtual bool possibly(Declaration<VarParameter>& o);
-  virtual bool possibly(Declaration<FuncParameter>& o);
-  virtual bool possibly(Declaration<ProgParameter>& o);
-  virtual bool possibly(Declaration<ModelParameter>& o);
-  virtual bool possibly(EmptyStatement& o);
-  virtual bool possibly(ExpressionStatement& o);
-  virtual bool possibly(Import& o);
-  virtual bool possibly(List<Statement>& o);
-  virtual bool possibly(Loop& o);
-  virtual bool possibly(Raw& o);
+  virtual bool possibly(const Statement& o) const;
+  virtual bool dispatchPossibly(const Statement& o) const = 0;
+  virtual bool possibly(const Conditional& o) const;
+  virtual bool possibly(const Declaration<VarParameter>& o) const;
+  virtual bool possibly(const Declaration<FuncParameter>& o) const;
+  virtual bool possibly(const Declaration<ProgParameter>& o) const;
+  virtual bool possibly(const Declaration<ModelParameter>& o) const;
+  virtual bool possibly(const EmptyStatement& o) const;
+  virtual bool possibly(const ExpressionStatement& o) const;
+  virtual bool possibly(const Import& o) const;
+  virtual bool possibly(const List<Statement>& o) const;
+  virtual bool possibly(const Loop& o) const;
+  virtual bool possibly(const Raw& o) const;
 };
 }

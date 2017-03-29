@@ -47,91 +47,91 @@ int bi::Type::count() const {
   return 0;
 }
 
-bool bi::Type::definitely(Type& o) {
+bool bi::Type::definitely(const Type& o) const {
   return o.dispatchDefinitely(*this);
 }
 
-bool bi::Type::definitely(AssignableType& o) {
+bool bi::Type::definitely(const AssignableType& o) const {
   return false;
 }
 
-bool bi::Type::definitely(BracketsType& o) {
+bool bi::Type::definitely(const BracketsType& o) const {
   return false;
 }
 
-bool bi::Type::definitely(EmptyType& o) {
+bool bi::Type::definitely(const EmptyType& o) const {
   return false;
 }
 
-bool bi::Type::definitely(LambdaType& o) {
+bool bi::Type::definitely(const LambdaType& o) const {
   return false;
 }
 
-bool bi::Type::definitely(List<Type>& o) {
+bool bi::Type::definitely(const List<Type>& o) const {
   return false;
 }
 
-bool bi::Type::definitely(ModelParameter& o) {
+bool bi::Type::definitely(const ModelParameter& o) const {
   return false;
 }
 
-bool bi::Type::definitely(ModelReference& o) {
+bool bi::Type::definitely(const ModelReference& o) const {
   return false;
 }
 
-bool bi::Type::definitely(ParenthesesType& o) {
+bool bi::Type::definitely(const ParenthesesType& o) const {
   return false;
 }
 
-bool bi::Type::definitely(RandomType& o) {
+bool bi::Type::definitely(const RandomType& o) const {
   return false;
 }
 
-bool bi::Type::definitely(VariantType& o) {
+bool bi::Type::definitely(const VariantType& o) const {
   return false;
 }
 
-bool bi::Type::possibly(Type& o) {
+bool bi::Type::possibly(const Type& o) const {
   return o.dispatchPossibly(*this);
 }
 
-bool bi::Type::possibly(AssignableType& o) {
+bool bi::Type::possibly(const AssignableType& o) const {
   return false;
 }
 
-bool bi::Type::possibly(BracketsType& o) {
+bool bi::Type::possibly(const BracketsType& o) const {
   return false;
 }
 
-bool bi::Type::possibly(EmptyType& o) {
+bool bi::Type::possibly(const EmptyType& o) const {
   return false;
 }
 
-bool bi::Type::possibly(LambdaType& o) {
+bool bi::Type::possibly(const LambdaType& o) const {
   return false;
 }
 
-bool bi::Type::possibly(List<Type>& o) {
+bool bi::Type::possibly(const List<Type>& o) const {
   return false;
 }
 
-bool bi::Type::possibly(ModelParameter& o) {
+bool bi::Type::possibly(const ModelParameter& o) const {
   return false;
 }
 
-bool bi::Type::possibly(ModelReference& o) {
+bool bi::Type::possibly(const ModelReference& o) const {
   return false;
 }
 
-bool bi::Type::possibly(ParenthesesType& o) {
+bool bi::Type::possibly(const ParenthesesType& o) const {
   return false;
 }
 
-bool bi::Type::possibly(RandomType& o) {
+bool bi::Type::possibly(const RandomType& o) const {
   return false;
 }
 
-bool bi::Type::possibly(VariantType& o) {
+bool bi::Type::possibly(const VariantType& o) const {
   return false;
 }
 

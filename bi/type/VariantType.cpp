@@ -52,11 +52,11 @@ bool bi::VariantType::isVariant() const {
   return true;
 }
 
-bool bi::VariantType::definitelyAll(Type& o) {
+bool bi::VariantType::definitelyAll(const Type& o) const {
   return definite->definitely(o);
 }
 
-bool bi::VariantType::possiblyAny(Type& o) {
+bool bi::VariantType::possiblyAny(const Type& o) const {
   auto f = [&](Type* type) {
     return type->possibly(o);
   };
@@ -64,7 +64,7 @@ bool bi::VariantType::possiblyAny(Type& o) {
       || std::any_of(possibles.begin(), possibles.end(), f);
 }
 
-bool bi::VariantType::dispatchDefinitely(Type& o) {
+bool bi::VariantType::dispatchDefinitely(const Type& o) const {
   auto f = [&](Type* type) {
     return type->dispatchDefinitely(o);
   };
@@ -72,47 +72,47 @@ bool bi::VariantType::dispatchDefinitely(Type& o) {
       && std::all_of(possibles.begin(), possibles.end(), f);
 }
 
-bool bi::VariantType::definitely(AssignableType& o) {
+bool bi::VariantType::definitely(const AssignableType& o) const {
   return definitelyAll(o);
 }
 
-bool bi::VariantType::definitely(BracketsType& o) {
+bool bi::VariantType::definitely(const BracketsType& o) const {
   return definitelyAll(o);
 }
 
-bool bi::VariantType::definitely(EmptyType& o) {
+bool bi::VariantType::definitely(const EmptyType& o) const {
   return definitelyAll(o);
 }
 
-bool bi::VariantType::definitely(LambdaType& o) {
+bool bi::VariantType::definitely(const LambdaType& o) const {
   return definitelyAll(o);
 }
 
-bool bi::VariantType::definitely(List<Type>& o) {
+bool bi::VariantType::definitely(const List<Type>& o) const {
   return definitelyAll(o);
 }
 
-bool bi::VariantType::definitely(ModelParameter& o) {
+bool bi::VariantType::definitely(const ModelParameter& o) const {
   return definitelyAll(o);
 }
 
-bool bi::VariantType::definitely(ModelReference& o) {
+bool bi::VariantType::definitely(const ModelReference& o) const {
   return definitelyAll(o);
 }
 
-bool bi::VariantType::definitely(ParenthesesType& o) {
+bool bi::VariantType::definitely(const ParenthesesType& o) const {
   return definitelyAll(o);
 }
 
-bool bi::VariantType::definitely(RandomType& o) {
+bool bi::VariantType::definitely(const RandomType& o) const {
   return definitelyAll(o);
 }
 
-bool bi::VariantType::definitely(VariantType& o) {
+bool bi::VariantType::definitely(const VariantType& o) const {
   return definitelyAll(o);
 }
 
-bool bi::VariantType::dispatchPossibly(Type& o) {
+bool bi::VariantType::dispatchPossibly(const Type& o) const {
   auto f = [&](Type* type) {
     return type->dispatchPossibly(o);
   };
@@ -120,42 +120,42 @@ bool bi::VariantType::dispatchPossibly(Type& o) {
       || std::any_of(possibles.begin(), possibles.end(), f);
 }
 
-bool bi::VariantType::possibly(AssignableType& o) {
+bool bi::VariantType::possibly(const AssignableType& o) const {
   return possiblyAny(o);
 }
 
-bool bi::VariantType::possibly(BracketsType& o) {
+bool bi::VariantType::possibly(const BracketsType& o) const {
   return possiblyAny(o);
 }
 
-bool bi::VariantType::possibly(EmptyType& o) {
+bool bi::VariantType::possibly(const EmptyType& o) const {
   return possiblyAny(o);
 }
 
-bool bi::VariantType::possibly(LambdaType& o) {
+bool bi::VariantType::possibly(const LambdaType& o) const {
   return possiblyAny(o);
 }
 
-bool bi::VariantType::possibly(List<Type>& o) {
+bool bi::VariantType::possibly(const List<Type>& o) const {
   return possiblyAny(o);
 }
 
-bool bi::VariantType::possibly(ModelParameter& o) {
+bool bi::VariantType::possibly(const ModelParameter& o) const {
   return possiblyAny(o);
 }
 
-bool bi::VariantType::possibly(ModelReference& o) {
+bool bi::VariantType::possibly(const ModelReference& o) const {
   return possiblyAny(o);
 }
 
-bool bi::VariantType::possibly(ParenthesesType& o) {
+bool bi::VariantType::possibly(const ParenthesesType& o) const {
   return possiblyAny(o);
 }
 
-bool bi::VariantType::possibly(RandomType& o) {
+bool bi::VariantType::possibly(const RandomType& o) const {
   return possiblyAny(o);
 }
 
-bool bi::VariantType::possibly(VariantType& o) {
+bool bi::VariantType::possibly(const VariantType& o) const {
   return possiblyAny(o);
 }

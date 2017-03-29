@@ -58,52 +58,53 @@ bool bi::ModelReference::isModel() const {
   }
 }
 
-bool bi::ModelReference::canUpcast(ModelReference& o) {
+bool bi::ModelReference::canUpcast(const ModelReference& o) const {
   /* pre-condition */
   assert(target && o.target);
 
   if (o.target->isEqual()) {
-    ModelReference* ref =
-        dynamic_cast<ModelReference*>(o.target->base->strip());
+    const ModelReference* ref =
+        dynamic_cast<const ModelReference*>(o.target->base->strip());
     return canUpcast(*ref);  // compare with canonical type
   } else {
-    ModelReference* ref = dynamic_cast<ModelReference*>(target->base->strip());
+    const ModelReference* ref =
+        dynamic_cast<const ModelReference*>(target->base->strip());
     return target == o.target || (ref && ref->canUpcast(o));
   }
 }
 
-bool bi::ModelReference::canDowncast(ModelReference& o) {
+bool bi::ModelReference::canDowncast(const ModelReference& o) const {
   return o.canUpcast(*this);
 }
 
-bool bi::ModelReference::dispatchDefinitely(Type& o) {
+bool bi::ModelReference::dispatchDefinitely(const Type& o) const {
   return o.definitely(*this);
 }
 
-bool bi::ModelReference::definitely(ModelParameter& o) {
+bool bi::ModelReference::definitely(const ModelParameter& o) const {
   return true;
 }
 
-bool bi::ModelReference::definitely(ModelReference& o) {
+bool bi::ModelReference::definitely(const ModelReference& o) const {
   return canUpcast(o) && (!o.assignable || assignable);
 }
 
-bool bi::ModelReference::definitely(EmptyType& o) {
+bool bi::ModelReference::definitely(const EmptyType& o) const {
   return !o.assignable || assignable;
 }
 
-bool bi::ModelReference::dispatchPossibly(Type& o) {
+bool bi::ModelReference::dispatchPossibly(const Type& o) const {
   return o.possibly(*this);
 }
 
-bool bi::ModelReference::possibly(ModelParameter& o) {
+bool bi::ModelReference::possibly(const ModelParameter& o) const {
   return true;
 }
 
-bool bi::ModelReference::possibly(ModelReference& o) {
+bool bi::ModelReference::possibly(const ModelReference& o) const {
   return canDowncast(o) && (!o.assignable || assignable);
 }
 
-bool bi::ModelReference::possibly(EmptyType& o) {
+bool bi::ModelReference::possibly(const EmptyType& o) const {
   return !o.assignable || assignable;
 }

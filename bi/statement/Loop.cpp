@@ -30,18 +30,18 @@ void bi::Loop::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::Loop::dispatchDefinitely(Statement& o) {
+bool bi::Loop::dispatchDefinitely(const Statement& o) const {
   return o.definitely(*this);
 }
 
-bool bi::Loop::definitely(Loop& o) {
+bool bi::Loop::definitely(const Loop& o) const {
   return cond->definitely(*o.cond) && braces->definitely(*o.braces);
 }
 
-bool bi::Loop::dispatchPossibly(Statement& o) {
+bool bi::Loop::dispatchPossibly(const Statement& o) const {
   return o.possibly(*this);
 }
 
-bool bi::Loop::possibly(Loop& o) {
+bool bi::Loop::possibly(const Loop& o) const {
   return cond->possibly(*o.cond) && braces->possibly(*o.braces);
 }

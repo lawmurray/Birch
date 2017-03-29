@@ -36,10 +36,10 @@ public:
   using Expression::definitely;
   using Expression::possibly;
 
-  virtual bool dispatchDefinitely(Expression& o);
-  virtual bool definitely(BracesExpression& o);
+  virtual bool dispatchDefinitely(const Expression& o) const;
+  virtual bool definitely(const BracesExpression& o) const;
 
-  virtual bool dispatchPossibly(Expression& o);
-  virtual bool possibly(BracesExpression& o);
+  virtual bool dispatchPossibly(const Expression& o) const;
+  virtual bool possibly(const BracesExpression& o) const;
 };
 }

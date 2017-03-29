@@ -33,18 +33,18 @@ bool bi::LambdaType::isLambda() const {
   return true;
 }
 
-bool bi::LambdaType::dispatchDefinitely(Type& o) {
+bool bi::LambdaType::dispatchDefinitely(const Type& o) const {
   return o.definitely(*this);
 }
 
-bool bi::LambdaType::definitely(LambdaType& o) {
+bool bi::LambdaType::definitely(const LambdaType& o) const {
   return parens->definitely(*o.parens) && result->definitely(*o.result);
 }
 
-bool bi::LambdaType::dispatchPossibly(Type& o) {
+bool bi::LambdaType::dispatchPossibly(const Type& o) const {
   return o.possibly(*this);
 }
 
-bool bi::LambdaType::possibly(LambdaType& o) {
+bool bi::LambdaType::possibly(const LambdaType& o) const {
   return parens->possibly(*o.parens) && result->possibly(*o.result);
 }

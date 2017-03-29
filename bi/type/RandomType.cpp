@@ -35,64 +35,64 @@ bool bi::RandomType::isRandom() const {
   return true;
 }
 
-bool bi::RandomType::dispatchDefinitely(Type& o) {
+bool bi::RandomType::dispatchDefinitely(const Type& o) const {
   return o.definitely(*this);
 }
 
-bool bi::RandomType::definitely(EmptyType& o) {
+bool bi::RandomType::definitely(const EmptyType& o) const {
   return !o.assignable || assignable;
 }
 
-bool bi::RandomType::definitely(LambdaType& o) {
+bool bi::RandomType::definitely(const LambdaType& o) const {
   return left->definitely(o) && (!o.assignable || assignable);
 }
 
-bool bi::RandomType::definitely(List<Type>& o) {
+bool bi::RandomType::definitely(const List<Type>& o) const {
   return left->definitely(o) && (!o.assignable || assignable);
 }
 
-bool bi::RandomType::definitely(ModelReference& o) {
+bool bi::RandomType::definitely(const ModelReference& o) const {
   return left->definitely(o) && (!o.assignable || assignable);
 }
 
-bool bi::RandomType::definitely(ModelParameter& o) {
+bool bi::RandomType::definitely(const ModelParameter& o) const {
   return left->definitely(o) && (!o.assignable || assignable);
 }
 
-bool bi::RandomType::definitely(RandomType& o) {
+bool bi::RandomType::definitely(const RandomType& o) const {
   return left->definitely(*o.left) && right->definitely(*o.right)
       && (!o.assignable || assignable);
 }
 
-bool bi::RandomType::dispatchPossibly(Type& o) {
+bool bi::RandomType::dispatchPossibly(const Type& o) const {
   return o.possibly(*this);
 }
 
-bool bi::RandomType::possibly(EmptyType& o) {
+bool bi::RandomType::possibly(const EmptyType& o) const {
   return !o.assignable || assignable;
 }
 
-bool bi::RandomType::possibly(LambdaType& o) {
+bool bi::RandomType::possibly(const LambdaType& o) const {
   return (left->possibly(o) || right->possibly(o))
       && (!o.assignable || assignable);
 }
 
-bool bi::RandomType::possibly(List<Type>& o) {
+bool bi::RandomType::possibly(const List<Type>& o) const {
   return (left->possibly(o) || right->possibly(o))
       && (!o.assignable || assignable);
 }
 
-bool bi::RandomType::possibly(ModelReference& o) {
+bool bi::RandomType::possibly(const ModelReference& o) const {
   return (left->possibly(o) || right->possibly(o))
       && (!o.assignable || assignable);
 }
 
-bool bi::RandomType::possibly(ModelParameter& o) {
+bool bi::RandomType::possibly(const ModelParameter& o) const {
   return (left->possibly(o) || right->possibly(o))
       && (!o.assignable || assignable);
 }
 
-bool bi::RandomType::possibly(RandomType& o) {
+bool bi::RandomType::possibly(const RandomType& o) const {
   return left->possibly(*o.left) && right->possibly(*o.right)
       && (!o.assignable || assignable);
 }

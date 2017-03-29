@@ -64,15 +64,15 @@ public:
   using Expression::definitely;
   using Expression::possibly;
 
-  virtual bool dispatchDefinitely(Expression& o);
-  virtual bool definitely(FuncReference& o);
-  virtual bool definitely(FuncParameter& o);
-  virtual bool definitely(VarParameter& o);
+  virtual bool dispatchDefinitely(const Expression& o) const;
+  virtual bool definitely(const FuncReference& o) const;
+  virtual bool definitely(const FuncParameter& o) const;
+  virtual bool definitely(const VarParameter& o) const;
 
-  virtual bool dispatchPossibly(Expression& o);
-  virtual bool possibly(FuncReference& o);
-  virtual bool possibly(FuncParameter& o);
-  virtual bool possibly(VarParameter& o);
+  virtual bool dispatchPossibly(const Expression& o) const;
+  virtual bool possibly(const FuncReference& o) const;
+  virtual bool possibly(const FuncParameter& o) const;
+  virtual bool possibly(const VarParameter& o) const;
 
   /**
    * Possible function resolutions that will need to be checked at runtime.

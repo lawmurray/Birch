@@ -58,14 +58,14 @@ public:
   /*
    * Double-dispatch partial order comparisons.
    */
-  virtual bool definitely(Prog& o);
-  virtual bool dispatchDefinitely(Prog& o) = 0;
-  virtual bool definitely(ProgParameter& o);
-  virtual bool definitely(ProgReference& o);
+  virtual bool definitely(const Prog& o) const;
+  virtual bool dispatchDefinitely(const Prog& o) const = 0;
+  virtual bool definitely(const ProgParameter& o) const;
+  virtual bool definitely(const ProgReference& o) const;
 
-  virtual bool possibly(Prog& o);
-  virtual bool dispatchPossibly(Prog& o) = 0;
-  virtual bool possibly(ProgParameter& o);
-  virtual bool possibly(ProgReference& o);
+  virtual bool possibly(const Prog& o) const;
+  virtual bool dispatchPossibly(const Prog& o) const = 0;
+  virtual bool possibly(const ProgParameter& o) const;
+  virtual bool possibly(const ProgReference& o) const;
 };
 }

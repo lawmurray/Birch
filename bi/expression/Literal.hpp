@@ -50,13 +50,13 @@ public:
   using Expression::definitely;
   using Expression::possibly;
 
-  virtual bool dispatchDefinitely(Expression& o);
+  virtual bool dispatchDefinitely(const Expression& o) const;
   virtual bool definitely(Literal<T1>& o);
-  virtual bool definitely(VarParameter& o);
+  virtual bool definitely(const VarParameter& o) const;
 
-  virtual bool dispatchPossibly(Expression& o);
+  virtual bool dispatchPossibly(const Expression& o) const;
   virtual bool possibly(Literal<T1>& o);
-  virtual bool possibly(VarParameter& o);
+  virtual bool possibly(const VarParameter& o) const;
 };
 
 /**

@@ -60,39 +60,39 @@ bi::Iterator<bi::Expression> bi::Expression::end() const {
   return bi::Iterator<Expression>(nullptr);
 }
 
-bool bi::Expression::definitely(Expression& o) {
+bool bi::Expression::definitely(const Expression& o) const {
   return o.dispatchDefinitely(*this);
 }
 
-bool bi::Expression::definitely(BracesExpression& o) {
+bool bi::Expression::definitely(const BracesExpression& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(BracketsExpression& o) {
+bool bi::Expression::definitely(const BracketsExpression& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(EmptyExpression& o) {
+bool bi::Expression::definitely(const EmptyExpression& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(List<Expression>& o) {
+bool bi::Expression::definitely(const List<Expression>& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(FuncParameter& o) {
+bool bi::Expression::definitely(const FuncParameter& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(FuncReference& o) {
+bool bi::Expression::definitely(const FuncReference& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(Index& o) {
+bool bi::Expression::definitely(const Index& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(Literal<bool>& o) {
+bool bi::Expression::definitely(const Literal<bool>& o) const {
   return false;
 }
 
@@ -100,7 +100,7 @@ bool bi::Expression::definitely(Literal<int64_t>& o) {
   return false;
 }
 
-bool bi::Expression::definitely(Literal<double>& o) {
+bool bi::Expression::definitely(const Literal<double>& o) const {
   return false;
 }
 
@@ -108,63 +108,63 @@ bool bi::Expression::definitely(Literal<const char*>& o) {
   return false;
 }
 
-bool bi::Expression::definitely(ParenthesesExpression& o) {
+bool bi::Expression::definitely(const ParenthesesExpression& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(Range& o) {
+bool bi::Expression::definitely(const Range& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(This& o) {
+bool bi::Expression::definitely(const This& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(Member& o) {
+bool bi::Expression::definitely(const Member& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(VarParameter& o) {
+bool bi::Expression::definitely(const VarParameter& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(VarReference& o) {
+bool bi::Expression::definitely(const VarReference& o) const {
   return false;
 }
 
-bool bi::Expression::possibly(Expression& o) {
+bool bi::Expression::possibly(const Expression& o) const {
   return o.dispatchPossibly(*this);
 }
 
-bool bi::Expression::possibly(BracesExpression& o) {
+bool bi::Expression::possibly(const BracesExpression& o) const {
   return false;
 }
 
-bool bi::Expression::possibly(BracketsExpression& o) {
+bool bi::Expression::possibly(const BracketsExpression& o) const {
   return false;
 }
 
-bool bi::Expression::possibly(EmptyExpression& o) {
+bool bi::Expression::possibly(const EmptyExpression& o) const {
   return false;
 }
 
-bool bi::Expression::possibly(List<Expression>& o) {
+bool bi::Expression::possibly(const List<Expression>& o) const {
   return false;
 }
 
-bool bi::Expression::possibly(FuncParameter& o) {
+bool bi::Expression::possibly(const FuncParameter& o) const {
   return false;
 }
 
-bool bi::Expression::possibly(FuncReference& o) {
+bool bi::Expression::possibly(const FuncReference& o) const {
   return false;
 }
 
-bool bi::Expression::possibly(Index& o) {
+bool bi::Expression::possibly(const Index& o) const {
   return false;
 }
 
-bool bi::Expression::possibly(Literal<bool>& o) {
+bool bi::Expression::possibly(const Literal<bool>& o) const {
   return false;
 }
 
@@ -172,7 +172,7 @@ bool bi::Expression::possibly(Literal<int64_t>& o) {
   return false;
 }
 
-bool bi::Expression::possibly(Literal<double>& o) {
+bool bi::Expression::possibly(const Literal<double>& o) const {
   return false;
 }
 
@@ -180,27 +180,27 @@ bool bi::Expression::possibly(Literal<const char*>& o) {
   return false;
 }
 
-bool bi::Expression::possibly(ParenthesesExpression& o) {
+bool bi::Expression::possibly(const ParenthesesExpression& o) const {
   return false;
 }
 
-bool bi::Expression::possibly(Range& o) {
+bool bi::Expression::possibly(const Range& o) const {
   return false;
 }
 
-bool bi::Expression::possibly(This& o) {
+bool bi::Expression::possibly(const This& o) const {
   return false;
 }
 
-bool bi::Expression::possibly(Member& o) {
+bool bi::Expression::possibly(const Member& o) const {
   return false;
 }
 
-bool bi::Expression::possibly(VarParameter& o) {
+bool bi::Expression::possibly(const VarParameter& o) const {
   return false;
 }
 
-bool bi::Expression::possibly(VarReference& o) {
+bool bi::Expression::possibly(const VarReference& o) const {
   return false;
 }
 

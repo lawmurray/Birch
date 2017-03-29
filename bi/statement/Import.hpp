@@ -47,10 +47,10 @@ public:
   using Statement::definitely;
   using Statement::possibly;
 
-  virtual bool dispatchDefinitely(Statement& o);
-  virtual bool definitely(Import& o);
+  virtual bool dispatchDefinitely(const Statement& o) const;
+  virtual bool definitely(const Import& o) const;
 
-  virtual bool dispatchPossibly(Statement& o);
-  virtual bool possibly(Import& o);
+  virtual bool dispatchPossibly(const Statement& o) const;
+  virtual bool possibly(const Import& o) const;
 };
 }

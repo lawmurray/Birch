@@ -68,22 +68,22 @@ void bi::List<T>::accept(Visitor* visitor) const {
 }
 
 template<class T>
-bool bi::List<T>::dispatchDefinitely(T& o) {
+bool bi::List<T>::dispatchDefinitely(const T& o) const {
   return o.definitely(*this);
 }
 
 template<class T>
-bool bi::List<T>::definitely(List<T>& o) {
+bool bi::List<T>::definitely(const List<T>& o) const {
   return head->definitely(*o.head) && tail->definitely(*o.tail);
 }
 
 template<class T>
-bool bi::List<T>::dispatchPossibly(T& o) {
+bool bi::List<T>::dispatchPossibly(const T& o) const {
   return o.possibly(*this);
 }
 
 template<class T>
-bool bi::List<T>::possibly(List<T>& o) {
+bool bi::List<T>::possibly(const List<T>& o) const {
   return head->possibly(*o.head) && tail->possibly(*o.tail);
 }
 

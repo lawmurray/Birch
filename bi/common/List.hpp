@@ -59,11 +59,11 @@ public:
   using T::definitely;
   using T::possibly;
 
-  virtual bool dispatchDefinitely(T& o);
-  virtual bool definitely(List<T>& o);
+  virtual bool dispatchDefinitely(const T& o) const;
+  virtual bool definitely(const List<T>& o) const;
 
-  virtual bool dispatchPossibly(T& o);
-  virtual bool possibly(List<T>& o);
+  virtual bool dispatchPossibly(const T& o) const;
+  virtual bool possibly(const List<T>& o) const;
 };
 
 /**

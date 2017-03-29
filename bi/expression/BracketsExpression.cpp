@@ -30,26 +30,26 @@ void bi::BracketsExpression::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }
 
-bool bi::BracketsExpression::dispatchDefinitely(Expression& o) {
+bool bi::BracketsExpression::dispatchDefinitely(const Expression& o) const {
   return o.definitely(*this);
 }
 
-bool bi::BracketsExpression::definitely(BracketsExpression& o) {
+bool bi::BracketsExpression::definitely(const BracketsExpression& o) const {
   return single->definitely(*o.single) && brackets->definitely(*o.brackets);
 }
 
-bool bi::BracketsExpression::definitely(VarParameter& o) {
+bool bi::BracketsExpression::definitely(const VarParameter& o) const {
   return type->definitely(*o.type);
 }
 
-bool bi::BracketsExpression::dispatchPossibly(Expression& o) {
+bool bi::BracketsExpression::dispatchPossibly(const Expression& o) const {
   return o.possibly(*this);
 }
 
-bool bi::BracketsExpression::possibly(BracketsExpression& o) {
+bool bi::BracketsExpression::possibly(const BracketsExpression& o) const {
   return single->possibly(*o.single) && brackets->possibly(*o.brackets);
 }
 
-bool bi::BracketsExpression::possibly(VarParameter& o) {
+bool bi::BracketsExpression::possibly(const VarParameter& o) const {
   return type->possibly(*o.type);
 }

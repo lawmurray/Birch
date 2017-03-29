@@ -58,28 +58,28 @@ bool bi::ModelParameter::isEqual() const {
   return !base->isEmpty() && *op == "=";
 }
 
-bool bi::ModelParameter::dispatchDefinitely(Type& o) {
+bool bi::ModelParameter::dispatchDefinitely(const Type& o) const {
   return o.definitely(*this);
 }
 
-bool bi::ModelParameter::definitely(ModelParameter& o) {
+bool bi::ModelParameter::definitely(const ModelParameter& o) const {
   return parens->definitely(*o.parens) && base->definitely(*o.base)
       && (!o.assignable || assignable);
 }
 
-bool bi::ModelParameter::definitely(EmptyType& o) {
+bool bi::ModelParameter::definitely(const EmptyType& o) const {
   return !o.assignable || assignable;
 }
 
-bool bi::ModelParameter::dispatchPossibly(Type& o) {
+bool bi::ModelParameter::dispatchPossibly(const Type& o) const {
   return o.possibly(*this);
 }
 
-bool bi::ModelParameter::possibly(ModelParameter& o) {
+bool bi::ModelParameter::possibly(const ModelParameter& o) const {
   return parens->possibly(*o.parens) && base->possibly(*o.base)
       && (!o.assignable || assignable);
 }
 
-bool bi::ModelParameter::possibly(EmptyType& o) {
+bool bi::ModelParameter::possibly(const EmptyType& o) const {
   return !o.assignable || assignable;
 }

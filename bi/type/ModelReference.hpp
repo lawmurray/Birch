@@ -52,12 +52,12 @@ public:
   /**
    * Is this type equal to or less than @p o by inheritance?
    */
-  bool canUpcast(ModelReference& o);
+  bool canUpcast(const ModelReference& o) const;
 
   /**
    * Is this type greater than @p o by inheritance?
    */
-  bool canDowncast(ModelReference& o);
+  bool canDowncast(const ModelReference& o) const;
 
   virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);
@@ -66,14 +66,14 @@ public:
   using Type::definitely;
   using Type::possibly;
 
-  virtual bool dispatchDefinitely(Type& o);
-  virtual bool definitely(ModelParameter& o);
-  virtual bool definitely(ModelReference& o);
-  virtual bool definitely(EmptyType& o);
+  virtual bool dispatchDefinitely(const Type& o) const;
+  virtual bool definitely(const ModelParameter& o) const;
+  virtual bool definitely(const ModelReference& o) const;
+  virtual bool definitely(const EmptyType& o) const;
 
-  virtual bool dispatchPossibly(Type& o);
-  virtual bool possibly(ModelParameter& o);
-  virtual bool possibly(ModelReference& o);
-  virtual bool possibly(EmptyType& o);
+  virtual bool dispatchPossibly(const Type& o) const;
+  virtual bool possibly(const ModelParameter& o) const;
+  virtual bool possibly(const ModelReference& o) const;
+  virtual bool possibly(const EmptyType& o) const;
 };
 }

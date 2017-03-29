@@ -49,11 +49,11 @@ public:
   using Type::definitely;
   using Type::possibly;
 
-  virtual bool dispatchDefinitely(Type& o);
-  virtual bool definitely(BracketsType& o);
+  virtual bool dispatchDefinitely(const Type& o) const;
+  virtual bool definitely(const BracketsType& o) const;
 
-  virtual bool dispatchPossibly(Type& o);
-  virtual bool possibly(BracketsType& o);
+  virtual bool dispatchPossibly(const Type& o) const;
+  virtual bool possibly(const BracketsType& o) const;
 
   /**
    * Number of dimensions.

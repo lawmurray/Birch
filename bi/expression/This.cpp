@@ -28,26 +28,26 @@ void bi::This::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::This::dispatchDefinitely(Expression& o) {
+bool bi::This::dispatchDefinitely(const Expression& o) const {
   return o.definitely(*this);
 }
 
-bool bi::This::definitely(This& o) {
+bool bi::This::definitely(const This& o) const {
   return type->definitely(*o.type);
 }
 
-bool bi::This::definitely(VarParameter& o) {
+bool bi::This::definitely(const VarParameter& o) const {
   return type->definitely(*o.type);
 }
 
-bool bi::This::dispatchPossibly(Expression& o) {
+bool bi::This::dispatchPossibly(const Expression& o) const {
   return o.possibly(*this);
 }
 
-bool bi::This::possibly(This& o) {
+bool bi::This::possibly(const This& o) const {
   return type->possibly(*o.type);
 }
 
-bool bi::This::possibly(VarParameter& o) {
+bool bi::This::possibly(const VarParameter& o) const {
   return type->possibly(*o.type);
 }

@@ -39,18 +39,18 @@ void bi::FuncParameter::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::FuncParameter::dispatchDefinitely(Expression& o) {
+bool bi::FuncParameter::dispatchDefinitely(const Expression& o) const {
   return o.definitely(*this);
 }
 
-bool bi::FuncParameter::definitely(FuncParameter& o) {
+bool bi::FuncParameter::definitely(const FuncParameter& o) const {
   return parens->definitely(*o.parens);
 }
 
-bool bi::FuncParameter::dispatchPossibly(Expression& o) {
+bool bi::FuncParameter::dispatchPossibly(const Expression& o) const {
   return o.possibly(*this);
 }
 
-bool bi::FuncParameter::possibly(FuncParameter& o) {
+bool bi::FuncParameter::possibly(const FuncParameter& o) const {
   return parens->possibly(*o.parens);
 }

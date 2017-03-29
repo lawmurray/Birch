@@ -51,90 +51,90 @@ void bi::ParenthesesType::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::ParenthesesType::dispatchDefinitely(Type& o) {
+bool bi::ParenthesesType::dispatchDefinitely(const Type& o) const {
   return o.definitely(*this) || o.definitely(*single);
 }
 
-bool bi::ParenthesesType::definitely(AssignableType& o) {
+bool bi::ParenthesesType::definitely(const AssignableType& o) const {
   return single->definitely(o);
 }
 
-bool bi::ParenthesesType::definitely(BracketsType& o) {
+bool bi::ParenthesesType::definitely(const BracketsType& o) const {
   return single->definitely(o);
 }
 
-bool bi::ParenthesesType::definitely(EmptyType& o) {
+bool bi::ParenthesesType::definitely(const EmptyType& o) const {
   return single->definitely(o);
 }
 
-bool bi::ParenthesesType::definitely(LambdaType& o) {
+bool bi::ParenthesesType::definitely(const LambdaType& o) const {
   return single->definitely(o);
 }
 
-bool bi::ParenthesesType::definitely(List<Type>& o) {
+bool bi::ParenthesesType::definitely(const List<Type>& o) const {
   return single->definitely(o);
 }
 
-bool bi::ParenthesesType::definitely(ModelParameter& o) {
+bool bi::ParenthesesType::definitely(const ModelParameter& o) const {
   return single->definitely(o);
 }
 
-bool bi::ParenthesesType::definitely(ModelReference& o) {
+bool bi::ParenthesesType::definitely(const ModelReference& o) const {
   return single->definitely(o);
 }
 
-bool bi::ParenthesesType::definitely(ParenthesesType& o) {
+bool bi::ParenthesesType::definitely(const ParenthesesType& o) const {
   return single->definitely(o);
 }
 
-bool bi::ParenthesesType::definitely(RandomType& o) {
+bool bi::ParenthesesType::definitely(const RandomType& o) const {
   return single->definitely(o);
 }
 
-bool bi::ParenthesesType::definitely(VariantType& o) {
+bool bi::ParenthesesType::definitely(const VariantType& o) const {
   return single->definitely(o);
 }
 
-bool bi::ParenthesesType::dispatchPossibly(Type& o) {
+bool bi::ParenthesesType::dispatchPossibly(const Type& o) const {
   return o.possibly(*this) || o.possibly(*single);
 }
 
-bool bi::ParenthesesType::possibly(AssignableType& o) {
+bool bi::ParenthesesType::possibly(const AssignableType& o) const {
   return single->possibly(o);
 }
 
-bool bi::ParenthesesType::possibly(BracketsType& o) {
+bool bi::ParenthesesType::possibly(const BracketsType& o) const {
   return single->possibly(o);
 }
 
-bool bi::ParenthesesType::possibly(EmptyType& o) {
+bool bi::ParenthesesType::possibly(const EmptyType& o) const {
   return single->possibly(o);
 }
 
-bool bi::ParenthesesType::possibly(LambdaType& o) {
+bool bi::ParenthesesType::possibly(const LambdaType& o) const {
   return single->possibly(o);
 }
 
-bool bi::ParenthesesType::possibly(List<Type>& o) {
+bool bi::ParenthesesType::possibly(const List<Type>& o) const {
   return single->possibly(o);
 }
 
-bool bi::ParenthesesType::possibly(ModelParameter& o) {
+bool bi::ParenthesesType::possibly(const ModelParameter& o) const {
   return single->possibly(o);
 }
 
-bool bi::ParenthesesType::possibly(ModelReference& o) {
+bool bi::ParenthesesType::possibly(const ModelReference& o) const {
   return single->possibly(o);
 }
 
-bool bi::ParenthesesType::possibly(ParenthesesType& o) {
+bool bi::ParenthesesType::possibly(const ParenthesesType& o) const {
   return single->possibly(*o.single);
 }
 
-bool bi::ParenthesesType::possibly(RandomType& o) {
+bool bi::ParenthesesType::possibly(const RandomType& o) const {
   return single->possibly(o);
 }
 
-bool bi::ParenthesesType::possibly(VariantType& o) {
+bool bi::ParenthesesType::possibly(const VariantType& o) const {
   return single->possibly(o);
 }

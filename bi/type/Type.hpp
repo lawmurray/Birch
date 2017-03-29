@@ -114,31 +114,31 @@ public:
   /*
    * Double-dispatch partial order comparisons.
    */
-  virtual bool definitely(Type& o);
-  virtual bool dispatchDefinitely(Type& o) = 0;
-  virtual bool definitely(AssignableType& o);
-  virtual bool definitely(BracketsType& o);
-  virtual bool definitely(EmptyType& o);
-  virtual bool definitely(LambdaType& o);
-  virtual bool definitely(List<Type>& o);
-  virtual bool definitely(ModelParameter& o);
-  virtual bool definitely(ModelReference& o);
-  virtual bool definitely(ParenthesesType& o);
-  virtual bool definitely(RandomType& o);
-  virtual bool definitely(VariantType& o);
+  virtual bool definitely(const Type& o) const;
+  virtual bool dispatchDefinitely(const Type& o) const = 0;
+  virtual bool definitely(const AssignableType& o) const;
+  virtual bool definitely(const BracketsType& o) const;
+  virtual bool definitely(const EmptyType& o) const;
+  virtual bool definitely(const LambdaType& o) const;
+  virtual bool definitely(const List<Type>& o) const;
+  virtual bool definitely(const ModelParameter& o) const;
+  virtual bool definitely(const ModelReference& o) const;
+  virtual bool definitely(const ParenthesesType& o) const;
+  virtual bool definitely(const RandomType& o) const;
+  virtual bool definitely(const VariantType& o) const;
 
-  virtual bool possibly(Type& o);
-  virtual bool dispatchPossibly(Type& o) = 0;
-  virtual bool possibly(AssignableType& o);
-  virtual bool possibly(BracketsType& o);
-  virtual bool possibly(EmptyType& o);
-  virtual bool possibly(LambdaType& o);
-  virtual bool possibly(List<Type>& o);
-  virtual bool possibly(ModelParameter& o);
-  virtual bool possibly(ModelReference& o);
-  virtual bool possibly(ParenthesesType& o);
-  virtual bool possibly(RandomType& o);
-  virtual bool possibly(VariantType& o);
+  virtual bool possibly(const Type& o) const;
+  virtual bool dispatchPossibly(const Type& o) const = 0;
+  virtual bool possibly(const AssignableType& o) const;
+  virtual bool possibly(const BracketsType& o) const;
+  virtual bool possibly(const EmptyType& o) const;
+  virtual bool possibly(const LambdaType& o) const;
+  virtual bool possibly(const List<Type>& o) const;
+  virtual bool possibly(const ModelParameter& o) const;
+  virtual bool possibly(const ModelReference& o) const;
+  virtual bool possibly(const ParenthesesType& o) const;
+  virtual bool possibly(const RandomType& o) const;
+  virtual bool possibly(const VariantType& o) const;
 
   /*
    * Operators for equality comparisons.

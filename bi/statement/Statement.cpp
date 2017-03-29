@@ -16,98 +16,98 @@ bool bi::Statement::isEmpty() const {
   return false;
 }
 
-bool bi::Statement::definitely(Statement& o) {
+bool bi::Statement::definitely(const Statement& o) const {
   return o.dispatchDefinitely(*this);
 }
 
-bool bi::Statement::definitely(Conditional& o) {
+bool bi::Statement::definitely(const Conditional& o) const {
   return false;
 }
 
-bool bi::Statement::definitely(Declaration<VarParameter>& o) {
+bool bi::Statement::definitely(const Declaration<VarParameter>& o) const {
   return false;
 }
 
-bool bi::Statement::definitely(Declaration<FuncParameter>& o) {
+bool bi::Statement::definitely(const Declaration<FuncParameter>& o) const {
   return false;
 }
 
-bool bi::Statement::definitely(Declaration<ProgParameter>& o) {
+bool bi::Statement::definitely(const Declaration<ProgParameter>& o) const {
   return false;
 }
 
-bool bi::Statement::definitely(Declaration<ModelParameter>& o) {
+bool bi::Statement::definitely(const Declaration<ModelParameter>& o) const {
   return false;
 }
 
-bool bi::Statement::definitely(EmptyStatement& o) {
+bool bi::Statement::definitely(const EmptyStatement& o) const {
   return false;
 }
 
-bool bi::Statement::definitely(ExpressionStatement& o) {
+bool bi::Statement::definitely(const ExpressionStatement& o) const {
   return false;
 }
 
-bool bi::Statement::definitely(Import& o) {
+bool bi::Statement::definitely(const Import& o) const {
   return false;
 }
 
-bool bi::Statement::definitely(List<Statement>& o) {
+bool bi::Statement::definitely(const List<Statement>& o) const {
   return false;
 }
 
-bool bi::Statement::definitely(Loop& o) {
+bool bi::Statement::definitely(const Loop& o) const {
   return false;
 }
 
-bool bi::Statement::definitely(Raw& o) {
+bool bi::Statement::definitely(const Raw& o) const {
   return false;
 }
 
-bool bi::Statement::possibly(Statement& o) {
+bool bi::Statement::possibly(const Statement& o) const {
   return o.dispatchPossibly(*this);
 }
 
-bool bi::Statement::possibly(Conditional& o) {
+bool bi::Statement::possibly(const Conditional& o) const {
   return false;
 }
 
-bool bi::Statement::possibly(Declaration<VarParameter>& o) {
+bool bi::Statement::possibly(const Declaration<VarParameter>& o) const {
   return false;
 }
 
-bool bi::Statement::possibly(Declaration<FuncParameter>& o) {
+bool bi::Statement::possibly(const Declaration<FuncParameter>& o) const {
   return false;
 }
 
-bool bi::Statement::possibly(Declaration<ProgParameter>& o) {
+bool bi::Statement::possibly(const Declaration<ProgParameter>& o) const {
   return false;
 }
 
-bool bi::Statement::possibly(Declaration<ModelParameter>& o) {
+bool bi::Statement::possibly(const Declaration<ModelParameter>& o) const {
   return false;
 }
 
-bool bi::Statement::possibly(EmptyStatement& o) {
+bool bi::Statement::possibly(const EmptyStatement& o) const {
   return false;
 }
 
-bool bi::Statement::possibly(ExpressionStatement& o) {
+bool bi::Statement::possibly(const ExpressionStatement& o) const {
   return false;
 }
 
-bool bi::Statement::possibly(Import& o) {
+bool bi::Statement::possibly(const Import& o) const {
   return false;
 }
 
-bool bi::Statement::possibly(List<Statement>& o) {
+bool bi::Statement::possibly(const List<Statement>& o) const {
   return false;
 }
 
-bool bi::Statement::possibly(Loop& o) {
+bool bi::Statement::possibly(const Loop& o) const {
   return false;
 }
 
-bool bi::Statement::possibly(Raw& o) {
+bool bi::Statement::possibly(const Raw& o) const {
   return false;
 }

@@ -45,12 +45,12 @@ public:
   using Prog::definitely;
   using Prog::possibly;
 
-  virtual bool dispatchDefinitely(Prog& o);
-  virtual bool definitely(ProgParameter& o);
-  virtual bool definitely(ProgReference& o);
+  virtual bool dispatchDefinitely(const Prog& o) const;
+  virtual bool definitely(const ProgParameter& o) const;
+  virtual bool definitely(const ProgReference& o) const;
 
-  virtual bool dispatchPossibly(Prog& o);
-  virtual bool possibly(ProgParameter& o);
-  virtual bool possibly(ProgReference& o);
+  virtual bool dispatchPossibly(const Prog& o) const;
+  virtual bool possibly(const ProgParameter& o) const;
+  virtual bool possibly(const ProgReference& o) const;
 };
 }

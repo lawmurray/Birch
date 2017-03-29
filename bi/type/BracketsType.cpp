@@ -40,20 +40,20 @@ void bi::BracketsType::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }
 
-bool bi::BracketsType::dispatchDefinitely(Type& o) {
+bool bi::BracketsType::dispatchDefinitely(const Type& o) const {
   return o.definitely(*this);
 }
 
-bool bi::BracketsType::definitely(BracketsType& o) {
+bool bi::BracketsType::definitely(const BracketsType& o) const {
   return single->definitely(*o.single) && brackets->definitely(*o.brackets)
       && (!o.assignable || assignable);
 }
 
-bool bi::BracketsType::dispatchPossibly(Type& o) {
+bool bi::BracketsType::dispatchPossibly(const Type& o) const {
   return o.possibly(*this);
 }
 
-bool bi::BracketsType::possibly(BracketsType& o) {
+bool bi::BracketsType::possibly(const BracketsType& o) const {
   return single->possibly(*o.single) && brackets->possibly(*o.brackets)
       && (!o.assignable || assignable);
 }
