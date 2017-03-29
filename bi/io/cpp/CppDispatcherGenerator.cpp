@@ -5,8 +5,7 @@
 
 #include "bi/io/cpp/CppParameterGenerator.hpp"
 #include "bi/io/cpp/CppTemplateParameterGenerator.hpp"
-#include "bi/io/cpp/misc.hpp"
-#include "bi/visitor/Gatherer.hpp"
+#include "bi/primitive/encode.hpp"
 
 bi::CppDispatcherGenerator::CppDispatcherGenerator(std::ostream& base,
     const int level, const bool header) :
@@ -24,9 +23,6 @@ void bi::CppDispatcherGenerator::visit(const File* o) {
 void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
   /* a dispatcher uses the boost::variant mechanism to determine the precise
    * types of all variant arguments, then bi::cast handles the rest */
-
-  Gatherer<VarParameter> gatherer;
-  o->parens->accept(&gatherer);
   bool before;
   int i;
 
@@ -36,22 +32,22 @@ void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
     middle("visitor_" << o->name << "_" << o->number << '_');
     finish(" : public boost::static_visitor<" << o->type << "> {");
     in();
-    for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
-      VarParameter* param = *iter;
+    for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
+      const Expression* param = *iter;
       if (!param->type->isVariant()) {
         start("");
         if (!param->type->assignable) {
           middle("const ");
         }
-        finish(param->type << "& " << param->name << ';');
+        finish(param << ';');
       }
     }
     line("");
 
     start("visitor_" << o->name << "_" << o->number << "_(");
     before = false;
-    for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
-      VarParameter* param = *iter;
+    for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
+      const Expression* param = *iter;
       if (!param->type->isVariant()) {
         if (before) {
           middle(", ");
@@ -59,7 +55,7 @@ void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
         if (!param->type->assignable) {
           middle("const ");
         }
-        middle(param->type << "& " << param->name);
+        middle(param);
         before = true;
       }
     }
@@ -67,8 +63,8 @@ void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
     in();
     in();
     before = false;
-    for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
-      VarParameter* param = *iter;
+    for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
+      const VarParameter* param = dynamic_cast<const VarParameter*>(*iter);
       if (!param->type->isVariant()) {
         if (before) {
           finish(',');
@@ -84,11 +80,9 @@ void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
     line("}\n");
 
     start("template<");
-    Gatherer<VarParameter> gatherer;
-    o->parens->accept(&gatherer);
     i = 1;
-    for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
-      VarParameter* param = *iter;
+    for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
+      const Expression* param = *iter;
       if (param->type->isVariant()) {
         if (i > 1) {
           middle(", ");
@@ -99,8 +93,8 @@ void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
     finish(">");
     start(o->type << " operator()(");
     i = 1;
-    for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
-      VarParameter* param = *iter;
+    for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
+      const VarParameter* param = dynamic_cast<const VarParameter*>(*iter);
       if (param->type->isVariant()) {
         if (i > 1) {
           middle(", ");
@@ -144,8 +138,8 @@ void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
     start("return boost::apply_visitor(");
     middle("visitor_" << o->name << "_" << o->number << "_(");
     bool before = false;
-    for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
-      VarParameter* param = *iter;
+    for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
+      const VarParameter* param = dynamic_cast<const VarParameter*>(*iter);
       if (!param->type->isVariant()) {
         if (before) {
           middle(", ");
@@ -155,8 +149,8 @@ void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
       }
     }
     middle(")");
-    for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
-      VarParameter* param = *iter;
+    for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
+      const VarParameter* param = dynamic_cast<const VarParameter*>(*iter);
       if (param->type->isVariant()) {
         middle(", " << param->name);
       }
@@ -173,58 +167,39 @@ void bi::CppDispatcherGenerator::visit(const VarParameter* o) {
 
 void bi::CppDispatcherGenerator::genBody(const Dispatcher* o) {
   /* try functions, in topological order from most specific */
-  /*for (auto iter = o->funcs.begin(); iter != o->funcs.end(); ++iter) {
-   FuncParameter* func = *iter;
-   ArgumentCapturer capturer(o->parens.get(), func->parens.get());
-   auto iter1 = capturer.begin();
+  for (auto iter = o->funcs.begin(); iter != o->funcs.end(); ++iter) {
+    const FuncParameter* func = *iter;
+    auto iter1 = o->parens->begin();
+    int i = 1;
 
-   start("try { return ");
-   if (func->isBinary() && isTranslatable(func->name->str())) {
-   genArg(iter1->first, iter1->second);
-   ++iter1;
-   middle(' ' << translate(o->name->str()) << ' ');
-   genArg(iter1->first, iter1->second);
-   ++iter1;
-   } else if (func->isUnary() && isTranslatable(func->name->str())) {
-   middle(translate(o->name->str()) << ' ');
-   genArg(iter1->first, iter1->second);
-   ++iter;
-   } else {
-   middle("bi::" << func->name << '(');
-   for (; iter1 != capturer.end(); ++iter1) {
-   if (iter1 != capturer.begin()) {
-   middle(", ");
-   }
-   genArg(iter1->first, iter1->second);
-   }
-   middle(")");
-   }
-   finish("; } catch (std::bad_cast e) {}");
-   }*/
-
+    start("try { return ");
+    if (func->isBinary() && isTranslatable(func->name->str())) {
+      genArg(*(iter1++), i++);
+      middle(' ' << o->name << ' ');
+      genArg(*(iter1++), i++);
+    } else if (func->isUnary() && isTranslatable(func->name->str())) {
+      middle(o->name << ' ');
+      genArg(*(iter1++), i++);
+    } else {
+      middle("bi::" << func->name << '(');
+      while (iter1 != o->parens->end()) {
+        if (iter1 != o->parens->begin()) {
+          middle(", ");
+        }
+        genArg(*(iter1++), i++);
+      }
+      middle(")");
+    }
+    finish("; } catch (std::bad_cast e) {}");
+  }
   line("throw std::bad_cast();");
 }
 
-void bi::CppDispatcherGenerator::genArg(const Expression* arg,
-    const VarParameter* param) {
-  Expression* arg1 = const_cast<Expression*>(arg);
-  VarParameter* param1 = const_cast<VarParameter*>(param);
-
-  if (!arg1->type->equals(*param1->type)) {
-    middle("bi::cast<");
-    if (!param1->type->assignable) {
-      middle("const ");
-    }
-    if (!arg1->type->isLambda() && param1->type->isLambda()) {
-      const LambdaType* lambda =
-          dynamic_cast<const LambdaType*>(param1->type.get());
-      assert(lambda);
-      middle(lambda->result);
-    } else {
-      middle(param1->type);
-    }
-    middle("&>(" << arg1 << ')');
-  } else {
-    middle(arg1);
+void bi::CppDispatcherGenerator::genArg(const Expression* o, const int i) {
+  middle("bi::cast<");
+  if (!o->type->assignable) {
+    middle("const ");
   }
+  middle(o->type);
+  middle("&>(o" << i << ')');
 }

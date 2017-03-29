@@ -34,16 +34,21 @@ unsigned char encode32(const unsigned char c);
 unsigned char decode32(const unsigned char c);
 
 /**
- * Generate internal name. This is the original name, with any characters
- * outside the class [0-9a-zA-z_] translated to within that class, and an
- * underscore added to the end to avoid clashes with user variables.
+ * Does this operator exist in C++?
  */
-std::string internalise(const std::string& name);
+bool isTranslatable(const std::string& op);
 
 /**
  * Is character in the class [0-9a-zA-Z_]?
  */
 bool isSimple(const char c);
+
+/**
+ * Generate C++ name. This is the original name, with any characters
+ * outside the class [0-9a-zA-z_] translated to within that class, and an
+ * underscore added to the end to avoid clashes with user variables.
+ */
+std::string internalise(const std::string& name);
 
 /**
  * Escape special characters in a string.

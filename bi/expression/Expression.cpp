@@ -3,9 +3,9 @@
  */
 #include "bi/expression/Expression.hpp"
 
+#include "bi/common/Iterator.hpp"
 #include "bi/type/EmptyType.hpp"
-#include "bi/visitor/TupleSizer.hpp"
-#include "bi/visitor/Gatherer.hpp"
+#include "bi/expression/Range.hpp"
 
 bi::Expression::Expression(Type* type, shared_ptr<Location> loc) :
     Located(loc), Typed(type) {
@@ -26,9 +26,7 @@ bool bi::Expression::isEmpty() const {
 }
 
 bool bi::Expression::hasAssignable() const {
-  Gatherer<VarParameter> gatherer;
-  accept(&gatherer);
-  for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
+  for (auto iter = begin(); iter != end(); ++iter) {
     if ((*iter)->type->assignable) {
       return true;
     }
@@ -41,15 +39,21 @@ bi::Expression* bi::Expression::strip() {
 }
 
 int bi::Expression::tupleSize() const {
-  TupleSizer visitor;
-  this->accept(&visitor);
-  return visitor.size;
+  int result = 0;
+  for (auto iter = begin(); iter != end(); ++iter) {
+    ++result;
+  }
+  return result;
 }
 
 int bi::Expression::tupleDims() const {
-  TupleSizer visitor;
-  this->accept(&visitor);
-  return visitor.dims;
+  int result = 0;
+  for (auto iter = begin(); iter != end(); ++iter) {
+    if (dynamic_cast<const Range*>(*iter)) {
+      ++result;
+    }
+  }
+  return result;
 }
 
 bi::Iterator<bi::Expression> bi::Expression::begin() const {

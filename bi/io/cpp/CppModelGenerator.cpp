@@ -12,7 +12,7 @@
 #include "bi/io/cpp/CppOutputGenerator.hpp"
 #include "bi/io/cpp/CppReturnGenerator.hpp"
 #include "bi/io/cpp/CppTemplateParameterGenerator.hpp"
-#include "bi/io/cpp/misc.hpp"
+#include "bi/primitive/encode.hpp"
 
 bi::CppModelGenerator::CppModelGenerator(std::ostream& base, const int level,
     const bool header) :
@@ -170,7 +170,7 @@ void bi::CppModelGenerator::visit(const FuncParameter* o) {
       middle("bi::model::" << model->name << "<Group>::");
     }
     if ((o->isBinary() || o->isUnary()) && isTranslatable(o->name->str())) {
-      middle("operator" << translate(o->name->str()));
+      middle("operator" << o->name);
     } else {
       middle(o->name);
     }

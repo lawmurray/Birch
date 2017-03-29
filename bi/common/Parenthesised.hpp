@@ -29,27 +29,17 @@ public:
 
   /**
    * If these parentheses were constructed for a binary operator, get the
-   * left operand. Otherwise undefined.
+   * left operand. Otherwise return the same as strip().
    */
+  Expression* getLeft();
   const Expression* getLeft() const;
 
   /**
-   * If these parentheses were constructed for a binary operator, release the
-   * left operand. Otherwise undefined.
-   */
-  Expression* releaseLeft();
-
-  /**
    * If these parentheses were constructed for a binary or unary operator,
-   * get the right operand. Otherwise undefined.
+   * get the right operand. Otherwise return the same as strip().
    */
+  Expression* getRight();
   const Expression* getRight() const;
-
-  /**
-   * If these parentheses were constructed for a binary or unary operator,
-   * release the right operand. Otherwise undefined.
-   */
-  Expression* releaseRight();
 
   /**
    * Expression in parentheses.

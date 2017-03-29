@@ -9,9 +9,9 @@
 #include "bi/io/cpp/CppOutputGenerator.hpp"
 #include "bi/io/cpp/CppReturnGenerator.hpp"
 #include "bi/io/cpp/CppTemplateParameterGenerator.hpp"
-#include "bi/io/cpp/misc.hpp"
 #include "bi/program/all.hpp"
 #include "bi/exception/all.hpp"
+#include "bi/primitive/encode.hpp"
 #include "bi/visitor/Gatherer.hpp"
 
 #include "boost/filesystem.hpp"
@@ -101,7 +101,7 @@ void bi::CppFileGenerator::visit(const FuncParameter* o) {
       middle("bi::");
     }
     if ((o->isBinary() || o->isUnary()) && isTranslatable(o->name->str())) {
-      middle("operator" << translate(o->name->str()));
+      middle("operator" << o->name);
     } else {
       middle(o->name);
     }
@@ -185,14 +185,11 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
     out();
     line("}\n");
   } else {
-    Gatherer<VarParameter> gatherer;
-    o->parens->accept(&gatherer);
-
     line("void bi::program::" << o->name << "(int argc, char** argv) {");
     in();
-    if (gatherer.size() > 0) {
+    if (o->parens->tupleSize() > 0) {
       /* option variables */
-      for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
+      for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
         line(*iter << ';');
       }
       line("");
@@ -200,11 +197,11 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
       /* option flags */
       line("enum {");
       in();
-      for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
-        std::string flag = (*iter)->name->str() + "_ARG";
+      for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
+        std::string flag = dynamic_cast<const VarParameter*>(*iter)->name->str() + "_ARG";
         boost::to_upper(flag);
         start(flag);
-        if (iter == gatherer.begin()) {
+        if (iter == o->parens->begin()) {
           middle(" = 256");
         }
         finish(',');
@@ -216,8 +213,8 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
       line("int c, option_index;");
       line("option long_options[] = {");
       in();
-      for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
-        const std::string& name = (*iter)->name->str();
+      for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
+        const std::string& name = dynamic_cast<const VarParameter*>(*iter)->name->str();
         if (name.length() > 1) {
           std::string flag = name + "_ARG";
           boost::to_upper(flag);
@@ -234,8 +231,8 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
 
       /* short options */
       start("const char* short_options = \"");
-      for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
-        const std::string& name = (*iter)->name->str();
+      for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
+        const std::string& name = dynamic_cast<const VarParameter*>(*iter)->name->str();
         if (name.length() == 1) {
           middle(name << ':');
         }
@@ -251,8 +248,8 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
       line("switch (c) {");
       in();
 
-      for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
-        const std::string& name = (*iter)->name->str();
+      for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
+        const std::string& name = dynamic_cast<const VarParameter*>(*iter)->name->str();
         std::string flag = name + "_ARG";
         boost::to_upper(flag);
 

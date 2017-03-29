@@ -4,7 +4,7 @@
 #include "bi/io/cpp/CppBaseGenerator.hpp"
 
 #include "bi/visitor/Gatherer.hpp"
-#include "bi/io/cpp/misc.hpp"
+#include "bi/primitive/encode.hpp"
 
 #include <unordered_set>
 
@@ -16,24 +16,24 @@ bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
   //
 }
 
+void bi::CppBaseGenerator::visit(const Name* o) {
+  middle(internalise(o->str()));
+}
+
 void bi::CppBaseGenerator::visit(const BooleanLiteral* o) {
-  *this << o->str;
+  middle(o->str);
 }
 
 void bi::CppBaseGenerator::visit(const IntegerLiteral* o) {
-  *this << o->str;
+  middle(o->str);
 }
 
 void bi::CppBaseGenerator::visit(const RealLiteral* o) {
-  *this << o->str;
+  middle(o->str);
 }
 
 void bi::CppBaseGenerator::visit(const StringLiteral* o) {
-  *this << o->str;
-}
-
-void bi::CppBaseGenerator::visit(const Name* o) {
-  *this << o->str();
+  middle(o->str);
 }
 
 void bi::CppBaseGenerator::visit(const ExpressionList* o) {
@@ -108,13 +108,12 @@ void bi::CppBaseGenerator::visit(const VarReference* o) {
 }
 
 void bi::CppBaseGenerator::visit(const FuncReference* o) {
-  if (o->isBinary() && isTranslatable(o->name->str())) {
-    auto iter = o->parens->begin();
-    auto first = *(iter++);
-    auto second = *(iter++);
-    middle(first << ' ' << o->name << ' ' << second);
+  if (o->isAssign() && *o->name == "<-") {
+    middle(o->getLeft() << " = " << o->getRight());
+  } else if (o->isBinary() && isTranslatable(o->name->str())) {
+    middle(o->getLeft() << ' ' << o->name << ' ' << o->getRight());
   } else if (o->isUnary() && isTranslatable(o->name->str())) {
-    middle(o->name << o->parens);
+    middle(o->name << o->getRight());
   } else {
     middle(o->name << '(' << o->parens << ')');
   }
@@ -184,12 +183,16 @@ void bi::CppBaseGenerator::visit(const FuncParameter* o) {
   }
 }
 
+void bi::CppBaseGenerator::visit(const VarDeclaration* o) {
+  line(o->param << ';');
+}
+
 void bi::CppBaseGenerator::visit(const ExpressionStatement* o) {
   line(o->single << ';');
 }
 
 void bi::CppBaseGenerator::visit(const Conditional* o) {
-  line("if " << o->cond << " {");
+  line("if (" << o->cond << ") {");
   in();
   *this << o->braces;
   out();
@@ -203,7 +206,7 @@ void bi::CppBaseGenerator::visit(const Conditional* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Loop* o) {
-  line("while " << o->cond << " {");
+  line("while (" << o->cond << ") {");
   in();
   *this << o->braces;
   out();

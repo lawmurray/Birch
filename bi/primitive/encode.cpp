@@ -7,6 +7,7 @@
 #include <sstream>
 #include <cassert>
 #include <unordered_map>
+#include <unordered_set>
 
 void bi::encode32(const std::string& in, std::string& out) {
   out.resize((in.length() + 4) / 5 * 7);
@@ -70,12 +71,39 @@ unsigned char bi::decode32(const unsigned char c) {
   return d;
 }
 
+bool bi::isTranslatable(const std::string& op) {
+  static std::unordered_set<std::string> ops;
+  static bool init = false;
+  if (!init) {
+    ops.insert("+");
+    ops.insert("-");
+    ops.insert("*");
+    ops.insert("/");
+    ops.insert("<");
+    ops.insert(">");
+    ops.insert("<=");
+    ops.insert(">=");
+    ops.insert("==");
+    ops.insert("!=");
+    ops.insert("!");
+    ops.insert("||");
+    ops.insert("&&");
+
+    init = true;
+  }
+  return ops.find(op) != ops.end();
+}
+
+bool bi::isSimple(const char c) {
+  return (('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z')
+      || ('0' <= c && c <= '9') || c == '_');
+}
+
 std::string bi::internalise(const std::string& name) {
   /* translations */
   static std::regex reg;
   static std::unordered_map<std::string,std::string> ops, greeks;
   static bool init = false;
-
   if (!init) {
     ops["<-"] = "left";
     ops["->"] = "right";
@@ -83,19 +111,6 @@ std::string bi::internalise(const std::string& name) {
     ops["~>"] = "right_tilde";
     ops["~"] = "tilde";
     ops[".."] = "range";
-    ops["!"] = "not";
-    ops["&&"] = "and";
-    ops["||"] = "or";
-    ops["<"] = "lt";
-    ops[">"] = "gt";
-    ops["<="] = "le";
-    ops[">="] = "ge";
-    ops["=="] = "eq";
-    ops["!="] = "ne";
-    ops["+"] = "add";
-    ops["-"] = "sub";
-    ops["*"] = "mul";
-    ops["/"] = "div";
 
     greeks["α"] = "alpha";
     greeks["β"] = "beta";
@@ -153,13 +168,13 @@ std::string bi::internalise(const std::string& name) {
 
   /* translate Greek letters */
   std::stringstream buf;
-  std::smatch match;
-  while (std::regex_search(str, match, reg)) {
-    assert(greeks.find(match.str()) != greeks.end());
-    buf << match.prefix();
-    buf << greeks[match.str()];
-    str = match.suffix();
-  }
+  //std::smatch match;
+  //while (std::regex_search(str, match, reg)) {
+  //  assert(greeks.find(match.str()) != greeks.end());
+  //  buf << match.prefix();
+  //  buf << greeks[match.str()];
+  //  str = match.suffix();
+  //}
   buf << str;
 
   return buf.str();
@@ -177,9 +192,4 @@ std::string bi::escape(const std::string& str) {
   buf << str1;
 
   return buf.str();
-}
-
-bool bi::isSimple(const char c) {
-  return (('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z')
-      || ('0' <= c && c <= '9') || c == '_');
 }

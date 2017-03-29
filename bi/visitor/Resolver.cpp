@@ -170,6 +170,9 @@ bi::Expression* bi::Resolver::modify(VarParameter* o) {
 
 bi::Expression* bi::Resolver::modify(FuncParameter* o) {
   push();
+  if (o->isAssign()) {
+    o->getLeft()->type->accept(&assigner);
+  }
   ++inInputs;
   o->parens = o->parens->accept(this);
   --inInputs;

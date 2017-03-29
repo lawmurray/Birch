@@ -209,8 +209,9 @@ var_parameter_with_value
     
 func_parameter
     : name parameters optional_results optional_braces                                      { $$ = new bi::FuncParameter($1, $2, $3, $4, bi::FUNCTION, make_loc(@$)); }
-    | '(' unary_operator var_parameter ')' optional_results optional_braces                 { $$ = new bi::FuncParameter($2, $3, $5, $6, bi::UNARY, make_loc(@$)); }
+    | '(' var_parameter assignment_operator var_parameter ')' optional_results optional_braces  { $$ = new bi::FuncParameter($2, $3, $4, $6, $7, bi::ASSIGN, make_loc(@$)); }
     | '(' var_parameter binary_operator var_parameter ')' optional_results optional_braces  { $$ = new bi::FuncParameter($2, $3, $4, $6, $7, bi::BINARY, make_loc(@$)); }
+    | '(' unary_operator var_parameter ')' optional_results optional_braces                 { $$ = new bi::FuncParameter($2, $3, $5, $6, bi::UNARY, make_loc(@$)); }
     ;
 
 model_parameter
@@ -489,7 +490,6 @@ binary_operator
     | logical_and_operator
     | logical_or_operator
     | condition_operator
-    | assignment_operator
     ;
 
 

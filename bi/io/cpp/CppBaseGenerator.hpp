@@ -18,11 +18,12 @@ public:
 
   using indentable_ostream::visit;
 
+  virtual void visit(const Name* o);
+
   virtual void visit(const BooleanLiteral* o);
   virtual void visit(const IntegerLiteral* o);
   virtual void visit(const RealLiteral* o);
   virtual void visit(const StringLiteral* o);
-  virtual void visit(const Name* o);
 
   virtual void visit(const ExpressionList* o);
   virtual void visit(const StatementList* o);
@@ -42,6 +43,7 @@ public:
   virtual void visit(const VarParameter* o);
   virtual void visit(const FuncParameter* o);
 
+  virtual void visit(const VarDeclaration* o);
   virtual void visit(const ExpressionStatement* o);
   virtual void visit(const Conditional* o);
   virtual void visit(const Loop* o);

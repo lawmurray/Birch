@@ -84,7 +84,6 @@ birchc_SOURCES = \
   bi/io/cpp/CppReturnGenerator.cpp \
   bi/io/cpp/CppTemplateParameterGenerator.cpp \
   bi/io/cpp/CppViewConstructorGenerator.cpp \
-  bi/io/cpp/misc.cpp \
   bi/io/bi_ostream.cpp \
   bi/io/cpp_ostream.cpp \
   bi/io/indentable_ostream.cpp \
@@ -116,7 +115,6 @@ birchc_SOURCES = \
   bi/visitor/Gatherer.cpp \
   bi/visitor/Modifier.cpp \
   bi/visitor/Resolver.cpp \
-  bi/visitor/TupleSizer.cpp \
   bi/visitor/Visitor.cpp \
   bi/birchc.cpp \
   bi/lexer.lpp \
