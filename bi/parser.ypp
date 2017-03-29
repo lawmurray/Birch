@@ -58,10 +58,9 @@
 %token <valString> AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP RANGE_OP
 
 %type <valName> unary_operator
-%type <valName> multiplicative_operator additive_operator
-%type <valName> relational_operator
+%type <valName> multiplicative_operator additive_operator relational_operator
 %type <valName> equality_operator logical_and_operator logical_or_operator
-%type <valName> assignment_operator binary_operator
+%type <valName> condition_operator assignment_operator binary_operator
 %type <valName> name path_name
 %type <valPath> path
 
@@ -86,9 +85,9 @@
 %type <valExpression> member_expression primary_expression
 %type <valExpression> brackets_expression unary_expression
 %type <valExpression> multiplicative_expression additive_expression
-%type <valExpression> relational_expression
-%type <valExpression> equality_expression logical_and_expression logical_or_expression
-%type <valExpression> assignment_expression
+%type <valExpression> relational_expression equality_expression
+%type <valExpression> logical_and_expression logical_or_expression
+%type <valExpression> condition_expression assignment_expression
 %type <valExpression> expression index_expression index_list
 
 %type <valStatement> var_declaration func_declaration
@@ -397,7 +396,7 @@ unary_expression
     : member_expression
     | unary_operator member_expression  { $$ = new bi::FuncReference($1, $2, bi::UNARY, make_loc(@$)); }
     ;
-    
+
 multiplicative_operator
     : '*'  { $$ = new bi::Name("*", make_loc(@$)); }
     | '/'  { $$ = new bi::Name("/", make_loc(@$)); }
@@ -458,16 +457,24 @@ logical_or_expression
     | logical_or_expression logical_or_operator logical_and_expression  { $$ = new bi::FuncReference($1, $2, $3, bi::BINARY, make_loc(@$)); }
     ;
 
+condition_operator
+    : RIGHT_TILDE_OP  { $$ = new bi::Name("~>", make_loc(@$)); }
+    ;
+
+condition_expression
+    : logical_or_expression
+    | condition_expression condition_operator logical_or_expression  { $$ = new bi::FuncReference($1, $2, $3, bi::BINARY, make_loc(@$)); }
+    ;
+
 assignment_operator
-    : LEFT_OP         { $$ = new bi::Name("<-", make_loc(@$)); }
-    | LEFT_TILDE_OP   { $$ = new bi::Name("<~", make_loc(@$)); }
-    | RIGHT_TILDE_OP  { $$ = new bi::Name("~>", make_loc(@$)); }
-    | '~'             { $$ = new bi::Name("~", make_loc(@$)); }
+    : LEFT_OP        { $$ = new bi::Name("<-", make_loc(@$)); }
+    | LEFT_TILDE_OP  { $$ = new bi::Name("<~", make_loc(@$)); }
+    | '~'            { $$ = new bi::Name("~", make_loc(@$)); }
     ;
     
 assignment_expression
-    : logical_or_expression
-    | logical_or_expression assignment_operator assignment_expression  { $$ = new bi::FuncReference($1, $2, $3, bi::ASSIGN, make_loc(@$)); }
+    : condition_expression
+    | condition_expression assignment_operator assignment_expression  { $$ = new bi::FuncReference($1, $2, $3, bi::ASSIGN, make_loc(@$)); }
     ;
 
 expression
@@ -481,6 +488,7 @@ binary_operator
     | equality_operator
     | logical_and_operator
     | logical_or_operator
+    | condition_operator
     | assignment_operator
     ;
 

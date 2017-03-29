@@ -135,7 +135,7 @@ bi::Expression* bi::Resolver::modify(FuncReference* o) {
     } else {
       o->type = o->target->type->accept(&cloner)->accept(this);
     }
-    o->type->assignable = false;  // rvalue
+    //o->type->assignable = false;  // rvalue
   }
   return o;
 }
