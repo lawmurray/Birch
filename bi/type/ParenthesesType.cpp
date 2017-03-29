@@ -8,8 +8,9 @@
 
 #include <typeinfo>
 
-bi::ParenthesesType::ParenthesesType(Type* single, shared_ptr<Location> loc) :
-    Type(loc),
+bi::ParenthesesType::ParenthesesType(Type* single, shared_ptr<Location> loc,
+    const bool assignable) :
+    Type(loc, assignable),
     TypeUnary(single) {
   //
 }

@@ -86,18 +86,18 @@ void bi::CppConstructorGenerator::initialise(const VarParameter* o) {
   CppBaseGenerator aux(base, level, header);
   finish(',');
   start(o->name->str() << "(");
-  if (!o->parens->strip()->isEmpty() && o->type->count() == 0) {
-    aux << o->parens->strip();
-    middle(", ");
-  }
+//  if (!o->parens->strip()->isEmpty() && o->type->count() == 0) {
+//    aux << o->parens->strip();
+//    middle(", ");
+//  }
   middle(o->type);
   middle(", \"" << o->name->str() << "\"");
   middle(", childGroup");
   middle("(this->group, \"" << o->name->str() << "\")");
-  if (!o->parens->strip()->isEmpty() && o->type->count() > 0) {
-    middle(", ");
-    aux << o->value->strip();
-  }
+//  if (!o->parens->strip()->isEmpty() && o->type->count() > 0) {
+//    middle(", ");
+//    aux << o->value->strip();
+//  }
   middle(')');
 }
 

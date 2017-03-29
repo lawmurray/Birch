@@ -12,7 +12,7 @@ bi::Signature::Signature(shared_ptr<Name> name, Expression* parens,
     Parenthesised(parens),
     Formed(form),
     result(result) {
-  this->mangled = new Name(mangle(this));
+  //
 }
 
 bi::Signature::~Signature() {

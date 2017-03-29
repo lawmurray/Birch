@@ -18,9 +18,7 @@ bi::FuncParameter::FuncParameter(Expression* left, shared_ptr<Name> name,
     Expression* right, Expression* result, Expression* braces,
     const SignatureForm form, shared_ptr<Location> loc) :
     Expression(loc),
-    Signature(name,
-        new ParenthesesExpression(new ExpressionList(left, right)), result,
-        form),
+    Signature(name, new ExpressionList(left, right), result, form),
     Braced(braces) {
   this->arg = this;
 }

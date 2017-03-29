@@ -467,11 +467,11 @@ void bi::poset<T,Compare>::dot() {
   ++colour;
   std::cout << "digraph {" << std::endl;
   for (auto iter = vertices.begin(); iter != vertices.end(); ++iter) {
-    std::cout << "  \"" << (*iter)->mangled->str() << "\"" << std::endl;
+    std::cout << "  \"" << (*iter)->name->str() << "\"" << std::endl;
   }
   for (auto iter = forwards.begin(); iter != forwards.end(); ++iter) {
-    std::cout << "  \"" << iter->first->mangled->str() << "\" -> \""
-        << iter->second->mangled->str() << "\"" << std::endl;
+    std::cout << "  \"" << iter->first->name->str() << "\" -> \""
+        << iter->second->name->str() << "\"" << std::endl;
   }
   std::cout << "}" << std::endl;
 }

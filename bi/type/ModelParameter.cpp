@@ -9,8 +9,8 @@
 
 bi::ModelParameter::ModelParameter(shared_ptr<Name> name, Expression* parens,
     shared_ptr<Name> op, Type* base, Expression* braces,
-    shared_ptr<Location> loc) :
-    Type(loc),
+    shared_ptr<Location> loc, const bool assignable) :
+    Type(loc, assignable),
     Named(name),
     Parenthesised(parens),
     Based(op, base),
@@ -67,10 +67,6 @@ bool bi::ModelParameter::definitely(ModelParameter& o) {
       && (!o.assignable || assignable) && o.capture(this);
 }
 
-bool bi::ModelParameter::definitely(LambdaType& o) {
-  return definitely(*o.result) && (!o.assignable || assignable);
-}
-
 bool bi::ModelParameter::definitely(EmptyType& o) {
   return !o.assignable || assignable;
 }
@@ -82,10 +78,6 @@ bool bi::ModelParameter::dispatchPossibly(Type& o) {
 bool bi::ModelParameter::possibly(ModelParameter& o) {
   return parens->possibly(*o.parens) && base->possibly(*o.base)
       && (!o.assignable || assignable) && o.capture(this);
-}
-
-bool bi::ModelParameter::possibly(LambdaType& o) {
-  return possibly(*o.result) && (!o.assignable || assignable);
 }
 
 bool bi::ModelParameter::possibly(EmptyType& o) {

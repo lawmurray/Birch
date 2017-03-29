@@ -13,15 +13,15 @@ bi::Formed::~Formed() {
 }
 
 bool bi::Formed::isBinary() const {
-  return form == BINARY_OPERATOR || form == ASSIGNMENT_OPERATOR;
+  return form == BINARY || form == ASSIGN;
 }
 
 bool bi::Formed::isUnary() const {
-  return form == UNARY_OPERATOR;
+  return form == UNARY;
 }
 
-bool bi::Formed::isAssignment() const {
-  return form == ASSIGNMENT_OPERATOR;
+bool bi::Formed::isAssign() const {
+  return form == ASSIGN;
 }
 
 bool bi::Formed::isLambda() const {

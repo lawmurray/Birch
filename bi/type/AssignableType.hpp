@@ -19,8 +19,10 @@ public:
    *
    * @param single Type.
    * @param loc Location.
+   * @param assignable Is this type writeable?
    */
-  AssignableType(Type* single, shared_ptr<Location> loc = nullptr);
+  AssignableType(Type* single, shared_ptr<Location> loc = nullptr,
+      const bool assignable = false);
 
   /**
    * Destructor.

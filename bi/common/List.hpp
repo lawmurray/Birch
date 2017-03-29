@@ -6,6 +6,7 @@
 #include "bi/expression/Expression.hpp"
 #include "bi/statement/Statement.hpp"
 #include "bi/type/Type.hpp"
+#include "bi/common/Iterator.hpp"
 #include "bi/primitive/unique_ptr.hpp"
 
 namespace bi {
@@ -85,9 +86,4 @@ typedef List<Statement> StatementList;
  * @ingroup compiler_common
  */
 typedef List<Type> TypeList;
-}
-
-template<class T>
-inline bi::List<T>::~List() {
-  //
 }

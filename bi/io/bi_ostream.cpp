@@ -75,14 +75,6 @@ void bi::bi_ostream::visit(const This* o) {
   *this << "this";
 }
 
-void bi::bi_ostream::visit(const LambdaInit* o) {
-  *this << o->single;
-}
-
-void bi::bi_ostream::visit(const RandomInit* o) {
-  *this << o->left << " ~ " << o->right;
-}
-
 void bi::bi_ostream::visit(const BracketsExpression* o) {
   *this << o->single << '[' << o->brackets << ']';
 }
@@ -94,24 +86,26 @@ void bi::bi_ostream::visit(const VarReference* o) {
 void bi::bi_ostream::visit(const FuncReference* o) {
   if (o->isBinary()) {
     *this << o->getLeft() << ' ' << o->name << ' ' << o->getRight();
+  } else if (o->isUnary()) {
+    *this << o->name << o->getRight();
   } else {
-    *this << o->name << o->parens;
+    *this << o->name << '(' << o->parens << ')';
   }
 }
 
 void bi::bi_ostream::visit(const ModelReference* o) {
-  *this << o->name << o->parens;
+  *this << o->name;
+  if (!o->parens->isEmpty()) {
+    *this << '(' << o->parens << ')';
+  }
 }
 
 void bi::bi_ostream::visit(const ProgReference* o) {
-  *this << o->name << o->parens;
+  *this << o->name << '(' << o->parens << ')';
 }
 
 void bi::bi_ostream::visit(const VarParameter* o) {
   *this << o->name << ':' << o->type;
-  if (!o->parens->isEmpty()) {
-    *this << o->parens;
-  }
   if (!o->value->isEmpty()) {
     *this << " <- " << o->value;
   }
@@ -119,21 +113,21 @@ void bi::bi_ostream::visit(const VarParameter* o) {
 
 void bi::bi_ostream::visit(const FuncParameter* o) {
   if (o->isBinary()) {
-    ExpressionList* list = dynamic_cast<ExpressionList*>(o->parens->strip());
-    assert(list);
-    *this << list->head << ' ' << o->name << ' ' << list->tail;
+    *this << '(' << o->getLeft() << ' ' << o->name << ' ' << o->getRight() << ')';
+  } else if (o->isUnary()) {
+    *this << '(' << o->name << o->getRight() << ')';
   } else {
-    *this << o->name << o->parens;
+    *this << o->name << '(' << o->parens << ')';
   }
   if (!o->result->isEmpty()) {
-    *this << " => " << o->result;
+    *this << " -> " << o->result;
   }
 }
 
 void bi::bi_ostream::visit(const ModelParameter* o) {
   *this << o->name;
   if (!o->parens->isEmpty()) {
-    *this << o->parens;
+    *this << '(' << o->parens << ')';
   }
   if (!o->base->isEmpty()) {
     *this << ' ' << o->op << ' ' << o->base;
@@ -141,7 +135,7 @@ void bi::bi_ostream::visit(const ModelParameter* o) {
 }
 
 void bi::bi_ostream::visit(const ProgParameter* o) {
-  *this << o->name << o->parens;
+  *this << o->name << '(' << o->parens << ')';
   if (!header && !o->braces->isEmpty()) {
     *this << o->braces;
   } else {
@@ -178,7 +172,7 @@ void bi::bi_ostream::visit(const RandomType* o) {
 }
 
 void bi::bi_ostream::visit(const LambdaType* o) {
-  *this << '@' << o->result;
+  *this << '(' << o->parens << ") -> " << o->result;
 }
 
 void bi::bi_ostream::visit(const File* o) {

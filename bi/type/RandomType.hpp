@@ -20,8 +20,10 @@ public:
    * @param left Variate type.
    * @param right Model type.
    * @param loc Location.
+   * @param assignable Is this type writeable?
    */
-  RandomType(Type* left, Type* right, shared_ptr<Location> loc = nullptr);
+  RandomType(Type* left, Type* right, shared_ptr<Location> loc = nullptr,
+      const bool assignable = false);
 
   /**
    * Destructor.

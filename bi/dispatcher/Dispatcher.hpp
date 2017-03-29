@@ -5,7 +5,6 @@
 
 #include "bi/common/Named.hpp"
 #include "bi/common/Numbered.hpp"
-#include "bi/common/Mangled.hpp"
 #include "bi/common/Parenthesised.hpp"
 #include "bi/common/Scoped.hpp"
 #include "bi/expression/FuncParameter.hpp"
@@ -16,11 +15,10 @@ namespace bi {
 /**
  * Dispatcher for runtime resolution of a function call.
  *
- * @ingroup compiler_expression
+ * @ingroup compiler_dispatcher
  */
 class Dispatcher: public Named,
     public Numbered,
-    public Mangled,
     public Parenthesised,
     public Scoped {
 public:
@@ -28,13 +26,8 @@ public:
    * Constructor.
    *
    * @param name Name.
-   * @param mangled Mangled name associated with the pattern of this
-   * dispatcher.
-   * @param parens Parentheses.
-   * @param parent Parent dispatcher.
    */
-  Dispatcher(shared_ptr<Name> name, shared_ptr<Name> mangled,
-      Expression* parens, Dispatcher* parent = nullptr);
+  Dispatcher(shared_ptr<Name> name);
 
   /**
    * Destructor.
@@ -67,19 +60,8 @@ public:
   std::list<FuncParameter*> funcs;
 
   /**
-   * Parent dispatcher.
-   */
-  Dispatcher* parent;
-
-  /**
    * Result type.
    */
   unique_ptr<Type> type;
-
-private:
-  /**
-   * Update the variant type of @p o2 with the type of @p o1.
-   */
-  void update(Expression* o1, Expression* o2);
 };
 }

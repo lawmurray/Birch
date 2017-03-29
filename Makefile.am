@@ -21,7 +21,6 @@ birchc_LDADD = $(DEPS_LIBS)
 birchc_SOURCES = \
   bi/build/Compiler.cpp \
   bi/build/misc.cpp \
-  bi/capture/ArgumentCapturer.cpp \
   bi/common/Based.cpp \
   bi/common/Binary.cpp \
   bi/common/Braced.cpp \
@@ -30,10 +29,10 @@ birchc_SOURCES = \
   bi/common/Dictionary.cpp \
   bi/common/DispatcherDictionary.cpp \
   bi/common/Formed.cpp \
+  bi/common/Iterator.cpp \
   bi/common/List.cpp \
   bi/common/Located.cpp \
   bi/common/Location.cpp \
-  bi/common/Mangled.cpp \
   bi/common/Name.cpp \
   bi/common/Named.cpp \
   bi/common/Numbered.cpp \
@@ -53,6 +52,7 @@ birchc_SOURCES = \
   bi/exception/CyclicImportException.cpp \
   bi/exception/Exception.cpp \
   bi/exception/FileNotFoundException.cpp \
+  bi/exception/InvalidAssignmentException.cpp \
   bi/exception/MemberException.cpp \
   bi/exception/NotAssignableException.cpp \
   bi/exception/PreviousDeclarationException.cpp \
@@ -66,10 +66,8 @@ birchc_SOURCES = \
   bi/expression/FuncParameter.cpp \
   bi/expression/FuncReference.cpp \
   bi/expression/Index.cpp \
-  bi/expression/LambdaInit.cpp \
   bi/expression/Literal.cpp \
   bi/expression/ParenthesesExpression.cpp \
-  bi/expression/RandomInit.cpp \
   bi/expression/Range.cpp \
   bi/expression/This.cpp \
   bi/expression/Member.cpp \
@@ -91,7 +89,6 @@ birchc_SOURCES = \
   bi/io/bi_ostream.cpp \
   bi/io/cpp_ostream.cpp \
   bi/io/indentable_ostream.cpp \
-  bi/io/mangler_ostream.cpp \
   bi/primitive/encode.cpp \
   bi/program/Prog.cpp \
   bi/program/ProgParameter.cpp \
@@ -118,10 +115,7 @@ birchc_SOURCES = \
   bi/visitor/Assigner.cpp \
   bi/visitor/Cloner.cpp \
   bi/visitor/Gatherer.cpp \
-  bi/visitor/IsPrimary.cpp \
-  bi/visitor/IsRich.cpp \
   bi/visitor/Modifier.cpp \
-  bi/visitor/Replacer.cpp \
   bi/visitor/Resolver.cpp \
   bi/visitor/TupleSizer.cpp \
   bi/visitor/Visitor.cpp \

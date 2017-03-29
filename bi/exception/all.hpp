@@ -10,6 +10,7 @@
 #include "bi/exception/CyclicImportException.hpp"
 #include "bi/exception/DriverException.hpp"
 #include "bi/exception/FileNotFoundException.hpp"
+#include "bi/exception/InvalidAssignmentException.hpp"
 #include "bi/exception/MemberException.hpp"
 #include "bi/exception/MemoryException.hpp"
 #include "bi/exception/NetCDFException.hpp"

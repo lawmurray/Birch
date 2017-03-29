@@ -9,9 +9,9 @@ namespace bi {
  */
 enum SignatureForm {
   FUNCTION,
-  BINARY_OPERATOR,
-  UNARY_OPERATOR,
-  ASSIGNMENT_OPERATOR,
+  BINARY,
+  UNARY,
+  ASSIGN,
   LAMBDA
 };
 
@@ -47,7 +47,7 @@ public:
   /**
    * Is this an assignment operator?
    */
-  bool isAssignment() const;
+  bool isAssign() const;
 
   /**
    * Is this a lambda function?

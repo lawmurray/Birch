@@ -20,6 +20,11 @@ bi::List<T>::List(T* head, T* tail, shared_ptr<Location> loc) :
 }
 
 template<class T>
+bi::List<T>::~List() {
+  //
+}
+
+template<class T>
 int bi::List<T>::count() const {
   const List<T>* listTail = dynamic_cast<const List<T>*>(tail.get());
   if (listTail) {

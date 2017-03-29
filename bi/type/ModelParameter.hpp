@@ -34,10 +34,11 @@ public:
    * @param base Base type.
    * @param braces Braces.
    * @param loc Location.
+   * @param assignable Is this type writeable?
    */
   ModelParameter(shared_ptr<Name> name, Expression* parens,
       shared_ptr<Name> op, Type* base, Expression* braces,
-      shared_ptr<Location> loc = nullptr);
+      shared_ptr<Location> loc = nullptr, const bool assignable = false);
 
   /**
    * Destructor.
@@ -53,23 +54,15 @@ public:
   bool isLess() const;
   bool isEqual() const;
 
-  /*
-   * Assignment operators.
-   */
-  unique_ptr<Expression> valueToValue;
-  unique_ptr<Expression> lambdaToLambda;
-
   using Type::definitely;
   using Type::possibly;
 
   virtual bool dispatchDefinitely(Type& o);
   virtual bool definitely(ModelParameter& o);
-  virtual bool definitely(LambdaType& o);
   virtual bool definitely(EmptyType& o);
 
   virtual bool dispatchPossibly(Type& o);
   virtual bool possibly(ModelParameter& o);
-  virtual bool possibly(LambdaType& o);
   virtual bool possibly(EmptyType& o);
 };
 }

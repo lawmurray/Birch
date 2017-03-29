@@ -9,8 +9,9 @@
 #include <algorithm>
 
 bi::VariantType::VariantType(Type* definite,
-    const std::list<Type*>& possibles, shared_ptr<Location> loc) :
-    Type(loc),
+    const std::list<Type*>& possibles, shared_ptr<Location> loc,
+    const bool assignable) :
+    Type(loc, assignable),
     definite(definite),
     possibles(possibles) {
   //

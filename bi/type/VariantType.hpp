@@ -21,10 +21,11 @@ public:
    * @param definite Definite type.
    * @param possibles Possible types.
    * @param loc Location.
+   * @param assignable Is this type writeable?
    */
   VariantType(Type* definite,
       const std::list<Type*>& possibles = std::list<Type*>(),
-      shared_ptr<Location> loc = nullptr);
+      shared_ptr<Location> loc = nullptr, const bool assignable = false);
 
   /**
    * Destructor.

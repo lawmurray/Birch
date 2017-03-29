@@ -7,7 +7,6 @@
 #include "bi/io/cpp/CppTemplateParameterGenerator.hpp"
 #include "bi/io/cpp/misc.hpp"
 #include "bi/visitor/Gatherer.hpp"
-#include "bi/capture/ArgumentCapturer.hpp"
 
 bi::CppDispatcherGenerator::CppDispatcherGenerator(std::ostream& base,
     const int level, const bool header) :
@@ -34,7 +33,7 @@ void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
   /* visitor struct for determining the precise types of variant arguments */
   if (!header && o->hasVariant()) {
     start("struct ");
-    middle("visitor_" << o->mangled << "_" << o->number << '_');
+    middle("visitor_" << o->name << "_" << o->number << '_');
     finish(" : public boost::static_visitor<" << o->type << "> {");
     in();
     for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
@@ -49,7 +48,7 @@ void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
     }
     line("");
 
-    start("visitor_" << o->mangled << "_" << o->number << "_(");
+    start("visitor_" << o->name << "_" << o->number << "_(");
     before = false;
     for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
       VarParameter* param = *iter;
@@ -130,7 +129,7 @@ void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
   start(o->type << ' ');
 
   /* name */
-  start("dispatch_" << o->mangled << "_" << o->number << '_');
+  start("dispatch_" << o->name << "_" << o->number << '_');
 
   /* parameters */
   CppParameterGenerator auxParameter(base, level, header);
@@ -144,7 +143,7 @@ void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
     in();
     if (o->hasVariant()) {
       start("return boost::apply_visitor(");
-      middle("visitor_" << o->mangled << "_" << o->number << "_(");
+      middle("visitor_" << o->name << "_" << o->number << "_(");
       bool before = false;
       for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
         VarParameter* param = *iter;
@@ -178,26 +177,24 @@ void bi::CppDispatcherGenerator::visit(const VarParameter* o) {
 
 void bi::CppDispatcherGenerator::genBody(const Dispatcher* o) {
   /* try functions, in topological order from most specific */
-  for (auto iter = o->funcs.begin(); iter != o->funcs.end(); ++iter) {
+  /*for (auto iter = o->funcs.begin(); iter != o->funcs.end(); ++iter) {
     FuncParameter* func = *iter;
     ArgumentCapturer capturer(o->parens.get(), func->parens.get());
     auto iter1 = capturer.begin();
 
     start("try { return ");
-    if (func->isBinary() && isTranslatable(func->name->str())
-        && !func->parens->isRich()) {
+    if (func->isBinary() && isTranslatable(func->name->str())) {
       genArg(iter1->first, iter1->second);
       ++iter1;
       middle(' ' << translate(o->name->str()) << ' ');
       genArg(iter1->first, iter1->second);
       ++iter1;
-    } else if (func->isUnary() && isTranslatable(func->name->str())
-        && !func->parens->isRich()) {
+    } else if (func->isUnary() && isTranslatable(func->name->str())) {
       middle(translate(o->name->str()) << ' ');
       genArg(iter1->first, iter1->second);
       ++iter;
     } else {
-      middle("bi::" << func->mangled << '(');
+      middle("bi::" << func->name << '(');
       for (; iter1 != capturer.end(); ++iter1) {
         if (iter1 != capturer.begin()) {
           middle(", ");
@@ -207,28 +204,9 @@ void bi::CppDispatcherGenerator::genBody(const Dispatcher* o) {
       middle(")");
     }
     finish("; } catch (std::bad_cast e) {}");
-  }
+  }*/
 
-  /* defer to parent dispatcher */
-  if (o->parent) {
-    bool result = o->parens->possibly(*o->parent->parens);
-    assert(result);
-
-    Gatherer<VarParameter> gatherer;
-    o->parent->parens->accept(&gatherer);
-
-    start(
-        "return dispatch_" << o->parent->mangled << "_" << o->parent->number << "_(");
-    for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
-      if (iter != gatherer.begin()) {
-        middle(", ");
-      }
-      middle((*iter)->arg);
-    }
-    finish(");");
-  } else {
-    line("throw std::bad_cast();");
-  }
+  line("throw std::bad_cast();");
 }
 
 void bi::CppDispatcherGenerator::genArg(const Expression* arg,

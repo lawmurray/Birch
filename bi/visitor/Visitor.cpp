@@ -86,16 +86,6 @@ void bi::Visitor::visit(const This* o) {
   //
 }
 
-void bi::Visitor::visit(const LambdaInit* o) {
-  o->parens->accept(this);
-  o->single->accept(this);
-}
-
-void bi::Visitor::visit(const RandomInit* o) {
-  o->left->accept(this);
-  o->right->accept(this);
-}
-
 void bi::Visitor::visit(const Member* o) {
   o->left->accept(this);
   o->right->accept(this);
@@ -201,6 +191,7 @@ void bi::Visitor::visit(const RandomType* o) {
 }
 
 void bi::Visitor::visit(const LambdaType* o) {
+  o->parens->accept(this);
   o->result->accept(this);
 }
 

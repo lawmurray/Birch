@@ -8,8 +8,9 @@
 
 #include <typeinfo>
 
-bi::RandomType::RandomType(Type* left, Type* right, shared_ptr<Location> loc) :
-    Type(loc),
+bi::RandomType::RandomType(Type* left, Type* right, shared_ptr<Location> loc,
+    const bool assignable) :
+    Type(loc, assignable),
     TypeBinary(left, right) {
   //
 }

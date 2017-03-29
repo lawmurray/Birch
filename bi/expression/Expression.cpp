@@ -4,8 +4,6 @@
 #include "bi/expression/Expression.hpp"
 
 #include "bi/type/EmptyType.hpp"
-#include "bi/visitor/IsPrimary.hpp"
-#include "bi/visitor/IsRich.hpp"
 #include "bi/visitor/TupleSizer.hpp"
 #include "bi/visitor/Gatherer.hpp"
 
@@ -25,18 +23,6 @@ bi::Expression::~Expression() {
 
 bool bi::Expression::isEmpty() const {
   return false;
-}
-
-bool bi::Expression::isPrimary() const {
-  IsPrimary visitor;
-  this->accept(&visitor);
-  return visitor.result;
-}
-
-bool bi::Expression::isRich() const {
-  IsRich visitor;
-  this->accept(&visitor);
-  return visitor.result;
 }
 
 bool bi::Expression::hasAssignable() const {
@@ -64,6 +50,14 @@ int bi::Expression::tupleDims() const {
   TupleSizer visitor;
   this->accept(&visitor);
   return visitor.dims;
+}
+
+bi::Iterator<bi::Expression> bi::Expression::begin() const {
+  return bi::Iterator<Expression>(this);
+}
+
+bi::Iterator<bi::Expression> bi::Expression::end() const {
+  return bi::Iterator<Expression>(nullptr);
 }
 
 bool bi::Expression::definitely(Expression& o) {
@@ -127,14 +121,6 @@ bool bi::Expression::definitely(This& o) {
 }
 
 bool bi::Expression::definitely(Member& o) {
-  return false;
-}
-
-bool bi::Expression::definitely(LambdaInit& o) {
-  return false;
-}
-
-bool bi::Expression::definitely(RandomInit& o) {
   return false;
 }
 
@@ -207,14 +193,6 @@ bool bi::Expression::possibly(This& o) {
 }
 
 bool bi::Expression::possibly(Member& o) {
-  return false;
-}
-
-bool bi::Expression::possibly(LambdaInit& o) {
-  return false;
-}
-
-bool bi::Expression::possibly(RandomInit& o) {
   return false;
 }
 

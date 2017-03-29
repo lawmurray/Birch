@@ -3,12 +3,10 @@
  */
 #include "bi/primitive/encode.hpp"
 
-#include "bi/io/mangler_ostream.hpp"
-#include "bi/expression/all.hpp"
-
 #include <regex>
 #include <sstream>
 #include <cassert>
+#include <unordered_map>
 
 void bi::encode32(const std::string& in, std::string& out) {
   out.resize((in.length() + 4) / 5 * 7);
@@ -72,38 +70,18 @@ unsigned char bi::decode32(const unsigned char c) {
   return d;
 }
 
-std::string bi::mangle(const Signature* o) {
-  std::stringstream buf;
-  std::string decoded, encoded;
-
-  /* encode */
-  bi::mangler_ostream stream(buf);
-  stream << o->parens->strip();
-  decoded = buf.str();
-  encode32(decoded, encoded);
-
-  /* construct unique name */
-  buf.str("");
-  buf << internalise(o);
-  if (encoded.length() > 0) {
-    buf << '_' << encoded << '_';
-  }
-
-  return buf.str();
-}
-
-std::string bi::internalise(const Signature* o) {
+std::string bi::internalise(const std::string& name) {
   /* translations */
   static std::regex reg;
   static std::unordered_map<std::string,std::string> ops, greeks;
   static bool init = false;
 
   if (!init) {
-    ops["<-"] = "forward";
-    ops["->"] = "backward";
-    ops["<~"] = "simulate";
-    ops["~>"] = "condition";
-    ops["~"] = "sim";
+    ops["<-"] = "left";
+    ops["->"] = "right";
+    ops["<~"] = "left_tilde";
+    ops["~>"] = "right_tilde";
+    ops["~"] = "tilde";
     ops[".."] = "range";
     ops["!"] = "not";
     ops["&&"] = "and";
@@ -167,11 +145,10 @@ std::string bi::internalise(const Signature* o) {
     init = true;
   }
 
-  std::string str = o->name->str();
-
   /* translate operators */
-  if (ops.find(str) != ops.end()) {
-    str = ops[str] + '_';
+  std::string str = name;
+  if (ops.find(name) != ops.end()) {
+    str = ops[name] + '_';
   }
 
   /* translate Greek letters */

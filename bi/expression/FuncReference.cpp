@@ -25,7 +25,7 @@ bi::FuncReference::FuncReference(Expression* left, shared_ptr<Name> name,
     FuncParameter* target) :
     Expression(loc),
     Named(name),
-    Parenthesised(new ParenthesesExpression(new ExpressionList(left, right))),
+    Parenthesised(new ExpressionList(left, right)),
     Formed(form),
     Reference<FuncParameter>(target),
     dispatcher(nullptr) {

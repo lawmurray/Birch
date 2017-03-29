@@ -16,15 +16,14 @@ class Visitor;
 class BracesExpression;
 class BracketsExpression;
 class EmptyExpression;
+template<class T> class Iterator;
 template<class T> class List;
 class FuncParameter;
 class FuncReference;
 class Index;
-class LambdaInit;
 template<class T> class Literal;
 class Member;
 class ParenthesesExpression;
-class RandomInit;
 class Range;
 class This;
 class VarParameter;
@@ -58,6 +57,17 @@ public:
   virtual ~Expression() = 0;
 
   /**
+   * Iterator to first element if this is an expression list, otherwise to
+   * itself.
+   */
+  Iterator<Expression> begin() const;
+
+  /**
+   * Iterator to one-past-the-last.
+   */
+  Iterator<Expression> end() const;
+
+  /**
    * Accept cloning visitor.
    *
    * @param v The visitor.
@@ -88,16 +98,6 @@ public:
   virtual bool isEmpty() const;
 
   /**
-   * Is this a primary expression?
-   */
-  virtual bool isPrimary() const;
-
-  /**
-   * Is this a rich expression?
-   */
-  virtual bool isRich() const;
-
-  /**
    * Does this function have an assignable parameter?
    */
   virtual bool hasAssignable() const;
@@ -117,12 +117,6 @@ public:
    */
   virtual int tupleDims() const;
 
-  /**
-   * Backward expression (if any). Will be null, not EmptyExpression, if
-   * there is no backward expression.
-   */
-  unique_ptr<Expression> backward;
-
   /*
    * Double-dispatch partial order comparisons.
    */
@@ -141,8 +135,6 @@ public:
   virtual bool definitely(Literal<const char*>& o);
   virtual bool definitely(Member& o);
   virtual bool definitely(ParenthesesExpression& o);
-  virtual bool definitely(LambdaInit& o);
-  virtual bool definitely(RandomInit& o);
   virtual bool definitely(Range& o);
   virtual bool definitely(This& o);
   virtual bool definitely(VarParameter& o);
@@ -163,8 +155,6 @@ public:
   virtual bool possibly(Literal<const char*>& o);
   virtual bool possibly(Member& o);
   virtual bool possibly(ParenthesesExpression& o);
-  virtual bool possibly(LambdaInit& o);
-  virtual bool possibly(RandomInit& o);
   virtual bool possibly(Range& o);
   virtual bool possibly(This& o);
   virtual bool possibly(VarParameter& o);

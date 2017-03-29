@@ -34,14 +34,13 @@ public:
   virtual void visit(const Range* o);
   virtual void visit(const Member* o);
   virtual void visit(const This* o);
-  virtual void visit(const LambdaInit* o);
-  virtual void visit(const RandomInit* o);
 
   virtual void visit(const VarReference* o);
   virtual void visit(const FuncReference* o);
   virtual void visit(const ModelReference* o);
 
   virtual void visit(const VarParameter* o);
+  virtual void visit(const FuncParameter* o);
 
   virtual void visit(const ExpressionStatement* o);
   virtual void visit(const Conditional* o);
@@ -60,22 +59,6 @@ protected:
    * Generate the capture for a lambda.
    */
   void genCapture(const Expression* o);
-
-  /*
-   * Generate function calls of various kinds.
-   */
-  void genCallFunction(FuncReference* o);
-  void genCallBinary(FuncReference* o);
-  void genCallUnary(FuncReference* o);
-  void genCallDispatcher(FuncReference* o);
-
-  /**
-   * Generate a single argument for a function call.
-   *
-   * @param arg Argument.
-   * @param param Associated parameter.
-   */
-  void genArg(Expression* arg, VarParameter* param);
 
   /**
    * Output header instead of source?

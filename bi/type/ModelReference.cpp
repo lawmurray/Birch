@@ -6,8 +6,8 @@
 #include "bi/visitor/all.hpp"
 
 bi::ModelReference::ModelReference(shared_ptr<Name> name, Expression* parens,
-    shared_ptr<Location> loc, ModelParameter* target) :
-    Type(loc),
+    shared_ptr<Location> loc, const bool assignable, ModelParameter* target) :
+    Type(loc, assignable),
     Named(name),
     Parenthesised(parens),
     Reference(target) {
@@ -88,10 +88,6 @@ bool bi::ModelReference::definitely(ModelReference& o) {
   return canUpcast(o) && (!o.assignable || assignable);
 }
 
-bool bi::ModelReference::definitely(LambdaType& o) {
-  return definitely(*o.result) && (!o.assignable || assignable);
-}
-
 bool bi::ModelReference::definitely(EmptyType& o) {
   return !o.assignable || assignable;
 }
@@ -106,10 +102,6 @@ bool bi::ModelReference::possibly(ModelParameter& o) {
 
 bool bi::ModelReference::possibly(ModelReference& o) {
   return canDowncast(o) && (!o.assignable || assignable);
-}
-
-bool bi::ModelReference::possibly(LambdaType& o) {
-  return possibly(*o.result) && (!o.assignable || assignable);
 }
 
 bool bi::ModelReference::possibly(EmptyType& o) {

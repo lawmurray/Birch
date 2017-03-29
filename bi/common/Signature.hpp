@@ -5,7 +5,6 @@
 
 #include "bi/common/Named.hpp"
 #include "bi/common/Numbered.hpp"
-#include "bi/common/Mangled.hpp"
 #include "bi/common/Parenthesised.hpp"
 #include "bi/common/Formed.hpp"
 
@@ -17,7 +16,6 @@ namespace bi {
  */
 class Signature: public Named,
     public Numbered,
-    public Mangled,
     public Parenthesised,
     public Formed {
 public:

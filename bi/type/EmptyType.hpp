@@ -17,8 +17,9 @@ public:
    * Constructor.
    *
    * @param loc Location.
+   * @param assignable Is this type writeable?
    */
-  EmptyType(shared_ptr<Location> loc = nullptr);
+  EmptyType(shared_ptr<Location> loc = nullptr, const bool assignable = false);
 
   /**
    * Destructor.

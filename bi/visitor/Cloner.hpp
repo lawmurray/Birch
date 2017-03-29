@@ -38,8 +38,6 @@ public:
   virtual Expression* clone(const Range* o);
   virtual Expression* clone(const Member* o);
   virtual Expression* clone(const This* o);
-  virtual Expression* clone(const LambdaInit* o);
-  virtual Expression* clone(const RandomInit* o);
 
   virtual Expression* clone(const VarReference* o);
   virtual Expression* clone(const FuncReference* o);

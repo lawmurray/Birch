@@ -22,9 +22,10 @@ public:
    * @param single Type.
    * @param brackets Brackets.
    * @param loc Location.
+   * @param assignable Is this type writeable?
    */
   BracketsType(Type* single, Expression* brackets, shared_ptr<Location> loc =
-      nullptr);
+      nullptr, const bool assignable = false);
 
   /**
    * Constructor.
@@ -50,11 +51,9 @@ public:
 
   virtual bool dispatchDefinitely(Type& o);
   virtual bool definitely(BracketsType& o);
-  virtual bool definitely(LambdaType& o);
 
   virtual bool dispatchPossibly(Type& o);
   virtual bool possibly(BracketsType& o);
-  virtual bool possibly(LambdaType& o);
 
   /**
    * Number of dimensions.

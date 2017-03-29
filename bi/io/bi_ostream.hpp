@@ -35,8 +35,6 @@ public:
   virtual void visit(const Member* o);
   virtual void visit(const This* o);
   virtual void visit(const BracketsExpression* o);
-  virtual void visit(const LambdaInit* o);
-  virtual void visit(const RandomInit* o);
 
   virtual void visit(const VarReference* o);
   virtual void visit(const FuncReference* o);

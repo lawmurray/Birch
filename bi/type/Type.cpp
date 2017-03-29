@@ -5,9 +5,9 @@
 
 #include <cassert>
 
-bi::Type::Type(shared_ptr<Location> loc) :
+bi::Type::Type(shared_ptr<Location> loc, const bool assignable) :
     Located(loc),
-    assignable(false) {
+    assignable(assignable) {
   //
 }
 

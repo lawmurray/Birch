@@ -3,7 +3,6 @@
  */
 #include "bi/io/cpp/CppBaseGenerator.hpp"
 
-#include "bi/capture/ArgumentCapturer.hpp"
 #include "bi/visitor/Gatherer.hpp"
 #include "bi/io/cpp/misc.hpp"
 
@@ -94,28 +93,6 @@ void bi::CppBaseGenerator::visit(const This* o) {
   middle("*this");
 }
 
-void bi::CppBaseGenerator::visit(const LambdaInit* o) {
-  genCapture(o->single.get());
-  middle('(');
-  Gatherer<VarParameter> gatherer;
-  o->parens->accept(&gatherer);
-  for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
-    VarParameter* param = *iter;
-    if (iter != gatherer.begin()) {
-      middle(", ");
-    }
-    if (!param->type->assignable) {
-      middle("const ");
-    }
-    middle(param->type << "& " << param->name);
-  }
-  middle(") { return " << o->single << "; }");
-}
-
-void bi::CppBaseGenerator::visit(const RandomInit* o) {
-  middle(o->left << ".init(" << o->right << ", " << o->backward << ')');
-}
-
 void bi::CppBaseGenerator::visit(const Member* o) {
   const This* left = dynamic_cast<const This*>(o->left.get());
   if (left) {
@@ -131,18 +108,15 @@ void bi::CppBaseGenerator::visit(const VarReference* o) {
 }
 
 void bi::CppBaseGenerator::visit(const FuncReference* o) {
-  FuncReference* o1 = const_cast<FuncReference*>(o);
-  assert(o1);
-  if (o1->dispatcher) {
-    genCallDispatcher(o1);
-  } else if (o1->isBinary() && isTranslatable(o1->name->str())
-      && !o1->target->parens->isRich()) {
-    genCallBinary(o1);
-  } else if (o1->isUnary() && isTranslatable(o1->name->str())
-      && !o1->target->parens->isRich()) {
-    genCallUnary(o1);
+  if (o->isBinary() && isTranslatable(o->name->str())) {
+    auto iter = o->parens->begin();
+    auto first = *(iter++);
+    auto second = *(iter++);
+    middle(first << ' ' << o->name << ' ' << second);
+  } else if (o->isUnary() && isTranslatable(o->name->str())) {
+    middle(o->name << o->parens);
   } else {
-    genCallFunction(o1);
+    middle(o->name << '(' << o->parens << ')');
   }
 }
 
@@ -170,28 +144,43 @@ void bi::CppBaseGenerator::visit(const ModelReference* o) {
 
 void bi::CppBaseGenerator::visit(const VarParameter* o) {
   middle(o->type << ' ' << o->name);
-  if (!o->parens->isEmpty() || o->type->count() > 0) {
-    middle('(');
-  }
-  if (!o->parens->isEmpty()) {
-    middle(o->parens->strip());
-    if (o->type->count() > 0) {
-      middle(", ");
-    }
-  }
-  if (o->type->count() > 0) {
-    BracketsType* type = dynamic_cast<BracketsType*>(o->type.get());
-    assert(type);
-    middle("make_frame(" << type->brackets << ")");
-    if (!o->value->isEmpty()) {
-      middle(", " << o->value->strip());
-    }
-  }
-  if (!o->parens->isEmpty() || o->type->count() > 0) {
-    middle(')');
-  }
+//  if (!o->parens->isEmpty() || o->type->count() > 0) {
+//    middle('(');
+//  }
+//  if (!o->parens->isEmpty()) {
+//    middle(o->parens->strip());
+//    if (o->type->count() > 0) {
+//      middle(", ");
+//    }
+//  }
+//  if (o->type->count() > 0) {
+//    BracketsType* type = dynamic_cast<BracketsType*>(o->type.get());
+//    assert(type);
+//    middle("make_frame(" << type->brackets << ")");
+//    if (!o->value->isEmpty()) {
+//      middle(", " << o->value->strip());
+//    }
+//  }
+//  if (!o->parens->isEmpty() || o->type->count() > 0) {
+//    middle(')');
+//  }
   if (!o->value->isEmpty()) {
     middle(" = " << o->value);
+  }
+}
+
+void bi::CppBaseGenerator::visit(const FuncParameter* o) {
+  if (o->isLambda()) {
+    genCapture(o->braces.get());
+    middle('(');
+    for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
+      if (iter != o->parens->begin()) {
+        middle(", ");
+      }
+      middle(*iter);
+    }
+    middle(')');
+    middle(o->braces);
   }
 }
 
@@ -290,69 +279,4 @@ void bi::CppBaseGenerator::genCapture(const Expression* o) {
     }
   }
   middle(']');
-}
-
-void bi::CppBaseGenerator::genCallFunction(FuncReference* o) {
-  ArgumentCapturer capturer(o, o->target);
-
-  middle(o->target->mangled);
-  middle('(');
-  for (auto iter = capturer.begin(); iter != capturer.end(); ++iter) {
-    if (iter != capturer.begin()) {
-      middle(", ");
-    }
-    genArg(iter->first, iter->second);
-  }
-  middle(')');
-}
-
-void bi::CppBaseGenerator::genCallBinary(FuncReference* o) {
-  ArgumentCapturer capturer(o, o->target);
-
-  auto iter = capturer.begin();
-  genArg(iter->first, iter->second);
-  ++iter;
-  middle(' ' << translate(o->name->str()) << ' ');
-  genArg(iter->first, iter->second);
-  ++iter;
-  assert(iter == capturer.end());
-}
-
-void bi::CppBaseGenerator::genCallUnary(FuncReference* o) {
-  ArgumentCapturer capturer(o, o->target);
-
-  middle(translate(o->name->str()));
-  auto iter = capturer.begin();
-  genArg(iter->first, iter->second);
-  ++iter;
-  assert(iter == capturer.end());
-}
-
-void bi::CppBaseGenerator::genCallDispatcher(FuncReference* o) {
-  middle("dispatch_" << o->dispatcher->mangled);
-  middle("_" << o->dispatcher->number << "_");
-
-  ArgumentCapturer capturer(o, o->dispatcher);
-  middle('(');
-  for (auto iter = capturer.begin(); iter != capturer.end(); ++iter) {
-    if (iter != capturer.begin()) {
-      middle(", ");
-    }
-    genArg(iter->first, iter->second);
-  }
-  middle(')');
-}
-
-void bi::CppBaseGenerator::genArg(Expression* arg, VarParameter* param) {
-  if (!arg->type->isLambda() && param->type->isLambda()) {
-    middle(param->type << "(");
-    genCapture(arg);
-    middle(" { return " << arg << "; }");
-    if (arg->backward) {
-      middle(", " << arg->backward);
-    }
-    middle(')');
-  } else {
-    middle(arg);
-  }
 }

@@ -76,15 +76,6 @@ bi::Expression* bi::Cloner::clone(const This* o) {
   return new This(o->loc);
 }
 
-bi::Expression* bi::Cloner::clone(const LambdaInit* o) {
-  return new LambdaInit(o->parens->accept(this), o->single->accept(this),
-      o->loc);
-}
-
-bi::Expression* bi::Cloner::clone(const RandomInit* o) {
-  return new RandomInit(o->left->accept(this), o->right->accept(this), o->loc);
-}
-
 bi::Expression* bi::Cloner::clone(const VarReference* o) {
   return new VarReference(o->name, o->loc);
 }
@@ -94,9 +85,8 @@ bi::Expression* bi::Cloner::clone(const FuncReference* o) {
 }
 
 bi::Type* bi::Cloner::clone(const ModelReference* o) {
-  Type* result = new ModelReference(o->name, o->parens->accept(this), o->loc);
-  result->assignable = o->assignable;
-  return result;
+  return new ModelReference(o->name, o->parens->accept(this), o->loc,
+      o->assignable);
 }
 
 bi::Prog* bi::Cloner::clone(const ProgReference* o) {
@@ -105,7 +95,7 @@ bi::Prog* bi::Cloner::clone(const ProgReference* o) {
 
 bi::Expression* bi::Cloner::clone(const VarParameter* o) {
   return new VarParameter(o->name, o->type->accept(this),
-      o->parens->accept(this), o->value->accept(this), o->loc);
+      o->value->accept(this), o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const FuncParameter* o) {
@@ -169,51 +159,39 @@ bi::Statement* bi::Cloner::clone(const ProgDeclaration* o) {
 }
 
 bi::Type* bi::Cloner::clone(const AssignableType* o) {
-  Type* result = new AssignableType(o->single->accept(this), o->loc);
-  result->assignable = o->assignable;
-  return result;
+  return new AssignableType(o->single->accept(this), o->loc, o->assignable);
 }
 
 bi::Type* bi::Cloner::clone(const BracketsType* o) {
-  Type* result = new BracketsType(o->single->accept(this),
-      o->brackets->accept(this), o->loc);
-  result->assignable = o->assignable;
-  return result;
+  return new BracketsType(o->single->accept(this), o->brackets->accept(this),
+      o->loc, o->assignable);
 }
 
 bi::Type* bi::Cloner::clone(const ParenthesesType* o) {
-  Type* result = new ParenthesesType(o->single->accept(this), o->loc);
-  result->assignable = o->assignable;
-  return result;
+  return new ParenthesesType(o->single->accept(this), o->loc, o->assignable);
 }
 
 bi::Type* bi::Cloner::clone(const RandomType* o) {
-  Type* result = new RandomType(o->left->accept(this), o->right->accept(this),
-      o->loc);
-  result->assignable = o->assignable;
-  return result;
+  return new RandomType(o->left->accept(this), o->right->accept(this), o->loc,
+      o->assignable);
 }
 
 bi::Type* bi::Cloner::clone(const LambdaType* o) {
-  Type* result = new LambdaType(o->result->accept(this), o->loc);
-  result->assignable = o->assignable;
-  return result;
+  return new LambdaType(o->parens->accept(this), o->result->accept(this),
+      o->loc, o->assignable);
 }
 
 bi::Type* bi::Cloner::clone(const TypeList* o) {
-  Type* result = new TypeList(o->head->accept(this), o->tail->accept(this),
-      o->loc);
+  TypeList* result = new TypeList(o->head->accept(this),
+      o->tail->accept(this), o->loc);
   result->assignable = o->assignable;
   return result;
 }
 
 bi::Type* bi::Cloner::clone(const VariantType* o) {
-  Type* result = new VariantType(o->definite, o->possibles, o->loc);
-  result->assignable = o->assignable;
-  return result;
+  return new VariantType(o->definite, o->possibles, o->loc, o->assignable);
 }
 
 bi::Dispatcher* bi::Cloner::clone(const Dispatcher* o) {
-  return new Dispatcher(o->name, o->mangled, o->parens->accept(this),
-      o->parent);
+  return new Dispatcher(o->name);
 }

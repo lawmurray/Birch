@@ -9,10 +9,9 @@
 #include <typeinfo>
 
 bi::VarParameter::VarParameter(shared_ptr<Name> name, Type* type,
-    Expression* parens, Expression* value, shared_ptr<Location> loc) :
+    Expression* value, shared_ptr<Location> loc) :
     Expression(type, loc),
     Named(name),
-    Parenthesised(parens),
     value(value) {
   this->arg = this;
 }

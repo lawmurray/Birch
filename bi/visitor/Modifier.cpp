@@ -88,18 +88,6 @@ bi::Expression* bi::Modifier::modify(This* o) {
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(LambdaInit* o) {
-  o->parens = o->parens.release()->accept(this);
-  o->single = o->single.release()->accept(this);
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(RandomInit* o) {
-  o->left = o->left.release()->accept(this);
-  o->right = o->right.release()->accept(this);
-  return o;
-}
-
 bi::Expression* bi::Modifier::modify(VarReference* o) {
   return o;
 }
@@ -222,6 +210,7 @@ bi::Type* bi::Modifier::modify(RandomType* o) {
 }
 
 bi::Type* bi::Modifier::modify(LambdaType* o) {
+  o->parens = o->parens.release()->accept(this);
   o->result = o->result.release()->accept(this);
   return o;
 }

@@ -20,8 +20,10 @@ public:
    *
    * @param single Type in parentheses.
    * @param loc Location.
+   * @param assignable Is this type writeable?
    */
-  ParenthesesType(Type* single, shared_ptr<Location> loc = nullptr);
+  ParenthesesType(Type* single, shared_ptr<Location> loc = nullptr,
+      const bool assignable = false);
 
   /**
    * Destructor.

@@ -100,11 +100,10 @@ void bi::CppFileGenerator::visit(const FuncParameter* o) {
     if (!header) {
       middle("bi::");
     }
-    if ((o->isBinary() || o->isUnary()) && isTranslatable(o->name->str())
-        && !o->parens->isRich()) {
+    if ((o->isBinary() || o->isUnary()) && isTranslatable(o->name->str())) {
       middle("operator" << translate(o->name->str()));
     } else {
-      middle(o->mangled);
+      middle(o->name);
     }
 
     /* parameters */

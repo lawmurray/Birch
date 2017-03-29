@@ -27,11 +27,12 @@ public:
    * @param name Name.
    * @param parens Parentheses.
    * @param loc Location.
+   * @param assignable Is this type writeable?
    * @param target Target.
    */
   ModelReference(shared_ptr<Name> name, Expression* parens =
       new EmptyExpression(), shared_ptr<Location> loc = nullptr,
-      ModelParameter* target = nullptr);
+      const bool assignable = false, ModelParameter* target = nullptr);
 
   /**
    * Constructor.
@@ -68,13 +69,11 @@ public:
   virtual bool dispatchDefinitely(Type& o);
   virtual bool definitely(ModelParameter& o);
   virtual bool definitely(ModelReference& o);
-  virtual bool definitely(LambdaType& o);
   virtual bool definitely(EmptyType& o);
 
   virtual bool dispatchPossibly(Type& o);
   virtual bool possibly(ModelParameter& o);
   virtual bool possibly(ModelReference& o);
-  virtual bool possibly(LambdaType& o);
   virtual bool possibly(EmptyType& o);
 };
 }

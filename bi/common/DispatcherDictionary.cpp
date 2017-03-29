@@ -6,7 +6,7 @@
 #include "bi/dispatcher/Dispatcher.hpp"
 
 bool bi::DispatcherDictionary::contains(Dispatcher* dispatcher) {
-  auto range = dispatchers.equal_range(dispatcher->mangled->str());
+  auto range = dispatchers.equal_range(dispatcher->name->str());
   for (auto iter = range.first; iter != range.second; ++iter) {
     if (*iter->second == *dispatcher) {
       return true;
@@ -16,7 +16,7 @@ bool bi::DispatcherDictionary::contains(Dispatcher* dispatcher) {
 }
 
 bi::Dispatcher* bi::DispatcherDictionary::get(Dispatcher* dispatcher) {
-  auto range = dispatchers.equal_range(dispatcher->mangled->str());
+  auto range = dispatchers.equal_range(dispatcher->name->str());
   for (auto iter = range.first; iter != range.second; ++iter) {
     if (*iter->second == *dispatcher) {
       return iter->second;
@@ -29,7 +29,7 @@ void bi::DispatcherDictionary::add(Dispatcher* dispatcher) {
   /* pre-condition */
   assert(!contains(dispatcher));
 
-  dispatchers.insert(std::make_pair(dispatcher->mangled->str(), dispatcher));
+  dispatchers.insert(std::make_pair(dispatcher->name->str(), dispatcher));
 }
 
 void bi::DispatcherDictionary::merge(DispatcherDictionary& o) {

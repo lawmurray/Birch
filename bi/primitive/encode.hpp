@@ -34,16 +34,11 @@ unsigned char encode32(const unsigned char c);
 unsigned char decode32(const unsigned char c);
 
 /**
- * Generate a unique name for a function parameter.
- */
-std::string mangle(const Signature* o);
-
-/**
  * Generate internal name. This is the original name, with any characters
  * outside the class [0-9a-zA-z_] translated to within that class, and an
  * underscore added to the end to avoid clashes with user variables.
  */
-std::string internalise(const Signature* o);
+std::string internalise(const std::string& name);
 
 /**
  * Is character in the class [0-9a-zA-Z_]?
