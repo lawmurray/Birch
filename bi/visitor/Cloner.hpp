@@ -67,7 +67,5 @@ public:
   virtual Type* clone(const LambdaType* o);
   virtual Type* clone(const TypeList* o);
   virtual Type* clone(const VariantType* o);
-
-  virtual Dispatcher* clone(const Dispatcher* o);
 };
 }

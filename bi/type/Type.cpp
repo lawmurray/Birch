@@ -3,6 +3,8 @@
  */
 #include "bi/type/Type.hpp"
 
+#include "bi/common/Iterator.hpp"
+
 #include <cassert>
 
 bi::Type::Type(shared_ptr<Location> loc, const bool assignable) :
@@ -45,6 +47,14 @@ bi::Type* bi::Type::strip() {
 
 int bi::Type::count() const {
   return 0;
+}
+
+bi::Iterator<bi::Type> bi::Type::begin() const {
+  return bi::Iterator<Type>(this);
+}
+
+bi::Iterator<bi::Type> bi::Type::end() const {
+  return bi::Iterator<Type>(nullptr);
 }
 
 bool bi::Type::definitely(const Type& o) const {

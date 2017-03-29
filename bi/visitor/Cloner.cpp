@@ -191,7 +191,3 @@ bi::Type* bi::Cloner::clone(const TypeList* o) {
 bi::Type* bi::Cloner::clone(const VariantType* o) {
   return new VariantType(o->definite, o->possibles, o->loc, o->assignable);
 }
-
-bi::Dispatcher* bi::Cloner::clone(const Dispatcher* o) {
-  return new Dispatcher(o->name);
-}

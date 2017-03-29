@@ -13,6 +13,7 @@ class Visitor;
 class AssignableType;
 class BracketsType;
 class EmptyType;
+template<class T> class Iterator;
 class LambdaType;
 template<class T> class List;
 class ModelParameter;
@@ -105,6 +106,16 @@ public:
    * How many dimensions does this type have?
    */
   virtual int count() const;
+
+  /**
+   * Iterator to first element if this is an list, otherwise to this.
+   */
+  Iterator<Type> begin() const;
+
+  /**
+   * Iterator to one-past-the-last.
+   */
+  Iterator<Type> end() const;
 
   /**
    * Is this type assignable?

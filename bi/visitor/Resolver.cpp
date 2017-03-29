@@ -129,7 +129,8 @@ bi::Expression* bi::Resolver::modify(FuncReference* o) {
     }
   } else {
     resolve(o, membershipScope);
-    if (o->dispatcher) {
+    if (o->possibles.size() > 0) {
+      o->dispatcher = makeDispatcher(o);
       o->type = o->dispatcher->type->accept(&cloner)->accept(this);
     } else {
       o->type = o->target->type->accept(&cloner)->accept(this);
@@ -155,14 +156,7 @@ bi::Expression* bi::Resolver::modify(VarParameter* o) {
     top()->add(o);
   }
   if (o->type->isLambda()) {
-    LambdaType* lambda = dynamic_cast<LambdaType*>(o->type->strip());
-    assert(lambda);
-    Expression* parens = new ParenthesesExpression();
-    Expression* result = new VarParameter(new Name(),
-        lambda->result->accept(&cloner));
-    o->func = new FuncParameter(o->name, parens, result,
-        new EmptyExpression(), LAMBDA);
-    o->func = o->func->accept(this);
+    o->func = makeLambda(o);
   }
   if (!o->value->isEmpty()) {
     if (!o->type->assignable) {
@@ -183,7 +177,7 @@ bi::Expression* bi::Resolver::modify(FuncParameter* o) {
   o->type = o->result->type->accept(&cloner)->accept(this);
   if (o->isLambda()) {
     o->braces = o->braces->accept(this);
-  } else if (!o->braces->isEmpty() ) {
+  } else if (!o->braces->isEmpty()) {
     defer(o->braces.get());
   }
   o->scope = pop();
@@ -247,60 +241,53 @@ bi::Type* bi::Resolver::modify(AssignableType* o) {
   return o;
 }
 
-bi::Dispatcher* bi::Resolver::modify(Dispatcher* o) {
-  /* pre-condition */
-  assert(o->funcs.size() > 0);
+bi::FuncParameter* bi::Resolver::makeLambda(VarParameter* o) {
+  LambdaType* type = dynamic_cast<LambdaType*>(o->type.get());
+  assert(type);
 
-  /* initialise with return type of first function */
-  auto iter = o->funcs.rbegin();
-  o->type = (*iter)->result->type->accept(&cloner)->accept(this);
-  ++iter;
-
-  /* fill with types of remaining functions */
-  while (iter != o->funcs.rend()) {
-    FuncParameter* func = *iter;
-    o->type = combine(func->result->type.get(), o->type.release());
+  /* parameters */
+  Expression* parens;
+  std::list<const Type*> types;
+  for (auto iter = type->parens->begin(); iter != type->parens->end();
+      ++iter) {
+    types.push_back(*iter);
+  }
+  if (types.size() > 0) {
+    auto iter = types.rbegin();
+    parens = new VarParameter(new Name(), (*iter)->accept(&cloner));
     ++iter;
+    while (iter != types.rend()) {
+      parens = new ExpressionList(
+          new VarParameter(new Name(), (*iter)->accept(&cloner)), parens);
+      ++iter;
+    }
+  } else {
+    parens = new EmptyExpression();
   }
 
-  return o;
+  /* result */
+  Expression* result = new VarParameter(new Name(), o->type->accept(&cloner));
+
+  /* function */
+  FuncParameter* func = new FuncParameter(o->name, parens, result, new EmptyExpression(), LAMBDA);
+  func->accept(this);
+
+  return func;
 }
 
-bi::Expression* bi::Resolver::parameters(Expression* parens1,
-    Expression* parens2) {
-  /*ArgumentCapturer capturer(parens1, parens2);
-   Expression* parens3 = parens2->accept(&cloner);
-   Gatherer<VarParameter> gatherer;
-   parens3->accept(&gatherer);*/
+bi::Dispatcher* bi::Resolver::makeDispatcher(FuncReference* o) {
+  Dispatcher* dispatcher = new Dispatcher(o);
 
-  /* replace types of parameters with types of arguments */
-  /*auto iter2 = capturer.begin();
-   auto iter3 = gatherer.begin();
-   while (iter2 != capturer.end() && iter3 != gatherer.end()) {
-   (*iter3)->type = iter2->first->type->accept(&cloner);
-   ++iter2;
-   ++iter3;
-   }
-   assert(iter2 == capturer.end());
-   assert(iter3 == gatherer.end());
-
-   return parens3;*/
-}
-
-bi::Type* bi::Resolver::combine(Type* o1, Type* o2) {
-  VariantType* variant = dynamic_cast<VariantType*>(o2);
-  if (variant) {
-    /* this parameter already has a variant type, add the type of the
-     * argument to this */
-    variant->add(o1);
-    return variant;
-  } else if (!o1->equals(*o2)) {
-    /* make a new variant type, assuming current type is definite */
-    variant = new VariantType(o2);
-    variant->add(o1);
-    return variant;
+  /* reuse an existing, identical dispatcher in the scope if possible */
+  if (bottom()->contains(dispatcher)) {
+    Dispatcher* existing = bottom()->get(dispatcher);
+    delete dispatcher;
+    dispatcher = existing;
+  } else {
+    bottom()->add(dispatcher);
   }
-  return o2;
+
+  return dispatcher;
 }
 
 bi::Scope* bi::Resolver::takeMembershipScope() {
@@ -352,30 +339,6 @@ void bi::Resolver::resolve(ReferenceType* ref, Scope* scope) {
   }
 }
 
-void bi::Resolver::resolve(FuncReference* ref, Scope* scope) {
-  resolve<FuncReference>(ref, scope);
-  if (ref->possibles.size() > 0) {
-    FuncParameter* param = ref->target;
-    Dispatcher* dispatcher = new Dispatcher(param->name);
-    dispatcher->push_front(param);
-    for (auto iter = ref->possibles.rbegin(); iter != ref->possibles.rend();
-        ++iter) {
-      dispatcher->push_front(*iter);
-    }
-    dispatcher = dispatcher->accept(this);
-    if (bottom()->contains(dispatcher)) {
-      /* reuse identical dispatcher in the scope */
-      Dispatcher* existing = bottom()->get(dispatcher);
-      delete dispatcher;
-      dispatcher = existing;
-    } else {
-      /* add current dispatcher to the scope */
-      bottom()->add(dispatcher);
-    }
-    ref->dispatcher = dispatcher;
-  }
-}
-
 void bi::Resolver::defer(Expression* o) {
   if (files.size() == 1) {
     /* ignore bodies in imported files */
@@ -409,4 +372,5 @@ bi::ModelParameter* bi::Resolver::model() {
 }
 
 template void bi::Resolver::resolve(VarReference* ref, Scope* scope);
+template void bi::Resolver::resolve(FuncReference* ref, Scope* scope);
 template void bi::Resolver::resolve(ModelReference* ref, Scope* scope);

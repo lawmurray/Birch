@@ -57,17 +57,6 @@ public:
   virtual ~Expression() = 0;
 
   /**
-   * Iterator to first element if this is an expression list, otherwise to
-   * itself.
-   */
-  Iterator<Expression> begin() const;
-
-  /**
-   * Iterator to one-past-the-last.
-   */
-  Iterator<Expression> end() const;
-
-  /**
    * Accept cloning visitor.
    *
    * @param v The visitor.
@@ -116,6 +105,16 @@ public:
    * Number of range expressions in tuple.
    */
   virtual int tupleDims() const;
+
+  /**
+   * Iterator to first element if this is an list, otherwise to this.
+   */
+  Iterator<Expression> begin() const;
+
+  /**
+   * Iterator to one-past-the-last.
+   */
+  Iterator<Expression> end() const;
 
   /*
    * Double-dispatch partial order comparisons.

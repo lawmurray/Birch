@@ -58,9 +58,18 @@ public:
 
   virtual Type* modify(AssignableType* o);
 
-  virtual Dispatcher*  modify(Dispatcher* o);
-
 protected:
+  /**
+   * Make a function associated with a variable of lambda type.
+   */
+  FuncParameter* makeLambda(VarParameter* o);
+
+  /**
+   * Make a dispatcher associated with a function call that must be resolved
+   * at runtime.
+   */
+  Dispatcher* makeDispatcher(FuncReference* o);
+
   /**
    * Take the membership scope, if it exists.
    *
@@ -106,15 +115,6 @@ protected:
   void resolve(ReferenceType* ref, Scope* scope = nullptr);
 
   /**
-   * Resolve a function reference.
-   *
-   * @param ref The reference.
-   * @param scope The membership scope, if it is to be used for lookup,
-   * otherwise the containing scope is used.
-   */
-  void resolve(FuncReference* ref, Scope* scope = nullptr);
-
-  /**
    * Defer visit.
    *
    * @param o Braces to which to defer visit.
@@ -131,18 +131,6 @@ protected:
    * Innermost model.
    */
   ModelParameter* model();
-
-  /**
-   * Determine the parameter list for a dispatcher.
-   */
-  Expression* parameters(Expression* parens1, Expression* parens2);
-
-  /**
-   * Combine one type into another (possibly variant) type. Combines @p o1
-   * into @p o2 and returns the result. If the two types are identical,
-   * returns @p o2.
-   */
-  Type* combine(Type* o1, Type* o2);
 
   /**
    * Stack of containing scopes.

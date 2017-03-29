@@ -31,7 +31,7 @@ void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
   int i;
 
   /* visitor struct for determining the precise types of variant arguments */
-  if (!header && o->hasVariant()) {
+  if (!header) {
     start("struct ");
     middle("visitor_" << o->name << "_" << o->number << '_');
     finish(" : public boost::static_visitor<" << o->type << "> {");
@@ -141,31 +141,27 @@ void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
   } else {
     finish(" {");
     in();
-    if (o->hasVariant()) {
-      start("return boost::apply_visitor(");
-      middle("visitor_" << o->name << "_" << o->number << "_(");
-      bool before = false;
-      for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
-        VarParameter* param = *iter;
-        if (!param->type->isVariant()) {
-          if (before) {
-            middle(", ");
-          }
-          middle(param->name);
-          before = true;
+    start("return boost::apply_visitor(");
+    middle("visitor_" << o->name << "_" << o->number << "_(");
+    bool before = false;
+    for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
+      VarParameter* param = *iter;
+      if (!param->type->isVariant()) {
+        if (before) {
+          middle(", ");
         }
+        middle(param->name);
+        before = true;
       }
-      middle(")");
-      for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
-        VarParameter* param = *iter;
-        if (param->type->isVariant()) {
-          middle(", " << param->name);
-        }
-      }
-      finish(");");
-    } else {
-      genBody(o);
     }
+    middle(")");
+    for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
+      VarParameter* param = *iter;
+      if (param->type->isVariant()) {
+        middle(", " << param->name);
+      }
+    }
+    finish(");");
     out();
     line("}\n");
   }
@@ -178,33 +174,33 @@ void bi::CppDispatcherGenerator::visit(const VarParameter* o) {
 void bi::CppDispatcherGenerator::genBody(const Dispatcher* o) {
   /* try functions, in topological order from most specific */
   /*for (auto iter = o->funcs.begin(); iter != o->funcs.end(); ++iter) {
-    FuncParameter* func = *iter;
-    ArgumentCapturer capturer(o->parens.get(), func->parens.get());
-    auto iter1 = capturer.begin();
+   FuncParameter* func = *iter;
+   ArgumentCapturer capturer(o->parens.get(), func->parens.get());
+   auto iter1 = capturer.begin();
 
-    start("try { return ");
-    if (func->isBinary() && isTranslatable(func->name->str())) {
-      genArg(iter1->first, iter1->second);
-      ++iter1;
-      middle(' ' << translate(o->name->str()) << ' ');
-      genArg(iter1->first, iter1->second);
-      ++iter1;
-    } else if (func->isUnary() && isTranslatable(func->name->str())) {
-      middle(translate(o->name->str()) << ' ');
-      genArg(iter1->first, iter1->second);
-      ++iter;
-    } else {
-      middle("bi::" << func->name << '(');
-      for (; iter1 != capturer.end(); ++iter1) {
-        if (iter1 != capturer.begin()) {
-          middle(", ");
-        }
-        genArg(iter1->first, iter1->second);
-      }
-      middle(")");
-    }
-    finish("; } catch (std::bad_cast e) {}");
-  }*/
+   start("try { return ");
+   if (func->isBinary() && isTranslatable(func->name->str())) {
+   genArg(iter1->first, iter1->second);
+   ++iter1;
+   middle(' ' << translate(o->name->str()) << ' ');
+   genArg(iter1->first, iter1->second);
+   ++iter1;
+   } else if (func->isUnary() && isTranslatable(func->name->str())) {
+   middle(translate(o->name->str()) << ' ');
+   genArg(iter1->first, iter1->second);
+   ++iter;
+   } else {
+   middle("bi::" << func->name << '(');
+   for (; iter1 != capturer.end(); ++iter1) {
+   if (iter1 != capturer.begin()) {
+   middle(", ");
+   }
+   genArg(iter1->first, iter1->second);
+   }
+   middle(")");
+   }
+   finish("; } catch (std::bad_cast e) {}");
+   }*/
 
   line("throw std::bad_cast();");
 }

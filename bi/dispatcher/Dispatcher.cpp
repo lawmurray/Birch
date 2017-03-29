@@ -9,30 +9,15 @@
 #include <vector>
 #include <algorithm>
 
-bi::Dispatcher::Dispatcher(shared_ptr<Name> name) :
-    Named(name) {
-  //
+bi::Dispatcher::Dispatcher(FuncReference* ref) :
+    Named(ref->name) {
+  add(ref->target);
+  std::for_each(ref->possibles.begin(), ref->possibles.end(),
+      [&](FuncParameter* o) {add(o);});
 }
 
 bi::Dispatcher::~Dispatcher() {
-  //
-}
-
-void bi::Dispatcher::push_front(FuncParameter* o) {
-  /* pre-condition */
-  assert(*o->name == *name);
-
-  /* add function */
-  funcs.push_front(o);
-}
-
-bool bi::Dispatcher::hasVariant() const {
-  return std::any_of(parens->begin(), parens->end(),
-      [&](const Expression* o) {return o->type->isVariant();});
-}
-
-bi::Dispatcher* bi::Dispatcher::accept(Cloner* visitor) const {
-  return visitor->clone(this);
+  std::for_each(types.begin(), types.end(), [](VariantType* o) {delete o;});
 }
 
 bi::Dispatcher* bi::Dispatcher::accept(Modifier* visitor) {
@@ -51,4 +36,19 @@ bool bi::Dispatcher::operator==(const Dispatcher& o) const {
   std::sort(funcs2.begin(), funcs2.end());
 
   return funcs1 == funcs2;
+}
+
+void bi::Dispatcher::add(FuncParameter* o) {
+  if (funcs.size() == 0) {
+    std::transform(o->parens->begin(), o->parens->end(),
+        std::back_inserter(types),
+        [](const Expression* expr) {return new VariantType(expr->type.get());});
+    type = new VariantType(o->result->type.get());
+  } else {
+    std::transform(o->parens->begin(), o->parens->end(), types.begin(),
+        types.begin(),
+        [&](const Expression* expr, VariantType* type) {type->add(expr->type.get()); return type;});
+    type->add(o->result->type.get());
+  }
+  funcs.push_back(o);
 }

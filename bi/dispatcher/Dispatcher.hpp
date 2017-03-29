@@ -25,27 +25,15 @@ public:
   /**
    * Constructor.
    *
-   * @param name Name.
+   * @param ref Function call.
    */
-  Dispatcher(shared_ptr<Name> name);
+  Dispatcher(FuncReference* ref);
 
   /**
    * Destructor.
    */
   virtual ~Dispatcher();
 
-  /**
-   * Insert a function into the dispatcher. The function pattern must match
-   * that of the dispatcher.
-   */
-  void push_front(FuncParameter* func);
-
-  /**
-   * Does this dispatcher have a parameter of a variant type?
-   */
-  bool hasVariant() const;
-
-  virtual Dispatcher* accept(Cloner* visitor) const;
   virtual Dispatcher* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
@@ -60,8 +48,19 @@ public:
   std::list<FuncParameter*> funcs;
 
   /**
+   * Parameter types.
+   */
+  std::list<VariantType*> types;
+
+  /**
    * Result type.
    */
-  unique_ptr<Type> type;
+  unique_ptr<VariantType> type;
+
+private:
+  /**
+   * Add a function.
+   */
+  void add(FuncParameter* o);
 };
 }
