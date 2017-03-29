@@ -57,11 +57,11 @@ bool bi::FuncReference::definitely(FuncReference& o) {
 }
 
 bool bi::FuncReference::definitely(FuncParameter& o) {
-  return parens->definitely(*o.parens) && o.capture(this);
+  return parens->definitely(*o.parens);
 }
 
 bool bi::FuncReference::definitely(VarParameter& o) {
-  return type->definitely(*o.type) && o.capture(this);
+  return type->definitely(*o.type);
 }
 
 bool bi::FuncReference::dispatchPossibly(Expression& o) {
@@ -73,9 +73,9 @@ bool bi::FuncReference::possibly(FuncReference& o) {
 }
 
 bool bi::FuncReference::possibly(FuncParameter& o) {
-  return parens->possibly(*o.parens) && o.capture(this);
+  return parens->possibly(*o.parens);
 }
 
 bool bi::FuncReference::possibly(VarParameter& o) {
-  return type->possibly(*o.type) && o.capture(this);
+  return type->possibly(*o.type);
 }

@@ -37,7 +37,6 @@ birchc_SOURCES = \
   bi/common/Named.cpp \
   bi/common/Numbered.cpp \
   bi/common/OverloadedDictionary.cpp \
-  bi/common/Parameter.cpp \
   bi/common/Parenthesised.cpp \
   bi/common/Path.cpp \
   bi/common/Reference.cpp \

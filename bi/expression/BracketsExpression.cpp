@@ -39,7 +39,7 @@ bool bi::BracketsExpression::definitely(BracketsExpression& o) {
 }
 
 bool bi::BracketsExpression::definitely(VarParameter& o) {
-  return type->definitely(*o.type) && o.capture(this);
+  return type->definitely(*o.type);
 }
 
 bool bi::BracketsExpression::dispatchPossibly(Expression& o) {
@@ -51,5 +51,5 @@ bool bi::BracketsExpression::possibly(BracketsExpression& o) {
 }
 
 bool bi::BracketsExpression::possibly(VarParameter& o) {
-  return type->possibly(*o.type) && o.capture(this);
+  return type->possibly(*o.type);
 }

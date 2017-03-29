@@ -42,9 +42,9 @@ bool bi::VarReference::definitely(VarReference& o) {
 
 bool bi::VarReference::definitely(VarParameter& o) {
   if (!target) {
-    return o.capture(this);
+    return true;
   } else {
-    return type->definitely(*o.type) && o.capture(this);
+    return type->definitely(*o.type);
   }
 }
 
@@ -58,8 +58,8 @@ bool bi::VarReference::possibly(VarReference& o) {
 
 bool bi::VarReference::possibly(VarParameter& o) {
   if (!target) {
-    return o.capture(this);
+    return true;
   } else {
-    return type->possibly(*o.type) && o.capture(this);
+    return type->possibly(*o.type);
   }
 }

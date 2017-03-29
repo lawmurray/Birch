@@ -81,7 +81,7 @@ bool bi::ModelReference::dispatchDefinitely(Type& o) {
 }
 
 bool bi::ModelReference::definitely(ModelParameter& o) {
-  return o.capture(this);
+  return true;
 }
 
 bool bi::ModelReference::definitely(ModelReference& o) {
@@ -97,7 +97,7 @@ bool bi::ModelReference::dispatchPossibly(Type& o) {
 }
 
 bool bi::ModelReference::possibly(ModelParameter& o) {
-  return o.capture(this);
+  return true;
 }
 
 bool bi::ModelReference::possibly(ModelReference& o) {

@@ -13,7 +13,7 @@ bi::VarParameter::VarParameter(shared_ptr<Name> name, Type* type,
     Expression(type, loc),
     Named(name),
     value(value) {
-  this->arg = this;
+  //
 }
 
 bi::VarParameter::~VarParameter() {
@@ -37,7 +37,7 @@ bool bi::VarParameter::dispatchDefinitely(Expression& o) {
 }
 
 bool bi::VarParameter::definitely(VarParameter& o) {
-  return type->definitely(*o.type) && o.capture(this);
+  return type->definitely(*o.type);
 }
 
 bool bi::VarParameter::dispatchPossibly(Expression& o) {
@@ -45,5 +45,5 @@ bool bi::VarParameter::dispatchPossibly(Expression& o) {
 }
 
 bool bi::VarParameter::possibly(VarParameter& o) {
-  return type->possibly(*o.type) && o.capture(this);
+  return type->possibly(*o.type);
 }

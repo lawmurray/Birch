@@ -37,7 +37,7 @@ bool bi::This::definitely(This& o) {
 }
 
 bool bi::This::definitely(VarParameter& o) {
-  return type->definitely(*o.type) && o.capture(this);
+  return type->definitely(*o.type);
 }
 
 bool bi::This::dispatchPossibly(Expression& o) {
@@ -49,5 +49,5 @@ bool bi::This::possibly(This& o) {
 }
 
 bool bi::This::possibly(VarParameter& o) {
-  return type->possibly(*o.type) && o.capture(this);
+  return type->possibly(*o.type);
 }

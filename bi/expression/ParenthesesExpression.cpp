@@ -96,7 +96,7 @@ bool bi::ParenthesesExpression::definitely(This& o) {
 }
 
 bool bi::ParenthesesExpression::definitely(VarParameter& o) {
-  return (type->definitely(*o.type) && o.capture(this)) || single->definitely(o);
+  return (type->definitely(*o.type)) || single->definitely(o);
 }
 
 bool bi::ParenthesesExpression::definitely(VarReference& o) {
@@ -164,7 +164,7 @@ bool bi::ParenthesesExpression::possibly(This& o) {
 }
 
 bool bi::ParenthesesExpression::possibly(VarParameter& o) {
-  return (type->possibly(*o.type) && o.capture(this)) || single->possibly(o);
+  return (type->possibly(*o.type)) || single->possibly(o);
 }
 
 bool bi::ParenthesesExpression::possibly(VarReference& o) {

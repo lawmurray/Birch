@@ -49,7 +49,7 @@ bool bi::Literal<T1>::definitely(Literal<T1>& o) {
 
 template<class T1>
 bool bi::Literal<T1>::definitely(VarParameter& o) {
-  return type->definitely(*o.type) && o.capture(this);
+  return type->definitely(*o.type);
 }
 
 template<class T1>
@@ -64,7 +64,7 @@ bool bi::Literal<T1>::possibly(Literal<T1>& o) {
 
 template<class T1>
 bool bi::Literal<T1>::possibly(VarParameter& o) {
-  return type->possibly(*o.type) && o.capture(this);
+  return type->possibly(*o.type);
 }
 
 /*

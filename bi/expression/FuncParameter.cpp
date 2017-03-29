@@ -11,7 +11,7 @@ bi::FuncParameter::FuncParameter(shared_ptr<Name> name, Expression* parens,
     Expression(loc),
     Signature(name, parens, result, form),
     Braced(braces) {
-  this->arg = this;
+  //
 }
 
 bi::FuncParameter::FuncParameter(Expression* left, shared_ptr<Name> name,
@@ -20,7 +20,7 @@ bi::FuncParameter::FuncParameter(Expression* left, shared_ptr<Name> name,
     Expression(loc),
     Signature(name, new ExpressionList(left, right), result, form),
     Braced(braces) {
-  this->arg = this;
+  //
 }
 
 bi::FuncParameter::~FuncParameter() {
@@ -44,7 +44,7 @@ bool bi::FuncParameter::dispatchDefinitely(Expression& o) {
 }
 
 bool bi::FuncParameter::definitely(FuncParameter& o) {
-  return parens->definitely(*o.parens) && o.capture(this);
+  return parens->definitely(*o.parens);
 }
 
 bool bi::FuncParameter::dispatchPossibly(Expression& o) {
@@ -52,5 +52,5 @@ bool bi::FuncParameter::dispatchPossibly(Expression& o) {
 }
 
 bool bi::FuncParameter::possibly(FuncParameter& o) {
-  return parens->possibly(*o.parens) && o.capture(this);
+  return parens->possibly(*o.parens);
 }

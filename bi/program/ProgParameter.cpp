@@ -14,7 +14,7 @@ bi::ProgParameter::ProgParameter(shared_ptr<Name> name, Expression* parens,
     Named(name),
     Parenthesised(parens),
     Braced(braces) {
-  this->arg = this;
+  //
 }
 
 bi::ProgParameter::~ProgParameter() {
@@ -39,7 +39,7 @@ bool bi::ProgParameter::dispatchDefinitely(Prog& o) {
 
 bool bi::ProgParameter::definitely(ProgParameter& o) {
   return parens->definitely(*o.parens) && braces->definitely(*o.braces)
-      && o.capture(this);
+     ;
 }
 
 bool bi::ProgParameter::dispatchPossibly(Prog& o) {
@@ -48,5 +48,5 @@ bool bi::ProgParameter::dispatchPossibly(Prog& o) {
 
 bool bi::ProgParameter::possibly(ProgParameter& o) {
   return parens->possibly(*o.parens) && braces->possibly(*o.braces)
-      && o.capture(this);
+     ;
 }

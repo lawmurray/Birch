@@ -6,7 +6,6 @@
 #include "bi/program/Prog.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Scoped.hpp"
-#include "bi/common/Parameter.hpp"
 #include "bi/common/Parenthesised.hpp"
 #include "bi/common/Braced.hpp"
 
@@ -20,8 +19,7 @@ class ProgParameter: public Prog,
     public Named,
     public Scoped,
     public Parenthesised,
-    public Braced,
-    public Parameter<Prog> {
+    public Braced {
 public:
   /**
    * Constructor.

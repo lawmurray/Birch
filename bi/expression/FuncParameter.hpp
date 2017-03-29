@@ -7,7 +7,6 @@
 #include "bi/common/Braced.hpp"
 #include "bi/common/Signature.hpp"
 #include "bi/common/Scoped.hpp"
-#include "bi/common/Parameter.hpp"
 
 namespace bi {
 /**
@@ -18,8 +17,7 @@ namespace bi {
 class FuncParameter: public Expression,
     public Signature,
     public Scoped,
-    public Braced,
-    public Parameter<Expression> {
+    public Braced {
 public:
   /**
    * Constructor.

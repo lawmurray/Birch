@@ -9,7 +9,6 @@
 #include "bi/common/Named.hpp"
 #include "bi/common/Braced.hpp"
 #include "bi/common/Scoped.hpp"
-#include "bi/common/Parameter.hpp"
 
 namespace bi {
 /**
@@ -22,8 +21,7 @@ class ModelParameter: public Type,
     public Parenthesised,
     public Based,
     public Braced,
-    public Scoped,
-    public Parameter<Type> {
+    public Scoped {
 public:
   /**
    * Constructor.

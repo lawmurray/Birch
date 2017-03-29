@@ -37,7 +37,7 @@ bool bi::ProgReference::dispatchDefinitely(Prog& o) {
 }
 
 bool bi::ProgReference::definitely(ProgParameter& o) {
-  return parens->definitely(*o.parens) && o.capture(this);
+  return parens->definitely(*o.parens);
 }
 
 bool bi::ProgReference::definitely(ProgReference& o) {
@@ -49,7 +49,7 @@ bool bi::ProgReference::dispatchPossibly(Prog& o) {
 }
 
 bool bi::ProgReference::possibly(ProgParameter& o) {
-  return parens->possibly(*o.parens) && o.capture(this);
+  return parens->possibly(*o.parens);
 }
 
 bool bi::ProgReference::possibly(ProgReference& o) {

@@ -40,7 +40,7 @@ bool bi::Member::definitely(Member& o) {
 }
 
 bool bi::Member::definitely(VarParameter& o) {
-  return type->definitely(*o.type) && o.capture(this);
+  return type->definitely(*o.type);
 }
 
 bool bi::Member::dispatchPossibly(Expression& o) {
@@ -52,5 +52,5 @@ bool bi::Member::possibly(Member& o) {
 }
 
 bool bi::Member::possibly(VarParameter& o) {
-  return type->possibly(*o.type) && o.capture(this);
+  return type->possibly(*o.type);
 }

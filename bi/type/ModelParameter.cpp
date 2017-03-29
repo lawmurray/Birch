@@ -15,7 +15,7 @@ bi::ModelParameter::ModelParameter(shared_ptr<Name> name, Expression* parens,
     Parenthesised(parens),
     Based(op, base),
     Braced(braces) {
-  this->arg = this;
+  //
 }
 
 bi::ModelParameter::~ModelParameter() {
@@ -64,7 +64,7 @@ bool bi::ModelParameter::dispatchDefinitely(Type& o) {
 
 bool bi::ModelParameter::definitely(ModelParameter& o) {
   return parens->definitely(*o.parens) && base->definitely(*o.base)
-      && (!o.assignable || assignable) && o.capture(this);
+      && (!o.assignable || assignable);
 }
 
 bool bi::ModelParameter::definitely(EmptyType& o) {
@@ -77,7 +77,7 @@ bool bi::ModelParameter::dispatchPossibly(Type& o) {
 
 bool bi::ModelParameter::possibly(ModelParameter& o) {
   return parens->possibly(*o.parens) && base->possibly(*o.base)
-      && (!o.assignable || assignable) && o.capture(this);
+      && (!o.assignable || assignable);
 }
 
 bool bi::ModelParameter::possibly(EmptyType& o) {

@@ -6,7 +6,6 @@
 #include "bi/expression/Expression.hpp"
 #include "bi/expression/EmptyExpression.hpp"
 #include "bi/common/Named.hpp"
-#include "bi/common/Parameter.hpp"
 #include "bi/primitive/unique_ptr.hpp"
 
 namespace bi {
@@ -15,8 +14,7 @@ namespace bi {
  *
  * @ingroup compiler_expression
  */
-class VarParameter: public Expression, public Named, public Parameter<
-    Expression> {
+class VarParameter: public Expression, public Named {
 public:
   /**
    * Constructor.
