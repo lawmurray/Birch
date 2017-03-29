@@ -266,10 +266,12 @@ bi::FuncParameter* bi::Resolver::makeLambda(VarParameter* o) {
   }
 
   /* result */
-  Expression* result = new VarParameter(new Name(), o->type->accept(&cloner));
+  Expression* result = new VarParameter(new Name(),
+      type->result->accept(&cloner));
 
   /* function */
-  FuncParameter* func = new FuncParameter(o->name, parens, result, new EmptyExpression(), LAMBDA);
+  FuncParameter* func = new FuncParameter(o->name, parens, result,
+      new EmptyExpression(), LAMBDA);
   func->accept(this);
 
   return func;
