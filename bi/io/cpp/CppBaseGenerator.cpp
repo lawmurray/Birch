@@ -3,6 +3,8 @@
  */
 #include "bi/io/cpp/CppBaseGenerator.hpp"
 
+#include "bi/io/cpp/CppOutputGenerator.hpp"
+#include "bi/io/cpp/CppReturnGenerator.hpp"
 #include "bi/visitor/Gatherer.hpp"
 #include "bi/primitive/encode.hpp"
 
@@ -147,8 +149,7 @@ void bi::CppBaseGenerator::visit(const VarParameter* o) {
 
 void bi::CppBaseGenerator::visit(const FuncParameter* o) {
   if (o->isLambda()) {
-    genCapture(o->braces.get());
-    middle('(');
+    middle("[&](");
     for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
       if (iter != o->parens->begin()) {
         middle(", ");
@@ -157,9 +158,22 @@ void bi::CppBaseGenerator::visit(const FuncParameter* o) {
     }
     finish(") {");
     in();
+
+    /* output parameters */
+    CppOutputGenerator auxOutput(base, level, false);
+    auxOutput << o;
+
+    /* body */
     *this << o->braces;
+
+    /* return statement */
+    if (!o->result->isEmpty()) {
+      CppReturnGenerator auxReturn(base, level, false);
+      auxReturn << o;
+    }
+
     out();
-    middle("}");
+    start("}");
   }
 }
 

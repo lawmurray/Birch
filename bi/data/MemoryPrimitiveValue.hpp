@@ -95,6 +95,14 @@ public:
   PrimitiveValue<Type,MemoryGroup>& operator=(const Type& o);
 
   /**
+   * Call operator for lambda types.
+   */
+  template<class... Args>
+  auto operator()(Args... args) const {
+    return static_cast<const Type&>(*this)(args...);
+  }
+
+  /**
    * Value type conversion.
    */
   operator Type&();
