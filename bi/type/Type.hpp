@@ -83,6 +83,11 @@ public:
   virtual bool isModel() const;
 
   /**
+   * Is this an array type?
+   */
+  virtual bool isArray() const;
+
+  /**
    * Is this a random type?
    */
   virtual bool isRandom() const;

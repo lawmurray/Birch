@@ -3,7 +3,7 @@
  */
 #pragma once
 
-#include "bi/io/indentable_ostream.hpp"
+#include "bi/io/cpp/CppBaseGenerator.hpp"
 
 namespace bi {
 /**
@@ -11,14 +11,14 @@ namespace bi {
  *
  * @ingroup compiler_io
  */
-class CppAssignmentGenerator : public indentable_ostream {
+class CppAssignmentGenerator : public CppBaseGenerator {
 public:
   CppAssignmentGenerator(std::ostream& base, const int level = 0,
       const bool header = false);
 
-  using indentable_ostream::visit;
+  using CppBaseGenerator::visit;
   virtual void visit(const ModelParameter* o);
-
-  virtual void assign(const VarParameter* o);
+  virtual void visit(const VarParameter* o);
+  virtual void visit(const FuncParameter* o);
 };
 }

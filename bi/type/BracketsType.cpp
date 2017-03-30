@@ -28,6 +28,10 @@ int bi::BracketsType::count() const {
   return ndims;
 }
 
+bool bi::BracketsType::isArray() const {
+  return true;
+}
+
 bi::Type* bi::BracketsType::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

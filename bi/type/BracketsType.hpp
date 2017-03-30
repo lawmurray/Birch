@@ -41,6 +41,7 @@ public:
   virtual ~BracketsType();
 
   virtual int count() const;
+  virtual bool isArray() const;
 
   virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);

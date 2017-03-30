@@ -29,6 +29,10 @@ bool bi::Type::isModel() const {
   return false;
 }
 
+bool bi::Type::isArray() const {
+  return false;
+}
+
 bool bi::Type::isRandom() const {
   return false;
 }

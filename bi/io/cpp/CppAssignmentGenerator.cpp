@@ -2,19 +2,14 @@
  * @file
  */
 #include "bi/io/cpp/CppAssignmentGenerator.hpp"
-#include "bi/io/cpp/CppBaseGenerator.hpp"
-#include "bi/visitor/Gatherer.hpp"
 
 bi::CppAssignmentGenerator::CppAssignmentGenerator(std::ostream& base,
     const int level, const bool header) :
-    indentable_ostream(base, level, header) {
+    CppBaseGenerator(base, level, header) {
   //
 }
 
 void bi::CppAssignmentGenerator::visit(const ModelParameter* o) {
-  Gatherer<VarDeclaration> gatherer;
-  o->braces->accept(&gatherer);
-
   /* basic assignment operator */
   if (!header) {
     line("template<class Group>");
@@ -22,11 +17,11 @@ void bi::CppAssignmentGenerator::visit(const ModelParameter* o) {
   } else {
     start("");
   }
-  middle(o->name->str() << "<Group>& ");
+  middle(o->name << "<Group>& ");
   if (!header) {
-    middle("bi::model::" << o->name->str() << "<Group>::");
+    middle("bi::model::" << o->name << "<Group>::");
   }
-  middle("operator=(const " << o->name->str() << "<Group>& o_)");
+  middle("operator=(const " << o->name << "<Group>& o_)");
   if (header) {
     finish(';');
   } else {
@@ -35,9 +30,7 @@ void bi::CppAssignmentGenerator::visit(const ModelParameter* o) {
     if (o->isLess()) {
       line("base_type::operator=(o_);");
     }
-    for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
-      assign((*iter)->param.get());
-    }
+    *this << o->braces;
     line("");
     line("return *this;");
     out();
@@ -47,16 +40,14 @@ void bi::CppAssignmentGenerator::visit(const ModelParameter* o) {
   /* generic assignment operator */
   if (header) {
     line("template<class Group1>");
-    start(o->name->str() << "<Group>&");
-    middle(" operator=(const " << o->name->str() << "<Group1>& o_)");
+    start(o->name << "<Group>&");
+    middle(" operator=(const " << o->name << "<Group1>& o_)");
     finish(" {");
     in();
     if (o->isLess()) {
       line("base_type::operator=(o_);");
     }
-    for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
-      assign((*iter)->param.get());
-    }
+    *this << o->braces;
     line("");
     line("return *this;");
     out();
@@ -64,6 +55,10 @@ void bi::CppAssignmentGenerator::visit(const ModelParameter* o) {
   }
 }
 
-void bi::CppAssignmentGenerator::assign(const VarParameter* o) {
-  line(o->name->str() << " = o_." << o->name->str() << ';');
+void bi::CppAssignmentGenerator::visit(const FuncParameter* o) {
+  //
+}
+
+void bi::CppAssignmentGenerator::visit(const VarParameter* o) {
+  middle(o->name << " = o_." << o->name);
 }

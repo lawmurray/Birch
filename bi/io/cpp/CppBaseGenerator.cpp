@@ -227,13 +227,12 @@ void bi::CppBaseGenerator::visit(const EmptyType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const BracketsType* o) {
-  inArray = true;
   if (!o->assignable) {
     middle("const ");
   }
-  middle("bi::Array<" << o->single << ',');
+  inArray = true;
+  middle("DefaultArray<" << o->single << ',' << o->count() << '>');
   inArray = false;
-  middle("typename bi::DefaultFrame<" << o->count() << ">::type>");
 }
 
 void bi::CppBaseGenerator::visit(const ParenthesesType* o) {

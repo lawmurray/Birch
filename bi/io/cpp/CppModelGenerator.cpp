@@ -3,7 +3,6 @@
  */
 #include "bi/io/cpp/CppModelGenerator.hpp"
 
-#include "bi/io/cpp/CppBaseGenerator.hpp"
 #include "bi/io/cpp/CppConstructorGenerator.hpp"
 #include "bi/io/cpp/CppViewConstructorGenerator.hpp"
 #include "bi/io/cpp/CppCopyConstructorGenerator.hpp"
@@ -16,14 +15,10 @@
 
 bi::CppModelGenerator::CppModelGenerator(std::ostream& base, const int level,
     const bool header) :
-    indentable_ostream(base, level, header),
+    CppBaseGenerator(base, level, header),
     model(nullptr),
     inArray(false) {
   //
-}
-
-void bi::CppModelGenerator::visit(const Name* o) {
-  *this << o->str();
 }
 
 void bi::CppModelGenerator::visit(const ModelParameter* o) {
@@ -95,9 +90,9 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
 
     /* move assignment operator */
     if (header) {
-      middle(o->name->str() << "<Group>& ");
-      middle("operator=(" << o->name->str() << "<Group>&& o_)");
-      middle(" = default;\n");
+      start(o->name << "<Group>& ");
+      middle("operator=(" << o->name << "<Group>&& o_)");
+      finish(" = default;\n");
     }
 
     /* group member variable */
@@ -130,23 +125,10 @@ void bi::CppModelGenerator::visit(const ModelReference* o) {
   middle(o->name << "<Group>");
 }
 
-void bi::CppModelGenerator::visit(const BracketsType* o) {
-  if (!header) {
-    middle("bi::");
-  }
-  inArray = true;
-  middle("DefaultArray<" << o->single << ',' << o->count() << '>');
-  inArray = false;
-}
-
 void bi::CppModelGenerator::visit(const VarDeclaration* o) {
   if (header) {
-    line(o->param << ';');
+    CppBaseGenerator::visit(o);
   }
-}
-
-void bi::CppModelGenerator::visit(const VarParameter* o) {
-  middle(o->type << ' ' << o->name);
 }
 
 void bi::CppModelGenerator::visit(const FuncParameter* o) {

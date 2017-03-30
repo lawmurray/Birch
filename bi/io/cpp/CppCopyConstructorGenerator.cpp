@@ -2,40 +2,33 @@
  * @file
  */
 #include "bi/io/cpp/CppCopyConstructorGenerator.hpp"
-#include "bi/io/cpp/CppBaseGenerator.hpp"
 #include "bi/visitor/Gatherer.hpp"
 
 bi::CppCopyConstructorGenerator::CppCopyConstructorGenerator(
     std::ostream& base, const int level, const bool header) :
-    indentable_ostream(base, level, header) {
+    CppBaseGenerator(base, level, header),
+    before(false) {
   //
 }
 
 void bi::CppCopyConstructorGenerator::visit(const ModelParameter* o) {
   if (header) {
     line("template<class Frame = EmptyFrame>");
-    start(o->name->str() << "(const " << o->name->str() << "<Group>& o");
+    start(o->name << "(const " << o->name << "<Group>& o");
     middle(", const bool deep = true");
     middle(", const Frame& frame = EmptyFrame()");
     middle(", const char* name = nullptr");
     middle(", const MemoryGroup& group = MemoryGroup())");
 
-    Gatherer<VarDeclaration> gatherer;
-    o->braces->accept(&gatherer);
-
-    if (o->isLess() || gatherer.size() > 0) {
+    if (o->isLess()) {
       finish(" :");
       in();
       in();
-      if (o->isLess()) {
-        finish("base_type(o, deep, frame, name, group)");
-      }
-      for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
-        if (o->isLess() || iter != gatherer.begin()) {
-          finish(',');
-        }
-        initialise((*iter)->param.get());
-      }
+      start("base_type(o, deep, frame, name, group)");
+      before = true;
+    }
+    *this << o->braces;
+    if (before) {
       out();
       out();
     }
@@ -47,6 +40,19 @@ void bi::CppCopyConstructorGenerator::visit(const ModelParameter* o) {
   }
 }
 
-void bi::CppCopyConstructorGenerator::initialise(const VarParameter* o) {
-  start(o->name->str() << "(o." << o->name->str() << ", deep, frame, name, group)");
+void bi::CppCopyConstructorGenerator::visit(const VarDeclaration* o) {
+  if (before) {
+    finish(',');
+  } else {
+    finish(": ");
+    in();
+    in();
+  }
+  start(o->param->name << "(o." << o->param->name);
+  middle(", deep, frame, name, group)");
+  before = true;
+}
+
+void bi::CppCopyConstructorGenerator::visit(const FuncDeclaration* o) {
+  //
 }

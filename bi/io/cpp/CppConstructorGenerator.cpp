@@ -2,29 +2,15 @@
  * @file
  */
 #include "bi/io/cpp/CppConstructorGenerator.hpp"
-#include "bi/io/cpp/CppBaseGenerator.hpp"
 #include "bi/visitor/Gatherer.hpp"
 
 bi::CppConstructorGenerator::CppConstructorGenerator(std::ostream& base,
     const int level, const bool header) :
-    indentable_ostream(base, level, header) {
+    CppBaseGenerator(base, level, header) {
   //
 }
 
-void bi::CppConstructorGenerator::visit(const BracketsType* o) {
-  middle("make_frame(");
-  CppBaseGenerator aux(base, level, header);
-  aux << o->brackets;
-  middle(")*frame.lead");
-}
-
-void bi::CppConstructorGenerator::visit(const ModelReference* o) {
-  middle("frame");
-}
-
 void bi::CppConstructorGenerator::visit(const ModelParameter* o) {
-  CppBaseGenerator aux(base, level, header);
-
   Gatherer<VarDeclaration> gatherer;
   o->braces->accept(&gatherer);
 
@@ -39,8 +25,7 @@ void bi::CppConstructorGenerator::visit(const ModelParameter* o) {
       }
       start(o->name->str() << '(');
       if (!o->parens->isEmpty()) {
-        aux << o->parens->strip();
-        middle(", ");
+        middle(o->parens << ", ");
       }
       if (i == 0) {
         middle("const NonemptyFrame<Tail,Head>& frame");
@@ -58,8 +43,7 @@ void bi::CppConstructorGenerator::visit(const ModelParameter* o) {
         ModelReference* base = dynamic_cast<ModelReference*>(o->base.get());
         assert(base);
         if (!base->parens->isEmpty()) {
-          aux << base->parens->strip();
-          middle(", ");
+          middle(base->parens << ", ");
         }
         finish("frame, name, group),");
       }
@@ -83,20 +67,24 @@ void bi::CppConstructorGenerator::visit(const ModelParameter* o) {
 }
 
 void bi::CppConstructorGenerator::initialise(const VarParameter* o) {
-  CppBaseGenerator aux(base, level, header);
   finish(',');
-  start(o->name->str() << "(");
-//  if (!o->parens->strip()->isEmpty() && o->type->count() == 0) {
+  start(o->name << "(");
+//  if (!o->parens()->isEmpty() && o->type->count() == 0) {
 //    aux << o->parens->strip();
 //    middle(", ");
 //  }
-  middle(o->type);
+  if (o->type->isArray()) {
+    const BracketsType* type = dynamic_cast<const BracketsType*>(o->type.get());
+    assert(type);
+    middle("make_frame(" << type->brackets << ")*frame.lead");
+  } else {
+    middle("frame");
+  }
   middle(", \"" << o->name->str() << "\"");
   middle(", childGroup");
   middle("(this->group, \"" << o->name->str() << "\")");
-//  if (!o->parens->strip()->isEmpty() && o->type->count() > 0) {
-//    middle(", ");
-//    aux << o->value->strip();
+//  if (!o->parens->isEmpty() && o->type->count() > 0) {
+//    middle(", "  << o->parens);
 //  }
   middle(')');
 }
