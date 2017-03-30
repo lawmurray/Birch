@@ -107,7 +107,8 @@ public:
   virtual int tupleDims() const;
 
   /**
-   * Iterator to first element if this is an list, otherwise to this.
+   * Iterator to first element if this is a list, to one-past-the-last if
+   * this is empty, otherwise to this.
    */
   Iterator<Expression> begin() const;
 

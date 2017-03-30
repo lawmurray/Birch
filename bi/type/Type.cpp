@@ -54,7 +54,11 @@ int bi::Type::count() const {
 }
 
 bi::Iterator<bi::Type> bi::Type::begin() const {
-  return bi::Iterator<Type>(this);
+  if (isEmpty()) {
+    return end();
+  } else {
+    return bi::Iterator<Type>(this);
+  }
 }
 
 bi::Iterator<bi::Type> bi::Type::end() const {

@@ -57,7 +57,11 @@ int bi::Expression::tupleDims() const {
 }
 
 bi::Iterator<bi::Expression> bi::Expression::begin() const {
-  return bi::Iterator<Expression>(this);
+  if (isEmpty()) {
+    return end();
+  } else {
+    return bi::Iterator<Expression>(this);
+  }
 }
 
 bi::Iterator<bi::Expression> bi::Expression::end() const {

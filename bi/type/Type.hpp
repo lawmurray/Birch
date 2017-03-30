@@ -113,7 +113,8 @@ public:
   virtual int count() const;
 
   /**
-   * Iterator to first element if this is an list, otherwise to this.
+   * Iterator to first element if this is a list, to one-past-the-last if
+   * this is empty, otherwise to this.
    */
   Iterator<Type> begin() const;
 
