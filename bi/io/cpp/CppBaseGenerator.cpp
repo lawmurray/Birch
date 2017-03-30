@@ -11,8 +11,7 @@
 bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
     const bool header) :
     indentable_ostream(base, level),
-    header(header),
-    inArray(false) {
+    header(header) {
   //
 }
 
@@ -119,28 +118,6 @@ void bi::CppBaseGenerator::visit(const FuncReference* o) {
   }
 }
 
-void bi::CppBaseGenerator::visit(const ModelReference* o) {
-  if (o->isBuiltin() && !inArray) {
-    if (*o->name == "Boolean") {
-      middle("unsigned char");
-    } else if (*o->name == "Real64" || *o->name == "Real") {
-      middle("double");
-    } else if (*o->name == "Real32") {
-      middle("float");
-    } else if (*o->name == "Integer64" || *o->name == "Integer") {
-      middle("int64_t");
-    } else if (*o->name == "Integer32") {
-      middle("int32_t");
-    } else if (*o->name == "String") {
-      middle("std::string");
-    } else {
-      assert(false);
-    }
-  } else {
-    middle("bi::model::" << o->name << "<>");
-  }
-}
-
 void bi::CppBaseGenerator::visit(const VarParameter* o) {
   middle(o->type << ' ' << o->name);
 //  if (!o->parens->isEmpty() || o->type->count() > 0) {
@@ -178,8 +155,11 @@ void bi::CppBaseGenerator::visit(const FuncParameter* o) {
       }
       middle(*iter);
     }
-    middle(')');
-    middle(o->braces);
+    finish(") {");
+    in();
+    *this << o->braces;
+    out();
+    middle("}");
   }
 }
 
@@ -222,6 +202,14 @@ void bi::CppBaseGenerator::visit(const Raw* o) {
   }
 }
 
+void bi::CppBaseGenerator::visit(const ModelReference* o) {
+  if (o->isBuiltin()) {
+    genBuiltin(o);
+  } else {
+    middle("bi::model::" << o->name << "<>");
+  }
+}
+
 void bi::CppBaseGenerator::visit(const EmptyType* o) {
   middle("void");
 }
@@ -230,9 +218,7 @@ void bi::CppBaseGenerator::visit(const BracketsType* o) {
   if (!o->assignable) {
     middle("const ");
   }
-  inArray = true;
   middle("DefaultArray<" << o->single << ',' << o->count() << '>');
-  inArray = false;
 }
 
 void bi::CppBaseGenerator::visit(const ParenthesesType* o) {
@@ -244,19 +230,15 @@ void bi::CppBaseGenerator::visit(const ParenthesesType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const RandomType* o) {
-  inArray = true;
   middle("bi::Random<" << o->left << ',' << o->right << '>');
-  inArray = false;
 }
 
 void bi::CppBaseGenerator::visit(const LambdaType* o) {
-  inArray = true;
-  middle("bi::Lambda<" << o->result << '>');
-  inArray = false;
+  middle("bi::Lambda<" << o->result << '(' << o->parens << ")>");
 }
 
 void bi::CppBaseGenerator::visit(const VariantType* o) {
-  middle("boost::variant<" << o->definite);
+  middle("bi::Variant<" << o->definite);
   for (auto iter = o->possibles.begin(); iter != o->possibles.end(); ++iter) {
     middle(',');
     middle(*iter);
@@ -281,4 +263,25 @@ void bi::CppBaseGenerator::genCapture(const Expression* o) {
     }
   }
   middle(']');
+}
+
+void bi::CppBaseGenerator::genBuiltin(const ModelReference* o) {
+  /* pre-condition */
+  assert(o->isBuiltin());
+
+  if (*o->name == "Boolean") {
+    middle("unsigned char");
+  } else if (*o->name == "Real64" || *o->name == "Real") {
+    middle("double");
+  } else if (*o->name == "Real32") {
+    middle("float");
+  } else if (*o->name == "Integer64" || *o->name == "Integer") {
+    middle("int64_t");
+  } else if (*o->name == "Integer32") {
+    middle("int32_t");
+  } else if (*o->name == "String") {
+    middle("std::string");
+  } else {
+    assert(false);
+  }
 }

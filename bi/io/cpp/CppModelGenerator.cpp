@@ -119,15 +119,22 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
 }
 
 void bi::CppModelGenerator::visit(const ModelReference* o) {
-  if (!header) {
-    middle("bi::model::");
+  if (o->isBuiltin()) {
+    genBuiltin(o);
+  } else {
+    middle(o->name << "<Group>");
   }
-  middle(o->name << "<Group>");
 }
 
 void bi::CppModelGenerator::visit(const VarDeclaration* o) {
   if (header) {
-    CppBaseGenerator::visit(o);
+    if (o->param->type->isModel()) {
+      start(o->param->type << ' ' << o->param->name);
+    } else {
+      start("PrimitiveValue<" << o->param->type << ",Group> ");
+      middle(o->param->name);
+    }
+    finish(';');
   }
 }
 

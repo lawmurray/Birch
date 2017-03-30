@@ -63,13 +63,13 @@ protected:
   void genCapture(const Expression* o);
 
   /**
+   * Generate a built-in type.
+   */
+  void genBuiltin(const ModelReference* o);
+
+  /**
    * Output header instead of source?
    */
   bool header;
-
-  /**
-   * Currently generating type for an array?
-   */
-  bool inArray;
 };
 }

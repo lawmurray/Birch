@@ -185,6 +185,7 @@ nobase_include_HEADERS = bi/data/Array.hpp \
   bi/method/RandomInterface.hpp \
   bi/method/RandomState.hpp \
   bi/method/Stack.hpp \
+  bi/method/Variant.hpp \
   bi/primitive/cast.hpp \
   bi/primitive/shared_ptr.hpp \
   bi/primitive/unique_ptr.hpp \

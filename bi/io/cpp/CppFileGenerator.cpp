@@ -144,18 +144,26 @@ void bi::CppFileGenerator::visit(const ModelParameter* o) {
     if (header) {
       ModelReference* base = dynamic_cast<ModelReference*>(o->base.get());
       assert(base);
-      line("namespace bi {");
-      in();
-      line("namespace model {");
-      out();
-      line("template<class Group = MemoryGroup>");
-      line("using " << o->name << " = " << base->name << "<Group>;");
-      in();
-      line("}");
-      out();
-      line("}\n");
+      if (!base->isBuiltin()) {
+        line("namespace bi {");
+        in();
+        line("namespace model {");
+        out();
+        line("template<class Group = MemoryGroup>");
+        start("using " << o->name << " = ");
+        //if (base->isBuiltin()) {
+        //  middle("PrimitiveValue<" << base << ",Group>");
+        //} else {
+          middle(base->name << "<Group>");
+        //}
+        finish(';');
+        in();
+        line("}");
+        out();
+        line("}\n");
+      }
     }
-  } else if (!o->braces->isEmpty()) {
+  } else if (!o->isBuiltin()) {
     if (header) {
       line("namespace bi {");
       in();

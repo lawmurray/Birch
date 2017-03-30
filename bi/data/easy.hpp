@@ -74,11 +74,6 @@ auto make_frame(const Span<length_value,stride_value,lead_value>& arg) {
   return NonemptyFrame<decltype(tail),decltype(head)>(tail, head);
 }
 
-template<class Group>
-inline auto make_frame(const model::Integer64<Group> arg) {
-  return make_frame(make_span(static_cast<int_t>(arg)));
-}
-
 inline auto make_frame(const int_t arg) {
   return make_frame(make_span(arg));
 }
