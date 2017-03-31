@@ -99,6 +99,7 @@ IS                                 (u|U|l|L)*
 "program"                           { return PROG; }
 "model"                             { return MODEL; }
 "function"                          { return FUNC; }
+"lambda"                            { return LAMBDA; }
 "if"                                { return IF; }
 "else"                              { return ELSE; }
 "while"                             { return WHILE; }

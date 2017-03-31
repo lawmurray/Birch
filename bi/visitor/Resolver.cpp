@@ -274,7 +274,7 @@ bi::FuncParameter* bi::Resolver::makeLambda(VarParameter* o) {
 
   /* function */
   FuncParameter* func = new FuncParameter(o->name, parens, result,
-      new EmptyExpression(), LAMBDA);
+      new EmptyExpression(), LAMBDA_FUNCTION);
 
   return func;
 }

@@ -9,10 +9,10 @@ namespace bi {
  */
 enum SignatureForm {
   FUNCTION,
-  BINARY,
-  UNARY,
-  ASSIGN,
-  LAMBDA
+  BINARY_OPERATOR,
+  UNARY_OPERATOR,
+  ASSIGN_OPERATOR,
+  LAMBDA_FUNCTION
 };
 
 /**
