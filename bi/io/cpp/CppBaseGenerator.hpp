@@ -71,5 +71,10 @@ protected:
    * Output header instead of source?
    */
   bool header;
+
+  /**
+   * Are we in a variant type?
+   */
+  int inVariant;
 };
 }

@@ -13,7 +13,8 @@
 bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
     const bool header) :
     indentable_ostream(base, level),
-    header(header) {
+    header(header),
+    inVariant(0) {
   //
 }
 
@@ -109,7 +110,10 @@ void bi::CppBaseGenerator::visit(const VarReference* o) {
 }
 
 void bi::CppBaseGenerator::visit(const FuncReference* o) {
-  if (o->isAssign() && *o->name == "<-") {
+  if (o->dispatcher) {
+    middle("dispatch_" << o->dispatcher->name << '_');
+    middle(o->dispatcher->number << "_(" << o->parens << ')');
+  } else if (o->isAssign() && *o->name == "<-") {
     middle(o->getLeft() << " = " << o->getRight());
   } else if (o->isBinary() && isTranslatable(o->name->str())) {
     middle(o->getLeft() << ' ' << o->name << ' ' << o->getRight());
@@ -225,7 +229,11 @@ void bi::CppBaseGenerator::visit(const ModelReference* o) {
 }
 
 void bi::CppBaseGenerator::visit(const EmptyType* o) {
-  middle("void");
+  if (inVariant) {
+    middle("boost::blank");
+  } else {
+    middle("void");
+  }
 }
 
 void bi::CppBaseGenerator::visit(const BracketsType* o) {
@@ -252,12 +260,14 @@ void bi::CppBaseGenerator::visit(const LambdaType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const VariantType* o) {
+  ++inVariant;
   middle("bi::Variant<" << o->definite);
   for (auto iter = o->possibles.begin(); iter != o->possibles.end(); ++iter) {
     middle(',');
     middle(*iter);
   }
   middle(">");
+  --inVariant;
 }
 
 void bi::CppBaseGenerator::genCapture(const Expression* o) {

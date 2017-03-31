@@ -51,4 +51,7 @@ void bi::Dispatcher::add(FuncParameter* o) {
     type->add(o->result->type.get());
   }
   funcs.push_back(o);
+
+  /* post-condition */
+  assert(types.size() == o->parens->tupleSize());
 }
