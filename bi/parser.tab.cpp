@@ -1943,7 +1943,7 @@ yyreduce:
 
   case 76:
 #line 346 "parser.ypp" /* yacc.c:1661  */
-    { (yyval.valType) = new bi::RandomType((yyvsp[-2].valType), (yyvsp[0].valType), make_loc((yyloc))); }
+    { (yyval.valType) = new bi::DelayType((yyvsp[-2].valType), (yyvsp[0].valType), make_loc((yyloc))); }
 #line 1948 "parser.tab.cpp" /* yacc.c:1661  */
     break;
 

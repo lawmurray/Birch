@@ -14,7 +14,7 @@ bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
     const bool header) :
     indentable_ostream(base, level),
     header(header),
-    inRandom(0),
+    inDelay(0),
     inLambda(0),
     inVariant(0) {
   //
@@ -253,10 +253,10 @@ void bi::CppBaseGenerator::visit(const ParenthesesType* o) {
   }
 }
 
-void bi::CppBaseGenerator::visit(const RandomType* o) {
-  ++inRandom;
-  middle("bi::Random<" << o->left << ',' << o->right << '>');
-  --inRandom;
+void bi::CppBaseGenerator::visit(const DelayType* o) {
+  ++inDelay;
+  middle("bi::Delay<" << o->left << ',' << o->right << '>');
+  --inDelay;
 }
 
 void bi::CppBaseGenerator::visit(const LambdaType* o) {
@@ -286,7 +286,7 @@ void bi::CppBaseGenerator::genCapture(const Expression* o) {
   for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
     const VarReference* ref = *iter;
     if (done.find(ref->name->str()) == done.end()) {
-      if (ref->type->isRandom()) {
+      if (ref->type->isDelay()) {
         middle(", &" << ref->name);
       }
       done.insert(ref->name->str());

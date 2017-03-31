@@ -5,9 +5,9 @@
 
 namespace bi {
 /**
- * Possible states of a random variable.
+ * Possible states of a delay variate.
  */
-enum RandomState {
+enum DelayState {
   /**
    * Value is unknown.
    */

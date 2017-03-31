@@ -26,7 +26,7 @@ public:
   virtual Type* modify(AssignableType* o);
   virtual Type* modify(BracketsType* o);
   virtual Type* modify(ParenthesesType* o);
-  virtual Type* modify(RandomType* o);
+  virtual Type* modify(DelayType* o);
   virtual Type* modify(LambdaType* o);
   virtual Type* modify(TypeList* o);
   virtual Type* modify(VariantType* o);

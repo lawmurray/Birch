@@ -104,7 +104,7 @@ bool bi::VariantType::definitely(const ParenthesesType& o) const {
   return definitelyAll(o);
 }
 
-bool bi::VariantType::definitely(const RandomType& o) const {
+bool bi::VariantType::definitely(const DelayType& o) const {
   return definitelyAll(o);
 }
 
@@ -152,7 +152,7 @@ bool bi::VariantType::possibly(const ParenthesesType& o) const {
   return possiblyAny(o);
 }
 
-bool bi::VariantType::possibly(const RandomType& o) const {
+bool bi::VariantType::possibly(const DelayType& o) const {
   return possiblyAny(o);
 }
 

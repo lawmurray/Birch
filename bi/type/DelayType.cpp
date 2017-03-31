@@ -1,98 +1,98 @@
 /**
  * @file
  */
-#include "bi/type/RandomType.hpp"
+#include "bi/type/DelayType.hpp"
 
 #include "bi/type/ModelParameter.hpp"
 #include "bi/visitor/all.hpp"
 
 #include <typeinfo>
 
-bi::RandomType::RandomType(Type* left, Type* right, shared_ptr<Location> loc,
+bi::DelayType::DelayType(Type* left, Type* right, shared_ptr<Location> loc,
     const bool assignable) :
     Type(loc, assignable),
     TypeBinary(left, right) {
   //
 }
 
-bi::RandomType::~RandomType() {
+bi::DelayType::~DelayType() {
   //
 }
 
-bi::Type* bi::RandomType::accept(Cloner* visitor) const {
+bi::Type* bi::DelayType::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-bi::Type* bi::RandomType::accept(Modifier* visitor) {
+bi::Type* bi::DelayType::accept(Modifier* visitor) {
   return visitor->modify(this);
 }
 
-void bi::RandomType::accept(Visitor* visitor) const {
+void bi::DelayType::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::RandomType::isRandom() const {
+bool bi::DelayType::isDelay() const {
   return true;
 }
 
-bool bi::RandomType::dispatchDefinitely(const Type& o) const {
+bool bi::DelayType::dispatchDefinitely(const Type& o) const {
   return o.definitely(*this);
 }
 
-bool bi::RandomType::definitely(const EmptyType& o) const {
+bool bi::DelayType::definitely(const EmptyType& o) const {
   return !o.assignable || assignable;
 }
 
-bool bi::RandomType::definitely(const LambdaType& o) const {
+bool bi::DelayType::definitely(const LambdaType& o) const {
   return left->definitely(o) && (!o.assignable || assignable);
 }
 
-bool bi::RandomType::definitely(const List<Type>& o) const {
+bool bi::DelayType::definitely(const List<Type>& o) const {
   return left->definitely(o) && (!o.assignable || assignable);
 }
 
-bool bi::RandomType::definitely(const ModelReference& o) const {
+bool bi::DelayType::definitely(const ModelReference& o) const {
   return left->definitely(o) && (!o.assignable || assignable);
 }
 
-bool bi::RandomType::definitely(const ModelParameter& o) const {
+bool bi::DelayType::definitely(const ModelParameter& o) const {
   return left->definitely(o) && (!o.assignable || assignable);
 }
 
-bool bi::RandomType::definitely(const RandomType& o) const {
+bool bi::DelayType::definitely(const DelayType& o) const {
   return left->definitely(*o.left) && right->definitely(*o.right)
       && (!o.assignable || assignable);
 }
 
-bool bi::RandomType::dispatchPossibly(const Type& o) const {
+bool bi::DelayType::dispatchPossibly(const Type& o) const {
   return o.possibly(*this);
 }
 
-bool bi::RandomType::possibly(const EmptyType& o) const {
+bool bi::DelayType::possibly(const EmptyType& o) const {
   return !o.assignable || assignable;
 }
 
-bool bi::RandomType::possibly(const LambdaType& o) const {
+bool bi::DelayType::possibly(const LambdaType& o) const {
   return (left->possibly(o) || right->possibly(o))
       && (!o.assignable || assignable);
 }
 
-bool bi::RandomType::possibly(const List<Type>& o) const {
+bool bi::DelayType::possibly(const List<Type>& o) const {
   return (left->possibly(o) || right->possibly(o))
       && (!o.assignable || assignable);
 }
 
-bool bi::RandomType::possibly(const ModelReference& o) const {
+bool bi::DelayType::possibly(const ModelReference& o) const {
   return (left->possibly(o) || right->possibly(o))
       && (!o.assignable || assignable);
 }
 
-bool bi::RandomType::possibly(const ModelParameter& o) const {
+bool bi::DelayType::possibly(const ModelParameter& o) const {
   return (left->possibly(o) || right->possibly(o))
       && (!o.assignable || assignable);
 }
 
-bool bi::RandomType::possibly(const RandomType& o) const {
+bool bi::DelayType::possibly(const DelayType& o) const {
   return left->possibly(*o.left) && right->possibly(*o.right)
       && (!o.assignable || assignable);
 }

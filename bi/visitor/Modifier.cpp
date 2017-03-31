@@ -203,7 +203,7 @@ bi::Type* bi::Modifier::modify(ParenthesesType* o) {
   return o;
 }
 
-bi::Type* bi::Modifier::modify(RandomType* o) {
+bi::Type* bi::Modifier::modify(DelayType* o) {
   o->left = o->left.release()->accept(this);
   o->right = o->right.release()->accept(this);
   return o;

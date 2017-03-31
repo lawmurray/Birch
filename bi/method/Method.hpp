@@ -3,7 +3,7 @@
  */
 #pragma once
 
-#include "bi/method/RandomInterface.hpp"
+#include "bi/method/DelayInterface.hpp"
 
 namespace bi {
 /**
@@ -17,25 +17,25 @@ public:
   virtual ~Method();
 
   /**
-   * Add a random variable.
+   * Add a delay variate.
    *
-   * @param rv Random variable.
+   * @param o Delay variate.
    *
-   * @return Id assigned to the random variable.
+   * @return Id assigned to the delay variate.
    */
-  virtual int add(RandomInterface* rv) = 0;
+  virtual int add(DelayInterface* o) = 0;
 
   /**
-   * Get a random variable.
+   * Get a delay variate.
    *
-   * @param id Id of the random variable.
+   * @param id Id of the delay variate.
    */
-  virtual RandomInterface* get(const int id) = 0;
+  virtual DelayInterface* get(const int id) = 0;
 
   /**
-   * Simulate a random variable.
+   * Simulate a delay variate.
    *
-   * @param id Id of the random variable.
+   * @param id Id of the delay variate.
    */
   virtual void simulate(const int id) = 0;
 };

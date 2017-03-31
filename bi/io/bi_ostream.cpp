@@ -167,7 +167,7 @@ void bi::bi_ostream::visit(const ParenthesesType* o) {
   *this << '(' << o->single << ')';
 }
 
-void bi::bi_ostream::visit(const RandomType* o) {
+void bi::bi_ostream::visit(const DelayType* o) {
   *this << o->left << " ~ " << o->right;
 }
 

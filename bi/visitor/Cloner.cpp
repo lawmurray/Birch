@@ -171,8 +171,8 @@ bi::Type* bi::Cloner::clone(const ParenthesesType* o) {
   return new ParenthesesType(o->single->accept(this), o->loc, o->assignable);
 }
 
-bi::Type* bi::Cloner::clone(const RandomType* o) {
-  return new RandomType(o->left->accept(this), o->right->accept(this), o->loc,
+bi::Type* bi::Cloner::clone(const DelayType* o) {
+  return new DelayType(o->left->accept(this), o->right->accept(this), o->loc,
       o->assignable);
 }
 

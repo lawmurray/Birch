@@ -9,8 +9,7 @@
 
 namespace bi {
 /**
- * Simple stack-based method for analytical inference where possible,
- * otherwise importance sampling from the prior.
+ * Simple stack-based method for delayed samling.
  */
 class Stack : public Method {
 public:
@@ -19,21 +18,21 @@ public:
    */
   Stack();
 
-  int add(RandomInterface* rv);
-  RandomInterface* get(const int id);
+  int add(DelayInterface* rv);
+  DelayInterface* get(const int id);
   void simulate(const int id);
 
 private:
   /**
-   * Pop all random variables down to and including the given position on the
+   * Pop all delay variates down to and including the given position on the
    * stack.
    */
   void pop(const int state);
 
   /**
-   * Canonical representations of random variables.
+   * Canonical representations of delay variates.
    */
-  std::stack<RandomInterface*> rvs;
+  std::stack<DelayInterface*> rvs;
 
   /**
    * Cumulative log-likelihood.

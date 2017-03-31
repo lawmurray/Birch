@@ -5,12 +5,12 @@
  */
 #pragma once
 
-#include "bi/method/Random.hpp"
+#include "bi/method/Delay.hpp"
 #include "bi/data/MemoryPrimitiveValue.hpp"
 
 namespace bi {
 enum TypeFlag {
-  IS_PRIMITIVE, IS_MODEL, IS_RANDOM, IS_LAMBDA
+  IS_PRIMITIVE, IS_MODEL, IS_DELAY, IS_LAMBDA
 };
 
 template<class T>
@@ -20,8 +20,8 @@ struct type_flag {
 };
 
 template<class Value, class Distribution>
-struct type_flag<Random<Value,Distribution>> {
-  static const TypeFlag value = IS_RANDOM;
+struct type_flag<Delay<Value,Distribution>> {
+  static const TypeFlag value = IS_DELAY;
 };
 
 template<class Result>
@@ -54,7 +54,7 @@ struct cast_impl<To,From,IS_PRIMITIVE,IS_MODEL> {
 };
 
 template<class To, class From>
-struct cast_impl<To,From,IS_PRIMITIVE,IS_RANDOM> {
+struct cast_impl<To,From,IS_PRIMITIVE,IS_DELAY> {
   static To eval(From&& o) {
     return static_cast<To>(o);
   }
@@ -83,7 +83,7 @@ struct cast_impl<To,From,IS_MODEL,IS_MODEL> {
 };
 
 template<class To, class From>
-struct cast_impl<To,From,IS_MODEL,IS_RANDOM> {
+struct cast_impl<To,From,IS_MODEL,IS_DELAY> {
   static To eval(From&& o) {
     return static_cast<To>(o);
   }
@@ -97,21 +97,21 @@ struct cast_impl<To,From,IS_MODEL,IS_LAMBDA> {
 };
 
 template<class To, class From>
-struct cast_impl<To,From,IS_RANDOM,IS_PRIMITIVE> {
+struct cast_impl<To,From,IS_DELAY,IS_PRIMITIVE> {
   static To eval(From&& o) {
     throw std::bad_cast();
   }
 };
 
 template<class To, class From>
-struct cast_impl<To,From,IS_RANDOM,IS_MODEL> {
+struct cast_impl<To,From,IS_DELAY,IS_MODEL> {
   static To eval(From&& o) {
     throw std::bad_cast();
   }
 };
 
 template<class To, class From>
-struct cast_impl<To,From,IS_RANDOM,IS_RANDOM> {
+struct cast_impl<To,From,IS_DELAY,IS_DELAY> {
   static To eval(From&& o) {
     if (o.state == MISSING) {
       return dynamic_cast<To>(o);
@@ -122,7 +122,7 @@ struct cast_impl<To,From,IS_RANDOM,IS_RANDOM> {
 };
 
 template<class To, class From>
-struct cast_impl<To,From,IS_RANDOM,IS_LAMBDA> {
+struct cast_impl<To,From,IS_DELAY,IS_LAMBDA> {
   static To eval(From&& o) {
     throw std::bad_cast();
   }
@@ -143,7 +143,7 @@ struct cast_impl<To,From,IS_LAMBDA,IS_MODEL> {
 };
 
 template<class To, class From>
-struct cast_impl<To,From,IS_LAMBDA,IS_RANDOM> {
+struct cast_impl<To,From,IS_LAMBDA,IS_DELAY> {
   static To eval(From&& o) {
     throw std::bad_cast();
   }

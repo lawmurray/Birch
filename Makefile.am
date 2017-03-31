@@ -101,12 +101,12 @@ birchc_SOURCES = \
   bi/statement/Statement.cpp \
   bi/type/AssignableType.cpp \
   bi/type/BracketsType.cpp \
+  bi/type/DelayType.cpp \
   bi/type/EmptyType.cpp \
   bi/type/LambdaType.cpp \
   bi/type/ModelParameter.cpp \
   bi/type/ModelReference.cpp \
   bi/type/ParenthesesType.cpp \
-  bi/type/RandomType.cpp \
   bi/type/Type.cpp \
   bi/type/VariantType.cpp \
   bi/visitor/Assigner.cpp \
@@ -178,11 +178,11 @@ nobase_include_HEADERS = bi/data/Array.hpp \
   bi/exception/MemoryException.hpp \
   bi/exception/NetCDFException.hpp \
   bi/exception/UnknownOptionException.hpp \
+  bi/method/Delay.hpp \
+  bi/method/DelayInterface.hpp \
+  bi/method/DelayState.hpp \
   bi/method/Lambda.hpp \
   bi/method/Method.hpp \
-  bi/method/Random.hpp \
-  bi/method/RandomInterface.hpp \
-  bi/method/RandomState.hpp \
   bi/method/Stack.hpp \
   bi/method/Variant.hpp \
   bi/primitive/cast.hpp \

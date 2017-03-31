@@ -33,7 +33,7 @@ bool bi::Type::isArray() const {
   return false;
 }
 
-bool bi::Type::isRandom() const {
+bool bi::Type::isDelay() const {
   return false;
 }
 
@@ -101,7 +101,7 @@ bool bi::Type::definitely(const ParenthesesType& o) const {
   return false;
 }
 
-bool bi::Type::definitely(const RandomType& o) const {
+bool bi::Type::definitely(const DelayType& o) const {
   return false;
 }
 
@@ -145,7 +145,7 @@ bool bi::Type::possibly(const ParenthesesType& o) const {
   return false;
 }
 
-bool bi::Type::possibly(const RandomType& o) const {
+bool bi::Type::possibly(const DelayType& o) const {
   return false;
 }
 

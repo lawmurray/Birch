@@ -10,7 +10,7 @@ bi::Stack::Stack() :
   //
 }
 
-int bi::Stack::add(RandomInterface* rv) {
+int bi::Stack::add(DelayInterface* rv) {
   if (rv->getState() == MISSING) {
     rvs.push(rv);
     return rvs.size() - 1;
@@ -20,7 +20,7 @@ int bi::Stack::add(RandomInterface* rv) {
   }
 }
 
-bi::RandomInterface* bi::Stack::get(const int id) {
+bi::DelayInterface* bi::Stack::get(const int id) {
   /* pre-condition */
   assert(0 <= id && id < rvs.size());
 

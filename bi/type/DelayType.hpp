@@ -8,11 +8,11 @@
 
 namespace bi {
 /**
- * Random variable type.
+ * Delay variate type.
  *
  * @ingroup compiler_type
  */
-class RandomType: public Type, public TypeBinary {
+class DelayType: public Type, public TypeBinary {
 public:
   /**
    * Constructor.
@@ -22,19 +22,19 @@ public:
    * @param loc Location.
    * @param assignable Is this type writeable?
    */
-  RandomType(Type* left, Type* right, shared_ptr<Location> loc = nullptr,
+  DelayType(Type* left, Type* right, shared_ptr<Location> loc = nullptr,
       const bool assignable = false);
 
   /**
    * Destructor.
    */
-  virtual ~RandomType();
+  virtual ~DelayType();
 
   virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
-  virtual bool isRandom() const;
+  virtual bool isDelay() const;
 
   using Type::definitely;
   using Type::possibly;
@@ -45,7 +45,7 @@ public:
   virtual bool definitely(const List<Type>& o) const;
   virtual bool definitely(const ModelParameter& o) const;
   virtual bool definitely(const ModelReference& o) const;
-  virtual bool definitely(const RandomType& o) const;
+  virtual bool definitely(const DelayType& o) const;
 
   virtual bool dispatchPossibly(const Type& o) const;
   virtual bool possibly(const EmptyType& o) const;
@@ -53,6 +53,6 @@ public:
   virtual bool possibly(const List<Type>& o) const;
   virtual bool possibly(const ModelParameter& o) const;
   virtual bool possibly(const ModelReference& o) const;
-  virtual bool possibly(const RandomType& o) const;
+  virtual bool possibly(const DelayType& o) const;
 };
 }

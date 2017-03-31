@@ -24,8 +24,8 @@ bool bi::AssignableType::isModel() const {
   return single->isModel();
 }
 
-bool bi::AssignableType::isRandom() const {
-  return single->isRandom();
+bool bi::AssignableType::isDelay() const {
+  return single->isDelay();
 }
 
 bool bi::AssignableType::isLambda() const {
@@ -84,7 +84,7 @@ bool bi::AssignableType::definitely(const ParenthesesType& o) const {
   return single->definitely(o);
 }
 
-bool bi::AssignableType::definitely(const RandomType& o) const {
+bool bi::AssignableType::definitely(const DelayType& o) const {
   return single->definitely(o);
 }
 
@@ -128,7 +128,7 @@ bool bi::AssignableType::possibly(const ParenthesesType& o) const {
   return single->possibly(o);
 }
 
-bool bi::AssignableType::possibly(const RandomType& o) const {
+bool bi::AssignableType::possibly(const DelayType& o) const {
   return single->possibly(o);
 }
 

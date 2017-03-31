@@ -52,7 +52,7 @@ public:
   virtual void visit(const EmptyType* o);
   virtual void visit(const BracketsType* o);
   virtual void visit(const ParenthesesType* o);
-  virtual void visit(const RandomType* o);
+  virtual void visit(const DelayType* o);
   virtual void visit(const LambdaType* o);
   virtual void visit(const VariantType* o);
 
@@ -73,9 +73,9 @@ protected:
   bool header;
 
   /**
-   * Are we in a random type?
+   * Are we in a delay type?
    */
-  int inRandom;
+  int inDelay;
 
   /**
    * Are we in a lambda type?

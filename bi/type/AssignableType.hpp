@@ -31,7 +31,7 @@ public:
 
   virtual bool isBuiltin() const;
   virtual bool isModel() const;
-  virtual bool isRandom() const;
+  virtual bool isDelay() const;
   virtual bool isLambda() const;
 
   virtual Type* strip();
@@ -49,7 +49,7 @@ public:
   virtual bool definitely(const ModelParameter& o) const;
   virtual bool definitely(const ModelReference& o) const;
   virtual bool definitely(const ParenthesesType& o) const;
-  virtual bool definitely(const RandomType& o) const;
+  virtual bool definitely(const DelayType& o) const;
   virtual bool definitely(const VariantType& o) const;
 
   virtual bool dispatchPossibly(const Type& o) const;
@@ -61,7 +61,7 @@ public:
   virtual bool possibly(const ModelParameter& o) const;
   virtual bool possibly(const ModelReference& o) const;
   virtual bool possibly(const ParenthesesType& o) const;
-  virtual bool possibly(const RandomType& o) const;
+  virtual bool possibly(const DelayType& o) const;
   virtual bool possibly(const VariantType& o) const;
 };
 }

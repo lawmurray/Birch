@@ -27,8 +27,8 @@ bool bi::ParenthesesType::isModel() const {
   return single->isModel();
 }
 
-bool bi::ParenthesesType::isRandom() const {
-  return single->isRandom();
+bool bi::ParenthesesType::isDelay() const {
+  return single->isDelay();
 }
 
 bool bi::ParenthesesType::isLambda() const {
@@ -87,7 +87,7 @@ bool bi::ParenthesesType::definitely(const ParenthesesType& o) const {
   return single->definitely(o);
 }
 
-bool bi::ParenthesesType::definitely(const RandomType& o) const {
+bool bi::ParenthesesType::definitely(const DelayType& o) const {
   return single->definitely(o);
 }
 
@@ -131,7 +131,7 @@ bool bi::ParenthesesType::possibly(const ParenthesesType& o) const {
   return single->possibly(*o.single);
 }
 
-bool bi::ParenthesesType::possibly(const RandomType& o) const {
+bool bi::ParenthesesType::possibly(const DelayType& o) const {
   return single->possibly(o);
 }
 
