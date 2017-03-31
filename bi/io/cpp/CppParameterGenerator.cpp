@@ -3,33 +3,63 @@
  */
 #include "bi/io/cpp/CppParameterGenerator.hpp"
 
-#include "bi/visitor/Gatherer.hpp"
-
 bi::CppParameterGenerator::CppParameterGenerator(std::ostream& base,
     const int level, const bool header) :
     CppBaseGenerator(base, level, header), args(0) {
   //
 }
 
-void bi::CppParameterGenerator::visit(const VarParameter* o) {
-  if (o->type->assignable) {
-    middle("Arg" << ++args << "_&& ");
-  } else {
-    middle("const " << o->type << "& ");
+void bi::CppParameterGenerator::visit(const ModelReference* o) {
+  if (!o->assignable) {
+    middle("const ");
   }
-  middle(o->name);
+  CppBaseGenerator::visit(o);
+  middle('&');
+}
+
+void bi::CppParameterGenerator::visit(const BracketsType* o) {
+  if (!o->assignable) {
+    middle("const ");
+  }
+  CppBaseGenerator::visit(o);
+  middle('&');
+}
+
+void bi::CppParameterGenerator::visit(const ParenthesesType* o) {
+  if (!o->assignable) {
+    middle("const ");
+  }
+  CppBaseGenerator::visit(o);
+  middle('&');
+}
+
+void bi::CppParameterGenerator::visit(const RandomType* o) {
+  if (!o->assignable) {
+    middle("const ");
+  }
+  CppBaseGenerator::visit(o);
+  middle('&');
+}
+
+void bi::CppParameterGenerator::visit(const LambdaType* o) {
+  if (!o->assignable) {
+    middle("const ");
+  }
+  CppBaseGenerator::visit(o);
+  middle('&');
+}
+
+void bi::CppParameterGenerator::visit(const VarParameter* o) {
+  middle(o->type << o->name);
   if (!o->value->isEmpty()) {
     middle(" = " << o->value);
   }
 }
 
 void bi::CppParameterGenerator::visit(const FuncParameter* o) {
-  Gatherer<VarParameter> gatherer;
-  o->parens->accept(&gatherer);
-
   middle('(');
-  for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
-    if (iter != gatherer.begin()) {
+  for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
+    if (iter != o->parens->begin()) {
       middle(", ");
     }
     middle(*iter);
@@ -38,12 +68,9 @@ void bi::CppParameterGenerator::visit(const FuncParameter* o) {
 }
 
 void bi::CppParameterGenerator::visit(const Dispatcher* o) {
-  Gatherer<VarParameter> gatherer;
-  o->parens->accept(&gatherer);
-
   middle('(');
-  for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
-    if (iter != gatherer.begin()) {
+  for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
+    if (iter != o->parens->begin()) {
       middle(", ");
     }
     middle(*iter);

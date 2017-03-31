@@ -4,12 +4,11 @@
 #include "bi/io/cpp/CppDispatcherGenerator.hpp"
 
 #include "bi/io/cpp/CppParameterGenerator.hpp"
-#include "bi/io/cpp/CppTemplateParameterGenerator.hpp"
 #include "bi/primitive/encode.hpp"
 
 bi::CppDispatcherGenerator::CppDispatcherGenerator(std::ostream& base,
     const int level, const bool header) :
-    CppBaseGenerator(base, level, header) {
+    CppParameterGenerator(base, level, header) {
   //
 }
 
@@ -137,10 +136,5 @@ void bi::CppDispatcherGenerator::genBody(const Dispatcher* o) {
 }
 
 void bi::CppDispatcherGenerator::genArg(const Expression* o, const int i) {
-  middle("bi::cast<");
-  if (!o->type->assignable) {
-    middle("const ");
-  }
-  middle(o->type);
-  middle("&>(o" << i << ')');
+  middle("bi::cast<" << o->type << ">(o" << i << ')');
 }

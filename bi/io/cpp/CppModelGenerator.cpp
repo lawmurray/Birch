@@ -10,7 +10,6 @@
 #include "bi/io/cpp/CppParameterGenerator.hpp"
 #include "bi/io/cpp/CppOutputGenerator.hpp"
 #include "bi/io/cpp/CppReturnGenerator.hpp"
-#include "bi/io/cpp/CppTemplateParameterGenerator.hpp"
 #include "bi/primitive/encode.hpp"
 
 bi::CppModelGenerator::CppModelGenerator(std::ostream& base, const int level,
@@ -144,10 +143,6 @@ void bi::CppModelGenerator::visit(const FuncParameter* o) {
     if (!header) {
       line("template<class Group>");
     }
-
-    /* template parameters */
-    CppTemplateParameterGenerator auxTemplateParameter(base, level, header);
-    auxTemplateParameter << o;
 
     /* return type */
     start("");

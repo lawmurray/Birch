@@ -3,7 +3,7 @@
  */
 #pragma once
 
-#include "bi/io/cpp/CppBaseGenerator.hpp"
+#include "bi/io/cpp/CppParameterGenerator.hpp"
 
 namespace bi {
 /**
@@ -11,7 +11,7 @@ namespace bi {
  *
  * @ingroup compiler_io
  */
-class CppDispatcherGenerator: public CppBaseGenerator {
+class CppDispatcherGenerator: public CppParameterGenerator {
 public:
   CppDispatcherGenerator(std::ostream& base, const int level = 0,
       const bool header = false);
