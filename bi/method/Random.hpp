@@ -7,32 +7,25 @@
 #include "bi/method/RandomInterface.hpp"
 #include "bi/method/RandomState.hpp"
 
-#include <functional>
-
 namespace bi {
 /**
  * Random variable.
  *
- * @tparam Variate Variate type.
- * @tparam Model Model type.
- *
- * This is implemented using code similar to that generated for models by
- * the compiler itself so that it can act rather like it was specified in
- * Birch code. Eventually it may be possible to implement it directly in
- * Birch.
+ * @tparam Value Value type.
+ * @tparam Distribution Distribution type.
  */
-template<class Variate, class Model>
+template<class Value, class Distribution>
 class Random: public virtual RandomInterface {
 public:
   /**
    * Value type.
    */
-  typedef typename value_type<Variate>::type value_type;
+  typedef typename value_type<Value>::type value_type;
 
   /**
-   * Backward lambda type.
+   * Distribution type.
    */
-  typedef Lambda<Variate> lambda_type;
+  typedef Distribution distribution_type;
 
   /**
    * Constructor.
@@ -40,64 +33,54 @@ public:
   Random();
 
   /**
-   * Destructor.
-   */
-  virtual ~Random();
-
-  /**
    * Value assigment.
    */
-  Random<Variate,Model>& operator=(const value_type& o);
+  Random<Value,Distribution>& operator=(const value_type& o);
 
   /**
-   * Cast to variate type.
+   * Distribution assigment.
+   */
+  Random<Value,Distribution>& operator=(const distribution_type& o);
+
+  /**
+   * Cast to value type.
    */
   operator value_type&();
 
   /**
-   * Cast to variate type.
+   * Cast to value type.
    */
   operator const value_type&() const;
 
   /**
-   * Cast to model type.
+   * Cast to distribution type.
    */
-  explicit operator Model&();
+  explicit operator Distribution&();
 
   /**
-   * Cast to model type.
+   * Cast to distribution type.
    */
-  explicit operator const Model&() const;
-
-  /**
-   * Initialise the random variable.
-   */
-  void init(const Model& m, const lambda_type& lambda);
+  explicit operator const Distribution&() const;
 
   /*
    * RandomInterface requirements.
    */
   virtual void simulate();
   virtual double observe();
-  virtual RandomState getState() const;
-  virtual void setState(const RandomState state);
   virtual int getId() const;
   virtual void setId(const int id);
+  virtual RandomState getState() const;
+  virtual void setState(const RandomState state);
 
   /**
-   * Lambda function.
+   * Value.
    */
-  lambda_type lambda;
+  Value x;
 
   /**
-   * Variate.
+   * Distribution.
    */
-  Variate x;
-
-  /**
-   * Model.
-   */
-  Model m;
+  Distribution m;
 
   /**
    * Random variable id, or -1 if this has not been assigned.
@@ -113,20 +96,15 @@ public:
 
 #include "bi/method/Method.hpp"
 
-template<class Variate, class Model>
-bi::Random<Variate,Model>::Random() :
+template<class Value, class Distribution>
+bi::Random<Value,Distribution>::Random() :
     id(-1),
     state(MISSING) {
   //
 }
 
-template<class Variate, class Model>
-bi::Random<Variate,Model>::~Random() {
-  //
-}
-
-template<class Variate, class Model>
-bi::Random<Variate,Model>& bi::Random<Variate,Model>::operator=(
+template<class Value, class Distribution>
+bi::Random<Value,Distribution>& bi::Random<Value,Distribution>::operator=(
     const value_type& o) {
   x = o;
   state = ASSIGNED;
@@ -134,24 +112,34 @@ bi::Random<Variate,Model>& bi::Random<Variate,Model>::operator=(
   return *this;
 }
 
-template<class Variate, class Model>
-bi::Random<Variate,Model>::operator value_type&() {
+template<class Value, class Distribution>
+bi::Random<Value,Distribution>& bi::Random<Value,Distribution>::operator=(
+    const distribution_type& o) {
+  m = o;
+  state = MISSING;
+  id = method->add(this);
+
+  return *this;
+}
+
+template<class Value, class Distribution>
+bi::Random<Value,Distribution>::operator value_type&() {
   if (id >= 0 && state == MISSING) {
     method->simulate(id);
   }
   return x;
 }
 
-template<class Variate, class Model>
-bi::Random<Variate,Model>::operator const value_type&() const {
+template<class Value, class Distribution>
+bi::Random<Value,Distribution>::operator const value_type&() const {
   if (id >= 0 && state == MISSING) {
     method->simulate(id);
   }
   return x;
 }
 
-template<class Variate, class Model>
-bi::Random<Variate,Model>::operator Model&() {
+template<class Value, class Distribution>
+bi::Random<Value,Distribution>::operator Distribution&() {
   if (id >= 0 && state == MISSING) {
     return m;
   } else {
@@ -159,8 +147,8 @@ bi::Random<Variate,Model>::operator Model&() {
   }
 }
 
-template<class Variate, class Model>
-bi::Random<Variate,Model>::operator const Model&() const {
+template<class Value, class Distribution>
+bi::Random<Value,Distribution>::operator const Distribution&() const {
   if (id >= 0 && state == MISSING) {
     return m;
   } else {
@@ -168,40 +156,32 @@ bi::Random<Variate,Model>::operator const Model&() const {
   }
 }
 
-template<class Variate, class Model>
-void bi::Random<Variate,Model>::init(const Model& m,
-    const lambda_type& lambda) {
-  this->m = m;
-  this->lambda = lambda;
-  this->id = method->add(this);
+template<class Value, class Distribution>
+void bi::Random<Value,Distribution>::simulate() {
+  left_tilde_(x, m);
 }
 
-template<class Variate, class Model>
-void bi::Random<Variate,Model>::simulate() {
-  x = sim_(m);
+template<class Value, class Distribution>
+double bi::Random<Value,Distribution>::observe() {
+  return right_tilde_(x, m);
 }
 
-template<class Variate, class Model>
-double bi::Random<Variate,Model>::observe() {
-  return lambda(x);
-}
-
-template<class Variate, class Model>
-int bi::Random<Variate,Model>::getId() const {
+template<class Value, class Distribution>
+int bi::Random<Value,Distribution>::getId() const {
   return this->id;
 }
 
-template<class Variate, class Model>
-void bi::Random<Variate,Model>::setId(const int id) {
+template<class Value, class Distribution>
+void bi::Random<Value,Distribution>::setId(const int id) {
   this->id = id;
 }
 
-template<class Variate, class Model>
-bi::RandomState bi::Random<Variate,Model>::getState() const {
+template<class Value, class Distribution>
+bi::RandomState bi::Random<Value,Distribution>::getState() const {
   return this->state;
 }
 
-template<class Variate, class Model>
-void bi::Random<Variate,Model>::setState(const RandomState state) {
+template<class Value, class Distribution>
+void bi::Random<Value,Distribution>::setState(const RandomState state) {
   this->state = state;
 }

@@ -73,6 +73,16 @@ protected:
   bool header;
 
   /**
+   * Are we in a random type?
+   */
+  int inRandom;
+
+  /**
+   * Are we in a lambda type?
+   */
+  int inLambda;
+
+  /**
    * Are we in a variant type?
    */
   int inVariant;

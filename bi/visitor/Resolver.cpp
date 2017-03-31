@@ -127,7 +127,8 @@ bi::Expression* bi::Resolver::modify(FuncReference* o) {
     } else if (!o->getRight()->type->definitely(*o->getLeft()->type)) {
       //throw InvalidAssignmentException(o);
     }
-  } else {
+  }
+  if (*o->name != "<-"){
     resolve(o, membershipScope);
     if (o->possibles.size() > 0) {
       o->dispatcher = makeDispatcher(o);

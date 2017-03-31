@@ -14,6 +14,8 @@ bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
     const bool header) :
     indentable_ostream(base, level),
     header(header),
+    inRandom(0),
+    inLambda(0),
     inVariant(0) {
   //
 }
@@ -252,11 +254,15 @@ void bi::CppBaseGenerator::visit(const ParenthesesType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const RandomType* o) {
+  ++inRandom;
   middle("bi::Random<" << o->left << ',' << o->right << '>');
+  --inRandom;
 }
 
 void bi::CppBaseGenerator::visit(const LambdaType* o) {
+  ++inLambda;
   middle("bi::Lambda<" << o->result << '(' << o->parens << ")>");
+  --inLambda;
 }
 
 void bi::CppBaseGenerator::visit(const VariantType* o) {
