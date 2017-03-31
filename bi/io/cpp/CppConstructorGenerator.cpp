@@ -80,9 +80,9 @@ void bi::CppConstructorGenerator::initialise(const VarParameter* o) {
   } else {
     middle("frame");
   }
-  middle(", \"" << o->name->str() << "\"");
+  middle(", \"" << o->name << "\"");
   middle(", childGroup");
-  middle("(this->group, \"" << o->name->str() << "\")");
+  middle("(this->group, \"" << o->name << "\")");
 //  if (!o->parens->isEmpty() && o->type->count() > 0) {
 //    middle(", "  << o->parens);
 //  }
@@ -90,10 +90,9 @@ void bi::CppConstructorGenerator::initialise(const VarParameter* o) {
 }
 
 void bi::CppConstructorGenerator::assign(const VarParameter* o) {
-  CppBaseGenerator aux(base, level, header);
   if (!o->value->isEmpty()) {
-    start(o->name->str() << " = ");
-    aux << o->value;
-    finish(';');
+    line("this->group.fill(" << o->name << ", " << o->value << "(), frame);");
+  } else if (o->type->isLambda() || o->type->isDelay()) {
+    line("this->group.fill(" << o->name << ", " << o->type << "(), frame);");
   }
 }
