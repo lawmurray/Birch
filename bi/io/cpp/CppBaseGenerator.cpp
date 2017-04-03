@@ -4,6 +4,7 @@
 #include "bi/io/cpp/CppBaseGenerator.hpp"
 
 #include "bi/io/cpp/CppOutputGenerator.hpp"
+#include "bi/io/cpp/CppParameterGenerator.hpp"
 #include "bi/io/cpp/CppReturnGenerator.hpp"
 #include "bi/visitor/Gatherer.hpp"
 #include "bi/primitive/encode.hpp"
@@ -262,7 +263,10 @@ void bi::CppBaseGenerator::visit(const DelayType* o) {
 
 void bi::CppBaseGenerator::visit(const LambdaType* o) {
   ++inLambda;
-  middle("bi::Lambda<" << o->result << '(' << o->parens << ")>");
+  middle("bi::Lambda<" << o->result << '(');
+  CppParameterGenerator auxParameter(base, level, header);
+  auxParameter << o->parens;
+  middle(")>");
   --inLambda;
 }
 

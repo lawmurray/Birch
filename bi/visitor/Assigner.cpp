@@ -50,7 +50,6 @@ bi::Type* bi::Assigner::modify(DelayType* o) {
 }
 
 bi::Type* bi::Assigner::modify(LambdaType* o) {
-  Modifier::modify(o);
   o->assignable = true;
   return o;
 }
