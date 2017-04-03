@@ -62,7 +62,6 @@ bi::Expression* bi::Resolver::modify(Range* o) {
 
 bi::Expression* bi::Resolver::modify(Member* o) {
   o->left = o->left->accept(this);
-
   ModelReference* ref = dynamic_cast<ModelReference*>(o->left->type->strip());
   if (ref) {
     membershipScope = ref->target->scope.get();
@@ -83,7 +82,7 @@ bi::Expression* bi::Resolver::modify(This* o) {
   } else {
     Modifier::modify(o);
     o->type = new ModelReference(model()->name, new EmptyExpression(),
-        nullptr, model());
+        nullptr, true, model());
   }
   return o;
 }
