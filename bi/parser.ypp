@@ -80,6 +80,7 @@
 %type <valType> assignable_type delay_type lambda_type
 %type <valType> type_list type
 %type <valType> type_parameter_list type_parameters
+%type <valType> result_type optional_result_type
 
 %type <valExpression> reference_expression this_expression
 %type <valExpression> parens_expression lambda_expression
@@ -254,6 +255,15 @@ type_parameters
     ;
     ;
 
+result_type
+    : RIGHT_OP type  { $$ = $2; }
+    ;
+    
+optional_result_type
+    : result_type
+    |              { $$ = new bi::EmptyType(); }
+    ;
+
 result
     : var_parameter
     ;
@@ -331,7 +341,7 @@ assignable_type
 
 lambda_type
     : assignable_type
-    | LAMBDA type_parameters RIGHT_OP type  { $$ = new bi::LambdaType($2, $4, make_loc(@$)); }
+    | LAMBDA type_parameters optional_result_type  { $$ = new bi::LambdaType($2, $3, make_loc(@$)); }
     ;
 
 delay_type
