@@ -21,7 +21,7 @@ public:
   /**
    * Apply the simulate function.
    */
-  virtual void simulate() = 0;
+  virtual void sample() = 0;
 
   /**
    * Apply the observe function.

@@ -166,6 +166,7 @@ void bi::CppModelGenerator::visit(const FuncParameter* o) {
     CppParameterGenerator auxParameter(base, level, header);
     auxParameter << o;
 
+    middle(" const");
     if (header && !o->parens->hasAssignable()) {
       finish(';');
     } else {

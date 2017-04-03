@@ -65,7 +65,7 @@ public:
   /*
    * DelayInterface requirements.
    */
-  virtual void simulate();
+  virtual void sample();
   virtual double observe();
   virtual int getId() const;
   virtual void setId(const int id);
@@ -83,12 +83,12 @@ public:
   Distribution m;
 
   /**
-   * Delay variate id, or -1 if this has not been assigned.
+   * Id assigned by the method,  -1 if no id has been assigned.
    */
   int id;
 
   /**
-   * Delay variate state, taking one of the values of the enum State.
+   * State flag.
    */
   DelayState state;
 };
@@ -106,41 +106,51 @@ bi::Delay<Value,Distribution>::Delay() :
 template<class Value, class Distribution>
 bi::Delay<Value,Distribution>& bi::Delay<Value,Distribution>::operator=(
     const value_type& o) {
-  x = o;
-  state = ASSIGNED;
+  /* pre-condition */
+  assert(state == MISSING);
 
+  x = o;
+  if (id >= 0) {
+    method->observe(id);
+  } else {
+    state = ASSIGNED;
+  }
   return *this;
 }
 
 template<class Value, class Distribution>
 bi::Delay<Value,Distribution>& bi::Delay<Value,Distribution>::operator=(
     const distribution_type& o) {
-  m = o;
-  state = MISSING;
-  id = method->add(this);
-
+  if (id >= 0) {
+    method->get(id);
+    m = o;
+  } else {
+    m = o;
+    id = method->add(this);
+  }
   return *this;
 }
 
 template<class Value, class Distribution>
 bi::Delay<Value,Distribution>::operator value_type&() {
-  if (id >= 0 && state == MISSING) {
-    method->simulate(id);
+  if (id >= 0) {
+    method->sample(id);
   }
   return x;
 }
 
 template<class Value, class Distribution>
 bi::Delay<Value,Distribution>::operator const value_type&() const {
-  if (id >= 0 && state == MISSING) {
-    method->simulate(id);
+  if (id >= 0) {
+    method->sample(id);
   }
   return x;
 }
 
 template<class Value, class Distribution>
 bi::Delay<Value,Distribution>::operator Distribution&() {
-  if (id >= 0 && state == MISSING) {
+  if (id >= 0) {
+    method->get(id);
     return m;
   } else {
     throw std::bad_cast();
@@ -149,7 +159,8 @@ bi::Delay<Value,Distribution>::operator Distribution&() {
 
 template<class Value, class Distribution>
 bi::Delay<Value,Distribution>::operator const Distribution&() const {
-  if (id >= 0 && state == MISSING) {
+  if (id >= 0) {
+    method->get(id);
     return m;
   } else {
     throw std::bad_cast();
@@ -157,7 +168,7 @@ bi::Delay<Value,Distribution>::operator const Distribution&() const {
 }
 
 template<class Value, class Distribution>
-void bi::Delay<Value,Distribution>::simulate() {
+void bi::Delay<Value,Distribution>::sample() {
   left_tilde_(x, m);
 }
 

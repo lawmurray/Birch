@@ -20,7 +20,8 @@ public:
 
   int add(DelayInterface* rv);
   DelayInterface* get(const int id);
-  void simulate(const int id);
+  void sample(const int id);
+  void observe(const int id);
 
 private:
   /**
@@ -32,11 +33,11 @@ private:
   /**
    * Canonical representations of delay variates.
    */
-  std::stack<DelayInterface*> rvs;
+  std::stack<DelayInterface*> stack;
 
   /**
-   * Cumulative log-likelihood.
+   * Cumulative log-weight.
    */
-  double logLikelihood;
+  double logWeight;
 };
 }

@@ -96,14 +96,14 @@ void bi::CppBaseGenerator::visit(const Range* o) {
 }
 
 void bi::CppBaseGenerator::visit(const This* o) {
-  middle("*this");
+  middle("*nonconst(this)");
 }
 
 void bi::CppBaseGenerator::visit(const Member* o) {
   const This* left = dynamic_cast<const This*>(o->left.get());
   if (left) {
     // tidier this way
-    middle("this->" << o->right);
+    middle("nonconst(this)->" << o->right);
   } else {
     middle(o->left << '.' << o->right);
   }
@@ -158,12 +158,8 @@ void bi::CppBaseGenerator::visit(const VarParameter* o) {
 void bi::CppBaseGenerator::visit(const FuncParameter* o) {
   if (o->isLambda()) {
     middle("[&](");
-    for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
-      if (iter != o->parens->begin()) {
-        middle(", ");
-      }
-      middle(*iter);
-    }
+    CppParameterGenerator auxParameter(base, level, header);
+    auxParameter << o->parens;
     finish(") {");
     in();
 

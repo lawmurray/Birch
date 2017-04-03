@@ -6,47 +6,76 @@
 #include <cassert>
 
 bi::Stack::Stack() :
-    logLikelihood(0.0) {
+    logWeight(0.0) {
   //
 }
 
-int bi::Stack::add(DelayInterface* rv) {
-  if (rv->getState() == MISSING) {
-    rvs.push(rv);
-    return rvs.size() - 1;
+int bi::Stack::add(DelayInterface* o) {
+  if (o->getState() == MISSING) {
+    /* missing value, put on stack for later */
+    stack.push(o);
+    return stack.size() - 1;
   } else {
-    logLikelihood += rv->observe();
+    /* known value, observe now */
+    logWeight += o->observe();
     return -1;
   }
 }
 
 bi::DelayInterface* bi::Stack::get(const int id) {
   /* pre-condition */
-  assert(0 <= id && id < rvs.size());
+  assert(0 <= id && id < stack.size());
 
+  /* ensure variate is on top of the stack */
   pop(id + 1);
-  return rvs.top();
+
+  return stack.top();
 }
 
-void bi::Stack::simulate(const int id) {
+void bi::Stack::sample(const int id) {
   /* pre-condition */
-  assert(0 <= id && id < rvs.size());
+  assert(0 <= id && id < stack.size());
 
-  pop(id);
+  /* ensure variate is on top of the stack */
+  pop(id + 1);
+
+  /* sample the variate */
+  DelayInterface* o = stack.top();
+  assert(o->getState() == MISSING);
+  o->sample();
+  o->setId(-1);
+  o->setState(SIMULATED);
+  logWeight += o->observe();
+  stack.pop();
+}
+
+void bi::Stack::observe(const int id) {
+  /* pre-condition */
+  assert(0 <= id && id < stack.size());
+
+  /* ensure variate is on top of the stack */
+  pop(id + 1);
+
+  /* observe the variate */
+  DelayInterface* o = stack.top();
+  assert(o->getState() == MISSING);
+  o->setId(-1);
+  o->setState(ASSIGNED);
+  logWeight += o->observe();
+  stack.pop();
 }
 
 void bi::Stack::pop(const int id) {
   /* pre-condition */
   assert(id >= 0);
 
-  while (rvs.size() > id) {
-    auto* rv = rvs.top();
-    rvs.pop();
-
-    assert(rv->getState() == MISSING);
-    rv->simulate();
-    rv->setId(-1);
-    rv->setState(SIMULATED);
-    logLikelihood += rv->observe();
+  while (stack.size() > id) {
+    DelayInterface* o = stack.top();
+    assert(o->getState() == MISSING);
+    o->sample();
+    o->setId(-1);
+    o->setState(SIMULATED);
+    logWeight += o->observe();
+    stack.pop();
   }
 }

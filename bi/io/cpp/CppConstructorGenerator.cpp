@@ -2,7 +2,6 @@
  * @file
  */
 #include "bi/io/cpp/CppConstructorGenerator.hpp"
-#include "bi/visitor/Gatherer.hpp"
 
 bi::CppConstructorGenerator::CppConstructorGenerator(std::ostream& base,
     const int level, const bool header) :
@@ -11,9 +10,6 @@ bi::CppConstructorGenerator::CppConstructorGenerator(std::ostream& base,
 }
 
 void bi::CppConstructorGenerator::visit(const ModelParameter* o) {
-  Gatherer<VarDeclaration> gatherer;
-  o->braces->accept(&gatherer);
-
   /* two constructors are created here, one for nonempty frames, and one for
    * empty frames, this helps with debugging by ensuring that there is not a
    * catch-all constructor ("template<class Frame>") that can take any first
@@ -49,50 +45,56 @@ void bi::CppConstructorGenerator::visit(const ModelParameter* o) {
       }
       start("group(childGroup(group, name))");
 
-      for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
-        initialise((*iter)->param.get());
-      }
+      inInitial = true;
+      *this << o->braces;
 
       out();
       out();
       finish(" {");
       in();
-      for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
-        assign((*iter)->param.get());
-      }
+      inInitial = false;
+      *this << o->braces;
       out();
       line("}\n");
     }
   }
 }
 
-void bi::CppConstructorGenerator::initialise(const VarParameter* o) {
-  finish(',');
-  start(o->name << "(");
-//  if (!o->parens()->isEmpty() && o->type->count() == 0) {
-//    aux << o->parens->strip();
-//    middle(", ");
-//  }
-  if (o->type->isArray()) {
-    const BracketsType* type = dynamic_cast<const BracketsType*>(o->type.get());
-    assert(type);
-    middle("make_frame(" << type->brackets << ")*frame.lead");
+void bi::CppConstructorGenerator::visit(const VarParameter* o) {
+  if (inInitial) {
+    finish(',');
+    start(o->name << "(");
+  //  if (!o->parens()->isEmpty() && o->type->count() == 0) {
+  //    aux << o->parens->strip();
+  //    middle(", ");
+  //  }
+    if (o->type->isArray()) {
+      const BracketsType* type = dynamic_cast<const BracketsType*>(o->type.get());
+      assert(type);
+      middle("make_frame(" << type->brackets << ")*frame.lead");
+    } else {
+      middle("frame");
+    }
+    middle(", \"" << o->name << "\"");
+    middle(", childGroup");
+    middle("(this->group, \"" << o->name << "\")");
+  //  if (!o->parens->isEmpty() && o->type->count() > 0) {
+  //    middle(", "  << o->parens);
+  //  }
+    middle(')');
   } else {
-    middle("frame");
+    if (!o->value->isEmpty()) {
+      line("this->group.fill(" << o->name << ", " << o->value << "(), frame);");
+    } else if (o->type->isLambda() || o->type->isDelay()) {
+      line("this->group.fill(" << o->name << ", " << o->type << "(), frame);");
+    }
   }
-  middle(", \"" << o->name << "\"");
-  middle(", childGroup");
-  middle("(this->group, \"" << o->name << "\")");
-//  if (!o->parens->isEmpty() && o->type->count() > 0) {
-//    middle(", "  << o->parens);
-//  }
-  middle(')');
 }
 
-void bi::CppConstructorGenerator::assign(const VarParameter* o) {
-  if (!o->value->isEmpty()) {
-    line("this->group.fill(" << o->name << ", " << o->value << "(), frame);");
-  } else if (o->type->isLambda() || o->type->isDelay()) {
-    line("this->group.fill(" << o->name << ", " << o->type << "(), frame);");
-  }
+void bi::CppConstructorGenerator::visit(const VarDeclaration* o) {
+  *this << o->param;
+}
+
+void bi::CppConstructorGenerator::visit(const FuncDeclaration* o) {
+  //
 }

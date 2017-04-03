@@ -37,7 +37,15 @@ public:
    *
    * @param id Id of the delay variate.
    */
-  virtual void simulate(const int id) = 0;
+  virtual void sample(const int id) = 0;
+
+  /**
+   * Observe a delay variate.
+   *
+   * @param id Id of the delay variate.
+   */
+  virtual void observe(const int id) = 0;
+
 };
 }
 

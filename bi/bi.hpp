@@ -18,6 +18,7 @@
 #include "bi/method/Stack.hpp"
 #include "bi/method/Variant.hpp"
 #include "bi/primitive/cast.hpp"
+#include "bi/primitive/nonconst.hpp"
 #include "bi/primitive/shared_ptr.hpp"
 #include "bi/primitive/unique_ptr.hpp"
 

@@ -2,7 +2,6 @@
  * @file
  */
 #include "bi/io/cpp/CppCopyConstructorGenerator.hpp"
-#include "bi/visitor/Gatherer.hpp"
 
 bi::CppCopyConstructorGenerator::CppCopyConstructorGenerator(
     std::ostream& base, const int level, const bool header) :

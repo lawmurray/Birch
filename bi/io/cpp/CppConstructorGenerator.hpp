@@ -19,8 +19,11 @@ public:
   using CppBaseGenerator::visit;
 
   virtual void visit(const ModelParameter* o);
+  virtual void visit(const VarParameter* o);
+  virtual void visit(const VarDeclaration* o);
+  virtual void visit(const FuncDeclaration* o);
 
-  void initialise(const VarParameter* o);
-  void assign(const VarParameter* o);
+private:
+  bool inInitial;
 };
 }
