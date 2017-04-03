@@ -26,7 +26,9 @@ void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
   if (!header) {
     start("struct ");
     middle("visitor_" << o->name << "_" << o->number << '_');
+    ++inReturn;
     finish(" : public boost::static_visitor<" << o->type << "> {");
+    --inReturn;
     in();
 
     if (o->types.size() >= 1) {
@@ -42,7 +44,10 @@ void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
     if (o->types.size() >= 1) {
       finish(">");
     }
-    start(o->type << " operator()(");
+    ++inReturn;
+    start(o->type);
+    --inReturn;
+    middle(" operator()(");
     i = 0;
     for (auto iter = o->types.begin(); iter != o->types.end(); ++iter) {
       if (i > 0) {
@@ -63,7 +68,9 @@ void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
   if (header) {
     middle("static ");
   }
+  ++inReturn;
   start(o->type << ' ');
+  --inReturn;
   start("dispatch_" << o->name << "_" << o->number << "_(");
   i = 0;
   for (auto iter = o->types.begin(); iter != o->types.end(); ++iter) {
@@ -127,7 +134,7 @@ void bi::CppDispatcherGenerator::genBody(const Dispatcher* o) {
       middle(')');
     }
     middle(';');
-    if (func->result->type->isEmpty()) {
+    if (func->result->type->isEmpty() && o->type->isVariant()) {
       middle(" return boost::blank();");
     }
     finish(" } catch (std::bad_cast e) {}");

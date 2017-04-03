@@ -3,14 +3,13 @@
  */
 #include "bi/dispatcher/Dispatcher.hpp"
 
-#include "bi/visitor/Gatherer.hpp"
 #include "bi/visitor/all.hpp"
 
 #include <vector>
 #include <algorithm>
 
 bi::Dispatcher::Dispatcher(FuncReference* ref) :
-    Named(ref->name) {
+    Named(ref->name), own(false) {
   /* argument types */
   std::transform(ref->parens->begin(), ref->parens->end(),
       std::back_inserter(types),
@@ -24,6 +23,9 @@ bi::Dispatcher::Dispatcher(FuncReference* ref) :
 
 bi::Dispatcher::~Dispatcher() {
   std::for_each(types.begin(), types.end(), [](VariantType* o) {delete o;});
+  if (own) {
+    delete type;
+  }
 }
 
 bi::Dispatcher* bi::Dispatcher::accept(Modifier* visitor) {
@@ -46,9 +48,19 @@ bool bi::Dispatcher::operator==(const Dispatcher& o) const {
 
 void bi::Dispatcher::add(FuncParameter* o) {
   if (funcs.size() == 0) {
-    type = new VariantType(o->result->type.get());
+    type = o->result->type.get();
+    own = false;
   } else {
-    type->add(o->result->type.get());
+    VariantType* variant;
+    if (own) {
+      variant = dynamic_cast<VariantType*>(type);
+      assert(variant);
+      variant->add(o->result->type.get());
+    } else if (!o->result->type->equals(*type)) {
+      variant = new VariantType(type);
+      own = true;
+      variant->add(o->result->type.get());
+    }
   }
   funcs.push_back(o);
 

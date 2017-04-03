@@ -55,12 +55,17 @@ public:
   /**
    * Result type.
    */
-  unique_ptr<VariantType> type;
+  Type* type;
 
 private:
   /**
    * Add a function.
    */
   void add(FuncParameter* o);
+
+  /**
+   * Do we own the result type?
+   */
+  bool own;
 };
 }

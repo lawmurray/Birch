@@ -89,7 +89,9 @@ void bi::CppFileGenerator::visit(const FuncParameter* o) {
     }
 
     /* return type */
+    ++inReturn;
     start(o->type << ' ');
+    --inReturn;
 
     /* name */
     if (!header) {

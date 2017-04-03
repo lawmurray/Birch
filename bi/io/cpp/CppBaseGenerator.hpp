@@ -86,5 +86,10 @@ protected:
    * Are we in a variant type?
    */
   int inVariant;
+
+  /**
+   * Are we in a return type?
+   */
+  int inReturn;
 };
 }

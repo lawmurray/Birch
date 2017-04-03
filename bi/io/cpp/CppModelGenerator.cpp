@@ -120,6 +120,8 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
 void bi::CppModelGenerator::visit(const ModelReference* o) {
   if (o->isBuiltin()) {
     genBuiltin(o);
+  } else if (inReturn) {
+    middle(o->name << "<>");
   } else {
     middle(o->name << "<Group>");
   }
@@ -146,8 +148,9 @@ void bi::CppModelGenerator::visit(const FuncParameter* o) {
 
     /* return type */
     start("");
-    CppBaseGenerator auxType(base, level, header);
-    auxType << o->type << ' ';
+    ++inReturn;
+    middle(o->type << ' ');
+    --inReturn;
 
     /* name */
     if (!header) {

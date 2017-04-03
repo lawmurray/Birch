@@ -16,7 +16,8 @@ bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
     header(header),
     inDelay(0),
     inLambda(0),
-    inVariant(0) {
+    inVariant(0),
+    inReturn(0) {
   //
 }
 

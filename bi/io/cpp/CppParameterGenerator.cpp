@@ -14,7 +14,7 @@ void bi::CppParameterGenerator::visit(const ModelReference* o) {
     middle("const ");
   }
   CppBaseGenerator::visit(o);
-  if (!inDelay) {
+  if (!inDelay && !inReturn) {
     middle('&');
   }
 }
@@ -24,7 +24,7 @@ void bi::CppParameterGenerator::visit(const BracketsType* o) {
     middle("const ");
   }
   CppBaseGenerator::visit(o);
-  if (!inDelay) {
+  if (!inDelay && !inReturn) {
     middle('&');
   }
 }
@@ -35,7 +35,7 @@ void bi::CppParameterGenerator::visit(const ParenthesesType* o) {
       middle("const ");
     }
     middle("std::tuple<" << o->single->strip() << ">");
-    if (!inDelay) {
+    if (!inDelay && !inReturn) {
       middle('&');
     }
   } else {
@@ -48,7 +48,7 @@ void bi::CppParameterGenerator::visit(const DelayType* o) {
     middle("const ");
   }
   CppBaseGenerator::visit(o);
-  if (!inDelay) {
+  if (!inDelay && !inReturn) {
     middle('&');
   }
 }
@@ -58,7 +58,7 @@ void bi::CppParameterGenerator::visit(const LambdaType* o) {
     middle("const ");
   }
   CppBaseGenerator::visit(o);
-  if (!inDelay) {
+  if (!inDelay && !inReturn) {
     middle('&');
   }
 }
