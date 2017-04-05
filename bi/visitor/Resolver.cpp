@@ -315,7 +315,7 @@ bi::Dispatcher* bi::Resolver::makeDispatcher(FuncReference* o) {
       variant = dynamic_cast<VariantType*>(dispatcher->type.get());
       assert(variant);
       variant->add((*iter)->result->type.get());
-    } else if (!dispatcher->type->equals(*(*iter)->result->type)) {
+    } else if (!(*iter)->result->type->definitely(*dispatcher->type)) {
       variant = new VariantType(dispatcher->type.release());
       dispatcher->type = variant;
       variant->add((*iter)->result->type.get());

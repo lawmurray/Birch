@@ -24,9 +24,9 @@ bi::VariantType::~VariantType() {
 void bi::VariantType::add(Type* o) {
   Type* o1 = o->strip();
   auto f = [&](Type* type) {
-    return o1->equals(*type);
+    return o1->definitely(*type);
   };
-  if (!o1->equals(*definite)
+  if (!o1->definitely(*definite)
       && !std::any_of(possibles.begin(), possibles.end(), f)) {
     possibles.push_back(o1);
   } else {
