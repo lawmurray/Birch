@@ -90,7 +90,7 @@ void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
     finish(" {");
     in();
     start("return boost::apply_visitor(");
-    middle("visitor_" << o->name << "_" << o->number << "_()");
+    middle("visitor_" << internalise(o->name->str()) << "_" << o->number << "_()");
     i = 0;
     for (auto iter = o->types.begin(); iter != o->types.end(); ++iter) {
       middle(", o" << ++i);
