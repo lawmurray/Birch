@@ -25,7 +25,7 @@ void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
   int i;
   if (!header) {
     start("struct ");
-    middle("visitor_" << o->name << "_" << o->number << '_');
+    middle("visitor_" << internalise(o->name->str()) << "_" << o->number << '_');
     ++inReturn;
     finish(" : public boost::static_visitor<" << o->type << "> {");
     --inReturn;
@@ -71,7 +71,7 @@ void bi::CppDispatcherGenerator::visit(const Dispatcher* o) {
   ++inReturn;
   start(o->type << ' ');
   --inReturn;
-  start("dispatch_" << o->name << "_" << o->number << "_(");
+  start("dispatch_" << internalise(o->name->str()) << "_" << o->number << "_(");
   i = 0;
   for (auto iter = o->types.begin(); iter != o->types.end(); ++iter) {
     if (i > 0) {

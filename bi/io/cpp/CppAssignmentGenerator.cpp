@@ -60,9 +60,5 @@ void bi::CppAssignmentGenerator::visit(const FuncParameter* o) {
 }
 
 void bi::CppAssignmentGenerator::visit(const VarParameter* o) {
-  if (o->type->polymorphic) {
-    middle(o->name << " = new " << o->type << "(*o_." << o->name << ')');
-  } else {
-    middle(o->name << " = o_." << o->name);
-  }
+  middle(o->name << " = o_." << o->name);
 }

@@ -18,12 +18,13 @@ bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
     inDelay(0),
     inLambda(0),
     inVariant(0),
-    inReturn(0) {
+    inReturn(0),
+    inPolymorphic(0) {
   //
 }
 
 void bi::CppBaseGenerator::visit(const Name* o) {
-  middle(internalise(o->str()));
+  middle(o->str());
 }
 
 void bi::CppBaseGenerator::visit(const BooleanLiteral* o) {
@@ -106,7 +107,7 @@ void bi::CppBaseGenerator::visit(const Member* o) {
     middle("nonconst(this)->");
   } else {
     middle(o->left);
-    if (o->left->type->polymorphic && o->left->isMember()) {
+    if (o->left->type->polymorphic) {
       middle("->");
     } else {
       middle('.');
@@ -122,21 +123,16 @@ void bi::CppBaseGenerator::visit(const VarReference* o) {
 
 void bi::CppBaseGenerator::visit(const FuncReference* o) {
   if (o->dispatcher) {
-    middle("dispatch_" << o->dispatcher->name << '_');
+    middle("dispatch_" << internalise(o->dispatcher->name->str()) << '_');
     middle(o->dispatcher->number << "_(" << o->parens << ')');
   } else if (o->isAssign() && *o->name == "<-") {
-    middle(o->getLeft() << " = ");
-    if (o->getLeft()->isMember() && o->getLeft()->type->polymorphic) {
-      middle("new " << o->getRight()->type << '(' << o->getRight() <<')');
-    } else {
-      middle(o->getRight());
-    }
+    middle(o->getLeft() << " = " << o->getRight());
   } else if (o->isBinary() && isTranslatable(o->name->str())) {
     middle(o->getLeft() << ' ' << o->name << ' ' << o->getRight());
   } else if (o->isUnary() && isTranslatable(o->name->str())) {
     middle(o->name << o->getRight());
   } else {
-    middle(o->name << '(' << o->parens << ')');
+    middle(internalise(o->name->str()) << '(' << o->parens << ')');
   }
 }
 
@@ -164,6 +160,10 @@ void bi::CppBaseGenerator::visit(const VarParameter* o) {
 //  }
   if (!o->value->isEmpty()) {
     middle(" = " << o->value);
+  } else if (o->type->polymorphic) {
+    ++inPolymorphic;
+    middle(" = std::make_shared<" << o->type << ">()");
+    --inPolymorphic;
   }
 }
 
@@ -235,6 +235,8 @@ void bi::CppBaseGenerator::visit(const Raw* o) {
 void bi::CppBaseGenerator::visit(const ModelReference* o) {
   if (o->isBuiltin()) {
     genBuiltin(o);
+  } else if (!inPolymorphic && o->polymorphic) {
+    middle("bi::shared_ptr<bi::model::" << o->name << "<>>");
   } else {
     middle("bi::model::" << o->name << "<>");
   }

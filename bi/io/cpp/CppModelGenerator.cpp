@@ -167,7 +167,7 @@ void bi::CppModelGenerator::visit(const FuncParameter* o) {
     if ((o->isBinary() || o->isUnary()) && isTranslatable(o->name->str())) {
       middle("operator" << o->name);
     } else {
-      middle(o->name);
+      middle(internalise(o->name->str()));
     }
 
     /* parameters */

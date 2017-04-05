@@ -111,6 +111,20 @@ std::string bi::internalise(const std::string& name) {
     ops["~>"] = "right_tilde";
     ops["~"] = "tilde";
     ops[".."] = "range";
+    ops["+"] = "add";
+    ops["-"] = "subtract";
+    ops["*"] = "multiply";
+    ops["/"] = "divide";
+    ops["<"] = "lt";
+    ops[">"] = "gt";
+    ops["<="] = "le";
+    ops[">="] = "ge";
+    ops["=="] = "eq";
+    ops["!="] = "ne";
+    ops["!"] = "not";
+    ops["||"] = "or";
+    ops["&&"] = "and";
+
 
     greeks["α"] = "alpha";
     greeks["β"] = "beta";

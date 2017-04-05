@@ -91,5 +91,10 @@ protected:
    * Are we in a return type?
    */
   int inReturn;
+
+  /**
+   * Are we in a polymorphic type?
+   */
+  int inPolymorphic;
 };
 }

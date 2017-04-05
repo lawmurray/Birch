@@ -15,6 +15,8 @@ namespace bi {
  */
 template<class T>
 class shared_ptr {
+  template<class U>
+  friend class shared_ptr;
 public:
   /**
    * Constructor. The pointer is initialised to null.
@@ -22,14 +24,22 @@ public:
   shared_ptr();
 
   /**
-   * Constructor from raw pointer.
+   * Construct from raw pointer.
    */
   shared_ptr(T* ptr);
 
   /**
-   * Constructor from STL smart pointer.
+   * Construct from STL smart pointer.
    */
   shared_ptr(std::shared_ptr<T> ptr);
+
+  /**
+   * Construct from pointer of a derived type.
+   */
+  template<class U>
+  shared_ptr(const shared_ptr<U>& o) : ptr(std::static_pointer_cast<U>(o.ptr)) {
+    //
+  }
 
   /**
    * Copy constructor.
