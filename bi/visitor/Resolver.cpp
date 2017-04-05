@@ -293,7 +293,34 @@ bi::FuncParameter* bi::Resolver::makeLambda(VarParameter* o) {
 }
 
 bi::Dispatcher* bi::Resolver::makeDispatcher(FuncReference* o) {
-  Dispatcher* dispatcher = new Dispatcher(o);
+  Dispatcher* dispatcher = new Dispatcher(o->name);
+
+  /* add functions */
+  dispatcher->add(o->target);
+  for (auto iter = o->possibles.begin(); iter != o->possibles.end(); ++iter) {
+    dispatcher->add(*iter);
+  }
+
+  /* argument types */
+  std::transform(o->parens->begin(), o->parens->end(),
+      std::back_inserter(dispatcher->types), [](const Expression* expr) {
+        return new VariantType(expr->type.get());
+  });
+
+  /* result type */
+  dispatcher->type = o->target->type->accept(&cloner)->accept(this);
+  for (auto iter = o->possibles.begin(); iter != o->possibles.end(); ++iter) {
+    VariantType* variant;
+    if (dispatcher->type->isVariant()) {
+      variant = dynamic_cast<VariantType*>(dispatcher->type.get());
+      assert(variant);
+      variant->add((*iter)->result->type.get());
+    } else if (!dispatcher->type->equals(*(*iter)->result->type)) {
+      variant = new VariantType(dispatcher->type.release());
+      dispatcher->type = variant;
+      variant->add((*iter)->result->type.get());
+    }
+  }
 
   /* reuse an existing, identical dispatcher in the scope if possible */
   if (bottom()->contains(dispatcher)) {

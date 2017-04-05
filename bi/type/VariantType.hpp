@@ -5,6 +5,8 @@
 
 #include "bi/type/Type.hpp"
 
+#include "bi/primitive/unique_ptr.hpp"
+
 #include <list>
 
 namespace bi {
@@ -83,7 +85,7 @@ public:
   /**
    * Definite type.
    */
-  Type* definite;
+  unique_ptr<Type> definite;
 
   /**
    * Possible types.

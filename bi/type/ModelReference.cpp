@@ -84,6 +84,9 @@ bool bi::ModelReference::possibly(const ModelParameter& o) const {
 }
 
 bool bi::ModelReference::possibly(const ModelReference& o) const {
+  /* pre-condition */
+  assert(target && o.target);
+
   return target->canDowncast(o.target) && (!o.assignable || assignable);
 }
 

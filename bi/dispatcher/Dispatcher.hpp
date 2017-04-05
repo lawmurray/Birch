@@ -25,14 +25,19 @@ public:
   /**
    * Constructor.
    *
-   * @param ref Function call.
+   * @param name Name.
    */
-  Dispatcher(FuncReference* ref);
+  Dispatcher(shared_ptr<Name> name);
 
   /**
    * Destructor.
    */
   virtual ~Dispatcher();
+
+  /**
+   * Add a function.
+   */
+  void add(FuncParameter* o);
 
   virtual Dispatcher* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
@@ -55,17 +60,6 @@ public:
   /**
    * Result type.
    */
-  Type* type;
-
-private:
-  /**
-   * Add a function.
-   */
-  void add(FuncParameter* o);
-
-  /**
-   * Do we own the result type?
-   */
-  bool own;
+  bi::unique_ptr<Type> type;
 };
 }

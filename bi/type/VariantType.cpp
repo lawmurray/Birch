@@ -29,6 +29,8 @@ void bi::VariantType::add(Type* o) {
   if (!o1->equals(*definite)
       && !std::any_of(possibles.begin(), possibles.end(), f)) {
     possibles.push_back(o1);
+  } else {
+    delete o;
   }
 }
 

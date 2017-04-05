@@ -190,6 +190,6 @@ bi::Type* bi::Cloner::clone(const TypeList* o) {
 }
 
 bi::Type* bi::Cloner::clone(const VariantType* o) {
-  return new VariantType(o->definite, o->possibles, o->loc, o->assignable,
-      o->polymorphic);
+  return new VariantType(o->definite->accept(this), o->possibles, o->loc,
+      o->assignable, o->polymorphic);
 }
