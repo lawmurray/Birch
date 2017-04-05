@@ -22,10 +22,12 @@ public:
    * @param single Type.
    * @param brackets Brackets.
    * @param loc Location.
-   * @param assignable Is this type writeable?
+   * @param assignable Is this type assignable?
+   * @param polymorphic Is this type polymorphic?
    */
   BracketsType(Type* single, Expression* brackets, shared_ptr<Location> loc =
-      nullptr, const bool assignable = false);
+      nullptr, const bool assignable = false,
+      const bool polymorphic = false);
 
   /**
    * Constructor.

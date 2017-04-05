@@ -22,10 +22,12 @@ public:
    * @param name Name.
    * @param type Type.
    * @param value Initial value.
+   * @param member Is this a member variable?
    * @param loc Location.
    */
   VarParameter(shared_ptr<Name> name, Type* type, Expression* value =
-      new EmptyExpression(), shared_ptr<Location> loc = nullptr);
+      new EmptyExpression(), const bool member = false,
+      shared_ptr<Location> loc = nullptr);
 
   /**
    * Destructor.
@@ -36,6 +38,8 @@ public:
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
+  virtual bool isMember() const;
+
   /**
    * Default/initial value.
    */
@@ -45,6 +49,11 @@ public:
    * If this variable has a lambda type, the function associated with it.
    */
   unique_ptr<Expression> func;
+
+  /**
+   * Is this a member variable?
+   */
+  bool member;
 
   using Expression::definitely;
   using Expression::possibly;

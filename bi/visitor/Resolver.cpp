@@ -3,7 +3,7 @@
  */
 #include "bi/visitor/Resolver.hpp"
 
-#include "bi/visitor/Gatherer.hpp"
+#include "bi/visitor/IsPolymorphic.hpp"
 #include "bi/exception/all.hpp"
 
 #include <sstream>
@@ -64,15 +64,15 @@ bi::Expression* bi::Resolver::modify(Member* o) {
   o->left = o->left->accept(this);
   ModelReference* ref = dynamic_cast<ModelReference*>(o->left->type->strip());
   if (ref) {
+    assert(ref->target);
     membershipScope = ref->target->scope.get();
   } else {
     throw MemberException(o);
   }
   o->right = o->right->accept(this);
   o->type = o->right->type->accept(&cloner)->accept(this);
-  if (o->left->type->assignable) {
-    o->type->accept(&assigner);
-  }
+  o->member = o->right->isMember();
+
   return o;
 }
 
@@ -81,8 +81,8 @@ bi::Expression* bi::Resolver::modify(This* o) {
     throw ThisException(o);
   } else {
     Modifier::modify(o);
-    o->type = new ModelReference(model()->name, new EmptyExpression(),
-        nullptr, true, model());
+    o->type = new ModelReference(model()->name);
+    o->type->accept(this);
   }
   return o;
 }
@@ -127,7 +127,7 @@ bi::Expression* bi::Resolver::modify(FuncReference* o) {
       //throw InvalidAssignmentException(o);
     }
   }
-  if (*o->name != "<-"){
+  if (*o->name != "<-") {
     resolve(o, membershipScope);
     if (o->possibles.size() > 0) {
       o->dispatcher = makeDispatcher(o);
@@ -142,8 +142,11 @@ bi::Expression* bi::Resolver::modify(FuncReference* o) {
 
 bi::Type* bi::Resolver::modify(ModelReference* o) {
   Scope* membershipScope = takeMembershipScope();
+  assert(!membershipScope);
+
   Modifier::modify(o);
-  resolve(o, membershipScope);
+  resolve(o);
+  o->polymorphic = o->target->polymorphic;
   return o;
 }
 
@@ -206,12 +209,22 @@ bi::Type* bi::Resolver::modify(ModelParameter* o) {
   o->parens = o->parens->accept(this);
   o->base = o->base->accept(this);
   o->scope = pop();
+
+  if (o->isLess()) {
+    o->scope->inherit(o->getBase()->scope.get());
+  }
+
   top()->add(o);
   push(o->scope.get());
   models.push(o);
   o->braces = o->braces->accept(this);
   models.pop();
   pop();
+
+  /* determine if this is a polymorphic type */
+  IsPolymorphic aux;
+  o->accept(&aux);
+  o->polymorphic = aux.result;
 
   return o;
 }
@@ -325,8 +338,7 @@ bi::Scope* bi::Resolver::pop() {
   return res;
 }
 
-template<class ReferenceType>
-void bi::Resolver::resolve(ReferenceType* ref, Scope* scope) {
+void bi::Resolver::resolve(VarReference* ref, Scope* scope) {
   if (scope) {
     /* use provided scope, usually a membership scope */
     scope->resolve(ref);
@@ -337,6 +349,36 @@ void bi::Resolver::resolve(ReferenceType* ref, Scope* scope) {
         ++iter) {
       (*iter)->resolve(ref);
     }
+  }
+  if (!ref->target) {
+    throw UnresolvedReferenceException(ref);
+  } else {
+    ref->member = ref->target->isMember();
+  }
+}
+
+void bi::Resolver::resolve(FuncReference* ref, Scope* scope) {
+  if (scope) {
+    /* use provided scope, usually a membership scope */
+    scope->resolve(ref);
+  } else {
+    /* use current stack of scopes */
+    ref->target = nullptr;
+    for (auto iter = scopes.rbegin(); !ref->target && iter != scopes.rend();
+        ++iter) {
+      (*iter)->resolve(ref);
+    }
+  }
+  if (!ref->target) {
+    throw UnresolvedReferenceException(ref);
+  }
+}
+
+void bi::Resolver::resolve(ModelReference* ref) {
+  ref->target = nullptr;
+  for (auto iter = scopes.rbegin(); !ref->target && iter != scopes.rend();
+      ++iter) {
+    (*iter)->resolve(ref);
   }
   if (!ref->target) {
     throw UnresolvedReferenceException(ref);
@@ -374,7 +416,3 @@ bi::ModelParameter* bi::Resolver::model() {
     return models.top();
   }
 }
-
-template void bi::Resolver::resolve(VarReference* ref, Scope* scope);
-template void bi::Resolver::resolve(FuncReference* ref, Scope* scope);
-template void bi::Resolver::resolve(ModelReference* ref, Scope* scope);

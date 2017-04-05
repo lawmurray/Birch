@@ -15,8 +15,7 @@
 bi::CppModelGenerator::CppModelGenerator(std::ostream& base, const int level,
     const bool header) :
     CppBaseGenerator(base, level, header),
-    model(nullptr),
-    inArray(false) {
+    model(nullptr) {
   //
 }
 
@@ -28,7 +27,7 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
       line("template<class Group = MemoryGroup>");
       start("class " << o->name);
       if (o->isLess()) {
-        middle(" : public " << o->base);
+        middle(" : public " << o->getBase()->name << "<Group>");
       }
       finish(" {");
       line("public:");
@@ -36,7 +35,7 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
       line("typedef Group group_type;");
       line("typedef " << o->name << "<Group> value_type;");
       if (o->isLess()) {
-        line("typedef " << o->base << " base_type;");
+        line("typedef " << o->getBase()->name << "<Group> base_type;");
       }
       line("");
     }
@@ -118,18 +117,23 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
 }
 
 void bi::CppModelGenerator::visit(const ModelReference* o) {
-  if (o->isBuiltin()) {
-    genBuiltin(o);
-  } else if (inReturn) {
-    middle(o->name << "<>");
+  if (inReturn) {
+    CppBaseGenerator::visit(o);
   } else {
-    middle(o->name << "<Group>");
+    if (o->isBuiltin()) {
+      genBuiltin(o);
+    } else if (o->polymorphic) {
+      middle("bi::shared_ptr<bi::model::" << o->name << "<Group>>");
+    } else {
+      middle("bi::model::" << o->name << "<Group>");
+    }
   }
 }
 
 void bi::CppModelGenerator::visit(const VarDeclaration* o) {
   if (header) {
-    if (o->param->type->isModel()) {
+    if (o->param->type->isModel() && !o->param->type->polymorphic) {
+      /* use struct-of-arrays */
       start(o->param->type << ' ' << o->param->name);
     } else {
       start("PrimitiveValue<" << o->param->type << ",Group> ");
@@ -147,7 +151,11 @@ void bi::CppModelGenerator::visit(const FuncParameter* o) {
     }
 
     /* return type */
-    start("");
+    if (header && o->isVirtual()) {
+      start("virtual ");
+    } else {
+      start("");
+    }
     ++inReturn;
     middle(o->type << ' ');
     --inReturn;

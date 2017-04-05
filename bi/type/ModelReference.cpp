@@ -6,8 +6,9 @@
 #include "bi/visitor/all.hpp"
 
 bi::ModelReference::ModelReference(shared_ptr<Name> name, Expression* parens,
-    shared_ptr<Location> loc, const bool assignable, ModelParameter* target) :
-    Type(loc, assignable),
+    shared_ptr<Location> loc, const bool assignable, const bool polymorphic,
+    ModelParameter* target) :
+    Type(loc, assignable, polymorphic),
     Named(name),
     Parenthesised(parens),
     Reference(target) {
@@ -58,25 +59,6 @@ bool bi::ModelReference::isModel() const {
   }
 }
 
-bool bi::ModelReference::canUpcast(const ModelReference& o) const {
-  /* pre-condition */
-  assert(target && o.target);
-
-  if (o.target->isEqual()) {
-    const ModelReference* ref =
-        dynamic_cast<const ModelReference*>(o.target->base->strip());
-    return canUpcast(*ref);  // compare with canonical type
-  } else {
-    const ModelReference* ref =
-        dynamic_cast<const ModelReference*>(target->base->strip());
-    return target == o.target || (ref && ref->canUpcast(o));
-  }
-}
-
-bool bi::ModelReference::canDowncast(const ModelReference& o) const {
-  return o.canUpcast(*this);
-}
-
 bool bi::ModelReference::dispatchDefinitely(const Type& o) const {
   return o.definitely(*this);
 }
@@ -86,7 +68,7 @@ bool bi::ModelReference::definitely(const ModelParameter& o) const {
 }
 
 bool bi::ModelReference::definitely(const ModelReference& o) const {
-  return canUpcast(o) && (!o.assignable || assignable);
+  return target->canUpcast(o.target) && (!o.assignable || assignable);
 }
 
 bool bi::ModelReference::definitely(const EmptyType& o) const {
@@ -102,7 +84,7 @@ bool bi::ModelReference::possibly(const ModelParameter& o) const {
 }
 
 bool bi::ModelReference::possibly(const ModelReference& o) const {
-  return canDowncast(o) && (!o.assignable || assignable);
+  return target->canDowncast(o.target) && (!o.assignable || assignable);
 }
 
 bool bi::ModelReference::possibly(const EmptyType& o) const {

@@ -16,9 +16,7 @@ bi::Statement* bi::Cloner::clone(const EmptyStatement* o) {
 }
 
 bi::Type* bi::Cloner::clone(const EmptyType* o) {
-  Type* result = new EmptyType();
-  result->assignable = o->assignable;
-  return result;
+  return new EmptyType(o->assignable, o->polymorphic);
 }
 
 bi::Expression* bi::Cloner::clone(const BooleanLiteral* o) {
@@ -86,7 +84,7 @@ bi::Expression* bi::Cloner::clone(const FuncReference* o) {
 
 bi::Type* bi::Cloner::clone(const ModelReference* o) {
   return new ModelReference(o->name, o->parens->accept(this), o->loc,
-      o->assignable);
+      o->assignable, o->polymorphic);
 }
 
 bi::Prog* bi::Cloner::clone(const ProgReference* o) {
@@ -95,7 +93,7 @@ bi::Prog* bi::Cloner::clone(const ProgReference* o) {
 
 bi::Expression* bi::Cloner::clone(const VarParameter* o) {
   return new VarParameter(o->name, o->type->accept(this),
-      o->value->accept(this), o->loc);
+      o->value->accept(this), o->member, o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const FuncParameter* o) {
@@ -159,35 +157,39 @@ bi::Statement* bi::Cloner::clone(const ProgDeclaration* o) {
 }
 
 bi::Type* bi::Cloner::clone(const AssignableType* o) {
-  return new AssignableType(o->single->accept(this), o->loc, o->assignable);
+  return new AssignableType(o->single->accept(this), o->loc, o->assignable,
+      o->polymorphic);
 }
 
 bi::Type* bi::Cloner::clone(const BracketsType* o) {
   return new BracketsType(o->single->accept(this), o->brackets->accept(this),
-      o->loc, o->assignable);
+      o->loc, o->assignable, o->polymorphic);
 }
 
 bi::Type* bi::Cloner::clone(const ParenthesesType* o) {
-  return new ParenthesesType(o->single->accept(this), o->loc, o->assignable);
+  return new ParenthesesType(o->single->accept(this), o->loc, o->assignable,
+      o->polymorphic);
 }
 
 bi::Type* bi::Cloner::clone(const DelayType* o) {
   return new DelayType(o->left->accept(this), o->right->accept(this), o->loc,
-      o->assignable);
+      o->assignable, o->polymorphic);
 }
 
 bi::Type* bi::Cloner::clone(const LambdaType* o) {
   return new LambdaType(o->parens->accept(this), o->result->accept(this),
-      o->loc, o->assignable);
+      o->loc, o->assignable, o->polymorphic);
 }
 
 bi::Type* bi::Cloner::clone(const TypeList* o) {
   TypeList* result = new TypeList(o->head->accept(this),
       o->tail->accept(this), o->loc);
   result->assignable = o->assignable;
+  result->polymorphic = o->polymorphic;
   return result;
 }
 
 bi::Type* bi::Cloner::clone(const VariantType* o) {
-  return new VariantType(o->definite, o->possibles, o->loc, o->assignable);
+  return new VariantType(o->definite, o->possibles, o->loc, o->assignable,
+      o->polymorphic);
 }

@@ -28,10 +28,5 @@ protected:
    * The model being generated.
    */
   const ModelParameter* model;
-
-  /**
-   * Currently generating type for an array?
-   */
-  bool inArray;
 };
 }

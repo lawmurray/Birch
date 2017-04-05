@@ -103,10 +103,17 @@ void bi::CppBaseGenerator::visit(const Member* o) {
   const This* left = dynamic_cast<const This*>(o->left.get());
   if (left) {
     // tidier this way
-    middle("nonconst(this)->" << o->right);
+    middle("nonconst(this)->");
   } else {
-    middle(o->left << '.' << o->right);
+    middle(o->left);
+    if (o->left->type->polymorphic && o->left->isMember()) {
+      middle("->");
+    } else {
+      middle('.');
+    }
   }
+  middle(o->right);
+
 }
 
 void bi::CppBaseGenerator::visit(const VarReference* o) {
@@ -118,7 +125,12 @@ void bi::CppBaseGenerator::visit(const FuncReference* o) {
     middle("dispatch_" << o->dispatcher->name << '_');
     middle(o->dispatcher->number << "_(" << o->parens << ')');
   } else if (o->isAssign() && *o->name == "<-") {
-    middle(o->getLeft() << " = " << o->getRight());
+    middle(o->getLeft() << " = ");
+    if (o->getLeft()->isMember() && o->getLeft()->type->polymorphic) {
+      middle("new " << o->getRight()->type << '(' << o->getRight() <<')');
+    } else {
+      middle(o->getRight());
+    }
   } else if (o->isBinary() && isTranslatable(o->name->str())) {
     middle(o->getLeft() << ' ' << o->name << ' ' << o->getRight());
   } else if (o->isUnary() && isTranslatable(o->name->str())) {

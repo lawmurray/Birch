@@ -4,6 +4,8 @@
 #pragma once
 
 #include "bi/data/MemoryGroup.hpp"
+#include "bi/primitive/shared_ptr.hpp"
+#include "bi/primitive/unique_ptr.hpp"
 
 namespace bi {
 /**
@@ -113,6 +115,12 @@ public:
   operator const Type&() const;
 
   /**
+   * Member access.
+   */
+  Type& operator->();
+  const Type& operator->() const;
+
+  /**
    * Underlying buffer.
    */
   Type* ptr;
@@ -127,6 +135,26 @@ public:
    */
   bool own;
 };
+
+template<class T>
+T& operator*(PrimitiveValue<shared_ptr<T>,bi::MemoryGroup>& o) {
+  return **o.ptr;
+}
+
+template<class T>
+const T& operator*(const PrimitiveValue<shared_ptr<T>,bi::MemoryGroup>& o) {
+  return **o.ptr;
+}
+
+template<class T>
+T& operator*(PrimitiveValue<unique_ptr<T>,bi::MemoryGroup>& o) {
+  return **o.ptr;
+}
+
+template<class T>
+const T& operator*(const PrimitiveValue<unique_ptr<T>,bi::MemoryGroup>& o) {
+  return **o.ptr;
+}
 }
 
 #include "bi/data/copy.hpp"
@@ -253,6 +281,16 @@ bi::PrimitiveValue<Type,bi::MemoryGroup>::operator Type&() {
 
 template<class Type>
 bi::PrimitiveValue<Type,bi::MemoryGroup>::operator const Type&() const {
+  return *ptr;
+}
+
+template<class Type>
+Type& bi::PrimitiveValue<Type,bi::MemoryGroup>::operator->() {
+  return *ptr;
+}
+
+template<class Type>
+const Type& bi::PrimitiveValue<Type,bi::MemoryGroup>::operator->() const {
   return *ptr;
 }
 

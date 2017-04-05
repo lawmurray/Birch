@@ -9,7 +9,6 @@
 %code {
   #include "expression/all.hpp"
   #include "program/all.hpp"
-  #include "statement/all.hpp"
   #include "type/all.hpp"
 
   #include <sstream>
@@ -48,7 +47,8 @@
   bi::Statement* valStatement;
 }
 
-%token <valString> IMPORT PROG MODEL FUNC LAMBDA IF ELSE WHILE CPP HPP THIS
+%token <valString> IMPORT PROG MODEL VIRTUAL FUNC LAMBDA
+%token <valString> IF ELSE WHILE CPP HPP THIS
 %token <valString> DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE RAW NAME
 %token <valBool> BOOL_LITERAL
 %token <valInt> INT_LITERAL
@@ -72,7 +72,8 @@
 %type <valExpression> result result_list results optional_results
 %type <valExpression> argument_list arguments optional_arguments
 %type <valExpression> var_reference var_parameter var_parameter_with_value
-%type <valExpression> func_reference func_parameter
+%type <valExpression> member_parameter member_parameter_with_value
+%type <valExpression> func_reference func_parameter op_parameter virtual_parameter
 %type <valProg> prog_parameter
 
 %type <valType> model_reference model_parameter
@@ -93,7 +94,8 @@
 %type <valExpression> condition_expression assignment_expression
 %type <valExpression> expression_list expression
 
-%type <valStatement> var_declaration func_declaration
+%type <valStatement> var_declaration member_declaration
+%type <valStatement> func_declaration op_declaration virtual_declaration
 %type <valStatement> model_declaration prog_declaration
 %type <valStatement> import cpp hpp expression_statement if while
 %type <valStatement> statement statements optional_statements
@@ -204,20 +206,36 @@ double_braces
  ***************************************************************************/
 
 var_parameter
-    : name ':' type  { $$ = new bi::VarParameter($1, $3, make_empty(), make_loc(@$)); }
-    | ':' type       { $$ = new bi::VarParameter(new bi::Name(), $2, make_empty(), make_loc(@$)); }
+    : name ':' type  { $$ = new bi::VarParameter($1, $3, make_empty(), false, make_loc(@$)); }
+    | ':' type       { $$ = new bi::VarParameter(new bi::Name(), $2, make_empty(), false, make_loc(@$)); }
     ;
     
 var_parameter_with_value
     : var_parameter
     | name ':' type LEFT_OP expression  { $$ = new bi::VarParameter($1, $3, $5, make_loc(@$)); }
     ;
+
+member_parameter
+    : name ':' type  { $$ = new bi::VarParameter($1, $3, make_empty(), true, make_loc(@$)); }
+    ;
+    
+member_parameter_with_value
+    : member_parameter
+    | name ':' type LEFT_OP expression  { $$ = new bi::VarParameter($1, $3, $5, true, make_loc(@$)); }
+    ;
     
 func_parameter
-    : name parameters optional_results optional_braces                                          { $$ = new bi::FuncParameter($1, $2, $3, $4, bi::FUNCTION, make_loc(@$)); }
-    | '(' var_parameter assignment_operator var_parameter ')' optional_results optional_braces  { $$ = new bi::FuncParameter($2, $3, $4, $6, $7, bi::ASSIGN_OPERATOR, make_loc(@$)); }
+    : name parameters optional_results optional_braces  { $$ = new bi::FuncParameter($1, $2, $3, $4, bi::FUNCTION, make_loc(@$)); }
+    ;
+    
+op_parameter
+    : '(' var_parameter assignment_operator var_parameter ')' optional_results optional_braces  { $$ = new bi::FuncParameter($2, $3, $4, $6, $7, bi::ASSIGN_OPERATOR, make_loc(@$)); }
     | '(' var_parameter binary_operator var_parameter ')' optional_results optional_braces      { $$ = new bi::FuncParameter($2, $3, $4, $6, $7, bi::BINARY_OPERATOR, make_loc(@$)); }
     | '(' unary_operator var_parameter ')' optional_results optional_braces                     { $$ = new bi::FuncParameter($2, $3, $5, $6, bi::UNARY_OPERATOR, make_loc(@$)); }
+    ;
+
+virtual_parameter
+    : name parameters optional_results optional_braces  { $$ = new bi::FuncParameter($1, $2, $3, $4, bi::VIRTUAL_FUNCTION, make_loc(@$)); }
     ;
 
 model_parameter
@@ -531,10 +549,22 @@ var_declaration
     : var_parameter_with_value ';'  { $$ = new bi::VarDeclaration(dynamic_cast<bi::VarParameter*>($1), make_loc(@$)); }
     ;
 
+member_declaration
+    : member_parameter_with_value ';'  { $$ = new bi::VarDeclaration(dynamic_cast<bi::VarParameter*>($1), make_loc(@$)); }
+    ;
+
 func_declaration
     : FUNC func_parameter  { $$ = new bi::FuncDeclaration(dynamic_cast<bi::FuncParameter*>($2), make_loc(@$)); }
     ;
-    
+
+op_declaration
+    : FUNC op_parameter  { $$ = new bi::FuncDeclaration(dynamic_cast<bi::FuncParameter*>($2), make_loc(@$)); }
+    ;
+
+virtual_declaration
+    : VIRTUAL FUNC virtual_parameter  { $$ = new bi::FuncDeclaration(dynamic_cast<bi::FuncParameter*>($3), make_loc(@$)); }
+    ;
+
 model_declaration
     : MODEL model_parameter  { $$ = new bi::ModelDeclaration(dynamic_cast<bi::ModelParameter*>($2), make_loc(@$)); } 
     ;
@@ -585,8 +615,9 @@ optional_statements
     ;
 
 model_statement
-    : var_declaration
-    | func_declaration ///@todo Don't allow operators to be declared in models
+    : member_declaration
+    | func_declaration
+    | virtual_declaration
     | hpp
     ;
     
@@ -610,6 +641,7 @@ file_statement
     | hpp
     | var_declaration
     | func_declaration
+    | op_declaration
     | prog_declaration
     | model_declaration
     ;

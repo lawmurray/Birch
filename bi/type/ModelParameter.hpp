@@ -52,6 +52,21 @@ public:
   bool isLess() const;
   bool isEqual() const;
 
+  /**
+   * Get the base type.
+   */
+  const ModelParameter* getBase() const;
+
+  /**
+   * Is this type equal to or less than @p o by inheritance?
+   */
+  bool canUpcast(const ModelParameter* o) const;
+
+  /**
+   * Is this type equal to or greater than @p o by inheritance?
+   */
+  bool canDowncast(const ModelParameter* o) const;
+
   using Type::definitely;
   using Type::possibly;
 

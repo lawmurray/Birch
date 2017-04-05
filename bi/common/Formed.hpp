@@ -12,7 +12,8 @@ enum SignatureForm {
   BINARY_OPERATOR,
   UNARY_OPERATOR,
   ASSIGN_OPERATOR,
-  LAMBDA_FUNCTION
+  LAMBDA_FUNCTION,
+  VIRTUAL_FUNCTION
 };
 
 /**
@@ -53,6 +54,11 @@ public:
    * Is this a lambda function?
    */
   bool isLambda() const;
+
+  /**
+   * Is this a virtual function?
+   */
+  bool isVirtual() const;
 
   /**
    * Form.

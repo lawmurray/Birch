@@ -33,9 +33,11 @@ public:
    * Constructor.
    *
    * @param loc Location.
-   * @param assignable Is this type writeable?
+   * @param assignable Is this type assignable?
+   * @param polymorphic Is this type polymorphic?
    */
-  Type(shared_ptr<Location> loc = nullptr, const bool assignable = false);
+  Type(shared_ptr<Location> loc = nullptr, const bool assignable = false,
+      const bool polymorphic = false);
 
   /**
    * Destructor.
@@ -127,6 +129,11 @@ public:
    * Is this type assignable?
    */
   bool assignable;
+
+  /**
+   * Is this type polymorphic?
+   */
+  bool polymorphic;
 
   /*
    * Double-dispatch partial order comparisons.

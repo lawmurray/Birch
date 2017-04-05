@@ -16,10 +16,10 @@ public:
   /**
    * Constructor.
    *
-   * @param loc Location.
-   * @param assignable Is this type writeable?
+   * @param assignable Is this type assignable?
+   * @param polymorphic Is this type polymorphic?
    */
-  EmptyType(shared_ptr<Location> loc = nullptr, const bool assignable = false);
+  EmptyType(const bool assignable = false, const bool polymorphic = false);
 
   /**
    * Destructor.

@@ -103,16 +103,29 @@ protected:
   Scope* pop();
 
   /**
-   * Resolve a reference.
-   *
-   * @tparam ReferenceType Reference type.
+   * Resolve a variable reference.
    *
    * @param ref The reference.
    * @param scope The membership scope, if it is to be used for lookup,
    * otherwise the containing scope is used.
    */
-  template<class ReferenceType>
-  void resolve(ReferenceType* ref, Scope* scope = nullptr);
+  void resolve(VarReference* ref, Scope* scope = nullptr);
+
+  /**
+   * Resolve a function reference.
+   *
+   * @param ref The reference.
+   * @param scope The membership scope, if it is to be used for lookup,
+   * otherwise the containing scope is used.
+   */
+  void resolve(FuncReference* ref, Scope* scope = nullptr);
+
+  /**
+   * Resolve a model reference.
+   *
+   * @param ref The reference.
+   */
+  void resolve(ModelReference* ref);
 
   /**
    * Defer visit.

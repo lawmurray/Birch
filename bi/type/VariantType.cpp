@@ -10,8 +10,8 @@
 
 bi::VariantType::VariantType(Type* definite,
     const std::list<Type*>& possibles, shared_ptr<Location> loc,
-    const bool assignable) :
-    Type(loc, assignable),
+    const bool assignable, const bool polymorphic) :
+    Type(loc, assignable, polymorphic),
     definite(definite),
     possibles(possibles) {
   //

@@ -6,8 +6,8 @@
 #include "bi/visitor/all.hpp"
 
 bi::AssignableType::AssignableType(Type* single, shared_ptr<Location> loc,
-    const bool assignable) :
-    Type(loc, assignable),
+    const bool assignable, const bool polymorphic) :
+    Type(loc, assignable, polymorphic),
     TypeUnary(single) {
   //
 }

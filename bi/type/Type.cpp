@@ -7,9 +7,11 @@
 
 #include <cassert>
 
-bi::Type::Type(shared_ptr<Location> loc, const bool assignable) :
+bi::Type::Type(shared_ptr<Location> loc, const bool assignable,
+    const bool polymorphic) :
     Located(loc),
-    assignable(assignable) {
+    assignable(assignable),
+    polymorphic(polymorphic) {
   //
 }
 

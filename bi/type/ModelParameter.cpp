@@ -58,6 +58,29 @@ bool bi::ModelParameter::isEqual() const {
   return !base->isEmpty() && *op == "=";
 }
 
+const bi::ModelParameter* bi::ModelParameter::getBase() const {
+  const ModelReference* ref =
+      dynamic_cast<const ModelReference*>(base->strip());
+  assert(ref && ref->target);
+  return ref->target;
+}
+
+bool bi::ModelParameter::canUpcast(const ModelParameter* o) const {
+  if (o->isEqual()) {
+    return canUpcast(o->getBase());
+  } else if (isEqual()) {
+    return getBase()->canUpcast(o);
+  } else if (isLess()) {
+    return this == o || getBase()->canUpcast(o);
+  } else {
+    return this == o;
+  }
+}
+
+bool bi::ModelParameter::canDowncast(const ModelParameter* o) const {
+  return o->canUpcast(this);
+}
+
 bool bi::ModelParameter::dispatchDefinitely(const Type& o) const {
   return o.definitely(*this);
 }

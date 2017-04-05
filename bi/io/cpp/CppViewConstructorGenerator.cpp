@@ -22,7 +22,7 @@ void bi::CppViewConstructorGenerator::visit(const ModelParameter* o) {
     in();
     in();
     if (o->isLess()) {
-      finish("base_type(o, frame, view),");
+      line("base_type(o, frame, view),");
     }
     start("group(o.group)");
     *this << o->braces;

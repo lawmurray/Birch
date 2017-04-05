@@ -20,10 +20,12 @@ public:
    *
    * @param single Type in parentheses.
    * @param loc Location.
-   * @param assignable Is this type writeable?
+   * @param assignable Is this type assignable?
+   * @param polymorphic Is this type polymorphic?
    */
   ParenthesesType(Type* single, shared_ptr<Location> loc = nullptr,
-      const bool assignable = false);
+      const bool assignable = false,
+      const bool polymorphic = false);
 
   /**
    * Destructor.

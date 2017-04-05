@@ -36,6 +36,13 @@ public:
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
+  virtual bool isMember() const;
+
+  /**
+   * Is this a member variable?
+   */
+  bool member;
+
   using Expression::definitely;
   using Expression::possibly;
 

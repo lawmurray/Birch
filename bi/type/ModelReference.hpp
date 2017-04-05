@@ -27,12 +27,14 @@ public:
    * @param name Name.
    * @param parens Parentheses.
    * @param loc Location.
-   * @param assignable Is this type writeable?
+   * @param assignable Is this type assignable?
+   * @param polymorphic Is this type polymorphic?
    * @param target Target.
    */
   ModelReference(shared_ptr<Name> name, Expression* parens =
       new EmptyExpression(), shared_ptr<Location> loc = nullptr,
-      const bool assignable = false, ModelParameter* target = nullptr);
+      const bool assignable = false,
+      const bool polymorphic = false, ModelParameter* target = nullptr);
 
   /**
    * Constructor.
@@ -48,16 +50,6 @@ public:
 
   virtual bool isBuiltin() const;
   virtual bool isModel() const;
-
-  /**
-   * Is this type equal to or less than @p o by inheritance?
-   */
-  bool canUpcast(const ModelReference& o) const;
-
-  /**
-   * Is this type greater than @p o by inheritance?
-   */
-  bool canDowncast(const ModelReference& o) const;
 
   virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);

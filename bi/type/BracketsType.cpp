@@ -6,8 +6,8 @@
 #include "bi/visitor/all.hpp"
 
 bi::BracketsType::BracketsType(Type* single, Expression* brackets,
-    shared_ptr<Location> loc, const bool assignable) :
-    Type(loc, assignable),
+    shared_ptr<Location> loc, const bool assignable, const bool polymorphic) :
+    Type(loc, assignable, polymorphic),
     TypeUnary(single),
     Bracketed(brackets),
     ndims(brackets->tupleSize()) {

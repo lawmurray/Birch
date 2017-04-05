@@ -5,8 +5,8 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::EmptyType::EmptyType(shared_ptr<Location> loc, const bool assignable) :
-    Type(loc, assignable) {
+bi::EmptyType::EmptyType(const bool assignable, const bool polymorphic) :
+    Type(nullptr, assignable, polymorphic) {
   //
 }
 
