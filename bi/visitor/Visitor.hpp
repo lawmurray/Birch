@@ -64,7 +64,6 @@ public:
   virtual void visit(const ModelDeclaration* o);
   virtual void visit(const ProgDeclaration* o);
 
-  virtual void visit(const AssignableType* o);
   virtual void visit(const BracketsType* o);
   virtual void visit(const ParenthesesType* o);
   virtual void visit(const DelayType* o);

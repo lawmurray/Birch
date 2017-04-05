@@ -59,7 +59,6 @@ public:
   virtual bool possiblyAny(const Type& o) const;
 
   virtual bool dispatchDefinitely(const Type& o) const;
-  virtual bool definitely(const AssignableType& o) const;
   virtual bool definitely(const BracketsType& o) const;
   virtual bool definitely(const EmptyType& o) const;
   virtual bool definitely(const LambdaType& o) const;
@@ -71,7 +70,6 @@ public:
   virtual bool definitely(const VariantType& o) const;
 
   virtual bool dispatchPossibly(const Type& o) const;
-  virtual bool possibly(const AssignableType& o) const;
   virtual bool possibly(const BracketsType& o) const;
   virtual bool possibly(const EmptyType& o) const;
   virtual bool possibly(const LambdaType& o) const;

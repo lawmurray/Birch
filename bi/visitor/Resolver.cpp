@@ -251,12 +251,6 @@ bi::Statement* bi::Resolver::modify(Loop* o) {
   return o;
 }
 
-bi::Type* bi::Resolver::modify(AssignableType* o) {
-  Modifier::modify(o);
-  o->accept(&assigner);
-  return o;
-}
-
 bi::FuncParameter* bi::Resolver::makeLambda(VarParameter* o) {
   LambdaType* type = dynamic_cast<LambdaType*>(o->type->strip());
   assert(type);

@@ -56,8 +56,6 @@ public:
   virtual Statement* modify(Conditional* o);
   virtual Statement* modify(Loop* o);
 
-  virtual Type* modify(AssignableType* o);
-
 protected:
   /**
    * Make a function associated with a variable of lambda type.

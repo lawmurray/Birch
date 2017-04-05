@@ -5,7 +5,6 @@
  */
 #pragma once
 
-#include "bi/type/AssignableType.hpp"
 #include "bi/type/BracketsType.hpp"
 #include "bi/type/EmptyType.hpp"
 #include "bi/type/LambdaType.hpp"

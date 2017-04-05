@@ -78,7 +78,7 @@
 
 %type <valType> model_reference model_parameter
 %type <valType> brackets_type parens_type primary_type
-%type <valType> assignable_type delay_type lambda_type
+%type <valType> delay_type lambda_type
 %type <valType> type_list type
 %type <valType> type_parameter_list type_parameters
 %type <valType> result_type optional_result_type
@@ -352,13 +352,8 @@ brackets_type
     | primary_type brackets  { $$ = new bi::BracketsType($1, $2, make_loc(@$)); }
     ;
 
-assignable_type
-    : brackets_type
-    | brackets_type '!'  { $$ = new bi::AssignableType($1, make_loc(@$)); }
-    ;
-
 lambda_type
-    : assignable_type
+    : brackets_type
     | LAMBDA type_parameters optional_result_type  { $$ = new bi::LambdaType($2, $3, make_loc(@$)); }
     ;
 

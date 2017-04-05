@@ -55,10 +55,6 @@ bool bi::ParenthesesType::dispatchDefinitely(const Type& o) const {
   return o.definitely(*this) || o.definitely(*single);
 }
 
-bool bi::ParenthesesType::definitely(const AssignableType& o) const {
-  return single->definitely(o);
-}
-
 bool bi::ParenthesesType::definitely(const BracketsType& o) const {
   return single->definitely(o);
 }
@@ -97,10 +93,6 @@ bool bi::ParenthesesType::definitely(const VariantType& o) const {
 
 bool bi::ParenthesesType::dispatchPossibly(const Type& o) const {
   return o.possibly(*this) || o.possibly(*single);
-}
-
-bool bi::ParenthesesType::possibly(const AssignableType& o) const {
-  return single->possibly(o);
 }
 
 bool bi::ParenthesesType::possibly(const BracketsType& o) const {

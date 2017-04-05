@@ -156,11 +156,6 @@ bi::Statement* bi::Cloner::clone(const ProgDeclaration* o) {
       dynamic_cast<ProgParameter*>(o->param->accept(this)), o->loc);
 }
 
-bi::Type* bi::Cloner::clone(const AssignableType* o) {
-  return new AssignableType(o->single->accept(this), o->loc, o->assignable,
-      o->polymorphic);
-}
-
 bi::Type* bi::Cloner::clone(const BracketsType* o) {
   return new BracketsType(o->single->accept(this), o->brackets->accept(this),
       o->loc, o->assignable, o->polymorphic);

@@ -74,10 +74,6 @@ bool bi::VariantType::dispatchDefinitely(const Type& o) const {
       && std::all_of(possibles.begin(), possibles.end(), f);
 }
 
-bool bi::VariantType::definitely(const AssignableType& o) const {
-  return definitelyAll(o);
-}
-
 bool bi::VariantType::definitely(const BracketsType& o) const {
   return definitelyAll(o);
 }
@@ -120,10 +116,6 @@ bool bi::VariantType::dispatchPossibly(const Type& o) const {
   };
   return definite->dispatchPossibly(o)
       || std::any_of(possibles.begin(), possibles.end(), f);
-}
-
-bool bi::VariantType::possibly(const AssignableType& o) const {
-  return possiblyAny(o);
 }
 
 bool bi::VariantType::possibly(const BracketsType& o) const {

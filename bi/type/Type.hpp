@@ -10,7 +10,6 @@ class Cloner;
 class Modifier;
 class Visitor;
 
-class AssignableType;
 class BracketsType;
 class EmptyType;
 template<class T> class Iterator;
@@ -140,7 +139,6 @@ public:
    */
   virtual bool definitely(const Type& o) const;
   virtual bool dispatchDefinitely(const Type& o) const = 0;
-  virtual bool definitely(const AssignableType& o) const;
   virtual bool definitely(const BracketsType& o) const;
   virtual bool definitely(const EmptyType& o) const;
   virtual bool definitely(const LambdaType& o) const;
@@ -153,7 +151,6 @@ public:
 
   virtual bool possibly(const Type& o) const;
   virtual bool dispatchPossibly(const Type& o) const = 0;
-  virtual bool possibly(const AssignableType& o) const;
   virtual bool possibly(const BracketsType& o) const;
   virtual bool possibly(const EmptyType& o) const;
   virtual bool possibly(const LambdaType& o) const;

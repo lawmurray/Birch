@@ -71,10 +71,6 @@ bool bi::Type::definitely(const Type& o) const {
   return o.dispatchDefinitely(*this);
 }
 
-bool bi::Type::definitely(const AssignableType& o) const {
-  return false;
-}
-
 bool bi::Type::definitely(const BracketsType& o) const {
   return false;
 }
@@ -113,10 +109,6 @@ bool bi::Type::definitely(const VariantType& o) const {
 
 bool bi::Type::possibly(const Type& o) const {
   return o.dispatchPossibly(*this);
-}
-
-bool bi::Type::possibly(const AssignableType& o) const {
-  return false;
 }
 
 bool bi::Type::possibly(const BracketsType& o) const {

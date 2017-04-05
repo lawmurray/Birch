@@ -99,7 +99,6 @@ birchc_SOURCES = \
   bi/statement/Loop.cpp \
   bi/statement/Raw.cpp \
   bi/statement/Statement.cpp \
-  bi/type/AssignableType.cpp \
   bi/type/BracketsType.cpp \
   bi/type/DelayType.cpp \
   bi/type/EmptyType.cpp \

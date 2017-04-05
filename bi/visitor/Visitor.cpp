@@ -172,10 +172,6 @@ void bi::Visitor::visit(const ProgDeclaration* o) {
   o->param->accept(this);
 }
 
-void bi::Visitor::visit(const AssignableType* o) {
-  o->single->accept(this);
-}
-
 void bi::Visitor::visit(const BracketsType* o) {
   o->single->accept(this);
   o->brackets->accept(this);
