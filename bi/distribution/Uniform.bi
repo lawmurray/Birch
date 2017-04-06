@@ -27,19 +27,19 @@ function Uniform(l:Real, u:Real) -> m:Uniform {
 /**
  * Simulate.
  */
-function ~m:Uniform -> x:Real {
+function (x:Real <~ m:Uniform) {
   cpp {{
   x = std::uniform_real_distribution<double>(m.l, m.u)(rng);
   }}
 }
 
 /**
- * Evaluate pdf.
+ * Observe.
  */
-function x:Real ~> m:Uniform -> l:Real {
+function (x:Real ~> m:Uniform) -> l:Real {
   if (x >= m.l && x <= m.u) {
-    l <- 1.0/(m.u - m.l);
+    l <- log(1.0/(m.u - m.l));
   } else {
-    l <- 0.0;
+    l <- log(0.0);
   }
 }

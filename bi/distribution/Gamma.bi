@@ -28,23 +28,16 @@ function Gamma(k:Real, θ:Real) -> m:Gamma {
 /**
  * Simulate.
  */
-function ~m:Gamma -> x:Real {
+function (x:Real <~ m:Gamma) {
   cpp {{
   x = std::gamma_distribution<double>(m.k, m.θ)(rng);
   }}
 }
 
 /**
- * Evaluate pdf.
+ * Observe.
  */
-function x:Real ~> m:Gamma -> l:Real {
-  l <- exp(log(x ~> m));
-}
-
-/**
- * Evaluate log-pdf.
- */
-function log(x:Real ~> m:Gamma) -> ll:Real {
+function (x:Real ~> m:Gamma) -> l:Real {
   logZ:Real <- lgamma(m.k) + m.k*log(m.θ);
-  ll <- (m.k - 1.0)*log(x) - x/m.θ - logZ;
+  l <- (m.k - 1.0)*log(x) - x/m.θ - logZ;
 }

@@ -50,73 +50,73 @@ function Integer32(x:Integer64) -> y:Integer32 {
 /**
  * Real64 operators
  */
-function x:Real64 + y:Real64 -> z:Real64;
-function x:Real64 - y:Real64 -> z:Real64;
-function x:Real64 * y:Real64 -> z:Real64;
-function x:Real64 / y:Real64 -> z:Real64;
-function +x:Real64 -> z:Real64;
-function -x:Real64 -> z:Real64;
-function x:Real64 > y:Real64 -> z:Boolean;
-function x:Real64 < y:Real64 -> z:Boolean;
-function x:Real64 >= y:Real64 -> z:Boolean;
-function x:Real64 <= y:Real64 -> z:Boolean;
-function x:Real64 == y:Real64 -> z:Boolean;
-function x:Real64 != y:Real64 -> z:Boolean;
+function (x:Real64 + y:Real64) -> z:Real64;
+function (x:Real64 - y:Real64) -> z:Real64;
+function (x:Real64 * y:Real64) -> z:Real64;
+function (x:Real64 / y:Real64) -> z:Real64;
+function (+x:Real64) -> z:Real64;
+function (-x:Real64) -> z:Real64;
+function (x:Real64 > y:Real64) -> z:Boolean;
+function (x:Real64 < y:Real64) -> z:Boolean;
+function (x:Real64 >= y:Real64) -> z:Boolean;
+function (x:Real64 <= y:Real64) -> z:Boolean;
+function (x:Real64 == y:Real64) -> z:Boolean;
+function (x:Real64 != y:Real64) -> z:Boolean;
 
 /**
  * Real32 operators
  */
-function x:Real32 + y:Real32 -> z:Real32;
-function x:Real32 - y:Real32 -> z:Real32;
-function x:Real32 * y:Real32 -> z:Real32;
-function x:Real32 / y:Real32 -> z:Real32;
-function +x:Real32 -> z:Real32;
-function -x:Real32 -> z:Real32;
-function x:Real32 > y:Real32 -> z:Boolean;
-function x:Real32 < y:Real32 -> z:Boolean;
-function x:Real32 >= y:Real32 -> z:Boolean;
-function x:Real32 <= y:Real32 -> z:Boolean;
-function x:Real32 == y:Real32 -> z:Boolean;
-function x:Real32 != y:Real32 -> z:Boolean;
+function (x:Real32 + y:Real32) -> z:Real32;
+function (x:Real32 - y:Real32) -> z:Real32;
+function (x:Real32 * y:Real32) -> z:Real32;
+function (x:Real32 / y:Real32) -> z:Real32;
+function (+x:Real32) -> z:Real32;
+function (-x:Real32) -> z:Real32;
+function (x:Real32 > y:Real32) -> z:Boolean;
+function (x:Real32 < y:Real32) -> z:Boolean;
+function (x:Real32 >= y:Real32) -> z:Boolean;
+function (x:Real32 <= y:Real32) -> z:Boolean;
+function (x:Real32 == y:Real32) -> z:Boolean;
+function (x:Real32 != y:Real32) -> z:Boolean;
 
 /**
  * Integer64 operators
  */
-function x:Integer64 + y:Integer64 -> z:Integer64;
-function x:Integer64 - y:Integer64 -> z:Integer64;
-function x:Integer64 * y:Integer64 -> z:Integer64;
-function x:Integer64 / y:Integer64 -> z:Integer64;
-function +x:Integer64 -> z:Integer64;
-function -x:Integer64 -> z:Integer64;
-function x:Integer64 > y:Integer64 -> z:Boolean;
-function x:Integer64 < y:Integer64 -> z:Boolean;
-function x:Integer64 >= y:Integer64 -> z:Boolean;
-function x:Integer64 <= y:Integer64 -> z:Boolean;
-function x:Integer64 == y:Integer64 -> z:Boolean;
-function x:Integer64 != y:Integer64 -> z:Boolean;
+function (x:Integer64 + y:Integer64) -> z:Integer64;
+function (x:Integer64 - y:Integer64) -> z:Integer64;
+function (x:Integer64 * y:Integer64) -> z:Integer64;
+function (x:Integer64 / y:Integer64) -> z:Integer64;
+function (+x:Integer64) -> z:Integer64;
+function (-x:Integer64) -> z:Integer64;
+function (x:Integer64 > y:Integer64) -> z:Boolean;
+function (x:Integer64 < y:Integer64) -> z:Boolean;
+function (x:Integer64 >= y:Integer64) -> z:Boolean;
+function (x:Integer64 <= y:Integer64) -> z:Boolean;
+function (x:Integer64 == y:Integer64) -> z:Boolean;
+function (x:Integer64 != y:Integer64) -> z:Boolean;
 
 /**
  * Integer32 operators
  */
-function x:Integer32 + y:Integer32 -> z:Integer32;
-function x:Integer32 - y:Integer32 -> z:Integer32;
-function x:Integer32 * y:Integer32 -> z:Integer32;
-function x:Integer32 / y:Integer32 -> z:Integer32;
-function +x:Integer32 -> z:Integer32;
-function -x:Integer32 -> z:Integer32;
-function x:Integer32 > y:Integer32 -> z:Boolean;
-function x:Integer32 < y:Integer32 -> z:Boolean;
-function x:Integer32 >= y:Integer32 -> z:Boolean;
-function x:Integer32 <= y:Integer32 -> z:Boolean;
-function x:Integer32 == y:Integer32 -> z:Boolean;
-function x:Integer32 != y:Integer32 -> z:Boolean;
+function (x:Integer32 + y:Integer32) -> z:Integer32;
+function (x:Integer32 - y:Integer32) -> z:Integer32;
+function (x:Integer32 * y:Integer32) -> z:Integer32;
+function (x:Integer32 / y:Integer32) -> z:Integer32;
+function (+x:Integer32) -> z:Integer32;
+function (-x:Integer32) -> z:Integer32;
+function (x:Integer32 > y:Integer32) -> z:Boolean;
+function (x:Integer32 < y:Integer32) -> z:Boolean;
+function (x:Integer32 >= y:Integer32) -> z:Boolean;
+function (x:Integer32 <= y:Integer32) -> z:Boolean;
+function (x:Integer32 == y:Integer32) -> z:Boolean;
+function (x:Integer32 != y:Integer32) -> z:Boolean;
 
 /**
  * Boolean operators
  */
-function x:Boolean && y:Boolean -> z:Boolean;
-function x:Boolean || y:Boolean -> z:Boolean;
-function !x:Boolean -> z:Boolean;
+function (x:Boolean && y:Boolean) -> z:Boolean;
+function (x:Boolean || y:Boolean) -> z:Boolean;
+function (!x:Boolean) -> z:Boolean;
 
 /**
  * Functions
@@ -158,22 +158,6 @@ function log(x:Real32) -> y:Real32 {
   }}
 }
 
-function nanlog(x:Real64) -> y:Real64 {
-  if (isnan(x)) {
-    y <- -inf;
-  } else {
-    y <- log(x);
-  }
-}
-
-function nanlog(x:Real32) -> y:Real32 {
-  if (isnan(x)) {
-    y <- Real32(-inf);
-  } else {
-    y <- log(x);
-  }
-}
-
 function exp(x:Real64) -> y:Real64 {
   cpp {{
   y = ::exp(x);
@@ -184,22 +168,6 @@ function exp(x:Real32) -> y:Real32 {
   cpp {{
   y = ::expf(x);
   }}
-}
-
-function nanexp(x:Real64) -> y:Real64 {
-  if (isnan(x)) {
-    y <- 0.0;
-  } else {
-    y <- exp(x);
-  }
-}
-
-function nanexp(x:Real32) -> y:Real32 {
-  if (isnan(x)) {
-    y <- Real32(0.0);
-  } else {
-    y <- exp(x);
-  }
 }
 
 function max(x:Real64, y:Real64) -> z:Real64 {

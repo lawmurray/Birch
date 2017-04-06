@@ -1,7 +1,6 @@
 import math;
 import random;
 import assert;
-import distribution.Uniform;
 
 /**
  * Bernoulli distribution.
@@ -23,19 +22,19 @@ function Bernoulli(ρ:Real) -> m:Bernoulli {
 /**
  * Simulate.
  */
-function ~m:Bernoulli -> x:Boolean {
+function (x:Boolean <~ m:Bernoulli) {
   cpp {{
   x = std::bernoulli_distribution(m.ρ)(rng);
   }}
 }
 
 /**
- * Evaluate pmf.
+ * Observe.
  */
-function x:Boolean ~> m:Bernoulli -> l:Real {
+function (x:Boolean ~> m:Bernoulli) -> l:Real {
   if (x) {
-    l <- m.ρ;
+    l <- log(m.ρ);
   } else {
-    l <- 1.0 - m.ρ;
+    l <- log(1.0 - m.ρ);
   }
 }
