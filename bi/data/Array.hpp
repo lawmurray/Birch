@@ -20,6 +20,7 @@ template<class Value, class Frame = EmptyFrame>
 class Array {
 public:
   typedef typename Value::group_type group_type;
+  typedef typename Value::value_type value_type;
 
   /**
    * Constructor.
@@ -116,22 +117,16 @@ public:
    * @return The new array.
    */
   template<class View1>
-  auto operator()(const View1& view) {
+  auto& operator()(const View1& view) {
     return viewReturn(view, frame(view));
-  }
-  auto& operator()(const EmptyView& view) {
-    return value;
   }
 
   /**
    * View operator.
    */
   template<class View1>
-  auto operator()(const View1& view) const {
+  auto& operator()(const View1& view) const {
     return viewReturn(view, frame(view));
-  }
-  auto& operator()(const EmptyView& view) const {
-    return value;
   }
 
   /**
@@ -280,15 +275,15 @@ public:
    */
   template<class View1, class Frame1>
   auto viewReturn(const View1& view, const Frame1& frame) const {
-    return Array<decltype(value(this->frame, view)),Frame1>(value(this->frame, view), frame);
+    return Array<Value,Frame1>(Value(value, this->frame, view), frame);
   }
 
   /**
    * Return value of view when result is a scalar.
    */
   template<class View1>
-  auto viewReturn(const View1& view, const EmptyFrame& frame) const {
-    return value(this->frame, view);
+  auto& viewReturn(const View1& view, const EmptyFrame& frame) const {
+    return static_cast<value_type&>(Value(value, this->frame, view));
   }
 };
 

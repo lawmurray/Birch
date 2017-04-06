@@ -19,8 +19,8 @@ public:
       EmptyFrame(), const char* name = nullptr);
 
   template<class Value, class Frame = EmptyFrame>
-  void fill(PrimitiveValue<Value,MemoryGroup>& value, const Value& init,
-      const Frame& frame = EmptyFrame());
+  void fill(PrimitiveValue<Value,MemoryGroup>& value, const Frame& frame =
+      EmptyFrame(), const Value& init = Value());
 
   template<class Value, class Frame = EmptyFrame>
   void release(PrimitiveValue<Value,MemoryGroup>& value, const Frame& frame =
@@ -51,7 +51,7 @@ void bi::MemoryGroup::create(PrimitiveValue<Value,MemoryGroup>& value,
 
 template<class Value, class Frame>
 void bi::MemoryGroup::fill(PrimitiveValue<Value,MemoryGroup>& value,
-    const Value& init, const Frame& frame) {
+    const Frame& frame, const Value& init) {
   std::uninitialized_fill_n(value.ptr, frame.lead, init);
 }
 

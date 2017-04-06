@@ -73,6 +73,11 @@ protected:
   bool header;
 
   /**
+   * Are we in an array type?
+   */
+  int inArray;
+
+  /**
    * Are we in a delay type?
    */
   int inDelay;

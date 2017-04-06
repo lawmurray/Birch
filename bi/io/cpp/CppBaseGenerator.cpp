@@ -15,6 +15,7 @@ bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
     const bool header) :
     indentable_ostream(base, level),
     header(header),
+    inArray(0),
     inDelay(0),
     inLambda(0),
     inVariant(0),
@@ -147,18 +148,19 @@ void bi::CppBaseGenerator::visit(const VarParameter* o) {
 //      middle(", ");
 //    }
 //  }
-//  if (o->type->count() > 0) {
-//    BracketsType* type = dynamic_cast<BracketsType*>(o->type.get());
-//    assert(type);
-//    middle("make_frame(" << type->brackets << ")");
-//    if (!o->value->isEmpty()) {
-//      middle(", " << o->value->strip());
-//    }
-//  }
+  if (o->type->count() > 0) {
+    BracketsType* type = dynamic_cast<BracketsType*>(o->type->strip());
+    assert(type);
+    middle('(');
+    middle("bi::make_frame(" << type->brackets << ")");
+    if (!o->value->isEmpty()) {
+      middle(", " << o->value->strip());
+    }
+    middle(')');
 //  if (!o->parens->isEmpty() || o->type->count() > 0) {
 //    middle(')');
 //  }
-  if (!o->value->isEmpty()) {
+  } else if (!o->value->isEmpty()) {
     middle(" = " << o->value);
   } else if (o->type->polymorphic) {
     ++inPolymorphic;
@@ -251,10 +253,13 @@ void bi::CppBaseGenerator::visit(const EmptyType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const BracketsType* o) {
-  if (!o->assignable && !inVariant) {
-    middle("const ");
+  ++inArray;
+  if (o->single->isModel() && !o->single->polymorphic) {
+    middle("DefaultArray<" << o->single << "," << o->count() << '>');
+  } else {
+    middle("DefaultArray<PrimitiveValue<" << o->single << ">," << o->count() << '>');
   }
-  middle("DefaultArray<" << o->single << ',' << o->count() << '>');
+  --inArray;
 }
 
 void bi::CppBaseGenerator::visit(const ParenthesesType* o) {

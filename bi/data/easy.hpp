@@ -4,7 +4,6 @@
  * Convenience functions for creating spans, ranges, frames, views, arrays,
  * etc.
  */
-
 #include "bi/data/Span.hpp"
 #include "bi/data/Index.hpp"
 #include "bi/data/Range.hpp"

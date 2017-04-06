@@ -4,6 +4,8 @@
 #pragma once
 
 namespace bi {
+class MemoryGroup;
+
 /**
  * Value of a primitive type.
  *
@@ -19,7 +21,7 @@ namespace bi {
  * client code. This involves overloading the assignment, type conversion and
  * address-of operators.
  */
-template<class Value, class Group>
+template<class Value, class Group = MemoryGroup>
 class PrimitiveValue {
   //
 };

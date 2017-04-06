@@ -82,12 +82,6 @@ void bi::CppConstructorGenerator::visit(const VarParameter* o) {
   //    middle(", "  << o->parens);
   //  }
     middle(')');
-  } else {
-    if (!o->value->isEmpty()) {
-      line("this->group.fill(" << o->name << ", " << o->value << "(), frame);");
-    } else if (o->type->isLambda() || o->type->isDelay() || o->type->polymorphic) {
-      line("this->group.fill(" << o->name << ", " << o->type << "(), frame);");
-    }
   }
 }
 

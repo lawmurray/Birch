@@ -71,17 +71,6 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
       line("}\n");
     }
 
-    /* view operator */
-    if (header) {
-      line("template<class Frame, class View>");
-      line(
-          o->name << "<Group> operator()(const Frame& frame, const View& view) const {");
-      in();
-      line("return " << o->name << "<Group>(*this, frame, view);");
-      out();
-      line("}\n");
-    }
-
     /* copy assignment operator */
     CppAssignmentGenerator auxAssignment(base, level, header);
     auxAssignment << o;

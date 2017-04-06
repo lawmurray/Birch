@@ -167,6 +167,7 @@ bi::PrimitiveValue<Type,bi::MemoryGroup>::PrimitiveValue(
     group(group),
     own(true) {
   this->group.create(*this, frame, name);
+  this->group.fill(*this, frame);
 }
 
 template<class Type>
@@ -177,6 +178,7 @@ bi::PrimitiveValue<Type,bi::MemoryGroup>::PrimitiveValue(
     group(group) {
   if (deep) {
     this->group.create(*this, frame, name);
+    this->group.fill(*this, frame);
     own = true;
     *this = o;
   } else {
@@ -197,26 +199,19 @@ bi::PrimitiveValue<Type,bi::MemoryGroup>::PrimitiveValue(
 }
 
 template<class Type>
-template<class Group1>
-bi::PrimitiveValue<Type,bi::MemoryGroup>& bi::PrimitiveValue<Type,
-    bi::MemoryGroup>::operator=(const PrimitiveValue<Type,Group1>& o) {
-  copy(*this, o);
-  return *this;
-}
-
-template<class Type>
 bi::PrimitiveValue<Type,bi::MemoryGroup>::PrimitiveValue(
     const EmptyFrame& frame, const char* name, const MemoryGroup& group) :
     group(group),
     own(true) {
   this->group.create(*this, frame, name);
+  this->group.fill(*this, frame);
 }
 
 template<class Type>
 bi::PrimitiveValue<Type,bi::MemoryGroup>::PrimitiveValue(const Type& value) :
     own(true) {
   this->group.create(*this);
-  this->group.fill(*this, value);
+  this->group.fill(*this, EmptyFrame(), value);
 }
 
 template<class Type>
@@ -224,6 +219,7 @@ bi::PrimitiveValue<Type,bi::MemoryGroup>::PrimitiveValue(
     const PrimitiveValue<Type,MemoryGroup>& o) :
     own(true) {
   this->group.create(*this);
+  this->group.fill(*this);
   *this = o;
 }
 
@@ -241,6 +237,14 @@ bi::PrimitiveValue<Type,bi::MemoryGroup>::~PrimitiveValue() {
   if (own) {
     group.release(*this);
   }
+}
+
+template<class Type>
+template<class Group1>
+bi::PrimitiveValue<Type,bi::MemoryGroup>& bi::PrimitiveValue<Type,
+    bi::MemoryGroup>::operator=(const PrimitiveValue<Type,Group1>& o) {
+  copy(*this, o);
+  return *this;
 }
 
 template<class Type>
@@ -262,6 +266,7 @@ bi::PrimitiveValue<Type,bi::MemoryGroup>& bi::PrimitiveValue<Type,
     /* copy assignment */
     own = true;
     this->group.create(*this);
+    this->group.fill(*this);
     *this = o;
   }
   return *this;
