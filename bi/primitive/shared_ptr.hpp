@@ -17,6 +17,9 @@ template<class T>
 class shared_ptr {
   template<class U>
   friend class shared_ptr;
+
+  template<class U>
+  friend const shared_ptr<U>& cast(const shared_ptr<T>&);
 public:
   /**
    * Constructor. The pointer is initialised to null.
@@ -31,20 +34,21 @@ public:
   /**
    * Construct from STL smart pointer.
    */
-  shared_ptr(std::shared_ptr<T> ptr);
+  shared_ptr(const std::shared_ptr<T>& ptr);
 
   /**
-   * Construct from pointer of a derived type.
+   * Construct from pointer of a base or derived type.
    */
   template<class U>
-  shared_ptr(const shared_ptr<U>& o) : ptr(std::static_pointer_cast<U>(o.ptr)) {
+  shared_ptr(const shared_ptr<U>& o) :
+      ptr(std::dynamic_pointer_cast<U>(o.ptr)) {
     //
   }
 
   /**
    * Copy constructor.
    */
-  shared_ptr(const shared_ptr<T>& ptr);
+  shared_ptr(const shared_ptr<T>& o);
 
   /**
    * Destructor.
@@ -110,7 +114,7 @@ private:
 };
 
 template<class T, class ...Args>
-shared_ptr<T> make_shared(Args... args) {
+shared_ptr<T> make_shared(Args ... args) {
   return shared_ptr<T>(std::make_shared<T>(args...));
 }
 }
@@ -128,14 +132,14 @@ bi::shared_ptr<T>::shared_ptr(T* ptr) :
 }
 
 template<class T>
-bi::shared_ptr<T>::shared_ptr(std::shared_ptr<T> ptr) :
+bi::shared_ptr<T>::shared_ptr(const std::shared_ptr<T>& ptr) :
     ptr(ptr) {
   //
 }
 
 template<class T>
-bi::shared_ptr<T>::shared_ptr(const shared_ptr<T>& ptr) :
-    ptr(ptr.ptr) {
+bi::shared_ptr<T>::shared_ptr(const shared_ptr<T>& o) :
+    ptr(o.ptr) {
   //
 }
 

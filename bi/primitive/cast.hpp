@@ -5,28 +5,37 @@
  */
 #pragma once
 
-#include "bi/method/Delay.hpp"
-#include "bi/data/MemoryPrimitiveValue.hpp"
+#include "bi/primitive/shared_ptr.hpp"
+
+#include <type_traits>
 
 namespace bi {
 enum TypeFlag {
-  IS_PRIMITIVE, IS_MODEL, IS_DELAY, IS_LAMBDA
+  /**
+   * Built-in type (e.g. double, int).
+   */
+  IS_BUILTIN,
+
+  /**
+   * Class type (most other things).
+   */
+  IS_CLASS,
+
+  /**
+   * Shared pointer to class type, used for polymorphic types.
+   */
+  IS_POINTER
 };
 
 template<class T>
 struct type_flag {
   static const TypeFlag value =
-      std::is_class<T>::value ? IS_MODEL : IS_PRIMITIVE;
+      std::is_class<T>::value ? IS_CLASS : IS_BUILTIN;
 };
 
-template<class Value, class Distribution>
-struct type_flag<Delay<Value,Distribution>> {
-  static const TypeFlag value = IS_DELAY;
-};
-
-template<class Result>
-struct type_flag<Lambda<Result>> {
-  static const TypeFlag value = IS_LAMBDA;
+template<class T>
+struct type_flag<shared_ptr<T>> {
+  static const TypeFlag value = IS_POINTER;
 };
 
 /**
@@ -40,119 +49,42 @@ struct cast_impl {
 };
 
 template<class To, class From>
-struct cast_impl<To,From,IS_PRIMITIVE,IS_PRIMITIVE> {
+struct cast_impl<To,From,IS_BUILTIN,IS_BUILTIN> {
   static To eval(From&& o) {
     return static_cast<To>(o);
   }
 };
 
 template<class To, class From>
-struct cast_impl<To,From,IS_PRIMITIVE,IS_MODEL> {
-  static To eval(From&& o) {
-    throw std::bad_cast();
-  }
-};
-
-template<class To, class From>
-struct cast_impl<To,From,IS_PRIMITIVE,IS_DELAY> {
+struct cast_impl<To,From,IS_BUILTIN,IS_CLASS> {
   static To eval(From&& o) {
     return static_cast<To>(o);
   }
 };
 
 template<class To, class From>
-struct cast_impl<To,From,IS_PRIMITIVE,IS_LAMBDA> {
-  static To eval(From&& o) {
-    throw std::bad_cast();
-    //return static_cast<To>(o);
-  }
-};
-
-template<class To, class From>
-struct cast_impl<To,From,IS_MODEL,IS_PRIMITIVE> {
-  static To eval(From&& o) {
-    throw std::bad_cast();
-  }
-};
-
-template<class To, class From>
-struct cast_impl<To,From,IS_MODEL,IS_MODEL> {
+struct cast_impl<To,From,IS_CLASS,IS_CLASS> {
   static To eval(From&& o) {
     return dynamic_cast<To>(o);
   }
 };
 
 template<class To, class From>
-struct cast_impl<To,From,IS_MODEL,IS_DELAY> {
+struct cast_impl<To,From,IS_POINTER,IS_CLASS> {
   static To eval(From&& o) {
     return static_cast<To>(o);
   }
 };
 
 template<class To, class From>
-struct cast_impl<To,From,IS_MODEL,IS_LAMBDA> {
+struct cast_impl<To,From,IS_POINTER,IS_POINTER> {
   static To eval(From&& o) {
-    return static_cast<To>(o);
-  }
-};
-
-template<class To, class From>
-struct cast_impl<To,From,IS_DELAY,IS_PRIMITIVE> {
-  static To eval(From&& o) {
-    throw std::bad_cast();
-  }
-};
-
-template<class To, class From>
-struct cast_impl<To,From,IS_DELAY,IS_MODEL> {
-  static To eval(From&& o) {
-    throw std::bad_cast();
-  }
-};
-
-template<class To, class From>
-struct cast_impl<To,From,IS_DELAY,IS_DELAY> {
-  static To eval(From&& o) {
-    if (o.state == MISSING) {
-      return dynamic_cast<To>(o);
+    auto result = To(o);
+    if (result) {
+      return result;
     } else {
       throw std::bad_cast();
     }
-  }
-};
-
-template<class To, class From>
-struct cast_impl<To,From,IS_DELAY,IS_LAMBDA> {
-  static To eval(From&& o) {
-    throw std::bad_cast();
-  }
-};
-
-template<class To, class From>
-struct cast_impl<To,From,IS_LAMBDA,IS_PRIMITIVE> {
-  static To eval(From&& o) {
-    throw std::bad_cast();
-  }
-};
-
-template<class To, class From>
-struct cast_impl<To,From,IS_LAMBDA,IS_MODEL> {
-  static To eval(From&& o) {
-    throw std::bad_cast();
-  }
-};
-
-template<class To, class From>
-struct cast_impl<To,From,IS_LAMBDA,IS_DELAY> {
-  static To eval(From&& o) {
-    throw std::bad_cast();
-  }
-};
-
-template<class To, class From>
-struct cast_impl<To,From,IS_LAMBDA,IS_LAMBDA> {
-  static To eval(From&& o) {
-    throw std::bad_cast();
   }
 };
 
@@ -165,6 +97,7 @@ inline To cast(From&& o) {
       type_flag<typename std::decay<To>::type>::value;
   static constexpr TypeFlag from_flag = type_flag<
       typename std::decay<From>::type>::value;
+
   return cast_impl<To,From,to_flag,from_flag>::eval(o);
 }
 }
