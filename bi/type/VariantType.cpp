@@ -23,14 +23,24 @@ bi::VariantType::~VariantType() {
 
 void bi::VariantType::add(Type* o) {
   Type* o1 = o->strip();
-  auto f = [&](Type* type) {
-    return o1->definitely(*type);
-  };
-  if (!o1->definitely(*definite)
-      && !std::any_of(possibles.begin(), possibles.end(), f)) {
-    possibles.push_back(o1);
-  } else {
+  if (o1->isVariant()) {
+    VariantType* variant = dynamic_cast<VariantType*>(o1);
+    assert(variant);
+    add(variant->definite.release());
+    for (auto iter = variant->possibles.begin(); iter != variant->possibles.end(); ++iter) {
+      add(*iter);
+    }
     delete o;
+  } else {
+    auto f = [&](Type* type) {
+      return o1->definitely(*type);
+    };
+    if (!o1->definitely(*definite)
+        && !std::any_of(possibles.begin(), possibles.end(), f)) {
+      possibles.push_back(o1);
+    } else {
+      delete o;
+    }
   }
 }
 
@@ -54,68 +64,51 @@ bool bi::VariantType::isVariant() const {
   return true;
 }
 
-bool bi::VariantType::definitelyAll(const Type& o) const {
-  return definite->definitely(o);
-}
-
 bool bi::VariantType::possiblyAny(const Type& o) const {
-  auto f = [&](Type* type) {
-    return type->possibly(o);
+  auto f = [&](Type* o1) {
+    return o1->possibly(o) || o1->definitely(o);
   };
-  return definite->possibly(o)
-      || std::any_of(possibles.begin(), possibles.end(), f);
+  return f(definite.get()) || std::any_of(possibles.begin(), possibles.end(), f);
 }
 
 bool bi::VariantType::dispatchDefinitely(const Type& o) const {
-  auto f = [&](Type* type) {
-    return type->dispatchDefinitely(o);
-  };
-  return definite->dispatchDefinitely(o)
-      && std::all_of(possibles.begin(), possibles.end(), f);
+  return o.definitely(*this);
 }
 
 bool bi::VariantType::definitely(const BracketsType& o) const {
-  return definitelyAll(o);
+  return definite->definitely(o);
 }
 
 bool bi::VariantType::definitely(const EmptyType& o) const {
-  return definitelyAll(o);
+  return definite->definitely(o);
 }
 
 bool bi::VariantType::definitely(const LambdaType& o) const {
-  return definitelyAll(o);
+  return definite->definitely(o);
 }
 
 bool bi::VariantType::definitely(const List<Type>& o) const {
-  return definitelyAll(o);
+  return definite->definitely(o);
 }
 
 bool bi::VariantType::definitely(const ModelParameter& o) const {
-  return definitelyAll(o);
+  return definite->definitely(o);
 }
 
 bool bi::VariantType::definitely(const ModelReference& o) const {
-  return definitelyAll(o);
+  return definite->definitely(o);
 }
 
 bool bi::VariantType::definitely(const ParenthesesType& o) const {
-  return definitelyAll(o);
+  return definite->definitely(o);
 }
 
 bool bi::VariantType::definitely(const DelayType& o) const {
-  return definitelyAll(o);
-}
-
-bool bi::VariantType::definitely(const VariantType& o) const {
-  return definitelyAll(o);
+  return definite->definitely(o);
 }
 
 bool bi::VariantType::dispatchPossibly(const Type& o) const {
-  auto f = [&](Type* type) {
-    return type->dispatchPossibly(o);
-  };
-  return definite->dispatchPossibly(o)
-      || std::any_of(possibles.begin(), possibles.end(), f);
+  return o.possibly(*this);
 }
 
 bool bi::VariantType::possibly(const BracketsType& o) const {
@@ -147,9 +140,5 @@ bool bi::VariantType::possibly(const ParenthesesType& o) const {
 }
 
 bool bi::VariantType::possibly(const DelayType& o) const {
-  return possiblyAny(o);
-}
-
-bool bi::VariantType::possibly(const VariantType& o) const {
   return possiblyAny(o);
 }

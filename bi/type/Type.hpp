@@ -164,6 +164,6 @@ public:
   /*
    * Operators for equality comparisons.
    */
-  virtual bool equals(Type& o);
+  virtual bool equals(const Type& o) const;
 };
 }

@@ -147,6 +147,6 @@ bool bi::Type::possibly(const VariantType& o) const {
   return false;
 }
 
-bool bi::Type::equals(Type& o) {
+bool bi::Type::equals(const Type& o) const {
   return definitely(o) && o.definitely(*this);
 }

@@ -90,8 +90,8 @@ bool bi::ModelParameter::definitely(const ModelParameter& o) const {
       && (!o.assignable || assignable);
 }
 
-bool bi::ModelParameter::definitely(const EmptyType& o) const {
-  return !o.assignable || assignable;
+bool bi::ModelParameter::definitely(const ParenthesesType& o) const {
+  return definitely(*o.single) && (!o.assignable || assignable);
 }
 
 bool bi::ModelParameter::dispatchPossibly(const Type& o) const {
@@ -103,6 +103,6 @@ bool bi::ModelParameter::possibly(const ModelParameter& o) const {
       && (!o.assignable || assignable);
 }
 
-bool bi::ModelParameter::possibly(const EmptyType& o) const {
-  return !o.assignable || assignable;
+bool bi::ModelParameter::possibly(const ParenthesesType& o) const {
+  return possibly(*o.single) && (!o.assignable || assignable);
 }

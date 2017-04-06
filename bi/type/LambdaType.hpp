@@ -39,11 +39,16 @@ public:
 
   virtual bool isLambda() const;
 
+  using Type::definitely;
+  using Type::possibly;
+
   virtual bool dispatchDefinitely(const Type& o) const;
   virtual bool definitely(const LambdaType& o) const;
+  virtual bool definitely(const ParenthesesType& o) const;
 
   virtual bool dispatchPossibly(const Type& o) const;
   virtual bool possibly(const LambdaType& o) const;
+  virtual bool possibly(const ParenthesesType& o) const;
 
   /**
    * Parameters type.

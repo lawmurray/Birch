@@ -71,8 +71,8 @@ bool bi::ModelReference::definitely(const ModelReference& o) const {
   return target->canUpcast(o.target) && (!o.assignable || assignable);
 }
 
-bool bi::ModelReference::definitely(const EmptyType& o) const {
-  return !o.assignable || assignable;
+bool bi::ModelReference::definitely(const ParenthesesType& o) const {
+  return definitely(*o.single) && (!o.assignable || assignable);
 }
 
 bool bi::ModelReference::dispatchPossibly(const Type& o) const {
@@ -90,6 +90,6 @@ bool bi::ModelReference::possibly(const ModelReference& o) const {
   return target->canDowncast(o.target) && (!o.assignable || assignable);
 }
 
-bool bi::ModelReference::possibly(const EmptyType& o) const {
-  return !o.assignable || assignable;
+bool bi::ModelReference::possibly(const ParenthesesType& o) const {
+  return possibly(*o.single) && (!o.assignable || assignable);
 }

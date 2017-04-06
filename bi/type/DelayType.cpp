@@ -39,8 +39,9 @@ bool bi::DelayType::dispatchDefinitely(const Type& o) const {
   return o.definitely(*this);
 }
 
-bool bi::DelayType::definitely(const EmptyType& o) const {
-  return !o.assignable || assignable;
+bool bi::DelayType::definitely(const DelayType& o) const {
+  return left->definitely(*o.left) && right->definitely(*o.right)
+      && (!o.assignable || assignable);
 }
 
 bool bi::DelayType::definitely(const LambdaType& o) const {
@@ -59,17 +60,17 @@ bool bi::DelayType::definitely(const ModelParameter& o) const {
   return left->definitely(o) && (!o.assignable || assignable);
 }
 
-bool bi::DelayType::definitely(const DelayType& o) const {
-  return left->definitely(*o.left) && right->definitely(*o.right)
-      && (!o.assignable || assignable);
+bool bi::DelayType::definitely(const ParenthesesType& o) const {
+  return definitely(*o.single) && (!o.assignable || assignable);
 }
 
 bool bi::DelayType::dispatchPossibly(const Type& o) const {
   return o.possibly(*this);
 }
 
-bool bi::DelayType::possibly(const EmptyType& o) const {
-  return !o.assignable || assignable;
+bool bi::DelayType::possibly(const DelayType& o) const {
+  return left->possibly(*o.left) && right->possibly(*o.right)
+      && (!o.assignable || assignable);
 }
 
 bool bi::DelayType::possibly(const LambdaType& o) const {
@@ -92,7 +93,6 @@ bool bi::DelayType::possibly(const ModelParameter& o) const {
       && (!o.assignable || assignable);
 }
 
-bool bi::DelayType::possibly(const DelayType& o) const {
-  return left->possibly(*o.left) && right->possibly(*o.right)
-      && (!o.assignable || assignable);
+bool bi::DelayType::possibly(const ParenthesesType& o) const {
+  return possibly(*o.single) && (!o.assignable || assignable);
 }

@@ -26,6 +26,5 @@ public:
 
   virtual void visit(const VarParameter* o);
   virtual void visit(const FuncParameter* o);
-  virtual void visit(const Dispatcher* o);
 };
 }

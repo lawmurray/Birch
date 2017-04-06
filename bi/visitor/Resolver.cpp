@@ -298,7 +298,11 @@ bi::Dispatcher* bi::Resolver::makeDispatcher(FuncReference* o) {
   /* argument types */
   std::transform(o->parens->begin(), o->parens->end(),
       std::back_inserter(dispatcher->types), [](const Expression* expr) {
-        return new VariantType(expr->type.get());
+        if (expr->type->isVariant()) {
+          return dynamic_cast<VariantType*>(expr->type->strip());
+        } else {
+          return new VariantType(expr->type.get());
+        }
   });
 
   /* result type */

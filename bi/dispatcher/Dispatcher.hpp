@@ -5,7 +5,6 @@
 
 #include "bi/common/Named.hpp"
 #include "bi/common/Numbered.hpp"
-#include "bi/common/Parenthesised.hpp"
 #include "bi/common/Scoped.hpp"
 #include "bi/expression/FuncParameter.hpp"
 
@@ -19,7 +18,6 @@ namespace bi {
  */
 class Dispatcher: public Named,
     public Numbered,
-    public Parenthesised,
     public Scoped {
 public:
   /**

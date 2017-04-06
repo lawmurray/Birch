@@ -52,7 +52,7 @@ void bi::ParenthesesType::accept(Visitor* visitor) const {
 }
 
 bool bi::ParenthesesType::dispatchDefinitely(const Type& o) const {
-  return o.definitely(*this) || o.definitely(*single);
+  return o.definitely(*this);
 }
 
 bool bi::ParenthesesType::definitely(const BracketsType& o) const {
@@ -92,7 +92,7 @@ bool bi::ParenthesesType::definitely(const VariantType& o) const {
 }
 
 bool bi::ParenthesesType::dispatchPossibly(const Type& o) const {
-  return o.possibly(*this) || o.possibly(*single);
+  return o.possibly(*this);
 }
 
 bool bi::ParenthesesType::possibly(const BracketsType& o) const {

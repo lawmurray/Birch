@@ -41,10 +41,18 @@ bool bi::LambdaType::definitely(const LambdaType& o) const {
   return parens->definitely(*o.parens) && result->definitely(*o.result);
 }
 
+bool bi::LambdaType::definitely(const ParenthesesType& o) const {
+  return definitely(*o.single);
+}
+
 bool bi::LambdaType::dispatchPossibly(const Type& o) const {
   return o.possibly(*this);
 }
 
 bool bi::LambdaType::possibly(const LambdaType& o) const {
   return parens->possibly(*o.parens) && result->possibly(*o.result);
+}
+
+bool bi::LambdaType::possibly(const ParenthesesType& o) const {
+  return possibly(*o.single);
 }

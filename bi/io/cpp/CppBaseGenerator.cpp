@@ -251,7 +251,7 @@ void bi::CppBaseGenerator::visit(const EmptyType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const BracketsType* o) {
-  if (!o->assignable) {
+  if (!o->assignable && !inVariant) {
     middle("const ");
   }
   middle("DefaultArray<" << o->single << ',' << o->count() << '>');
