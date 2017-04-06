@@ -1,6 +1,6 @@
 /**
  * Hello world.
  */
-program hello_world() {
+program demo_hello() {
   print("Hello world!\n");
 }

@@ -10,7 +10,7 @@
  * `Gaussian(0.0, 1.0)` prior and Gaussian likelihood with known standard
  * deviation.
  */
-program multiple_observations(μ:Real <- 0.0, σ:Real <- 1.0, N:Integer <- 100) {
+program delay_iid(μ:Real <- 0.0, σ:Real <- 1.0, N:Integer <- 100) {
   x:(Real ~ Gaussian);
   y:(Real ~ Gaussian)[N];
   n:Integer;
@@ -21,7 +21,7 @@ program multiple_observations(μ:Real <- 0.0, σ:Real <- 1.0, N:Integer <- 100) 
     y[n] <~ Gaussian(μ, σ);
     n <- n + 1;
   }
-    
+  
   /* prior */
   x ~ Gaussian(0.0, 1.0);
   
