@@ -6,6 +6,7 @@
 #include "bi/bi.hpp"
 #include "bi/method/DelayInterface.hpp"
 #include "bi/method/DelayState.hpp"
+#include "bi/primitive/nonconst.hpp"
 
 namespace bi {
 /**
@@ -135,6 +136,8 @@ template<class Value, class Distribution>
 bi::Delay<Value,Distribution>::operator value_type&() {
   if (id >= 0) {
     method->sample(id);
+  } else if (state == MISSING) {
+    state = ASSIGNED;
   }
   return x;
 }
@@ -143,6 +146,8 @@ template<class Value, class Distribution>
 bi::Delay<Value,Distribution>::operator const value_type&() const {
   if (id >= 0) {
     method->sample(id);
+  } else if (state == MISSING) {
+    nonconst(this)->state = ASSIGNED;
   }
   return x;
 }
