@@ -200,6 +200,9 @@ dist_pkgdata_DATA = \
   share/LICENSE \
   share/Makefile \
   share/MANIFEST \
+  share/META.md \
+  share/README.md \
+  share/VERSION.md \
   share/autogen.sh \
   share/common.am \
   share/configure.ac
