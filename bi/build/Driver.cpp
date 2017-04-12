@@ -114,7 +114,7 @@ bi::Driver::Driver(int argc, char** argv) :
   /* read options */
   std::vector<char*> unknown;
   opterr = 0;  // handle error reporting ourselves
-  c = getopt_long(largv.size(), largv.data(), short_options, long_options,
+  c = getopt_long_only(largv.size(), largv.data(), short_options, long_options,
       &option_index);
   while (c != -1) {
     switch (c) {
@@ -176,7 +176,7 @@ bi::Driver::Driver(int argc, char** argv) :
       --optind;
       break;
     }
-    c = getopt_long(largv.size(), largv.data(), short_options, long_options,
+    c = getopt_long_only(largv.size(), largv.data(), short_options, long_options,
         &option_index);
   }
   largv.insert(largv.end(), unknown.begin(), unknown.end());

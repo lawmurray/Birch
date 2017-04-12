@@ -220,7 +220,7 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
       in();
       for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
         const std::string& name = dynamic_cast<const VarParameter*>(*iter)->name->str();
-        if (name.length() > 1) {
+        //if (name.length() > 1) {
           std::string flag = name + "_ARG";
           boost::to_upper(flag);
           std::string option = name;
@@ -228,7 +228,7 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
 
           line(
               "{\"" << option << "\", required_argument, 0, " << flag << " },");
-        }
+        //}
       }
       line("{0, 0, 0, 0}");
       out();
@@ -236,18 +236,18 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
 
       /* short options */
       start("const char* short_options = \"");
-      for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
-        const std::string& name = dynamic_cast<const VarParameter*>(*iter)->name->str();
-        if (name.length() == 1) {
-          middle(name << ':');
-        }
-      }
+      //for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
+      //  const std::string& name = dynamic_cast<const VarParameter*>(*iter)->name->str();
+      //  if (name.length() == 1) {
+      //    middle(name << ':');
+      //  }
+      //}
       finish("\";");
 
       /* read in options with getopt_long */
       line("opterr = 0; // handle error reporting ourselves");
       line(
-          "c = getopt_long(argc, argv, short_options, long_options, &option_index);");
+          "c = getopt_long_only(argc, argv, short_options, long_options, &option_index);");
       line("while (c != -1) {");
       in();
       line("switch (c) {");
@@ -259,11 +259,11 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
         boost::to_upper(flag);
 
         start("case ");
-        if (name.length() > 1) {
+        //if (name.length() > 1) {
           middle(flag);
-        } else {
-          middle('\'' << name << '\'');
-        }
+        //} else {
+        //  middle('\'' << name << '\'');
+        //}
         finish(':');
         in();
         start(name << " = ");
@@ -304,7 +304,7 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
       out();
       line('}');
       line(
-          "c = getopt_long(argc, argv, short_options, long_options, &option_index);");
+          "c = getopt_long_only(argc, argv, short_options, long_options, &option_index);");
       out();
       line("}\n");
     }
