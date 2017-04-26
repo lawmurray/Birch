@@ -93,11 +93,11 @@ bool bi::Type::definitely(const List<Type>& o) const {
   return false;
 }
 
-bool bi::Type::definitely(const ModelParameter& o) const {
+bool bi::Type::definitely(const TypeParameter& o) const {
   return false;
 }
 
-bool bi::Type::definitely(const ModelReference& o) const {
+bool bi::Type::definitely(const TypeReference& o) const {
   return false;
 }
 
@@ -133,11 +133,11 @@ bool bi::Type::possibly(const List<Type>& o) const {
   return false;
 }
 
-bool bi::Type::possibly(const ModelParameter& o) const {
+bool bi::Type::possibly(const TypeParameter& o) const {
   return false;
 }
 
-bool bi::Type::possibly(const ModelReference& o) const {
+bool bi::Type::possibly(const TypeReference& o) const {
   return false;
 }
 

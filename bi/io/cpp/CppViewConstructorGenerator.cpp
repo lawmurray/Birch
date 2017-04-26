@@ -9,7 +9,7 @@ bi::CppViewConstructorGenerator::CppViewConstructorGenerator(
   //
 }
 
-void bi::CppViewConstructorGenerator::visit(const ModelParameter* o) {
+void bi::CppViewConstructorGenerator::visit(const TypeParameter* o) {
   if (header) {
     line("template<class Frame, class View>");
     start("");

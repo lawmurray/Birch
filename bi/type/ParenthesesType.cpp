@@ -3,7 +3,7 @@
  */
 #include "bi/type/ParenthesesType.hpp"
 
-#include "bi/type/ModelParameter.hpp"
+#include "bi/type/TypeParameter.hpp"
 #include "bi/visitor/all.hpp"
 
 #include <typeinfo>
@@ -79,11 +79,11 @@ bool bi::ParenthesesType::definitely(const List<Type>& o) const {
   return single->definitely(o);
 }
 
-bool bi::ParenthesesType::definitely(const ModelParameter& o) const {
+bool bi::ParenthesesType::definitely(const TypeParameter& o) const {
   return single->definitely(o);
 }
 
-bool bi::ParenthesesType::definitely(const ModelReference& o) const {
+bool bi::ParenthesesType::definitely(const TypeReference& o) const {
   return single->definitely(o);
 }
 
@@ -119,11 +119,11 @@ bool bi::ParenthesesType::possibly(const List<Type>& o) const {
   return single->possibly(o);
 }
 
-bool bi::ParenthesesType::possibly(const ModelParameter& o) const {
+bool bi::ParenthesesType::possibly(const TypeParameter& o) const {
   return single->possibly(o);
 }
 
-bool bi::ParenthesesType::possibly(const ModelReference& o) const {
+bool bi::ParenthesesType::possibly(const TypeReference& o) const {
   return single->possibly(o);
 }
 

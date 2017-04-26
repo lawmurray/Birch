@@ -13,13 +13,13 @@ bi::Type* bi::Assigner::modify(EmptyType* o) {
   return o;
 }
 
-bi::Type* bi::Assigner::modify(ModelReference* o) {
+bi::Type* bi::Assigner::modify(TypeReference* o) {
   Modifier::modify(o);
   o->assignable = true;
   return o;
 }
 
-bi::Type* bi::Assigner::modify(ModelParameter* o) {
+bi::Type* bi::Assigner::modify(TypeParameter* o) {
   Modifier::modify(o);
   o->assignable = true;
   return o;

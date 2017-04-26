@@ -60,4 +60,4 @@ bool bi::Declaration<T>::possibly(const Declaration<T>& o) const {
 template class bi::Declaration<bi::VarParameter>;
 template class bi::Declaration<bi::FuncParameter>;
 template class bi::Declaration<bi::ProgParameter>;
-template class bi::Declaration<bi::ModelParameter>;
+template class bi::Declaration<bi::TypeParameter>;

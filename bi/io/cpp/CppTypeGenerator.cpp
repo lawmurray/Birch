@@ -1,7 +1,7 @@
 /**
  * @file
  */
-#include "bi/io/cpp/CppModelGenerator.hpp"
+#include "bi/io/cpp/CppTypeGenerator.hpp"
 
 #include "bi/io/cpp/CppConstructorGenerator.hpp"
 #include "bi/io/cpp/CppViewConstructorGenerator.hpp"
@@ -12,15 +12,15 @@
 #include "bi/io/cpp/CppReturnGenerator.hpp"
 #include "bi/primitive/encode.hpp"
 
-bi::CppModelGenerator::CppModelGenerator(std::ostream& base, const int level,
+bi::CppTypeGenerator::CppTypeGenerator(std::ostream& base, const int level,
     const bool header) :
     CppBaseGenerator(base, level, header),
-    model(nullptr) {
+    type(nullptr) {
   //
 }
 
-void bi::CppModelGenerator::visit(const ModelParameter* o) {
-  model = o;
+void bi::CppTypeGenerator::visit(const TypeParameter* o) {
+  type = o;
   if (!o->isBuiltin()) {
     /* start boilerplate */
     if (header) {
@@ -103,14 +103,14 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
 
     /* explicit template specialisations */
     if (!header) {
-      line("template class bi::model::" << o->name << "<bi::MemoryGroup>;");
-      line("//template class bi::model::" << o->name << "<bi::NetCDFGroup>;");
+      line("template class bi::type::" << o->name << "<bi::MemoryGroup>;");
+      line("//template class bi::type::" << o->name << "<bi::NetCDFGroup>;");
       line("");
     }
   }
 }
 
-void bi::CppModelGenerator::visit(const ModelReference* o) {
+void bi::CppTypeGenerator::visit(const TypeReference* o) {
   if (inReturn) {
     CppBaseGenerator::visit(o);
   } else {
@@ -124,7 +124,7 @@ void bi::CppModelGenerator::visit(const ModelReference* o) {
   }
 }
 
-void bi::CppModelGenerator::visit(const VarDeclaration* o) {
+void bi::CppTypeGenerator::visit(const VarDeclaration* o) {
   if (header) {
     if (o->param->type->isClass()) {
       /* use struct-of-arrays */
@@ -137,7 +137,7 @@ void bi::CppModelGenerator::visit(const VarDeclaration* o) {
   }
 }
 
-void bi::CppModelGenerator::visit(const FuncParameter* o) {
+void bi::CppTypeGenerator::visit(const FuncParameter* o) {
   if (!o->braces->isEmpty()) {
     /* class template parameters */
     if (!header) {
@@ -145,7 +145,7 @@ void bi::CppModelGenerator::visit(const FuncParameter* o) {
     }
 
     /* return type */
-    if (header && model->isClass()) {
+    if (header && type->isClass()) {
       start("virtual ");
     } else {
       start("");
@@ -156,7 +156,7 @@ void bi::CppModelGenerator::visit(const FuncParameter* o) {
 
     /* name */
     if (!header) {
-      middle("bi::model::" << model->name << "<Group>::");
+      middle("bi::type::" << type->name << "<Group>::");
     }
     if ((o->isBinary() || o->isUnary()) && isTranslatable(o->name->str())) {
       middle("operator" << o->name);

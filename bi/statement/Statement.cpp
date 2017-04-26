@@ -36,7 +36,7 @@ bool bi::Statement::definitely(const Declaration<ProgParameter>& o) const {
   return false;
 }
 
-bool bi::Statement::definitely(const Declaration<ModelParameter>& o) const {
+bool bi::Statement::definitely(const Declaration<TypeParameter>& o) const {
   return false;
 }
 
@@ -84,7 +84,7 @@ bool bi::Statement::possibly(const Declaration<ProgParameter>& o) const {
   return false;
 }
 
-bool bi::Statement::possibly(const Declaration<ModelParameter>& o) const {
+bool bi::Statement::possibly(const Declaration<TypeParameter>& o) const {
   return false;
 }
 

@@ -3,7 +3,7 @@
  */
 #include "bi/type/DelayType.hpp"
 
-#include "bi/type/ModelParameter.hpp"
+#include "bi/type/TypeParameter.hpp"
 #include "bi/visitor/all.hpp"
 
 #include <typeinfo>
@@ -52,11 +52,11 @@ bool bi::DelayType::definitely(const List<Type>& o) const {
   return left->definitely(o) && (!o.assignable || assignable);
 }
 
-bool bi::DelayType::definitely(const ModelReference& o) const {
+bool bi::DelayType::definitely(const TypeReference& o) const {
   return left->definitely(o) && (!o.assignable || assignable);
 }
 
-bool bi::DelayType::definitely(const ModelParameter& o) const {
+bool bi::DelayType::definitely(const TypeParameter& o) const {
   return left->definitely(o) && (!o.assignable || assignable);
 }
 
@@ -83,12 +83,12 @@ bool bi::DelayType::possibly(const List<Type>& o) const {
       && (!o.assignable || assignable);
 }
 
-bool bi::DelayType::possibly(const ModelReference& o) const {
+bool bi::DelayType::possibly(const TypeReference& o) const {
   return (left->possibly(o) || right->possibly(o))
       && (!o.assignable || assignable);
 }
 
-bool bi::DelayType::possibly(const ModelParameter& o) const {
+bool bi::DelayType::possibly(const TypeParameter& o) const {
   return (left->possibly(o) || right->possibly(o))
       && (!o.assignable || assignable);
 }

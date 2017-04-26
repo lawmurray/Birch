@@ -9,7 +9,7 @@ bi::CppParameterGenerator::CppParameterGenerator(std::ostream& base,
   //
 }
 
-void bi::CppParameterGenerator::visit(const ModelReference* o) {
+void bi::CppParameterGenerator::visit(const TypeReference* o) {
   if (!o->assignable && !inVariant && !o->isClass()) {
     middle("const ");
   }

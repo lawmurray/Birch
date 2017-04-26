@@ -6,7 +6,7 @@
 namespace bi {
 /**
  * Cast away the const-ness of a pointer. Usually used for the @c this
- * pointer to implement the read-write semantics of models.
+ * pointer to implement the read-write semantics of objects.
  */
 template<class T>
 T* nonconst(const T* o) {

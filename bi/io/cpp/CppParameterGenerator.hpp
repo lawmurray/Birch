@@ -18,7 +18,7 @@ public:
 
   using CppBaseGenerator::visit;
 
-  virtual void visit(const ModelReference* o);
+  virtual void visit(const TypeReference* o);
   virtual void visit(const BracketsType* o);
   virtual void visit(const ParenthesesType* o);
   virtual void visit(const DelayType* o);

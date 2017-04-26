@@ -5,7 +5,7 @@
 
 #include "bi/expression/VarParameter.hpp"
 #include "bi/expression/FuncParameter.hpp"
-#include "bi/type/ModelParameter.hpp"
+#include "bi/type/TypeParameter.hpp"
 #include "bi/exception/all.hpp"
 #include "bi/visitor/Cloner.hpp"
 
@@ -19,8 +19,8 @@ bool bi::Scope::contains(FuncParameter* param) {
   return definites.contains(param);
 }
 
-bool bi::Scope::contains(ModelParameter* param) {
-  return models.contains(param);
+bool bi::Scope::contains(TypeParameter* param) {
+  return types.contains(param);
 }
 
 bool bi::Scope::contains(ProgParameter* param) {
@@ -44,11 +44,11 @@ void bi::Scope::add(FuncParameter* param) {
   }
 }
 
-void bi::Scope::add(ModelParameter* param) {
-  if (models.contains(param)) {
-    throw PreviousDeclarationException(param, models.get(param));
+void bi::Scope::add(TypeParameter* param) {
+  if (types.contains(param)) {
+    throw PreviousDeclarationException(param, types.get(param));
   } else {
-    models.add(param);
+    types.add(param);
   }
 }
 
@@ -91,10 +91,10 @@ void bi::Scope::resolve(FuncReference* ref) {
   }
 }
 
-void bi::Scope::resolve(ModelReference* ref) {
-  ref->target = models.resolve(ref);
+void bi::Scope::resolve(TypeReference* ref) {
+  ref->target = types.resolve(ref);
   if (!ref->target) {
-    resolveDefer<ModelParameter,ModelReference>(ref);
+    resolveDefer<TypeParameter,TypeReference>(ref);
   }
 }
 
@@ -118,6 +118,6 @@ void bi::Scope::import(Scope* scope) {
   vars.merge(scope->vars);
   definites.merge(scope->definites);
   possibles.merge(scope->possibles);
-  models.merge(scope->models);
+  types.merge(scope->types);
   progs.merge(scope->progs);
 }

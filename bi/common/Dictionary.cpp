@@ -44,5 +44,5 @@ void bi::Dictionary<ParameterType>::merge(Dictionary<ParameterType>& o) {
  * Explicit instantiations.
  */
 template class bi::Dictionary<bi::VarParameter>;
-template class bi::Dictionary<bi::ModelParameter>;
+template class bi::Dictionary<bi::TypeParameter>;
 template class bi::Dictionary<bi::ProgParameter>;

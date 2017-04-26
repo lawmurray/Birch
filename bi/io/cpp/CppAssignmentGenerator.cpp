@@ -9,17 +9,17 @@ bi::CppAssignmentGenerator::CppAssignmentGenerator(std::ostream& base,
   //
 }
 
-void bi::CppAssignmentGenerator::visit(const ModelParameter* o) {
+void bi::CppAssignmentGenerator::visit(const TypeParameter* o) {
   /* basic assignment operator */
   if (!header) {
     line("template<class Group>");
-    start("bi::model::");
+    start("bi::type::");
   } else {
     start("");
   }
   middle(o->name << "<Group>& ");
   if (!header) {
-    middle("bi::model::" << o->name << "<Group>::");
+    middle("bi::type::" << o->name << "<Group>::");
   }
   middle("operator=(const " << o->name << "<Group>& o_)");
   if (header) {

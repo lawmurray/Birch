@@ -3,7 +3,7 @@
  */
 #include "bi/io/cpp/CppFileGenerator.hpp"
 
-#include "bi/io/cpp/CppModelGenerator.hpp"
+#include "bi/io/cpp/CppTypeGenerator.hpp"
 #include "bi/io/cpp/CppDispatcherGenerator.hpp"
 #include "bi/io/cpp/CppParameterGenerator.hpp"
 #include "bi/io/cpp/CppOutputGenerator.hpp"
@@ -136,15 +136,15 @@ void bi::CppFileGenerator::visit(const FuncParameter* o) {
   }
 }
 
-void bi::CppFileGenerator::visit(const ModelParameter* o) {
+void bi::CppFileGenerator::visit(const TypeParameter* o) {
   if (o->isAlias()) {
     if (header) {
-      ModelReference* base = dynamic_cast<ModelReference*>(o->base.get());
+      TypeReference* base = dynamic_cast<TypeReference*>(o->base.get());
       assert(base);
       if (!base->isBuiltin()) {
         line("namespace bi {");
         in();
-        line("namespace model {");
+        line("namespace type {");
         out();
         line("template<class Group = MemoryGroup>");
         start("using " << o->name << " = ");
@@ -164,11 +164,11 @@ void bi::CppFileGenerator::visit(const ModelParameter* o) {
     if (header) {
       line("namespace bi {");
       in();
-      line("namespace model {");
+      line("namespace type {");
       out();
     }
-    CppModelGenerator auxModel(base, level, header);
-    auxModel << o;
+    CppTypeGenerator auxType(base, level, header);
+    auxType << o;
     if (header) {
       in();
       line("}");
@@ -268,11 +268,11 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
         in();
         start(name << " = ");
         Type* type = (*iter)->type->strip();
-        const ModelReference* ref = dynamic_cast<const ModelReference*>(type);
+        const TypeReference* ref = dynamic_cast<const TypeReference*>(type);
         if (!ref) {
           const DelayType* delay = dynamic_cast<const DelayType*>(type);
           if (delay) {
-            ref = dynamic_cast<const ModelReference*>(delay->left.get());
+            ref = dynamic_cast<const TypeReference*>(delay->left.get());
           }
         }
 

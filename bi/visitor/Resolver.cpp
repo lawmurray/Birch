@@ -8,7 +8,7 @@
 #include <sstream>
 
 bi::Resolver::Resolver() :
-    membershipScope(nullptr),
+    memberScope(nullptr),
     inInputs(0) {
   //
 }
@@ -61,10 +61,10 @@ bi::Expression* bi::Resolver::modify(Range* o) {
 
 bi::Expression* bi::Resolver::modify(Member* o) {
   o->left = o->left->accept(this);
-  ModelReference* ref = dynamic_cast<ModelReference*>(o->left->type->strip());
+  TypeReference* ref = dynamic_cast<TypeReference*>(o->left->type->strip());
   if (ref) {
     assert(ref->target);
-    membershipScope = ref->target->scope.get();
+    memberScope = ref->target->scope.get();
   } else {
     throw MemberException(o);
   }
@@ -76,11 +76,11 @@ bi::Expression* bi::Resolver::modify(Member* o) {
 }
 
 bi::Expression* bi::Resolver::modify(This* o) {
-  if (!model()) {
+  if (!type()) {
     throw ThisException(o);
   } else {
     Modifier::modify(o);
-    o->type = new ModelReference(model()->name);
+    o->type = new TypeReference(type()->name);
     o->type->accept(this);
   }
   return o;
@@ -109,15 +109,15 @@ bi::Expression* bi::Resolver::modify(BracketsExpression* o) {
 }
 
 bi::Expression* bi::Resolver::modify(VarReference* o) {
-  Scope* membershipScope = takeMembershipScope();
+  Scope* memberScope = takeMemberScope();
   Modifier::modify(o);
-  resolve(o, membershipScope);
+  resolve(o, memberScope);
   o->type = o->target->type->accept(&cloner)->accept(this);
   return o;
 }
 
 bi::Expression* bi::Resolver::modify(FuncReference* o) {
-  Scope* membershipScope = takeMembershipScope();
+  Scope* memberScope = takeMemberScope();
   Modifier::modify(o);
   if (o->isAssign()) {
     if (!o->getLeft()->type->assignable) {
@@ -127,7 +127,7 @@ bi::Expression* bi::Resolver::modify(FuncReference* o) {
     }
   }
   if (*o->name != "<-") {
-    resolve(o, membershipScope);
+    resolve(o, memberScope);
     if (o->possibles.size() > 0) {
       o->dispatcher = makeDispatcher(o);
       o->type = o->dispatcher->type->accept(&cloner)->accept(this);
@@ -139,9 +139,9 @@ bi::Expression* bi::Resolver::modify(FuncReference* o) {
   return o;
 }
 
-bi::Type* bi::Resolver::modify(ModelReference* o) {
-  Scope* membershipScope = takeMembershipScope();
-  assert(!membershipScope);
+bi::Type* bi::Resolver::modify(TypeReference* o) {
+  Scope* memberScope = takeMemberScope();
+  assert(!memberScope);
 
   Modifier::modify(o);
   resolve(o);
@@ -202,7 +202,7 @@ bi::Prog* bi::Resolver::modify(ProgParameter* o) {
   return o;
 }
 
-bi::Type* bi::Resolver::modify(ModelParameter* o) {
+bi::Type* bi::Resolver::modify(TypeParameter* o) {
   push();
   o->parens = o->parens->accept(this);
   o->base = o->base->accept(this);
@@ -214,9 +214,9 @@ bi::Type* bi::Resolver::modify(ModelParameter* o) {
 
   top()->add(o);
   push(o->scope.get());
-  models.push(o);
+  types.push(o);
   o->braces = o->braces->accept(this);
-  models.pop();
+  types.pop();
   pop();
 
   return o;
@@ -325,9 +325,9 @@ bi::Dispatcher* bi::Resolver::makeDispatcher(FuncReference* o) {
   return dispatcher;
 }
 
-bi::Scope* bi::Resolver::takeMembershipScope() {
-  Scope* scope = membershipScope;
-  membershipScope = nullptr;
+bi::Scope* bi::Resolver::takeMemberScope() {
+  Scope* scope = memberScope;
+  memberScope = nullptr;
   return scope;
 }
 
@@ -392,7 +392,7 @@ void bi::Resolver::resolve(FuncReference* ref, Scope* scope) {
   }
 }
 
-void bi::Resolver::resolve(ModelReference* ref) {
+void bi::Resolver::resolve(TypeReference* ref) {
   ref->target = nullptr;
   for (auto iter = scopes.rbegin(); !ref->target && iter != scopes.rend();
       ++iter) {
@@ -406,7 +406,7 @@ void bi::Resolver::resolve(ModelReference* ref) {
 void bi::Resolver::defer(Expression* o) {
   if (files.size() == 1) {
     /* ignore bodies in imported files */
-    defers.push_back(std::make_tuple(o, top(), model()));
+    defers.push_back(std::make_tuple(o, top(), type()));
   }
 }
 
@@ -415,22 +415,22 @@ void bi::Resolver::undefer() {
   while (iter != defers.end()) {
     auto o = std::get<0>(*iter);
     auto scope = std::get<1>(*iter);
-    auto model = std::get<2>(*iter);
+    auto type = std::get<2>(*iter);
 
     push(scope);
-    models.push(model);
+    types.push(type);
     o->accept(this);
-    models.pop();
+    types.pop();
     pop();
     ++iter;
   }
   defers.clear();
 }
 
-bi::ModelParameter* bi::Resolver::model() {
-  if (models.empty()) {
+bi::TypeParameter* bi::Resolver::type() {
+  if (types.empty()) {
     return nullptr;
   } else {
-    return models.top();
+    return types.top();
   }
 }

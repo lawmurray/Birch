@@ -93,7 +93,7 @@ void bi::bi_ostream::visit(const FuncReference* o) {
   }
 }
 
-void bi::bi_ostream::visit(const ModelReference* o) {
+void bi::bi_ostream::visit(const TypeReference* o) {
   *this << o->name;
   if (!o->parens->isEmpty()) {
     *this << '(' << o->parens << ')';
@@ -124,7 +124,7 @@ void bi::bi_ostream::visit(const FuncParameter* o) {
   }
 }
 
-void bi::bi_ostream::visit(const ModelParameter* o) {
+void bi::bi_ostream::visit(const TypeParameter* o) {
   *this << o->name;
   if (!o->parens->isEmpty()) {
     *this << '(' << o->parens << ')';
@@ -217,8 +217,16 @@ void bi::bi_ostream::visit(const FuncDeclaration* o) {
   *this << "\n\n";
 }
 
-void bi::bi_ostream::visit(const ModelDeclaration* o) {
-  *this << indent << "model " << o->param;
+void bi::bi_ostream::visit(const TypeDeclaration* o) {
+  *this << indent;
+  if (o->param->isStruct()) {
+    *this << "struct";
+  } else if (o->param->isClass()) {
+    *this << "class";
+  } else {
+    *this << "type";
+  }
+  *this << ' ' << o->param;
   if (!o->param->braces->isEmpty()) {
     *this << o->param->braces;
   } else {

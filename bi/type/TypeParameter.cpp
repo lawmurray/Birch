@@ -1,11 +1,11 @@
 /**
  * @file
  */
-#include "bi/type/ModelParameter.hpp"
+#include "bi/type/TypeParameter.hpp"
 
 #include "bi/visitor/all.hpp"
 
-bi::ModelParameter::ModelParameter(shared_ptr<Name> name, Expression* parens,
+bi::TypeParameter::TypeParameter(shared_ptr<Name> name, Expression* parens,
     Type* base, Expression* braces, const TypeForm form,
     shared_ptr<Location> loc, const bool assignable) :
     Type(loc, assignable),
@@ -17,23 +17,23 @@ bi::ModelParameter::ModelParameter(shared_ptr<Name> name, Expression* parens,
   //
 }
 
-bi::ModelParameter::~ModelParameter() {
+bi::TypeParameter::~TypeParameter() {
   //
 }
 
-bi::Type* bi::ModelParameter::accept(Cloner* visitor) const {
+bi::Type* bi::TypeParameter::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-bi::Type* bi::ModelParameter::accept(Modifier* visitor) {
+bi::Type* bi::TypeParameter::accept(Modifier* visitor) {
   return visitor->modify(this);
 }
 
-void bi::ModelParameter::accept(Visitor* visitor) const {
+void bi::TypeParameter::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::ModelParameter::isBuiltin() const {
+bool bi::TypeParameter::isBuiltin() const {
   if (isAlias()) {
     return base->isBuiltin();
   } else {
@@ -41,7 +41,7 @@ bool bi::ModelParameter::isBuiltin() const {
   }
 }
 
-bool bi::ModelParameter::isStruct() const {
+bool bi::TypeParameter::isStruct() const {
   if (isAlias()) {
     return base->isStruct();
   } else {
@@ -49,7 +49,7 @@ bool bi::ModelParameter::isStruct() const {
   }
 }
 
-bool bi::ModelParameter::isClass() const {
+bool bi::TypeParameter::isClass() const {
   if (isAlias()) {
     return base->isClass();
   } else {
@@ -57,18 +57,18 @@ bool bi::ModelParameter::isClass() const {
   }
 }
 
-bool bi::ModelParameter::isAlias() const {
+bool bi::TypeParameter::isAlias() const {
   return form == ALIAS_TYPE;
 }
 
-const bi::ModelParameter* bi::ModelParameter::getBase() const {
-  const ModelReference* ref =
-      dynamic_cast<const ModelReference*>(base->strip());
+const bi::TypeParameter* bi::TypeParameter::getBase() const {
+  const TypeReference* ref =
+      dynamic_cast<const TypeReference*>(base->strip());
   assert(ref && ref->target);
   return ref->target;
 }
 
-bool bi::ModelParameter::canUpcast(const ModelParameter* o) const {
+bool bi::TypeParameter::canUpcast(const TypeParameter* o) const {
   if (o->isAlias()) {
     return canUpcast(o->getBase());
   } else if (isAlias()) {
@@ -80,32 +80,32 @@ bool bi::ModelParameter::canUpcast(const ModelParameter* o) const {
   }
 }
 
-bool bi::ModelParameter::canDowncast(const ModelParameter* o) const {
+bool bi::TypeParameter::canDowncast(const TypeParameter* o) const {
   return o->canUpcast(this);
 }
 
-bool bi::ModelParameter::dispatchDefinitely(const Type& o) const {
+bool bi::TypeParameter::dispatchDefinitely(const Type& o) const {
   return o.definitely(*this);
 }
 
-bool bi::ModelParameter::definitely(const ModelParameter& o) const {
+bool bi::TypeParameter::definitely(const TypeParameter& o) const {
   return parens->definitely(*o.parens) && base->definitely(*o.base)
       && (!o.assignable || assignable);
 }
 
-bool bi::ModelParameter::definitely(const ParenthesesType& o) const {
+bool bi::TypeParameter::definitely(const ParenthesesType& o) const {
   return definitely(*o.single) && (!o.assignable || assignable);
 }
 
-bool bi::ModelParameter::dispatchPossibly(const Type& o) const {
+bool bi::TypeParameter::dispatchPossibly(const Type& o) const {
   return o.possibly(*this);
 }
 
-bool bi::ModelParameter::possibly(const ModelParameter& o) const {
+bool bi::TypeParameter::possibly(const TypeParameter& o) const {
   return parens->possibly(*o.parens) && base->possibly(*o.base)
       && (!o.assignable || assignable);
 }
 
-bool bi::ModelParameter::possibly(const ParenthesesType& o) const {
+bool bi::TypeParameter::possibly(const ParenthesesType& o) const {
   return possibly(*o.single) && (!o.assignable || assignable);
 }

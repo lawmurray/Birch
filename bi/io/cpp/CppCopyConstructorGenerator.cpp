@@ -10,7 +10,7 @@ bi::CppCopyConstructorGenerator::CppCopyConstructorGenerator(
   //
 }
 
-void bi::CppCopyConstructorGenerator::visit(const ModelParameter* o) {
+void bi::CppCopyConstructorGenerator::visit(const TypeParameter* o) {
   if (header) {
     line("template<class Frame = EmptyFrame>");
     start(o->name << "(const " << o->name << "<Group>& o");

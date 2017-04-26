@@ -21,8 +21,8 @@ public:
   using Modifier::modify;
 
   virtual Type* modify(EmptyType* o);
-  virtual Type* modify(ModelReference* o);
-  virtual Type* modify(ModelParameter* o);
+  virtual Type* modify(TypeReference* o);
+  virtual Type* modify(TypeParameter* o);
   virtual Type* modify(BracketsType* o);
   virtual Type* modify(ParenthesesType* o);
   virtual Type* modify(DelayType* o);

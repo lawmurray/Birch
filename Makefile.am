@@ -78,7 +78,7 @@ birchc_SOURCES = \
   bi/io/cpp/CppCopyConstructorGenerator.cpp \
   bi/io/cpp/CppDispatcherGenerator.cpp \
   bi/io/cpp/CppFileGenerator.cpp \
-  bi/io/cpp/CppModelGenerator.cpp \
+  bi/io/cpp/CppTypeGenerator.cpp \
   bi/io/cpp/CppOutputGenerator.cpp \
   bi/io/cpp/CppParameterGenerator.cpp \
   bi/io/cpp/CppReturnGenerator.cpp \
@@ -103,8 +103,8 @@ birchc_SOURCES = \
   bi/type/DelayType.cpp \
   bi/type/EmptyType.cpp \
   bi/type/LambdaType.cpp \
-  bi/type/ModelParameter.cpp \
-  bi/type/ModelReference.cpp \
+  bi/type/TypeParameter.cpp \
+  bi/type/TypeReference.cpp \
   bi/type/ParenthesesType.cpp \
   bi/type/Type.cpp \
   bi/type/VariantType.cpp \

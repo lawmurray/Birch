@@ -82,8 +82,8 @@ bi::Expression* bi::Cloner::clone(const FuncReference* o) {
   return new FuncReference(o->name, o->parens->accept(this), o->form, o->loc);
 }
 
-bi::Type* bi::Cloner::clone(const ModelReference* o) {
-  return new ModelReference(o->name, o->parens->accept(this), o->loc,
+bi::Type* bi::Cloner::clone(const TypeReference* o) {
+  return new TypeReference(o->name, o->parens->accept(this), o->loc,
       o->assignable);
 }
 
@@ -101,8 +101,8 @@ bi::Expression* bi::Cloner::clone(const FuncParameter* o) {
       o->result->accept(this), o->braces->accept(this), o->form, o->loc);
 }
 
-bi::Type* bi::Cloner::clone(const ModelParameter* o) {
-  return new ModelParameter(o->name, o->parens->accept(this),
+bi::Type* bi::Cloner::clone(const TypeParameter* o) {
+  return new TypeParameter(o->name, o->parens->accept(this),
       o->base->accept(this), o->braces->accept(this), o->form, o->loc);
 }
 
@@ -146,9 +146,9 @@ bi::Statement* bi::Cloner::clone(const FuncDeclaration* o) {
       dynamic_cast<FuncParameter*>(o->param->accept(this)), o->loc);
 }
 
-bi::Statement* bi::Cloner::clone(const ModelDeclaration* o) {
-  return new ModelDeclaration(
-      dynamic_cast<ModelParameter*>(o->param->accept(this)), o->loc);
+bi::Statement* bi::Cloner::clone(const TypeDeclaration* o) {
+  return new TypeDeclaration(
+      dynamic_cast<TypeParameter*>(o->param->accept(this)), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const ProgDeclaration* o) {

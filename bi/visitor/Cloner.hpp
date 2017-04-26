@@ -41,12 +41,12 @@ public:
 
   virtual Expression* clone(const VarReference* o);
   virtual Expression* clone(const FuncReference* o);
-  virtual Type* clone(const ModelReference* o);
+  virtual Type* clone(const TypeReference* o);
   virtual Prog* clone(const ProgReference* o);
 
   virtual Expression* clone(const VarParameter* o);
   virtual Expression* clone(const FuncParameter* o);
-  virtual Type* clone(const ModelParameter* o);
+  virtual Type* clone(const TypeParameter* o);
   virtual Prog* clone(const ProgParameter* o);
 
   virtual File* clone(const File* o);
@@ -57,7 +57,7 @@ public:
   virtual Statement* clone(const Raw* o);
   virtual Statement* clone(const VarDeclaration* o);
   virtual Statement* clone(const FuncDeclaration* o);
-  virtual Statement* clone(const ModelDeclaration* o);
+  virtual Statement* clone(const TypeDeclaration* o);
   virtual Statement* clone(const ProgDeclaration* o);
 
   virtual Type* clone(const BracketsType* o);

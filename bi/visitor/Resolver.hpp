@@ -45,12 +45,12 @@ public:
 
   virtual Expression*  modify(VarReference* o);
   virtual Expression*  modify(FuncReference* o);
-  virtual Type* modify(ModelReference* o);
+  virtual Type* modify(TypeReference* o);
 
   virtual Expression*  modify(VarParameter* o);
   virtual Expression*  modify(FuncParameter* o);
   virtual Prog* modify(ProgParameter* o);
-  virtual Type* modify(ModelParameter* o);
+  virtual Type* modify(TypeParameter* o);
 
   virtual Statement* modify(Import* o);
   virtual Statement* modify(Conditional* o);
@@ -74,7 +74,7 @@ protected:
    * @return The membership scope, or nullptr if there is no membership scope
    * at present.
    */
-  Scope* takeMembershipScope();
+  Scope* takeMemberScope();
 
   /**
    * Top of the stack of containing scopes.
@@ -119,11 +119,11 @@ protected:
   void resolve(FuncReference* ref, Scope* scope = nullptr);
 
   /**
-   * Resolve a model reference.
+   * Resolve a type reference.
    *
    * @param ref The reference.
    */
-  void resolve(ModelReference* ref);
+  void resolve(TypeReference* ref);
 
   /**
    * Defer visit.
@@ -139,9 +139,9 @@ protected:
   void undefer();
 
   /**
-   * Innermost model.
+   * Innermost type.
    */
-  ModelParameter* model();
+  TypeParameter* type();
 
   /**
    * Stack of containing scopes.
@@ -149,9 +149,9 @@ protected:
   std::list<Scope*> scopes;
 
   /**
-   * Model stack.
+   * Type stack.
    */
-  std::stack<ModelParameter*> models;
+  std::stack<TypeParameter*> types;
 
   /**
    * File stack.
@@ -159,14 +159,14 @@ protected:
   std::stack<File*> files;
 
   /**
-   * Scope for resolution of model members.
+   * Scope for resolution of type members.
    */
-  Scope* membershipScope;
+  Scope* memberScope;
 
   /**
    * Deferred functions, binary and unary operators.
    */
-  std::list<std::tuple<Expression*,Scope*,ModelParameter*> > defers;
+  std::list<std::tuple<Expression*,Scope*,TypeParameter*> > defers;
 
   /**
    * Are we in the input parameters of a function?

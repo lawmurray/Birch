@@ -26,7 +26,7 @@ enum TypeForm {
  *
  * @ingroup compiler_type
  */
-class ModelParameter: public Type,
+class TypeParameter: public Type,
     public Named,
     public Parenthesised,
     public Based,
@@ -44,14 +44,14 @@ public:
    * @param loc Location.
    * @param assignable Is this type writeable?
    */
-  ModelParameter(shared_ptr<Name> name, Expression* parens,
+  TypeParameter(shared_ptr<Name> name, Expression* parens,
       Type* base, Expression* braces, const TypeForm form,
       shared_ptr<Location> loc = nullptr, const bool assignable = false);
 
   /**
    * Destructor.
    */
-  virtual ~ModelParameter();
+  virtual ~TypeParameter();
 
   virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);
@@ -65,27 +65,27 @@ public:
   /**
    * Get the base type.
    */
-  const ModelParameter* getBase() const;
+  const TypeParameter* getBase() const;
 
   /**
    * Is this type equal to or less than @p o by inheritance?
    */
-  bool canUpcast(const ModelParameter* o) const;
+  bool canUpcast(const TypeParameter* o) const;
 
   /**
    * Is this type equal to or greater than @p o by inheritance?
    */
-  bool canDowncast(const ModelParameter* o) const;
+  bool canDowncast(const TypeParameter* o) const;
 
   using Type::definitely;
   using Type::possibly;
 
   virtual bool dispatchDefinitely(const Type& o) const;
-  virtual bool definitely(const ModelParameter& o) const;
+  virtual bool definitely(const TypeParameter& o) const;
   virtual bool definitely(const ParenthesesType& o) const;
 
   virtual bool dispatchPossibly(const Type& o) const;
-  virtual bool possibly(const ModelParameter& o) const;
+  virtual bool possibly(const TypeParameter& o) const;
   virtual bool possibly(const ParenthesesType& o) const;
 
   /**

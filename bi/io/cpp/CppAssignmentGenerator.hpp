@@ -7,7 +7,7 @@
 
 namespace bi {
 /**
- * C++ code generator for model assignment operators.
+ * C++ code generator for assignment operators.
  *
  * @ingroup compiler_io
  */
@@ -17,7 +17,7 @@ public:
       const bool header = false);
 
   using CppBaseGenerator::visit;
-  virtual void visit(const ModelParameter* o);
+  virtual void visit(const TypeParameter* o);
   virtual void visit(const VarParameter* o);
   virtual void visit(const FuncParameter* o);
 };

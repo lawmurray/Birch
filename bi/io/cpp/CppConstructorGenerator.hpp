@@ -7,7 +7,7 @@
 
 namespace bi {
 /**
- * C++ code generator for model constructors.
+ * C++ code generator for constructors.
  *
  * @ingroup compiler_io
  */
@@ -18,7 +18,7 @@ public:
 
   using CppBaseGenerator::visit;
 
-  virtual void visit(const ModelParameter* o);
+  virtual void visit(const TypeParameter* o);
   virtual void visit(const VarParameter* o);
   virtual void visit(const VarDeclaration* o);
   virtual void visit(const FuncDeclaration* o);

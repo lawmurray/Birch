@@ -9,7 +9,7 @@ bi::CppConstructorGenerator::CppConstructorGenerator(std::ostream& base,
   //
 }
 
-void bi::CppConstructorGenerator::visit(const ModelParameter* o) {
+void bi::CppConstructorGenerator::visit(const TypeParameter* o) {
   /* two constructors are created here, one for nonempty frames, and one for
    * empty frames, this helps with debugging by ensuring that there is not a
    * catch-all constructor ("template<class Frame>") that can take any first
@@ -36,7 +36,7 @@ void bi::CppConstructorGenerator::visit(const ModelParameter* o) {
       in();
       if (!o->base->isEmpty()) {
         start("base_type(");
-        ModelReference* base = dynamic_cast<ModelReference*>(o->base.get());
+        TypeReference* base = dynamic_cast<TypeReference*>(o->base.get());
         assert(base);
         if (!base->parens->isEmpty()) {
           middle(base->parens << ", ");

@@ -4,7 +4,7 @@
 #pragma once
 
 #include "bi/type/Type.hpp"
-#include "bi/type/ModelParameter.hpp"
+#include "bi/type/TypeParameter.hpp"
 #include "bi/expression/EmptyExpression.hpp"
 #include "bi/common/Parenthesised.hpp"
 #include "bi/common/Reference.hpp"
@@ -12,14 +12,14 @@
 
 namespace bi {
 /**
- * Reference to model.
+ * Reference to type.
  *
  * @ingroup compiler_type
  */
-class ModelReference: public Type,
+class TypeReference: public Type,
     public Named,
     public Parenthesised,
-    public Reference<ModelParameter> {
+    public Reference<TypeParameter> {
 public:
   /**
    * Constructor.
@@ -30,21 +30,21 @@ public:
    * @param assignable Is this type assignable?
    * @param target Target.
    */
-  ModelReference(shared_ptr<Name> name, Expression* parens =
+  TypeReference(shared_ptr<Name> name, Expression* parens =
       new EmptyExpression(), shared_ptr<Location> loc = nullptr,
-      const bool assignable = false, ModelParameter* target = nullptr);
+      const bool assignable = false, TypeParameter* target = nullptr);
 
   /**
    * Constructor.
    *
    * @param target Target.
    */
-  ModelReference(ModelParameter* target);
+  TypeReference(TypeParameter* target);
 
   /**
    * Destructor.
    */
-  virtual ~ModelReference();
+  virtual ~TypeReference();
 
   virtual bool isBuiltin() const;
   virtual bool isStruct() const;
@@ -59,13 +59,13 @@ public:
   using Type::possibly;
 
   virtual bool dispatchDefinitely(const Type& o) const;
-  virtual bool definitely(const ModelParameter& o) const;
-  virtual bool definitely(const ModelReference& o) const;
+  virtual bool definitely(const TypeParameter& o) const;
+  virtual bool definitely(const TypeReference& o) const;
   virtual bool definitely(const ParenthesesType& o) const;
 
   virtual bool dispatchPossibly(const Type& o) const;
-  virtual bool possibly(const ModelParameter& o) const;
-  virtual bool possibly(const ModelReference& o) const;
+  virtual bool possibly(const TypeParameter& o) const;
+  virtual bool possibly(const TypeReference& o) const;
   virtual bool possibly(const ParenthesesType& o) const;
 };
 }

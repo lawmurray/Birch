@@ -3,7 +3,7 @@
  */
 #include "bi/type/VariantType.hpp"
 
-#include "bi/type/ModelParameter.hpp"
+#include "bi/type/TypeParameter.hpp"
 #include "bi/visitor/all.hpp"
 
 #include <algorithm>
@@ -91,11 +91,11 @@ bool bi::VariantType::definitely(const List<Type>& o) const {
   return definite->definitely(o);
 }
 
-bool bi::VariantType::definitely(const ModelParameter& o) const {
+bool bi::VariantType::definitely(const TypeParameter& o) const {
   return definite->definitely(o);
 }
 
-bool bi::VariantType::definitely(const ModelReference& o) const {
+bool bi::VariantType::definitely(const TypeReference& o) const {
   return definite->definitely(o);
 }
 
@@ -127,11 +127,11 @@ bool bi::VariantType::possibly(const List<Type>& o) const {
   return possiblyAny(o);
 }
 
-bool bi::VariantType::possibly(const ModelParameter& o) const {
+bool bi::VariantType::possibly(const TypeParameter& o) const {
   return possiblyAny(o);
 }
 
-bool bi::VariantType::possibly(const ModelReference& o) const {
+bool bi::VariantType::possibly(const TypeReference& o) const {
   return possiblyAny(o);
 }
 

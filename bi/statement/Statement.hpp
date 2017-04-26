@@ -21,7 +21,7 @@ class Raw;
 
 class VarParameter;
 class FuncParameter;
-class ModelParameter;
+class TypeParameter;
 class ProgParameter;
 
 /**
@@ -82,7 +82,7 @@ public:
   virtual bool definitely(const Declaration<VarParameter>& o) const;
   virtual bool definitely(const Declaration<FuncParameter>& o) const;
   virtual bool definitely(const Declaration<ProgParameter>& o) const;
-  virtual bool definitely(const Declaration<ModelParameter>& o) const;
+  virtual bool definitely(const Declaration<TypeParameter>& o) const;
   virtual bool definitely(const EmptyStatement& o) const;
   virtual bool definitely(const ExpressionStatement& o) const;
   virtual bool definitely(const Import& o) const;
@@ -96,7 +96,7 @@ public:
   virtual bool possibly(const Declaration<VarParameter>& o) const;
   virtual bool possibly(const Declaration<FuncParameter>& o) const;
   virtual bool possibly(const Declaration<ProgParameter>& o) const;
-  virtual bool possibly(const Declaration<ModelParameter>& o) const;
+  virtual bool possibly(const Declaration<TypeParameter>& o) const;
   virtual bool possibly(const EmptyStatement& o) const;
   virtual bool possibly(const ExpressionStatement& o) const;
   virtual bool possibly(const Import& o) const;

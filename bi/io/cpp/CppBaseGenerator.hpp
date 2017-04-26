@@ -38,7 +38,7 @@ public:
 
   virtual void visit(const VarReference* o);
   virtual void visit(const FuncReference* o);
-  virtual void visit(const ModelReference* o);
+  virtual void visit(const TypeReference* o);
 
   virtual void visit(const VarParameter* o);
   virtual void visit(const FuncParameter* o);
@@ -65,7 +65,7 @@ protected:
   /**
    * Generate a built-in type.
    */
-  void genBuiltin(const ModelReference* o);
+  void genBuiltin(const TypeReference* o);
 
   /**
    * Output header instead of source?

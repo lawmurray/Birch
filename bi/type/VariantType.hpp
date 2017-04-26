@@ -60,8 +60,8 @@ public:
   virtual bool definitely(const EmptyType& o) const;
   virtual bool definitely(const LambdaType& o) const;
   virtual bool definitely(const List<Type>& o) const;
-  virtual bool definitely(const ModelParameter& o) const;
-  virtual bool definitely(const ModelReference& o) const;
+  virtual bool definitely(const TypeParameter& o) const;
+  virtual bool definitely(const TypeReference& o) const;
   virtual bool definitely(const ParenthesesType& o) const;
   virtual bool definitely(const DelayType& o) const;
 
@@ -70,8 +70,8 @@ public:
   virtual bool possibly(const EmptyType& o) const;
   virtual bool possibly(const LambdaType& o) const;
   virtual bool possibly(const List<Type>& o) const;
-  virtual bool possibly(const ModelParameter& o) const;
-  virtual bool possibly(const ModelReference& o) const;
+  virtual bool possibly(const TypeParameter& o) const;
+  virtual bool possibly(const TypeReference& o) const;
   virtual bool possibly(const ParenthesesType& o) const;
   virtual bool possibly(const DelayType& o) const;
 

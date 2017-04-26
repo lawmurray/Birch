@@ -15,12 +15,12 @@
 namespace bi {
 class VarParameter;
 class FuncParameter;
-class ModelParameter;
+class TypeParameter;
 class ProgParameter;
 
 class VarReference;
 class FuncReference;
-class ModelReference;
+class TypeReference;
 class ProgReference;
 
 class Dispatcher;
@@ -42,7 +42,7 @@ public:
    */
   bool contains(VarParameter* param);
   bool contains(FuncParameter* param);
-  bool contains(ModelParameter* param);
+  bool contains(TypeParameter* param);
   bool contains(ProgParameter* param);
 
   /**
@@ -52,7 +52,7 @@ public:
    */
   void add(VarParameter* param);
   void add(FuncParameter* param);
-  void add(ModelParameter* param);
+  void add(TypeParameter* param);
   void add(ProgParameter* param);
 
   /**
@@ -64,7 +64,7 @@ public:
    */
   void resolve(VarReference* ref);
   void resolve(FuncReference* ref);
-  void resolve(ModelReference* ref);
+  void resolve(TypeReference* ref);
 
   /*
    * Dispatchers.
@@ -98,7 +98,7 @@ public:
    * Dictionaries.
    */
   Dictionary<VarParameter> vars;
-  Dictionary<ModelParameter> models;
+  Dictionary<TypeParameter> types;
   OverloadedDictionary<FuncParameter,definitely> definites;
   OverloadedDictionary<FuncParameter,possibly> possibles;
   Dictionary<ProgParameter> progs;

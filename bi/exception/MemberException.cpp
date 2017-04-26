@@ -12,6 +12,6 @@ bi::MemberException::MemberException(const Expression* expr) {
   if (expr->loc) {
     buf << expr->loc;
   }
-  buf << "error: '.' used with non-model type '" << expr->type << "' on left\n";
+  buf << "error: '.' used with type '" << expr->type << "' on left, which is not a struct or class type\n";
   msg = base.str();
 }

@@ -41,12 +41,12 @@ public:
 
   virtual Expression* modify(VarReference* o);
   virtual Expression* modify(FuncReference* o);
-  virtual Type* modify(ModelReference* o);
+  virtual Type* modify(TypeReference* o);
   virtual Prog* modify(ProgReference* o);
 
   virtual Expression* modify(VarParameter* o);
   virtual Expression* modify(FuncParameter* o);
-  virtual Type* modify(ModelParameter* o);
+  virtual Type* modify(TypeParameter* o);
   virtual Prog* modify(ProgParameter* o);
 
   virtual void modify(File* o);
@@ -57,7 +57,7 @@ public:
   virtual Statement* modify(Raw* o);
   virtual Statement* modify(VarDeclaration* o);
   virtual Statement* modify(FuncDeclaration* o);
-  virtual Statement* modify(ModelDeclaration* o);
+  virtual Statement* modify(TypeDeclaration* o);
   virtual Statement* modify(ProgDeclaration* o);
 
   virtual Type* modify(BracketsType* o);

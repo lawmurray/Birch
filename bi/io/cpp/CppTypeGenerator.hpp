@@ -7,26 +7,26 @@
 
 namespace bi {
 /**
- * C++ code generator for models.
+ * C++ code generator for types.
  *
  * @ingroup compiler_io
  */
-class CppModelGenerator: public CppBaseGenerator {
+class CppTypeGenerator: public CppBaseGenerator {
 public:
-  CppModelGenerator(std::ostream& base, const int level = 0,
+  CppTypeGenerator(std::ostream& base, const int level = 0,
       const bool header = false);
 
   using indentable_ostream::visit;
 
-  virtual void visit(const ModelParameter* o);
-  virtual void visit(const ModelReference* o);
+  virtual void visit(const TypeParameter* o);
+  virtual void visit(const TypeReference* o);
   virtual void visit(const VarDeclaration* o);
   virtual void visit(const FuncParameter* o);
 
 protected:
   /**
-   * The model being generated.
+   * The type being generated.
    */
-  const ModelParameter* model;
+  const TypeParameter* type;
 };
 }

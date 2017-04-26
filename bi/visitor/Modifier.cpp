@@ -97,7 +97,7 @@ bi::Expression* bi::Modifier::modify(FuncReference* o) {
   return o;
 }
 
-bi::Type* bi::Modifier::modify(ModelReference* o) {
+bi::Type* bi::Modifier::modify(TypeReference* o) {
   o->parens = o->parens.release()->accept(this);
   return o;
 }
@@ -120,7 +120,7 @@ bi::Expression* bi::Modifier::modify(FuncParameter* o) {
   return o;
 }
 
-bi::Type* bi::Modifier::modify(ModelParameter* o) {
+bi::Type* bi::Modifier::modify(TypeParameter* o) {
   o->parens = o->parens.release()->accept(this);
   o->base = o->base.release()->accept(this);
   o->braces = o->braces.release()->accept(this);
@@ -175,8 +175,8 @@ bi::Statement* bi::Modifier::modify(FuncDeclaration* o) {
   return o;
 }
 
-bi::Statement* bi::Modifier::modify(ModelDeclaration* o) {
-  o->param = dynamic_cast<ModelParameter*>(o->param.release()->accept(this));
+bi::Statement* bi::Modifier::modify(TypeDeclaration* o) {
+  o->param = dynamic_cast<TypeParameter*>(o->param.release()->accept(this));
   assert(o->param);
   return o;
 }

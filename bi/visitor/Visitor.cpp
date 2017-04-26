@@ -99,7 +99,7 @@ void bi::Visitor::visit(const FuncReference* o) {
   o->parens->accept(this);
 }
 
-void bi::Visitor::visit(const ModelReference* o) {
+void bi::Visitor::visit(const TypeReference* o) {
   o->parens->accept(this);
 }
 
@@ -118,7 +118,7 @@ void bi::Visitor::visit(const FuncParameter* o) {
   o->braces->accept(this);
 }
 
-void bi::Visitor::visit(const ModelParameter* o) {
+void bi::Visitor::visit(const TypeParameter* o) {
   o->parens->accept(this);
   o->base->accept(this);
   o->braces->accept(this);
@@ -164,7 +164,7 @@ void bi::Visitor::visit(const FuncDeclaration* o) {
   o->param->accept(this);
 }
 
-void bi::Visitor::visit(const ModelDeclaration* o) {
+void bi::Visitor::visit(const TypeDeclaration* o) {
   o->param->accept(this);
 }
 

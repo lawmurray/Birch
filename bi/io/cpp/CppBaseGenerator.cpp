@@ -234,13 +234,13 @@ void bi::CppBaseGenerator::visit(const Raw* o) {
   }
 }
 
-void bi::CppBaseGenerator::visit(const ModelReference* o) {
+void bi::CppBaseGenerator::visit(const TypeReference* o) {
   if (o->isBuiltin()) {
     genBuiltin(o);
   } else if (!inPolymorphic && o->isClass()) {
-    middle("bi::shared_ptr<bi::model::" << o->name << "<>>");
+    middle("bi::shared_ptr<bi::type::" << o->name << "<>>");
   } else {
-    middle("bi::model::" << o->name << "<>");
+    middle("bi::type::" << o->name << "<>");
   }
 }
 
@@ -315,7 +315,7 @@ void bi::CppBaseGenerator::genCapture(const Expression* o) {
   middle(']');
 }
 
-void bi::CppBaseGenerator::genBuiltin(const ModelReference* o) {
+void bi::CppBaseGenerator::genBuiltin(const TypeReference* o) {
   /* pre-condition */
   assert(o->isBuiltin());
 
