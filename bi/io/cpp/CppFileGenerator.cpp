@@ -4,7 +4,6 @@
 #include "bi/io/cpp/CppFileGenerator.hpp"
 
 #include "bi/io/cpp/CppTypeGenerator.hpp"
-#include "bi/io/cpp/CppDispatcherGenerator.hpp"
 #include "bi/io/cpp/CppParameterGenerator.hpp"
 #include "bi/io/cpp/CppOutputGenerator.hpp"
 #include "bi/io/cpp/CppReturnGenerator.hpp"
@@ -45,21 +44,11 @@ void bi::CppFileGenerator::visit(const File* o) {
     file.replace_extension(".hpp");
     line("#include \"" << file.filename().string() << "\"\n");
 
-    /* dispatcher header code */
-    CppDispatcherGenerator auxDispatcher(base, level, true);
-    auxDispatcher << o;
-
     line("");
   }
 
   /* main code */
   *this << o->root;
-
-  /* dispatcher source code */
-  if (!header) {
-    CppDispatcherGenerator auxDispatcher(base, level, false);
-    auxDispatcher << o;
-  }
 }
 
 void bi::CppFileGenerator::visit(const Import* o) {

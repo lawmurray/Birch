@@ -123,10 +123,7 @@ void bi::CppBaseGenerator::visit(const VarReference* o) {
 }
 
 void bi::CppBaseGenerator::visit(const FuncReference* o) {
-  if (o->dispatcher) {
-    middle("dispatch_" << internalise(o->dispatcher->name->str()) << '_');
-    middle(o->dispatcher->number << "_(" << o->parens << ')');
-  } else if (o->isAssign() && *o->name == "<-") {
+  if (o->isAssign() && *o->name == "<-") {
     middle(o->getLeft() << " = " << o->getRight());
   } else if (o->isBinary() && isTranslatable(o->name->str())) {
     middle(o->getLeft() << ' ' << o->name << ' ' << o->getRight());

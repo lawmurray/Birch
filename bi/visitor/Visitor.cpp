@@ -69,10 +69,6 @@ void bi::Visitor::visit(const BracketsExpression* o) {
   o->brackets->accept(this);
 }
 
-void bi::Visitor::visit(const Dispatcher* o) {
-  //
-}
-
 void bi::Visitor::visit(const Index* o) {
   o->single->accept(this);
 }

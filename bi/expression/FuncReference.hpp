@@ -9,7 +9,6 @@
 #include "bi/common/Parenthesised.hpp"
 #include "bi/common/Formed.hpp"
 #include "bi/common/Reference.hpp"
-#include "bi/dispatcher/Dispatcher.hpp"
 
 #include <list>
 
@@ -73,16 +72,5 @@ public:
   virtual bool possibly(const FuncReference& o) const;
   virtual bool possibly(const FuncParameter& o) const;
   virtual bool possibly(const VarParameter& o) const;
-
-  /**
-   * Possible function resolutions that will need to be checked at runtime.
-   */
-  std::list<FuncParameter*> possibles;
-
-  /**
-   * Dispatcher to be used for this function, or `nullptr` if no dispatcher
-   * is required.
-   */
-  Dispatcher* dispatcher;
 };
 }

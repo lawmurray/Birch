@@ -27,7 +27,6 @@ birchc_SOURCES = \
   bi/common/Bracketed.cpp \
   bi/common/Conditioned.cpp \
   bi/common/Dictionary.cpp \
-  bi/common/DispatcherDictionary.cpp \
   bi/common/Formed.cpp \
   bi/common/Iterator.cpp \
   bi/common/List.cpp \
@@ -45,7 +44,6 @@ birchc_SOURCES = \
   bi/common/Signature.cpp \
   bi/common/Typed.cpp \
   bi/common/Unary.cpp \
-  bi/dispatcher/Dispatcher.cpp \
   bi/exception/AmbiguousReferenceException.cpp \
   bi/exception/CompilerException.cpp \
   bi/exception/CyclicImportException.cpp \
@@ -76,7 +74,6 @@ birchc_SOURCES = \
   bi/io/cpp/CppBaseGenerator.cpp \
   bi/io/cpp/CppConstructorGenerator.cpp \
   bi/io/cpp/CppCopyConstructorGenerator.cpp \
-  bi/io/cpp/CppDispatcherGenerator.cpp \
   bi/io/cpp/CppFileGenerator.cpp \
   bi/io/cpp/CppTypeGenerator.cpp \
   bi/io/cpp/CppOutputGenerator.cpp \

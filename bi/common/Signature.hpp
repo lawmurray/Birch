@@ -10,7 +10,7 @@
 
 namespace bi {
 /**
- * Signature of a function, operator, dispatcher, etc.
+ * Signature of a function.
  *
  * @ingroup compiler_expression
  */

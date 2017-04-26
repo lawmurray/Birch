@@ -214,7 +214,3 @@ bi::Type* bi::Modifier::modify(VariantType* o) {
   o->definite = o->definite.release()->accept(this);
   return o;
 }
-
-bi::Dispatcher* bi::Modifier::modify(Dispatcher* o) {
-  return o;
-}

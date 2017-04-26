@@ -63,12 +63,6 @@ protected:
   FuncParameter* makeLambda(VarParameter* o);
 
   /**
-   * Make a dispatcher associated with a function call that must be resolved
-   * at runtime.
-   */
-  Dispatcher* makeDispatcher(FuncReference* o);
-
-  /**
    * Take the membership scope, if it exists.
    *
    * @return The membership scope, or nullptr if there is no membership scope

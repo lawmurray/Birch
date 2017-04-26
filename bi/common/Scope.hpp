@@ -5,7 +5,6 @@
 
 #include "bi/common/Dictionary.hpp"
 #include "bi/common/OverloadedDictionary.hpp"
-#include "bi/common/DispatcherDictionary.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/primitive/definitely.hpp"
 #include "bi/primitive/possibly.hpp"
@@ -22,8 +21,6 @@ class VarReference;
 class FuncReference;
 class TypeReference;
 class ProgReference;
-
-class Dispatcher;
 
 /**
  * Scope.
@@ -66,13 +63,6 @@ public:
   void resolve(FuncReference* ref);
   void resolve(TypeReference* ref);
 
-  /*
-   * Dispatchers.
-   */
-  bool contains(Dispatcher* dispatcher);
-  void add(Dispatcher* dispatcher);
-  Dispatcher* get(Dispatcher* dispatcher);
-
   /**
    * Inherit another scope into this scope. This is used to import
    * declarations from a base class into a derived class.
@@ -99,10 +89,8 @@ public:
    */
   Dictionary<VarParameter> vars;
   Dictionary<TypeParameter> types;
-  OverloadedDictionary<FuncParameter,definitely> definites;
-  OverloadedDictionary<FuncParameter,possibly> possibles;
+  OverloadedDictionary<FuncParameter,definitely> funcs;
   Dictionary<ProgParameter> progs;
-  DispatcherDictionary dispatchers;
 
 private:
   /**
