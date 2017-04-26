@@ -186,7 +186,3 @@ void bi::Visitor::visit(const TypeList* o) {
   o->head->accept(this);
   o->tail->accept(this);
 }
-
-void bi::Visitor::visit(const VariantType* o) {
-  o->definite->accept(this);
-}

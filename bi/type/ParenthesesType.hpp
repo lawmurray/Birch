@@ -34,7 +34,6 @@ public:
   virtual bool isStruct() const;
   virtual bool isClass() const;
   virtual bool isAlias() const;
-  virtual bool isDelay() const;
   virtual bool isLambda() const;
 
   virtual Type* strip();
@@ -51,7 +50,6 @@ public:
   virtual bool definitely(const TypeParameter& o) const;
   virtual bool definitely(const TypeReference& o) const;
   virtual bool definitely(const ParenthesesType& o) const;
-  virtual bool definitely(const VariantType& o) const;
 
   virtual bool dispatchPossibly(const Type& o) const;
   virtual bool possibly(const BracketsType& o) const;
@@ -61,6 +59,5 @@ public:
   virtual bool possibly(const TypeParameter& o) const;
   virtual bool possibly(const TypeReference& o) const;
   virtual bool possibly(const ParenthesesType& o) const;
-  virtual bool possibly(const VariantType& o) const;
 };
 }

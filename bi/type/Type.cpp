@@ -41,15 +41,7 @@ bool bi::Type::isArray() const {
   return false;
 }
 
-bool bi::Type::isDelay() const {
-  return false;
-}
-
 bool bi::Type::isLambda() const {
-  return false;
-}
-
-bool bi::Type::isVariant() const {
   return false;
 }
 
@@ -105,10 +97,6 @@ bool bi::Type::definitely(const ParenthesesType& o) const {
   return false;
 }
 
-bool bi::Type::definitely(const VariantType& o) const {
-  return false;
-}
-
 bool bi::Type::possibly(const Type& o) const {
   return o.dispatchPossibly(*this);
 }
@@ -138,10 +126,6 @@ bool bi::Type::possibly(const TypeReference& o) const {
 }
 
 bool bi::Type::possibly(const ParenthesesType& o) const {
-  return false;
-}
-
-bool bi::Type::possibly(const VariantType& o) const {
   return false;
 }
 

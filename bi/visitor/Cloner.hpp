@@ -64,6 +64,5 @@ public:
   virtual Type* clone(const ParenthesesType* o);
   virtual Type* clone(const LambdaType* o);
   virtual Type* clone(const TypeList* o);
-  virtual Type* clone(const VariantType* o);
 };
 }

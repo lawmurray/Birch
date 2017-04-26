@@ -103,7 +103,6 @@ birchc_SOURCES = \
   bi/type/TypeReference.cpp \
   bi/type/ParenthesesType.cpp \
   bi/type/Type.cpp \
-  bi/type/VariantType.cpp \
   bi/visitor/Assigner.cpp \
   bi/visitor/Cloner.cpp \
   bi/visitor/Gatherer.cpp \
@@ -179,8 +178,6 @@ nobase_include_HEADERS = bi/data/Array.hpp \
   bi/method/Lambda.hpp \
   bi/method/Method.hpp \
   bi/method/Stack.hpp \
-  bi/method/Variant.hpp \
-  bi/primitive/cast.hpp \
   bi/primitive/nonconst.hpp \
   bi/primitive/shared_ptr.hpp \
   bi/primitive/unique_ptr.hpp \

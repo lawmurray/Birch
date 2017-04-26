@@ -11,4 +11,3 @@
 #include "bi/type/TypeParameter.hpp"
 #include "bi/type/TypeReference.hpp"
 #include "bi/type/ParenthesesType.hpp"
-#include "bi/type/VariantType.hpp"

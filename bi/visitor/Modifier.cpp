@@ -209,8 +209,3 @@ bi::Type* bi::Modifier::modify(TypeList* o) {
   o->tail = o->tail.release()->accept(this);
   return o;
 }
-
-bi::Type* bi::Modifier::modify(VariantType* o) {
-  o->definite = o->definite.release()->accept(this);
-  return o;
-}

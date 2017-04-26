@@ -35,10 +35,6 @@ bool bi::ParenthesesType::isAlias() const {
   return single->isAlias();
 }
 
-bool bi::ParenthesesType::isDelay() const {
-  return single->isDelay();
-}
-
 bool bi::ParenthesesType::isLambda() const {
   return single->isLambda();
 }
@@ -91,10 +87,6 @@ bool bi::ParenthesesType::definitely(const ParenthesesType& o) const {
   return single->definitely(o);
 }
 
-bool bi::ParenthesesType::definitely(const VariantType& o) const {
-  return single->definitely(o);
-}
-
 bool bi::ParenthesesType::dispatchPossibly(const Type& o) const {
   return o.possibly(*this);
 }
@@ -125,8 +117,4 @@ bool bi::ParenthesesType::possibly(const TypeReference& o) const {
 
 bool bi::ParenthesesType::possibly(const ParenthesesType& o) const {
   return single->possibly(*o.single);
-}
-
-bool bi::ParenthesesType::possibly(const VariantType& o) const {
-  return single->possibly(o);
 }

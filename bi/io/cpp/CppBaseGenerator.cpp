@@ -16,9 +16,7 @@ bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
     indentable_ostream(base, level),
     header(header),
     inArray(0),
-    inDelay(0),
     inLambda(0),
-    inVariant(0),
     inReturn(0),
     inPolymorphic(0) {
   //
@@ -242,11 +240,7 @@ void bi::CppBaseGenerator::visit(const TypeReference* o) {
 }
 
 void bi::CppBaseGenerator::visit(const EmptyType* o) {
-  if (inVariant) {
-    middle("boost::blank");
-  } else {
-    middle("void");
-  }
+  middle("void");
 }
 
 void bi::CppBaseGenerator::visit(const BracketsType* o) {
@@ -276,17 +270,6 @@ void bi::CppBaseGenerator::visit(const LambdaType* o) {
   --inLambda;
 }
 
-void bi::CppBaseGenerator::visit(const VariantType* o) {
-  ++inVariant;
-  middle("bi::Variant<" << o->definite);
-  for (auto iter = o->possibles.begin(); iter != o->possibles.end(); ++iter) {
-    middle(',');
-    middle(*iter);
-  }
-  middle(">");
-  --inVariant;
-}
-
 void bi::CppBaseGenerator::genCapture(const Expression* o) {
   /* for lambda, capture assignable variables by reference, others by value */
   Gatherer<VarReference> gatherer;
@@ -297,9 +280,6 @@ void bi::CppBaseGenerator::genCapture(const Expression* o) {
   for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
     const VarReference* ref = *iter;
     if (done.find(ref->name->str()) == done.end()) {
-      if (ref->type->isDelay()) {
-        middle(", &" << ref->name);
-      }
       done.insert(ref->name->str());
     }
   }

@@ -53,7 +53,6 @@ public:
   virtual void visit(const BracketsType* o);
   virtual void visit(const ParenthesesType* o);
   virtual void visit(const LambdaType* o);
-  virtual void visit(const VariantType* o);
 
 protected:
   /**
@@ -77,19 +76,9 @@ protected:
   int inArray;
 
   /**
-   * Are we in a delay type?
-   */
-  int inDelay;
-
-  /**
    * Are we in a lambda type?
    */
   int inLambda;
-
-  /**
-   * Are we in a variant type?
-   */
-  int inVariant;
 
   /**
    * Are we in a return type?
