@@ -3,7 +3,6 @@
  */
 #include "bi/visitor/Resolver.hpp"
 
-#include "bi/visitor/IsPolymorphic.hpp"
 #include "bi/exception/all.hpp"
 
 #include <sstream>
@@ -146,7 +145,6 @@ bi::Type* bi::Resolver::modify(ModelReference* o) {
 
   Modifier::modify(o);
   resolve(o);
-  o->polymorphic = o->target->polymorphic;
   return o;
 }
 
@@ -210,7 +208,7 @@ bi::Type* bi::Resolver::modify(ModelParameter* o) {
   o->base = o->base->accept(this);
   o->scope = pop();
 
-  if (o->isLess()) {
+  if (!o->base->isEmpty()) {
     o->scope->inherit(o->getBase()->scope.get());
   }
 
@@ -220,11 +218,6 @@ bi::Type* bi::Resolver::modify(ModelParameter* o) {
   o->braces = o->braces->accept(this);
   models.pop();
   pop();
-
-  /* determine if this is a polymorphic type */
-  IsPolymorphic aux;
-  o->accept(&aux);
-  o->polymorphic = aux.result;
 
   return o;
 }

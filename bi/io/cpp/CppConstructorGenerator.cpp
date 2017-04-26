@@ -34,7 +34,7 @@ void bi::CppConstructorGenerator::visit(const ModelParameter* o) {
       finish(" :");
       in();
       in();
-      if (o->isLess()) {
+      if (!o->base->isEmpty()) {
         start("base_type(");
         ModelReference* base = dynamic_cast<ModelReference*>(o->base.get());
         assert(base);

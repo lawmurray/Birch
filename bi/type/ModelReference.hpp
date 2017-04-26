@@ -28,13 +28,11 @@ public:
    * @param parens Parentheses.
    * @param loc Location.
    * @param assignable Is this type assignable?
-   * @param polymorphic Is this type polymorphic?
    * @param target Target.
    */
   ModelReference(shared_ptr<Name> name, Expression* parens =
       new EmptyExpression(), shared_ptr<Location> loc = nullptr,
-      const bool assignable = false,
-      const bool polymorphic = false, ModelParameter* target = nullptr);
+      const bool assignable = false, ModelParameter* target = nullptr);
 
   /**
    * Constructor.
@@ -49,7 +47,9 @@ public:
   virtual ~ModelReference();
 
   virtual bool isBuiltin() const;
-  virtual bool isModel() const;
+  virtual bool isStruct() const;
+  virtual bool isClass() const;
+  virtual bool isAlias() const;
 
   virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);

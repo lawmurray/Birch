@@ -9,8 +9,8 @@
 #include <typeinfo>
 
 bi::ParenthesesType::ParenthesesType(Type* single, shared_ptr<Location> loc,
-    const bool assignable, const bool polymorphic) :
-    Type(loc, assignable, polymorphic),
+    const bool assignable) :
+    Type(loc, assignable),
     TypeUnary(single) {
   //
 }
@@ -23,8 +23,16 @@ bool bi::ParenthesesType::isBuiltin() const {
   return single->isBuiltin();
 }
 
-bool bi::ParenthesesType::isModel() const {
-  return single->isModel();
+bool bi::ParenthesesType::isStruct() const {
+  return single->isStruct();
+}
+
+bool bi::ParenthesesType::isClass() const {
+  return single->isClass();
+}
+
+bool bi::ParenthesesType::isAlias() const {
+  return single->isAlias();
 }
 
 bool bi::ParenthesesType::isDelay() const {

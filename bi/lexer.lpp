@@ -97,8 +97,9 @@ IS                                 (u|U|l|L)*
 
 "import"                            { return IMPORT; }
 "program"                           { return PROG; }
-"model"                             { return MODEL; }
-"virtual"                           { return VIRTUAL; }
+"struct"                            { return STRUCT; }
+"class"                             { return CLASS; }
+"type"                              { return TYPE; }
 "function"                          { return FUNC; }
 "lambda"                            { return LAMBDA; }
 "if"                                { return IF; }

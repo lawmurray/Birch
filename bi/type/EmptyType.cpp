@@ -5,8 +5,8 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::EmptyType::EmptyType(const bool assignable, const bool polymorphic) :
-    Type(nullptr, assignable, polymorphic) {
+bi::EmptyType::EmptyType(const bool assignable) :
+    Type(nullptr, assignable) {
   //
 }
 

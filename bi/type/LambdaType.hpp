@@ -22,11 +22,9 @@ public:
    * @param result Result type.
    * @param loc Location.
    * @param assignable Is this type assignable?
-   * @param polymorphic Is this type polymorphic?
    */
   LambdaType(Type* parens, Type* result, shared_ptr<Location> loc = nullptr,
-      const bool assignable = false,
-      const bool polymorphic = false);
+      const bool assignable = false);
 
   /**
    * Destructor.

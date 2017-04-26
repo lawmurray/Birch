@@ -47,7 +47,7 @@
   bi::Statement* valStatement;
 }
 
-%token <valString> IMPORT PROG MODEL VIRTUAL FUNC LAMBDA
+%token <valString> IMPORT PROG STRUCT CLASS TYPE FUNC LAMBDA
 %token <valString> IF ELSE WHILE CPP HPP THIS
 %token <valString> DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE RAW NAME
 %token <valBool> BOOL_LITERAL
@@ -67,16 +67,16 @@
 %type <valExpression> bool_literal int_literal real_literal string_literal
 %type <valExpression> literal
 %type <valExpression> brackets braces optional_braces
-%type <valExpression> model_braces optional_model_braces
+%type <valExpression> type_braces optional_type_braces
 %type <valExpression> parameter_list parameters optional_parameters
 %type <valExpression> result result_list results optional_results
 %type <valExpression> argument_list arguments optional_arguments
 %type <valExpression> var_reference var_parameter var_parameter_with_value
 %type <valExpression> member_parameter
-%type <valExpression> func_reference func_parameter op_parameter virtual_parameter
+%type <valExpression> func_reference func_parameter op_parameter
 %type <valProg> prog_parameter
 
-%type <valType> model_reference model_parameter
+%type <valType> type_reference struct_parameter class_parameter type_parameter
 %type <valType> brackets_type parens_type primary_type
 %type <valType> delay_type lambda_type
 %type <valType> type_list type
@@ -95,11 +95,11 @@
 %type <valExpression> expression_list expression
 
 %type <valStatement> var_declaration member_declaration
-%type <valStatement> func_declaration op_declaration virtual_declaration
-%type <valStatement> model_declaration prog_declaration
+%type <valStatement> func_declaration op_declaration
+%type <valStatement> type_declaration prog_declaration
 %type <valStatement> import cpp hpp expression_statement if while
 %type <valStatement> statement statements optional_statements
-%type <valStatement> model_statement model_statements optional_model_statements
+%type <valStatement> type_statement type_statements optional_type_statements
 %type <valStatement> file_statement file_statements optional_file_statements
 
 %locations
@@ -118,12 +118,6 @@ name
 
 path_name
     : NAME    { $$ = new bi::Name($1, make_loc(@$)); }
-    
-    /* some keywords can be sensibly used as path names */
-    | FUNC    { $$ = new bi::Name("function", make_loc(@$)); }
-    | LAMBDA  { $$ = new bi::Name("lambda", make_loc(@$)); }
-    | MODEL   { $$ = new bi::Name("model", make_loc(@$)); }
-    | PROG    { $$ = new bi::Name("program", make_loc(@$)); }
     ;
 
 path
@@ -177,12 +171,12 @@ optional_braces
     | ';'     { $$ = make_empty(); }
     ;
 
-model_braces
-    : '{' optional_model_statements '}'  { $$ = new bi::BracesExpression($2, make_loc(@$)); }
+type_braces
+    : '{' optional_type_statements '}'  { $$ = new bi::BracesExpression($2, make_loc(@$)); }
     ;
 
-optional_model_braces
-    : model_braces
+optional_type_braces
+    : type_braces
     | ';'           { $$ = make_empty(); }
     ;
 
@@ -229,14 +223,19 @@ op_parameter
     | '(' unary_operator var_parameter ')' optional_results optional_braces                     { $$ = new bi::FuncParameter($2, $3, $5, $6, bi::UNARY_OPERATOR, make_loc(@$)); }
     ;
 
-virtual_parameter
-    : name parameters optional_results optional_braces  { $$ = new bi::FuncParameter($1, $2, $3, $4, bi::VIRTUAL_FUNCTION, make_loc(@$)); }
+struct_parameter
+    : name optional_parameters '<' type_reference optional_type_braces  { $$ = new bi::ModelParameter($1, $2, $4, $5, bi::STRUCT_TYPE, make_loc(@$)); }
+    | name optional_parameters optional_type_braces                     { $$ = new bi::ModelParameter($1, $2, new bi::EmptyType(), $3, bi::STRUCT_TYPE, make_loc(@$)); }
     ;
 
-model_parameter
-    : name optional_parameters '<' model_reference optional_model_braces  { $$ = new bi::ModelParameter($1, $2, new bi::Name("<"), $4, $5, make_loc(@$)); }
-    | name optional_parameters optional_model_braces                      { $$ = new bi::ModelParameter($1, $2, new bi::Name(), new bi::EmptyType(), $3, make_loc(@$)); }
-    | name '=' model_reference ';'                                        { $$ = new bi::ModelParameter($1, make_empty(), new bi::Name("="), $3, make_empty(), make_loc(@$)); }
+class_parameter
+    : name optional_parameters '<' type_reference optional_type_braces  { $$ = new bi::ModelParameter($1, $2, $4, $5, bi::CLASS_TYPE, make_loc(@$)); }
+    | name optional_parameters optional_type_braces                     { $$ = new bi::ModelParameter($1, $2, new bi::EmptyType(), $3, bi::CLASS_TYPE, make_loc(@$)); }
+    ;
+
+type_parameter
+    : name '=' type_reference ';'  { $$ = new bi::ModelParameter($1, make_empty(), $3, make_empty(), bi::ALIAS_TYPE, make_loc(@$)); }
+    | name ';'                     { $$ = new bi::ModelParameter($1, make_empty(), new bi::EmptyType(), make_empty(), bi::BUILTIN_TYPE, make_loc(@$)); }
     ;
 
 prog_parameter
@@ -309,7 +308,7 @@ func_reference
     : name arguments  { $$ = new bi::FuncReference($1, $2, bi::FUNCTION, make_loc(@$)); }
     ;
 
-model_reference
+type_reference
     : name optional_arguments  { $$ = new bi::ModelReference($1, $2, make_loc(@$)); }
     ;
 
@@ -338,7 +337,7 @@ parens_type
     ;
 
 primary_type
-    : model_reference
+    : type_reference
     | parens_type
     ;
 
@@ -551,12 +550,10 @@ op_declaration
     : FUNC op_parameter  { $$ = new bi::FuncDeclaration(dynamic_cast<bi::FuncParameter*>($2), make_loc(@$)); }
     ;
 
-virtual_declaration
-    : VIRTUAL FUNC virtual_parameter  { $$ = new bi::FuncDeclaration(dynamic_cast<bi::FuncParameter*>($3), make_loc(@$)); }
-    ;
-
-model_declaration
-    : MODEL model_parameter  { $$ = new bi::ModelDeclaration(dynamic_cast<bi::ModelParameter*>($2), make_loc(@$)); } 
+type_declaration
+    : STRUCT struct_parameter  { $$ = new bi::ModelDeclaration(dynamic_cast<bi::ModelParameter*>($2), make_loc(@$)); } 
+    | CLASS class_parameter    { $$ = new bi::ModelDeclaration(dynamic_cast<bi::ModelParameter*>($2), make_loc(@$)); } 
+    | TYPE type_parameter      { $$ = new bi::ModelDeclaration(dynamic_cast<bi::ModelParameter*>($2), make_loc(@$)); } 
     ;
     
 prog_declaration
@@ -604,20 +601,19 @@ optional_statements
     |             { $$ = new bi::EmptyStatement(); }
     ;
 
-model_statement
+type_statement
     : member_declaration
     | func_declaration
-    | virtual_declaration
     | hpp
     ;
     
-model_statements
-    : model_statement
-    | model_statement model_statements  { $$ = new bi::StatementList($1, $2, make_loc(@$)); }
+type_statements
+    : type_statement
+    | type_statement type_statements  { $$ = new bi::StatementList($1, $2, make_loc(@$)); }
     ;
     
-optional_model_statements
-    : model_statements
+optional_type_statements
+    : type_statements
     |                   { $$ = new bi::EmptyStatement(); }
     ;
 
@@ -633,7 +629,7 @@ file_statement
     | func_declaration
     | op_declaration
     | prog_declaration
-    | model_declaration
+    | type_declaration
     ;
 
 file_statements

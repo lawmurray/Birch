@@ -26,7 +26,7 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
     if (header) {
       line("template<class Group = MemoryGroup>");
       start("class " << o->name);
-      if (o->isLess()) {
+      if (!o->base->isEmpty()) {
         middle(" : public " << o->getBase()->name << "<Group>");
       }
       finish(" {");
@@ -34,7 +34,7 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
       in();
       line("typedef Group group_type;");
       line("typedef " << o->name << "<Group> value_type;");
-      if (o->isLess()) {
+      if (!o->base->isEmpty()) {
         line("typedef " << o->getBase()->name << "<Group> base_type;");
       }
       line("");
@@ -64,7 +64,12 @@ void bi::CppModelGenerator::visit(const ModelParameter* o) {
 
     /* destructor */
     if (header) {
-      line("virtual ~" << o->name << "() {");
+      if (o->isClass()) {
+        start("virtual ");
+      } else {
+        start("");
+      }
+      finish('~' << o->name << "() {");
       in();
       line("//");
       out();
@@ -111,17 +116,17 @@ void bi::CppModelGenerator::visit(const ModelReference* o) {
   } else {
     if (o->isBuiltin()) {
       genBuiltin(o);
-    } else if (o->polymorphic) {
-      middle("bi::shared_ptr<bi::model::" << o->name << "<Group>>");
+    } else if (o->isClass()) {
+      middle("PrimitiveValue<shared_ptr<" << o->name << "<Group>>,Group>");
     } else {
-      middle("bi::model::" << o->name << "<Group>");
+      middle(o->name << "<Group>");
     }
   }
 }
 
 void bi::CppModelGenerator::visit(const VarDeclaration* o) {
   if (header) {
-    if (o->param->type->isModel() && !o->param->type->polymorphic) {
+    if (o->param->type->isClass()) {
       /* use struct-of-arrays */
       start(o->param->type << ' ' << o->param->name);
     } else {
@@ -140,7 +145,7 @@ void bi::CppModelGenerator::visit(const FuncParameter* o) {
     }
 
     /* return type */
-    if (header && o->isVirtual()) {
+    if (header && model->isClass()) {
       start("virtual ");
     } else {
       start("");

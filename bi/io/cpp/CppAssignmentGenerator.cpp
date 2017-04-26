@@ -27,7 +27,7 @@ void bi::CppAssignmentGenerator::visit(const ModelParameter* o) {
   } else {
     finish(" {");
     in();
-    if (o->isLess()) {
+    if (!o->base->isEmpty()) {
       line("base_type::operator=(o_);");
     }
     *this << o->braces;
@@ -44,7 +44,7 @@ void bi::CppAssignmentGenerator::visit(const ModelParameter* o) {
     middle(" operator=(const " << o->name << "<Group1>& o_)");
     finish(" {");
     in();
-    if (o->isLess()) {
+    if (!o->base->isEmpty()) {
       line("base_type::operator=(o_);");
     }
     *this << o->braces;

@@ -129,8 +129,10 @@ void bi::bi_ostream::visit(const ModelParameter* o) {
   if (!o->parens->isEmpty()) {
     *this << '(' << o->parens << ')';
   }
-  if (!o->base->isEmpty()) {
-    *this << ' ' << o->op << ' ' << o->base;
+  if (!o->isAlias()) {
+    *this << " = " << o->base;
+  } else if (!o->base->isEmpty()) {
+    *this << " < " << o->base;
   }
 }
 

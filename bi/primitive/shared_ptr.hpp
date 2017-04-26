@@ -37,13 +37,10 @@ public:
   shared_ptr(const std::shared_ptr<T>& ptr);
 
   /**
-   * Construct from pointer of a base or derived type.
+   * Construct from pointer to base or derived type.
    */
   template<class U>
-  shared_ptr(const shared_ptr<U>& o) :
-      ptr(std::dynamic_pointer_cast<U>(o.ptr)) {
-    //
-  }
+  shared_ptr(const shared_ptr<U>& o);
 
   /**
    * Copy constructor.
@@ -135,6 +132,15 @@ template<class T>
 bi::shared_ptr<T>::shared_ptr(const std::shared_ptr<T>& ptr) :
     ptr(ptr) {
   //
+}
+
+template<class T>
+template<class U>
+bi::shared_ptr<T>::shared_ptr(const shared_ptr<U>& o) :
+    ptr(std::dynamic_pointer_cast<T>(o.ptr)) {
+  if (!ptr) {
+    throw std::bad_cast();
+  }
 }
 
 template<class T>

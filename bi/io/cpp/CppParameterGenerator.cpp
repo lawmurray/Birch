@@ -10,11 +10,11 @@ bi::CppParameterGenerator::CppParameterGenerator(std::ostream& base,
 }
 
 void bi::CppParameterGenerator::visit(const ModelReference* o) {
-  if (!o->assignable && !inVariant) {
+  if (!o->assignable && !inVariant && !o->isClass()) {
     middle("const ");
   }
   CppBaseGenerator::visit(o);
-  if (!inDelay && !inReturn && !inVariant) {
+  if (!inDelay && !inReturn && !inVariant && !o->isClass()) {
     middle('&');
   }
 }

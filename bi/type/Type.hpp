@@ -33,10 +33,8 @@ public:
    *
    * @param loc Location.
    * @param assignable Is this type assignable?
-   * @param polymorphic Is this type polymorphic?
    */
-  Type(shared_ptr<Location> loc = nullptr, const bool assignable = false,
-      const bool polymorphic = false);
+  Type(shared_ptr<Location> loc = nullptr, const bool assignable = false);
 
   /**
    * Destructor.
@@ -79,9 +77,19 @@ public:
   virtual bool isBuiltin() const;
 
   /**
-   * Is this a model type?
+   * Is this a struct type, or an alias of a struct type?
    */
-  virtual bool isModel() const;
+  virtual bool isStruct() const;
+
+  /**
+   * Is this a class type, or an alias of a class type?
+   */
+  virtual bool isClass() const;
+
+  /**
+   * Is this an type?
+   */
+  virtual bool isAlias() const;
 
   /**
    * Is this an array type?
@@ -128,11 +136,6 @@ public:
    * Is this type assignable?
    */
   bool assignable;
-
-  /**
-   * Is this type polymorphic?
-   */
-  bool polymorphic;
 
   /*
    * Double-dispatch partial order comparisons.

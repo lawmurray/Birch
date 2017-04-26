@@ -21,11 +21,9 @@ public:
    * @param single Type in parentheses.
    * @param loc Location.
    * @param assignable Is this type assignable?
-   * @param polymorphic Is this type polymorphic?
    */
   ParenthesesType(Type* single, shared_ptr<Location> loc = nullptr,
-      const bool assignable = false,
-      const bool polymorphic = false);
+      const bool assignable = false);
 
   /**
    * Destructor.
@@ -33,7 +31,9 @@ public:
   virtual ~ParenthesesType();
 
   virtual bool isBuiltin() const;
-  virtual bool isModel() const;
+  virtual bool isStruct() const;
+  virtual bool isClass() const;
+  virtual bool isAlias() const;
   virtual bool isDelay() const;
   virtual bool isLambda() const;
 

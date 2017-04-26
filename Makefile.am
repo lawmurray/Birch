@@ -111,7 +111,6 @@ birchc_SOURCES = \
   bi/visitor/Assigner.cpp \
   bi/visitor/Cloner.cpp \
   bi/visitor/Gatherer.cpp \
-  bi/visitor/IsPolymorphic.cpp \
   bi/visitor/Modifier.cpp \
   bi/visitor/Resolver.cpp \
   bi/visitor/Visitor.cpp \

@@ -8,6 +8,7 @@
 #include "bi/primitive/shared_ptr.hpp"
 
 #include <type_traits>
+#include <iostream>
 
 namespace bi {
 enum TypeFlag {
@@ -79,12 +80,7 @@ struct cast_impl<To,From,IS_POINTER,IS_CLASS> {
 template<class To, class From>
 struct cast_impl<To,From,IS_POINTER,IS_POINTER> {
   static To eval(From&& o) {
-    auto result = To(o);
-    if (result) {
-      return result;
-    } else {
-      throw std::bad_cast();
-    }
+    return To(o);  // shared_ptr throws internally on failure
   }
 };
 

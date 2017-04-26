@@ -7,11 +7,9 @@
 
 #include <cassert>
 
-bi::Type::Type(shared_ptr<Location> loc, const bool assignable,
-    const bool polymorphic) :
+bi::Type::Type(shared_ptr<Location> loc, const bool assignable) :
     Located(loc),
-    assignable(assignable),
-    polymorphic(polymorphic) {
+    assignable(assignable) {
   //
 }
 
@@ -27,7 +25,15 @@ bool bi::Type::isBuiltin() const {
   return false;
 }
 
-bool bi::Type::isModel() const {
+bool bi::Type::isStruct() const {
+  return false;
+}
+
+bool bi::Type::isClass() const {
+  return false;
+}
+
+bool bi::Type::isAlias() const {
   return false;
 }
 

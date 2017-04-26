@@ -12,6 +12,16 @@
 
 namespace bi {
 /**
+ * Type form.
+ */
+enum TypeForm {
+  STRUCT_TYPE,
+  CLASS_TYPE,
+  BUILTIN_TYPE,
+  ALIAS_TYPE
+};
+
+/**
  * Type parameter.
  *
  * @ingroup compiler_type
@@ -28,14 +38,14 @@ public:
    *
    * @param name Name.
    * @param parens Parentheses.
-   * @param op Operator giving relation to base type.
    * @param base Base type.
    * @param braces Braces.
+   * @param form Type form.
    * @param loc Location.
    * @param assignable Is this type writeable?
    */
   ModelParameter(shared_ptr<Name> name, Expression* parens,
-      shared_ptr<Name> op, Type* base, Expression* braces,
+      Type* base, Expression* braces, const TypeForm form,
       shared_ptr<Location> loc = nullptr, const bool assignable = false);
 
   /**
@@ -48,9 +58,9 @@ public:
   virtual void accept(Visitor* visitor) const;
 
   bool isBuiltin() const;
-  bool isModel() const;
-  bool isLess() const;
-  bool isEqual() const;
+  bool isStruct() const;
+  bool isClass() const;
+  bool isAlias() const;
 
   /**
    * Get the base type.
@@ -77,5 +87,10 @@ public:
   virtual bool dispatchPossibly(const Type& o) const;
   virtual bool possibly(const ModelParameter& o) const;
   virtual bool possibly(const ParenthesesType& o) const;
+
+  /**
+   * Type form.
+   */
+  TypeForm form;
 };
 }

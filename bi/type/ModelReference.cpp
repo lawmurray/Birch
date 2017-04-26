@@ -6,9 +6,8 @@
 #include "bi/visitor/all.hpp"
 
 bi::ModelReference::ModelReference(shared_ptr<Name> name, Expression* parens,
-    shared_ptr<Location> loc, const bool assignable, const bool polymorphic,
-    ModelParameter* target) :
-    Type(loc, assignable, polymorphic),
+    shared_ptr<Location> loc, const bool assignable, ModelParameter* target) :
+    Type(loc, assignable),
     Named(name),
     Parenthesised(parens),
     Reference(target) {
@@ -41,22 +40,28 @@ bool bi::ModelReference::isBuiltin() const {
   /* pre-condition */
   assert(target);
 
-  if (target->isEqual()) {
-    return target->base->isBuiltin();
-  } else {
-    return target->braces->isEmpty();
-  }
+  return target->isBuiltin();
 }
 
-bool bi::ModelReference::isModel() const {
+bool bi::ModelReference::isStruct() const {
   /* pre-condition */
   assert(target);
 
-  if (target->isEqual()) {
-    return target->base->isModel();
-  } else {
-    return !target->braces->isEmpty();
-  }
+  return target->isStruct();
+}
+
+bool bi::ModelReference::isClass() const {
+  /* pre-condition */
+  assert(target);
+
+  return target->isClass();
+}
+
+bool bi::ModelReference::isAlias() const {
+  /* pre-condition */
+  assert(target);
+
+  return target->isAlias();
 }
 
 bool bi::ModelReference::dispatchDefinitely(const Type& o) const {

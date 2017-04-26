@@ -19,7 +19,7 @@ void bi::CppCopyConstructorGenerator::visit(const ModelParameter* o) {
     middle(", const char* name = nullptr");
     middle(", const MemoryGroup& group = MemoryGroup())");
 
-    if (o->isLess()) {
+    if (!o->base->isEmpty()) {
       finish(" :");
       in();
       in();

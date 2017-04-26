@@ -9,8 +9,8 @@
 #include <typeinfo>
 
 bi::DelayType::DelayType(Type* left, Type* right, shared_ptr<Location> loc,
-    const bool assignable, const bool polymorphic) :
-    Type(loc, assignable, polymorphic),
+    const bool assignable) :
+    Type(loc, assignable),
     TypeBinary(left, right) {
   //
 }

@@ -6,8 +6,8 @@
 #include "bi/visitor/all.hpp"
 
 bi::LambdaType::LambdaType(Type* parens, Type* result,
-    shared_ptr<Location> loc, const bool assignable, const bool polymorphic) :
-    Type(loc, assignable, polymorphic),
+    shared_ptr<Location> loc, const bool assignable) :
+    Type(loc, assignable),
     parens(parens),
     result(result) {
   //

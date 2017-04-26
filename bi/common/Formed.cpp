@@ -27,7 +27,3 @@ bool bi::Formed::isAssign() const {
 bool bi::Formed::isLambda() const {
   return form == LAMBDA_FUNCTION;
 }
-
-bool bi::Formed::isVirtual() const {
-  return form == VIRTUAL_FUNCTION;
-}

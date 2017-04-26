@@ -5,16 +5,15 @@
 
 #include "bi/visitor/all.hpp"
 
-#include <typeinfo>
-
 bi::ModelParameter::ModelParameter(shared_ptr<Name> name, Expression* parens,
-    shared_ptr<Name> op, Type* base, Expression* braces,
+    Type* base, Expression* braces, const TypeForm form,
     shared_ptr<Location> loc, const bool assignable) :
     Type(loc, assignable),
     Named(name),
     Parenthesised(parens),
-    Based(op, base),
-    Braced(braces) {
+    Based(base),
+    Braced(braces),
+    form(form) {
   //
 }
 
@@ -35,27 +34,31 @@ void bi::ModelParameter::accept(Visitor* visitor) const {
 }
 
 bool bi::ModelParameter::isBuiltin() const {
-  if (isEqual()) {
+  if (isAlias()) {
     return base->isBuiltin();
   } else {
-    return braces->isEmpty();
+    return form == BUILTIN_TYPE;
   }
 }
 
-bool bi::ModelParameter::isModel() const {
-  if (isEqual()) {
-    return base->isModel();
+bool bi::ModelParameter::isStruct() const {
+  if (isAlias()) {
+    return base->isStruct();
   } else {
-    return !braces->isEmpty();
+    return form == STRUCT_TYPE;
   }
 }
 
-bool bi::ModelParameter::isLess() const {
-  return !base->isEmpty() && *op == "<";
+bool bi::ModelParameter::isClass() const {
+  if (isAlias()) {
+    return base->isClass();
+  } else {
+    return form == CLASS_TYPE;
+  }
 }
 
-bool bi::ModelParameter::isEqual() const {
-  return !base->isEmpty() && *op == "=";
+bool bi::ModelParameter::isAlias() const {
+  return form == ALIAS_TYPE;
 }
 
 const bi::ModelParameter* bi::ModelParameter::getBase() const {
@@ -66,11 +69,11 @@ const bi::ModelParameter* bi::ModelParameter::getBase() const {
 }
 
 bool bi::ModelParameter::canUpcast(const ModelParameter* o) const {
-  if (o->isEqual()) {
+  if (o->isAlias()) {
     return canUpcast(o->getBase());
-  } else if (isEqual()) {
+  } else if (isAlias()) {
     return getBase()->canUpcast(o);
-  } else if (isLess()) {
+  } else if (!base->isEmpty()) {
     return this == o || getBase()->canUpcast(o);
   } else {
     return this == o;

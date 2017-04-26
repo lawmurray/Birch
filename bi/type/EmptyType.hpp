@@ -17,9 +17,8 @@ public:
    * Constructor.
    *
    * @param assignable Is this type assignable?
-   * @param polymorphic Is this type polymorphic?
    */
-  EmptyType(const bool assignable = false, const bool polymorphic = false);
+  EmptyType(const bool assignable = false);
 
   /**
    * Destructor.

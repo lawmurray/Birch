@@ -108,7 +108,7 @@ void bi::CppBaseGenerator::visit(const Member* o) {
     middle("nonconst(this)->");
   } else {
     middle(o->left);
-    if (o->left->type->polymorphic) {
+    if (o->left->type->isClass()) {
       middle("->");
     } else {
       middle('.');
@@ -162,7 +162,7 @@ void bi::CppBaseGenerator::visit(const VarParameter* o) {
 //  }
   } else if (!o->value->isEmpty()) {
     middle(" = " << o->value);
-  } else if (o->type->polymorphic) {
+  } else if (o->type->isClass()) {
     ++inPolymorphic;
     middle(" = std::make_shared<" << o->type << ">()");
     --inPolymorphic;
@@ -237,7 +237,7 @@ void bi::CppBaseGenerator::visit(const Raw* o) {
 void bi::CppBaseGenerator::visit(const ModelReference* o) {
   if (o->isBuiltin()) {
     genBuiltin(o);
-  } else if (!inPolymorphic && o->polymorphic) {
+  } else if (!inPolymorphic && o->isClass()) {
     middle("bi::shared_ptr<bi::model::" << o->name << "<>>");
   } else {
     middle("bi::model::" << o->name << "<>");
@@ -254,7 +254,7 @@ void bi::CppBaseGenerator::visit(const EmptyType* o) {
 
 void bi::CppBaseGenerator::visit(const BracketsType* o) {
   ++inArray;
-  if (o->single->isModel() && !o->single->polymorphic) {
+  if (o->single->isClass()) {
     middle("DefaultArray<" << o->single << "," << o->count() << '>');
   } else {
     middle("DefaultArray<PrimitiveValue<" << o->single << ">," << o->count() << '>');

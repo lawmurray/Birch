@@ -24,12 +24,10 @@ public:
    * @param possibles Possible types.
    * @param loc Location.
    * @param assignable Is this type assignable?
-   * @param polymorphic Is this type polymorphic?
    */
   VariantType(Type* definite,
       const std::list<Type*>& possibles = std::list<Type*>(),
-      shared_ptr<Location> loc = nullptr, const bool assignable = false,
-      const bool polymorphic = false);
+      shared_ptr<Location> loc = nullptr, const bool assignable = false);
 
   /**
    * Destructor.
