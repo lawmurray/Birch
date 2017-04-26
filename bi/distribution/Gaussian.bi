@@ -5,7 +5,7 @@ import io;
 /**
  * Gaussian distribution.
  */
-model Gaussian {
+class Gaussian {
   /**
    * Mean.
    */
@@ -27,11 +27,11 @@ model Gaussian {
     }}
   }
 
-  virtual function observe(x:Real) -> l:Real {
+  function observe(x:Real) -> l:Real {
     l <- -0.5*pow((x - this.μ)/this.σ, 2.0) - log(sqrt(2.0*π)*this.σ);
   }
   
-  virtual function smooth(μ:Real, σ:Real) {
+  function smooth(μ:Real, σ:Real) {
     this.μ <- μ;
     this.σ <- σ;
   }
@@ -40,7 +40,7 @@ model Gaussian {
 /**
  * Gaussian distribution with conjugate prior over the mean.
  */
-model GaussianWithConjugateMean < Gaussian {
+class GaussianWithConjugateMean < Gaussian {
   m0:Gaussian;
   a:Real;
 
@@ -51,7 +51,7 @@ model GaussianWithConjugateMean < Gaussian {
     this.a <- a;
   }
   
-  virtual function observe(x:Real) -> l:Real {
+  function observe(x:Real) -> l:Real {
     σ2_0:Real <- pow(this.m0.σ, 2.0);
     λ_0:Real <- 1.0/σ2_0;
     σ2:Real <- pow(this.a, 2.0);
@@ -64,7 +64,7 @@ model GaussianWithConjugateMean < Gaussian {
     l <- -0.5*pow((x - this.μ)/this.σ, 2.0) - log(sqrt(2.0*π)*this.σ);
   }
   
-  virtual function smooth(μ:Real, σ:Real) {
+  function smooth(μ:Real, σ:Real) {
     this.μ <- μ;
     this.σ <- σ;
   }
@@ -73,22 +73,22 @@ model GaussianWithConjugateMean < Gaussian {
 /**
  * Gaussian distribution that is scalar multiple of another.
  */
-model GaussianMultiple < Gaussian {
+class GaussianMultiple < Gaussian {
   a:Real;
   m0:Gaussian;
 
-  virtual function create(a:Real, m0:Gaussian) {
+  function create(a:Real, m0:Gaussian) {
     this.μ <- m0.μ*a;
     this.σ <- m0.σ*abs(a);
     this.a <- a;
     this.m0 <- m0;
   }
   
-  virtual function observe(x:Real) -> l:Real {
+  function observe(x:Real) -> l:Real {
     l <- this.m0.observe(x/abs(this.a)) - log(abs(this.a));
   }
   
-  virtual function smooth(μ:Real, σ:Real) {
+  function smooth(μ:Real, σ:Real) {
     this.m0.smooth(μ/this.a, σ/abs(this.a));
   }
 }

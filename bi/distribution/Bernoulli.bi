@@ -5,7 +5,7 @@ import assert;
 /**
  * Bernoulli distribution.
  */
-model Bernoulli {
+class Bernoulli {
   /**
    * Probability of a true result.
    */
@@ -24,7 +24,7 @@ function Bernoulli(ρ:Real) -> m:Bernoulli {
  */
 function (x:Boolean <~ m:Bernoulli) {
   cpp {{
-  x = std::bernoulli_distribution(m.ρ)(rng);
+  x = std::bernoulli_distribution(m->ρ)(rng);
   }}
 }
 

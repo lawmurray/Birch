@@ -1,4 +1,4 @@
 /**
  * String.
  */
-model String;
+type String;

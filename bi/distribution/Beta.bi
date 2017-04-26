@@ -7,7 +7,7 @@ import distribution.Bernoulli;
 /**
  * Beta distribution.
  */
-model Beta {
+class Beta {
   /**
    * First shape parameter.
    */

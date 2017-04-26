@@ -5,7 +5,7 @@ import assert;
 /**
  * Gamma distribution.
  */
-model Gamma {
+class Gamma {
   /**
    * Shape.
    */
@@ -30,7 +30,7 @@ function Gamma(k:Real, θ:Real) -> m:Gamma {
  */
 function (x:Real <~ m:Gamma) {
   cpp {{
-  x = std::gamma_distribution<double>(m.k, m.θ)(rng);
+  x = std::gamma_distribution<double>(m->k, m->θ)(rng);
   }}
 }
 

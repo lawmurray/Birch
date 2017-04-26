@@ -4,7 +4,7 @@ import random;
 /**
  * Uniform distribution.
  */
-model Uniform {
+class Uniform {
   /**
    * Lower bound.
    */
@@ -29,7 +29,7 @@ function Uniform(l:Real, u:Real) -> m:Uniform {
  */
 function (x:Real <~ m:Uniform) {
   cpp {{
-  x = std::uniform_real_distribution<double>(m.l, m.u)(rng);
+  x = std::uniform_real_distribution<double>(m->l, m->u)(rng);
   }}
 }
 

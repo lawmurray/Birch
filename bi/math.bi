@@ -7,13 +7,13 @@ cpp {{
  * Built-in types
  * --------------
  */
-model Boolean;
-model Real64;
-model Real32;
-model Integer64;
-model Integer32;
-model Real = Real64;
-model Integer = Integer64;
+type Boolean;
+type Real64;
+type Real32;
+type Integer64;
+type Integer32;
+type Real = Real64;
+type Integer = Integer64;
 
 /**
  * Conversions
