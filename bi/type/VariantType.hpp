@@ -63,7 +63,6 @@ public:
   virtual bool definitely(const TypeParameter& o) const;
   virtual bool definitely(const TypeReference& o) const;
   virtual bool definitely(const ParenthesesType& o) const;
-  virtual bool definitely(const DelayType& o) const;
 
   virtual bool dispatchPossibly(const Type& o) const;
   virtual bool possibly(const BracketsType& o) const;
@@ -73,7 +72,6 @@ public:
   virtual bool possibly(const TypeParameter& o) const;
   virtual bool possibly(const TypeReference& o) const;
   virtual bool possibly(const ParenthesesType& o) const;
-  virtual bool possibly(const DelayType& o) const;
 
   /**
    * Definite type.

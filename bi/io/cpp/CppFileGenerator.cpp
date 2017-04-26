@@ -269,13 +269,6 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
         start(name << " = ");
         Type* type = (*iter)->type->strip();
         const TypeReference* ref = dynamic_cast<const TypeReference*>(type);
-        if (!ref) {
-          const DelayType* delay = dynamic_cast<const DelayType*>(type);
-          if (delay) {
-            ref = dynamic_cast<const TypeReference*>(delay->left.get());
-          }
-        }
-
         if (ref) {
           std::string typeName = ref->name->str();
           if (typeName == "Boolean") {

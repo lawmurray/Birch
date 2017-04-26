@@ -270,12 +270,6 @@ void bi::CppBaseGenerator::visit(const ParenthesesType* o) {
   }
 }
 
-void bi::CppBaseGenerator::visit(const DelayType* o) {
-  ++inDelay;
-  middle("bi::Delay<" << o->left << ',' << o->right << '>');
-  --inDelay;
-}
-
 void bi::CppBaseGenerator::visit(const LambdaType* o) {
   ++inLambda;
   middle("bi::Lambda<" << o->result << '(');

@@ -43,16 +43,6 @@ void bi::CppParameterGenerator::visit(const ParenthesesType* o) {
   }
 }
 
-void bi::CppParameterGenerator::visit(const DelayType* o) {
-  if (!o->assignable && !inVariant) {
-    middle("const ");
-  }
-  CppBaseGenerator::visit(o);
-  if (!inDelay && !inReturn && !inVariant) {
-    middle('&');
-  }
-}
-
 void bi::CppParameterGenerator::visit(const LambdaType* o) {
   if (!o->assignable && !inVariant) {
     middle("const ");

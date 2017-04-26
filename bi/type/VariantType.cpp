@@ -103,10 +103,6 @@ bool bi::VariantType::definitely(const ParenthesesType& o) const {
   return definite->definitely(o);
 }
 
-bool bi::VariantType::definitely(const DelayType& o) const {
-  return definite->definitely(o);
-}
-
 bool bi::VariantType::dispatchPossibly(const Type& o) const {
   return o.possibly(*this);
 }
@@ -136,9 +132,5 @@ bool bi::VariantType::possibly(const TypeReference& o) const {
 }
 
 bool bi::VariantType::possibly(const ParenthesesType& o) const {
-  return possiblyAny(o);
-}
-
-bool bi::VariantType::possibly(const DelayType& o) const {
   return possiblyAny(o);
 }

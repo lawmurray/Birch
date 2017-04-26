@@ -66,7 +66,6 @@ public:
 
   virtual void visit(const BracketsType* o);
   virtual void visit(const ParenthesesType* o);
-  virtual void visit(const DelayType* o);
   virtual void visit(const LambdaType* o);
   virtual void visit(const TypeList* o);
   virtual void visit(const VariantType* o);

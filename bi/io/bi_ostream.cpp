@@ -165,10 +165,6 @@ void bi::bi_ostream::visit(const ParenthesesType* o) {
   *this << '(' << o->single << ')';
 }
 
-void bi::bi_ostream::visit(const DelayType* o) {
-  *this << o->left << " ~ " << o->right;
-}
-
 void bi::bi_ostream::visit(const LambdaType* o) {
   *this << '(' << o->parens << ") -> " << o->result;
 }

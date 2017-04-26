@@ -198,12 +198,6 @@ bi::Type* bi::Modifier::modify(ParenthesesType* o) {
   return o;
 }
 
-bi::Type* bi::Modifier::modify(DelayType* o) {
-  o->left = o->left.release()->accept(this);
-  o->right = o->right.release()->accept(this);
-  return o;
-}
-
 bi::Type* bi::Modifier::modify(LambdaType* o) {
   o->parens = o->parens.release()->accept(this);
   o->result = o->result.release()->accept(this);

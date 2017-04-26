@@ -105,10 +105,6 @@ bool bi::Type::definitely(const ParenthesesType& o) const {
   return false;
 }
 
-bool bi::Type::definitely(const DelayType& o) const {
-  return false;
-}
-
 bool bi::Type::definitely(const VariantType& o) const {
   return false;
 }
@@ -142,10 +138,6 @@ bool bi::Type::possibly(const TypeReference& o) const {
 }
 
 bool bi::Type::possibly(const ParenthesesType& o) const {
-  return false;
-}
-
-bool bi::Type::possibly(const DelayType& o) const {
   return false;
 }
 

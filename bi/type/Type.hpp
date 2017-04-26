@@ -18,7 +18,6 @@ template<class T> class List;
 class TypeParameter;
 class TypeReference;
 class ParenthesesType;
-class DelayType;
 class VariantType;
 
 /**
@@ -149,7 +148,6 @@ public:
   virtual bool definitely(const TypeParameter& o) const;
   virtual bool definitely(const TypeReference& o) const;
   virtual bool definitely(const ParenthesesType& o) const;
-  virtual bool definitely(const DelayType& o) const;
   virtual bool definitely(const VariantType& o) const;
 
   virtual bool possibly(const Type& o) const;
@@ -161,7 +159,6 @@ public:
   virtual bool possibly(const TypeParameter& o) const;
   virtual bool possibly(const TypeReference& o) const;
   virtual bool possibly(const ParenthesesType& o) const;
-  virtual bool possibly(const DelayType& o) const;
   virtual bool possibly(const VariantType& o) const;
 
   /*
