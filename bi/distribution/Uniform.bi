@@ -19,9 +19,11 @@ class Uniform {
 /**
  * Create.
  */
-function Uniform(l:Real, u:Real) -> m:Uniform {
+function Uniform(l:Real, u:Real) -> Uniform {
+  m:Uniform;
   m.l <- l;
   m.u <- u;
+  return m;
 }
 
 /**
@@ -36,10 +38,10 @@ function (x:Real <~ m:Uniform) {
 /**
  * Observe.
  */
-function (x:Real ~> m:Uniform) -> l:Real {
+function (x:Real ~> m:Uniform) -> Real {
   if (x >= m.l && x <= m.u) {
-    l <- log(1.0/(m.u - m.l));
+    return log(1.0/(m.u - m.l));
   } else {
-    l <- log(0.0);
+    return log(0.0);
   }
 }

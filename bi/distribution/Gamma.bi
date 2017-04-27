@@ -20,9 +20,11 @@ class Gamma {
 /**
  * Create.
  */
-function Gamma(k:Real, θ:Real) -> m:Gamma {
+function Gamma(k:Real, θ:Real) -> Gamma {
+  m:Gamma;
   m.k <- k;
   m.θ <- θ;
+  return m;
 }
 
 /**
@@ -37,7 +39,7 @@ function (x:Real <~ m:Gamma) {
 /**
  * Observe.
  */
-function (x:Real ~> m:Gamma) -> l:Real {
+function (x:Real ~> m:Gamma) -> Real {
   logZ:Real <- lgamma(m.k) + m.k*log(m.θ);
-  l <- (m.k - 1.0)*log(x) - x/m.θ - logZ;
+  return (m.k - 1.0)*log(x) - x/m.θ - logZ;
 }

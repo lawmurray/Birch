@@ -21,14 +21,14 @@ class Gaussian {
     this.σ <- σ;
   }
 
-  function simulate() -> x:Real {
+  function simulate() -> Real {
     cpp {{
-    x = std::normal_distribution<double>(μ, σ)(rng);
+    return std::normal_distribution<double>(μ, σ)(rng);
     }}
   }
 
-  function observe(x:Real) -> l:Real {
-    l <- -0.5*pow((x - this.μ)/this.σ, 2.0) - log(sqrt(2.0*π)*this.σ);
+  function observe(x:Real) -> Real {
+    return -0.5*pow((x - this.μ)/this.σ, 2.0) - log(sqrt(2.0*π)*this.σ);
   }
   
   function smooth(μ:Real, σ:Real) {
@@ -51,7 +51,7 @@ class GaussianWithConjugateMean < Gaussian {
     this.a <- a;
   }
   
-  function observe(x:Real) -> l:Real {
+  function observe(x:Real) -> Real {
     σ2_0:Real <- pow(this.m0.σ, 2.0);
     λ_0:Real <- 1.0/σ2_0;
     σ2:Real <- pow(this.a, 2.0);
@@ -61,7 +61,7 @@ class GaussianWithConjugateMean < Gaussian {
     σ_1:Real <- sqrt(σ2_1);
     
     this.m0.smooth(μ_1, σ_1);
-    l <- -0.5*pow((x - this.μ)/this.σ, 2.0) - log(sqrt(2.0*π)*this.σ);
+    return -0.5*pow((x - this.μ)/this.σ, 2.0) - log(sqrt(2.0*π)*this.σ);
   }
   
   function smooth(μ:Real, σ:Real) {
@@ -84,8 +84,8 @@ class GaussianMultiple < Gaussian {
     this.m0 <- m0;
   }
   
-  function observe(x:Real) -> l:Real {
-    l <- this.m0.observe(x/abs(this.a)) - log(abs(this.a));
+  function observe(x:Real) -> Real {
+    return this.m0.observe(x/abs(this.a)) - log(abs(this.a));
   }
   
   function smooth(μ:Real, σ:Real) {
@@ -107,17 +107,15 @@ function (x:Real <~ m:Gaussian) {
 /**
  * Observe.
  */
-function (x:Real ~> m:Gaussian) -> l:Real {
-  l <- m.observe(x);
+function (x:Real ~> m:Gaussian) -> Real {
+  return m.observe(x);
 }
 
 /**
- * Delay.
+ * Initialise.
  */
-function (x:(Real ~ Gaussian) ~ m:Gaussian) {
-  cpp{{
-  x = m;
-  }}
+function (x:Gaussian ~ m:Gaussian) {
+
 }
 
 /**
@@ -127,27 +125,35 @@ function (x:(Real ~ Gaussian) ~ m:Gaussian) {
 /**
  * Create.
  */
-function Gaussian(μ:Real, σ:Real) -> m:Gaussian {
+function Gaussian(μ:Real, σ:Real) -> Gaussian {
+  m:Gaussian;
   m.create(μ, σ);
+  return m;
 }
 
 /**
  * Marginalise.
  */
-function Gaussian(μ:Gaussian, σ:Real) -> m:GaussianWithConjugateMean {
+function Gaussian(μ:Gaussian, σ:Real) -> Gaussian {
+  m:GaussianWithConjugateMean;
   m.create(μ, σ);
+  return m;
 }
 
 /**
  * Multiply by scalar on left.
  */
-function (a:Real*m0:Gaussian) -> m1:GaussianMultiple {
+function (a:Real*m0:Gaussian) -> Gaussian {
+  m1:GaussianMultiple;
   m1.create(a, m0);
+  return m1;
 }
 
 /**
  * Multiply by scalar on right.
  */
-function (m0:Gaussian*a:Real) -> m1:GaussianMultiple {
+function (m0:Gaussian*a:Real) -> Gaussian {
+  m1:GaussianMultiple;
   m1.create(a, m0);
+  return m1;
 }

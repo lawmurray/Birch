@@ -19,27 +19,27 @@ type Integer = Integer64;
  * Conversions
  * -----------
  */
-function Real64(x:Real32) -> y:Real64 {
+function Real64(x:Real32) -> Real64 {
   cpp{{
-  y = x;
+  return x;
   }}
 }
 
-function Real32(x:Real64) -> y:Real32 {
+function Real32(x:Real64) -> Real32 {
   cpp{{
-  y = static_cast<float>(x);
+  return static_cast<float>(x);
   }}
 }
 
-function Integer64(x:Integer32) -> y:Integer64 {
+function Integer64(x:Integer32) -> Integer64 {
   cpp{{
-  y = x;
+  return x;
   }}
 }
 
-function Integer32(x:Integer64) -> y:Integer32 {
+function Integer32(x:Integer64) -> Integer32 {
   cpp{{
-  y = static_cast<int32_t>(x);
+  return static_cast<int32_t>(x);
   }}
 }
 
@@ -50,456 +50,456 @@ function Integer32(x:Integer64) -> y:Integer32 {
 /**
  * Real64 operators
  */
-function (x:Real64 + y:Real64) -> z:Real64;
-function (x:Real64 - y:Real64) -> z:Real64;
-function (x:Real64 * y:Real64) -> z:Real64;
-function (x:Real64 / y:Real64) -> z:Real64;
-function (+x:Real64) -> z:Real64;
-function (-x:Real64) -> z:Real64;
-function (x:Real64 > y:Real64) -> z:Boolean;
-function (x:Real64 < y:Real64) -> z:Boolean;
-function (x:Real64 >= y:Real64) -> z:Boolean;
-function (x:Real64 <= y:Real64) -> z:Boolean;
-function (x:Real64 == y:Real64) -> z:Boolean;
-function (x:Real64 != y:Real64) -> z:Boolean;
+function (x:Real64 + y:Real64) -> Real64;
+function (x:Real64 - y:Real64) -> Real64;
+function (x:Real64 * y:Real64) -> Real64;
+function (x:Real64 / y:Real64) -> Real64;
+function (+x:Real64) -> Real64;
+function (-x:Real64) -> Real64;
+function (x:Real64 > y:Real64) -> Boolean;
+function (x:Real64 < y:Real64) -> Boolean;
+function (x:Real64 >= y:Real64) -> Boolean;
+function (x:Real64 <= y:Real64) -> Boolean;
+function (x:Real64 == y:Real64) -> Boolean;
+function (x:Real64 != y:Real64) -> Boolean;
 
 /**
  * Real32 operators
  */
-function (x:Real32 + y:Real32) -> z:Real32;
-function (x:Real32 - y:Real32) -> z:Real32;
-function (x:Real32 * y:Real32) -> z:Real32;
-function (x:Real32 / y:Real32) -> z:Real32;
-function (+x:Real32) -> z:Real32;
-function (-x:Real32) -> z:Real32;
-function (x:Real32 > y:Real32) -> z:Boolean;
-function (x:Real32 < y:Real32) -> z:Boolean;
-function (x:Real32 >= y:Real32) -> z:Boolean;
-function (x:Real32 <= y:Real32) -> z:Boolean;
-function (x:Real32 == y:Real32) -> z:Boolean;
-function (x:Real32 != y:Real32) -> z:Boolean;
+function (x:Real32 + y:Real32) -> Real32;
+function (x:Real32 - y:Real32) -> Real32;
+function (x:Real32 * y:Real32) -> Real32;
+function (x:Real32 / y:Real32) -> Real32;
+function (+x:Real32) -> Real32;
+function (-x:Real32) -> Real32;
+function (x:Real32 > y:Real32) -> Boolean;
+function (x:Real32 < y:Real32) -> Boolean;
+function (x:Real32 >= y:Real32) -> Boolean;
+function (x:Real32 <= y:Real32) -> Boolean;
+function (x:Real32 == y:Real32) -> Boolean;
+function (x:Real32 != y:Real32) -> Boolean;
 
 /**
  * Integer64 operators
  */
-function (x:Integer64 + y:Integer64) -> z:Integer64;
-function (x:Integer64 - y:Integer64) -> z:Integer64;
-function (x:Integer64 * y:Integer64) -> z:Integer64;
-function (x:Integer64 / y:Integer64) -> z:Integer64;
-function (+x:Integer64) -> z:Integer64;
-function (-x:Integer64) -> z:Integer64;
-function (x:Integer64 > y:Integer64) -> z:Boolean;
-function (x:Integer64 < y:Integer64) -> z:Boolean;
-function (x:Integer64 >= y:Integer64) -> z:Boolean;
-function (x:Integer64 <= y:Integer64) -> z:Boolean;
-function (x:Integer64 == y:Integer64) -> z:Boolean;
-function (x:Integer64 != y:Integer64) -> z:Boolean;
+function (x:Integer64 + y:Integer64) -> Integer64;
+function (x:Integer64 - y:Integer64) -> Integer64;
+function (x:Integer64 * y:Integer64) -> Integer64;
+function (x:Integer64 / y:Integer64) -> Integer64;
+function (+x:Integer64) -> Integer64;
+function (-x:Integer64) -> Integer64;
+function (x:Integer64 > y:Integer64) -> Boolean;
+function (x:Integer64 < y:Integer64) -> Boolean;
+function (x:Integer64 >= y:Integer64) -> Boolean;
+function (x:Integer64 <= y:Integer64) -> Boolean;
+function (x:Integer64 == y:Integer64) -> Boolean;
+function (x:Integer64 != y:Integer64) -> Boolean;
 
 /**
  * Integer32 operators
  */
-function (x:Integer32 + y:Integer32) -> z:Integer32;
-function (x:Integer32 - y:Integer32) -> z:Integer32;
-function (x:Integer32 * y:Integer32) -> z:Integer32;
-function (x:Integer32 / y:Integer32) -> z:Integer32;
-function (+x:Integer32) -> z:Integer32;
-function (-x:Integer32) -> z:Integer32;
-function (x:Integer32 > y:Integer32) -> z:Boolean;
-function (x:Integer32 < y:Integer32) -> z:Boolean;
-function (x:Integer32 >= y:Integer32) -> z:Boolean;
-function (x:Integer32 <= y:Integer32) -> z:Boolean;
-function (x:Integer32 == y:Integer32) -> z:Boolean;
-function (x:Integer32 != y:Integer32) -> z:Boolean;
+function (x:Integer32 + y:Integer32) -> Integer32;
+function (x:Integer32 - y:Integer32) -> Integer32;
+function (x:Integer32 * y:Integer32) -> Integer32;
+function (x:Integer32 / y:Integer32) -> Integer32;
+function (+x:Integer32) -> Integer32;
+function (-x:Integer32) -> Integer32;
+function (x:Integer32 > y:Integer32) -> Boolean;
+function (x:Integer32 < y:Integer32) -> Boolean;
+function (x:Integer32 >= y:Integer32) -> Boolean;
+function (x:Integer32 <= y:Integer32) -> Boolean;
+function (x:Integer32 == y:Integer32) -> Boolean;
+function (x:Integer32 != y:Integer32) -> Boolean;
 
 /**
  * Boolean operators
  */
-function (x:Boolean && y:Boolean) -> z:Boolean;
-function (x:Boolean || y:Boolean) -> z:Boolean;
-function (!x:Boolean) -> z:Boolean;
+function (x:Boolean && y:Boolean) -> Boolean;
+function (x:Boolean || y:Boolean) -> Boolean;
+function (!x:Boolean) -> Boolean;
 
 /**
  * Functions
  * ---------
  */
-function abs(x:Real64) -> y:Real64 {
+function abs(x:Real64) -> Real64 {
   cpp {{
-  y = ::fabs(x);
+  return ::fabs(x);
   }}
 }
 
-function abs(x:Real32) -> y:Real32 {
+function abs(x:Real32) -> Real32 {
   cpp {{
-  y = ::fabsf(x);
+  return ::fabsf(x);
   }}
 }
 
-function abs(x:Integer64) -> y:Integer64 {
+function abs(x:Integer64) -> Integer64 {
   cpp {{
-  y = std::abs(x);
+  return std::abs(x);
   }}
 }
 
-function abs(x:Integer32) -> y:Integer32 {
+function abs(x:Integer32) -> Integer32 {
   cpp {{
-  y = std::abs(x);
+  return std::abs(x);
   }}
 }
 
-function log(x:Real64) -> y:Real64 {
+function log(x:Real64) -> Real64 {
   cpp {{
-  y = ::log(x);
+  return ::log(x);
   }}
 }
 
-function log(x:Real32) -> y:Real32 {
+function log(x:Real32) -> Real32 {
   cpp {{
-  y = ::logf(x);
+  return ::logf(x);
   }}
 }
 
-function exp(x:Real64) -> y:Real64 {
+function exp(x:Real64) -> Real64 {
   cpp {{
-  y = ::exp(x);
+  return ::exp(x);
   }}
 }
 
-function exp(x:Real32) -> y:Real32 {
+function exp(x:Real32) -> Real32 {
   cpp {{
-  y = ::expf(x);
+  return ::expf(x);
   }}
 }
 
-function max(x:Real64, y:Real64) -> z:Real64 {
+function max(x:Real64, y:Real64) -> Real64 {
   cpp {{
-  z = ::fmax(x, y);
+  return ::fmax(x, y);
   }}
 }
 
-function max(x:Real32, y:Real32) -> z:Real32 {
+function max(x:Real32, y:Real32) -> Real32 {
   cpp {{
-  z = ::fmaxf(x, y);
+  return ::fmaxf(x, y);
   }}
 }
 
-function max(x:Integer64, y:Integer64) -> z:Integer64 {
+function max(x:Integer64, y:Integer64) -> Integer64 {
   cpp {{
-  z = std::max(x, y);
+  return std::max(x, y);
   }}
 }
 
-function max(x:Integer32, y:Integer32) -> z:Integer32 {
+function max(x:Integer32, y:Integer32) -> Integer32 {
   cpp {{
-  z = std::max(x, y);
+  return std::max(x, y);
   }}
 }
 
-function min(x:Real64, y:Real64) -> z:Real64 {
+function min(x:Real64, y:Real64) -> Real64 {
   cpp {{
-  z = ::fmin(x, y);
+  return ::fmin(x, y);
   }}
 }
 
-function min(x:Real32, y:Real32) -> z:Real32 {
+function min(x:Real32, y:Real32) -> Real32 {
   cpp {{
-  z = ::fminf(x, y);
+  return ::fminf(x, y);
   }}
 }
 
-function min(x:Integer64, y:Integer64) -> z:Integer64 {
+function min(x:Integer64, y:Integer64) -> Integer64 {
   cpp {{
-  z = std::min(x, y);
+  return std::min(x, y);
   }}
 }
 
-function min(x:Integer32, y:Integer32) -> z:Integer32 {
+function min(x:Integer32, y:Integer32) -> Integer32 {
   cpp {{
-  z = std::min(x, y);
+  return std::min(x, y);
   }}
 }
 
-function sqrt(x:Real64) -> y:Real64 {
+function sqrt(x:Real64) -> Real64 {
   cpp {{
-  y = ::sqrt(x);
+  return ::sqrt(x);
   }}
 }
 
-function sqrt(x:Real32) -> y:Real32 {
+function sqrt(x:Real32) -> Real32 {
   cpp {{
-  y = ::sqrtf(x);
+  return ::sqrtf(x);
   }}
 }
 
-function pow(x:Real64, y:Real64) -> z:Real64 {
+function pow(x:Real64, y:Real64) -> Real64 {
   cpp {{
-  z = ::pow(x, y);
+  return ::pow(x, y);
   }}
 }
 
-function pow(x:Real32, y:Real32) -> z:Real32 {
+function pow(x:Real32, y:Real32) -> Real32 {
   cpp {{
-  z = ::powf(x, y);
+  return ::powf(x, y);
   }}
 }
 
-function mod(x:Real64, y:Real64) -> z:Real64 {
+function mod(x:Real64, y:Real64) -> Real64 {
   cpp {{
-  z = ::fmod(x, y);
+  return ::fmod(x, y);
   }}
 }
 
-function mod(x:Real32, y:Real32) -> z:Real32 {
+function mod(x:Real32, y:Real32) -> Real32 {
   cpp {{
-  z = ::fmodf(x, y);
+  return ::fmodf(x, y);
   }}
 }
 
-function ceil(x:Real64) -> y:Real64 {
+function ceil(x:Real64) -> Real64 {
   cpp {{
-  y = ::ceil(x);
+  return ::ceil(x);
   }}
 }
 
-function ceil(x:Real32) -> y:Real32 {
+function ceil(x:Real32) -> Real32 {
   cpp {{
-  y = ::ceilf(x);
+  return ::ceilf(x);
   }}
 }
 
-function floor(x:Real64) -> y:Real64 {
+function floor(x:Real64) -> Real64 {
   cpp {{
-  y = ::floor(x);
+  return ::floor(x);
   }}
 }
 
-function floor(x:Real32) -> y:Real32 {
+function floor(x:Real32) -> Real32 {
   cpp {{
-  y = ::floorf(x);
+  return ::floorf(x);
   }}
 }
 
-function round(x:Real64) -> y:Real64 {
+function round(x:Real64) -> Real64 {
   cpp {{
-  y = ::round(x);
+  return ::round(x);
   }}
 }
 
-function round(x:Real32) -> y:Real32 {
+function round(x:Real32) -> Real32 {
   cpp {{
-  y = ::roundf(x);
+  return ::roundf(x);
   }}
 }
 
-function gamma(x:Real64) -> y:Real64 {
+function gamma(x:Real64) -> Real64 {
   cpp {{
-  y = ::tgamma(x);
+  return ::tgamma(x);
   }}
 }
 
-function gamma(x:Real32) -> y:Real32 {
+function gamma(x:Real32) -> Real32 {
   cpp {{
-  y = ::tgammaf(x);
+  return ::tgammaf(x);
   }}
 }
 
-function lgamma(x:Real64) -> y:Real64 {
+function lgamma(x:Real64) -> Real64 {
   cpp {{
-  y = ::lgamma(x);
+  return ::lgamma(x);
   }}
 }
 
-function lgamma(x:Real32) -> y:Real32 {
+function lgamma(x:Real32) -> Real32 {
   cpp {{
-  y = ::lgammaf(x);
+  return ::lgammaf(x);
   }}
 }
 
-function sin(x:Real64) -> y:Real64 {
+function sin(x:Real64) -> Real64 {
   cpp {{
-  y = ::sin(x);
+  return ::sin(x);
   }}
 }
 
-function sin(x:Real32) -> y:Real32 {
+function sin(x:Real32) -> Real32 {
   cpp {{
-  y = ::sinf(x);
+  return ::sinf(x);
   }}
 }
 
-function cos(x:Real64) -> y:Real64 {
+function cos(x:Real64) -> Real64 {
   cpp {{
-  y = ::cos(x);
+  return ::cos(x);
   }}
 }
 
-function cos(x:Real32) -> y:Real32 {
+function cos(x:Real32) -> Real32 {
   cpp {{
-  y = ::cosf(x);
+  return ::cosf(x);
   }}
 }
 
-function tan(x:Real64) -> y:Real64 {
+function tan(x:Real64) -> Real64 {
   cpp {{
-  y = ::tan(x);
+  return ::tan(x);
   }}
 }
 
-function tan(x:Real32) -> y:Real32 {
+function tan(x:Real32) -> Real32 {
   cpp {{
-  y = ::tanf(x);
+  return ::tanf(x);
   }}
 }
 
-function asin(x:Real64) -> y:Real64 {
+function asin(x:Real64) -> Real64 {
   cpp {{
-  y = ::asin(x);
+  return ::asin(x);
   }}
 }
 
-function asin(x:Real32) -> y:Real32 {
+function asin(x:Real32) -> Real32 {
  cpp {{
-  y =  ::asinf(x);
+  return  ::asinf(x);
   }}
 }
 
-function acos(x:Real64) -> y:Real64 {
+function acos(x:Real64) -> Real64 {
   cpp {{
-  y = ::acos(x);
+  return ::acos(x);
   }}
 }
 
-function acos(x:Real32) -> y:Real32 {
+function acos(x:Real32) -> Real32 {
   cpp {{
-  y = ::acosf(x);
+  return ::acosf(x);
   }}
 }
 
-function atan(x:Real64) -> y:Real64 {
+function atan(x:Real64) -> Real64 {
   cpp {{
-  y = ::atan(x);
+  return ::atan(x);
   }}
 }
 
-function atan(x:Real32) -> y:Real32 {
+function atan(x:Real32) -> Real32 {
   cpp {{
-  y = ::atanf(x);
+  return ::atanf(x);
   }}
 }
 
-function atan2(x:Real64, y:Real64) -> z:Real64 {
+function atan2(x:Real64, y:Real64) -> Real64 {
   cpp {{
-  z = ::atan2(x, y);
+  return ::atan2(x, y);
   }}
 }
 
-function atan2(x:Real32, y:Real32) -> z:Real32 {
+function atan2(x:Real32, y:Real32) -> Real32 {
   cpp {{
-  z = ::atan2f(x, y);
+  return ::atan2f(x, y);
   }}
 }
 
-function sinh(x:Real64) -> y:Real64 {
+function sinh(x:Real64) -> Real64 {
   cpp {{
-  y = ::sinh(x);
+  return ::sinh(x);
   }}
 }
 
-function sinh(x:Real32) -> y:Real32 {
+function sinh(x:Real32) -> Real32 {
   cpp {{
-  y = ::sinhf(x);
+  return ::sinhf(x);
   }}
 }
 
-function cosh(x:Real64) -> y:Real64 {
+function cosh(x:Real64) -> Real64 {
   cpp {{
-  y = ::cosh(x);
+  return ::cosh(x);
   }}
 }
 
-function cosh(x:Real32) -> y:Real32 {
+function cosh(x:Real32) -> Real32 {
   cpp {{
-  y = ::coshf(x);
+  return ::coshf(x);
   }}
 }
 
-function tanh(x:Real64) -> y:Real64 {
+function tanh(x:Real64) -> Real64 {
   cpp {{
-  y = ::tanh(x);
+  return ::tanh(x);
   }}
 }
 
-function tanh(x:Real32) -> y:Real32 {
+function tanh(x:Real32) -> Real32 {
   cpp {{
-  y = ::tanhf(x);
+  return ::tanhf(x);
   }}
 }
 
-function asinh(x:Real64) -> y:Real64 {
+function asinh(x:Real64) -> Real64 {
   cpp {{
-  y = ::asinh(x);
+  return ::asinh(x);
   }}
 }
 
-function asinh(x:Real32) -> y:Real32 {
+function asinh(x:Real32) -> Real32 {
   cpp {{
-  y = ::asinhf(x);
+  return ::asinhf(x);
   }}
 }
 
-function acosh(x:Real64) -> y:Real64 {
+function acosh(x:Real64) -> Real64 {
   cpp {{
-  y = ::acosh(x);
+  return ::acosh(x);
   }}
 }
 
-function acosh(x:Real32) -> y:Real32 {
+function acosh(x:Real32) -> Real32 {
   cpp {{
-  y = ::acoshf(x);
+  return ::acoshf(x);
   }}
 }
 
-function atanh(x:Real64) -> y:Real64 {
+function atanh(x:Real64) -> Real64 {
   cpp {{
-  y = ::atanh(x);
+  return ::atanh(x);
   }}
 }
 
-function atanh(x:Real32) -> y:Real32 {
+function atanh(x:Real32) -> Real32 {
   cpp {{
-  y = ::atanhf(x);
+  return ::atanhf(x);
   }}
 }
 
-function erf(x:Real64) -> y:Real64 {
+function erf(x:Real64) -> Real64 {
   cpp {{
-  y = ::erf(x);
+  return ::erf(x);
   }}
 }
 
-function erf(x:Real32) -> y:Real32 {
+function erf(x:Real32) -> Real32 {
   cpp {{
-  y = ::erff(x);
+  return ::erff(x);
   }}
 }
 
-function erfc(x:Real64) -> y:Real64 {
+function erfc(x:Real64) -> Real64 {
   cpp {{
-  y = ::erfc(x);
+  return ::erfc(x);
   }}
 }
 
-function erfc(x:Real32) -> y:Real32 {
+function erfc(x:Real32) -> Real32 {
   cpp {{
-  y = ::erfcf(x);
+  return ::erfcf(x);
   }}
 }
 
-function isnan(x:Real64) -> y:Boolean {
-  y <- x != x;
+function isnan(x:Real64) -> Boolean {
+  return x != x;
 }
 
-function isnan(x:Real32) -> y:Boolean {
-  y <- x != x;
+function isnan(x:Real32) -> Boolean {
+  return x != x;
 }
 
 /**

@@ -15,8 +15,10 @@ class Bernoulli {
 /**
  * Create.
  */
-function Bernoulli(ρ:Real) -> m:Bernoulli {
+function Bernoulli(ρ:Real) -> Bernoulli {
+  m:Bernoulli;
   m.ρ <- ρ;
+  return m;
 }
 
 /**
@@ -31,10 +33,10 @@ function (x:Boolean <~ m:Bernoulli) {
 /**
  * Observe.
  */
-function (x:Boolean ~> m:Bernoulli) -> l:Real {
+function (x:Boolean ~> m:Bernoulli) -> Real {
   if (x) {
-    l <- log(m.ρ);
+    return log(m.ρ);
   } else {
-    l <- log(1.0 - m.ρ);
+    return log(1.0 - m.ρ);
   }
 }
