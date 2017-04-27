@@ -22,6 +22,7 @@ public:
   virtual void visit(const TypeReference* o);
   virtual void visit(const VarDeclaration* o);
   virtual void visit(const FuncParameter* o);
+  virtual void visit(const ConversionParameter* o);
 
 protected:
   /**

@@ -22,6 +22,7 @@ public:
   virtual void visit(const VarParameter* o);
   virtual void visit(const VarDeclaration* o);
   virtual void visit(const FuncDeclaration* o);
+  virtual void visit(const ConversionDeclaration* o);
 
 private:
   bool inInitial;

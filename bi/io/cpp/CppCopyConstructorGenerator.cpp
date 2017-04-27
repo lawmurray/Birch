@@ -55,3 +55,7 @@ void bi::CppCopyConstructorGenerator::visit(const VarDeclaration* o) {
 void bi::CppCopyConstructorGenerator::visit(const FuncDeclaration* o) {
   //
 }
+
+void bi::CppCopyConstructorGenerator::visit(const ConversionDeclaration* o) {
+  //
+}

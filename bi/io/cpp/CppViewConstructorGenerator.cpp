@@ -44,3 +44,7 @@ void bi::CppViewConstructorGenerator::visit(const VarDeclaration* o) {
 void bi::CppViewConstructorGenerator::visit(const FuncDeclaration* o) {
   //
 }
+
+void bi::CppViewConstructorGenerator::visit(const ConversionDeclaration* o) {
+  //
+}

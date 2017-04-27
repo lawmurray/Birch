@@ -46,6 +46,7 @@ public:
 
   virtual Expression* clone(const VarParameter* o);
   virtual Expression* clone(const FuncParameter* o);
+  virtual Expression* clone(const ConversionParameter* o);
   virtual Type* clone(const TypeParameter* o);
   virtual Prog* clone(const ProgParameter* o);
 
@@ -58,6 +59,7 @@ public:
   virtual Statement* clone(const Raw* o);
   virtual Statement* clone(const VarDeclaration* o);
   virtual Statement* clone(const FuncDeclaration* o);
+  virtual Statement* clone(const ConversionDeclaration* o);
   virtual Statement* clone(const TypeDeclaration* o);
   virtual Statement* clone(const ProgDeclaration* o);
 

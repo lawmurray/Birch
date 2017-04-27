@@ -186,6 +186,18 @@ bi::Expression* bi::Resolver::modify(FuncParameter* o) {
   return o;
 }
 
+bi::Expression* bi::Resolver::modify(ConversionParameter* o) {
+  push();
+  o->type = o->type->accept(this)->accept(&assigner);
+  if (!o->braces->isEmpty()) {
+    defer(o->braces.get());
+  }
+  o->scope = pop();
+  top()->add(o);
+
+  return o;
+}
+
 bi::Prog* bi::Resolver::modify(ProgParameter* o) {
   push();
   o->parens = o->parens->accept(this);

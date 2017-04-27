@@ -120,6 +120,12 @@ bi::Expression* bi::Modifier::modify(FuncParameter* o) {
   return o;
 }
 
+bi::Expression* bi::Modifier::modify(ConversionParameter* o) {
+  o->type = o->type.release()->accept(this);
+  o->braces = o->braces.release()->accept(this);
+  return o;
+}
+
 bi::Type* bi::Modifier::modify(TypeParameter* o) {
   o->parens = o->parens.release()->accept(this);
   o->base = o->base.release()->accept(this);
@@ -176,6 +182,13 @@ bi::Statement* bi::Modifier::modify(VarDeclaration* o) {
 
 bi::Statement* bi::Modifier::modify(FuncDeclaration* o) {
   o->param = dynamic_cast<FuncParameter*>(o->param.release()->accept(this));
+  assert(o->param);
+  return o;
+}
+
+bi::Statement* bi::Modifier::modify(ConversionDeclaration* o) {
+  o->param = dynamic_cast<ConversionParameter*>(o->param.release()->accept(
+      this));
   assert(o->param);
   return o;
 }

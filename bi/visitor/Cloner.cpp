@@ -101,6 +101,11 @@ bi::Expression* bi::Cloner::clone(const FuncParameter* o) {
       o->type->accept(this), o->braces->accept(this), o->form, o->loc);
 }
 
+bi::Expression* bi::Cloner::clone(const ConversionParameter* o) {
+  return new ConversionParameter(o->type->accept(this),
+      o->braces->accept(this), o->loc);
+}
+
 bi::Type* bi::Cloner::clone(const TypeParameter* o) {
   return new TypeParameter(o->name, o->parens->accept(this),
       o->base->accept(this), o->braces->accept(this), o->form, o->loc);
@@ -148,6 +153,11 @@ bi::Statement* bi::Cloner::clone(const VarDeclaration* o) {
 bi::Statement* bi::Cloner::clone(const FuncDeclaration* o) {
   return new FuncDeclaration(
       dynamic_cast<FuncParameter*>(o->param->accept(this)), o->loc);
+}
+
+bi::Statement* bi::Cloner::clone(const ConversionDeclaration* o) {
+  return new ConversionDeclaration(
+      dynamic_cast<ConversionParameter*>(o->param->accept(this)), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const TypeDeclaration* o) {

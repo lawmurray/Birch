@@ -5,6 +5,7 @@
 
 #include "bi/common/Dictionary.hpp"
 #include "bi/common/OverloadedDictionary.hpp"
+#include "bi/common/OverloadedSet.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/primitive/definitely.hpp"
 #include "bi/primitive/possibly.hpp"
@@ -14,6 +15,7 @@
 namespace bi {
 class VarParameter;
 class FuncParameter;
+class ConversionParameter;
 class TypeParameter;
 class ProgParameter;
 
@@ -39,6 +41,7 @@ public:
    */
   bool contains(VarParameter* param);
   bool contains(FuncParameter* param);
+  bool contains(ConversionParameter* param);
   bool contains(TypeParameter* param);
   bool contains(ProgParameter* param);
 
@@ -49,6 +52,7 @@ public:
    */
   void add(VarParameter* param);
   void add(FuncParameter* param);
+  void add(ConversionParameter* param);
   void add(TypeParameter* param);
   void add(ProgParameter* param);
 
@@ -90,6 +94,7 @@ public:
   Dictionary<VarParameter> vars;
   Dictionary<TypeParameter> types;
   OverloadedDictionary<FuncParameter,definitely> funcs;
+  OverloadedSet<ConversionParameter,definitely> convs;
   Dictionary<ProgParameter> progs;
 
 private:

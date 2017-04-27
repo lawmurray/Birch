@@ -92,3 +92,7 @@ void bi::CppConstructorGenerator::visit(const VarDeclaration* o) {
 void bi::CppConstructorGenerator::visit(const FuncDeclaration* o) {
   //
 }
+
+void bi::CppConstructorGenerator::visit(const ConversionDeclaration* o) {
+  //
+}

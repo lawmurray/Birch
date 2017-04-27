@@ -124,6 +124,10 @@ void bi::bi_ostream::visit(const FuncParameter* o) {
   }
 }
 
+void bi::bi_ostream::visit(const ConversionParameter* o) {
+  *this << " -> " << o->type;
+}
+
 void bi::bi_ostream::visit(const TypeParameter* o) {
   *this << o->name;
   if (!o->parens->isEmpty()) {
@@ -208,6 +212,16 @@ void bi::bi_ostream::visit(const VarDeclaration* o) {
 }
 
 void bi::bi_ostream::visit(const FuncDeclaration* o) {
+  *this << indent << "function " << o->param;
+  if (!header && !o->param->braces->isEmpty()) {
+    *this << o->param->braces;
+  } else {
+    *this << ';';
+  }
+  *this << "\n\n";
+}
+
+void bi::bi_ostream::visit(const ConversionDeclaration* o) {
   *this << indent << "function " << o->param;
   if (!header && !o->param->braces->isEmpty()) {
     *this << o->param->braces;

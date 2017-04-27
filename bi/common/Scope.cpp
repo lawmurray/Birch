@@ -5,6 +5,7 @@
 
 #include "bi/expression/VarParameter.hpp"
 #include "bi/expression/FuncParameter.hpp"
+#include "bi/expression/ConversionParameter.hpp"
 #include "bi/type/TypeParameter.hpp"
 #include "bi/exception/all.hpp"
 #include "bi/visitor/Cloner.hpp"
@@ -17,6 +18,10 @@ bool bi::Scope::contains(VarParameter* param) {
 
 bool bi::Scope::contains(FuncParameter* param) {
   return funcs.contains(param);
+}
+
+bool bi::Scope::contains(ConversionParameter* param) {
+  return convs.contains(param);
 }
 
 bool bi::Scope::contains(TypeParameter* param) {
@@ -40,6 +45,14 @@ void bi::Scope::add(FuncParameter* param) {
     throw PreviousDeclarationException(param, funcs.get(param));
   } else {
     funcs.add(param);
+  }
+}
+
+void bi::Scope::add(ConversionParameter* param) {
+  if (convs.contains(param)) {
+    throw PreviousDeclarationException(param, convs.get(param));
+  } else {
+    convs.add(param);
   }
 }
 
@@ -87,6 +100,7 @@ void bi::Scope::inherit(Scope* scope) {
 void bi::Scope::import(Scope* scope) {
   vars.merge(scope->vars);
   funcs.merge(scope->funcs);
+  convs.merge(scope->convs);
   types.merge(scope->types);
   progs.merge(scope->progs);
 }

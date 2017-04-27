@@ -36,6 +36,7 @@ birchc_SOURCES = \
   bi/common/Named.cpp \
   bi/common/Numbered.cpp \
   bi/common/OverloadedDictionary.cpp \
+  bi/common/OverloadedSet.cpp \
   bi/common/Parenthesised.cpp \
   bi/common/Path.cpp \
   bi/common/Reference.cpp \
@@ -58,6 +59,7 @@ birchc_SOURCES = \
   bi/exception/UnsupportedOptionTypeException.cpp \
   bi/expression/BracesExpression.cpp \
   bi/expression/BracketsExpression.cpp \
+  bi/expression/ConversionParameter.cpp \
   bi/expression/EmptyExpression.cpp \
   bi/expression/Expression.cpp \
   bi/expression/FuncParameter.cpp \

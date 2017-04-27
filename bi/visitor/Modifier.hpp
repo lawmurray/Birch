@@ -46,6 +46,7 @@ public:
 
   virtual Expression* modify(VarParameter* o);
   virtual Expression* modify(FuncParameter* o);
+  virtual Expression* modify(ConversionParameter* o);
   virtual Type* modify(TypeParameter* o);
   virtual Prog* modify(ProgParameter* o);
 
@@ -58,6 +59,7 @@ public:
   virtual Statement* modify(Raw* o);
   virtual Statement* modify(VarDeclaration* o);
   virtual Statement* modify(FuncDeclaration* o);
+  virtual Statement* modify(ConversionDeclaration* o);
   virtual Statement* modify(TypeDeclaration* o);
   virtual Statement* modify(ProgDeclaration* o);
 

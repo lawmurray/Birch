@@ -6,6 +6,7 @@
 #include "bi/statement/Statement.hpp"
 #include "bi/expression/VarParameter.hpp"
 #include "bi/expression/FuncParameter.hpp"
+#include "bi/expression/ConversionParameter.hpp"
 #include "bi/type/TypeParameter.hpp"
 #include "bi/program/ProgParameter.hpp"
 #include "bi/primitive/unique_ptr.hpp"
@@ -53,6 +54,7 @@ public:
 
 typedef Declaration<VarParameter> VarDeclaration;
 typedef Declaration<FuncParameter> FuncDeclaration;
+typedef Declaration<ConversionParameter> ConversionDeclaration;
 typedef Declaration<ProgParameter> ProgDeclaration;
 typedef Declaration<TypeParameter> TypeDeclaration;
 }

@@ -84,6 +84,10 @@ bool bi::Expression::definitely(const BracketsExpression& o) const {
   return false;
 }
 
+bool bi::Expression::definitely(const ConversionParameter& o) const {
+  return false;
+}
+
 bool bi::Expression::definitely(const EmptyExpression& o) const {
   return false;
 }
@@ -153,6 +157,10 @@ bool bi::Expression::possibly(const BracesExpression& o) const {
 }
 
 bool bi::Expression::possibly(const BracketsExpression& o) const {
+  return false;
+}
+
+bool bi::Expression::possibly(const ConversionParameter& o) const {
   return false;
 }
 

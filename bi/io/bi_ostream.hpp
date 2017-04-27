@@ -43,6 +43,7 @@ public:
 
   virtual void visit(const VarParameter* o);
   virtual void visit(const FuncParameter* o);
+  virtual void visit(const ConversionParameter* o);
   virtual void visit(const TypeParameter* o);
   virtual void visit(const ProgParameter* o);
 
@@ -59,6 +60,7 @@ public:
   virtual void visit(const Raw* o);
   virtual void visit(const VarDeclaration* o);
   virtual void visit(const FuncDeclaration* o);
+  virtual void visit(const ConversionDeclaration* o);
   virtual void visit(const TypeDeclaration* o);
   virtual void visit(const ProgDeclaration* o);
 };

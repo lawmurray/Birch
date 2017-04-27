@@ -114,6 +114,11 @@ void bi::Visitor::visit(const FuncParameter* o) {
   o->braces->accept(this);
 }
 
+void bi::Visitor::visit(const ConversionParameter* o) {
+  o->type->accept(this);
+  o->braces->accept(this);
+}
+
 void bi::Visitor::visit(const TypeParameter* o) {
   o->parens->accept(this);
   o->base->accept(this);
@@ -161,6 +166,10 @@ void bi::Visitor::visit(const VarDeclaration* o) {
 }
 
 void bi::Visitor::visit(const FuncDeclaration* o) {
+  o->param->accept(this);
+}
+
+void bi::Visitor::visit(const ConversionDeclaration* o) {
   o->param->accept(this);
 }
 

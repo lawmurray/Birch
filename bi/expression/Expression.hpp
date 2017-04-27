@@ -15,6 +15,7 @@ class Visitor;
 
 class BracesExpression;
 class BracketsExpression;
+class ConversionParameter;
 class EmptyExpression;
 template<class T> class Iterator;
 template<class T> class List;
@@ -129,6 +130,7 @@ public:
   virtual bool dispatchDefinitely(const Expression& o) const = 0;
   virtual bool definitely(const BracesExpression& o) const;
   virtual bool definitely(const BracketsExpression& o) const;
+  virtual bool definitely(const ConversionParameter& o) const;
   virtual bool definitely(const EmptyExpression& o) const;
   virtual bool definitely(const List<Expression>& o) const;
   virtual bool definitely(const FuncParameter& o) const;
@@ -149,6 +151,7 @@ public:
   virtual bool dispatchPossibly(const Expression& o) const = 0;
   virtual bool possibly(const BracesExpression& o) const;
   virtual bool possibly(const BracketsExpression& o) const;
+  virtual bool possibly(const ConversionParameter& o) const;
   virtual bool possibly(const EmptyExpression& o) const;
   virtual bool possibly(const List<Expression>& o) const;
   virtual bool possibly(const FuncParameter& o) const;

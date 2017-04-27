@@ -19,7 +19,7 @@ bi::PreviousDeclarationException::PreviousDeclarationException(
   if (param->loc) {
     buf << param->loc;
   }
-  buf << "error: redeclaration of '" << param->name << "'\n";
+  buf << "error: redeclaration of\n";
   buf << param << '\n';
   if (prev->loc) {
     buf << prev->loc;
@@ -33,6 +33,8 @@ template bi::PreviousDeclarationException::PreviousDeclarationException(
     VarParameter* param, VarParameter* prev);
 template bi::PreviousDeclarationException::PreviousDeclarationException(
     FuncParameter* param, FuncParameter* prev);
+template bi::PreviousDeclarationException::PreviousDeclarationException(
+    ConversionParameter* param, ConversionParameter* prev);
 template bi::PreviousDeclarationException::PreviousDeclarationException(
     TypeParameter* param, TypeParameter* prev);
 template bi::PreviousDeclarationException::PreviousDeclarationException(

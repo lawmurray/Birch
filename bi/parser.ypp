@@ -73,6 +73,7 @@
 %type <valExpression> var_reference var_parameter var_parameter_with_value
 %type <valExpression> member_parameter
 %type <valExpression> func_reference func_parameter op_parameter
+%type <valExpression> conversion_parameter
 %type <valProg> prog_parameter
 
 %type <valType> type_reference struct_parameter class_parameter type_parameter
@@ -93,7 +94,7 @@
 %type <valExpression> expression_list expression
 
 %type <valStatement> var_declaration member_declaration
-%type <valStatement> func_declaration op_declaration
+%type <valStatement> func_declaration op_declaration conversion_declaration
 %type <valStatement> type_declaration prog_declaration
 %type <valStatement> import cpp hpp expression_statement if while return
 %type <valStatement> statement statements optional_statements
@@ -219,6 +220,10 @@ op_parameter
     : '(' var_parameter assignment_operator var_parameter ')' optional_result_type optional_braces  { $$ = new bi::FuncParameter($2, $3, $4, $6, $7, bi::ASSIGN_OPERATOR, make_loc(@$)); }
     | '(' var_parameter binary_operator var_parameter ')' optional_result_type optional_braces      { $$ = new bi::FuncParameter($2, $3, $4, $6, $7, bi::BINARY_OPERATOR, make_loc(@$)); }
     | '(' unary_operator var_parameter ')' optional_result_type optional_braces                     { $$ = new bi::FuncParameter($2, $3, $5, $6, bi::UNARY_OPERATOR, make_loc(@$)); }
+    ;
+
+conversion_parameter
+    : result_type optional_braces  { $$ = new bi::ConversionParameter($1, $2, make_loc(@$)); }
     ;
 
 struct_parameter
@@ -524,6 +529,10 @@ op_declaration
     : FUNC op_parameter  { $$ = new bi::FuncDeclaration(dynamic_cast<bi::FuncParameter*>($2), make_loc(@$)); }
     ;
 
+conversion_declaration
+    : FUNC conversion_parameter  { $$ = new bi::ConversionDeclaration(dynamic_cast<bi::ConversionParameter*>($2), make_loc(@$)); }
+    ;
+
 type_declaration
     : STRUCT struct_parameter  { $$ = new bi::TypeDeclaration(dynamic_cast<bi::TypeParameter*>($2), make_loc(@$)); } 
     | CLASS class_parameter    { $$ = new bi::TypeDeclaration(dynamic_cast<bi::TypeParameter*>($2), make_loc(@$)); } 
@@ -583,6 +592,7 @@ optional_statements
 type_statement
     : member_declaration
     | func_declaration
+    | conversion_declaration
     | hpp
     ;
     
