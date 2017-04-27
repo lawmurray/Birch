@@ -110,7 +110,7 @@ void bi::Visitor::visit(const VarParameter* o) {
 
 void bi::Visitor::visit(const FuncParameter* o) {
   o->parens->accept(this);
-  o->result->accept(this);
+  o->type->accept(this);
   o->braces->accept(this);
 }
 
@@ -148,6 +148,10 @@ void bi::Visitor::visit(const Loop* o) {
   o->braces->accept(this);
 }
 
+void bi::Visitor::visit(const Return* o) {
+  o->single->accept(this);
+}
+
 void bi::Visitor::visit(const Raw* o) {
   //
 }
@@ -179,7 +183,7 @@ void bi::Visitor::visit(const ParenthesesType* o) {
 
 void bi::Visitor::visit(const LambdaType* o) {
   o->parens->accept(this);
-  o->result->accept(this);
+  o->type->accept(this);
 }
 
 void bi::Visitor::visit(const TypeList* o) {

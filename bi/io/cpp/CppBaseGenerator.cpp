@@ -3,9 +3,7 @@
  */
 #include "bi/io/cpp/CppBaseGenerator.hpp"
 
-#include "bi/io/cpp/CppOutputGenerator.hpp"
 #include "bi/io/cpp/CppParameterGenerator.hpp"
-#include "bi/io/cpp/CppReturnGenerator.hpp"
 #include "bi/visitor/Gatherer.hpp"
 #include "bi/primitive/encode.hpp"
 
@@ -171,20 +169,7 @@ void bi::CppBaseGenerator::visit(const FuncParameter* o) {
     auxParameter << o->parens;
     finish(") {");
     in();
-
-    /* output parameters */
-    CppOutputGenerator auxOutput(base, level, false);
-    auxOutput << o;
-
-    /* body */
     *this << o->braces;
-
-    /* return statement */
-    if (!o->result->isEmpty()) {
-      CppReturnGenerator auxReturn(base, level, false);
-      auxReturn << o;
-    }
-
     out();
     start("}");
   }
@@ -218,6 +203,10 @@ void bi::CppBaseGenerator::visit(const Loop* o) {
   *this << o->braces;
   out();
   line("}");
+}
+
+void bi::CppBaseGenerator::visit(const Return* o) {
+  line("return " << o->single << ';');
 }
 
 void bi::CppBaseGenerator::visit(const Raw* o) {
@@ -263,7 +252,7 @@ void bi::CppBaseGenerator::visit(const ParenthesesType* o) {
 
 void bi::CppBaseGenerator::visit(const LambdaType* o) {
   ++inLambda;
-  middle("bi::Lambda<" << o->result << '(');
+  middle("bi::Lambda<" << o->type << '(');
   CppParameterGenerator auxParameter(base, level, header);
   auxParameter << o->parens;
   middle(")>");

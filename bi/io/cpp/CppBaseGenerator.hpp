@@ -47,6 +47,7 @@ public:
   virtual void visit(const ExpressionStatement* o);
   virtual void visit(const Conditional* o);
   virtual void visit(const Loop* o);
+  virtual void visit(const Return* o);
   virtual void visit(const Raw* o);
 
   virtual void visit(const EmptyType* o);

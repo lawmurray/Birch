@@ -18,6 +18,7 @@ class Import;
 template<class T> class List;
 class Loop;
 class Raw;
+class Return;
 
 class VarParameter;
 class FuncParameter;
@@ -88,6 +89,7 @@ public:
   virtual bool definitely(const Import& o) const;
   virtual bool definitely(const List<Statement>& o) const;
   virtual bool definitely(const Loop& o) const;
+  virtual bool definitely(const Return& o) const;
   virtual bool definitely(const Raw& o) const;
 
   virtual bool possibly(const Statement& o) const;
@@ -102,6 +104,7 @@ public:
   virtual bool possibly(const Import& o) const;
   virtual bool possibly(const List<Statement>& o) const;
   virtual bool possibly(const Loop& o) const;
+  virtual bool possibly(const Return& o) const;
   virtual bool possibly(const Raw& o) const;
 };
 }

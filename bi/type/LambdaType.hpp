@@ -19,11 +19,11 @@ public:
    * Constructor.
    *
    * @param parens Parameters type.
-   * @param result Result type.
+   * @param type Return type.
    * @param loc Location.
    * @param assignable Is this type assignable?
    */
-  LambdaType(Type* parens, Type* result, shared_ptr<Location> loc = nullptr,
+  LambdaType(Type* parens, Type* type, shared_ptr<Location> loc = nullptr,
       const bool assignable = false);
 
   /**
@@ -54,8 +54,8 @@ public:
   unique_ptr<Type> parens;
 
   /**
-   * Result type.
+   * Return type.
    */
-  unique_ptr<Type> result;
+  unique_ptr<Type> type;
 };
 }

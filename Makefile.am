@@ -76,9 +76,7 @@ birchc_SOURCES = \
   bi/io/cpp/CppCopyConstructorGenerator.cpp \
   bi/io/cpp/CppFileGenerator.cpp \
   bi/io/cpp/CppTypeGenerator.cpp \
-  bi/io/cpp/CppOutputGenerator.cpp \
   bi/io/cpp/CppParameterGenerator.cpp \
-  bi/io/cpp/CppReturnGenerator.cpp \
   bi/io/cpp/CppViewConstructorGenerator.cpp \
   bi/io/bi_ostream.cpp \
   bi/io/cpp_ostream.cpp \
@@ -95,6 +93,7 @@ birchc_SOURCES = \
   bi/statement/Import.cpp \
   bi/statement/Loop.cpp \
   bi/statement/Raw.cpp \
+  bi/statement/Return.cpp \
   bi/statement/Statement.cpp \
   bi/type/BracketsType.cpp \
   bi/type/EmptyType.cpp \

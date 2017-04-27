@@ -48,7 +48,7 @@
 }
 
 %token <valString> IMPORT PROG STRUCT CLASS TYPE FUNC LAMBDA
-%token <valString> IF ELSE WHILE CPP HPP THIS
+%token <valString> IF ELSE WHILE RETURN CPP HPP THIS
 %token <valString> DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE RAW NAME
 %token <valBool> BOOL_LITERAL
 %token <valInt> INT_LITERAL
@@ -69,7 +69,6 @@
 %type <valExpression> brackets braces optional_braces
 %type <valExpression> type_braces optional_type_braces
 %type <valExpression> parameter_list parameters optional_parameters
-%type <valExpression> result result_list results optional_results
 %type <valExpression> argument_list arguments optional_arguments
 %type <valExpression> var_reference var_parameter var_parameter_with_value
 %type <valExpression> member_parameter
@@ -96,7 +95,7 @@
 %type <valStatement> var_declaration member_declaration
 %type <valStatement> func_declaration op_declaration
 %type <valStatement> type_declaration prog_declaration
-%type <valStatement> import cpp hpp expression_statement if while
+%type <valStatement> import cpp hpp expression_statement if while return
 %type <valStatement> statement statements optional_statements
 %type <valStatement> type_statement type_statements optional_type_statements
 %type <valStatement> file_statement file_statements optional_file_statements
@@ -213,13 +212,13 @@ member_parameter
     ;
     
 func_parameter
-    : name parameters optional_results optional_braces  { $$ = new bi::FuncParameter($1, $2, $3, $4, bi::FUNCTION, make_loc(@$)); }
+    : name parameters optional_result_type optional_braces  { $$ = new bi::FuncParameter($1, $2, $3, $4, bi::FUNCTION, make_loc(@$)); }
     ;
     
 op_parameter
-    : '(' var_parameter assignment_operator var_parameter ')' optional_results optional_braces  { $$ = new bi::FuncParameter($2, $3, $4, $6, $7, bi::ASSIGN_OPERATOR, make_loc(@$)); }
-    | '(' var_parameter binary_operator var_parameter ')' optional_results optional_braces      { $$ = new bi::FuncParameter($2, $3, $4, $6, $7, bi::BINARY_OPERATOR, make_loc(@$)); }
-    | '(' unary_operator var_parameter ')' optional_results optional_braces                     { $$ = new bi::FuncParameter($2, $3, $5, $6, bi::UNARY_OPERATOR, make_loc(@$)); }
+    : '(' var_parameter assignment_operator var_parameter ')' optional_result_type optional_braces  { $$ = new bi::FuncParameter($2, $3, $4, $6, $7, bi::ASSIGN_OPERATOR, make_loc(@$)); }
+    | '(' var_parameter binary_operator var_parameter ')' optional_result_type optional_braces      { $$ = new bi::FuncParameter($2, $3, $4, $6, $7, bi::BINARY_OPERATOR, make_loc(@$)); }
+    | '(' unary_operator var_parameter ')' optional_result_type optional_braces                     { $$ = new bi::FuncParameter($2, $3, $5, $6, bi::UNARY_OPERATOR, make_loc(@$)); }
     ;
 
 struct_parameter
@@ -273,25 +272,6 @@ result_type
 optional_result_type
     : result_type
     |              { $$ = new bi::EmptyType(); }
-    ;
-
-result
-    : var_parameter
-    ;
-
-result_list
-    : result
-    | result_list ',' result  { $$ = new bi::ExpressionList($1, $3, make_loc(@$)); }
-    ;
-
-results
-    : result
-    | '(' result_list ')'  { $$ = $2; }
-    ;
-
-optional_results
-    : RIGHT_OP results  { $$ = $2; }
-    |                   { $$ = make_empty(); }
     ;
 
 
@@ -374,7 +354,7 @@ parens_expression
     ;
     
 lambda_expression
-    : LAMBDA parameters optional_results optional_braces  { $$ = new bi::FuncParameter(new bi::Name(), $2, $3, $4, bi::LAMBDA_FUNCTION, make_loc(@$)); }
+    : LAMBDA parameters optional_result_type optional_braces  { $$ = new bi::FuncParameter(new bi::Name(), $2, $3, $4, bi::LAMBDA_FUNCTION, make_loc(@$)); }
     ;
 
 this_expression
@@ -568,6 +548,10 @@ while
     : WHILE '(' expression ')' braces  { $$ = new bi::Loop($3, $5, make_loc(@$)); }
     ;
 
+return
+    : RETURN expression ';'  { $$ = new bi::Return($2, make_loc(@$)); }
+    ;
+
 cpp
     : CPP double_braces  { $$ = new bi::Raw(new bi::Name("cpp"), raw.str(), make_loc(@$)); }
     ;
@@ -581,6 +565,7 @@ statement
     | var_declaration
     | if
     | while
+    | return
     | cpp
     | hpp
     ;

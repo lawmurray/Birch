@@ -60,6 +60,10 @@ bool bi::Statement::definitely(const Loop& o) const {
   return false;
 }
 
+bool bi::Statement::definitely(const Return& o) const {
+  return false;
+}
+
 bool bi::Statement::definitely(const Raw& o) const {
   return false;
 }
@@ -105,6 +109,10 @@ bool bi::Statement::possibly(const List<Statement>& o) const {
 }
 
 bool bi::Statement::possibly(const Loop& o) const {
+  return false;
+}
+
+bool bi::Statement::possibly(const Return& o) const {
   return false;
 }
 

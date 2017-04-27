@@ -24,12 +24,12 @@ public:
    *
    * @param name Name.
    * @param parens Parentheses expression.
-   * @param result Result expression.
+   * @param type Return type.
    * @param braces Braces expression.
    * @param form Function form.
    * @param loc Location.
    */
-  FuncParameter(shared_ptr<Name> name, Expression* parens, Expression* result,
+  FuncParameter(shared_ptr<Name> name, Expression* parens, Type* type,
       Expression* braces, const SignatureForm form, shared_ptr<Location> loc =
           nullptr);
 
@@ -39,13 +39,13 @@ public:
    * @param left Left operand.
    * @param name Operator.
    * @param right Right operand.
-   * @param result Result expression.
+   * @param type Return type.
    * @param braces Braces expression.
    * @param form Signature form.
    * @param loc Location.
    */
   FuncParameter(Expression* left, shared_ptr<Name> name, Expression* right,
-      Expression* result, Expression* braces, const SignatureForm form,
+      Type* type, Expression* braces, const SignatureForm form,
       shared_ptr<Location> loc = nullptr);
 
   /**

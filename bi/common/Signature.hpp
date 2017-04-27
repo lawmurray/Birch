@@ -24,20 +24,14 @@ public:
    *
    * @param name Name.
    * @param parens Parentheses expression.
-   * @param result Result expression.
    * @param form Function form.
    */
-  Signature(shared_ptr<Name> name, Expression* parens, Expression* result,
+  Signature(shared_ptr<Name> name, Expression* parens,
       const SignatureForm form = FUNCTION);
 
   /**
    * Destructor.
    */
   virtual ~Signature() = 0;
-
-  /**
-   * Result expression.
-   */
-  unique_ptr<Expression> result;
 };
 }

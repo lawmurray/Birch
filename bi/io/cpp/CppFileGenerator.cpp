@@ -5,8 +5,6 @@
 
 #include "bi/io/cpp/CppTypeGenerator.hpp"
 #include "bi/io/cpp/CppParameterGenerator.hpp"
-#include "bi/io/cpp/CppOutputGenerator.hpp"
-#include "bi/io/cpp/CppReturnGenerator.hpp"
 #include "bi/program/all.hpp"
 #include "bi/exception/all.hpp"
 #include "bi/primitive/encode.hpp"
@@ -102,19 +100,10 @@ void bi::CppFileGenerator::visit(const FuncParameter* o) {
       finish(" {");
       in();
 
-      /* output parameters */
-      CppOutputGenerator auxOutput(base, level, false);
-      auxOutput << o;
 
       /* body */
       CppBaseGenerator aux(base, level, false);
       aux << o->braces;
-
-      /* return statement */
-      if (!o->result->isEmpty()) {
-        CppReturnGenerator auxReturn(base, level, false);
-        auxReturn << o;
-      }
 
       out();
       finish("}\n");

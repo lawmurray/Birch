@@ -98,7 +98,7 @@ bi::Expression* bi::Cloner::clone(const VarParameter* o) {
 
 bi::Expression* bi::Cloner::clone(const FuncParameter* o) {
   return new FuncParameter(o->name, o->parens->accept(this),
-      o->result->accept(this), o->braces->accept(this), o->form, o->loc);
+      o->type->accept(this), o->braces->accept(this), o->form, o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const TypeParameter* o) {
@@ -130,6 +130,10 @@ bi::Statement* bi::Cloner::clone(const Conditional* o) {
 
 bi::Statement* bi::Cloner::clone(const Loop* o) {
   return new Loop(o->cond->accept(this), o->braces->accept(this), o->loc);
+}
+
+bi::Statement* bi::Cloner::clone(const Return* o) {
+  return new Return(o->single->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const Raw* o) {
@@ -166,7 +170,7 @@ bi::Type* bi::Cloner::clone(const ParenthesesType* o) {
 }
 
 bi::Type* bi::Cloner::clone(const LambdaType* o) {
-  return new LambdaType(o->parens->accept(this), o->result->accept(this),
+  return new LambdaType(o->parens->accept(this), o->type->accept(this),
       o->loc, o->assignable);
 }
 

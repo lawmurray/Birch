@@ -115,7 +115,7 @@ bi::Expression* bi::Modifier::modify(VarParameter* o) {
 
 bi::Expression* bi::Modifier::modify(FuncParameter* o) {
   o->parens = o->parens.release()->accept(this);
-  o->result = o->result.release()->accept(this);
+  o->type = o->type.release()->accept(this);
   o->braces = o->braces.release()->accept(this);
   return o;
 }
@@ -156,6 +156,11 @@ bi::Statement* bi::Modifier::modify(Conditional* o) {
 bi::Statement* bi::Modifier::modify(Loop* o) {
   o->cond = o->cond.release()->accept(this);
   o->braces = o->braces.release()->accept(this);
+  return o;
+}
+
+bi::Statement* bi::Modifier::modify(Return* o) {
+  o->single = o->single.release()->accept(this);
   return o;
 }
 
@@ -200,7 +205,7 @@ bi::Type* bi::Modifier::modify(ParenthesesType* o) {
 
 bi::Type* bi::Modifier::modify(LambdaType* o) {
   o->parens = o->parens.release()->accept(this);
-  o->result = o->result.release()->accept(this);
+  o->type = o->type.release()->accept(this);
   return o;
 }
 

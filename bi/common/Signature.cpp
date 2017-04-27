@@ -7,11 +7,10 @@
 #include "bi/primitive/encode.hpp"
 
 bi::Signature::Signature(shared_ptr<Name> name, Expression* parens,
-    Expression* result, const SignatureForm form) :
+    const SignatureForm form) :
     Named(name),
     Parenthesised(parens),
-    Formed(form),
-    result(result) {
+    Formed(form) {
   //
 }
 

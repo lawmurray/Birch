@@ -8,8 +8,6 @@
 #include "bi/io/cpp/CppCopyConstructorGenerator.hpp"
 #include "bi/io/cpp/CppAssignmentGenerator.hpp"
 #include "bi/io/cpp/CppParameterGenerator.hpp"
-#include "bi/io/cpp/CppOutputGenerator.hpp"
-#include "bi/io/cpp/CppReturnGenerator.hpp"
 #include "bi/primitive/encode.hpp"
 
 bi::CppTypeGenerator::CppTypeGenerator(std::ostream& base, const int level,
@@ -175,19 +173,9 @@ void bi::CppTypeGenerator::visit(const FuncParameter* o) {
       finish(" {");
       in();
 
-      /* output parameters */
-      CppOutputGenerator auxOutput(base, level, header);
-      auxOutput << o;
-
       /* body */
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces;
-
-      /* return statement */
-      if (!o->result->isEmpty()) {
-        CppReturnGenerator auxReturn(base, level, header);
-        auxReturn << o;
-      }
 
       out();
       finish("}\n");

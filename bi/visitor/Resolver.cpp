@@ -172,8 +172,7 @@ bi::Expression* bi::Resolver::modify(FuncParameter* o) {
   ++inInputs;
   o->parens = o->parens->accept(this);
   --inInputs;
-  o->result = o->result->accept(this)->accept(&assigner);
-  o->type = o->result->type->accept(&cloner)->accept(this);
+  o->type = o->type->accept(this)->accept(&assigner);
   if (o->isLambda()) {
     o->braces = o->braces->accept(this);
   } else if (!o->braces->isEmpty()) {
@@ -240,13 +239,13 @@ bi::Statement* bi::Resolver::modify(Loop* o) {
 }
 
 bi::FuncParameter* bi::Resolver::makeLambda(VarParameter* o) {
-  LambdaType* type = dynamic_cast<LambdaType*>(o->type->strip());
-  assert(type);
+  LambdaType* lambda = dynamic_cast<LambdaType*>(o->type->strip());
+  assert(lambda);
 
   /* parameters */
   Expression* parens;
   std::list<const Type*> types;
-  for (auto iter = type->parens->begin(); iter != type->parens->end();
+  for (auto iter = lambda->parens->begin(); iter != lambda->parens->end();
       ++iter) {
     types.push_back(*iter);
   }
@@ -263,12 +262,11 @@ bi::FuncParameter* bi::Resolver::makeLambda(VarParameter* o) {
     parens = new EmptyExpression();
   }
 
-  /* result */
-  Expression* result = new VarParameter(new Name(),
-      type->result->accept(&cloner));
+  /* return type */
+  Type* type = lambda->type->accept(&cloner);
 
   /* function */
-  FuncParameter* func = new FuncParameter(o->name, parens, result,
+  FuncParameter* func = new FuncParameter(o->name, parens, type,
       new EmptyExpression(), LAMBDA_FUNCTION);
 
   return func;

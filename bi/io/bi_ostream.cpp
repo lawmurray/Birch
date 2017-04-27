@@ -119,8 +119,8 @@ void bi::bi_ostream::visit(const FuncParameter* o) {
   } else {
     *this << o->name << '(' << o->parens << ')';
   }
-  if (!o->result->isEmpty()) {
-    *this << " -> " << o->result;
+  if (!o->type->isEmpty()) {
+    *this << " -> " << o->type;
   }
 }
 
@@ -166,7 +166,7 @@ void bi::bi_ostream::visit(const ParenthesesType* o) {
 }
 
 void bi::bi_ostream::visit(const LambdaType* o) {
-  *this << '(' << o->parens << ") -> " << o->result;
+  *this << '(' << o->parens << ") -> " << o->type;
 }
 
 void bi::bi_ostream::visit(const File* o) {
@@ -191,6 +191,10 @@ void bi::bi_ostream::visit(const Conditional* o) {
 
 void bi::bi_ostream::visit(const Loop* o) {
   *this << indent << "while " << o->cond << ' ' << o->braces << '\n';
+}
+
+void bi::bi_ostream::visit(const Return* o) {
+  *this << indent << "return " << o->single << ";\n";
 }
 
 void bi::bi_ostream::visit(const Raw* o) {

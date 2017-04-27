@@ -6,19 +6,19 @@
 #include "bi/visitor/all.hpp"
 
 bi::FuncParameter::FuncParameter(shared_ptr<Name> name, Expression* parens,
-    Expression* result, Expression* braces, const SignatureForm form,
+    Type* type, Expression* braces, const SignatureForm form,
     shared_ptr<Location> loc) :
-    Expression(loc),
-    Signature(name, parens, result, form),
+    Expression(type, loc),
+    Signature(name, parens, form),
     Braced(braces) {
   //
 }
 
 bi::FuncParameter::FuncParameter(Expression* left, shared_ptr<Name> name,
-    Expression* right, Expression* result, Expression* braces,
+    Expression* right, Type* type, Expression* braces,
     const SignatureForm form, shared_ptr<Location> loc) :
-    Expression(loc),
-    Signature(name, new ExpressionList(left, right), result, form),
+    Expression(type, loc),
+    Signature(name, new ExpressionList(left, right), form),
     Braced(braces) {
   //
 }

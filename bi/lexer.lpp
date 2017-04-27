@@ -105,6 +105,7 @@ IS                                 (u|U|l|L)*
 "if"                                { return IF; }
 "else"                              { return ELSE; }
 "while"                             { return WHILE; }
+"return"                            { return RETURN; }
 "cpp"                               { return CPP; }
 "hpp"                               { return HPP; }
 "this"                              { return THIS; }

@@ -5,11 +5,11 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::LambdaType::LambdaType(Type* parens, Type* result,
+bi::LambdaType::LambdaType(Type* parens, Type* type,
     shared_ptr<Location> loc, const bool assignable) :
     Type(loc, assignable),
     parens(parens),
-    result(result) {
+    type(type) {
   //
 }
 
@@ -38,7 +38,7 @@ bool bi::LambdaType::dispatchDefinitely(const Type& o) const {
 }
 
 bool bi::LambdaType::definitely(const LambdaType& o) const {
-  return parens->definitely(*o.parens) && result->definitely(*o.result);
+  return parens->definitely(*o.parens) && type->definitely(*o.type);
 }
 
 bool bi::LambdaType::definitely(const ParenthesesType& o) const {
@@ -50,7 +50,7 @@ bool bi::LambdaType::dispatchPossibly(const Type& o) const {
 }
 
 bool bi::LambdaType::possibly(const LambdaType& o) const {
-  return parens->possibly(*o.parens) && result->possibly(*o.result);
+  return parens->possibly(*o.parens) && type->possibly(*o.type);
 }
 
 bool bi::LambdaType::possibly(const ParenthesesType& o) const {
