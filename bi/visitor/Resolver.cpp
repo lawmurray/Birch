@@ -216,7 +216,7 @@ bi::Type* bi::Resolver::modify(TypeParameter* o) {
   o->scope = pop();
 
   if (!o->base->isEmpty()) {
-    o->scope->inherit(o->getBase()->scope.get());
+    o->scope->inherit(o->super()->scope.get());
   }
 
   top()->add(o);

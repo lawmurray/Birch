@@ -108,9 +108,8 @@ private:
 
 template<class ParameterType, class ReferenceType>
 void bi::Scope::resolveDefer(ReferenceType* ref) {
-  auto iter = bases.begin();
-  while (!ref->target && iter != bases.end()) {
+  for (auto iter = bases.begin(); !ref->target && iter != bases.end();
+      ++iter) {
     (*iter)->resolve(ref);
-    ++iter;
   }
 }

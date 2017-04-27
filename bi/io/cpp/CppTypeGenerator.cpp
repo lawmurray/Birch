@@ -24,8 +24,8 @@ void bi::CppTypeGenerator::visit(const TypeParameter* o) {
     if (header) {
       line("template<class Group = MemoryGroup>");
       start("class " << o->name);
-      if (!o->base->isEmpty()) {
-        middle(" : public " << o->getBase()->name << "<Group>");
+      if (o->super()) {
+        middle(" : public " << o->super()->name << "<Group>");
       }
       finish(" {");
       line("public:");
@@ -33,7 +33,7 @@ void bi::CppTypeGenerator::visit(const TypeParameter* o) {
       line("typedef Group group_type;");
       line("typedef " << o->name << "<Group> value_type;");
       if (!o->base->isEmpty()) {
-        line("typedef " << o->getBase()->name << "<Group> base_type;");
+        line("typedef " << o->super()->name << "<Group> base_type;");
       }
       line("");
     }
@@ -192,7 +192,9 @@ void bi::CppTypeGenerator::visit(const ConversionParameter* o) {
 
     /* name */
     if (!header) {
-      middle("bi::type::" << type->name << "<Group>::");
+      start("bi::type::" << type->name << "<Group>::");
+    } else {
+      start("");
     }
     middle("operator " << o->type << "() const");
     if (header) {

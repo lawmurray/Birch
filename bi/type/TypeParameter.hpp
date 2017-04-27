@@ -57,25 +57,37 @@ public:
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
+  /**
+   * Get the base type.
+   */
+  const TypeParameter* super() const;
+
+  /**
+   * Is this type derived from the given type?
+   */
+  bool derivedFrom(const TypeParameter* o) const;
+
+  /**
+   * Is this type convertible to the given type? This means that either the
+   * type is equal to or derived from the given type, or that it is defined
+   * with a conversion function to another type that is equal to or derived
+   * from the given type.
+   */
+  bool convertibleTo(const TypeParameter* o) const;
+  /**
+   * Iterators over type conversions.
+   */
+  auto beginConversions() const {
+    return scope->convs.params.begin();
+  }
+  auto endConversions() const {
+    return scope->convs.params.end();
+  }
+
   bool isBuiltin() const;
   bool isStruct() const;
   bool isClass() const;
   bool isAlias() const;
-
-  /**
-   * Get the base type.
-   */
-  const TypeParameter* getBase() const;
-
-  /**
-   * Is this type equal to or less than @p o by inheritance?
-   */
-  bool canUpcast(const TypeParameter* o) const;
-
-  /**
-   * Is this type equal to or greater than @p o by inheritance?
-   */
-  bool canDowncast(const TypeParameter* o) const;
 
   using Type::definitely;
   using Type::possibly;

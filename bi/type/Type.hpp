@@ -148,8 +148,8 @@ public:
   virtual bool possibly(const TypeReference& o) const;
   virtual bool possibly(const ParenthesesType& o) const;
 
-  /*
-   * Operators for equality comparisons.
+  /**
+   * Are these two types the same?
    */
   virtual bool equals(const Type& o) const;
 };

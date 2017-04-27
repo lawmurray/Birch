@@ -58,12 +58,30 @@ public:
   using Type::definitely;
   using Type::possibly;
 
+  /**
+   * Do any of the conversions for this type definitely match?
+   */
+  bool convertedDefinitely(const Type& o) const;
+
+  /**
+   * Do any of the conversions for this type possibly match?
+   */
+  bool convertedPossibly(const Type& o) const;
+
   virtual bool dispatchDefinitely(const Type& o) const;
+  virtual bool definitely(const BracketsType& o) const;
+  virtual bool definitely(const EmptyType& o) const;
+  virtual bool definitely(const LambdaType& o) const;
+  virtual bool definitely(const List<Type>& o) const;
   virtual bool definitely(const TypeParameter& o) const;
   virtual bool definitely(const TypeReference& o) const;
   virtual bool definitely(const ParenthesesType& o) const;
 
   virtual bool dispatchPossibly(const Type& o) const;
+  virtual bool possibly(const BracketsType& o) const;
+  virtual bool possibly(const EmptyType& o) const;
+  virtual bool possibly(const LambdaType& o) const;
+  virtual bool possibly(const List<Type>& o) const;
   virtual bool possibly(const TypeParameter& o) const;
   virtual bool possibly(const TypeReference& o) const;
   virtual bool possibly(const ParenthesesType& o) const;

@@ -33,6 +33,37 @@ void bi::TypeParameter::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
+const bi::TypeParameter* bi::TypeParameter::super() const {
+  const TypeReference* result = dynamic_cast<const TypeReference*>(base.get());
+  if (result) {
+    return result->target;
+  } else {
+    return nullptr;
+  }
+}
+
+bool bi::TypeParameter::derivedFrom(const TypeParameter* o) const {
+  if (isAlias()) {
+    return super()->derivedFrom(o);
+  } else if (o->isAlias()) {
+    return derivedFrom(o->super());
+  } else if (this == o) {
+    return true;
+  } else {
+    return super() && super()->derivedFrom(o);
+  }
+}
+
+bool bi::TypeParameter::convertibleTo(const TypeParameter* o) const {
+  auto f =
+      [&](const ConversionParameter* conv) {
+        const TypeReference* ref = dynamic_cast<const TypeReference*>(conv->type.get());
+        return ref && ref->target && ref->target->derivedFrom(o);
+      };
+  return derivedFrom(o)
+      || std::any_of(beginConversions(), endConversions(), f);
+}
+
 bool bi::TypeParameter::isBuiltin() const {
   if (isAlias()) {
     return base->isBuiltin();
@@ -59,29 +90,6 @@ bool bi::TypeParameter::isClass() const {
 
 bool bi::TypeParameter::isAlias() const {
   return form == ALIAS_TYPE;
-}
-
-const bi::TypeParameter* bi::TypeParameter::getBase() const {
-  const TypeReference* ref =
-      dynamic_cast<const TypeReference*>(base->strip());
-  assert(ref && ref->target);
-  return ref->target;
-}
-
-bool bi::TypeParameter::canUpcast(const TypeParameter* o) const {
-  if (o->isAlias()) {
-    return canUpcast(o->getBase());
-  } else if (isAlias()) {
-    return getBase()->canUpcast(o);
-  } else if (!base->isEmpty()) {
-    return this == o || getBase()->canUpcast(o);
-  } else {
-    return this == o;
-  }
-}
-
-bool bi::TypeParameter::canDowncast(const TypeParameter* o) const {
-  return o->canUpcast(this);
 }
 
 bool bi::TypeParameter::dispatchDefinitely(const Type& o) const {

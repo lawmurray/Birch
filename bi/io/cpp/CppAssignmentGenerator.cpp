@@ -59,6 +59,10 @@ void bi::CppAssignmentGenerator::visit(const FuncParameter* o) {
   //
 }
 
+void bi::CppAssignmentGenerator::visit(const ConversionParameter* o) {
+  //
+}
+
 void bi::CppAssignmentGenerator::visit(const VarParameter* o) {
   middle(o->name << " = o_." << o->name);
 }

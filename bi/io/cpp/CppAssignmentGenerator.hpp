@@ -20,5 +20,6 @@ public:
   virtual void visit(const TypeParameter* o);
   virtual void visit(const VarParameter* o);
   virtual void visit(const FuncParameter* o);
+  virtual void visit(const ConversionParameter* o);
 };
 }
