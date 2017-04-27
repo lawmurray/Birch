@@ -200,6 +200,7 @@ bi::Type* bi::Resolver::modify(TypeParameter* o) {
   push();
   o->parens = o->parens->accept(this);
   o->base = o->base->accept(this);
+  ///@todo Check that the type and its base are both struct or both class
   o->scope = pop();
 
   if (!o->base->isEmpty()) {
@@ -235,6 +236,12 @@ bi::Statement* bi::Resolver::modify(Loop* o) {
   Modifier::modify(o);
   o->scope = pop();
   ///@todo Check that condition is of type Boolean
+  return o;
+}
+
+bi::Statement* bi::Resolver::modify(Return* o) {
+  Modifier::modify(o);
+  ///@todo Check that the type of the expression is correct
   return o;
 }
 

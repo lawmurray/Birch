@@ -55,6 +55,7 @@ public:
   virtual Statement* modify(Import* o);
   virtual Statement* modify(Conditional* o);
   virtual Statement* modify(Loop* o);
+  virtual Statement* modify(Return* o);
 
 protected:
   /**
