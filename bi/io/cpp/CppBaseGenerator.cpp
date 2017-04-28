@@ -243,7 +243,7 @@ void bi::CppBaseGenerator::visit(const EmptyType* o) {
 
 void bi::CppBaseGenerator::visit(const BracketsType* o) {
   ++inArray;
-  if (o->single->isClass()) {
+  if (o->single->isStruct()) {
     middle("DefaultArray<" << o->single << "," << o->count() << '>');
   } else {
     middle("DefaultArray<PrimitiveValue<" << o->single << ">," << o->count() << '>');
