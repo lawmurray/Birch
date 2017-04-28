@@ -17,6 +17,13 @@ bi::VarParameter::VarParameter(shared_ptr<Name> name, Type* type,
   //
 }
 
+bi::VarParameter::VarParameter(Type* type) :
+    Expression(type),
+    value(new EmptyExpression()),
+    member(false) {
+  //
+}
+
 bi::VarParameter::~VarParameter() {
   //
 }

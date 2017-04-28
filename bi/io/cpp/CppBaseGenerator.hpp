@@ -68,6 +68,14 @@ protected:
   void genBuiltin(const TypeReference* o);
 
   /**
+   * Generate an argument to a function.
+   *
+   * @param arg The argument.
+   * @param param The parameter.
+   */
+  void genArg(const Expression* arg, const Expression* param);
+
+  /**
    * Output header instead of source?
    */
   bool header;

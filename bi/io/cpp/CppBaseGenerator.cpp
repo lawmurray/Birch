@@ -120,13 +120,39 @@ void bi::CppBaseGenerator::visit(const VarReference* o) {
 
 void bi::CppBaseGenerator::visit(const FuncReference* o) {
   if (o->isAssign() && *o->name == "<-") {
-    middle(o->getLeft() << " = " << o->getRight());
+    if (o->getLeft()->type->isClass() && !o->getRight()->type->isClass()) {
+      middle("*(" << o->getLeft() << ')');
+    } else {
+      middle(o->getLeft());
+    }
+    middle(" = ");
+    if (!o->getLeft()->type->isClass() && o->getRight()->type->isClass()) {
+      middle("*(" << o->getRight() << ')');
+    } else {
+      middle(o->getRight());
+    }
   } else if (o->isBinary() && isTranslatable(o->name->str())) {
-    middle(o->getLeft() << ' ' << o->name << ' ' << o->getRight());
+    genArg(o->getLeft(), o->target->getLeft());
+    middle(' ' << o->name << ' ');
+    genArg(o->getRight(), o->target->getRight());
   } else if (o->isUnary() && isTranslatable(o->name->str())) {
-    middle(o->name << o->getRight());
+    middle(o->name);
+    genArg(o->getRight(), o->target->getRight());
   } else {
-    middle(internalise(o->name->str()) << '(' << o->parens << ')');
+    middle(internalise(o->name->str()) << '(');
+    auto arg = o->parens->begin();
+    auto param = o->target->parens->begin();
+    while (arg != o->parens->end() && param != o->target->parens->end()) {
+      if (arg != o->parens->begin()) {
+        middle(", ");
+      }
+      genArg(*arg, *param);
+      ++arg;
+      ++param;
+    }
+    assert(arg == o->parens->end());
+    assert(param == o->target->parens->end());
+    middle(')');
   }
 }
 
@@ -302,5 +328,13 @@ void bi::CppBaseGenerator::genBuiltin(const TypeReference* o) {
     middle("std::string");
   } else {
     assert(false);
+  }
+}
+
+void bi::CppBaseGenerator::genArg(const Expression* arg, const Expression* param) {
+  if (arg->type->isClass() && !param->type->isClass()) {
+    middle("*(" << arg << ')');
+  } else {
+    middle(arg);
   }
 }

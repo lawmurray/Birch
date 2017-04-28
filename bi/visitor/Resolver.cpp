@@ -119,18 +119,20 @@ bi::Expression* bi::Resolver::modify(VarReference* o) {
 bi::Expression* bi::Resolver::modify(FuncReference* o) {
   Scope* memberScope = takeMemberScope();
   Modifier::modify(o);
-  if (o->isAssign()) {
+  if (o->isAssign() && *o->name == "<-") {
     if (!o->getLeft()->type->assignable) {
       throw NotAssignableException(o);
     } else if (!o->getRight()->type->definitely(*o->getLeft()->type)) {
-      //throw InvalidAssignmentException(o);
+      ///@todo Problems with assignable in comparison here
+      //resolve(o, memberScope);
+      //o->type = o->target->type->accept(&cloner)->accept(this);
     }
-  }
-  if (*o->name != "<-") {
+  } else {
     resolve(o, memberScope);
     o->type = o->target->type->accept(&cloner)->accept(this);
     //o->type->assignable = false;  // rvalue
   }
+  
   return o;
 }
 
@@ -179,6 +181,7 @@ bi::Expression* bi::Resolver::modify(FuncParameter* o) {
     defer(o->braces.get());
   }
   o->scope = pop();
+
   if (!o->name->isEmpty()) {
     top()->add(o);
   }

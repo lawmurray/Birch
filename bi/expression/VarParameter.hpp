@@ -30,6 +30,14 @@ public:
       shared_ptr<Location> loc = nullptr);
 
   /**
+   * Constructor. Usually used internally when constructing, e.g. the default
+   * assignment operator.
+   *
+   * @param type Type.
+   */
+  VarParameter(Type* type);
+
+  /**
    * Destructor.
    */
   virtual ~VarParameter();

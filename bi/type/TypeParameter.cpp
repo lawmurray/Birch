@@ -42,26 +42,12 @@ const bi::TypeParameter* bi::TypeParameter::super() const {
   }
 }
 
-bool bi::TypeParameter::derivedFrom(const TypeParameter* o) const {
+const bi::TypeParameter* bi::TypeParameter::canonical() const {
   if (isAlias()) {
-    return super()->derivedFrom(o);
-  } else if (o->isAlias()) {
-    return derivedFrom(o->super());
-  } else if (this == o) {
-    return true;
+    return super()->canonical();
   } else {
-    return super() && super()->derivedFrom(o);
+    return this;
   }
-}
-
-bool bi::TypeParameter::convertibleTo(const TypeParameter* o) const {
-  auto f =
-      [&](const ConversionParameter* conv) {
-        const TypeReference* ref = dynamic_cast<const TypeReference*>(conv->type.get());
-        return ref && ref->target && ref->target->derivedFrom(o);
-      };
-  return derivedFrom(o)
-      || std::any_of(beginConversions(), endConversions(), f);
 }
 
 bool bi::TypeParameter::isBuiltin() const {

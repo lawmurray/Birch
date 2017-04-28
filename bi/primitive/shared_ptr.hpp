@@ -37,12 +37,6 @@ public:
   shared_ptr(const std::shared_ptr<T>& ptr);
 
   /**
-   * Construct from pointer to base or derived type.
-   */
-  template<class U>
-  shared_ptr(const shared_ptr<U>& o);
-
-  /**
    * Copy constructor.
    */
   shared_ptr(const shared_ptr<T>& o);
@@ -57,29 +51,35 @@ public:
    */
   shared_ptr<T>& operator=(T* o);
 
+  /**
+   * Cast to shared pointer of base or derived type.
+   */
+  template<class U>
+  operator shared_ptr<U>() const;
+
   /*
    * Equality operators.
    */
-  bool operator==(const shared_ptr<T>& o) {
+  bool operator==(const shared_ptr<T>& o) const {
     return get() == o.get();
   }
-  bool operator!=(const shared_ptr<T>& o) {
+  bool operator!=(const shared_ptr<T>& o) const {
     return get() != o.get();
   }
 
   /*
    * Inequality operators.
    */
-  bool operator<(const shared_ptr<T>& o) {
+  bool operator<(const shared_ptr<T>& o) const {
     return get() < o.get();
   }
-  bool operator>(const shared_ptr<T>& o) {
+  bool operator>(const shared_ptr<T>& o) const {
     return get() > o.get();
   }
-  bool operator<=(const shared_ptr<T>& o) {
+  bool operator<=(const shared_ptr<T>& o) const {
     return get() <= o.get();
   }
-  bool operator>=(const shared_ptr<T>& o) {
+  bool operator>=(const shared_ptr<T>& o) const {
     return get() >= o.get();
   }
 
@@ -135,15 +135,6 @@ bi::shared_ptr<T>::shared_ptr(const std::shared_ptr<T>& ptr) :
 }
 
 template<class T>
-template<class U>
-bi::shared_ptr<T>::shared_ptr(const shared_ptr<U>& o) :
-    ptr(std::dynamic_pointer_cast<T>(o.ptr)) {
-  if (!ptr) {
-    throw std::bad_cast();
-  }
-}
-
-template<class T>
 bi::shared_ptr<T>::shared_ptr(const shared_ptr<T>& o) :
     ptr(o.ptr) {
   //
@@ -160,6 +151,12 @@ inline bi::shared_ptr<T>& bi::shared_ptr<T>::operator=(T* ptr) {
     this->ptr.reset(ptr);
   }
   return *this;
+}
+
+template<class T>
+template<class U>
+bi::shared_ptr<T>::operator shared_ptr<U>() const {
+  return std::dynamic_pointer_cast<U>(ptr);
 }
 
 template<class T>

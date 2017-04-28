@@ -70,9 +70,10 @@ bool bi::TypeReference::convertedDefinitely(const Type& o) const {
 
   auto f = [&](const ConversionParameter* conv) {
     ///@todo Avoid transitivity here
-    return conv->type->definitely(o);
-  };
-  return std::any_of(target->beginConversions(), target->endConversions(), f);
+      return conv->type->definitely(o);
+    };
+  return (target->super() && target->super()->definitely(o))
+      || std::any_of(target->beginConversions(), target->endConversions(), f);
 }
 
 bool bi::TypeReference::dispatchDefinitely(const Type& o) const {
@@ -103,8 +104,8 @@ bool bi::TypeReference::definitely(const TypeReference& o) const {
   /* pre-condition */
   assert(target && o.target);
 
-  return (target->derivedFrom(o.target) && (!o.assignable || assignable))
-      || convertedDefinitely(o);
+  return (target->canonical() == o.target->canonical()
+      && (!o.assignable || assignable)) || convertedDefinitely(o);
 }
 
 bool bi::TypeReference::definitely(const ParenthesesType& o) const {
@@ -117,8 +118,8 @@ bool bi::TypeReference::convertedPossibly(const Type& o) const {
 
   auto f = [&](const ConversionParameter* conv) {
     ///@todo Avoid transitivity here
-    return conv->type->possibly(o);
-  };
+      return conv->type->possibly(o);
+    };
   return std::any_of(target->beginConversions(), target->endConversions(), f);
 }
 
@@ -150,8 +151,8 @@ bool bi::TypeReference::possibly(const TypeReference& o) const {
   /* pre-condition */
   assert(target && o.target);
 
-  return (o.target->derivedFrom(target) && (!o.assignable || assignable))
-      || convertedPossibly(o);
+  return (target->canonical() == o.target->canonical()
+      && (!o.assignable || assignable)) || convertedPossibly(o);
 }
 
 bool bi::TypeReference::possibly(const ParenthesesType& o) const {

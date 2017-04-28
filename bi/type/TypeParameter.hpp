@@ -63,17 +63,11 @@ public:
   const TypeParameter* super() const;
 
   /**
-   * Is this type derived from the given type?
+   * Return the canonical representation of this type. For an alias, this is
+   * the base type, for all other types, the same type.
    */
-  bool derivedFrom(const TypeParameter* o) const;
+  const TypeParameter* canonical() const;
 
-  /**
-   * Is this type convertible to the given type? This means that either the
-   * type is equal to or derived from the given type, or that it is defined
-   * with a conversion function to another type that is equal to or derived
-   * from the given type.
-   */
-  bool convertibleTo(const TypeParameter* o) const;
   /**
    * Iterators over type conversions.
    */

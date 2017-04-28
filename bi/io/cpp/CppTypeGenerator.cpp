@@ -185,28 +185,40 @@ void bi::CppTypeGenerator::visit(const FuncParameter* o) {
 
 void bi::CppTypeGenerator::visit(const ConversionParameter* o) {
   if (!o->braces->isEmpty()) {
-    /* class template parameters */
+    /* non-const conversion */
     if (!header) {
       line("template<class Group>");
-    }
-
-    /* name */
-    if (!header) {
       start("bi::type::" << type->name << "<Group>::");
     } else {
       start("");
     }
-    middle("operator " << o->type << "() const");
+    middle("operator " << o->type << "&()");
     if (header) {
       finish(';');
     } else {
       finish(" {");
       in();
-
-      /* body */
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces;
+      out();
+      finish("}\n");
+    }
 
+    /* const conversion */
+    if (!header) {
+      line("template<class Group>");
+      start("bi::type::" << type->name << "<Group>::");
+    } else {
+      start("");
+    }
+    middle("operator const " << o->type << "&() const");
+    if (header) {
+      finish(';');
+    } else {
+      finish(" {");
+      in();
+      CppBaseGenerator auxBase(base, level, header);
+      auxBase << o->braces;
       out();
       finish("}\n");
     }
