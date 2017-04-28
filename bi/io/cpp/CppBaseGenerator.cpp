@@ -82,15 +82,15 @@ void bi::CppBaseGenerator::visit(const BracesExpression* o) {
 }
 
 void bi::CppBaseGenerator::visit(const BracketsExpression* o) {
-  middle(o->single << "(bi::make_view(" << o->brackets << "))");
+  middle(o->single << "(make_view(" << o->brackets << "))");
 }
 
 void bi::CppBaseGenerator::visit(const Index* o) {
-  middle("bi::make_index(" << o->single << ')');
+  middle("make_index(" << o->single << " - 1)");
 }
 
 void bi::CppBaseGenerator::visit(const Range* o) {
-  middle("bi::make_range(" << o->left << ", " << o->right << ')');
+  middle("make_range(" << o->left << " - 1, " << o->right << " - 1)");
 }
 
 void bi::CppBaseGenerator::visit(const This* o) {
