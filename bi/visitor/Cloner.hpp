@@ -54,6 +54,7 @@ public:
   virtual Statement* clone(const Import* o);
   virtual Statement* clone(const ExpressionStatement* o);
   virtual Statement* clone(const If* o);
+  virtual Statement* clone(const For* o);
   virtual Statement* clone(const While* o);
   virtual Statement* clone(const Return* o);
   virtual Statement* clone(const Raw* o);

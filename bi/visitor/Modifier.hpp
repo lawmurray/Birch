@@ -54,6 +54,7 @@ public:
   virtual Statement* modify(Import* o);
   virtual Statement* modify(ExpressionStatement* o);
   virtual Statement* modify(If* o);
+  virtual Statement* modify(For* o);
   virtual Statement* modify(While* o);
   virtual Statement* modify(Return* o);
   virtual Statement* modify(Raw* o);

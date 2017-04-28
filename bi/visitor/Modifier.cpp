@@ -159,6 +159,14 @@ bi::Statement* bi::Modifier::modify(If* o) {
   return o;
 }
 
+bi::Statement* bi::Modifier::modify(For* o) {
+  o->index = o->index.release()->accept(this);
+  o->from = o->from.release()->accept(this);
+  o->to = o->to.release()->accept(this);
+  o->braces = o->braces.release()->accept(this);
+  return o;
+}
+
 bi::Statement* bi::Modifier::modify(While* o) {
   o->cond = o->cond.release()->accept(this);
   o->braces = o->braces.release()->accept(this);

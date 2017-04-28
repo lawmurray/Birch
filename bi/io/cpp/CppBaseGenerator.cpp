@@ -197,6 +197,15 @@ void bi::CppBaseGenerator::visit(const If* o) {
   line("}");
 }
 
+void bi::CppBaseGenerator::visit(const For* o) {
+  ///@todo May need to be more sophisticated to accommodate arbitrary types
+  line("for (" << o->index << " = " << o->from << "; " << o->index << " <= " << o->to << "; ++" << o->index << ") {");
+  in();
+  *this << o->braces;
+  out();
+  line("}");
+}
+
 void bi::CppBaseGenerator::visit(const While* o) {
   line("while (" << o->cond << ") {");
   in();

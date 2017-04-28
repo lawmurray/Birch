@@ -52,7 +52,7 @@ void bi::bi_ostream::visit(const ParenthesesExpression* o) {
 }
 
 void bi::bi_ostream::visit(const BracesExpression* o) {
-  *this << "{\n";
+  *this << " {\n";
   in();
   *this << o->single;
   out();
@@ -186,15 +186,21 @@ void bi::bi_ostream::visit(const ExpressionStatement* o) {
 }
 
 void bi::bi_ostream::visit(const If* o) {
-  *this << indent << "if " << o->cond << ' ' << o->braces;
+  *this << indent << "if (" << o->cond << ')' << o->braces;
   if (!o->falseBraces->isEmpty()) {
-    *this << " else " << o->falseBraces;
+    *this << " else" << o->falseBraces;
   }
   *this << '\n';
 }
 
+void bi::bi_ostream::visit(const For* o) {
+  *this << indent << "for (";
+  *this << o->index << " in " << o->from << ".." << o->to;
+  *this << ')' << o->braces << '\n';
+}
+
 void bi::bi_ostream::visit(const While* o) {
-  *this << indent << "while " << o->cond << ' ' << o->braces << '\n';
+  *this << indent << "while (" << o->cond << ')' << o->braces << '\n';
 }
 
 void bi::bi_ostream::visit(const Return* o) {

@@ -10,15 +10,16 @@ class Cloner;
 class Modifier;
 class Visitor;
 
-class If;
 template<class T> class Declaration;
 class EmptyStatement;
 class ExpressionStatement;
+class For;
+class If;
 class Import;
 template<class T> class List;
-class While;
 class Raw;
 class Return;
+class While;
 
 class VarParameter;
 class FuncParameter;
@@ -79,32 +80,34 @@ public:
    */
   virtual bool definitely(const Statement& o) const;
   virtual bool dispatchDefinitely(const Statement& o) const = 0;
-  virtual bool definitely(const If& o) const;
   virtual bool definitely(const Declaration<VarParameter>& o) const;
   virtual bool definitely(const Declaration<FuncParameter>& o) const;
   virtual bool definitely(const Declaration<ProgParameter>& o) const;
   virtual bool definitely(const Declaration<TypeParameter>& o) const;
   virtual bool definitely(const EmptyStatement& o) const;
   virtual bool definitely(const ExpressionStatement& o) const;
+  virtual bool definitely(const For& o) const;
+  virtual bool definitely(const If& o) const;
   virtual bool definitely(const Import& o) const;
   virtual bool definitely(const List<Statement>& o) const;
-  virtual bool definitely(const While& o) const;
   virtual bool definitely(const Return& o) const;
   virtual bool definitely(const Raw& o) const;
+  virtual bool definitely(const While& o) const;
 
   virtual bool possibly(const Statement& o) const;
   virtual bool dispatchPossibly(const Statement& o) const = 0;
-  virtual bool possibly(const If& o) const;
   virtual bool possibly(const Declaration<VarParameter>& o) const;
   virtual bool possibly(const Declaration<FuncParameter>& o) const;
   virtual bool possibly(const Declaration<ProgParameter>& o) const;
   virtual bool possibly(const Declaration<TypeParameter>& o) const;
   virtual bool possibly(const EmptyStatement& o) const;
   virtual bool possibly(const ExpressionStatement& o) const;
+  virtual bool possibly(const For& o) const;
+  virtual bool possibly(const If& o) const;
   virtual bool possibly(const Import& o) const;
   virtual bool possibly(const List<Statement>& o) const;
-  virtual bool possibly(const While& o) const;
   virtual bool possibly(const Return& o) const;
   virtual bool possibly(const Raw& o) const;
+  virtual bool possibly(const While& o) const;
 };
 }

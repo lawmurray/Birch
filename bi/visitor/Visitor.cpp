@@ -148,6 +148,13 @@ void bi::Visitor::visit(const If* o) {
   o->falseBraces->accept(this);
 }
 
+void bi::Visitor::visit(const For* o) {
+  o->index->accept(this);
+  o->from->accept(this);
+  o->to->accept(this);
+  o->braces->accept(this);
+}
+
 void bi::Visitor::visit(const While* o) {
   o->cond->accept(this);
   o->braces->accept(this);

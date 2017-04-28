@@ -20,10 +20,6 @@ bool bi::Statement::definitely(const Statement& o) const {
   return o.dispatchDefinitely(*this);
 }
 
-bool bi::Statement::definitely(const If& o) const {
-  return false;
-}
-
 bool bi::Statement::definitely(const Declaration<VarParameter>& o) const {
   return false;
 }
@@ -48,15 +44,18 @@ bool bi::Statement::definitely(const ExpressionStatement& o) const {
   return false;
 }
 
+bool bi::Statement::definitely(const If& o) const {
+  return false;
+}
 bool bi::Statement::definitely(const Import& o) const {
   return false;
 }
 
-bool bi::Statement::definitely(const List<Statement>& o) const {
+bool bi::Statement::definitely(const For& o) const {
   return false;
 }
 
-bool bi::Statement::definitely(const While& o) const {
+bool bi::Statement::definitely(const List<Statement>& o) const {
   return false;
 }
 
@@ -68,12 +67,12 @@ bool bi::Statement::definitely(const Raw& o) const {
   return false;
 }
 
-bool bi::Statement::possibly(const Statement& o) const {
-  return o.dispatchPossibly(*this);
+bool bi::Statement::definitely(const While& o) const {
+  return false;
 }
 
-bool bi::Statement::possibly(const If& o) const {
-  return false;
+bool bi::Statement::possibly(const Statement& o) const {
+  return o.dispatchPossibly(*this);
 }
 
 bool bi::Statement::possibly(const Declaration<VarParameter>& o) const {
@@ -100,15 +99,19 @@ bool bi::Statement::possibly(const ExpressionStatement& o) const {
   return false;
 }
 
+bool bi::Statement::possibly(const If& o) const {
+  return false;
+}
+
 bool bi::Statement::possibly(const Import& o) const {
   return false;
 }
 
-bool bi::Statement::possibly(const List<Statement>& o) const {
+bool bi::Statement::possibly(const For& o) const {
   return false;
 }
 
-bool bi::Statement::possibly(const While& o) const {
+bool bi::Statement::possibly(const List<Statement>& o) const {
   return false;
 }
 
@@ -117,5 +120,9 @@ bool bi::Statement::possibly(const Return& o) const {
 }
 
 bool bi::Statement::possibly(const Raw& o) const {
+  return false;
+}
+
+bool bi::Statement::possibly(const While& o) const {
   return false;
 }

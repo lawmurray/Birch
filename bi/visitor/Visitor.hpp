@@ -57,6 +57,7 @@ public:
   virtual void visit(const Import* o);
   virtual void visit(const ExpressionStatement* o);
   virtual void visit(const If* o);
+  virtual void visit(const For* o);
   virtual void visit(const While* o);
   virtual void visit(const Return* o);
   virtual void visit(const Raw* o);

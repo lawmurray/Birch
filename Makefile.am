@@ -92,6 +92,7 @@ birchc_SOURCES = \
   bi/statement/EmptyStatement.cpp \
   bi/statement/ExpressionStatement.cpp \
   bi/statement/File.cpp \
+  bi/statement/For.cpp \
   bi/statement/Import.cpp \
   bi/statement/While.cpp \
   bi/statement/Raw.cpp \

@@ -133,6 +133,11 @@ bi::Statement* bi::Cloner::clone(const If* o) {
       o->falseBraces->accept(this), o->loc);
 }
 
+bi::Statement* bi::Cloner::clone(const For* o) {
+  return new For(o->index->accept(this), o->from->accept(this),
+      o->to->accept(this), o->braces->accept(this), o->loc);
+}
+
 bi::Statement* bi::Cloner::clone(const While* o) {
   return new While(o->cond->accept(this), o->braces->accept(this), o->loc);
 }

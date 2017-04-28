@@ -48,7 +48,7 @@
 }
 
 %token <valString> IMPORT PROG STRUCT CLASS TYPE FUNC LAMBDA
-%token <valString> IF ELSE WHILE RETURN CPP HPP THIS
+%token <valString> IF ELSE FOR IN WHILE RETURN CPP HPP THIS
 %token <valString> DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE RAW NAME
 %token <valBool> BOOL_LITERAL
 %token <valInt> INT_LITERAL
@@ -96,7 +96,7 @@
 %type <valStatement> var_declaration member_declaration
 %type <valStatement> func_declaration op_declaration conversion_declaration
 %type <valStatement> type_declaration prog_declaration
-%type <valStatement> import cpp hpp expression_statement if while return
+%type <valStatement> import cpp hpp expression_statement if for while return
 %type <valStatement> statement statements optional_statements
 %type <valStatement> type_statement type_statements optional_type_statements
 %type <valStatement> file_statement file_statements optional_file_statements
@@ -375,8 +375,8 @@ primary_expression
     ;
 
 index_expression
-    : assignment_expression RANGE_OP assignment_expression  { $$ = new bi::Range($1, $3, make_loc(@$)); }
-    | assignment_expression                                 { $$ = new bi::Index($1, make_loc(@$)); }
+    : expression RANGE_OP expression  { $$ = new bi::Range($1, $3, make_loc(@$)); }
+    | expression                      { $$ = new bi::Index($1, make_loc(@$)); }
     ;
     
 index_list
@@ -553,6 +553,10 @@ if
     | IF '(' expression ')' braces              { $$ = new bi::If($3, $5, make_empty(), make_loc(@$)); }
     ;
 
+for
+    : FOR '(' var_reference IN expression RANGE_OP expression ')' braces  { $$ = new bi::For($3, $5, $7, $9, make_loc(@$)); }
+    ;
+
 while
     : WHILE '(' expression ')' braces  { $$ = new bi::While($3, $5, make_loc(@$)); }
     ;
@@ -573,6 +577,7 @@ statement
     : expression_statement
     | var_declaration
     | if
+    | for
     | while
     | return
     | cpp

@@ -243,6 +243,14 @@ bi::Statement* bi::Resolver::modify(If* o) {
   return o;
 }
 
+bi::Statement* bi::Resolver::modify(For* o) {
+  push();
+  Modifier::modify(o);
+  o->scope = pop();
+  ///@todo Check that index, from and to are of type Integer
+  return o;
+}
+
 bi::Statement* bi::Resolver::modify(While* o) {
   push();
   Modifier::modify(o);

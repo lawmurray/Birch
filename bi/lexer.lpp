@@ -104,6 +104,8 @@ IS                                 (u|U|l|L)*
 "lambda"                            { return LAMBDA; }
 "if"                                { return IF; }
 "else"                              { return ELSE; }
+"for"                               { return FOR; }
+"in"                                { return IN; }
 "while"                             { return WHILE; }
 "return"                            { return RETURN; }
 "cpp"                               { return CPP; }
