@@ -548,13 +548,13 @@ expression_statement
     ;
 
 if
-    : IF '(' expression ')' braces ELSE braces  { $$ = new bi::Conditional($3, $5, $7, make_loc(@$)); }
-    | IF '(' expression ')' braces ELSE if      { $$ = new bi::Conditional($3, $5, new bi::BracesExpression($7), make_loc(@$)); }
-    | IF '(' expression ')' braces              { $$ = new bi::Conditional($3, $5, make_empty(), make_loc(@$)); }
+    : IF '(' expression ')' braces ELSE braces  { $$ = new bi::If($3, $5, $7, make_loc(@$)); }
+    | IF '(' expression ')' braces ELSE if      { $$ = new bi::If($3, $5, new bi::BracesExpression($7), make_loc(@$)); }
+    | IF '(' expression ')' braces              { $$ = new bi::If($3, $5, make_empty(), make_loc(@$)); }
     ;
 
 while
-    : WHILE '(' expression ')' braces  { $$ = new bi::Loop($3, $5, make_loc(@$)); }
+    : WHILE '(' expression ')' braces  { $$ = new bi::While($3, $5, make_loc(@$)); }
     ;
 
 return

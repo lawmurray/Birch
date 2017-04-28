@@ -152,14 +152,14 @@ bi::Statement* bi::Modifier::modify(ExpressionStatement* o) {
   return o;
 }
 
-bi::Statement* bi::Modifier::modify(Conditional* o) {
+bi::Statement* bi::Modifier::modify(If* o) {
   o->cond = o->cond.release()->accept(this);
   o->braces = o->braces.release()->accept(this);
   o->falseBraces = o->falseBraces.release()->accept(this);
   return o;
 }
 
-bi::Statement* bi::Modifier::modify(Loop* o) {
+bi::Statement* bi::Modifier::modify(While* o) {
   o->cond = o->cond.release()->accept(this);
   o->braces = o->braces.release()->accept(this);
   return o;

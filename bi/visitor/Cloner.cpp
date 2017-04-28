@@ -128,13 +128,13 @@ bi::Statement* bi::Cloner::clone(const ExpressionStatement* o) {
   return new ExpressionStatement(o->single->accept(this), o->loc);
 }
 
-bi::Statement* bi::Cloner::clone(const Conditional* o) {
-  return new Conditional(o->cond->accept(this), o->braces->accept(this),
+bi::Statement* bi::Cloner::clone(const If* o) {
+  return new If(o->cond->accept(this), o->braces->accept(this),
       o->falseBraces->accept(this), o->loc);
 }
 
-bi::Statement* bi::Cloner::clone(const Loop* o) {
-  return new Loop(o->cond->accept(this), o->braces->accept(this), o->loc);
+bi::Statement* bi::Cloner::clone(const While* o) {
+  return new While(o->cond->accept(this), o->braces->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const Return* o) {

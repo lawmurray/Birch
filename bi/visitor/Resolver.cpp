@@ -235,7 +235,7 @@ bi::Statement* bi::Resolver::modify(Import* o) {
   return o;
 }
 
-bi::Statement* bi::Resolver::modify(Conditional* o) {
+bi::Statement* bi::Resolver::modify(If* o) {
   push();
   Modifier::modify(o);
   o->scope = pop();
@@ -243,7 +243,7 @@ bi::Statement* bi::Resolver::modify(Conditional* o) {
   return o;
 }
 
-bi::Statement* bi::Resolver::modify(Loop* o) {
+bi::Statement* bi::Resolver::modify(While* o) {
   push();
   Modifier::modify(o);
   o->scope = pop();

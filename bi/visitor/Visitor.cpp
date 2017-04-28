@@ -142,13 +142,13 @@ void bi::Visitor::visit(const ExpressionStatement* o) {
   o->single->accept(this);
 }
 
-void bi::Visitor::visit(const Conditional* o) {
+void bi::Visitor::visit(const If* o) {
   o->cond->accept(this);
   o->braces->accept(this);
   o->falseBraces->accept(this);
 }
 
-void bi::Visitor::visit(const Loop* o) {
+void bi::Visitor::visit(const While* o) {
   o->cond->accept(this);
   o->braces->accept(this);
 }

@@ -183,7 +183,7 @@ void bi::CppBaseGenerator::visit(const ExpressionStatement* o) {
   line(o->single << ';');
 }
 
-void bi::CppBaseGenerator::visit(const Conditional* o) {
+void bi::CppBaseGenerator::visit(const If* o) {
   line("if (" << o->cond << ") {");
   in();
   *this << o->braces;
@@ -197,7 +197,7 @@ void bi::CppBaseGenerator::visit(const Conditional* o) {
   line("}");
 }
 
-void bi::CppBaseGenerator::visit(const Loop* o) {
+void bi::CppBaseGenerator::visit(const While* o) {
   line("while (" << o->cond << ") {");
   in();
   *this << o->braces;

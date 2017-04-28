@@ -87,13 +87,13 @@ birchc_SOURCES = \
   bi/program/Prog.cpp \
   bi/program/ProgParameter.cpp \
   bi/program/ProgReference.cpp \
-  bi/statement/Conditional.cpp \
+  bi/statement/If.cpp \
   bi/statement/Declaration.cpp \
   bi/statement/EmptyStatement.cpp \
   bi/statement/ExpressionStatement.cpp \
   bi/statement/File.cpp \
   bi/statement/Import.cpp \
-  bi/statement/Loop.cpp \
+  bi/statement/While.cpp \
   bi/statement/Raw.cpp \
   bi/statement/Return.cpp \
   bi/statement/Statement.cpp \

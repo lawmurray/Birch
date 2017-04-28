@@ -20,7 +20,7 @@ bool bi::Statement::definitely(const Statement& o) const {
   return o.dispatchDefinitely(*this);
 }
 
-bool bi::Statement::definitely(const Conditional& o) const {
+bool bi::Statement::definitely(const If& o) const {
   return false;
 }
 
@@ -56,7 +56,7 @@ bool bi::Statement::definitely(const List<Statement>& o) const {
   return false;
 }
 
-bool bi::Statement::definitely(const Loop& o) const {
+bool bi::Statement::definitely(const While& o) const {
   return false;
 }
 
@@ -72,7 +72,7 @@ bool bi::Statement::possibly(const Statement& o) const {
   return o.dispatchPossibly(*this);
 }
 
-bool bi::Statement::possibly(const Conditional& o) const {
+bool bi::Statement::possibly(const If& o) const {
   return false;
 }
 
@@ -108,7 +108,7 @@ bool bi::Statement::possibly(const List<Statement>& o) const {
   return false;
 }
 
-bool bi::Statement::possibly(const Loop& o) const {
+bool bi::Statement::possibly(const While& o) const {
   return false;
 }
 

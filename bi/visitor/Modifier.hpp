@@ -53,8 +53,8 @@ public:
   virtual void modify(File* o);
   virtual Statement* modify(Import* o);
   virtual Statement* modify(ExpressionStatement* o);
-  virtual Statement* modify(Conditional* o);
-  virtual Statement* modify(Loop* o);
+  virtual Statement* modify(If* o);
+  virtual Statement* modify(While* o);
   virtual Statement* modify(Return* o);
   virtual Statement* modify(Raw* o);
   virtual Statement* modify(VarDeclaration* o);

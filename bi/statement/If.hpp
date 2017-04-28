@@ -12,11 +12,11 @@
 
 namespace bi {
 /**
- * Conditional.
+ * If.
  *
  * @ingroup compiler_statement
  */
-class Conditional: public Statement,
+class If: public Statement,
     public Conditioned,
     public Braced,
     public Scoped {
@@ -29,13 +29,13 @@ public:
    * @param falseBraces False branch.
    * @param loc Location.
    */
-  Conditional(Expression* cond, Expression* braces, Expression* falseBraces,
+  If(Expression* cond, Expression* braces, Expression* falseBraces,
       shared_ptr<Location> loc = nullptr);
 
   /**
    * Destructor.
    */
-  virtual ~Conditional();
+  virtual ~If();
 
   virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);
@@ -50,9 +50,9 @@ public:
   using Statement::possibly;
 
   virtual bool dispatchDefinitely(const Statement& o) const;
-  virtual bool definitely(const Conditional& o) const;
+  virtual bool definitely(const If& o) const;
 
   virtual bool dispatchPossibly(const Statement& o) const;
-  virtual bool possibly(const Conditional& o) const;
+  virtual bool possibly(const If& o) const;
 };
 }

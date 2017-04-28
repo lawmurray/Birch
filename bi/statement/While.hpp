@@ -10,11 +10,11 @@
 
 namespace bi {
 /**
- * Loop.
+ * While.
  *
  * @ingroup compiler_statement
  */
-class Loop: public Statement, public Conditioned, public Braced, public Scoped {
+class While: public Statement, public Conditioned, public Braced, public Scoped {
 public:
   /**
    * Constructor.
@@ -23,13 +23,13 @@ public:
    * @param braces Body of loop.
    * @param loc Location.
    */
-  Loop(Expression* cond, Expression* braces,
+  While(Expression* cond, Expression* braces,
       shared_ptr<Location> loc = nullptr);
 
   /**
    * Destructor.
    */
-  virtual ~Loop();
+  virtual ~While();
 
   virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);
@@ -39,9 +39,9 @@ public:
   using Statement::possibly;
 
   virtual bool dispatchDefinitely(const Statement& o) const;
-  virtual bool definitely(const Loop& o) const;
+  virtual bool definitely(const While& o) const;
 
   virtual bool dispatchPossibly(const Statement& o) const;
-  virtual bool possibly(const Loop& o) const;
+  virtual bool possibly(const While& o) const;
 };
 }

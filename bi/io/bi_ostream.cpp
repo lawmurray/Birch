@@ -185,7 +185,7 @@ void bi::bi_ostream::visit(const ExpressionStatement* o) {
   *this << indent << o->single << '\n';
 }
 
-void bi::bi_ostream::visit(const Conditional* o) {
+void bi::bi_ostream::visit(const If* o) {
   *this << indent << "if " << o->cond << ' ' << o->braces;
   if (!o->falseBraces->isEmpty()) {
     *this << " else " << o->falseBraces;
@@ -193,7 +193,7 @@ void bi::bi_ostream::visit(const Conditional* o) {
   *this << '\n';
 }
 
-void bi::bi_ostream::visit(const Loop* o) {
+void bi::bi_ostream::visit(const While* o) {
   *this << indent << "while " << o->cond << ' ' << o->braces << '\n';
 }
 

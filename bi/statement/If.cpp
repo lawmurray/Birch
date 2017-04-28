@@ -1,13 +1,13 @@
 /**
  * @file
  */
-#include "bi/statement/Conditional.hpp"
+#include "bi/statement/If.hpp"
 
 #include "bi/visitor/all.hpp"
 
 #include <typeinfo>
 
-bi::Conditional::Conditional(Expression* cond, Expression* braces,
+bi::If::If(Expression* cond, Expression* braces,
     Expression* falseBraces, shared_ptr<Location> loc) :
     Statement(loc),
     Conditioned(cond),
@@ -17,36 +17,36 @@ bi::Conditional::Conditional(Expression* cond, Expression* braces,
   assert(falseBraces);
 }
 
-bi::Conditional::~Conditional() {
+bi::If::~If() {
   //
 }
 
-bi::Statement* bi::Conditional::accept(Cloner* visitor) const {
+bi::Statement* bi::If::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-bi::Statement* bi::Conditional::accept(Modifier* visitor) {
+bi::Statement* bi::If::accept(Modifier* visitor) {
   return visitor->modify(this);
 }
 
-void bi::Conditional::accept(Visitor* visitor) const {
+void bi::If::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::Conditional::dispatchDefinitely(const Statement& o) const {
+bool bi::If::dispatchDefinitely(const Statement& o) const {
   return o.definitely(*this);
 }
 
-bool bi::Conditional::definitely(const Conditional& o) const {
+bool bi::If::definitely(const If& o) const {
   return cond->definitely(*o.cond) && braces->definitely(*o.braces)
       && falseBraces->definitely(*o.falseBraces);
 }
 
-bool bi::Conditional::dispatchPossibly(const Statement& o) const {
+bool bi::If::dispatchPossibly(const Statement& o) const {
   return o.possibly(*this);
 }
 
-bool bi::Conditional::possibly(const Conditional& o) const {
+bool bi::If::possibly(const If& o) const {
   return cond->possibly(*o.cond) && braces->possibly(*o.braces)
       && falseBraces->possibly(*o.falseBraces);
 }

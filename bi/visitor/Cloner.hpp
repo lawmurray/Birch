@@ -53,8 +53,8 @@ public:
   virtual File* clone(const File* o);
   virtual Statement* clone(const Import* o);
   virtual Statement* clone(const ExpressionStatement* o);
-  virtual Statement* clone(const Conditional* o);
-  virtual Statement* clone(const Loop* o);
+  virtual Statement* clone(const If* o);
+  virtual Statement* clone(const While* o);
   virtual Statement* clone(const Return* o);
   virtual Statement* clone(const Raw* o);
   virtual Statement* clone(const VarDeclaration* o);
