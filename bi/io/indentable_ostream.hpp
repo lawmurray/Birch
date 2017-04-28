@@ -4,7 +4,6 @@
 #pragma once
 
 #include "bi/visitor/Visitor.hpp"
-#include "bi/primitive/owned_ptr.hpp"
 #include "bi/primitive/unique_ptr.hpp"
 #include "bi/primitive/shared_ptr.hpp"
 
@@ -79,12 +78,6 @@ public:
   template<class T>
   bi::indentable_ostream& operator<<(const T* arg) {
     arg->accept(this);
-    return *this;
-  }
-
-  template<class T>
-  bi::indentable_ostream& operator<<(const owned_ptr<T>& arg) {
-    *this << arg.get();
     return *this;
   }
 
