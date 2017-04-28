@@ -383,11 +383,17 @@ void bi::Resolver::undefer() {
     auto scope = std::get<1>(*iter);
     auto type = std::get<2>(*iter);
 
+    if (type) {
+      push(type->scope.get());
+    }
     push(scope);
     types.push(type);
     o->accept(this);
     types.pop();
     pop();
+    if (type) {
+      pop();
+    }
     ++iter;
   }
   defers.clear();
