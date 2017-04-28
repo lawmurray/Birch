@@ -115,7 +115,7 @@ void bi::CppTypeGenerator::visit(const TypeReference* o) {
     if (o->isBuiltin()) {
       genBuiltin(o);
     } else if (o->isClass()) {
-      middle("PrimitiveValue<shared_ptr<" << o->name << "<Group>>,Group>");
+      middle("PrimitiveValue<std::shared_ptr<" << o->name << "<Group>>,Group>");
     } else {
       middle(o->name << "<Group>");
     }

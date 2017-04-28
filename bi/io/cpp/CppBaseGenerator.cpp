@@ -257,7 +257,7 @@ void bi::CppBaseGenerator::visit(const TypeReference* o) {
   if (o->isBuiltin()) {
     genBuiltin(o);
   } else if (!inPolymorphic && o->isClass()) {
-    middle("bi::shared_ptr<bi::type::" << o->name << "<>>");
+    middle("std::shared_ptr<bi::type::" << o->name << "<>>");
   } else {
     middle("bi::type::" << o->name << "<>");
   }

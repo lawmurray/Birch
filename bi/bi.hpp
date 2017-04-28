@@ -16,8 +16,7 @@
 #include "bi/method/Method.hpp"
 #include "bi/method/Stack.hpp"
 #include "bi/primitive/nonconst.hpp"
-#include "bi/primitive/shared_ptr.hpp"
-#include "bi/primitive/unique_ptr.hpp"
 
+#include <memory>
 #include <utility>
 #include <getopt.h>
