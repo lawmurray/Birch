@@ -269,7 +269,7 @@ void bi::CppBaseGenerator::visit(const EmptyType* o) {
 
 void bi::CppBaseGenerator::visit(const BracketsType* o) {
   ++inArray;
-  middle("DefaultArray<" << o->single << ',' << o->count() << '>');
+  middle("bi::DefaultArray<" << o->single << ',' << o->count() << '>');
   --inArray;
 }
 

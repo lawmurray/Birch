@@ -70,7 +70,8 @@ void yyreset() {
 %x COMMENT_EOL COMMENT_INLINE DOUBLE_BRACE
 
 D                                  [0-9]
-L                                  [a-zA-Z_]
+L                                  [a-zA-Z]
+U                                  _
 G                                  (α|β|γ|δ|ε|ζ|η|θ|ι|κ|λ|μ|ν|ξ|ο|π|ρ|σ|τ|υ|φ|χ|ψ|ω|Γ|Δ|Θ|Λ|Ξ|Π|Σ|Υ|Φ|Ψ|Ω)
 H                                  [a-fA-F0-9]
 E                                  [Ee][+-]?{D}+
@@ -115,7 +116,7 @@ IS                                 (u|U|l|L)*
 "true"                              { yylval.valBool = true; return BOOL_LITERAL; }
 "false"                             { yylval.valBool = false; return BOOL_LITERAL; }
 
-({L}|{G})({L}|{G}|{D})*             { yylval.valString = yytext; return NAME; }
+({L}|{G})({L}|{G}|{U}|{D})*         { yylval.valString = yytext; return NAME; }
 
 0[xX]{H}+{IS}?                      { yylval.valInt = atoi(yytext); return INT_LITERAL; }
 0{D}+{IS}?                          { yylval.valInt = atoi(yytext); return INT_LITERAL; }
@@ -155,5 +156,6 @@ IS                                 (u|U|l|L)*
 "["                                 { return '['; }
 "]"                                 { return ']'; }
 "."                                 { return '.'; }
+"_"                                 { return '_'; }
 
 %%
