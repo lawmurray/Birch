@@ -6,9 +6,7 @@
  */
 #pragma once
 
-#include "bi/data/builtin.hpp"
 #include "bi/data/easy.hpp"
-#include "bi/data/group.hpp"
 #include "bi/exception/MemoryException.hpp"
 #include "bi/exception/UnknownOptionException.hpp"
 #include "bi/method/Lambda.hpp"
