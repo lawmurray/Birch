@@ -257,9 +257,9 @@ void bi::CppBaseGenerator::visit(const TypeReference* o) {
   if (o->isBuiltin()) {
     genBuiltin(o);
   } else if (!inPolymorphic && o->isClass()) {
-    middle("std::shared_ptr<bi::type::" << o->name << "<>>");
+    middle("std::shared_ptr<bi::type::" << o->name << ">");
   } else {
-    middle("bi::type::" << o->name << "<>");
+    middle("bi::type::" << o->name);
   }
 }
 
@@ -269,11 +269,7 @@ void bi::CppBaseGenerator::visit(const EmptyType* o) {
 
 void bi::CppBaseGenerator::visit(const BracketsType* o) {
   ++inArray;
-  if (o->single->isStruct()) {
-    middle("DefaultArray<" << o->single << "," << o->count() << '>');
-  } else {
-    middle("DefaultArray<PrimitiveValue<" << o->single << ">," << o->count() << '>');
-  }
+  middle("DefaultArray<" << o->single << ',' << o->count() << '>');
   --inArray;
 }
 

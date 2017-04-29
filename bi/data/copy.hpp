@@ -5,7 +5,6 @@
  */
 #pragma once
 
-#include "bi/data/MemoryGroup.hpp"
 #include "bi/data/Array.hpp"
 
 namespace bi {
@@ -78,44 +77,15 @@ inline EmptyView common_view(const EmptyView& o1, const EmptyView& o2) {
 }
 
 /**
- * Catch-all for unimplemented copies.
- */
-template<class Type1, class Type2>
-void copy(Type1& o1, const Type2& o2) {
-  assert(false);
-}
-
-/**
- * @name Scalar copies from primitive values
- */
-//@{
-template<class Type>
-void copy(PrimitiveValue<Type,MemoryGroup>& dst, const Type& src) {
-  *dst.ptr = src;
-}
-//@}
-
-/**
- * @name Scalar copies
- */
-//@{
-template<class Type>
-void copy(PrimitiveValue<Type,MemoryGroup>& dst,
-    const PrimitiveValue<Type,MemoryGroup>& src) {
-  *dst.ptr = *src.ptr;
-}
-//@}
-
-/**
  * @name Array copies
  */
 //@{
 /**
  * Copy for all arrays, iterating over contiguous chunks.
  */
-template<class Type, class Group1, class Frame1, class Group2, class Frame2>
-void copy(Array<PrimitiveValue<Type,Group1>,Frame1>& dst,
-    const Array<PrimitiveValue<Type,Group2>,Frame2>& src) {
+template<class Type, class Frame1, class Frame2>
+void copy(Array<Type,Frame1>& dst,
+    const Array<Type,Frame2>& src) {
   /* pre-condition */
   assert(dst.frame.conforms(src.frame));
 
@@ -143,9 +113,9 @@ void copy(Array<PrimitiveValue<Type,Group1>,Frame1>& dst,
  * Contiguous copies for arrays between groups.
  */
 template<class Type, class Frame1, class Frame2>
-void contiguous_copy(Array<PrimitiveValue<Type,MemoryGroup>,Frame1>& dst,
-    const Array<PrimitiveValue<Type,MemoryGroup>,Frame2>& src) {
-  memcpy(dst.value.ptr, src.value.ptr, dst.frame.lead * sizeof(Type));
+void contiguous_copy(Array<Type,Frame1>& dst,
+    const Array<Type,Frame2>& src) {
+  memcpy(dst.ptr, src.ptr, dst.lead * sizeof(Type));
 }
 //@}
 

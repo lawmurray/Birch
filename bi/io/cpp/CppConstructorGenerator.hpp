@@ -25,6 +25,6 @@ public:
   virtual void visit(const ConversionDeclaration* o);
 
 private:
-  bool inInitial;
+  bool before;
 };
 }

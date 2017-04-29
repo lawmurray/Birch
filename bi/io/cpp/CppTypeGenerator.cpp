@@ -4,9 +4,6 @@
 #include "bi/io/cpp/CppTypeGenerator.hpp"
 
 #include "bi/io/cpp/CppConstructorGenerator.hpp"
-#include "bi/io/cpp/CppViewConstructorGenerator.hpp"
-#include "bi/io/cpp/CppCopyConstructorGenerator.hpp"
-#include "bi/io/cpp/CppAssignmentGenerator.hpp"
 #include "bi/io/cpp/CppParameterGenerator.hpp"
 #include "bi/primitive/encode.hpp"
 
@@ -22,43 +19,22 @@ void bi::CppTypeGenerator::visit(const TypeParameter* o) {
   if (!o->isBuiltin()) {
     /* start boilerplate */
     if (header) {
-      line("template<class Group = MemoryGroup>");
       start("class " << o->name);
       if (o->super()) {
-        middle(" : public " << o->super()->name << "<Group>");
+        middle(" : public " << o->super()->name);
       }
       finish(" {");
       line("public:");
       in();
-      line("typedef Group group_type;");
-      line("typedef " << o->name << "<Group> value_type;");
       if (!o->base->isEmpty()) {
-        line("typedef " << o->super()->name << "<Group> base_type;");
+        line("typedef " << o->super()->name << " base_type;");
+        line("");
       }
-      line("");
     }
 
     /* constructor */
     CppConstructorGenerator auxConstructor(base, level, header);
     auxConstructor << o;
-
-    /* copy constructor */
-    if (header) {
-      line(o->name << "(const " << o->name << "<Group>& o) = default;\n");
-    }
-
-    /* move constructor */
-    if (header) {
-      line(o->name << '(' << o->name << "<Group>&& o) = default;\n");
-    }
-
-    /* view constructor */
-    CppViewConstructorGenerator auxViewConstructor(base, level, header);
-    auxViewConstructor << o;
-
-    /* generic copy constructor */
-    CppCopyConstructorGenerator auxCopyConstructor(base, level, header);
-    auxCopyConstructor << o;
 
     /* destructor */
     if (header) {
@@ -74,22 +50,6 @@ void bi::CppTypeGenerator::visit(const TypeParameter* o) {
       line("}\n");
     }
 
-    /* copy assignment operator */
-    CppAssignmentGenerator auxAssignment(base, level, header);
-    auxAssignment << o;
-
-    /* move assignment operator */
-    if (header) {
-      start(o->name << "<Group>& ");
-      middle("operator=(" << o->name << "<Group>&& o_)");
-      finish(" = default;\n");
-    }
-
-    /* group member variable */
-    if (header) {
-      line("Group group;");
-    }
-
     /* member variables and functions */
     *this << o->braces;
 
@@ -97,12 +57,6 @@ void bi::CppTypeGenerator::visit(const TypeParameter* o) {
     if (header) {
       out();
       line("};\n");
-    }
-
-    /* explicit template specialisations */
-    if (!header) {
-      line("template class bi::type::" << o->name << "<bi::MemoryGroup>;");
-      line("");
     }
   }
 }
@@ -114,33 +68,21 @@ void bi::CppTypeGenerator::visit(const TypeReference* o) {
     if (o->isBuiltin()) {
       genBuiltin(o);
     } else if (o->isClass()) {
-      middle("PrimitiveValue<std::shared_ptr<" << o->name << "<Group>>,Group>");
+      middle("std::shared_ptr<" << o->name << '>');
     } else {
-      middle(o->name << "<Group>");
+      middle(o->name);
     }
   }
 }
 
 void bi::CppTypeGenerator::visit(const VarDeclaration* o) {
   if (header) {
-    if (o->param->type->isClass()) {
-      /* use struct-of-arrays */
-      start(o->param->type << ' ' << o->param->name);
-    } else {
-      start("PrimitiveValue<" << o->param->type << ",Group> ");
-      middle(o->param->name);
-    }
-    finish(';');
+    line(o->param->type << ' ' << o->param->name << ';');
   }
 }
 
 void bi::CppTypeGenerator::visit(const FuncParameter* o) {
   if (!o->braces->isEmpty()) {
-    /* class template parameters */
-    if (!header) {
-      line("template<class Group>");
-    }
-
     /* return type */
     if (header && type->isClass()) {
       start("virtual ");
@@ -153,7 +95,7 @@ void bi::CppTypeGenerator::visit(const FuncParameter* o) {
 
     /* name */
     if (!header) {
-      middle("bi::type::" << type->name << "<Group>::");
+      middle("bi::type::" << type->name << "::");
     }
     if ((o->isBinary() || o->isUnary()) && isTranslatable(o->name->str())) {
       middle("operator" << o->name);
@@ -186,8 +128,7 @@ void bi::CppTypeGenerator::visit(const ConversionParameter* o) {
   if (!o->braces->isEmpty()) {
     /* non-const conversion */
     if (!header) {
-      line("template<class Group>");
-      start("bi::type::" << type->name << "<Group>::");
+      start("bi::type::" << type->name << "::");
     } else {
       start("");
     }
@@ -205,8 +146,7 @@ void bi::CppTypeGenerator::visit(const ConversionParameter* o) {
 
     /* const conversion */
     if (!header) {
-      line("template<class Group>");
-      start("bi::type::" << type->name << "<Group>::");
+      start("bi::type::" << type->name << "::");
     } else {
       start("");
     }

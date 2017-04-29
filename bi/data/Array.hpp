@@ -13,81 +13,78 @@ namespace bi {
  *
  * @ingroup library
  *
- * @tparam Value Value type.
+ * @tparam Type Value type.
  * @tparam Frame Frame type.
  */
-template<class Value, class Frame = EmptyFrame>
+template<class Type, class Frame = EmptyFrame>
 class Array {
 public:
-  typedef typename Value::group_type group_type;
-  typedef typename Value::value_type value_type;
-
   /**
-   * Constructor.
+   * Constructor with new allocation.
    *
    * @tparam ...Args Arbitrary types.
    *
    * @param frame Frame.
-   * @param name Optional name.
-   * @param group Optional group.
    * @param args Optional constructor arguments.
    *
    * Memory is allocated for the array, and is freed on destruction.
    */
   template<class ... Args>
-  Array(const Frame& frame, const char* name = nullptr,
-      const group_type& group = group_type(), Args ... args) :
-      value(args..., frame, name, group),
+  Array(const Frame& frame, Args ... args) :
       frame(frame) {
+    create(&ptr, frame);
+    fill(ptr, frame, args...);
+  }
+
+  /**
+   * Constructor with existing allocation.
+   *
+   * @tparam Frame Frame type.
+   *
+   * @param ptr Existing allocation.
+   * @param frame Frame.
+   */
+  Array(Type* ptr, const Frame& frame) :
+      frame(frame),
+      ptr(ptr),
+      own(false) {
     //
   }
 
   /**
    * Copy constructor.
    */
-  Array(const Array<Value,Frame>& o, const bool deep = true) :
-      value(o.value, deep, o.frame),
+  Array(const Array<Type,Frame>& o) :
       frame(o.frame) {
-    //
+    create(&ptr, frame);
+    fill(ptr, frame);
+    own = true;
+    *this = o;
   }
 
   /**
    * Move constructor.
    */
-  Array(Array<Value,Frame> && o) :
-      value(o.value),
-      frame(o.frame) {
-    //
-  }
-
-  /**
-   * View constructor.
-   *
-   * @tparam Frame1 Frame type.
-   * @tparam View1 View type.
-   *
-   * @param o Array.
-   * @param frame Extra frame.
-   * @param view Extra view.
-   */
-  template<class Frame1, class View1>
-  Array(const Array<Value,Frame>& o, const Frame1& frame, const View1& view) :
-      value(o.value, frame, view),
-      frame(o.frame) {
-    //
+  Array(Array<Type,Frame> && o) :
+      frame(o.frame),
+      ptr(o.ptr),
+      own(o.own) {
+    o.own = false;  // ownership moves
   }
 
   /**
    * Destructor.
    */
   ~Array() {
-    //
+    if (own) {
+      release(ptr, frame);
+    }
   }
 
   /**
    * Copy assignment. The frames of the two arrays must conform.
    */
-  Array<Value,Frame>& operator=(const Array<Value,Frame>& o) {
+  Array<Type,Frame>& operator=(const Array<Type,Frame>& o) {
     /* pre-condition */
     assert(frame.conforms(o.frame));
 
@@ -96,10 +93,32 @@ public:
   }
 
   /**
+   * Move assignment. The frames of the two arrays must conform.
+   */
+  Array<Type,Frame>& operator=(Array<Type,Frame> && o) {
+    /* pre-condition */
+    assert(frame.conforms(o.frame));
+
+    if (ptr == o.ptr) {
+      /* just take ownership */
+      if (!own) {
+        std::swap(own, o.own);
+      }
+    } else {
+      /* copy assignment */
+      own = true;
+      create(&ptr, frame);
+      fill(ptr, frame);
+      *this = o;
+    }
+    return *this;
+  }
+
+  /**
    * Generic assignment. The frames of the two arrays must conform.
    */
-  template<class Value1, class Frame1>
-  Array<Value,Frame>& operator=(const Array<Value1,Frame1>& o) {
+  template<class Type1, class Frame1>
+  Array<Type,Frame>& operator=(const Array<Type1,Frame1>& o) {
     /* pre-condition */
     assert(frame.conforms(o.frame));
 
@@ -136,29 +155,29 @@ public:
   /**
    * Access the first element.
    */
-  Value& front() {
-    return value;
+  Type& front() {
+    return *ptr;
   }
 
   /**
    * Access the first element.
    */
-  const Value& front() const {
-    return value;
+  const Type& front() const {
+    return *ptr;
   }
 
   /**
    * Access the last element.
    */
-  Value& back() {
-    return value + (frame.lead - 1);
+  Type& back() {
+    return ptr + frame.lead - 1;
   }
 
   /**
    * Access the last element.
    */
-  const Value& back() const {
-    return value + (frame.lead - 1);
+  const Type& back() const {
+    return ptr + frame.lead - 1;
   }
   //@}
 
@@ -169,36 +188,36 @@ public:
   /**
    * Get lengths.
    *
-   * @tparam T1 Integer type.
+   * @tparam Integer Integer type.
    *
    * @param[out] out Array assumed to have at least count() elements.
    */
-  template<class T1>
-  void lengths(T1* out) const {
+  template<class Integer>
+  void lengths(Integer* out) const {
     frame.lengths(out);
   }
 
   /**
    * Get strides.
    *
-   * @tparam T1 Integer type.
+   * @tparam Integer Integer type.
    *
    * @param[out] out Array assumed to have at least count() elements.
    */
-  template<class T1>
-  void strides(T1* out) const {
+  template<class Integer>
+  void strides(Integer* out) const {
     frame.strides(out);
   }
 
   /**
    * Get leads.
    *
-   * @tparam T1 Integer type.
+   * @tparam Integer Integer type.
    *
    * @param[out] out Array assumed to have at least count() elements.
    */
-  template<class T1>
-  void leads(T1* out) const {
+  template<class Integer>
+  void leads(Integer* out) const {
     frame.leads(out);
   }
   //@}
@@ -259,23 +278,28 @@ public:
   auto end(const View& view =
       typename DefaultView<Frame::count()>::type()) const;
 
-//protected:
-  /**
-   * Value.
-   */
-  Value value;
-
+protected:
   /**
    * Frame.
    */
   Frame frame;
 
   /**
+   * Value.
+   */
+  Type* ptr;
+
+  /**
+   * Do we own the underlying buffer?
+   */
+  bool own;
+
+  /**
    * Return value of view when result is an array.
    */
   template<class View1, class Frame1>
   auto viewReturn(const View1& view, const Frame1& frame) const {
-    return Array<Value,Frame1>(Value(value, this->frame, view), frame);
+    return Array<Type,Frame1>(ptr + frame.serial(view), frame);
   }
 
   /**
@@ -283,39 +307,39 @@ public:
    */
   template<class View1>
   auto& viewReturn(const View1& view, const EmptyFrame& frame) const {
-    return static_cast<value_type&>(Value(value, this->frame, view));
+    return *(ptr + frame.serial(view));
   }
 };
 
 /**
  * Default array for `D` dimensions.
  */
-template<class Value, int D>
-using DefaultArray = Array<Value,typename DefaultFrame<D>::type>;
+template<class Type, int D>
+using DefaultArray = Array<Type,typename DefaultFrame<D>::type>;
 }
 
 #include "bi/data/Iterator.hpp"
 
-template<class Value, class Frame>
+template<class Type, class Frame>
 template<class View>
-auto bi::Array<Value,Frame>::begin(const View& view) {
-  return Iterator<Value,Frame,View>(value, frame, view);
+auto bi::Array<Type,Frame>::begin(const View& view) {
+  return Iterator<Type,Frame,View>(ptr, frame, view);
 }
 
-template<class Value, class Frame>
+template<class Type, class Frame>
 template<class View>
-auto bi::Array<Value,Frame>::begin(const View& view) const {
-  return Iterator<const Value,Frame,View>(value, frame, view);
+auto bi::Array<Type,Frame>::begin(const View& view) const {
+  return Iterator<const Type,Frame,View>(ptr, frame, view);
 }
 
-template<class Value, class Frame>
+template<class Type, class Frame>
 template<class View>
-auto bi::Array<Value,Frame>::end(const View& view) {
-  return Iterator<Value,Frame,View>(value, frame, view, frame.length);
+auto bi::Array<Type,Frame>::end(const View& view) {
+  return Iterator<Type,Frame,View>(ptr, frame, view, frame.length);
 }
 
-template<class Value, class Frame>
+template<class Type, class Frame>
 template<class View>
-auto bi::Array<Value,Frame>::end(const View& view) const {
-  return Iterator<const Value,Frame,View>(value, frame, view, frame.length);
+auto bi::Array<Type,Frame>::end(const View& view) const {
+  return Iterator<const Type,Frame,View>(ptr, frame, view, frame.length);
 }

@@ -72,14 +72,11 @@ birchc_SOURCES = \
   bi/expression/Member.cpp \
   bi/expression/VarParameter.cpp \
   bi/expression/VarReference.cpp \
-  bi/io/cpp/CppAssignmentGenerator.cpp \
   bi/io/cpp/CppBaseGenerator.cpp \
   bi/io/cpp/CppConstructorGenerator.cpp \
-  bi/io/cpp/CppCopyConstructorGenerator.cpp \
   bi/io/cpp/CppFileGenerator.cpp \
   bi/io/cpp/CppTypeGenerator.cpp \
   bi/io/cpp/CppParameterGenerator.cpp \
-  bi/io/cpp/CppViewConstructorGenerator.cpp \
   bi/io/bi_ostream.cpp \
   bi/io/cpp_ostream.cpp \
   bi/io/indentable_ostream.cpp \
@@ -132,8 +129,6 @@ birch_CXXFLAGS = $(AM_CXXFLAGS)
 libbirch_la_SOURCES = \
   bi/bi.cpp \
   bi/data/copy.cpp \
-  bi/data/MemoryGroup.cpp \
-  bi/data/MemoryPrimitiveValue.cpp \
   bi/exception/Exception.cpp \
   bi/exception/MemoryException.cpp \
   bi/exception/UnknownOptionException.cpp \
@@ -142,19 +137,16 @@ libbirch_la_SOURCES = \
 libbirch_la_CXXFLAGS = $(AM_CXXFLAGS)
 
 nobase_include_HEADERS = bi/data/Array.hpp \
-  bi/data/builtin.hpp \
   bi/data/constant.hpp \
   bi/data/copy.hpp \
   bi/data/easy.hpp \
   bi/data/Frame.hpp \
-  bi/data/MemoryGroup.hpp \
-  bi/data/MemoryPrimitiveValue.hpp \
+  bi/data/memory.hpp \
   bi/data/Index.hpp \
   bi/data/Iterator.hpp \
   bi/data/Lead.hpp \
   bi/data/Length.hpp \
   bi/data/Offset.hpp \
-  bi/data/PrimitiveValue.hpp \
   bi/data/Range.hpp \
   bi/data/Span.hpp \
   bi/data/Stride.hpp \

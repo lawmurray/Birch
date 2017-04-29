@@ -5,84 +5,54 @@
 
 bi::CppConstructorGenerator::CppConstructorGenerator(std::ostream& base,
     const int level, const bool header) :
-    CppBaseGenerator(base, level, header) {
+    CppBaseGenerator(base, level, header),
+    before(false) {
   //
 }
 
 void bi::CppConstructorGenerator::visit(const TypeParameter* o) {
-  /* two constructors are created here, one for nonempty frames, and one for
-   * empty frames, this helps with debugging by ensuring that there is not a
-   * catch-all constructor ("template<class Frame>") that can take any first
-   * argument */
-  for (int i = 0; i < 2; ++i) {
-    if (header) {
-      if (i == 0) {
-        line("template<class Tail, class Head>");
-      }
-      start(o->name->str() << '(');
-      if (!o->parens->isEmpty()) {
-        middle(o->parens << ", ");
-      }
-      if (i == 0) {
-        middle("const NonemptyFrame<Tail,Head>& frame");
-      } else {
-        middle("const EmptyFrame& frame = EmptyFrame()");
-      }
-      middle(", const char* name = nullptr");
-      middle(", const Group& group = Group()");
-      middle(')');
-      finish(" :");
-      in();
-      in();
-      if (!o->base->isEmpty()) {
-        start("base_type(");
-        TypeReference* base = dynamic_cast<TypeReference*>(o->base.get());
-        assert(base);
-        if (!base->parens->isEmpty()) {
-          middle(base->parens << ", ");
-        }
-        finish("frame, name, group),");
-      }
-      start("group(childGroup(group, name))");
-
-      inInitial = true;
-      *this << o->braces;
-
-      out();
-      out();
-      finish(" {");
-      in();
-      inInitial = false;
-      *this << o->braces;
-      out();
-      line("}\n");
+  if (header) {
+    start(o->name << '(');
+    if (!o->parens->isEmpty()) {
+      middle(o->parens);
     }
+    middle(')');
+    finish(" :");
+    in();
+    in();
+    if (!o->base->isEmpty()) {
+      before = true;
+      start("base_type(");
+      if (o->super() && !o->super()->parens->isEmpty()) {
+        middle(o->super()->parens);
+      }
+      middle(')');
+    }
+    *this << o->braces;
+    out();
+    out();
+    finish(" {");
+    in();
+    line("//");
+    out();
+    line("}\n");
   }
 }
 
 void bi::CppConstructorGenerator::visit(const VarParameter* o) {
-  if (inInitial) {
+  if (before) {
     finish(',');
-    start(o->name << "(");
-  //  if (!o->parens()->isEmpty() && o->type->count() == 0) {
-  //    aux << o->parens->strip();
-  //    middle(", ");
-  //  }
-    if (o->type->isArray()) {
-      const BracketsType* type = dynamic_cast<const BracketsType*>(o->type.get());
-      assert(type);
-      middle("make_frame(" << type->brackets << ")*frame.lead");
-    } else {
-      middle("frame");
-    }
-    middle(", \"" << o->name << "\"");
-    middle(", childGroup");
-    middle("(this->group, \"" << o->name << "\")");
-  //  if (!o->parens->isEmpty() && o->type->count() > 0) {
-  //    middle(", "  << o->parens);
-  //  }
-    middle(')');
   }
+  before = true;
+
+  start(o->name << '(');
+  if (o->type->isArray()) {
+    const BracketsType* type =
+        dynamic_cast<const BracketsType*>(o->type.get());
+    assert(type);
+    middle("make_frame(" << type->brackets << ")");
+  }
+  middle(')');
 }
 
 void bi::CppConstructorGenerator::visit(const VarDeclaration* o) {

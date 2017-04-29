@@ -100,7 +100,6 @@ void bi::CppFileGenerator::visit(const FuncParameter* o) {
       finish(" {");
       in();
 
-
       /* body */
       CppBaseGenerator aux(base, level, false);
       aux << o->braces;
@@ -117,26 +116,15 @@ void bi::CppFileGenerator::visit(const FuncParameter* o) {
 void bi::CppFileGenerator::visit(const TypeParameter* o) {
   if (o->isAlias()) {
     if (header) {
-      TypeReference* base = dynamic_cast<TypeReference*>(o->base.get());
-      assert(base);
-      if (!base->isBuiltin()) {
-        line("namespace bi {");
-        in();
-        line("namespace type {");
-        out();
-        line("template<class Group = MemoryGroup>");
-        start("using " << o->name << " = ");
-        //if (base->isBuiltin()) {
-        //  middle("PrimitiveValue<" << base << ",Group>");
-        //} else {
-          middle(base->name << "<Group>");
-        //}
-        finish(';');
-        in();
-        line("}");
-        out();
-        line("}\n");
-      }
+      line("namespace bi {");
+      in();
+      line("namespace type {");
+      out();
+      line("using " << o->name << " = " << o->base << ';');
+      in();
+      line("}");
+      out();
+      line("}\n");
     }
   } else if (!o->isBuiltin()) {
     if (header) {
@@ -181,7 +169,8 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
       line("enum {");
       in();
       for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
-        std::string flag = dynamic_cast<const VarParameter*>(*iter)->name->str() + "_ARG";
+        std::string flag =
+            dynamic_cast<const VarParameter*>(*iter)->name->str() + "_ARG";
         boost::to_upper(flag);
         start(flag);
         if (iter == o->parens->begin()) {
@@ -197,15 +186,16 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
       line("option long_options[] = {");
       in();
       for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
-        const std::string& name = dynamic_cast<const VarParameter*>(*iter)->name->str();
+        const std::string& name =
+            dynamic_cast<const VarParameter*>(*iter)->name->str();
         //if (name.length() > 1) {
-          std::string flag = name + "_ARG";
-          boost::to_upper(flag);
-          std::string option = name;
-          boost::replace_all(option, "_", "-");
+        std::string flag = name + "_ARG";
+        boost::to_upper(flag);
+        std::string option = name;
+        boost::replace_all(option, "_", "-");
 
-          line(
-              "{\"" << option << "\", required_argument, 0, " << flag << " },");
+        line(
+            "{\"" << option << "\", required_argument, 0, " << flag << " },");
         //}
       }
       line("{0, 0, 0, 0}");
@@ -232,13 +222,14 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
       in();
 
       for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
-        const std::string& name = dynamic_cast<const VarParameter*>(*iter)->name->str();
+        const std::string& name =
+            dynamic_cast<const VarParameter*>(*iter)->name->str();
         std::string flag = name + "_ARG";
         boost::to_upper(flag);
 
         start("case ");
         //if (name.length() > 1) {
-          middle(flag);
+        middle(flag);
         //} else {
         //  middle('\'' << name << '\'');
         //}
