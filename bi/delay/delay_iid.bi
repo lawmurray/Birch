@@ -11,8 +11,8 @@
  * deviation.
  */
 program delay_iid(μ:Real <- 0.0, σ:Real <- 1.0, N:Integer <- 100) {
-  x:(Real ~ Gaussian);
-  y:(Real ~ Gaussian)[N];
+  x:Gaussian;
+  y:Gaussian[N];
   n:Integer;
   
   /* simulate data */

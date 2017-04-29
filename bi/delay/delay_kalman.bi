@@ -5,8 +5,8 @@
  * `T` Number of time steps.
  */
 program delay_kalman(a:Real <- 0.9, T:Integer <- 10) {
-  x:(Real ~ Gaussian)[T];  // state
-  y:(Real ~ Gaussian)[T];  // observation
+  x:Gaussian[T];  // state
+  y:Gaussian[T];  // observation
   t:Integer;
   
   /* simulate data */

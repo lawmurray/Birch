@@ -4,12 +4,11 @@
  */
 program demo_lambda() {
   /* declare a lambda function */
-  x:lambda() -> Boolean;
+  x:lambda();
   
   /* assign a lambda function */
-  x <- lambda() -> y:Boolean {
+  x <- lambda() {
     print("called lambda\n");
-    y <- true;
   };
   
   /* call a lambda function */
