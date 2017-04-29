@@ -17,12 +17,7 @@ namespace bi {
  *
  * @see View
  */
-struct EmptyView: public Length<1> {
-  EmptyView() :
-      Length<1>(1) {
-    //
-  }
-
+struct EmptyView {
   template<class T1>
   void offsets(T1* out) const {
     //
@@ -75,7 +70,7 @@ struct EmptyView: public Length<1> {
  * is EmptyView for the first dimension.
  */
 template<class Tail, class Head>
-struct NonemptyView: public Length<Tail::length_value * Head::length_value> {
+struct NonemptyView {
   /**
    * Tail type.
    */
@@ -87,15 +82,9 @@ struct NonemptyView: public Length<Tail::length_value * Head::length_value> {
   typedef Head head_type;
 
   /**
-   * Length type.
-   */
-  typedef Length<Tail::length_value * Head::length_value> length_type;
-
-  /**
    * Default constructor.
    */
-  NonemptyView() :
-      length_type(1) {
+  NonemptyView() {
     //
   }
 
@@ -104,7 +93,6 @@ struct NonemptyView: public Length<Tail::length_value * Head::length_value> {
    */
   template<class Tail1, class Head1>
   NonemptyView(const Tail1 tail, const Head1 head) :
-      length_type(tail.length * head.length),
       tail(tail),
       head(head) {
     //
@@ -115,7 +103,6 @@ struct NonemptyView: public Length<Tail::length_value * Head::length_value> {
    */
   template<class Tail1, class Head1>
   NonemptyView(const NonemptyView<Tail1,Head1>& o) :
-      length_type(o),
       tail(o.tail),
       head(o.head) {
     //

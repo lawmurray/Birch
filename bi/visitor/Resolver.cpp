@@ -111,8 +111,10 @@ bi::Expression* bi::Resolver::modify(BracketsExpression* o) {
 bi::Expression* bi::Resolver::modify(VarReference* o) {
   Scope* memberScope = takeMemberScope();
   Modifier::modify(o);
-  resolve(o, memberScope);
-  o->type = o->target->type->accept(&cloner)->accept(this);
+  if (!o->name->isEmpty()) {
+    resolve(o, memberScope);
+    o->type = o->target->type->accept(&cloner)->accept(this);
+  }
   return o;
 }
 

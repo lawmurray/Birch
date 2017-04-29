@@ -19,10 +19,8 @@ namespace bi {
  *
  * @see NonemptyFrame
  */
-struct EmptyFrame: public Length<1>, public Lead<1> {
-  EmptyFrame() :
-      Length<1>(1),
-      Lead<1>(1) {
+struct EmptyFrame {
+  EmptyFrame() {
     //
   }
 
@@ -48,6 +46,21 @@ struct EmptyFrame: public Length<1>, public Lead<1> {
     //
   }
 
+  int_t length(const int i) const {
+    assert(i == 0);
+    return 1;
+  }
+
+  int_t stride(const int i) const {
+    assert(i == 0);
+    return 1;
+  }
+
+  int_t lead(const int i) const {
+    assert(i == 0);
+    return 1;
+  }
+
   template<class T1>
   void lengths(T1* out) const {
     //
@@ -65,6 +78,14 @@ struct EmptyFrame: public Length<1>, public Lead<1> {
 
   static constexpr int count() {
     return 0;
+  }
+
+  static constexpr int_t size() {
+    return 1;
+  }
+
+  static constexpr int_t volume() {
+    return 1;
   }
 
   template<class View>
@@ -121,8 +142,7 @@ struct EmptyFrame: public Length<1>, public Lead<1> {
  * EmptyFrame for the first dimension.
  */
 template<class Tail, class Head>
-struct NonemptyFrame: public Length<Tail::length_value * Head::length_value>,
-    public Lead<Tail::lead_value * Head::lead_value> {
+struct NonemptyFrame {
   /**
    * Tail type.
    */
@@ -134,22 +154,10 @@ struct NonemptyFrame: public Length<Tail::length_value * Head::length_value>,
   typedef Head head_type;
 
   /**
-   * Length type.
-   */
-  typedef Length<Tail::length_value * Head::length_value> length_type;
-
-  /**
-   * Lead type.
-   */
-  typedef Lead<Tail::lead_value * Head::lead_value> lead_type;
-
-  /**
    * Generic constructor.
    */
   template<class Tail1, class Head1>
   NonemptyFrame(const Tail1 tail, const Head1 head) :
-      length_type(tail.length * head.length),
-      lead_type(tail.lead * head.lead),
       tail(tail),
       head(head) {
     //
@@ -160,8 +168,6 @@ struct NonemptyFrame: public Length<Tail::length_value * Head::length_value>,
    */
   template<class Tail1, class Head1>
   NonemptyFrame(const NonemptyFrame<Tail1,Head1>& o) :
-      length_type(o),
-      lead_type(o),
       tail(o.tail),
       head(o.head) {
     //
@@ -227,6 +233,44 @@ struct NonemptyFrame: public Length<Tail::length_value * Head::length_value>,
   }
 
   /**
+   * @name Queries
+   */
+  //@{
+  /**
+   * Get the length of the @p i th dimension.
+   */
+  int_t length(const int i) const {
+    if (i == count() - 1) {
+      return head.length;
+    } else {
+      return tail.length(i - 1);
+    }
+  }
+
+  /**
+   * Get the stride of the @p i th dimension.
+   */
+  int_t stride(const int i) const {
+    if (i == count() - 1) {
+      return head.stride;
+    } else {
+      return tail.stride(i - 1);
+    }
+  }
+
+  /**
+   * Get the lead of the @p i th dimension.
+   */
+  int_t lead(const int i) const {
+    if (i == count() - 1) {
+      return head.lead;
+    } else {
+      return tail.lead(i - 1);
+    }
+  }
+  //@}
+
+  /**
    * @name Collections
    */
   //@{
@@ -279,6 +323,20 @@ struct NonemptyFrame: public Length<Tail::length_value * Head::length_value>,
    */
   static constexpr int count() {
     return Tail::count() + 1;
+  }
+
+  /**
+   * Product of all lengths.
+   */
+  int_t size() const {
+    return tail.size()*head.length;
+  }
+
+  /**
+   * Product of all leads.
+   */
+  int_t volume() const {
+    return tail.volume()*head.lead;
   }
 
   /**

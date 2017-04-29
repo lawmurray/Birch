@@ -310,7 +310,7 @@ optional_arguments
 
 size
     : expression
-    | '_'         { $$ = new bi::EmptyExpression(); }
+    | '_'         { $$ = new bi::VarReference(new bi::Name(), make_loc(@$)); }
     ;
 
 size_list

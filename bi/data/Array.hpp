@@ -182,6 +182,46 @@ public:
   //@}
 
   /**
+   * @name Queries
+   */
+  //@{
+  /**
+   * Get the length of the @p i th dimension.
+   */
+  int_t length(const int i) const {
+    return frame.length(i);
+  }
+
+  /**
+   * Get the stride of the @p i th dimension.
+   */
+  int_t stride(const int i) const {
+    return frame.stride(i);
+  }
+
+  /**
+   * Get the lead of the @p i th dimension.
+   */
+  int_t lead(const int i) const {
+    return frame.lead(i);
+  }
+
+  /**
+   * Raw pointer to underlying buffer.
+   */
+  Type* buf() {
+    return ptr;
+  }
+
+  /**
+   * Raw pointer to underlying buffer.
+   */
+  Type* const buf() const {
+    return ptr;
+  }
+//@}
+
+  /**
    * @name Collections
    */
   //@{
