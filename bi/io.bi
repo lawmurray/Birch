@@ -1,5 +1,4 @@
-import string;
-import math;
+import basic;
 
 cpp {{
 #include <cstdio>

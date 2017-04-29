@@ -15,10 +15,26 @@ class Gaussian {
    * Standard deviation.
    */
   σ:Real;
+  
+  /**
+   * Value.
+   */
+  x:Real;
+
+  /**
+   * Convert to value.
+   */
+  function -> Real {
+    return x;
+  }
 
   function create(μ:Real, σ:Real) {
     this.μ <- μ;
     this.σ <- σ;
+  }
+
+  function value() -> Real {
+    return this.x;
   }
 
   function simulate() -> Real {

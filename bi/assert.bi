@@ -1,12 +1,7 @@
-import math;
-import string;
+import basic;
 
 hpp {{
 #include <cassert>
 }}
 
-function require(condition:Boolean) {
-  cpp {{
-  assert(condition);
-  }}
-}
+function assert(condition:Boolean);
