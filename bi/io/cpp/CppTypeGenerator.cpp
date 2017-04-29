@@ -102,7 +102,6 @@ void bi::CppTypeGenerator::visit(const TypeParameter* o) {
     /* explicit template specialisations */
     if (!header) {
       line("template class bi::type::" << o->name << "<bi::MemoryGroup>;");
-      line("//template class bi::type::" << o->name << "<bi::NetCDFGroup>;");
       line("");
     }
   }

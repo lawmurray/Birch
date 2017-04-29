@@ -15,7 +15,7 @@ struct MemoryException: public Exception {
   /**
    * Constructor.
    *
-   * @param status NetCDF status code.
+   * @param msg Message.
    */
   MemoryException(const std::string& msg);
 };

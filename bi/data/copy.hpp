@@ -6,9 +6,7 @@
 #pragma once
 
 #include "bi/data/MemoryGroup.hpp"
-#include "bi/data/NetCDFGroup.hpp"
 #include "bi/data/Array.hpp"
-#include "bi/data/netcdf.hpp"
 
 namespace bi {
 /**
@@ -95,11 +93,6 @@ template<class Type>
 void copy(PrimitiveValue<Type,MemoryGroup>& dst, const Type& src) {
   *dst.ptr = src;
 }
-
-template<class Type>
-void copy(PrimitiveValue<Type,NetCDFGroup>& dst, const Type& src) {
-  put(dst.group.ncid, dst.varid, dst.convolved.offsets.data(), &src);
-}
 //@}
 
 /**
@@ -110,26 +103,6 @@ template<class Type>
 void copy(PrimitiveValue<Type,MemoryGroup>& dst,
     const PrimitiveValue<Type,MemoryGroup>& src) {
   *dst.ptr = *src.ptr;
-}
-
-template<class Type>
-void copy(PrimitiveValue<Type,MemoryGroup>& dst,
-    const PrimitiveValue<Type,NetCDFGroup>& src) {
-  get(src.group.ncid, src.varid, src.convolved.offsets.data(), dst.ptr);
-}
-
-template<class Type>
-void copy(PrimitiveValue<Type,NetCDFGroup>& dst,
-    const PrimitiveValue<Type,MemoryGroup>& src) {
-  put(dst.group.ncid, dst.varid, dst.convolved.offsets.data(), src.ptr);
-}
-
-template<class Type>
-void copy(PrimitiveValue<Type,NetCDFGroup>& dst,
-    const PrimitiveValue<Type,NetCDFGroup>& src) {
-  Type value;
-  get(src.group.ncid, src.varid, src.convolved.offsets.data(), &value);
-  put(dst.group.ncid, dst.varid, dst.convolved.offsets.data(), &value);
 }
 //@}
 
@@ -173,34 +146,6 @@ template<class Type, class Frame1, class Frame2>
 void contiguous_copy(Array<PrimitiveValue<Type,MemoryGroup>,Frame1>& dst,
     const Array<PrimitiveValue<Type,MemoryGroup>,Frame2>& src) {
   memcpy(dst.value.ptr, src.value.ptr, dst.frame.lead * sizeof(Type));
-}
-
-template<class Type, class Frame1, class Frame2>
-void contiguous_copy(Array<PrimitiveValue<Type,MemoryGroup>,Frame1>& dst,
-    const Array<PrimitiveValue<Type,NetCDFGroup>,Frame2>& src) {
-  get(src.value.group.ncid, src.value.varid,
-      src.value.convolved.offsets.data(), src.value.convolved.lengths.data(),
-      dst.value.ptr);
-}
-
-template<class Type, class Frame1, class Frame2>
-void contiguous_copy(Array<PrimitiveValue<Type,NetCDFGroup>,Frame1>& dst,
-    const Array<PrimitiveValue<Type,MemoryGroup>,Frame2>& src) {
-  put(dst.value.group.ncid, dst.value.varid,
-      dst.value.convolved.offsets.data(), dst.value.convolved.lengths.data(),
-      src.value.ptr);
-}
-
-template<class Type, class Frame1, class Frame2>
-void contiguous_copy(Array<PrimitiveValue<Type,NetCDFGroup>,Frame1>& dst,
-    const Array<PrimitiveValue<Type,NetCDFGroup>,Frame2>& src) {
-  Type tmp[src.frame.length];
-  get(src.value.group.ncid, src.value.varid,
-      src.value.convolved.offsets.data(), src.value.convolved.lengths.data(),
-      tmp);
-  put(dst.value.group.ncid, dst.value.varid,
-      dst.value.convolved.offsets.data(), dst.value.convolved.lengths.data(),
-      tmp);
 }
 //@}
 

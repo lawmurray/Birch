@@ -20,7 +20,7 @@ struct CompilerException: public Exception {
   /**
    * Constructor.
    *
-   * @param status NetCDF status code.
+   * @param msg Message.
    */
   CompilerException(const std::string& msg);
 };

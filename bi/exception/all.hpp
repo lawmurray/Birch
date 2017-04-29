@@ -13,7 +13,6 @@
 #include "bi/exception/InvalidAssignmentException.hpp"
 #include "bi/exception/MemberException.hpp"
 #include "bi/exception/MemoryException.hpp"
-#include "bi/exception/NetCDFException.hpp"
 #include "bi/exception/PreviousDeclarationException.hpp"
 #include "bi/exception/ThisException.hpp"
 #include "bi/exception/UnknownOptionException.hpp"

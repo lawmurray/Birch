@@ -132,16 +132,10 @@ birch_CXXFLAGS = $(AM_CXXFLAGS)
 libbirch_la_SOURCES = \
   bi/bi.cpp \
   bi/data/copy.cpp \
-  bi/data/group.cpp \
-  bi/data/netcdf.cpp \
   bi/data/MemoryGroup.cpp \
   bi/data/MemoryPrimitiveValue.cpp \
-  bi/data/NetCDFGroup.cpp \
-  bi/data/NetCDFPrimitiveValue.cpp \
-  bi/data/NetCDFView.cpp \
   bi/exception/Exception.cpp \
   bi/exception/MemoryException.cpp \
-  bi/exception/NetCDFException.cpp \
   bi/exception/UnknownOptionException.cpp \
   bi/method/Method.cpp \
   bi/method/Stack.cpp
@@ -152,7 +146,6 @@ nobase_include_HEADERS = bi/data/Array.hpp \
   bi/data/constant.hpp \
   bi/data/copy.hpp \
   bi/data/easy.hpp \
-  bi/data/group.hpp \
   bi/data/Frame.hpp \
   bi/data/MemoryGroup.hpp \
   bi/data/MemoryPrimitiveValue.hpp \
@@ -160,10 +153,6 @@ nobase_include_HEADERS = bi/data/Array.hpp \
   bi/data/Iterator.hpp \
   bi/data/Lead.hpp \
   bi/data/Length.hpp \
-  bi/data/netcdf.hpp \
-  bi/data/NetCDFGroup.hpp \
-  bi/data/NetCDFPrimitiveValue.hpp \
-  bi/data/NetCDFView.hpp \
   bi/data/Offset.hpp \
   bi/data/PrimitiveValue.hpp \
   bi/data/Range.hpp \
@@ -172,7 +161,6 @@ nobase_include_HEADERS = bi/data/Array.hpp \
   bi/data/View.hpp \
   bi/exception/Exception.hpp \
   bi/exception/MemoryException.hpp \
-  bi/exception/NetCDFException.hpp \
   bi/exception/UnknownOptionException.hpp \
   bi/method/Delay.hpp \
   bi/method/DelayInterface.hpp \

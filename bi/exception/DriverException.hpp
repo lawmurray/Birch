@@ -20,7 +20,7 @@ struct DriverException: public Exception {
   /**
    * Constructor.
    *
-   * @param status NetCDF status code.
+   * @param msg Message.
    */
   DriverException(const std::string& msg);
 };

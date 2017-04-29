@@ -15,7 +15,7 @@ struct UnknownOptionException: public Exception {
   /**
    * Constructor.
    *
-   * @param status NetCDF status code.
+   * @param option Option name.
    */
   UnknownOptionException(const std::string& option);
 };
