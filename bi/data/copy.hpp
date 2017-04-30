@@ -1,11 +1,11 @@
 /**
  * @file
- *
- * Assignment functions between data.
  */
 #pragma once
 
-#include "bi/data/Array.hpp"
+#include "bi/data/Range.hpp"
+#include "bi/data/View.hpp"
+#include "bi/data/constant.hpp"
 
 namespace bi {
 /**
@@ -75,48 +75,5 @@ auto common_view(const View1& o1, const View2& o2) {
 inline EmptyView common_view(const EmptyView& o1, const EmptyView& o2) {
   return EmptyView();
 }
-
-/**
- * @name Array copies
- */
-//@{
-/**
- * Copy for all arrays, iterating over contiguous chunks.
- */
-template<class Type, class Frame1, class Frame2>
-void copy(Array<Type,Frame1>& dst,
-    const Array<Type,Frame2>& src) {
-  /* pre-condition */
-  assert(dst.frame.conforms(src.frame));
-
-  auto block = common_view(dst.frame.block(), src.frame.block());
-  auto iter1 = dst.begin(block);
-  auto iter2 = src.begin(block);
-  auto end1 = dst.end(block);
-  auto end2 = src.end(block);
-
-  for (; iter1 != end1; ++iter1, ++iter2) {
-    /* pre-conditions */
-    auto a1 = *iter1;
-    auto a2 = *iter2;
-
-    assert(a1.frame.contiguous());
-    assert(a2.frame.contiguous());
-    assert(a1.frame.length == a2.frame.length);
-
-    contiguous_copy(a1, a2);
-  }
-  assert(iter2 == end2);
-}
-
-/*
- * Contiguous copies for arrays between groups.
- */
-template<class Type, class Frame1, class Frame2>
-void contiguous_copy(Array<Type,Frame1>& dst,
-    const Array<Type,Frame2>& src) {
-  memcpy(dst.ptr, src.ptr, dst.lead * sizeof(Type));
-}
-//@}
 
 }

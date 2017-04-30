@@ -35,7 +35,7 @@ bool bi::EmptyType::dispatchDefinitely(const Type& o) const {
 }
 
 bool bi::EmptyType::definitely(const EmptyType& o) const {
-  return !o.assignable || assignable;
+  return true;
 }
 
 bool bi::EmptyType::dispatchPossibly(const Type& o) const {
@@ -43,5 +43,5 @@ bool bi::EmptyType::dispatchPossibly(const Type& o) const {
 }
 
 bool bi::EmptyType::possibly(const EmptyType& o) const {
-  return !o.assignable || assignable;
+  return true;
 }

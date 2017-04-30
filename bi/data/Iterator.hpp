@@ -3,7 +3,7 @@
  */
 #pragma once
 
-#include "bi/data/View.hpp"
+#include "bi/data/Frame.hpp"
 
 namespace bi {
 /**
@@ -11,92 +11,80 @@ namespace bi {
  *
  * @ingroup library
  *
- * @tparam Value Value type.
+ * @tparam Type Value type.
  * @tparam Frame Frame type.
- * @tparam View View type.
  */
-template<class Value, class Frame = EmptyFrame, class View = EmptyView>
+template<class Type, class Frame = EmptyFrame>
 class Iterator {
 public:
   /**
    * Constructor.
    *
-   * @param value Value.
+   * @param ptr Value.
    * @param frame Frame.
-   * @param view View.
    */
-  Iterator(const Value& value, const Frame& frame, const View& view, const int_t serial = 0) :
-      value(value),
+  Iterator(Type* ptr, const Frame& frame) :
       frame(frame),
-      view(view),
-      serial(serial) {
-    update();
+      ptr(ptr),
+      serial(0) {
+    //
   }
 
-  /*
-   * This needs to be a shallow copy, but semantics for Value are that
-   * assignment does a deep copy, which is problematic. Delete to prevent
-   * its use, as it may lead to difficult to debug errors.
-   */
-  Iterator<Value,Frame,View>& operator=(const Iterator<Value,Frame,View>& o) = delete;
-
-  auto operator*();
-
-  //Value* operator->() {
-  //  return &result;
-  //}
-
-  bool operator==(const Iterator<Value,Frame,View>& o) const {
-    return serial == o.serial;
+  Type& operator*() {
+    return ptr[frame.offset(serial)];
   }
 
-  bool operator!=(const Iterator<Value,Frame,View>& o) const {
+  const Type& operator*() const {
+    return ptr[frame.offset(serial)];
+  }
+
+  bool operator==(const Iterator<Type,Frame>& o) const {
+    return ptr == o.ptr && serial == o.serial;
+  }
+
+  bool operator!=(const Iterator<Type,Frame>& o) const {
     return !(*this == o);
   }
 
-  Iterator<Value,Frame,View>& operator+=(const int_t i) {
-    serial += i*view.length;
-    update();
+  Iterator<Type,Frame>& operator+=(const int_t i) {
+    serial += i;
     return *this;
   }
 
-  Iterator<Value,Frame,View>& operator+(const int_t i) {
+  Iterator<Type,Frame>& operator+(const int_t i) const {
     auto result = *this;
     result += i;
     return result;
   }
 
-  Iterator<Value,Frame,View>& operator-=(const int_t i) {
-    serial -= i*view.length;
-    update();
+  Iterator<Type,Frame>& operator-=(const int_t i) {
+    serial -= i;
     return *this;
   }
 
-  Iterator<Value,Frame,View>& operator-(const int_t i) {
+  Iterator<Type,Frame>& operator-(const int_t i) const {
     auto result = *this;
     result -= i;
     return result;
   }
 
-  Iterator<Value,Frame,View>& operator++() {
-    serial += view.length;
-    update();
+  Iterator<Type,Frame>& operator++() {
+    serial += 1;
     return *this;
   }
 
-  Iterator<Value,Frame,View> operator++(int) {
+  Iterator<Type,Frame> operator++(int) {
     auto result = *this;
     ++*this;
     return result;
   }
 
-  Iterator<Value,Frame,View>& operator--() {
-    serial -= view.length;
-    update();
+  Iterator<Type,Frame>& operator--() {
+    serial -= 1;
     return *this;
   }
 
-  Iterator<Value,Frame,View> operator--(int) {
+  Iterator<Type,Frame> operator--(int) {
     auto result = *this;
     --*this;
     return result;
@@ -104,38 +92,18 @@ public:
 
 protected:
   /**
-   * Update member attributes after serial index is changed.
-   */
-  void update() {
-    frame.coord(serial, view);
-  }
-
-  /**
-   * Value.
-   */
-  Value value;
-
-  /**
    * Frame.
    */
   Frame frame;
 
   /**
-   * View.
+   * Value.
    */
-  View view;
+  Type* ptr;
 
   /**
-   * Serialised offset of the view.
+   * Serialised offset into the frame.
    */
   int_t serial;
 };
-}
-
-#include "bi/data/Array.hpp"
-
-template<class Value, class Frame, class View>
-auto bi::Iterator<Value,Frame,View>::operator*() {
-  Array<Value,Frame> array(value, frame);
-  return array(view);
 }

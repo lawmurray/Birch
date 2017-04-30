@@ -121,20 +121,17 @@ bi::Expression* bi::Resolver::modify(VarReference* o) {
 bi::Expression* bi::Resolver::modify(FuncReference* o) {
   Scope* memberScope = takeMemberScope();
   Modifier::modify(o);
-  if (o->isAssign() && *o->name == "<-") {
-    if (!o->getLeft()->type->assignable) {
-      throw NotAssignableException(o);
-    } else if (!o->getRight()->type->definitely(*o->getLeft()->type)) {
-      ///@todo Problems with assignable in comparison here
-      //resolve(o, memberScope);
-      //o->type = o->target->type->accept(&cloner)->accept(this);
-    }
+  if (o->isAssign() && !o->getLeft()->type->assignable) {
+    throw NotAssignableException(o);
+  }
+  if (o->isAssign() && *o->name == "<-"
+      && o->getRight()->type->definitely(*o->getLeft()->type)) {
+    // no need to resolve, have default assignment operator
   } else {
     resolve(o, memberScope);
     o->type = o->target->type->accept(&cloner)->accept(this);
-    //o->type->assignable = false;  // rvalue
   }
-  
+  o->type->assignable = false;  // rvalue
   return o;
 }
 
@@ -162,7 +159,8 @@ bi::Expression* bi::Resolver::modify(VarParameter* o) {
     if (!o->type->assignable) {
       throw NotAssignableException(o);
     } else if (!o->value->type->definitely(*o->type)) {
-      //throw InvalidAssignmentException(o);
+      ///@todo Support assignment operator overloads here
+      throw InvalidAssignmentException(o);
     }
   }
   return o;
@@ -176,7 +174,7 @@ bi::Expression* bi::Resolver::modify(FuncParameter* o) {
   ++inInputs;
   o->parens = o->parens->accept(this);
   --inInputs;
-  o->type = o->type->accept(this)->accept(&assigner);
+  o->type = o->type->accept(this);
   if (o->isLambda()) {
     o->braces = o->braces->accept(this);
   } else if (!o->braces->isEmpty()) {
@@ -193,7 +191,7 @@ bi::Expression* bi::Resolver::modify(FuncParameter* o) {
 
 bi::Expression* bi::Resolver::modify(ConversionParameter* o) {
   push();
-  o->type = o->type->accept(this)->accept(&assigner);
+  o->type = o->type->accept(this);
   if (!o->braces->isEmpty()) {
     defer(o->braces.get());
   }

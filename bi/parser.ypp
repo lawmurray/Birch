@@ -60,7 +60,7 @@
 %type <valName> unary_operator
 %type <valName> multiplicative_operator additive_operator relational_operator
 %type <valName> equality_operator logical_and_operator logical_or_operator
-%type <valName> condition_operator assignment_operator binary_operator
+%type <valName> stochastic_operator assignment_operator binary_operator
 %type <valName> name path_name
 %type <valPath> path
 
@@ -91,7 +91,7 @@
 %type <valExpression> multiplicative_expression additive_expression
 %type <valExpression> relational_expression equality_expression
 %type <valExpression> logical_and_expression logical_or_expression
-%type <valExpression> condition_expression assignment_expression
+%type <valExpression> stochastic_expression assignment_expression
 %type <valExpression> expression_list expression
 
 %type <valStatement> var_declaration member_declaration
@@ -101,6 +101,14 @@
 %type <valStatement> statement statements optional_statements
 %type <valStatement> type_statement type_statements optional_type_statements
 %type <valStatement> file_statement file_statements optional_file_statements
+
+/*
+ * left associativity on RIGHT_OP is necessary to resolve ambiguity between
+ * lambda types and return types in operation declarations, e.g.:
+ *
+ * function x:Real + y:lambda() -> Real -> Real;
+ */
+%left RIGHT_OP
 
 %locations
 
@@ -214,9 +222,9 @@ func_parameter
     ;
     
 op_parameter
-    : '(' var_parameter assignment_operator var_parameter ')' optional_result_type optional_braces  { $$ = new bi::FuncParameter($2, $3, $4, $6, $7, bi::ASSIGN_OPERATOR, make_loc(@$)); }
-    | '(' var_parameter binary_operator var_parameter ')' optional_result_type optional_braces      { $$ = new bi::FuncParameter($2, $3, $4, $6, $7, bi::BINARY_OPERATOR, make_loc(@$)); }
-    | '(' unary_operator var_parameter ')' optional_result_type optional_braces                     { $$ = new bi::FuncParameter($2, $3, $5, $6, bi::UNARY_OPERATOR, make_loc(@$)); }
+    : var_parameter assignment_operator var_parameter optional_braces                   { $$ = new bi::FuncParameter($1, $2, $3, new bi::EmptyType(), $4, bi::ASSIGN_OPERATOR, make_loc(@$)); }
+    | var_parameter binary_operator var_parameter optional_result_type optional_braces  { $$ = new bi::FuncParameter($1, $2, $3, $4, $5, bi::BINARY_OPERATOR, make_loc(@$)); }
+    | unary_operator var_parameter optional_result_type optional_braces                 { $$ = new bi::FuncParameter($1, $2, $3, $4, bi::UNARY_OPERATOR, make_loc(@$)); }
     ;
 
 conversion_parameter
@@ -273,7 +281,7 @@ result_type
     
 optional_result_type
     : result_type
-    |              { $$ = new bi::EmptyType(); }
+    |             %prec RIGHT_OP { $$ = new bi::EmptyType(); }
     ;
 
 
@@ -476,24 +484,24 @@ logical_or_expression
     | logical_or_expression logical_or_operator logical_and_expression  { $$ = new bi::FuncReference($1, $2, $3, bi::BINARY_OPERATOR, make_loc(@$)); }
     ;
 
-condition_operator
+stochastic_operator
     : RIGHT_TILDE_OP  { $$ = new bi::Name("~>", make_loc(@$)); }
+    | '~'             { $$ = new bi::Name("~", make_loc(@$)); }
     ;
 
-condition_expression
+stochastic_expression
     : logical_or_expression
-    | condition_expression condition_operator logical_or_expression  { $$ = new bi::FuncReference($1, $2, $3, bi::BINARY_OPERATOR, make_loc(@$)); }
+    | stochastic_expression stochastic_operator logical_or_expression  { $$ = new bi::FuncReference($1, $2, $3, bi::BINARY_OPERATOR, make_loc(@$)); }
     ;
 
 assignment_operator
     : LEFT_OP        { $$ = new bi::Name("<-", make_loc(@$)); }
     | LEFT_TILDE_OP  { $$ = new bi::Name("<~", make_loc(@$)); }
-    | '~'            { $$ = new bi::Name("~", make_loc(@$)); }
     ;
     
 assignment_expression
-    : condition_expression
-    | condition_expression assignment_operator assignment_expression  { $$ = new bi::FuncReference($1, $2, $3, bi::ASSIGN_OPERATOR, make_loc(@$)); }
+    : stochastic_expression
+    | stochastic_expression assignment_operator assignment_expression  { $$ = new bi::FuncReference($1, $2, $3, bi::ASSIGN_OPERATOR, make_loc(@$)); }
     ;
 
 expression_list
@@ -512,7 +520,7 @@ binary_operator
     | equality_operator
     | logical_and_operator
     | logical_or_operator
-    | condition_operator
+    | stochastic_operator
     ;
 
 

@@ -4,6 +4,11 @@
 #pragma once
 
 #include "bi/data/Frame.hpp"
+#include "bi/data/Iterator.hpp"
+#include "bi/data/copy.hpp"
+#include "bi/data/constant.hpp"
+
+#include <cstring>
 
 namespace bi {
 /**
@@ -18,6 +23,76 @@ namespace bi {
  */
 template<class Type, class Frame = EmptyFrame>
 class Array {
+  template<class Type1, class Frame1>
+  friend class Array;
+
+  /**
+   * @internal These are declare ahead due to some issues with clang++ around
+   * the return type of operator(), which in turn calls viewReturn().
+   */
+protected:
+  /**
+   * Frame.
+   */
+  Frame frame;
+
+  /**
+   * Value.
+   */
+  Type* ptr;
+
+  /**
+   * Do we own the underlying buffer?
+   */
+  bool own;
+
+  /**
+   * Copy from another array.
+   */
+  template<class Frame1>
+  void copy(const Array<Type,Frame1>& o) {
+    /* pre-condition */
+    assert(frame.conforms(o.frame));
+
+    int_t block = common_view(frame.block(), o.frame.block()).size();
+    auto iter1 = begin();
+    auto end1 = end();
+    auto iter2 = o.begin();
+    auto end2 = o.end();
+
+    for (; iter1 != end1; iter1 += block, iter2 += block) {
+      std::memcpy(&(*iter1), &(*iter2), block * sizeof(Type));
+    }
+    assert(iter2 == end2);
+  }
+
+  /**
+   * Return value of view when result is an array.
+   */
+  template<class View1, class Frame1>
+  Array<Type,Frame1> viewReturn(const View1& view, const Frame1& frame) {
+    return Array<Type,Frame1>(ptr + frame.serial(view), frame);
+  }
+
+  template<class View1, class Frame1>
+  Array<const Type,Frame1> viewReturn(const View1& view,
+      const Frame1& frame) const {
+    return Array<const Type,Frame1>(ptr + frame.serial(view), frame);
+  }
+
+  /**
+   * Return value of view when result is a scalar.
+   */
+  template<class View1>
+  Type& viewReturn(const View1& view, const EmptyFrame& frame) {
+    return ptr[frame.serial(view)];
+  }
+
+  template<class View1>
+  const Type& viewReturn(const View1& view, const EmptyFrame& frame) const {
+    return ptr[frame.serial(view)];
+  }
+
 public:
   /**
    * Constructor with new allocation.
@@ -88,7 +163,9 @@ public:
     /* pre-condition */
     assert(frame.conforms(o.frame));
 
-    copy(*this, o);
+    if (ptr != ptr) {
+      copy(o);
+    }
     return *this;
   }
 
@@ -106,10 +183,7 @@ public:
       }
     } else {
       /* copy assignment */
-      own = true;
-      create(&ptr, frame);
-      fill(ptr, frame);
-      *this = o;
+      copy(o);
     }
     return *this;
   }
@@ -117,12 +191,12 @@ public:
   /**
    * Generic assignment. The frames of the two arrays must conform.
    */
-  template<class Type1, class Frame1>
-  Array<Type,Frame>& operator=(const Array<Type1,Frame1>& o) {
+  template<class Frame1>
+  Array<Type,Frame>& operator=(const Array<Type,Frame1>& o) {
     /* pre-condition */
     assert(frame.conforms(o.frame));
 
-    copy(*this, o);
+    copy(o);
     return *this;
   }
 
@@ -134,9 +208,13 @@ public:
    * @param o View.
    *
    * @return The new array.
+   *
+   * @internal The decltype use for the return type here seems necessary,
+   * clang++ is otherwise giving these a const return type.
    */
   template<class View1>
-  auto& operator()(const View1& view) {
+  auto operator()(
+      const View1& view) -> decltype(viewReturn(view, this->frame(view))) {
     return viewReturn(view, frame(view));
   }
 
@@ -144,7 +222,8 @@ public:
    * View operator.
    */
   template<class View1>
-  auto& operator()(const View1& view) const {
+  auto operator()(
+      const View1& view) const -> decltype(viewReturn(view, this->frame(view))) {
     return viewReturn(view, frame(view));
   }
 
@@ -219,7 +298,7 @@ public:
   Type* const buf() const {
     return ptr;
   }
-//@}
+  //@}
 
   /**
    * @name Collections
@@ -290,64 +369,34 @@ public:
    *
    * Iterators are used to access the elements of an array sequentially.
    * Elements are visited in the order in which they are stored in memory;
-   * the leftmost dimension is the fastest moving (for a matrix, this is
-   * "column major" order).
+   * the rightmost dimension is the fastest moving (for a matrix, this is
+   * "row major" order).
    *
    * The idiom of iterator usage is as for the STL.
    */
-  template<class View = typename DefaultView<Frame::count()>::type>
-  auto begin(const View& view = typename DefaultView<Frame::count()>::type());
+  Iterator<Type,Frame> begin() {
+    return Iterator<Type,Frame>(ptr, frame);
+  }
 
   /**
    * Iterator pointing to the first element.
    */
-  template<class View = typename DefaultView<Frame::count()>::type>
-  auto begin(const View& view =
-      typename DefaultView<Frame::count()>::type()) const;
-
-  /**
-   * Iterator pointing to one beyond the last element.
-   */
-  template<class View = typename DefaultView<Frame::count()>::type>
-  auto end(const View& view = typename DefaultView<Frame::count()>::type());
-
-  /**
-   * Iterator pointing to one beyond the last element.
-   */
-  template<class View = typename DefaultView<Frame::count()>::type>
-  auto end(const View& view =
-      typename DefaultView<Frame::count()>::type()) const;
-
-protected:
-  /**
-   * Frame.
-   */
-  Frame frame;
-
-  /**
-   * Value.
-   */
-  Type* ptr;
-
-  /**
-   * Do we own the underlying buffer?
-   */
-  bool own;
-
-  /**
-   * Return value of view when result is an array.
-   */
-  template<class View1, class Frame1>
-  auto viewReturn(const View1& view, const Frame1& frame) const {
-    return Array<Type,Frame1>(ptr + frame.serial(view), frame);
+  Iterator<const Type,Frame> begin() const {
+    return Iterator<const Type,Frame>(ptr, frame);
   }
 
   /**
-   * Return value of view when result is a scalar.
+   * Iterator pointing to one beyond the last element.
    */
-  template<class View1>
-  auto& viewReturn(const View1& view, const EmptyFrame& frame) const {
-    return *(ptr + frame.serial(view));
+  Iterator<Type,Frame> end() {
+    return begin() + frame.size();
+  }
+
+  /**
+   * Iterator pointing to one beyond the last element.
+   */
+  Iterator<const Type,Frame> end() const {
+    return begin() + frame.size();
   }
 };
 
@@ -356,30 +405,4 @@ protected:
  */
 template<class Type, int D>
 using DefaultArray = Array<Type,typename DefaultFrame<D>::type>;
-}
-
-#include "bi/data/Iterator.hpp"
-
-template<class Type, class Frame>
-template<class View>
-auto bi::Array<Type,Frame>::begin(const View& view) {
-  return Iterator<Type,Frame,View>(ptr, frame, view);
-}
-
-template<class Type, class Frame>
-template<class View>
-auto bi::Array<Type,Frame>::begin(const View& view) const {
-  return Iterator<const Type,Frame,View>(ptr, frame, view);
-}
-
-template<class Type, class Frame>
-template<class View>
-auto bi::Array<Type,Frame>::end(const View& view) {
-  return Iterator<Type,Frame,View>(ptr, frame, view, frame.length);
-}
-
-template<class Type, class Frame>
-template<class View>
-auto bi::Array<Type,Frame>::end(const View& view) const {
-  return Iterator<const Type,Frame,View>(ptr, frame, view, frame.length);
 }

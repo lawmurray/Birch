@@ -50,11 +50,11 @@ bool bi::BracketsType::dispatchDefinitely(const Type& o) const {
 
 bool bi::BracketsType::definitely(const BracketsType& o) const {
   return single->definitely(*o.single) && ndims == o.ndims
-      && (!o.assignable || assignable);
+     ;
 }
 
 bool bi::BracketsType::definitely(const ParenthesesType& o) const {
-  return definitely(*o.single) && (!o.assignable || assignable);
+  return definitely(*o.single);
 }
 
 bool bi::BracketsType::dispatchPossibly(const Type& o) const {
@@ -63,9 +63,9 @@ bool bi::BracketsType::dispatchPossibly(const Type& o) const {
 
 bool bi::BracketsType::possibly(const BracketsType& o) const {
   return single->possibly(*o.single) && ndims == o.ndims
-      && (!o.assignable || assignable);
+     ;
 }
 
 bool bi::BracketsType::possibly(const ParenthesesType& o) const {
-  return possibly(*o.single) && (!o.assignable || assignable);
+  return possibly(*o.single);
 }

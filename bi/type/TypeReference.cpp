@@ -105,11 +105,11 @@ bool bi::TypeReference::definitely(const TypeReference& o) const {
   assert(target && o.target);
 
   return (target->canonical() == o.target->canonical()
-      && (!o.assignable || assignable)) || convertedDefinitely(o);
+     ) || convertedDefinitely(o);
 }
 
 bool bi::TypeReference::definitely(const ParenthesesType& o) const {
-  return definitely(*o.single) && (!o.assignable || assignable);
+  return definitely(*o.single);
 }
 
 bool bi::TypeReference::convertedPossibly(const Type& o) const {
@@ -152,9 +152,9 @@ bool bi::TypeReference::possibly(const TypeReference& o) const {
   assert(target && o.target);
 
   return (target->canonical() == o.target->canonical()
-      && (!o.assignable || assignable)) || convertedPossibly(o);
+     ) || convertedPossibly(o);
 }
 
 bool bi::TypeReference::possibly(const ParenthesesType& o) const {
-  return possibly(*o.single) && (!o.assignable || assignable);
+  return possibly(*o.single);
 }

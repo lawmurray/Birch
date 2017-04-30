@@ -13,7 +13,7 @@ namespace bi {
  * @param frame
  */
 template<class Type, class Frame = EmptyFrame>
-void create(Type* ptr, const Frame& frame);
+void create(Type** ptr, const Frame& frame);
 
 /**
  * Initialise memory.
@@ -35,11 +35,13 @@ static const int_t ALIGNMENT = 128;
 
 #include "bi/exception/MemoryException.hpp"
 
+#include <memory>
+#include <type_traits>
 #include <cstdlib>
 
 template<class Type, class Frame>
-void bi::create(Type* ptr, const Frame& frame) {
-  int err = posix_memalign((void**)&ptr, ALIGNMENT,
+void bi::create(Type** ptr, const Frame& frame) {
+  int err = posix_memalign((void**)ptr, ALIGNMENT,
       frame.volume() * sizeof(Type));
   if (err != 0) {
     throw MemoryException("Aligned memory allocation failed.");
@@ -53,5 +55,5 @@ void bi::fill(Type* ptr, const Frame& frame, const Type& init) {
 
 template<class Type, class Frame>
 void bi::release(Type* ptr, const Frame& frame) {
-  free(ptr);
+  free((void*)ptr);
 }

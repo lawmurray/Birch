@@ -170,7 +170,10 @@ void bi::bi_ostream::visit(const ParenthesesType* o) {
 }
 
 void bi::bi_ostream::visit(const LambdaType* o) {
-  *this << '(' << o->parens << ") -> " << o->type;
+  *this << "lambda(" << o->parens << ')';
+  if (!o->type->isEmpty()) {
+    *this << " -> " << o->type;
+  }
 }
 
 void bi::bi_ostream::visit(const File* o) {

@@ -171,7 +171,7 @@ void bi::CppBaseGenerator::visit(const VarParameter* o) {
     BracketsType* type = dynamic_cast<BracketsType*>(o->type->strip());
     assert(type);
     middle('(');
-    middle("bi::make_frame(" << type->brackets << ")");
+    middle("make_frame(" << type->brackets << ")");
     if (!o->value->isEmpty()) {
       middle(", " << o->value->strip());
     }

@@ -42,7 +42,7 @@ struct EmptyFrame {
     return o;
   }
 
-  void coord(const int_t serial, EmptyView& o) {
+  int_t offset(const int_t n) {
     //
   }
 
@@ -221,15 +221,15 @@ struct NonemptyFrame {
   }
 
   /**
-   * Expand serial index into coordinates.
+   * Compute the offset to the @p n th element in storage order.
    *
-   * @param serial The serial index.
-   * @param[out] view The view in which to write the coordinates.
+   * @param n Element number.
    */
-  template<class View>
-  void coord(const int_t serial, View& view) {
-    tail.coord(serial / head.length, view.tail);
-    view.head.offset = serial % head.length;
+  int_t offset(const int_t n) {
+    int_t q = n / tail.size();
+    int_t r = n % tail.size();
+
+    return tail.volume()*tail.offset(q) + r*head.stride;
   }
 
   /**
@@ -329,14 +329,14 @@ struct NonemptyFrame {
    * Product of all lengths.
    */
   int_t size() const {
-    return tail.size()*head.length;
+    return tail.size() * head.length;
   }
 
   /**
    * Product of all leads.
    */
   int_t volume() const {
-    return tail.volume()*head.lead;
+    return tail.volume() * head.lead;
   }
 
   /**
@@ -351,8 +351,8 @@ struct NonemptyFrame {
    * Are all elements stored contiguously in memory?
    */
   bool contiguous() const {
-    return this->length == 1 || (count() == 1 && head.stride == 1)
-        || (tail.contiguous() && this->lead == this->length);
+    return size() == 1 || (count() == 1 && head.stride == 1)
+        || volume() == size();
   }
   //@}
 

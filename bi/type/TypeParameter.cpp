@@ -84,11 +84,11 @@ bool bi::TypeParameter::dispatchDefinitely(const Type& o) const {
 
 bool bi::TypeParameter::definitely(const TypeParameter& o) const {
   return parens->definitely(*o.parens) && base->definitely(*o.base)
-      && (!o.assignable || assignable);
+     ;
 }
 
 bool bi::TypeParameter::definitely(const ParenthesesType& o) const {
-  return definitely(*o.single) && (!o.assignable || assignable);
+  return definitely(*o.single);
 }
 
 bool bi::TypeParameter::dispatchPossibly(const Type& o) const {
@@ -97,9 +97,9 @@ bool bi::TypeParameter::dispatchPossibly(const Type& o) const {
 
 bool bi::TypeParameter::possibly(const TypeParameter& o) const {
   return parens->possibly(*o.parens) && base->possibly(*o.base)
-      && (!o.assignable || assignable);
+     ;
 }
 
 bool bi::TypeParameter::possibly(const ParenthesesType& o) const {
-  return possibly(*o.single) && (!o.assignable || assignable);
+  return possibly(*o.single);
 }
