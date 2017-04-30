@@ -116,21 +116,21 @@ class GaussianMultiple < Gaussian {
 /**
  * Simulate.
  */
-function (x:Real <~ m:Gaussian) {
+function x:Real <~ m:Gaussian {
   x <- m.simulate();
 }
 
 /**
  * Observe.
  */
-function (x:Real ~> m:Gaussian) -> Real {
+function x:Real ~> m:Gaussian -> Real {
   return m.observe(x);
 }
 
 /**
  * Initialise.
  */
-function (x:Gaussian ~ m:Gaussian) {
+function x:Gaussian ~ m:Gaussian {
 
 }
 
@@ -159,7 +159,7 @@ function Gaussian(μ:Gaussian, σ:Real) -> Gaussian {
 /**
  * Multiply by scalar on left.
  */
-function (a:Real*m0:Gaussian) -> Gaussian {
+function a:Real*m0:Gaussian -> Gaussian {
   m1:GaussianMultiple;
   m1.create(a, m0);
   return m1;
@@ -168,7 +168,7 @@ function (a:Real*m0:Gaussian) -> Gaussian {
 /**
  * Multiply by scalar on right.
  */
-function (m0:Gaussian*a:Real) -> Gaussian {
+function m0:Gaussian*a:Real -> Gaussian {
   m1:GaussianMultiple;
   m1.create(a, m0);
   return m1;

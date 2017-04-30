@@ -1,6 +1,6 @@
 /**
  * Eigen integration
- * =================
+ * -----------------
  */
 
 import math.scalar;
@@ -48,7 +48,7 @@ auto toEigenMatrix(const Array<Type,Frame>& x) {
 }
 }}
 
-function (x:Real[_] + y:Real[_]) -> Real[_] {
+function x:Real[_] + y:Real[_] -> Real[_] {
   assert(length(x) == length(y));
   
   z:Real[length(x)];
@@ -58,7 +58,7 @@ function (x:Real[_] + y:Real[_]) -> Real[_] {
   return z;
 }
 
-function (X:Real[_,_] + Y:Real[_,_]) -> Real[_,_] {
+function X:Real[_,_] + Y:Real[_,_] -> Real[_,_] {
   assert(rows(X) == rows(Y) && columns(X) == columns(Y));
   
   Z:Real[rows(X), columns(X)];

@@ -11,73 +11,73 @@ import basic;
 /**
  * Real64 operators
  */
-function (x:Real64 + y:Real64) -> Real64;
-function (x:Real64 - y:Real64) -> Real64;
-function (x:Real64 * y:Real64) -> Real64;
-function (x:Real64 / y:Real64) -> Real64;
-function (+x:Real64) -> Real64;
-function (-x:Real64) -> Real64;
-function (x:Real64 > y:Real64) -> Boolean;
-function (x:Real64 < y:Real64) -> Boolean;
-function (x:Real64 >= y:Real64) -> Boolean;
-function (x:Real64 <= y:Real64) -> Boolean;
-function (x:Real64 == y:Real64) -> Boolean;
-function (x:Real64 != y:Real64) -> Boolean;
+function x:Real64 + y:Real64 -> Real64;
+function x:Real64 - y:Real64 -> Real64;
+function x:Real64 * y:Real64 -> Real64;
+function x:Real64 / y:Real64 -> Real64;
+function +x:Real64 -> Real64;
+function -x:Real64 -> Real64;
+function x:Real64 > y:Real64 -> Boolean;
+function x:Real64 < y:Real64 -> Boolean;
+function x:Real64 >= y:Real64 -> Boolean;
+function x:Real64 <= y:Real64 -> Boolean;
+function x:Real64 == y:Real64 -> Boolean;
+function x:Real64 != y:Real64 -> Boolean;
 
 /**
  * Real32 operators
  */
-function (x:Real32 + y:Real32) -> Real32;
-function (x:Real32 - y:Real32) -> Real32;
-function (x:Real32 * y:Real32) -> Real32;
-function (x:Real32 / y:Real32) -> Real32;
-function (+x:Real32) -> Real32;
-function (-x:Real32) -> Real32;
-function (x:Real32 > y:Real32) -> Boolean;
-function (x:Real32 < y:Real32) -> Boolean;
-function (x:Real32 >= y:Real32) -> Boolean;
-function (x:Real32 <= y:Real32) -> Boolean;
-function (x:Real32 == y:Real32) -> Boolean;
-function (x:Real32 != y:Real32) -> Boolean;
+function x:Real32 + y:Real32 -> Real32;
+function x:Real32 - y:Real32 -> Real32;
+function x:Real32 * y:Real32 -> Real32;
+function x:Real32 / y:Real32 -> Real32;
+function +x:Real32 -> Real32;
+function -x:Real32 -> Real32;
+function x:Real32 > y:Real32 -> Boolean;
+function x:Real32 < y:Real32 -> Boolean;
+function x:Real32 >= y:Real32 -> Boolean;
+function x:Real32 <= y:Real32 -> Boolean;
+function x:Real32 == y:Real32 -> Boolean;
+function x:Real32 != y:Real32 -> Boolean;
 
 /**
  * Integer64 operators
  */
-function (x:Integer64 + y:Integer64) -> Integer64;
-function (x:Integer64 - y:Integer64) -> Integer64;
-function (x:Integer64 * y:Integer64) -> Integer64;
-function (x:Integer64 / y:Integer64) -> Integer64;
-function (+x:Integer64) -> Integer64;
-function (-x:Integer64) -> Integer64;
-function (x:Integer64 > y:Integer64) -> Boolean;
-function (x:Integer64 < y:Integer64) -> Boolean;
-function (x:Integer64 >= y:Integer64) -> Boolean;
-function (x:Integer64 <= y:Integer64) -> Boolean;
-function (x:Integer64 == y:Integer64) -> Boolean;
-function (x:Integer64 != y:Integer64) -> Boolean;
+function x:Integer64 + y:Integer64 -> Integer64;
+function x:Integer64 - y:Integer64 -> Integer64;
+function x:Integer64 * y:Integer64 -> Integer64;
+function x:Integer64 / y:Integer64 -> Integer64;
+function +x:Integer64 -> Integer64;
+function -x:Integer64 -> Integer64;
+function x:Integer64 > y:Integer64 -> Boolean;
+function x:Integer64 < y:Integer64 -> Boolean;
+function x:Integer64 >= y:Integer64 -> Boolean;
+function x:Integer64 <= y:Integer64 -> Boolean;
+function x:Integer64 == y:Integer64 -> Boolean;
+function x:Integer64 != y:Integer64 -> Boolean;
 
 /**
  * Integer32 operators
  */
-function (x:Integer32 + y:Integer32) -> Integer32;
-function (x:Integer32 - y:Integer32) -> Integer32;
-function (x:Integer32 * y:Integer32) -> Integer32;
-function (x:Integer32 / y:Integer32) -> Integer32;
-function (+x:Integer32) -> Integer32;
-function (-x:Integer32) -> Integer32;
-function (x:Integer32 > y:Integer32) -> Boolean;
-function (x:Integer32 < y:Integer32) -> Boolean;
-function (x:Integer32 >= y:Integer32) -> Boolean;
-function (x:Integer32 <= y:Integer32) -> Boolean;
-function (x:Integer32 == y:Integer32) -> Boolean;
-function (x:Integer32 != y:Integer32) -> Boolean;
+function x:Integer32 + y:Integer32 -> Integer32;
+function x:Integer32 - y:Integer32 -> Integer32;
+function x:Integer32 * y:Integer32 -> Integer32;
+function x:Integer32 / y:Integer32 -> Integer32;
+function +x:Integer32 -> Integer32;
+function -x:Integer32 -> Integer32;
+function x:Integer32 > y:Integer32 -> Boolean;
+function x:Integer32 < y:Integer32 -> Boolean;
+function x:Integer32 >= y:Integer32 -> Boolean;
+function x:Integer32 <= y:Integer32 -> Boolean;
+function x:Integer32 == y:Integer32 -> Boolean;
+function x:Integer32 != y:Integer32 -> Boolean;
 
 /**
  * Boolean operators
  */
-function (x:Boolean && y:Boolean) -> Boolean;
-function (x:Boolean || y:Boolean) -> Boolean;
-function (!x:Boolean) -> Boolean;
+function x:Boolean && y:Boolean -> Boolean;
+function x:Boolean || y:Boolean -> Boolean;
+function !x:Boolean -> Boolean;
 
 /**
  * Functions

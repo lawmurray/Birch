@@ -24,7 +24,7 @@ function Bernoulli(ρ:Real) -> Bernoulli {
 /**
  * Simulate.
  */
-function (x:Boolean <~ m:Bernoulli) {
+function x:Boolean <~ m:Bernoulli {
   cpp {{
   x = std::bernoulli_distribution(m->ρ)(rng);
   }}
@@ -33,7 +33,7 @@ function (x:Boolean <~ m:Bernoulli) {
 /**
  * Observe.
  */
-function (x:Boolean ~> m:Bernoulli) -> Real {
+function x:Boolean ~> m:Bernoulli -> Real {
   if (x) {
     return log(m.ρ);
   } else {
