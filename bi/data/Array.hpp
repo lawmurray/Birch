@@ -140,12 +140,12 @@ public:
   /**
    * Move constructor.
    */
-  Array(Array<Type,Frame> && o) :
-      frame(o.frame),
-      ptr(o.ptr),
-      own(o.own) {
-    o.own = false;  // ownership moves
-  }
+//  Array(Array<Type,Frame> && o) :
+//      frame(o.frame),
+//      ptr(o.ptr),
+//      own(o.own) {
+//    o.own = false;  // ownership moves
+//  }
 
   /**
    * Destructor.
@@ -163,7 +163,7 @@ public:
     /* pre-condition */
     assert(frame.conforms(o.frame));
 
-    if (ptr != ptr) {
+    if (ptr != o.ptr) {
       copy(o);
     }
     return *this;
@@ -172,21 +172,21 @@ public:
   /**
    * Move assignment. The frames of the two arrays must conform.
    */
-  Array<Type,Frame>& operator=(Array<Type,Frame> && o) {
-    /* pre-condition */
-    assert(frame.conforms(o.frame));
-
-    if (ptr == o.ptr) {
-      /* just take ownership */
-      if (!own) {
-        std::swap(own, o.own);
-      }
-    } else {
-      /* copy assignment */
-      copy(o);
-    }
-    return *this;
-  }
+//  Array<Type,Frame>& operator=(Array<Type,Frame> && o) {
+//    /* pre-condition */
+//    assert(frame.conforms(o.frame));
+//
+//    if (ptr == o.ptr) {
+//      /* just take ownership */
+//      if (!own) {
+//        std::swap(own, o.own);
+//      }
+//    } else {
+//      /* copy assignment */
+//      copy(o);
+//    }
+//    return *this;
+//  }
 
   /**
    * Generic assignment. The frames of the two arrays must conform.

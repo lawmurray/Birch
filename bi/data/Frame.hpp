@@ -43,22 +43,22 @@ struct EmptyFrame {
   }
 
   int_t offset(const int_t n) {
-    //
+    /* pre-condition */
+    assert(n == 0);
+
+    return 0;
   }
 
   int_t length(const int i) const {
-    assert(i == 0);
-    return 1;
+    assert(false);
   }
 
   int_t stride(const int i) const {
-    assert(i == 0);
-    return 1;
+    assert(false);
   }
 
   int_t lead(const int i) const {
-    assert(i == 0);
-    return 1;
+    assert(false);
   }
 
   template<class T1>
@@ -240,10 +240,12 @@ struct NonemptyFrame {
    * Get the length of the @p i th dimension.
    */
   int_t length(const int i) const {
+    /* pre-condition */
+    assert(i >= 0 && i < count());
     if (i == count() - 1) {
       return head.length;
     } else {
-      return tail.length(i - 1);
+      return tail.length(i);
     }
   }
 
@@ -251,10 +253,13 @@ struct NonemptyFrame {
    * Get the stride of the @p i th dimension.
    */
   int_t stride(const int i) const {
+    /* pre-condition */
+    assert(i >= 0 && i < count());
+
     if (i == count() - 1) {
       return head.stride;
     } else {
-      return tail.stride(i - 1);
+      return tail.stride(i);
     }
   }
 
@@ -262,10 +267,13 @@ struct NonemptyFrame {
    * Get the lead of the @p i th dimension.
    */
   int_t lead(const int i) const {
+    /* pre-condition */
+    assert(i >= 0 && i < count());
+
     if (i == count() - 1) {
       return head.lead;
     } else {
-      return tail.lead(i - 1);
+      return tail.lead(i);
     }
   }
   //@}
