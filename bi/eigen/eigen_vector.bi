@@ -4,9 +4,11 @@ program eigen_vector(N:Integer <- 5) {
   z:Real[N];
   n:Integer;
   
+  v:Real <- 1.0;
   for (n in 1..N) {
-    x[n] <- 1.0;
-    y[n] <- 2.0;
+    x[n] <- v;
+    y[n] <- 2.0*v;
+    v <- v + 1.0;
   }
   z <- x + y;
   
