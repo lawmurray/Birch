@@ -3,8 +3,9 @@
  */
 #pragma once
 
-#include <cstdint>
 #include <limits>
+#include <cstdint>
+#include <cassert>
 
 namespace bi {
 /**
@@ -28,4 +29,20 @@ static constexpr int_t mutable_value = 0;
  * @ingroup library
  */
 static constexpr int_t default_value = std::numeric_limits<int_t>::max();
+
+/**
+ * Greatest common divisor of two positive integers.
+ */
+inline int_t gcd(const int_t a, const int_t b) {
+  /* pre-condition */
+  assert(a > 0);
+  assert(b > 0);
+
+  int_t a1 = a, b1 = b;
+  while (a1 != b1 && b1 != 0) {
+    a1 = a1 % b1;
+    std::swap(a1, b1);
+  }
+  return a1;
+}
 }

@@ -43,9 +43,6 @@ struct EmptyFrame {
   }
 
   int_t offset(const int_t n) {
-    /* pre-condition */
-    assert(n == 0);
-
     return 0;
   }
 
@@ -88,6 +85,10 @@ struct EmptyFrame {
     return 1;
   }
 
+  static constexpr int_t block() {
+    return 1;
+  }
+
   template<class View>
   int_t serial(const View& o) const {
     return 0;
@@ -95,12 +96,6 @@ struct EmptyFrame {
 
   bool contiguous() const {
     return true;
-  }
-
-  template<bool is_not_contiguous_value = false, bool is_contiguous_value =
-      true>
-  EmptyView block(bool contiguous = true) const {
-    return EmptyView();
   }
 
   bool operator==(const EmptyFrame& o) const {
@@ -226,10 +221,10 @@ struct NonemptyFrame {
    * @param n Element number.
    */
   int_t offset(const int_t n) {
-    int_t q = n / tail.size();
-    int_t r = n % tail.size();
+    int_t q = n / head.length;
+    int_t r = n % head.length;
 
-    return tail.volume()*tail.offset(q) + r*head.stride;
+    return tail.offset(q)*head.lead + r*head.stride;
   }
 
   /**
@@ -348,6 +343,21 @@ struct NonemptyFrame {
   }
 
   /**
+   * Size of contiguous blocks.
+   */
+  int_t block() const {
+    if (head.stride == 1) {
+      if (head.lead == head.length) {
+        return tail.block()*head.length;
+      } else {
+        return head.length;
+      }
+    } else {
+      return 1;
+    }
+  }
+
+  /**
    * Serial offset for a view.
    */
   template<class View>
@@ -363,56 +373,6 @@ struct NonemptyFrame {
         || volume() == size();
   }
   //@}
-
-  /**
-   * @name Iterating
-   */
-  //@{
-  /**
-   * View describing contiguous blocks in storage.
-   *
-   * @tparam is_not_contiguous Is the frame statically known to be not
-   * contiguous at this point?
-   * @tparam is_contiguous Is the frame statically known to be contiguous
-   * at this point?
-   */
-  template<bool is_not_contiguous_value = false, bool is_contiguous_value =
-      true>
-  auto block(bool contiguous = true) const {
-    /* tail */
-    static const bool new_is_not_contiguous_value = is_not_contiguous_value
-        || Head::stride_value > 1
-        || (Head::length_value != Head::lead_value
-            && Head::length_value * Head::lead_value > 0);
-    static const bool new_is_contiguous_value = is_contiguous_value
-        && Head::length_value == Head::lead_value
-        && Head::length_value * Head::lead_value > 0;
-
-    bool new_contiguous = contiguous && head.length == head.lead;
-
-    auto new_tail = tail.template block<new_is_not_contiguous_value,
-        new_is_contiguous_value>(new_contiguous);
-
-    /* head */
-    static const int_t new_offset_value = 0;
-    static const int_t new_length_value =
-        is_not_contiguous_value ?
-            1 :
-            ((is_contiguous_value && Head::stride_value == 1) ?
-                Head::length_value : mutable_value);
-    static const int_t new_stride_value = 1;
-
-    int_t new_offset = 0;
-    int_t new_length = (head.stride == 1) ? head.length : 1;
-    int_t new_stride = 1;
-
-    auto new_head = Range<new_offset_value,new_length_value,new_stride_value>(
-        new_offset, new_length, new_stride);
-
-    /* combine */
-    return NonemptyView<decltype(new_tail),decltype(new_head)>(new_tail,
-        new_head);
-  }
 
   /**
    * Equality operator.

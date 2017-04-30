@@ -128,7 +128,6 @@ birch_CXXFLAGS = $(AM_CXXFLAGS)
 
 libbirch_la_SOURCES = \
   bi/bi.cpp \
-  bi/data/copy.cpp \
   bi/exception/Exception.cpp \
   bi/exception/MemoryException.cpp \
   bi/exception/UnknownOptionException.cpp \
@@ -138,7 +137,6 @@ libbirch_la_CXXFLAGS = $(AM_CXXFLAGS)
 
 nobase_include_HEADERS = bi/data/Array.hpp \
   bi/data/constant.hpp \
-  bi/data/copy.hpp \
   bi/data/easy.hpp \
   bi/data/Frame.hpp \
   bi/data/memory.hpp \

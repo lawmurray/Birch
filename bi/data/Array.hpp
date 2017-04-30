@@ -5,7 +5,6 @@
 
 #include "bi/data/Frame.hpp"
 #include "bi/data/Iterator.hpp"
-#include "bi/data/copy.hpp"
 #include "bi/data/constant.hpp"
 
 #include <cstring>
@@ -54,12 +53,15 @@ protected:
     /* pre-condition */
     assert(frame.conforms(o.frame));
 
-    int_t block = common_view(frame.block(), o.frame.block()).size();
+    int_t block1 = frame.block();
     auto iter1 = begin();
     auto end1 = end();
+
+    int_t block2 = o.frame.block();
     auto iter2 = o.begin();
     auto end2 = o.end();
 
+    int_t block = gcd(block1, block2);
     for (; iter1 != end1; iter1 += block, iter2 += block) {
       std::memcpy(&(*iter1), &(*iter2), block * sizeof(Type));
     }
@@ -69,28 +71,24 @@ protected:
   /**
    * Return value of view when result is an array.
    */
-  template<class View1, class Frame1>
-  Array<Type,Frame1> viewReturn(const View1& view, const Frame1& frame) {
-    return Array<Type,Frame1>(ptr + frame.serial(view), frame);
+  template<class Frame1>
+  Array<Type,Frame1> viewReturn(Type* ptr, const Frame1& frame) {
+    return Array<Type,Frame1>(ptr, frame);
   }
-
-  template<class View1, class Frame1>
-  Array<const Type,Frame1> viewReturn(const View1& view,
+  template<class Frame1>
+  Array<const Type,Frame1> viewReturn(const Type* ptr,
       const Frame1& frame) const {
-    return Array<const Type,Frame1>(ptr + frame.serial(view), frame);
+    return Array<const Type,Frame1>(ptr, frame);
   }
 
   /**
    * Return value of view when result is a scalar.
    */
-  template<class View1>
-  Type& viewReturn(const View1& view, const EmptyFrame& frame) {
-    return ptr[frame.serial(view)];
+  Type& viewReturn(Type* ptr, const EmptyFrame& frame) {
+    return *ptr;
   }
-
-  template<class View1>
-  const Type& viewReturn(const View1& view, const EmptyFrame& frame) const {
-    return ptr[frame.serial(view)];
+  const Type& viewReturn(Type* ptr, const EmptyFrame& frame) const {
+    return *ptr;
   }
 
 public:
@@ -216,8 +214,8 @@ public:
    */
   template<class View1>
   auto operator()(
-      const View1& view) -> decltype(viewReturn(view, this->frame(view))) {
-    return viewReturn(view, frame(view));
+      const View1& view) -> decltype(viewReturn(ptr + frame.serial(view), this->frame(view))) {
+    return viewReturn(ptr + frame.serial(view), frame(view));
   }
 
   /**
@@ -225,8 +223,8 @@ public:
    */
   template<class View1>
   auto operator()(
-      const View1& view) const -> decltype(viewReturn(view, this->frame(view))) {
-    return viewReturn(view, frame(view));
+      const View1& view) const -> decltype(viewReturn(ptr + frame.serial(view), frame(view))) {
+    return viewReturn(ptr + frame.serial(view), frame(view));
   }
 
   /**

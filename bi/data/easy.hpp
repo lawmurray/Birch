@@ -31,9 +31,8 @@ inline auto make_span(const int_t length) {
  *
  * @param index Index.
  */
-template<class Value>
-inline auto make_index(const Value i) {
-  return Index<mutable_value>(static_cast<int_t>(i));
+inline auto make_index(const int_t i) {
+  return Index<mutable_value>(i);
 }
 
 /**
@@ -44,10 +43,8 @@ inline auto make_index(const Value i) {
  * @param start First index.
  * @param end Last index.
  */
-template<class Start, class End>
-inline auto make_range(const Start start, const End end) {
-  return Range<mutable_value,mutable_value,1>(static_cast<int_t>(start),
-      static_cast<int_t>(end - start + 1));
+inline auto make_range(const int_t start, const int_t end) {
+  return Range<mutable_value,mutable_value,1>(start, end - start + 1);
 }
 
 /**
