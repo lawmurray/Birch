@@ -3,3 +3,4 @@
 /lexer.cpp
 /parser.output
 /config.cpp
+/parser.tab.cpp
