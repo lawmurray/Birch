@@ -5,8 +5,8 @@ program eigen_vector(N:Integer <- 5) {
   n:Integer;
   
   for (n in 1..N) {
-    x[n] <- n;
-    y[n] <- 2*n;
+    x[n] <- 1.0;
+    y[n] <- 2.0;
   }
   z <- x + y;
   
