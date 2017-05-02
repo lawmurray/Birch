@@ -4,13 +4,13 @@
  */
 program demo_lambda() {
   /* declare a lambda function */
-  x:lambda();
+  //x:lambda();
   
   /* assign a lambda function */
-  x <- lambda() {
-    print("called lambda\n");
-  };
+  //x <- lambda() {
+  //  print("called lambda\n");
+  //};
   
   /* call a lambda function */
-  x();
+  //x();
 }

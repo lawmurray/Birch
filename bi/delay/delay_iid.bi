@@ -16,20 +16,16 @@ program delay_iid(μ:Real <- 0.0, σ:Real <- 1.0, N:Integer <- 100) {
   n:Integer;
   
   /* simulate data */
-  n <- 0;
-  while (n < N) {
+  for (n in 1..N) {
     y[n] <~ Gaussian(μ, σ);
-    n <- n + 1;
   }
   
   /* prior */
   x ~ Gaussian(0.0, 1.0);
   
   /* likelihood */
-  n <- 0;
-  while (n < N) {
+  for (n in 1..N) {
     y[n] ~ Gaussian(x, 1.0);
-    n <- n + 1;
   }
   
   /* output */
