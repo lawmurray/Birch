@@ -130,9 +130,7 @@ libbirch_la_SOURCES = \
   bi/bi.cpp \
   bi/exception/Exception.cpp \
   bi/exception/MemoryException.cpp \
-  bi/exception/UnknownOptionException.cpp \
-  bi/method/Method.cpp \
-  bi/method/Stack.cpp
+  bi/exception/UnknownOptionException.cpp
 libbirch_la_CXXFLAGS = $(AM_CXXFLAGS)
 
 nobase_include_HEADERS = bi/data/Array.hpp \
@@ -152,15 +150,7 @@ nobase_include_HEADERS = bi/data/Array.hpp \
   bi/exception/Exception.hpp \
   bi/exception/MemoryException.hpp \
   bi/exception/UnknownOptionException.hpp \
-  bi/method/Delay.hpp \
-  bi/method/DelayInterface.hpp \
-  bi/method/DelayState.hpp \
-  bi/method/Lambda.hpp \
-  bi/method/Method.hpp \
-  bi/method/Stack.hpp \
   bi/primitive/nonconst.hpp \
-  bi/primitive/shared_ptr.hpp \
-  bi/primitive/unique_ptr.hpp \
   bi/bi.hpp
 
 dist_noinst_SCRIPTS = autogen.sh

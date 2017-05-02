@@ -271,17 +271,11 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
       line("}\n");
     }
 
-    /* initialise */
-    line("method = new Stack();");
-
     /* body of program */
     if (!o->braces->isEmpty()) {
       CppBaseGenerator aux(base, level, header);
       aux << o->braces;
     }
-
-    /* terminate */
-    line("delete method;");
 
     out();
     line("}\n");

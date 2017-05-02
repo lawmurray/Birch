@@ -283,7 +283,7 @@ void bi::CppBaseGenerator::visit(const ParenthesesType* o) {
 
 void bi::CppBaseGenerator::visit(const LambdaType* o) {
   ++inLambda;
-  middle("bi::Lambda<" << o->type << '(');
+  middle("std::function<" << o->type << '(');
   CppParameterGenerator auxParameter(base, level, header);
   auxParameter << o->parens;
   middle(")>");

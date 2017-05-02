@@ -9,11 +9,9 @@
 #include "bi/data/easy.hpp"
 #include "bi/exception/MemoryException.hpp"
 #include "bi/exception/UnknownOptionException.hpp"
-#include "bi/method/Lambda.hpp"
-#include "bi/method/Method.hpp"
-#include "bi/method/Stack.hpp"
 #include "bi/primitive/nonconst.hpp"
 
 #include <memory>
 #include <utility>
+#include <functional>
 #include <getopt.h>
