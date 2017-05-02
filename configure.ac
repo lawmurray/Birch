@@ -53,7 +53,6 @@ AC_CHECK_HEADERS([\
     boost/filesystem/fstream.hpp \
     boost/interprocess/sync/file_lock.hpp \
     boost/algorithm/string.hpp \
-    boost/variant.hpp \
     ], [], AC_MSG_ERROR([required Boost header not found]), [-])
 
 # Defines
