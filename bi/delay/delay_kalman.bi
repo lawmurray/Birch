@@ -22,7 +22,6 @@ program delay_kalman(a:Real <- 0.9, T:Integer <- 10) {
   for (t in 2..T) {
     x[t] ~ Gaussian(a*x[t - 1], 1.0);
     y[t] ~ Gaussian(x[t], 1.0);
-    t <- t + 1;
   }
   
   /* output */
