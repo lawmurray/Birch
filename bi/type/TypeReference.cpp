@@ -73,7 +73,7 @@ bool bi::TypeReference::convertedDefinitely(const Type& o) const {
     ///@todo Avoid transitivity here
       return conv->type->definitely(o);
     };
-  return (target->super() && target->super()->definitely(o))
+  return (!target->base->isEmpty() && target->base->definitely(o))
       || std::any_of(target->beginConversions(), target->endConversions(), f);
 }
 
