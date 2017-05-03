@@ -48,6 +48,10 @@ auto toEigenMatrix(const Array<Type,Frame>& X) {
 }
 }}
 
+/**
+ * Addition
+ * --------
+ */
 function x:Real[_] + y:Real[_] -> Real[_] {
   assert(length(x) == length(y));
   
@@ -64,6 +68,106 @@ function X:Real[_,_] + Y:Real[_,_] -> Real[_,_] {
   Z:Real[rows(X), columns(X)];
   cpp{{
   toEigenMatrix(Z) = toEigenMatrix(X) + toEigenMatrix(Y);
+  }}
+  return Z;
+}
+
+/**
+ * Subtraction
+ * -----------
+ */
+function x:Real[_] - y:Real[_] -> Real[_] {
+  assert(length(x) == length(y));
+  
+  z:Real[length(x)];
+  cpp{{
+  toEigenVector(z) = toEigenVector(x) - toEigenVector(y);
+  }}
+  return z;
+}
+
+function X:Real[_,_] - Y:Real[_,_] -> Real[_,_] {
+  assert(rows(X) == rows(Y) && columns(X) == columns(Y));
+  
+  Z:Real[rows(X), columns(X)];
+  cpp{{
+  toEigenMatrix(Z) = toEigenMatrix(X) - toEigenMatrix(Y);
+  }}
+  return Z;
+}
+
+/**
+ * Multiplication
+ * --------------
+ */
+function x:Real*y:Real[_] -> Real[_] {
+  z:Real[length(y)];
+  cpp{{
+  toEigenVector(z) = x * toEigenVector(y);
+  }}
+  return z;
+}
+
+function x:Real[_]*y:Real -> Real[_] {
+  z:Real[length(x)];
+  cpp{{
+  toEigenVector(z) = toEigenVector(x) * y;
+  }}
+  return z;
+}
+
+function x:Real*Y:Real[_,_] -> Real[_,_] {
+  Z:Real[rows(Y),columns(Y)];
+  cpp{{
+  toEigenVector(Z) = x * toEigenMatrix(Y);
+  }}
+  return Z;
+}
+
+function X:Real[_,_]*y:Real -> Real[_,_] {
+  Z:Real[rows(X),columns(X)];
+  cpp{{
+  toEigenMatrix(Z) = toEigenMatrix(X) * y;
+  }}
+  return Z;
+}
+
+function x:Real[_]*y:Real[_] -> Real[_] {
+  assert(length(y) == 1);
+  
+  z:Real[length(x)];
+  cpp{{
+  toEigenVector(z) = toEigenVector(x) * toEigenVector(y);
+  }}
+  return z;
+}
+
+function X:Real[_,_]*y:Real[_] -> Real[_] {
+  assert(columns(X) == length(y));
+  
+  z:Real[rows(X)];
+  cpp{{
+  toEigenVector(z) = toEigenMatrix(X) * toEigenVector(y);
+  }}
+  return z;
+}
+
+function x:Real[_]*Y:Real[_,_] -> Real[_,_] {
+  assert(1 == rows(Y));
+  
+  Z:Real[length(x),columns(Y)];
+  cpp{{
+  toEigenMatrix(Z) = toEigenVector(x) * toEigenMatrix(Y);
+  }}
+  return Z;
+}
+
+function X:Real[_,_]*Y:Real[_,_] -> Real[_,_] {
+  assert(columns(X) == rows(Y));
+  
+  Z:Real[rows(X),columns(Y)];
+  cpp{{
+  toEigenMatrix(Z) = toEigenMatrix(X) * toEigenMatrix(Y);
   }}
   return Z;
 }
