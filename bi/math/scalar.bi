@@ -455,6 +455,18 @@ function erfc(x:Real32) -> Real32 {
   }}
 }
 
+function copysign(x:Real64, y:Real64) -> Real64 {
+  cpp {{
+  return ::copysign(x, y);
+  }}
+}
+
+function copysign(x:Real32, y:Real32) -> Real32 {
+  cpp {{
+  return ::copysignf(x, y);
+  }}
+}
+     
 function isnan(x:Real64) -> Boolean {
   return x != x;
 }
