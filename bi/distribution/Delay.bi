@@ -18,12 +18,12 @@ class Delay {
   state:Integer;
   
   /**
-   * Parent on the stem, if any.
+   * Parent, if any.
    */
   parent:Delay;
   
   /**
-   * Child on the stem, if any.
+   * Child, if one exists and it is on the stem.
    */
   child:Delay;
   
@@ -45,7 +45,7 @@ class Delay {
   }
   
   /**
-   * Is this the terminal node of the stem?
+   * Is this the terminal node of a stem?
    */
   function isTerminal() -> Boolean {
     return isMarginalised() && !hasChild;
@@ -73,7 +73,7 @@ class Delay {
   }
 
   /**
-   * Initialise as a root variate.
+   * Initialise as a root node.
    */
   function initialise() {
     this.hasParent <- false;
@@ -82,7 +82,7 @@ class Delay {
   }
   
   /**
-   * Initialise as a non-root variate.
+   * Initialise as a non-root node.
    *
    * `parent` The parent node.
    */
@@ -100,21 +100,6 @@ class Delay {
     assert(isInitialised());
     assert(hasParent && parent.isTerminal());
     
-    this.state <- MARGINALISED;
-    doMarginalise();
-  }
-  
-  /**
-   * Marginalise the variate.
-   *
-   * `child` The calling child, which is also being marginalised.
-   */
-  function marginalise(child:Delay) {
-    assert(isInitialised());
-    assert(hasParent && parent.isTerminal());
-    
-    this.child <- child;
-    this.hasChild <- true;
     this.state <- MARGINALISED;
     doMarginalise();
   }
@@ -166,11 +151,32 @@ class Delay {
     if (isMarginalised()) {
       if (hasChild) {
         child.prune();
+        this.hasChild <- false;
       }
     } else {
       parent.graft();
       marginalise();
     }
+  }
+
+  /**
+   * Graft the stem to this node.
+   *
+   * `c` The child node that called this, and that will itself be part
+   * of the stem.
+   */
+  function graft(c:Delay) {
+    if (isMarginalised()) {
+      if (hasChild) {
+        child.prune();
+        this.hasChild <- false;
+      }
+    } else {
+      parent.graft();
+      marginalise();
+    }
+    this.child <- c;
+    this.hasChild <- true;
   }
   
   /**
@@ -181,6 +187,7 @@ class Delay {
     
     if (hasChild) {
       child.prune();
+      this.hasChild <- false;
     }
     sample();
   }
