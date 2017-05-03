@@ -71,6 +71,10 @@ void bi::bi_ostream::visit(const Member* o) {
   *this << o->left << '.' << o->right;
 }
 
+void bi::bi_ostream::visit(const Super* o) {
+  *this << "super";
+}
+
 void bi::bi_ostream::visit(const This* o) {
   *this << "this";
 }

@@ -91,6 +91,10 @@ bool bi::ParenthesesExpression::definitely(const Range& o) const {
   return single->definitely(o);
 }
 
+bool bi::ParenthesesExpression::definitely(const Super& o) const {
+  return single->definitely(o);
+}
+
 bool bi::ParenthesesExpression::definitely(const This& o) const {
   return single->definitely(o);
 }
@@ -156,6 +160,10 @@ bool bi::ParenthesesExpression::possibly(const ParenthesesExpression& o) const {
 }
 
 bool bi::ParenthesesExpression::possibly(const Range& o) const {
+  return single->possibly(o);
+}
+
+bool bi::ParenthesesExpression::possibly(const Super& o) const {
   return single->possibly(o);
 }
 

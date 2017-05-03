@@ -32,14 +32,14 @@ public:
    */
   TypeReference(shared_ptr<Name> name, Expression* parens =
       new EmptyExpression(), shared_ptr<Location> loc = nullptr,
-      const bool assignable = false, TypeParameter* target = nullptr);
+      const bool assignable = false, const TypeParameter* target = nullptr);
 
   /**
    * Constructor.
    *
    * @param target Target.
    */
-  TypeReference(TypeParameter* target);
+  TypeReference(const TypeParameter* target);
 
   /**
    * Destructor.

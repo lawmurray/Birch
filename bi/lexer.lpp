@@ -112,6 +112,7 @@ IS                                 (u|U|l|L)*
 "cpp"                               { return CPP; }
 "hpp"                               { return HPP; }
 "this"                              { return THIS; }
+"super"                             { return SUPER; }
 
 "true"                              { yylval.valBool = true; return BOOL_LITERAL; }
 "false"                             { yylval.valBool = false; return BOOL_LITERAL; }

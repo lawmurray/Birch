@@ -132,6 +132,10 @@ bool bi::Expression::definitely(const Range& o) const {
   return false;
 }
 
+bool bi::Expression::definitely(const Super& o) const {
+  return false;
+}
+
 bool bi::Expression::definitely(const This& o) const {
   return false;
 }
@@ -205,6 +209,10 @@ bool bi::Expression::possibly(const ParenthesesExpression& o) const {
 }
 
 bool bi::Expression::possibly(const Range& o) const {
+  return false;
+}
+
+bool bi::Expression::possibly(const Super& o) const {
   return false;
 }
 

@@ -78,6 +78,10 @@ void bi::Visitor::visit(const Range* o) {
   o->right->accept(this);
 }
 
+void bi::Visitor::visit(const Super* o) {
+  //
+}
+
 void bi::Visitor::visit(const This* o) {
   //
 }

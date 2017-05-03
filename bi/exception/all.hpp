@@ -14,6 +14,8 @@
 #include "bi/exception/MemberException.hpp"
 #include "bi/exception/MemoryException.hpp"
 #include "bi/exception/PreviousDeclarationException.hpp"
+#include "bi/exception/SuperException.hpp"
+#include "bi/exception/SuperBaseException.hpp"
 #include "bi/exception/ThisException.hpp"
 #include "bi/exception/UnknownOptionException.hpp"
 #include "bi/exception/UnresolvedReferenceException.hpp"

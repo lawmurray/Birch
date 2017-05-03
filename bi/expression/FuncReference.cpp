@@ -10,7 +10,8 @@
 #include <typeinfo>
 
 bi::FuncReference::FuncReference(shared_ptr<Name> name, Expression* parens,
-    const SignatureForm form, shared_ptr<Location> loc, FuncParameter* target) :
+    const SignatureForm form, shared_ptr<Location> loc,
+    const FuncParameter* target) :
     Expression(loc),
     Named(name),
     Parenthesised(parens),
@@ -21,7 +22,7 @@ bi::FuncReference::FuncReference(shared_ptr<Name> name, Expression* parens,
 
 bi::FuncReference::FuncReference(Expression* left, shared_ptr<Name> name,
     Expression* right, const SignatureForm form, shared_ptr<Location> loc,
-    FuncParameter* target) :
+    const FuncParameter* target) :
     Expression(loc),
     Named(name),
     Parenthesised(new ExpressionList(left, right)),

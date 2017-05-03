@@ -48,7 +48,7 @@
 }
 
 %token <valString> IMPORT PROG STRUCT CLASS TYPE FUNC LAMBDA
-%token <valString> IF ELSE FOR IN WHILE RETURN CPP HPP THIS
+%token <valString> IF ELSE FOR IN WHILE RETURN CPP HPP THIS SUPER
 %token <valString> DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE RAW NAME
 %token <valBool> BOOL_LITERAL
 %token <valInt> INT_LITERAL
@@ -83,7 +83,7 @@
 %type <valType> type_parameter_list type_parameters
 %type <valType> result_type optional_result_type
 
-%type <valExpression> reference_expression this_expression
+%type <valExpression> reference_expression this_expression super_expression
 %type <valExpression> parens_expression lambda_expression
 %type <valExpression> member_expression primary_expression
 %type <valExpression> index_expression index_list
@@ -381,12 +381,17 @@ this_expression
     : THIS  { $$ = new bi::This(make_loc(@$)); }
     ;
 
+super_expression
+    : SUPER  { $$ = new bi::Super(make_loc(@$)); }
+    ;
+
 primary_expression
     : literal
     | parens_expression
     | lambda_expression
     | reference_expression
     | this_expression
+    | super_expression
     ;
 
 index_expression
@@ -486,7 +491,6 @@ logical_or_expression
 
 stochastic_operator
     : RIGHT_TILDE_OP  { $$ = new bi::Name("~>", make_loc(@$)); }
-    | '~'             { $$ = new bi::Name("~", make_loc(@$)); }
     ;
 
 stochastic_expression
@@ -497,6 +501,7 @@ stochastic_expression
 assignment_operator
     : LEFT_OP        { $$ = new bi::Name("<-", make_loc(@$)); }
     | LEFT_TILDE_OP  { $$ = new bi::Name("<~", make_loc(@$)); }
+    | '~'            { $$ = new bi::Name("~", make_loc(@$)); }
     ;
     
 assignment_expression

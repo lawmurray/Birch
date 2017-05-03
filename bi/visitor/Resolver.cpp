@@ -80,7 +80,20 @@ bi::Expression* bi::Resolver::modify(This* o) {
     throw ThisException(o);
   } else {
     Modifier::modify(o);
-    o->type = new TypeReference(type()->name);
+    o->type = new TypeReference(type());
+    o->type->accept(this);
+  }
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(Super* o) {
+  if (!type()) {
+    throw SuperException(o);
+  } else if (!type()->super()) {
+    throw SuperBaseException(o);
+  } else {
+    Modifier::modify(o);
+    o->type = new TypeReference(type()->super());
     o->type->accept(this);
   }
   return o;

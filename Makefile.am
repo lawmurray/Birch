@@ -54,6 +54,8 @@ birchc_SOURCES = \
   bi/exception/MemberException.cpp \
   bi/exception/NotAssignableException.cpp \
   bi/exception/PreviousDeclarationException.cpp \
+  bi/exception/SuperException.cpp \
+  bi/exception/SuperBaseException.cpp \
   bi/exception/ThisException.cpp \
   bi/exception/UnresolvedReferenceException.cpp \
   bi/exception/UnsupportedOptionTypeException.cpp \
@@ -68,6 +70,7 @@ birchc_SOURCES = \
   bi/expression/Literal.cpp \
   bi/expression/ParenthesesExpression.cpp \
   bi/expression/Range.cpp \
+  bi/expression/Super.cpp \
   bi/expression/This.cpp \
   bi/expression/Member.cpp \
   bi/expression/VarParameter.cpp \

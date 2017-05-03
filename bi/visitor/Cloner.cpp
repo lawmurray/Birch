@@ -74,6 +74,10 @@ bi::Expression* bi::Cloner::clone(const This* o) {
   return new This(o->loc);
 }
 
+bi::Expression* bi::Cloner::clone(const Super* o) {
+  return new Super(o->loc);
+}
+
 bi::Expression* bi::Cloner::clone(const VarReference* o) {
   return new VarReference(o->name, o->loc);
 }

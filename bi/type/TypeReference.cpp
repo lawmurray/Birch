@@ -6,7 +6,8 @@
 #include "bi/visitor/all.hpp"
 
 bi::TypeReference::TypeReference(shared_ptr<Name> name, Expression* parens,
-    shared_ptr<Location> loc, const bool assignable, TypeParameter* target) :
+    shared_ptr<Location> loc, const bool assignable,
+    const TypeParameter* target) :
     Type(loc, assignable),
     Named(name),
     Parenthesised(parens),
@@ -14,7 +15,7 @@ bi::TypeReference::TypeReference(shared_ptr<Name> name, Expression* parens,
   //
 }
 
-bi::TypeReference::TypeReference(TypeParameter* target) :
+bi::TypeReference::TypeReference(const TypeParameter* target) :
     Named(target->name),
     Reference(target) {
   //
@@ -104,8 +105,8 @@ bool bi::TypeReference::definitely(const TypeReference& o) const {
   /* pre-condition */
   assert(target && o.target);
 
-  return (target->canonical() == o.target->canonical()
-     ) || convertedDefinitely(o);
+  return (target->canonical() == o.target->canonical())
+      || convertedDefinitely(o);
 }
 
 bool bi::TypeReference::definitely(const ParenthesesType& o) const {
@@ -151,8 +152,8 @@ bool bi::TypeReference::possibly(const TypeReference& o) const {
   /* pre-condition */
   assert(target && o.target);
 
-  return (target->canonical() == o.target->canonical()
-     ) || convertedPossibly(o);
+  return (target->canonical() == o.target->canonical())
+      || convertedPossibly(o);
 }
 
 bool bi::TypeReference::possibly(const ParenthesesType& o) const {

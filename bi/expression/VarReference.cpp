@@ -9,7 +9,7 @@
 #include <typeinfo>
 
 bi::VarReference::VarReference(shared_ptr<Name> name,
-    shared_ptr<Location> loc, VarParameter* target) :
+    shared_ptr<Location> loc, const VarParameter* target) :
     Expression(loc),
     Named(name),
     Reference(target),

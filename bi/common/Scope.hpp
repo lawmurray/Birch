@@ -84,7 +84,7 @@ public:
   void import(Scope* scope);
 
   /**
-   * Base scopes.
+   * Base scope.
    */
   std::set<Scope*> bases;
 

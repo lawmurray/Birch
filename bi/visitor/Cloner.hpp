@@ -37,6 +37,7 @@ public:
   virtual Expression* clone(const Index* o);
   virtual Expression* clone(const Range* o);
   virtual Expression* clone(const Member* o);
+  virtual Expression* clone(const Super* o);
   virtual Expression* clone(const This* o);
 
   virtual Expression* clone(const VarReference* o);

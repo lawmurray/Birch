@@ -8,14 +8,14 @@
 
 namespace bi {
 /**
- * Use of "this" keyword outside of a class.
+ * Use of "super" keyword outside of a class.
  *
  * @ingroup compiler_exception
  */
-struct ThisException: public CompilerException {
+struct SuperException: public CompilerException {
   /**
    * Constructor.
    */
-  ThisException(const Expression* expr);
+  SuperException(const Expression* expr);
 };
 }
