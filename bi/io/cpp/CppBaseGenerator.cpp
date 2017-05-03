@@ -94,7 +94,7 @@ void bi::CppBaseGenerator::visit(const Range* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Super* o) {
-  middle("*nonconst(base_type::this)");
+  middle("*nonconst<base_type>(this)");
 }
 
 void bi::CppBaseGenerator::visit(const This* o) {
@@ -109,7 +109,7 @@ void bi::CppBaseGenerator::visit(const Member* o) {
     middle("nonconst(this)->");
   } else if (leftSuper) {
     // tidier this way
-    middle("nonconst(base_type::this)->");
+    middle("nonconst<base_type>(this)->");
   } else {
     middle(o->left);
     if (o->left->type->isClass()) {
