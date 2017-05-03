@@ -49,6 +49,19 @@ auto toEigenMatrix(const Array<Type,Frame>& X) {
 }}
 
 /**
+ * Conversion
+ * ----------
+ */
+function vector(x:Real, length:Integer) -> Real[_] {
+  z:Real[length];
+  i:Integer;
+  for (i in 1..length) {
+    z[i] <- x;
+  }
+  return z;
+}
+
+/**
  * Addition
  * --------
  */

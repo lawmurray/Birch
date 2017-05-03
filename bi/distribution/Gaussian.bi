@@ -1,11 +1,21 @@
+import distribution.Delay;
 import math;
 import random;
-import io;
 
 /**
  * Gaussian distribution.
  */
-class Gaussian {
+class Gaussian < Delay {
+  /**
+   * Value.
+   */
+  x:Real;
+  
+  /**
+   * Weight.
+   */
+  w:Real;
+
   /**
    * Mean.
    */
@@ -15,129 +25,45 @@ class Gaussian {
    * Standard deviation.
    */
   σ:Real;
-  
-  /**
-   * Value.
-   */
-  x:Real;
 
   /**
-   * Convert to value.
+   * Implicit conversion to value.
    */
   function -> Real {
+    value();
     return x;
   }
 
   function create(μ:Real, σ:Real) {
+    assert(σ > 0.0);
+    
+    initialise();
     this.μ <- μ;
     this.σ <- σ;
   }
 
-  function value() -> Real {
-    return this.x;
-  }
-
-  function simulate() -> Real {
+  function doSample() {
     cpp {{
-    return std::normal_distribution<double>(μ, σ)(rng);
+    nonconst(this)->x = std::normal_distribution<double>(μ, σ)(rng);
     }}
   }
 
-  function observe(x:Real) -> Real {
-    return -0.5*pow((x - this.μ)/this.σ, 2.0) - log(sqrt(2.0*π)*this.σ);
+  function doObserve() {
+    this.w <- -0.5*pow((x - μ)/σ, 2.0) - log(sqrt(2.0*π)*σ);
   }
   
-  function smooth(μ:Real, σ:Real) {
-    this.μ <- μ;
-    this.σ <- σ;
-  }
-}
-
-/**
- * Gaussian distribution with conjugate prior over the mean.
- */
-class GaussianWithConjugateMean < Gaussian {
-  m0:Gaussian;
-  a:Real;
-
-  function create(m0:Gaussian, a:Real) {
-    this.μ <- m0.μ;
-    this.σ <- sqrt(pow(m0.σ, 2.0) + pow(a, 2.0));
-    this.m0 <- m0;
-    this.a <- a;
+  function set(x:Real) {
+    this.x <- x;
   }
   
-  function observe(x:Real) -> Real {
-    σ2_0:Real <- pow(this.m0.σ, 2.0);
-    λ_0:Real <- 1.0/σ2_0;
-    σ2:Real <- pow(this.a, 2.0);
-    λ:Real <- 1.0/σ2;
-    σ2_1:Real <- 1.0/(λ_0 + λ);
-    μ_1:Real <- (this.m0.μ*λ_0 + x*λ)*σ2_1;
-    σ_1:Real <- sqrt(σ2_1);
+  function update(μ:Real, σ:Real) {
+    assert(σ > 0.0);
     
-    this.m0.smooth(μ_1, σ_1);
-    return -0.5*pow((x - this.μ)/this.σ, 2.0) - log(sqrt(2.0*π)*this.σ);
-  }
-  
-  function smooth(μ:Real, σ:Real) {
     this.μ <- μ;
     this.σ <- σ;
   }
 }
 
-/**
- * Gaussian distribution that is scalar multiple of another.
- */
-class GaussianMultiple < Gaussian {
-  a:Real;
-  m0:Gaussian;
-
-  function create(a:Real, m0:Gaussian) {
-    this.μ <- m0.μ*a;
-    this.σ <- m0.σ*abs(a);
-    this.a <- a;
-    this.m0 <- m0;
-  }
-  
-  function observe(x:Real) -> Real {
-    return this.m0.observe(x/abs(this.a)) - log(abs(this.a));
-  }
-  
-  function smooth(μ:Real, σ:Real) {
-    this.m0.smooth(μ/this.a, σ/abs(this.a));
-  }
-}
-
-/**
- * Operators
- * ---------
- */
-/**
- * Simulate.
- */
-function x:Real <~ m:Gaussian {
-  x <- m.simulate();
-}
-
-/**
- * Observe.
- */
-function x:Real ~> m:Gaussian -> Real {
-  return m.observe(x);
-}
-
-/**
- * Initialise.
- */
-function x:Gaussian ~ m:Gaussian {
-
-}
-
-/**
- * Expressions
- * -----------
- */
 /**
  * Create.
  */
@@ -148,28 +74,24 @@ function Gaussian(μ:Real, σ:Real) -> Gaussian {
 }
 
 /**
- * Marginalise.
+ * Simulate.
  */
-function Gaussian(μ:Gaussian, σ:Real) -> Gaussian {
-  m:GaussianWithConjugateMean;
-  m.create(μ, σ);
-  return m;
+function x:Real <~ m:Gaussian {
+  m.sample();
+  x <- m.x;
 }
 
 /**
- * Multiply by scalar on left.
+ * Observe.
  */
-function a:Real*m0:Gaussian -> Gaussian {
-  m1:GaussianMultiple;
-  m1.create(a, m0);
-  return m1;
+function x:Real ~> m:Gaussian -> Real {
+  m.observe();
+  return m.w;
 }
 
 /**
- * Multiply by scalar on right.
+ * Initialise.
  */
-function m0:Gaussian*a:Real -> Gaussian {
-  m1:GaussianMultiple;
-  m1.create(a, m0);
-  return m1;
+function x:Gaussian ~ m:Gaussian {
+  x <- m;
 }

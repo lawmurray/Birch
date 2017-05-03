@@ -1,7 +1,10 @@
 Doxyfile
 MANIFEST
+bi/distribution/delay/GaussianConjugateMean.bi
+bi/distribution/delay/GaussianMultiply.bi
 bi/distribution/Beta.bi
 bi/distribution/Bernoulli.bi
+bi/distribution/Delay.bi
 bi/distribution/Gamma.bi
 bi/distribution/Gaussian.bi
 bi/distribution/Uniform.bi
