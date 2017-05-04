@@ -22,7 +22,7 @@ void bi::CppConstructorGenerator::visit(const TypeParameter* o) {
     in();
     if (!o->base->isEmpty()) {
       before = true;
-      start("base_type(");
+      start("super_type(");
       if (o->super() && !o->super()->parens->isEmpty()) {
         middle(o->super()->parens);
       }

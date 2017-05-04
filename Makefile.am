@@ -153,7 +153,7 @@ nobase_include_HEADERS = bi/data/Array.hpp \
   bi/exception/Exception.hpp \
   bi/exception/MemoryException.hpp \
   bi/exception/UnknownOptionException.hpp \
-  bi/primitive/nonconst.hpp \
+  bi/primitive/cast.hpp \
   bi/bi.hpp
 
 dist_noinst_SCRIPTS = autogen.sh

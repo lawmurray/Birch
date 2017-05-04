@@ -19,17 +19,20 @@ void bi::CppTypeGenerator::visit(const TypeParameter* o) {
   if (!o->isBuiltin()) {
     /* start boilerplate */
     if (header) {
-      start("class " << o->name);
+      start("class " << o->name << " : ");
       if (o->super()) {
-        middle(" : public " << o->super()->name);
+        middle("public " << o->super()->name);
+      } else {
+        middle("public std::enable_shared_from_this<" << o->name << '>');
       }
       finish(" {");
       line("public:");
       in();
+      line("typedef " << o->name << " this_type;");
       if (!o->base->isEmpty()) {
-        line("typedef " << o->super()->name << " base_type;");
-        line("");
+        line("typedef " << o->super()->name << " super_type;");
       }
+      line("");
     }
 
     /* constructor */

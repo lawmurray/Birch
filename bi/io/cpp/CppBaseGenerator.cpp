@@ -94,11 +94,11 @@ void bi::CppBaseGenerator::visit(const Range* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Super* o) {
-  middle("*nonconst<base_type>(this)");
+  middle("cast<super_type>(shared_from_this())");
 }
 
 void bi::CppBaseGenerator::visit(const This* o) {
-  middle("*nonconst(this)");
+  middle("cast<this_type>(shared_from_this())");
 }
 
 void bi::CppBaseGenerator::visit(const Member* o) {
@@ -106,10 +106,10 @@ void bi::CppBaseGenerator::visit(const Member* o) {
   const Super* leftSuper = dynamic_cast<const Super*>(o->left.get());
   if (leftThis) {
     // tidier this way
-    middle("nonconst(this)->");
+    middle("cast(this)->");
   } else if (leftSuper) {
     // tidier this way
-    middle("nonconst<base_type>(this)->");
+    middle("cast<super_type>(this)->");
   } else {
     middle(o->left);
     if (o->left->type->isClass()) {
