@@ -98,7 +98,7 @@ class Delay {
    */
   function marginalise() {
     assert(isInitialised());
-    assert(hasParent && parent.isTerminal());
+    assert(hasParent);
     
     this.state <- MARGINALISED;
     doMarginalise();
@@ -154,7 +154,9 @@ class Delay {
         this.hasChild <- false;
       }
     } else {
-      parent.graft();
+      if (!parent.isRealised()) {
+        parent.graft(this);
+      }
       marginalise();
     }
   }
@@ -166,13 +168,17 @@ class Delay {
    * of the stem.
    */
   function graft(c:Delay) {
+    assert(isInitialised() || isMarginalised());
+  
     if (isMarginalised()) {
       if (hasChild) {
         child.prune();
         this.hasChild <- false;
       }
     } else {
-      parent.graft();
+      if (!parent.isRealised()) {
+        parent.graft(this);
+      }
       marginalise();
     }
     this.child <- c;

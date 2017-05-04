@@ -27,13 +27,13 @@ class Gaussian < Delay {
   σ:Real;
 
   /**
-   * Implicit conversion to value.
+   * Value conversion.
    */
   function -> Real {
     value();
     return x;
   }
-
+  
   function create(μ:Real, σ:Real) {
     assert(σ > 0.0);
     
@@ -44,7 +44,7 @@ class Gaussian < Delay {
 
   function doSample() {
     cpp {{
-    nonconst(this)->x = std::normal_distribution<double>(μ, σ)(rng);
+    cast(this)->x = std::normal_distribution<double>(μ, σ)(rng);
     }}
   }
 
@@ -85,13 +85,24 @@ function x:Real <~ m:Gaussian {
  * Observe.
  */
 function x:Real ~> m:Gaussian -> Real {
+  m.set(x);
   m.observe();
   return m.w;
+}
+
+/**
+ * Value assignment.
+ */
+function m:Gaussian <- x:Real {
+  m.set(x);
 }
 
 /**
  * Initialise.
  */
 function x:Gaussian ~ m:Gaussian {
+  if (x.isRealised()) {
+    x ~> m;
+  }
   x <- m;
 }

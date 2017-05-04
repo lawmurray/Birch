@@ -15,10 +15,10 @@ class GaussianConjugateMean < Gaussian {
    */
   τ:Real;
    
-  function create(u:Gaussian, σ:Real) {
+  function create(u:Gaussian, τ:Real) {
     initialise(u);
     this.u <- u;
-    this.τ <- σ;
+    this.τ <- τ;
   }
 
   function doMarginalise() {
@@ -45,7 +45,7 @@ class GaussianConjugateMean < Gaussian {
 }
 
 function Gaussian(μ:Gaussian, σ:Real) -> Gaussian {
-  m:GaussianConjugateMean;
-  m.create(μ, σ);
-  return m;
+  v:GaussianConjugateMean;
+  v.create(μ, σ);
+  return v;
 }

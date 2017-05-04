@@ -5,12 +5,12 @@ import distribution.Gaussian;
  */
 class GaussianMultiply < Gaussian {
   /**
-   * Scalar.
+   * Scalar operand.
    */
   a:Real;
   
   /**
-   * Parent.
+   * Gaussian operand.
    */
   u:Gaussian;
 
