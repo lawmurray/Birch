@@ -109,7 +109,7 @@ void bi::CppBaseGenerator::visit(const Member* o) {
     middle("cast(this)->");
   } else if (leftSuper) {
     // tidier this way
-    middle("cast<super_type>(this)->");
+    middle("super_type::");
   } else {
     middle(o->left);
     if (o->left->type->isClass()) {
