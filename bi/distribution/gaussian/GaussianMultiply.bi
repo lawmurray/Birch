@@ -22,7 +22,7 @@ class GaussianMultiply < Gaussian {
   
   function doMarginalise() {
     if (u.isRealised()) {
-      this.x <- a*u;
+      this.x <- a*u.x;
       realise();
     } else {
       this.μ <- a*u.μ;
@@ -31,7 +31,9 @@ class GaussianMultiply < Gaussian {
   }
   
   function doRealise() {
-    u.set(x/a);
+    if (u.isTerminal()) {
+      u.set(x/a);
+    }
   }
 }
 

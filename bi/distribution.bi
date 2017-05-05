@@ -3,5 +3,5 @@ import distribution.Beta;
 import distribution.Gamma;
 import distribution.Gaussian;
 import distribution.Uniform;
-import distribution.delay.GaussianConjugateMean;
-import distribution.delay.GaussianMultiply;
+import distribution.gaussian.GaussianConjugateMean;
+import distribution.gaussian.GaussianMultiply;

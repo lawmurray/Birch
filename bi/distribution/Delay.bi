@@ -108,11 +108,14 @@ class Delay {
    * Realise the variate.
    */
   function realise() {
-    assert(isTerminal());
+    assert(isInitialised() || isTerminal());
     
     this.state <- REALISED;
+    if (hasParent) {
+      parent.removeChild();
+    }
     doRealise();
-  }  
+  } 
   
   /**
    * Sample the value.
@@ -143,7 +146,7 @@ class Delay {
       sample();
     }
   }
-  
+
   /**
    * Graft the stem to this node.
    */
@@ -159,6 +162,8 @@ class Delay {
       }
       marginalise();
     }
+
+    assert(isMarginalised());
   }
 
   /**
@@ -173,7 +178,7 @@ class Delay {
     if (isMarginalised()) {
       if (hasChild) {
         child.prune();
-        this.hasChild <- false;
+        removeChild();
       }
     } else {
       if (!parent.isRealised()) {
@@ -181,8 +186,9 @@ class Delay {
       }
       marginalise();
     }
-    this.child <- c;
-    this.hasChild <- true;
+    setChild(c);
+    
+    assert(isMarginalised());
   }
   
   /**
@@ -193,9 +199,24 @@ class Delay {
     
     if (hasChild) {
       child.prune();
-      this.hasChild <- false;
+      removeChild();
     }
     sample();
+  }
+
+  /**
+   * Set the child.
+   */
+  function setChild(c:Delay) {
+    this.child <- c;
+    this.hasChild <- true;
+  }
+
+  /**
+   * Remove the child.
+   */
+  function removeChild() {
+    this.hasChild <- false;
   }
   
   /**

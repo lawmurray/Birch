@@ -42,6 +42,17 @@ class Gaussian < Delay {
     this.σ <- σ;
   }
 
+  function update(μ:Real, σ:Real) {
+    assert(σ > 0.0);
+    
+    this.μ <- μ;
+    this.σ <- σ;
+  }
+
+  function set(x:Real) {
+    this.x <- x;
+  }
+
   function doSample() {
     cpp {{
     cast(this)->x = std::normal_distribution<double>(μ, σ)(rng);
@@ -50,17 +61,6 @@ class Gaussian < Delay {
 
   function doObserve() {
     this.w <- -0.5*pow((x - μ)/σ, 2.0) - log(sqrt(2.0*π)*σ);
-  }
-  
-  function set(x:Real) {
-    this.x <- x;
-  }
-  
-  function update(μ:Real, σ:Real) {
-    assert(σ > 0.0);
-    
-    this.μ <- μ;
-    this.σ <- σ;
   }
 }
 
@@ -74,9 +74,10 @@ function Gaussian(μ:Real, σ:Real) -> Gaussian {
 }
 
 /**
- * Simulate.
+ * Sample.
  */
 function x:Real <~ m:Gaussian {
+  m.graft();
   m.sample();
   x <- m.x;
 }
@@ -85,6 +86,7 @@ function x:Real <~ m:Gaussian {
  * Observe.
  */
 function x:Real ~> m:Gaussian -> Real {
+  m.graft();
   m.set(x);
   m.observe();
   return m.w;
