@@ -129,31 +129,12 @@ void bi::CppTypeGenerator::visit(const FuncParameter* o) {
 
 void bi::CppTypeGenerator::visit(const ConversionParameter* o) {
   if (!o->braces->isEmpty()) {
-    /* non-const conversion */
     if (!header) {
       start("bi::type::" << type->name << "::");
     } else {
       start("");
     }
-    middle("operator " << o->type << "&()");
-    if (header) {
-      finish(';');
-    } else {
-      finish(" {");
-      in();
-      CppBaseGenerator auxBase(base, level, header);
-      auxBase << o->braces;
-      out();
-      finish("}\n");
-    }
-
-    /* const conversion */
-    if (!header) {
-      start("bi::type::" << type->name << "::");
-    } else {
-      start("");
-    }
-    middle("operator const " << o->type << "&() const");
+    middle("operator " << o->type << "()");
     if (header) {
       finish(';');
     } else {
