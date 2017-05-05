@@ -101,7 +101,6 @@ class Delay {
     assert(hasParent);
     
     this.state <- MARGINALISED;
-    doMarginalise();
   }
   
   /**
@@ -114,7 +113,6 @@ class Delay {
     if (hasParent) {
       parent.removeChild();
     }
-    doRealise();
   } 
   
   /**
@@ -122,9 +120,6 @@ class Delay {
    */
   function sample() {
     assert(isTerminal());
-    
-    doSample();
-    realise();
   }
 
   /**
@@ -132,9 +127,6 @@ class Delay {
    */
   function observe() {
     assert(isTerminal());
-    
-    doObserve();
-    realise();
   }
 
   /**
@@ -144,6 +136,7 @@ class Delay {
     if (!isRealised()) {
       graft();
       sample();
+      realise();
     }
   }
 
@@ -217,21 +210,5 @@ class Delay {
    */
   function removeChild() {
     this.hasChild <- false;
-  }
-  
-  /**
-   * Functions to be implemented by derived types
-   */
-  function doMarginalise() {
-    //
-  }
-  function doRealise() {
-    //
-  }
-  function doSample() {
-    //
-  }
-  function doObserve() {
-    //
   }
 }

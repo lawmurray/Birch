@@ -20,7 +20,8 @@ class GaussianMultiply < Gaussian {
     this.u <- u;
   }
   
-  function doMarginalise() {
+  function marginalise() {
+    super.marginalise();
     if (u.isRealised()) {
       this.x <- a*u.x;
       realise();
@@ -30,7 +31,8 @@ class GaussianMultiply < Gaussian {
     }
   }
   
-  function doRealise() {
+  function realise() {
+    super.realise();
     if (u.isTerminal()) {
       u.set(x/a);
     }

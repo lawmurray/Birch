@@ -21,7 +21,8 @@ class GaussianConjugateMean < Gaussian {
     this.τ <- τ;
   }
 
-  function doMarginalise() {
+  function marginalise() {
+    super.marginalise();
     if (u.isRealised()) {
       this.μ <- u.x;
       this.σ <- τ;
@@ -31,7 +32,9 @@ class GaussianConjugateMean < Gaussian {
     }
   }
   
-  function doRealise() {
+  function realise() {
+    super.realise();
+    
     σ2_0:Real <- pow(u.σ, 2.0);
     λ_0:Real <- 1.0/σ2_0;
     σ2:Real <- pow(τ, 2.0);

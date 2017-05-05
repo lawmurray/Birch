@@ -30,7 +30,7 @@ class Gaussian < Delay {
    * Value conversion.
    */
   function -> Real {
-    value();
+    super.value();
     return x;
   }
   
@@ -53,13 +53,19 @@ class Gaussian < Delay {
     this.x <- x;
   }
 
-  function doSample() {
+  function marginalise() {
+    super.marginalise();
+  }
+
+  function sample() {
+    super.sample();
     cpp {{
     cast(this)->x = std::normal_distribution<double>(μ, σ)(rng);
     }}
   }
 
-  function doObserve() {
+  function observe() {
+    super.observe();
     this.w <- -0.5*pow((x - μ)/σ, 2.0) - log(sqrt(2.0*π)*σ);
   }
 }
@@ -79,6 +85,7 @@ function Gaussian(μ:Real, σ:Real) -> Gaussian {
 function x:Real <~ m:Gaussian {
   m.graft();
   m.sample();
+  m.realise();
   x <- m.x;
 }
 
@@ -89,6 +96,7 @@ function x:Real ~> m:Gaussian -> Real {
   m.graft();
   m.set(x);
   m.observe();
+  m.realise();
   return m.w;
 }
 
@@ -103,8 +111,5 @@ function m:Gaussian <- x:Real {
  * Initialise.
  */
 function x:Gaussian ~ m:Gaussian {
-  if (x.isRealised()) {
-    x ~> m;
-  }
   x <- m;
 }
