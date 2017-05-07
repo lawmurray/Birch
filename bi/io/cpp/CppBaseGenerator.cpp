@@ -319,7 +319,7 @@ void bi::CppBaseGenerator::genBuiltin(const TypeReference* o) {
   assert(o->isBuiltin());
 
   if (*o->name == "Boolean") {
-    middle("unsigned char");
+    middle("bool");
   } else if (*o->name == "Real64" || *o->name == "Real") {
     middle("double");
   } else if (*o->name == "Real32") {

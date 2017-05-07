@@ -63,7 +63,7 @@ bool bi::ParenthesesExpression::definitely(const FuncReference& o) const {
   return single->definitely(o);
 }
 
-bool bi::ParenthesesExpression::definitely(Literal<unsigned char>& o) {
+bool bi::ParenthesesExpression::definitely(Literal<bool>& o) {
   return single->definitely(o);
 }
 
@@ -135,7 +135,7 @@ bool bi::ParenthesesExpression::possibly(const FuncReference& o) const {
   return single->possibly(o);
 }
 
-bool bi::ParenthesesExpression::possibly(Literal<unsigned char>& o) {
+bool bi::ParenthesesExpression::possibly(Literal<bool>& o) {
   return single->possibly(o);
 }
 

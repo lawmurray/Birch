@@ -52,7 +52,7 @@ public:
   virtual bool definitely(const List<Expression>& o) const;
   virtual bool definitely(const FuncParameter& o) const;
   virtual bool definitely(const FuncReference& o) const;
-  virtual bool definitely(Literal<unsigned char>& o);
+  virtual bool definitely(Literal<bool>& o);
   virtual bool definitely(Literal<int64_t>& o);
   virtual bool definitely(const Literal<double>& o) const;
   virtual bool definitely(Literal<const char*>& o);
@@ -71,7 +71,7 @@ public:
   virtual bool possibly(const List<Expression>& o) const;
   virtual bool possibly(const FuncParameter& o) const;
   virtual bool possibly(const FuncReference& o) const;
-  virtual bool possibly(Literal<unsigned char>& o);
+  virtual bool possibly(Literal<bool>& o);
   virtual bool possibly(Literal<int64_t>& o);
   virtual bool possibly(const Literal<double>& o) const;
   virtual bool possibly(Literal<const char*>& o);
