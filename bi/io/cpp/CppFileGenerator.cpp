@@ -235,26 +235,13 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
         //}
         finish(':');
         in();
-        start(name << " = ");
         Type* type = (*iter)->type->strip();
         const TypeReference* ref = dynamic_cast<const TypeReference*>(type);
-        if (ref) {
-          std::string typeName = ref->name->str();
-          if (typeName == "Boolean") {
-            middle("atoi(optarg)");
-          } else if (typeName == "Integer") {
-            middle("atoi(optarg)");
-          } else if (typeName == "Real") {
-            middle("atof(optarg)");
-          } else if (typeName == "String") {
-            middle("optarg");
-          } else {
-            throw UnsupportedOptionTypeException(type);
-          }
+        if (ref && *ref->name == "String") {
+          line(name << " = optarg;");
         } else {
-          throw UnsupportedOptionTypeException(type);
+          line("left_(" << name << ", optarg);");
         }
-        finish(';');
         line("break;");
         out();
       }
