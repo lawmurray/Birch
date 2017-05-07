@@ -140,6 +140,7 @@ bi::Expression* bi::Resolver::modify(FuncReference* o) {
   if (o->isAssign() && *o->name == "<-"
       && o->getRight()->type->definitely(*o->getLeft()->type)) {
     // no need to resolve, have default assignment operator
+    ///@todo Warn if a declared assignment operator is masked by this
   } else {
     resolve(o, memberScope);
     o->type = o->target->type->accept(&cloner)->accept(this);

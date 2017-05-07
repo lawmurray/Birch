@@ -127,7 +127,7 @@ void bi::CppBaseGenerator::visit(const VarReference* o) {
 }
 
 void bi::CppBaseGenerator::visit(const FuncReference* o) {
-  if (o->isAssign() && *o->name == "<-") {
+  if (o->isAssign() && *o->name == "<-" && !o->target) {
     if (o->getLeft()->type->isClass() && !o->getRight()->type->isClass()) {
       middle("*(" << o->getLeft() << ')');
     } else {
