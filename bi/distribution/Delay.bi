@@ -4,6 +4,7 @@ import assert;
 /*
  * Node states for delayed sampling.
  */
+UNINITIALISED:Integer <- 0;
 INITIALISED:Integer <- 1;
 MARGINALISED:Integer <- 2;
 REALISED:Integer <- 3;
@@ -16,6 +17,11 @@ class Delay {
    * State of the variate.
    */
   state:Integer;
+  
+  /**
+   * Is the value missing?
+   */
+  missing:Boolean;
   
   /**
    * Parent, if any.
@@ -38,6 +44,16 @@ class Delay {
   hasChild:Boolean;
   
   /**
+   * Constructor.
+   */
+  function construct() {
+    this.state <- UNINITIALISED;
+    this.missing <- true;
+    this.hasParent <- false;
+    this.hasChild <- false;
+  }
+  
+  /**
    * Is this a root node?
    */
   function isRoot() -> Boolean {
@@ -49,6 +65,13 @@ class Delay {
    */
   function isTerminal() -> Boolean {
     return isMarginalised() && !hasChild;
+  }
+
+  /**
+   * Is this node in the uninitialised state?
+   */
+  function isUninitialised() -> Boolean {
+    return state == UNINITIALISED;
   }
   
   /**
@@ -71,7 +94,21 @@ class Delay {
   function isRealised() -> Boolean {
     return state == REALISED;
   }
-
+  
+  /**
+   * Is the value of this node missing?
+   */
+  function isMissing() -> Boolean {
+    return missing;
+  }
+  
+  /**
+   * Does this node have a deterministic relationship with its parent?
+   */
+  function isDeterministic() -> Boolean {
+    return false;
+  }
+    
   /**
    * Initialise as a root node.
    */
@@ -100,7 +137,22 @@ class Delay {
     assert(isInitialised());
     assert(hasParent);
     
+    doMarginalise();
     this.state <- MARGINALISED;
+  }
+  
+  /**
+   * Forward sample the variate.
+   */
+  function forward() {
+    assert(isInitialised());
+    
+    doForward();
+    if (isDeterministic()) {
+      this.state <- REALISED;
+    } else {
+      this.state <- MARGINALISED;
+    }
   }
   
   /**
@@ -113,30 +165,16 @@ class Delay {
     if (hasParent) {
       parent.removeChild();
     }
-  } 
-  
-  /**
-   * Sample the value.
-   */
-  function sample() {
-    assert(isTerminal());
-  }
-
-  /**
-   * Observe the value.
-   */
-  function observe() {
-    assert(isTerminal());
-  }
-
-  /**
-   * Ensure that the node has a value
-   */
-  function value() {
-    if (!isRealised()) {
-      graft();
-      sample();
-      realise();
+    if (missing) {
+      doSample();
+    } else {
+      doObserve();
+    }
+    if (hasParent && !parent.isRealised()) {
+      doCondition();
+      if (isDeterministic()) {
+        parent.realise();
+      }
     }
   }
 
@@ -147,16 +185,16 @@ class Delay {
     if (isMarginalised()) {
       if (hasChild) {
         child.prune();
-        this.hasChild <- false;
+        removeChild();
       }
-    } else {
-      if (!parent.isRealised()) {
-        parent.graft(this);
+    } else if (isInitialised()) {
+      parent.graft(this);
+      if (parent.isRealised()) {
+        forward();
+      } else {
+        marginalise();
       }
-      marginalise();
     }
-
-    assert(isMarginalised());
   }
 
   /**
@@ -166,22 +204,8 @@ class Delay {
    * of the stem.
    */
   function graft(c:Delay) {
-    assert(isInitialised() || isMarginalised());
-  
-    if (isMarginalised()) {
-      if (hasChild) {
-        child.prune();
-        removeChild();
-      }
-    } else {
-      if (!parent.isRealised()) {
-        parent.graft(this);
-      }
-      marginalise();
-    }
+    graft();
     setChild(c);
-    
-    assert(isMarginalised());
   }
   
   /**
@@ -194,7 +218,7 @@ class Delay {
       child.prune();
       removeChild();
     }
-    sample();
+    realise();
   }
 
   /**
@@ -211,4 +235,23 @@ class Delay {
   function removeChild() {
     this.hasChild <- false;
   }
+  
+  /*
+   * Derived type requirements.
+   */
+   function doMarginalise() {
+     //
+   }
+   function doForward() {
+     //
+   }
+   function doSample() {
+     //
+   }
+   function doObserve() {
+     //
+   }
+   function doCondition() {
+     //
+   }
 }

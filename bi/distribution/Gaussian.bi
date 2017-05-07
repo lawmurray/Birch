@@ -26,20 +26,16 @@ class Gaussian < Delay {
    */
   σ:Real;
 
-  /**
-   * Value conversion.
-   */
-  function -> Real {
-    super.value();
-    return x;
-  }
-  
-  function create(μ:Real, σ:Real) {
+  function construct(μ:Real, σ:Real) {
     assert(σ > 0.0);
     
-    initialise();
+    super.construct();
     this.μ <- μ;
     this.σ <- σ;
+  }
+  
+  function construct() {
+    super.construct();
   }
 
   function update(μ:Real, σ:Real) {
@@ -49,24 +45,38 @@ class Gaussian < Delay {
     this.σ <- σ;
   }
 
+  /**
+   * Value conversion.
+   */
+  function -> Real {
+    if (isMissing()) {
+      graft();
+      realise();
+    }
+    return x;
+  }
+  
   function set(x:Real) {
     this.x <- x;
+    this.missing <- false;
   }
-
-  function marginalise() {
-    super.marginalise();
-  }
-
-  function sample() {
-    super.sample();
+  
+  function sample() -> Real {
     cpp {{
-    cast(this)->x = std::normal_distribution<double>(μ, σ)(rng);
+    return std::normal_distribution<double>(μ, σ)(rng);
     }}
   }
 
-  function observe() {
-    super.observe();
-    this.w <- -0.5*pow((x - μ)/σ, 2.0) - log(sqrt(2.0*π)*σ);
+  function observe(x:Real) -> Real {
+    return -0.5*pow((x - μ)/σ, 2.0) - log(sqrt(2.0*π)*σ);
+  }
+
+  function doSample() {
+    this.x <- sample();
+  }
+  
+  function doObserve() {
+    this.w <- observe(x);
   }
 }
 
@@ -75,8 +85,16 @@ class Gaussian < Delay {
  */
 function Gaussian(μ:Real, σ:Real) -> Gaussian {
   m:Gaussian;
-  m.create(μ, σ);
+  m.construct(μ, σ);
+  m.initialise();
   return m;
+}
+
+/**
+ * Set.
+ */
+function m:Gaussian <- x:Real {
+  m.set(x);
 }
 
 /**
@@ -84,7 +102,6 @@ function Gaussian(μ:Real, σ:Real) -> Gaussian {
  */
 function x:Real <~ m:Gaussian {
   m.graft();
-  m.sample();
   m.realise();
   x <- m.x;
 }
@@ -95,21 +112,20 @@ function x:Real <~ m:Gaussian {
 function x:Real ~> m:Gaussian -> Real {
   m.graft();
   m.set(x);
-  m.observe();
   m.realise();
   return m.w;
-}
-
-/**
- * Value assignment.
- */
-function m:Gaussian <- x:Real {
-  m.set(x);
 }
 
 /**
  * Initialise.
  */
 function x:Gaussian ~ m:Gaussian {
+  assert(x.isUninitialised());
+  
+  if (!x.isMissing()) {
+    m.set(x);
+    m.graft();
+    m.realise();
+  }
   x <- m;
 }
