@@ -1,3 +1,7 @@
+cpp{{
+#include <cstdlib>
+}}
+
 /**
  * Built-in types
  * --------------
@@ -12,29 +16,35 @@ type Integer = Integer64;
 type String;
 
 /**
- * Conversions
- * -----------
+ * String conversions
+ * ------------------
  */
-function Real64(x:Real32) -> Real64 {
+function x:Boolean <- s:String {
   cpp{{
-  return x;
+  x = ::atoi(s.c_str());
   }}
 }
 
-function Real32(x:Real64) -> Real32 {
+function x:Real64 <- s:String {
   cpp{{
-  return static_cast<float>(x);
+  x = ::strtof(s.c_str(), nullptr);
   }}
 }
 
-function Integer64(x:Integer32) -> Integer64 {
+function x:Real32 <- s:String {
   cpp{{
-  return x;
+  x = ::strtod(s.c_str(), nullptr);
   }}
 }
 
-function Integer32(x:Integer64) -> Integer32 {
+function x:Integer64 <- s:String {
   cpp{{
-  return static_cast<int32_t>(x);
+  x = ::atol(s.c_str());
+  }}
+}
+
+function x:Integer32 <- s:String {
+  cpp{{
+  x = ::atoi(s.c_str());
   }}
 }
