@@ -218,7 +218,9 @@ class Delay {
       child.prune();
       removeChild();
     }
-    realise();
+    if (!isRealised()) { // deterministic child may have triggered realisation
+      realise();
+    }
   }
 
   /**

@@ -72,7 +72,7 @@ class Gaussian < Delay {
   }
 
   function doSample() {
-    this.x <- sample();
+    set(sample());
   }
   
   function doObserve() {
@@ -123,8 +123,8 @@ function x:Gaussian ~ m:Gaussian {
   assert(x.isUninitialised());
   
   if (!x.isMissing()) {
-    m.set(x);
     m.graft();
+    m.set(x);
     m.realise();
   }
   x <- m;

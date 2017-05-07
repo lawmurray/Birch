@@ -14,14 +14,14 @@ class GaussianMultiply < Gaussian {
    */
   u:Gaussian;
 
-  function isDeterministic() -> Boolean {
-    return true;
-  }
-
   function construct(a:Real, u:Gaussian) {
     super.construct();
     this.a <- a;
     this.u <- u;
+  }
+
+  function isDeterministic() -> Boolean {
+    return true;
   }
   
   function doMarginalise() {
