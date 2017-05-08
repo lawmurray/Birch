@@ -600,6 +600,8 @@ void bi::Driver::configure() {
       cxxflags << " -Wall";
       ldflags << " -Wall";
     }
+    cxxflags << " -Wno-overloaded-virtual";
+
     for (auto iter = include_dirs.begin(); iter != include_dirs.end();
         ++iter) {
       cppflags << " -I" << iter->string();
