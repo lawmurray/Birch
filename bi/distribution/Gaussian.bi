@@ -26,16 +26,16 @@ class Gaussian < Delay {
    */
   σ:Real;
 
-  function construct(μ:Real, σ:Real) {
+  function initialise(u:Gaussian) {
+    super.initialise(u);
+  }
+
+  function initialise(μ:Real, σ:Real) {
     assert(σ > 0.0);
     
-    super.construct();
+    super.initialise();
     this.μ <- μ;
     this.σ <- σ;
-  }
-  
-  function construct() {
-    super.construct();
   }
 
   function update(μ:Real, σ:Real) {
@@ -51,7 +51,9 @@ class Gaussian < Delay {
   function -> Real {
     if (isMissing()) {
       graft();
-      realise();
+      if (!isRealised()) {
+        realise();
+      }
     }
     return x;
   }
@@ -85,8 +87,7 @@ class Gaussian < Delay {
  */
 function Gaussian(μ:Real, σ:Real) -> Gaussian {
   m:Gaussian;
-  m.construct(μ, σ);
-  m.initialise();
+  m.initialise(μ, σ);
   return m;
 }
 
@@ -95,6 +96,13 @@ function Gaussian(μ:Real, σ:Real) -> Gaussian {
  */
 function m:Gaussian <- x:Real {
   m.set(x);
+}
+
+/**
+ * Set from string.
+ */
+function m:Gaussian <- s:String {
+  m.set(Real(s));
 }
 
 /**

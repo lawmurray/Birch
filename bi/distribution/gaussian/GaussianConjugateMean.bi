@@ -15,8 +15,8 @@ class GaussianConjugateMean < Gaussian {
    */
   τ:Real;
    
-  function construct(u:Gaussian, τ:Real) {
-    super.construct();
+  function initialise(u:Gaussian, τ:Real) {
+    super.initialise(u);
     this.u <- u;
     this.τ <- τ;
   }
@@ -46,7 +46,6 @@ class GaussianConjugateMean < Gaussian {
 
 function Gaussian(μ:Gaussian, σ:Real) -> Gaussian {
   v:GaussianConjugateMean;
-  v.construct(μ, σ);
-  v.initialise(μ);
+  v.initialise(μ, σ);
   return v;
 }

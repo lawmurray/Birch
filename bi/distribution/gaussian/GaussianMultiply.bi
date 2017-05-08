@@ -14,8 +14,8 @@ class GaussianMultiply < Gaussian {
    */
   u:Gaussian;
 
-  function construct(a:Real, u:Gaussian) {
-    super.construct();
+  function initialise(a:Real, u:Gaussian) {
+    super.initialise(u);
     this.a <- a;
     this.u <- u;
   }
@@ -40,14 +40,12 @@ class GaussianMultiply < Gaussian {
 
 function a:Real*u:Gaussian -> Gaussian {
   v:GaussianMultiply;
-  v.construct(a, u);
-  v.initialise(u);
+  v.initialise(a, u);
   return v;
 }
 
 function u:Gaussian*a:Real -> Gaussian {
   v:GaussianMultiply;
-  v.construct(a, u);
-  v.initialise(u);
+  v.initialise(a, u);
   return v;
 }
