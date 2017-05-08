@@ -6,8 +6,7 @@
 #include "bi/data/Frame.hpp"
 #include "bi/data/Iterator.hpp"
 #include "bi/data/constant.hpp"
-
-#include <cstring>
+#include "bi/data/memory.hpp"
 
 namespace bi {
 /**
@@ -98,15 +97,19 @@ public:
    * @tparam ...Args Arbitrary types.
    *
    * @param frame Frame.
-   * @param args Optional constructor arguments.
+   * @param args Constructor arguments.
    *
-   * Memory is allocated for the array, and is freed on destruction.
+   * Memory is allocated for the array, and is freed on destruction. After
+   * allocation, the constructor is called for each element with the given
+   * arguments.
    */
   template<class ... Args>
   Array(const Frame& frame, Args ... args) :
       frame(frame) {
     create(&ptr, frame);
-    fill(ptr, frame, args...);
+    for (auto iter = begin(); iter != end(); ++iter) {
+      construct(&*iter, args...);
+    }
   }
 
   /**
