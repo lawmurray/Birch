@@ -158,5 +158,6 @@ IS                                 (u|U|l|L)*
 "]"                                 { return ']'; }
 "."                                 { return '.'; }
 "_"                                 { return '_'; }
+.                                   { yyerror("syntax error"); }
 
 %%
