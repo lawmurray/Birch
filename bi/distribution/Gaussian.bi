@@ -115,6 +115,15 @@ function x:Real <~ m:Gaussian {
 }
 
 /**
+ * Sample.
+ */
+function x:Gaussian <~ m:Gaussian {
+  m.graft();
+  m.realise();
+  x.set(m.x);
+}
+
+/**
  * Observe.
  */
 function x:Real ~> m:Gaussian -> Real {
@@ -131,9 +140,7 @@ function x:Gaussian ~ m:Gaussian {
   assert(x.isUninitialised());
   
   if (!x.isMissing()) {
-    m.graft();
-    m.set(x);
-    m.realise();
+    x ~> m;
   }
   x <- m;
 }
