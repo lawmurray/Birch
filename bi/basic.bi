@@ -16,8 +16,30 @@ type Integer = Integer64;
 type String;
 
 /**
- * String conversions
- * ------------------
+ * String conversion
+ * -----------------
+ */
+function Boolean(s:String) -> Boolean {
+  cpp{{
+  return ::atoi(s.c_str());
+  }}
+}
+
+function Real(s:String) -> Real {
+  cpp{{
+  return ::strtof(s.c_str(), nullptr);
+  }}
+}
+
+function Integer(s:String) -> Integer {
+  cpp{{
+  return ::atol(s.c_str());
+  }}
+}
+
+/**
+ * String assignment
+ * -----------------
  */
 function x:Boolean <- s:String {
   cpp{{
