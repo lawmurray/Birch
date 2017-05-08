@@ -15,10 +15,7 @@ namespace bi {
  * Type form.
  */
 enum TypeForm {
-  STRUCT_TYPE,
-  CLASS_TYPE,
-  BUILTIN_TYPE,
-  ALIAS_TYPE
+  STRUCT_TYPE, CLASS_TYPE, BUILTIN_TYPE, ALIAS_TYPE
 };
 
 /**
@@ -37,15 +34,16 @@ public:
    * Constructor.
    *
    * @param name Name.
-   * @param parens Parentheses.
+   * @param parens Constructor parameters.
    * @param base Base type.
+   * @param baseParens Base type constructor arguments.
    * @param braces Braces.
    * @param form Type form.
    * @param loc Location.
    * @param assignable Is this type writeable?
    */
-  TypeParameter(shared_ptr<Name> name, Expression* parens,
-      Type* base, Expression* braces, const TypeForm form,
+  TypeParameter(shared_ptr<Name> name, Expression* parens, Type* base,
+      Expression* baseParens, Expression* braces, const TypeForm form,
       shared_ptr<Location> loc = nullptr, const bool assignable = false);
 
   /**

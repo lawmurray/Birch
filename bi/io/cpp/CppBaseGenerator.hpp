@@ -82,23 +82,8 @@ protected:
   bool header;
 
   /**
-   * Are we in an array type?
-   */
-  int inArray;
-
-  /**
-   * Are we in a lambda type?
-   */
-  int inLambda;
-
-  /**
    * Are we in a return type?
    */
   int inReturn;
-
-  /**
-   * Are we in a polymorphic type?
-   */
-  int inPolymorphic;
 };
 }

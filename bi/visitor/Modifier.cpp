@@ -102,7 +102,6 @@ bi::Expression* bi::Modifier::modify(FuncReference* o) {
 }
 
 bi::Type* bi::Modifier::modify(TypeReference* o) {
-  o->parens = o->parens.release()->accept(this);
   return o;
 }
 
@@ -113,6 +112,7 @@ bi::Prog* bi::Modifier::modify(ProgReference* o) {
 
 bi::Expression* bi::Modifier::modify(VarParameter* o) {
   o->type = o->type.release()->accept(this);
+  o->parens = o->parens.release()->accept(this);
   o->value = o->value.release()->accept(this);
   return o;
 }
@@ -133,6 +133,7 @@ bi::Expression* bi::Modifier::modify(ConversionParameter* o) {
 bi::Type* bi::Modifier::modify(TypeParameter* o) {
   o->parens = o->parens.release()->accept(this);
   o->base = o->base.release()->accept(this);
+  o->baseParens = o->baseParens.release()->accept(this);
   o->braces = o->braces.release()->accept(this);
   return o;
 }

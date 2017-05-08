@@ -87,8 +87,7 @@ bi::Expression* bi::Cloner::clone(const FuncReference* o) {
 }
 
 bi::Type* bi::Cloner::clone(const TypeReference* o) {
-  return new TypeReference(o->name, o->parens->accept(this), o->loc,
-      o->assignable);
+  return new TypeReference(o->name, o->loc, o->assignable);
 }
 
 bi::Prog* bi::Cloner::clone(const ProgReference* o) {
@@ -97,7 +96,7 @@ bi::Prog* bi::Cloner::clone(const ProgReference* o) {
 
 bi::Expression* bi::Cloner::clone(const VarParameter* o) {
   return new VarParameter(o->name, o->type->accept(this),
-      o->value->accept(this), o->member, o->loc);
+      o->parens->accept(this), o->value->accept(this), o->member, o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const FuncParameter* o) {
@@ -112,7 +111,8 @@ bi::Expression* bi::Cloner::clone(const ConversionParameter* o) {
 
 bi::Type* bi::Cloner::clone(const TypeParameter* o) {
   return new TypeParameter(o->name, o->parens->accept(this),
-      o->base->accept(this), o->braces->accept(this), o->form, o->loc);
+      o->base->accept(this), o->baseParens->accept(this),
+      o->braces->accept(this), o->form, o->loc);
 }
 
 bi::Prog* bi::Cloner::clone(const ProgParameter* o) {

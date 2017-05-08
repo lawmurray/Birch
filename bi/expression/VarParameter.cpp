@@ -9,9 +9,11 @@
 #include <typeinfo>
 
 bi::VarParameter::VarParameter(shared_ptr<Name> name, Type* type,
-    Expression* value, const bool member, shared_ptr<Location> loc) :
+    Expression* parens, Expression* value, const bool member,
+    shared_ptr<Location> loc) :
     Expression(type, loc),
     Named(name),
+    Parenthesised(parens),
     value(value),
     member(member) {
   //

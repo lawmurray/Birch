@@ -13,10 +13,7 @@ bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
     const bool header) :
     indentable_ostream(base, level),
     header(header),
-    inArray(0),
-    inLambda(0),
-    inReturn(0),
-    inPolymorphic(0) {
+    inReturn(0) {
   //
 }
 
@@ -166,33 +163,33 @@ void bi::CppBaseGenerator::visit(const FuncReference* o) {
 
 void bi::CppBaseGenerator::visit(const VarParameter* o) {
   middle(o->type << ' ' << o->name);
-//  if (!o->parens->isEmpty() || o->type->count() > 0) {
-//    middle('(');
-//  }
-//  if (!o->parens->isEmpty()) {
-//    middle(o->parens->strip());
-//    if (o->type->count() > 0) {
-//      middle(", ");
-//    }
-//  }
+  if (o->type->isClass()) {
+    TypeReference* type = dynamic_cast<TypeReference*>(o->type->strip());
+    assert(type);
+    middle(" = std::make_shared<bi::type::" << type->name << ">(");
+  } else if (!o->parens->isEmpty() || o->type->count() > 0) {
+    middle('(');
+  }
   if (o->type->count() > 0) {
     BracketsType* type = dynamic_cast<BracketsType*>(o->type->strip());
     assert(type);
-    middle('(');
     middle("make_frame(" << type->brackets << ")");
-    if (!o->value->isEmpty()) {
-      middle(", " << o->value->strip());
+    if (!o->parens->isEmpty()) {
+      middle(", " << o->parens->strip());
     }
+  }
+  if (o->type->isClass()) {
     middle(')');
-//  if (!o->parens->isEmpty() || o->type->count() > 0) {
-//    middle(')');
-//  }
-  } else if (!o->value->isEmpty()) {
-    middle(" = " << o->value);
-  } else if (o->type->isClass()) {
-    ++inPolymorphic;
-    middle(" = std::make_shared<" << o->type << ">()");
-    --inPolymorphic;
+  } else if (!o->parens->isEmpty() || o->type->count() > 0) {
+    middle(')');
+  }
+  if (!o->value->isEmpty()) {
+    if (o->type->isClass()) {
+      ///@todo How to handle this case?
+      assert(false);
+    } else {
+      middle(" = " << o->value);
+    }
   }
 }
 
@@ -264,7 +261,7 @@ void bi::CppBaseGenerator::visit(const Raw* o) {
 void bi::CppBaseGenerator::visit(const TypeReference* o) {
   if (o->isBuiltin()) {
     genBuiltin(o);
-  } else if (!inPolymorphic && o->isClass()) {
+  } else if (o->isClass()) {
     middle("std::shared_ptr<bi::type::" << o->name << ">");
   } else {
     middle("bi::type::" << o->name);
@@ -276,9 +273,7 @@ void bi::CppBaseGenerator::visit(const EmptyType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const BracketsType* o) {
-  ++inArray;
   middle("bi::DefaultArray<" << o->single << ',' << o->count() << '>');
-  --inArray;
 }
 
 void bi::CppBaseGenerator::visit(const ParenthesesType* o) {
@@ -290,12 +285,10 @@ void bi::CppBaseGenerator::visit(const ParenthesesType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const LambdaType* o) {
-  ++inLambda;
   middle("std::function<" << o->type << '(');
   CppParameterGenerator auxParameter(base, level, header);
   auxParameter << o->parens;
   middle(")>");
-  --inLambda;
 }
 
 void bi::CppBaseGenerator::genCapture(const Expression* o) {

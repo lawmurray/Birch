@@ -6,7 +6,6 @@
 #include "bi/type/Type.hpp"
 #include "bi/type/TypeParameter.hpp"
 #include "bi/expression/EmptyExpression.hpp"
-#include "bi/common/Parenthesised.hpp"
 #include "bi/common/Reference.hpp"
 #include "bi/type/EmptyType.hpp"
 
@@ -18,20 +17,17 @@ namespace bi {
  */
 class TypeReference: public Type,
     public Named,
-    public Parenthesised,
     public Reference<TypeParameter> {
 public:
   /**
    * Constructor.
    *
    * @param name Name.
-   * @param parens Parentheses.
    * @param loc Location.
    * @param assignable Is this type assignable?
    * @param target Target.
    */
-  TypeReference(shared_ptr<Name> name, Expression* parens =
-      new EmptyExpression(), shared_ptr<Location> loc = nullptr,
+  TypeReference(shared_ptr<Name> name, shared_ptr<Location> loc = nullptr,
       const bool assignable = false, const TypeParameter* target = nullptr);
 
   /**

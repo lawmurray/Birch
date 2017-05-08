@@ -173,10 +173,11 @@ bi::Expression* bi::Resolver::modify(VarParameter* o) {
     if (!o->type->assignable) {
       throw NotAssignableException(o);
     } else if (!o->value->type->definitely(*o->type)) {
-      ///@todo Support assignment operator overloads here
       throw InvalidAssignmentException(o);
     }
   }
+  ///@todo Check constructor arguments
+  ///@todo Check assignment operator for value
   return o;
 }
 
@@ -229,7 +230,7 @@ bi::Type* bi::Resolver::modify(TypeParameter* o) {
   push();
   o->parens = o->parens->accept(this);
   o->base = o->base->accept(this);
-  ///@todo Check that the type and its base are both struct or both class
+  o->baseParens = o->baseParens->accept(this);
   o->scope = pop();
 
   if (!o->base->isEmpty()) {
@@ -243,6 +244,8 @@ bi::Type* bi::Resolver::modify(TypeParameter* o) {
   types.pop();
   pop();
 
+  ///@todo Check that the type and its base are both struct or both class
+  ///@todo Check base type constructor arguments
   return o;
 }
 

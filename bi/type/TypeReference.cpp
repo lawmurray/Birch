@@ -5,12 +5,11 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::TypeReference::TypeReference(shared_ptr<Name> name, Expression* parens,
+bi::TypeReference::TypeReference(shared_ptr<Name> name,
     shared_ptr<Location> loc, const bool assignable,
     const TypeParameter* target) :
     Type(loc, assignable),
     Named(name),
-    Parenthesised(parens),
     Reference(target) {
   //
 }

@@ -6,12 +6,12 @@
 #include "bi/visitor/all.hpp"
 
 bi::TypeParameter::TypeParameter(shared_ptr<Name> name, Expression* parens,
-    Type* base, Expression* braces, const TypeForm form,
-    shared_ptr<Location> loc, const bool assignable) :
+    Type* base, Expression* baseParens, Expression* braces,
+    const TypeForm form, shared_ptr<Location> loc, const bool assignable) :
     Type(loc, assignable),
     Named(name),
     Parenthesised(parens),
-    Based(base),
+    Based(base, baseParens),
     Braced(braces),
     form(form) {
   //
@@ -83,8 +83,7 @@ bool bi::TypeParameter::dispatchDefinitely(const Type& o) const {
 }
 
 bool bi::TypeParameter::definitely(const TypeParameter& o) const {
-  return parens->definitely(*o.parens) && base->definitely(*o.base)
-     ;
+  return parens->definitely(*o.parens);
 }
 
 bool bi::TypeParameter::definitely(const ParenthesesType& o) const {
@@ -96,8 +95,7 @@ bool bi::TypeParameter::dispatchPossibly(const Type& o) const {
 }
 
 bool bi::TypeParameter::possibly(const TypeParameter& o) const {
-  return parens->possibly(*o.parens) && base->possibly(*o.base)
-     ;
+  return parens->possibly(*o.parens);
 }
 
 bool bi::TypeParameter::possibly(const ParenthesesType& o) const {
