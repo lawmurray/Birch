@@ -8,7 +8,7 @@ import math.vector;
 import math.matrix;
 import assert;
 
-hpp{{
+cpp{{
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Dense>
 #include <eigen3/Eigen/Cholesky>
