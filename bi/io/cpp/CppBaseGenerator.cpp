@@ -342,6 +342,8 @@ void bi::CppBaseGenerator::genBuiltin(const TypeReference* o) {
 void bi::CppBaseGenerator::genArg(const Expression* arg, const Expression* param) {
   if (arg->type->isClass() && !param->type->isClass()) {
     middle("*(" << arg << ')');
+  } else if (param->type->assignable && arg->type->isArray()) {
+    middle("cast(" << arg << ')');
   } else {
     middle(arg);
   }

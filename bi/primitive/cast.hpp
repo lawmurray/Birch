@@ -16,6 +16,15 @@ To* cast(const From* o) {
 }
 
 /**
+ * Cast away the const-ness of a reference. Usually used for passing rvalues
+ * to assignment operator overloads requiring lvalue reference argument.
+ */
+template<class From, class To = From>
+To& cast(const From& o) {
+  return const_cast<To&>(o);
+}
+
+/**
  * Simultaneously cast a shared pointer to a derived type and remove its
  * constness.
  */
