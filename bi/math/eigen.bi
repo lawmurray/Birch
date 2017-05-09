@@ -64,6 +64,26 @@ function vector(x:Real, length:Integer) -> Real[_] {
 }
 
 /**
+ * Negation
+ * --------
+ */
+function -x:Real[_] -> Real[_] {
+  z:Real[length(x)];
+  cpp{{
+  toEigenVector(z) = -toEigenVector(x);
+  }}
+  return z;
+}
+
+function -X:Real[_,_] -> Real[_,_] {
+  Z:Real[rows(X),columns(X)];
+  cpp{{
+  toEigenMatrix(Z) = -toEigenMatrix(X);
+  }}
+  return Z;
+}
+
+/**
  * Addition
  * --------
  */
@@ -183,6 +203,26 @@ function X:Real[_,_]*Y:Real[_,_] -> Real[_,_] {
   Z:Real[rows(X),columns(Y)];
   cpp{{
   toEigenMatrix(Z) = toEigenMatrix(X) * toEigenMatrix(Y);
+  }}
+  return Z;
+}
+
+/**
+ * Division
+ * --------
+ */
+function x:Real[_]/y:Real -> Real[_] {
+  z:Real[length(x)];
+  cpp{{
+  toEigenVector(z) = toEigenVector(x) / y;
+  }}
+  return z;
+}
+
+function X:Real[_,_]/y:Real -> Real[_,_] {
+  Z:Real[rows(X),columns(X)];
+  cpp{{
+  toEigenMatrix(Z) = toEigenMatrix(X) / y;
   }}
   return Z;
 }

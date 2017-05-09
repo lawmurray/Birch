@@ -32,7 +32,7 @@ class MultivariateGaussian(D1:Integer) < Delay {
   L:Real[D,D];
     
   /**
-   * Determinant of `L`.
+   * Log-determinant of `L`.
    */
   logDetL:Real;
 
