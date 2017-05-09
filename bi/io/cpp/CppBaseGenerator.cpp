@@ -34,7 +34,7 @@ void bi::CppBaseGenerator::visit(const RealLiteral* o) {
 }
 
 void bi::CppBaseGenerator::visit(const StringLiteral* o) {
-  middle(o->str);
+  middle("std::string(" << o->str << ')');
 }
 
 void bi::CppBaseGenerator::visit(const ExpressionList* o) {
