@@ -75,9 +75,8 @@ protected:
     return Array<Type,Frame1>(ptr, frame);
   }
   template<class Frame1>
-  Array<const Type,Frame1> viewReturn(const Type* ptr,
-      const Frame1& frame) const {
-    return Array<const Type,Frame1>(ptr, frame);
+  Array<Type,Frame1> viewReturn(Type* ptr, const Frame1& frame) const {
+    return Array<Type,Frame1>(ptr, frame);
   }
 
   /**
@@ -250,14 +249,14 @@ public:
    * Access the last element.
    */
   Type& back() {
-    return ptr + frame.lead - 1;
+    return ptr + frame.volume() - 1;
   }
 
   /**
    * Access the last element.
    */
   const Type& back() const {
-    return ptr + frame.lead - 1;
+    return ptr + frame.volume() - 1;
   }
   //@}
 
@@ -401,8 +400,8 @@ public:
   }
 
 private:
-  template<class... Args>
-  void fill(Args... args) {
+  template<class ... Args>
+  void fill(Args ... args) {
     for (auto iter = begin(); iter != end(); ++iter) {
       construct(&*iter, args...);
     }

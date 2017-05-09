@@ -51,8 +51,8 @@ public:
     return *this;
   }
 
-  Iterator<Type,Frame>& operator+(const int_t i) const {
-    auto result = *this;
+  Iterator<Type,Frame> operator+(const int_t i) const {
+    Iterator<Type,Frame> result(*this);
     result += i;
     return result;
   }
@@ -62,8 +62,8 @@ public:
     return *this;
   }
 
-  Iterator<Type,Frame>& operator-(const int_t i) const {
-    auto result = *this;
+  Iterator<Type,Frame> operator-(const int_t i) const {
+    Iterator<Type,Frame> result(*this);
     result -= i;
     return result;
   }
@@ -74,7 +74,7 @@ public:
   }
 
   Iterator<Type,Frame> operator++(int) {
-    auto result = *this;
+    Iterator<Type,Frame> result(*this);
     ++*this;
     return result;
   }
@@ -85,12 +85,12 @@ public:
   }
 
   Iterator<Type,Frame> operator--(int) {
-    auto result = *this;
+    Iterator<Type,Frame> result(*this);
     --*this;
     return result;
   }
 
-protected:
+//protected:
   /**
    * Frame.
    */
