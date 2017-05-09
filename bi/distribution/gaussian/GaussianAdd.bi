@@ -1,9 +1,10 @@
 import distribution.Gaussian;
+import distribution.gaussian.GaussianMultiply;
 
 /**
  * Variate that is scalar multiple of a Gaussian variate.
  */
-class GaussianMultiply < Gaussian {
+class GaussianAdd < Gaussian {
   /**
    * Scalar operand.
    */
@@ -25,33 +26,39 @@ class GaussianMultiply < Gaussian {
   }
   
   function doMarginalise() {
-    this.μ <- a*u.μ;
-    this.σ <- abs(a*u.σ);
+    this.μ <- a + u.μ;
+    this.σ <- u.σ;
   }
   
   function doForward() {
-    set(a*u.x);
+    set(a + u.x);
   }
   
   function doCondition() {
-    u.set(x/a);
+    u.set(x - a);
   }
 }
 
-function a:Real*u:Gaussian -> Gaussian {
-  v:GaussianMultiply;
+function a:Real + u:Gaussian -> Gaussian {
+  v:GaussianAdd;
   v.initialise(a, u);
   return v;
 }
 
-function u:Gaussian*a:Real -> Gaussian {
-  v:GaussianMultiply;
+function u:Gaussian + a:Real -> Gaussian {
+  v:GaussianAdd;
   v.initialise(a, u);
   return v;
 }
 
-function u:Gaussian/a:Real -> Gaussian {
-  v:GaussianMultiply;
-  v.initialise(1.0/a, u);
+function a:Real - u:Gaussian -> Gaussian {
+  v:GaussianAdd;
+  v.initialise(a, -1.0*u);
+  return v;
+}
+
+function u:Gaussian - a:Real -> Gaussian {
+  v:GaussianAdd;
+  v.initialise(-a, u);
   return v;
 }

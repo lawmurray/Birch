@@ -1,5 +1,6 @@
 Doxyfile
 MANIFEST
+bi/distribution/gaussian/GaussianAdd.bi
 bi/distribution/gaussian/GaussianConjugateMean.bi
 bi/distribution/gaussian/GaussianMultiply.bi
 bi/distribution/Beta.bi
