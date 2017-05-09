@@ -30,11 +30,6 @@ class MultivariateGaussian(D1:Integer) < Delay {
    * Standard deviation (lower-triangular Cholesky factor of covariance).
    */
   L:Real[D,D];
-    
-  /**
-   * Log-determinant of `L`.
-   */
-  logDetL:Real;
 
   function initialise(u:MultivariateGaussian) {
     super.initialise(u);
@@ -54,7 +49,6 @@ class MultivariateGaussian(D1:Integer) < Delay {
     
     this.μ <- μ;
     this.L <- L;
-    this.logDetL <- log(determinant(L));
   }
 
   /**
@@ -91,7 +85,7 @@ class MultivariateGaussian(D1:Integer) < Delay {
   function observe(x:Real[_]) -> Real {
     assert(length(x) == D);
     
-    return -0.5*squaredNorm(solve(L, x - μ)) - logDetL - 0.5*Real(D)*log(2.0*π);
+    return -0.5*squaredNorm(solve(L, x - μ)) - log(determinant(L)) - 0.5*Real(D)*log(2.0*π);
   }
 
   function doSample() {
