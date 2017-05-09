@@ -14,7 +14,9 @@ bi::BracketsType::BracketsType(Type* single, Expression* brackets,
   //
 }
 
-bi::BracketsType::BracketsType(Type* single, const int ndims) :
+bi::BracketsType::BracketsType(Type* single, const int ndims,
+    shared_ptr<Location> loc, const bool assignable) :
+    Type(loc, assignable),
     TypeUnary(single),
     ndims(ndims) {
   //
@@ -49,8 +51,7 @@ bool bi::BracketsType::dispatchDefinitely(const Type& o) const {
 }
 
 bool bi::BracketsType::definitely(const BracketsType& o) const {
-  return single->definitely(*o.single) && ndims == o.ndims
-     ;
+  return single->definitely(*o.single) && ndims == o.ndims;
 }
 
 bool bi::BracketsType::definitely(const ParenthesesType& o) const {
@@ -62,8 +63,7 @@ bool bi::BracketsType::dispatchPossibly(const Type& o) const {
 }
 
 bool bi::BracketsType::possibly(const BracketsType& o) const {
-  return single->possibly(*o.single) && ndims == o.ndims
-     ;
+  return single->possibly(*o.single) && ndims == o.ndims;
 }
 
 bool bi::BracketsType::possibly(const ParenthesesType& o) const {

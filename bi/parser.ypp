@@ -73,9 +73,8 @@
 %type <valExpression> arguments optional_arguments
 %type <valExpression> size_list size
 %type <valExpression> var_reference var_parameter var_declaration_parameter
-%type <valExpression> var_member_parameter
-%type <valExpression> func_reference func_parameter op_parameter
-%type <valExpression> conversion_parameter
+%type <valExpression> func_reference func_parameter member_parameter
+%type <valExpression> op_parameter conversion_parameter
 %type <valProg> prog_parameter
 
 %type <valType> type_reference struct_parameter class_parameter type_parameter
@@ -95,8 +94,8 @@
 %type <valExpression> stochastic_expression assignment_expression
 %type <valExpression> expression_list expression
 
-%type <valStatement> var_declaration var_member_declaration
-%type <valStatement> func_declaration op_declaration conversion_declaration
+%type <valStatement> var_declaration func_declaration member_declaration
+%type <valStatement> op_declaration conversion_declaration
 %type <valStatement> type_declaration prog_declaration
 %type <valStatement> import cpp hpp expression_statement if for while return
 %type <valStatement> statement statements optional_statements
@@ -214,20 +213,20 @@ double_braces
  ***************************************************************************/
 
 var_parameter
-    : name ':' type  { $$ = new bi::VarParameter($1, $3, make_empty(), make_empty(), false, make_loc(@$)); }
-    | ':' type       { $$ = new bi::VarParameter(new bi::Name(), $2, make_empty(), make_empty(), false, make_loc(@$)); }
+    : name ':' type  { $$ = new bi::VarParameter($1, $3, make_empty(), make_empty(), make_loc(@$)); }
+    | ':' type       { $$ = new bi::VarParameter(new bi::Name(), $2, make_empty(), make_empty(), make_loc(@$)); }
     ;
     
 var_declaration_parameter
-    : name ':' type optional_arguments optional_value  { $$ = new bi::VarParameter($1, $3, $4, $5, false, make_loc(@$)); }
-    ;
-
-var_member_parameter
-    : name ':' type optional_arguments optional_value  { $$ = new bi::VarParameter($1, $3, $4, $5, true, make_loc(@$)); }
+    : name ':' type optional_arguments optional_value  { $$ = new bi::VarParameter($1, $3, $4, $5, make_loc(@$)); }
     ;
     
 func_parameter
     : name parameters optional_result_type optional_braces  { $$ = new bi::FuncParameter($1, $2, $3, $4, bi::FUNCTION, make_loc(@$)); }
+    ;
+
+member_parameter
+    : name parameters optional_result_type optional_braces  { $$ = new bi::FuncParameter($1, $2, $3, $4, bi::MEMBER_FUNCTION, make_loc(@$)); }
     ;
     
 op_parameter
@@ -434,8 +433,9 @@ unary_expression
     ;
 
 multiplicative_operator
-    : '*'  { $$ = new bi::Name("*", make_loc(@$)); }
-    | '/'  { $$ = new bi::Name("/", make_loc(@$)); }
+    : '*'   { $$ = new bi::Name("*", make_loc(@$)); }
+    | '/'   { $$ = new bi::Name("/", make_loc(@$)); }
+    | '\\'  { $$ = new bi::Name("\\", make_loc(@$)); }
     ;
 
 multiplicative_expression
@@ -541,12 +541,12 @@ var_declaration
     : var_declaration_parameter ';'  { $$ = new bi::VarDeclaration(dynamic_cast<bi::VarParameter*>($1), make_loc(@$)); }
     ;
 
-var_member_declaration
-    : var_member_parameter ';'  { $$ = new bi::VarDeclaration(dynamic_cast<bi::VarParameter*>($1), make_loc(@$)); }
-    ;
-
 func_declaration
     : FUNC func_parameter  { $$ = new bi::FuncDeclaration(dynamic_cast<bi::FuncParameter*>($2), make_loc(@$)); }
+    ;
+
+member_declaration
+    : FUNC member_parameter  { $$ = new bi::FuncDeclaration(dynamic_cast<bi::FuncParameter*>($2), make_loc(@$)); }
     ;
 
 op_declaration
@@ -619,8 +619,8 @@ optional_statements
     ;
 
 type_statement
-    : var_member_declaration
-    | func_declaration
+    : var_declaration
+    | member_declaration
     | conversion_declaration
     | hpp
     ;

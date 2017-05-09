@@ -114,6 +114,12 @@ auto make_frame(const NonemptyFrame<Tail,Head>& tail, const Arg& arg,
     Args ... args) {
   return make_frame(make_frame(tail, arg), args...);
 }
+
+template<class Tail, class Head, class ... Args>
+auto make_frame(const NonemptyFrame<Tail,Head>& tail, const int_t arg,
+    Args ... args) {
+  return make_frame(make_frame(tail, make_span(arg)), args...);
+}
 //@}
 
 /**

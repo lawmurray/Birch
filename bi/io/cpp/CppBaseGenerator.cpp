@@ -120,7 +120,11 @@ void bi::CppBaseGenerator::visit(const Member* o) {
 }
 
 void bi::CppBaseGenerator::visit(const VarReference* o) {
-  middle(o->name);
+  if (o->name->isEmpty()) {
+    middle("(int_t)0"); // used for [_,_,_] type syntax in array types
+  } else {
+    middle(o->name);
+  }
 }
 
 void bi::CppBaseGenerator::visit(const FuncReference* o) {
@@ -174,13 +178,14 @@ void bi::CppBaseGenerator::visit(const VarParameter* o) {
     BracketsType* type = dynamic_cast<BracketsType*>(o->type->strip());
     assert(type);
     middle("make_frame(" << type->brackets << ")");
-    if (!o->parens->isEmpty()) {
-      middle(", " << o->parens->strip());
-    }
   }
-  if (o->type->isClass()) {
-    middle(')');
-  } else if (!o->parens->isEmpty() || o->type->count() > 0) {
+  if (!o->parens->isEmpty()) {
+    if (o->type->count() > 0) {
+      middle(", ");
+    }
+    middle(o->parens->strip());
+  }
+  if (o->type->isClass() || !o->parens->isEmpty() || o->type->count() > 0) {
     middle(')');
   }
   if (!o->value->isEmpty()) {

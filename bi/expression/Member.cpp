@@ -11,8 +11,7 @@
 bi::Member::Member(Expression* left, Expression* right,
     shared_ptr<Location> loc) :
     Expression(loc),
-    ExpressionBinary(left, right),
-    member(false) {
+    ExpressionBinary(left, right) {
   //
 }
 
@@ -30,10 +29,6 @@ bi::Expression* bi::Member::accept(Modifier* visitor) {
 
 void bi::Member::accept(Visitor* visitor) const {
   return visitor->visit(this);
-}
-
-bool bi::Member::isMember() const {
-  return member;
 }
 
 bool bi::Member::dispatchDefinitely(const Expression& o) const {

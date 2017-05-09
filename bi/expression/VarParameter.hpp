@@ -24,12 +24,11 @@ public:
    * @param type Type.
    * @param parens Constructor arguments.
    * @param value Assigned value.
-   * @param member Is this a member variable?
    * @param loc Location.
    */
   VarParameter(shared_ptr<Name> name, Type* type, Expression* parens =
       new EmptyExpression(), Expression* value = new EmptyExpression(),
-      const bool member = false, shared_ptr<Location> loc = nullptr);
+      shared_ptr<Location> loc = nullptr);
 
   /**
    * Constructor. Usually used internally when constructing, e.g. the default
@@ -48,8 +47,6 @@ public:
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
-  virtual bool isMember() const;
-
   /**
    * Default/initial value.
    */
@@ -59,11 +56,6 @@ public:
    * If this variable has a lambda type, the function associated with it.
    */
   unique_ptr<Expression> func;
-
-  /**
-   * Is this a member variable?
-   */
-  bool member;
 
   using Expression::definitely;
   using Expression::possibly;

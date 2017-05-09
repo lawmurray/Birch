@@ -107,9 +107,7 @@ public:
   Array(const Frame& frame, Args ... args) :
       frame(frame) {
     create(&ptr, frame);
-    for (auto iter = begin(); iter != end(); ++iter) {
-      construct(&*iter, args...);
-    }
+    fill(args...);
   }
 
   /**
@@ -133,7 +131,7 @@ public:
   Array(const Array<Type,Frame>& o) :
       frame(o.frame) {
     create(&ptr, frame);
-    fill(ptr, frame);
+    fill();
     own = true;
     *this = o;
   }
@@ -400,6 +398,14 @@ public:
    */
   Iterator<const Type,Frame> end() const {
     return begin() + frame.size();
+  }
+
+private:
+  template<class... Args>
+  void fill(Args... args) {
+    for (auto iter = begin(); iter != end(); ++iter) {
+      construct(&*iter, args...);
+    }
   }
 };
 

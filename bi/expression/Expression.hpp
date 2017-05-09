@@ -89,11 +89,6 @@ public:
   virtual bool isEmpty() const;
 
   /**
-   * Is this expression a member variable?
-   */
-  virtual bool isMember() const;
-
-  /**
    * Does this function have an assignable parameter?
    */
   virtual bool hasAssignable() const;

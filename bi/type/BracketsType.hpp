@@ -32,8 +32,11 @@ public:
    *
    * @param single Type.
    * @param ndims Number of dimensions.
+   * @param loc Location.
+   * @param assignable Is this type assignable?
    */
-  BracketsType(Type* single, const int ndims);
+  BracketsType(Type* single, const int ndims, shared_ptr<Location> loc =
+      nullptr, const bool assignable = false);
 
   /**
    * Destructor.

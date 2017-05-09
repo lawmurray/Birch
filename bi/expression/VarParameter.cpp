@@ -9,20 +9,17 @@
 #include <typeinfo>
 
 bi::VarParameter::VarParameter(shared_ptr<Name> name, Type* type,
-    Expression* parens, Expression* value, const bool member,
-    shared_ptr<Location> loc) :
+    Expression* parens, Expression* value, shared_ptr<Location> loc) :
     Expression(type, loc),
     Named(name),
     Parenthesised(parens),
-    value(value),
-    member(member) {
+    value(value) {
   //
 }
 
 bi::VarParameter::VarParameter(Type* type) :
     Expression(type),
-    value(new EmptyExpression()),
-    member(false) {
+    value(new EmptyExpression()) {
   //
 }
 
@@ -40,10 +37,6 @@ bi::Expression* bi::VarParameter::accept(Modifier* visitor) {
 
 void bi::VarParameter::accept(Visitor* visitor) const {
   visitor->visit(this);
-}
-
-bool bi::VarParameter::isMember() const {
-  return member;
 }
 
 bool bi::VarParameter::dispatchDefinitely(const Expression& o) const {

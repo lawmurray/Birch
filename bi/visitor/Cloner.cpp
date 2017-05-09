@@ -96,7 +96,7 @@ bi::Prog* bi::Cloner::clone(const ProgReference* o) {
 
 bi::Expression* bi::Cloner::clone(const VarParameter* o) {
   return new VarParameter(o->name, o->type->accept(this),
-      o->parens->accept(this), o->value->accept(this), o->member, o->loc);
+      o->parens->accept(this), o->value->accept(this), o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const FuncParameter* o) {
@@ -180,7 +180,7 @@ bi::Statement* bi::Cloner::clone(const ProgDeclaration* o) {
 }
 
 bi::Type* bi::Cloner::clone(const BracketsType* o) {
-  return new BracketsType(o->single->accept(this), o->brackets->accept(this),
+  return new BracketsType(o->single->accept(this), o->ndims,
       o->loc, o->assignable);
 }
 

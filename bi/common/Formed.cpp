@@ -27,3 +27,7 @@ bool bi::Formed::isAssign() const {
 bool bi::Formed::isLambda() const {
   return form == LAMBDA_FUNCTION;
 }
+
+bool bi::Formed::isMember() const {
+  return form == MEMBER_FUNCTION;
+}

@@ -12,8 +12,7 @@ bi::VarReference::VarReference(shared_ptr<Name> name,
     shared_ptr<Location> loc, const VarParameter* target) :
     Expression(loc),
     Named(name),
-    Reference(target),
-    member(false) {
+    Reference(target) {
   //
 }
 
@@ -31,10 +30,6 @@ bi::Expression* bi::VarReference::accept(Modifier* visitor) {
 
 void bi::VarReference::accept(Visitor* visitor) const {
   visitor->visit(this);
-}
-
-bool bi::VarReference::isMember() const {
-  return member;
 }
 
 bool bi::VarReference::dispatchDefinitely(const Expression& o) const {

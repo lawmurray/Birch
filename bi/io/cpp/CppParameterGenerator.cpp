@@ -29,3 +29,14 @@ void bi::CppParameterGenerator::visit(const FuncParameter* o) {
   }
   middle(')');
 }
+
+void bi::CppParameterGenerator::visit(const TypeParameter* o) {
+  middle('(');
+  for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
+    if (iter != o->parens->begin()) {
+      middle(", ");
+    }
+    middle(*iter);
+  }
+  middle(')');
+}

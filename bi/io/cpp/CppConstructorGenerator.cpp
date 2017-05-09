@@ -3,6 +3,8 @@
  */
 #include "bi/io/cpp/CppConstructorGenerator.hpp"
 
+#include "bi/io/cpp/CppParameterGenerator.hpp"
+
 bi::CppConstructorGenerator::CppConstructorGenerator(std::ostream& base,
     const int level, const bool header) :
     CppBaseGenerator(base, level, header),
@@ -12,11 +14,11 @@ bi::CppConstructorGenerator::CppConstructorGenerator(std::ostream& base,
 
 void bi::CppConstructorGenerator::visit(const TypeParameter* o) {
   if (header) {
-    start(o->name << '(');
-    if (!o->parens->isEmpty()) {
-      middle(o->parens);
-    }
-    middle(')');
+    start(o->name);
+
+    CppParameterGenerator auxParameter(base, level, header);
+    auxParameter << o;
+
     finish(" :");
     in();
     in();

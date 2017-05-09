@@ -7,6 +7,8 @@
 
 #include <sstream>
 
+#include <iostream>
+
 bi::Resolver::Resolver() :
     memberScope(nullptr),
     inInputs(0) {
@@ -70,7 +72,6 @@ bi::Expression* bi::Resolver::modify(Member* o) {
   }
   o->right = o->right->accept(this);
   o->type = o->right->type->accept(&cloner)->accept(this);
-  o->member = o->right->isMember();
 
   return o;
 }
@@ -228,7 +229,9 @@ bi::Prog* bi::Resolver::modify(ProgParameter* o) {
 
 bi::Type* bi::Resolver::modify(TypeParameter* o) {
   push();
+  ++inInputs;
   o->parens = o->parens->accept(this);
+  --inInputs;
   o->base = o->base->accept(this);
   o->baseParens = o->baseParens->accept(this);
   o->scope = pop();
@@ -364,8 +367,6 @@ void bi::Resolver::resolve(VarReference* ref, Scope* scope) {
   }
   if (!ref->target) {
     throw UnresolvedReferenceException(ref);
-  } else {
-    ref->member = ref->target->isMember();
   }
 }
 
@@ -383,6 +384,8 @@ void bi::Resolver::resolve(FuncReference* ref, Scope* scope) {
   }
   if (!ref->target) {
     throw UnresolvedReferenceException(ref);
+  } else {
+    ref->form = ref->target->form;
   }
 }
 
