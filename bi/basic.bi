@@ -16,7 +16,7 @@ type Integer = Integer64;
 type String;
 
 /**
- * String conversion
+ * Basic conversions
  * -----------------
  */
 function Boolean(s:String) -> Boolean {
@@ -34,6 +34,12 @@ function Real(s:String) -> Real {
 function Integer(s:String) -> Integer {
   cpp{{
   return ::atol(s.c_str());
+  }}
+}
+
+function Real(x:Integer) -> Real {
+  cpp{{
+  return static_cast<bi::type::Real>(x);
   }}
 }
 

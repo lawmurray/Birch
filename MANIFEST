@@ -7,6 +7,7 @@ bi/distribution/Bernoulli.bi
 bi/distribution/Delay.bi
 bi/distribution/Gamma.bi
 bi/distribution/Gaussian.bi
+bi/distribution/MultivariateGaussian.bi
 bi/distribution/Uniform.bi
 bi/math/eigen.bi
 bi/math/matrix.bi

@@ -70,7 +70,7 @@ class Gaussian < Delay {
   }
 
   function observe(x:Real) -> Real {
-    return -0.5*pow((x - μ)/σ, 2.0) - log(sqrt(2.0*π)*σ);
+    return -0.5*pow((x - μ)/σ, 2.0) - log(σ) - 0.5*log(2.0*π);
   }
 
   function doSample() {

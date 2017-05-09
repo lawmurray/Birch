@@ -10,6 +10,8 @@ import assert;
 
 hpp{{
 #include <eigen3/Eigen/Core>
+#include <eigen3/Eigen/Dense>
+#include <eigen3/Eigen/Cholesky>
 
 namespace bi {
 
@@ -183,4 +185,78 @@ function X:Real[_,_]*Y:Real[_,_] -> Real[_,_] {
   toEigenMatrix(Z) = toEigenMatrix(X) * toEigenMatrix(Y);
   }}
   return Z;
+}
+
+/**
+ * Other vector operations
+ * -----------------------
+ */
+/**
+ * Norm of a vector.
+ */
+function norm(x:Real[_]) -> Real {
+  cpp{{
+  return toEigenVector(x).norm();
+  }}
+}
+
+/**
+ * Squared norm of a vector.
+ */
+function squaredNorm(x:Real[_]) -> Real {
+  cpp{{
+  return toEigenVector(x).squaredNorm();
+  }}
+}
+
+/**
+ * Other matrix operations
+ * -----------------------
+ */
+
+/**
+ * Determinant of a matrix.
+ */
+function determinant(X:Real[_,_]) -> Real {
+  cpp{{
+  return toEigenMatrix(X).determinant();
+  }}
+}
+
+/**
+ * Transpose of a matrix.
+ */
+function transpose(X:Real[_,_]) -> Real[_,_] {
+  Y:Real[columns(X),rows(X)];
+  
+  cpp{{
+  toEigenMatrix(Y) = toEigenMatrix(X).transpose();
+  }}
+  return Y;
+}
+
+/**
+ * `LL^T` Cholesky decomposition of a matrix.
+ */
+function llt(X:Real[_,_]) -> Real[_,_] {
+  assert(rows(X) == columns(X));
+  
+  L:Real[rows(X),columns(X)];
+  cpp{{
+  toEigenMatrix(L) = toEigenMatrix(X).llt().matrixL();
+  }}
+  return L;
+}
+
+/**
+ * Solve a system of equations.
+ */
+function solve(X:Real[_,_], y:Real[_]) -> Real[_] {
+  assert(columns(X) == length(y));
+  
+  z:Real[rows(X)];
+  cpp{{
+  toEigenVector(z) = toEigenMatrix(X).colPivHouseholderQr().solve(toEigenVector(y));
+  }}
+  return z;
 }
