@@ -70,6 +70,7 @@ birchc_SOURCES = \
   bi/expression/Literal.cpp \
   bi/expression/ParenthesesExpression.cpp \
   bi/expression/Range.cpp \
+  bi/expression/Span.cpp \
   bi/expression/Super.cpp \
   bi/expression/This.cpp \
   bi/expression/Member.cpp \

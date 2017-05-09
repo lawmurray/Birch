@@ -50,6 +50,12 @@ bi::Expression* bi::Resolver::modify(ParenthesesExpression* o) {
   return o;
 }
 
+bi::Expression* bi::Resolver::modify(Span* o) {
+  Modifier::modify(o);
+  o->type = o->single->type->accept(&cloner)->accept(this);
+  return o;
+}
+
 bi::Expression* bi::Resolver::modify(Index* o) {
   Modifier::modify(o);
   o->type = o->single->type->accept(&cloner)->accept(this);
@@ -114,7 +120,7 @@ bi::Expression* bi::Resolver::modify(BracketsExpression* o) {
     o->type = new BracketsType(type->single->accept(&cloner), rangeDims);
     o->type = o->type->accept(this);
     if (o->single->type->assignable) {
-      o->single->type->accept(&assigner);
+      o->type->accept(&assigner);
     }
   } else {
     o->type = type->single->accept(&cloner)->accept(this);

@@ -15,6 +15,7 @@
 #include "bi/expression/Literal.hpp"
 #include "bi/expression/ParenthesesExpression.hpp"
 #include "bi/expression/Range.hpp"
+#include "bi/expression/Span.hpp"
 #include "bi/expression/Super.hpp"
 #include "bi/expression/This.hpp"
 #include "bi/expression/Member.hpp"

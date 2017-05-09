@@ -37,6 +37,7 @@ public:
 
   virtual Expression* modify(ExpressionList* o);
   virtual Expression*  modify(ParenthesesExpression* o);
+  virtual Expression*  modify(Span* o);
   virtual Expression*  modify(Index* o);
   virtual Expression*  modify(Range* o);
   virtual Expression*  modify(Member* o);

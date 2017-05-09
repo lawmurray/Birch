@@ -67,6 +67,11 @@ bi::Expression* bi::Modifier::modify(BracketsExpression* o) {
   return o;
 }
 
+bi::Expression* bi::Modifier::modify(Span* o) {
+  o->single = o->single.release()->accept(this);
+  return o;
+}
+
 bi::Expression* bi::Modifier::modify(Index* o) {
   o->single = o->single.release()->accept(this);
   return o;

@@ -73,6 +73,11 @@ void bi::CppFileGenerator::visit(const FuncParameter* o) {
   if (!o->braces->isEmpty()) {
     if (header) {
       line("namespace bi {");
+      if (!o->isOperator()) {
+        in();
+        line("namespace func {");
+        out();
+      }
     }
 
     /* return type */
@@ -83,6 +88,9 @@ void bi::CppFileGenerator::visit(const FuncParameter* o) {
     /* name */
     if (!header) {
       middle("bi::");
+      if (!o->isOperator()) {
+        middle("func::");
+      }
     }
     if ((o->isBinary() || o->isUnary()) && isTranslatable(o->name->str())) {
       middle("operator" << o->name);
@@ -108,6 +116,11 @@ void bi::CppFileGenerator::visit(const FuncParameter* o) {
       finish("}\n");
     }
     if (header) {
+      if (!o->isOperator()) {
+        in();
+        line("}");
+        out();
+      }
       line("}\n");
     }
   }

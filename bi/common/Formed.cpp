@@ -12,6 +12,10 @@ bi::Formed::~Formed() {
   //
 }
 
+bool bi::Formed::isOperator() const {
+  return isBinary() || isUnary() || isAssign();
+}
+
 bool bi::Formed::isBinary() const {
   return form == BINARY_OPERATOR || form == ASSIGN_OPERATOR;
 }

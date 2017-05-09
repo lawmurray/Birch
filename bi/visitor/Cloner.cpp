@@ -58,6 +58,10 @@ bi::Expression* bi::Cloner::clone(const BracketsExpression* o) {
       o->brackets->accept(this), o->loc);
 }
 
+bi::Expression* bi::Cloner::clone(const Span* o) {
+  return new Span(o->single->accept(this), o->loc);
+}
+
 bi::Expression* bi::Cloner::clone(const Index* o) {
   return new Index(o->single->accept(this), o->loc);
 }

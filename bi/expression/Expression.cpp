@@ -128,6 +128,10 @@ bool bi::Expression::definitely(const Range& o) const {
   return false;
 }
 
+bool bi::Expression::definitely(const Span& o) const {
+  return false;
+}
+
 bool bi::Expression::definitely(const Super& o) const {
   return false;
 }
@@ -181,6 +185,10 @@ bool bi::Expression::possibly(const FuncReference& o) const {
 }
 
 bool bi::Expression::possibly(const Index& o) const {
+  return false;
+}
+
+bool bi::Expression::possibly(const Span& o) const {
   return false;
 }
 

@@ -82,6 +82,10 @@ void bi::CppBaseGenerator::visit(const BracketsExpression* o) {
   middle(o->single << "(make_view(" << o->brackets << "))");
 }
 
+void bi::CppBaseGenerator::visit(const Span* o) {
+  middle("make_span(" << o->single << ')');
+}
+
 void bi::CppBaseGenerator::visit(const Index* o) {
   middle("make_index(" << o->single << " - 1)");
 }
@@ -120,11 +124,7 @@ void bi::CppBaseGenerator::visit(const Member* o) {
 }
 
 void bi::CppBaseGenerator::visit(const VarReference* o) {
-  if (o->name->isEmpty()) {
-    middle("(int_t)0"); // used for [_,_,_] type syntax in array types
-  } else {
-    middle(o->name);
-  }
+  middle(o->name);
 }
 
 void bi::CppBaseGenerator::visit(const FuncReference* o) {
@@ -148,6 +148,12 @@ void bi::CppBaseGenerator::visit(const FuncReference* o) {
     middle(o->name);
     genArg(o->getRight(), o->target->getRight());
   } else {
+    if (!o->isMember() && o->name->str() != "assert") { // special exception for now
+      middle("bi::");
+      if (!o->isOperator()) {
+        middle("func::");
+      }
+    }
     middle(internalise(o->name->str()) << '(');
     auto arg = o->parens->begin();
     auto param = o->target->parens->begin();

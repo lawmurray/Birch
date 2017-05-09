@@ -36,6 +36,11 @@ public:
   virtual ~Formed() = 0;
 
   /**
+   * Is this an operator?
+   */
+  bool isOperator() const;
+
+  /**
    * Is this a binary operator?
    */
   bool isBinary() const;
