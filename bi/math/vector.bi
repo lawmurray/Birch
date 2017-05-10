@@ -13,6 +13,11 @@ function length(x:Real[_]) -> Integer64 {
   return x.length(0);
   }}
 }
+function length(x:Integer[_]) -> Integer64 {
+  cpp{{
+  return x.length(0);
+  }}
+}
 
 /**
  * Convert single-element vector to scalar.

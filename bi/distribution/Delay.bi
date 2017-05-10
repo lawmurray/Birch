@@ -214,10 +214,18 @@ class Delay {
   }
 
   /**
+   * Set the parent.
+   */
+  function setParent(u:Delay) {
+    this.child <- u;
+    this.hasChild <- true;
+  }
+
+  /**
    * Set the child.
    */
-  function setChild(c:Delay) {
-    this.child <- c;
+  function setChild(u:Delay) {
+    this.child <- u;
     this.hasChild <- true;
   }
 
@@ -231,19 +239,25 @@ class Delay {
   /*
    * Derived type requirements.
    */
-   function doMarginalise() {
-     //
-   }
-   function doForward() {
-     //
-   }
-   function doSample() {
-     //
-   }
-   function doObserve() {
-     //
-   }
-   function doCondition() {
-     //
-   }
-}
+  function doMarginalise() {
+    //
+  }
+  function doForward() {
+    //
+  }
+  function doSample() {
+    //
+  }
+  function doObserve() {
+    //
+  }
+  function doCondition() {
+    //
+  }
+  
+  function copy(o:Delay) {
+    this.state <- o.state;
+    this.missing <- o.missing;
+    this.hasParent <- false;
+    this.hasChild <- false;
+  }}

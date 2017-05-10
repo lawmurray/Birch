@@ -31,15 +31,21 @@ function Real(s:String) -> Real {
   }}
 }
 
-function Integer(s:String) -> Integer {
-  cpp{{
-  return ::atol(s.c_str());
-  }}
-}
-
 function Real(x:Integer) -> Real {
   cpp{{
   return static_cast<bi::type::Real>(x);
+  }}
+}
+
+function Integer(x:Real) -> Integer {
+  cpp{{
+  return static_cast<bi::type::Integer>(x);
+  }}
+}
+
+function Integer(s:String) -> Integer {
+  cpp{{
+  return ::atol(s.c_str());
   }}
 }
 

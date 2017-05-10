@@ -13,11 +13,21 @@ function rows(X:Real[_,_]) -> Integer64 {
   return X.length(0);
   }}
 }
+function rows(X:Integer[_,_]) -> Integer64 {
+  cpp{{
+  return X.length(0);
+  }}
+}
 
 /**
  * Number of columns of a matrix.
  */
 function columns(X:Real[_,_]) -> Integer64 {
+  cpp{{
+  return X.length(1);
+  }}
+}
+function columns(X:Integer[_,_]) -> Integer64 {
   cpp{{
   return X.length(1);
   }}
