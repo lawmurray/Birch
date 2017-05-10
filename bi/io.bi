@@ -2,7 +2,8 @@ import basic;
 import math;
 
 cpp {{
-#include <cstdio>
+#include <iostream>
+#include <fstream>
 }}
 
 function print(value:Boolean) {
@@ -15,19 +16,19 @@ function print(value:Boolean) {
 
 function print(value:Real) {
   cpp {{
-  ::printf("%f", value);
+  std::cout << value;
   }}
 }
 
 function print(value:Integer) {
   cpp {{
-  ::printf("%lld", value);
+  std::cout << value;
   }}
 }
 
 function print(value:String) {
   cpp {{
-  ::printf("%s", value.c_str());
+  std::cout << value;
   }}
 }
 
@@ -53,4 +54,23 @@ function print(X:Real[_,_]) {
     }
     print("\n");
   }
+}
+
+/**
+ * Read numbers from a file.
+ */
+function read(file:String, N:Integer) -> Real[_] {
+  cpp{{
+  std::ifstream stream(file);
+  }}
+  x:Real[N];
+  n:Integer;
+  v:Real;
+  for (n in 1..N) {
+    cpp{{
+    stream >> v;
+    }}
+    x[n] <- v;
+  }
+  return x;
 }
