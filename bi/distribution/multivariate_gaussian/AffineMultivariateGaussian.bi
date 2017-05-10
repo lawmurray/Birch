@@ -19,59 +19,70 @@ class AffineMultivariateGaussian(R1:Integer,C1:Integer) < MultivariateGaussian(R
   C:Integer <- C1;
 
   /**
-   * Parent.
-   */
-  u:MultivariateGaussian;
-  
-  /**
-   * Standard deviation.
-   */
-  L1:Real[R,R];
-  
-  /**
    * Matrix of affine transformation.
    */
   A:Real[R,C];
+
+  /**
+   * Mean.
+   */
+  μ:MultivariateGaussian;
   
   /**
    * Vector of affine transformation.
    */
   c:Real[R];
 
-  function initialise(μ:MultivariateGaussian, L:Real[_,_], A:Real[_,_], c:Real[_]) {
+  /**
+   * Disturbance standard deviation.
+   */
+  Q:Real[R,R];
+  
+  /**
+   * Marginalised prior mean.
+   */
+  y:Real[R];
+  
+  /**
+   * Marginalised prior covariance.
+   */
+  S:Real[R,R];
+
+  function initialise(A:Real[_,_], μ:MultivariateGaussian, c:Real[_], Q:Real[_,_]) {
     super.initialise(μ);
-    this.u <- μ;
-    this.L1 <- L;
     this.A <- A;
+    this.μ <- μ;
     this.c <- c;
+    this.Q <- Q;
   }
   
   function doMarginalise() {
-    this.μ <- A*u.μ + c;
-    this.L <- llt(A*u.L*transpose(A*u.L) + L1*transpose(L1));
+    this.y <- A*μ.μ + c;
+    this.S <- A*μ.Σ*transpose(A) + Q;
+    update(y, S);
   }
 
   function doForward() {
-    this.μ <- A*u.x + c;
-    this.L <- L1;
+    this.y <- A*μ.x + c;
+    this.S <- Q;
+    update(y, S);
   }
   
   function doCondition() {
-    
+    K:Real[μ.D,D];
+    K <- μ.Σ*transpose(A)*inverse(S);
+    μ.update(μ.μ + K*(x - y), μ.Σ - K*A*μ.Σ);
   }
 }
 
-function Gaussian(μ:MultivariateGaussian, L:Real[_,_]) -> MultivariateGaussian {
-  D:Integer <- μ.D;
-  v:AffineMultivariateGaussian(D, D);
-  v.initialise(μ, L, identity(D, D), vector(0.0, D));
+function Gaussian(μ:MultivariateGaussian, Q:Real[_,_]) -> MultivariateGaussian {
+  v:AffineMultivariateGaussian(μ.D, μ.D);
+  v.initialise(identity(μ.D, μ.D), μ, vector(0.0, μ.D), Q);
   return v;
 }
 
-function Gaussian(μ:AffineMultivariateGaussianExpression, L:Real[_,_]) -> MultivariateGaussian {
-  R:Integer <- μ.R;
-  C:Integer <- μ.C;
-  v:AffineMultivariateGaussian(R, C);
-  v.initialise(μ.u, L, μ.A, μ.c);
+function Gaussian(μ:AffineMultivariateGaussianExpression, Q:Real[_,_]) -> MultivariateGaussian {
+  v:AffineMultivariateGaussian(μ.R, μ.C);
+  v.initialise(μ.A, μ.u, μ.c, Q);
   return v;
 }

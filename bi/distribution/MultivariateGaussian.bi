@@ -1,4 +1,5 @@
 import distribution.Delay;
+import distribution.Gaussian;
 import math;
 import random;
 
@@ -27,28 +28,22 @@ class MultivariateGaussian(D1:Integer) < Delay {
   μ:Real[D];
   
   /**
-   * Standard deviation (lower-triangular Cholesky factor of covariance).
+   * Covariance matrix.
    */
-  L:Real[D,D];
+  Σ:Real[D,D];
 
   function initialise(u:MultivariateGaussian) {
     super.initialise(u);
   }
 
-  function initialise(μ:Real[_], L:Real[_,_]) {
-    assert(length(μ) == D);
-    assert(rows(L) == D && columns(L) == D);
-    
+  function initialise(μ:Real[_], Σ:Real[_,_]) {
     super.initialise();
-    update(μ, L);
+    update(μ, Σ);
   }
 
-  function update(μ:Real[_], L:Real[_,_]) {
-    assert(length(μ) == D);
-    assert(rows(L) == D && columns(L) == D);
-    
+  function update(μ:Real[_], Σ:Real[_,_]) {
     this.μ <- μ;
-    this.L <- L;
+    this.Σ <- Σ;
   }
 
   /**
@@ -75,23 +70,19 @@ class MultivariateGaussian(D1:Integer) < Delay {
     x:Real[D];
     d:Integer;
     for (d in 1..D) {
-      cpp{{
-      x(make_view(make_index(d - 1))) = std::normal_distribution<double>(0.0, 1.0)(rng);
-      }}
+      x[d] <~ Gaussian(0.0, 1.0);
     }
-    return μ + L*x;
+    return μ + llt(Σ)*x;
   }
 
   function observe(x:Real[_]) -> Real {
-    assert(length(x) == D);
-    
+    L:Real[D,D];
+    L <- llt(Σ);
     return -0.5*squaredNorm(solve(L, x - μ)) - log(determinant(L)) - 0.5*Real(D)*log(2.0*π);
   }
 
   function doSample() {
-    x:Real[D];
-    x <- sample();
-    set(x);
+    set(sample());
   }
   
   function doObserve() {
@@ -102,9 +93,12 @@ class MultivariateGaussian(D1:Integer) < Delay {
 /**
  * Create.
  */
-function Gaussian(μ:Real[_], L:Real[_,_]) -> MultivariateGaussian {
-  m:MultivariateGaussian(length(μ));
-  m.initialise(μ, L);
+function Gaussian(μ:Real[_], Σ:Real[_,_]) -> MultivariateGaussian {
+  D:Integer <- length(μ);
+  assert(rows(Σ) == D);
+  assert(columns(Σ) == D);
+  m:MultivariateGaussian(D);
+  m.initialise(μ, Σ);
   return m;
 }
 
@@ -120,10 +114,8 @@ function m:MultivariateGaussian <- x:Real[_] {
  */
 function x:Real[_] <~ m:MultivariateGaussian {
   assert(length(x) == m.D);
-  
   m.graft();
   m.realise();
-  
   x <- m.x;
 }
 
@@ -131,9 +123,10 @@ function x:Real[_] <~ m:MultivariateGaussian {
  * Sample.
  */
 function x:MultivariateGaussian <~ m:MultivariateGaussian {
+  assert(x.isUninitialised() && x.isMissing());
   m.graft();
   m.realise();
-  x.set(m.x);
+  x <- m;
 }
 
 /**
@@ -141,7 +134,6 @@ function x:MultivariateGaussian <~ m:MultivariateGaussian {
  */
 function x:Real[_] ~> m:MultivariateGaussian -> Real {
   assert(length(x) == m.D);
-
   m.graft();
   m.set(x);
   m.realise();
@@ -149,12 +141,20 @@ function x:Real[_] ~> m:MultivariateGaussian -> Real {
 }
 
 /**
+ * Observe.
+ */
+function x:MultivariateGaussian ~> m:MultivariateGaussian {
+  assert(x.isUninitialised() && !x.isMissing());
+  m.graft();
+  m.set(x.x);
+  m.realise();
+}
+
+/**
  * Initialise.
  */
 function x:MultivariateGaussian ~ m:MultivariateGaussian {
   assert(x.isUninitialised());
-  assert(length(x) == m.D);
-  
   if (!x.isMissing()) {
     x ~> m;
   }

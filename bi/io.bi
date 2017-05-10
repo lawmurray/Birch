@@ -1,46 +1,56 @@
 import basic;
-import math.vector;
+import math;
 
 cpp {{
 #include <cstdio>
 }}
 
-/**
- * Output to standard output.
- */
-function print(value:String) {
-  cpp {{
-  ::printf("%s", value.c_str());
-  }}
+function print(value:Boolean) {
+  if (value) {
+    print("true");
+  } else {
+    print("false");
+  }
 }
 
-/**
- * Output to standard output.
- */
 function print(value:Real) {
   cpp {{
   ::printf("%f", value);
   }}
 }
 
-/**
- * Output to standard output.
- */
 function print(value:Integer) {
   cpp {{
   ::printf("%lld", value);
   }}
 }
 
-/**
- * Output to standard output.
- */
-function print(value:Real[_]) {
+function print(value:String) {
+  cpp {{
+  ::printf("%s", value.c_str());
+  }}
+}
+
+function print(x:Real[_]) {
   i:Integer;
-  for (i in 1..length(value)) {
+  for (i in 1..length(x)) {
     if (i != 1) {
       print(", ");
     }
-    print(value[i]);
+    print(x[i]);
+  }
+}
+
+function print(X:Real[_,_]) {
+  i:Integer;
+  j:Integer;
+  for (i in 1..rows(X)) {
+    for (j in 1..columns(X)) {
+      if (j != 1) {
+        print(", ");
+      }
+      print(X[i,j]);
+    }
+    print("\n");
   }
 }

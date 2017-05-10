@@ -34,7 +34,7 @@ template<class Type, class Frame>
 auto toEigenVector(const Array<Type,Frame>& x) {
   assert(x.count() == 1);
   return EigenVectorMap<Type>(x.buf(), x.length(0), 1,
-      EigenVectorStride(x.stride(0), 1));
+      EigenVectorStride(1, x.stride(0)));
 }
 
 /**
@@ -44,7 +44,7 @@ template<class Type, class Frame>
 auto toEigenMatrix(const Array<Type,Frame>& X) {
   assert(X.count() == 2);
   return EigenMatrixMap<Type>(X.buf(), X.length(0), X.length(1),
-      EigenMatrixStride(X.stride(1), X.lead(0)));
+      EigenMatrixStride(X.lead(1), X.stride(1)));
 }
 
 }
@@ -276,6 +276,19 @@ function llt(X:Real[_,_]) -> Real[_,_] {
 }
 
 /**
+ * Inverse of a matrix.
+ */
+function inverse(X:Real[_,_]) -> Real[_,_] {
+  assert(rows(X) == columns(X));
+  
+  invX:Real[rows(X),columns(X)];
+  cpp{{
+  toEigenMatrix(invX) = toEigenMatrix(X).inverse();
+  }}
+  return invX;
+}
+
+/**
  * Solve a system of equations.
  */
 function solve(X:Real[_,_], y:Real[_]) -> Real[_] {
@@ -286,4 +299,17 @@ function solve(X:Real[_,_], y:Real[_]) -> Real[_] {
   toEigenVector(z) = toEigenMatrix(X).colPivHouseholderQr().solve(toEigenVector(y));
   }}
   return z;
+}
+
+/**
+ * Solve a system of equations.
+ */
+function solve(X:Real[_,_], Y:Real[_,_]) -> Real[_,_] {
+  assert(columns(X) == rows(Y));
+  
+  Z:Real[rows(Y),columns(Y)];
+  cpp{{
+  toEigenMatrix(Z) = toEigenMatrix(X).colPivHouseholderQr().solve(toEigenMatrix(Y));
+  }}
+  return Z;
 }
