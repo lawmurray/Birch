@@ -6,45 +6,44 @@ cpp{{
  * Demonstrates a nonlinear state-space model with a linear-Gaussian
  * component that can be Rao--Blackwellised.
  */
-program delay_rbpf(N:Integer <- 100, T:Integer <- 10, R:Integer <- 10) {  
-  r:Integer;
-  for (r in 1..R) {  // repetitions
-    x:Example[N](T);
-    w:Real[N];
-    a:Integer[N];
-    W:Real <- 0.0;
-    n:Integer;
-    t:Integer;
+program delay_rbpf(N:Integer <- 100, T:Integer <- 10) {  
+  x:Example[N](T);
+  w:Real[N];
+  a:Integer[N];
+  W:Real <- 0.0;
+  n:Integer;
+  t:Integer;
 
-    /* initialise */
-    for (n in 1..N) {
-      x[n].input(T);
-      x[n].parameter();
-      x[n].initial();
-      w[n] <- x[n].observation(1);
-    }
-    W <- log_sum_exp(w) - log(Real(N));
-  
-    /* filter */
-    for (t in 2..T) {
-      a <- ancestors(w);
-      for (n in 1..N) {
-        x[n].copy(x[a[n]], t - 1);
-        x[n].transition(t);
-        w[n] <- x[n].observation(t);
-      }
-      W <- W + log_sum_exp(w) - log(Real(N));
-    }
-    
-    /* output */
-    s:Integer <- ancestor(w);
-    for (t in 1..T) {
-      x[s].output(t);
-      print(",");
-    }
-    print(W);
-    print("\n");
+  /* initialise */
+  for (n in 1..N) {
+    x[n].input(T);
+    x[n].parameter();
+    x[n].initial();
+    w[n] <- x[n].observation(1);
   }
+  W <- log_sum_exp(w) - log(Real(N));
+  
+  /* filter */
+  for (t in 2..T) {
+    a <- ancestors(w);
+    for (n in 1..N) {
+      if (a[n] != n) {
+        x[n].copy(x[a[n]], t - 1);
+      }
+      x[n].transition(t);
+      w[n] <- x[n].observation(t);
+    }
+    W <- W + log_sum_exp(w) - log(Real(N));
+  }
+    
+  /* output */
+  s:Integer <- ancestor(w);
+  for (t in 1..T) {
+    x[s].output(t);
+    print(",");
+  }
+  print(W);
+  print("\n");
 }
 
 /**
@@ -125,12 +124,12 @@ class Example(T1:Integer) {
 
     v <- read("data/y_n.csv", T);
     for (t in 1..T) {
-      this.y_n[t] <- vector(v[t], 1);
+      this.y_n[t] <- v[t..t];
     }
     
     v <- read("data/y_l.csv", T);
     for (t in 1..T) {
-      this.y_l[t] <- vector(v[t], 1);
+      this.y_l[t] <- v[t..t];
     }
   }
   
