@@ -23,8 +23,7 @@ bi::Driver::Driver(int argc, char** argv) :
     prefix(""),
     enable_std(true),
     enable_warnings(false),
-    enable_assert(true),
-    enable_extra_debug(false),
+    enable_debug(false),
     dry_build(false),
     dry_run(false),
     force(false),
@@ -44,10 +43,8 @@ bi::Driver::Driver(int argc, char** argv) :
     DISABLE_STD_ARG,
     ENABLE_WARNINGS_ARG,
     DISABLE_WARNINGS_ARG,
-    ENABLE_ASSERT_ARG,
-    DISABLE_ASSERT_ARG,
-    ENABLE_EXTRA_DEBUG_ARG,
-    DISABLE_EXTRA_DEBUG_ARG,
+    ENABLE_DEBUG_ARG,
+    DISABLE_DEBUG_ARG,
     DRY_BUILD_ARG,
     DRY_RUN_ARG,
     FORCE_ARG,
@@ -65,10 +62,8 @@ bi::Driver::Driver(int argc, char** argv) :
       { "disable-std", no_argument, 0, DISABLE_STD_ARG },
       { "enable-warnings", no_argument, 0, ENABLE_WARNINGS_ARG },
       { "disable-warnings", no_argument, 0, DISABLE_WARNINGS_ARG },
-      { "enable-assert", no_argument, 0, ENABLE_ASSERT_ARG },
-      { "disable-assert", no_argument, 0, DISABLE_ASSERT_ARG },
-      { "enable-extra-debug", no_argument, 0, ENABLE_EXTRA_DEBUG_ARG },
-      { "disable-extra-debug", no_argument, 0, DISABLE_EXTRA_DEBUG_ARG },
+      { "enable-extra-debug", no_argument, 0, ENABLE_DEBUG_ARG },
+      { "disable-extra-debug", no_argument, 0, DISABLE_DEBUG_ARG },
       { "dry-build", no_argument, 0, DRY_BUILD_ARG },
       { "dry-run", no_argument, 0, DRY_RUN_ARG },
       { "force", no_argument, 0, FORCE_ARG },
@@ -145,17 +140,11 @@ bi::Driver::Driver(int argc, char** argv) :
     case DISABLE_WARNINGS_ARG:
       enable_warnings = false;
       break;
-    case ENABLE_ASSERT_ARG:
-      enable_assert = true;
+    case ENABLE_DEBUG_ARG:
+      enable_debug = true;
       break;
-    case DISABLE_ASSERT_ARG:
-      enable_assert = false;
-      break;
-    case ENABLE_EXTRA_DEBUG_ARG:
-      enable_extra_debug = true;
-      break;
-    case DISABLE_EXTRA_DEBUG_ARG:
-      enable_extra_debug = false;
+    case DISABLE_DEBUG_ARG:
+      enable_debug = false;
       break;
     case DRY_BUILD_ARG:
       dry_build = true;
@@ -580,12 +569,12 @@ void bi::Driver::configure() {
     std::stringstream cppflags, cxxflags, ldflags, options, cmd;
 
     /* compile and link flags */
-    if (enable_extra_debug) {
+    if (enable_debug) {
       cppflags << " -D_GLIBCXX_DEBUG";
       cxxflags << " -O0 -g -fno-inline";
       ldflags << " -O0 -g -fno-inline";
     } else {
-      cxxflags << " -O3 -g -funroll-loops -flto";
+      cppflags << " -DNDEBUG";
 
       /*
        * -flto enables link-time code generation, which is used in favour
@@ -593,6 +582,7 @@ void bi::Driver::configure() {
        * recommends passing the same optimisation options to the linker as
        * to the compiler when using this.
        */
+      cxxflags << " -O3 -g -funroll-loops -flto";
       ldflags << " -O3 -g -funroll-loops -flto";
       // ^ can also use -flto=n to use n threads internally
     }
@@ -619,17 +609,13 @@ void bi::Driver::configure() {
     }
     options << " --disable-static";
     //options << " INSTALL=\"install -p\"";
-    // ^ This is problematic for headers, as whie *.bi file may change, this
+    // ^ This is problematic for headers, as while *.bi file may change, this
     //   may not change the *.hpp file, and so make keeps trying to rebuild
     //   it.
     if (!force) {
       options << " --config-cache";
     }
     options << ((enable_std) ? " --enable-std" : " --disable-std");
-    options << ((enable_assert) ? " --enable-assert" : " --disable-assert");
-    options << ((enable_extra_debug) ?
-                               " --enable-extradebug" :
-                               " --disable-extradebug");
 
     /* command */
     cmd << (work_dir / "configure").string() << " " << options.str()

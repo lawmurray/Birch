@@ -121,17 +121,11 @@ private:
    */
   bool enable_warnings;
 
-  /**
-   * Enable assertion checking. This is recommended for test runs, but not for
-   * production runs.
-   */
-  bool enable_assert;
 
   /**
-   * Enable extra debugging options in compilation. This is recommended along with
-   * `--with-gdb` or `--with-cuda-gdb` when debugging.
+   * Enable debugging mode.
    */
-  bool enable_extra_debug;
+  bool enable_debug;
 
   /**
    * Do not build.

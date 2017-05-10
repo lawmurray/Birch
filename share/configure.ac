@@ -15,22 +15,6 @@ AC_ARG_ENABLE([std],
        *) AC_MSG_ERROR([bad value ${enableval} for --enable-std]) ;;
      esac],[std=true])
 
-AC_ARG_ENABLE([assert],
-     [  --enable-assert         enable assertion checking],
-     [case "${enableval}" in
-       yes) assert=true ;;
-       no)  assert=false ;;
-       *) AC_MSG_ERROR([bad value ${enableval} for --enable-assert]) ;;
-     esac],[assert=true])
-
-AC_ARG_ENABLE([extradebug],
-     [  --enable-extradebug    use extra debugging options],
-     [case "${enableval}" in
-       yes) extradebug=true ;;
-       no)  extradebug=false ;;
-       *) AC_MSG_ERROR([bad value ${enableval} for --enable-extradebug]) ;;
-     esac],[extradebug=false])
-
 AC_PROG_CXXCPP
 AC_PROG_CXX
 AC_PATH_PROG([BIRCHC], [birchc], [./birchc])  # assumes will be compiled into working directory if not found
@@ -52,8 +36,6 @@ fi
 
 # Defines
 AM_CONDITIONAL([ENABLE_STD], [test x$std = xtrue])
-AM_CONDITIONAL([ENABLE_ASSERT], [test x$assert = xtrue])
-AM_CONDITIONAL([ENABLE_EXTRADEBUG], [test x$extradebug = xtrue])
 
 # Checks for typedefs, structures, and compiler characteristics
 AC_HEADER_STDBOOL
