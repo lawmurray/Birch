@@ -23,16 +23,22 @@ program delay_rbpf(N:Integer <- 100, T:Integer <- 10) {
   }
   W <- log_sum_exp(w) - log(Real(N));
   
-  /* filter */
   for (t in 2..T) {
+    /* resample */
     a <- ancestors(w);
     for (n in 1..N) {
       if (a[n] != n) {
         x[n].copy(x[a[n]], t - 1);
       }
+    }
+    
+    /* propagate and weight */
+    for (n in 1..N) {
       x[n].transition(t);
       w[n] <- x[n].observation(t);
     }
+    
+    /* marginal log-likelihood estimate */
     W <- W + log_sum_exp(w) - log(Real(N));
   }
     
@@ -43,6 +49,8 @@ program delay_rbpf(N:Integer <- 100, T:Integer <- 10) {
     print(",");
   }
   print(W);
+  print(",");
+  print(N);
   print("\n");
 }
 
@@ -112,7 +120,7 @@ class Example(T1:Integer) {
   }
   
   function observation(t:Integer) -> Real {
-    this.y_n[t] ~ Gaussian(vector(copysign(pow(scalar(x_n[t]), 2.0), scalar(x_n[t])), 1), Σ_y_n);
+    this.y_n[t] ~ Gaussian(vector(0.1*copysign(pow(scalar(x_n[t]), 2.0), scalar(x_n[t])), 1), Σ_y_n);
     this.y_l[t] ~ Gaussian(C*x_l[t], Σ_y_l);
     
     return y_n[t].w + y_l[t].w;
