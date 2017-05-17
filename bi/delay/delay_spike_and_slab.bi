@@ -1,6 +1,8 @@
 /**
  * Demonstrates how delayed sampling can yield to different runtime states
- * through a stochastic branch.
+ * through a stochastic branch, inspired by a spike-and-slab prior. Outputs
+ * whether the variable `y` is marginalized or realized at the end of the
+ * program. This is random in each run.
  */
 program delay_spike_and_slab() {  
   x:Boolean;
@@ -13,11 +15,11 @@ program delay_spike_and_slab() {
     y <- 0.0;
   }
   
-  print("y is a ");
-  if (y.isMissing()) {
-    print("distribution");
+  print("y is ");
+  if (y.isMarginalized()) {
+    print("marginalized");
   } else {
-    print("value");
+    print("realized");
   }
   print("\n");
 }

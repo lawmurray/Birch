@@ -1,10 +1,13 @@
-cpp{{
-#include <iostream>
-}}
-
 /**
- * Demonstrates a nonlinear state-space model with a linear-Gaussian
- * component that can be Rao--Blackwellised.
+ * Demonstrates a particle filter over a nonlinear state-space model with
+ * linear substructure. With delayed sampling enabled, this automatically
+ * yields a Rao--Blackwellized particle filter with locally-optimal proposal.
+ *
+ * `N` Number of particles.
+ * `T` Number of time steps.
+ *
+ * To disable delayed sampling, change the `~` operators to `<~` in the
+ * `initial` and `transition` functions of the `Example` class.
  */
 program delay_rbpf(N:Integer <- 100, T:Integer <- 10) {  
   x:Example[N](T);
@@ -14,7 +17,7 @@ program delay_rbpf(N:Integer <- 100, T:Integer <- 10) {
   n:Integer;
   t:Integer;
 
-  /* initialise */
+  /* initialize */
   for (n in 1..N) {
     x[n].input(T);
     x[n].parameter();
