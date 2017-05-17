@@ -29,12 +29,12 @@ class AffineGaussian < Gaussian {
   q:Real;
   
   /**
-   * Marginalised prior mean.
+   * Marginalized prior mean.
    */
   y:Real;
   
   /**
-   * Marginalised prior variance.
+   * Marginalized prior variance.
    */
   s:Real;
 
@@ -74,7 +74,7 @@ class AffineGaussian < Gaussian {
     
     /* update graph edges */
     setParent(μ);
-    if (isMarginalised()) {
+    if (isMarginalized()) {
       μ.setChild(this);
     }
   }

@@ -52,9 +52,7 @@ class MultivariateGaussian(D1:Integer) < Delay {
   function -> Real[_] {
     if (isMissing()) {
       graft();
-      if (!isRealised()) {
-        realize();
-      }
+      realize();
     }
     return x;
   }
@@ -131,7 +129,7 @@ function x:Real[_] <~ m:MultivariateGaussian {
  * Sample.
  */
 function x:MultivariateGaussian <~ m:MultivariateGaussian {
-  assert(x.isUninitialised() && x.isMissing());
+  assert(x.isUninitialized() && x.isMissing());
   m.graft();
   m.realize();
   x <- m;
@@ -152,7 +150,7 @@ function x:Real[_] ~> m:MultivariateGaussian -> Real {
  * Observe.
  */
 function x:MultivariateGaussian ~> m:MultivariateGaussian {
-  assert(x.isUninitialised() && !x.isMissing());
+  assert(x.isUninitialized() && !x.isMissing());
   m.graft();
   m.set(x.x);
   m.realize();
@@ -162,7 +160,7 @@ function x:MultivariateGaussian ~> m:MultivariateGaussian {
  * Initialise.
  */
 function x:MultivariateGaussian ~ m:MultivariateGaussian {
-  assert(x.isUninitialised());
+  assert(x.isUninitialized());
   if (!x.isMissing()) {
     x ~> m;
   }

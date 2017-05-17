@@ -51,9 +51,7 @@ class Gaussian < Delay {
   function -> Real {
     if (isMissing()) {
       graft();
-      if (!isRealised()) {
-        realize();
-      }
+      realize();
     }
     return x;
   }
@@ -118,7 +116,7 @@ function x:Real <~ m:Gaussian {
  * Sample.
  */
 function x:Gaussian <~ m:Gaussian {
-  assert(x.isUninitialised() && x.isMissing());
+  assert(x.isUninitialized() && x.isMissing());
   m.graft();
   m.realize();
   x <- m;
@@ -138,7 +136,7 @@ function x:Real ~> m:Gaussian -> Real {
  * Observe.
  */
 function x:Gaussian ~> m:Gaussian {
-  assert(x.isUninitialised() && !x.isMissing());
+  assert(x.isUninitialized() && !x.isMissing());
   m.graft();
   m.set(x.x);
   m.realize();
@@ -148,7 +146,7 @@ function x:Gaussian ~> m:Gaussian {
  * Initialise.
  */
 function x:Gaussian ~ m:Gaussian {
-  assert(x.isUninitialised());
+  assert(x.isUninitialized());
   if (!x.isMissing()) {
     x ~> m;
   }

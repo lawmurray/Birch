@@ -4,10 +4,10 @@ import assert;
 /*
  * Node states for delayed sampling.
  */
-UNINITIALISED:Integer <- 0;
-INITIALISED:Integer <- 1;
-MARGINALISED:Integer <- 2;
-REALISED:Integer <- 3;
+UNINITIALIZED:Integer <- 0;
+INITIALIZED:Integer <- 1;
+MARGINALIZED:Integer <- 2;
+REALIZED:Integer <- 3;
 
 /**
  * Node interface for delayed sampling.
@@ -16,7 +16,7 @@ class Delay {
   /**
    * State of the variate.
    */
-  state:Integer <- UNINITIALISED;
+  state:Integer <- UNINITIALIZED;
   
   /**
    * Is the value missing?
@@ -54,35 +54,35 @@ class Delay {
    * Is this the terminal node of a stem?
    */
   function isTerminal() -> Boolean {
-    return isMarginalised() && !hasChild;
+    return isMarginalized() && !hasChild;
   }
 
   /**
-   * Is this node in the uninitialised state?
+   * Is this node in the uninitialized state?
    */
-  function isUninitialised() -> Boolean {
-    return state == UNINITIALISED;
+  function isUninitialized() -> Boolean {
+    return state == UNINITIALIZED;
   }
   
   /**
-   * Is this node in the initialised state?
+   * Is this node in the initialized state?
    */
-  function isInitialised() -> Boolean {
-    return state == INITIALISED;
+  function isInitialized() -> Boolean {
+    return state == INITIALIZED;
   }
 
   /**
-   * Is this node in the marginalised state?
+   * Is this node in the marginalized state?
    */
-  function isMarginalised() -> Boolean {
-    return state == MARGINALISED;
+  function isMarginalized() -> Boolean {
+    return state == MARGINALIZED;
   }
 
   /**
-   * Is this node in the realised state?
+   * Is this node in the realized state?
    */
-  function isRealised() -> Boolean {
-    return state == REALISED;
+  function isRealized() -> Boolean {
+    return state == REALIZED;
   }
   
   /**
@@ -91,21 +91,14 @@ class Delay {
   function isMissing() -> Boolean {
     return missing;
   }
-  
-  /**
-   * Does this node have a deterministic relationship with its parent?
-   */
-  function isDeterministic() -> Boolean {
-    return false;
-  }
-    
+
   /**
    * Initialise as a root node.
    */
   function initialize() {
     this.hasParent <- false;
     this.hasChild <- false;
-    this.state <- MARGINALISED;
+    this.state <- MARGINALIZED;
   }
   
   /**
@@ -117,41 +110,37 @@ class Delay {
     this.parent <- parent;
     this.hasParent <- true;
     this.hasChild <- false;
-    this.state <- INITIALISED;
+    this.state <- INITIALIZED;
   }
   
   /**
    * Marginalise the variate.
    */
   function marginalize() {
-    assert(isInitialised());
+    assert(isInitialized());
     assert(hasParent);
     
     doMarginalize();
-    this.state <- MARGINALISED;
+    this.state <- MARGINALIZED;
   }
   
   /**
    * Forward sample the variate.
    */
   function forward() {
-    assert(isInitialised());
+    assert(isInitialized());
     
     doForward();
-    if (isDeterministic()) {
-      this.state <- REALISED;
-    } else {
-      this.state <- MARGINALISED;
-    }
+    this.state <- MARGINALIZED;
   }
   
   /**
    * Realise the variate.
    */
   function realize() {
-    assert(isInitialised() || isTerminal());
+    assert(isInitialized() || isTerminal());
     
-    this.state <- REALISED;
+    this.state <- REALIZED;
     if (hasParent) {
       parent.removeChild();
     }
@@ -160,11 +149,8 @@ class Delay {
     } else {
       doObserve();
     }
-    if (hasParent && !parent.isRealised()) {
+    if (hasParent && !parent.isRealized()) {
       doCondition();
-      if (isDeterministic()) {
-        parent.realize();
-      }
     }
     removeParent();
   }
@@ -173,14 +159,14 @@ class Delay {
    * Graft the stem to this node.
    */
   function graft() {
-    if (isMarginalised()) {
+    if (isMarginalized()) {
       if (hasChild) {
         child.prune();
         removeChild();
       }
-    } else if (isInitialised()) {
+    } else if (isInitialized()) {
       parent.graft(this);
-      if (parent.isRealised()) {
+      if (parent.isRealized()) {
         forward();
       } else {
         marginalize();
@@ -203,15 +189,13 @@ class Delay {
    * Prune the stem from below this node.
    */
   function prune() {
-    assert(isMarginalised());
+    assert(isMarginalized());
     
     if (hasChild) {
       child.prune();
       removeChild();
     }
-    if (!isRealised()) { // deterministic child may have triggered realisation
-      realize();
-    }
+    realize();
   }
 
   /**

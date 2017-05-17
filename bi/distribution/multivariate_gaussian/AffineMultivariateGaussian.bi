@@ -39,12 +39,12 @@ class AffineMultivariateGaussian(R1:Integer,C1:Integer) < MultivariateGaussian(R
   Q:Real[R,R];
   
   /**
-   * Marginalised prior mean.
+   * Marginalized prior mean.
    */
   y:Real[R];
   
   /**
-   * Marginalised prior covariance.
+   * Marginalized prior covariance.
    */
   S:Real[R,R];
 
@@ -85,7 +85,7 @@ class AffineMultivariateGaussian(R1:Integer,C1:Integer) < MultivariateGaussian(R
     
     /* update graph edges */
     setParent(μ);
-    if (isMarginalised()) {
+    if (isMarginalized()) {
       μ.setChild(this);
     }
   }
