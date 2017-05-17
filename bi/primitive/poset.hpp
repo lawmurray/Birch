@@ -4,6 +4,8 @@
 #pragma once
 
 #include <cstdlib>
+#include <cstddef>
+#include <algorithm>
 #include <map>
 #include <list>
 
@@ -287,7 +289,7 @@ void bi::poset<T,Compare>::add_vertex(T v) {
   std::list<T> parents1, children1;
   parents(v, parents1);
   children(v, children1);
-  ptrdiff_t l = 0, u = size();
+  std::ptrdiff_t l = 0, u = size();
 
   for (auto iter = parents1.begin(); iter != parents1.end(); ++iter) {
     auto find = std::find(begin(), end(), *iter);

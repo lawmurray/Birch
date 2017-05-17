@@ -99,7 +99,9 @@ bi::Driver::Driver(int argc, char** argv) :
         }
         ++i;
       } else if (name[0] != '-') {
-        throw DriverException((std::stringstream() << "Configuration file " << name << " does not exist.").str());
+        std::stringstream buf;
+        buf << "Configuration file " << name << " does not exist.";
+        throw DriverException(buf.str());
       }
     } while (yyin && i < argc);
     largv.erase(largv.begin() + 1, largv.begin() + i);
@@ -266,12 +268,16 @@ void bi::Driver::run(const std::string& prog) {
   handle = dlopen(so.c_str(), RTLD_NOW);
   msg = dlerror();
   if (handle == NULL) {
-    throw DriverException((std::stringstream() << "Could not load " << so.string() << ", " << msg << '.').str());
+    std::stringstream buf;
+    buf << "Could not load " << so.string() << ", " << msg << '.';
+    throw DriverException(buf.str());
   } else {
     addr = dlsym(handle, prog.c_str());
     msg = dlerror();
     if (msg != NULL) {
-      throw DriverException((std::stringstream() << "Could not find symbol " << prog << " in " << so.string() << '.').str());
+      std::stringstream buf;
+      buf << "Could not find symbol " << prog << " in " << so.string() << '.';
+      throw DriverException(buf.str());
     } else {
       fcn = reinterpret_cast<prog_t*>(addr);
       if (!dry_run) {
@@ -304,8 +310,9 @@ void bi::Driver::install() {
     if (ret == -1) {
       throw DriverException("make install failed to execute.");
     } else if (ret != 0) {
-      throw DriverException((std::stringstream() <<
-          "make install died with signal " << ret << ". See " << (build_dir / "install.log").string() << " for details.").str());
+      std::stringstream buf;
+      buf << "make install died with signal " << ret << ". See " << (build_dir / "install.log").string() << " for details.";
+      throw DriverException(buf.str());
     }
 
     /* change back to original working dir */
@@ -331,8 +338,9 @@ void bi::Driver::uninstall() {
   if (ret == -1) {
     throw DriverException("make uninstall failed to execute.");
   } else if (ret != 0) {
-    throw DriverException((std::stringstream() <<
-        "make uninstall died with signal " << ret << ". See " << (build_dir / "uninstall.log").string() << " for details.").str());
+    std::stringstream buf;
+    buf << "make uninstall died with signal " << ret << ". See " << (build_dir / "uninstall.log").string() << " for details.";
+    throw DriverException(buf.str());
   }
 
   /* change back to original working dir */
@@ -344,7 +352,9 @@ void bi::Driver::setup() {
   if (exists("MANIFEST")) {
     if (!exists(build_dir)) {
       if (!create_directory(build_dir)) {
-        throw DriverException((std::stringstream() << "Could not create build directory " << build_dir << '.').str());
+        std::stringstream buf;
+        buf << "Could not create build directory " << build_dir << '.';
+        throw DriverException(buf.str());
       }
       ofstream stream(build_dir / "lock");  // creates lock file
     }
@@ -365,7 +375,9 @@ void bi::Driver::setup() {
     path m4_dir = work_dir / "m4";
     if (!exists(m4_dir)) {
       if (!create_directory(m4_dir)) {
-        throw DriverException((std::stringstream() << "Could not create m4 directory " << m4_dir << '.').str());
+        std::stringstream buf;
+        buf << "Could not create m4 directory " << m4_dir << '.';
+        throw DriverException(buf.str());
       }
     }
     copy_if_newer(find(share_dirs, biPath / "ax_cxx_compile_stdcxx.m4"),
@@ -401,7 +413,9 @@ void bi::Driver::setup() {
           otherFiles.push_back(file);
         }
       } else {
-        warn((std::stringstream() << file.string() << " in MANIFEST does not exist.").str());
+        std::stringstream buf;
+        buf << file.string() << " in MANIFEST does not exist.";
+        warn(buf.str());
       }
     }
 
@@ -556,8 +570,9 @@ void bi::Driver::autogen() {
     if (ret == -1) {
       throw DriverException("autogen.sh failed to execute.");
     } else if (ret != 0) {
-      throw DriverException((std::stringstream() <<
-          "autogen.sh died with signal " << ret << ". Make sure autoconf, automake and libtool are installed. See " << (build_dir / "autogen.log").string() << " for details.").str());
+      std::stringstream buf;
+      buf << "autogen.sh died with signal " << ret << ". Make sure autoconf, automake and libtool are installed. See " << (build_dir / "autogen.log").string() << " for details.";
+      throw DriverException(buf.str());
     }
   }
 }
@@ -634,8 +649,9 @@ void bi::Driver::configure() {
     if (ret == -1) {
       throw DriverException("configure failed to execute.");
     } else if (ret != 0) {
-      throw DriverException((std::stringstream() <<
-          "configure died with signal " << ret << ". Make sure all dependencies are installed. See " << (build_dir / "configure.log").string() << " and " << (build_dir / "config.log").string() << " for details.").str());
+      std::stringstream buf;
+      buf << "configure died with signal " << ret << ". Make sure all dependencies are installed. See " << (build_dir / "configure.log").string() << " and " << (build_dir / "config.log").string() << " for details.";
+      throw DriverException(buf.str());
     }
 
     /* change back to original working dir */
@@ -664,8 +680,9 @@ void bi::Driver::make() {
   if (ret == -1) {
     throw DriverException("make failed to execute.");
   } else if (ret != 0) {
-    throw DriverException((std::stringstream() <<
-        "make died with signal " << ret << ". See " << (build_dir / "make.log").string() << " for details.").str());
+    std::stringstream buf;
+    buf << "make died with signal " << ret << ". See " << (build_dir / "make.log").string() << " for details.";
+    throw DriverException(buf.str());
   }
 
   /* change back to original working dir */

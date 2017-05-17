@@ -41,7 +41,7 @@ bi::Packager::Packager(int argc, char** argv) :
   setenv("POSIXLY_CORRECT", "1", 1);
 
   /* remaining options */
-  while (optind < largv.size()) {  // don't use c != -1, this indicates a config file
+  while (optind < (int)largv.size()) {  // don't use c != -1, this indicates a config file
     c = getopt_long(largv.size(), largv.data(), short_options, long_options,
         &option_index);
     switch (c) {
@@ -77,8 +77,9 @@ bi::Packager::Packager(int argc, char** argv) :
           ++i;
         }
       } else {
-        warn(
-            (std::stringstream() << "could not open config file " << name << '.').str());
+        std::stringstream buf;
+        buf << "could not open config file " << name << '.';
+        warn(buf.str());
       }
       break;
     }
@@ -138,9 +139,7 @@ void bi::Packager::validate() {
 
   /* check MANIFEST */
   if (!exists("MANIFEST")) {
-    warn(
-        (std::stringstream()
-            << "no MANIFEST file; create a MANIFEST file with a list of files, one per line, to be contained in the package.").str());
+    warn("no MANIFEST file; create a MANIFEST file with a list of files, one per line, to be contained in the package.");
   } else {
     ifstream manifestStream("MANIFEST");
     std::string name;
@@ -148,9 +147,7 @@ void bi::Packager::validate() {
       boost::trim(name);
       manifestFiles.insert(name);
       if (!exists(name)) {
-        warn(
-            (std::stringstream() << name
-                << " file listed in MANIFEST file does not exist.").str());
+        warn(name + " file listed in MANIFEST file does not exist.");
       }
     }
   }
@@ -206,9 +203,7 @@ void bi::Packager::validate() {
     } else if (interesting.find(path.extension().string())
         != interesting.end()) {
       if (manifestFiles.find(path.string()) == manifestFiles.end()) {
-        warn(
-            (std::stringstream() << "is " << path.string()
-                << " missing from MANIFEST file?").str());
+        warn(std::string("is ") + path.string() + " missing from MANIFEST file?");
       }
     }
     ++iter;
@@ -222,9 +217,7 @@ void bi::Packager::validate() {
       auto path = dataIter->path();
       if (interesting.find(path.extension().string()) != interesting.end()) {
         if (manifestFiles.find(path.string()) == manifestFiles.end()) {
-          warn(
-              (std::stringstream() << "is " << path.string()
-                  << " missing from MANIFEST file?").str());
+          warn(std::string("is ") + path.string() + " missing from MANIFEST file?");
         }
       }
       ++dataIter;
