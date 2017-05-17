@@ -166,6 +166,7 @@ class Delay {
         parent.realise();
       }
     }
+    removeParent();
   }
 
   /**
@@ -222,6 +223,16 @@ class Delay {
   }
 
   /**
+   * Remove the parent.
+   */
+  function removeParent() {
+    cpp{{
+    cast(this)->parent = nullptr;
+    }}
+    this.hasParent <- false;
+  }
+
+  /**
    * Set the child.
    */
   function setChild(u:Delay) {
@@ -233,6 +244,9 @@ class Delay {
    * Remove the child.
    */
   function removeChild() {
+    cpp{{
+    cast(this)->child = nullptr;
+    }}
     this.hasChild <- false;
   }
   
@@ -257,7 +271,12 @@ class Delay {
   
   function copy(o:Delay) {
     this.state <- o.state;
-    this.missing <- o.missing;
+    this.missing <- o.missing;    
     this.hasParent <- false;
     this.hasChild <- false;
-  }}
+    cpp{{
+    cast(this)->parent = nullptr;
+    cast(this)->child = nullptr;
+    }}
+  }
+}
