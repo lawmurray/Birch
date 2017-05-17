@@ -26,14 +26,14 @@ class Gaussian < Delay {
    */
   σ2:Real;
 
-  function initialise(u:Gaussian) {
-    super.initialise(u);
+  function initialize(u:Gaussian) {
+    super.initialize(u);
   }
 
-  function initialise(μ:Real, σ2:Real) {
+  function initialize(μ:Real, σ2:Real) {
     assert(σ2 > 0.0);
     
-    super.initialise();
+    super.initialize();
     this.μ <- μ;
     this.σ2 <- σ2;
   }
@@ -52,7 +52,7 @@ class Gaussian < Delay {
     if (isMissing()) {
       graft();
       if (!isRealised()) {
-        realise();
+        realize();
       }
     }
     return x;
@@ -87,7 +87,7 @@ class Gaussian < Delay {
  */
 function Gaussian(μ:Real, σ2:Real) -> Gaussian {
   m:Gaussian;
-  m.initialise(μ, σ2);
+  m.initialize(μ, σ2);
   return m;
 }
 
@@ -110,7 +110,7 @@ function m:Gaussian <- s:String {
  */
 function x:Real <~ m:Gaussian {
   m.graft();
-  m.realise();
+  m.realize();
   x <- m.x;
 }
 
@@ -120,7 +120,7 @@ function x:Real <~ m:Gaussian {
 function x:Gaussian <~ m:Gaussian {
   assert(x.isUninitialised() && x.isMissing());
   m.graft();
-  m.realise();
+  m.realize();
   x <- m;
 }
 
@@ -130,7 +130,7 @@ function x:Gaussian <~ m:Gaussian {
 function x:Real ~> m:Gaussian -> Real {
   m.graft();
   m.set(x);
-  m.realise();
+  m.realize();
   return m.w;
 }
 
@@ -141,7 +141,7 @@ function x:Gaussian ~> m:Gaussian {
   assert(x.isUninitialised() && !x.isMissing());
   m.graft();
   m.set(x.x);
-  m.realise();
+  m.realize();
 }
 
 /**

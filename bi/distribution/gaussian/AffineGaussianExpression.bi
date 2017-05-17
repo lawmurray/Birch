@@ -24,7 +24,7 @@ class AffineGaussianExpression {
   /**
    * Constructor.
    */
-  function initialise(a:Real, u:Gaussian, c:Real) {
+  function initialize(a:Real, u:Gaussian, c:Real) {
     this.a <- a;
     this.u <- u;
     this.c <- c;
@@ -33,7 +33,7 @@ class AffineGaussianExpression {
 
 function u:Gaussian + c:Real -> AffineGaussianExpression {
   v:AffineGaussianExpression;
-  v.initialise(1.0, u, c);
+  v.initialize(1.0, u, c);
   return v;
 }
 
@@ -43,25 +43,25 @@ function c:Real + u:Gaussian -> AffineGaussianExpression {
 
 function u:Gaussian - c:Real -> AffineGaussianExpression {
   v:AffineGaussianExpression;
-  v.initialise(1.0, u, -c);
+  v.initialize(1.0, u, -c);
   return v;
 }
 
 function c:Real - u:Gaussian -> AffineGaussianExpression {
   v:AffineGaussianExpression;
-  v.initialise(-1.0, u, c);
+  v.initialize(-1.0, u, c);
   return v;
 }
 
 function a:Real*u:Gaussian -> AffineGaussianExpression {
   v:AffineGaussianExpression;
-  v.initialise(1.0, u, 0.0);
+  v.initialize(1.0, u, 0.0);
   return v;
 }
 
 function u:AffineGaussianExpression + c:Real -> AffineGaussianExpression {
   v:AffineGaussianExpression;
-  v.initialise(u.a, u.u, u.c + c);
+  v.initialize(u.a, u.u, u.c + c);
   return v;
 }
 
@@ -71,18 +71,18 @@ function c:Real + u:AffineGaussianExpression -> AffineGaussianExpression {
 
 function u:AffineGaussianExpression - c:Real -> AffineGaussianExpression {
   v:AffineGaussianExpression;
-  v.initialise(u.a, u.u, u.c - c);
+  v.initialize(u.a, u.u, u.c - c);
   return v;
 }
 
 function c:Real - u:AffineGaussianExpression -> AffineGaussianExpression {
   v:AffineGaussianExpression;
-  v.initialise(-u.a, u.u, c - u.c);
+  v.initialize(-u.a, u.u, c - u.c);
   return v;
 }
 
 function a:Real*u:AffineGaussianExpression -> AffineGaussianExpression {
   v:AffineGaussianExpression;
-  v.initialise(a*u.a, u.u, a*u.c);
+  v.initialize(a*u.a, u.u, a*u.c);
   return v;
 }

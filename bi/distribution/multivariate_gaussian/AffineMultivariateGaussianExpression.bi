@@ -35,7 +35,7 @@ class AffineMultivariateGaussianExpression(R1:Integer, C1:Integer) {
   /**
    * Constructor.
    */
-  function initialise(A:Real[_,_], u:MultivariateGaussian, c:Real[_]) {
+  function initialize(A:Real[_,_], u:MultivariateGaussian, c:Real[_]) {
     assert(rows(A) == R && columns(A) == C);
     assert(length(c) == R);
     assert(u.D == C);
@@ -49,7 +49,7 @@ class AffineMultivariateGaussianExpression(R1:Integer, C1:Integer) {
 function u:MultivariateGaussian + c:Real[_] -> AffineMultivariateGaussianExpression {
   assert(u.D == length(c));
   v:AffineMultivariateGaussianExpression(u.D, u.D);
-  v.initialise(identity(u.D, u.D), u, c);
+  v.initialize(identity(u.D, u.D), u, c);
   return v;
 }
 
@@ -60,14 +60,14 @@ function c:Real[_] + u:MultivariateGaussian -> AffineMultivariateGaussianExpress
 function u:MultivariateGaussian - c:Real[_] -> AffineMultivariateGaussianExpression {
   assert(u.D == length(c));
   v:AffineMultivariateGaussianExpression(u.D, u.D);
-  v.initialise(identity(u.D, u.D), u, -c);
+  v.initialize(identity(u.D, u.D), u, -c);
   return v;
 }
 
 function c:Real[_] - u:MultivariateGaussian -> AffineMultivariateGaussianExpression {
   assert(u.D == length(c));
   v:AffineMultivariateGaussianExpression(u.D, u.D);
-  v.initialise(-identity(u.D, u.D), u, c);
+  v.initialize(-identity(u.D, u.D), u, c);
   return v;
 }
 
@@ -76,13 +76,13 @@ function A:Real[_,_]*u:MultivariateGaussian -> AffineMultivariateGaussianExpress
   R:Integer <- rows(A);
   C:Integer <- columns(A);
   v:AffineMultivariateGaussianExpression(R, C);
-  v.initialise(A, u, vector(0.0, R));
+  v.initialize(A, u, vector(0.0, R));
   return v;
 }
 
 function u:AffineMultivariateGaussianExpression + c:Real[_] -> AffineMultivariateGaussianExpression {
   v:AffineMultivariateGaussianExpression(u.R, u.C);
-  v.initialise(u.A, u.u, u.c + c);
+  v.initialize(u.A, u.u, u.c + c);
   return v;
 }
 
@@ -92,18 +92,18 @@ function c:Real[_] + u:AffineMultivariateGaussianExpression -> AffineMultivariat
 
 function u:AffineMultivariateGaussianExpression - c:Real[_] -> AffineMultivariateGaussianExpression {
   v:AffineMultivariateGaussianExpression(u.R, u.C);
-  v.initialise(u.A, u.u, u.c - c);
+  v.initialize(u.A, u.u, u.c - c);
   return v;
 }
 
 function c:Real[_] - u:AffineMultivariateGaussianExpression -> AffineMultivariateGaussianExpression {
   v:AffineMultivariateGaussianExpression(u.R, u.C);
-  v.initialise(-u.A, u.u, c - u.c);
+  v.initialize(-u.A, u.u, c - u.c);
   return v;
 }
 
 function A:Real[_,_]*u:AffineMultivariateGaussianExpression -> AffineMultivariateGaussianExpression {
   v:AffineMultivariateGaussianExpression(rows(A), u.C);
-  v.initialise(A*u.A, u.u, A*u.c);
+  v.initialize(A*u.A, u.u, A*u.c);
   return v;
 }

@@ -48,15 +48,15 @@ class AffineMultivariateGaussian(R1:Integer,C1:Integer) < MultivariateGaussian(R
    */
   S:Real[R,R];
 
-  function initialise(A:Real[_,_], μ:MultivariateGaussian, c:Real[_], Q:Real[_,_]) {
-    super.initialise(μ);
+  function initialize(A:Real[_,_], μ:MultivariateGaussian, c:Real[_], Q:Real[_,_]) {
+    super.initialize(μ);
     this.A <- A;
     this.μ <- μ;
     this.c <- c;
     this.Q <- Q;
   }
   
-  function doMarginalise() {
+  function doMarginalize() {
     this.y <- A*μ.μ + c;
     this.S <- A*μ.Σ*transpose(A) + Q;
     update(y, S);
@@ -93,12 +93,12 @@ class AffineMultivariateGaussian(R1:Integer,C1:Integer) < MultivariateGaussian(R
 
 function Gaussian(μ:MultivariateGaussian, Q:Real[_,_]) -> MultivariateGaussian {
   v:AffineMultivariateGaussian(μ.D, μ.D);
-  v.initialise(identity(μ.D, μ.D), μ, vector(0.0, μ.D), Q);
+  v.initialize(identity(μ.D, μ.D), μ, vector(0.0, μ.D), Q);
   return v;
 }
 
 function Gaussian(μ:AffineMultivariateGaussianExpression, Q:Real[_,_]) -> MultivariateGaussian {
   v:AffineMultivariateGaussian(μ.R, μ.C);
-  v.initialise(μ.A, μ.u, μ.c, Q);
+  v.initialize(μ.A, μ.u, μ.c, Q);
   return v;
 }

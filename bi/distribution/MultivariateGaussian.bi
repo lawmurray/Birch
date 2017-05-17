@@ -32,12 +32,12 @@ class MultivariateGaussian(D1:Integer) < Delay {
    */
   Σ:Real[D,D];
 
-  function initialise(u:MultivariateGaussian) {
-    super.initialise(u);
+  function initialize(u:MultivariateGaussian) {
+    super.initialize(u);
   }
 
-  function initialise(μ:Real[_], Σ:Real[_,_]) {
-    super.initialise();
+  function initialize(μ:Real[_], Σ:Real[_,_]) {
+    super.initialize();
     update(μ, Σ);
   }
 
@@ -53,7 +53,7 @@ class MultivariateGaussian(D1:Integer) < Delay {
     if (isMissing()) {
       graft();
       if (!isRealised()) {
-        realise();
+        realize();
       }
     }
     return x;
@@ -106,7 +106,7 @@ function Gaussian(μ:Real[_], Σ:Real[_,_]) -> MultivariateGaussian {
   assert(rows(Σ) == D);
   assert(columns(Σ) == D);
   m:MultivariateGaussian(D);
-  m.initialise(μ, Σ);
+  m.initialize(μ, Σ);
   return m;
 }
 
@@ -123,7 +123,7 @@ function m:MultivariateGaussian <- x:Real[_] {
 function x:Real[_] <~ m:MultivariateGaussian {
   assert(length(x) == m.D);
   m.graft();
-  m.realise();
+  m.realize();
   x <- m.x;
 }
 
@@ -133,7 +133,7 @@ function x:Real[_] <~ m:MultivariateGaussian {
 function x:MultivariateGaussian <~ m:MultivariateGaussian {
   assert(x.isUninitialised() && x.isMissing());
   m.graft();
-  m.realise();
+  m.realize();
   x <- m;
 }
 
@@ -144,7 +144,7 @@ function x:Real[_] ~> m:MultivariateGaussian -> Real {
   assert(length(x) == m.D);
   m.graft();
   m.set(x);
-  m.realise();
+  m.realize();
   return m.w;
 }
 
@@ -155,7 +155,7 @@ function x:MultivariateGaussian ~> m:MultivariateGaussian {
   assert(x.isUninitialised() && !x.isMissing());
   m.graft();
   m.set(x.x);
-  m.realise();
+  m.realize();
 }
 
 /**

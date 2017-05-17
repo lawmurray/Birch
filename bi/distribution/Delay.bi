@@ -102,7 +102,7 @@ class Delay {
   /**
    * Initialise as a root node.
    */
-  function initialise() {
+  function initialize() {
     this.hasParent <- false;
     this.hasChild <- false;
     this.state <- MARGINALISED;
@@ -113,7 +113,7 @@ class Delay {
    *
    * `parent` The parent node.
    */
-  function initialise(parent:Delay) {
+  function initialize(parent:Delay) {
     this.parent <- parent;
     this.hasParent <- true;
     this.hasChild <- false;
@@ -123,11 +123,11 @@ class Delay {
   /**
    * Marginalise the variate.
    */
-  function marginalise() {
+  function marginalize() {
     assert(isInitialised());
     assert(hasParent);
     
-    doMarginalise();
+    doMarginalize();
     this.state <- MARGINALISED;
   }
   
@@ -148,7 +148,7 @@ class Delay {
   /**
    * Realise the variate.
    */
-  function realise() {
+  function realize() {
     assert(isInitialised() || isTerminal());
     
     this.state <- REALISED;
@@ -163,7 +163,7 @@ class Delay {
     if (hasParent && !parent.isRealised()) {
       doCondition();
       if (isDeterministic()) {
-        parent.realise();
+        parent.realize();
       }
     }
     removeParent();
@@ -183,7 +183,7 @@ class Delay {
       if (parent.isRealised()) {
         forward();
       } else {
-        marginalise();
+        marginalize();
       }
     }
   }
@@ -210,7 +210,7 @@ class Delay {
       removeChild();
     }
     if (!isRealised()) { // deterministic child may have triggered realisation
-      realise();
+      realize();
     }
   }
 
@@ -253,7 +253,7 @@ class Delay {
   /*
    * Derived type requirements.
    */
-  function doMarginalise() {
+  function doMarginalize() {
     //
   }
   function doForward() {

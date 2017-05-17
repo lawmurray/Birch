@@ -38,15 +38,15 @@ class AffineGaussian < Gaussian {
    */
   s:Real;
 
-  function initialise(a:Real, μ:Gaussian, c:Real, q:Real) {
-    super.initialise(μ);
+  function initialize(a:Real, μ:Gaussian, c:Real, q:Real) {
+    super.initialize(μ);
     this.a <- a;
     this.μ <- μ;
     this.c <- c;
     this.q <- q;
   }
   
-  function doMarginalise() {
+  function doMarginalize() {
     this.y <- a*μ.μ + c;
     this.s <- pow(a, 2.0)*μ.σ2 + q;
     update(y, s);
@@ -82,12 +82,12 @@ class AffineGaussian < Gaussian {
 
 function Gaussian(μ:Gaussian, q:Real) -> Gaussian {
   v:AffineGaussian;
-  v.initialise(1.0, μ, 0.0, q);
+  v.initialize(1.0, μ, 0.0, q);
   return v;
 }
 
 function Gaussian(μ:AffineGaussianExpression, q:Real) -> Gaussian {
   v:AffineGaussian;
-  v.initialise(μ.a, μ.u, μ.c, q);
+  v.initialize(μ.a, μ.u, μ.c, q);
   return v;
 }
