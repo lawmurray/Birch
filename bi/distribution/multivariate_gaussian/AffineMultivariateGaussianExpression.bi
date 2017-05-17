@@ -1,11 +1,10 @@
 import distribution.MultivariateGaussian;
 import math;
 import assert;
-import io;
 
 /**
- * Multivariate Gaussian that has a mean which is an affine transformation of
- * another multivariate Gaussian.
+ * Expression used to accumulate affine transformations of multivariate
+ * Gaussians.
  */
 class AffineMultivariateGaussianExpression(R1:Integer, C1:Integer) {
   /**
@@ -29,7 +28,7 @@ class AffineMultivariateGaussianExpression(R1:Integer, C1:Integer) {
   u:MultivariateGaussian;
 
   /**
-   * Vector of affine transformation.
+   * Additive ector of affine transformation.
    */
   c:Real[R];
   
@@ -48,7 +47,6 @@ class AffineMultivariateGaussianExpression(R1:Integer, C1:Integer) {
 }
 
 function u:MultivariateGaussian + c:Real[_] -> AffineMultivariateGaussianExpression {
-    print(u.D); print("\n");
   assert(u.D == length(c));
   v:AffineMultivariateGaussianExpression(u.D, u.D);
   v.initialise(identity(u.D, u.D), u, c);
@@ -72,7 +70,6 @@ function c:Real[_] - u:MultivariateGaussian -> AffineMultivariateGaussianExpress
   v.initialise(-identity(u.D, u.D), u, c);
   return v;
 }
-
 
 function A:Real[_,_]*u:MultivariateGaussian -> AffineMultivariateGaussianExpression {
   assert(columns(A) == u.D);
@@ -104,7 +101,6 @@ function c:Real[_] - u:AffineMultivariateGaussianExpression -> AffineMultivariat
   v.initialise(-u.A, u.u, c - u.c);
   return v;
 }
-
 
 function A:Real[_,_]*u:AffineMultivariateGaussianExpression -> AffineMultivariateGaussianExpression {
   v:AffineMultivariateGaussianExpression(rows(A), u.C);

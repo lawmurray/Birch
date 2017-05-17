@@ -22,27 +22,27 @@ class Gaussian < Delay {
   μ:Real;
   
   /**
-   * Standard deviation.
+   * Variance.
    */
-  σ:Real;
+  σ2:Real;
 
   function initialise(u:Gaussian) {
     super.initialise(u);
   }
 
-  function initialise(μ:Real, σ:Real) {
-    assert(σ > 0.0);
+  function initialise(μ:Real, σ2:Real) {
+    assert(σ2 > 0.0);
     
     super.initialise();
     this.μ <- μ;
-    this.σ <- σ;
+    this.σ2 <- σ2;
   }
 
-  function update(μ:Real, σ:Real) {
-    assert(σ > 0.0);
+  function update(μ:Real, σ2:Real) {
+    assert(σ2 > 0.0);
     
     this.μ <- μ;
-    this.σ <- σ;
+    this.σ2 <- σ2;
   }
 
   /**
@@ -65,12 +65,12 @@ class Gaussian < Delay {
   
   function sample() -> Real {
     cpp {{
-    return std::normal_distribution<double>(μ, σ)(rng);
+    return std::normal_distribution<double>(μ, ::sqrt(σ2))(rng);
     }}
   }
 
   function observe(x:Real) -> Real {
-    return -0.5*pow((x - μ)/σ, 2.0) - log(σ) - 0.5*log(2.0*π);
+    return -0.5*(pow((x - μ), 2.0)/σ2 - log(σ2) - log(2.0*π));
   }
 
   function doSample() {
@@ -85,9 +85,9 @@ class Gaussian < Delay {
 /**
  * Create.
  */
-function Gaussian(μ:Real, σ:Real) -> Gaussian {
+function Gaussian(μ:Real, σ2:Real) -> Gaussian {
   m:Gaussian;
-  m.initialise(μ, σ);
+  m.initialise(μ, σ2);
   return m;
 }
 

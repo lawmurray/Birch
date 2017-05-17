@@ -34,7 +34,7 @@ class AffineMultivariateGaussian(R1:Integer,C1:Integer) < MultivariateGaussian(R
   c:Real[R];
 
   /**
-   * Disturbance standard deviation.
+   * Disturbance covariance.
    */
   Q:Real[R,R];
   
