@@ -1,11 +1,11 @@
 all:
-	birch build --verbose --enable-warnings --enable-assert --enable-extra-debug
+	birch build --verbose
 
 install:
-	birch install --verbose --enable-warnings --enable-assert --enable-extra-debug
+	birch install --verbose
 
 uninstall:
-	birch uninstall --verbose --enable-warnings --enable-assert --enable-extra-debug
+	birch uninstall --verbose
 
 clean:
 	rm -rf build autom4te.cache autogen.sh common.am configure.ac Makefile.am configure
