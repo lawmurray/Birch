@@ -63,10 +63,10 @@ program delay_rbpf(N:Integer <- 100, T:Integer <- 10) {
 class Example(T1:Integer) {
   T:Integer <- T1;
 
-  Σ_x_l:Real[3,3];  // linear state noise standard deviation
-  Σ_x_n:Real[1,1];  // nonlinear state noise standard deviation
-  Σ_y_l:Real[1,1];  // linear observation noise standard deviation
-  Σ_y_n:Real[1,1];  // nonlinear observation noise standard deviation
+  Σ_x_l:Real[3,3];  // linear state noise covariance
+  Σ_x_n:Real[1,1];  // nonlinear state noise covariance
+  Σ_y_l:Real[1,1];  // linear observation noise covariance
+  Σ_y_n:Real[1,1];  // nonlinear observation noise covariance
   
   A:Real[3,3];  // linear-linear state transition matrix
   B:Real[1,3];  // nonlinear-linear state transition matrix
