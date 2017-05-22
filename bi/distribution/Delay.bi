@@ -211,7 +211,7 @@ class Delay {
    */
   function removeParent() {
     cpp{{
-    cast(this)->parent = nullptr;
+    this->parent = nullptr;
     }}
     this.hasParent <- false;
   }
@@ -229,7 +229,7 @@ class Delay {
    */
   function removeChild() {
     cpp{{
-    cast(this)->child = nullptr;
+    this->child = nullptr;
     }}
     this.hasChild <- false;
   }
@@ -259,8 +259,8 @@ class Delay {
     this.hasParent <- false;
     this.hasChild <- false;
     cpp{{
-    cast(this)->parent = nullptr;
-    cast(this)->child = nullptr;
+    this->parent = nullptr;
+    this->child = nullptr;
     }}
   }
 }
