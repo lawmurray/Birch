@@ -110,7 +110,7 @@ void bi::CppTypeGenerator::visit(const FuncParameter* o) {
     CppParameterGenerator auxParameter(base, level, header);
     auxParameter << o;
 
-    middle(" const");
+    //middle(" const");
     if (header && !o->parens->hasAssignable()) {
       finish(';');
     } else {

@@ -9,7 +9,6 @@
 #include "bi/data/easy.hpp"
 #include "bi/exception/MemoryException.hpp"
 #include "bi/exception/UnknownOptionException.hpp"
-#include "bi/primitive/cast.hpp"
 
 #include <memory>
 #include <utility>

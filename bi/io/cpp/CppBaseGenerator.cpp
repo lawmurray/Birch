@@ -95,11 +95,11 @@ void bi::CppBaseGenerator::visit(const Range* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Super* o) {
-  middle("cast<super_type>(shared_from_this())");
+  middle("std::dynamic_pointer_cast<super_type>(shared_from_this())");
 }
 
 void bi::CppBaseGenerator::visit(const This* o) {
-  middle("cast<this_type>(shared_from_this())");
+  middle("std::dynamic_pointer_cast<this_type>(shared_from_this())");
 }
 
 void bi::CppBaseGenerator::visit(const Member* o) {
@@ -107,7 +107,7 @@ void bi::CppBaseGenerator::visit(const Member* o) {
   const Super* leftSuper = dynamic_cast<const Super*>(o->left.get());
   if (leftThis) {
     // tidier this way
-    middle("cast(this)->");
+    middle("this->");
   } else if (leftSuper) {
     // tidier this way
     middle("super_type::");
@@ -342,8 +342,6 @@ void bi::CppBaseGenerator::genBuiltin(const TypeReference* o) {
 void bi::CppBaseGenerator::genArg(const Expression* arg, const Expression* param) {
   if (arg->type->isClass() && !param->type->isClass()) {
     middle("*(" << arg << ')');
-  } else if (param->type->assignable && arg->type->isArray()) {
-    middle("cast(" << arg << ')');
   } else {
     middle(arg);
   }

@@ -155,7 +155,6 @@ nobase_include_HEADERS = \
   bi/exception/Exception.hpp \
   bi/exception/MemoryException.hpp \
   bi/exception/UnknownOptionException.hpp \
-  bi/primitive/cast.hpp \
   bi/bi.hpp
   
 noinst_HEADERS = \
