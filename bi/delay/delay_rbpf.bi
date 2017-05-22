@@ -113,7 +113,7 @@ class Example(T1:Integer) {
   }
   
   function initial() {
-    this.x_n[1] ~ Gaussian(vector(0.0, 1), matrix(1.0, 1, 1));
+    this.x_n[1] ~ Gaussian(vector(0.0, 1), identity(1, 1));
     this.x_l[1] ~ Gaussian(vector(0.0, 3), identity(3, 3));
   }
   
