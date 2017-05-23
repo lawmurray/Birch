@@ -79,52 +79,52 @@ class Example(T1:Integer) {
   y_l:MultivariateGaussian[T](1);  // linear observation
 
   function parameter() {
-    this.A[1,1] <- 1.0;
-    this.A[1,2] <- 0.3;
-    this.A[1,3] <- 0.0;
-    this.A[2,1] <- 0.0;
-    this.A[2,2] <- 0.92;
-    this.A[2,3] <- -0.3;
-    this.A[3,1] <- 0.0;
-    this.A[3,2] <- 0.3;
-    this.A[3,3] <- 0.92;
+    A[1,1] <- 1.0;
+    A[1,2] <- 0.3;
+    A[1,3] <- 0.0;
+    A[2,1] <- 0.0;
+    A[2,2] <- 0.92;
+    A[2,3] <- -0.3;
+    A[3,1] <- 0.0;
+    A[3,2] <- 0.3;
+    A[3,3] <- 0.92;
     
-    this.B[1,1] <- 1.0;
-    this.B[1,2] <- 0.0;
-    this.B[1,3] <- 0.0;
+    B[1,1] <- 1.0;
+    B[1,2] <- 0.0;
+    B[1,3] <- 0.0;
     
-    this.C[1,1] <- 1.0;
-    this.C[1,2] <- -1.0;
-    this.C[1,3] <- 1.0;
+    C[1,1] <- 1.0;
+    C[1,2] <- -1.0;
+    C[1,3] <- 1.0;
     
-    this.Σ_x_l[1,1] <- 0.01;
-    this.Σ_x_l[1,2] <- 0.0;
-    this.Σ_x_l[1,3] <- 0.0;
-    this.Σ_x_l[2,1] <- 0.0;
-    this.Σ_x_l[2,2] <- 0.01;
-    this.Σ_x_l[2,3] <- 0.0;
-    this.Σ_x_l[3,1] <- 0.0;
-    this.Σ_x_l[3,2] <- 0.0;
-    this.Σ_x_l[3,3] <- 0.01;
+    Σ_x_l[1,1] <- 0.01;
+    Σ_x_l[1,2] <- 0.0;
+    Σ_x_l[1,3] <- 0.0;
+    Σ_x_l[2,1] <- 0.0;
+    Σ_x_l[2,2] <- 0.01;
+    Σ_x_l[2,3] <- 0.0;
+    Σ_x_l[3,1] <- 0.0;
+    Σ_x_l[3,2] <- 0.0;
+    Σ_x_l[3,3] <- 0.01;
     
-    this.Σ_x_n[1,1] <- 0.01;
-    this.Σ_y_l[1,1] <- 0.1;
-    this.Σ_y_n[1,1] <- 0.1;
+    Σ_x_n[1,1] <- 0.01;
+    Σ_y_l[1,1] <- 0.1;
+    Σ_y_n[1,1] <- 0.1;
   }
   
   function initial() {
-    this.x_n[1] ~ Gaussian(vector(0.0, 1), identity(1, 1));
-    this.x_l[1] ~ Gaussian(vector(0.0, 3), identity(3, 3));
+    x_n[1] ~ Gaussian(vector(0.0, 1), identity(1, 1));
+    x_l[1] ~ Gaussian(vector(0.0, 3), identity(3, 3));
   }
   
   function transition(t:Integer) {
-    this.x_n[t] ~ Gaussian(vector(atan(scalar(x_n[t-1])), 1) + B*x_l[t-1], Σ_x_n);
-    this.x_l[t] ~ Gaussian(A*x_l[t-1], Σ_x_l);
+    x_n[t] ~ Gaussian(vector(atan(scalar(x_n[t-1])), 1) + B*x_l[t-1], Σ_x_n);
+    x_l[t] ~ Gaussian(A*x_l[t-1], Σ_x_l);
   }
   
   function observation(t:Integer) -> Real {
-    this.y_n[t] ~ Gaussian(vector(0.1*copysign(pow(scalar(x_n[t]), 2.0), scalar(x_n[t])), 1), Σ_y_n);
-    this.y_l[t] ~ Gaussian(C*x_l[t], Σ_y_l);
+    y_n[t] ~ Gaussian(vector(0.1*copysign(pow(scalar(x_n[t]), 2.0), scalar(x_n[t])), 1), Σ_y_n);
+    y_l[t] ~ Gaussian(C*x_l[t], Σ_y_l);
     
     return y_n[t].w + y_l[t].w;
   }
@@ -135,12 +135,12 @@ class Example(T1:Integer) {
 
     v <- read("data/y_n.csv", T);
     for (t in 1..T) {
-      this.y_n[t] <- v[t..t];
+      y_n[t] <- v[t..t];
     }
     
     v <- read("data/y_l.csv", T);
     for (t in 1..T) {
-      this.y_l[t] <- v[t..t];
+      y_l[t] <- v[t..t];
     }
   }
   
@@ -151,13 +151,13 @@ class Example(T1:Integer) {
   }
     
   function copy(o:Example, t:Integer) {    
-    this.Σ_x_l <- o.Σ_x_l;
-    this.Σ_x_n <- o.Σ_x_n;
-    this.Σ_y_l <- o.Σ_y_l;
-    this.Σ_y_n <- o.Σ_y_n;
-    this.A <- o.A;
-    this.B <- o.B;
-    this.C <- o.C;
+    Σ_x_l <- o.Σ_x_l;
+    Σ_x_n <- o.Σ_x_n;
+    Σ_y_l <- o.Σ_y_l;
+    Σ_y_n <- o.Σ_y_n;
+    A <- o.A;
+    B <- o.B;
+    C <- o.C;
     
     s:Integer;
     for (s in 1..t) {
