@@ -47,14 +47,14 @@ class AffineGaussian < Gaussian {
   }
   
   function doMarginalize() {
-    this.y <- a*μ.μ + c;
-    this.s <- pow(a, 2.0)*μ.σ2 + q;
+    y <- a*μ.μ + c;
+    s <- pow(a, 2.0)*μ.σ2 + q;
     update(y, s);
   }
 
   function doForward() {
-    this.y <- a*μ.x + c;
-    this.s <- q;
+    y <- a*μ.x + c;
+    s <- q;
     update(y, s);
   }
   
@@ -65,12 +65,12 @@ class AffineGaussian < Gaussian {
 
   function copy(o:AffineGaussian) {
     super.copy(o);
-    this.a <- o.a;
-    this.μ.copy(o.μ);
-    this.c <- o.c;
-    this.q <- o.q;
-    this.y <- o.y;
-    this.s <- o.s;
+    a <- o.a;
+    μ.copy(o.μ);
+    c <- o.c;
+    q <- o.q;
+    y <- o.y;
+    s <- o.s;
     
     /* update graph edges */
     setParent(μ);

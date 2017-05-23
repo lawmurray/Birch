@@ -121,7 +121,7 @@ class Delay {
     assert(hasParent);
     
     doMarginalize();
-    this.state <- MARGINALIZED;
+    state <- MARGINALIZED;
   }
   
   /**
@@ -131,7 +131,7 @@ class Delay {
     assert(isInitialized());
     
     doForward();
-    this.state <- MARGINALIZED;
+    state <- MARGINALIZED;
   }
   
   /**
@@ -140,7 +140,7 @@ class Delay {
   function realize() {
     assert(isInitialized() || isTerminal());
     
-    this.state <- REALIZED;
+    state <- REALIZED;
     if (hasParent) {
       parent.removeChild();
     }
@@ -202,8 +202,8 @@ class Delay {
    * Set the parent.
    */
   function setParent(u:Delay) {
-    this.child <- u;
-    this.hasChild <- true;
+    child <- u;
+    hasChild <- true;
   }
 
   /**
@@ -213,15 +213,15 @@ class Delay {
     cpp{{
     this->parent = nullptr;
     }}
-    this.hasParent <- false;
+    hasParent <- false;
   }
 
   /**
    * Set the child.
    */
   function setChild(u:Delay) {
-    this.child <- u;
-    this.hasChild <- true;
+    child <- u;
+    hasChild <- true;
   }
 
   /**
@@ -231,7 +231,7 @@ class Delay {
     cpp{{
     this->child = nullptr;
     }}
-    this.hasChild <- false;
+    hasChild <- false;
   }
   
   /*
@@ -254,10 +254,10 @@ class Delay {
   }
   
   function copy(o:Delay) {
-    this.state <- o.state;
-    this.missing <- o.missing;    
-    this.hasParent <- false;
-    this.hasChild <- false;
+    state <- o.state;
+    missing <- o.missing;    
+    hasParent <- false;
+    hasChild <- false;
     cpp{{
     this->parent = nullptr;
     this->child = nullptr;

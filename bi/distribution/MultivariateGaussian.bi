@@ -84,15 +84,15 @@ class MultivariateGaussian(D1:Integer) < Delay {
   }
   
   function doObserve() {
-    this.w <- observe(x);
+    w <- observe(x);
   }
   
   function copy(o:MultivariateGaussian) {
     super.copy(o);
-    this.x <- o.x;
-    this.w <- o.w;
-    this.μ <- o.μ;
-    this.Σ <- o.Σ;
+    x <- o.x;
+    w <- o.w;
+    μ <- o.μ;
+    Σ <- o.Σ;
   }
 }
 

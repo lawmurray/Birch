@@ -57,14 +57,14 @@ class AffineMultivariateGaussian(R1:Integer,C1:Integer) < MultivariateGaussian(R
   }
   
   function doMarginalize() {
-    this.y <- A*μ.μ + c;
-    this.S <- A*μ.Σ*transpose(A) + Q;
+    y <- A*μ.μ + c;
+    S <- A*μ.Σ*transpose(A) + Q;
     update(y, S);
   }
 
   function doForward() {
-    this.y <- A*μ.x + c;
-    this.S <- Q;
+    y <- A*μ.x + c;
+    S <- Q;
     update(y, S);
   }
   
@@ -76,12 +76,12 @@ class AffineMultivariateGaussian(R1:Integer,C1:Integer) < MultivariateGaussian(R
 
   function copy(o:AffineMultivariateGaussian) {
     super.copy(o);
-    this.A <- o.A;
-    this.μ.copy(o.μ);
-    this.c <- o.c;
-    this.Q <- o.Q;
-    this.y <- o.y;
-    this.S <- o.S;
+    A <- o.A;
+    μ.copy(o.μ);
+    c <- o.c;
+    Q <- o.Q;
+    y <- o.y;
+    S <- o.S;
     
     /* update graph edges */
     setParent(μ);

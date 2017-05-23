@@ -76,7 +76,7 @@ class Gaussian < Delay {
   }
   
   function doObserve() {
-    this.w <- observe(x);
+    w <- observe(x);
   }
 }
 
