@@ -19,7 +19,7 @@ public:
   /**
    * Constructor.
    */
-  reloc_ptr(T* ptr = nullptr) : ptr(ptr) {
+  reloc_ptr(T* ptr = nullptr) : ptr(ptr), page(-1) {
     //
   }
 
@@ -27,14 +27,14 @@ public:
    * Generic constructor.
    */
   template<class U>
-  reloc_ptr(U* ptr = nullptr) : ptr(ptr) {
+  reloc_ptr(U* ptr = nullptr) : ptr(ptr), page(-1) {
     //
   }
 
   /**
    * Copy constructor.
    */
-  reloc_ptr(const reloc_ptr<T>& o) : ptr(o.ptr) {
+  reloc_ptr(const reloc_ptr<T>& o) : ptr(o.ptr), page(o.page) {
     //
   }
 
@@ -42,7 +42,7 @@ public:
    * Generic copy constructor.
    */
   template<class U>
-  reloc_ptr(const reloc_ptr<U>& o) : ptr(o.ptr) {
+  reloc_ptr(const reloc_ptr<U>& o) : ptr(o.ptr), page(o.page) {
     //
   }
 
@@ -57,10 +57,10 @@ public:
    * Equality operators.
    */
   bool operator==(const reloc_ptr<T>& o) const {
-    return ptr == o.ptr;
+    return ptr == o.ptr && page == o.page;
   }
   bool operator!=(const reloc_ptr<T>& o) const {
-    return ptr != o.ptr;
+    return !(*this == o);
   }
 
   /*
@@ -105,10 +105,18 @@ public:
    * Cast to raw pointer.
    */
   operator T*() {
-    return ptr;
+    if (page < 0) {
+      return ptr;
+    } else {
+      assert(false);
+    }
   }
   operator T* const() const {
-    return ptr;
+    if (page < 0) {
+      return ptr;
+    } else {
+      assert(false);
+    }
   }
 
   /**
@@ -137,5 +145,10 @@ private:
    * Raw pointer.
    */
   T* ptr;
+
+  /**
+   * Heap page index.
+   */
+  int page;
 };
 }
