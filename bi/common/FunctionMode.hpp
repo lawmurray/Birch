@@ -8,12 +8,13 @@ namespace bi {
  * Function form flags.
  */
 enum FunctionForm {
-  FUNCTION,
-  BINARY_OPERATOR,
-  UNARY_OPERATOR,
-  ASSIGN_OPERATOR,
-  LAMBDA_FUNCTION,
-  MEMBER_FUNCTION
+  FUNCTION_FORM,
+  BINARY_FORM,
+  UNARY_FORM,
+  ASSIGN_FORM,
+  LAMBDA_FORM,
+  MEMBER_FUNCTION_FORM,
+  COROUTINE_FORM,
 };
 
 /**
@@ -28,7 +29,7 @@ public:
    *
    * @param form Form.
    */
-  FunctionMode(const FunctionForm form);
+  FunctionMode(const FunctionForm form = FUNCTION_FORM);
 
   /**
    * Destructor.

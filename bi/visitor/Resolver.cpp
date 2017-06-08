@@ -141,12 +141,13 @@ bi::Expression* bi::Resolver::modify(VarReference* o) {
 bi::Expression* bi::Resolver::modify(FuncReference* o) {
   Scope* memberScope = takeMemberScope();
   Modifier::modify(o);
-  if (o->isAssign() && !o->getLeft()->type->assignable) {
+  if (o->name && *o->name == "<-" && !o->getLeft()->type->assignable) {
     throw NotAssignableException(o);
   }
-  if (o->isAssign() && *o->name == "<-"
+  if (o->name && *o->name == "<-"
       && o->getRight()->type->definitely(*o->getLeft()->type)) {
     // no need to resolve, have default assignment operator
+    o->form = ASSIGN_FORM;
     ///@todo Warn if a declared assignment operator is masked by this
   } else {
     resolve(o, memberScope);
@@ -308,12 +309,12 @@ bi::FuncParameter* bi::Resolver::makeLambda(VarParameter* o) {
   if (types.size() > 0) {
     auto iter = types.rbegin();
     parens = new VarParameter(new Name(), (*iter)->accept(&cloner),
-        PARAMETER);
+        PARAMETER_FORM);
     ++iter;
     while (iter != types.rend()) {
       parens = new ExpressionList(
-          new VarParameter(new Name(), (*iter)->accept(&cloner), PARAMETER),
-          parens);
+          new VarParameter(new Name(), (*iter)->accept(&cloner),
+              PARAMETER_FORM), parens);
       ++iter;
     }
   } else {
@@ -325,7 +326,7 @@ bi::FuncParameter* bi::Resolver::makeLambda(VarParameter* o) {
 
   /* function */
   FuncParameter* func = new FuncParameter(o->name, parens, type,
-      new EmptyExpression(), LAMBDA_FUNCTION);
+      new EmptyExpression(), LAMBDA_FORM);
 
   return func;
 }

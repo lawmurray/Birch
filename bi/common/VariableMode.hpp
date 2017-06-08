@@ -8,9 +8,9 @@ namespace bi {
  * Variable form flags.
  */
 enum VariableForm {
-  ORDINARY,
-  PARAMETER,
-  MEMBER
+  VARIABLE_FORM,
+  PARAMETER_FORM,
+  MEMBER_VARIABLE_FORM
 };
 
 /**
@@ -25,7 +25,7 @@ public:
    *
    * @param form Form.
    */
-  VariableMode(const VariableForm = ORDINARY);
+  VariableMode(const VariableForm = VARIABLE_FORM);
 
   /**
    * Destructor.

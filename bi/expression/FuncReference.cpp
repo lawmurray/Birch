@@ -10,23 +10,19 @@
 #include <typeinfo>
 
 bi::FuncReference::FuncReference(shared_ptr<Name> name, Expression* parens,
-    const FunctionForm form, shared_ptr<Location> loc,
-    const FuncParameter* target) :
+    shared_ptr<Location> loc, const FuncParameter* target) :
     Expression(loc),
     Named(name),
     Parenthesised(parens),
-    FunctionMode(form),
     Reference<FuncParameter>(target) {
   //
 }
 
 bi::FuncReference::FuncReference(Expression* left, shared_ptr<Name> name,
-    Expression* right, const FunctionForm form, shared_ptr<Location> loc,
-    const FuncParameter* target) :
+    Expression* right, shared_ptr<Location> loc, const FuncParameter* target) :
     Expression(loc),
     Named(name),
     Parenthesised(new ExpressionList(left, right)),
-    FunctionMode(form),
     Reference<FuncParameter>(target) {
   //
 }

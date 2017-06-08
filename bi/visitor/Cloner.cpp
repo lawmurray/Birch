@@ -87,7 +87,7 @@ bi::Expression* bi::Cloner::clone(const VarReference* o) {
 }
 
 bi::Expression* bi::Cloner::clone(const FuncReference* o) {
-  return new FuncReference(o->name, o->parens->accept(this), o->form, o->loc);
+  return new FuncReference(o->name, o->parens->accept(this), o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const TypeReference* o) {

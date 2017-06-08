@@ -103,6 +103,7 @@ IS                                 (u|U|l|L)*
 "type"                              { return TYPE; }
 "function"                          { return FUNC; }
 "lambda"                            { return LAMBDA; }
+"coroutine"                         { return COROUTINE; }
 "if"                                { return IF; }
 "else"                              { return ELSE; }
 "for"                               { return FOR; }

@@ -27,7 +27,7 @@ public:
    * @param form Function form.
    */
   Signature(shared_ptr<Name> name, Expression* parens,
-      const FunctionForm form = FUNCTION);
+      const FunctionForm form = FUNCTION_FORM);
 
   /**
    * Destructor.

@@ -13,9 +13,9 @@ bi::VariableMode::~VariableMode() {
 }
 
 bool bi::VariableMode::isParameter() const {
-  return form == PARAMETER;
+  return form == PARAMETER_FORM;
 }
 
 bool bi::VariableMode::isMember() const {
-  return form == MEMBER;
+  return form == MEMBER_VARIABLE_FORM;
 }

@@ -29,13 +29,12 @@ public:
    *
    * @param name Name.
    * @param parens Expression in parentheses.
-   * @param form Signature form.
    * @param loc Location.
    * @param target Target.
    */
   FuncReference(shared_ptr<Name> name, Expression* parens,
-      const FunctionForm form, shared_ptr<Location> loc = nullptr,
-      const FuncParameter* target = nullptr);
+      shared_ptr<Location> loc = nullptr, const FuncParameter* target =
+          nullptr);
 
   /**
    * Constructor for binary operator.
@@ -43,13 +42,12 @@ public:
    * @param left Left operand.
    * @param name Operator.
    * @param right Right operand.
-   * @param form Signature form.
    * @param loc Location.
    * @param target Target.
    */
   FuncReference(Expression* left, shared_ptr<Name> name, Expression* right,
-      const FunctionForm form, shared_ptr<Location> loc = nullptr,
-      const FuncParameter* target = nullptr);
+      shared_ptr<Location> loc = nullptr, const FuncParameter* target =
+          nullptr);
 
   /**
    * Destructor.
