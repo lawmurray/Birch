@@ -9,10 +9,14 @@
 #include "bi/build/misc.hpp"
 
 #include <iostream>
+#include <gc.h>
 
 int main(int argc, char** argv) {
   using namespace boost::filesystem;
   using namespace bi;
+
+  /* initialise garbage collector */
+  GC_INIT();
 
   try {
     /* first option (should be a program name) */

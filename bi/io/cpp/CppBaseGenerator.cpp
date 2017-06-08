@@ -95,11 +95,11 @@ void bi::CppBaseGenerator::visit(const Range* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Super* o) {
-  middle("std::dynamic_pointer_cast<super_type>(shared_from_this())");
+  middle("dynamic_cast<super_type*>(this)");
 }
 
 void bi::CppBaseGenerator::visit(const This* o) {
-  middle("std::dynamic_pointer_cast<this_type>(shared_from_this())");
+  middle("this");
 }
 
 void bi::CppBaseGenerator::visit(const Member* o) {
@@ -176,7 +176,7 @@ void bi::CppBaseGenerator::visit(const VarParameter* o) {
   if (o->type->isClass()) {
     TypeReference* type = dynamic_cast<TypeReference*>(o->type->strip());
     assert(type);
-    middle(" = std::make_shared<bi::type::" << type->name << ">(");
+    middle(" = new (GC_MALLOC(sizeof(bi::type::" << type->name << "))) bi::type::" << type->name << '(');
   } else if (!o->parens->isEmpty() || o->type->count() > 0) {
     middle('(');
   }
@@ -273,7 +273,7 @@ void bi::CppBaseGenerator::visit(const TypeReference* o) {
   if (o->isBuiltin()) {
     genBuiltin(o);
   } else if (o->isClass()) {
-    middle("std::shared_ptr<bi::type::" << o->name << ">");
+    middle("bi::reloc_ptr<bi::type::" << o->name << ">");
   } else {
     middle("bi::type::" << o->name);
   }

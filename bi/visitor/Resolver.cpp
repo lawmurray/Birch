@@ -307,11 +307,13 @@ bi::FuncParameter* bi::Resolver::makeLambda(VarParameter* o) {
   }
   if (types.size() > 0) {
     auto iter = types.rbegin();
-    parens = new VarParameter(new Name(), (*iter)->accept(&cloner));
+    parens = new VarParameter(new Name(), (*iter)->accept(&cloner),
+        PARAMETER);
     ++iter;
     while (iter != types.rend()) {
       parens = new ExpressionList(
-          new VarParameter(new Name(), (*iter)->accept(&cloner)), parens);
+          new VarParameter(new Name(), (*iter)->accept(&cloner), PARAMETER),
+          parens);
       ++iter;
     }
   } else {
@@ -373,6 +375,8 @@ void bi::Resolver::resolve(VarReference* ref, Scope* scope) {
   }
   if (!ref->target) {
     throw UnresolvedReferenceException(ref);
+  } else {
+    ref->form = ref->target->form;
   }
 }
 

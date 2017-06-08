@@ -3,9 +3,9 @@
  */
 #pragma once
 
-#include "bi/data/constant.hpp"
-#include "bi/data/Index.hpp"
-#include "bi/data/Range.hpp"
+#include "bi/lib/constant.hpp"
+#include "bi/lib/Index.hpp"
+#include "bi/lib/Range.hpp"
 
 #include <cstddef>
 
@@ -37,7 +37,7 @@ struct EmptyView {
     return 0;
   }
 
-  int_t size() const {
+  size_t size() const {
     return 1;
   }
 
@@ -166,7 +166,7 @@ struct NonemptyView {
   /**
    * Size (the product of all lengths).
    */
-  int_t size() const {
+  size_t size() const {
     return tail.size() * head.length;
   }
   //@}

@@ -3,7 +3,7 @@
  */
 #pragma once
 
-#include "bi/data/Offset.hpp"
+#include "bi/lib/Offset.hpp"
 
 namespace bi {
 /**
@@ -13,7 +13,7 @@ namespace bi {
  *
  * An Index indicates one element along one dimension of an array.
  */
-template<int_t offset_value = 0>
+template<ptrdiff_t offset_value = 0>
 struct Index: public Offset<offset_value>, public Length<1> {
   typedef Offset<offset_value> offset_type;
   typedef Length<1> length_type;
@@ -26,7 +26,7 @@ struct Index: public Offset<offset_value>, public Length<1> {
    * For static values, the initial values given must match the static values
    * or an error is given.
    */
-  Index(const int_t offset = 0) :
+  Index(const ptrdiff_t offset = 0) :
       offset_type(offset), length_type(1) {
     //
   }
@@ -34,7 +34,7 @@ struct Index: public Offset<offset_value>, public Length<1> {
   /**
    * Generic copy constructor.
    */
-  template<int_t offset_value1>
+  template<ptrdiff_t offset_value1>
   Index(const Index<offset_value1>& o) :
       offset_type(o.offset), length_type(o.length) {
     //
@@ -44,7 +44,7 @@ struct Index: public Offset<offset_value>, public Length<1> {
    * Generic equality operator. Two spans are considered equal if they have
    * the same offset and length.
    */
-  template<int_t offset_value1>
+  template<ptrdiff_t offset_value1>
   bool operator==(const Index<offset_value1>& o) const {
     return this->offset == o.offset;
   }
@@ -52,7 +52,7 @@ struct Index: public Offset<offset_value>, public Length<1> {
   /**
    * Generic inequality operator.
    */
-  template<int_t offset_value1>
+  template<ptrdiff_t offset_value1>
   bool operator!=(const Index<offset_value1>& o) const {
     return !(*this == o);
   }

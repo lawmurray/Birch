@@ -6,7 +6,7 @@
 #include "bi/common/Named.hpp"
 #include "bi/common/Numbered.hpp"
 #include "bi/common/Parenthesised.hpp"
-#include "bi/common/Formed.hpp"
+#include "bi/common/FunctionMode.hpp"
 
 namespace bi {
 /**
@@ -17,7 +17,7 @@ namespace bi {
 class Signature: public Named,
     public Numbered,
     public Parenthesised,
-    public Formed {
+    public FunctionMode {
 public:
   /**
    * Constructor.
@@ -27,7 +27,7 @@ public:
    * @param form Function form.
    */
   Signature(shared_ptr<Name> name, Expression* parens,
-      const SignatureForm form = FUNCTION);
+      const FunctionForm form = FUNCTION);
 
   /**
    * Destructor.

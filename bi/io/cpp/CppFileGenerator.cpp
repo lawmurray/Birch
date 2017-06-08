@@ -258,11 +258,11 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
         line("break;");
         out();
       }
-      line("default:");
-      in();
-      line("throw UnknownOptionException(argv[optind - 1]);");
-      line("break;");
-      out();
+      //line("default:");
+      //in();
+      //line("throw UnknownOptionException(argv[optind - 1]);");
+      //line("break;");
+      //out();
       out();
       line('}');
       line(

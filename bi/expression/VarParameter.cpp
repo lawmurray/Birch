@@ -9,16 +9,19 @@
 #include <typeinfo>
 
 bi::VarParameter::VarParameter(shared_ptr<Name> name, Type* type,
-    Expression* parens, Expression* value, shared_ptr<Location> loc) :
+    const VariableForm form, Expression* parens, Expression* value,
+    shared_ptr<Location> loc) :
     Expression(type, loc),
     Named(name),
+    VariableMode(form),
     Parenthesised(parens),
     value(value) {
   //
 }
 
-bi::VarParameter::VarParameter(Type* type) :
+bi::VarParameter::VarParameter(Type* type, const VariableForm form) :
     Expression(type),
+    VariableMode(form),
     value(new EmptyExpression()) {
   //
 }

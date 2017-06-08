@@ -5,9 +5,9 @@
 
 namespace bi {
 /**
- * Signature form flags.
+ * Function form flags.
  */
-enum SignatureForm {
+enum FunctionForm {
   FUNCTION,
   BINARY_OPERATOR,
   UNARY_OPERATOR,
@@ -17,23 +17,23 @@ enum SignatureForm {
 };
 
 /**
- * Signature of a function.
+ * Function mode.
  *
  * @ingroup compiler_expression
  */
-class Formed {
+class FunctionMode {
 public:
   /**
    * Constructor.
    *
-   * @param form Signature form.
+   * @param form Form.
    */
-  Formed(const SignatureForm form = FUNCTION);
+  FunctionMode(const FunctionForm form);
 
   /**
    * Destructor.
    */
-  virtual ~Formed() = 0;
+  virtual ~FunctionMode() = 0;
 
   /**
    * Is this an operator?
@@ -68,6 +68,6 @@ public:
   /**
    * Form.
    */
-  SignatureForm form;
+  FunctionForm form;
 };
 }

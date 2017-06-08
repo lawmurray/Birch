@@ -27,7 +27,7 @@ birchc_SOURCES = \
   bi/common/Bracketed.cpp \
   bi/common/Conditioned.cpp \
   bi/common/Dictionary.cpp \
-  bi/common/Formed.cpp \
+  bi/common/FunctionMode.cpp \
   bi/common/Iterator.cpp \
   bi/common/List.cpp \
   bi/common/Located.cpp \
@@ -45,6 +45,7 @@ birchc_SOURCES = \
   bi/common/Signature.cpp \
   bi/common/Typed.cpp \
   bi/common/Unary.cpp \
+  bi/common/VariableMode.cpp \
   bi/exception/AmbiguousReferenceException.cpp \
   bi/exception/CompilerException.cpp \
   bi/exception/CyclicImportException.cpp \
@@ -130,31 +131,25 @@ birch_SOURCES = \
   bi/config.lpp
 birch_CXXFLAGS = $(AM_CXXFLAGS)
 
-libbirch_la_SOURCES = \
-  bi/bi.cpp \
-  bi/exception/Exception.cpp \
-  bi/exception/MemoryException.cpp \
-  bi/exception/UnknownOptionException.cpp
+libbirch_la_SOURCES = bi/bi.cpp
 libbirch_la_CXXFLAGS = $(AM_CXXFLAGS)
 
 nobase_include_HEADERS = \
-  bi/data/Array.hpp \
-  bi/data/constant.hpp \
-  bi/data/easy.hpp \
-  bi/data/Frame.hpp \
-  bi/data/memory.hpp \
-  bi/data/Index.hpp \
-  bi/data/Iterator.hpp \
-  bi/data/Lead.hpp \
-  bi/data/Length.hpp \
-  bi/data/Offset.hpp \
-  bi/data/Range.hpp \
-  bi/data/Span.hpp \
-  bi/data/Stride.hpp \
-  bi/data/View.hpp \
-  bi/exception/Exception.hpp \
-  bi/exception/MemoryException.hpp \
-  bi/exception/UnknownOptionException.hpp \
+  bi/lib/Array.hpp \
+  bi/lib/constant.hpp \
+  bi/lib/easy.hpp \
+  bi/lib/Frame.hpp \
+  bi/lib/memory.hpp \
+  bi/lib/Index.hpp \
+  bi/lib/Iterator.hpp \
+  bi/lib/Lead.hpp \
+  bi/lib/Length.hpp \
+  bi/lib/Offset.hpp \
+  bi/lib/Range.hpp \
+  bi/lib/reloc_ptr.hpp \
+  bi/lib/Span.hpp \
+  bi/lib/Stride.hpp \
+  bi/lib/View.hpp \
   bi/bi.hpp
   
 noinst_HEADERS = \
@@ -168,7 +163,7 @@ noinst_HEADERS = \
   bi/common/Bracketed.hpp \
   bi/common/Conditioned.hpp \
   bi/common/Dictionary.hpp \
-  bi/common/Formed.hpp \
+  bi/common/FunctionMode.hpp \
   bi/common/Iterator.hpp \
   bi/common/List.hpp \
   bi/common/Located.hpp \
@@ -186,6 +181,7 @@ noinst_HEADERS = \
   bi/common/Signature.hpp \
   bi/common/Typed.hpp \
   bi/common/Unary.hpp \
+  bi/common/VariableMode.hpp \
   bi/config.hpp \
   bi/exception/all.hpp \
   bi/exception/AmbiguousReferenceException.hpp \

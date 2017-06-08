@@ -3,10 +3,13 @@
  */
 #pragma once
 
-#include "bi/data/Frame.hpp"
-#include "bi/data/Iterator.hpp"
-#include "bi/data/constant.hpp"
-#include "bi/data/memory.hpp"
+#include "bi/lib/Frame.hpp"
+#include "bi/lib/Iterator.hpp"
+#include "bi/lib/constant.hpp"
+#include "bi/lib/memory.hpp"
+#include "bi/lib/reloc_ptr.hpp"
+
+#include <cstring>
 
 namespace bi {
 /**
@@ -37,12 +40,7 @@ protected:
   /**
    * Value.
    */
-  Type* ptr;
-
-  /**
-   * Do we own the underlying buffer?
-   */
-  bool own;
+  reloc_ptr<Type> ptr;
 
   /**
    * Copy from another array.
@@ -52,15 +50,15 @@ protected:
     /* pre-condition */
     assert(frame.conforms(o.frame));
 
-    int_t block1 = frame.block();
+    size_t block1 = frame.block();
     auto iter1 = begin();
     auto end1 = end();
 
-    int_t block2 = o.frame.block();
+    size_t block2 = o.frame.block();
     auto iter2 = o.begin();
     auto end2 = o.end();
 
-    int_t block = gcd(block1, block2);
+    size_t block = gcd(block1, block2);
     for (; iter1 != end1; iter1 += block, iter2 += block) {
       std::memcpy(&(*iter1), &(*iter2), block * sizeof(Type));
     }
@@ -71,21 +69,24 @@ protected:
    * Return value of view when result is an array.
    */
   template<class Frame1>
-  Array<Type,Frame1> viewReturn(Type* ptr, const Frame1& frame) {
+  Array<Type,Frame1> viewReturn(const reloc_ptr<Type>& ptr,
+      const Frame1& frame) {
     return Array<Type,Frame1>(ptr, frame);
   }
   template<class Frame1>
-  Array<Type,Frame1> viewReturn(Type* ptr, const Frame1& frame) const {
+  Array<Type,Frame1> viewReturn(const reloc_ptr<Type>& ptr,
+      const Frame1& frame) const {
     return Array<Type,Frame1>(ptr, frame);
   }
 
   /**
    * Return value of view when result is a scalar.
    */
-  Type& viewReturn(Type* ptr, const EmptyFrame& frame) {
+  Type& viewReturn(const reloc_ptr<Type>& ptr, const EmptyFrame& frame) {
     return *ptr;
   }
-  const Type& viewReturn(Type* ptr, const EmptyFrame& frame) const {
+  const Type& viewReturn(const reloc_ptr<Type>& ptr,
+      const EmptyFrame& frame) const {
     return *ptr;
   }
 
@@ -105,7 +106,7 @@ public:
   template<class ... Args>
   Array(const Frame& frame, Args ... args) :
       frame(frame) {
-    create(&ptr, frame);
+    create(ptr, frame.volume() * sizeof(Type));
     fill(args...);
   }
 
@@ -117,10 +118,9 @@ public:
    * @param ptr Existing allocation.
    * @param frame Frame.
    */
-  Array(Type* ptr, const Frame& frame) :
+  Array(const reloc_ptr<Type>& ptr, const Frame& frame) :
       frame(frame),
-      ptr(ptr),
-      own(false) {
+      ptr(ptr) {
     //
   }
 
@@ -129,30 +129,15 @@ public:
    */
   Array(const Array<Type,Frame>& o) :
       frame(o.frame) {
-    create(&ptr, frame);
+    create(ptr, frame.volume() * sizeof(Type));
     fill();
-    own = true;
     *this = o;
   }
 
   /**
    * Move constructor.
    */
-  Array(Array<Type,Frame> && o) :
-      frame(o.frame),
-      ptr(o.ptr),
-      own(o.own) {
-    o.own = false;  // ownership moves
-  }
-
-  /**
-   * Destructor.
-   */
-  ~Array() {
-    if (own) {
-      release(ptr, frame);
-    }
-  }
+  Array(Array<Type,Frame> && o) = default;
 
   /**
    * Copy assignment. The frames of the two arrays must conform.
@@ -174,15 +159,7 @@ public:
     /* pre-condition */
     assert(frame.conforms(o.frame));
 
-    if (ptr == o.ptr) {
-      /* just take ownership */
-      if (!own) {
-        std::swap(own, o.own);
-      }
-    } else {
-      /* copy assignment; note that we cannot simply move, even if this
-       * object owns its buffer, as there may exist non-owning arrays
-       * with the same buffer */
+    if (ptr != o.ptr) {
       copy(o);
     }
     return *this;
@@ -267,36 +244,22 @@ public:
   /**
    * Get the length of the @p i th dimension.
    */
-  int_t length(const int i) const {
+  size_t length(const int i) const {
     return frame.length(i);
   }
 
   /**
    * Get the stride of the @p i th dimension.
    */
-  int_t stride(const int i) const {
+  ptrdiff_t stride(const int i) const {
     return frame.stride(i);
   }
 
   /**
    * Get the lead of the @p i th dimension.
    */
-  int_t lead(const int i) const {
+  size_t lead(const int i) const {
     return frame.lead(i);
-  }
-
-  /**
-   * Raw pointer to underlying buffer.
-   */
-  Type* buf() {
-    return ptr;
-  }
-
-  /**
-   * Raw pointer to underlying buffer.
-   */
-  Type* const buf() const {
-    return ptr;
   }
   //@}
 
@@ -399,11 +362,25 @@ public:
     return begin() + frame.size();
   }
 
+  /**
+   * Raw pointer to underlying buffer.
+   */
+  Type* buf() {
+    return ptr;
+  }
+
+  /**
+   * Raw pointer to underlying buffer.
+   */
+  Type* const buf() const {
+    return ptr;
+  }
+
 private:
   template<class ... Args>
   void fill(Args ... args) {
     for (auto iter = begin(); iter != end(); ++iter) {
-      construct(&*iter, args...);
+      construct(*iter, args...);
     }
   }
 };

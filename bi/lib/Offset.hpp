@@ -3,7 +3,7 @@
  */
 #pragma once
 
-#include "bi/data/constant.hpp"
+#include "bi/lib/constant.hpp"
 
 #include <cassert>
 
@@ -14,21 +14,21 @@ namespace bi {
  *
  * @ingroup library
  */
-template<int_t n>
+template<ptrdiff_t n>
 struct Offset {
-  static const int_t offset_value = n;
-  static const int_t offset = n;
+  static const ptrdiff_t offset_value = n;
+  static const ptrdiff_t offset = n;
 
-  Offset(const int_t offset) {
+  Offset(const ptrdiff_t offset) {
     assert(offset == this->offset);
   }
 };
 template<>
 struct Offset<mutable_value> {
-  static const int_t offset_value = mutable_value;
-  int_t offset;
+  static const ptrdiff_t offset_value = mutable_value;
+  ptrdiff_t offset;
 
-  Offset(const int_t offset) :
+  Offset(const ptrdiff_t offset) :
       offset(offset) {
     //
   }

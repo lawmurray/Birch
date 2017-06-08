@@ -19,11 +19,9 @@ void bi::CppTypeGenerator::visit(const TypeParameter* o) {
   if (!o->isBuiltin()) {
     /* start boilerplate */
     if (header) {
-      start("class " << o->name << " : ");
+      start("class " << o->name);
       if (o->super()) {
-        middle("public " << o->super()->name);
-      } else {
-        middle("public std::enable_shared_from_this<" << o->name << '>');
+        middle(" : public " << o->super()->name);
       }
       finish(" {");
       line("public:");
@@ -71,7 +69,7 @@ void bi::CppTypeGenerator::visit(const TypeReference* o) {
     if (o->isBuiltin()) {
       genBuiltin(o);
     } else if (o->isClass()) {
-      middle("std::shared_ptr<" << o->name << '>');
+      middle("bi::reloc_ptr<" << o->name << '>');
     } else {
       middle(o->name);
     }

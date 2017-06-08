@@ -6,6 +6,7 @@
 #include "bi/expression/Expression.hpp"
 #include "bi/expression/VarParameter.hpp"
 #include "bi/common/Named.hpp"
+#include "bi/common/VariableMode.hpp"
 #include "bi/common/Reference.hpp"
 
 namespace bi {
@@ -14,8 +15,10 @@ namespace bi {
  *
  * @ingroup compiler_expression
  */
-class VarReference: public Expression, public Named, public Reference<
-    VarParameter> {
+class VarReference: public Expression,
+    public Named,
+    public VariableMode,
+    public Reference<VarParameter> {
 public:
   /**
    * Constructor.

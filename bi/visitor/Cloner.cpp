@@ -99,7 +99,7 @@ bi::Prog* bi::Cloner::clone(const ProgReference* o) {
 }
 
 bi::Expression* bi::Cloner::clone(const VarParameter* o) {
-  return new VarParameter(o->name, o->type->accept(this),
+  return new VarParameter(o->name, o->type->accept(this), o->form,
       o->parens->accept(this), o->value->accept(this), o->loc);
 }
 

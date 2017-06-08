@@ -6,11 +6,12 @@
  */
 #pragma once
 
-#include "bi/data/easy.hpp"
-#include "bi/exception/MemoryException.hpp"
-#include "bi/exception/UnknownOptionException.hpp"
+#include "bi/lib/easy.hpp"
+#include "bi/lib/reloc_ptr.hpp"
 
-#include <memory>
 #include <utility>
 #include <functional>
+#include <string>
+
 #include <getopt.h>
+#include <gc.h>

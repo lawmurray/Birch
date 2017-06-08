@@ -3,7 +3,7 @@
  */
 #pragma once
 
-#include "bi/data/constant.hpp"
+#include "bi/lib/constant.hpp"
 
 #include <cassert>
 
@@ -14,20 +14,20 @@ namespace bi {
  *
  * @ingroup library
  */
-template<int_t n>
+template<ptrdiff_t n>
 struct Stride {
-  static const int_t stride_value = n;
-  static const int_t stride = n;
+  static const ptrdiff_t stride_value = n;
+  static const ptrdiff_t stride = n;
 
-  Stride(const int_t stride) {
+  Stride(const ptrdiff_t stride) {
     assert(stride == this->stride);
   }
 };
 template<>
 struct Stride<mutable_value> {
-  static const int_t stride_value = mutable_value;
-  int_t stride;
-  Stride(const int_t stride) :
+  static const ptrdiff_t stride_value = mutable_value;
+  ptrdiff_t stride;
+  Stride(const ptrdiff_t stride) :
       stride(stride) {
     //
   }

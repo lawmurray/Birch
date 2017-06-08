@@ -30,7 +30,7 @@ public:
    * @param loc Location.
    */
   FuncParameter(shared_ptr<Name> name, Expression* parens, Type* type,
-      Expression* braces, const SignatureForm form, shared_ptr<Location> loc =
+      Expression* braces, const FunctionForm form, shared_ptr<Location> loc =
           nullptr);
 
   /**
@@ -45,7 +45,7 @@ public:
    * @param loc Location.
    */
   FuncParameter(Expression* left, shared_ptr<Name> name, Expression* right,
-      Type* type, Expression* braces, const SignatureForm form,
+      Type* type, Expression* braces, const FunctionForm form,
       shared_ptr<Location> loc = nullptr);
 
   /**

@@ -7,7 +7,7 @@
 #include "bi/expression/FuncParameter.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Parenthesised.hpp"
-#include "bi/common/Formed.hpp"
+#include "bi/common/FunctionMode.hpp"
 #include "bi/common/Reference.hpp"
 
 #include <list>
@@ -21,7 +21,7 @@ namespace bi {
 class FuncReference: public Expression,
     public Named,
     public Parenthesised,
-    public Formed,
+    public FunctionMode,
     public Reference<FuncParameter> {
 public:
   /**
@@ -34,7 +34,7 @@ public:
    * @param target Target.
    */
   FuncReference(shared_ptr<Name> name, Expression* parens,
-      const SignatureForm form, shared_ptr<Location> loc = nullptr,
+      const FunctionForm form, shared_ptr<Location> loc = nullptr,
       const FuncParameter* target = nullptr);
 
   /**
@@ -48,7 +48,7 @@ public:
    * @param target Target.
    */
   FuncReference(Expression* left, shared_ptr<Name> name, Expression* right,
-      const SignatureForm form, shared_ptr<Location> loc = nullptr,
+      const FunctionForm form, shared_ptr<Location> loc = nullptr,
       const FuncParameter* target = nullptr);
 
   /**

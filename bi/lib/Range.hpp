@@ -3,9 +3,9 @@
  */
 #pragma once
 
-#include "bi/data/Offset.hpp"
-#include "bi/data/Length.hpp"
-#include "bi/data/Stride.hpp"
+#include "bi/lib/Offset.hpp"
+#include "bi/lib/Length.hpp"
+#include "bi/lib/Stride.hpp"
 
 namespace bi {
 /**
@@ -19,8 +19,8 @@ namespace bi {
  * dynamic value (indicated by a template parameter of mutable_value and
  * initial value given in the constructor).
  */
-template<int_t offset_value = 0, int_t length_value = mutable_value,
-    int_t stride_value = 1>
+template<ptrdiff_t offset_value = 0, size_t length_value = mutable_value,
+    ptrdiff_t stride_value = 1>
 struct Range: public Offset<offset_value>,
     public Length<length_value>,
     public Stride<stride_value> {
@@ -38,8 +38,8 @@ struct Range: public Offset<offset_value>,
    * For static values, the initial values given must match the static values
    * or an error is given.
    */
-  Range(const int_t offset = 0, const int_t length = 1,
-      const int_t stride = 1) :
+  Range(const ptrdiff_t offset = 0, const size_t length = 1,
+      const ptrdiff_t stride = 1) :
       offset_type(offset),
       length_type(length),
       stride_type(stride) {
@@ -49,7 +49,8 @@ struct Range: public Offset<offset_value>,
   /**
    * Generic copy constructor.
    */
-  template<int_t offset_value1, int_t length_value1, int_t stride_value1>
+  template<ptrdiff_t offset_value1, size_t length_value1,
+      ptrdiff_t stride_value1>
   Range(const Range<offset_value1,length_value1,stride_value1>& o) :
       offset_type(o.offset),
       length_type(o.length),
@@ -60,7 +61,8 @@ struct Range: public Offset<offset_value>,
   /**
    * Generic equality operator.
    */
-  template<int_t offset_value1, int_t length_value1, int_t stride_value1>
+  template<ptrdiff_t offset_value1, size_t length_value1,
+      ptrdiff_t stride_value1>
   bool operator==(
       const Range<offset_value1,length_value1,stride_value1>& o) const {
     return this->offset == o.offset && this->length == o.length
@@ -70,7 +72,8 @@ struct Range: public Offset<offset_value>,
   /**
    * Generic inequality operator.
    */
-  template<int_t offset_value1, int_t length_value1, int_t stride_value1>
+  template<ptrdiff_t offset_value1, size_t length_value1,
+      ptrdiff_t stride_value1>
   bool operator!=(
       const Range<offset_value1,length_value1,stride_value1>& o) const {
     return !(*this == o);

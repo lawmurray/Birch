@@ -3,7 +3,7 @@
  */
 #pragma once
 
-#include "bi/data/constant.hpp"
+#include "bi/lib/constant.hpp"
 
 #include <cassert>
 
@@ -14,20 +14,20 @@ namespace bi {
  *
  * @ingroup library
  */
-template<int_t n>
+template<size_t n>
 struct Lead {
-  static const int_t lead_value = n;
-  static const int_t lead = n;
+  static const size_t lead_value = n;
+  static const size_t lead = n;
 
-  Lead(const int_t lead) {
+  Lead(const size_t lead) {
     assert(lead == this->lead);
   }
 };
 template<>
 struct Lead<mutable_value> {
-  static const int_t lead_value = mutable_value;
-  int_t lead;
-  Lead(const int_t lead) :
+  static const size_t lead_value = mutable_value;
+  size_t lead;
+  Lead(const size_t lead) :
       lead(lead) {
     //
   }

@@ -7,6 +7,7 @@
 #include "bi/expression/EmptyExpression.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Parenthesised.hpp"
+#include "bi/common/VariableMode.hpp"
 #include "bi/primitive/unique_ptr.hpp"
 
 namespace bi {
@@ -15,28 +16,33 @@ namespace bi {
  *
  * @ingroup compiler_expression
  */
-class VarParameter: public Expression, public Named, public Parenthesised {
+class VarParameter: public Expression,
+    public Named,
+    public VariableMode,
+    public Parenthesised {
 public:
   /**
    * Constructor.
    *
    * @param name Name.
    * @param type Type.
+   * @param form Form.
    * @param parens Constructor arguments.
    * @param value Assigned value.
    * @param loc Location.
    */
-  VarParameter(shared_ptr<Name> name, Type* type, Expression* parens =
-      new EmptyExpression(), Expression* value = new EmptyExpression(),
-      shared_ptr<Location> loc = nullptr);
+  VarParameter(shared_ptr<Name> name, Type* type, const VariableForm form,
+      Expression* parens = new EmptyExpression(), Expression* value =
+          new EmptyExpression(), shared_ptr<Location> loc = nullptr);
 
   /**
    * Constructor. Usually used internally when constructing, e.g. the default
    * assignment operator.
    *
    * @param type Type.
+   * @param form Form.
    */
-  VarParameter(Type* type);
+  VarParameter(Type* type, const VariableForm form);
 
   /**
    * Destructor.

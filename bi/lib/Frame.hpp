@@ -3,11 +3,11 @@
  */
 #pragma once
 
-#include "bi/data/constant.hpp"
-#include "bi/data/Span.hpp"
-#include "bi/data/Index.hpp"
-#include "bi/data/Range.hpp"
-#include "bi/data/View.hpp"
+#include "bi/lib/constant.hpp"
+#include "bi/lib/Span.hpp"
+#include "bi/lib/Index.hpp"
+#include "bi/lib/Range.hpp"
+#include "bi/lib/View.hpp"
 
 #include <cstddef>
 
@@ -42,19 +42,19 @@ struct EmptyFrame {
     return o;
   }
 
-  int_t offset(const int_t n) {
+  ptrdiff_t offset(const ptrdiff_t n) {
     return 0;
   }
 
-  int_t length(const int i) const {
+  size_t length(const int i) const {
     assert(false);
   }
 
-  int_t stride(const int i) const {
+  ptrdiff_t stride(const int i) const {
     assert(false);
   }
 
-  int_t lead(const int i) const {
+  size_t lead(const int i) const {
     assert(false);
   }
 
@@ -77,20 +77,20 @@ struct EmptyFrame {
     return 0;
   }
 
-  static constexpr int_t size() {
+  static constexpr size_t size() {
     return 1;
   }
 
-  static constexpr int_t volume() {
+  static constexpr size_t volume() {
     return 1;
   }
 
-  static constexpr int_t block() {
+  static constexpr size_t block() {
     return 1;
   }
 
   template<class View>
-  int_t serial(const View& o) const {
+  ptrdiff_t serial(const View& o) const {
     return 0;
   }
 
@@ -112,11 +112,11 @@ struct EmptyFrame {
     return !operator==(o);
   }
 
-  EmptyFrame& operator*=(const int_t n) {
+  EmptyFrame& operator*=(const ptrdiff_t n) {
     return *this;
   }
 
-  EmptyFrame operator*(const int_t n) const {
+  EmptyFrame operator*(const ptrdiff_t n) const {
     EmptyFrame result(*this);
     result *= n;
     return result;
@@ -171,8 +171,8 @@ struct NonemptyFrame {
   /**
    * View operator.
    */
-  template<class Tail1, int_t other_offset_value, int_t other_length_value,
-      int_t other_stride_value>
+  template<class Tail1, ptrdiff_t other_offset_value,
+      size_t other_length_value, ptrdiff_t other_stride_value>
   auto operator()(
       const NonemptyView<Tail1,
           Range<other_offset_value,other_length_value,other_stride_value>>& o) const {
@@ -183,7 +183,7 @@ struct NonemptyFrame {
   /**
    * View operator.
    */
-  template<class Tail1, int_t other_offset_value>
+  template<class Tail1, ptrdiff_t other_offset_value>
   auto operator()(
       const NonemptyView<Tail1,Index<other_offset_value>>& o) const {
     return tail(o.tail) * head.lead;
@@ -220,11 +220,11 @@ struct NonemptyFrame {
    *
    * @param n Element number.
    */
-  int_t offset(const int_t n) {
-    int_t q = n / head.length;
-    int_t r = n % head.length;
+  ptrdiff_t offset(const ptrdiff_t n) {
+    ptrdiff_t q = n / head.length;
+    ptrdiff_t r = n % head.length;
 
-    return tail.offset(q)*head.lead + r*head.stride;
+    return tail.offset(q) * head.lead + r * head.stride;
   }
 
   /**
@@ -234,7 +234,7 @@ struct NonemptyFrame {
   /**
    * Get the length of the @p i th dimension.
    */
-  int_t length(const int i) const {
+  size_t length(const int i) const {
     /* pre-condition */
     assert(i >= 0 && i < count());
     if (i == count() - 1) {
@@ -247,7 +247,7 @@ struct NonemptyFrame {
   /**
    * Get the stride of the @p i th dimension.
    */
-  int_t stride(const int i) const {
+  ptrdiff_t stride(const int i) const {
     /* pre-condition */
     assert(i >= 0 && i < count());
 
@@ -261,7 +261,7 @@ struct NonemptyFrame {
   /**
    * Get the lead of the @p i th dimension.
    */
-  int_t lead(const int i) const {
+  size_t lead(const int i) const {
     /* pre-condition */
     assert(i >= 0 && i < count());
 
@@ -331,24 +331,24 @@ struct NonemptyFrame {
   /**
    * Product of all lengths.
    */
-  int_t size() const {
+  size_t size() const {
     return tail.size() * head.length;
   }
 
   /**
    * Product of all leads.
    */
-  int_t volume() const {
+  size_t volume() const {
     return tail.volume() * head.lead;
   }
 
   /**
    * Size of contiguous blocks.
    */
-  int_t block() const {
+  size_t block() const {
     if (head.stride == 1) {
       if (head.lead == head.length) {
-        return tail.block()*head.length;
+        return tail.block() * head.length;
       } else {
         return head.length;
       }
@@ -361,7 +361,7 @@ struct NonemptyFrame {
    * Serial offset for a view.
    */
   template<class View>
-  int_t serial(const View& o) const {
+  ptrdiff_t serial(const View& o) const {
     return tail.serial(o.tail) * head.lead + head.stride * o.head.offset;
   }
 
@@ -402,7 +402,7 @@ struct NonemptyFrame {
    *
    * @todo Take index instead of n.
    */
-  NonemptyFrame<Tail,Head>& operator*=(const int_t n) {
+  NonemptyFrame<Tail,Head>& operator*=(const ptrdiff_t n) {
     head *= n;
     return *this;
   }
@@ -412,7 +412,7 @@ struct NonemptyFrame {
    *
    * @todo Take index instead of n.
    */
-  auto operator*(const int_t n) const {
+  auto operator*(const ptrdiff_t n) const {
     auto head = this->head * n;
     return NonemptyFrame<Tail,decltype(head)>(this->tail, head);
   }
