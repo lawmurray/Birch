@@ -67,6 +67,11 @@ public:
   bool isMember() const;
 
   /**
+   * Is this a coroutine?
+   */
+  bool isCoroutine() const;
+
+  /**
    * Form.
    */
   FunctionForm form;

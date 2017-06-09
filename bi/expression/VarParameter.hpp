@@ -6,6 +6,7 @@
 #include "bi/expression/Expression.hpp"
 #include "bi/expression/EmptyExpression.hpp"
 #include "bi/common/Named.hpp"
+#include "bi/common/Numbered.hpp"
 #include "bi/common/Parenthesised.hpp"
 #include "bi/common/VariableMode.hpp"
 #include "bi/primitive/unique_ptr.hpp"
@@ -18,6 +19,7 @@ namespace bi {
  */
 class VarParameter: public Expression,
     public Named,
+    public Numbered,
     public VariableMode,
     public Parenthesised {
 public:

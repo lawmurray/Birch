@@ -13,7 +13,8 @@ bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
     const bool header) :
     indentable_ostream(base, level),
     header(header),
-    inReturn(0) {
+    inReturn(0),
+    inCoroutine(0) {
   //
 }
 
@@ -172,7 +173,11 @@ void bi::CppBaseGenerator::visit(const FuncReference* o) {
 }
 
 void bi::CppBaseGenerator::visit(const VarParameter* o) {
-  middle(o->type << ' ' << o->name);
+  if (inCoroutine) {
+    middle("auto& " << o->name << " = this->" << o->name << '_' << o->number << '_');
+  } else {
+    middle(o->type << ' ' << o->name);
+  }
   if (o->type->isClass()) {
     TypeReference* type = dynamic_cast<TypeReference*>(o->type->strip());
     assert(type);

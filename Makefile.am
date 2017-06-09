@@ -79,6 +79,7 @@ birchc_SOURCES = \
   bi/expression/VarReference.cpp \
   bi/io/cpp/CppBaseGenerator.cpp \
   bi/io/cpp/CppConstructorGenerator.cpp \
+  bi/io/cpp/CppCoroutineGenerator.cpp \
   bi/io/cpp/CppFileGenerator.cpp \
   bi/io/cpp/CppTypeGenerator.cpp \
   bi/io/cpp/CppParameterGenerator.cpp \
@@ -220,6 +221,7 @@ noinst_HEADERS = \
   bi/io/bih_ostream.hpp \
   bi/io/cpp/CppBaseGenerator.hpp \
   bi/io/cpp/CppConstructorGenerator.hpp \
+  bi/io/cpp/CppCoroutineGenerator.hpp \
   bi/io/cpp/CppFileGenerator.hpp \
   bi/io/cpp/CppParameterGenerator.hpp \
   bi/io/cpp/CppTypeGenerator.hpp \

@@ -64,10 +64,10 @@ void bi::create(reloc_ptr<reloc_ptr<Type>>& ptr, const size_t size) {
 
 template<class Type, class... Args>
 void bi::construct(Type& o, Args... args) {
-  return new (&o) Type(args...);
+  new (&o) Type(args...);
 }
 
 template<class Type, class... Args>
 void bi::construct(reloc_ptr<Type>& o, Args... args) {
-  return new (&o) reloc_ptr<Type>(new (GC_MALLOC(sizeof(Type))) Type(args...));
+  new (&o) reloc_ptr<Type>(new (GC_MALLOC(sizeof(Type))) Type(args...));
 }

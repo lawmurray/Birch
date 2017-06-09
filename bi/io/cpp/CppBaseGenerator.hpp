@@ -86,5 +86,10 @@ protected:
    * Are we in a return type?
    */
   int inReturn;
+
+  /**
+   * Are we in a coroutine body?
+   */
+  int inCoroutine;
 };
 }

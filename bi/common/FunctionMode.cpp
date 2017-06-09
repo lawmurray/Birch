@@ -35,3 +35,7 @@ bool bi::FunctionMode::isLambda() const {
 bool bi::FunctionMode::isMember() const {
   return form == MEMBER_FUNCTION_FORM;
 }
+
+bool bi::FunctionMode::isCoroutine() const {
+  return form == COROUTINE_FORM;
+}

@@ -5,6 +5,7 @@
 
 #include "bi/io/cpp/CppTypeGenerator.hpp"
 #include "bi/io/cpp/CppParameterGenerator.hpp"
+#include "bi/io/cpp/CppCoroutineGenerator.hpp"
 #include "bi/program/all.hpp"
 #include "bi/exception/all.hpp"
 #include "bi/primitive/encode.hpp"
@@ -70,7 +71,10 @@ void bi::CppFileGenerator::visit(const VarDeclaration* o) {
 }
 
 void bi::CppFileGenerator::visit(const FuncParameter* o) {
-  if (!o->braces->isEmpty()) {
+  if (o->isCoroutine()) {
+    CppCoroutineGenerator auxCoroutine(base, level, header);
+    auxCoroutine << o;
+  } else if (!o->braces->isEmpty()) {
     if (header) {
       line("namespace bi {");
       if (!o->isOperator()) {
