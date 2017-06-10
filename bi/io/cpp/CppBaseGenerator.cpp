@@ -174,7 +174,7 @@ void bi::CppBaseGenerator::visit(const FuncReference* o) {
 
 void bi::CppBaseGenerator::visit(const VarParameter* o) {
   if (inCoroutine) {
-    middle("auto& " << o->name << " = this->" << o->name << '_' << o->number << '_');
+    middle("auto& " << o->name << " = " << o->name << '_' << o->number << '_');
   } else {
     middle(o->type << ' ' << o->name);
   }
@@ -300,11 +300,15 @@ void bi::CppBaseGenerator::visit(const ParenthesesType* o) {
   }
 }
 
-void bi::CppBaseGenerator::visit(const LambdaType* o) {
+void bi::CppBaseGenerator::visit(const FunctionType* o) {
   middle("std::function<" << o->type << '(');
   CppParameterGenerator auxParameter(base, level, header);
   auxParameter << o->parens;
   middle(")>");
+}
+
+void bi::CppBaseGenerator::visit(const CoroutineType* o) {
+  middle("bi::Coroutine<" << o->type << '>');
 }
 
 void bi::CppBaseGenerator::genCapture(const Expression* o) {

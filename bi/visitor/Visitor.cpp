@@ -207,8 +207,12 @@ void bi::Visitor::visit(const ParenthesesType* o) {
   o->single->accept(this);
 }
 
-void bi::Visitor::visit(const LambdaType* o) {
+void bi::Visitor::visit(const FunctionType* o) {
   o->parens->accept(this);
+  o->type->accept(this);
+}
+
+void bi::Visitor::visit(const CoroutineType* o) {
   o->type->accept(this);
 }
 

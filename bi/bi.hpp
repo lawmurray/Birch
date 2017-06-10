@@ -8,6 +8,7 @@
 
 #include "bi/lib/easy.hpp"
 #include "bi/lib/reloc_ptr.hpp"
+#include "bi/lib/Coroutine.hpp"
 
 #include <utility>
 #include <functional>

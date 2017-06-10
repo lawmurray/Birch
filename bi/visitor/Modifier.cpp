@@ -234,8 +234,13 @@ bi::Type* bi::Modifier::modify(ParenthesesType* o) {
   return o;
 }
 
-bi::Type* bi::Modifier::modify(LambdaType* o) {
+bi::Type* bi::Modifier::modify(FunctionType* o) {
   o->parens = o->parens.release()->accept(this);
+  o->type = o->type.release()->accept(this);
+  return o;
+}
+
+bi::Type* bi::Modifier::modify(CoroutineType* o) {
   o->type = o->type.release()->accept(this);
   return o;
 }

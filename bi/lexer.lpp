@@ -97,12 +97,11 @@ IS                                 (u|U|l|L)*
 <DOUBLE_BRACE>.                     { yylval.valString = yytext; return RAW; }
 
 "import"                            { return IMPORT; }
-"program"                           { return PROG; }
+"program"                           { return PROGRAM; }
 "struct"                            { return STRUCT; }
 "class"                             { return CLASS; }
 "type"                              { return TYPE; }
-"function"                          { return FUNC; }
-"lambda"                            { return LAMBDA; }
+"function"                          { return FUNCTION; }
 "coroutine"                         { return COROUTINE; }
 "if"                                { return IF; }
 "else"                              { return ELSE; }
@@ -117,6 +116,9 @@ IS                                 (u|U|l|L)*
 
 "true"                              { yylval.valBool = true; return BOOL_LITERAL; }
 "false"                             { yylval.valBool = false; return BOOL_LITERAL; }
+
+"Function"                          { return FUNCTION_UPPER; }
+"Coroutine"                         { return COROUTINE_UPPER; }
 
 ({L}|{G})({L}|{G}|{U}|{D})*         { yylval.valString = yytext; return NAME; }
 

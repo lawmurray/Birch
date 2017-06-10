@@ -173,11 +173,16 @@ void bi::bi_ostream::visit(const ParenthesesType* o) {
   *this << '(' << o->single << ')';
 }
 
-void bi::bi_ostream::visit(const LambdaType* o) {
-  *this << "lambda(" << o->parens << ')';
+void bi::bi_ostream::visit(const FunctionType* o) {
+  *this << "Function<(" << o->parens << ')';
   if (!o->type->isEmpty()) {
     *this << " -> " << o->type;
   }
+  *this << '>';
+}
+
+void bi::bi_ostream::visit(const CoroutineType* o) {
+  *this << "Coroutine<" << o->type << '>';
 }
 
 void bi::bi_ostream::visit(const File* o) {

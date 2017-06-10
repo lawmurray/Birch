@@ -68,7 +68,8 @@ public:
 
   virtual Type* clone(const BracketsType* o);
   virtual Type* clone(const ParenthesesType* o);
-  virtual Type* clone(const LambdaType* o);
+  virtual Type* clone(const FunctionType* o);
+  virtual Type* clone(const CoroutineType* o);
   virtual Type* clone(const TypeList* o);
 };
 }

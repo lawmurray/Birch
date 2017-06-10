@@ -37,7 +37,12 @@ bi::Type* bi::Assigner::modify(ParenthesesType* o) {
   return o;
 }
 
-bi::Type* bi::Assigner::modify(LambdaType* o) {
+bi::Type* bi::Assigner::modify(FunctionType* o) {
+  o->assignable = true;
+  return o;
+}
+
+bi::Type* bi::Assigner::modify(CoroutineType* o) {
   o->assignable = true;
   return o;
 }

@@ -13,7 +13,7 @@ namespace bi {
  *
  * @ingroup compiler_type
  */
-class LambdaType: public Type {
+class FunctionType: public Type {
 public:
   /**
    * Constructor.
@@ -23,29 +23,29 @@ public:
    * @param loc Location.
    * @param assignable Is this type assignable?
    */
-  LambdaType(Type* parens, Type* type, shared_ptr<Location> loc = nullptr,
+  FunctionType(Type* parens, Type* type, shared_ptr<Location> loc = nullptr,
       const bool assignable = false);
 
   /**
    * Destructor.
    */
-  virtual ~LambdaType();
+  virtual ~FunctionType();
 
   virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
-  virtual bool isLambda() const;
+  virtual bool isFunction() const;
 
   using Type::definitely;
   using Type::possibly;
 
   virtual bool dispatchDefinitely(const Type& o) const;
-  virtual bool definitely(const LambdaType& o) const;
+  virtual bool definitely(const FunctionType& o) const;
   virtual bool definitely(const ParenthesesType& o) const;
 
   virtual bool dispatchPossibly(const Type& o) const;
-  virtual bool possibly(const LambdaType& o) const;
+  virtual bool possibly(const FunctionType& o) const;
   virtual bool possibly(const ParenthesesType& o) const;
 
   /**

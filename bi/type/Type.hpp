@@ -11,9 +11,10 @@ class Modifier;
 class Visitor;
 
 class BracketsType;
+class CoroutineType;
 class EmptyType;
 template<class T> class Iterator;
-class LambdaType;
+class FunctionType;
 template<class T> class List;
 class TypeParameter;
 class TypeReference;
@@ -95,9 +96,14 @@ public:
   virtual bool isArray() const;
 
   /**
-   * Is this a lambda type?
+   * Is this a function type?
    */
-  virtual bool isLambda() const;
+  virtual bool isFunction() const;
+
+  /**
+   * Is this a coroutine type?
+   */
+  virtual bool isCoroutine() const;
 
   /**
    * Strip parentheses.
@@ -131,8 +137,9 @@ public:
   virtual bool definitely(const Type& o) const;
   virtual bool dispatchDefinitely(const Type& o) const = 0;
   virtual bool definitely(const BracketsType& o) const;
+  virtual bool definitely(const CoroutineType& o) const;
   virtual bool definitely(const EmptyType& o) const;
-  virtual bool definitely(const LambdaType& o) const;
+  virtual bool definitely(const FunctionType& o) const;
   virtual bool definitely(const List<Type>& o) const;
   virtual bool definitely(const TypeParameter& o) const;
   virtual bool definitely(const TypeReference& o) const;
@@ -141,8 +148,9 @@ public:
   virtual bool possibly(const Type& o) const;
   virtual bool dispatchPossibly(const Type& o) const = 0;
   virtual bool possibly(const BracketsType& o) const;
+  virtual bool possibly(const CoroutineType& o) const;
   virtual bool possibly(const EmptyType& o) const;
-  virtual bool possibly(const LambdaType& o) const;
+  virtual bool possibly(const FunctionType& o) const;
   virtual bool possibly(const List<Type>& o) const;
   virtual bool possibly(const TypeParameter& o) const;
   virtual bool possibly(const TypeReference& o) const;

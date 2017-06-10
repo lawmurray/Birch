@@ -35,8 +35,12 @@ bool bi::ParenthesesType::isAlias() const {
   return single->isAlias();
 }
 
-bool bi::ParenthesesType::isLambda() const {
-  return single->isLambda();
+bool bi::ParenthesesType::isFunction() const {
+  return single->isFunction();
+}
+
+bool bi::ParenthesesType::isCoroutine() const {
+  return single->isFunction();
 }
 
 bi::Type* bi::ParenthesesType::strip() {
@@ -63,11 +67,15 @@ bool bi::ParenthesesType::definitely(const BracketsType& o) const {
   return single->definitely(o);
 }
 
+bool bi::ParenthesesType::definitely(const CoroutineType& o) const {
+  return single->definitely(o);
+}
+
 bool bi::ParenthesesType::definitely(const EmptyType& o) const {
   return single->definitely(o);
 }
 
-bool bi::ParenthesesType::definitely(const LambdaType& o) const {
+bool bi::ParenthesesType::definitely(const FunctionType& o) const {
   return single->definitely(o);
 }
 
@@ -95,11 +103,15 @@ bool bi::ParenthesesType::possibly(const BracketsType& o) const {
   return single->possibly(o);
 }
 
+bool bi::ParenthesesType::possibly(const CoroutineType& o) const {
+  return single->possibly(o);
+}
+
 bool bi::ParenthesesType::possibly(const EmptyType& o) const {
   return single->possibly(o);
 }
 
-bool bi::ParenthesesType::possibly(const LambdaType& o) const {
+bool bi::ParenthesesType::possibly(const FunctionType& o) const {
   return single->possibly(o);
 }
 

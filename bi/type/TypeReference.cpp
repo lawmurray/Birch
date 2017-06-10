@@ -84,11 +84,15 @@ bool bi::TypeReference::definitely(const BracketsType& o) const {
   return convertedDefinitely(o);
 }
 
+bool bi::TypeReference::definitely(const CoroutineType& o) const {
+  return convertedDefinitely(o);
+}
+
 bool bi::TypeReference::definitely(const EmptyType& o) const {
   return convertedDefinitely(o);
 }
 
-bool bi::TypeReference::definitely(const LambdaType& o) const {
+bool bi::TypeReference::definitely(const FunctionType& o) const {
   return convertedDefinitely(o);
 }
 
@@ -131,11 +135,15 @@ bool bi::TypeReference::possibly(const BracketsType& o) const {
   return convertedPossibly(o);
 }
 
+bool bi::TypeReference::possibly(const CoroutineType& o) const {
+  return convertedPossibly(o);
+}
+
 bool bi::TypeReference::possibly(const EmptyType& o) const {
   return convertedPossibly(o);
 }
 
-bool bi::TypeReference::possibly(const LambdaType& o) const {
+bool bi::TypeReference::possibly(const FunctionType& o) const {
   return convertedPossibly(o);
 }
 

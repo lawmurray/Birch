@@ -184,17 +184,21 @@ bi::Statement* bi::Cloner::clone(const ProgDeclaration* o) {
 }
 
 bi::Type* bi::Cloner::clone(const BracketsType* o) {
-  return new BracketsType(o->single->accept(this), o->ndims,
-      o->loc, o->assignable);
+  return new BracketsType(o->single->accept(this), o->ndims, o->loc,
+      o->assignable);
 }
 
 bi::Type* bi::Cloner::clone(const ParenthesesType* o) {
   return new ParenthesesType(o->single->accept(this), o->loc, o->assignable);
 }
 
-bi::Type* bi::Cloner::clone(const LambdaType* o) {
-  return new LambdaType(o->parens->accept(this), o->type->accept(this),
+bi::Type* bi::Cloner::clone(const FunctionType* o) {
+  return new FunctionType(o->parens->accept(this), o->type->accept(this),
       o->loc, o->assignable);
+}
+
+bi::Type* bi::Cloner::clone(const CoroutineType* o) {
+  return new CoroutineType(o->type->accept(this), o->loc, o->assignable);
 }
 
 bi::Type* bi::Cloner::clone(const TypeList* o) {

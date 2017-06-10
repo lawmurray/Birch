@@ -56,7 +56,8 @@ public:
   virtual void visit(const EmptyType* o);
   virtual void visit(const BracketsType* o);
   virtual void visit(const ParenthesesType* o);
-  virtual void visit(const LambdaType* o);
+  virtual void visit(const FunctionType* o);
+  virtual void visit(const CoroutineType* o);
 
 protected:
   /**

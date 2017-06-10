@@ -41,7 +41,11 @@ bool bi::Type::isArray() const {
   return false;
 }
 
-bool bi::Type::isLambda() const {
+bool bi::Type::isFunction() const {
+  return false;
+}
+
+bool bi::Type::isCoroutine() const {
   return false;
 }
 
@@ -73,11 +77,15 @@ bool bi::Type::definitely(const BracketsType& o) const {
   return false;
 }
 
+bool bi::Type::definitely(const CoroutineType& o) const {
+  return false;
+}
+
 bool bi::Type::definitely(const EmptyType& o) const {
   return false;
 }
 
-bool bi::Type::definitely(const LambdaType& o) const {
+bool bi::Type::definitely(const FunctionType& o) const {
   return false;
 }
 
@@ -105,11 +113,15 @@ bool bi::Type::possibly(const BracketsType& o) const {
   return false;
 }
 
+bool bi::Type::possibly(const CoroutineType& o) const {
+  return false;
+}
+
 bool bi::Type::possibly(const EmptyType& o) const {
   return false;
 }
 
-bool bi::Type::possibly(const LambdaType& o) const {
+bool bi::Type::possibly(const FunctionType& o) const {
   return false;
 }
 

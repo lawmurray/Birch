@@ -34,7 +34,8 @@ public:
   virtual bool isStruct() const;
   virtual bool isClass() const;
   virtual bool isAlias() const;
-  virtual bool isLambda() const;
+  virtual bool isFunction() const;
+  virtual bool isCoroutine() const;
 
   virtual Type* strip();
 
@@ -44,8 +45,9 @@ public:
 
   virtual bool dispatchDefinitely(const Type& o) const;
   virtual bool definitely(const BracketsType& o) const;
+  virtual bool definitely(const CoroutineType& o) const;
   virtual bool definitely(const EmptyType& o) const;
-  virtual bool definitely(const LambdaType& o) const;
+  virtual bool definitely(const FunctionType& o) const;
   virtual bool definitely(const List<Type>& o) const;
   virtual bool definitely(const TypeParameter& o) const;
   virtual bool definitely(const TypeReference& o) const;
@@ -53,8 +55,9 @@ public:
 
   virtual bool dispatchPossibly(const Type& o) const;
   virtual bool possibly(const BracketsType& o) const;
+  virtual bool possibly(const CoroutineType& o) const;
   virtual bool possibly(const EmptyType& o) const;
-  virtual bool possibly(const LambdaType& o) const;
+  virtual bool possibly(const FunctionType& o) const;
   virtual bool possibly(const List<Type>& o) const;
   virtual bool possibly(const TypeParameter& o) const;
   virtual bool possibly(const TypeReference& o) const;

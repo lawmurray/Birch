@@ -50,7 +50,8 @@ public:
 
   virtual void visit(const BracketsType* o);
   virtual void visit(const ParenthesesType* o);
-  virtual void visit(const LambdaType* o);
+  virtual void visit(const FunctionType* o);
+  virtual void visit(const CoroutineType* o);
 
   virtual void visit(const File* o);
   virtual void visit(const Import* o);

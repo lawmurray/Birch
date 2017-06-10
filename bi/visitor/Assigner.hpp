@@ -25,7 +25,8 @@ public:
   virtual Type* modify(TypeParameter* o);
   virtual Type* modify(BracketsType* o);
   virtual Type* modify(ParenthesesType* o);
-  virtual Type* modify(LambdaType* o);
+  virtual Type* modify(FunctionType* o);
+  virtual Type* modify(CoroutineType* o);
   virtual Type* modify(TypeList* o);
 };
 }

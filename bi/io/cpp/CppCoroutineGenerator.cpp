@@ -22,7 +22,7 @@ void bi::CppCoroutineGenerator::visit(const FuncParameter* o) {
     in();
     line("namespace func {");
     out();
-    line("class " << o->name << " {");
+    line("class " << o->name << " : Coroutine<" << o->type << "> {");
     line("public:");
     in();
   }
@@ -43,12 +43,13 @@ void bi::CppCoroutineGenerator::visit(const FuncParameter* o) {
     if (o->parens->tupleSize() > 0) {
       finish(" :");
       in();
-      start("state_(0)");
       Gatherer<VarParameter> gatherer;
       o->parens->accept(&gatherer);
       for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
         const VarParameter* param = *iter;
-        finish(',');
+        if (iter != gatherer.begin()) {
+          finish(',');
+        }
         start(param->name << '(' << param->name << ')');
       }
       out();
@@ -61,8 +62,13 @@ void bi::CppCoroutineGenerator::visit(const FuncParameter* o) {
   }
 
   /* yield function */
+  if (header) {
+    start("virtual ");
+  } else {
+    start("");
+  }
   ++inReturn;
-  start(o->type);
+  middle(o->type);
   --inReturn;
   middle(' ');
   if (!header) {
@@ -78,23 +84,23 @@ void bi::CppCoroutineGenerator::visit(const FuncParameter* o) {
     Gatherer<Return> gatherer;
     o->braces->accept(&gatherer);
     if (gatherer.size() > 0) {
-      line("switch (this->state_) {");
+      line("switch (state) {");
       in();
       for (int s = 0; s <= gatherer.size(); ++s) {
-        line("case " << s << ": goto STATE" << s << "_;");
+        line("case " << s << ": goto STATE" << s << ';');
       }
       out();
       line('}');
     }
 
-    line("STATE0_:");
+    line("STATE0:");
     ++state;
 
     ++inCoroutine;
     *this << o->braces;
     ++inCoroutine;
 
-    line("this->state_ = " << state << ';');
+    line("state = " << state << ';');
     out();
     finish("}\n");
   }
@@ -104,7 +110,6 @@ void bi::CppCoroutineGenerator::visit(const FuncParameter* o) {
     out();
     line("private:");
     in();
-    line("int state_;\n");
 
     /* function parameters as class member variables */
     Gatherer<VarParameter> gatherer1;
@@ -133,7 +138,7 @@ void bi::CppCoroutineGenerator::visit(const FuncParameter* o) {
 }
 
 void bi::CppCoroutineGenerator::visit(const Return* o) {
-  line("this->state_ = " << state << "; return " << o->single << ';');
-  line("STATE" << state << "_: ");
+  line("state = " << state << "; return " << o->single << ';');
+  line("STATE" << state << ": ;");
   ++state;
 }

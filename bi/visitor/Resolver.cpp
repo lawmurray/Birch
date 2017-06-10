@@ -174,7 +174,7 @@ bi::Expression* bi::Resolver::modify(VarParameter* o) {
   if (!o->name->isEmpty()) {
     top()->add(o);
   }
-  if (o->type->isLambda()) {
+  if (o->type->isFunction()) {
     o->func = makeLambda(o)->accept(this);
   }
   if (!o->value->isEmpty()) {
@@ -296,7 +296,7 @@ bi::Statement* bi::Resolver::modify(Return* o) {
 }
 
 bi::FuncParameter* bi::Resolver::makeLambda(VarParameter* o) {
-  LambdaType* lambda = dynamic_cast<LambdaType*>(o->type->strip());
+  FunctionType* lambda = dynamic_cast<FunctionType*>(o->type->strip());
   assert(lambda);
 
   /* parameters */

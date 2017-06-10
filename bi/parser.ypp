@@ -47,8 +47,9 @@
   bi::Statement* valStatement;
 }
 
-%token <valString> IMPORT PROG STRUCT CLASS TYPE FUNC LAMBDA COROUTINE
+%token <valString> IMPORT PROGRAM STRUCT CLASS TYPE FUNCTION COROUTINE
 %token <valString> IF ELSE FOR IN WHILE RETURN CPP HPP THIS SUPER
+%token <valString> FUNCTION_UPPER COROUTINE_UPPER
 %token <valString> DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE RAW NAME
 %token <valBool> BOOL_LITERAL
 %token <valInt> INT_LITERAL
@@ -78,13 +79,13 @@
 %type <valProg> prog_parameter
 
 %type <valType> type_reference struct_parameter class_parameter type_parameter
-%type <valType> brackets_type parens_type primary_type lambda_type
-%type <valType> type_list type
+%type <valType> parens_type function_type coroutine_type primary_type
+%type <valType> brackets_type type_list type
 %type <valType> type_parameter_list type_parameters
 %type <valType> result_type optional_result_type
 
 %type <valExpression> reference_expression this_expression super_expression
-%type <valExpression> parens_expression lambda_expression
+%type <valExpression> parens_expression function_expression
 %type <valExpression> member_expression primary_expression
 %type <valExpression> index_expression index_list
 %type <valExpression> brackets_expression unary_expression
@@ -102,14 +103,6 @@
 %type <valStatement> statement statements optional_statements
 %type <valStatement> type_statement type_statements optional_type_statements
 %type <valStatement> file_statement file_statements optional_file_statements
-
-/*
- * left associativity on RIGHT_OP is necessary to resolve ambiguity between
- * lambda types and return types in operation declarations, e.g.:
- *
- * function x:Real + y:lambda() -> Real -> Real;
- */
-%left RIGHT_OP
 
 %locations
 
@@ -347,9 +340,19 @@ parens_type
     : '(' type_list ')'  { $$ = new bi::ParenthesesType($2, make_loc(@$)); }
     ;
 
+function_type
+    : FUNCTION_UPPER '<' type_parameters optional_result_type '>'  { $$ = new bi::FunctionType($3, $4, make_loc(@$)); }
+    ;
+
+coroutine_type
+    : COROUTINE_UPPER '<' type '>'  { $$ = new bi::CoroutineType($3, make_loc(@$)); }
+    ;
+
 primary_type
     : type_reference
     | parens_type
+    | function_type
+    | coroutine_type
     ;
 
 brackets_type
@@ -357,18 +360,13 @@ brackets_type
     | primary_type '[' size_list ']'  { $$ = new bi::BracketsType($1, $3, make_loc(@$)); }
     ;
 
-lambda_type
-    : brackets_type
-    | LAMBDA type_parameters optional_result_type  { $$ = new bi::LambdaType($2, $3, make_loc(@$)); }
-    ;
-
 type_list
-    : lambda_type
-    | lambda_type ',' type_list  { $$ = new bi::TypeList($1, $3, make_loc(@$)); }
+    : brackets_type
+    | brackets_type ',' type_list  { $$ = new bi::TypeList($1, $3, make_loc(@$)); }
     ;
 
 type
-    : lambda_type
+    : brackets_type
     ;
 
 
@@ -385,8 +383,8 @@ parens_expression
     : '(' expression_list ')'  { $$ = new bi::ParenthesesExpression($2, make_loc(@$)); }
     ;
     
-lambda_expression
-    : LAMBDA parameters optional_result_type optional_braces  { $$ = new bi::FuncParameter(new bi::Name(), $2, $3, $4, bi::LAMBDA_FORM, make_loc(@$)); }
+function_expression
+    : FUNCTION parameters optional_result_type optional_braces  { $$ = new bi::FuncParameter(new bi::Name(), $2, $3, $4, bi::LAMBDA_FORM, make_loc(@$)); }
     ;
 
 this_expression
@@ -400,7 +398,7 @@ super_expression
 primary_expression
     : literal
     | parens_expression
-    | lambda_expression
+    | function_expression
     | reference_expression
     | this_expression
     | super_expression
@@ -555,11 +553,11 @@ var_member_declaration
     ;
 
 func_declaration
-    : FUNC func_parameter  { $$ = new bi::FuncDeclaration(dynamic_cast<bi::FuncParameter*>($2), make_loc(@$)); }
+    : FUNCTION func_parameter  { $$ = new bi::FuncDeclaration(dynamic_cast<bi::FuncParameter*>($2), make_loc(@$)); }
     ;
 
 func_member_declaration
-    : FUNC func_member_parameter  { $$ = new bi::FuncDeclaration(dynamic_cast<bi::FuncParameter*>($2), make_loc(@$)); }
+    : FUNCTION func_member_parameter  { $$ = new bi::FuncDeclaration(dynamic_cast<bi::FuncParameter*>($2), make_loc(@$)); }
     ;
 
 coroutine_declaration
@@ -567,11 +565,11 @@ coroutine_declaration
     ;
 
 op_declaration
-    : FUNC op_parameter  { $$ = new bi::FuncDeclaration(dynamic_cast<bi::FuncParameter*>($2), make_loc(@$)); }
+    : FUNCTION op_parameter  { $$ = new bi::FuncDeclaration(dynamic_cast<bi::FuncParameter*>($2), make_loc(@$)); }
     ;
 
 conversion_declaration
-    : FUNC conversion_parameter  { $$ = new bi::ConversionDeclaration(dynamic_cast<bi::ConversionParameter*>($2), make_loc(@$)); }
+    : FUNCTION conversion_parameter  { $$ = new bi::ConversionDeclaration(dynamic_cast<bi::ConversionParameter*>($2), make_loc(@$)); }
     ;
 
 type_declaration
@@ -581,7 +579,7 @@ type_declaration
     ;
     
 prog_declaration
-    : PROG prog_parameter  { $$ = new bi::ProgDeclaration(dynamic_cast<bi::ProgParameter*>($2), make_loc(@$)); } 
+    : PROGRAM prog_parameter  { $$ = new bi::ProgDeclaration(dynamic_cast<bi::ProgParameter*>($2), make_loc(@$)); } 
     ;
 
 expression_statement

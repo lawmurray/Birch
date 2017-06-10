@@ -102,8 +102,9 @@ birchc_SOURCES = \
   bi/statement/Return.cpp \
   bi/statement/Statement.cpp \
   bi/type/BracketsType.cpp \
+  bi/type/CoroutineType.cpp \
   bi/type/EmptyType.cpp \
-  bi/type/LambdaType.cpp \
+  bi/type/FunctionType.cpp \
   bi/type/TypeParameter.cpp \
   bi/type/TypeReference.cpp \
   bi/type/ParenthesesType.cpp \
@@ -138,6 +139,7 @@ libbirch_la_CXXFLAGS = $(AM_CXXFLAGS)
 nobase_include_HEADERS = \
   bi/lib/Array.hpp \
   bi/lib/constant.hpp \
+  bi/lib/Coroutine.hpp \
   bi/lib/easy.hpp \
   bi/lib/Frame.hpp \
   bi/lib/memory.hpp \
@@ -255,8 +257,9 @@ noinst_HEADERS = \
   bi/statement/While.hpp \
   bi/type/all.hpp \
   bi/type/BracketsType.hpp \
+  bi/type/CoroutineType.hpp \
   bi/type/EmptyType.hpp \
-  bi/type/LambdaType.hpp \
+  bi/type/FunctionType.hpp \
   bi/type/ParenthesesType.hpp \
   bi/type/Type.hpp \
   bi/type/TypeParameter.hpp \
