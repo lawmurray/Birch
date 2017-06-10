@@ -167,13 +167,13 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
     in();
     line("namespace program {");
     out();
-    line("extern \"C\" void " << o->name << "(int argc, char** argv);");
+    line("extern \"C\" void " << o->name << "(int argc_, char** argv_);");
     in();
     line("}");
     out();
     line("}\n");
   } else {
-    line("void bi::program::" << o->name << "(int argc, char** argv) {");
+    line("void bi::program::" << o->name << "(int argc_, char** argv_) {");
     in();
     if (o->parens->tupleSize() > 0) {
       /* option variables */
@@ -187,7 +187,7 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
       in();
       for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
         std::string flag =
-            dynamic_cast<const VarParameter*>(*iter)->name->str() + "_ARG";
+            dynamic_cast<const VarParameter*>(*iter)->name->str() + "_ARG_";
         boost::to_upper(flag);
         start(flag);
         if (iter == o->parens->begin()) {
@@ -199,14 +199,14 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
       line("};");
 
       /* long options */
-      line("int c, option_index;");
-      line("option long_options[] = {");
+      line("int c_, option_index_;");
+      line("option long_options_[] = {");
       in();
       for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
         const std::string& name =
             dynamic_cast<const VarParameter*>(*iter)->name->str();
         //if (name.length() > 1) {
-        std::string flag = name + "_ARG";
+        std::string flag = name + "_ARG_";
         boost::to_upper(flag);
         std::string option = name;
         boost::replace_all(option, "_", "-");
@@ -220,7 +220,7 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
       line("};");
 
       /* short options */
-      start("const char* short_options = \"");
+      start("const char* short_options_ = \"");
       //for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
       //  const std::string& name = dynamic_cast<const VarParameter*>(*iter)->name->str();
       //  if (name.length() == 1) {
@@ -230,18 +230,18 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
       finish("\";");
 
       /* read in options with getopt_long */
-      line("opterr = 0; // handle error reporting ourselves");
+      line("::opterr = 0; // handle error reporting ourselves");
       line(
-          "c = getopt_long_only(argc, argv, short_options, long_options, &option_index);");
-      line("while (c != -1) {");
+          "c_ = getopt_long_only(argc_, argv_, short_options_, long_options_, &option_index_);");
+      line("while (c_ != -1) {");
       in();
-      line("switch (c) {");
+      line("switch (c_) {");
       in();
 
       for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
         const std::string& name =
             dynamic_cast<const VarParameter*>(*iter)->name->str();
-        std::string flag = name + "_ARG";
+        std::string flag = name + "_ARG_";
         boost::to_upper(flag);
 
         start("case ");
@@ -255,9 +255,9 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
         Type* type = (*iter)->type->strip();
         const TypeReference* ref = dynamic_cast<const TypeReference*>(type);
         if (ref && *ref->name == "String") {
-          line(name << " = optarg;");
+          line(name << " = ::optarg;");
         } else {
-          line("left_(" << name << ", optarg);");
+          line("left_(" << name << ", ::optarg);");
         }
         line("break;");
         out();
@@ -270,7 +270,7 @@ void bi::CppFileGenerator::visit(const ProgParameter* o) {
       out();
       line('}');
       line(
-          "c = getopt_long_only(argc, argv, short_options, long_options, &option_index);");
+          "c_ = getopt_long_only(argc_, argv_, short_options_, long_options_, &option_index_);");
       out();
       line("}\n");
     }
