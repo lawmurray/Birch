@@ -384,7 +384,7 @@ parens_expression
     ;
     
 function_expression
-    : FUNCTION parameters optional_result_type optional_braces  { $$ = new bi::FuncParameter(new bi::Name(), $2, $3, $4, bi::LAMBDA_FORM, make_loc(@$)); }
+    : FUNCTION parameters optional_result_type optional_braces  { $$ = new bi::FuncParameter(new bi::Name(), $2, $3, $4, bi::LAMBDA_FUNCTION_FORM, make_loc(@$)); }
     ;
 
 this_expression

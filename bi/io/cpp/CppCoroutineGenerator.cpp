@@ -17,23 +17,24 @@ void bi::CppCoroutineGenerator::visit(const FuncParameter* o) {
   /* pre-condition */
   assert(o->isCoroutine());
 
+  /* supporting class */
   if (header) {
     line("namespace bi {");
     in();
     line("namespace func {");
     out();
-    line("class " << o->name << " : Coroutine<" << o->type << "> {");
+    line("class Coroutine_" << o->name << "_ : public Coroutine<" << o->type << "> {");
     line("public:");
     in();
   }
 
   /* constructor, taking the arguments of the coroutine */
   if (!header) {
-    start("bi::func::" << o->name << "::");
+    start("bi::func::Coroutine_" << o->name << "_::");
   } else {
     start("");
   }
-  middle(o->name);
+  middle("Coroutine_" << o->name << "_");
 
   CppParameterGenerator auxParameter(base, level, header);
   auxParameter << o;
@@ -50,7 +51,7 @@ void bi::CppCoroutineGenerator::visit(const FuncParameter* o) {
         if (iter != gatherer.begin()) {
           finish(',');
         }
-        start(param->name << '(' << param->name << ')');
+        start(param->name << '_' << param->number << '_' << '(' << param->name << ')');
       }
       out();
     }
@@ -61,7 +62,7 @@ void bi::CppCoroutineGenerator::visit(const FuncParameter* o) {
     line("}\n");
   }
 
-  /* yield function */
+  /* call function */
   if (header) {
     start("virtual ");
   } else {
@@ -72,7 +73,7 @@ void bi::CppCoroutineGenerator::visit(const FuncParameter* o) {
   --inReturn;
   middle(' ');
   if (!header) {
-    middle("bi::func::" << o->name << "::");
+    middle("bi::func::Coroutine_" << o->name << "_::");
   }
   middle("operator()()");
   if (header) {
@@ -95,10 +96,7 @@ void bi::CppCoroutineGenerator::visit(const FuncParameter* o) {
 
     line("STATE0:");
     ++state;
-
-    ++inCoroutine;
     *this << o->braces;
-    ++inCoroutine;
 
     line("state = " << state << ';');
     out();
@@ -111,19 +109,10 @@ void bi::CppCoroutineGenerator::visit(const FuncParameter* o) {
     line("private:");
     in();
 
-    /* function parameters as class member variables */
-    Gatherer<VarParameter> gatherer1;
-    o->parens->accept(&gatherer1);
-    for (auto iter = gatherer1.begin(); iter != gatherer1.end(); ++iter) {
-      const VarParameter* param = *iter;
-      line(param->type << ' ' << param->name << ';');
-    }
-    line("");
-
-    /* local variables as class member variables */
-    Gatherer<VarParameter> gatherer2;
-    o->braces->accept(&gatherer2);
-    for (auto iter = gatherer2.begin(); iter != gatherer2.end(); ++iter) {
+    /* parameters and local variables as class member variables */
+    Gatherer<VarParameter> gatherer;
+    o->accept(&gatherer);
+    for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
       const VarParameter* param = *iter;
       line(param->type << ' ' << param->name << '_' << param->number << "_;");
     }
@@ -135,10 +124,96 @@ void bi::CppCoroutineGenerator::visit(const FuncParameter* o) {
     out();
     line("}\n");
   }
+
+  /* initialisation function */
+  if (header) {
+    line("namespace bi {");
+      in();
+      line("namespace func {");
+      out();
+  }
+
+  /* return type */
+  ++inReturn;
+  start("bi::reloc_ptr<bi::Coroutine<" << o->type << ">> ");
+  --inReturn;
+
+  /* name */
+  if (!header) {
+    middle("bi::func::");
+  }
+  middle(o->name);
+
+  /* parameters */
+  auxParameter << o;
+
+  if (header) {
+    finish(';');
+  } else {
+    finish(" {");
+    in();
+    start("return new (GC_MALLOC(sizeof(bi::func::Coroutine_" << o->name << "_))) bi::func::Coroutine_" << o->name << "_(");
+    for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
+      if (iter != o->parens->begin()) {
+        middle(", ");
+      }
+      const VarParameter* param = dynamic_cast<const VarParameter*>(*iter);
+      assert(param);
+      middle(param->name);
+    }
+    finish(");");
+    out();
+    finish("}\n");
+  }
+  if (header) {
+      in();
+      line("}");
+      out();
+    line("}\n");
+  }
 }
 
 void bi::CppCoroutineGenerator::visit(const Return* o) {
   line("state = " << state << "; return " << o->single << ';');
   line("STATE" << state << ": ;");
   ++state;
+}
+
+void bi::CppCoroutineGenerator::visit(const VarReference* o) {
+  middle(o->name << '_' << o->target->number << '_');
+}
+
+void bi::CppCoroutineGenerator::visit(const VarParameter* o) {
+  if (o->type->isClass() || !o->parens->isEmpty() || o->type->count() > 0) {
+    middle(o->name << '_' << o->number << '_');
+  }
+  if (o->type->isClass()) {
+    TypeReference* type = dynamic_cast<TypeReference*>(o->type->strip());
+    assert(type);
+    middle(" = new (GC_MALLOC(sizeof(bi::type::" << type->name << "))) bi::type::" << type->name << '(');
+  } else if (!o->parens->isEmpty() || o->type->count() > 0) {
+    middle('(');
+  }
+  if (o->type->count() > 0) {
+    BracketsType* type = dynamic_cast<BracketsType*>(o->type->strip());
+    assert(type);
+    middle("make_frame(" << type->brackets << ")");
+  }
+  if (!o->parens->isEmpty()) {
+    if (o->type->count() > 0) {
+      middle(", ");
+    }
+    middle(o->parens->strip());
+  }
+  if (o->type->isClass() || !o->parens->isEmpty() || o->type->count() > 0) {
+    middle(')');
+  }
+  if (!o->value->isEmpty()) {
+    if (o->type->isClass()) {
+      ///@todo How to handle this case?
+      assert(false);
+    } else {
+      middle(" = " << o->value);
+    }
+  }
 }

@@ -29,13 +29,17 @@ bool bi::FunctionMode::isAssign() const {
 }
 
 bool bi::FunctionMode::isLambda() const {
-  return form == LAMBDA_FORM;
+  return form == LAMBDA_FUNCTION_FORM || form == LAMBDA_COROUTINE_FORM;
 }
 
 bool bi::FunctionMode::isMember() const {
-  return form == MEMBER_FUNCTION_FORM;
+  return form == MEMBER_FUNCTION_FORM || form == MEMBER_COROUTINE_FORM;
+}
+
+bool bi::FunctionMode::isFunction() const {
+  return form == FUNCTION_FORM || form == MEMBER_FUNCTION_FORM || form == LAMBDA_FUNCTION_FORM;
 }
 
 bool bi::FunctionMode::isCoroutine() const {
-  return form == COROUTINE_FORM;
+  return form == COROUTINE_FORM || form == MEMBER_COROUTINE_FORM || form == LAMBDA_COROUTINE_FORM;
 }

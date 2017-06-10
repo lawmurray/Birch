@@ -63,9 +63,14 @@ public:
 
 protected:
   /**
-   * Make a function associated with a variable of lambda type.
+   * Make a function associated with a variable of function type.
    */
-  FuncParameter* makeLambda(VarParameter* o);
+  FuncParameter* makeFunction(VarParameter* o);
+
+  /**
+   * Make a coroutine associated with a variable of coroutine type.
+   */
+  FuncParameter* makeCoroutine(VarParameter* o);
 
   /**
    * Take the membership scope, if it exists.

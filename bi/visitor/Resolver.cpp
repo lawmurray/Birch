@@ -151,7 +151,11 @@ bi::Expression* bi::Resolver::modify(FuncReference* o) {
     ///@todo Warn if a declared assignment operator is masked by this
   } else {
     resolve(o, memberScope);
-    o->type = o->target->type->accept(&cloner)->accept(this);
+    if (o->target->isCoroutine() && !o->target->isLambda()) {
+      o->type = new CoroutineType(o->target->type->accept(&cloner)->accept(this));
+    } else {
+      o->type = o->target->type->accept(&cloner)->accept(this);
+    }
   }
   o->type->assignable = false;  // rvalue
   return o;
@@ -175,7 +179,9 @@ bi::Expression* bi::Resolver::modify(VarParameter* o) {
     top()->add(o);
   }
   if (o->type->isFunction()) {
-    o->func = makeLambda(o)->accept(this);
+    o->func = makeFunction(o)->accept(this);
+  } else if (o->type->isCoroutine()) {
+    o->func = makeCoroutine(o)->accept(this);
   }
   if (!o->value->isEmpty()) {
     if (!o->type->assignable) {
@@ -295,7 +301,7 @@ bi::Statement* bi::Resolver::modify(Return* o) {
   return o;
 }
 
-bi::FuncParameter* bi::Resolver::makeLambda(VarParameter* o) {
+bi::FuncParameter* bi::Resolver::makeFunction(VarParameter* o) {
   FunctionType* lambda = dynamic_cast<FunctionType*>(o->type->strip());
   assert(lambda);
 
@@ -326,7 +332,21 @@ bi::FuncParameter* bi::Resolver::makeLambda(VarParameter* o) {
 
   /* function */
   FuncParameter* func = new FuncParameter(o->name, parens, type,
-      new EmptyExpression(), LAMBDA_FORM);
+      new EmptyExpression(), LAMBDA_FUNCTION_FORM);
+
+  return func;
+}
+
+bi::FuncParameter* bi::Resolver::makeCoroutine(VarParameter* o) {
+  CoroutineType* lambda = dynamic_cast<CoroutineType*>(o->type->strip());
+  assert(lambda);
+
+  /* return type */
+  Type* type = lambda->type->accept(&cloner);
+
+  /* coroutine */
+  FuncParameter* func = new FuncParameter(o->name, new bi::EmptyExpression(), type,
+      new EmptyExpression(), LAMBDA_COROUTINE_FORM);
 
   return func;
 }

@@ -13,8 +13,7 @@ bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
     const bool header) :
     indentable_ostream(base, level),
     header(header),
-    inReturn(0),
-    inCoroutine(0) {
+    inReturn(0) {
   //
 }
 
@@ -149,13 +148,18 @@ void bi::CppBaseGenerator::visit(const FuncReference* o) {
     middle(o->name);
     genArg(o->getRight(), o->target->getRight());
   } else {
-    if (!o->isMember() && o->name->str() != "assert") { // special exception for now
+    if (!o->isMember() && !o->isLambda() && o->name->str() != "assert") { // special exception for now
       middle("bi::");
       if (!o->isOperator()) {
         middle("func::");
       }
     }
-    middle(internalise(o->name->str()) << '(');
+    if (o->isCoroutine() && o->isLambda()) {
+      middle("(*" << internalise(o->name->str()) << ')');
+    } else {
+      middle(internalise(o->name->str()));
+    }
+    middle('(');
     auto arg = o->parens->begin();
     auto param = o->target->parens->begin();
     while (arg != o->parens->end() && param != o->target->parens->end()) {
@@ -173,11 +177,7 @@ void bi::CppBaseGenerator::visit(const FuncReference* o) {
 }
 
 void bi::CppBaseGenerator::visit(const VarParameter* o) {
-  if (inCoroutine) {
-    middle("auto& " << o->name << " = " << o->name << '_' << o->number << '_');
-  } else {
-    middle(o->type << ' ' << o->name);
-  }
+  middle(o->type << ' ' << o->name);
   if (o->type->isClass()) {
     TypeReference* type = dynamic_cast<TypeReference*>(o->type->strip());
     assert(type);
@@ -308,7 +308,7 @@ void bi::CppBaseGenerator::visit(const FunctionType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const CoroutineType* o) {
-  middle("bi::Coroutine<" << o->type << '>');
+  middle("bi::reloc_ptr<bi::Coroutine<" << o->type << ">>");
 }
 
 void bi::CppBaseGenerator::genCapture(const Expression* o) {

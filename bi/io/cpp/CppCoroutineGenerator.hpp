@@ -20,6 +20,8 @@ public:
 
   virtual void visit(const FuncParameter* o);
   virtual void visit(const Return* o);
+  virtual void visit(const VarReference* o);
+  virtual void visit(const VarParameter* o);
 
 private:
   /**

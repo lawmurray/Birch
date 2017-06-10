@@ -8,13 +8,15 @@ namespace bi {
  * Function form flags.
  */
 enum FunctionForm {
-  FUNCTION_FORM,
   BINARY_FORM,
   UNARY_FORM,
   ASSIGN_FORM,
-  LAMBDA_FORM,
+  FUNCTION_FORM,
+  LAMBDA_FUNCTION_FORM,
   MEMBER_FUNCTION_FORM,
   COROUTINE_FORM,
+  LAMBDA_COROUTINE_FORM,
+  MEMBER_COROUTINE_FORM,
 };
 
 /**
@@ -57,14 +59,19 @@ public:
   bool isAssign() const;
 
   /**
-   * Is this a lambda function?
+   * Is this a lambda?
    */
   bool isLambda() const;
 
   /**
-   * Is this a lambda function?
+   * Is this a member?
    */
   bool isMember() const;
+
+  /**
+   * Is this a function?
+   */
+  bool isFunction() const;
 
   /**
    * Is this a coroutine?
