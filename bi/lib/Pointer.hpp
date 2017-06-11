@@ -12,14 +12,14 @@ namespace bi {
  * @tparam T Type.
  */
 template<class T>
-class reloc_ptr {
+class Pointer {
   template<class U>
-  friend class reloc_ptr;
+  friend class Pointer;
 public:
   /**
    * Constructor.
    */
-  reloc_ptr(T* ptr = nullptr) : ptr(ptr), page(-1) {
+  Pointer(T* ptr = nullptr) : ptr(ptr), page(-1) {
     //
   }
 
@@ -27,14 +27,14 @@ public:
    * Generic constructor.
    */
   template<class U>
-  reloc_ptr(U* ptr = nullptr) : ptr(ptr), page(-1) {
+  Pointer(U* ptr = nullptr) : ptr(ptr), page(-1) {
     //
   }
 
   /**
    * Copy constructor.
    */
-  reloc_ptr(const reloc_ptr<T>& o) : ptr(o.ptr), page(o.page) {
+  Pointer(const Pointer<T>& o) : ptr(o.ptr), page(o.page) {
     //
   }
 
@@ -42,61 +42,61 @@ public:
    * Generic copy constructor.
    */
   template<class U>
-  reloc_ptr(const reloc_ptr<U>& o) : ptr(o.ptr), page(o.page) {
+  Pointer(const Pointer<U>& o) : ptr(o.ptr), page(o.page) {
     //
   }
 
   /**
    * Destructor.
    */
-  ~reloc_ptr() {
+  ~Pointer() {
     //
   }
 
   /*
    * Equality operators.
    */
-  bool operator==(const reloc_ptr<T>& o) const {
+  bool operator==(const Pointer<T>& o) const {
     return ptr == o.ptr && page == o.page;
   }
-  bool operator!=(const reloc_ptr<T>& o) const {
+  bool operator!=(const Pointer<T>& o) const {
     return !(*this == o);
   }
 
   /*
    * Inequality operators.
    */
-  bool operator<(const reloc_ptr<T>& o) const {
+  bool operator<(const Pointer<T>& o) const {
     return ptr < o.ptr;
   }
-  bool operator>(const reloc_ptr<T>& o) const {
+  bool operator>(const Pointer<T>& o) const {
     return ptr > o.ptr;
   }
-  bool operator<=(const reloc_ptr<T>& o) const {
+  bool operator<=(const Pointer<T>& o) const {
     return ptr <= o.ptr;
   }
-  bool operator>=(const reloc_ptr<T>& o) const {
+  bool operator>=(const Pointer<T>& o) const {
     return ptr >= o.ptr;
   }
 
   /*
    * Arithmetic operators.
    */
-  reloc_ptr<T>& operator+=(const ptrdiff_t o) {
+  Pointer<T>& operator+=(const ptrdiff_t o) {
     ptr += o;
     return *this;
   }
-  reloc_ptr<T>& operator-=(const ptrdiff_t o) {
+  Pointer<T>& operator-=(const ptrdiff_t o) {
     ptr -= o;
     return *this;
   }
-  reloc_ptr<T> operator+(const ptrdiff_t o) const {
-    reloc_ptr<T> result(*this);
+  Pointer<T> operator+(const ptrdiff_t o) const {
+    Pointer<T> result(*this);
     result += o;
     return result;
   }
-  reloc_ptr<T> operator-(const ptrdiff_t o) const {
-    reloc_ptr<T> result(*this);
+  Pointer<T> operator-(const ptrdiff_t o) const {
+    Pointer<T> result(*this);
     result -= o;
     return result;
   }

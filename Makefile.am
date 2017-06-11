@@ -150,7 +150,7 @@ nobase_include_HEADERS = \
   bi/lib/Length.hpp \
   bi/lib/Offset.hpp \
   bi/lib/Range.hpp \
-  bi/lib/reloc_ptr.hpp \
+  bi/lib/Pointer.hpp \
   bi/lib/Span.hpp \
   bi/lib/Stride.hpp \
   bi/lib/View.hpp \

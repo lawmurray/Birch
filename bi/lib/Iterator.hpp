@@ -4,7 +4,7 @@
 #pragma once
 
 #include "bi/lib/Frame.hpp"
-#include "bi/lib/reloc_ptr.hpp"
+#include "bi/lib/Pointer.hpp"
 
 namespace bi {
 /**
@@ -24,7 +24,7 @@ public:
    * @param ptr Value.
    * @param frame Frame.
    */
-  Iterator(const reloc_ptr<Type>& ptr, const Frame& frame) :
+  Iterator(const Pointer<Type>& ptr, const Frame& frame) :
       frame(frame),
       ptr(ptr),
       serial(0) {
@@ -100,7 +100,7 @@ public:
   /**
    * Value.
    */
-  reloc_ptr<Type> ptr;
+  Pointer<Type> ptr;
 
   /**
    * Serialised offset into the frame.

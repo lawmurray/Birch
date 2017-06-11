@@ -293,7 +293,7 @@ void bi::CppBaseGenerator::visit(const TypeReference* o) {
   if (o->isBuiltin()) {
     genBuiltin(o);
   } else if (o->isClass()) {
-    middle("bi::reloc_ptr<bi::type::" << o->name << ">");
+    middle("bi::Pointer<bi::type::" << o->name << ">");
   } else {
     middle("bi::type::" << o->name);
   }
@@ -323,7 +323,7 @@ void bi::CppBaseGenerator::visit(const FunctionType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const CoroutineType* o) {
-  middle("bi::reloc_ptr<bi::Coroutine<" << o->type << ">>");
+  middle("bi::Pointer<bi::Coroutine<" << o->type << ">>");
 }
 
 void bi::CppBaseGenerator::genCapture(const Expression* o) {

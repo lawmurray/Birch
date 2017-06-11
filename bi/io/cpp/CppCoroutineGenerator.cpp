@@ -135,7 +135,7 @@ void bi::CppCoroutineGenerator::visit(const FuncParameter* o) {
 
   /* return type */
   ++inReturn;
-  start("bi::reloc_ptr<bi::Coroutine<" << o->type << ">> ");
+  start("bi::Pointer<bi::Coroutine<" << o->type << ">> ");
   --inReturn;
 
   /* name */

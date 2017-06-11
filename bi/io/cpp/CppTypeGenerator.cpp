@@ -69,7 +69,7 @@ void bi::CppTypeGenerator::visit(const TypeReference* o) {
     if (o->isBuiltin()) {
       genBuiltin(o);
     } else if (o->isClass()) {
-      middle("bi::reloc_ptr<" << o->name << '>');
+      middle("bi::Pointer<" << o->name << '>');
     } else {
       middle(o->name);
     }

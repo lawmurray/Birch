@@ -4,7 +4,7 @@
 #pragma once
 
 #include "bi/lib/Frame.hpp"
-#include "bi/lib/reloc_ptr.hpp"
+#include "bi/lib/Pointer.hpp"
 
 namespace bi {
 /**
@@ -16,7 +16,7 @@ namespace bi {
  * @param size Number of bytes to allocate.
  */
 template<class Type>
-void create(reloc_ptr<Type>& ptr, const size_t size);
+void create(Pointer<Type>& ptr, const size_t size);
 
 /**
  * Allocate memory for pointer type.
@@ -27,7 +27,7 @@ void create(reloc_ptr<Type>& ptr, const size_t size);
  * @param size Number of bytes to allocate.
  */
 template<class Type>
-void create(reloc_ptr<reloc_ptr<Type>>& ptr, const size_t size);
+void create(Pointer<Pointer<Type>>& ptr, const size_t size);
 
 /**
  * Initialise memory.
@@ -45,21 +45,21 @@ void construct(Type& o, Args... args);
  * @param args Constructor arguments.
  */
 template<class Type, class... Args>
-void construct(reloc_ptr<Type>& o, Args... args);
+void construct(Pointer<Type>& o, Args... args);
 }
 
 #include <gc.h>
 
 template<class Type>
-void bi::create(reloc_ptr<Type>& ptr, const size_t size) {
+void bi::create(Pointer<Type>& ptr, const size_t size) {
   ptr = static_cast<Type*>(GC_MALLOC_ATOMIC(size));
   // ^ buffer cannot itself contain pointers, so GC_MALLOC_ATOMIC can be used
   //   to prevent the garbage collector sweeping through it
 }
 
 template<class Type>
-void bi::create(reloc_ptr<reloc_ptr<Type>>& ptr, const size_t size) {
-  ptr = static_cast<reloc_ptr<Type>*>(GC_MALLOC(size));
+void bi::create(Pointer<Pointer<Type>>& ptr, const size_t size) {
+  ptr = static_cast<Pointer<Type>*>(GC_MALLOC(size));
 }
 
 template<class Type, class... Args>
@@ -68,6 +68,6 @@ void bi::construct(Type& o, Args... args) {
 }
 
 template<class Type, class... Args>
-void bi::construct(reloc_ptr<Type>& o, Args... args) {
-  new (&o) reloc_ptr<Type>(new (GC_MALLOC(sizeof(Type))) Type(args...));
+void bi::construct(Pointer<Type>& o, Args... args) {
+  new (&o) Pointer<Type>(new (GC_MALLOC(sizeof(Type))) Type(args...));
 }

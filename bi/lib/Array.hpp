@@ -7,7 +7,7 @@
 #include "bi/lib/Iterator.hpp"
 #include "bi/lib/constant.hpp"
 #include "bi/lib/memory.hpp"
-#include "bi/lib/reloc_ptr.hpp"
+#include "bi/lib/Pointer.hpp"
 
 #include <cstring>
 
@@ -40,7 +40,7 @@ protected:
   /**
    * Value.
    */
-  reloc_ptr<Type> ptr;
+  Pointer<Type> ptr;
 
   /**
    * Copy from another array.
@@ -69,12 +69,12 @@ protected:
    * Return value of view when result is an array.
    */
   template<class Frame1>
-  Array<Type,Frame1> viewReturn(const reloc_ptr<Type>& ptr,
+  Array<Type,Frame1> viewReturn(const Pointer<Type>& ptr,
       const Frame1& frame) {
     return Array<Type,Frame1>(ptr, frame);
   }
   template<class Frame1>
-  Array<Type,Frame1> viewReturn(const reloc_ptr<Type>& ptr,
+  Array<Type,Frame1> viewReturn(const Pointer<Type>& ptr,
       const Frame1& frame) const {
     return Array<Type,Frame1>(ptr, frame);
   }
@@ -82,10 +82,10 @@ protected:
   /**
    * Return value of view when result is a scalar.
    */
-  Type& viewReturn(const reloc_ptr<Type>& ptr, const EmptyFrame& frame) {
+  Type& viewReturn(const Pointer<Type>& ptr, const EmptyFrame& frame) {
     return *ptr;
   }
-  const Type& viewReturn(const reloc_ptr<Type>& ptr,
+  const Type& viewReturn(const Pointer<Type>& ptr,
       const EmptyFrame& frame) const {
     return *ptr;
   }
@@ -118,7 +118,7 @@ public:
    * @param ptr Existing allocation.
    * @param frame Frame.
    */
-  Array(const reloc_ptr<Type>& ptr, const Frame& frame) :
+  Array(const Pointer<Type>& ptr, const Frame& frame) :
       frame(frame),
       ptr(ptr) {
     //
