@@ -5,6 +5,8 @@
  */
 #pragma once
 
+#include "bi/statement/AssignmentParameter.hpp"
+#include "bi/statement/AssignmentReference.hpp"
 #include "bi/statement/Declaration.hpp"
 #include "bi/statement/EmptyStatement.hpp"
 #include "bi/statement/ExpressionStatement.hpp"

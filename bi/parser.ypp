@@ -60,7 +60,7 @@
 %type <valName> unary_operator
 %type <valName> multiplicative_operator additive_operator relational_operator
 %type <valName> equality_operator logical_and_operator logical_or_operator
-%type <valName> stochastic_operator assignment_operator binary_operator
+%type <valName> stochastic_operator binary_operator assignment_operator
 %type <valName> name path_name
 %type <valPath> path
 
@@ -91,14 +91,14 @@
 %type <valExpression> multiplicative_expression additive_expression
 %type <valExpression> relational_expression equality_expression
 %type <valExpression> logical_and_expression logical_or_expression
-%type <valExpression> stochastic_expression assignment_expression
-%type <valExpression> expression_list expression
+%type <valExpression> stochastic_expression expression_list expression
 
 %type <valStatement> var_declaration var_member_declaration
 %type <valStatement> func_declaration func_member_declaration
 %type <valStatement> coroutine_declaration op_declaration conversion_declaration
 %type <valStatement> type_declaration prog_declaration
 %type <valStatement> import cpp hpp expression_statement if for while return
+%type <valStatement> assignment_parameter assignment_statement assignment_declaration
 %type <valStatement> statement statements optional_statements
 %type <valStatement> type_statement type_statements optional_type_statements
 %type <valStatement> file_statement file_statements optional_file_statements
@@ -233,6 +233,10 @@ coroutine_parameter
 op_parameter
     : var_parameter binary_operator var_parameter optional_result_type optional_braces  { $$ = new bi::BinaryParameter($1, $2, $3, $4, $5, make_loc(@$)); }
     | unary_operator var_parameter optional_result_type optional_braces                 { $$ = new bi::UnaryParameter($1, $2, $3, $4, make_loc(@$)); }
+    ;
+
+assignment_parameter
+    : assignment_operator var_parameter optional_braces  { $$ = new bi::AssignmentParameter($1, $2, $3, make_loc(@$)); }
     ;
 
 conversion_parameter
@@ -507,24 +511,13 @@ stochastic_expression
     | stochastic_expression stochastic_operator logical_or_expression  { $$ = new bi::BinaryReference($1, $2, $3, make_loc(@$)); }
     ;
 
-assignment_operator
-    : LEFT_OP        { $$ = new bi::Name("<-", make_loc(@$)); }
-    | LEFT_TILDE_OP  { $$ = new bi::Name("<~", make_loc(@$)); }
-    | '~'            { $$ = new bi::Name("~", make_loc(@$)); }
-    ;
-    
-assignment_expression
-    : stochastic_expression
-    | stochastic_expression assignment_operator assignment_expression  { $$ = new bi::BinaryReference($1, $2, $3, make_loc(@$)); }
-    ;
-
 expression_list
-    : assignment_expression
-    | assignment_expression ',' expression_list  { $$ = new bi::List<bi::Expression>($1, $3, make_loc(@$)); }
+    : stochastic_expression
+    | stochastic_expression ',' expression_list  { $$ = new bi::List<bi::Expression>($1, $3, make_loc(@$)); }
     ;
 
 expression
-    : assignment_expression
+    : stochastic_expression
     ;
 
 binary_operator
@@ -566,6 +559,10 @@ op_declaration
     : FUNCTION op_parameter  { $$ = new bi::Declaration<bi::Expression>($2, make_loc(@$)); }
     ;
 
+assignment_declaration
+    : FUNCTION assignment_parameter  { $$ = $2; }
+    ;
+
 conversion_declaration
     : FUNCTION conversion_parameter  { $$ = new bi::Declaration<bi::Expression>($2, make_loc(@$)); }
     ;
@@ -582,6 +579,16 @@ prog_declaration
 
 expression_statement
     : expression ';'  { $$ = new bi::ExpressionStatement($1, make_loc(@$)); }
+    ;
+
+assignment_operator
+    : LEFT_OP        { $$ = new bi::Name("<-", make_loc(@$)); }
+    | LEFT_TILDE_OP  { $$ = new bi::Name("<~", make_loc(@$)); }
+    | '~'            { $$ = new bi::Name("~", make_loc(@$)); }
+    ;
+    
+assignment_statement
+    : stochastic_expression assignment_operator stochastic_expression  { $$ = new bi::AssignmentReference($1, $2, $3, make_loc(@$)); }
     ;
 
 if
@@ -613,6 +620,7 @@ hpp
 statement
     : expression_statement
     | var_declaration
+    | assignment_statement
     | if
     | for
     | while
@@ -658,6 +666,7 @@ file_statement
     | hpp
     | var_declaration
     | func_declaration
+    | assignment_declaration
     | coroutine_declaration
     | op_declaration
     | prog_declaration

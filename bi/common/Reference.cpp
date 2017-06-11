@@ -7,6 +7,7 @@
 #include "bi/expression/FuncParameter.hpp"
 #include "bi/expression/BinaryParameter.hpp"
 #include "bi/expression/UnaryParameter.hpp"
+#include "bi/statement/AssignmentParameter.hpp"
 #include "bi/type/TypeParameter.hpp"
 #include "bi/expression/ProgParameter.hpp"
 
@@ -28,5 +29,6 @@ template class bi::Reference<bi::VarParameter>;
 template class bi::Reference<bi::FuncParameter>;
 template class bi::Reference<bi::BinaryParameter>;
 template class bi::Reference<bi::UnaryParameter>;
+template class bi::Reference<bi::AssignmentParameter>;
 template class bi::Reference<bi::TypeParameter>;
 template class bi::Reference<bi::ProgParameter>;

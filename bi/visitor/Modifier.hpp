@@ -45,6 +45,7 @@ public:
   virtual Expression* modify(FuncReference* o);
   virtual Expression* modify(BinaryReference* o);
   virtual Expression* modify(UnaryReference* o);
+  virtual Statement* modify(AssignmentReference* o);
   virtual Type* modify(TypeReference* o);
   virtual Expression* modify(ProgReference* o);
 
@@ -52,6 +53,7 @@ public:
   virtual Expression* modify(FuncParameter* o);
   virtual Expression* modify(BinaryParameter* o);
   virtual Expression* modify(UnaryParameter* o);
+  virtual Statement* modify(AssignmentParameter* o);
   virtual Expression* modify(ConversionParameter* o);
   virtual Type* modify(TypeParameter* o);
   virtual Expression* modify(ProgParameter* o);

@@ -30,5 +30,10 @@ public:
    * Target. This is the most-specific definite resolution to a parameter.
    */
   const Target* target;
+
+  /**
+   * All matches.
+   */
+  std::list<const Target*> matches;
 };
 }

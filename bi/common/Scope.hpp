@@ -17,6 +17,7 @@ class VarParameter;
 class FuncParameter;
 class BinaryParameter;
 class UnaryParameter;
+class AssignmentParameter;
 class ConversionParameter;
 class TypeParameter;
 class ProgParameter;
@@ -25,6 +26,7 @@ class VarReference;
 class FuncReference;
 class BinaryReference;
 class UnaryReference;
+class AssignmentReference;
 class TypeReference;
 class ProgReference;
 
@@ -47,6 +49,7 @@ public:
   bool contains(FuncParameter* param);
   bool contains(BinaryParameter* param);
   bool contains(UnaryParameter* param);
+  bool contains(AssignmentParameter* param);
   bool contains(ConversionParameter* param);
   bool contains(TypeParameter* param);
   bool contains(ProgParameter* param);
@@ -60,6 +63,7 @@ public:
   void add(FuncParameter* param);
   void add(BinaryParameter* param);
   void add(UnaryParameter* param);
+  void add(AssignmentParameter* param);
   void add(ConversionParameter* param);
   void add(TypeParameter* param);
   void add(ProgParameter* param);
@@ -75,6 +79,7 @@ public:
   void resolve(FuncReference* ref);
   void resolve(BinaryReference* ref);
   void resolve(UnaryReference* ref);
+  void resolve(AssignmentReference* ref);
   void resolve(TypeReference* ref);
 
   /**
@@ -106,6 +111,7 @@ public:
   OverloadedDictionary<FuncParameter,definitely> funcs;
   OverloadedDictionary<BinaryParameter,definitely> binaries;
   OverloadedDictionary<UnaryParameter,definitely> unaries;
+  OverloadedDictionary<AssignmentParameter,definitely> assigns;
   OverloadedSet<ConversionParameter,definitely> convs;
   Dictionary<ProgParameter> progs;
 
@@ -113,15 +119,12 @@ private:
   /**
    * Defer resolution to imported scopes.
    */
-  template<class ParameterType, class ReferenceType>
-  void resolveDefer(ReferenceType* ref);
-};
-}
-
-template<class ParameterType, class ReferenceType>
-void bi::Scope::resolveDefer(ReferenceType* ref) {
-  for (auto iter = bases.begin(); !ref->target && iter != bases.end();
-      ++iter) {
-    (*iter)->resolve(ref);
+  template<class ReferenceType>
+  void resolveDefer(ReferenceType* ref) {
+    for (auto iter = bases.begin(); !ref->target && iter != bases.end();
+        ++iter) {
+      (*iter)->resolve(ref);
+    }
   }
+};
 }

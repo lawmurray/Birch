@@ -48,6 +48,7 @@ public:
   virtual void visit(const FuncReference* o);
   virtual void visit(const BinaryReference* o);
   virtual void visit(const UnaryReference* o);
+  virtual void visit(const AssignmentReference* o);
   virtual void visit(const TypeReference* o);
   virtual void visit(const ProgReference* o);
 
@@ -55,6 +56,7 @@ public:
   virtual void visit(const FuncParameter* o);
   virtual void visit(const BinaryParameter* o);
   virtual void visit(const UnaryParameter* o);
+  virtual void visit(const AssignmentParameter* o);
   virtual void visit(const ConversionParameter* o);
   virtual void visit(const TypeParameter* o);
   virtual void visit(const ProgParameter* o);

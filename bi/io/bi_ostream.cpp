@@ -99,6 +99,10 @@ void bi::bi_ostream::visit(const UnaryReference* o) {
   *this << o->name << o->single;
 }
 
+void bi::bi_ostream::visit(const AssignmentReference* o) {
+  *this << o->left << ' ' << o->name << ' ' << o->right;
+}
+
 void bi::bi_ostream::visit(const TypeReference* o) {
   *this << o->name;
 }
@@ -147,6 +151,15 @@ void bi::bi_ostream::visit(const UnaryParameter* o) {
   if (!o->type->isEmpty()) {
     *this << " -> " << o->type;
   }
+  if (!header && !o->braces->isEmpty()) {
+    *this << o->braces;
+  } else {
+    *this << ';';
+  }
+}
+
+void bi::bi_ostream::visit(const AssignmentParameter* o) {
+  *this << "function " << o->name << ' ' << o->single;
   if (!header && !o->braces->isEmpty()) {
     *this << o->braces;
   } else {

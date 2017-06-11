@@ -5,8 +5,6 @@
 
 #include <sstream>
 
-#include <iostream>
-
 bi::Resolver::Resolver() :
     memberScope(nullptr),
     inInputs(0) {
@@ -131,6 +129,7 @@ bi::Expression* bi::Resolver::modify(VarReference* o) {
   Modifier::modify(o);
   if (!o->name->isEmpty()) {
     resolve(o, memberScope);
+    o->form = o->target->form;
     o->type = o->target->type->accept(&cloner)->accept(this);
   }
   return o;
@@ -139,22 +138,13 @@ bi::Expression* bi::Resolver::modify(VarReference* o) {
 bi::Expression* bi::Resolver::modify(FuncReference* o) {
   Scope* memberScope = takeMemberScope();
   Modifier::modify(o);
-  if (o->name && *o->name == "<-" && !o->getLeft()->type->assignable) {
-    throw NotAssignableException(o);
-  }
-  if (o->name && *o->name == "<-"
-      && o->getRight()->type->definitely(*o->getLeft()->type)) {
-    // no need to resolve, have default assignment operator
-    o->form = ASSIGN_FORM;
-    ///@todo Warn if a declared assignment operator is masked by this
+  resolve(o, memberScope);
+  o->form = o->target->form;
+  if (o->target->isCoroutine() && !o->target->isLambda()) {
+    o->type = new CoroutineType(
+        o->target->type->accept(&cloner)->accept(this));
   } else {
-    resolve(o, memberScope);
-    if (o->target->isCoroutine() && !o->target->isLambda()) {
-      o->type = new CoroutineType(
-          o->target->type->accept(&cloner)->accept(this));
-    } else {
-      o->type = o->target->type->accept(&cloner)->accept(this);
-    }
+    o->type = o->target->type->accept(&cloner)->accept(this);
   }
   o->type->assignable = false;  // rvalue
   return o;
@@ -175,6 +165,36 @@ bi::Expression* bi::Resolver::modify(UnaryReference* o) {
   resolve(o, memberScope);
   o->type = o->target->type->accept(&cloner)->accept(this);
   o->type->assignable = false;  // rvalue
+  return o;
+}
+
+bi::Statement* bi::Resolver::modify(AssignmentReference* o) {
+  /*
+   * Use of an assignment operator is valid if:
+   *
+   *   1. the right-side type is a the same as, or a subtype of, the
+   *      left-side type (either a polymorphic pointer),
+   *   2. a conversion operator for the left-side type is defined in the
+   *      right-side (class) type, or
+   *   3. an assignment operator for the right-side type is defined in the
+   *      left-side (class) type.
+   */
+  Modifier::modify(o);
+  if (!o->right->type->definitely(*o->left->type)) {
+    // ^ the first two cases are covered by this check
+    TypeReference* ref = dynamic_cast<TypeReference*>(o->left->type->strip());
+    if (ref) {
+      assert(ref->target);
+      memberScope = ref->target->scope.get();
+    } else {
+      //throw MemberException(o);
+    }
+    resolve(o, memberScope);
+  }
+  if (!o->left->type->assignable) {
+    throw NotAssignableException(o->left.get());
+  }
+
   return o;
 }
 
@@ -214,23 +234,14 @@ bi::Expression* bi::Resolver::modify(VarParameter* o) {
 
 bi::Expression* bi::Resolver::modify(FuncParameter* o) {
   push();
-  if (o->isAssign()) {
-    o->getLeft()->type->accept(&assigner);
-  }
   ++inInputs;
   o->parens = o->parens->accept(this);
   --inInputs;
-  o->type = o->type->accept(this);
-  if (o->isLambda()) {
-    o->braces = o->braces->accept(this);
-  } else if (!o->braces->isEmpty()) {
+  if (!o->braces->isEmpty()) {
     defer(o->braces.get());
   }
   o->scope = pop();
-
-  if (!o->name->isEmpty()) {
-    top()->add(o);
-  }
+  top()->add(o);
 
   return o;
 }
@@ -257,6 +268,20 @@ bi::Expression* bi::Resolver::modify(UnaryParameter* o) {
   o->single = o->single->accept(this);
   --inInputs;
   o->type = o->type->accept(this);
+  if (!o->braces->isEmpty()) {
+    defer(o->braces.get());
+  }
+  o->scope = pop();
+  top()->add(o);
+
+  return o;
+}
+
+bi::Statement* bi::Resolver::modify(AssignmentParameter* o) {
+  push();
+  ++inInputs;
+  o->single->type->accept(&assigner);
+  --inInputs;
   if (!o->braces->isEmpty()) {
     defer(o->braces.get());
   }
@@ -428,44 +453,6 @@ bi::Scope* bi::Resolver::pop() {
   Scope* res = scopes.back();
   scopes.pop_back();
   return res;
-}
-
-void bi::Resolver::resolve(VarReference* ref, Scope* scope) {
-  if (scope) {
-    /* use provided scope, usually a membership scope */
-    scope->resolve(ref);
-  } else {
-    /* use current stack of scopes */
-    ref->target = nullptr;
-    for (auto iter = scopes.rbegin(); !ref->target && iter != scopes.rend();
-        ++iter) {
-      (*iter)->resolve(ref);
-    }
-  }
-  if (!ref->target) {
-    throw UnresolvedReferenceException(ref);
-  } else {
-    ref->form = ref->target->form;
-  }
-}
-
-void bi::Resolver::resolve(FuncReference* ref, Scope* scope) {
-  if (scope) {
-    /* use provided scope, usually a membership scope */
-    scope->resolve(ref);
-  } else {
-    /* use current stack of scopes */
-    ref->target = nullptr;
-    for (auto iter = scopes.rbegin(); !ref->target && iter != scopes.rend();
-        ++iter) {
-      (*iter)->resolve(ref);
-    }
-  }
-  if (!ref->target) {
-    throw UnresolvedReferenceException(ref);
-  } else {
-    ref->form = ref->target->form;
-  }
 }
 
 void bi::Resolver::defer(Expression* o) {

@@ -9,6 +9,7 @@
 #include "bi/primitive/shared_ptr.hpp"
 
 #include <stack>
+#include <list>
 
 namespace bi {
 /**
@@ -36,26 +37,28 @@ public:
   using Modifier::modify;
 
   virtual Expression* modify(List<Expression>* o);
-  virtual Expression*  modify(ParenthesesExpression* o);
-  virtual Expression*  modify(Span* o);
-  virtual Expression*  modify(Index* o);
-  virtual Expression*  modify(Range* o);
-  virtual Expression*  modify(Member* o);
-  virtual Expression*  modify(Super* o);
-  virtual Expression*  modify(This* o);
-  virtual Expression*  modify(BracketsExpression* o);
+  virtual Expression* modify(ParenthesesExpression* o);
+  virtual Expression* modify(Span* o);
+  virtual Expression* modify(Index* o);
+  virtual Expression* modify(Range* o);
+  virtual Expression* modify(Member* o);
+  virtual Expression* modify(Super* o);
+  virtual Expression* modify(This* o);
+  virtual Expression* modify(BracketsExpression* o);
 
-  virtual Expression*  modify(VarReference* o);
-  virtual Expression*  modify(FuncReference* o);
-  virtual Expression*  modify(BinaryReference* o);
-  virtual Expression*  modify(UnaryReference* o);
+  virtual Expression* modify(VarReference* o);
+  virtual Expression* modify(FuncReference* o);
+  virtual Expression* modify(BinaryReference* o);
+  virtual Expression* modify(UnaryReference* o);
+  virtual Statement* modify(AssignmentReference* o);
   virtual Type* modify(TypeReference* o);
 
-  virtual Expression*  modify(VarParameter* o);
-  virtual Expression*  modify(FuncParameter* o);
-  virtual Expression*  modify(BinaryParameter* o);
-  virtual Expression*  modify(UnaryParameter* o);
-  virtual Expression*  modify(ConversionParameter* o);
+  virtual Expression* modify(VarParameter* o);
+  virtual Expression* modify(FuncParameter* o);
+  virtual Expression* modify(BinaryParameter* o);
+  virtual Expression* modify(UnaryParameter* o);
+  virtual Statement* modify(AssignmentParameter* o);
+  virtual Expression* modify(ConversionParameter* o);
   virtual Expression* modify(ProgParameter* o);
   virtual Type* modify(TypeParameter* o);
 
@@ -109,29 +112,13 @@ protected:
   Scope* pop();
 
   /**
-   * Resolve a variable reference.
-   *
-   * @param ref The reference.
-   * @param scope The membership scope, if it is to be used for lookup,
-   * otherwise the containing scope is used.
-   */
-  void resolve(VarReference* ref, Scope* scope = nullptr);
-
-  /**
-   * Resolve a function reference.
-   *
-   * @param ref The reference.
-   * @param scope The membership scope, if it is to be used for lookup,
-   * otherwise the containing scope is used.
-   */
-  void resolve(FuncReference* ref, Scope* scope = nullptr);
-
-  /**
    * Resolve a reference.
    *
    * @tparam Reference Reference type.
    *
    * @param ref The reference.
+   * @param scope The membership scope, if it is to be used for lookup,
+   * otherwise the containing scope is used.
    */
   template<class Reference>
   void resolve(Reference* ref, Scope* scope = nullptr);
@@ -201,13 +188,16 @@ void bi::Resolver::resolve(Reference* ref, Scope* scope) {
     scope->resolve(ref);
   } else {
     /* use current stack of scopes */
-    ref->target = nullptr;
-    for (auto iter = scopes.rbegin(); !ref->target && iter != scopes.rend();
-        ++iter) {
+    for (auto iter = scopes.rbegin();
+        ref->matches.size() == 0 && iter != scopes.rend(); ++iter) {
       (*iter)->resolve(ref);
     }
   }
-  if (!ref->target) {
+  if (ref->matches.size() == 0) {
     throw UnresolvedReferenceException(ref);
+  } else if (ref->matches.size() > 1) {
+    throw AmbiguousReferenceException(ref);
+  } else {
+    ref->target = ref->matches.front();
   }
 }

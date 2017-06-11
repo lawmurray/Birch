@@ -7,12 +7,19 @@
 #include "bi/expression/FuncParameter.hpp"
 #include "bi/expression/BinaryParameter.hpp"
 #include "bi/expression/UnaryParameter.hpp"
+#include "bi/statement/AssignmentParameter.hpp"
 #include "bi/expression/ConversionParameter.hpp"
 #include "bi/type/TypeParameter.hpp"
+
+#include "bi/expression/VarReference.hpp"
+#include "bi/expression/FuncReference.hpp"
+#include "bi/expression/BinaryReference.hpp"
+#include "bi/expression/UnaryReference.hpp"
+#include "bi/statement/AssignmentReference.hpp"
+#include "bi/type/TypeReference.hpp"
+
 #include "bi/exception/all.hpp"
 #include "bi/visitor/Cloner.hpp"
-
-#include <vector>
 
 bool bi::Scope::contains(VarParameter* param) {
   return vars.contains(param);
@@ -28,6 +35,10 @@ bool bi::Scope::contains(BinaryParameter* param) {
 
 bool bi::Scope::contains(UnaryParameter* param) {
   return unaries.contains(param);
+}
+
+bool bi::Scope::contains(AssignmentParameter* param) {
+  return assigns.contains(param);
 }
 
 bool bi::Scope::contains(ConversionParameter* param) {
@@ -74,6 +85,14 @@ void bi::Scope::add(UnaryParameter* param) {
   }
 }
 
+void bi::Scope::add(AssignmentParameter* param) {
+  if (assigns.contains(param)) {
+    throw PreviousDeclarationException(param, assigns.get(param));
+  } else {
+    assigns.add(param);
+  }
+}
+
 void bi::Scope::add(ConversionParameter* param) {
   if (convs.contains(param)) {
     throw PreviousDeclarationException(param, convs.get(param));
@@ -99,37 +118,44 @@ void bi::Scope::add(ProgParameter* param) {
 }
 
 void bi::Scope::resolve(VarReference* ref) {
-  ref->target = vars.resolve(ref);
-  if (!ref->target) {
-    resolveDefer<VarParameter,VarReference>(ref);
+  vars.resolve(ref);
+  if (ref->matches.size() == 0) {
+    resolveDefer(ref);
   }
 }
 
 void bi::Scope::resolve(FuncReference* ref) {
-  ref->target = funcs.resolve(ref);
-  if (!ref->target) {
-    resolveDefer<FuncParameter,FuncReference>(ref);
+  funcs.resolve(ref);
+  if (ref->matches.size() == 0) {
+    resolveDefer(ref);
   }
 }
 
 void bi::Scope::resolve(BinaryReference* ref) {
-  ref->target = binaries.resolve(ref);
-  if (!ref->target) {
-    resolveDefer<BinaryParameter,BinaryReference>(ref);
+  binaries.resolve(ref);
+  if (ref->matches.size() == 0) {
+    resolveDefer(ref);
   }
 }
 
 void bi::Scope::resolve(UnaryReference* ref) {
-  ref->target = unaries.resolve(ref);
-  if (!ref->target) {
-    resolveDefer<UnaryParameter,UnaryReference>(ref);
+  unaries.resolve(ref);
+  if (ref->matches.size() == 0) {
+    resolveDefer(ref);
+  }
+}
+
+void bi::Scope::resolve(AssignmentReference* ref) {
+  assigns.resolve(ref);
+  if (ref->matches.size() == 0) {
+    resolveDefer(ref);
   }
 }
 
 void bi::Scope::resolve(TypeReference* ref) {
-  ref->target = types.resolve(ref);
-  if (!ref->target) {
-    resolveDefer<TypeParameter,TypeReference>(ref);
+  types.resolve(ref);
+  if (ref->matches.size() == 0) {
+    resolveDefer(ref);
   }
 }
 
@@ -140,6 +166,9 @@ void bi::Scope::inherit(Scope* scope) {
 void bi::Scope::import(Scope* scope) {
   vars.merge(scope->vars);
   funcs.merge(scope->funcs);
+  binaries.merge(scope->binaries);
+  unaries.merge(scope->unaries);
+  assigns.merge(scope->assigns);
   convs.merge(scope->convs);
   types.merge(scope->types);
   progs.merge(scope->progs);

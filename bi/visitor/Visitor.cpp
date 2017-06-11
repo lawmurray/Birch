@@ -112,6 +112,11 @@ void bi::Visitor::visit(const UnaryReference* o) {
   o->single->accept(this);
 }
 
+void bi::Visitor::visit(const AssignmentReference* o) {
+  o->left->accept(this);
+  o->right->accept(this);
+}
+
 void bi::Visitor::visit(const TypeReference* o) {
   //
 }
@@ -142,6 +147,11 @@ void bi::Visitor::visit(const BinaryParameter* o) {
 void bi::Visitor::visit(const UnaryParameter* o) {
   o->single->accept(this);
   o->type->accept(this);
+  o->braces->accept(this);
+}
+
+void bi::Visitor::visit(const AssignmentParameter* o) {
+  o->single->accept(this);
   o->braces->accept(this);
 }
 

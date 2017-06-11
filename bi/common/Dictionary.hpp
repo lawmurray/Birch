@@ -45,7 +45,7 @@ public:
    * `nullptr` if the parameter cannot be resolved.
    */
   template<class ReferenceType>
-  ParameterType* resolve(ReferenceType* ref);
+  void resolve(ReferenceType* ref);
 
   /**
    * Merge another dictionary into this one.
@@ -61,11 +61,9 @@ public:
 
 template<class ParameterType>
 template<class ReferenceType>
-ParameterType* bi::Dictionary<ParameterType>::resolve(ReferenceType* ref) {
+void bi::Dictionary<ParameterType>::resolve(ReferenceType* ref) {
   auto iter = params.find(ref->name->str());
   if (iter != params.end() && ref->definitely(*iter->second)) {
-    return iter->second;
-  } else {
-    return nullptr;
+    ref->matches.push_back(iter->second);
   }
 }

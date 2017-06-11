@@ -8,7 +8,6 @@ namespace bi {
  * Function form flags.
  */
 enum FunctionForm {
-  ASSIGN_FORM,
   FUNCTION_FORM,
   LAMBDA_FUNCTION_FORM,
   MEMBER_FUNCTION_FORM,
@@ -35,16 +34,6 @@ public:
    * Destructor.
    */
   virtual ~FunctionMode() = 0;
-
-  /**
-   * Is this an operator?
-   */
-  bool isOperator() const;
-
-  /**
-   * Is this an assignment operator?
-   */
-  bool isAssign() const;
 
   /**
    * Is this a lambda?

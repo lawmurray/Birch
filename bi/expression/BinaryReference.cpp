@@ -5,10 +5,6 @@
 
 #include "bi/visitor/all.hpp"
 
-#include <vector>
-#include <algorithm>
-#include <typeinfo>
-
 bi::BinaryReference::BinaryReference(Expression* left, shared_ptr<Name> name,
     Expression* right, shared_ptr<Location> loc,
     const BinaryParameter* target) :

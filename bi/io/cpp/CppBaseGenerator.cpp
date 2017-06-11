@@ -128,45 +128,28 @@ void bi::CppBaseGenerator::visit(const VarReference* o) {
 }
 
 void bi::CppBaseGenerator::visit(const FuncReference* o) {
-  if (o->isAssign() && *o->name == "<-" && !o->target) {
-    if (o->getLeft()->type->isClass() && !o->getRight()->type->isClass()) {
-      middle("*(" << o->getLeft() << ')');
-    } else {
-      middle(o->getLeft());
-    }
-    middle(" = ");
-    if (!o->getLeft()->type->isClass() && o->getRight()->type->isClass()) {
-      middle("*(" << o->getRight() << ')');
-    } else {
-      middle(o->getRight());
-    }
-  } else {
-    if (!o->isMember() && !o->isLambda() && o->name->str() != "assert") {  // special exception for now
-      middle("bi::");
-      if (!o->isOperator()) {
-        middle("func::");
-      }
-    }
-    if (o->isCoroutine() && o->isLambda()) {
-      middle("(*" << internalise(o->name->str()) << ')');
-    } else {
-      middle(internalise(o->name->str()));
-    }
-    middle('(');
-    auto arg = o->parens->begin();
-    auto param = o->target->parens->begin();
-    while (arg != o->parens->end() && param != o->target->parens->end()) {
-      if (arg != o->parens->begin()) {
-        middle(", ");
-      }
-      genArg(*arg, *param);
-      ++arg;
-      ++param;
-    }
-    assert(arg == o->parens->end());
-    assert(param == o->target->parens->end());
-    middle(')');
+  if (!o->isMember() && !o->isLambda() && o->name->str() != "assert") {  // special exception for now
+    middle("bi::func::");
   }
+  if (o->isCoroutine() && o->isLambda()) {
+    middle("(*" << internalise(o->name->str()) << ')');
+  } else {
+    middle(internalise(o->name->str()));
+  }
+  middle('(');
+  auto arg = o->parens->begin();
+  auto param = o->target->parens->begin();
+  while (arg != o->parens->end() && param != o->target->parens->end()) {
+    if (arg != o->parens->begin()) {
+      middle(", ");
+    }
+    genArg(*arg, *param);
+    ++arg;
+    ++param;
+  }
+  assert(arg == o->parens->end());
+  assert(param == o->target->parens->end());
+  middle(')');
 }
 
 void bi::CppBaseGenerator::visit(const BinaryReference* o) {
@@ -195,6 +178,20 @@ void bi::CppBaseGenerator::visit(const UnaryReference* o) {
     middle("bi::" << internalise(o->name->str()) << '(');
     genArg(o->single.get(), o->target->single.get());
     middle(')');
+  }
+}
+
+void bi::CppBaseGenerator::visit(const AssignmentReference* o) {
+  if (o->left->type->isClass() && !o->right->type->isClass()) {
+    middle("*(" << o->left << ')');
+  } else {
+    middle(o->left);
+  }
+  middle(" = ");
+  if (!o->left->type->isClass() && o->right->type->isClass()) {
+    middle("*(" << o->right << ')');
+  } else {
+    middle(o->right);
   }
 }
 

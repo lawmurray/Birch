@@ -93,10 +93,12 @@ birchc_SOURCES = \
   bi/io/cpp_ostream.cpp \
   bi/io/indentable_ostream.cpp \
   bi/primitive/encode.cpp \
-  bi/statement/If.cpp \
+  bi/statement/AssignmentParameter.cpp \
+  bi/statement/AssignmentReference.cpp \
   bi/statement/Declaration.cpp \
   bi/statement/EmptyStatement.cpp \
   bi/statement/ExpressionStatement.cpp \
+  bi/statement/If.cpp \
   bi/statement/File.cpp \
   bi/statement/For.cpp \
   bi/statement/Import.cpp \
@@ -249,6 +251,8 @@ noinst_HEADERS = \
   bi/primitive/shared_ptr.hpp \
   bi/primitive/unique_ptr.hpp \
   bi/statement/all.hpp \
+  bi/statement/AssignmentParameter.hpp \
+  bi/statement/AssignmentReference.hpp \
   bi/statement/Declaration.hpp \
   bi/statement/EmptyStatement.hpp \
   bi/statement/ExpressionStatement.hpp \

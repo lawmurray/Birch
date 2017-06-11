@@ -12,14 +12,6 @@ bi::FunctionMode::~FunctionMode() {
   //
 }
 
-bool bi::FunctionMode::isOperator() const {
-  return isAssign();
-}
-
-bool bi::FunctionMode::isAssign() const {
-  return form == ASSIGN_FORM;
-}
-
 bool bi::FunctionMode::isLambda() const {
   return form == LAMBDA_FUNCTION_FORM || form == LAMBDA_COROUTINE_FORM;
 }

@@ -48,21 +48,9 @@ public:
    * Resolve reference.
    *
    * @param ref The reference.
-   *
-   * @return The most-specific parameter to which the reference can be
-   * resolved, or `nullptr` if the parameter cannot be resolved.
    */
   template<class ReferenceType>
-  ParameterType* resolve(ReferenceType* ref);
-
-  /**
-   * Resolve reference.
-   *
-   * @param ref The reference.
-   * @param[out] targets All matching targets.
-   */
-  template<class ReferenceType, class Container>
-  void resolve(ReferenceType* ref, Container& matches);
+  void resolve(ReferenceType* ref);
 
   /**
    * Declarations by partial order.
@@ -71,32 +59,12 @@ public:
 };
 }
 
-#include "bi/exception/AmbiguousReferenceException.hpp"
-
 template<class ParameterType, class CompareType>
 template<class ReferenceType>
-ParameterType* bi::OverloadedDictionary<ParameterType,CompareType>::resolve(
-    ReferenceType* ref) {
-  std::list<ParameterType*> matches;
-  auto iter = params.find(ref->name->str());
-  if (iter != params.end()) {
-    iter->second.match(ref, matches);
-  }
-  if (matches.size() > 1) {
-    throw AmbiguousReferenceException(ref, matches);
-  } else if (matches.size() == 1) {
-    return matches.front();
-  } else {
-    return nullptr;
-  }
-}
-
-template<class ParameterType, class CompareType>
-template<class ReferenceType, class Container>
 void bi::OverloadedDictionary<ParameterType,CompareType>::resolve(
-    ReferenceType* ref, Container& matches) {
+    ReferenceType* ref) {
   auto iter = params.find(ref->name->str());
   if (iter != params.end()) {
-    iter->second.match_all(ref, matches);
+    iter->second.match(ref, ref->matches);
   }
 }
