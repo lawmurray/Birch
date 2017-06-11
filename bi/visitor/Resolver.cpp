@@ -33,9 +33,9 @@ void bi::Resolver::modify(File* o) {
   }
 }
 
-bi::Expression* bi::Resolver::modify(ExpressionList* o) {
+bi::Expression* bi::Resolver::modify(List<Expression>* o) {
   Modifier::modify(o);
-  o->type = new TypeList(o->head->type->accept(&cloner),
+  o->type = new List<Type>(o->head->type->accept(&cloner),
       o->tail->type->accept(&cloner));
   o->type = o->type->accept(this);
   return o;
@@ -342,7 +342,7 @@ bi::FuncParameter* bi::Resolver::makeFunction(VarParameter* o) {
         PARAMETER_FORM);
     ++iter;
     while (iter != types.rend()) {
-      parens = new ExpressionList(
+      parens = new List<Expression>(
           new VarParameter(new Name(), (*iter)->accept(&cloner),
               PARAMETER_FORM), parens);
       ++iter;

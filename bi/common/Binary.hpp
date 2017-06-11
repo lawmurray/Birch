@@ -21,7 +21,7 @@ public:
    * @param left Left operand.
    * @param right Right operand.
    */
-  explicit Binary(T* left, T* right);
+  Binary(T* left, T* right);
 
   /**
    * Destructor.

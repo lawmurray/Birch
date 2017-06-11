@@ -10,7 +10,7 @@
 bi::BracesExpression::BracesExpression(Statement* single,
     shared_ptr<Location> loc) :
     Expression(loc),
-    StatementUnary(single) {
+    Unary<Statement>(single) {
   //
 }
 

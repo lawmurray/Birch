@@ -47,7 +47,7 @@ bi::Type* bi::Assigner::modify(CoroutineType* o) {
   return o;
 }
 
-bi::Type* bi::Assigner::modify(TypeList* o) {
+bi::Type* bi::Assigner::modify(List<Type>* o) {
   Modifier::modify(o);
   o->assignable = true;
   return o;

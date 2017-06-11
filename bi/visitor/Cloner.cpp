@@ -35,13 +35,13 @@ bi::Expression* bi::Cloner::clone(const StringLiteral* o) {
   return new StringLiteral(o->value, o->str, o->type->accept(this), o->loc);
 }
 
-bi::Expression* bi::Cloner::clone(const ExpressionList* o) {
-  return new ExpressionList(o->head->accept(this), o->tail->accept(this),
+bi::Expression* bi::Cloner::clone(const List<Expression>* o) {
+  return new List<Expression>(o->head->accept(this), o->tail->accept(this),
       o->loc);
 }
 
-bi::Statement* bi::Cloner::clone(const StatementList* o) {
-  return new StatementList(o->head->accept(this), o->tail->accept(this),
+bi::Statement* bi::Cloner::clone(const List<Statement>* o) {
+  return new List<Statement>(o->head->accept(this), o->tail->accept(this),
       o->loc);
 }
 
@@ -195,8 +195,8 @@ bi::Type* bi::Cloner::clone(const CoroutineType* o) {
   return new CoroutineType(o->type->accept(this), o->loc, o->assignable);
 }
 
-bi::Type* bi::Cloner::clone(const TypeList* o) {
-  TypeList* result = new TypeList(o->head->accept(this),
+bi::Type* bi::Cloner::clone(const List<Type>* o) {
+  List<Type>* result = new List<Type>(o->head->accept(this),
       o->tail->accept(this), o->loc);
   result->assignable = o->assignable;
   return result;

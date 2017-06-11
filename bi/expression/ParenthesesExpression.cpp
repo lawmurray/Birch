@@ -6,12 +6,10 @@
 #include "bi/expression/VarParameter.hpp"
 #include "bi/visitor/all.hpp"
 
-#include <typeinfo>
-
 bi::ParenthesesExpression::ParenthesesExpression(Expression* single,
     shared_ptr<Location> loc) :
     Expression(loc),
-    ExpressionUnary(single) {
+    Unary<Expression>(single) {
   //
 }
 

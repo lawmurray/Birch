@@ -46,12 +46,12 @@ void bi::Visitor::visit(const StringLiteral* o) {
   o->type->accept(this);
 }
 
-void bi::Visitor::visit(const ExpressionList* o) {
+void bi::Visitor::visit(const List<Expression>* o) {
   o->head->accept(this);
   o->tail->accept(this);
 }
 
-void bi::Visitor::visit(const StatementList* o) {
+void bi::Visitor::visit(const List<Statement>* o) {
   o->head->accept(this);
   o->tail->accept(this);
 }
@@ -216,7 +216,7 @@ void bi::Visitor::visit(const CoroutineType* o) {
   o->type->accept(this);
 }
 
-void bi::Visitor::visit(const TypeList* o) {
+void bi::Visitor::visit(const List<Type>* o) {
   o->head->accept(this);
   o->tail->accept(this);
 }

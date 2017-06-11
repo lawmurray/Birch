@@ -29,8 +29,8 @@ public:
   virtual Expression* modify(IntegerLiteral* o);
   virtual Expression* modify(RealLiteral* o);
   virtual Expression* modify(StringLiteral* o);
-  virtual Expression* modify(ExpressionList* o);
-  virtual Statement* modify(StatementList* o);
+  virtual Expression* modify(List<Expression>* o);
+  virtual Statement* modify(List<Statement>* o);
   virtual Expression* modify(ParenthesesExpression* o);
   virtual Expression* modify(BracesExpression* o);
   virtual Expression* modify(BracketsExpression* o);
@@ -69,6 +69,6 @@ public:
   virtual Type* modify(ParenthesesType* o);
   virtual Type* modify(FunctionType* o);
   virtual Type* modify(CoroutineType* o);
-  virtual Type* modify(TypeList* o);
+  virtual Type* modify(List<Type>* o);
 };
 }

@@ -16,7 +16,7 @@ namespace bi {
  * @ingroup compiler_expression
  */
 class BracketsExpression: public Expression,
-    public ExpressionUnary,
+    public Unary<Expression>,
     public Bracketed {
 public:
   /**

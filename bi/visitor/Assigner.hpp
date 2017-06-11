@@ -27,6 +27,6 @@ public:
   virtual Type* modify(ParenthesesType* o);
   virtual Type* modify(FunctionType* o);
   virtual Type* modify(CoroutineType* o);
-  virtual Type* modify(TypeList* o);
+  virtual Type* modify(List<Type>* o);
 };
 }

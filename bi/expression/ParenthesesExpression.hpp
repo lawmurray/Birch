@@ -17,7 +17,7 @@ class VarReference;
  *
  * @ingroup compiler_expression
  */
-class ParenthesesExpression: public Expression, public ExpressionUnary {
+class ParenthesesExpression: public Expression, public Unary<Expression> {
 public:
   /**
    * Constructor.

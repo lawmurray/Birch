@@ -13,7 +13,7 @@ namespace bi {
  *
  * @ingroup compiler_type
  */
-class ParenthesesType: public Type, public TypeUnary {
+class ParenthesesType: public Type, public Unary<Type> {
 public:
   /**
    * Constructor.

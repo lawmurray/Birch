@@ -10,7 +10,7 @@
 
 bi::BracketsExpression::BracketsExpression(Expression* single,
     Expression* brackets, shared_ptr<Location> loc) :
-    Expression(loc), ExpressionUnary(single), Bracketed(brackets) {
+    Expression(loc), Unary<Expression>(single), Bracketed(brackets) {
   //
 }
 

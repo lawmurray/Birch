@@ -22,7 +22,7 @@ public:
    *
    * @param single Operand.
    */
-  explicit Unary(T* single);
+  Unary(T* single);
 
   /**
    * Destructor.
@@ -34,26 +34,4 @@ public:
    */
   unique_ptr<T> single;
 };
-
-/**
- * Expression unary.
- *
- * @ingroup compiler_common
- */
-typedef Unary<Expression> ExpressionUnary;
-
-/**
- * Statement unary.
- *
- * @ingroup compiler_common
- */
-typedef Unary<Statement> StatementUnary;
-
-/**
- * Type unary.
- *
- * @ingroup compiler_common
- */
-typedef Unary<Type> TypeUnary;
-
 }

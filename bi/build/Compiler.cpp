@@ -131,7 +131,7 @@ void bi::Compiler::setRoot(Statement* root) {
   if (std) {
     Import* import = new Import(new Path(new Name("standard")),
         files[standard]);
-    file->root = new StatementList(import, root);
+    file->root = new List<Statement>(import, root);
   } else {
     file->root = root;
   }

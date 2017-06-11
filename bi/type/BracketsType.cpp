@@ -8,7 +8,7 @@
 bi::BracketsType::BracketsType(Type* single, Expression* brackets,
     shared_ptr<Location> loc, const bool assignable) :
     Type(loc, assignable),
-    TypeUnary(single),
+    Unary<Type>(single),
     Bracketed(brackets),
     ndims(brackets->tupleSize()) {
   //
@@ -17,7 +17,7 @@ bi::BracketsType::BracketsType(Type* single, Expression* brackets,
 bi::BracketsType::BracketsType(Type* single, const int ndims,
     shared_ptr<Location> loc, const bool assignable) :
     Type(loc, assignable),
-    TypeUnary(single),
+    Unary<Type>(single),
     ndims(ndims) {
   //
 }

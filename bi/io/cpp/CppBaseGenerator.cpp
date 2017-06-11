@@ -37,28 +37,28 @@ void bi::CppBaseGenerator::visit(const StringLiteral* o) {
   middle("std::string(" << o->str << ')');
 }
 
-void bi::CppBaseGenerator::visit(const ExpressionList* o) {
+void bi::CppBaseGenerator::visit(const List<Expression>* o) {
   middle(o->head);
   if (o->tail) {
     middle(", " << o->tail);
   }
 }
 
-void bi::CppBaseGenerator::visit(const StatementList* o) {
+void bi::CppBaseGenerator::visit(const List<Statement>* o) {
   middle(o->head);
   if (o->tail) {
     middle(o->tail);
   }
 }
 
-void bi::CppBaseGenerator::visit(const TypeList* o) {
+void bi::CppBaseGenerator::visit(const List<Type>* o) {
   middle(o->head);
   Type* tail = o->tail.get();
-  TypeList* list = dynamic_cast<TypeList*>(tail);
+  List<Type>* list = dynamic_cast<List<Type>*>(tail);
   while (list) {
     middle(',' << list->head);
     tail = list->tail.get();
-    list = dynamic_cast<TypeList*>(tail);
+    list = dynamic_cast<List<Type>*>(tail);
   }
   middle(',' << tail);
 }
@@ -308,7 +308,7 @@ void bi::CppBaseGenerator::visit(const BracketsType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const ParenthesesType* o) {
-  if (dynamic_cast<TypeList*>(o->single->strip())) {
+  if (dynamic_cast<List<Type>*>(o->single->strip())) {
     middle("std::tuple<" << o->single->strip() << ">");
   } else {
     middle(o->single);

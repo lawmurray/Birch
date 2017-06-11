@@ -35,15 +35,15 @@ void bi::bi_ostream::visit(const Path* o) {
   *this << o->str();
 }
 
-void bi::bi_ostream::visit(const ExpressionList* o) {
+void bi::bi_ostream::visit(const List<Expression>* o) {
   *this << o->head << ", " << o->tail;
 }
 
-void bi::bi_ostream::visit(const StatementList* o) {
+void bi::bi_ostream::visit(const List<Statement>* o) {
   *this << o->head << o->tail;
 }
 
-void bi::bi_ostream::visit(const TypeList* o) {
+void bi::bi_ostream::visit(const List<Type>* o) {
   *this << o->head << ", " << o->tail;
 }
 

@@ -12,7 +12,7 @@ namespace bi {
  *
  * @ingroup compiler_expression
  */
-class Span: public Expression, public ExpressionUnary {
+class Span: public Expression, public Unary<Expression> {
 public:
   /**
    * Constructor.

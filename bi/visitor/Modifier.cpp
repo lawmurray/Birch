@@ -39,13 +39,13 @@ bi::Expression* bi::Modifier::modify(StringLiteral* o) {
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(ExpressionList* o) {
+bi::Expression* bi::Modifier::modify(List<Expression>* o) {
   o->head = o->head.release()->accept(this);
   o->tail = o->tail.release()->accept(this);
   return o;
 }
 
-bi::Statement* bi::Modifier::modify(StatementList* o) {
+bi::Statement* bi::Modifier::modify(List<Statement>* o) {
   o->head = o->head.release()->accept(this);
   o->tail = o->tail.release()->accept(this);
   return o;
@@ -238,7 +238,7 @@ bi::Type* bi::Modifier::modify(CoroutineType* o) {
   return o;
 }
 
-bi::Type* bi::Modifier::modify(TypeList* o) {
+bi::Type* bi::Modifier::modify(List<Type>* o) {
   o->head = o->head.release()->accept(this);
   o->tail = o->tail.release()->accept(this);
   return o;

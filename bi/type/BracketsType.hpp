@@ -14,7 +14,7 @@ namespace bi {
  *
  * @ingroup compiler_type
  */
-class BracketsType: public Type, public TypeUnary, public Bracketed {
+class BracketsType: public Type, public Unary<Type>, public Bracketed {
 public:
   /**
    * Constructor.

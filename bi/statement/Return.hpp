@@ -13,7 +13,7 @@ namespace bi {
  *
  * @ingroup compiler_statement
  */
-class Return: public Statement, public ExpressionUnary {
+class Return: public Statement, public Unary<Expression> {
 public:
   /**
    * Constructor.

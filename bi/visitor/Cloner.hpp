@@ -29,8 +29,8 @@ public:
   virtual Expression* clone(const IntegerLiteral* o);
   virtual Expression* clone(const RealLiteral* o);
   virtual Expression* clone(const StringLiteral* o);
-  virtual Expression* clone(const ExpressionList* o);
-  virtual Statement* clone(const StatementList* o);
+  virtual Expression* clone(const List<Expression>* o);
+  virtual Statement* clone(const List<Statement>* o);
   virtual Expression* clone(const ParenthesesExpression* o);
   virtual Expression* clone(const BracesExpression* o);
   virtual Expression* clone(const BracketsExpression* o);
@@ -69,6 +69,6 @@ public:
   virtual Type* clone(const ParenthesesType* o);
   virtual Type* clone(const FunctionType* o);
   virtual Type* clone(const CoroutineType* o);
-  virtual Type* clone(const TypeList* o);
+  virtual Type* clone(const List<Type>* o);
 };
 }

@@ -32,8 +32,8 @@ public:
   virtual void visit(const IntegerLiteral* o);
   virtual void visit(const RealLiteral* o);
   virtual void visit(const StringLiteral* o);
-  virtual void visit(const ExpressionList* o);
-  virtual void visit(const StatementList* o);
+  virtual void visit(const List<Expression>* o);
+  virtual void visit(const List<Statement>* o);
   virtual void visit(const ParenthesesExpression* o);
   virtual void visit(const BracesExpression* o);
   virtual void visit(const BracketsExpression* o);
@@ -72,6 +72,6 @@ public:
   virtual void visit(const ParenthesesType* o);
   virtual void visit(const FunctionType* o);
   virtual void visit(const CoroutineType* o);
-  virtual void visit(const TypeList* o);
+  virtual void visit(const List<Type>* o);
 };
 }

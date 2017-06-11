@@ -10,7 +10,7 @@
 
 bi::Index::Index(Expression* single, shared_ptr<Location> loc) :
     Expression(loc),
-    ExpressionUnary(single) {
+    Unary<Expression>(single) {
   //
 }
 

@@ -25,7 +25,7 @@ public:
    * @param tail Remaining list.
    * @param loc Location.
    */
-  explicit List(T* head, T* tail, shared_ptr<Location> loc = nullptr);
+  List(T* head, T* tail, shared_ptr<Location> loc = nullptr);
 
   /**
    * Destructor.
@@ -65,25 +65,4 @@ public:
   virtual bool dispatchPossibly(const T& o) const;
   virtual bool possibly(const List<T>& o) const;
 };
-
-/**
- * Expression list.
- *
- * @ingroup compiler_common
- */
-typedef List<Expression> ExpressionList;
-
-/**
- * Statement list.
- *
- * @ingroup compiler_common
- */
-typedef List<Statement> StatementList;
-
-/**
- * Type list.
- *
- * @ingroup compiler_common
- */
-typedef List<Type> TypeList;
 }

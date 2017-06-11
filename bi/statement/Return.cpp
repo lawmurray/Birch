@@ -10,7 +10,7 @@
 bi::Return::Return(Expression* single,
     shared_ptr<Location> loc) :
     Statement(loc),
-    ExpressionUnary(single) {
+    Unary<Expression>(single) {
   //
 }
 

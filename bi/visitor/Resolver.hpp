@@ -35,7 +35,7 @@ public:
 
   using Modifier::modify;
 
-  virtual Expression* modify(ExpressionList* o);
+  virtual Expression* modify(List<Expression>* o);
   virtual Expression*  modify(ParenthesesExpression* o);
   virtual Expression*  modify(Span* o);
   virtual Expression*  modify(Index* o);

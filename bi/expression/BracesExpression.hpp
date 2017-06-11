@@ -14,7 +14,7 @@ namespace bi {
  *
  * @ingroup compiler_expression
  */
-class BracesExpression: public Expression, public StatementUnary {
+class BracesExpression: public Expression, public Unary<Statement> {
 public:
   /**
    * Constructor.
