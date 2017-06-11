@@ -72,6 +72,14 @@ bool bi::Expression::definitely(const Expression& o) const {
   return o.dispatchDefinitely(*this);
 }
 
+bool bi::Expression::definitely(const BinaryParameter& o) const {
+  return false;
+}
+
+bool bi::Expression::definitely(const BinaryReference& o) const {
+  return false;
+}
+
 bool bi::Expression::definitely(const BracesExpression& o) const {
   return false;
 }
@@ -124,6 +132,14 @@ bool bi::Expression::definitely(const ParenthesesExpression& o) const {
   return false;
 }
 
+bool bi::Expression::definitely(const ProgParameter& o) const {
+  return false;
+}
+
+bool bi::Expression::definitely(const ProgReference& o) const {
+  return false;
+}
+
 bool bi::Expression::definitely(const Range& o) const {
   return false;
 }
@@ -154,6 +170,14 @@ bool bi::Expression::definitely(const VarReference& o) const {
 
 bool bi::Expression::possibly(const Expression& o) const {
   return o.dispatchPossibly(*this);
+}
+
+bool bi::Expression::possibly(const BinaryParameter& o) const {
+  return false;
+}
+
+bool bi::Expression::possibly(const BinaryReference& o) const {
+  return false;
 }
 
 bool bi::Expression::possibly(const BracesExpression& o) const {
@@ -211,6 +235,15 @@ bool bi::Expression::possibly(Literal<const char*>& o) {
 bool bi::Expression::possibly(const ParenthesesExpression& o) const {
   return false;
 }
+
+bool bi::Expression::possibly(const ProgParameter& o) const {
+  return false;
+}
+
+bool bi::Expression::possibly(const ProgReference& o) const {
+  return false;
+}
+
 
 bool bi::Expression::possibly(const Range& o) const {
   return false;

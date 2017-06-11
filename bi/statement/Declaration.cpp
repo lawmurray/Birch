@@ -57,8 +57,5 @@ bool bi::Declaration<T>::possibly(const Declaration<T>& o) const {
 /*
  * Explicit instantiations.
  */
-template class bi::Declaration<bi::VarParameter>;
-template class bi::Declaration<bi::FuncParameter>;
-template class bi::Declaration<bi::ConversionParameter>;
-template class bi::Declaration<bi::ProgParameter>;
-template class bi::Declaration<bi::TypeParameter>;
+template class bi::Declaration<bi::Expression>;
+template class bi::Declaration<bi::Type>;

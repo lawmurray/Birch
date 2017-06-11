@@ -6,7 +6,7 @@
 #include "bi/io/cpp/CppTypeGenerator.hpp"
 #include "bi/io/cpp/CppParameterGenerator.hpp"
 #include "bi/io/cpp/CppCoroutineGenerator.hpp"
-#include "bi/program/all.hpp"
+#include "bi/expression/all.hpp"
 #include "bi/exception/all.hpp"
 #include "bi/primitive/encode.hpp"
 #include "bi/visitor/Gatherer.hpp"
@@ -56,15 +56,15 @@ void bi::CppFileGenerator::visit(const Import* o) {
   }
 }
 
-void bi::CppFileGenerator::visit(const VarDeclaration* o) {
+void bi::CppFileGenerator::visit(const VarParameter* o) {
   if (header) {
     line("namespace bi {");
-    line("extern " << o->param->type << ' ' << o->param->name << ';');
+    line("extern " << o->type << ' ' << o->name << ';');
     line("}\n");
   } else {
-    start(o->param->type << " bi::" << o->param->name);
-    if (!o->param->value->isEmpty()) {
-      middle(" = " << o->param->value);
+    start(o->type << " bi::" << o->name);
+    if (!o->value->isEmpty()) {
+      middle(" = " << o->value);
     }
     finish(';');
   }

@@ -23,8 +23,12 @@ class While;
 
 class VarParameter;
 class FuncParameter;
+class BinaryParameter;
 class TypeParameter;
 class ProgParameter;
+
+class Expression;
+class Type;
 
 /**
  * Statement.
@@ -80,10 +84,8 @@ public:
    */
   virtual bool definitely(const Statement& o) const;
   virtual bool dispatchDefinitely(const Statement& o) const = 0;
-  virtual bool definitely(const Declaration<VarParameter>& o) const;
-  virtual bool definitely(const Declaration<FuncParameter>& o) const;
-  virtual bool definitely(const Declaration<ProgParameter>& o) const;
-  virtual bool definitely(const Declaration<TypeParameter>& o) const;
+  virtual bool definitely(const Declaration<Expression>& o) const;
+  virtual bool definitely(const Declaration<Type>& o) const;
   virtual bool definitely(const EmptyStatement& o) const;
   virtual bool definitely(const ExpressionStatement& o) const;
   virtual bool definitely(const For& o) const;
@@ -96,10 +98,8 @@ public:
 
   virtual bool possibly(const Statement& o) const;
   virtual bool dispatchPossibly(const Statement& o) const = 0;
-  virtual bool possibly(const Declaration<VarParameter>& o) const;
-  virtual bool possibly(const Declaration<FuncParameter>& o) const;
-  virtual bool possibly(const Declaration<ProgParameter>& o) const;
-  virtual bool possibly(const Declaration<TypeParameter>& o) const;
+  virtual bool possibly(const Declaration<Expression>& o) const;
+  virtual bool possibly(const Declaration<Type>& o) const;
   virtual bool possibly(const EmptyStatement& o) const;
   virtual bool possibly(const ExpressionStatement& o) const;
   virtual bool possibly(const For& o) const;

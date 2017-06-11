@@ -39,6 +39,14 @@ bool bi::ParenthesesExpression::dispatchDefinitely(const Expression& o) const {
   return o.definitely(*this) || single->dispatchDefinitely(o);
 }
 
+bool bi::ParenthesesExpression::definitely(const BinaryParameter& o) const {
+  return single->definitely(o);
+}
+
+bool bi::ParenthesesExpression::definitely(const BinaryReference& o) const {
+  return single->definitely(o);
+}
+
 bool bi::ParenthesesExpression::definitely(const BracesExpression& o) const {
   return single->definitely(o);
 }
@@ -87,6 +95,14 @@ bool bi::ParenthesesExpression::definitely(const ParenthesesExpression& o) const
   return single->definitely(*o.single);
 }
 
+bool bi::ParenthesesExpression::definitely(const ProgParameter& o) const {
+  return single->definitely(o);
+}
+
+bool bi::ParenthesesExpression::definitely(const ProgReference& o) const {
+  return single->definitely(o);
+}
+
 bool bi::ParenthesesExpression::definitely(const Range& o) const {
   return single->definitely(o);
 }
@@ -109,6 +125,14 @@ bool bi::ParenthesesExpression::definitely(const VarReference& o) const {
 
 bool bi::ParenthesesExpression::dispatchPossibly(const Expression& o) const {
   return o.possibly(*this) || single->dispatchPossibly(o);
+}
+
+bool bi::ParenthesesExpression::possibly(const BinaryParameter& o) const {
+  return single->possibly(o);
+}
+
+bool bi::ParenthesesExpression::possibly(const BinaryReference& o) const {
+  return single->possibly(o);
 }
 
 bool bi::ParenthesesExpression::possibly(const BracesExpression& o) const {
@@ -157,6 +181,14 @@ bool bi::ParenthesesExpression::possibly(const Member& o) const {
 
 bool bi::ParenthesesExpression::possibly(const ParenthesesExpression& o) const {
   return single->possibly(*o.single);
+}
+
+bool bi::ParenthesesExpression::possibly(const ProgParameter& o) const {
+  return single->possibly(o);
+}
+
+bool bi::ParenthesesExpression::possibly(const ProgReference& o) const {
+  return single->possibly(o);
 }
 
 bool bi::ParenthesesExpression::possibly(const Range& o) const {

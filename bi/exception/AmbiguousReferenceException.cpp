@@ -3,6 +3,10 @@
  */
 #include "bi/exception/AmbiguousReferenceException.hpp"
 
+#include "bi/expression/FuncParameter.hpp"
+#include "bi/expression/BinaryParameter.hpp"
+#include "bi/expression/FuncReference.hpp"
+#include "bi/expression/BinaryReference.hpp"
 #include "bi/io/bih_ostream.hpp"
 
 #include <sstream>
@@ -29,3 +33,5 @@ bi::AmbiguousReferenceException::AmbiguousReferenceException(
 
 template bi::AmbiguousReferenceException::AmbiguousReferenceException(
     FuncReference* ref, std::list<FuncParameter*> matches);
+template bi::AmbiguousReferenceException::AmbiguousReferenceException(
+    BinaryReference* ref, std::list<BinaryParameter*> matches);

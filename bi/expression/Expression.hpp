@@ -13,6 +13,8 @@ class Cloner;
 class Modifier;
 class Visitor;
 
+class BinaryParameter;
+class BinaryReference;
 class BracesExpression;
 class BracketsExpression;
 class ConversionParameter;
@@ -25,6 +27,8 @@ class Index;
 template<class T> class Literal;
 class Member;
 class ParenthesesExpression;
+class ProgParameter;
+class ProgReference;
 class Range;
 class Span;
 class Super;
@@ -125,6 +129,8 @@ public:
    */
   bool definitely(const Expression& o) const;
   virtual bool dispatchDefinitely(const Expression& o) const = 0;
+  virtual bool definitely(const BinaryParameter& o) const;
+  virtual bool definitely(const BinaryReference& o) const;
   virtual bool definitely(const BracesExpression& o) const;
   virtual bool definitely(const BracketsExpression& o) const;
   virtual bool definitely(const ConversionParameter& o) const;
@@ -139,6 +145,8 @@ public:
   virtual bool definitely(Literal<const char*>& o);
   virtual bool definitely(const Member& o) const;
   virtual bool definitely(const ParenthesesExpression& o) const;
+  virtual bool definitely(const ProgParameter& o) const;
+  virtual bool definitely(const ProgReference& o) const;
   virtual bool definitely(const Range& o) const;
   virtual bool definitely(const Span& o) const;
   virtual bool definitely(const Super& o) const;
@@ -148,6 +156,8 @@ public:
 
   bool possibly(const Expression& o) const;
   virtual bool dispatchPossibly(const Expression& o) const = 0;
+  virtual bool possibly(const BinaryParameter& o) const;
+  virtual bool possibly(const BinaryReference& o) const;
   virtual bool possibly(const BracesExpression& o) const;
   virtual bool possibly(const BracketsExpression& o) const;
   virtual bool possibly(const ConversionParameter& o) const;
@@ -162,6 +172,8 @@ public:
   virtual bool possibly(Literal<const char*>& o);
   virtual bool possibly(const Member& o) const;
   virtual bool possibly(const ParenthesesExpression& o) const;
+  virtual bool possibly(const ProgParameter& o) const;
+  virtual bool possibly(const ProgReference& o) const;
   virtual bool possibly(const Range& o) const;
   virtual bool possibly(const Span& o) const;
   virtual bool possibly(const Super& o) const;

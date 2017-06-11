@@ -46,6 +46,8 @@ public:
   using Expression::possibly;
 
   virtual bool dispatchDefinitely(const Expression& o) const;
+  virtual bool definitely(const BinaryParameter& o) const;
+  virtual bool definitely(const BinaryReference& o) const;
   virtual bool definitely(const BracesExpression& o) const;
   virtual bool definitely(const BracketsExpression& o) const;
   virtual bool definitely(const EmptyExpression& o) const;
@@ -58,6 +60,8 @@ public:
   virtual bool definitely(Literal<const char*>& o);
   virtual bool definitely(const Member& o) const;
   virtual bool definitely(const ParenthesesExpression& o) const;
+  virtual bool definitely(const ProgParameter& o) const;
+  virtual bool definitely(const ProgReference& o) const;
   virtual bool definitely(const Range& o) const;
   virtual bool definitely(const Super& o) const;
   virtual bool definitely(const This& o) const;
@@ -65,6 +69,8 @@ public:
   virtual bool definitely(const VarReference& o) const;
 
   virtual bool dispatchPossibly(const Expression& o) const;
+  virtual bool possibly(const BinaryParameter& o) const;
+  virtual bool possibly(const BinaryReference& o) const;
   virtual bool possibly(const BracesExpression& o) const;
   virtual bool possibly(const BracketsExpression& o) const;
   virtual bool possibly(const EmptyExpression& o) const;
@@ -77,6 +83,8 @@ public:
   virtual bool possibly(Literal<const char*>& o);
   virtual bool possibly(const Member& o) const;
   virtual bool possibly(const ParenthesesExpression& o) const;
+  virtual bool possibly(const ProgParameter& o) const;
+  virtual bool possibly(const ProgReference& o) const;
   virtual bool possibly(const Range& o) const;
   virtual bool possibly(const Super& o) const;
   virtual bool possibly(const This& o) const;

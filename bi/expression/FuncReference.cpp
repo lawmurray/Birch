@@ -18,15 +18,6 @@ bi::FuncReference::FuncReference(shared_ptr<Name> name, Expression* parens,
   //
 }
 
-bi::FuncReference::FuncReference(Expression* left, shared_ptr<Name> name,
-    Expression* right, shared_ptr<Location> loc, const FuncParameter* target) :
-    Expression(loc),
-    Named(name),
-    Parenthesised(new ExpressionList(left, right)),
-    Reference<FuncParameter>(target) {
-  //
-}
-
 bi::FuncReference::~FuncReference() {
   //
 }

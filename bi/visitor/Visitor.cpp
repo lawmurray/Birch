@@ -103,6 +103,11 @@ void bi::Visitor::visit(const FuncReference* o) {
   o->parens->accept(this);
 }
 
+void bi::Visitor::visit(const BinaryReference* o) {
+  o->left->accept(this);
+  o->right->accept(this);
+}
+
 void bi::Visitor::visit(const TypeReference* o) {
   //
 }
@@ -119,6 +124,13 @@ void bi::Visitor::visit(const VarParameter* o) {
 
 void bi::Visitor::visit(const FuncParameter* o) {
   o->parens->accept(this);
+  o->type->accept(this);
+  o->braces->accept(this);
+}
+
+void bi::Visitor::visit(const BinaryParameter* o) {
+  o->left->accept(this);
+  o->right->accept(this);
   o->type->accept(this);
   o->braces->accept(this);
 }
@@ -178,23 +190,11 @@ void bi::Visitor::visit(const Raw* o) {
   //
 }
 
-void bi::Visitor::visit(const VarDeclaration* o) {
+void bi::Visitor::visit(const Declaration<Expression>* o) {
   o->param->accept(this);
 }
 
-void bi::Visitor::visit(const FuncDeclaration* o) {
-  o->param->accept(this);
-}
-
-void bi::Visitor::visit(const ConversionDeclaration* o) {
-  o->param->accept(this);
-}
-
-void bi::Visitor::visit(const TypeDeclaration* o) {
-  o->param->accept(this);
-}
-
-void bi::Visitor::visit(const ProgDeclaration* o) {
+void bi::Visitor::visit(const Declaration<Type>* o) {
   o->param->accept(this);
 }
 

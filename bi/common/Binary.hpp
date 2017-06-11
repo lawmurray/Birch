@@ -38,19 +38,4 @@ public:
    */
   unique_ptr<T> right;
 };
-
-/**
- * Expression binary.
- *
- * @ingroup compiler_common
- */
-typedef Binary<Expression> ExpressionBinary;
-
-/**
- * Type binary.
- *
- * @ingroup compiler_common
- */
-typedef Binary<Type> TypeBinary;
-
 }

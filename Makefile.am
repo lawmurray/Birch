@@ -60,6 +60,8 @@ birchc_SOURCES = \
   bi/exception/ThisException.cpp \
   bi/exception/UnresolvedReferenceException.cpp \
   bi/exception/UnsupportedOptionTypeException.cpp \
+  bi/expression/BinaryParameter.cpp \
+  bi/expression/BinaryReference.cpp \
   bi/expression/BracesExpression.cpp \
   bi/expression/BracketsExpression.cpp \
   bi/expression/ConversionParameter.cpp \
@@ -70,6 +72,8 @@ birchc_SOURCES = \
   bi/expression/Index.cpp \
   bi/expression/Literal.cpp \
   bi/expression/ParenthesesExpression.cpp \
+  bi/expression/ProgParameter.cpp \
+  bi/expression/ProgReference.cpp \
   bi/expression/Range.cpp \
   bi/expression/Span.cpp \
   bi/expression/Super.cpp \
@@ -87,9 +91,6 @@ birchc_SOURCES = \
   bi/io/cpp_ostream.cpp \
   bi/io/indentable_ostream.cpp \
   bi/primitive/encode.cpp \
-  bi/program/Prog.cpp \
-  bi/program/ProgParameter.cpp \
-  bi/program/ProgReference.cpp \
   bi/statement/If.cpp \
   bi/statement/Declaration.cpp \
   bi/statement/EmptyStatement.cpp \
@@ -202,6 +203,8 @@ noinst_HEADERS = \
   bi/exception/UnresolvedReferenceException.hpp \
   bi/exception/UnsupportedOptionTypeException.hpp \
   bi/expression/all.hpp \
+  bi/expression/BinaryParameter.hpp \
+  bi/expression/BinaryReference.hpp \
   bi/expression/BracesExpression.hpp \
   bi/expression/BracketsExpression.hpp \
   bi/expression/ConversionParameter.hpp \
@@ -213,6 +216,8 @@ noinst_HEADERS = \
   bi/expression/Literal.hpp \
   bi/expression/Member.hpp \
   bi/expression/ParenthesesExpression.hpp \
+  bi/expression/ProgParameter.hpp \
+  bi/expression/ProgReference.hpp \
   bi/expression/Range.hpp \
   bi/expression/Span.hpp \
   bi/expression/Super.hpp \
@@ -239,10 +244,6 @@ noinst_HEADERS = \
   bi/primitive/possibly.hpp \
   bi/primitive/shared_ptr.hpp \
   bi/primitive/unique_ptr.hpp \
-  bi/program/all.hpp \
-  bi/program/Prog.hpp \
-  bi/program/ProgParameter.hpp \
-  bi/program/ProgReference.hpp \
   bi/statement/all.hpp \
   bi/statement/Declaration.hpp \
   bi/statement/EmptyStatement.hpp \

@@ -4,42 +4,38 @@
 #pragma once
 
 #include "bi/expression/Expression.hpp"
-#include "bi/expression/FuncParameter.hpp"
+#include "bi/expression/BinaryParameter.hpp"
+#include "bi/expression/VarParameter.hpp"
 #include "bi/common/Named.hpp"
-#include "bi/common/Parenthesised.hpp"
-#include "bi/common/FunctionMode.hpp"
+#include "bi/common/Binary.hpp"
 #include "bi/common/Reference.hpp"
-
-#include <list>
 
 namespace bi {
 /**
- * Reference to function.
+ * Reference to binary operator.
  *
  * @ingroup compiler_expression
  */
-class FuncReference: public Expression,
-    public Named,
-    public Parenthesised,
-    public FunctionMode,
-    public Reference<FuncParameter> {
+class BinaryReference: public Expression, public Named, public Binary<
+    Expression>, public Reference<BinaryParameter> {
 public:
   /**
    * Constructor.
    *
+   * @param left Left operand.
    * @param name Name.
-   * @param parens Expression in parentheses.
+   * @param right Right operand.
    * @param loc Location.
    * @param target Target.
    */
-  FuncReference(shared_ptr<Name> name, Expression* parens,
-      shared_ptr<Location> loc = nullptr, const FuncParameter* target =
+  BinaryReference(Expression* left, shared_ptr<Name> name, Expression* right,
+      shared_ptr<Location> loc = nullptr, const BinaryParameter* target =
           nullptr);
 
   /**
    * Destructor.
    */
-  virtual ~FuncReference();
+  virtual ~BinaryReference();
 
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);
@@ -49,13 +45,13 @@ public:
   using Expression::possibly;
 
   virtual bool dispatchDefinitely(const Expression& o) const;
-  virtual bool definitely(const FuncReference& o) const;
-  virtual bool definitely(const FuncParameter& o) const;
+  virtual bool definitely(const BinaryReference& o) const;
+  virtual bool definitely(const BinaryParameter& o) const;
   virtual bool definitely(const VarParameter& o) const;
 
   virtual bool dispatchPossibly(const Expression& o) const;
-  virtual bool possibly(const FuncReference& o) const;
-  virtual bool possibly(const FuncParameter& o) const;
+  virtual bool possibly(const BinaryReference& o) const;
+  virtual bool possibly(const BinaryParameter& o) const;
   virtual bool possibly(const VarParameter& o) const;
 };
 }

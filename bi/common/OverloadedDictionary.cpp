@@ -4,6 +4,7 @@
 #include "bi/common/OverloadedDictionary.hpp"
 
 #include "bi/expression/FuncParameter.hpp"
+#include "bi/expression/BinaryParameter.hpp"
 
 template<class ParameterType, class CompareType>
 bool bi::OverloadedDictionary<ParameterType,CompareType>::contains(
@@ -59,3 +60,4 @@ void bi::OverloadedDictionary<ParameterType,CompareType>::merge(
  * Explicit instantiations.
  */
 template class bi::OverloadedDictionary<bi::FuncParameter,bi::definitely>;
+template class bi::OverloadedDictionary<bi::BinaryParameter,bi::definitely>;

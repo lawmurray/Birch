@@ -20,19 +20,11 @@ bool bi::Statement::definitely(const Statement& o) const {
   return o.dispatchDefinitely(*this);
 }
 
-bool bi::Statement::definitely(const Declaration<VarParameter>& o) const {
+bool bi::Statement::definitely(const Declaration<Expression>& o) const {
   return false;
 }
 
-bool bi::Statement::definitely(const Declaration<FuncParameter>& o) const {
-  return false;
-}
-
-bool bi::Statement::definitely(const Declaration<ProgParameter>& o) const {
-  return false;
-}
-
-bool bi::Statement::definitely(const Declaration<TypeParameter>& o) const {
+bool bi::Statement::definitely(const Declaration<Type>& o) const {
   return false;
 }
 
@@ -75,19 +67,11 @@ bool bi::Statement::possibly(const Statement& o) const {
   return o.dispatchPossibly(*this);
 }
 
-bool bi::Statement::possibly(const Declaration<VarParameter>& o) const {
+bool bi::Statement::possibly(const Declaration<Expression>& o) const {
   return false;
 }
 
-bool bi::Statement::possibly(const Declaration<FuncParameter>& o) const {
-  return false;
-}
-
-bool bi::Statement::possibly(const Declaration<ProgParameter>& o) const {
-  return false;
-}
-
-bool bi::Statement::possibly(const Declaration<TypeParameter>& o) const {
+bool bi::Statement::possibly(const Declaration<Type>& o) const {
   return false;
 }
 

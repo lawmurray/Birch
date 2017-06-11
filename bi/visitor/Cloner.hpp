@@ -4,7 +4,7 @@
 #pragma once
 
 #include "bi/expression/all.hpp"
-#include "bi/program/all.hpp"
+#include "bi/expression/all.hpp"
 #include "bi/statement/all.hpp"
 #include "bi/type/all.hpp"
 
@@ -43,14 +43,16 @@ public:
 
   virtual Expression* clone(const VarReference* o);
   virtual Expression* clone(const FuncReference* o);
+  virtual Expression* clone(const BinaryReference* o);
   virtual Type* clone(const TypeReference* o);
-  virtual Prog* clone(const ProgReference* o);
+  virtual Expression* clone(const ProgReference* o);
 
   virtual Expression* clone(const VarParameter* o);
   virtual Expression* clone(const FuncParameter* o);
+  virtual Expression* clone(const BinaryParameter* o);
   virtual Expression* clone(const ConversionParameter* o);
   virtual Type* clone(const TypeParameter* o);
-  virtual Prog* clone(const ProgParameter* o);
+  virtual Expression* clone(const ProgParameter* o);
 
   virtual File* clone(const File* o);
   virtual Statement* clone(const Import* o);
@@ -60,11 +62,8 @@ public:
   virtual Statement* clone(const While* o);
   virtual Statement* clone(const Return* o);
   virtual Statement* clone(const Raw* o);
-  virtual Statement* clone(const VarDeclaration* o);
-  virtual Statement* clone(const FuncDeclaration* o);
-  virtual Statement* clone(const ConversionDeclaration* o);
-  virtual Statement* clone(const TypeDeclaration* o);
-  virtual Statement* clone(const ProgDeclaration* o);
+  virtual Statement* clone(const Declaration<Expression>* o);
+  virtual Statement* clone(const Declaration<Type>* o);
 
   virtual Type* clone(const BracketsType* o);
   virtual Type* clone(const ParenthesesType* o);

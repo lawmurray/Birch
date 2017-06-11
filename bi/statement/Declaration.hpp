@@ -8,7 +8,7 @@
 #include "bi/expression/FuncParameter.hpp"
 #include "bi/expression/ConversionParameter.hpp"
 #include "bi/type/TypeParameter.hpp"
-#include "bi/program/ProgParameter.hpp"
+#include "bi/expression/ProgParameter.hpp"
 #include "bi/primitive/unique_ptr.hpp"
 
 namespace bi {
@@ -51,10 +51,4 @@ public:
   virtual bool dispatchPossibly(const Statement& o) const;
   virtual bool possibly(const Declaration<T>& o) const;
 };
-
-typedef Declaration<VarParameter> VarDeclaration;
-typedef Declaration<FuncParameter> FuncDeclaration;
-typedef Declaration<ConversionParameter> ConversionDeclaration;
-typedef Declaration<ProgParameter> ProgDeclaration;
-typedef Declaration<TypeParameter> TypeDeclaration;
 }

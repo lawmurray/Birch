@@ -11,7 +11,7 @@
 bi::Member::Member(Expression* left, Expression* right,
     shared_ptr<Location> loc) :
     Expression(loc),
-    ExpressionBinary(left, right) {
+    Binary<Expression>(left, right) {
   //
 }
 

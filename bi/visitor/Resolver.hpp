@@ -47,12 +47,14 @@ public:
 
   virtual Expression*  modify(VarReference* o);
   virtual Expression*  modify(FuncReference* o);
+  virtual Expression*  modify(BinaryReference* o);
   virtual Type* modify(TypeReference* o);
 
   virtual Expression*  modify(VarParameter* o);
   virtual Expression*  modify(FuncParameter* o);
+  virtual Expression*  modify(BinaryParameter* o);
   virtual Expression*  modify(ConversionParameter* o);
-  virtual Prog* modify(ProgParameter* o);
+  virtual Expression* modify(ProgParameter* o);
   virtual Type* modify(TypeParameter* o);
 
   virtual Statement* modify(Import* o);
@@ -123,11 +125,14 @@ protected:
   void resolve(FuncReference* ref, Scope* scope = nullptr);
 
   /**
-   * Resolve a type reference.
+   * Resolve a reference.
+   *
+   * @tparam Reference Reference type.
    *
    * @param ref The reference.
    */
-  void resolve(TypeReference* ref);
+  template<class Reference>
+  void resolve(Reference* ref, Scope* scope = nullptr);
 
   /**
    * Defer visit.
@@ -183,4 +188,24 @@ protected:
   Cloner cloner;
   Assigner assigner;
 };
+}
+
+#include "bi/exception/all.hpp"
+
+template<class Reference>
+void bi::Resolver::resolve(Reference* ref, Scope* scope) {
+  if (scope) {
+    /* use provided scope, usually a membership scope */
+    scope->resolve(ref);
+  } else {
+    /* use current stack of scopes */
+    ref->target = nullptr;
+    for (auto iter = scopes.rbegin(); !ref->target && iter != scopes.rend();
+        ++iter) {
+      (*iter)->resolve(ref);
+    }
+  }
+  if (!ref->target) {
+    throw UnresolvedReferenceException(ref);
+  }
 }

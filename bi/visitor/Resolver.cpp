@@ -3,8 +3,6 @@
  */
 #include "bi/visitor/Resolver.hpp"
 
-#include "bi/exception/all.hpp"
-
 #include <sstream>
 
 #include <iostream>
@@ -152,11 +150,21 @@ bi::Expression* bi::Resolver::modify(FuncReference* o) {
   } else {
     resolve(o, memberScope);
     if (o->target->isCoroutine() && !o->target->isLambda()) {
-      o->type = new CoroutineType(o->target->type->accept(&cloner)->accept(this));
+      o->type = new CoroutineType(
+          o->target->type->accept(&cloner)->accept(this));
     } else {
       o->type = o->target->type->accept(&cloner)->accept(this);
     }
   }
+  o->type->assignable = false;  // rvalue
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(BinaryReference* o) {
+  Scope* memberScope = takeMemberScope();
+  Modifier::modify(o);
+  resolve(o, memberScope);
+  o->type = o->target->type->accept(&cloner)->accept(this);
   o->type->assignable = false;  // rvalue
   return o;
 }
@@ -218,6 +226,22 @@ bi::Expression* bi::Resolver::modify(FuncParameter* o) {
   return o;
 }
 
+bi::Expression* bi::Resolver::modify(BinaryParameter* o) {
+  push();
+  ++inInputs;
+  o->left = o->left->accept(this);
+  o->right = o->right->accept(this);
+  --inInputs;
+  o->type = o->type->accept(this);
+  if (!o->braces->isEmpty()) {
+    defer(o->braces.get());
+  }
+  o->scope = pop();
+  top()->add(o);
+
+  return o;
+}
+
 bi::Expression* bi::Resolver::modify(ConversionParameter* o) {
   push();
   o->type = o->type->accept(this);
@@ -230,7 +254,7 @@ bi::Expression* bi::Resolver::modify(ConversionParameter* o) {
   return o;
 }
 
-bi::Prog* bi::Resolver::modify(ProgParameter* o) {
+bi::Expression* bi::Resolver::modify(ProgParameter* o) {
   push();
   o->parens = o->parens->accept(this);
   defer(o->braces.get());
@@ -345,8 +369,8 @@ bi::FuncParameter* bi::Resolver::makeCoroutine(VarParameter* o) {
   Type* type = lambda->type->accept(&cloner);
 
   /* coroutine */
-  FuncParameter* func = new FuncParameter(o->name, new bi::EmptyExpression(), type,
-      new EmptyExpression(), LAMBDA_COROUTINE_FORM);
+  FuncParameter* func = new FuncParameter(o->name, new bi::EmptyExpression(),
+      type, new EmptyExpression(), LAMBDA_COROUTINE_FORM);
 
   return func;
 }
@@ -417,17 +441,6 @@ void bi::Resolver::resolve(FuncReference* ref, Scope* scope) {
     throw UnresolvedReferenceException(ref);
   } else {
     ref->form = ref->target->form;
-  }
-}
-
-void bi::Resolver::resolve(TypeReference* ref) {
-  ref->target = nullptr;
-  for (auto iter = scopes.rbegin(); !ref->target && iter != scopes.rend();
-      ++iter) {
-    (*iter)->resolve(ref);
-  }
-  if (!ref->target) {
-    throw UnresolvedReferenceException(ref);
   }
 }
 

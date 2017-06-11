@@ -4,7 +4,7 @@
 #pragma once
 
 #include "bi/expression/all.hpp"
-#include "bi/program/all.hpp"
+#include "bi/expression/all.hpp"
 #include "bi/statement/all.hpp"
 #include "bi/type/all.hpp"
 
@@ -46,11 +46,13 @@ public:
 
   virtual void visit(const VarReference* o);
   virtual void visit(const FuncReference* o);
+  virtual void visit(const BinaryReference* o);
   virtual void visit(const TypeReference* o);
   virtual void visit(const ProgReference* o);
 
   virtual void visit(const VarParameter* o);
   virtual void visit(const FuncParameter* o);
+  virtual void visit(const BinaryParameter* o);
   virtual void visit(const ConversionParameter* o);
   virtual void visit(const TypeParameter* o);
   virtual void visit(const ProgParameter* o);
@@ -63,11 +65,8 @@ public:
   virtual void visit(const While* o);
   virtual void visit(const Return* o);
   virtual void visit(const Raw* o);
-  virtual void visit(const VarDeclaration* o);
-  virtual void visit(const FuncDeclaration* o);
-  virtual void visit(const ConversionDeclaration* o);
-  virtual void visit(const TypeDeclaration* o);
-  virtual void visit(const ProgDeclaration* o);
+  virtual void visit(const Declaration<Expression>* o);
+  virtual void visit(const Declaration<Type>* o);
 
   virtual void visit(const BracketsType* o);
   virtual void visit(const ParenthesesType* o);

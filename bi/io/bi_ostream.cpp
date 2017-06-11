@@ -88,13 +88,15 @@ void bi::bi_ostream::visit(const VarReference* o) {
 }
 
 void bi::bi_ostream::visit(const FuncReference* o) {
-  if (o->isBinary()) {
-    *this << o->getLeft() << ' ' << o->name << ' ' << o->getRight();
-  } else if (o->isUnary()) {
+  if (o->isUnary()) {
     *this << o->name << o->getRight();
   } else {
     *this << o->name << '(' << o->parens << ')';
   }
+}
+
+void bi::bi_ostream::visit(const BinaryReference* o) {
+  *this << o->left << ' ' << o->name << ' ' << o->right;
 }
 
 void bi::bi_ostream::visit(const TypeReference* o) {
@@ -113,26 +115,40 @@ void bi::bi_ostream::visit(const VarParameter* o) {
   if (!o->value->isEmpty()) {
     *this << " <- " << o->value;
   }
+  finish(';');
 }
 
 void bi::bi_ostream::visit(const FuncParameter* o) {
-  if (o->isBinary()) {
-    *this << '(' << o->getLeft() << ' ' << o->name << ' ' << o->getRight() << ')';
-  } else if (o->isUnary()) {
-    *this << '(' << o->name << o->getRight() << ')';
+  if (o->isUnary()) {
+    *this << "function " << o->name << o->getRight();
   } else {
-    *this << o->name << '(' << o->parens << ')';
+    *this << "function " << o->name << '(' << o->parens << ')';
   }
   if (!o->type->isEmpty()) {
     *this << " -> " << o->type;
   }
 }
 
+void bi::bi_ostream::visit(const BinaryParameter* o) {
+  *this << "function " << o->left << ' ' << o->name << ' ' << o->right;
+  if (!o->type->isEmpty()) {
+    *this << " -> " << o->type;
+  }
+}
+
 void bi::bi_ostream::visit(const ConversionParameter* o) {
-  *this << " -> " << o->type;
+  *this << "function -> " << o->type;
 }
 
 void bi::bi_ostream::visit(const TypeParameter* o) {
+  *this << indent;
+  if (o->isStruct()) {
+    *this << "struct";
+  } else if (o->isClass()) {
+    *this << "class";
+  } else {
+    *this << "type";
+  }
   *this << o->name;
   if (!o->parens->isEmpty()) {
     *this << '(' << o->parens << ')';
@@ -142,10 +158,15 @@ void bi::bi_ostream::visit(const TypeParameter* o) {
   } else if (!o->base->isEmpty()) {
     *this << " < " << o->base;
   }
+  if (!o->braces->isEmpty()) {
+    *this << o->braces;
+  } else {
+    *this << ';';
+  }
 }
 
 void bi::bi_ostream::visit(const ProgParameter* o) {
-  *this << o->name << '(' << o->parens << ')';
+  *this << "program " << o->name << '(' << o->parens << ')';
   if (!header && !o->braces->isEmpty()) {
     *this << o->braces;
   } else {
@@ -223,56 +244,4 @@ void bi::bi_ostream::visit(const Raw* o) {
   *this << indent << o->name << " {{\n";
   *this << indent << o->raw << '\n';
   *this << indent << "}}\n";
-}
-
-void bi::bi_ostream::visit(const VarDeclaration* o) {
-  *this << indent << o->param << ";\n";
-}
-
-void bi::bi_ostream::visit(const FuncDeclaration* o) {
-  *this << indent << "function " << o->param;
-  if (!header && !o->param->braces->isEmpty()) {
-    *this << o->param->braces;
-  } else {
-    *this << ';';
-  }
-  *this << "\n\n";
-}
-
-void bi::bi_ostream::visit(const ConversionDeclaration* o) {
-  *this << indent << "function " << o->param;
-  if (!header && !o->param->braces->isEmpty()) {
-    *this << o->param->braces;
-  } else {
-    *this << ';';
-  }
-  *this << "\n\n";
-}
-
-void bi::bi_ostream::visit(const TypeDeclaration* o) {
-  *this << indent;
-  if (o->param->isStruct()) {
-    *this << "struct";
-  } else if (o->param->isClass()) {
-    *this << "class";
-  } else {
-    *this << "type";
-  }
-  *this << ' ' << o->param;
-  if (!o->param->braces->isEmpty()) {
-    *this << o->param->braces;
-  } else {
-    *this << ';';
-  }
-  *this << "\n\n";
-}
-
-void bi::bi_ostream::visit(const ProgDeclaration* o) {
-  *this << indent << "program " << o->param;
-  if (!header && !o->param->braces->isEmpty()) {
-    *this << o->param->braces;
-  } else {
-    *this << ';';
-  }
-  *this << "\n\n";
 }

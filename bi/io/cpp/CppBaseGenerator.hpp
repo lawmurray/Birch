@@ -40,12 +40,12 @@ public:
 
   virtual void visit(const VarReference* o);
   virtual void visit(const FuncReference* o);
+  virtual void visit(const BinaryReference* o);
   virtual void visit(const TypeReference* o);
 
   virtual void visit(const VarParameter* o);
   virtual void visit(const FuncParameter* o);
 
-  virtual void visit(const VarDeclaration* o);
   virtual void visit(const ExpressionStatement* o);
   virtual void visit(const If* o);
   virtual void visit(const For* o);

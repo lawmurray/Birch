@@ -8,7 +8,7 @@
 
 %code {
   #include "expression/all.hpp"
-  #include "program/all.hpp"
+  #include "statement/all.hpp"
   #include "type/all.hpp"
 
   #include <sstream>
@@ -41,7 +41,6 @@
 
   bi::Name* valName;
   bi::Path* valPath;
-  bi::Prog* valProg;
   bi::Expression* valExpression;
   bi::Type* valType;
   bi::Statement* valStatement;
@@ -76,7 +75,7 @@
 %type <valExpression> var_reference var_parameter var_member_parameter var_declaration_parameter
 %type <valExpression> func_reference func_parameter func_member_parameter
 %type <valExpression> coroutine_parameter op_parameter conversion_parameter
-%type <valProg> prog_parameter
+%type <valExpression> prog_parameter
 
 %type <valType> type_reference struct_parameter class_parameter type_parameter
 %type <valType> parens_type function_type coroutine_type primary_type
@@ -232,8 +231,7 @@ coroutine_parameter
     ;
     
 op_parameter
-    : var_parameter assignment_operator var_parameter optional_braces                   { $$ = new bi::FuncParameter($1, $2, $3, new bi::EmptyType(), $4, bi::ASSIGN_FORM, make_loc(@$)); }
-    | var_parameter binary_operator var_parameter optional_result_type optional_braces  { $$ = new bi::FuncParameter($1, $2, $3, $4, $5, bi::BINARY_FORM, make_loc(@$)); }
+    : var_parameter binary_operator var_parameter optional_result_type optional_braces  { $$ = new bi::BinaryParameter($1, $2, $3, $4, $5, make_loc(@$)); }
     | unary_operator var_parameter optional_result_type optional_braces                 { $$ = new bi::FuncParameter($1, $2, $3, $4, bi::UNARY_FORM, make_loc(@$)); }
     ;
 
@@ -447,7 +445,7 @@ multiplicative_operator
 
 multiplicative_expression
     : unary_expression
-    | multiplicative_expression multiplicative_operator unary_expression  { $$ = new bi::FuncReference($1, $2, $3, make_loc(@$)); }
+    | multiplicative_expression multiplicative_operator unary_expression  { $$ = new bi::BinaryReference($1, $2, $3, make_loc(@$)); }
     ;
 
 additive_operator
@@ -457,7 +455,7 @@ additive_operator
 
 additive_expression
     : multiplicative_expression
-    | additive_expression additive_operator multiplicative_expression  { $$ = new bi::FuncReference($1, $2, $3, make_loc(@$)); }
+    | additive_expression additive_operator multiplicative_expression  { $$ = new bi::BinaryReference($1, $2, $3, make_loc(@$)); }
     ;
 
 relational_operator
@@ -469,7 +467,7 @@ relational_operator
     
 relational_expression
     : additive_expression
-    | relational_expression relational_operator additive_expression  { $$ = new bi::FuncReference($1, $2, $3, make_loc(@$)); }
+    | relational_expression relational_operator additive_expression  { $$ = new bi::BinaryReference($1, $2, $3, make_loc(@$)); }
     ;
 
 equality_operator
@@ -479,7 +477,7 @@ equality_operator
 
 equality_expression
     : relational_expression
-    | equality_expression equality_operator relational_expression  { $$ = new bi::FuncReference($1, $2, $3, make_loc(@$)); }
+    | equality_expression equality_operator relational_expression  { $$ = new bi::BinaryReference($1, $2, $3, make_loc(@$)); }
     ;
 
 logical_and_operator
@@ -488,7 +486,7 @@ logical_and_operator
 
 logical_and_expression
     : equality_expression
-    | logical_and_expression logical_and_operator equality_expression  { $$ = new bi::FuncReference($1, $2, $3, make_loc(@$)); }
+    | logical_and_expression logical_and_operator equality_expression  { $$ = new bi::BinaryReference($1, $2, $3, make_loc(@$)); }
     ;
 
 logical_or_operator
@@ -497,7 +495,7 @@ logical_or_operator
 
 logical_or_expression
     : logical_and_expression
-    | logical_or_expression logical_or_operator logical_and_expression  { $$ = new bi::FuncReference($1, $2, $3, make_loc(@$)); }
+    | logical_or_expression logical_or_operator logical_and_expression  { $$ = new bi::BinaryReference($1, $2, $3, make_loc(@$)); }
     ;
 
 stochastic_operator
@@ -506,7 +504,7 @@ stochastic_operator
 
 stochastic_expression
     : logical_or_expression
-    | stochastic_expression stochastic_operator logical_or_expression  { $$ = new bi::FuncReference($1, $2, $3, make_loc(@$)); }
+    | stochastic_expression stochastic_operator logical_or_expression  { $$ = new bi::BinaryReference($1, $2, $3, make_loc(@$)); }
     ;
 
 assignment_operator
@@ -517,7 +515,7 @@ assignment_operator
     
 assignment_expression
     : stochastic_expression
-    | stochastic_expression assignment_operator assignment_expression  { $$ = new bi::FuncReference($1, $2, $3, make_loc(@$)); }
+    | stochastic_expression assignment_operator assignment_expression  { $$ = new bi::BinaryReference($1, $2, $3, make_loc(@$)); }
     ;
 
 expression_list
@@ -545,41 +543,41 @@ binary_operator
  ***************************************************************************/
 
 var_declaration
-    : var_declaration_parameter ';'  { $$ = new bi::VarDeclaration(dynamic_cast<bi::VarParameter*>($1), make_loc(@$)); }
+    : var_declaration_parameter ';'  { $$ = new bi::Declaration<bi::Expression>($1, make_loc(@$)); }
     ;
 
 var_member_declaration
-    : var_member_parameter ';'  { $$ = new bi::VarDeclaration(dynamic_cast<bi::VarParameter*>($1), make_loc(@$)); }
+    : var_member_parameter ';'  { $$ = new bi::Declaration<bi::Expression>($1, make_loc(@$)); }
     ;
 
 func_declaration
-    : FUNCTION func_parameter  { $$ = new bi::FuncDeclaration(dynamic_cast<bi::FuncParameter*>($2), make_loc(@$)); }
+    : FUNCTION func_parameter  { $$ = new bi::Declaration<bi::Expression>($2, make_loc(@$)); }
     ;
 
 func_member_declaration
-    : FUNCTION func_member_parameter  { $$ = new bi::FuncDeclaration(dynamic_cast<bi::FuncParameter*>($2), make_loc(@$)); }
+    : FUNCTION func_member_parameter  { $$ = new bi::Declaration<bi::Expression>($2, make_loc(@$)); }
     ;
 
 coroutine_declaration
-    : COROUTINE coroutine_parameter  { $$ = new bi::FuncDeclaration(dynamic_cast<bi::FuncParameter*>($2), make_loc(@$)); }
+    : COROUTINE coroutine_parameter  { $$ = new bi::Declaration<bi::Expression>($2, make_loc(@$)); }
     ;
 
 op_declaration
-    : FUNCTION op_parameter  { $$ = new bi::FuncDeclaration(dynamic_cast<bi::FuncParameter*>($2), make_loc(@$)); }
+    : FUNCTION op_parameter  { $$ = new bi::Declaration<bi::Expression>($2, make_loc(@$)); }
     ;
 
 conversion_declaration
-    : FUNCTION conversion_parameter  { $$ = new bi::ConversionDeclaration(dynamic_cast<bi::ConversionParameter*>($2), make_loc(@$)); }
+    : FUNCTION conversion_parameter  { $$ = new bi::Declaration<bi::Expression>($2, make_loc(@$)); }
     ;
 
 type_declaration
-    : STRUCT struct_parameter  { $$ = new bi::TypeDeclaration(dynamic_cast<bi::TypeParameter*>($2), make_loc(@$)); } 
-    | CLASS class_parameter    { $$ = new bi::TypeDeclaration(dynamic_cast<bi::TypeParameter*>($2), make_loc(@$)); } 
-    | TYPE type_parameter      { $$ = new bi::TypeDeclaration(dynamic_cast<bi::TypeParameter*>($2), make_loc(@$)); } 
+    : STRUCT struct_parameter  { $$ = new bi::Declaration<bi::Type>($2, make_loc(@$)); } 
+    | CLASS class_parameter    { $$ = new bi::Declaration<bi::Type>($2, make_loc(@$)); } 
+    | TYPE type_parameter      { $$ = new bi::Declaration<bi::Type>($2, make_loc(@$)); } 
     ;
     
 prog_declaration
-    : PROGRAM prog_parameter  { $$ = new bi::ProgDeclaration(dynamic_cast<bi::ProgParameter*>($2), make_loc(@$)); } 
+    : PROGRAM prog_parameter  { $$ = new bi::Declaration<bi::Expression>($2, make_loc(@$)); } 
     ;
 
 expression_statement

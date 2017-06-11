@@ -6,7 +6,7 @@
 #include "bi/expression/all.hpp"
 #include "bi/statement/all.hpp"
 #include "bi/type/all.hpp"
-#include "bi/program/all.hpp"
+#include "bi/expression/all.hpp"
 #include "bi/exception/all.hpp"
 
 template<class ParameterType>

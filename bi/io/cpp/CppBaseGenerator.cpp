@@ -148,7 +148,7 @@ void bi::CppBaseGenerator::visit(const FuncReference* o) {
     middle(o->name);
     genArg(o->getRight(), o->target->getRight());
   } else {
-    if (!o->isMember() && !o->isLambda() && o->name->str() != "assert") { // special exception for now
+    if (!o->isMember() && !o->isLambda() && o->name->str() != "assert") {  // special exception for now
       middle("bi::");
       if (!o->isOperator()) {
         middle("func::");
@@ -176,12 +176,29 @@ void bi::CppBaseGenerator::visit(const FuncReference* o) {
   }
 }
 
+void bi::CppBaseGenerator::visit(const BinaryReference* o) {
+  if (isTranslatable(o->name->str())) {
+    /* can use as raw C++ operator */
+    genArg(o->left.get(), o->target->left.get());
+    middle(' ' << o->name << ' ');
+    genArg(o->right.get(), o->target->right.get());
+  } else {
+    /* must use as function */
+    middle("bi::" << internalise(o->name->str()) << '(');
+    genArg(o->left.get(), o->target->left.get());
+    middle(", ");
+    genArg(o->right.get(), o->target->right.get());
+    middle(')');
+  }
+}
+
 void bi::CppBaseGenerator::visit(const VarParameter* o) {
   middle(o->type << ' ' << o->name);
   if (o->type->isClass()) {
     TypeReference* type = dynamic_cast<TypeReference*>(o->type->strip());
     assert(type);
-    middle(" = new (GC_MALLOC(sizeof(bi::type::" << type->name << "))) bi::type::" << type->name << '(');
+    middle(
+        " = new (GC_MALLOC(sizeof(bi::type::" << type->name << "))) bi::type::" << type->name << '(');
   } else if (!o->parens->isEmpty() || o->type->count() > 0) {
     middle('(');
   }
@@ -207,6 +224,7 @@ void bi::CppBaseGenerator::visit(const VarParameter* o) {
       middle(" = " << o->value);
     }
   }
+  finish(';');
 }
 
 void bi::CppBaseGenerator::visit(const FuncParameter* o) {
@@ -220,10 +238,6 @@ void bi::CppBaseGenerator::visit(const FuncParameter* o) {
     out();
     start("}");
   }
-}
-
-void bi::CppBaseGenerator::visit(const VarDeclaration* o) {
-  line(o->param << ';');
 }
 
 void bi::CppBaseGenerator::visit(const ExpressionStatement* o) {
@@ -246,7 +260,8 @@ void bi::CppBaseGenerator::visit(const If* o) {
 
 void bi::CppBaseGenerator::visit(const For* o) {
   ///@todo May need to be more sophisticated to accommodate arbitrary types
-  line("for (" << o->index << " = " << o->from << "; " << o->index << " <= " << o->to << "; ++" << o->index << ") {");
+  line(
+      "for (" << o->index << " = " << o->from << "; " << o->index << " <= " << o->to << "; ++" << o->index << ") {");
   in();
   *this << o->braces;
   out();
@@ -348,7 +363,8 @@ void bi::CppBaseGenerator::genBuiltin(const TypeReference* o) {
   }
 }
 
-void bi::CppBaseGenerator::genArg(const Expression* arg, const Expression* param) {
+void bi::CppBaseGenerator::genArg(const Expression* arg,
+    const Expression* param) {
   if (arg->type->isClass() && !param->type->isClass()) {
     middle("*(" << arg << ')');
   } else {

@@ -90,11 +90,16 @@ bi::Expression* bi::Cloner::clone(const FuncReference* o) {
   return new FuncReference(o->name, o->parens->accept(this), o->loc);
 }
 
+bi::Expression* bi::Cloner::clone(const BinaryReference* o) {
+  return new BinaryReference(o->left->accept(this), o->name,
+      o->right->accept(this), o->loc);
+}
+
 bi::Type* bi::Cloner::clone(const TypeReference* o) {
   return new TypeReference(o->name, o->loc, o->assignable);
 }
 
-bi::Prog* bi::Cloner::clone(const ProgReference* o) {
+bi::Expression* bi::Cloner::clone(const ProgReference* o) {
   return new ProgReference(o->name, o->parens->accept(this), o->loc);
 }
 
@@ -108,6 +113,12 @@ bi::Expression* bi::Cloner::clone(const FuncParameter* o) {
       o->type->accept(this), o->braces->accept(this), o->form, o->loc);
 }
 
+bi::Expression* bi::Cloner::clone(const BinaryParameter* o) {
+  return new BinaryParameter(o->left->accept(this), o->name,
+      o->right->accept(this), o->type->accept(this), o->braces->accept(this),
+      o->loc);
+}
+
 bi::Expression* bi::Cloner::clone(const ConversionParameter* o) {
   return new ConversionParameter(o->type->accept(this),
       o->braces->accept(this), o->loc);
@@ -119,7 +130,7 @@ bi::Type* bi::Cloner::clone(const TypeParameter* o) {
       o->braces->accept(this), o->form, o->loc);
 }
 
-bi::Prog* bi::Cloner::clone(const ProgParameter* o) {
+bi::Expression* bi::Cloner::clone(const ProgParameter* o) {
   return new ProgParameter(o->name, o->parens->accept(this),
       o->braces->accept(this), o->loc);
 }
@@ -158,29 +169,12 @@ bi::Statement* bi::Cloner::clone(const Raw* o) {
   return new Raw(o->name, o->raw, o->loc);
 }
 
-bi::Statement* bi::Cloner::clone(const VarDeclaration* o) {
-  return new VarDeclaration(
-      dynamic_cast<VarParameter*>(o->param->accept(this)), o->loc);
+bi::Statement* bi::Cloner::clone(const Declaration<Expression>* o) {
+  return new Declaration<Expression>(o->param->accept(this), o->loc);
 }
 
-bi::Statement* bi::Cloner::clone(const FuncDeclaration* o) {
-  return new FuncDeclaration(
-      dynamic_cast<FuncParameter*>(o->param->accept(this)), o->loc);
-}
-
-bi::Statement* bi::Cloner::clone(const ConversionDeclaration* o) {
-  return new ConversionDeclaration(
-      dynamic_cast<ConversionParameter*>(o->param->accept(this)), o->loc);
-}
-
-bi::Statement* bi::Cloner::clone(const TypeDeclaration* o) {
-  return new TypeDeclaration(
-      dynamic_cast<TypeParameter*>(o->param->accept(this)), o->loc);
-}
-
-bi::Statement* bi::Cloner::clone(const ProgDeclaration* o) {
-  return new ProgDeclaration(
-      dynamic_cast<ProgParameter*>(o->param->accept(this)), o->loc);
+bi::Statement* bi::Cloner::clone(const Declaration<Type>* o) {
+  return new Declaration<Type>(o->param->accept(this), o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const BracketsType* o) {

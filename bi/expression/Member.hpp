@@ -13,7 +13,7 @@ namespace bi {
  *
  * @ingroup compiler_expression
  */
-class Member: public Expression, public ExpressionBinary {
+class Member: public Expression, public Binary<Expression> {
 public:
   /**
    * Constructor.

@@ -14,15 +14,6 @@ bi::FuncParameter::FuncParameter(shared_ptr<Name> name, Expression* parens,
   //
 }
 
-bi::FuncParameter::FuncParameter(Expression* left, shared_ptr<Name> name,
-    Expression* right, Type* type, Expression* braces,
-    const FunctionForm form, shared_ptr<Location> loc) :
-    Expression(type, loc),
-    Signature(name, new ExpressionList(left, right), form),
-    Braced(braces) {
-  //
-}
-
 bi::FuncParameter::~FuncParameter() {
   //
 }

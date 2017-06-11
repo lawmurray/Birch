@@ -106,11 +106,17 @@ bi::Expression* bi::Modifier::modify(FuncReference* o) {
   return o;
 }
 
+bi::Expression* bi::Modifier::modify(BinaryReference* o) {
+  o->left = o->left.release()->accept(this);
+  o->right = o->right.release()->accept(this);
+  return o;
+}
+
 bi::Type* bi::Modifier::modify(TypeReference* o) {
   return o;
 }
 
-bi::Prog* bi::Modifier::modify(ProgReference* o) {
+bi::Expression* bi::Modifier::modify(ProgReference* o) {
   o->parens = o->parens.release()->accept(this);
   return o;
 }
@@ -124,6 +130,14 @@ bi::Expression* bi::Modifier::modify(VarParameter* o) {
 
 bi::Expression* bi::Modifier::modify(FuncParameter* o) {
   o->parens = o->parens.release()->accept(this);
+  o->type = o->type.release()->accept(this);
+  o->braces = o->braces.release()->accept(this);
+  return o;
+}
+
+bi::Expression* bi::Modifier::modify(BinaryParameter* o) {
+  o->left = o->left.release()->accept(this);
+  o->right = o->right.release()->accept(this);
   o->type = o->type.release()->accept(this);
   o->braces = o->braces.release()->accept(this);
   return o;
@@ -143,7 +157,7 @@ bi::Type* bi::Modifier::modify(TypeParameter* o) {
   return o;
 }
 
-bi::Prog* bi::Modifier::modify(ProgParameter* o) {
+bi::Expression* bi::Modifier::modify(ProgParameter* o) {
   o->parens = o->parens.release()->accept(this);
   o->braces = o->braces.release()->accept(this);
   return o;
@@ -192,34 +206,13 @@ bi::Statement* bi::Modifier::modify(Raw* o) {
   return o;
 }
 
-bi::Statement* bi::Modifier::modify(VarDeclaration* o) {
-  o->param = dynamic_cast<VarParameter*>(o->param.release()->accept(this));
-  assert(o->param);
+bi::Statement* bi::Modifier::modify(Declaration<Expression>* o) {
+  o->param = o->param.release()->accept(this);
   return o;
 }
 
-bi::Statement* bi::Modifier::modify(FuncDeclaration* o) {
-  o->param = dynamic_cast<FuncParameter*>(o->param.release()->accept(this));
-  assert(o->param);
-  return o;
-}
-
-bi::Statement* bi::Modifier::modify(ConversionDeclaration* o) {
-  o->param = dynamic_cast<ConversionParameter*>(o->param.release()->accept(
-      this));
-  assert(o->param);
-  return o;
-}
-
-bi::Statement* bi::Modifier::modify(TypeDeclaration* o) {
-  o->param = dynamic_cast<TypeParameter*>(o->param.release()->accept(this));
-  assert(o->param);
-  return o;
-}
-
-bi::Statement* bi::Modifier::modify(ProgDeclaration* o) {
-  o->param = dynamic_cast<ProgParameter*>(o->param.release()->accept(this));
-  assert(o->param);
+bi::Statement* bi::Modifier::modify(Declaration<Type>* o) {
+  o->param = o->param.release()->accept(this);
   return o;
 }
 

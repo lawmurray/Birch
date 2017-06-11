@@ -5,6 +5,7 @@
 
 #include "bi/expression/VarParameter.hpp"
 #include "bi/expression/FuncParameter.hpp"
+#include "bi/expression/BinaryParameter.hpp"
 #include "bi/expression/ConversionParameter.hpp"
 #include "bi/type/TypeParameter.hpp"
 #include "bi/exception/all.hpp"
@@ -18,6 +19,10 @@ bool bi::Scope::contains(VarParameter* param) {
 
 bool bi::Scope::contains(FuncParameter* param) {
   return funcs.contains(param);
+}
+
+bool bi::Scope::contains(BinaryParameter* param) {
+  return binaries.contains(param);
 }
 
 bool bi::Scope::contains(ConversionParameter* param) {
@@ -45,6 +50,14 @@ void bi::Scope::add(FuncParameter* param) {
     throw PreviousDeclarationException(param, funcs.get(param));
   } else {
     funcs.add(param);
+  }
+}
+
+void bi::Scope::add(BinaryParameter* param) {
+  if (binaries.contains(param)) {
+    throw PreviousDeclarationException(param, binaries.get(param));
+  } else {
+    binaries.add(param);
   }
 }
 
@@ -83,6 +96,13 @@ void bi::Scope::resolve(FuncReference* ref) {
   ref->target = funcs.resolve(ref);
   if (!ref->target) {
     resolveDefer<FuncParameter,FuncReference>(ref);
+  }
+}
+
+void bi::Scope::resolve(BinaryReference* ref) {
+  ref->target = binaries.resolve(ref);
+  if (!ref->target) {
+    resolveDefer<BinaryParameter,BinaryReference>(ref);
   }
 }
 
