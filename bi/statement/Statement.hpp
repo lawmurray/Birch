@@ -21,12 +21,6 @@ class Raw;
 class Return;
 class While;
 
-class VarParameter;
-class FuncParameter;
-class BinaryParameter;
-class TypeParameter;
-class ProgParameter;
-
 class Expression;
 class Type;
 

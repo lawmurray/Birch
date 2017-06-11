@@ -160,6 +160,14 @@ bool bi::Expression::definitely(const Member& o) const {
   return false;
 }
 
+bool bi::Expression::definitely(const UnaryParameter& o) const {
+  return false;
+}
+
+bool bi::Expression::definitely(const UnaryReference& o) const {
+  return false;
+}
+
 bool bi::Expression::definitely(const VarParameter& o) const {
   return false;
 }
@@ -258,6 +266,14 @@ bool bi::Expression::possibly(const This& o) const {
 }
 
 bool bi::Expression::possibly(const Member& o) const {
+  return false;
+}
+
+bool bi::Expression::possibly(const UnaryParameter& o) const {
+  return false;
+}
+
+bool bi::Expression::possibly(const UnaryReference& o) const {
   return false;
 }
 

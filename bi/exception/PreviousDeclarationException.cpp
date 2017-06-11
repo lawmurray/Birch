@@ -36,6 +36,8 @@ template bi::PreviousDeclarationException::PreviousDeclarationException(
 template bi::PreviousDeclarationException::PreviousDeclarationException(
     BinaryParameter* param, BinaryParameter* prev);
 template bi::PreviousDeclarationException::PreviousDeclarationException(
+    UnaryParameter* param, UnaryParameter* prev);
+template bi::PreviousDeclarationException::PreviousDeclarationException(
     ConversionParameter* param, ConversionParameter* prev);
 template bi::PreviousDeclarationException::PreviousDeclarationException(
     TypeParameter* param, TypeParameter* prev);

@@ -65,6 +65,8 @@ public:
   virtual bool definitely(const Range& o) const;
   virtual bool definitely(const Super& o) const;
   virtual bool definitely(const This& o) const;
+  virtual bool definitely(const UnaryParameter& o) const;
+  virtual bool definitely(const UnaryReference& o) const;
   virtual bool definitely(const VarParameter& o) const;
   virtual bool definitely(const VarReference& o) const;
 
@@ -88,6 +90,8 @@ public:
   virtual bool possibly(const Range& o) const;
   virtual bool possibly(const Super& o) const;
   virtual bool possibly(const This& o) const;
+  virtual bool possibly(const UnaryParameter& o) const;
+  virtual bool possibly(const UnaryReference& o) const;
   virtual bool possibly(const VarParameter& o) const;
   virtual bool possibly(const VarReference& o) const;
 };

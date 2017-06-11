@@ -44,12 +44,14 @@ public:
   virtual Expression* clone(const VarReference* o);
   virtual Expression* clone(const FuncReference* o);
   virtual Expression* clone(const BinaryReference* o);
+  virtual Expression* clone(const UnaryReference* o);
   virtual Type* clone(const TypeReference* o);
   virtual Expression* clone(const ProgReference* o);
 
   virtual Expression* clone(const VarParameter* o);
   virtual Expression* clone(const FuncParameter* o);
   virtual Expression* clone(const BinaryParameter* o);
+  virtual Expression* clone(const UnaryParameter* o);
   virtual Expression* clone(const ConversionParameter* o);
   virtual Type* clone(const TypeParameter* o);
   virtual Expression* clone(const ProgParameter* o);

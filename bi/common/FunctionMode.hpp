@@ -8,8 +8,6 @@ namespace bi {
  * Function form flags.
  */
 enum FunctionForm {
-  BINARY_FORM,
-  UNARY_FORM,
   ASSIGN_FORM,
   FUNCTION_FORM,
   LAMBDA_FUNCTION_FORM,
@@ -42,16 +40,6 @@ public:
    * Is this an operator?
    */
   bool isOperator() const;
-
-  /**
-   * Is this a binary operator?
-   */
-  bool isBinary() const;
-
-  /**
-   * Is this a unary operator?
-   */
-  bool isUnary() const;
 
   /**
    * Is this an assignment operator?

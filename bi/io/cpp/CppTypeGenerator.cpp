@@ -98,11 +98,7 @@ void bi::CppTypeGenerator::visit(const FuncParameter* o) {
     if (!header) {
       middle("bi::type::" << type->name << "::");
     }
-    if ((o->isBinary() || o->isUnary()) && isTranslatable(o->name->str())) {
-      middle("operator" << o->name);
-    } else {
-      middle(internalise(o->name->str()));
-    }
+    middle(internalise(o->name->str()));
 
     /* parameters */
     CppParameterGenerator auxParameter(base, level, header);

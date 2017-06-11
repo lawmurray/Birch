@@ -32,6 +32,8 @@ template bi::UnresolvedReferenceException::UnresolvedReferenceException(
 template bi::UnresolvedReferenceException::UnresolvedReferenceException(
     const BinaryReference* ref);
 template bi::UnresolvedReferenceException::UnresolvedReferenceException(
+    const UnaryReference* ref);
+template bi::UnresolvedReferenceException::UnresolvedReferenceException(
     const TypeReference* ref);
 template bi::UnresolvedReferenceException::UnresolvedReferenceException(
     const ProgReference* ref);

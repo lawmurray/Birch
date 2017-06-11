@@ -5,8 +5,10 @@
 
 #include "bi/expression/FuncParameter.hpp"
 #include "bi/expression/BinaryParameter.hpp"
+#include "bi/expression/UnaryParameter.hpp"
 #include "bi/expression/FuncReference.hpp"
 #include "bi/expression/BinaryReference.hpp"
+#include "bi/expression/UnaryReference.hpp"
 #include "bi/io/bih_ostream.hpp"
 
 #include <sstream>
@@ -35,3 +37,5 @@ template bi::AmbiguousReferenceException::AmbiguousReferenceException(
     FuncReference* ref, std::list<FuncParameter*> matches);
 template bi::AmbiguousReferenceException::AmbiguousReferenceException(
     BinaryReference* ref, std::list<BinaryParameter*> matches);
+template bi::AmbiguousReferenceException::AmbiguousReferenceException(
+    UnaryReference* ref, std::list<UnaryParameter*> matches);

@@ -23,6 +23,8 @@
 #include "bi/expression/Super.hpp"
 #include "bi/expression/This.hpp"
 #include "bi/expression/Member.hpp"
+#include "bi/expression/UnaryParameter.hpp"
+#include "bi/expression/UnaryReference.hpp"
 #include "bi/expression/VarParameter.hpp"
 #include "bi/expression/VarReference.hpp"
 

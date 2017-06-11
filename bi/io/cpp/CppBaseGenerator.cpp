@@ -140,13 +140,6 @@ void bi::CppBaseGenerator::visit(const FuncReference* o) {
     } else {
       middle(o->getRight());
     }
-  } else if (o->isBinary() && isTranslatable(o->name->str())) {
-    genArg(o->getLeft(), o->target->getLeft());
-    middle(' ' << o->name << ' ');
-    genArg(o->getRight(), o->target->getRight());
-  } else if (o->isUnary() && isTranslatable(o->name->str())) {
-    middle(o->name);
-    genArg(o->getRight(), o->target->getRight());
   } else {
     if (!o->isMember() && !o->isLambda() && o->name->str() != "assert") {  // special exception for now
       middle("bi::");
@@ -188,6 +181,19 @@ void bi::CppBaseGenerator::visit(const BinaryReference* o) {
     genArg(o->left.get(), o->target->left.get());
     middle(", ");
     genArg(o->right.get(), o->target->right.get());
+    middle(')');
+  }
+}
+
+void bi::CppBaseGenerator::visit(const UnaryReference* o) {
+  if (isTranslatable(o->name->str())) {
+    /* can use as raw C++ operator */
+    middle(' ' << o->name);
+    genArg(o->single.get(), o->target->single.get());
+  } else {
+    /* must use as function */
+    middle("bi::" << internalise(o->name->str()) << '(');
+    genArg(o->single.get(), o->target->single.get());
     middle(')');
   }
 }

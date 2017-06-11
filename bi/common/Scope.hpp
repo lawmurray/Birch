@@ -16,6 +16,7 @@ namespace bi {
 class VarParameter;
 class FuncParameter;
 class BinaryParameter;
+class UnaryParameter;
 class ConversionParameter;
 class TypeParameter;
 class ProgParameter;
@@ -23,6 +24,7 @@ class ProgParameter;
 class VarReference;
 class FuncReference;
 class BinaryReference;
+class UnaryReference;
 class TypeReference;
 class ProgReference;
 
@@ -44,6 +46,7 @@ public:
   bool contains(VarParameter* param);
   bool contains(FuncParameter* param);
   bool contains(BinaryParameter* param);
+  bool contains(UnaryParameter* param);
   bool contains(ConversionParameter* param);
   bool contains(TypeParameter* param);
   bool contains(ProgParameter* param);
@@ -56,6 +59,7 @@ public:
   void add(VarParameter* param);
   void add(FuncParameter* param);
   void add(BinaryParameter* param);
+  void add(UnaryParameter* param);
   void add(ConversionParameter* param);
   void add(TypeParameter* param);
   void add(ProgParameter* param);
@@ -70,6 +74,7 @@ public:
   void resolve(VarReference* ref);
   void resolve(FuncReference* ref);
   void resolve(BinaryReference* ref);
+  void resolve(UnaryReference* ref);
   void resolve(TypeReference* ref);
 
   /**
@@ -100,6 +105,7 @@ public:
   Dictionary<TypeParameter> types;
   OverloadedDictionary<FuncParameter,definitely> funcs;
   OverloadedDictionary<BinaryParameter,definitely> binaries;
+  OverloadedDictionary<UnaryParameter,definitely> unaries;
   OverloadedSet<ConversionParameter,definitely> convs;
   Dictionary<ProgParameter> progs;
 

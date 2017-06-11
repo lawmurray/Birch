@@ -79,6 +79,8 @@ birchc_SOURCES = \
   bi/expression/Super.cpp \
   bi/expression/This.cpp \
   bi/expression/Member.cpp \
+  bi/expression/UnaryParameter.cpp \
+  bi/expression/UnaryReference.cpp \
   bi/expression/VarParameter.cpp \
   bi/expression/VarReference.cpp \
   bi/io/cpp/CppBaseGenerator.cpp \
@@ -222,6 +224,8 @@ noinst_HEADERS = \
   bi/expression/Span.hpp \
   bi/expression/Super.hpp \
   bi/expression/This.hpp \
+  bi/expression/UnaryParameter.hpp \
+  bi/expression/UnaryReference.hpp \
   bi/expression/VarParameter.hpp \
   bi/expression/VarReference.hpp \
   bi/io/bi_ostream.hpp \

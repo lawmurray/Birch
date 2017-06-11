@@ -113,6 +113,14 @@ bool bi::ParenthesesExpression::definitely(const This& o) const {
   return single->definitely(o);
 }
 
+bool bi::ParenthesesExpression::definitely(const UnaryParameter& o) const {
+  return single->definitely(o);
+}
+
+bool bi::ParenthesesExpression::definitely(const UnaryReference& o) const {
+  return single->definitely(o);
+}
+
 bool bi::ParenthesesExpression::definitely(const VarParameter& o) const {
   return (type->definitely(*o.type)) || single->definitely(o);
 }
@@ -198,6 +206,14 @@ bool bi::ParenthesesExpression::possibly(const Super& o) const {
 }
 
 bool bi::ParenthesesExpression::possibly(const This& o) const {
+  return single->possibly(o);
+}
+
+bool bi::ParenthesesExpression::possibly(const UnaryParameter& o) const {
+  return single->possibly(o);
+}
+
+bool bi::ParenthesesExpression::possibly(const UnaryReference& o) const {
   return single->possibly(o);
 }
 

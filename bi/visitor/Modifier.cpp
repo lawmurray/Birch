@@ -112,6 +112,11 @@ bi::Expression* bi::Modifier::modify(BinaryReference* o) {
   return o;
 }
 
+bi::Expression* bi::Modifier::modify(UnaryReference* o) {
+  o->single = o->single.release()->accept(this);
+  return o;
+}
+
 bi::Type* bi::Modifier::modify(TypeReference* o) {
   return o;
 }
@@ -138,6 +143,13 @@ bi::Expression* bi::Modifier::modify(FuncParameter* o) {
 bi::Expression* bi::Modifier::modify(BinaryParameter* o) {
   o->left = o->left.release()->accept(this);
   o->right = o->right.release()->accept(this);
+  o->type = o->type.release()->accept(this);
+  o->braces = o->braces.release()->accept(this);
+  return o;
+}
+
+bi::Expression* bi::Modifier::modify(UnaryParameter* o) {
+  o->single = o->single.release()->accept(this);
   o->type = o->type.release()->accept(this);
   o->braces = o->braces.release()->accept(this);
   return o;

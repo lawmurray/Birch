@@ -169,6 +169,15 @@ bi::Expression* bi::Resolver::modify(BinaryReference* o) {
   return o;
 }
 
+bi::Expression* bi::Resolver::modify(UnaryReference* o) {
+  Scope* memberScope = takeMemberScope();
+  Modifier::modify(o);
+  resolve(o, memberScope);
+  o->type = o->target->type->accept(&cloner)->accept(this);
+  o->type->assignable = false;  // rvalue
+  return o;
+}
+
 bi::Type* bi::Resolver::modify(TypeReference* o) {
   Scope* memberScope = takeMemberScope();
   assert(!memberScope);
@@ -231,6 +240,21 @@ bi::Expression* bi::Resolver::modify(BinaryParameter* o) {
   ++inInputs;
   o->left = o->left->accept(this);
   o->right = o->right->accept(this);
+  --inInputs;
+  o->type = o->type->accept(this);
+  if (!o->braces->isEmpty()) {
+    defer(o->braces.get());
+  }
+  o->scope = pop();
+  top()->add(o);
+
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(UnaryParameter* o) {
+  push();
+  ++inInputs;
+  o->single = o->single->accept(this);
   --inInputs;
   o->type = o->type->accept(this);
   if (!o->braces->isEmpty()) {

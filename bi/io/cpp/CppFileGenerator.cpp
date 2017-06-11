@@ -77,11 +77,9 @@ void bi::CppFileGenerator::visit(const FuncParameter* o) {
   } else if (!o->braces->isEmpty()) {
     if (header) {
       line("namespace bi {");
-      if (!o->isOperator()) {
-        in();
-        line("namespace func {");
-        out();
-      }
+      in();
+      line("namespace func {");
+      out();
     }
 
     /* return type */
@@ -91,16 +89,9 @@ void bi::CppFileGenerator::visit(const FuncParameter* o) {
 
     /* name */
     if (!header) {
-      middle("bi::");
-      if (!o->isOperator()) {
-        middle("func::");
-      }
+      middle("bi::func::");
     }
-    if ((o->isBinary() || o->isUnary()) && isTranslatable(o->name->str())) {
-      middle("operator" << o->name);
-    } else {
-      middle(internalise(o->name->str()));
-    }
+    middle(internalise(o->name->str()));
 
     /* parameters */
     CppParameterGenerator auxParameter(base, level, header);
@@ -120,11 +111,89 @@ void bi::CppFileGenerator::visit(const FuncParameter* o) {
       finish("}\n");
     }
     if (header) {
-      if (!o->isOperator()) {
-        in();
-        line("}");
-        out();
-      }
+      in();
+      line("}");
+      out();
+      line("}\n");
+    }
+  }
+}
+
+void bi::CppFileGenerator::visit(const BinaryParameter* o) {
+  if (!o->braces->isEmpty()) {
+    if (header) {
+      line("namespace bi {");
+    }
+
+    /* return type */
+    ++inReturn;
+    start(o->type << ' ');
+    --inReturn;
+
+    /* name */
+    if (!header) {
+      middle("bi::");
+    }
+    if (isTranslatable(o->name->str())) {
+      middle("operator" << o->name);
+    } else {
+      middle(internalise(o->name->str()));
+    }
+    middle('(' << o->left << ", " << o->right << ')');
+    if (header) {
+      finish(';');
+    } else {
+      finish(" {");
+      in();
+
+      /* body */
+      CppBaseGenerator aux(base, level, false);
+      aux << o->braces;
+
+      out();
+      finish("}\n");
+    }
+    if (header) {
+      line("}\n");
+    }
+  }
+}
+
+void bi::CppFileGenerator::visit(const UnaryParameter* o) {
+  if (!o->braces->isEmpty()) {
+    if (header) {
+      line("namespace bi {");
+    }
+
+    /* return type */
+    ++inReturn;
+    start(o->type << ' ');
+    --inReturn;
+
+    /* name */
+    if (!header) {
+      middle("bi::");
+    }
+    if (isTranslatable(o->name->str())) {
+      middle("operator" << o->name);
+    } else {
+      middle(internalise(o->name->str()));
+    }
+    middle('(' << o->single << ')');
+    if (header) {
+      finish(';');
+    } else {
+      finish(" {");
+      in();
+
+      /* body */
+      CppBaseGenerator aux(base, level, false);
+      aux << o->braces;
+
+      out();
+      finish("}\n");
+    }
+    if (header) {
       line("}\n");
     }
   }

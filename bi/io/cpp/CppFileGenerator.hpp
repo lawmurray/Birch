@@ -23,6 +23,8 @@ public:
 
   virtual void visit(const VarParameter* o);
   virtual void visit(const FuncParameter* o);
+  virtual void visit(const BinaryParameter* o);
+  virtual void visit(const UnaryParameter* o);
   virtual void visit(const TypeParameter* o);
   virtual void visit(const ProgParameter* o);
 

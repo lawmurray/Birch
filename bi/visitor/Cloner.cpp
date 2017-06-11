@@ -95,6 +95,10 @@ bi::Expression* bi::Cloner::clone(const BinaryReference* o) {
       o->right->accept(this), o->loc);
 }
 
+bi::Expression* bi::Cloner::clone(const UnaryReference* o) {
+  return new UnaryReference(o->name, o->single->accept(this), o->loc);
+}
+
 bi::Type* bi::Cloner::clone(const TypeReference* o) {
   return new TypeReference(o->name, o->loc, o->assignable);
 }
@@ -117,6 +121,11 @@ bi::Expression* bi::Cloner::clone(const BinaryParameter* o) {
   return new BinaryParameter(o->left->accept(this), o->name,
       o->right->accept(this), o->type->accept(this), o->braces->accept(this),
       o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(const UnaryParameter* o) {
+  return new UnaryParameter(o->name, o->single->accept(this),
+      o->type->accept(this), o->braces->accept(this), o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const ConversionParameter* o) {

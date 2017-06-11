@@ -13,15 +13,7 @@ bi::FunctionMode::~FunctionMode() {
 }
 
 bool bi::FunctionMode::isOperator() const {
-  return isBinary() || isUnary() || isAssign();
-}
-
-bool bi::FunctionMode::isBinary() const {
-  return form == BINARY_FORM || form == ASSIGN_FORM;
-}
-
-bool bi::FunctionMode::isUnary() const {
-  return form == UNARY_FORM;
+  return isAssign();
 }
 
 bool bi::FunctionMode::isAssign() const {

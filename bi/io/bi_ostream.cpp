@@ -88,15 +88,15 @@ void bi::bi_ostream::visit(const VarReference* o) {
 }
 
 void bi::bi_ostream::visit(const FuncReference* o) {
-  if (o->isUnary()) {
-    *this << o->name << o->getRight();
-  } else {
-    *this << o->name << '(' << o->parens << ')';
-  }
+  *this << o->name << '(' << o->parens << ')';
 }
 
 void bi::bi_ostream::visit(const BinaryReference* o) {
   *this << o->left << ' ' << o->name << ' ' << o->right;
+}
+
+void bi::bi_ostream::visit(const UnaryReference* o) {
+  *this << o->name << o->single;
 }
 
 void bi::bi_ostream::visit(const TypeReference* o) {
@@ -119,13 +119,14 @@ void bi::bi_ostream::visit(const VarParameter* o) {
 }
 
 void bi::bi_ostream::visit(const FuncParameter* o) {
-  if (o->isUnary()) {
-    *this << "function " << o->name << o->getRight();
-  } else {
-    *this << "function " << o->name << '(' << o->parens << ')';
-  }
+  *this << "function " << o->name << '(' << o->parens << ')';
   if (!o->type->isEmpty()) {
     *this << " -> " << o->type;
+  }
+  if (!header && !o->braces->isEmpty()) {
+    *this << o->braces;
+  } else {
+    *this << ';';
   }
 }
 
@@ -134,10 +135,32 @@ void bi::bi_ostream::visit(const BinaryParameter* o) {
   if (!o->type->isEmpty()) {
     *this << " -> " << o->type;
   }
+  if (!header && !o->braces->isEmpty()) {
+    *this << o->braces;
+  } else {
+    *this << ';';
+  }
+}
+
+void bi::bi_ostream::visit(const UnaryParameter* o) {
+  *this << "function " << o->name << ' ' << o->single;
+  if (!o->type->isEmpty()) {
+    *this << " -> " << o->type;
+  }
+  if (!header && !o->braces->isEmpty()) {
+    *this << o->braces;
+  } else {
+    *this << ';';
+  }
 }
 
 void bi::bi_ostream::visit(const ConversionParameter* o) {
   *this << "function -> " << o->type;
+  if (!header && !o->braces->isEmpty()) {
+    *this << o->braces;
+  } else {
+    *this << ';';
+  }
 }
 
 void bi::bi_ostream::visit(const TypeParameter* o) {
