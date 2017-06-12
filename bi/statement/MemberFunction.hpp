@@ -4,45 +4,43 @@
 #pragma once
 
 #include "bi/statement/Statement.hpp"
-#include "bi/expression/Expression.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Numbered.hpp"
-#include "bi/common/Binary.hpp"
-#include "bi/common/Typed.hpp"
-#include "bi/common/Scoped.hpp"
+#include "bi/common/Parenthesised.hpp"
+#include "bi/common/ReturnTyped.hpp"
 #include "bi/common/Braced.hpp"
+#include "bi/common/Scoped.hpp"
 
 namespace bi {
 /**
- * Binary operator.
+ * Member function of a class or struct.
  *
  * @ingroup compiler_expression
  */
-class BinaryParameter: public Statement,
+class MemberFunction: public Statement,
     public Named,
     public Numbered,
-    public Binary<Expression>,
-    public Typed,
+    public Parenthesised,
+    public ReturnTyped,
     public Scoped,
     public Braced {
 public:
   /**
    * Constructor.
    *
-   * @param left Left operand.
    * @param name Name.
-   * @param right Right operand.
-   * @param type Typed type.
+   * @param parens Parentheses expression.
+   * @param returnType Return type.
    * @param braces Braces expression.
    * @param loc Location.
    */
-  BinaryParameter(Expression* left, shared_ptr<Name> name, Expression* right,
-      Type* type, Expression* braces, shared_ptr<Location> loc = nullptr);
+  MemberFunction(shared_ptr<Name> name, Expression* parens, Type* returnType,
+      Expression* braces, shared_ptr<Location> loc = nullptr);
 
   /**
    * Destructor.
    */
-  virtual ~BinaryParameter();
+  virtual ~MemberFunction();
 
   virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);
@@ -52,9 +50,9 @@ public:
   using Statement::possibly;
 
   virtual bool dispatchDefinitely(const Statement& o) const;
-  virtual bool definitely(const BinaryParameter& o) const;
+  virtual bool definitely(const MemberFunction& o) const;
 
   virtual bool dispatchPossibly(const Statement& o) const;
-  virtual bool possibly(const BinaryParameter& o) const;
+  virtual bool possibly(const MemberFunction& o) const;
 };
 }

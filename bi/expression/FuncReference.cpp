@@ -10,11 +10,11 @@
 #include <typeinfo>
 
 bi::FuncReference::FuncReference(shared_ptr<Name> name, Expression* parens,
-    shared_ptr<Location> loc, const FuncParameter* target) :
+    shared_ptr<Location> loc, const Function* target) :
     Expression(loc),
     Named(name),
     Parenthesised(parens),
-    Reference<FuncParameter>(target) {
+    Reference<Function>(target) {
   //
 }
 
@@ -42,7 +42,7 @@ bool bi::FuncReference::definitely(const FuncReference& o) const {
   return parens->definitely(*o.parens);
 }
 
-bool bi::FuncReference::definitely(const FuncParameter& o) const {
+bool bi::FuncReference::definitely(const Function& o) const {
   return parens->definitely(*o.parens);
 }
 
@@ -58,7 +58,7 @@ bool bi::FuncReference::possibly(const FuncReference& o) const {
   return parens->possibly(*o.parens);
 }
 
-bool bi::FuncReference::possibly(const FuncParameter& o) const {
+bool bi::FuncReference::possibly(const Function& o) const {
   return parens->possibly(*o.parens);
 }
 

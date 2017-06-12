@@ -46,6 +46,43 @@ bi::Expression* bi::Resolver::modify(ParenthesesExpression* o) {
   return o;
 }
 
+bi::Expression* bi::Resolver::modify(BracketsExpression* o) {
+  Modifier::modify(o);
+
+  const int typeSize = o->single->type->count();
+  const int indexSize = o->brackets->tupleSize();
+  const int rangeDims = o->brackets->tupleDims();
+  assert(typeSize == indexSize);  ///@todo Exception
+
+  BracketsType* type = dynamic_cast<BracketsType*>(o->single->type->strip());
+  assert(type);
+  if (rangeDims > 0) {
+    o->type = new BracketsType(type->single->accept(&cloner), rangeDims);
+    o->type = o->type->accept(this);
+    if (o->single->type->assignable) {
+      o->type->accept(&assigner);
+    }
+  } else {
+    o->type = type->single->accept(&cloner)->accept(this);
+  }
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(LambdaFunction* o) {
+  push();
+  ++inInputs;
+  o->parens = o->parens->accept(this);
+  --inInputs;
+  o->returnType->accept(this);
+  o->braces->accept(this);
+  o->scope = pop();
+  o->type = new FunctionType(o->parens->type->accept(&cloner),
+      o->returnType->accept(&cloner));
+  o->type->accept(this);
+
+  return o;
+}
+
 bi::Expression* bi::Resolver::modify(Span* o) {
   Modifier::modify(o);
   o->type = o->single->type->accept(&cloner)->accept(this);
@@ -102,28 +139,6 @@ bi::Expression* bi::Resolver::modify(Super* o) {
   return o;
 }
 
-bi::Expression* bi::Resolver::modify(BracketsExpression* o) {
-  Modifier::modify(o);
-
-  const int typeSize = o->single->type->count();
-  const int indexSize = o->brackets->tupleSize();
-  const int rangeDims = o->brackets->tupleDims();
-  assert(typeSize == indexSize);  ///@todo Exception
-
-  BracketsType* type = dynamic_cast<BracketsType*>(o->single->type->strip());
-  assert(type);
-  if (rangeDims > 0) {
-    o->type = new BracketsType(type->single->accept(&cloner), rangeDims);
-    o->type = o->type->accept(this);
-    if (o->single->type->assignable) {
-      o->type->accept(&assigner);
-    }
-  } else {
-    o->type = type->single->accept(&cloner)->accept(this);
-  }
-  return o;
-}
-
 bi::Expression* bi::Resolver::modify(VarReference* o) {
   Scope* memberScope = takeMemberScope();
   Modifier::modify(o);
@@ -135,17 +150,36 @@ bi::Expression* bi::Resolver::modify(VarReference* o) {
   return o;
 }
 
+bi::Expression* bi::Resolver::modify(VarParameter* o) {
+  Modifier::modify(o);
+  if (!inInputs) {
+    o->type->accept(&assigner);
+  }
+  if (!o->name->isEmpty()) {
+    top()->add(o);
+  }
+  if (!o->value->isEmpty()) {
+    if (!o->type->assignable) {
+      throw NotAssignableException(o);
+    } else if (!o->value->type->definitely(*o->type)) {
+      throw InvalidAssignmentException(o);
+    }
+  }
+  ///@todo Check constructor arguments
+  ///@todo Check assignment operator for value
+  return o;
+}
+
 bi::Expression* bi::Resolver::modify(FuncReference* o) {
   Scope* memberScope = takeMemberScope();
   Modifier::modify(o);
   resolve(o, memberScope);
-  o->form = o->target->form;
-  if (o->target->isCoroutine() && !o->target->isLambda()) {
-    o->type = new CoroutineType(
-        o->target->type->accept(&cloner)->accept(this));
-  } else {
-    o->type = o->target->type->accept(&cloner)->accept(this);
-  }
+  //if (o->target->isCoroutine() && !o->target->isLambda()) {
+  //  o->type = new CoroutineType(
+  //      o->target->type->accept(&cloner)->accept(this));
+  //} else {
+    o->type = o->target->returnType->accept(&cloner)->accept(this);
+  //}
   o->type->assignable = false;  // rvalue
   return o;
 }
@@ -154,7 +188,7 @@ bi::Expression* bi::Resolver::modify(BinaryReference* o) {
   Scope* memberScope = takeMemberScope();
   Modifier::modify(o);
   resolve(o, memberScope);
-  o->type = o->target->type->accept(&cloner)->accept(this);
+  o->type = o->target->returnType->accept(&cloner)->accept(this);
   o->type->assignable = false;  // rvalue
   return o;
 }
@@ -163,12 +197,12 @@ bi::Expression* bi::Resolver::modify(UnaryReference* o) {
   Scope* memberScope = takeMemberScope();
   Modifier::modify(o);
   resolve(o, memberScope);
-  o->type = o->target->type->accept(&cloner)->accept(this);
+  o->type = o->target->returnType->accept(&cloner)->accept(this);
   o->type->assignable = false;  // rvalue
   return o;
 }
 
-bi::Statement* bi::Resolver::modify(AssignmentReference* o) {
+bi::Statement* bi::Resolver::modify(Assignment* o) {
   /*
    * Use of an assignment operator is valid if:
    *
@@ -198,36 +232,47 @@ bi::Statement* bi::Resolver::modify(AssignmentReference* o) {
   return o;
 }
 
-bi::Type* bi::Resolver::modify(TypeReference* o) {
-  Scope* memberScope = takeMemberScope();
-  assert(!memberScope);
+bi::Statement* bi::Resolver::modify(Function* o) {
+  push();
+  ++inInputs;
+  o->parens = o->parens->accept(this);
+  --inInputs;
+  o->returnType = o->returnType->accept(this);
+  if (!o->braces->isEmpty()) {
+    defer(o->braces.get());
+  }
+  o->scope = pop();
+  top()->add(o);
 
-  Modifier::modify(o);
-  resolve(o);
   return o;
 }
 
-bi::Expression* bi::Resolver::modify(VarParameter* o) {
-  Modifier::modify(o);
-  if (!inInputs) {
-    o->type->accept(&assigner);
+bi::Statement* bi::Resolver::modify(Coroutine* o) {
+  push();
+  ++inInputs;
+  o->parens = o->parens->accept(this);
+  --inInputs;
+  o->returnType = o->returnType->accept(this);
+  if (!o->braces->isEmpty()) {
+    defer(o->braces.get());
   }
-  if (!o->name->isEmpty()) {
-    top()->add(o);
-  }
-  if (!o->value->isEmpty()) {
-    if (!o->type->assignable) {
-      throw NotAssignableException(o);
-    } else if (!o->value->type->definitely(*o->type)) {
-      throw InvalidAssignmentException(o);
-    }
-  }
-  ///@todo Check constructor arguments
-  ///@todo Check assignment operator for value
+  o->scope = pop();
+  top()->add(o);
+
   return o;
 }
 
-bi::Statement* bi::Resolver::modify(FuncParameter* o) {
+bi::Statement* bi::Resolver::modify(Program* o) {
+  push();
+  o->parens = o->parens->accept(this);
+  defer(o->braces.get());
+  o->scope = pop();
+  top()->add(o);
+
+  return o;
+}
+
+bi::Statement* bi::Resolver::modify(MemberFunction* o) {
   push();
   ++inInputs;
   o->parens = o->parens->accept(this);
@@ -241,13 +286,13 @@ bi::Statement* bi::Resolver::modify(FuncParameter* o) {
   return o;
 }
 
-bi::Statement* bi::Resolver::modify(BinaryParameter* o) {
+bi::Statement* bi::Resolver::modify(BinaryOperator* o) {
   push();
   ++inInputs;
   o->left = o->left->accept(this);
   o->right = o->right->accept(this);
   --inInputs;
-  o->type = o->type->accept(this);
+  o->returnType = o->returnType->accept(this);
   if (!o->braces->isEmpty()) {
     defer(o->braces.get());
   }
@@ -257,12 +302,12 @@ bi::Statement* bi::Resolver::modify(BinaryParameter* o) {
   return o;
 }
 
-bi::Statement* bi::Resolver::modify(UnaryParameter* o) {
+bi::Statement* bi::Resolver::modify(UnaryOperator* o) {
   push();
   ++inInputs;
   o->single = o->single->accept(this);
   --inInputs;
-  o->type = o->type->accept(this);
+  o->returnType = o->returnType->accept(this);
   if (!o->braces->isEmpty()) {
     defer(o->braces.get());
   }
@@ -272,7 +317,7 @@ bi::Statement* bi::Resolver::modify(UnaryParameter* o) {
   return o;
 }
 
-bi::Statement* bi::Resolver::modify(AssignmentParameter* o) {
+bi::Statement* bi::Resolver::modify(AssignmentOperator* o) {
   push();
   ++inInputs;
   o->single->type->accept(&assigner);
@@ -286,50 +331,15 @@ bi::Statement* bi::Resolver::modify(AssignmentParameter* o) {
   return o;
 }
 
-bi::Statement* bi::Resolver::modify(ConversionParameter* o) {
+bi::Statement* bi::Resolver::modify(ConversionOperator* o) {
   push();
-  o->type = o->type->accept(this);
+  o->returnType = o->returnType->accept(this);
   if (!o->braces->isEmpty()) {
     defer(o->braces.get());
   }
   o->scope = pop();
   top()->add(o);
 
-  return o;
-}
-
-bi::Statement* bi::Resolver::modify(ProgParameter* o) {
-  push();
-  o->parens = o->parens->accept(this);
-  defer(o->braces.get());
-  o->scope = pop();
-  top()->add(o);
-
-  return o;
-}
-
-bi::Type* bi::Resolver::modify(TypeParameter* o) {
-  push();
-  ++inInputs;
-  o->parens = o->parens->accept(this);
-  --inInputs;
-  o->base = o->base->accept(this);
-  o->baseParens = o->baseParens->accept(this);
-  o->scope = pop();
-
-  if (!o->base->isEmpty()) {
-    o->scope->inherit(o->super()->scope.get());
-  }
-
-  top()->add(o);
-  push(o->scope.get());
-  types.push(o);
-  o->braces = o->braces->accept(this);
-  types.pop();
-  pop();
-
-  ///@todo Check that the type and its base are both struct or both class
-  ///@todo Check base type constructor arguments
   return o;
 }
 
@@ -366,6 +376,40 @@ bi::Statement* bi::Resolver::modify(While* o) {
 bi::Statement* bi::Resolver::modify(Return* o) {
   Modifier::modify(o);
   ///@todo Check that the type of the expression is correct
+  return o;
+}
+
+bi::Type* bi::Resolver::modify(TypeReference* o) {
+  Scope* memberScope = takeMemberScope();
+  assert(!memberScope);
+
+  Modifier::modify(o);
+  resolve(o);
+  return o;
+}
+
+bi::Type* bi::Resolver::modify(TypeParameter* o) {
+  push();
+  ++inInputs;
+  o->parens = o->parens->accept(this);
+  --inInputs;
+  o->base = o->base->accept(this);
+  o->baseParens = o->baseParens->accept(this);
+  o->scope = pop();
+
+  if (!o->base->isEmpty()) {
+    o->scope->inherit(o->super()->scope.get());
+  }
+
+  top()->add(o);
+  push(o->scope.get());
+  types.push(o);
+  o->braces = o->braces->accept(this);
+  types.pop();
+  pop();
+
+  ///@todo Check that the type and its base are both struct or both class
+  ///@todo Check base type constructor arguments
   return o;
 }
 

@@ -19,7 +19,7 @@ void bi::CppParameterGenerator::visit(const VarParameter* o) {
   }
 }
 
-void bi::CppParameterGenerator::visit(const FuncParameter* o) {
+void bi::CppParameterGenerator::visit(const Function* o) {
   middle('(');
   for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
     if (iter != o->parens->begin()) {

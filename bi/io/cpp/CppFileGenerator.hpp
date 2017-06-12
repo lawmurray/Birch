@@ -22,11 +22,12 @@ public:
   virtual void visit(const Import* o);
 
   virtual void visit(const VarParameter* o);
-  virtual void visit(const FuncParameter* o);
-  virtual void visit(const BinaryParameter* o);
-  virtual void visit(const UnaryParameter* o);
+  virtual void visit(const Function* o);
+  virtual void visit(const Coroutine* o);
+  virtual void visit(const Program* o);
+  virtual void visit(const BinaryOperator* o);
+  virtual void visit(const UnaryOperator* o);
   virtual void visit(const TypeParameter* o);
-  virtual void visit(const ProgParameter* o);
 
 protected:
   /**

@@ -20,8 +20,8 @@ public:
 
   virtual void visit(const TypeParameter* o);
   virtual void visit(const VarParameter* o);
-  virtual void visit(const FuncParameter* o);
-  virtual void visit(const ConversionParameter* o);
+  virtual void visit(const MemberFunction* o);
+  virtual void visit(const ConversionOperator* o);
 
 private:
   bool before;

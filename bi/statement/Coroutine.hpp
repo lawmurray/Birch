@@ -4,39 +4,43 @@
 #pragma once
 
 #include "bi/statement/Statement.hpp"
-#include "bi/expression/Expression.hpp"
 #include "bi/common/Named.hpp"
-#include "bi/common/Scoped.hpp"
+#include "bi/common/Numbered.hpp"
 #include "bi/common/Parenthesised.hpp"
+#include "bi/common/ReturnTyped.hpp"
 #include "bi/common/Braced.hpp"
+#include "bi/common/Scoped.hpp"
 
 namespace bi {
 /**
- * Program parameter.
+ * Coroutine.
  *
- * @ingroup compiler_program
+ * @ingroup compiler_expression
  */
-class ProgParameter: public Statement,
+class Coroutine: public Statement,
     public Named,
-    public Scoped,
+    public Numbered,
     public Parenthesised,
+    public ReturnTyped,
+    public Scoped,
     public Braced {
 public:
   /**
    * Constructor.
    *
    * @param name Name.
-   * @param parens Expression in parentheses.
-   * @param braces Expression in braces.
+   * @param parens Parentheses expression.
+   * @param returnType Return type.
+   * @param braces Braces expression.
    * @param loc Location.
    */
-  ProgParameter(shared_ptr<Name> name, Expression* parens, Expression* braces,
-      shared_ptr<Location> loc = nullptr);
+  Coroutine(shared_ptr<Name> name, Expression* parens, Type* returnType,
+      Expression* braces, shared_ptr<Location> loc = nullptr);
 
   /**
    * Destructor.
    */
-  virtual ~ProgParameter();
+  virtual ~Coroutine();
 
   virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);
@@ -46,9 +50,9 @@ public:
   using Statement::possibly;
 
   virtual bool dispatchDefinitely(const Statement& o) const;
-  virtual bool definitely(const ProgParameter& o) const;
+  virtual bool definitely(const Coroutine& o) const;
 
   virtual bool dispatchPossibly(const Statement& o) const;
-  virtual bool possibly(const ProgParameter& o) const;
+  virtual bool possibly(const Coroutine& o) const;
 };
 }

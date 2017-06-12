@@ -7,11 +7,11 @@
 
 bi::BinaryReference::BinaryReference(Expression* left, shared_ptr<Name> name,
     Expression* right, shared_ptr<Location> loc,
-    const BinaryParameter* target) :
+    const BinaryOperator* target) :
     Expression(loc),
     Named(name),
     Binary<Expression>(left, right),
-    Reference<BinaryParameter>(target) {
+    Reference<BinaryOperator>(target) {
   //
 }
 
@@ -39,7 +39,7 @@ bool bi::BinaryReference::definitely(const BinaryReference& o) const {
   return left->definitely(*o.left) && right->definitely(*o.right);
 }
 
-bool bi::BinaryReference::definitely(const BinaryParameter& o) const {
+bool bi::BinaryReference::definitely(const BinaryOperator& o) const {
   return left->definitely(*o.left) && right->definitely(*o.right);
 }
 
@@ -55,7 +55,7 @@ bool bi::BinaryReference::possibly(const BinaryReference& o) const {
   return left->possibly(*o.left) && right->possibly(*o.right);
 }
 
-bool bi::BinaryReference::possibly(const BinaryParameter& o) const {
+bool bi::BinaryReference::possibly(const BinaryOperator& o) const {
   return left->possibly(*o.left) && right->possibly(*o.right);
 }
 

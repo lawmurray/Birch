@@ -38,35 +38,37 @@ public:
 
   virtual Expression* modify(List<Expression>* o);
   virtual Expression* modify(ParenthesesExpression* o);
+  virtual Expression* modify(BracketsExpression* o);
+  virtual Expression* modify(LambdaFunction* o);
   virtual Expression* modify(Span* o);
   virtual Expression* modify(Index* o);
   virtual Expression* modify(Range* o);
   virtual Expression* modify(Member* o);
   virtual Expression* modify(Super* o);
   virtual Expression* modify(This* o);
-  virtual Expression* modify(BracketsExpression* o);
-
   virtual Expression* modify(VarReference* o);
+  virtual Expression* modify(VarParameter* o);
   virtual Expression* modify(FuncReference* o);
   virtual Expression* modify(BinaryReference* o);
   virtual Expression* modify(UnaryReference* o);
-  virtual Statement* modify(AssignmentReference* o);
-  virtual Type* modify(TypeReference* o);
 
-  virtual Expression* modify(VarParameter* o);
-  virtual Statement* modify(FuncParameter* o);
-  virtual Statement* modify(BinaryParameter* o);
-  virtual Statement* modify(UnaryParameter* o);
-  virtual Statement* modify(AssignmentParameter* o);
-  virtual Statement* modify(ConversionParameter* o);
-  virtual Statement* modify(ProgParameter* o);
-  virtual Type* modify(TypeParameter* o);
-
+  virtual Statement* modify(Assignment* o);
+  virtual Statement* modify(Function* o);
+  virtual Statement* modify(Coroutine* o);
+  virtual Statement* modify(Program* o);
+  virtual Statement* modify(MemberFunction* o);
+  virtual Statement* modify(BinaryOperator* o);
+  virtual Statement* modify(UnaryOperator* o);
+  virtual Statement* modify(AssignmentOperator* o);
+  virtual Statement* modify(ConversionOperator* o);
   virtual Statement* modify(Import* o);
   virtual Statement* modify(If* o);
   virtual Statement* modify(For* o);
   virtual Statement* modify(While* o);
   virtual Statement* modify(Return* o);
+
+  virtual Type* modify(TypeReference* o);
+  virtual Type* modify(TypeParameter* o);
 
 protected:
   /**

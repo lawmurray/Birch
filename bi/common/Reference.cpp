@@ -4,12 +4,12 @@
 #include "bi/common/Reference.hpp"
 
 #include "bi/expression/VarParameter.hpp"
-#include "bi/statement/FuncParameter.hpp"
-#include "bi/statement/BinaryParameter.hpp"
-#include "bi/statement/UnaryParameter.hpp"
-#include "bi/statement/AssignmentParameter.hpp"
+#include "bi/statement/Function.hpp"
+#include "bi/statement/BinaryOperator.hpp"
+#include "bi/statement/UnaryOperator.hpp"
+#include "bi/statement/AssignmentOperator.hpp"
 #include "bi/type/TypeParameter.hpp"
-#include "bi/statement/ProgParameter.hpp"
+#include "bi/statement/Program.hpp"
 
 template<class Target>
 bi::Reference<Target>::Reference(const Target* target) :
@@ -26,9 +26,9 @@ bi::Reference<Target>::~Reference() {
  * Explicit instantiations.
  */
 template class bi::Reference<bi::VarParameter>;
-template class bi::Reference<bi::FuncParameter>;
-template class bi::Reference<bi::BinaryParameter>;
-template class bi::Reference<bi::UnaryParameter>;
-template class bi::Reference<bi::AssignmentParameter>;
+template class bi::Reference<bi::Function>;
+template class bi::Reference<bi::BinaryOperator>;
+template class bi::Reference<bi::UnaryOperator>;
+template class bi::Reference<bi::AssignmentOperator>;
+template class bi::Reference<bi::Program>;
 template class bi::Reference<bi::TypeParameter>;
-template class bi::Reference<bi::ProgParameter>;

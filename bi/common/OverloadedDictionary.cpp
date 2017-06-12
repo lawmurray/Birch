@@ -3,10 +3,12 @@
  */
 #include "bi/common/OverloadedDictionary.hpp"
 
-#include "bi/statement/FuncParameter.hpp"
-#include "bi/statement/BinaryParameter.hpp"
-#include "bi/statement/UnaryParameter.hpp"
-#include "bi/statement/AssignmentParameter.hpp"
+#include "bi/statement/Function.hpp"
+#include "bi/statement/Coroutine.hpp"
+#include "bi/statement/MemberFunction.hpp"
+#include "bi/statement/BinaryOperator.hpp"
+#include "bi/statement/UnaryOperator.hpp"
+#include "bi/statement/AssignmentOperator.hpp"
 
 template<class ParameterType, class CompareType>
 bool bi::OverloadedDictionary<ParameterType,CompareType>::contains(
@@ -61,7 +63,9 @@ void bi::OverloadedDictionary<ParameterType,CompareType>::merge(
 /*
  * Explicit instantiations.
  */
-template class bi::OverloadedDictionary<bi::FuncParameter,bi::definitely>;
-template class bi::OverloadedDictionary<bi::BinaryParameter,bi::definitely>;
-template class bi::OverloadedDictionary<bi::UnaryParameter,bi::definitely>;
-template class bi::OverloadedDictionary<bi::AssignmentParameter,bi::definitely>;
+template class bi::OverloadedDictionary<bi::Function,bi::definitely>;
+template class bi::OverloadedDictionary<bi::Coroutine,bi::definitely>;
+template class bi::OverloadedDictionary<bi::MemberFunction,bi::definitely>;
+template class bi::OverloadedDictionary<bi::BinaryOperator,bi::definitely>;
+template class bi::OverloadedDictionary<bi::UnaryOperator,bi::definitely>;
+template class bi::OverloadedDictionary<bi::AssignmentOperator,bi::definitely>;

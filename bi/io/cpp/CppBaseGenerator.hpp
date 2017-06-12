@@ -20,17 +20,15 @@ public:
 
   virtual void visit(const Name* o);
 
+  virtual void visit(const List<Expression>* o);
   virtual void visit(const BooleanLiteral* o);
   virtual void visit(const IntegerLiteral* o);
   virtual void visit(const RealLiteral* o);
   virtual void visit(const StringLiteral* o);
-
-  virtual void visit(const List<Expression>* o);
-  virtual void visit(const List<Statement>* o);
-  virtual void visit(const List<Type>* o);
   virtual void visit(const ParenthesesExpression* o);
   virtual void visit(const BracesExpression* o);
   virtual void visit(const BracketsExpression* o);
+  virtual void visit(const LambdaFunction* o);
   virtual void visit(const Span* o);
   virtual void visit(const Index* o);
   virtual void visit(const Range* o);
@@ -39,15 +37,12 @@ public:
   virtual void visit(const This* o);
 
   virtual void visit(const VarReference* o);
+  virtual void visit(const VarParameter* o);
   virtual void visit(const FuncReference* o);
   virtual void visit(const BinaryReference* o);
   virtual void visit(const UnaryReference* o);
-  virtual void visit(const AssignmentReference* o);
-  virtual void visit(const TypeReference* o);
-
-  virtual void visit(const VarParameter* o);
-  virtual void visit(const FuncParameter* o);
-
+  virtual void visit(const List<Statement>* o);
+  virtual void visit(const Assignment* o);
   virtual void visit(const ExpressionStatement* o);
   virtual void visit(const If* o);
   virtual void visit(const For* o);
@@ -55,6 +50,8 @@ public:
   virtual void visit(const Return* o);
   virtual void visit(const Raw* o);
 
+  virtual void visit(const List<Type>* o);
+  virtual void visit(const TypeReference* o);
   virtual void visit(const EmptyType* o);
   virtual void visit(const BracketsType* o);
   virtual void visit(const ParenthesesType* o);

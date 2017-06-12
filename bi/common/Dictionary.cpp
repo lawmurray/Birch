@@ -45,4 +45,4 @@ void bi::Dictionary<ParameterType>::merge(Dictionary<ParameterType>& o) {
  */
 template class bi::Dictionary<bi::VarParameter>;
 template class bi::Dictionary<bi::TypeParameter>;
-template class bi::Dictionary<bi::ProgParameter>;
+template class bi::Dictionary<bi::Program>;

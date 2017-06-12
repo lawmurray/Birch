@@ -14,19 +14,21 @@
 
 namespace bi {
 class VarParameter;
-class FuncParameter;
-class BinaryParameter;
-class UnaryParameter;
-class AssignmentParameter;
-class ConversionParameter;
+class Function;
+class Coroutine;
+class MemberFunction;
+class Program;
+class BinaryOperator;
+class UnaryOperator;
+class AssignmentOperator;
+class ConversionOperator;
 class TypeParameter;
-class ProgParameter;
 
 class VarReference;
 class FuncReference;
 class BinaryReference;
 class UnaryReference;
-class AssignmentReference;
+class Assignment;
 class TypeReference;
 
 /**
@@ -45,13 +47,15 @@ public:
    * is done by name only.
    */
   bool contains(VarParameter* param);
-  bool contains(FuncParameter* param);
-  bool contains(BinaryParameter* param);
-  bool contains(UnaryParameter* param);
-  bool contains(AssignmentParameter* param);
-  bool contains(ConversionParameter* param);
+  bool contains(Function* param);
+  bool contains(Coroutine* param);
+  bool contains(Program* param);
+  bool contains(MemberFunction* param);
+  bool contains(BinaryOperator* param);
+  bool contains(UnaryOperator* param);
+  bool contains(AssignmentOperator* param);
+  bool contains(ConversionOperator* param);
   bool contains(TypeParameter* param);
-  bool contains(ProgParameter* param);
 
   /**
    * Add parameter.
@@ -59,13 +63,15 @@ public:
    * @param param Parameter.
    */
   void add(VarParameter* param);
-  void add(FuncParameter* param);
-  void add(BinaryParameter* param);
-  void add(UnaryParameter* param);
-  void add(AssignmentParameter* param);
-  void add(ConversionParameter* param);
+  void add(Function* param);
+  void add(Coroutine* param);
+  void add(Program* param);
+  void add(MemberFunction* param);
+  void add(BinaryOperator* param);
+  void add(UnaryOperator* param);
+  void add(AssignmentOperator* param);
+  void add(ConversionOperator* param);
   void add(TypeParameter* param);
-  void add(ProgParameter* param);
 
   /**
    * Resolve a reference to a parameter.
@@ -78,7 +84,7 @@ public:
   void resolve(FuncReference* ref);
   void resolve(BinaryReference* ref);
   void resolve(UnaryReference* ref);
-  void resolve(AssignmentReference* ref);
+  void resolve(Assignment* ref);
   void resolve(TypeReference* ref);
 
   /**
@@ -107,12 +113,14 @@ public:
    */
   Dictionary<VarParameter> vars;
   Dictionary<TypeParameter> types;
-  OverloadedDictionary<FuncParameter,definitely> funcs;
-  OverloadedDictionary<BinaryParameter,definitely> binaries;
-  OverloadedDictionary<UnaryParameter,definitely> unaries;
-  OverloadedDictionary<AssignmentParameter,definitely> assigns;
-  OverloadedSet<ConversionParameter,definitely> convs;
-  Dictionary<ProgParameter> progs;
+  OverloadedDictionary<Function,definitely> functions;
+  OverloadedDictionary<Coroutine,definitely> coroutines;
+  OverloadedDictionary<MemberFunction,definitely> memberFunctions;
+  OverloadedDictionary<BinaryOperator,definitely> binaryOperators;
+  OverloadedDictionary<UnaryOperator,definitely> unaryOperators;
+  OverloadedDictionary<AssignmentOperator,definitely> assignmentOperators;
+  OverloadedSet<ConversionOperator,definitely> conversionOperators;
+  Dictionary<Program> programs;
 
 private:
   /**

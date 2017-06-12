@@ -70,10 +70,10 @@ public:
    * Iterators over type conversions.
    */
   auto beginConversions() const {
-    return scope->convs.params.begin();
+    return scope->conversionOperators.params.begin();
   }
   auto endConversions() const {
-    return scope->convs.params.end();
+    return scope->conversionOperators.params.end();
   }
 
   bool isBuiltin() const;

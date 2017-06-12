@@ -6,11 +6,11 @@
 #include "bi/visitor/all.hpp"
 
 bi::UnaryReference::UnaryReference(shared_ptr<Name> name, Expression* single,
-    shared_ptr<Location> loc, const UnaryParameter* target) :
+    shared_ptr<Location> loc, const UnaryOperator* target) :
     Expression(loc),
     Named(name),
     Unary<Expression>(single),
-    Reference<UnaryParameter>(target) {
+    Reference<UnaryOperator>(target) {
   //
 }
 
@@ -38,7 +38,7 @@ bool bi::UnaryReference::definitely(const UnaryReference& o) const {
   return single->definitely(*o.single);
 }
 
-bool bi::UnaryReference::definitely(const UnaryParameter& o) const {
+bool bi::UnaryReference::definitely(const UnaryOperator& o) const {
   return single->definitely(*o.single);
 }
 
@@ -54,7 +54,7 @@ bool bi::UnaryReference::possibly(const UnaryReference& o) const {
   return single->possibly(*o.single);
 }
 
-bool bi::UnaryReference::possibly(const UnaryParameter& o) const {
+bool bi::UnaryReference::possibly(const UnaryOperator& o) const {
   return single->possibly(*o.single);
 }
 

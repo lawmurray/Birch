@@ -4,10 +4,9 @@
 #pragma once
 
 #include "bi/expression/Expression.hpp"
-#include "bi/statement/FuncParameter.hpp"
+#include "bi/statement/Function.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Parenthesised.hpp"
-#include "bi/common/FunctionMode.hpp"
 #include "bi/common/Reference.hpp"
 
 #include <list>
@@ -21,8 +20,7 @@ namespace bi {
 class FuncReference: public Expression,
     public Named,
     public Parenthesised,
-    public FunctionMode,
-    public Reference<FuncParameter> {
+    public Reference<Function> {
 public:
   /**
    * Constructor.
@@ -33,7 +31,7 @@ public:
    * @param target Target.
    */
   FuncReference(shared_ptr<Name> name, Expression* parens,
-      shared_ptr<Location> loc = nullptr, const FuncParameter* target =
+      shared_ptr<Location> loc = nullptr, const Function* target =
           nullptr);
 
   /**
@@ -50,12 +48,12 @@ public:
 
   virtual bool dispatchDefinitely(const Expression& o) const;
   virtual bool definitely(const FuncReference& o) const;
-  virtual bool definitely(const FuncParameter& o) const;
+  virtual bool definitely(const Function& o) const;
   virtual bool definitely(const VarParameter& o) const;
 
   virtual bool dispatchPossibly(const Expression& o) const;
   virtual bool possibly(const FuncReference& o) const;
-  virtual bool possibly(const FuncParameter& o) const;
+  virtual bool possibly(const Function& o) const;
   virtual bool possibly(const VarParameter& o) const;
 };
 }

@@ -72,10 +72,6 @@ bool bi::Expression::definitely(const Expression& o) const {
   return o.dispatchDefinitely(*this);
 }
 
-bool bi::Expression::definitely(const BinaryParameter& o) const {
-  return false;
-}
-
 bool bi::Expression::definitely(const BinaryReference& o) const {
   return false;
 }
@@ -88,19 +84,7 @@ bool bi::Expression::definitely(const BracketsExpression& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(const ConversionParameter& o) const {
-  return false;
-}
-
 bool bi::Expression::definitely(const EmptyExpression& o) const {
-  return false;
-}
-
-bool bi::Expression::definitely(const List<Expression>& o) const {
-  return false;
-}
-
-bool bi::Expression::definitely(const FuncParameter& o) const {
   return false;
 }
 
@@ -112,11 +96,19 @@ bool bi::Expression::definitely(const Index& o) const {
   return false;
 }
 
+bool bi::Expression::definitely(const LambdaFunction& o) const {
+  return false;
+}
+
+bool bi::Expression::definitely(const List<Expression>& o) const {
+  return false;
+}
+
 bool bi::Expression::definitely(const Literal<bool>& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(Literal<int64_t>& o) {
+bool bi::Expression::definitely(const Literal<int64_t>& o) {
   return false;
 }
 
@@ -124,15 +116,11 @@ bool bi::Expression::definitely(const Literal<double>& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(Literal<const char*>& o) {
+bool bi::Expression::definitely(const Literal<const char*>& o) {
   return false;
 }
 
 bool bi::Expression::definitely(const ParenthesesExpression& o) const {
-  return false;
-}
-
-bool bi::Expression::definitely(const ProgParameter& o) const {
   return false;
 }
 
@@ -156,10 +144,6 @@ bool bi::Expression::definitely(const Member& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(const UnaryParameter& o) const {
-  return false;
-}
-
 bool bi::Expression::definitely(const UnaryReference& o) const {
   return false;
 }
@@ -176,10 +160,6 @@ bool bi::Expression::possibly(const Expression& o) const {
   return o.dispatchPossibly(*this);
 }
 
-bool bi::Expression::possibly(const BinaryParameter& o) const {
-  return false;
-}
-
 bool bi::Expression::possibly(const BinaryReference& o) const {
   return false;
 }
@@ -192,19 +172,7 @@ bool bi::Expression::possibly(const BracketsExpression& o) const {
   return false;
 }
 
-bool bi::Expression::possibly(const ConversionParameter& o) const {
-  return false;
-}
-
 bool bi::Expression::possibly(const EmptyExpression& o) const {
-  return false;
-}
-
-bool bi::Expression::possibly(const List<Expression>& o) const {
-  return false;
-}
-
-bool bi::Expression::possibly(const FuncParameter& o) const {
   return false;
 }
 
@@ -216,7 +184,11 @@ bool bi::Expression::possibly(const Index& o) const {
   return false;
 }
 
-bool bi::Expression::possibly(const Span& o) const {
+bool bi::Expression::possibly(const LambdaFunction& o) const {
+  return false;
+}
+
+bool bi::Expression::possibly(const List<Expression>& o) const {
   return false;
 }
 
@@ -224,7 +196,7 @@ bool bi::Expression::possibly(const Literal<bool>& o) const {
   return false;
 }
 
-bool bi::Expression::possibly(Literal<int64_t>& o) {
+bool bi::Expression::possibly(const Literal<int64_t>& o) {
   return false;
 }
 
@@ -232,7 +204,7 @@ bool bi::Expression::possibly(const Literal<double>& o) const {
   return false;
 }
 
-bool bi::Expression::possibly(Literal<const char*>& o) {
+bool bi::Expression::possibly(const Literal<const char*>& o) {
   return false;
 }
 
@@ -240,11 +212,11 @@ bool bi::Expression::possibly(const ParenthesesExpression& o) const {
   return false;
 }
 
-bool bi::Expression::possibly(const ProgParameter& o) const {
+bool bi::Expression::possibly(const Range& o) const {
   return false;
 }
 
-bool bi::Expression::possibly(const Range& o) const {
+bool bi::Expression::possibly(const Span& o) const {
   return false;
 }
 
@@ -257,10 +229,6 @@ bool bi::Expression::possibly(const This& o) const {
 }
 
 bool bi::Expression::possibly(const Member& o) const {
-  return false;
-}
-
-bool bi::Expression::possibly(const UnaryParameter& o) const {
   return false;
 }
 

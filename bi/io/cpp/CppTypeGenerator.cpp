@@ -82,7 +82,7 @@ void bi::CppTypeGenerator::visit(const VarParameter* o) {
   }
 }
 
-void bi::CppTypeGenerator::visit(const FuncParameter* o) {
+void bi::CppTypeGenerator::visit(const MemberFunction* o) {
   if (!o->braces->isEmpty()) {
     /* return type */
     if (header && type->isClass()) {
@@ -91,7 +91,7 @@ void bi::CppTypeGenerator::visit(const FuncParameter* o) {
       start("");
     }
     ++inReturn;
-    middle(o->type << ' ');
+    middle(o->returnType << ' ');
     --inReturn;
 
     /* name */
@@ -121,7 +121,7 @@ void bi::CppTypeGenerator::visit(const FuncParameter* o) {
   }
 }
 
-void bi::CppTypeGenerator::visit(const AssignmentParameter* o) {
+void bi::CppTypeGenerator::visit(const AssignmentOperator* o) {
   if (!o->braces->isEmpty()) {
     start("");
     if (!header) {
@@ -145,14 +145,14 @@ void bi::CppTypeGenerator::visit(const AssignmentParameter* o) {
   }
 }
 
-void bi::CppTypeGenerator::visit(const ConversionParameter* o) {
+void bi::CppTypeGenerator::visit(const ConversionOperator* o) {
   if (!o->braces->isEmpty()) {
     if (!header) {
       start("bi::type::" << type->name << "::");
     } else {
       start("");
     }
-    middle("operator " << o->type << "()");
+    middle("operator " << o->returnType << "()");
     if (header) {
       finish(';');
     } else {

@@ -21,6 +21,13 @@ void bi::CppBaseGenerator::visit(const Name* o) {
   middle(o->str());
 }
 
+void bi::CppBaseGenerator::visit(const List<Expression>* o) {
+  middle(o->head);
+  if (o->tail) {
+    middle(", " << o->tail);
+  }
+}
+
 void bi::CppBaseGenerator::visit(const BooleanLiteral* o) {
   middle(o->str);
 }
@@ -35,32 +42,6 @@ void bi::CppBaseGenerator::visit(const RealLiteral* o) {
 
 void bi::CppBaseGenerator::visit(const StringLiteral* o) {
   middle("std::string(" << o->str << ')');
-}
-
-void bi::CppBaseGenerator::visit(const List<Expression>* o) {
-  middle(o->head);
-  if (o->tail) {
-    middle(", " << o->tail);
-  }
-}
-
-void bi::CppBaseGenerator::visit(const List<Statement>* o) {
-  middle(o->head);
-  if (o->tail) {
-    middle(o->tail);
-  }
-}
-
-void bi::CppBaseGenerator::visit(const List<Type>* o) {
-  middle(o->head);
-  Type* tail = o->tail.get();
-  List<Type>* list = dynamic_cast<List<Type>*>(tail);
-  while (list) {
-    middle(',' << list->head);
-    tail = list->tail.get();
-    list = dynamic_cast<List<Type>*>(tail);
-  }
-  middle(',' << tail);
 }
 
 void bi::CppBaseGenerator::visit(const ParenthesesExpression* o) {
@@ -80,6 +61,17 @@ void bi::CppBaseGenerator::visit(const BracesExpression* o) {
 
 void bi::CppBaseGenerator::visit(const BracketsExpression* o) {
   middle(o->single << "(make_view(" << o->brackets << "))");
+}
+
+void bi::CppBaseGenerator::visit(const LambdaFunction* o) {
+  middle("[&](");
+  CppParameterGenerator auxParameter(base, level, header);
+  auxParameter << o->parens;
+  finish(") {");
+  in();
+  *this << o->braces;
+  out();
+  start("}");
 }
 
 void bi::CppBaseGenerator::visit(const Span* o) {
@@ -127,15 +119,50 @@ void bi::CppBaseGenerator::visit(const VarReference* o) {
   middle(o->name);
 }
 
+void bi::CppBaseGenerator::visit(const VarParameter* o) {
+  middle(o->type << ' ' << o->name);
+  if (o->type->isClass()) {
+    TypeReference* type = dynamic_cast<TypeReference*>(o->type->strip());
+    assert(type);
+    middle(
+        " = new (GC_MALLOC(sizeof(bi::type::" << type->name << "))) bi::type::" << type->name << '(');
+  } else if (!o->parens->isEmpty() || o->type->count() > 0) {
+    middle('(');
+  }
+  if (o->type->count() > 0) {
+    BracketsType* type = dynamic_cast<BracketsType*>(o->type->strip());
+    assert(type);
+    middle("make_frame(" << type->brackets << ")");
+  }
+  if (!o->parens->isEmpty()) {
+    if (o->type->count() > 0) {
+      middle(", ");
+    }
+    middle(o->parens->strip());
+  }
+  if (o->type->isClass() || !o->parens->isEmpty() || o->type->count() > 0) {
+    middle(')');
+  }
+  if (!o->value->isEmpty()) {
+    if (o->type->isClass()) {
+      ///@todo How to handle this case?
+      assert(false);
+    } else {
+      middle(" = " << o->value);
+    }
+  }
+  finish(';');
+}
+
 void bi::CppBaseGenerator::visit(const FuncReference* o) {
-  if (!o->isMember() && !o->isLambda() && o->name->str() != "assert") {  // special exception for now
+  /*if (!o->isMember() && !o->isLambda() && o->name->str() != "assert") {  // special exception for now
     middle("bi::func::");
   }
   if (o->isCoroutine() && o->isLambda()) {
     middle("(*" << internalise(o->name->str()) << ')');
   } else {
     middle(internalise(o->name->str()));
-  }
+  }*/
   middle('(');
   auto arg = o->parens->begin();
   auto param = o->target->parens->begin();
@@ -181,7 +208,14 @@ void bi::CppBaseGenerator::visit(const UnaryReference* o) {
   }
 }
 
-void bi::CppBaseGenerator::visit(const AssignmentReference* o) {
+void bi::CppBaseGenerator::visit(const List<Statement>* o) {
+  middle(o->head);
+  if (o->tail) {
+    middle(o->tail);
+  }
+}
+
+void bi::CppBaseGenerator::visit(const Assignment* o) {
   if (o->left->type->isClass() && !o->right->type->isClass()) {
     middle("*(" << o->left << ')');
   } else {
@@ -192,54 +226,6 @@ void bi::CppBaseGenerator::visit(const AssignmentReference* o) {
     middle("*(" << o->right << ')');
   } else {
     middle(o->right);
-  }
-}
-
-void bi::CppBaseGenerator::visit(const VarParameter* o) {
-  middle(o->type << ' ' << o->name);
-  if (o->type->isClass()) {
-    TypeReference* type = dynamic_cast<TypeReference*>(o->type->strip());
-    assert(type);
-    middle(
-        " = new (GC_MALLOC(sizeof(bi::type::" << type->name << "))) bi::type::" << type->name << '(');
-  } else if (!o->parens->isEmpty() || o->type->count() > 0) {
-    middle('(');
-  }
-  if (o->type->count() > 0) {
-    BracketsType* type = dynamic_cast<BracketsType*>(o->type->strip());
-    assert(type);
-    middle("make_frame(" << type->brackets << ")");
-  }
-  if (!o->parens->isEmpty()) {
-    if (o->type->count() > 0) {
-      middle(", ");
-    }
-    middle(o->parens->strip());
-  }
-  if (o->type->isClass() || !o->parens->isEmpty() || o->type->count() > 0) {
-    middle(')');
-  }
-  if (!o->value->isEmpty()) {
-    if (o->type->isClass()) {
-      ///@todo How to handle this case?
-      assert(false);
-    } else {
-      middle(" = " << o->value);
-    }
-  }
-  finish(';');
-}
-
-void bi::CppBaseGenerator::visit(const FuncParameter* o) {
-  if (o->isLambda()) {
-    middle("[&](");
-    CppParameterGenerator auxParameter(base, level, header);
-    auxParameter << o->parens;
-    finish(") {");
-    in();
-    *this << o->braces;
-    out();
-    start("}");
   }
 }
 
@@ -292,6 +278,22 @@ void bi::CppBaseGenerator::visit(const Raw* o) {
   }
 }
 
+void bi::CppBaseGenerator::visit(const EmptyType* o) {
+  middle("void");
+}
+
+void bi::CppBaseGenerator::visit(const List<Type>* o) {
+  middle(o->head);
+  Type* tail = o->tail.get();
+  List<Type>* list = dynamic_cast<List<Type>*>(tail);
+  while (list) {
+    middle(',' << list->head);
+    tail = list->tail.get();
+    list = dynamic_cast<List<Type>*>(tail);
+  }
+  middle(',' << tail);
+}
+
 void bi::CppBaseGenerator::visit(const TypeReference* o) {
   if (o->isBuiltin()) {
     genBuiltin(o);
@@ -300,10 +302,6 @@ void bi::CppBaseGenerator::visit(const TypeReference* o) {
   } else {
     middle("bi::type::" << o->name);
   }
-}
-
-void bi::CppBaseGenerator::visit(const EmptyType* o) {
-  middle("void");
 }
 
 void bi::CppBaseGenerator::visit(const BracketsType* o) {

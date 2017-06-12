@@ -69,10 +69,10 @@ void bi::CppConstructorGenerator::visit(const VarParameter* o) {
   middle(')');
 }
 
-void bi::CppConstructorGenerator::visit(const FuncParameter* o) {
+void bi::CppConstructorGenerator::visit(const MemberFunction* o) {
   //
 }
 
-void bi::CppConstructorGenerator::visit(const ConversionParameter* o) {
+void bi::CppConstructorGenerator::visit(const ConversionOperator* o) {
   //
 }

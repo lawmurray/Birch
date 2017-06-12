@@ -4,37 +4,35 @@
 #pragma once
 
 #include "bi/statement/Statement.hpp"
-#include "bi/expression/Expression.hpp"
-#include "bi/common/Braced.hpp"
-#include "bi/common/Signature.hpp"
-#include "bi/common/Typed.hpp"
+#include "bi/common/ReturnTyped.hpp"
 #include "bi/common/Scoped.hpp"
+#include "bi/common/Braced.hpp"
 
 namespace bi {
 /**
- * Type conversion function.
+ * Type conversion operator.
  *
  * @ingroup compiler_expression
  */
-class ConversionParameter: public Statement,
-    public Typed,
+class ConversionOperator: public Statement,
+    public ReturnTyped,
     public Scoped,
     public Braced {
 public:
   /**
    * Constructor.
    *
-   * @param type Typed type.
+   * @param returnType Return type.
    * @param braces Braces expression.
    * @param loc Location.
    */
-  ConversionParameter(Type* type, Expression* braces,
+  ConversionOperator(Type* returnType, Expression* braces,
       shared_ptr<Location> loc = nullptr);
 
   /**
    * Destructor.
    */
-  virtual ~ConversionParameter();
+  virtual ~ConversionOperator();
 
   virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);
@@ -44,9 +42,9 @@ public:
   using Statement::possibly;
 
   virtual bool dispatchDefinitely(const Statement& o) const;
-  virtual bool definitely(const ConversionParameter& o) const;
+  virtual bool definitely(const ConversionOperator& o) const;
 
   virtual bool dispatchPossibly(const Statement& o) const;
-  virtual bool possibly(const ConversionParameter& o) const;
+  virtual bool possibly(const ConversionOperator& o) const;
 };
 }

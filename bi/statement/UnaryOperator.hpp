@@ -4,22 +4,25 @@
 #pragma once
 
 #include "bi/statement/Statement.hpp"
+#include "bi/expression/Expression.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Numbered.hpp"
 #include "bi/common/Unary.hpp"
+#include "bi/common/ReturnTyped.hpp"
 #include "bi/common/Scoped.hpp"
 #include "bi/common/Braced.hpp"
 
 namespace bi {
 /**
- * Assignment operator.
+ * Unary operator.
  *
  * @ingroup compiler_expression
  */
-class AssignmentParameter: public Statement,
+class UnaryOperator: public Statement,
     public Named,
     public Numbered,
     public Unary<Expression>,
+    public ReturnTyped,
     public Scoped,
     public Braced {
 public:
@@ -28,16 +31,17 @@ public:
    *
    * @param name Name.
    * @param single Operand.
+   * @param returnType Return type.
    * @param braces Braces expression.
    * @param loc Location.
    */
-  AssignmentParameter(shared_ptr<Name> name, Expression* single,
+  UnaryOperator(shared_ptr<Name> name, Expression* single, Type* returnType,
       Expression* braces, shared_ptr<Location> loc = nullptr);
 
   /**
    * Destructor.
    */
-  virtual ~AssignmentParameter();
+  virtual ~UnaryOperator();
 
   virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);
@@ -47,9 +51,9 @@ public:
   using Statement::possibly;
 
   virtual bool dispatchDefinitely(const Statement& o) const;
-  virtual bool definitely(const AssignmentParameter& o) const;
+  virtual bool definitely(const UnaryOperator& o) const;
 
   virtual bool dispatchPossibly(const Statement& o) const;
-  virtual bool possibly(const AssignmentParameter& o) const;
+  virtual bool possibly(const UnaryOperator& o) const;
 };
 }

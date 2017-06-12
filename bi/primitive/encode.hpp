@@ -3,7 +3,6 @@
  */
 #pragma once
 
-#include "bi/common/Signature.hpp"
 #include "bi/expression/Expression.hpp"
 
 #include <string>

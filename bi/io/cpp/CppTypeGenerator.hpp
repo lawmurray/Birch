@@ -21,9 +21,9 @@ public:
   virtual void visit(const TypeParameter* o);
   virtual void visit(const TypeReference* o);
   virtual void visit(const VarParameter* o);
-  virtual void visit(const FuncParameter* o);
-  virtual void visit(const AssignmentParameter* o);
-  virtual void visit(const ConversionParameter* o);
+  virtual void visit(const MemberFunction* o);
+  virtual void visit(const AssignmentOperator* o);
+  virtual void visit(const ConversionOperator* o);
 
 protected:
   /**

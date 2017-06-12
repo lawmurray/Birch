@@ -215,28 +215,28 @@ var_declaration_parameter
     ;
     
 func_parameter
-    : name parameters optional_result_type optional_braces  { $$ = new bi::FuncParameter($1, $2, $3, $4, bi::FUNCTION_FORM, make_loc(@$)); }
+    : name parameters optional_result_type optional_braces  { $$ = new bi::Function($1, $2, $3, $4, bi::FUNCTION_FORM, make_loc(@$)); }
     ;
 
 func_member_parameter
-    : name parameters optional_result_type optional_braces  { $$ = new bi::FuncParameter($1, $2, $3, $4, bi::MEMBER_FUNCTION_FORM, make_loc(@$)); }
+    : name parameters optional_result_type optional_braces  { $$ = new bi::Function($1, $2, $3, $4, bi::MEMBER_FUNCTION_FORM, make_loc(@$)); }
     ;
 
 coroutine_parameter
-    : name parameters optional_result_type optional_braces  { $$ = new bi::FuncParameter($1, $2, $3, $4, bi::COROUTINE_FORM, make_loc(@$)); }
+    : name parameters optional_result_type optional_braces  { $$ = new bi::Function($1, $2, $3, $4, bi::COROUTINE_FORM, make_loc(@$)); }
     ;
     
 op_parameter
-    : var_parameter binary_operator var_parameter optional_result_type optional_braces  { $$ = new bi::BinaryParameter($1, $2, $3, $4, $5, make_loc(@$)); }
-    | unary_operator var_parameter optional_result_type optional_braces                 { $$ = new bi::UnaryParameter($1, $2, $3, $4, make_loc(@$)); }
+    : var_parameter binary_operator var_parameter optional_result_type optional_braces  { $$ = new bi::BinaryOperator($1, $2, $3, $4, $5, make_loc(@$)); }
+    | unary_operator var_parameter optional_result_type optional_braces                 { $$ = new bi::UnaryOperator($1, $2, $3, $4, make_loc(@$)); }
     ;
 
 assignment_parameter
-    : assignment_operator var_parameter optional_braces  { $$ = new bi::AssignmentParameter($1, $2, $3, make_loc(@$)); }
+    : assignment_operator var_parameter optional_braces  { $$ = new bi::AssignmentOperator($1, $2, $3, make_loc(@$)); }
     ;
 
 conversion_parameter
-    : result_type optional_braces  { $$ = new bi::ConversionParameter($1, $2, make_loc(@$)); }
+    : result_type optional_braces  { $$ = new bi::ConversionOperator($1, $2, make_loc(@$)); }
     ;
 
 struct_parameter
@@ -255,7 +255,7 @@ type_parameter
     ;
 
 prog_parameter
-    : name parameters optional_braces  { $$ = new bi::ProgParameter($1, $2, $3, make_loc(@$)); }
+    : name parameters optional_braces  { $$ = new bi::Program($1, $2, $3, make_loc(@$)); }
     ;
 
 parameter_list
@@ -382,7 +382,7 @@ parens_expression
     ;
     
 function_expression
-    : FUNCTION parameters optional_result_type optional_braces  { $$ = new bi::FuncParameter(new bi::Name(), $2, $3, $4, bi::LAMBDA_FUNCTION_FORM, make_loc(@$)); }
+    : FUNCTION parameters optional_result_type optional_braces  { $$ = new bi::Function(new bi::Name(), $2, $3, $4, bi::LAMBDA_FUNCTION_FORM, make_loc(@$)); }
     ;
 
 this_expression
@@ -584,7 +584,7 @@ assignment_operator
     ;
     
 assignment_statement
-    : stochastic_expression assignment_operator stochastic_expression  { $$ = new bi::AssignmentReference($1, $2, $3, make_loc(@$)); }
+    : stochastic_expression assignment_operator stochastic_expression  { $$ = new bi::Assignment($1, $2, $3, make_loc(@$)); }
     ;
 
 if

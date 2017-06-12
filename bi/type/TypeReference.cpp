@@ -68,9 +68,9 @@ bool bi::TypeReference::convertedDefinitely(const Type& o) const {
   /* pre-condition */
   assert(target);
 
-  auto f = [&](const ConversionParameter* conv) {
+  auto f = [&](const ConversionOperator* conv) {
     ///@todo Avoid transitivity here
-      return conv->type->definitely(o);
+      return conv->returnType->definitely(o);
     };
   return (!target->base->isEmpty() && target->base->definitely(o))
       || std::any_of(target->beginConversions(), target->endConversions(), f);
@@ -120,9 +120,9 @@ bool bi::TypeReference::convertedPossibly(const Type& o) const {
   /* pre-condition */
   assert(target);
 
-  auto f = [&](const ConversionParameter* conv) {
+  auto f = [&](const ConversionOperator* conv) {
     ///@todo Avoid transitivity here
-      return conv->type->possibly(o);
+      return conv->returnType->possibly(o);
     };
   return std::any_of(target->beginConversions(), target->endConversions(), f);
 }

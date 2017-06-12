@@ -13,17 +13,14 @@ bi::CppCoroutineGenerator::CppCoroutineGenerator(std::ostream& base,
   //
 }
 
-void bi::CppCoroutineGenerator::visit(const FuncParameter* o) {
-  /* pre-condition */
-  assert(o->isCoroutine());
-
+void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
   /* supporting class */
   if (header) {
     line("namespace bi {");
     in();
     line("namespace func {");
     out();
-    line("class Coroutine_" << o->name << "_ : public Coroutine<" << o->type << "> {");
+    line("class Coroutine_" << o->name << "_ : public Coroutine<" << o->returnType << "> {");
     line("public:");
     in();
   }
@@ -69,7 +66,7 @@ void bi::CppCoroutineGenerator::visit(const FuncParameter* o) {
     start("");
   }
   ++inReturn;
-  middle(o->type);
+  middle(o->returnType);
   --inReturn;
   middle(' ');
   if (!header) {
@@ -135,7 +132,7 @@ void bi::CppCoroutineGenerator::visit(const FuncParameter* o) {
 
   /* return type */
   ++inReturn;
-  start("bi::Pointer<bi::Coroutine<" << o->type << ">> ");
+  start("bi::Pointer<bi::Coroutine<" << o->returnType << ">> ");
   --inReturn;
 
   /* name */

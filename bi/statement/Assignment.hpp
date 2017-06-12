@@ -4,7 +4,7 @@
 #pragma once
 
 #include "bi/statement/Statement.hpp"
-#include "bi/statement/AssignmentParameter.hpp"
+#include "bi/statement/AssignmentOperator.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Binary.hpp"
 #include "bi/common/Reference.hpp"
@@ -15,8 +15,8 @@ namespace bi {
  *
  * @ingroup compiler_expression
  */
-class AssignmentReference: public Statement, public Named, public Binary<
-    Expression>, public Reference<AssignmentParameter> {
+class Assignment: public Statement, public Named, public Binary<
+    Expression>, public Reference<AssignmentOperator> {
 public:
   /**
    * Constructor.
@@ -27,14 +27,14 @@ public:
    * @param loc Location.
    * @param target Target.
    */
-  AssignmentReference(Expression* left, shared_ptr<Name> name,
+  Assignment(Expression* left, shared_ptr<Name> name,
       Expression* right, shared_ptr<Location> loc = nullptr,
-      const AssignmentParameter* target = nullptr);
+      const AssignmentOperator* target = nullptr);
 
   /**
    * Destructor.
    */
-  virtual ~AssignmentReference();
+  virtual ~Assignment();
 
   virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);
@@ -44,11 +44,11 @@ public:
   using Statement::possibly;
 
   virtual bool dispatchDefinitely(const Statement& o) const;
-  virtual bool definitely(const AssignmentReference& o) const;
-  virtual bool definitely(const AssignmentParameter& o) const;
+  virtual bool definitely(const Assignment& o) const;
+  virtual bool definitely(const AssignmentOperator& o) const;
 
   virtual bool dispatchPossibly(const Statement& o) const;
-  virtual bool possibly(const AssignmentReference& o) const;
-  virtual bool possibly(const AssignmentParameter& o) const;
+  virtual bool possibly(const Assignment& o) const;
+  virtual bool possibly(const AssignmentOperator& o) const;
 };
 }

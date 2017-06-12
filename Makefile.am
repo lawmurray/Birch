@@ -27,7 +27,6 @@ birchc_SOURCES = \
   bi/common/Bracketed.cpp \
   bi/common/Conditioned.cpp \
   bi/common/Dictionary.cpp \
-  bi/common/FunctionMode.cpp \
   bi/common/Iterator.cpp \
   bi/common/List.cpp \
   bi/common/Located.cpp \
@@ -39,10 +38,10 @@ birchc_SOURCES = \
   bi/common/OverloadedSet.cpp \
   bi/common/Parenthesised.cpp \
   bi/common/Path.cpp \
+  bi/common/ReturnTyped.cpp \
   bi/common/Reference.cpp \
   bi/common/Scope.cpp \
   bi/common/Scoped.cpp \
-  bi/common/Signature.cpp \
   bi/common/Typed.cpp \
   bi/common/Unary.cpp \
   bi/common/VariableMode.cpp \
@@ -67,6 +66,7 @@ birchc_SOURCES = \
   bi/expression/Expression.cpp \
   bi/expression/FuncReference.cpp \
   bi/expression/Index.cpp \
+  bi/expression/LambdaFunction.cpp \
   bi/expression/Literal.cpp \
   bi/expression/ParenthesesExpression.cpp \
   bi/expression/Range.cpp \
@@ -87,22 +87,24 @@ birchc_SOURCES = \
   bi/io/cpp_ostream.cpp \
   bi/io/indentable_ostream.cpp \
   bi/primitive/encode.cpp \
-  bi/statement/AssignmentParameter.cpp \
-  bi/statement/AssignmentReference.cpp \
-  bi/statement/BinaryParameter.cpp \
-  bi/statement/ConversionParameter.cpp \
+  bi/statement/AssignmentOperator.cpp \
+  bi/statement/Assignment.cpp \
+  bi/statement/BinaryOperator.cpp \
+  bi/statement/ConversionOperator.cpp \
+  bi/statement/Coroutine.cpp \
   bi/statement/EmptyStatement.cpp \
   bi/statement/ExpressionStatement.cpp \
   bi/statement/File.cpp \
   bi/statement/For.cpp \
-  bi/statement/FuncParameter.cpp \
+  bi/statement/Function.cpp \
   bi/statement/If.cpp \
   bi/statement/Import.cpp \
-  bi/statement/ProgParameter.cpp \
+  bi/statement/MemberFunction.cpp \
+  bi/statement/Program.cpp \
   bi/statement/Raw.cpp \
   bi/statement/Return.cpp \
   bi/statement/Statement.cpp \
-  bi/statement/UnaryParameter.cpp \
+  bi/statement/UnaryOperator.cpp \
   bi/statement/While.cpp \
   bi/type/BracketsType.cpp \
   bi/type/CoroutineType.cpp \
@@ -168,7 +170,6 @@ noinst_HEADERS = \
   bi/common/Bracketed.hpp \
   bi/common/Conditioned.hpp \
   bi/common/Dictionary.hpp \
-  bi/common/FunctionMode.hpp \
   bi/common/Iterator.hpp \
   bi/common/List.hpp \
   bi/common/Located.hpp \
@@ -181,9 +182,9 @@ noinst_HEADERS = \
   bi/common/Parenthesised.hpp \
   bi/common/Path.hpp \
   bi/common/Reference.hpp \
+  bi/common/ReturnTyped.hpp \
   bi/common/Scope.hpp \
   bi/common/Scoped.hpp \
-  bi/common/Signature.hpp \
   bi/common/Typed.hpp \
   bi/common/Unary.hpp \
   bi/common/VariableMode.hpp \
@@ -210,6 +211,7 @@ noinst_HEADERS = \
   bi/expression/Expression.hpp \
   bi/expression/FuncReference.hpp \
   bi/expression/Index.hpp \
+  bi/expression/LambdaFunction.hpp \
   bi/expression/Literal.hpp \
   bi/expression/Member.hpp \
   bi/expression/ParenthesesExpression.hpp \
@@ -238,22 +240,24 @@ noinst_HEADERS = \
   bi/primitive/shared_ptr.hpp \
   bi/primitive/unique_ptr.hpp \
   bi/statement/all.hpp \
-  bi/statement/AssignmentParameter.hpp \
-  bi/statement/AssignmentReference.hpp \
-  bi/statement/BinaryParameter.hpp \
-  bi/statement/ConversionParameter.hpp \
+  bi/statement/AssignmentOperator.hpp \
+  bi/statement/Assignment.hpp \
+  bi/statement/BinaryOperator.hpp \
+  bi/statement/ConversionOperator.hpp \
+  bi/statement/Coroutine.hpp \
   bi/statement/EmptyStatement.hpp \
   bi/statement/ExpressionStatement.hpp \
   bi/statement/File.hpp \
   bi/statement/For.hpp \
-  bi/statement/FuncParameter.hpp \
+  bi/statement/Function.hpp \
   bi/statement/If.hpp \
   bi/statement/Import.hpp \
-  bi/statement/ProgParameter.hpp \
+  bi/statement/MemberFunction.hpp \
+  bi/statement/Program.hpp \
   bi/statement/Raw.hpp \
   bi/statement/Return.hpp \
   bi/statement/Statement.hpp \
-  bi/statement/UnaryParameter.hpp \
+  bi/statement/UnaryOperator.hpp \
   bi/statement/While.hpp \
   bi/type/all.hpp \
   bi/type/BracketsType.hpp \

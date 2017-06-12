@@ -3,7 +3,7 @@
  */
 #include "bi/common/OverloadedSet.hpp"
 
-#include "bi/statement/ConversionParameter.hpp"
+#include "bi/statement/ConversionOperator.hpp"
 
 template<class ParameterType, class CompareType>
 bool bi::OverloadedSet<ParameterType,CompareType>::contains(
@@ -41,4 +41,4 @@ void bi::OverloadedSet<ParameterType,CompareType>::merge(
 /*
  * Explicit instantiations.
  */
-template class bi::OverloadedSet<bi::ConversionParameter,bi::definitely>;
+template class bi::OverloadedSet<bi::ConversionOperator,bi::definitely>;
