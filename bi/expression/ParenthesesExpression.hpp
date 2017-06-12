@@ -61,7 +61,6 @@ public:
   virtual bool definitely(const Member& o) const;
   virtual bool definitely(const ParenthesesExpression& o) const;
   virtual bool definitely(const ProgParameter& o) const;
-  virtual bool definitely(const ProgReference& o) const;
   virtual bool definitely(const Range& o) const;
   virtual bool definitely(const Super& o) const;
   virtual bool definitely(const This& o) const;
@@ -86,7 +85,6 @@ public:
   virtual bool possibly(const Member& o) const;
   virtual bool possibly(const ParenthesesExpression& o) const;
   virtual bool possibly(const ProgParameter& o) const;
-  virtual bool possibly(const ProgReference& o) const;
   virtual bool possibly(const Range& o) const;
   virtual bool possibly(const Super& o) const;
   virtual bool possibly(const This& o) const;

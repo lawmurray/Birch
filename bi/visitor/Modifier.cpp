@@ -128,11 +128,6 @@ bi::Type* bi::Modifier::modify(TypeReference* o) {
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(ProgReference* o) {
-  o->parens = o->parens.release()->accept(this);
-  return o;
-}
-
 bi::Expression* bi::Modifier::modify(VarParameter* o) {
   o->type = o->type.release()->accept(this);
   o->parens = o->parens.release()->accept(this);
@@ -140,14 +135,14 @@ bi::Expression* bi::Modifier::modify(VarParameter* o) {
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(FuncParameter* o) {
+bi::Statement* bi::Modifier::modify(FuncParameter* o) {
   o->parens = o->parens.release()->accept(this);
   o->type = o->type.release()->accept(this);
   o->braces = o->braces.release()->accept(this);
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(BinaryParameter* o) {
+bi::Statement* bi::Modifier::modify(BinaryParameter* o) {
   o->left = o->left.release()->accept(this);
   o->right = o->right.release()->accept(this);
   o->type = o->type.release()->accept(this);
@@ -155,7 +150,7 @@ bi::Expression* bi::Modifier::modify(BinaryParameter* o) {
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(UnaryParameter* o) {
+bi::Statement* bi::Modifier::modify(UnaryParameter* o) {
   o->single = o->single.release()->accept(this);
   o->type = o->type.release()->accept(this);
   o->braces = o->braces.release()->accept(this);
@@ -168,8 +163,14 @@ bi::Statement* bi::Modifier::modify(AssignmentParameter* o) {
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(ConversionParameter* o) {
+bi::Statement* bi::Modifier::modify(ConversionParameter* o) {
   o->type = o->type.release()->accept(this);
+  o->braces = o->braces.release()->accept(this);
+  return o;
+}
+
+bi::Statement* bi::Modifier::modify(ProgParameter* o) {
+  o->parens = o->parens.release()->accept(this);
   o->braces = o->braces.release()->accept(this);
   return o;
 }
@@ -178,12 +179,6 @@ bi::Type* bi::Modifier::modify(TypeParameter* o) {
   o->parens = o->parens.release()->accept(this);
   o->base = o->base.release()->accept(this);
   o->baseParens = o->baseParens.release()->accept(this);
-  o->braces = o->braces.release()->accept(this);
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(ProgParameter* o) {
-  o->parens = o->parens.release()->accept(this);
   o->braces = o->braces.release()->accept(this);
   return o;
 }
@@ -228,16 +223,6 @@ bi::Statement* bi::Modifier::modify(Return* o) {
 }
 
 bi::Statement* bi::Modifier::modify(Raw* o) {
-  return o;
-}
-
-bi::Statement* bi::Modifier::modify(Declaration<Expression>* o) {
-  o->param = o->param.release()->accept(this);
-  return o;
-}
-
-bi::Statement* bi::Modifier::modify(Declaration<Type>* o) {
-  o->param = o->param.release()->accept(this);
   return o;
 }
 

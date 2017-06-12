@@ -3,9 +3,11 @@
  */
 #pragma once
 
+#include "bi/statement/Statement.hpp"
 #include "bi/expression/Expression.hpp"
 #include "bi/common/Braced.hpp"
 #include "bi/common/Signature.hpp"
+#include "bi/common/Typed.hpp"
 #include "bi/common/Scoped.hpp"
 
 namespace bi {
@@ -14,12 +16,15 @@ namespace bi {
  *
  * @ingroup compiler_expression
  */
-class ConversionParameter: public Expression, public Scoped, public Braced {
+class ConversionParameter: public Statement,
+    public Typed,
+    public Scoped,
+    public Braced {
 public:
   /**
    * Constructor.
    *
-   * @param type Return type.
+   * @param type Typed type.
    * @param braces Braces expression.
    * @param loc Location.
    */
@@ -31,17 +36,17 @@ public:
    */
   virtual ~ConversionParameter();
 
-  virtual Expression* accept(Cloner* visitor) const;
-  virtual Expression* accept(Modifier* visitor);
+  virtual Statement* accept(Cloner* visitor) const;
+  virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
-  using Expression::definitely;
-  using Expression::possibly;
+  using Statement::definitely;
+  using Statement::possibly;
 
-  virtual bool dispatchDefinitely(const Expression& o) const;
+  virtual bool dispatchDefinitely(const Statement& o) const;
   virtual bool definitely(const ConversionParameter& o) const;
 
-  virtual bool dispatchPossibly(const Expression& o) const;
+  virtual bool dispatchPossibly(const Statement& o) const;
   virtual bool possibly(const ConversionParameter& o) const;
 };
 }

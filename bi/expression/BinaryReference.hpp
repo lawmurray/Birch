@@ -4,7 +4,7 @@
 #pragma once
 
 #include "bi/expression/Expression.hpp"
-#include "bi/expression/BinaryParameter.hpp"
+#include "bi/statement/BinaryParameter.hpp"
 #include "bi/expression/VarParameter.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Binary.hpp"

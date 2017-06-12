@@ -121,10 +121,6 @@ void bi::Visitor::visit(const TypeReference* o) {
   //
 }
 
-void bi::Visitor::visit(const ProgReference* o) {
-  o->parens->accept(this);
-}
-
 void bi::Visitor::visit(const VarParameter* o) {
   o->type->accept(this);
   o->parens->accept(this);
@@ -208,14 +204,6 @@ void bi::Visitor::visit(const Return* o) {
 
 void bi::Visitor::visit(const Raw* o) {
   //
-}
-
-void bi::Visitor::visit(const Declaration<Expression>* o) {
-  o->param->accept(this);
-}
-
-void bi::Visitor::visit(const Declaration<Type>* o) {
-  o->param->accept(this);
 }
 
 void bi::Visitor::visit(const BracketsType* o) {

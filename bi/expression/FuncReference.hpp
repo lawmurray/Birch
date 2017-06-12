@@ -4,7 +4,7 @@
 #pragma once
 
 #include "bi/expression/Expression.hpp"
-#include "bi/expression/FuncParameter.hpp"
+#include "bi/statement/FuncParameter.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Parenthesised.hpp"
 #include "bi/common/FunctionMode.hpp"

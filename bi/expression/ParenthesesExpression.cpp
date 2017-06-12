@@ -97,10 +97,6 @@ bool bi::ParenthesesExpression::definitely(const ProgParameter& o) const {
   return single->definitely(o);
 }
 
-bool bi::ParenthesesExpression::definitely(const ProgReference& o) const {
-  return single->definitely(o);
-}
-
 bool bi::ParenthesesExpression::definitely(const Range& o) const {
   return single->definitely(o);
 }
@@ -190,10 +186,6 @@ bool bi::ParenthesesExpression::possibly(const ParenthesesExpression& o) const {
 }
 
 bool bi::ParenthesesExpression::possibly(const ProgParameter& o) const {
-  return single->possibly(o);
-}
-
-bool bi::ParenthesesExpression::possibly(const ProgReference& o) const {
   return single->possibly(o);
 }
 

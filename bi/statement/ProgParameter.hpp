@@ -3,6 +3,7 @@
  */
 #pragma once
 
+#include "bi/statement/Statement.hpp"
 #include "bi/expression/Expression.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Scoped.hpp"
@@ -15,7 +16,7 @@ namespace bi {
  *
  * @ingroup compiler_program
  */
-class ProgParameter: public Expression,
+class ProgParameter: public Statement,
     public Named,
     public Scoped,
     public Parenthesised,
@@ -37,17 +38,17 @@ public:
    */
   virtual ~ProgParameter();
 
-  virtual Expression* accept(Cloner* visitor) const;
-  virtual Expression* accept(Modifier* visitor);
+  virtual Statement* accept(Cloner* visitor) const;
+  virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
-  using Expression::definitely;
-  using Expression::possibly;
+  using Statement::definitely;
+  using Statement::possibly;
 
-  virtual bool dispatchDefinitely(const Expression& o) const;
+  virtual bool dispatchDefinitely(const Statement& o) const;
   virtual bool definitely(const ProgParameter& o) const;
 
-  virtual bool dispatchPossibly(const Expression& o) const;
+  virtual bool dispatchPossibly(const Statement& o) const;
   virtual bool possibly(const ProgParameter& o) const;
 };
 }

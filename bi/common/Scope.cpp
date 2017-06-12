@@ -4,11 +4,11 @@
 #include "bi/common/Scope.hpp"
 
 #include "bi/expression/VarParameter.hpp"
-#include "bi/expression/FuncParameter.hpp"
-#include "bi/expression/BinaryParameter.hpp"
-#include "bi/expression/UnaryParameter.hpp"
+#include "bi/statement/FuncParameter.hpp"
+#include "bi/statement/BinaryParameter.hpp"
+#include "bi/statement/UnaryParameter.hpp"
 #include "bi/statement/AssignmentParameter.hpp"
-#include "bi/expression/ConversionParameter.hpp"
+#include "bi/statement/ConversionParameter.hpp"
 #include "bi/type/TypeParameter.hpp"
 
 #include "bi/expression/VarReference.hpp"

@@ -10,7 +10,6 @@ class Cloner;
 class Modifier;
 class Visitor;
 
-template<class T> class Declaration;
 class EmptyStatement;
 class ExpressionStatement;
 class For;
@@ -78,8 +77,6 @@ public:
    */
   virtual bool definitely(const Statement& o) const;
   virtual bool dispatchDefinitely(const Statement& o) const = 0;
-  virtual bool definitely(const Declaration<Expression>& o) const;
-  virtual bool definitely(const Declaration<Type>& o) const;
   virtual bool definitely(const EmptyStatement& o) const;
   virtual bool definitely(const ExpressionStatement& o) const;
   virtual bool definitely(const For& o) const;
@@ -92,8 +89,6 @@ public:
 
   virtual bool possibly(const Statement& o) const;
   virtual bool dispatchPossibly(const Statement& o) const = 0;
-  virtual bool possibly(const Declaration<Expression>& o) const;
-  virtual bool possibly(const Declaration<Type>& o) const;
   virtual bool possibly(const EmptyStatement& o) const;
   virtual bool possibly(const ExpressionStatement& o) const;
   virtual bool possibly(const For& o) const;

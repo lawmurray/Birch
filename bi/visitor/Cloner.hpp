@@ -47,16 +47,15 @@ public:
   virtual Expression* clone(const UnaryReference* o);
   virtual Statement* clone(const AssignmentReference* o);
   virtual Type* clone(const TypeReference* o);
-  virtual Expression* clone(const ProgReference* o);
 
   virtual Expression* clone(const VarParameter* o);
-  virtual Expression* clone(const FuncParameter* o);
-  virtual Expression* clone(const BinaryParameter* o);
-  virtual Expression* clone(const UnaryParameter* o);
+  virtual Statement* clone(const FuncParameter* o);
+  virtual Statement* clone(const BinaryParameter* o);
+  virtual Statement* clone(const UnaryParameter* o);
   virtual Statement* clone(const AssignmentParameter* o);
-  virtual Expression* clone(const ConversionParameter* o);
+  virtual Statement* clone(const ConversionParameter* o);
+  virtual Statement* clone(const ProgParameter* o);
   virtual Type* clone(const TypeParameter* o);
-  virtual Expression* clone(const ProgParameter* o);
 
   virtual File* clone(const File* o);
   virtual Statement* clone(const Import* o);
@@ -66,8 +65,6 @@ public:
   virtual Statement* clone(const While* o);
   virtual Statement* clone(const Return* o);
   virtual Statement* clone(const Raw* o);
-  virtual Statement* clone(const Declaration<Expression>* o);
-  virtual Statement* clone(const Declaration<Type>* o);
 
   virtual Type* clone(const BracketsType* o);
   virtual Type* clone(const ParenthesesType* o);

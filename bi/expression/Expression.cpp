@@ -136,10 +136,6 @@ bool bi::Expression::definitely(const ProgParameter& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(const ProgReference& o) const {
-  return false;
-}
-
 bool bi::Expression::definitely(const Range& o) const {
   return false;
 }
@@ -247,11 +243,6 @@ bool bi::Expression::possibly(const ParenthesesExpression& o) const {
 bool bi::Expression::possibly(const ProgParameter& o) const {
   return false;
 }
-
-bool bi::Expression::possibly(const ProgReference& o) const {
-  return false;
-}
-
 
 bool bi::Expression::possibly(const Range& o) const {
   return false;

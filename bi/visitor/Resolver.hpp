@@ -54,12 +54,12 @@ public:
   virtual Type* modify(TypeReference* o);
 
   virtual Expression* modify(VarParameter* o);
-  virtual Expression* modify(FuncParameter* o);
-  virtual Expression* modify(BinaryParameter* o);
-  virtual Expression* modify(UnaryParameter* o);
+  virtual Statement* modify(FuncParameter* o);
+  virtual Statement* modify(BinaryParameter* o);
+  virtual Statement* modify(UnaryParameter* o);
   virtual Statement* modify(AssignmentParameter* o);
-  virtual Expression* modify(ConversionParameter* o);
-  virtual Expression* modify(ProgParameter* o);
+  virtual Statement* modify(ConversionParameter* o);
+  virtual Statement* modify(ProgParameter* o);
   virtual Type* modify(TypeParameter* o);
 
   virtual Statement* modify(Import* o);
@@ -69,16 +69,6 @@ public:
   virtual Statement* modify(Return* o);
 
 protected:
-  /**
-   * Make a function associated with a variable of function type.
-   */
-  FuncParameter* makeFunction(VarParameter* o);
-
-  /**
-   * Make a coroutine associated with a variable of coroutine type.
-   */
-  FuncParameter* makeCoroutine(VarParameter* o);
-
   /**
    * Take the membership scope, if it exists.
    *

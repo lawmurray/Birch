@@ -3,10 +3,12 @@
  */
 #pragma once
 
+#include "bi/statement/Statement.hpp"
 #include "bi/expression/Expression.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Numbered.hpp"
 #include "bi/common/Unary.hpp"
+#include "bi/common/Typed.hpp"
 #include "bi/common/Scoped.hpp"
 #include "bi/common/Braced.hpp"
 
@@ -16,10 +18,11 @@ namespace bi {
  *
  * @ingroup compiler_expression
  */
-class UnaryParameter: public Expression,
+class UnaryParameter: public Statement,
     public Named,
     public Numbered,
     public Unary<Expression>,
+    public Typed,
     public Scoped,
     public Braced {
 public:
@@ -28,7 +31,7 @@ public:
    *
    * @param name Name.
    * @param single Operand.
-   * @param type Return type.
+   * @param type Typed type.
    * @param braces Braces expression.
    * @param loc Location.
    */
@@ -40,17 +43,17 @@ public:
    */
   virtual ~UnaryParameter();
 
-  virtual Expression* accept(Cloner* visitor) const;
-  virtual Expression* accept(Modifier* visitor);
+  virtual Statement* accept(Cloner* visitor) const;
+  virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
-  using Expression::definitely;
-  using Expression::possibly;
+  using Statement::definitely;
+  using Statement::possibly;
 
-  virtual bool dispatchDefinitely(const Expression& o) const;
+  virtual bool dispatchDefinitely(const Statement& o) const;
   virtual bool definitely(const UnaryParameter& o) const;
 
-  virtual bool dispatchPossibly(const Expression& o) const;
+  virtual bool dispatchPossibly(const Statement& o) const;
   virtual bool possibly(const UnaryParameter& o) const;
 };
 }

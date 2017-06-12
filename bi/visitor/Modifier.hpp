@@ -47,16 +47,15 @@ public:
   virtual Expression* modify(UnaryReference* o);
   virtual Statement* modify(AssignmentReference* o);
   virtual Type* modify(TypeReference* o);
-  virtual Expression* modify(ProgReference* o);
 
   virtual Expression* modify(VarParameter* o);
-  virtual Expression* modify(FuncParameter* o);
-  virtual Expression* modify(BinaryParameter* o);
-  virtual Expression* modify(UnaryParameter* o);
+  virtual Statement* modify(FuncParameter* o);
+  virtual Statement* modify(BinaryParameter* o);
+  virtual Statement* modify(UnaryParameter* o);
   virtual Statement* modify(AssignmentParameter* o);
-  virtual Expression* modify(ConversionParameter* o);
+  virtual Statement* modify(ConversionParameter* o);
+  virtual Statement* modify(ProgParameter* o);
   virtual Type* modify(TypeParameter* o);
-  virtual Expression* modify(ProgParameter* o);
 
   virtual void modify(File* o);
   virtual Statement* modify(Import* o);
@@ -66,8 +65,6 @@ public:
   virtual Statement* modify(While* o);
   virtual Statement* modify(Return* o);
   virtual Statement* modify(Raw* o);
-  virtual Statement* modify(Declaration<Expression>* o);
-  virtual Statement* modify(Declaration<Type>* o);
 
   virtual Type* modify(BracketsType* o);
   virtual Type* modify(ParenthesesType* o);

@@ -3,9 +3,9 @@
  */
 #include "bi/common/OverloadedDictionary.hpp"
 
-#include "bi/expression/FuncParameter.hpp"
-#include "bi/expression/BinaryParameter.hpp"
-#include "bi/expression/UnaryParameter.hpp"
+#include "bi/statement/FuncParameter.hpp"
+#include "bi/statement/BinaryParameter.hpp"
+#include "bi/statement/UnaryParameter.hpp"
 #include "bi/statement/AssignmentParameter.hpp"
 
 template<class ParameterType, class CompareType>

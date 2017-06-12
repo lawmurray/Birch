@@ -28,7 +28,6 @@ class BinaryReference;
 class UnaryReference;
 class AssignmentReference;
 class TypeReference;
-class ProgReference;
 
 /**
  * Scope.

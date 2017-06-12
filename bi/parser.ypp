@@ -73,9 +73,7 @@
 %type <valExpression> arguments optional_arguments
 %type <valExpression> size_list size
 %type <valExpression> var_reference var_parameter var_member_parameter var_declaration_parameter
-%type <valExpression> func_reference func_parameter func_member_parameter
-%type <valExpression> coroutine_parameter op_parameter conversion_parameter
-%type <valExpression> prog_parameter
+%type <valExpression> func_reference
 
 %type <valType> type_reference struct_parameter class_parameter type_parameter
 %type <valType> parens_type function_type coroutine_type primary_type
@@ -93,12 +91,10 @@
 %type <valExpression> logical_and_expression logical_or_expression
 %type <valExpression> stochastic_expression expression_list expression
 
-%type <valStatement> var_declaration var_member_declaration
-%type <valStatement> func_declaration func_member_declaration
-%type <valStatement> coroutine_declaration op_declaration conversion_declaration
-%type <valStatement> type_declaration prog_declaration
+%type <valStatement> coroutine_parameter op_parameter conversion_parameter
+%type <valStatement> func_parameter func_member_parameter prog_parameter
 %type <valStatement> import cpp hpp expression_statement if for while return
-%type <valStatement> assignment_parameter assignment_statement assignment_declaration
+%type <valStatement> assignment_parameter assignment_statement
 %type <valStatement> statement statements optional_statements
 %type <valStatement> type_statement type_statements optional_type_statements
 %type <valStatement> file_statement file_statements optional_file_statements

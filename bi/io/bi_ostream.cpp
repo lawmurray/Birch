@@ -107,10 +107,6 @@ void bi::bi_ostream::visit(const TypeReference* o) {
   *this << o->name;
 }
 
-void bi::bi_ostream::visit(const ProgReference* o) {
-  *this << o->name << '(' << o->parens << ')';
-}
-
 void bi::bi_ostream::visit(const VarParameter* o) {
   *this << o->name << ':' << o->type;
   if (!o->parens->isEmpty()) {

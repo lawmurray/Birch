@@ -50,7 +50,6 @@ public:
   virtual void visit(const UnaryReference* o);
   virtual void visit(const AssignmentReference* o);
   virtual void visit(const TypeReference* o);
-  virtual void visit(const ProgReference* o);
 
   virtual void visit(const VarParameter* o);
   virtual void visit(const FuncParameter* o);
@@ -69,8 +68,6 @@ public:
   virtual void visit(const While* o);
   virtual void visit(const Return* o);
   virtual void visit(const Raw* o);
-  virtual void visit(const Declaration<Expression>* o);
-  virtual void visit(const Declaration<Type>* o);
 
   virtual void visit(const BracketsType* o);
   virtual void visit(const ParenthesesType* o);

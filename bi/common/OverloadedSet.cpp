@@ -3,7 +3,7 @@
  */
 #include "bi/common/OverloadedSet.hpp"
 
-#include "bi/expression/ConversionParameter.hpp"
+#include "bi/statement/ConversionParameter.hpp"
 
 template<class ParameterType, class CompareType>
 bool bi::OverloadedSet<ParameterType,CompareType>::contains(

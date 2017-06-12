@@ -20,14 +20,6 @@ bool bi::Statement::definitely(const Statement& o) const {
   return o.dispatchDefinitely(*this);
 }
 
-bool bi::Statement::definitely(const Declaration<Expression>& o) const {
-  return false;
-}
-
-bool bi::Statement::definitely(const Declaration<Type>& o) const {
-  return false;
-}
-
 bool bi::Statement::definitely(const EmptyStatement& o) const {
   return false;
 }
@@ -65,14 +57,6 @@ bool bi::Statement::definitely(const While& o) const {
 
 bool bi::Statement::possibly(const Statement& o) const {
   return o.dispatchPossibly(*this);
-}
-
-bool bi::Statement::possibly(const Declaration<Expression>& o) const {
-  return false;
-}
-
-bool bi::Statement::possibly(const Declaration<Type>& o) const {
-  return false;
 }
 
 bool bi::Statement::possibly(const EmptyStatement& o) const {

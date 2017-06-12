@@ -28,7 +28,6 @@ template<class T> class Literal;
 class Member;
 class ParenthesesExpression;
 class ProgParameter;
-class ProgReference;
 class Range;
 class Span;
 class Super;
@@ -148,7 +147,6 @@ public:
   virtual bool definitely(const Member& o) const;
   virtual bool definitely(const ParenthesesExpression& o) const;
   virtual bool definitely(const ProgParameter& o) const;
-  virtual bool definitely(const ProgReference& o) const;
   virtual bool definitely(const Range& o) const;
   virtual bool definitely(const Span& o) const;
   virtual bool definitely(const Super& o) const;
@@ -177,7 +175,6 @@ public:
   virtual bool possibly(const Member& o) const;
   virtual bool possibly(const ParenthesesExpression& o) const;
   virtual bool possibly(const ProgParameter& o) const;
-  virtual bool possibly(const ProgReference& o) const;
   virtual bool possibly(const Range& o) const;
   virtual bool possibly(const Span& o) const;
   virtual bool possibly(const Super& o) const;

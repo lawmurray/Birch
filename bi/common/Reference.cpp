@@ -4,12 +4,12 @@
 #include "bi/common/Reference.hpp"
 
 #include "bi/expression/VarParameter.hpp"
-#include "bi/expression/FuncParameter.hpp"
-#include "bi/expression/BinaryParameter.hpp"
-#include "bi/expression/UnaryParameter.hpp"
+#include "bi/statement/FuncParameter.hpp"
+#include "bi/statement/BinaryParameter.hpp"
+#include "bi/statement/UnaryParameter.hpp"
 #include "bi/statement/AssignmentParameter.hpp"
 #include "bi/type/TypeParameter.hpp"
-#include "bi/expression/ProgParameter.hpp"
+#include "bi/statement/ProgParameter.hpp"
 
 template<class Target>
 bi::Reference<Target>::Reference(const Target* target) :

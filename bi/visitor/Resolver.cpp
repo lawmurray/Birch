@@ -215,11 +215,6 @@ bi::Expression* bi::Resolver::modify(VarParameter* o) {
   if (!o->name->isEmpty()) {
     top()->add(o);
   }
-  if (o->type->isFunction()) {
-    o->func = makeFunction(o)->accept(this);
-  } else if (o->type->isCoroutine()) {
-    o->func = makeCoroutine(o)->accept(this);
-  }
   if (!o->value->isEmpty()) {
     if (!o->type->assignable) {
       throw NotAssignableException(o);
@@ -232,7 +227,7 @@ bi::Expression* bi::Resolver::modify(VarParameter* o) {
   return o;
 }
 
-bi::Expression* bi::Resolver::modify(FuncParameter* o) {
+bi::Statement* bi::Resolver::modify(FuncParameter* o) {
   push();
   ++inInputs;
   o->parens = o->parens->accept(this);
@@ -246,7 +241,7 @@ bi::Expression* bi::Resolver::modify(FuncParameter* o) {
   return o;
 }
 
-bi::Expression* bi::Resolver::modify(BinaryParameter* o) {
+bi::Statement* bi::Resolver::modify(BinaryParameter* o) {
   push();
   ++inInputs;
   o->left = o->left->accept(this);
@@ -262,7 +257,7 @@ bi::Expression* bi::Resolver::modify(BinaryParameter* o) {
   return o;
 }
 
-bi::Expression* bi::Resolver::modify(UnaryParameter* o) {
+bi::Statement* bi::Resolver::modify(UnaryParameter* o) {
   push();
   ++inInputs;
   o->single = o->single->accept(this);
@@ -291,7 +286,7 @@ bi::Statement* bi::Resolver::modify(AssignmentParameter* o) {
   return o;
 }
 
-bi::Expression* bi::Resolver::modify(ConversionParameter* o) {
+bi::Statement* bi::Resolver::modify(ConversionParameter* o) {
   push();
   o->type = o->type->accept(this);
   if (!o->braces->isEmpty()) {
@@ -303,7 +298,7 @@ bi::Expression* bi::Resolver::modify(ConversionParameter* o) {
   return o;
 }
 
-bi::Expression* bi::Resolver::modify(ProgParameter* o) {
+bi::Statement* bi::Resolver::modify(ProgParameter* o) {
   push();
   o->parens = o->parens->accept(this);
   defer(o->braces.get());
@@ -372,56 +367,6 @@ bi::Statement* bi::Resolver::modify(Return* o) {
   Modifier::modify(o);
   ///@todo Check that the type of the expression is correct
   return o;
-}
-
-bi::FuncParameter* bi::Resolver::makeFunction(VarParameter* o) {
-  FunctionType* lambda = dynamic_cast<FunctionType*>(o->type->strip());
-  assert(lambda);
-
-  /* parameters */
-  Expression* parens;
-  std::list<const Type*> types;
-  for (auto iter = lambda->parens->begin(); iter != lambda->parens->end();
-      ++iter) {
-    types.push_back(*iter);
-  }
-  if (types.size() > 0) {
-    auto iter = types.rbegin();
-    parens = new VarParameter(new Name(), (*iter)->accept(&cloner),
-        PARAMETER_FORM);
-    ++iter;
-    while (iter != types.rend()) {
-      parens = new List<Expression>(
-          new VarParameter(new Name(), (*iter)->accept(&cloner),
-              PARAMETER_FORM), parens);
-      ++iter;
-    }
-  } else {
-    parens = new EmptyExpression();
-  }
-
-  /* return type */
-  Type* type = lambda->type->accept(&cloner);
-
-  /* function */
-  FuncParameter* func = new FuncParameter(o->name, parens, type,
-      new EmptyExpression(), LAMBDA_FUNCTION_FORM);
-
-  return func;
-}
-
-bi::FuncParameter* bi::Resolver::makeCoroutine(VarParameter* o) {
-  CoroutineType* lambda = dynamic_cast<CoroutineType*>(o->type->strip());
-  assert(lambda);
-
-  /* return type */
-  Type* type = lambda->type->accept(&cloner);
-
-  /* coroutine */
-  FuncParameter* func = new FuncParameter(o->name, new bi::EmptyExpression(),
-      type, new EmptyExpression(), LAMBDA_COROUTINE_FORM);
-
-  return func;
 }
 
 bi::Scope* bi::Resolver::takeMemberScope() {

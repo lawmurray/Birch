@@ -60,26 +60,20 @@ birchc_SOURCES = \
   bi/exception/ThisException.cpp \
   bi/exception/UnresolvedReferenceException.cpp \
   bi/exception/UnsupportedOptionTypeException.cpp \
-  bi/expression/BinaryParameter.cpp \
   bi/expression/BinaryReference.cpp \
   bi/expression/BracesExpression.cpp \
   bi/expression/BracketsExpression.cpp \
-  bi/expression/ConversionParameter.cpp \
   bi/expression/EmptyExpression.cpp \
   bi/expression/Expression.cpp \
-  bi/expression/FuncParameter.cpp \
   bi/expression/FuncReference.cpp \
   bi/expression/Index.cpp \
   bi/expression/Literal.cpp \
   bi/expression/ParenthesesExpression.cpp \
-  bi/expression/ProgParameter.cpp \
-  bi/expression/ProgReference.cpp \
   bi/expression/Range.cpp \
   bi/expression/Span.cpp \
   bi/expression/Super.cpp \
   bi/expression/This.cpp \
   bi/expression/Member.cpp \
-  bi/expression/UnaryParameter.cpp \
   bi/expression/UnaryReference.cpp \
   bi/expression/VarParameter.cpp \
   bi/expression/VarReference.cpp \
@@ -95,17 +89,21 @@ birchc_SOURCES = \
   bi/primitive/encode.cpp \
   bi/statement/AssignmentParameter.cpp \
   bi/statement/AssignmentReference.cpp \
-  bi/statement/Declaration.cpp \
+  bi/statement/BinaryParameter.cpp \
+  bi/statement/ConversionParameter.cpp \
   bi/statement/EmptyStatement.cpp \
   bi/statement/ExpressionStatement.cpp \
-  bi/statement/If.cpp \
   bi/statement/File.cpp \
   bi/statement/For.cpp \
+  bi/statement/FuncParameter.cpp \
+  bi/statement/If.cpp \
   bi/statement/Import.cpp \
-  bi/statement/While.cpp \
+  bi/statement/ProgParameter.cpp \
   bi/statement/Raw.cpp \
   bi/statement/Return.cpp \
   bi/statement/Statement.cpp \
+  bi/statement/UnaryParameter.cpp \
+  bi/statement/While.cpp \
   bi/type/BracketsType.cpp \
   bi/type/CoroutineType.cpp \
   bi/type/EmptyType.cpp \
@@ -120,9 +118,8 @@ birchc_SOURCES = \
   bi/visitor/Modifier.cpp \
   bi/visitor/Resolver.cpp \
   bi/visitor/Visitor.cpp \
-  bi/birchc.cpp \
-  bi/lexer.lpp \
-  bi/parser.ypp
+  bi/birchc.cpp
+
 birchc_CXXFLAGS = $(AM_CXXFLAGS)
 # ^ workaround for 'created with both libtool and without' error
 
@@ -190,7 +187,6 @@ noinst_HEADERS = \
   bi/common/Typed.hpp \
   bi/common/Unary.hpp \
   bi/common/VariableMode.hpp \
-  bi/config.hpp \
   bi/exception/all.hpp \
   bi/exception/AmbiguousReferenceException.hpp \
   bi/exception/CompilerException.hpp \
@@ -207,26 +203,20 @@ noinst_HEADERS = \
   bi/exception/UnresolvedReferenceException.hpp \
   bi/exception/UnsupportedOptionTypeException.hpp \
   bi/expression/all.hpp \
-  bi/expression/BinaryParameter.hpp \
   bi/expression/BinaryReference.hpp \
   bi/expression/BracesExpression.hpp \
   bi/expression/BracketsExpression.hpp \
-  bi/expression/ConversionParameter.hpp \
   bi/expression/EmptyExpression.hpp \
   bi/expression/Expression.hpp \
-  bi/expression/FuncParameter.hpp \
   bi/expression/FuncReference.hpp \
   bi/expression/Index.hpp \
   bi/expression/Literal.hpp \
   bi/expression/Member.hpp \
   bi/expression/ParenthesesExpression.hpp \
-  bi/expression/ProgParameter.hpp \
-  bi/expression/ProgReference.hpp \
   bi/expression/Range.hpp \
   bi/expression/Span.hpp \
   bi/expression/Super.hpp \
   bi/expression/This.hpp \
-  bi/expression/UnaryParameter.hpp \
   bi/expression/UnaryReference.hpp \
   bi/expression/VarParameter.hpp \
   bi/expression/VarReference.hpp \
@@ -241,9 +231,6 @@ noinst_HEADERS = \
   bi/io/cpp_ostream.hpp \
   bi/io/hpp_ostream.hpp \
   bi/io/indentable_ostream.hpp \
-  bi/lexer.hpp \
-  bi/modules.hpp \
-  bi/parser.hpp \
   bi/primitive/definitely.hpp \
   bi/primitive/encode.hpp \
   bi/primitive/poset.hpp \
@@ -253,16 +240,20 @@ noinst_HEADERS = \
   bi/statement/all.hpp \
   bi/statement/AssignmentParameter.hpp \
   bi/statement/AssignmentReference.hpp \
-  bi/statement/Declaration.hpp \
+  bi/statement/BinaryParameter.hpp \
+  bi/statement/ConversionParameter.hpp \
   bi/statement/EmptyStatement.hpp \
   bi/statement/ExpressionStatement.hpp \
   bi/statement/File.hpp \
   bi/statement/For.hpp \
+  bi/statement/FuncParameter.hpp \
   bi/statement/If.hpp \
   bi/statement/Import.hpp \
+  bi/statement/ProgParameter.hpp \
   bi/statement/Raw.hpp \
   bi/statement/Return.hpp \
   bi/statement/Statement.hpp \
+  bi/statement/UnaryParameter.hpp \
   bi/statement/While.hpp \
   bi/type/all.hpp \
   bi/type/BracketsType.hpp \
@@ -279,7 +270,11 @@ noinst_HEADERS = \
   bi/visitor/Gatherer.hpp \
   bi/visitor/Modifier.hpp \
   bi/visitor/Resolver.hpp \
-  bi/visitor/Visitor.hpp
+  bi/visitor/Visitor.hpp \
+  bi/config.hpp \
+  bi/lexer.hpp \
+  bi/modules.hpp \
+  bi/parser.hpp
 
 dist_noinst_SCRIPTS = autogen.sh
 dist_pkgdata_DATA = \

@@ -60,11 +60,6 @@ public:
    */
   unique_ptr<Expression> value;
 
-  /**
-   * If this variable has a lambda type, the function associated with it.
-   */
-  unique_ptr<Expression> func;
-
   using Expression::definitely;
   using Expression::possibly;
 
