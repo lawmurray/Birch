@@ -3,7 +3,7 @@
  */
 #include "bi/expression/Index.hpp"
 
-#include "bi/expression/VarParameter.hpp"
+#include "bi/expression/Parameter.hpp"
 #include "bi/visitor/all.hpp"
 
 #include <typeinfo>
@@ -38,7 +38,7 @@ bool bi::Index::definitely(const Index& o) const {
   return single->definitely(*o.single);
 }
 
-bool bi::Index::definitely(const VarParameter& o) const {
+bool bi::Index::definitely(const Parameter& o) const {
   /* transparent to capture */
   return single->definitely(o);
 }
@@ -51,7 +51,7 @@ bool bi::Index::possibly(const Index& o) const {
   return single->possibly(*o.single);
 }
 
-bool bi::Index::possibly(const VarParameter& o) const {
+bool bi::Index::possibly(const Parameter& o) const {
   /* transparent to capture */
   return single->possibly(o);
 }

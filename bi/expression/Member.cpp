@@ -3,7 +3,7 @@
  */
 #include "bi/expression/Member.hpp"
 
-#include "bi/expression/VarParameter.hpp"
+#include "bi/expression/Parameter.hpp"
 #include "bi/visitor/all.hpp"
 
 #include <typeinfo>
@@ -39,7 +39,7 @@ bool bi::Member::definitely(const Member& o) const {
   return left->definitely(*o.left) && right->definitely(*o.right);
 }
 
-bool bi::Member::definitely(const VarParameter& o) const {
+bool bi::Member::definitely(const Parameter& o) const {
   return type->definitely(*o.type);
 }
 
@@ -51,6 +51,6 @@ bool bi::Member::possibly(const Member& o) const {
   return left->possibly(*o.left) && right->possibly(*o.right);
 }
 
-bool bi::Member::possibly(const VarParameter& o) const {
+bool bi::Member::possibly(const Parameter& o) const {
   return type->possibly(*o.type);
 }

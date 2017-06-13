@@ -41,7 +41,7 @@ void bi::CppConstructorGenerator::visit(const TypeParameter* o) {
   }
 }
 
-void bi::CppConstructorGenerator::visit(const VarParameter* o) {
+void bi::CppConstructorGenerator::visit(const MemberVariable* o) {
   if (before) {
     finish(',');
   }
@@ -53,18 +53,6 @@ void bi::CppConstructorGenerator::visit(const VarParameter* o) {
         dynamic_cast<const BracketsType*>(o->type.get());
     assert(type);
     middle("make_frame(" << type->brackets << ")");
-  }
-  if (!o->parens->isEmpty()) {
-    if (o->type->isArray()) {
-      middle(", ");
-    }
-    middle(o->parens);
-  }
-  if (!o->value->isEmpty()) {
-    if (o->type->isArray() || !o->parens->isEmpty()) {
-      middle(", ");
-    }
-    middle(o->value);
   }
   middle(')');
 }

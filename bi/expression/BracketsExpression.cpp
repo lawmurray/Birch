@@ -3,7 +3,7 @@
  */
 #include "bi/expression/BracketsExpression.hpp"
 
-#include "bi/expression/VarParameter.hpp"
+#include "bi/expression/Parameter.hpp"
 #include "bi/visitor/all.hpp"
 
 #include <typeinfo>
@@ -38,7 +38,7 @@ bool bi::BracketsExpression::definitely(const BracketsExpression& o) const {
   return single->definitely(*o.single) && brackets->definitely(*o.brackets);
 }
 
-bool bi::BracketsExpression::definitely(const VarParameter& o) const {
+bool bi::BracketsExpression::definitely(const Parameter& o) const {
   return type->definitely(*o.type);
 }
 
@@ -50,6 +50,6 @@ bool bi::BracketsExpression::possibly(const BracketsExpression& o) const {
   return single->possibly(*o.single) && brackets->possibly(*o.brackets);
 }
 
-bool bi::BracketsExpression::possibly(const VarParameter& o) const {
+bool bi::BracketsExpression::possibly(const Parameter& o) const {
   return type->possibly(*o.type);
 }

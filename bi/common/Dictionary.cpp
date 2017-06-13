@@ -6,7 +6,6 @@
 #include "bi/expression/all.hpp"
 #include "bi/statement/all.hpp"
 #include "bi/type/all.hpp"
-#include "bi/expression/all.hpp"
 #include "bi/exception/all.hpp"
 
 template<class ParameterType>
@@ -43,6 +42,9 @@ void bi::Dictionary<ParameterType>::merge(Dictionary<ParameterType>& o) {
 /*
  * Explicit instantiations.
  */
-template class bi::Dictionary<bi::VarParameter>;
+template class bi::Dictionary<bi::Parameter>;
+template class bi::Dictionary<bi::GlobalVariable>;
+template class bi::Dictionary<bi::LocalVariable>;
+template class bi::Dictionary<bi::MemberVariable>;
 template class bi::Dictionary<bi::TypeParameter>;
 template class bi::Dictionary<bi::Program>;

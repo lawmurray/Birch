@@ -9,7 +9,7 @@ bi::CppParameterGenerator::CppParameterGenerator(std::ostream& base,
   //
 }
 
-void bi::CppParameterGenerator::visit(const VarParameter* o) {
+void bi::CppParameterGenerator::visit(const Parameter* o) {
   if (!o->type->assignable) {
     middle("const ");
   }

@@ -3,7 +3,10 @@
  */
 #include "bi/common/Scope.hpp"
 
-#include "bi/expression/VarParameter.hpp"
+#include "bi/expression/Parameter.hpp"
+#include "bi/expression/GlobalVariable.hpp"
+#include "bi/expression/LocalVariable.hpp"
+#include "bi/expression/MemberVariable.hpp"
 #include "bi/statement/Function.hpp"
 #include "bi/statement/Coroutine.hpp"
 #include "bi/statement/Program.hpp"
@@ -24,128 +27,50 @@
 #include "bi/exception/all.hpp"
 #include "bi/visitor/Cloner.hpp"
 
-bool bi::Scope::contains(VarParameter* param) {
-  return vars.contains(param);
-}
-
-bool bi::Scope::contains(Function* param) {
-  return functions.contains(param);
-}
-
-bool bi::Scope::contains(Coroutine* param) {
-  return coroutines.contains(param);
-}
-
-bool bi::Scope::contains(Program* param) {
-  return programs.contains(param);
-}
-
-bool bi::Scope::contains(MemberFunction* param) {
-  return memberFunctions.contains(param);
-}
-
-bool bi::Scope::contains(BinaryOperator* param) {
-  return binaryOperators.contains(param);
-}
-
-bool bi::Scope::contains(UnaryOperator* param) {
-  return unaryOperators.contains(param);
-}
-
-bool bi::Scope::contains(AssignmentOperator* param) {
-  return assignmentOperators.contains(param);
-}
-
-bool bi::Scope::contains(ConversionOperator* param) {
-  return conversionOperators.contains(param);
-}
-
-bool bi::Scope::contains(TypeParameter* param) {
-  return types.contains(param);
-}
-
-void bi::Scope::add(VarParameter* param) {
-  if (vars.contains(param)) {
-    throw PreviousDeclarationException(param, vars.get(param));
-  } else {
-    vars.add(param);
+#define CONTAINS_IMPL(type, container) \
+  bool bi::Scope::contains(type* param) { \
+    return container.contains(param); \
   }
-}
 
-void bi::Scope::add(Function* param) {
-  if (functions.contains(param)) {
-    throw PreviousDeclarationException(param, functions.get(param));
-  } else {
-    functions.add(param);
-  }
-}
+CONTAINS_IMPL(Parameter, parameters)
+CONTAINS_IMPL(GlobalVariable, globalVariables)
+CONTAINS_IMPL(LocalVariable, localVariables)
+CONTAINS_IMPL(MemberVariable, memberVariables)
+CONTAINS_IMPL(Function, functions)
+CONTAINS_IMPL(Coroutine, coroutines)
+CONTAINS_IMPL(Program, programs)
+CONTAINS_IMPL(MemberFunction, memberFunctions)
+CONTAINS_IMPL(BinaryOperator, binaryOperators)
+CONTAINS_IMPL(UnaryOperator, unaryOperators)
+CONTAINS_IMPL(AssignmentOperator, assignmentOperators)
+CONTAINS_IMPL(ConversionOperator, conversionOperators)
+CONTAINS_IMPL(TypeParameter, types)
 
-void bi::Scope::add(Coroutine* param) {
-  if (coroutines.contains(param)) {
-    throw PreviousDeclarationException(param, coroutines.get(param));
-  } else {
-    coroutines.add(param);
+#define ADD_IMPL(type, container) \
+  void bi::Scope::add(type* param) { \
+    if (container.contains(param)) { \
+      throw PreviousDeclarationException(param, container.get(param)); \
+    } else { \
+      container.add(param); \
+    } \
   }
-}
 
-void bi::Scope::add(Program* param) {
-  if (programs.contains(param)) {
-    throw PreviousDeclarationException(param, programs.get(param));
-  } else {
-    programs.add(param);
-  }
-}
-
-void bi::Scope::add(MemberFunction* param) {
-  if (memberFunctions.contains(param)) {
-    throw PreviousDeclarationException(param, memberFunctions.get(param));
-  } else {
-    memberFunctions.add(param);
-  }
-}
-
-void bi::Scope::add(BinaryOperator* param) {
-  if (binaryOperators.contains(param)) {
-    throw PreviousDeclarationException(param, binaryOperators.get(param));
-  } else {
-    binaryOperators.add(param);
-  }
-}
-
-void bi::Scope::add(UnaryOperator* param) {
-  if (unaryOperators.contains(param)) {
-    throw PreviousDeclarationException(param, unaryOperators.get(param));
-  } else {
-    unaryOperators.add(param);
-  }
-}
-
-void bi::Scope::add(AssignmentOperator* param) {
-  if (assignmentOperators.contains(param)) {
-    throw PreviousDeclarationException(param, assignmentOperators.get(param));
-  } else {
-    assignmentOperators.add(param);
-  }
-}
-
-void bi::Scope::add(ConversionOperator* param) {
-  if (conversionOperators.contains(param)) {
-    throw PreviousDeclarationException(param, conversionOperators.get(param));
-  } else {
-    conversionOperators.add(param);
-  }
-}
-
-void bi::Scope::add(TypeParameter* param) {
-  if (types.contains(param)) {
-    throw PreviousDeclarationException(param, types.get(param));
-  } else {
-    types.add(param);
-  }
-}
+ADD_IMPL(Parameter, parameters)
+ADD_IMPL(GlobalVariable, globalVariables)
+ADD_IMPL(LocalVariable, localVariables)
+ADD_IMPL(MemberVariable, memberVariables)
+ADD_IMPL(Function, functions)
+ADD_IMPL(Coroutine, coroutines)
+ADD_IMPL(Program, programs)
+ADD_IMPL(MemberFunction, memberFunctions)
+ADD_IMPL(BinaryOperator, binaryOperators)
+ADD_IMPL(UnaryOperator, unaryOperators)
+ADD_IMPL(AssignmentOperator, assignmentOperators)
+ADD_IMPL(ConversionOperator, conversionOperators)
+ADD_IMPL(TypeParameter, types)
 
 void bi::Scope::resolve(VarReference* ref) {
-  vars.resolve(ref);
+  parameters.resolve(ref);
   if (ref->matches.size() == 0) {
     resolveDefer(ref);
   }
@@ -191,7 +116,10 @@ void bi::Scope::inherit(Scope* scope) {
 }
 
 void bi::Scope::import(Scope* scope) {
-  vars.merge(scope->vars);
+  parameters.merge(scope->parameters);
+  globalVariables.merge(scope->globalVariables);
+  localVariables.merge(scope->localVariables);
+  memberVariables.merge(scope->memberVariables);
   functions.merge(scope->functions);
   coroutines.merge(scope->coroutines);
   memberFunctions.merge(scope->memberFunctions);

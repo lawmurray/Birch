@@ -3,13 +3,13 @@
  */
 #include "bi/expression/VarReference.hpp"
 
-#include "bi/expression/VarParameter.hpp"
+#include "bi/expression/Parameter.hpp"
 #include "bi/visitor/all.hpp"
 
 #include <typeinfo>
 
 bi::VarReference::VarReference(shared_ptr<Name> name,
-    shared_ptr<Location> loc, const VarParameter* target) :
+    shared_ptr<Location> loc, const Parameter* target) :
     Expression(loc),
     Named(name),
     Reference(target) {
@@ -40,7 +40,7 @@ bool bi::VarReference::definitely(const VarReference& o) const {
   return target == o.target;
 }
 
-bool bi::VarReference::definitely(const VarParameter& o) const {
+bool bi::VarReference::definitely(const Parameter& o) const {
   if (!target) {
     return true;
   } else {
@@ -56,7 +56,7 @@ bool bi::VarReference::possibly(const VarReference& o) const {
   return target == o.target;
 }
 
-bool bi::VarReference::possibly(const VarParameter& o) const {
+bool bi::VarReference::possibly(const Parameter& o) const {
   if (!target) {
     return true;
   } else {

@@ -11,7 +11,7 @@ namespace bi {
 /**
  * Type with base.
  *
- * @ingroup compiler_type
+ * @ingroup compiler_common
  */
 class Based {
 public:

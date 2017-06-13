@@ -18,7 +18,7 @@ public:
 
   using CppBaseGenerator::visit;
 
-  virtual void visit(const VarParameter* o);
+  virtual void visit(const Parameter* o);
   virtual void visit(const Function* o);
   virtual void visit(const TypeParameter* o);
 };

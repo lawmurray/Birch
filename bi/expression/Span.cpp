@@ -3,7 +3,7 @@
  */
 #include "bi/expression/Span.hpp"
 
-#include "bi/expression/VarParameter.hpp"
+#include "bi/expression/Parameter.hpp"
 #include "bi/visitor/all.hpp"
 
 #include <typeinfo>
@@ -38,7 +38,7 @@ bool bi::Span::definitely(const Span& o) const {
   return single->definitely(*o.single);
 }
 
-bool bi::Span::definitely(const VarParameter& o) const {
+bool bi::Span::definitely(const Parameter& o) const {
   /* transparent to capture */
   return single->definitely(o);
 }
@@ -51,7 +51,7 @@ bool bi::Span::possibly(const Span& o) const {
   return single->possibly(*o.single);
 }
 
-bool bi::Span::possibly(const VarParameter& o) const {
+bool bi::Span::possibly(const Parameter& o) const {
   /* transparent to capture */
   return single->possibly(o);
 }

@@ -92,6 +92,10 @@ bool bi::Expression::definitely(const FuncReference& o) const {
   return false;
 }
 
+bool bi::Expression::definitely(const GlobalVariable& o) const {
+  return false;
+}
+
 bool bi::Expression::definitely(const Index& o) const {
   return false;
 }
@@ -120,6 +124,22 @@ bool bi::Expression::definitely(const Literal<const char*>& o) {
   return false;
 }
 
+bool bi::Expression::definitely(const LocalVariable& o) const {
+  return false;
+}
+
+bool bi::Expression::definitely(const Member& o) const {
+  return false;
+}
+
+bool bi::Expression::definitely(const MemberVariable& o) const {
+  return false;
+}
+
+bool bi::Expression::definitely(const Parameter& o) const {
+  return false;
+}
+
 bool bi::Expression::definitely(const ParenthesesExpression& o) const {
   return false;
 }
@@ -140,15 +160,7 @@ bool bi::Expression::definitely(const This& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(const Member& o) const {
-  return false;
-}
-
 bool bi::Expression::definitely(const UnaryReference& o) const {
-  return false;
-}
-
-bool bi::Expression::definitely(const VarParameter& o) const {
   return false;
 }
 
@@ -180,6 +192,10 @@ bool bi::Expression::possibly(const FuncReference& o) const {
   return false;
 }
 
+bool bi::Expression::possibly(const GlobalVariable& o) const {
+  return false;
+}
+
 bool bi::Expression::possibly(const Index& o) const {
   return false;
 }
@@ -208,6 +224,18 @@ bool bi::Expression::possibly(const Literal<const char*>& o) {
   return false;
 }
 
+bool bi::Expression::possibly(const LocalVariable& o) const {
+  return false;
+}
+
+bool bi::Expression::possibly(const MemberVariable& o) const {
+  return false;
+}
+
+bool bi::Expression::possibly(const Parameter& o) const {
+  return false;
+}
+
 bool bi::Expression::possibly(const ParenthesesExpression& o) const {
   return false;
 }
@@ -233,10 +261,6 @@ bool bi::Expression::possibly(const Member& o) const {
 }
 
 bool bi::Expression::possibly(const UnaryReference& o) const {
-  return false;
-}
-
-bool bi::Expression::possibly(const VarParameter& o) const {
   return false;
 }
 

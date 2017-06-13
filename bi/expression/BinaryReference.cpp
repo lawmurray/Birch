@@ -43,7 +43,7 @@ bool bi::BinaryReference::definitely(const BinaryOperator& o) const {
   return left->definitely(*o.left) && right->definitely(*o.right);
 }
 
-bool bi::BinaryReference::definitely(const VarParameter& o) const {
+bool bi::BinaryReference::definitely(const Parameter& o) const {
   return type->definitely(*o.type);
 }
 
@@ -59,6 +59,6 @@ bool bi::BinaryReference::possibly(const BinaryOperator& o) const {
   return left->possibly(*o.left) && right->possibly(*o.right);
 }
 
-bool bi::BinaryReference::possibly(const VarParameter& o) const {
+bool bi::BinaryReference::possibly(const Parameter& o) const {
   return type->possibly(*o.type);
 }

@@ -3,7 +3,7 @@
  */
 #include "bi/expression/Literal.hpp"
 
-#include "bi/expression/VarParameter.hpp"
+#include "bi/expression/Parameter.hpp"
 #include "bi/visitor/all.hpp"
 
 #include <typeinfo>
@@ -48,7 +48,7 @@ bool bi::Literal<T1>::definitely(Literal<T1>& o) {
 }
 
 template<class T1>
-bool bi::Literal<T1>::definitely(const VarParameter& o) const {
+bool bi::Literal<T1>::definitely(const Parameter& o) const {
   return type->definitely(*o.type);
 }
 
@@ -63,7 +63,7 @@ bool bi::Literal<T1>::possibly(Literal<T1>& o) {
 }
 
 template<class T1>
-bool bi::Literal<T1>::possibly(const VarParameter& o) const {
+bool bi::Literal<T1>::possibly(const Parameter& o) const {
   return type->possibly(*o.type);
 }
 

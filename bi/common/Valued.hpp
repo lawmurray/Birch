@@ -3,32 +3,32 @@
  */
 #pragma once
 
-#include "bi/expression/all.hpp"
+#include "bi/expression/Expression.hpp"
 #include "bi/primitive/unique_ptr.hpp"
 
 namespace bi {
 /**
- * Statement with a condition (e.g. conditional, loop).
+ * Statement or expression with a default or initial value.
  *
  * @ingroup compiler_common
  */
-class Conditioned {
+class Valued {
 public:
   /**
    * Constructor.
    *
    * @param cond Condition.
    */
-  Conditioned(Expression* cond);
+  Valued(Expression* cond);
 
   /**
    * Destructor.
    */
-  virtual ~Conditioned() = 0;
+  virtual ~Valued() = 0;
 
   /**
    * Condition.
    */
-  unique_ptr<Expression> cond;
+  unique_ptr<Expression> value;
 };
 }

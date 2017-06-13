@@ -35,8 +35,11 @@ public:
   virtual void visit(const Super* o);
   virtual void visit(const This* o);
   virtual void visit(const BracketsExpression* o);
+  virtual void visit(const Parameter* o);
+  virtual void visit(const GlobalVariable* o);
+  virtual void visit(const LocalVariable* o);
+  virtual void visit(const MemberVariable* o);
   virtual void visit(const VarReference* o);
-  virtual void visit(const VarParameter* o);
   virtual void visit(const FuncReference* o);
   virtual void visit(const BinaryReference* o);
   virtual void visit(const UnaryReference* o);

@@ -4,7 +4,7 @@
 #pragma once
 
 #include "bi/exception/CompilerException.hpp"
-#include "bi/expression/VarParameter.hpp"
+#include "bi/expression/Parameter.hpp"
 
 namespace bi {
 /**

@@ -39,12 +39,15 @@ public:
   virtual Expression* clone(const Member* o);
   virtual Expression* clone(const Super* o);
   virtual Expression* clone(const This* o);
-
   virtual Expression* clone(const VarReference* o);
-  virtual Expression* clone(const VarParameter* o);
+  virtual Expression* clone(const Parameter* o);
+  virtual Expression* clone(const GlobalVariable* o);
+  virtual Expression* clone(const LocalVariable* o);
+  virtual Expression* clone(const MemberVariable* o);
   virtual Expression* clone(const FuncReference* o);
   virtual Expression* clone(const BinaryReference* o);
   virtual Expression* clone(const UnaryReference* o);
+
   virtual Statement* clone(const EmptyStatement* o);
   virtual Statement* clone(const List<Statement>* o);
   virtual Statement* clone(const Assignment* o);

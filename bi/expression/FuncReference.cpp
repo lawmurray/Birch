@@ -46,7 +46,7 @@ bool bi::FuncReference::definitely(const Function& o) const {
   return parens->definitely(*o.parens);
 }
 
-bool bi::FuncReference::definitely(const VarParameter& o) const {
+bool bi::FuncReference::definitely(const Parameter& o) const {
   return type->definitely(*o.type);
 }
 
@@ -62,6 +62,6 @@ bool bi::FuncReference::possibly(const Function& o) const {
   return parens->possibly(*o.parens);
 }
 
-bool bi::FuncReference::possibly(const VarParameter& o) const {
+bool bi::FuncReference::possibly(const Parameter& o) const {
   return type->possibly(*o.type);
 }

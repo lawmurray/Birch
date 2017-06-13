@@ -36,7 +36,7 @@ bool bi::This::definitely(const This& o) const {
   return type->definitely(*o.type);
 }
 
-bool bi::This::definitely(const VarParameter& o) const {
+bool bi::This::definitely(const Parameter& o) const {
   return type->definitely(*o.type);
 }
 
@@ -48,6 +48,6 @@ bool bi::This::possibly(const This& o) const {
   return type->possibly(*o.type);
 }
 
-bool bi::This::possibly(const VarParameter& o) const {
+bool bi::This::possibly(const Parameter& o) const {
   return type->possibly(*o.type);
 }

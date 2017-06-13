@@ -44,7 +44,7 @@ birchc_SOURCES = \
   bi/common/Scoped.cpp \
   bi/common/Typed.cpp \
   bi/common/Unary.cpp \
-  bi/common/VariableMode.cpp \
+  bi/common/Valued.cpp \
   bi/exception/AmbiguousReferenceException.cpp \
   bi/exception/CompilerException.cpp \
   bi/exception/CyclicImportException.cpp \
@@ -65,17 +65,20 @@ birchc_SOURCES = \
   bi/expression/EmptyExpression.cpp \
   bi/expression/Expression.cpp \
   bi/expression/FuncReference.cpp \
+  bi/expression/GlobalVariable.cpp \
   bi/expression/Index.cpp \
   bi/expression/LambdaFunction.cpp \
   bi/expression/Literal.cpp \
+  bi/expression/LocalVariable.cpp \
+  bi/expression/Member.cpp \
+  bi/expression/MemberVariable.cpp \
+  bi/expression/Parameter.cpp \
   bi/expression/ParenthesesExpression.cpp \
   bi/expression/Range.cpp \
   bi/expression/Span.cpp \
   bi/expression/Super.cpp \
   bi/expression/This.cpp \
-  bi/expression/Member.cpp \
   bi/expression/UnaryReference.cpp \
-  bi/expression/VarParameter.cpp \
   bi/expression/VarReference.cpp \
   bi/io/cpp/CppBaseGenerator.cpp \
   bi/io/cpp/CppConstructorGenerator.cpp \
@@ -187,7 +190,7 @@ noinst_HEADERS = \
   bi/common/Scoped.hpp \
   bi/common/Typed.hpp \
   bi/common/Unary.hpp \
-  bi/common/VariableMode.hpp \
+  bi/common/Valued.hpp \
   bi/exception/all.hpp \
   bi/exception/AmbiguousReferenceException.hpp \
   bi/exception/CompilerException.hpp \
@@ -210,17 +213,20 @@ noinst_HEADERS = \
   bi/expression/EmptyExpression.hpp \
   bi/expression/Expression.hpp \
   bi/expression/FuncReference.hpp \
+  bi/expression/GlobalVariable.hpp \
   bi/expression/Index.hpp \
   bi/expression/LambdaFunction.hpp \
   bi/expression/Literal.hpp \
+  bi/expression/LocalVariable.hpp \
   bi/expression/Member.hpp \
+  bi/expression/MemberVariable.hpp \
+  bi/expression/Parameter.hpp \
   bi/expression/ParenthesesExpression.hpp \
   bi/expression/Range.hpp \
   bi/expression/Span.hpp \
   bi/expression/Super.hpp \
   bi/expression/This.hpp \
   bi/expression/UnaryReference.hpp \
-  bi/expression/VarParameter.hpp \
   bi/expression/VarReference.hpp \
   bi/io/bi_ostream.hpp \
   bi/io/bih_ostream.hpp \

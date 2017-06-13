@@ -39,7 +39,10 @@ public:
   virtual Expression* modify(Super* o);
   virtual Expression* modify(This* o);
   virtual Expression* modify(VarReference* o);
-  virtual Expression* modify(VarParameter* o);
+  virtual Expression* modify(Parameter* o);
+  virtual Expression* modify(GlobalVariable* o);
+  virtual Expression* modify(LocalVariable* o);
+  virtual Expression* modify(MemberVariable* o);
   virtual Expression* modify(FuncReference* o);
   virtual Expression* modify(BinaryReference* o);
   virtual Expression* modify(UnaryReference* o);

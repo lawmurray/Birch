@@ -42,7 +42,7 @@ bool bi::UnaryReference::definitely(const UnaryOperator& o) const {
   return single->definitely(*o.single);
 }
 
-bool bi::UnaryReference::definitely(const VarParameter& o) const {
+bool bi::UnaryReference::definitely(const Parameter& o) const {
   return type->definitely(*o.type);
 }
 
@@ -58,6 +58,6 @@ bool bi::UnaryReference::possibly(const UnaryOperator& o) const {
   return single->possibly(*o.single);
 }
 
-bool bi::UnaryReference::possibly(const VarParameter& o) const {
+bool bi::UnaryReference::possibly(const Parameter& o) const {
   return type->possibly(*o.type);
 }

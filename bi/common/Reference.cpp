@@ -3,7 +3,7 @@
  */
 #include "bi/common/Reference.hpp"
 
-#include "bi/expression/VarParameter.hpp"
+#include "bi/expression/Parameter.hpp"
 #include "bi/statement/Function.hpp"
 #include "bi/statement/BinaryOperator.hpp"
 #include "bi/statement/UnaryOperator.hpp"
@@ -25,7 +25,7 @@ bi::Reference<Target>::~Reference() {
 /*
  * Explicit instantiations.
  */
-template class bi::Reference<bi::VarParameter>;
+template class bi::Reference<bi::Parameter>;
 template class bi::Reference<bi::Function>;
 template class bi::Reference<bi::BinaryOperator>;
 template class bi::Reference<bi::UnaryOperator>;

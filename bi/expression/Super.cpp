@@ -36,7 +36,7 @@ bool bi::Super::definitely(const Super& o) const {
   return type->definitely(*o.type);
 }
 
-bool bi::Super::definitely(const VarParameter& o) const {
+bool bi::Super::definitely(const Parameter& o) const {
   return type->definitely(*o.type);
 }
 
@@ -48,6 +48,6 @@ bool bi::Super::possibly(const Super& o) const {
   return type->possibly(*o.type);
 }
 
-bool bi::Super::possibly(const VarParameter& o) const {
+bool bi::Super::possibly(const Parameter& o) const {
   return type->possibly(*o.type);
 }

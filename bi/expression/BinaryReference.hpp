@@ -5,7 +5,7 @@
 
 #include "bi/expression/Expression.hpp"
 #include "bi/statement/BinaryOperator.hpp"
-#include "bi/expression/VarParameter.hpp"
+#include "bi/expression/Parameter.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Binary.hpp"
 #include "bi/common/Reference.hpp"
@@ -47,11 +47,11 @@ public:
   virtual bool dispatchDefinitely(const Expression& o) const;
   virtual bool definitely(const BinaryReference& o) const;
   virtual bool definitely(const BinaryOperator& o) const;
-  virtual bool definitely(const VarParameter& o) const;
+  virtual bool definitely(const Parameter& o) const;
 
   virtual bool dispatchPossibly(const Expression& o) const;
   virtual bool possibly(const BinaryReference& o) const;
   virtual bool possibly(const BinaryOperator& o) const;
-  virtual bool possibly(const VarParameter& o) const;
+  virtual bool possibly(const Parameter& o) const;
 };
 }

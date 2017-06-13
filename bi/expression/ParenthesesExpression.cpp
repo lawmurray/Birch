@@ -3,7 +3,7 @@
  */
 #include "bi/expression/ParenthesesExpression.hpp"
 
-#include "bi/expression/VarParameter.hpp"
+#include "bi/expression/Parameter.hpp"
 #include "bi/visitor/all.hpp"
 
 bi::ParenthesesExpression::ParenthesesExpression(Expression* single,
@@ -33,7 +33,8 @@ void bi::ParenthesesExpression::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::ParenthesesExpression::dispatchDefinitely(const Expression& o) const {
+bool bi::ParenthesesExpression::dispatchDefinitely(
+    const Expression& o) const {
   return o.definitely(*this) || single->dispatchDefinitely(o);
 }
 
@@ -45,7 +46,8 @@ bool bi::ParenthesesExpression::definitely(const BracesExpression& o) const {
   return single->definitely(o);
 }
 
-bool bi::ParenthesesExpression::definitely(const BracketsExpression& o) const {
+bool bi::ParenthesesExpression::definitely(
+    const BracketsExpression& o) const {
   return single->definitely(o);
 }
 
@@ -54,6 +56,10 @@ bool bi::ParenthesesExpression::definitely(const EmptyExpression& o) const {
 }
 
 bool bi::ParenthesesExpression::definitely(const FuncReference& o) const {
+  return single->definitely(o);
+}
+
+bool bi::ParenthesesExpression::definitely(const GlobalVariable& o) const {
   return single->definitely(o);
 }
 
@@ -81,11 +87,24 @@ bool bi::ParenthesesExpression::definitely(const Literal<const char*>& o) {
   return single->definitely(o);
 }
 
+bool bi::ParenthesesExpression::definitely(const LocalVariable& o) const {
+  return single->definitely(o);
+}
+
+bool bi::ParenthesesExpression::definitely(const MemberVariable& o) const {
+  return single->definitely(o);
+}
+
 bool bi::ParenthesesExpression::definitely(const Member& o) const {
   return single->definitely(o);
 }
 
-bool bi::ParenthesesExpression::definitely(const ParenthesesExpression& o) const {
+bool bi::ParenthesesExpression::definitely(const Parameter& o) const {
+  return (type->definitely(*o.type)) || single->definitely(o);
+}
+
+bool bi::ParenthesesExpression::definitely(
+    const ParenthesesExpression& o) const {
   return single->definitely(*o.single);
 }
 
@@ -107,10 +126,6 @@ bool bi::ParenthesesExpression::definitely(const This& o) const {
 
 bool bi::ParenthesesExpression::definitely(const UnaryReference& o) const {
   return single->definitely(o);
-}
-
-bool bi::ParenthesesExpression::definitely(const VarParameter& o) const {
-  return (type->definitely(*o.type)) || single->definitely(o);
 }
 
 bool bi::ParenthesesExpression::definitely(const VarReference& o) const {
@@ -141,6 +156,10 @@ bool bi::ParenthesesExpression::possibly(const FuncReference& o) const {
   return single->possibly(o);
 }
 
+bool bi::ParenthesesExpression::possibly(const GlobalVariable& o) const {
+  return single->possibly(o);
+}
+
 bool bi::ParenthesesExpression::possibly(const LambdaFunction& o) const {
   return single->possibly(o);
 }
@@ -165,11 +184,24 @@ bool bi::ParenthesesExpression::possibly(const Literal<const char*>& o) {
   return single->possibly(o);
 }
 
+bool bi::ParenthesesExpression::possibly(const LocalVariable& o) const {
+  return single->possibly(o);
+}
+
 bool bi::ParenthesesExpression::possibly(const Member& o) const {
   return single->possibly(o);
 }
 
-bool bi::ParenthesesExpression::possibly(const ParenthesesExpression& o) const {
+bool bi::ParenthesesExpression::possibly(const MemberVariable& o) const {
+  return single->possibly(o);
+}
+
+bool bi::ParenthesesExpression::possibly(const Parameter& o) const {
+  return (type->possibly(*o.type)) || single->possibly(o);
+}
+
+bool bi::ParenthesesExpression::possibly(
+    const ParenthesesExpression& o) const {
   return single->possibly(*o.single);
 }
 
@@ -191,10 +223,6 @@ bool bi::ParenthesesExpression::possibly(const This& o) const {
 
 bool bi::ParenthesesExpression::possibly(const UnaryReference& o) const {
   return single->possibly(o);
-}
-
-bool bi::ParenthesesExpression::possibly(const VarParameter& o) const {
-  return (type->possibly(*o.type)) || single->possibly(o);
 }
 
 bool bi::ParenthesesExpression::possibly(const VarReference& o) const {

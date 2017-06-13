@@ -144,29 +144,37 @@ bi::Expression* bi::Resolver::modify(VarReference* o) {
   Modifier::modify(o);
   if (!o->name->isEmpty()) {
     resolve(o, memberScope);
-    o->form = o->target->form;
     o->type = o->target->type->accept(&cloner)->accept(this);
   }
   return o;
 }
 
-bi::Expression* bi::Resolver::modify(VarParameter* o) {
+bi::Expression* bi::Resolver::modify(Parameter* o) {
   Modifier::modify(o);
-  if (!inInputs) {
-    o->type->accept(&assigner);
-  }
   if (!o->name->isEmpty()) {
     top()->add(o);
   }
-  if (!o->value->isEmpty()) {
-    if (!o->type->assignable) {
-      throw NotAssignableException(o);
-    } else if (!o->value->type->definitely(*o->type)) {
-      throw InvalidAssignmentException(o);
-    }
-  }
-  ///@todo Check constructor arguments
-  ///@todo Check assignment operator for value
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(GlobalVariable* o) {
+  Modifier::modify(o);
+  o->type->accept(&assigner);
+  top()->add(o);
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(LocalVariable* o) {
+  Modifier::modify(o);
+  o->type->accept(&assigner);
+  top()->add(o);
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(MemberVariable* o) {
+  Modifier::modify(o);
+  o->type->accept(&assigner);
+  top()->add(o);
   return o;
 }
 

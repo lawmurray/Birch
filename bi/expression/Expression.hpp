@@ -18,19 +18,22 @@ class BracesExpression;
 class BracketsExpression;
 class EmptyExpression;
 class FuncReference;
+class GlobalVariable;
 class Index;
 template<class T> class Iterator;
 class LambdaFunction;
 template<class T> class List;
 template<class T> class Literal;
+class LocalVariable;
+class MemberVariable;
 class Member;
+class Parameter;
 class ParenthesesExpression;
 class Range;
 class Span;
 class Super;
 class This;
 class UnaryReference;
-class VarParameter;
 class VarReference;
 
 /**
@@ -131,6 +134,7 @@ public:
   virtual bool definitely(const BracketsExpression& o) const;
   virtual bool definitely(const EmptyExpression& o) const;
   virtual bool definitely(const FuncReference& o) const;
+  virtual bool definitely(const GlobalVariable& o) const;
   virtual bool definitely(const Index& o) const;
   virtual bool definitely(const LambdaFunction& o) const;
   virtual bool definitely(const List<Expression>& o) const;
@@ -138,14 +142,16 @@ public:
   virtual bool definitely(const Literal<int64_t>& o);
   virtual bool definitely(const Literal<double>& o) const;
   virtual bool definitely(const Literal<const char*>& o);
+  virtual bool definitely(const LocalVariable& o) const;
   virtual bool definitely(const Member& o) const;
+  virtual bool definitely(const MemberVariable& o) const;
+  virtual bool definitely(const Parameter& o) const;
   virtual bool definitely(const ParenthesesExpression& o) const;
   virtual bool definitely(const Range& o) const;
   virtual bool definitely(const Span& o) const;
   virtual bool definitely(const Super& o) const;
   virtual bool definitely(const This& o) const;
   virtual bool definitely(const UnaryReference& o) const;
-  virtual bool definitely(const VarParameter& o) const;
   virtual bool definitely(const VarReference& o) const;
 
   bool possibly(const Expression& o) const;
@@ -155,6 +161,7 @@ public:
   virtual bool possibly(const BracketsExpression& o) const;
   virtual bool possibly(const EmptyExpression& o) const;
   virtual bool possibly(const FuncReference& o) const;
+  virtual bool possibly(const GlobalVariable& o) const;
   virtual bool possibly(const Index& o) const;
   virtual bool possibly(const LambdaFunction& o) const;
   virtual bool possibly(const List<Expression>& o) const;
@@ -162,14 +169,16 @@ public:
   virtual bool possibly(const Literal<int64_t>& o);
   virtual bool possibly(const Literal<double>& o) const;
   virtual bool possibly(const Literal<const char*>& o);
+  virtual bool possibly(const LocalVariable& o) const;
   virtual bool possibly(const Member& o) const;
+  virtual bool possibly(const MemberVariable& o) const;
+  virtual bool possibly(const Parameter& o) const;
   virtual bool possibly(const ParenthesesExpression& o) const;
   virtual bool possibly(const Range& o) const;
   virtual bool possibly(const Span& o) const;
   virtual bool possibly(const Super& o) const;
   virtual bool possibly(const This& o) const;
   virtual bool possibly(const UnaryReference& o) const;
-  virtual bool possibly(const VarParameter& o) const;
   virtual bool possibly(const VarReference& o) const;
 
   /**

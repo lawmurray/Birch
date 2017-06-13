@@ -98,10 +98,24 @@ bi::Expression* bi::Modifier::modify(VarReference* o) {
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(VarParameter* o) {
+bi::Expression* bi::Modifier::modify(Parameter* o) {
   o->type = o->type.release()->accept(this);
-  o->parens = o->parens.release()->accept(this);
   o->value = o->value.release()->accept(this);
+  return o;
+}
+
+bi::Expression* bi::Modifier::modify(GlobalVariable* o) {
+  o->type = o->type.release()->accept(this);
+  return o;
+}
+
+bi::Expression* bi::Modifier::modify(LocalVariable* o) {
+  o->type = o->type.release()->accept(this);
+  return o;
+}
+
+bi::Expression* bi::Modifier::modify(MemberVariable* o) {
+  o->type = o->type.release()->accept(this);
   return o;
 }
 

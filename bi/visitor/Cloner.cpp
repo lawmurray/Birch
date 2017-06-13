@@ -82,9 +82,21 @@ bi::Expression* bi::Cloner::clone(const VarReference* o) {
   return new VarReference(o->name, o->loc);
 }
 
-bi::Expression* bi::Cloner::clone(const VarParameter* o) {
-  return new VarParameter(o->name, o->type->accept(this), o->form,
-      o->parens->accept(this), o->value->accept(this), o->loc);
+bi::Expression* bi::Cloner::clone(const Parameter* o) {
+  return new Parameter(o->name, o->type->accept(this), o->value->accept(this),
+      o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(const GlobalVariable* o) {
+  return new GlobalVariable(o->name, o->type->accept(this), o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(const LocalVariable* o) {
+  return new GlobalVariable(o->name, o->type->accept(this), o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(const MemberVariable* o) {
+  return new GlobalVariable(o->name, o->type->accept(this), o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const FuncReference* o) {

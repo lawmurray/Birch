@@ -4,33 +4,35 @@
 #pragma once
 
 #include "bi/expression/Expression.hpp"
-#include "bi/expression/Parameter.hpp"
+#include "bi/expression/EmptyExpression.hpp"
 #include "bi/common/Named.hpp"
-#include "bi/common/Reference.hpp"
+#include "bi/common/Numbered.hpp"
+#include "bi/primitive/unique_ptr.hpp"
 
 namespace bi {
 /**
- * Reference to a variable.
+ * Global variable.
  *
  * @ingroup compiler_expression
  */
-class VarReference: public Expression, public Named, public Reference<
-    Parameter> {
+class LocalVariable: public Expression,
+    public Named,
+    public Numbered {
 public:
   /**
    * Constructor.
    *
    * @param name Name.
+   * @param type Type.
    * @param loc Location.
-   * @param target Target.
    */
-  VarReference(shared_ptr<Name> name, shared_ptr<Location> loc = nullptr,
-      const Parameter* target = nullptr);
+  LocalVariable(shared_ptr<Name> name, Type* type, shared_ptr<Location> loc =
+      nullptr);
 
   /**
    * Destructor.
    */
-  virtual ~VarReference();
+  virtual ~LocalVariable();
 
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);
@@ -40,11 +42,9 @@ public:
   using Expression::possibly;
 
   virtual bool dispatchDefinitely(const Expression& o) const;
-  virtual bool definitely(const VarReference& o) const;
-  virtual bool definitely(const Parameter& o) const;
+  virtual bool definitely(const LocalVariable& o) const;
 
   virtual bool dispatchPossibly(const Expression& o) const;
-  virtual bool possibly(const VarReference& o) const;
-  virtual bool possibly(const Parameter& o) const;
+  virtual bool possibly(const LocalVariable& o) const;
 };
 }

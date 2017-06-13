@@ -21,7 +21,7 @@ public:
   virtual void visit(const File* o);
   virtual void visit(const Import* o);
 
-  virtual void visit(const VarParameter* o);
+  virtual void visit(const GlobalVariable* o);
   virtual void visit(const Function* o);
   virtual void visit(const Coroutine* o);
   virtual void visit(const Program* o);

@@ -41,10 +41,10 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
     if (o->parens->tupleSize() > 0) {
       finish(" :");
       in();
-      Gatherer<VarParameter> gatherer;
+      Gatherer<Parameter> gatherer;
       o->parens->accept(&gatherer);
       for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
-        const VarParameter* param = *iter;
+        const Parameter* param = *iter;
         if (iter != gatherer.begin()) {
           finish(',');
         }
@@ -107,10 +107,10 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
     in();
 
     /* parameters and local variables as class member variables */
-    Gatherer<VarParameter> gatherer;
+    Gatherer<Parameter> gatherer;
     o->accept(&gatherer);
     for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
-      const VarParameter* param = *iter;
+      const Parameter* param = *iter;
       line(param->type << ' ' << param->name << '_' << param->number << "_;");
     }
 
@@ -154,7 +154,7 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
       if (iter != o->parens->begin()) {
         middle(", ");
       }
-      const VarParameter* param = dynamic_cast<const VarParameter*>(*iter);
+      const Parameter* param = dynamic_cast<const Parameter*>(*iter);
       assert(param);
       middle(param->name);
     }
@@ -180,37 +180,18 @@ void bi::CppCoroutineGenerator::visit(const VarReference* o) {
   middle(o->name << '_' << o->target->number << '_');
 }
 
-void bi::CppCoroutineGenerator::visit(const VarParameter* o) {
-  if (o->type->isClass() || !o->parens->isEmpty() || o->type->count() > 0) {
+void bi::CppCoroutineGenerator::visit(const LocalVariable* o) {
+  if (o->type->isClass() || o->type->count() > 0) {
     middle(o->name << '_' << o->number << '_');
   }
   if (o->type->isClass()) {
     TypeReference* type = dynamic_cast<TypeReference*>(o->type->strip());
     assert(type);
-    middle(" = new (GC_MALLOC(sizeof(bi::type::" << type->name << "))) bi::type::" << type->name << '(');
-  } else if (!o->parens->isEmpty() || o->type->count() > 0) {
-    middle('(');
+    middle(" = new (GC_MALLOC(sizeof(bi::type::" << type->name << "))) bi::type::" << type->name << "()");
   }
   if (o->type->count() > 0) {
     BracketsType* type = dynamic_cast<BracketsType*>(o->type->strip());
     assert(type);
-    middle("make_frame(" << type->brackets << ")");
-  }
-  if (!o->parens->isEmpty()) {
-    if (o->type->count() > 0) {
-      middle(", ");
-    }
-    middle(o->parens->strip());
-  }
-  if (o->type->isClass() || !o->parens->isEmpty() || o->type->count() > 0) {
-    middle(')');
-  }
-  if (!o->value->isEmpty()) {
-    if (o->type->isClass()) {
-      ///@todo How to handle this case?
-      assert(false);
-    } else {
-      middle(" = " << o->value);
-    }
+    middle("(make_frame(" << type->brackets << "))");
   }
 }

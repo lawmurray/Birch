@@ -115,43 +115,46 @@ void bi::CppBaseGenerator::visit(const Member* o) {
 
 }
 
-void bi::CppBaseGenerator::visit(const VarReference* o) {
-  middle(o->name);
+void bi::CppBaseGenerator::visit(const Parameter* o) {
+  middle(o->type << ' ' << o->name);
 }
 
-void bi::CppBaseGenerator::visit(const VarParameter* o) {
+void bi::CppBaseGenerator::visit(const GlobalVariable* o) {
   middle(o->type << ' ' << o->name);
   if (o->type->isClass()) {
     TypeReference* type = dynamic_cast<TypeReference*>(o->type->strip());
     assert(type);
     middle(
-        " = new (GC_MALLOC(sizeof(bi::type::" << type->name << "))) bi::type::" << type->name << '(');
-  } else if (!o->parens->isEmpty() || o->type->count() > 0) {
-    middle('(');
+        " = new (GC_MALLOC(sizeof(bi::type::" << type->name << "))) bi::type::" << type->name << "()");
   }
   if (o->type->count() > 0) {
     BracketsType* type = dynamic_cast<BracketsType*>(o->type->strip());
     assert(type);
-    middle("make_frame(" << type->brackets << ")");
+    middle("(make_frame(" << type->brackets << "))");
   }
-  if (!o->parens->isEmpty()) {
-    if (o->type->count() > 0) {
-      middle(", ");
-    }
-    middle(o->parens->strip());
+}
+
+void bi::CppBaseGenerator::visit(const LocalVariable* o) {
+  middle(o->type << ' ' << o->name);
+  if (o->type->isClass()) {
+    TypeReference* type = dynamic_cast<TypeReference*>(o->type->strip());
+    assert(type);
+    middle(
+        " = new (GC_MALLOC(sizeof(bi::type::" << type->name << "))) bi::type::" << type->name << "()");
   }
-  if (o->type->isClass() || !o->parens->isEmpty() || o->type->count() > 0) {
-    middle(')');
+  if (o->type->count() > 0) {
+    BracketsType* type = dynamic_cast<BracketsType*>(o->type->strip());
+    assert(type);
+    middle("(make_frame(" << type->brackets << "))");
   }
-  if (!o->value->isEmpty()) {
-    if (o->type->isClass()) {
-      ///@todo How to handle this case?
-      assert(false);
-    } else {
-      middle(" = " << o->value);
-    }
-  }
-  finish(';');
+}
+
+void bi::CppBaseGenerator::visit(const MemberVariable* o) {
+  middle(o->type << ' ' << o->name);
+}
+
+void bi::CppBaseGenerator::visit(const VarReference* o) {
+  middle(o->name);
 }
 
 void bi::CppBaseGenerator::visit(const FuncReference* o) {

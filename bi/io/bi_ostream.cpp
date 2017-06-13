@@ -79,19 +79,27 @@ void bi::bi_ostream::visit(const BracketsExpression* o) {
   *this << o->single << '[' << o->brackets << ']';
 }
 
-void bi::bi_ostream::visit(const VarReference* o) {
-  *this << o->name;
-}
-
-void bi::bi_ostream::visit(const VarParameter* o) {
+void bi::bi_ostream::visit(const Parameter* o) {
   *this << o->name << ':' << o->type;
-  if (!o->parens->isEmpty()) {
-    *this << '(' << o->parens << ')';
-  }
   if (!o->value->isEmpty()) {
     *this << " <- " << o->value;
   }
-  finish(';');
+}
+
+void bi::bi_ostream::visit(const GlobalVariable* o) {
+  *this << o->name << ':' << o->type;
+}
+
+void bi::bi_ostream::visit(const LocalVariable* o) {
+  *this << o->name << ':' << o->type;
+}
+
+void bi::bi_ostream::visit(const MemberVariable* o) {
+  *this << o->name << ':' << o->type;
+}
+
+void bi::bi_ostream::visit(const VarReference* o) {
+  *this << o->name;
 }
 
 void bi::bi_ostream::visit(const FuncReference* o) {

@@ -76,7 +76,7 @@ void bi::CppTypeGenerator::visit(const TypeReference* o) {
   }
 }
 
-void bi::CppTypeGenerator::visit(const VarParameter* o) {
+void bi::CppTypeGenerator::visit(const MemberVariable* o) {
   if (header) {
     line(o->type << ' ' << o->name << ';');
   }

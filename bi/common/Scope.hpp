@@ -13,7 +13,10 @@
 #include <set>
 
 namespace bi {
-class VarParameter;
+class Parameter;
+class GlobalVariable;
+class LocalVariable;
+class MemberVariable;
 class Function;
 class Coroutine;
 class MemberFunction;
@@ -46,7 +49,10 @@ public:
    * For functions, matching is done by signature. For all others, matching
    * is done by name only.
    */
-  bool contains(VarParameter* param);
+  bool contains(Parameter* param);
+  bool contains(GlobalVariable* param);
+  bool contains(LocalVariable* param);
+  bool contains(MemberVariable* param);
   bool contains(Function* param);
   bool contains(Coroutine* param);
   bool contains(Program* param);
@@ -62,7 +68,10 @@ public:
    *
    * @param param Parameter.
    */
-  void add(VarParameter* param);
+  void add(Parameter* param);
+  void add(GlobalVariable* param);
+  void add(LocalVariable* param);
+  void add(MemberVariable* param);
   void add(Function* param);
   void add(Coroutine* param);
   void add(Program* param);
@@ -111,16 +120,19 @@ public:
   /*
    * Dictionaries.
    */
-  Dictionary<VarParameter> vars;
-  Dictionary<TypeParameter> types;
+  Dictionary<Parameter> parameters;
+  Dictionary<GlobalVariable> globalVariables;
+  Dictionary<LocalVariable> localVariables;
+  Dictionary<MemberVariable> memberVariables;
   OverloadedDictionary<Function,definitely> functions;
   OverloadedDictionary<Coroutine,definitely> coroutines;
+  Dictionary<Program> programs;
   OverloadedDictionary<MemberFunction,definitely> memberFunctions;
   OverloadedDictionary<BinaryOperator,definitely> binaryOperators;
   OverloadedDictionary<UnaryOperator,definitely> unaryOperators;
   OverloadedDictionary<AssignmentOperator,definitely> assignmentOperators;
   OverloadedSet<ConversionOperator,definitely> conversionOperators;
-  Dictionary<Program> programs;
+  Dictionary<TypeParameter> types;
 
 private:
   /**

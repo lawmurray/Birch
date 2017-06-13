@@ -56,17 +56,13 @@ void bi::CppFileGenerator::visit(const Import* o) {
   }
 }
 
-void bi::CppFileGenerator::visit(const VarParameter* o) {
+void bi::CppFileGenerator::visit(const GlobalVariable* o) {
   if (header) {
     line("namespace bi {");
     line("extern " << o->type << ' ' << o->name << ';');
     line("}\n");
   } else {
     start(o->type << " bi::" << o->name);
-    if (!o->value->isEmpty()) {
-      middle(" = " << o->value);
-    }
-    finish(';');
   }
 }
 
@@ -147,7 +143,7 @@ void bi::CppFileGenerator::visit(const Program* o) {
       in();
       for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
         std::string flag =
-            dynamic_cast<const VarParameter*>(*iter)->name->str() + "_ARG_";
+            dynamic_cast<const Parameter*>(*iter)->name->str() + "_ARG_";
         boost::to_upper(flag);
         start(flag);
         if (iter == o->parens->begin()) {
@@ -164,7 +160,7 @@ void bi::CppFileGenerator::visit(const Program* o) {
       in();
       for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
         const std::string& name =
-            dynamic_cast<const VarParameter*>(*iter)->name->str();
+            dynamic_cast<const Parameter*>(*iter)->name->str();
         //if (name.length() > 1) {
         std::string flag = name + "_ARG_";
         boost::to_upper(flag);
@@ -182,7 +178,7 @@ void bi::CppFileGenerator::visit(const Program* o) {
       /* short options */
       start("const char* short_options_ = \"");
       //for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
-      //  const std::string& name = dynamic_cast<const VarParameter*>(*iter)->name->str();
+      //  const std::string& name = dynamic_cast<const Parameter*>(*iter)->name->str();
       //  if (name.length() == 1) {
       //    middle(name << ':');
       //  }
@@ -200,7 +196,7 @@ void bi::CppFileGenerator::visit(const Program* o) {
 
       for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
         const std::string& name =
-            dynamic_cast<const VarParameter*>(*iter)->name->str();
+            dynamic_cast<const Parameter*>(*iter)->name->str();
         std::string flag = name + "_ARG_";
         boost::to_upper(flag);
 
