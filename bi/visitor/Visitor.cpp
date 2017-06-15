@@ -92,10 +92,6 @@ void bi::Visitor::visit(const Member* o) {
   o->right->accept(this);
 }
 
-void bi::Visitor::visit(const VarReference* o) {
-  //
-}
-
 void bi::Visitor::visit(const Parameter* o) {
   o->type->accept(this);
   o->value->accept(this);
@@ -113,18 +109,47 @@ void bi::Visitor::visit(const MemberVariable* o) {
   o->type->accept(this);
 }
 
-void bi::Visitor::visit(const FuncReference* o) {
+void bi::Visitor::visit(const Identifier<Unknown>* o) {
   o->parens->accept(this);
 }
 
-void bi::Visitor::visit(const BinaryReference* o) {
+void bi::Visitor::visit(const Identifier<Parameter>* o) {
+  o->parens->accept(this);
+}
+
+void bi::Visitor::visit(const Identifier<GlobalVariable>* o) {
+  o->parens->accept(this);
+}
+
+void bi::Visitor::visit(const Identifier<LocalVariable>* o) {
+  o->parens->accept(this);
+}
+
+void bi::Visitor::visit(const Identifier<MemberVariable>* o) {
+  o->parens->accept(this);
+}
+
+void bi::Visitor::visit(const Identifier<Function>* o) {
+  o->parens->accept(this);
+}
+
+void bi::Visitor::visit(const Identifier<Coroutine>* o) {
+  o->parens->accept(this);
+}
+
+void bi::Visitor::visit(const Identifier<MemberFunction>* o) {
+  o->parens->accept(this);
+}
+
+void bi::Visitor::visit(const Identifier<BinaryOperator>* o) {
   o->left->accept(this);
   o->right->accept(this);
 }
 
-void bi::Visitor::visit(const UnaryReference* o) {
+void bi::Visitor::visit(const Identifier<UnaryOperator>* o) {
   o->single->accept(this);
 }
+
 
 void bi::Visitor::visit(const EmptyStatement* o) {
   //

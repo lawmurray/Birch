@@ -3,7 +3,6 @@
  */
 #include "bi/expression/Parameter.hpp"
 
-#include "bi/expression/VarReference.hpp"
 #include "bi/visitor/all.hpp"
 
 bi::Parameter::Parameter(shared_ptr<Name> name, Type* type, Expression* value,

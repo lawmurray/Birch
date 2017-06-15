@@ -78,10 +78,6 @@ bi::Expression* bi::Cloner::clone(const Super* o) {
   return new Super(o->loc);
 }
 
-bi::Expression* bi::Cloner::clone(const VarReference* o) {
-  return new VarReference(o->name, o->loc);
-}
-
 bi::Expression* bi::Cloner::clone(const Parameter* o) {
   return new Parameter(o->name, o->type->accept(this), o->value->accept(this),
       o->loc);
@@ -99,17 +95,45 @@ bi::Expression* bi::Cloner::clone(const MemberVariable* o) {
   return new GlobalVariable(o->name, o->type->accept(this), o->loc);
 }
 
-bi::Expression* bi::Cloner::clone(const FuncReference* o) {
-  return new FuncReference(o->name, o->parens->accept(this), o->loc);
+bi::Expression* bi::Cloner::clone(const Identifier<Unknown>* o) {
+  return new Identifier<Unknown>(o->name, o->parens->accept(this), o->loc);
 }
 
-bi::Expression* bi::Cloner::clone(const BinaryReference* o) {
-  return new BinaryReference(o->left->accept(this), o->name,
+bi::Expression* bi::Cloner::clone(const Identifier<Parameter>* o) {
+  return new Identifier<Parameter>(o->name, o->parens->accept(this), o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(const Identifier<GlobalVariable>* o) {
+  return new Identifier<GlobalVariable>(o->name, o->parens->accept(this), o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(const Identifier<LocalVariable>* o) {
+  return new Identifier<LocalVariable>(o->name, o->parens->accept(this), o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(const Identifier<MemberVariable>* o) {
+  return new Identifier<MemberVariable>(o->name, o->parens->accept(this), o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(const Identifier<Function>* o) {
+  return new Identifier<Function>(o->name, o->parens->accept(this), o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(const Identifier<Coroutine>* o) {
+  return new Identifier<Coroutine>(o->name, o->parens->accept(this), o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(const Identifier<MemberFunction>* o) {
+  return new Identifier<MemberFunction>(o->name, o->parens->accept(this), o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(const Identifier<BinaryOperator>* o) {
+  return new Identifier<BinaryOperator>(o->left->accept(this), o->name,
       o->right->accept(this), o->loc);
 }
 
-bi::Expression* bi::Cloner::clone(const UnaryReference* o) {
-  return new UnaryReference(o->name, o->single->accept(this), o->loc);
+bi::Expression* bi::Cloner::clone(const Identifier<UnaryOperator>* o) {
+  return new Identifier<UnaryOperator>(o->name, o->single->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const EmptyStatement* o) {

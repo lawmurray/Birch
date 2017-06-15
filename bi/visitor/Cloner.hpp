@@ -4,7 +4,6 @@
 #pragma once
 
 #include "bi/expression/all.hpp"
-#include "bi/expression/all.hpp"
 #include "bi/statement/all.hpp"
 #include "bi/type/all.hpp"
 
@@ -39,14 +38,20 @@ public:
   virtual Expression* clone(const Member* o);
   virtual Expression* clone(const Super* o);
   virtual Expression* clone(const This* o);
-  virtual Expression* clone(const VarReference* o);
   virtual Expression* clone(const Parameter* o);
   virtual Expression* clone(const GlobalVariable* o);
   virtual Expression* clone(const LocalVariable* o);
   virtual Expression* clone(const MemberVariable* o);
-  virtual Expression* clone(const FuncReference* o);
-  virtual Expression* clone(const BinaryReference* o);
-  virtual Expression* clone(const UnaryReference* o);
+  virtual Expression* clone(const Identifier<Unknown>* o);
+  virtual Expression* clone(const Identifier<Parameter>* o);
+  virtual Expression* clone(const Identifier<GlobalVariable>* o);
+  virtual Expression* clone(const Identifier<LocalVariable>* o);
+  virtual Expression* clone(const Identifier<MemberVariable>* o);
+  virtual Expression* clone(const Identifier<Function>* o);
+  virtual Expression* clone(const Identifier<Coroutine>* o);
+  virtual Expression* clone(const Identifier<MemberFunction>* o);
+  virtual Expression* clone(const Identifier<BinaryOperator>* o);
+  virtual Expression* clone(const Identifier<UnaryOperator>* o);
 
   virtual Statement* clone(const EmptyStatement* o);
   virtual Statement* clone(const List<Statement>* o);

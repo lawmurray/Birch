@@ -38,10 +38,6 @@ bool bi::ParenthesesExpression::dispatchDefinitely(
   return o.definitely(*this) || single->dispatchDefinitely(o);
 }
 
-bool bi::ParenthesesExpression::definitely(const BinaryReference& o) const {
-  return single->definitely(o);
-}
-
 bool bi::ParenthesesExpression::definitely(const BracesExpression& o) const {
   return single->definitely(o);
 }
@@ -55,11 +51,56 @@ bool bi::ParenthesesExpression::definitely(const EmptyExpression& o) const {
   return single->definitely(o);
 }
 
-bool bi::ParenthesesExpression::definitely(const FuncReference& o) const {
+bool bi::ParenthesesExpression::definitely(const GlobalVariable& o) const {
   return single->definitely(o);
 }
 
-bool bi::ParenthesesExpression::definitely(const GlobalVariable& o) const {
+bool bi::ParenthesesExpression::definitely(
+    const Identifier<Parameter>& o) const {
+  return single->definitely(o);
+}
+
+bool bi::ParenthesesExpression::definitely(
+    const Identifier<GlobalVariable>& o) const {
+  return single->definitely(o);
+}
+
+bool bi::ParenthesesExpression::definitely(
+    const Identifier<LocalVariable>& o) const {
+  return single->definitely(o);
+}
+
+bool bi::ParenthesesExpression::definitely(
+    const Identifier<MemberVariable>& o) const {
+  return single->definitely(o);
+}
+
+bool bi::ParenthesesExpression::definitely(
+    const Identifier<Function>& o) const {
+  return single->definitely(o);
+}
+
+bool bi::ParenthesesExpression::definitely(
+    const Identifier<Coroutine>& o) const {
+  return single->definitely(o);
+}
+
+bool bi::ParenthesesExpression::definitely(
+    const Identifier<MemberFunction>& o) const {
+  return single->definitely(o);
+}
+
+bool bi::ParenthesesExpression::definitely(
+    const Identifier<BinaryOperator>& o) const {
+  return single->definitely(o);
+}
+
+bool bi::ParenthesesExpression::definitely(
+    const Identifier<UnaryOperator>& o) const {
+  return single->definitely(o);
+}
+
+bool bi::ParenthesesExpression::definitely(const Index& o) const {
   return single->definitely(o);
 }
 
@@ -124,20 +165,8 @@ bool bi::ParenthesesExpression::definitely(const This& o) const {
   return single->definitely(o);
 }
 
-bool bi::ParenthesesExpression::definitely(const UnaryReference& o) const {
-  return single->definitely(o);
-}
-
-bool bi::ParenthesesExpression::definitely(const VarReference& o) const {
-  return single->definitely(o);
-}
-
 bool bi::ParenthesesExpression::dispatchPossibly(const Expression& o) const {
   return o.possibly(*this) || single->dispatchPossibly(o);
-}
-
-bool bi::ParenthesesExpression::possibly(const BinaryReference& o) const {
-  return single->possibly(o);
 }
 
 bool bi::ParenthesesExpression::possibly(const BracesExpression& o) const {
@@ -152,11 +181,56 @@ bool bi::ParenthesesExpression::possibly(const EmptyExpression& o) const {
   return single->possibly(o);
 }
 
-bool bi::ParenthesesExpression::possibly(const FuncReference& o) const {
+bool bi::ParenthesesExpression::possibly(const GlobalVariable& o) const {
   return single->possibly(o);
 }
 
-bool bi::ParenthesesExpression::possibly(const GlobalVariable& o) const {
+bool bi::ParenthesesExpression::possibly(
+    const Identifier<Parameter>& o) const {
+  return single->possibly(o);
+}
+
+bool bi::ParenthesesExpression::possibly(
+    const Identifier<GlobalVariable>& o) const {
+  return single->possibly(o);
+}
+
+bool bi::ParenthesesExpression::possibly(
+    const Identifier<LocalVariable>& o) const {
+  return single->possibly(o);
+}
+
+bool bi::ParenthesesExpression::possibly(
+    const Identifier<MemberVariable>& o) const {
+  return single->possibly(o);
+}
+
+bool bi::ParenthesesExpression::possibly(
+    const Identifier<Function>& o) const {
+  return single->possibly(o);
+}
+
+bool bi::ParenthesesExpression::possibly(
+    const Identifier<Coroutine>& o) const {
+  return single->possibly(o);
+}
+
+bool bi::ParenthesesExpression::possibly(
+    const Identifier<MemberFunction>& o) const {
+  return single->possibly(o);
+}
+
+bool bi::ParenthesesExpression::possibly(
+    const Identifier<BinaryOperator>& o) const {
+  return single->possibly(o);
+}
+
+bool bi::ParenthesesExpression::possibly(
+    const Identifier<UnaryOperator>& o) const {
+  return single->possibly(o);
+}
+
+bool bi::ParenthesesExpression::possibly(const Index& o) const {
   return single->possibly(o);
 }
 
@@ -218,13 +292,5 @@ bool bi::ParenthesesExpression::possibly(const Super& o) const {
 }
 
 bool bi::ParenthesesExpression::possibly(const This& o) const {
-  return single->possibly(o);
-}
-
-bool bi::ParenthesesExpression::possibly(const UnaryReference& o) const {
-  return single->possibly(o);
-}
-
-bool bi::ParenthesesExpression::possibly(const VarReference& o) const {
   return single->possibly(o);
 }

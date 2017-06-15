@@ -17,10 +17,7 @@
 #include "bi/statement/ConversionOperator.hpp"
 #include "bi/type/TypeParameter.hpp"
 
-#include "bi/expression/VarReference.hpp"
-#include "bi/expression/FuncReference.hpp"
-#include "bi/expression/BinaryReference.hpp"
-#include "bi/expression/UnaryReference.hpp"
+#include "bi/expression/Identifier.hpp"
 #include "bi/statement/Assignment.hpp"
 #include "bi/type/TypeReference.hpp"
 
@@ -69,33 +66,23 @@ ADD_IMPL(AssignmentOperator, assignmentOperators)
 ADD_IMPL(ConversionOperator, conversionOperators)
 ADD_IMPL(TypeParameter, types)
 
-void bi::Scope::resolve(VarReference* ref) {
-  parameters.resolve(ref);
-  if (ref->matches.size() == 0) {
-    resolveDefer(ref);
+#define RESOLVE_IMPL(type, container) \
+  void bi::Scope::resolve(Identifier<type>* ref) { \
+    container.resolve(ref); \
+    if (ref->matches.size() == 0) { \
+      resolveDefer(ref); \
+    } \
   }
-}
 
-void bi::Scope::resolve(FuncReference* ref) {
-  functions.resolve(ref);
-  if (ref->matches.size() == 0) {
-    resolveDefer(ref);
-  }
-}
-
-void bi::Scope::resolve(BinaryReference* ref) {
-  binaryOperators.resolve(ref);
-  if (ref->matches.size() == 0) {
-    resolveDefer(ref);
-  }
-}
-
-void bi::Scope::resolve(UnaryReference* ref) {
-  unaryOperators.resolve(ref);
-  if (ref->matches.size() == 0) {
-    resolveDefer(ref);
-  }
-}
+RESOLVE_IMPL(Parameter, parameters)
+RESOLVE_IMPL(GlobalVariable, globalVariables)
+RESOLVE_IMPL(LocalVariable, localVariables)
+RESOLVE_IMPL(MemberVariable, memberVariables)
+RESOLVE_IMPL(Function, functions)
+RESOLVE_IMPL(Coroutine, coroutines)
+RESOLVE_IMPL(MemberFunction, memberFunctions)
+RESOLVE_IMPL(BinaryOperator, binaryOperators)
+RESOLVE_IMPL(UnaryOperator, unaryOperators)
 
 void bi::Scope::resolve(Assignment* ref) {
   assignmentOperators.resolve(ref);

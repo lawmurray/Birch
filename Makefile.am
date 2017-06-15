@@ -59,13 +59,12 @@ birchc_SOURCES = \
   bi/exception/ThisException.cpp \
   bi/exception/UnresolvedReferenceException.cpp \
   bi/exception/UnsupportedOptionTypeException.cpp \
-  bi/expression/BinaryReference.cpp \
   bi/expression/BracesExpression.cpp \
   bi/expression/BracketsExpression.cpp \
   bi/expression/EmptyExpression.cpp \
   bi/expression/Expression.cpp \
-  bi/expression/FuncReference.cpp \
   bi/expression/GlobalVariable.cpp \
+  bi/expression/Identifier.cpp \
   bi/expression/Index.cpp \
   bi/expression/LambdaFunction.cpp \
   bi/expression/Literal.cpp \
@@ -78,8 +77,6 @@ birchc_SOURCES = \
   bi/expression/Span.cpp \
   bi/expression/Super.cpp \
   bi/expression/This.cpp \
-  bi/expression/UnaryReference.cpp \
-  bi/expression/VarReference.cpp \
   bi/io/cpp/CppBaseGenerator.cpp \
   bi/io/cpp/CppConstructorGenerator.cpp \
   bi/io/cpp/CppCoroutineGenerator.cpp \
@@ -207,13 +204,12 @@ noinst_HEADERS = \
   bi/exception/UnresolvedReferenceException.hpp \
   bi/exception/UnsupportedOptionTypeException.hpp \
   bi/expression/all.hpp \
-  bi/expression/BinaryReference.hpp \
   bi/expression/BracesExpression.hpp \
   bi/expression/BracketsExpression.hpp \
   bi/expression/EmptyExpression.hpp \
   bi/expression/Expression.hpp \
-  bi/expression/FuncReference.hpp \
   bi/expression/GlobalVariable.hpp \
+  bi/expression/Identifier.hpp \
   bi/expression/Index.hpp \
   bi/expression/LambdaFunction.hpp \
   bi/expression/Literal.hpp \
@@ -226,8 +222,6 @@ noinst_HEADERS = \
   bi/expression/Span.hpp \
   bi/expression/Super.hpp \
   bi/expression/This.hpp \
-  bi/expression/UnaryReference.hpp \
-  bi/expression/VarReference.hpp \
   bi/io/bi_ostream.hpp \
   bi/io/bih_ostream.hpp \
   bi/io/cpp/CppBaseGenerator.hpp \

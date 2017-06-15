@@ -139,16 +139,6 @@ bi::Expression* bi::Resolver::modify(Super* o) {
   return o;
 }
 
-bi::Expression* bi::Resolver::modify(VarReference* o) {
-  Scope* memberScope = takeMemberScope();
-  Modifier::modify(o);
-  if (!o->name->isEmpty()) {
-    resolve(o, memberScope);
-    o->type = o->target->type->accept(&cloner)->accept(this);
-  }
-  return o;
-}
-
 bi::Expression* bi::Resolver::modify(Parameter* o) {
   Modifier::modify(o);
   if (!o->name->isEmpty()) {
@@ -178,21 +168,44 @@ bi::Expression* bi::Resolver::modify(MemberVariable* o) {
   return o;
 }
 
-bi::Expression* bi::Resolver::modify(FuncReference* o) {
-  Scope* memberScope = takeMemberScope();
-  Modifier::modify(o);
-  resolve(o, memberScope);
-  //if (o->target->isCoroutine() && !o->target->isLambda()) {
-  //  o->type = new CoroutineType(
-  //      o->target->type->accept(&cloner)->accept(this));
-  //} else {
-    o->type = o->target->returnType->accept(&cloner)->accept(this);
-  //}
-  o->type->assignable = false;  // rvalue
+bi::Expression* bi::Resolver::modify(Identifier<Unknown>* o) {
+  /* determine specific type of this identifier */
   return o;
 }
 
-bi::Expression* bi::Resolver::modify(BinaryReference* o) {
+bi::Expression* bi::Resolver::modify(Identifier<Parameter>* o) {
+  Scope* memberScope = takeMemberScope();
+  Modifier::modify(o);
+  resolve(o, memberScope);
+  o->type = o->target->type->accept(&cloner)->accept(this);
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(Identifier<GlobalVariable>* o) {
+  Scope* memberScope = takeMemberScope();
+  Modifier::modify(o);
+  resolve(o, memberScope);
+  o->type = o->target->type->accept(&cloner)->accept(this);
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(Identifier<LocalVariable>* o) {
+  Scope* memberScope = takeMemberScope();
+  Modifier::modify(o);
+  resolve(o, memberScope);
+  o->type = o->target->type->accept(&cloner)->accept(this);
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(Identifier<MemberVariable>* o) {
+  Scope* memberScope = takeMemberScope();
+  Modifier::modify(o);
+  resolve(o, memberScope);
+  o->type = o->target->type->accept(&cloner)->accept(this);
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(Identifier<Function>* o) {
   Scope* memberScope = takeMemberScope();
   Modifier::modify(o);
   resolve(o, memberScope);
@@ -201,7 +214,34 @@ bi::Expression* bi::Resolver::modify(BinaryReference* o) {
   return o;
 }
 
-bi::Expression* bi::Resolver::modify(UnaryReference* o) {
+bi::Expression* bi::Resolver::modify(Identifier<Coroutine>* o) {
+  Scope* memberScope = takeMemberScope();
+  Modifier::modify(o);
+  resolve(o, memberScope);
+  o->type = new CoroutineType(o->target->returnType->accept(&cloner)->accept(this));
+  o->type->assignable = false;  // rvalue
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(Identifier<MemberFunction>* o) {
+  Scope* memberScope = takeMemberScope();
+  Modifier::modify(o);
+  resolve(o, memberScope);
+  o->type = o->target->returnType->accept(&cloner)->accept(this);
+  o->type->assignable = false;  // rvalue
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(Identifier<BinaryOperator>* o) {
+  Scope* memberScope = takeMemberScope();
+  Modifier::modify(o);
+  resolve(o, memberScope);
+  o->type = o->target->returnType->accept(&cloner)->accept(this);
+  o->type->assignable = false;  // rvalue
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(Identifier<UnaryOperator>* o) {
   Scope* memberScope = takeMemberScope();
   Modifier::modify(o);
   resolve(o, memberScope);

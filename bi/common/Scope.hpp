@@ -27,10 +27,7 @@ class AssignmentOperator;
 class ConversionOperator;
 class TypeParameter;
 
-class VarReference;
-class FuncReference;
-class BinaryReference;
-class UnaryReference;
+template<class ObjectType> class Identifier;
 class Assignment;
 class TypeReference;
 
@@ -89,10 +86,16 @@ public:
    *
    * @return Target of the reference.
    */
-  void resolve(VarReference* ref);
-  void resolve(FuncReference* ref);
-  void resolve(BinaryReference* ref);
-  void resolve(UnaryReference* ref);
+  void resolve(Identifier<Parameter>* ref);
+  void resolve(Identifier<GlobalVariable>* ref);
+  void resolve(Identifier<LocalVariable>* ref);
+  void resolve(Identifier<MemberVariable>* ref);
+  void resolve(Identifier<Function>* ref);
+  void resolve(Identifier<Coroutine>* ref);
+  void resolve(Identifier<Program>* ref);
+  void resolve(Identifier<MemberFunction>* ref);
+  void resolve(Identifier<BinaryOperator>* ref);
+  void resolve(Identifier<UnaryOperator>* ref);
   void resolve(Assignment* ref);
   void resolve(TypeReference* ref);
 

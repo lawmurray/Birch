@@ -20,7 +20,7 @@ public:
 
   virtual void visit(const Coroutine* o);
   virtual void visit(const Return* o);
-  virtual void visit(const VarReference* o);
+  virtual void visit(const Identifier<LocalVariable>* o);
   virtual void visit(const LocalVariable* o);
 
 private:

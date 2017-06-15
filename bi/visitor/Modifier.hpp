@@ -4,7 +4,6 @@
 #pragma once
 
 #include "bi/expression/all.hpp"
-#include "bi/expression/all.hpp"
 #include "bi/statement/all.hpp"
 #include "bi/type/all.hpp"
 
@@ -38,14 +37,20 @@ public:
   virtual Expression* modify(Member* o);
   virtual Expression* modify(Super* o);
   virtual Expression* modify(This* o);
-  virtual Expression* modify(VarReference* o);
   virtual Expression* modify(Parameter* o);
   virtual Expression* modify(GlobalVariable* o);
   virtual Expression* modify(LocalVariable* o);
   virtual Expression* modify(MemberVariable* o);
-  virtual Expression* modify(FuncReference* o);
-  virtual Expression* modify(BinaryReference* o);
-  virtual Expression* modify(UnaryReference* o);
+  virtual Expression* modify(Identifier<Unknown>* o);
+  virtual Expression* modify(Identifier<Parameter>* o);
+  virtual Expression* modify(Identifier<GlobalVariable>* o);
+  virtual Expression* modify(Identifier<LocalVariable>* o);
+  virtual Expression* modify(Identifier<MemberVariable>* o);
+  virtual Expression* modify(Identifier<Function>* o);
+  virtual Expression* modify(Identifier<Coroutine>* o);
+  virtual Expression* modify(Identifier<MemberFunction>* o);
+  virtual Expression* modify(Identifier<BinaryOperator>* o);
+  virtual Expression* modify(Identifier<UnaryOperator>* o);
 
   virtual Statement* modify(EmptyStatement* o);
   virtual Statement* modify(List<Statement>* o);

@@ -13,13 +13,12 @@ class Cloner;
 class Modifier;
 class Visitor;
 
-class BinaryReference;
 class BracesExpression;
 class BracketsExpression;
 class EmptyExpression;
-class FuncReference;
 class GlobalVariable;
 class Index;
+template<class T> class Identifier;
 template<class T> class Iterator;
 class LambdaFunction;
 template<class T> class List;
@@ -33,8 +32,12 @@ class Range;
 class Span;
 class Super;
 class This;
-class UnaryReference;
-class VarReference;
+
+class Function;
+class Coroutine;
+class MemberFunction;
+class BinaryOperator;
+class UnaryOperator;
 
 /**
  * Expression.
@@ -129,12 +132,19 @@ public:
    */
   bool definitely(const Expression& o) const;
   virtual bool dispatchDefinitely(const Expression& o) const = 0;
-  virtual bool definitely(const BinaryReference& o) const;
   virtual bool definitely(const BracesExpression& o) const;
   virtual bool definitely(const BracketsExpression& o) const;
   virtual bool definitely(const EmptyExpression& o) const;
-  virtual bool definitely(const FuncReference& o) const;
   virtual bool definitely(const GlobalVariable& o) const;
+  virtual bool definitely(const Identifier<Parameter>& o) const;
+  virtual bool definitely(const Identifier<GlobalVariable>& o) const;
+  virtual bool definitely(const Identifier<LocalVariable>& o) const;
+  virtual bool definitely(const Identifier<MemberVariable>& o) const;
+  virtual bool definitely(const Identifier<Function>& o) const;
+  virtual bool definitely(const Identifier<Coroutine>& o) const;
+  virtual bool definitely(const Identifier<MemberFunction>& o) const;
+  virtual bool definitely(const Identifier<BinaryOperator>& o) const;
+  virtual bool definitely(const Identifier<UnaryOperator>& o) const;
   virtual bool definitely(const Index& o) const;
   virtual bool definitely(const LambdaFunction& o) const;
   virtual bool definitely(const List<Expression>& o) const;
@@ -151,17 +161,22 @@ public:
   virtual bool definitely(const Span& o) const;
   virtual bool definitely(const Super& o) const;
   virtual bool definitely(const This& o) const;
-  virtual bool definitely(const UnaryReference& o) const;
-  virtual bool definitely(const VarReference& o) const;
 
   bool possibly(const Expression& o) const;
   virtual bool dispatchPossibly(const Expression& o) const = 0;
-  virtual bool possibly(const BinaryReference& o) const;
   virtual bool possibly(const BracesExpression& o) const;
   virtual bool possibly(const BracketsExpression& o) const;
   virtual bool possibly(const EmptyExpression& o) const;
-  virtual bool possibly(const FuncReference& o) const;
   virtual bool possibly(const GlobalVariable& o) const;
+  virtual bool possibly(const Identifier<Parameter>& o) const;
+  virtual bool possibly(const Identifier<GlobalVariable>& o) const;
+  virtual bool possibly(const Identifier<LocalVariable>& o) const;
+  virtual bool possibly(const Identifier<MemberVariable>& o) const;
+  virtual bool possibly(const Identifier<Function>& o) const;
+  virtual bool possibly(const Identifier<Coroutine>& o) const;
+  virtual bool possibly(const Identifier<MemberFunction>& o) const;
+  virtual bool possibly(const Identifier<BinaryOperator>& o) const;
+  virtual bool possibly(const Identifier<UnaryOperator>& o) const;
   virtual bool possibly(const Index& o) const;
   virtual bool possibly(const LambdaFunction& o) const;
   virtual bool possibly(const List<Expression>& o) const;
@@ -178,8 +193,6 @@ public:
   virtual bool possibly(const Span& o) const;
   virtual bool possibly(const Super& o) const;
   virtual bool possibly(const This& o) const;
-  virtual bool possibly(const UnaryReference& o) const;
-  virtual bool possibly(const VarReference& o) const;
 
   /**
    * Operators for equality comparisons.

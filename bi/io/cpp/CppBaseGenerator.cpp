@@ -52,11 +52,7 @@ void bi::CppBaseGenerator::visit(const ParenthesesExpression* o) {
 }
 
 void bi::CppBaseGenerator::visit(const BracesExpression* o) {
-  //finish('{');
-  //in();
   *this << o->single;
-  //out();
-  //start('}');
 }
 
 void bi::CppBaseGenerator::visit(const BracketsExpression* o) {
@@ -86,14 +82,6 @@ void bi::CppBaseGenerator::visit(const Range* o) {
   middle("make_range(" << o->left << " - 1, " << o->right << " - 1)");
 }
 
-void bi::CppBaseGenerator::visit(const Super* o) {
-  middle("dynamic_cast<super_type*>(this)");
-}
-
-void bi::CppBaseGenerator::visit(const This* o) {
-  middle("this");
-}
-
 void bi::CppBaseGenerator::visit(const Member* o) {
   const This* leftThis = dynamic_cast<const This*>(o->left.get());
   const Super* leftSuper = dynamic_cast<const Super*>(o->left.get());
@@ -112,7 +100,110 @@ void bi::CppBaseGenerator::visit(const Member* o) {
     }
   }
   middle(o->right);
+}
 
+void bi::CppBaseGenerator::visit(const Super* o) {
+  middle("dynamic_cast<super_type*>(this)");
+}
+
+void bi::CppBaseGenerator::visit(const This* o) {
+  middle("this");
+}
+
+void bi::CppBaseGenerator::visit(const Identifier<Parameter>* o) {
+  middle(internalise(o->name->str()));
+}
+
+void bi::CppBaseGenerator::visit(const Identifier<GlobalVariable>* o) {
+  middle(internalise(o->name->str()));
+}
+
+void bi::CppBaseGenerator::visit(const Identifier<LocalVariable>* o) {
+  middle(internalise(o->name->str()));
+}
+
+void bi::CppBaseGenerator::visit(const Identifier<MemberVariable>* o) {
+  middle(internalise(o->name->str()));
+}
+
+void bi::CppBaseGenerator::visit(const Identifier<Function>* o) {
+  middle("bi::func::" << internalise(o->name->str()) << '(');
+  auto arg = o->parens->begin();
+  auto param = o->target->parens->begin();
+  while (arg != o->parens->end() && param != o->target->parens->end()) {
+    if (arg != o->parens->begin()) {
+      middle(", ");
+    }
+    genArg(*arg, *param);
+    ++arg;
+    ++param;
+  }
+  assert(arg == o->parens->end());
+  assert(param == o->target->parens->end());
+  middle(')');
+}
+
+void bi::CppBaseGenerator::visit(const Identifier<Coroutine>* o) {
+  middle("bi::func::" << internalise(o->name->str()) << '(');
+  auto arg = o->parens->begin();
+  auto param = o->target->parens->begin();
+  while (arg != o->parens->end() && param != o->target->parens->end()) {
+    if (arg != o->parens->begin()) {
+      middle(", ");
+    }
+    genArg(*arg, *param);
+    ++arg;
+    ++param;
+  }
+  assert(arg == o->parens->end());
+  assert(param == o->target->parens->end());
+  middle(')');
+}
+
+void bi::CppBaseGenerator::visit(const Identifier<MemberFunction>* o) {
+  middle(internalise(o->name->str()) << '(');
+  auto arg = o->parens->begin();
+  auto param = o->target->parens->begin();
+  while (arg != o->parens->end() && param != o->target->parens->end()) {
+    if (arg != o->parens->begin()) {
+      middle(", ");
+    }
+    genArg(*arg, *param);
+    ++arg;
+    ++param;
+  }
+  assert(arg == o->parens->end());
+  assert(param == o->target->parens->end());
+  middle(')');
+}
+
+void bi::CppBaseGenerator::visit(const Identifier<BinaryOperator>* o) {
+  if (isTranslatable(o->name->str())) {
+    /* can use as raw C++ operator */
+    genArg(o->left.get(), o->target->left.get());
+    middle(' ' << o->name << ' ');
+    genArg(o->right.get(), o->target->right.get());
+  } else {
+    /* must use as function */
+    middle("bi::" << internalise(o->name->str()) << '(');
+    genArg(o->left.get(), o->target->left.get());
+    middle(", ");
+    genArg(o->right.get(), o->target->right.get());
+    middle(')');
+  }
+}
+
+void bi::CppBaseGenerator::visit(const Identifier<UnaryOperator>* o) {
+  if (isTranslatable(o->name->str())) {
+    /* can use as raw C++ operator */
+    middle(' ' << o->name);
+    genArg(o->single.get(), o->target->single.get());
+  } else {
+    /* must use as function */
+    middle("bi::" << internalise(o->name->str()) << '(');
+    genArg(o->single.get(), o->target->single.get());
+    middle(')');
+  }
 }
 
 void bi::CppBaseGenerator::visit(const Parameter* o) {
@@ -151,64 +242,6 @@ void bi::CppBaseGenerator::visit(const LocalVariable* o) {
 
 void bi::CppBaseGenerator::visit(const MemberVariable* o) {
   middle(o->type << ' ' << o->name);
-}
-
-void bi::CppBaseGenerator::visit(const VarReference* o) {
-  middle(o->name);
-}
-
-void bi::CppBaseGenerator::visit(const FuncReference* o) {
-  /*if (!o->isMember() && !o->isLambda() && o->name->str() != "assert") {  // special exception for now
-    middle("bi::func::");
-  }
-  if (o->isCoroutine() && o->isLambda()) {
-    middle("(*" << internalise(o->name->str()) << ')');
-  } else {
-    middle(internalise(o->name->str()));
-  }*/
-  middle('(');
-  auto arg = o->parens->begin();
-  auto param = o->target->parens->begin();
-  while (arg != o->parens->end() && param != o->target->parens->end()) {
-    if (arg != o->parens->begin()) {
-      middle(", ");
-    }
-    genArg(*arg, *param);
-    ++arg;
-    ++param;
-  }
-  assert(arg == o->parens->end());
-  assert(param == o->target->parens->end());
-  middle(')');
-}
-
-void bi::CppBaseGenerator::visit(const BinaryReference* o) {
-  if (isTranslatable(o->name->str())) {
-    /* can use as raw C++ operator */
-    genArg(o->left.get(), o->target->left.get());
-    middle(' ' << o->name << ' ');
-    genArg(o->right.get(), o->target->right.get());
-  } else {
-    /* must use as function */
-    middle("bi::" << internalise(o->name->str()) << '(');
-    genArg(o->left.get(), o->target->left.get());
-    middle(", ");
-    genArg(o->right.get(), o->target->right.get());
-    middle(')');
-  }
-}
-
-void bi::CppBaseGenerator::visit(const UnaryReference* o) {
-  if (isTranslatable(o->name->str())) {
-    /* can use as raw C++ operator */
-    middle(' ' << o->name);
-    genArg(o->single.get(), o->target->single.get());
-  } else {
-    /* must use as function */
-    middle("bi::" << internalise(o->name->str()) << '(');
-    genArg(o->single.get(), o->target->single.get());
-    middle(')');
-  }
 }
 
 void bi::CppBaseGenerator::visit(const List<Statement>* o) {
@@ -328,22 +361,6 @@ void bi::CppBaseGenerator::visit(const FunctionType* o) {
 
 void bi::CppBaseGenerator::visit(const CoroutineType* o) {
   middle("bi::Pointer<bi::Coroutine<" << o->type << ">>");
-}
-
-void bi::CppBaseGenerator::genCapture(const Expression* o) {
-  /* for lambda, capture assignable variables by reference, others by value */
-  Gatherer<VarReference> gatherer;
-  o->accept(&gatherer);
-  std::unordered_set<std::string> done;
-
-  middle("[=");
-  for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
-    const VarReference* ref = *iter;
-    if (done.find(ref->name->str()) == done.end()) {
-      done.insert(ref->name->str());
-    }
-  }
-  middle(']');
 }
 
 void bi::CppBaseGenerator::genBuiltin(const TypeReference* o) {

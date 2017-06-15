@@ -8,7 +8,8 @@
 #include "bi/expression/Range.hpp"
 
 bi::Expression::Expression(Type* type, shared_ptr<Location> loc) :
-    Located(loc), Typed(type) {
+    Located(loc),
+    Typed(type) {
   //
 }
 
@@ -72,10 +73,6 @@ bool bi::Expression::definitely(const Expression& o) const {
   return o.dispatchDefinitely(*this);
 }
 
-bool bi::Expression::definitely(const BinaryReference& o) const {
-  return false;
-}
-
 bool bi::Expression::definitely(const BracesExpression& o) const {
   return false;
 }
@@ -88,11 +85,43 @@ bool bi::Expression::definitely(const EmptyExpression& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(const FuncReference& o) const {
+bool bi::Expression::definitely(const GlobalVariable& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(const GlobalVariable& o) const {
+bool bi::Expression::definitely(const Identifier<Parameter>& o) const {
+  return false;
+}
+
+bool bi::Expression::definitely(const Identifier<GlobalVariable>& o) const {
+  return false;
+}
+
+bool bi::Expression::definitely(const Identifier<LocalVariable>& o) const {
+  return false;
+}
+
+bool bi::Expression::definitely(const Identifier<MemberVariable>& o) const {
+  return false;
+}
+
+bool bi::Expression::definitely(const Identifier<Function>& o) const {
+  return false;
+}
+
+bool bi::Expression::definitely(const Identifier<Coroutine>& o) const {
+  return false;
+}
+
+bool bi::Expression::definitely(const Identifier<MemberFunction>& o) const {
+  return false;
+}
+
+bool bi::Expression::definitely(const Identifier<BinaryOperator>& o) const {
+  return false;
+}
+
+bool bi::Expression::definitely(const Identifier<UnaryOperator>& o) const {
   return false;
 }
 
@@ -160,20 +189,8 @@ bool bi::Expression::definitely(const This& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(const UnaryReference& o) const {
-  return false;
-}
-
-bool bi::Expression::definitely(const VarReference& o) const {
-  return false;
-}
-
 bool bi::Expression::possibly(const Expression& o) const {
   return o.dispatchPossibly(*this);
-}
-
-bool bi::Expression::possibly(const BinaryReference& o) const {
-  return false;
 }
 
 bool bi::Expression::possibly(const BracesExpression& o) const {
@@ -188,11 +205,43 @@ bool bi::Expression::possibly(const EmptyExpression& o) const {
   return false;
 }
 
-bool bi::Expression::possibly(const FuncReference& o) const {
+bool bi::Expression::possibly(const GlobalVariable& o) const {
   return false;
 }
 
-bool bi::Expression::possibly(const GlobalVariable& o) const {
+bool bi::Expression::possibly(const Identifier<Parameter>& o) const {
+  return false;
+}
+
+bool bi::Expression::possibly(const Identifier<GlobalVariable>& o) const {
+  return false;
+}
+
+bool bi::Expression::possibly(const Identifier<LocalVariable>& o) const {
+  return false;
+}
+
+bool bi::Expression::possibly(const Identifier<MemberVariable>& o) const {
+  return false;
+}
+
+bool bi::Expression::possibly(const Identifier<Function>& o) const {
+  return false;
+}
+
+bool bi::Expression::possibly(const Identifier<Coroutine>& o) const {
+  return false;
+}
+
+bool bi::Expression::possibly(const Identifier<MemberFunction>& o) const {
+  return false;
+}
+
+bool bi::Expression::possibly(const Identifier<BinaryOperator>& o) const {
+  return false;
+}
+
+bool bi::Expression::possibly(const Identifier<UnaryOperator>& o) const {
   return false;
 }
 
@@ -257,14 +306,6 @@ bool bi::Expression::possibly(const This& o) const {
 }
 
 bool bi::Expression::possibly(const Member& o) const {
-  return false;
-}
-
-bool bi::Expression::possibly(const UnaryReference& o) const {
-  return false;
-}
-
-bool bi::Expression::possibly(const VarReference& o) const {
   return false;
 }
 

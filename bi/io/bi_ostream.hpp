@@ -39,10 +39,15 @@ public:
   virtual void visit(const GlobalVariable* o);
   virtual void visit(const LocalVariable* o);
   virtual void visit(const MemberVariable* o);
-  virtual void visit(const VarReference* o);
-  virtual void visit(const FuncReference* o);
-  virtual void visit(const BinaryReference* o);
-  virtual void visit(const UnaryReference* o);
+  virtual void visit(const Identifier<Parameter>* o);
+  virtual void visit(const Identifier<GlobalVariable>* o);
+  virtual void visit(const Identifier<LocalVariable>* o);
+  virtual void visit(const Identifier<MemberVariable>* o);
+  virtual void visit(const Identifier<Function>* o);
+  virtual void visit(const Identifier<Coroutine>* o);
+  virtual void visit(const Identifier<MemberFunction>* o);
+  virtual void visit(const Identifier<BinaryOperator>* o);
+  virtual void visit(const Identifier<UnaryOperator>* o);
 
   virtual void visit(const List<Statement>* o);
   virtual void visit(const Assignment* o);

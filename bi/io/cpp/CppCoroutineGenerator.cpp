@@ -176,7 +176,7 @@ void bi::CppCoroutineGenerator::visit(const Return* o) {
   ++state;
 }
 
-void bi::CppCoroutineGenerator::visit(const VarReference* o) {
+void bi::CppCoroutineGenerator::visit(const Identifier<LocalVariable>* o) {
   middle(o->name << '_' << o->target->number << '_');
 }
 
