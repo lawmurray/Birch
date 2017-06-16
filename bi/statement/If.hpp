@@ -29,7 +29,7 @@ public:
    * @param falseBraces False branch.
    * @param loc Location.
    */
-  If(Expression* cond, Expression* braces, Expression* falseBraces,
+  If(Expression* cond, Statement* braces, Expression* falseBraces,
       shared_ptr<Location> loc = nullptr);
 
   /**

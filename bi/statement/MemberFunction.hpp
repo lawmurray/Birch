@@ -13,7 +13,7 @@
 
 namespace bi {
 /**
- * Member function of a class or struct.
+ * Class member function.
  *
  * @ingroup compiler_expression
  */
@@ -35,7 +35,7 @@ public:
    * @param loc Location.
    */
   MemberFunction(shared_ptr<Name> name, Expression* parens, Type* returnType,
-      Expression* braces, shared_ptr<Location> loc = nullptr);
+      Statement* braces, shared_ptr<Location> loc = nullptr);
 
   /**
    * Destructor.

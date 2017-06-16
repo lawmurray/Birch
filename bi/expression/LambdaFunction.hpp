@@ -29,7 +29,7 @@ public:
    * @param braces Braces expression.
    * @param loc Location.
    */
-  LambdaFunction(Expression* parens, Type* returnType, Expression* braces,
+  LambdaFunction(Expression* parens, Type* returnType, Statement* braces,
       shared_ptr<Location> loc = nullptr);
 
   /**

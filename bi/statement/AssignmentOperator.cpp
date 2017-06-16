@@ -6,7 +6,7 @@
 #include "bi/visitor/all.hpp"
 
 bi::AssignmentOperator::AssignmentOperator(shared_ptr<Name> name,
-    Expression* single, Expression* braces, shared_ptr<Location> loc) :
+    Expression* single, Statement* braces, shared_ptr<Location> loc) :
     Statement(loc),
     Named(name),
     Unary(single),

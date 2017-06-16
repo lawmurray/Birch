@@ -3,7 +3,6 @@
  */
 #include "bi/type/ParenthesesType.hpp"
 
-#include "bi/type/TypeParameter.hpp"
 #include "bi/visitor/all.hpp"
 
 #include <typeinfo>
@@ -83,11 +82,15 @@ bool bi::ParenthesesType::definitely(const List<Type>& o) const {
   return single->definitely(o);
 }
 
-bool bi::ParenthesesType::definitely(const TypeParameter& o) const {
+bool bi::ParenthesesType::definitely(const IdentifierType<Class>& o) const {
   return single->definitely(o);
 }
 
-bool bi::ParenthesesType::definitely(const TypeReference& o) const {
+bool bi::ParenthesesType::definitely(const IdentifierType<AliasType>& o) const {
+  return single->definitely(o);
+}
+
+bool bi::ParenthesesType::definitely(const IdentifierType<BasicType>& o) const {
   return single->definitely(o);
 }
 
@@ -119,11 +122,15 @@ bool bi::ParenthesesType::possibly(const List<Type>& o) const {
   return single->possibly(o);
 }
 
-bool bi::ParenthesesType::possibly(const TypeParameter& o) const {
+bool bi::ParenthesesType::possibly(const IdentifierType<Class>& o) const {
   return single->possibly(o);
 }
 
-bool bi::ParenthesesType::possibly(const TypeReference& o) const {
+bool bi::ParenthesesType::possibly(const IdentifierType<AliasType>& o) const {
+  return single->possibly(o);
+}
+
+bool bi::ParenthesesType::possibly(const IdentifierType<BasicType>& o) const {
   return single->possibly(o);
 }
 

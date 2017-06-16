@@ -4,32 +4,31 @@
 #pragma once
 
 #include "bi/statement/Statement.hpp"
-#include "bi/common/Conditioned.hpp"
-#include "bi/common/Braced.hpp"
-#include "bi/common/Scoped.hpp"
+#include "bi/common/Named.hpp"
+#include "bi/common/Based.hpp"
 
 namespace bi {
 /**
- * While loop.
+ * Alias of another type.
  *
- * @ingroup compiler_statement
+ * @ingroup compiler_type
  */
-class While: public Statement, public Conditioned, public Braced, public Scoped {
+class AliasType: public Statement, public Named, public Based {
 public:
   /**
    * Constructor.
    *
-   * @param cond Condition.
-   * @param braces Body of loop.
+   * @param name Name.
+   * @param base Base type.
    * @param loc Location.
    */
-  While(Expression* cond, Statement* braces,
-      shared_ptr<Location> loc = nullptr);
+  AliasType(shared_ptr<Name> name, Type* base, shared_ptr<Location> loc =
+      nullptr);
 
   /**
    * Destructor.
    */
-  virtual ~While();
+  virtual ~AliasType();
 
   virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);
@@ -39,9 +38,9 @@ public:
   using Statement::possibly;
 
   virtual bool dispatchDefinitely(const Statement& o) const;
-  virtual bool definitely(const While& o) const;
+  virtual bool definitely(const AliasType& o) const;
 
   virtual bool dispatchPossibly(const Statement& o) const;
-  virtual bool possibly(const While& o) const;
+  virtual bool possibly(const AliasType& o) const;
 };
 }

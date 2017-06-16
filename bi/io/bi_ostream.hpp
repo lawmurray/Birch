@@ -28,7 +28,6 @@ public:
   virtual void visit(const Literal<double>* o);
   virtual void visit(const Literal<const char*>* o);
   virtual void visit(const ParenthesesExpression* o);
-  virtual void visit(const BracesExpression* o);
   virtual void visit(const Index* o);
   virtual void visit(const Range* o);
   virtual void visit(const Member* o);
@@ -59,6 +58,9 @@ public:
   virtual void visit(const UnaryOperator* o);
   virtual void visit(const AssignmentOperator* o);
   virtual void visit(const ConversionOperator* o);
+  virtual void visit(const Class* o);
+  virtual void visit(const AliasType* o);
+  virtual void visit(const BasicType* o);
   virtual void visit(const Import* o);
   virtual void visit(const ExpressionStatement* o);
   virtual void visit(const If* o);
@@ -68,8 +70,9 @@ public:
   virtual void visit(const Raw* o);
 
   virtual void visit(const List<Type>* o);
-  virtual void visit(const TypeReference* o);
-  virtual void visit(const TypeParameter* o);
+  virtual void visit(const IdentifierType<Class>* o);
+  virtual void visit(const IdentifierType<BasicType>* o);
+  virtual void visit(const IdentifierType<AliasType>* o);
   virtual void visit(const BracketsType* o);
   virtual void visit(const ParenthesesType* o);
   virtual void visit(const FunctionType* o);

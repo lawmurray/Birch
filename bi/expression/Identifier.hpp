@@ -22,10 +22,10 @@ struct Unknown {
 /**
  * Identifier.
  *
+ * @ingroup compiler_expression
+ *
  * @tparam ObjectType The particular type of object referred to by the
  * identifier.
- *
- * @ingroup compiler_expression
  *
  * An identifier refers to a variable, function or the like. For most
  * identifiers, the type of object referred to is ambiguous in syntax:

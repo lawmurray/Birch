@@ -29,7 +29,6 @@ public:
   virtual Expression* clone(const Literal<double>* o);
   virtual Expression* clone(const Literal<const char*>* o);
   virtual Expression* clone(const ParenthesesExpression* o);
-  virtual Expression* clone(const BracesExpression* o);
   virtual Expression* clone(const BracketsExpression* o);
   virtual Expression* clone(const LambdaFunction* o);
   virtual Expression* clone(const Span* o);
@@ -39,9 +38,6 @@ public:
   virtual Expression* clone(const Super* o);
   virtual Expression* clone(const This* o);
   virtual Expression* clone(const Parameter* o);
-  virtual Expression* clone(const GlobalVariable* o);
-  virtual Expression* clone(const LocalVariable* o);
-  virtual Expression* clone(const MemberVariable* o);
   virtual Expression* clone(const Identifier<Unknown>* o);
   virtual Expression* clone(const Identifier<Parameter>* o);
   virtual Expression* clone(const Identifier<GlobalVariable>* o);
@@ -56,6 +52,9 @@ public:
   virtual Statement* clone(const EmptyStatement* o);
   virtual Statement* clone(const List<Statement>* o);
   virtual Statement* clone(const Assignment* o);
+  virtual Statement* clone(const GlobalVariable* o);
+  virtual Statement* clone(const LocalVariable* o);
+  virtual Statement* clone(const MemberVariable* o);
   virtual Statement* clone(const Function* o);
   virtual Statement* clone(const Coroutine* o);
   virtual Statement* clone(const Program* o);
@@ -64,6 +63,9 @@ public:
   virtual Statement* clone(const UnaryOperator* o);
   virtual Statement* clone(const AssignmentOperator* o);
   virtual Statement* clone(const ConversionOperator* o);
+  virtual Statement* clone(const Class* o);
+  virtual Statement* clone(const AliasType* o);
+  virtual Statement* clone(const BasicType* o);
   virtual Statement* clone(const Import* o);
   virtual Statement* clone(const ExpressionStatement* o);
   virtual Statement* clone(const If* o);
@@ -74,8 +76,10 @@ public:
 
   virtual Type* clone(const EmptyType* o);
   virtual Type* clone(const List<Type>* o);
-  virtual Type* clone(const TypeReference* o);
-  virtual Type* clone(const TypeParameter* o);
+  virtual Type* clone(const IdentifierType<UnknownType>* o);
+  virtual Type* clone(const IdentifierType<Class>* o);
+  virtual Type* clone(const IdentifierType<AliasType>* o);
+  virtual Type* clone(const IdentifierType<BasicType>* o);
   virtual Type* clone(const BracketsType* o);
   virtual Type* clone(const ParenthesesType* o);
   virtual Type* clone(const FunctionType* o);

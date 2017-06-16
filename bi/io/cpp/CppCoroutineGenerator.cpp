@@ -185,7 +185,7 @@ void bi::CppCoroutineGenerator::visit(const LocalVariable* o) {
     middle(o->name << '_' << o->number << '_');
   }
   if (o->type->isClass()) {
-    TypeReference* type = dynamic_cast<TypeReference*>(o->type->strip());
+    Identifier<Class>* type = dynamic_cast<Identifier<Class>*>(o->type->strip());
     assert(type);
     middle(" = new (GC_MALLOC(sizeof(bi::type::" << type->name << "))) bi::type::" << type->name << "()");
   }

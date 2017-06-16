@@ -51,10 +51,6 @@ void bi::CppBaseGenerator::visit(const ParenthesesExpression* o) {
   middle('(' << o->single << ')');
 }
 
-void bi::CppBaseGenerator::visit(const BracesExpression* o) {
-  *this << o->single;
-}
-
 void bi::CppBaseGenerator::visit(const BracketsExpression* o) {
   middle(o->single << "(make_view(" << o->brackets << "))");
 }
@@ -207,13 +203,19 @@ void bi::CppBaseGenerator::visit(const Identifier<UnaryOperator>* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Parameter* o) {
-  middle(o->type << ' ' << o->name);
+  if (!o->type->assignable) {
+    middle("const ");
+  }
+  middle(o->type << "& " << o->name);
+  if (!o->value->isEmpty()) {
+    middle(" = " << o->value);
+  }
 }
 
 void bi::CppBaseGenerator::visit(const GlobalVariable* o) {
   middle(o->type << ' ' << o->name);
   if (o->type->isClass()) {
-    TypeReference* type = dynamic_cast<TypeReference*>(o->type->strip());
+    IdentifierType<Class>* type = dynamic_cast<IdentifierType<Class>*>(o->type->strip());
     assert(type);
     middle(
         " = new (GC_MALLOC(sizeof(bi::type::" << type->name << "))) bi::type::" << type->name << "()");
@@ -228,7 +230,7 @@ void bi::CppBaseGenerator::visit(const GlobalVariable* o) {
 void bi::CppBaseGenerator::visit(const LocalVariable* o) {
   middle(o->type << ' ' << o->name);
   if (o->type->isClass()) {
-    TypeReference* type = dynamic_cast<TypeReference*>(o->type->strip());
+    IdentifierType<Class>* type = dynamic_cast<IdentifierType<Class>*>(o->type->strip());
     assert(type);
     middle(
         " = new (GC_MALLOC(sizeof(bi::type::" << type->name << "))) bi::type::" << type->name << "()");
@@ -330,16 +332,6 @@ void bi::CppBaseGenerator::visit(const List<Type>* o) {
   middle(',' << tail);
 }
 
-void bi::CppBaseGenerator::visit(const TypeReference* o) {
-  if (o->isBuiltin()) {
-    genBuiltin(o);
-  } else if (o->isClass()) {
-    middle("bi::Pointer<bi::type::" << o->name << ">");
-  } else {
-    middle("bi::type::" << o->name);
-  }
-}
-
 void bi::CppBaseGenerator::visit(const BracketsType* o) {
   middle("bi::DefaultArray<" << o->single << ',' << o->count() << '>');
 }
@@ -363,10 +355,15 @@ void bi::CppBaseGenerator::visit(const CoroutineType* o) {
   middle("bi::Pointer<bi::Coroutine<" << o->type << ">>");
 }
 
-void bi::CppBaseGenerator::genBuiltin(const TypeReference* o) {
-  /* pre-condition */
-  assert(o->isBuiltin());
+void bi::CppBaseGenerator::visit(const IdentifierType<Class>* o) {
+  middle("bi::Pointer<bi::type::" << o->name << ">");
+}
 
+void bi::CppBaseGenerator::visit(const IdentifierType<AliasType>* o) {
+  middle("bi::type::" << o->name);
+}
+
+void bi::CppBaseGenerator::visit(const IdentifierType<BasicType>* o) {
   if (*o->name == "Boolean") {
     middle("bool");
   } else if (*o->name == "Real64" || *o->name == "Real") {
@@ -380,7 +377,7 @@ void bi::CppBaseGenerator::genBuiltin(const TypeReference* o) {
   } else if (*o->name == "String") {
     middle("std::string");
   } else {
-    assert(false);
+    middle(o->name);
   }
 }
 

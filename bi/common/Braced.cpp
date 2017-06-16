@@ -3,7 +3,9 @@
  */
 #include "bi/common/Braced.hpp"
 
-bi::Braced::Braced(Expression* braces) :
+#include <cassert>
+
+bi::Braced::Braced(Statement* braces) :
     braces(braces) {
   /* pre-condition */
   assert(braces);

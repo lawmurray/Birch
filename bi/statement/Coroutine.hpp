@@ -35,7 +35,7 @@ public:
    * @param loc Location.
    */
   Coroutine(shared_ptr<Name> name, Expression* parens, Type* returnType,
-      Expression* braces, shared_ptr<Location> loc = nullptr);
+      Statement* braces, shared_ptr<Location> loc = nullptr);
 
   /**
    * Destructor.

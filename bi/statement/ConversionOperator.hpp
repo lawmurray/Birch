@@ -26,7 +26,7 @@ public:
    * @param braces Braces expression.
    * @param loc Location.
    */
-  ConversionOperator(Type* returnType, Expression* braces,
+  ConversionOperator(Type* returnType, Statement* braces,
       shared_ptr<Location> loc = nullptr);
 
   /**

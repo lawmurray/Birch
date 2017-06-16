@@ -4,7 +4,6 @@
 #pragma once
 
 #include "bi/type/Type.hpp"
-#include "bi/expression/Expression.hpp"
 #include "bi/primitive/unique_ptr.hpp"
 
 namespace bi {
@@ -19,9 +18,8 @@ public:
    * Constructor.
    *
    * @param base Base type.
-   * @param baseParens Base type arguments.
    */
-  Based(Type* base, Expression* baseParens);
+  Based(Type* base);
 
   /**
    * Destructor.
@@ -32,10 +30,5 @@ public:
    * Base type.
    */
   unique_ptr<Type> base;
-
-  /**
-   * Base type arguments.
-   */
-  unique_ptr<Expression> baseParens;
 };
 }

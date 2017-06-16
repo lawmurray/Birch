@@ -4,32 +4,28 @@
 #pragma once
 
 #include "bi/statement/Statement.hpp"
-#include "bi/common/Conditioned.hpp"
-#include "bi/common/Braced.hpp"
-#include "bi/common/Scoped.hpp"
+#include "bi/common/Named.hpp"
 
 namespace bi {
 /**
- * While loop.
+ * Basic (built-in) type.
  *
- * @ingroup compiler_statement
+ * @ingroup compiler_type
  */
-class While: public Statement, public Conditioned, public Braced, public Scoped {
+class BasicType: public Statement, public Named {
 public:
   /**
    * Constructor.
    *
-   * @param cond Condition.
-   * @param braces Body of loop.
+   * @param name Name.
    * @param loc Location.
    */
-  While(Expression* cond, Statement* braces,
-      shared_ptr<Location> loc = nullptr);
+  BasicType(shared_ptr<Name> name, shared_ptr<Location> loc = nullptr);
 
   /**
    * Destructor.
    */
-  virtual ~While();
+  virtual ~BasicType();
 
   virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);
@@ -39,9 +35,9 @@ public:
   using Statement::possibly;
 
   virtual bool dispatchDefinitely(const Statement& o) const;
-  virtual bool definitely(const While& o) const;
+  virtual bool definitely(const BasicType& o) const;
 
   virtual bool dispatchPossibly(const Statement& o) const;
-  virtual bool possibly(const While& o) const;
+  virtual bool possibly(const BasicType& o) const;
 };
 }

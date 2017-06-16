@@ -3,21 +3,22 @@
  */
 #pragma once
 
-#include "bi/expression/Expression.hpp"
-#include "bi/expression/EmptyExpression.hpp"
+#include "bi/statement/Statement.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Numbered.hpp"
+#include "bi/common/Typed.hpp"
 #include "bi/primitive/unique_ptr.hpp"
 
 namespace bi {
 /**
- * Global variable.
+ * Class member variable.
  *
  * @ingroup compiler_expression
  */
-class MemberVariable: public Expression,
+class MemberVariable: public Statement,
     public Named,
-    public Numbered {
+    public Numbered,
+    public Typed {
 public:
   /**
    * Constructor.
@@ -34,17 +35,17 @@ public:
    */
   virtual ~MemberVariable();
 
-  virtual Expression* accept(Cloner* visitor) const;
-  virtual Expression* accept(Modifier* visitor);
+  virtual Statement* accept(Cloner* visitor) const;
+  virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
-  using Expression::definitely;
-  using Expression::possibly;
+  using Statement::definitely;
+  using Statement::possibly;
 
-  virtual bool dispatchDefinitely(const Expression& o) const;
+  virtual bool dispatchDefinitely(const Statement& o) const;
   virtual bool definitely(const MemberVariable& o) const;
 
-  virtual bool dispatchPossibly(const Expression& o) const;
+  virtual bool dispatchPossibly(const Statement& o) const;
   virtual bool possibly(const MemberVariable& o) const;
 };
 }

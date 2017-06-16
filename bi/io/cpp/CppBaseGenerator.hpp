@@ -26,7 +26,6 @@ public:
   virtual void visit(const Literal<double>* o);
   virtual void visit(const Literal<const char*>* o);
   virtual void visit(const ParenthesesExpression* o);
-  virtual void visit(const BracesExpression* o);
   virtual void visit(const BracketsExpression* o);
   virtual void visit(const LambdaFunction* o);
   virtual void visit(const Span* o);
@@ -59,19 +58,16 @@ public:
   virtual void visit(const Raw* o);
 
   virtual void visit(const List<Type>* o);
-  virtual void visit(const TypeReference* o);
   virtual void visit(const EmptyType* o);
   virtual void visit(const BracketsType* o);
   virtual void visit(const ParenthesesType* o);
   virtual void visit(const FunctionType* o);
   virtual void visit(const CoroutineType* o);
+  virtual void visit(const IdentifierType<Class>* o);
+  virtual void visit(const IdentifierType<BasicType>* o);
+  virtual void visit(const IdentifierType<AliasType>* o);
 
 protected:
-  /**
-   * Generate a built-in type.
-   */
-  void genBuiltin(const TypeReference* o);
-
   /**
    * Generate an argument to a function.
    *

@@ -1,91 +1,70 @@
 /**
  * @file
  */
-#include "bi/io/cpp/CppTypeGenerator.hpp"
-
+#include <bi/io/cpp/CppClassGenerator.hpp>
 #include "bi/io/cpp/CppConstructorGenerator.hpp"
 #include "bi/io/cpp/CppParameterGenerator.hpp"
 #include "bi/primitive/encode.hpp"
 
-bi::CppTypeGenerator::CppTypeGenerator(std::ostream& base, const int level,
+bi::CppClassGenerator::CppClassGenerator(std::ostream& base, const int level,
     const bool header) :
     CppBaseGenerator(base, level, header),
     type(nullptr) {
   //
 }
 
-void bi::CppTypeGenerator::visit(const TypeParameter* o) {
+void bi::CppClassGenerator::visit(const Class* o) {
   type = o;
-  if (!o->isBuiltin()) {
-    /* start boilerplate */
-    if (header) {
-      start("class " << o->name);
-      if (o->super()) {
-        middle(" : public " << o->super()->name);
-      }
-      finish(" {");
-      line("public:");
-      in();
-      line("typedef " << o->name << " this_type;");
-      if (!o->base->isEmpty()) {
-        line("typedef " << o->super()->name << " super_type;");
-      }
-      line("");
+
+  /* start boilerplate */
+  if (header) {
+    start("class " << o->name);
+    if (!o->base->isEmpty()) {
+      middle(" : public " << o->base);
     }
-
-    /* constructor */
-    CppConstructorGenerator auxConstructor(base, level, header);
-    auxConstructor << o;
-
-    /* destructor */
-    if (header) {
-      if (o->isClass()) {
-        start("virtual ");
-      } else {
-        start("");
-      }
-      finish('~' << o->name << "() {");
-      in();
-      line("//");
-      out();
-      line("}\n");
+    finish(" {");
+    line("public:");
+    in();
+    line("typedef " << o->name << " this_type;");
+    if (!o->base->isEmpty()) {
+      line("typedef " << o->base << " super_type;");
     }
+    line("");
+  }
 
-    /* member variables and functions */
-    *this << o->braces;
+  /* constructor */
+  CppConstructorGenerator auxConstructor(base, level, header);
+  auxConstructor << o;
 
-    /* end boilerplate */
-    if (header) {
-      out();
-      line("};\n");
-    }
+  /* destructor */
+  if (header) {
+    line("virtual ~" << o->name << "() {");
+    in();
+    line("//");
+    out();
+    line("}\n");
+  }
+
+  /* member variables and functions */
+  *this << o->braces;
+
+  /* end boilerplate */
+  if (header) {
+    out();
+    line("};\n");
   }
 }
 
-void bi::CppTypeGenerator::visit(const TypeReference* o) {
-  if (inReturn) {
-    CppBaseGenerator::visit(o);
-  } else {
-    if (o->isBuiltin()) {
-      genBuiltin(o);
-    } else if (o->isClass()) {
-      middle("bi::Pointer<" << o->name << '>');
-    } else {
-      middle(o->name);
-    }
-  }
-}
-
-void bi::CppTypeGenerator::visit(const MemberVariable* o) {
+void bi::CppClassGenerator::visit(const MemberVariable* o) {
   if (header) {
     line(o->type << ' ' << o->name << ';');
   }
 }
 
-void bi::CppTypeGenerator::visit(const MemberFunction* o) {
+void bi::CppClassGenerator::visit(const MemberFunction* o) {
   if (!o->braces->isEmpty()) {
     /* return type */
-    if (header && type->isClass()) {
+    if (header) {
       start("virtual ");
     } else {
       start("");
@@ -121,7 +100,7 @@ void bi::CppTypeGenerator::visit(const MemberFunction* o) {
   }
 }
 
-void bi::CppTypeGenerator::visit(const AssignmentOperator* o) {
+void bi::CppClassGenerator::visit(const AssignmentOperator* o) {
   if (!o->braces->isEmpty()) {
     start("");
     if (!header) {
@@ -145,7 +124,7 @@ void bi::CppTypeGenerator::visit(const AssignmentOperator* o) {
   }
 }
 
-void bi::CppTypeGenerator::visit(const ConversionOperator* o) {
+void bi::CppClassGenerator::visit(const ConversionOperator* o) {
   if (!o->braces->isEmpty()) {
     if (!header) {
       start("bi::type::" << type->name << "::");

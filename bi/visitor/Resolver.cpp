@@ -102,7 +102,7 @@ bi::Expression* bi::Resolver::modify(Range* o) {
 
 bi::Expression* bi::Resolver::modify(Member* o) {
   o->left = o->left->accept(this);
-  TypeReference* ref = dynamic_cast<TypeReference*>(o->left->type->strip());
+  Identifier<Class>* ref = dynamic_cast<Identifier<Class>*>(o->left->type->strip());
   if (ref) {
     assert(ref->target);
     memberScope = ref->target->scope.get();
@@ -120,7 +120,7 @@ bi::Expression* bi::Resolver::modify(This* o) {
     throw ThisException(o);
   } else {
     Modifier::modify(o);
-    o->type = new TypeReference(type());
+    o->type = new Identifier<Class>(type());
     o->type->accept(this);
   }
   return o;
@@ -133,7 +133,7 @@ bi::Expression* bi::Resolver::modify(Super* o) {
     throw SuperBaseException(o);
   } else {
     Modifier::modify(o);
-    o->type = new TypeReference(type()->super());
+    o->type = new Identifier<Class>(type()->super());
     o->type->accept(this);
   }
   return o;
@@ -144,27 +144,6 @@ bi::Expression* bi::Resolver::modify(Parameter* o) {
   if (!o->name->isEmpty()) {
     top()->add(o);
   }
-  return o;
-}
-
-bi::Expression* bi::Resolver::modify(GlobalVariable* o) {
-  Modifier::modify(o);
-  o->type->accept(&assigner);
-  top()->add(o);
-  return o;
-}
-
-bi::Expression* bi::Resolver::modify(LocalVariable* o) {
-  Modifier::modify(o);
-  o->type->accept(&assigner);
-  top()->add(o);
-  return o;
-}
-
-bi::Expression* bi::Resolver::modify(MemberVariable* o) {
-  Modifier::modify(o);
-  o->type->accept(&assigner);
-  top()->add(o);
   return o;
 }
 
@@ -264,7 +243,7 @@ bi::Statement* bi::Resolver::modify(Assignment* o) {
   Modifier::modify(o);
   if (!o->right->type->definitely(*o->left->type)) {
     // ^ the first two cases are covered by this check
-    TypeReference* ref = dynamic_cast<TypeReference*>(o->left->type->strip());
+    Identifier<Class>* ref = dynamic_cast<Identifier<Class>*>(o->left->type->strip());
     if (ref) {
       assert(ref->target);
       memberScope = ref->target->scope.get();
@@ -277,6 +256,27 @@ bi::Statement* bi::Resolver::modify(Assignment* o) {
     throw NotAssignableException(o->left.get());
   }
 
+  return o;
+}
+
+bi::Statement* bi::Resolver::modify(GlobalVariable* o) {
+  Modifier::modify(o);
+  o->type->accept(&assigner);
+  top()->add(o);
+  return o;
+}
+
+bi::Statement* bi::Resolver::modify(LocalVariable* o) {
+  Modifier::modify(o);
+  o->type->accept(&assigner);
+  top()->add(o);
+  return o;
+}
+
+bi::Statement* bi::Resolver::modify(MemberVariable* o) {
+  Modifier::modify(o);
+  o->type->accept(&assigner);
+  top()->add(o);
   return o;
 }
 
@@ -391,6 +391,36 @@ bi::Statement* bi::Resolver::modify(ConversionOperator* o) {
   return o;
 }
 
+
+bi::Statement* bi::Resolver::modify(Class* o) {
+  push();
+  o->base = o->base->accept(this);
+  o->scope = pop();
+  if (!o->base->isEmpty()) {
+    o->scope->inherit(o->super()->scope.get());
+  }
+  top()->add(o);
+  push(o->scope.get());
+  types.push(o);
+  o->braces = o->braces->accept(this);
+  types.pop();
+  pop();
+
+  ///@todo Check that base type is of class type
+  return o;
+}
+
+bi::Statement* bi::Resolver::modify(AliasType* o) {
+  o->base = o->base->accept(this);
+  top()->add(o);
+  return o;
+}
+
+bi::Statement* bi::Resolver::modify(BasicType* o) {
+  top()->add(o);
+  return o;
+}
+
 bi::Statement* bi::Resolver::modify(Import* o) {
   o->file->accept(this);
   top()->import(o->file->scope.get());
@@ -427,7 +457,11 @@ bi::Statement* bi::Resolver::modify(Return* o) {
   return o;
 }
 
-bi::Type* bi::Resolver::modify(TypeReference* o) {
+bi::Type* bi::Resolver::modify(IdentifierType<UnknownType>* o) {
+  return o;
+}
+
+bi::Type* bi::Resolver::modify(IdentifierType<Class>* o) {
   Scope* memberScope = takeMemberScope();
   assert(!memberScope);
 
@@ -436,28 +470,21 @@ bi::Type* bi::Resolver::modify(TypeReference* o) {
   return o;
 }
 
-bi::Type* bi::Resolver::modify(TypeParameter* o) {
-  push();
-  ++inInputs;
-  o->parens = o->parens->accept(this);
-  --inInputs;
-  o->base = o->base->accept(this);
-  o->baseParens = o->baseParens->accept(this);
-  o->scope = pop();
+bi::Type* bi::Resolver::modify(IdentifierType<AliasType>* o) {
+  Scope* memberScope = takeMemberScope();
+  assert(!memberScope);
 
-  if (!o->base->isEmpty()) {
-    o->scope->inherit(o->super()->scope.get());
-  }
+  Modifier::modify(o);
+  resolve(o);
+  return o;
+}
 
-  top()->add(o);
-  push(o->scope.get());
-  types.push(o);
-  o->braces = o->braces->accept(this);
-  types.pop();
-  pop();
+bi::Type* bi::Resolver::modify(IdentifierType<BasicType>* o) {
+  Scope* memberScope = takeMemberScope();
+  assert(!memberScope);
 
-  ///@todo Check that the type and its base are both struct or both class
-  ///@todo Check base type constructor arguments
+  Modifier::modify(o);
+  resolve(o);
   return o;
 }
 
@@ -492,7 +519,7 @@ bi::Scope* bi::Resolver::pop() {
   return res;
 }
 
-void bi::Resolver::defer(Expression* o) {
+void bi::Resolver::defer(Statement* o) {
   if (files.size() == 1) {
     /* ignore bodies in imported files */
     defers.push_back(std::make_tuple(o, top(), type()));
@@ -522,7 +549,7 @@ void bi::Resolver::undefer() {
   defers.clear();
 }
 
-bi::TypeParameter* bi::Resolver::type() {
+bi::Class* bi::Resolver::type() {
   if (types.empty()) {
     return nullptr;
   } else {

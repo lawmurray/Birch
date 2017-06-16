@@ -12,7 +12,7 @@ bi::CppConstructorGenerator::CppConstructorGenerator(std::ostream& base,
   //
 }
 
-void bi::CppConstructorGenerator::visit(const TypeParameter* o) {
+void bi::CppConstructorGenerator::visit(const Class* o) {
   if (header) {
     start(o->name);
 
@@ -25,9 +25,6 @@ void bi::CppConstructorGenerator::visit(const TypeParameter* o) {
     if (!o->base->isEmpty()) {
       before = true;
       start("super_type(");
-      if (!o->baseParens->isEmpty()) {
-        middle(o->baseParens);
-      }
       middle(')');
     }
     *this << o->braces;

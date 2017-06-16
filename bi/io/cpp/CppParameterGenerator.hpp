@@ -20,6 +20,6 @@ public:
 
   virtual void visit(const Parameter* o);
   virtual void visit(const Function* o);
-  virtual void visit(const TypeParameter* o);
+  virtual void visit(const Class* o);
 };
 }

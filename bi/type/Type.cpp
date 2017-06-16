@@ -93,11 +93,19 @@ bool bi::Type::definitely(const List<Type>& o) const {
   return false;
 }
 
-bool bi::Type::definitely(const TypeParameter& o) const {
+bool bi::Type::definitely(const Class& o) const {
   return false;
 }
 
-bool bi::Type::definitely(const TypeReference& o) const {
+bool bi::Type::definitely(const IdentifierType<Class>& o) const {
+  return false;
+}
+
+bool bi::Type::definitely(const IdentifierType<AliasType>& o) const {
+  return false;
+}
+
+bool bi::Type::definitely(const IdentifierType<BasicType>& o) const {
   return false;
 }
 
@@ -129,11 +137,19 @@ bool bi::Type::possibly(const List<Type>& o) const {
   return false;
 }
 
-bool bi::Type::possibly(const TypeParameter& o) const {
+bool bi::Type::possibly(const Class& o) const {
   return false;
 }
 
-bool bi::Type::possibly(const TypeReference& o) const {
+bool bi::Type::possibly(const IdentifierType<Class>& o) const {
+  return false;
+}
+
+bool bi::Type::possibly(const IdentifierType<AliasType>& o) const {
+  return false;
+}
+
+bool bi::Type::possibly(const IdentifierType<BasicType>& o) const {
   return false;
 }
 

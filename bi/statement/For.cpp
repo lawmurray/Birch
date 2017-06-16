@@ -8,7 +8,7 @@
 #include <typeinfo>
 
 bi::For::For(Expression* index, Expression* from, Expression* to,
-    Expression* braces, shared_ptr<Location> loc) :
+    Statement* braces, shared_ptr<Location> loc) :
     Statement(loc),
     Braced(braces),
     index(index),

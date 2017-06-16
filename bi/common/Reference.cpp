@@ -5,16 +5,15 @@
 
 #include "bi/expression/Identifier.hpp"
 #include "bi/expression/Parameter.hpp"
-#include "bi/expression/GlobalVariable.hpp"
-#include "bi/expression/LocalVariable.hpp"
-#include "bi/expression/MemberVariable.hpp"
+#include "bi/statement/GlobalVariable.hpp"
+#include "bi/statement/LocalVariable.hpp"
+#include "bi/statement/MemberVariable.hpp"
 #include "bi/statement/Function.hpp"
 #include "bi/statement/Coroutine.hpp"
 #include "bi/statement/MemberFunction.hpp"
 #include "bi/statement/BinaryOperator.hpp"
 #include "bi/statement/UnaryOperator.hpp"
 #include "bi/statement/AssignmentOperator.hpp"
-#include "bi/type/TypeParameter.hpp"
 #include "bi/statement/Program.hpp"
 
 template<class Target>
@@ -42,4 +41,3 @@ template class bi::Reference<bi::MemberFunction>;
 template class bi::Reference<bi::BinaryOperator>;
 template class bi::Reference<bi::UnaryOperator>;
 template class bi::Reference<bi::AssignmentOperator>;
-template class bi::Reference<bi::TypeParameter>;

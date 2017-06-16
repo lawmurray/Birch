@@ -37,7 +37,7 @@ public:
    * @param loc Location.
    */
   BinaryOperator(Expression* left, shared_ptr<Name> name, Expression* right,
-      Type* returnType, Expression* braces, shared_ptr<Location> loc = nullptr);
+      Type* returnType, Statement* braces, shared_ptr<Location> loc = nullptr);
 
   /**
    * Destructor.

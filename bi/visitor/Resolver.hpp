@@ -47,9 +47,6 @@ public:
   virtual Expression* modify(Super* o);
   virtual Expression* modify(This* o);
   virtual Expression* modify(Parameter* o);
-  virtual Expression* modify(GlobalVariable* o);
-  virtual Expression* modify(LocalVariable* o);
-  virtual Expression* modify(MemberVariable* o);
   virtual Expression* modify(Identifier<Unknown>* o);
   virtual Expression* modify(Identifier<Parameter>* o);
   virtual Expression* modify(Identifier<GlobalVariable>* o);
@@ -62,6 +59,9 @@ public:
   virtual Expression* modify(Identifier<UnaryOperator>* o);
 
   virtual Statement* modify(Assignment* o);
+  virtual Statement* modify(GlobalVariable* o);
+  virtual Statement* modify(LocalVariable* o);
+  virtual Statement* modify(MemberVariable* o);
   virtual Statement* modify(Function* o);
   virtual Statement* modify(Coroutine* o);
   virtual Statement* modify(Program* o);
@@ -70,14 +70,19 @@ public:
   virtual Statement* modify(UnaryOperator* o);
   virtual Statement* modify(AssignmentOperator* o);
   virtual Statement* modify(ConversionOperator* o);
+  virtual Statement* modify(Class* o);
+  virtual Statement* modify(AliasType* o);
+  virtual Statement* modify(BasicType* o);
   virtual Statement* modify(Import* o);
   virtual Statement* modify(If* o);
   virtual Statement* modify(For* o);
   virtual Statement* modify(While* o);
   virtual Statement* modify(Return* o);
 
-  virtual Type* modify(TypeReference* o);
-  virtual Type* modify(TypeParameter* o);
+  virtual Type* modify(IdentifierType<UnknownType>* o);
+  virtual Type* modify(IdentifierType<Class>* o);
+  virtual Type* modify(IdentifierType<AliasType>* o);
+  virtual Type* modify(IdentifierType<BasicType>* o);
 
 protected:
   /**
@@ -129,7 +134,7 @@ protected:
    *
    * @param o Braces to which to defer visit.
    */
-  void defer(Expression* o);
+  void defer(Statement* o);
 
   /**
    * End deferred visits to the bodies of functions, visiting the bodies of
@@ -140,7 +145,7 @@ protected:
   /**
    * Innermost type.
    */
-  TypeParameter* type();
+  Class* type();
 
   /**
    * Stack of containing scopes.
@@ -150,7 +155,7 @@ protected:
   /**
    * Type stack.
    */
-  std::stack<TypeParameter*> types;
+  std::stack<Class*> types;
 
   /**
    * File stack.
@@ -165,7 +170,7 @@ protected:
   /**
    * Deferred functions, binary and unary operators.
    */
-  std::list<std::tuple<Expression*,Scope*,TypeParameter*> > defers;
+  std::list<std::tuple<Statement*,Scope*,Class*> > defers;
 
   /**
    * Are we in the input parameters of a function?

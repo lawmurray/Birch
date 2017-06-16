@@ -20,11 +20,23 @@ bool bi::Statement::definitely(const Statement& o) const {
   return o.dispatchDefinitely(*this);
 }
 
+bool bi::Statement::definitely(const AliasType& o) const {
+  return false;
+}
+
 bool bi::Statement::definitely(const AssignmentOperator& o) const {
   return false;
 }
 
+bool bi::Statement::definitely(const BasicType& o) const {
+  return false;
+}
+
 bool bi::Statement::definitely(const BinaryOperator& o) const {
+  return false;
+}
+
+bool bi::Statement::definitely(const Class& o) const {
   return false;
 }
 
@@ -52,6 +64,10 @@ bool bi::Statement::definitely(const Function& o) const {
   return false;
 }
 
+bool bi::Statement::definitely(const GlobalVariable& o) const {
+  return false;
+}
+
 bool bi::Statement::definitely(const If& o) const {
   return false;
 }
@@ -64,7 +80,15 @@ bool bi::Statement::definitely(const List<Statement>& o) const {
   return false;
 }
 
+bool bi::Statement::definitely(const LocalVariable& o) const {
+  return false;
+}
+
 bool bi::Statement::definitely(const MemberFunction& o) const {
+  return false;
+}
+
+bool bi::Statement::definitely(const MemberVariable& o) const {
   return false;
 }
 
@@ -92,11 +116,23 @@ bool bi::Statement::possibly(const Statement& o) const {
   return o.dispatchPossibly(*this);
 }
 
+bool bi::Statement::possibly(const AliasType& o) const {
+  return false;
+}
+
 bool bi::Statement::possibly(const AssignmentOperator& o) const {
   return false;
 }
 
+bool bi::Statement::possibly(const BasicType& o) const {
+  return false;
+}
+
 bool bi::Statement::possibly(const BinaryOperator& o) const {
+  return false;
+}
+
+bool bi::Statement::possibly(const Class& o) const {
   return false;
 }
 
@@ -124,6 +160,10 @@ bool bi::Statement::possibly(const Function& o) const {
   return false;
 }
 
+bool bi::Statement::possibly(const GlobalVariable& o) const {
+  return false;
+}
+
 bool bi::Statement::possibly(const If& o) const {
   return false;
 }
@@ -136,7 +176,15 @@ bool bi::Statement::possibly(const List<Statement>& o) const {
   return false;
 }
 
+bool bi::Statement::possibly(const LocalVariable& o) const {
+  return false;
+}
+
 bool bi::Statement::possibly(const MemberFunction& o) const {
+  return false;
+}
+
+bool bi::Statement::possibly(const MemberVariable& o) const {
   return false;
 }
 

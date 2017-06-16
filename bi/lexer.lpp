@@ -97,12 +97,12 @@ IS                                 (u|U|l|L)*
 <DOUBLE_BRACE>.                     { yylval.valString = yytext; return RAW; }
 
 "import"                            { return IMPORT; }
-"program"                           { return PROGRAM; }
-"struct"                            { return STRUCT; }
-"class"                             { return CLASS; }
-"type"                              { return TYPE; }
 "function"                          { return FUNCTION; }
 "coroutine"                         { return COROUTINE; }
+"program"                           { return PROGRAM; }
+"class"                             { return CLASS; }
+"type"                              { return TYPE; }
+"operator"                          { return OPERATOR; }
 "if"                                { return IF; }
 "else"                              { return ELSE; }
 "for"                               { return FOR; }

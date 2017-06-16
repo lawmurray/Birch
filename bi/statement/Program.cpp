@@ -6,7 +6,7 @@
 #include "bi/visitor/all.hpp"
 
 bi::Program::Program(shared_ptr<Name> name, Expression* parens,
-    Expression* braces, shared_ptr<Location> loc) :
+    Statement* braces, shared_ptr<Location> loc) :
     Statement(loc),
     Named(name),
     Parenthesised(parens),

@@ -31,7 +31,6 @@ public:
   virtual void visit(const Literal<double>* o);
   virtual void visit(const Literal<const char*>* o);
   virtual void visit(const ParenthesesExpression* o);
-  virtual void visit(const BracesExpression* o);
   virtual void visit(const BracketsExpression* o);
   virtual void visit(const LambdaFunction* o);
   virtual void visit(const Index* o);
@@ -41,9 +40,6 @@ public:
   virtual void visit(const Super* o);
   virtual void visit(const This* o);
   virtual void visit(const Parameter* o);
-  virtual void visit(const GlobalVariable* o);
-  virtual void visit(const LocalVariable* o);
-  virtual void visit(const MemberVariable* o);
   virtual void visit(const Identifier<Unknown>* o);
   virtual void visit(const Identifier<Parameter>* o);
   virtual void visit(const Identifier<GlobalVariable>* o);
@@ -58,6 +54,9 @@ public:
   virtual void visit(const EmptyStatement* o);
   virtual void visit(const List<Statement>* o);
   virtual void visit(const Assignment* o);
+  virtual void visit(const GlobalVariable* o);
+  virtual void visit(const LocalVariable* o);
+  virtual void visit(const MemberVariable* o);
   virtual void visit(const Function* o);
   virtual void visit(const Coroutine* o);
   virtual void visit(const Program* o);
@@ -66,6 +65,9 @@ public:
   virtual void visit(const UnaryOperator* o);
   virtual void visit(const AssignmentOperator* o);
   virtual void visit(const ConversionOperator* o);
+  virtual void visit(const Class* o);
+  virtual void visit(const AliasType* o);
+  virtual void visit(const BasicType* o);
   virtual void visit(const Import* o);
   virtual void visit(const ExpressionStatement* o);
   virtual void visit(const If* o);
@@ -76,8 +78,10 @@ public:
 
   virtual void visit(const EmptyType* o);
   virtual void visit(const List<Type>* o);
-  virtual void visit(const TypeReference* o);
-  virtual void visit(const TypeParameter* o);
+  virtual void visit(const IdentifierType<UnknownType>* o);
+  virtual void visit(const IdentifierType<Class>* o);
+  virtual void visit(const IdentifierType<AliasType>* o);
+  virtual void visit(const IdentifierType<BasicType>* o);
   virtual void visit(const BracketsType* o);
   virtual void visit(const ParenthesesType* o);
   virtual void visit(const FunctionType* o);

@@ -4,12 +4,13 @@
 #pragma once
 
 #include "bi/statement/Statement.hpp"
+#include "bi/expression/Expression.hpp"
 #include "bi/common/Braced.hpp"
 #include "bi/common/Scoped.hpp"
 
 namespace bi {
 /**
- * For.
+ * For loop.
  *
  * @ingroup compiler_statement
  */
@@ -24,7 +25,7 @@ public:
    * @param braces Body of loop.
    * @param loc Location.
    */
-  For(Expression* index, Expression* from, Expression* to, Expression* braces,
+  For(Expression* index, Expression* from, Expression* to, Statement* braces,
       shared_ptr<Location> loc = nullptr);
 
   /**

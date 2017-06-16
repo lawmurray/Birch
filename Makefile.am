@@ -59,18 +59,14 @@ birchc_SOURCES = \
   bi/exception/ThisException.cpp \
   bi/exception/UnresolvedReferenceException.cpp \
   bi/exception/UnsupportedOptionTypeException.cpp \
-  bi/expression/BracesExpression.cpp \
   bi/expression/BracketsExpression.cpp \
   bi/expression/EmptyExpression.cpp \
   bi/expression/Expression.cpp \
-  bi/expression/GlobalVariable.cpp \
   bi/expression/Identifier.cpp \
   bi/expression/Index.cpp \
   bi/expression/LambdaFunction.cpp \
   bi/expression/Literal.cpp \
-  bi/expression/LocalVariable.cpp \
   bi/expression/Member.cpp \
-  bi/expression/MemberVariable.cpp \
   bi/expression/Parameter.cpp \
   bi/expression/ParenthesesExpression.cpp \
   bi/expression/Range.cpp \
@@ -81,25 +77,31 @@ birchc_SOURCES = \
   bi/io/cpp/CppConstructorGenerator.cpp \
   bi/io/cpp/CppCoroutineGenerator.cpp \
   bi/io/cpp/CppFileGenerator.cpp \
-  bi/io/cpp/CppTypeGenerator.cpp \
+  bi/io/cpp/CppClassGenerator.cpp \
   bi/io/cpp/CppParameterGenerator.cpp \
   bi/io/bi_ostream.cpp \
   bi/io/cpp_ostream.cpp \
   bi/io/indentable_ostream.cpp \
   bi/primitive/encode.cpp \
+  bi/statement/AliasType.cpp \
   bi/statement/AssignmentOperator.cpp \
   bi/statement/Assignment.cpp \
+  bi/statement/BasicType.cpp \
   bi/statement/BinaryOperator.cpp \
-  bi/statement/ConversionOperator.cpp \
+  bi/statement/LocalVariable.cpp \
+  bi/statement/Class.cpp \
   bi/statement/Coroutine.cpp \
   bi/statement/EmptyStatement.cpp \
   bi/statement/ExpressionStatement.cpp \
   bi/statement/File.cpp \
   bi/statement/For.cpp \
   bi/statement/Function.cpp \
+  bi/statement/GlobalVariable.cpp \
   bi/statement/If.cpp \
   bi/statement/Import.cpp \
+  bi/statement/LocalVariable.cpp \
   bi/statement/MemberFunction.cpp \
+  bi/statement/MemberVariable.cpp \
   bi/statement/Program.cpp \
   bi/statement/Raw.cpp \
   bi/statement/Return.cpp \
@@ -110,8 +112,7 @@ birchc_SOURCES = \
   bi/type/CoroutineType.cpp \
   bi/type/EmptyType.cpp \
   bi/type/FunctionType.cpp \
-  bi/type/TypeParameter.cpp \
-  bi/type/TypeReference.cpp \
+  bi/type/IdentifierType.cpp \
   bi/type/ParenthesesType.cpp \
   bi/type/Type.cpp \
   bi/visitor/Assigner.cpp \
@@ -120,7 +121,9 @@ birchc_SOURCES = \
   bi/visitor/Modifier.cpp \
   bi/visitor/Resolver.cpp \
   bi/visitor/Visitor.cpp \
-  bi/birchc.cpp
+  bi/birchc.cpp \
+  bi/lexer.lpp \
+  bi/parser.ypp
 
 birchc_CXXFLAGS = $(AM_CXXFLAGS)
 # ^ workaround for 'created with both libtool and without' error
@@ -204,18 +207,14 @@ noinst_HEADERS = \
   bi/exception/UnresolvedReferenceException.hpp \
   bi/exception/UnsupportedOptionTypeException.hpp \
   bi/expression/all.hpp \
-  bi/expression/BracesExpression.hpp \
   bi/expression/BracketsExpression.hpp \
   bi/expression/EmptyExpression.hpp \
   bi/expression/Expression.hpp \
-  bi/expression/GlobalVariable.hpp \
   bi/expression/Identifier.hpp \
   bi/expression/Index.hpp \
   bi/expression/LambdaFunction.hpp \
   bi/expression/Literal.hpp \
-  bi/expression/LocalVariable.hpp \
   bi/expression/Member.hpp \
-  bi/expression/MemberVariable.hpp \
   bi/expression/Parameter.hpp \
   bi/expression/ParenthesesExpression.hpp \
   bi/expression/Range.hpp \
@@ -229,7 +228,7 @@ noinst_HEADERS = \
   bi/io/cpp/CppCoroutineGenerator.hpp \
   bi/io/cpp/CppFileGenerator.hpp \
   bi/io/cpp/CppParameterGenerator.hpp \
-  bi/io/cpp/CppTypeGenerator.hpp \
+  bi/io/cpp/CppClassGenerator.hpp \
   bi/io/cpp_ostream.hpp \
   bi/io/hpp_ostream.hpp \
   bi/io/indentable_ostream.hpp \
@@ -240,9 +239,12 @@ noinst_HEADERS = \
   bi/primitive/shared_ptr.hpp \
   bi/primitive/unique_ptr.hpp \
   bi/statement/all.hpp \
+  bi/statement/AliasType.hpp \
   bi/statement/AssignmentOperator.hpp \
   bi/statement/Assignment.hpp \
+  bi/statement/BasicType.hpp \
   bi/statement/BinaryOperator.hpp \
+  bi/statement/Class.hpp \
   bi/statement/ConversionOperator.hpp \
   bi/statement/Coroutine.hpp \
   bi/statement/EmptyStatement.hpp \
@@ -250,9 +252,12 @@ noinst_HEADERS = \
   bi/statement/File.hpp \
   bi/statement/For.hpp \
   bi/statement/Function.hpp \
+  bi/statement/GlobalVariable.hpp \
   bi/statement/If.hpp \
   bi/statement/Import.hpp \
+  bi/statement/LocalVariable.hpp \
   bi/statement/MemberFunction.hpp \
+  bi/statement/MemberVariable.hpp \
   bi/statement/Program.hpp \
   bi/statement/Raw.hpp \
   bi/statement/Return.hpp \
@@ -266,7 +271,6 @@ noinst_HEADERS = \
   bi/type/FunctionType.hpp \
   bi/type/ParenthesesType.hpp \
   bi/type/Type.hpp \
-  bi/type/TypeParameter.hpp \
   bi/type/TypeReference.hpp \
   bi/visitor/all.hpp \
   bi/visitor/Assigner.hpp \

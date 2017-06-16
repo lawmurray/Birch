@@ -46,5 +46,5 @@ template class bi::Dictionary<bi::Parameter>;
 template class bi::Dictionary<bi::GlobalVariable>;
 template class bi::Dictionary<bi::LocalVariable>;
 template class bi::Dictionary<bi::MemberVariable>;
-template class bi::Dictionary<bi::TypeParameter>;
+template class bi::Dictionary<bi::Class>;
 template class bi::Dictionary<bi::Program>;

@@ -38,20 +38,12 @@ bool bi::ParenthesesExpression::dispatchDefinitely(
   return o.definitely(*this) || single->dispatchDefinitely(o);
 }
 
-bool bi::ParenthesesExpression::definitely(const BracesExpression& o) const {
-  return single->definitely(o);
-}
-
 bool bi::ParenthesesExpression::definitely(
     const BracketsExpression& o) const {
   return single->definitely(o);
 }
 
 bool bi::ParenthesesExpression::definitely(const EmptyExpression& o) const {
-  return single->definitely(o);
-}
-
-bool bi::ParenthesesExpression::definitely(const GlobalVariable& o) const {
   return single->definitely(o);
 }
 
@@ -128,14 +120,6 @@ bool bi::ParenthesesExpression::definitely(const Literal<const char*>& o) {
   return single->definitely(o);
 }
 
-bool bi::ParenthesesExpression::definitely(const LocalVariable& o) const {
-  return single->definitely(o);
-}
-
-bool bi::ParenthesesExpression::definitely(const MemberVariable& o) const {
-  return single->definitely(o);
-}
-
 bool bi::ParenthesesExpression::definitely(const Member& o) const {
   return single->definitely(o);
 }
@@ -169,19 +153,11 @@ bool bi::ParenthesesExpression::dispatchPossibly(const Expression& o) const {
   return o.possibly(*this) || single->dispatchPossibly(o);
 }
 
-bool bi::ParenthesesExpression::possibly(const BracesExpression& o) const {
-  return single->possibly(o);
-}
-
 bool bi::ParenthesesExpression::possibly(const BracketsExpression& o) const {
   return single->possibly(o);
 }
 
 bool bi::ParenthesesExpression::possibly(const EmptyExpression& o) const {
-  return single->possibly(o);
-}
-
-bool bi::ParenthesesExpression::possibly(const GlobalVariable& o) const {
   return single->possibly(o);
 }
 
@@ -258,15 +234,7 @@ bool bi::ParenthesesExpression::possibly(const Literal<const char*>& o) {
   return single->possibly(o);
 }
 
-bool bi::ParenthesesExpression::possibly(const LocalVariable& o) const {
-  return single->possibly(o);
-}
-
 bool bi::ParenthesesExpression::possibly(const Member& o) const {
-  return single->possibly(o);
-}
-
-bool bi::ParenthesesExpression::possibly(const MemberVariable& o) const {
   return single->possibly(o);
 }
 

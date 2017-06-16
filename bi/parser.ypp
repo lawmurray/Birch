@@ -46,7 +46,7 @@
   bi::Statement* valStatement;
 }
 
-%token <valString> IMPORT PROGRAM STRUCT CLASS TYPE FUNCTION COROUTINE
+%token <valString> IMPORT PROGRAM CLASS TYPE FUNCTION COROUTINE OPERATOR
 %token <valString> IF ELSE FOR IN WHILE RETURN CPP HPP THIS SUPER
 %token <valString> FUNCTION_UPPER COROUTINE_UPPER
 %token <valString> DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE RAW NAME
@@ -57,31 +57,16 @@
 %token <valString> LEFT_OP RIGHT_OP LEFT_TILDE_OP RIGHT_TILDE_OP
 %token <valString> AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP RANGE_OP
 
-%type <valName> unary_operator
+%type <valName> name
+%type <valPath> path
+%type <valName> unary_operator binary_operator assignment_operator
 %type <valName> multiplicative_operator additive_operator relational_operator
 %type <valName> equality_operator logical_and_operator logical_or_operator
-%type <valName> stochastic_operator binary_operator assignment_operator
-%type <valName> name path_name
-%type <valPath> path
+%type <valName> stochastic_operator 
 
 %type <valExpression> bool_literal int_literal real_literal string_literal
-%type <valExpression> literal
-%type <valExpression> value optional_value
-%type <valExpression> braces optional_braces
-%type <valExpression> type_braces optional_type_braces
-%type <valExpression> parameter_list parameters optional_parameters
-%type <valExpression> arguments optional_arguments
-%type <valExpression> size_list size
-%type <valExpression> var_reference var_parameter var_member_parameter var_declaration_parameter
-%type <valExpression> func_reference
-
-%type <valType> type_reference struct_parameter class_parameter type_parameter
-%type <valType> parens_type function_type coroutine_type primary_type
-%type <valType> brackets_type type_list type
-%type <valType> type_parameter_list type_parameters
-%type <valType> result_type optional_result_type
-
-%type <valExpression> reference_expression this_expression super_expression
+%type <valExpression> literal identifier
+%type <valExpression> this_expression super_expression
 %type <valExpression> parens_expression function_expression
 %type <valExpression> member_expression primary_expression
 %type <valExpression> index_expression index_list
@@ -90,14 +75,27 @@
 %type <valExpression> relational_expression equality_expression
 %type <valExpression> logical_and_expression logical_or_expression
 %type <valExpression> stochastic_expression expression_list expression
+%type <valExpression> parameter parameter_list parameters
+%type <valExpression> arguments optional_arguments
+%type <valExpression> size_list size
 
-%type <valStatement> coroutine_parameter op_parameter conversion_parameter
-%type <valStatement> func_parameter func_member_parameter prog_parameter
-%type <valStatement> import cpp hpp expression_statement if for while return
-%type <valStatement> assignment_parameter assignment_statement
+%type <valStatement> global_variable_declaration local_variable_declaration
+%type <valStatement> function_declaration coroutine_declaration program_declaration
+%type <valStatement> member_variable_declaration member_function_declaration
+%type <valStatement> binary_operator_declaration unary_operator_declaration
+%type <valStatement> conversion_operator_declaration assignment_operator_declaration
+%type <valStatement> class_declaration alias_type_declaration basic_type_declaration
+%type <valStatement> import cpp hpp assignment expression_statement if for while return
 %type <valStatement> statement statements optional_statements
-%type <valStatement> type_statement type_statements optional_type_statements
+%type <valStatement> class_statement class_statements optional_class_statements
 %type <valStatement> file_statement file_statements optional_file_statements
+%type <valStatement> braces optional_braces
+%type <valStatement> class_braces optional_class_braces
+
+%type <valType> identifier_type primary_type parens_type function_type
+%type <valType> coroutine_type brackets_type type_list type
+%type <valType> type_parameter_list type_parameters
+%type <valType> base optional_base result optional_result
 
 %locations
 
@@ -113,34 +111,30 @@ name
     : NAME  { $$ = new bi::Name($1, make_loc(@$)); }
     ;
 
-path_name
-    : NAME    { $$ = new bi::Name($1, make_loc(@$)); }
-    ;
-
 path
-    : path_name           { $$ = new bi::Path($1, nullptr, make_loc(@$)); }
-    | path_name '.' path  { $$ = new bi::Path($1, $3, make_loc(@$)); }
+    : name           { $$ = new bi::Path($1, nullptr, make_loc(@$)); }
+    | name '.' path  { $$ = new bi::Path($1, $3, make_loc(@$)); }
     ;
 
 
 /***************************************************************************
- * Literals                                                                *
+ * Expressions                                                             *
  ***************************************************************************/
 
 bool_literal
-    : BOOL_LITERAL  { $$ = new bi::Literal<bool>($1, yytext, new bi::TypeReference(new bi::Name("Boolean")), make_loc(@$)); }
+    : BOOL_LITERAL  { $$ = new bi::Literal<bool>($1, yytext, new bi::IdentifierType<bi::BasicType>(new bi::Name("Boolean")), make_loc(@$)); }
     ;
 
 int_literal
-    : INT_LITERAL  { $$ = new bi::Literal<int64_t>($1, yytext, new bi::TypeReference(new bi::Name("Integer")), make_loc(@$)); }
+    : INT_LITERAL  { $$ = new bi::Literal<int64_t>($1, yytext, new bi::IdentifierType<bi::BasicType>(new bi::Name("Integer")), make_loc(@$)); }
     ;
 
 real_literal
-    : REAL_LITERAL  { $$ = new bi::Literal<double>($1, yytext, new bi::TypeReference(new bi::Name("Real")), make_loc(@$)); }
+    : REAL_LITERAL  { $$ = new bi::Literal<double>($1, yytext, new bi::IdentifierType<bi::BasicType>(new bi::Name("Real")), make_loc(@$)); }
     ;
 
 string_literal
-    : STRING_LITERAL  { $$ = new bi::Literal<const char*>($1, yytext, new bi::TypeReference(new bi::Name("String")), make_loc(@$)); }
+    : STRING_LITERAL  { $$ = new bi::Literal<const char*>($1, yytext, new bi::IdentifierType<bi::BasicType>(new bi::Name("String")), make_loc(@$)); }
     ;
 
 literal
@@ -149,232 +143,9 @@ literal
     | real_literal
     | string_literal
     ;
-    
 
-/***************************************************************************
- * Groupings                                                               *
- ***************************************************************************/
-    
-value
-    : LEFT_OP expression  { $$ = $2; }
-    ;
-    
-optional_value
-    : value
-    |        { $$ = make_empty(); }
-    ;
-
-braces
-    : '{' optional_statements '}'  { $$ = new bi::BracesExpression($2, make_loc(@$)); }
-    ;
-
-optional_braces
-    : braces
-    | ';'     { $$ = make_empty(); }
-    ;
-
-type_braces
-    : '{' optional_type_statements '}'  { $$ = new bi::BracesExpression($2, make_loc(@$)); }
-    ;
-
-optional_type_braces
-    : type_braces
-    | ';'           { $$ = make_empty(); }
-    ;
-
-
-/***************************************************************************
- * Raw code                                                                *
- ***************************************************************************/
-
-raw
-    : RAW      { raw << $1; }
-    | raw RAW  { raw << $2; }
-    ;
-    
-double_braces
-    : DOUBLE_BRACE_OPEN { raw.str(""); } raw DOUBLE_BRACE_CLOSE
-    ;
-
-
-/***************************************************************************
- * Parameters                                                              *
- ***************************************************************************/
-
-var_parameter
-    : name ':' type  { $$ = new bi::Parameter($1, $3, bi::PARAMETER_FORM, make_empty(), make_empty(), make_loc(@$)); }
-    | ':' type       { $$ = new bi::Parameter(new bi::Name(), $2, bi::PARAMETER_FORM, make_empty(), make_empty(), make_loc(@$)); }
-    ;
-
-var_member_parameter
-    : name ':' type optional_arguments optional_value  { $$ = new bi::Parameter($1, $3, bi::MEMBER_VARIABLE_FORM, $4, $5, make_loc(@$)); }
-    ;
-
-var_declaration_parameter
-    : name ':' type optional_arguments optional_value  { $$ = new bi::Parameter($1, $3, bi::VARIABLE_FORM, $4, $5, make_loc(@$)); }
-    ;
-    
-func_parameter
-    : name parameters optional_result_type optional_braces  { $$ = new bi::Function($1, $2, $3, $4, bi::FUNCTION_FORM, make_loc(@$)); }
-    ;
-
-func_member_parameter
-    : name parameters optional_result_type optional_braces  { $$ = new bi::Function($1, $2, $3, $4, bi::MEMBER_FUNCTION_FORM, make_loc(@$)); }
-    ;
-
-coroutine_parameter
-    : name parameters optional_result_type optional_braces  { $$ = new bi::Function($1, $2, $3, $4, bi::COROUTINE_FORM, make_loc(@$)); }
-    ;
-    
-op_parameter
-    : var_parameter binary_operator var_parameter optional_result_type optional_braces  { $$ = new bi::BinaryOperator($1, $2, $3, $4, $5, make_loc(@$)); }
-    | unary_operator var_parameter optional_result_type optional_braces                 { $$ = new bi::UnaryOperator($1, $2, $3, $4, make_loc(@$)); }
-    ;
-
-assignment_parameter
-    : assignment_operator var_parameter optional_braces  { $$ = new bi::AssignmentOperator($1, $2, $3, make_loc(@$)); }
-    ;
-
-conversion_parameter
-    : result_type optional_braces  { $$ = new bi::ConversionOperator($1, $2, make_loc(@$)); }
-    ;
-
-struct_parameter
-    : name optional_parameters '<' type_reference optional_arguments optional_type_braces  { $$ = new bi::TypeParameter($1, $2, $4, $5, $6, bi::STRUCT_TYPE, make_loc(@$)); }
-    | name optional_parameters optional_type_braces                                        { $$ = new bi::TypeParameter($1, $2, new bi::EmptyType(), make_empty(), $3, bi::STRUCT_TYPE, make_loc(@$)); }
-    ;
-
-class_parameter
-    : name optional_parameters '<' type_reference optional_arguments optional_type_braces  { $$ = new bi::TypeParameter($1, $2, $4, $5, $6, bi::CLASS_TYPE, make_loc(@$)); }
-    | name optional_parameters optional_type_braces                     { $$ = new bi::TypeParameter($1, $2, new bi::EmptyType(), make_empty(), $3, bi::CLASS_TYPE, make_loc(@$)); }
-    ;
-
-type_parameter
-    : name '=' type_reference ';'  { $$ = new bi::TypeParameter($1, make_empty(), $3, make_empty(), make_empty(), bi::ALIAS_TYPE, make_loc(@$)); }
-    | name ';'                     { $$ = new bi::TypeParameter($1, make_empty(), new bi::EmptyType(), make_empty(), make_empty(), bi::BUILTIN_TYPE, make_loc(@$)); }
-    ;
-
-prog_parameter
-    : name parameters optional_braces  { $$ = new bi::Program($1, $2, $3, make_loc(@$)); }
-    ;
-
-parameter_list
-    : var_declaration_parameter
-    | var_declaration_parameter ',' parameter_list  { $$ = new bi::List<bi::Expression>($1, $3, make_loc(@$)); }
-    ;
-
-parameters
-    : '(' ')'                 { $$ = make_empty(); }
-    | '(' parameter_list ')'  { $$ = $2; }
-    ;
-
-optional_parameters
-    : parameters
-    |             { $$ = make_empty(); }
-
-type_parameter_list
-    : type
-    | type ',' type_parameter_list  { $$ = new bi::List<bi::Type>($1, $3, make_loc(@$)); }
-    ;
-
-type_parameters
-    : '(' ')'                      { $$ = new bi::EmptyType(); }
-    | '(' type_parameter_list ')'  { $$ = $2; }
-    ;
-    ;
-
-result_type
-    : RIGHT_OP type  { $$ = $2; }
-    ;
-    
-optional_result_type
-    : result_type
-    |             %prec RIGHT_OP { $$ = new bi::EmptyType(); }
-    ;
-
-
-/***************************************************************************
- * References                                                              *
- ***************************************************************************/
-
-var_reference
-    : name  { $$ = new bi::VarReference($1, make_loc(@$)); }
-    ;
-
-func_reference
-    : name arguments  { $$ = new bi::FunctionIdentifier($1, $2, make_loc(@$)); }
-    ;
-
-type_reference
-    : name  { $$ = new bi::TypeReference($1, make_loc(@$)); }
-    ;
-
-arguments
-    : '(' ')'                  { $$ = make_empty(); }
-    | '(' expression_list ')'  { $$ = $2; }
-    ;
-
-optional_arguments
-    : arguments
-    |            { $$ = make_empty(); }
-    ;
-
-size
-    : expression  { $$ = new bi::Span($1, make_loc(@$)); }
-    | '_'         { $$ = new bi::Span(make_empty(), make_loc(@$)); }
-    ;
-
-size_list
-    : size
-    | size ',' size_list  { $$ = new bi::List<bi::Expression>($1, $3, make_loc(@$)); }
-    ;
-
-
-/***************************************************************************
- * Types                                                                   *
- ***************************************************************************/
-
-parens_type
-    : '(' type_list ')'  { $$ = new bi::ParenthesesType($2, make_loc(@$)); }
-    ;
-
-function_type
-    : FUNCTION_UPPER '<' type_parameters optional_result_type '>'  { $$ = new bi::FunctionType($3, $4, make_loc(@$)); }
-    ;
-
-coroutine_type
-    : COROUTINE_UPPER '<' type '>'  { $$ = new bi::CoroutineType($3, make_loc(@$)); }
-    ;
-
-primary_type
-    : type_reference
-    | parens_type
-    | function_type
-    | coroutine_type
-    ;
-
-brackets_type
-    : primary_type
-    | primary_type '[' size_list ']'  { $$ = new bi::BracketsType($1, $3, make_loc(@$)); }
-    ;
-
-type_list
-    : brackets_type
-    | brackets_type ',' type_list  { $$ = new bi::List<bi::Type>($1, $3, make_loc(@$)); }
-    ;
-
-type
-    : brackets_type
-    ;
-
-
-/***************************************************************************
- * Expressions                                                             *
- ***************************************************************************/
-
-reference_expression
-    : var_reference
-    | func_reference
+identifier
+    : name optional_arguments  { $$ = new bi::Identifier<bi::Unknown>($1, $2, make_loc(@$)); }
     ;
 
 parens_expression
@@ -382,7 +153,7 @@ parens_expression
     ;
     
 function_expression
-    : FUNCTION parameters optional_result_type optional_braces  { $$ = new bi::Function(new bi::Name(), $2, $3, $4, bi::LAMBDA_FUNCTION_FORM, make_loc(@$)); }
+    : FUNCTION parameters optional_result optional_braces  { $$ = new bi::LambdaFunction($2, $3, $4, make_loc(@$)); }
     ;
 
 this_expression
@@ -395,11 +166,11 @@ super_expression
 
 primary_expression
     : literal
-    | parens_expression
-    | function_expression
-    | reference_expression
+    | identifier
     | this_expression
     | super_expression
+    | function_expression
+    | parens_expression
     ;
 
 index_expression
@@ -434,18 +205,17 @@ unary_operator
 
 unary_expression
     : member_expression
-    | unary_operator member_expression  { $$ = new bi::Identifier<UnaryOperator>($1, $2, make_loc(@$)); }
+    | unary_operator member_expression  { $$ = new bi::Identifier<bi::UnaryOperator>($1, $2, make_loc(@$)); }
     ;
 
 multiplicative_operator
-    : '*'   { $$ = new bi::Name("*", make_loc(@$)); }
-    | '/'   { $$ = new bi::Name("/", make_loc(@$)); }
-    | '\\'  { $$ = new bi::Name("\\", make_loc(@$)); }
+    : '*'  { $$ = new bi::Name("*", make_loc(@$)); }
+    | '/'  { $$ = new bi::Name("/", make_loc(@$)); }
     ;
 
 multiplicative_expression
     : unary_expression
-    | multiplicative_expression multiplicative_operator unary_expression  { $$ = new bi::Identifier<BinaryOperator>($1, $2, $3, make_loc(@$)); }
+    | multiplicative_expression multiplicative_operator unary_expression  { $$ = new bi::Identifier<bi::BinaryOperator>($1, $2, $3, make_loc(@$)); }
     ;
 
 additive_operator
@@ -455,7 +225,7 @@ additive_operator
 
 additive_expression
     : multiplicative_expression
-    | additive_expression additive_operator multiplicative_expression  { $$ = new bi::Identifier<BinaryOperator>($1, $2, $3, make_loc(@$)); }
+    | additive_expression additive_operator multiplicative_expression  { $$ = new bi::Identifier<bi::BinaryOperator>($1, $2, $3, make_loc(@$)); }
     ;
 
 relational_operator
@@ -467,7 +237,7 @@ relational_operator
     
 relational_expression
     : additive_expression
-    | relational_expression relational_operator additive_expression  { $$ = new bi::Identifier<BinaryOperator>($1, $2, $3, make_loc(@$)); }
+    | relational_expression relational_operator additive_expression  { $$ = new bi::Identifier<bi::BinaryOperator>($1, $2, $3, make_loc(@$)); }
     ;
 
 equality_operator
@@ -477,7 +247,7 @@ equality_operator
 
 equality_expression
     : relational_expression
-    | equality_expression equality_operator relational_expression  { $$ = new bi::Identifier<BinaryOperator>($1, $2, $3, make_loc(@$)); }
+    | equality_expression equality_operator relational_expression  { $$ = new bi::Identifier<bi::BinaryOperator>($1, $2, $3, make_loc(@$)); }
     ;
 
 logical_and_operator
@@ -486,7 +256,7 @@ logical_and_operator
 
 logical_and_expression
     : equality_expression
-    | logical_and_expression logical_and_operator equality_expression  { $$ = new bi::Identifier<BinaryOperator>($1, $2, $3, make_loc(@$)); }
+    | logical_and_expression logical_and_operator equality_expression  { $$ = new bi::Identifier<bi::BinaryOperator>($1, $2, $3, make_loc(@$)); }
     ;
 
 logical_or_operator
@@ -495,7 +265,7 @@ logical_or_operator
 
 logical_or_expression
     : logical_and_expression
-    | logical_or_expression logical_or_operator logical_and_expression  { $$ = new bi::Identifier<BinaryOperator>($1, $2, $3, make_loc(@$)); }
+    | logical_or_expression logical_or_operator logical_and_expression  { $$ = new bi::Identifier<bi::BinaryOperator>($1, $2, $3, make_loc(@$)); }
     ;
 
 stochastic_operator
@@ -504,7 +274,7 @@ stochastic_operator
 
 stochastic_expression
     : logical_or_expression
-    | stochastic_expression stochastic_operator logical_or_expression  { $$ = new bi::Identifier<BinaryOperator>($1, $2, $3, make_loc(@$)); }
+    | stochastic_expression stochastic_operator logical_or_expression  { $$ = new bi::Identifier<bi::BinaryOperator>($1, $2, $3, make_loc(@$)); }
     ;
 
 expression_list
@@ -526,83 +296,110 @@ binary_operator
     | stochastic_operator
     ;
 
-
-/***************************************************************************
- * Statements                                                              *
- ***************************************************************************/
-
-var_declaration
-    : var_declaration_parameter ';'  { $$ = new bi::Declaration<bi::Expression>($1, make_loc(@$)); }
-    ;
-
-var_member_declaration
-    : var_member_parameter ';'  { $$ = new bi::Declaration<bi::Expression>($1, make_loc(@$)); }
-    ;
-
-func_declaration
-    : FUNCTION func_parameter  { $$ = new bi::Declaration<bi::Expression>($2, make_loc(@$)); }
-    ;
-
-func_member_declaration
-    : FUNCTION func_member_parameter  { $$ = new bi::Declaration<bi::Expression>($2, make_loc(@$)); }
-    ;
-
-coroutine_declaration
-    : COROUTINE coroutine_parameter  { $$ = new bi::Declaration<bi::Expression>($2, make_loc(@$)); }
-    ;
-
-op_declaration
-    : FUNCTION op_parameter  { $$ = new bi::Declaration<bi::Expression>($2, make_loc(@$)); }
-    ;
-
-assignment_declaration
-    : FUNCTION assignment_parameter  { $$ = $2; }
-    ;
-
-conversion_declaration
-    : FUNCTION conversion_parameter  { $$ = new bi::Declaration<bi::Expression>($2, make_loc(@$)); }
-    ;
-
-type_declaration
-    : STRUCT struct_parameter  { $$ = new bi::Declaration<bi::Type>($2, make_loc(@$)); } 
-    | CLASS class_parameter    { $$ = new bi::Declaration<bi::Type>($2, make_loc(@$)); } 
-    | TYPE type_parameter      { $$ = new bi::Declaration<bi::Type>($2, make_loc(@$)); } 
-    ;
-    
-prog_declaration
-    : PROGRAM prog_parameter  { $$ = new bi::Declaration<bi::Expression>($2, make_loc(@$)); } 
-    ;
-
-expression_statement
-    : expression ';'  { $$ = new bi::ExpressionStatement($1, make_loc(@$)); }
-    ;
-
 assignment_operator
     : LEFT_OP        { $$ = new bi::Name("<-", make_loc(@$)); }
     | LEFT_TILDE_OP  { $$ = new bi::Name("<~", make_loc(@$)); }
     | '~'            { $$ = new bi::Name("~", make_loc(@$)); }
     ;
+
+parameters
+    : '(' ')'                 { $$ = make_empty(); }
+    | '(' parameter_list ')'  { $$ = $2; }
+    ;
+
+parameter_list
+    : parameter
+    | parameter ',' parameter_list  { $$ = new bi::List<bi::Expression>($1, $3, make_loc(@$)); }
+    ;
+
+parameter
+    : name ':' type  { $$ = new bi::Parameter($1, $3, make_empty(), make_loc(@$)); }
+    | ':' type       { $$ = new bi::Parameter(new bi::Name(), $2, make_empty(), make_loc(@$)); }
+    ;
+
+arguments
+    : '(' ')'                  { $$ = make_empty(); }
+    | '(' expression_list ')'  { $$ = $2; }
+    ;
+
+optional_arguments
+    : arguments
+    |            { $$ = make_empty(); }
+    ;
+
+size
+    : expression  { $$ = new bi::Span($1, make_loc(@$)); }
+    | '_'         { $$ = new bi::Span(make_empty(), make_loc(@$)); }
+    ;
+
+size_list
+    : size
+    | size ',' size_list  { $$ = new bi::List<bi::Expression>($1, $3, make_loc(@$)); }
+    ;
+
+
+/***************************************************************************
+ * Statements                                                              *
+ ***************************************************************************/
+
+global_variable_declaration
+    : name ':' type ';'  { $$ = new bi::GlobalVariable($1, $3, make_loc(@$)); }
+    ;
+
+local_variable_declaration
+    : name ':' type ';'  { $$ = new bi::LocalVariable($1, $3, make_loc(@$)); }
+    ;
+
+member_variable_declaration
+    : name ':' type ';'  { $$ = new bi::MemberVariable($1, $3, make_loc(@$)); }
+    ;
+
+function_declaration
+    : FUNCTION name parameters optional_result optional_braces  { $$ = new bi::Function($2, $3, $4, $5, make_loc(@$)); }
+    ;
+
+coroutine_declaration
+    : COROUTINE name parameters optional_result optional_braces  { $$ = new bi::Coroutine($2, $3, $4, $5, make_loc(@$)); }
+    ;
+
+program_declaration
+    : PROGRAM name parameters optional_braces  { $$ = new bi::Program($2, $3, $4, make_loc(@$)); }
+    ;
+
+member_function_declaration
+    : FUNCTION name parameters optional_result optional_braces  { $$ = new bi::MemberFunction($2, $3, $4, $5, make_loc(@$)); }
+    ;
     
-assignment_statement
-    : stochastic_expression assignment_operator stochastic_expression  { $$ = new bi::Assignment($1, $2, $3, make_loc(@$)); }
+binary_operator_declaration
+    : OPERATOR parameter binary_operator parameter optional_result optional_braces  { $$ = new bi::BinaryOperator($2, $3, $4, $5, $6, make_loc(@$)); }
     ;
 
-if
-    : IF '(' expression ')' braces ELSE braces  { $$ = new bi::If($3, $5, $7, make_loc(@$)); }
-    | IF '(' expression ')' braces ELSE if      { $$ = new bi::If($3, $5, new bi::BracesExpression($7), make_loc(@$)); }
-    | IF '(' expression ')' braces              { $$ = new bi::If($3, $5, make_empty(), make_loc(@$)); }
+unary_operator_declaration
+    : OPERATOR unary_operator parameter optional_result optional_braces  { $$ = new bi::UnaryOperator($2, $3, $4, $5, make_loc(@$)); }
+    ;
+    
+assignment_operator_declaration
+    : OPERATOR assignment_operator parameter optional_braces  { $$ = new bi::AssignmentOperator($2, $3, $4, make_loc(@$)); }
     ;
 
-for
-    : FOR '(' var_reference IN expression RANGE_OP expression ')' braces  { $$ = new bi::For($3, $5, $7, $9, make_loc(@$)); }
+conversion_operator_declaration
+    : OPERATOR result optional_braces  { $$ = new bi::ConversionOperator($2, $3, make_loc(@$)); }
     ;
 
-while
-    : WHILE '(' expression ')' braces  { $$ = new bi::While($3, $5, make_loc(@$)); }
+class_declaration
+    : CLASS name optional_base optional_class_braces  { $$ = new bi::Class($2, $3, $4, make_loc(@$)); }
     ;
 
-return
-    : RETURN expression ';'  { $$ = new bi::Return($2, make_loc(@$)); }
+alias_type_declaration
+    : TYPE name '=' identifier_type ';'  { $$ = new bi::AliasType($2, $4, make_loc(@$)); }
+    ;
+    
+basic_type_declaration
+    : TYPE name ';'  { $$ = new bi::BasicType($2, make_loc(@$)); }
+    ;
+
+import
+    : IMPORT path ';'  { $$ = new bi::Import($2, compiler->import($2), make_loc(@$)); }
     ;
 
 cpp
@@ -613,16 +410,41 @@ hpp
     : HPP double_braces  { $$ = new bi::Raw(new bi::Name("hpp"), raw.str(), make_loc(@$)); }
     ;
 
+assignment
+    : stochastic_expression assignment_operator stochastic_expression ';'  { $$ = new bi::Assignment($1, $2, $3, make_loc(@$)); }
+    ;
+
+expression_statement
+    : expression ';'  { $$ = new bi::ExpressionStatement($1, make_loc(@$)); }
+    ;
+
+if
+    : IF '(' expression ')' braces ELSE braces  { $$ = new bi::If($3, $5, $7, make_loc(@$)); }
+    | IF '(' expression ')' braces ELSE if      { $$ = new bi::If($3, $5, $7, make_loc(@$)); }
+    | IF '(' expression ')' braces              { $$ = new bi::If($3, $5, make_empty(), make_loc(@$)); }
+    ;
+
+for
+    : FOR '(' identifier IN expression RANGE_OP expression ')' braces  { $$ = new bi::For($3, $5, $7, $9, make_loc(@$)); }
+    ;
+
+while
+    : WHILE '(' expression ')' braces  { $$ = new bi::While($3, $5, make_loc(@$)); }
+    ;
+
+return
+    : RETURN expression ';'  { $$ = new bi::Return($2, make_loc(@$)); }
+    ;
+
 statement
-    : expression_statement
-    | var_declaration
-    | assignment_statement
+    : local_variable_declaration
+    | expression_statement
+    | assignment
     | if
     | for
     | while
     | return
     | cpp
-    | hpp
     ;
 
 statements
@@ -635,38 +457,37 @@ optional_statements
     |             { $$ = new bi::EmptyStatement(); }
     ;
 
-type_statement
-    : var_member_declaration
-    | func_member_declaration
-    | conversion_declaration
+class_statement
+    : member_variable_declaration
+    | member_function_declaration
+    | assignment_operator_declaration
+    | conversion_operator_declaration
     | hpp
     ;
     
-type_statements
-    : type_statement
-    | type_statement type_statements  { $$ = new bi::List<bi::Statement>($1, $2, make_loc(@$)); }
+class_statements
+    : class_statement
+    | class_statement class_statements  { $$ = new bi::List<bi::Statement>($1, $2, make_loc(@$)); }
     ;
     
-optional_type_statements
-    : type_statements
+optional_class_statements
+    : class_statements
     |                   { $$ = new bi::EmptyStatement(); }
-    ;
-
-import
-    : IMPORT path ';'  { $$ = new bi::Import($2, compiler->import($2), make_loc(@$)); }
     ;
     
 file_statement
     : import
+    | global_variable_declaration
+    | function_declaration
+    | coroutine_declaration
+    | program_declaration
+    | binary_operator_declaration
+    | unary_operator_declaration
+    | class_declaration
+    | alias_type_declaration
+    | basic_type_declaration
     | cpp
     | hpp
-    | var_declaration
-    | func_declaration
-    | assignment_declaration
-    | coroutine_declaration
-    | op_declaration
-    | prog_declaration
-    | type_declaration
     ;
 
 file_statements
@@ -682,5 +503,103 @@ optional_file_statements
 file
     : optional_file_statements  { compiler->setRoot($1); }
     ;
+
+result
+    : RIGHT_OP type  { $$ = $2; }
+    ;
     
+optional_result
+    : result
+    |        %prec RIGHT_OP { $$ = new bi::EmptyType(); }
+    ;
+
+base
+    : '<' identifier_type  { $$ = $2; }
+    ;
+    
+optional_base
+    : base
+    |       { $$ = new bi::EmptyType(); }
+    ;
+
+braces
+    : '{' optional_statements '}'  { $$ = $2; }
+    ;
+
+optional_braces
+    : braces
+    | ';'     { $$ = make_empty(); }
+    ;
+
+class_braces
+    : '{' optional_class_statements '}'  { $$ = $2; }
+    ;
+
+optional_class_braces
+    : class_braces
+    | ';'           { $$ = make_empty(); }
+    ;
+
+raw
+    : RAW      { raw << $1; }
+    | raw RAW  { raw << $2; }
+    ;
+    
+double_braces
+    : DOUBLE_BRACE_OPEN { raw.str(""); } raw DOUBLE_BRACE_CLOSE
+    ;
+
+
+/***************************************************************************
+ * Types                                                                   *
+ ***************************************************************************/
+
+identifier_type
+    : name  { $$ = new bi::IdentifierType<bi::UnknownType>($1, make_loc(@$)); }
+    ;
+
+parens_type
+    : '(' type_list ')'  { $$ = new bi::ParenthesesType($2, make_loc(@$)); }
+    ;
+
+function_type
+    : FUNCTION_UPPER '<' type_parameters optional_result '>'  { $$ = new bi::FunctionType($3, $4, make_loc(@$)); }
+    ;
+
+coroutine_type
+    : COROUTINE_UPPER '<' type '>'  { $$ = new bi::CoroutineType($3, make_loc(@$)); }
+    ;
+
+primary_type
+    : identifier_type
+    | parens_type
+    | function_type
+    | coroutine_type
+    ;
+
+brackets_type
+    : primary_type
+    | primary_type '[' size_list ']'  { $$ = new bi::BracketsType($1, $3, make_loc(@$)); }
+    ;
+
+type_list
+    : brackets_type
+    | brackets_type ',' type_list  { $$ = new bi::List<bi::Type>($1, $3, make_loc(@$)); }
+    ;
+
+type
+    : brackets_type
+    ;
+
+type_parameter_list
+    : type
+    | type ',' type_parameter_list  { $$ = new bi::List<bi::Type>($1, $3, make_loc(@$)); }
+    ;
+
+type_parameters
+    : '(' ')'                      { $$ = new bi::EmptyType(); }
+    | '(' type_parameter_list ')'  { $$ = $2; }
+    ;
+    ;
+
 %%

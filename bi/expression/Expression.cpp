@@ -73,19 +73,11 @@ bool bi::Expression::definitely(const Expression& o) const {
   return o.dispatchDefinitely(*this);
 }
 
-bool bi::Expression::definitely(const BracesExpression& o) const {
-  return false;
-}
-
 bool bi::Expression::definitely(const BracketsExpression& o) const {
   return false;
 }
 
 bool bi::Expression::definitely(const EmptyExpression& o) const {
-  return false;
-}
-
-bool bi::Expression::definitely(const GlobalVariable& o) const {
   return false;
 }
 
@@ -153,15 +145,7 @@ bool bi::Expression::definitely(const Literal<const char*>& o) {
   return false;
 }
 
-bool bi::Expression::definitely(const LocalVariable& o) const {
-  return false;
-}
-
 bool bi::Expression::definitely(const Member& o) const {
-  return false;
-}
-
-bool bi::Expression::definitely(const MemberVariable& o) const {
   return false;
 }
 
@@ -193,19 +177,11 @@ bool bi::Expression::possibly(const Expression& o) const {
   return o.dispatchPossibly(*this);
 }
 
-bool bi::Expression::possibly(const BracesExpression& o) const {
-  return false;
-}
-
 bool bi::Expression::possibly(const BracketsExpression& o) const {
   return false;
 }
 
 bool bi::Expression::possibly(const EmptyExpression& o) const {
-  return false;
-}
-
-bool bi::Expression::possibly(const GlobalVariable& o) const {
   return false;
 }
 
@@ -270,14 +246,6 @@ bool bi::Expression::possibly(const Literal<double>& o) const {
 }
 
 bool bi::Expression::possibly(const Literal<const char*>& o) {
-  return false;
-}
-
-bool bi::Expression::possibly(const LocalVariable& o) const {
-  return false;
-}
-
-bool bi::Expression::possibly(const MemberVariable& o) const {
   return false;
 }
 

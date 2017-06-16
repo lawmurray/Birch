@@ -1,14 +1,15 @@
 /**
  * @file
  */
-#include "bi/expression/GlobalVariable.hpp"
+#include "bi/statement/GlobalVariable.hpp"
 
 #include "bi/visitor/all.hpp"
 
 bi::GlobalVariable::GlobalVariable(shared_ptr<Name> name, Type* type,
     shared_ptr<Location> loc) :
-    Expression(type, loc),
-    Named(name) {
+    Statement(loc),
+    Named(name),
+    Typed(type) {
   //
 }
 
@@ -16,11 +17,11 @@ bi::GlobalVariable::~GlobalVariable() {
   //
 }
 
-bi::Expression* bi::GlobalVariable::accept(Cloner* visitor) const {
+bi::Statement* bi::GlobalVariable::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-bi::Expression* bi::GlobalVariable::accept(Modifier* visitor) {
+bi::Statement* bi::GlobalVariable::accept(Modifier* visitor) {
   return visitor->modify(this);
 }
 
@@ -28,7 +29,7 @@ void bi::GlobalVariable::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::GlobalVariable::dispatchDefinitely(const Expression& o) const {
+bool bi::GlobalVariable::dispatchDefinitely(const Statement& o) const {
   return o.definitely(*this);
 }
 
@@ -36,7 +37,7 @@ bool bi::GlobalVariable::definitely(const GlobalVariable& o) const {
   return type->definitely(*o.type);
 }
 
-bool bi::GlobalVariable::dispatchPossibly(const Expression& o) const {
+bool bi::GlobalVariable::dispatchPossibly(const Statement& o) const {
   return o.possibly(*this);
 }
 

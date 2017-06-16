@@ -27,7 +27,8 @@ public:
   virtual void visit(const Program* o);
   virtual void visit(const BinaryOperator* o);
   virtual void visit(const UnaryOperator* o);
-  virtual void visit(const TypeParameter* o);
+  virtual void visit(const Class* o);
+  virtual void visit(const AliasType* o);
 
 protected:
   /**

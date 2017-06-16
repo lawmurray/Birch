@@ -51,10 +51,6 @@ void bi::Visitor::visit(const ParenthesesExpression* o) {
   o->single->accept(this);
 }
 
-void bi::Visitor::visit(const BracesExpression* o) {
-  o->single->accept(this);
-}
-
 void bi::Visitor::visit(const BracketsExpression* o) {
   o->single->accept(this);
   o->brackets->accept(this);
@@ -95,18 +91,6 @@ void bi::Visitor::visit(const Member* o) {
 void bi::Visitor::visit(const Parameter* o) {
   o->type->accept(this);
   o->value->accept(this);
-}
-
-void bi::Visitor::visit(const GlobalVariable* o) {
-  o->type->accept(this);
-}
-
-void bi::Visitor::visit(const LocalVariable* o) {
-  o->type->accept(this);
-}
-
-void bi::Visitor::visit(const MemberVariable* o) {
-  o->type->accept(this);
 }
 
 void bi::Visitor::visit(const Identifier<Unknown>* o) {
@@ -165,6 +149,18 @@ void bi::Visitor::visit(const Assignment* o) {
   o->right->accept(this);
 }
 
+void bi::Visitor::visit(const GlobalVariable* o) {
+  o->type->accept(this);
+}
+
+void bi::Visitor::visit(const LocalVariable* o) {
+  o->type->accept(this);
+}
+
+void bi::Visitor::visit(const MemberVariable* o) {
+  o->type->accept(this);
+}
+
 void bi::Visitor::visit(const Function* o) {
   o->parens->accept(this);
   o->returnType->accept(this);
@@ -211,6 +207,19 @@ void bi::Visitor::visit(const ConversionOperator* o) {
   o->braces->accept(this);
 }
 
+void bi::Visitor::visit(const Class* o) {
+  o->base->accept(this);
+  o->braces->accept(this);
+}
+
+void bi::Visitor::visit(const AliasType* o) {
+  o->base->accept(this);
+}
+
+void bi::Visitor::visit(const BasicType* o) {
+  //
+}
+
 void bi::Visitor::visit(const Import* o) {
   o->path->accept(this);
 }
@@ -253,15 +262,16 @@ void bi::Visitor::visit(const List<Type>* o) {
   o->head->accept(this);
   o->tail->accept(this);
 }
-void bi::Visitor::visit(const TypeReference* o) {
+void bi::Visitor::visit(const IdentifierType<Class>* o) {
   //
 }
 
-void bi::Visitor::visit(const TypeParameter* o) {
-  o->parens->accept(this);
-  o->base->accept(this);
-  o->baseParens->accept(this);
-  o->braces->accept(this);
+void bi::Visitor::visit(const IdentifierType<AliasType>* o) {
+  //
+}
+
+void bi::Visitor::visit(const IdentifierType<BasicType>* o) {
+  //
 }
 
 void bi::Visitor::visit(const BracketsType* o) {

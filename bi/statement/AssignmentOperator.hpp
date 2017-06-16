@@ -32,7 +32,7 @@ public:
    * @param loc Location.
    */
   AssignmentOperator(shared_ptr<Name> name, Expression* single,
-      Expression* braces, shared_ptr<Location> loc = nullptr);
+      Statement* braces, shared_ptr<Location> loc = nullptr);
 
   /**
    * Destructor.

@@ -7,7 +7,7 @@
 
 #include <typeinfo>
 
-bi::If::If(Expression* cond, Expression* braces,
+bi::If::If(Expression* cond, Statement* braces,
     Expression* falseBraces, shared_ptr<Location> loc) :
     Statement(loc),
     Conditioned(cond),

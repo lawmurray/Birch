@@ -6,7 +6,7 @@
 #include "bi/visitor/all.hpp"
 
 bi::BinaryOperator::BinaryOperator(Expression* left, shared_ptr<Name> name,
-    Expression* right, Type* returnType, Expression* braces,
+    Expression* right, Type* returnType, Statement* braces,
     shared_ptr<Location> loc) :
     Statement(loc),
     Named(name),

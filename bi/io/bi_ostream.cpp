@@ -47,14 +47,6 @@ void bi::bi_ostream::visit(const ParenthesesExpression* o) {
   *this << '(' << o->single << ')';
 }
 
-void bi::bi_ostream::visit(const BracesExpression* o) {
-  *this << " {\n";
-  in();
-  *this << o->single;
-  out();
-  *this << indent << '}';
-}
-
 void bi::bi_ostream::visit(const Index* o) {
   *this << o->single;
 }
@@ -250,6 +242,26 @@ void bi::bi_ostream::visit(const ConversionOperator* o) {
   }
 }
 
+void bi::bi_ostream::visit(const Class* o) {
+  *this << indent << "class " << o->name;
+  if (!o->base->isEmpty()) {
+    *this << " < " << o->base;
+  }
+  if (!o->braces->isEmpty()) {
+    *this << o->braces;
+  } else {
+    *this << ';';
+  }
+}
+
+void bi::bi_ostream::visit(const AliasType* o) {
+  *this << indent << "type " << o->name << " = " << o->base;
+}
+
+void bi::bi_ostream::visit(const BasicType* o) {
+  *this << indent << "type " << o->name;
+}
+
 void bi::bi_ostream::visit(const Import* o) {
   *this << indent << "import " << o->path << ";\n";
 }
@@ -290,33 +302,16 @@ void bi::bi_ostream::visit(const List<Type>* o) {
   *this << o->head << ", " << o->tail;
 }
 
-void bi::bi_ostream::visit(const TypeReference* o) {
+void bi::bi_ostream::visit(const IdentifierType<Class>* o) {
   *this << o->name;
 }
 
-void bi::bi_ostream::visit(const TypeParameter* o) {
-  *this << indent;
-  if (o->isStruct()) {
-    *this << "struct";
-  } else if (o->isClass()) {
-    *this << "class";
-  } else {
-    *this << "type";
-  }
+void bi::bi_ostream::visit(const IdentifierType<AliasType>* o) {
   *this << o->name;
-  if (!o->parens->isEmpty()) {
-    *this << '(' << o->parens << ')';
-  }
-  if (!o->isAlias()) {
-    *this << " = " << o->base;
-  } else if (!o->base->isEmpty()) {
-    *this << " < " << o->base;
-  }
-  if (!o->braces->isEmpty()) {
-    *this << o->braces;
-  } else {
-    *this << ';';
-  }
+}
+
+void bi::bi_ostream::visit(const IdentifierType<BasicType>* o) {
+  *this << o->name;
 }
 
 void bi::bi_ostream::visit(const BracketsType* o) {

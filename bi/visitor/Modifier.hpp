@@ -28,7 +28,6 @@ public:
   virtual Expression* modify(Literal<double>* o);
   virtual Expression* modify(Literal<const char*>* o);
   virtual Expression* modify(ParenthesesExpression* o);
-  virtual Expression* modify(BracesExpression* o);
   virtual Expression* modify(BracketsExpression* o);
   virtual Expression* modify(LambdaFunction* o);
   virtual Expression* modify(Span* o);
@@ -38,9 +37,6 @@ public:
   virtual Expression* modify(Super* o);
   virtual Expression* modify(This* o);
   virtual Expression* modify(Parameter* o);
-  virtual Expression* modify(GlobalVariable* o);
-  virtual Expression* modify(LocalVariable* o);
-  virtual Expression* modify(MemberVariable* o);
   virtual Expression* modify(Identifier<Unknown>* o);
   virtual Expression* modify(Identifier<Parameter>* o);
   virtual Expression* modify(Identifier<GlobalVariable>* o);
@@ -55,6 +51,9 @@ public:
   virtual Statement* modify(EmptyStatement* o);
   virtual Statement* modify(List<Statement>* o);
   virtual Statement* modify(Assignment* o);
+  virtual Statement* modify(GlobalVariable* o);
+  virtual Statement* modify(LocalVariable* o);
+  virtual Statement* modify(MemberVariable* o);
   virtual Statement* modify(Function* o);
   virtual Statement* modify(Coroutine* o);
   virtual Statement* modify(Program* o);
@@ -63,6 +62,9 @@ public:
   virtual Statement* modify(UnaryOperator* o);
   virtual Statement* modify(AssignmentOperator* o);
   virtual Statement* modify(ConversionOperator* o);
+  virtual Statement* modify(Class* o);
+  virtual Statement* modify(AliasType* o);
+  virtual Statement* modify(BasicType* o);
   virtual Statement* modify(Import* o);
   virtual Statement* modify(ExpressionStatement* o);
   virtual Statement* modify(If* o);
@@ -73,8 +75,10 @@ public:
 
   virtual Type* modify(EmptyType* o);
   virtual Type* modify(List<Type>* o);
-  virtual Type* modify(TypeReference* o);
-  virtual Type* modify(TypeParameter* o);
+  virtual Type* modify(IdentifierType<UnknownType>* o);
+  virtual Type* modify(IdentifierType<Class>* o);
+  virtual Type* modify(IdentifierType<AliasType>* o);
+  virtual Type* modify(IdentifierType<BasicType>* o);
   virtual Type* modify(BracketsType* o);
   virtual Type* modify(ParenthesesType* o);
   virtual Type* modify(FunctionType* o);

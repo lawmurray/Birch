@@ -46,11 +46,6 @@ bi::Expression* bi::Modifier::modify(ParenthesesExpression* o) {
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(BracesExpression* o) {
-  o->single = o->single.release()->accept(this);
-  return o;
-}
-
 bi::Expression* bi::Modifier::modify(BracketsExpression* o) {
   o->single = o->single.release()->accept(this);
   o->brackets = o->brackets.release()->accept(this);
@@ -97,21 +92,6 @@ bi::Expression* bi::Modifier::modify(This* o) {
 bi::Expression* bi::Modifier::modify(Parameter* o) {
   o->type = o->type.release()->accept(this);
   o->value = o->value.release()->accept(this);
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(GlobalVariable* o) {
-  o->type = o->type.release()->accept(this);
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(LocalVariable* o) {
-  o->type = o->type.release()->accept(this);
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(MemberVariable* o) {
-  o->type = o->type.release()->accept(this);
   return o;
 }
 
@@ -182,6 +162,21 @@ bi::Statement* bi::Modifier::modify(List<Statement>* o) {
   return o;
 }
 
+bi::Statement* bi::Modifier::modify(GlobalVariable* o) {
+  o->type = o->type.release()->accept(this);
+  return o;
+}
+
+bi::Statement* bi::Modifier::modify(LocalVariable* o) {
+  o->type = o->type.release()->accept(this);
+  return o;
+}
+
+bi::Statement* bi::Modifier::modify(MemberVariable* o) {
+  o->type = o->type.release()->accept(this);
+  return o;
+}
+
 bi::Statement* bi::Modifier::modify(Function* o) {
   o->parens = o->parens.release()->accept(this);
   o->returnType = o->returnType.release()->accept(this);
@@ -236,6 +231,21 @@ bi::Statement* bi::Modifier::modify(ConversionOperator* o) {
   return o;
 }
 
+bi::Statement* bi::Modifier::modify(Class* o) {
+  o->base = o->base.release()->accept(this);
+  o->braces = o->braces.release()->accept(this);
+  return o;
+}
+
+bi::Statement* bi::Modifier::modify(AliasType* o) {
+  o->base = o->base.release()->accept(this);
+  return o;
+}
+
+bi::Statement* bi::Modifier::modify(BasicType* o) {
+  return o;
+}
+
 bi::Statement* bi::Modifier::modify(Import* o) {
   return o;
 }
@@ -284,15 +294,20 @@ bi::Type* bi::Modifier::modify(List<Type>* o) {
   o->tail = o->tail.release()->accept(this);
   return o;
 }
-bi::Type* bi::Modifier::modify(TypeReference* o) {
+
+bi::Type* bi::Modifier::modify(Identifier<UnknownType>* o) {
   return o;
 }
 
-bi::Type* bi::Modifier::modify(TypeParameter* o) {
-  o->parens = o->parens.release()->accept(this);
-  o->base = o->base.release()->accept(this);
-  o->baseParens = o->baseParens.release()->accept(this);
-  o->braces = o->braces.release()->accept(this);
+bi::Type* bi::Modifier::modify(Identifier<Class>* o) {
+  return o;
+}
+
+bi::Type* bi::Modifier::modify(Identifier<AliasType>* o) {
+  return o;
+}
+
+bi::Type* bi::Modifier::modify(Identifier<BasicType>* o) {
   return o;
 }
 

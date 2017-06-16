@@ -36,7 +36,7 @@ public:
    * @param loc Location.
    */
   UnaryOperator(shared_ptr<Name> name, Expression* single, Type* returnType,
-      Expression* braces, shared_ptr<Location> loc = nullptr);
+      Statement* braces, shared_ptr<Location> loc = nullptr);
 
   /**
    * Destructor.

@@ -3,7 +3,7 @@
  */
 #include "bi/io/cpp/CppFileGenerator.hpp"
 
-#include "bi/io/cpp/CppTypeGenerator.hpp"
+#include "bi/io/cpp/CppClassGenerator.hpp"
 #include "bi/io/cpp/CppParameterGenerator.hpp"
 #include "bi/io/cpp/CppCoroutineGenerator.hpp"
 #include "bi/expression/all.hpp"
@@ -142,8 +142,8 @@ void bi::CppFileGenerator::visit(const Program* o) {
       line("enum {");
       in();
       for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
-        std::string flag =
-            dynamic_cast<const Parameter*>(*iter)->name->str() + "_ARG_";
+        std::string flag = dynamic_cast<const Parameter*>(*iter)->name->str()
+            + "_ARG_";
         boost::to_upper(flag);
         start(flag);
         if (iter == o->parens->begin()) {
@@ -208,13 +208,7 @@ void bi::CppFileGenerator::visit(const Program* o) {
         //}
         finish(':');
         in();
-        Type* type = (*iter)->type->strip();
-        const TypeReference* ref = dynamic_cast<const TypeReference*>(type);
-        if (ref && *ref->name == "String") {
-          line(name << " = ::optarg;");
-        } else {
-          line("left_(" << name << ", ::optarg);");
-        }
+        line("left_(" << name << ", ::optarg);");
         line("break;");
         out();
       }
@@ -322,34 +316,34 @@ void bi::CppFileGenerator::visit(const UnaryOperator* o) {
   }
 }
 
-void bi::CppFileGenerator::visit(const TypeParameter* o) {
-  if (o->isAlias()) {
-    if (header) {
-      line("namespace bi {");
-      in();
-      line("namespace type {");
-      out();
-      line("using " << o->name << " = " << o->base << ';');
-      in();
-      line("}");
-      out();
-      line("}\n");
-    }
-  } else if (!o->isBuiltin()) {
-    if (header) {
-      line("namespace bi {");
-      in();
-      line("namespace type {");
-      out();
-    }
-    CppTypeGenerator auxType(base, level, header);
-    auxType << o;
-    if (header) {
-      in();
-      line("}");
-      out();
-      line("}\n");
-    }
+void bi::CppFileGenerator::visit(const Class* o) {
+  if (header) {
+    line("namespace bi {");
+    in();
+    line("namespace type {");
+    out();
+  }
+  CppClassGenerator auxClass(base, level, header);
+  auxClass << o;
+  if (header) {
+    in();
+    line("}");
+    out();
+    line("}\n");
+  }
+}
+
+void bi::CppFileGenerator::visit(const AliasType* o) {
+  if (header) {
+    line("namespace bi {");
+    in();
+    line("namespace type {");
+    out();
+    line("using " << o->name << " = " << o->base << ';');
+    in();
+    line("}");
+    out();
+    line("}\n");
   }
 }
 

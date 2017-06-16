@@ -6,7 +6,7 @@
 #include "bi/visitor/all.hpp"
 
 bi::LambdaFunction::LambdaFunction(Expression* parens, Type* returnType,
-    Expression* braces, shared_ptr<Location> loc) :
+    Statement* braces, shared_ptr<Location> loc) :
     Expression(loc),
     Parenthesised(parens),
     ReturnTyped(returnType),

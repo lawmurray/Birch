@@ -3,8 +3,7 @@
  */
 #pragma once
 
-#include "bi/expression/BracesExpression.hpp"
-#include "bi/common/Scope.hpp"
+#include "bi/statement/Statement.hpp"
 #include "bi/primitive/unique_ptr.hpp"
 
 namespace bi {
@@ -20,7 +19,7 @@ public:
    *
    * @param braces Body.
    */
-  Braced(Expression* braces);
+  Braced(Statement* braces);
 
   /**
    * Destructor.
@@ -30,6 +29,6 @@ public:
   /**
    * Body.
    */
-  unique_ptr<Expression> braces;
+  unique_ptr<Statement> braces;
 };
 }

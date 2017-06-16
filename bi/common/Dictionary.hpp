@@ -63,7 +63,7 @@ template<class ParameterType>
 template<class ReferenceType>
 void bi::Dictionary<ParameterType>::resolve(ReferenceType* ref) {
   auto iter = params.find(ref->name->str());
-  if (iter != params.end() && ref->definitely(*iter->second)) {
+  if (iter != params.end()) {
     ref->matches.push_back(iter->second);
   }
 }

@@ -7,7 +7,7 @@
 
 #include <typeinfo>
 
-bi::While::While(Expression* cond, Expression* braces, shared_ptr<Location> loc) :
+bi::While::While(Expression* cond, Statement* braces, shared_ptr<Location> loc) :
     Statement(loc),
     Conditioned(cond),
     Braced(braces) {

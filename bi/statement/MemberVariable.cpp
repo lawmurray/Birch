@@ -1,14 +1,15 @@
 /**
  * @file
  */
-#include "bi/expression/MemberVariable.hpp"
+#include "bi/statement/MemberVariable.hpp"
 
 #include "bi/visitor/all.hpp"
 
 bi::MemberVariable::MemberVariable(shared_ptr<Name> name, Type* type,
     shared_ptr<Location> loc) :
-    Expression(type, loc),
-    Named(name) {
+    Statement(loc),
+    Named(name),
+    Typed(type) {
   //
 }
 
@@ -16,11 +17,11 @@ bi::MemberVariable::~MemberVariable() {
   //
 }
 
-bi::Expression* bi::MemberVariable::accept(Cloner* visitor) const {
+bi::Statement* bi::MemberVariable::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-bi::Expression* bi::MemberVariable::accept(Modifier* visitor) {
+bi::Statement* bi::MemberVariable::accept(Modifier* visitor) {
   return visitor->modify(this);
 }
 
@@ -28,7 +29,7 @@ void bi::MemberVariable::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::MemberVariable::dispatchDefinitely(const Expression& o) const {
+bool bi::MemberVariable::dispatchDefinitely(const Statement& o) const {
   return o.definitely(*this);
 }
 
@@ -36,7 +37,7 @@ bool bi::MemberVariable::definitely(const MemberVariable& o) const {
   return type->definitely(*o.type);
 }
 
-bool bi::MemberVariable::dispatchPossibly(const Expression& o) const {
+bool bi::MemberVariable::dispatchPossibly(const Statement& o) const {
   return o.possibly(*this);
 }
 
