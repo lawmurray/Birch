@@ -27,19 +27,19 @@ void bi::bi_ostream::visit(const List<Expression>* o) {
   *this << o->head << ", " << o->tail;
 }
 
-void bi::bi_ostream::visit(const BooleanLiteral* o) {
+void bi::bi_ostream::visit(const Literal<bool>* o) {
   *this << o->str;
 }
 
-void bi::bi_ostream::visit(const IntegerLiteral* o) {
+void bi::bi_ostream::visit(const Literal<int64_t>* o) {
   *this << o->str;
 }
 
-void bi::bi_ostream::visit(const RealLiteral* o) {
+void bi::bi_ostream::visit(const Literal<double>* o) {
   *this << o->str;
 }
 
-void bi::bi_ostream::visit(const StringLiteral* o) {
+void bi::bi_ostream::visit(const Literal<const char*>* o) {
   *this << o->str;
 }
 

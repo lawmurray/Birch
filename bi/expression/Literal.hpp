@@ -58,32 +58,4 @@ public:
   virtual bool possibly(Literal<T1>& o);
   virtual bool possibly(const Parameter& o) const;
 };
-
-/**
- * Boolean literal.
- *
- * @ingroup compiler_expression
- */
-typedef Literal<bool> BooleanLiteral;
-
-/**
- * Integer literal.
- *
- * @ingroup compiler_expression
- */
-typedef Literal<int64_t> IntegerLiteral;
-
-/**
- * Floating point literal.
- *
- * @ingroup compiler_expression
- */
-typedef Literal<double> RealLiteral;
-
-/**
- * String literal.
- *
- * @ingroup compiler_expression
- */
-typedef Literal<const char*> StringLiteral;
 }

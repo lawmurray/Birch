@@ -128,19 +128,19 @@ path
  ***************************************************************************/
 
 bool_literal
-    : BOOL_LITERAL  { $$ = new bi::BooleanLiteral($1, yytext, new bi::TypeReference(new bi::Name("Boolean")), make_loc(@$)); }
+    : BOOL_LITERAL  { $$ = new bi::Literal<bool>($1, yytext, new bi::TypeReference(new bi::Name("Boolean")), make_loc(@$)); }
     ;
 
 int_literal
-    : INT_LITERAL  { $$ = new bi::IntegerLiteral($1, yytext, new bi::TypeReference(new bi::Name("Integer")), make_loc(@$)); }
+    : INT_LITERAL  { $$ = new bi::Literal<int64_t>($1, yytext, new bi::TypeReference(new bi::Name("Integer")), make_loc(@$)); }
     ;
 
 real_literal
-    : REAL_LITERAL  { $$ = new bi::RealLiteral($1, yytext, new bi::TypeReference(new bi::Name("Real")), make_loc(@$)); }
+    : REAL_LITERAL  { $$ = new bi::Literal<double>($1, yytext, new bi::TypeReference(new bi::Name("Real")), make_loc(@$)); }
     ;
 
 string_literal
-    : STRING_LITERAL  { $$ = new bi::StringLiteral($1, yytext, new bi::TypeReference(new bi::Name("String")), make_loc(@$)); }
+    : STRING_LITERAL  { $$ = new bi::Literal<const char*>($1, yytext, new bi::TypeReference(new bi::Name("String")), make_loc(@$)); }
     ;
 
 literal

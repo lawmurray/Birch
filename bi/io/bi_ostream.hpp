@@ -23,10 +23,10 @@ public:
   virtual void visit(const Path* o);
 
   virtual void visit(const List<Expression>* o);
-  virtual void visit(const BooleanLiteral* o);
-  virtual void visit(const IntegerLiteral* o);
-  virtual void visit(const RealLiteral* o);
-  virtual void visit(const StringLiteral* o);
+  virtual void visit(const Literal<bool>* o);
+  virtual void visit(const Literal<int64_t>* o);
+  virtual void visit(const Literal<double>* o);
+  virtual void visit(const Literal<const char*>* o);
   virtual void visit(const ParenthesesExpression* o);
   virtual void visit(const BracesExpression* o);
   virtual void visit(const Index* o);

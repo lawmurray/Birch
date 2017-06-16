@@ -21,22 +21,22 @@ bi::Expression* bi::Modifier::modify(List<Expression>* o) {
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(BooleanLiteral* o) {
+bi::Expression* bi::Modifier::modify(Literal<bool>* o) {
   o->type = o->type.release()->accept(this);
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(IntegerLiteral* o) {
+bi::Expression* bi::Modifier::modify(Literal<int64_t>* o) {
   o->type = o->type.release()->accept(this);
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(RealLiteral* o) {
+bi::Expression* bi::Modifier::modify(Literal<double>* o) {
   o->type = o->type.release()->accept(this);
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(StringLiteral* o) {
+bi::Expression* bi::Modifier::modify(Literal<const char*>* o) {
   o->type = o->type.release()->accept(this);
   return o;
 }

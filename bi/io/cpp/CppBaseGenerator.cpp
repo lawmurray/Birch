@@ -28,19 +28,19 @@ void bi::CppBaseGenerator::visit(const List<Expression>* o) {
   }
 }
 
-void bi::CppBaseGenerator::visit(const BooleanLiteral* o) {
+void bi::CppBaseGenerator::visit(const Literal<bool>* o) {
   middle(o->str);
 }
 
-void bi::CppBaseGenerator::visit(const IntegerLiteral* o) {
+void bi::CppBaseGenerator::visit(const Literal<int64_t>* o) {
   middle(o->str);
 }
 
-void bi::CppBaseGenerator::visit(const RealLiteral* o) {
+void bi::CppBaseGenerator::visit(const Literal<double>* o) {
   middle(o->str);
 }
 
-void bi::CppBaseGenerator::visit(const StringLiteral* o) {
+void bi::CppBaseGenerator::visit(const Literal<const char*>* o) {
   middle("std::string(" << o->str << ')');
 }
 

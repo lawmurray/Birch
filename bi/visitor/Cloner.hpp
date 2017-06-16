@@ -24,10 +24,10 @@ public:
 
   virtual Expression* clone(const EmptyExpression* o);
   virtual Expression* clone(const List<Expression>* o);
-  virtual Expression* clone(const BooleanLiteral* o);
-  virtual Expression* clone(const IntegerLiteral* o);
-  virtual Expression* clone(const RealLiteral* o);
-  virtual Expression* clone(const StringLiteral* o);
+  virtual Expression* clone(const Literal<bool>* o);
+  virtual Expression* clone(const Literal<int64_t>* o);
+  virtual Expression* clone(const Literal<double>* o);
+  virtual Expression* clone(const Literal<const char*>* o);
   virtual Expression* clone(const ParenthesesExpression* o);
   virtual Expression* clone(const BracesExpression* o);
   virtual Expression* clone(const BracketsExpression* o);

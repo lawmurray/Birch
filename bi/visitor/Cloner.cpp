@@ -20,20 +20,20 @@ bi::Expression* bi::Cloner::clone(const List<Expression>* o) {
       o->loc);
 }
 
-bi::Expression* bi::Cloner::clone(const BooleanLiteral* o) {
-  return new BooleanLiteral(o->value, o->str, o->type->accept(this), o->loc);
+bi::Expression* bi::Cloner::clone(const Literal<bool>* o) {
+  return new Literal<bool>(o->value, o->str, o->type->accept(this), o->loc);
 }
 
-bi::Expression* bi::Cloner::clone(const IntegerLiteral* o) {
-  return new IntegerLiteral(o->value, o->str, o->type->accept(this), o->loc);
+bi::Expression* bi::Cloner::clone(const Literal<int64_t>* o) {
+  return new Literal<int64_t>(o->value, o->str, o->type->accept(this), o->loc);
 }
 
-bi::Expression* bi::Cloner::clone(const RealLiteral* o) {
-  return new RealLiteral(o->value, o->str, o->type->accept(this), o->loc);
+bi::Expression* bi::Cloner::clone(const Literal<double>* o) {
+  return new Literal<double>(o->value, o->str, o->type->accept(this), o->loc);
 }
 
-bi::Expression* bi::Cloner::clone(const StringLiteral* o) {
-  return new StringLiteral(o->value, o->str, o->type->accept(this), o->loc);
+bi::Expression* bi::Cloner::clone(const Literal<const char*>* o) {
+  return new Literal<const char*>(o->value, o->str, o->type->accept(this), o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const ParenthesesExpression* o) {

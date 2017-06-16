@@ -23,10 +23,10 @@ public:
   virtual void modify(File* o);
   virtual Expression* modify(EmptyExpression* o);
   virtual Expression* modify(List<Expression>* o);
-  virtual Expression* modify(BooleanLiteral* o);
-  virtual Expression* modify(IntegerLiteral* o);
-  virtual Expression* modify(RealLiteral* o);
-  virtual Expression* modify(StringLiteral* o);
+  virtual Expression* modify(Literal<bool>* o);
+  virtual Expression* modify(Literal<int64_t>* o);
+  virtual Expression* modify(Literal<double>* o);
+  virtual Expression* modify(Literal<const char*>* o);
   virtual Expression* modify(ParenthesesExpression* o);
   virtual Expression* modify(BracesExpression* o);
   virtual Expression* modify(BracketsExpression* o);
