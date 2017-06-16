@@ -421,7 +421,7 @@ expression_statement
 if
     : IF '(' expression ')' braces ELSE braces  { $$ = new bi::If($3, $5, $7, make_loc(@$)); }
     | IF '(' expression ')' braces ELSE if      { $$ = new bi::If($3, $5, $7, make_loc(@$)); }
-    | IF '(' expression ')' braces              { $$ = new bi::If($3, $5, make_empty(), make_loc(@$)); }
+    | IF '(' expression ')' braces              { $$ = new bi::If($3, $5, new bi::EmptyStatement(), make_loc(@$)); }
     ;
 
 for
@@ -528,7 +528,7 @@ braces
 
 optional_braces
     : braces
-    | ';'     { $$ = make_empty(); }
+    | ';'     { $$ = new bi::EmptyStatement(); }
     ;
 
 class_braces
@@ -537,7 +537,7 @@ class_braces
 
 optional_class_braces
     : class_braces
-    | ';'           { $$ = make_empty(); }
+    | ';'           { $$ = new bi::EmptyStatement(); }
     ;
 
 raw

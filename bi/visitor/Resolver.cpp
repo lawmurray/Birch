@@ -120,7 +120,7 @@ bi::Expression* bi::Resolver::modify(This* o) {
     throw ThisException(o);
   } else {
     Modifier::modify(o);
-    o->type = new Identifier<Class>(type());
+    o->type = new IdentifierType<Class>(type());
     o->type->accept(this);
   }
   return o;
@@ -133,7 +133,7 @@ bi::Expression* bi::Resolver::modify(Super* o) {
     throw SuperBaseException(o);
   } else {
     Modifier::modify(o);
-    o->type = new Identifier<Class>(type()->super());
+    o->type = new IdentifierType<Class>(type()->super());
     o->type->accept(this);
   }
   return o;

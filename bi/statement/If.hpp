@@ -29,7 +29,7 @@ public:
    * @param falseBraces False branch.
    * @param loc Location.
    */
-  If(Expression* cond, Statement* braces, Expression* falseBraces,
+  If(Expression* cond, Statement* braces, Statement* falseBraces,
       shared_ptr<Location> loc = nullptr);
 
   /**
@@ -44,7 +44,7 @@ public:
   /**
    * Block if condition is false. May be empty if there is no else clause.
    */
-  unique_ptr<Expression> falseBraces;
+  unique_ptr<Statement> falseBraces;
 
   using Statement::definitely;
   using Statement::possibly;

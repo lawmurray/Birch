@@ -295,19 +295,19 @@ bi::Type* bi::Modifier::modify(List<Type>* o) {
   return o;
 }
 
-bi::Type* bi::Modifier::modify(Identifier<UnknownType>* o) {
+bi::Type* bi::Modifier::modify(IdentifierType<UnknownType>* o) {
   return o;
 }
 
-bi::Type* bi::Modifier::modify(Identifier<Class>* o) {
+bi::Type* bi::Modifier::modify(IdentifierType<Class>* o) {
   return o;
 }
 
-bi::Type* bi::Modifier::modify(Identifier<AliasType>* o) {
+bi::Type* bi::Modifier::modify(IdentifierType<AliasType>* o) {
   return o;
 }
 
-bi::Type* bi::Modifier::modify(Identifier<BasicType>* o) {
+bi::Type* bi::Modifier::modify(IdentifierType<BasicType>* o) {
   return o;
 }
 
