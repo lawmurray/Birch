@@ -215,13 +215,13 @@ void bi::CppBaseGenerator::visit(const Parameter* o) {
 void bi::CppBaseGenerator::visit(const GlobalVariable* o) {
   middle(o->type << ' ' << o->name);
   if (o->type->isClass()) {
-    IdentifierType<Class>* type = dynamic_cast<IdentifierType<Class>*>(o->type->strip());
+    ClassType* type = dynamic_cast<ClassType*>(o->type->strip());
     assert(type);
     middle(
         " = new (GC_MALLOC(sizeof(bi::type::" << type->name << "))) bi::type::" << type->name << "()");
   }
   if (o->type->count() > 0) {
-    BracketsType* type = dynamic_cast<BracketsType*>(o->type->strip());
+    ArrayType* type = dynamic_cast<ArrayType*>(o->type->strip());
     assert(type);
     middle("(make_frame(" << type->brackets << "))");
   }
@@ -230,13 +230,13 @@ void bi::CppBaseGenerator::visit(const GlobalVariable* o) {
 void bi::CppBaseGenerator::visit(const LocalVariable* o) {
   middle(o->type << ' ' << o->name);
   if (o->type->isClass()) {
-    IdentifierType<Class>* type = dynamic_cast<IdentifierType<Class>*>(o->type->strip());
+    ClassType* type = dynamic_cast<ClassType*>(o->type->strip());
     assert(type);
     middle(
         " = new (GC_MALLOC(sizeof(bi::type::" << type->name << "))) bi::type::" << type->name << "()");
   }
   if (o->type->count() > 0) {
-    BracketsType* type = dynamic_cast<BracketsType*>(o->type->strip());
+    ArrayType* type = dynamic_cast<ArrayType*>(o->type->strip());
     assert(type);
     middle("(make_frame(" << type->brackets << "))");
   }
@@ -332,7 +332,7 @@ void bi::CppBaseGenerator::visit(const List<Type>* o) {
   middle(',' << tail);
 }
 
-void bi::CppBaseGenerator::visit(const BracketsType* o) {
+void bi::CppBaseGenerator::visit(const ArrayType* o) {
   middle("bi::DefaultArray<" << o->single << ',' << o->count() << '>');
 }
 
@@ -355,15 +355,15 @@ void bi::CppBaseGenerator::visit(const CoroutineType* o) {
   middle("bi::Pointer<bi::Coroutine<" << o->type << ">>");
 }
 
-void bi::CppBaseGenerator::visit(const IdentifierType<Class>* o) {
+void bi::CppBaseGenerator::visit(const ClassType* o) {
   middle("bi::Pointer<bi::type::" << o->name << ">");
 }
 
-void bi::CppBaseGenerator::visit(const IdentifierType<AliasType>* o) {
+void bi::CppBaseGenerator::visit(const AliasType* o) {
   middle("bi::type::" << o->name);
 }
 
-void bi::CppBaseGenerator::visit(const IdentifierType<BasicType>* o) {
+void bi::CppBaseGenerator::visit(const BasicType* o) {
   if (*o->name == "Boolean") {
     middle("bool");
   } else if (*o->name == "Real64" || *o->name == "Real") {

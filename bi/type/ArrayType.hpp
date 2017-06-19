@@ -10,11 +10,11 @@
 
 namespace bi {
 /**
- * Bracketed type.
+ * Array type.
  *
  * @ingroup compiler_type
  */
-class BracketsType: public Type, public Unary<Type>, public Bracketed {
+class ArrayType: public Type, public Unary<Type>, public Bracketed {
 public:
   /**
    * Constructor.
@@ -24,7 +24,7 @@ public:
    * @param loc Location.
    * @param assignable Is this type assignable?
    */
-  BracketsType(Type* single, Expression* brackets, shared_ptr<Location> loc =
+  ArrayType(Type* single, Expression* brackets, shared_ptr<Location> loc =
       nullptr, const bool assignable = false);
 
   /**
@@ -35,13 +35,13 @@ public:
    * @param loc Location.
    * @param assignable Is this type assignable?
    */
-  BracketsType(Type* single, const int ndims, shared_ptr<Location> loc =
+  ArrayType(Type* single, const int ndims, shared_ptr<Location> loc =
       nullptr, const bool assignable = false);
 
   /**
    * Destructor.
    */
-  virtual ~BracketsType();
+  virtual ~ArrayType();
 
   virtual int count() const;
   virtual bool isArray() const;
@@ -54,11 +54,11 @@ public:
   using Type::possibly;
 
   virtual bool dispatchDefinitely(const Type& o) const;
-  virtual bool definitely(const BracketsType& o) const;
+  virtual bool definitely(const ArrayType& o) const;
   virtual bool definitely(const ParenthesesType& o) const;
 
   virtual bool dispatchPossibly(const Type& o) const;
-  virtual bool possibly(const BracketsType& o) const;
+  virtual bool possibly(const ArrayType& o) const;
   virtual bool possibly(const ParenthesesType& o) const;
 
   /**

@@ -59,13 +59,13 @@ public:
 
   virtual void visit(const List<Type>* o);
   virtual void visit(const EmptyType* o);
-  virtual void visit(const BracketsType* o);
+  virtual void visit(const ArrayType* o);
   virtual void visit(const ParenthesesType* o);
   virtual void visit(const FunctionType* o);
   virtual void visit(const CoroutineType* o);
-  virtual void visit(const IdentifierType<Class>* o);
-  virtual void visit(const IdentifierType<BasicType>* o);
-  virtual void visit(const IdentifierType<AliasType>* o);
+  virtual void visit(const ClassType* o);
+  virtual void visit(const BasicType* o);
+  virtual void visit(const AliasType* o);
 
 protected:
   /**

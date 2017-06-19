@@ -198,12 +198,12 @@ bi::Statement* bi::Cloner::clone(const Class* o) {
       o->loc);
 }
 
-bi::Statement* bi::Cloner::clone(const AliasType* o) {
-  return new AliasType(o->name, o->base->accept(this), o->loc);
+bi::Statement* bi::Cloner::clone(const Alias* o) {
+  return new Alias(o->name, o->base->accept(this), o->loc);
 }
 
-bi::Statement* bi::Cloner::clone(const BasicType* o) {
-  return new BasicType(o->name, o->loc);
+bi::Statement* bi::Cloner::clone(const Basic* o) {
+  return new Basic(o->name, o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const Import* o) {
@@ -247,24 +247,24 @@ bi::Type* bi::Cloner::clone(const List<Type>* o) {
   return result;
 }
 
-bi::Type* bi::Cloner::clone(const IdentifierType<UnknownType>* o) {
-  return new IdentifierType<UnknownType>(o->name, o->loc);
+bi::Type* bi::Cloner::clone(const IdentifierType* o) {
+  return new IdentifierType(o->name, o->loc);
 }
 
-bi::Type* bi::Cloner::clone(const IdentifierType<Class>* o) {
-  return new IdentifierType<Class>(o->name, o->loc);
+bi::Type* bi::Cloner::clone(const ClassType* o) {
+  return new ClassType(o->name, o->loc);
 }
 
-bi::Type* bi::Cloner::clone(const IdentifierType<AliasType>* o) {
-  return new IdentifierType<AliasType>(o->name, o->loc);
+bi::Type* bi::Cloner::clone(const AliasType* o) {
+  return new AliasType(o->name, o->loc);
 }
 
-bi::Type* bi::Cloner::clone(const IdentifierType<BasicType>* o) {
-  return new IdentifierType<BasicType>(o->name, o->loc);
+bi::Type* bi::Cloner::clone(const BasicType* o) {
+  return new BasicType(o->name, o->loc);
 }
 
-bi::Type* bi::Cloner::clone(const BracketsType* o) {
-  return new BracketsType(o->single->accept(this), o->ndims, o->loc,
+bi::Type* bi::Cloner::clone(const ArrayType* o) {
+  return new ArrayType(o->single->accept(this), o->ndims, o->loc,
       o->assignable);
 }
 

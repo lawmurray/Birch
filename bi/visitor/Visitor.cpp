@@ -212,11 +212,11 @@ void bi::Visitor::visit(const Class* o) {
   o->braces->accept(this);
 }
 
-void bi::Visitor::visit(const AliasType* o) {
+void bi::Visitor::visit(const Alias* o) {
   o->base->accept(this);
 }
 
-void bi::Visitor::visit(const BasicType* o) {
+void bi::Visitor::visit(const Basic* o) {
   //
 }
 
@@ -262,19 +262,24 @@ void bi::Visitor::visit(const List<Type>* o) {
   o->head->accept(this);
   o->tail->accept(this);
 }
-void bi::Visitor::visit(const IdentifierType<Class>* o) {
+
+void bi::Visitor::visit(const IdentifierType* o) {
   //
 }
 
-void bi::Visitor::visit(const IdentifierType<AliasType>* o) {
+void bi::Visitor::visit(const ClassType* o) {
   //
 }
 
-void bi::Visitor::visit(const IdentifierType<BasicType>* o) {
+void bi::Visitor::visit(const AliasType* o) {
   //
 }
 
-void bi::Visitor::visit(const BracketsType* o) {
+void bi::Visitor::visit(const BasicType* o) {
+  //
+}
+
+void bi::Visitor::visit(const ArrayType* o) {
   o->single->accept(this);
   o->brackets->accept(this);
 }

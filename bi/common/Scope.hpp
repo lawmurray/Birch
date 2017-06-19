@@ -25,13 +25,15 @@ class BinaryOperator;
 class UnaryOperator;
 class AssignmentOperator;
 class ConversionOperator;
+class Basic;
 class Class;
-class AliasType;
-class BasicType;
+class Alias;
 
 template<class ObjectType> class Identifier;
-template<class ObjectType> class IdentifierType;
 class Assignment;
+class BasicType;
+class ClassType;
+class AliasType;
 
 /**
  * Scope.
@@ -61,8 +63,8 @@ public:
   bool contains(AssignmentOperator* param);
   bool contains(ConversionOperator* param);
   bool contains(Class* param);
-  bool contains(AliasType* param);
-  bool contains(BasicType* param);
+  bool contains(Alias* param);
+  bool contains(Basic* param);
 
   /**
    * Add parameter.
@@ -82,8 +84,8 @@ public:
   void add(AssignmentOperator* param);
   void add(ConversionOperator* param);
   void add(Class* param);
-  void add(AliasType* param);
-  void add(BasicType* param);
+  void add(Alias* param);
+  void add(Basic* param);
 
   /**
    * Resolve a reference to a parameter.
@@ -102,9 +104,9 @@ public:
   void resolve(Identifier<MemberFunction>* ref);
   void resolve(Identifier<BinaryOperator>* ref);
   void resolve(Identifier<UnaryOperator>* ref);
-  void resolve(IdentifierType<Class>* ref);
-  void resolve(IdentifierType<AliasType>* ref);
-  void resolve(IdentifierType<BasicType>* ref);
+  void resolve(BasicType* ref);
+  void resolve(ClassType* ref);
+  void resolve(AliasType* ref);
   void resolve(Assignment* ref);
 
   /**
@@ -143,9 +145,9 @@ public:
   OverloadedDictionary<UnaryOperator,definitely> unaryOperators;
   OverloadedDictionary<AssignmentOperator,definitely> assignmentOperators;
   OverloadedSet<ConversionOperator,definitely> conversionOperators;
+  Dictionary<Basic> basics;
   Dictionary<Class> classes;
-  Dictionary<AliasType> aliasTypes;
-  Dictionary<BasicType> basicTypes;
+  Dictionary<Alias> aliases;
 
 private:
   /**

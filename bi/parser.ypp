@@ -122,19 +122,19 @@ path
  ***************************************************************************/
 
 bool_literal
-    : BOOL_LITERAL  { $$ = new bi::Literal<bool>($1, yytext, new bi::IdentifierType<bi::BasicType>(new bi::Name("Boolean")), make_loc(@$)); }
+    : BOOL_LITERAL  { $$ = new bi::Literal<bool>($1, yytext, new bi::BasicType(new bi::Name("Boolean")), make_loc(@$)); }
     ;
 
 int_literal
-    : INT_LITERAL  { $$ = new bi::Literal<int64_t>($1, yytext, new bi::IdentifierType<bi::BasicType>(new bi::Name("Integer")), make_loc(@$)); }
+    : INT_LITERAL  { $$ = new bi::Literal<int64_t>($1, yytext, new bi::BasicType(new bi::Name("Integer")), make_loc(@$)); }
     ;
 
 real_literal
-    : REAL_LITERAL  { $$ = new bi::Literal<double>($1, yytext, new bi::IdentifierType<bi::BasicType>(new bi::Name("Real")), make_loc(@$)); }
+    : REAL_LITERAL  { $$ = new bi::Literal<double>($1, yytext, new bi::BasicType(new bi::Name("Real")), make_loc(@$)); }
     ;
 
 string_literal
-    : STRING_LITERAL  { $$ = new bi::Literal<const char*>($1, yytext, new bi::IdentifierType<bi::BasicType>(new bi::Name("String")), make_loc(@$)); }
+    : STRING_LITERAL  { $$ = new bi::Literal<const char*>($1, yytext, new bi::BasicType(new bi::Name("String")), make_loc(@$)); }
     ;
 
 literal
@@ -391,11 +391,11 @@ class_declaration
     ;
 
 alias_type_declaration
-    : TYPE name '=' identifier_type ';'  { $$ = new bi::AliasType($2, $4, make_loc(@$)); }
+    : TYPE name '=' identifier_type ';'  { $$ = new bi::Alias($2, $4, make_loc(@$)); }
     ;
     
 basic_type_declaration
-    : TYPE name ';'  { $$ = new bi::BasicType($2, make_loc(@$)); }
+    : TYPE name ';'  { $$ = new bi::Basic($2, make_loc(@$)); }
     ;
 
 import
@@ -555,7 +555,7 @@ double_braces
  ***************************************************************************/
 
 identifier_type
-    : name  { $$ = new bi::IdentifierType<bi::UnknownType>($1, make_loc(@$)); }
+    : name  { $$ = new bi::IdentifierType($1, make_loc(@$)); }
     ;
 
 parens_type
@@ -579,7 +579,7 @@ primary_type
 
 brackets_type
     : primary_type
-    | primary_type '[' size_list ']'  { $$ = new bi::BracketsType($1, $3, make_loc(@$)); }
+    | primary_type '[' size_list ']'  { $$ = new bi::ArrayType($1, $3, make_loc(@$)); }
     ;
 
 type_list

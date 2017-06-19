@@ -83,13 +83,13 @@ birchc_SOURCES = \
   bi/io/cpp_ostream.cpp \
   bi/io/indentable_ostream.cpp \
   bi/primitive/encode.cpp \
-  bi/statement/AliasType.cpp \
+  bi/statement/Alias.cpp \
   bi/statement/AssignmentOperator.cpp \
   bi/statement/Assignment.cpp \
-  bi/statement/BasicType.cpp \
+  bi/statement/Basic.cpp \
   bi/statement/BinaryOperator.cpp \
-  bi/statement/LocalVariable.cpp \
   bi/statement/Class.cpp \
+  bi/statement/ConversionOperator.cpp \
   bi/statement/Coroutine.cpp \
   bi/statement/EmptyStatement.cpp \
   bi/statement/ExpressionStatement.cpp \
@@ -108,7 +108,10 @@ birchc_SOURCES = \
   bi/statement/Statement.cpp \
   bi/statement/UnaryOperator.cpp \
   bi/statement/While.cpp \
-  bi/type/BracketsType.cpp \
+  bi/type/AliasType.cpp \
+  bi/type/ArrayType.cpp \
+  bi/type/BasicType.cpp \
+  bi/type/ClassType.cpp \
   bi/type/CoroutineType.cpp \
   bi/type/EmptyType.cpp \
   bi/type/FunctionType.cpp \
@@ -239,10 +242,10 @@ noinst_HEADERS = \
   bi/primitive/shared_ptr.hpp \
   bi/primitive/unique_ptr.hpp \
   bi/statement/all.hpp \
-  bi/statement/AliasType.hpp \
+  bi/statement/Alias.hpp \
   bi/statement/AssignmentOperator.hpp \
   bi/statement/Assignment.hpp \
-  bi/statement/BasicType.hpp \
+  bi/statement/Basic.hpp \
   bi/statement/BinaryOperator.hpp \
   bi/statement/Class.hpp \
   bi/statement/ConversionOperator.hpp \
@@ -265,13 +268,16 @@ noinst_HEADERS = \
   bi/statement/UnaryOperator.hpp \
   bi/statement/While.hpp \
   bi/type/all.hpp \
-  bi/type/BracketsType.hpp \
+  bi/type/AliasType.hpp \
+  bi/type/ArrayType.hpp \
+  bi/type/BasicType.hpp \
+  bi/type/ClassType.hpp \
   bi/type/CoroutineType.hpp \
   bi/type/EmptyType.hpp \
   bi/type/FunctionType.hpp \
+  bi/type/IdentifierType.hpp \
   bi/type/ParenthesesType.hpp \
   bi/type/Type.hpp \
-  bi/type/TypeReference.hpp \
   bi/visitor/all.hpp \
   bi/visitor/Assigner.hpp \
   bi/visitor/Cloner.hpp \

@@ -54,10 +54,10 @@ bi::Expression* bi::Resolver::modify(BracketsExpression* o) {
   const int rangeDims = o->brackets->tupleDims();
   assert(typeSize == indexSize);  ///@todo Exception
 
-  BracketsType* type = dynamic_cast<BracketsType*>(o->single->type->strip());
+  ArrayType* type = dynamic_cast<ArrayType*>(o->single->type->strip());
   assert(type);
   if (rangeDims > 0) {
-    o->type = new BracketsType(type->single->accept(&cloner), rangeDims);
+    o->type = new ArrayType(type->single->accept(&cloner), rangeDims);
     o->type = o->type->accept(this);
     if (o->single->type->assignable) {
       o->type->accept(&assigner);
@@ -120,7 +120,7 @@ bi::Expression* bi::Resolver::modify(This* o) {
     throw ThisException(o);
   } else {
     Modifier::modify(o);
-    o->type = new IdentifierType<Class>(type());
+    o->type = new ClassType(type());
     o->type->accept(this);
   }
   return o;
@@ -129,12 +129,11 @@ bi::Expression* bi::Resolver::modify(This* o) {
 bi::Expression* bi::Resolver::modify(Super* o) {
   if (!type()) {
     throw SuperException(o);
-  } else if (!type()->super()) {
+  } else if (type()->base->isEmpty()) {
     throw SuperBaseException(o);
   } else {
     Modifier::modify(o);
-    o->type = new IdentifierType<Class>(type()->super());
-    o->type->accept(this);
+    o->type = type()->base->accept(&cloner)->accept(this);
   }
   return o;
 }
@@ -397,7 +396,9 @@ bi::Statement* bi::Resolver::modify(Class* o) {
   o->base = o->base->accept(this);
   o->scope = pop();
   if (!o->base->isEmpty()) {
-    o->scope->inherit(o->super()->scope.get());
+    ClassType* base = dynamic_cast<ClassType*>(o->base.get());
+    assert(base);
+    o->scope->inherit(base->target->scope.get());
   }
   top()->add(o);
   push(o->scope.get());
@@ -410,13 +411,13 @@ bi::Statement* bi::Resolver::modify(Class* o) {
   return o;
 }
 
-bi::Statement* bi::Resolver::modify(AliasType* o) {
+bi::Statement* bi::Resolver::modify(Alias* o) {
   o->base = o->base->accept(this);
   top()->add(o);
   return o;
 }
 
-bi::Statement* bi::Resolver::modify(BasicType* o) {
+bi::Statement* bi::Resolver::modify(Basic* o) {
   top()->add(o);
   return o;
 }
@@ -457,11 +458,11 @@ bi::Statement* bi::Resolver::modify(Return* o) {
   return o;
 }
 
-bi::Type* bi::Resolver::modify(IdentifierType<UnknownType>* o) {
+bi::Type* bi::Resolver::modify(IdentifierType* o) {
   return o;
 }
 
-bi::Type* bi::Resolver::modify(IdentifierType<Class>* o) {
+bi::Type* bi::Resolver::modify(ClassType* o) {
   Scope* memberScope = takeMemberScope();
   assert(!memberScope);
 
@@ -470,7 +471,7 @@ bi::Type* bi::Resolver::modify(IdentifierType<Class>* o) {
   return o;
 }
 
-bi::Type* bi::Resolver::modify(IdentifierType<AliasType>* o) {
+bi::Type* bi::Resolver::modify(AliasType* o) {
   Scope* memberScope = takeMemberScope();
   assert(!memberScope);
 
@@ -479,7 +480,7 @@ bi::Type* bi::Resolver::modify(IdentifierType<AliasType>* o) {
   return o;
 }
 
-bi::Type* bi::Resolver::modify(IdentifierType<BasicType>* o) {
+bi::Type* bi::Resolver::modify(BasicType* o) {
   Scope* memberScope = takeMemberScope();
   assert(!memberScope);
 

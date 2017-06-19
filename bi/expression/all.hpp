@@ -1,7 +1,5 @@
 /**
  * @file
- *
- * Convenience header to include all parse tree headers.
  */
 #pragma once
 

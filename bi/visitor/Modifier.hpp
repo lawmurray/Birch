@@ -63,8 +63,8 @@ public:
   virtual Statement* modify(AssignmentOperator* o);
   virtual Statement* modify(ConversionOperator* o);
   virtual Statement* modify(Class* o);
-  virtual Statement* modify(AliasType* o);
-  virtual Statement* modify(BasicType* o);
+  virtual Statement* modify(Alias* o);
+  virtual Statement* modify(Basic* o);
   virtual Statement* modify(Import* o);
   virtual Statement* modify(ExpressionStatement* o);
   virtual Statement* modify(If* o);
@@ -75,11 +75,11 @@ public:
 
   virtual Type* modify(EmptyType* o);
   virtual Type* modify(List<Type>* o);
-  virtual Type* modify(IdentifierType<UnknownType>* o);
-  virtual Type* modify(IdentifierType<Class>* o);
-  virtual Type* modify(IdentifierType<AliasType>* o);
-  virtual Type* modify(IdentifierType<BasicType>* o);
-  virtual Type* modify(BracketsType* o);
+  virtual Type* modify(IdentifierType* o);
+  virtual Type* modify(ClassType* o);
+  virtual Type* modify(AliasType* o);
+  virtual Type* modify(BasicType* o);
+  virtual Type* modify(ArrayType* o);
   virtual Type* modify(ParenthesesType* o);
   virtual Type* modify(FunctionType* o);
   virtual Type* modify(CoroutineType* o);

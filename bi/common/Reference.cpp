@@ -41,3 +41,6 @@ template class bi::Reference<bi::MemberFunction>;
 template class bi::Reference<bi::BinaryOperator>;
 template class bi::Reference<bi::UnaryOperator>;
 template class bi::Reference<bi::AssignmentOperator>;
+template class bi::Reference<bi::Basic>;
+template class bi::Reference<bi::Class>;
+template class bi::Reference<bi::Alias>;

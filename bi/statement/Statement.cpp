@@ -20,7 +20,7 @@ bool bi::Statement::definitely(const Statement& o) const {
   return o.dispatchDefinitely(*this);
 }
 
-bool bi::Statement::definitely(const AliasType& o) const {
+bool bi::Statement::definitely(const Alias& o) const {
   return false;
 }
 
@@ -28,7 +28,7 @@ bool bi::Statement::definitely(const AssignmentOperator& o) const {
   return false;
 }
 
-bool bi::Statement::definitely(const BasicType& o) const {
+bool bi::Statement::definitely(const Basic& o) const {
   return false;
 }
 
@@ -116,7 +116,7 @@ bool bi::Statement::possibly(const Statement& o) const {
   return o.dispatchPossibly(*this);
 }
 
-bool bi::Statement::possibly(const AliasType& o) const {
+bool bi::Statement::possibly(const Alias& o) const {
   return false;
 }
 
@@ -124,7 +124,7 @@ bool bi::Statement::possibly(const AssignmentOperator& o) const {
   return false;
 }
 
-bool bi::Statement::possibly(const BasicType& o) const {
+bool bi::Statement::possibly(const Basic& o) const {
   return false;
 }
 

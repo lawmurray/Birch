@@ -190,7 +190,7 @@ void bi::CppCoroutineGenerator::visit(const LocalVariable* o) {
     middle(" = new (GC_MALLOC(sizeof(bi::type::" << type->name << "))) bi::type::" << type->name << "()");
   }
   if (o->type->count() > 0) {
-    BracketsType* type = dynamic_cast<BracketsType*>(o->type->strip());
+    ArrayType* type = dynamic_cast<ArrayType*>(o->type->strip());
     assert(type);
     middle("(make_frame(" << type->brackets << "))");
   }

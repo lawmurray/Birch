@@ -18,8 +18,8 @@
 #include "bi/statement/ConversionOperator.hpp"
 #include "bi/statement/Assignment.hpp"
 #include "bi/statement/Class.hpp"
-#include "bi/statement/AliasType.hpp"
-#include "bi/statement/BasicType.hpp"
+#include "bi/statement/Alias.hpp"
+#include "bi/statement/Basic.hpp"
 #include "bi/exception/all.hpp"
 #include "bi/visitor/Cloner.hpp"
 
@@ -40,9 +40,9 @@ CONTAINS_IMPL(BinaryOperator, binaryOperators)
 CONTAINS_IMPL(UnaryOperator, unaryOperators)
 CONTAINS_IMPL(AssignmentOperator, assignmentOperators)
 CONTAINS_IMPL(ConversionOperator, conversionOperators)
+CONTAINS_IMPL(Basic, basics)
 CONTAINS_IMPL(Class, classes)
-CONTAINS_IMPL(AliasType, aliasTypes)
-CONTAINS_IMPL(BasicType, basicTypes)
+CONTAINS_IMPL(Alias, aliases)
 
 #define ADD_IMPL(type, container) \
   void bi::Scope::add(type* param) { \
@@ -65,9 +65,9 @@ ADD_IMPL(BinaryOperator, binaryOperators)
 ADD_IMPL(UnaryOperator, unaryOperators)
 ADD_IMPL(AssignmentOperator, assignmentOperators)
 ADD_IMPL(ConversionOperator, conversionOperators)
+ADD_IMPL(Basic, basics)
 ADD_IMPL(Class, classes)
-ADD_IMPL(AliasType, aliasTypes)
-ADD_IMPL(BasicType, basicTypes)
+ADD_IMPL(Alias, aliases)
 
 #define RESOLVE_IMPL(type, container) \
   void bi::Scope::resolve(Identifier<type>* ref) { \
@@ -88,16 +88,16 @@ RESOLVE_IMPL(BinaryOperator, binaryOperators)
 RESOLVE_IMPL(UnaryOperator, unaryOperators)
 
 #define RESOLVE_TYPE_IMPL(type, container) \
-  void bi::Scope::resolve(IdentifierType<type>* ref) { \
+  void bi::Scope::resolve(type* ref) { \
     container.resolve(ref); \
     if (ref->matches.size() == 0) { \
       resolveDefer(ref); \
     } \
   }
 
-RESOLVE_TYPE_IMPL(Class, classes)
-RESOLVE_TYPE_IMPL(AliasType, aliasTypes)
-RESOLVE_TYPE_IMPL(BasicType, basicTypes)
+RESOLVE_TYPE_IMPL(BasicType, basics)
+RESOLVE_TYPE_IMPL(ClassType, classes)
+RESOLVE_TYPE_IMPL(AliasType, aliases)
 
 void bi::Scope::resolve(Assignment* ref) {
   assignmentOperators.resolve(ref);
@@ -123,7 +123,7 @@ void bi::Scope::import(Scope* scope) {
   unaryOperators.merge(scope->unaryOperators);
   assignmentOperators.merge(scope->assignmentOperators);
   conversionOperators.merge(scope->conversionOperators);
+  basics.merge(scope->basics);
   classes.merge(scope->classes);
-  aliasTypes.merge(scope->aliasTypes);
-  basicTypes.merge(scope->basicTypes);
+  aliases.merge(scope->aliases);
 }

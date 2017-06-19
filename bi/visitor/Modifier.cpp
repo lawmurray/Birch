@@ -237,12 +237,12 @@ bi::Statement* bi::Modifier::modify(Class* o) {
   return o;
 }
 
-bi::Statement* bi::Modifier::modify(AliasType* o) {
+bi::Statement* bi::Modifier::modify(Alias* o) {
   o->base = o->base.release()->accept(this);
   return o;
 }
 
-bi::Statement* bi::Modifier::modify(BasicType* o) {
+bi::Statement* bi::Modifier::modify(Basic* o) {
   return o;
 }
 
@@ -295,23 +295,23 @@ bi::Type* bi::Modifier::modify(List<Type>* o) {
   return o;
 }
 
-bi::Type* bi::Modifier::modify(IdentifierType<UnknownType>* o) {
+bi::Type* bi::Modifier::modify(IdentifierType* o) {
   return o;
 }
 
-bi::Type* bi::Modifier::modify(IdentifierType<Class>* o) {
+bi::Type* bi::Modifier::modify(ClassType* o) {
   return o;
 }
 
-bi::Type* bi::Modifier::modify(IdentifierType<AliasType>* o) {
+bi::Type* bi::Modifier::modify(AliasType* o) {
   return o;
 }
 
-bi::Type* bi::Modifier::modify(IdentifierType<BasicType>* o) {
+bi::Type* bi::Modifier::modify(BasicType* o) {
   return o;
 }
 
-bi::Type* bi::Modifier::modify(BracketsType* o) {
+bi::Type* bi::Modifier::modify(ArrayType* o) {
   o->single = o->single.release()->accept(this);
   o->brackets = o->brackets.release()->accept(this);
   return o;

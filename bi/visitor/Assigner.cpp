@@ -13,7 +13,7 @@ bi::Type* bi::Assigner::modify(EmptyType* o) {
   return o;
 }
 
-bi::Type* bi::Assigner::modify(BracketsType* o) {
+bi::Type* bi::Assigner::modify(ArrayType* o) {
   Modifier::modify(o);
   o->assignable = true;
   return o;
@@ -41,19 +41,19 @@ bi::Type* bi::Assigner::modify(List<Type>* o) {
   return o;
 }
 
-bi::Type* bi::Assigner::modify(IdentifierType<Class>* o) {
+bi::Type* bi::Assigner::modify(ClassType* o) {
   Modifier::modify(o);
   o->assignable = true;
   return o;
 }
 
-bi::Type* bi::Assigner::modify(IdentifierType<AliasType>* o) {
+bi::Type* bi::Assigner::modify(AliasType* o) {
   Modifier::modify(o);
   o->assignable = true;
   return o;
 }
 
-bi::Type* bi::Assigner::modify(IdentifierType<BasicType>* o) {
+bi::Type* bi::Assigner::modify(BasicType* o) {
   Modifier::modify(o);
   o->assignable = true;
   return o;

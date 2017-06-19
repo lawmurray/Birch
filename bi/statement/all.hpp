@@ -1,14 +1,12 @@
 /**
  * @file
- *
- * Convenience header to include all parse tree headers.
  */
 #pragma once
 
-#include "bi/statement/AliasType.hpp"
+#include "bi/statement/Alias.hpp"
 #include "bi/statement/AssignmentOperator.hpp"
 #include "bi/statement/Assignment.hpp"
-#include "bi/statement/BasicType.hpp"
+#include "bi/statement/Basic.hpp"
 #include "bi/statement/BinaryOperator.hpp"
 #include "bi/statement/Class.hpp"
 #include "bi/statement/ConversionOperator.hpp"

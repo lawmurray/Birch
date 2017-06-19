@@ -333,7 +333,7 @@ void bi::CppFileGenerator::visit(const Class* o) {
   }
 }
 
-void bi::CppFileGenerator::visit(const AliasType* o) {
+void bi::CppFileGenerator::visit(const Alias* o) {
   if (header) {
     line("namespace bi {");
     in();

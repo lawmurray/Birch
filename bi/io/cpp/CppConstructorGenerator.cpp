@@ -46,8 +46,8 @@ void bi::CppConstructorGenerator::visit(const MemberVariable* o) {
 
   start(o->name << '(');
   if (o->type->isArray()) {
-    const BracketsType* type =
-        dynamic_cast<const BracketsType*>(o->type.get());
+    const ArrayType* type =
+        dynamic_cast<const ArrayType*>(o->type.get());
     assert(type);
     middle("make_frame(" << type->brackets << ")");
   }

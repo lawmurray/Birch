@@ -10,9 +10,9 @@ class Cloner;
 class Modifier;
 class Visitor;
 
-class AliasType;
+class Alias;
 class AssignmentOperator;
-class BasicType;
+class Basic;
 class BinaryOperator;
 class Class;
 class ConversionOperator;
@@ -88,9 +88,9 @@ public:
    */
   virtual bool definitely(const Statement& o) const;
   virtual bool dispatchDefinitely(const Statement& o) const = 0;
-  virtual bool definitely(const AliasType& o) const;
+  virtual bool definitely(const Alias& o) const;
   virtual bool definitely(const AssignmentOperator& o) const;
-  virtual bool definitely(const BasicType& o) const;
+  virtual bool definitely(const Basic& o) const;
   virtual bool definitely(const BinaryOperator& o) const;
   virtual bool definitely(const Class& o) const;
   virtual bool definitely(const ConversionOperator& o) const;
@@ -114,9 +114,9 @@ public:
 
   virtual bool possibly(const Statement& o) const;
   virtual bool dispatchPossibly(const Statement& o) const = 0;
-  virtual bool possibly(const AliasType& o) const;
+  virtual bool possibly(const Alias& o) const;
   virtual bool possibly(const AssignmentOperator& o) const;
-  virtual bool possibly(const BasicType& o) const;
+  virtual bool possibly(const Basic& o) const;
   virtual bool possibly(const BinaryOperator& o) const;
   virtual bool possibly(const Class& o) const;
   virtual bool possibly(const ConversionOperator& o) const;

@@ -64,8 +64,8 @@ public:
   virtual Statement* clone(const AssignmentOperator* o);
   virtual Statement* clone(const ConversionOperator* o);
   virtual Statement* clone(const Class* o);
-  virtual Statement* clone(const AliasType* o);
-  virtual Statement* clone(const BasicType* o);
+  virtual Statement* clone(const Alias* o);
+  virtual Statement* clone(const Basic* o);
   virtual Statement* clone(const Import* o);
   virtual Statement* clone(const ExpressionStatement* o);
   virtual Statement* clone(const If* o);
@@ -76,11 +76,11 @@ public:
 
   virtual Type* clone(const EmptyType* o);
   virtual Type* clone(const List<Type>* o);
-  virtual Type* clone(const IdentifierType<UnknownType>* o);
-  virtual Type* clone(const IdentifierType<Class>* o);
-  virtual Type* clone(const IdentifierType<AliasType>* o);
-  virtual Type* clone(const IdentifierType<BasicType>* o);
-  virtual Type* clone(const BracketsType* o);
+  virtual Type* clone(const IdentifierType* o);
+  virtual Type* clone(const ClassType* o);
+  virtual Type* clone(const AliasType* o);
+  virtual Type* clone(const BasicType* o);
+  virtual Type* clone(const ArrayType* o);
   virtual Type* clone(const ParenthesesType* o);
   virtual Type* clone(const FunctionType* o);
   virtual Type* clone(const CoroutineType* o);

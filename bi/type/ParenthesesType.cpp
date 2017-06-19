@@ -18,12 +18,8 @@ bi::ParenthesesType::~ParenthesesType() {
   //
 }
 
-bool bi::ParenthesesType::isBuiltin() const {
-  return single->isBuiltin();
-}
-
-bool bi::ParenthesesType::isStruct() const {
-  return single->isStruct();
+bool bi::ParenthesesType::isBasic() const {
+  return single->isBasic();
 }
 
 bool bi::ParenthesesType::isClass() const {
@@ -62,7 +58,7 @@ bool bi::ParenthesesType::dispatchDefinitely(const Type& o) const {
   return o.definitely(*this);
 }
 
-bool bi::ParenthesesType::definitely(const BracketsType& o) const {
+bool bi::ParenthesesType::definitely(const ArrayType& o) const {
   return single->definitely(o);
 }
 
@@ -82,15 +78,15 @@ bool bi::ParenthesesType::definitely(const List<Type>& o) const {
   return single->definitely(o);
 }
 
-bool bi::ParenthesesType::definitely(const IdentifierType<Class>& o) const {
+bool bi::ParenthesesType::definitely(const ClassType& o) const {
   return single->definitely(o);
 }
 
-bool bi::ParenthesesType::definitely(const IdentifierType<AliasType>& o) const {
+bool bi::ParenthesesType::definitely(const AliasType& o) const {
   return single->definitely(o);
 }
 
-bool bi::ParenthesesType::definitely(const IdentifierType<BasicType>& o) const {
+bool bi::ParenthesesType::definitely(const BasicType& o) const {
   return single->definitely(o);
 }
 
@@ -102,7 +98,7 @@ bool bi::ParenthesesType::dispatchPossibly(const Type& o) const {
   return o.possibly(*this);
 }
 
-bool bi::ParenthesesType::possibly(const BracketsType& o) const {
+bool bi::ParenthesesType::possibly(const ArrayType& o) const {
   return single->possibly(o);
 }
 
@@ -122,15 +118,15 @@ bool bi::ParenthesesType::possibly(const List<Type>& o) const {
   return single->possibly(o);
 }
 
-bool bi::ParenthesesType::possibly(const IdentifierType<Class>& o) const {
+bool bi::ParenthesesType::possibly(const ClassType& o) const {
   return single->possibly(o);
 }
 
-bool bi::ParenthesesType::possibly(const IdentifierType<AliasType>& o) const {
+bool bi::ParenthesesType::possibly(const AliasType& o) const {
   return single->possibly(o);
 }
 
-bool bi::ParenthesesType::possibly(const IdentifierType<BasicType>& o) const {
+bool bi::ParenthesesType::possibly(const BasicType& o) const {
   return single->possibly(o);
 }
 

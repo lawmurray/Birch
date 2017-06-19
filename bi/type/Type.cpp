@@ -21,11 +21,7 @@ bool bi::Type::isEmpty() const {
   return false;
 }
 
-bool bi::Type::isBuiltin() const {
-  return false;
-}
-
-bool bi::Type::isStruct() const {
+bool bi::Type::isBasic() const {
   return false;
 }
 
@@ -73,7 +69,19 @@ bool bi::Type::definitely(const Type& o) const {
   return o.dispatchDefinitely(*this);
 }
 
-bool bi::Type::definitely(const BracketsType& o) const {
+bool bi::Type::definitely(const AliasType& o) const {
+  return false;
+}
+
+bool bi::Type::definitely(const ArrayType& o) const {
+  return false;
+}
+
+bool bi::Type::definitely(const BasicType& o) const {
+  return false;
+}
+
+bool bi::Type::definitely(const ClassType& o) const {
   return false;
 }
 
@@ -93,22 +101,6 @@ bool bi::Type::definitely(const List<Type>& o) const {
   return false;
 }
 
-bool bi::Type::definitely(const Class& o) const {
-  return false;
-}
-
-bool bi::Type::definitely(const IdentifierType<Class>& o) const {
-  return false;
-}
-
-bool bi::Type::definitely(const IdentifierType<AliasType>& o) const {
-  return false;
-}
-
-bool bi::Type::definitely(const IdentifierType<BasicType>& o) const {
-  return false;
-}
-
 bool bi::Type::definitely(const ParenthesesType& o) const {
   return false;
 }
@@ -117,7 +109,19 @@ bool bi::Type::possibly(const Type& o) const {
   return o.dispatchPossibly(*this);
 }
 
-bool bi::Type::possibly(const BracketsType& o) const {
+bool bi::Type::possibly(const AliasType& o) const {
+  return false;
+}
+
+bool bi::Type::possibly(const ArrayType& o) const {
+  return false;
+}
+
+bool bi::Type::possibly(const BasicType& o) const {
+  return false;
+}
+
+bool bi::Type::possibly(const ClassType& o) const {
   return false;
 }
 
@@ -134,22 +138,6 @@ bool bi::Type::possibly(const FunctionType& o) const {
 }
 
 bool bi::Type::possibly(const List<Type>& o) const {
-  return false;
-}
-
-bool bi::Type::possibly(const Class& o) const {
-  return false;
-}
-
-bool bi::Type::possibly(const IdentifierType<Class>& o) const {
-  return false;
-}
-
-bool bi::Type::possibly(const IdentifierType<AliasType>& o) const {
-  return false;
-}
-
-bool bi::Type::possibly(const IdentifierType<BasicType>& o) const {
   return false;
 }
 

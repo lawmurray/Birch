@@ -254,11 +254,11 @@ void bi::bi_ostream::visit(const Class* o) {
   }
 }
 
-void bi::bi_ostream::visit(const AliasType* o) {
+void bi::bi_ostream::visit(const Alias* o) {
   *this << indent << "type " << o->name << " = " << o->base;
 }
 
-void bi::bi_ostream::visit(const BasicType* o) {
+void bi::bi_ostream::visit(const Basic* o) {
   *this << indent << "type " << o->name;
 }
 
@@ -302,19 +302,19 @@ void bi::bi_ostream::visit(const List<Type>* o) {
   *this << o->head << ", " << o->tail;
 }
 
-void bi::bi_ostream::visit(const IdentifierType<Class>* o) {
+void bi::bi_ostream::visit(const ClassType* o) {
   *this << o->name;
 }
 
-void bi::bi_ostream::visit(const IdentifierType<AliasType>* o) {
+void bi::bi_ostream::visit(const AliasType* o) {
   *this << o->name;
 }
 
-void bi::bi_ostream::visit(const IdentifierType<BasicType>* o) {
+void bi::bi_ostream::visit(const BasicType* o) {
   *this << o->name;
 }
 
-void bi::bi_ostream::visit(const BracketsType* o) {
+void bi::bi_ostream::visit(const ArrayType* o) {
   *this << o->single;
   if (!o->brackets->isEmpty()) {
     *this << '[' << o->brackets << ']';

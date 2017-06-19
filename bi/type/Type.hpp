@@ -10,18 +10,21 @@ class Cloner;
 class Modifier;
 class Visitor;
 
-class BracketsType;
+class AliasType;
+class ArrayType;
+class BasicType;
+class ClassType;
 class CoroutineType;
 class EmptyType;
-template<class T> class IdentifierType;
-template<class T> class Iterator;
 class FunctionType;
+class IdentifierType;
+template<class T> class Iterator;
 template<class T> class List;
 class ParenthesesType;
 
 class Class;
-class AliasType;
-class BasicType;
+class Alias;
+class Basic;
 
 /**
  * Type.
@@ -76,12 +79,7 @@ public:
   /**
    * Is this a built-in type?
    */
-  virtual bool isBuiltin() const;
-
-  /**
-   * Is this a struct type, or an alias of a struct type?
-   */
-  virtual bool isStruct() const;
+  virtual bool isBasic() const;
 
   /**
    * Is this a class type, or an alias of a class type?
@@ -139,28 +137,26 @@ public:
    */
   virtual bool definitely(const Type& o) const;
   virtual bool dispatchDefinitely(const Type& o) const = 0;
-  virtual bool definitely(const BracketsType& o) const;
+  virtual bool definitely(const AliasType& o) const;
+  virtual bool definitely(const ArrayType& o) const;
+  virtual bool definitely(const BasicType& o) const;
+  virtual bool definitely(const ClassType& o) const;
   virtual bool definitely(const CoroutineType& o) const;
   virtual bool definitely(const EmptyType& o) const;
   virtual bool definitely(const FunctionType& o) const;
   virtual bool definitely(const List<Type>& o) const;
-  virtual bool definitely(const Class& o) const;
-  virtual bool definitely(const IdentifierType<Class>& o) const;
-  virtual bool definitely(const IdentifierType<AliasType>& o) const;
-  virtual bool definitely(const IdentifierType<BasicType>& o) const;
   virtual bool definitely(const ParenthesesType& o) const;
 
   virtual bool possibly(const Type& o) const;
   virtual bool dispatchPossibly(const Type& o) const = 0;
-  virtual bool possibly(const BracketsType& o) const;
+  virtual bool possibly(const AliasType& o) const;
+  virtual bool possibly(const ArrayType& o) const;
+  virtual bool possibly(const BasicType& o) const;
+  virtual bool possibly(const ClassType& o) const;
   virtual bool possibly(const CoroutineType& o) const;
   virtual bool possibly(const EmptyType& o) const;
   virtual bool possibly(const FunctionType& o) const;
   virtual bool possibly(const List<Type>& o) const;
-  virtual bool possibly(const Class& o) const;
-  virtual bool possibly(const IdentifierType<Class>& o) const;
-  virtual bool possibly(const IdentifierType<AliasType>& o) const;
-  virtual bool possibly(const IdentifierType<BasicType>& o) const;
   virtual bool possibly(const ParenthesesType& o) const;
 
   /**

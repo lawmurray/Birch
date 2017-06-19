@@ -5,30 +5,27 @@
 
 #include "bi/statement/Statement.hpp"
 #include "bi/common/Named.hpp"
-#include "bi/common/Based.hpp"
 
 namespace bi {
 /**
- * Alias of another type.
+ * Basic (built-in) type.
  *
  * @ingroup compiler_type
  */
-class AliasType: public Statement, public Named, public Based {
+class Basic: public Statement, public Named {
 public:
   /**
    * Constructor.
    *
    * @param name Name.
-   * @param base Base type.
    * @param loc Location.
    */
-  AliasType(shared_ptr<Name> name, Type* base, shared_ptr<Location> loc =
-      nullptr);
+  Basic(shared_ptr<Name> name, shared_ptr<Location> loc = nullptr);
 
   /**
    * Destructor.
    */
-  virtual ~AliasType();
+  virtual ~Basic();
 
   virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);
@@ -38,9 +35,9 @@ public:
   using Statement::possibly;
 
   virtual bool dispatchDefinitely(const Statement& o) const;
-  virtual bool definitely(const AliasType& o) const;
+  virtual bool definitely(const Basic& o) const;
 
   virtual bool dispatchPossibly(const Statement& o) const;
-  virtual bool possibly(const AliasType& o) const;
+  virtual bool possibly(const Basic& o) const;
 };
 }
