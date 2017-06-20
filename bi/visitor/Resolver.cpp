@@ -317,6 +317,7 @@ bi::Statement* bi::Resolver::modify(Program* o) {
   defer(o->braces.get());
   o->scope = pop();
   top()->add(o);
+  ///@todo Check that can assign String to all option types
 
   return o;
 }

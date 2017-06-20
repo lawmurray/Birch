@@ -208,7 +208,13 @@ void bi::CppFileGenerator::visit(const Program* o) {
         //}
         finish(':');
         in();
-        line("left_(" << name << ", ::optarg);");
+        if ((*iter)->type->isBasic()) {
+          auto type = dynamic_cast<const BasicType*>((*iter)->type.get());
+          assert(type);
+          line(name << " = " << type->name << "(::optarg);");
+        } else {
+          line(name << " = ::optarg;");
+        }
         line("break;");
         out();
       }

@@ -141,15 +141,17 @@ bi::Statement* bi::Cloner::clone(const Assignment* o) {
 }
 
 bi::Statement* bi::Cloner::clone(const GlobalVariable* o) {
-  return new GlobalVariable(o->name, o->type->accept(this), o->loc);
+  return new GlobalVariable(o->name, o->type->accept(this),
+      o->parens->accept(this), o->value->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const LocalVariable* o) {
-  return new GlobalVariable(o->name, o->type->accept(this), o->loc);
+  return new LocalVariable(o->name, o->type->accept(this),
+      o->parens->accept(this), o->value->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const MemberVariable* o) {
-  return new GlobalVariable(o->name, o->type->accept(this), o->loc);
+  return new MemberVariable(o->name, o->type->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const Function* o) {

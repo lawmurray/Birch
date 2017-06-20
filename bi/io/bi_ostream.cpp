@@ -80,10 +80,16 @@ void bi::bi_ostream::visit(const Parameter* o) {
 
 void bi::bi_ostream::visit(const GlobalVariable* o) {
   *this << o->name << ':' << o->type;
+  if (!o->value->isEmpty()) {
+    *this << " <- " << o->value;
+  }
 }
 
 void bi::bi_ostream::visit(const LocalVariable* o) {
   *this << o->name << ':' << o->type;
+  if (!o->value->isEmpty()) {
+    *this << " <- " << o->value;
+  }
 }
 
 void bi::bi_ostream::visit(const MemberVariable* o) {

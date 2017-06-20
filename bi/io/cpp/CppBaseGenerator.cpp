@@ -214,13 +214,14 @@ void bi::CppBaseGenerator::visit(const Parameter* o) {
 
 void bi::CppBaseGenerator::visit(const GlobalVariable* o) {
   middle(o->type << ' ' << o->name);
-  if (o->type->isClass()) {
+  if (!o->value->isEmpty()) {
+    *this << " <- " << o->value;
+  } else if (o->type->isClass()) {
     ClassType* type = dynamic_cast<ClassType*>(o->type->strip());
     assert(type);
     middle(
         " = new (GC_MALLOC(sizeof(bi::type::" << type->name << "))) bi::type::" << type->name << "()");
-  }
-  if (o->type->count() > 0) {
+  } else if (o->type->isArray()) {
     ArrayType* type = dynamic_cast<ArrayType*>(o->type->strip());
     assert(type);
     middle("(make_frame(" << type->brackets << "))");
@@ -229,13 +230,14 @@ void bi::CppBaseGenerator::visit(const GlobalVariable* o) {
 
 void bi::CppBaseGenerator::visit(const LocalVariable* o) {
   middle(o->type << ' ' << o->name);
-  if (o->type->isClass()) {
+  if (!o->value->isEmpty()) {
+    *this << " <- " << o->value;
+  } else if (o->type->isClass()) {
     ClassType* type = dynamic_cast<ClassType*>(o->type->strip());
     assert(type);
     middle(
         " = new (GC_MALLOC(sizeof(bi::type::" << type->name << "))) bi::type::" << type->name << "()");
-  }
-  if (o->type->count() > 0) {
+  } else if (o->type->isArray()) {
     ArrayType* type = dynamic_cast<ArrayType*>(o->type->strip());
     assert(type);
     middle("(make_frame(" << type->brackets << "))");

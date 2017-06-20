@@ -6,10 +6,12 @@
 #include "bi/visitor/all.hpp"
 
 bi::LocalVariable::LocalVariable(shared_ptr<Name> name, Type* type,
-    shared_ptr<Location> loc) :
+    Expression* parens, Expression* value, shared_ptr<Location> loc) :
     Statement(loc),
     Named(name),
-    Typed(type) {
+    Typed(type),
+    Parenthesised(parens),
+    Valued(value) {
   //
 }
 

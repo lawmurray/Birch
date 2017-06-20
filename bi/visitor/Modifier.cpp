@@ -164,11 +164,15 @@ bi::Statement* bi::Modifier::modify(List<Statement>* o) {
 
 bi::Statement* bi::Modifier::modify(GlobalVariable* o) {
   o->type = o->type.release()->accept(this);
+  o->parens = o->parens.release()->accept(this);
+  o->value = o->value.release()->accept(this);
   return o;
 }
 
 bi::Statement* bi::Modifier::modify(LocalVariable* o) {
   o->type = o->type.release()->accept(this);
+  o->parens = o->parens.release()->accept(this);
+  o->value = o->value.release()->accept(this);
   return o;
 }
 

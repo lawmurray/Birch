@@ -4,6 +4,7 @@
 #pragma once
 
 #include "bi/expression/Expression.hpp"
+#include "bi/expression/EmptyExpression.hpp"
 #include "bi/primitive/unique_ptr.hpp"
 
 namespace bi {
@@ -17,9 +18,9 @@ public:
   /**
    * Constructor.
    *
-   * @param cond Condition.
+   * @param value Value.
    */
-  Valued(Expression* cond);
+  Valued(Expression* value = new EmptyExpression());
 
   /**
    * Destructor.
