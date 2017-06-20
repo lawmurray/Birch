@@ -54,7 +54,7 @@ auto toEigenMatrix(const Array<Type,Frame>& X) {
  * Negation
  * --------
  */
-function -x:Real[_] -> Real[_] {
+operator -x:Real[_] -> Real[_] {
   z:Real[length(x)];
   cpp{{
   toEigenVector(z) = -toEigenVector(x);
@@ -62,7 +62,7 @@ function -x:Real[_] -> Real[_] {
   return z;
 }
 
-function -X:Real[_,_] -> Real[_,_] {
+operator -X:Real[_,_] -> Real[_,_] {
   Z:Real[rows(X),columns(X)];
   cpp{{
   toEigenMatrix(Z) = -toEigenMatrix(X);
@@ -74,7 +74,7 @@ function -X:Real[_,_] -> Real[_,_] {
  * Addition
  * --------
  */
-function x:Real[_] + y:Real[_] -> Real[_] {
+operator x:Real[_] + y:Real[_] -> Real[_] {
   assert(length(x) == length(y));
   
   z:Real[length(x)];
@@ -84,7 +84,7 @@ function x:Real[_] + y:Real[_] -> Real[_] {
   return z;
 }
 
-function X:Real[_,_] + Y:Real[_,_] -> Real[_,_] {
+operator X:Real[_,_] + Y:Real[_,_] -> Real[_,_] {
   assert(rows(X) == rows(Y) && columns(X) == columns(Y));
   
   Z:Real[rows(X), columns(X)];
@@ -98,7 +98,7 @@ function X:Real[_,_] + Y:Real[_,_] -> Real[_,_] {
  * Subtraction
  * -----------
  */
-function x:Real[_] - y:Real[_] -> Real[_] {
+operator x:Real[_] - y:Real[_] -> Real[_] {
   assert(length(x) == length(y));
   
   z:Real[length(x)];
@@ -108,7 +108,7 @@ function x:Real[_] - y:Real[_] -> Real[_] {
   return z;
 }
 
-function X:Real[_,_] - Y:Real[_,_] -> Real[_,_] {
+operator X:Real[_,_] - Y:Real[_,_] -> Real[_,_] {
   assert(rows(X) == rows(Y) && columns(X) == columns(Y));
   
   Z:Real[rows(X), columns(X)];
@@ -122,7 +122,7 @@ function X:Real[_,_] - Y:Real[_,_] -> Real[_,_] {
  * Multiplication
  * --------------
  */
-function x:Real*y:Real[_] -> Real[_] {
+operator x:Real*y:Real[_] -> Real[_] {
   z:Real[length(y)];
   cpp{{
   toEigenVector(z) = x * toEigenVector(y);
@@ -130,7 +130,7 @@ function x:Real*y:Real[_] -> Real[_] {
   return z;
 }
 
-function x:Real[_]*y:Real -> Real[_] {
+operator x:Real[_]*y:Real -> Real[_] {
   z:Real[length(x)];
   cpp{{
   toEigenVector(z) = toEigenVector(x) * y;
@@ -138,7 +138,7 @@ function x:Real[_]*y:Real -> Real[_] {
   return z;
 }
 
-function x:Real*Y:Real[_,_] -> Real[_,_] {
+operator x:Real*Y:Real[_,_] -> Real[_,_] {
   Z:Real[rows(Y),columns(Y)];
   cpp{{
   toEigenVector(Z) = x * toEigenMatrix(Y);
@@ -146,7 +146,7 @@ function x:Real*Y:Real[_,_] -> Real[_,_] {
   return Z;
 }
 
-function X:Real[_,_]*y:Real -> Real[_,_] {
+operator X:Real[_,_]*y:Real -> Real[_,_] {
   Z:Real[rows(X),columns(X)];
   cpp{{
   toEigenMatrix(Z) = toEigenMatrix(X) * y;
@@ -154,7 +154,7 @@ function X:Real[_,_]*y:Real -> Real[_,_] {
   return Z;
 }
 
-function x:Real[_]*y:Real[_] -> Real[_] {
+operator x:Real[_]*y:Real[_] -> Real[_] {
   assert(length(y) == 1);
   
   z:Real[length(x)];
@@ -164,7 +164,7 @@ function x:Real[_]*y:Real[_] -> Real[_] {
   return z;
 }
 
-function X:Real[_,_]*y:Real[_] -> Real[_] {
+operator X:Real[_,_]*y:Real[_] -> Real[_] {
   assert(columns(X) == length(y));
   
   z:Real[rows(X)];
@@ -174,7 +174,7 @@ function X:Real[_,_]*y:Real[_] -> Real[_] {
   return z;
 }
 
-function x:Real[_]*Y:Real[_,_] -> Real[_,_] {
+operator x:Real[_]*Y:Real[_,_] -> Real[_,_] {
   assert(1 == rows(Y));
   
   Z:Real[length(x),columns(Y)];
@@ -184,7 +184,7 @@ function x:Real[_]*Y:Real[_,_] -> Real[_,_] {
   return Z;
 }
 
-function X:Real[_,_]*Y:Real[_,_] -> Real[_,_] {
+operator X:Real[_,_]*Y:Real[_,_] -> Real[_,_] {
   assert(columns(X) == rows(Y));
   
   Z:Real[rows(X),columns(Y)];
@@ -198,7 +198,7 @@ function X:Real[_,_]*Y:Real[_,_] -> Real[_,_] {
  * Division
  * --------
  */
-function x:Real[_]/y:Real -> Real[_] {
+operator x:Real[_]/y:Real -> Real[_] {
   z:Real[length(x)];
   cpp{{
   toEigenVector(z) = toEigenVector(x) / y;
@@ -206,7 +206,7 @@ function x:Real[_]/y:Real -> Real[_] {
   return z;
 }
 
-function X:Real[_,_]/y:Real -> Real[_,_] {
+operator X:Real[_,_]/y:Real -> Real[_,_] {
   Z:Real[rows(X),columns(X)];
   cpp{{
   toEigenMatrix(Z) = toEigenMatrix(X) / y;

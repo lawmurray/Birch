@@ -16,12 +16,12 @@ class Delay {
   /**
    * State of the variate.
    */
-  state:Integer <- UNINITIALIZED;
+  state:Integer;
   
   /**
    * Is the value missing?
    */
-  missing:Boolean <- true;
+  missing:Boolean;
   
   /**
    * Parent, if any.
@@ -36,12 +36,19 @@ class Delay {
   /**
    * Is there a parent?
    */
-  hasParent:Boolean <- false;
+  hasParent:Boolean;
   
   /**
    * Is there a child?
    */
-  hasChild:Boolean <- false;
+  hasChild:Boolean;
+  
+  function constructor() {
+    state <- UNINITIALIZED;
+    missing <- true;
+    hasParent <- false;
+    hasChild <- false;
+  }
   
   /**
    * Is this a root node?
@@ -210,9 +217,6 @@ class Delay {
    * Remove the parent.
    */
   function removeParent() {
-    cpp{{
-    this->parent = nullptr;
-    }}
     hasParent <- false;
   }
 
@@ -228,9 +232,6 @@ class Delay {
    * Remove the child.
    */
   function removeChild() {
-    cpp{{
-    this->child = nullptr;
-    }}
     hasChild <- false;
   }
   
@@ -258,9 +259,5 @@ class Delay {
     missing <- o.missing;    
     hasParent <- false;
     hasChild <- false;
-    cpp{{
-    this->parent = nullptr;
-    this->child = nullptr;
-    }}
   }
 }

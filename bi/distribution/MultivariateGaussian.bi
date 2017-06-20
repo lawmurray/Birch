@@ -6,16 +6,16 @@ import random;
 /**
  * Multivariate Gaussian distribution.
  */
-class MultivariateGaussian(D1:Integer) < Delay {
+class MultivariateGaussian < Delay {
   /**
    * Number of dimensions.
    */
-  D:Integer <- D1;
+  D:Integer;
 
   /**
    * Value.
    */
-  x:Real[D];
+  x:Real[_];
   
   /**
    * Weight.
@@ -25,12 +25,19 @@ class MultivariateGaussian(D1:Integer) < Delay {
   /**
    * Mean.
    */
-  μ:Real[D];
+  μ:Real[_];
   
   /**
    * Covariance matrix.
    */
-  Σ:Real[D,D];
+  Σ:Real[_,_];
+
+  function constructor(D:Integer) {
+    this.D <- D;
+    //this.x <- :Real[D];
+    //this.μ <- :Real[D];
+    //this.Σ <- :Real[D,D]
+  }
 
   function initialize(u:MultivariateGaussian) {
     super.initialize(u);
@@ -47,9 +54,16 @@ class MultivariateGaussian(D1:Integer) < Delay {
   }
 
   /**
+   * Value assignment.
+   */
+  operator <- x:Real[_] {
+    set(x);
+  }
+
+  /**
    * Value conversion.
    */
-  function -> Real[_] {
+  operator -> Real[_] {
     if (isMissing()) {
       graft();
       realize();
@@ -109,16 +123,9 @@ function Gaussian(μ:Real[_], Σ:Real[_,_]) -> MultivariateGaussian {
 }
 
 /**
- * Set.
- */
-function m:MultivariateGaussian <- x:Real[_] {
-  m.set(x);
-}
-
-/**
  * Sample.
  */
-function x:Real[_] <~ m:MultivariateGaussian {
+operator x:Real[_] <~ m:MultivariateGaussian {
   assert(length(x) == m.D);
   m.graft();
   m.realize();
@@ -128,7 +135,7 @@ function x:Real[_] <~ m:MultivariateGaussian {
 /**
  * Sample.
  */
-function x:MultivariateGaussian <~ m:MultivariateGaussian {
+operator x:MultivariateGaussian <~ m:MultivariateGaussian {
   assert(x.isUninitialized() && x.isMissing());
   m.graft();
   m.realize();
@@ -138,7 +145,7 @@ function x:MultivariateGaussian <~ m:MultivariateGaussian {
 /**
  * Observe.
  */
-function x:Real[_] ~> m:MultivariateGaussian -> Real {
+operator x:Real[_] ~> m:MultivariateGaussian -> Real {
   assert(length(x) == m.D);
   m.graft();
   m.set(x);
@@ -149,7 +156,7 @@ function x:Real[_] ~> m:MultivariateGaussian -> Real {
 /**
  * Observe.
  */
-function x:MultivariateGaussian ~> m:MultivariateGaussian {
+operator x:MultivariateGaussian ~> m:MultivariateGaussian {
   assert(x.isUninitialized() && !x.isMissing());
   m.graft();
   m.set(x.x);
@@ -157,9 +164,9 @@ function x:MultivariateGaussian ~> m:MultivariateGaussian {
 }
 
 /**
- * Initialise.
+ * Initialize.
  */
-function x:MultivariateGaussian ~ m:MultivariateGaussian {
+operator x:MultivariateGaussian ~ m:MultivariateGaussian {
   assert(x.isUninitialized());
   if (!x.isMissing()) {
     x ~> m;

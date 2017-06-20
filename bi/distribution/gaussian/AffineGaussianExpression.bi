@@ -31,57 +31,57 @@ class AffineGaussianExpression {
   }
 }
 
-function u:Gaussian + c:Real -> AffineGaussianExpression {
+operator u:Gaussian + c:Real -> AffineGaussianExpression {
   v:AffineGaussianExpression;
   v.initialize(1.0, u, c);
   return v;
 }
 
-function c:Real + u:Gaussian -> AffineGaussianExpression {
+operator c:Real + u:Gaussian -> AffineGaussianExpression {
   return u + c;
 }
 
-function u:Gaussian - c:Real -> AffineGaussianExpression {
+operator u:Gaussian - c:Real -> AffineGaussianExpression {
   v:AffineGaussianExpression;
   v.initialize(1.0, u, -c);
   return v;
 }
 
-function c:Real - u:Gaussian -> AffineGaussianExpression {
+operator c:Real - u:Gaussian -> AffineGaussianExpression {
   v:AffineGaussianExpression;
   v.initialize(-1.0, u, c);
   return v;
 }
 
-function a:Real*u:Gaussian -> AffineGaussianExpression {
+operator a:Real*u:Gaussian -> AffineGaussianExpression {
   v:AffineGaussianExpression;
   v.initialize(1.0, u, 0.0);
   return v;
 }
 
-function u:AffineGaussianExpression + c:Real -> AffineGaussianExpression {
+operator u:AffineGaussianExpression + c:Real -> AffineGaussianExpression {
   v:AffineGaussianExpression;
   v.initialize(u.a, u.u, u.c + c);
   return v;
 }
 
-function c:Real + u:AffineGaussianExpression -> AffineGaussianExpression {
+operator c:Real + u:AffineGaussianExpression -> AffineGaussianExpression {
   return u + c;
 }
 
-function u:AffineGaussianExpression - c:Real -> AffineGaussianExpression {
+operator u:AffineGaussianExpression - c:Real -> AffineGaussianExpression {
   v:AffineGaussianExpression;
   v.initialize(u.a, u.u, u.c - c);
   return v;
 }
 
-function c:Real - u:AffineGaussianExpression -> AffineGaussianExpression {
+operator c:Real - u:AffineGaussianExpression -> AffineGaussianExpression {
   v:AffineGaussianExpression;
   v.initialize(-u.a, u.u, c - u.c);
   return v;
 }
 
-function a:Real*u:AffineGaussianExpression -> AffineGaussianExpression {
+operator a:Real*u:AffineGaussianExpression -> AffineGaussianExpression {
   v:AffineGaussianExpression;
   v.initialize(a*u.a, u.u, a*u.c);
   return v;

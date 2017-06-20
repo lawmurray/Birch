@@ -25,9 +25,33 @@ function Boolean(s:String) -> Boolean {
   }}
 }
 
-function Real(s:String) -> Real {
+function Real64(s:String) -> Real64 {
+  cpp{{
+  return ::strtod(s.c_str(), nullptr);
+  }}
+}
+
+function Real32(s:String) -> Real32 {
   cpp{{
   return ::strtof(s.c_str(), nullptr);
+  }}
+}
+
+function Integer64(s:String) -> Integer64 {
+  cpp{{
+  return ::atol(s.c_str());
+  }}
+}
+
+function Integer32(s:String) -> Integer32 {
+  cpp{{
+  return ::atoi(s.c_str());
+  }}
+}
+
+function Real(s:String) -> Real {
+  cpp{{
+  return ::strtod(s.c_str(), nullptr);
   }}
 }
 
@@ -49,36 +73,6 @@ function Integer(s:String) -> Integer {
   }}
 }
 
-/**
- * String assignment
- * -----------------
- */
-function x:Boolean <- s:String {
-  cpp{{
-  x = ::atoi(s.c_str());
-  }}
-}
-
-function x:Real64 <- s:String {
-  cpp{{
-  x = ::strtof(s.c_str(), nullptr);
-  }}
-}
-
-function x:Real32 <- s:String {
-  cpp{{
-  x = ::strtod(s.c_str(), nullptr);
-  }}
-}
-
-function x:Integer64 <- s:String {
-  cpp{{
-  x = ::atol(s.c_str());
-  }}
-}
-
-function x:Integer32 <- s:String {
-  cpp{{
-  x = ::atoi(s.c_str());
-  }}
+function String(s:String) -> String {
+  return s;
 }

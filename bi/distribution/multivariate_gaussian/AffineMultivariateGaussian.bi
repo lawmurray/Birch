@@ -7,21 +7,21 @@ import assert;
  * Multivariate Gaussian that has a mean which is an affine transformation of
  * another multivariate Gaussian.
  */
-class AffineMultivariateGaussian(R1:Integer,C1:Integer) < MultivariateGaussian(R1) {
+class AffineMultivariateGaussian < MultivariateGaussian {
   /**
    * Number of rows in matrix.
    */
-  R:Integer <- R1;
+  R:Integer;
   
   /**
    * Number of columns in matrix.
    */
-  C:Integer <- C1;
+  C:Integer;
 
   /**
    * Matrix of affine transformation.
    */
-  A:Real[R,C];
+  A:Real[_,_];
 
   /**
    * Mean.
@@ -31,22 +31,33 @@ class AffineMultivariateGaussian(R1:Integer,C1:Integer) < MultivariateGaussian(R
   /**
    * Vector of affine transformation.
    */
-  c:Real[R];
+  c:Real[_];
 
   /**
    * Disturbance covariance.
    */
-  Q:Real[R,R];
+  Q:Real[_,_];
   
   /**
    * Marginalized prior mean.
    */
-  y:Real[R];
+  y:Real[_];
   
   /**
    * Marginalized prior covariance.
    */
-  S:Real[R,R];
+  S:Real[_,_];
+
+  function constructor(R:Integer, C:Integer) {
+    super.constructor(R);
+    this.R <- R;
+    this.C <- C;
+    //this.A <- :Real[R,C];
+    //this.c <- :Real[R];
+    //this.Q <- :Real[R,R];
+    //this.y <- :Real[R];
+    //this.S <- :Real[R,R];
+  }
 
   function initialize(A:Real[_,_], μ:MultivariateGaussian, c:Real[_], Q:Real[_,_]) {
     super.initialize(μ);

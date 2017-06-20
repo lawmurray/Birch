@@ -26,6 +26,31 @@ class Gaussian < Delay {
    */
   σ2:Real;
 
+  /**
+   * Value assignment.
+   */
+  operator <- x:Real {
+    set(x);
+  }
+
+  /**
+   * String assignment.
+   */
+  operator <- s:String {
+    set(Real(s));
+  }
+
+  /**
+   * Value conversion.
+   */
+  operator -> Real {
+    if (isMissing()) {
+      graft();
+      realize();
+    }
+    return x;
+  }
+
   function initialize(u:Gaussian) {
     super.initialize(u);
   }
@@ -43,17 +68,6 @@ class Gaussian < Delay {
     
     this.μ <- μ;
     this.σ2 <- σ2;
-  }
-
-  /**
-   * Value conversion.
-   */
-  function -> Real {
-    if (isMissing()) {
-      graft();
-      realize();
-    }
-    return x;
   }
   
   function set(x:Real) {
@@ -90,23 +104,9 @@ function Gaussian(μ:Real, σ2:Real) -> Gaussian {
 }
 
 /**
- * Set.
- */
-function m:Gaussian <- x:Real {
-  m.set(x);
-}
-
-/**
- * Set from string.
- */
-function m:Gaussian <- s:String {
-  m.set(Real(s));
-}
-
-/**
  * Sample.
  */
-function x:Real <~ m:Gaussian {
+operator x:Real <~ m:Gaussian {
   m.graft();
   m.realize();
   x <- m.x;
@@ -115,7 +115,7 @@ function x:Real <~ m:Gaussian {
 /**
  * Sample.
  */
-function x:Gaussian <~ m:Gaussian {
+operator x:Gaussian <~ m:Gaussian {
   assert(x.isUninitialized() && x.isMissing());
   m.graft();
   m.realize();
@@ -125,7 +125,7 @@ function x:Gaussian <~ m:Gaussian {
 /**
  * Observe.
  */
-function x:Real ~> m:Gaussian -> Real {
+operator x:Real ~> m:Gaussian -> Real {
   m.graft();
   m.set(x);
   m.realize();
@@ -135,7 +135,7 @@ function x:Real ~> m:Gaussian -> Real {
 /**
  * Observe.
  */
-function x:Gaussian ~> m:Gaussian {
+operator x:Gaussian ~> m:Gaussian {
   assert(x.isUninitialized() && !x.isMissing());
   m.graft();
   m.set(x.x);
@@ -143,9 +143,9 @@ function x:Gaussian ~> m:Gaussian {
 }
 
 /**
- * Initialise.
+ * Initialize.
  */
-function x:Gaussian ~ m:Gaussian {
+operator x:Gaussian ~ m:Gaussian {
   assert(x.isUninitialized());
   if (!x.isMissing()) {
     x ~> m;
