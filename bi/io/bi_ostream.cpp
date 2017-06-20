@@ -147,6 +147,13 @@ void bi::bi_ostream::visit(const Identifier<UnaryOperator>* o) {
   *this << o->name << o->single;
 }
 
+void bi::bi_ostream::visit(const Identifier<Unknown>* o) {
+  *this << o->name;
+  if (!o->parens->isEmpty()) {
+    *this << '(' << o->parens << ')';
+  }
+}
+
 void bi::bi_ostream::visit(const List<Statement>* o) {
   *this << o->head << o->tail;
 }
@@ -311,6 +318,10 @@ void bi::bi_ostream::visit(const AliasType* o) {
 }
 
 void bi::bi_ostream::visit(const BasicType* o) {
+  *this << o->name;
+}
+
+void bi::bi_ostream::visit(const IdentifierType* o) {
   *this << o->name;
 }
 

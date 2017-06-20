@@ -47,6 +47,7 @@ public:
   virtual void visit(const Identifier<MemberFunction>* o);
   virtual void visit(const Identifier<BinaryOperator>* o);
   virtual void visit(const Identifier<UnaryOperator>* o);
+  virtual void visit(const Identifier<Unknown>* o);
 
   virtual void visit(const List<Statement>* o);
   virtual void visit(const Assignment* o);
@@ -73,6 +74,7 @@ public:
   virtual void visit(const ClassType* o);
   virtual void visit(const BasicType* o);
   virtual void visit(const AliasType* o);
+  virtual void visit(const IdentifierType* o);
   virtual void visit(const ArrayType* o);
   virtual void visit(const ParenthesesType* o);
   virtual void visit(const FunctionType* o);
