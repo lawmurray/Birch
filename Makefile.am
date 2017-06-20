@@ -35,7 +35,6 @@ birchc_SOURCES = \
   bi/common/Named.cpp \
   bi/common/Numbered.cpp \
   bi/common/OverloadedDictionary.cpp \
-  bi/common/OverloadedSet.cpp \
   bi/common/Parenthesised.cpp \
   bi/common/Path.cpp \
   bi/common/ReturnTyped.cpp \
@@ -184,7 +183,6 @@ noinst_HEADERS = \
   bi/common/Named.hpp \
   bi/common/Numbered.hpp \
   bi/common/OverloadedDictionary.hpp \
-  bi/common/OverloadedSet.hpp \
   bi/common/Parenthesised.hpp \
   bi/common/Path.hpp \
   bi/common/Reference.hpp \

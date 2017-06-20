@@ -28,6 +28,7 @@ class Range;
 class Span;
 class Super;
 class This;
+class Unknown;
 
 class GlobalVariable;
 class LocalVariable;

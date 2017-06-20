@@ -25,12 +25,12 @@ public:
   /**
    * Does the dictionary contain the given parameter?
    */
-  bool contains(ParameterType* param);
+  bool contains(ParameterType* param) const;
 
   /**
-   * If the dictionary contains the given parameter, retrieve its version.
+   * Does the dictionary contain the given name?
    */
-  ParameterType* get(ParameterType* param);
+  bool contains(const std::string& name) const;
 
   /**
    * Add parameter.
@@ -40,9 +40,9 @@ public:
   void add(ParameterType* param);
 
   /**
-   * Merge another overloaded dictionary into this one.
+   * Import another overloaded dictionary into this one.
    */
-  void merge(OverloadedDictionary<ParameterType,CompareType>& o);
+  void import(OverloadedDictionary<ParameterType,CompareType>& o);
 
   /**
    * Resolve reference.

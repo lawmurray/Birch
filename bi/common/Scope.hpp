@@ -5,7 +5,6 @@
 
 #include "bi/common/Dictionary.hpp"
 #include "bi/common/OverloadedDictionary.hpp"
-#include "bi/common/OverloadedSet.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/primitive/definitely.hpp"
 #include "bi/primitive/possibly.hpp"
@@ -23,17 +22,33 @@ class MemberFunction;
 class Program;
 class BinaryOperator;
 class UnaryOperator;
-class AssignmentOperator;
-class ConversionOperator;
 class Basic;
 class Class;
 class Alias;
+class Unknown;
 
 template<class ObjectType> class Identifier;
-class Assignment;
 class BasicType;
 class ClassType;
 class AliasType;
+class IdentifierType;
+
+/**
+ * Categories of objects for identifier loookups.
+ */
+enum LookupResult {
+  PARAMETER,
+  GLOBAL_VARIABLE,
+  LOCAL_VARIABLE,
+  MEMBER_VARIABLE,
+  FUNCTION,
+  COROUTINE,
+  MEMBER_FUNCTION,
+  BASIC,
+  CLASS,
+  ALIAS,
+  UNRESOLVED
+};
 
 /**
  * Scope.
@@ -43,28 +58,10 @@ class AliasType;
 class Scope {
 public:
   /**
-   * Does the scope contain the parameter?
-   *
-   * @param param Parameter.
-   *
-   * For functions, matching is done by signature. For all others, matching
-   * is done by name only.
+   * Look up the category for an unknown identifier.
    */
-  bool contains(Parameter* param);
-  bool contains(GlobalVariable* param);
-  bool contains(LocalVariable* param);
-  bool contains(MemberVariable* param);
-  bool contains(Function* param);
-  bool contains(Coroutine* param);
-  bool contains(Program* param);
-  bool contains(MemberFunction* param);
-  bool contains(BinaryOperator* param);
-  bool contains(UnaryOperator* param);
-  bool contains(AssignmentOperator* param);
-  bool contains(ConversionOperator* param);
-  bool contains(Class* param);
-  bool contains(Alias* param);
-  bool contains(Basic* param);
+  LookupResult lookup(const Identifier<Unknown>* ref) const;
+  LookupResult lookup(const IdentifierType* ref) const;
 
   /**
    * Add parameter.
@@ -81,8 +78,6 @@ public:
   void add(MemberFunction* param);
   void add(BinaryOperator* param);
   void add(UnaryOperator* param);
-  void add(AssignmentOperator* param);
-  void add(ConversionOperator* param);
   void add(Class* param);
   void add(Alias* param);
   void add(Basic* param);
@@ -107,7 +102,6 @@ public:
   void resolve(BasicType* ref);
   void resolve(ClassType* ref);
   void resolve(AliasType* ref);
-  void resolve(Assignment* ref);
 
   /**
    * Inherit another scope into this scope. This is used to import
@@ -143,18 +137,29 @@ public:
   OverloadedDictionary<MemberFunction,definitely> memberFunctions;
   OverloadedDictionary<BinaryOperator,definitely> binaryOperators;
   OverloadedDictionary<UnaryOperator,definitely> unaryOperators;
-  OverloadedDictionary<AssignmentOperator,definitely> assignmentOperators;
-  OverloadedSet<ConversionOperator,definitely> conversionOperators;
   Dictionary<Basic> basics;
   Dictionary<Class> classes;
   Dictionary<Alias> aliases;
 
 private:
   /**
-   * Defer resolution to imported scopes.
+   * Defer lookup to inherited scopes.
    */
   template<class ReferenceType>
-  void resolveDefer(ReferenceType* ref) {
+  LookupResult lookupInherit(const ReferenceType* ref) const {
+    LookupResult result = UNRESOLVED;
+    for (auto iter = bases.begin();
+        result == UNRESOLVED && iter != bases.end(); ++iter) {
+      result = (*iter)->lookup(ref);
+    }
+    return result;
+  }
+
+  /**
+   * Defer resolution to inherited scopes.
+   */
+  template<class ReferenceType>
+  void resolveInherit(ReferenceType* ref) {
     for (auto iter = bases.begin(); !ref->target && iter != bases.end();
         ++iter) {
       (*iter)->resolve(ref);

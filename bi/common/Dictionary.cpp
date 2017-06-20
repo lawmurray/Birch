@@ -9,16 +9,22 @@
 #include "bi/exception/all.hpp"
 
 template<class ParameterType>
-bool bi::Dictionary<ParameterType>::contains(ParameterType* param) {
-  return params.find(param->name->str()) != params.end();
+bool bi::Dictionary<ParameterType>::contains(ParameterType* param) const {
+  auto iter = params.find(param->name->str());
+  return iter != params.end() && iter->second == param;
 }
 
 template<class ParameterType>
-ParameterType* bi::Dictionary<ParameterType>::get(ParameterType* param) {
-  /* pre-condition */
-  assert(contains(param));
+bool bi::Dictionary<ParameterType>::contains(const std::string& name) const {
+  return params.find(name) != params.end();
+}
 
-  return params.find(param->name->str())->second;
+template<class ParameterType>
+ParameterType* bi::Dictionary<ParameterType>::get(const std::string& name) {
+  /* pre-condition */
+  assert(contains(name));
+
+  return params.find(name)->second;
 }
 
 template<class ParameterType>
@@ -31,7 +37,7 @@ void bi::Dictionary<ParameterType>::add(ParameterType* param) {
 }
 
 template<class ParameterType>
-void bi::Dictionary<ParameterType>::merge(Dictionary<ParameterType>& o) {
+void bi::Dictionary<ParameterType>::import(Dictionary<ParameterType>& o) {
   for (auto iter = o.params.begin(); iter != o.params.end(); ++iter) {
     if (!contains(iter->second)) {
       add(iter->second);

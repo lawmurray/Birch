@@ -102,7 +102,8 @@ bi::Expression* bi::Resolver::modify(Range* o) {
 
 bi::Expression* bi::Resolver::modify(Member* o) {
   o->left = o->left->accept(this);
-  Identifier<Class>* ref = dynamic_cast<Identifier<Class>*>(o->left->type->strip());
+  Identifier<Class>* ref =
+      dynamic_cast<Identifier<Class>*>(o->left->type->strip());
   if (ref) {
     assert(ref->target);
     memberScope = ref->target->scope.get();
@@ -147,8 +148,7 @@ bi::Expression* bi::Resolver::modify(Parameter* o) {
 }
 
 bi::Expression* bi::Resolver::modify(Identifier<Unknown>* o) {
-  /* determine specific type of this identifier */
-  return o;
+  return lookup(o)->accept(this);
 }
 
 bi::Expression* bi::Resolver::modify(Identifier<Parameter>* o) {
@@ -196,7 +196,8 @@ bi::Expression* bi::Resolver::modify(Identifier<Coroutine>* o) {
   Scope* memberScope = takeMemberScope();
   Modifier::modify(o);
   resolve(o, memberScope);
-  o->type = new CoroutineType(o->target->returnType->accept(&cloner)->accept(this));
+  o->type = new CoroutineType(
+      o->target->returnType->accept(&cloner)->accept(this));
   o->type->assignable = false;  // rvalue
   return o;
 }
@@ -242,14 +243,15 @@ bi::Statement* bi::Resolver::modify(Assignment* o) {
   Modifier::modify(o);
   if (!o->right->type->definitely(*o->left->type)) {
     // ^ the first two cases are covered by this check
-    Identifier<Class>* ref = dynamic_cast<Identifier<Class>*>(o->left->type->strip());
+    Identifier<Class>* ref =
+        dynamic_cast<Identifier<Class>*>(o->left->type->strip());
     if (ref) {
       assert(ref->target);
       memberScope = ref->target->scope.get();
     } else {
       //throw MemberException(o);
     }
-    resolve(o, memberScope);
+    //resolve(o, memberScope);
   }
   if (!o->left->type->assignable) {
     throw NotAssignableException(o->left.get());
@@ -373,7 +375,7 @@ bi::Statement* bi::Resolver::modify(AssignmentOperator* o) {
     defer(o->braces.get());
   }
   o->scope = pop();
-  top()->add(o);
+  //top()->add(o);
 
   return o;
 }
@@ -385,11 +387,10 @@ bi::Statement* bi::Resolver::modify(ConversionOperator* o) {
     defer(o->braces.get());
   }
   o->scope = pop();
-  top()->add(o);
+  //top()->add(o);
 
   return o;
 }
-
 
 bi::Statement* bi::Resolver::modify(Class* o) {
   push();
@@ -459,7 +460,7 @@ bi::Statement* bi::Resolver::modify(Return* o) {
 }
 
 bi::Type* bi::Resolver::modify(IdentifierType* o) {
-  return o;
+  return lookup(o)->accept(this);
 }
 
 bi::Type* bi::Resolver::modify(ClassType* o) {
@@ -518,6 +519,73 @@ bi::Scope* bi::Resolver::pop() {
   Scope* res = scopes.back();
   scopes.pop_back();
   return res;
+}
+
+bi::Expression* bi::Resolver::lookup(Identifier<Unknown>* ref, Scope* scope) {
+  LookupResult category = UNRESOLVED;
+  if (scope) {
+    /* use provided scope, usually a membership scope */
+    category = scope->lookup(ref);
+  } else {
+    /* use current stack of scopes */
+    for (auto iter = scopes.rbegin();
+        category == UNRESOLVED && iter != scopes.rend(); ++iter) {
+      category = (*iter)->lookup(ref);
+    }
+  }
+
+  /* replace the reference of unknown object type with that of a known one */
+  switch (category) {
+  case PARAMETER:
+    return new Identifier<Parameter>(ref->name, ref->parens.release(),
+        ref->loc);
+  case GLOBAL_VARIABLE:
+    return new Identifier<GlobalVariable>(ref->name, ref->parens.release(),
+        ref->loc);
+  case LOCAL_VARIABLE:
+    return new Identifier<LocalVariable>(ref->name, ref->parens.release(),
+        ref->loc);
+  case MEMBER_VARIABLE:
+    return new Identifier<MemberVariable>(ref->name, ref->parens.release(),
+        ref->loc);
+  case FUNCTION:
+    return new Identifier<Function>(ref->name, ref->parens.release(),
+        ref->loc);
+  case COROUTINE:
+    return new Identifier<Coroutine>(ref->name, ref->parens.release(),
+        ref->loc);
+  case MEMBER_FUNCTION:
+    return new Identifier<MemberFunction>(ref->name, ref->parens.release(),
+        ref->loc);
+  default:
+    throw UnresolvedReferenceException(ref);
+  }
+}
+
+bi::Type* bi::Resolver::lookup(IdentifierType* ref, Scope* scope) {
+  LookupResult category = UNRESOLVED;
+  if (scope) {
+    /* use provided scope, usually a membership scope */
+    category = scope->lookup(ref);
+  } else {
+    /* use current stack of scopes */
+    for (auto iter = scopes.rbegin();
+        category == UNRESOLVED && iter != scopes.rend(); ++iter) {
+      category = (*iter)->lookup(ref);
+    }
+  }
+
+  /* replace the reference of unknown object type with that of a known one */
+  switch (category) {
+  case BASIC:
+    return new BasicType(ref->name, ref->loc);
+  case CLASS:
+    return new ClassType(ref->name, ref->loc);
+  case ALIAS:
+    return new AliasType(ref->name, ref->loc);
+  default:
+    throw UnresolvedReferenceException(ref);
+  }
 }
 
 void bi::Resolver::defer(Statement* o) {

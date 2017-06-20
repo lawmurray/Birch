@@ -23,57 +23,187 @@
 #include "bi/exception/all.hpp"
 #include "bi/visitor/Cloner.hpp"
 
-#define CONTAINS_IMPL(type, container) \
-  bool bi::Scope::contains(type* param) { \
-    return container.contains(param); \
+bi::LookupResult bi::Scope::lookup(
+    const Identifier<Unknown>* ref) const {
+  auto name = ref->name->str();
+  if (localVariables.contains(name)) {
+    return LOCAL_VARIABLE;
+  } else if (parameters.contains(name)) {
+    return PARAMETER;
+  } else if (memberVariables.contains(name)) {
+    return MEMBER_VARIABLE;
+  } else if (memberFunctions.contains(name)) {
+    return MEMBER_FUNCTION;
+  } else if (globalVariables.contains(name)) {
+    return GLOBAL_VARIABLE;
+  } else if (functions.contains(name)) {
+    return FUNCTION;
+  } else if (coroutines.contains(name)) {
+    return COROUTINE;
+  } else {
+    return lookupInherit(ref);
   }
+}
 
-CONTAINS_IMPL(Parameter, parameters)
-CONTAINS_IMPL(GlobalVariable, globalVariables)
-CONTAINS_IMPL(LocalVariable, localVariables)
-CONTAINS_IMPL(MemberVariable, memberVariables)
-CONTAINS_IMPL(Function, functions)
-CONTAINS_IMPL(Coroutine, coroutines)
-CONTAINS_IMPL(Program, programs)
-CONTAINS_IMPL(MemberFunction, memberFunctions)
-CONTAINS_IMPL(BinaryOperator, binaryOperators)
-CONTAINS_IMPL(UnaryOperator, unaryOperators)
-CONTAINS_IMPL(AssignmentOperator, assignmentOperators)
-CONTAINS_IMPL(ConversionOperator, conversionOperators)
-CONTAINS_IMPL(Basic, basics)
-CONTAINS_IMPL(Class, classes)
-CONTAINS_IMPL(Alias, aliases)
-
-#define ADD_IMPL(type, container) \
-  void bi::Scope::add(type* param) { \
-    if (container.contains(param)) { \
-      throw PreviousDeclarationException(param, container.get(param)); \
-    } else { \
-      container.add(param); \
-    } \
+bi::LookupResult bi::Scope::lookup(const IdentifierType* ref) const {
+  auto name = ref->name->str();
+  if (basics.contains(name)) {
+    return BASIC;
+  } else if (classes.contains(name)) {
+    return CLASS;
+  } else if (aliases.contains(name)) {
+    return ALIAS;
+  } else {
+    return lookupInherit(ref);
   }
+}
 
-ADD_IMPL(Parameter, parameters)
-ADD_IMPL(GlobalVariable, globalVariables)
-ADD_IMPL(LocalVariable, localVariables)
-ADD_IMPL(MemberVariable, memberVariables)
-ADD_IMPL(Function, functions)
-ADD_IMPL(Coroutine, coroutines)
-ADD_IMPL(Program, programs)
-ADD_IMPL(MemberFunction, memberFunctions)
-ADD_IMPL(BinaryOperator, binaryOperators)
-ADD_IMPL(UnaryOperator, unaryOperators)
-ADD_IMPL(AssignmentOperator, assignmentOperators)
-ADD_IMPL(ConversionOperator, conversionOperators)
-ADD_IMPL(Basic, basics)
-ADD_IMPL(Class, classes)
-ADD_IMPL(Alias, aliases)
+void bi::Scope::add(Parameter* param) {
+  auto name = param->name->str();
+  if (parameters.contains(name)) {
+    throw PreviousDeclarationException(param, parameters.get(name));
+  } else {
+    parameters.add(param);
+  }
+}
+
+void bi::Scope::add(GlobalVariable* param) {
+  auto name = param->name->str();
+  if (globalVariables.contains(name)) {
+    throw PreviousDeclarationException(param, globalVariables.get(name));
+  } else if (functions.contains(name)) {
+    throw PreviousDeclarationException(param);
+  } else if (coroutines.contains(name)) {
+    throw PreviousDeclarationException(param);
+  } else if (programs.contains(name)) {
+    throw PreviousDeclarationException(param);
+  } else {
+    globalVariables.add(param);
+  }
+}
+
+void bi::Scope::add(LocalVariable* param) {
+  auto name = param->name->str();
+  if (localVariables.contains(name)) {
+    throw PreviousDeclarationException(param, localVariables.get(name));
+  } else if (parameters.contains(name)) {
+    throw PreviousDeclarationException(param, parameters.get(name));
+  } else {
+    localVariables.add(param);
+  }
+}
+
+void bi::Scope::add(MemberVariable* param) {
+  auto name = param->name->str();
+  if (memberVariables.contains(name)) {
+    throw PreviousDeclarationException(param, memberVariables.get(name));
+  } else if (memberFunctions.contains(name)) {
+    throw PreviousDeclarationException(param);
+  } else {
+    memberVariables.add(param);
+  }
+}
+
+void bi::Scope::add(Function* param) {
+  auto name = param->name->str();
+  if (coroutines.contains(name)) {
+    throw PreviousDeclarationException(param);
+  } else if (programs.contains(name)) {
+    throw PreviousDeclarationException(param, programs.get(name));
+  } else if (globalVariables.contains(name)) {
+    throw PreviousDeclarationException(param, globalVariables.get(name));
+  } else {
+    functions.add(param);
+  }
+}
+
+void bi::Scope::add(Coroutine* param) {
+  auto name = param->name->str();
+  if (functions.contains(name)) {
+    throw PreviousDeclarationException(param);
+  } else if (programs.contains(name)) {
+    throw PreviousDeclarationException(param, programs.get(name));
+  } else if (globalVariables.contains(name)) {
+    throw PreviousDeclarationException(param, globalVariables.get(name));
+  } else {
+    coroutines.add(param);
+  }
+}
+
+void bi::Scope::add(Program* param) {
+  auto name = param->name->str();
+  if (functions.contains(name)) {
+    throw PreviousDeclarationException(param);
+  } else if (coroutines.contains(name)) {
+    throw PreviousDeclarationException(param);
+  } else if (globalVariables.contains(name)) {
+    throw PreviousDeclarationException(param, globalVariables.get(name));
+  } else {
+    programs.add(param);
+  }
+}
+
+void bi::Scope::add(MemberFunction* param) {
+  auto name = param->name->str();
+  if (memberVariables.contains(name)) {
+    throw PreviousDeclarationException(param, memberVariables.get(name));
+  } else {
+    memberFunctions.add(param);
+  }
+}
+
+void bi::Scope::add(BinaryOperator* param) {
+  binaryOperators.add(param);
+}
+
+void bi::Scope::add(UnaryOperator* param) {
+  unaryOperators.add(param);
+}
+
+void bi::Scope::add(Basic* param) {
+  auto name = param->name->str();
+  if (basics.contains(name)) {
+    throw PreviousDeclarationException(param, basics.get(name));
+  } else if (classes.contains(name)) {
+    throw PreviousDeclarationException(param, classes.get(name));
+  } else if (aliases.contains(name)) {
+    throw PreviousDeclarationException(param, aliases.get(name));
+  } else {
+    basics.add(param);
+  }
+}
+
+void bi::Scope::add(Class* param) {
+  auto name = param->name->str();
+  if (basics.contains(name)) {
+    throw PreviousDeclarationException(param, basics.get(name));
+  } else if (classes.contains(name)) {
+    throw PreviousDeclarationException(param, classes.get(name));
+  } else if (aliases.contains(name)) {
+    throw PreviousDeclarationException(param, aliases.get(name));
+  } else {
+    classes.add(param);
+  }
+}
+
+void bi::Scope::add(Alias* param) {
+  auto name = param->name->str();
+  if (basics.contains(name)) {
+    throw PreviousDeclarationException(param, basics.get(name));
+  } else if (classes.contains(name)) {
+    throw PreviousDeclarationException(param, classes.get(name));
+  } else if (aliases.contains(name)) {
+    throw PreviousDeclarationException(param, aliases.get(name));
+  } else {
+    aliases.add(param);
+  }
+}
 
 #define RESOLVE_IMPL(type, container) \
   void bi::Scope::resolve(Identifier<type>* ref) { \
     container.resolve(ref); \
     if (ref->matches.size() == 0) { \
-      resolveDefer(ref); \
+      resolveInherit(ref); \
     } \
   }
 
@@ -91,7 +221,7 @@ RESOLVE_IMPL(UnaryOperator, unaryOperators)
   void bi::Scope::resolve(type* ref) { \
     container.resolve(ref); \
     if (ref->matches.size() == 0) { \
-      resolveDefer(ref); \
+      resolveInherit(ref); \
     } \
   }
 
@@ -99,31 +229,20 @@ RESOLVE_TYPE_IMPL(BasicType, basics)
 RESOLVE_TYPE_IMPL(ClassType, classes)
 RESOLVE_TYPE_IMPL(AliasType, aliases)
 
-void bi::Scope::resolve(Assignment* ref) {
-  assignmentOperators.resolve(ref);
-  if (ref->matches.size() == 0) {
-    resolveDefer(ref);
-  }
-}
-
 void bi::Scope::inherit(Scope* scope) {
   bases.insert(scope);
 }
 
 void bi::Scope::import(Scope* scope) {
-  parameters.merge(scope->parameters);
-  globalVariables.merge(scope->globalVariables);
-  localVariables.merge(scope->localVariables);
-  memberVariables.merge(scope->memberVariables);
-  functions.merge(scope->functions);
-  coroutines.merge(scope->coroutines);
-  memberFunctions.merge(scope->memberFunctions);
-  programs.merge(scope->programs);
-  binaryOperators.merge(scope->binaryOperators);
-  unaryOperators.merge(scope->unaryOperators);
-  assignmentOperators.merge(scope->assignmentOperators);
-  conversionOperators.merge(scope->conversionOperators);
-  basics.merge(scope->basics);
-  classes.merge(scope->classes);
-  aliases.merge(scope->aliases);
+  // only file-scope objects need to be imported here, e.g. no need for
+  // class members
+  globalVariables.import(scope->globalVariables);
+  functions.import(scope->functions);
+  coroutines.import(scope->coroutines);
+  programs.import(scope->programs);
+  binaryOperators.import(scope->binaryOperators);
+  unaryOperators.import(scope->unaryOperators);
+  basics.import(scope->basics);
+  classes.import(scope->classes);
+  aliases.import(scope->aliases);
 }

@@ -130,6 +130,30 @@ protected:
   void resolve(Reference* ref, Scope* scope = nullptr);
 
   /**
+   * Look up a reference that is syntactically ambiguous in an expression
+   * context.
+   *
+   * @param ref The reference.
+   * @param scope The membership scope, if it is to be used for lookup,
+   * otherwise the containing scope is used.
+   *
+   * @return A new, unambiguous, reference.
+   */
+  Expression* lookup(Identifier<Unknown>* ref, Scope* scope = nullptr);
+
+  /**
+   * Look up a reference that is syntactically ambiguous in a type
+   * context.
+   *
+   * @param ref The reference.
+   * @param scope The membership scope, if it is to be used for lookup,
+   * otherwise the containing scope is used.
+   *
+   * @return A new, unambiguous, reference.
+   */
+  Type* lookup(IdentifierType* ref, Scope* scope = nullptr);
+
+  /**
    * Defer visit.
    *
    * @param o Braces to which to defer visit.

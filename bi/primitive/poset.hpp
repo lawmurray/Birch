@@ -32,14 +32,9 @@ public:
   }
 
   /**
-   * Does the set contain an equivalent value?
+   * Does the set contain this value?
    */
-  bool contains(T v);
-
-  /**
-   * Get the equivalent value.
-   */
-  T get(T v);
+  bool contains(T v) const;
 
   /**
    * Get the children of a vertex.
@@ -209,22 +204,8 @@ bi::poset<T,Compare>::poset() :
 }
 
 template<class T, class Compare>
-bool bi::poset<T,Compare>::contains(T v) {
-  std::list<T> matches;
-  match(v, matches);
-
-  return matches.size() == 1 && compare(matches.front(), v)
-      && compare(v, matches.front());
-}
-
-template<class T, class Compare>
-T bi::poset<T,Compare>::get(T v) {
-  /* pre-condition */
-  assert(contains(v));
-
-  std::list<T> matches;
-  match(v, matches);
-  return matches.front();
+bool bi::poset<T,Compare>::contains(T v) const {
+  return std::find(vertices.begin(), vertices.end(), v) != vertices.end();
 }
 
 template<class T, class Compare>

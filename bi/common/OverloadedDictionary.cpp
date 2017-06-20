@@ -12,20 +12,15 @@
 
 template<class ParameterType, class CompareType>
 bool bi::OverloadedDictionary<ParameterType,CompareType>::contains(
-    ParameterType* param) {
+    ParameterType* param) const {
   auto iter = params.find(param->name->str());
   return iter != params.end() && iter->second.contains(param);
 }
 
 template<class ParameterType, class CompareType>
-ParameterType* bi::OverloadedDictionary<ParameterType,CompareType>::get(
-    ParameterType* param) {
-  /* pre-condition */
-  assert(contains(param));
-
-  auto iter = params.find(param->name->str());
-  assert(iter != params.end());
-  return iter->second.get(param);
+bool bi::OverloadedDictionary<ParameterType,CompareType>::contains(
+    const std::string& name) const {
+  return params.find(name) != params.end();
 }
 
 template<class ParameterType, class CompareType>
@@ -48,7 +43,7 @@ void bi::OverloadedDictionary<ParameterType,CompareType>::add(
 }
 
 template<class ParameterType, class CompareType>
-void bi::OverloadedDictionary<ParameterType,CompareType>::merge(
+void bi::OverloadedDictionary<ParameterType,CompareType>::import(
     OverloadedDictionary<ParameterType,CompareType>& o) {
   for (auto iter1 = o.params.begin(); iter1 != o.params.end(); ++iter1) {
     for (auto iter2 = iter1->second.begin(); iter2 != iter1->second.end();

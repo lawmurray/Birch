@@ -15,8 +15,14 @@ struct PreviousDeclarationException: public CompilerException {
   /**
    * Constructor.
    */
+  template<class ParameterType1, class ParameterType2>
+  PreviousDeclarationException(ParameterType1* param, ParameterType2* prev);
+
+  /**
+   * Constructor.
+   */
   template<class ParameterType>
-  PreviousDeclarationException(ParameterType* param, ParameterType* prev);
+  PreviousDeclarationException(ParameterType* param);
 };
 }
 
@@ -24,20 +30,33 @@ struct PreviousDeclarationException: public CompilerException {
 
 #include <sstream>
 
-template<class ParameterType>
+template<class ParameterType1, class ParameterType2>
 bi::PreviousDeclarationException::PreviousDeclarationException(
-    ParameterType* param, ParameterType* prev) {
+    ParameterType1* param, ParameterType2* prev) {
   std::stringstream base;
   bih_ostream buf(base);
   if (param->loc) {
     buf << param->loc;
   }
-  buf << "error: redeclaration of\n";
+  buf << "error: previous declaration for\n";
   buf << param << '\n';
   if (prev->loc) {
     buf << prev->loc;
   }
   buf << "note: previous declaration\n";
   buf << prev << '\n';
+  msg = base.str();
+}
+
+template<class ParameterType>
+bi::PreviousDeclarationException::PreviousDeclarationException(
+    ParameterType* param) {
+  std::stringstream base;
+  bih_ostream buf(base);
+  if (param->loc) {
+    buf << param->loc;
+  }
+  buf << "error: previous declaration for\n";
+  buf << param << '\n';
   msg = base.str();
 }

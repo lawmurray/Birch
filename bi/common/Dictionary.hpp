@@ -22,12 +22,17 @@ public:
   /**
    * Does the dictionary contain the given parameter?
    */
-  bool contains(ParameterType* param);
+  bool contains(ParameterType* param) const;
 
   /**
-   * If the dictionary contains the given parameter, retrieve its version.
+   * Does the dictionary contain the given parameter?
    */
-  ParameterType* get(ParameterType* param);
+  bool contains(const std::string& name) const;
+
+  /**
+   * Get a parameter by name.
+   */
+  ParameterType* get(const std::string& name);
 
   /**
    * Add parameter.
@@ -48,9 +53,9 @@ public:
   void resolve(ReferenceType* ref);
 
   /**
-   * Merge another dictionary into this one.
+   * Import another dictionary into this one.
    */
-  void merge(Dictionary<ParameterType>& o);
+  void import(Dictionary<ParameterType>& o);
 
   /**
    * Declarations within this scope.
