@@ -47,7 +47,7 @@
 }
 
 %token <valString> IMPORT PROGRAM CLASS TYPE FUNCTION COROUTINE OPERATOR
-%token <valString> IF ELSE FOR IN WHILE RETURN CPP HPP THIS SUPER
+%token <valString> IF ELSE FOR IN WHILE ASSERT RETURN CPP HPP THIS SUPER
 %token <valString> FUNCTION_UPPER COROUTINE_UPPER
 %token <valString> DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE RAW NAME
 %token <valBool> BOOL_LITERAL
@@ -85,7 +85,8 @@
 %type <valStatement> binary_operator_declaration unary_operator_declaration
 %type <valStatement> conversion_operator_declaration assignment_operator_declaration
 %type <valStatement> class_declaration alias_type_declaration basic_type_declaration
-%type <valStatement> import cpp hpp assignment expression_statement if for while return
+%type <valStatement> import cpp hpp assignment expression_statement if for
+%type <valStatement> while assertion return
 %type <valStatement> statement statements optional_statements
 %type <valStatement> class_statement class_statements optional_class_statements
 %type <valStatement> file_statement file_statements optional_file_statements
@@ -432,6 +433,10 @@ while
     : WHILE '(' expression ')' braces  { $$ = new bi::While($3, $5, make_loc(@$)); }
     ;
 
+assertion
+    : ASSERT expression ';'  { $$ = new bi::Assert($2, make_loc(@$)); }
+    ;
+
 return
     : RETURN expression ';'  { $$ = new bi::Return($2, make_loc(@$)); }
     ;
@@ -443,6 +448,7 @@ statement
     | if
     | for
     | while
+    | assertion
     | return
     | cpp
     ;

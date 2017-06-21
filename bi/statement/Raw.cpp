@@ -7,8 +7,6 @@
 
 #include "boost/algorithm/string/trim.hpp"
 
-#include <typeinfo>
-
 bi::Raw::Raw(shared_ptr<Name> name, const std::string& raw,
     shared_ptr<Location> loc) :
     Statement(loc),

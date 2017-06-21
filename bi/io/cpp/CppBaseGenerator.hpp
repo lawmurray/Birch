@@ -53,9 +53,12 @@ public:
   virtual void visit(const List<Statement>* o);
   virtual void visit(const Function* o);
   virtual void visit(const Coroutine* o);
+  virtual void visit(const MemberFunction* o);
   virtual void visit(const Program* o);
   virtual void visit(const BinaryOperator* o);
   virtual void visit(const UnaryOperator* o);
+  virtual void visit(const AssignmentOperator* o);
+  virtual void visit(const ConversionOperator* o);
   virtual void visit(const Basic* o);
   virtual void visit(const Class* o);
   virtual void visit(const Alias* o);
@@ -64,6 +67,7 @@ public:
   virtual void visit(const If* o);
   virtual void visit(const For* o);
   virtual void visit(const While* o);
+  virtual void visit(const Assert* o);
   virtual void visit(const Return* o);
   virtual void visit(const Raw* o);
 

@@ -264,11 +264,12 @@ void bi::CppBaseGenerator::visit(const GlobalVariable* o) {
       assert(type);
       middle("(make_frame(" << type->brackets << "))");
     }
+    finish(';');
   }
 }
 
 void bi::CppBaseGenerator::visit(const LocalVariable* o) {
-  middle(o->type << ' ' << o->name);
+  start(o->type << ' ' << o->name);
   if (!o->value->isEmpty()) {
     *this << " = " << o->value;
   } else if (o->type->isClass()) {
@@ -281,10 +282,11 @@ void bi::CppBaseGenerator::visit(const LocalVariable* o) {
     assert(type);
     middle("(make_frame(" << type->brackets << "))");
   }
+  finish(';');
 }
 
 void bi::CppBaseGenerator::visit(const MemberVariable* o) {
-  middle(o->type << ' ' << o->name);
+  assert(false); // should be in CppClassGenerator
 }
 
 void bi::CppBaseGenerator::visit(const Function* o) {
@@ -329,6 +331,10 @@ void bi::CppBaseGenerator::visit(const Function* o) {
 void bi::CppBaseGenerator::visit(const Coroutine* o) {
   CppCoroutineGenerator auxCoroutine(base, level, header);
   auxCoroutine << o;
+}
+
+void bi::CppBaseGenerator::visit(const MemberFunction* o) {
+  assert(false); // should be in CppClassGenerator
 }
 
 void bi::CppBaseGenerator::visit(const Program* o) {
@@ -536,6 +542,15 @@ void bi::CppBaseGenerator::visit(const UnaryOperator* o) {
   }
 }
 
+void bi::CppBaseGenerator::visit(const AssignmentOperator* o) {
+  assert(false); // should be in CppClassGenerator
+}
+
+void bi::CppBaseGenerator::visit(const ConversionOperator* o) {
+  assert(false); // should be in CppClassGenerator
+}
+
+
 void bi::CppBaseGenerator::visit(const Basic* o) {
   // assumed to be built in to compiler library headers
 }
@@ -580,9 +595,9 @@ void bi::CppBaseGenerator::visit(const List<Statement>* o) {
 
 void bi::CppBaseGenerator::visit(const Assignment* o) {
   if (o->left->type->isClass() && !o->right->type->isClass()) {
-    middle("*(" << o->left << ')');
+    start("*(" << o->left << ')');
   } else {
-    middle(o->left);
+    start(o->left);
   }
   middle(" = ");
   if (!o->left->type->isClass() && o->right->type->isClass()) {
@@ -590,6 +605,7 @@ void bi::CppBaseGenerator::visit(const Assignment* o) {
   } else {
     middle(o->right);
   }
+  finish(';');
 }
 
 void bi::CppBaseGenerator::visit(const ExpressionStatement* o) {
@@ -626,6 +642,10 @@ void bi::CppBaseGenerator::visit(const While* o) {
   *this << o->braces;
   out();
   line("}");
+}
+
+void bi::CppBaseGenerator::visit(const Assert* o) {
+  line("assert(" << o->cond << ");");
 }
 
 void bi::CppBaseGenerator::visit(const Return* o) {
@@ -682,7 +702,7 @@ void bi::CppBaseGenerator::visit(const ClassType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const AliasType* o) {
-  middle("bi::type::" << o->name);
+  middle(o->target->base);
 }
 
 void bi::CppBaseGenerator::visit(const BasicType* o) {

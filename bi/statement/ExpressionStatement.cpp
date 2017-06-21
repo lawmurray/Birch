@@ -5,8 +5,6 @@
 
 #include "bi/visitor/all.hpp"
 
-#include <typeinfo>
-
 bi::ExpressionStatement::ExpressionStatement(Expression* single,
     shared_ptr<Location> loc) :
     Statement(loc),

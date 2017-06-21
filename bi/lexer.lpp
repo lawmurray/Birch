@@ -108,6 +108,7 @@ IS                                 (u|U|l|L)*
 "for"                               { return FOR; }
 "in"                                { return IN; }
 "while"                             { return WHILE; }
+"assert"                            { return ASSERT; }
 "return"                            { return RETURN; }
 "cpp"                               { return CPP; }
 "hpp"                               { return HPP; }

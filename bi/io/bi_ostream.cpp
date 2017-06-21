@@ -301,6 +301,10 @@ void bi::bi_ostream::visit(const While* o) {
   *this << indent << "while (" << o->cond << ')' << o->braces << '\n';
 }
 
+void bi::bi_ostream::visit(const Assert* o) {
+  *this << indent << "assert " << o->cond << ";\n";
+}
+
 void bi::bi_ostream::visit(const Return* o) {
   *this << indent << "return " << o->single << ";\n";
 }

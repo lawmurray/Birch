@@ -38,7 +38,7 @@ struct Range: public Offset<offset_value>,
    * For static values, the initial values given must match the static values
    * or an error is given.
    */
-  Range(const ptrdiff_t offset = 0, const size_t length = 1,
+  Range(const ptrdiff_t offset = 0, const size_t length = 0,
       const ptrdiff_t stride = 1) :
       offset_type(offset),
       length_type(length),

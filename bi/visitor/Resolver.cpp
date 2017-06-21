@@ -319,6 +319,7 @@ bi::Statement* bi::Resolver::modify(Program* o) {
 bi::Statement* bi::Resolver::modify(MemberFunction* o) {
   push();
   o->parens = o->parens->accept(this);
+  o->returnType = o->returnType->accept(this);
   if (!o->braces->isEmpty()) {
     defer(o->braces.get());
   }
@@ -434,6 +435,12 @@ bi::Statement* bi::Resolver::modify(While* o) {
   push();
   Modifier::modify(o);
   o->scope = pop();
+  ///@todo Check that condition is of type Boolean
+  return o;
+}
+
+bi::Statement* bi::Resolver::modify(Assert* o) {
+  Modifier::modify(o);
   ///@todo Check that condition is of type Boolean
   return o;
 }

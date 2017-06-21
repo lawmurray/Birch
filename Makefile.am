@@ -81,6 +81,7 @@ birchc_SOURCES = \
   bi/io/indentable_ostream.cpp \
   bi/primitive/encode.cpp \
   bi/statement/Alias.cpp \
+  bi/statement/Assert.cpp \
   bi/statement/AssignmentOperator.cpp \
   bi/statement/Assignment.cpp \
   bi/statement/Basic.cpp \

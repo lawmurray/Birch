@@ -250,6 +250,10 @@ void bi::Visitor::visit(const While* o) {
   o->braces->accept(this);
 }
 
+void bi::Visitor::visit(const Assert* o) {
+  o->cond->accept(this);
+}
+
 void bi::Visitor::visit(const Return* o) {
   o->single->accept(this);
 }

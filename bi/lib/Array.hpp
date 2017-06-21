@@ -92,6 +92,13 @@ protected:
 
 public:
   /**
+   * Constructor with null allocation.
+   */
+  Array() : ptr(nullptr) {
+    //
+  }
+
+  /**
    * Constructor with new allocation.
    *
    * @tparam ...Args Arbitrary types.

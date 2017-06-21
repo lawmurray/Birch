@@ -40,7 +40,7 @@ struct Span: public Length<length_value>,
    * For static values, the initial values given must match the static values
    * or an error is given.
    */
-  Span(const size_t length = 1, const ptrdiff_t stride = 1,
+  Span(const size_t length = 0, const ptrdiff_t stride = 1,
       const size_t lead = default_value) :
       length_type(length),
       stride_type(stride),

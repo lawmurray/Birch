@@ -149,6 +149,13 @@ struct NonemptyFrame {
   typedef Head head_type;
 
   /**
+   * Default constructor (for zero-size frame).
+   */
+  NonemptyFrame() {
+    //
+  }
+
+  /**
    * Generic constructor.
    */
   template<class Tail1, class Head1>

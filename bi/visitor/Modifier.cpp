@@ -280,6 +280,11 @@ bi::Statement* bi::Modifier::modify(While* o) {
   return o;
 }
 
+bi::Statement* bi::Modifier::modify(Assert* o) {
+  o->cond = o->cond.release()->accept(this);
+  return o;
+}
+
 bi::Statement* bi::Modifier::modify(Return* o) {
   o->single = o->single.release()->accept(this);
   return o;
