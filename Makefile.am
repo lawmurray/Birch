@@ -75,9 +75,7 @@ birchc_SOURCES = \
   bi/io/cpp/CppBaseGenerator.cpp \
   bi/io/cpp/CppConstructorGenerator.cpp \
   bi/io/cpp/CppCoroutineGenerator.cpp \
-  bi/io/cpp/CppFileGenerator.cpp \
   bi/io/cpp/CppClassGenerator.cpp \
-  bi/io/cpp/CppParameterGenerator.cpp \
   bi/io/bi_ostream.cpp \
   bi/io/cpp_ostream.cpp \
   bi/io/indentable_ostream.cpp \
@@ -227,8 +225,6 @@ noinst_HEADERS = \
   bi/io/cpp/CppBaseGenerator.hpp \
   bi/io/cpp/CppConstructorGenerator.hpp \
   bi/io/cpp/CppCoroutineGenerator.hpp \
-  bi/io/cpp/CppFileGenerator.hpp \
-  bi/io/cpp/CppParameterGenerator.hpp \
   bi/io/cpp/CppClassGenerator.hpp \
   bi/io/cpp_ostream.hpp \
   bi/io/hpp_ostream.hpp \

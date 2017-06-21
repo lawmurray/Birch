@@ -3,8 +3,8 @@
  */
 #pragma once
 
-#include "bi/io/cpp/CppFileGenerator.hpp"
+#include "bi/io/cpp/CppBaseGenerator.hpp"
 
 namespace bi {
-typedef CppFileGenerator cpp_ostream;
+typedef CppBaseGenerator cpp_ostream;
 }

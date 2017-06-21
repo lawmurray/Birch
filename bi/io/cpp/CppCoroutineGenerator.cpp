@@ -3,7 +3,6 @@
  */
 #include "bi/io/cpp/CppCoroutineGenerator.hpp"
 
-#include "bi/io/cpp/CppParameterGenerator.hpp"
 #include "bi/visitor/Gatherer.hpp"
 
 bi::CppCoroutineGenerator::CppCoroutineGenerator(std::ostream& base,
@@ -31,10 +30,7 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
   } else {
     start("");
   }
-  middle("Coroutine_" << o->name << "_");
-
-  CppParameterGenerator auxParameter(base, level, header);
-  auxParameter << o;
+  middle("Coroutine_" << o->name << "_(" << o->parens << ')');
   if (header) {
     finish(';');
   } else {
@@ -129,21 +125,13 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
       line("namespace func {");
       out();
   }
-
-  /* return type */
   ++inReturn;
   start("bi::Pointer<bi::Coroutine<" << o->returnType << ">> ");
   --inReturn;
-
-  /* name */
   if (!header) {
     middle("bi::func::");
   }
-  middle(o->name);
-
-  /* parameters */
-  auxParameter << o;
-
+  middle(o->name << '(' << o->parens << ')');
   if (header) {
     finish(';');
   } else {

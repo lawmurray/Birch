@@ -3,7 +3,6 @@
  */
 #include <bi/io/cpp/CppClassGenerator.hpp>
 #include "bi/io/cpp/CppConstructorGenerator.hpp"
-#include "bi/io/cpp/CppParameterGenerator.hpp"
 #include "bi/primitive/encode.hpp"
 
 bi::CppClassGenerator::CppClassGenerator(std::ostream& base, const int level,
@@ -73,16 +72,10 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
     middle(o->returnType << ' ');
     --inReturn;
 
-    /* name */
     if (!header) {
       middle("bi::type::" << type->name << "::");
     }
-    middle(internalise(o->name->str()));
-
-    /* parameters */
-    CppParameterGenerator auxParameter(base, level, header);
-    auxParameter << o;
-
+    middle(internalise(o->name->str()) << '(' << o->parens << ')');
     //middle(" const");
     if (header && !o->parens->hasAssignable()) {
       finish(';');

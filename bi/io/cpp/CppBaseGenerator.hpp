@@ -34,6 +34,7 @@ public:
   virtual void visit(const Member* o);
   virtual void visit(const Super* o);
   virtual void visit(const This* o);
+  virtual void visit(const Parameter* o);
   virtual void visit(const Identifier<Parameter>* o);
   virtual void visit(const Identifier<GlobalVariable>* o);
   virtual void visit(const Identifier<LocalVariable>* o);
@@ -44,11 +45,20 @@ public:
   virtual void visit(const Identifier<BinaryOperator>* o);
   virtual void visit(const Identifier<UnaryOperator>* o);
 
-  virtual void visit(const Parameter* o);
+  virtual void visit(const File* o);
+  virtual void visit(const Import* o);
   virtual void visit(const GlobalVariable* o);
   virtual void visit(const LocalVariable* o);
   virtual void visit(const MemberVariable* o);
   virtual void visit(const List<Statement>* o);
+  virtual void visit(const Function* o);
+  virtual void visit(const Coroutine* o);
+  virtual void visit(const Program* o);
+  virtual void visit(const BinaryOperator* o);
+  virtual void visit(const UnaryOperator* o);
+  virtual void visit(const Basic* o);
+  virtual void visit(const Class* o);
+  virtual void visit(const Alias* o);
   virtual void visit(const Assignment* o);
   virtual void visit(const ExpressionStatement* o);
   virtual void visit(const If* o);
