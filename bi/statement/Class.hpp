@@ -40,8 +40,8 @@ public:
    */
   virtual ~Class();
 
-  void addSuper(const Class* o);
-  bool hasSuper(const Class* o) const;
+  void addSuper(const Type* o);
+  bool hasSuper(const Type* o) const;
   void addConversion(const Type* o);
   bool hasConversion(const Type* o) const;
   void addAssignment(const Type* o);

@@ -30,15 +30,25 @@ void bi::Class::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-void bi::Class::addSuper(const Class* o) {
-  supers.insert(o);
-  for (auto x : o->supers) {
+void bi::Class::addSuper(const Type* o) {
+  auto type = dynamic_cast<const ClassType*>(o);
+  assert(type);
+
+  /* record all super types */
+  supers.insert(type->target);
+  for (auto x : type->target->supers) {
     supers.insert(x);
   }
+
+  /* inherit all members from most-immediate super type */
+  scope->inherit(type->target->scope.get());
 }
 
-bool bi::Class::hasSuper(const Class* o) const {
-  return supers.find(o) != supers.end();
+bool bi::Class::hasSuper(const Type* o) const {
+  auto type = dynamic_cast<const ClassType*>(o);
+  assert(type);
+
+  return supers.find(type->target) != supers.end();
 }
 
 void bi::Class::addConversion(const Type* o) {

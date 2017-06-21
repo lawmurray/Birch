@@ -15,8 +15,8 @@ int main(int argc, char** argv) {
   try {
     compiler = new Compiler(argc, argv);
     compiler->parse();
-    compiler->process();
-    compiler->gen();
+    compiler->resolve();
+    //compiler->gen();
   } catch (Exception& e) {
     std::cerr << e.msg << std::endl;
     return 1;

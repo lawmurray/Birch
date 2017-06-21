@@ -7,17 +7,17 @@
 
 #include <sstream>
 
-bi::NotAssignableException::NotAssignableException(const Expression* expr) {
+bi::NotAssignableException::NotAssignableException(const Assignment* o) {
   std::stringstream base;
   bih_ostream buf(base);
-  if (expr->loc) {
-    buf << expr->loc;
+  if (o->loc) {
+    buf << o->loc;
   }
   buf << "error: left side of assignment is not assignable\n";
-  if (expr->loc) {
-    buf << expr->loc;
+  if (o->loc) {
+    buf << o->loc;
   }
   buf << "note: in\n";
-  buf << expr << '\n';
+  buf << o << '\n';
   msg = base.str();
 }

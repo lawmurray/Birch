@@ -13,6 +13,6 @@ bi::ThisException::ThisException(const Expression* expr) {
   if (expr->loc) {
     buf << expr->loc;
   }
-  buf << "error: 'this' used outside of struct or class\n";
+  buf << "error: 'this' used outside of class\n";
   msg = base.str();
 }

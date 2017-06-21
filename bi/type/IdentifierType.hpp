@@ -21,8 +21,10 @@ public:
    *
    * @param name Name.
    * @param loc Location.
+   * @param assignable Is this type assignable?
    */
-  IdentifierType(shared_ptr<Name> name, shared_ptr<Location> loc = nullptr);
+  IdentifierType(shared_ptr<Name> name, shared_ptr<Location> loc = nullptr,
+      const bool assignable = false);
 
   /**
    * Destructor.

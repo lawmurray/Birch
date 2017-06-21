@@ -26,8 +26,8 @@ public:
   virtual Type* modify(FunctionType* o);
   virtual Type* modify(CoroutineType* o);
   virtual Type* modify(List<Type>* o);
+  virtual Type* modify(BasicType* o);
   virtual Type* modify(ClassType* o);
   virtual Type* modify(AliasType* o);
-  virtual Type* modify(BasicType* o);
 };
 }

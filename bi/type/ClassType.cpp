@@ -56,7 +56,7 @@ bool bi::ClassType::definitely(const BasicType& o) const {
 }
 
 bool bi::ClassType::definitely(const ClassType& o) const {
-  return target == o.target || target->hasSuper(o.target) || target->hasConversion(&o);
+  return target == o.target || target->hasSuper(&o) || target->hasConversion(&o);
 }
 
 bool bi::ClassType::definitely(const CoroutineType& o) const {
@@ -88,7 +88,7 @@ bool bi::ClassType::possibly(const AliasType& o) const {
 }
 
 bool bi::ClassType::possibly(const ClassType& o) const {
-  return o.target->hasSuper(target);
+  return o.target->hasSuper(this);
 }
 
 bool bi::ClassType::possibly(const ParenthesesType& o) const {

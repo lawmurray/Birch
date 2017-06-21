@@ -114,7 +114,7 @@ void bi::Compiler::parse() {
   }
 }
 
-void bi::Compiler::process() {
+void bi::Compiler::resolve() {
   for (auto iter = files.begin(); iter != files.end(); ++iter) {
     Resolver resolver;
     iter->second->accept(&resolver);

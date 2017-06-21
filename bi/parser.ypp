@@ -126,11 +126,11 @@ bool_literal
     ;
 
 int_literal
-    : INT_LITERAL  { $$ = new bi::Literal<int64_t>($1, yytext, new bi::BasicType(new bi::Name("Integer")), make_loc(@$)); }
+    : INT_LITERAL  { $$ = new bi::Literal<int64_t>($1, yytext, new bi::AliasType(new bi::Name("Integer")), make_loc(@$)); }
     ;
 
 real_literal
-    : REAL_LITERAL  { $$ = new bi::Literal<double>($1, yytext, new bi::BasicType(new bi::Name("Real")), make_loc(@$)); }
+    : REAL_LITERAL  { $$ = new bi::Literal<double>($1, yytext, new bi::AliasType(new bi::Name("Real")), make_loc(@$)); }
     ;
 
 string_literal

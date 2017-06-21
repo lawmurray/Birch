@@ -250,19 +250,19 @@ bi::Type* bi::Cloner::clone(const List<Type>* o) {
 }
 
 bi::Type* bi::Cloner::clone(const IdentifierType* o) {
-  return new IdentifierType(o->name, o->loc);
+  return new IdentifierType(o->name, o->loc, o->assignable);
 }
 
 bi::Type* bi::Cloner::clone(const ClassType* o) {
-  return new ClassType(o->name, o->loc);
+  return new ClassType(o->name, o->loc, o->assignable);
 }
 
 bi::Type* bi::Cloner::clone(const AliasType* o) {
-  return new AliasType(o->name, o->loc);
+  return new AliasType(o->name, o->loc, o->assignable);
 }
 
 bi::Type* bi::Cloner::clone(const BasicType* o) {
-  return new BasicType(o->name, o->loc);
+  return new BasicType(o->name, o->loc, o->assignable);
 }
 
 bi::Type* bi::Cloner::clone(const ArrayType* o) {

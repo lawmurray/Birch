@@ -13,6 +13,6 @@ bi::SuperBaseException::SuperBaseException(const Expression* expr) {
   if (expr->loc) {
     buf << expr->loc;
   }
-  buf << "error: 'super' used outside of struct or class with a base type\n";
+  buf << "error: 'super' used outside of derived class\n";
   msg = base.str();
 }

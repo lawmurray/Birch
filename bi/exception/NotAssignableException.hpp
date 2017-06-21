@@ -4,7 +4,7 @@
 #pragma once
 
 #include "bi/exception/CompilerException.hpp"
-#include "bi/expression/Expression.hpp"
+#include "bi/statement/Assignment.hpp"
 
 namespace bi {
 /**
@@ -16,6 +16,6 @@ struct NotAssignableException: public CompilerException {
   /**
    * Constructor.
    */
-  NotAssignableException(const Expression* expr);
+  NotAssignableException(const Assignment* o);
 };
 }

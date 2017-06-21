@@ -41,6 +41,12 @@ bi::Type* bi::Assigner::modify(List<Type>* o) {
   return o;
 }
 
+bi::Type* bi::Assigner::modify(BasicType* o) {
+  Modifier::modify(o);
+  o->assignable = true;
+  return o;
+}
+
 bi::Type* bi::Assigner::modify(ClassType* o) {
   Modifier::modify(o);
   o->assignable = true;
@@ -48,12 +54,6 @@ bi::Type* bi::Assigner::modify(ClassType* o) {
 }
 
 bi::Type* bi::Assigner::modify(AliasType* o) {
-  Modifier::modify(o);
-  o->assignable = true;
-  return o;
-}
-
-bi::Type* bi::Assigner::modify(BasicType* o) {
   Modifier::modify(o);
   o->assignable = true;
   return o;

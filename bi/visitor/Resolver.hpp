@@ -70,9 +70,9 @@ public:
   virtual Statement* modify(UnaryOperator* o);
   virtual Statement* modify(AssignmentOperator* o);
   virtual Statement* modify(ConversionOperator* o);
+  virtual Statement* modify(Basic* o);
   virtual Statement* modify(Class* o);
   virtual Statement* modify(Alias* o);
-  virtual Statement* modify(Basic* o);
   virtual Statement* modify(Import* o);
   virtual Statement* modify(If* o);
   virtual Statement* modify(For* o);
@@ -86,12 +86,18 @@ public:
 
 protected:
   /**
-   * Take the membership scope, if it exists.
+   * Take the membership scope, if it exists, so that it is null for the next
+   * such request.
    *
    * @return The membership scope, or nullptr if there is no membership scope
    * at present.
    */
   Scope* takeMemberScope();
+
+  /**
+   * Get the containing class, if any.
+   */
+  Class* getClass();
 
   /**
    * Top of the stack of containing scopes.
@@ -167,19 +173,14 @@ protected:
   void undefer();
 
   /**
-   * Innermost type.
-   */
-  Class* type();
-
-  /**
    * Stack of containing scopes.
    */
   std::list<Scope*> scopes;
 
   /**
-   * Type stack.
+   * Class stack.
    */
-  std::stack<Class*> types;
+  std::stack<Class*> classes;
 
   /**
    * File stack.
@@ -195,11 +196,6 @@ protected:
    * Deferred functions, binary and unary operators.
    */
   std::list<std::tuple<Statement*,Scope*,Class*> > defers;
-
-  /**
-   * Are we in the input parameters of a function?
-   */
-  int inInputs;
 
   /*
    * Auxiliary visitors.

@@ -35,9 +35,9 @@ public:
   void parse();
 
   /**
-   * Process parsed files.
+   * Resolve identifiers and check types.
    */
-  void process();
+  void resolve();
 
   /**
    * Generate output code for all input files.

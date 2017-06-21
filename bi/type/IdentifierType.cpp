@@ -6,8 +6,8 @@
 #include "bi/visitor/all.hpp"
 
 bi::IdentifierType::IdentifierType(shared_ptr<Name> name,
-    shared_ptr<Location> loc) :
-    Type(loc),
+    shared_ptr<Location> loc, const bool assignable) :
+    Type(loc, assignable),
     Named(name) {
   //
 }
