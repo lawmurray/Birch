@@ -56,7 +56,7 @@ class Gaussian < Delay {
   }
 
   function initialize(μ:Real, σ2:Real) {
-    assert(σ2 > 0.0);
+    assert σ2 > 0.0;
     
     super.initialize();
     this.μ <- μ;
@@ -64,7 +64,7 @@ class Gaussian < Delay {
   }
 
   function update(μ:Real, σ2:Real) {
-    assert(σ2 > 0.0);
+    assert σ2 > 0.0;
     
     this.μ <- μ;
     this.σ2 <- σ2;
@@ -126,7 +126,7 @@ function Gaussian(μ:Real, σ2:Real) -> Gaussian {
  * Initialize.
  */
 //operator x:Gaussian ~ m:Gaussian {
-//  assert(x.isUninitialized());
+//  assert x.isUninitialized();
 //  if (!x.isMissing()) {
 //    x ~> m;
 //  }

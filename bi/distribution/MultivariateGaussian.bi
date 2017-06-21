@@ -73,7 +73,7 @@ class MultivariateGaussian < Delay {
   }
   
   function set(x:Real[_]) {
-    assert(length(x) == D);
+    assert length(x) == D;
     
     this.x <- x;
     this.missing <- false;
@@ -116,8 +116,8 @@ class MultivariateGaussian < Delay {
  */
 function Gaussian(μ:Real[_], Σ:Real[_,_]) -> MultivariateGaussian {
   D:Integer <- length(μ);
-  assert(rows(Σ) == D);
-  assert(columns(Σ) == D);
+  assert rows(Σ) == D;
+  assert columns(Σ) == D;
   m:MultivariateGaussian(D);
   m.initialize(μ, Σ);
   return m;
@@ -127,7 +127,7 @@ function Gaussian(μ:Real[_], Σ:Real[_,_]) -> MultivariateGaussian {
  * Sample.
  */
 //operator x:Real[_] <~ m:MultivariateGaussian {
-//  assert(length(x) == m.D);
+//  assert length(x) == m.D;
 //  m.graft();
 //  m.realize();
 //  x <- m.x;
@@ -137,7 +137,7 @@ function Gaussian(μ:Real[_], Σ:Real[_,_]) -> MultivariateGaussian {
  * Observe.
  */
 //operator x:Real[_] ~> m:MultivariateGaussian -> Real {
-//  assert(length(x) == m.D);
+//  assert length(x) == m.D;
 //  m.graft();
 //  m.set(x);
 //  m.realize();
@@ -148,7 +148,7 @@ function Gaussian(μ:Real[_], Σ:Real[_,_]) -> MultivariateGaussian {
  * Initialize.
  */
 //operator x:MultivariateGaussian ~ m:MultivariateGaussian {
-//  assert(x.isUninitialized());
+//  assert x.isUninitialized();
 //  if (!x.isMissing()) {
 //    x ~> m;
 //  }

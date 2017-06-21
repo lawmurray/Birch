@@ -1,5 +1,4 @@
 import math;
-import assert;
 
 /*
  * Node states for delayed sampling.
@@ -124,8 +123,8 @@ class Delay {
    * Marginalize the variate.
    */
   function marginalize() {
-    assert(isInitialized());
-    assert(hasParent);
+    assert isInitialized();
+    assert hasParent;
     
     doMarginalize();
     state <- MARGINALIZED;
@@ -135,7 +134,7 @@ class Delay {
    * Forward sample the variate.
    */
   function forward() {
-    assert(isInitialized());
+    assert isInitialized();
     
     doForward();
     state <- MARGINALIZED;
@@ -145,7 +144,7 @@ class Delay {
    * Realize the variate.
    */
   function realize() {
-    assert(isInitialized() || isTerminal());
+    assert isInitialized() || isTerminal();
     
     state <- REALIZED;
     if (hasParent) {
@@ -196,7 +195,7 @@ class Delay {
    * Prune the stem from below this node.
    */
   function prune() {
-    assert(isMarginalized());
+    assert isMarginalized();
     
     if (hasChild) {
       child.prune();

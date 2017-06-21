@@ -25,7 +25,7 @@ function ancestor(w:Real[_]) -> Integer {
   n:Integer;
   
   W <- cumulative_weights(w);
-  u <~ Uniform(0.0, W[N]);
+  //u <~ Uniform(0.0, W[N]);
   n <- 1;
   while (W[n] < u) {
     n <- n + 1;
@@ -43,7 +43,7 @@ function systematic_cumulative_offspring(W:Real[_]) -> Integer[_] {
   n:Integer;
   r:Real;
 
-  u <~ Uniform(0.0, 1.0);
+  //u <~ Uniform(0.0, 1.0);
   for (n in 1..N) {
     r <- Real(N)*W[n]/W[N];
     O[n] <- min(N, Integer(floor(r + u)));

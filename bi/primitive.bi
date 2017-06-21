@@ -8,7 +8,7 @@ import math;
  * Sum of a vector.
  */
 function sum(x:Real[_]) -> Real {
-  assert(length(x) > 0);
+  assert length(x) > 0;
   r:Real <- x[1];
   n:Integer;
   for (n in 2..length(x)) {
@@ -21,7 +21,7 @@ function sum(x:Real[_]) -> Real {
  * Maximum of a vector.
  */
 function max(x:Real[_]) -> Real {
-  assert(length(x) > 0);
+  assert length(x) > 0;
   r:Real <- x[1];
   n:Integer;
   for (n in 2..length(x)) {
@@ -34,7 +34,7 @@ function max(x:Real[_]) -> Real {
  * Minimum of a vector.
  */
 function min(x:Real[_]) -> Real {
-  assert(length(x) > 0);
+  assert length(x) > 0;
   r:Real <- x[1];
   n:Integer;
   for (n in 2..length(x)) {
@@ -47,7 +47,7 @@ function min(x:Real[_]) -> Real {
  * Exponentiate and sum a vector, return the logarithm of the sum.
  */
 function log_sum_exp(x:Real[_]) -> Real {
-  assert(length(x) > 0);
+  assert length(x) > 0;
   mx:Real <- max(x);
   r:Real <- 0.0;
   n:Integer;
@@ -65,7 +65,7 @@ function log_sum_exp(x:Real[_]) -> Real {
  * Inclusive prefix sum.
  */
 function inclusive_prefix_sum(x:Real[_]) -> Real[_] {
-  assert(length(x) > 0);
+  assert length(x) > 0;
   r:Real[length(x)];
   n:Integer;
   
@@ -80,7 +80,7 @@ function inclusive_prefix_sum(x:Real[_]) -> Real[_] {
  * Inclusive prefix sum.
  */
 function exclusive_prefix_sum(x:Real[_]) -> Real[_] {
-  assert(length(x) > 0);
+  assert length(x) > 0;
   r:Real[length(x)];
   n:Integer;
   
@@ -95,7 +95,7 @@ function exclusive_prefix_sum(x:Real[_]) -> Real[_] {
  * Inclusive prefix sum.
  */
 function adjacent_difference(x:Real[_]) -> Real[_] {
-  assert(length(x) > 0);
+  assert length(x) > 0;
   r:Real[length(x)];
   n:Integer;
   

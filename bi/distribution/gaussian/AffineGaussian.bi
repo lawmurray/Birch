@@ -1,7 +1,6 @@
 import distribution.Gaussian;
 import distribution.gaussian.AffineGaussianExpression;
 import math;
-import assert;
 
 /**
  * Gaussian that has a mean which is an affine transformation of another

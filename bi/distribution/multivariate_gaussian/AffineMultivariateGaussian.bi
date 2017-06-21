@@ -1,7 +1,6 @@
 import distribution.MultivariateGaussian;
 import distribution.multivariate_gaussian.AffineMultivariateGaussianExpression;
 import math;
-import assert;
 
 /**
  * Multivariate Gaussian that has a mean which is an affine transformation of

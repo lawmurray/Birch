@@ -15,7 +15,6 @@ bi/math/eigen.bi
 bi/math/matrix.bi
 bi/math/scalar.bi
 bi/math/vector.bi
-bi/assert.bi
 bi/basic.bi
 bi/distribution.bi
 bi/io.bi

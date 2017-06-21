@@ -1,6 +1,5 @@
 import math;
 import random;
-import assert;
 
 /**
  * Bernoulli distribution.
@@ -24,19 +23,19 @@ function Bernoulli(ρ:Real) -> Bernoulli {
 /**
  * Simulate.
  */
-operator x:Boolean <~ m:Bernoulli {
-  cpp {{
-  x = std::bernoulli_distribution(m->ρ)(rng);
-  }}
-}
+//operator x:Boolean <~ m:Bernoulli {
+//  cpp {{
+//  x = std::bernoulli_distribution(m->ρ)(rng);
+//  }}
+//}
 
 /**
  * Observe.
  */
-operator x:Boolean ~> m:Bernoulli -> Real {
-  if (x) {
-    return log(m.ρ);
-  } else {
-    return log(1.0 - m.ρ);
-  }
-}
+//operator x:Boolean ~> m:Bernoulli -> Real {
+//  if (x) {
+//    return log(m.ρ);
+//  } else {
+//    return log(1.0 - m.ρ);
+//  }
+//}

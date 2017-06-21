@@ -1,6 +1,5 @@
 import distribution.Gaussian;
 import math;
-import assert;
 
 /**
  * Expression used to accumulate affine transformations of Gaussians.

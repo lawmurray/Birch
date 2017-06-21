@@ -3,7 +3,6 @@
  * --------
  */
 import math.scalar;
-import assert;
 
 /**
  * Number of rows of a matrix.
@@ -37,7 +36,7 @@ function columns(X:Integer[_,_]) -> Integer64 {
  * Convert single-element matrix to scalar.
  */
 function scalar(X:Real[_,_]) -> Real {
-  assert(rows(X) == 1 && columns(X) == 1);
+  assert rows(X) == 1 && columns(X) == 1;
   
   return X[1,1];
 }

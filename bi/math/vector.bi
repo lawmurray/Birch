@@ -3,7 +3,6 @@
  * -------
  */
 import math.scalar;
-import assert;
 
 /**
  * Length of a vector.
@@ -23,7 +22,7 @@ function length(x:Integer[_]) -> Integer64 {
  * Convert single-element vector to scalar.
  */
 function scalar(x:Real[_]) -> Real {
-  assert(length(x) == 1);
+  assert length(x) == 1;
   
   return x[1];
 }

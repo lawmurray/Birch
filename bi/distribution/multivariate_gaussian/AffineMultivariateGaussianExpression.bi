@@ -1,6 +1,5 @@
 import distribution.MultivariateGaussian;
 import math;
-import assert;
 
 /**
  * Expression used to accumulate affine transformations of multivariate
@@ -43,9 +42,9 @@ class AffineMultivariateGaussianExpression {
    * Constructor.
    */
   function initialize(A:Real[_,_], u:MultivariateGaussian, c:Real[_]) {
-    assert(rows(A) == R && columns(A) == C);
-    assert(length(c) == R);
-    assert(u.D == C);
+    assert rows(A) == R && columns(A) == C;
+    assert length(c) == R;
+    assert u.D == C;
   
     this.A <- A;
     this.u <- u;
@@ -54,7 +53,7 @@ class AffineMultivariateGaussianExpression {
 }
 
 operator u:MultivariateGaussian + c:Real[_] -> AffineMultivariateGaussianExpression {
-  assert(u.D == length(c));
+  assert u.D == length(c);
   v:AffineMultivariateGaussianExpression(u.D, u.D);
   v.initialize(identity(u.D, u.D), u, c);
   return v;
@@ -65,21 +64,21 @@ operator c:Real[_] + u:MultivariateGaussian -> AffineMultivariateGaussianExpress
 }
 
 operator u:MultivariateGaussian - c:Real[_] -> AffineMultivariateGaussianExpression {
-  assert(u.D == length(c));
+  assert u.D == length(c);
   v:AffineMultivariateGaussianExpression(u.D, u.D);
   v.initialize(identity(u.D, u.D), u, -c);
   return v;
 }
 
 operator c:Real[_] - u:MultivariateGaussian -> AffineMultivariateGaussianExpression {
-  assert(u.D == length(c));
+  assert u.D == length(c);
   v:AffineMultivariateGaussianExpression(u.D, u.D);
   v.initialize(-identity(u.D, u.D), u, c);
   return v;
 }
 
 operator A:Real[_,_]*u:MultivariateGaussian -> AffineMultivariateGaussianExpression {
-  assert(columns(A) == u.D);
+  assert columns(A) == u.D;
   R:Integer <- rows(A);
   C:Integer <- columns(A);
   v:AffineMultivariateGaussianExpression(R, C);

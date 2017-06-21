@@ -29,19 +29,19 @@ function Uniform(l:Real, u:Real) -> Uniform {
 /**
  * Simulate.
  */
-operator x:Real <~ m:Uniform {
-  cpp {{
-  x = std::uniform_real_distribution<double>(m->l, m->u)(rng);
-  }}
-}
+//operator x:Real <~ m:Uniform {
+//  cpp {{
+//  x = std::uniform_real_distribution<double>(m->l, m->u)(rng);
+//  }}
+//}
 
 /**
  * Observe.
  */
-operator x:Real ~> m:Uniform -> Real {
-  if (x >= m.l && x <= m.u) {
-    return log(1.0/(m.u - m.l));
-  } else {
-    return log(0.0);
-  }
-}
+//operator x:Real ~> m:Uniform -> Real {
+//  if (x >= m.l && x <= m.u) {
+//    return log(1.0/(m.u - m.l));
+//  } else {
+//    return log(0.0);
+//  }
+//}

@@ -1,6 +1,5 @@
 import math;
 import random;
-import assert;
 import distribution.Gamma;
 import distribution.Bernoulli;
 

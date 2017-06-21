@@ -6,7 +6,6 @@
 import math.scalar;
 import math.vector;
 import math.matrix;
-import assert;
 
 cpp{{
 #include <eigen3/Eigen/Core>
@@ -75,7 +74,7 @@ operator -X:Real[_,_] -> Real[_,_] {
  * --------
  */
 operator x:Real[_] + y:Real[_] -> Real[_] {
-  assert(length(x) == length(y));
+  assert length(x) == length(y);
   
   z:Real[length(x)];
   cpp{{
@@ -85,7 +84,7 @@ operator x:Real[_] + y:Real[_] -> Real[_] {
 }
 
 operator X:Real[_,_] + Y:Real[_,_] -> Real[_,_] {
-  assert(rows(X) == rows(Y) && columns(X) == columns(Y));
+  assert rows(X) == rows(Y) && columns(X) == columns(Y);
   
   Z:Real[rows(X), columns(X)];
   cpp{{
@@ -99,7 +98,7 @@ operator X:Real[_,_] + Y:Real[_,_] -> Real[_,_] {
  * -----------
  */
 operator x:Real[_] - y:Real[_] -> Real[_] {
-  assert(length(x) == length(y));
+  assert length(x) == length(y);
   
   z:Real[length(x)];
   cpp{{
@@ -109,7 +108,7 @@ operator x:Real[_] - y:Real[_] -> Real[_] {
 }
 
 operator X:Real[_,_] - Y:Real[_,_] -> Real[_,_] {
-  assert(rows(X) == rows(Y) && columns(X) == columns(Y));
+  assert rows(X) == rows(Y) && columns(X) == columns(Y);
   
   Z:Real[rows(X), columns(X)];
   cpp{{
@@ -155,7 +154,7 @@ operator X:Real[_,_]*y:Real -> Real[_,_] {
 }
 
 operator x:Real[_]*y:Real[_] -> Real[_] {
-  assert(length(y) == 1);
+  assert length(y) == 1;
   
   z:Real[length(x)];
   cpp{{
@@ -165,7 +164,7 @@ operator x:Real[_]*y:Real[_] -> Real[_] {
 }
 
 operator X:Real[_,_]*y:Real[_] -> Real[_] {
-  assert(columns(X) == length(y));
+  assert columns(X) == length(y);
   
   z:Real[rows(X)];
   cpp{{
@@ -175,7 +174,7 @@ operator X:Real[_,_]*y:Real[_] -> Real[_] {
 }
 
 operator x:Real[_]*Y:Real[_,_] -> Real[_,_] {
-  assert(1 == rows(Y));
+  assert 1 == rows(Y);
   
   Z:Real[length(x),columns(Y)];
   cpp{{
@@ -185,7 +184,7 @@ operator x:Real[_]*Y:Real[_,_] -> Real[_,_] {
 }
 
 operator X:Real[_,_]*Y:Real[_,_] -> Real[_,_] {
-  assert(columns(X) == rows(Y));
+  assert columns(X) == rows(Y);
   
   Z:Real[rows(X),columns(Y)];
   cpp{{
@@ -266,7 +265,7 @@ function transpose(X:Real[_,_]) -> Real[_,_] {
  * `LL^T` Cholesky decomposition of a matrix.
  */
 function llt(X:Real[_,_]) -> Real[_,_] {
-  assert(rows(X) == columns(X));
+  assert rows(X) == columns(X);
   
   L:Real[rows(X),columns(X)];
   cpp{{
@@ -279,7 +278,7 @@ function llt(X:Real[_,_]) -> Real[_,_] {
  * Inverse of a matrix.
  */
 function inverse(X:Real[_,_]) -> Real[_,_] {
-  assert(rows(X) == columns(X));
+  assert rows(X) == columns(X);
   
   invX:Real[rows(X),columns(X)];
   cpp{{
@@ -292,7 +291,7 @@ function inverse(X:Real[_,_]) -> Real[_,_] {
  * Solve a system of equations.
  */
 function solve(X:Real[_,_], y:Real[_]) -> Real[_] {
-  assert(columns(X) == length(y));
+  assert columns(X) == length(y);
   
   z:Real[rows(X)];
   cpp{{
@@ -305,7 +304,7 @@ function solve(X:Real[_,_], y:Real[_]) -> Real[_] {
  * Solve a system of equations.
  */
 function solve(X:Real[_,_], Y:Real[_,_]) -> Real[_,_] {
-  assert(columns(X) == rows(Y));
+  assert columns(X) == rows(Y);
   
   Z:Real[rows(Y),columns(Y)];
   cpp{{
