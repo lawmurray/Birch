@@ -75,18 +75,23 @@ class Gaussian < Delay {
     this.missing <- false;
   }
   
-  function sample() -> Real {
+  function simulate() -> Real {
+    //graft();
+    //realize();
     cpp {{
     return std::normal_distribution<double>(μ, ::sqrt(σ2))(rng);
     }}
   }
 
   function observe(x:Real) -> Real {
+    //graft();
+    //set(x);
+    //realize();
     return -0.5*(pow((x - μ), 2.0)/σ2 - log(σ2) - log(2.0*π));
   }
 
   function doSample() {
-    set(sample());
+    set(simulate());
   }
   
   function doObserve() {
@@ -102,25 +107,6 @@ function Gaussian(μ:Real, σ2:Real) -> Gaussian {
   m.initialize(μ, σ2);
   return m;
 }
-
-/**
- * Sample.
- */
-//operator x:Real <~ m:Gaussian {
-//  m.graft();
-//  m.realize();
-//  x <- m.x;
-//}
-
-/**
- * Observe.
- */
-//operator x:Real ~> m:Gaussian -> Real {
-//  m.graft();
-//  m.set(x);
-//  m.realize();
-//  return m.w;
-//}
 
 /**
  * Initialize.

@@ -79,23 +79,29 @@ class MultivariateGaussian < Delay {
     this.missing <- false;
   }
   
-  function sample() -> Real[_] {
+  function simulate() -> Real[_] {
+    //graft();
+    //realize();
     x:Real[D];
     d:Integer;
     for (d in 1..D) {
-      //x[d] <~ Gaussian(0.0, 1.0);
+      x[d] <~ Gaussian(0.0, 1.0);
     }
     return μ + llt(Σ)*x;
   }
 
   function observe(x:Real[_]) -> Real {
+    assert length(x) == D;
+    //graft();
+    //set(x);
+    //realize();
     L:Real[D,D];
     L <- llt(Σ);
     return -0.5*squaredNorm(solve(L, x - μ)) - log(determinant(L)) - 0.5*Real(D)*log(2.0*π);
   }
 
   function doSample() {
-    set(sample());
+    set(simulate());
   }
   
   function doObserve() {
@@ -122,27 +128,6 @@ function Gaussian(μ:Real[_], Σ:Real[_,_]) -> MultivariateGaussian {
   m.initialize(μ, Σ);
   return m;
 }
-
-/**
- * Sample.
- */
-//operator x:Real[_] <~ m:MultivariateGaussian {
-//  assert length(x) == m.D;
-//  m.graft();
-//  m.realize();
-//  x <- m.x;
-//}
-
-/**
- * Observe.
- */
-//operator x:Real[_] ~> m:MultivariateGaussian -> Real {
-//  assert length(x) == m.D;
-//  m.graft();
-//  m.set(x);
-//  m.realize();
-//  return m.w;
-//}
 
 /**
  * Initialize.

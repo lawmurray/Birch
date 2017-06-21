@@ -14,6 +14,22 @@ class Gamma {
    * Scale.
    */
   θ:Real;
+
+  /**
+   * Simulate.
+   */
+  function simulate() -> Real {
+    cpp {{
+    return std::gamma_distribution<double>(k, θ)(rng);
+    }}
+  }
+
+  /**
+   * Observe.
+   */
+  function observe(x:Real) -> Real {
+    return (k - 1.0)*log(x) - x/θ - lgamma(k) - k*log(θ);
+  }
 }
 
 /**
@@ -25,20 +41,3 @@ function Gamma(k:Real, θ:Real) -> Gamma {
   m.θ <- θ;
   return m;
 }
-
-/**
- * Simulate.
- */
-//operator x:Real <~ m:Gamma {
-//  cpp {{
-//  x = std::gamma_distribution<double>(m->k, m->θ)(rng);
-//  }}
-//}
-
-/**
- * Observe.
- */
-//operator x:Real ~> m:Gamma -> Real {
-//  logZ:Real <- lgamma(m.k) + m.k*log(m.θ);
-//  return (m.k - 1.0)*log(x) - x/m.θ - logZ;
-//}

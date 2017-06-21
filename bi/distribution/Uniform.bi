@@ -14,6 +14,26 @@ class Uniform {
    * Upper bound.
    */
   u:Real;
+
+  /**
+   * Simulate.
+   */
+  function simulate() -> Real {
+    cpp {{
+    return std::uniform_real_distribution<double>(l, u)(rng);
+    }}
+  }
+
+  /**
+   * Observe.
+   */
+  function observe(x:Real) -> Real {
+    if (x >= l && x <= u) {
+      return log(1.0/(u - l));
+    } else {
+      return log(0.0);
+    }
+  }
 }
 
 /**
@@ -25,23 +45,3 @@ function Uniform(l:Real, u:Real) -> Uniform {
   m.u <- u;
   return m;
 }
-
-/**
- * Simulate.
- */
-//operator x:Real <~ m:Uniform {
-//  cpp {{
-//  x = std::uniform_real_distribution<double>(m->l, m->u)(rng);
-//  }}
-//}
-
-/**
- * Observe.
- */
-//operator x:Real ~> m:Uniform -> Real {
-//  if (x >= m.l && x <= m.u) {
-//    return log(1.0/(m.u - m.l));
-//  } else {
-//    return log(0.0);
-//  }
-//}

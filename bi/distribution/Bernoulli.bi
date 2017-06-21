@@ -9,6 +9,26 @@ class Bernoulli {
    * Probability of a true result.
    */
   ρ:Real;
+
+  /**
+   * Simulate.
+   */
+  function simulate() -> Boolean {
+    cpp {{
+    return std::bernoulli_distribution(ρ)(rng);
+    }}
+  }
+
+  /**
+   * Observe.
+   */
+  function observe(x:Boolean) -> Real {
+    if (x) {
+      return log(ρ);
+    } else {
+      return log(1.0 - ρ);
+    }
+  }
 }
 
 /**
@@ -19,23 +39,3 @@ function Bernoulli(ρ:Real) -> Bernoulli {
   m.ρ <- ρ;
   return m;
 }
-
-/**
- * Simulate.
- */
-//operator x:Boolean <~ m:Bernoulli {
-//  cpp {{
-//  x = std::bernoulli_distribution(m->ρ)(rng);
-//  }}
-//}
-
-/**
- * Observe.
- */
-//operator x:Boolean ~> m:Bernoulli -> Real {
-//  if (x) {
-//    return log(m.ρ);
-//  } else {
-//    return log(1.0 - m.ρ);
-//  }
-//}
