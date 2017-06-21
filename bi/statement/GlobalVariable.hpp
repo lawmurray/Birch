@@ -15,7 +15,7 @@ namespace bi {
 /**
  * Global variable.
  *
- * @ingroup compiler_expression
+ * @ingroup compiler_statement
  */
 class GlobalVariable: public Statement,
     public Named,

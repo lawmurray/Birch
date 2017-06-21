@@ -16,7 +16,7 @@ namespace bi {
 /**
  * Unary operator.
  *
- * @ingroup compiler_expression
+ * @ingroup compiler_statement
  */
 class UnaryOperator: public Statement,
     public Named,

@@ -15,7 +15,7 @@ namespace bi {
 /**
  * Coroutine.
  *
- * @ingroup compiler_expression
+ * @ingroup compiler_statement
  */
 class Coroutine: public Statement,
     public Named,

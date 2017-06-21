@@ -13,7 +13,7 @@ namespace bi {
 /**
  * Class member variable.
  *
- * @ingroup compiler_expression
+ * @ingroup compiler_statement
  */
 class MemberVariable: public Statement,
     public Named,

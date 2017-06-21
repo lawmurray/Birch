@@ -13,7 +13,7 @@ namespace bi {
 /**
  * Reference to assignment operator.
  *
- * @ingroup compiler_expression
+ * @ingroup compiler_statement
  */
 class Assignment: public Statement, public Named, public Binary<
     Expression>, public Reference<AssignmentOperator> {

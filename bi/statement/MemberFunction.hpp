@@ -15,7 +15,7 @@ namespace bi {
 /**
  * Class member function.
  *
- * @ingroup compiler_expression
+ * @ingroup compiler_statement
  */
 class MemberFunction: public Statement,
     public Named,

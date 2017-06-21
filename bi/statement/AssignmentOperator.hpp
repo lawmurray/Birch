@@ -14,7 +14,7 @@ namespace bi {
 /**
  * Assignment operator.
  *
- * @ingroup compiler_expression
+ * @ingroup compiler_statement
  */
 class AssignmentOperator: public Statement,
     public Named,
