@@ -32,22 +32,22 @@ function Beta(α:Real, β:Real) -> Beta {
 /**
  * Simulate.
  */
-operator x:Real <~ m:Beta {
-  u:Real;
-  v:Real;
-  u <~ Gamma(m.α, 1.0);
-  v <~ Gamma(m.β, 1.0);
-  x <- u/(u + v);
-}
+//operator x:Real <~ m:Beta {
+//  u:Real;
+//  v:Real;
+//  u <~ Gamma(m.α, 1.0);
+//  v <~ Gamma(m.β, 1.0);
+//  x <- u/(u + v);
+//}
 
 /**
  * Observe.
  */
-operator x:Real ~> m:Beta -> Real {
-  if (0.0 < x && x < 1.0) {
-    logZ:Real <- lgamma(m.α) + lgamma(m.β) - lgamma(m.α + m.β);
-    return (m.α - 1.0)*log(x) + (m.β - 1.0)*log(1.0 - x) - logZ;
-  } else {
-    return log(0.0);
-  }
-}
+//operator x:Real ~> m:Beta -> Real {
+//  if (0.0 < x && x < 1.0) {
+//    logZ:Real <- lgamma(m.α) + lgamma(m.β) - lgamma(m.α + m.β);
+//    return (m.α - 1.0)*log(x) + (m.β - 1.0)*log(1.0 - x) - logZ;
+//  } else {
+//    return log(0.0);
+//  }
+//}

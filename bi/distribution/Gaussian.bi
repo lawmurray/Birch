@@ -106,49 +106,29 @@ function Gaussian(μ:Real, σ2:Real) -> Gaussian {
 /**
  * Sample.
  */
-operator x:Real <~ m:Gaussian {
-  m.graft();
-  m.realize();
-  x <- m.x;
-}
-
-/**
- * Sample.
- */
-operator x:Gaussian <~ m:Gaussian {
-  assert(x.isUninitialized() && x.isMissing());
-  m.graft();
-  m.realize();
-  x <- m;
-}
+//operator x:Real <~ m:Gaussian {
+//  m.graft();
+//  m.realize();
+//  x <- m.x;
+//}
 
 /**
  * Observe.
  */
-operator x:Real ~> m:Gaussian -> Real {
-  m.graft();
-  m.set(x);
-  m.realize();
-  return m.w;
-}
-
-/**
- * Observe.
- */
-operator x:Gaussian ~> m:Gaussian {
-  assert(x.isUninitialized() && !x.isMissing());
-  m.graft();
-  m.set(x.x);
-  m.realize();
-}
+//operator x:Real ~> m:Gaussian -> Real {
+//  m.graft();
+//  m.set(x);
+//  m.realize();
+//  return m.w;
+//}
 
 /**
  * Initialize.
  */
-operator x:Gaussian ~ m:Gaussian {
-  assert(x.isUninitialized());
-  if (!x.isMissing()) {
-    x ~> m;
-  }
-  x <- m;
-}
+//operator x:Gaussian ~ m:Gaussian {
+//  assert(x.isUninitialized());
+//  if (!x.isMissing()) {
+//    x ~> m;
+//  }
+//  x <- m;
+//}

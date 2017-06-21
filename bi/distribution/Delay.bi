@@ -100,7 +100,7 @@ class Delay {
   }
 
   /**
-   * Initialise as a root node.
+   * Initialize as a root node.
    */
   function initialize() {
     this.hasParent <- false;
@@ -109,7 +109,7 @@ class Delay {
   }
   
   /**
-   * Initialise as a non-root node.
+   * Initialize as a non-root node.
    *
    * `parent` The parent node.
    */
@@ -121,7 +121,7 @@ class Delay {
   }
   
   /**
-   * Marginalise the variate.
+   * Marginalize the variate.
    */
   function marginalize() {
     assert(isInitialized());
@@ -142,7 +142,7 @@ class Delay {
   }
   
   /**
-   * Realise the variate.
+   * Realize the variate.
    */
   function realize() {
     assert(isInitialized() || isTerminal());
