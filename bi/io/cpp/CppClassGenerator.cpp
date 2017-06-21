@@ -112,6 +112,7 @@ void bi::CppClassGenerator::visit(const AssignmentOperator* o) {
       in();
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces;
+      line("return *this;");
       out();
       finish("}\n");
     }
