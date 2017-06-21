@@ -210,12 +210,20 @@ bi::Expression* bi::Resolver::modify(Identifier<MemberFunction>* o) {
 }
 
 bi::Expression* bi::Resolver::modify(Identifier<BinaryOperator>* o) {
-  Scope* memberScope = takeMemberScope();
-  Modifier::modify(o);
-  resolve(o, memberScope);
-  o->type = o->target->returnType->accept(&cloner)->accept(this);
-  o->type->assignable = false;  // rvalue
-  return o;
+  if (*o->name == "~>") {
+    /* x ~> m is syntactic sugar for m.observe(x) */
+    Expression* expr = new Identifier<MemberFunction>(new Name("observe"),
+        o->left.release(), o->loc);
+    expr = new Member(o->right.release(), expr, o->loc);
+    return expr->accept(this);
+  } else {
+    Scope* memberScope = takeMemberScope();
+    Modifier::modify(o);
+    resolve(o, memberScope);
+    o->type = o->target->returnType->accept(&cloner)->accept(this);
+    o->type->assignable = false;  // rvalue
+    return o;
+  }
 }
 
 bi::Expression* bi::Resolver::modify(Identifier<UnaryOperator>* o) {
@@ -228,33 +236,43 @@ bi::Expression* bi::Resolver::modify(Identifier<UnaryOperator>* o) {
 }
 
 bi::Statement* bi::Resolver::modify(Assignment* o) {
-  /*
-   * Use of an assignment operator is valid if:
-   *
-   *   1. the right-side type is a the same as, or a subtype of, the
-   *      left-side type (either a polymorphic pointer),
-   *   2. a conversion operator for the left-side type is defined in the
-   *      right-side (class) type, or
-   *   3. an assignment operator for the right-side type is defined in the
-   *      left-side (class) type.
-   */
   Modifier::modify(o);
-  if (!o->right->type->definitely(*o->left->type)) {
-    // ^ the first two cases are covered by this check
-    Identifier<Class>* ref =
-        dynamic_cast<Identifier<Class>*>(o->left->type->strip());
-    if (ref) {
-      assert(ref->target);
-      memberScope = ref->target->scope.get();
-    } else {
-      //throw MemberException(o);
-    }
-    //resolve(o, memberScope);
-  }
   if (!o->left->type->assignable) {
     throw NotAssignableException(o);
   }
-
+  if (*o->name == "<~") {
+    /* x <~ m is syntactic sugar for x <- m.simulate() */
+    Expression* expr;
+    Statement* stmt;
+    expr = new Identifier<MemberFunction>(new Name("simulate"),
+        new EmptyExpression(), o->loc);
+    expr = new Member(o->right.release(), expr, o->loc);
+    stmt = new Assignment(o->left.release(), new Name("<-"), expr, o->loc);
+    return stmt->accept(this);
+  } else {
+    /*
+     * An assignment is valid if:
+     *
+     *   1. the right-side type is a the same as, or a subtype of, the
+     *      left-side type (either a polymorphic pointer),
+     *   2. a conversion operator for the left-side type is defined in the
+     *      right-side (class) type, or
+     *   3. an assignment operator for the right-side type is defined in the
+     *      left-side (class) type.
+     */
+    if (!o->right->type->definitely(*o->left->type)) {
+      // ^ the first two cases are covered by this check
+      Identifier<Class>* ref =
+          dynamic_cast<Identifier<Class>*>(o->left->type->strip());
+      if (ref) {
+        assert(ref->target);
+        memberScope = ref->target->scope.get();
+      } else {
+        //throw MemberException(o);
+      }
+      //resolve(o, memberScope);
+    }
+  }
   return o;
 }
 

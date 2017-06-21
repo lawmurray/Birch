@@ -48,8 +48,9 @@ public:
    * @param loc Location.
    * @param target Target.
    */
-  Identifier(shared_ptr<Name> name, Expression* parens,
-      shared_ptr<Location> loc = nullptr, const ObjectType* target = nullptr);
+  Identifier(shared_ptr<Name> name, Expression* parens =
+      new EmptyExpression(), shared_ptr<Location> loc = nullptr,
+      const ObjectType* target = nullptr);
 
   /**
    * Destructor.

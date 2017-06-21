@@ -271,8 +271,6 @@ logical_or_expression
 
 stochastic_operator
     : RIGHT_TILDE_OP  { $$ = new bi::Name("~>", make_loc(@$)); }
-    | LEFT_TILDE_OP   { $$ = new bi::Name("<~", make_loc(@$)); }
-    | '~'             { $$ = new bi::Name("~", make_loc(@$)); }
     ;
 
 stochastic_expression
@@ -301,6 +299,8 @@ binary_operator
 
 assignment_operator
     : LEFT_OP        { $$ = new bi::Name("<-", make_loc(@$)); }
+    | LEFT_TILDE_OP  { $$ = new bi::Name("<~", make_loc(@$)); }
+    | '~'            { $$ = new bi::Name("~", make_loc(@$)); }
     ;
 
 parameters
@@ -380,7 +380,7 @@ unary_operator_declaration
     ;
     
 assignment_operator_declaration
-    : OPERATOR assignment_operator parameter optional_braces  { $$ = new bi::AssignmentOperator($2, $3, $4, make_loc(@$)); }
+    : OPERATOR LEFT_OP parameter optional_braces  { $$ = new bi::AssignmentOperator(new bi::Name("<-"), $3, $4, make_loc(@$)); }
     ;
 
 conversion_operator_declaration
