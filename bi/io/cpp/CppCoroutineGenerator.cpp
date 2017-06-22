@@ -13,6 +13,10 @@ bi::CppCoroutineGenerator::CppCoroutineGenerator(std::ostream& base,
 }
 
 void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
+  /* collect local variables */
+  Gatherer<LocalVariable> locals;
+  o->accept(&locals);
+
   /* supporting class */
   if (header) {
     line("namespace bi {");
@@ -30,21 +34,22 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
   } else {
     start("");
   }
-  middle("Coroutine_" << o->name << "_(" << o->parens << ')');
+  middle("Coroutine_" << o->name << '_' << o->parens);
   if (header) {
     finish(';');
   } else {
     if (o->parens->tupleSize() > 0) {
       finish(" :");
       in();
-      Gatherer<Parameter> gatherer;
-      o->parens->accept(&gatherer);
-      for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
-        const Parameter* param = *iter;
-        if (iter != gatherer.begin()) {
+      bool before = false;
+      for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
+        auto param = dynamic_cast<const Parameter*>(*iter);
+        assert(param);
+        if (before) {
           finish(',');
         }
-        start(param->name << '_' << param->number << '_' << '(' << param->name << ')');
+        before = true;
+        start(param->name << '(' << param->name << ')');
       }
       out();
     }
@@ -61,10 +66,7 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
   } else {
     start("");
   }
-  ++inReturn;
-  middle(o->returnType);
-  --inReturn;
-  middle(' ');
+  middle(o->returnType << ' ');
   if (!header) {
     middle("bi::func::Coroutine_" << o->name << "_::");
   }
@@ -103,10 +105,14 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
     in();
 
     /* parameters and local variables as class member variables */
-    Gatherer<Parameter> gatherer;
-    o->accept(&gatherer);
-    for (auto iter = gatherer.begin(); iter != gatherer.end(); ++iter) {
-      const Parameter* param = *iter;
+    for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
+      auto param = dynamic_cast<const Parameter*>(*iter);
+      assert(param);
+      line(param->type << ' ' << param->name << ';');
+    }
+    for (auto iter = locals.begin(); iter != locals.end(); ++iter) {
+      auto param = dynamic_cast<const LocalVariable*>(*iter);
+      assert(param);
       line(param->type << ' ' << param->name << '_' << param->number << "_;");
     }
 
@@ -125,19 +131,17 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
       line("namespace func {");
       out();
   }
-  ++inReturn;
   start("bi::Pointer<bi::Coroutine<" << o->returnType << ">> ");
-  --inReturn;
   if (!header) {
     middle("bi::func::");
   }
-  middle(o->name << '(' << o->parens << ')');
+  middle(o->name << o->parens);
   if (header) {
     finish(';');
   } else {
     finish(" {");
     in();
-    start("return new (GC_MALLOC(sizeof(bi::func::Coroutine_" << o->name << "_))) bi::func::Coroutine_" << o->name << "_(");
+    start("return BI_NEW(bi::func::Coroutine_" << o->name << "_)(");
     for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
       if (iter != o->parens->begin()) {
         middle(", ");
@@ -169,17 +173,9 @@ void bi::CppCoroutineGenerator::visit(const Identifier<LocalVariable>* o) {
 }
 
 void bi::CppCoroutineGenerator::visit(const LocalVariable* o) {
-  if (o->type->isClass() || o->type->count() > 0) {
+  if (o->type->isClass() || !o->parens->isEmpty() || !o->value->isEmpty()) {
     middle(o->name << '_' << o->number << '_');
-  }
-  if (o->type->isClass()) {
-    Identifier<Class>* type = dynamic_cast<Identifier<Class>*>(o->type->strip());
-    assert(type);
-    middle(" = new (GC_MALLOC(sizeof(bi::type::" << type->name << "))) bi::type::" << type->name << "()");
-  }
-  if (o->type->count() > 0) {
-    ArrayType* type = dynamic_cast<ArrayType*>(o->type->strip());
-    assert(type);
-    middle("(make_frame(" << type->brackets << "))");
+    genInit(o);
+    ///@todo This will need to resize arrays, overload operator() for Array?
   }
 }

@@ -85,13 +85,63 @@ public:
 
 protected:
   /**
+   * Generate arguments to a function.
+   *
+   * @param args Arguments.
+   * @param params Parameters
+   */
+  void genArgs(const Expression* args, const Expression* params);
+
+  /**
+   * Generate an argument to a function.
+   *
+   * @param arg The argument.
+   * @param param The parameter.
+   */
+  void genArg(const Expression* arg, const Expression* param);
+
+  /**
+   * Generate the initialization of a variable, including the call to the
+   * constructor and/or assignment of the initial value.
+   */
+  template<class T>
+  void genInit(const T* o);
+
+  /**
    * Output header instead of source?
    */
   bool header;
-
-  /**
-   * Are we in a return type?
-   */
-  int inReturn;
 };
+}
+
+template<class T>
+void bi::CppBaseGenerator::genInit(const T* o) {
+  if (o->type->isArray()) {
+    ArrayType* type = dynamic_cast<ArrayType*>(o->type->strip());
+    assert(type);
+    middle("(make_frame(" << type->brackets << ')');
+    if (!o->parens->isEmpty()) {
+      middle(", " << o->parens->strip());
+    }
+    middle(')');
+  } else if (o->type->isClass()) {
+    ClassType* type = dynamic_cast<ClassType*>(o->type->strip());
+    assert(type);
+    if (!o->value->isEmpty()) {
+      middle('(');
+    }
+    middle(" = BI_NEW(bi::type::" << type->name << ')');
+    if (o->parens->isEmpty()) {
+      middle("()");
+    } else {
+      ///@todo Use genArgs()
+      middle(o->parens);
+    }
+    if (!o->value->isEmpty()) {
+      middle(')');
+    }
+  }
+  if (!o->value->isEmpty()) {
+    middle(" = " << o->value);
+  }
 }

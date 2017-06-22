@@ -82,9 +82,7 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
   } else {
     start("");
   }
-  ++inReturn;
   middle(o->returnType << ' ');
-  --inReturn;
   if (!header) {
     middle("bi::type::" << type->name << "::");
   }
