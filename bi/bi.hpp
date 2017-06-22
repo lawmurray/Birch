@@ -13,6 +13,7 @@
 #include <utility>
 #include <functional>
 #include <string>
+#include <cstdlib>
 #include <cassert>
 
 #include <getopt.h>

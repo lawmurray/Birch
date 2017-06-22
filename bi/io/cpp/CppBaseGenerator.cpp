@@ -443,9 +443,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
         finish(':');
         in();
         if ((*iter)->type->isBasic()) {
-          auto type = dynamic_cast<const BasicType*>((*iter)->type.get());
-          assert(type);
-          line(name << " = " << type->name << "(::optarg);");
+          line(name << " = " << (*iter)->type << "(::optarg);");
         } else {
           line(name << " = ::optarg;");
         }
@@ -719,21 +717,7 @@ void bi::CppBaseGenerator::visit(const AliasType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const BasicType* o) {
-  if (*o->name == "Boolean") {
-    middle("bool");
-  } else if (*o->name == "Real64" || *o->name == "Real") {
-    middle("double");
-  } else if (*o->name == "Real32") {
-    middle("float");
-  } else if (*o->name == "Integer64" || *o->name == "Integer") {
-    middle("int64_t");
-  } else if (*o->name == "Integer32") {
-    middle("int32_t");
-  } else if (*o->name == "String") {
-    middle("std::string");
-  } else {
-    middle(o->name);
-  }
+  middle("bi::type::" << o->name);
 }
 
 void bi::CppBaseGenerator::genArg(const Expression* arg,

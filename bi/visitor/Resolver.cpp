@@ -366,6 +366,9 @@ bi::Statement* bi::Resolver::modify(Coroutine* o) {
 bi::Statement* bi::Resolver::modify(Program* o) {
   push();
   o->parens = o->parens->accept(this);
+  o->parens->accept(&assigner);
+  // ^ currently for backwards compatibility of delay_triplet example, can
+  //   be updated later
   defer(o->braces.get());
   o->scope = pop();
   top()->add(o);
