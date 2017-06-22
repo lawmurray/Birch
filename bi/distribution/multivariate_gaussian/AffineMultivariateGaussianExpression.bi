@@ -4,22 +4,15 @@ import math;
 /**
  * Expression used to accumulate affine transformations of multivariate
  * Gaussians.
+ *
+ * `R` Number of rows in transformation.
+ * `C` Number of columns in transformation.
  */
-class AffineMultivariateGaussianExpression {
-  /**
-   * Number of rows in matrix.
-   */
-  R:Integer;
-  
-  /**
-   * Number of columns in matrix.
-   */
-  C:Integer;
-  
+class AffineMultivariateGaussianExpression(R:Integer, C:Integer) {
   /**
    * Matrix of affine transformation.
    */
-  A:Real[_,_];
+  A:Real[R,C];
   
   /**
    * Parent.
@@ -29,17 +22,10 @@ class AffineMultivariateGaussianExpression {
   /**
    * Additive ector of affine transformation.
    */
-  c:Real[_];
-  
-  function constructor(R:Integer, C:Integer) {
-    this.R <- R;
-    this.C <- C;
-    //this.A <- :Real[R,C];
-    //this.c <- :Real[R];
-  }
-  
+  c:Real[R];
+    
   /**
-   * Constructor.
+   * Initialize.
    */
   function initialize(A:Real[_,_], u:MultivariateGaussian, c:Real[_]) {
     assert rows(A) == R && columns(A) == C;

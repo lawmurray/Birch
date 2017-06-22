@@ -5,17 +5,14 @@ import random;
 
 /**
  * Multivariate Gaussian distribution.
+ *
+ * `D` Number of dimensions.
  */
-class MultivariateGaussian < Delay {
-  /**
-   * Number of dimensions.
-   */
-  D:Integer;
-
+class MultivariateGaussian(D:Integer) < Delay {
   /**
    * Value.
    */
-  x:Real[_];
+  x:Real[D];
   
   /**
    * Weight.
@@ -25,20 +22,12 @@ class MultivariateGaussian < Delay {
   /**
    * Mean.
    */
-  μ:Real[_];
+  μ:Real[D];
   
   /**
    * Covariance matrix.
    */
-  Σ:Real[_,_];
-
-  function constructor(D:Integer) {
-    super.constructor();
-    this.D <- D;
-    //this.x[D];
-    //this.μ[D];
-    //this.Σ[D,D];
-  }
+  Σ:Real[D,D];
 
   function initialize(u:MultivariateGaussian) {
     super.initialize(u);

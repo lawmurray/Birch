@@ -15,12 +15,12 @@ class Delay {
   /**
    * State of the variate.
    */
-  state:Integer;
+  state:Integer <- UNINITIALIZED;
   
   /**
    * Is the value missing?
    */
-  missing:Boolean;
+  missing:Boolean <- true;
   
   /**
    * Parent, if any.
@@ -35,19 +35,12 @@ class Delay {
   /**
    * Is there a parent?
    */
-  hasParent:Boolean;
+  hasParent:Boolean <- false;
   
   /**
    * Is there a child?
    */
-  hasChild:Boolean;
-  
-  function constructor() {
-    state <- UNINITIALIZED;
-    missing <- true;
-    hasParent <- false;
-    hasChild <- false;
-  }
+  hasChild:Boolean <- false;
   
   /**
    * Is this a root node?

@@ -21,7 +21,7 @@ class AffineGaussianExpression {
   c:Real;
   
   /**
-   * Constructor.
+   * Initialize.
    */
   function initialize(a:Real, u:Gaussian, c:Real) {
     this.a <- a;
