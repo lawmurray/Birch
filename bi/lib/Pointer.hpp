@@ -133,6 +133,14 @@ public:
     return ptr;
   }
 
+  /**
+   * Call operator.
+   */
+  template<class... Args>
+  auto operator()(Args... args) const {
+    return (*ptr)(args...);
+  }
+
 private:
   /**
    * Raw pointer.

@@ -122,23 +122,23 @@ void bi::CppBaseGenerator::visit(const MemberParameter* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Identifier<Parameter>* o) {
-  middle(o->name);
+  middle(o->name << o->parens);
 }
 
 void bi::CppBaseGenerator::visit(const Identifier<MemberParameter>* o) {
-  middle(o->name);
+  middle(o->name << o->parens);
 }
 
 void bi::CppBaseGenerator::visit(const Identifier<GlobalVariable>* o) {
-  middle(o->name);
+  middle(o->name << o->parens);
 }
 
 void bi::CppBaseGenerator::visit(const Identifier<LocalVariable>* o) {
-  middle(o->name);
+  middle(o->name << o->parens);
 }
 
 void bi::CppBaseGenerator::visit(const Identifier<MemberVariable>* o) {
-  middle(o->name);
+  middle(o->name << o->parens);
 }
 
 void bi::CppBaseGenerator::visit(const Identifier<Function>* o) {
