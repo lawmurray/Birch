@@ -161,7 +161,8 @@ bi::Statement* bi::Cloner::clone(const LocalVariable* o) {
 }
 
 bi::Statement* bi::Cloner::clone(const MemberVariable* o) {
-  return new MemberVariable(o->name, o->type->accept(this), o->loc);
+  return new MemberVariable(o->name, o->type->accept(this),
+      o->parens->accept(this), o->value->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const Function* o) {

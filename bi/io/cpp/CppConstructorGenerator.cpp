@@ -61,6 +61,8 @@ void bi::CppConstructorGenerator::visit(const MemberVariable* o) {
         dynamic_cast<const ArrayType*>(o->type.get());
     assert(type);
     middle("make_frame(" << type->brackets << ")");
+  } else if (!o->value->isEmpty()) {
+    middle(o->value);
   }
   middle(')');
 }

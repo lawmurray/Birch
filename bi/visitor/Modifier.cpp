@@ -189,6 +189,8 @@ bi::Statement* bi::Modifier::modify(LocalVariable* o) {
 
 bi::Statement* bi::Modifier::modify(MemberVariable* o) {
   o->type = o->type.release()->accept(this);
+  o->parens = o->parens.release()->accept(this);
+  o->value = o->value.release()->accept(this);
   return o;
 }
 

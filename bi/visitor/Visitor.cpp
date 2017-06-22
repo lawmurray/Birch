@@ -172,6 +172,8 @@ void bi::Visitor::visit(const LocalVariable* o) {
 
 void bi::Visitor::visit(const MemberVariable* o) {
   o->type->accept(this);
+  o->parens->accept(this);
+  o->value->accept(this);
 }
 
 void bi::Visitor::visit(const Function* o) {

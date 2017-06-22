@@ -80,6 +80,9 @@ void bi::bi_ostream::visit(const Parameter* o) {
 
 void bi::bi_ostream::visit(const GlobalVariable* o) {
   *this << o->name << ':' << o->type;
+  if (!o->parens->isEmpty()) {
+    *this << '(' << o->value << ')';
+  }
   if (!o->value->isEmpty()) {
     *this << " <- " << o->value;
   }
@@ -87,6 +90,9 @@ void bi::bi_ostream::visit(const GlobalVariable* o) {
 
 void bi::bi_ostream::visit(const LocalVariable* o) {
   *this << o->name << ':' << o->type;
+  if (!o->parens->isEmpty()) {
+    *this << '(' << o->value << ')';
+  }
   if (!o->value->isEmpty()) {
     *this << " <- " << o->value;
   }
@@ -94,6 +100,12 @@ void bi::bi_ostream::visit(const LocalVariable* o) {
 
 void bi::bi_ostream::visit(const MemberVariable* o) {
   *this << o->name << ':' << o->type;
+  if (!o->parens->isEmpty()) {
+    *this << '(' << o->value << ')';
+  }
+  if (!o->value->isEmpty()) {
+    *this << " <- " << o->value;
+  }
 }
 
 void bi::bi_ostream::visit(const Identifier<Parameter>* o) {
@@ -214,7 +226,7 @@ void bi::bi_ostream::visit(const MemberFunction* o) {
 }
 
 void bi::bi_ostream::visit(const BinaryOperator* o) {
-  *this << "function " << o->left << ' ' << o->name << ' ' << o->right;
+  *this << "operator " << o->left << ' ' << o->name << ' ' << o->right;
   if (!o->returnType->isEmpty()) {
     *this << " -> " << o->returnType;
   }
@@ -226,7 +238,7 @@ void bi::bi_ostream::visit(const BinaryOperator* o) {
 }
 
 void bi::bi_ostream::visit(const UnaryOperator* o) {
-  *this << "function " << o->name << ' ' << o->single;
+  *this << "operator " << o->name << ' ' << o->single;
   if (!o->returnType->isEmpty()) {
     *this << " -> " << o->returnType;
   }
@@ -238,7 +250,7 @@ void bi::bi_ostream::visit(const UnaryOperator* o) {
 }
 
 void bi::bi_ostream::visit(const AssignmentOperator* o) {
-  *this << "function " << o->name << ' ' << o->single;
+  *this << "operator " << o->name << ' ' << o->single;
   if (!header && !o->braces->isEmpty()) {
     *this << o->braces;
   } else {
@@ -247,7 +259,7 @@ void bi::bi_ostream::visit(const AssignmentOperator* o) {
 }
 
 void bi::bi_ostream::visit(const ConversionOperator* o) {
-  *this << "function -> " << o->returnType;
+  *this << "operator -> " << o->returnType;
   if (!header && !o->braces->isEmpty()) {
     *this << o->braces;
   } else {
@@ -257,8 +269,14 @@ void bi::bi_ostream::visit(const ConversionOperator* o) {
 
 void bi::bi_ostream::visit(const Class* o) {
   *this << indent << "class " << o->name;
+  if (!o->parens->isEmpty()) {
+    *this << '(' << o->parens << ')';
+  }
   if (!o->base->isEmpty()) {
     *this << " < " << o->base;
+  }
+  if (!o->baseParens->isEmpty()) {
+    *this << '(' << o->baseParens << ')';
   }
   if (!o->braces->isEmpty()) {
     *this << o->braces;
