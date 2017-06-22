@@ -215,7 +215,7 @@ void bi::CppBaseGenerator::visit(const Identifier<BinaryOperator>* o) {
 void bi::CppBaseGenerator::visit(const Identifier<UnaryOperator>* o) {
   if (isTranslatable(o->name->str())) {
     /* can use as raw C++ operator */
-    middle(' ' << o->name);
+    middle(o->name);
     genArg(o->single.get(), o->target->single.get());
   } else {
     /* must use as function */

@@ -139,17 +139,13 @@ bi::Expression* bi::Resolver::modify(Super* o) {
 
 bi::Expression* bi::Resolver::modify(Parameter* o) {
   Modifier::modify(o);
-  if (!o->name->isEmpty()) {
-    top()->add(o);
-  }
+  top()->add(o);
   return o;
 }
 
 bi::Expression* bi::Resolver::modify(MemberParameter* o) {
   Modifier::modify(o);
-  if (!o->name->isEmpty()) {
-    top()->add(o);
-  }
+  top()->add(o);
   return o;
 }
 
@@ -265,6 +261,34 @@ bi::Statement* bi::Resolver::modify(Assignment* o) {
     expr = new Member(o->right.release(), expr, o->loc);
     stmt = new Assignment(o->left.release(), new Name("<-"), expr, o->loc);
     return stmt->accept(this);
+  } else if (*o->name == "~") {
+    /* x ~ m is syntactic sugar for:
+     *
+     *   assert x.isUninitialized();
+     *   if (!x.isMissing()) {
+     *     x ~> m;
+     *   }
+     *   x <- m;
+     */
+    Statement* assertion = new Assert(
+        new Member(o->left->accept(&cloner),
+            new Identifier<Unknown>(new Name("isUninitialized"),
+                new EmptyExpression(), o->loc), o->loc), o->loc);
+    Expression* cond = new Identifier<UnaryOperator>(new Name("!"),
+        new Member(o->left->accept(&cloner),
+            new Identifier<Unknown>(new Name("isMissing"),
+                new EmptyExpression(), o->loc), o->loc), o->loc);
+    Statement* braces = new ExpressionStatement(
+        new Identifier<BinaryOperator>(o->left->accept(&cloner),
+            new Name("~>"), o->right->accept(&cloner), o->loc));
+    Statement* conditional = new If(cond, braces, new EmptyStatement(),
+        o->loc);
+    Statement* assignment = new Assignment(o->left.release(), new Name("<-"),
+        o->right.release(), o->loc);
+    List<Statement>* list = new List<Statement>(conditional, assignment,
+        o->loc);
+    List<Statement>* result = new List<Statement>(assertion, list, o->loc);
+    return result->accept(this);
   } else {
     /*
      * An assignment is valid if:
@@ -409,7 +433,7 @@ bi::Statement* bi::Resolver::modify(ConversionOperator* o) {
     defer(o->braces.get());
   }
   o->scope = pop();
-  //top()->add(o);
+  getClass()->addConversion(o->returnType.get());
 
   return o;
 }
