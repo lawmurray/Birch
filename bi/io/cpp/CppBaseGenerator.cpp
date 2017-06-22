@@ -115,7 +115,21 @@ void bi::CppBaseGenerator::visit(const Parameter* o) {
   }
 }
 
+void bi::CppBaseGenerator::visit(const MemberParameter* o) {
+  if (!o->type->assignable) {
+    middle("const ");
+  }
+  middle(o->type << "& " << o->name);
+  if (!o->value->isEmpty()) {
+    middle(" = " << o->value);
+  }
+}
+
 void bi::CppBaseGenerator::visit(const Identifier<Parameter>* o) {
+  middle(internalise(o->name->str()));
+}
+
+void bi::CppBaseGenerator::visit(const Identifier<MemberParameter>* o) {
   middle(internalise(o->name->str()));
 }
 
@@ -257,8 +271,8 @@ void bi::CppBaseGenerator::visit(const GlobalVariable* o) {
     } else if (o->type->isClass()) {
       ClassType* type = dynamic_cast<ClassType*>(o->type->strip());
       assert(type);
-      middle(
-          " = new (GC_MALLOC(sizeof(bi::type::" << type->name << "))) bi::type::" << type->name << "()");
+      middle(" = new (GC_MALLOC(sizeof(bi::type::" << type->name << "))) ");
+      middle("bi::type::" << type->name << '(' << o->parens << ')');
     } else if (o->type->isArray()) {
       ArrayType* type = dynamic_cast<ArrayType*>(o->type->strip());
       assert(type);
@@ -275,8 +289,8 @@ void bi::CppBaseGenerator::visit(const LocalVariable* o) {
   } else if (o->type->isClass()) {
     ClassType* type = dynamic_cast<ClassType*>(o->type->strip());
     assert(type);
-    middle(
-        " = new (GC_MALLOC(sizeof(bi::type::" << type->name << "))) bi::type::" << type->name << "()");
+    middle(" = new (GC_MALLOC(sizeof(bi::type::" << type->name << "))) ");
+    middle("bi::type::" << type->name << '(' << o->parens << ')');
   } else if (o->type->isArray()) {
     ArrayType* type = dynamic_cast<ArrayType*>(o->type->strip());
     assert(type);
@@ -286,7 +300,7 @@ void bi::CppBaseGenerator::visit(const LocalVariable* o) {
 }
 
 void bi::CppBaseGenerator::visit(const MemberVariable* o) {
-  assert(false); // should be in CppClassGenerator
+  assert(false);  // should be in CppClassGenerator
 }
 
 void bi::CppBaseGenerator::visit(const Function* o) {
@@ -334,7 +348,7 @@ void bi::CppBaseGenerator::visit(const Coroutine* o) {
 }
 
 void bi::CppBaseGenerator::visit(const MemberFunction* o) {
-  assert(false); // should be in CppClassGenerator
+  assert(false);  // should be in CppClassGenerator
 }
 
 void bi::CppBaseGenerator::visit(const Program* o) {
@@ -543,13 +557,12 @@ void bi::CppBaseGenerator::visit(const UnaryOperator* o) {
 }
 
 void bi::CppBaseGenerator::visit(const AssignmentOperator* o) {
-  assert(false); // should be in CppClassGenerator
+  assert(false);  // should be in CppClassGenerator
 }
 
 void bi::CppBaseGenerator::visit(const ConversionOperator* o) {
-  assert(false); // should be in CppClassGenerator
+  assert(false);  // should be in CppClassGenerator
 }
-
 
 void bi::CppBaseGenerator::visit(const Basic* o) {
   // assumed to be built in to compiler library headers

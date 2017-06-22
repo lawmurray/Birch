@@ -11,14 +11,24 @@ bi::CppConstructorGenerator::CppConstructorGenerator(std::ostream& base,
 }
 
 void bi::CppConstructorGenerator::visit(const Class* o) {
+  if (!header) {
+    start("bi::type::" << o->name << "::");
+  } else {
+    start("");
+  }
+  middle(o->name << '(');
+  CppBaseGenerator aux(base, level, header);
+  aux << o->parens;
+  middle(')');
   if (header) {
-    line(o->name << " :");
+    finish(";\n");
+  } else {
+    finish(" :");
     in();
     in();
     if (!o->base->isEmpty()) {
       before = true;
-      start("super_type(");
-      middle(')');
+      start("super_type(" << o->baseParens << ')');
     }
     *this << o->braces;
     out();
@@ -29,6 +39,14 @@ void bi::CppConstructorGenerator::visit(const Class* o) {
     out();
     line("}\n");
   }
+}
+
+void bi::CppConstructorGenerator::visit(const MemberParameter* o) {
+  if (before) {
+    finish(',');
+  }
+  before = true;
+  start(o->name << '(' << o->name << ')');
 }
 
 void bi::CppConstructorGenerator::visit(const MemberVariable* o) {
@@ -52,5 +70,9 @@ void bi::CppConstructorGenerator::visit(const MemberFunction* o) {
 }
 
 void bi::CppConstructorGenerator::visit(const ConversionOperator* o) {
+  //
+}
+
+void bi::CppConstructorGenerator::visit(const AssignmentOperator* o) {
   //
 }

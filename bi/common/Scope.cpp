@@ -5,6 +5,7 @@
 
 #include "bi/expression/Identifier.hpp"
 #include "bi/expression/Parameter.hpp"
+#include "bi/expression/MemberParameter.hpp"
 #include "bi/statement/GlobalVariable.hpp"
 #include "bi/statement/LocalVariable.hpp"
 #include "bi/statement/MemberVariable.hpp"
@@ -23,8 +24,7 @@
 #include "bi/exception/all.hpp"
 #include "bi/visitor/Cloner.hpp"
 
-bi::LookupResult bi::Scope::lookup(
-    const Identifier<Unknown>* ref) const {
+bi::LookupResult bi::Scope::lookup(const Identifier<Unknown>* ref) const {
   auto name = ref->name->str();
   if (localVariables.contains(name)) {
     return LOCAL_VARIABLE;
@@ -32,6 +32,8 @@ bi::LookupResult bi::Scope::lookup(
     return PARAMETER;
   } else if (memberVariables.contains(name)) {
     return MEMBER_VARIABLE;
+  } else if (memberParameters.contains(name)) {
+    return MEMBER_PARAMETER;
   } else if (memberFunctions.contains(name)) {
     return MEMBER_FUNCTION;
   } else if (globalVariables.contains(name)) {
@@ -67,6 +69,19 @@ void bi::Scope::add(Parameter* param) {
   }
 }
 
+void bi::Scope::add(MemberParameter* param) {
+  auto name = param->name->str();
+  if (memberVariables.contains(name)) {
+    throw PreviousDeclarationException(param, memberVariables.get(name));
+  } else if (memberParameters.contains(name)) {
+    throw PreviousDeclarationException(param, memberParameters.get(name));
+  } else if (memberFunctions.contains(name)) {
+    throw PreviousDeclarationException(param);
+  } else {
+    memberParameters.add(param);
+  }
+}
+
 void bi::Scope::add(GlobalVariable* param) {
   auto name = param->name->str();
   if (globalVariables.contains(name)) {
@@ -97,6 +112,8 @@ void bi::Scope::add(MemberVariable* param) {
   auto name = param->name->str();
   if (memberVariables.contains(name)) {
     throw PreviousDeclarationException(param, memberVariables.get(name));
+  } else if (memberParameters.contains(name)) {
+    throw PreviousDeclarationException(param, memberParameters.get(name));
   } else if (memberFunctions.contains(name)) {
     throw PreviousDeclarationException(param);
   } else {
@@ -147,6 +164,8 @@ void bi::Scope::add(MemberFunction* param) {
   auto name = param->name->str();
   if (memberVariables.contains(name)) {
     throw PreviousDeclarationException(param, memberVariables.get(name));
+  } else if (memberParameters.contains(name)) {
+    throw PreviousDeclarationException(param, memberParameters.get(name));
   } else {
     memberFunctions.add(param);
   }
@@ -199,35 +218,65 @@ void bi::Scope::add(Alias* param) {
   }
 }
 
-#define RESOLVE_IMPL(type, container) \
-  void bi::Scope::resolve(Identifier<type>* ref) { \
-    container.resolve(ref); \
-    if (ref->matches.size() == 0) { \
-      resolveInherit(ref); \
-    } \
+void bi::Scope::resolve(Identifier<Parameter>* ref) {
+  parameters.resolve(ref);
+}
+
+void bi::Scope::resolve(Identifier<MemberParameter>* ref) {
+  memberParameters.resolve(ref);
+  /* member parameters are used by constructors, and are deliberately not
+   * inherited from base classes */
+}
+
+void bi::Scope::resolve(Identifier<GlobalVariable>* ref) {
+  globalVariables.resolve(ref);
+}
+
+void bi::Scope::resolve(Identifier<LocalVariable>* ref) {
+  localVariables.resolve(ref);
+}
+
+void bi::Scope::resolve(Identifier<MemberVariable>* ref) {
+  memberVariables.resolve(ref);
+  if (ref->matches.size() == 0) {
+    resolveInherit(ref);
   }
+}
 
-RESOLVE_IMPL(Parameter, parameters)
-RESOLVE_IMPL(GlobalVariable, globalVariables)
-RESOLVE_IMPL(LocalVariable, localVariables)
-RESOLVE_IMPL(MemberVariable, memberVariables)
-RESOLVE_IMPL(Function, functions)
-RESOLVE_IMPL(Coroutine, coroutines)
-RESOLVE_IMPL(MemberFunction, memberFunctions)
-RESOLVE_IMPL(BinaryOperator, binaryOperators)
-RESOLVE_IMPL(UnaryOperator, unaryOperators)
+void bi::Scope::resolve(Identifier<Function>* ref) {
+  functions.resolve(ref);
+}
 
-#define RESOLVE_TYPE_IMPL(type, container) \
-  void bi::Scope::resolve(type* ref) { \
-    container.resolve(ref); \
-    if (ref->matches.size() == 0) { \
-      resolveInherit(ref); \
-    } \
+void bi::Scope::resolve(Identifier<Coroutine>* ref) {
+  coroutines.resolve(ref);
+}
+
+void bi::Scope::resolve(Identifier<MemberFunction>* ref) {
+  memberFunctions.resolve(ref);
+  if (ref->matches.size() == 0) {
+    resolveInherit(ref);
   }
+}
 
-RESOLVE_TYPE_IMPL(BasicType, basics)
-RESOLVE_TYPE_IMPL(ClassType, classes)
-RESOLVE_TYPE_IMPL(AliasType, aliases)
+void bi::Scope::resolve(Identifier<BinaryOperator>* ref) {
+  binaryOperators.resolve(ref);
+}
+
+void bi::Scope::resolve(Identifier<UnaryOperator>* ref) {
+  unaryOperators.resolve(ref);
+}
+
+void bi::Scope::resolve(BasicType* ref) {
+  basics.resolve(ref);
+}
+
+void bi::Scope::resolve(ClassType* ref) {
+  classes.resolve(ref);
+}
+
+void bi::Scope::resolve(AliasType* ref) {
+  aliases.resolve(ref);
+}
 
 void bi::Scope::inherit(Scope* scope) {
   bases.insert(scope);

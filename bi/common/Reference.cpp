@@ -5,6 +5,7 @@
 
 #include "bi/expression/Identifier.hpp"
 #include "bi/expression/Parameter.hpp"
+#include "bi/expression/MemberParameter.hpp"
 #include "bi/statement/GlobalVariable.hpp"
 #include "bi/statement/LocalVariable.hpp"
 #include "bi/statement/MemberVariable.hpp"
@@ -32,6 +33,7 @@ bi::Reference<Target>::~Reference() {
  */
 template class bi::Reference<bi::Unknown>;
 template class bi::Reference<bi::Parameter>;
+template class bi::Reference<bi::MemberParameter>;
 template class bi::Reference<bi::GlobalVariable>;
 template class bi::Reference<bi::LocalVariable>;
 template class bi::Reference<bi::MemberVariable>;

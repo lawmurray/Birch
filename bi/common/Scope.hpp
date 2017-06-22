@@ -13,6 +13,7 @@
 
 namespace bi {
 class Parameter;
+class MemberParameter;
 class GlobalVariable;
 class LocalVariable;
 class MemberVariable;
@@ -38,6 +39,7 @@ class IdentifierType;
  */
 enum LookupResult {
   PARAMETER,
+  MEMBER_PARAMETER,
   GLOBAL_VARIABLE,
   LOCAL_VARIABLE,
   MEMBER_VARIABLE,
@@ -69,6 +71,7 @@ public:
    * @param param Parameter.
    */
   void add(Parameter* param);
+  void add(MemberParameter* param);
   void add(GlobalVariable* param);
   void add(LocalVariable* param);
   void add(MemberVariable* param);
@@ -90,6 +93,7 @@ public:
    * @return Target of the reference.
    */
   void resolve(Identifier<Parameter>* ref);
+  void resolve(Identifier<MemberParameter>* ref);
   void resolve(Identifier<GlobalVariable>* ref);
   void resolve(Identifier<LocalVariable>* ref);
   void resolve(Identifier<MemberVariable>* ref);
@@ -128,6 +132,7 @@ public:
    * Dictionaries.
    */
   Dictionary<Parameter> parameters;
+  Dictionary<MemberParameter> memberParameters;
   Dictionary<GlobalVariable> globalVariables;
   Dictionary<LocalVariable> localVariables;
   Dictionary<MemberVariable> memberVariables;

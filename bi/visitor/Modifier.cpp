@@ -95,12 +95,23 @@ bi::Expression* bi::Modifier::modify(Parameter* o) {
   return o;
 }
 
+bi::Expression* bi::Modifier::modify(MemberParameter* o) {
+  o->type = o->type.release()->accept(this);
+  o->value = o->value.release()->accept(this);
+  return o;
+}
+
 bi::Expression* bi::Modifier::modify(Identifier<Unknown>* o) {
   o->parens = o->parens.release()->accept(this);
   return o;
 }
 
 bi::Expression* bi::Modifier::modify(Identifier<Parameter>* o) {
+  o->parens = o->parens.release()->accept(this);
+  return o;
+}
+
+bi::Expression* bi::Modifier::modify(Identifier<MemberParameter>* o) {
   o->parens = o->parens.release()->accept(this);
   return o;
 }
@@ -236,7 +247,9 @@ bi::Statement* bi::Modifier::modify(ConversionOperator* o) {
 }
 
 bi::Statement* bi::Modifier::modify(Class* o) {
+  o->parens = o->parens.release()->accept(this);
   o->base = o->base.release()->accept(this);
+  o->baseParens = o->baseParens.release()->accept(this);
   o->braces = o->braces.release()->accept(this);
   return o;
 }

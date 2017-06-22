@@ -80,12 +80,22 @@ bi::Expression* bi::Cloner::clone(const Parameter* o) {
       o->loc);
 }
 
+bi::Expression* bi::Cloner::clone(const MemberParameter* o) {
+  return new MemberParameter(o->name, o->type->accept(this),
+      o->value->accept(this), o->loc);
+}
+
 bi::Expression* bi::Cloner::clone(const Identifier<Unknown>* o) {
   return new Identifier<Unknown>(o->name, o->parens->accept(this), o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const Identifier<Parameter>* o) {
   return new Identifier<Parameter>(o->name, o->parens->accept(this), o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(const Identifier<MemberParameter>* o) {
+  return new Identifier<MemberParameter>(o->name, o->parens->accept(this),
+      o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const Identifier<GlobalVariable>* o) {
@@ -196,8 +206,8 @@ bi::Statement* bi::Cloner::clone(const ConversionOperator* o) {
 }
 
 bi::Statement* bi::Cloner::clone(const Class* o) {
-  return new Class(o->name, o->base->accept(this), o->braces->accept(this),
-      o->loc);
+  return new Class(o->name, o->parens->accept(this), o->base->accept(this),
+      o->baseParens->accept(this), o->braces->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const Alias* o) {

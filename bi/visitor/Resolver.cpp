@@ -145,11 +145,27 @@ bi::Expression* bi::Resolver::modify(Parameter* o) {
   return o;
 }
 
+bi::Expression* bi::Resolver::modify(MemberParameter* o) {
+  Modifier::modify(o);
+  if (!o->name->isEmpty()) {
+    top()->add(o);
+  }
+  return o;
+}
+
 bi::Expression* bi::Resolver::modify(Identifier<Unknown>* o) {
   return lookup(o, memberScope)->accept(this);
 }
 
 bi::Expression* bi::Resolver::modify(Identifier<Parameter>* o) {
+  Scope* memberScope = takeMemberScope();
+  Modifier::modify(o);
+  resolve(o, memberScope);
+  o->type = o->target->type->accept(&cloner)->accept(this);
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(Identifier<MemberParameter>* o) {
   Scope* memberScope = takeMemberScope();
   Modifier::modify(o);
   resolve(o, memberScope);
@@ -405,7 +421,9 @@ bi::Statement* bi::Resolver::modify(Basic* o) {
 
 bi::Statement* bi::Resolver::modify(Class* o) {
   push();
+  o->parens = o->parens->accept(this);
   o->base = o->base->accept(this);
+  o->baseParens = o->baseParens->accept(this);
   o->scope = pop();
   if (!o->base->isEmpty()) {
     o->addSuper(o->base.get());
@@ -556,6 +574,9 @@ bi::Expression* bi::Resolver::lookup(Identifier<Unknown>* ref, Scope* scope) {
   switch (category) {
   case PARAMETER:
     return new Identifier<Parameter>(ref->name, ref->parens.release(),
+        ref->loc);
+  case MEMBER_PARAMETER:
+    return new Identifier<MemberParameter>(ref->name, ref->parens.release(),
         ref->loc);
   case GLOBAL_VARIABLE:
     return new Identifier<GlobalVariable>(ref->name, ref->parens.release(),

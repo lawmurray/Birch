@@ -19,6 +19,7 @@ public:
   using indentable_ostream::visit;
 
   virtual void visit(const Class* o);
+  virtual void visit(const MemberParameter* o);
   virtual void visit(const MemberVariable* o);
   virtual void visit(const MemberFunction* o);
   virtual void visit(const AssignmentOperator* o);

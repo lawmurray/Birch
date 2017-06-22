@@ -261,6 +261,7 @@ bool bi::Identifier<bi::UnaryOperator>::possibly(const Parameter& o) const {
 
 template class bi::Identifier<bi::Unknown>;
 template class bi::Identifier<bi::Parameter>;
+template class bi::Identifier<bi::MemberParameter>;
 template class bi::Identifier<bi::GlobalVariable>;
 template class bi::Identifier<bi::LocalVariable>;
 template class bi::Identifier<bi::MemberVariable>;

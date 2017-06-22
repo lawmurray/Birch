@@ -5,12 +5,14 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::Class::Class(shared_ptr<Name> name, Type* base, Statement* braces,
-    shared_ptr<Location> loc) :
+bi::Class::Class(shared_ptr<Name> name, Expression* parens, Type* base,
+    Expression* baseParens, Statement* braces, shared_ptr<Location> loc) :
     Statement(loc),
     Named(name),
+    Parenthesised(parens),
     Based(base),
-    Braced(braces) {
+    Braced(braces),
+    baseParens(baseParens) {
   //
 }
 

@@ -3,6 +3,7 @@
  */
 #include "bi/io/cpp/CppClassGenerator.hpp"
 
+#include "bi/io/cpp/CppConstructorGenerator.hpp"
 #include "bi/primitive/encode.hpp"
 
 bi::CppClassGenerator::CppClassGenerator(std::ostream& base, const int level,
@@ -36,9 +37,8 @@ void bi::CppClassGenerator::visit(const Class* o) {
   }
 
   /* constructor */
-  if (header) {
-    line(o->name << "() = default;\n");
-  }
+  CppConstructorGenerator auxConstructor(base, level, header);
+  auxConstructor << o;
 
   /* destructor */
   if (header) {
@@ -49,6 +49,11 @@ void bi::CppClassGenerator::visit(const Class* o) {
     line("}\n");
   }
 
+  /* member parameters */
+  for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
+    *this << *iter;
+  }
+
   /* member variables and functions */
   *this << o->braces;
 
@@ -56,6 +61,12 @@ void bi::CppClassGenerator::visit(const Class* o) {
   if (header) {
     out();
     line("};\n");
+  }
+}
+
+void bi::CppClassGenerator::visit(const MemberParameter* o) {
+  if (header) {
+    line(o->type << ' ' << o->name << ';');
   }
 }
 

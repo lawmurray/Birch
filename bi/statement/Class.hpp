@@ -5,6 +5,7 @@
 
 #include "bi/statement/Statement.hpp"
 #include "bi/common/Named.hpp"
+#include "bi/common/Parenthesised.hpp"
 #include "bi/common/Based.hpp"
 #include "bi/common/Braced.hpp"
 #include "bi/common/Scoped.hpp"
@@ -20,6 +21,7 @@ namespace bi {
  */
 class Class: public Statement,
     public Named,
+    public Parenthesised,
     public Based,
     public Braced,
     public Scoped {
@@ -28,12 +30,15 @@ public:
    * Constructor.
    *
    * @param name Name.
+   * @param parens Constructor parameters.
    * @param base Base type.
+   * @param baseParens Base type constructor arguments.
    * @param braces Braces.
    * @param loc Location.
    */
-  Class(shared_ptr<Name> name, Type* base, Statement* braces,
-      shared_ptr<Location> loc = nullptr);
+  Class(shared_ptr<Name> name, Expression* parens, Type* base,
+      Expression* baseParens, Statement* braces, shared_ptr<Location> loc =
+          nullptr);
 
   /**
    * Destructor.
@@ -59,6 +64,11 @@ public:
 
   virtual bool dispatchPossibly(const Statement& o) const;
   virtual bool possibly(const Class& o) const;
+
+  /**
+   * Base type constructor arguments.
+   */
+  unique_ptr<Expression> baseParens;
 
 private:
   /**

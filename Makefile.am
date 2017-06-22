@@ -66,6 +66,7 @@ birchc_SOURCES = \
   bi/expression/LambdaFunction.cpp \
   bi/expression/Literal.cpp \
   bi/expression/Member.cpp \
+  bi/expression/MemberParameter.cpp \
   bi/expression/Parameter.cpp \
   bi/expression/ParenthesesExpression.cpp \
   bi/expression/Range.cpp \
@@ -215,6 +216,7 @@ noinst_HEADERS = \
   bi/expression/LambdaFunction.hpp \
   bi/expression/Literal.hpp \
   bi/expression/Member.hpp \
+  bi/expression/MemberParameter.hpp \
   bi/expression/Parameter.hpp \
   bi/expression/ParenthesesExpression.hpp \
   bi/expression/Range.hpp \

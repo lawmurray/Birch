@@ -93,11 +93,20 @@ void bi::Visitor::visit(const Parameter* o) {
   o->value->accept(this);
 }
 
+void bi::Visitor::visit(const MemberParameter* o) {
+  o->type->accept(this);
+  o->value->accept(this);
+}
+
 void bi::Visitor::visit(const Identifier<Unknown>* o) {
   o->parens->accept(this);
 }
 
 void bi::Visitor::visit(const Identifier<Parameter>* o) {
+  o->parens->accept(this);
+}
+
+void bi::Visitor::visit(const Identifier<MemberParameter>* o) {
   o->parens->accept(this);
 }
 
@@ -212,7 +221,9 @@ void bi::Visitor::visit(const ConversionOperator* o) {
 }
 
 void bi::Visitor::visit(const Class* o) {
+  o->parens->accept(this);
   o->base->accept(this);
+  o->baseParens->accept(this);
   o->braces->accept(this);
 }
 
