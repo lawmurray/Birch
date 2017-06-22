@@ -21,6 +21,14 @@ bi::Expression* bi::ParenthesesExpression::strip() {
   return single->strip();
 }
 
+bi::Iterator<bi::Expression> bi::ParenthesesExpression::begin() const {
+  return single->begin();
+}
+
+bi::Iterator<bi::Expression> bi::ParenthesesExpression::end() const {
+  return single->end();
+}
+
 bi::Expression* bi::ParenthesesExpression::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

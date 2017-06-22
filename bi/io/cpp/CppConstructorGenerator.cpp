@@ -16,19 +16,25 @@ void bi::CppConstructorGenerator::visit(const Class* o) {
   } else {
     start("");
   }
-  middle(o->name << '(');
-  CppBaseGenerator aux(base, level, header);
-  aux << o->parens;
-  middle(')');
+  middle(o->name);
+  if (o->parens->isEmpty()) {
+    middle("()");
+  } else {
+    CppBaseGenerator aux(base, level, header);
+    aux << o->parens;
+  }
   if (header) {
     finish(";\n");
   } else {
     finish(" :");
     in();
     in();
-    if (!o->base->isEmpty()) {
+    if (!o->base->isEmpty() && !o->baseParens->isEmpty()) {
       before = true;
-      start("super_type(" << o->baseParens << ')');
+      start("super_type" << o->baseParens);
+    }
+    for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
+      *this << *iter;
     }
     *this << o->braces;
     out();
@@ -56,7 +62,12 @@ void bi::CppConstructorGenerator::visit(const MemberVariable* o) {
   before = true;
 
   start(o->name << '(');
-  if (o->type->isArray()) {
+  if (o->type->isClass() && !o->parens->isEmpty()) {
+    ClassType* type = dynamic_cast<ClassType*>(o->type->strip());
+    assert(type);
+    middle("new (GC_MALLOC(sizeof(bi::type::" << type->name << "))) ");
+    middle(type->name << o->parens);
+  } else if (o->type->isArray()) {
     const ArrayType* type =
         dynamic_cast<const ArrayType*>(o->type.get());
     assert(type);

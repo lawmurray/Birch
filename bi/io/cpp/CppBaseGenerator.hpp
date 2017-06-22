@@ -85,14 +85,6 @@ public:
 
 protected:
   /**
-   * Generate an argument to a function.
-   *
-   * @param arg The argument.
-   * @param param The parameter.
-   */
-  void genArg(const Expression* arg, const Expression* param);
-
-  /**
    * Output header instead of source?
    */
   bool header;

@@ -149,7 +149,7 @@ identifier
     ;
 
 parens_expression
-    : '(' expression_list ')'  { $$ = new bi::ParenthesesExpression($2, make_loc(@$)); }
+    : '(' expression ')'  { $$ = new bi::ParenthesesExpression($2, make_loc(@$)); }
     ;
     
 function_expression
@@ -303,8 +303,8 @@ assignment_operator
     ;
 
 parameters
-    : '(' ')'                 { $$ = new bi::EmptyExpression(); }
-    | '(' parameter_list ')'  { $$ = $2; }
+    : '(' ')'                 { $$ = new bi::ParenthesesExpression(new bi::EmptyExpression(), make_loc(@$)); }
+    | '(' parameter_list ')'  { $$ = new bi::ParenthesesExpression($2, make_loc(@$)); }
     ;
 
 parameter_list
@@ -317,8 +317,8 @@ parameter
     ;
 
 options
-    : '(' ')'              { $$ = new bi::EmptyExpression(); }
-    | '(' option_list ')'  { $$ = $2; }
+    : '(' ')'              { $$ = new bi::ParenthesesExpression(new bi::EmptyExpression(), make_loc(@$)); }
+    | '(' option_list ')'  { $$ = new bi::ParenthesesExpression($2, make_loc(@$)); }
     ;
 
 option_list
@@ -331,8 +331,8 @@ option
     ;
 
 member_parameters
-    : '(' ')'                        { $$ = new bi::EmptyExpression(); }
-    | '(' member_parameter_list ')'  { $$ = $2; }
+    : '(' ')'                        { $$ = new bi::ParenthesesExpression(new bi::EmptyExpression(), make_loc(@$)); }
+    | '(' member_parameter_list ')'  { $$ = new bi::ParenthesesExpression($2, make_loc(@$)); }
     ;
 
 optional_member_parameters
@@ -350,8 +350,9 @@ member_parameter
     ;
 
 arguments
-    : '(' ')'                  { $$ = new bi::EmptyExpression(); }
-    | '(' expression_list ')'  { $$ = $2; }
+    : '(' ')'                  { $$ = new bi::ParenthesesExpression(new bi::EmptyExpression(), make_loc(@$)); }
+    | '(' expression_list ')'  { $$ = new bi::ParenthesesExpression($2, make_loc(@$)); }
+    ;
     ;
 
 optional_arguments
@@ -452,9 +453,9 @@ expression_statement
     ;
 
 if
-    : IF '(' expression ')' braces ELSE braces  { $$ = new bi::If($3, $5, $7, make_loc(@$)); }
-    | IF '(' expression ')' braces ELSE if      { $$ = new bi::If($3, $5, $7, make_loc(@$)); }
-    | IF '(' expression ')' braces              { $$ = new bi::If($3, $5, new bi::EmptyStatement(), make_loc(@$)); }
+    : IF parens_expression braces ELSE braces  { $$ = new bi::If($2, $3, $5, make_loc(@$)); }
+    | IF parens_expression braces ELSE if      { $$ = new bi::If($2, $3, $5, make_loc(@$)); }
+    | IF parens_expression braces              { $$ = new bi::If($2, $3, new bi::EmptyStatement(), make_loc(@$)); }
     ;
 
 for
@@ -462,7 +463,7 @@ for
     ;
 
 while
-    : WHILE '(' expression ')' braces  { $$ = new bi::While($3, $5, make_loc(@$)); }
+    : WHILE parens_expression braces  { $$ = new bi::While($2, $3, make_loc(@$)); }
     ;
 
 assertion

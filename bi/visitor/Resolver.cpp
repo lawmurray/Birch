@@ -225,7 +225,7 @@ bi::Expression* bi::Resolver::modify(Identifier<BinaryOperator>* o) {
   if (*o->name == "~>") {
     /* x ~> m is syntactic sugar for m.observe(x) */
     Expression* expr = new Identifier<MemberFunction>(new Name("observe"),
-        o->left.release(), o->loc);
+        new ParenthesesExpression(o->left.release(), o->loc), o->loc);
     expr = new Member(o->right.release(), expr, o->loc);
     return expr->accept(this);
   } else {
@@ -257,7 +257,7 @@ bi::Statement* bi::Resolver::modify(Assignment* o) {
     Expression* expr;
     Statement* stmt;
     expr = new Identifier<MemberFunction>(new Name("simulate"),
-        new EmptyExpression(), o->loc);
+        new ParenthesesExpression(new EmptyExpression(), o->loc), o->loc);
     expr = new Member(o->right.release(), expr, o->loc);
     stmt = new Assignment(o->left.release(), new Name("<-"), expr, o->loc);
     return stmt->accept(this);
@@ -273,11 +273,13 @@ bi::Statement* bi::Resolver::modify(Assignment* o) {
     Statement* assertion = new Assert(
         new Member(o->left->accept(&cloner),
             new Identifier<Unknown>(new Name("isUninitialized"),
-                new EmptyExpression(), o->loc), o->loc), o->loc);
+                new ParenthesesExpression(new EmptyExpression(), o->loc),
+                o->loc), o->loc), o->loc);
     Expression* cond = new Identifier<UnaryOperator>(new Name("!"),
         new Member(o->left->accept(&cloner),
             new Identifier<Unknown>(new Name("isMissing"),
-                new EmptyExpression(), o->loc), o->loc), o->loc);
+                new ParenthesesExpression(new EmptyExpression(), o->loc),
+                o->loc), o->loc), o->loc);
     Statement* braces = new ExpressionStatement(
         new Identifier<BinaryOperator>(o->left->accept(&cloner),
             new Name("~>"), o->right->accept(&cloner), o->loc));

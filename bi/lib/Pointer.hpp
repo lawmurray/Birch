@@ -42,7 +42,7 @@ public:
    * Generic copy constructor.
    */
   template<class U>
-  Pointer(const Pointer<U>& o) : ptr(o.ptr), page(o.page) {
+  explicit Pointer(const Pointer<U>& o) : ptr(o.ptr), page(o.page) {
     //
   }
 
@@ -124,6 +124,30 @@ public:
    */
   operator bool() const {
     return ptr != nullptr;
+  }
+
+  /**
+   * Pointer casts.
+   */
+  template<class U>
+  operator Pointer<U>() {
+    return Pointer<U>(*this);
+  }
+  template<class U>
+  operator Pointer<U>() const {
+    return Pointer<U>(*this);
+  }
+
+  /**
+   * Other casts (defer to value type).
+   */
+  template<class U>
+  operator U() {
+    return *ptr;
+  }
+  template<class U>
+  operator U() const {
+    return *ptr;
   }
 
   /**

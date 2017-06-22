@@ -13,7 +13,7 @@ class Parameter;
 class VarReference;
 
 /**
- * ParenthesesExpression.
+ * Expression in parentheses.
  *
  * @ingroup compiler_expression
  */
@@ -33,10 +33,9 @@ public:
    */
   virtual ~ParenthesesExpression();
 
-  /**
-   * Strip parentheses.
-   */
   virtual Expression* strip();
+  virtual Iterator<Expression> begin() const;
+  virtual Iterator<Expression> end() const;
 
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);

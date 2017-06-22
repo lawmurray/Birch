@@ -11,7 +11,7 @@
 
 namespace bi {
 /**
- * Bracketed expression.
+ * Expression with proceeding square brackets.
  *
  * @ingroup compiler_expression
  */

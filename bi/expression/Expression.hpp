@@ -120,12 +120,12 @@ public:
    * Iterator to first element if this is a list, to one-past-the-last if
    * this is empty, otherwise to this.
    */
-  Iterator<Expression> begin() const;
+  virtual Iterator<Expression> begin() const;
 
   /**
    * Iterator to one-past-the-last.
    */
-  Iterator<Expression> end() const;
+  virtual Iterator<Expression> end() const;
 
   /*
    * Double-dispatch partial order comparisons.
