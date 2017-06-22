@@ -307,47 +307,7 @@ bi::Statement* bi::Resolver::modify(Assignment* o) {
   if (!o->left->type->assignable) {
     throw NotAssignableException(o);
   }
-  if (*o->name == "<~") {
-    /* x <~ m is syntactic sugar for x <- m.simulate() */
-    Expression* expr;
-    Statement* stmt;
-    expr = new Identifier<MemberFunction>(new Name("simulate"),
-        new ParenthesesExpression(new EmptyExpression(), o->loc), o->loc);
-    expr = new Member(o->right.release(), expr, o->loc);
-    stmt = new Assignment(o->left.release(), new Name("<-"), expr, o->loc);
-    return stmt->accept(this);
-  } else if (*o->name == "~") {
-    /* x ~ m is syntactic sugar for:
-     *
-     *   assert x.isUninitialized();
-     *   if (!x.isMissing()) {
-     *     x ~> m;
-     *   }
-     *   x <- m;
-     */
-    Statement* assertion = new Assert(
-        new Member(o->left->accept(&cloner),
-            new Identifier<Unknown>(new Name("isUninitialized"),
-                new ParenthesesExpression(new EmptyExpression(), o->loc),
-                o->loc), o->loc), o->loc);
-    Expression* cond = new ParenthesesExpression(
-        new Identifier<UnaryOperator>(new Name("!"),
-            new Member(o->left->accept(&cloner),
-                new Identifier<Unknown>(new Name("isMissing"),
-                    new ParenthesesExpression(new EmptyExpression(), o->loc),
-                    o->loc), o->loc), o->loc), o->loc);
-    Statement* braces = new ExpressionStatement(
-        new Identifier<BinaryOperator>(o->left->accept(&cloner),
-            new Name("~>"), o->right->accept(&cloner), o->loc));
-    Statement* conditional = new If(cond, braces, new EmptyStatement(),
-        o->loc);
-    Statement* assignment = new Assignment(o->left.release(), new Name("<-"),
-        o->right.release(), o->loc);
-    List<Statement>* list = new List<Statement>(conditional, assignment,
-        o->loc);
-    List<Statement>* result = new List<Statement>(assertion, list, o->loc);
-    return result->accept(this);
-  } else {
+  if (*o->name == "<-") {
     /*
      * An assignment is valid if:
      *
@@ -371,6 +331,8 @@ bi::Statement* bi::Resolver::modify(Assignment* o) {
       //resolve(o, memberScope);
     }
   }
+  ///@todo The <~ and ~ assignments, which are currently not checked, and
+  /// map to function templates in bi.hpp
   return o;
 }
 

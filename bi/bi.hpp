@@ -20,3 +20,31 @@
 #include <gc.h>
 
 #define BI_NEW(Type) new (GC_MALLOC(sizeof(Type))) Type
+
+/**
+ * Left tilde (`<~`) operator
+ */
+template<class Left, class Right>
+void left_tilde_(Left& left, const Right& right) {
+  left = right->simulate();
+}
+
+/**
+ * Right tilde (`~>`) operator
+ */
+template<class Left, class Right>
+auto right_tilde_(const Left& left, const Right& right) {
+  return right->observe(left);
+}
+
+/**
+ * Tilde (`~`) operator
+ */
+template<class Left, class Right>
+auto tilde_(Left& left, const Right& right) {
+  assert(left->isUninitialized());
+  if (left->isMissing()) {
+    right_tilde_(left->value(), right);
+  }
+  left = right;
+}

@@ -19,7 +19,7 @@ bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
 }
 
 void bi::CppBaseGenerator::visit(const Name* o) {
-  middle(o->str());
+  middle(internalise(o->str()));
 }
 
 void bi::CppBaseGenerator::visit(const List<Expression>* o) {
@@ -122,39 +122,39 @@ void bi::CppBaseGenerator::visit(const MemberParameter* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Identifier<Parameter>* o) {
-  middle(internalise(o->name->str()));
+  middle(o->name);
 }
 
 void bi::CppBaseGenerator::visit(const Identifier<MemberParameter>* o) {
-  middle(internalise(o->name->str()));
+  middle(o->name);
 }
 
 void bi::CppBaseGenerator::visit(const Identifier<GlobalVariable>* o) {
-  middle(internalise(o->name->str()));
+  middle(o->name);
 }
 
 void bi::CppBaseGenerator::visit(const Identifier<LocalVariable>* o) {
-  middle(internalise(o->name->str()));
+  middle(o->name);
 }
 
 void bi::CppBaseGenerator::visit(const Identifier<MemberVariable>* o) {
-  middle(internalise(o->name->str()));
+  middle(o->name);
 }
 
 void bi::CppBaseGenerator::visit(const Identifier<Function>* o) {
-  middle("bi::func::" << internalise(o->name->str()) << '(');
+  middle("bi::func::" << o->name << '(');
   genArgs(o->parens.get(), o->target->parens.get());
   middle(')');
 }
 
 void bi::CppBaseGenerator::visit(const Identifier<Coroutine>* o) {
-  middle("bi::func::" << internalise(o->name->str()) << '(');
+  middle("bi::func::" << o->name << '(');
   genArgs(o->parens.get(), o->target->parens.get());
   middle(')');
 }
 
 void bi::CppBaseGenerator::visit(const Identifier<MemberFunction>* o) {
-  middle(internalise(o->name->str()) << '(');
+  middle(o->name << '(');
   genArgs(o->parens.get(), o->target->parens.get());
   middle(')');
 }
@@ -163,11 +163,11 @@ void bi::CppBaseGenerator::visit(const Identifier<BinaryOperator>* o) {
   if (isTranslatable(o->name->str())) {
     /* can use as raw C++ operator */
     genArg(o->left.get(), o->target->left.get());
-    middle(' ' << o->name << ' ');
+    middle(' ' << o->name->str() << ' ');
     genArg(o->right.get(), o->target->right.get());
   } else {
     /* must use as function */
-    middle("bi::" << internalise(o->name->str()) << '(');
+    middle("bi::" << o->name << '(');
     genArg(o->left.get(), o->target->left.get());
     middle(", ");
     genArg(o->right.get(), o->target->right.get());
@@ -178,11 +178,11 @@ void bi::CppBaseGenerator::visit(const Identifier<BinaryOperator>* o) {
 void bi::CppBaseGenerator::visit(const Identifier<UnaryOperator>* o) {
   if (isTranslatable(o->name->str())) {
     /* can use as raw C++ operator */
-    middle(o->name);
+    middle(o->name->str());
     genArg(o->single.get(), o->target->single.get());
   } else {
     /* must use as function */
-    middle("bi::" << internalise(o->name->str()) << '(');
+    middle("bi::" << o->name << '(');
     genArg(o->single.get(), o->target->single.get());
     middle(')');
   }
@@ -257,7 +257,7 @@ void bi::CppBaseGenerator::visit(const Function* o) {
     if (!header) {
       middle("bi::func::");
     }
-    middle(internalise(o->name->str()) << o->parens);
+    middle(o->name << o->parens);
 
     if (header) {
       finish(';');
@@ -434,9 +434,9 @@ void bi::CppBaseGenerator::visit(const BinaryOperator* o) {
       middle("bi::");
     }
     if (isTranslatable(o->name->str())) {
-      middle("operator" << o->name);
+      middle("operator" << o->name->str());
     } else {
-      middle(internalise(o->name->str()));
+      middle(o->name);
     }
     middle('(' << o->left << ", " << o->right << ')');
     if (header) {
@@ -460,15 +460,14 @@ void bi::CppBaseGenerator::visit(const UnaryOperator* o) {
     if (header) {
       line("namespace bi {");
     }
-
     start(o->returnType << ' ');
     if (!header) {
       middle("bi::");
     }
     if (isTranslatable(o->name->str())) {
-      middle("operator" << o->name);
+      middle("operator" << o->name->str());
     } else {
-      middle(internalise(o->name->str()));
+      middle(o->name);
     }
     middle('(' << o->single << ')');
     if (header) {
@@ -538,16 +537,20 @@ void bi::CppBaseGenerator::visit(const List<Statement>* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Assignment* o) {
-  if (o->left->type->isClass() && !o->right->type->isClass()) {
-    start("*(" << o->left << ')');
+  if (*o->name == "<~" || *o->name == "~") {
+    middle(o->name << '(' << o->left << ", " << o->right << ')');
   } else {
-    start(o->left);
-  }
-  middle(" = ");
-  if (!o->left->type->isClass() && o->right->type->isClass()) {
-    middle("*(" << o->right << ')');
-  } else {
-    middle(o->right);
+    if (o->left->type->isClass() && !o->right->type->isClass()) {
+      start("*(" << o->left << ')');
+    } else {
+      start(o->left);
+    }
+    middle(" = ");
+    if (!o->left->type->isClass() && o->right->type->isClass()) {
+      middle("*(" << o->right << ')');
+    } else {
+      middle(o->right);
+    }
   }
   finish(';');
 }
