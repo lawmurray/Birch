@@ -312,6 +312,10 @@ void bi::CppBaseGenerator::visit(const Program* o) {
         start(param->type << ' ' << param->name);
         if (!param->value->isEmpty()) {
           middle(" = " << param->value);
+        } else if (param->type->isClass()) {
+          auto type = dynamic_cast<const ClassType*>(param->type->strip());
+          assert(type);
+          middle(" = BI_NEW(bi::type::" << type->name << ')');
         }
         finish(';');
       }
@@ -538,7 +542,7 @@ void bi::CppBaseGenerator::visit(const List<Statement>* o) {
 
 void bi::CppBaseGenerator::visit(const Assignment* o) {
   if (*o->name == "<~" || *o->name == "~") {
-    middle(o->name << '(' << o->left << ", " << o->right << ')');
+    start(o->name << '(' << o->left << ", " << o->right << ')');
   } else {
     if (o->left->type->isClass() && !o->right->type->isClass()) {
       start("*(" << o->left << ')');
