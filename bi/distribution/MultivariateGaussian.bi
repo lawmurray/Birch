@@ -117,14 +117,3 @@ function Gaussian(μ:Real[_], Σ:Real[_,_]) -> MultivariateGaussian {
   m.initialize(μ, Σ);
   return m;
 }
-
-/**
- * Initialize.
- */
-//operator x:MultivariateGaussian ~ m:MultivariateGaussian {
-//  assert x.isUninitialized();
-//  if (!x.isMissing()) {
-//    x ~> m;
-//  }
-//  x <- m;
-//}

@@ -107,14 +107,3 @@ function Gaussian(μ:Real, σ2:Real) -> Gaussian {
   m.initialize(μ, σ2);
   return m;
 }
-
-/**
- * Initialize.
- */
-//operator x:Gaussian ~ m:Gaussian {
-//  assert x.isUninitialized();
-//  if (!x.isMissing()) {
-//    x ~> m;
-//  }
-//  x <- m;
-//}
