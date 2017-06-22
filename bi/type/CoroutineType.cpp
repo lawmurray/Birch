@@ -5,10 +5,10 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::CoroutineType::CoroutineType(Type* type,
-    shared_ptr<Location> loc, const bool assignable) :
+bi::CoroutineType::CoroutineType(Type* returnType, shared_ptr<Location> loc,
+    const bool assignable) :
     Type(loc, assignable),
-    type(type) {
+    ReturnTyped(returnType) {
   //
 }
 
@@ -37,7 +37,7 @@ bool bi::CoroutineType::dispatchDefinitely(const Type& o) const {
 }
 
 bool bi::CoroutineType::definitely(const CoroutineType& o) const {
-  return type->definitely(*o.type);
+  return returnType->definitely(*o.returnType);
 }
 
 bool bi::CoroutineType::definitely(const ParenthesesType& o) const {
@@ -49,7 +49,7 @@ bool bi::CoroutineType::dispatchPossibly(const Type& o) const {
 }
 
 bool bi::CoroutineType::possibly(const CoroutineType& o) const {
-  return type->possibly(*o.type);
+  return returnType->possibly(*o.returnType);
 }
 
 bool bi::CoroutineType::possibly(const ParenthesesType& o) const {

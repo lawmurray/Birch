@@ -328,7 +328,13 @@ void bi::CppBaseGenerator::visit(const Program* o) {
     if (o->parens->tupleSize() > 0) {
       /* option variables */
       for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
-        line(*iter << ';');
+        auto param = dynamic_cast<const Parameter*>(*iter);
+        assert(param);
+        start(param->type << ' ' << param->name);
+        if (!param->value->isEmpty()) {
+          middle(" = " << param->value);
+        }
+        finish(';');
       }
       line("");
 
@@ -403,7 +409,9 @@ void bi::CppBaseGenerator::visit(const Program* o) {
         finish(':');
         in();
         if ((*iter)->type->isBasic()) {
-          line(name << " = " << (*iter)->type << "(::optarg);");
+          auto type = dynamic_cast<Named*>((*iter)->type.get());
+          assert(type);
+          line(name << " = bi::func::" << type->name << "(::optarg);");
         } else {
           line(name << " = ::optarg;");
         }
@@ -657,11 +665,11 @@ void bi::CppBaseGenerator::visit(const ParenthesesType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const FunctionType* o) {
-  middle("std::function<" << o->type << o->parens);
+  middle("std::function<" << o->returnType << o->parens);
 }
 
 void bi::CppBaseGenerator::visit(const CoroutineType* o) {
-  middle("bi::Pointer<bi::Coroutine<" << o->type << ">>");
+  middle("bi::Pointer<bi::Coroutine<" << o->returnType << ">>");
 }
 
 void bi::CppBaseGenerator::visit(const ClassType* o) {

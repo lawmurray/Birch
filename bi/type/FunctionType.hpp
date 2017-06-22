@@ -4,27 +4,26 @@
 #pragma once
 
 #include "bi/type/Type.hpp"
-
-#include "bi/primitive/unique_ptr.hpp"
+#include "bi/common/ReturnTyped.hpp"
 
 namespace bi {
 /**
- * Lambda function type.
+ * Function type.
  *
  * @ingroup compiler_type
  */
-class FunctionType: public Type {
+class FunctionType: public Type, public ReturnTyped {
 public:
   /**
    * Constructor.
    *
    * @param parens Parameters type.
-   * @param type Return type.
+   * @param returnType Return type.
    * @param loc Location.
    * @param assignable Is this type assignable?
    */
-  FunctionType(Type* parens, Type* type, shared_ptr<Location> loc = nullptr,
-      const bool assignable = false);
+  FunctionType(Type* parens, Type* returnType = new EmptyType(),
+      shared_ptr<Location> loc = nullptr, const bool assignable = false);
 
   /**
    * Destructor.
@@ -52,10 +51,5 @@ public:
    * Parameters type.
    */
   unique_ptr<Type> parens;
-
-  /**
-   * Return type.
-   */
-  unique_ptr<Type> type;
 };
 }

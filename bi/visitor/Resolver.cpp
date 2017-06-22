@@ -157,7 +157,18 @@ bi::Expression* bi::Resolver::modify(Identifier<Parameter>* o) {
   Scope* memberScope = takeMemberScope();
   Modifier::modify(o);
   resolve(o, memberScope);
-  o->type = o->target->type->accept(&cloner)->accept(this);
+  if (!o->parens->isEmpty()) {
+    if (o->target->type->isFunction() || o->target->type->isCoroutine()) {
+      ///@todo Check arguments
+      auto func = dynamic_cast<ReturnTyped*>(o->target->type.get());
+      assert(func);
+      o->type = func->returnType->accept(&cloner)->accept(this);
+    } else {
+      assert(false);  ///@todo Throw exception
+    }
+  } else {
+    o->type = o->target->type->accept(&cloner)->accept(this);
+  }
   return o;
 }
 
@@ -165,7 +176,18 @@ bi::Expression* bi::Resolver::modify(Identifier<MemberParameter>* o) {
   Scope* memberScope = takeMemberScope();
   Modifier::modify(o);
   resolve(o, memberScope);
-  o->type = o->target->type->accept(&cloner)->accept(this);
+  if (!o->parens->isEmpty()) {
+    if (o->target->type->isFunction() || o->target->type->isCoroutine()) {
+      ///@todo Check arguments
+      auto func = dynamic_cast<ReturnTyped*>(o->target->type.get());
+      assert(func);
+      o->type = func->returnType->accept(&cloner)->accept(this);
+    } else {
+      assert(false);  ///@todo Throw exception
+    }
+  } else {
+    o->type = o->target->type->accept(&cloner)->accept(this);
+  }
   return o;
 }
 
@@ -173,7 +195,18 @@ bi::Expression* bi::Resolver::modify(Identifier<GlobalVariable>* o) {
   Scope* memberScope = takeMemberScope();
   Modifier::modify(o);
   resolve(o, memberScope);
-  o->type = o->target->type->accept(&cloner)->accept(this);
+  if (!o->parens->isEmpty()) {
+    if (o->target->type->isFunction() || o->target->type->isCoroutine()) {
+      ///@todo Check arguments
+      auto func = dynamic_cast<ReturnTyped*>(o->target->type.get());
+      assert(func);
+      o->type = func->returnType->accept(&cloner)->accept(this);
+    } else {
+      assert(false);  ///@todo Throw exception
+    }
+  } else {
+    o->type = o->target->type->accept(&cloner)->accept(this);
+  }
   return o;
 }
 
@@ -181,7 +214,18 @@ bi::Expression* bi::Resolver::modify(Identifier<LocalVariable>* o) {
   Scope* memberScope = takeMemberScope();
   Modifier::modify(o);
   resolve(o, memberScope);
-  o->type = o->target->type->accept(&cloner)->accept(this);
+  if (!o->parens->isEmpty()) {
+    if (o->target->type->isFunction() || o->target->type->isCoroutine()) {
+      ///@todo Check arguments
+      auto func = dynamic_cast<ReturnTyped*>(o->target->type.get());
+      assert(func);
+      o->type = func->returnType->accept(&cloner)->accept(this);
+    } else {
+      assert(false);  ///@todo Throw exception
+    }
+  } else {
+    o->type = o->target->type->accept(&cloner)->accept(this);
+  }
   return o;
 }
 
@@ -189,7 +233,18 @@ bi::Expression* bi::Resolver::modify(Identifier<MemberVariable>* o) {
   Scope* memberScope = takeMemberScope();
   Modifier::modify(o);
   resolve(o, memberScope);
-  o->type = o->target->type->accept(&cloner)->accept(this);
+  if (!o->parens->isEmpty()) {
+    if (o->target->type->isFunction() || o->target->type->isCoroutine()) {
+      ///@todo Check arguments
+      auto func = dynamic_cast<ReturnTyped*>(o->target->type.get());
+      assert(func);
+      o->type = func->returnType->accept(&cloner)->accept(this);
+    } else {
+      assert(false);  ///@todo Throw exception
+    }
+  } else {
+    o->type = o->target->type->accept(&cloner)->accept(this);
+  }
   return o;
 }
 
@@ -275,11 +330,12 @@ bi::Statement* bi::Resolver::modify(Assignment* o) {
             new Identifier<Unknown>(new Name("isUninitialized"),
                 new ParenthesesExpression(new EmptyExpression(), o->loc),
                 o->loc), o->loc), o->loc);
-    Expression* cond = new Identifier<UnaryOperator>(new Name("!"),
-        new Member(o->left->accept(&cloner),
-            new Identifier<Unknown>(new Name("isMissing"),
-                new ParenthesesExpression(new EmptyExpression(), o->loc),
-                o->loc), o->loc), o->loc);
+    Expression* cond = new ParenthesesExpression(
+        new Identifier<UnaryOperator>(new Name("!"),
+            new Member(o->left->accept(&cloner),
+                new Identifier<Unknown>(new Name("isMissing"),
+                    new ParenthesesExpression(new EmptyExpression(), o->loc),
+                    o->loc), o->loc), o->loc), o->loc);
     Statement* braces = new ExpressionStatement(
         new Identifier<BinaryOperator>(o->left->accept(&cloner),
             new Name("~>"), o->right->accept(&cloner), o->loc));

@@ -348,12 +348,12 @@ bi::Type* bi::Modifier::modify(ParenthesesType* o) {
 
 bi::Type* bi::Modifier::modify(FunctionType* o) {
   o->parens = o->parens.release()->accept(this);
-  o->type = o->type.release()->accept(this);
+  o->returnType = o->returnType.release()->accept(this);
   return o;
 }
 
 bi::Type* bi::Modifier::modify(CoroutineType* o) {
-  o->type = o->type.release()->accept(this);
+  o->returnType = o->returnType.release()->accept(this);
   return o;
 }
 

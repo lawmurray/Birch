@@ -375,12 +375,12 @@ void bi::bi_ostream::visit(const ParenthesesType* o) {
 
 void bi::bi_ostream::visit(const FunctionType* o) {
   *this << "Function<" << o->parens;
-  if (!o->type->isEmpty()) {
-    *this << " -> " << o->type;
+  if (!o->returnType->isEmpty()) {
+    *this << " -> " << o->returnType;
   }
   *this << '>';
 }
 
 void bi::bi_ostream::visit(const CoroutineType* o) {
-  *this << "Coroutine<" << o->type << '>';
+  *this << "Coroutine<" << o->returnType << '>';
 }

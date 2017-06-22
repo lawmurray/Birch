@@ -290,11 +290,11 @@ bi::Type* bi::Cloner::clone(const ParenthesesType* o) {
 }
 
 bi::Type* bi::Cloner::clone(const FunctionType* o) {
-  return new FunctionType(o->parens->accept(this), o->type->accept(this),
-      o->loc, o->assignable);
+  return new FunctionType(o->parens->accept(this),
+      o->returnType->accept(this), o->loc, o->assignable);
 }
 
 bi::Type* bi::Cloner::clone(const CoroutineType* o) {
-  return new CoroutineType(o->type->accept(this), o->loc, o->assignable);
+  return new CoroutineType(o->returnType->accept(this), o->loc, o->assignable);
 }
 

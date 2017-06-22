@@ -5,11 +5,11 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::FunctionType::FunctionType(Type* parens, Type* type,
+bi::FunctionType::FunctionType(Type* parens, Type* returnType,
     shared_ptr<Location> loc, const bool assignable) :
     Type(loc, assignable),
-    parens(parens),
-    type(type) {
+    ReturnTyped(returnType),
+    parens(parens) {
   //
 }
 
@@ -38,7 +38,8 @@ bool bi::FunctionType::dispatchDefinitely(const Type& o) const {
 }
 
 bool bi::FunctionType::definitely(const FunctionType& o) const {
-  return parens->definitely(*o.parens) && type->definitely(*o.type);
+  return parens->definitely(*o.parens)
+      && returnType->definitely(*o.returnType);
 }
 
 bool bi::FunctionType::definitely(const ParenthesesType& o) const {
@@ -50,7 +51,7 @@ bool bi::FunctionType::dispatchPossibly(const Type& o) const {
 }
 
 bool bi::FunctionType::possibly(const FunctionType& o) const {
-  return parens->possibly(*o.parens) && type->possibly(*o.type);
+  return parens->possibly(*o.parens) && returnType->possibly(*o.returnType);
 }
 
 bool bi::FunctionType::possibly(const ParenthesesType& o) const {

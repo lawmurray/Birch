@@ -4,26 +4,25 @@
 #pragma once
 
 #include "bi/type/Type.hpp"
-
-#include "bi/primitive/unique_ptr.hpp"
+#include "bi/common/ReturnTyped.hpp"
 
 namespace bi {
 /**
- * Lambda function type.
+ * Coroutine type.
  *
  * @ingroup compiler_type
  */
-class CoroutineType: public Type {
+class CoroutineType: public Type, public ReturnTyped {
 public:
   /**
    * Constructor.
    *
-   * @param type Return type.
+   * @param returnType Return type.
    * @param loc Location.
    * @param assignable Is this type assignable?
    */
-  CoroutineType(Type* type, shared_ptr<Location> loc = nullptr,
-      const bool assignable = false);
+  CoroutineType(Type* returnType = new EmptyType(), shared_ptr<Location> loc =
+      nullptr, const bool assignable = false);
 
   /**
    * Destructor.
@@ -46,10 +45,5 @@ public:
   virtual bool dispatchPossibly(const Type& o) const;
   virtual bool possibly(const CoroutineType& o) const;
   virtual bool possibly(const ParenthesesType& o) const;
-
-  /**
-   * Return type.
-   */
-  unique_ptr<Type> type;
 };
 }
