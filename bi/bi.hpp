@@ -7,6 +7,8 @@
 #pragma once
 
 #include "bi/lib/easy.hpp"
+#include "bi/lib/Heap.hpp"
+#include "bi/lib/Markable.hpp"
 #include "bi/lib/Pointer.hpp"
 #include "bi/lib/Coroutine.hpp"
 
@@ -17,10 +19,8 @@
 #include <cassert>
 
 #include <getopt.h>
-#include <gc.h>
 
-#define BI_NEW(Type) new (GC_MALLOC(sizeof(Type))) Type
-
+namespace bi {
 /**
  * Left tilde (`<~`) operator
  */
@@ -47,4 +47,5 @@ auto tilde_(Left& left, const Right& right) {
     right_tilde_(left->value(), right);
   }
   left = right;
+}
 }

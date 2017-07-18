@@ -3,6 +3,8 @@
  */
 #pragma once
 
+#include <cstddef>
+
 namespace bi {
 /**
  * Relocatable pointer.
@@ -13,28 +15,35 @@ namespace bi {
  */
 template<class T>
 class Pointer {
-  template<class U>
-  friend class Pointer;
+  template<class U> friend class Pointer;
+  friend class Heap;
 public:
   /**
-   * Constructor.
+   * Constructor for global pointer.
    */
-  Pointer(T* ptr = nullptr) : ptr(ptr), page(-1) {
+  Pointer(T* ptr = nullptr) : ptr(ptr), index(-1) {
     //
   }
 
   /**
-   * Generic constructor.
+   * Generic constructor for global pointer.
    */
   template<class U>
-  Pointer(U* ptr = nullptr) : ptr(ptr), page(-1) {
+  Pointer(U* ptr = nullptr) : ptr(ptr), index(-1) {
+    //
+  }
+
+  /**
+   * Constructor for coroutine-local pointer.
+   */
+  Pointer(const size_t index) : ptr(nullptr), index(index) {
     //
   }
 
   /**
    * Copy constructor.
    */
-  Pointer(const Pointer<T>& o) : ptr(o.ptr), page(o.page) {
+  Pointer(const Pointer<T>& o) : ptr(o.ptr), index(o.index) {
     //
   }
 
@@ -42,7 +51,7 @@ public:
    * Generic copy constructor.
    */
   template<class U>
-  Pointer(const Pointer<U>& o) : ptr(o.ptr), page(o.page) {
+  Pointer(const Pointer<U>& o) : ptr(o.ptr), index(o.index) {
     //
   }
 
@@ -57,80 +66,37 @@ public:
    * Equality operators.
    */
   bool operator==(const Pointer<T>& o) const {
-    return ptr == o.ptr && page == o.page;
+    return get() == o.get();
   }
   bool operator!=(const Pointer<T>& o) const {
     return !(*this == o);
   }
 
-  /*
-   * Inequality operators.
-   */
-  bool operator<(const Pointer<T>& o) const {
-    return ptr < o.ptr;
-  }
-  bool operator>(const Pointer<T>& o) const {
-    return ptr > o.ptr;
-  }
-  bool operator<=(const Pointer<T>& o) const {
-    return ptr <= o.ptr;
-  }
-  bool operator>=(const Pointer<T>& o) const {
-    return ptr >= o.ptr;
-  }
-
-  /*
-   * Arithmetic operators.
-   */
-  Pointer<T>& operator+=(const ptrdiff_t o) {
-    ptr += o;
-    return *this;
-  }
-  Pointer<T>& operator-=(const ptrdiff_t o) {
-    ptr -= o;
-    return *this;
-  }
-  Pointer<T> operator+(const ptrdiff_t o) const {
-    Pointer<T> result(*this);
-    result += o;
-    return result;
-  }
-  Pointer<T> operator-(const ptrdiff_t o) const {
-    Pointer<T> result(*this);
-    result -= o;
-    return result;
-  }
-
   /**
-   * Cast to raw pointer.
+   * Get the raw pointer.
    */
-  operator T*() {
-    if (page < 0) {
-      return ptr;
-    } else {
-      assert(false);
-    }
-  }
-  operator T* const() const {
-    if (page < 0) {
-      return ptr;
-    } else {
-      assert(false);
-    }
-  }
+  T* get();
+  T* const get() const;
 
   /**
    * Dereference.
    */
-  T& operator*() const {
-    return *ptr;
+  T& operator*() {
+    return *get();
+  }
+  const T& operator*() const {
+    return *get();
   }
 
   /**
    * Member access.
    */
-  T* operator->() const {
-    return ptr;
+  T* operator->() {
+    //@todo Copy-on-write
+    return get();
+  }
+  T* const operator->() const {
+    return get();
   }
 
   /**
@@ -143,13 +109,25 @@ public:
 
 private:
   /**
-   * Raw pointer.
+   * Raw pointer, for global pointers.
    */
   T* ptr;
 
   /**
-   * Heap page index.
+   * Heap index, for coroutine-local pointers.
    */
-  int page;
+  size_t index;
 };
+}
+
+#include "bi/lib/Heap.hpp"
+
+template<class T>
+T* bi::Pointer<T>::get() {
+  return heap.get(*this);
+}
+
+template<class T>
+T* const bi::Pointer<T>::get() const {
+  return heap.get(*this);
 }

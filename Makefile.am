@@ -142,7 +142,9 @@ birch_SOURCES = \
   bi/config.lpp
 birch_CXXFLAGS = $(AM_CXXFLAGS)
 
-libbirch_la_SOURCES = bi/bi.cpp
+libbirch_la_SOURCES = \
+  bi/lib/Heap.cpp \
+  bi/bi.cpp
 libbirch_la_CXXFLAGS = $(AM_CXXFLAGS)
 
 nobase_include_HEADERS = \
@@ -151,11 +153,12 @@ nobase_include_HEADERS = \
   bi/lib/Coroutine.hpp \
   bi/lib/easy.hpp \
   bi/lib/Frame.hpp \
-  bi/lib/memory.hpp \
+  bi/lib/Heap.hpp \
   bi/lib/Index.hpp \
   bi/lib/Iterator.hpp \
   bi/lib/Lead.hpp \
   bi/lib/Length.hpp \
+  bi/lib/Markable.hpp \
   bi/lib/Offset.hpp \
   bi/lib/Range.hpp \
   bi/lib/Pointer.hpp \
