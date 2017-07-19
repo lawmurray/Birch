@@ -9,7 +9,7 @@
 #include <vector>
 
 namespace bi {
-class Markable;
+class Object;
 template<class T> class Pointer;
 
 /**
@@ -95,12 +95,19 @@ public:
    * Convert a smart pointer to a raw pointer.
    */
   template<class Type>
-  Type* get(const Pointer<Type>& ptr) const;
+  Type* get(const Pointer<Type>& ptr);
+  template<class Type>
+  Type* const get(const Pointer<const Type>& ptr) const;
 
   /**
-   * Unmark all allocations.
+   * Mark an object as reachable, via a pointer.
+   *
+   * @param ptr The pointer;
+   *
+   * @return Was the object already marked?
    */
-  void unmark();
+  template<class Type>
+  bool mark(const Pointer<Type>& ptr);
 
   /**
    * Free all unreachable allocations.
@@ -111,7 +118,12 @@ private:
   /**
    * Items on the heap.
    */
-  std::vector<Markable*,gc_allocator<Markable*>> items;
+  std::vector<Object*,traceable_allocator<Object*>> items;
+
+  /**
+   * Marks of items on the heap.
+   */
+  std::vector<bool> marks;
 
   /**
    * Is this a global heap?
@@ -125,6 +137,7 @@ private:
 extern Heap heap;
 }
 
+#include "bi/lib/Object.hpp"
 #include "bi/lib/Pointer.hpp"
 
 template<class Type, class ... Args>
@@ -180,7 +193,39 @@ void bi::Heap::initialise(Pointer<Type>& o, Args ... args) {
 }
 
 template<class Type>
-Type* bi::Heap::get(const Pointer<Type>& ptr) const {
+Type* bi::Heap::get(const Pointer<Type>& ptr) {
+  assert(!global || ptr.index < 0);
+  if (ptr.index >= 0) {
+    return ptr.ptr;
+  } else {
+    Type* raw = nullptr;
+    Object*& o = items[ptr.index];
+    if (o->isShared()) {
+      /* writeable, so copy now (copy-on-write) */
+      raw = dynamic_cast<Type*>(o->copy());
+      o->disuse();
+      raw->use();
+      o = raw;
+    } else {
+      raw = dynamic_cast<Type*>(o);
+    }
+    assert(raw);
+    return raw;
+  }
+}
+
+template<class Type>
+Type* const bi::Heap::get(const Pointer<const Type>& ptr) const {
   assert(!global || ptr.index < 0);
   return ptr.index >= 0 ? dynamic_cast<Type*>(items[ptr.index]) : ptr.ptr;
+}
+
+template<class Type>
+bool bi::Heap::mark(const Pointer<Type>& ptr) {
+  assert(!global || ptr.index < 0);
+  bool result = true;
+  if (ptr.index >= 0) {
+    std::swap(result, marks[ptr.index]);
+  }
+  return result;
 }

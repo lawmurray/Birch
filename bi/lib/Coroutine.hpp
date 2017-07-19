@@ -3,6 +3,7 @@
  */
 #pragma once
 
+#include "bi/lib/Object.hpp"
 #include "bi/lib/Heap.hpp"
 
 namespace bi {
@@ -14,7 +15,7 @@ namespace bi {
  * @tparam Type Return type.
  */
 template<class Type>
-class Coroutine {
+class Coroutine : public Object {
 public:
   /**
    * Constructor.
@@ -32,17 +33,11 @@ public:
    * Run garbage collector on coroutine-local allocations.
    */
   void collect() {
-    heap.unmark();
     mark();
     heap.sweep();
   }
 
 protected:
-  /**
-   * Mark reachable allocations.
-   */
-  virtual void mark() = 0;
-
   /**
    * Coroutine-local heap.
    */

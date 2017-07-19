@@ -21,7 +21,7 @@ public:
   /**
    * Constructor for global pointer.
    */
-  Pointer(T* ptr = nullptr) : ptr(ptr), index(-1) {
+  explicit Pointer(T* ptr = nullptr) : ptr(ptr), index(-1) {
     //
   }
 
@@ -29,14 +29,14 @@ public:
    * Generic constructor for global pointer.
    */
   template<class U>
-  Pointer(U* ptr = nullptr) : ptr(ptr), index(-1) {
+  explicit Pointer(U* ptr = nullptr) : ptr(ptr), index(-1) {
     //
   }
 
   /**
    * Constructor for coroutine-local pointer.
    */
-  Pointer(const size_t index) : ptr(nullptr), index(index) {
+  explicit Pointer(const size_t index) : ptr(nullptr), index(index) {
     //
   }
 
@@ -52,13 +52,6 @@ public:
    */
   template<class U>
   Pointer(const Pointer<U>& o) : ptr(o.ptr), index(o.index) {
-    //
-  }
-
-  /**
-   * Destructor.
-   */
-  ~Pointer() {
     //
   }
 
@@ -92,7 +85,6 @@ public:
    * Member access.
    */
   T* operator->() {
-    //@todo Copy-on-write
     return get();
   }
   T* const operator->() const {

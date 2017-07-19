@@ -3,7 +3,7 @@
  */
 #include "bi/lib/Heap.hpp"
 
-#include "bi/lib/Markable.hpp"
+#include "bi/lib/Object.hpp"
 
 bi::Heap bi::heap;
 
@@ -13,21 +13,21 @@ bi::Heap::Heap(const bool global) :
 }
 
 bi::Heap::~Heap() {
-  unmark();
-  sweep();
-}
-
-void bi::Heap::unmark() {
-  for (auto o : items) {
-    o->unmark();
-  }
+  //
 }
 
 void bi::Heap::sweep() {
-  for (auto o : items) {
-    if (!o->isMarked()) {
-      GC_FREE(o);
-      o = nullptr;
+  auto item = items.begin();
+  auto mark = marks.begin();
+  while (item != items.end() && mark != marks.end()) {
+    if (!*mark) {
+      (*item)->disuse();
+      //GC_FREE(*item);  // optional
+      *item = nullptr;
+    } else {
+      *mark = false;  // clear for next time
     }
+    ++item;
+    ++mark;
   }
 }

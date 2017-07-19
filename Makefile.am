@@ -158,7 +158,7 @@ nobase_include_HEADERS = \
   bi/lib/Iterator.hpp \
   bi/lib/Lead.hpp \
   bi/lib/Length.hpp \
-  bi/lib/Markable.hpp \
+  bi/lib/Object.hpp \
   bi/lib/Offset.hpp \
   bi/lib/Range.hpp \
   bi/lib/Pointer.hpp \
