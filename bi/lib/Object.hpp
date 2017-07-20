@@ -3,6 +3,8 @@
  */
 #pragma once
 
+#include "bi/lib/Coroutine.hpp"
+
 #include <cassert>
 
 namespace bi {
@@ -16,8 +18,17 @@ public:
    * Constructor.
    */
   Object() :
-      users(0),
-      local(false) {
+      users(1),
+      index(-1) {
+    //
+  }
+
+  /**
+   * Copy constructor.
+   */
+  Object(const Object& o) :
+      users(1),
+      index(o.index) {
     //
   }
 
@@ -33,29 +44,7 @@ public:
    * of member attributes incremented, deferring their cloning until they are
    * used.
    */
-  virtual Object* clone() const;
-
-  /**
-   * Recursively replace one address with another.
-   *
-   * @param from Old address.
-   * @param to New address.
-   *
-   * @return The new address of this object, which will be the same as the
-   * old address if no replacements are necessary.
-   *
-   * If a replacement is made anywhere below this object, it will need to be
-   * copied, and the return object will be different to this object,
-   * otherwise it will be the same as this object.
-   */
-  virtual Object* replace(const void* from, const void* to);
-
-  /**
-   * Indicate that a(nother) coroutine is using this object.
-   */
-  void use() {
-    ++users;
-  }
+  virtual Object* clone() = 0;
 
   /**
    * Indicate that a coroutine is no longer using this object.
@@ -76,14 +65,19 @@ public:
    * Is this object coroutine-local?
    */
   bool isLocal() const {
-    return local;
+    return index >= 0;
   }
 
   /**
-   * Set whether this object is coroutine local.
+   * Get a smart pointer to this object.
    */
-  void setLocal(const bool local = true) {
-    this->local = local;
+  template<class T>
+  Pointer<T> pointer_from_this() {
+    return Pointer<T>(static_cast<T*>(this), index);
+  }
+  template<class T>
+  Pointer<const T> pointer_from_this() const {
+    return Pointer<const T>(static_cast<T* const>(this), index);
   }
 
 private:
@@ -93,8 +87,9 @@ private:
   size_t users;
 
   /**
-   * Is this object coroutine-local?
+   * For a coroutine-local pointer, the index of the heap allocation,
+   * otherwise -1.
    */
-  bool local;
+  size_t index;
 };
 }

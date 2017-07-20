@@ -74,6 +74,7 @@ birchc_SOURCES = \
   bi/expression/Super.cpp \
   bi/expression/This.cpp \
   bi/io/cpp/CppBaseGenerator.cpp \
+  bi/io/cpp/CppCloneGenerator.cpp \
   bi/io/cpp/CppConstructorGenerator.cpp \
   bi/io/cpp/CppCoroutineGenerator.cpp \
   bi/io/cpp/CppClassGenerator.cpp \
@@ -143,6 +144,7 @@ birch_SOURCES = \
 birch_CXXFLAGS = $(AM_CXXFLAGS)
 
 libbirch_la_SOURCES = \
+  bi/lib/Coroutine.cpp \
   bi/libbirch.cpp
 libbirch_la_CXXFLAGS = $(AM_CXXFLAGS)
 
@@ -227,6 +229,7 @@ noinst_HEADERS = \
   bi/io/bi_ostream.hpp \
   bi/io/bih_ostream.hpp \
   bi/io/cpp/CppBaseGenerator.hpp \
+  bi/io/cpp/CppCloneGenerator.hpp \
   bi/io/cpp/CppConstructorGenerator.hpp \
   bi/io/cpp/CppCoroutineGenerator.hpp \
   bi/io/cpp/CppClassGenerator.hpp \

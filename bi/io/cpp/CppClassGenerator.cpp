@@ -4,6 +4,7 @@
 #include "bi/io/cpp/CppClassGenerator.hpp"
 
 #include "bi/io/cpp/CppConstructorGenerator.hpp"
+#include "bi/io/cpp/CppCloneGenerator.hpp"
 #include "bi/primitive/encode.hpp"
 
 bi::CppClassGenerator::CppClassGenerator(std::ostream& base, const int level,
@@ -50,6 +51,10 @@ void bi::CppClassGenerator::visit(const Class* o) {
     out();
     line("}\n");
   }
+
+  /* clone function */
+  CppCloneGenerator auxClone(base, level, header);
+  auxClone << o;
 
   /* member parameters */
   for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {

@@ -244,4 +244,20 @@ Pointer<Type> make_object(Args... args) {
   auto raw = new (GC_MALLOC(sizeof(Type))) Type(args...);
   return Pointer<Type>(raw);
 }
+
+/**
+ * Shallow-copy an object.
+ *
+ * @ingroup library
+ *
+ * @tparam Type Value type.
+ *
+ * @param o The object to copy.
+ *
+ * @return Pointer to the new object.
+ */
+template<class Type>
+Type* copy_object(Type* o) {
+  return new (GC_MALLOC(sizeof(Type))) Type(*o);
+}
 }

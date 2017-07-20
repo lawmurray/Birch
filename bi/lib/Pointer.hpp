@@ -7,7 +7,8 @@
 
 namespace bi {
 /**
- * Smart copy-on-write pointer.
+ * Smart pointer for global and coroutine-local objects, with copy-on-write
+ * semantics for te latter.
  *
  * @ingroup library
  *
@@ -20,7 +21,9 @@ public:
   /**
    * Constructor.
    */
-  Pointer(T* ptr = nullptr) : ptr(ptr) {
+  Pointer(T* ptr = nullptr, const size_t index = -1) :
+      ptr(ptr),
+      index(index) {
     //
   }
 
@@ -28,22 +31,24 @@ public:
    * Generic constructor.
    */
   template<class U>
-  Pointer(U* ptr = nullptr) : ptr(ptr) {
+  Pointer(U* ptr = nullptr, const size_t index = -1) :
+      ptr(ptr),
+      index(index) {
     //
   }
 
   /**
    * Copy constructor.
    */
-  Pointer(const Pointer<T>& o) : ptr(o.ptr) {
-    //
-  }
+  Pointer(const Pointer<T>& o) = default;
 
   /**
    * Generic copy constructor.
    */
   template<class U>
-  Pointer(const Pointer<U>& o) : ptr(o.ptr) {
+  Pointer(const Pointer<U>& o) :
+      ptr(o.ptr),
+      index(o.index) {
     //
   }
 
@@ -52,23 +57,19 @@ public:
    */
   T* get() {
     if (ptr->isShared()) {
-      /* shared and writeable, so copy now (copy-on-write) */
+      /* shared and writeable, copy now (copy-on-write) */
       auto from = ptr;
-      auto to = dynamic_cast<T*>(from->clone());
+      auto to = static_cast<T*>(from->clone());
       from->disuse();
       to->use();
-
-      /* update other uses of this pointer in the same coroutine */
-      //coroutine->replace(from, to);  ///@todo
-
       return to;
     } else {
-      /* not shared, so no need to copy */
+      /* not shared, no need to copy */
       return ptr;
     }
   }
   T* const get() const {
-    /* read-only, so no need to copy */
+    /* read-only, no need to copy */
     return ptr;
   }
 
@@ -95,8 +96,8 @@ public:
   /**
    * Call operator.
    */
-  template<class... Args>
-  auto operator()(Args... args) const {
+  template<class ... Args>
+  auto operator()(Args ... args) const {
     return (*ptr)(args...);
   }
 
@@ -112,8 +113,17 @@ public:
 
 private:
   /**
-   * Raw pointer.
+   * For a global pointer, the raw address.
    */
   T* ptr;
+
+  /**
+   * For a coroutine-local pointer, the index of the heap allocation,
+   * otherwise -1.
+   */
+  size_t index;
+
+  /// @todo Might there be an implementation that allows both cases to be
+  /// packed into the same 64-bit value?
 };
 }

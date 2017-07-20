@@ -70,13 +70,12 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
   if (!header) {
     middle("bi::func::" << o->name << "Coroutine::");
   }
-  middle("operator()()");
+  middle("run()");
   if (header) {
     finish(';');
   } else {
     finish(" {");
     in();
-
     Gatherer<Return> gatherer;
     o->braces->accept(&gatherer);
     if (gatherer.size() > 0) {

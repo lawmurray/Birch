@@ -3,9 +3,16 @@
  */
 #pragma once
 
-#include "bi/lib/Object.hpp"
-
 namespace bi {
+/**
+ * Global variable indicating whether the currently running code is within
+ * a coroutine. This is used to flag objects as either global or
+ * coroutine-local. It is incremented whenever a coroutine is resumed, and
+ * decremented whenever it yields. A value greater than zero indicates that
+ * the currently running code is within a coroutine.
+ */
+extern int inCoroutine;
+
 /**
  * Relocatable coroutine.
  *
@@ -14,7 +21,7 @@ namespace bi {
  * @tparam Type Return type.
  */
 template<class Type>
-class Coroutine : public Object {
+class Coroutine {
 public:
   /**
    * Constructor.
@@ -26,9 +33,19 @@ public:
   /**
    * Run to next yield.
    */
-  virtual Type operator()() = 0;
+  Type operator()() {
+    ++inCoroutine;
+    Type result = run();
+    --inCoroutine;
+    return result;
+  }
 
 protected:
+  /**
+   * Run to next yield.
+   */
+  virtual Type run() = 0;
+
   /**
    * State.
    */
