@@ -18,11 +18,13 @@ void bi::CppClassGenerator::visit(const Class* o) {
 
   /* start boilerplate */
   if (header) {
-    start("class " << o->name);
+    start("class " << o->name << " : public ");
     if (!o->base->isEmpty()) {
       auto type = dynamic_cast<const ClassType*>(o->base.get());
       assert(type);
-      middle(" : public " << type->name);
+      middle(type->name);
+    } else {
+      middle("Object");
     }
     finish(" {");
     line("public:");

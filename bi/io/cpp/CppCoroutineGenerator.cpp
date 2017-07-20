@@ -23,18 +23,18 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
     in();
     line("namespace func {");
     out();
-    line("class Coroutine_" << o->name << "_ : public Coroutine<" << o->returnType << "> {");
+    line("class " << o->name << "Coroutine : public Coroutine<" << o->returnType << "> {");
     line("public:");
     in();
   }
 
   /* constructor, taking the arguments of the coroutine */
   if (!header) {
-    start("bi::func::Coroutine_" << o->name << "_::");
+    start("bi::func::" << o->name << "Coroutine::");
   } else {
     start("");
   }
-  middle("Coroutine_" << o->name << '_' << o->parens);
+  middle(o->name << "Coroutine" << o->parens);
   if (header) {
     finish(';');
   } else {
@@ -68,7 +68,7 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
   }
   middle(o->returnType << ' ');
   if (!header) {
-    middle("bi::func::Coroutine_" << o->name << "_::");
+    middle("bi::func::" << o->name << "Coroutine::");
   }
   middle("operator()()");
   if (header) {
@@ -113,7 +113,7 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
     for (auto iter = locals.begin(); iter != locals.end(); ++iter) {
       auto param = dynamic_cast<const LocalVariable*>(*iter);
       assert(param);
-      line(param->type << ' ' << param->name << '_' << param->number << "_;");
+      line(param->type << ' ' << param->name << param->number << ';');
     }
 
     out();
@@ -141,7 +141,7 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
   } else {
     finish(" {");
     in();
-    start("return BI_NEW(bi::func::Coroutine_" << o->name << "_)(");
+    start("return make_object<bi::func::" << o->name << "Coroutine>(");
     for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
       if (iter != o->parens->begin()) {
         middle(", ");
@@ -169,12 +169,12 @@ void bi::CppCoroutineGenerator::visit(const Return* o) {
 }
 
 void bi::CppCoroutineGenerator::visit(const Identifier<LocalVariable>* o) {
-  middle(o->name << '_' << o->target->number << '_');
+  middle(o->name << o->target->number);
 }
 
 void bi::CppCoroutineGenerator::visit(const LocalVariable* o) {
   if (o->type->isClass() || !o->parens->isEmpty() || !o->value->isEmpty()) {
-    middle(o->name << '_' << o->number << '_');
+    middle(o->name << o->number);
     genInit(o);
     ///@todo This will need to resize arrays, overload operator() for Array?
   }

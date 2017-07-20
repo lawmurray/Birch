@@ -200,7 +200,7 @@ void bi::CppBaseGenerator::visit(const File* o) {
     line("#pragma once\n");
 
     /* standard headers */
-    line("#include \"bi/bi.hpp\"");
+    line("#include \"bi/libbirch.hpp\"");
   } else {
     /* include main header file */
     boost::filesystem::path file(o->path);
@@ -296,13 +296,13 @@ void bi::CppBaseGenerator::visit(const Program* o) {
     in();
     line("namespace program {");
     out();
-    line("extern \"C\" void " << o->name << "(int argc_, char** argv_);");
+    line("extern \"C\" void " << o->name << "(int argc, char** argv);");
     in();
     line("}");
     out();
     line("}\n");
   } else {
-    line("void bi::program::" << o->name << "(int argc_, char** argv_) {");
+    line("void bi::program::" << o->name << "(int argc, char** argv) {");
     in();
     if (o->parens->tupleSize() > 0) {
       /* option variables */
@@ -315,7 +315,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
         } else if (param->type->isClass()) {
           auto type = dynamic_cast<const ClassType*>(param->type->strip());
           assert(type);
-          middle(" = BI_NEW(bi::type::" << type->name << ')');
+          middle(" = make_object<bi::type::" << type->name << ">()");
         }
         finish(';');
       }
@@ -326,7 +326,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
       in();
       for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
         std::string flag = dynamic_cast<const Parameter*>(*iter)->name->str()
-            + "_ARG_";
+            + "_ARG";
         boost::to_upper(flag);
         start(flag);
         if (iter == o->parens->begin()) {
@@ -338,14 +338,14 @@ void bi::CppBaseGenerator::visit(const Program* o) {
       line("};");
 
       /* long options */
-      line("int c_, option_index_;");
-      line("option long_options_[] = {");
+      line("int c, option_index;");
+      line("option long_options[] = {");
       in();
       for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
         const std::string& name =
             dynamic_cast<const Parameter*>(*iter)->name->str();
         //if (name.length() > 1) {
-        std::string flag = name + "_ARG_";
+        std::string flag = name + "_ARG";
         boost::to_upper(flag);
         std::string option = name;
         boost::replace_all(option, "_", "-");
@@ -359,7 +359,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
       line("};");
 
       /* short options */
-      start("const char* short_options_ = \"");
+      start("const char* short_options = \"");
       //for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
       //  const std::string& name = dynamic_cast<const Parameter*>(*iter)->name->str();
       //  if (name.length() == 1) {
@@ -371,16 +371,16 @@ void bi::CppBaseGenerator::visit(const Program* o) {
       /* read in options with getopt_long */
       line("::opterr = 0; // handle error reporting ourselves");
       line(
-          "c_ = getopt_long_only(argc_, argv_, short_options_, long_options_, &option_index_);");
-      line("while (c_ != -1) {");
+          "c = getopt_long_only(argc, argv, short_options, long_options, &option_index);");
+      line("while (c != -1) {");
       in();
-      line("switch (c_) {");
+      line("switch (c) {");
       in();
 
       for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
         const std::string& name =
             dynamic_cast<const Parameter*>(*iter)->name->str();
-        std::string flag = name + "_ARG_";
+        std::string flag = name + "_ARG";
         boost::to_upper(flag);
 
         start("case ");
@@ -394,11 +394,11 @@ void bi::CppBaseGenerator::visit(const Program* o) {
         if ((*iter)->type->isBasic()) {
           auto type = dynamic_cast<Named*>((*iter)->type.get());
           assert(type);
-          line(name << " = bi::func::" << type->name << "(::optarg);");
+          line(name << " = bi::func::" << type->name << "(optarg);");
         } else if ((*iter)->type->isClass()) {
-          line('*' << name << " = ::optarg;");
+          line('*' << name << " = optarg;");
         } else {
-          line(name << " = ::optarg;");
+          line(name << " = optarg;");
         }
         line("break;");
         out();
@@ -411,7 +411,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
       out();
       line('}');
       line(
-          "c_ = getopt_long_only(argc_, argv_, short_options_, long_options_, &option_index_);");
+          "c = getopt_long_only(argc, argv, short_options, long_options, &option_index);");
       out();
       line("}\n");
     }

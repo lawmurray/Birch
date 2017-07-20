@@ -7,8 +7,8 @@
 #pragma once
 
 #include "bi/lib/easy.hpp"
-#include "bi/lib/Heap.hpp"
 #include "bi/lib/Markable.hpp"
+#include "bi/lib/Object.hpp"
 #include "bi/lib/Pointer.hpp"
 #include "bi/lib/Coroutine.hpp"
 
@@ -26,7 +26,7 @@ namespace bi {
  */
 template<class Left, class Right>
 void left_tilde_(Left& left, const Right& right) {
-  left = right->simulate();
+  left = right->simulate_();
 }
 
 /**
@@ -34,7 +34,7 @@ void left_tilde_(Left& left, const Right& right) {
  */
 template<class Left, class Right>
 auto right_tilde_(const Left& left, const Right& right) {
-  return right->observe(left);
+  return right->observe_(left);
 }
 
 /**
@@ -42,9 +42,9 @@ auto right_tilde_(const Left& left, const Right& right) {
  */
 template<class Left, class Right>
 auto tilde_(Left& left, const Right& right) {
-  assert(left->isUninitialized());
-  if (left->isMissing()) {
-    right_tilde_(left->value(), right);
+  assert(left->isUninitialized_());
+  if (left->isMissing_()) {
+    right_tilde_(left->value_(), right);
   }
   left = right;
 }

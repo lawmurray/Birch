@@ -2,7 +2,7 @@
  * @file
  *
  * Convenience functions for creating spans, ranges, frames, views, arrays,
- * etc.
+ * objects, etc.
  */
 #include "bi/lib/Span.hpp"
 #include "bi/lib/Index.hpp"
@@ -10,6 +10,8 @@
 #include "bi/lib/Frame.hpp"
 #include "bi/lib/View.hpp"
 #include "bi/lib/Array.hpp"
+
+#include <gc.h>
 
 namespace bi {
 /**
@@ -213,13 +215,33 @@ auto make_view(const NonemptyView<Tail,Head>& tail, Arg arg, Args ... args) {
  *
  * @ingroup library
  *
- * @tparam Value Value type.
+ * @tparam Type Value type.
  * @tparam Frame Frame type.
  *
  * @param frame Frame.
+ *
+ * @return The array.
  */
 template<class Type, class Frame = EmptyFrame>
 auto make_array(const Frame& frame = EmptyFrame()) {
   return Array<Type,Frame>(frame);
+}
+
+/**
+ * Make an object.
+ *
+ * @ingroup library
+ *
+ * @tparam Type Value type.
+ * @tparam Args Argument types.
+ *
+ * @param args Constructor arguments.
+ *
+ * @return Pointer to the object.
+ */
+template<class Type, class... Args>
+Pointer<Type> make_object(Args... args) {
+  auto raw = new (GC_MALLOC(sizeof(Type))) Type(args...);
+  return Pointer<Type>(raw);
 }
 }

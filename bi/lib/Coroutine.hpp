@@ -4,7 +4,6 @@
 #pragma once
 
 #include "bi/lib/Object.hpp"
-#include "bi/lib/Heap.hpp"
 
 namespace bi {
 /**
@@ -29,20 +28,7 @@ public:
    */
   virtual Type operator()() = 0;
 
-  /**
-   * Run garbage collector on coroutine-local allocations.
-   */
-  void collect() {
-    mark();
-    heap.sweep();
-  }
-
 protected:
-  /**
-   * Coroutine-local heap.
-   */
-  Heap heap;
-
   /**
    * State.
    */

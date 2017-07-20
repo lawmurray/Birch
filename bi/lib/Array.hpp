@@ -38,9 +38,9 @@ protected:
   Frame frame;
 
   /**
-   * Value.
+   * Buffer.
    */
-  Pointer<Type> ptr;
+  Type* ptr;
 
   /**
    * Copy from another array.
@@ -69,24 +69,21 @@ protected:
    * Return value of view when result is an array.
    */
   template<class Frame1>
-  Array<Type,Frame1> viewReturn(const Pointer<Type>& ptr,
-      const Frame1& frame) {
+  Array<Type,Frame1> viewReturn(Type* ptr, const Frame1& frame) {
     return Array<Type,Frame1>(ptr, frame);
   }
   template<class Frame1>
-  Array<Type,Frame1> viewReturn(const Pointer<Type>& ptr,
-      const Frame1& frame) const {
+  Array<Type,Frame1> viewReturn(Type* ptr, const Frame1& frame) const {
     return Array<Type,Frame1>(ptr, frame);
   }
 
   /**
    * Return value of view when result is a scalar.
    */
-  Type& viewReturn(const Pointer<Type>& ptr, const EmptyFrame& frame) {
+  Type& viewReturn(Type* ptr, const EmptyFrame& frame) {
     return *ptr;
   }
-  const Type& viewReturn(const Pointer<Type>& ptr,
-      const EmptyFrame& frame) const {
+  const Type& viewReturn(Type* ptr, const EmptyFrame& frame) const {
     return *ptr;
   }
 
@@ -94,7 +91,8 @@ public:
   /**
    * Constructor with null allocation.
    */
-  Array() : ptr(nullptr) {
+  Array() :
+      ptr(nullptr) {
     //
   }
 
@@ -113,8 +111,8 @@ public:
   template<class ... Args>
   Array(const Frame& frame, Args ... args) :
       frame(frame) {
-    create(ptr, frame.volume() * sizeof(Type));
-    fill(args...);
+    allocate(ptr, frame.volume());
+    initialise(args...);
   }
 
   /**
@@ -125,7 +123,7 @@ public:
    * @param ptr Existing allocation.
    * @param frame Frame.
    */
-  Array(const Pointer<Type>& ptr, const Frame& frame) :
+  Array(Type* ptr, const Frame& frame) :
       frame(frame),
       ptr(ptr) {
     //
@@ -136,8 +134,8 @@ public:
    */
   Array(const Array<Type,Frame>& o) :
       frame(o.frame) {
-    create(ptr, frame.volume() * sizeof(Type));
-    fill();
+    allocate(ptr, frame.volume());
+    initialise();
     *this = o;
   }
 
@@ -384,11 +382,66 @@ public:
   }
 
 private:
+  /**
+   * Initialise allocated memory.
+   *
+   * @param args Constructor arguments.
+   */
   template<class ... Args>
-  void fill(Args ... args) {
+  void initialise(Args ... args) {
     for (auto iter = begin(); iter != end(); ++iter) {
       construct(*iter, args...);
     }
+  }
+
+  /**
+   * Allocate memory for array of value type.
+   *
+   * @tparam Type1 Element type.
+   *
+   * @param[out] ptr Pointer to start of allocated buffer.
+   * @param size Number of elements to allocate.
+   */
+  template<class Type1>
+  static void allocate(Type1*& ptr, const size_t n) {
+    ptr = static_cast<Type1*>(GC_MALLOC_ATOMIC(sizeof(Type1)*n));
+    // ^ buffer will not itself contain pointers, so GC_MALLOC_ATOMIC can be
+    //   used
+  }
+
+  /**
+   * Allocate memory for array of smart pointer type.
+   *
+   * @tparam Type1 Element type.
+   *
+   * @param[out] ptr Pointer to start of allocated buffer.
+   * @param size Number of elements to allocate.
+   */
+  template<class Type1>
+  static void allocate(Pointer<Type1>*& ptr, const size_t n) {
+    ptr = static_cast<Pointer<Type1>*>(GC_MALLOC(sizeof(Pointer<Type1>)*n));
+  }
+
+  /**
+   * Construct element of value type in place.
+   *
+   * @param o Element.
+   * @param args Constructor arguments.
+   */
+  template<class Type1, class ... Args>
+  static void construct(Type1& o, Args ... args) {
+    new (&o) Type1(args...);
+  }
+
+  /**
+   * Construct element of smart pointer type in place.
+   *
+   * @param o Element.
+   * @param args Constructor arguments.
+   */
+  template<class Type1, class ... Args>
+  static void construct(Pointer<Type1>& o, Args ... args) {
+    new (&o) Pointer<Type1>(args...);
   }
 };
 

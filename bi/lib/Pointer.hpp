@@ -7,7 +7,7 @@
 
 namespace bi {
 /**
- * Relocatable pointer.
+ * Smart copy-on-write pointer.
  *
  * @ingroup library
  *
@@ -16,34 +16,26 @@ namespace bi {
 template<class T>
 class Pointer {
   template<class U> friend class Pointer;
-  friend class Heap;
 public:
   /**
-   * Constructor for global pointer.
+   * Constructor.
    */
-  explicit Pointer(T* ptr = nullptr) : ptr(ptr), index(-1) {
+  Pointer(T* ptr = nullptr) : ptr(ptr) {
     //
   }
 
   /**
-   * Generic constructor for global pointer.
+   * Generic constructor.
    */
   template<class U>
-  explicit Pointer(U* ptr = nullptr) : ptr(ptr), index(-1) {
-    //
-  }
-
-  /**
-   * Constructor for coroutine-local pointer.
-   */
-  explicit Pointer(const size_t index) : ptr(nullptr), index(index) {
+  Pointer(U* ptr = nullptr) : ptr(ptr) {
     //
   }
 
   /**
    * Copy constructor.
    */
-  Pointer(const Pointer<T>& o) : ptr(o.ptr), index(o.index) {
+  Pointer(const Pointer<T>& o) : ptr(o.ptr) {
     //
   }
 
@@ -51,25 +43,34 @@ public:
    * Generic copy constructor.
    */
   template<class U>
-  Pointer(const Pointer<U>& o) : ptr(o.ptr), index(o.index) {
+  Pointer(const Pointer<U>& o) : ptr(o.ptr) {
     //
-  }
-
-  /*
-   * Equality operators.
-   */
-  bool operator==(const Pointer<T>& o) const {
-    return get() == o.get();
-  }
-  bool operator!=(const Pointer<T>& o) const {
-    return !(*this == o);
   }
 
   /**
    * Get the raw pointer.
    */
-  T* get();
-  T* const get() const;
+  T* get() {
+    if (ptr->isShared()) {
+      /* shared and writeable, so copy now (copy-on-write) */
+      auto from = ptr;
+      auto to = dynamic_cast<T*>(from->clone());
+      from->disuse();
+      to->use();
+
+      /* update other uses of this pointer in the same coroutine */
+      //coroutine->replace(from, to);  ///@todo
+
+      return to;
+    } else {
+      /* not shared, so no need to copy */
+      return ptr;
+    }
+  }
+  T* const get() const {
+    /* read-only, so no need to copy */
+    return ptr;
+  }
 
   /**
    * Dereference.
@@ -99,27 +100,20 @@ public:
     return (*ptr)(args...);
   }
 
+  /*
+   * Equality operators.
+   */
+  bool operator==(const Pointer<T>& o) const {
+    return get() == o.get();
+  }
+  bool operator!=(const Pointer<T>& o) const {
+    return !(*this == o);
+  }
+
 private:
   /**
-   * Raw pointer, for global pointers.
+   * Raw pointer.
    */
   T* ptr;
-
-  /**
-   * Heap index, for coroutine-local pointers.
-   */
-  size_t index;
 };
-}
-
-#include "bi/lib/Heap.hpp"
-
-template<class T>
-T* bi::Pointer<T>::get() {
-  return heap.get(*this);
-}
-
-template<class T>
-T* const bi::Pointer<T>::get() const {
-  return heap.get(*this);
 }

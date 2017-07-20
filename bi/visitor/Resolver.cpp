@@ -332,7 +332,7 @@ bi::Statement* bi::Resolver::modify(Assignment* o) {
     }
   }
   ///@todo The <~ and ~ assignments, which are currently not checked, and
-  /// map to function templates in bi.hpp
+  /// map to function templates in libbirch.hpp
   return o;
 }
 

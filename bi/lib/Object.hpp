@@ -7,7 +7,8 @@
 
 namespace bi {
 /**
- * Base of all class types.
+ * Base class for all class types. Includes functionality for sharing objects
+ * between coroutines with copy-on-write semantics.
  */
 class Object {
 public:
@@ -16,7 +17,7 @@ public:
    */
   Object() :
       users(0),
-      index(-1) {
+      local(false) {
     //
   }
 
@@ -24,31 +25,36 @@ public:
    * Destructor.
    */
   virtual ~Object() {
-    assert(users == 0);
+    //
   }
 
   /**
-   * Copy the object.
+   * Clone the object. This is a shallow clone with coroutine usage counts
+   * of member attributes incremented, deferring their cloning until they are
+   * used.
    */
-  virtual Object* copy() const = 0;
+  virtual Object* clone() const;
 
   /**
-   * Mark the object.
+   * Recursively replace one address with another.
+   *
+   * @param from Old address.
+   * @param to New address.
+   *
+   * @return The new address of this object, which will be the same as the
+   * old address if no replacements are necessary.
+   *
+   * If a replacement is made anywhere below this object, it will need to be
+   * copied, and the return object will be different to this object,
+   * otherwise it will be the same as this object.
    */
-  virtual void mark() const = 0;
+  virtual Object* replace(const void* from, const void* to);
 
   /**
    * Indicate that a(nother) coroutine is using this object.
-   *
-   * @param index The index of this object in the coroutine's local heap.
    */
-  void use(const int index) {
+  void use() {
     ++users;
-    if (users == 1) {
-      this->index = index;
-    } else {
-      assert(this->index == index);
-    }
   }
 
   /**
@@ -66,29 +72,18 @@ public:
     return users > 1;
   }
 
-protected:
   /**
-   * Create a pointer to this object. This function should be used instead of
-   * @c this to obtain a correctly constructed pointer for global or
-   * coroutine-local heap allocation, as appropriate for the object. It
-   * behaves similarly to @c shared_from_this() in the STL.
+   * Is this object coroutine-local?
    */
-  template<class DerivedType>
-  Pointer<DerivedType> pointer_from_this() {
-    if (index >= 0) {
-      return Pointer<DerivedType>(index);
-    } else {
-      return Pointer<DerivedType>(dynamic_cast<DerivedType*>(this));
-    }
+  bool isLocal() const {
+    return local;
   }
-  template<class DerivedType>
-  Pointer<const DerivedType> pointer_from_this() const {
-    if (index >= 0) {
-      return Pointer<const DerivedType>(index);
-    } else {
-      return Pointer<const DerivedType>(
-          dynamic_cast<DerivedType* const >(this));
-    }
+
+  /**
+   * Set whether this object is coroutine local.
+   */
+  void setLocal(const bool local = true) {
+    this->local = local;
   }
 
 private:
@@ -98,11 +93,8 @@ private:
   size_t users;
 
   /**
-   * Position of this object in coroutine-local heaps, or -1 if on the global
-   * heap. Note that an object can only be in use by more than one coroutine
-   * via the copying of coroutines, so that it must have the same position in
-   * all coroutine-local heaps in which it exists.
+   * Is this object coroutine-local?
    */
-  long index;
+  bool local;
 };
 }

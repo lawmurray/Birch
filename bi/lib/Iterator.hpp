@@ -4,7 +4,6 @@
 #pragma once
 
 #include "bi/lib/Frame.hpp"
-#include "bi/lib/Pointer.hpp"
 
 namespace bi {
 /**
@@ -21,10 +20,10 @@ public:
   /**
    * Constructor.
    *
-   * @param ptr Value.
+   * @param ptr Buffer.
    * @param frame Frame.
    */
-  Iterator(const Pointer<Type>& ptr, const Frame& frame) :
+  Iterator(Type* ptr, const Frame& frame) :
       frame(frame),
       ptr(ptr),
       serial(0) {
@@ -100,7 +99,7 @@ public:
   /**
    * Value.
    */
-  Pointer<Type> ptr;
+  Type* ptr;
 
   /**
    * Serialised offset into the frame.

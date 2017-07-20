@@ -125,7 +125,6 @@ std::string bi::internalise(const std::string& name) {
     ops["||"] = "or";
     ops["&&"] = "and";
 
-
     greeks["α"] = "alpha";
     greeks["β"] = "beta";
     greeks["γ"] = "gamma";
@@ -177,7 +176,7 @@ std::string bi::internalise(const std::string& name) {
   /* translate operators */
   std::string str = name;
   if (ops.find(name) != ops.end()) {
-    str = ops[name] + '_';
+    str = ops[name];
   }
 
   /* translate Greek letters */
@@ -190,6 +189,9 @@ std::string bi::internalise(const std::string& name) {
   //  str = match.suffix();
   //}
   buf << str;
+
+  /* underscore on end to avoid conflicts with internal names */
+  buf << '_';
 
   return buf.str();
 }

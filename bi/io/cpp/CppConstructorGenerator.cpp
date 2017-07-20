@@ -65,7 +65,7 @@ void bi::CppConstructorGenerator::visit(const MemberVariable* o) {
   if (o->type->isClass() && !o->parens->isEmpty()) {
     ClassType* type = dynamic_cast<ClassType*>(o->type->strip());
     assert(type);
-    middle("BI_NEW(" << type->name << ')');
+    middle("make_object<" << type->name << '>');
     middle(o->parens); ///@todo Use genArgs()
   } else if (o->type->isArray()) {
     const ArrayType* type =

@@ -23,13 +23,13 @@ AC_PROG_LIBTOOL
 AX_CXX_COMPILE_STDCXX_14([noext], [mandatory])
 
 # Checks for libraries
-AC_CHECK_LIB([birch], [bi_present_], [], [AC_MSG_ERROR([Birch compiler library not found])])
+AC_CHECK_LIB([birch], [bi_present], [], [AC_MSG_ERROR([Birch compiler library not found])])
 if test x$std = xtrue; then
-    AC_CHECK_LIB([birch_standard], [bi_standard_present_], [], [AC_MSG_ERROR([Birch standard library not found])])
+    AC_CHECK_LIB([birch_standard], [bi_standard_present], [], [AC_MSG_ERROR([Birch standard library not found])])
 fi
 
 # Checks for header files
-AC_CHECK_HEADERS([bi/bi.hpp], [], [AC_MSG_ERROR([Birch compiler library header not found.])], [-])
+AC_CHECK_HEADERS([bi/libbirch.hpp], [], [AC_MSG_ERROR([Birch compiler library header not found.])], [-])
 if test x$std = xtrue; then
     AC_CHECK_HEADERS([bi/standard.hpp], [], [AC_MSG_ERROR([Birch standard library header not found.])], [-])
 fi

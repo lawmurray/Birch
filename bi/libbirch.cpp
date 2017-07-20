@@ -1,6 +1,6 @@
 /**
  * @file
  */
-extern "C" int bi_present_() {
+extern "C" int bi_present() {
   return 0;
 }
