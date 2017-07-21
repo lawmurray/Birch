@@ -17,6 +17,28 @@ namespace bi {
 class Heap {
 public:
   /**
+   * Destructor.
+   */
+  virtual ~Heap() {
+    /* update fiber usage counts */
+    for (auto o : heap) {
+      o->disuse();
+    }
+  }
+
+  /**
+   * Copy constructor.
+   */
+  Heap(const Heap& o) : heap(o.heap) {
+    /* update fiber usage counts */
+    for (auto o : heap) {
+      o->use();
+    }
+    /// @todo For multiple copies of the same fiber (common use case), could
+    /// update usage counts just once
+  }
+
+  /**
    * Get an allocation.
    *
    * @param index The heap index.

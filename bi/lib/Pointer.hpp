@@ -142,7 +142,7 @@ T* bi::Pointer<T>::get() {
     if (raw->isShared()) {
       /* shared and writeable, copy now (copy-on-write) */
       raw->disuse();
-      raw = static_cast<T*>(raw->clone());
+      raw = raw->clone();
       currentFiber->set(index, raw);
     }
   } else {

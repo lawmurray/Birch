@@ -13,7 +13,7 @@ void bi::CppCloneGenerator::visit(const Class* o) {
   if (!header) {
     start("bi::type::");
   } else {
-    start("");
+    start("virtual ");
   }
   middle(o->name << "* ");
   if (!header) {
@@ -25,26 +25,18 @@ void bi::CppCloneGenerator::visit(const Class* o) {
   } else {
     finish(" {");
     in();
-    line("auto result = copy_object(this);");
-    /// @todo What if more than one member attribute points to the same
-    /// object, or even this?
-    *this << o->braces;
-    line("return result;");
+    line("return copy_object(this);");
     out();
     line("}\n");
   }
 }
 
 void bi::CppCloneGenerator::visit(const MemberParameter* o) {
-  if (o->type->isClass()) {
-    line("result->" << o->name << "->use();");
-  }
+  //
 }
 
 void bi::CppCloneGenerator::visit(const MemberVariable* o) {
-  if (o->type->isClass()) {
-    line("result->" << o->name << "->use();");
-  }
+  //
 }
 
 void bi::CppCloneGenerator::visit(const MemberFunction* o) {

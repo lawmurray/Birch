@@ -14,12 +14,30 @@ namespace bi {
  * @tparam Type Return type.
  */
 template<class Type>
-class Fiber : public Heap {
+class Fiber: public Heap {
 public:
   /**
    * Constructor.
    */
-  Fiber() : yieldTo(this), state(0) {
+  Fiber() :
+      yieldTo(this),
+      state(0) {
+    //
+  }
+
+  /**
+   * Destructor.
+   */
+  virtual ~Fiber() {
+    //
+  }
+
+  /**
+   * Copy constructor.
+   */
+  Fiber(const Fiber& o) :
+      yieldTo(this),
+      state(o.state) {
     //
   }
 
