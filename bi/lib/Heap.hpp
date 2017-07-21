@@ -17,6 +17,25 @@ namespace bi {
 class Heap {
 public:
   /**
+   * Copy constructor.
+   */
+  Heap(const Heap& o) : heap(o.heap) {
+    /* update fiber usage counts */
+    for (auto o : heap) {
+      o->use();
+    }
+    /// @todo For multiple copies of the same fiber (common use case), could
+    /// update usage counts just once
+  }
+
+  /**
+   * Move constructor.
+   */
+  Heap(Heap&& o) {
+    std::swap(heap, o.heap);
+  }
+
+  /**
    * Destructor.
    */
   virtual ~Heap() {
@@ -27,15 +46,50 @@ public:
   }
 
   /**
-   * Copy constructor.
+   * Copy assignment. It is common for fibers to have shared history, and an
+   * assignment provides the opportunity to only update usage counts for the
+   * part that is not shared, which may be faster than a complete destruction
+   * and recreation.
    */
-  Heap(const Heap& o) : heap(o.heap) {
-    /* update fiber usage counts */
-    for (auto o : heap) {
-      o->use();
+  Heap& operator=(const Heap& o) {
+    auto iter1 = heap.begin();
+    auto iter2 = o.heap.begin();
+    auto end1 = heap.end();
+    auto end2 = o.heap.end();
+
+    /* skip through common history */
+    while (iter1 != end1 && iter2 != end2 && *iter1 == *iter2) {
+      ++iter1;
+      ++iter2;
     }
-    /// @todo For multiple copies of the same fiber (common use case), could
-    /// update usage counts just once
+
+    /* disuse remaining allocations on the left of the assignment */
+    while (iter1 != end1) {
+      (*iter1)->disuse();
+      ++iter1;
+    }
+
+    /* copy remaining allocations from the right side of the assignment */
+    heap.resize(o.heap.size());
+    iter1 = heap.begin() + std::distance(o.heap.begin(), iter2);
+    while (iter2 != end2) {
+      *iter1 = *iter2;
+      (*iter1)->use();
+      ++iter1;
+      ++iter2;
+    }
+    assert(iter1 == heap.end());
+    assert(iter2 == o.heap.end());
+
+    return *this;
+  }
+
+  /**
+   * Move assignment.
+   */
+  Heap& operator=(Heap&& o) {
+    std::swap(heap, o.heap);
+    return *this;
   }
 
   /**

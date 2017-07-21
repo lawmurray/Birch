@@ -20,7 +20,6 @@ public:
    * Constructor.
    */
   Fiber() :
-      yieldTo(this),
       state(0) {
     //
   }
@@ -33,21 +32,13 @@ public:
   }
 
   /**
-   * Copy constructor.
-   */
-  Fiber(const Fiber& o) :
-      yieldTo(this),
-      state(o.state) {
-    //
-  }
-
-  /**
    * Run to next yield point.
    */
   Type operator()() {
-    std::swap(yieldTo, currentFiber);
+    Heap* yieldTo = currentFiber;
+    currentFiber = this;
     Type result = run();
-    std::swap(yieldTo, currentFiber);
+    currentFiber = yieldTo;
     return result;
   }
 
@@ -56,11 +47,6 @@ protected:
    * Run to next yield point.
    */
   virtual Type run() = 0;
-
-  /**
-   * Fiber to which to yield at next yield point.
-   */
-  Heap* yieldTo;
 
   /**
    * State.
