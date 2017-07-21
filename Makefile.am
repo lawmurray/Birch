@@ -112,8 +112,8 @@ birchc_SOURCES = \
   bi/type/ArrayType.cpp \
   bi/type/BasicType.cpp \
   bi/type/ClassType.cpp \
-  bi/type/CoroutineType.cpp \
   bi/type/EmptyType.cpp \
+  bi/type/FiberType.cpp \
   bi/type/FunctionType.cpp \
   bi/type/IdentifierType.cpp \
   bi/type/ParenthesesType.cpp \
@@ -144,16 +144,16 @@ birch_SOURCES = \
 birch_CXXFLAGS = $(AM_CXXFLAGS)
 
 libbirch_la_SOURCES = \
-  bi/lib/Coroutine.cpp \
+  bi/lib/global.cpp \
   bi/libbirch.cpp
 libbirch_la_CXXFLAGS = $(AM_CXXFLAGS)
 
 nobase_include_HEADERS = \
   bi/lib/Array.hpp \
-  bi/lib/constant.hpp \
-  bi/lib/Coroutine.hpp \
-  bi/lib/easy.hpp \
+  bi/lib/Fiber.hpp \
   bi/lib/Frame.hpp \
+  bi/lib/global.hpp \
+  bi/lib/Heap.hpp \
   bi/lib/Index.hpp \
   bi/lib/Iterator.hpp \
   bi/lib/Lead.hpp \
@@ -273,8 +273,8 @@ noinst_HEADERS = \
   bi/type/ArrayType.hpp \
   bi/type/BasicType.hpp \
   bi/type/ClassType.hpp \
-  bi/type/CoroutineType.hpp \
   bi/type/EmptyType.hpp \
+  bi/type/FiberType.hpp \
   bi/type/FunctionType.hpp \
   bi/type/IdentifierType.hpp \
   bi/type/ParenthesesType.hpp \

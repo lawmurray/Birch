@@ -79,7 +79,7 @@ bool bi::AliasType::definitely(const ClassType& o) const {
   return target->base->definitely(o);
 }
 
-bool bi::AliasType::definitely(const CoroutineType& o) const {
+bool bi::AliasType::definitely(const FiberType& o) const {
   return target->base->definitely(o);
 }
 
@@ -123,7 +123,7 @@ bool bi::AliasType::possibly(const ClassType& o) const {
   return target->base->possibly(o);
 }
 
-bool bi::AliasType::possibly(const CoroutineType& o) const {
+bool bi::AliasType::possibly(const FiberType& o) const {
   return target->base->possibly(o);
 }
 

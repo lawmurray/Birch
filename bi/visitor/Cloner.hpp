@@ -86,6 +86,6 @@ public:
   virtual Type* clone(const ArrayType* o);
   virtual Type* clone(const ParenthesesType* o);
   virtual Type* clone(const FunctionType* o);
-  virtual Type* clone(const CoroutineType* o);
+  virtual Type* clone(const FiberType* o);
 };
 }

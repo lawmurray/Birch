@@ -26,6 +26,8 @@ void bi::CppCloneGenerator::visit(const Class* o) {
     finish(" {");
     in();
     line("auto result = copy_object(this);");
+    /// @todo What if more than one member attribute points to the same
+    /// object, or even this?
     *this << o->braces;
     line("return result;");
     out();

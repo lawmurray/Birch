@@ -352,7 +352,7 @@ bi::Type* bi::Modifier::modify(FunctionType* o) {
   return o;
 }
 
-bi::Type* bi::Modifier::modify(CoroutineType* o) {
+bi::Type* bi::Modifier::modify(FiberType* o) {
   o->returnType = o->returnType.release()->accept(this);
   return o;
 }

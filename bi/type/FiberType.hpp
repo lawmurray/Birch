@@ -8,11 +8,11 @@
 
 namespace bi {
 /**
- * Coroutine type.
+ * Fiber type.
  *
  * @ingroup compiler_type
  */
-class CoroutineType: public Type, public ReturnTyped {
+class FiberType: public Type, public ReturnTyped {
 public:
   /**
    * Constructor.
@@ -21,13 +21,13 @@ public:
    * @param loc Location.
    * @param assignable Is this type assignable?
    */
-  CoroutineType(Type* returnType = new EmptyType(), shared_ptr<Location> loc =
+  FiberType(Type* returnType = new EmptyType(), shared_ptr<Location> loc =
       nullptr, const bool assignable = false);
 
   /**
    * Destructor.
    */
-  virtual ~CoroutineType();
+  virtual ~FiberType();
 
   virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);
@@ -39,11 +39,11 @@ public:
   using Type::possibly;
 
   virtual bool dispatchDefinitely(const Type& o) const;
-  virtual bool definitely(const CoroutineType& o) const;
+  virtual bool definitely(const FiberType& o) const;
   virtual bool definitely(const ParenthesesType& o) const;
 
   virtual bool dispatchPossibly(const Type& o) const;
-  virtual bool possibly(const CoroutineType& o) const;
+  virtual bool possibly(const FiberType& o) const;
   virtual bool possibly(const ParenthesesType& o) const;
 };
 }

@@ -261,7 +261,7 @@ bi::Expression* bi::Resolver::modify(Identifier<Coroutine>* o) {
   Scope* memberScope = takeMemberScope();
   Modifier::modify(o);
   resolve(o, memberScope);
-  o->type = new CoroutineType(
+  o->type = new FiberType(
       o->target->returnType->accept(&cloner)->accept(this));
   o->type->assignable = false;  // rvalue
   return o;

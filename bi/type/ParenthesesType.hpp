@@ -44,7 +44,7 @@ public:
 
   virtual bool dispatchDefinitely(const Type& o) const;
   virtual bool definitely(const ArrayType& o) const;
-  virtual bool definitely(const CoroutineType& o) const;
+  virtual bool definitely(const FiberType& o) const;
   virtual bool definitely(const EmptyType& o) const;
   virtual bool definitely(const FunctionType& o) const;
   virtual bool definitely(const List<Type>& o) const;
@@ -55,7 +55,7 @@ public:
 
   virtual bool dispatchPossibly(const Type& o) const;
   virtual bool possibly(const ArrayType& o) const;
-  virtual bool possibly(const CoroutineType& o) const;
+  virtual bool possibly(const FiberType& o) const;
   virtual bool possibly(const EmptyType& o) const;
   virtual bool possibly(const FunctionType& o) const;
   virtual bool possibly(const List<Type>& o) const;

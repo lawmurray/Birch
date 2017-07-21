@@ -606,7 +606,7 @@ function_type
     ;
 
 coroutine_type
-    : COROUTINE_UPPER '<' type '>'  { $$ = new bi::CoroutineType($3, make_loc(@$)); }
+    : COROUTINE_UPPER '<' type '>'  { $$ = new bi::FiberType($3, make_loc(@$)); }
     ;
 
 primary_type

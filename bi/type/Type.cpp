@@ -85,7 +85,7 @@ bool bi::Type::definitely(const ClassType& o) const {
   return false;
 }
 
-bool bi::Type::definitely(const CoroutineType& o) const {
+bool bi::Type::definitely(const FiberType& o) const {
   return false;
 }
 
@@ -125,7 +125,7 @@ bool bi::Type::possibly(const ClassType& o) const {
   return false;
 }
 
-bool bi::Type::possibly(const CoroutineType& o) const {
+bool bi::Type::possibly(const FiberType& o) const {
   return false;
 }
 

@@ -3,14 +3,16 @@
  */
 #pragma once
 
-#include "bi/lib/Coroutine.hpp"
+#include "bi/lib/Fiber.hpp"
 
 #include <cassert>
 
 namespace bi {
 /**
  * Base class for all class types. Includes functionality for sharing objects
- * between coroutines with copy-on-write semantics.
+ * between fibers with copy-on-write semantics.
+ *
+ * @ingroup library
  */
 class Object {
 public:
@@ -40,14 +42,21 @@ public:
   }
 
   /**
-   * Clone the object. This is a shallow clone with coroutine usage counts
-   * of member attributes incremented, deferring their cloning until they are
+   * Clone the object. This is a shallow clone with fiber usage counts of
+   * member attributes incremented, deferring their cloning until they are
    * used.
    */
   virtual Object* clone() = 0;
 
   /**
-   * Indicate that a coroutine is no longer using this object.
+   * Indicate that a(nother) fiber is using this object.
+   */
+  void use() {
+    ++users;
+  }
+
+  /**
+   * Indicate that a fiber is no longer using this object.
    */
   void disuse() {
     assert(users > 0);
@@ -55,17 +64,31 @@ public:
   }
 
   /**
-   * Is this object being shared by two or more coroutines?
+   * Is this object being shared by two or more fibers?
    */
   bool isShared() const {
     return users > 1;
   }
 
   /**
-   * Is this object coroutine-local?
+   * Is this object fiber-local?
    */
   bool isLocal() const {
     return index >= 0;
+  }
+
+  /**
+   * Get the fiber-local heap index of the object.
+   */
+  size_t getIndex() const {
+    return index;
+  }
+
+  /**
+   * Set the fiber-local heap index of the object.
+   */
+  void setIndex(const size_t index) {
+    this->index = index;
   }
 
   /**
@@ -73,21 +96,21 @@ public:
    */
   template<class T>
   Pointer<T> pointer_from_this() {
-    return Pointer<T>(static_cast<T*>(this), index);
+    return Pointer<T>(index >= 0 ? nullptr : static_cast<T*>(this), index);
   }
   template<class T>
   Pointer<const T> pointer_from_this() const {
-    return Pointer<const T>(static_cast<T* const>(this), index);
+    return Pointer<T>(index >= 0 ? nullptr : static_cast<T*>(this), index);
   }
 
 private:
   /**
-   * Number of coroutines using this object.
+   * Number of fibers referencing this object.
    */
   size_t users;
 
   /**
-   * For a coroutine-local pointer, the index of the heap allocation,
+   * For a fiber-local pointer, the index of the heap allocation,
    * otherwise -1.
    */
   size_t index;

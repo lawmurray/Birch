@@ -3,7 +3,7 @@
  */
 #pragma once
 
-#include "bi/lib/constant.hpp"
+#include "bi/lib/global.hpp"
 #include "bi/lib/Index.hpp"
 #include "bi/lib/Range.hpp"
 

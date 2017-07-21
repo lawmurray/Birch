@@ -30,7 +30,7 @@ bi::Type* bi::Assigner::modify(FunctionType* o) {
   return o;
 }
 
-bi::Type* bi::Assigner::modify(CoroutineType* o) {
+bi::Type* bi::Assigner::modify(FiberType* o) {
   o->assignable = true;
   return o;
 }

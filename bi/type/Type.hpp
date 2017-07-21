@@ -14,7 +14,7 @@ class AliasType;
 class ArrayType;
 class BasicType;
 class ClassType;
-class CoroutineType;
+class FiberType;
 class EmptyType;
 class FunctionType;
 class IdentifierType;
@@ -141,7 +141,7 @@ public:
   virtual bool definitely(const ArrayType& o) const;
   virtual bool definitely(const BasicType& o) const;
   virtual bool definitely(const ClassType& o) const;
-  virtual bool definitely(const CoroutineType& o) const;
+  virtual bool definitely(const FiberType& o) const;
   virtual bool definitely(const EmptyType& o) const;
   virtual bool definitely(const FunctionType& o) const;
   virtual bool definitely(const List<Type>& o) const;
@@ -153,7 +153,7 @@ public:
   virtual bool possibly(const ArrayType& o) const;
   virtual bool possibly(const BasicType& o) const;
   virtual bool possibly(const ClassType& o) const;
-  virtual bool possibly(const CoroutineType& o) const;
+  virtual bool possibly(const FiberType& o) const;
   virtual bool possibly(const EmptyType& o) const;
   virtual bool possibly(const FunctionType& o) const;
   virtual bool possibly(const List<Type>& o) const;

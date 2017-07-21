@@ -24,7 +24,7 @@ public:
   virtual Type* modify(ArrayType* o);
   virtual Type* modify(ParenthesesType* o);
   virtual Type* modify(FunctionType* o);
-  virtual Type* modify(CoroutineType* o);
+  virtual Type* modify(FiberType* o);
   virtual Type* modify(List<Type>* o);
   virtual Type* modify(BasicType* o);
   virtual Type* modify(ClassType* o);

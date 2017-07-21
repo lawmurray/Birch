@@ -78,7 +78,7 @@ public:
   virtual void visit(const ArrayType* o);
   virtual void visit(const ParenthesesType* o);
   virtual void visit(const FunctionType* o);
-  virtual void visit(const CoroutineType* o);
+  virtual void visit(const FiberType* o);
   virtual void visit(const ClassType* o);
   virtual void visit(const BasicType* o);
   virtual void visit(const AliasType* o);

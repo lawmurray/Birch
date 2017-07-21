@@ -294,7 +294,7 @@ bi::Type* bi::Cloner::clone(const FunctionType* o) {
       o->returnType->accept(this), o->loc, o->assignable);
 }
 
-bi::Type* bi::Cloner::clone(const CoroutineType* o) {
-  return new CoroutineType(o->returnType->accept(this), o->loc, o->assignable);
+bi::Type* bi::Cloner::clone(const FiberType* o) {
+  return new FiberType(o->returnType->accept(this), o->loc, o->assignable);
 }
 

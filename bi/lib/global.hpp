@@ -5,9 +5,10 @@
 
 #include <limits>
 #include <cstdint>
-#include <cassert>
 
 namespace bi {
+class Heap;
+
 /**
  * Constant to indicate a mutable value. Zero is convenient here, as it
  * enables multiplication to convolve multiple values.
@@ -24,18 +25,8 @@ static constexpr int mutable_value = 0;
 static constexpr size_t default_value = std::numeric_limits<size_t>::max();
 
 /**
- * Greatest common divisor of two positive integers.
+ * Currently running fiber. If there is no currently running fiber, then
+ * @c nullptr.
  */
-inline size_t gcd(const size_t a, const size_t b) {
-  /* pre-condition */
-  assert(a > 0);
-  assert(b > 0);
-
-  size_t a1 = a, b1 = b;
-  while (a1 != b1 && b1 != 0) {
-    a1 = a1 % b1;
-    std::swap(a1, b1);
-  }
-  return a1;
-}
+extern Heap* currentFiber;
 }

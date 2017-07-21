@@ -5,7 +5,7 @@
 
 #include "bi/lib/Frame.hpp"
 #include "bi/lib/Iterator.hpp"
-#include "bi/lib/constant.hpp"
+#include "bi/lib/global.hpp"
 #include "bi/lib/memory.hpp"
 #include "bi/lib/Pointer.hpp"
 
@@ -390,7 +390,7 @@ private:
   template<class ... Args>
   void initialise(Args ... args) {
     for (auto iter = begin(); iter != end(); ++iter) {
-      construct(*iter, args...);
+      emplace(*iter, args...);
     }
   }
 
@@ -429,7 +429,7 @@ private:
    * @param args Constructor arguments.
    */
   template<class Type1, class ... Args>
-  static void construct(Type1& o, Args ... args) {
+  static void emplace(Type1& o, Args ... args) {
     new (&o) Type1(args...);
   }
 
@@ -440,8 +440,24 @@ private:
    * @param args Constructor arguments.
    */
   template<class Type1, class ... Args>
-  static void construct(Pointer<Type1>& o, Args ... args) {
-    new (&o) Pointer<Type1>(args...);
+  static void emplace(Pointer<Type1>& o, Args ... args) {
+    new (&o) Pointer<Type1>(make_object(args...));
+  }
+
+  /**
+   * Greatest common divisor of two positive integers.
+   */
+  static size_t gcd(const size_t a, const size_t b) {
+    /* pre-condition */
+    assert(a > 0);
+    assert(b > 0);
+
+    size_t a1 = a, b1 = b;
+    while (a1 != b1 && b1 != 0) {
+      a1 = a1 % b1;
+      std::swap(a1, b1);
+    }
+    return a1;
   }
 };
 

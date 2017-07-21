@@ -62,7 +62,7 @@ bool bi::ParenthesesType::definitely(const ArrayType& o) const {
   return single->definitely(o);
 }
 
-bool bi::ParenthesesType::definitely(const CoroutineType& o) const {
+bool bi::ParenthesesType::definitely(const FiberType& o) const {
   return single->definitely(o);
 }
 
@@ -102,7 +102,7 @@ bool bi::ParenthesesType::possibly(const ArrayType& o) const {
   return single->possibly(o);
 }
 
-bool bi::ParenthesesType::possibly(const CoroutineType& o) const {
+bool bi::ParenthesesType::possibly(const FiberType& o) const {
   return single->possibly(o);
 }
 

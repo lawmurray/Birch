@@ -3,11 +3,9 @@
  */
 #pragma once
 
-#include <cstddef>
-
 namespace bi {
 /**
- * Smart pointer for global and coroutine-local objects, with copy-on-write
+ * Smart pointer for global and fiber-local objects, with copy-on-write
  * semantics for te latter.
  *
  * @ingroup library
@@ -21,21 +19,13 @@ public:
   /**
    * Constructor.
    */
-  Pointer(T* ptr = nullptr, const size_t index = -1) :
-      ptr(ptr),
-      index(index) {
-    //
-  }
+  Pointer(T* raw = nullptr);
 
   /**
    * Generic constructor.
    */
   template<class U>
-  Pointer(U* ptr = nullptr, const size_t index = -1) :
-      ptr(ptr),
-      index(index) {
-    //
-  }
+  Pointer(U* raw = nullptr);
 
   /**
    * Copy constructor.
@@ -46,32 +36,13 @@ public:
    * Generic copy constructor.
    */
   template<class U>
-  Pointer(const Pointer<U>& o) :
-      ptr(o.ptr),
-      index(o.index) {
-    //
-  }
+  Pointer(const Pointer<U>& o);
 
   /**
    * Get the raw pointer.
    */
-  T* get() {
-    if (ptr->isShared()) {
-      /* shared and writeable, copy now (copy-on-write) */
-      auto from = ptr;
-      auto to = static_cast<T*>(from->clone());
-      from->disuse();
-      to->use();
-      return to;
-    } else {
-      /* not shared, no need to copy */
-      return ptr;
-    }
-  }
-  T* const get() const {
-    /* read-only, no need to copy */
-    return ptr;
-  }
+  T* get();
+  T* const get() const;
 
   /**
    * Dereference.
@@ -118,7 +89,7 @@ private:
   T* ptr;
 
   /**
-   * For a coroutine-local pointer, the index of the heap allocation,
+   * For a fiber-local pointer, the index of the heap allocation,
    * otherwise -1.
    */
   size_t index;
@@ -126,4 +97,68 @@ private:
   /// @todo Might there be an implementation that allows both cases to be
   /// packed into the same 64-bit value?
 };
+}
+
+#include "bi/lib/global.hpp"
+#include "bi/lib/Fiber.hpp"
+
+template<class T>
+bi::Pointer<T>::Pointer(T* raw) {
+  if (currentFiber) {
+    ptr = nullptr;
+    index = currentFiber->put(raw);
+  } else {
+    ptr = raw;
+    index = -1;
+  }
+}
+
+template<class T>
+template<class U>
+bi::Pointer<T>::Pointer(U* raw) {
+  if (currentFiber) {
+    ptr = nullptr;
+    index = currentFiber->put(raw);
+  } else {
+    ptr = raw;
+    index = -1;
+  }
+}
+
+template<class T>
+template<class U>
+bi::Pointer<T>::Pointer(const Pointer<U>& o) :
+    ptr(o.ptr),
+    index(o.index) {
+  //
+}
+
+template<class T>
+T* bi::Pointer<T>::get() {
+  T* raw;
+  if (index >= 0) {
+    assert(currentFiber);
+    raw = static_cast<T*>(currentFiber->get(index));
+    if (raw->isShared()) {
+      /* shared and writeable, copy now (copy-on-write) */
+      raw->disuse();
+      raw = static_cast<T*>(raw->clone());
+      currentFiber->set(index, raw);
+    }
+  } else {
+    raw = ptr;
+  }
+  return raw;
+}
+
+template<class T>
+T* const bi::Pointer<T>::get() const {
+  T* raw;
+  if (index >= 0) {
+    assert(currentFiber);
+    raw = static_cast<T*>(currentFiber->get(index));
+  } else {
+    raw = ptr;
+  }
+  return raw;
 }

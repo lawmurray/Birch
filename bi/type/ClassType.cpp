@@ -59,7 +59,7 @@ bool bi::ClassType::definitely(const ClassType& o) const {
   return target == o.target || target->hasSuper(&o) || target->hasConversion(&o);
 }
 
-bool bi::ClassType::definitely(const CoroutineType& o) const {
+bool bi::ClassType::definitely(const FiberType& o) const {
   return target->hasConversion(&o);
 }
 
