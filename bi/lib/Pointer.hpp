@@ -92,7 +92,7 @@ private:
    * For a fiber-local pointer, the index of the heap allocation,
    * otherwise -1.
    */
-  size_t index;
+  intptr_t index;
 
   /// @todo Might there be an implementation that allows both cases to be
   /// packed into the same 64-bit value?
