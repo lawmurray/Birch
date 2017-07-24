@@ -113,6 +113,6 @@ private:
    * For a fiber-local pointer, the index of the heap allocation,
    * otherwise -1.
    */
-  size_t index;
+  intptr_t index;
 };
 }

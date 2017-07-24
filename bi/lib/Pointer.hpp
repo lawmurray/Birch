@@ -15,6 +15,7 @@ namespace bi {
 template<class T>
 class Pointer {
   template<class U> friend class Pointer;
+  friend class Object;
 public:
   /**
    * Constructor.
@@ -84,6 +85,15 @@ public:
 
 private:
   /**
+   * Constructor for pointer_from_this() in Object.
+   */
+  Pointer(T* raw, intptr_t index) :
+      ptr(nullptr),
+      index(index) {
+    assert(heap[index] == raw);
+  }
+
+  /**
    * For a global pointer, the raw address.
    */
   T* ptr;
@@ -107,6 +117,7 @@ bi::Pointer<T>::Pointer(T* raw) {
   if (currentFiber) {
     ptr = nullptr;
     index = currentFiber->put(raw);
+    raw->setIndex(index);
   } else {
     ptr = raw;
     index = -1;
@@ -119,6 +130,7 @@ bi::Pointer<T>::Pointer(U* raw) {
   if (currentFiber) {
     ptr = nullptr;
     index = currentFiber->put(raw);
+    raw->setIndex(index);
   } else {
     ptr = raw;
     index = -1;

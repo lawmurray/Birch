@@ -94,11 +94,15 @@ void bi::CppBaseGenerator::visit(const Member* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Super* o) {
-  middle("dynamic_cast<super_type*>(this)");
+  // only need to handle the case outside member expression, which shouldn't
+  // exist
+  assert(false);
 }
 
 void bi::CppBaseGenerator::visit(const This* o) {
-  middle("this");
+  // only need to handle the case outside member expression, where must
+  // ensure correct global or fiber-local pointer is used
+  middle("pointer_from_this<this_type>()");
 }
 
 void bi::CppBaseGenerator::visit(const Parameter* o) {
