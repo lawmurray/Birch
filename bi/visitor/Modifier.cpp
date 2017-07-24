@@ -141,6 +141,11 @@ bi::Expression* bi::Modifier::modify(Identifier<Coroutine>* o) {
   return o;
 }
 
+bi::Expression* bi::Modifier::modify(Identifier<MemberCoroutine>* o) {
+  o->parens = o->parens.release()->accept(this);
+  return o;
+}
+
 bi::Expression* bi::Modifier::modify(Identifier<MemberFunction>* o) {
   o->parens = o->parens.release()->accept(this);
   return o;
@@ -215,6 +220,13 @@ bi::Statement* bi::Modifier::modify(Program* o) {
 }
 
 bi::Statement* bi::Modifier::modify(MemberFunction* o) {
+  o->parens = o->parens.release()->accept(this);
+  o->returnType = o->returnType.release()->accept(this);
+  o->braces = o->braces.release()->accept(this);
+  return o;
+}
+
+bi::Statement* bi::Modifier::modify(MemberCoroutine* o) {
   o->parens = o->parens.release()->accept(this);
   o->returnType = o->returnType.release()->accept(this);
   o->braces = o->braces.release()->accept(this);

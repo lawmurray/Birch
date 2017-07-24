@@ -109,6 +109,10 @@ bool bi::Expression::definitely(const Identifier<MemberFunction>& o) const {
   return false;
 }
 
+bool bi::Expression::definitely(const Identifier<MemberCoroutine>& o) const {
+  return false;
+}
+
 bool bi::Expression::definitely(const Identifier<BinaryOperator>& o) const {
   return false;
 }
@@ -210,6 +214,10 @@ bool bi::Expression::possibly(const Identifier<Coroutine>& o) const {
 }
 
 bool bi::Expression::possibly(const Identifier<MemberFunction>& o) const {
+  return false;
+}
+
+bool bi::Expression::possibly(const Identifier<MemberCoroutine>& o) const {
   return false;
 }
 

@@ -74,10 +74,10 @@ birchc_SOURCES = \
   bi/expression/Super.cpp \
   bi/expression/This.cpp \
   bi/io/cpp/CppBaseGenerator.cpp \
-  bi/io/cpp/CppCloneGenerator.cpp \
   bi/io/cpp/CppConstructorGenerator.cpp \
   bi/io/cpp/CppCoroutineGenerator.cpp \
   bi/io/cpp/CppClassGenerator.cpp \
+  bi/io/cpp/CppMemberCoroutineGenerator.cpp \
   bi/io/bi_ostream.cpp \
   bi/io/cpp_ostream.cpp \
   bi/io/indentable_ostream.cpp \
@@ -100,6 +100,7 @@ birchc_SOURCES = \
   bi/statement/If.cpp \
   bi/statement/Import.cpp \
   bi/statement/LocalVariable.cpp \
+  bi/statement/MemberCoroutine.cpp \
   bi/statement/MemberFunction.cpp \
   bi/statement/MemberVariable.cpp \
   bi/statement/Program.cpp \
@@ -230,10 +231,10 @@ noinst_HEADERS = \
   bi/io/bi_ostream.hpp \
   bi/io/bih_ostream.hpp \
   bi/io/cpp/CppBaseGenerator.hpp \
-  bi/io/cpp/CppCloneGenerator.hpp \
   bi/io/cpp/CppConstructorGenerator.hpp \
   bi/io/cpp/CppCoroutineGenerator.hpp \
   bi/io/cpp/CppClassGenerator.hpp \
+  bi/io/cpp/CppMemberCoroutineGenerator.hpp \
   bi/io/cpp_ostream.hpp \
   bi/io/hpp_ostream.hpp \
   bi/io/indentable_ostream.hpp \
@@ -261,6 +262,7 @@ noinst_HEADERS = \
   bi/statement/If.hpp \
   bi/statement/Import.hpp \
   bi/statement/LocalVariable.hpp \
+  bi/statement/MemberCoroutine.hpp \
   bi/statement/MemberFunction.hpp \
   bi/statement/MemberVariable.hpp \
   bi/statement/Program.hpp \

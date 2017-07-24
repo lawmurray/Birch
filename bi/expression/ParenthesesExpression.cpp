@@ -91,6 +91,11 @@ bool bi::ParenthesesExpression::definitely(
 }
 
 bool bi::ParenthesesExpression::definitely(
+    const Identifier<MemberCoroutine>& o) const {
+  return single->definitely(o);
+}
+
+bool bi::ParenthesesExpression::definitely(
     const Identifier<BinaryOperator>& o) const {
   return single->definitely(o);
 }
@@ -201,6 +206,11 @@ bool bi::ParenthesesExpression::possibly(
 
 bool bi::ParenthesesExpression::possibly(
     const Identifier<MemberFunction>& o) const {
+  return single->possibly(o);
+}
+
+bool bi::ParenthesesExpression::possibly(
+    const Identifier<MemberCoroutine>& o) const {
   return single->possibly(o);
 }
 

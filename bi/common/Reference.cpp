@@ -40,6 +40,7 @@ template class bi::Reference<bi::MemberVariable>;
 template class bi::Reference<bi::Function>;
 template class bi::Reference<bi::Coroutine>;
 template class bi::Reference<bi::MemberFunction>;
+template class bi::Reference<bi::MemberCoroutine>;
 template class bi::Reference<bi::BinaryOperator>;
 template class bi::Reference<bi::UnaryOperator>;
 template class bi::Reference<bi::AssignmentOperator>;

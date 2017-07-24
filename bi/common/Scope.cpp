@@ -36,6 +36,8 @@ bi::LookupResult bi::Scope::lookup(const Identifier<Unknown>* ref) const {
     return MEMBER_PARAMETER;
   } else if (memberFunctions.contains(name)) {
     return MEMBER_FUNCTION;
+  } else if (memberCoroutines.contains(name)) {
+    return MEMBER_COROUTINE;
   } else if (globalVariables.contains(name)) {
     return GLOBAL_VARIABLE;
   } else if (functions.contains(name)) {
@@ -116,6 +118,8 @@ void bi::Scope::add(MemberVariable* param) {
     throw PreviousDeclarationException(param, memberParameters.get(name));
   } else if (memberFunctions.contains(name)) {
     throw PreviousDeclarationException(param);
+  } else if (memberCoroutines.contains(name)) {
+    throw PreviousDeclarationException(param);
   } else {
     memberVariables.add(param);
   }
@@ -166,8 +170,23 @@ void bi::Scope::add(MemberFunction* param) {
     throw PreviousDeclarationException(param, memberVariables.get(name));
   } else if (memberParameters.contains(name)) {
     throw PreviousDeclarationException(param, memberParameters.get(name));
+  } else if (memberCoroutines.contains(name)) {
+    throw PreviousDeclarationException(param);
   } else {
     memberFunctions.add(param);
+  }
+}
+
+void bi::Scope::add(MemberCoroutine* param) {
+  auto name = param->name->str();
+  if (memberVariables.contains(name)) {
+    throw PreviousDeclarationException(param, memberVariables.get(name));
+  } else if (memberParameters.contains(name)) {
+    throw PreviousDeclarationException(param, memberParameters.get(name));
+  } else if (memberFunctions.contains(name)) {
+    throw PreviousDeclarationException(param);
+  } else {
+    memberCoroutines.add(param);
   }
 }
 
@@ -253,6 +272,13 @@ void bi::Scope::resolve(Identifier<Coroutine>* ref) {
 
 void bi::Scope::resolve(Identifier<MemberFunction>* ref) {
   memberFunctions.resolve(ref);
+  if (ref->matches.size() == 0) {
+    resolveInherit(ref);
+  }
+}
+
+void bi::Scope::resolve(Identifier<MemberCoroutine>* ref) {
+  memberCoroutines.resolve(ref);
   if (ref->matches.size() == 0) {
     resolveInherit(ref);
   }

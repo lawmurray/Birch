@@ -5,8 +5,7 @@
 
 bi::CppConstructorGenerator::CppConstructorGenerator(std::ostream& base,
     const int level, const bool header) :
-    CppBaseGenerator(base, level, header),
-    before(false) {
+    CppBaseGenerator(base, level, header) {
   //
 }
 
@@ -29,9 +28,11 @@ void bi::CppConstructorGenerator::visit(const Class* o) {
     finish(" :");
     in();
     in();
-    if (!o->base->isEmpty() && !o->baseParens->isEmpty()) {
-      before = true;
-      start("super_type" << o->baseParens);
+    start("super_type");
+    if (!o->baseParens->isEmpty()) {
+      middle(o->baseParens);
+    } else {
+      middle("()");
     }
     for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
       *this << *iter;
@@ -48,19 +49,12 @@ void bi::CppConstructorGenerator::visit(const Class* o) {
 }
 
 void bi::CppConstructorGenerator::visit(const MemberParameter* o) {
-  if (before) {
-    finish(',');
-  }
-  before = true;
+  finish(',');
   start(o->name << '(' << o->name << ')');
 }
 
 void bi::CppConstructorGenerator::visit(const MemberVariable* o) {
-  if (before) {
-    finish(',');
-  }
-  before = true;
-
+  finish(',');
   start(o->name << '(');
   if (o->type->isClass() && !o->parens->isEmpty()) {
     ClassType* type = dynamic_cast<ClassType*>(o->type->strip());
@@ -82,6 +76,10 @@ void bi::CppConstructorGenerator::visit(const MemberVariable* o) {
 }
 
 void bi::CppConstructorGenerator::visit(const MemberFunction* o) {
+  //
+}
+
+void bi::CppConstructorGenerator::visit(const MemberCoroutine* o) {
   //
 }
 

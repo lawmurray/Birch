@@ -163,6 +163,12 @@ void bi::CppBaseGenerator::visit(const Identifier<MemberFunction>* o) {
   middle(')');
 }
 
+void bi::CppBaseGenerator::visit(const Identifier<MemberCoroutine>* o) {
+  middle(o->name << '(');
+  genArgs(o->parens.get(), o->target->parens.get());
+  middle(')');
+}
+
 void bi::CppBaseGenerator::visit(const Identifier<BinaryOperator>* o) {
   if (isTranslatable(o->name->str())) {
     /* can use as raw C++ operator */
@@ -291,6 +297,10 @@ void bi::CppBaseGenerator::visit(const Coroutine* o) {
 }
 
 void bi::CppBaseGenerator::visit(const MemberFunction* o) {
+  assert(false);  // should be in CppClassGenerator
+}
+
+void bi::CppBaseGenerator::visit(const MemberCoroutine* o) {
   assert(false);  // should be in CppClassGenerator
 }
 

@@ -47,6 +47,7 @@ public:
   virtual Expression* modify(Identifier<Function>* o);
   virtual Expression* modify(Identifier<Coroutine>* o);
   virtual Expression* modify(Identifier<MemberFunction>* o);
+  virtual Expression* modify(Identifier<MemberCoroutine>* o);
   virtual Expression* modify(Identifier<BinaryOperator>* o);
   virtual Expression* modify(Identifier<UnaryOperator>* o);
 
@@ -60,6 +61,7 @@ public:
   virtual Statement* modify(Coroutine* o);
   virtual Statement* modify(Program* o);
   virtual Statement* modify(MemberFunction* o);
+  virtual Statement* modify(MemberCoroutine* o);
   virtual Statement* modify(BinaryOperator* o);
   virtual Statement* modify(UnaryOperator* o);
   virtual Statement* modify(AssignmentOperator* o);

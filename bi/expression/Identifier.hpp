@@ -73,6 +73,7 @@ public:
   virtual bool definitely(const Function& o) const;
   virtual bool definitely(const Coroutine& o) const;
   virtual bool definitely(const MemberFunction& o) const;
+  virtual bool definitely(const MemberCoroutine& o) const;
 
   virtual bool dispatchPossibly(const Expression& o) const;
   virtual bool possibly(const Identifier<ObjectType>& o) const;
@@ -83,6 +84,7 @@ public:
   virtual bool possibly(const Function& o) const;
   virtual bool possibly(const Coroutine& o) const;
   virtual bool possibly(const MemberFunction& o) const;
+  virtual bool possibly(const MemberCoroutine& o) const;
 };
 
 /**

@@ -48,6 +48,7 @@ public:
   virtual Expression* clone(const Identifier<Function>* o);
   virtual Expression* clone(const Identifier<Coroutine>* o);
   virtual Expression* clone(const Identifier<MemberFunction>* o);
+  virtual Expression* clone(const Identifier<MemberCoroutine>* o);
   virtual Expression* clone(const Identifier<BinaryOperator>* o);
   virtual Expression* clone(const Identifier<UnaryOperator>* o);
 
@@ -61,6 +62,7 @@ public:
   virtual Statement* clone(const Coroutine* o);
   virtual Statement* clone(const Program* o);
   virtual Statement* clone(const MemberFunction* o);
+  virtual Statement* clone(const MemberCoroutine* o);
   virtual Statement* clone(const BinaryOperator* o);
   virtual Statement* clone(const UnaryOperator* o);
   virtual Statement* clone(const AssignmentOperator* o);

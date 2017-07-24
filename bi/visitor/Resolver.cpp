@@ -276,6 +276,16 @@ bi::Expression* bi::Resolver::modify(Identifier<MemberFunction>* o) {
   return o;
 }
 
+bi::Expression* bi::Resolver::modify(Identifier<MemberCoroutine>* o) {
+  Scope* memberScope = takeMemberScope();
+  Modifier::modify(o);
+  resolve(o, memberScope);
+  o->type = new FiberType(
+      o->target->returnType->accept(&cloner)->accept(this));
+  o->type->assignable = false;  // rvalue
+  return o;
+}
+
 bi::Expression* bi::Resolver::modify(Identifier<BinaryOperator>* o) {
   if (*o->name == "~>") {
     /* x ~> m is syntactic sugar for m.observe(x) */
@@ -398,6 +408,19 @@ bi::Statement* bi::Resolver::modify(Program* o) {
 }
 
 bi::Statement* bi::Resolver::modify(MemberFunction* o) {
+  push();
+  o->parens = o->parens->accept(this);
+  o->returnType = o->returnType->accept(this);
+  if (!o->braces->isEmpty()) {
+    defer(o->braces.get());
+  }
+  o->scope = pop();
+  top()->add(o);
+
+  return o;
+}
+
+bi::Statement* bi::Resolver::modify(MemberCoroutine* o) {
   push();
   o->parens = o->parens->accept(this);
   o->returnType = o->returnType->accept(this);
@@ -642,6 +665,9 @@ bi::Expression* bi::Resolver::lookup(Identifier<Unknown>* ref, Scope* scope) {
         ref->loc);
   case MEMBER_FUNCTION:
     return new Identifier<MemberFunction>(ref->name, ref->parens.release(),
+        ref->loc);
+  case MEMBER_COROUTINE:
+    return new Identifier<MemberCoroutine>(ref->name, ref->parens.release(),
         ref->loc);
   default:
     throw UnresolvedReferenceException(ref);

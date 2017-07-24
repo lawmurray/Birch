@@ -4,7 +4,7 @@
 #include "bi/io/cpp/CppClassGenerator.hpp"
 
 #include "bi/io/cpp/CppConstructorGenerator.hpp"
-#include "bi/io/cpp/CppCloneGenerator.hpp"
+#include "bi/io/cpp/CppMemberCoroutineGenerator.hpp"
 #include "bi/primitive/encode.hpp"
 
 bi::CppClassGenerator::CppClassGenerator(std::ostream& base, const int level,
@@ -31,7 +31,9 @@ void bi::CppClassGenerator::visit(const Class* o) {
     line("public:");
     in();
     line("typedef " << o->name << " this_type;");
-    if (!o->base->isEmpty()) {
+    if (o->base->isEmpty()) {
+      line("typedef Object super_type;");
+    } else {
       auto type = dynamic_cast<const ClassType*>(o->base.get());
       assert(type);
       line("typedef " << type->name << " super_type;");
@@ -53,8 +55,25 @@ void bi::CppClassGenerator::visit(const Class* o) {
   }
 
   /* clone function */
-  CppCloneGenerator auxClone(base, level, header);
-  auxClone << o;
+  if (!header) {
+    start("bi::type::");
+  } else {
+    start("virtual ");
+  }
+  middle(o->name << "* ");
+  if (!header) {
+    middle("bi::type::" << o->name << "::");
+  }
+  middle("clone()");
+  if (header) {
+    finish(";\n");
+  } else {
+    finish(" {");
+    in();
+    line("return copy_object(this);");
+    out();
+    line("}\n");
+  }
 
   /* member parameters */
   for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
@@ -108,6 +127,11 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
     out();
     finish("}\n");
   }
+}
+
+void bi::CppClassGenerator::visit(const MemberCoroutine* o) {
+  CppMemberCoroutineGenerator auxMemberCoroutine(type, base, level, header);
+  auxMemberCoroutine << o;
 }
 
 void bi::CppClassGenerator::visit(const AssignmentOperator* o) {

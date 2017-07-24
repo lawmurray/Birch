@@ -84,6 +84,10 @@ bool bi::Statement::definitely(const LocalVariable& o) const {
   return false;
 }
 
+bool bi::Statement::definitely(const MemberCoroutine& o) const {
+  return false;
+}
+
 bool bi::Statement::definitely(const MemberFunction& o) const {
   return false;
 }
@@ -177,6 +181,10 @@ bool bi::Statement::possibly(const List<Statement>& o) const {
 }
 
 bool bi::Statement::possibly(const LocalVariable& o) const {
+  return false;
+}
+
+bool bi::Statement::possibly(const MemberCoroutine& o) const {
   return false;
 }
 

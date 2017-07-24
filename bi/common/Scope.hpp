@@ -20,6 +20,7 @@ class MemberVariable;
 class Function;
 class Coroutine;
 class MemberFunction;
+class MemberCoroutine;
 class Program;
 class BinaryOperator;
 class UnaryOperator;
@@ -46,6 +47,7 @@ enum LookupResult {
   FUNCTION,
   COROUTINE,
   MEMBER_FUNCTION,
+  MEMBER_COROUTINE,
   BASIC,
   CLASS,
   ALIAS,
@@ -79,6 +81,7 @@ public:
   void add(Coroutine* param);
   void add(Program* param);
   void add(MemberFunction* param);
+  void add(MemberCoroutine* param);
   void add(BinaryOperator* param);
   void add(UnaryOperator* param);
   void add(Class* param);
@@ -101,6 +104,7 @@ public:
   void resolve(Identifier<Coroutine>* ref);
   void resolve(Identifier<Program>* ref);
   void resolve(Identifier<MemberFunction>* ref);
+  void resolve(Identifier<MemberCoroutine>* ref);
   void resolve(Identifier<BinaryOperator>* ref);
   void resolve(Identifier<UnaryOperator>* ref);
   void resolve(BasicType* ref);
@@ -140,6 +144,7 @@ public:
   OverloadedDictionary<Coroutine,definitely> coroutines;
   Dictionary<Program> programs;
   OverloadedDictionary<MemberFunction,definitely> memberFunctions;
+  OverloadedDictionary<MemberCoroutine,definitely> memberCoroutines;
   OverloadedDictionary<BinaryOperator,definitely> binaryOperators;
   OverloadedDictionary<UnaryOperator,definitely> unaryOperators;
   Dictionary<Basic> basics;

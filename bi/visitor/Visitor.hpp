@@ -50,6 +50,7 @@ public:
   virtual void visit(const Identifier<Function>* o);
   virtual void visit(const Identifier<Coroutine>* o);
   virtual void visit(const Identifier<MemberFunction>* o);
+  virtual void visit(const Identifier<MemberCoroutine>* o);
   virtual void visit(const Identifier<BinaryOperator>* o);
   virtual void visit(const Identifier<UnaryOperator>* o);
 
@@ -63,6 +64,7 @@ public:
   virtual void visit(const Coroutine* o);
   virtual void visit(const Program* o);
   virtual void visit(const MemberFunction* o);
+  virtual void visit(const MemberCoroutine* o);
   virtual void visit(const BinaryOperator* o);
   virtual void visit(const UnaryOperator* o);
   virtual void visit(const AssignmentOperator* o);

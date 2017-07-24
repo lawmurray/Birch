@@ -22,10 +22,8 @@ public:
   virtual void visit(const MemberParameter* o);
   virtual void visit(const MemberVariable* o);
   virtual void visit(const MemberFunction* o);
+  virtual void visit(const MemberCoroutine* o);
   virtual void visit(const AssignmentOperator* o);
   virtual void visit(const ConversionOperator* o);
-
-private:
-  bool before;
 };
 }

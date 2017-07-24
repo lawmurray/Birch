@@ -6,6 +6,7 @@
 #include "bi/statement/Function.hpp"
 #include "bi/statement/Coroutine.hpp"
 #include "bi/statement/MemberFunction.hpp"
+#include "bi/statement/MemberCoroutine.hpp"
 #include "bi/statement/BinaryOperator.hpp"
 #include "bi/statement/UnaryOperator.hpp"
 #include "bi/statement/AssignmentOperator.hpp"
@@ -61,6 +62,7 @@ void bi::OverloadedDictionary<ParameterType,CompareType>::import(
 template class bi::OverloadedDictionary<bi::Function,bi::definitely>;
 template class bi::OverloadedDictionary<bi::Coroutine,bi::definitely>;
 template class bi::OverloadedDictionary<bi::MemberFunction,bi::definitely>;
+template class bi::OverloadedDictionary<bi::MemberCoroutine,bi::definitely>;
 template class bi::OverloadedDictionary<bi::BinaryOperator,bi::definitely>;
 template class bi::OverloadedDictionary<bi::UnaryOperator,bi::definitely>;
 template class bi::OverloadedDictionary<bi::AssignmentOperator,bi::definitely>;

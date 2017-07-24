@@ -20,6 +20,7 @@
 #include "bi/statement/If.hpp"
 #include "bi/statement/Import.hpp"
 #include "bi/statement/LocalVariable.hpp"
+#include "bi/statement/MemberCoroutine.hpp"
 #include "bi/statement/MemberFunction.hpp"
 #include "bi/statement/MemberVariable.hpp"
 #include "bi/statement/Program.hpp"

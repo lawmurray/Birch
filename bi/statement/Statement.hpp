@@ -25,6 +25,7 @@ class GlobalVariable;
 class If;
 class Import;
 class LocalVariable;
+class MemberCoroutine;
 class MemberFunction;
 class MemberVariable;
 class Program;
@@ -104,6 +105,7 @@ public:
   virtual bool definitely(const Import& o) const;
   virtual bool definitely(const List<Statement>& o) const;
   virtual bool definitely(const LocalVariable& o) const;
+  virtual bool definitely(const MemberCoroutine& o) const;
   virtual bool definitely(const MemberFunction& o) const;
   virtual bool definitely(const MemberVariable& o) const;
   virtual bool definitely(const Program& o) const;
@@ -130,6 +132,7 @@ public:
   virtual bool possibly(const Import& o) const;
   virtual bool possibly(const List<Statement>& o) const;
   virtual bool possibly(const LocalVariable& o) const;
+  virtual bool possibly(const MemberCoroutine& o) const;
   virtual bool possibly(const MemberFunction& o) const;
   virtual bool possibly(const MemberVariable& o) const;
   virtual bool possibly(const Program& o) const;

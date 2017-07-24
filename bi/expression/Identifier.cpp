@@ -83,6 +83,11 @@ bool bi::Identifier<ObjectType>::definitely(const MemberFunction& o) const {
 }
 
 template<class ObjectType>
+bool bi::Identifier<ObjectType>::definitely(const MemberCoroutine& o) const {
+  return !this->target && parens->definitely(*o.parens);
+}
+
+template<class ObjectType>
 bool bi::Identifier<ObjectType>::dispatchPossibly(const Expression& o) const {
   return o.possibly(*this);
 }
@@ -120,6 +125,11 @@ bool bi::Identifier<ObjectType>::possibly(const Function& o) const {
 
 template<class ObjectType>
 bool bi::Identifier<ObjectType>::possibly(const Coroutine& o) const {
+  return !this->target && parens->possibly(*o.parens);
+}
+
+template<class ObjectType>
+bool bi::Identifier<ObjectType>::possibly(const MemberCoroutine& o) const {
   return !this->target && parens->possibly(*o.parens);
 }
 
@@ -268,5 +278,6 @@ template class bi::Identifier<bi::MemberVariable>;
 template class bi::Identifier<bi::Function>;
 template class bi::Identifier<bi::Coroutine>;
 template class bi::Identifier<bi::MemberFunction>;
+template class bi::Identifier<bi::MemberCoroutine>;
 template class bi::Identifier<bi::BinaryOperator>;
 template class bi::Identifier<bi::UnaryOperator>;

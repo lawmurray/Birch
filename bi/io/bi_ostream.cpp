@@ -157,6 +157,13 @@ void bi::bi_ostream::visit(const Identifier<MemberFunction>* o) {
   }
 }
 
+void bi::bi_ostream::visit(const Identifier<MemberCoroutine>* o) {
+  *this << o->name;
+  if (!o->parens->isEmpty()) {
+    *this << o->parens;
+  }
+}
+
 void bi::bi_ostream::visit(const Identifier<BinaryOperator>* o) {
   *this << o->left << ' ' << o->name << ' ' << o->right;
 }

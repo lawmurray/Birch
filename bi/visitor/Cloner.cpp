@@ -126,6 +126,11 @@ bi::Expression* bi::Cloner::clone(const Identifier<MemberFunction>* o) {
       o->loc);
 }
 
+bi::Expression* bi::Cloner::clone(const Identifier<MemberCoroutine>* o) {
+  return new Identifier<MemberCoroutine>(o->name, o->parens->accept(this),
+      o->loc);
+}
+
 bi::Expression* bi::Cloner::clone(const Identifier<BinaryOperator>* o) {
   return new Identifier<BinaryOperator>(o->left->accept(this), o->name,
       o->right->accept(this), o->loc);
@@ -182,6 +187,11 @@ bi::Statement* bi::Cloner::clone(const Program* o) {
 
 bi::Statement* bi::Cloner::clone(const MemberFunction* o) {
   return new MemberFunction(o->name, o->parens->accept(this),
+      o->returnType->accept(this), o->braces->accept(this), o->loc);
+}
+
+bi::Statement* bi::Cloner::clone(const MemberCoroutine* o) {
+  return new MemberCoroutine(o->name, o->parens->accept(this),
       o->returnType->accept(this), o->braces->accept(this), o->loc);
 }
 

@@ -134,6 +134,10 @@ void bi::Visitor::visit(const Identifier<MemberFunction>* o) {
   o->parens->accept(this);
 }
 
+void bi::Visitor::visit(const Identifier<MemberCoroutine>* o) {
+  o->parens->accept(this);
+}
+
 void bi::Visitor::visit(const Identifier<BinaryOperator>* o) {
   o->left->accept(this);
   o->right->accept(this);
@@ -190,6 +194,12 @@ void bi::Visitor::visit(const Coroutine* o) {
 
 void bi::Visitor::visit(const Program* o) {
   o->parens->accept(this);
+  o->braces->accept(this);
+}
+
+void bi::Visitor::visit(const MemberCoroutine* o) {
+  o->parens->accept(this);
+  o->returnType->accept(this);
   o->braces->accept(this);
 }
 

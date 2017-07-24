@@ -81,6 +81,7 @@
 %type <valStatement> global_variable_declaration local_variable_declaration
 %type <valStatement> function_declaration coroutine_declaration program_declaration
 %type <valStatement> member_variable_declaration member_function_declaration
+%type <valStatement> member_coroutine_declaration
 %type <valStatement> binary_operator_declaration unary_operator_declaration
 %type <valStatement> conversion_operator_declaration assignment_operator_declaration
 %type <valStatement> class_declaration alias_type_declaration basic_type_declaration
@@ -402,6 +403,10 @@ program_declaration
 member_function_declaration
     : FUNCTION name parameters optional_result optional_braces  { $$ = new bi::MemberFunction($2, $3, $4, $5, make_loc(@$)); }
     ;
+
+member_coroutine_declaration
+    : COROUTINE name parameters optional_result optional_braces  { $$ = new bi::MemberCoroutine($2, $3, $4, $5, make_loc(@$)); }
+    ;
     
 binary_operator_declaration
     : OPERATOR parameter binary_operator parameter optional_result optional_braces  { $$ = new bi::BinaryOperator($2, $3, $4, $5, $6, make_loc(@$)); }
@@ -499,6 +504,7 @@ optional_statements
 class_statement
     : member_variable_declaration
     | member_function_declaration
+    | member_coroutine_declaration
     | assignment_operator_declaration
     | conversion_operator_declaration
     | hpp

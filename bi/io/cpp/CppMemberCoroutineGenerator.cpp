@@ -1,32 +1,29 @@
 /**
  * @file
  */
-#include "bi/io/cpp/CppCoroutineGenerator.hpp"
+#include "bi/io/cpp/CppMemberCoroutineGenerator.hpp"
 
 #include "bi/visitor/Gatherer.hpp"
 
-bi::CppCoroutineGenerator::CppCoroutineGenerator(std::ostream& base,
-    const int level, const bool header) :
+bi::CppMemberCoroutineGenerator::CppMemberCoroutineGenerator(
+    const Class* type, std::ostream& base, const int level, const bool header) :
     CppBaseGenerator(base, level, header),
+    type(type),
     state(0) {
   //
 }
 
-void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
+void bi::CppMemberCoroutineGenerator::visit(const MemberCoroutine* o) {
   /* gather local variables */
-  Gatherer<LocalVariable> locals;
+  Gatherer < LocalVariable > locals;
   o->accept(&locals);
 
   /* gather return statements */
-  Gatherer<Return> returns;
+  Gatherer < Return > returns;
   o->braces->accept(&returns);
 
   /* supporting class */
   if (header) {
-    line("namespace bi {");
-    in();
-    line("namespace func {");
-    out();
     line(
         "class " << o->name << "Coroutine : public Coroutine<" << o->returnType << "> {");
     line("public:");
@@ -36,19 +33,22 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
   /* constructor, taking the arguments of the coroutine */
   start("");
   if (!header) {
-    middle("bi::func::" << o->name << "Coroutine::");
+    middle("bi::type::" << type->name << "::" << o->name << "Coroutine::");
   }
-  middle(o->name << "Coroutine" << o->parens);
+  middle(o->name << "Coroutine(Pointer<" << type->name << "> self");
+  if (!o->parens->isEmpty()) {
+    middle(", " << o->parens->strip());
+  }
+  middle(')');
   if (header) {
     finish(';');
   } else {
     if (o->parens->tupleSize() > 0) {
       finish(" :");
       in();
+      start("self(self)");
       for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
-        if (iter != o->parens->begin()) {
-          finish(',');
-        }
+        finish(',');
         auto param = dynamic_cast<const Parameter*>(*iter);
         assert(param);
         start(param->name << '(' << param->name << ')');
@@ -64,13 +64,13 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
 
   /* clone function */
   if (!header) {
-    start("bi::func::");
+    start("bi::type::" << type->name << "::");
   } else {
     start("virtual ");
   }
   middle(o->name << "Coroutine* ");
   if (!header) {
-    middle("bi::func::" << o->name << "Coroutine::");
+    middle("bi::type::" << type->name << "::" << o->name << "Coroutine::");
   }
   middle("clone()");
   if (header) {
@@ -90,7 +90,7 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
   }
   middle(o->returnType << ' ');
   if (!header) {
-    middle("bi::func::" << o->name << "Coroutine::");
+    middle("bi::type::" << type->name << "::" << o->name << "Coroutine::");
   }
   middle("operator()()");
   if (header) {
@@ -124,6 +124,7 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
     in();
 
     /* parameters and local variables as class member variables */
+    line("Pointer<" << type->name << "> self;");
     for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
       auto param = dynamic_cast<const Parameter*>(*iter);
       assert(param);
@@ -137,22 +138,12 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
 
     out();
     line("};");
-    in();
-    line("}");
-    out();
-    line("}\n");
   }
 
   /* initialisation function */
-  if (header) {
-    line("namespace bi {");
-    in();
-    line("namespace func {");
-    out();
-  }
   start("bi::Fiber<" << o->returnType << "> ");
   if (!header) {
-    middle("bi::func::");
+    middle("bi::type::" << type->name << "::");
   }
   middle(o->name << o->parens);
   if (header) {
@@ -161,11 +152,9 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
     finish(" {");
     in();
     start("return Fiber<" << o->returnType << ">(make_object<");
-    middle(o->name << "Coroutine>(");
+    middle(o->name << "Coroutine>(pointer_from_this<" << type->name << ">()");
     for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
-      if (iter != o->parens->begin()) {
-        middle(", ");
-      }
+      middle(", ");
       const Parameter* param = dynamic_cast<const Parameter*>(*iter);
       assert(param);
       middle(param->name);
@@ -174,25 +163,25 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
     out();
     finish("}\n");
   }
-  if (header) {
-    in();
-    line("}");
-    out();
-    line("}\n");
-  }
 }
 
-void bi::CppCoroutineGenerator::visit(const Return* o) {
+void bi::CppMemberCoroutineGenerator::visit(const Return* o) {
   line("state = " << state << "; return " << o->single << ';');
   line("STATE" << state << ": ;");
   ++state;
 }
 
-void bi::CppCoroutineGenerator::visit(const Identifier<LocalVariable>* o) {
+void bi::CppMemberCoroutineGenerator::visit(
+    const Identifier<LocalVariable>* o) {
   middle(o->name << o->target->number);
 }
 
-void bi::CppCoroutineGenerator::visit(const LocalVariable* o) {
+void bi::CppMemberCoroutineGenerator::visit(
+    const Identifier<MemberVariable>* o) {
+  middle("self->" << o->name);
+}
+
+void bi::CppMemberCoroutineGenerator::visit(const LocalVariable* o) {
   if (o->type->isClass() || !o->parens->isEmpty() || !o->value->isEmpty()) {
     middle(o->name << o->number);
     genInit(o);

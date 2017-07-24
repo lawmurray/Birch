@@ -54,6 +54,7 @@ public:
   virtual bool definitely(const Identifier<Function>& o) const;
   virtual bool definitely(const Identifier<Coroutine>& o) const;
   virtual bool definitely(const Identifier<MemberFunction>& o) const;
+  virtual bool definitely(const Identifier<MemberCoroutine>& o) const;
   virtual bool definitely(const Identifier<BinaryOperator>& o) const;
   virtual bool definitely(const Identifier<UnaryOperator>& o) const;
   virtual bool definitely(const Index& o) const;
@@ -81,6 +82,7 @@ public:
   virtual bool possibly(const Identifier<Function>& o) const;
   virtual bool possibly(const Identifier<Coroutine>& o) const;
   virtual bool possibly(const Identifier<MemberFunction>& o) const;
+  virtual bool possibly(const Identifier<MemberCoroutine>& o) const;
   virtual bool possibly(const Identifier<BinaryOperator>& o) const;
   virtual bool possibly(const Identifier<UnaryOperator>& o) const;
   virtual bool possibly(const Index& o) const;
