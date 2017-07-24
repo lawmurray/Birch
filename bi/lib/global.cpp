@@ -3,4 +3,4 @@
  */
 #include "bi/lib/global.hpp"
 
-bi::Heap* currentFiber = nullptr;
+bi::Heap* bi::currentFiber = nullptr;

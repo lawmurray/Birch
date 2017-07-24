@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
       driver.build();
       driver.install();
       driver.unlock();
-      driver.run(prog);
+      driver.run(prog + "_");  // underscore suffix for user-specified names
     }
   } catch (Exception& e) {
     std::cerr << e.msg << std::endl;

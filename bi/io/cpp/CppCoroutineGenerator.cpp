@@ -60,6 +60,27 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
     line("}\n");
   }
 
+  /* clone function */
+  if (!header) {
+    start("bi::func::");
+  } else {
+    start("virtual ");
+  }
+  middle(o->name << "Coroutine* ");
+  if (!header) {
+    middle("bi::func::" << o->name << "Coroutine::");
+  }
+  middle("clone()");
+  if (header) {
+    finish(";\n");
+  } else {
+    finish(" {");
+    in();
+    line("return copy_object(this);");
+    out();
+    line("}\n");
+  }
+
   /* call function */
   if (header) {
     start("virtual ");
@@ -70,7 +91,7 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
   if (!header) {
     middle("bi::func::" << o->name << "Coroutine::");
   }
-  middle("run()");
+  middle("operator()()");
   if (header) {
     finish(';');
   } else {

@@ -6,7 +6,6 @@
 #include "bi/lib/Frame.hpp"
 #include "bi/lib/Iterator.hpp"
 #include "bi/lib/global.hpp"
-#include "bi/lib/memory.hpp"
 #include "bi/lib/Pointer.hpp"
 
 #include <cstring>
@@ -135,7 +134,7 @@ public:
   Array(const Array<Type,Frame>& o) :
       frame(o.frame) {
     allocate(ptr, frame.volume());
-    initialise();
+    copy(o);
     *this = o;
   }
 
@@ -441,7 +440,8 @@ private:
    */
   template<class Type1, class ... Args>
   static void emplace(Pointer<Type1>& o, Args ... args) {
-    new (&o) Pointer<Type1>(make_object(args...));
+    auto raw = new (GC_MALLOC(sizeof(Type1))) Type1(args...);
+    new (&o) Pointer<Type1>(raw);
   }
 
   /**

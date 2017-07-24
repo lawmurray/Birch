@@ -378,9 +378,9 @@ void bi::CppBaseGenerator::visit(const Program* o) {
       in();
 
       for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
-        const std::string& name =
-            dynamic_cast<const Parameter*>(*iter)->name->str();
-        std::string flag = name + "_ARG";
+        auto name = dynamic_cast<const Named*>(*iter)->name;
+        assert(name);
+        std::string flag = name->str() + "_ARG";
         boost::to_upper(flag);
 
         start("case ");

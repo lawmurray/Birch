@@ -4,6 +4,7 @@
 #pragma once
 
 #include "bi/lib/Heap.hpp"
+#include "bi/lib/Coroutine.hpp"
 
 namespace bi {
 /**
@@ -18,16 +19,19 @@ class Fiber: public Heap {
 public:
   /**
    * Constructor.
+   *
+   * @param coroutine Coroutine associated with the fiber.
    */
-  Fiber() :
-      state(0) {
+  Fiber(Pointer<Coroutine<Type>> coroutine) :
+      coroutine(coroutine) {
     //
   }
 
   /**
-   * Destructor.
+   * Copy constructor. Fibers are copy-by-value.
    */
-  virtual ~Fiber() {
+  Fiber(const Fiber& o) :
+      coroutine(o.coroutine->clone()) {
     //
   }
 
@@ -37,20 +41,15 @@ public:
   Type operator()() {
     Heap* yieldTo = currentFiber;
     currentFiber = this;
-    Type result = run();
+    Type result = (*coroutine)();
     currentFiber = yieldTo;
     return result;
   }
 
 protected:
   /**
-   * Run to next yield point.
+   * Coroutine associated with this fiber.
    */
-  virtual Type run() = 0;
-
-  /**
-   * State.
-   */
-  int state;
+  Pointer<Coroutine<Type>> coroutine;
 };
 }

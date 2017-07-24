@@ -150,6 +150,7 @@ libbirch_la_CXXFLAGS = $(AM_CXXFLAGS)
 
 nobase_include_HEADERS = \
   bi/lib/Array.hpp \
+  bi/lib/Coroutine.hpp \
   bi/lib/Fiber.hpp \
   bi/lib/Frame.hpp \
   bi/lib/global.hpp \
