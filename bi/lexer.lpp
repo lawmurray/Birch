@@ -119,7 +119,7 @@ IS                                 (u|U|l|L)*
 "false"                             { yylval.valBool = false; return BOOL_LITERAL; }
 
 "Function"                          { return FUNCTION_UPPER; }
-"Coroutine"                         { return COROUTINE_UPPER; }
+"Fiber"                             { return FIBER_UPPER; }
 
 ({L}|{G})({L}|{G}|{U}|{D})*         { yylval.valString = yytext; return NAME; }
 

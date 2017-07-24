@@ -44,7 +44,7 @@
 
 %token <valString> IMPORT PROGRAM CLASS TYPE FUNCTION COROUTINE OPERATOR
 %token <valString> IF ELSE FOR IN WHILE ASSERT RETURN CPP HPP THIS SUPER
-%token <valString> FUNCTION_UPPER COROUTINE_UPPER
+%token <valString> FUNCTION_UPPER FIBER_UPPER
 %token <valString> DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE RAW NAME
 %token <valBool> BOOL_LITERAL
 %token <valInt> INT_LITERAL
@@ -606,7 +606,7 @@ function_type
     ;
 
 coroutine_type
-    : COROUTINE_UPPER '<' type '>'  { $$ = new bi::FiberType($3, make_loc(@$)); }
+    : FIBER_UPPER '<' type '>'  { $$ = new bi::FiberType($3, make_loc(@$)); }
     ;
 
 primary_type
