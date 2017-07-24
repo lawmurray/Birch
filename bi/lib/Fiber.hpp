@@ -22,7 +22,7 @@ public:
    *
    * @param coroutine Coroutine associated with the fiber.
    */
-  Fiber(Pointer<Coroutine<Type>> coroutine) :
+  Fiber(const Pointer<Coroutine<Type>>& coroutine = nullptr) :
       coroutine(coroutine) {
     //
   }
@@ -31,10 +31,37 @@ public:
    * Copy constructor. Fibers are copy-by-value.
    */
   Fiber(const Fiber& o) :
+      Heap(o),
       coroutine(o.coroutine->clone()) {
     //
   }
 
+  /**
+   * Move constructor.
+   */
+  Fiber(Fiber&& o) :
+      Heap(o),
+      coroutine(o.coroutine) {
+    o.coroutine = nullptr;
+  }
+
+  /**
+   * Copy assignment.
+   */
+  Fiber<Type>& operator=(const Fiber<Type>& o) {
+    Heap::operator=(o);
+    coroutine = o.coroutine->clone();
+    return *this;
+  }
+
+  /**
+   * Move assignment.
+   */
+  Fiber<Type>& operator=(Fiber<Type> && o) {
+    Heap::operator=(o);
+    std::swap(coroutine, o.coroutine);
+    return *this;
+  }
   /**
    * Run to next yield point.
    */

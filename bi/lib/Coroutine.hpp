@@ -32,6 +32,11 @@ public:
   }
 
   /**
+   * Clone the object.
+   */
+  virtual Coroutine<Type>* clone() = 0;
+
+  /**
    * Run to next yield point.
    */
   virtual Type operator()() = 0;

@@ -641,7 +641,7 @@ void bi::CppBaseGenerator::visit(const FunctionType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const FiberType* o) {
-  middle("bi::Pointer<bi::Coroutine<" << o->returnType << ">>");
+  middle("bi::Fiber<" << o->returnType << ">");
 }
 
 void bi::CppBaseGenerator::visit(const ClassType* o) {

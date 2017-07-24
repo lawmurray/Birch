@@ -17,6 +17,13 @@ namespace bi {
 class Heap {
 public:
   /**
+   * Constructor.
+   */
+  Heap() {
+    //
+  }
+
+  /**
    * Copy constructor.
    */
   Heap(const Heap& o) : heap(o.heap) {
@@ -31,7 +38,7 @@ public:
   /**
    * Move constructor.
    */
-  Heap(Heap&& o) {
+  Heap(Heap&& o) : heap() {
     std::swap(heap, o.heap);
   }
 

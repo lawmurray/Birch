@@ -151,7 +151,7 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
       line("namespace func {");
       out();
   }
-  start("bi::Pointer<bi::Coroutine<" << o->returnType << ">> ");
+  start("bi::Fiber<" << o->returnType << "> ");
   if (!header) {
     middle("bi::func::");
   }
@@ -161,7 +161,8 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
   } else {
     finish(" {");
     in();
-    start("return make_object<bi::func::" << o->name << "Coroutine>(");
+    start("return Fiber<" << o->returnType << ">(make_object<bi::func::");
+    middle(o->name << "Coroutine>(");
     for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
       if (iter != o->parens->begin()) {
         middle(", ");
@@ -170,7 +171,7 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
       assert(param);
       middle(param->name);
     }
-    finish(");");
+    finish("));");
     out();
     finish("}\n");
   }
