@@ -87,11 +87,7 @@ private:
   /**
    * Constructor for pointer_from_this() in Object.
    */
-  Pointer(T* raw, intptr_t index) :
-      ptr(nullptr),
-      index(index) {
-    assert(heap[index] == raw);
-  }
+  Pointer(T* raw, intptr_t index);
 
   /**
    * For a global pointer, the raw address.
@@ -173,4 +169,11 @@ T* const bi::Pointer<T>::get() const {
     raw = ptr;
   }
   return raw;
+}
+
+template<class T>
+bi::Pointer<T>::Pointer(T* raw, intptr_t index) :
+    ptr(index <= 0 ? raw : nullptr),
+    index(index) {
+  assert(index <= 0 || currentFiber->get(index) == raw);
 }

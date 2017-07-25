@@ -6,6 +6,7 @@
 #include "bi/lib/Fiber.hpp"
 
 #include <cassert>
+#include <iostream>
 
 namespace bi {
 /**
@@ -96,11 +97,11 @@ public:
    */
   template<class T>
   Pointer<T> pointer_from_this() {
-    return Pointer<T>(index >= 0 ? nullptr : static_cast<T*>(this), index);
+    return Pointer<T>(static_cast<T*>(this), index);
   }
   template<class T>
   Pointer<const T> pointer_from_this() const {
-    return Pointer<T>(index >= 0 ? nullptr : static_cast<T*>(this), index);
+    return Pointer<const T>(static_cast<T* const>(this), index);
   }
 
 private:
