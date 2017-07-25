@@ -34,6 +34,7 @@ class Raw;
 class Return;
 class UnaryOperator;
 class While;
+class Yield;
 
 /**
  * Statement.
@@ -113,6 +114,7 @@ public:
   virtual bool definitely(const Raw& o) const;
   virtual bool definitely(const UnaryOperator& o) const;
   virtual bool definitely(const While& o) const;
+  virtual bool definitely(const Yield& o) const;
 
   virtual bool possibly(const Statement& o) const;
   virtual bool dispatchPossibly(const Statement& o) const = 0;
@@ -140,5 +142,6 @@ public:
   virtual bool possibly(const Raw& o) const;
   virtual bool possibly(const UnaryOperator& o) const;
   virtual bool possibly(const While& o) const;
+  virtual bool possibly(const Yield& o) const;
 };
 }

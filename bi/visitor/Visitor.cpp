@@ -281,6 +281,10 @@ void bi::Visitor::visit(const Return* o) {
   o->single->accept(this);
 }
 
+void bi::Visitor::visit(const Yield* o) {
+  o->single->accept(this);
+}
+
 void bi::Visitor::visit(const Raw* o) {
   //
 }

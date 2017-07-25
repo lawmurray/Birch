@@ -4,6 +4,7 @@
 #pragma once
 
 #include "bi/io/cpp/CppBaseGenerator.hpp"
+#include "bi/visitor/Gatherer.hpp"
 
 namespace bi {
 /**
@@ -20,10 +21,21 @@ public:
 
   virtual void visit(const Coroutine* o);
   virtual void visit(const Return* o);
+  virtual void visit(const Yield* o);
   virtual void visit(const Identifier<LocalVariable>* o);
   virtual void visit(const LocalVariable* o);
 
-private:
+protected:
+  void genSwitch();
+  void genEnd();
+
+  /*
+   * Gatherers for important objects.
+   */
+  Gatherer<Yield> yields;
+  Gatherer<Parameter> parameters;
+  Gatherer<LocalVariable> locals;
+
   /**
    * Current state index.
    */

@@ -65,12 +65,22 @@ public:
   /**
    * Run to next yield point.
    */
-  Type operator()() {
+  bool operator()() {
     Heap* yieldTo = currentFiber;
     currentFiber = this;
-    Type result = (*coroutine)();
+    bool result = coroutine->run();
     currentFiber = yieldTo;
     return result;
+  }
+
+  /**
+   * Get the last yield value.
+   */
+  operator Type&() {
+    return coroutine->getValue();
+  }
+  operator const Type&() const {
+    return coroutine->getValue();
   }
 
 protected:

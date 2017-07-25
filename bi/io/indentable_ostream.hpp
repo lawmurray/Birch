@@ -52,6 +52,11 @@ public:
     return *this;
   }
 
+  bi::indentable_ostream& operator<<(const size_t o) {
+    base << o;
+    return *this;
+  }
+
   bi::indentable_ostream& operator<<(const float o) {
     base << o;
     return *this;

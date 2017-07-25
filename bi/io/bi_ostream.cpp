@@ -334,6 +334,10 @@ void bi::bi_ostream::visit(const Return* o) {
   *this << indent << "return " << o->single << ";\n";
 }
 
+void bi::bi_ostream::visit(const Yield* o) {
+  *this << indent << "yield " << o->single << ";\n";
+}
+
 void bi::bi_ostream::visit(const Raw* o) {
   *this << indent << o->name << " {{\n";
   *this << indent << o->raw << '\n';

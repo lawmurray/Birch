@@ -617,6 +617,10 @@ void bi::CppBaseGenerator::visit(const Return* o) {
   line("return " << o->single << ';');
 }
 
+void bi::CppBaseGenerator::visit(const Yield* o) {
+  assert(false);  // should be in CppCoroutineGenerator
+}
+
 void bi::CppBaseGenerator::visit(const Raw* o) {
   if ((header && *o->name == "hpp") || (!header && *o->name == "cpp")) {
     *this << o->raw;

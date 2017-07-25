@@ -77,6 +77,7 @@ public:
   virtual Statement* clone(const While* o);
   virtual Statement* clone(const Assert* o);
   virtual Statement* clone(const Return* o);
+  virtual Statement* clone(const Yield* o);
   virtual Statement* clone(const Raw* o);
 
   virtual Type* clone(const EmptyType* o);

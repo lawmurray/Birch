@@ -28,4 +28,5 @@
 #include "bi/statement/Return.hpp"
 #include "bi/statement/UnaryOperator.hpp"
 #include "bi/statement/While.hpp"
+#include "bi/statement/Yield.hpp"
 #include "bi/common/List.hpp"

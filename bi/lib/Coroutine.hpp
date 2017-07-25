@@ -20,7 +20,8 @@ public:
    * Constructor.
    */
   Coroutine() :
-      state(0) {
+      state(0),
+      nstates(0) {
     //
   }
 
@@ -39,12 +40,32 @@ public:
   /**
    * Run to next yield point.
    */
-  virtual Type operator()() = 0;
+  virtual bool run() = 0;
+
+  /**
+   * Get the last yield value.
+   */
+  Type& getValue() {
+    return value;
+  }
+  const Type& getValue() const {
+    return value;
+  }
 
 protected:
+  /**
+   * Last yielded value.
+   */
+  Type value;
+
   /**
    * State.
    */
   int state;
+
+  /**
+   * Number of states.
+   */
+  int nstates;
 };
 }

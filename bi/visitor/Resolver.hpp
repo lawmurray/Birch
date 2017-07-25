@@ -83,6 +83,7 @@ public:
   virtual Statement* modify(While* o);
   virtual Statement* modify(Assert* o);
   virtual Statement* modify(Return* o);
+  virtual Statement* modify(Yield* o);
 
   virtual Type* modify(IdentifierType* o);
   virtual Type* modify(ClassType* o);
@@ -178,6 +179,12 @@ protected:
   void undefer();
 
   /**
+   * Generic implementation of modify() for variable identifiers.
+   */
+  template<class Variable>
+  Identifier<Variable>* modifyVariableIdentifier(bi::Identifier<Variable>* o);
+
+  /**
    * Stack of containing scopes.
    */
   std::list<Scope*> scopes;
@@ -231,4 +238,33 @@ void bi::Resolver::resolve(Reference* ref, Scope* scope) {
   } else {
     ref->target = ref->matches.front();
   }
+}
+
+template<class Variable>
+bi::Identifier<Variable>* bi::Resolver::modifyVariableIdentifier(
+    bi::Identifier<Variable>* o) {
+  Scope* memberScope = takeMemberScope();
+  Modifier::modify(o);
+  resolve(o, memberScope);
+  if (o->target->type->isFunction()) {
+    if (o->parens->isEmpty()) {
+      assert(false);
+    } else {
+      ///@todo Check arguments
+      auto func = dynamic_cast<ReturnTyped*>(o->target->type.get());
+      assert(func);
+      o->type = func->returnType->accept(&cloner)->accept(this);
+    }
+  } else if (o->target->type->isCoroutine()) {
+    if (o->parens->isEmpty()) {
+      auto func = dynamic_cast<ReturnTyped*>(o->target->type.get());
+      assert(func);
+      o->type = func->returnType->accept(&cloner)->accept(this);
+    } else {
+      o->type = new BasicType(new Name("Boolean"));
+    }
+  } else {
+    o->type = o->target->type->accept(&cloner)->accept(this);
+  }
+  return o;
 }

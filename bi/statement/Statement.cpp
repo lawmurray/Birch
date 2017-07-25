@@ -116,6 +116,10 @@ bool bi::Statement::definitely(const While& o) const {
   return false;
 }
 
+bool bi::Statement::definitely(const Yield& o) const {
+  return false;
+}
+
 bool bi::Statement::possibly(const Statement& o) const {
   return o.dispatchPossibly(*this);
 }
@@ -213,5 +217,9 @@ bool bi::Statement::possibly(const UnaryOperator& o) const {
 }
 
 bool bi::Statement::possibly(const While& o) const {
+  return false;
+}
+
+bool bi::Statement::possibly(const Yield& o) const {
   return false;
 }

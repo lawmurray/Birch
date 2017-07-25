@@ -154,98 +154,23 @@ bi::Expression* bi::Resolver::modify(Identifier<Unknown>* o) {
 }
 
 bi::Expression* bi::Resolver::modify(Identifier<Parameter>* o) {
-  Scope* memberScope = takeMemberScope();
-  Modifier::modify(o);
-  resolve(o, memberScope);
-  if (!o->parens->isEmpty()) {
-    if (o->target->type->isFunction() || o->target->type->isCoroutine()) {
-      ///@todo Check arguments
-      auto func = dynamic_cast<ReturnTyped*>(o->target->type.get());
-      assert(func);
-      o->type = func->returnType->accept(&cloner)->accept(this);
-    } else {
-      assert(false);  ///@todo Throw exception
-    }
-  } else {
-    o->type = o->target->type->accept(&cloner)->accept(this);
-  }
-  return o;
+  return modifyVariableIdentifier(o);
 }
 
 bi::Expression* bi::Resolver::modify(Identifier<MemberParameter>* o) {
-  Scope* memberScope = takeMemberScope();
-  Modifier::modify(o);
-  resolve(o, memberScope);
-  if (!o->parens->isEmpty()) {
-    if (o->target->type->isFunction() || o->target->type->isCoroutine()) {
-      ///@todo Check arguments
-      auto func = dynamic_cast<ReturnTyped*>(o->target->type.get());
-      assert(func);
-      o->type = func->returnType->accept(&cloner)->accept(this);
-    } else {
-      assert(false);  ///@todo Throw exception
-    }
-  } else {
-    o->type = o->target->type->accept(&cloner)->accept(this);
-  }
-  return o;
+  return modifyVariableIdentifier(o);
 }
 
 bi::Expression* bi::Resolver::modify(Identifier<GlobalVariable>* o) {
-  Scope* memberScope = takeMemberScope();
-  Modifier::modify(o);
-  resolve(o, memberScope);
-  if (!o->parens->isEmpty()) {
-    if (o->target->type->isFunction() || o->target->type->isCoroutine()) {
-      ///@todo Check arguments
-      auto func = dynamic_cast<ReturnTyped*>(o->target->type.get());
-      assert(func);
-      o->type = func->returnType->accept(&cloner)->accept(this);
-    } else {
-      assert(false);  ///@todo Throw exception
-    }
-  } else {
-    o->type = o->target->type->accept(&cloner)->accept(this);
-  }
-  return o;
+  return modifyVariableIdentifier(o);
 }
 
 bi::Expression* bi::Resolver::modify(Identifier<LocalVariable>* o) {
-  Scope* memberScope = takeMemberScope();
-  Modifier::modify(o);
-  resolve(o, memberScope);
-  if (!o->parens->isEmpty()) {
-    if (o->target->type->isFunction() || o->target->type->isCoroutine()) {
-      ///@todo Check arguments
-      auto func = dynamic_cast<ReturnTyped*>(o->target->type.get());
-      assert(func);
-      o->type = func->returnType->accept(&cloner)->accept(this);
-    } else {
-      assert(false);  ///@todo Throw exception
-    }
-  } else {
-    o->type = o->target->type->accept(&cloner)->accept(this);
-  }
-  return o;
+  return modifyVariableIdentifier(o);
 }
 
 bi::Expression* bi::Resolver::modify(Identifier<MemberVariable>* o) {
-  Scope* memberScope = takeMemberScope();
-  Modifier::modify(o);
-  resolve(o, memberScope);
-  if (!o->parens->isEmpty()) {
-    if (o->target->type->isFunction() || o->target->type->isCoroutine()) {
-      ///@todo Check arguments
-      auto func = dynamic_cast<ReturnTyped*>(o->target->type.get());
-      assert(func);
-      o->type = func->returnType->accept(&cloner)->accept(this);
-    } else {
-      assert(false);  ///@todo Throw exception
-    }
-  } else {
-    o->type = o->target->type->accept(&cloner)->accept(this);
-  }
-  return o;
+  return modifyVariableIdentifier(o);
 }
 
 bi::Expression* bi::Resolver::modify(Identifier<Function>* o) {
@@ -552,6 +477,12 @@ bi::Statement* bi::Resolver::modify(Assert* o) {
 }
 
 bi::Statement* bi::Resolver::modify(Return* o) {
+  Modifier::modify(o);
+  ///@todo Check that the type of the expression is correct
+  return o;
+}
+
+bi::Statement* bi::Resolver::modify(Yield* o) {
   Modifier::modify(o);
   ///@todo Check that the type of the expression is correct
   return o;

@@ -76,6 +76,7 @@ public:
   virtual Statement* modify(While* o);
   virtual Statement* modify(Assert* o);
   virtual Statement* modify(Return* o);
+  virtual Statement* modify(Yield* o);
   virtual Statement* modify(Raw* o);
 
   virtual Type* modify(EmptyType* o);

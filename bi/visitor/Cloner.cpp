@@ -259,6 +259,10 @@ bi::Statement* bi::Cloner::clone(const Return* o) {
   return new Return(o->single->accept(this), o->loc);
 }
 
+bi::Statement* bi::Cloner::clone(const Yield* o) {
+  return new Yield(o->single->accept(this), o->loc);
+}
+
 bi::Statement* bi::Cloner::clone(const Raw* o) {
   return new Raw(o->name, o->raw, o->loc);
 }

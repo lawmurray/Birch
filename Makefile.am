@@ -109,6 +109,7 @@ birchc_SOURCES = \
   bi/statement/Statement.cpp \
   bi/statement/UnaryOperator.cpp \
   bi/statement/While.cpp \
+  bi/statement/Yield.cpp \
   bi/type/AliasType.cpp \
   bi/type/ArrayType.cpp \
   bi/type/BasicType.cpp \
@@ -271,6 +272,7 @@ noinst_HEADERS = \
   bi/statement/Statement.hpp \
   bi/statement/UnaryOperator.hpp \
   bi/statement/While.hpp \
+  bi/statement/Yield.hpp \
   bi/type/all.hpp \
   bi/type/AliasType.hpp \
   bi/type/ArrayType.hpp \

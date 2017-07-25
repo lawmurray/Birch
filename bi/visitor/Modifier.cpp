@@ -317,6 +317,11 @@ bi::Statement* bi::Modifier::modify(Return* o) {
   return o;
 }
 
+bi::Statement* bi::Modifier::modify(Yield* o) {
+  o->single = o->single.release()->accept(this);
+  return o;
+}
+
 bi::Statement* bi::Modifier::modify(Raw* o) {
   return o;
 }

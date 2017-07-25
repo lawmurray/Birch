@@ -3,7 +3,7 @@
  */
 #pragma once
 
-#include "bi/io/cpp/CppBaseGenerator.hpp"
+#include "bi/io/cpp/CppCoroutineGenerator.hpp"
 
 namespace bi {
 /**
@@ -11,7 +11,7 @@ namespace bi {
  *
  * @ingroup compiler_io
  */
-class CppMemberCoroutineGenerator: public CppBaseGenerator {
+class CppMemberCoroutineGenerator: public CppCoroutineGenerator {
 public:
   CppMemberCoroutineGenerator(const Class* type, std::ostream& base,
       const int level = 0, const bool header = false);
@@ -19,10 +19,8 @@ public:
   using indentable_ostream::visit;
 
   virtual void visit(const MemberCoroutine* o);
-  virtual void visit(const Return* o);
-  virtual void visit(const Identifier<LocalVariable>* o);
+  virtual void visit(const Identifier<MemberParameter>* o);
   virtual void visit(const Identifier<MemberVariable>* o);
-  virtual void visit(const LocalVariable* o);
 
 private:
   /**

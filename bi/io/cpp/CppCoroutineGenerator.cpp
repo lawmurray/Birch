@@ -13,13 +13,10 @@ bi::CppCoroutineGenerator::CppCoroutineGenerator(std::ostream& base,
 }
 
 void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
-  /* gather local variables */
-  Gatherer<LocalVariable> locals;
-  o->accept(&locals);
-
-  /* gather return statements */
-  Gatherer<Return> returns;
-  o->braces->accept(&returns);
+  /* gather important objects */
+  o->parens->accept(&parameters);
+  o->braces->accept(&locals);
+  o->braces->accept(&yields);
 
   /* supporting class */
   if (header) {
@@ -45,19 +42,17 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
     if (o->parens->tupleSize() > 0) {
       finish(" :");
       in();
-      for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
-        if (iter != o->parens->begin()) {
+      for (auto iter = parameters.begin(); iter != parameters.end(); ++iter) {
+        if (iter != parameters.begin()) {
           finish(',');
         }
-        auto param = dynamic_cast<const Parameter*>(*iter);
-        assert(param);
-        start(param->name << '(' << param->name << ')');
+        start((*iter)->name << '(' << (*iter)->name << ')');
       }
       out();
     }
     finish(" {");
     in();
-    line("//");
+    line("nstates = " << (yields.size() + 1) << ';');
     out();
     line("}\n");
   }
@@ -88,31 +83,19 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
   if (header) {
     middle("virtual ");
   }
-  middle(o->returnType << ' ');
+  middle("bool ");
   if (!header) {
     middle("bi::func::" << o->name << "Coroutine::");
   }
-  middle("operator()()");
+  middle("run()");
   if (header) {
     finish(';');
   } else {
     finish(" {");
     in();
-    if (returns.size() > 0) {
-      line("switch (state) {");
-      in();
-      for (int s = 0; s <= returns.size(); ++s) {
-        line("case " << s << ": goto STATE" << s << ';');
-      }
-      out();
-      line('}');
-    }
-
-    line("STATE0:");
-    ++state;
+    genSwitch();
     *this << o->braces;
-
-    line("state = " << state << ';');
+    genEnd();
     out();
     finish("}\n");
   }
@@ -183,7 +166,13 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
 }
 
 void bi::CppCoroutineGenerator::visit(const Return* o) {
-  line("state = " << state << "; return " << o->single << ';');
+  line("goto END;");
+}
+
+void bi::CppCoroutineGenerator::visit(const Yield* o) {
+  line("value = " << o->single << ';');
+  line("state = " << state << ';');
+  line("return true;");
   line("STATE" << state << ": ;");
   ++state;
 }
@@ -198,4 +187,23 @@ void bi::CppCoroutineGenerator::visit(const LocalVariable* o) {
     genInit(o);
     ///@todo This will need to resize arrays, overload operator() for Array?
   }
+}
+
+void bi::CppCoroutineGenerator::genSwitch() {
+  line("switch (state) {");
+  in();
+  for (int s = 0; s <= yields.size(); ++s) {
+    line("case " << s << ": goto STATE" << s << ';');
+  }
+  line("default: goto END;");
+  out();
+  line('}');
+  line("STATE0:");
+  ++state;
+}
+
+void bi::CppCoroutineGenerator::genEnd() {
+  line("END:");
+  line("state = " << (yields.size() + 1) << ';');
+  line("return false;");
 }

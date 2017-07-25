@@ -70,6 +70,7 @@ public:
   virtual void visit(const While* o);
   virtual void visit(const Assert* o);
   virtual void visit(const Return* o);
+  virtual void visit(const Yield* o);
   virtual void visit(const Raw* o);
 
   virtual void visit(const List<Type>* o);

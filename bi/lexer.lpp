@@ -110,6 +110,7 @@ IS                                 (u|U|l|L)*
 "while"                             { return WHILE; }
 "assert"                            { return ASSERT; }
 "return"                            { return RETURN; }
+"yield"                             { return YIELD; }
 "cpp"                               { return CPP; }
 "hpp"                               { return HPP; }
 "this"                              { return THIS; }
