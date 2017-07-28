@@ -26,15 +26,6 @@ bool bi::Expression::isEmpty() const {
   return false;
 }
 
-bool bi::Expression::hasAssignable() const {
-  for (auto iter = begin(); iter != end(); ++iter) {
-    if ((*iter)->type->assignable) {
-      return true;
-    }
-  }
-  return false;
-}
-
 bi::Expression* bi::Expression::strip() {
   return this;
 }

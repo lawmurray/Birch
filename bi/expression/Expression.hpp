@@ -102,11 +102,6 @@ public:
   virtual bool isEmpty() const;
 
   /**
-   * Does this function have an assignable parameter?
-   */
-  virtual bool hasAssignable() const;
-
-  /**
    * Strip parentheses.
    */
   virtual Expression* strip();
