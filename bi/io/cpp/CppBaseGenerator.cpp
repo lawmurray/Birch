@@ -53,11 +53,11 @@ void bi::CppBaseGenerator::visit(const Brackets* o) {
   middle("make_view(" << o->single << ')');
 }
 
-void bi::CppBaseGenerator::visit(const Call* o) {
+void bi::CppBaseGenerator::visit(const Call<Expression>* o) {
   middle(o->single << o->parens);
 }
 
-void bi::CppBaseGenerator::visit(const BinaryCall* o) {
+void bi::CppBaseGenerator::visit(const Call<BinaryOperator>* o) {
   if (isTranslatable(o->name->str())) {
     /* can use as raw C++ operator */
     genArg(o->left.get(), o->target->left.get());
@@ -73,7 +73,7 @@ void bi::CppBaseGenerator::visit(const BinaryCall* o) {
   }
 }
 
-void bi::CppBaseGenerator::visit(const UnaryCall* o) {
+void bi::CppBaseGenerator::visit(const Call<UnaryOperator>* o) {
   if (isTranslatable(o->name->str())) {
     /* can use as raw C++ operator */
     middle(o->name->str());

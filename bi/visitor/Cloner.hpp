@@ -30,9 +30,9 @@ public:
   virtual Expression* clone(const Literal<const char*>* o);
   virtual Expression* clone(const Parentheses* o);
   virtual Expression* clone(const Brackets* o);
-  virtual Expression* clone(const Call* o);
-  virtual Expression* clone(const BinaryCall* o);
-  virtual Expression* clone(const UnaryCall* o);
+  virtual Expression* clone(const Call<Expression>* o);
+  virtual Expression* clone(const Call<BinaryOperator>* o);
+  virtual Expression* clone(const Call<UnaryOperator>* o);
   virtual Expression* clone(const Slice* o);
   virtual Expression* clone(const LambdaFunction* o);
   virtual Expression* clone(const Span* o);

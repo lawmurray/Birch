@@ -51,15 +51,15 @@ void bi::bi_ostream::visit(const Brackets* o) {
   *this << '[' << o->single << ']';
 }
 
-void bi::bi_ostream::visit(const Call* o) {
+void bi::bi_ostream::visit(const Call<Expression>* o) {
   *this << o->single << o->parens;
 }
 
-void bi::bi_ostream::visit(const BinaryCall* o) {
+void bi::bi_ostream::visit(const Call<BinaryOperator>* o) {
   *this << o->left << ' ' << o->name << ' ' << o->right;
 }
 
-void bi::bi_ostream::visit(const UnaryCall* o) {
+void bi::bi_ostream::visit(const Call<UnaryOperator>* o) {
   *this << o->name << o->single;
 }
 

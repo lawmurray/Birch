@@ -3,67 +3,54 @@
  */
 #pragma once
 
-#include "bi/common/Named.hpp"
 #include "bi/primitive/poset.hpp"
 #include "bi/primitive/definitely.hpp"
 #include "bi/primitive/possibly.hpp"
 
 namespace bi {
+template<class T> class Call;
+
 /**
  * Overloadable object. Groups all overloads into one object.
  *
  * @ingroup compiler_common
- *
- * @tparam ObjectType Type of objects.
  */
 template<class ObjectType>
-class Overloaded: public Named {
+class Overloaded {
 public:
   typedef poset<ObjectType*,definitely> poset_type;
 
   /**
    * Constructor.
    *
-   * @param o Initial object.
+   * @param o First overload.
    */
   Overloaded(ObjectType* o);
 
   /**
-   * Does this contain the given object?
+   * Does this contain the given overload?
    *
-   * @param o The object.
+   * @param o The overload.
    */
   bool contains(ObjectType* o) const;
 
   /**
-   * Add an object.
+   * Add an overload.
    *
-   * @param o The object.
+   * @param o The overload.
    */
   void add(ObjectType* o);
 
   /**
-   * Import from another overloaded name.
-   */
-  void import(Overloaded<ObjectType>& o);
-
-  /**
-   * Resolve reference.
+   * Resolve call.
    *
-   * @param ref The reference.
+   * @param o The call.
    */
-  template<class ReferenceType>
-  void resolve(ReferenceType* ref);
+  void resolve(Call<ObjectType>* o);
 
   /**
    * Declarations by partial order.
    */
-  poset_type objects;
+  poset_type overloads;
 };
-}
-
-template<class ObjectType>
-template<class ReferenceType>
-void bi::Overloaded<ObjectType>::resolve(ReferenceType* ref) {
-  objects.match(ref, ref->matches);
 }

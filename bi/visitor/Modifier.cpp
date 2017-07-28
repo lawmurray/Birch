@@ -51,19 +51,19 @@ bi::Expression* bi::Modifier::modify(Brackets* o) {
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(Call* o) {
+bi::Expression* bi::Modifier::modify(Call<Expression>* o) {
   o->single = o->single.release()->accept(this);
   o->parens = o->parens.release()->accept(this);
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(BinaryCall* o) {
+bi::Expression* bi::Modifier::modify(Call<BinaryOperator>* o) {
   o->left = o->left.release()->accept(this);
   o->right = o->right.release()->accept(this);
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(UnaryCall* o) {
+bi::Expression* bi::Modifier::modify(Call<UnaryOperator>* o) {
   o->single = o->single.release()->accept(this);
   return o;
 }

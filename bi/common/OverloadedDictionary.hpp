@@ -3,8 +3,10 @@
  */
 #pragma once
 
-#include "bi/common/Dictionary.hpp"
 #include "bi/common/Overloaded.hpp"
+
+#include <unordered_map>
+#include <string>
 
 namespace bi {
 /**
@@ -15,12 +17,29 @@ namespace bi {
  * @tparam ObjectType Type of objects.
  */
 template<class ObjectType>
-class OverloadedDictionary: public Dictionary<Overloaded<ObjectType>> {
+class OverloadedDictionary {
 public:
   /**
    * Destructor.
    */
   ~OverloadedDictionary();
+
+  typedef std::unordered_map<std::string,Overloaded<ObjectType>*> map_type;
+
+  /**
+   * Does the dictionary contain the given object?
+   */
+  bool contains(ObjectType* o) const;
+
+  /**
+   * Does the dictionary contain the given object?
+   */
+  bool contains(const std::string& name) const;
+
+  /**
+   * Get a object by name.
+   */
+  Overloaded<ObjectType>* get(const std::string& name);
 
   /**
    * Add object.
@@ -28,5 +47,35 @@ public:
    * @param o The object.
    */
   void add(ObjectType* o);
+
+  /**
+   * Resolve reference.
+   *
+   * @param[in,out] ref The reference.
+   *
+   * @return The object to which the reference can be resolved, or
+   * `nullptr` if it cannot be resolved.
+   */
+  template<class ReferenceType>
+  void resolve(ReferenceType* ref);
+
+  /**
+   * Import another dictionary into this one.
+   */
+  void import(OverloadedDictionary<ObjectType>& o);
+
+  /**
+   * Objects.
+   */
+  map_type objects;
 };
+}
+
+template<class ObjectType>
+template<class ReferenceType>
+void bi::OverloadedDictionary<ObjectType>::resolve(ReferenceType* ref) {
+  auto iter = objects.find(ref->name->str());
+  if (iter != objects.end()) {
+    ref->matches.push_back(iter->second);
+  }
 }

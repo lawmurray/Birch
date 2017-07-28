@@ -39,9 +39,9 @@ public:
   virtual Expression* modify(List<Expression>* o);
   virtual Expression* modify(Parentheses* o);
   virtual Expression* modify(Brackets* o);
-  virtual Expression* modify(Call* o);
-  virtual Expression* modify(BinaryCall* o);
-  virtual Expression* modify(UnaryCall* o);
+  virtual Expression* modify(Call<Expression>* o);
+  virtual Expression* modify(Call<BinaryOperator>* o);
+  virtual Expression* modify(Call<UnaryOperator>* o);
   virtual Expression* modify(Slice* o);
   virtual Expression* modify(LambdaFunction* o);
   virtual Expression* modify(Span* o);

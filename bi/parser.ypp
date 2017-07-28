@@ -200,7 +200,7 @@ member_expression
 postfix_expression
     : member_expression
     | postfix_expression brackets_expression  { $$ = new bi::Slice($1, $2, make_loc(@$)); }
-    | postfix_expression arguments            { $$ = new bi::Call($1, $2, make_loc(@$)); }
+    | postfix_expression arguments            { $$ = new bi::Call<bi::Expression>($1, $2, make_loc(@$)); }
     ;
 
 unary_operator
@@ -211,7 +211,7 @@ unary_operator
 
 unary_expression
     : postfix_expression
-    | unary_operator unary_expression  { $$ = new bi::UnaryCall($1, $2, make_loc(@$)); }
+    | unary_operator unary_expression  { $$ = new bi::Call<bi::UnaryOperator>($1, $2, make_loc(@$)); }
     ;
 
 multiplicative_operator
@@ -221,7 +221,7 @@ multiplicative_operator
 
 multiplicative_expression
     : unary_expression
-    | multiplicative_expression multiplicative_operator unary_expression  { $$ = new bi::BinaryCall($1, $2, $3, make_loc(@$)); }
+    | multiplicative_expression multiplicative_operator unary_expression  { $$ = new bi::Call<bi::BinaryOperator>($1, $2, $3, make_loc(@$)); }
     ;
 
 additive_operator
@@ -231,7 +231,7 @@ additive_operator
 
 additive_expression
     : multiplicative_expression
-    | additive_expression additive_operator multiplicative_expression  { $$ = new bi::BinaryCall($1, $2, $3, make_loc(@$)); }
+    | additive_expression additive_operator multiplicative_expression  { $$ = new bi::Call<bi::BinaryOperator>($1, $2, $3, make_loc(@$)); }
     ;
 
 relational_operator
@@ -243,7 +243,7 @@ relational_operator
     
 relational_expression
     : additive_expression
-    | relational_expression relational_operator additive_expression  { $$ = new bi::BinaryCall($1, $2, $3, make_loc(@$)); }
+    | relational_expression relational_operator additive_expression  { $$ = new bi::Call<bi::BinaryOperator>($1, $2, $3, make_loc(@$)); }
     ;
 
 equality_operator
@@ -253,7 +253,7 @@ equality_operator
 
 equality_expression
     : relational_expression
-    | equality_expression equality_operator relational_expression  { $$ = new bi::BinaryCall($1, $2, $3, make_loc(@$)); }
+    | equality_expression equality_operator relational_expression  { $$ = new bi::Call<bi::BinaryOperator>($1, $2, $3, make_loc(@$)); }
     ;
 
 logical_and_operator
@@ -262,7 +262,7 @@ logical_and_operator
 
 logical_and_expression
     : equality_expression
-    | logical_and_expression logical_and_operator equality_expression  { $$ = new bi::BinaryCall($1, $2, $3, make_loc(@$)); }
+    | logical_and_expression logical_and_operator equality_expression  { $$ = new bi::Call<bi::BinaryOperator>($1, $2, $3, make_loc(@$)); }
     ;
 
 logical_or_operator
@@ -271,7 +271,7 @@ logical_or_operator
 
 logical_or_expression
     : logical_and_expression
-    | logical_or_expression logical_or_operator logical_and_expression  { $$ = new bi::BinaryCall($1, $2, $3, make_loc(@$)); }
+    | logical_or_expression logical_or_operator logical_and_expression  { $$ = new bi::Call<bi::BinaryOperator>($1, $2, $3, make_loc(@$)); }
     ;
 
 stochastic_operator
@@ -280,7 +280,7 @@ stochastic_operator
 
 stochastic_expression
     : logical_or_expression
-    | stochastic_expression stochastic_operator logical_or_expression  { $$ = new bi::BinaryCall($1, $2, $3, make_loc(@$)); }
+    | stochastic_expression stochastic_operator logical_or_expression  { $$ = new bi::Call<bi::BinaryOperator>($1, $2, $3, make_loc(@$)); }
     ;
 
 expression_list

@@ -51,30 +51,30 @@ bi::Expression* bi::Resolver::modify(Brackets* o) {
   return o;
 }
 
-bi::Expression* bi::Resolver::modify(Call* o) {
+bi::Expression* bi::Resolver::modify(Call<Expression>* o) {
   Modifier::modify(o);
   return o;
 }
 
-bi::Expression* bi::Resolver::modify(BinaryCall* o) {
-  if (*o->name == "~>") {
+bi::Expression* bi::Resolver::modify(Call<BinaryOperator>* o) {
+  //if (*o->name == "~>") {
     /* x ~> m is syntactic sugar for m.observe(x) */
-    Expression* expr = new Call(
-        new OverloadedIdentifier<MemberFunction>(new Name("observe"), o->loc),
-        new Parentheses(o->left.release(), o->loc), o->loc);
-    expr = new Member(o->right.release(), expr, o->loc);
-    return expr->accept(this);
-  } else {
+    //Expression* expr = new Call<Expression>(
+    //    new OverloadedIdentifier<MemberFunction>(new Name("observe"), o->loc),
+    //    new Parentheses(o->left.release(), o->loc), o->loc);
+    //expr = new Member(o->right.release(), expr, o->loc);
+    //return expr->accept(this);
+  //} else {
     //Scope* memberScope = takeMemberScope();
     //Modifier::modify(o);
     //resolve(o, memberScope);
     //o->type = o->target->returnType->accept(&cloner)->accept(this);
     //o->type->assignable = false;  // rvalue
     return o;
-  }
+  //}
 }
 
-bi::Expression* bi::Resolver::modify(UnaryCall* o) {
+bi::Expression* bi::Resolver::modify(Call<UnaryOperator>* o) {
   //Scope* memberScope = takeMemberScope();
   //Modifier::modify(o);
   //resolve(o, memberScope);

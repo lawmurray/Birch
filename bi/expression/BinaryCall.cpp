@@ -6,7 +6,7 @@
 #include "bi/expression/Parameter.hpp"
 #include "bi/visitor/all.hpp"
 
-bi::BinaryCall::BinaryCall(Expression* left, shared_ptr<Name> name,
+bi::Call<bi::BinaryOperator>::Call(Expression* left, shared_ptr<Name> name,
     Expression* right, shared_ptr<Location> loc, const BinaryOperator* target) :
     Expression(loc),
     Named(name),
@@ -15,50 +15,54 @@ bi::BinaryCall::BinaryCall(Expression* left, shared_ptr<Name> name,
   //
 }
 
-bi::BinaryCall::~BinaryCall() {
+bi::Call<bi::BinaryOperator>::~Call() {
   //
 }
 
-bi::Expression* bi::BinaryCall::accept(Cloner* visitor) const {
+bi::Expression* bi::Call<bi::BinaryOperator>::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-bi::Expression* bi::BinaryCall::accept(Modifier* visitor) {
+bi::Expression* bi::Call<bi::BinaryOperator>::accept(Modifier* visitor) {
   return visitor->modify(this);
 }
 
-void bi::BinaryCall::accept(Visitor* visitor) const {
+void bi::Call<bi::BinaryOperator>::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::BinaryCall::dispatchDefinitely(const Expression& o) const {
+bool bi::Call<bi::BinaryOperator>::dispatchDefinitely(
+    const Expression& o) const {
   return o.definitely(*this);
 }
 
-bool bi::BinaryCall::definitely(const BinaryCall& o) const {
+bool bi::Call<bi::BinaryOperator>::definitely(
+    const Call<BinaryOperator>& o) const {
   return left->definitely(*o.left) && right->definitely(*o.right);
 }
 
-bool bi::BinaryCall::definitely(const BinaryOperator& o) const {
+bool bi::Call<bi::BinaryOperator>::definitely(const BinaryOperator& o) const {
   return left->definitely(*o.left) && right->definitely(*o.right);
 }
 
-bool bi::BinaryCall::definitely(const Parameter& o) const {
+bool bi::Call<bi::BinaryOperator>::definitely(const Parameter& o) const {
   return type->definitely(*o.type);
 }
 
-bool bi::BinaryCall::dispatchPossibly(const Expression& o) const {
+bool bi::Call<bi::BinaryOperator>::dispatchPossibly(
+    const Expression& o) const {
   return o.possibly(*this);
 }
 
-bool bi::BinaryCall::possibly(const BinaryCall& o) const {
+bool bi::Call<bi::BinaryOperator>::possibly(
+    const Call<BinaryOperator>& o) const {
   return left->possibly(*o.left) && right->possibly(*o.right);
 }
 
-bool bi::BinaryCall::possibly(const BinaryOperator& o) const {
+bool bi::Call<bi::BinaryOperator>::possibly(const BinaryOperator& o) const {
   return left->possibly(*o.left) && right->possibly(*o.right);
 }
 
-bool bi::BinaryCall::possibly(const Parameter& o) const {
+bool bi::Call<bi::BinaryOperator>::possibly(const Parameter& o) const {
   return type->possibly(*o.type);
 }

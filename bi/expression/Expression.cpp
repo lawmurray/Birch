@@ -73,7 +73,7 @@ bool bi::Expression::definitely(const Expression& o) const {
   return o.dispatchDefinitely(*this);
 }
 
-bool bi::Expression::definitely(const BinaryCall& o) const {
+bool bi::Expression::definitely(const Call<BinaryOperator>& o) const {
   return false;
 }
 
@@ -81,7 +81,7 @@ bool bi::Expression::definitely(const Brackets& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(const Call& o) const {
+bool bi::Expression::definitely(const Call<Expression>& o) const {
   return false;
 }
 
@@ -181,7 +181,7 @@ bool bi::Expression::definitely(const This& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(const UnaryCall& o) const {
+bool bi::Expression::definitely(const Call<UnaryOperator>& o) const {
   return false;
 }
 
@@ -189,7 +189,7 @@ bool bi::Expression::possibly(const Expression& o) const {
   return o.dispatchPossibly(*this);
 }
 
-bool bi::Expression::possibly(const BinaryCall& o) const {
+bool bi::Expression::possibly(const Call<BinaryOperator>& o) const {
   return false;
 }
 
@@ -197,7 +197,7 @@ bool bi::Expression::possibly(const Brackets& o) const {
   return false;
 }
 
-bool bi::Expression::possibly(const Call& o) const {
+bool bi::Expression::possibly(const Call<Expression>& o) const {
   return false;
 }
 
@@ -297,7 +297,7 @@ bool bi::Expression::possibly(const This& o) const {
   return false;
 }
 
-bool bi::Expression::possibly(const UnaryCall& o) const {
+bool bi::Expression::possibly(const Call<UnaryOperator>& o) const {
   return false;
 }
 

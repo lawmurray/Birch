@@ -13,9 +13,8 @@ class Cloner;
 class Modifier;
 class Visitor;
 
-class BinaryCall;
 class Brackets;
-class Call;
+template<class T> class Call;
 class EmptyExpression;
 class Index;
 template<class T> class Identifier;
@@ -32,7 +31,6 @@ class Slice;
 class Span;
 class Super;
 class This;
-class UnaryCall;
 class Unknown;
 
 class GlobalVariable;
@@ -138,9 +136,9 @@ public:
    */
   bool definitely(const Expression& o) const;
   virtual bool dispatchDefinitely(const Expression& o) const = 0;
-  virtual bool definitely(const BinaryCall& o) const;
+  virtual bool definitely(const Call<BinaryOperator>& o) const;
   virtual bool definitely(const Brackets& o) const;
-  virtual bool definitely(const Call& o) const;
+  virtual bool definitely(const Call<Expression>& o) const;
   virtual bool definitely(const EmptyExpression& o) const;
   virtual bool definitely(const Identifier<Parameter>& o) const;
   virtual bool definitely(const Identifier<GlobalVariable>& o) const;
@@ -165,13 +163,13 @@ public:
   virtual bool definitely(const Span& o) const;
   virtual bool definitely(const Super& o) const;
   virtual bool definitely(const This& o) const;
-  virtual bool definitely(const UnaryCall& o) const;
+  virtual bool definitely(const Call<UnaryOperator>& o) const;
 
   bool possibly(const Expression& o) const;
   virtual bool dispatchPossibly(const Expression& o) const = 0;
-  virtual bool possibly(const BinaryCall& o) const;
+  virtual bool possibly(const Call<BinaryOperator>& o) const;
   virtual bool possibly(const Brackets& o) const;
-  virtual bool possibly(const Call& o) const;
+  virtual bool possibly(const Call<Expression>& o) const;
   virtual bool possibly(const EmptyExpression& o) const;
   virtual bool possibly(const Identifier<Parameter>& o) const;
   virtual bool possibly(const Identifier<GlobalVariable>& o) const;
@@ -196,7 +194,7 @@ public:
   virtual bool possibly(const Span& o) const;
   virtual bool possibly(const Super& o) const;
   virtual bool possibly(const This& o) const;
-  virtual bool possibly(const UnaryCall& o) const;
+  virtual bool possibly(const Call<UnaryOperator>& o) const;
 
   /**
    * Operators for equality comparisons.

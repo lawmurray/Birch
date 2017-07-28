@@ -37,3 +37,14 @@ public:
   std::list<const Target*> matches;
 };
 }
+
+template<class Target>
+bi::Reference<Target>::Reference(const Target* target) :
+    target(target) {
+  //
+}
+
+template<class Target>
+bi::Reference<Target>::~Reference() {
+  //
+}
