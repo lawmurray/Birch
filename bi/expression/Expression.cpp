@@ -73,7 +73,15 @@ bool bi::Expression::definitely(const Expression& o) const {
   return o.dispatchDefinitely(*this);
 }
 
-bool bi::Expression::definitely(const BracketsExpression& o) const {
+bool bi::Expression::definitely(const BinaryCall& o) const {
+  return false;
+}
+
+bool bi::Expression::definitely(const Brackets& o) const {
+  return false;
+}
+
+bool bi::Expression::definitely(const Call& o) const {
   return false;
 }
 
@@ -97,27 +105,19 @@ bool bi::Expression::definitely(const Identifier<MemberVariable>& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(const Identifier<Function>& o) const {
+bool bi::Expression::definitely(const OverloadedIdentifier<Function>& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(const Identifier<Coroutine>& o) const {
+bool bi::Expression::definitely(const OverloadedIdentifier<Coroutine>& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(const Identifier<MemberFunction>& o) const {
+bool bi::Expression::definitely(const OverloadedIdentifier<MemberFunction>& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(const Identifier<MemberCoroutine>& o) const {
-  return false;
-}
-
-bool bi::Expression::definitely(const Identifier<BinaryOperator>& o) const {
-  return false;
-}
-
-bool bi::Expression::definitely(const Identifier<UnaryOperator>& o) const {
+bool bi::Expression::definitely(const OverloadedIdentifier<MemberCoroutine>& o) const {
   return false;
 }
 
@@ -157,11 +157,15 @@ bool bi::Expression::definitely(const Parameter& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(const ParenthesesExpression& o) const {
+bool bi::Expression::definitely(const Parentheses& o) const {
   return false;
 }
 
 bool bi::Expression::definitely(const Range& o) const {
+  return false;
+}
+
+bool bi::Expression::definitely(const Slice& o) const {
   return false;
 }
 
@@ -177,11 +181,23 @@ bool bi::Expression::definitely(const This& o) const {
   return false;
 }
 
+bool bi::Expression::definitely(const UnaryCall& o) const {
+  return false;
+}
+
 bool bi::Expression::possibly(const Expression& o) const {
   return o.dispatchPossibly(*this);
 }
 
-bool bi::Expression::possibly(const BracketsExpression& o) const {
+bool bi::Expression::possibly(const BinaryCall& o) const {
+  return false;
+}
+
+bool bi::Expression::possibly(const Brackets& o) const {
+  return false;
+}
+
+bool bi::Expression::possibly(const Call& o) const {
   return false;
 }
 
@@ -205,27 +221,19 @@ bool bi::Expression::possibly(const Identifier<MemberVariable>& o) const {
   return false;
 }
 
-bool bi::Expression::possibly(const Identifier<Function>& o) const {
+bool bi::Expression::possibly(const OverloadedIdentifier<Function>& o) const {
   return false;
 }
 
-bool bi::Expression::possibly(const Identifier<Coroutine>& o) const {
+bool bi::Expression::possibly(const OverloadedIdentifier<Coroutine>& o) const {
   return false;
 }
 
-bool bi::Expression::possibly(const Identifier<MemberFunction>& o) const {
+bool bi::Expression::possibly(const OverloadedIdentifier<MemberFunction>& o) const {
   return false;
 }
 
-bool bi::Expression::possibly(const Identifier<MemberCoroutine>& o) const {
-  return false;
-}
-
-bool bi::Expression::possibly(const Identifier<BinaryOperator>& o) const {
-  return false;
-}
-
-bool bi::Expression::possibly(const Identifier<UnaryOperator>& o) const {
+bool bi::Expression::possibly(const OverloadedIdentifier<MemberCoroutine>& o) const {
   return false;
 }
 
@@ -257,15 +265,23 @@ bool bi::Expression::possibly(const Literal<const char*>& o) {
   return false;
 }
 
+bool bi::Expression::possibly(const Member& o) const {
+  return false;
+}
+
 bool bi::Expression::possibly(const Parameter& o) const {
   return false;
 }
 
-bool bi::Expression::possibly(const ParenthesesExpression& o) const {
+bool bi::Expression::possibly(const Parentheses& o) const {
   return false;
 }
 
 bool bi::Expression::possibly(const Range& o) const {
+  return false;
+}
+
+bool bi::Expression::possibly(const Slice& o) const {
   return false;
 }
 
@@ -281,7 +297,7 @@ bool bi::Expression::possibly(const This& o) const {
   return false;
 }
 
-bool bi::Expression::possibly(const Member& o) const {
+bool bi::Expression::possibly(const UnaryCall& o) const {
   return false;
 }
 

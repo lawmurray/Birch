@@ -30,8 +30,12 @@ public:
   virtual void visit(const Literal<int64_t>* o);
   virtual void visit(const Literal<double>* o);
   virtual void visit(const Literal<const char*>* o);
-  virtual void visit(const ParenthesesExpression* o);
-  virtual void visit(const BracketsExpression* o);
+  virtual void visit(const Parentheses* o);
+  virtual void visit(const Brackets* o);
+  virtual void visit(const Call* o);
+  virtual void visit(const BinaryCall* o);
+  virtual void visit(const UnaryCall* o);
+  virtual void visit(const Slice* o);
   virtual void visit(const LambdaFunction* o);
   virtual void visit(const Index* o);
   virtual void visit(const Span* o);
@@ -47,12 +51,10 @@ public:
   virtual void visit(const Identifier<GlobalVariable>* o);
   virtual void visit(const Identifier<LocalVariable>* o);
   virtual void visit(const Identifier<MemberVariable>* o);
-  virtual void visit(const Identifier<Function>* o);
-  virtual void visit(const Identifier<Coroutine>* o);
-  virtual void visit(const Identifier<MemberFunction>* o);
-  virtual void visit(const Identifier<MemberCoroutine>* o);
-  virtual void visit(const Identifier<BinaryOperator>* o);
-  virtual void visit(const Identifier<UnaryOperator>* o);
+  virtual void visit(const OverloadedIdentifier<Function>* o);
+  virtual void visit(const OverloadedIdentifier<Coroutine>* o);
+  virtual void visit(const OverloadedIdentifier<MemberFunction>* o);
+  virtual void visit(const OverloadedIdentifier<MemberCoroutine>* o);
 
   virtual void visit(const EmptyStatement* o);
   virtual void visit(const List<Statement>* o);

@@ -65,8 +65,8 @@
 %type <valExpression> this_expression super_expression
 %type <valExpression> parens_expression function_expression
 %type <valExpression> member_expression primary_expression
-%type <valExpression> index_expression index_list
-%type <valExpression> brackets_expression unary_expression
+%type <valExpression> brackets_expression index_expression index_list
+%type <valExpression> postfix_expression unary_expression
 %type <valExpression> multiplicative_expression additive_expression
 %type <valExpression> relational_expression equality_expression
 %type <valExpression> logical_and_expression logical_or_expression
@@ -146,11 +146,11 @@ literal
     ;
 
 identifier
-    : name optional_arguments  { $$ = new bi::Identifier<bi::Unknown>($1, $2, make_loc(@$)); }
+    : name  { $$ = new bi::Identifier<bi::Unknown>($1, make_loc(@$)); }
     ;
 
 parens_expression
-    : '(' expression ')'  { $$ = new bi::ParenthesesExpression($2, make_loc(@$)); }
+    : '(' expression ')'  { $$ = new bi::Parentheses($2, make_loc(@$)); }
     ;
     
 function_expression
@@ -168,10 +168,10 @@ super_expression
 primary_expression
     : literal
     | identifier
+    | parens_expression
+    | function_expression
     | this_expression
     | super_expression
-    | function_expression
-    | parens_expression
     ;
 
 index_expression
@@ -185,8 +185,7 @@ index_list
     ;
 
 brackets_expression
-    : primary_expression
-    | primary_expression '[' index_list ']'  { $$ = new bi::BracketsExpression($1, $3, make_loc(@$)); }
+    : '[' index_list ']'  { $$ = new bi::Brackets($2, make_loc(@$)); }
     ;
 
 member_operator
@@ -194,8 +193,14 @@ member_operator
     ;
 
 member_expression
-    : brackets_expression
-    | member_expression member_operator brackets_expression  { $$ = new bi::Member($1, $3, make_loc(@$)); }
+    : primary_expression
+    | member_expression member_operator identifier  { $$ = new bi::Member($1, $3, make_loc(@$)); }
+    ;
+
+postfix_expression
+    : member_expression
+    | postfix_expression brackets_expression  { $$ = new bi::Slice($1, $2, make_loc(@$)); }
+    | postfix_expression arguments            { $$ = new bi::Call($1, $2, make_loc(@$)); }
     ;
 
 unary_operator
@@ -205,8 +210,8 @@ unary_operator
     ;
 
 unary_expression
-    : member_expression
-    | unary_operator member_expression  { $$ = new bi::Identifier<bi::UnaryOperator>($1, $2, make_loc(@$)); }
+    : postfix_expression
+    | unary_operator unary_expression  { $$ = new bi::UnaryCall($1, $2, make_loc(@$)); }
     ;
 
 multiplicative_operator
@@ -216,7 +221,7 @@ multiplicative_operator
 
 multiplicative_expression
     : unary_expression
-    | multiplicative_expression multiplicative_operator unary_expression  { $$ = new bi::Identifier<bi::BinaryOperator>($1, $2, $3, make_loc(@$)); }
+    | multiplicative_expression multiplicative_operator unary_expression  { $$ = new bi::BinaryCall($1, $2, $3, make_loc(@$)); }
     ;
 
 additive_operator
@@ -226,7 +231,7 @@ additive_operator
 
 additive_expression
     : multiplicative_expression
-    | additive_expression additive_operator multiplicative_expression  { $$ = new bi::Identifier<bi::BinaryOperator>($1, $2, $3, make_loc(@$)); }
+    | additive_expression additive_operator multiplicative_expression  { $$ = new bi::BinaryCall($1, $2, $3, make_loc(@$)); }
     ;
 
 relational_operator
@@ -238,7 +243,7 @@ relational_operator
     
 relational_expression
     : additive_expression
-    | relational_expression relational_operator additive_expression  { $$ = new bi::Identifier<bi::BinaryOperator>($1, $2, $3, make_loc(@$)); }
+    | relational_expression relational_operator additive_expression  { $$ = new bi::BinaryCall($1, $2, $3, make_loc(@$)); }
     ;
 
 equality_operator
@@ -248,7 +253,7 @@ equality_operator
 
 equality_expression
     : relational_expression
-    | equality_expression equality_operator relational_expression  { $$ = new bi::Identifier<bi::BinaryOperator>($1, $2, $3, make_loc(@$)); }
+    | equality_expression equality_operator relational_expression  { $$ = new bi::BinaryCall($1, $2, $3, make_loc(@$)); }
     ;
 
 logical_and_operator
@@ -257,7 +262,7 @@ logical_and_operator
 
 logical_and_expression
     : equality_expression
-    | logical_and_expression logical_and_operator equality_expression  { $$ = new bi::Identifier<bi::BinaryOperator>($1, $2, $3, make_loc(@$)); }
+    | logical_and_expression logical_and_operator equality_expression  { $$ = new bi::BinaryCall($1, $2, $3, make_loc(@$)); }
     ;
 
 logical_or_operator
@@ -266,7 +271,7 @@ logical_or_operator
 
 logical_or_expression
     : logical_and_expression
-    | logical_or_expression logical_or_operator logical_and_expression  { $$ = new bi::Identifier<bi::BinaryOperator>($1, $2, $3, make_loc(@$)); }
+    | logical_or_expression logical_or_operator logical_and_expression  { $$ = new bi::BinaryCall($1, $2, $3, make_loc(@$)); }
     ;
 
 stochastic_operator
@@ -275,7 +280,7 @@ stochastic_operator
 
 stochastic_expression
     : logical_or_expression
-    | stochastic_expression stochastic_operator logical_or_expression  { $$ = new bi::Identifier<bi::BinaryOperator>($1, $2, $3, make_loc(@$)); }
+    | stochastic_expression stochastic_operator logical_or_expression  { $$ = new bi::BinaryCall($1, $2, $3, make_loc(@$)); }
     ;
 
 expression_list
@@ -304,8 +309,8 @@ assignment_operator
     ;
 
 parameters
-    : '(' ')'                 { $$ = new bi::ParenthesesExpression(new bi::EmptyExpression(), make_loc(@$)); }
-    | '(' parameter_list ')'  { $$ = new bi::ParenthesesExpression($2, make_loc(@$)); }
+    : '(' ')'                 { $$ = new bi::Parentheses(new bi::EmptyExpression(), make_loc(@$)); }
+    | '(' parameter_list ')'  { $$ = new bi::Parentheses($2, make_loc(@$)); }
     ;
 
 parameter_list
@@ -318,8 +323,8 @@ parameter
     ;
 
 options
-    : '(' ')'              { $$ = new bi::ParenthesesExpression(new bi::EmptyExpression(), make_loc(@$)); }
-    | '(' option_list ')'  { $$ = new bi::ParenthesesExpression($2, make_loc(@$)); }
+    : '(' ')'              { $$ = new bi::Parentheses(new bi::EmptyExpression(), make_loc(@$)); }
+    | '(' option_list ')'  { $$ = new bi::Parentheses($2, make_loc(@$)); }
     ;
 
 option_list
@@ -332,8 +337,8 @@ option
     ;
 
 member_parameters
-    : '(' ')'                        { $$ = new bi::ParenthesesExpression(new bi::EmptyExpression(), make_loc(@$)); }
-    | '(' member_parameter_list ')'  { $$ = new bi::ParenthesesExpression($2, make_loc(@$)); }
+    : '(' ')'                        { $$ = new bi::Parentheses(new bi::EmptyExpression(), make_loc(@$)); }
+    | '(' member_parameter_list ')'  { $$ = new bi::Parentheses($2, make_loc(@$)); }
     ;
 
 optional_member_parameters
@@ -351,8 +356,8 @@ member_parameter
     ;
 
 arguments
-    : '(' ')'                  { $$ = new bi::ParenthesesExpression(new bi::EmptyExpression(), make_loc(@$)); }
-    | '(' expression_list ')'  { $$ = new bi::ParenthesesExpression($2, make_loc(@$)); }
+    : '(' ')'                  { $$ = new bi::Parentheses(new bi::EmptyExpression(), make_loc(@$)); }
+    | '(' expression_list ')'  { $$ = new bi::Parentheses($2, make_loc(@$)); }
     ;
     ;
 

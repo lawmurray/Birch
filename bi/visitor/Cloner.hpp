@@ -28,8 +28,12 @@ public:
   virtual Expression* clone(const Literal<int64_t>* o);
   virtual Expression* clone(const Literal<double>* o);
   virtual Expression* clone(const Literal<const char*>* o);
-  virtual Expression* clone(const ParenthesesExpression* o);
-  virtual Expression* clone(const BracketsExpression* o);
+  virtual Expression* clone(const Parentheses* o);
+  virtual Expression* clone(const Brackets* o);
+  virtual Expression* clone(const Call* o);
+  virtual Expression* clone(const BinaryCall* o);
+  virtual Expression* clone(const UnaryCall* o);
+  virtual Expression* clone(const Slice* o);
   virtual Expression* clone(const LambdaFunction* o);
   virtual Expression* clone(const Span* o);
   virtual Expression* clone(const Index* o);
@@ -45,12 +49,10 @@ public:
   virtual Expression* clone(const Identifier<GlobalVariable>* o);
   virtual Expression* clone(const Identifier<LocalVariable>* o);
   virtual Expression* clone(const Identifier<MemberVariable>* o);
-  virtual Expression* clone(const Identifier<Function>* o);
-  virtual Expression* clone(const Identifier<Coroutine>* o);
-  virtual Expression* clone(const Identifier<MemberFunction>* o);
-  virtual Expression* clone(const Identifier<MemberCoroutine>* o);
-  virtual Expression* clone(const Identifier<BinaryOperator>* o);
-  virtual Expression* clone(const Identifier<UnaryOperator>* o);
+  virtual Expression* clone(const OverloadedIdentifier<Function>* o);
+  virtual Expression* clone(const OverloadedIdentifier<Coroutine>* o);
+  virtual Expression* clone(const OverloadedIdentifier<MemberFunction>* o);
+  virtual Expression* clone(const OverloadedIdentifier<MemberCoroutine>* o);
 
   virtual Statement* clone(const EmptyStatement* o);
   virtual Statement* clone(const List<Statement>* o);

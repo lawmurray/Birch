@@ -3,44 +3,45 @@
  */
 #include "bi/common/Dictionary.hpp"
 
+#include "bi/common/Overloaded.hpp"
 #include "bi/expression/all.hpp"
 #include "bi/statement/all.hpp"
 #include "bi/type/all.hpp"
 #include "bi/exception/all.hpp"
 
-template<class ParameterType>
-bool bi::Dictionary<ParameterType>::contains(ParameterType* param) const {
-  auto iter = params.find(param->name->str());
-  return iter != params.end() && iter->second == param;
+template<class ObjectType>
+bool bi::Dictionary<ObjectType>::contains(ObjectType* o) const {
+  auto iter = objects.find(o->name->str());
+  return iter != objects.end() && iter->second == o;
 }
 
-template<class ParameterType>
-bool bi::Dictionary<ParameterType>::contains(const std::string& name) const {
-  return params.find(name) != params.end();
+template<class ObjectType>
+bool bi::Dictionary<ObjectType>::contains(const std::string& name) const {
+  return objects.find(name) != objects.end();
 }
 
-template<class ParameterType>
-ParameterType* bi::Dictionary<ParameterType>::get(const std::string& name) {
+template<class ObjectType>
+ObjectType* bi::Dictionary<ObjectType>::get(const std::string& name) {
   /* pre-condition */
   assert(contains(name));
 
-  return params.find(name)->second;
+  return objects.find(name)->second;
 }
 
-template<class ParameterType>
-void bi::Dictionary<ParameterType>::add(ParameterType* param) {
+template<class ObjectType>
+void bi::Dictionary<ObjectType>::add(ObjectType* o) {
   /* pre-condition */
-  assert(!contains(param));
+  assert(!contains(o));
 
-  auto result = params.insert(std::make_pair(param->name->str(), param));
+  auto result = objects.insert(std::make_pair(o->name->str(), o));
   assert(result.second);
 }
 
-template<class ParameterType>
-void bi::Dictionary<ParameterType>::import(Dictionary<ParameterType>& o) {
-  for (auto iter = o.params.begin(); iter != o.params.end(); ++iter) {
-    if (!contains(iter->second)) {
-      add(iter->second);
+template<class ObjectType>
+void bi::Dictionary<ObjectType>::import(Dictionary<ObjectType>& o) {
+  for (auto object : o.objects) {
+    if (!contains(object.second)) {
+      add(object.second);
     }
   }
 }
@@ -57,3 +58,10 @@ template class bi::Dictionary<bi::Program>;
 template class bi::Dictionary<bi::Basic>;
 template class bi::Dictionary<bi::Class>;
 template class bi::Dictionary<bi::Alias>;
+template class bi::Dictionary<bi::Overloaded<bi::Function>>;
+template class bi::Dictionary<bi::Overloaded<bi::Coroutine>>;
+template class bi::Dictionary<bi::Overloaded<bi::MemberFunction>>;
+template class bi::Dictionary<bi::Overloaded<bi::MemberCoroutine>>;
+template class bi::Dictionary<bi::Overloaded<bi::BinaryOperator>>;
+template class bi::Dictionary<bi::Overloaded<bi::UnaryOperator>>;
+template class bi::Dictionary<bi::Overloaded<bi::AssignmentOperator>>;

@@ -8,46 +8,46 @@
 
 namespace bi {
 /**
- * Dictionary for parameters.
+ * Dictionary for variables, functions, operators etc.
  *
  * @ingroup compiler_common
  *
- * @tparam ParameterType Type of parameters.
+ * @tparam ObjectType Type of objects.
  */
-template<class ParameterType>
+template<class ObjectType>
 class Dictionary {
 public:
-  typedef std::unordered_map<std::string,ParameterType*> map_type;
+  typedef std::unordered_map<std::string,ObjectType*> map_type;
 
   /**
-   * Does the dictionary contain the given parameter?
+   * Does the dictionary contain the given object?
    */
-  bool contains(ParameterType* param) const;
+  bool contains(ObjectType* param) const;
 
   /**
-   * Does the dictionary contain the given parameter?
+   * Does the dictionary contain the given object?
    */
   bool contains(const std::string& name) const;
 
   /**
-   * Get a parameter by name.
+   * Get a object by name.
    */
-  ParameterType* get(const std::string& name);
+  ObjectType* get(const std::string& name);
 
   /**
-   * Add parameter.
+   * Add object.
    *
-   * @param param The parameter.
+   * @param o The object.
    */
-  void add(ParameterType* param);
+  void add(ObjectType* o);
 
   /**
    * Resolve reference.
    *
    * @param[in,out] ref The reference.
    *
-   * @return The parameter to which the reference can be resolved, or
-   * `nullptr` if the parameter cannot be resolved.
+   * @return The object to which the reference can be resolved, or
+   * `nullptr` if it cannot be resolved.
    */
   template<class ReferenceType>
   void resolve(ReferenceType* ref);
@@ -55,20 +55,20 @@ public:
   /**
    * Import another dictionary into this one.
    */
-  void import(Dictionary<ParameterType>& o);
+  void import(Dictionary<ObjectType>& o);
 
   /**
-   * Declarations within this scope.
+   * Objects.
    */
-  map_type params;
+  map_type objects;
 };
 }
 
-template<class ParameterType>
+template<class ObjectType>
 template<class ReferenceType>
-void bi::Dictionary<ParameterType>::resolve(ReferenceType* ref) {
-  auto iter = params.find(ref->name->str());
-  if (iter != params.end()) {
+void bi::Dictionary<ObjectType>::resolve(ReferenceType* ref) {
+  auto iter = objects.find(ref->name->str());
+  if (iter != objects.end()) {
     ref->matches.push_back(iter->second);
   }
 }

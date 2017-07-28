@@ -43,8 +43,28 @@ void bi::bi_ostream::visit(const Literal<const char*>* o) {
   *this << o->str;
 }
 
-void bi::bi_ostream::visit(const ParenthesesExpression* o) {
+void bi::bi_ostream::visit(const Parentheses* o) {
   *this << '(' << o->single << ')';
+}
+
+void bi::bi_ostream::visit(const Brackets* o) {
+  *this << '[' << o->single << ']';
+}
+
+void bi::bi_ostream::visit(const Call* o) {
+  *this << o->single << o->parens;
+}
+
+void bi::bi_ostream::visit(const BinaryCall* o) {
+  *this << o->left << ' ' << o->name << ' ' << o->right;
+}
+
+void bi::bi_ostream::visit(const UnaryCall* o) {
+  *this << o->name << o->single;
+}
+
+void bi::bi_ostream::visit(const Slice* o) {
+  *this << o->single << o->brackets;
 }
 
 void bi::bi_ostream::visit(const Index* o) {
@@ -65,10 +85,6 @@ void bi::bi_ostream::visit(const Super* o) {
 
 void bi::bi_ostream::visit(const This* o) {
   *this << "this";
-}
-
-void bi::bi_ostream::visit(const BracketsExpression* o) {
-  *this << o->single << '[' << o->brackets << ']';
 }
 
 void bi::bi_ostream::visit(const Parameter* o) {
@@ -110,73 +126,38 @@ void bi::bi_ostream::visit(const MemberVariable* o) {
 
 void bi::bi_ostream::visit(const Identifier<Parameter>* o) {
   *this << o->name;
-  if (!o->parens->isEmpty()) {
-    *this << o->parens;
-  }
 }
 
 void bi::bi_ostream::visit(const Identifier<GlobalVariable>* o) {
   *this << o->name;
-  if (!o->parens->isEmpty()) {
-    *this << o->parens;
-  }
 }
 
 void bi::bi_ostream::visit(const Identifier<LocalVariable>* o) {
   *this << o->name;
-  if (!o->parens->isEmpty()) {
-    *this << o->parens;
-  }
 }
 
 void bi::bi_ostream::visit(const Identifier<MemberVariable>* o) {
   *this << o->name;
-  if (!o->parens->isEmpty()) {
-    *this << o->parens;
-  }
 }
 
-void bi::bi_ostream::visit(const Identifier<Function>* o) {
+void bi::bi_ostream::visit(const OverloadedIdentifier<Function>* o) {
   *this << o->name;
-  if (!o->parens->isEmpty()) {
-    *this << o->parens;
-  }
 }
 
-void bi::bi_ostream::visit(const Identifier<Coroutine>* o) {
+void bi::bi_ostream::visit(const OverloadedIdentifier<Coroutine>* o) {
   *this << o->name;
-  if (!o->parens->isEmpty()) {
-    *this << o->parens;
-  }
 }
 
-void bi::bi_ostream::visit(const Identifier<MemberFunction>* o) {
+void bi::bi_ostream::visit(const OverloadedIdentifier<MemberFunction>* o) {
   *this << o->name;
-  if (!o->parens->isEmpty()) {
-    *this << o->parens;
-  }
 }
 
-void bi::bi_ostream::visit(const Identifier<MemberCoroutine>* o) {
+void bi::bi_ostream::visit(const OverloadedIdentifier<MemberCoroutine>* o) {
   *this << o->name;
-  if (!o->parens->isEmpty()) {
-    *this << o->parens;
-  }
-}
-
-void bi::bi_ostream::visit(const Identifier<BinaryOperator>* o) {
-  *this << o->left << ' ' << o->name << ' ' << o->right;
-}
-
-void bi::bi_ostream::visit(const Identifier<UnaryOperator>* o) {
-  *this << o->name << o->single;
 }
 
 void bi::bi_ostream::visit(const Identifier<Unknown>* o) {
   *this << o->name;
-  if (!o->parens->isEmpty()) {
-    *this << o->parens;
-  }
 }
 
 void bi::bi_ostream::visit(const List<Statement>* o) {

@@ -39,14 +39,51 @@ bi::Expression* bi::Resolver::modify(List<Expression>* o) {
   return o;
 }
 
-bi::Expression* bi::Resolver::modify(ParenthesesExpression* o) {
+bi::Expression* bi::Resolver::modify(Parentheses* o) {
   Modifier::modify(o);
   o->type = new ParenthesesType(o->single->type->accept(&cloner));
   o->type = o->type->accept(this);
   return o;
 }
 
-bi::Expression* bi::Resolver::modify(BracketsExpression* o) {
+bi::Expression* bi::Resolver::modify(Brackets* o) {
+  Modifier::modify(o);
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(Call* o) {
+  Modifier::modify(o);
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(BinaryCall* o) {
+  if (*o->name == "~>") {
+    /* x ~> m is syntactic sugar for m.observe(x) */
+    Expression* expr = new Call(
+        new OverloadedIdentifier<MemberFunction>(new Name("observe"), o->loc),
+        new Parentheses(o->left.release(), o->loc), o->loc);
+    expr = new Member(o->right.release(), expr, o->loc);
+    return expr->accept(this);
+  } else {
+    //Scope* memberScope = takeMemberScope();
+    //Modifier::modify(o);
+    //resolve(o, memberScope);
+    //o->type = o->target->returnType->accept(&cloner)->accept(this);
+    //o->type->assignable = false;  // rvalue
+    return o;
+  }
+}
+
+bi::Expression* bi::Resolver::modify(UnaryCall* o) {
+  //Scope* memberScope = takeMemberScope();
+  //Modifier::modify(o);
+  //resolve(o, memberScope);
+  //o->type = o->target->returnType->accept(&cloner)->accept(this);
+  //o->type->assignable = false;  // rvalue
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(Slice* o) {
   Modifier::modify(o);
 
   const int typeSize = o->single->type->count();
@@ -173,66 +210,42 @@ bi::Expression* bi::Resolver::modify(Identifier<MemberVariable>* o) {
   return modifyVariableIdentifier(o);
 }
 
-bi::Expression* bi::Resolver::modify(Identifier<Function>* o) {
+bi::Expression* bi::Resolver::modify(OverloadedIdentifier<Function>* o) {
   Scope* memberScope = takeMemberScope();
   Modifier::modify(o);
   resolve(o, memberScope);
-  o->type = o->target->returnType->accept(&cloner)->accept(this);
+  //o->type = o->target->returnType->accept(&cloner)->accept(this);
   o->type->assignable = false;  // rvalue
   return o;
 }
 
-bi::Expression* bi::Resolver::modify(Identifier<Coroutine>* o) {
+bi::Expression* bi::Resolver::modify(OverloadedIdentifier<Coroutine>* o) {
   Scope* memberScope = takeMemberScope();
   Modifier::modify(o);
   resolve(o, memberScope);
-  o->type = new FiberType(
-      o->target->returnType->accept(&cloner)->accept(this));
+  //o->type = new FiberType(
+  //    o->target->returnType->accept(&cloner)->accept(this));
   o->type->assignable = false;  // rvalue
   return o;
 }
 
-bi::Expression* bi::Resolver::modify(Identifier<MemberFunction>* o) {
+bi::Expression* bi::Resolver::modify(
+    OverloadedIdentifier<MemberFunction>* o) {
   Scope* memberScope = takeMemberScope();
   Modifier::modify(o);
   resolve(o, memberScope);
-  o->type = o->target->returnType->accept(&cloner)->accept(this);
+  //o->type = o->target->returnType->accept(&cloner)->accept(this);
   o->type->assignable = false;  // rvalue
   return o;
 }
 
-bi::Expression* bi::Resolver::modify(Identifier<MemberCoroutine>* o) {
+bi::Expression* bi::Resolver::modify(
+    OverloadedIdentifier<MemberCoroutine>* o) {
   Scope* memberScope = takeMemberScope();
   Modifier::modify(o);
   resolve(o, memberScope);
-  o->type = new FiberType(
-      o->target->returnType->accept(&cloner)->accept(this));
-  o->type->assignable = false;  // rvalue
-  return o;
-}
-
-bi::Expression* bi::Resolver::modify(Identifier<BinaryOperator>* o) {
-  if (*o->name == "~>") {
-    /* x ~> m is syntactic sugar for m.observe(x) */
-    Expression* expr = new Identifier<MemberFunction>(new Name("observe"),
-        new ParenthesesExpression(o->left.release(), o->loc), o->loc);
-    expr = new Member(o->right.release(), expr, o->loc);
-    return expr->accept(this);
-  } else {
-    Scope* memberScope = takeMemberScope();
-    Modifier::modify(o);
-    resolve(o, memberScope);
-    o->type = o->target->returnType->accept(&cloner)->accept(this);
-    o->type->assignable = false;  // rvalue
-    return o;
-  }
-}
-
-bi::Expression* bi::Resolver::modify(Identifier<UnaryOperator>* o) {
-  Scope* memberScope = takeMemberScope();
-  Modifier::modify(o);
-  resolve(o, memberScope);
-  o->type = o->target->returnType->accept(&cloner)->accept(this);
+  //o->type = new FiberType(
+  //    o->target->returnType->accept(&cloner)->accept(this));
   o->type->assignable = false;  // rvalue
   return o;
 }
@@ -574,32 +587,23 @@ bi::Expression* bi::Resolver::lookup(Identifier<Unknown>* ref, Scope* scope) {
   /* replace the reference of unknown object type with that of a known one */
   switch (category) {
   case PARAMETER:
-    return new Identifier<Parameter>(ref->name, ref->parens.release(),
-        ref->loc);
+    return new Identifier<Parameter>(ref->name, ref->loc);
   case MEMBER_PARAMETER:
-    return new Identifier<MemberParameter>(ref->name, ref->parens.release(),
-        ref->loc);
+    return new Identifier<MemberParameter>(ref->name, ref->loc);
   case GLOBAL_VARIABLE:
-    return new Identifier<GlobalVariable>(ref->name, ref->parens.release(),
-        ref->loc);
+    return new Identifier<GlobalVariable>(ref->name, ref->loc);
   case LOCAL_VARIABLE:
-    return new Identifier<LocalVariable>(ref->name, ref->parens.release(),
-        ref->loc);
+    return new Identifier<LocalVariable>(ref->name, ref->loc);
   case MEMBER_VARIABLE:
-    return new Identifier<MemberVariable>(ref->name, ref->parens.release(),
-        ref->loc);
+    return new Identifier<MemberVariable>(ref->name, ref->loc);
   case FUNCTION:
-    return new Identifier<Function>(ref->name, ref->parens.release(),
-        ref->loc);
+    return new OverloadedIdentifier<Function>(ref->name, ref->loc);
   case COROUTINE:
-    return new Identifier<Coroutine>(ref->name, ref->parens.release(),
-        ref->loc);
+    return new OverloadedIdentifier<Coroutine>(ref->name, ref->loc);
   case MEMBER_FUNCTION:
-    return new Identifier<MemberFunction>(ref->name, ref->parens.release(),
-        ref->loc);
+    return new OverloadedIdentifier<MemberFunction>(ref->name, ref->loc);
   case MEMBER_COROUTINE:
-    return new Identifier<MemberCoroutine>(ref->name, ref->parens.release(),
-        ref->loc);
+    return new OverloadedIdentifier<MemberCoroutine>(ref->name, ref->loc);
   default:
     throw UnresolvedReferenceException(ref);
   }

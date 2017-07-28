@@ -41,12 +41,34 @@ bi::Expression* bi::Modifier::modify(Literal<const char*>* o) {
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(ParenthesesExpression* o) {
+bi::Expression* bi::Modifier::modify(Parentheses* o) {
   o->single = o->single.release()->accept(this);
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(BracketsExpression* o) {
+bi::Expression* bi::Modifier::modify(Brackets* o) {
+  o->single = o->single.release()->accept(this);
+  return o;
+}
+
+bi::Expression* bi::Modifier::modify(Call* o) {
+  o->single = o->single.release()->accept(this);
+  o->parens = o->parens.release()->accept(this);
+  return o;
+}
+
+bi::Expression* bi::Modifier::modify(BinaryCall* o) {
+  o->left = o->left.release()->accept(this);
+  o->right = o->right.release()->accept(this);
+  return o;
+}
+
+bi::Expression* bi::Modifier::modify(UnaryCall* o) {
+  o->single = o->single.release()->accept(this);
+  return o;
+}
+
+bi::Expression* bi::Modifier::modify(Slice* o) {
   o->single = o->single.release()->accept(this);
   o->brackets = o->brackets.release()->accept(this);
   return o;
@@ -102,63 +124,42 @@ bi::Expression* bi::Modifier::modify(MemberParameter* o) {
 }
 
 bi::Expression* bi::Modifier::modify(Identifier<Unknown>* o) {
-  o->parens = o->parens.release()->accept(this);
   return o;
 }
 
 bi::Expression* bi::Modifier::modify(Identifier<Parameter>* o) {
-  o->parens = o->parens.release()->accept(this);
   return o;
 }
 
 bi::Expression* bi::Modifier::modify(Identifier<MemberParameter>* o) {
-  o->parens = o->parens.release()->accept(this);
   return o;
 }
 
 bi::Expression* bi::Modifier::modify(Identifier<GlobalVariable>* o) {
-  o->parens = o->parens.release()->accept(this);
   return o;
 }
 
 bi::Expression* bi::Modifier::modify(Identifier<LocalVariable>* o) {
-  o->parens = o->parens.release()->accept(this);
   return o;
 }
 
 bi::Expression* bi::Modifier::modify(Identifier<MemberVariable>* o) {
-  o->parens = o->parens.release()->accept(this);
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(Identifier<Function>* o) {
-  o->parens = o->parens.release()->accept(this);
+bi::Expression* bi::Modifier::modify(OverloadedIdentifier<Function>* o) {
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(Identifier<Coroutine>* o) {
-  o->parens = o->parens.release()->accept(this);
+bi::Expression* bi::Modifier::modify(OverloadedIdentifier<Coroutine>* o) {
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(Identifier<MemberCoroutine>* o) {
-  o->parens = o->parens.release()->accept(this);
+bi::Expression* bi::Modifier::modify(OverloadedIdentifier<MemberCoroutine>* o) {
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(Identifier<MemberFunction>* o) {
-  o->parens = o->parens.release()->accept(this);
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(Identifier<BinaryOperator>* o) {
-  o->left = o->left.release()->accept(this);
-  o->right = o->right.release()->accept(this);
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(Identifier<UnaryOperator>* o) {
-  o->single = o->single.release()->accept(this);
+bi::Expression* bi::Modifier::modify(OverloadedIdentifier<MemberFunction>* o) {
   return o;
 }
 

@@ -45,12 +45,49 @@ void bi::CppBaseGenerator::visit(const Literal<const char*>* o) {
   middle("std::string(" << o->str << ')');
 }
 
-void bi::CppBaseGenerator::visit(const ParenthesesExpression* o) {
+void bi::CppBaseGenerator::visit(const Parentheses* o) {
   middle('(' << o->single << ')');
 }
 
-void bi::CppBaseGenerator::visit(const BracketsExpression* o) {
-  middle(o->single << "(make_view(" << o->brackets << "))");
+void bi::CppBaseGenerator::visit(const Brackets* o) {
+  middle("make_view(" << o->single << ')');
+}
+
+void bi::CppBaseGenerator::visit(const Call* o) {
+  middle(o->single << o->parens);
+}
+
+void bi::CppBaseGenerator::visit(const BinaryCall* o) {
+  if (isTranslatable(o->name->str())) {
+    /* can use as raw C++ operator */
+    genArg(o->left.get(), o->target->left.get());
+    middle(' ' << o->name->str() << ' ');
+    genArg(o->right.get(), o->target->right.get());
+  } else {
+    /* must use as function */
+    middle("bi::" << o->name << '(');
+    genArg(o->left.get(), o->target->left.get());
+    middle(", ");
+    genArg(o->right.get(), o->target->right.get());
+    middle(')');
+  }
+}
+
+void bi::CppBaseGenerator::visit(const UnaryCall* o) {
+  if (isTranslatable(o->name->str())) {
+    /* can use as raw C++ operator */
+    middle(o->name->str());
+    genArg(o->single.get(), o->target->single.get());
+  } else {
+    /* must use as function */
+    middle("bi::" << o->name << '(');
+    genArg(o->single.get(), o->target->single.get());
+    middle(')');
+  }
+}
+
+void bi::CppBaseGenerator::visit(const Slice* o) {
+  middle(o->single << '(' << o->brackets << ')');
 }
 
 void bi::CppBaseGenerator::visit(const LambdaFunction* o) {
@@ -126,76 +163,39 @@ void bi::CppBaseGenerator::visit(const MemberParameter* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Identifier<Parameter>* o) {
-  middle(o->name << o->parens);
+  middle(o->name);
 }
 
 void bi::CppBaseGenerator::visit(const Identifier<MemberParameter>* o) {
-  middle(o->name << o->parens);
+  middle(o->name);
 }
 
 void bi::CppBaseGenerator::visit(const Identifier<GlobalVariable>* o) {
-  middle(o->name << o->parens);
+  middle(o->name);
 }
 
 void bi::CppBaseGenerator::visit(const Identifier<LocalVariable>* o) {
-  middle(o->name << o->parens);
+  middle(o->name);
 }
 
 void bi::CppBaseGenerator::visit(const Identifier<MemberVariable>* o) {
-  middle(o->name << o->parens);
+  middle(o->name);
 }
 
-void bi::CppBaseGenerator::visit(const Identifier<Function>* o) {
-  middle("bi::func::" << o->name << '(');
-  genArgs(o->parens.get(), o->target->parens.get());
-  middle(')');
+void bi::CppBaseGenerator::visit(const OverloadedIdentifier<Function>* o) {
+  middle("bi::func::" << o->name);
 }
 
-void bi::CppBaseGenerator::visit(const Identifier<Coroutine>* o) {
-  middle("bi::func::" << o->name << '(');
-  genArgs(o->parens.get(), o->target->parens.get());
-  middle(')');
+void bi::CppBaseGenerator::visit(const OverloadedIdentifier<Coroutine>* o) {
+  middle("bi::func::" << o->name);
 }
 
-void bi::CppBaseGenerator::visit(const Identifier<MemberFunction>* o) {
-  middle(o->name << '(');
-  genArgs(o->parens.get(), o->target->parens.get());
-  middle(')');
+void bi::CppBaseGenerator::visit(const OverloadedIdentifier<MemberFunction>* o) {
+  middle(o->name);
 }
 
-void bi::CppBaseGenerator::visit(const Identifier<MemberCoroutine>* o) {
-  middle(o->name << '(');
-  genArgs(o->parens.get(), o->target->parens.get());
-  middle(')');
-}
-
-void bi::CppBaseGenerator::visit(const Identifier<BinaryOperator>* o) {
-  if (isTranslatable(o->name->str())) {
-    /* can use as raw C++ operator */
-    genArg(o->left.get(), o->target->left.get());
-    middle(' ' << o->name->str() << ' ');
-    genArg(o->right.get(), o->target->right.get());
-  } else {
-    /* must use as function */
-    middle("bi::" << o->name << '(');
-    genArg(o->left.get(), o->target->left.get());
-    middle(", ");
-    genArg(o->right.get(), o->target->right.get());
-    middle(')');
-  }
-}
-
-void bi::CppBaseGenerator::visit(const Identifier<UnaryOperator>* o) {
-  if (isTranslatable(o->name->str())) {
-    /* can use as raw C++ operator */
-    middle(o->name->str());
-    genArg(o->single.get(), o->target->single.get());
-  } else {
-    /* must use as function */
-    middle("bi::" << o->name << '(');
-    genArg(o->single.get(), o->target->single.get());
-    middle(')');
-  }
+void bi::CppBaseGenerator::visit(const OverloadedIdentifier<MemberCoroutine>* o) {
+  middle(o->name);
 }
 
 void bi::CppBaseGenerator::visit(const File* o) {

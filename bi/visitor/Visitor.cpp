@@ -47,11 +47,29 @@ void bi::Visitor::visit(const Literal<const char*>* o) {
   o->type->accept(this);
 }
 
-void bi::Visitor::visit(const ParenthesesExpression* o) {
+void bi::Visitor::visit(const Parentheses* o) {
   o->single->accept(this);
 }
 
-void bi::Visitor::visit(const BracketsExpression* o) {
+void bi::Visitor::visit(const Brackets* o) {
+  o->single->accept(this);
+}
+
+void bi::Visitor::visit(const Call* o) {
+  o->single->accept(this);
+  o->parens->accept(this);
+}
+
+void bi::Visitor::visit(const BinaryCall* o) {
+  o->left->accept(this);
+  o->right->accept(this);
+}
+
+void bi::Visitor::visit(const UnaryCall* o) {
+  o->single->accept(this);
+}
+
+void bi::Visitor::visit(const Slice* o) {
   o->single->accept(this);
   o->brackets->accept(this);
 }
@@ -99,54 +117,44 @@ void bi::Visitor::visit(const MemberParameter* o) {
 }
 
 void bi::Visitor::visit(const Identifier<Unknown>* o) {
-  o->parens->accept(this);
+  //
 }
 
 void bi::Visitor::visit(const Identifier<Parameter>* o) {
-  o->parens->accept(this);
+  //
 }
 
 void bi::Visitor::visit(const Identifier<MemberParameter>* o) {
-  o->parens->accept(this);
+  //
 }
 
 void bi::Visitor::visit(const Identifier<GlobalVariable>* o) {
-  o->parens->accept(this);
+  //
 }
 
 void bi::Visitor::visit(const Identifier<LocalVariable>* o) {
-  o->parens->accept(this);
+  //
 }
 
 void bi::Visitor::visit(const Identifier<MemberVariable>* o) {
-  o->parens->accept(this);
+  //
 }
 
-void bi::Visitor::visit(const Identifier<Function>* o) {
-  o->parens->accept(this);
+void bi::Visitor::visit(const OverloadedIdentifier<Function>* o) {
+  //
 }
 
-void bi::Visitor::visit(const Identifier<Coroutine>* o) {
-  o->parens->accept(this);
+void bi::Visitor::visit(const OverloadedIdentifier<Coroutine>* o) {
+  //
 }
 
-void bi::Visitor::visit(const Identifier<MemberFunction>* o) {
-  o->parens->accept(this);
+void bi::Visitor::visit(const OverloadedIdentifier<MemberFunction>* o) {
+  //
 }
 
-void bi::Visitor::visit(const Identifier<MemberCoroutine>* o) {
-  o->parens->accept(this);
+void bi::Visitor::visit(const OverloadedIdentifier<MemberCoroutine>* o) {
+  //
 }
-
-void bi::Visitor::visit(const Identifier<BinaryOperator>* o) {
-  o->left->accept(this);
-  o->right->accept(this);
-}
-
-void bi::Visitor::visit(const Identifier<UnaryOperator>* o) {
-  o->single->accept(this);
-}
-
 
 void bi::Visitor::visit(const EmptyStatement* o) {
   //

@@ -37,11 +37,11 @@ bi::AmbiguousReferenceException::AmbiguousReferenceException(
   buf << "error: ambiguous reference '" << ref->name << "'\n";
   buf << ref << '\n';
   for (auto iter = ref->matches.begin(); iter != ref->matches.end(); ++iter) {
-    if ((*iter)->loc) {
-      buf << (*iter)->loc;
-    }
-    buf << "note: candidate\n";
-    buf << *iter << '\n';
+    //if ((*iter)->loc) {
+    //  buf << (*iter)->loc;
+    //}
+    //buf << "note: candidate\n";
+    //buf << *iter << '\n';
   }
   msg = base.str();
 }

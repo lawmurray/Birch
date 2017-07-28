@@ -4,35 +4,37 @@
 #pragma once
 
 #include "bi/expression/Expression.hpp"
-#include "bi/common/Bracketed.hpp"
 #include "bi/common/Unary.hpp"
+#include "bi/common/Reference.hpp"
 #include "bi/expression/Parameter.hpp"
-#include "bi/primitive/unique_ptr.hpp"
 
 namespace bi {
 /**
- * Expression with proceeding square brackets.
+ * Call to a unary operator.
  *
  * @ingroup compiler_expression
  */
-class BracketsExpression: public Expression,
+class UnaryCall: public Expression,
+    public Named,
     public Unary<Expression>,
-    public Bracketed {
+    public Reference<UnaryOperator> {
 public:
   /**
    * Constructor.
    *
-   * @param single Expression.
-   * @param brackets Brackets.
+   * @param name Name.
+   * @param single Operand.
    * @param loc Location.
+   * @param target Target.
    */
-  BracketsExpression(Expression* single, Expression* brackets,
-      shared_ptr<Location> loc = nullptr);
+  UnaryCall(shared_ptr<Name> name, Expression* single,
+      shared_ptr<Location> loc = nullptr, const UnaryOperator* target =
+          nullptr);
 
   /**
    * Destructor.
    */
-  virtual ~BracketsExpression();
+  virtual ~UnaryCall();
 
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);
@@ -42,11 +44,13 @@ public:
   using Expression::possibly;
 
   virtual bool dispatchDefinitely(const Expression& o) const;
-  virtual bool definitely(const BracketsExpression& o) const;
+  virtual bool definitely(const UnaryCall& o) const;
+  virtual bool definitely(const UnaryOperator& o) const;
   virtual bool definitely(const Parameter& o) const;
 
   virtual bool dispatchPossibly(const Expression& o) const;
-  virtual bool possibly(const BracketsExpression& o) const;
+  virtual bool possibly(const UnaryCall& o) const;
+  virtual bool possibly(const UnaryOperator& o) const;
   virtual bool possibly(const Parameter& o) const;
 };
 }

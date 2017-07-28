@@ -34,6 +34,7 @@ birchc_SOURCES = \
   bi/common/Name.cpp \
   bi/common/Named.cpp \
   bi/common/Numbered.cpp \
+  bi/common/Overloaded.cpp \
   bi/common/OverloadedDictionary.cpp \
   bi/common/Parenthesised.cpp \
   bi/common/Path.cpp \
@@ -58,7 +59,9 @@ birchc_SOURCES = \
   bi/exception/ThisException.cpp \
   bi/exception/UnresolvedReferenceException.cpp \
   bi/exception/UnsupportedOptionTypeException.cpp \
-  bi/expression/BracketsExpression.cpp \
+  bi/expression/BinaryCall.cpp \
+  bi/expression/Brackets.cpp \
+  bi/expression/Call.cpp \
   bi/expression/EmptyExpression.cpp \
   bi/expression/Expression.cpp \
   bi/expression/Identifier.cpp \
@@ -67,12 +70,15 @@ birchc_SOURCES = \
   bi/expression/Literal.cpp \
   bi/expression/Member.cpp \
   bi/expression/MemberParameter.cpp \
+  bi/expression/OverloadedIdentifier.cpp \
   bi/expression/Parameter.cpp \
-  bi/expression/ParenthesesExpression.cpp \
+  bi/expression/Parentheses.cpp \
   bi/expression/Range.cpp \
+  bi/expression/Slice.cpp \
   bi/expression/Span.cpp \
   bi/expression/Super.cpp \
   bi/expression/This.cpp \
+  bi/expression/UnaryCall.cpp \
   bi/io/cpp/CppBaseGenerator.cpp \
   bi/io/cpp/CppConstructorGenerator.cpp \
   bi/io/cpp/CppCoroutineGenerator.cpp \
@@ -188,6 +194,7 @@ noinst_HEADERS = \
   bi/common/Name.hpp \
   bi/common/Named.hpp \
   bi/common/Numbered.hpp \
+  bi/common/Overloaded.hpp \
   bi/common/OverloadedDictionary.hpp \
   bi/common/Parenthesised.hpp \
   bi/common/Path.hpp \
@@ -214,7 +221,9 @@ noinst_HEADERS = \
   bi/exception/UnresolvedReferenceException.hpp \
   bi/exception/UnsupportedOptionTypeException.hpp \
   bi/expression/all.hpp \
-  bi/expression/BracketsExpression.hpp \
+  bi/expression/BinaryCall.hpp \
+  bi/expression/Brackets.hpp \
+  bi/expression/Call.hpp \
   bi/expression/EmptyExpression.hpp \
   bi/expression/Expression.hpp \
   bi/expression/Identifier.hpp \
@@ -223,12 +232,15 @@ noinst_HEADERS = \
   bi/expression/Literal.hpp \
   bi/expression/Member.hpp \
   bi/expression/MemberParameter.hpp \
+  bi/expression/OverloadedIdentifier.hpp \
   bi/expression/Parameter.hpp \
-  bi/expression/ParenthesesExpression.hpp \
+  bi/expression/Parentheses.hpp \
   bi/expression/Range.hpp \
+  bi/expression/Slice.hpp \
   bi/expression/Span.hpp \
   bi/expression/Super.hpp \
   bi/expression/This.hpp \
+  bi/expression/UnaryCall.hpp \
   bi/io/bi_ostream.hpp \
   bi/io/bih_ostream.hpp \
   bi/io/cpp/CppBaseGenerator.hpp \

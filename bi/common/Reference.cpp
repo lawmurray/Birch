@@ -3,6 +3,7 @@
  */
 #include "bi/common/Reference.hpp"
 
+#include "bi/common/Overloaded.hpp"
 #include "bi/expression/Identifier.hpp"
 #include "bi/expression/Parameter.hpp"
 #include "bi/expression/MemberParameter.hpp"
@@ -47,3 +48,10 @@ template class bi::Reference<bi::AssignmentOperator>;
 template class bi::Reference<bi::Basic>;
 template class bi::Reference<bi::Class>;
 template class bi::Reference<bi::Alias>;
+template class bi::Reference<bi::Overloaded<bi::Function>>;
+template class bi::Reference<bi::Overloaded<bi::Coroutine>>;
+template class bi::Reference<bi::Overloaded<bi::MemberFunction>>;
+template class bi::Reference<bi::Overloaded<bi::MemberCoroutine>>;
+template class bi::Reference<bi::Overloaded<bi::BinaryOperator>>;
+template class bi::Reference<bi::Overloaded<bi::UnaryOperator>>;
+template class bi::Reference<bi::Overloaded<bi::AssignmentOperator>>;

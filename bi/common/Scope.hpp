@@ -6,8 +6,6 @@
 #include "bi/common/Dictionary.hpp"
 #include "bi/common/OverloadedDictionary.hpp"
 #include "bi/common/Named.hpp"
-#include "bi/primitive/definitely.hpp"
-#include "bi/primitive/possibly.hpp"
 
 #include <set>
 
@@ -30,13 +28,15 @@ class Alias;
 class Unknown;
 
 template<class ObjectType> class Identifier;
+template<class ObjectType> class OverloadedIdentifier;
+
 class BasicType;
 class ClassType;
 class AliasType;
 class IdentifierType;
 
 /**
- * Categories of objects for identifier loookups.
+ * Categories of objects for identifier lookups.
  */
 enum LookupResult {
   PARAMETER,
@@ -100,13 +100,13 @@ public:
   void resolve(Identifier<GlobalVariable>* ref);
   void resolve(Identifier<LocalVariable>* ref);
   void resolve(Identifier<MemberVariable>* ref);
-  void resolve(Identifier<Function>* ref);
-  void resolve(Identifier<Coroutine>* ref);
+  void resolve(OverloadedIdentifier<Function>* ref);
+  void resolve(OverloadedIdentifier<Coroutine>* ref);
   void resolve(Identifier<Program>* ref);
-  void resolve(Identifier<MemberFunction>* ref);
-  void resolve(Identifier<MemberCoroutine>* ref);
-  void resolve(Identifier<BinaryOperator>* ref);
-  void resolve(Identifier<UnaryOperator>* ref);
+  void resolve(OverloadedIdentifier<MemberFunction>* ref);
+  void resolve(OverloadedIdentifier<MemberCoroutine>* ref);
+  void resolve(OverloadedIdentifier<BinaryOperator>* ref);
+  void resolve(OverloadedIdentifier<UnaryOperator>* ref);
   void resolve(BasicType* ref);
   void resolve(ClassType* ref);
   void resolve(AliasType* ref);
@@ -140,13 +140,13 @@ public:
   Dictionary<GlobalVariable> globalVariables;
   Dictionary<LocalVariable> localVariables;
   Dictionary<MemberVariable> memberVariables;
-  OverloadedDictionary<Function,definitely> functions;
-  OverloadedDictionary<Coroutine,definitely> coroutines;
+  OverloadedDictionary<Function> functions;
+  OverloadedDictionary<Coroutine> coroutines;
   Dictionary<Program> programs;
-  OverloadedDictionary<MemberFunction,definitely> memberFunctions;
-  OverloadedDictionary<MemberCoroutine,definitely> memberCoroutines;
-  OverloadedDictionary<BinaryOperator,definitely> binaryOperators;
-  OverloadedDictionary<UnaryOperator,definitely> unaryOperators;
+  OverloadedDictionary<MemberFunction> memberFunctions;
+  OverloadedDictionary<MemberCoroutine> memberCoroutines;
+  OverloadedDictionary<BinaryOperator> binaryOperators;
+  OverloadedDictionary<UnaryOperator> unaryOperators;
   Dictionary<Basic> basics;
   Dictionary<Class> classes;
   Dictionary<Alias> aliases;

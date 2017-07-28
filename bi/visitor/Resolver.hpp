@@ -37,8 +37,12 @@ public:
   using Modifier::modify;
 
   virtual Expression* modify(List<Expression>* o);
-  virtual Expression* modify(ParenthesesExpression* o);
-  virtual Expression* modify(BracketsExpression* o);
+  virtual Expression* modify(Parentheses* o);
+  virtual Expression* modify(Brackets* o);
+  virtual Expression* modify(Call* o);
+  virtual Expression* modify(BinaryCall* o);
+  virtual Expression* modify(UnaryCall* o);
+  virtual Expression* modify(Slice* o);
   virtual Expression* modify(LambdaFunction* o);
   virtual Expression* modify(Span* o);
   virtual Expression* modify(Index* o);
@@ -54,12 +58,10 @@ public:
   virtual Expression* modify(Identifier<GlobalVariable>* o);
   virtual Expression* modify(Identifier<LocalVariable>* o);
   virtual Expression* modify(Identifier<MemberVariable>* o);
-  virtual Expression* modify(Identifier<Function>* o);
-  virtual Expression* modify(Identifier<Coroutine>* o);
-  virtual Expression* modify(Identifier<MemberFunction>* o);
-  virtual Expression* modify(Identifier<MemberCoroutine>* o);
-  virtual Expression* modify(Identifier<BinaryOperator>* o);
-  virtual Expression* modify(Identifier<UnaryOperator>* o);
+  virtual Expression* modify(OverloadedIdentifier<Function>* o);
+  virtual Expression* modify(OverloadedIdentifier<Coroutine>* o);
+  virtual Expression* modify(OverloadedIdentifier<MemberFunction>* o);
+  virtual Expression* modify(OverloadedIdentifier<MemberCoroutine>* o);
 
   virtual Statement* modify(Assignment* o);
   virtual Statement* modify(GlobalVariable* o);
@@ -247,22 +249,14 @@ bi::Identifier<Variable>* bi::Resolver::modifyVariableIdentifier(
   Modifier::modify(o);
   resolve(o, memberScope);
   if (o->target->type->isFunction()) {
-    if (o->parens->isEmpty()) {
-      assert(false);
-    } else {
-      ///@todo Check arguments
-      auto func = dynamic_cast<ReturnTyped*>(o->target->type.get());
-      assert(func);
-      o->type = func->returnType->accept(&cloner)->accept(this);
-    }
+    ///@todo Check arguments
+    auto func = dynamic_cast<ReturnTyped*>(o->target->type.get());
+    assert(func);
+    o->type = func->returnType->accept(&cloner)->accept(this);
   } else if (o->target->type->isCoroutine()) {
-    if (o->parens->isEmpty()) {
-      auto func = dynamic_cast<ReturnTyped*>(o->target->type.get());
-      assert(func);
-      o->type = func->returnType->accept(&cloner)->accept(this);
-    } else {
-      o->type = new BasicType(new Name("Boolean"));
-    }
+    auto func = dynamic_cast<ReturnTyped*>(o->target->type.get());
+    assert(func);
+    o->type = func->returnType->accept(&cloner)->accept(this);
   } else {
     o->type = o->target->type->accept(&cloner)->accept(this);
   }

@@ -4,6 +4,7 @@
 #include "bi/common/Scope.hpp"
 
 #include "bi/expression/Identifier.hpp"
+#include "bi/expression/OverloadedIdentifier.hpp"
 #include "bi/expression/Parameter.hpp"
 #include "bi/expression/MemberParameter.hpp"
 #include "bi/statement/GlobalVariable.hpp"
@@ -262,33 +263,33 @@ void bi::Scope::resolve(Identifier<MemberVariable>* ref) {
   }
 }
 
-void bi::Scope::resolve(Identifier<Function>* ref) {
+void bi::Scope::resolve(OverloadedIdentifier<Function>* ref) {
   functions.resolve(ref);
 }
 
-void bi::Scope::resolve(Identifier<Coroutine>* ref) {
+void bi::Scope::resolve(OverloadedIdentifier<Coroutine>* ref) {
   coroutines.resolve(ref);
 }
 
-void bi::Scope::resolve(Identifier<MemberFunction>* ref) {
+void bi::Scope::resolve(OverloadedIdentifier<MemberFunction>* ref) {
   memberFunctions.resolve(ref);
   if (ref->matches.size() == 0) {
     resolveInherit(ref);
   }
 }
 
-void bi::Scope::resolve(Identifier<MemberCoroutine>* ref) {
+void bi::Scope::resolve(OverloadedIdentifier<MemberCoroutine>* ref) {
   memberCoroutines.resolve(ref);
   if (ref->matches.size() == 0) {
     resolveInherit(ref);
   }
 }
 
-void bi::Scope::resolve(Identifier<BinaryOperator>* ref) {
+void bi::Scope::resolve(OverloadedIdentifier<BinaryOperator>* ref) {
   binaryOperators.resolve(ref);
 }
 
-void bi::Scope::resolve(Identifier<UnaryOperator>* ref) {
+void bi::Scope::resolve(OverloadedIdentifier<UnaryOperator>* ref) {
   unaryOperators.resolve(ref);
 }
 
