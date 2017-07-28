@@ -14,7 +14,7 @@ class Modifier;
 class Visitor;
 
 class Brackets;
-template<class T> class Call;
+class Call;
 class EmptyExpression;
 class Index;
 template<class T> class Identifier;
@@ -23,6 +23,7 @@ class LambdaFunction;
 template<class T> class List;
 template<class T> class Literal;
 class Member;
+template<class T> class OverloadedCall;
 template<class T> class OverloadedIdentifier;
 class Parameter;
 class Parentheses;
@@ -136,18 +137,13 @@ public:
    */
   bool definitely(const Expression& o) const;
   virtual bool dispatchDefinitely(const Expression& o) const = 0;
-  virtual bool definitely(const Call<BinaryOperator>& o) const;
   virtual bool definitely(const Brackets& o) const;
-  virtual bool definitely(const Call<Expression>& o) const;
+  virtual bool definitely(const Call& o) const;
   virtual bool definitely(const EmptyExpression& o) const;
   virtual bool definitely(const Identifier<Parameter>& o) const;
   virtual bool definitely(const Identifier<GlobalVariable>& o) const;
   virtual bool definitely(const Identifier<LocalVariable>& o) const;
   virtual bool definitely(const Identifier<MemberVariable>& o) const;
-  virtual bool definitely(const OverloadedIdentifier<Function>& o) const;
-  virtual bool definitely(const OverloadedIdentifier<Coroutine>& o) const;
-  virtual bool definitely(const OverloadedIdentifier<MemberFunction>& o) const;
-  virtual bool definitely(const OverloadedIdentifier<MemberCoroutine>& o) const;
   virtual bool definitely(const Index& o) const;
   virtual bool definitely(const LambdaFunction& o) const;
   virtual bool definitely(const List<Expression>& o) const;
@@ -156,6 +152,18 @@ public:
   virtual bool definitely(const Literal<double>& o) const;
   virtual bool definitely(const Literal<const char*>& o);
   virtual bool definitely(const Member& o) const;
+  virtual bool definitely(const OverloadedCall<Function>& o) const;
+  virtual bool definitely(const OverloadedCall<Coroutine>& o) const;
+  virtual bool definitely(const OverloadedCall<MemberFunction>& o) const;
+  virtual bool definitely(const OverloadedCall<MemberCoroutine>& o) const;
+  virtual bool definitely(const OverloadedCall<BinaryOperator>& o) const;
+  virtual bool definitely(const OverloadedCall<UnaryOperator>& o) const;
+  virtual bool definitely(const OverloadedIdentifier<Function>& o) const;
+  virtual bool definitely(const OverloadedIdentifier<Coroutine>& o) const;
+  virtual bool definitely(
+      const OverloadedIdentifier<MemberFunction>& o) const;
+  virtual bool definitely(
+      const OverloadedIdentifier<MemberCoroutine>& o) const;
   virtual bool definitely(const Parameter& o) const;
   virtual bool definitely(const Parentheses& o) const;
   virtual bool definitely(const Range& o) const;
@@ -163,22 +171,16 @@ public:
   virtual bool definitely(const Span& o) const;
   virtual bool definitely(const Super& o) const;
   virtual bool definitely(const This& o) const;
-  virtual bool definitely(const Call<UnaryOperator>& o) const;
 
   bool possibly(const Expression& o) const;
   virtual bool dispatchPossibly(const Expression& o) const = 0;
-  virtual bool possibly(const Call<BinaryOperator>& o) const;
   virtual bool possibly(const Brackets& o) const;
-  virtual bool possibly(const Call<Expression>& o) const;
+  virtual bool possibly(const Call& o) const;
   virtual bool possibly(const EmptyExpression& o) const;
   virtual bool possibly(const Identifier<Parameter>& o) const;
   virtual bool possibly(const Identifier<GlobalVariable>& o) const;
   virtual bool possibly(const Identifier<LocalVariable>& o) const;
   virtual bool possibly(const Identifier<MemberVariable>& o) const;
-  virtual bool possibly(const OverloadedIdentifier<Function>& o) const;
-  virtual bool possibly(const OverloadedIdentifier<Coroutine>& o) const;
-  virtual bool possibly(const OverloadedIdentifier<MemberFunction>& o) const;
-  virtual bool possibly(const OverloadedIdentifier<MemberCoroutine>& o) const;
   virtual bool possibly(const Index& o) const;
   virtual bool possibly(const LambdaFunction& o) const;
   virtual bool possibly(const List<Expression>& o) const;
@@ -187,6 +189,16 @@ public:
   virtual bool possibly(const Literal<double>& o) const;
   virtual bool possibly(const Literal<const char*>& o);
   virtual bool possibly(const Member& o) const;
+  virtual bool possibly(const OverloadedCall<Function>& o) const;
+  virtual bool possibly(const OverloadedCall<Coroutine>& o) const;
+  virtual bool possibly(const OverloadedCall<MemberFunction>& o) const;
+  virtual bool possibly(const OverloadedCall<MemberCoroutine>& o) const;
+  virtual bool possibly(const OverloadedCall<BinaryOperator>& o) const;
+  virtual bool possibly(const OverloadedCall<UnaryOperator>& o) const;
+  virtual bool possibly(const OverloadedIdentifier<Function>& o) const;
+  virtual bool possibly(const OverloadedIdentifier<Coroutine>& o) const;
+  virtual bool possibly(const OverloadedIdentifier<MemberFunction>& o) const;
+  virtual bool possibly(const OverloadedIdentifier<MemberCoroutine>& o) const;
   virtual bool possibly(const Parameter& o) const;
   virtual bool possibly(const Parentheses& o) const;
   virtual bool possibly(const Range& o) const;
@@ -194,7 +206,6 @@ public:
   virtual bool possibly(const Span& o) const;
   virtual bool possibly(const Super& o) const;
   virtual bool possibly(const This& o) const;
-  virtual bool possibly(const Call<UnaryOperator>& o) const;
 
   /**
    * Operators for equality comparisons.

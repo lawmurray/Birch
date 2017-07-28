@@ -51,15 +51,31 @@ bi::Expression* bi::Resolver::modify(Brackets* o) {
   return o;
 }
 
-bi::Expression* bi::Resolver::modify(Call<Expression>* o) {
+bi::Expression* bi::Resolver::modify(Call* o) {
   Modifier::modify(o);
   return o;
 }
 
-bi::Expression* bi::Resolver::modify(Call<BinaryOperator>* o) {
+bi::Expression* bi::Resolver::modify(OverloadedCall<Function>* o) {
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(OverloadedCall<Coroutine>* o) {
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(OverloadedCall<MemberFunction>* o) {
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(OverloadedCall<MemberCoroutine>* o) {
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(OverloadedCall<BinaryOperator>* o) {
   //if (*o->name == "~>") {
     /* x ~> m is syntactic sugar for m.observe(x) */
-    //Expression* expr = new Call<Expression>(
+    //Expression* expr = new Call(
     //    new OverloadedIdentifier<MemberFunction>(new Name("observe"), o->loc),
     //    new Parentheses(o->left.release(), o->loc), o->loc);
     //expr = new Member(o->right.release(), expr, o->loc);
@@ -74,7 +90,7 @@ bi::Expression* bi::Resolver::modify(Call<BinaryOperator>* o) {
   //}
 }
 
-bi::Expression* bi::Resolver::modify(Call<UnaryOperator>* o) {
+bi::Expression* bi::Resolver::modify(OverloadedCall<UnaryOperator>* o) {
   //Scope* memberScope = takeMemberScope();
   //Modifier::modify(o);
   //resolve(o, memberScope);

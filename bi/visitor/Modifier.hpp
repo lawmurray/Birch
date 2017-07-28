@@ -29,9 +29,13 @@ public:
   virtual Expression* modify(Literal<const char*>* o);
   virtual Expression* modify(Parentheses* o);
   virtual Expression* modify(Brackets* o);
-  virtual Expression* modify(Call<Expression>* o);
-  virtual Expression* modify(Call<BinaryOperator>* o);
-  virtual Expression* modify(Call<UnaryOperator>* o);
+  virtual Expression* modify(Call* o);
+  virtual Expression* modify(OverloadedCall<Function>* o);
+  virtual Expression* modify(OverloadedCall<Coroutine>* o);
+  virtual Expression* modify(OverloadedCall<MemberFunction>* o);
+  virtual Expression* modify(OverloadedCall<MemberCoroutine>* o);
+  virtual Expression* modify(OverloadedCall<BinaryOperator>* o);
+  virtual Expression* modify(OverloadedCall<UnaryOperator>* o);
   virtual Expression* modify(Slice* o);
   virtual Expression* modify(LambdaFunction* o);
   virtual Expression* modify(Span* o);

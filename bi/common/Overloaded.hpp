@@ -3,13 +3,12 @@
  */
 #pragma once
 
+#include "bi/expression/OverloadedCall.hpp"
 #include "bi/primitive/poset.hpp"
 #include "bi/primitive/definitely.hpp"
 #include "bi/primitive/possibly.hpp"
 
 namespace bi {
-template<class T> class Call;
-
 /**
  * Overloadable object. Groups all overloads into one object.
  *
@@ -46,7 +45,7 @@ public:
    *
    * @param o The call.
    */
-  void resolve(Call<ObjectType>* o);
+  void resolve(OverloadedCall<ObjectType>* o);
 
   /**
    * Declarations by partial order.

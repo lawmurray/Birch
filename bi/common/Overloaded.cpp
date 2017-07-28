@@ -32,7 +32,7 @@ void bi::Overloaded<ObjectType>::add(ObjectType* o) {
 }
 
 template<class ObjectType>
-void bi::Overloaded<ObjectType>::resolve(Call<ObjectType>* o) {
+void bi::Overloaded<ObjectType>::resolve(OverloadedCall<ObjectType>* o) {
   overloads.match(o, o->matches);
 }
 

@@ -55,17 +55,37 @@ void bi::Visitor::visit(const Brackets* o) {
   o->single->accept(this);
 }
 
-void bi::Visitor::visit(const Call<Expression>* o) {
+void bi::Visitor::visit(const Call* o) {
   o->single->accept(this);
   o->parens->accept(this);
 }
 
-void bi::Visitor::visit(const Call<BinaryOperator>* o) {
+void bi::Visitor::visit(const OverloadedCall<Function>* o) {
+  o->single->accept(this);
+  o->parens->accept(this);
+}
+
+void bi::Visitor::visit(const OverloadedCall<Coroutine>* o) {
+  o->single->accept(this);
+  o->parens->accept(this);
+}
+
+void bi::Visitor::visit(const OverloadedCall<MemberFunction>* o) {
+  o->single->accept(this);
+  o->parens->accept(this);
+}
+
+void bi::Visitor::visit(const OverloadedCall<MemberCoroutine>* o) {
+  o->single->accept(this);
+  o->parens->accept(this);
+}
+
+void bi::Visitor::visit(const OverloadedCall<BinaryOperator>* o) {
   o->left->accept(this);
   o->right->accept(this);
 }
 
-void bi::Visitor::visit(const Call<UnaryOperator>* o) {
+void bi::Visitor::visit(const OverloadedCall<UnaryOperator>* o) {
   o->single->accept(this);
 }
 

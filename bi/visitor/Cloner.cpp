@@ -45,18 +45,38 @@ bi::Expression* bi::Cloner::clone(const Brackets* o) {
   return new Brackets(o->single->accept(this), o->loc);
 }
 
-bi::Expression* bi::Cloner::clone(const Call<Expression>* o) {
-  return new Call<Expression>(o->single->accept(this),
+bi::Expression* bi::Cloner::clone(const Call* o) {
+  return new Call(o->single->accept(this), o->parens->accept(this), o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(const OverloadedCall<Function>* o) {
+  return new OverloadedCall<Function>(o->single->accept(this),
       o->parens->accept(this), o->loc);
 }
 
-bi::Expression* bi::Cloner::clone(const Call<BinaryOperator>* o) {
-  return new Call<BinaryOperator>(o->left->accept(this), o->name,
+bi::Expression* bi::Cloner::clone(const OverloadedCall<Coroutine>* o) {
+  return new OverloadedCall<Coroutine>(o->single->accept(this),
+      o->parens->accept(this), o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(const OverloadedCall<MemberFunction>* o) {
+  return new OverloadedCall<MemberFunction>(o->single->accept(this),
+      o->parens->accept(this), o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(const OverloadedCall<MemberCoroutine>* o) {
+  return new OverloadedCall<MemberCoroutine>(o->single->accept(this),
+      o->parens->accept(this), o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(const OverloadedCall<BinaryOperator>* o) {
+  return new OverloadedCall<BinaryOperator>(o->left->accept(this), o->name,
       o->right->accept(this), o->loc);
 }
 
-bi::Expression* bi::Cloner::clone(const Call<UnaryOperator>* o) {
-  return new Call<UnaryOperator>(o->name, o->single->accept(this), o->loc);
+bi::Expression* bi::Cloner::clone(const OverloadedCall<UnaryOperator>* o) {
+  return new OverloadedCall<UnaryOperator>(o->name, o->single->accept(this),
+      o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const Slice* o) {

@@ -46,11 +46,11 @@ bool bi::Parentheses::dispatchDefinitely(
   return o.definitely(*this) || single->dispatchDefinitely(o);
 }
 
-bool bi::Parentheses::definitely(const Call<BinaryOperator>& o) const {
+bool bi::Parentheses::definitely(const OverloadedCall<BinaryOperator>& o) const {
   return single->definitely(o);
 }
 
-bool bi::Parentheses::definitely(const Call<Expression>& o) const {
+bool bi::Parentheses::definitely(const Call& o) const {
   return single->definitely(o);
 }
 
@@ -160,7 +160,7 @@ bool bi::Parentheses::definitely(const This& o) const {
   return single->definitely(o);
 }
 
-bool bi::Parentheses::definitely(const Call<UnaryOperator>& o) const {
+bool bi::Parentheses::definitely(const OverloadedCall<UnaryOperator>& o) const {
   return single->definitely(o);
 }
 
@@ -168,11 +168,11 @@ bool bi::Parentheses::dispatchPossibly(const Expression& o) const {
   return o.possibly(*this) || single->dispatchPossibly(o);
 }
 
-bool bi::Parentheses::possibly(const Call<BinaryOperator>& o) const {
+bool bi::Parentheses::possibly(const OverloadedCall<BinaryOperator>& o) const {
   return single->possibly(o);
 }
 
-bool bi::Parentheses::possibly(const Call<Expression>& o) const {
+bool bi::Parentheses::possibly(const Call& o) const {
   return single->possibly(o);
 }
 
@@ -281,6 +281,6 @@ bool bi::Parentheses::possibly(const This& o) const {
   return single->possibly(o);
 }
 
-bool bi::Parentheses::possibly(const Call<UnaryOperator>& o) const {
+bool bi::Parentheses::possibly(const OverloadedCall<UnaryOperator>& o) const {
   return single->possibly(o);
 }

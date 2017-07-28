@@ -14,8 +14,10 @@ namespace bi {
  * @ingroup compiler_expression
  */
 template<>
-class Call<UnaryOperator> : public Expression, public Named, public Unary<
-    Expression>, public Reference<UnaryOperator> {
+class OverloadedCall<UnaryOperator> : public Expression,
+    public Named,
+    public Unary<Expression>,
+    public Reference<UnaryOperator> {
 public:
   /**
    * Constructor.
@@ -25,13 +27,14 @@ public:
    * @param loc Location.
    * @param target Target.
    */
-  Call(shared_ptr<Name> name, Expression* single, shared_ptr<Location> loc =
-      nullptr, const UnaryOperator* target = nullptr);
+  OverloadedCall(shared_ptr<Name> name, Expression* single,
+      shared_ptr<Location> loc = nullptr, const UnaryOperator* target =
+          nullptr);
 
   /**
    * Destructor.
    */
-  virtual ~Call();
+  virtual ~OverloadedCall();
 
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);
@@ -41,12 +44,12 @@ public:
   using Expression::possibly;
 
   virtual bool dispatchDefinitely(const Expression& o) const;
-  virtual bool definitely(const Call<UnaryOperator>& o) const;
+  virtual bool definitely(const OverloadedCall<UnaryOperator>& o) const;
   virtual bool definitely(const UnaryOperator& o) const;
   virtual bool definitely(const Parameter& o) const;
 
   virtual bool dispatchPossibly(const Expression& o) const;
-  virtual bool possibly(const Call<UnaryOperator>& o) const;
+  virtual bool possibly(const OverloadedCall<UnaryOperator>& o) const;
   virtual bool possibly(const UnaryOperator& o) const;
   virtual bool possibly(const Parameter& o) const;
 };
