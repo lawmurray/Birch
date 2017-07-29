@@ -6,14 +6,14 @@
 #include "bi/visitor/all.hpp"
 
 bi::BasicType::BasicType(shared_ptr<Name> name, shared_ptr<Location> loc,
-    const bool assignable, const Basic* target) :
+    const bool assignable, Basic* target) :
     Type(loc, assignable),
     Named(name),
     Reference<Basic>(target) {
   //
 }
 
-bi::BasicType::BasicType(const Basic* target) :
+bi::BasicType::BasicType(Basic* target) :
     Named(target->name),
     Reference<Basic>(target) {
   //

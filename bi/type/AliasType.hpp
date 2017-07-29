@@ -27,14 +27,14 @@ public:
    * @param target Target.
    */
   AliasType(shared_ptr<Name> name, shared_ptr<Location> loc = nullptr,
-      const bool assignable = false, const Alias* target = nullptr);
+      const bool assignable = false, Alias* target = nullptr);
 
   /**
    * Constructor.
    *
    * @param target Target.
    */
-  AliasType(const Alias* target);
+  AliasType(Alias* target);
 
   /**
    * Destructor.

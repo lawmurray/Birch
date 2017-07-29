@@ -176,6 +176,14 @@ void bi::Visitor::visit(const OverloadedIdentifier<MemberCoroutine>* o) {
   //
 }
 
+void bi::Visitor::visit(const OverloadedIdentifier<BinaryOperator>* o) {
+  //
+}
+
+void bi::Visitor::visit(const OverloadedIdentifier<UnaryOperator>* o) {
+  //
+}
+
 void bi::Visitor::visit(const EmptyStatement* o) {
   //
 }

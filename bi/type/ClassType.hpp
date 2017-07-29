@@ -25,14 +25,14 @@ public:
    * @param target Target.
    */
   ClassType(shared_ptr<Name> name, shared_ptr<Location> loc = nullptr,
-      const bool assignable = false, const Class* target = nullptr);
+      const bool assignable = false, Class* target = nullptr);
 
   /**
    * Constructor.
    *
    * @param target Target.
    */
-  ClassType(const Class* target);
+  ClassType(Class* target);
 
   /**
    * Destructor.

@@ -187,6 +187,14 @@ bi::Expression* bi::Modifier::modify(OverloadedIdentifier<MemberFunction>* o) {
   return o;
 }
 
+bi::Expression* bi::Modifier::modify(OverloadedIdentifier<BinaryOperator>* o) {
+  return o;
+}
+
+bi::Expression* bi::Modifier::modify(OverloadedIdentifier<UnaryOperator>* o) {
+  return o;
+}
+
 bi::Statement* bi::Modifier::modify(Assignment* o) {
   o->left = o->left.release()->accept(this);
   o->right = o->right.release()->accept(this);

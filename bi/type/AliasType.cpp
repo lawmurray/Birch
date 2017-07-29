@@ -6,14 +6,14 @@
 #include "bi/visitor/all.hpp"
 
 bi::AliasType::AliasType(shared_ptr<Name> name, shared_ptr<Location> loc,
-    const bool assignable, const Alias* target) :
+    const bool assignable, Alias* target) :
     Type(loc, assignable),
     Named(name),
     Reference<Alias>(target) {
   //
 }
 
-bi::AliasType::AliasType(const Alias* target) :
+bi::AliasType::AliasType(Alias* target) :
     Named(target->name),
     Reference<Alias>(target) {
   //

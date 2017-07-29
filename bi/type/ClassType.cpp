@@ -6,14 +6,14 @@
 #include "bi/visitor/all.hpp"
 
 bi::ClassType::ClassType(shared_ptr<Name> name, shared_ptr<Location> loc,
-    const bool assignable, const Class* target) :
+    const bool assignable, Class* target) :
     Type(loc, assignable),
     Named(name),
     Reference<Class>(target) {
   //
 }
 
-bi::ClassType::ClassType(const Class* target) :
+bi::ClassType::ClassType(Class* target) :
     Named(target->name),
     Reference<Class>(target) {
   //

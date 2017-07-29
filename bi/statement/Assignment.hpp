@@ -29,7 +29,7 @@ public:
    */
   Assignment(Expression* left, shared_ptr<Name> name,
       Expression* right, shared_ptr<Location> loc = nullptr,
-      const AssignmentOperator* target = nullptr);
+      AssignmentOperator* target = nullptr);
 
   /**
    * Destructor.

@@ -30,7 +30,7 @@ public:
    * @param target Target.
    */
   OverloadedCall(Expression* single, Expression* parens,
-      shared_ptr<Location> loc = nullptr, const ObjectType* target = nullptr);
+      shared_ptr<Location> loc = nullptr, ObjectType* target = nullptr);
 
   /**
    * Destructor.

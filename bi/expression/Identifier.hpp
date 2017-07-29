@@ -43,7 +43,7 @@ public:
    * @param target Target.
    */
   Identifier(shared_ptr<Name> name, shared_ptr<Location> loc = nullptr,
-      const ObjectType* target = nullptr);
+      ObjectType* target = nullptr);
 
   /**
    * Destructor.

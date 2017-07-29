@@ -66,6 +66,8 @@ public:
   virtual Expression* modify(OverloadedIdentifier<Coroutine>* o);
   virtual Expression* modify(OverloadedIdentifier<MemberFunction>* o);
   virtual Expression* modify(OverloadedIdentifier<MemberCoroutine>* o);
+  virtual Expression* modify(OverloadedIdentifier<BinaryOperator>* o);
+  virtual Expression* modify(OverloadedIdentifier<UnaryOperator>* o);
 
   virtual Statement* modify(Assignment* o);
   virtual Statement* modify(GlobalVariable* o);
@@ -238,10 +240,9 @@ void bi::Resolver::resolve(Reference* ref, Scope* scope) {
     }
   }
   if (ref->matches.size() == 0) {
-    throw UnresolvedReferenceException(ref);
-  } else if (ref->matches.size() > 1) {
-    throw AmbiguousReferenceException(ref);
+    throw UnresolvedException(ref);
   } else {
+    assert(ref->matches.size() == 1);
     ref->target = ref->matches.front();
   }
 }

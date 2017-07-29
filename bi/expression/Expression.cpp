@@ -26,6 +26,10 @@ bool bi::Expression::isEmpty() const {
   return false;
 }
 
+bool bi::Expression::isOverloaded() const {
+  return false;
+}
+
 bi::Expression* bi::Expression::strip() {
   return this;
 }
@@ -132,35 +136,53 @@ bool bi::Expression::definitely(const OverloadedCall<Coroutine>& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(const OverloadedCall<MemberFunction>& o) const {
+bool bi::Expression::definitely(
+    const OverloadedCall<MemberFunction>& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(const OverloadedCall<MemberCoroutine>& o) const {
+bool bi::Expression::definitely(
+    const OverloadedCall<MemberCoroutine>& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(const OverloadedCall<BinaryOperator>& o) const {
+bool bi::Expression::definitely(
+    const OverloadedCall<BinaryOperator>& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(const OverloadedCall<UnaryOperator>& o) const {
+bool bi::Expression::definitely(
+    const OverloadedCall<UnaryOperator>& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(const OverloadedIdentifier<Function>& o) const {
+bool bi::Expression::definitely(
+    const OverloadedIdentifier<Function>& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(const OverloadedIdentifier<Coroutine>& o) const {
+bool bi::Expression::definitely(
+    const OverloadedIdentifier<Coroutine>& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(const OverloadedIdentifier<MemberFunction>& o) const {
+bool bi::Expression::definitely(
+    const OverloadedIdentifier<MemberFunction>& o) const {
   return false;
 }
 
-bool bi::Expression::definitely(const OverloadedIdentifier<MemberCoroutine>& o) const {
+bool bi::Expression::definitely(
+    const OverloadedIdentifier<MemberCoroutine>& o) const {
+  return false;
+}
+
+bool bi::Expression::definitely(
+    const OverloadedIdentifier<BinaryOperator>& o) const {
+  return false;
+}
+
+bool bi::Expression::definitely(
+    const OverloadedIdentifier<UnaryOperator>& o) const {
   return false;
 }
 
@@ -268,7 +290,8 @@ bool bi::Expression::possibly(const OverloadedCall<MemberFunction>& o) const {
   return false;
 }
 
-bool bi::Expression::possibly(const OverloadedCall<MemberCoroutine>& o) const {
+bool bi::Expression::possibly(
+    const OverloadedCall<MemberCoroutine>& o) const {
   return false;
 }
 
@@ -284,15 +307,28 @@ bool bi::Expression::possibly(const OverloadedIdentifier<Function>& o) const {
   return false;
 }
 
-bool bi::Expression::possibly(const OverloadedIdentifier<Coroutine>& o) const {
+bool bi::Expression::possibly(
+    const OverloadedIdentifier<Coroutine>& o) const {
   return false;
 }
 
-bool bi::Expression::possibly(const OverloadedIdentifier<MemberFunction>& o) const {
+bool bi::Expression::possibly(
+    const OverloadedIdentifier<MemberFunction>& o) const {
   return false;
 }
 
-bool bi::Expression::possibly(const OverloadedIdentifier<MemberCoroutine>& o) const {
+bool bi::Expression::possibly(
+    const OverloadedIdentifier<MemberCoroutine>& o) const {
+  return false;
+}
+
+bool bi::Expression::possibly(
+    const OverloadedIdentifier<BinaryOperator>& o) const {
+  return false;
+}
+
+bool bi::Expression::possibly(
+    const OverloadedIdentifier<UnaryOperator>& o) const {
   return false;
 }
 

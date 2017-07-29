@@ -8,7 +8,7 @@
 
 bi::OverloadedCall<bi::BinaryOperator>::OverloadedCall(Expression* left,
     shared_ptr<Name> name, Expression* right, shared_ptr<Location> loc,
-    const BinaryOperator* target) :
+    BinaryOperator* target) :
     Expression(loc),
     Named(name),
     Binary<Expression>(left, right),

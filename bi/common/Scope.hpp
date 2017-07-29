@@ -68,48 +68,48 @@ public:
   LookupResult lookup(const IdentifierType* ref) const;
 
   /**
-   * Add parameter.
+   * Add declaration to scope.
    *
-   * @param param Parameter.
+   * @param o Object.
    */
-  void add(Parameter* param);
-  void add(MemberParameter* param);
-  void add(GlobalVariable* param);
-  void add(LocalVariable* param);
-  void add(MemberVariable* param);
-  void add(Function* param);
-  void add(Coroutine* param);
-  void add(Program* param);
-  void add(MemberFunction* param);
-  void add(MemberCoroutine* param);
-  void add(BinaryOperator* param);
-  void add(UnaryOperator* param);
-  void add(Class* param);
-  void add(Alias* param);
-  void add(Basic* param);
+  void add(Parameter* o);
+  void add(MemberParameter* o);
+  void add(GlobalVariable* o);
+  void add(LocalVariable* o);
+  void add(MemberVariable* o);
+  void add(Function* o);
+  void add(Coroutine* o);
+  void add(Program* o);
+  void add(MemberFunction* o);
+  void add(MemberCoroutine* o);
+  void add(BinaryOperator* o);
+  void add(UnaryOperator* o);
+  void add(Class* o);
+  void add(Alias* o);
+  void add(Basic* o);
 
   /**
-   * Resolve a reference to a parameter.
+   * Get the declaration to which an identifier corresponds.
    *
-   * @param ref Reference to resolve.
+   * @param o Identnfier.
    *
-   * @return Target of the reference.
+   * @return Declaration.
    */
-  void resolve(Identifier<Parameter>* ref);
-  void resolve(Identifier<MemberParameter>* ref);
-  void resolve(Identifier<GlobalVariable>* ref);
-  void resolve(Identifier<LocalVariable>* ref);
-  void resolve(Identifier<MemberVariable>* ref);
-  void resolve(OverloadedIdentifier<Function>* ref);
-  void resolve(OverloadedIdentifier<Coroutine>* ref);
-  void resolve(Identifier<Program>* ref);
-  void resolve(OverloadedIdentifier<MemberFunction>* ref);
-  void resolve(OverloadedIdentifier<MemberCoroutine>* ref);
-  void resolve(OverloadedIdentifier<BinaryOperator>* ref);
-  void resolve(OverloadedIdentifier<UnaryOperator>* ref);
-  void resolve(BasicType* ref);
-  void resolve(ClassType* ref);
-  void resolve(AliasType* ref);
+  void resolve(Identifier<Parameter>* o);
+  void resolve(Identifier<MemberParameter>* o);
+  void resolve(Identifier<GlobalVariable>* o);
+  void resolve(Identifier<LocalVariable>* o);
+  void resolve(Identifier<MemberVariable>* o);
+  void resolve(OverloadedIdentifier<Function>* o);
+  void resolve(OverloadedIdentifier<Coroutine>* o);
+  void resolve(Identifier<Program>* o);
+  void resolve(OverloadedIdentifier<MemberFunction>* o);
+  void resolve(OverloadedIdentifier<MemberCoroutine>* o);
+  void resolve(OverloadedIdentifier<BinaryOperator>* o);
+  void resolve(OverloadedIdentifier<UnaryOperator>* o);
+  void resolve(BasicType* o);
+  void resolve(ClassType* o);
+  void resolve(AliasType* o);
 
   /**
    * Inherit another scope into this scope. This is used to import

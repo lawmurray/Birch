@@ -30,14 +30,14 @@ public:
    * @param target Target.
    */
   BasicType(shared_ptr<Name> name, shared_ptr<Location> loc = nullptr,
-      const bool assignable = false, const Basic* target = nullptr);
+      const bool assignable = false, Basic* target = nullptr);
 
   /**
    * Constructor.
    *
    * @param target Target.
    */
-  BasicType(const Basic* target);
+  BasicType(Basic* target);
 
   /**
    * Destructor.

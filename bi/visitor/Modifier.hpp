@@ -56,6 +56,8 @@ public:
   virtual Expression* modify(OverloadedIdentifier<Coroutine>* o);
   virtual Expression* modify(OverloadedIdentifier<MemberFunction>* o);
   virtual Expression* modify(OverloadedIdentifier<MemberCoroutine>* o);
+  virtual Expression* modify(OverloadedIdentifier<BinaryOperator>* o);
+  virtual Expression* modify(OverloadedIdentifier<UnaryOperator>* o);
 
   virtual Statement* modify(EmptyStatement* o);
   virtual Statement* modify(List<Statement>* o);

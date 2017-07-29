@@ -29,12 +29,14 @@ public:
    * @param target Target.
    */
   OverloadedIdentifier(shared_ptr<Name> name, shared_ptr<Location> loc =
-      nullptr, const Overloaded<ObjectType>* target = nullptr);
+      nullptr, Overloaded<ObjectType>* target = nullptr);
 
   /**
    * Destructor.
    */
   virtual ~OverloadedIdentifier();
+
+  virtual bool isOverloaded() const;
 
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);

@@ -19,7 +19,7 @@ public:
    *
    * @param target Target.
    */
-  Reference(const Target* target = nullptr);
+  Reference(Target* target = nullptr);
 
   /**
    * Destructor.
@@ -29,17 +29,17 @@ public:
   /**
    * Target. This is the most-specific definite resolution to a parameter.
    */
-  const Target* target;
+  Target* target;
 
   /**
    * All matches.
    */
-  std::list<const Target*> matches;
+  std::list<Target*> matches;
 };
 }
 
 template<class Target>
-bi::Reference<Target>::Reference(const Target* target) :
+bi::Reference<Target>::Reference(Target* target) :
     target(target) {
   //
 }

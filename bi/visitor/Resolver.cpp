@@ -52,50 +52,137 @@ bi::Expression* bi::Resolver::modify(Brackets* o) {
 }
 
 bi::Expression* bi::Resolver::modify(Call* o) {
-  Modifier::modify(o);
-  return o;
+  if (o->single->isOverloaded()) {
+    /* replace the Call object with an appropriate OverloadedCall object
+     * given the type of object */
+    Expression* result;
+    if (dynamic_cast<OverloadedIdentifier<Function>*>(o->single.get())) {
+      result = new OverloadedCall<Function>(o->single.release(),
+          o->parens.release(), o->loc);
+    } else if (dynamic_cast<OverloadedIdentifier<Coroutine>*>(o->single.get())) {
+        result = new OverloadedCall<Coroutine>(o->single.release(),
+            o->parens.release(), o->loc);
+    } else if (dynamic_cast<OverloadedIdentifier<MemberFunction>*>(o->single.get())) {
+        result = new OverloadedCall<MemberFunction>(o->single.release(),
+            o->parens.release(), o->loc);
+    } else if (dynamic_cast<OverloadedIdentifier<MemberCoroutine>*>(o->single.get())) {
+        result = new OverloadedCall<MemberCoroutine>(o->single.release(),
+            o->parens.release(), o->loc);
+    } else {
+      assert(false);
+    }
+    return result->accept(this);
+  } else {
+    Modifier::modify(o);
+    ///@todo Check that parentheses match function type and set retur type
+    return o;
+  }
 }
 
 bi::Expression* bi::Resolver::modify(OverloadedCall<Function>* o) {
+  dynamic_cast<OverloadedIdentifier<Function>*>(o->single.get())->target->resolve(o);
+  if (o->matches.size() == 0) {
+    throw InvalidCallException(o);
+  } else if (o->matches.size() > 1) {
+    throw AmbiguousCallException(o);
+  } else {
+    o->target = o->matches.front();
+  }
+  o->type = o->target->returnType->accept(&cloner)->accept(this);
+  o->type->assignable = false;  // rvalue
   return o;
 }
 
 bi::Expression* bi::Resolver::modify(OverloadedCall<Coroutine>* o) {
+  dynamic_cast<OverloadedIdentifier<Coroutine>*>(o->single.get())->target->resolve(o);
+  if (o->matches.size() == 0) {
+    throw InvalidCallException(o);
+  } else if (o->matches.size() > 1) {
+    throw AmbiguousCallException(o);
+  } else {
+    o->target = o->matches.front();
+  }
+  o->type = new FiberType(
+      o->target->returnType->accept(&cloner)->accept(this));
+  o->type->assignable = false;  // rvalue
   return o;
 }
 
 bi::Expression* bi::Resolver::modify(OverloadedCall<MemberFunction>* o) {
+  dynamic_cast<OverloadedIdentifier<MemberFunction>*>(o->single.get())->target->resolve(o);
+  if (o->matches.size() == 0) {
+    throw InvalidCallException(o);
+  } else if (o->matches.size() > 1) {
+    throw AmbiguousCallException(o);
+  } else {
+    o->target = o->matches.front();
+  }
+  o->type = o->target->returnType->accept(&cloner)->accept(this);
+  o->type->assignable = false;  // rvalue
   return o;
 }
 
 bi::Expression* bi::Resolver::modify(OverloadedCall<MemberCoroutine>* o) {
+  dynamic_cast<OverloadedIdentifier<MemberCoroutine>*>(o->single.get())->target->resolve(o);
+  if (o->matches.size() == 0) {
+    throw InvalidCallException(o);
+  } else if (o->matches.size() > 1) {
+    throw AmbiguousCallException(o);
+  } else {
+    o->target = o->matches.front();
+  }
+  o->type = new FiberType(
+      o->target->returnType->accept(&cloner)->accept(this));
+  o->type->assignable = false;  // rvalue
   return o;
 }
 
 bi::Expression* bi::Resolver::modify(OverloadedCall<BinaryOperator>* o) {
-  //if (*o->name == "~>") {
+  if (*o->name == "~>") {
     /* x ~> m is syntactic sugar for m.observe(x) */
-    //Expression* expr = new Call(
-    //    new OverloadedIdentifier<MemberFunction>(new Name("observe"), o->loc),
-    //    new Parentheses(o->left.release(), o->loc), o->loc);
-    //expr = new Member(o->right.release(), expr, o->loc);
-    //return expr->accept(this);
-  //} else {
-    //Scope* memberScope = takeMemberScope();
-    //Modifier::modify(o);
-    //resolve(o, memberScope);
-    //o->type = o->target->returnType->accept(&cloner)->accept(this);
-    //o->type->assignable = false;  // rvalue
+    Expression* expr = new Call(
+        new OverloadedIdentifier<MemberFunction>(new Name("observe"), o->loc),
+        new Parentheses(o->left.release(), o->loc), o->loc);
+    expr = new Member(o->right.release(), expr, o->loc);
+    return expr->accept(this);
+  } else {
+    Scope* memberScope = takeMemberScope();
+    Modifier::modify(o);
+
+    o->op = new OverloadedIdentifier<BinaryOperator>(o->name, o->loc);
+    resolve(o->op.get(), memberScope);
+    o->op->target->resolve(o);
+    if (o->matches.size() == 0) {
+      throw InvalidCallException(o);
+    } else if (o->matches.size() > 1) {
+      throw AmbiguousCallException(o);
+    } else {
+      o->target = o->matches.front();
+    }
+
+    o->type = o->target->returnType->accept(&cloner)->accept(this);
+    o->type->assignable = false;  // rvalue
     return o;
-  //}
+  }
 }
 
 bi::Expression* bi::Resolver::modify(OverloadedCall<UnaryOperator>* o) {
-  //Scope* memberScope = takeMemberScope();
-  //Modifier::modify(o);
-  //resolve(o, memberScope);
-  //o->type = o->target->returnType->accept(&cloner)->accept(this);
-  //o->type->assignable = false;  // rvalue
+  Scope* memberScope = takeMemberScope();
+  Modifier::modify(o);
+
+  o->op = new OverloadedIdentifier<UnaryOperator>(o->name, o->loc);
+  resolve(o->op.get(), memberScope);
+  o->op->target->resolve(o);
+  if (o->matches.size() == 0) {
+    throw InvalidCallException(o);
+  } else if (o->matches.size() > 1) {
+    throw AmbiguousCallException(o);
+  } else {
+    o->target = o->matches.front();
+  }
+
+  o->type = o->target->returnType->accept(&cloner)->accept(this);
+  o->type->assignable = false;  // rvalue
   return o;
 }
 
@@ -230,8 +317,6 @@ bi::Expression* bi::Resolver::modify(OverloadedIdentifier<Function>* o) {
   Scope* memberScope = takeMemberScope();
   Modifier::modify(o);
   resolve(o, memberScope);
-  //o->type = o->target->returnType->accept(&cloner)->accept(this);
-  o->type->assignable = false;  // rvalue
   return o;
 }
 
@@ -239,9 +324,6 @@ bi::Expression* bi::Resolver::modify(OverloadedIdentifier<Coroutine>* o) {
   Scope* memberScope = takeMemberScope();
   Modifier::modify(o);
   resolve(o, memberScope);
-  //o->type = new FiberType(
-  //    o->target->returnType->accept(&cloner)->accept(this));
-  o->type->assignable = false;  // rvalue
   return o;
 }
 
@@ -250,8 +332,6 @@ bi::Expression* bi::Resolver::modify(
   Scope* memberScope = takeMemberScope();
   Modifier::modify(o);
   resolve(o, memberScope);
-  //o->type = o->target->returnType->accept(&cloner)->accept(this);
-  o->type->assignable = false;  // rvalue
   return o;
 }
 
@@ -260,9 +340,21 @@ bi::Expression* bi::Resolver::modify(
   Scope* memberScope = takeMemberScope();
   Modifier::modify(o);
   resolve(o, memberScope);
-  //o->type = new FiberType(
-  //    o->target->returnType->accept(&cloner)->accept(this));
-  o->type->assignable = false;  // rvalue
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(
+    OverloadedIdentifier<BinaryOperator>* o) {
+  Scope* memberScope = takeMemberScope();
+  Modifier::modify(o);
+  resolve(o, memberScope);
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(OverloadedIdentifier<UnaryOperator>* o) {
+  Scope* memberScope = takeMemberScope();
+  Modifier::modify(o);
+  resolve(o, memberScope);
   return o;
 }
 
@@ -621,7 +713,7 @@ bi::Expression* bi::Resolver::lookup(Identifier<Unknown>* ref, Scope* scope) {
   case MEMBER_COROUTINE:
     return new OverloadedIdentifier<MemberCoroutine>(ref->name, ref->loc);
   default:
-    throw UnresolvedReferenceException(ref);
+    throw UnresolvedException(ref);
   }
 }
 
@@ -647,7 +739,7 @@ bi::Type* bi::Resolver::lookup(IdentifierType* ref, Scope* scope) {
   case ALIAS:
     return new AliasType(ref->name, ref->loc);
   default:
-    throw UnresolvedReferenceException(ref);
+    throw UnresolvedException(ref);
   }
 }
 

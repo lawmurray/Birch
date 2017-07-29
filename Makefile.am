@@ -45,19 +45,20 @@ birchc_SOURCES = \
   bi/common/Typed.cpp \
   bi/common/Unary.cpp \
   bi/common/Valued.cpp \
-  bi/exception/AmbiguousReferenceException.cpp \
+  bi/exception/AmbiguousCallException.cpp \
   bi/exception/CompilerException.cpp \
   bi/exception/CyclicImportException.cpp \
   bi/exception/Exception.cpp \
   bi/exception/FileNotFoundException.cpp \
   bi/exception/InvalidAssignmentException.cpp \
+  bi/exception/InvalidCallException.cpp \
   bi/exception/MemberException.cpp \
   bi/exception/NotAssignableException.cpp \
   bi/exception/PreviousDeclarationException.cpp \
   bi/exception/SuperException.cpp \
   bi/exception/SuperBaseException.cpp \
   bi/exception/ThisException.cpp \
-  bi/exception/UnresolvedReferenceException.cpp \
+  bi/exception/UnresolvedException.cpp \
   bi/exception/UnsupportedOptionTypeException.cpp \
   bi/expression/BinaryCall.cpp \
   bi/expression/Brackets.cpp \
@@ -207,19 +208,20 @@ noinst_HEADERS = \
   bi/common/Unary.hpp \
   bi/common/Valued.hpp \
   bi/exception/all.hpp \
-  bi/exception/AmbiguousReferenceException.hpp \
+  bi/exception/AmbiguousCallException.hpp \
   bi/exception/CompilerException.hpp \
   bi/exception/CyclicImportException.hpp \
   bi/exception/DriverException.hpp \
   bi/exception/FileNotFoundException.hpp \
   bi/exception/InvalidAssignmentException.hpp \
+  bi/exception/InvalidCallException.hpp \
   bi/exception/MemberException.hpp \
   bi/exception/NotAssignableException.hpp \
   bi/exception/PreviousDeclarationException.hpp \
   bi/exception/SuperBaseException.hpp \
   bi/exception/SuperException.hpp \
   bi/exception/ThisException.hpp \
-  bi/exception/UnresolvedReferenceException.hpp \
+  bi/exception/UnresolvedException.hpp \
   bi/exception/UnsupportedOptionTypeException.hpp \
   bi/expression/all.hpp \
   bi/expression/BinaryCall.hpp \

@@ -172,6 +172,14 @@ void bi::bi_ostream::visit(const OverloadedIdentifier<MemberCoroutine>* o) {
   *this << o->name;
 }
 
+void bi::bi_ostream::visit(const OverloadedIdentifier<BinaryOperator>* o) {
+  *this << o->name;
+}
+
+void bi::bi_ostream::visit(const OverloadedIdentifier<UnaryOperator>* o) {
+  *this << o->name;
+}
+
 void bi::bi_ostream::visit(const Identifier<Unknown>* o) {
   *this << o->name;
 }

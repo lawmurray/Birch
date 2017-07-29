@@ -8,7 +8,7 @@
 
 template<class ObjectType>
 bi::OverloadedCall<ObjectType>::OverloadedCall(Expression* single,
-    Expression* parens, shared_ptr<Location> loc, const ObjectType* target) :
+    Expression* parens, shared_ptr<Location> loc, ObjectType* target) :
     Expression(loc),
     Unary<Expression>(single),
     Parenthesised(parens),

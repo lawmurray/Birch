@@ -164,6 +164,16 @@ bi::Expression* bi::Cloner::clone(
   return new OverloadedIdentifier<MemberCoroutine>(o->name, o->loc);
 }
 
+bi::Expression* bi::Cloner::clone(
+    const OverloadedIdentifier<BinaryOperator>* o) {
+  return new OverloadedIdentifier<BinaryOperator>(o->name, o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(
+    const OverloadedIdentifier<UnaryOperator>* o) {
+  return new OverloadedIdentifier<UnaryOperator>(o->name, o->loc);
+}
+
 bi::Statement* bi::Cloner::clone(const EmptyStatement* o) {
   return new EmptyStatement();
 }

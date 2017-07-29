@@ -7,7 +7,7 @@
 
 template<class ObjectType>
 bi::Identifier<ObjectType>::Identifier(shared_ptr<Name> name,
-    shared_ptr<Location> loc, const ObjectType* target) :
+    shared_ptr<Location> loc, ObjectType* target) :
     Expression(loc),
     Named(name),
     Reference<ObjectType>(target) {

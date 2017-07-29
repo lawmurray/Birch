@@ -102,6 +102,12 @@ public:
   virtual bool isEmpty() const;
 
   /**
+   * Is expression an identifier for an overloaded object (e.g. a first-class
+   * function)?
+   */
+  virtual bool isOverloaded() const;
+
+  /**
    * Strip parentheses.
    */
   virtual Expression* strip();
@@ -159,6 +165,10 @@ public:
       const OverloadedIdentifier<MemberFunction>& o) const;
   virtual bool definitely(
       const OverloadedIdentifier<MemberCoroutine>& o) const;
+  virtual bool definitely(
+      const OverloadedIdentifier<BinaryOperator>& o) const;
+  virtual bool definitely(
+      const OverloadedIdentifier<UnaryOperator>& o) const;
   virtual bool definitely(const Parameter& o) const;
   virtual bool definitely(const Parentheses& o) const;
   virtual bool definitely(const Range& o) const;
@@ -194,6 +204,8 @@ public:
   virtual bool possibly(const OverloadedIdentifier<Coroutine>& o) const;
   virtual bool possibly(const OverloadedIdentifier<MemberFunction>& o) const;
   virtual bool possibly(const OverloadedIdentifier<MemberCoroutine>& o) const;
+  virtual bool possibly(const OverloadedIdentifier<BinaryOperator>& o) const;
+  virtual bool possibly(const OverloadedIdentifier<UnaryOperator>& o) const;
   virtual bool possibly(const Parameter& o) const;
   virtual bool possibly(const Parentheses& o) const;
   virtual bool possibly(const Range& o) const;

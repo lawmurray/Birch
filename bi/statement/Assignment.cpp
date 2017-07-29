@@ -7,7 +7,7 @@
 
 bi::Assignment::Assignment(Expression* left,
     shared_ptr<Name> name, Expression* right, shared_ptr<Location> loc,
-    const AssignmentOperator* target) :
+    AssignmentOperator* target) :
     Statement(loc),
     Named(name),
     Binary<Expression>(left, right),

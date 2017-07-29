@@ -53,6 +53,8 @@ public:
   virtual void visit(const OverloadedIdentifier<Coroutine>* o);
   virtual void visit(const OverloadedIdentifier<MemberFunction>* o);
   virtual void visit(const OverloadedIdentifier<MemberCoroutine>* o);
+  virtual void visit(const OverloadedIdentifier<BinaryOperator>* o);
+  virtual void visit(const OverloadedIdentifier<UnaryOperator>* o);
 
   virtual void visit(const File* o);
   virtual void visit(const Import* o);

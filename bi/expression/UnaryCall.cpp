@@ -7,7 +7,7 @@
 #include "bi/visitor/all.hpp"
 
 bi::OverloadedCall<bi::UnaryOperator>::OverloadedCall(shared_ptr<Name> name,
-    Expression* single, shared_ptr<Location> loc, const UnaryOperator* target) :
+    Expression* single, shared_ptr<Location> loc, UnaryOperator* target) :
     Expression(loc),
     Named(name),
     Unary<Expression>(single),

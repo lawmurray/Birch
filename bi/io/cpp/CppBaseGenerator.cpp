@@ -206,11 +206,23 @@ void bi::CppBaseGenerator::visit(const OverloadedIdentifier<Coroutine>* o) {
   middle("bi::func::" << o->name);
 }
 
-void bi::CppBaseGenerator::visit(const OverloadedIdentifier<MemberFunction>* o) {
+void bi::CppBaseGenerator::visit(
+    const OverloadedIdentifier<MemberFunction>* o) {
   middle(o->name);
 }
 
-void bi::CppBaseGenerator::visit(const OverloadedIdentifier<MemberCoroutine>* o) {
+void bi::CppBaseGenerator::visit(
+    const OverloadedIdentifier<MemberCoroutine>* o) {
+  middle(o->name);
+}
+
+void bi::CppBaseGenerator::visit(
+    const OverloadedIdentifier<BinaryOperator>* o) {
+  middle(o->name);
+}
+
+void bi::CppBaseGenerator::visit(
+    const OverloadedIdentifier<UnaryOperator>* o) {
   middle(o->name);
 }
 

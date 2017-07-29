@@ -50,11 +50,13 @@ public:
   virtual void visit(const Identifier<GlobalVariable>* o);
   virtual void visit(const Identifier<LocalVariable>* o);
   virtual void visit(const Identifier<MemberVariable>* o);
+  virtual void visit(const Identifier<Unknown>* o);
   virtual void visit(const OverloadedIdentifier<Function>* o);
   virtual void visit(const OverloadedIdentifier<Coroutine>* o);
   virtual void visit(const OverloadedIdentifier<MemberFunction>* o);
   virtual void visit(const OverloadedIdentifier<MemberCoroutine>* o);
-  virtual void visit(const Identifier<Unknown>* o);
+  virtual void visit(const OverloadedIdentifier<BinaryOperator>* o);
+  virtual void visit(const OverloadedIdentifier<UnaryOperator>* o);
 
   virtual void visit(const List<Statement>* o);
   virtual void visit(const Assignment* o);

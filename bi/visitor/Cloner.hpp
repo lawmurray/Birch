@@ -57,6 +57,8 @@ public:
   virtual Expression* clone(const OverloadedIdentifier<Coroutine>* o);
   virtual Expression* clone(const OverloadedIdentifier<MemberFunction>* o);
   virtual Expression* clone(const OverloadedIdentifier<MemberCoroutine>* o);
+  virtual Expression* clone(const OverloadedIdentifier<BinaryOperator>* o);
+  virtual Expression* clone(const OverloadedIdentifier<UnaryOperator>* o);
 
   virtual Statement* clone(const EmptyStatement* o);
   virtual Statement* clone(const List<Statement>* o);

@@ -28,7 +28,7 @@ public:
    * @param target Target.
    */
   OverloadedCall(shared_ptr<Name> name, Expression* single,
-      shared_ptr<Location> loc = nullptr, const UnaryOperator* target =
+      shared_ptr<Location> loc = nullptr, UnaryOperator* target =
           nullptr);
 
   /**
@@ -52,5 +52,10 @@ public:
   virtual bool possibly(const OverloadedCall<UnaryOperator>& o) const;
   virtual bool possibly(const UnaryOperator& o) const;
   virtual bool possibly(const Parameter& o) const;
+
+  /**
+   * Identifier for operator resolution.
+   */
+  unique_ptr<OverloadedIdentifier<UnaryOperator>> op;
 };
 }

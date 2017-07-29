@@ -29,7 +29,7 @@ public:
    * @param target Target.
    */
   OverloadedCall<BinaryOperator>(Expression* left, shared_ptr<Name> name, Expression* right,
-      shared_ptr<Location> loc = nullptr, const BinaryOperator* target =
+      shared_ptr<Location> loc = nullptr, BinaryOperator* target =
           nullptr);
 
   /**
@@ -53,5 +53,10 @@ public:
   virtual bool possibly(const OverloadedCall<BinaryOperator>& o) const;
   virtual bool possibly(const BinaryOperator& o) const;
   virtual bool possibly(const Parameter& o) const;
+
+  /**
+   * Identifier for operator resolution.
+   */
+  unique_ptr<OverloadedIdentifier<BinaryOperator>> op;
 };
 }
