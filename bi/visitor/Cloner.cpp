@@ -49,34 +49,13 @@ bi::Expression* bi::Cloner::clone(const Call* o) {
   return new Call(o->single->accept(this), o->parens->accept(this), o->loc);
 }
 
-bi::Expression* bi::Cloner::clone(const OverloadedCall<Function>* o) {
-  return new OverloadedCall<Function>(o->single->accept(this),
-      o->parens->accept(this), o->loc);
-}
-
-bi::Expression* bi::Cloner::clone(const OverloadedCall<Coroutine>* o) {
-  return new OverloadedCall<Coroutine>(o->single->accept(this),
-      o->parens->accept(this), o->loc);
-}
-
-bi::Expression* bi::Cloner::clone(const OverloadedCall<MemberFunction>* o) {
-  return new OverloadedCall<MemberFunction>(o->single->accept(this),
-      o->parens->accept(this), o->loc);
-}
-
-bi::Expression* bi::Cloner::clone(const OverloadedCall<MemberCoroutine>* o) {
-  return new OverloadedCall<MemberCoroutine>(o->single->accept(this),
-      o->parens->accept(this), o->loc);
-}
-
-bi::Expression* bi::Cloner::clone(const OverloadedCall<BinaryOperator>* o) {
-  return new OverloadedCall<BinaryOperator>(o->left->accept(this), o->name,
+bi::Expression* bi::Cloner::clone(const BinaryCall* o) {
+  return new BinaryCall(o->left->accept(this), o->name,
       o->right->accept(this), o->loc);
 }
 
-bi::Expression* bi::Cloner::clone(const OverloadedCall<UnaryOperator>* o) {
-  return new OverloadedCall<UnaryOperator>(o->name, o->single->accept(this),
-      o->loc);
+bi::Expression* bi::Cloner::clone(const UnaryCall* o) {
+  return new UnaryCall(o->name, o->single->accept(this), o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const Slice* o) {
@@ -339,6 +318,20 @@ bi::Type* bi::Cloner::clone(const ParenthesesType* o) {
 bi::Type* bi::Cloner::clone(const FunctionType* o) {
   return new FunctionType(o->parens->accept(this),
       o->returnType->accept(this), o->loc, o->assignable);
+}
+
+bi::Type* bi::Cloner::clone(const BinaryType* o) {
+  return new BinaryType(o->left->accept(this), o->right->accept(this),
+      o->returnType->accept(this), o->loc, o->assignable);
+}
+
+bi::Type* bi::Cloner::clone(const UnaryType* o) {
+  return new UnaryType(o->single->accept(this), o->returnType->accept(this),
+      o->loc, o->assignable);
+}
+
+bi::Type* bi::Cloner::clone(const OverloadedType* o) {
+  return new OverloadedType(o->overloads, o->loc, o->assignable);
 }
 
 bi::Type* bi::Cloner::clone(const FiberType* o) {

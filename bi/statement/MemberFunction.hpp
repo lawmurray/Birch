@@ -22,6 +22,7 @@ class MemberFunction: public Statement,
     public Numbered,
     public Parenthesised,
     public ReturnTyped,
+    public Typed,
     public Scoped,
     public Braced {
 public:

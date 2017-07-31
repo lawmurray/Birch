@@ -40,18 +40,10 @@ bool bi::FiberType::definitely(const FiberType& o) const {
   return returnType->definitely(*o.returnType);
 }
 
-bool bi::FiberType::definitely(const ParenthesesType& o) const {
-  return definitely(*o.single);
-}
-
 bool bi::FiberType::dispatchPossibly(const Type& o) const {
   return o.possibly(*this);
 }
 
 bool bi::FiberType::possibly(const FiberType& o) const {
   return returnType->possibly(*o.returnType);
-}
-
-bool bi::FiberType::possibly(const ParenthesesType& o) const {
-  return possibly(*o.single);
 }

@@ -45,8 +45,16 @@ bool bi::Type::isCoroutine() const {
   return false;
 }
 
-bi::Type* bi::Type::strip() {
-  return this;
+bool bi::Type::isBinary() const {
+  return false;
+}
+
+bool bi::Type::isUnary() const {
+  return false;
+}
+
+bool bi::Type::isOverloaded() const {
+  return false;
 }
 
 int bi::Type::count() const {
@@ -81,6 +89,10 @@ bool bi::Type::definitely(const BasicType& o) const {
   return false;
 }
 
+bool bi::Type::definitely(const BinaryType& o) const {
+  return false;
+}
+
 bool bi::Type::definitely(const ClassType& o) const {
   return false;
 }
@@ -101,7 +113,15 @@ bool bi::Type::definitely(const List<Type>& o) const {
   return false;
 }
 
+bool bi::Type::definitely(const OverloadedType& o) const {
+  return false;
+}
+
 bool bi::Type::definitely(const ParenthesesType& o) const {
+  return false;
+}
+
+bool bi::Type::definitely(const UnaryType& o) const {
   return false;
 }
 
@@ -118,6 +138,10 @@ bool bi::Type::possibly(const ArrayType& o) const {
 }
 
 bool bi::Type::possibly(const BasicType& o) const {
+  return false;
+}
+
+bool bi::Type::possibly(const BinaryType& o) const {
   return false;
 }
 
@@ -141,7 +165,15 @@ bool bi::Type::possibly(const List<Type>& o) const {
   return false;
 }
 
+bool bi::Type::possibly(const OverloadedType& o) const {
+  return false;
+}
+
 bool bi::Type::possibly(const ParenthesesType& o) const {
+  return false;
+}
+
+bool bi::Type::possibly(const UnaryType& o) const {
   return false;
 }
 

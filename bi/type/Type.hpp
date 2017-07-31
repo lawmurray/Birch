@@ -13,6 +13,7 @@ class Visitor;
 class AliasType;
 class ArrayType;
 class BasicType;
+class BinaryType;
 class ClassType;
 class FiberType;
 class EmptyType;
@@ -20,7 +21,9 @@ class FunctionType;
 class IdentifierType;
 template<class T> class Iterator;
 template<class T> class List;
+class OverloadedType;
 class ParenthesesType;
+class UnaryType;
 
 class Class;
 class Alias;
@@ -107,9 +110,19 @@ public:
   virtual bool isCoroutine() const;
 
   /**
-   * Strip parentheses.
+   * Is this a binary operator type?
    */
-  virtual Type* strip();
+  virtual bool isBinary() const;
+
+  /**
+   * Is this a unary operator type?
+   */
+  virtual bool isUnary() const;
+
+  /**
+   * Is this an overloaded type?
+   */
+  virtual bool isOverloaded() const;
 
   /**
    * How many dimensions does this type have?
@@ -140,24 +153,30 @@ public:
   virtual bool definitely(const AliasType& o) const;
   virtual bool definitely(const ArrayType& o) const;
   virtual bool definitely(const BasicType& o) const;
+  virtual bool definitely(const BinaryType& o) const;
   virtual bool definitely(const ClassType& o) const;
   virtual bool definitely(const FiberType& o) const;
   virtual bool definitely(const EmptyType& o) const;
   virtual bool definitely(const FunctionType& o) const;
   virtual bool definitely(const List<Type>& o) const;
+  virtual bool definitely(const OverloadedType& o) const;
   virtual bool definitely(const ParenthesesType& o) const;
+  virtual bool definitely(const UnaryType& o) const;
 
   virtual bool possibly(const Type& o) const;
   virtual bool dispatchPossibly(const Type& o) const = 0;
   virtual bool possibly(const AliasType& o) const;
   virtual bool possibly(const ArrayType& o) const;
   virtual bool possibly(const BasicType& o) const;
+  virtual bool possibly(const BinaryType& o) const;
   virtual bool possibly(const ClassType& o) const;
   virtual bool possibly(const FiberType& o) const;
   virtual bool possibly(const EmptyType& o) const;
   virtual bool possibly(const FunctionType& o) const;
   virtual bool possibly(const List<Type>& o) const;
+  virtual bool possibly(const OverloadedType& o) const;
   virtual bool possibly(const ParenthesesType& o) const;
+  virtual bool possibly(const UnaryType& o) const;
 
   /**
    * Are these two types the same?

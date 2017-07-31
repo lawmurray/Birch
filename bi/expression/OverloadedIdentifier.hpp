@@ -4,8 +4,8 @@
 #pragma once
 
 #include "bi/expression/Identifier.hpp"
-#include "bi/common/Named.hpp"
 #include "bi/common/Overloaded.hpp"
+#include "bi/common/Named.hpp"
 #include "bi/common/Reference.hpp"
 
 namespace bi {

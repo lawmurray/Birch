@@ -57,17 +57,17 @@ void bi::CppConstructorGenerator::visit(const MemberVariable* o) {
   finish(',');
   start(o->name << '(');
   if (o->type->isClass() && !o->parens->isEmpty()) {
-    ClassType* type = dynamic_cast<ClassType*>(o->type->strip());
+    ClassType* type = dynamic_cast<ClassType*>(o->type.get());
     assert(type);
     middle("make_object<" << type->name << '>');
-    middle(o->parens); ///@todo Use genArgs()
+    middle(o->parens);
   } else if (o->type->isArray()) {
     const ArrayType* type =
         dynamic_cast<const ArrayType*>(o->type.get());
     assert(type);
     middle("make_frame(" << type->brackets << ")");
     if (!o->parens->isEmpty()) {
-      middle(", " << o->parens->strip()); ///@todo Use genArgs()
+      middle(", " << o->parens->strip());
     }
   } else if (!o->value->isEmpty()) {
     middle(o->value);

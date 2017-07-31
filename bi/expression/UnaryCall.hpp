@@ -3,9 +3,9 @@
  */
 #pragma once
 
-#include "bi/expression/Call.hpp"
+#include "bi/expression/Expression.hpp"
+#include "bi/common/Named.hpp"
 #include "bi/common/Unary.hpp"
-#include "bi/statement/UnaryOperator.hpp"
 
 namespace bi {
 /**
@@ -13,11 +13,9 @@ namespace bi {
  *
  * @ingroup compiler_expression
  */
-template<>
-class OverloadedCall<UnaryOperator> : public Expression,
+class UnaryCall: public Expression,
     public Named,
-    public Unary<Expression>,
-    public Reference<UnaryOperator> {
+    public Unary<Expression> {
 public:
   /**
    * Constructor.
@@ -25,16 +23,14 @@ public:
    * @param name Name.
    * @param single Operand.
    * @param loc Location.
-   * @param target Target.
    */
-  OverloadedCall(shared_ptr<Name> name, Expression* single,
-      shared_ptr<Location> loc = nullptr, UnaryOperator* target =
-          nullptr);
+  UnaryCall(shared_ptr<Name> name, Expression* single,
+      shared_ptr<Location> loc = nullptr);
 
   /**
    * Destructor.
    */
-  virtual ~OverloadedCall();
+  virtual ~UnaryCall();
 
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);
@@ -44,13 +40,11 @@ public:
   using Expression::possibly;
 
   virtual bool dispatchDefinitely(const Expression& o) const;
-  virtual bool definitely(const OverloadedCall<UnaryOperator>& o) const;
-  virtual bool definitely(const UnaryOperator& o) const;
+  virtual bool definitely(const UnaryCall& o) const;
   virtual bool definitely(const Parameter& o) const;
 
   virtual bool dispatchPossibly(const Expression& o) const;
-  virtual bool possibly(const OverloadedCall<UnaryOperator>& o) const;
-  virtual bool possibly(const UnaryOperator& o) const;
+  virtual bool possibly(const UnaryCall& o) const;
   virtual bool possibly(const Parameter& o) const;
 
   /**

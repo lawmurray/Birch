@@ -31,12 +31,8 @@ public:
   virtual Expression* clone(const Parentheses* o);
   virtual Expression* clone(const Brackets* o);
   virtual Expression* clone(const Call* o);
-  virtual Expression* clone(const OverloadedCall<Function>* o);
-  virtual Expression* clone(const OverloadedCall<Coroutine>* o);
-  virtual Expression* clone(const OverloadedCall<MemberFunction>* o);
-  virtual Expression* clone(const OverloadedCall<MemberCoroutine>* o);
-  virtual Expression* clone(const OverloadedCall<BinaryOperator>* o);
-  virtual Expression* clone(const OverloadedCall<UnaryOperator>* o);
+  virtual Expression* clone(const BinaryCall* o);
+  virtual Expression* clone(const UnaryCall* o);
   virtual Expression* clone(const Slice* o);
   virtual Expression* clone(const LambdaFunction* o);
   virtual Expression* clone(const Span* o);
@@ -97,6 +93,9 @@ public:
   virtual Type* clone(const ArrayType* o);
   virtual Type* clone(const ParenthesesType* o);
   virtual Type* clone(const FunctionType* o);
+  virtual Type* clone(const BinaryType* o);
+  virtual Type* clone(const UnaryType* o);
+  virtual Type* clone(const OverloadedType* o);
   virtual Type* clone(const FiberType* o);
 };
 }

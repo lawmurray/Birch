@@ -60,32 +60,12 @@ void bi::Visitor::visit(const Call* o) {
   o->parens->accept(this);
 }
 
-void bi::Visitor::visit(const OverloadedCall<Function>* o) {
-  o->single->accept(this);
-  o->parens->accept(this);
-}
-
-void bi::Visitor::visit(const OverloadedCall<Coroutine>* o) {
-  o->single->accept(this);
-  o->parens->accept(this);
-}
-
-void bi::Visitor::visit(const OverloadedCall<MemberFunction>* o) {
-  o->single->accept(this);
-  o->parens->accept(this);
-}
-
-void bi::Visitor::visit(const OverloadedCall<MemberCoroutine>* o) {
-  o->single->accept(this);
-  o->parens->accept(this);
-}
-
-void bi::Visitor::visit(const OverloadedCall<BinaryOperator>* o) {
+void bi::Visitor::visit(const BinaryCall* o) {
   o->left->accept(this);
   o->right->accept(this);
 }
 
-void bi::Visitor::visit(const OverloadedCall<UnaryOperator>* o) {
+void bi::Visitor::visit(const UnaryCall* o) {
   o->single->accept(this);
 }
 
@@ -362,6 +342,21 @@ void bi::Visitor::visit(const ParenthesesType* o) {
 void bi::Visitor::visit(const FunctionType* o) {
   o->parens->accept(this);
   o->returnType->accept(this);
+}
+
+void bi::Visitor::visit(const BinaryType* o) {
+  o->left->accept(this);
+  o->right->accept(this);
+  o->returnType->accept(this);
+}
+
+void bi::Visitor::visit(const UnaryType* o) {
+  o->single->accept(this);
+  o->returnType->accept(this);
+}
+
+void bi::Visitor::visit(const OverloadedType* o) {
+  //
 }
 
 void bi::Visitor::visit(const FiberType* o) {

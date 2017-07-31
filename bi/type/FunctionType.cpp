@@ -38,12 +38,7 @@ bool bi::FunctionType::dispatchDefinitely(const Type& o) const {
 }
 
 bool bi::FunctionType::definitely(const FunctionType& o) const {
-  return parens->definitely(*o.parens)
-      && returnType->definitely(*o.returnType);
-}
-
-bool bi::FunctionType::definitely(const ParenthesesType& o) const {
-  return definitely(*o.single);
+  return parens->definitely(*o.parens);
 }
 
 bool bi::FunctionType::dispatchPossibly(const Type& o) const {
@@ -51,9 +46,5 @@ bool bi::FunctionType::dispatchPossibly(const Type& o) const {
 }
 
 bool bi::FunctionType::possibly(const FunctionType& o) const {
-  return parens->possibly(*o.parens) && returnType->possibly(*o.returnType);
-}
-
-bool bi::FunctionType::possibly(const ParenthesesType& o) const {
-  return possibly(*o.single);
+  return parens->possibly(*o.parens);
 }

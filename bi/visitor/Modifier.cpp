@@ -57,37 +57,13 @@ bi::Expression* bi::Modifier::modify(Call* o) {
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(OverloadedCall<Function>* o) {
-  o->single = o->single.release()->accept(this);
-  o->parens = o->parens.release()->accept(this);
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(OverloadedCall<Coroutine>* o) {
-  o->single = o->single.release()->accept(this);
-  o->parens = o->parens.release()->accept(this);
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(OverloadedCall<MemberFunction>* o) {
-  o->single = o->single.release()->accept(this);
-  o->parens = o->parens.release()->accept(this);
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(OverloadedCall<MemberCoroutine>* o) {
-  o->single = o->single.release()->accept(this);
-  o->parens = o->parens.release()->accept(this);
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(OverloadedCall<BinaryOperator>* o) {
+bi::Expression* bi::Modifier::modify(BinaryCall* o) {
   o->left = o->left.release()->accept(this);
   o->right = o->right.release()->accept(this);
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(OverloadedCall<UnaryOperator>* o) {
+bi::Expression* bi::Modifier::modify(UnaryCall* o) {
   o->single = o->single.release()->accept(this);
   return o;
 }
@@ -399,6 +375,23 @@ bi::Type* bi::Modifier::modify(ParenthesesType* o) {
 bi::Type* bi::Modifier::modify(FunctionType* o) {
   o->parens = o->parens.release()->accept(this);
   o->returnType = o->returnType.release()->accept(this);
+  return o;
+}
+
+bi::Type* bi::Modifier::modify(BinaryType* o) {
+  o->left = o->left.release()->accept(this);
+  o->right = o->right.release()->accept(this);
+  o->returnType = o->returnType.release()->accept(this);
+  return o;
+}
+
+bi::Type* bi::Modifier::modify(UnaryType* o) {
+  o->single = o->single.release()->accept(this);
+  o->returnType = o->returnType.release()->accept(this);
+  return o;
+}
+
+bi::Type* bi::Modifier::modify(OverloadedType* o) {
   return o;
 }
 

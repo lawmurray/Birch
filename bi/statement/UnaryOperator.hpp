@@ -23,6 +23,7 @@ class UnaryOperator: public Statement,
     public Numbered,
     public Unary<Expression>,
     public ReturnTyped,
+    public Typed,
     public Scoped,
     public Braced {
 public:

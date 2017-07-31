@@ -28,12 +28,8 @@ public:
   virtual void visit(const Parentheses* o);
   virtual void visit(const Brackets* o);
   virtual void visit(const Call* o);
-  virtual void visit(const OverloadedCall<Function>* o);
-  virtual void visit(const OverloadedCall<Coroutine>* o);
-  virtual void visit(const OverloadedCall<MemberFunction>* o);
-  virtual void visit(const OverloadedCall<MemberCoroutine>* o);
-  virtual void visit(const OverloadedCall<BinaryOperator>* o);
-  virtual void visit(const OverloadedCall<UnaryOperator>* o);
+  virtual void visit(const BinaryCall* o);
+  virtual void visit(const UnaryCall* o);
   virtual void visit(const Slice* o);
   virtual void visit(const LambdaFunction* o);
   virtual void visit(const Span* o);
@@ -96,22 +92,6 @@ public:
 
 protected:
   /**
-   * Generate arguments to a function.
-   *
-   * @param args Arguments.
-   * @param params Parameters
-   */
-  void genArgs(const Expression* args, const Expression* params);
-
-  /**
-   * Generate an argument to a function.
-   *
-   * @param arg The argument.
-   * @param param The parameter.
-   */
-  void genArg(const Expression* arg, const Expression* param);
-
-  /**
    * Generate the initialization of a variable, including the call to the
    * constructor and/or assignment of the initial value.
    */
@@ -128,7 +108,7 @@ protected:
 template<class T>
 void bi::CppBaseGenerator::genInit(const T* o) {
   if (o->type->isArray()) {
-    ArrayType* type = dynamic_cast<ArrayType*>(o->type->strip());
+    ArrayType* type = dynamic_cast<ArrayType*>(o->type.get());
     assert(type);
     middle("(make_frame(" << type->brackets << ')');
     if (!o->parens->isEmpty()) {
@@ -136,7 +116,7 @@ void bi::CppBaseGenerator::genInit(const T* o) {
     }
     middle(')');
   } else if (o->type->isClass()) {
-    ClassType* type = dynamic_cast<ClassType*>(o->type->strip());
+    ClassType* type = dynamic_cast<ClassType*>(o->type.get());
     assert(type);
     if (!o->value->isEmpty()) {
       middle('(');
@@ -145,7 +125,6 @@ void bi::CppBaseGenerator::genInit(const T* o) {
     if (o->parens->isEmpty()) {
       middle("()");
     } else {
-      ///@todo Use genArgs()
       middle(o->parens);
     }
     if (!o->value->isEmpty()) {

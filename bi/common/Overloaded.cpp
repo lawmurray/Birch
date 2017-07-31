@@ -12,15 +12,19 @@
 #include "bi/statement/MemberCoroutine.hpp"
 #include "bi/statement/BinaryOperator.hpp"
 #include "bi/statement/UnaryOperator.hpp"
+#include "bi/type/OverloadedType.hpp"
+
+#include <algorithm>
 
 template<class ObjectType>
 bi::Overloaded<ObjectType>::Overloaded(ObjectType* o) {
-  add(o);
+  overloads.push_back(o);
+  type = new OverloadedType(o->type.get());
 }
 
 template<class ObjectType>
 bool bi::Overloaded<ObjectType>::contains(ObjectType* o) const {
-  return overloads.contains(o);
+  return std::find(overloads.begin(), overloads.end(), o) != overloads.end();
 }
 
 template<class ObjectType>
@@ -28,12 +32,9 @@ void bi::Overloaded<ObjectType>::add(ObjectType* o) {
   /* pre-condition */
   assert(!contains(o));
 
-  overloads.insert(o);
-}
-
-template<class ObjectType>
-void bi::Overloaded<ObjectType>::resolve(OverloadedCall<ObjectType>* o) {
-  overloads.match(o, o->matches);
+  overloads.push_back(o);
+  OverloadedType* overloadedType = dynamic_cast<OverloadedType*>(type.get());
+  overloadedType->add(o->type.get());
 }
 
 template class bi::Overloaded<bi::Function>;

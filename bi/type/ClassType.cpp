@@ -75,10 +75,6 @@ bool bi::ClassType::definitely(const Class& o) const {
   return true;
 }
 
-bool bi::ClassType::definitely(const ParenthesesType& o) const {
-  return definitely(*o.single);
-}
-
 bool bi::ClassType::dispatchPossibly(const Type& o) const {
   return o.possibly(*this);
 }
@@ -89,8 +85,4 @@ bool bi::ClassType::possibly(const AliasType& o) const {
 
 bool bi::ClassType::possibly(const ClassType& o) const {
   return o.target->hasSuper(this);
-}
-
-bool bi::ClassType::possibly(const ParenthesesType& o) const {
-  return possibly(*o.single);
 }

@@ -13,6 +13,7 @@ class Cloner;
 class Modifier;
 class Visitor;
 
+class BinaryCall;
 class Brackets;
 class Call;
 class EmptyExpression;
@@ -23,7 +24,6 @@ class LambdaFunction;
 template<class T> class List;
 template<class T> class Literal;
 class Member;
-template<class T> class OverloadedCall;
 template<class T> class OverloadedIdentifier;
 class Parameter;
 class Parentheses;
@@ -32,6 +32,7 @@ class Slice;
 class Span;
 class Super;
 class This;
+class UnaryCall;
 class Unknown;
 
 class GlobalVariable;
@@ -102,12 +103,6 @@ public:
   virtual bool isEmpty() const;
 
   /**
-   * Is expression an identifier for an overloaded object (e.g. a first-class
-   * function)?
-   */
-  virtual bool isOverloaded() const;
-
-  /**
    * Strip parentheses.
    */
   virtual Expression* strip();
@@ -153,12 +148,8 @@ public:
   virtual bool definitely(const Literal<double>& o) const;
   virtual bool definitely(const Literal<const char*>& o);
   virtual bool definitely(const Member& o) const;
-  virtual bool definitely(const OverloadedCall<Function>& o) const;
-  virtual bool definitely(const OverloadedCall<Coroutine>& o) const;
-  virtual bool definitely(const OverloadedCall<MemberFunction>& o) const;
-  virtual bool definitely(const OverloadedCall<MemberCoroutine>& o) const;
-  virtual bool definitely(const OverloadedCall<BinaryOperator>& o) const;
-  virtual bool definitely(const OverloadedCall<UnaryOperator>& o) const;
+  virtual bool definitely(const BinaryCall& o) const;
+  virtual bool definitely(const UnaryCall& o) const;
   virtual bool definitely(const OverloadedIdentifier<Function>& o) const;
   virtual bool definitely(const OverloadedIdentifier<Coroutine>& o) const;
   virtual bool definitely(
@@ -194,12 +185,8 @@ public:
   virtual bool possibly(const Literal<double>& o) const;
   virtual bool possibly(const Literal<const char*>& o);
   virtual bool possibly(const Member& o) const;
-  virtual bool possibly(const OverloadedCall<Function>& o) const;
-  virtual bool possibly(const OverloadedCall<Coroutine>& o) const;
-  virtual bool possibly(const OverloadedCall<MemberFunction>& o) const;
-  virtual bool possibly(const OverloadedCall<MemberCoroutine>& o) const;
-  virtual bool possibly(const OverloadedCall<BinaryOperator>& o) const;
-  virtual bool possibly(const OverloadedCall<UnaryOperator>& o) const;
+  virtual bool possibly(const BinaryCall& o) const;
+  virtual bool possibly(const UnaryCall& o) const;
   virtual bool possibly(const OverloadedIdentifier<Function>& o) const;
   virtual bool possibly(const OverloadedIdentifier<Coroutine>& o) const;
   virtual bool possibly(const OverloadedIdentifier<MemberFunction>& o) const;

@@ -3,10 +3,10 @@
  */
 #pragma once
 
-#include "bi/expression/OverloadedCall.hpp"
-#include "bi/primitive/poset.hpp"
-#include "bi/primitive/definitely.hpp"
-#include "bi/primitive/possibly.hpp"
+#include "bi/type/Type.hpp"
+#include "bi/primitive/unique_ptr.hpp"
+
+#include <list>
 
 namespace bi {
 /**
@@ -17,8 +17,6 @@ namespace bi {
 template<class ObjectType>
 class Overloaded {
 public:
-  typedef poset<ObjectType*,definitely> poset_type;
-
   /**
    * Constructor.
    *
@@ -41,15 +39,16 @@ public:
   void add(ObjectType* o);
 
   /**
-   * Resolve call.
-   *
-   * @param o The call.
+   * Type. Should be of type OverloadedType.
    */
-  void resolve(OverloadedCall<ObjectType>* o);
+  unique_ptr<Type> type;
 
   /**
-   * Declarations by partial order.
+   * Overloads.
+   *
+   * std::list is preferred to std::set to maintain declaration order of
+   * overloads for error messages.
    */
-  poset_type overloads;
+  std::list<ObjectType*> overloads;
 };
 }

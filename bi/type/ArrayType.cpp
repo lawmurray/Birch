@@ -54,18 +54,10 @@ bool bi::ArrayType::definitely(const ArrayType& o) const {
   return single->definitely(*o.single) && ndims == o.ndims;
 }
 
-bool bi::ArrayType::definitely(const ParenthesesType& o) const {
-  return definitely(*o.single);
-}
-
 bool bi::ArrayType::dispatchPossibly(const Type& o) const {
   return o.possibly(*this);
 }
 
 bool bi::ArrayType::possibly(const ArrayType& o) const {
   return single->possibly(*o.single) && ndims == o.ndims;
-}
-
-bool bi::ArrayType::possibly(const ParenthesesType& o) const {
-  return possibly(*o.single);
 }

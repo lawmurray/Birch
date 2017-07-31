@@ -30,12 +30,8 @@ public:
   virtual void visit(const Parentheses* o);
   virtual void visit(const Brackets* o);
   virtual void visit(const Call* o);
-  virtual void visit(const OverloadedCall<Function>* o);
-  virtual void visit(const OverloadedCall<Coroutine>* o);
-  virtual void visit(const OverloadedCall<MemberFunction>* o);
-  virtual void visit(const OverloadedCall<MemberCoroutine>* o);
-  virtual void visit(const OverloadedCall<BinaryOperator>* o);
-  virtual void visit(const OverloadedCall<UnaryOperator>* o);
+  virtual void visit(const BinaryCall* o);
+  virtual void visit(const UnaryCall* o);
   virtual void visit(const Slice* o);
   virtual void visit(const Index* o);
   virtual void visit(const Range* o);

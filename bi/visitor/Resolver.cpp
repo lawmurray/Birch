@@ -52,92 +52,42 @@ bi::Expression* bi::Resolver::modify(Brackets* o) {
 }
 
 bi::Expression* bi::Resolver::modify(Call* o) {
-  if (o->single->isOverloaded()) {
-    /* replace the Call object with an appropriate OverloadedCall object
-     * given the type of object */
-    Expression* result;
-    if (dynamic_cast<OverloadedIdentifier<Function>*>(o->single.get())) {
-      result = new OverloadedCall<Function>(o->single.release(),
-          o->parens.release(), o->loc);
-    } else if (dynamic_cast<OverloadedIdentifier<Coroutine>*>(o->single.get())) {
-        result = new OverloadedCall<Coroutine>(o->single.release(),
-            o->parens.release(), o->loc);
-    } else if (dynamic_cast<OverloadedIdentifier<MemberFunction>*>(o->single.get())) {
-        result = new OverloadedCall<MemberFunction>(o->single.release(),
-            o->parens.release(), o->loc);
-    } else if (dynamic_cast<OverloadedIdentifier<MemberCoroutine>*>(o->single.get())) {
-        result = new OverloadedCall<MemberCoroutine>(o->single.release(),
-            o->parens.release(), o->loc);
+  Modifier::modify(o);
+  if (o->single->type->isOverloaded()) {
+    OverloadedType* overloadedType =
+        dynamic_cast<OverloadedType*>(o->single->type.get());
+    assert(overloadedType);
+
+    std::list<Type*> matches;
+    overloadedType->overloads.match(o->parens->type.get(), matches);
+    if (matches.size() == 1) {
+      FunctionType* functionType =
+          dynamic_cast<FunctionType*>(matches.front());
+      assert(functionType);
+      o->type = functionType->returnType->accept(&cloner);
+    } else if (matches.size() == 0) {
+      throw InvalidCallException(o);
     } else {
-      assert(false);
+      throw AmbiguousCallException(o, matches);
     }
-    return result->accept(this);
+  } else if (o->single->type->isFunction()) {
+    FunctionType* functionType =
+        dynamic_cast<FunctionType*>(o->single->type.get());
+    assert(functionType);
+    if (o->parens->type->definitely(*functionType->parens)) {
+      o->type = functionType->returnType->accept(&cloner);
+    } else {
+      throw InvalidCallException(o);
+    }
   } else {
-    Modifier::modify(o);
-    ///@todo Check that parentheses match function type and set retur type
-    return o;
-  }
-}
-
-bi::Expression* bi::Resolver::modify(OverloadedCall<Function>* o) {
-  dynamic_cast<OverloadedIdentifier<Function>*>(o->single.get())->target->resolve(o);
-  if (o->matches.size() == 0) {
     throw InvalidCallException(o);
-  } else if (o->matches.size() > 1) {
-    throw AmbiguousCallException(o);
-  } else {
-    o->target = o->matches.front();
   }
-  o->type = o->target->returnType->accept(&cloner)->accept(this);
+  o->type = o->type->accept(this);
   o->type->assignable = false;  // rvalue
   return o;
 }
 
-bi::Expression* bi::Resolver::modify(OverloadedCall<Coroutine>* o) {
-  dynamic_cast<OverloadedIdentifier<Coroutine>*>(o->single.get())->target->resolve(o);
-  if (o->matches.size() == 0) {
-    throw InvalidCallException(o);
-  } else if (o->matches.size() > 1) {
-    throw AmbiguousCallException(o);
-  } else {
-    o->target = o->matches.front();
-  }
-  o->type = new FiberType(
-      o->target->returnType->accept(&cloner)->accept(this));
-  o->type->assignable = false;  // rvalue
-  return o;
-}
-
-bi::Expression* bi::Resolver::modify(OverloadedCall<MemberFunction>* o) {
-  dynamic_cast<OverloadedIdentifier<MemberFunction>*>(o->single.get())->target->resolve(o);
-  if (o->matches.size() == 0) {
-    throw InvalidCallException(o);
-  } else if (o->matches.size() > 1) {
-    throw AmbiguousCallException(o);
-  } else {
-    o->target = o->matches.front();
-  }
-  o->type = o->target->returnType->accept(&cloner)->accept(this);
-  o->type->assignable = false;  // rvalue
-  return o;
-}
-
-bi::Expression* bi::Resolver::modify(OverloadedCall<MemberCoroutine>* o) {
-  dynamic_cast<OverloadedIdentifier<MemberCoroutine>*>(o->single.get())->target->resolve(o);
-  if (o->matches.size() == 0) {
-    throw InvalidCallException(o);
-  } else if (o->matches.size() > 1) {
-    throw AmbiguousCallException(o);
-  } else {
-    o->target = o->matches.front();
-  }
-  o->type = new FiberType(
-      o->target->returnType->accept(&cloner)->accept(this));
-  o->type->assignable = false;  // rvalue
-  return o;
-}
-
-bi::Expression* bi::Resolver::modify(OverloadedCall<BinaryOperator>* o) {
+bi::Expression* bi::Resolver::modify(BinaryCall* o) {
   if (*o->name == "~>") {
     /* x ~> m is syntactic sugar for m.observe(x) */
     Expression* expr = new Call(
@@ -151,37 +101,52 @@ bi::Expression* bi::Resolver::modify(OverloadedCall<BinaryOperator>* o) {
 
     o->op = new OverloadedIdentifier<BinaryOperator>(o->name, o->loc);
     resolve(o->op.get(), memberScope);
-    o->op->target->resolve(o);
-    if (o->matches.size() == 0) {
-      throw InvalidCallException(o);
-    } else if (o->matches.size() > 1) {
-      throw AmbiguousCallException(o);
-    } else {
-      o->target = o->matches.front();
-    }
+    o->op->type = new BinaryType(o->left->type->accept(&cloner),
+        o->right->type->accept(&cloner));
 
-    o->type = o->target->returnType->accept(&cloner)->accept(this);
+    OverloadedType* overloadedType =
+        dynamic_cast<OverloadedType*>(o->op->target->type.get());
+    assert(overloadedType);
+    std::list<Type*> matches;
+    overloadedType->overloads.match(o->op->type.get(), matches);
+    if (matches.size() == 1) {
+      BinaryType* binaryType = dynamic_cast<BinaryType*>(matches.front());
+      assert(binaryType);
+      o->type = binaryType->returnType->accept(&cloner);
+    } else if (matches.size() == 0) {
+      throw InvalidCallException(o);
+    } else if (matches.size() > 1) {
+      throw AmbiguousCallException(o, matches);
+    }
+    o->type = o->type->accept(this);
     o->type->assignable = false;  // rvalue
     return o;
   }
 }
 
-bi::Expression* bi::Resolver::modify(OverloadedCall<UnaryOperator>* o) {
+bi::Expression* bi::Resolver::modify(UnaryCall* o) {
   Scope* memberScope = takeMemberScope();
   Modifier::modify(o);
 
   o->op = new OverloadedIdentifier<UnaryOperator>(o->name, o->loc);
   resolve(o->op.get(), memberScope);
-  o->op->target->resolve(o);
-  if (o->matches.size() == 0) {
-    throw InvalidCallException(o);
-  } else if (o->matches.size() > 1) {
-    throw AmbiguousCallException(o);
-  } else {
-    o->target = o->matches.front();
-  }
+  o->op->type = new UnaryType(o->single->type->accept(&cloner));
 
-  o->type = o->target->returnType->accept(&cloner)->accept(this);
+  OverloadedType* overloadedType =
+      dynamic_cast<OverloadedType*>(o->op->target->type.get());
+  assert(overloadedType);
+  std::list<Type*> matches;
+  overloadedType->overloads.match(o->op->type.get(), matches);
+  if (matches.size() == 1) {
+    UnaryType* unaryType = dynamic_cast<UnaryType*>(matches.front());
+    assert(unaryType);
+    o->type = unaryType->returnType->accept(&cloner);
+  } else if (matches.size() == 0) {
+    throw InvalidCallException(o);
+  } else if (matches.size() > 1) {
+    throw AmbiguousCallException(o, matches);
+  }
+  o->type = o->type->accept(this);
   o->type->assignable = false;  // rvalue
   return o;
 }
@@ -194,7 +159,7 @@ bi::Expression* bi::Resolver::modify(Slice* o) {
   const int rangeDims = o->brackets->tupleDims();
   assert(typeSize == indexSize);  ///@todo Exception
 
-  ArrayType* type = dynamic_cast<ArrayType*>(o->single->type->strip());
+  ArrayType* type = dynamic_cast<ArrayType*>(o->single->type.get());
   assert(type);
   if (rangeDims > 0) {
     o->type = new ArrayType(type->single->accept(&cloner), rangeDims);
@@ -240,7 +205,7 @@ bi::Expression* bi::Resolver::modify(Range* o) {
 
 bi::Expression* bi::Resolver::modify(Member* o) {
   o->left = o->left->accept(this);
-  ClassType* type = dynamic_cast<ClassType*>(o->left->type->strip());
+  ClassType* type = dynamic_cast<ClassType*>(o->left->type.get());
   if (type) {
     assert(type->target);
     memberScope = type->target->scope.get();
@@ -377,7 +342,7 @@ bi::Statement* bi::Resolver::modify(Assignment* o) {
     if (!o->right->type->definitely(*o->left->type)) {
       // ^ the first two cases are covered by this check
       Identifier<Class>* ref =
-          dynamic_cast<Identifier<Class>*>(o->left->type->strip());
+          dynamic_cast<Identifier<Class>*>(o->left->type.get());
       if (ref) {
         assert(ref->target);
         memberScope = ref->target->scope.get();
@@ -420,6 +385,9 @@ bi::Statement* bi::Resolver::modify(Function* o) {
   if (!o->braces->isEmpty()) {
     defer(o->braces.get());
   }
+  o->type = new FunctionType(o->parens->type->accept(&cloner),
+      o->returnType->accept(&cloner));
+  o->type = o->type->accept(this);
   o->scope = pop();
   top()->add(o);
 
@@ -433,6 +401,9 @@ bi::Statement* bi::Resolver::modify(Coroutine* o) {
   if (!o->braces->isEmpty()) {
     defer(o->braces.get());
   }
+  o->type = new FunctionType(o->parens->type->accept(&cloner),
+      new FiberType(o->returnType->accept(&cloner)));
+  o->type = o->type->accept(this);
   o->scope = pop();
   top()->add(o);
 
@@ -460,6 +431,9 @@ bi::Statement* bi::Resolver::modify(MemberFunction* o) {
   if (!o->braces->isEmpty()) {
     defer(o->braces.get());
   }
+  o->type = new FunctionType(o->parens->type->accept(&cloner),
+      o->returnType->accept(&cloner));
+  o->type = o->type->accept(this);
   o->scope = pop();
   top()->add(o);
 
@@ -473,6 +447,9 @@ bi::Statement* bi::Resolver::modify(MemberCoroutine* o) {
   if (!o->braces->isEmpty()) {
     defer(o->braces.get());
   }
+  o->type = new FunctionType(o->parens->type->accept(&cloner),
+      new FiberType(o->returnType->accept(&cloner)));
+  o->type = o->type->accept(this);
   o->scope = pop();
   top()->add(o);
 
@@ -487,6 +464,9 @@ bi::Statement* bi::Resolver::modify(BinaryOperator* o) {
   if (!o->braces->isEmpty()) {
     defer(o->braces.get());
   }
+  o->type = new BinaryType(o->left->type->accept(&cloner),
+      o->right->type->accept(&cloner), o->returnType->accept(&cloner));
+  o->type = o->type->accept(this);
   o->scope = pop();
   top()->add(o);
 
@@ -500,6 +480,9 @@ bi::Statement* bi::Resolver::modify(UnaryOperator* o) {
   if (!o->braces->isEmpty()) {
     defer(o->braces.get());
   }
+  o->type = new UnaryType(o->single->type->accept(&cloner),
+      o->returnType->accept(&cloner));
+  o->type = o->type->accept(this);
   o->scope = pop();
   top()->add(o);
 

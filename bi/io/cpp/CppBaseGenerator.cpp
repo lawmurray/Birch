@@ -57,48 +57,23 @@ void bi::CppBaseGenerator::visit(const Call* o) {
   middle(o->single << o->parens);
 }
 
-void bi::CppBaseGenerator::visit(const OverloadedCall<Function>* o) {
-  middle(o->single << o->parens);
-}
-
-void bi::CppBaseGenerator::visit(const OverloadedCall<Coroutine>* o) {
-  middle(o->single << o->parens);
-}
-
-void bi::CppBaseGenerator::visit(const OverloadedCall<MemberFunction>* o) {
-  middle(o->single << o->parens);
-}
-
-void bi::CppBaseGenerator::visit(const OverloadedCall<MemberCoroutine>* o) {
-  middle(o->single << o->parens);
-}
-
-void bi::CppBaseGenerator::visit(const OverloadedCall<BinaryOperator>* o) {
+void bi::CppBaseGenerator::visit(const BinaryCall* o) {
   if (isTranslatable(o->name->str())) {
     /* can use as raw C++ operator */
-    genArg(o->left.get(), o->target->left.get());
-    middle(' ' << o->name->str() << ' ');
-    genArg(o->right.get(), o->target->right.get());
+    middle(o->left << ' ' << o->name->str() << ' ' << o->right);
   } else {
     /* must use as function */
-    middle("bi::" << o->name << '(');
-    genArg(o->left.get(), o->target->left.get());
-    middle(", ");
-    genArg(o->right.get(), o->target->right.get());
-    middle(')');
+    middle("bi::" << o->name << '(' << o->left << ", " << o->right << ')');
   }
 }
 
-void bi::CppBaseGenerator::visit(const OverloadedCall<UnaryOperator>* o) {
+void bi::CppBaseGenerator::visit(const UnaryCall* o) {
   if (isTranslatable(o->name->str())) {
     /* can use as raw C++ operator */
-    middle(o->name->str());
-    genArg(o->single.get(), o->target->single.get());
+    middle(o->name->str() << o->single);
   } else {
     /* must use as function */
-    middle("bi::" << o->name << '(');
-    genArg(o->single.get(), o->target->single.get());
-    middle(')');
+    middle("bi::" << o->name << '(' << o->single << ')');
   }
 }
 
@@ -355,7 +330,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
         if (!param->value->isEmpty()) {
           middle(" = " << param->value);
         } else if (param->type->isClass()) {
-          auto type = dynamic_cast<const ClassType*>(param->type->strip());
+          auto type = dynamic_cast<const ClassType*>(param->type.get());
           assert(type);
           middle(" = make_object<bi::type::" << type->name << ">()");
         }
@@ -700,29 +675,4 @@ void bi::CppBaseGenerator::visit(const AliasType* o) {
 
 void bi::CppBaseGenerator::visit(const BasicType* o) {
   middle("bi::type::" << o->name);
-}
-
-void bi::CppBaseGenerator::genArgs(const Expression* args,
-    const Expression* params) {
-  auto iter1 = args->begin();
-  auto iter2 = params->begin();
-  while (iter1 != args->end() && iter2 != params->end()) {
-    if (iter1 != args->begin()) {
-      middle(", ");
-    }
-    genArg(*iter1, *iter2);
-    ++iter1;
-    ++iter2;
-  }
-  assert(iter1 == args->end());
-  assert(iter2 == params->end());
-}
-
-void bi::CppBaseGenerator::genArg(const Expression* arg,
-    const Expression* param) {
-  if (arg->type->isClass() && !param->type->isClass()) {
-    middle("*(" << arg << ')');
-  } else {
-    middle(arg);
-  }
 }

@@ -3,9 +3,9 @@
  */
 #pragma once
 
-#include "bi/expression/Call.hpp"
+#include "bi/expression/Expression.hpp"
+#include "bi/common/Named.hpp"
 #include "bi/common/Binary.hpp"
-#include "bi/statement/BinaryOperator.hpp"
 
 namespace bi {
 /**
@@ -13,11 +13,9 @@ namespace bi {
  *
  * @ingroup compiler_expression
  */
-template<>
-class OverloadedCall<BinaryOperator>: public Expression,
+class BinaryCall: public Expression,
     public Named,
-    public Binary<Expression>,
-    public Reference<BinaryOperator> {
+    public Binary<Expression> {
 public:
   /**
    * Constructor.
@@ -26,16 +24,14 @@ public:
    * @param name Name.
    * @param right Right operand.
    * @param loc Location.
-   * @param target Target.
    */
-  OverloadedCall<BinaryOperator>(Expression* left, shared_ptr<Name> name, Expression* right,
-      shared_ptr<Location> loc = nullptr, BinaryOperator* target =
-          nullptr);
+  BinaryCall(Expression* left, shared_ptr<Name> name, Expression* right,
+      shared_ptr<Location> loc = nullptr);
 
   /**
    * Destructor.
    */
-  virtual ~OverloadedCall<BinaryOperator>();
+  virtual ~BinaryCall();
 
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);
@@ -45,13 +41,11 @@ public:
   using Expression::possibly;
 
   virtual bool dispatchDefinitely(const Expression& o) const;
-  virtual bool definitely(const OverloadedCall<BinaryOperator>& o) const;
-  virtual bool definitely(const BinaryOperator& o) const;
+  virtual bool definitely(const BinaryCall& o) const;
   virtual bool definitely(const Parameter& o) const;
 
   virtual bool dispatchPossibly(const Expression& o) const;
-  virtual bool possibly(const OverloadedCall<BinaryOperator>& o) const;
-  virtual bool possibly(const BinaryOperator& o) const;
+  virtual bool possibly(const BinaryCall& o) const;
   virtual bool possibly(const Parameter& o) const;
 
   /**

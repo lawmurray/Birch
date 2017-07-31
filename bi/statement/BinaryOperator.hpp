@@ -23,6 +23,7 @@ class BinaryOperator: public Statement,
     public Numbered,
     public Binary<Expression>,
     public ReturnTyped,
+    public Typed,
     public Scoped,
     public Braced {
 public:
