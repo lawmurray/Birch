@@ -5,8 +5,6 @@
 
 #include "bi/visitor/all.hpp"
 
-#include <typeinfo>
-
 bi::Super::Super(Location* loc) :
     Expression(loc) {
   //

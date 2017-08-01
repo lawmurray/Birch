@@ -3,10 +3,7 @@
  */
 #include "bi/expression/Span.hpp"
 
-#include "bi/expression/Parameter.hpp"
 #include "bi/visitor/all.hpp"
-
-#include <typeinfo>
 
 bi::Span::Span(Expression* single, Location* loc) :
     Expression(loc),

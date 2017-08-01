@@ -5,8 +5,6 @@
 
 #include "bi/visitor/all.hpp"
 
-#include <typeinfo>
-
 bi::ParenthesesType::ParenthesesType(Type* single, Location* loc,
     const bool assignable) :
     Type(loc, assignable),

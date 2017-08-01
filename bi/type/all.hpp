@@ -6,6 +6,7 @@
 #include "bi/type/AliasType.hpp"
 #include "bi/type/ArrayType.hpp"
 #include "bi/type/BasicType.hpp"
+#include "bi/type/BinaryType.hpp"
 #include "bi/type/ClassType.hpp"
 #include "bi/type/FiberType.hpp"
 #include "bi/type/EmptyType.hpp"

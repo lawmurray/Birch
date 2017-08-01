@@ -51,6 +51,14 @@ bi::Expression* bi::Resolver::modify(Brackets* o) {
   return o;
 }
 
+bi::Expression* bi::Resolver::modify(Binary* o) {
+  Modifier::modify(o);
+  o->type = new BinaryType(o->left->type->accept(&cloner),
+      o->right->type->accept(&cloner));
+  o->type = o->type->accept(this);
+  return o;
+}
+
 bi::Expression* bi::Resolver::modify(Call* o) {
   Modifier::modify(o);
   if (o->single->type->isOverloaded()) {
@@ -71,8 +79,7 @@ bi::Expression* bi::Resolver::modify(Call* o) {
       throw AmbiguousCallException(o, matches);
     }
   } else if (o->single->type->isFunction()) {
-    FunctionType* functionType =
-        dynamic_cast<FunctionType*>(o->single->type);
+    FunctionType* functionType = dynamic_cast<FunctionType*>(o->single->type);
     assert(functionType);
     if (o->parens->type->definitely(*functionType->parens)) {
       o->type = functionType->returnType->accept(&cloner);
@@ -259,8 +266,7 @@ bi::Statement* bi::Resolver::modify(Assignment* o) {
    */
   if (!o->right->type->definitely(*o->left->type)) {
     // ^ the first two cases are covered by this check
-    Identifier<Class>* ref =
-        dynamic_cast<Identifier<Class>*>(o->left->type);
+    Identifier<Class>* ref = dynamic_cast<Identifier<Class>*>(o->left->type);
     if (ref) {
       assert(ref->target);
       memberScope = ref->target->scope;

@@ -60,6 +60,7 @@ birchc_SOURCES = \
   bi/exception/ThisException.cpp \
   bi/exception/UnresolvedException.cpp \
   bi/exception/UnsupportedOptionTypeException.cpp \
+  bi/expression/Binary.cpp \
   bi/expression/Brackets.cpp \
   bi/expression/Call.cpp \
   bi/expression/EmptyExpression.cpp \
@@ -118,6 +119,7 @@ birchc_SOURCES = \
   bi/type/AliasType.cpp \
   bi/type/ArrayType.cpp \
   bi/type/BasicType.cpp \
+  bi/type/BinaryType.cpp \
   bi/type/ClassType.cpp \
   bi/type/EmptyType.cpp \
   bi/type/FiberType.cpp \
@@ -223,6 +225,7 @@ noinst_HEADERS = \
   bi/exception/UnresolvedException.hpp \
   bi/exception/UnsupportedOptionTypeException.hpp \
   bi/expression/all.hpp \
+  bi/expression/Binary.hpp \
   bi/expression/Brackets.hpp \
   bi/expression/Call.hpp \
   bi/expression/EmptyExpression.hpp \
@@ -287,6 +290,7 @@ noinst_HEADERS = \
   bi/type/AliasType.hpp \
   bi/type/ArrayType.hpp \
   bi/type/BasicType.hpp \
+  bi/type/BinaryType.hpp \
   bi/type/ClassType.hpp \
   bi/type/EmptyType.hpp \
   bi/type/FiberType.hpp \

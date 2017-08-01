@@ -3,7 +3,6 @@
  */
 #include "bi/expression/Brackets.hpp"
 
-#include "bi/expression/Parameter.hpp"
 #include "bi/visitor/all.hpp"
 
 bi::Brackets::Brackets(Expression* single, Location* loc) :

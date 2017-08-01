@@ -45,6 +45,10 @@ bi::Expression* bi::Cloner::clone(const Brackets* o) {
   return new Brackets(o->single->accept(this), o->loc);
 }
 
+bi::Expression* bi::Cloner::clone(const Binary* o) {
+  return new Binary(o->left->accept(this), o->right->accept(this), o->loc);
+}
+
 bi::Expression* bi::Cloner::clone(const Call* o) {
   return new Call(o->single->accept(this), o->parens->accept(this), o->loc);
 }
@@ -302,6 +306,11 @@ bi::Type* bi::Cloner::clone(const ArrayType* o) {
 
 bi::Type* bi::Cloner::clone(const ParenthesesType* o) {
   return new ParenthesesType(o->single->accept(this), o->loc, o->assignable);
+}
+
+bi::Type* bi::Cloner::clone(const BinaryType* o) {
+  return new BinaryType(o->left->accept(this), o->right->accept(this), o->loc,
+      o->assignable);
 }
 
 bi::Type* bi::Cloner::clone(const FunctionType* o) {

@@ -29,6 +29,7 @@ public:
   virtual Expression* modify(Literal<const char*>* o);
   virtual Expression* modify(Parentheses* o);
   virtual Expression* modify(Brackets* o);
+  virtual Expression* modify(Binary* o);
   virtual Expression* modify(Call* o);
   virtual Expression* modify(Slice* o);
   virtual Expression* modify(LambdaFunction* o);
@@ -89,6 +90,7 @@ public:
   virtual Type* modify(BasicType* o);
   virtual Type* modify(ArrayType* o);
   virtual Type* modify(ParenthesesType* o);
+  virtual Type* modify(BinaryType* o);
   virtual Type* modify(FunctionType* o);
   virtual Type* modify(OverloadedType* o);
   virtual Type* modify(FiberType* o);

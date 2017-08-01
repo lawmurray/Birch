@@ -3,11 +3,8 @@
  */
 #include "bi/expression/Literal.hpp"
 
-#include "bi/expression/Parameter.hpp"
 #include "bi/visitor/all.hpp"
 
-#include <typeinfo>
-#include <type_traits>
 #include <string>
 
 template<class T1>

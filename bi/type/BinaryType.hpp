@@ -4,39 +4,40 @@
 #pragma once
 
 #include "bi/type/Type.hpp"
-#include "bi/common/Single.hpp"
+#include "bi/common/Couple.hpp"
 
 namespace bi {
 /**
- * Parentheses type.
+ * Type of operands to a binary operator.
  *
  * @ingroup compiler_type
  */
-class ParenthesesType: public Type, public Single<Type> {
+class BinaryType: public Type, public Couple<Type> {
 public:
   /**
    * Constructor.
    *
-   * @param single Type in parentheses.
+   * @param left Type of left operand.
+   * @param right Type of right operand.
    * @param loc Location.
    * @param assignable Is this type assignable?
    */
-  ParenthesesType(Type* single, Location* loc = nullptr,
+  BinaryType(Type* left, Type* right, Location* loc = nullptr,
       const bool assignable = false);
 
   /**
    * Destructor.
    */
-  virtual ~ParenthesesType();
+  virtual ~BinaryType();
 
   virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
   virtual bool dispatchDefinitely(const Type& o) const;
-  virtual bool definitely(const ParenthesesType& o) const;
+  virtual bool definitely(const BinaryType& o) const;
 
   virtual bool dispatchPossibly(const Type& o) const;
-  virtual bool possibly(const ParenthesesType& o) const;
+  virtual bool possibly(const BinaryType& o) const;
 };
 }

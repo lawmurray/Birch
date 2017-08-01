@@ -5,7 +5,6 @@
 
 #include "bi/expression/Expression.hpp"
 #include "bi/common/Couple.hpp"
-#include "bi/expression/Parameter.hpp"
 
 namespace bi {
 /**

@@ -3,7 +3,6 @@
  */
 #include "bi/expression/Parentheses.hpp"
 
-#include "bi/expression/Parameter.hpp"
 #include "bi/visitor/all.hpp"
 
 bi::Parentheses::Parentheses(Expression* single,

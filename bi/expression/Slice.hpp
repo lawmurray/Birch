@@ -6,7 +6,6 @@
 #include "bi/expression/Expression.hpp"
 #include "bi/common/Bracketed.hpp"
 #include "bi/common/Single.hpp"
-#include "bi/expression/Parameter.hpp"
 
 namespace bi {
 /**
@@ -23,8 +22,7 @@ public:
    * @param brackets Brackets.
    * @param loc Location.
    */
-  Slice(Expression* single, Expression* brackets, Location* loc =
-      nullptr);
+  Slice(Expression* single, Expression* brackets, Location* loc = nullptr);
 
   /**
    * Destructor.

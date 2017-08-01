@@ -3,10 +3,7 @@
  */
 #include "bi/expression/Index.hpp"
 
-#include "bi/expression/Parameter.hpp"
 #include "bi/visitor/all.hpp"
-
-#include <typeinfo>
 
 bi::Index::Index(Expression* single, Location* loc) :
     Expression(loc),

@@ -3,7 +3,6 @@
  */
 #include "bi/expression/Slice.hpp"
 
-#include "bi/expression/Parameter.hpp"
 #include "bi/visitor/all.hpp"
 
 bi::Slice::Slice(Expression* single,

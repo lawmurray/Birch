@@ -4,7 +4,6 @@
 #pragma once
 
 #include "bi/expression/Expression.hpp"
-#include "bi/expression/Parameter.hpp"
 
 namespace bi {
 /**

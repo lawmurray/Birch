@@ -51,6 +51,12 @@ bi::Expression* bi::Modifier::modify(Brackets* o) {
   return o;
 }
 
+bi::Expression* bi::Modifier::modify(Binary* o) {
+  o->left = o->left->accept(this);
+  o->right = o->right->accept(this);
+  return o;
+}
+
 bi::Expression* bi::Modifier::modify(Call* o) {
   o->single = o->single->accept(this);
   o->parens = o->parens->accept(this);
@@ -357,6 +363,12 @@ bi::Type* bi::Modifier::modify(ArrayType* o) {
 
 bi::Type* bi::Modifier::modify(ParenthesesType* o) {
   o->single = o->single->accept(this);
+  return o;
+}
+
+bi::Type* bi::Modifier::modify(BinaryType* o) {
+  o->left = o->left->accept(this);
+  o->right = o->right->accept(this);
   return o;
 }
 

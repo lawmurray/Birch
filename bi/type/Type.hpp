@@ -13,6 +13,7 @@ class Visitor;
 class AliasType;
 class ArrayType;
 class BasicType;
+class BinaryType;
 class ClassType;
 class FiberType;
 class EmptyType;

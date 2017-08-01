@@ -30,6 +30,7 @@ public:
   virtual Expression* clone(const Literal<const char*>* o);
   virtual Expression* clone(const Parentheses* o);
   virtual Expression* clone(const Brackets* o);
+  virtual Expression* clone(const Binary* o);
   virtual Expression* clone(const Call* o);
   virtual Expression* clone(const Slice* o);
   virtual Expression* clone(const LambdaFunction* o);
@@ -90,6 +91,7 @@ public:
   virtual Type* clone(const BasicType* o);
   virtual Type* clone(const ArrayType* o);
   virtual Type* clone(const ParenthesesType* o);
+  virtual Type* clone(const BinaryType* o);
   virtual Type* clone(const FunctionType* o);
   virtual Type* clone(const OverloadedType* o);
   virtual Type* clone(const FiberType* o);

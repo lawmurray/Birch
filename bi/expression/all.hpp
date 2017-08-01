@@ -3,6 +3,7 @@
  */
 #pragma once
 
+#include "bi/expression/Binary.hpp"
 #include "bi/expression/Brackets.hpp"
 #include "bi/expression/Call.hpp"
 #include "bi/expression/EmptyExpression.hpp"

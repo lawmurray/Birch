@@ -29,11 +29,7 @@
   }
   
   bi::Expression* make_binary(bi::Expression* left, bi::Expression* right) {
-    return new bi::Parentheses(new bi::List<bi::Expression>(left, right));
-  }
-
-  bi::Expression* make_unary(bi::Expression* single) {
-    return new bi::Parentheses(single);
+    return new bi::Binary(left, right);
   }
 }
 
@@ -219,7 +215,7 @@ unary_operator
 
 unary_expression
     : postfix_expression
-    | unary_operator unary_expression  { $$ = new bi::Call($1, make_unary($2), make_loc(@$)); }
+    | unary_operator unary_expression  { $$ = new bi::Call($1, $2, make_loc(@$)); }
     ;
 
 multiplicative_operator
@@ -437,7 +433,7 @@ prefix_operator
     ;    
 
 unary_operator_declaration
-    : OPERATOR prefix_operator parameter optional_result optional_braces  { $$ = new bi::UnaryOperator($2, make_unary($3), $4, $5, make_loc(@$)); }
+    : OPERATOR prefix_operator parameter optional_result optional_braces  { $$ = new bi::UnaryOperator($2, $3, $4, $5, make_loc(@$)); }
     ;
     
 assignment_operator_declaration

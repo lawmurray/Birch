@@ -55,6 +55,11 @@ void bi::Visitor::visit(const Brackets* o) {
   o->single->accept(this);
 }
 
+void bi::Visitor::visit(const Binary* o) {
+  o->left->accept(this);
+  o->right->accept(this);
+}
+
 void bi::Visitor::visit(const Call* o) {
   o->single->accept(this);
   o->parens->accept(this);
@@ -327,6 +332,11 @@ void bi::Visitor::visit(const ArrayType* o) {
 
 void bi::Visitor::visit(const ParenthesesType* o) {
   o->single->accept(this);
+}
+
+void bi::Visitor::visit(const BinaryType* o) {
+  o->left->accept(this);
+  o->right->accept(this);
 }
 
 void bi::Visitor::visit(const FunctionType* o) {
