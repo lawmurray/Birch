@@ -30,19 +30,3 @@ bi::Statement* bi::Raw::accept(Modifier* visitor) {
 void bi::Raw::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
-
-bool bi::Raw::dispatchDefinitely(const Statement& o) const {
-  return o.definitely(*this);
-}
-
-bool bi::Raw::definitely(const Raw& o) const {
-  return raw.compare(o.raw) == 0;
-}
-
-bool bi::Raw::dispatchPossibly(const Statement& o) const {
-  return o.possibly(*this);
-}
-
-bool bi::Raw::possibly(const Raw& o) const {
-  return raw.compare(o.raw) == 0;
-}

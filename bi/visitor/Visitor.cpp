@@ -60,15 +60,6 @@ void bi::Visitor::visit(const Call* o) {
   o->parens->accept(this);
 }
 
-void bi::Visitor::visit(const BinaryCall* o) {
-  o->left->accept(this);
-  o->right->accept(this);
-}
-
-void bi::Visitor::visit(const UnaryCall* o) {
-  o->single->accept(this);
-}
-
 void bi::Visitor::visit(const Slice* o) {
   o->single->accept(this);
   o->brackets->accept(this);
@@ -226,14 +217,13 @@ void bi::Visitor::visit(const MemberFunction* o) {
 }
 
 void bi::Visitor::visit(const BinaryOperator* o) {
-  o->left->accept(this);
-  o->right->accept(this);
+  o->parens->accept(this);
   o->returnType->accept(this);
   o->braces->accept(this);
 }
 
 void bi::Visitor::visit(const UnaryOperator* o) {
-  o->single->accept(this);
+  o->parens->accept(this);
   o->returnType->accept(this);
   o->braces->accept(this);
 }
@@ -309,7 +299,7 @@ void bi::Visitor::visit(const EmptyType* o) {
   //
 }
 
-void bi::Visitor::visit(const List<Type>* o) {
+void bi::Visitor::visit(const ListType* o) {
   o->head->accept(this);
   o->tail->accept(this);
 }
@@ -341,17 +331,6 @@ void bi::Visitor::visit(const ParenthesesType* o) {
 
 void bi::Visitor::visit(const FunctionType* o) {
   o->parens->accept(this);
-  o->returnType->accept(this);
-}
-
-void bi::Visitor::visit(const BinaryType* o) {
-  o->left->accept(this);
-  o->right->accept(this);
-  o->returnType->accept(this);
-}
-
-void bi::Visitor::visit(const UnaryType* o) {
-  o->single->accept(this);
   o->returnType->accept(this);
 }
 

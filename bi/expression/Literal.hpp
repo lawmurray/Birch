@@ -46,16 +46,5 @@ public:
    * Preferred string encoding of value.
    */
   std::string str;
-
-  using Expression::definitely;
-  using Expression::possibly;
-
-  virtual bool dispatchDefinitely(const Expression& o) const;
-  virtual bool definitely(Literal<T1>& o);
-  virtual bool definitely(const Parameter& o) const;
-
-  virtual bool dispatchPossibly(const Expression& o) const;
-  virtual bool possibly(Literal<T1>& o);
-  virtual bool possibly(const Parameter& o) const;
 };
 }

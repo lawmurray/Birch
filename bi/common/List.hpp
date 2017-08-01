@@ -55,14 +55,5 @@ public:
    * Right operand.
    */
   unique_ptr<T> tail;
-
-  using T::definitely;
-  using T::possibly;
-
-  virtual bool dispatchDefinitely(const T& o) const;
-  virtual bool definitely(const List<T>& o) const;
-
-  virtual bool dispatchPossibly(const T& o) const;
-  virtual bool possibly(const List<T>& o) const;
 };
 }

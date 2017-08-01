@@ -26,19 +26,3 @@ bi::Statement* bi::Basic::accept(Modifier* visitor) {
 void bi::Basic::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
-
-bool bi::Basic::dispatchDefinitely(const Statement& o) const {
-  return o.definitely(*this);
-}
-
-bool bi::Basic::definitely(const Basic& o) const {
-  return true;
-}
-
-bool bi::Basic::dispatchPossibly(const Statement& o) const {
-  return o.possibly(*this);
-}
-
-bool bi::Basic::possibly(const Basic& o) const {
-  return true;
-}

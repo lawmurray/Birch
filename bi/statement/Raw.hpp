@@ -39,14 +39,5 @@ public:
    * Raw C++ code.
    */
   std::string raw;
-
-  using Statement::definitely;
-  using Statement::possibly;
-
-  virtual bool dispatchDefinitely(const Statement& o) const;
-  virtual bool definitely(const Raw& o) const;
-
-  virtual bool dispatchPossibly(const Statement& o) const;
-  virtual bool possibly(const Raw& o) const;
 };
 }

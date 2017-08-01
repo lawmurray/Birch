@@ -5,9 +5,6 @@
 
 #include "bi/visitor/all.hpp"
 
-#include <typeinfo>
-#include <type_traits>
-
 template<class T>
 bi::List<T>::List(T* head, T* tail, shared_ptr<Location> loc) :
     head(head),
@@ -67,29 +64,8 @@ void bi::List<T>::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-template<class T>
-bool bi::List<T>::dispatchDefinitely(const T& o) const {
-  return o.definitely(*this);
-}
-
-template<class T>
-bool bi::List<T>::definitely(const List<T>& o) const {
-  return head->definitely(*o.head) && tail->definitely(*o.tail);
-}
-
-template<class T>
-bool bi::List<T>::dispatchPossibly(const T& o) const {
-  return o.possibly(*this);
-}
-
-template<class T>
-bool bi::List<T>::possibly(const List<T>& o) const {
-  return head->possibly(*o.head) && tail->possibly(*o.tail);
-}
-
 /*
  * Explicit template instantiations.
  */
 template class bi::List<bi::Expression>;
 template class bi::List<bi::Statement>;
-template class bi::List<bi::Type>;

@@ -24,19 +24,3 @@ void bi::EmptyStatement::accept(Visitor* visitor) const {
 bool bi::EmptyStatement::isEmpty() const {
   return true;
 }
-
-bool bi::EmptyStatement::dispatchDefinitely(const Statement& o) const {
-  return o.definitely(*this);
-}
-
-bool bi::EmptyStatement::definitely(const EmptyStatement& o) const {
-  return true;
-}
-
-bool bi::EmptyStatement::dispatchPossibly(const Statement& o) const {
-  return o.possibly(*this);
-}
-
-bool bi::EmptyStatement::possibly(const EmptyStatement& o) const {
-  return true;
-}

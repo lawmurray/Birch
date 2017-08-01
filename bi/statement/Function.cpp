@@ -30,19 +30,3 @@ bi::Statement* bi::Function::accept(Modifier* visitor) {
 void bi::Function::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
-
-bool bi::Function::dispatchDefinitely(const Statement& o) const {
-  return o.definitely(*this);
-}
-
-bool bi::Function::definitely(const Function& o) const {
-  return parens->definitely(*o.parens);
-}
-
-bool bi::Function::dispatchPossibly(const Statement& o) const {
-  return o.possibly(*this);
-}
-
-bool bi::Function::possibly(const Function& o) const {
-  return parens->possibly(*o.parens);
-}

@@ -55,26 +55,22 @@ void bi::CppBaseGenerator::visit(const Brackets* o) {
 
 void bi::CppBaseGenerator::visit(const Call* o) {
   middle(o->single << o->parens);
-}
 
-void bi::CppBaseGenerator::visit(const BinaryCall* o) {
-  if (isTranslatable(o->name->str())) {
-    /* can use as raw C++ operator */
-    middle(o->left << ' ' << o->name->str() << ' ' << o->right);
-  } else {
-    /* must use as function */
-    middle("bi::" << o->name << '(' << o->left << ", " << o->right << ')');
-  }
-}
+  //if (isTranslatable(o->name->str())) {
+  //  /* can use as raw C++ operator */
+  //  middle(o->left << ' ' << o->name->str() << ' ' << o->right);
+  //} else {
+  //  /* must use as function */
+  //  middle("bi::" << o->name << '(' << o->left << ", " << o->right << ')');
+  //}
 
-void bi::CppBaseGenerator::visit(const UnaryCall* o) {
-  if (isTranslatable(o->name->str())) {
-    /* can use as raw C++ operator */
-    middle(o->name->str() << o->single);
-  } else {
-    /* must use as function */
-    middle("bi::" << o->name << '(' << o->single << ')');
-  }
+  //if (isTranslatable(o->name->str())) {
+  //  /* can use as raw C++ operator */
+  //  middle(o->name->str() << o->single);
+  //} else {
+  //  /* must use as function */
+  //  middle("bi::" << o->name << '(' << o->single << ')');
+  //}
 }
 
 void bi::CppBaseGenerator::visit(const Slice* o) {
@@ -459,7 +455,7 @@ void bi::CppBaseGenerator::visit(const BinaryOperator* o) {
     } else {
       middle(o->name);
     }
-    middle('(' << o->left << ", " << o->right << ')');
+    middle(o->parens);
     if (header) {
       finish(';');
     } else {
@@ -490,7 +486,7 @@ void bi::CppBaseGenerator::visit(const UnaryOperator* o) {
     } else {
       middle(o->name);
     }
-    middle('(' << o->single << ')');
+    middle(o->parens);
     if (header) {
       finish(';');
     } else {
@@ -558,9 +554,9 @@ void bi::CppBaseGenerator::visit(const List<Statement>* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Assignment* o) {
-  if (*o->name == "<~" || *o->name == "~") {
-    start(o->name << '(' << o->left << ", " << o->right << ')');
-  } else {
+  //if (*o->name == "<~" || *o->name == "~") {
+  //  start(o->name << '(' << o->left << ", " << o->right << ')');
+  //} else {
     if (o->left->type->isClass() && !o->right->type->isClass()) {
       start("*(" << o->left << ')');
     } else {
@@ -572,7 +568,7 @@ void bi::CppBaseGenerator::visit(const Assignment* o) {
     } else {
       middle(o->right);
     }
-  }
+  //}
   finish(';');
 }
 
@@ -637,14 +633,14 @@ void bi::CppBaseGenerator::visit(const EmptyType* o) {
   middle("void");
 }
 
-void bi::CppBaseGenerator::visit(const List<Type>* o) {
+void bi::CppBaseGenerator::visit(const ListType* o) {
   middle(o->head);
   Type* tail = o->tail.get();
-  List<Type>* list = dynamic_cast<List<Type>*>(tail);
+  ListType* list = dynamic_cast<ListType*>(tail);
   while (list) {
     middle(',' << list->head);
     tail = list->tail.get();
-    list = dynamic_cast<List<Type>*>(tail);
+    list = dynamic_cast<ListType*>(tail);
   }
   middle(',' << tail);
 }

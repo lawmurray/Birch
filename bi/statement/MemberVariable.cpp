@@ -30,19 +30,3 @@ bi::Statement* bi::MemberVariable::accept(Modifier* visitor) {
 void bi::MemberVariable::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
-
-bool bi::MemberVariable::dispatchDefinitely(const Statement& o) const {
-  return o.definitely(*this);
-}
-
-bool bi::MemberVariable::definitely(const MemberVariable& o) const {
-  return type->definitely(*o.type);
-}
-
-bool bi::MemberVariable::dispatchPossibly(const Statement& o) const {
-  return o.possibly(*this);
-}
-
-bool bi::MemberVariable::possibly(const MemberVariable& o) const {
-  return type->possibly(*o.type);
-}

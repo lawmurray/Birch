@@ -27,19 +27,3 @@ bi::Statement* bi::Return::accept(Modifier* visitor) {
 void bi::Return::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
-
-bool bi::Return::dispatchDefinitely(const Statement& o) const {
-  return o.definitely(*this);
-}
-
-bool bi::Return::definitely(const Return& o) const {
-  return single->definitely(*o.single);
-}
-
-bool bi::Return::dispatchPossibly(const Statement& o) const {
-  return o.possibly(*this);
-}
-
-bool bi::Return::possibly(const Return& o) const {
-  return single->possibly(*o.single);
-}

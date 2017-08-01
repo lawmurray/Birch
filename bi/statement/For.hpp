@@ -37,15 +37,6 @@ public:
   virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
-  using Statement::definitely;
-  using Statement::possibly;
-
-  virtual bool dispatchDefinitely(const Statement& o) const;
-  virtual bool definitely(const For& o) const;
-
-  virtual bool dispatchPossibly(const Statement& o) const;
-  virtual bool possibly(const For& o) const;
-
   /**
    * Index.
    */

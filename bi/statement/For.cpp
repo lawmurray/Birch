@@ -30,21 +30,3 @@ bi::Statement* bi::For::accept(Modifier* visitor) {
 void bi::For::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
-
-bool bi::For::dispatchDefinitely(const Statement& o) const {
-  return o.definitely(*this);
-}
-
-bool bi::For::definitely(const For& o) const {
-  return index->definitely(*o.index) && from->definitely(*o.from)
-      && to->definitely(*o.to);
-}
-
-bool bi::For::dispatchPossibly(const Statement& o) const {
-  return o.possibly(*this);
-}
-
-bool bi::For::possibly(const For& o) const {
-  return index->possibly(*o.index) && from->possibly(*o.from)
-      && to->possibly(*o.to);
-}

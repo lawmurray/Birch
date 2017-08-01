@@ -30,8 +30,6 @@ public:
   virtual Expression* modify(Parentheses* o);
   virtual Expression* modify(Brackets* o);
   virtual Expression* modify(Call* o);
-  virtual Expression* modify(BinaryCall* o);
-  virtual Expression* modify(UnaryCall* o);
   virtual Expression* modify(Slice* o);
   virtual Expression* modify(LambdaFunction* o);
   virtual Expression* modify(Span* o);
@@ -84,7 +82,7 @@ public:
   virtual Statement* modify(Raw* o);
 
   virtual Type* modify(EmptyType* o);
-  virtual Type* modify(List<Type>* o);
+  virtual Type* modify(ListType* o);
   virtual Type* modify(IdentifierType* o);
   virtual Type* modify(ClassType* o);
   virtual Type* modify(AliasType* o);
@@ -92,8 +90,6 @@ public:
   virtual Type* modify(ArrayType* o);
   virtual Type* modify(ParenthesesType* o);
   virtual Type* modify(FunctionType* o);
-  virtual Type* modify(BinaryType* o);
-  virtual Type* modify(UnaryType* o);
   virtual Type* modify(OverloadedType* o);
   virtual Type* modify(FiberType* o);
 };

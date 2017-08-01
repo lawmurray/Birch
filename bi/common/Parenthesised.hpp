@@ -28,20 +28,6 @@ public:
   virtual ~Parenthesised() = 0;
 
   /**
-   * If these parentheses were constructed for a binary operator, get the
-   * left operand. Otherwise return the same as strip().
-   */
-  Expression* getLeft();
-  const Expression* getLeft() const;
-
-  /**
-   * If these parentheses were constructed for a binary or unary operator,
-   * get the right operand. Otherwise return the same as strip().
-   */
-  Expression* getRight();
-  const Expression* getRight() const;
-
-  /**
    * Expression in parentheses.
    */
   unique_ptr<Expression> parens;

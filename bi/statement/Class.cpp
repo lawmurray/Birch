@@ -78,19 +78,3 @@ bool bi::Class::hasAssignment(const Type* o) const {
   }
   return false;
 }
-
-bool bi::Class::dispatchDefinitely(const Statement& o) const {
-  return o.definitely(*this);
-}
-
-bool bi::Class::definitely(const Class& o) const {
-  return true;
-}
-
-bool bi::Class::dispatchPossibly(const Statement& o) const {
-  return o.possibly(*this);
-}
-
-bool bi::Class::possibly(const Class& o) const {
-  return true;
-}

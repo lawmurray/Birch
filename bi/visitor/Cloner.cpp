@@ -49,15 +49,6 @@ bi::Expression* bi::Cloner::clone(const Call* o) {
   return new Call(o->single->accept(this), o->parens->accept(this), o->loc);
 }
 
-bi::Expression* bi::Cloner::clone(const BinaryCall* o) {
-  return new BinaryCall(o->left->accept(this), o->name,
-      o->right->accept(this), o->loc);
-}
-
-bi::Expression* bi::Cloner::clone(const UnaryCall* o) {
-  return new UnaryCall(o->name, o->single->accept(this), o->loc);
-}
-
 bi::Expression* bi::Cloner::clone(const Slice* o) {
   return new Slice(o->single->accept(this), o->brackets->accept(this), o->loc);
 }
@@ -163,8 +154,7 @@ bi::Statement* bi::Cloner::clone(const List<Statement>* o) {
 }
 
 bi::Statement* bi::Cloner::clone(const Assignment* o) {
-  return new Assignment(o->left->accept(this), o->name,
-      o->right->accept(this), o->loc);
+  return new Assignment(o->left->accept(this), o->right->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const GlobalVariable* o) {
@@ -208,13 +198,12 @@ bi::Statement* bi::Cloner::clone(const MemberCoroutine* o) {
 }
 
 bi::Statement* bi::Cloner::clone(const BinaryOperator* o) {
-  return new BinaryOperator(o->left->accept(this), o->name,
-      o->right->accept(this), o->returnType->accept(this),
-      o->braces->accept(this), o->loc);
+  return new BinaryOperator(o->name, o->parens->accept(this),
+      o->returnType->accept(this), o->braces->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const UnaryOperator* o) {
-  return new UnaryOperator(o->name, o->single->accept(this),
+  return new UnaryOperator(o->name, o->parens->accept(this),
       o->returnType->accept(this), o->braces->accept(this), o->loc);
 }
 
@@ -283,8 +272,8 @@ bi::Type* bi::Cloner::clone(const EmptyType* o) {
   return new EmptyType(o->assignable);
 }
 
-bi::Type* bi::Cloner::clone(const List<Type>* o) {
-  List<Type>* result = new List<Type>(o->head->accept(this),
+bi::Type* bi::Cloner::clone(const ListType* o) {
+  ListType* result = new ListType(o->head->accept(this),
       o->tail->accept(this), o->loc);
   result->assignable = o->assignable;
   return result;
@@ -318,16 +307,6 @@ bi::Type* bi::Cloner::clone(const ParenthesesType* o) {
 bi::Type* bi::Cloner::clone(const FunctionType* o) {
   return new FunctionType(o->parens->accept(this),
       o->returnType->accept(this), o->loc, o->assignable);
-}
-
-bi::Type* bi::Cloner::clone(const BinaryType* o) {
-  return new BinaryType(o->left->accept(this), o->right->accept(this),
-      o->returnType->accept(this), o->loc, o->assignable);
-}
-
-bi::Type* bi::Cloner::clone(const UnaryType* o) {
-  return new UnaryType(o->single->accept(this), o->returnType->accept(this),
-      o->loc, o->assignable);
 }
 
 bi::Type* bi::Cloner::clone(const OverloadedType* o) {

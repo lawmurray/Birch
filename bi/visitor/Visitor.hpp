@@ -33,8 +33,6 @@ public:
   virtual void visit(const Parentheses* o);
   virtual void visit(const Brackets* o);
   virtual void visit(const Call* o);
-  virtual void visit(const BinaryCall* o);
-  virtual void visit(const UnaryCall* o);
   virtual void visit(const Slice* o);
   virtual void visit(const LambdaFunction* o);
   virtual void visit(const Index* o);
@@ -87,7 +85,7 @@ public:
   virtual void visit(const Raw* o);
 
   virtual void visit(const EmptyType* o);
-  virtual void visit(const List<Type>* o);
+  virtual void visit(const ListType* o);
   virtual void visit(const IdentifierType* o);
   virtual void visit(const ClassType* o);
   virtual void visit(const AliasType* o);
@@ -95,8 +93,6 @@ public:
   virtual void visit(const ArrayType* o);
   virtual void visit(const ParenthesesType* o);
   virtual void visit(const FunctionType* o);
-  virtual void visit(const BinaryType* o);
-  virtual void visit(const UnaryType* o);
   virtual void visit(const OverloadedType* o);
   virtual void visit(const FiberType* o);
 };

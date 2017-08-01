@@ -43,14 +43,5 @@ public:
    * File.
    */
   File* file;
-
-  using Statement::definitely;
-  using Statement::possibly;
-
-  virtual bool dispatchDefinitely(const Statement& o) const;
-  virtual bool definitely(const Import& o) const;
-
-  virtual bool dispatchPossibly(const Statement& o) const;
-  virtual bool possibly(const Import& o) const;
 };
 }

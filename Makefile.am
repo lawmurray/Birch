@@ -60,7 +60,6 @@ birchc_SOURCES = \
   bi/exception/ThisException.cpp \
   bi/exception/UnresolvedException.cpp \
   bi/exception/UnsupportedOptionTypeException.cpp \
-  bi/expression/BinaryCall.cpp \
   bi/expression/Brackets.cpp \
   bi/expression/Call.cpp \
   bi/expression/EmptyExpression.cpp \
@@ -79,7 +78,6 @@ birchc_SOURCES = \
   bi/expression/Span.cpp \
   bi/expression/Super.cpp \
   bi/expression/This.cpp \
-  bi/expression/UnaryCall.cpp \
   bi/io/cpp/CppBaseGenerator.cpp \
   bi/io/cpp/CppConstructorGenerator.cpp \
   bi/io/cpp/CppCoroutineGenerator.cpp \
@@ -120,16 +118,15 @@ birchc_SOURCES = \
   bi/type/AliasType.cpp \
   bi/type/ArrayType.cpp \
   bi/type/BasicType.cpp \
-  bi/type/BinaryType.cpp \
   bi/type/ClassType.cpp \
   bi/type/EmptyType.cpp \
   bi/type/FiberType.cpp \
   bi/type/FunctionType.cpp \
   bi/type/IdentifierType.cpp \
+  bi/type/ListType.cpp \
   bi/type/OverloadedType.cpp \
   bi/type/ParenthesesType.cpp \
   bi/type/Type.cpp \
-  bi/type/UnaryType.cpp \
   bi/visitor/Assigner.cpp \
   bi/visitor/Cloner.cpp \
   bi/visitor/Gatherer.cpp \
@@ -226,7 +223,6 @@ noinst_HEADERS = \
   bi/exception/UnresolvedException.hpp \
   bi/exception/UnsupportedOptionTypeException.hpp \
   bi/expression/all.hpp \
-  bi/expression/BinaryCall.hpp \
   bi/expression/Brackets.hpp \
   bi/expression/Call.hpp \
   bi/expression/EmptyExpression.hpp \
@@ -245,7 +241,6 @@ noinst_HEADERS = \
   bi/expression/Span.hpp \
   bi/expression/Super.hpp \
   bi/expression/This.hpp \
-  bi/expression/UnaryCall.hpp \
   bi/io/bi_ostream.hpp \
   bi/io/bih_ostream.hpp \
   bi/io/cpp/CppBaseGenerator.hpp \
@@ -294,16 +289,15 @@ noinst_HEADERS = \
   bi/type/AliasType.hpp \
   bi/type/ArrayType.hpp \
   bi/type/BasicType.hpp \
-  bi/type/BinaryType.hpp \
   bi/type/ClassType.hpp \
   bi/type/EmptyType.hpp \
   bi/type/FiberType.hpp \
   bi/type/FunctionType.hpp \
   bi/type/IdentifierType.hpp \
+  bi/type/ListType.hpp \
   bi/type/OverloadedType.hpp \
   bi/type/ParenthesesType.hpp \
   bi/type/Type.hpp \
-  bi/type/UnaryType.hpp \
   bi/visitor/all.hpp \
   bi/visitor/Assigner.hpp \
   bi/visitor/Cloner.hpp \

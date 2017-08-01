@@ -45,14 +45,5 @@ public:
    * Block if condition is false. May be empty if there is no else clause.
    */
   unique_ptr<Statement> falseBraces;
-
-  using Statement::definitely;
-  using Statement::possibly;
-
-  virtual bool dispatchDefinitely(const Statement& o) const;
-  virtual bool definitely(const If& o) const;
-
-  virtual bool dispatchPossibly(const Statement& o) const;
-  virtual bool possibly(const If& o) const;
 };
 }

@@ -30,19 +30,3 @@ bi::Statement* bi::LocalVariable::accept(Modifier* visitor) {
 void bi::LocalVariable::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
-
-bool bi::LocalVariable::dispatchDefinitely(const Statement& o) const {
-  return o.definitely(*this);
-}
-
-bool bi::LocalVariable::definitely(const LocalVariable& o) const {
-  return type->definitely(*o.type);
-}
-
-bool bi::LocalVariable::dispatchPossibly(const Statement& o) const {
-  return o.possibly(*this);
-}
-
-bool bi::LocalVariable::possibly(const LocalVariable& o) const {
-  return type->possibly(*o.type);
-}

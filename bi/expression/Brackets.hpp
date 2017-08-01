@@ -32,21 +32,11 @@ public:
    */
   virtual ~Brackets();
 
-  virtual Expression* strip();
   virtual Iterator<Expression> begin() const;
   virtual Iterator<Expression> end() const;
 
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
-
-  using Expression::definitely;
-  using Expression::possibly;
-
-  virtual bool dispatchDefinitely(const Expression& o) const;
-  virtual bool definitely(const Brackets& o) const;
-
-  virtual bool dispatchPossibly(const Expression& o) const;
-  virtual bool possibly(const Brackets& o) const;
 };
 }

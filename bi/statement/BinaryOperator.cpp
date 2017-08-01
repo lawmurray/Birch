@@ -5,12 +5,11 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::BinaryOperator::BinaryOperator(Expression* left, shared_ptr<Name> name,
-    Expression* right, Type* returnType, Statement* braces,
-    shared_ptr<Location> loc) :
+bi::BinaryOperator::BinaryOperator(shared_ptr<Name> name, Expression* parens,
+    Type* returnType, Statement* braces, shared_ptr<Location> loc) :
     Statement(loc),
     Named(name),
-    Binary(left, right),
+    Parenthesised(parens),
     ReturnTyped(returnType),
     Braced(braces) {
   //
@@ -30,20 +29,4 @@ bi::Statement* bi::BinaryOperator::accept(Modifier* visitor) {
 
 void bi::BinaryOperator::accept(Visitor* visitor) const {
   visitor->visit(this);
-}
-
-bool bi::BinaryOperator::dispatchDefinitely(const Statement& o) const {
-  return o.definitely(*this);
-}
-
-bool bi::BinaryOperator::definitely(const BinaryOperator& o) const {
-  return left->definitely(*o.left) && right->definitely(*o.right);
-}
-
-bool bi::BinaryOperator::dispatchPossibly(const Statement& o) const {
-  return o.possibly(*this);
-}
-
-bool bi::BinaryOperator::possibly(const BinaryOperator& o) const {
-  return left->possibly(*o.left) && right->possibly(*o.right);
 }

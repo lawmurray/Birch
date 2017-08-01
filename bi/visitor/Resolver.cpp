@@ -33,7 +33,7 @@ void bi::Resolver::modify(File* o) {
 
 bi::Expression* bi::Resolver::modify(List<Expression>* o) {
   Modifier::modify(o);
-  o->type = new List<Type>(o->head->type->accept(&cloner),
+  o->type = new ListType(o->head->type->accept(&cloner),
       o->tail->type->accept(&cloner));
   o->type = o->type->accept(this);
   return o;
@@ -81,70 +81,6 @@ bi::Expression* bi::Resolver::modify(Call* o) {
     }
   } else {
     throw InvalidCallException(o);
-  }
-  o->type = o->type->accept(this);
-  o->type->assignable = false;  // rvalue
-  return o;
-}
-
-bi::Expression* bi::Resolver::modify(BinaryCall* o) {
-  if (*o->name == "~>") {
-    /* x ~> m is syntactic sugar for m.observe(x) */
-    Expression* expr = new Call(
-        new OverloadedIdentifier<MemberFunction>(new Name("observe"), o->loc),
-        new Parentheses(o->left.release(), o->loc), o->loc);
-    expr = new Member(o->right.release(), expr, o->loc);
-    return expr->accept(this);
-  } else {
-    Scope* memberScope = takeMemberScope();
-    Modifier::modify(o);
-
-    o->op = new OverloadedIdentifier<BinaryOperator>(o->name, o->loc);
-    resolve(o->op.get(), memberScope);
-    o->op->type = new BinaryType(o->left->type->accept(&cloner),
-        o->right->type->accept(&cloner));
-
-    OverloadedType* overloadedType =
-        dynamic_cast<OverloadedType*>(o->op->target->type.get());
-    assert(overloadedType);
-    std::list<Type*> matches;
-    overloadedType->overloads.match(o->op->type.get(), matches);
-    if (matches.size() == 1) {
-      BinaryType* binaryType = dynamic_cast<BinaryType*>(matches.front());
-      assert(binaryType);
-      o->type = binaryType->returnType->accept(&cloner);
-    } else if (matches.size() == 0) {
-      throw InvalidCallException(o);
-    } else if (matches.size() > 1) {
-      throw AmbiguousCallException(o, matches);
-    }
-    o->type = o->type->accept(this);
-    o->type->assignable = false;  // rvalue
-    return o;
-  }
-}
-
-bi::Expression* bi::Resolver::modify(UnaryCall* o) {
-  Scope* memberScope = takeMemberScope();
-  Modifier::modify(o);
-
-  o->op = new OverloadedIdentifier<UnaryOperator>(o->name, o->loc);
-  resolve(o->op.get(), memberScope);
-  o->op->type = new UnaryType(o->single->type->accept(&cloner));
-
-  OverloadedType* overloadedType =
-      dynamic_cast<OverloadedType*>(o->op->target->type.get());
-  assert(overloadedType);
-  std::list<Type*> matches;
-  overloadedType->overloads.match(o->op->type.get(), matches);
-  if (matches.size() == 1) {
-    UnaryType* unaryType = dynamic_cast<UnaryType*>(matches.front());
-    assert(unaryType);
-    o->type = unaryType->returnType->accept(&cloner);
-  } else if (matches.size() == 0) {
-    throw InvalidCallException(o);
-  } else if (matches.size() > 1) {
-    throw AmbiguousCallException(o, matches);
   }
   o->type = o->type->accept(this);
   o->type->assignable = false;  // rvalue
@@ -279,48 +215,30 @@ bi::Expression* bi::Resolver::modify(Identifier<MemberVariable>* o) {
 }
 
 bi::Expression* bi::Resolver::modify(OverloadedIdentifier<Function>* o) {
-  Scope* memberScope = takeMemberScope();
-  Modifier::modify(o);
-  resolve(o, memberScope);
-  return o;
+  return modifyFunctionIdentifier(o);
 }
 
 bi::Expression* bi::Resolver::modify(OverloadedIdentifier<Coroutine>* o) {
-  Scope* memberScope = takeMemberScope();
-  Modifier::modify(o);
-  resolve(o, memberScope);
-  return o;
+  return modifyFunctionIdentifier(o);
 }
 
 bi::Expression* bi::Resolver::modify(
     OverloadedIdentifier<MemberFunction>* o) {
-  Scope* memberScope = takeMemberScope();
-  Modifier::modify(o);
-  resolve(o, memberScope);
-  return o;
+  return modifyFunctionIdentifier(o);
 }
 
 bi::Expression* bi::Resolver::modify(
     OverloadedIdentifier<MemberCoroutine>* o) {
-  Scope* memberScope = takeMemberScope();
-  Modifier::modify(o);
-  resolve(o, memberScope);
-  return o;
+  return modifyFunctionIdentifier(o);
 }
 
 bi::Expression* bi::Resolver::modify(
     OverloadedIdentifier<BinaryOperator>* o) {
-  Scope* memberScope = takeMemberScope();
-  Modifier::modify(o);
-  resolve(o, memberScope);
-  return o;
+  return modifyFunctionIdentifier(o);
 }
 
 bi::Expression* bi::Resolver::modify(OverloadedIdentifier<UnaryOperator>* o) {
-  Scope* memberScope = takeMemberScope();
-  Modifier::modify(o);
-  resolve(o, memberScope);
-  return o;
+  return modifyFunctionIdentifier(o);
 }
 
 bi::Statement* bi::Resolver::modify(Assignment* o) {
@@ -328,28 +246,26 @@ bi::Statement* bi::Resolver::modify(Assignment* o) {
   if (!o->left->type->assignable) {
     throw NotAssignableException(o);
   }
-  if (*o->name == "<-") {
-    /*
-     * An assignment is valid if:
-     *
-     *   1. the right-side type is a the same as, or a subtype of, the
-     *      left-side type (either a polymorphic pointer),
-     *   2. a conversion operator for the left-side type is defined in the
-     *      right-side (class) type, or
-     *   3. an assignment operator for the right-side type is defined in the
-     *      left-side (class) type.
-     */
-    if (!o->right->type->definitely(*o->left->type)) {
-      // ^ the first two cases are covered by this check
-      Identifier<Class>* ref =
-          dynamic_cast<Identifier<Class>*>(o->left->type.get());
-      if (ref) {
-        assert(ref->target);
-        memberScope = ref->target->scope.get();
-      } else {
-        //throw MemberException(o);
-      }
-      //resolve(o, memberScope);
+
+  /*
+   * An assignment is valid if:
+   *
+   *   1. the right-side type is a the same as, or a subtype of, the
+   *      left-side type (either a polymorphic pointer),
+   *   2. a conversion operator for the left-side type is defined in the
+   *      right-side (class) type, or
+   *   3. an assignment operator for the right-side type is defined in the
+   *      left-side (class) type.
+   */
+  if (!o->right->type->definitely(*o->left->type)) {
+    // ^ the first two cases are covered by this check
+    Identifier<Class>* ref =
+        dynamic_cast<Identifier<Class>*>(o->left->type.get());
+    if (ref) {
+      assert(ref->target);
+      memberScope = ref->target->scope.get();
+    } else {
+      //throw MemberException(o);
     }
   }
   ///@todo The <~ and ~ assignments, which are currently not checked, and
@@ -458,14 +374,13 @@ bi::Statement* bi::Resolver::modify(MemberCoroutine* o) {
 
 bi::Statement* bi::Resolver::modify(BinaryOperator* o) {
   push();
-  o->left = o->left->accept(this);
-  o->right = o->right->accept(this);
+  o->parens = o->parens->accept(this);
   o->returnType = o->returnType->accept(this);
   if (!o->braces->isEmpty()) {
     defer(o->braces.get());
   }
-  o->type = new BinaryType(o->left->type->accept(&cloner),
-      o->right->type->accept(&cloner), o->returnType->accept(&cloner));
+  o->type = new FunctionType(o->parens->type->accept(&cloner),
+      o->returnType->accept(&cloner));
   o->type = o->type->accept(this);
   o->scope = pop();
   top()->add(o);
@@ -475,12 +390,12 @@ bi::Statement* bi::Resolver::modify(BinaryOperator* o) {
 
 bi::Statement* bi::Resolver::modify(UnaryOperator* o) {
   push();
-  o->single = o->single->accept(this);
+  o->parens = o->parens->accept(this);
   o->returnType = o->returnType->accept(this);
   if (!o->braces->isEmpty()) {
     defer(o->braces.get());
   }
-  o->type = new UnaryType(o->single->type->accept(&cloner),
+  o->type = new FunctionType(o->parens->type->accept(&cloner),
       o->returnType->accept(&cloner));
   o->type = o->type->accept(this);
   o->scope = pop();
@@ -593,40 +508,25 @@ bi::Statement* bi::Resolver::modify(Yield* o) {
 }
 
 bi::Type* bi::Resolver::modify(IdentifierType* o) {
-  return lookup(o, memberScope)->accept(this);
+  return lookup(o)->accept(this);
 }
 
 bi::Type* bi::Resolver::modify(ClassType* o) {
-  Scope* memberScope = takeMemberScope();
-  assert(!memberScope);
-
   Modifier::modify(o);
   resolve(o);
   return o;
 }
 
 bi::Type* bi::Resolver::modify(AliasType* o) {
-  Scope* memberScope = takeMemberScope();
-  assert(!memberScope);
-
   Modifier::modify(o);
   resolve(o);
   return o;
 }
 
 bi::Type* bi::Resolver::modify(BasicType* o) {
-  Scope* memberScope = takeMemberScope();
-  assert(!memberScope);
-
   Modifier::modify(o);
   resolve(o);
   return o;
-}
-
-bi::Scope* bi::Resolver::takeMemberScope() {
-  Scope* scope = memberScope;
-  memberScope = nullptr;
-  return scope;
 }
 
 bi::Class* bi::Resolver::getClass() {

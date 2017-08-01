@@ -37,14 +37,5 @@ public:
   virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
-
-  using Statement::definitely;
-  using Statement::possibly;
-
-  virtual bool dispatchDefinitely(const Statement& o) const;
-  virtual bool definitely(const ConversionOperator& o) const;
-
-  virtual bool dispatchPossibly(const Statement& o) const;
-  virtual bool possibly(const ConversionOperator& o) const;
 };
 }

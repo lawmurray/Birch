@@ -57,17 +57,6 @@ bi::Expression* bi::Modifier::modify(Call* o) {
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(BinaryCall* o) {
-  o->left = o->left.release()->accept(this);
-  o->right = o->right.release()->accept(this);
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(UnaryCall* o) {
-  o->single = o->single.release()->accept(this);
-  return o;
-}
-
 bi::Expression* bi::Modifier::modify(Slice* o) {
   o->single = o->single.release()->accept(this);
   o->brackets = o->brackets.release()->accept(this);
@@ -243,15 +232,14 @@ bi::Statement* bi::Modifier::modify(MemberCoroutine* o) {
 }
 
 bi::Statement* bi::Modifier::modify(BinaryOperator* o) {
-  o->left = o->left.release()->accept(this);
-  o->right = o->right.release()->accept(this);
+  o->parens = o->parens.release()->accept(this);
   o->returnType = o->returnType.release()->accept(this);
   o->braces = o->braces.release()->accept(this);
   return o;
 }
 
 bi::Statement* bi::Modifier::modify(UnaryOperator* o) {
-  o->single = o->single.release()->accept(this);
+  o->parens = o->parens.release()->accept(this);
   o->returnType = o->returnType.release()->accept(this);
   o->braces = o->braces.release()->accept(this);
   return o;
@@ -339,7 +327,7 @@ bi::Type* bi::Modifier::modify(EmptyType* o) {
   return o;
 }
 
-bi::Type* bi::Modifier::modify(List<Type>* o) {
+bi::Type* bi::Modifier::modify(ListType* o) {
   o->head = o->head.release()->accept(this);
   o->tail = o->tail.release()->accept(this);
   return o;
@@ -374,19 +362,6 @@ bi::Type* bi::Modifier::modify(ParenthesesType* o) {
 
 bi::Type* bi::Modifier::modify(FunctionType* o) {
   o->parens = o->parens.release()->accept(this);
-  o->returnType = o->returnType.release()->accept(this);
-  return o;
-}
-
-bi::Type* bi::Modifier::modify(BinaryType* o) {
-  o->left = o->left.release()->accept(this);
-  o->right = o->right.release()->accept(this);
-  o->returnType = o->returnType.release()->accept(this);
-  return o;
-}
-
-bi::Type* bi::Modifier::modify(UnaryType* o) {
-  o->single = o->single.release()->accept(this);
   o->returnType = o->returnType.release()->accept(this);
   return o;
 }

@@ -28,19 +28,3 @@ bi::Statement* bi::ConversionOperator::accept(Modifier* visitor) {
 void bi::ConversionOperator::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
-
-bool bi::ConversionOperator::dispatchDefinitely(const Statement& o) const {
-  return o.definitely(*this);
-}
-
-bool bi::ConversionOperator::definitely(const ConversionOperator& o) const {
-  return returnType->definitely(*o.returnType);
-}
-
-bool bi::ConversionOperator::dispatchPossibly(const Statement& o) const {
-  return o.possibly(*this);
-}
-
-bool bi::ConversionOperator::possibly(const ConversionOperator& o) const {
-  return returnType->possibly(*o.returnType);
-}

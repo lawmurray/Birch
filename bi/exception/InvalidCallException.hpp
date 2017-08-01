@@ -17,15 +17,5 @@ struct InvalidCallException: public CompilerException {
    * Constructor.
    */
   InvalidCallException(Call* o);
-
-  /**
-   * Constructor.
-   */
-  InvalidCallException(BinaryCall* o);
-
-  /**
-   * Constructor.
-   */
-  InvalidCallException(UnaryCall* o);
 };
 }

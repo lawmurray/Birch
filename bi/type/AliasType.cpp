@@ -91,7 +91,7 @@ bool bi::AliasType::definitely(const FunctionType& o) const {
   return target->base->definitely(o);
 }
 
-bool bi::AliasType::definitely(const List<Type>& o) const {
+bool bi::AliasType::definitely(const ListType& o) const {
   return target->base->definitely(o);
 }
 
@@ -135,7 +135,7 @@ bool bi::AliasType::possibly(const FunctionType& o) const {
   return target->base->possibly(o);
 }
 
-bool bi::AliasType::possibly(const List<Type>& o) const {
+bool bi::AliasType::possibly(const ListType& o) const {
   return target->base->possibly(o);
 }
 

@@ -53,14 +53,8 @@ void bi::bi_ostream::visit(const Brackets* o) {
 
 void bi::bi_ostream::visit(const Call* o) {
   *this << o->single << o->parens;
-}
-
-void bi::bi_ostream::visit(const BinaryCall* o) {
-  *this << o->left << ' ' << o->name << ' ' << o->right;
-}
-
-void bi::bi_ostream::visit(const UnaryCall* o) {
-  *this << o->name << o->single;
+  //*this << o->left << ' ' << o->name << ' ' << o->right;
+  //*this << o->name << o->single;
 }
 
 void bi::bi_ostream::visit(const Slice* o) {
@@ -173,7 +167,7 @@ void bi::bi_ostream::visit(const List<Statement>* o) {
 }
 
 void bi::bi_ostream::visit(const Assignment* o) {
-  *this << o->left << ' ' << o->name << ' ' << o->right;
+  *this << o->left << " <- " << o->right;
 }
 
 void bi::bi_ostream::visit(const Function* o) {
@@ -222,7 +216,7 @@ void bi::bi_ostream::visit(const MemberFunction* o) {
 }
 
 void bi::bi_ostream::visit(const BinaryOperator* o) {
-  *this << "operator " << o->left << ' ' << o->name << ' ' << o->right;
+  /**this << "operator " << o->left << ' ' << o->name << ' ' << o->right;
   if (!o->returnType->isEmpty()) {
     *this << " -> " << o->returnType;
   }
@@ -230,11 +224,11 @@ void bi::bi_ostream::visit(const BinaryOperator* o) {
     *this << o->braces;
   } else {
     *this << ';';
-  }
+  }*/
 }
 
 void bi::bi_ostream::visit(const UnaryOperator* o) {
-  *this << "operator " << o->name << ' ' << o->single;
+  /**this << "operator " << o->name << ' ' << o->single;
   if (!o->returnType->isEmpty()) {
     *this << " -> " << o->returnType;
   }
@@ -242,7 +236,7 @@ void bi::bi_ostream::visit(const UnaryOperator* o) {
     *this << o->braces;
   } else {
     *this << ';';
-  }
+  }*/
 }
 
 void bi::bi_ostream::visit(const AssignmentOperator* o) {
@@ -333,7 +327,7 @@ void bi::bi_ostream::visit(const Raw* o) {
   *this << indent << "}}\n";
 }
 
-void bi::bi_ostream::visit(const List<Type>* o) {
+void bi::bi_ostream::visit(const ListType* o) {
   *this << o->head << ", " << o->tail;
 }
 

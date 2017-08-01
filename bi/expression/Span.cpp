@@ -29,29 +29,3 @@ bi::Expression* bi::Span::accept(Modifier* visitor) {
 void bi::Span::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }
-
-bool bi::Span::dispatchDefinitely(const Expression& o) const {
-  return o.definitely(*this);
-}
-
-bool bi::Span::definitely(const Span& o) const {
-  return single->definitely(*o.single);
-}
-
-bool bi::Span::definitely(const Parameter& o) const {
-  /* transparent to capture */
-  return single->definitely(o);
-}
-
-bool bi::Span::dispatchPossibly(const Expression& o) const {
-  return o.possibly(*this);
-}
-
-bool bi::Span::possibly(const Span& o) const {
-  return single->possibly(*o.single);
-}
-
-bool bi::Span::possibly(const Parameter& o) const {
-  /* transparent to capture */
-  return single->possibly(o);
-}

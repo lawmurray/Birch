@@ -40,8 +40,6 @@ public:
   virtual Expression* modify(Parentheses* o);
   virtual Expression* modify(Brackets* o);
   virtual Expression* modify(Call* o);
-  virtual Expression* modify(BinaryCall* o);
-  virtual Expression* modify(UnaryCall* o);
   virtual Expression* modify(Slice* o);
   virtual Expression* modify(LambdaFunction* o);
   virtual Expression* modify(Span* o);
@@ -96,15 +94,6 @@ public:
 
 protected:
   /**
-   * Take the membership scope, if it exists, so that it is null for the next
-   * such request.
-   *
-   * @return The membership scope, or nullptr if there is no membership scope
-   * at present.
-   */
-  Scope* takeMemberScope();
-
-  /**
    * Get the containing class, if any.
    */
   Class* getClass();
@@ -134,16 +123,14 @@ protected:
   Scope* pop();
 
   /**
-   * Resolve a reference.
+   * Resolve an identifier.
    *
-   * @tparam Reference Reference type.
+   * @tparam ObjectType Object type.
    *
-   * @param ref The reference.
-   * @param scope The membership scope, if it is to be used for lookup,
-   * otherwise the containing scope is used.
+   * @param o The identifier.
    */
-  template<class Reference>
-  void resolve(Reference* ref, Scope* scope = nullptr);
+  template<class ObjectType>
+  void resolve(ObjectType* o);
 
   /**
    * Look up a reference that is syntactically ambiguous in an expression
@@ -185,8 +172,16 @@ protected:
   /**
    * Generic implementation of modify() for variable identifiers.
    */
-  template<class Variable>
-  Identifier<Variable>* modifyVariableIdentifier(bi::Identifier<Variable>* o);
+  template<class ObjectType>
+  Identifier<ObjectType>* modifyVariableIdentifier(
+      bi::Identifier<ObjectType>* o);
+
+  /**
+   * Generic implementation of modify() for function identifiers.
+   */
+  template<class ObjectType>
+  OverloadedIdentifier<ObjectType>* modifyFunctionIdentifier(
+      bi::OverloadedIdentifier<ObjectType>* o);
 
   /**
    * Stack of containing scopes.
@@ -223,32 +218,32 @@ protected:
 
 #include "bi/exception/all.hpp"
 
-template<class Reference>
-void bi::Resolver::resolve(Reference* ref, Scope* scope) {
-  if (scope) {
-    /* use provided scope, usually a membership scope */
-    scope->resolve(ref);
+template<class ObjectType>
+void bi::Resolver::resolve(ObjectType* o) {
+  if (memberScope) {
+    /* use the scope for the current member lookup */
+    memberScope->resolve(o);
+    memberScope = nullptr;
   } else {
     /* use current stack of scopes */
     for (auto iter = scopes.rbegin();
-        ref->matches.size() == 0 && iter != scopes.rend(); ++iter) {
-      (*iter)->resolve(ref);
+        o->matches.size() == 0 && iter != scopes.rend(); ++iter) {
+      (*iter)->resolve(o);
     }
   }
-  if (ref->matches.size() == 0) {
-    throw UnresolvedException(ref);
+  if (o->matches.size() == 0) {
+    throw UnresolvedException(o);
   } else {
-    assert(ref->matches.size() == 1);
-    ref->target = ref->matches.front();
+    assert(o->matches.size() == 1);
+    o->target = o->matches.front();
   }
 }
 
-template<class Variable>
-bi::Identifier<Variable>* bi::Resolver::modifyVariableIdentifier(
-    bi::Identifier<Variable>* o) {
-  Scope* memberScope = takeMemberScope();
+template<class ObjectType>
+bi::Identifier<ObjectType>* bi::Resolver::modifyVariableIdentifier(
+    bi::Identifier<ObjectType>* o) {
   Modifier::modify(o);
-  resolve(o, memberScope);
+  resolve(o);
   if (o->target->type->isFunction()) {
     ///@todo Check arguments
     auto func = dynamic_cast<ReturnTyped*>(o->target->type.get());
@@ -261,5 +256,14 @@ bi::Identifier<Variable>* bi::Resolver::modifyVariableIdentifier(
   } else {
     o->type = o->target->type->accept(&cloner)->accept(this);
   }
+  return o;
+}
+
+template<class ObjectType>
+bi::OverloadedIdentifier<ObjectType>* bi::Resolver::modifyFunctionIdentifier(
+    bi::OverloadedIdentifier<ObjectType>* o) {
+  Modifier::modify(o);
+  resolve(o);
+  o->type = o->target->type->accept(&cloner)->accept(this);
   return o;
 }

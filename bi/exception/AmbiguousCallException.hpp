@@ -20,17 +20,5 @@ struct AmbiguousCallException: public CompilerException {
    */
   AmbiguousCallException(const Call* o,
       const std::list<Type*>& matches);
-
-  /**
-   * Constructor.
-   */
-  AmbiguousCallException(const BinaryCall* o,
-      const std::list<Type*>& matches);
-
-  /**
-   * Constructor.
-   */
-  AmbiguousCallException(const UnaryCall* o,
-      const std::list<Type*>& matches);
 };
 }

@@ -30,19 +30,3 @@ bi::Statement* bi::Coroutine::accept(Modifier* visitor) {
 void bi::Coroutine::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
-
-bool bi::Coroutine::dispatchDefinitely(const Statement& o) const {
-  return o.definitely(*this);
-}
-
-bool bi::Coroutine::definitely(const Coroutine& o) const {
-  return parens->definitely(*o.parens);
-}
-
-bool bi::Coroutine::dispatchPossibly(const Statement& o) const {
-  return o.possibly(*this);
-}
-
-bool bi::Coroutine::possibly(const Coroutine& o) const {
-  return parens->possibly(*o.parens);
-}

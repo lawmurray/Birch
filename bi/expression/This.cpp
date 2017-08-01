@@ -27,27 +27,3 @@ bi::Expression* bi::This::accept(Modifier* visitor) {
 void bi::This::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
-
-bool bi::This::dispatchDefinitely(const Expression& o) const {
-  return o.definitely(*this);
-}
-
-bool bi::This::definitely(const This& o) const {
-  return type->definitely(*o.type);
-}
-
-bool bi::This::definitely(const Parameter& o) const {
-  return type->definitely(*o.type);
-}
-
-bool bi::This::dispatchPossibly(const Expression& o) const {
-  return o.possibly(*this);
-}
-
-bool bi::This::possibly(const This& o) const {
-  return type->possibly(*o.type);
-}
-
-bool bi::This::possibly(const Parameter& o) const {
-  return type->possibly(*o.type);
-}

@@ -37,19 +37,3 @@ bi::Statement* bi::Alias::accept(Modifier* visitor) {
 void bi::Alias::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }
-
-bool bi::Alias::dispatchDefinitely(const Statement& o) const {
-  return o.definitely(*this);
-}
-
-bool bi::Alias::definitely(const Alias& o) const {
-  return true;
-}
-
-bool bi::Alias::dispatchPossibly(const Statement& o) const {
-  return o.possibly(*this);
-}
-
-bool bi::Alias::possibly(const Alias& o) const {
-  return true;
-}

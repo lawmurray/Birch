@@ -42,42 +42,6 @@ void bi::OverloadedIdentifier<ObjectType>::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-template<class ObjectType>
-bool bi::OverloadedIdentifier<ObjectType>::dispatchDefinitely(
-    const Expression& o) const {
-  return o.definitely(*this);
-}
-
-template<class ObjectType>
-bool bi::OverloadedIdentifier<ObjectType>::definitely(
-    const OverloadedIdentifier<ObjectType>& o) const {
-  return true;
-}
-
-template<class ObjectType>
-bool bi::OverloadedIdentifier<ObjectType>::definitely(
-    const Parameter& o) const {
-  return type->definitely(*o.type);
-}
-
-template<class ObjectType>
-bool bi::OverloadedIdentifier<ObjectType>::dispatchPossibly(
-    const Expression& o) const {
-  return o.possibly(*this);
-}
-
-template<class ObjectType>
-bool bi::OverloadedIdentifier<ObjectType>::possibly(
-    const OverloadedIdentifier<ObjectType>& o) const {
-  return true;
-}
-
-template<class ObjectType>
-bool bi::OverloadedIdentifier<ObjectType>::possibly(
-    const Parameter& o) const {
-  return type->possibly(*o.type);
-}
-
 template class bi::OverloadedIdentifier<bi::Function>;
 template class bi::OverloadedIdentifier<bi::Coroutine>;
 template class bi::OverloadedIdentifier<bi::MemberFunction>;

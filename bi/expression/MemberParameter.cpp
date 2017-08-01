@@ -28,19 +28,3 @@ bi::Expression* bi::MemberParameter::accept(Modifier* visitor) {
 void bi::MemberParameter::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
-
-bool bi::MemberParameter::dispatchDefinitely(const Expression& o) const {
-  return o.definitely(*this);
-}
-
-bool bi::MemberParameter::definitely(const MemberParameter& o) const {
-  return type->definitely(*o.type);
-}
-
-bool bi::MemberParameter::dispatchPossibly(const Expression& o) const {
-  return o.possibly(*this);
-}
-
-bool bi::MemberParameter::possibly(const MemberParameter& o) const {
-  return type->possibly(*o.type);
-}

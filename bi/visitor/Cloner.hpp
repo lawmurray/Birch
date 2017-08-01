@@ -31,8 +31,6 @@ public:
   virtual Expression* clone(const Parentheses* o);
   virtual Expression* clone(const Brackets* o);
   virtual Expression* clone(const Call* o);
-  virtual Expression* clone(const BinaryCall* o);
-  virtual Expression* clone(const UnaryCall* o);
   virtual Expression* clone(const Slice* o);
   virtual Expression* clone(const LambdaFunction* o);
   virtual Expression* clone(const Span* o);
@@ -85,7 +83,7 @@ public:
   virtual Statement* clone(const Raw* o);
 
   virtual Type* clone(const EmptyType* o);
-  virtual Type* clone(const List<Type>* o);
+  virtual Type* clone(const ListType* o);
   virtual Type* clone(const IdentifierType* o);
   virtual Type* clone(const ClassType* o);
   virtual Type* clone(const AliasType* o);
@@ -93,8 +91,6 @@ public:
   virtual Type* clone(const ArrayType* o);
   virtual Type* clone(const ParenthesesType* o);
   virtual Type* clone(const FunctionType* o);
-  virtual Type* clone(const BinaryType* o);
-  virtual Type* clone(const UnaryType* o);
   virtual Type* clone(const OverloadedType* o);
   virtual Type* clone(const FiberType* o);
 };

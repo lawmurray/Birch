@@ -29,19 +29,3 @@ bi::Expression* bi::LambdaFunction::accept(Modifier* visitor) {
 void bi::LambdaFunction::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
-
-bool bi::LambdaFunction::dispatchDefinitely(const Expression& o) const {
-  return o.definitely(*this);
-}
-
-bool bi::LambdaFunction::definitely(const LambdaFunction& o) const {
-  return parens->definitely(*o.parens);
-}
-
-bool bi::LambdaFunction::dispatchPossibly(const Expression& o) const {
-  return o.possibly(*this);
-}
-
-bool bi::LambdaFunction::possibly(const LambdaFunction& o) const {
-  return parens->possibly(*o.parens);
-}

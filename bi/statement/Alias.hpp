@@ -43,14 +43,5 @@ public:
    * Base class.
    */
   const Statement* canonical() const;
-
-  using Statement::definitely;
-  using Statement::possibly;
-
-  virtual bool dispatchDefinitely(const Statement& o) const;
-  virtual bool definitely(const Alias& o) const;
-
-  virtual bool dispatchPossibly(const Statement& o) const;
-  virtual bool possibly(const Alias& o) const;
 };
 }

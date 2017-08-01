@@ -28,14 +28,5 @@ public:
   virtual void accept(Visitor* visitor) const;
 
   virtual bool isEmpty() const;
-
-  using Expression::definitely;
-  using Expression::possibly;
-
-  virtual bool dispatchDefinitely(const Expression& o) const;
-  virtual bool definitely(const EmptyExpression& o) const;
-
-  virtual bool dispatchPossibly(const Expression& o) const;
-  virtual bool possibly(const EmptyExpression& o) const;
 };
 }

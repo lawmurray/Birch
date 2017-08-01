@@ -30,16 +30,6 @@ bi::Type* bi::Assigner::modify(FunctionType* o) {
   return o;
 }
 
-bi::Type* bi::Assigner::modify(BinaryType* o) {
-  o->assignable = true;
-  return o;
-}
-
-bi::Type* bi::Assigner::modify(UnaryType* o) {
-  o->assignable = true;
-  return o;
-}
-
 bi::Type* bi::Assigner::modify(OverloadedType* o) {
   o->assignable = true;
   return o;
@@ -50,7 +40,7 @@ bi::Type* bi::Assigner::modify(FiberType* o) {
   return o;
 }
 
-bi::Type* bi::Assigner::modify(List<Type>* o) {
+bi::Type* bi::Assigner::modify(ListType* o) {
   Modifier::modify(o);
   o->assignable = true;
   return o;

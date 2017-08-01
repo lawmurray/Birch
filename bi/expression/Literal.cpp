@@ -37,36 +37,6 @@ void bi::Literal<T1>::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-template<class T1>
-bool bi::Literal<T1>::dispatchDefinitely(const Expression& o) const {
-  return o.definitely(*this);
-}
-
-template<class T1>
-bool bi::Literal<T1>::definitely(Literal<T1>& o) {
-  return value == o.value && type->definitely(*o.type);
-}
-
-template<class T1>
-bool bi::Literal<T1>::definitely(const Parameter& o) const {
-  return type->definitely(*o.type);
-}
-
-template<class T1>
-bool bi::Literal<T1>::dispatchPossibly(const Expression& o) const {
-  return o.possibly(*this);
-}
-
-template<class T1>
-bool bi::Literal<T1>::possibly(Literal<T1>& o) {
-  return value == o.value && type->possibly(*o.type);
-}
-
-template<class T1>
-bool bi::Literal<T1>::possibly(const Parameter& o) const {
-  return type->possibly(*o.type);
-}
-
 /*
  * Explicit instantiations.
  */

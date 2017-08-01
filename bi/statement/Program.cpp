@@ -29,19 +29,3 @@ bi::Statement* bi::Program::accept(Modifier* visitor) {
 void bi::Program::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
-
-bool bi::Program::dispatchDefinitely(const Statement& o) const {
-  return o.definitely(*this);
-}
-
-bool bi::Program::definitely(const Program& o) const {
-  return parens->definitely(*o.parens) && braces->definitely(*o.braces);
-}
-
-bool bi::Program::dispatchPossibly(const Statement& o) const {
-  return o.possibly(*this);
-}
-
-bool bi::Program::possibly(const Program& o) const {
-  return parens->possibly(*o.parens) && braces->possibly(*o.braces);
-}

@@ -67,7 +67,7 @@ bool bi::ClassType::definitely(const FunctionType& o) const {
   return target->hasConversion(&o);
 }
 
-bool bi::ClassType::definitely(const List<Type>& o) const {
+bool bi::ClassType::definitely(const ListType& o) const {
   return target->hasConversion(&o);
 }
 

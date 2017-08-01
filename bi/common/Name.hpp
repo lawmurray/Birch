@@ -14,51 +14,28 @@ class Visitor;
 /**
  * Name.
  */
-class Name: public Located {
+class Name {
 public:
   /**
    * Constructor.
    *
    * @param name Name.
-   * @param loc Location.
    */
-  Name(const std::string& name, shared_ptr<Location> loc = nullptr);
+  Name(const std::string& name);
 
   /**
    * Constructor.
    *
    * @param name Name.
-   * @param loc Location.
    */
-  Name(const char* name = "", shared_ptr<Location> loc = nullptr);
+  Name(const char* name = "");
 
   /**
    * Constructor.
    *
    * @param name Name.
-   * @param loc Location.
    */
-  Name(const char name, shared_ptr<Location> loc = nullptr);
-
-  /**
-   * Constructor.
-   *
-   * @param sigil Sigil.
-   * @param name Name.
-   * @param loc Location.
-   */
-  Name(const char sigil, const std::string& name, shared_ptr<Location> loc =
-      nullptr);
-
-  /**
-   * Constructor.
-   *
-   * @param sigil Sigil.
-   * @param name Name.
-   * @param loc Location.
-   */
-  Name(const char sigil, const char* name = "", shared_ptr<Location> loc =
-      nullptr);
+  Name(const char name);
 
   /**
    * Destructor.
