@@ -21,6 +21,7 @@ birchc_LDADD = $(DEPS_LIBS)
 birchc_SOURCES = \
   bi/build/Compiler.cpp \
   bi/build/misc.cpp \
+  bi/common/Argumented.cpp \
   bi/common/Based.cpp \
   bi/common/Braced.cpp \
   bi/common/Bracketed.cpp \
@@ -36,6 +37,7 @@ birchc_SOURCES = \
   bi/common/Numbered.cpp \
   bi/common/Overloaded.cpp \
   bi/common/OverloadedDictionary.cpp \
+  bi/common/Parameterised.cpp \
   bi/common/Parenthesised.cpp \
   bi/common/Path.cpp \
   bi/common/ReturnTyped.cpp \
@@ -184,6 +186,7 @@ noinst_HEADERS = \
   bi/build/Driver.hpp \
   bi/build/misc.hpp \
   bi/build/Packager.hpp \
+  bi/common/Argumented.hpp \
   bi/common/Based.hpp \
   bi/common/Braced.hpp \
   bi/common/Bracketed.hpp \
@@ -199,6 +202,7 @@ noinst_HEADERS = \
   bi/common/Numbered.hpp \
   bi/common/Overloaded.hpp \
   bi/common/OverloadedDictionary.hpp \
+  bi/common/Parameterised.hpp \
   bi/common/Parenthesised.hpp \
   bi/common/Path.hpp \
   bi/common/Reference.hpp \

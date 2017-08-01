@@ -59,7 +59,7 @@ bi::Expression* bi::Modifier::modify(Binary* o) {
 
 bi::Expression* bi::Modifier::modify(Call* o) {
   o->single = o->single->accept(this);
-  o->parens = o->parens->accept(this);
+  o->args = o->args->accept(this);
   return o;
 }
 
@@ -204,48 +204,48 @@ bi::Statement* bi::Modifier::modify(MemberVariable* o) {
 }
 
 bi::Statement* bi::Modifier::modify(Function* o) {
-  o->parens = o->parens->accept(this);
+  o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
   o->braces = o->braces->accept(this);
   return o;
 }
 
 bi::Statement* bi::Modifier::modify(Coroutine* o) {
-  o->parens = o->parens->accept(this);
+  o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
   o->braces = o->braces->accept(this);
   return o;
 }
 
 bi::Statement* bi::Modifier::modify(Program* o) {
-  o->parens = o->parens->accept(this);
+  o->params = o->params->accept(this);
   o->braces = o->braces->accept(this);
   return o;
 }
 
 bi::Statement* bi::Modifier::modify(MemberFunction* o) {
-  o->parens = o->parens->accept(this);
+  o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
   o->braces = o->braces->accept(this);
   return o;
 }
 
 bi::Statement* bi::Modifier::modify(MemberCoroutine* o) {
-  o->parens = o->parens->accept(this);
+  o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
   o->braces = o->braces->accept(this);
   return o;
 }
 
 bi::Statement* bi::Modifier::modify(BinaryOperator* o) {
-  o->parens = o->parens->accept(this);
+  o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
   o->braces = o->braces->accept(this);
   return o;
 }
 
 bi::Statement* bi::Modifier::modify(UnaryOperator* o) {
-  o->parens = o->parens->accept(this);
+  o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
   o->braces = o->braces->accept(this);
   return o;
@@ -373,7 +373,7 @@ bi::Type* bi::Modifier::modify(BinaryType* o) {
 }
 
 bi::Type* bi::Modifier::modify(FunctionType* o) {
-  o->parens = o->parens->accept(this);
+  o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
   return o;
 }

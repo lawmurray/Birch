@@ -6,11 +6,11 @@
 #include "bi/visitor/all.hpp"
 
 bi::MemberCoroutine::MemberCoroutine(Name* name,
-    Expression* parens, Type* returnType, Statement* braces,
+    Expression* params, Type* returnType, Statement* braces,
     Location* loc) :
     Statement(loc),
     Named(name),
-    Parenthesised(parens),
+    Parameterised(params),
     ReturnTyped(returnType),
     Braced(braces) {
   //

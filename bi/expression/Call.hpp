@@ -5,7 +5,7 @@
 
 #include "bi/expression/Expression.hpp"
 #include "bi/common/Single.hpp"
-#include "bi/common/Parenthesised.hpp"
+#include "bi/common/Argumented.hpp"
 
 namespace bi {
 /**
@@ -14,19 +14,16 @@ namespace bi {
  *
  * @ingroup compiler_expression
  */
-class Call: public Expression,
-    public Single<Expression>,
-    public Parenthesised {
+class Call: public Expression, public Single<Expression>, public Argumented {
 public:
   /**
    * Constructor.
    *
    * @param single Expression.
-   * @param parens Parentheses.
+   * @param args Arguments.
    * @param loc Location.
    */
-  Call(Expression* single, Expression* parens, Location* loc =
-      nullptr);
+  Call(Expression* single, Expression* args, Location* loc = nullptr);
 
   /**
    * Destructor.
@@ -36,5 +33,10 @@ public:
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
+
+  /**
+   * Arguments.
+   */
+  Expression* args;
 };
 }

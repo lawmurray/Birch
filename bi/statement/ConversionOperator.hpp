@@ -23,7 +23,7 @@ public:
    * Constructor.
    *
    * @param returnType Return type.
-   * @param braces Braces expression.
+   * @param braces Body.
    * @param loc Location.
    */
   ConversionOperator(Type* returnType, Statement* braces,

@@ -112,7 +112,7 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
   if (!header) {
     middle("bi::type::" << type->name << "::");
   }
-  middle(internalise(o->name->str()) << o->parens);
+  middle(internalise(o->name->str()) << o->params);
   //middle(" const");
   if (header) {
     finish(';');

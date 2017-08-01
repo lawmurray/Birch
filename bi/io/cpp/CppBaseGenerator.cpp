@@ -54,7 +54,7 @@ void bi::CppBaseGenerator::visit(const Brackets* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Call* o) {
-  middle(o->single << o->parens);
+  middle(o->single << o->args);
 
   //if (isTranslatable(o->name->str())) {
   //  /* can use as raw C++ operator */
@@ -266,7 +266,7 @@ void bi::CppBaseGenerator::visit(const Function* o) {
     if (!header) {
       middle("bi::func::");
     }
-    middle(o->name << o->parens);
+    middle(o->name << o->params);
 
     if (header) {
       finish(';');
@@ -317,9 +317,9 @@ void bi::CppBaseGenerator::visit(const Program* o) {
   } else {
     line("void bi::program::" << o->name << "(int argc, char** argv) {");
     in();
-    if (o->parens->tupleSize() > 0) {
+    if (o->params->tupleSize() > 0) {
       /* option variables */
-      for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
+      for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
         auto param = dynamic_cast<const Parameter*>(*iter);
         assert(param);
         start(param->type << ' ' << param->name);
@@ -337,12 +337,12 @@ void bi::CppBaseGenerator::visit(const Program* o) {
       /* option flags */
       line("enum {");
       in();
-      for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
+      for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
         std::string flag = dynamic_cast<const Parameter*>(*iter)->name->str()
             + "_ARG";
         boost::to_upper(flag);
         start(flag);
-        if (iter == o->parens->begin()) {
+        if (iter == o->params->begin()) {
           middle(" = 256");
         }
         finish(',');
@@ -354,7 +354,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
       line("int c, option_index;");
       line("option long_options[] = {");
       in();
-      for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
+      for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
         const std::string& name =
             dynamic_cast<const Parameter*>(*iter)->name->str();
         //if (name.length() > 1) {
@@ -390,7 +390,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
       line("switch (c) {");
       in();
 
-      for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
+      for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
         auto name = dynamic_cast<const Named*>(*iter)->name;
         assert(name);
         std::string flag = name->str() + "_ARG";
@@ -455,7 +455,7 @@ void bi::CppBaseGenerator::visit(const BinaryOperator* o) {
     } else {
       middle(o->name);
     }
-    middle(o->parens);
+    middle(o->params);
     if (header) {
       finish(';');
     } else {
@@ -486,7 +486,7 @@ void bi::CppBaseGenerator::visit(const UnaryOperator* o) {
     } else {
       middle(o->name);
     }
-    middle(o->parens);
+    middle(o->params);
     if (header) {
       finish(';');
     } else {
@@ -557,17 +557,17 @@ void bi::CppBaseGenerator::visit(const Assignment* o) {
   //if (*o->name == "<~" || *o->name == "~") {
   //  start(o->name << '(' << o->left << ", " << o->right << ')');
   //} else {
-    if (o->left->type->isClass() && !o->right->type->isClass()) {
-      start("*(" << o->left << ')');
-    } else {
-      start(o->left);
-    }
-    middle(" = ");
-    if (!o->left->type->isClass() && o->right->type->isClass()) {
-      middle("*(" << o->right << ')');
-    } else {
-      middle(o->right);
-    }
+  if (o->left->type->isClass() && !o->right->type->isClass()) {
+    start("*(" << o->left << ')');
+  } else {
+    start(o->left);
+  }
+  middle(" = ");
+  if (!o->left->type->isClass() && o->right->type->isClass()) {
+    middle("*(" << o->right << ')');
+  } else {
+    middle(o->right);
+  }
   //}
   finish(';');
 }
@@ -654,7 +654,7 @@ void bi::CppBaseGenerator::visit(const ParenthesesType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const FunctionType* o) {
-  middle("std::function<" << o->returnType << o->parens);
+  middle("std::function<" << o->returnType << o->params);
 }
 
 void bi::CppBaseGenerator::visit(const FiberType* o) {

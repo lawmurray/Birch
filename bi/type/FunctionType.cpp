@@ -5,16 +5,20 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::FunctionType::FunctionType(Type* parens, Type* returnType,
-    Location* loc, const bool assignable) :
+bi::FunctionType::FunctionType(Type* params, Type* returnType, Location* loc,
+    const bool assignable) :
     Type(loc, assignable),
     ReturnTyped(returnType),
-    parens(parens) {
+    params(params) {
   //
 }
 
 bi::FunctionType::~FunctionType() {
   //
+}
+
+bool bi::FunctionType::isFunction() const {
+  return true;
 }
 
 bi::Type* bi::FunctionType::accept(Cloner* visitor) const {
@@ -29,16 +33,12 @@ void bi::FunctionType::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }
 
-bool bi::FunctionType::isFunction() const {
-  return true;
-}
-
 bool bi::FunctionType::dispatchDefinitely(const Type& o) const {
   return o.definitely(*this);
 }
 
 bool bi::FunctionType::definitely(const FunctionType& o) const {
-  return parens->definitely(*o.parens);
+  return params->definitely(*o.params);
 }
 
 bool bi::FunctionType::dispatchPossibly(const Type& o) const {
@@ -46,5 +46,5 @@ bool bi::FunctionType::dispatchPossibly(const Type& o) const {
 }
 
 bool bi::FunctionType::possibly(const FunctionType& o) const {
-  return parens->possibly(*o.parens);
+  return params->possibly(*o.params);
 }

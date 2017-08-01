@@ -52,7 +52,7 @@ void bi::bi_ostream::visit(const Brackets* o) {
 }
 
 void bi::bi_ostream::visit(const Call* o) {
-  *this << o->single << o->parens;
+  *this << o->single << o->args;
   //*this << o->left << ' ' << o->name << ' ' << o->right;
   //*this << o->name << o->single;
 }
@@ -171,7 +171,7 @@ void bi::bi_ostream::visit(const Assignment* o) {
 }
 
 void bi::bi_ostream::visit(const Function* o) {
-  *this << "function " << o->name << o->parens;
+  *this << "function " << o->name << o->params;
   if (!o->returnType->isEmpty()) {
     *this << " -> " << o->returnType;
   }
@@ -183,7 +183,7 @@ void bi::bi_ostream::visit(const Function* o) {
 }
 
 void bi::bi_ostream::visit(const Coroutine* o) {
-  *this << "function " << o->name << o->parens;
+  *this << "function " << o->name << o->params;
   if (!o->returnType->isEmpty()) {
     *this << " -> " << o->returnType;
   }
@@ -195,7 +195,7 @@ void bi::bi_ostream::visit(const Coroutine* o) {
 }
 
 void bi::bi_ostream::visit(const Program* o) {
-  *this << "program " << o->name << o->parens;
+  *this << "program " << o->name << o->params;
   if (!header && !o->braces->isEmpty()) {
     *this << o->braces;
   } else {
@@ -204,7 +204,7 @@ void bi::bi_ostream::visit(const Program* o) {
 }
 
 void bi::bi_ostream::visit(const MemberFunction* o) {
-  *this << "function " << o->name << o->parens;
+  *this << "function " << o->name << o->params;
   if (!o->returnType->isEmpty()) {
     *this << " -> " << o->returnType;
   }
@@ -368,7 +368,7 @@ void bi::bi_ostream::visit(const ParenthesesType* o) {
 }
 
 void bi::bi_ostream::visit(const FunctionType* o) {
-  *this << "Function<" << o->parens;
+  *this << "Function<" << o->params;
   if (!o->returnType->isEmpty()) {
     *this << " -> " << o->returnType;
   }

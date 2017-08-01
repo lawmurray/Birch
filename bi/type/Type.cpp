@@ -49,10 +49,6 @@ bool bi::Type::isBinary() const {
   return false;
 }
 
-bool bi::Type::isUnary() const {
-  return false;
-}
-
 bool bi::Type::isOverloaded() const {
   return false;
 }

@@ -5,11 +5,10 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::Call::Call(Expression* single, Expression* parens,
-    Location* loc) :
+bi::Call::Call(Expression* single, Expression* args, Location* loc) :
     Expression(loc),
     Single<Expression>(single),
-    Parenthesised(parens) {
+    Argumented(args) {
   //
 }
 

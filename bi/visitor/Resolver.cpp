@@ -67,7 +67,7 @@ bi::Expression* bi::Resolver::modify(Call* o) {
     assert(overloadedType);
 
     std::list<Type*> matches;
-    overloadedType->overloads.match(o->parens->type, matches);
+    overloadedType->overloads.match(o->args->type, matches);
     if (matches.size() == 1) {
       FunctionType* functionType =
           dynamic_cast<FunctionType*>(matches.front());
@@ -81,7 +81,7 @@ bi::Expression* bi::Resolver::modify(Call* o) {
   } else if (o->single->type->isFunction()) {
     FunctionType* functionType = dynamic_cast<FunctionType*>(o->single->type);
     assert(functionType);
-    if (o->parens->type->definitely(*functionType->parens)) {
+    if (o->args->type->definitely(*functionType->params)) {
       o->type = functionType->returnType->accept(&cloner);
     } else {
       throw InvalidCallException(o);
@@ -302,12 +302,12 @@ bi::Statement* bi::Resolver::modify(MemberVariable* o) {
 
 bi::Statement* bi::Resolver::modify(Function* o) {
   push();
-  o->parens = o->parens->accept(this);
+  o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
   if (!o->braces->isEmpty()) {
     defer(o->braces);
   }
-  o->type = new FunctionType(o->parens->type->accept(&cloner),
+  o->type = new FunctionType(o->params->type->accept(&cloner),
       o->returnType->accept(&cloner));
   o->type = o->type->accept(this);
   o->scope = pop();
@@ -318,12 +318,12 @@ bi::Statement* bi::Resolver::modify(Function* o) {
 
 bi::Statement* bi::Resolver::modify(Coroutine* o) {
   push();
-  o->parens = o->parens->accept(this);
+  o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
   if (!o->braces->isEmpty()) {
     defer(o->braces);
   }
-  o->type = new FunctionType(o->parens->type->accept(&cloner),
+  o->type = new FunctionType(o->params->type->accept(&cloner),
       new FiberType(o->returnType->accept(&cloner)));
   o->type = o->type->accept(this);
   o->scope = pop();
@@ -334,8 +334,8 @@ bi::Statement* bi::Resolver::modify(Coroutine* o) {
 
 bi::Statement* bi::Resolver::modify(Program* o) {
   push();
-  o->parens = o->parens->accept(this);
-  o->parens->accept(&assigner);
+  o->params = o->params->accept(this);
+  o->params->accept(&assigner);
   // ^ currently for backwards compatibility of delay_triplet example, can
   //   be updated later
   defer(o->braces);
@@ -348,12 +348,12 @@ bi::Statement* bi::Resolver::modify(Program* o) {
 
 bi::Statement* bi::Resolver::modify(MemberFunction* o) {
   push();
-  o->parens = o->parens->accept(this);
+  o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
   if (!o->braces->isEmpty()) {
     defer(o->braces);
   }
-  o->type = new FunctionType(o->parens->type->accept(&cloner),
+  o->type = new FunctionType(o->params->type->accept(&cloner),
       o->returnType->accept(&cloner));
   o->type = o->type->accept(this);
   o->scope = pop();
@@ -364,12 +364,12 @@ bi::Statement* bi::Resolver::modify(MemberFunction* o) {
 
 bi::Statement* bi::Resolver::modify(MemberCoroutine* o) {
   push();
-  o->parens = o->parens->accept(this);
+  o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
   if (!o->braces->isEmpty()) {
     defer(o->braces);
   }
-  o->type = new FunctionType(o->parens->type->accept(&cloner),
+  o->type = new FunctionType(o->params->type->accept(&cloner),
       new FiberType(o->returnType->accept(&cloner)));
   o->type = o->type->accept(this);
   o->scope = pop();
@@ -380,12 +380,12 @@ bi::Statement* bi::Resolver::modify(MemberCoroutine* o) {
 
 bi::Statement* bi::Resolver::modify(BinaryOperator* o) {
   push();
-  o->parens = o->parens->accept(this);
+  o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
   if (!o->braces->isEmpty()) {
     defer(o->braces);
   }
-  o->type = new FunctionType(o->parens->type->accept(&cloner),
+  o->type = new FunctionType(o->params->type->accept(&cloner),
       o->returnType->accept(&cloner));
   o->type = o->type->accept(this);
   o->scope = pop();
@@ -396,12 +396,12 @@ bi::Statement* bi::Resolver::modify(BinaryOperator* o) {
 
 bi::Statement* bi::Resolver::modify(UnaryOperator* o) {
   push();
-  o->parens = o->parens->accept(this);
+  o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
   if (!o->braces->isEmpty()) {
     defer(o->braces);
   }
-  o->type = new FunctionType(o->parens->type->accept(&cloner),
+  o->type = new FunctionType(o->params->type->accept(&cloner),
       o->returnType->accept(&cloner));
   o->type = o->type->accept(this);
   o->scope = pop();

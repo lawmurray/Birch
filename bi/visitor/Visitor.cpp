@@ -62,7 +62,7 @@ void bi::Visitor::visit(const Binary* o) {
 
 void bi::Visitor::visit(const Call* o) {
   o->single->accept(this);
-  o->parens->accept(this);
+  o->args->accept(this);
 }
 
 void bi::Visitor::visit(const Slice* o) {
@@ -193,42 +193,42 @@ void bi::Visitor::visit(const MemberVariable* o) {
 }
 
 void bi::Visitor::visit(const Function* o) {
-  o->parens->accept(this);
+  o->params->accept(this);
   o->returnType->accept(this);
   o->braces->accept(this);
 }
 
 void bi::Visitor::visit(const Coroutine* o) {
-  o->parens->accept(this);
+  o->params->accept(this);
   o->returnType->accept(this);
   o->braces->accept(this);
 }
 
 void bi::Visitor::visit(const Program* o) {
-  o->parens->accept(this);
+  o->params->accept(this);
   o->braces->accept(this);
 }
 
 void bi::Visitor::visit(const MemberCoroutine* o) {
-  o->parens->accept(this);
+  o->params->accept(this);
   o->returnType->accept(this);
   o->braces->accept(this);
 }
 
 void bi::Visitor::visit(const MemberFunction* o) {
-  o->parens->accept(this);
+  o->params->accept(this);
   o->returnType->accept(this);
   o->braces->accept(this);
 }
 
 void bi::Visitor::visit(const BinaryOperator* o) {
-  o->parens->accept(this);
+  o->params->accept(this);
   o->returnType->accept(this);
   o->braces->accept(this);
 }
 
 void bi::Visitor::visit(const UnaryOperator* o) {
-  o->parens->accept(this);
+  o->params->accept(this);
   o->returnType->accept(this);
   o->braces->accept(this);
 }
@@ -340,7 +340,7 @@ void bi::Visitor::visit(const BinaryType* o) {
 }
 
 void bi::Visitor::visit(const FunctionType* o) {
-  o->parens->accept(this);
+  o->params->accept(this);
   o->returnType->accept(this);
 }
 

@@ -15,14 +15,13 @@ bi::InvalidCallException::InvalidCallException(Call* o) {
   }
   buf << "error: invalid call '" << o << "'\n";
   if (o->single->type->isFunction()) {
-    buf << "note: type of parameters is\n";
+    buf << "note: function type is\n";
     buf << o->single->type << "\n";
-    buf << "note: type of arguments is\n";
-    buf << o->parens->type << "\n";
+    buf << "note: argument type is\n";
+    buf << o->args->type << "\n";
   } else {
     buf << "note: expression is not of function type:\n";
     buf << o->single->type << "\n";
   }
-
   msg = base.str();
 }

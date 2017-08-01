@@ -17,12 +17,12 @@ public:
   /**
    * Constructor.
    *
-   * @param parens Parameters type.
+   * @param params Parameters type.
    * @param returnType Return type.
    * @param loc Location.
    * @param assignable Is this type assignable?
    */
-  FunctionType(Type* parens, Type* returnType = new EmptyType(),
+  FunctionType(Type* params, Type* returnType = new EmptyType(),
       Location* loc = nullptr, const bool assignable = false);
 
   /**
@@ -48,6 +48,6 @@ public:
   /**
    * Parameters type.
    */
-  Type* parens;
+  Type* params;
 };
 }

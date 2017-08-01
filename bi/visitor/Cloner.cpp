@@ -50,7 +50,7 @@ bi::Expression* bi::Cloner::clone(const Binary* o) {
 }
 
 bi::Expression* bi::Cloner::clone(const Call* o) {
-  return new Call(o->single->accept(this), o->parens->accept(this), o->loc);
+  return new Call(o->single->accept(this), o->args->accept(this), o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const Slice* o) {
@@ -177,37 +177,37 @@ bi::Statement* bi::Cloner::clone(const MemberVariable* o) {
 }
 
 bi::Statement* bi::Cloner::clone(const Function* o) {
-  return new Function(o->name, o->parens->accept(this),
+  return new Function(o->name, o->params->accept(this),
       o->returnType->accept(this), o->braces->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const Coroutine* o) {
-  return new Coroutine(o->name, o->parens->accept(this),
+  return new Coroutine(o->name, o->params->accept(this),
       o->returnType->accept(this), o->braces->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const Program* o) {
-  return new Program(o->name, o->parens->accept(this),
+  return new Program(o->name, o->params->accept(this),
       o->braces->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const MemberFunction* o) {
-  return new MemberFunction(o->name, o->parens->accept(this),
+  return new MemberFunction(o->name, o->params->accept(this),
       o->returnType->accept(this), o->braces->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const MemberCoroutine* o) {
-  return new MemberCoroutine(o->name, o->parens->accept(this),
+  return new MemberCoroutine(o->name, o->params->accept(this),
       o->returnType->accept(this), o->braces->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const BinaryOperator* o) {
-  return new BinaryOperator(o->name, o->parens->accept(this),
+  return new BinaryOperator(o->name, o->params->accept(this),
       o->returnType->accept(this), o->braces->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const UnaryOperator* o) {
-  return new UnaryOperator(o->name, o->parens->accept(this),
+  return new UnaryOperator(o->name, o->params->accept(this),
       o->returnType->accept(this), o->braces->accept(this), o->loc);
 }
 
@@ -314,7 +314,7 @@ bi::Type* bi::Cloner::clone(const BinaryType* o) {
 }
 
 bi::Type* bi::Cloner::clone(const FunctionType* o) {
-  return new FunctionType(o->parens->accept(this),
+  return new FunctionType(o->params->accept(this),
       o->returnType->accept(this), o->loc, o->assignable);
 }
 

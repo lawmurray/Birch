@@ -14,7 +14,7 @@ bi::CppCoroutineGenerator::CppCoroutineGenerator(std::ostream& base,
 
 void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
   /* gather important objects */
-  o->parens->accept(&parameters);
+  o->params->accept(&parameters);
   o->braces->accept(&locals);
   o->braces->accept(&yields);
 
@@ -35,11 +35,11 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
   if (!header) {
     middle("bi::func::" << o->name << "Coroutine::");
   }
-  middle(o->name << "Coroutine" << o->parens);
+  middle(o->name << "Coroutine" << o->params);
   if (header) {
     finish(';');
   } else {
-    if (o->parens->tupleSize() > 0) {
+    if (o->params->tupleSize() > 0) {
       finish(" :");
       in();
       for (auto iter = parameters.begin(); iter != parameters.end(); ++iter) {
@@ -107,7 +107,7 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
     in();
 
     /* parameters and local variables as class member variables */
-    for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
+    for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
       auto param = dynamic_cast<const Parameter*>(*iter);
       assert(param);
       line(param->type << ' ' << param->name << ';');
@@ -137,7 +137,7 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
   if (!header) {
     middle("bi::func::");
   }
-  middle(o->name << o->parens);
+  middle(o->name << o->params);
   if (header) {
     finish(';');
   } else {
@@ -145,8 +145,8 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
     in();
     start("return Fiber<" << o->returnType << ">(make_object<");
     middle(o->name << "Coroutine>(");
-    for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
-      if (iter != o->parens->begin()) {
+    for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
+      if (iter != o->params->begin()) {
         middle(", ");
       }
       const Parameter* param = dynamic_cast<const Parameter*>(*iter);

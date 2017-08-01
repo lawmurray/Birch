@@ -5,11 +5,11 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::Program::Program(Name* name, Expression* parens,
-    Statement* braces, Location* loc) :
+bi::Program::Program(Name* name, Expression* params, Statement* braces,
+    Location* loc) :
     Statement(loc),
     Named(name),
-    Parenthesised(parens),
+    Parameterised(params),
     Braced(braces) {
   //
 }

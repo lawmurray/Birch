@@ -28,7 +28,7 @@ public:
    *
    * @param name Name.
    * @param single Operand.
-   * @param braces Braces expression.
+   * @param braces Body.
    * @param loc Location.
    */
   AssignmentOperator(Name* name, Expression* single,

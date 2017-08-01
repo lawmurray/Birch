@@ -6,7 +6,7 @@
 #include "bi/statement/Statement.hpp"
 #include "bi/expression/Expression.hpp"
 #include "bi/common/Named.hpp"
-#include "bi/common/Parenthesised.hpp"
+#include "bi/common/Parameterised.hpp"
 #include "bi/common/Scoped.hpp"
 #include "bi/common/Braced.hpp"
 
@@ -18,7 +18,7 @@ namespace bi {
  */
 class Program: public Statement,
     public Named,
-    public Parenthesised,
+    public Parameterised,
     public Scoped,
     public Braced {
 public:
@@ -26,11 +26,11 @@ public:
    * Constructor.
    *
    * @param name Name.
-   * @param parens Expression in parentheses.
-   * @param braces Expression in braces.
+   * @param params Parameters.
+   * @param braces Body.
    * @param loc Location.
    */
-  Program(Name* name, Expression* parens, Statement* braces,
+  Program(Name* name, Expression* params, Statement* braces,
       Location* loc = nullptr);
 
   /**

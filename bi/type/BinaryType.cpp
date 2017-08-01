@@ -16,6 +16,10 @@ bi::BinaryType::~BinaryType() {
   //
 }
 
+bool bi::BinaryType::isBinary() const {
+  return true;
+}
+
 bi::Type* bi::BinaryType::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

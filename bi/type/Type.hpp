@@ -114,11 +114,6 @@ public:
   virtual bool isBinary() const;
 
   /**
-   * Is this a unary operator type?
-   */
-  virtual bool isUnary() const;
-
-  /**
    * Is this an overloaded type?
    */
   virtual bool isOverloaded() const;

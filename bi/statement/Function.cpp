@@ -5,11 +5,11 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::Function::Function(Name* name, Expression* parens, Type* returnType,
+bi::Function::Function(Name* name, Expression* params, Type* returnType,
     Statement* braces, Location* loc) :
     Statement(loc),
     Named(name),
-    Parenthesised(parens),
+    Parameterised(params),
     ReturnTyped(returnType),
     Braced(braces) {
   //

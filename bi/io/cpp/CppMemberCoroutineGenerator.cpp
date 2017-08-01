@@ -13,7 +13,7 @@ bi::CppMemberCoroutineGenerator::CppMemberCoroutineGenerator(
 
 void bi::CppMemberCoroutineGenerator::visit(const MemberCoroutine* o) {
   /* gather important objects */
-  o->parens->accept(&parameters);
+  o->params->accept(&parameters);
   o->braces->accept(&locals);
   o->braces->accept(&yields);
 
@@ -31,8 +31,8 @@ void bi::CppMemberCoroutineGenerator::visit(const MemberCoroutine* o) {
     middle("bi::type::" << type->name << "::" << o->name << "Coroutine::");
   }
   middle(o->name << "Coroutine(const Pointer<" << type->name << ">& self");
-  if (!o->parens->strip()->isEmpty()) {
-    middle(", " << o->parens->strip());
+  if (!o->params->strip()->isEmpty()) {
+    middle(", " << o->params->strip());
   }
   middle(')');
   if (header) {
@@ -122,7 +122,7 @@ void bi::CppMemberCoroutineGenerator::visit(const MemberCoroutine* o) {
   if (!header) {
     middle("bi::type::" << type->name << "::");
   }
-  middle(o->name << o->parens);
+  middle(o->name << o->params);
   if (header) {
     finish(';');
   } else {

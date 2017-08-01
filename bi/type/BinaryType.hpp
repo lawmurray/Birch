@@ -30,6 +30,8 @@ public:
    */
   virtual ~BinaryType();
 
+  virtual bool isBinary() const;
+
   virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
