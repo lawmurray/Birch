@@ -9,27 +9,27 @@
 
 namespace bi {
 /**
- * Object containing single operand.
+ * Object containing another single object.
  *
  * @ingroup compiler_common
  */
 template<class T>
-class Unary {
+class Single {
 public:
   /**
    * Constructor.
    *
-   * @param single Operand.
+   * @param single Object.
    */
-  Unary(T* single);
+  Single(T* single);
 
   /**
    * Destructor.
    */
-  virtual ~Unary() = 0;
+  virtual ~Single() = 0;
 
   /**
-   * Operand.
+   * Object.
    */
   T* single;
 };

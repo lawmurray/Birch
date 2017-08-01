@@ -8,7 +8,7 @@
 bi::ArrayType::ArrayType(Type* single, Expression* brackets,
     Location* loc, const bool assignable) :
     Type(loc, assignable),
-    Unary<Type>(single),
+    Single<Type>(single),
     Bracketed(brackets),
     ndims(brackets->tupleSize()) {
   //
@@ -17,7 +17,7 @@ bi::ArrayType::ArrayType(Type* single, Expression* brackets,
 bi::ArrayType::ArrayType(Type* single, const int ndims,
     Location* loc, const bool assignable) :
     Type(loc, assignable),
-    Unary<Type>(single),
+    Single<Type>(single),
     ndims(ndims) {
   //
 }

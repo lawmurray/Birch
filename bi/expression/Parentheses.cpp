@@ -9,7 +9,7 @@
 bi::Parentheses::Parentheses(Expression* single,
     Location* loc) :
     Expression(loc),
-    Unary<Expression>(single) {
+    Single<Expression>(single) {
   //
 }
 

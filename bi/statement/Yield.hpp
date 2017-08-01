@@ -5,7 +5,7 @@
 
 #include "bi/statement/Statement.hpp"
 #include "bi/expression/Expression.hpp"
-#include "bi/common/Unary.hpp"
+#include "bi/common/Single.hpp"
 
 namespace bi {
 /**
@@ -13,7 +13,7 @@ namespace bi {
  *
  * @ingroup compiler_statement
  */
-class Yield: public Statement, public Unary<Expression> {
+class Yield: public Statement, public Single<Expression> {
 public:
   /**
    * Constructor.

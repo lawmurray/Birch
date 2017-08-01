@@ -4,7 +4,7 @@
 #pragma once
 
 #include "bi/type/Type.hpp"
-#include "bi/common/Unary.hpp"
+#include "bi/common/Single.hpp"
 
 namespace bi {
 /**
@@ -12,7 +12,7 @@ namespace bi {
  *
  * @ingroup compiler_type
  */
-class ParenthesesType: public Type, public Unary<Type> {
+class ParenthesesType: public Type, public Single<Type> {
 public:
   /**
    * Constructor.

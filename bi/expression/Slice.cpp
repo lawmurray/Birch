@@ -8,7 +8,7 @@
 
 bi::Slice::Slice(Expression* single,
     Expression* brackets, Location* loc) :
-    Expression(loc), Unary<Expression>(single), Bracketed(brackets) {
+    Expression(loc), Single<Expression>(single), Bracketed(brackets) {
   //
 }
 

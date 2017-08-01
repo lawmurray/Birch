@@ -22,10 +22,10 @@ birchc_SOURCES = \
   bi/build/Compiler.cpp \
   bi/build/misc.cpp \
   bi/common/Based.cpp \
-  bi/common/Binary.cpp \
   bi/common/Braced.cpp \
   bi/common/Bracketed.cpp \
   bi/common/Conditioned.cpp \
+  bi/common/Couple.cpp \
   bi/common/Dictionary.cpp \
   bi/common/Iterator.cpp \
   bi/common/List.cpp \
@@ -42,8 +42,8 @@ birchc_SOURCES = \
   bi/common/Reference.cpp \
   bi/common/Scope.cpp \
   bi/common/Scoped.cpp \
+  bi/common/Single.cpp \
   bi/common/Typed.cpp \
-  bi/common/Unary.cpp \
   bi/common/Valued.cpp \
   bi/exception/AmbiguousCallException.cpp \
   bi/exception/CompilerException.cpp \
@@ -183,10 +183,10 @@ noinst_HEADERS = \
   bi/build/misc.hpp \
   bi/build/Packager.hpp \
   bi/common/Based.hpp \
-  bi/common/Binary.hpp \
   bi/common/Braced.hpp \
   bi/common/Bracketed.hpp \
   bi/common/Conditioned.hpp \
+  bi/common/Couple.hpp \
   bi/common/Dictionary.hpp \
   bi/common/Iterator.hpp \
   bi/common/List.hpp \
@@ -203,8 +203,8 @@ noinst_HEADERS = \
   bi/common/ReturnTyped.hpp \
   bi/common/Scope.hpp \
   bi/common/Scoped.hpp \
+  bi/common/Single.hpp \
   bi/common/Typed.hpp \
-  bi/common/Unary.hpp \
   bi/common/Valued.hpp \
   bi/exception/all.hpp \
   bi/exception/AmbiguousCallException.hpp \

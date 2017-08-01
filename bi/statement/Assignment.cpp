@@ -8,7 +8,7 @@
 bi::Assignment::Assignment(Expression* left, Expression* right,
     Location* loc, AssignmentOperator* target) :
     Statement(loc),
-    Binary<Expression>(left, right),
+    Couple<Expression>(left, right),
     Reference<AssignmentOperator>(target) {
   //
 }

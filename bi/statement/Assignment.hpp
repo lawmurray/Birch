@@ -6,7 +6,7 @@
 #include "bi/statement/Statement.hpp"
 #include "bi/statement/AssignmentOperator.hpp"
 #include "bi/common/Named.hpp"
-#include "bi/common/Binary.hpp"
+#include "bi/common/Couple.hpp"
 #include "bi/common/Reference.hpp"
 
 namespace bi {
@@ -16,7 +16,7 @@ namespace bi {
  * @ingroup compiler_statement
  */
 class Assignment: public Statement,
-    public Binary<Expression>,
+    public Couple<Expression>,
     public Reference<AssignmentOperator> {
 public:
   /**

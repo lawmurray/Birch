@@ -8,7 +8,7 @@
 bi::Yield::Yield(Expression* single,
     Location* loc) :
     Statement(loc),
-    Unary<Expression>(single) {
+    Single<Expression>(single) {
   //
 }
 

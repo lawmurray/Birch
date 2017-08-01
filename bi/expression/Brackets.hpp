@@ -4,7 +4,7 @@
 #pragma once
 
 #include "bi/expression/Expression.hpp"
-#include "bi/common/Unary.hpp"
+#include "bi/common/Single.hpp"
 #include "bi/expression/EmptyExpression.hpp"
 
 namespace bi {
@@ -16,7 +16,7 @@ class VarReference;
  *
  * @ingroup compiler_expression
  */
-class Brackets: public Expression, public Unary<Expression> {
+class Brackets: public Expression, public Single<Expression> {
 public:
   /**
    * Constructor.

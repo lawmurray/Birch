@@ -4,7 +4,7 @@
 #pragma once
 
 #include "bi/expression/Expression.hpp"
-#include "bi/common/Unary.hpp"
+#include "bi/common/Single.hpp"
 #include "bi/expression/EmptyExpression.hpp"
 
 namespace bi {
@@ -15,7 +15,7 @@ class Parameter;
  *
  * @ingroup compiler_expression
  */
-class Parentheses: public Expression, public Unary<Expression> {
+class Parentheses: public Expression, public Single<Expression> {
 public:
   /**
    * Constructor.

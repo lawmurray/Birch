@@ -1,12 +1,12 @@
 /**
  * @file
  */
-#include "bi/common/Binary.hpp"
+#include "bi/common/Couple.hpp"
 
 #include <cassert>
 
 template<class T>
-bi::Binary<T>::Binary(T* left, T* right) :
+bi::Couple<T>::Couple(T* left, T* right) :
     left(left), right(right) {
   /* pre-conditions */
   assert(left);
@@ -16,12 +16,12 @@ bi::Binary<T>::Binary(T* left, T* right) :
 }
 
 template<class T>
-bi::Binary<T>::~Binary() {
+bi::Couple<T>::~Couple() {
   //
 }
 
 /*
  * Explicit template instantiations.
  */
-template class bi::Binary<bi::Expression>;
-template class bi::Binary<bi::Type>;
+template class bi::Couple<bi::Expression>;
+template class bi::Couple<bi::Type>;

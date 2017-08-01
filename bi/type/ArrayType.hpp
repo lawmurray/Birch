@@ -5,7 +5,7 @@
 
 #include "bi/type/Type.hpp"
 #include "bi/common/Bracketed.hpp"
-#include "bi/common/Unary.hpp"
+#include "bi/common/Single.hpp"
 
 namespace bi {
 /**
@@ -13,7 +13,7 @@ namespace bi {
  *
  * @ingroup compiler_type
  */
-class ArrayType: public Type, public Unary<Type>, public Bracketed {
+class ArrayType: public Type, public Single<Type>, public Bracketed {
 public:
   /**
    * Constructor.

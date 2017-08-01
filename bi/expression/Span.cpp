@@ -10,7 +10,7 @@
 
 bi::Span::Span(Expression* single, Location* loc) :
     Expression(loc),
-    Unary<Expression>(single) {
+    Single<Expression>(single) {
   //
 }
 

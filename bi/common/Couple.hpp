@@ -7,33 +7,33 @@
 
 namespace bi {
 /**
- * Object with left and right operands.
+ * Object containing two other objects, denoted left and right.
  *
  * @ingroup compiler_common
  */
 template<class T>
-class Binary {
+class Couple {
 public:
   /**
    * Constructor.
    *
-   * @param left Left operand.
-   * @param right Right operand.
+   * @param left Left.
+   * @param right Right.
    */
-  Binary(T* left, T* right);
+  Couple(T* left, T* right);
 
   /**
    * Destructor.
    */
-  virtual ~Binary() = 0;
+  virtual ~Couple() = 0;
 
   /**
-   * Left operand.
+   * Left.
    */
   T* left;
 
   /**
-   * Right operand.
+   * Right.
    */
   T* right;
 };

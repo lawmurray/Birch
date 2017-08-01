@@ -8,7 +8,7 @@
 bi::Call::Call(Expression* single, Expression* parens,
     Location* loc) :
     Expression(loc),
-    Unary<Expression>(single),
+    Single<Expression>(single),
     Parenthesised(parens) {
   //
 }

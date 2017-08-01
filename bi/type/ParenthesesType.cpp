@@ -10,7 +10,7 @@
 bi::ParenthesesType::ParenthesesType(Type* single, Location* loc,
     const bool assignable) :
     Type(loc, assignable),
-    Unary<Type>(single) {
+    Single<Type>(single) {
   //
 }
 

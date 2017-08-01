@@ -4,7 +4,7 @@
 #pragma once
 
 #include "bi/expression/Expression.hpp"
-#include "bi/common/Binary.hpp"
+#include "bi/common/Couple.hpp"
 
 namespace bi {
 /**
@@ -12,7 +12,7 @@ namespace bi {
  *
  * @ingroup compiler_expression
  */
-class Range: public Expression, public Binary<Expression> {
+class Range: public Expression, public Couple<Expression> {
 public:
   /**
    * Constructor.

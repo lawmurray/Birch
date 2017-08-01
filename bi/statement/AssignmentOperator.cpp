@@ -9,7 +9,7 @@ bi::AssignmentOperator::AssignmentOperator(Name* name,
     Expression* single, Statement* braces, Location* loc) :
     Statement(loc),
     Named(name),
-    Unary(single),
+    Single(single),
     Braced(braces) {
   //
 }

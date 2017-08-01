@@ -11,7 +11,7 @@
 bi::Member::Member(Expression* left, Expression* right,
     Location* loc) :
     Expression(loc),
-    Binary<Expression>(left, right) {
+    Couple<Expression>(left, right) {
   //
 }
 

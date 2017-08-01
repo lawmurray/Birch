@@ -5,7 +5,7 @@
 
 #include "bi/expression/Expression.hpp"
 #include "bi/common/Bracketed.hpp"
-#include "bi/common/Unary.hpp"
+#include "bi/common/Single.hpp"
 #include "bi/expression/Parameter.hpp"
 
 namespace bi {
@@ -14,7 +14,7 @@ namespace bi {
  *
  * @ingroup compiler_expression
  */
-class Slice: public Expression, public Unary<Expression>, public Bracketed {
+class Slice: public Expression, public Single<Expression>, public Bracketed {
 public:
   /**
    * Constructor.

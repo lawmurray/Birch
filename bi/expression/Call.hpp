@@ -4,7 +4,7 @@
 #pragma once
 
 #include "bi/expression/Expression.hpp"
-#include "bi/common/Unary.hpp"
+#include "bi/common/Single.hpp"
 #include "bi/common/Parenthesised.hpp"
 
 namespace bi {
@@ -15,7 +15,7 @@ namespace bi {
  * @ingroup compiler_expression
  */
 class Call: public Expression,
-    public Unary<Expression>,
+    public Single<Expression>,
     public Parenthesised {
 public:
   /**

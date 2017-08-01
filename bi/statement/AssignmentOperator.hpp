@@ -6,7 +6,7 @@
 #include "bi/statement/Statement.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Numbered.hpp"
-#include "bi/common/Unary.hpp"
+#include "bi/common/Single.hpp"
 #include "bi/common/Scoped.hpp"
 #include "bi/common/Braced.hpp"
 
@@ -19,7 +19,7 @@ namespace bi {
 class AssignmentOperator: public Statement,
     public Named,
     public Numbered,
-    public Unary<Expression>,
+    public Single<Expression>,
     public Scoped,
     public Braced {
 public:
