@@ -90,6 +90,10 @@ bool bi::Type::definitely(const BasicType& o) const {
   return false;
 }
 
+bool bi::Type::definitely(const BinaryType& o) const {
+  return false;
+}
+
 bool bi::Type::definitely(const ClassType& o) const {
   return false;
 }
@@ -131,6 +135,10 @@ bool bi::Type::possibly(const ArrayType& o) const {
 }
 
 bool bi::Type::possibly(const BasicType& o) const {
+  return false;
+}
+
+bool bi::Type::possibly(const BinaryType& o) const {
   return false;
 }
 
