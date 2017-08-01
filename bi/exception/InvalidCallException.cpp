@@ -13,6 +13,12 @@ bi::InvalidCallException::InvalidCallException(Type* o) {
   if (o->loc) {
     buf << o->loc;
   }
-  buf << "error: invalid argument types '" << o << "'\n";
+  if (o->isBinary()) {
+    buf << "error: no overload for argument types '" << o->getLeft();
+    buf << "' and '" << o->getRight() << "'\n";
+  } else {
+    buf << "error: no overload for argument types '" << o << "'\n";
+  }
+
   msg = base.str();
 }

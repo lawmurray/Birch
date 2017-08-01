@@ -27,10 +27,6 @@
     return new bi::Location(compiler->file, loc.first_line, loc.last_line,
         loc.first_column, loc.last_column);
   }
-  
-  bi::Expression* make_binary(bi::Expression* left, bi::Expression* right) {
-    return new bi::Binary(left, right);
-  }
 }
 
 %union {
@@ -225,7 +221,7 @@ multiplicative_operator
 
 multiplicative_expression
     : unary_expression
-    | multiplicative_expression multiplicative_operator unary_expression  { $$ = new bi::Call($2, make_binary($1, $3), make_loc(@$)); }
+    | multiplicative_expression multiplicative_operator unary_expression  { $$ = new bi::Call($2, new bi::Binary($1, $3, make_loc(@$)), make_loc(@$)); }
     ;
 
 additive_operator
@@ -235,7 +231,7 @@ additive_operator
 
 additive_expression
     : multiplicative_expression
-    | additive_expression additive_operator multiplicative_expression  { $$ = new bi::Call($2, make_binary($1, $3), make_loc(@$)); }
+    | additive_expression additive_operator multiplicative_expression  { $$ = new bi::Call($2, new bi::Binary($1, $3, make_loc(@$)), make_loc(@$)); }
     ;
 
 relational_operator
@@ -247,7 +243,7 @@ relational_operator
     
 relational_expression
     : additive_expression
-    | relational_expression relational_operator additive_expression  { $$ = new bi::Call($2, make_binary($1, $3), make_loc(@$)); }
+    | relational_expression relational_operator additive_expression  { $$ = new bi::Call($2, new bi::Binary($1, $3, make_loc(@$)), make_loc(@$)); }
     ;
 
 equality_operator
@@ -257,7 +253,7 @@ equality_operator
 
 equality_expression
     : relational_expression
-    | equality_expression equality_operator relational_expression  { $$ = new bi::Call($2, make_binary($1, $3), make_loc(@$)); }
+    | equality_expression equality_operator relational_expression  { $$ = new bi::Call($2, new bi::Binary($1, $3, make_loc(@$)), make_loc(@$)); }
     ;
 
 logical_and_operator
@@ -266,7 +262,7 @@ logical_and_operator
 
 logical_and_expression
     : equality_expression
-    | logical_and_expression logical_and_operator equality_expression  { $$ = new bi::Call($2, make_binary($1, $3), make_loc(@$)); }
+    | logical_and_expression logical_and_operator equality_expression  { $$ = new bi::Call($2, new bi::Binary($1, $3, make_loc(@$)), make_loc(@$)); }
     ;
 
 logical_or_operator
@@ -275,7 +271,7 @@ logical_or_operator
 
 logical_or_expression
     : logical_and_expression
-    | logical_or_expression logical_or_operator logical_and_expression  { $$ = new bi::Call($2, make_binary($1, $3), make_loc(@$)); }
+    | logical_or_expression logical_or_operator logical_and_expression  { $$ = new bi::Call($2, new bi::Binary($1, $3, make_loc(@$)), make_loc(@$)); }
     ;
 
 stochastic_operator
@@ -284,7 +280,7 @@ stochastic_operator
 
 stochastic_expression
     : logical_or_expression
-    | stochastic_expression stochastic_operator logical_or_expression  { $$ = new bi::Call($2, make_binary($1, $3), make_loc(@$)); }
+    | stochastic_expression stochastic_operator logical_or_expression  { $$ = new bi::Call($2, new bi::Binary($1, $3, make_loc(@$)), make_loc(@$)); }
     ;
 
 expression_list
@@ -423,7 +419,7 @@ infix_operator
     ;
     
 binary_operator_declaration
-    : OPERATOR parameter infix_operator parameter optional_result optional_braces  { $$ = new bi::BinaryOperator($3, make_binary($2, $4), $5, $6, make_loc(@$)); }
+    : OPERATOR parameter infix_operator parameter optional_result optional_braces  { $$ = new bi::BinaryOperator($3, new bi::Binary($2, $4, make_loc(@$)), $5, $6, make_loc(@$)); }
     ;
 
 prefix_operator

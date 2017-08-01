@@ -5,15 +5,16 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::ClassType::ClassType(Name* name, Location* loc,
-    const bool assignable, Class* target) :
+bi::ClassType::ClassType(Name* name, Location* loc, const bool assignable,
+    Class* target) :
     Type(loc, assignable),
     Named(name),
     Reference<Class>(target) {
   //
 }
 
-bi::ClassType::ClassType(Class* target) :
+bi::ClassType::ClassType(Class* target, Location* loc, const bool assignable) :
+    Type(loc, assignable),
     Named(target->name),
     Reference<Class>(target) {
   //
@@ -56,7 +57,8 @@ bool bi::ClassType::definitely(const BasicType& o) const {
 }
 
 bool bi::ClassType::definitely(const ClassType& o) const {
-  return target == o.target || target->hasSuper(&o) || target->hasConversion(&o);
+  return target == o.target || target->hasSuper(&o)
+      || target->hasConversion(&o);
 }
 
 bool bi::ClassType::definitely(const FiberType& o) const {

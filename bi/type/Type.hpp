@@ -119,6 +119,16 @@ public:
   virtual bool isOverloaded() const;
 
   /**
+   * Get the left operand of a BinaryType, otherwise undefined.
+   */
+  virtual Type* getLeft() const;
+
+  /**
+   * Get the right operand of a BinaryType, otherwise undefined.
+   */
+  virtual Type* getRight() const;
+
+  /**
    * Resolve a call.
    *
    * @param args Argument types.

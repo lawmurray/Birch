@@ -20,6 +20,14 @@ bool bi::BinaryType::isBinary() const {
   return true;
 }
 
+bi::Type* bi::BinaryType::getLeft() const {
+  return left;
+}
+
+bi::Type* bi::BinaryType::getRight() const {
+  return right;
+}
+
 bi::Type* bi::BinaryType::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

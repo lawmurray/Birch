@@ -31,14 +31,14 @@ void bi::Resolver::modify(File* o) {
 bi::Expression* bi::Resolver::modify(List<Expression>* o) {
   Modifier::modify(o);
   o->type = new ListType(o->head->type->accept(&cloner),
-      o->tail->type->accept(&cloner));
+      o->tail->type->accept(&cloner), o->loc);
   o->type = o->type->accept(this);
   return o;
 }
 
 bi::Expression* bi::Resolver::modify(Parentheses* o) {
   Modifier::modify(o);
-  o->type = new ParenthesesType(o->single->type->accept(&cloner));
+  o->type = new ParenthesesType(o->single->type->accept(&cloner), o->loc);
   o->type = o->type->accept(this);
   return o;
 }
@@ -51,7 +51,7 @@ bi::Expression* bi::Resolver::modify(Brackets* o) {
 bi::Expression* bi::Resolver::modify(Binary* o) {
   Modifier::modify(o);
   o->type = new BinaryType(o->left->type->accept(&cloner),
-      o->right->type->accept(&cloner));
+      o->right->type->accept(&cloner), o->loc);
   o->type = o->type->accept(this);
   return o;
 }
@@ -59,7 +59,9 @@ bi::Expression* bi::Resolver::modify(Binary* o) {
 bi::Expression* bi::Resolver::modify(Call* o) {
   Modifier::modify(o);
   if (o->single->type->isFunction() || o->single->type->isOverloaded()) {
-    o->type = o->single->type->resolve(o->args->type)->accept(&cloner)->accept(this);
+    o->type =
+        o->single->type->resolve(o->args->type)->accept(&cloner)->accept(
+            this);
     o->type->assignable = false;  // rvalue
     return o;
   } else {
@@ -78,7 +80,7 @@ bi::Expression* bi::Resolver::modify(Slice* o) {
   ArrayType* type = dynamic_cast<ArrayType*>(o->single->type);
   assert(type);
   if (rangeDims > 0) {
-    o->type = new ArrayType(type->single->accept(&cloner), rangeDims);
+    o->type = new ArrayType(type->single->accept(&cloner), rangeDims, o->loc);
     o->type = o->type->accept(this);
   } else {
     o->type = type->single->accept(&cloner)->accept(this);
@@ -96,7 +98,7 @@ bi::Expression* bi::Resolver::modify(LambdaFunction* o) {
   o->braces->accept(this);
   o->scope = pop();
   o->type = new FunctionType(o->parens->type->accept(&cloner),
-      o->returnType->accept(&cloner));
+      o->returnType->accept(&cloner), o->loc);
   o->type->accept(this);
 
   return o;
@@ -139,7 +141,7 @@ bi::Expression* bi::Resolver::modify(This* o) {
     throw ThisException(o);
   } else {
     Modifier::modify(o);
-    o->type = new ClassType(getClass());
+    o->type = new ClassType(getClass(), o->loc);
     o->type->accept(this);
   }
   return o;
@@ -281,7 +283,7 @@ bi::Statement* bi::Resolver::modify(Function* o) {
     defer(o->braces);
   }
   o->type = new FunctionType(o->params->type->accept(&cloner),
-      o->returnType->accept(&cloner));
+      o->returnType->accept(&cloner), o->loc);
   o->type = o->type->accept(this);
   o->scope = pop();
   top()->add(o);
@@ -297,7 +299,7 @@ bi::Statement* bi::Resolver::modify(Coroutine* o) {
     defer(o->braces);
   }
   o->type = new FunctionType(o->params->type->accept(&cloner),
-      new FiberType(o->returnType->accept(&cloner)));
+      new FiberType(o->returnType->accept(&cloner)), o->loc);
   o->type = o->type->accept(this);
   o->scope = pop();
   top()->add(o);
@@ -327,7 +329,7 @@ bi::Statement* bi::Resolver::modify(MemberFunction* o) {
     defer(o->braces);
   }
   o->type = new FunctionType(o->params->type->accept(&cloner),
-      o->returnType->accept(&cloner));
+      o->returnType->accept(&cloner), o->loc);
   o->type = o->type->accept(this);
   o->scope = pop();
   top()->add(o);
@@ -343,7 +345,7 @@ bi::Statement* bi::Resolver::modify(MemberCoroutine* o) {
     defer(o->braces);
   }
   o->type = new FunctionType(o->params->type->accept(&cloner),
-      new FiberType(o->returnType->accept(&cloner)));
+      new FiberType(o->returnType->accept(&cloner)), o->loc);
   o->type = o->type->accept(this);
   o->scope = pop();
   top()->add(o);
@@ -359,7 +361,7 @@ bi::Statement* bi::Resolver::modify(BinaryOperator* o) {
     defer(o->braces);
   }
   o->type = new FunctionType(o->params->type->accept(&cloner),
-      o->returnType->accept(&cloner));
+      o->returnType->accept(&cloner), o->loc);
   o->type = o->type->accept(this);
   o->scope = pop();
   top()->add(o);
@@ -375,7 +377,7 @@ bi::Statement* bi::Resolver::modify(UnaryOperator* o) {
     defer(o->braces);
   }
   o->type = new FunctionType(o->params->type->accept(&cloner),
-      o->returnType->accept(&cloner));
+      o->returnType->accept(&cloner), o->loc);
   o->type = o->type->accept(this);
   o->scope = pop();
   top()->add(o);

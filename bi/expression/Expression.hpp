@@ -76,12 +76,12 @@ public:
   virtual Expression* strip();
 
   /**
-   * Get the left operand of a Binary, otherwise @c nullptr.
+   * Get the left operand of a Binary, otherwise undefined.
    */
   virtual Expression* getLeft() const;
 
   /**
-   * Get the right operand of a Binary, otherwise @c nullptr.
+   * Get the right operand of a Binary, otherwise undefined.
    */
   virtual Expression* getRight() const;
 

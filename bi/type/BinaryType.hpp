@@ -32,6 +32,9 @@ public:
 
   virtual bool isBinary() const;
 
+  virtual Type* getLeft() const;
+  virtual Type* getRight() const;
+
   virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;

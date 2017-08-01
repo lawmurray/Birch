@@ -54,6 +54,16 @@ bool bi::Type::isOverloaded() const {
   return false;
 }
 
+bi::Type* bi::Type::getLeft() const {
+  assert(false);
+  return nullptr;
+}
+
+bi::Type* bi::Type::getRight() const {
+  assert(false);
+  return nullptr;
+}
+
 bi::Type* bi::Type::resolve(Type* args) {
   throw InvalidCallException(args);
 }

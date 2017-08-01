@@ -32,7 +32,8 @@ public:
    *
    * @param target Target.
    */
-  ClassType(Class* target);
+  ClassType(Class* target, Location* loc = nullptr, const bool assignable =
+      false);
 
   /**
    * Destructor.
