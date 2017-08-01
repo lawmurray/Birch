@@ -27,7 +27,7 @@ public:
    * @param loc Location.
    */
   ConversionOperator(Type* returnType, Statement* braces,
-      shared_ptr<Location> loc = nullptr);
+      Location* loc = nullptr);
 
   /**
    * Destructor.

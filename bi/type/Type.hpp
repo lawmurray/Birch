@@ -40,7 +40,7 @@ public:
    * @param loc Location.
    * @param assignable Is this type assignable?
    */
-  Type(shared_ptr<Location> loc = nullptr, const bool assignable = false);
+  Type(Location* loc = nullptr, const bool assignable = false);
 
   /**
    * Destructor.

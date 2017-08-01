@@ -5,7 +5,7 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::While::While(Expression* cond, Statement* braces, shared_ptr<Location> loc) :
+bi::While::While(Expression* cond, Statement* braces, Location* loc) :
     Statement(loc),
     Conditioned(cond),
     Braced(braces) {

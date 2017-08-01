@@ -7,7 +7,7 @@
 #include "bi/visitor/all.hpp"
 
 bi::Parentheses::Parentheses(Expression* single,
-    shared_ptr<Location> loc) :
+    Location* loc) :
     Expression(loc),
     Unary<Expression>(single) {
   //

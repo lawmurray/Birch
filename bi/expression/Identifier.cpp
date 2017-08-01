@@ -6,8 +6,8 @@
 #include "bi/visitor/all.hpp"
 
 template<class ObjectType>
-bi::Identifier<ObjectType>::Identifier(shared_ptr<Name> name,
-    shared_ptr<Location> loc, ObjectType* target) :
+bi::Identifier<ObjectType>::Identifier(Name* name,
+    Location* loc, ObjectType* target) :
     Expression(loc),
     Named(name),
     Reference<ObjectType>(target) {

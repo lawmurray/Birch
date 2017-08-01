@@ -8,7 +8,7 @@ bi::Named::Named() :
   //
 }
 
-bi::Named::Named(shared_ptr<Name> name) :
+bi::Named::Named(Name* name) :
     name(name) {
   //
 }

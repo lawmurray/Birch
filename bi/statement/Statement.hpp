@@ -22,7 +22,7 @@ public:
    *
    * @param loc Location.
    */
-  Statement(shared_ptr<Location> loc = nullptr);
+  Statement(Location* loc = nullptr);
 
   /**
    * Destructor.

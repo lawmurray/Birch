@@ -8,7 +8,7 @@ bi::Modifier::~Modifier() {
 }
 
 void bi::Modifier::modify(File* o) {
-  o->root = o->root.release()->accept(this);
+  o->root = o->root->accept(this);
 }
 
 bi::Expression* bi::Modifier::modify(EmptyExpression* o) {
@@ -16,79 +16,79 @@ bi::Expression* bi::Modifier::modify(EmptyExpression* o) {
 }
 
 bi::Expression* bi::Modifier::modify(List<Expression>* o) {
-  o->head = o->head.release()->accept(this);
-  o->tail = o->tail.release()->accept(this);
+  o->head = o->head->accept(this);
+  o->tail = o->tail->accept(this);
   return o;
 }
 
 bi::Expression* bi::Modifier::modify(Literal<bool>* o) {
-  o->type = o->type.release()->accept(this);
+  o->type = o->type->accept(this);
   return o;
 }
 
 bi::Expression* bi::Modifier::modify(Literal<int64_t>* o) {
-  o->type = o->type.release()->accept(this);
+  o->type = o->type->accept(this);
   return o;
 }
 
 bi::Expression* bi::Modifier::modify(Literal<double>* o) {
-  o->type = o->type.release()->accept(this);
+  o->type = o->type->accept(this);
   return o;
 }
 
 bi::Expression* bi::Modifier::modify(Literal<const char*>* o) {
-  o->type = o->type.release()->accept(this);
+  o->type = o->type->accept(this);
   return o;
 }
 
 bi::Expression* bi::Modifier::modify(Parentheses* o) {
-  o->single = o->single.release()->accept(this);
+  o->single = o->single->accept(this);
   return o;
 }
 
 bi::Expression* bi::Modifier::modify(Brackets* o) {
-  o->single = o->single.release()->accept(this);
+  o->single = o->single->accept(this);
   return o;
 }
 
 bi::Expression* bi::Modifier::modify(Call* o) {
-  o->single = o->single.release()->accept(this);
-  o->parens = o->parens.release()->accept(this);
+  o->single = o->single->accept(this);
+  o->parens = o->parens->accept(this);
   return o;
 }
 
 bi::Expression* bi::Modifier::modify(Slice* o) {
-  o->single = o->single.release()->accept(this);
-  o->brackets = o->brackets.release()->accept(this);
+  o->single = o->single->accept(this);
+  o->brackets = o->brackets->accept(this);
   return o;
 }
 
 bi::Expression* bi::Modifier::modify(LambdaFunction* o) {
-  o->parens = o->parens.release()->accept(this);
-  o->returnType = o->returnType.release()->accept(this);
-  o->braces = o->braces.release()->accept(this);
+  o->parens = o->parens->accept(this);
+  o->returnType = o->returnType->accept(this);
+  o->braces = o->braces->accept(this);
   return o;
 }
 
 bi::Expression* bi::Modifier::modify(Span* o) {
-  o->single = o->single.release()->accept(this);
+  o->single = o->single->accept(this);
   return o;
 }
 
 bi::Expression* bi::Modifier::modify(Index* o) {
-  o->single = o->single.release()->accept(this);
+  o->single = o->single->accept(this);
   return o;
 }
 
 bi::Expression* bi::Modifier::modify(Range* o) {
-  o->left = o->left.release()->accept(this);
-  o->right = o->right.release()->accept(this);
+  o->left = o->left->accept(this);
+  o->right = o->right->accept(this);
   return o;
 }
 
 bi::Expression* bi::Modifier::modify(Member* o) {
-  o->left = o->left.release()->accept(this);
-  o->right = o->right.release()->accept(this);
+  o->left = o->left->accept(this);
+  o->right = o->right->accept(this);
   return o;
 }
 
@@ -101,14 +101,14 @@ bi::Expression* bi::Modifier::modify(This* o) {
 }
 
 bi::Expression* bi::Modifier::modify(Parameter* o) {
-  o->type = o->type.release()->accept(this);
-  o->value = o->value.release()->accept(this);
+  o->type = o->type->accept(this);
+  o->value = o->value->accept(this);
   return o;
 }
 
 bi::Expression* bi::Modifier::modify(MemberParameter* o) {
-  o->type = o->type.release()->accept(this);
-  o->value = o->value.release()->accept(this);
+  o->type = o->type->accept(this);
+  o->value = o->value->accept(this);
   return o;
 }
 
@@ -161,8 +161,8 @@ bi::Expression* bi::Modifier::modify(OverloadedIdentifier<UnaryOperator>* o) {
 }
 
 bi::Statement* bi::Modifier::modify(Assignment* o) {
-  o->left = o->left.release()->accept(this);
-  o->right = o->right.release()->accept(this);
+  o->left = o->left->accept(this);
+  o->right = o->right->accept(this);
   return o;
 }
 
@@ -171,102 +171,102 @@ bi::Statement* bi::Modifier::modify(EmptyStatement* o) {
 }
 
 bi::Statement* bi::Modifier::modify(List<Statement>* o) {
-  o->head = o->head.release()->accept(this);
-  o->tail = o->tail.release()->accept(this);
+  o->head = o->head->accept(this);
+  o->tail = o->tail->accept(this);
   return o;
 }
 
 bi::Statement* bi::Modifier::modify(GlobalVariable* o) {
-  o->type = o->type.release()->accept(this);
-  o->parens = o->parens.release()->accept(this);
-  o->value = o->value.release()->accept(this);
+  o->type = o->type->accept(this);
+  o->parens = o->parens->accept(this);
+  o->value = o->value->accept(this);
   return o;
 }
 
 bi::Statement* bi::Modifier::modify(LocalVariable* o) {
-  o->type = o->type.release()->accept(this);
-  o->parens = o->parens.release()->accept(this);
-  o->value = o->value.release()->accept(this);
+  o->type = o->type->accept(this);
+  o->parens = o->parens->accept(this);
+  o->value = o->value->accept(this);
   return o;
 }
 
 bi::Statement* bi::Modifier::modify(MemberVariable* o) {
-  o->type = o->type.release()->accept(this);
-  o->parens = o->parens.release()->accept(this);
-  o->value = o->value.release()->accept(this);
+  o->type = o->type->accept(this);
+  o->parens = o->parens->accept(this);
+  o->value = o->value->accept(this);
   return o;
 }
 
 bi::Statement* bi::Modifier::modify(Function* o) {
-  o->parens = o->parens.release()->accept(this);
-  o->returnType = o->returnType.release()->accept(this);
-  o->braces = o->braces.release()->accept(this);
+  o->parens = o->parens->accept(this);
+  o->returnType = o->returnType->accept(this);
+  o->braces = o->braces->accept(this);
   return o;
 }
 
 bi::Statement* bi::Modifier::modify(Coroutine* o) {
-  o->parens = o->parens.release()->accept(this);
-  o->returnType = o->returnType.release()->accept(this);
-  o->braces = o->braces.release()->accept(this);
+  o->parens = o->parens->accept(this);
+  o->returnType = o->returnType->accept(this);
+  o->braces = o->braces->accept(this);
   return o;
 }
 
 bi::Statement* bi::Modifier::modify(Program* o) {
-  o->parens = o->parens.release()->accept(this);
-  o->braces = o->braces.release()->accept(this);
+  o->parens = o->parens->accept(this);
+  o->braces = o->braces->accept(this);
   return o;
 }
 
 bi::Statement* bi::Modifier::modify(MemberFunction* o) {
-  o->parens = o->parens.release()->accept(this);
-  o->returnType = o->returnType.release()->accept(this);
-  o->braces = o->braces.release()->accept(this);
+  o->parens = o->parens->accept(this);
+  o->returnType = o->returnType->accept(this);
+  o->braces = o->braces->accept(this);
   return o;
 }
 
 bi::Statement* bi::Modifier::modify(MemberCoroutine* o) {
-  o->parens = o->parens.release()->accept(this);
-  o->returnType = o->returnType.release()->accept(this);
-  o->braces = o->braces.release()->accept(this);
+  o->parens = o->parens->accept(this);
+  o->returnType = o->returnType->accept(this);
+  o->braces = o->braces->accept(this);
   return o;
 }
 
 bi::Statement* bi::Modifier::modify(BinaryOperator* o) {
-  o->parens = o->parens.release()->accept(this);
-  o->returnType = o->returnType.release()->accept(this);
-  o->braces = o->braces.release()->accept(this);
+  o->parens = o->parens->accept(this);
+  o->returnType = o->returnType->accept(this);
+  o->braces = o->braces->accept(this);
   return o;
 }
 
 bi::Statement* bi::Modifier::modify(UnaryOperator* o) {
-  o->parens = o->parens.release()->accept(this);
-  o->returnType = o->returnType.release()->accept(this);
-  o->braces = o->braces.release()->accept(this);
+  o->parens = o->parens->accept(this);
+  o->returnType = o->returnType->accept(this);
+  o->braces = o->braces->accept(this);
   return o;
 }
 
 bi::Statement* bi::Modifier::modify(AssignmentOperator* o) {
-  o->single = o->single.release()->accept(this);
-  o->braces = o->braces.release()->accept(this);
+  o->single = o->single->accept(this);
+  o->braces = o->braces->accept(this);
   return o;
 }
 
 bi::Statement* bi::Modifier::modify(ConversionOperator* o) {
-  o->returnType = o->returnType.release()->accept(this);
-  o->braces = o->braces.release()->accept(this);
+  o->returnType = o->returnType->accept(this);
+  o->braces = o->braces->accept(this);
   return o;
 }
 
 bi::Statement* bi::Modifier::modify(Class* o) {
-  o->parens = o->parens.release()->accept(this);
-  o->base = o->base.release()->accept(this);
-  o->baseParens = o->baseParens.release()->accept(this);
-  o->braces = o->braces.release()->accept(this);
+  o->parens = o->parens->accept(this);
+  o->base = o->base->accept(this);
+  o->baseParens = o->baseParens->accept(this);
+  o->braces = o->braces->accept(this);
   return o;
 }
 
 bi::Statement* bi::Modifier::modify(Alias* o) {
-  o->base = o->base.release()->accept(this);
+  o->base = o->base->accept(this);
   return o;
 }
 
@@ -279,43 +279,43 @@ bi::Statement* bi::Modifier::modify(Import* o) {
 }
 
 bi::Statement* bi::Modifier::modify(ExpressionStatement* o) {
-  o->single = o->single.release()->accept(this);
+  o->single = o->single->accept(this);
   return o;
 }
 
 bi::Statement* bi::Modifier::modify(If* o) {
-  o->cond = o->cond.release()->accept(this);
-  o->braces = o->braces.release()->accept(this);
-  o->falseBraces = o->falseBraces.release()->accept(this);
+  o->cond = o->cond->accept(this);
+  o->braces = o->braces->accept(this);
+  o->falseBraces = o->falseBraces->accept(this);
   return o;
 }
 
 bi::Statement* bi::Modifier::modify(For* o) {
-  o->index = o->index.release()->accept(this);
-  o->from = o->from.release()->accept(this);
-  o->to = o->to.release()->accept(this);
-  o->braces = o->braces.release()->accept(this);
+  o->index = o->index->accept(this);
+  o->from = o->from->accept(this);
+  o->to = o->to->accept(this);
+  o->braces = o->braces->accept(this);
   return o;
 }
 
 bi::Statement* bi::Modifier::modify(While* o) {
-  o->cond = o->cond.release()->accept(this);
-  o->braces = o->braces.release()->accept(this);
+  o->cond = o->cond->accept(this);
+  o->braces = o->braces->accept(this);
   return o;
 }
 
 bi::Statement* bi::Modifier::modify(Assert* o) {
-  o->cond = o->cond.release()->accept(this);
+  o->cond = o->cond->accept(this);
   return o;
 }
 
 bi::Statement* bi::Modifier::modify(Return* o) {
-  o->single = o->single.release()->accept(this);
+  o->single = o->single->accept(this);
   return o;
 }
 
 bi::Statement* bi::Modifier::modify(Yield* o) {
-  o->single = o->single.release()->accept(this);
+  o->single = o->single->accept(this);
   return o;
 }
 
@@ -328,8 +328,8 @@ bi::Type* bi::Modifier::modify(EmptyType* o) {
 }
 
 bi::Type* bi::Modifier::modify(ListType* o) {
-  o->head = o->head.release()->accept(this);
-  o->tail = o->tail.release()->accept(this);
+  o->head = o->head->accept(this);
+  o->tail = o->tail->accept(this);
   return o;
 }
 
@@ -350,19 +350,19 @@ bi::Type* bi::Modifier::modify(BasicType* o) {
 }
 
 bi::Type* bi::Modifier::modify(ArrayType* o) {
-  o->single = o->single.release()->accept(this);
-  o->brackets = o->brackets.release()->accept(this);
+  o->single = o->single->accept(this);
+  o->brackets = o->brackets->accept(this);
   return o;
 }
 
 bi::Type* bi::Modifier::modify(ParenthesesType* o) {
-  o->single = o->single.release()->accept(this);
+  o->single = o->single->accept(this);
   return o;
 }
 
 bi::Type* bi::Modifier::modify(FunctionType* o) {
-  o->parens = o->parens.release()->accept(this);
-  o->returnType = o->returnType.release()->accept(this);
+  o->parens = o->parens->accept(this);
+  o->returnType = o->returnType->accept(this);
   return o;
 }
 
@@ -371,7 +371,7 @@ bi::Type* bi::Modifier::modify(OverloadedType* o) {
 }
 
 bi::Type* bi::Modifier::modify(FiberType* o) {
-  o->returnType = o->returnType.release()->accept(this);
+  o->returnType = o->returnType->accept(this);
   return o;
 }
 

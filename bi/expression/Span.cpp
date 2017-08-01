@@ -8,7 +8,7 @@
 
 #include <typeinfo>
 
-bi::Span::Span(Expression* single, shared_ptr<Location> loc) :
+bi::Span::Span(Expression* single, Location* loc) :
     Expression(loc),
     Unary<Expression>(single) {
   //

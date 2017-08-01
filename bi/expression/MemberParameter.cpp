@@ -5,8 +5,8 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::MemberParameter::MemberParameter(shared_ptr<Name> name, Type* type,
-    Expression* value, shared_ptr<Location> loc) :
+bi::MemberParameter::MemberParameter(Name* name, Type* type,
+    Expression* value, Location* loc) :
     Expression(type, loc),
     Named(name),
     Valued(value) {

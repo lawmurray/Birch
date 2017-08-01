@@ -22,7 +22,7 @@ void bi::Resolver::modify(File* o) {
     o->state = File::RESOLVING;
     o->scope = new Scope();
     files.push(o);
-    push(o->scope.get());
+    push(o->scope);
     o->root = o->root->accept(this);
     undefer();
     pop();
@@ -55,11 +55,11 @@ bi::Expression* bi::Resolver::modify(Call* o) {
   Modifier::modify(o);
   if (o->single->type->isOverloaded()) {
     OverloadedType* overloadedType =
-        dynamic_cast<OverloadedType*>(o->single->type.get());
+        dynamic_cast<OverloadedType*>(o->single->type);
     assert(overloadedType);
 
     std::list<Type*> matches;
-    overloadedType->overloads.match(o->parens->type.get(), matches);
+    overloadedType->overloads.match(o->parens->type, matches);
     if (matches.size() == 1) {
       FunctionType* functionType =
           dynamic_cast<FunctionType*>(matches.front());
@@ -72,7 +72,7 @@ bi::Expression* bi::Resolver::modify(Call* o) {
     }
   } else if (o->single->type->isFunction()) {
     FunctionType* functionType =
-        dynamic_cast<FunctionType*>(o->single->type.get());
+        dynamic_cast<FunctionType*>(o->single->type);
     assert(functionType);
     if (o->parens->type->definitely(*functionType->parens)) {
       o->type = functionType->returnType->accept(&cloner);
@@ -95,7 +95,7 @@ bi::Expression* bi::Resolver::modify(Slice* o) {
   const int rangeDims = o->brackets->tupleDims();
   assert(typeSize == indexSize);  ///@todo Exception
 
-  ArrayType* type = dynamic_cast<ArrayType*>(o->single->type.get());
+  ArrayType* type = dynamic_cast<ArrayType*>(o->single->type);
   assert(type);
   if (rangeDims > 0) {
     o->type = new ArrayType(type->single->accept(&cloner), rangeDims);
@@ -141,10 +141,10 @@ bi::Expression* bi::Resolver::modify(Range* o) {
 
 bi::Expression* bi::Resolver::modify(Member* o) {
   o->left = o->left->accept(this);
-  ClassType* type = dynamic_cast<ClassType*>(o->left->type.get());
+  ClassType* type = dynamic_cast<ClassType*>(o->left->type);
   if (type) {
     assert(type->target);
-    memberScope = type->target->scope.get();
+    memberScope = type->target->scope;
   } else {
     throw MemberException(o);
   }
@@ -260,10 +260,10 @@ bi::Statement* bi::Resolver::modify(Assignment* o) {
   if (!o->right->type->definitely(*o->left->type)) {
     // ^ the first two cases are covered by this check
     Identifier<Class>* ref =
-        dynamic_cast<Identifier<Class>*>(o->left->type.get());
+        dynamic_cast<Identifier<Class>*>(o->left->type);
     if (ref) {
       assert(ref->target);
-      memberScope = ref->target->scope.get();
+      memberScope = ref->target->scope;
     } else {
       //throw MemberException(o);
     }
@@ -299,7 +299,7 @@ bi::Statement* bi::Resolver::modify(Function* o) {
   o->parens = o->parens->accept(this);
   o->returnType = o->returnType->accept(this);
   if (!o->braces->isEmpty()) {
-    defer(o->braces.get());
+    defer(o->braces);
   }
   o->type = new FunctionType(o->parens->type->accept(&cloner),
       o->returnType->accept(&cloner));
@@ -315,7 +315,7 @@ bi::Statement* bi::Resolver::modify(Coroutine* o) {
   o->parens = o->parens->accept(this);
   o->returnType = o->returnType->accept(this);
   if (!o->braces->isEmpty()) {
-    defer(o->braces.get());
+    defer(o->braces);
   }
   o->type = new FunctionType(o->parens->type->accept(&cloner),
       new FiberType(o->returnType->accept(&cloner)));
@@ -332,7 +332,7 @@ bi::Statement* bi::Resolver::modify(Program* o) {
   o->parens->accept(&assigner);
   // ^ currently for backwards compatibility of delay_triplet example, can
   //   be updated later
-  defer(o->braces.get());
+  defer(o->braces);
   o->scope = pop();
   top()->add(o);
   ///@todo Check that can assign String to all option types
@@ -345,7 +345,7 @@ bi::Statement* bi::Resolver::modify(MemberFunction* o) {
   o->parens = o->parens->accept(this);
   o->returnType = o->returnType->accept(this);
   if (!o->braces->isEmpty()) {
-    defer(o->braces.get());
+    defer(o->braces);
   }
   o->type = new FunctionType(o->parens->type->accept(&cloner),
       o->returnType->accept(&cloner));
@@ -361,7 +361,7 @@ bi::Statement* bi::Resolver::modify(MemberCoroutine* o) {
   o->parens = o->parens->accept(this);
   o->returnType = o->returnType->accept(this);
   if (!o->braces->isEmpty()) {
-    defer(o->braces.get());
+    defer(o->braces);
   }
   o->type = new FunctionType(o->parens->type->accept(&cloner),
       new FiberType(o->returnType->accept(&cloner)));
@@ -377,7 +377,7 @@ bi::Statement* bi::Resolver::modify(BinaryOperator* o) {
   o->parens = o->parens->accept(this);
   o->returnType = o->returnType->accept(this);
   if (!o->braces->isEmpty()) {
-    defer(o->braces.get());
+    defer(o->braces);
   }
   o->type = new FunctionType(o->parens->type->accept(&cloner),
       o->returnType->accept(&cloner));
@@ -393,7 +393,7 @@ bi::Statement* bi::Resolver::modify(UnaryOperator* o) {
   o->parens = o->parens->accept(this);
   o->returnType = o->returnType->accept(this);
   if (!o->braces->isEmpty()) {
-    defer(o->braces.get());
+    defer(o->braces);
   }
   o->type = new FunctionType(o->parens->type->accept(&cloner),
       o->returnType->accept(&cloner));
@@ -408,7 +408,7 @@ bi::Statement* bi::Resolver::modify(AssignmentOperator* o) {
   push();
   o->single = o->single->accept(this);
   if (!o->braces->isEmpty()) {
-    defer(o->braces.get());
+    defer(o->braces);
   }
   o->scope = pop();
   //top()->add(o);
@@ -420,10 +420,10 @@ bi::Statement* bi::Resolver::modify(ConversionOperator* o) {
   push();
   o->returnType = o->returnType->accept(this);
   if (!o->braces->isEmpty()) {
-    defer(o->braces.get());
+    defer(o->braces);
   }
   o->scope = pop();
-  getClass()->addConversion(o->returnType.get());
+  getClass()->addConversion(o->returnType);
 
   return o;
 }
@@ -440,10 +440,10 @@ bi::Statement* bi::Resolver::modify(Class* o) {
   o->baseParens = o->baseParens->accept(this);
   o->scope = pop();
   if (!o->base->isEmpty()) {
-    o->addSuper(o->base.get());
+    o->addSuper(o->base);
   }
   top()->add(o);
-  push(o->scope.get());
+  push(o->scope);
   classes.push(o);
   o->braces = o->braces->accept(this);
   classes.pop();
@@ -461,7 +461,7 @@ bi::Statement* bi::Resolver::modify(Alias* o) {
 
 bi::Statement* bi::Resolver::modify(Import* o) {
   o->file->accept(this);
-  top()->import(o->file->scope.get());
+  top()->import(o->file->scope);
   return o;
 }
 
@@ -641,7 +641,7 @@ void bi::Resolver::undefer() {
     auto type = std::get<2>(*iter);
 
     if (type) {
-      push(type->scope.get());
+      push(type->scope);
     }
     push(scope);
     classes.push(type);

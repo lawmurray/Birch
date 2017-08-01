@@ -5,7 +5,6 @@
 
 #include "bi/expression/Expression.hpp"
 #include "bi/expression/EmptyExpression.hpp"
-#include "bi/primitive/unique_ptr.hpp"
 
 namespace bi {
 /**
@@ -30,6 +29,6 @@ public:
   /**
    * Square bracket expression.
    */
-  unique_ptr<Expression> brackets;
+  Expression* brackets;
 };
 }

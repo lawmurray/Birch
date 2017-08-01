@@ -26,14 +26,14 @@ public:
    * @param type Type.
    * @param loc Location.
    */
-  Expression(Type* type, shared_ptr<Location> loc = nullptr);
+  Expression(Type* type, Location* loc = nullptr);
 
   /**
    * Constructor.
    *
    * @param loc Location.
    */
-  Expression(shared_ptr<Location> loc = nullptr);
+  Expression(Location* loc = nullptr);
 
   /**
    * Destructor.

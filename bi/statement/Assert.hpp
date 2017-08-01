@@ -20,7 +20,7 @@ public:
    * @param cond Condition.
    * @param loc Location.
    */
-  Assert(Expression* cond, shared_ptr<Location> loc = nullptr);
+  Assert(Expression* cond, Location* loc = nullptr);
 
   /**
    * Destructor.

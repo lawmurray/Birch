@@ -21,7 +21,7 @@ public:
    * @param loc Location.
    * @param assignable Is this type assignable?
    */
-  FiberType(Type* returnType = new EmptyType(), shared_ptr<Location> loc =
+  FiberType(Type* returnType = new EmptyType(), Location* loc =
       nullptr, const bool assignable = false);
 
   /**

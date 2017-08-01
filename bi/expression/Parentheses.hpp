@@ -24,7 +24,7 @@ public:
    * @param loc Location.
    */
   Parentheses(Expression* single = new EmptyExpression(),
-      shared_ptr<Location> loc = nullptr);
+      Location* loc = nullptr);
 
   /**
    * Destructor.

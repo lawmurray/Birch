@@ -20,7 +20,7 @@ public:
    * @param name Name.
    * @param loc Location.
    */
-  Basic(shared_ptr<Name> name, shared_ptr<Location> loc = nullptr);
+  Basic(Name* name, Location* loc = nullptr);
 
   /**
    * Destructor.

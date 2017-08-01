@@ -9,7 +9,7 @@
 #include <typeinfo>
 
 bi::Member::Member(Expression* left, Expression* right,
-    shared_ptr<Location> loc) :
+    Location* loc) :
     Expression(loc),
     Binary<Expression>(left, right) {
   //

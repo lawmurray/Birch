@@ -8,7 +8,6 @@
 #include "bi/expression/EmptyExpression.hpp"
 #include "bi/common/Braced.hpp"
 #include "bi/common/Scoped.hpp"
-#include "bi/primitive/unique_ptr.hpp"
 
 namespace bi {
 /**
@@ -30,7 +29,7 @@ public:
    * @param loc Location.
    */
   If(Expression* cond, Statement* braces, Statement* falseBraces,
-      shared_ptr<Location> loc = nullptr);
+      Location* loc = nullptr);
 
   /**
    * Destructor.
@@ -44,6 +43,6 @@ public:
   /**
    * Block if condition is false. May be empty if there is no else clause.
    */
-  unique_ptr<Statement> falseBraces;
+  Statement* falseBraces;
 };
 }

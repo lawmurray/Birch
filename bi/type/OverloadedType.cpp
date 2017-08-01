@@ -6,14 +6,14 @@
 #include "bi/visitor/all.hpp"
 #include "bi/exception/all.hpp"
 
-bi::OverloadedType::OverloadedType(Type* o, shared_ptr<Location> loc,
+bi::OverloadedType::OverloadedType(Type* o, Location* loc,
     const bool assignable) :
     Type(loc, assignable) {
   add(o);
 }
 
 bi::OverloadedType::OverloadedType(
-    const poset<Type*,bi::definitely>& overloads, shared_ptr<Location> loc,
+    const poset<Type*,bi::definitely>& overloads, Location* loc,
     const bool assignable) :
     Type(loc, assignable),
     overloads(overloads) {

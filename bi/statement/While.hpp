@@ -24,7 +24,7 @@ public:
    * @param loc Location.
    */
   While(Expression* cond, Statement* braces,
-      shared_ptr<Location> loc = nullptr);
+      Location* loc = nullptr);
 
   /**
    * Destructor.

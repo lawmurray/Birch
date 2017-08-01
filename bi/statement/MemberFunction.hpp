@@ -35,8 +35,8 @@ public:
    * @param braces Braces expression.
    * @param loc Location.
    */
-  MemberFunction(shared_ptr<Name> name, Expression* parens, Type* returnType,
-      Statement* braces, shared_ptr<Location> loc = nullptr);
+  MemberFunction(Name* name, Expression* parens, Type* returnType,
+      Statement* braces, Location* loc = nullptr);
 
   /**
    * Destructor.

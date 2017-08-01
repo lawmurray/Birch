@@ -6,7 +6,7 @@
 #include "bi/visitor/all.hpp"
 
 bi::If::If(Expression* cond, Statement* braces,
-    Statement* falseBraces, shared_ptr<Location> loc) :
+    Statement* falseBraces, Location* loc) :
     Statement(loc),
     Conditioned(cond),
     Braced(braces),

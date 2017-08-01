@@ -4,7 +4,6 @@
 #pragma once
 
 #include "bi/type/Type.hpp"
-#include "bi/primitive/unique_ptr.hpp"
 
 #include <list>
 
@@ -41,7 +40,7 @@ public:
   /**
    * Type. Should be of type OverloadedType.
    */
-  unique_ptr<Type> type;
+  Type* type;
 
   /**
    * Overloads.

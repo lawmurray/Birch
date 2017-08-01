@@ -4,7 +4,6 @@
 #pragma once
 
 #include "bi/expression/all.hpp"
-#include "bi/primitive/unique_ptr.hpp"
 
 namespace bi {
 /**
@@ -29,6 +28,6 @@ public:
   /**
    * Condition.
    */
-  unique_ptr<Expression> cond;
+  Expression* cond;
 };
 }

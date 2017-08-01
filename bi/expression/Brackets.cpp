@@ -6,7 +6,7 @@
 #include "bi/expression/Parameter.hpp"
 #include "bi/visitor/all.hpp"
 
-bi::Brackets::Brackets(Expression* single, shared_ptr<Location> loc) :
+bi::Brackets::Brackets(Expression* single, Location* loc) :
     Expression(loc),
     Unary<Expression>(single) {
   //

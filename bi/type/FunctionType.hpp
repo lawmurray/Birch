@@ -23,7 +23,7 @@ public:
    * @param assignable Is this type assignable?
    */
   FunctionType(Type* parens, Type* returnType = new EmptyType(),
-      shared_ptr<Location> loc = nullptr, const bool assignable = false);
+      Location* loc = nullptr, const bool assignable = false);
 
   /**
    * Destructor.
@@ -48,6 +48,6 @@ public:
   /**
    * Parameters type.
    */
-  unique_ptr<Type> parens;
+  Type* parens;
 };
 }

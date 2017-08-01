@@ -4,7 +4,6 @@
 #pragma once
 
 #include "bi/common/Scope.hpp"
-#include "bi/primitive/unique_ptr.hpp"
 
 namespace bi {
 class Scope;
@@ -24,6 +23,6 @@ public:
   /**
    * Scope.
    */
-  unique_ptr<Scope> scope;
+  Scope* scope;
 };
 }

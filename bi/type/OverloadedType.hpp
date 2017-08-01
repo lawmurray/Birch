@@ -23,7 +23,7 @@ public:
    * @param loc Location.
    * @param assignable Is this type assignable?
    */
-  OverloadedType(Type* o, shared_ptr<Location> loc = nullptr,
+  OverloadedType(Type* o, Location* loc = nullptr,
       const bool assignable = false);
 
   /**
@@ -34,7 +34,7 @@ public:
    * @param assignable Is this type assignable?
    */
   OverloadedType(const poset<Type*,bi::definitely>& overloads,
-      shared_ptr<Location> loc = nullptr, const bool assignable = false);
+      Location* loc = nullptr, const bool assignable = false);
 
   /**
    * Destructor.

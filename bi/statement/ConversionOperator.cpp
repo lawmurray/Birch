@@ -6,7 +6,7 @@
 #include "bi/visitor/all.hpp"
 
 bi::ConversionOperator::ConversionOperator(Type* returnType, Statement* braces,
-    shared_ptr<Location> loc) :
+    Location* loc) :
     Statement(loc),
     ReturnTyped(returnType),
     Braced(braces) {

@@ -6,7 +6,7 @@
 #include "bi/visitor/all.hpp"
 
 bi::ArrayType::ArrayType(Type* single, Expression* brackets,
-    shared_ptr<Location> loc, const bool assignable) :
+    Location* loc, const bool assignable) :
     Type(loc, assignable),
     Unary<Type>(single),
     Bracketed(brackets),
@@ -15,7 +15,7 @@ bi::ArrayType::ArrayType(Type* single, Expression* brackets,
 }
 
 bi::ArrayType::ArrayType(Type* single, const int ndims,
-    shared_ptr<Location> loc, const bool assignable) :
+    Location* loc, const bool assignable) :
     Type(loc, assignable),
     Unary<Type>(single),
     ndims(ndims) {

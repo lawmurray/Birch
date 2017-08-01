@@ -7,7 +7,7 @@
 
 #include <typeinfo>
 
-bi::ParenthesesType::ParenthesesType(Type* single, shared_ptr<Location> loc,
+bi::ParenthesesType::ParenthesesType(Type* single, Location* loc,
     const bool assignable) :
     Type(loc, assignable),
     Unary<Type>(single) {

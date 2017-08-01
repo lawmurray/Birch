@@ -6,7 +6,7 @@
 #include "bi/visitor/all.hpp"
 
 bi::Assignment::Assignment(Expression* left, Expression* right,
-    shared_ptr<Location> loc, AssignmentOperator* target) :
+    Location* loc, AssignmentOperator* target) :
     Statement(loc),
     Binary<Expression>(left, right),
     Reference<AssignmentOperator>(target) {

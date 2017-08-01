@@ -106,7 +106,7 @@ protected:
 template<class T>
 void bi::CppBaseGenerator::genInit(const T* o) {
   if (o->type->isArray()) {
-    ArrayType* type = dynamic_cast<ArrayType*>(o->type.get());
+    ArrayType* type = dynamic_cast<ArrayType*>(o->type);
     assert(type);
     middle("(make_frame(" << type->brackets << ')');
     if (!o->parens->isEmpty()) {
@@ -114,7 +114,7 @@ void bi::CppBaseGenerator::genInit(const T* o) {
     }
     middle(')');
   } else if (o->type->isClass()) {
-    ClassType* type = dynamic_cast<ClassType*>(o->type.get());
+    ClassType* type = dynamic_cast<ClassType*>(o->type);
     assert(type);
     if (!o->value->isEmpty()) {
       middle('(');

@@ -5,7 +5,7 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::ListType::ListType(Type* head, Type* tail, shared_ptr<Location> loc) :
+bi::ListType::ListType(Type* head, Type* tail, Location* loc) :
     head(head),
     tail(tail) {
   /* pre-conditions */

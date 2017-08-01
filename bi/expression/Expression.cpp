@@ -7,13 +7,13 @@
 #include "bi/type/EmptyType.hpp"
 #include "bi/expression/Range.hpp"
 
-bi::Expression::Expression(Type* type, shared_ptr<Location> loc) :
+bi::Expression::Expression(Type* type, Location* loc) :
     Located(loc),
     Typed(type) {
   //
 }
 
-bi::Expression::Expression(shared_ptr<Location> loc) :
+bi::Expression::Expression(Location* loc) :
     Located(loc) {
   //
 }

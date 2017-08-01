@@ -3,7 +3,7 @@
  */
 #include "bi/common/Located.hpp"
 
-bi::Located::Located(shared_ptr<Location> loc) :
+bi::Located::Located(Location* loc) :
     loc(loc) {
   //
 }

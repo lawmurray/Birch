@@ -5,8 +5,8 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::Class::Class(shared_ptr<Name> name, Expression* parens, Type* base,
-    Expression* baseParens, Statement* braces, shared_ptr<Location> loc) :
+bi::Class::Class(Name* name, Expression* parens, Type* base,
+    Expression* baseParens, Statement* braces, Location* loc) :
     Statement(loc),
     Named(name),
     Parenthesised(parens),
@@ -43,7 +43,7 @@ void bi::Class::addSuper(const Type* o) {
   }
 
   /* inherit all members from most-immediate super type */
-  scope->inherit(type->target->scope.get());
+  scope->inherit(type->target->scope);
 }
 
 bool bi::Class::hasSuper(const Type* o) const {

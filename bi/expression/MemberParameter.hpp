@@ -8,7 +8,6 @@
 #include "bi/common/Named.hpp"
 #include "bi/common/Numbered.hpp"
 #include "bi/common/Valued.hpp"
-#include "bi/primitive/unique_ptr.hpp"
 
 namespace bi {
 /**
@@ -29,8 +28,8 @@ public:
    * @param value Default value.
    * @param loc Location.
    */
-  MemberParameter(shared_ptr<Name> name, Type* type, Expression* value =
-      new EmptyExpression(), shared_ptr<Location> loc = nullptr);
+  MemberParameter(Name* name, Type* type, Expression* value =
+      new EmptyExpression(), Location* loc = nullptr);
 
   /**
    * Destructor.

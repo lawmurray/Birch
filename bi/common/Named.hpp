@@ -4,7 +4,6 @@
 #pragma once
 
 #include "bi/common/Name.hpp"
-#include "bi/primitive/shared_ptr.hpp"
 
 namespace bi {
 /**
@@ -24,7 +23,7 @@ public:
    *
    * @param name Name.
    */
-  Named(shared_ptr<Name> name);
+  Named(Name* name);
 
   /**
    * Destructor.
@@ -34,6 +33,6 @@ public:
   /**
    * Name.
    */
-  shared_ptr<Name> name;
+  Name* name;
 };
 }

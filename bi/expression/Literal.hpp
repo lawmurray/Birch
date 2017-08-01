@@ -26,7 +26,7 @@ public:
    * @param loc Location.
    */
   Literal(const T1& value, const std::string& str, Type* type,
-      shared_ptr<Location> loc = nullptr);
+      Location* loc = nullptr);
 
   /**
    * Destructor.

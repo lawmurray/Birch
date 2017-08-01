@@ -6,7 +6,7 @@
 #include "bi/visitor/all.hpp"
 
 bi::FunctionType::FunctionType(Type* parens, Type* returnType,
-    shared_ptr<Location> loc, const bool assignable) :
+    Location* loc, const bool assignable) :
     Type(loc, assignable),
     ReturnTyped(returnType),
     parens(parens) {

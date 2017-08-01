@@ -9,7 +9,7 @@
 
 #include <sstream>
 
-bi::Path::Path(shared_ptr<Name> head, Path* tail, shared_ptr<Location> loc) :
+bi::Path::Path(Name* head, Path* tail, Location* loc) :
     Located(loc), head(head), tail(tail) {
   //
 }
@@ -36,7 +36,7 @@ std::string bi::Path::file() const {
   const Path* path = this;
   while (path) {
     file /= path->head->str();
-    path = path->tail.get();
+    path = path->tail;
   }
   file.replace_extension("bi");
 
@@ -48,7 +48,7 @@ std::string bi::Path::str() const {
   const Path* path = this;
   while (path) {
     buf << path->head->str();
-    path = path->tail.get();
+    path = path->tail;
     if (path) {
       buf << '.';
     }

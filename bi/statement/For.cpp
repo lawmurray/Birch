@@ -6,7 +6,7 @@
 #include "bi/visitor/all.hpp"
 
 bi::For::For(Expression* index, Expression* from, Expression* to,
-    Statement* braces, shared_ptr<Location> loc) :
+    Statement* braces, Location* loc) :
     Statement(loc),
     Braced(braces),
     index(index),

@@ -98,8 +98,8 @@ void bi::CppBaseGenerator::visit(const Range* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Member* o) {
-  const This* leftThis = dynamic_cast<const This*>(o->left.get());
-  const Super* leftSuper = dynamic_cast<const Super*>(o->left.get());
+  const This* leftThis = dynamic_cast<const This*>(o->left);
+  const Super* leftSuper = dynamic_cast<const Super*>(o->left);
   if (leftThis) {
     // tidier this way
     middle("this->");
@@ -326,7 +326,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
         if (!param->value->isEmpty()) {
           middle(" = " << param->value);
         } else if (param->type->isClass()) {
-          auto type = dynamic_cast<const ClassType*>(param->type.get());
+          auto type = dynamic_cast<const ClassType*>(param->type);
           assert(type);
           middle(" = make_object<bi::type::" << type->name << ">()");
         }
@@ -405,7 +405,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
         finish(':');
         in();
         if ((*iter)->type->isBasic()) {
-          auto type = dynamic_cast<Named*>((*iter)->type.get());
+          auto type = dynamic_cast<Named*>((*iter)->type);
           assert(type);
           line(name << " = bi::func::" << type->name << "(optarg);");
         } else if ((*iter)->type->isClass()) {
@@ -635,11 +635,11 @@ void bi::CppBaseGenerator::visit(const EmptyType* o) {
 
 void bi::CppBaseGenerator::visit(const ListType* o) {
   middle(o->head);
-  Type* tail = o->tail.get();
+  Type* tail = o->tail;
   ListType* list = dynamic_cast<ListType*>(tail);
   while (list) {
     middle(',' << list->head);
-    tail = list->tail.get();
+    tail = list->tail;
     list = dynamic_cast<ListType*>(tail);
   }
   middle(',' << tail);

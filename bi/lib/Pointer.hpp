@@ -77,7 +77,7 @@ public:
    * Equality operators.
    */
   bool operator==(const Pointer<T>& o) const {
-    return get() == o.get();
+    return get() == o;
   }
   bool operator!=(const Pointer<T>& o) const {
     return !(*this == o);

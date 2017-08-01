@@ -21,7 +21,7 @@ public:
    * @param right Right operand.
    * @param loc Location.
    */
-  Range(Expression* left, Expression* right, shared_ptr<Location> loc =
+  Range(Expression* left, Expression* right, Location* loc =
       nullptr);
 
   /**

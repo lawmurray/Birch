@@ -5,8 +5,6 @@
 
 #include "bi/common/Located.hpp"
 #include "bi/common/Name.hpp"
-#include "bi/primitive/shared_ptr.hpp"
-#include "bi/primitive/unique_ptr.hpp"
 
 namespace bi {
 class Visitor;
@@ -25,7 +23,7 @@ public:
    * @param tail Remaining path.
    * @param loc Location.
    */
-  Path(shared_ptr<Name> head, Path* tail = nullptr, shared_ptr<Location> loc =
+  Path(Name* head, Path* tail = nullptr, Location* loc =
       nullptr);
 
   /**
@@ -51,11 +49,11 @@ public:
   /**
    * First name in path.
    */
-  shared_ptr<Name> head;
+  Name* head;
 
   /**
    * Remaining path.
    */
-  unique_ptr<Path> tail;
+  Path* tail;
 };
 }

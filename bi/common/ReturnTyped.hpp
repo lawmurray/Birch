@@ -5,7 +5,6 @@
 
 #include "bi/type/Type.hpp"
 #include "bi/type/EmptyType.hpp"
-#include "bi/primitive/unique_ptr.hpp"
 
 namespace bi {
 /**
@@ -30,6 +29,6 @@ public:
   /**
    * Return type.
    */
-  unique_ptr<Type> returnType;
+  Type* returnType;
 };
 }

@@ -17,7 +17,7 @@
 template<class ObjectType>
 bi::Overloaded<ObjectType>::Overloaded(ObjectType* o) {
   overloads.push_back(o);
-  type = new OverloadedType(o->type.get());
+  type = new OverloadedType(o->type);
 }
 
 template<class ObjectType>
@@ -31,8 +31,8 @@ void bi::Overloaded<ObjectType>::add(ObjectType* o) {
   assert(!contains(o));
 
   overloads.push_back(o);
-  OverloadedType* overloadedType = dynamic_cast<OverloadedType*>(type.get());
-  overloadedType->add(o->type.get());
+  OverloadedType* overloadedType = dynamic_cast<OverloadedType*>(type);
+  overloadedType->add(o->type);
 }
 
 template class bi::Overloaded<bi::Function>;

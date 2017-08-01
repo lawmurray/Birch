@@ -7,7 +7,7 @@
 
 #include <typeinfo>
 
-bi::This::This(shared_ptr<Location> loc) :
+bi::This::This(Location* loc) :
     Expression(loc) {
   //
 }

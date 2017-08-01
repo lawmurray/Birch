@@ -5,7 +5,7 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::Alias::Alias(shared_ptr<Name> name, Type* base, shared_ptr<Location> loc) :
+bi::Alias::Alias(Name* name, Type* base, Location* loc) :
     Statement(loc),
     Named(name),
     Based(base) {
@@ -17,7 +17,7 @@ bi::Alias::~Alias() {
 }
 
 const bi::Statement* bi::Alias::super() const {
-  auto base = dynamic_cast<const Identifier<Class>*>(this->base.get());
+  auto base = dynamic_cast<const Identifier<Class>*>(this->base);
   assert(base);
   return base->target;
 }

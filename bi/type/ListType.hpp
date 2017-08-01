@@ -21,7 +21,7 @@ public:
    * @param tail Remaining list.
    * @param loc Location.
    */
-  ListType(Type* head, Type* tail, shared_ptr<Location> loc = nullptr);
+  ListType(Type* head, Type* tail, Location* loc = nullptr);
 
   /**
    * Destructor.
@@ -35,12 +35,12 @@ public:
   /**
    * Left operand.
    */
-  unique_ptr<Type> head;
+  Type* head;
 
   /**
    * Right operand.
    */
-  unique_ptr<Type> tail;
+  Type* tail;
 
   virtual bool dispatchDefinitely(const Type& o) const;
   virtual bool definitely(const ListType& o) const;

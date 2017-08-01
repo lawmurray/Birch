@@ -6,7 +6,7 @@
 #include "bi/visitor/all.hpp"
 
 bi::Call::Call(Expression* single, Expression* parens,
-    shared_ptr<Location> loc) :
+    Location* loc) :
     Expression(loc),
     Unary<Expression>(single),
     Parenthesised(parens) {

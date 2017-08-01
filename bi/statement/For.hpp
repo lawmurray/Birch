@@ -26,7 +26,7 @@ public:
    * @param loc Location.
    */
   For(Expression* index, Expression* from, Expression* to, Statement* braces,
-      shared_ptr<Location> loc = nullptr);
+      Location* loc = nullptr);
 
   /**
    * Destructor.
@@ -40,16 +40,16 @@ public:
   /**
    * Index.
    */
-  unique_ptr<Expression> index;
+  Expression* index;
 
   /**
    * From expression.
    */
-  unique_ptr<Expression> from;
+  Expression* from;
 
   /**
    * To expression.
    */
-  unique_ptr<Expression> to;
+  Expression* to;
 };
 }

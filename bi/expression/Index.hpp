@@ -20,7 +20,7 @@ public:
    * @param single Expression.
    * @param loc Location.
    */
-  Index(Expression* single, shared_ptr<Location> loc = nullptr);
+  Index(Expression* single, Location* loc = nullptr);
 
   /**
    * Destructor.

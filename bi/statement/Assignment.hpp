@@ -27,7 +27,7 @@ public:
    * @param loc Location.
    * @param target Target.
    */
-  Assignment(Expression* left, Expression* right, shared_ptr<Location> loc =
+  Assignment(Expression* left, Expression* right, Location* loc =
       nullptr, AssignmentOperator* target = nullptr);
 
   /**

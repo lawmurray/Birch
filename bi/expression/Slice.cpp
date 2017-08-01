@@ -7,7 +7,7 @@
 #include "bi/visitor/all.hpp"
 
 bi::Slice::Slice(Expression* single,
-    Expression* brackets, shared_ptr<Location> loc) :
+    Expression* brackets, Location* loc) :
     Expression(loc), Unary<Expression>(single), Bracketed(brackets) {
   //
 }

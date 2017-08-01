@@ -8,7 +8,7 @@
 
 #include <typeinfo>
 
-bi::Index::Index(Expression* single, shared_ptr<Location> loc) :
+bi::Index::Index(Expression* single, Location* loc) :
     Expression(loc),
     Unary<Expression>(single) {
   //

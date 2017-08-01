@@ -5,7 +5,6 @@
 
 #include "bi/type/Type.hpp"
 #include "bi/common/Unary.hpp"
-#include "bi/primitive/unique_ptr.hpp"
 
 namespace bi {
 /**
@@ -22,7 +21,7 @@ public:
    * @param loc Location.
    * @param assignable Is this type assignable?
    */
-  ParenthesesType(Type* single, shared_ptr<Location> loc = nullptr,
+  ParenthesesType(Type* single, Location* loc = nullptr,
       const bool assignable = false);
 
   /**

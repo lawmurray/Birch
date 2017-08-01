@@ -4,8 +4,6 @@
 #pragma once
 
 #include "bi/visitor/Visitor.hpp"
-#include "bi/primitive/unique_ptr.hpp"
-#include "bi/primitive/shared_ptr.hpp"
 
 #define line(x) *this << indent << x << '\n'
 #define start(x) *this << indent << x
@@ -83,18 +81,6 @@ public:
   template<class T>
   bi::indentable_ostream& operator<<(const T* arg) {
     arg->accept(this);
-    return *this;
-  }
-
-  template<class T>
-  bi::indentable_ostream& operator<<(const unique_ptr<T>& arg) {
-    *this << arg.get();
-    return *this;
-  }
-
-  template<class T>
-  bi::indentable_ostream& operator<<(const shared_ptr<T>& arg) {
-    *this << arg.get();
     return *this;
   }
 

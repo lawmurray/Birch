@@ -12,7 +12,7 @@
 
 template<class T1>
 bi::Literal<T1>::Literal(const T1& value, const std::string& str, Type* type,
-    shared_ptr<Location> loc) :
+    Location* loc) :
     Expression(type, loc), value(value), str(str) {
   //
 }

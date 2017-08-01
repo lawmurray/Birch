@@ -24,7 +24,7 @@ public:
    * @param assignable Is this type assignable?
    * @param target Target.
    */
-  ClassType(shared_ptr<Name> name, shared_ptr<Location> loc = nullptr,
+  ClassType(Name* name, Location* loc = nullptr,
       const bool assignable = false, Class* target = nullptr);
 
   /**

@@ -4,7 +4,6 @@
 #pragma once
 
 #include "bi/expression/Expression.hpp"
-#include "bi/primitive/unique_ptr.hpp"
 
 namespace bi {
 /**
@@ -31,11 +30,11 @@ public:
   /**
    * Left operand.
    */
-  unique_ptr<T> left;
+  T* left;
 
   /**
    * Right operand.
    */
-  unique_ptr<T> right;
+  T* right;
 };
 }

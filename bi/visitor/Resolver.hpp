@@ -6,7 +6,6 @@
 #include "bi/visitor/Modifier.hpp"
 #include "bi/visitor/Cloner.hpp"
 #include "bi/visitor/Assigner.hpp"
-#include "bi/primitive/shared_ptr.hpp"
 
 #include <stack>
 #include <list>
@@ -246,11 +245,11 @@ bi::Identifier<ObjectType>* bi::Resolver::modifyVariableIdentifier(
   resolve(o);
   if (o->target->type->isFunction()) {
     ///@todo Check arguments
-    auto func = dynamic_cast<ReturnTyped*>(o->target->type.get());
+    auto func = dynamic_cast<ReturnTyped*>(o->target->type);
     assert(func);
     o->type = func->returnType->accept(&cloner)->accept(this);
   } else if (o->target->type->isCoroutine()) {
-    auto func = dynamic_cast<ReturnTyped*>(o->target->type.get());
+    auto func = dynamic_cast<ReturnTyped*>(o->target->type);
     assert(func);
     o->type = func->returnType->accept(&cloner)->accept(this);
   } else {

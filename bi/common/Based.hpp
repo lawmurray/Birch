@@ -4,7 +4,6 @@
 #pragma once
 
 #include "bi/type/Type.hpp"
-#include "bi/primitive/unique_ptr.hpp"
 
 namespace bi {
 /**
@@ -29,6 +28,6 @@ public:
   /**
    * Base type.
    */
-  unique_ptr<Type> base;
+  Type* base;
 };
 }

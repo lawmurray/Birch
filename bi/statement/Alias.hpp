@@ -22,8 +22,8 @@ public:
    * @param base Base type.
    * @param loc Location.
    */
-  Alias(shared_ptr<Name> name, Type* base,
-      shared_ptr<Location> loc = nullptr);
+  Alias(Name* name, Type* base,
+      Location* loc = nullptr);
 
   /**
    * Destructor.

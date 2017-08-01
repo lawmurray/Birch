@@ -6,7 +6,6 @@
 #include "bi/type/Type.hpp"
 #include "bi/common/Bracketed.hpp"
 #include "bi/common/Unary.hpp"
-#include "bi/primitive/unique_ptr.hpp"
 
 namespace bi {
 /**
@@ -24,7 +23,7 @@ public:
    * @param loc Location.
    * @param assignable Is this type assignable?
    */
-  ArrayType(Type* single, Expression* brackets, shared_ptr<Location> loc =
+  ArrayType(Type* single, Expression* brackets, Location* loc =
       nullptr, const bool assignable = false);
 
   /**
@@ -35,7 +34,7 @@ public:
    * @param loc Location.
    * @param assignable Is this type assignable?
    */
-  ArrayType(Type* single, const int ndims, shared_ptr<Location> loc =
+  ArrayType(Type* single, const int ndims, Location* loc =
       nullptr, const bool assignable = false);
 
   /**

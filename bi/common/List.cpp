@@ -6,7 +6,7 @@
 #include "bi/visitor/all.hpp"
 
 template<class T>
-bi::List<T>::List(T* head, T* tail, shared_ptr<Location> loc) :
+bi::List<T>::List(T* head, T* tail, Location* loc) :
     head(head),
     tail(tail) {
   /* pre-conditions */
@@ -23,7 +23,7 @@ bi::List<T>::~List() {
 
 template<class T>
 int bi::List<T>::count() const {
-  const List<T>* listTail = dynamic_cast<const List<T>*>(tail.get());
+  const List<T>* listTail = dynamic_cast<const List<T>*>(tail);
   if (listTail) {
     return 1 + listTail->count();
   } else {
@@ -33,9 +33,9 @@ int bi::List<T>::count() const {
 
 template<class T>
 int bi::List<T>::rangeCount() const {
-  const Range* rangeHead = dynamic_cast<const Range*>(head.get());
-  const Range* rangeTail = dynamic_cast<const Range*>(tail.get());
-  const List<T>* listTail = dynamic_cast<const List<T>*>(tail.get());
+  const Range* rangeHead = dynamic_cast<const Range*>(head);
+  const Range* rangeTail = dynamic_cast<const Range*>(tail);
+  const List<T>* listTail = dynamic_cast<const List<T>*>(tail);
   int count = 0;
 
   if (rangeHead) {

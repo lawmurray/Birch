@@ -42,7 +42,7 @@ public:
    * @param loc Location.
    * @param target Target.
    */
-  Identifier(shared_ptr<Name> name, shared_ptr<Location> loc = nullptr,
+  Identifier(Name* name, Location* loc = nullptr,
       ObjectType* target = nullptr);
 
   /**

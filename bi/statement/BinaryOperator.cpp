@@ -5,8 +5,8 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::BinaryOperator::BinaryOperator(shared_ptr<Name> name, Expression* parens,
-    Type* returnType, Statement* braces, shared_ptr<Location> loc) :
+bi::BinaryOperator::BinaryOperator(Name* name, Expression* parens,
+    Type* returnType, Statement* braces, Location* loc) :
     Statement(loc),
     Named(name),
     Parenthesised(parens),

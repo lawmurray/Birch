@@ -19,7 +19,7 @@ public:
    *
    * @param loc Location.
    */
-  Super(shared_ptr<Location> loc = nullptr);
+  Super(Location* loc = nullptr);
 
   /**
    * Destructor.

@@ -5,7 +5,7 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::Assert::Assert(Expression* cond, shared_ptr<Location> loc) :
+bi::Assert::Assert(Expression* cond, Location* loc) :
     Statement(loc),
     Conditioned(cond) {
   //

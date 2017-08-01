@@ -21,7 +21,7 @@ public:
    * @param single Expression.
    * @param loc Location.
    */
-  ExpressionStatement(Expression* single, shared_ptr<Location> loc = nullptr);
+  ExpressionStatement(Expression* single, Location* loc = nullptr);
 
   /**
    * Destructor.

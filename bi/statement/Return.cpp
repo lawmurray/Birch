@@ -6,7 +6,7 @@
 #include "bi/visitor/all.hpp"
 
 bi::Return::Return(Expression* single,
-    shared_ptr<Location> loc) :
+    Location* loc) :
     Statement(loc),
     Unary<Expression>(single) {
   //

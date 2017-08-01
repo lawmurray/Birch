@@ -21,7 +21,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
   if (header) {
     start("class " << o->name << " : public ");
     if (!o->base->isEmpty()) {
-      auto type = dynamic_cast<const ClassType*>(o->base.get());
+      auto type = dynamic_cast<const ClassType*>(o->base);
       assert(type);
       middle(type->name);
     } else {
@@ -34,7 +34,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
     if (o->base->isEmpty()) {
       line("typedef Object super_type;");
     } else {
-      auto type = dynamic_cast<const ClassType*>(o->base.get());
+      auto type = dynamic_cast<const ClassType*>(o->base);
       assert(type);
       line("typedef " << type->name << " super_type;");
     }

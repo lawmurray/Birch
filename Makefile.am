@@ -255,8 +255,6 @@ noinst_HEADERS = \
   bi/primitive/encode.hpp \
   bi/primitive/poset.hpp \
   bi/primitive/possibly.hpp \
-  bi/primitive/shared_ptr.hpp \
-  bi/primitive/unique_ptr.hpp \
   bi/statement/all.hpp \
   bi/statement/Alias.hpp \
   bi/statement/AssignmentOperator.hpp \

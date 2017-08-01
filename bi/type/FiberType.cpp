@@ -5,7 +5,7 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::FiberType::FiberType(Type* returnType, shared_ptr<Location> loc,
+bi::FiberType::FiberType(Type* returnType, Location* loc,
     const bool assignable) :
     Type(loc, assignable),
     ReturnTyped(returnType) {

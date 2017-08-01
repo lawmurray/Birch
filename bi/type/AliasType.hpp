@@ -26,7 +26,7 @@ public:
    * @param assignable Is this type assignable?
    * @param target Target.
    */
-  AliasType(shared_ptr<Name> name, shared_ptr<Location> loc = nullptr,
+  AliasType(Name* name, Location* loc = nullptr,
       const bool assignable = false, Alias* target = nullptr);
 
   /**

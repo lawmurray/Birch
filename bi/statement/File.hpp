@@ -6,7 +6,6 @@
 #include "bi/statement/Statement.hpp"
 #include "bi/statement/EmptyStatement.hpp"
 #include "bi/common/Scoped.hpp"
-#include "bi/primitive/unique_ptr.hpp"
 
 namespace bi {
 /**
@@ -48,7 +47,7 @@ public:
   /**
    * Root statement of file.
    */
-  unique_ptr<Statement> root;
+  Statement* root;
 
   /**
    * Parsing state of this file.

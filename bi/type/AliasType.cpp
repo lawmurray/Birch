@@ -5,7 +5,7 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::AliasType::AliasType(shared_ptr<Name> name, shared_ptr<Location> loc,
+bi::AliasType::AliasType(Name* name, Location* loc,
     const bool assignable, Alias* target) :
     Type(loc, assignable),
     Named(name),

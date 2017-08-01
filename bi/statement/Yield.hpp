@@ -21,7 +21,7 @@ public:
    * @param single Expression.
    * @param loc Location.
    */
-  Yield(Expression* single, shared_ptr<Location> loc = nullptr);
+  Yield(Expression* single, Location* loc = nullptr);
 
   /**
    * Destructor.

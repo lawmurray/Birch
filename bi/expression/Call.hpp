@@ -25,7 +25,7 @@ public:
    * @param parens Parentheses.
    * @param loc Location.
    */
-  Call(Expression* single, Expression* parens, shared_ptr<Location> loc =
+  Call(Expression* single, Expression* parens, Location* loc =
       nullptr);
 
   /**

@@ -7,7 +7,6 @@
 #include "bi/statement/Statement.hpp"
 #include "bi/type/Type.hpp"
 #include "bi/common/Iterator.hpp"
-#include "bi/primitive/unique_ptr.hpp"
 
 namespace bi {
 /**
@@ -25,7 +24,7 @@ public:
    * @param tail Remaining list.
    * @param loc Location.
    */
-  List(T* head, T* tail, shared_ptr<Location> loc = nullptr);
+  List(T* head, T* tail, Location* loc = nullptr);
 
   /**
    * Destructor.
@@ -49,11 +48,11 @@ public:
   /**
    * Left operand.
    */
-  unique_ptr<T> head;
+  T* head;
 
   /**
    * Right operand.
    */
-  unique_ptr<T> tail;
+  T* tail;
 };
 }

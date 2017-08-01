@@ -23,8 +23,8 @@ public:
    * @param raw Raw C++ code.
    * @param loc Location.
    */
-  Raw(shared_ptr<Name> name, const std::string& raw,
-      shared_ptr<Location> loc = nullptr);
+  Raw(Name* name, const std::string& raw,
+      Location* loc = nullptr);
 
   /**
    * Destructor.

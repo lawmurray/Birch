@@ -4,7 +4,6 @@
 #pragma once
 
 #include "bi/common/Location.hpp"
-#include "bi/primitive/shared_ptr.hpp"
 
 namespace bi {
 /**
@@ -19,7 +18,7 @@ public:
    *
    * @param loc Location.
    */
-  Located(shared_ptr<Location> loc = nullptr);
+  Located(Location* loc = nullptr);
 
   /**
    * Destructor.
@@ -29,6 +28,6 @@ public:
   /**
    * Location.
    */
-  shared_ptr<Location> loc;
+  Location* loc;
 };
 }

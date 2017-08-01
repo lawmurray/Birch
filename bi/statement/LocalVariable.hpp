@@ -9,7 +9,6 @@
 #include "bi/common/Typed.hpp"
 #include "bi/common/Parenthesised.hpp"
 #include "bi/common/Valued.hpp"
-#include "bi/primitive/unique_ptr.hpp"
 
 namespace bi {
 /**
@@ -33,9 +32,9 @@ public:
    * @param value Initial value.
    * @param loc Location.
    */
-  LocalVariable(shared_ptr<Name> name, Type* type, Expression* parens =
+  LocalVariable(Name* name, Type* type, Expression* parens =
       new EmptyExpression(), Expression* value = new EmptyExpression(),
-      shared_ptr<Location> loc = nullptr);
+      Location* loc = nullptr);
 
   /**
    * Destructor.

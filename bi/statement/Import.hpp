@@ -6,7 +6,6 @@
 #include "bi/statement/Statement.hpp"
 #include "bi/statement/File.hpp"
 #include "bi/common/Path.hpp"
-#include "bi/primitive/shared_ptr.hpp"
 
 namespace bi {
 /**
@@ -23,7 +22,7 @@ public:
    * @param file File associated with the path.
    * @param loc Location.
    */
-  Import(shared_ptr<Path> path, File* file, shared_ptr<Location> loc = nullptr);
+  Import(Path* path, File* file, Location* loc = nullptr);
 
   /**
    * Destructor.
@@ -37,7 +36,7 @@ public:
   /**
    * Path.
    */
-  shared_ptr<Path> path;
+  Path* path;
 
   /**
    * File.

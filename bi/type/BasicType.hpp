@@ -29,7 +29,7 @@ public:
    * @param assignable Is this type assignable?
    * @param target Target.
    */
-  BasicType(shared_ptr<Name> name, shared_ptr<Location> loc = nullptr,
+  BasicType(Name* name, Location* loc = nullptr,
       const bool assignable = false, Basic* target = nullptr);
 
   /**

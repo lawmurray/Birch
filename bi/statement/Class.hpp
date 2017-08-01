@@ -36,8 +36,8 @@ public:
    * @param braces Braces.
    * @param loc Location.
    */
-  Class(shared_ptr<Name> name, Expression* parens, Type* base,
-      Expression* baseParens, Statement* braces, shared_ptr<Location> loc =
+  Class(Name* name, Expression* parens, Type* base,
+      Expression* baseParens, Statement* braces, Location* loc =
           nullptr);
 
   /**
@@ -59,7 +59,7 @@ public:
   /**
    * Base type constructor arguments.
    */
-  unique_ptr<Expression> baseParens;
+  Expression* baseParens;
 
 private:
   /**

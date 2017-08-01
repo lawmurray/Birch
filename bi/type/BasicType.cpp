@@ -5,7 +5,7 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::BasicType::BasicType(shared_ptr<Name> name, shared_ptr<Location> loc,
+bi::BasicType::BasicType(Name* name, Location* loc,
     const bool assignable, Basic* target) :
     Type(loc, assignable),
     Named(name),

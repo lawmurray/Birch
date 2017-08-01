@@ -30,7 +30,7 @@ public:
    * @param loc Location.
    */
   LambdaFunction(Expression* parens, Type* returnType, Statement* braces,
-      shared_ptr<Location> loc = nullptr);
+      Location* loc = nullptr);
 
   /**
    * Destructor.

@@ -31,8 +31,8 @@ public:
    * @param braces Braces expression.
    * @param loc Location.
    */
-  AssignmentOperator(shared_ptr<Name> name, Expression* single,
-      Statement* braces, shared_ptr<Location> loc = nullptr);
+  AssignmentOperator(Name* name, Expression* single,
+      Statement* braces, Location* loc = nullptr);
 
   /**
    * Destructor.

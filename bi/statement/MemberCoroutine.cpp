@@ -5,9 +5,9 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::MemberCoroutine::MemberCoroutine(shared_ptr<Name> name,
+bi::MemberCoroutine::MemberCoroutine(Name* name,
     Expression* parens, Type* returnType, Statement* braces,
-    shared_ptr<Location> loc) :
+    Location* loc) :
     Statement(loc),
     Named(name),
     Parenthesised(parens),

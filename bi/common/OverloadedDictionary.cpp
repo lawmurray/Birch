@@ -12,10 +12,7 @@
 
 template<class ObjectType>
 bi::OverloadedDictionary<ObjectType>::~OverloadedDictionary() {
-  for (auto o : this->objects) {
-    delete o.second;
-  }
-  this->objects.clear();
+  //
 }
 
 template<class ObjectType>

@@ -30,8 +30,8 @@ public:
    * @param braces Expression in braces.
    * @param loc Location.
    */
-  Program(shared_ptr<Name> name, Expression* parens, Statement* braces,
-      shared_ptr<Location> loc = nullptr);
+  Program(Name* name, Expression* parens, Statement* braces,
+      Location* loc = nullptr);
 
   /**
    * Destructor.

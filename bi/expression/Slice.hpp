@@ -23,7 +23,7 @@ public:
    * @param brackets Brackets.
    * @param loc Location.
    */
-  Slice(Expression* single, Expression* brackets, shared_ptr<Location> loc =
+  Slice(Expression* single, Expression* brackets, Location* loc =
       nullptr);
 
   /**

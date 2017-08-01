@@ -5,7 +5,7 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::Basic::Basic(shared_ptr<Name> name, shared_ptr<Location> loc) :
+bi::Basic::Basic(Name* name, Location* loc) :
     Statement(loc),
     Named(name) {
   //

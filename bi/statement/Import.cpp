@@ -5,8 +5,8 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::Import::Import(shared_ptr<Path> path, File* file,
-    shared_ptr<Location> loc) :
+bi::Import::Import(Path* path, File* file,
+    Location* loc) :
     Statement(loc),
     path(path),
     file(file) {

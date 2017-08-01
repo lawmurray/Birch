@@ -7,7 +7,7 @@
 
 template<class ObjectType>
 bi::OverloadedIdentifier<ObjectType>::OverloadedIdentifier(
-    shared_ptr<Name> name, shared_ptr<Location> loc,
+    Name* name, Location* loc,
     Overloaded<ObjectType>* target) :
     Expression(loc),
     Named(name),

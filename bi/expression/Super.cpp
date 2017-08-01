@@ -7,7 +7,7 @@
 
 #include <typeinfo>
 
-bi::Super::Super(shared_ptr<Location> loc) :
+bi::Super::Super(Location* loc) :
     Expression(loc) {
   //
 }

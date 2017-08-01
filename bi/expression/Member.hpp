@@ -22,7 +22,7 @@ public:
    * @param right Right operand.
    * @param loc Location.
    */
-  Member(Expression* left, Expression* right, shared_ptr<Location> loc =
+  Member(Expression* left, Expression* right, Location* loc =
       nullptr);
 
   /**

@@ -6,7 +6,6 @@
 #include "bi/expression/Expression.hpp"
 #include "bi/statement/Statement.hpp"
 #include "bi/type/Type.hpp"
-#include "bi/primitive/unique_ptr.hpp"
 
 namespace bi {
 /**
@@ -32,6 +31,6 @@ public:
   /**
    * Operand.
    */
-  unique_ptr<T> single;
+  T* single;
 };
 }

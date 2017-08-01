@@ -5,7 +5,7 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::ClassType::ClassType(shared_ptr<Name> name, shared_ptr<Location> loc,
+bi::ClassType::ClassType(Name* name, Location* loc,
     const bool assignable, Class* target) :
     Type(loc, assignable),
     Named(name),

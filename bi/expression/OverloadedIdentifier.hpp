@@ -28,7 +28,7 @@ public:
    * @param loc Location.
    * @param target Target.
    */
-  OverloadedIdentifier(shared_ptr<Name> name, shared_ptr<Location> loc =
+  OverloadedIdentifier(Name* name, Location* loc =
       nullptr, Overloaded<ObjectType>* target = nullptr);
 
   /**

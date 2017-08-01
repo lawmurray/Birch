@@ -14,7 +14,7 @@ template<class T>
 bi::Iterator<T>& bi::Iterator<T>::operator++() {
   const List<T>* list = dynamic_cast<const List<T>*>(o);
   if (list) {
-    o = list->tail.get();
+    o = list->tail;
   } else {
     o = nullptr;
   }
@@ -32,7 +32,7 @@ template<class T>
 const T* bi::Iterator<T>::operator*() {
   const List<T>* list = dynamic_cast<const List<T>*>(o);
   if (list) {
-    return list->head.get();
+    return list->head;
   } else {
     return o;
   }

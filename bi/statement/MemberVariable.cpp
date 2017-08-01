@@ -5,8 +5,8 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::MemberVariable::MemberVariable(shared_ptr<Name> name, Type* type,
-    Expression* parens, Expression* value, shared_ptr<Location> loc) :
+bi::MemberVariable::MemberVariable(Name* name, Type* type,
+    Expression* parens, Expression* value, Location* loc) :
     Statement(loc),
     Named(name),
     Typed(type),
