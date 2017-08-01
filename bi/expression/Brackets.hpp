@@ -8,9 +8,6 @@
 #include "bi/expression/EmptyExpression.hpp"
 
 namespace bi {
-class Parameter;
-class VarReference;
-
 /**
  * Expression in brackets.
  *

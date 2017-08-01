@@ -8,8 +8,6 @@
 #include "bi/expression/EmptyExpression.hpp"
 
 namespace bi {
-class Parameter;
-
 /**
  * Expression in parentheses.
  *
