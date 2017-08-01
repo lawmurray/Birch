@@ -9,8 +9,7 @@
 
 namespace bi {
 /**
- * Call to a function object. Also used as a placeholder during parsing for
- * calls to first-class overloadable functions before resolution.
+ * Call to a function or operator.
  *
  * @ingroup compiler_expression
  */
@@ -19,7 +18,7 @@ public:
   /**
    * Constructor.
    *
-   * @param single Expression.
+   * @param single Expression indicating the function.
    * @param args Arguments.
    * @param loc Location.
    */
@@ -33,10 +32,5 @@ public:
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
-
-  /**
-   * Arguments.
-   */
-  Expression* args;
 };
 }

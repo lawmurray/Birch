@@ -258,7 +258,7 @@ void bi::Scope::resolve(Identifier<LocalVariable>* ref) {
 
 void bi::Scope::resolve(Identifier<MemberVariable>* ref) {
   memberVariables.resolve(ref);
-  if (ref->matches.size() == 0) {
+  if (!ref->target) {
     resolveInherit(ref);
   }
 }
@@ -273,14 +273,14 @@ void bi::Scope::resolve(OverloadedIdentifier<Coroutine>* ref) {
 
 void bi::Scope::resolve(OverloadedIdentifier<MemberFunction>* ref) {
   memberFunctions.resolve(ref);
-  if (ref->matches.size() == 0) {
+  if (!ref->target) {
     resolveInherit(ref);
   }
 }
 
 void bi::Scope::resolve(OverloadedIdentifier<MemberCoroutine>* ref) {
   memberCoroutines.resolve(ref);
-  if (ref->matches.size() == 0) {
+  if (!ref->target) {
     resolveInherit(ref);
   }
 }

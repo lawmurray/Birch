@@ -56,6 +56,7 @@ birchc_SOURCES = \
   bi/exception/InvalidCallException.cpp \
   bi/exception/MemberException.cpp \
   bi/exception/NotAssignableException.cpp \
+  bi/exception/NotFunctionException.cpp \
   bi/exception/PreviousDeclarationException.cpp \
   bi/exception/SuperException.cpp \
   bi/exception/SuperBaseException.cpp \
@@ -222,6 +223,7 @@ noinst_HEADERS = \
   bi/exception/InvalidCallException.hpp \
   bi/exception/MemberException.hpp \
   bi/exception/NotAssignableException.hpp \
+  bi/exception/NotFunctionException.hpp \
   bi/exception/PreviousDeclarationException.hpp \
   bi/exception/SuperBaseException.hpp \
   bi/exception/SuperException.hpp \

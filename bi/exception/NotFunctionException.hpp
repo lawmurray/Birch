@@ -6,18 +6,16 @@
 #include "bi/exception/CompilerException.hpp"
 #include "bi/expression/Call.hpp"
 
-#include <list>
-
 namespace bi {
 /**
- * Ambiguous overloaded function call.
+ * Call on something that is not of function type.
  *
  * @ingroup compiler_exception
  */
-struct AmbiguousCallException: public CompilerException {
+struct NotFunctionException: public CompilerException {
   /**
    * Constructor.
    */
-  AmbiguousCallException(const Type* o, const std::list<Type*>& matches);
+  NotFunctionException(Call* o);
 };
 }

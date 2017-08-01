@@ -12,6 +12,7 @@
 #include "bi/exception/InvalidCallException.hpp"
 #include "bi/exception/MemberException.hpp"
 #include "bi/exception/NotAssignableException.hpp"
+#include "bi/exception/NotFunctionException.hpp"
 #include "bi/exception/PreviousDeclarationException.hpp"
 #include "bi/exception/SuperException.hpp"
 #include "bi/exception/SuperBaseException.hpp"

@@ -3,21 +3,17 @@
  */
 #include "bi/common/Overloaded.hpp"
 
-#include "bi/expression/Call.hpp"
 #include "bi/statement/Function.hpp"
 #include "bi/statement/Coroutine.hpp"
 #include "bi/statement/MemberFunction.hpp"
 #include "bi/statement/MemberCoroutine.hpp"
 #include "bi/statement/BinaryOperator.hpp"
 #include "bi/statement/UnaryOperator.hpp"
-#include "bi/type/OverloadedType.hpp"
-
-#include <algorithm>
+#include "bi/exception/all.hpp"
 
 template<class ObjectType>
 bi::Overloaded<ObjectType>::Overloaded(ObjectType* o) {
-  overloads.push_back(o);
-  type = new OverloadedType(o->type);
+  add(o);
 }
 
 template<class ObjectType>
@@ -31,8 +27,7 @@ void bi::Overloaded<ObjectType>::add(ObjectType* o) {
   assert(!contains(o));
 
   overloads.push_back(o);
-  OverloadedType* overloadedType = dynamic_cast<OverloadedType*>(type);
-  overloadedType->add(o->type);
+  overloadTypes.insert(o->type);
 }
 
 template class bi::Overloaded<bi::Function>;

@@ -226,16 +226,13 @@ void bi::Resolver::resolve(ObjectType* o) {
     memberScope = nullptr;
   } else {
     /* use current stack of scopes */
-    for (auto iter = scopes.rbegin();
-        o->matches.size() == 0 && iter != scopes.rend(); ++iter) {
+    for (auto iter = scopes.rbegin(); !o->target && iter != scopes.rend();
+        ++iter) {
       (*iter)->resolve(o);
     }
   }
-  if (o->matches.size() == 0) {
+  if (!o->target) {
     throw UnresolvedException(o);
-  } else {
-    assert(o->matches.size() == 1);
-    o->target = o->matches.front();
   }
 }
 
@@ -244,18 +241,7 @@ bi::Identifier<ObjectType>* bi::Resolver::modifyVariableIdentifier(
     bi::Identifier<ObjectType>* o) {
   Modifier::modify(o);
   resolve(o);
-  if (o->target->type->isFunction()) {
-    ///@todo Check arguments
-    auto func = dynamic_cast<ReturnTyped*>(o->target->type);
-    assert(func);
-    o->type = func->returnType->accept(&cloner)->accept(this);
-  } else if (o->target->type->isCoroutine()) {
-    auto func = dynamic_cast<ReturnTyped*>(o->target->type);
-    assert(func);
-    o->type = func->returnType->accept(&cloner)->accept(this);
-  } else {
-    o->type = o->target->type->accept(&cloner)->accept(this);
-  }
+  o->type = o->target->type->accept(&cloner)->accept(this);
   return o;
 }
 
@@ -264,6 +250,6 @@ bi::OverloadedIdentifier<ObjectType>* bi::Resolver::modifyFunctionIdentifier(
     bi::OverloadedIdentifier<ObjectType>* o) {
   Modifier::modify(o);
   resolve(o);
-  o->type = o->target->type->accept(&cloner)->accept(this);
+  o->type = new OverloadedType(o->target->overloadTypes);
   return o;
 }

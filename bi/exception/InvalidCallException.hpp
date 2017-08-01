@@ -16,6 +16,6 @@ struct InvalidCallException: public CompilerException {
   /**
    * Constructor.
    */
-  InvalidCallException(Call* o);
+  InvalidCallException(Type* o);
 };
 }

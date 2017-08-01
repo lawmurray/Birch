@@ -6,9 +6,8 @@
 #include "bi/visitor/all.hpp"
 
 template<class ObjectType>
-bi::OverloadedIdentifier<ObjectType>::OverloadedIdentifier(
-    Name* name, Location* loc,
-    Overloaded<ObjectType>* target) :
+bi::OverloadedIdentifier<ObjectType>::OverloadedIdentifier(Name* name,
+    Location* loc, Overloaded<ObjectType>* target) :
     Expression(loc),
     Named(name),
     Reference<Overloaded<ObjectType>>(target) {

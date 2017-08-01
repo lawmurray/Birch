@@ -21,6 +21,14 @@ bool bi::FunctionType::isFunction() const {
   return true;
 }
 
+bi::Type* bi::FunctionType::resolve(Type* args) {
+  if (args->definitely(*params)) {
+    return returnType;
+  } else {
+    return nullptr;
+  }
+}
+
 bi::Type* bi::FunctionType::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

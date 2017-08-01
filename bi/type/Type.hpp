@@ -119,6 +119,17 @@ public:
   virtual bool isOverloaded() const;
 
   /**
+   * Resolve a call.
+   *
+   * @param args Argument types.
+   *
+   * @return If this is a function type, and the argument types match the
+   * parameter types of the function, the return type of the function. In all
+   * other cases throws an exception.
+   */
+  virtual Type* resolve(Type* args);
+
+  /**
    * How many dimensions does this type have?
    */
   virtual int count() const;

@@ -69,6 +69,6 @@ template<class ReferenceType>
 void bi::Dictionary<ObjectType>::resolve(ReferenceType* ref) {
   auto iter = objects.find(ref->name->str());
   if (iter != objects.end()) {
-    ref->matches.push_back(iter->second);
+    ref->target = iter->second;
   }
 }

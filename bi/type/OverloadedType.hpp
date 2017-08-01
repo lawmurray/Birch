@@ -19,16 +19,6 @@ public:
   /**
    * Constructor.
    *
-   * @param o First overload.
-   * @param loc Location.
-   * @param assignable Is this type assignable?
-   */
-  OverloadedType(Type* o, Location* loc = nullptr,
-      const bool assignable = false);
-
-  /**
-   * Constructor.
-   *
    * @param overloads Overloads.
    * @param loc Location.
    * @param assignable Is this type assignable?
@@ -60,6 +50,7 @@ public:
   void add(Type* o);
 
   virtual bool isOverloaded() const;
+  virtual Type* resolve(Type* args);
 
   using Type::definitely;
   using Type::possibly;

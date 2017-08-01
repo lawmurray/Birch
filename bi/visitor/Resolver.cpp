@@ -3,9 +3,6 @@
  */
 #include "bi/visitor/Resolver.hpp"
 
-#include <sstream>
-#include <iostream>
-
 bi::Resolver::Resolver() :
     memberScope(nullptr) {
   //
@@ -61,37 +58,13 @@ bi::Expression* bi::Resolver::modify(Binary* o) {
 
 bi::Expression* bi::Resolver::modify(Call* o) {
   Modifier::modify(o);
-  if (o->single->type->isOverloaded()) {
-    OverloadedType* overloadedType =
-        dynamic_cast<OverloadedType*>(o->single->type);
-    assert(overloadedType);
-
-    std::list<Type*> matches;
-    overloadedType->overloads.match(o->args->type, matches);
-    if (matches.size() == 1) {
-      FunctionType* functionType =
-          dynamic_cast<FunctionType*>(matches.front());
-      assert(functionType);
-      o->type = functionType->returnType->accept(&cloner);
-    } else if (matches.size() == 0) {
-      throw InvalidCallException(o);
-    } else {
-      throw AmbiguousCallException(o, matches);
-    }
-  } else if (o->single->type->isFunction()) {
-    FunctionType* functionType = dynamic_cast<FunctionType*>(o->single->type);
-    assert(functionType);
-    if (o->args->type->definitely(*functionType->params)) {
-      o->type = functionType->returnType->accept(&cloner);
-    } else {
-      throw InvalidCallException(o);
-    }
+  if (o->single->type->isFunction() || o->single->type->isOverloaded()) {
+    o->type = o->single->type->resolve(o->args->type)->accept(&cloner)->accept(this);
+    o->type->assignable = false;  // rvalue
+    return o;
   } else {
-    throw InvalidCallException(o);
+    throw NotFunctionException(o);
   }
-  o->type = o->type->accept(this);
-  o->type->assignable = false;  // rvalue
-  return o;
 }
 
 bi::Expression* bi::Resolver::modify(Slice* o) {

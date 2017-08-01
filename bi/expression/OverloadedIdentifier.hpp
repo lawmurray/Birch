@@ -28,8 +28,8 @@ public:
    * @param loc Location.
    * @param target Target.
    */
-  OverloadedIdentifier(Name* name, Location* loc =
-      nullptr, Overloaded<ObjectType>* target = nullptr);
+  OverloadedIdentifier(Name* name, Location* loc = nullptr,
+      Overloaded<ObjectType>* target = nullptr);
 
   /**
    * Destructor.

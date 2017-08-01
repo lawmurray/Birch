@@ -27,14 +27,9 @@ public:
   virtual ~Reference() = 0;
 
   /**
-   * Target. This is the most-specific definite resolution to a parameter.
+   * Object to which the reference has been resolved.
    */
   Target* target;
-
-  /**
-   * All matches.
-   */
-  std::list<Target*> matches;
 };
 }
 

@@ -7,14 +7,14 @@
 
 #include <sstream>
 
-bi::AmbiguousCallException::AmbiguousCallException(const Call* o,
+bi::AmbiguousCallException::AmbiguousCallException(const Type* o,
     const std::list<Type*>& matches) {
   std::stringstream base;
   bih_ostream buf(base);
   if (o->loc) {
     buf << o->loc;
   }
-  buf << "error: ambiguous call '" << o << "'\n";
+  buf << "error: ambiguous call with argument types '" << o << "'\n";
   buf << o << '\n';
   for (auto match : matches) {
     if (match->loc) {

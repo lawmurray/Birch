@@ -3,9 +3,10 @@
  */
 #pragma once
 
-#include "bi/type/Type.hpp"
-
-#include <list>
+#include "bi/expression/Expression.hpp"
+#include "bi/primitive/poset.hpp"
+#include "bi/primitive/definitely.hpp"
+#include "bi/primitive/possibly.hpp"
 
 namespace bi {
 /**
@@ -38,16 +39,13 @@ public:
   void add(ObjectType* o);
 
   /**
-   * Type. Should be of type OverloadedType.
-   */
-  Type* type;
-
-  /**
-   * Overloads.
-   *
-   * std::list is preferred to std::set to maintain declaration order of
-   * overloads for error messages.
+   * Overload types.
    */
   std::list<ObjectType*> overloads;
+
+  /**
+   * Overload types.
+   */
+  poset<Type*,definitely> overloadTypes;
 };
 }

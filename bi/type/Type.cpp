@@ -4,6 +4,7 @@
 #include "bi/type/Type.hpp"
 
 #include "bi/common/Iterator.hpp"
+#include "bi/exception/all.hpp"
 
 #include <cassert>
 
@@ -51,6 +52,10 @@ bool bi::Type::isBinary() const {
 
 bool bi::Type::isOverloaded() const {
   return false;
+}
+
+bi::Type* bi::Type::resolve(Type* args) {
+  throw InvalidCallException(args);
 }
 
 int bi::Type::count() const {
