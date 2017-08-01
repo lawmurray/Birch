@@ -45,12 +45,20 @@ bool bi::FunctionType::dispatchDefinitely(const Type& o) const {
   return o.definitely(*this);
 }
 
+bool bi::FunctionType::definitely(const AliasType& o) const {
+  return definitely(*o.target->base);
+}
+
 bool bi::FunctionType::definitely(const FunctionType& o) const {
   return params->definitely(*o.params);
 }
 
 bool bi::FunctionType::dispatchPossibly(const Type& o) const {
   return o.possibly(*this);
+}
+
+bool bi::FunctionType::possibly(const AliasType& o) const {
+  return possibly(*o.target->base);
 }
 
 bool bi::FunctionType::possibly(const FunctionType& o) const {

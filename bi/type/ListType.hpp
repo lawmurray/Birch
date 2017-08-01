@@ -42,10 +42,15 @@ public:
    */
   Type* tail;
 
+  using Type::definitely;
+  using Type::possibly;
+
   virtual bool dispatchDefinitely(const Type& o) const;
+  virtual bool definitely(const AliasType& o) const;
   virtual bool definitely(const ListType& o) const;
 
   virtual bool dispatchPossibly(const Type& o) const;
+  virtual bool possibly(const AliasType& o) const;
   virtual bool possibly(const ListType& o) const;
 };
 }

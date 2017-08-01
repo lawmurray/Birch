@@ -319,7 +319,7 @@ bi::Type* bi::Cloner::clone(const FunctionType* o) {
 }
 
 bi::Type* bi::Cloner::clone(const OverloadedType* o) {
-  return new OverloadedType(o->overloads, o->loc, o->assignable);
+  return new OverloadedType(o->params, o->returns, o->loc, o->assignable);
 }
 
 bi::Type* bi::Cloner::clone(const FiberType* o) {

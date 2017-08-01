@@ -8,6 +8,8 @@
 #include "bi/primitive/definitely.hpp"
 #include "bi/primitive/possibly.hpp"
 
+#include <map>
+
 namespace bi {
 /**
  * Overloaded type. Typically used for the type of first-class functions.
@@ -19,12 +21,14 @@ public:
   /**
    * Constructor.
    *
-   * @param overloads Overloads.
+   * @param params Overload parameter types.
+   * @param returns Map from parameter to return types.
    * @param loc Location.
    * @param assignable Is this type assignable?
    */
-  OverloadedType(const poset<Type*,bi::definitely>& overloads,
-      Location* loc = nullptr, const bool assignable = false);
+  OverloadedType(const poset<Type*,bi::definitely>& params,
+      const std::map<Type*,Type*>& returns, Location* loc = nullptr,
+      const bool assignable = false);
 
   /**
    * Destructor.
@@ -34,20 +38,6 @@ public:
   virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
-
-  /**
-   * Does this contain the given overload?
-   *
-   * @param o The overload.
-   */
-  bool contains(Type* o) const;
-
-  /**
-   * Add an overload.
-   *
-   * @param o The overload.
-   */
-  void add(Type* o);
 
   virtual bool isOverloaded() const;
   virtual Type* resolve(Type* args);
@@ -61,9 +51,7 @@ public:
   virtual bool dispatchPossibly(const Type& o) const;
   virtual bool possibly(const OverloadedType& o) const;
 
-  /**
-   * Declarations by partial order.
-   */
-  poset<Type*,bi::definitely> overloads;
+  poset<Type*,bi::definitely> params;
+  std::map<Type*,Type*> returns;
 };
 }

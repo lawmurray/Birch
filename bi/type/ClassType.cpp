@@ -73,10 +73,6 @@ bool bi::ClassType::definitely(const ListType& o) const {
   return target->hasConversion(&o);
 }
 
-bool bi::ClassType::definitely(const Class& o) const {
-  return true;
-}
-
 bool bi::ClassType::dispatchPossibly(const Type& o) const {
   return o.possibly(*this);
 }

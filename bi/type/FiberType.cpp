@@ -36,12 +36,20 @@ bool bi::FiberType::dispatchDefinitely(const Type& o) const {
   return o.definitely(*this);
 }
 
+bool bi::FiberType::definitely(const AliasType& o) const {
+  return definitely(*o.target->base);
+}
+
 bool bi::FiberType::definitely(const FiberType& o) const {
   return returnType->definitely(*o.returnType);
 }
 
 bool bi::FiberType::dispatchPossibly(const Type& o) const {
   return o.possibly(*this);
+}
+
+bool bi::FiberType::possibly(const AliasType& o) const {
+  return possibly(*o.target->base);
 }
 
 bool bi::FiberType::possibly(const FiberType& o) const {

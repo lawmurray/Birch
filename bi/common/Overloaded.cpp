@@ -27,7 +27,11 @@ void bi::Overloaded<ObjectType>::add(ObjectType* o) {
   assert(!contains(o));
 
   overloads.push_back(o);
-  overloadTypes.insert(o->type);
+
+  auto type = dynamic_cast<FunctionType*>(o->type);
+  assert(type);
+  params.insert(type->params);
+  returns.insert(std::make_pair(type->params, type->returnType));
 }
 
 template class bi::Overloaded<bi::Function>;

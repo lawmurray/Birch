@@ -8,6 +8,8 @@
 #include "bi/primitive/definitely.hpp"
 #include "bi/primitive/possibly.hpp"
 
+#include <map>
+
 namespace bi {
 /**
  * Overloadable object. Groups all overloads into one object.
@@ -39,13 +41,18 @@ public:
   void add(ObjectType* o);
 
   /**
-   * Overload types.
+   * Overloads.
    */
   std::list<ObjectType*> overloads;
 
   /**
-   * Overload types.
+   * Overload parameter types.
    */
-  poset<Type*,definitely> overloadTypes;
+  poset<Type*,definitely> params;
+
+  /**
+   * Map from parameter types to return types.
+   */
+  std::map<Type*,Type*> returns;
 };
 }

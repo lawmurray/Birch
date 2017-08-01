@@ -32,12 +32,20 @@ bool bi::ParenthesesType::dispatchDefinitely(const Type& o) const {
   return o.definitely(*this);
 }
 
+bool bi::ParenthesesType::definitely(const AliasType& o) const {
+  return definitely(*o.target->base);
+}
+
 bool bi::ParenthesesType::definitely(const ParenthesesType& o) const {
   return single->definitely(*o.single);
 }
 
 bool bi::ParenthesesType::dispatchPossibly(const Type& o) const {
   return o.possibly(*this);
+}
+
+bool bi::ParenthesesType::possibly(const AliasType& o) const {
+  return possibly(*o.target->base);
 }
 
 bool bi::ParenthesesType::possibly(const ParenthesesType& o) const {

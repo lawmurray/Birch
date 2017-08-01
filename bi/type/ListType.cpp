@@ -35,12 +35,20 @@ bool bi::ListType::dispatchDefinitely(const Type& o) const {
   return o.definitely(*this);
 }
 
+bool bi::ListType::definitely(const AliasType& o) const {
+  return definitely(*o.target->base);
+}
+
 bool bi::ListType::definitely(const ListType& o) const {
   return head->definitely(*o.head) && tail->definitely(*o.tail);
 }
 
 bool bi::ListType::dispatchPossibly(const Type& o) const {
   return o.possibly(*this);
+}
+
+bool bi::ListType::possibly(const AliasType& o) const {
+  return possibly(*o.target->base);
 }
 
 bool bi::ListType::possibly(const ListType& o) const {

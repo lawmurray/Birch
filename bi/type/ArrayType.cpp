@@ -50,12 +50,20 @@ bool bi::ArrayType::dispatchDefinitely(const Type& o) const {
   return o.definitely(*this);
 }
 
+bool bi::ArrayType::definitely(const AliasType& o) const {
+  return definitely(*o.target->base);
+}
+
 bool bi::ArrayType::definitely(const ArrayType& o) const {
   return single->definitely(*o.single) && ndims == o.ndims;
 }
 
 bool bi::ArrayType::dispatchPossibly(const Type& o) const {
   return o.possibly(*this);
+}
+
+bool bi::ArrayType::possibly(const AliasType& o) const {
+  return possibly(*o.target->base);
 }
 
 bool bi::ArrayType::possibly(const ArrayType& o) const {

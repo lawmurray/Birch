@@ -6,27 +6,17 @@
 #include "bi/visitor/all.hpp"
 #include "bi/exception/all.hpp"
 
-bi::OverloadedType::OverloadedType(
-    const poset<Type*,bi::definitely>& overloads, Location* loc,
+bi::OverloadedType::OverloadedType(const poset<Type*,bi::definitely>& params,
+    const std::map<Type*,Type*>& returns, Location* loc,
     const bool assignable) :
     Type(loc, assignable),
-    overloads(overloads) {
+    params(params),
+    returns(returns) {
   //
 }
 
 bi::OverloadedType::~OverloadedType() {
   //
-}
-
-bool bi::OverloadedType::contains(Type* o) const {
-  return overloads.contains(o);
-}
-
-void bi::OverloadedType::add(Type* o) {
-  /* pre-condition */
-  assert(!contains(o));
-
-  overloads.insert(o);
 }
 
 bool bi::OverloadedType::isOverloaded() const {
@@ -35,9 +25,9 @@ bool bi::OverloadedType::isOverloaded() const {
 
 bi::Type* bi::OverloadedType::resolve(Type* args) {
   std::list<Type*> matches;
-  overloads.match(args, matches);
+  params.match(args, matches);
   if (matches.size() == 1) {
-    return matches.front()->resolve(args);
+    return returns[matches.front()];
   } else if (matches.size() == 0) {
     throw InvalidCallException(args);
   } else {

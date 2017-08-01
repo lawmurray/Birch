@@ -250,6 +250,6 @@ bi::OverloadedIdentifier<ObjectType>* bi::Resolver::modifyFunctionIdentifier(
     bi::OverloadedIdentifier<ObjectType>* o) {
   Modifier::modify(o);
   resolve(o);
-  o->type = new OverloadedType(o->target->overloadTypes);
+  o->type = new OverloadedType(o->target->params, o->target->returns, o->loc);
   return o;
 }
