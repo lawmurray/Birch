@@ -71,9 +71,19 @@ public:
   virtual bool isEmpty() const;
 
   /**
-   * Strip parentheses.
+   * Strip parentheses, if any.
    */
   virtual Expression* strip();
+
+  /**
+   * Get the left operand of a Binary, otherwise @c nullptr.
+   */
+  virtual Expression* getLeft() const;
+
+  /**
+   * Get the right operand of a Binary, otherwise @c nullptr.
+   */
+  virtual Expression* getRight() const;
 
   /**
    * Number of expressions in tuple.

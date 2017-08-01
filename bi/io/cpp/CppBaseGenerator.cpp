@@ -54,23 +54,21 @@ void bi::CppBaseGenerator::visit(const Brackets* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Call* o) {
-  middle(o->single << o->args);
-
-  //if (isTranslatable(o->name->str())) {
-  //  /* can use as raw C++ operator */
-  //  middle(o->left << ' ' << o->name->str() << ' ' << o->right);
-  //} else {
-  //  /* must use as function */
-  //  middle("bi::" << o->name << '(' << o->left << ", " << o->right << ')');
-  //}
-
-  //if (isTranslatable(o->name->str())) {
-  //  /* can use as raw C++ operator */
-  //  middle(o->name->str() << o->single);
-  //} else {
-  //  /* must use as function */
-  //  middle("bi::" << o->name << '(' << o->single << ')');
-  //}
+  if (o->args->type->isBinary()) {
+    auto op = dynamic_cast<OverloadedIdentifier<BinaryOperator>*>(o->single);
+    assert(op);
+    if (isTranslatable(op->name->str())) {
+      /* can use corresponding C++ operator */
+      middle(o->args->getLeft());
+      middle(' ' << o->single << ' ');
+      middle(o->args->getRight());
+    } else {
+      /* must use as function */
+      middle(o->single << o->args);
+    }
+  } else {
+    middle(o->single << o->args);
+  }
 }
 
 void bi::CppBaseGenerator::visit(const Slice* o) {

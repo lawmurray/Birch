@@ -30,6 +30,16 @@ bi::Expression* bi::Expression::strip() {
   return this;
 }
 
+bi::Expression* bi::Expression::getLeft() const {
+  assert(false);
+  return nullptr;
+}
+
+bi::Expression* bi::Expression::getRight() const {
+  assert(false);
+  return nullptr;
+}
+
 int bi::Expression::tupleSize() const {
   int result = 0;
   for (auto iter = begin(); iter != end(); ++iter) {

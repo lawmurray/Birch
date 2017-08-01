@@ -15,6 +15,14 @@ bi::Binary::~Binary() {
   //
 }
 
+bi::Expression* bi::Binary::getLeft() const {
+  return left;
+}
+
+bi::Expression* bi::Binary::getRight() const {
+  return right;
+}
+
 bi::Expression* bi::Binary::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
