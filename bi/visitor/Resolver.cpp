@@ -69,10 +69,20 @@ bi::Expression* bi::Resolver::modify(Call* o) {
 }
 
 bi::Expression* bi::Resolver::modify(BinaryCall* o) {
-  Modifier::modify(o);
-  o->type = o->single->type->resolve(o->args->type);
-  o->type = o->type->accept(&cloner)->accept(this);
-  o->type->assignable = false;  // rvalue
+  auto op = dynamic_cast<OverloadedIdentifier<BinaryOperator>*>(o->single);
+  assert(op);
+  if (*op->name == "~>") {
+    /* replace with equivalent (by definition) code */
+    auto observe = new Identifier<Unknown>(new Name("observe"));
+    auto member = new Member(o->args->getRight(), observe);
+    auto call = new Call(member, new Parentheses(o->args->getLeft()));
+    return call->accept(this);
+  } else {
+    Modifier::modify(o);
+    o->type = o->single->type->resolve(o->args->type);
+    o->type = o->type->accept(&cloner)->accept(this);
+    o->type->assignable = false;  // rvalue
+  }
   return o;
 }
 
@@ -239,33 +249,42 @@ bi::Expression* bi::Resolver::modify(OverloadedIdentifier<UnaryOperator>* o) {
 }
 
 bi::Statement* bi::Resolver::modify(Assignment* o) {
-  Modifier::modify(o);
-  if (!o->left->type->assignable) {
-    throw NotAssignableException(o);
-  }
-
-  /*
-   * An assignment is valid if:
-   *
-   *   1. the right-side type is a the same as, or a subtype of, the
-   *      left-side type (either a polymorphic pointer),
-   *   2. a conversion operator for the left-side type is defined in the
-   *      right-side (class) type, or
-   *   3. an assignment operator for the right-side type is defined in the
-   *      left-side (class) type.
-   */
-  if (!o->right->type->definitely(*o->left->type)) {
-    // ^ the first two cases are covered by this check
-    Identifier<Class>* ref = dynamic_cast<Identifier<Class>*>(o->left->type);
-    if (ref) {
-      assert(ref->target);
-      memberScope = ref->target->scope;
-    } else {
-      //throw MemberException(o);
+  if (*o->name == "<~") {
+    /* replace with equivalent (by definition) code */
+    auto simulate = new Identifier<Unknown>(new Name("simulate"));
+    auto member = new Member(o->right, simulate);
+    auto call = new Call(member, new Parentheses());
+    auto assign = new Assignment(o->left, new Name("<-"), call);
+    return assign->accept(this);
+  } else if (*o->name == "~") {
+    ///@todo Check that both sides are of Delay type
+    return o;
+  } else {
+    /*
+     * An assignment is valid if:
+     *
+     *   1. the right-side type is a the same as, or a subtype of, the
+     *      left-side type (either a polymorphic pointer),
+     *   2. a conversion operator for the left-side type is defined in the
+     *      right-side (class) type, or
+     *   3. an assignment operator for the right-side type is defined in the
+     *      left-side (class) type.
+     */
+    Modifier::modify(o);
+    if (!o->left->type->assignable) {
+      throw NotAssignableException(o);
+    }
+    if (!o->right->type->definitely(*o->left->type)) {
+      // ^ the first two cases are covered by this check
+      Identifier<Class>* ref = dynamic_cast<Identifier<Class>*>(o->left->type);
+      if (ref) {
+        assert(ref->target);
+        memberScope = ref->target->scope;
+      } else {
+        //throw MemberException(o);
+      }
     }
   }
-  ///@todo The <~ and ~ assignments, which are currently not checked, and
-  /// map to function templates in libbirch.hpp
   return o;
 }
 
