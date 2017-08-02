@@ -53,10 +53,10 @@
 %token <valString> LEFT_OP RIGHT_OP LEFT_TILDE_OP RIGHT_TILDE_OP
 %token <valString> AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP RANGE_OP
 
-%type <valName> name infix_operator prefix_operator
+%type <valName> name infix_operator prefix_operator assignment_operator
 %type <valPath> path
 
-%type <valExpression> unary_operator assignment_operator
+%type <valExpression> unary_operator
 %type <valExpression> multiplicative_operator additive_operator relational_operator
 %type <valExpression> equality_operator logical_and_operator logical_or_operator
 %type <valExpression> stochastic_operator 
@@ -292,12 +292,6 @@ expression
     : stochastic_expression
     ;
 
-assignment_operator
-    : LEFT_OP        { $$ = new bi::OverloadedIdentifier<bi::BinaryOperator>(new bi::Name("<-"), make_loc(@$)); }
-    | LEFT_TILDE_OP  { $$ = new bi::OverloadedIdentifier<bi::BinaryOperator>(new bi::Name("<~"), make_loc(@$)); }
-    | '~'            { $$ = new bi::OverloadedIdentifier<bi::BinaryOperator>(new bi::Name("~"), make_loc(@$)); }
-    ;
-
 parameters
     : '(' ')'                 { $$ = new bi::Parentheses(new bi::EmptyExpression(), make_loc(@$)); }
     | '(' parameter_list ')'  { $$ = new bi::Parentheses($2, make_loc(@$)); }
@@ -432,6 +426,12 @@ unary_operator_declaration
     : OPERATOR prefix_operator parameter optional_result optional_braces  { $$ = new bi::UnaryOperator($2, $3, $4, $5, make_loc(@$)); }
     ;
     
+assignment_operator
+    : LEFT_OP        { $$ = new bi::Name("<-"); }
+    | LEFT_TILDE_OP  { $$ = new bi::Name("<~"); }
+    | '~'            { $$ = new bi::Name("~"); }
+    ;
+
 assignment_operator_declaration
     : OPERATOR LEFT_OP parameter optional_braces  { $$ = new bi::AssignmentOperator(new bi::Name("<-"), $3, $4, make_loc(@$)); }
     ;
@@ -466,7 +466,7 @@ hpp
     ;
 
 assignment
-    : stochastic_expression assignment_operator stochastic_expression ';'  { $$ = new bi::Assignment($1, $3, make_loc(@$)); }
+    : stochastic_expression assignment_operator stochastic_expression ';'  { $$ = new bi::Assignment($1, $2, $3, make_loc(@$)); }
     ;
 
 expression_statement

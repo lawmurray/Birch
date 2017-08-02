@@ -16,6 +16,7 @@ namespace bi {
  * @ingroup compiler_statement
  */
 class Assignment: public Statement,
+    public Named,
     public Couple<Expression>,
     public Reference<AssignmentOperator> {
 public:
@@ -23,11 +24,12 @@ public:
    * Constructor.
    *
    * @param left Left operand.
+   * @param op Operator.
    * @param right Right operand.
    * @param loc Location.
    * @param target Target.
    */
-  Assignment(Expression* left, Expression* right, Location* loc =
+  Assignment(Expression* left, Name* op, Expression* right, Location* loc =
       nullptr, AssignmentOperator* target = nullptr);
 
   /**

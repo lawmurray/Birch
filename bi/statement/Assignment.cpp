@@ -5,9 +5,10 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::Assignment::Assignment(Expression* left, Expression* right,
+bi::Assignment::Assignment(Expression* left, Name* name, Expression* right,
     Location* loc, AssignmentOperator* target) :
     Statement(loc),
+    Named(name),
     Couple<Expression>(left, right),
     Reference<AssignmentOperator>(target) {
   //

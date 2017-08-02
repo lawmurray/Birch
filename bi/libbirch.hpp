@@ -29,12 +29,6 @@
 
 namespace bi {
 /**
- *
- * @param left
- * @param right
- */
-
-/**
  * Left tilde (`<~`) operator
  */
 template<class Left, class Right>

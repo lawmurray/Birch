@@ -568,21 +568,21 @@ void bi::CppBaseGenerator::visit(const List<Statement>* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Assignment* o) {
-  //if (*o->name == "<~" || *o->name == "~") {
-  //  start(o->name << '(' << o->left << ", " << o->right << ')');
-  //} else {
-  if (o->left->type->isClass() && !o->right->type->isClass()) {
-    start("*(" << o->left << ')');
+  if (*o->name == "<~" || *o->name == "~") {
+    start(o->name << '(' << o->left << ", " << o->right << ')');
   } else {
-    start(o->left);
+    //if (o->left->type->isClass() && !o->right->type->isClass()) {
+    //  start("*(" << o->left << ')');
+    //} else {
+      start(o->left);
+    //}
+    middle(" = ");
+    //if (!o->left->type->isClass() && o->right->type->isClass()) {
+    //  middle("*(" << o->right << ')');
+    //} else {
+      middle(o->right);
+    //}
   }
-  middle(" = ");
-  if (!o->left->type->isClass() && o->right->type->isClass()) {
-    middle("*(" << o->right << ')');
-  } else {
-    middle(o->right);
-  }
-  //}
   finish(';');
 }
 

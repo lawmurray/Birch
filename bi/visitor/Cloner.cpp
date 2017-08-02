@@ -167,7 +167,8 @@ bi::Statement* bi::Cloner::clone(const List<Statement>* o) {
 }
 
 bi::Statement* bi::Cloner::clone(const Assignment* o) {
-  return new Assignment(o->left->accept(this), o->right->accept(this), o->loc);
+  return new Assignment(o->left->accept(this), o->name,
+      o->right->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const GlobalVariable* o) {

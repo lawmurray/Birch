@@ -173,7 +173,7 @@ void bi::bi_ostream::visit(const List<Statement>* o) {
 }
 
 void bi::bi_ostream::visit(const Assignment* o) {
-  *this << o->left << " <- " << o->right;
+  *this << o->left << ' ' << o->name << ' ' << o->right;
 }
 
 void bi::bi_ostream::visit(const Function* o) {
