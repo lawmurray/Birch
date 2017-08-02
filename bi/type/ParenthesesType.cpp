@@ -33,7 +33,39 @@ bool bi::ParenthesesType::dispatchDefinitely(const Type& o) const {
 }
 
 bool bi::ParenthesesType::definitely(const AliasType& o) const {
-  return definitely(*o.target->base);
+  return single->definitely(o);
+}
+
+bool bi::ParenthesesType::definitely(const ArrayType& o) const {
+  return single->definitely(o);
+}
+
+bool bi::ParenthesesType::definitely(const BasicType& o) const {
+  return single->definitely(o);
+}
+
+bool bi::ParenthesesType::definitely(const BinaryType& o) const {
+  return single->definitely(o);
+}
+
+bool bi::ParenthesesType::definitely(const ClassType& o) const {
+  return single->definitely(o);
+}
+
+bool bi::ParenthesesType::definitely(const EmptyType& o) const {
+  return single->definitely(o);
+}
+
+bool bi::ParenthesesType::definitely(const FiberType& o) const {
+  return single->definitely(o);
+}
+
+bool bi::ParenthesesType::definitely(const FunctionType& o) const {
+  return single->definitely(o);
+}
+
+bool bi::ParenthesesType::definitely(const ListType& o) const {
+  return single->definitely(o);
 }
 
 bool bi::ParenthesesType::definitely(const ParenthesesType& o) const {
@@ -45,7 +77,39 @@ bool bi::ParenthesesType::dispatchPossibly(const Type& o) const {
 }
 
 bool bi::ParenthesesType::possibly(const AliasType& o) const {
-  return possibly(*o.target->base);
+  return single->possibly(o);
+}
+
+bool bi::ParenthesesType::possibly(const ArrayType& o) const {
+  return single->possibly(o);
+}
+
+bool bi::ParenthesesType::possibly(const BasicType& o) const {
+  return single->possibly(o);
+}
+
+bool bi::ParenthesesType::possibly(const BinaryType& o) const {
+  return single->possibly(o);
+}
+
+bool bi::ParenthesesType::possibly(const ClassType& o) const {
+  return single->possibly(o);
+}
+
+bool bi::ParenthesesType::possibly(const EmptyType& o) const {
+  return single->possibly(o);
+}
+
+bool bi::ParenthesesType::possibly(const FiberType& o) const {
+  return single->possibly(o);
+}
+
+bool bi::ParenthesesType::possibly(const FunctionType& o) const {
+  return single->possibly(o);
+}
+
+bool bi::ParenthesesType::possibly(const ListType& o) const {
+  return single->possibly(o);
 }
 
 bool bi::ParenthesesType::possibly(const ParenthesesType& o) const {
