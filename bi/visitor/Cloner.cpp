@@ -66,6 +66,14 @@ bi::Expression* bi::Cloner::clone(const Slice* o) {
   return new Slice(o->single->accept(this), o->brackets->accept(this), o->loc);
 }
 
+bi::Expression* bi::Cloner::clone(const Query* o) {
+  return new Query(o->single->accept(this), o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(const Get* o) {
+  return new Get(o->single->accept(this), o->loc);
+}
+
 bi::Expression* bi::Cloner::clone(const LambdaFunction* o) {
   return new LambdaFunction(o->parens->accept(this),
       o->returnType->accept(this), o->braces->accept(this), o->loc);

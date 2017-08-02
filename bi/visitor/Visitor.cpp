@@ -80,6 +80,14 @@ void bi::Visitor::visit(const Slice* o) {
   o->brackets->accept(this);
 }
 
+void bi::Visitor::visit(const Query* o) {
+  o->single->accept(this);
+}
+
+void bi::Visitor::visit(const Get* o) {
+  o->single->accept(this);
+}
+
 void bi::Visitor::visit(const LambdaFunction* o) {
   o->parens->accept(this);
   o->returnType->accept(this);

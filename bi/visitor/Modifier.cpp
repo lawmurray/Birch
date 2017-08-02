@@ -81,6 +81,16 @@ bi::Expression* bi::Modifier::modify(Slice* o) {
   return o;
 }
 
+bi::Expression* bi::Modifier::modify(Query* o) {
+  o->single = o->single->accept(this);
+  return o;
+}
+
+bi::Expression* bi::Modifier::modify(Get* o) {
+  o->single = o->single->accept(this);
+  return o;
+}
+
 bi::Expression* bi::Modifier::modify(LambdaFunction* o) {
   o->parens = o->parens->accept(this);
   o->returnType = o->returnType->accept(this);

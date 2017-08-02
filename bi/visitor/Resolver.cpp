@@ -116,6 +116,16 @@ bi::Expression* bi::Resolver::modify(Slice* o) {
   return o;
 }
 
+bi::Expression* bi::Resolver::modify(Query* o) {
+  Modifier::modify(o);
+  ///@todo Check that expression is of type optional or fiber, return type boolean
+}
+
+bi::Expression* bi::Resolver::modify(Get* o) {
+  Modifier::modify(o);
+  ///@todo Check that expression is of type optional or fiber, return type
+}
+
 bi::Expression* bi::Resolver::modify(LambdaFunction* o) {
   push();
   o->parens = o->parens->accept(this);

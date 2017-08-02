@@ -69,6 +69,7 @@ birchc_SOURCES = \
   bi/expression/Call.cpp \
   bi/expression/EmptyExpression.cpp \
   bi/expression/Expression.cpp \
+  bi/expression/Get.cpp \
   bi/expression/Identifier.cpp \
   bi/expression/Index.cpp \
   bi/expression/LambdaFunction.cpp \
@@ -78,6 +79,7 @@ birchc_SOURCES = \
   bi/expression/OverloadedIdentifier.cpp \
   bi/expression/Parameter.cpp \
   bi/expression/Parentheses.cpp \
+  bi/expression/Query.cpp \
   bi/expression/Range.cpp \
   bi/expression/Slice.cpp \
   bi/expression/Span.cpp \
@@ -240,6 +242,7 @@ noinst_HEADERS = \
   bi/expression/Call.hpp \
   bi/expression/EmptyExpression.hpp \
   bi/expression/Expression.hpp \
+  bi/expression/Get.hpp \
   bi/expression/Identifier.hpp \
   bi/expression/Index.hpp \
   bi/expression/LambdaFunction.hpp \
@@ -249,6 +252,7 @@ noinst_HEADERS = \
   bi/expression/OverloadedIdentifier.hpp \
   bi/expression/Parameter.hpp \
   bi/expression/Parentheses.hpp \
+  bi/expression/Query.hpp \
   bi/expression/Range.hpp \
   bi/expression/Slice.hpp \
   bi/expression/Span.hpp \

@@ -192,6 +192,8 @@ postfix_expression
     : primary_expression
     | postfix_expression brackets_expression  { $$ = new bi::Slice($1, $2, make_loc(@$)); }
     | postfix_expression arguments            { $$ = new bi::Call($1, $2, make_loc(@$)); }
+    | postfix_expression '?'                  { $$ = new bi::Query($1, make_loc(@$)); }
+    | postfix_expression '!'                  { $$ = new bi::Get($1, make_loc(@$)); }
     ;
 
 member_operator

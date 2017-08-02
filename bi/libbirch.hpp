@@ -18,6 +18,8 @@
 #include "bi/lib/Coroutine.hpp"
 #include "bi/lib/Fiber.hpp"
 
+#include "boost/optional.hpp"
+
 #include <getopt.h>
 #include <gc.h>
 

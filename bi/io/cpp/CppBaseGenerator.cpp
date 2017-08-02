@@ -90,6 +90,14 @@ void bi::CppBaseGenerator::visit(const Slice* o) {
   middle(o->single << '(' << o->brackets << ')');
 }
 
+void bi::CppBaseGenerator::visit(const Query* o) {
+  middle(o->single);
+}
+
+void bi::CppBaseGenerator::visit(const Get* o) {
+  middle(o->single << ".get()");
+}
+
 void bi::CppBaseGenerator::visit(const LambdaFunction* o) {
   middle("[&]" << o->parens << " {");
   in();
@@ -672,19 +680,19 @@ void bi::CppBaseGenerator::visit(const FunctionType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const FiberType* o) {
-  middle("bi::Fiber<" << o->single << ">");
+  middle("bi::Fiber<" << o->single << '>');
 }
 
 void bi::CppBaseGenerator::visit(const OptionalType* o) {
-  middle("bi::Optional<" << o->single << ">");
+  middle("boost::optional<" << o->single << '>');
 }
 
 void bi::CppBaseGenerator::visit(const ClassType* o) {
-  middle("bi::Pointer<bi::type::" << o->name << ">");
+  middle("bi::Pointer<bi::type::" << o->name << '>');
 }
 
 void bi::CppBaseGenerator::visit(const AliasType* o) {
-  middle(o->target->base);
+  middle(o->name);
 }
 
 void bi::CppBaseGenerator::visit(const BasicType* o) {

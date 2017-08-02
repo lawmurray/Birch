@@ -43,6 +43,8 @@ public:
   virtual Expression* modify(BinaryCall* o);
   virtual Expression* modify(UnaryCall* o);
   virtual Expression* modify(Slice* o);
+  virtual Expression* modify(Query* o);
+  virtual Expression* modify(Get* o);
   virtual Expression* modify(LambdaFunction* o);
   virtual Expression* modify(Span* o);
   virtual Expression* modify(Index* o);

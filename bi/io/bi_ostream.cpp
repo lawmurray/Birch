@@ -67,6 +67,14 @@ void bi::bi_ostream::visit(const Slice* o) {
   *this << o->single << o->brackets;
 }
 
+void bi::bi_ostream::visit(const Query* o) {
+  *this << o->single << '?';
+}
+
+void bi::bi_ostream::visit(const Get* o) {
+  *this << o->single << '?';
+}
+
 void bi::bi_ostream::visit(const Index* o) {
   *this << o->single;
 }

@@ -31,6 +31,8 @@ public:
   virtual void visit(const BinaryCall* o);
   virtual void visit(const UnaryCall* o);
   virtual void visit(const Slice* o);
+  virtual void visit(const Query* o);
+  virtual void visit(const Get* o);
   virtual void visit(const LambdaFunction* o);
   virtual void visit(const Span* o);
   virtual void visit(const Index* o);
