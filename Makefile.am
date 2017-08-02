@@ -131,6 +131,7 @@ birchc_SOURCES = \
   bi/type/FunctionType.cpp \
   bi/type/IdentifierType.cpp \
   bi/type/ListType.cpp \
+  bi/type/OptionalType.cpp \
   bi/type/OverloadedType.cpp \
   bi/type/ParenthesesType.cpp \
   bi/type/Type.cpp \
@@ -307,6 +308,7 @@ noinst_HEADERS = \
   bi/type/FunctionType.hpp \
   bi/type/IdentifierType.hpp \
   bi/type/ListType.hpp \
+  bi/type/OptionalType.hpp \
   bi/type/OverloadedType.hpp \
   bi/type/ParenthesesType.hpp \
   bi/type/Type.hpp \

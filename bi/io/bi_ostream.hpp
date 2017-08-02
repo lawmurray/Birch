@@ -86,5 +86,6 @@ public:
   virtual void visit(const ParenthesesType* o);
   virtual void visit(const FunctionType* o);
   virtual void visit(const FiberType* o);
+  virtual void visit(const OptionalType* o);
 };
 }

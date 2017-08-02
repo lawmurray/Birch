@@ -395,7 +395,11 @@ bi::Type* bi::Modifier::modify(OverloadedType* o) {
 }
 
 bi::Type* bi::Modifier::modify(FiberType* o) {
-  o->returnType = o->returnType->accept(this);
+  o->single = o->single->accept(this);
   return o;
 }
 
+bi::Type* bi::Modifier::modify(OptionalType* o) {
+  o->single = o->single->accept(this);
+  return o;
+}

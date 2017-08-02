@@ -672,7 +672,11 @@ void bi::CppBaseGenerator::visit(const FunctionType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const FiberType* o) {
-  middle("bi::Fiber<" << o->returnType << ">");
+  middle("bi::Fiber<" << o->single << ">");
+}
+
+void bi::CppBaseGenerator::visit(const OptionalType* o) {
+  middle("bi::Optional<" << o->single << ">");
 }
 
 void bi::CppBaseGenerator::visit(const ClassType* o) {

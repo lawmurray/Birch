@@ -8,42 +8,42 @@
 
 namespace bi {
 /**
- * Fiber type.
+ * Optional type.
  *
  * @ingroup compiler_type
  */
-class FiberType: public Type, public Single<Type> {
+class OptionalType: public Type, public Single<Type> {
 public:
   /**
    * Constructor.
    *
-   * @param single Yield type.
+   * @param single Type.
    * @param loc Location.
    * @param assignable Is this type assignable?
    */
-  FiberType(Type* single = new EmptyType(), Location* loc =
-      nullptr, const bool assignable = false);
+  OptionalType(Type* sigle = new EmptyType(), Location* loc = nullptr,
+      const bool assignable = false);
 
   /**
    * Destructor.
    */
-  virtual ~FiberType();
+  virtual ~OptionalType();
 
   virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
-  virtual bool isFiber() const;
+  virtual bool isOptional() const;
 
   using Type::definitely;
   using Type::possibly;
 
   virtual bool dispatchDefinitely(const Type& o) const;
   virtual bool definitely(const AliasType& o) const;
-  virtual bool definitely(const FiberType& o) const;
+  virtual bool definitely(const OptionalType& o) const;
 
   virtual bool dispatchPossibly(const Type& o) const;
   virtual bool possibly(const AliasType& o) const;
-  virtual bool possibly(const FiberType& o) const;
+  virtual bool possibly(const OptionalType& o) const;
 };
 }

@@ -13,5 +13,6 @@
 #include "bi/type/FunctionType.hpp"
 #include "bi/type/IdentifierType.hpp"
 #include "bi/type/ListType.hpp"
+#include "bi/type/OptionalType.hpp"
 #include "bi/type/OverloadedType.hpp"
 #include "bi/type/ParenthesesType.hpp"

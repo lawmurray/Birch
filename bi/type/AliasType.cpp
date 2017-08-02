@@ -55,8 +55,8 @@ bool bi::AliasType::isFunction() const {
   return target->base->isFunction();
 }
 
-bool bi::AliasType::isCoroutine() const {
-  return target->base->isCoroutine();
+bool bi::AliasType::isFiber() const {
+  return target->base->isFiber();
 }
 
 bool bi::AliasType::dispatchDefinitely(const Type& o) const {

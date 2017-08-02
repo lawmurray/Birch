@@ -96,5 +96,6 @@ public:
   virtual Type* modify(FunctionType* o);
   virtual Type* modify(OverloadedType* o);
   virtual Type* modify(FiberType* o);
+  virtual Type* modify(OptionalType* o);
 };
 }

@@ -21,6 +21,7 @@ class FunctionType;
 class IdentifierType;
 template<class T> class Iterator;
 class ListType;
+class OptionalType;
 class OverloadedType;
 class ParenthesesType;
 
@@ -104,9 +105,14 @@ public:
   virtual bool isFunction() const;
 
   /**
-   * Is this a coroutine type?
+   * Is this a fiber type?
    */
-  virtual bool isCoroutine() const;
+  virtual bool isFiber() const;
+
+  /**
+   * Is this an optional type?
+   */
+  virtual bool isOptional() const;
 
   /**
    * Is this a binary operator type?
@@ -174,6 +180,7 @@ public:
   virtual bool definitely(const EmptyType& o) const;
   virtual bool definitely(const FunctionType& o) const;
   virtual bool definitely(const ListType& o) const;
+  virtual bool definitely(const OptionalType& o) const;
   virtual bool definitely(const OverloadedType& o) const;
   virtual bool definitely(const ParenthesesType& o) const;
 
@@ -188,6 +195,7 @@ public:
   virtual bool possibly(const EmptyType& o) const;
   virtual bool possibly(const FunctionType& o) const;
   virtual bool possibly(const ListType& o) const;
+  virtual bool possibly(const OptionalType& o) const;
   virtual bool possibly(const OverloadedType& o) const;
   virtual bool possibly(const ParenthesesType& o) const;
 

@@ -333,11 +333,11 @@ bi::Statement* bi::Resolver::modify(Coroutine* o) {
     defer(o->braces);
   }
   o->type = new FunctionType(o->params->type->accept(&cloner),
-      new FiberType(o->returnType->accept(&cloner)), o->loc);
+      o->returnType->accept(&cloner), o->loc);
   o->type = o->type->accept(this);
   o->scope = pop();
   top()->add(o);
-
+  ///@todo Check that return type is of fiber type
   return o;
 }
 
@@ -379,11 +379,11 @@ bi::Statement* bi::Resolver::modify(MemberCoroutine* o) {
     defer(o->braces);
   }
   o->type = new FunctionType(o->params->type->accept(&cloner),
-      new FiberType(o->returnType->accept(&cloner)), o->loc);
+      o->returnType->accept(&cloner), o->loc);
   o->type = o->type->accept(this);
   o->scope = pop();
   top()->add(o);
-
+  ///@todo Check that return type is of fiber type
   return o;
 }
 

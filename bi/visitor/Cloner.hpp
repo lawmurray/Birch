@@ -97,5 +97,6 @@ public:
   virtual Type* clone(const FunctionType* o);
   virtual Type* clone(const OverloadedType* o);
   virtual Type* clone(const FiberType* o);
+  virtual Type* clone(const OptionalType* o);
 };
 }

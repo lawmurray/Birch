@@ -42,7 +42,11 @@ bool bi::Type::isFunction() const {
   return false;
 }
 
-bool bi::Type::isCoroutine() const {
+bool bi::Type::isFiber() const {
+  return false;
+}
+
+bool bi::Type::isOptional() const {
   return false;
 }
 
@@ -124,6 +128,10 @@ bool bi::Type::definitely(const ListType& o) const {
   return false;
 }
 
+bool bi::Type::definitely(const OptionalType& o) const {
+  return false;
+}
+
 bool bi::Type::definitely(const OverloadedType& o) const {
   return false;
 }
@@ -169,6 +177,10 @@ bool bi::Type::possibly(const FunctionType& o) const {
 }
 
 bool bi::Type::possibly(const ListType& o) const {
+  return false;
+}
+
+bool bi::Type::possibly(const OptionalType& o) const {
   return false;
 }
 

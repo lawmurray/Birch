@@ -46,6 +46,11 @@ bi::Type* bi::Assigner::modify(FiberType* o) {
   return o;
 }
 
+bi::Type* bi::Assigner::modify(OptionalType* o) {
+  o->assignable = true;
+  return o;
+}
+
 bi::Type* bi::Assigner::modify(ListType* o) {
   Modifier::modify(o);
   o->assignable = true;

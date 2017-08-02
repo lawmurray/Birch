@@ -68,6 +68,10 @@ bool bi::ParenthesesType::definitely(const ListType& o) const {
   return single->definitely(o);
 }
 
+bool bi::ParenthesesType::definitely(const OptionalType& o) const {
+  return single->definitely(o);
+}
+
 bool bi::ParenthesesType::definitely(const ParenthesesType& o) const {
   return single->definitely(*o.single);
 }
@@ -109,6 +113,10 @@ bool bi::ParenthesesType::possibly(const FunctionType& o) const {
 }
 
 bool bi::ParenthesesType::possibly(const ListType& o) const {
+  return single->possibly(o);
+}
+
+bool bi::ParenthesesType::possibly(const OptionalType& o) const {
   return single->possibly(o);
 }
 

@@ -5,10 +5,9 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::FiberType::FiberType(Type* returnType, Location* loc,
-    const bool assignable) :
+bi::FiberType::FiberType(Type* single, Location* loc, const bool assignable) :
     Type(loc, assignable),
-    ReturnTyped(returnType) {
+    Single<Type>(single) {
   //
 }
 
@@ -28,7 +27,7 @@ void bi::FiberType::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }
 
-bool bi::FiberType::isCoroutine() const {
+bool bi::FiberType::isFiber() const {
   return true;
 }
 
@@ -41,7 +40,7 @@ bool bi::FiberType::definitely(const AliasType& o) const {
 }
 
 bool bi::FiberType::definitely(const FiberType& o) const {
-  return returnType->definitely(*o.returnType);
+  return single->definitely(*o.single);
 }
 
 bool bi::FiberType::dispatchPossibly(const Type& o) const {
@@ -53,5 +52,5 @@ bool bi::FiberType::possibly(const AliasType& o) const {
 }
 
 bool bi::FiberType::possibly(const FiberType& o) const {
-  return returnType->possibly(*o.returnType);
+  return single->possibly(*o.single);
 }

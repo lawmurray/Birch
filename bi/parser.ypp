@@ -44,7 +44,7 @@
 
 %token <valString> IMPORT PROGRAM CLASS TYPE FUNCTION COROUTINE OPERATOR
 %token <valString> IF ELSE FOR IN WHILE ASSERT RETURN YIELD CPP HPP THIS SUPER
-%token <valString> FUNCTION_UPPER FIBER_UPPER
+%token <valString> FUNCTION_UPPER
 %token <valString> DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE RAW NAME
 %token <valBool> BOOL_LITERAL
 %token <valInt> INT_LITERAL
@@ -53,10 +53,10 @@
 %token <valString> LEFT_OP RIGHT_OP LEFT_TILDE_OP RIGHT_TILDE_OP
 %token <valString> AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP RANGE_OP
 
-%type <valName> name infix_operator prefix_operator assignment_operator
+%type <valName> name binary_operator unary_operator assignment_operator
 %type <valPath> path
 
-%type <valExpression> unary_operator
+%type <valExpression> prefix_operator
 %type <valExpression> multiplicative_operator additive_operator relational_operator
 %type <valExpression> equality_operator logical_and_operator logical_or_operator
 %type <valExpression> observe_operator 
@@ -66,7 +66,7 @@
 %type <valExpression> parens_expression function_expression
 %type <valExpression> member_expression primary_expression
 %type <valExpression> brackets_expression index_expression index_list
-%type <valExpression> postfix_expression unary_expression
+%type <valExpression> postfix_expression prefix_expression
 %type <valExpression> multiplicative_expression additive_expression
 %type <valExpression> relational_expression equality_expression
 %type <valExpression> logical_and_expression logical_or_expression
@@ -94,7 +94,7 @@
 %type <valStatement> class_braces optional_class_braces
 
 %type <valType> identifier_type primary_type parens_type function_type
-%type <valType> coroutine_type array_type list_type type
+%type <valType> postfix_type list_type type
 %type <valType> type_parameter_list type_parameters
 %type <valType> result optional_result
 
@@ -203,15 +203,15 @@ member_expression
     | member_expression member_operator postfix_expression  { $$ = new bi::Member($1, $3, make_loc(@$)); }
     ;
 
-unary_operator
+prefix_operator
     : '+'  { $$ = new bi::OverloadedIdentifier<bi::UnaryOperator>(new bi::Name("+"), make_loc(@$)); }
     | '-'  { $$ = new bi::OverloadedIdentifier<bi::UnaryOperator>(new bi::Name("-"), make_loc(@$)); }
     | '!'  { $$ = new bi::OverloadedIdentifier<bi::UnaryOperator>(new bi::Name("!"), make_loc(@$)); }
     ;
 
-unary_expression
+prefix_expression
     : member_expression
-    | unary_operator unary_expression  { $$ = new bi::UnaryCall($1, $2, make_loc(@$)); }
+    | prefix_operator prefix_expression  { $$ = new bi::UnaryCall($1, $2, make_loc(@$)); }
     ;
 
 multiplicative_operator
@@ -220,8 +220,8 @@ multiplicative_operator
     ;
 
 multiplicative_expression
-    : unary_expression
-    | multiplicative_expression multiplicative_operator unary_expression  { $$ = new bi::BinaryCall($2, new bi::Binary($1, $3, make_loc(@$)), make_loc(@$)); }
+    : prefix_expression
+    | multiplicative_expression multiplicative_operator prefix_expression  { $$ = new bi::BinaryCall($2, new bi::Binary($1, $3, make_loc(@$)), make_loc(@$)); }
     ;
 
 additive_operator
@@ -397,7 +397,7 @@ member_coroutine_declaration
     : COROUTINE name parameters optional_result optional_braces  { $$ = new bi::MemberCoroutine($2, $3, $4, $5, make_loc(@$)); }
     ;
     
-infix_operator
+binary_operator
     : '*'     { $$ = new bi::Name('*'); }
     | '/'     { $$ = new bi::Name('/'); }
     | '+'     { $$ = new bi::Name('+'); }
@@ -413,17 +413,17 @@ infix_operator
     ;
     
 binary_operator_declaration
-    : OPERATOR parameter infix_operator parameter optional_result optional_braces  { $$ = new bi::BinaryOperator($3, new bi::Binary($2, $4, make_loc(@$)), $5, $6, make_loc(@$)); }
+    : OPERATOR parameter binary_operator parameter optional_result optional_braces  { $$ = new bi::BinaryOperator($3, new bi::Binary($2, $4, make_loc(@$)), $5, $6, make_loc(@$)); }
     ;
 
-prefix_operator
+unary_operator
     : '+'  { $$ = new bi::Name('+'); }
     | '-'  { $$ = new bi::Name('-'); }
     | '!'  { $$ = new bi::Name('!'); }
     ;    
 
 unary_operator_declaration
-    : OPERATOR prefix_operator parameter optional_result optional_braces  { $$ = new bi::UnaryOperator($2, $3, $4, $5, make_loc(@$)); }
+    : OPERATOR unary_operator parameter optional_result optional_braces  { $$ = new bi::UnaryOperator($2, $3, $4, $5, make_loc(@$)); }
     ;
     
 assignment_operator
@@ -632,29 +632,26 @@ function_type
     : FUNCTION_UPPER '<' type_parameters optional_result '>'  { $$ = new bi::FunctionType($3, $4, make_loc(@$)); }
     ;
 
-coroutine_type
-    : FIBER_UPPER '<' type '>'  { $$ = new bi::FiberType($3, make_loc(@$)); }
-    ;
-
 primary_type
     : identifier_type
     | parens_type
     | function_type
-    | coroutine_type
     ;
 
-array_type
+postfix_type
     : primary_type
-    | primary_type '[' size_list ']'  { $$ = new bi::ArrayType($1, $3, make_loc(@$)); }
+    | postfix_type '[' size_list ']'  { $$ = new bi::ArrayType($1, $3, make_loc(@$)); }
+    | postfix_type '!'                { $$ = new bi::FiberType($1, make_loc(@$)); }
+    | postfix_type '?'                { $$ = new bi::OptionalType($1, make_loc(@$)); }
     ;
 
 list_type
-    : array_type
-    | array_type ',' list_type  { $$ = new bi::ListType($1, $3, make_loc(@$)); }
+    : postfix_type
+    | postfix_type ',' list_type  { $$ = new bi::ListType($1, $3, make_loc(@$)); }
     ;
 
 type
-    : array_type
+    : postfix_type
     ;
 
 type_parameter_list

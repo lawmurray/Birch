@@ -333,6 +333,9 @@ bi::Type* bi::Cloner::clone(const OverloadedType* o) {
 }
 
 bi::Type* bi::Cloner::clone(const FiberType* o) {
-  return new FiberType(o->returnType->accept(this), o->loc, o->assignable);
+  return new FiberType(o->single->accept(this), o->loc, o->assignable);
 }
 
+bi::Type* bi::Cloner::clone(const OptionalType* o) {
+  return new OptionalType(o->single->accept(this), o->loc, o->assignable);
+}

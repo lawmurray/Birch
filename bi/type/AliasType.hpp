@@ -46,7 +46,7 @@ public:
   virtual bool isAlias() const;
   virtual bool isArray() const;
   virtual bool isFunction() const;
-  virtual bool isCoroutine() const;
+  virtual bool isFiber() const;
 
   virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);

@@ -359,6 +359,9 @@ void bi::Visitor::visit(const OverloadedType* o) {
 }
 
 void bi::Visitor::visit(const FiberType* o) {
-  o->returnType->accept(this);
+  o->single->accept(this);
 }
 
+void bi::Visitor::visit(const OptionalType* o) {
+  o->single->accept(this);
+}

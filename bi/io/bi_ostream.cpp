@@ -385,5 +385,9 @@ void bi::bi_ostream::visit(const FunctionType* o) {
 }
 
 void bi::bi_ostream::visit(const FiberType* o) {
-  *this << "Coroutine<" << o->returnType << '>';
+  *this << o->single << '!';
+}
+
+void bi::bi_ostream::visit(const OptionalType* o) {
+  *this << o->single << '?';
 }

@@ -14,6 +14,7 @@ bi::NotFunctionException::NotFunctionException(Call* o) {
     buf << o->loc;
   }
   buf << "error: call on object that is not a function\n";
-  buf << "note: '" << o << "' is of non-function type '" << o->type << "'\n";
+  buf << "note: '" << o->single << "' is of non-function type '";
+  buf << o->single->type << "'\n";
   msg = base.str();
 }
