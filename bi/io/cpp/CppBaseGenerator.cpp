@@ -692,7 +692,7 @@ void bi::CppBaseGenerator::visit(const ClassType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const AliasType* o) {
-  middle(o->name);
+  middle("bi::type::" << o->name);
 }
 
 void bi::CppBaseGenerator::visit(const BasicType* o) {
