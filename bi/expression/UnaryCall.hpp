@@ -9,11 +9,13 @@
 
 namespace bi {
 /**
- * Call to a function.
+ * Call to a unary operator.
  *
  * @ingroup compiler_expression
  */
-class Call: public Expression, public Single<Expression>, public Argumented {
+class UnaryCall: public Expression,
+    public Single<Expression>,
+    public Argumented {
 public:
   /**
    * Constructor.
@@ -22,12 +24,12 @@ public:
    * @param args Arguments.
    * @param loc Location.
    */
-  Call(Expression* single, Expression* args, Location* loc = nullptr);
+  UnaryCall(Expression* single, Expression* args, Location* loc = nullptr);
 
   /**
    * Destructor.
    */
-  virtual ~Call();
+  virtual ~UnaryCall();
 
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);

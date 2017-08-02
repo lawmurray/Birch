@@ -64,6 +64,7 @@ birchc_SOURCES = \
   bi/exception/UnresolvedException.cpp \
   bi/exception/UnsupportedOptionTypeException.cpp \
   bi/expression/Binary.cpp \
+  bi/expression/BinaryCall.cpp \
   bi/expression/Brackets.cpp \
   bi/expression/Call.cpp \
   bi/expression/EmptyExpression.cpp \
@@ -82,6 +83,7 @@ birchc_SOURCES = \
   bi/expression/Span.cpp \
   bi/expression/Super.cpp \
   bi/expression/This.cpp \
+  bi/expression/UnaryCall.cpp \
   bi/io/cpp/CppBaseGenerator.cpp \
   bi/io/cpp/CppConstructorGenerator.cpp \
   bi/io/cpp/CppCoroutineGenerator.cpp \
@@ -232,6 +234,7 @@ noinst_HEADERS = \
   bi/exception/UnsupportedOptionTypeException.hpp \
   bi/expression/all.hpp \
   bi/expression/Binary.hpp \
+  bi/expression/BinaryCall.hpp \
   bi/expression/Brackets.hpp \
   bi/expression/Call.hpp \
   bi/expression/EmptyExpression.hpp \
@@ -250,6 +253,7 @@ noinst_HEADERS = \
   bi/expression/Span.hpp \
   bi/expression/Super.hpp \
   bi/expression/This.hpp \
+  bi/expression/UnaryCall.hpp \
   bi/io/bi_ostream.hpp \
   bi/io/bih_ostream.hpp \
   bi/io/cpp/CppBaseGenerator.hpp \

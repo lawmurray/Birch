@@ -63,6 +63,18 @@ bi::Expression* bi::Modifier::modify(Call* o) {
   return o;
 }
 
+bi::Expression* bi::Modifier::modify(BinaryCall* o) {
+  o->single = o->single->accept(this);
+  o->args = o->args->accept(this);
+  return o;
+}
+
+bi::Expression* bi::Modifier::modify(UnaryCall* o) {
+  o->single = o->single->accept(this);
+  o->args = o->args->accept(this);
+  return o;
+}
+
 bi::Expression* bi::Modifier::modify(Slice* o) {
   o->single = o->single->accept(this);
   o->brackets = o->brackets->accept(this);

@@ -32,6 +32,8 @@ public:
   virtual Expression* clone(const Brackets* o);
   virtual Expression* clone(const Binary* o);
   virtual Expression* clone(const Call* o);
+  virtual Expression* clone(const BinaryCall* o);
+  virtual Expression* clone(const UnaryCall* o);
   virtual Expression* clone(const Slice* o);
   virtual Expression* clone(const LambdaFunction* o);
   virtual Expression* clone(const Span* o);

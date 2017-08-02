@@ -52,12 +52,15 @@ void bi::bi_ostream::visit(const Brackets* o) {
 }
 
 void bi::bi_ostream::visit(const Call* o) {
-  if (o->args->type->isBinary()) {
-    *this << o->args->getLeft() << ' ' << o->single << ' '
-        << o->args->getRight();
-  } else {
-    *this << o->single << o->args;
-  }
+  *this << o->single << o->args;
+}
+
+void bi::bi_ostream::visit(const BinaryCall* o) {
+  *this << o->args->getLeft() << ' ' << o->single << ' ' << o->args->getRight();
+}
+
+void bi::bi_ostream::visit(const UnaryCall* o) {
+  *this << o->single << o->args;
 }
 
 void bi::bi_ostream::visit(const Slice* o) {

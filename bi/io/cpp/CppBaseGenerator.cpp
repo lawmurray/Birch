@@ -54,20 +54,35 @@ void bi::CppBaseGenerator::visit(const Brackets* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Call* o) {
-  if (o->args->type->isBinary()) {
-    auto op = dynamic_cast<OverloadedIdentifier<BinaryOperator>*>(o->single);
-    assert(op);
-    if (isTranslatable(op->name->str())) {
-      /* can use corresponding C++ operator */
-      middle(o->args->getLeft());
-      middle(' ' << o->single << ' ');
-      middle(o->args->getRight());
-    } else {
-      /* must use as function */
-      middle(o->single << o->args);
-    }
+  middle(o->single << o->args);
+}
+
+void bi::CppBaseGenerator::visit(const BinaryCall* o) {
+  auto op = dynamic_cast<OverloadedIdentifier<BinaryOperator>*>(o->single);
+  assert(op);
+  if (isTranslatable(op->name->str())) {
+    /* can use corresponding C++ operator */
+    middle(o->args->getLeft());
+    middle(' ' << op->name->str() << ' ');
+    middle(o->args->getRight());
   } else {
-    middle(o->single << o->args);
+    /* must use as function */
+    middle(o->single);
+    middle('(' << o->args->getLeft());
+    middle(' ' << op->name->str() << ' ');
+    middle(o->args->getRight() << ')');
+  }
+}
+
+void bi::CppBaseGenerator::visit(const UnaryCall* o) {
+  auto op = dynamic_cast<OverloadedIdentifier<UnaryOperator>*>(o->single);
+  assert(op);
+  if (isTranslatable(op->name->str())) {
+    /* can use corresponding C++ operator */
+    middle(op->name->str() << o->args);
+  } else {
+    /* must use as function */
+    middle(o->single << '(' << o->args << ')');
   }
 }
 
@@ -453,7 +468,8 @@ void bi::CppBaseGenerator::visit(const BinaryOperator* o) {
     } else {
       middle(o->name);
     }
-    middle(o->params);
+    middle(
+        '(' << o->params->getLeft() << ", " << o->params->getRight() << ')');
     if (header) {
       finish(';');
     } else {
@@ -484,7 +500,7 @@ void bi::CppBaseGenerator::visit(const UnaryOperator* o) {
     } else {
       middle(o->name);
     }
-    middle(o->params);
+    middle('(' << o->params << ')');
     if (header) {
       finish(';');
     } else {

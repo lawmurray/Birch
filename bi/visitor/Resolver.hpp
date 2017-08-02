@@ -40,6 +40,8 @@ public:
   virtual Expression* modify(Brackets* o);
   virtual Expression* modify(Binary* o);
   virtual Expression* modify(Call* o);
+  virtual Expression* modify(BinaryCall* o);
+  virtual Expression* modify(UnaryCall* o);
   virtual Expression* modify(Slice* o);
   virtual Expression* modify(LambdaFunction* o);
   virtual Expression* modify(Span* o);
