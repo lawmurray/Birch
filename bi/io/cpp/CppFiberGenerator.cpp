@@ -183,8 +183,9 @@ void bi::CppFiberGenerator::visit(const Identifier<LocalVariable>* o) {
 
 void bi::CppFiberGenerator::visit(const LocalVariable* o) {
   if (o->type->isClass() || !o->parens->isEmpty() || !o->value->isEmpty()) {
-    middle(o->name << o->number);
+    start(o->name << o->number);
     genInit(o);
+    finish(';');
     ///@todo This will need to resize arrays, overload operator() for Array?
   }
 }
