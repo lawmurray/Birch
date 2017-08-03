@@ -373,3 +373,7 @@ void bi::Visitor::visit(const FiberType* o) {
 void bi::Visitor::visit(const OptionalType* o) {
   o->single->accept(this);
 }
+
+void bi::Visitor::visit(const NilType* o) {
+  //
+}

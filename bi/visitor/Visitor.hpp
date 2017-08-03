@@ -102,5 +102,6 @@ public:
   virtual void visit(const OverloadedType* o);
   virtual void visit(const FiberType* o);
   virtual void visit(const OptionalType* o);
+  virtual void visit(const NilType* o);
 };
 }

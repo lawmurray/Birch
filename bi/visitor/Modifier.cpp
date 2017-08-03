@@ -413,3 +413,7 @@ bi::Type* bi::Modifier::modify(OptionalType* o) {
   o->single = o->single->accept(this);
   return o;
 }
+
+bi::Type* bi::Modifier::modify(NilType* o) {
+  return o;
+}

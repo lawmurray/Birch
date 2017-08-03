@@ -347,3 +347,7 @@ bi::Type* bi::Cloner::clone(const FiberType* o) {
 bi::Type* bi::Cloner::clone(const OptionalType* o) {
   return new OptionalType(o->single->accept(this), o->loc, o->assignable);
 }
+
+bi::Type* bi::Cloner::clone(const NilType* o) {
+  return new NilType(o->loc, o->assignable);
+}
