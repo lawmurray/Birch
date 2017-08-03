@@ -150,6 +150,10 @@ void bi::CppBaseGenerator::visit(const This* o) {
   middle("pointer_from_this<this_type>()");
 }
 
+void bi::CppBaseGenerator::visit(const Nil* o) {
+  middle("boost::none");
+}
+
 void bi::CppBaseGenerator::visit(const Parameter* o) {
   if (!o->type->assignable) {
     middle("const ");

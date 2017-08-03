@@ -197,6 +197,13 @@ bi::Expression* bi::Resolver::modify(Super* o) {
   return o;
 }
 
+bi::Expression* bi::Resolver::modify(Nil* o) {
+  Modifier::modify(o);
+  o->type = new NilType(o->loc);
+  o->type->accept(this);
+  return o;
+}
+
 bi::Expression* bi::Resolver::modify(Parameter* o) {
   Modifier::modify(o);
   top()->add(o);
@@ -246,8 +253,7 @@ bi::Expression* bi::Resolver::modify(
   return modifyFunctionIdentifier(o);
 }
 
-bi::Expression* bi::Resolver::modify(
-    OverloadedIdentifier<MemberFiber>* o) {
+bi::Expression* bi::Resolver::modify(OverloadedIdentifier<MemberFiber>* o) {
   return modifyFunctionIdentifier(o);
 }
 

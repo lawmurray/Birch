@@ -76,6 +76,7 @@ birchc_SOURCES = \
   bi/expression/Literal.cpp \
   bi/expression/Member.cpp \
   bi/expression/MemberParameter.cpp \
+  bi/expression/Nil.cpp \
   bi/expression/OverloadedIdentifier.cpp \
   bi/expression/Parameter.cpp \
   bi/expression/Parentheses.cpp \
@@ -250,6 +251,7 @@ noinst_HEADERS = \
   bi/expression/Literal.hpp \
   bi/expression/Member.hpp \
   bi/expression/MemberParameter.hpp \
+  bi/expression/Nil.hpp \
   bi/expression/OverloadedIdentifier.hpp \
   bi/expression/Parameter.hpp \
   bi/expression/Parentheses.hpp \

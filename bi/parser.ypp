@@ -43,7 +43,8 @@
 }
 
 %token <valString> IMPORT PROGRAM CLASS TYPE FUNCTION FIBER OPERATOR
-%token <valString> IF ELSE FOR IN WHILE ASSERT RETURN YIELD CPP HPP THIS SUPER
+%token <valString> IF ELSE FOR IN WHILE ASSERT RETURN YIELD CPP HPP
+%token <valString> THIS SUPER NIL
 %token <valString> FUNCTION_UPPER
 %token <valString> DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE RAW NAME
 %token <valBool> BOOL_LITERAL
@@ -62,7 +63,7 @@
 %type <valExpression> observe_operator 
 %type <valExpression> bool_literal int_literal real_literal string_literal
 %type <valExpression> literal identifier
-%type <valExpression> this_expression super_expression
+%type <valExpression> this_expression super_expression nil_expression
 %type <valExpression> parens_expression function_expression
 %type <valExpression> member_expression primary_expression
 %type <valExpression> brackets_expression index_expression index_list
@@ -165,6 +166,10 @@ super_expression
     : SUPER  { $$ = new bi::Super(make_loc(@$)); }
     ;
 
+nil_expression
+    : NIL  { $$ = new bi::Nil(make_loc(@$)); }
+    ;
+
 primary_expression
     : literal
     | identifier
@@ -172,6 +177,7 @@ primary_expression
     | function_expression
     | this_expression
     | super_expression
+    | nil_expression
     ;
 
 index_expression

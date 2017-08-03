@@ -115,6 +115,7 @@ IS                                 (u|U|l|L)*
 "hpp"                               { return HPP; }
 "this"                              { return THIS; }
 "super"                             { return SUPER; }
+"nil"                               { return NIL; }
 
 "true"                              { yylval.valBool = true; return BOOL_LITERAL; }
 "false"                             { yylval.valBool = false; return BOOL_LITERAL; }

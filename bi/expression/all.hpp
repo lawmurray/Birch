@@ -14,6 +14,7 @@
 #include "bi/expression/LambdaFunction.hpp"
 #include "bi/expression/Literal.hpp"
 #include "bi/expression/MemberParameter.hpp"
+#include "bi/expression/Nil.hpp"
 #include "bi/expression/OverloadedIdentifier.hpp"
 #include "bi/expression/Parentheses.hpp"
 #include "bi/expression/Query.hpp"

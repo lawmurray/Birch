@@ -44,6 +44,7 @@ public:
   virtual Expression* clone(const Member* o);
   virtual Expression* clone(const Super* o);
   virtual Expression* clone(const This* o);
+  virtual Expression* clone(const Nil* o);
   virtual Expression* clone(const Parameter* o);
   virtual Expression* clone(const MemberParameter* o);
   virtual Expression* clone(const Identifier<Unknown>* o);

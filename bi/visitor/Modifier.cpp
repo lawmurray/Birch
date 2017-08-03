@@ -128,6 +128,10 @@ bi::Expression* bi::Modifier::modify(This* o) {
   return o;
 }
 
+bi::Expression* bi::Modifier::modify(Nil* o) {
+  return o;
+}
+
 bi::Expression* bi::Modifier::modify(Parameter* o) {
   o->type = o->type->accept(this);
   o->value = o->value->accept(this);

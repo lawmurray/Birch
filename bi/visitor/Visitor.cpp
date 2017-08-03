@@ -115,6 +115,10 @@ void bi::Visitor::visit(const This* o) {
   //
 }
 
+void bi::Visitor::visit(const Nil* o) {
+  //
+}
+
 void bi::Visitor::visit(const Member* o) {
   o->left->accept(this);
   o->right->accept(this);

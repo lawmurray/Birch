@@ -95,6 +95,10 @@ void bi::bi_ostream::visit(const This* o) {
   *this << "this";
 }
 
+void bi::bi_ostream::visit(const Nil* o) {
+  *this << "nil";
+}
+
 void bi::bi_ostream::visit(const Parameter* o) {
   *this << o->name << ':' << o->type;
   if (!o->value->isEmpty()) {

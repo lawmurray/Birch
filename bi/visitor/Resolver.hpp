@@ -52,6 +52,7 @@ public:
   virtual Expression* modify(Member* o);
   virtual Expression* modify(Super* o);
   virtual Expression* modify(This* o);
+  virtual Expression* modify(Nil* o);
   virtual Expression* modify(Parameter* o);
   virtual Expression* modify(MemberParameter* o);
   virtual Expression* modify(Identifier<Unknown>* o);
