@@ -43,6 +43,14 @@ bool bi::ListType::definitely(const ListType& o) const {
   return head->definitely(*o.head) && tail->definitely(*o.tail);
 }
 
+bool bi::ListType::definitely(const OptionalType& o) const {
+  return definitely(*o.single);
+}
+
+bool bi::ListType::definitely(const ParenthesesType& o) const {
+  return definitely(*o.single);
+}
+
 bool bi::ListType::dispatchPossibly(const Type& o) const {
   return o.possibly(*this);
 }
@@ -53,4 +61,12 @@ bool bi::ListType::possibly(const AliasType& o) const {
 
 bool bi::ListType::possibly(const ListType& o) const {
   return head->possibly(*o.head) && tail->possibly(*o.tail);
+}
+
+bool bi::ListType::possibly(const OptionalType& o) const {
+  return possibly(*o.single);
+}
+
+bool bi::ListType::possibly(const ParenthesesType& o) const {
+  return possibly(*o.single);
 }

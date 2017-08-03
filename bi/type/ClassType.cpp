@@ -73,6 +73,14 @@ bool bi::ClassType::definitely(const ListType& o) const {
   return target->hasConversion(&o);
 }
 
+bool bi::ClassType::definitely(const OptionalType& o) const {
+  return definitely(*o.single);
+}
+
+bool bi::ClassType::definitely(const ParenthesesType& o) const {
+  return definitely(*o.single);
+}
+
 bool bi::ClassType::dispatchPossibly(const Type& o) const {
   return o.possibly(*this);
 }
@@ -83,4 +91,12 @@ bool bi::ClassType::possibly(const AliasType& o) const {
 
 bool bi::ClassType::possibly(const ClassType& o) const {
   return o.target->hasSuper(this);
+}
+
+bool bi::ClassType::possibly(const OptionalType& o) const {
+  return possibly(*o.single);
+}
+
+bool bi::ClassType::possibly(const ParenthesesType& o) const {
+  return possibly(*o.single);
 }

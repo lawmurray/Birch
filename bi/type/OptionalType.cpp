@@ -44,6 +44,10 @@ bool bi::OptionalType::definitely(const OptionalType& o) const {
   return single->definitely(*o.single);
 }
 
+bool bi::OptionalType::definitely(const ParenthesesType& o) const {
+  return definitely(*o.single);
+}
+
 bool bi::OptionalType::dispatchPossibly(const Type& o) const {
   return o.possibly(*this);
 }
@@ -54,4 +58,8 @@ bool bi::OptionalType::possibly(const AliasType& o) const {
 
 bool bi::OptionalType::possibly(const OptionalType& o) const {
   return single->possibly(*o.single);
+}
+
+bool bi::OptionalType::possibly(const ParenthesesType& o) const {
+  return possibly(*o.single);
 }
