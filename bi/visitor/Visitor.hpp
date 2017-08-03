@@ -55,9 +55,9 @@ public:
   virtual void visit(const Identifier<LocalVariable>* o);
   virtual void visit(const Identifier<MemberVariable>* o);
   virtual void visit(const OverloadedIdentifier<Function>* o);
-  virtual void visit(const OverloadedIdentifier<Coroutine>* o);
+  virtual void visit(const OverloadedIdentifier<Fiber>* o);
   virtual void visit(const OverloadedIdentifier<MemberFunction>* o);
-  virtual void visit(const OverloadedIdentifier<MemberCoroutine>* o);
+  virtual void visit(const OverloadedIdentifier<MemberFiber>* o);
   virtual void visit(const OverloadedIdentifier<BinaryOperator>* o);
   virtual void visit(const OverloadedIdentifier<UnaryOperator>* o);
 
@@ -68,10 +68,10 @@ public:
   virtual void visit(const LocalVariable* o);
   virtual void visit(const MemberVariable* o);
   virtual void visit(const Function* o);
-  virtual void visit(const Coroutine* o);
+  virtual void visit(const Fiber* o);
   virtual void visit(const Program* o);
   virtual void visit(const MemberFunction* o);
-  virtual void visit(const MemberCoroutine* o);
+  virtual void visit(const MemberFiber* o);
   virtual void visit(const BinaryOperator* o);
   virtual void visit(const UnaryOperator* o);
   virtual void visit(const AssignmentOperator* o);

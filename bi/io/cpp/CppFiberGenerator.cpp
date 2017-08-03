@@ -1,18 +1,18 @@
 /**
  * @file
  */
-#include "bi/io/cpp/CppCoroutineGenerator.hpp"
+#include "bi/io/cpp/CppFiberGenerator.hpp"
 
 #include "bi/visitor/Gatherer.hpp"
 
-bi::CppCoroutineGenerator::CppCoroutineGenerator(std::ostream& base,
+bi::CppFiberGenerator::CppFiberGenerator(std::ostream& base,
     const int level, const bool header) :
     CppBaseGenerator(base, level, header),
     state(0) {
   //
 }
 
-void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
+void bi::CppFiberGenerator::visit(const Fiber* o) {
   /* gather important objects */
   o->params->accept(&parameters);
   o->braces->accept(&locals);
@@ -25,17 +25,17 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
     line("namespace func {");
     out();
     line(
-        "class " << o->name << "Coroutine : public Coroutine<" << o->returnType << "> {");
+        "class " << o->name << "FiberState : public FiberState<" << o->returnType << "> {");
     line("public:");
     in();
   }
 
-  /* constructor, taking the arguments of the coroutine */
+  /* constructor, taking the arguments of the Fiber */
   start("");
   if (!header) {
-    middle("bi::func::" << o->name << "Coroutine::");
+    middle("bi::func::" << o->name << "FiberState::");
   }
-  middle(o->name << "Coroutine" << o->params);
+  middle(o->name << "FiberState" << o->params);
   if (header) {
     finish(';');
   } else {
@@ -63,9 +63,9 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
   } else {
     start("virtual ");
   }
-  middle(o->name << "Coroutine* ");
+  middle(o->name << "FiberState* ");
   if (!header) {
-    middle("bi::func::" << o->name << "Coroutine::");
+    middle("bi::func::" << o->name << "FiberState::");
   }
   middle("clone()");
   if (header) {
@@ -85,7 +85,7 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
   }
   middle("bool ");
   if (!header) {
-    middle("bi::func::" << o->name << "Coroutine::");
+    middle("bi::func::" << o->name << "FiberState::");
   }
   middle("run()");
   if (header) {
@@ -144,7 +144,7 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
     finish(" {");
     in();
     start("return Fiber<" << o->returnType << ">(make_object<");
-    middle(o->name << "Coroutine>(");
+    middle(o->name << "FiberState>(");
     for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
       if (iter != o->params->begin()) {
         middle(", ");
@@ -165,11 +165,11 @@ void bi::CppCoroutineGenerator::visit(const Coroutine* o) {
   }
 }
 
-void bi::CppCoroutineGenerator::visit(const Return* o) {
+void bi::CppFiberGenerator::visit(const Return* o) {
   line("goto END;");
 }
 
-void bi::CppCoroutineGenerator::visit(const Yield* o) {
+void bi::CppFiberGenerator::visit(const Yield* o) {
   line("value = " << o->single << ';');
   line("state = " << state << ';');
   line("return true;");
@@ -177,11 +177,11 @@ void bi::CppCoroutineGenerator::visit(const Yield* o) {
   ++state;
 }
 
-void bi::CppCoroutineGenerator::visit(const Identifier<LocalVariable>* o) {
+void bi::CppFiberGenerator::visit(const Identifier<LocalVariable>* o) {
   middle(o->name << o->target->number);
 }
 
-void bi::CppCoroutineGenerator::visit(const LocalVariable* o) {
+void bi::CppFiberGenerator::visit(const LocalVariable* o) {
   if (o->type->isClass() || !o->parens->isEmpty() || !o->value->isEmpty()) {
     middle(o->name << o->number);
     genInit(o);
@@ -189,7 +189,7 @@ void bi::CppCoroutineGenerator::visit(const LocalVariable* o) {
   }
 }
 
-void bi::CppCoroutineGenerator::genSwitch() {
+void bi::CppFiberGenerator::genSwitch() {
   line("switch (state) {");
   in();
   for (int s = 0; s <= yields.size(); ++s) {
@@ -202,7 +202,7 @@ void bi::CppCoroutineGenerator::genSwitch() {
   ++state;
 }
 
-void bi::CppCoroutineGenerator::genEnd() {
+void bi::CppFiberGenerator::genEnd() {
   line("END:");
   line("state = " << (yields.size() + 1) << ';');
   line("return false;");

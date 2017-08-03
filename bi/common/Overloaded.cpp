@@ -4,9 +4,9 @@
 #include "bi/common/Overloaded.hpp"
 
 #include "bi/statement/Function.hpp"
-#include "bi/statement/Coroutine.hpp"
+#include "bi/statement/Fiber.hpp"
 #include "bi/statement/MemberFunction.hpp"
-#include "bi/statement/MemberCoroutine.hpp"
+#include "bi/statement/MemberFiber.hpp"
 #include "bi/statement/BinaryOperator.hpp"
 #include "bi/statement/UnaryOperator.hpp"
 #include "bi/exception/all.hpp"
@@ -35,8 +35,8 @@ void bi::Overloaded<ObjectType>::add(ObjectType* o) {
 }
 
 template class bi::Overloaded<bi::Function>;
-template class bi::Overloaded<bi::Coroutine>;
+template class bi::Overloaded<bi::Fiber>;
 template class bi::Overloaded<bi::MemberFunction>;
-template class bi::Overloaded<bi::MemberCoroutine>;
+template class bi::Overloaded<bi::MemberFiber>;
 template class bi::Overloaded<bi::BinaryOperator>;
 template class bi::Overloaded<bi::UnaryOperator>;

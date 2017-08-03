@@ -13,11 +13,11 @@
 
 namespace bi {
 /**
- * Coroutine.
+ * Fiber.
  *
  * @ingroup compiler_statement
  */
-class Coroutine: public Statement,
+class Fiber: public Statement,
     public Named,
     public Numbered,
     public Parameterised,
@@ -35,13 +35,13 @@ public:
    * @param braces Body.
    * @param loc Location.
    */
-  Coroutine(Name* name, Expression* params, Type* returnType,
+  Fiber(Name* name, Expression* params, Type* returnType,
       Statement* braces, Location* loc = nullptr);
 
   /**
    * Destructor.
    */
-  virtual ~Coroutine();
+  virtual ~Fiber();
 
   virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);

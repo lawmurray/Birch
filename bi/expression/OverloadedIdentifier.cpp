@@ -42,8 +42,8 @@ void bi::OverloadedIdentifier<ObjectType>::accept(Visitor* visitor) const {
 }
 
 template class bi::OverloadedIdentifier<bi::Function>;
-template class bi::OverloadedIdentifier<bi::Coroutine>;
+template class bi::OverloadedIdentifier<bi::Fiber>;
 template class bi::OverloadedIdentifier<bi::MemberFunction>;
-template class bi::OverloadedIdentifier<bi::MemberCoroutine>;
+template class bi::OverloadedIdentifier<bi::MemberFiber>;
 template class bi::OverloadedIdentifier<bi::BinaryOperator>;
 template class bi::OverloadedIdentifier<bi::UnaryOperator>;

@@ -141,8 +141,8 @@ bi::Expression* bi::Cloner::clone(const OverloadedIdentifier<Function>* o) {
   return new OverloadedIdentifier<Function>(o->name, o->loc);
 }
 
-bi::Expression* bi::Cloner::clone(const OverloadedIdentifier<Coroutine>* o) {
-  return new OverloadedIdentifier<Coroutine>(o->name, o->loc);
+bi::Expression* bi::Cloner::clone(const OverloadedIdentifier<Fiber>* o) {
+  return new OverloadedIdentifier<Fiber>(o->name, o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(
@@ -151,8 +151,8 @@ bi::Expression* bi::Cloner::clone(
 }
 
 bi::Expression* bi::Cloner::clone(
-    const OverloadedIdentifier<MemberCoroutine>* o) {
-  return new OverloadedIdentifier<MemberCoroutine>(o->name, o->loc);
+    const OverloadedIdentifier<MemberFiber>* o) {
+  return new OverloadedIdentifier<MemberFiber>(o->name, o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(
@@ -199,8 +199,8 @@ bi::Statement* bi::Cloner::clone(const Function* o) {
       o->returnType->accept(this), o->braces->accept(this), o->loc);
 }
 
-bi::Statement* bi::Cloner::clone(const Coroutine* o) {
-  return new Coroutine(o->name, o->params->accept(this),
+bi::Statement* bi::Cloner::clone(const Fiber* o) {
+  return new Fiber(o->name, o->params->accept(this),
       o->returnType->accept(this), o->braces->accept(this), o->loc);
 }
 
@@ -214,8 +214,8 @@ bi::Statement* bi::Cloner::clone(const MemberFunction* o) {
       o->returnType->accept(this), o->braces->accept(this), o->loc);
 }
 
-bi::Statement* bi::Cloner::clone(const MemberCoroutine* o) {
-  return new MemberCoroutine(o->name, o->params->accept(this),
+bi::Statement* bi::Cloner::clone(const MemberFiber* o) {
+  return new MemberFiber(o->name, o->params->accept(this),
       o->returnType->accept(this), o->braces->accept(this), o->loc);
 }
 

@@ -72,7 +72,7 @@ void bi::bi_ostream::visit(const Query* o) {
 }
 
 void bi::bi_ostream::visit(const Get* o) {
-  *this << o->single << '?';
+  *this << o->single << '!';
 }
 
 void bi::bi_ostream::visit(const Index* o) {
@@ -152,7 +152,7 @@ void bi::bi_ostream::visit(const OverloadedIdentifier<Function>* o) {
   *this << o->name;
 }
 
-void bi::bi_ostream::visit(const OverloadedIdentifier<Coroutine>* o) {
+void bi::bi_ostream::visit(const OverloadedIdentifier<Fiber>* o) {
   *this << o->name;
 }
 
@@ -160,7 +160,7 @@ void bi::bi_ostream::visit(const OverloadedIdentifier<MemberFunction>* o) {
   *this << o->name;
 }
 
-void bi::bi_ostream::visit(const OverloadedIdentifier<MemberCoroutine>* o) {
+void bi::bi_ostream::visit(const OverloadedIdentifier<MemberFiber>* o) {
   *this << o->name;
 }
 
@@ -196,8 +196,8 @@ void bi::bi_ostream::visit(const Function* o) {
   }
 }
 
-void bi::bi_ostream::visit(const Coroutine* o) {
-  *this << "function " << o->name << o->params;
+void bi::bi_ostream::visit(const Fiber* o) {
+  *this << "fiber " << o->name << o->params;
   if (!o->returnType->isEmpty()) {
     *this << " -> " << o->returnType;
   }
@@ -219,6 +219,18 @@ void bi::bi_ostream::visit(const Program* o) {
 
 void bi::bi_ostream::visit(const MemberFunction* o) {
   *this << "function " << o->name << o->params;
+  if (!o->returnType->isEmpty()) {
+    *this << " -> " << o->returnType;
+  }
+  if (!header && !o->braces->isEmpty()) {
+    *this << o->braces;
+  } else {
+    *this << ';';
+  }
+}
+
+void bi::bi_ostream::visit(const MemberFiber* o) {
+  *this << "fiber " << o->name << o->params;
   if (!o->returnType->isEmpty()) {
     *this << " -> " << o->returnType;
   }

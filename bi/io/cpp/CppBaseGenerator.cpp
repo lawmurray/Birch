@@ -4,7 +4,7 @@
 #include "bi/io/cpp/CppBaseGenerator.hpp"
 
 #include "bi/io/cpp/CppClassGenerator.hpp"
-#include "bi/io/cpp/CppCoroutineGenerator.hpp"
+#include "bi/io/cpp/CppFiberGenerator.hpp"
 #include "bi/visitor/Gatherer.hpp"
 #include "bi/primitive/encode.hpp"
 
@@ -194,7 +194,7 @@ void bi::CppBaseGenerator::visit(const OverloadedIdentifier<Function>* o) {
   middle("bi::func::" << o->name);
 }
 
-void bi::CppBaseGenerator::visit(const OverloadedIdentifier<Coroutine>* o) {
+void bi::CppBaseGenerator::visit(const OverloadedIdentifier<Fiber>* o) {
   middle("bi::func::" << o->name);
 }
 
@@ -204,7 +204,7 @@ void bi::CppBaseGenerator::visit(
 }
 
 void bi::CppBaseGenerator::visit(
-    const OverloadedIdentifier<MemberCoroutine>* o) {
+    const OverloadedIdentifier<MemberFiber>* o) {
   middle(o->name);
 }
 
@@ -311,16 +311,16 @@ void bi::CppBaseGenerator::visit(const Function* o) {
   }
 }
 
-void bi::CppBaseGenerator::visit(const Coroutine* o) {
-  CppCoroutineGenerator auxCoroutine(base, level, header);
-  auxCoroutine << o;
+void bi::CppBaseGenerator::visit(const Fiber* o) {
+  CppFiberGenerator auxFiber(base, level, header);
+  auxFiber << o;
 }
 
 void bi::CppBaseGenerator::visit(const MemberFunction* o) {
   assert(false);  // should be in CppClassGenerator
 }
 
-void bi::CppBaseGenerator::visit(const MemberCoroutine* o) {
+void bi::CppBaseGenerator::visit(const MemberFiber* o) {
   assert(false);  // should be in CppClassGenerator
 }
 
@@ -639,7 +639,7 @@ void bi::CppBaseGenerator::visit(const Return* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Yield* o) {
-  assert(false);  // should be in CppCoroutineGenerator
+  assert(false);  // should be in CppFiberGenerator
 }
 
 void bi::CppBaseGenerator::visit(const Raw* o) {

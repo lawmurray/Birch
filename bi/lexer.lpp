@@ -98,7 +98,7 @@ IS                                 (u|U|l|L)*
 
 "import"                            { return IMPORT; }
 "function"                          { return FUNCTION; }
-"coroutine"                         { return COROUTINE; }
+"fiber"                             { return FIBER; }
 "program"                           { return PROGRAM; }
 "class"                             { return CLASS; }
 "type"                              { return TYPE; }

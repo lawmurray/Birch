@@ -119,11 +119,13 @@ bi::Expression* bi::Resolver::modify(Slice* o) {
 bi::Expression* bi::Resolver::modify(Query* o) {
   Modifier::modify(o);
   ///@todo Check that expression is of type optional or fiber, return type boolean
+  return o;
 }
 
 bi::Expression* bi::Resolver::modify(Get* o) {
   Modifier::modify(o);
   ///@todo Check that expression is of type optional or fiber, return type
+  return o;
 }
 
 bi::Expression* bi::Resolver::modify(LambdaFunction* o) {
@@ -235,7 +237,7 @@ bi::Expression* bi::Resolver::modify(OverloadedIdentifier<Function>* o) {
   return modifyFunctionIdentifier(o);
 }
 
-bi::Expression* bi::Resolver::modify(OverloadedIdentifier<Coroutine>* o) {
+bi::Expression* bi::Resolver::modify(OverloadedIdentifier<Fiber>* o) {
   return modifyFunctionIdentifier(o);
 }
 
@@ -245,7 +247,7 @@ bi::Expression* bi::Resolver::modify(
 }
 
 bi::Expression* bi::Resolver::modify(
-    OverloadedIdentifier<MemberCoroutine>* o) {
+    OverloadedIdentifier<MemberFiber>* o) {
   return modifyFunctionIdentifier(o);
 }
 
@@ -335,7 +337,7 @@ bi::Statement* bi::Resolver::modify(Function* o) {
   return o;
 }
 
-bi::Statement* bi::Resolver::modify(Coroutine* o) {
+bi::Statement* bi::Resolver::modify(Fiber* o) {
   push();
   o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
@@ -381,7 +383,7 @@ bi::Statement* bi::Resolver::modify(MemberFunction* o) {
   return o;
 }
 
-bi::Statement* bi::Resolver::modify(MemberCoroutine* o) {
+bi::Statement* bi::Resolver::modify(MemberFiber* o) {
   push();
   o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
@@ -614,12 +616,12 @@ bi::Expression* bi::Resolver::lookup(Identifier<Unknown>* ref, Scope* scope) {
     return new Identifier<MemberVariable>(ref->name, ref->loc);
   case FUNCTION:
     return new OverloadedIdentifier<Function>(ref->name, ref->loc);
-  case COROUTINE:
-    return new OverloadedIdentifier<Coroutine>(ref->name, ref->loc);
+  case FIBER:
+    return new OverloadedIdentifier<Fiber>(ref->name, ref->loc);
   case MEMBER_FUNCTION:
     return new OverloadedIdentifier<MemberFunction>(ref->name, ref->loc);
-  case MEMBER_COROUTINE:
-    return new OverloadedIdentifier<MemberCoroutine>(ref->name, ref->loc);
+  case MEMBER_FIBER:
+    return new OverloadedIdentifier<MemberFiber>(ref->name, ref->loc);
   default:
     throw UnresolvedException(ref);
   }

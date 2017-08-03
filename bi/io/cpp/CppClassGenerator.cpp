@@ -4,7 +4,7 @@
 #include "bi/io/cpp/CppClassGenerator.hpp"
 
 #include "bi/io/cpp/CppConstructorGenerator.hpp"
-#include "bi/io/cpp/CppMemberCoroutineGenerator.hpp"
+#include "bi/io/cpp/CppMemberFiberGenerator.hpp"
 #include "bi/primitive/encode.hpp"
 
 bi::CppClassGenerator::CppClassGenerator(std::ostream& base, const int level,
@@ -129,9 +129,9 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
   }
 }
 
-void bi::CppClassGenerator::visit(const MemberCoroutine* o) {
-  CppMemberCoroutineGenerator auxMemberCoroutine(type, base, level, header);
-  auxMemberCoroutine << o;
+void bi::CppClassGenerator::visit(const MemberFiber* o) {
+  CppMemberFiberGenerator auxMemberFiber(type, base, level, header);
+  auxMemberFiber << o;
 }
 
 void bi::CppClassGenerator::visit(const AssignmentOperator* o) {

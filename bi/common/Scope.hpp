@@ -16,9 +16,9 @@ class GlobalVariable;
 class LocalVariable;
 class MemberVariable;
 class Function;
-class Coroutine;
+class Fiber;
 class MemberFunction;
-class MemberCoroutine;
+class MemberFiber;
 class Program;
 class BinaryOperator;
 class UnaryOperator;
@@ -45,9 +45,9 @@ enum LookupResult {
   LOCAL_VARIABLE,
   MEMBER_VARIABLE,
   FUNCTION,
-  COROUTINE,
+  FIBER,
   MEMBER_FUNCTION,
-  MEMBER_COROUTINE,
+  MEMBER_FIBER,
   BASIC,
   CLASS,
   ALIAS,
@@ -78,10 +78,10 @@ public:
   void add(LocalVariable* o);
   void add(MemberVariable* o);
   void add(Function* o);
-  void add(Coroutine* o);
+  void add(Fiber* o);
   void add(Program* o);
   void add(MemberFunction* o);
-  void add(MemberCoroutine* o);
+  void add(MemberFiber* o);
   void add(BinaryOperator* o);
   void add(UnaryOperator* o);
   void add(Class* o);
@@ -101,10 +101,10 @@ public:
   void resolve(Identifier<LocalVariable>* o);
   void resolve(Identifier<MemberVariable>* o);
   void resolve(OverloadedIdentifier<Function>* o);
-  void resolve(OverloadedIdentifier<Coroutine>* o);
+  void resolve(OverloadedIdentifier<Fiber>* o);
   void resolve(Identifier<Program>* o);
   void resolve(OverloadedIdentifier<MemberFunction>* o);
-  void resolve(OverloadedIdentifier<MemberCoroutine>* o);
+  void resolve(OverloadedIdentifier<MemberFiber>* o);
   void resolve(OverloadedIdentifier<BinaryOperator>* o);
   void resolve(OverloadedIdentifier<UnaryOperator>* o);
   void resolve(BasicType* o);
@@ -141,10 +141,10 @@ public:
   Dictionary<LocalVariable> localVariables;
   Dictionary<MemberVariable> memberVariables;
   OverloadedDictionary<Function> functions;
-  OverloadedDictionary<Coroutine> coroutines;
+  OverloadedDictionary<Fiber> Fibers;
   Dictionary<Program> programs;
   OverloadedDictionary<MemberFunction> memberFunctions;
-  OverloadedDictionary<MemberCoroutine> memberCoroutines;
+  OverloadedDictionary<MemberFiber> memberFibers;
   OverloadedDictionary<BinaryOperator> binaryOperators;
   OverloadedDictionary<UnaryOperator> unaryOperators;
   Dictionary<Basic> basics;

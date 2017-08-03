@@ -4,11 +4,11 @@
 #pragma once
 
 #include "bi/lib/Heap.hpp"
-#include "bi/lib/Coroutine.hpp"
+#include "bi/lib/FiberState.hpp"
 
 namespace bi {
 /**
- * Relocatable fiber.
+ * Fiber.
  *
  * @ingroup library
  *
@@ -20,10 +20,10 @@ public:
   /**
    * Constructor.
    *
-   * @param coroutine Coroutine associated with the fiber.
+   * @param state State of the fiber.
    */
-  Fiber(const Pointer<Coroutine<Type>>& coroutine = nullptr) :
-      coroutine(coroutine) {
+  Fiber(const Pointer<FiberState<Type>>& state = nullptr) :
+      state(state) {
     //
   }
 
@@ -32,7 +32,7 @@ public:
    */
   Fiber(const Fiber& o) :
       Heap(o),
-      coroutine(o.coroutine->clone()) {
+      state(o.state->clone()) {
     //
   }
 
@@ -41,8 +41,8 @@ public:
    */
   Fiber(Fiber&& o) :
       Heap(o),
-      coroutine(o.coroutine) {
-    o.coroutine = nullptr;
+      state(o.state) {
+    o.state = nullptr;
   }
 
   /**
@@ -50,7 +50,7 @@ public:
    */
   Fiber<Type>& operator=(const Fiber<Type>& o) {
     Heap::operator=(o);
-    coroutine = o.coroutine->clone();
+    state = o.state->clone();
     return *this;
   }
 
@@ -59,16 +59,19 @@ public:
    */
   Fiber<Type>& operator=(Fiber<Type> && o) {
     Heap::operator=(o);
-    std::swap(coroutine, o.coroutine);
+    std::swap(state, o.state);
     return *this;
   }
+
   /**
    * Run to next yield point.
+   *
+   * @return Was a value yielded?
    */
-  bool operator()() {
+  bool query() {
     Heap* yieldTo = currentFiber;
     currentFiber = this;
-    bool result = coroutine->run();
+    bool result = state->run();
     currentFiber = yieldTo;
     return result;
   }
@@ -76,17 +79,17 @@ public:
   /**
    * Get the last yield value.
    */
-  operator Type&() {
-    return coroutine->getValue();
+  Type& get() {
+    return state->get();
   }
-  operator const Type&() const {
-    return coroutine->getValue();
+  const Type& get() const {
+    return state->get();
   }
 
 protected:
   /**
-   * Coroutine associated with this fiber.
+   * Fiber state.
    */
-  Pointer<Coroutine<Type>> coroutine;
+  Pointer<FiberState<Type>> state;
 };
 }

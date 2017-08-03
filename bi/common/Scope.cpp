@@ -11,7 +11,7 @@
 #include "bi/statement/LocalVariable.hpp"
 #include "bi/statement/MemberVariable.hpp"
 #include "bi/statement/Function.hpp"
-#include "bi/statement/Coroutine.hpp"
+#include "bi/statement/Fiber.hpp"
 #include "bi/statement/Program.hpp"
 #include "bi/statement/MemberFunction.hpp"
 #include "bi/statement/BinaryOperator.hpp"
@@ -37,14 +37,14 @@ bi::LookupResult bi::Scope::lookup(const Identifier<Unknown>* ref) const {
     return MEMBER_PARAMETER;
   } else if (memberFunctions.contains(name)) {
     return MEMBER_FUNCTION;
-  } else if (memberCoroutines.contains(name)) {
-    return MEMBER_COROUTINE;
+  } else if (memberFibers.contains(name)) {
+    return MEMBER_FIBER;
   } else if (globalVariables.contains(name)) {
     return GLOBAL_VARIABLE;
   } else if (functions.contains(name)) {
     return FUNCTION;
-  } else if (coroutines.contains(name)) {
-    return COROUTINE;
+  } else if (Fibers.contains(name)) {
+    return FIBER;
   } else {
     return lookupInherit(ref);
   }
@@ -91,7 +91,7 @@ void bi::Scope::add(GlobalVariable* param) {
     throw PreviousDeclarationException(param, globalVariables.get(name));
   } else if (functions.contains(name)) {
     throw PreviousDeclarationException(param);
-  } else if (coroutines.contains(name)) {
+  } else if (Fibers.contains(name)) {
     throw PreviousDeclarationException(param);
   } else if (programs.contains(name)) {
     throw PreviousDeclarationException(param);
@@ -119,7 +119,7 @@ void bi::Scope::add(MemberVariable* param) {
     throw PreviousDeclarationException(param, memberParameters.get(name));
   } else if (memberFunctions.contains(name)) {
     throw PreviousDeclarationException(param);
-  } else if (memberCoroutines.contains(name)) {
+  } else if (memberFibers.contains(name)) {
     throw PreviousDeclarationException(param);
   } else {
     memberVariables.add(param);
@@ -128,7 +128,7 @@ void bi::Scope::add(MemberVariable* param) {
 
 void bi::Scope::add(Function* param) {
   auto name = param->name->str();
-  if (coroutines.contains(name)) {
+  if (Fibers.contains(name)) {
     throw PreviousDeclarationException(param);
   } else if (programs.contains(name)) {
     throw PreviousDeclarationException(param, programs.get(name));
@@ -139,7 +139,7 @@ void bi::Scope::add(Function* param) {
   }
 }
 
-void bi::Scope::add(Coroutine* param) {
+void bi::Scope::add(Fiber* param) {
   auto name = param->name->str();
   if (functions.contains(name)) {
     throw PreviousDeclarationException(param);
@@ -148,7 +148,7 @@ void bi::Scope::add(Coroutine* param) {
   } else if (globalVariables.contains(name)) {
     throw PreviousDeclarationException(param, globalVariables.get(name));
   } else {
-    coroutines.add(param);
+    Fibers.add(param);
   }
 }
 
@@ -156,7 +156,7 @@ void bi::Scope::add(Program* param) {
   auto name = param->name->str();
   if (functions.contains(name)) {
     throw PreviousDeclarationException(param);
-  } else if (coroutines.contains(name)) {
+  } else if (Fibers.contains(name)) {
     throw PreviousDeclarationException(param);
   } else if (globalVariables.contains(name)) {
     throw PreviousDeclarationException(param, globalVariables.get(name));
@@ -171,14 +171,14 @@ void bi::Scope::add(MemberFunction* param) {
     throw PreviousDeclarationException(param, memberVariables.get(name));
   } else if (memberParameters.contains(name)) {
     throw PreviousDeclarationException(param, memberParameters.get(name));
-  } else if (memberCoroutines.contains(name)) {
+  } else if (memberFibers.contains(name)) {
     throw PreviousDeclarationException(param);
   } else {
     memberFunctions.add(param);
   }
 }
 
-void bi::Scope::add(MemberCoroutine* param) {
+void bi::Scope::add(MemberFiber* param) {
   auto name = param->name->str();
   if (memberVariables.contains(name)) {
     throw PreviousDeclarationException(param, memberVariables.get(name));
@@ -187,7 +187,7 @@ void bi::Scope::add(MemberCoroutine* param) {
   } else if (memberFunctions.contains(name)) {
     throw PreviousDeclarationException(param);
   } else {
-    memberCoroutines.add(param);
+    memberFibers.add(param);
   }
 }
 
@@ -267,8 +267,8 @@ void bi::Scope::resolve(OverloadedIdentifier<Function>* ref) {
   functions.resolve(ref);
 }
 
-void bi::Scope::resolve(OverloadedIdentifier<Coroutine>* ref) {
-  coroutines.resolve(ref);
+void bi::Scope::resolve(OverloadedIdentifier<Fiber>* ref) {
+  Fibers.resolve(ref);
 }
 
 void bi::Scope::resolve(OverloadedIdentifier<MemberFunction>* ref) {
@@ -278,8 +278,8 @@ void bi::Scope::resolve(OverloadedIdentifier<MemberFunction>* ref) {
   }
 }
 
-void bi::Scope::resolve(OverloadedIdentifier<MemberCoroutine>* ref) {
-  memberCoroutines.resolve(ref);
+void bi::Scope::resolve(OverloadedIdentifier<MemberFiber>* ref) {
+  memberFibers.resolve(ref);
   if (!ref->target) {
     resolveInherit(ref);
   }
@@ -314,7 +314,7 @@ void bi::Scope::import(Scope* scope) {
   // class members
   globalVariables.import(scope->globalVariables);
   functions.import(scope->functions);
-  coroutines.import(scope->coroutines);
+  Fibers.import(scope->Fibers);
   programs.import(scope->programs);
   binaryOperators.import(scope->binaryOperators);
   unaryOperators.import(scope->unaryOperators);

@@ -42,7 +42,7 @@
   bi::Statement* valStatement;
 }
 
-%token <valString> IMPORT PROGRAM CLASS TYPE FUNCTION COROUTINE OPERATOR
+%token <valString> IMPORT PROGRAM CLASS TYPE FUNCTION FIBER OPERATOR
 %token <valString> IF ELSE FOR IN WHILE ASSERT RETURN YIELD CPP HPP THIS SUPER
 %token <valString> FUNCTION_UPPER
 %token <valString> DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE RAW NAME
@@ -79,9 +79,9 @@
 %type <valExpression> size_list size value optional_value
 
 %type <valStatement> global_variable_declaration local_variable_declaration
-%type <valStatement> function_declaration coroutine_declaration program_declaration
+%type <valStatement> function_declaration fiber_declaration program_declaration
 %type <valStatement> member_variable_declaration member_function_declaration
-%type <valStatement> member_coroutine_declaration
+%type <valStatement> member_fiber_declaration
 %type <valStatement> binary_operator_declaration unary_operator_declaration
 %type <valStatement> conversion_operator_declaration assignment_operator_declaration
 %type <valStatement> class_declaration alias_type_declaration basic_type_declaration
@@ -383,8 +383,8 @@ function_declaration
     : FUNCTION name parameters optional_result optional_braces  { $$ = new bi::Function($2, $3, $4, $5, make_loc(@$)); }
     ;
 
-coroutine_declaration
-    : COROUTINE name parameters optional_result optional_braces  { $$ = new bi::Coroutine($2, $3, $4, $5, make_loc(@$)); }
+fiber_declaration
+    : FIBER name parameters optional_result optional_braces  { $$ = new bi::Fiber($2, $3, $4, $5, make_loc(@$)); }
     ;
 
 program_declaration
@@ -395,8 +395,8 @@ member_function_declaration
     : FUNCTION name parameters optional_result optional_braces  { $$ = new bi::MemberFunction($2, $3, $4, $5, make_loc(@$)); }
     ;
 
-member_coroutine_declaration
-    : COROUTINE name parameters optional_result optional_braces  { $$ = new bi::MemberCoroutine($2, $3, $4, $5, make_loc(@$)); }
+member_fiber_declaration
+    : FIBER name parameters optional_result optional_braces  { $$ = new bi::MemberFiber($2, $3, $4, $5, make_loc(@$)); }
     ;
     
 binary_operator
@@ -527,7 +527,7 @@ optional_statements
 class_statement
     : member_variable_declaration
     | member_function_declaration
-    | member_coroutine_declaration
+    | member_fiber_declaration
     | assignment_operator_declaration
     | conversion_operator_declaration
     | hpp
@@ -547,7 +547,7 @@ file_statement
     : import
     | global_variable_declaration
     | function_declaration
-    | coroutine_declaration
+    | fiber_declaration
     | program_declaration
     | binary_operator_declaration
     | unary_operator_declaration

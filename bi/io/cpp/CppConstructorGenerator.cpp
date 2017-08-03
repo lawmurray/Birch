@@ -79,7 +79,7 @@ void bi::CppConstructorGenerator::visit(const MemberFunction* o) {
   //
 }
 
-void bi::CppConstructorGenerator::visit(const MemberCoroutine* o) {
+void bi::CppConstructorGenerator::visit(const MemberFiber* o) {
   //
 }
 

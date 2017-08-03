@@ -158,7 +158,7 @@ void bi::Visitor::visit(const OverloadedIdentifier<Function>* o) {
   //
 }
 
-void bi::Visitor::visit(const OverloadedIdentifier<Coroutine>* o) {
+void bi::Visitor::visit(const OverloadedIdentifier<Fiber>* o) {
   //
 }
 
@@ -166,7 +166,7 @@ void bi::Visitor::visit(const OverloadedIdentifier<MemberFunction>* o) {
   //
 }
 
-void bi::Visitor::visit(const OverloadedIdentifier<MemberCoroutine>* o) {
+void bi::Visitor::visit(const OverloadedIdentifier<MemberFiber>* o) {
   //
 }
 
@@ -216,7 +216,7 @@ void bi::Visitor::visit(const Function* o) {
   o->braces->accept(this);
 }
 
-void bi::Visitor::visit(const Coroutine* o) {
+void bi::Visitor::visit(const Fiber* o) {
   o->params->accept(this);
   o->returnType->accept(this);
   o->braces->accept(this);
@@ -227,7 +227,7 @@ void bi::Visitor::visit(const Program* o) {
   o->braces->accept(this);
 }
 
-void bi::Visitor::visit(const MemberCoroutine* o) {
+void bi::Visitor::visit(const MemberFiber* o) {
   o->params->accept(this);
   o->returnType->accept(this);
   o->braces->accept(this);

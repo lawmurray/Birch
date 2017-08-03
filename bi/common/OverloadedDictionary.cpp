@@ -4,9 +4,9 @@
 #include "bi/common/OverloadedDictionary.hpp"
 
 #include "bi/statement/Function.hpp"
-#include "bi/statement/Coroutine.hpp"
+#include "bi/statement/Fiber.hpp"
 #include "bi/statement/MemberFunction.hpp"
-#include "bi/statement/MemberCoroutine.hpp"
+#include "bi/statement/MemberFiber.hpp"
 #include "bi/statement/BinaryOperator.hpp"
 #include "bi/statement/UnaryOperator.hpp"
 
@@ -59,8 +59,8 @@ void bi::OverloadedDictionary<ObjectType>::import(
 }
 
 template class bi::OverloadedDictionary<bi::Function>;
-template class bi::OverloadedDictionary<bi::Coroutine>;
+template class bi::OverloadedDictionary<bi::Fiber>;
 template class bi::OverloadedDictionary<bi::MemberFunction>;
-template class bi::OverloadedDictionary<bi::MemberCoroutine>;
+template class bi::OverloadedDictionary<bi::MemberFiber>;
 template class bi::OverloadedDictionary<bi::BinaryOperator>;
 template class bi::OverloadedDictionary<bi::UnaryOperator>;

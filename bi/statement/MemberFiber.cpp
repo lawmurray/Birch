@@ -1,11 +1,11 @@
 /**
  * @file
  */
-#include "bi/statement/MemberCoroutine.hpp"
+#include "bi/statement/MemberFiber.hpp"
 
 #include "bi/visitor/all.hpp"
 
-bi::MemberCoroutine::MemberCoroutine(Name* name,
+bi::MemberFiber::MemberFiber(Name* name,
     Expression* params, Type* returnType, Statement* braces,
     Location* loc) :
     Statement(loc),
@@ -16,18 +16,18 @@ bi::MemberCoroutine::MemberCoroutine(Name* name,
   //
 }
 
-bi::MemberCoroutine::~MemberCoroutine() {
+bi::MemberFiber::~MemberFiber() {
   //
 }
 
-bi::Statement* bi::MemberCoroutine::accept(Cloner* visitor) const {
+bi::Statement* bi::MemberFiber::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-bi::Statement* bi::MemberCoroutine::accept(Modifier* visitor) {
+bi::Statement* bi::MemberFiber::accept(Modifier* visitor) {
   return visitor->modify(this);
 }
 
-void bi::MemberCoroutine::accept(Visitor* visitor) const {
+void bi::MemberFiber::accept(Visitor* visitor) const {
   visitor->visit(this);
 }

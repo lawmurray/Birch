@@ -168,11 +168,11 @@ bi::Expression* bi::Modifier::modify(OverloadedIdentifier<Function>* o) {
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(OverloadedIdentifier<Coroutine>* o) {
+bi::Expression* bi::Modifier::modify(OverloadedIdentifier<Fiber>* o) {
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(OverloadedIdentifier<MemberCoroutine>* o) {
+bi::Expression* bi::Modifier::modify(OverloadedIdentifier<MemberFiber>* o) {
   return o;
 }
 
@@ -232,7 +232,7 @@ bi::Statement* bi::Modifier::modify(Function* o) {
   return o;
 }
 
-bi::Statement* bi::Modifier::modify(Coroutine* o) {
+bi::Statement* bi::Modifier::modify(Fiber* o) {
   o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
   o->braces = o->braces->accept(this);
@@ -252,7 +252,7 @@ bi::Statement* bi::Modifier::modify(MemberFunction* o) {
   return o;
 }
 
-bi::Statement* bi::Modifier::modify(MemberCoroutine* o) {
+bi::Statement* bi::Modifier::modify(MemberFiber* o) {
   o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
   o->braces = o->braces->accept(this);

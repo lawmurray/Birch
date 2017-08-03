@@ -53,9 +53,9 @@ public:
   virtual Expression* clone(const Identifier<LocalVariable>* o);
   virtual Expression* clone(const Identifier<MemberVariable>* o);
   virtual Expression* clone(const OverloadedIdentifier<Function>* o);
-  virtual Expression* clone(const OverloadedIdentifier<Coroutine>* o);
+  virtual Expression* clone(const OverloadedIdentifier<Fiber>* o);
   virtual Expression* clone(const OverloadedIdentifier<MemberFunction>* o);
-  virtual Expression* clone(const OverloadedIdentifier<MemberCoroutine>* o);
+  virtual Expression* clone(const OverloadedIdentifier<MemberFiber>* o);
   virtual Expression* clone(const OverloadedIdentifier<BinaryOperator>* o);
   virtual Expression* clone(const OverloadedIdentifier<UnaryOperator>* o);
 
@@ -66,10 +66,10 @@ public:
   virtual Statement* clone(const LocalVariable* o);
   virtual Statement* clone(const MemberVariable* o);
   virtual Statement* clone(const Function* o);
-  virtual Statement* clone(const Coroutine* o);
+  virtual Statement* clone(const Fiber* o);
   virtual Statement* clone(const Program* o);
   virtual Statement* clone(const MemberFunction* o);
-  virtual Statement* clone(const MemberCoroutine* o);
+  virtual Statement* clone(const MemberFiber* o);
   virtual Statement* clone(const BinaryOperator* o);
   virtual Statement* clone(const UnaryOperator* o);
   virtual Statement* clone(const AssignmentOperator* o);

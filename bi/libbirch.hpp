@@ -15,7 +15,7 @@
 #include "bi/lib/Markable.hpp"
 #include "bi/lib/Object.hpp"
 #include "bi/lib/Pointer.hpp"
-#include "bi/lib/Coroutine.hpp"
+#include "bi/lib/FiberState.hpp"
 #include "bi/lib/Fiber.hpp"
 
 #include "boost/optional.hpp"

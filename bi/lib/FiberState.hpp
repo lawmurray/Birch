@@ -7,19 +7,19 @@
 
 namespace bi {
 /**
- * Coroutine.
+ * Fiber state.
  *
  * @ingroup library
  *
  * @tparam Type Return type.
  */
 template<class Type>
-class Coroutine: public Object {
+class FiberState: public Object {
 public:
   /**
    * Constructor.
    */
-  Coroutine() :
+  FiberState() :
       state(0),
       nstates(0) {
     //
@@ -28,27 +28,27 @@ public:
   /**
    * Destructor.
    */
-  virtual ~Coroutine() {
+  virtual ~FiberState() {
     //
   }
 
   /**
    * Clone the object.
    */
-  virtual Coroutine<Type>* clone() = 0;
+  virtual FiberState<Type>* clone() = 0;
 
   /**
    * Run to next yield point.
    */
-  virtual bool run() = 0;
+  virtual bool query() = 0;
 
   /**
    * Get the last yield value.
    */
-  Type& getValue() {
+  Type& get() {
     return value;
   }
-  const Type& getValue() const {
+  const Type& get() const {
     return value;
   }
 
