@@ -284,6 +284,10 @@ bi::Statement* bi::Resolver::modify(Assignment* o) {
     auto assign = new Assignment(o->left, new Name("<-"), call);
     return assign->accept(this);
   } else if (*o->name == "~") {
+    Modifier::modify(o);
+    if (!o->left->type->assignable) {
+      throw NotAssignableException(o);
+    }
     ///@todo Check that both sides are of Delay type
     return o;
   } else {

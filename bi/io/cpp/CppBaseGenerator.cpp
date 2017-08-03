@@ -580,7 +580,7 @@ void bi::CppBaseGenerator::visit(const List<Statement>* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Assignment* o) {
-  if (*o->name == "<~" || *o->name == "~") {
+  if (*o->name == "~") {
     start(o->name << '(' << o->left << ", " << o->right << ')');
   } else {
     //if (o->left->type->isClass() && !o->right->type->isClass()) {
