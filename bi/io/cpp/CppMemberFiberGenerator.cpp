@@ -86,7 +86,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   if (!header) {
     middle("bi::type::" << type->name << "::" << o->name << "FiberState::");
   }
-  middle("run()");
+  middle("query()");
   if (header) {
     finish(';');
   } else {
