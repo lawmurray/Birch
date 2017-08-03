@@ -3,8 +3,6 @@
  */
 #pragma once
 
-#include "bi/lib/global.hpp"
-
 namespace bi {
 /**
  * Smart pointer for global and fiber-local objects, with copy-on-write
@@ -42,9 +40,34 @@ public:
   Pointer(const Pointer<U>& o);
 
   /**
-   * Conversions. This allows pointers to be passed as arguments to functions
-   * with value type parameters, where the type of the object pointed to has
-   * a conversion to the value type.
+   * Assignment operator.
+   */
+  Pointer<T>& operator=(const Pointer<T>& o) = default;
+
+  /**
+   * Raw pointer assignment operator.
+   */
+  Pointer<T>& operator=(T* raw);
+
+  /**
+   * Null pointer assignment operator.
+   */
+  Pointer<T>& operator=(const std::nullptr_t&) {
+    ptr = nullptr;
+    index = -1;
+    return *this;
+  }
+
+  /**
+   * Generic assignment operator.
+   */
+  template<class U>
+  Pointer<T>& operator=(const U& o);
+
+  /**
+   * User-defined conversions. This allows pointers to be passed as arguments
+   * to functions with value type parameters, where the type of the object
+   * pointed to has a conversion to the value type.
    *
    * @seealso has_conversion
    */
@@ -121,6 +144,7 @@ private:
 };
 }
 
+#include "bi/lib/global.hpp"
 #include "bi/lib/Fiber.hpp"
 
 template<class T>
@@ -154,6 +178,26 @@ bi::Pointer<T>::Pointer(const Pointer<U>& o) :
     ptr(o.ptr),
     index(o.index) {
   //
+}
+
+template<class T>
+bi::Pointer<T>& bi::Pointer<T>::operator=(T* raw) {
+  if (currentFiber) {
+    ptr = nullptr;
+    index = currentFiber->put(raw);
+    raw->setIndex(index);
+  } else {
+    ptr = raw;
+    index = -1;
+  }
+  return *this;
+}
+
+template<class T>
+template<class U>
+bi::Pointer<T>& bi::Pointer<T>::operator=(const U& o) {
+  assign_(*this, o);
+  return *this;
 }
 
 template<class T>

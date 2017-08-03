@@ -20,8 +20,8 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
 
   /* supporting class */
   if (header) {
-    line(
-        "class " << o->name << "FiberState : public FiberState<" << o->returnType << "> {");
+    start("class " << o->name << "FiberState : ");
+    finish("public FiberState<" << o->returnType->unwrap() << "> {");
     line("public:");
     in();
   }
@@ -119,7 +119,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   }
 
   /* initialisation function */
-  start("bi::Fiber<" << o->returnType << "> ");
+  start(o->returnType);
   if (!header) {
     middle("bi::type::" << type->name << "::");
   }
@@ -129,7 +129,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   } else {
     finish(" {");
     in();
-    start("return Fiber<" << o->returnType << ">(make_object<");
+    start("return " << o->returnType << "(make_object<");
     middle(
         o->name << "FiberState>(pointer_from_this<" << type->name << ">()");
     for (auto iter = parameters.begin(); iter != parameters.end(); ++iter) {

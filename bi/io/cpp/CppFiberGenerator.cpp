@@ -24,8 +24,8 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     in();
     line("namespace func {");
     out();
-    line(
-        "class " << o->name << "FiberState : public FiberState<" << o->returnType << "> {");
+    start("class " << o->name << "FiberState : ");
+    finish("public FiberState<" << o->returnType->unwrap() << "> {");
     line("public:");
     in();
   }
@@ -133,7 +133,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     line("namespace func {");
     out();
   }
-  start("bi::Fiber<" << o->returnType << "> ");
+  start(o->returnType);
   if (!header) {
     middle("bi::func::");
   }
@@ -143,7 +143,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   } else {
     finish(" {");
     in();
-    start("return Fiber<" << o->returnType << ">(make_object<");
+    start("return " << o->returnType << "(make_object<");
     middle(o->name << "FiberState>(");
     for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
       if (iter != o->params->begin()) {

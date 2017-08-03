@@ -579,22 +579,11 @@ void bi::CppBaseGenerator::visit(const List<Statement>* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Assignment* o) {
-  if (*o->name == "~") {
-    start(o->name << '(' << o->left << ", " << o->right << ')');
+  if (o->name->str() == "~") {
+    line(o->name << '(' << o->left << ", " << o->right << ");");
   } else {
-    //if (o->left->type->isClass() && !o->right->type->isClass()) {
-    //  start("*(" << o->left << ')');
-    //} else {
-      start(o->left);
-    //}
-    middle(" = ");
-    //if (!o->left->type->isClass() && o->right->type->isClass()) {
-    //  middle("*(" << o->right << ')');
-    //} else {
-      middle(o->right);
-    //}
+    line(o->left << " = " << o->right << ';');
   }
-  finish(';');
 }
 
 void bi::CppBaseGenerator::visit(const ExpressionStatement* o) {

@@ -50,12 +50,31 @@ auto right_tilde_(const Left& left, const Right& right) {
  * Tilde (`~`) operator
  */
 template<class Left, class Right>
-auto tilde_(Left& left, const Right& right) {
+void tilde_(Left& left, const Right& right) {
   assert(left->isUninitialized_());
   if (!left->isMissing_()) {
     right_tilde_(left->value_(), right);
   }
   left = right;
+}
+
+/**
+ * Assignment (`<-`) operator.
+ */
+template<class Left, class Right, typename = std::enable_if_t<
+    std::is_base_of<Left,Right>::value || std::is_same<Left,Right>::value>>
+void assign_(Pointer<Left>& left, const Pointer<Right>& right) {
+  return left = right;
+}
+
+template<class Left, class Right>
+void assign_(Pointer<Left>& left, const Right& right) {
+  return *left = right;
+}
+
+template<class Left, class Right>
+void assign_(Left& left, const Right& right) {
+  return left = right;
 }
 
 /**
@@ -150,7 +169,7 @@ auto make_frame(const size_t arg, Args ... args) {
  * @ingroup library
  */
 template<class Tail, class Head, size_t length_value, ptrdiff_t stride_value,
-size_t lead_value>
+    size_t lead_value>
 auto make_frame(const NonemptyFrame<Tail,Head>& frame,
     const Span<length_value,stride_value,lead_value>& arg) {
   auto tail = frame;
@@ -340,8 +359,8 @@ auto make_array(const Frame& frame = EmptyFrame()) {
  *
  * @return Pointer to the object.
  */
-template<class Type, class... Args>
-Pointer<Type> make_object(Args... args) {
+template<class Type, class ... Args>
+Pointer<Type> make_object(Args ... args) {
   auto raw = new (GC_MALLOC(sizeof(Type))) Type(args...);
   return Pointer<Type>(raw);
 }

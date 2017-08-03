@@ -30,7 +30,7 @@ public:
   /**
    * Copy constructor. Fibers are copy-by-value.
    */
-  Fiber(const Fiber& o) :
+  Fiber(const Fiber<Type>& o) :
       Heap(o),
       state(o.state->clone()) {
     //
@@ -39,7 +39,7 @@ public:
   /**
    * Move constructor.
    */
-  Fiber(Fiber&& o) :
+  Fiber(Fiber<Type>&& o) :
       Heap(o),
       state(o.state) {
     o.state = nullptr;

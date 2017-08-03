@@ -122,17 +122,10 @@ void bi::CppBaseGenerator::genInit(const T* o) {
   } else if (o->type->isClass()) {
     ClassType* type = dynamic_cast<ClassType*>(o->type);
     assert(type);
-    if (!o->value->isEmpty()) {
-      middle('(');
-    }
-    middle(" = make_object<bi::type::" << type->name << '>');
-    if (o->parens->isEmpty()) {
-      middle("()");
-    } else {
-      middle(o->parens);
-    }
-    if (!o->value->isEmpty()) {
-      middle(')');
+    if (!o->parens->isEmpty()) {
+      middle(" = make_object<bi::type::" << type->name << '>' << o->parens);
+    } else if (o->value->isEmpty()) {
+      middle(" = make_object<bi::type::" << type->name << ">()");
     }
   }
   if (!o->value->isEmpty()) {

@@ -105,8 +105,7 @@ std::string bi::internalise(const std::string& name) {
   static std::unordered_map<std::string,std::string> ops, greeks;
   static bool init = false;
   if (!init) {
-    ops["<-"] = "left";
-    ops["->"] = "right";
+    ops["<-"] = "assign";
     ops["<~"] = "left_tilde";
     ops["~>"] = "right_tilde";
     ops["~"] = "tilde";
