@@ -21,6 +21,10 @@ public:
   virtual void visit(const MemberFiber* o);
   virtual void visit(const Identifier<MemberParameter>* o);
   virtual void visit(const Identifier<MemberVariable>* o);
+  virtual void visit(const OverloadedIdentifier<MemberFunction>* o);
+  virtual void visit(const OverloadedIdentifier<MemberFiber>* o);
+  virtual void visit(const Member* o);
+  virtual void visit(const This* o);
 
 private:
   /**
@@ -32,5 +36,10 @@ private:
    * Current state index.
    */
   int state;
+
+  /**
+   * Are we in a membership expression?
+   */
+  int inMember;
 };
 }

@@ -128,12 +128,7 @@ void bi::CppBaseGenerator::visit(const Member* o) {
     // tidier this way
     middle("super_type::");
   } else {
-    middle(o->left);
-    if (o->left->type->isClass()) {
-      middle("->");
-    } else {
-      middle('.');
-    }
+    middle(o->left << "->");
   }
   middle(o->right);
 }

@@ -3,11 +3,12 @@
  */
 #include "bi/io/cpp/CppMemberFiberGenerator.hpp"
 
-bi::CppMemberFiberGenerator::CppMemberFiberGenerator(
-    const Class* type, std::ostream& base, const int level, const bool header) :
+bi::CppMemberFiberGenerator::CppMemberFiberGenerator(const Class* type,
+    std::ostream& base, const int level, const bool header) :
     CppFiberGenerator(base, level, header),
     type(type),
-    state(0) {
+    state(0),
+    inMember(0) {
   //
 }
 
@@ -141,12 +142,50 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   }
 }
 
-void bi::CppMemberFiberGenerator::visit(
-    const Identifier<MemberVariable>* o) {
-  middle("self->" << o->name);
+void bi::CppMemberFiberGenerator::visit(const Identifier<MemberVariable>* o) {
+  if (!inMember) {
+    middle("self->");
+  }
+  middle(o->name);
 }
 
 void bi::CppMemberFiberGenerator::visit(
     const Identifier<MemberParameter>* o) {
-  middle("self->" << o->name);
+  if (!inMember) {
+    middle("self->");
+  }
+  middle(o->name);
+}
+
+void bi::CppMemberFiberGenerator::visit(
+    const OverloadedIdentifier<MemberFunction>* o) {
+  if (!inMember) {
+    middle("self->");
+  }
+  middle(o->name);
+}
+
+void bi::CppMemberFiberGenerator::visit(
+    const OverloadedIdentifier<MemberFiber>* o) {
+  if (!inMember) {
+    middle("self->");
+  }
+  middle(o->name);
+}
+
+void bi::CppMemberFiberGenerator::visit(const Member* o) {
+  ++inMember;
+  const Super* leftSuper = dynamic_cast<const Super*>(o->left);
+  if (leftSuper) {
+    // tidier this way
+    middle("super_type::");
+  } else {
+    middle(o->left << "->");
+  }
+  middle(o->right);
+  --inMember;
+}
+
+void bi::CppMemberFiberGenerator::visit(const This* o) {
+  middle("self");
 }
