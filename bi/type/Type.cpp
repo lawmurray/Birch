@@ -68,6 +68,11 @@ bi::Type* bi::Type::getRight() const {
   return nullptr;
 }
 
+bi::Type* bi::Type::unwrap() const {
+  assert(false);
+  return nullptr;
+}
+
 bi::Type* bi::Type::resolve(Type* args) {
   throw InvalidCallException(args);
 }

@@ -52,12 +52,14 @@ birchc_SOURCES = \
   bi/exception/CyclicImportException.cpp \
   bi/exception/Exception.cpp \
   bi/exception/FileNotFoundException.cpp \
+  bi/exception/GetException.cpp \
   bi/exception/InvalidAssignmentException.cpp \
   bi/exception/InvalidCallException.cpp \
   bi/exception/MemberException.cpp \
   bi/exception/NotAssignableException.cpp \
   bi/exception/NotFunctionException.cpp \
   bi/exception/PreviousDeclarationException.cpp \
+  bi/exception/QueryException.cpp \
   bi/exception/SuperException.cpp \
   bi/exception/SuperBaseException.cpp \
   bi/exception/ThisException.cpp \
@@ -226,12 +228,14 @@ noinst_HEADERS = \
   bi/exception/CyclicImportException.hpp \
   bi/exception/DriverException.hpp \
   bi/exception/FileNotFoundException.hpp \
+  bi/exception/GetException.hpp \
   bi/exception/InvalidAssignmentException.hpp \
   bi/exception/InvalidCallException.hpp \
   bi/exception/MemberException.hpp \
   bi/exception/NotAssignableException.hpp \
   bi/exception/NotFunctionException.hpp \
   bi/exception/PreviousDeclarationException.hpp \
+  bi/exception/QueryException.hpp \
   bi/exception/SuperBaseException.hpp \
   bi/exception/SuperException.hpp \
   bi/exception/ThisException.hpp \

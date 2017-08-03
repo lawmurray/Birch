@@ -138,6 +138,7 @@ IS                                 (u|U|l|L)*
 "~>"                                { return RIGHT_TILDE_OP; }
 "~"                                 { return '~'; }
 ".."                                { return RANGE_OP; }
+"?"                                 { return '?'; }
 "!"                                 { return '!'; }
 "&&"                                { return AND_OP; }
 "||"                                { return OR_OP; }

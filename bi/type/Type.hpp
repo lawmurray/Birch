@@ -136,6 +136,12 @@ public:
   virtual Type* getRight() const;
 
   /**
+   * For an optional or fiber type, the type that is wrapped, otherwise
+   * undefined.
+   */
+  virtual Type* unwrap() const;
+
+  /**
    * Resolve a call.
    *
    * @param args Argument types.

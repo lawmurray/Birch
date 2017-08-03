@@ -34,6 +34,7 @@ public:
   virtual void accept(Visitor* visitor) const;
 
   virtual bool isFiber() const;
+  virtual Type* unwrap() const;
 
   using Type::definitely;
   using Type::possibly;

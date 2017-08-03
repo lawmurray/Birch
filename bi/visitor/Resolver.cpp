@@ -118,13 +118,22 @@ bi::Expression* bi::Resolver::modify(Slice* o) {
 
 bi::Expression* bi::Resolver::modify(Query* o) {
   Modifier::modify(o);
-  ///@todo Check that expression is of type optional or fiber, return type boolean
+  if (o->single->type->isFiber() || o->single->type->isOptional()) {
+    o->type = new BasicType(new Name("Boolean"), o->loc);
+    o->type = o->type->accept(this);
+  } else {
+    throw QueryException(o);
+  }
   return o;
 }
 
 bi::Expression* bi::Resolver::modify(Get* o) {
   Modifier::modify(o);
-  ///@todo Check that expression is of type optional or fiber, return type
+  if (o->single->type->isFiber() || o->single->type->isOptional()) {
+    o->type = o->single->type->unwrap()->accept(&cloner)->accept(this);
+  } else {
+    throw GetException(o);
+  }
   return o;
 }
 

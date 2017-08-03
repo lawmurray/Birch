@@ -31,6 +31,10 @@ bool bi::FiberType::isFiber() const {
   return true;
 }
 
+bi::Type* bi::FiberType::unwrap() const {
+  return single;
+}
+
 bool bi::FiberType::dispatchDefinitely(const Type& o) const {
   return o.definitely(*this);
 }

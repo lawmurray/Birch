@@ -32,6 +32,10 @@ bool bi::OptionalType::isOptional() const {
   return true;
 }
 
+bi::Type* bi::OptionalType::unwrap() const {
+  return single;
+}
+
 bool bi::OptionalType::dispatchDefinitely(const Type& o) const {
   return o.definitely(*this);
 }
