@@ -164,7 +164,10 @@ void bi::CppClassGenerator::visit(const ConversionOperator* o) {
     if (!header) {
       start("bi::type::" << type->name << "::");
     } else {
-      start("");
+      /* user-defined conversions should be marked explicit to work properly
+       * with the Pointer class in the compiler library; see also
+       * has_conversion */
+      start("explicit ");
     }
     middle("operator " << o->returnType << "()");
     if (header) {

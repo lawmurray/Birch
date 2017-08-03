@@ -3,6 +3,8 @@
  */
 #pragma once
 
+#include "bi/lib/global.hpp"
+
 namespace bi {
 /**
  * Smart pointer for global and fiber-local objects, with copy-on-write
@@ -38,6 +40,20 @@ public:
    */
   template<class U>
   Pointer(const Pointer<U>& o);
+
+  /**
+   * Conversions. This allows pointers to be passed as arguments to functions
+   * with value type parameters, where the type of the object pointed to has
+   * a conversion to the value type.
+   *
+   * @seealso has_conversion
+   */
+  template<class U, typename = std::enable_if_t<has_conversion<T,U>::value>>
+  operator U() {
+    /* conversion operators in generated code are marked explicit, so the
+     * cast is necessary here */
+    return static_cast<U>(*get());
+  }
 
   /**
    * Get the raw pointer.
@@ -105,7 +121,6 @@ private:
 };
 }
 
-#include "bi/lib/global.hpp"
 #include "bi/lib/Fiber.hpp"
 
 template<class T>
