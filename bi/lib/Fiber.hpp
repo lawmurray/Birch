@@ -71,7 +71,7 @@ public:
   bool query() {
     Heap* yieldTo = currentFiber;
     currentFiber = this;
-    bool result = state->run();
+    bool result = state->query();
     currentFiber = yieldTo;
     return result;
   }

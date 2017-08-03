@@ -91,7 +91,11 @@ void bi::CppBaseGenerator::visit(const Slice* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Query* o) {
-  middle(o->single);
+  if (o->single->type->isOptional()) {
+    middle(o->single);
+  } else {
+    middle(o->single << ".query()");
+  }
 }
 
 void bi::CppBaseGenerator::visit(const Get* o) {
