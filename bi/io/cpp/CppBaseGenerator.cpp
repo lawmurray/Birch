@@ -432,8 +432,6 @@ void bi::CppBaseGenerator::visit(const Program* o) {
           auto type = dynamic_cast<Named*>((*iter)->type);
           assert(type);
           line(name << " = bi::func::" << type->name << "(optarg);");
-        } else if ((*iter)->type->isClass()) {
-          line('*' << name << " = optarg;");
         } else {
           line(name << " = optarg;");
         }
