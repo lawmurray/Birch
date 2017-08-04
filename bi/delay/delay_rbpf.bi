@@ -18,12 +18,12 @@ class Example(T:Integer) {
   y_l:MultivariateGaussian[T](1);  // linear observation
 
   fiber simulate() -> Real! {
+    t:Integer <- 1;
     input();
     parameter();
     initial();
-    
-    t:Integer;
-    for (t in 1..T) {
+    yield observation(t);
+    for (t in 2..T) {
       transition(t);
       yield observation(t);
     }
@@ -106,6 +106,15 @@ class Example(T:Integer) {
   }
 }
 
+fiber particle(T:Integer) -> Real! {
+  x:Example(T);
+  w:Real;
+  f:Real! <- x.simulate();
+  while (f?) {
+    yield f!;  
+  }
+}
+
 /**
  * Demonstrates a particle filter over a nonlinear state-space model with
  * linear substructure. With delayed sampling enabled, this automatically
@@ -118,13 +127,13 @@ class Example(T:Integer) {
  * `initial` and `transition` functions of the `Example` class.
  */
 program delay_rbpf(N:Integer <- 100, T:Integer <- 10) {  
-  x:Real![N];  // particles
-  w:Real[N];         // log-weights
-  a:Integer[N];      // ancestor indices
-  W:Real <- 0.0;     // marginal likelihood
+  x:Real![N];     // particles
+  w:Real[N];      // log-weights
+  a:Integer[N];   // ancestor indices
+  W:Real <- 0.0;  // marginal likelihood
   
   n:Integer;
-  t:Integer;
+  t:Integer <- 1;
 
   /* initialize */
   for (n in 1..N) {
@@ -147,10 +156,12 @@ program delay_rbpf(N:Integer <- 100, T:Integer <- 10) {
     }
     
     /* propagate and weight */
-    if (x[n]?) {
-      w[n] <- x[n]!;
-    } else {
-      w[n] <- -inf;
+    for (n in 1..N) {
+      if (x[n]?) {
+        w[n] <- x[n]!;
+      } else {
+        w[n] <- -inf;
+      }
     }
     
     /* marginal log-likelihood estimate */
@@ -163,14 +174,4 @@ program delay_rbpf(N:Integer <- 100, T:Integer <- 10) {
   print(",");
   print(N);
   print("\n");
-}
-
-fiber particle(T:Integer) -> Real! {
-  x:Example(T);
-  w:Real;
-  
-  f:Real! <- x.simulate();
-  while (f?) {
-    yield f!;  
-  }
 }

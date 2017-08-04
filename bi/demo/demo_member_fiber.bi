@@ -1,6 +1,6 @@
 program demo_member_fiber(N:Integer <- 10) {
   a:A(1, N);
-  b:Integer! <- a.f();
+  b:Real! <- a.f();
   while (b?) {
     print(b!);
     print("\n");
@@ -8,10 +8,12 @@ program demo_member_fiber(N:Integer <- 10) {
 }
 
 class A(from:Integer, to:Integer) {
-  fiber f() -> Integer! {
+  fiber f() -> Real! {
     n:Integer;
+    x:Real;
     for (n in from..to) {
-      yield n;
+      x <~ Gaussian(0.0, 1.0);
+      yield x;
     }
   }
 }
