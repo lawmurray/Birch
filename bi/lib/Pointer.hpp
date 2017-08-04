@@ -160,7 +160,7 @@ private:
 
 template<class T>
 bi::Pointer<T>::Pointer(T* raw) {
-  if (currentFiber) {
+  if (currentFiber && raw) {
     ptr = nullptr;
     index = currentFiber->put(raw);
     raw->setIndex(index);
@@ -173,7 +173,7 @@ bi::Pointer<T>::Pointer(T* raw) {
 template<class T>
 template<class U>
 bi::Pointer<T>::Pointer(U* raw) {
-  if (currentFiber) {
+  if (currentFiber && raw) {
     ptr = nullptr;
     index = currentFiber->put(raw);
     raw->setIndex(index);
@@ -193,7 +193,7 @@ bi::Pointer<T>::Pointer(const Pointer<U>& o) :
 
 template<class T>
 bi::Pointer<T>& bi::Pointer<T>::operator=(T* raw) {
-  if (currentFiber) {
+  if (currentFiber && raw) {
     ptr = nullptr;
     index = currentFiber->put(raw);
     raw->setIndex(index);
