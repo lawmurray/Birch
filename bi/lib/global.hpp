@@ -29,7 +29,7 @@ static constexpr size_t default_value = std::numeric_limits<size_t>::max();
  * Currently running fiber. If there is no currently running fiber, then
  * @c nullptr.
  */
-extern Heap* currentFiber;
+extern Heap* fiberHeap;
 
 /**
  * Does type @p T have a conversion operator to type @p U?

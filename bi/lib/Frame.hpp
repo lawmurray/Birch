@@ -183,6 +183,10 @@ struct NonemptyFrame {
   auto operator()(
       const NonemptyView<Tail1,
           Range<other_offset_value,other_length_value,other_stride_value>>& o) const {
+    /* pre-conditions */
+    assert(o.head.offset >= 0);
+    assert((o.head.length - 1)*o.head.stride < head.length);
+
     return NonemptyFrame<decltype(tail(o.tail)),decltype(head(o.head))>(
         tail(o.tail), head(o.head));
   }
@@ -193,6 +197,9 @@ struct NonemptyFrame {
   template<class Tail1, ptrdiff_t other_offset_value>
   auto operator()(
       const NonemptyView<Tail1,Index<other_offset_value>>& o) const {
+    /* pre-condition */
+    assert(o.head.offset >= 0 && o.head.offset < head.length);
+
     return tail(o.tail) * head.lead;
   }
 

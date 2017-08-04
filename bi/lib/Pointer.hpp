@@ -160,9 +160,9 @@ private:
 
 template<class T>
 bi::Pointer<T>::Pointer(T* raw) {
-  if (currentFiber && raw) {
+  if (fiberHeap && raw) {
     ptr = nullptr;
-    index = currentFiber->put(raw);
+    index = fiberHeap->put(raw);
     raw->setIndex(index);
   } else {
     ptr = raw;
@@ -173,9 +173,9 @@ bi::Pointer<T>::Pointer(T* raw) {
 template<class T>
 template<class U>
 bi::Pointer<T>::Pointer(U* raw) {
-  if (currentFiber && raw) {
+  if (fiberHeap && raw) {
     ptr = nullptr;
-    index = currentFiber->put(raw);
+    index = fiberHeap->put(raw);
     raw->setIndex(index);
   } else {
     ptr = raw;
@@ -193,9 +193,9 @@ bi::Pointer<T>::Pointer(const Pointer<U>& o) :
 
 template<class T>
 bi::Pointer<T>& bi::Pointer<T>::operator=(T* raw) {
-  if (currentFiber && raw) {
+  if (fiberHeap && raw) {
     ptr = nullptr;
-    index = currentFiber->put(raw);
+    index = fiberHeap->put(raw);
     raw->setIndex(index);
   } else {
     ptr = raw;
@@ -215,13 +215,13 @@ template<class T>
 T* bi::Pointer<T>::get() {
   T* raw;
   if (index >= 0) {
-    assert(currentFiber);
-    raw = static_cast<T*>(currentFiber->get(index));
+    assert(fiberHeap);
+    raw = static_cast<T*>(fiberHeap->get(index));
     if (raw->isShared()) {
       /* shared and writeable, copy now (copy-on-write) */
       raw->disuse();
       raw = raw->clone();
-      currentFiber->set(index, raw);
+      fiberHeap->set(index, raw);
     }
   } else {
     raw = ptr;
@@ -233,8 +233,8 @@ template<class T>
 T* const bi::Pointer<T>::get() const {
   T* raw;
   if (index >= 0) {
-    assert(currentFiber);
-    raw = static_cast<T*>(currentFiber->get(index));
+    assert(fiberHeap);
+    raw = static_cast<T*>(fiberHeap->get(index));
   } else {
     raw = ptr;
   }
@@ -245,5 +245,5 @@ template<class T>
 bi::Pointer<T>::Pointer(T* raw, intptr_t index) :
     ptr(index <= 0 ? raw : nullptr),
     index(index) {
-  assert(index <= 0 || currentFiber->get(index) == raw);
+  assert(index <= 0 || fiberHeap->get(index) == raw);
 }

@@ -15,13 +15,15 @@ namespace bi {
  * @tparam Type Return type.
  */
 template<class Type>
-class Fiber: public Heap {
+class Fiber {
 public:
   /**
    * Default constructor.
    */
   Fiber() {
-    //
+    if (fiberHeap) {
+      heap = *fiberHeap;
+    }
   }
 
   /**
@@ -50,10 +52,10 @@ public:
    * @return Was a value yielded?
    */
   bool query() {
-    Heap* yieldTo = currentFiber;
-    currentFiber = this;
+    Heap* callerHeap = fiberHeap;
+    fiberHeap = &heap;
     bool result = state->query();
-    currentFiber = yieldTo;
+    fiberHeap = callerHeap;
     return result;
   }
 
@@ -61,17 +63,17 @@ public:
    * Get the last yield value.
    */
   Type& get() {
-    Heap* yieldTo = currentFiber;
-    currentFiber = this;
+    Heap* callerHeap = fiberHeap;
+    fiberHeap = &heap;
     Type& result = state->get();
-    currentFiber = yieldTo;
+    fiberHeap = callerHeap;
     return result;
   }
   const Type& get() const {
-    Heap* yieldTo = currentFiber;
-    currentFiber = this;
+    Heap* callerHeap = fiberHeap;
+    fiberHeap = &heap;
     const Type& result = state->get();
-    currentFiber = yieldTo;
+    fiberHeap = callerHeap;
     return result;
   }
 
@@ -79,5 +81,10 @@ public:
    * Fiber state.
    */
   Pointer<FiberState<Type>> state;
+
+  /**
+   * Fiber heap.
+   */
+  Heap heap;
 };
 }
