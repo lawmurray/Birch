@@ -1,68 +1,7 @@
 /**
- * Demonstrates a particle filter over a nonlinear state-space model with
- * linear substructure. With delayed sampling enabled, this automatically
- * yields a Rao--Blackwellized particle filter with locally-optimal proposal.
- *
- * `N` Number of particles.
- * `T` Number of time steps.
- *
- * To disable delayed sampling, change the `~` operators to `<~` in the
- * `initial` and `transition` functions of the `Example` class.
- */
-program delay_rbpf(N:Integer <- 100, T:Integer <- 10) {  
-  x:Example[N](T);
-  w:Real[N];
-  a:Integer[N];
-  W:Real <- 0.0;
-  n:Integer;
-  t:Integer;
-
-  /* initialize */
-  for (n in 1..N) {
-    x[n].input(T);
-    x[n].parameter();
-    x[n].initial();
-    w[n] <- x[n].observation(1);
-  }
-  W <- log_sum_exp(w) - log(Real(N));
-  
-  for (t in 2..T) {
-    /* resample */
-    a <- ancestors(w);
-    for (n in 1..N) {
-      if (a[n] != n) {
-        x[n].copy(x[a[n]], t - 1);
-      }
-    }
-    
-    /* propagate and weight */
-    for (n in 1..N) {
-      x[n].transition(t);
-      w[n] <- x[n].observation(t);
-    }
-    
-    /* marginal log-likelihood estimate */
-    W <- W + log_sum_exp(w) - log(Real(N));
-  }
-    
-  /* output */
-  s:Integer <- ancestor(w);
-  for (t in 1..T) {
-    x[s].output(t);
-    print(",");
-  }
-  print(W);
-  print(",");
-  print(N);
-  print("\n");
-}
-
-/**
  * The state-space model.
  */
-class Example(T1:Integer) {
-  T:Integer <- T1;
-
+class Example(T:Integer) {
   Σ_x_l:Real[3,3];  // linear state noise covariance
   Σ_x_n:Real[1,1];  // nonlinear state noise covariance
   Σ_y_l:Real[1,1];  // linear observation noise covariance
@@ -77,6 +16,18 @@ class Example(T1:Integer) {
   
   y_n:MultivariateGaussian[T](1);  // nonlinear observation
   y_l:MultivariateGaussian[T](1);  // linear observation
+
+  fiber simulate() -> Real! {
+    input();
+    parameter();
+    initial();
+    
+    t:Integer;
+    for (t in 1..T) {
+      transition(t);
+      yield observation(t);
+    }
+  }
 
   function parameter() {
     A[1,1] <- 1.0;
@@ -129,7 +80,7 @@ class Example(T1:Integer) {
     return y_n[t].w + y_l[t].w;
   }
   
-  function input(T:Integer) {
+  function input() {
     v:Real[T];
     t:Integer;
 
@@ -144,27 +95,82 @@ class Example(T1:Integer) {
     }
   }
   
-  function output(t:Integer) {
-    print(x_n[t]);
-    print(", ");
-    print(x_l[t]);
+  function output() {
+    t:Integer;
+    for (t in 1..T) {
+      print(x_n[t]);
+      print(", ");
+      print(x_l[t]);
+      print(", ");
+    }
+  }
+}
+
+/**
+ * Demonstrates a particle filter over a nonlinear state-space model with
+ * linear substructure. With delayed sampling enabled, this automatically
+ * yields a Rao--Blackwellized particle filter with locally-optimal proposal.
+ *
+ * `N` Number of particles.
+ * `T` Number of time steps.
+ *
+ * To disable delayed sampling, change the `~` operators to `<~` in the
+ * `initial` and `transition` functions of the `Example` class.
+ */
+program delay_rbpf(N:Integer <- 100, T:Integer <- 10) {  
+  x:Real![N];  // particles
+  w:Real[N];         // log-weights
+  a:Integer[N];      // ancestor indices
+  W:Real <- 0.0;     // marginal likelihood
+  
+  n:Integer;
+  t:Integer;
+
+  /* initialize */
+  for (n in 1..N) {
+    x[n] <- particle(T);
+    if (x[n]?) {
+      w[n] <- x[n]!;
+    } else {
+      w[n] <- -inf;
+    }
+  }
+  W <- log_sum_exp(w) - log(Real(N));
+  
+  for (t in 2..T) {
+    /* resample */
+    a <- ancestors(w);
+    for (n in 1..N) {
+      if (a[n] != n) {
+        x[n] <- x[a[n]];
+      }
+    }
+    
+    /* propagate and weight */
+    if (x[n]?) {
+      w[n] <- x[n]!;
+    } else {
+      w[n] <- -inf;
+    }
+    
+    /* marginal log-likelihood estimate */
+    W <- W + log_sum_exp(w) - log(Real(N));
   }
     
-  function copy(o:Example, t:Integer) {    
-    Σ_x_l <- o.Σ_x_l;
-    Σ_x_n <- o.Σ_x_n;
-    Σ_y_l <- o.Σ_y_l;
-    Σ_y_n <- o.Σ_y_n;
-    A <- o.A;
-    B <- o.B;
-    C <- o.C;
-    
-    s:Integer;
-    for (s in 1..t) {
-      x_n[s].copy(o.x_n[s]);
-      x_l[s].copy(o.x_l[s]);
-      y_n[s].copy(o.y_n[s]);
-      y_l[s].copy(o.y_l[s]);
-    }
+  /* output */
+  //x[ancestor(w)].output();
+  print(W);
+  print(",");
+  print(N);
+  print("\n");
+}
+
+fiber particle(T:Integer) -> Real! {
+  x:Example(T);
+  w:Real;
+  
+  f:Real! <- x.simulate();
+  while (f?) {
+    yield f!;  
   }
 }

@@ -3,11 +3,12 @@ bi/delay/delay_kalman.bi
 bi/delay/delay_rbpf.bi
 bi/delay/delay_spike_and_slab.bi
 bi/delay/delay_triplet.bi
+bi/demo/demo_echo.bi
+bi/demo/demo_fiber.bi
+bi/demo/demo_hello.bi
+bi/demo/demo_lambda.bi
+bi/demo/demo_member_fiber.bi
 bi/eigen/eigen_matrix.bi
 bi/eigen/eigen_vector.bi
-bi/fundamentals/demo_coroutine.bi
-bi/fundamentals/demo_echo.bi
-bi/fundamentals/demo_hello.bi
-bi/fundamentals/demo_lambda.bi
 MANIFEST
 META.md
