@@ -37,8 +37,8 @@ protected:
   Gatherer<LocalVariable> locals;
 
   /**
-   * Current state index.
+   * Current label.
    */
-  int state;
+  int label;
 };
 }

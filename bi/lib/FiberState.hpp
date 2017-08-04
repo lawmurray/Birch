@@ -20,8 +20,8 @@ public:
    * Constructor.
    */
   FiberState() :
-      state(0),
-      nstates(0) {
+      label(0),
+      nlabels(0) {
     //
   }
 
@@ -59,13 +59,13 @@ protected:
   Type value;
 
   /**
-   * State.
+   * Label to which to jump on next query.
    */
-  int state;
+  int label;
 
   /**
-   * Number of states.
+   * Number of labels.
    */
-  int nstates;
+  int nlabels;
 };
 }

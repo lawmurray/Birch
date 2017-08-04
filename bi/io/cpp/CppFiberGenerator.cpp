@@ -8,7 +8,7 @@
 bi::CppFiberGenerator::CppFiberGenerator(std::ostream& base,
     const int level, const bool header) :
     CppBaseGenerator(base, level, header),
-    state(0) {
+    label(0) {
   //
 }
 
@@ -52,7 +52,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     }
     finish(" {");
     in();
-    line("nstates = " << (yields.size() + 1) << ';');
+    line("nlabels = " << (yields.size() + 1) << ';');
     out();
     line("}\n");
   }
@@ -170,10 +170,10 @@ void bi::CppFiberGenerator::visit(const Return* o) {
 
 void bi::CppFiberGenerator::visit(const Yield* o) {
   line("value = " << o->single << ';');
-  line("state = " << state << ';');
+  line("label = " << label << ';');
   line("return true;");
-  line("STATE" << state << ": ;");
-  ++state;
+  line("LABEL" << label << ": ;");
+  ++label;
 }
 
 void bi::CppFiberGenerator::visit(const Identifier<LocalVariable>* o) {
@@ -190,20 +190,20 @@ void bi::CppFiberGenerator::visit(const LocalVariable* o) {
 }
 
 void bi::CppFiberGenerator::genSwitch() {
-  line("switch (state) {");
+  line("switch (label) {");
   in();
   for (int s = 0; s <= yields.size(); ++s) {
-    line("case " << s << ": goto STATE" << s << ';');
+    line("case " << s << ": goto LABEL" << s << ';');
   }
   line("default: goto END;");
   out();
   line('}');
-  line("STATE0:");
-  ++state;
+  line("LABEL0:");
+  ++label;
 }
 
 void bi::CppFiberGenerator::genEnd() {
   line("END:");
-  line("state = " << (yields.size() + 1) << ';');
+  line("label = " << (yields.size() + 1) << ';');
   line("return false;");
 }

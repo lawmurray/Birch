@@ -207,7 +207,7 @@ bi::Pointer<T>& bi::Pointer<T>::operator=(T* raw) {
 template<class T>
 template<class U>
 bi::Pointer<T>& bi::Pointer<T>::operator=(const U& o) {
-  *this = o;
+  *get() = o;
   return *this;
 }
 

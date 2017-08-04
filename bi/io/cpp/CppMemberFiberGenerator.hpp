@@ -33,11 +33,6 @@ private:
   const Class* type;
 
   /**
-   * Current state index.
-   */
-  int state;
-
-  /**
    * Are we in a membership expression?
    */
   int inMember;

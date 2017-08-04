@@ -367,15 +367,22 @@ Type* copy_object(Type* o) {
  *
  * @tparam YieldType The yield type of the fiber.
  * @tparam StateType The state type of the fiber.
- * @tparam Args Constructor parameter types.
+ * @tparam Args Fiber state constructor parameter types.
  *
- * @param args Constructor arguments.
+ * @param args Fiber state constructor arguments.
+ *
+ * For a member fiber, the first argument should be a raw pointer to the
+ * containing object.
  */
 template<class YieldType, class StateType, class... Args>
 static Fiber<YieldType> make_fiber(Args... args) {
+  /* the key here is to ensure that both the internal fiber state, and the
+   * pointer to the containing object (for a member fiber), are relative to
+   * the new fiber's heap, and not that of the calling fiber, or the
+   * process */
   Fiber<YieldType> fiber;
   Heap* yieldTo = currentFiber;
-  currentFiber = &fiber;  // ensures state is allocated fiber-local
+  currentFiber = &fiber;  // ensures on the new fiber's heap
   fiber.state = make_object<StateType>(args...);
   currentFiber = yieldTo;
   return fiber;

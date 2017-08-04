@@ -7,7 +7,6 @@ bi::CppMemberFiberGenerator::CppMemberFiberGenerator(const Class* type,
     std::ostream& base, const int level, const bool header) :
     CppFiberGenerator(base, level, header),
     type(type),
-    state(0),
     inMember(0) {
   //
 }
@@ -51,7 +50,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     out();
     finish(" {");
     in();
-    line("nstates = " << (yields.size() + 1) << ';');
+    line("nlabels = " << (yields.size() + 1) << ';');
     out();
     line("}\n");
   }
@@ -129,8 +128,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   } else {
     finish(" {");
     in();
-    start("return make_fiber<" << o->returnType->unwrap() << ',' << o->name << "FiberState>(");
-    middle("pointer_from_this<" << type->name << ">()");
+    start("return make_fiber<" << o->returnType->unwrap() << ',' << o->name << "FiberState>(this");
     for (auto iter = parameters.begin(); iter != parameters.end(); ++iter) {
       middle(", ");
       middle((*iter)->name);

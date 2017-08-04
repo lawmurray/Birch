@@ -8,6 +8,8 @@
 #include <vector>
 #include <gc/gc_allocator.h>
 
+#include <iostream>
+
 namespace bi {
 /**
  * Heap-local heap.
