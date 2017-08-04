@@ -119,7 +119,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   }
 
   /* initialisation function */
-  start(o->returnType);
+  start(o->returnType << ' ');
   if (!header) {
     middle("bi::type::" << type->name << "::");
   }
@@ -129,14 +129,13 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   } else {
     finish(" {");
     in();
-    start("return " << o->returnType << "(make_object<");
-    middle(
-        o->name << "FiberState>(pointer_from_this<" << type->name << ">()");
+    start("return make_fiber<" << o->returnType->unwrap() << ',' << o->name << "FiberState>(");
+    middle("pointer_from_this<" << type->name << ">()");
     for (auto iter = parameters.begin(); iter != parameters.end(); ++iter) {
       middle(", ");
       middle((*iter)->name);
     }
-    finish("));");
+    finish(");");
     out();
     finish("}\n");
   }

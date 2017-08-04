@@ -133,7 +133,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     line("namespace func {");
     out();
   }
-  start(o->returnType);
+  start(o->returnType << ' ');
   if (!header) {
     middle("bi::func::");
   }
@@ -143,8 +143,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   } else {
     finish(" {");
     in();
-    start("return " << o->returnType << "(make_object<");
-    middle(o->name << "FiberState>(");
+    start("return make_fiber<" << o->returnType->unwrap() << ',' << o->name << "FiberState>(");
     for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
       if (iter != o->params->begin()) {
         middle(", ");
@@ -153,7 +152,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       assert(param);
       middle(param->name);
     }
-    finish("));");
+    finish(");");
     out();
     finish("}\n");
   }

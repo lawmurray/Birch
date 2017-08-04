@@ -59,25 +59,6 @@ void tilde_(Left& left, const Right& right) {
 }
 
 /**
- * Assignment (`<-`) operator.
- */
-template<class Left, class Right, typename = std::enable_if_t<
-    std::is_base_of<Left,Right>::value || std::is_same<Left,Right>::value>>
-void assign_(Pointer<Left>& left, const Pointer<Right>& right) {
-  return left = right;
-}
-
-template<class Left, class Right>
-void assign_(Pointer<Left>& left, const Right& right) {
-  return *left = right;
-}
-
-template<class Left, class Right>
-void assign_(Left& left, const Right& right) {
-  return left = right;
-}
-
-/**
  * Make a span.
  *
  * @ingroup library
@@ -353,7 +334,7 @@ auto make_array(const Frame& frame = EmptyFrame()) {
  * @ingroup library
  *
  * @tparam Type Value type.
- * @tparam Args Argument types.
+ * @tparam Args Constructor parameter types.
  *
  * @param args Constructor arguments.
  *
@@ -379,5 +360,24 @@ Pointer<Type> make_object(Args ... args) {
 template<class Type>
 Type* copy_object(Type* o) {
   return new (GC_MALLOC(sizeof(Type))) Type(*o);
+}
+
+/**
+ * Make a fiber.
+ *
+ * @tparam YieldType The yield type of the fiber.
+ * @tparam StateType The state type of the fiber.
+ * @tparam Args Constructor parameter types.
+ *
+ * @param args Constructor arguments.
+ */
+template<class YieldType, class StateType, class... Args>
+static Fiber<YieldType> make_fiber(Args... args) {
+  Fiber<YieldType> fiber;
+  Heap* yieldTo = currentFiber;
+  currentFiber = &fiber;  // ensures state is allocated fiber-local
+  fiber.state = make_object<StateType>(args...);
+  currentFiber = yieldTo;
+  return fiber;
 }
 }

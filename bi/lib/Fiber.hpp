@@ -18,50 +18,31 @@ template<class Type>
 class Fiber: public Heap {
 public:
   /**
-   * Constructor.
-   *
-   * @param state State of the fiber.
+   * Default constructor.
    */
-  Fiber(const Pointer<FiberState<Type>>& state = nullptr) :
-      state(state) {
+  Fiber() {
     //
   }
 
   /**
    * Copy constructor. Fibers are copy-by-value.
    */
-  Fiber(const Fiber<Type>& o) :
-      Heap(o),
-      state(o.state->clone()) {
-    //
-  }
+  Fiber(const Fiber<Type>& o) = default;
 
   /**
    * Move constructor.
    */
-  Fiber(Fiber<Type>&& o) :
-      Heap(o),
-      state(o.state) {
-    o.state = nullptr;
-  }
+  Fiber(Fiber<Type>&& o) = default;
 
   /**
    * Copy assignment.
    */
-  Fiber<Type>& operator=(const Fiber<Type>& o) {
-    Heap::operator=(o);
-    state = o.state->clone();
-    return *this;
-  }
+  Fiber<Type>& operator=(const Fiber<Type>& o) = default;
 
   /**
    * Move assignment.
    */
-  Fiber<Type>& operator=(Fiber<Type> && o) {
-    Heap::operator=(o);
-    std::swap(state, o.state);
-    return *this;
-  }
+  Fiber<Type>& operator=(Fiber<Type> && o) = default;
 
   /**
    * Run to next yield point.
@@ -80,13 +61,20 @@ public:
    * Get the last yield value.
    */
   Type& get() {
-    return state->get();
+    Heap* yieldTo = currentFiber;
+    currentFiber = this;
+    Type& result = state->get();
+    currentFiber = yieldTo;
+    return result;
   }
   const Type& get() const {
-    return state->get();
+    Heap* yieldTo = currentFiber;
+    currentFiber = this;
+    const Type& result = state->get();
+    currentFiber = yieldTo;
+    return result;
   }
 
-protected:
   /**
    * Fiber state.
    */

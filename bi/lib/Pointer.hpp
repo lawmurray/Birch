@@ -45,6 +45,17 @@ public:
   Pointer<T>& operator=(const Pointer<T>& o) = default;
 
   /**
+   * Generic assignment operator.
+   */
+  template<class U, typename = std::enable_if_t<
+      std::is_base_of<T,U>::value && !std::is_same<T,U>::value>>
+  Pointer<T>& operator=(const Pointer<U>& o) {
+    ptr = o.ptr;
+    index = o.index;
+    return *this;
+  }
+
+  /**
    * Raw pointer assignment operator.
    */
   Pointer<T>& operator=(T* raw);
@@ -59,7 +70,7 @@ public:
   }
 
   /**
-   * Generic assignment operator.
+   * Generic value assignment operator.
    */
   template<class U>
   Pointer<T>& operator=(const U& o);
@@ -196,7 +207,7 @@ bi::Pointer<T>& bi::Pointer<T>::operator=(T* raw) {
 template<class T>
 template<class U>
 bi::Pointer<T>& bi::Pointer<T>::operator=(const U& o) {
-  assign_(*this, o);
+  *this = o;
   return *this;
 }
 

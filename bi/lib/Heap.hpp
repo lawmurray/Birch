@@ -38,9 +38,7 @@ public:
   /**
    * Move constructor.
    */
-  Heap(Heap&& o) : heap() {
-    std::swap(heap, o.heap);
-  }
+  Heap(Heap&& o) = default;
 
   /**
    * Destructor.
@@ -94,10 +92,7 @@ public:
   /**
    * Move assignment.
    */
-  Heap& operator=(Heap&& o) {
-    std::swap(heap, o.heap);
-    return *this;
-  }
+  Heap& operator=(Heap&& o) = default;
 
   /**
    * Get an allocation.
