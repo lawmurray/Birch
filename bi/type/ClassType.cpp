@@ -49,28 +49,28 @@ bool bi::ClassType::definitely(const AliasType& o) const {
 }
 
 bool bi::ClassType::definitely(const ArrayType& o) const {
-  return target->hasConversion(&o);
+  return target->hasConversion(&o) || target->base->definitely(o);
 }
 
 bool bi::ClassType::definitely(const BasicType& o) const {
-  return target->hasConversion(&o);
+  return target->hasConversion(&o) || target->base->definitely(o);
 }
 
 bool bi::ClassType::definitely(const ClassType& o) const {
-  return target == o.target || target->hasSuper(&o)
-      || target->hasConversion(&o);
+  return target == o.target || target->hasConversion(&o)
+      || target->hasSuper(&o) || target->base->definitely(o);
 }
 
 bool bi::ClassType::definitely(const FiberType& o) const {
-  return target->hasConversion(&o);
+  return target->hasConversion(&o) || target->base->definitely(o);
 }
 
 bool bi::ClassType::definitely(const FunctionType& o) const {
-  return target->hasConversion(&o);
+  return target->hasConversion(&o) || target->base->definitely(o);
 }
 
 bool bi::ClassType::definitely(const ListType& o) const {
-  return target->hasConversion(&o);
+  return target->hasConversion(&o) || target->base->definitely(o);
 }
 
 bool bi::ClassType::definitely(const OptionalType& o) const {

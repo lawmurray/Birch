@@ -54,6 +54,11 @@ void bi::CppClassGenerator::visit(const Class* o) {
     line("}\n");
   }
 
+  /* ensure super type assignments are visible */
+  if (header) {
+    line("using super_type::operator=;\n");
+  }
+
   /* clone function */
   if (!header) {
     start("bi::type::");
@@ -136,11 +141,12 @@ void bi::CppClassGenerator::visit(const MemberFiber* o) {
 
 void bi::CppClassGenerator::visit(const AssignmentOperator* o) {
   if (!o->braces->isEmpty()) {
-    start("");
-    if (!header) {
-      middle("bi::type::");
+    if (header) {
+      start("virtual ");
+    } else {
+      start("bi::type::");
     }
-    start(type->name << "& ");
+    middle(type->name << "& ");
     if (!header) {
       middle("bi::type::" << type->name << "::");
     }
@@ -167,7 +173,7 @@ void bi::CppClassGenerator::visit(const ConversionOperator* o) {
       /* user-defined conversions should be marked explicit to work properly
        * with the Pointer class in the compiler library; see also
        * has_conversion */
-      start("explicit ");
+      start("virtual explicit ");
     }
     middle("operator " << o->returnType << "()");
     if (header) {
