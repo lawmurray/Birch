@@ -15,7 +15,7 @@ class Bernoulli {
    */
   function simulate() -> Boolean {
     cpp {{
-    return std::bernoulli_distribution(ρ)(rng);
+    return std::bernoulli_distribution(ρ_)(rng);
     }}
   }
 

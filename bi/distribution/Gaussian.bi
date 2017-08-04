@@ -1,21 +1,11 @@
-import distribution.Delay;
+import distribution.DelayReal;
 import math;
 import random;
 
 /**
  * Gaussian distribution.
  */
-class Gaussian < Delay {
-  /**
-   * Value.
-   */
-  x:Real;
-  
-  /**
-   * Weight.
-   */
-  w:Real;
-
+class Gaussian < DelayReal {
   /**
    * Mean.
    */
@@ -25,31 +15,6 @@ class Gaussian < Delay {
    * Variance.
    */
   σ2:Real;
-
-  /**
-   * Value assignment.
-   */
-  operator <- x:Real {
-    set(x);
-  }
-
-  /**
-   * String assignment.
-   */
-  operator <- s:String {
-    set(Real(s));
-  }
-
-  /**
-   * Value conversion.
-   */
-  operator -> Real {
-    if (isMissing()) {
-      graft();
-      realize();
-    }
-    return x;
-  }
 
   function initialize(u:Gaussian) {
     super.initialize(u);
@@ -69,33 +34,15 @@ class Gaussian < Delay {
     this.μ <- μ;
     this.σ2 <- σ2;
   }
-  
-  function set(x:Real) {
-    this.x <- x;
-    this.missing <- false;
-  }
-  
-  function simulate() -> Real {
-    //graft();
-    //realize();
-    cpp {{
-    return std::normal_distribution<double>(μ, ::sqrt(σ2))(rng);
-    }}
-  }
-
-  function observe(x:Real) -> Real {
-    //graft();
-    //set(x);
-    //realize();
-    return -0.5*(pow((x - μ), 2.0)/σ2 - log(σ2) - log(2.0*π));
-  }
 
   function doSample() {
-    set(simulate());
+    cpp {{
+    set_(std::normal_distribution<double>(μ_, ::sqrt(σ2_))(rng));
+    }}    
   }
   
   function doObserve() {
-    w <- observe(x);
+    setWeight(-0.5*(pow((x - μ), 2.0)/σ2 - log(σ2) - log(2.0*π)));
   }
 }
 

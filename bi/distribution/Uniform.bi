@@ -20,7 +20,7 @@ class Uniform {
    */
   function simulate() -> Real {
     cpp {{
-    return std::uniform_real_distribution<double>(l, u)(rng);
+    return std::uniform_real_distribution<double>(l_, u_)(rng);
     }}
   }
 

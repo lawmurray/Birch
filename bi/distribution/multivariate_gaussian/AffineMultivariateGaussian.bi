@@ -67,22 +67,6 @@ class AffineMultivariateGaussian(R:Integer, C:Integer) <
     K <- μ.Σ*transpose(A)*inverse(S);
     μ.update(μ.μ + K*(x - y), μ.Σ - K*A*μ.Σ);
   }
-
-  function copy(o:AffineMultivariateGaussian) {
-    super.copy(o);
-    A <- o.A;
-    μ.copy(o.μ);
-    c <- o.c;
-    Q <- o.Q;
-    y <- o.y;
-    S <- o.S;
-    
-    /* update graph edges */
-    setParent(μ);
-    if (isMarginalized()) {
-      μ.setChild(this);
-    }
-  }
 }
 
 function Gaussian(μ:MultivariateGaussian, Q:Real[_,_]) ->

@@ -17,6 +17,6 @@ std::mt19937_64 rng(std::time(0));
  */
 function seed(s:Integer) {
   cpp {{
-  rng.seed(s);
+  rng.seed(s_);
   }}
 }

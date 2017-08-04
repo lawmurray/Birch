@@ -23,37 +23,27 @@ class Delay {
   missing:Boolean <- true;
   
   /**
-   * Parent, if any.
+   * Parent.
    */
-  parent:Delay;
+  parent:Delay?;
   
   /**
    * Child, if one exists and it is on the stem.
    */
-  child:Delay;
-  
-  /**
-   * Is there a parent?
-   */
-  hasParent:Boolean <- false;
-  
-  /**
-   * Is there a child?
-   */
-  hasChild:Boolean <- false;
-  
+  child:Delay?;
+    
   /**
    * Is this a root node?
    */
   function isRoot() -> Boolean {
-    return !hasParent;
+    return !(parent?);
   }
   
   /**
    * Is this the terminal node of a stem?
    */
   function isTerminal() -> Boolean {
-    return isMarginalized() && !hasChild;
+    return isMarginalized() && !(child?);
   }
 
   /**
@@ -95,8 +85,6 @@ class Delay {
    * Initialize as a root node.
    */
   function initialize() {
-    this.hasParent <- false;
-    this.hasChild <- false;
     this.state <- MARGINALIZED;
   }
   
@@ -107,8 +95,6 @@ class Delay {
    */
   function initialize(parent:Delay) {
     this.parent <- parent;
-    this.hasParent <- true;
-    this.hasChild <- false;
     this.state <- INITIALIZED;
   }
   
@@ -117,7 +103,7 @@ class Delay {
    */
   function marginalize() {
     assert isInitialized();
-    assert hasParent;
+    assert parent?;
     
     doMarginalize();
     state <- MARGINALIZED;
@@ -140,15 +126,15 @@ class Delay {
     assert isInitialized() || isTerminal();
     
     state <- REALIZED;
-    if (hasParent) {
-      parent.removeChild();
+    if (parent?) {
+      parent!.removeChild();
     }
     if (missing) {
       doSample();
     } else {
       doObserve();
     }
-    if (hasParent && !parent.isRealized()) {
+    if (parent? && !(parent!.isRealized())) {
       doCondition();
     }
     removeParent();
@@ -159,13 +145,13 @@ class Delay {
    */
   function graft() {
     if (isMarginalized()) {
-      if (hasChild) {
-        child.prune();
+      if (child?) {
+        child!.prune();
         removeChild();
       }
     } else if (isInitialized()) {
-      parent.graft(this);
-      if (parent.isRealized()) {
+      parent!.graft(this);
+      if (parent!.isRealized()) {
         forward();
       } else {
         marginalize();
@@ -190,8 +176,8 @@ class Delay {
   function prune() {
     assert isMarginalized();
     
-    if (hasChild) {
-      child.prune();
+    if (child?) {
+      child!.prune();
       removeChild();
     }
     realize();
@@ -201,15 +187,14 @@ class Delay {
    * Set the parent.
    */
   function setParent(u:Delay) {
-    child <- u;
-    hasChild <- true;
+    parent <- u;
   }
 
   /**
    * Remove the parent.
    */
   function removeParent() {
-    hasParent <- false;
+    parent <- nil;
   }
 
   /**
@@ -217,14 +202,13 @@ class Delay {
    */
   function setChild(u:Delay) {
     child <- u;
-    hasChild <- true;
   }
 
   /**
    * Remove the child.
    */
   function removeChild() {
-    hasChild <- false;
+    child <- nil;
   }
   
   /*
@@ -244,12 +228,5 @@ class Delay {
   }
   function doCondition() {
     //
-  }
-  
-  function copy(o:Delay) {
-    state <- o.state;
-    missing <- o.missing;    
-    hasParent <- false;
-    hasChild <- false;
   }
 }

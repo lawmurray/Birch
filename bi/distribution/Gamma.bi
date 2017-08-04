@@ -20,7 +20,7 @@ class Gamma {
    */
   function simulate() -> Real {
     cpp {{
-    return std::gamma_distribution<double>(k, θ)(rng);
+    return std::gamma_distribution<double>(k_, θ_)(rng);
     }}
   }
 

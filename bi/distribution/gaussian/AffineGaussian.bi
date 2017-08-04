@@ -61,22 +61,6 @@ class AffineGaussian < Gaussian {
     k:Real <- μ.σ2*a/s;
     μ.update(μ.μ + k*(x - y), μ.σ2 - k*a*μ.σ2);
   }
-
-  function copy(o:AffineGaussian) {
-    super.copy(o);
-    a <- o.a;
-    μ.copy(o.μ);
-    c <- o.c;
-    q <- o.q;
-    y <- o.y;
-    s <- o.s;
-    
-    /* update graph edges */
-    setParent(μ);
-    if (isMarginalized()) {
-      μ.setChild(this);
-    }
-  }
 }
 
 function Gaussian(μ:Gaussian, q:Real) -> Gaussian {

@@ -1,0 +1,75 @@
+import distribution.Delay;
+import math;
+import random;
+
+/**
+ * Abstract delay variate with real value.
+ */
+class DelayReal < Delay {
+  /**
+   * Value.
+   */
+  x:Real;
+  
+  /**
+   * Weight.
+   */
+  w:Real;
+
+  /**
+   * Value conversion.
+   */
+  operator -> Real {
+    return value();
+  }
+
+  /**
+   * Value assignment.
+   */
+  operator <- x:Real {
+    set(x);
+  }
+
+  /**
+   * String assignment.
+   */
+  operator <- s:String {
+    set(Real(s));
+  }
+
+  function initialize() {
+    super.initialize();
+  }
+
+  function initialize(u:DelayReal) {
+    super.initialize(u);
+  }
+  
+  function value() -> Real {
+    if (isMissing()) {
+      graft();
+      realize();
+    }
+    return x;
+  }
+
+  function set(x:Real) {
+    this.x <- x;
+    this.missing <- false;
+  }
+  
+  function setWeight(w:Real) {
+    this.w <- w;
+  }
+    
+  function simulate() -> Real {
+    return value();
+  }
+
+  function observe(x:Real) -> Real {
+    graft();
+    set(x);
+    realize();
+    return w;
+  }
+}

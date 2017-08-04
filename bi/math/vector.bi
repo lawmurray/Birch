@@ -9,12 +9,12 @@ import math.scalar;
  */
 function length(x:Real[_]) -> Integer64 {
   cpp{{
-  return x.length(0);
+  return x_.length(0);
   }}
 }
 function length(x:Integer[_]) -> Integer64 {
   cpp{{
-  return x.length(0);
+  return x_.length(0);
   }}
 }
 

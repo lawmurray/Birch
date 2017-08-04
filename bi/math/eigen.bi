@@ -56,7 +56,7 @@ auto toEigenMatrix(const Array<Type,Frame>& X) {
 operator -x:Real[_] -> Real[_] {
   z:Real[length(x)];
   cpp{{
-  toEigenVector(z) = -toEigenVector(x);
+  toEigenVector(z_) = -toEigenVector(x_);
   }}
   return z;
 }
@@ -64,7 +64,7 @@ operator -x:Real[_] -> Real[_] {
 operator -X:Real[_,_] -> Real[_,_] {
   Z:Real[rows(X),columns(X)];
   cpp{{
-  toEigenMatrix(Z) = -toEigenMatrix(X);
+  toEigenMatrix(Z_) = -toEigenMatrix(X_);
   }}
   return Z;
 }
@@ -78,7 +78,7 @@ operator x:Real[_] + y:Real[_] -> Real[_] {
   
   z:Real[length(x)];
   cpp{{
-  toEigenVector(z) = toEigenVector(x) + toEigenVector(y);
+  toEigenVector(z_) = toEigenVector(x_) + toEigenVector(y_);
   }}
   return z;
 }
@@ -88,7 +88,7 @@ operator X:Real[_,_] + Y:Real[_,_] -> Real[_,_] {
   
   Z:Real[rows(X), columns(X)];
   cpp{{
-  toEigenMatrix(Z) = toEigenMatrix(X) + toEigenMatrix(Y);
+  toEigenMatrix(Z_) = toEigenMatrix(X_) + toEigenMatrix(Y_);
   }}
   return Z;
 }
@@ -102,7 +102,7 @@ operator x:Real[_] - y:Real[_] -> Real[_] {
   
   z:Real[length(x)];
   cpp{{
-  toEigenVector(z) = toEigenVector(x) - toEigenVector(y);
+  toEigenVector(z_) = toEigenVector(x_) - toEigenVector(y_);
   }}
   return z;
 }
@@ -112,7 +112,7 @@ operator X:Real[_,_] - Y:Real[_,_] -> Real[_,_] {
   
   Z:Real[rows(X), columns(X)];
   cpp{{
-  toEigenMatrix(Z) = toEigenMatrix(X) - toEigenMatrix(Y);
+  toEigenMatrix(Z_) = toEigenMatrix(X_) - toEigenMatrix(Y_);
   }}
   return Z;
 }
@@ -124,7 +124,7 @@ operator X:Real[_,_] - Y:Real[_,_] -> Real[_,_] {
 operator x:Real*y:Real[_] -> Real[_] {
   z:Real[length(y)];
   cpp{{
-  toEigenVector(z) = x * toEigenVector(y);
+  toEigenVector(z_) = x_ * toEigenVector(y_);
   }}
   return z;
 }
@@ -132,7 +132,7 @@ operator x:Real*y:Real[_] -> Real[_] {
 operator x:Real[_]*y:Real -> Real[_] {
   z:Real[length(x)];
   cpp{{
-  toEigenVector(z) = toEigenVector(x) * y;
+  toEigenVector(z_) = toEigenVector(x_) * y_;
   }}
   return z;
 }
@@ -140,7 +140,7 @@ operator x:Real[_]*y:Real -> Real[_] {
 operator x:Real*Y:Real[_,_] -> Real[_,_] {
   Z:Real[rows(Y),columns(Y)];
   cpp{{
-  toEigenVector(Z) = x * toEigenMatrix(Y);
+  toEigenVector(Z_) = x_ * toEigenMatrix(Y_);
   }}
   return Z;
 }
@@ -148,7 +148,7 @@ operator x:Real*Y:Real[_,_] -> Real[_,_] {
 operator X:Real[_,_]*y:Real -> Real[_,_] {
   Z:Real[rows(X),columns(X)];
   cpp{{
-  toEigenMatrix(Z) = toEigenMatrix(X) * y;
+  toEigenMatrix(Z_) = toEigenMatrix(X_) * y_;
   }}
   return Z;
 }
@@ -158,7 +158,7 @@ operator x:Real[_]*y:Real[_] -> Real[_] {
   
   z:Real[length(x)];
   cpp{{
-  toEigenVector(z) = toEigenVector(x) * toEigenVector(y);
+  toEigenVector(z_) = toEigenVector(x_) * toEigenVector(y_);
   }}
   return z;
 }
@@ -168,7 +168,7 @@ operator X:Real[_,_]*y:Real[_] -> Real[_] {
   
   z:Real[rows(X)];
   cpp{{
-  toEigenVector(z) = toEigenMatrix(X) * toEigenVector(y);
+  toEigenVector(z_) = toEigenMatrix(X_) * toEigenVector(y_);
   }}
   return z;
 }
@@ -178,7 +178,7 @@ operator x:Real[_]*Y:Real[_,_] -> Real[_,_] {
   
   Z:Real[length(x),columns(Y)];
   cpp{{
-  toEigenMatrix(Z) = toEigenVector(x) * toEigenMatrix(Y);
+  toEigenMatrix(Z_) = toEigenVector(x_) * toEigenMatrix(Y_);
   }}
   return Z;
 }
@@ -188,7 +188,7 @@ operator X:Real[_,_]*Y:Real[_,_] -> Real[_,_] {
   
   Z:Real[rows(X),columns(Y)];
   cpp{{
-  toEigenMatrix(Z) = toEigenMatrix(X) * toEigenMatrix(Y);
+  toEigenMatrix(Z_) = toEigenMatrix(X_) * toEigenMatrix(Y_);
   }}
   return Z;
 }
@@ -200,7 +200,7 @@ operator X:Real[_,_]*Y:Real[_,_] -> Real[_,_] {
 operator x:Real[_]/y:Real -> Real[_] {
   z:Real[length(x)];
   cpp{{
-  toEigenVector(z) = toEigenVector(x) / y;
+  toEigenVector(z_) = toEigenVector(x_) / y_;
   }}
   return z;
 }
@@ -208,7 +208,7 @@ operator x:Real[_]/y:Real -> Real[_] {
 operator X:Real[_,_]/y:Real -> Real[_,_] {
   Z:Real[rows(X),columns(X)];
   cpp{{
-  toEigenMatrix(Z) = toEigenMatrix(X) / y;
+  toEigenMatrix(Z_) = toEigenMatrix(X_) / y_;
   }}
   return Z;
 }
@@ -222,7 +222,7 @@ operator X:Real[_,_]/y:Real -> Real[_,_] {
  */
 function norm(x:Real[_]) -> Real {
   cpp{{
-  return toEigenVector(x).norm();
+  return toEigenVector(x_).norm();
   }}
 }
 
@@ -231,7 +231,7 @@ function norm(x:Real[_]) -> Real {
  */
 function squaredNorm(x:Real[_]) -> Real {
   cpp{{
-  return toEigenVector(x).squaredNorm();
+  return toEigenVector(x_).squaredNorm();
   }}
 }
 
@@ -245,7 +245,7 @@ function squaredNorm(x:Real[_]) -> Real {
  */
 function determinant(X:Real[_,_]) -> Real {
   cpp{{
-  return toEigenMatrix(X).determinant();
+  return toEigenMatrix(X_).determinant();
   }}
 }
 
@@ -256,7 +256,7 @@ function transpose(X:Real[_,_]) -> Real[_,_] {
   Y:Real[columns(X),rows(X)];
   
   cpp{{
-  toEigenMatrix(Y) = toEigenMatrix(X).transpose();
+  toEigenMatrix(Y_) = toEigenMatrix(X_).transpose();
   }}
   return Y;
 }
@@ -269,7 +269,7 @@ function llt(X:Real[_,_]) -> Real[_,_] {
   
   L:Real[rows(X),columns(X)];
   cpp{{
-  toEigenMatrix(L) = toEigenMatrix(X).llt().matrixL();
+  toEigenMatrix(L_) = toEigenMatrix(X_).llt().matrixL();
   }}
   return L;
 }
@@ -282,7 +282,7 @@ function inverse(X:Real[_,_]) -> Real[_,_] {
   
   invX:Real[rows(X),columns(X)];
   cpp{{
-  toEigenMatrix(invX) = toEigenMatrix(X).inverse();
+  toEigenMatrix(invX_) = toEigenMatrix(X_).inverse();
   }}
   return invX;
 }
@@ -295,7 +295,7 @@ function solve(X:Real[_,_], y:Real[_]) -> Real[_] {
   
   z:Real[rows(X)];
   cpp{{
-  toEigenVector(z) = toEigenMatrix(X).colPivHouseholderQr().solve(toEigenVector(y));
+  toEigenVector(z_) = toEigenMatrix(X_).colPivHouseholderQr().solve(toEigenVector(y_));
   }}
   return z;
 }
@@ -308,7 +308,7 @@ function solve(X:Real[_,_], Y:Real[_,_]) -> Real[_,_] {
   
   Z:Real[rows(Y),columns(Y)];
   cpp{{
-  toEigenMatrix(Z) = toEigenMatrix(X).colPivHouseholderQr().solve(toEigenMatrix(Y));
+  toEigenMatrix(Z_) = toEigenMatrix(X_).colPivHouseholderQr().solve(toEigenMatrix(Y_));
   }}
   return Z;
 }

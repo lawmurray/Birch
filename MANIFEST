@@ -7,6 +7,8 @@ bi/distribution/multivariate_gaussian/AffineMultivariateGaussianExpression.bi
 bi/distribution/Beta.bi
 bi/distribution/Bernoulli.bi
 bi/distribution/Delay.bi
+bi/distribution/DelayReal.bi
+bi/distribution/DelayRealVector.bi
 bi/distribution/Gamma.bi
 bi/distribution/Gaussian.bi
 bi/distribution/MultivariateGaussian.bi

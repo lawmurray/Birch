@@ -9,12 +9,12 @@ import math.scalar;
  */
 function rows(X:Real[_,_]) -> Integer64 {
   cpp{{
-  return X.length(0);
+  return X_.length(0);
   }}
 }
 function rows(X:Integer[_,_]) -> Integer64 {
   cpp{{
-  return X.length(0);
+  return X_.length(0);
   }}
 }
 
@@ -23,12 +23,12 @@ function rows(X:Integer[_,_]) -> Integer64 {
  */
 function columns(X:Real[_,_]) -> Integer64 {
   cpp{{
-  return X.length(1);
+  return X_.length(1);
   }}
 }
 function columns(X:Integer[_,_]) -> Integer64 {
   cpp{{
-  return X.length(1);
+  return X_.length(1);
   }}
 }
 

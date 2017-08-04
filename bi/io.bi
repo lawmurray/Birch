@@ -16,19 +16,19 @@ function print(value:Boolean) {
 
 function print(value:Real) {
   cpp {{
-  std::cout << value;
+  std::cout << value_;
   }}
 }
 
 function print(value:Integer) {
   cpp {{
-  std::cout << value;
+  std::cout << value_;
   }}
 }
 
 function print(value:String) {
   cpp {{
-  std::cout << value;
+  std::cout << value_;
   }}
 }
 
@@ -85,14 +85,14 @@ function print(X:Integer[_,_]) {
  */
 function read(file:String, N:Integer) -> Real[_] {
   cpp{{
-  std::ifstream stream(file);
+  std::ifstream stream(file_);
   }}
   x:Real[N];
   n:Integer;
   v:Real;
   for (n in 1..N) {
     cpp{{
-    stream >> v;
+    stream >> v_;
     }}
     x[n] <- v;
   }
