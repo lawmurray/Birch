@@ -110,7 +110,7 @@ class Delay {
   }
   
   /**
-   * Forward sample the variate.
+   * Forward simulate the variate.
    */
   function forward() {
     assert isInitialized();
@@ -130,7 +130,7 @@ class Delay {
       parent!.removeChild();
     }
     if (missing) {
-      doSample();
+      doSimulate();
     } else {
       doObserve();
     }
@@ -220,7 +220,7 @@ class Delay {
   function doForward() {
     //
   }
-  function doSample() {
+  function doSimulate() {
     //
   }
   function doObserve() {

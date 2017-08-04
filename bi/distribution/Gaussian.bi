@@ -35,7 +35,7 @@ class Gaussian < DelayReal {
     this.σ2 <- σ2;
   }
 
-  function doSample() {
+  function doSimulate() {
     cpp {{
     set_(std::normal_distribution<double>(μ_, ::sqrt(σ2_))(rng));
     }}    

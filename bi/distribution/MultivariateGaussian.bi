@@ -38,7 +38,7 @@ class MultivariateGaussian(D:Integer) < DelayRealVector(D) {
     for (d in 1..D) {
       x[d] <~ Gaussian(0.0, 1.0);
     }
-    x <- μ + llt(Σ)*x;
+    set(μ + llt(Σ)*x);
   }
 
   function doObserve() {
