@@ -621,6 +621,9 @@ void bi::CppBaseGenerator::visit(const While* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Assert* o) {
+  if (o->loc) {
+    line("#line " << o->loc->firstLine << " \"" << o->loc->file->path << '"');
+  }
   line("assert(" << o->cond << ");");
 }
 
