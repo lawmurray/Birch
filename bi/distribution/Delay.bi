@@ -123,7 +123,7 @@ class Delay {
    * Realize the variate.
    */
   function realize() {
-    assert isInitialized() || isTerminal();
+    assert isTerminal();
     
     state <- REALIZED;
     if (parent?) {

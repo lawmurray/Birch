@@ -27,7 +27,9 @@ class DelayReal < Delay {
    * Value assignment.
    */
   operator <- x:Real {
+    assert isUninitialized();
     set(x);
+    state <- REALIZED;
   }
 
   /**
@@ -47,10 +49,10 @@ class DelayReal < Delay {
   
   function value() -> Real {
     if (isMissing()) {
-      graft();
-      realize();
+      return simulate();
+    } else {
+      return x;
     }
-    return x;
   }
 
   function set(x:Real) {
@@ -63,7 +65,9 @@ class DelayReal < Delay {
   }
     
   function simulate() -> Real {
-    return value();
+    graft();
+    realize();
+    return x;
   }
 
   function observe(x:Real) -> Real {

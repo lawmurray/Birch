@@ -29,7 +29,9 @@ class DelayRealVector(D:Integer) < Delay {
    * Value assignment.
    */
   operator <- x:Real[_] {
+    assert isUninitialized();
     set(x);
+    state <- REALIZED;
   }
 
   function initialize() {
@@ -42,10 +44,10 @@ class DelayRealVector(D:Integer) < Delay {
 
   function value() -> Real[_] {
     if (isMissing()) {
-      graft();
-      realize();
+      return simulate();
+    } else {
+      return x;
     }
-    return x;
   }
   
   function set(x:Real[_]) {
@@ -60,7 +62,9 @@ class DelayRealVector(D:Integer) < Delay {
   }
   
   function simulate() -> Real[_] {
-    return value();
+    graft();
+    realize();
+    return x;
   }
   
   function observe(x:Real[_]) -> Real {
