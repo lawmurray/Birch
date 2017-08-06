@@ -35,14 +35,14 @@ class Gaussian < DelayReal {
     this.σ2 <- σ2;
   }
 
-  function doSimulate() {
-    cpp {{
-    set_(std::normal_distribution<double>(μ_, ::sqrt(σ2_))(rng));
-    }}    
-  }
-  
-  function doObserve() {
-    setWeight(-0.5*(pow((x - μ), 2.0)/σ2 - log(σ2) - log(2.0*π)));
+  function doRealize() {
+    if (isMissing()) {
+      cpp {{
+      set_(std::normal_distribution<double>(μ_, ::sqrt(σ2_))(rng));
+      }}
+    } else {
+      setWeight(-0.5*(pow((x - μ), 2.0)/σ2 - log(σ2) - log(2.0*π)));
+    }
   }
 }
 

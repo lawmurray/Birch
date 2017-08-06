@@ -123,21 +123,19 @@ class Delay {
    * Realize the variate.
    */
   function realize() {
-    assert isTerminal();
+    assert isUninitialized() || isTerminal();
     
+    if (isTerminal()) {
+      doRealize();
+      if (parent?) {
+        parent!.removeChild();
+        if (!(parent!.isRealized())) {
+          doCondition();
+        }
+        removeParent();
+      }
+    }
     state <- REALIZED;
-    if (parent?) {
-      parent!.removeChild();
-    }
-    if (missing) {
-      doSimulate();
-    } else {
-      doObserve();
-    }
-    if (parent? && !(parent!.isRealized())) {
-      doCondition();
-    }
-    removeParent();
   }
 
   /**
@@ -220,10 +218,7 @@ class Delay {
   function doForward() {
     //
   }
-  function doSimulate() {
-    //
-  }
-  function doObserve() {
+  function doRealize() {
     //
   }
   function doCondition() {

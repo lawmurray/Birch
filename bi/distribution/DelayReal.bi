@@ -29,7 +29,7 @@ class DelayReal < Delay {
   operator <- x:Real {
     assert isUninitialized();
     set(x);
-    state <- REALIZED;
+    realize();
   }
 
   /**

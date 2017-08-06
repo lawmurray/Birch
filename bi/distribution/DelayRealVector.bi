@@ -31,7 +31,7 @@ class DelayRealVector(D:Integer) < Delay {
   operator <- x:Real[_] {
     assert isUninitialized();
     set(x);
-    state <- REALIZED;
+    realize();
   }
 
   function initialize() {

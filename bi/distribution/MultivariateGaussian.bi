@@ -33,18 +33,18 @@ class MultivariateGaussian(D:Integer) < DelayRealVector(D) {
     this.Σ <- Σ;
   }
 
-  function doSimulate() {
-    d:Integer;
-    for (d in 1..D) {
-      x[d] <~ Gaussian(0.0, 1.0);
+  function doRealize() {
+    if (missing) {
+      d:Integer;
+      for (d in 1..D) {
+        x[d] <~ Gaussian(0.0, 1.0);
+      }
+      set(μ + llt(Σ)*x);
+    } else {
+      L:Real[D,D];
+      L <- llt(Σ);
+      setWeight(-0.5*squaredNorm(solve(L, x - μ)) - log(determinant(L)) - 0.5*Real(D)*log(2.0*π));
     }
-    set(μ + llt(Σ)*x);
-  }
-
-  function doObserve() {
-    L:Real[D,D];
-    L <- llt(Σ);
-    setWeight(-0.5*squaredNorm(solve(L, x - μ)) - log(determinant(L)) - 0.5*Real(D)*log(2.0*π));
   }
 }
 
