@@ -51,7 +51,6 @@ auto right_tilde_(const Left& left, const Right& right) {
  */
 template<class Left, class Right>
 void tilde_(Left& left, const Right& right) {
-  assert(left->isUninitialized_());
   if (!left->isMissing_()) {
     right_tilde_(left->value_(), right);
   }
