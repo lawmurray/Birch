@@ -24,13 +24,13 @@ UNARY_OPERATOR(-)
     return x.toEigen() op y.toEigen(); \
   } \
   \
-  template<class EigenType1, class Type2, class Frame2> \
-  auto operator op(const EigenType1& x, const bi::Array<Type2,Frame2>& y) { \
+  template<class OtherType1, class Type2, class Frame2> \
+  auto operator op(const OtherType1& x, const bi::Array<Type2,Frame2>& y) { \
     return x op y.toEigen(); \
   } \
   \
-  template<class Type1, class Frame1, class EigenType2> \
-  auto operator op(const bi::Array<Type1,Frame1>& x, const EigenType2& y) { \
+  template<class Type1, class Frame1, class OtherType2> \
+  auto operator op(const bi::Array<Type1,Frame1>& x, const OtherType2& y) { \
     return x.toEigen() op y; \
   }
 
