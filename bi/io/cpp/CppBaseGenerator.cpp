@@ -50,7 +50,7 @@ void bi::CppBaseGenerator::visit(const Parentheses* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Brackets* o) {
-  middle("make_view(" << o->single << ')');
+  middle("bi::make_view(" << o->single << ')');
 }
 
 void bi::CppBaseGenerator::visit(const Call* o) {
@@ -111,15 +111,15 @@ void bi::CppBaseGenerator::visit(const LambdaFunction* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Span* o) {
-  middle("make_span(" << o->single << ')');
+  middle("bi::make_span(" << o->single << ')');
 }
 
 void bi::CppBaseGenerator::visit(const Index* o) {
-  middle("make_index(" << o->single << " - 1)");
+  middle("bi::make_index(" << o->single << " - 1)");
 }
 
 void bi::CppBaseGenerator::visit(const Range* o) {
-  middle("make_range(" << o->left << " - 1, " << o->right << " - 1)");
+  middle("bi::make_range(" << o->left << " - 1, " << o->right << " - 1)");
 }
 
 void bi::CppBaseGenerator::visit(const Member* o) {
@@ -352,7 +352,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
         } else if (param->type->isClass()) {
           auto type = dynamic_cast<const ClassType*>(param->type);
           assert(type);
-          middle(" = make_object<bi::type::" << type->name << ">()");
+          middle(" = bi::make_object<bi::type::" << type->name << ">()");
         }
         finish(';');
       }
@@ -464,14 +464,14 @@ void bi::CppBaseGenerator::visit(const Program* o) {
 
 void bi::CppBaseGenerator::visit(const BinaryOperator* o) {
   if (!o->braces->isEmpty()) {
-    if (header) {
-      line("namespace bi {");
-    }
+    //if (header) {
+    //  line("namespace bi {");
+    //}
 
     start(o->returnType << ' ');
-    if (!header) {
-      middle("bi::");
-    }
+    //if (!header) {
+    //  middle("bi::");
+    //}
     if (isTranslatable(o->name->str())) {
       middle("operator" << o->name->str());
     } else {
@@ -489,21 +489,21 @@ void bi::CppBaseGenerator::visit(const BinaryOperator* o) {
       out();
       finish("}\n");
     }
-    if (header) {
-      line("}\n");
-    }
+    //if (header) {
+    //  line("}\n");
+    //}
   }
 }
 
 void bi::CppBaseGenerator::visit(const UnaryOperator* o) {
   if (!o->braces->isEmpty()) {
-    if (header) {
-      line("namespace bi {");
-    }
+    //if (header) {
+    //  line("namespace bi {");
+    //}
     start(o->returnType << ' ');
-    if (!header) {
-      middle("bi::");
-    }
+    //if (!header) {
+    //  middle("bi::");
+    //}
     if (isTranslatable(o->name->str())) {
       middle("operator" << o->name->str());
     } else {
@@ -520,9 +520,9 @@ void bi::CppBaseGenerator::visit(const UnaryOperator* o) {
       out();
       finish("}\n");
     }
-    if (header) {
-      line("}\n");
-    }
+    //if (header) {
+    //  line("}\n");
+    //}
   }
 }
 

@@ -173,6 +173,8 @@ libbirch_la_CXXFLAGS = $(AM_CXXFLAGS)
 
 nobase_include_HEADERS = \
   bi/lib/Array.hpp \
+  bi/lib/Eigen.hpp \
+  bi/lib/EigenOperators.hpp \
   bi/lib/Fiber.hpp \
   bi/lib/FiberState.hpp \
   bi/lib/Frame.hpp \

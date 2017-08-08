@@ -5,8 +5,9 @@
 
 #include "bi/lib/Frame.hpp"
 #include "bi/lib/Iterator.hpp"
-#include "bi/lib/global.hpp"
 #include "bi/lib/Pointer.hpp"
+#include "bi/lib/Eigen.hpp"
+#include "bi/lib/global.hpp"
 
 #include <cstring>
 
@@ -209,6 +210,43 @@ public:
   }
 
   /**
+   * @name Eigen integration
+   */
+  //@{
+  using EigenType = typename std::conditional<Frame::count() == 2,
+  EigenMatrixMap<Type>,
+  typename std::conditional<Frame::count() == 1,
+  EigenVectorMap<Type>,
+  void>::type>::type;
+
+  using EigenStrideType = typename std::conditional<Frame::count() == 2,
+  EigenMatrixStride,
+  typename std::conditional<Frame::count() == 1,
+  EigenVectorStride,
+  void>::type>::type;
+
+  /**
+   * Convert to Eigen type.
+   */
+  EigenType toEigen() const {
+    return EigenType(buf(), length(0), (Frame::count() == 1 ? 1 : length(1)),
+        (Frame::count() == 1 ?
+            EigenStrideType(1, stride(0)) :
+            EigenStrideType(lead(1), stride(1))));
+  }
+
+  /**
+   * Construct from Eigen type.
+   */
+  template<class DerivedType>
+  Array(const Eigen::MatrixBase<DerivedType>& o) :
+      frame(/* ... */) {
+    allocate(ptr, frame.volume());
+    toEigen() = o;
+  }
+  //@}
+
+  /**
    * @name Selections
    */
   //@{
@@ -403,7 +441,7 @@ private:
    */
   template<class Type1>
   static void allocate(Type1*& ptr, const size_t n) {
-    ptr = static_cast<Type1*>(GC_MALLOC_ATOMIC(sizeof(Type1)*n));
+    ptr = static_cast<Type1*>(GC_MALLOC_ATOMIC(sizeof(Type1) * n));
     // ^ buffer will not itself contain pointers, so GC_MALLOC_ATOMIC can be
     //   used
   }
@@ -418,7 +456,8 @@ private:
    */
   template<class Type1>
   static void allocate(Pointer<Type1>*& ptr, const size_t n) {
-    ptr = static_cast<Pointer<Type1>*>(GC_MALLOC(sizeof(Pointer<Type1>)*n));
+    ptr =
+        static_cast<Pointer<Type1>*>(GC_MALLOC(sizeof(Pointer<Type1> ) * n));
   }
 
   /**

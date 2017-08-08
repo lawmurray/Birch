@@ -17,6 +17,8 @@
 #include "bi/lib/Pointer.hpp"
 #include "bi/lib/FiberState.hpp"
 #include "bi/lib/Fiber.hpp"
+#include "bi/lib/Eigen.hpp"
+#include "bi/lib/EigenOperators.hpp"
 
 #include "boost/optional.hpp"
 

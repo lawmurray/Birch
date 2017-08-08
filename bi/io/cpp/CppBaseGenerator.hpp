@@ -114,7 +114,7 @@ void bi::CppBaseGenerator::genInit(const T* o) {
   if (o->type->isArray()) {
     ArrayType* type = dynamic_cast<ArrayType*>(o->type);
     assert(type);
-    middle("(make_frame(" << type->brackets << ')');
+    middle("(bi::make_frame(" << type->brackets << ')');
     if (!o->parens->isEmpty()) {
       middle(", " << o->parens->strip());
     }
@@ -123,9 +123,9 @@ void bi::CppBaseGenerator::genInit(const T* o) {
     ClassType* type = dynamic_cast<ClassType*>(o->type);
     assert(type);
     if (!o->parens->isEmpty()) {
-      middle(" = make_object<bi::type::" << type->name << '>' << o->parens);
+      middle(" = bi::make_object<bi::type::" << type->name << '>' << o->parens);
     } else if (o->value->isEmpty()) {
-      middle(" = make_object<bi::type::" << type->name << ">()");
+      middle(" = bi::make_object<bi::type::" << type->name << ">()");
     }
   }
   if (!o->value->isEmpty()) {
