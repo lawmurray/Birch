@@ -1,266 +1,70 @@
 /**
  * Eigen integration
  * -----------------
+ *
+ * Birch uses the Eigen library <https://eigen.tuxfamily.org> for linear
+ * algebra support. Eigen is tightly integrated with support from the Birch
+ * compiler library, in order to preserve the lazy evaluation of Eigen that
+ * is a critical feature of its performance.
  */
-
-import math.scalar;
+import basic;
 import math.vector;
 import math.matrix;
 
-cpp{{
-#include <eigen3/Eigen/Core>
-#include <eigen3/Eigen/Dense>
-#include <eigen3/Eigen/Cholesky>
-
-namespace bi {
-
-using EigenVectorStride = Eigen::Stride<1,Eigen::Dynamic>;
-template<class Type>
-using EigenVector = Eigen::Matrix<Type,Eigen::Dynamic,1,Eigen::ColMajor,Eigen::Dynamic,1>;
-template<class Type>
-using EigenVectorMap = Eigen::Map<EigenVector<Type>,Eigen::DontAlign,EigenVectorStride>;
-
-using EigenMatrixStride = Eigen::Stride<Eigen::Dynamic,Eigen::Dynamic>;
-template<class Type>
-using EigenMatrix = Eigen::Matrix<Type,Eigen::Dynamic,Eigen::Dynamic,Eigen::RowMajor,Eigen::Dynamic,Eigen::Dynamic>;
-template<class Type>
-using EigenMatrixMap = Eigen::Map<EigenMatrix<Type>,Eigen::DontAlign,EigenMatrixStride>;
-
-/**
- * Convert Birch vector to Eigen vector.
+/*
+ * Basic operators
  */
-template<class Type, class Frame>
-auto toEigenVector(const Array<Type,Frame>& x) {
-  assert(x.count() == 1);
-  return EigenVectorMap<Type>(x.buf(), x.length(0), 1,
-      EigenVectorStride(1, x.stride(0)));
-}
+operator -x:Real[_] -> Real[_];
+operator +x:Real[_] -> Real[_];
+operator x:Real[_] + y:Real[_] -> Real[_];
+operator x:Real[_] - y:Real[_] -> Real[_];
 
-/**
- * Convert Birch matrix to Eigen matrix.
- */
-template<class Type, class Frame>
-auto toEigenMatrix(const Array<Type,Frame>& X) {
-  assert(X.count() == 2);
-  return EigenMatrixMap<Type>(X.buf(), X.length(0), X.length(1),
-      EigenMatrixStride(X.lead(1), X.stride(1)));
-}
+operator -X:Real[_,_] -> Real[_,_];
+operator +X:Real[_,_] -> Real[_,_];
+operator X:Real[_,_] + Y:Real[_,_] -> Real[_,_];
+operator X:Real[_,_] - Y:Real[_,_] -> Real[_,_];
 
-}
-}}
+operator x:Real[_]*y:Real[_] -> Real[_];
+operator X:Real[_,_]*y:Real[_] -> Real[_];
+operator x:Real[_]*Y:Real[_,_] -> Real[_,_];
+operator X:Real[_,_]*Y:Real[_,_] -> Real[_,_];
 
-/**
- * Negation
- * --------
- */
-operator -x:Real[_] -> Real[_] {
-  z:Real[length(x)];
-  cpp{{
-  toEigenVector(z_) = -toEigenVector(x_);
-  }}
-  return z;
-}
+operator x:Real*y:Real[_] -> Real[_];
+operator x:Real[_]*y:Real -> Real[_];
+operator x:Real*Y:Real[_,_] -> Real[_,_];
+operator X:Real[_,_]*y:Real -> Real[_,_];
+operator x:Real[_]/y:Real -> Real[_];
+operator X:Real[_,_]/y:Real -> Real[_,_];
 
-operator -X:Real[_,_] -> Real[_,_] {
-  Z:Real[rows(X),columns(X)];
-  cpp{{
-  toEigenMatrix(Z_) = -toEigenMatrix(X_);
-  }}
-  return Z;
-}
-
-/**
- * Addition
- * --------
- */
-operator x:Real[_] + y:Real[_] -> Real[_] {
-  assert length(x) == length(y);
-  
-  z:Real[length(x)];
-  cpp{{
-  toEigenVector(z_) = toEigenVector(x_) + toEigenVector(y_);
-  }}
-  return z;
-}
-
-operator X:Real[_,_] + Y:Real[_,_] -> Real[_,_] {
-  assert rows(X) == rows(Y) && columns(X) == columns(Y);
-  
-  Z:Real[rows(X), columns(X)];
-  cpp{{
-  toEigenMatrix(Z_) = toEigenMatrix(X_) + toEigenMatrix(Y_);
-  }}
-  return Z;
-}
-
-/**
- * Subtraction
- * -----------
- */
-operator x:Real[_] - y:Real[_] -> Real[_] {
-  assert length(x) == length(y);
-  
-  z:Real[length(x)];
-  cpp{{
-  toEigenVector(z_) = toEigenVector(x_) - toEigenVector(y_);
-  }}
-  return z;
-}
-
-operator X:Real[_,_] - Y:Real[_,_] -> Real[_,_] {
-  assert rows(X) == rows(Y) && columns(X) == columns(Y);
-  
-  Z:Real[rows(X), columns(X)];
-  cpp{{
-  toEigenMatrix(Z_) = toEigenMatrix(X_) - toEigenMatrix(Y_);
-  }}
-  return Z;
-}
-
-/**
- * Multiplication
- * --------------
- */
-operator x:Real*y:Real[_] -> Real[_] {
-  z:Real[length(y)];
-  cpp{{
-  toEigenVector(z_) = x_ * toEigenVector(y_);
-  }}
-  return z;
-}
-
-operator x:Real[_]*y:Real -> Real[_] {
-  z:Real[length(x)];
-  cpp{{
-  toEigenVector(z_) = toEigenVector(x_) * y_;
-  }}
-  return z;
-}
-
-operator x:Real*Y:Real[_,_] -> Real[_,_] {
-  Z:Real[rows(Y),columns(Y)];
-  cpp{{
-  toEigenVector(Z_) = x_ * toEigenMatrix(Y_);
-  }}
-  return Z;
-}
-
-operator X:Real[_,_]*y:Real -> Real[_,_] {
-  Z:Real[rows(X),columns(X)];
-  cpp{{
-  toEigenMatrix(Z_) = toEigenMatrix(X_) * y_;
-  }}
-  return Z;
-}
-
-operator x:Real[_]*y:Real[_] -> Real[_] {
-  assert length(y) == 1;
-  
-  z:Real[length(x)];
-  cpp{{
-  toEigenVector(z_) = toEigenVector(x_) * toEigenVector(y_);
-  }}
-  return z;
-}
-
-operator X:Real[_,_]*y:Real[_] -> Real[_] {
-  assert columns(X) == length(y);
-  
-  z:Real[rows(X)];
-  cpp{{
-  toEigenVector(z_) = toEigenMatrix(X_) * toEigenVector(y_);
-  }}
-  return z;
-}
-
-operator x:Real[_]*Y:Real[_,_] -> Real[_,_] {
-  assert 1 == rows(Y);
-  
-  Z:Real[length(x),columns(Y)];
-  cpp{{
-  toEigenMatrix(Z_) = toEigenVector(x_) * toEigenMatrix(Y_);
-  }}
-  return Z;
-}
-
-operator X:Real[_,_]*Y:Real[_,_] -> Real[_,_] {
-  assert columns(X) == rows(Y);
-  
-  Z:Real[rows(X),columns(Y)];
-  cpp{{
-  toEigenMatrix(Z_) = toEigenMatrix(X_) * toEigenMatrix(Y_);
-  }}
-  return Z;
-}
-
-/**
- * Division
- * --------
- */
-operator x:Real[_]/y:Real -> Real[_] {
-  z:Real[length(x)];
-  cpp{{
-  toEigenVector(z_) = toEigenVector(x_) / y_;
-  }}
-  return z;
-}
-
-operator X:Real[_,_]/y:Real -> Real[_,_] {
-  Z:Real[rows(X),columns(X)];
-  cpp{{
-  toEigenMatrix(Z_) = toEigenMatrix(X_) / y_;
-  }}
-  return Z;
-}
-
-/**
- * Other vector operations
- * -----------------------
- */
 /**
  * Norm of a vector.
  */
-function norm(x:Real[_]) -> Real {
-  cpp{{
-  return toEigenVector(x_).norm();
-  }}
-}
+function norm(x:Real[_]) -> Real;
 
 /**
  * Squared norm of a vector.
  */
-function squaredNorm(x:Real[_]) -> Real {
-  cpp{{
-  return toEigenVector(x_).squaredNorm();
-  }}
-}
-
-/**
- * Other matrix operations
- * -----------------------
- */
+function squaredNorm(x:Real[_]) -> Real;
 
 /**
  * Determinant of a matrix.
  */
-function determinant(X:Real[_,_]) -> Real {
-  cpp{{
-  return toEigenMatrix(X_).determinant();
-  }}
-}
+function determinant(X:Real[_,_]) -> Real;
 
 /**
  * Transpose of a matrix.
  */
-function transpose(X:Real[_,_]) -> Real[_,_] {
-  Y:Real[columns(X),rows(X)];
-  
-  cpp{{
-  toEigenMatrix(Y_) = toEigenMatrix(X_).transpose();
-  }}
-  return Y;
-}
+function transpose(X:Real[_,_]) -> Real[_,_];
 
+/**
+ * Inverse of a matrix.
+ */
+function inverse(X:Real[_,_]) -> Real[_,_];
+
+/*
+ * for the below functions, need to assign the result to a new matrix, as, it
+ * seems, they return a view of a matrix that will be destroyed on return
+ */
 /**
  * `LL^T` Cholesky decomposition of a matrix.
  */
@@ -269,22 +73,9 @@ function llt(X:Real[_,_]) -> Real[_,_] {
   
   L:Real[rows(X),columns(X)];
   cpp{{
-  toEigenMatrix(L_) = toEigenMatrix(X_).llt().matrixL();
+  L_.toEigen() = X_.toEigen().llt().matrixL();
   }}
   return L;
-}
-
-/**
- * Inverse of a matrix.
- */
-function inverse(X:Real[_,_]) -> Real[_,_] {
-  assert rows(X) == columns(X);
-  
-  invX:Real[rows(X),columns(X)];
-  cpp{{
-  toEigenMatrix(invX_) = toEigenMatrix(X_).inverse();
-  }}
-  return invX;
 }
 
 /**
@@ -295,7 +86,7 @@ function solve(X:Real[_,_], y:Real[_]) -> Real[_] {
   
   z:Real[rows(X)];
   cpp{{
-  toEigenVector(z_) = toEigenMatrix(X_).colPivHouseholderQr().solve(toEigenVector(y_));
+  z_.toEigen() = X_.toEigen().colPivHouseholderQr().solve(y_.toEigen());
   }}
   return z;
 }
@@ -308,7 +99,7 @@ function solve(X:Real[_,_], Y:Real[_,_]) -> Real[_,_] {
   
   Z:Real[rows(Y),columns(Y)];
   cpp{{
-  toEigenMatrix(Z_) = toEigenMatrix(X_).colPivHouseholderQr().solve(toEigenMatrix(Y_));
+  Z_.toEigen() = X_.toEigen().colPivHouseholderQr().solve(Y_.toEigen());
   }}
   return Z;
 }
