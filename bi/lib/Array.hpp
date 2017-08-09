@@ -478,7 +478,9 @@ private:
   template<class Type1>
   static void allocate(Pointer<Type1>*& ptr, const size_t n) {
     ptr =
-        static_cast<Pointer<Type1>*>(GC_MALLOC(sizeof(Pointer<Type1> ) * n));
+        static_cast<Pointer<Type1>*>(GC_MALLOC_ATOMIC(sizeof(Pointer<Type1> ) * n));
+    // ^ while the buffer contains pointers, these a relocatable and do not
+    //   themselves contain addresses, so GC_MALLOC_ATOMIC can be used
   }
 
   /**
@@ -500,7 +502,7 @@ private:
    */
   template<class Type1, class ... Args>
   static void emplace(Pointer<Type1>& o, Args ... args) {
-    auto raw = new (GC_MALLOC(sizeof(Type1))) Type1(args...);
+    auto raw = new (GC_MALLOC_ATOMIC(sizeof(Type1))) Type1(args...);
     new (&o) Pointer<Type1>(raw);
   }
 
