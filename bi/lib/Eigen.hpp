@@ -1,5 +1,7 @@
 /**
  * @file
+ *
+ * Eigen Matrix types for use with Birch Array.
  */
 #pragma once
 

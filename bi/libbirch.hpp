@@ -18,6 +18,7 @@
 #include "bi/lib/FiberState.hpp"
 #include "bi/lib/Fiber.hpp"
 #include "bi/lib/Eigen.hpp"
+#include "bi/lib/EigenFunctions.hpp"
 #include "bi/lib/EigenOperators.hpp"
 
 #include "boost/optional.hpp"

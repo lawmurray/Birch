@@ -211,8 +211,14 @@ public:
 
   /**
    * @name Eigen integration
+   *
+   * These functions and operators permit the implicit conversion between
+   * Birch Array types and Eigen Matrix types.
    */
   //@{
+  /**
+   * Appropriate Eigen Matrix type for this Birch Array type.
+   */
   using EigenType = typename std::conditional<Frame::count() == 2,
   EigenMatrixMap<Type>,
   typename std::conditional<Frame::count() == 1,
@@ -226,7 +232,7 @@ public:
   void>::type>::type;
 
   /**
-   * Convert to Eigen type.
+   * Convert to Eigen Matrix type.
    */
   EigenType toEigen() const {
     return EigenType(buf(), length(0), (Frame::count() == 1 ? 1 : length(1)),
@@ -236,15 +242,28 @@ public:
   }
 
   /**
-   * Construct vector from Eigen type.
+   * Construct from Eigen Matrix expression.
    */
   template<class DerivedType, typename = std::enable_if_t<
-      (Frame::count() == 1 && DerivedType::ColsAtCompileTime == 1) ||
-      (Frame::count() == 2 && DerivedType::ColsAtCompileTime == Eigen::Dynamic)>>
-  Array(const Eigen::DenseBase<DerivedType>& o) :
+      (Frame::count() == 1 && DerivedType::ColsAtCompileTime == 1)
+          || (Frame::count() == 2
+              && DerivedType::ColsAtCompileTime == Eigen::Dynamic)>>
+  Array(const Eigen::EigenBase<DerivedType>& o) :
       frame(o.rows(), o.cols()) {
     allocate(ptr, frame.volume());
     toEigen() = o;
+  }
+
+  /**
+   * Assign from Eigen Matrix expression.
+   */
+  template<class DerivedType, typename = std::enable_if_t<
+      (Frame::count() == 1 && DerivedType::ColsAtCompileTime == 1)
+          || (Frame::count() == 2
+              && DerivedType::ColsAtCompileTime == Eigen::Dynamic)>>
+  Array<Type,Frame>& operator=(const Eigen::EigenBase<DerivedType>& o) {
+    toEigen() = o;
+    return *this;
   }
   //@}
 
