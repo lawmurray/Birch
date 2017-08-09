@@ -236,10 +236,12 @@ public:
   }
 
   /**
-   * Construct from Eigen type.
+   * Construct vector from Eigen type.
    */
-  template<class DerivedType>
-  Array(const Eigen::MatrixBase<DerivedType>& o) :
+  template<class DerivedType, typename = std::enable_if_t<
+      (Frame::count() == 1 && DerivedType::ColsAtCompileTime == 1) ||
+      (Frame::count() == 2 && DerivedType::ColsAtCompileTime == Eigen::Dynamic)>>
+  Array(const Eigen::DenseBase<DerivedType>& o) :
       frame(/* ... */) {
     allocate(ptr, frame.volume());
     toEigen() = o;
