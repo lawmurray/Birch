@@ -8,6 +8,7 @@
 #include "bi/lib/Index.hpp"
 #include "bi/lib/Range.hpp"
 #include "bi/lib/View.hpp"
+#include "bi/lib/Eigen.hpp"
 
 #include <cstddef>
 
@@ -22,6 +23,16 @@ namespace bi {
 struct EmptyFrame {
   EmptyFrame() {
     //
+  }
+
+  /**
+   * Special constructor for Eigen integration where all matrices and vectors
+   * are treated as matrices, with row and column counts. If this constructor,
+   * is reached, it means the array is a vector, and @p length should be one
+   * (and is checked for this).
+   */
+  EmptyFrame(const Eigen::Index cols) {
+    assert(cols == 1);
   }
 
   EmptyFrame operator()(const EmptyView& o) const {
@@ -155,6 +166,20 @@ struct NonemptyFrame {
     //
   }
 
+  /*
+   * Special constructors for Eigen integration where all matrices and vectors
+   * are treated as matrices, with row and column counts.
+   */
+  NonemptyFrame(const Eigen::Index rows, const Eigen::Index cols) :
+      tail(tail_type::count() == 0 ? cols : rows),
+      head(tail_type::count() == 0 ? rows : cols) {
+    //
+  }
+  NonemptyFrame(const Eigen::Index rows) :
+      head(rows) {
+    assert(tail_type::count() == 0);
+  }
+
   /**
    * Generic constructor.
    */
@@ -185,7 +210,7 @@ struct NonemptyFrame {
           Range<other_offset_value,other_length_value,other_stride_value>>& o) const {
     /* pre-conditions */
     assert(o.head.offset >= 0);
-    assert((o.head.length - 1)*o.head.stride < head.length);
+    assert((o.head.length - 1) * o.head.stride < head.length);
 
     return NonemptyFrame<decltype(tail(o.tail)),decltype(head(o.head))>(
         tail(o.tail), head(o.head));

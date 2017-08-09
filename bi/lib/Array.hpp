@@ -242,7 +242,7 @@ public:
       (Frame::count() == 1 && DerivedType::ColsAtCompileTime == 1) ||
       (Frame::count() == 2 && DerivedType::ColsAtCompileTime == Eigen::Dynamic)>>
   Array(const Eigen::DenseBase<DerivedType>& o) :
-      frame(/* ... */) {
+      frame(o.rows(), o.cols()) {
     allocate(ptr, frame.volume());
     toEigen() = o;
   }
