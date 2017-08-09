@@ -5,8 +5,7 @@
 
 namespace bi {
 /**
- * Smart pointer for global and fiber-local objects, with copy-on-write
- * semantics for te latter.
+ * Smart pointer fiber-local heaps, with copy-on-write semantics.
  *
  * @ingroup library
  *
@@ -50,7 +49,6 @@ public:
   template<class U, typename = std::enable_if_t<
       std::is_base_of<T,U>::value && !std::is_same<T,U>::value>>
   Pointer<T>& operator=(const Pointer<U>& o) {
-    ptr = o.ptr;
     index = o.index;
     return *this;
   }
@@ -64,7 +62,6 @@ public:
    * Null pointer assignment operator.
    */
   Pointer<T>& operator=(const std::nullptr_t&) {
-    ptr = nullptr;
     index = -1;
     return *this;
   }
@@ -120,7 +117,7 @@ public:
    */
   template<class ... Args>
   auto operator()(Args ... args) const {
-    return (*ptr)(args...);
+    return (*get())(args...);
   }
 
   /*
@@ -140,18 +137,9 @@ private:
   Pointer(T* raw, intptr_t index);
 
   /**
-   * For a global pointer, the raw address.
-   */
-  T* ptr;
-
-  /**
-   * For a fiber-local pointer, the index of the heap allocation,
-   * otherwise -1.
+   * The index of the heap allocation, -1 for null.
    */
   intptr_t index;
-
-  /// @todo Might there be an implementation that allows both cases to be
-  /// packed into the same 64-bit value?
 };
 }
 
@@ -160,12 +148,11 @@ private:
 
 template<class T>
 bi::Pointer<T>::Pointer(T* raw) {
-  if (fiberHeap && raw) {
-    ptr = nullptr;
+  assert(fiberHeap);
+  if (raw) {
     index = fiberHeap->put(raw);
     raw->setIndex(index);
   } else {
-    ptr = raw;
     index = -1;
   }
 }
@@ -173,12 +160,11 @@ bi::Pointer<T>::Pointer(T* raw) {
 template<class T>
 template<class U>
 bi::Pointer<T>::Pointer(U* raw) {
-  if (fiberHeap && raw) {
-    ptr = nullptr;
+  assert(fiberHeap);
+  if (raw) {
     index = fiberHeap->put(raw);
     raw->setIndex(index);
   } else {
-    ptr = raw;
     index = -1;
   }
 }
@@ -186,19 +172,17 @@ bi::Pointer<T>::Pointer(U* raw) {
 template<class T>
 template<class U>
 bi::Pointer<T>::Pointer(const Pointer<U>& o) :
-    ptr(o.ptr),
     index(o.index) {
   //
 }
 
 template<class T>
 bi::Pointer<T>& bi::Pointer<T>::operator=(T* raw) {
-  if (fiberHeap && raw) {
-    ptr = nullptr;
+  assert(fiberHeap);
+  if (raw) {
     index = fiberHeap->put(raw);
     raw->setIndex(index);
   } else {
-    ptr = raw;
     index = -1;
   }
   return *this;
@@ -224,7 +208,7 @@ T* bi::Pointer<T>::get() {
       fiberHeap->set(index, raw);
     }
   } else {
-    raw = ptr;
+    raw = nullptr;
   }
   return raw;
 }
@@ -235,15 +219,21 @@ T* const bi::Pointer<T>::get() const {
   if (index >= 0) {
     assert(fiberHeap);
     raw = static_cast<T*>(fiberHeap->get(index));
+    if (raw->isShared()) {
+      /* shared and writeable, copy now (copy-on-write) */
+      raw->disuse();
+      raw = raw->clone();
+      fiberHeap->set(index, raw);
+    }
   } else {
-    raw = ptr;
+    raw = nullptr;
   }
   return raw;
 }
 
 template<class T>
 bi::Pointer<T>::Pointer(T* raw, intptr_t index) :
-    ptr(index <= 0 ? raw : nullptr),
     index(index) {
-  assert(index <= 0 || fiberHeap->get(index) == raw);
+  assert(index >= 0 || !raw);
+  assert(index < 0 || fiberHeap->get(index) == raw);
 }

@@ -451,6 +451,9 @@ void bi::CppBaseGenerator::visit(const Program* o) {
       line("}\n");
     }
 
+    /* set root heap */
+    line("fiberHeap = new Heap();");
+
     /* body of program */
     if (!o->braces->isEmpty()) {
       CppBaseGenerator aux(base, level, header);
