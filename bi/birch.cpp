@@ -4,7 +4,6 @@
  * The driver program.
  */
 #include "bi/build/Driver.hpp"
-#include "bi/build/Packager.hpp"
 #include "bi/exception/DriverException.hpp"
 #include "bi/build/misc.hpp"
 
@@ -27,24 +26,19 @@ int main(int argc, char** argv) {
       throw DriverException("No command given.");
     }
 
+    Driver driver(argc - 1, argv + 1);
     if (prog.compare("build") == 0) {
-      Driver driver(argc - 1, argv + 1);
       driver.build();
     } else if (prog.compare("install") == 0) {
-      Driver driver(argc - 1, argv + 1);
       driver.build();
       driver.install();
     } else if (prog.compare("create") == 0) {
-      Packager packager(argc - 1, argv + 1);
-      packager.create();
+      driver.create();
     } else if (prog.compare("validate") == 0) {
-      Packager packager(argc - 1, argv + 1);
-      packager.validate();
-    } else if (prog.compare("distribute") == 0) {
-      Packager packager(argc - 1, argv + 1);
-      packager.distribute();
+      driver.validate();
+    } else if (prog.compare("docs") == 0) {
+      driver.docs();
     } else {
-      Driver driver(argc - 1, argv + 1);
       driver.build();
       driver.install();
       driver.unlock();

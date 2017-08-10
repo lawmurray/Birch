@@ -47,6 +47,21 @@ public:
   void run(const std::string& prog);
 
   /**
+   * Create a new package.
+   */
+  void create();
+
+  /**
+   * Validate an existing package.
+   */
+  void validate();
+
+  /**
+   * Produce documentation.
+   */
+  void docs();
+
+  /**
    * Unlock the build directory.
    */
   void unlock();
@@ -120,7 +135,6 @@ private:
    * Enable compiler warnings.
    */
   bool enable_warnings;
-
 
   /**
    * Enable debugging mode.

@@ -158,7 +158,6 @@ birch_LDADD = $(DEPS_LIBS)
 birch_SOURCES = \
   bi/build/Driver.cpp \
   bi/build/misc.cpp \
-  bi/build/Packager.cpp \
   bi/exception/DriverException.cpp \
   bi/exception/Exception.cpp \
   bi/exception/FileNotFoundException.cpp \
@@ -198,7 +197,6 @@ noinst_HEADERS = \
   bi/build/Compiler.hpp \
   bi/build/Driver.hpp \
   bi/build/misc.hpp \
-  bi/build/Packager.hpp \
   bi/common/Argumented.hpp \
   bi/common/Based.hpp \
   bi/common/Braced.hpp \

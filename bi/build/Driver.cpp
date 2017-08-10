@@ -12,6 +12,7 @@
 
 #include <iostream>
 #include <regex>
+#include <unordered_set>
 #include <getopt.h>
 #include <dlfcn.h>
 
@@ -687,6 +688,127 @@ void bi::Driver::make() {
 
   /* change back to original working dir */
   current_path(work_dir);
+}
+
+void bi::Driver::create() {
+  using namespace boost::filesystem;
+
+  create_directory("bi");
+  path biPath("bi");
+  if (force) {
+    copy_with_force(find(share_dirs, "gitignore"), ".gitignore");
+    copy_with_force(find(share_dirs, "LICENSE"), "LICENSE");
+    copy_with_force(find(share_dirs, "Makefile"), "Makefile");
+    copy_with_force(find(share_dirs, "MANIFEST"), "MANIFEST");
+    copy_with_force(find(share_dirs, "META.md"), "META.md");
+    copy_with_force(find(share_dirs, "README.md"), "README.md");
+    copy_with_force(find(share_dirs, "VERSION.md"), "VERSION.md");
+  } else {
+    copy_with_prompt(find(share_dirs, "gitignore"), ".gitignore");
+    copy_with_prompt(find(share_dirs, "LICENSE"), "LICENSE");
+    copy_with_prompt(find(share_dirs, "Makefile"), "Makefile");
+    copy_with_prompt(find(share_dirs, "MANIFEST"), "MANIFEST");
+    copy_with_prompt(find(share_dirs, "META.md"), "META.md");
+    copy_with_prompt(find(share_dirs, "README.md"), "README.md");
+    copy_with_prompt(find(share_dirs, "VERSION.md"), "VERSION.md");
+  }
+}
+
+void bi::Driver::validate() {
+  using namespace boost::filesystem;
+
+  std::unordered_set<std::string> manifestFiles;
+
+  /* check MANIFEST */
+  if (!exists("MANIFEST")) {
+    warn("no MANIFEST file; create a MANIFEST file with a list of files, one per line, to be contained in the package.");
+  } else {
+    ifstream manifestStream("MANIFEST");
+    std::string name;
+    while (std::getline(manifestStream, name)) {
+      boost::trim(name);
+      manifestFiles.insert(name);
+      if (!exists(name)) {
+        warn(name + " file listed in MANIFEST file does not exist.");
+      }
+    }
+  }
+
+  /* check LICENSE */
+  if (!exists("LICENSE")) {
+    warn(
+        "no LICENSE file; create a LICENSE file containing the distribution license (e.g. GPL or BSD) of the package.");
+  } else if (manifestFiles.find("LICENSE") == manifestFiles.end()) {
+    warn("LICENSE file is not listed in MANIFEST file.");
+  }
+
+  /* check META.md */
+  if (!exists("META.md")) {
+    warn(
+        "no META.md file; create a META.md file documenting the package in Markdown format.");
+  } else if (manifestFiles.find("META.md") == manifestFiles.end()) {
+    warn("META.md file is not listed in MANIFEST file.");
+  }
+
+  /* check README.md */
+  if (!exists("README.md")) {
+    warn(
+        "no README.md file; create a README.md file documenting the package in Markdown format.");
+  } else if (manifestFiles.find("README.md") == manifestFiles.end()) {
+    warn("README.md file is not listed in MANIFEST file.");
+  }
+
+  /* check VERSION.md */
+  if (!exists("VERSION.md")) {
+    warn(
+        "no VERSION.md file; create a VERSION.md file documenting changes to the package in Markdown format.");
+  } else if (manifestFiles.find("VERSION.md") == manifestFiles.end()) {
+    warn("VERSION.md file is not listed in MANIFEST file.");
+  }
+
+  /* check for files that might be missing from MANIFEST */
+  std::unordered_set<std::string> interesting;
+
+  interesting.insert(".bi");
+  interesting.insert(".conf");
+  interesting.insert(".sh");
+  interesting.insert(".cpp");
+  interesting.insert(".hpp");
+  interesting.insert(".m");
+  interesting.insert(".R");
+
+  recursive_directory_iterator iter("."), end;
+  while (iter != end) {
+    auto path = remove_first(iter->path());
+    if (path.string().compare("build") == 0) {
+      iter.no_push();
+    } else if (interesting.find(path.extension().string())
+        != interesting.end()) {
+      if (manifestFiles.find(path.string()) == manifestFiles.end()) {
+        warn(std::string("is ") + path.string() + " missing from MANIFEST file?");
+      }
+    }
+    ++iter;
+  }
+
+  if (is_directory("data")) {
+    interesting.clear();
+    interesting.insert(".nc");
+    recursive_directory_iterator dataIter("data");
+    while (dataIter != end) {
+      auto path = dataIter->path();
+      if (interesting.find(path.extension().string()) != interesting.end()) {
+        if (manifestFiles.find(path.string()) == manifestFiles.end()) {
+          warn(std::string("is ") + path.string() + " missing from MANIFEST file?");
+        }
+      }
+      ++dataIter;
+    }
+  }
+}
+
+void bi::Driver::docs() {
+
 }
 
 void bi::Driver::unlock() {
