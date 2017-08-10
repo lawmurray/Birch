@@ -7,7 +7,7 @@
 
 namespace bi {
 /**
- * Output stream for *.bi files.
+ * Output stream for Birch source files.
  *
  * @ingroup compiler_io
  */

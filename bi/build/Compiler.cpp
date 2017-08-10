@@ -10,9 +10,9 @@
 #include "bi/io/cpp_ostream.hpp"
 #include "bi/io/hpp_ostream.hpp"
 #include "bi/io/bi_ostream.hpp"
+#include "bi/io/md_ostream.hpp"
 
 #include "boost/filesystem/fstream.hpp"
-#include "boost/graph/transitive_closure.hpp"
 
 #include <getopt.h>
 #include <dlfcn.h>
@@ -20,8 +20,8 @@
 
 namespace fs = boost::filesystem;
 
-bi::Compiler* compiler = nullptr;  // global variable needed by GNU Bison parser
-std::stringstream raw;  // stream for raw code and /** ... */ comments
+bi::Compiler* compiler = nullptr;
+std::stringstream raw;
 
 bi::Compiler::Compiler(int argc, char** argv) :
     output_file(""),
@@ -130,6 +130,12 @@ void bi::Compiler::gen() {
   }
 }
 
+void bi::Compiler::doc() {
+  for (auto iter = input_files.begin(); iter != input_files.end(); ++iter) {
+    doc(*iter);
+  }
+}
+
 void bi::Compiler::setRoot(Statement* root) {
   if (std) {
     Import* import = new Import(new Path(new Name("standard")),
@@ -204,6 +210,26 @@ void bi::Compiler::gen(const std::string name) {
   hppOutput << files[name];
   setStates(File::UNGENERATED);
   cppOutput << files[name];
+}
+
+void bi::Compiler::doc(const std::string name) {
+  /* pre-condition */
+  assert(parsed.find(name) != parsed.end());
+
+  fs::path mdPath;
+  if (!output_file.empty()) {
+    mdPath = output_file;
+  } else {
+    mdPath = name;
+  }
+  mdPath.replace_extension(".md");
+
+  fs::ofstream mdStream(mdPath);
+
+  md_ostream mdOutput(mdStream);
+
+  setStates(File::UNGENERATED);
+  mdOutput << files[name];
 }
 
 void bi::Compiler::setStates(const File::State state) {

@@ -208,3 +208,17 @@ std::string bi::escape(const std::string& str) {
 
   return buf.str();
 }
+
+std::string bi::comment(const std::string& str) {
+  std::regex reg("\n *\\* ?");
+  std::stringstream buf;
+  std::smatch match;
+  std::string str1 = str;
+  while (std::regex_search(str1, match, reg)) {
+    buf << match.prefix();
+    str1 = match.suffix();
+  }
+  buf << str1;
+
+  return buf.str();
+}

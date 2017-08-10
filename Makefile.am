@@ -97,6 +97,7 @@ birchc_SOURCES = \
   bi/io/bi_ostream.cpp \
   bi/io/cpp_ostream.cpp \
   bi/io/indentable_ostream.cpp \
+  bi/io/md_ostream.cpp \
   bi/primitive/encode.cpp \
   bi/statement/Alias.cpp \
   bi/statement/Assert.cpp \
@@ -267,16 +268,17 @@ noinst_HEADERS = \
   bi/expression/Super.hpp \
   bi/expression/This.hpp \
   bi/expression/UnaryCall.hpp \
-  bi/io/bi_ostream.hpp \
-  bi/io/bih_ostream.hpp \
   bi/io/cpp/CppBaseGenerator.hpp \
   bi/io/cpp/CppConstructorGenerator.hpp \
   bi/io/cpp/CppClassGenerator.hpp \
   bi/io/cpp/CppFiberGenerator.hpp \
   bi/io/cpp/CppMemberFiberGenerator.hpp \
   bi/io/cpp_ostream.hpp \
+  bi/io/bi_ostream.hpp \
+  bi/io/bih_ostream.hpp \
   bi/io/hpp_ostream.hpp \
   bi/io/indentable_ostream.hpp \
+  bi/io/md_ostream.hpp \
   bi/primitive/definitely.hpp \
   bi/primitive/encode.hpp \
   bi/primitive/poset.hpp \

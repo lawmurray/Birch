@@ -7,7 +7,7 @@
 
 namespace bi {
 /**
- * Output stream for *.hpp files.
+ * Output stream for C++ source files.
  *
  * @ingroup compiler_io
  */

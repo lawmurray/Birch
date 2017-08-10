@@ -53,4 +53,9 @@ std::string internalise(const std::string& name);
  * Escape special characters in a string.
  */
 std::string escape(const std::string& str);
+
+/**
+ * Process a documentation comment.
+ */
+std::string comment(const std::string& str);
 }

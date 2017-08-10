@@ -45,6 +45,11 @@ public:
   void gen();
 
   /**
+   * Generate documentation for all input files.
+   */
+  void doc();
+
+  /**
    * Import a path.
    *
    * @param path Path given in import statement.
@@ -93,6 +98,13 @@ private:
    * @param name File name.
    */
   void gen(const std::string name);
+
+  /**
+   * Generate documentation for specific file.
+   *
+   * @param name File name.
+   */
+  void doc(const std::string name);
 
   /**
    * Set state of all files.

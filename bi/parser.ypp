@@ -13,6 +13,15 @@
   #include "bi/type/all.hpp"
 
   /**
+   * Take the raw string (for raw code, documentation comments).
+   */
+  std::string take_raw() {
+    std::string result(raw.str());
+    raw.str("");
+    return result;
+  }
+
+  /**
    * Make a location, without documentation string.
    */
   bi::Location* make_loc(YYLTYPE& loc) {
@@ -25,7 +34,7 @@
    */
   bi::Location* make_doc_loc(YYLTYPE& loc) {
     return new bi::Location(compiler->file, loc.first_line, loc.last_line,
-        loc.first_column, loc.last_column, raw.str());
+        loc.first_column, loc.last_column, take_raw());
   }
 }
 
@@ -466,11 +475,11 @@ import
     ;
 
 cpp
-    : CPP double_braces  { $$ = new bi::Raw(new bi::Name("cpp"), raw.str(), make_doc_loc(@$)); }
+    : CPP double_braces  { $$ = new bi::Raw(new bi::Name("cpp"), take_raw(), make_doc_loc(@$)); }
     ;
 
 hpp
-    : HPP double_braces  { $$ = new bi::Raw(new bi::Name("hpp"), raw.str(), make_doc_loc(@$)); }
+    : HPP double_braces  { $$ = new bi::Raw(new bi::Name("hpp"), take_raw(), make_doc_loc(@$)); }
     ;
 
 assignment
@@ -615,7 +624,7 @@ optional_class_braces
     ;
     
 double_braces
-    : DOUBLE_BRACE_OPEN { raw.str(""); } DOUBLE_BRACE_CLOSE
+    : DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE
     ;
 
 

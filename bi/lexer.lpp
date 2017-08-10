@@ -86,7 +86,7 @@ IS                                 (u|U|l|L)*
 <COMMENT_EOL>"\n"                   { BEGIN(INITIAL); }
 <COMMENT_EOL>.                      { }
 
-"/**"                               { BEGIN(COMMENT_DOC); }
+"/**"                               { BEGIN(COMMENT_DOC); raw.str(""); }
 <COMMENT_DOC>"*/"                   { BEGIN(INITIAL); }
 <COMMENT_DOC>"\n"                   { raw << yytext; }
 <COMMENT_DOC>.                      { raw << yytext; }
@@ -96,7 +96,7 @@ IS                                 (u|U|l|L)*
 <COMMENT_INLINE>"\n"                { }
 <COMMENT_INLINE>.                   { }
 
-"{{"                                { BEGIN(DOUBLE_BRACE); return DOUBLE_BRACE_OPEN; }
+"{{"                                { BEGIN(DOUBLE_BRACE); raw.str(""); return DOUBLE_BRACE_OPEN; }
 <DOUBLE_BRACE>"}}"                  { BEGIN(INITIAL); return DOUBLE_BRACE_CLOSE; }
 <DOUBLE_BRACE>"\n"                  { raw << yytext; }
 <DOUBLE_BRACE>.                     { raw << yytext; }
