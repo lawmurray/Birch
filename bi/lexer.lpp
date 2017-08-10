@@ -67,7 +67,7 @@ void yyreset() {
 
 %option noyywrap
 
-%x COMMENT_EOL COMMENT_INLINE DOUBLE_BRACE
+%x COMMENT_EOL COMMENT_INLINE COMMENT_DOC DOUBLE_BRACE
 
 D                                  [0-9]
 L                                  [a-zA-Z]
@@ -85,6 +85,11 @@ IS                                 (u|U|l|L)*
 "//"                                { BEGIN(COMMENT_EOL); }
 <COMMENT_EOL>"\n"                   { BEGIN(INITIAL); }
 <COMMENT_EOL>.                      { }
+
+"/**"                               { BEGIN(COMMENT_DOC); }
+<COMMENT_DOC>"*/"                   { BEGIN(INITIAL); }
+<COMMENT_DOC>"\n"                   { raw << yytext; }
+<COMMENT_DOC>.                      { raw << yytext; }
 
 "/*"                                { BEGIN(COMMENT_INLINE); }
 <COMMENT_INLINE>"*/"                { BEGIN(INITIAL); }
