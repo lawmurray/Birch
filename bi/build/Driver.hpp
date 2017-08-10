@@ -68,6 +68,11 @@ public:
 
 private:
   /**
+   * Read in the MANIFEST file.
+   */
+  void readManifest();
+
+  /**
    * Set up build directory.
    */
   void setup();
@@ -199,13 +204,19 @@ private:
   bool newManifest;
 
   /**
+   * Is build directory locked?
+   */
+  bool isLocked;
+
+  /**
    * File lock.
    */
   boost::interprocess::file_lock lockFile;
 
   /**
-   * Is build directory locked?
+   * Lists of files from MANIFEST.
    */
-  bool isLocked;
+  std::list<boost::filesystem::path> files, biFiles, cppFiles, hppFiles,
+      metaFiles, otherFiles;
 };
 }

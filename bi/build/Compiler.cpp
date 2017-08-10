@@ -20,6 +20,9 @@
 
 namespace fs = boost::filesystem;
 
+bi::Compiler* compiler = nullptr;  // global variable needed by GNU Bison parser
+std::stringstream raw;  // stream for raw code and /** ... */ comments
+
 bi::Compiler::Compiler(int argc, char** argv) :
     output_file(""),
     enable_std(true) {

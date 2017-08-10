@@ -112,8 +112,8 @@ bi::Driver::Driver(int argc, char** argv) :
   /* read options */
   std::vector<char*> unknown;
   opterr = 0;  // handle error reporting ourselves
-  c = getopt_long_only(largv.size(), largv.data(), short_options, long_options,
-      &option_index);
+  c = getopt_long_only(largv.size(), largv.data(), short_options,
+      long_options, &option_index);
   while (c != -1) {
     switch (c) {
     case BUILD_DIR_ARG:
@@ -168,8 +168,8 @@ bi::Driver::Driver(int argc, char** argv) :
       --optind;
       break;
     }
-    c = getopt_long_only(largv.size(), largv.data(), short_options, long_options,
-        &option_index);
+    c = getopt_long_only(largv.size(), largv.data(), short_options,
+        long_options, &option_index);
   }
   largv.insert(largv.end(), unknown.begin(), unknown.end());
 
@@ -312,7 +312,8 @@ void bi::Driver::install() {
       throw DriverException("make install failed to execute.");
     } else if (ret != 0) {
       std::stringstream buf;
-      buf << "make install died with signal " << ret << ". See " << (build_dir / "install.log").string() << " for details.";
+      buf << "make install died with signal " << ret << ". See "
+          << (build_dir / "install.log").string() << " for details.";
       throw DriverException(buf.str());
     }
 
@@ -340,7 +341,8 @@ void bi::Driver::uninstall() {
     throw DriverException("make uninstall failed to execute.");
   } else if (ret != 0) {
     std::stringstream buf;
-    buf << "make uninstall died with signal " << ret << ". See " << (build_dir / "uninstall.log").string() << " for details.";
+    buf << "make uninstall died with signal " << ret << ". See "
+        << (build_dir / "uninstall.log").string() << " for details.";
     throw DriverException(buf.str());
   }
 
@@ -348,52 +350,10 @@ void bi::Driver::uninstall() {
   current_path(work_dir);
 }
 
-void bi::Driver::setup() {
-  /* create build directory */
+void bi::Driver::readManifest() {
   if (exists("MANIFEST")) {
-    if (!exists(build_dir)) {
-      if (!create_directory(build_dir)) {
-        std::stringstream buf;
-        buf << "Could not create build directory " << build_dir << '.';
-        throw DriverException(buf.str());
-      }
-      ofstream stream(build_dir / "lock");  // creates lock file
-    }
-    lock();
-
-    path biPath("birch");
-    newAutogen = copy_if_newer(find(share_dirs, biPath / "autogen.sh"),
-        work_dir / "autogen.sh");
-    permissions(work_dir / "autogen.sh", add_perms|owner_exe);
-    newConfigure = copy_if_newer(find(share_dirs, biPath / "configure.ac"),
-        work_dir / "configure.ac");
-    newMake = copy_if_newer(find(share_dirs, biPath / "common.am"),
-        work_dir / "common.am");
-    newManifest = !exists(work_dir / "Makefile.am")
-        || last_write_time("MANIFEST")
-            > last_write_time(work_dir / "Makefile.am");
-
-    path m4_dir = work_dir / "m4";
-    if (!exists(m4_dir)) {
-      if (!create_directory(m4_dir)) {
-        std::stringstream buf;
-        buf << "Could not create m4 directory " << m4_dir << '.';
-        throw DriverException(buf.str());
-      }
-    }
-    copy_if_newer(find(share_dirs, biPath / "ax_cxx_compile_stdcxx.m4"),
-        m4_dir / "ax_cxx_compile_stdcxx.m4");
-    copy_if_newer(find(share_dirs, biPath / "ax_cxx_compile_stdcxx_11.m4"),
-        m4_dir / "ax_cxx_compile_stdcxx_11.m4");
-    copy_if_newer(find(share_dirs, biPath / "ax_cxx_compile_stdcxx_14.m4"),
-        m4_dir / "ax_cxx_compile_stdcxx_14.m4");
-
-    /* build list of source files */
     ifstream manifestStream("MANIFEST");
-    std::list<path> files, biFiles, cppFiles, hppFiles, metaFiles,
-        otherFiles;
     std::string name;
-
     while (std::getline(manifestStream, name)) {
       path file(name);
       if (exists(file)) {
@@ -419,138 +379,183 @@ void bi::Driver::setup() {
         warn(buf.str());
       }
     }
+  } else {
+    throw DriverException("No MANIFEST file.");
+  }
+}
 
-    /* create Makefile.am */
-    if (newManifest) {
-      ofstream makeStream(work_dir / "Makefile.am");
-      makeStream << "include common.am\n\n";
-      makeStream << "lib_LTLIBRARIES = lib" << packageName << ".la\n\n";
-
-      /* *.cpp files */
-      makeStream << "lib" << packageName << "_la_SOURCES = ";
-      auto iter = cppFiles.begin();
-      while (iter != cppFiles.end()) {
-        if (iter != cppFiles.begin()) {
-          makeStream << "  ";
-        }
-        makeStream << iter->string();
-        if (++iter != cppFiles.end()) {
-          makeStream << " \\";
-        }
-        makeStream << '\n';
-      }
-      makeStream << '\n';
-
-      /* sources derived from *.bi files */
-      makeStream << "nodist_lib" << packageName << "_la_SOURCES = ";
-      iter = biFiles.begin();
-      while (iter != biFiles.end()) {
-        iter->replace_extension(".cpp");
-        if (iter != biFiles.begin()) {
-          makeStream << "  ";
-        }
-        makeStream << iter->string();
-        if (++iter != biFiles.end()) {
-          makeStream << " \\";
-        }
-        makeStream << '\n';
-      }
-      makeStream << '\n';
-
-      /* headers to install and distribute */
-      makeStream << "nobase_include_HEADERS = ";
-      iter = hppFiles.begin();
-      while (iter != hppFiles.end()) {
-        if (iter != hppFiles.begin()) {
-          makeStream << "  ";
-        }
-        makeStream << iter->string();
-        if (++iter != hppFiles.end() || !biFiles.empty()) {
-          makeStream << " \\";
-        }
-        makeStream << '\n';
-      }
-      iter = biFiles.begin();
-      while (iter != biFiles.end()) {
-        iter->replace_extension(".bi");
-        if (iter != biFiles.begin() || !hppFiles.empty()) {
-          makeStream << "  ";
-        }
-        makeStream << iter->string();
-        if (++iter != biFiles.end()) {
-          makeStream << " \\";
-        }
-        makeStream << '\n';
-      }
-      makeStream << '\n';
-
-      /* headers to install but not distribute */
-      makeStream << "nobase_nodist_include_HEADERS = ";
-      iter = biFiles.begin();
-      while (iter != biFiles.end()) {
-        iter->replace_extension(".hpp");
-        if (iter != biFiles.begin()) {
-          makeStream << "  ";
-        }
-        makeStream << iter->string();
-        if (++iter != biFiles.end()) {
-          makeStream << " \\";
-        }
-        makeStream << '\n';
-      }
-      makeStream << '\n';
-
-      /* built sources */
-      makeStream << "BUILT_SOURCES = ";
-      iter = biFiles.begin();
-      while (iter != biFiles.end()) {
-        iter->replace_extension(".cpp");
-        if (iter != biFiles.begin()) {
-          makeStream << "  ";
-        }
-        makeStream << iter->string();
-        makeStream << " \\\n  ";
-        iter->replace_extension(".hpp");
-        makeStream << iter->string();
-        if (++iter != biFiles.end()) {
-          makeStream << " \\";
-        }
-        makeStream << '\n';
-      }
-      makeStream << '\n';
-
-      /* data files */
-      makeStream << "dist_pkgdata_DATA = ";
-      iter = otherFiles.begin();
-      while (iter != otherFiles.end()) {
-        if (iter != otherFiles.begin()) {
-          makeStream << "  ";
-        }
-        makeStream << iter->string();
-        if (++iter != otherFiles.end()) {
-          makeStream << " \\";
-        }
-        makeStream << '\n';
-      }
-      makeStream << '\n';
-
-      /* meta files */
-      makeStream << "noinst_DATA = ";
-      iter = metaFiles.begin();
-      while (iter != metaFiles.end()) {
-        if (iter != metaFiles.begin()) {
-          makeStream << "  ";
-        }
-        makeStream << iter->string();
-        if (++iter != metaFiles.end()) {
-          makeStream << " \\";
-        }
-        makeStream << '\n';
-      }
-      makeStream << '\n';
-
-      makeStream.close();
+void bi::Driver::setup() {
+  /* create build directory */
+  if (!exists(build_dir)) {
+    if (!create_directory(build_dir)) {
+      std::stringstream buf;
+      buf << "Could not create build directory " << build_dir << '.';
+      throw DriverException(buf.str());
     }
+    ofstream stream(build_dir / "lock");  // creates lock file
+  }
+  lock();
+
+  path biPath("birch");
+  newAutogen = copy_if_newer(find(share_dirs, biPath / "autogen.sh"),
+      work_dir / "autogen.sh");
+  permissions(work_dir / "autogen.sh", add_perms | owner_exe);
+  newConfigure = copy_if_newer(find(share_dirs, biPath / "configure.ac"),
+      work_dir / "configure.ac");
+  newMake = copy_if_newer(find(share_dirs, biPath / "common.am"),
+      work_dir / "common.am");
+  newManifest = !exists(work_dir / "Makefile.am")
+      || last_write_time("MANIFEST")
+          > last_write_time(work_dir / "Makefile.am");
+
+  path m4_dir = work_dir / "m4";
+  if (!exists(m4_dir)) {
+    if (!create_directory(m4_dir)) {
+      std::stringstream buf;
+      buf << "Could not create m4 directory " << m4_dir << '.';
+      throw DriverException(buf.str());
+    }
+  }
+  copy_if_newer(find(share_dirs, biPath / "ax_cxx_compile_stdcxx.m4"),
+      m4_dir / "ax_cxx_compile_stdcxx.m4");
+  copy_if_newer(find(share_dirs, biPath / "ax_cxx_compile_stdcxx_11.m4"),
+      m4_dir / "ax_cxx_compile_stdcxx_11.m4");
+  copy_if_newer(find(share_dirs, biPath / "ax_cxx_compile_stdcxx_14.m4"),
+      m4_dir / "ax_cxx_compile_stdcxx_14.m4");
+
+  /* build list of source files */
+  readManifest();
+
+  /* create Makefile.am */
+  if (newManifest) {
+    ofstream makeStream(work_dir / "Makefile.am");
+    makeStream << "include common.am\n\n";
+    makeStream << "lib_LTLIBRARIES = lib" << packageName << ".la\n\n";
+
+    /* *.cpp files */
+    makeStream << "lib" << packageName << "_la_SOURCES = ";
+    auto iter = cppFiles.begin();
+    while (iter != cppFiles.end()) {
+      if (iter != cppFiles.begin()) {
+        makeStream << "  ";
+      }
+      makeStream << iter->string();
+      if (++iter != cppFiles.end()) {
+        makeStream << " \\";
+      }
+      makeStream << '\n';
+    }
+    makeStream << '\n';
+
+    /* sources derived from *.bi files */
+    makeStream << "nodist_lib" << packageName << "_la_SOURCES = ";
+    iter = biFiles.begin();
+    while (iter != biFiles.end()) {
+      iter->replace_extension(".cpp");
+      if (iter != biFiles.begin()) {
+        makeStream << "  ";
+      }
+      makeStream << iter->string();
+      if (++iter != biFiles.end()) {
+        makeStream << " \\";
+      }
+      makeStream << '\n';
+    }
+    makeStream << '\n';
+
+    /* headers to install and distribute */
+    makeStream << "nobase_include_HEADERS = ";
+    iter = hppFiles.begin();
+    while (iter != hppFiles.end()) {
+      if (iter != hppFiles.begin()) {
+        makeStream << "  ";
+      }
+      makeStream << iter->string();
+      if (++iter != hppFiles.end() || !biFiles.empty()) {
+        makeStream << " \\";
+      }
+      makeStream << '\n';
+    }
+    iter = biFiles.begin();
+    while (iter != biFiles.end()) {
+      iter->replace_extension(".bi");
+      if (iter != biFiles.begin() || !hppFiles.empty()) {
+        makeStream << "  ";
+      }
+      makeStream << iter->string();
+      if (++iter != biFiles.end()) {
+        makeStream << " \\";
+      }
+      makeStream << '\n';
+    }
+    makeStream << '\n';
+
+    /* headers to install but not distribute */
+    makeStream << "nobase_nodist_include_HEADERS = ";
+    iter = biFiles.begin();
+    while (iter != biFiles.end()) {
+      iter->replace_extension(".hpp");
+      if (iter != biFiles.begin()) {
+        makeStream << "  ";
+      }
+      makeStream << iter->string();
+      if (++iter != biFiles.end()) {
+        makeStream << " \\";
+      }
+      makeStream << '\n';
+    }
+    makeStream << '\n';
+
+    /* built sources */
+    makeStream << "BUILT_SOURCES = ";
+    iter = biFiles.begin();
+    while (iter != biFiles.end()) {
+      iter->replace_extension(".cpp");
+      if (iter != biFiles.begin()) {
+        makeStream << "  ";
+      }
+      makeStream << iter->string();
+      makeStream << " \\\n  ";
+      iter->replace_extension(".hpp");
+      makeStream << iter->string();
+      if (++iter != biFiles.end()) {
+        makeStream << " \\";
+      }
+      makeStream << '\n';
+    }
+    makeStream << '\n';
+
+    /* data files */
+    makeStream << "dist_pkgdata_DATA = ";
+    iter = otherFiles.begin();
+    while (iter != otherFiles.end()) {
+      if (iter != otherFiles.begin()) {
+        makeStream << "  ";
+      }
+      makeStream << iter->string();
+      if (++iter != otherFiles.end()) {
+        makeStream << " \\";
+      }
+      makeStream << '\n';
+    }
+    makeStream << '\n';
+
+    /* meta files */
+    makeStream << "noinst_DATA = ";
+    iter = metaFiles.begin();
+    while (iter != metaFiles.end()) {
+      if (iter != metaFiles.begin()) {
+        makeStream << "  ";
+      }
+      makeStream << iter->string();
+      if (++iter != metaFiles.end()) {
+        makeStream << " \\";
+      }
+      makeStream << '\n';
+    }
+    makeStream << '\n';
+
+    makeStream.close();
   }
 }
 
@@ -572,7 +577,9 @@ void bi::Driver::autogen() {
       throw DriverException("autogen.sh failed to execute.");
     } else if (ret != 0) {
       std::stringstream buf;
-      buf << "autogen.sh died with signal " << ret << ". Make sure autoconf, automake and libtool are installed. See " << (build_dir / "autogen.log").string() << " for details.";
+      buf << "autogen.sh died with signal " << ret
+          << ". Make sure autoconf, automake and libtool are installed. See "
+          << (build_dir / "autogen.log").string() << " for details.";
       throw DriverException(buf.str());
     }
   }
@@ -651,7 +658,10 @@ void bi::Driver::configure() {
       throw DriverException("configure failed to execute.");
     } else if (ret != 0) {
       std::stringstream buf;
-      buf << "configure died with signal " << ret << ". Make sure all dependencies are installed. See " << (build_dir / "configure.log").string() << " and " << (build_dir / "config.log").string() << " for details.";
+      buf << "configure died with signal " << ret
+          << ". Make sure all dependencies are installed. See "
+          << (build_dir / "configure.log").string() << " and "
+          << (build_dir / "config.log").string() << " for details.";
       throw DriverException(buf.str());
     }
 
@@ -682,7 +692,8 @@ void bi::Driver::make() {
     throw DriverException("make failed to execute.");
   } else if (ret != 0) {
     std::stringstream buf;
-    buf << "make died with signal " << ret << ". See " << (build_dir / "make.log").string() << " for details.";
+    buf << "make died with signal " << ret << ". See "
+        << (build_dir / "make.log").string() << " for details.";
     throw DriverException(buf.str());
   }
 
@@ -721,7 +732,8 @@ void bi::Driver::validate() {
 
   /* check MANIFEST */
   if (!exists("MANIFEST")) {
-    warn("no MANIFEST file; create a MANIFEST file with a list of files, one per line, to be contained in the package.");
+    warn(
+        "no MANIFEST file; create a MANIFEST file with a list of files, one per line, to be contained in the package.");
   } else {
     ifstream manifestStream("MANIFEST");
     std::string name;
@@ -785,7 +797,9 @@ void bi::Driver::validate() {
     } else if (interesting.find(path.extension().string())
         != interesting.end()) {
       if (manifestFiles.find(path.string()) == manifestFiles.end()) {
-        warn(std::string("is ") + path.string() + " missing from MANIFEST file?");
+        warn(
+            std::string("is ") + path.string()
+                + " missing from MANIFEST file?");
       }
     }
     ++iter;
@@ -799,7 +813,9 @@ void bi::Driver::validate() {
       auto path = dataIter->path();
       if (interesting.find(path.extension().string()) != interesting.end()) {
         if (manifestFiles.find(path.string()) == manifestFiles.end()) {
-          warn(std::string("is ") + path.string() + " missing from MANIFEST file?");
+          warn(
+              std::string("is ") + path.string()
+                  + " missing from MANIFEST file?");
         }
       }
       ++dataIter;
@@ -808,7 +824,7 @@ void bi::Driver::validate() {
 }
 
 void bi::Driver::docs() {
-
+  readManifest();
 }
 
 void bi::Driver::unlock() {
