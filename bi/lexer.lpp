@@ -93,8 +93,8 @@ IS                                 (u|U|l|L)*
 
 "{{"                                { BEGIN(DOUBLE_BRACE); return DOUBLE_BRACE_OPEN; }
 <DOUBLE_BRACE>"}}"                  { BEGIN(INITIAL); return DOUBLE_BRACE_CLOSE; }
-<DOUBLE_BRACE>"\n"                  { yylval.valString = yytext; return RAW; }
-<DOUBLE_BRACE>.                     { yylval.valString = yytext; return RAW; }
+<DOUBLE_BRACE>"\n"                  { raw << yytext; }
+<DOUBLE_BRACE>.                     { raw << yytext; }
 
 "import"                            { return IMPORT; }
 "function"                          { return FUNCTION; }

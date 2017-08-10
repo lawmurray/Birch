@@ -24,6 +24,7 @@ AX_CXX_COMPILE_STDCXX_14([noext], [mandatory])
 
 # Checks for libraries
 AC_CHECK_LIB([birch], [bi_present], [], [AC_MSG_ERROR([Birch compiler library not found])])
+AC_CHECK_LIB([profiler], [main], [], [])
 if test x$std = xtrue; then
     AC_CHECK_LIB([birch_standard], [bi_standard_present], [], [AC_MSG_ERROR([Birch standard library not found])])
 fi

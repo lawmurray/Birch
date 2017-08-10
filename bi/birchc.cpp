@@ -6,8 +6,10 @@
 #include "bi/build/Compiler.hpp"
 
 #include <iostream>
+#include <sstream>
 
 bi::Compiler* compiler = nullptr;  // global variable needed by GNU Bison parser
+std::stringstream raw;  // stream for raw code and /** ... */ comments
 
 int main(int argc, char** argv) {
   using namespace bi;

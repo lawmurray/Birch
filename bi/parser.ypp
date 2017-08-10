@@ -3,6 +3,7 @@
   #include "bi/build/Compiler.hpp"
 
   extern bi::Compiler* compiler;
+  extern std::stringstream raw;
   extern char *yytext;
 }
 
@@ -10,10 +11,6 @@
   #include "bi/expression/all.hpp"
   #include "bi/statement/all.hpp"
   #include "bi/type/all.hpp"
-
-  #include <sstream>
-
-  std::stringstream raw;
   
   void setloc(bi::Located* o, YYLTYPE& loc) {
     o->loc->file = compiler->file;
@@ -46,7 +43,7 @@
 %token <valString> IF ELSE FOR IN WHILE ASSERT RETURN YIELD CPP HPP
 %token <valString> THIS SUPER NIL
 %token <valString> FUNCTION_UPPER
-%token <valString> DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE RAW NAME
+%token <valString> DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE NAME
 %token <valBool> BOOL_LITERAL
 %token <valInt> INT_LITERAL
 %token <valReal> REAL_LITERAL
@@ -613,14 +610,9 @@ optional_class_braces
     : class_braces
     | ';'           { $$ = new bi::EmptyStatement(); }
     ;
-
-raw
-    : RAW      { raw << $1; }
-    | raw RAW  { raw << $2; }
-    ;
     
 double_braces
-    : DOUBLE_BRACE_OPEN { raw.str(""); } raw DOUBLE_BRACE_CLOSE
+    : DOUBLE_BRACE_OPEN { raw.str(""); } DOUBLE_BRACE_CLOSE
     ;
 
 

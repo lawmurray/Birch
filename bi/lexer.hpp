@@ -7,8 +7,10 @@
 #define BI_LEXER_HPP
 
 #include <cstdio>
+#include <sstream>
 
 extern FILE* yyin;
+extern std::stringstream raw;
 
 int yylex();
 int yyparse();
