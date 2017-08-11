@@ -10,16 +10,16 @@ AM_CXXFLAGS = -Wno-deprecated-register -Wno-overloaded-virtual
 # ^ -Wno-deprecated-register to omit warnings for GNU Flex/Bison generated code
 ACLOCAL_AMFLAGS = -I m4
 
-# programs
-bin_PROGRAMS = birchc birch
+# driver and compiler programs
+bin_PROGRAMS = birch birchc
 
-# libraries
+# compiler lirary
 lib_LTLIBRARIES = libbirch.la
 
-# sources
-birchc_LDADD = $(DEPS_LIBS)
-birchc_SOURCES = \
+# common sources for driver and compiler programs
+COMMON_SOURCES = \
   bi/build/Compiler.cpp \
+  bi/build/Driver.cpp \
   bi/build/misc.cpp \
   bi/common/Argumented.cpp \
   bi/common/Based.cpp \
@@ -50,6 +50,7 @@ birchc_SOURCES = \
   bi/exception/AmbiguousCallException.cpp \
   bi/exception/CompilerException.cpp \
   bi/exception/CyclicImportException.cpp \
+  bi/exception/DriverException.cpp \
   bi/exception/Exception.cpp \
   bi/exception/FileNotFoundException.cpp \
   bi/exception/GetException.cpp \
@@ -148,22 +149,22 @@ birchc_SOURCES = \
   bi/visitor/Modifier.cpp \
   bi/visitor/Resolver.cpp \
   bi/visitor/Visitor.cpp \
-  bi/birchc.cpp \
   bi/lexer.lpp \
   bi/parser.ypp
+
+# sources
+birchc_LDADD = $(DEPS_LIBS)
+birchc_SOURCES = \
+  $(COMMON_SOURCES) \
+  bi/birchc.cpp
 
 birchc_CXXFLAGS = $(AM_CXXFLAGS)
 # ^ workaround for 'created with both libtool and without' error
 
 birch_LDADD = $(DEPS_LIBS)
 birch_SOURCES = \
-  bi/build/Driver.cpp \
-  bi/build/misc.cpp \
-  bi/exception/DriverException.cpp \
-  bi/exception/Exception.cpp \
-  bi/exception/FileNotFoundException.cpp \
-  bi/birch.cpp \
-  bi/config.lpp
+  $(COMMON_SOURCES) \
+  bi/birch.cpp
 birch_CXXFLAGS = $(AM_CXXFLAGS)
 
 libbirch_la_SOURCES = \
@@ -334,7 +335,6 @@ noinst_HEADERS = \
   bi/visitor/Modifier.hpp \
   bi/visitor/Resolver.hpp \
   bi/visitor/Visitor.hpp \
-  bi/config.hpp \
   bi/lexer.hpp \
   bi/modules.hpp \
   bi/parser.hpp

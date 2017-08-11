@@ -3,7 +3,6 @@
  */
 #include "Driver.hpp"
 
-#include "bi/config.hpp"
 #include "bi/build/misc.hpp"
 #include "bi/exception/DriverException.hpp"
 
@@ -79,35 +78,6 @@ bi::Driver::Driver(int argc, char** argv) :
 
   /* first position argument is program name */
   int i = 1;
-
-  /* next position arguments are config files */
-  if (i < argc) {
-    do {
-      char* name;
-      if (*largv[i] == '@') {
-        // for backwards compatibility with Birch 1.x, allow config file name
-        // to start with '@', but just remove it
-        name = largv[i] + 1;
-      } else {
-        name = largv[i];
-      }
-
-      yyin = fopen(name, "r");
-      if (yyin) {
-        while (yylex()) {
-          fbufs.push_back(yytext);
-          fargv.insert(fargv.end(), const_cast<char*>(fbufs.back().c_str()));
-        }
-        ++i;
-      } else if (name[0] != '-') {
-        std::stringstream buf;
-        buf << "Configuration file " << name << " does not exist.";
-        throw DriverException(buf.str());
-      }
-    } while (yyin && i < argc);
-    largv.erase(largv.begin() + 1, largv.begin() + i);
-    largv.insert(largv.begin() + 1, fargv.begin(), fargv.end());
-  }
 
   /* read options */
   std::vector<char*> unknown;
