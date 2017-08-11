@@ -3,157 +3,55 @@
  */
 #include "bi/io/md_ostream.hpp"
 
-#include "bi/primitive/encode.hpp"
-
-bi::md_ostream::md_ostream(std::ostream& base) :
-    bih_ostream(base) {
+bi::md_ostream::md_ostream(std::ostream& base, const std::list<File*> files) :
+    bih_ostream(base),
+    files(files),
+    depth(1) {
   //
 }
 
-void bi::md_ostream::visit(const GlobalVariable* o) {
-  if (!o->loc->doc.empty()) {
-    genDoc(o->loc);
-    in(); in();
-    bih_ostream::visit(o);
-    out(); out();
-    *this << "\n\n";
-  }
-}
-
-void bi::md_ostream::visit(const MemberVariable* o) {
-  if (!o->loc->doc.empty()) {
-    genDoc(o->loc);
-    in(); in();
-    bih_ostream::visit(o);
-    out(); out();
-    *this << "\n\n";
-  }
-}
-
-void bi::md_ostream::visit(const Function* o) {
-  if (!o->loc->doc.empty()) {
-    genDoc(o->loc);
-    in(); in();
-    bih_ostream::visit(o);
-    out(); out();
-    *this << "\n\n";
-  }
-}
-
-void bi::md_ostream::visit(const Fiber* o) {
-  if (!o->loc->doc.empty()) {
-    genDoc(o->loc);
-    in(); in();
-    bih_ostream::visit(o);
-    out(); out();
-    *this << "\n\n";
-  }
-}
-
-void bi::md_ostream::visit(const Program* o) {
-  if (!o->loc->doc.empty()) {
-    genDoc(o->loc);
-    in(); in();
-    bih_ostream::visit(o);
-    out(); out();
-    *this << "\n\n";
-  }
-}
-
-void bi::md_ostream::visit(const MemberFunction* o) {
-  if (!o->loc->doc.empty()) {
-    genDoc(o->loc);
-    in(); in();
-    bih_ostream::visit(o);
-    out(); out();
-    *this << "\n\n";
-  }
-}
-
-void bi::md_ostream::visit(const MemberFiber* o) {
-  if (!o->loc->doc.empty()) {
-    genDoc(o->loc);
-    in(); in();
-    bih_ostream::visit(o);
-    out(); out();
-    *this << "\n\n";
-  }
-}
-
-void bi::md_ostream::visit(const BinaryOperator* o) {
-  if (!o->loc->doc.empty()) {
-    genDoc(o->loc);
-    in(); in();
-    bih_ostream::visit(o);
-    out(); out();
-    *this << "\n\n";
-  }
-}
-
-void bi::md_ostream::visit(const UnaryOperator* o) {
-  if (!o->loc->doc.empty()) {
-    genDoc(o->loc);
-    in(); in();
-    bih_ostream::visit(o);
-    out(); out();
-    *this << "\n\n";
-  }
-}
-
-void bi::md_ostream::visit(const AssignmentOperator* o) {
-  if (!o->loc->doc.empty()) {
-    genDoc(o->loc);
-    in(); in();
-    bih_ostream::visit(o);
-    out(); out();
-    *this << "\n\n";
-  }
-}
-
-void bi::md_ostream::visit(const ConversionOperator* o) {
-  if (!o->loc->doc.empty()) {
-    genDoc(o->loc);
-    in(); in();
-    bih_ostream::visit(o);
-    out(); out();
-    *this << "\n\n";
-  }
+void bi::md_ostream::gen() {
+  genHead("Global");
+  ++depth;
+  genHead("Programs");
+  genSection<Program>();
+  genHead("Variables");
+  genSection<GlobalVariable>();
+  genHead("Functions");
+  genSection<Function>();
+  genHead("Fibers");
+  genSection<Fiber>();
+  genHead("Operators");
+  genSection<UnaryOperator>();
+  genSection<BinaryOperator>();
+  --depth;
+  genHead("Classes");
+  genSection<Class>();
 }
 
 void bi::md_ostream::visit(const Class* o) {
-  if (!o->loc->doc.empty()) {
-    genDoc(o->loc);
-    in(); in();
-    bih_ostream::visit(o);
-    out(); out();
-    *this << "\n\n";
+  out(); out(); // cancel bih_ostream indenting
+  ++depth;
+  genHead("Member Variables");
+  genClassSection<MemberVariable>(o);
+  genHead("Member Functions");
+  genClassSection<MemberFunction>(o);
+  genHead("Member Fibers");
+  genClassSection<MemberFiber>(o);
+  genHead("Assignments");
+  genClassSection<AssignmentOperator>(o);
+  genHead("Conversions");
+  genClassSection<ConversionOperator>(o);
+  --depth;
+  in(); in();
+}
+
+void bi::md_ostream::genHead(const std::string& name) {
+  finish("");
+  for (int i = 0; i < depth; ++i) {
+    middle('#');
   }
-}
-
-void bi::md_ostream::visit(const Alias* o) {
-  if (!o->loc->doc.empty()) {
-    genDoc(o->loc);
-    in(); in();
-    bih_ostream::visit(o);
-    out(); out();
-    *this << "\n\n";
-  }
-}
-
-void bi::md_ostream::visit(const Basic* o) {
-  if (!o->loc->doc.empty()) {
-    genDoc(o->loc);
-    in(); in();
-    bih_ostream::visit(o);
-    out(); out();
-    *this << "\n\n";
-  }
-}
-
-void bi::md_ostream::visit(const Import* o) {
-  //
-}
-
-void bi::md_ostream::genDoc(const Location* o) {
-  *this << comment(o->doc) << "\n";
+  middle(' ');
+  finish(name);
+  line("");
 }

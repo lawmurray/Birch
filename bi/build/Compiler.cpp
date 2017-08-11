@@ -4,13 +4,11 @@
 #include "Compiler.hpp"
 
 #include "bi/build/misc.hpp"
-#include "bi/lexer.hpp"
 #include "bi/visitor/Resolver.hpp"
 #include "bi/io/bi_ostream.hpp"
 #include "bi/io/cpp_ostream.hpp"
 #include "bi/io/hpp_ostream.hpp"
-#include "bi/io/bi_ostream.hpp"
-#include "bi/io/md_ostream.hpp"
+#include "bi/lexer.hpp"
 
 #include "boost/filesystem/fstream.hpp"
 
@@ -23,9 +21,15 @@ namespace fs = boost::filesystem;
 bi::Compiler* compiler = nullptr;
 std::stringstream raw;
 
+bi::Compiler::Compiler() :
+    enable_std(false),
+    enable_import(false) {
+  //
+}
+
 bi::Compiler::Compiler(int argc, char** argv) :
-    output_file(""),
-    enable_std(true) {
+    enable_std(true),
+    enable_import(true) {
   enum {
     INCLUDE_DIR_ARG = 256,
     LIB_DIR_ARG,
@@ -118,9 +122,9 @@ void bi::Compiler::parse() {
 }
 
 void bi::Compiler::resolve() {
-  for (auto iter = files.begin(); iter != files.end(); ++iter) {
+  for (auto file : files) {
     Resolver resolver;
-    iter->second->accept(&resolver);
+    file->accept(&resolver);
   }
 }
 
@@ -130,16 +134,10 @@ void bi::Compiler::gen() {
   }
 }
 
-void bi::Compiler::doc() {
-  for (auto iter = input_files.begin(); iter != input_files.end(); ++iter) {
-    doc(*iter);
-  }
-}
-
 void bi::Compiler::setRoot(Statement* root) {
   if (std) {
     Import* import = new Import(new Path(new Name("standard")),
-        files[standard]);
+        filesByName[standard]);
     file->root = new List<Statement>(import, root);
   } else {
     file->root = root;
@@ -147,20 +145,21 @@ void bi::Compiler::setRoot(Statement* root) {
 }
 
 bi::File* bi::Compiler::import(const Path* path) {
-  return queue(find(include_dirs, path->file()).string(), std);
+  if (enable_import) {
+    return queue(find(include_dirs, path->file()).string(), std);
+  } else {
+    return nullptr;
+  }
 }
 
 bi::File* bi::Compiler::queue(const std::string name, const bool std) {
-  if (files.find(name) == files.end()) {
-    files.insert(std::make_pair(name, new File(name)));
+  if (filesByName.find(name) == filesByName.end()) {
+    files.push_back(new File(name));
+    filesByName.insert(std::make_pair(name, files.back()));
     stds.insert(std::make_pair(name, std));
     unparsed.insert(name);
   }
-
-  /* post-condition */
-  assert(files.find(name) != files.end());
-
-  return files[name];
+  return filesByName[name];
 }
 
 void bi::Compiler::parse(const std::string name) {
@@ -172,7 +171,7 @@ void bi::Compiler::parse(const std::string name) {
     throw FileNotFoundException(name.c_str());
   }
 
-  file = files[name];  // member variable needed by GNU Bison parser
+  file = filesByName[name];  // member variable needed by GNU Bison parser
   std = stds[name];
   yyreset();
   do {
@@ -207,33 +206,13 @@ void bi::Compiler::gen(const std::string name) {
   cpp_ostream cppOutput(cppStream);
 
   setStates(File::UNGENERATED);
-  hppOutput << files[name];
+  hppOutput << filesByName[name];
   setStates(File::UNGENERATED);
-  cppOutput << files[name];
-}
-
-void bi::Compiler::doc(const std::string name) {
-  /* pre-condition */
-  assert(parsed.find(name) != parsed.end());
-
-  fs::path mdPath;
-  if (!output_file.empty()) {
-    mdPath = output_file;
-  } else {
-    mdPath = name;
-  }
-  mdPath.replace_extension(".md");
-
-  fs::ofstream mdStream(mdPath);
-
-  md_ostream mdOutput(mdStream);
-
-  setStates(File::UNGENERATED);
-  mdOutput << files[name];
+  cppOutput << filesByName[name];
 }
 
 void bi::Compiler::setStates(const File::State state) {
-  for (auto iter = files.begin(); iter != files.end(); ++iter) {
-    iter->second->state = state;
+  for (auto file : files) {
+    file->state = state;
   }
 }

@@ -20,7 +20,12 @@ namespace bi {
 class Compiler {
 public:
   /**
-   * Constructor.
+   * Default constructor.
+   */
+  Compiler();
+
+  /**
+   * Constructor from command-line options.
    */
   Compiler(int argc, char** argv);
 
@@ -45,11 +50,6 @@ public:
   void gen();
 
   /**
-   * Generate documentation for all input files.
-   */
-  void doc();
-
-  /**
    * Import a path.
    *
    * @param path Path given in import statement.
@@ -57,6 +57,16 @@ public:
    * @return File associated with the path.
    */
   File* import(const Path* path);
+
+  /**
+   * Queue a file for parsing.
+   *
+   * @param name File name.
+   * @param std Include the standard library automatically?
+   *
+   * @return File associated with the path.
+   */
+  File* queue(const std::string name, const bool std = false);
 
   /**
    * Set the root statement of the file, adding an import for the
@@ -70,21 +80,16 @@ public:
   File* file;
 
   /**
+   * All files.
+   */
+  std::list<File*> files;
+
+  /**
    * Standard library inclusion flag of current file being parsed.
    */
   bool std;
 
 private:
-  /**
-   * Queue a file for parsing.
-   *
-   * @param name File name.
-   * @param std Include the standard library automatically?
-   *
-   * @return File associated with the path.
-   */
-  File* queue(const std::string name, const bool std);
-
   /**
    * Parse a specific file.
    *
@@ -100,13 +105,6 @@ private:
   void gen(const std::string name);
 
   /**
-   * Generate documentation for specific file.
-   *
-   * @param name File name.
-   */
-  void doc(const std::string name);
-
-  /**
    * Set state of all files.
    */
   void setStates(const File::State state);
@@ -114,7 +112,7 @@ private:
   /**
    * File names to files.
    */
-  std::unordered_map<std::string,File*> files;
+  std::unordered_map<std::string,File*> filesByName;
 
   /**
    * File names to standard library inclusion flags.
@@ -164,6 +162,16 @@ private:
    * Enable standard library?
    */
   bool enable_std;
+
+  /**
+   * Enable imports? (Can be disabled when no resolution is to happen, such
+   * as when generating reference documentation.)
+   */
+  bool enable_import;
   //@}
 };
 }
+
+extern bi::Compiler* compiler;
+extern std::stringstream raw;
+

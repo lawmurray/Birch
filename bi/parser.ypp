@@ -1,10 +1,6 @@
 %code requires {
   #include "bi/lexer.hpp"
   #include "bi/build/Compiler.hpp"
-
-  extern bi::Compiler* compiler;
-  extern std::stringstream raw;
-  extern char *yytext;
 }
 
 %code {

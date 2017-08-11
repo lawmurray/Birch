@@ -4,6 +4,10 @@
 #pragma once
 
 #include "bi/io/bih_ostream.hpp"
+#include "bi/common/Dictionary.hpp"
+#include "bi/common/OverloadedDictionary.hpp"
+
+#include <list>
 
 namespace bi {
 /**
@@ -13,27 +17,84 @@ namespace bi {
  */
 class md_ostream: public bih_ostream {
 public:
-  md_ostream(std::ostream& base);
+  md_ostream(std::ostream& base, const std::list<File*> files);
 
   using bih_ostream::visit;
 
-  virtual void visit(const GlobalVariable* o);
-  virtual void visit(const MemberVariable* o);
-  virtual void visit(const Function* o);
-  virtual void visit(const Fiber* o);
-  virtual void visit(const Program* o);
-  virtual void visit(const MemberFunction* o);
-  virtual void visit(const MemberFiber* o);
-  virtual void visit(const BinaryOperator* o);
-  virtual void visit(const UnaryOperator* o);
-  virtual void visit(const AssignmentOperator* o);
-  virtual void visit(const ConversionOperator* o);
+  void gen();
+
   virtual void visit(const Class* o);
-  virtual void visit(const Alias* o);
-  virtual void visit(const Basic* o);
-  virtual void visit(const Import* o);
 
 private:
-  void genDoc(const Location* o);
+  void genHead(const std::string& name);
+
+  template<class ObjectType>
+  void genSection();
+
+  template<class ObjectType>
+  void genClassSection(const Class* o);
+
+  /**
+   * Files to include in documentation.
+   */
+  std::list<File*> files;
+
+  /**
+   * Current section depth.
+   */
+  int depth;
 };
+}
+
+#include "bi/visitor/Gatherer.hpp"
+#include "bi/primitive/encode.hpp"
+
+template<class ObjectType>
+void bi::md_ostream::genSection() {
+  Gatherer<ObjectType> gatherer;
+  for (auto file : files) {
+    file->accept(&gatherer);
+  }
+
+  ++depth;
+  for (auto o : gatherer) {
+    auto named = dynamic_cast<Named*>(o);
+    if (named) {
+      genHead(named->name->str());
+    }
+    if (!o->loc->doc.empty()) {
+      line(comment(o->loc->doc));
+    }
+    in();
+    in();
+    line(o);
+    out();
+    out();
+    line("\n");
+  }
+  --depth;
+}
+
+template<class ObjectType>
+void bi::md_ostream::genClassSection(const Class* o) {
+  Gatherer<ObjectType> gatherer;
+  o->accept(&gatherer);
+
+  ++depth;
+  for (auto o : gatherer) {
+    auto named = dynamic_cast<Named*>(o);
+    if (named) {
+      genHead(named->name->str());
+    }
+    if (!o->loc->doc.empty()) {
+      line(comment(o->loc->doc));
+    }
+    in();
+    in();
+    line(o);
+    out();
+    out();
+    line("\n");
+  }
+  --depth;
 }

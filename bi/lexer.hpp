@@ -10,6 +10,7 @@
 #include <sstream>
 
 extern FILE* yyin;
+extern char *yytext;
 extern std::stringstream raw;
 
 int yylex();

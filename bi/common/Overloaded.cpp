@@ -12,7 +12,8 @@
 #include "bi/exception/all.hpp"
 
 template<class ObjectType>
-bi::Overloaded<ObjectType>::Overloaded(ObjectType* o) {
+bi::Overloaded<ObjectType>::Overloaded(ObjectType* o) :
+    Named(o->name) {
   add(o);
 }
 

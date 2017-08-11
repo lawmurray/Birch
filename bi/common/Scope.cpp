@@ -43,7 +43,7 @@ bi::LookupResult bi::Scope::lookup(const Identifier<Unknown>* ref) const {
     return GLOBAL_VARIABLE;
   } else if (functions.contains(name)) {
     return FUNCTION;
-  } else if (Fibers.contains(name)) {
+  } else if (fibers.contains(name)) {
     return FIBER;
   } else {
     return lookupInherit(ref);
@@ -91,7 +91,7 @@ void bi::Scope::add(GlobalVariable* param) {
     throw PreviousDeclarationException(param, globalVariables.get(name));
   } else if (functions.contains(name)) {
     throw PreviousDeclarationException(param);
-  } else if (Fibers.contains(name)) {
+  } else if (fibers.contains(name)) {
     throw PreviousDeclarationException(param);
   } else if (programs.contains(name)) {
     throw PreviousDeclarationException(param);
@@ -128,7 +128,7 @@ void bi::Scope::add(MemberVariable* param) {
 
 void bi::Scope::add(Function* param) {
   auto name = param->name->str();
-  if (Fibers.contains(name)) {
+  if (fibers.contains(name)) {
     throw PreviousDeclarationException(param);
   } else if (programs.contains(name)) {
     throw PreviousDeclarationException(param, programs.get(name));
@@ -148,7 +148,7 @@ void bi::Scope::add(Fiber* param) {
   } else if (globalVariables.contains(name)) {
     throw PreviousDeclarationException(param, globalVariables.get(name));
   } else {
-    Fibers.add(param);
+    fibers.add(param);
   }
 }
 
@@ -156,7 +156,7 @@ void bi::Scope::add(Program* param) {
   auto name = param->name->str();
   if (functions.contains(name)) {
     throw PreviousDeclarationException(param);
-  } else if (Fibers.contains(name)) {
+  } else if (fibers.contains(name)) {
     throw PreviousDeclarationException(param);
   } else if (globalVariables.contains(name)) {
     throw PreviousDeclarationException(param, globalVariables.get(name));
@@ -268,7 +268,7 @@ void bi::Scope::resolve(OverloadedIdentifier<Function>* ref) {
 }
 
 void bi::Scope::resolve(OverloadedIdentifier<Fiber>* ref) {
-  Fibers.resolve(ref);
+  fibers.resolve(ref);
 }
 
 void bi::Scope::resolve(OverloadedIdentifier<MemberFunction>* ref) {
@@ -314,7 +314,7 @@ void bi::Scope::import(Scope* scope) {
   // class members
   globalVariables.import(scope->globalVariables);
   functions.import(scope->functions);
-  Fibers.import(scope->Fibers);
+  fibers.import(scope->fibers);
   programs.import(scope->programs);
   binaryOperators.import(scope->binaryOperators);
   unaryOperators.import(scope->unaryOperators);

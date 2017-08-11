@@ -7,7 +7,7 @@
 
 namespace bi {
 /**
- * C++ code generator for within-function code.
+ * C++ code generator.
  *
  * @ingroup compiler_io
  */

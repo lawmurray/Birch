@@ -58,6 +58,16 @@ public:
   void import(Dictionary<ObjectType>& o);
 
   /**
+   * Iterators.
+   */
+  auto begin() const {
+    return objects.begin();
+  }
+  auto end() const {
+    return objects.end();
+  }
+
+  /**
    * Objects.
    */
   map_type objects;

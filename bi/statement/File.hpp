@@ -11,7 +11,7 @@ namespace bi {
 /**
  * File.
  *
- * @ingroup File
+ * @ingroup compiler_statement
  */
 class File: public Scoped {
 public:
@@ -28,7 +28,7 @@ public:
    * @param path File path.
    * @param root Root statement of file.
    */
-  File(const std::string& path, Statement* root = new EmptyStatement());
+  File(const std::string& path = "", Statement* root = new EmptyStatement());
 
   /**
    * Destructor.

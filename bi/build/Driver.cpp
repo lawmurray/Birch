@@ -3,8 +3,10 @@
  */
 #include "Driver.hpp"
 
+#include "bi/build/Compiler.hpp"
 #include "bi/build/misc.hpp"
 #include "bi/exception/DriverException.hpp"
+#include "bi/io/md_ostream.hpp"
 
 #include "boost/filesystem/fstream.hpp"
 #include "boost/algorithm/string.hpp"
@@ -672,8 +674,6 @@ void bi::Driver::make() {
 }
 
 void bi::Driver::create() {
-  using namespace boost::filesystem;
-
   create_directory("bi");
   path biPath("bi");
   if (force) {
@@ -696,8 +696,6 @@ void bi::Driver::create() {
 }
 
 void bi::Driver::validate() {
-  using namespace boost::filesystem;
-
   std::unordered_set<std::string> manifestFiles;
 
   /* check MANIFEST */
@@ -794,7 +792,21 @@ void bi::Driver::validate() {
 }
 
 void bi::Driver::docs() {
+  current_path(work_dir);
   readManifest();
+
+  /* parse all files */
+  compiler = new Compiler();
+  for (auto file : biFiles) {
+    compiler->queue(file.string());
+  }
+  compiler->parse();
+
+  /* output everything, categorised by object type, and sorted */
+  path path = "DOCS.md";
+  ofstream stream(path);
+  md_ostream output(stream, compiler->files);
+  output.gen();
 }
 
 void bi::Driver::unlock() {

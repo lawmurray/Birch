@@ -141,7 +141,7 @@ public:
   Dictionary<LocalVariable> localVariables;
   Dictionary<MemberVariable> memberVariables;
   OverloadedDictionary<Function> functions;
-  OverloadedDictionary<Fiber> Fibers;
+  OverloadedDictionary<Fiber> fibers;
   Dictionary<Program> programs;
   OverloadedDictionary<MemberFunction> memberFunctions;
   OverloadedDictionary<MemberFiber> memberFibers;

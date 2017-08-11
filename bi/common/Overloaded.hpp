@@ -4,6 +4,7 @@
 #pragma once
 
 #include "bi/expression/Expression.hpp"
+#include "bi/common/Named.hpp"
 #include "bi/primitive/poset.hpp"
 #include "bi/primitive/definitely.hpp"
 #include "bi/primitive/possibly.hpp"
@@ -17,7 +18,7 @@ namespace bi {
  * @ingroup compiler_common
  */
 template<class ObjectType>
-class Overloaded {
+class Overloaded : public Named {
 public:
   /**
    * Constructor.
@@ -39,6 +40,16 @@ public:
    * @param o The overload.
    */
   void add(ObjectType* o);
+
+  /**
+   * Iterators.
+   */
+  auto begin() const {
+    return overloads.begin();
+  }
+  auto end() const {
+    return overloads.end();
+  }
 
   /**
    * Overloads.

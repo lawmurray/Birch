@@ -16,6 +16,11 @@ class Scope;
 class Scoped {
 public:
   /**
+   * Constructor.
+   */
+  Scoped();
+
+  /**
    * Destructor.
    */
   virtual ~Scoped() = 0;
