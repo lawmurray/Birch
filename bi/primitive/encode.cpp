@@ -3,6 +3,8 @@
  */
 #include "bi/primitive/encode.hpp"
 
+#include "boost/algorithm/string.hpp"
+
 #include <regex>
 #include <sstream>
 #include <cassert>
@@ -209,11 +211,12 @@ std::string bi::escape(const std::string& str) {
   return buf.str();
 }
 
-std::string bi::comment(const std::string& str) {
-  std::regex reg("\n *\\* ?");
+std::string bi::detailed(const std::string& str) {
+  std::regex reg(" *\n *\\* ?");
   std::stringstream buf;
   std::smatch match;
   std::string str1 = str;
+  boost::trim_right(str1);
   while (std::regex_search(str1, match, reg)) {
     buf << match.prefix();
     str1 = match.suffix();
@@ -221,4 +224,23 @@ std::string bi::comment(const std::string& str) {
   buf << str1;
 
   return buf.str();
+}
+
+std::string bi::brief(const std::string& str) {
+  std::regex reg(".*[\\.\\?\\!]");
+  std::stringstream buf;
+  std::smatch match;
+  std::string str1 = detailed(str);
+  if (std::regex_search(str1, match, reg)) {
+    return match.str();
+  } else {
+    return "";
+  }
+}
+
+std::string bi::anchor(const std::string& str) {
+  std::string str1 = str;
+  boost::to_lower(str1);
+  boost::replace_all(str1, " ", "-");
+  return str1;
 }

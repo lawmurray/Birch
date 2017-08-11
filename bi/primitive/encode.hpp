@@ -55,7 +55,17 @@ std::string internalise(const std::string& name);
 std::string escape(const std::string& str);
 
 /**
- * Process a documentation comment.
+ * Process a documentation comment to detailed description.
  */
-std::string comment(const std::string& str);
+std::string detailed(const std::string& str);
+
+/**
+ * Process a documentation comment to brief description.
+ */
+std::string brief(const std::string& str);
+
+/**
+ * Process a string into an anchor for Markdown.
+ */
+std::string anchor(const std::string& str);
 }

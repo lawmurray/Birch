@@ -390,7 +390,7 @@ void bi::bi_ostream::visit(const ArrayType* o) {
       if (i != 0) {
         *this << ',';
       }
-      *this << '0';
+      *this << '_';
     }
     *this << ']';
   }
