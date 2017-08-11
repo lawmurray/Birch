@@ -335,8 +335,8 @@ noinst_HEADERS = \
   bi/visitor/Modifier.hpp \
   bi/visitor/Resolver.hpp \
   bi/visitor/Visitor.hpp \
+  bi/doxygen.hpp \
   bi/lexer.hpp \
-  bi/modules.hpp \
   bi/parser.hpp
 
 dist_noinst_SCRIPTS = autogen.sh

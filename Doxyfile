@@ -431,7 +431,7 @@ SORT_BY_SCOPE_NAME = NO
 # disable (NO) the todo list. This list is created by putting \todo 
 # commands in the documentation.
 
-GENERATE_TODOLIST = YES
+GENERATE_TODOLIST = NO
 
 # The GENERATE_TESTLIST tag can be used to enable (YES) or 
 # disable (NO) the test list. This list is created by putting \test 
@@ -489,7 +489,7 @@ SHOW_FILES = YES
 # This will remove the Namespaces entry from the Quick Index 
 # and from the Folder Tree View (if specified). The default is YES.
 
-SHOW_NAMESPACES = YES
+SHOW_NAMESPACES = NO
 
 # The FILE_VERSION_FILTER tag can be used to specify a program or script that 
 # doxygen should invoke to get the current version for each file (typically from 
