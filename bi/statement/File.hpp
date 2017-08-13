@@ -3,9 +3,8 @@
  */
 #pragma once
 
-#include "bi/statement/Statement.hpp"
-#include "bi/statement/EmptyStatement.hpp"
 #include "bi/common/Scoped.hpp"
+#include "bi/statement/EmptyStatement.hpp"
 
 namespace bi {
 /**
@@ -36,7 +35,7 @@ public:
   virtual ~File();
 
   File* accept(Cloner* visitor) const;
-  void accept(Modifier* visitor);
+  File* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
   /**

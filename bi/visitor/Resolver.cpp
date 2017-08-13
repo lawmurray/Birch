@@ -12,7 +12,7 @@ bi::Resolver::~Resolver() {
   //
 }
 
-void bi::Resolver::modify(File* o) {
+bi::File* bi::Resolver::modify(File* o) {
   if (o->state == File::RESOLVING) {
     throw CyclicImportException(o);
   } else if (o->state == File::UNRESOLVED) {
@@ -26,6 +26,7 @@ void bi::Resolver::modify(File* o) {
     files.pop();
     o->state = File::RESOLVED;
   }
+  return o;
 }
 
 bi::Expression* bi::Resolver::modify(List<Expression>* o) {

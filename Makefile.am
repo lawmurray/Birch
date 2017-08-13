@@ -121,6 +121,7 @@ COMMON_SOURCES = \
   bi/statement/MemberFiber.cpp \
   bi/statement/MemberFunction.cpp \
   bi/statement/MemberVariable.cpp \
+  bi/statement/Package.cpp \
   bi/statement/Program.cpp \
   bi/statement/Raw.cpp \
   bi/statement/Return.cpp \
@@ -305,6 +306,7 @@ noinst_HEADERS = \
   bi/statement/MemberFiber.hpp \
   bi/statement/MemberFunction.hpp \
   bi/statement/MemberVariable.hpp \
+  bi/statement/Package.hpp \
   bi/statement/Program.hpp \
   bi/statement/Raw.hpp \
   bi/statement/Return.hpp \

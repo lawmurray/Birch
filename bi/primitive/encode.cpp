@@ -218,7 +218,7 @@ std::string bi::detailed(const std::string& str) {
   std::string str1 = str;
   boost::trim_right(str1);
   while (std::regex_search(str1, match, reg)) {
-    buf << match.prefix();
+    buf << match.prefix() << '\n';
     str1 = match.suffix();
   }
   buf << str1;
@@ -236,6 +236,12 @@ std::string bi::brief(const std::string& str) {
   } else {
     return "";
   }
+}
+
+std::string bi::one_line(const std::string& str) {
+  std::string str1 = detailed(str);
+  boost::replace_all(str1, "\n", " ");
+  return str1;
 }
 
 std::string bi::anchor(const std::string& str) {

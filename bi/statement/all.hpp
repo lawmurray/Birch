@@ -23,6 +23,7 @@
 #include "bi/statement/MemberFiber.hpp"
 #include "bi/statement/MemberFunction.hpp"
 #include "bi/statement/MemberVariable.hpp"
+#include "bi/statement/Package.hpp"
 #include "bi/statement/Program.hpp"
 #include "bi/statement/Raw.hpp"
 #include "bi/statement/Return.hpp"

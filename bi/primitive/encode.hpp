@@ -65,6 +65,11 @@ std::string detailed(const std::string& str);
 std::string brief(const std::string& str);
 
 /**
+ * Process a documentation comment to a single line.
+ */
+std::string one_line(const std::string& str);
+
+/**
  * Process a string into an anchor for Markdown.
  */
 std::string anchor(const std::string& str);

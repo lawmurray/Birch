@@ -805,8 +805,10 @@ void bi::Driver::docs() {
   /* output everything, categorised by object type, and sorted */
   path path = "DOCS.md";
   ofstream stream(path);
-  md_ostream output(stream, compiler->files);
-  output.gen();
+  md_ostream output(stream);
+
+  Package package(compiler->files);
+  output << &package;
 }
 
 void bi::Driver::unlock() {

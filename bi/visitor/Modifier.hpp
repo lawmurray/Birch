@@ -20,7 +20,9 @@ public:
    */
   virtual ~Modifier();
 
-  virtual void modify(File* o);
+  virtual Package* modify(Package* o);
+  virtual File* modify(File* o);
+
   virtual Expression* modify(EmptyExpression* o);
   virtual Expression* modify(List<Expression>* o);
   virtual Expression* modify(Literal<bool>* o);

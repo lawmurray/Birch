@@ -7,6 +7,14 @@ bi::Cloner::~Cloner() {
   //
 }
 
+bi::Package* bi::Cloner::clone(const Package* o) {
+  std::list<File*> files;
+  for (auto file : o->files) {
+    files.push_back(file->accept(this));
+  }
+  return new Package(files);
+}
+
 bi::File* bi::Cloner::clone(const File* o) {
   return new File(o->path, o->root->accept(this));
 }

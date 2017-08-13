@@ -20,8 +20,8 @@ bi::File* bi::File::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-void bi::File::accept(Modifier* visitor) {
-  visitor->modify(this);
+bi::File* bi::File::accept(Modifier* visitor) {
+  return visitor->modify(this);
 }
 
 void bi::File::accept(Visitor* visitor) const {

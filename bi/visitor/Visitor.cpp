@@ -7,6 +7,12 @@ bi::Visitor::~Visitor() {
   //
 }
 
+void bi::Visitor::visit(const Package* o) {
+  for (auto file : o->files) {
+    file->accept(this);
+  }
+}
+
 void bi::Visitor::visit(const File* o) {
   o->root->accept(this);
 }

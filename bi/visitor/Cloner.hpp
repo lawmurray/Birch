@@ -20,6 +20,7 @@ public:
    */
   virtual ~Cloner();
 
+  virtual Package* clone(const Package* o);
   virtual File* clone(const File* o);
 
   virtual Expression* clone(const EmptyExpression* o);

@@ -7,8 +7,15 @@ bi::Modifier::~Modifier() {
   //
 }
 
-void bi::Modifier::modify(File* o) {
+bi::Package* bi::Modifier::modify(Package* o) {
+  for (auto file : o->files) {
+    file = file->accept(this);
+  }
+}
+
+bi::File* bi::Modifier::modify(File* o) {
   o->root = o->root->accept(this);
+  return o;
 }
 
 bi::Expression* bi::Modifier::modify(EmptyExpression* o) {

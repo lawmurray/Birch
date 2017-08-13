@@ -9,12 +9,25 @@
   #include "bi/type/all.hpp"
 
   /**
-   * Take the raw string (for raw code, documentation comments).
+   * Raw string stack.
    */
-  std::string take_raw() {
-    std::string result(raw.str());
+  std::stack<std::string> raws;
+
+  /**
+   * Push the current raw string onto the stack, and restart it.
+   */
+  void push_raw() {
+    raws.push(raw.str());
     raw.str("");
-    return result;
+  }
+
+  /**
+   * Pop a raw string from the stack.
+   */
+  std::string pop_raw() {
+    std::string raw = raws.top();
+    raws.pop();
+    return raw;
   }
 
   /**
@@ -30,7 +43,7 @@
    */
   bi::Location* make_doc_loc(YYLTYPE& loc) {
     return new bi::Location(compiler->file, loc.first_line, loc.last_line,
-        loc.first_column, loc.last_column, take_raw());
+        loc.first_column, loc.last_column, pop_raw());
   }
 }
 
@@ -379,35 +392,35 @@ size_list
  ***************************************************************************/
 
 global_variable_declaration
-    : name ':' type optional_arguments optional_value ';'  { $$ = new bi::GlobalVariable($1, $3, $4, $5, make_doc_loc(@$)); }
+    : name ':' type optional_arguments optional_value ';'  { push_raw(); $$ = new bi::GlobalVariable($1, $3, $4, $5, make_doc_loc(@$)); }
     ;
 
 local_variable_declaration
-    : name ':' type optional_arguments optional_value ';'  { $$ = new bi::LocalVariable($1, $3, $4, $5, make_doc_loc(@$)); }
+    : name ':' type optional_arguments optional_value ';'  { push_raw(); $$ = new bi::LocalVariable($1, $3, $4, $5, make_doc_loc(@$)); }
     ;
 
 member_variable_declaration
-    : name ':' type optional_arguments optional_value ';'  { $$ = new bi::MemberVariable($1, $3, $4, $5, make_doc_loc(@$)); }
+    : name ':' type optional_arguments optional_value ';'  { push_raw(); $$ = new bi::MemberVariable($1, $3, $4, $5, make_doc_loc(@$)); }
     ;
 
 function_declaration
-    : FUNCTION name parameters optional_result optional_braces  { $$ = new bi::Function($2, $3, $4, $5, make_doc_loc(@$)); }
+    : FUNCTION { push_raw(); } name parameters optional_result optional_braces  { $$ = new bi::Function($3, $4, $5, $6, make_doc_loc(@$)); }
     ;
 
 fiber_declaration
-    : FIBER name parameters optional_result optional_braces  { $$ = new bi::Fiber($2, $3, $4, $5, make_doc_loc(@$)); }
+    : FIBER { push_raw(); }name parameters optional_result optional_braces  { $$ = new bi::Fiber($3, $4, $5, $6, make_doc_loc(@$)); }
     ;
 
 program_declaration
-    : PROGRAM name options optional_braces  { $$ = new bi::Program($2, $3, $4, make_doc_loc(@$)); }
+    : PROGRAM { push_raw(); } name options optional_braces  { $$ = new bi::Program($3, $4, $5, make_doc_loc(@$)); }
     ;
 
 member_function_declaration
-    : FUNCTION name parameters optional_result optional_braces  { $$ = new bi::MemberFunction($2, $3, $4, $5, make_doc_loc(@$)); }
+    : FUNCTION { push_raw(); } name parameters optional_result optional_braces  { $$ = new bi::MemberFunction($3, $4, $5, $6, make_doc_loc(@$)); }
     ;
 
 member_fiber_declaration
-    : FIBER name parameters optional_result optional_braces  { $$ = new bi::MemberFiber($2, $3, $4, $5, make_doc_loc(@$)); }
+    : FIBER { push_raw(); } name parameters optional_result optional_braces  { $$ = new bi::MemberFiber($3, $4, $5, $6, make_doc_loc(@$)); }
     ;
     
 binary_operator
@@ -426,7 +439,7 @@ binary_operator
     ;
     
 binary_operator_declaration
-    : OPERATOR parameter binary_operator parameter optional_result optional_braces  { $$ = new bi::BinaryOperator($3, new bi::Binary($2, $4, make_doc_loc(@$)), $5, $6, make_loc(@$)); }
+    : OPERATOR { push_raw(); } parameter binary_operator parameter optional_result optional_braces  { $$ = new bi::BinaryOperator($4, new bi::Binary($3, $5, make_doc_loc(@$)), $6, $7, make_loc(@$)); }
     ;
 
 unary_operator
@@ -436,7 +449,7 @@ unary_operator
     ;    
 
 unary_operator_declaration
-    : OPERATOR unary_operator parameter optional_result optional_braces  { $$ = new bi::UnaryOperator($2, $3, $4, $5, make_doc_loc(@$)); }
+    : OPERATOR { push_raw(); } unary_operator parameter optional_result optional_braces  { $$ = new bi::UnaryOperator($3, $4, $5, $6, make_doc_loc(@$)); }
     ;
     
 assignment_operator
@@ -446,70 +459,70 @@ assignment_operator
     ;
 
 assignment_operator_declaration
-    : OPERATOR LEFT_OP parameter optional_braces  { $$ = new bi::AssignmentOperator(new bi::Name("<-"), $3, $4, make_doc_loc(@$)); }
+    : OPERATOR { push_raw(); } LEFT_OP parameter optional_braces  { $$ = new bi::AssignmentOperator(new bi::Name("<-"), $4, $5, make_doc_loc(@$)); }
     ;
 
 conversion_operator_declaration
-    : OPERATOR result optional_braces  { $$ = new bi::ConversionOperator($2, $3, make_doc_loc(@$)); }
+    : OPERATOR { push_raw(); } result optional_braces  { $$ = new bi::ConversionOperator($3, $4, make_doc_loc(@$)); }
     ;
 
 class_declaration
-    : CLASS name optional_member_parameters '<' identifier_type optional_arguments optional_class_braces  { $$ = new bi::Class($2, $3, $5, $6, $7, make_doc_loc(@$)); }
-    | CLASS name optional_member_parameters optional_class_braces                                         { $$ = new bi::Class($2, $3, new bi::EmptyType(), new bi::EmptyExpression(), $4, make_doc_loc(@$)); }
+    : CLASS name optional_member_parameters '<' identifier_type optional_arguments { push_raw(); } optional_class_braces  { $$ = new bi::Class($2, $3, $5, $6, $8, make_doc_loc(@$)); }
+    | CLASS name optional_member_parameters { push_raw(); } optional_class_braces                                         { $$ = new bi::Class($2, $3, new bi::EmptyType(), new bi::EmptyExpression(), $5, make_doc_loc(@$)); }
     ;
 
 alias_type_declaration
-    : TYPE name '=' identifier_type ';'  { $$ = new bi::Alias($2, $4, make_doc_loc(@$)); }
+    : TYPE name '=' identifier_type ';'  { push_raw(); $$ = new bi::Alias($2, $4, make_doc_loc(@$)); }
     ;
     
 basic_type_declaration
-    : TYPE name ';'  { $$ = new bi::Basic($2, make_doc_loc(@$)); }
+    : TYPE name ';'  { push_raw(); $$ = new bi::Basic($2, make_doc_loc(@$)); }
     ;
 
 import
-    : IMPORT path ';'  { $$ = new bi::Import($2, compiler->import($2), make_doc_loc(@$)); }
+    : IMPORT path ';'  { $$ = new bi::Import($2, compiler->import($2), make_loc(@$)); }
     ;
 
 cpp
-    : CPP double_braces  { $$ = new bi::Raw(new bi::Name("cpp"), take_raw(), make_doc_loc(@$)); }
+    : CPP double_braces  { push_raw(); $$ = new bi::Raw(new bi::Name("cpp"), pop_raw(), make_loc(@$)); }
     ;
 
 hpp
-    : HPP double_braces  { $$ = new bi::Raw(new bi::Name("hpp"), take_raw(), make_doc_loc(@$)); }
+    : HPP double_braces  { push_raw(); $$ = new bi::Raw(new bi::Name("hpp"), pop_raw(), make_loc(@$)); }
     ;
 
 assignment
-    : observe_expression assignment_operator observe_expression ';'  { $$ = new bi::Assignment($1, $2, $3, make_doc_loc(@$)); }
+    : observe_expression assignment_operator observe_expression ';'  { $$ = new bi::Assignment($1, $2, $3, make_loc(@$)); }
     ;
 
 expression_statement
-    : expression ';'  { $$ = new bi::ExpressionStatement($1, make_doc_loc(@$)); }
+    : expression ';'  { $$ = new bi::ExpressionStatement($1, make_loc(@$)); }
     ;
 
 if
-    : IF parens_expression braces ELSE braces  { $$ = new bi::If($2, $3, $5, make_doc_loc(@$)); }
-    | IF parens_expression braces ELSE if      { $$ = new bi::If($2, $3, $5, make_doc_loc(@$)); }
-    | IF parens_expression braces              { $$ = new bi::If($2, $3, new bi::EmptyStatement(), make_doc_loc(@$)); }
+    : IF parens_expression braces ELSE braces  { $$ = new bi::If($2, $3, $5, make_loc(@$)); }
+    | IF parens_expression braces ELSE if      { $$ = new bi::If($2, $3, $5, make_loc(@$)); }
+    | IF parens_expression braces              { $$ = new bi::If($2, $3, new bi::EmptyStatement(), make_loc(@$)); }
     ;
 
 for
-    : FOR '(' identifier IN expression RANGE_OP expression ')' braces  { $$ = new bi::For($3, $5, $7, $9, make_doc_loc(@$)); }
+    : FOR '(' identifier IN expression RANGE_OP expression ')' braces  { $$ = new bi::For($3, $5, $7, $9, make_loc(@$)); }
     ;
 
 while
-    : WHILE parens_expression braces  { $$ = new bi::While($2, $3, make_doc_loc(@$)); }
+    : WHILE parens_expression braces  { $$ = new bi::While($2, $3, make_loc(@$)); }
     ;
 
 assertion
-    : ASSERT expression ';'  { $$ = new bi::Assert($2, make_doc_loc(@$)); }
+    : ASSERT expression ';'  { $$ = new bi::Assert($2, make_loc(@$)); }
     ;
 
 return
-    : RETURN expression ';'  { $$ = new bi::Return($2, make_doc_loc(@$)); }
+    : RETURN expression ';'  { $$ = new bi::Return($2, make_loc(@$)); }
     ;
 
 yield
-    : YIELD expression ';'  { $$ = new bi::Yield($2, make_doc_loc(@$)); }
+    : YIELD expression ';'  { $$ = new bi::Yield($2, make_loc(@$)); }
     ;
 
 statement

@@ -31,7 +31,7 @@ public:
   /**
    * Resolve a file.
    */
-  virtual void modify(File* file);
+  virtual File* modify(File* file);
 
   using Modifier::modify;
 
