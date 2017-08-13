@@ -1,10 +1,6 @@
 import math;
 
 /**
- * Reductions
- * ----------
- */
-/**
  * Sum of a vector.
  */
 function sum(x:Real[_]) -> Real {
@@ -57,10 +53,6 @@ function log_sum_exp(x:Real[_]) -> Real {
   return mx + log(r);
 }
 
-/**
- * Prefix scans
- * ------------
- */
 /**
  * Inclusive prefix sum.
  */

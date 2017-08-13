@@ -20,7 +20,7 @@ class AffineMultivariateGaussianExpression(R:Integer, C:Integer) {
   u:MultivariateGaussian;
 
   /**
-   * Additive ector of affine transformation.
+   * Vector of affine transformation.
    */
   c:Real[R];
     

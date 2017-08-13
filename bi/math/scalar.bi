@@ -6,11 +6,7 @@ cpp {{
 }}
 import basic;
 
-/**
- * Operators
- * ---------
- */
-/**
+/*
  * Real64 operators
  */
 operator x:Real64 + y:Real64 -> Real64;
@@ -26,7 +22,7 @@ operator x:Real64 <= y:Real64 -> Boolean;
 operator x:Real64 == y:Real64 -> Boolean;
 operator x:Real64 != y:Real64 -> Boolean;
 
-/**
+/*
  * Real32 operators
  */
 operator x:Real32 + y:Real32 -> Real32;
@@ -42,7 +38,7 @@ operator x:Real32 <= y:Real32 -> Boolean;
 operator x:Real32 == y:Real32 -> Boolean;
 operator x:Real32 != y:Real32 -> Boolean;
 
-/**
+/*
  * Integer64 operators
  */
 operator x:Integer64 + y:Integer64 -> Integer64;
@@ -58,7 +54,7 @@ operator x:Integer64 <= y:Integer64 -> Boolean;
 operator x:Integer64 == y:Integer64 -> Boolean;
 operator x:Integer64 != y:Integer64 -> Boolean;
 
-/**
+/*
  * Integer32 operators
  */
 operator x:Integer32 + y:Integer32 -> Integer32;
@@ -74,16 +70,15 @@ operator x:Integer32 <= y:Integer32 -> Boolean;
 operator x:Integer32 == y:Integer32 -> Boolean;
 operator x:Integer32 != y:Integer32 -> Boolean;
 
-/**
+/*
  * Boolean operators
  */
 operator x:Boolean && y:Boolean -> Boolean;
 operator x:Boolean || y:Boolean -> Boolean;
 operator !x:Boolean -> Boolean;
 
-/**
+/*
  * Functions
- * ---------
  */
 function abs(x:Real64) -> Real64 {
   cpp {{
@@ -477,10 +472,10 @@ function isnan(x:Real32) -> Boolean {
   return x != x;
 }
 
-/**
+/*
  * Constants
- * ---------
  */
+ 
 /**
  * $\pi$
  */

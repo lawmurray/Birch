@@ -1,7 +1,4 @@
-/**
- * Eigen integration
- * -----------------
- *
+/*
  * Birch uses the Eigen library <https://eigen.tuxfamily.org> for linear
  * algebra support. Eigen is tightly integrated with support from the Birch
  * compiler library, in order to preserve the lazy evaluation of Eigen that

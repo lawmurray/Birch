@@ -1,7 +1,3 @@
-/**
- * Vectors
- * -------
- */
 import math.scalar;
 
 /**
@@ -12,6 +8,10 @@ function length(x:Real[_]) -> Integer64 {
   return x_.length(0);
   }}
 }
+
+/**
+ * Length of a vector.
+ */
 function length(x:Integer[_]) -> Integer64 {
   cpp{{
   return x_.length(0);

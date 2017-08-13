@@ -1,7 +1,3 @@
-/**
- * Matrices
- * --------
- */
 import math.scalar;
 
 /**
@@ -12,6 +8,10 @@ function rows(X:Real[_,_]) -> Integer64 {
   return X_.length(0);
   }}
 }
+
+/**
+ * Number of rows of a matrix.
+ */
 function rows(X:Integer[_,_]) -> Integer64 {
   cpp{{
   return X_.length(0);
@@ -26,6 +26,10 @@ function columns(X:Real[_,_]) -> Integer64 {
   return X_.length(1);
   }}
 }
+
+/**
+ * Number of columns of a matrix.
+ */
 function columns(X:Integer[_,_]) -> Integer64 {
   cpp{{
   return X_.length(1);
