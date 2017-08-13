@@ -228,10 +228,10 @@ std::string bi::detailed(const std::string& str) {
 }
 
 std::string bi::brief(const std::string& str) {
-  std::regex reg(".*[\\.\\?\\!]");
+  std::regex reg(".*?[\\.\\?\\!]");
   std::stringstream buf;
   std::smatch match;
-  std::string str1 = detailed(str);
+  std::string str1 = one_line(str);
   if (std::regex_search(str1, match, reg)) {
     return one_line(match.str());
   } else {
