@@ -216,14 +216,15 @@ std::string bi::detailed(const std::string& str) {
   std::stringstream buf;
   std::smatch match;
   std::string str1 = str;
-  boost::trim_right(str1);
   while (std::regex_search(str1, match, reg)) {
     buf << match.prefix() << '\n';
     str1 = match.suffix();
   }
   buf << str1;
+  str1 = buf.str();
+  boost::trim(str1);
 
-  return buf.str();
+  return str1;
 }
 
 std::string bi::brief(const std::string& str) {
@@ -232,7 +233,7 @@ std::string bi::brief(const std::string& str) {
   std::smatch match;
   std::string str1 = detailed(str);
   if (std::regex_search(str1, match, reg)) {
-    return match.str();
+    return one_line(match.str());
   } else {
     return "";
   }
@@ -244,9 +245,12 @@ std::string bi::one_line(const std::string& str) {
   return str1;
 }
 
-std::string bi::anchor(const std::string& str) {
-  std::string str1 = str;
+std::string bi::anchor(const std::string& name, const int number) {
+  std::stringstream buf;
+  buf << name << '-' << number;
+  std::string str1 = buf.str();
   boost::to_lower(str1);
   boost::replace_all(str1, " ", "-");
+  boost::replace_all(str1, "_", "-");
   return str1;
 }

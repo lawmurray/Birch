@@ -5,6 +5,7 @@
 
 #include "bi/statement/Statement.hpp"
 #include "bi/common/Named.hpp"
+#include "bi/common/Numbered.hpp"
 
 namespace bi {
 /**
@@ -12,7 +13,7 @@ namespace bi {
  *
  * @ingroup compiler_type
  */
-class Basic: public Statement, public Named {
+class Basic: public Statement, public Named, public Numbered {
 public:
   /**
    * Constructor.

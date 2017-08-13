@@ -12,14 +12,24 @@ bi::md_ostream::md_ostream(std::ostream& base) :
 void bi::md_ostream::visit(const Package* o) {
   genHead("Global");
   ++depth;
-  genOneLine<GlobalVariable>("Variables", o);
-  genDetailed<Function>("Functions", o);
-  genDetailed<Fiber>("Fibers", o);
-  genDetailed<Program>("Programs", o);
-  genDetailed<UnaryOperator>("Unary Operators", o);
-  genDetailed<BinaryOperator>("Binary Operators", o);
+  genOneLine<GlobalVariable>("Variable", o, true);
+  genBrief<Function>("Function", o, true);
+  genBrief<Fiber>("Fiber", o, true);
+  genBrief<Program>("Program", o, true);
+  genBrief<UnaryOperator>("Unary Operator", o, true);
+  genBrief<BinaryOperator>("Binary Operator", o, true);
+  genBrief<Basic>("Basic Type", o, true);
+  genBrief<Alias>("Alias Type", o, true);
+
+  genDetailed<Function>("Function Details", o, true);
+  genDetailed<Fiber>("Fiber Details", o, true);
+  genDetailed<Program>("Program Details", o, true);
+  genDetailed<UnaryOperator>("Unary Operator Details", o, true);
+  genDetailed<BinaryOperator>("Binary Operator Details", o, true);
+  genDetailed<Basic>("Basic Type Details", o, true);
+  genDetailed<Alias>("Alias Type Details", o, true);
   --depth;
-  genSections<Class>("Classes", o);
+  genSections<Class>("Classes", o, true);
 }
 
 void bi::md_ostream::visit(const Name* o) {
@@ -104,11 +114,13 @@ void bi::md_ostream::visit(const Class* o) {
   line(detailed(o->loc->doc) << "\n");
 
   ++depth;
-  genOneLine<AssignmentOperator>("Assignments", o);
-  genOneLine<ConversionOperator>("Conversions", o);
-  genOneLine<MemberVariable>("Member Variables", o);
-  genDetailed<MemberFunction>("Member Functions", o);
-  genDetailed<MemberFiber>("Member Fibers", o);
+  genOneLine<AssignmentOperator>("Assignment", o, false);
+  genOneLine<ConversionOperator>("Conversion", o, false);
+  genOneLine<MemberVariable>("Member Variable", o, false);
+  genBrief<MemberFunction>("Member Function", o, false);
+  genBrief<MemberFiber>("Member Fiber", o, false);
+  genDetailed<MemberFunction>("Member Function Details", o, true);
+  genDetailed<MemberFiber>("Member Fiber Details", o, true);
   --depth;
 }
 
@@ -133,14 +145,14 @@ void bi::md_ostream::visit(const IdentifierType* o) {
 }
 
 void bi::md_ostream::visit(const ArrayType* o) {
-  middle(o->single << '[');
+  middle(o->single << "\\[");
   if (o->count() > 0) {
     middle("\\_");
     for (int i = 1; i < o->count(); ++i) {
       middle(",\\_");
     }
   }
-  middle(']');
+  middle("\\]");
 }
 
 void bi::md_ostream::visit(const ParenthesesType* o) {

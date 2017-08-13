@@ -11,6 +11,7 @@ bi::Package* bi::Modifier::modify(Package* o) {
   for (auto file : o->files) {
     file = file->accept(this);
   }
+  return o;
 }
 
 bi::File* bi::Modifier::modify(File* o) {

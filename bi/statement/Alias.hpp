@@ -5,6 +5,7 @@
 
 #include "bi/statement/Statement.hpp"
 #include "bi/common/Named.hpp"
+#include "bi/common/Numbered.hpp"
 #include "bi/common/Based.hpp"
 
 namespace bi {
@@ -13,7 +14,7 @@ namespace bi {
  *
  * @ingroup compiler_type
  */
-class Alias: public Statement, public Named, public Based {
+class Alias: public Statement, public Named, public Numbered, public Based {
 public:
   /**
    * Constructor.
@@ -22,8 +23,7 @@ public:
    * @param base Base type.
    * @param loc Location.
    */
-  Alias(Name* name, Type* base,
-      Location* loc = nullptr);
+  Alias(Name* name, Type* base, Location* loc = nullptr);
 
   /**
    * Destructor.

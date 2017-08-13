@@ -72,5 +72,5 @@ std::string one_line(const std::string& str);
 /**
  * Process a string into an anchor for Markdown.
  */
-std::string anchor(const std::string& str);
+std::string anchor(const std::string& str, const int number = 0);
 }

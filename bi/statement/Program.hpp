@@ -6,6 +6,7 @@
 #include "bi/statement/Statement.hpp"
 #include "bi/expression/Expression.hpp"
 #include "bi/common/Named.hpp"
+#include "bi/common/Numbered.hpp"
 #include "bi/common/Parameterised.hpp"
 #include "bi/common/Scoped.hpp"
 #include "bi/common/Braced.hpp"
@@ -18,6 +19,7 @@ namespace bi {
  */
 class Program: public Statement,
     public Named,
+    public Numbered,
     public Parameterised,
     public Scoped,
     public Braced {

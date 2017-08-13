@@ -5,6 +5,7 @@
 
 #include "bi/statement/Statement.hpp"
 #include "bi/common/Named.hpp"
+#include "bi/common/Numbered.hpp"
 #include "bi/common/Parenthesised.hpp"
 #include "bi/common/Based.hpp"
 #include "bi/common/Braced.hpp"
@@ -21,6 +22,7 @@ namespace bi {
  */
 class Class: public Statement,
     public Named,
+    public Numbered,
     public Parenthesised,
     public Based,
     public Braced,
