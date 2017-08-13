@@ -1,6 +1,3 @@
-/**
- * The state-space model.
- */
 class Example(T:Integer) {
   Σ_x_l:Real[3,3];  // linear state noise covariance
   Σ_x_n:Real[1,1];  // nonlinear state noise covariance
@@ -120,8 +117,8 @@ fiber particle(T:Integer) -> Real! {
  * linear substructure. With delayed sampling enabled, this automatically
  * yields a Rao--Blackwellized particle filter with locally-optimal proposal.
  *
- * `N` Number of particles.
- * `T` Number of time steps.
+ *   - N : Number of particles.
+ *   - T : Number of time steps.
  *
  * To disable delayed sampling, change the `~` operators to `<~` in the
  * `initial` and `transition` functions of the `Example` class.

@@ -2,9 +2,9 @@
  * Demonstrates multiple observations in an array, used to estimate a
  * single parameter.
  *
- * `μ`  True mean of the observations.
- * `σ2` True variance of the observations.
- * `N`  Number of observations.
+ *   - μ  : True mean of the observations.
+ *   - σ2 : True variance of the observations.
+ *   - N  : Number of observations.
  *
  * Outputs a sample from the posterior distribution of the mean, assuming a
  * `Gaussian(0.0, 1.0)` prior and Gaussian likelihood with known variance.
