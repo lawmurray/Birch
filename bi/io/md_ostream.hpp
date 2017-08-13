@@ -127,7 +127,13 @@ void bi::md_ostream::genDetailed(const std::string& name,
     ++depth;
     for (auto o : sorted) {
       std::string desc = detailed(o->loc->doc);
-      line("*" << o << "*\n");
+      std::string briefDesc = brief(o->loc->doc);
+      line("| --- |");
+      line("| *" << o << "* |");
+      if (!briefDesc.empty()) {
+        line("| " << briefDesc << " |");
+      }
+      line("");
       line(desc << "\n");
     }
     --depth;
