@@ -6,6 +6,8 @@
 #include "bi/io/bih_ostream.hpp"
 
 #include <list>
+#include <vector>
+#include <algorithm>
 
 namespace bi {
 /**
@@ -109,13 +111,21 @@ template<class ObjectType, class RootType>
 void bi::md_ostream::genDetailed(const std::string& name,
     const RootType* root) {
   Gatherer<ObjectType> gatherer([](const ObjectType* o) {
-        return !detailed(o->loc->doc).empty();
-      });
+    return !detailed(o->loc->doc).empty();
+  });
   root->accept(&gatherer);
-  if (gatherer.size() > 0) {
+
+  std::vector<ObjectType*> sorted(gatherer.size());
+  std::copy(gatherer.begin(), gatherer.end(), sorted.begin());
+  std::stable_sort(sorted.begin(), sorted.end(),
+      [](const ObjectType* o1, const ObjectType* o2) {
+        return o1->name->str() < o2->name->str();
+      });
+
+  if (sorted.size() > 0) {
     genHead(name);
     ++depth;
-    for (auto o : gatherer) {
+    for (auto o : sorted) {
       std::string desc = detailed(o->loc->doc);
       line("*" << o << "*\n");
       line(desc << "\n");
@@ -128,8 +138,8 @@ template<class ObjectType, class RootType>
 void bi::md_ostream::genSections(const std::string& name,
     const RootType* root) {
   Gatherer<ObjectType> gatherer([](const ObjectType* o) {
-        return !detailed(o->loc->doc).empty();
-      });
+    return !detailed(o->loc->doc).empty();
+  });
   root->accept(&gatherer);
   if (gatherer.size() > 0) {
     genHead(name);
