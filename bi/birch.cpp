@@ -32,10 +32,16 @@ int main(int argc, char** argv) {
     } else if (prog.compare("install") == 0) {
       driver.build();
       driver.install();
-    } else if (prog.compare("create") == 0) {
-      driver.create();
-    } else if (prog.compare("validate") == 0) {
-      driver.validate();
+    } else if (prog.compare("uninstall") == 0) {
+      driver.uninstall();
+    } else if (prog.compare("dist") == 0) {
+      driver.dist();
+    } else if (prog.compare("clean") == 0) {
+      driver.clean();
+    } else if (prog.compare("init") == 0) {
+      driver.init();
+    } else if (prog.compare("check") == 0) {
+      driver.check();
     } else if (prog.compare("docs") == 0) {
       driver.docs();
     } else {

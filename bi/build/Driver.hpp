@@ -29,7 +29,9 @@ public:
   /**
    * Build package.
    */
-  void build();
+  void run(const std::string& prog);
+
+void build();
 
   /**
    * Install package.
@@ -42,19 +44,24 @@ public:
   void uninstall();
 
   /**
-   * Run package.
+   * Distribute package.
    */
-  void run(const std::string& prog);
+  void dist();
+
+  /**
+   * Clean package.
+   */
+  void clean();
 
   /**
    * Create a new package.
    */
-  void create();
+  void init();
 
   /**
    * Validate an existing package.
    */
-  void validate();
+  void check();
 
   /**
    * Produce documentation.
@@ -66,7 +73,10 @@ public:
    */
   void unlock();
 
-private:
+  /**
+   * Run program.
+   */
+  private:
   /**
    * Read in the MANIFEST file.
    */
