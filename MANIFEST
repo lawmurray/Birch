@@ -13,6 +13,14 @@ bi/distribution/Gamma.bi
 bi/distribution/Gaussian.bi
 bi/distribution/MultivariateGaussian.bi
 bi/distribution/Uniform.bi
+bi/driver/build.bi
+bi/driver/check.bi
+bi/driver/clean.bi
+bi/driver/dist.bi
+bi/driver/docs.bi
+bi/driver/init.bi
+bi/driver/install.bi
+bi/driver/uninstall.bi
 bi/math/eigen.bi
 bi/math/matrix.bi
 bi/math/scalar.bi
