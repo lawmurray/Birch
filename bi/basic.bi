@@ -1,16 +1,3 @@
-hpp{{
-namespace bi {
-  namespace type {
-using Boolean_ = bool;
-using Real64_ = double;
-using Real32_ = float;
-using Integer64_ = int64_t;
-using Integer32_ = int32_t;
-using String_ = std::string;
-  }
-}
-}}
-
 type Boolean;
 type Real64;
 type Real32;

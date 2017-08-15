@@ -1,9 +1,3 @@
-cpp {{
-#include <cmath>
-#include <cstdint>
-#include <cstdlib>
-#include <algorithm>
-}}
 import basic;
 
 /*

@@ -1,11 +1,6 @@
 import basic;
 import math;
 
-cpp {{
-#include <iostream>
-#include <fstream>
-}}
-
 function print(value:Boolean) {
   if (value) {
     print("true");
