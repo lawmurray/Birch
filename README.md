@@ -32,23 +32,18 @@ Typically, only the first of these is used directly. It provides a friendly wrap
 
 ### Installing the standard library
 
-You will also want to install the standard library. This provides all the standard functionality used by Birch programs, such as mathematics functions, probability distributions, and I/O. It is in a separate `Birch.Standard` repository. To build and install, run the following from within the `Birch.Standard` directory:
+You will also want to install the standard library. The Birch Standard Library provides the basic functionality needed by most Birch programs, such as standard math, linear algebra, probability distributions, and I/O. It is in a separate `Birch.Standard` repository. To build and install, run the following from within the `Birch.Standard` directory:
 
-    make
-    make install
-    
-Note that these, in turn, are just calling the `birch` driver program to build and install the code.
+    birch build
+    birch install
 
 ### Installing the examples
 
-You may also want to install the example programs. These are in a separate `Birch.Example` repository. To build and install, run the following from within the `Birch.Example` directory:
+You may also want to install the example programs. These are in a separate `Birch.Example` repository. To build, run the following from within the `Birch.Example` directory:
 
-    make
-    make install
+    birch build
 
-Note that these, in turn, are just calling the `birch` driver program to build and install the code.
-    
-To run an example, use:
+Then, to run an example, use:
 
     birch example
 
@@ -472,36 +467,3 @@ It is the postfix `?` operator that triggers the continuation of the fiber execu
 Within the body of a fier, the `yield` statement is used to pause execution. This yields execution to the caller, along with the given value.
 
 The fiber terminates when execution reaches the end of the body, if ever. When terminating, it does not yield a value. To terminate the execution of a fiber before reaching the end of the body, use an empty `return;` statement.
-
-# The Birch Standard Library
-
-The Birch Standard Library provides the basic functionality needed by most Birch programs, such as standard math, linear algebra, probability distributions, and I/O. It is documented separately.
-
-# The Birch Eclipse Plugin
-
-The Birch Eclipse Plugin provides a syntax-highlighting text editor for the Eclipse IDE. 
-
-An Eclipse installation site has yet to be set up for the plugin. In the meantime, it is available in a separate `Birch.Eclipse` repository.
-
-To install the plugin, first ensure that your Eclipse environment has the appropriate components. Use *Help > Install New Software...*, and install:
-
-  * Eclipse Java Development Tools
-  * Eclipse Plug-in Development Environment
-
-Import the `Birch.Eclipse` project:
-
-  1. *File > Import... > Git > Projects from Git > Clone URI*.
-  2. Enter the URI: https://github.com/lawmurray/Birch.Eclipse.git.
-  3. *Next*, then *Next* again, the branch *master* should be checked.
-  4. Set the local directory to clone to, we suggest changing `.../git/...` to `.../workspace/...`.
-  5. *Next* again.
-  6. *Import existing Eclipse projects*.
-  7. *Finish*.
-
-The project should compile automatically, otherwise use `Project > Build Project`.
-
-To install:
-
-  1. *File > Export... > Plug-in Development > Deployable plug-ins and fragments*.
-  2. Check the box against *Birch (x.y.z)*.
-  3. Select *Install into host*.
