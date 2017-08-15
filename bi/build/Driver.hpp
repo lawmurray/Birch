@@ -78,6 +78,11 @@ public:
 
 private:
   /**
+   * Read in the project name from meta files.
+   */
+  void readName();
+
+  /**
    * Read in the MANIFEST file.
    */
   void readManifest();
@@ -167,7 +172,7 @@ private:
   /**
    * Name of the package.
    */
-  std::string packageName;
+  std::string projectName;
 
   /**
    * Local command-line arguments.

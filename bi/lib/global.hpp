@@ -4,8 +4,9 @@
 #pragma once
 
 #include <limits>
-#include <cstdint>
 #include <type_traits>
+#include <cstdint>
+#include <cstddef>
 
 namespace bi {
 class Heap;
@@ -16,7 +17,7 @@ class Heap;
  *
  * @ingroup library
  */
-static constexpr int mutable_value = 0;
+static constexpr size_t mutable_value = 0;
 
 /**
  * Constant to indicate default value for lead.

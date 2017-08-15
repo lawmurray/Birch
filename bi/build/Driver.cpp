@@ -65,6 +65,14 @@ bi::Driver::Driver(int argc, char** argv) :
   };
   const char* short_options = "-";  // treats non-options as short option 1
 
+  /* read project name */
+  readName();
+  if (projectName.compare("birch_standard") == 0) {
+    /* by default, disable inclusion of the standard library when the project
+     * is, itself,  the standard library (!) */
+    std = false;
+  }
+
   /* mutable copy of argv and argc */
   largv.insert(largv.begin(), argv, argv + argc);
   std::vector<char*> fargv;
@@ -175,21 +183,6 @@ bi::Driver::Driver(int argc, char** argv) :
 #endif
   lib_dirs.push_back("/usr/local/lib");
   lib_dirs.push_back("/usr/lib");
-
-  /* package name */
-  packageName = "birch_untitled";
-  ifstream metaStream("README.md");
-  std::regex reg("^name:\\s*(\\w+)$");
-  std::smatch match;
-  std::string line;
-  while (std::getline(metaStream, line)) {
-    if (std::regex_match(line, match, reg)) {
-      packageName = "birch_";
-      packageName += match[1];
-      boost::algorithm::to_lower(packageName);
-      break;
-    }
-  }
 }
 
 bi::Driver::~Driver() {
@@ -205,7 +198,7 @@ void bi::Driver::run(const std::string& prog) {
   char* msg;
   prog_t* fcn;
 
-  path so = std::string("lib") + packageName;
+  path so = std::string("lib") + projectName;
 #ifdef __APPLE__
   so.replace_extension(".dylib");
 #else
@@ -383,6 +376,22 @@ void bi::Driver::unlock() {
   isLocked = false;
 }
 
+void bi::Driver::readName() {
+  projectName = "birch_untitled";
+  ifstream metaStream("README.md");
+  std::regex reg("^name:\\s*(\\w+)$");
+  std::smatch match;
+  std::string line;
+  while (std::getline(metaStream, line)) {
+    if (std::regex_match(line, match, reg)) {
+      projectName = "birch_";
+      projectName += match[1];
+      boost::algorithm::to_lower(projectName);
+      break;
+    }
+  }
+}
+
 void bi::Driver::readManifest() {
   if (exists("MANIFEST")) {
     ifstream manifestStream("MANIFEST");
@@ -462,10 +471,10 @@ void bi::Driver::setup() {
   if (newManifest) {
     ofstream makeStream(work_dir / "Makefile.am");
     makeStream << "include common.am\n\n";
-    makeStream << "lib_LTLIBRARIES = lib" << packageName << ".la\n\n";
+    makeStream << "lib_LTLIBRARIES = lib" << projectName << ".la\n\n";
 
     /* *.cpp files */
-    makeStream << "lib" << packageName << "_la_SOURCES = ";
+    makeStream << "lib" << projectName << "_la_SOURCES = ";
     auto iter = cppFiles.begin();
     while (iter != cppFiles.end()) {
       if (iter != cppFiles.begin()) {
@@ -480,7 +489,7 @@ void bi::Driver::setup() {
     makeStream << '\n';
 
     /* sources derived from *.bi files */
-    makeStream << "nodist_lib" << packageName << "_la_SOURCES = ";
+    makeStream << "nodist_lib" << projectName << "_la_SOURCES = ";
     iter = biFiles.begin();
     while (iter != biFiles.end()) {
       iter->replace_extension(".cpp");
