@@ -94,6 +94,7 @@ COMMON_SOURCES = \
   bi/io/cpp/CppConstructorGenerator.cpp \
   bi/io/cpp/CppClassGenerator.cpp \
   bi/io/cpp/CppFiberGenerator.cpp \
+  bi/io/cpp/CppForwardGenerator.cpp \
   bi/io/cpp/CppMemberFiberGenerator.cpp \
   bi/io/bi_ostream.cpp \
   bi/io/cpp_ostream.cpp \
@@ -274,6 +275,7 @@ noinst_HEADERS = \
   bi/io/cpp/CppConstructorGenerator.hpp \
   bi/io/cpp/CppClassGenerator.hpp \
   bi/io/cpp/CppFiberGenerator.hpp \
+  bi/io/cpp/CppForwardGenerator.hpp \
   bi/io/cpp/CppMemberFiberGenerator.hpp \
   bi/io/cpp_ostream.hpp \
   bi/io/bi_ostream.hpp \

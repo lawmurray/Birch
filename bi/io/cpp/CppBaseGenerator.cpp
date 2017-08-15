@@ -5,7 +5,7 @@
 
 #include "bi/io/cpp/CppClassGenerator.hpp"
 #include "bi/io/cpp/CppFiberGenerator.hpp"
-#include "bi/visitor/Gatherer.hpp"
+#include "bi/io/cpp/CppForwardGenerator.hpp"
 #include "bi/primitive/encode.hpp"
 
 #include "boost/filesystem.hpp"
@@ -235,6 +235,10 @@ void bi::CppBaseGenerator::visit(const File* o) {
     /* compiler library header */
     // included in precompiled header
     line("//#include \"bi/libbirch.hpp\"");
+
+    /* forward type declarations */
+    CppForwardGenerator auxForward(base, level);
+    auxForward << o;
   } else {
     /* include main header file */
     boost::filesystem::path file(o->path);
