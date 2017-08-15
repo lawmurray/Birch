@@ -233,8 +233,7 @@ void bi::CppBaseGenerator::visit(const File* o) {
     line("#pragma once\n");
 
     /* compiler library header */
-    // Automake is now used to include this with `-include bi/libbirch.hpp`
-    // option, so that a precompiled version of it can be used
+    // included in precompiled header
     line("//#include \"bi/libbirch.hpp\"");
   } else {
     /* include main header file */
@@ -253,7 +252,12 @@ void bi::CppBaseGenerator::visit(const Import* o) {
   if (header) {
     boost::filesystem::path file = o->path->file();
     file.replace_extension(".hpp");
-    line("#include \"" << file.string() << "\"");
+    if (file.string().compare("bi/standard.hpp") == 0) {
+      // included in precompiled header
+      line("//#include \"" << file.string() << "\"");
+    } else {
+      line("#include \"" << file.string() << "\"");
+    }
   }
 }
 

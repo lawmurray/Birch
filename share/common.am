@@ -18,7 +18,7 @@ endif
 
 # precompile the Birch compiler library header
 precompile.hpp.pch: precompile.hpp
-	$(CXX) -std=c++14 precompile.hpp -o precompile.hpp.pch
+	$(CXX) $(DEFS) -std=c++14 precompile.hpp -o precompile.hpp.pch
 
 BUILT_SOURCES = precompile.hpp.pch
 CLEANFILES = precompile.hpp.pch
