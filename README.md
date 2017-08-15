@@ -1,8 +1,3 @@
-name: Standard
-version: 0.0.0
-description: The Birch standard library.
----
-
 # Birch
 
 Birch is a compiled, imperative, object-oriented, and probabilistic programming language. The latter is its primary research concern. The Birch compiler uses C++ as a target language.
