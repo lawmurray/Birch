@@ -254,10 +254,29 @@ void bi::Driver::dist() {
 }
 
 void bi::Driver::clean() {
-  setup();
-  autogen();
-  configure();
-  target("clean");
+  //setup();
+  //autogen();
+  //configure();
+  //target("clean");
+
+  remove_all(build_dir);
+  remove_all("autom4te.cache");
+  remove_all("m4");
+  remove("aclocal.m4");
+  remove("autogen.log");
+  remove("autogen.sh");
+  remove("common.am");
+  remove("compile");
+  remove("config.guess");
+  remove("config.sub");
+  remove("configure");
+  remove("configure.ac");
+  remove("depcomp");
+  remove("install-sh");
+  remove("ltmain.sh");
+  remove("Makefile.am");
+  remove("Makefile.in");
+  remove("missing");
 }
 
 void bi::Driver::init() {
@@ -437,6 +456,7 @@ void bi::Driver::setup() {
   }
   lock();
 
+  /* copy built files into build directory */
   path biPath("birch");
   newAutogen = copy_if_newer(find(share_dirs, biPath / "autogen.sh"),
       work_dir / "autogen.sh");
@@ -463,6 +483,8 @@ void bi::Driver::setup() {
       m4_dir / "ax_cxx_compile_stdcxx_11.m4");
   copy_if_newer(find(share_dirs, biPath / "ax_cxx_compile_stdcxx_14.m4"),
       m4_dir / "ax_cxx_compile_stdcxx_14.m4");
+  copy_if_newer(find(share_dirs, biPath / "precompile.hpp"),
+      build_dir / "precompile.hpp");
 
   /* build list of source files */
   readManifest();
@@ -548,7 +570,26 @@ void bi::Driver::setup() {
     makeStream << '\n';
 
     /* built sources */
-    makeStream << "BUILT_SOURCES = ";
+    makeStream << "BUILT_SOURCES += ";
+    iter = biFiles.begin();
+    while (iter != biFiles.end()) {
+      iter->replace_extension(".cpp");
+      if (iter != biFiles.begin()) {
+        makeStream << "  ";
+      }
+      makeStream << iter->string();
+      makeStream << " \\\n  ";
+      iter->replace_extension(".hpp");
+      makeStream << iter->string();
+      if (++iter != biFiles.end()) {
+        makeStream << " \\";
+      }
+      makeStream << '\n';
+    }
+    makeStream << '\n';
+
+    /* clean files */
+    makeStream << "CLEANFILES += ";
     iter = biFiles.begin();
     while (iter != biFiles.end()) {
       iter->replace_extension(".cpp");
