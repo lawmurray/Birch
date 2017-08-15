@@ -195,7 +195,8 @@ Birch supports the most common arithmetic and logical operators found in other p
 
 The (infix) binary operators are, in order of highest to lowest precedence:
 
-| ------------------ | --------------- | ---------------- | -------------------- |
+|     |     |     |     |
+| --- | --- | --- | --- |
 | `*` Multiply       | `/` Divide      | | |
 | `+` Add            | `-` Subtract    | | |
 | `<` Less           | `>` Greater     | `<=` Less/equal  | `>=` Greater/equal |
