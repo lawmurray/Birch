@@ -1,12 +1,11 @@
+import basic;
+
 /**
  * Build the project.
  *
- *   - `--include-dir`
- *     : Add search directory for header files.
- *   - `--lib-dir`
- *     : Add search directory for library files.
- *   - `--share-dir`
- *     : Add search directory for data files.
+ *   - `--include-dir` : Add search directory for header files.
+ *   - `--lib-dir` : Add search directory for library files.
+ *   - `--share-dir` : Add search directory for data files.
  *
  * These three options are analogous to their counterparts for a C/C++
  * compiler, and specify the locations in which the Birch compiler should
@@ -20,24 +19,17 @@
  * installation, followed by the system-wide locations `/usr/local/` and
  * `/usr/`.
  *
- *   - `--build-dir`
- *     : Intermediate build directory (default `build`).
- *   - `--prefix`
- *     : Installation prefix (default platform-specific).
- *
- *   - `--enable-std` / `--disable-std`
- *     : Enable/disable the standard library.
- *   - `--enable-warnings` / `--disable-warnings`
- *     : Enable/disable compiler warnings.
- *   - `--enable-debug` / `--disable-debug`
- *     : Enable/disable debug mode.
- *   - `--dry-build`
- *     : Do not build.
- *   - `--dry-run`
- *     : Do not run.
- *   - `--verbose`
- *     : Verbose mode.
- *   - `--force`
- *     : Force rebuild of all files.
+ *   - `--prefix` : Installation prefix (default platform-specific).
+ *   - `--enable-std` / `--disable-std` : Enable/disable the standard library.
+ *   - `--enable-warnings` / `--disable-warnings` : Enable/disable warnings.
+ *   - `--enable-debug` / `--disable-debug` : Enable/disable debug mode.
+ *   - `--enable-verbose` / `--disable-verbose` : Verbose mode.
  */
-program build();
+program build(
+    include_dir:String,
+    lib_dir:String,
+    share_dir:String,
+    prefix:String,
+    warnings:Boolean <- true,
+    debug:Boolean <- true,
+    verbose:Boolean <- true);

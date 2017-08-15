@@ -1,5 +1,5 @@
-Doxyfile
 MANIFEST
+README.md
 bi/distribution/gaussian/AffineGaussian.bi
 bi/distribution/gaussian/AffineGaussianExpression.bi
 bi/distribution/multivariate_gaussian/AffineMultivariateGaussian.bi

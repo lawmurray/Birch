@@ -1,7 +1,8 @@
+import basic;
+
 /**
  * Initialise the working directory for a new project.
  *
- *   - `--name`
- *     : Name of the project (default `untitled`).
+ *   - `--name` : Name of the project (default `untitled`).
  */
-program init();
+program init(name:String <- "untitled");
