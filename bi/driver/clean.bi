@@ -1,4 +1,4 @@
 /**
- * Clean the project directory.
+ * Clean the project directory of all build files.
  */
 program clean();

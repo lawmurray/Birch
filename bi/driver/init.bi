@@ -1,4 +1,7 @@
 /**
- * Set up the current working directory for a new project.
+ * Initialise the working directory for a new project.
+ *
+ *   - `--name`
+ *     : Name of the project (default `untitled`).
  */
 program init();
