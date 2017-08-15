@@ -195,7 +195,7 @@ Birch supports the most common arithmetic and logical operators found in other p
 
 The (infix) binary operators are, in order of highest to lowest precedence:
 
-|--------------------|-----------------|------------------|----------------------|
+| ------------------ | --------------- | ---------------- | -------------------- |
 | `*` Multiply       | `/` Divide      | | |
 | `+` Add            | `-` Subtract    | | |
 | `<` Less           | `>` Greater     | `<=` Less/equal  | `>=` Greater/equal |
@@ -207,7 +207,7 @@ The (infix) binary operators are, in order of highest to lowest precedence:
 
 The (prefix) unary operators are all of equal precedence, and of higher precedence than all binary operators:
 
-|--------------|--------------|-----------------|
+| ------------ | ------------ | --------------- |
 | `+` Identity | `-` Negative | `!` Logical not |
 
 The standard library provides the obvious overloads for these standard operators for built-in types.
@@ -218,7 +218,7 @@ There are no operators for power or modulus: the standard library functions `pow
 
 The remaining operators are introduced for concise probabilistic statements. The first is a binary operator that always returns a value of type `Real`, and has precedence less than all of the standard operators:
 
-|--------------|
+| ------------ |
 | `~>` Observe |
 
 This operator is syntactic sugar; `a ~> b` is defined to mean exactly:
@@ -229,7 +229,7 @@ and, in fact, is internally transformed to this on use. Consequently, it is nece
 
 The two remaining probabilistic operators are:
 
-|---------------|-------------------|
+| ------------- | ----------------- |
 | `<~` Simulate | `~` Distribute as |
 
 Like the assignment operator, these operators have no return type, and may only be used in statements, where they have the lowest, and final, precedence.
@@ -254,7 +254,7 @@ A higher-level treatment of these operators is given in later sections, which is
 
 These are postfix unary operators used with optional and fiber types. They are of equal precedence, and of higher precedence than all other operators:
 
-|--------------|--------------|
+| ------------ | ------------ |
 | `?` Query    | `!` Get      |
 
 See below for the behaviour of these operators.
