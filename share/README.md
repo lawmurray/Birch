@@ -1,14 +1,22 @@
-Birch package: Untitled
-=======================
+name: Untitled
+version: 0.0.0
+---
 
-Synopsis
---------
+# Untitled (package for Birch)
 
-    ./run.sh
+## Installation
+
+To build, use:
+
+    birch build
     
-Description
------------
+To install system wide, use:
+
+    birch install
 
 
-References
-----------
+## Version history
+
+### v0.0.0
+
+* Initialised project.

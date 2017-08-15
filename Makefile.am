@@ -348,11 +348,8 @@ dist_pkgdata_DATA = \
   share/ax_cxx_compile_stdcxx_11.m4 \
   share/ax_cxx_compile_stdcxx_14.m4 \
   share/LICENSE \
-  share/Makefile \
   share/MANIFEST \
-  share/META.md \
   share/README.md \
-  share/VERSION.md \
   share/autogen.sh \
   share/common.am \
   share/configure.ac

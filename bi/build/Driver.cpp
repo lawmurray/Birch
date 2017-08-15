@@ -26,7 +26,7 @@ bi::Driver::Driver(int argc, char** argv) :
     std(true),
     warnings(true),
     debug(true),
-    verbose(false),
+    verbose(true),
     newAutogen(false),
     newConfigure(false),
     newMake(false),
@@ -178,7 +178,7 @@ bi::Driver::Driver(int argc, char** argv) :
 
   /* package name */
   packageName = "birch_untitled";
-  ifstream metaStream("META.md");
+  ifstream metaStream("README.md");
   std::regex reg("^name:\\s*(\\w+)$");
   std::smatch match;
   std::string line;
@@ -272,11 +272,8 @@ void bi::Driver::init() {
   path biPath("bi");
   copy_with_prompt(find(share_dirs, "gitignore"), ".gitignore");
   copy_with_prompt(find(share_dirs, "LICENSE"), "LICENSE");
-  copy_with_prompt(find(share_dirs, "Makefile"), "Makefile");
   copy_with_prompt(find(share_dirs, "MANIFEST"), "MANIFEST");
-  copy_with_prompt(find(share_dirs, "META.md"), "META.md");
   copy_with_prompt(find(share_dirs, "README.md"), "README.md");
-  copy_with_prompt(find(share_dirs, "VERSION.md"), "VERSION.md");
 }
 
 void bi::Driver::check() {
@@ -306,28 +303,12 @@ void bi::Driver::check() {
     warn("LICENSE file is not listed in MANIFEST file.");
   }
 
-  /* check META.md */
-  if (!exists("META.md")) {
-    warn(
-        "no META.md file; create a META.md file documenting the package in Markdown format.");
-  } else if (manifestFiles.find("META.md") == manifestFiles.end()) {
-    warn("META.md file is not listed in MANIFEST file.");
-  }
-
   /* check README.md */
   if (!exists("README.md")) {
     warn(
         "no README.md file; create a README.md file documenting the package in Markdown format.");
   } else if (manifestFiles.find("README.md") == manifestFiles.end()) {
     warn("README.md file is not listed in MANIFEST file.");
-  }
-
-  /* check VERSION.md */
-  if (!exists("VERSION.md")) {
-    warn(
-        "no VERSION.md file; create a VERSION.md file documenting changes to the package in Markdown format.");
-  } else if (manifestFiles.find("VERSION.md") == manifestFiles.end()) {
-    warn("VERSION.md file is not listed in MANIFEST file.");
   }
 
   /* check for files that might be missing from MANIFEST */
@@ -419,8 +400,7 @@ void bi::Driver::readManifest() {
         } else if (file.extension().compare(".hpp") == 0) {
           hppFiles.push_back(file);
         } else if (file.extension().compare("") == 0
-            || file.extension().compare(".md") == 0
-            || file.filename().compare("META.yml") == 0) {
+            || file.extension().compare(".md") == 0) {
           metaFiles.push_back(file);
         } else {
           otherFiles.push_back(file);
