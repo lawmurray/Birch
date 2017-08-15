@@ -12,7 +12,6 @@
 #include "bi/lib/Frame.hpp"
 #include "bi/lib/View.hpp"
 #include "bi/lib/Array.hpp"
-#include "bi/lib/Markable.hpp"
 #include "bi/lib/Object.hpp"
 #include "bi/lib/Pointer.hpp"
 #include "bi/lib/FiberState.hpp"
@@ -26,10 +25,17 @@
 #include <getopt.h>
 #include <gc.h>
 
+#include <iostream>
+#include <fstream>
+#include <random>
+#include <algorithm>
 #include <utility>
 #include <functional>
 #include <string>
 #include <cstdlib>
+#include <cstdint>
+#include <cstddef>
+#include <cmath>
 #include <cassert>
 
 namespace bi {
