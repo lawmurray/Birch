@@ -12,4 +12,4 @@ bi/demo/demo_member_fiber.bi
 bi/eigen/eigen_matrix.bi
 bi/eigen/eigen_vector.bi
 MANIFEST
-META.md
+README.md
