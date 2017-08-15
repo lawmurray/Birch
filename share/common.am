@@ -4,6 +4,7 @@
 
 # compile and link flags
 ACLOCAL_AMFLAGS = -I m4
+AM_CXXFLAGS = -include precompile.hpp
 
 if ENABLE_STD
 BIRCHFLAGS = --enable-std
@@ -14,3 +15,10 @@ endif
 # pattern for *.bi files
 %.cpp %.hpp: %.bi $(BIRCHC)
 	$(BIRCHC) $(BIRCHFLAGS) $(CPPFLAGS) -o $@ $<
+
+# precompile the Birch compiler library header
+precompile.hpp.pch: precompile.hpp
+	$(CXX) -std=c++14 precompile.hpp -o precompile.hpp.pch
+
+BUILT_SOURCES = precompile.hpp.pch
+CLEANFILES = precompile.hpp.pch

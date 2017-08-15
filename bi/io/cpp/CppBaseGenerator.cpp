@@ -232,8 +232,10 @@ void bi::CppBaseGenerator::visit(const File* o) {
     /* include guard */
     line("#pragma once\n");
 
-    /* standard headers */
-    line("#include \"bi/libbirch.hpp\"");
+    /* compiler library header */
+    // Automake is now used to include this with `-include bi/libbirch.hpp`
+    // option, so that a precompiled version of it can be used
+    line("//#include \"bi/libbirch.hpp\"");
   } else {
     /* include main header file */
     boost::filesystem::path file(o->path);
