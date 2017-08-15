@@ -208,6 +208,7 @@ The (infix) binary operators are, in order of highest to lowest precedence:
 
 The (prefix) unary operators are all of equal precedence, and of higher precedence than all binary operators:
 
+|              |              |                 |
 | ------------ | ------------ | --------------- |
 | `+` Identity | `-` Negative | `!` Logical not |
 
@@ -219,6 +220,7 @@ There are no operators for power or modulus: the standard library functions `pow
 
 The remaining operators are introduced for concise probabilistic statements. The first is a binary operator that always returns a value of type `Real`, and has precedence less than all of the standard operators:
 
+|              |
 | ------------ |
 | `~>` Observe |
 
@@ -230,6 +232,7 @@ and, in fact, is internally transformed to this on use. Consequently, it is nece
 
 The two remaining probabilistic operators are:
 
+|               |                   |
 | ------------- | ----------------- |
 | `<~` Simulate | `~` Distribute as |
 
@@ -255,6 +258,7 @@ A higher-level treatment of these operators is given in later sections, which is
 
 These are postfix unary operators used with optional and fiber types. They are of equal precedence, and of higher precedence than all other operators:
 
+|              |              |
 | ------------ | ------------ |
 | `?` Query    | `!` Get      |
 
