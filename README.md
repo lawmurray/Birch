@@ -102,7 +102,7 @@ Greater focus is given to the probabilistic programming paradigm, which may be l
 
 A program represents an entry point into Birch code from the command line or other host software. It cannot be called from other Birch code. It is declared as follows:
 
-    program example(a:Real, b:Integer = 0, msg:String) {
+    program example(a:Real, b:Integer <- 0, msg:String) {
       ...
     }
 
