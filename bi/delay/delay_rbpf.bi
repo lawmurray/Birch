@@ -1,3 +1,74 @@
+/**
+ * Demonstrates a particle filter over a nonlinear state-space model with
+ * linear substructure. With delayed sampling enabled, this automatically
+ * yields a Rao--Blackwellized particle filter with locally-optimal proposal.
+ *
+ *   - N : Number of particles.
+ *   - T : Number of time steps.
+ *
+ * To disable delayed sampling, change the `~` operators to `<~` in the
+ * `initial` and `transition` functions of the `Example` class.
+ */
+program delay_rbpf(N:Integer <- 100, T:Integer <- 10) {  
+  x:Real![N];     // particles
+  w:Real[N];      // log-weights
+  a:Integer[N];   // ancestor indices
+  W:Real <- 0.0;  // marginal likelihood
+  
+  n:Integer;
+  t:Integer <- 1;
+
+  /* initialize */
+  for (n in 1..N) {
+    x[n] <- particle(T);
+    if (x[n]?) {
+      w[n] <- x[n]!;
+    } else {
+      w[n] <- -inf;
+    }
+  }
+  W <- log_sum_exp(w) - log(Real(N));
+  
+  for (t in 2..T) {
+    /* resample */
+    a <- ancestors(w);
+    for (n in 1..N) {
+      if (a[n] != n) {
+        x[n] <- x[a[n]];
+      }
+    }
+    
+    /* propagate and weight */
+    for (n in 1..N) {
+      if (x[n]?) {
+        w[n] <- x[n]!;
+      } else {
+        w[n] <- -inf;
+      }
+    }
+    
+    /* marginal log-likelihood estimate */
+    W <- W + log_sum_exp(w) - log(Real(N));
+  }
+    
+  /* output */
+  //x[ancestor(w)].output();
+  print(W);
+  print(",");
+  print(N);
+  print("\n");
+}
+
+
+fiber particle(T:Integer) -> Real! {
+  x:Example(T);
+  w:Real;
+  f:Real! <- x.simulate();
+  while (f?) {
+    yield f!;  
+  }
+}
+
 class Example(T:Integer) {
   Σ_x_l:Real[3,3];  // linear state noise covariance
   Σ_x_n:Real[1,1];  // nonlinear state noise covariance
@@ -101,74 +172,4 @@ class Example(T:Integer) {
       print(", ");
     }
   }
-}
-
-fiber particle(T:Integer) -> Real! {
-  x:Example(T);
-  w:Real;
-  f:Real! <- x.simulate();
-  while (f?) {
-    yield f!;  
-  }
-}
-
-/**
- * Demonstrates a particle filter over a nonlinear state-space model with
- * linear substructure. With delayed sampling enabled, this automatically
- * yields a Rao--Blackwellized particle filter with locally-optimal proposal.
- *
- *   - N : Number of particles.
- *   - T : Number of time steps.
- *
- * To disable delayed sampling, change the `~` operators to `<~` in the
- * `initial` and `transition` functions of the `Example` class.
- */
-program delay_rbpf(N:Integer <- 100, T:Integer <- 10) {  
-  x:Real![N];     // particles
-  w:Real[N];      // log-weights
-  a:Integer[N];   // ancestor indices
-  W:Real <- 0.0;  // marginal likelihood
-  
-  n:Integer;
-  t:Integer <- 1;
-
-  /* initialize */
-  for (n in 1..N) {
-    x[n] <- particle(T);
-    if (x[n]?) {
-      w[n] <- x[n]!;
-    } else {
-      w[n] <- -inf;
-    }
-  }
-  W <- log_sum_exp(w) - log(Real(N));
-  
-  for (t in 2..T) {
-    /* resample */
-    a <- ancestors(w);
-    for (n in 1..N) {
-      if (a[n] != n) {
-        x[n] <- x[a[n]];
-      }
-    }
-    
-    /* propagate and weight */
-    for (n in 1..N) {
-      if (x[n]?) {
-        w[n] <- x[n]!;
-      } else {
-        w[n] <- -inf;
-      }
-    }
-    
-    /* marginal log-likelihood estimate */
-    W <- W + log_sum_exp(w) - log(Real(N));
-  }
-    
-  /* output */
-  //x[ancestor(w)].output();
-  print(W);
-  print(",");
-  print(N);
-  print("\n");
 }
