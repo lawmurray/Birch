@@ -38,6 +38,9 @@ void bi::md_ostream::visit(const Name* o) {
 
 void bi::md_ostream::visit(const Parameter* o) {
   middle(o->name << ':' << o->type);
+  if (!o->value->isEmpty()) {
+    *this << " <- " << o->value;
+  }
 }
 
 void bi::md_ostream::visit(const GlobalVariable* o) {

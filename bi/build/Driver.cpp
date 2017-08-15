@@ -23,12 +23,9 @@ bi::Driver::Driver(int argc, char** argv) :
     work_dir(current_path()),
     build_dir(current_path() / "build"),
     prefix(""),
-    enable_std(true),
-    enable_warnings(true),
-    enable_debug(true),
-    dry_build(false),
-    dry_run(false),
-    force(false),
+    std(true),
+    warnings(true),
+    debug(true),
     verbose(false),
     newAutogen(false),
     newConfigure(false),
@@ -36,8 +33,7 @@ bi::Driver::Driver(int argc, char** argv) :
     newManifest(false),
     isLocked(false) {
   enum {
-    BUILD_DIR_ARG = 256,
-    SHARE_DIR_ARG,
+    SHARE_DIR_ARG = 256,
     INCLUDE_DIR_ARG,
     LIB_DIR_ARG,
     PREFIX_ARG,
@@ -47,15 +43,12 @@ bi::Driver::Driver(int argc, char** argv) :
     DISABLE_WARNINGS_ARG,
     ENABLE_DEBUG_ARG,
     DISABLE_DEBUG_ARG,
-    DRY_BUILD_ARG,
-    DRY_RUN_ARG,
-    FORCE_ARG,
-    VERBOSE_ARG
+    ENABLE_VERBOSE_ARG,
+    DISABLE_VERBOSE_ARG
   };
 
   int c, option_index;
   option long_options[] = {
-      { "build-dir", required_argument, 0, BUILD_DIR_ARG },
       { "share-dir", required_argument, 0, SHARE_DIR_ARG },
       { "include-dir", required_argument, 0, INCLUDE_DIR_ARG },
       { "lib-dir", required_argument, 0, LIB_DIR_ARG },
@@ -66,10 +59,8 @@ bi::Driver::Driver(int argc, char** argv) :
       { "disable-warnings", no_argument, 0, DISABLE_WARNINGS_ARG },
       { "enable-debug", no_argument, 0, ENABLE_DEBUG_ARG },
       { "disable-debug", no_argument, 0, DISABLE_DEBUG_ARG },
-      { "dry-build", no_argument, 0, DRY_BUILD_ARG },
-      { "dry-run", no_argument, 0, DRY_RUN_ARG },
-      { "force", no_argument, 0, FORCE_ARG },
-      { "verbose", no_argument, 0, VERBOSE_ARG },
+      { "enable-verbose", no_argument, 0, ENABLE_VERBOSE_ARG },
+      { "disable-verbose", no_argument, 0, DISABLE_VERBOSE_ARG },
       { 0, 0, 0, 0 }
   };
   const char* short_options = "-";  // treats non-options as short option 1
@@ -88,9 +79,6 @@ bi::Driver::Driver(int argc, char** argv) :
       long_options, &option_index);
   while (c != -1) {
     switch (c) {
-    case BUILD_DIR_ARG:
-      build_dir = optarg;
-      break;
     case SHARE_DIR_ARG:
       share_dirs.push_back(optarg);
       break;
@@ -104,34 +92,28 @@ bi::Driver::Driver(int argc, char** argv) :
       prefix = optarg;
       break;
     case ENABLE_STD_ARG:
-      enable_std = true;
+      std = true;
       break;
     case DISABLE_STD_ARG:
-      enable_std = false;
+      std = false;
       break;
     case ENABLE_WARNINGS_ARG:
-      enable_warnings = true;
+      warnings = true;
       break;
     case DISABLE_WARNINGS_ARG:
-      enable_warnings = false;
+      warnings = false;
       break;
     case ENABLE_DEBUG_ARG:
-      enable_debug = true;
+      debug = true;
       break;
     case DISABLE_DEBUG_ARG:
-      enable_debug = false;
+      debug = false;
       break;
-    case DRY_BUILD_ARG:
-      dry_build = true;
-      break;
-    case DRY_RUN_ARG:
-      dry_run = true;
-      break;
-    case FORCE_ARG:
-      force = true;
-      break;
-    case VERBOSE_ARG:
+    case ENABLE_VERBOSE_ARG:
       verbose = true;
+      break;
+    case DISABLE_VERBOSE_ARG:
+      verbose = false;
       break;
     case '?':  // unknown option
     case 1:  // not an option
@@ -244,112 +226,57 @@ void bi::Driver::run(const std::string& prog) {
       throw DriverException(buf.str());
     } else {
       fcn = reinterpret_cast<prog_t*>(addr);
-      if (!dry_run) {
-        fcn(largv.size(), largv.data());
-      }
+      fcn(largv.size(), largv.data());
     }
     dlclose(handle);
   }
 }
 
 void bi::Driver::build() {
-  if (!dry_build) {
-    setup();
-    autogen();
-    configure();
-    make();
-  }
+  setup();
+  autogen();
+  configure();
+  target();
 }
 
 void bi::Driver::install() {
-  if (!dry_build) {
-    /* command */
-    std::stringstream cmd;
-    cmd << "make install";
-    if (force) {
-      cmd << " --always-make";
-    }
-
-    if (verbose) {
-      std::cerr << cmd.str() << std::endl;
-    } else {
-      cmd << " > install.log 2>&1";
-    }
-
-    /* change into build dir */
-    current_path(build_dir);
-
-    int ret = system(cmd.str().c_str());
-    if (ret == -1) {
-      throw DriverException("make install failed to execute.");
-    } else if (ret != 0) {
-      std::stringstream buf;
-      buf << "make install died with signal " << ret << ". See "
-          << (build_dir / "install.log").string() << " for details.";
-      throw DriverException(buf.str());
-    }
-
-    /* change back to original working dir */
-    current_path(work_dir);
-  }
+  setup();
+  autogen();
+  configure();
+  target("install");
 }
 
 void bi::Driver::uninstall() {
-  /* command */
-  std::stringstream cmd;
-  cmd << "make uninstall";
-
-  if (verbose) {
-    std::cerr << cmd.str() << std::endl;
-  } else {
-    cmd << " > uninstall.log 2>&1";
-  }
-
-  /* change into build dir */
-  current_path(build_dir);
-
-  int ret = system(cmd.str().c_str());
-  if (ret == -1) {
-    throw DriverException("make uninstall failed to execute.");
-  } else if (ret != 0) {
-    std::stringstream buf;
-    buf << "make uninstall died with signal " << ret << ". See "
-        << (build_dir / "uninstall.log").string() << " for details.";
-    throw DriverException(buf.str());
-  }
-
-  /* change back to original working dir */
-  current_path(work_dir);
+  setup();
+  autogen();
+  configure();
+  target("uninstall");
 }
 
 void bi::Driver::dist() {
-
+  setup();
+  autogen();
+  configure();
+  target("dist");
 }
 
 void bi::Driver::clean() {
-
+  setup();
+  autogen();
+  configure();
+  target("clean");
 }
 
 void bi::Driver::init() {
   create_directory("bi");
   path biPath("bi");
-  if (force) {
-    copy_with_force(find(share_dirs, "gitignore"), ".gitignore");
-    copy_with_force(find(share_dirs, "LICENSE"), "LICENSE");
-    copy_with_force(find(share_dirs, "Makefile"), "Makefile");
-    copy_with_force(find(share_dirs, "MANIFEST"), "MANIFEST");
-    copy_with_force(find(share_dirs, "META.md"), "META.md");
-    copy_with_force(find(share_dirs, "README.md"), "README.md");
-    copy_with_force(find(share_dirs, "VERSION.md"), "VERSION.md");
-  } else {
-    copy_with_prompt(find(share_dirs, "gitignore"), ".gitignore");
-    copy_with_prompt(find(share_dirs, "LICENSE"), "LICENSE");
-    copy_with_prompt(find(share_dirs, "Makefile"), "Makefile");
-    copy_with_prompt(find(share_dirs, "MANIFEST"), "MANIFEST");
-    copy_with_prompt(find(share_dirs, "META.md"), "META.md");
-    copy_with_prompt(find(share_dirs, "README.md"), "README.md");
-    copy_with_prompt(find(share_dirs, "VERSION.md"), "VERSION.md");
-  }
+  copy_with_prompt(find(share_dirs, "gitignore"), ".gitignore");
+  copy_with_prompt(find(share_dirs, "LICENSE"), "LICENSE");
+  copy_with_prompt(find(share_dirs, "Makefile"), "Makefile");
+  copy_with_prompt(find(share_dirs, "MANIFEST"), "MANIFEST");
+  copy_with_prompt(find(share_dirs, "META.md"), "META.md");
+  copy_with_prompt(find(share_dirs, "README.md"), "README.md");
+  copy_with_prompt(find(share_dirs, "VERSION.md"), "VERSION.md");
 }
 
 void bi::Driver::check() {
@@ -469,12 +396,10 @@ void bi::Driver::docs() {
 }
 
 void bi::Driver::unlock() {
-  if (!dry_build) {
-    if (isLocked) {
-      lockFile.unlock();
-    }
-    isLocked = false;
+  if (isLocked) {
+    lockFile.unlock();
   }
+  isLocked = false;
 }
 
 void bi::Driver::readManifest() {
@@ -687,7 +612,7 @@ void bi::Driver::setup() {
 }
 
 void bi::Driver::autogen() {
-  if (force || newAutogen || newConfigure || newMake || newManifest
+  if (newAutogen || newConfigure || newMake || newManifest
       || !exists(work_dir / "configure")
       || !exists(work_dir / "install-sh")) {
     std::stringstream cmd;
@@ -705,21 +630,23 @@ void bi::Driver::autogen() {
     } else if (ret != 0) {
       std::stringstream buf;
       buf << "autogen.sh died with signal " << ret
-          << ". Make sure autoconf, automake and libtool are installed. See "
-          << (build_dir / "autogen.log").string() << " for details.";
+          << ". Make sure autoconf, automake and libtool are installed.";
+      if (!verbose) {
+        buf << " See " << (build_dir / "autogen.log").string() << " for details.";
+      }
       throw DriverException(buf.str());
     }
   }
 }
 
 void bi::Driver::configure() {
-  if (force || newAutogen || newConfigure || newMake || newManifest
+  if (newAutogen || newConfigure || newMake || newManifest
       || !exists(build_dir / "Makefile")) {
     /* working directory */
     std::stringstream cppflags, cxxflags, ldflags, options, cmd;
 
     /* compile and link flags */
-    if (enable_debug) {
+    if (debug) {
       cppflags << " -D_GLIBCXX_DEBUG";
       cxxflags << " -O0 -g -fno-inline";
       ldflags << " -O0 -g -fno-inline";
@@ -736,7 +663,7 @@ void bi::Driver::configure() {
       ldflags << " -O3 -g -funroll-loops -flto";
       // ^ can also use -flto=n to use n threads internally
     }
-    if (enable_warnings) {
+    if (warnings) {
       cxxflags << " -Wall";
       ldflags << " -Wall";
     }
@@ -762,10 +689,8 @@ void bi::Driver::configure() {
     // ^ This is problematic for headers, as while *.bi file may change, this
     //   may not change the *.hpp file, and so make keeps trying to rebuild
     //   it.
-    if (!force) {
-      options << " --config-cache";
-    }
-    options << ((enable_std) ? " --enable-std" : " --disable-std");
+    options << " --config-cache";
+    options << (std ? " --enable-std" : " --disable-std");
 
     /* command */
     cmd << (work_dir / "configure").string() << " " << options.str()
@@ -786,9 +711,12 @@ void bi::Driver::configure() {
     } else if (ret != 0) {
       std::stringstream buf;
       buf << "configure died with signal " << ret
-          << ". Make sure all dependencies are installed. See "
-          << (build_dir / "configure.log").string() << " and "
-          << (build_dir / "config.log").string() << " for details.";
+          << ". Make sure all dependencies are installed.";
+      if (!verbose) {
+        buf << "See "
+            << (build_dir / "configure.log").string() << " and "
+            << (build_dir / "config.log").string() << " for details.";
+      }
       throw DriverException(buf.str());
     }
 
@@ -797,30 +725,34 @@ void bi::Driver::configure() {
   }
 }
 
-void bi::Driver::make() {
+void bi::Driver::target(const std::string& cmd) {
   /* command */
-  std::stringstream cmd;
-  cmd << "make -j 2";
-  if (force) {
-    cmd << " --always-make";
-  }
+  std::stringstream buf;
+  buf << "make " << cmd;
 
+  /* handle output */
+  std::string log = cmd + ".log";
   if (verbose) {
-    std::cerr << cmd.str() << std::endl;
+    std::cerr << buf.str() << std::endl;
   } else {
-    cmd << " > make.log 2>&1";
+    buf << " > " << log << " 2>&1";
   }
 
   /* change into build dir */
   current_path(build_dir);
 
-  int ret = system(cmd.str().c_str());
-  if (ret == -1) {
-    throw DriverException("make failed to execute.");
-  } else if (ret != 0) {
-    std::stringstream buf;
-    buf << "make died with signal " << ret << ". See "
-        << (build_dir / "make.log").string() << " for details.";
+  int ret = system(buf.str().c_str());
+  if (ret != 0) {
+    buf.str("make ");
+    buf << cmd;
+    if (ret == -1) {
+      buf << " failed to execute.";
+    } else {
+      buf << " died with signal " << ret << '.';
+    }
+    if (!verbose) {
+      buf << " See " << (build_dir / log).string() << " for details.";
+    }
     throw DriverException(buf.str());
   }
 

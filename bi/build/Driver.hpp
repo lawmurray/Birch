@@ -27,11 +27,14 @@ public:
   ~Driver();
 
   /**
-   * Build package.
+   * Run user program.
    */
   void run(const std::string& prog);
 
-void build();
+  /**
+   * Build package.
+   */
+  void build();
 
   /**
    * Install package.
@@ -73,10 +76,7 @@ void build();
    */
   void unlock();
 
-  /**
-   * Run program.
-   */
-  private:
+private:
   /**
    * Read in the MANIFEST file.
    */
@@ -98,9 +98,11 @@ void build();
   void configure();
 
   /**
-   * Run make.
+   * Run make with a given target.
+   *
+   * @param cmd The target, empty string for the default target.
    */
-  void make();
+  void target(const std::string& cmd = "");
 
   /**
    * Lock the build directory.
@@ -144,33 +146,17 @@ void build();
   /**
    * Enable Birch standard library.
    */
-  bool enable_std;
+  bool std;
 
   /**
    * Enable compiler warnings.
    */
-  bool enable_warnings;
+  bool warnings;
 
   /**
    * Enable debugging mode.
    */
-  bool enable_debug;
-
-  /**
-   * Do not build.
-   */
-  bool dry_build;
-
-  /**
-   * Do not run.
-   */
-  bool dry_run;
-
-  /**
-   * Force all build steps to be performed, even when determined not to be
-   * required.
-   */
-  bool force;
+  bool debug;
 
   /**
    * Verbose reporting.

@@ -30,7 +30,6 @@ int main(int argc, char** argv) {
     if (prog.compare("build") == 0) {
       driver.build();
     } else if (prog.compare("install") == 0) {
-      driver.build();
       driver.install();
     } else if (prog.compare("uninstall") == 0) {
       driver.uninstall();
@@ -45,9 +44,6 @@ int main(int argc, char** argv) {
     } else if (prog.compare("docs") == 0) {
       driver.docs();
     } else {
-      driver.build();
-      driver.install();
-      driver.unlock();
       driver.run(prog + "_");  // underscore suffix for user-specified names
     }
   } catch (Exception& e) {
