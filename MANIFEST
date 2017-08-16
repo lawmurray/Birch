@@ -27,9 +27,10 @@ bi/math/scalar.bi
 bi/math/vector.bi
 bi/basic.bi
 bi/distribution.bi
-bi/io.bi
 bi/math.bi
 bi/primitive.bi
+bi/print.bi
 bi/random.bi
+bi/read.bi
 bi/resample.bi
 bi/standard.bi
