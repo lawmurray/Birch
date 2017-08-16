@@ -13,12 +13,16 @@ BIRCHFLAGS = --disable-std
 endif
 
 # pattern for *.bi files
-%.cpp %.hpp: %.bi $(BIRCHC)
+%.cpp %.hpp: %.bi
 	$(BIRCHC) $(BIRCHFLAGS) $(CPPFLAGS) -o $@ $<
 
 # precompile the Birch compiler library header
 precompile.hpp.pch: precompile.hpp
-	$(CXX) $(DEFS) -std=c++14 precompile.hpp -o precompile.hpp.pch
+	mkdir -p $(DEPDIR) && \
+	$(CXX) -M $(DEFS) -std=c++14 -Wno-pragma-once-outside-header -MF $(DEPDIR)/precompile.Plo -MT $@ $< && \
+	$(CXX) $(DEFS) -std=c++14 -Wno-pragma-once-outside-header -o $@ $<
 
 BUILT_SOURCES = precompile.hpp.pch
 CLEANFILES = precompile.hpp.pch
+
+include $(DEPDIR)/precompile.Plo
