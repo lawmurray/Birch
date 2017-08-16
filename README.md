@@ -39,9 +39,10 @@ You will also want to install the standard library. It is in a separate `Birch.S
 
 ### Installing the examples
 
-You may also want to install the example programs. These are in a separate `Birch.Example` repository. To build, run the following from within the `Birch.Example` directory:
+You may also want to install the example programs. These are in a separate `Birch.Example` repository. To build and install, run the following from within the `Birch.Example` directory:
 
     birch build
+    birch install
 
 Then, to run an example, use:
 

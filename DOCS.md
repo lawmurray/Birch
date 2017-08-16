@@ -24,13 +24,9 @@ To build the project, use:
 
     birch build
     
-This will create a number of additional files in the current working directory, required for the build. Most of these are created in a `build/` subdirectory to keep them out of the way as much as possible. To delete these additional files, use:
+To install the project (required to run), use:
 
-    birch clean
-
-Debugging mode is enabled by default, and this will (dramatically) slow down execution times. It is recommended that you keep debugging mode enabled when developing and testing code on small problems, but disable it when running tested code on serious problems:
-
-    birch build --disable-debug
+    birch install
 
 To run a program that is either part of the standard library or amongst the project code, use
 
@@ -39,6 +35,14 @@ To run a program that is either part of the standard library or amongst the proj
 replacing `example` with the name of the program. Arguments to the program may be given as command-line options, e.g.:
 
     birch example -N 10 -T 10
+
+When building, Birch will create a number of additional files in the current working directory. Most of these are created in a `build/` subdirectory to keep them out of the way as much as possible. To delete all of the additional files, use:
+
+    birch clean
+
+Debugging mode is enabled by default, and this will (dramatically) slow down execution times. It is recommended that you keep debugging mode enabled when developing and testing code on small problems, but disable it when running tested code on serious problems:
+
+    birch build --disable-debug
 
 More information on the `init`, `check`, and `build` programs is available in the documentation of the standard library, and more information on writing your own programs is available in the language guide below.
 
