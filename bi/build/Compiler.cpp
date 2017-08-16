@@ -112,7 +112,9 @@ void bi::Compiler::parse() {
   }
 
   /* queue input files */
-  queue(input_file.string(), enable_std);
+  if (!input_file.empty()) {
+    queue(input_file.string(), enable_std);
+  }
 
   /* parse all input files, and any imported files along the way */
   while (!unparsed.empty()) {
