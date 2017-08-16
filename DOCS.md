@@ -24,9 +24,11 @@ To build the project, use:
 
     birch build
     
-This will create a number of additional files in the current working directory, required for the build. Most of these are created in a `build/` subdirectory to keep them out of the way as much as possible.
+This will create a number of additional files in the current working directory, required for the build. Most of these are created in a `build/` subdirectory to keep them out of the way as much as possible. To delete these additional files, use:
 
-Note that debugging mode is enabled by default, and this will (dramatically) slow down execution times. It is recommended that you keep debugging mode enabled when developing and testing code on small problems, but disable it when running tested code on serious problems:
+    birch clean
+
+Debugging mode is enabled by default, and this will (dramatically) slow down execution times. It is recommended that you keep debugging mode enabled when developing and testing code on small problems, but disable it when running tested code on serious problems:
 
     birch build --disable-debug
 
