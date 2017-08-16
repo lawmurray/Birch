@@ -4,7 +4,8 @@ import primitive;
 import resample;
 import random;
 import distribution;
-import io;
+import print;
+import read;
 
 cpp {{
 extern "C" int bi_standard_present() {
