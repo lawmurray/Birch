@@ -3,11 +3,12 @@
  * linear substructure. With delayed sampling enabled, this automatically
  * yields a Rao--Blackwellized particle filter with locally-optimal proposal.
  *
- *   - N : Number of particles.
- *   - T : Number of time steps.
+ *   - `-N` : Number of particles.
+ *   - `-T` : Number of time steps.
  *
  * To disable delayed sampling, change the `~` operators to `<~` in the
- * `initial` and `transition` functions of the `Example` class.
+ * `initial` and `transition` functions of the `Example` class, and to `~>`
+ * in the `observation` function.
  */
 program delay_rbpf(N:Integer <- 100, T:Integer <- 10) {  
   x:Real![N];     // particles

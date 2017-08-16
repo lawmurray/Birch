@@ -6,9 +6,10 @@ description: Birch examples and tests.
 
 # The Birch Example Programs
 
-To build, use:
+To build and install, use:
 
     birch build
+    birch install
 
 Then, to run an example, use:
 
