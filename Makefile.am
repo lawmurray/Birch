@@ -150,6 +150,7 @@ COMMON_SOURCES = \
   bi/visitor/Gatherer.cpp \
   bi/visitor/Modifier.cpp \
   bi/visitor/Resolver.cpp \
+  bi/visitor/Typer.cpp \
   bi/visitor/Visitor.cpp \
   bi/lexer.lpp \
   bi/parser.ypp

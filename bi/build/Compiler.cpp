@@ -4,6 +4,7 @@
 #include "Compiler.hpp"
 
 #include "bi/build/misc.hpp"
+#include "bi/visitor/Typer.hpp"
 #include "bi/visitor/Resolver.hpp"
 #include "bi/io/bi_ostream.hpp"
 #include "bi/io/cpp_ostream.hpp"
@@ -122,6 +123,10 @@ void bi::Compiler::parse() {
 }
 
 void bi::Compiler::resolve() {
+  for (auto file : files) {
+    Typer typer;
+    file->accept(&typer);
+  }
   for (auto file : files) {
     Resolver resolver;
     file->accept(&resolver);

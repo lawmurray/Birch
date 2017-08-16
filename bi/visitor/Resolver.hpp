@@ -12,7 +12,8 @@
 
 namespace bi {
 /**
- * Visitor to resolve references and infer types.
+ * This is the second pass of the abstract syntax tree after parsing,
+ * simultaneously resolving identifiers and inferring types.
  *
  * @ingroup compiler_visitor
  */
@@ -117,15 +118,13 @@ protected:
    * Push a scope on the stack of containing scopes.
    *
    * @param scope Scope.
-   *
-   * If @p scope is @c nullptr, a new scope is created.
    */
-  void push(Scope* scope = nullptr);
+  void push(Scope* scope);
 
   /**
    * Pop a scope from the stack of containing scopes.
    */
-  Scope* pop();
+  void pop();
 
   /**
    * Resolve an identifier.

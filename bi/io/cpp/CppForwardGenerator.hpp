@@ -17,6 +17,7 @@ public:
 
   using indentable_ostream::visit;
 
+  virtual void visit(const File* o);
   virtual void visit(const Class* o);
   virtual void visit(const Alias* o);
 

@@ -13,11 +13,8 @@ bi::Resolver::~Resolver() {
 }
 
 bi::File* bi::Resolver::modify(File* o) {
-  if (o->state == File::RESOLVING) {
-    throw CyclicImportException(o);
-  } else if (o->state == File::UNRESOLVED) {
+  if (o->state == File::UNRESOLVED) {
     o->state = File::RESOLVING;
-    o->scope = new Scope();
     files.push(o);
     push(o->scope);
     o->root = o->root->accept(this);
@@ -139,11 +136,11 @@ bi::Expression* bi::Resolver::modify(Get* o) {
 }
 
 bi::Expression* bi::Resolver::modify(LambdaFunction* o) {
-  push();
+  push(o->scope);
   o->parens = o->parens->accept(this);
   o->returnType->accept(this);
   o->braces->accept(this);
-  o->scope = pop();
+  pop();
   o->type = new FunctionType(o->parens->type->accept(&cloner),
       o->returnType->accept(&cloner), o->loc);
   o->type->accept(this);
@@ -342,7 +339,7 @@ bi::Statement* bi::Resolver::modify(MemberVariable* o) {
 }
 
 bi::Statement* bi::Resolver::modify(Function* o) {
-  push();
+  push(o->scope);
   o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
   if (!o->braces->isEmpty()) {
@@ -351,14 +348,14 @@ bi::Statement* bi::Resolver::modify(Function* o) {
   o->type = new FunctionType(o->params->type->accept(&cloner),
       o->returnType->accept(&cloner), o->loc);
   o->type = o->type->accept(this);
-  o->scope = pop();
+  pop();
   top()->add(o);
 
   return o;
 }
 
 bi::Statement* bi::Resolver::modify(Fiber* o) {
-  push();
+  push(o->scope);
   o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
   if (!o->braces->isEmpty()) {
@@ -367,20 +364,20 @@ bi::Statement* bi::Resolver::modify(Fiber* o) {
   o->type = new FunctionType(o->params->type->accept(&cloner),
       o->returnType->accept(&cloner), o->loc);
   o->type = o->type->accept(this);
-  o->scope = pop();
+  pop();
   top()->add(o);
   ///@todo Check that return type is of fiber type
   return o;
 }
 
 bi::Statement* bi::Resolver::modify(Program* o) {
-  push();
+  push(o->scope);
   o->params = o->params->accept(this);
   o->params->accept(&assigner);
   // ^ currently for backwards compatibility of delay_triplet example, can
   //   be updated later
   defer(o->braces);
-  o->scope = pop();
+  pop();
   top()->add(o);
   ///@todo Check that can assign String to all option types
 
@@ -388,7 +385,7 @@ bi::Statement* bi::Resolver::modify(Program* o) {
 }
 
 bi::Statement* bi::Resolver::modify(MemberFunction* o) {
-  push();
+  push(o->scope);
   o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
   if (!o->braces->isEmpty()) {
@@ -397,14 +394,14 @@ bi::Statement* bi::Resolver::modify(MemberFunction* o) {
   o->type = new FunctionType(o->params->type->accept(&cloner),
       o->returnType->accept(&cloner), o->loc);
   o->type = o->type->accept(this);
-  o->scope = pop();
+  pop();
   top()->add(o);
 
   return o;
 }
 
 bi::Statement* bi::Resolver::modify(MemberFiber* o) {
-  push();
+  push(o->scope);
   o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
   if (!o->braces->isEmpty()) {
@@ -413,14 +410,14 @@ bi::Statement* bi::Resolver::modify(MemberFiber* o) {
   o->type = new FunctionType(o->params->type->accept(&cloner),
       o->returnType->accept(&cloner), o->loc);
   o->type = o->type->accept(this);
-  o->scope = pop();
+  pop();
   top()->add(o);
   ///@todo Check that return type is of fiber type
   return o;
 }
 
 bi::Statement* bi::Resolver::modify(BinaryOperator* o) {
-  push();
+  push(o->scope);
   o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
   if (!o->braces->isEmpty()) {
@@ -429,14 +426,14 @@ bi::Statement* bi::Resolver::modify(BinaryOperator* o) {
   o->type = new FunctionType(o->params->type->accept(&cloner),
       o->returnType->accept(&cloner), o->loc);
   o->type = o->type->accept(this);
-  o->scope = pop();
+  pop();
   top()->add(o);
 
   return o;
 }
 
 bi::Statement* bi::Resolver::modify(UnaryOperator* o) {
-  push();
+  push(o->scope);
   o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
   if (!o->braces->isEmpty()) {
@@ -445,52 +442,52 @@ bi::Statement* bi::Resolver::modify(UnaryOperator* o) {
   o->type = new FunctionType(o->params->type->accept(&cloner),
       o->returnType->accept(&cloner), o->loc);
   o->type = o->type->accept(this);
-  o->scope = pop();
+  pop();
   top()->add(o);
 
   return o;
 }
 
 bi::Statement* bi::Resolver::modify(AssignmentOperator* o) {
-  push();
+  push(o->scope);
   o->single = o->single->accept(this);
   if (!o->braces->isEmpty()) {
     defer(o->braces);
   }
-  o->scope = pop();
-  //top()->add(o);
+  pop();
+  getClass()->addAssignment(o->single->type);
 
   return o;
 }
 
 bi::Statement* bi::Resolver::modify(ConversionOperator* o) {
-  push();
+  push(o->scope);
   o->returnType = o->returnType->accept(this);
   if (!o->braces->isEmpty()) {
     defer(o->braces);
   }
-  o->scope = pop();
+  pop();
   getClass()->addConversion(o->returnType);
 
   return o;
 }
 
 bi::Statement* bi::Resolver::modify(Basic* o) {
-  top()->add(o);
+  //top()->add(o);  // already added in first pass, by Typer
   return o;
 }
 
 bi::Statement* bi::Resolver::modify(Class* o) {
-  push();
+  push(o->scope);
   o->parens = o->parens->accept(this);
   o->base = o->base->accept(this);
   o->baseParens = o->baseParens->accept(this);
-  o->scope = pop();
+  //pop();
   if (!o->base->isEmpty()) {
     o->addSuper(o->base);
   }
-  top()->add(o);
-  push(o->scope);
+  //top()->add(o);  // already added in first pass, by Typer
+  //push(o->scope);
   classes.push(o);
   o->braces = o->braces->accept(this);
   classes.pop();
@@ -502,7 +499,7 @@ bi::Statement* bi::Resolver::modify(Class* o) {
 
 bi::Statement* bi::Resolver::modify(Alias* o) {
   o->base = o->base->accept(this);
-  top()->add(o);
+  //top()->add(o);  // already added in first pass, by Typer
   return o;
 }
 
@@ -513,25 +510,25 @@ bi::Statement* bi::Resolver::modify(Import* o) {
 }
 
 bi::Statement* bi::Resolver::modify(If* o) {
-  push();
+  push(o->scope);
   Modifier::modify(o);
-  o->scope = pop();
+  pop();
   ///@todo Check that condition is of type Boolean
   return o;
 }
 
 bi::Statement* bi::Resolver::modify(For* o) {
-  push();
+  push(o->scope);
   Modifier::modify(o);
-  o->scope = pop();
+  pop();
   ///@todo Check that index, from and to are of type Integer
   return o;
 }
 
 bi::Statement* bi::Resolver::modify(While* o) {
-  push();
+  push(o->scope);
   Modifier::modify(o);
-  o->scope = pop();
+  pop();
   ///@todo Check that condition is of type Boolean
   return o;
 }
@@ -593,20 +590,13 @@ bi::Scope* bi::Resolver::bottom() {
 }
 
 void bi::Resolver::push(Scope* scope) {
-  if (scope) {
-    scopes.push_back(scope);
-  } else {
-    scopes.push_back(new Scope());
-  }
+  assert(scope);
+  scopes.push_back(scope);
 }
 
-bi::Scope* bi::Resolver::pop() {
-  /* pre-conditions */
+void bi::Resolver::pop() {
   assert(scopes.size() > 0);
-
-  Scope* res = scopes.back();
   scopes.pop_back();
-  return res;
 }
 
 bi::Expression* bi::Resolver::lookup(Identifier<Unknown>* ref, Scope* scope) {
