@@ -85,10 +85,13 @@ bi::Compiler::Compiler(int argc, char** argv) :
     c = getopt_long(argc, argv, short_options, long_options, &option_index);
   }
 
-  /* remaining arguments are input files */
-  for (; optind < argc; ++optind) {
-    fs::path path(argv[optind]);
-    input_files.push_back(path.string());
+  /* remaining argument is input file */
+  if (optind == argc - 1) {
+    input_file = argv[optind];
+  } else if (optind == argc) {
+    throw CompilerException("No input file.");
+  } else {
+    throw CompilerException("Multiple input files.");
   }
 
   /* name of standard library */
@@ -109,9 +112,7 @@ void bi::Compiler::parse() {
   }
 
   /* queue input files */
-  for (auto iter = input_files.begin(); iter != input_files.end(); ++iter) {
-    queue(*iter, enable_std);
-  }
+  queue(input_file.string(), enable_std);
 
   /* parse all input files, and any imported files along the way */
   while (!unparsed.empty()) {
@@ -134,9 +135,44 @@ void bi::Compiler::resolve() {
 }
 
 void bi::Compiler::gen() {
-  for (auto iter = input_files.begin(); iter != input_files.end(); ++iter) {
-    gen(*iter);
+  /* pre-condition */
+  assert(parsed.find(input_file.string()) != parsed.end());
+
+  fs::path biPath, hppPath, cppPath;
+  biPath = input_file;
+  if (!output_file.empty()) {
+    cppPath = output_file;
+    hppPath = output_file;
+  } else {
+    cppPath = input_file;
+    hppPath = input_file;
   }
+  hppPath.replace_extension(".hpp");
+  cppPath.replace_extension(".cpp");
+
+  fs::ifstream biStream(biPath);
+  fs::ofstream hppStream(hppPath);
+  fs::ofstream cppStream(cppPath);
+
+  hpp_ostream hppOutput(hppStream);
+  cpp_ostream cppOutput(cppStream);
+
+  setStates(File::UNGENERATED);
+  hppOutput << filesByName[input_file.string()];
+
+  /* the original file is also appended to the header, this ensures that any
+   * changes to the *.bi file produce a different *.hpp file, even if those
+   * changes would not otherwise produce different C++ code; `install -p` can
+   * then be used when installing *.bi and *.hpp header files, and the last
+   * modified date of the *.hpp header will never be earlier than the *.bi
+   * header, important so that `make` does try to rebuild the *.hpp file */
+  hppOutput << "\n// Original file\n";
+  hppOutput << "#if 0\n";
+  hppOutput << biStream.rdbuf();
+  hppOutput << "\n#endif\n";
+
+  setStates(File::UNGENERATED);
+  cppOutput << filesByName[input_file.string()];
 }
 
 void bi::Compiler::setRoot(Statement* root) {
@@ -187,33 +223,6 @@ void bi::Compiler::parse(const std::string name) {
     }
   } while (!feof(yyin));
   fclose(yyin);
-}
-
-void bi::Compiler::gen(const std::string name) {
-  /* pre-condition */
-  assert(parsed.find(name) != parsed.end());
-
-  fs::path hppPath, cppPath;
-  if (!output_file.empty()) {
-    cppPath = output_file;
-    hppPath = output_file;
-  } else {
-    cppPath = name;
-    hppPath = name;
-  }
-  hppPath.replace_extension(".hpp");
-  cppPath.replace_extension(".cpp");
-
-  fs::ofstream hppStream(hppPath);
-  fs::ofstream cppStream(cppPath);
-
-  hpp_ostream hppOutput(hppStream);
-  cpp_ostream cppOutput(cppStream);
-
-  setStates(File::UNGENERATED);
-  hppOutput << filesByName[name];
-  setStates(File::UNGENERATED);
-  cppOutput << filesByName[name];
 }
 
 void bi::Compiler::setStates(const File::State state) {

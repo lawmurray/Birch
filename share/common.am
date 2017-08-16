@@ -13,7 +13,7 @@ BIRCHFLAGS = --disable-std
 endif
 
 # pattern for *.bi files
-%.cpp %.hpp: %.bi
+%.cpp %.hpp: %.bi $(BIRCHC)
 	$(BIRCHC) $(BIRCHFLAGS) $(CPPFLAGS) -o $@ $<
 
 # precompile the Birch compiler library header

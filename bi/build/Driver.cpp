@@ -715,10 +715,12 @@ void bi::Driver::configure() {
       options << " --prefix=" << absolute(prefix).string();
     }
     options << " --disable-static";
-    //options << " INSTALL=\"install -p\"";
-    // ^ This is problematic for headers, as while *.bi file may change, this
-    //   may not change the *.hpp file, and so make keeps trying to rebuild
-    //   it.
+    options << " INSTALL=\"install -p\"";
+    // ^ This can be problematic for headers, as while *.bi file may change,
+    //   this may not change the *.hpp file, and so make keeps trying to
+    //   rebuild it. The solution has been to append the entire *.bi file to
+    //   the end of the generated *.hpp file to ensure that it always changes.
+    //   see Compiler.
     options << " --config-cache";
     options << (std ? " --enable-std" : " --disable-std");
 

@@ -98,13 +98,6 @@ private:
   void parse(const std::string name);
 
   /**
-   * Generate output code for specific file.
-   *
-   * @param name File name.
-   */
-  void gen(const std::string name);
-
-  /**
    * Set state of all files.
    */
   void setStates(const File::State state);
@@ -134,6 +127,11 @@ private:
    */
   //@{
   /**
+   * Input file.
+   */
+  boost::filesystem::path input_file;
+
+  /**
    * Output file.
    */
   boost::filesystem::path output_file;
@@ -147,11 +145,6 @@ private:
    * Library directories.
    */
   std::list<boost::filesystem::path> lib_dirs;
-
-  /**
-   * Files for which to generate code.
-   */
-  std::list<std::string> input_files;
 
   /**
    * Name of standard library.

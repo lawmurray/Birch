@@ -16,7 +16,7 @@ namespace bi {
  *
  * @ingroup compiler_io
  */
-class indentable_ostream : public Visitor {
+class indentable_ostream: public Visitor {
 public:
   /**
    * Constructor.
@@ -25,7 +25,8 @@ public:
    * @param indent Initial indentation level.
    * @param header Output header only?
    */
-  indentable_ostream(std::ostream& base, const int level = 0, const bool header = false);
+  indentable_ostream(std::ostream& base, const int level = 0,
+      const bool header = false);
 
   /*
    * Output operator for standard types.
@@ -76,18 +77,26 @@ public:
   }
 
   /*
-   * Output operator for pointers.
+   * Output operator for parse tree objects.
    */
-  template<class T>
-  bi::indentable_ostream& operator<<(const T* arg) {
-    arg->accept(this);
-    return *this;
-  }
+  bi::indentable_ostream& operator<<(const Name* o);
+  bi::indentable_ostream& operator<<(const Path* o);
+  bi::indentable_ostream& operator<<(const File* o);
+  bi::indentable_ostream& operator<<(const Package* o);
+  bi::indentable_ostream& operator<<(const Expression* o);
+  bi::indentable_ostream& operator<<(const Statement* o);
+  bi::indentable_ostream& operator<<(const Type* o);
+  bi::indentable_ostream& operator<<(const Location* o);
 
   /*
-   * Output operator for locations.
+   * Output operator for anything else.
    */
-  bi::indentable_ostream& operator<<(const bi::Location* o);
+  template<class CharT, class Traits>
+  bi::indentable_ostream& operator<<(
+      const std::basic_filebuf<CharT,Traits>* o) {
+    base << o;
+    return *this;
+  }
 
   /**
    * Increase indent level.
@@ -120,17 +129,4 @@ protected:
    */
   std::string indent;
 };
-}
-
-inline void bi::indentable_ostream::in() {
-  ++level;
-  indent.append(2, ' ');
-}
-
-inline void bi::indentable_ostream::out() {
-  /* pre-condition */
-  assert(level > 0);
-
-  --level;
-  indent.resize(2*level);
 }
