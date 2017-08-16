@@ -170,7 +170,7 @@ void bi::Compiler::gen() {
    * header, important so that `make` does try to rebuild the *.hpp file */
   hppOutput << "\n// Original file\n";
   hppOutput << "#if 0\n";
-  hppOutput << biStream.rdbuf();
+  hppOutput.append(biStream);
   hppOutput << "\n#endif\n";
 
   setStates(File::UNGENERATED);

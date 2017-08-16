@@ -89,13 +89,11 @@ public:
   bi::indentable_ostream& operator<<(const Location* o);
 
   /*
-   * Output operator for anything else.
+   * Append the contents of an input stream.
    */
-  template<class CharT, class Traits>
-  bi::indentable_ostream& operator<<(
-      const std::basic_filebuf<CharT,Traits>* o) {
-    base << o;
-    return *this;
+  template<class InputStream>
+  void append(const InputStream& stream) {
+    base << stream.rdbuf();
   }
 
   /**
