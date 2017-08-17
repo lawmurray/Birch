@@ -220,7 +220,7 @@ The action of standard operators is defined by overloads in Birch code, declared
 
 The precedence of operators is always the same. It cannot be manipulated by Birch code.
 
-Only the standard operators may be overloaded. All other operators have in-built behaviour as described above. It is still possible to manipulate the behaviour of some operators that cannot be overloaded. For example, the behaviour of the assignment operator `<-` can be manipulated by declaring assignments and conversions in class declarations, as described above.
+Only the standard operators may be overloaded. All other operators have in-built behaviour as described above. It is still possible to manipulate the behaviour of some operators that cannot be overloaded. For example, the behaviour of the assignment operator `<-` can be manipulated by declaring assignments and conversions in class declarations, as described below.
 
 A binary operator `+` with two operands (of type `A` and `B`) and return type `C` is overloaded as follows:
 
@@ -243,6 +243,70 @@ A unary operator `+` with one operand (of type `A`) and return type `C` is decla
 Any of the standard unary operators may be used in place of `+`.
 
 Operators always have a return type. It is not possible to manipulate operator precedence.
+
+## Optionals
+
+A variable of class type must always point to an object. When declared, a variable of class type must be constructed:
+
+    a:A(b, c);
+    
+or be assigned a value:
+
+    a:A <- b;
+
+If the constructor for the class type takes no parameters, the parentheses may be omitted:
+
+    a:A;
+
+but this is equivalent to:
+
+    a:A();
+
+and an object is constructed in this case.
+
+Some use cases require that a variable may not have a value. *Optional types* are provided for this purpose. An optional type is indicated by following any other type with the `?` type operator, like so:
+
+    a:A?;
+    
+To check whether a variable of optional type has a value, use the postfix `?` operator, which returns a `Boolean` giving `true` if there is a value. To get that value, use the postfix `!` operator, which returns a value of the original type.
+
+A common usage idiom is as follows:
+
+    a:A?;
+    ...
+    if (a?) {  // a? gives a Boolean
+      f(a!);  // when a? is true, a! gives an A, otherwise an error
+    }
+
+## Fibers
+
+A fiber is like a function for which execution can be paused and later resumed. Unlike a function, which can return just one value, a fiber yields a value each time it is paused.
+
+A fiber with two parameters (of type `A` and `B`) and yield type `C` is declared as follows:
+
+    fiber f(a:A, b:B) -> C! {
+      c:C;
+      ...
+      yield c;
+    }
+
+Note the decoration of the yield type `C` with `!` to make it a fiber type `C!`. This is required.
+
+When called, a fiber performs no execution except to construct an object of fiber type `C!` and return it; execution of the body of the fiber is then controlled through that object.
+
+The usage idiom for fibers is similar to optionals, but with a loop:
+
+    a:A! <- c();
+    while (a?) {
+      f(a!);
+    }
+    
+It is the postfix `?` operator that triggers the continuation of the fiber execution, which proceeds until the next yield point. Repeated use of the postfix `!` operator between calls of the postfix `?` operator will retrieve the last yield value, without further execution.
+
+Within the body of a fiber, the `yield` statement is used to pause execution. This yields execution to the caller, along with the given value.
+
+The fiber terminates when execution reaches the end of the body, if ever. When terminating, it does not yield a value. To terminate the execution of a fiber before reaching the end of the body, use an empty `return;` statement.
+
 
 ## Classes
 
@@ -359,66 +423,3 @@ The body of the operator should construct the object that is the result of the c
     
     o:Derived;
     f(o);
-
-## Optionals
-
-A variable of class type must always point to an object. When declared, a variable of class type must be constructed:
-
-    a:A(b, c);
-    
-or be assigned a value:
-
-    a:A <- b;
-
-If the constructor for the class type takes no parameters, the parentheses may be omitted:
-
-    a:A;
-
-but this is equivalent to:
-
-    a:A();
-
-and an object is constructed in this case.
-
-Some use cases require that a variable may not have a value. *Optional types* are provided for this purpose. An optional type is indicated by following any other type with the `?` type operator, like so:
-
-    a:A?;
-    
-To check whether a variable of optional type has a value, use the postfix `?` operator, which returns a `Boolean` giving `true` if there is a value. To get that value, use the postfix `!` operator, which returns a value of the original type.
-
-A common usage idiom is as follows:
-
-    a:A?;
-    ...
-    if (a?) {  // a? gives a Boolean
-      f(a!);  // when a? is true, a! gives an A, otherwise an error
-    }
-
-## Fibers
-
-A fiber is like a function for which execution can be paused and later resumed. Unlike a function, which can return just one value, a fiber yields a value each time it is paused.
-
-A fiber with two parameters (of type `A` and `B`) and yield type `C` is declared as follows:
-
-    fiber f(a:A, b:B) -> C! {
-      c:C;
-      ...
-      yield c;
-    }
-
-Note the decoration of the yield type `C` with `!` to make it a fiber type `C!`. This is required.
-
-When called, a fiber performs no execution except to construct an object of fiber type `C!` and return it; execution of the body of the fiber is then controlled through that object.
-
-The usage idiom for fibers is similar to optionals, but with a loop:
-
-    a:A! <- c();
-    while (a?) {
-      f(a!);
-    }
-    
-It is the postfix `?` operator that triggers the continuation of the fiber execution, which proceeds until the next yield point. Repeated use of the postfix `!` operator between calls of the postfix `?` operator will retrieve the last yield value, without further execution.
-
-Within the body of a fier, the `yield` statement is used to pause execution. This yields execution to the caller, along with the given value.
-
-The fiber terminates when execution reaches the end of the body, if ever. When terminating, it does not yield a value. To terminate the execution of a fiber before reaching the end of the body, use an empty `return;` statement.
