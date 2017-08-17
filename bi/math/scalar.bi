@@ -1,102 +1,14 @@
 import basic;
 
-/*
- * Real64 operators
+/**
+ * $\pi$
  */
-operator x:Real64 + y:Real64 -> Real64;
-operator x:Real64 - y:Real64 -> Real64;
-operator x:Real64 * y:Real64 -> Real64;
-operator x:Real64 / y:Real64 -> Real64;
-operator +x:Real64 -> Real64;
-operator -x:Real64 -> Real64;
-operator x:Real64 > y:Real64 -> Boolean;
-operator x:Real64 < y:Real64 -> Boolean;
-operator x:Real64 >= y:Real64 -> Boolean;
-operator x:Real64 <= y:Real64 -> Boolean;
-operator x:Real64 == y:Real64 -> Boolean;
-operator x:Real64 != y:Real64 -> Boolean;
+π:Real64 <- 3.1415926535897932384626433832795;
 
-/*
- * Real32 operators
+/**
+ * $\infty$
  */
-operator x:Real32 + y:Real32 -> Real32;
-operator x:Real32 - y:Real32 -> Real32;
-operator x:Real32 * y:Real32 -> Real32;
-operator x:Real32 / y:Real32 -> Real32;
-operator +x:Real32 -> Real32;
-operator -x:Real32 -> Real32;
-operator x:Real32 > y:Real32 -> Boolean;
-operator x:Real32 < y:Real32 -> Boolean;
-operator x:Real32 >= y:Real32 -> Boolean;
-operator x:Real32 <= y:Real32 -> Boolean;
-operator x:Real32 == y:Real32 -> Boolean;
-operator x:Real32 != y:Real32 -> Boolean;
-
-/*
- * Integer64 operators
- */
-operator x:Integer64 + y:Integer64 -> Integer64;
-operator x:Integer64 - y:Integer64 -> Integer64;
-operator x:Integer64 * y:Integer64 -> Integer64;
-operator x:Integer64 / y:Integer64 -> Integer64;
-operator +x:Integer64 -> Integer64;
-operator -x:Integer64 -> Integer64;
-operator x:Integer64 > y:Integer64 -> Boolean;
-operator x:Integer64 < y:Integer64 -> Boolean;
-operator x:Integer64 >= y:Integer64 -> Boolean;
-operator x:Integer64 <= y:Integer64 -> Boolean;
-operator x:Integer64 == y:Integer64 -> Boolean;
-operator x:Integer64 != y:Integer64 -> Boolean;
-
-/*
- * Integer32 operators
- */
-operator x:Integer32 + y:Integer32 -> Integer32;
-operator x:Integer32 - y:Integer32 -> Integer32;
-operator x:Integer32 * y:Integer32 -> Integer32;
-operator x:Integer32 / y:Integer32 -> Integer32;
-operator +x:Integer32 -> Integer32;
-operator -x:Integer32 -> Integer32;
-operator x:Integer32 > y:Integer32 -> Boolean;
-operator x:Integer32 < y:Integer32 -> Boolean;
-operator x:Integer32 >= y:Integer32 -> Boolean;
-operator x:Integer32 <= y:Integer32 -> Boolean;
-operator x:Integer32 == y:Integer32 -> Boolean;
-operator x:Integer32 != y:Integer32 -> Boolean;
-
-/*
- * Boolean operators
- */
-operator x:Boolean && y:Boolean -> Boolean;
-operator x:Boolean || y:Boolean -> Boolean;
-operator !x:Boolean -> Boolean;
-
-/*
- * Functions
- */
-function abs(x:Real64) -> Real64 {
-  cpp {{
-  return ::fabs(x_);
-  }}
-}
-
-function abs(x:Real32) -> Real32 {
-  cpp {{
-  return ::fabsf(x_);
-  }}
-}
-
-function abs(x:Integer64) -> Integer64 {
-  cpp {{
-  return std::abs(x_);
-  }}
-}
-
-function abs(x:Integer32) -> Integer32 {
-  cpp {{
-  return std::abs(x_);
-  }}
-}
+inf:Real64 <- 1.0/0.0;
 
 function log(x:Real64) -> Real64 {
   cpp {{
@@ -119,54 +31,6 @@ function exp(x:Real64) -> Real64 {
 function exp(x:Real32) -> Real32 {
   cpp {{
   return ::expf(x_);
-  }}
-}
-
-function max(x:Real64, y:Real64) -> Real64 {
-  cpp {{
-  return ::fmax(x_, y_);
-  }}
-}
-
-function max(x:Real32, y:Real32) -> Real32 {
-  cpp {{
-  return ::fmaxf(x_, y_);
-  }}
-}
-
-function max(x:Integer64, y:Integer64) -> Integer64 {
-  cpp {{
-  return std::max(x_, y_);
-  }}
-}
-
-function max(x:Integer32, y:Integer32) -> Integer32 {
-  cpp {{
-  return std::max(x_, y_);
-  }}
-}
-
-function min(x:Real64, y:Real64) -> Real64 {
-  cpp {{
-  return ::fmin(x_, y_);
-  }}
-}
-
-function min(x:Real32, y:Real32) -> Real32 {
-  cpp {{
-  return ::fminf(x_, y_);
-  }}
-}
-
-function min(x:Integer64, y:Integer64) -> Integer64 {
-  cpp {{
-  return std::min(x_, y_);
-  }}
-}
-
-function min(x:Integer32, y:Integer32) -> Integer32 {
-  cpp {{
-  return std::min(x_, y_);
   }}
 }
 
@@ -457,25 +321,3 @@ function copysign(x:Real32, y:Real32) -> Real32 {
   return ::copysignf(x_, y_);
   }}
 }
-     
-function isnan(x:Real64) -> Boolean {
-  return x != x;
-}
-
-function isnan(x:Real32) -> Boolean {
-  return x != x;
-}
-
-/*
- * Constants
- */
- 
-/**
- * $\pi$
- */
-π:Real64 <- 3.1415926535897932384626433832795;
-
-/**
- * $\infty$
- */
-inf:Real64 <- 1.0/0.0;

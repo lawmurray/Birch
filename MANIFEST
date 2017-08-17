@@ -1,5 +1,13 @@
 MANIFEST
 README.md
+bi/basic/Boolean.bi
+bi/basic/Integer.bi
+bi/basic/Integer32.bi
+bi/basic/Integer64.bi
+bi/basic/Real.bi
+bi/basic/Real32.bi
+bi/basic/Real64.bi
+bi/basic/String.bi
 bi/distribution/gaussian/AffineGaussian.bi
 bi/distribution/gaussian/AffineGaussianExpression.bi
 bi/distribution/multivariate_gaussian/AffineMultivariateGaussian.bi
