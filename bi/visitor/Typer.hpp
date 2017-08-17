@@ -5,6 +5,8 @@
 
 #include "bi/visitor/Modifier.hpp"
 
+#include <stack>
+
 namespace bi {
 /**
  * This is the first pass of the abstract syntax tree after parsing,
@@ -34,8 +36,8 @@ public:
 
 protected:
   /**
-   * The file.
+   * File stack.
    */
-  File* file;
+  std::stack<File*> files;
 };
 }

@@ -378,7 +378,7 @@ template<class T, class Compare>
 void bi::poset<T,Compare>::forward(T u, T v) {
   if (colours[u] < colour) {
     colours[u] = colour;
-    if (compare(u, v)) {
+    if (compare(u, v) && !compare(v, u)) {
       add_edge(v, u);
     } else {
       std::list<T> forwards1;
@@ -402,7 +402,7 @@ template<class T, class Compare>
 void bi::poset<T,Compare>::backward(T u, T v) {
   if (colours[u] < colour) {
     colours[u] = colour;
-    if (compare(v, u)) {
+    if (compare(v, u) && !compare(u, v)) {
       add_edge(u, v);
     } else {
       std::list<T> backwards1;

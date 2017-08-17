@@ -38,12 +38,15 @@ void bi::Dictionary<ObjectType>::add(ObjectType* o) {
 }
 
 template<class ObjectType>
-void bi::Dictionary<ObjectType>::import(Dictionary<ObjectType>& o) {
+bool bi::Dictionary<ObjectType>::import(Dictionary<ObjectType>& o) {
+  bool haveNew = false;
   for (auto object : o.objects) {
     if (!contains(object.second)) {
       add(object.second);
+      haveNew = true;
     }
   }
+  return haveNew;
 }
 
 /*

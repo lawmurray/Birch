@@ -15,13 +15,6 @@ namespace bi {
 class File: public Scoped {
 public:
   /**
-   * States of file during compilation.
-   */
-  enum State {
-    UNRESOLVED, RESOLVING, RESOLVED, UNGENERATED, GENERATING, GENERATED
-  };
-
-  /**
    * Constructor.
    *
    * @param path File path.
@@ -47,10 +40,5 @@ public:
    * Root statement of file.
    */
   Statement* root;
-
-  /**
-   * Parsing state of this file.
-   */
-  State state;
 };
 }

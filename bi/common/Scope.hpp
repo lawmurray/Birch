@@ -120,12 +120,15 @@ public:
   void inherit(Scope* scope);
 
   /**
-   * Import another scope into this scope. This is used to import
-   * declarations from one file into another file.
+   * Import declarations from another scope into this scope. This is used for
+   * `import` statements.
    *
-   * @param scope Scope to inherit.
+   * @param scope Scope to import.
+   *
+   * @return Were any new declarations imported, that were not already in the
+   * scope?
    */
-  void import(Scope* scope);
+  bool import(Scope* scope);
 
   /**
    * Base scope.

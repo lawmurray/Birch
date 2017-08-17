@@ -54,8 +54,12 @@ public:
 
   /**
    * Import another dictionary into this one.
+   *
+   * @param o The other dictionary.
+   *
+   * @return Were any new declarations imported that did not already exist?
    */
-  void import(Dictionary<ObjectType>& o);
+  bool import(Dictionary<ObjectType>& o);
 
   /**
    * Iterators.

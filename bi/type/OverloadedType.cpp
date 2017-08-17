@@ -29,7 +29,9 @@ bi::Type* bi::OverloadedType::resolve(Type* args) {
   if (matches.size() == 1) {
     return returns[matches.front()];
   } else if (matches.size() == 0) {
-    throw InvalidCallException(args);
+    std::list<Type*> available;
+    std::copy(params.begin(), params.end(), std::back_inserter(available));
+    throw InvalidCallException(args, available);
   } else {
     throw AmbiguousCallException(args, matches);
   }

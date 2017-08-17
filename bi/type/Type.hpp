@@ -186,6 +186,7 @@ public:
   virtual bool definitely(const FiberType& o) const;
   virtual bool definitely(const EmptyType& o) const;
   virtual bool definitely(const FunctionType& o) const;
+  virtual bool definitely(const IdentifierType& o) const;
   virtual bool definitely(const ListType& o) const;
   virtual bool definitely(const NilType& o) const;
   virtual bool definitely(const OptionalType& o) const;
@@ -202,6 +203,7 @@ public:
   virtual bool possibly(const FiberType& o) const;
   virtual bool possibly(const EmptyType& o) const;
   virtual bool possibly(const FunctionType& o) const;
+  virtual bool possibly(const IdentifierType& o) const;
   virtual bool possibly(const ListType& o) const;
   virtual bool possibly(const NilType& o) const;
   virtual bool possibly(const OptionalType& o) const;

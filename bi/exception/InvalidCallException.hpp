@@ -4,7 +4,9 @@
 #pragma once
 
 #include "bi/exception/CompilerException.hpp"
-#include "bi/expression/Call.hpp"
+#include "bi/type/Type.hpp"
+
+#include <list>
 
 namespace bi {
 /**
@@ -15,7 +17,11 @@ namespace bi {
 struct InvalidCallException: public CompilerException {
   /**
    * Constructor.
+   *
+   * @param o The invalid call.
+   * @param available The available overloads.
    */
-  InvalidCallException(Type* o);
+  InvalidCallException(Type* o,
+      const std::list<Type*>& available = std::list<Type*>());
 };
 }

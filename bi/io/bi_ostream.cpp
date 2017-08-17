@@ -376,6 +376,10 @@ void bi::bi_ostream::visit(const BasicType* o) {
   *this << o->name;
 }
 
+void bi::bi_ostream::visit(const BinaryType* o) {
+  *this << '(' << o->left << ", " << o->right << ')';
+}
+
 void bi::bi_ostream::visit(const IdentifierType* o) {
   *this << o->name;
 }

@@ -84,6 +84,7 @@ public:
   virtual void visit(const ListType* o);
   virtual void visit(const ClassType* o);
   virtual void visit(const BasicType* o);
+  virtual void visit(const BinaryType* o);
   virtual void visit(const AliasType* o);
   virtual void visit(const IdentifierType* o);
   virtual void visit(const ArrayType* o);

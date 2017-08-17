@@ -7,8 +7,7 @@
 
 bi::File::File(const std::string& path, Statement* root) :
     path(path),
-    root(root),
-    state(UNRESOLVED) {
+    root(root) {
   //
 }
 

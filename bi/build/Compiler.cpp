@@ -5,7 +5,9 @@
 
 #include "bi/build/misc.hpp"
 #include "bi/visitor/Typer.hpp"
-#include "bi/visitor/Resolver.hpp"
+#include "bi/visitor/Importer.hpp"
+#include "bi/visitor/ResolverHeader.hpp"
+#include "bi/visitor/ResolverSource.hpp"
 #include "bi/io/bi_ostream.hpp"
 #include "bi/io/cpp_ostream.hpp"
 #include "bi/io/hpp_ostream.hpp"
@@ -126,14 +128,40 @@ void bi::Compiler::parse() {
 }
 
 void bi::Compiler::resolve() {
+  Importer importer;
+  bool haveNew;
+
+  /* first pass: populate available types */
   for (auto file : files) {
-    Typer typer;
-    file->accept(&typer);
+    Typer pass1;
+    file->accept(&pass1);
   }
+
+  /* propagate available types through graph of file imports */
+  do {
+    haveNew = false;
+    for (auto file : files) {
+      haveNew = importer.import(file) || haveNew;
+    }
+  } while (haveNew);
+
+  /* second pass: populate available functions */
   for (auto file : files) {
-    Resolver resolver;
-    file->accept(&resolver);
+    ResolverHeader pass2;
+    file->accept(&pass2);
   }
+
+  /* propagate available functions through graph of file imports */
+  do {
+    haveNew = false;
+    for (auto file : files) {
+      haveNew = importer.import(file) || haveNew;
+    }
+  } while (haveNew);
+
+  /* third pass: resolve the bodies of functions in the input file */
+  ResolverSource pass3;
+  filesByName[input_file.string()]->accept(&pass3);
 }
 
 void bi::Compiler::gen() {
@@ -159,7 +187,6 @@ void bi::Compiler::gen() {
   hpp_ostream hppOutput(hppStream);
   cpp_ostream cppOutput(cppStream);
 
-  setStates(File::UNGENERATED);
   hppOutput << filesByName[input_file.string()];
 
   /* the original file is also appended to the header, this ensures that any
@@ -173,7 +200,6 @@ void bi::Compiler::gen() {
   hppOutput.append(biStream);
   hppOutput << "\n#endif\n";
 
-  setStates(File::UNGENERATED);
   cppOutput << filesByName[input_file.string()];
 }
 
@@ -225,10 +251,4 @@ void bi::Compiler::parse(const std::string name) {
     }
   } while (!feof(yyin));
   fclose(yyin);
-}
-
-void bi::Compiler::setStates(const File::State state) {
-  for (auto file : files) {
-    file->state = state;
-  }
 }

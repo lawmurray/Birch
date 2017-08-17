@@ -5,7 +5,7 @@
 
 namespace bi {
 /**
- * Comparison of two objects by their definitely() function.
+ * Less-than comparison of two objects using their definitely() function.
  */
 struct definitely {
   template<class T1, class T2>

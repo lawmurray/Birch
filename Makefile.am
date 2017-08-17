@@ -49,7 +49,6 @@ COMMON_SOURCES = \
   bi/common/Valued.cpp \
   bi/exception/AmbiguousCallException.cpp \
   bi/exception/CompilerException.cpp \
-  bi/exception/CyclicImportException.cpp \
   bi/exception/DriverException.cpp \
   bi/exception/Exception.cpp \
   bi/exception/FileNotFoundException.cpp \
@@ -148,8 +147,11 @@ COMMON_SOURCES = \
   bi/visitor/Assigner.cpp \
   bi/visitor/Cloner.cpp \
   bi/visitor/Gatherer.cpp \
+  bi/visitor/Importer.cpp \
   bi/visitor/Modifier.cpp \
   bi/visitor/Resolver.cpp \
+  bi/visitor/ResolverHeader.cpp \
+  bi/visitor/ResolverSource.cpp \
   bi/visitor/Typer.cpp \
   bi/visitor/Visitor.cpp \
   bi/lexer.lpp \
@@ -231,7 +233,6 @@ noinst_HEADERS = \
   bi/exception/all.hpp \
   bi/exception/AmbiguousCallException.hpp \
   bi/exception/CompilerException.hpp \
-  bi/exception/CyclicImportException.hpp \
   bi/exception/DriverException.hpp \
   bi/exception/FileNotFoundException.hpp \
   bi/exception/GetException.hpp \
@@ -337,8 +338,12 @@ noinst_HEADERS = \
   bi/visitor/Assigner.hpp \
   bi/visitor/Cloner.hpp \
   bi/visitor/Gatherer.hpp \
+  bi/visitor/Importer.hpp \
   bi/visitor/Modifier.hpp \
   bi/visitor/Resolver.hpp \
+  bi/visitor/ResolverHeader.hpp \
+  bi/visitor/ResolverSource.hpp \
+  bi/visitor/Typer.hpp \
   bi/visitor/Visitor.hpp \
   bi/doxygen.hpp \
   bi/lexer.hpp \

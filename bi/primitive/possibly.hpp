@@ -5,7 +5,7 @@
 
 namespace bi {
 /**
- * Comparison of two objects by their possibly() function.
+ * Less-than comparison of two objects using their possibly() function.
  */
 struct possibly {
   template<class T1, class T2>

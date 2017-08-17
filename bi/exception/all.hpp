@@ -5,7 +5,6 @@
 
 #include "bi/exception/AmbiguousCallException.hpp"
 #include "bi/exception/CompilerException.hpp"
-#include "bi/exception/CyclicImportException.hpp"
 #include "bi/exception/DriverException.hpp"
 #include "bi/exception/FileNotFoundException.hpp"
 #include "bi/exception/GetException.hpp"

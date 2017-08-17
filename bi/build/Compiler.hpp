@@ -32,7 +32,7 @@ public:
   /**
    * Destructor.
    */
-  ~Compiler();
+  virtual ~Compiler();
 
   /**
    * Parse all input files.
@@ -96,11 +96,6 @@ private:
    * @param name File name.
    */
   void parse(const std::string name);
-
-  /**
-   * Set state of all files.
-   */
-  void setStates(const File::State state);
 
   /**
    * File names to files.
@@ -167,4 +162,3 @@ private:
 
 extern bi::Compiler* compiler;
 extern std::stringstream raw;
-

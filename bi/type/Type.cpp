@@ -129,6 +129,10 @@ bool bi::Type::definitely(const FunctionType& o) const {
   return false;
 }
 
+bool bi::Type::definitely(const IdentifierType& o) const {
+  return false;
+}
+
 bool bi::Type::definitely(const ListType& o) const {
   return false;
 }
@@ -182,6 +186,10 @@ bool bi::Type::possibly(const EmptyType& o) const {
 }
 
 bool bi::Type::possibly(const FunctionType& o) const {
+  return false;
+}
+
+bool bi::Type::possibly(const IdentifierType& o) const {
   return false;
 }
 
