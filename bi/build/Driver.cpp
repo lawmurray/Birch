@@ -760,7 +760,7 @@ void bi::Driver::configure() {
 void bi::Driver::target(const std::string& cmd) {
   /* command */
   std::stringstream buf;
-  buf << "make " << cmd;
+  buf << "make -j 4 " << cmd;
 
   /* handle output */
   std::string log = cmd + ".log";
