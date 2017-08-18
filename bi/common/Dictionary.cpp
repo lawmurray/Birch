@@ -31,7 +31,7 @@ ObjectType* bi::Dictionary<ObjectType>::get(const std::string& name) {
 template<class ObjectType>
 void bi::Dictionary<ObjectType>::add(ObjectType* o) {
   /* pre-condition */
-  assert(!contains(o));
+  assert(!contains(o->name->str()));
 
   auto result = objects.insert(std::make_pair(o->name->str(), o));
   assert(result.second);
@@ -41,9 +41,14 @@ template<class ObjectType>
 bool bi::Dictionary<ObjectType>::import(Dictionary<ObjectType>& o) {
   bool haveNew = false;
   for (auto object : o.objects) {
+    auto name = object.second->name->str();
     if (!contains(object.second)) {
-      add(object.second);
-      haveNew = true;
+      if (contains(name)) {
+        throw PreviousDeclarationException(object.second, get(name));
+      } else {
+        add(object.second);
+        haveNew = true;
+      }
     }
   }
   return haveNew;

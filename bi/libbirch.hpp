@@ -32,6 +32,7 @@
 #include <utility>
 #include <functional>
 #include <string>
+#include <cstdio>
 #include <cstdlib>
 #include <cstdint>
 #include <cstddef>
@@ -49,6 +50,7 @@ namespace type {
   using Integer64_ = int64_t;
   using Integer32_ = int32_t;
   using String_ = std::string;
+  using File_ = FILE*;
 }
 
 /**
