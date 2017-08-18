@@ -1,5 +1,6 @@
 import math;
-
+import diagnostics.DelayDiagnostics;
+import print;
 /*
  * Node states for delayed sampling.
  */
@@ -31,6 +32,11 @@ class Delay {
    * Child, if one exists and it is on the stem.
    */
   child:Delay?;
+  
+  /**
+   * Unique id for delayed sampling diagnostics.
+   */
+  id:Integer <- 0;
     
   /**
    * Is this a root node?
@@ -86,6 +92,7 @@ class Delay {
    */
   function initialize() {
     this.state <- MARGINALIZED;
+    register();
   }
   
   /**
@@ -96,6 +103,7 @@ class Delay {
   function initialize(parent:Delay) {
     this.parent <- parent;
     this.state <- INITIALIZED;
+    register();
   }
   
   /**
@@ -107,6 +115,7 @@ class Delay {
     
     doMarginalize();
     state <- MARGINALIZED;
+    trigger();
   }
   
   /**
@@ -117,6 +126,7 @@ class Delay {
     
     doForward();
     state <- MARGINALIZED;
+    trigger();
   }
   
   /**
@@ -136,6 +146,7 @@ class Delay {
       }
     }
     state <- REALIZED;
+    trigger();
   }
 
   /**
@@ -223,5 +234,23 @@ class Delay {
   }
   function doCondition() {
     //
+  }
+  
+  /**
+   * Register with the diagnostic handler.
+   */
+  function register() {
+    if (delayDiagnostics?) {
+      id <- delayDiagnostics!.register(this);
+    }
+  }
+  
+  /**
+   * Trigger an event with the diagnostic handler.
+   */
+  function trigger() {
+    if (delayDiagnostics?) {
+      delayDiagnostics!.trigger();
+    }
   }
 }

@@ -15,6 +15,7 @@ bi/delay/AffineMultivariateGaussianExpression.bi
 bi/delay/Delay.bi
 bi/delay/DelayReal.bi
 bi/delay/DelayRealVector.bi
+bi/diagnostics/DelayDiagnostics.bi
 bi/distribution/Beta.bi
 bi/distribution/Bernoulli.bi
 bi/distribution/Gamma.bi
@@ -35,6 +36,7 @@ bi/math/scalar.bi
 bi/math/vector.bi
 bi/basic.bi
 bi/delay.bi
+bi/diagnostics.bi
 bi/distribution.bi
 bi/math.bi
 bi/primitive.bi
