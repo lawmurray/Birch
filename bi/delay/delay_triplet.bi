@@ -28,4 +28,8 @@ function delay_triplet_diagnostics() {
   o.name(1, "x");
   o.name(2, "y");
   o.name(3, "z");
+  
+  o.position(1, 1, 3);
+  o.position(2, 1, 2);
+  o.position(3, 1, 1);
 }

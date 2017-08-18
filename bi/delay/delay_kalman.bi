@@ -5,6 +5,8 @@
  *   - `-T` : Number of time steps.
  */
 program delay_kalman(a:Real <- 0.9, T:Integer <- 10) {
+  delay_kalman_diagnostics(T);
+
   x:Gaussian[T];  // state
   y:Gaussian[T];  // observation
   t:Integer;
@@ -26,6 +28,23 @@ program delay_kalman(a:Real <- 0.9, T:Integer <- 10) {
   
   /* output */
   for (t in 1..T) {
-    stdout.printf("%s\n", x[t]);
+    stdout.printf("%f\n", x[t]);
+  }
+}
+
+/*
+ * Set up diagnostics.
+ */
+function delay_kalman_diagnostics(T:Integer) {
+  o:DelayDiagnostics(3*T);
+  delayDiagnostics <- o;
+
+  t:Integer;
+  for (t in 1..T) {
+    o.name(T + 2*t - 1, "x[" + t + "]");
+    o.name(T + 2*t, "y[" + t + "]");
+    
+    o.position(T + 2*t - 1, t, 2);
+    o.position(T + 2*t, t, 1);
   }
 }
