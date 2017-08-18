@@ -94,6 +94,7 @@ class Delay {
   function initialize() {
     this.state <- MARGINALIZED;
     register();
+    trigger();
   }
   
   /**
@@ -105,6 +106,7 @@ class Delay {
     this.parent <- parent;
     this.state <- INITIALIZED;
     register();
+    trigger();
   }
   
   /**
