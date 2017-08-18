@@ -78,6 +78,36 @@ operator x:String != y:String -> Boolean {
  * String concatenation.
  */
 operator x:String + y:String -> String;
+operator x:String + y:Boolean -> String {
+  return x + String(y);
+}
+operator x:String + y:Real64 -> String {
+  return x + String(y);
+}
+operator x:String + y:Real32 -> String {
+  return x + String(y);
+}
+operator x:String + y:Integer64 -> String {
+  return x + String(y);
+}
+operator x:String + y:Integer32 -> String {
+  return x + String(y);
+}
+operator x:Boolean + y:String -> String {
+  return String(x) + y;
+}
+operator x:Real64 + y:String -> String {
+  return String(x) + y;
+}
+operator x:Real32 + y:String -> String {
+  return String(x) + y;
+}
+operator x:Integer64 + y:String -> String {
+  return String(x) + y;
+}
+operator x:Integer32 + y:String -> String {
+  return String(x) + y;
+}
 
 /**
  * Length of a string.

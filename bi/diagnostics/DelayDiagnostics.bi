@@ -58,7 +58,9 @@ class DelayDiagnostics(N:Integer) {
   }
   
   /**
-   * Set the name of a previously-registered node.
+   * Set the name of a node. This may be called before the node has been
+   * registered; it simply associates a name with an id for whenever it is
+   * used.
    *
    *   - id   : Id of the node.
    *   - name : The name.
@@ -69,7 +71,9 @@ class DelayDiagnostics(N:Integer) {
   }
   
   /**
-   * Set the position of a previously-registered node.
+   * Set the position of a previously-registered node. This may be called
+   * before the node has been registered; it simply associates a name with an
+   * id for whenever it is used.
    *
    *   - id : Id of the node.
    *   - x  : $x$-coordinate.
@@ -89,6 +93,16 @@ class DelayDiagnostics(N:Integer) {
    */
   function trigger() {
     nevents <- nevents + 1;
-    stdout.printf("event %d triggered\n", nevents);
+    dot();
+  }
+  
+  /**
+   * Output a dot graph of the current state.
+   */
+  function dot() {
+    out:FileOutputStream("diagnostics/state" + nevents + ".dot");
+    out.print("digraph {\n");
+    out.print("}\n");
+    out.close();
   }
 }
