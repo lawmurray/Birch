@@ -10,7 +10,7 @@ bi::md_ostream::md_ostream(std::ostream& base) :
 }
 
 void bi::md_ostream::visit(const Package* o) {
-  genHead("Global");
+  genHead("Summary");
   ++depth;
   genOneLine<GlobalVariable>("Variable", o, true);
   genBrief<Function>("Function", o, true);
@@ -20,6 +20,8 @@ void bi::md_ostream::visit(const Package* o) {
   genBrief<BinaryOperator>("Binary Operator", o, true);
   genBrief<Basic>("Basic Type", o, true);
   genBrief<Alias>("Alias Type", o, true);
+  genBrief<Class>("Class Type", o, true);
+  --depth;
 
   genDetailed<Function>("Function Details", o, true);
   genDetailed<Fiber>("Fiber Details", o, true);
@@ -28,8 +30,7 @@ void bi::md_ostream::visit(const Package* o) {
   genDetailed<BinaryOperator>("Binary Operator Details", o, true);
   genDetailed<Basic>("Basic Type Details", o, true);
   genDetailed<Alias>("Alias Type Details", o, true);
-  --depth;
-  genSections<Class>("Classes", o, true);
+  genSections<Class>("Class Type Details", o, true);
 }
 
 void bi::md_ostream::visit(const Name* o) {
