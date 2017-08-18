@@ -244,8 +244,9 @@ void bi::Scope::resolve(Identifier<Parameter>* ref) {
 
 void bi::Scope::resolve(Identifier<MemberParameter>* ref) {
   memberParameters.resolve(ref);
-  /* member parameters are used by constructors, and are deliberately not
-   * inherited from base classes */
+  if (!ref->target) {
+    resolveInherit(ref);
+  }
 }
 
 void bi::Scope::resolve(Identifier<GlobalVariable>* ref) {
