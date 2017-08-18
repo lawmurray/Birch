@@ -4,7 +4,3 @@ import distribution.Gamma;
 import distribution.Gaussian;
 import distribution.MultivariateGaussian;
 import distribution.Uniform;
-import distribution.gaussian.AffineGaussian;
-import distribution.gaussian.AffineGaussianExpression;
-import distribution.multivariate_gaussian.AffineMultivariateGaussian;
-import distribution.multivariate_gaussian.AffineMultivariateGaussianExpression;

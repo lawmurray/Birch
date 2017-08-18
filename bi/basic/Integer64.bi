@@ -1,7 +1,7 @@
 import basic;
 
 /**
- * A 32-bit integer.
+ * A 64-bit integer.
  */
 type Integer64;
 

@@ -1,4 +1,4 @@
-import distribution.DelayRealVector;
+import delay.DelayRealVector;
 import distribution.Gaussian;
 import math;
 import random;

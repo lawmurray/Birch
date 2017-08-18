@@ -1,17 +1,15 @@
-import distribution.Delay;
+import delay.Delay;
 import math;
 import random;
 
 /**
- * Abstract delay variate with real vector value.
- *
- * `D` Number of dimensions.
+ * Abstract delay variate with real value.
  */
-class DelayRealVector(D:Integer) < Delay {
+class DelayReal < Delay {
   /**
    * Value.
    */
-  x:Real[D];
+  x:Real;
   
   /**
    * Weight.
@@ -21,38 +19,43 @@ class DelayRealVector(D:Integer) < Delay {
   /**
    * Value conversion.
    */
-  operator -> Real[_] {
+  operator -> Real {
     return value();
   }
-  
+
   /**
    * Value assignment.
    */
-  operator <- x:Real[_] {
+  operator <- x:Real {
     assert isUninitialized();
     set(x);
     realize();
+  }
+
+  /**
+   * String assignment.
+   */
+  operator <- s:String {
+    set(Real(s));
   }
 
   function initialize() {
     super.initialize();
   }
 
-  function initialize(u:DelayRealVector) {
+  function initialize(u:DelayReal) {
     super.initialize(u);
   }
-
-  function value() -> Real[_] {
+  
+  function value() -> Real {
     if (isMissing()) {
       return simulate();
     } else {
       return x;
     }
   }
-  
-  function set(x:Real[_]) {
-    assert length(x) == D;
-    
+
+  function set(x:Real) {
     this.x <- x;
     this.missing <- false;
   }
@@ -60,14 +63,14 @@ class DelayRealVector(D:Integer) < Delay {
   function setWeight(w:Real) {
     this.w <- w;
   }
-  
-  function simulate() -> Real[_] {
+    
+  function simulate() -> Real {
     graft();
     realize();
     return x;
   }
-  
-  function observe(x:Real[_]) -> Real {
+
+  function observe(x:Real) -> Real {
     graft();
     set(x);
     realize();

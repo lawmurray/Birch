@@ -1,5 +1,5 @@
 import distribution.MultivariateGaussian;
-import distribution.multivariate_gaussian.AffineMultivariateGaussianExpression;
+import delay.AffineMultivariateGaussianExpression;
 import math;
 
 /**
