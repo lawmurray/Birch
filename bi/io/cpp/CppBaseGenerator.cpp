@@ -352,9 +352,6 @@ void bi::CppBaseGenerator::visit(const Program* o) {
     line("void bi::program::" << o->name << "(int argc, char** argv) {");
     in();
 
-    /* set root heap */
-    line("fiberHeap = new Heap();");
-
     /* handle program options */
     if (o->params->tupleSize() > 0) {
       /* option variables */

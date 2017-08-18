@@ -25,17 +25,9 @@ void yylocation() {
    * editor */
   if (compiler->file) {
     std::cerr << compiler->file->path;
-    /*if (yylloc.last_line > yylloc.first_line) {
-      std::cerr << " lines " << yylloc.first_line << "-" << yylloc.last_line;
-    } else {*/
-      std::cerr << ':' << yylloc.first_line;
-      /*if (yylloc.last_column > yylloc.first_column) {
-        std::cerr << " columns " << yylloc.first_column << "-" << yylloc.last_column;
-      } else {*/
-        std::cerr << ':' << yylloc.first_column;
-      //}
-      std::cerr << ": ";
-    //}
+    std::cerr << ':' << yylloc.first_line;
+    //std::cerr << ':' << yylloc.first_column;
+    std::cerr << ": ";
   }
 }
 

@@ -1,6 +1,6 @@
 /**
  * @file
  */
-#include "bi/lib/global.hpp"
+#include "bi/libbirch.hpp"
 
-bi::Heap* bi::fiberHeap = nullptr;
+bi::Heap* bi::fiberHeap = new bi::Heap();
