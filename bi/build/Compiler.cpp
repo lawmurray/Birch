@@ -25,15 +25,15 @@ bi::Compiler* compiler = nullptr;
 std::stringstream raw;
 
 bi::Compiler::Compiler(const std::list<fs::path>& include_dirs,
-    const std::list<fs::path> lib_dirs, const bool enable_std) :
+    const std::list<fs::path> lib_dirs, const bool std) :
     include_dirs(include_dirs),
     lib_dirs(lib_dirs),
-    enable_std(enable_std) {
+    std(std) {
   //
 }
 
 bi::Compiler::Compiler(int argc, char** argv) :
-    enable_std(true) {
+    std(true) {
   enum {
     INCLUDE_DIR_ARG = 256, LIB_DIR_ARG, ENABLE_STD_ARG, DISABLE_STD_ARG
   };
@@ -59,10 +59,10 @@ bi::Compiler::Compiler(int argc, char** argv) :
       lib_dirs.push_back(optarg);
       break;
     case ENABLE_STD_ARG:
-      enable_std = true;
+      std = true;
       break;
     case DISABLE_STD_ARG:
-      enable_std = false;
+      std = false;
       break;
     case 'o':
       output_file = optarg;
@@ -95,7 +95,7 @@ bi::Compiler::Compiler(int argc, char** argv) :
   }
 
   /* name of standard library */
-  if (enable_std) {
+  if (std) {
     Path path(new Name("standard"));
     standard = find(include_dirs, path.file()).string();
   }
@@ -107,13 +107,13 @@ bi::Compiler::~Compiler() {
 
 void bi::Compiler::parse() {
   /* queue standard library */
-  if (enable_std) {
-    queue(standard, false);
+  if (std) {
+    queue(standard);
   }
 
   /* queue input files */
   if (!input_file.empty()) {
-    queue(input_file.string(), enable_std);
+    queue(input_file.string());
   }
 
   /* parse all input files, and any imported files along the way */
@@ -211,15 +211,14 @@ void bi::Compiler::setRoot(Statement* root) {
 }
 
 bi::File* bi::Compiler::import(const Path* path) {
-  return queue(path->file(), std);
+  return queue(path->file());
 }
 
-bi::File* bi::Compiler::queue(const std::string name, const bool std) {
+bi::File* bi::Compiler::queue(const std::string name) {
   std::string canonical = find(include_dirs, name).string();
   if (filesByName.find(canonical) == filesByName.end()) {
     files.push_back(new File(canonical));
     filesByName.insert(std::make_pair(canonical, files.back()));
-    stds.insert(std::make_pair(canonical, std));
     unparsed.insert(canonical);
   }
   return filesByName[canonical];
@@ -236,7 +235,6 @@ void bi::Compiler::parse(const std::string name) {
   }
 
   file = filesByName[name];  // member variable needed by GNU Bison parser
-  std = stds[name];
   yyreset();
   do {
     try {

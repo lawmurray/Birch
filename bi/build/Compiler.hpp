@@ -25,7 +25,7 @@ public:
    */
   Compiler(const std::list<boost::filesystem::path>& include_dirs,
       const std::list<boost::filesystem::path> lib_dirs,
-      const bool enable_std = false);
+      const bool std = false);
 
   /**
    * Constructor from command-line options.
@@ -65,11 +65,10 @@ public:
    * Queue a file for parsing.
    *
    * @param name File name.
-   * @param std Include the standard library automatically?
    *
    * @return File associated with the path.
    */
-  File* queue(const std::string name, const bool std = false);
+  File* queue(const std::string name);
 
   /**
    * Set the root statement of the file, adding an import for the
@@ -87,11 +86,6 @@ public:
    */
   std::list<File*> files;
 
-  /**
-   * Standard library inclusion flag of current file being parsed.
-   */
-  bool std;
-
 private:
   /**
    * Parse a specific file.
@@ -104,11 +98,6 @@ private:
    * File names to files.
    */
   std::unordered_map<std::string,File*> filesByName;
-
-  /**
-   * File names to standard library inclusion flags.
-   */
-  std::unordered_map<std::string,bool> stds;
 
   /**
    * Unparsed files.
@@ -152,7 +141,7 @@ private:
   /**
    * Enable standard library?
    */
-  bool enable_std;
+  bool std;
   //@}
 };
 }
