@@ -373,18 +373,19 @@ void bi::Driver::docs() {
   readManifest();
 
   /* parse all files */
-  compiler = new Compiler();
+  Compiler compiler(include_dirs, lib_dirs, std);
   for (auto file : biFiles) {
-    compiler->queue(file.string());
+    compiler.queue(file.string());
   }
-  compiler->parse();
+  compiler.parse();
+  compiler.resolve();
 
   /* output everything, categorised by object type, and sorted */
   path path = "DOCS.md";
   ofstream stream(path);
   md_ostream output(stream);
 
-  Package package(compiler->files);
+  Package package(compiler.files);
   output << &package;
 }
 

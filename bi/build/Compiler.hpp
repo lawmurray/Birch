@@ -10,6 +10,7 @@
 
 #include <unordered_set>
 #include <unordered_map>
+#include <list>
 
 namespace bi {
 /**
@@ -20,9 +21,11 @@ namespace bi {
 class Compiler {
 public:
   /**
-   * Default constructor.
+   * Constructor.
    */
-  Compiler();
+  Compiler(const std::list<boost::filesystem::path>& include_dirs,
+      const std::list<boost::filesystem::path> lib_dirs,
+      const bool enable_std = false);
 
   /**
    * Constructor from command-line options.
@@ -150,12 +153,6 @@ private:
    * Enable standard library?
    */
   bool enable_std;
-
-  /**
-   * Enable imports? (Can be disabled when no resolution is to happen, such
-   * as when generating reference documentation.)
-   */
-  bool enable_import;
   //@}
 };
 }

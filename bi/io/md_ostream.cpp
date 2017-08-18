@@ -110,7 +110,7 @@ void bi::md_ostream::visit(const ConversionOperator* o) {
 
 void bi::md_ostream::visit(const Class* o) {
   /* anchor for internal links */
-  line("<a name=\"" << anchor(o->name->str()) << "\"></a>\n");
+  line("<a name=\"" << anchor(o->name->str(), o->number) << "\"></a>\n");
 
   if (!o->base->isEmpty()) {
     line("  * Inherits from *" << o->base << "*\n");
@@ -133,19 +133,15 @@ void bi::md_ostream::visit(const ListType* o) {
 }
 
 void bi::md_ostream::visit(const ClassType* o) {
-  middle("[" << o->name << "](#" << anchor(o->name->str()) << ")");
+  middle("[" << o->name << "](#" << anchor(o->name->str(), o->target->number) << ")");
 }
 
 void bi::md_ostream::visit(const AliasType* o) {
-  middle("[" << o->name << "](#" << anchor(o->name->str()) << ")");
+  middle("[" << o->name << "](#" << anchor(o->name->str(), o->target->number) << ")");
 }
 
 void bi::md_ostream::visit(const BasicType* o) {
-  middle("[" << o->name << "](#" << anchor(o->name->str()) << ")");
-}
-
-void bi::md_ostream::visit(const IdentifierType* o) {
-  middle("[" << o->name << "](#" << anchor(o->name->str()) << ")");
+  middle("[" << o->name << "](#" << anchor(o->name->str(), o->target->number) << ")");
 }
 
 void bi::md_ostream::visit(const ArrayType* o) {

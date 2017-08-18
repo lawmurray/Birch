@@ -24,20 +24,18 @@ namespace fs = boost::filesystem;
 bi::Compiler* compiler = nullptr;
 std::stringstream raw;
 
-bi::Compiler::Compiler() :
-    enable_std(false),
-    enable_import(false) {
+bi::Compiler::Compiler(const std::list<fs::path>& include_dirs,
+    const std::list<fs::path> lib_dirs, const bool enable_std) :
+    include_dirs(include_dirs),
+    lib_dirs(lib_dirs),
+    enable_std(enable_std) {
   //
 }
 
 bi::Compiler::Compiler(int argc, char** argv) :
-    enable_std(true),
-    enable_import(true) {
+    enable_std(true) {
   enum {
-    INCLUDE_DIR_ARG = 256,
-    LIB_DIR_ARG,
-    ENABLE_STD_ARG,
-    DISABLE_STD_ARG
+    INCLUDE_DIR_ARG = 256, LIB_DIR_ARG, ENABLE_STD_ARG, DISABLE_STD_ARG
   };
 
   /* command-line arguments */
@@ -50,7 +48,7 @@ bi::Compiler::Compiler(int argc, char** argv) :
       { 0, 0, 0, 0 } };
   const char* short_options = "o:D:I:L:";
 
-  opterr = 0; // handle error reporting ourselves
+  opterr = 0;  // handle error reporting ourselves
   c = getopt_long(argc, argv, short_options, long_options, &option_index);
   while (c != -1) {
     switch (c) {
@@ -89,7 +87,7 @@ bi::Compiler::Compiler(int argc, char** argv) :
 
   /* remaining argument is input file */
   if (optind == argc - 1) {
-    input_file = argv[optind];
+    input_file = find(include_dirs, argv[optind]).string();
   } else if (optind == argc) {
     throw CompilerException("No input file.");
   } else {
@@ -160,14 +158,13 @@ void bi::Compiler::resolve() {
   } while (haveNew);
 
   /* third pass: resolve the bodies of functions in the input file */
-  ResolverSource pass3;
-  filesByName[input_file.string()]->accept(&pass3);
+  if (!input_file.empty()) {
+    ResolverSource pass3;
+    filesByName[input_file.string()]->accept(&pass3);
+  }
 }
 
 void bi::Compiler::gen() {
-  /* pre-condition */
-  assert(parsed.find(input_file.string()) != parsed.end());
-
   fs::path biPath, hppPath, cppPath;
   biPath = input_file;
   if (!output_file.empty()) {
@@ -214,27 +211,25 @@ void bi::Compiler::setRoot(Statement* root) {
 }
 
 bi::File* bi::Compiler::import(const Path* path) {
-  if (enable_import) {
-    return queue(find(include_dirs, path->file()).string(), std);
-  } else {
-    return nullptr;
-  }
+  return queue(path->file(), std);
 }
 
 bi::File* bi::Compiler::queue(const std::string name, const bool std) {
-  if (filesByName.find(name) == filesByName.end()) {
-    files.push_back(new File(name));
-    filesByName.insert(std::make_pair(name, files.back()));
-    stds.insert(std::make_pair(name, std));
-    unparsed.insert(name);
+  std::string canonical = find(include_dirs, name).string();
+  if (filesByName.find(canonical) == filesByName.end()) {
+    files.push_back(new File(canonical));
+    filesByName.insert(std::make_pair(canonical, files.back()));
+    stds.insert(std::make_pair(canonical, std));
+    unparsed.insert(canonical);
   }
-  return filesByName[name];
+  return filesByName[canonical];
 }
 
 void bi::Compiler::parse(const std::string name) {
   /* pre-condition */
   assert(unparsed.find(name) != unparsed.end());
 
+  compiler = this;  // set global variable needed by parser for callbacks
   yyin = fopen(name.c_str(), "r");
   if (!yyin) {
     throw FileNotFoundException(name.c_str());
@@ -251,4 +246,5 @@ void bi::Compiler::parse(const std::string name) {
     }
   } while (!feof(yyin));
   fclose(yyin);
+  compiler = nullptr;
 }
