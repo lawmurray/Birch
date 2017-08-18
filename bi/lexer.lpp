@@ -126,8 +126,7 @@ IS                                 (u|U|l|L)*
 {D}+{IS}?                           { yylval.valInt = atoi(yytext); return INT_LITERAL; }
 {D}+{E}{FS}?                        { yylval.valReal = atof(yytext); return REAL_LITERAL; }
 {D}+\.{D}+({E})?{FS}?               { yylval.valReal = atof(yytext); return REAL_LITERAL; }
-\"(\.|[^\"])*\"                     { yylval.valString = yytext; return STRING_LITERAL; }
-\'(\.|[^\'])*\'                     { yylval.valString = yytext; return STRING_LITERAL; }
+\"(\\\"|[^\"])*\"                   { yylval.valString = yytext; return STRING_LITERAL; }
 
 "<-"                                { return LEFT_OP; } 
 "->"                                { return RIGHT_OP; }
