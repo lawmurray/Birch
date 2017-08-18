@@ -54,10 +54,10 @@ program delay_rbpf(N:Integer <- 100, T:Integer <- 10) {
     
   /* output */
   //x[ancestor(w)].output();
-  print(W);
-  print(",");
-  print(N);
-  print("\n");
+  stdout.print(W);
+  stdout.print(",");
+  stdout.print(N);
+  stdout.print("\n");
 }
 
 
@@ -167,10 +167,10 @@ class Example(T:Integer) {
   function output() {
     t:Integer;
     for (t in 1..T) {
-      print(x_n[t]);
-      print(", ");
-      print(x_l[t]);
-      print(", ");
+      stdout.print(x_n[t]);
+      stdout.print(", ");
+      stdout.print(x_l[t]);
+      stdout.print(", ");
     }
   }
 }

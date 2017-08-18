@@ -1,8 +1,7 @@
 program demo_fiber(N:Integer <- 10) {
   a:Real! <- f(1, N);
   while (a?) {
-    print(a!);
-    print("\n");
+    stdout.printf("%f\n", a!);
   }
 }
 

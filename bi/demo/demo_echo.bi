@@ -4,6 +4,5 @@
  * - `message` : The message.
  */
 program demo_echo(message:String <- "") {
-  print(message);
-  print("\n");
+  stdout.printf("%s\n", message);
 }

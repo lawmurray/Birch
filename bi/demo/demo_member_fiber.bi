@@ -2,8 +2,7 @@ program demo_member_fiber(N:Integer <- 10) {
   a:A(1, N);
   b:Real! <- a.f();
   while (b?) {
-    print(b!);
-    print("\n");
+    stdout.printf("%f\n", b!);
   }
 }
 

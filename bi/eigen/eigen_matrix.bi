@@ -15,11 +15,5 @@ program eigen_matrix(R:Integer <- 3, C:Integer <- 3) {
   }
   Z <- X + Y;
   
-  for (i in 1..R) {
-    for (j in 1..C) {
-      print(Z[i,j]);
-      print(" ");
-    }
-    print("\n");
-  }
+  stdout.print(Z);
 }

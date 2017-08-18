@@ -8,7 +8,7 @@ program demo_lambda() {
   
   /* assign a lambda function */
   //x <- lambda() {
-  //  print("called lambda\n");
+  //  stdout.print("called lambda\n");
   //};
   
   /* call a lambda function */

@@ -2,19 +2,17 @@ program demo_copy_fiber(N:Integer <- 10) {
   a:Real! <- g(1, N);
   b:Real! <- a;
   
-  print("1st fiber:");
+  stdout.print("1st fiber:");
   while (a?) {
-    print(" ");
-    print(a!);
+    stdout.printf(" %f", a!);
   }
-  print("\n");
+  stdout.print("\n");
 
-  print("2nd fiber:");
+  stdout.print("2nd fiber:");
   while (b?) {
-    print(" ");
-    print(b!);
+    stdout.printf(" %f", b!);
   }
-  print("\n");
+  stdout.print("\n");
 }
 
 fiber g(from:Integer, to:Integer) -> Real! {

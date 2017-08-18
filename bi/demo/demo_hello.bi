@@ -2,5 +2,5 @@
  * Hello world.
  */
 program demo_hello() {
-  print("Hello world!\n");
+  stdout.print("Hello world!\n");
 }

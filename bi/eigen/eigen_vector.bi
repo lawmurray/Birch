@@ -12,8 +12,5 @@ program eigen_vector(N:Integer <- 5) {
   }
   z <- x + y;
   
-  for (n in 1..N) {
-    print(z[n]);
-    print("\n");
-  }
+  stdout.print(z);
 }

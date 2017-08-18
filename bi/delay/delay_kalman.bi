@@ -26,6 +26,6 @@ program delay_kalman(a:Real <- 0.9, T:Integer <- 10) {
   
   /* output */
   for (t in 1..T) {
-    printf("%s\n", x[t]);
+    stdout.printf("%s\n", x[t]);
   }
 }

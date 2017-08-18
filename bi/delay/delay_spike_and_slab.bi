@@ -15,11 +15,11 @@ program delay_spike_and_slab() {
     y <- 0.0;
   }
   
-  print("y is ");
+  stdout.print("y is ");
   if (y.isMarginalized()) {
-    print("marginalized");
+    stdout.print("marginalized");
   } else {
-    print("realized");
+    stdout.print("realized");
   }
-  print("\n");
+  stdout.print("\n");
 }
