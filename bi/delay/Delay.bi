@@ -1,6 +1,7 @@
 import math;
-import diagnostics.DelayDiagnostics;
-import print;
+import io;
+import diagnostics;
+
 /*
  * Node states for delayed sampling.
  */

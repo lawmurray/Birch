@@ -1,5 +1,5 @@
 import basic;
-import print;
+import io;
 import delay.Delay;
 
 /**
@@ -89,6 +89,6 @@ class DelayDiagnostics(N:Integer) {
    */
   function trigger() {
     nevents <- nevents + 1;
-    printf("event %d triggered\n", nevents);
+    stdout.printf("event %d triggered\n", nevents);
   }
 }

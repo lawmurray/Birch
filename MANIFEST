@@ -1,6 +1,7 @@
 MANIFEST
 README.md
 bi/basic/Boolean.bi
+bi/basic/File.bi
 bi/basic/Integer.bi
 bi/basic/Integer32.bi
 bi/basic/Integer64.bi
@@ -30,6 +31,10 @@ bi/driver/docs.bi
 bi/driver/init.bi
 bi/driver/install.bi
 bi/driver/uninstall.bi
+bi/io/FileOutputStream.bi
+bi/io/OutputStream.bi
+bi/io/StdErrStream.bi
+bi/io/StdOutStream.bi
 bi/math/eigen.bi
 bi/math/matrix.bi
 bi/math/scalar.bi
@@ -38,9 +43,9 @@ bi/basic.bi
 bi/delay.bi
 bi/diagnostics.bi
 bi/distribution.bi
+bi/io.bi
 bi/math.bi
 bi/primitive.bi
-bi/print.bi
 bi/random.bi
 bi/read.bi
 bi/resample.bi
