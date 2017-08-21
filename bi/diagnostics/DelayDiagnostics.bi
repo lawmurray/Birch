@@ -121,7 +121,19 @@ class DelayDiagnostics(N:Integer) {
    * Output a dot graph of the current state.
    */
   function dot() {
-    out:FileOutputStream("diagnostics/state" + noutputs + ".dot");
+    /* pad file name with zeros */
+    Z:Integer <- ceil(log10(Real(N + 1))) - ceil(log10(Real(noutputs + 1)));
+    z:Integer;
+    filename:String <- "diagnostics/state";
+    for (z in 1..Z) {
+      filename <- filename + "0";
+    }
+    filename <- filename + noutputs + ".dot"; 
+    
+    /* open file */
+    out:FileOutputStream(filename);
+    
+    /* output dot graph */
     out.print("digraph {\n");
     out.print("  node [shape=circle]\n");
     out.print("\n");
