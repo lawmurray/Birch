@@ -1,5 +1,4 @@
 import delay.DelayRealVector;
-import distribution.Gaussian;
 import math;
 import random;
 
@@ -37,7 +36,7 @@ class MultivariateGaussian(D:Integer) < DelayRealVector(D) {
     if (missing) {
       d:Integer;
       for (d in 1..D) {
-        x[d] <~ Gaussian(0.0, 1.0);
+        x[d] <- random_gaussian(0.0, 1.0);
       }
       set(μ + llt(Σ)*x);
     } else {

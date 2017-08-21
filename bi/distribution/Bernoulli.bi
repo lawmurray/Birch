@@ -1,32 +1,38 @@
+import delay.DelayBoolean;
 import math;
 import random;
 
 /**
  * Bernoulli distribution.
  */
-class Bernoulli {
+class Bernoulli < DelayBoolean {
   /**
    * Probability of a true result.
    */
   ρ:Real;
 
-  /**
-   * Simulate.
-   */
-  function simulate() -> Boolean {
-    cpp {{
-    return std::bernoulli_distribution(ρ_)(rng);
-    }}
+  function initialize(ρ:Real) {
+    assert 0.0 <= ρ && ρ <= 1.0;
+  
+    super.initialize();
+    this.ρ <- ρ;
   }
 
-  /**
-   * Observe.
-   */
-  function observe(x:Boolean) -> Real {
-    if (x) {
-      return log(ρ);
+  function update(ρ:Real) {
+    assert 0.0 <= ρ && ρ <= 1.0;
+  
+    this.ρ <- ρ;
+  }
+
+  function doRealize() {
+    if (isMissing()) {
+      set(random_bernoulli(ρ));
     } else {
-      return log(1.0 - ρ);
+      if (x) {
+        setWeight(log(ρ));
+       } else {
+        setWeight(log(1.0 - ρ));
+      }
     }
   }
 }
@@ -36,6 +42,6 @@ class Bernoulli {
  */
 function Bernoulli(ρ:Real) -> Bernoulli {
   m:Bernoulli;
-  m.ρ <- ρ;
+  m.initialize(ρ);
   return m;
 }

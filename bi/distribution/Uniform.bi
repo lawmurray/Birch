@@ -1,10 +1,11 @@
+import delay.DelayReal;
 import math;
 import random;
 
 /**
  * Uniform distribution.
  */
-class Uniform {
+class Uniform < DelayReal {
   /**
    * Lower bound.
    */
@@ -15,33 +16,39 @@ class Uniform {
    */
   u:Real;
 
-  /**
-   * Simulate.
-   */
-  function simulate() -> Real {
-    cpp {{
-    return std::uniform_real_distribution<double>(l_, u_)(rng);
-    }}
+  function initialize(l:Real, u:Real) {
+    assert l <= u;
+  
+    super.initialize();
+    this.l <- l;
+    this.u <- u;
   }
 
-  /**
-   * Observe.
-   */
-  function observe(x:Real) -> Real {
-    if (x >= l && x <= u) {
-      return log(1.0/(u - l));
+  function update(l:Real, u:Real) {
+    assert l <= u;
+  
+    this.l <- l;
+    this.u <- u;
+  }
+
+  function doRealize() {
+    if (isMissing()) {
+      set(random_uniform(l, u));
     } else {
-      return log(0.0);
+      if (x >= l && x <= u) {
+        setWeight(log(1.0/(u - l)));
+      } else {
+        setWeight(-inf);
+      }
     }
   }
 }
 
 /**
- * Create.
+ * Create a Uniform distribution.
  */
 function Uniform(l:Real, u:Real) -> Uniform {
   m:Uniform;
-  m.l <- l;
-  m.u <- u;
+  m.initialize(l, u);
   return m;
 }

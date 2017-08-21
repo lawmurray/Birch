@@ -14,6 +14,8 @@ bi/delay/AffineGaussianExpression.bi
 bi/delay/AffineMultivariateGaussian.bi
 bi/delay/AffineMultivariateGaussianExpression.bi
 bi/delay/Delay.bi
+bi/delay/DelayBoolean.bi
+bi/delay/DelayInteger.bi
 bi/delay/DelayReal.bi
 bi/delay/DelayRealVector.bi
 bi/diagnostics/DelayDiagnostics.bi

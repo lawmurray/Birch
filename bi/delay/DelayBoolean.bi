@@ -3,13 +3,13 @@ import math;
 import random;
 
 /**
- * Abstract delay variate with Real value.
+ * Abstract delay variate with Boolean value.
  */
-class DelayReal < Delay {
+class DelayBoolean < Delay {
   /**
    * Value.
    */
-  x:Real;
+  x:Boolean;
   
   /**
    * Weight.
@@ -19,14 +19,14 @@ class DelayReal < Delay {
   /**
    * Value conversion.
    */
-  operator -> Real {
+  operator -> Boolean {
     return value();
   }
 
   /**
    * Value assignment.
    */
-  operator <- x:Real {
+  operator <- x:Boolean {
     assert isUninitialized();
     set(x);
     realize();
@@ -36,18 +36,18 @@ class DelayReal < Delay {
    * String assignment.
    */
   operator <- s:String {
-    set(Real(s));
+    set(Boolean(s));
   }
 
   function initialize() {
     super.initialize();
   }
 
-  function initialize(u:DelayReal) {
+  function initialize(u:DelayBoolean) {
     super.initialize(u);
   }
   
-  function value() -> Real {
+  function value() -> Boolean {
     if (isMissing()) {
       return simulate();
     } else {
@@ -55,7 +55,7 @@ class DelayReal < Delay {
     }
   }
 
-  function set(x:Real) {
+  function set(x:Boolean) {
     this.x <- x;
     this.missing <- false;
   }
@@ -64,13 +64,13 @@ class DelayReal < Delay {
     this.w <- w;
   }
     
-  function simulate() -> Real {
+  function simulate() -> Boolean {
     graft();
     realize();
     return x;
   }
 
-  function observe(x:Real) -> Real {
+  function observe(x:Boolean) -> Real {
     graft();
     set(x);
     realize();

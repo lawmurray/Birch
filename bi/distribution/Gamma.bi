@@ -1,10 +1,11 @@
+import delay.DelayReal;
 import math;
 import random;
 
 /**
  * Gamma distribution.
  */
-class Gamma {
+class Gamma < DelayReal {
   /**
    * Shape.
    */
@@ -15,29 +16,41 @@ class Gamma {
    */
   θ:Real;
 
-  /**
-   * Simulate.
-   */
-  function simulate() -> Real {
-    cpp {{
-    return std::gamma_distribution<double>(k_, θ_)(rng);
-    }}
+  function initialize(k:Real, θ:Real) {
+    assert k > 0.0;
+    assert θ > 0.0;
+  
+    super.initialize();
+    this.k <- k;
+    this.θ <- θ;
   }
 
-  /**
-   * Observe.
-   */
-  function observe(x:Real) -> Real {
-    return (k - 1.0)*log(x) - x/θ - lgamma(k) - k*log(θ);
+  function update(k:Real, θ:Real) {
+    assert k > 0.0;
+    assert θ > 0.0;
+
+    this.k <- k;
+    this.θ <- θ;
+  }
+
+  function doRealize() {
+    if (isMissing()) {
+      set(random_gamma(k, θ));
+    } else {
+      if (x > 0.0) {
+        setWeight((k - 1.0)*log(x) - x/θ - lgamma(k) - k*log(θ));
+      } else {
+        setWeight(-inf);
+      }
+    }
   }
 }
 
 /**
- * Create.
+ * Create Gamma distribution.
  */
 function Gamma(k:Real, θ:Real) -> Gamma {
   m:Gamma;
-  m.k <- k;
-  m.θ <- θ;
+  m.initialize(k, θ);
   return m;
 }

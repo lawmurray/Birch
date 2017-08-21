@@ -1,12 +1,11 @@
+import delay.DelayReal;
 import math;
 import random;
-import distribution.Gamma;
-import distribution.Bernoulli;
 
 /**
  * Beta distribution.
  */
-class Beta {
+class Beta < DelayReal {
   /**
    * First shape parameter.
    */
@@ -17,36 +16,44 @@ class Beta {
    */
   β:Real;
 
-  /**
-   * Simulate.
-   */
-  function simulate() -> Real {
-    u:Real;
-    v:Real;
-    u <~ Gamma(α, 1.0);
-    v <~ Gamma(β, 1.0);
-    return u/(u + v);
+  function initialize(α:Real, β:Real) {
+    assert(α > 0.0);
+    assert(β > 0.0);
+  
+    super.initialize();
+    this.α <- α;
+    this.β <- β;
   }
 
-  /**
-   * Observe.
-   */
-  function observe(x:Real) -> Real {
-    if (0.0 < x && x < 1.0) {
-      logZ:Real <- lgamma(α) + lgamma(β) - lgamma(α + β);
-      return (α - 1.0)*log(x) + (β - 1.0)*log(1.0 - x) - logZ;
+  function update(α:Real, β:Real) {
+    assert(α > 0.0);
+    assert(β > 0.0);
+
+    this.α <- α;
+    this.β <- β;
+  }
+
+  function doRealize() {
+    if (isMissing()) {
+      u:Real <- random_gamma(α, 1.0);
+      v:Real <- random_gamma(β, 1.0);
+      set(u/(u + v));
     } else {
-      return log(0.0);
+      if (0.0 < x && x < 1.0) {
+        logZ:Real <- lgamma(α) + lgamma(β) - lgamma(α + β);
+        setWeight((α - 1.0)*log(x) + (β - 1.0)*log(1.0 - x) - logZ);
+      } else {
+        setWeight(-inf);
+      }
     }
   }
 }
 
 /**
- * Create.
+ * Create a Beta distribution.
  */
 function Beta(α:Real, β:Real) -> Beta {
   m:Beta;
-  m.α <- α;
-  m.β <- β;
+  m.initialize(α, β);
   return m;
 }

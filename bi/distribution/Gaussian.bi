@@ -37,9 +37,7 @@ class Gaussian < DelayReal {
 
   function doRealize() {
     if (isMissing()) {
-      cpp {{
-      set_(std::normal_distribution<double>(μ_, ::sqrt(σ2_))(rng));
-      }}
+      set(random_gaussian(μ, σ2));
     } else {
       setWeight(-0.5*(pow((x - μ), 2.0)/σ2 - log(σ2) - log(2.0*π)));
     }
@@ -47,7 +45,7 @@ class Gaussian < DelayReal {
 }
 
 /**
- * Create.
+ * Create a Gaussian distribution.
  */
 function Gaussian(μ:Real, σ2:Real) -> Gaussian {
   m:Gaussian;
