@@ -92,7 +92,7 @@ void bi::CppBaseGenerator::visit(const Slice* o) {
 
 void bi::CppBaseGenerator::visit(const Query* o) {
   if (o->single->type->isOptional()) {
-    middle(o->single);
+    middle("static_cast<bool>(" << o->single << ')');
   } else {
     middle(o->single << ".query()");
   }
