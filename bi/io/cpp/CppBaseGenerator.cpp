@@ -443,7 +443,14 @@ void bi::CppBaseGenerator::visit(const Program* o) {
         if ((*iter)->type->isBasic()) {
           auto type = dynamic_cast<Named*>((*iter)->type);
           assert(type);
-          line(name << " = bi::func::" << type->name << "(optarg);");
+          start(name << " = bi::func::" << type->name);
+          if (type->name->str() == "String") {
+            middle("(std::string(optarg))");
+          }
+          else {
+            middle("(optarg)");
+          }
+          finish(';');
         } else {
           line(name << " = optarg;");
         }
