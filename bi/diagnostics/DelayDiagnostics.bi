@@ -57,9 +57,9 @@ class DelayDiagnostics(N:Integer) {
   n:Integer <- 0;
   
   /**
-   * Number of events that have been triggered.
+   * Number of graphs that have been output.
    */
-  nevents:Integer <- 0;
+  noutputs:Integer <- 0;
   
   /**
    * Register a new node. This is a callback function typically called
@@ -102,55 +102,67 @@ class DelayDiagnostics(N:Integer) {
    * Trigger an event.
    */
   function trigger() {
-    nevents <- nevents + 1;
-    dot();
+    /* avoid outputting empty graphs, so check first that at least one
+     * registered node has been named */
+    i:Integer <- 1;
+    isEmpty:Boolean <- true;
+    while (i <= n && isEmpty) {
+      isEmpty <- !names[i]?;
+      i <- i + 1;
+    }
+    
+    if (!isEmpty) {
+      noutputs <- noutputs + 1;
+      dot();
+    }
   }
   
   /**
    * Output a dot graph of the current state.
    */
   function dot() {
-    out:FileOutputStream("diagnostics/state" + nevents + ".dot");
+    out:FileOutputStream("diagnostics/state" + noutputs + ".dot");
     out.print("digraph {\n");
     out.print("  node [shape=circle]\n");
     out.print("\n");
     i:Integer;
     
-    for (i in 1..n) {
-      assert nodes[i]?;
-      node:Delay <- nodes[i]!;
+    for (i in 1..N) {
+      if (nodes[i]? && names[i]?) {
+        node:Delay <- nodes[i]!;
       
-      if (names[i]?) {
-        /* node */
+        /* output node */
         out.print("  X" + node.id + " [");
         if (node.isInitialized()) {
-          out.print("style=solid penwidth=0.5 fillcolor=white fontcolor=gray color=gray fontname=\"times\"");
+          out.print("style=solid fillcolor=white fontcolor=gray color=gray");
         } else if (node.isMarginalized()) {
-          out.print("style=solid penwidth=2 fillcolor=white fontname=\"times bold\"");
+          out.print("style=solid fillcolor=white");
         } else if (node.isRealized()) {
-          out.print("style=filled penwidth=1 fillcolor=black fontcolor=white fontname=\"times\"");
+          out.print("style=filled fillcolor=black fontcolor=white");
         }
-        if (names[i]?) {
-          out.print(" label=\"" + names[i]! + "\"");
-        }
+        out.print(" label=\"" + names[i]! + "\"");
         if (xs[i]? && ys[i]?) {
           out.print(" pos=\"" + xs[i]! + "," + ys[i]! + "!\"");
         }
         out.print("]\n");
       
-        /* edge */
+        /* output edge */
         if (node.parent?) {
           parent:Delay <- node.parent!;
           out.print("  X" + parent.id + " -> X" + node.id + " ["); 
           if (node.isInitialized()) {
-            out.print("style=solid arrowhead=empty penwidth=0.5 color=gray");
+            out.print("style=solid penwidth=1 color=gray");
           } else if (node.isMarginalized() && parent.isMarginalized()) {
-            out.print("style=solid penwidth=2");
+            out.print("style=solid penwidth=1");
           } else {
             out.print("style=solid penwidth=1");
           }
           out.print("]\n");
         }
+      } else if (xs[i]? && ys[i]?) {
+        /* output an invisible node to preserve this position and the overall
+         * size of the graph between outputs */
+        out.print("  Z" + i + " [style=invis pos=\"" + xs[i]! + "," + ys[i]! + "!\"]\n");
       }
     }
     
