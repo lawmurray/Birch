@@ -68,7 +68,7 @@ class DelayDiagnostics(N:Integer) {
    * Returns an id assigned to the node.
    */
   function register(o:Delay) -> Integer {
-    assert(n < N); // otherwise no room left
+    assert n < N; // otherwise no room left
     n <- n + 1;
     nodes[n] <- o;
     return n;
@@ -110,7 +110,6 @@ class DelayDiagnostics(N:Integer) {
       isEmpty <- !names[i]?;
       i <- i + 1;
     }
-    
     if (!isEmpty) {
       noutputs <- noutputs + 1;
       dot();
@@ -122,13 +121,13 @@ class DelayDiagnostics(N:Integer) {
    */
   function dot() {
     /* pad file name with zeros */
-    Z:Integer <- ceil(log10(Real(N + 1))) - ceil(log10(Real(noutputs + 1)));
+    Z:Integer <- 8 - Integer(ceil(log10(Real(noutputs + 1))));
     z:Integer;
     filename:String <- "diagnostics/state";
     for (z in 1..Z) {
       filename <- filename + "0";
     }
-    filename <- filename + noutputs + ".dot"; 
+    filename <- filename + noutputs + ".dot";
     
     /* open file */
     out:FileOutputStream(filename);
@@ -146,11 +145,13 @@ class DelayDiagnostics(N:Integer) {
         /* output node */
         out.print("  X" + node.id + " [");
         if (node.isInitialized()) {
-          out.print("style=solid fillcolor=white fontcolor=gray color=gray");
+          out.print("style=solid fillcolor=white fontcolor=gray color=gray margin=\"0.04,0.02\"");
         } else if (node.isMarginalized()) {
-          out.print("style=solid fillcolor=white");
+          out.print("style=solid fillcolor=white margin=\"0.04,0.02\"");
         } else if (node.isRealized()) {
-          out.print("style=filled fillcolor=black fontcolor=white");
+          out.print("style=filled fillcolor=black fontcolor=white margin=\"0.04,0.02\"");
+        } else {
+          assert false;
         }
         out.print(" label=\"" + names[i]! + "\"");
         if (xs[i]? && ys[i]?) {
