@@ -22,6 +22,30 @@ function log(x:Real32) -> Real32 {
   }}
 }
 
+function log2(x:Real64) -> Real64 {
+  cpp {{
+  return ::log2(x_);
+  }}
+}
+
+function log2(x:Real32) -> Real32 {
+  cpp {{
+  return ::log2f(x_);
+  }}
+}
+
+function log10(x:Real64) -> Real64 {
+  cpp {{
+  return ::log10(x_);
+  }}
+}
+
+function log10(x:Real32) -> Real32 {
+  cpp {{
+  return ::log10f(x_);
+  }}
+}
+
 function exp(x:Real64) -> Real64 {
   cpp {{
   return ::exp(x_);
