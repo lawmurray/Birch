@@ -13,7 +13,7 @@ program delay_kalman(a:Real <- 0.9, T:Integer <- 10) {
   
   /* simulate data */
   for (t in 1..T) {
-    y[t] <~ Gaussian(0.0, 1.0);
+    y[t] <- random_gaussian(0.0, 1.0);
   }
 
   /* initialise */
@@ -36,15 +36,15 @@ program delay_kalman(a:Real <- 0.9, T:Integer <- 10) {
  * Set up diagnostics.
  */
 function delay_kalman_diagnostics(T:Integer) {
-  o:DelayDiagnostics(3*T);
+  o:DelayDiagnostics(2*T);
   delayDiagnostics <- o;
 
   t:Integer;
   for (t in 1..T) {
-    o.name(T + 2*t - 1, "x[" + t + "]");
-    o.name(T + 2*t, "y[" + t + "]");
+    o.name(2*t - 1, "x[" + t + "]");
+    o.name(2*t, "y[" + t + "]");
     
-    o.position(T + 2*t - 1, t, 2);
-    o.position(T + 2*t, t, 1);
+    o.position(2*t - 1, t, 2);
+    o.position(2*t, t, 1);
   }
 }

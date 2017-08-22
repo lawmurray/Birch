@@ -10,13 +10,15 @@
  * `Gaussian(0.0, 1.0)` prior and Gaussian likelihood with known variance.
  */
 program delay_iid(μ:Real <- 0.0, σ2:Real <- 1.0, N:Integer <- 100) {
+  delay_iid_diagnostics(N);
+
   x:Gaussian;
   y:Gaussian[N];
   n:Integer;
   
   /* simulate data */
   for (n in 1..N) {
-    y[n] <~ Gaussian(μ, σ2);
+    y[n] <- random_gaussian(μ, σ2);
   }
   
   /* prior */
@@ -29,4 +31,21 @@ program delay_iid(μ:Real <- 0.0, σ2:Real <- 1.0, N:Integer <- 100) {
   
   /* output */
   stdout.printf("x = %f\n", x);
+}
+
+/*
+ * Set up diagnostics.
+ */
+function delay_iid_diagnostics(N:Integer) {
+  o:DelayDiagnostics(N + 1);
+  delayDiagnostics <- o;
+
+  o.name(1, "x");
+  o.position(1, (N + 1)/2, 2);
+
+  n:Integer;
+  for (n in 1..N) {
+    o.name(n + 1, "y[" + n + "]");
+    o.position(n + 1, n, 1);
+  }
 }

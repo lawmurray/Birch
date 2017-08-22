@@ -11,6 +11,8 @@
  * in the `observation` function.
  */
 program delay_rbpf(N:Integer <- 100, T:Integer <- 10) {  
+  delay_rbpf_diagnostics(T);
+
   x:Real![N];     // particles
   w:Real[N];      // log-weights
   a:Integer[N];   // ancestor indices
@@ -54,10 +56,7 @@ program delay_rbpf(N:Integer <- 100, T:Integer <- 10) {
     
   /* output */
   //x[ancestor(w)].output();
-  stdout.print(W);
-  stdout.print(",");
-  stdout.print(N);
-  stdout.print("\n");
+  stdout.print(W + "," + N + "\n");
 }
 
 
@@ -172,5 +171,26 @@ class Example(T:Integer) {
       stdout.print(x_l[t]);
       stdout.print(", ");
     }
+  }
+}
+
+/*
+ * Set up diagnostics.
+ */
+function delay_rbpf_diagnostics(T:Integer) {
+  o:DelayDiagnostics(4*T);
+  delayDiagnostics <- o;
+  
+  t:Integer;
+  for (t in 1..T) {
+    o.name(4*t - 3, "x_n[" + t + "]");
+    o.name(4*t - 2, "x_l[" + t + "]");
+    o.name(4*t - 1, "y_n[" + t + "]");
+    o.name(4*t, "y_l[" + t + "]");
+    
+    o.position(4*t - 3, t, 4);
+    o.position(4*t - 2, t, 3);
+    o.position(4*t, t, 2);
+    o.position(4*t - 1, t, 1);
   }
 }
