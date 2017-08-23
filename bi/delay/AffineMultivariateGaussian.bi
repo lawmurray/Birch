@@ -84,7 +84,13 @@ function Gaussian(μ:MultivariateGaussian, Q:Real[_,_]) ->
 
 function Gaussian(μ:AffineMultivariateGaussianExpression, Q:Real[_,_]) ->
     MultivariateGaussian {
-  v:AffineMultivariateGaussian(μ.R, μ.C);
-  v.initialize(μ.A, μ.u, μ.c, Q);
-  return v;
+  if (μ.u.isRealized()) {
+    v:MultivariateGaussian(μ.R);
+    v.initialize(μ.A*μ.u.value() + μ.c, Q);
+    return v;
+  } else {
+    v:AffineMultivariateGaussian(μ.R, μ.C);
+    v.initialize(μ.A, μ.u, μ.c, Q);
+    return v;
+  }
 }

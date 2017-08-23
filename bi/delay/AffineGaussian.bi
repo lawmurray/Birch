@@ -76,7 +76,13 @@ function Gaussian(μ:Gaussian, q:Real) -> Gaussian {
 }
 
 function Gaussian(μ:AffineGaussianExpression, q:Real) -> Gaussian {
-  v:AffineGaussian;
-  v.initialize(μ.a, μ.u, μ.c, q);
-  return v;
+  if (μ.u.isRealized()) {
+    v:Gaussian;
+    v.initialize(μ.a*μ.u.value() + μ.c, q);
+    return v;
+  } else {
+    v:AffineGaussian;
+    v.initialize(μ.a, μ.u, μ.c, q);
+    return v;
+  }
 }
