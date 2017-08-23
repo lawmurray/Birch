@@ -122,17 +122,12 @@ class Delay {
   }
 
   /**
-   * Update the variate.
+   * Increment number of observations absorbed.
+   *
+   *   - `nbackward` : Number of new observations absorbed.
    */
-  function update() {
-    assert isMarginalized();
-
-    if (parent?) {
-      nforward <- parent!.nforward;
-    }
-    if (child?) {
-      nbackward <- nbackward + child!.nbackward + 1;
-    }
+  function absorb(nbackward:Integer) {
+    this.nbackward <- this.nbackward + nbackward;
   }
 
   /**
@@ -143,6 +138,7 @@ class Delay {
     assert parent?;
     
     state <- MARGINALIZED;
+    nforward <- parent!.nforward + parent!.nbackward;
     doMarginalize();
     trigger();
   }
@@ -170,6 +166,7 @@ class Delay {
       if (parent?) {
         if (!(parent!.isRealized())) {
           doCondition();
+          parent!.absorb(nbackward);
         }
         parent!.removeChild();
         removeParent();

@@ -28,7 +28,6 @@ class MultivariateGaussian(D:Integer) < DelayRealVector(D) {
   }
 
   function update(μ:Real[_], Σ:Real[_,_]) {
-    super.update();
     this.μ <- μ;
     this.Σ <- Σ;
   }

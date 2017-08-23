@@ -70,6 +70,7 @@ class DelayRealVector(D:Integer) < Delay {
   function observe(x:Real[_]) -> Real {
     graft();
     set(x);
+    absorb(1);
     realize();
     return w;
   }

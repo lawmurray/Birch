@@ -73,6 +73,7 @@ class DelayBoolean < Delay {
   function observe(x:Boolean) -> Real {
     graft();
     set(x);
+    absorb(1);
     realize();
     return w;
   }

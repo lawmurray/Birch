@@ -31,7 +31,6 @@ class Gaussian < DelayReal {
   function update(μ:Real, σ2:Real) {
     assert σ2 > 0.0;
     
-    super.update();
     this.μ <- μ;
     this.σ2 <- σ2;
   }

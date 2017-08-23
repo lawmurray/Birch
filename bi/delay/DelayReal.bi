@@ -73,6 +73,7 @@ class DelayReal < Delay {
   function observe(x:Real) -> Real {
     graft();
     set(x);
+    absorb(1);
     realize();
     return w;
   }

@@ -29,7 +29,6 @@ class Gamma < DelayReal {
     assert k > 0.0;
     assert θ > 0.0;
 
-    super.update();
     this.k <- k;
     this.θ <- θ;
   }

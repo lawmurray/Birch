@@ -29,7 +29,6 @@ class Beta < DelayReal {
     assert(α > 0.0);
     assert(β > 0.0);
 
-    super.update();
     this.α <- α;
     this.β <- β;
   }
