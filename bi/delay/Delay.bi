@@ -104,7 +104,7 @@ class Delay {
    * Initialize as a root node.
    */
   function initialize() {
-    this.state <- MARGINALIZED;
+    this.state <- INITIALIZED;
     register();
     trigger();
   }
@@ -135,22 +135,16 @@ class Delay {
    */
   function marginalize() {
     assert isInitialized();
-    assert parent?;
     
     state <- MARGINALIZED;
-    nforward <- parent!.nforward + parent!.nbackward;
-    doMarginalize();
-    trigger();
-  }
-  
-  /**
-   * Forward simulate the variate.
-   */
-  function forward() {
-    assert isInitialized();
-    
-    state <- MARGINALIZED;
-    doForward();
+    if (parent? && parent!.isRealized()) {
+      doForward();
+    } else {
+      doMarginalize();
+    }
+    if (parent?) {
+      nforward <- parent!.nforward + parent!.nbackward;
+    }
     trigger();
   }
   
@@ -187,12 +181,10 @@ class Delay {
         removeChild();
       }
     } else if (isInitialized()) {
-      parent!.graft(this);
-      if (parent!.isRealized()) {
-        forward();
-      } else {
-        marginalize();
+      if (parent?) {
+        parent!.graft(this);
       }
+      marginalize();
     }
   }
 

@@ -71,26 +71,14 @@ class AffineMultivariateGaussian(R:Integer, C:Integer) <
 
 function Gaussian(μ:MultivariateGaussian, Q:Real[_,_]) ->
     MultivariateGaussian {
-  if (μ.isRealized()) {
-    v:MultivariateGaussian(μ.D);
-    v.initialize(μ.value(), Q);
-    return v;
-  } else {
-    v:AffineMultivariateGaussian(μ.D, μ.D);
-    v.initialize(identity(μ.D, μ.D), μ, vector(0.0, μ.D), Q);
-    return v;
-  }
+  v:MultivariateGaussian(μ.D);
+  v.initialize(μ.value(), Q);
+  return v;
 }
 
 function Gaussian(μ:AffineMultivariateGaussianExpression, Q:Real[_,_]) ->
     MultivariateGaussian {
-  if (μ.u.isRealized()) {
-    v:MultivariateGaussian(μ.R);
-    v.initialize(μ.A*μ.u.value() + μ.c, Q);
-    return v;
-  } else {
-    v:AffineMultivariateGaussian(μ.R, μ.C);
-    v.initialize(μ.A, μ.u, μ.c, Q);
-    return v;
-  }
+  v:AffineMultivariateGaussian(μ.R, μ.C);
+  v.initialize(μ.A, μ.u, μ.c, Q);
+  return v;
 }
