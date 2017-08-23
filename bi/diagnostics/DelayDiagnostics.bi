@@ -134,7 +134,7 @@ class DelayDiagnostics(N:Integer) {
     
     /* output dot graph */
     out.print("digraph {\n");
-    out.print("  node [shape=circle]\n");
+    out.print("  node [shape=circle pack=1]\n");
     out.print("\n");
     i:Integer;
     
@@ -144,11 +144,11 @@ class DelayDiagnostics(N:Integer) {
         nupdates:Integer <- node.nforward + node.nbackward;
       
         /* output node */
-        out.print("  X" + node.id + " [");
-        if (node.isMarginalized() && nupdates > 0) {
-          out.print("xlabel=" + nupdates);
-        }
+        out.print("  X" + i + " [");
         out.print(" margin=\"0.04,0.02\"");
+        if (node.isMarginalized() && nupdates > 0) {
+          out.print(" xlabel=" + nupdates);
+        }
         if (node.isInitialized()) {
           out.print(" style=solid fillcolor=white fontcolor=gray color=gray");
         } else if (node.isMarginalized()) {
@@ -171,10 +171,14 @@ class DelayDiagnostics(N:Integer) {
           }
           out.print("]\n");
         }
-      } else if (xs[i]? && ys[i]?) {
+      } else if (names[i]? && xs[i]? && ys[i]?) {
         /* output an invisible node to preserve this position and the overall
-         * size of the graph between outputs */
-        out.print("  Z" + i + " [style=invis pos=\"" + xs[i]! + "," + ys[i]! + "!\"]\n");
+         * size of the graph between outputs; this uses a white node rather
+         * than a  */
+        out.print("  X" + i + " [");
+        out.print(" margin=\"0.04,0.02\"");
+        out.print(" label=\"" + names[i]! + "\"");
+        out.print(" fontcolor=\"#FFFFFF00\" color=\"#FFFFFF00\" pos=\"" + xs[i]! + "," + ys[i]! + "!\"]\n");
       }
     }
     
