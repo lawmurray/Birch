@@ -354,7 +354,11 @@ bi::Statement* bi::ResolverSource::modify(Class* o) {
 
 bi::Statement* bi::ResolverSource::modify(If* o) {
   scopes.push_back(o->scope);
-  Modifier::modify(o);
+  o->cond = o->cond->accept(this);
+  o->braces = o->braces->accept(this);
+  scopes.pop_back();
+  scopes.push_back(o->falseScope);
+  o->falseBraces = o->falseBraces->accept(this);
   scopes.pop_back();
   ///@todo Check that condition is of type Boolean
   return o;

@@ -44,5 +44,10 @@ public:
    * Block if condition is false. May be empty if there is no else clause.
    */
   Statement* falseBraces;
+
+  /**
+   * Scope for false block.
+   */
+  Scope* falseScope;
 };
 }

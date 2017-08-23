@@ -10,7 +10,8 @@ bi::If::If(Expression* cond, Statement* braces,
     Statement(loc),
     Conditioned(cond),
     Braced(braces),
-    falseBraces(falseBraces) {
+    falseBraces(falseBraces),
+    falseScope(new Scope()) {
   /* pre-condition */
   assert(falseBraces);
 }
