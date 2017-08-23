@@ -141,17 +141,16 @@ class DelayDiagnostics(N:Integer) {
     for (i in 1..N) {
       if (nodes[i]? && names[i]?) {
         node:Delay <- nodes[i]!;
+        nupdates:Integer <- node.nforward + node.nbackward;
       
         /* output node */
         out.print("  X" + node.id + " [");
         if (node.isInitialized()) {
-          out.print("style=solid fillcolor=white fontcolor=gray color=gray margin=\"0.04,0.02\"");
+          out.print("xlabel=" + nupdates + " style=solid fillcolor=white fontcolor=gray color=gray margin=\"0.04,0.02\"");
         } else if (node.isMarginalized()) {
-          out.print("style=solid fillcolor=white margin=\"0.04,0.02\"");
+          out.print("xlabel=" + nupdates + " style=solid fillcolor=white margin=\"0.04,0.02\"");
         } else if (node.isRealized()) {
-          out.print("style=filled fillcolor=black fontcolor=white margin=\"0.04,0.02\"");
-        } else {
-          assert false;
+          out.print("xlabel=" + nupdates + " style=filled fillcolor=gray margin=\"0.04,0.02\"");
         }
         out.print(" label=\"" + names[i]! + "\"");
         if (xs[i]? && ys[i]?) {

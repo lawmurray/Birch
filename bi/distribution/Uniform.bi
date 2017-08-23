@@ -27,6 +27,7 @@ class Uniform < DelayReal {
   function update(l:Real, u:Real) {
     assert l <= u;
   
+    super.update();
     this.l <- l;
     this.u <- u;
   }

@@ -38,6 +38,18 @@ class Delay {
    * Unique id for delayed sampling diagnostics.
    */
   id:Integer <- 0;
+  
+  /**
+   * Number of observations absorbed in forward pass, for delayed sampling
+   * diagnostics.
+   */
+  nforward:Integer <- 0;
+  
+  /**
+   * Number of observations absorbed in backward pass, for delayed sampling
+   * diagnostics.
+   */
+  nbackward:Integer <- 0;
     
   /**
    * Is this a root node?
@@ -108,7 +120,21 @@ class Delay {
     register();
     trigger();
   }
-  
+
+  /**
+   * Update the variate.
+   */
+  function update() {
+    assert isMarginalized();
+
+    if (parent?) {
+      nforward <- parent!.nforward;
+    }
+    if (child?) {
+      nbackward <- nbackward + child!.nbackward + 1;
+    }
+  }
+
   /**
    * Marginalize the variate.
    */
@@ -116,8 +142,8 @@ class Delay {
     assert isInitialized();
     assert parent?;
     
-    doMarginalize();
     state <- MARGINALIZED;
+    doMarginalize();
     trigger();
   }
   
@@ -127,8 +153,8 @@ class Delay {
   function forward() {
     assert isInitialized();
     
-    doForward();
     state <- MARGINALIZED;
+    doForward();
     trigger();
   }
   
@@ -139,19 +165,21 @@ class Delay {
     assert isUninitialized() || isTerminal();
     
     if (isTerminal()) {
+      state <- REALIZED;
       doRealize();
       if (parent?) {
-        parent!.removeChild();
         if (!(parent!.isRealized())) {
           doCondition();
         }
+        parent!.removeChild();
         removeParent();
       }
+    } else {
+      state <- REALIZED;
     }
-    state <- REALIZED;
     trigger();
   }
-
+  
   /**
    * Graft the stem to this node.
    */
