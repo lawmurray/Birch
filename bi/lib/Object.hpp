@@ -3,12 +3,10 @@
  */
 #pragma once
 
-#include "bi/lib/Fiber.hpp"
-
 #include <cassert>
-#include <iostream>
 
 namespace bi {
+template<class T> class Pointer;
 /**
  * Base class for all class types. Includes functionality for sharing objects
  * between fibers with copy-on-write semantics.
@@ -96,13 +94,9 @@ public:
    * Get a smart pointer to this object.
    */
   template<class T>
-  Pointer<T> pointer_from_this() {
-    return Pointer<T>(static_cast<T*>(this), index);
-  }
+  Pointer<T> pointer_from_this();
   template<class T>
-  Pointer<const T> pointer_from_this() const {
-    return Pointer<const T>(static_cast<T* const>(this), index);
-  }
+  Pointer<const T> pointer_from_this() const;
 
 private:
   /**
@@ -116,4 +110,16 @@ private:
    */
   intptr_t index;
 };
+}
+
+#include "bi/lib/Pointer.hpp"
+
+template<class T>
+bi::Pointer<T> bi::Object::pointer_from_this() {
+  return Pointer<T>(static_cast<T*>(this), index);
+}
+
+template<class T>
+bi::Pointer<const T> bi::Object::pointer_from_this() const {
+  return Pointer<const T>(static_cast<T* const>(this), index);
 }

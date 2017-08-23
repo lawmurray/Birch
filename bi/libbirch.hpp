@@ -19,6 +19,7 @@
 #include "bi/lib/Eigen.hpp"
 #include "bi/lib/EigenFunctions.hpp"
 #include "bi/lib/EigenOperators.hpp"
+#include "bi/lib/global.hpp"
 
 #include "boost/optional.hpp"
 

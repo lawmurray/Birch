@@ -3,6 +3,8 @@
  */
 #pragma once
 
+#include "bi/lib/global.hpp"
+
 namespace bi {
 /**
  * Smart pointer fiber-local heaps, with copy-on-write semantics.
@@ -200,7 +202,12 @@ T* bi::Pointer<T>::get() {
   T* raw;
   if (index >= 0) {
     assert(fiberHeap);
+#ifdef NDEBUG
     raw = static_cast<T*>(fiberHeap->get(index));
+#else
+    raw = dynamic_cast<T*>(fiberHeap->get(index));
+    assert(raw);
+#endif
     if (raw->isShared()) {
       /* shared and writeable, copy now (copy-on-write) */
       raw->disuse();
@@ -218,7 +225,12 @@ T* const bi::Pointer<T>::get() const {
   T* raw;
   if (index >= 0) {
     assert(fiberHeap);
+#ifdef NDEBUG
     raw = static_cast<T*>(fiberHeap->get(index));
+#else
+    raw = dynamic_cast<T*>(fiberHeap->get(index));
+    assert(raw);
+#endif
     if (raw->isShared()) {
       /* shared and writeable, copy now (copy-on-write) */
       raw->disuse();

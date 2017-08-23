@@ -7,6 +7,7 @@
 #include <type_traits>
 #include <cstdint>
 #include <cstddef>
+#include <random>
 
 namespace bi {
 class Heap;
@@ -31,6 +32,11 @@ static constexpr size_t default_value = std::numeric_limits<size_t>::max();
  * @c nullptr.
  */
 extern Heap* fiberHeap;
+
+/**
+ * Random number generator.
+ */
+extern std::mt19937_64 rng;
 
 /**
  * Does type @p T have a conversion operator to type @p U?
