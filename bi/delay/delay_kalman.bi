@@ -1,11 +1,15 @@
 /**
  * Demonstrates sampling from a univariate linear-Gaussian state-space model.
  *
- *   - `-a` : Autoregressive coefficient.
- *   - `-T` : Number of time steps.
+ *   - `-a`            : Autoregressive coefficient.
+ *   - `-T`            : Number of time steps.
+ *   - `--diagnostics` : Enable/disable delayed sampling diagnostics.
  */
-program delay_kalman(a:Real <- 0.9, T:Integer <- 10) {
-  delay_kalman_diagnostics(T);
+program delay_kalman(a:Real <- 0.9, T:Integer <- 10,
+    diagnostics:Boolean <- false) {
+  if (diagnostics) {
+    delay_kalman_diagnostics(T);
+  }
 
   x:Gaussian[T];  // state
   y:Gaussian[T];  // observation

@@ -2,12 +2,16 @@
  * Demonstrates sampling from a triplet of Gaussian random variables, with
  * zero or more of them given a value on the command line.
  *
- *   - `-x` : Value of the first variable.
- *   - `-y` : Value of the second variable.
- *   - `-z` : Value of the third variable.
+ *   - `-x`            : Value of the first variable.
+ *   - `-y`            : Value of the second variable.
+ *   - `-z`            : Value of the third variable.
+ *   - `--diagnostics` : Enable/disable delayed sampling diagnostics.
  */
-program delay_triplet(x:Gaussian, y:Gaussian, z:Gaussian) {
-  delay_triplet_diagnostics();
+program delay_triplet(x:Gaussian, y:Gaussian, z:Gaussian,
+    diagnostics:Boolean <- false) {
+  if (diagnostics) {
+    delay_triplet_diagnostics();
+  }
 
   x ~ Gaussian(0.0, 1.0);
   y ~ Gaussian(x, 1.0);

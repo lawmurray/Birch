@@ -4,8 +4,10 @@
  * whether the variable `y` is marginalized or realized at the end of the
  * program. This is random in each run.
  */
-program delay_spike_and_slab() {
-  delay_spike_and_slab_diagnostics();
+program delay_spike_and_slab(diagnostics:Boolean <- false) {
+  if (diagnostics) {
+    delay_spike_and_slab_diagnostics();
+  }
 
   ρ:Bernoulli;
   x:Gaussian;
