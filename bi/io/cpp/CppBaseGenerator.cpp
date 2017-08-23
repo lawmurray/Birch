@@ -448,11 +448,11 @@ void bi::CppBaseGenerator::visit(const Program* o) {
             middle("(std::string(optarg))");
           }
           else {
-            middle("(optarg)");
+            middle("(std::string(optarg))");
           }
           finish(';');
         } else {
-          line(name << " = optarg;");
+          line(name << " = std::string(optarg);");
         }
         line("break;");
         out();
