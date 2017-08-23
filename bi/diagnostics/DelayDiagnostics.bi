@@ -145,7 +145,7 @@ class DelayDiagnostics(N:Integer) {
       
         /* output node */
         out.print("  X" + node.id + " [");
-        if (nupdates > 0) {
+        if (node.isMarginalized() && nupdates > 0) {
           out.print("xlabel=" + nupdates);
         }
         out.print(" margin=\"0.04,0.02\"");
