@@ -3,32 +3,32 @@
 
 | Variable | Description |
 | --- | --- |
-| *delayDiagnostics:[DelayDiagnostics](#delaydiagnostics-525)?* | Global diagnostics handler for delayed sampling. |
-| *inf:[Real64](#real64-766)* | $\infty$ |
+| *delayDiagnostics:[DelayDiagnostics](#delaydiagnostics-526)?* | Global diagnostics handler for delayed sampling. |
+| *inf:[Real64](#real64-767)* | $\infty$ |
 | *stderr:[StdErrStream](#stderrstream-105)* | Standard error. |
 | *stdout:[StdOutStream](#stdoutstream-94)* | Standard output. |
-| *π:[Real64](#real64-766)* | $\pi$ |
+| *π:[Real64](#real64-767)* | $\pi$ |
 
 | Function | Brief description |
 | --- | --- |
 | [Bernoulli](#bernoulli-393) | Create. |
-| [Beta](#beta-605) | Create a Beta distribution. |
-| [Boolean](#boolean-960) | Convert other basic types to Boolean. |
-| [Gamma](#gamma-588) | Create Gamma distribution. |
+| [Beta](#beta-606) | Create a Beta distribution. |
+| [Boolean](#boolean-961) | Convert other basic types to Boolean. |
+| [Gamma](#gamma-589) | Create Gamma distribution. |
 | [Gaussian](#gaussian-383) | Create a Gaussian distribution. |
-| [Gaussian](#gaussian-545) | Create. |
-| [Integer](#integer-755) | Convert other basic types to Integer. |
-| [Integer32](#integer32-890) | Convert other basic types to Integer32. |
+| [Gaussian](#gaussian-546) | Create. |
+| [Integer](#integer-756) | Convert other basic types to Integer. |
+| [Integer32](#integer32-891) | Convert other basic types to Integer32. |
 | [Integer64](#integer64-396) | Convert other basic types to Integer64. |
-| [Real](#real-949) | Convert other basic types to Real. |
+| [Real](#real-950) | Convert other basic types to Real. |
 | [Real32](#real32-41) | Convert other basic types to Real32. |
-| [Real64](#real64-768) | Convert other basic types to Real64. |
-| [String](#string-973) | Convert other basic types to String. |
+| [Real64](#real64-769) | Convert other basic types to Real64. |
+| [String](#string-974) | Convert other basic types to String. |
 | [Uniform](#uniform-367) | Create a Uniform distribution. |
-| [abs](#abs-934) | Absolute value. |
+| [abs](#abs-935) | Absolute value. |
 | [abs](#abs-440) | Absolute value. |
 | [abs](#abs-85) | Absolute value. |
-| [abs](#abs-812) | Absolute value. |
+| [abs](#abs-813) | Absolute value. |
 | [adjacent_difference](#adjacent-difference-353) | Inclusive prefix sum. |
 | [ancestor](#ancestor-11) | Sample a single ancestor for a vector of log-weights. |
 | [ancestors](#ancestors-5) | Sample an ancestry vector for a vector of log-weights. |
@@ -36,96 +36,96 @@
 | [columns](#columns-170) | Number of columns of a matrix. |
 | [cumulative_offspring_to_ancestors](#cumulative-offspring-to-ancestors-26) | Convert a cumulative offspring vector into an ancestry vector. |
 | [cumulative_weights](#cumulative-weights-38) | Compute the cumulative weight vector from the log-weight vector. |
-| [determinant](#determinant-737) | Determinant of a matrix. |
+| [determinant](#determinant-738) | Determinant of a matrix. |
 | [exclusive_prefix_sum](#exclusive-prefix-sum-349) | Inclusive prefix sum. |
-| [fclose](#fclose-571) | Close a file. |
-| [fopen](#fopen-566) | Open a file for reading. |
-| [fopen](#fopen-569) | Open a file. |
+| [fclose](#fclose-572) | Close a file. |
+| [fopen](#fopen-567) | Open a file for reading. |
+| [fopen](#fopen-570) | Open a file. |
 | [identity](#identity-185) | Create identity matrix. |
 | [inclusive_prefix_sum](#inclusive-prefix-sum-345) | Inclusive prefix sum. |
-| [inverse](#inverse-741) | Inverse of a matrix. |
+| [inverse](#inverse-742) | Inverse of a matrix. |
 | [isnan](#isnan-93) | Does this have the value NaN? |
-| [isnan](#isnan-820) | Does this have the value NaN? |
-| [length](#length-1036) | Length of a string. |
-| [length](#length-607) | Length of a vector. |
-| [length](#length-609) | Length of a vector. |
-| [llt](#llt-744) | `LL^T` Cholesky decomposition of a matrix. |
+| [isnan](#isnan-821) | Does this have the value NaN? |
+| [length](#length-1037) | Length of a string. |
+| [length](#length-608) | Length of a vector. |
+| [length](#length-610) | Length of a vector. |
+| [llt](#llt-745) | `LL^T` Cholesky decomposition of a matrix. |
 | [log_sum_exp](#log-sum-exp-341) | Exponentiate and sum a vector, return the logarithm of the sum. |
 | [matrix](#matrix-179) | Create matrix filled with a given scalar. |
-| [max](#max-937) | Maximum of two values. |
+| [max](#max-938) | Maximum of two values. |
 | [max](#max-443) | Maximum of two values. |
 | [max](#max-88) | Maximum of two values. |
-| [max](#max-815) | Maximum of two values. |
+| [max](#max-816) | Maximum of two values. |
 | [max](#max-332) | Maximum of a vector. |
-| [min](#min-940) | Minimum of two values. |
+| [min](#min-941) | Minimum of two values. |
 | [min](#min-446) | Minimum of two values. |
 | [min](#min-91) | Minimum of two values. |
-| [min](#min-818) | Minimum of two values. |
+| [min](#min-819) | Minimum of two values. |
 | [min](#min-336) | Minimum of a vector. |
-| [norm](#norm-733) | Norm of a vector. |
+| [norm](#norm-734) | Norm of a vector. |
 | [permute_ancestors](#permute-ancestors-32) | Permute an ancestry vector to ensure that, when a particle survives, at least one of its instances remains in the same place. |
 | [random_bernoulli](#random-bernoulli-313) | Simulate a Bernoulli variate. |
 | [random_gamma](#random-gamma-322) | Simulate a Gamma variate. |
 | [random_gaussian](#random-gaussian-319) | Simulate a Gaussian variate. |
 | [random_uniform](#random-uniform-316) | Simulate a Uniform variate. |
-| [read](#read-946) | Read numbers from a file. |
+| [read](#read-947) | Read numbers from a file. |
 | [rows](#rows-164) | Number of rows of a matrix. |
 | [rows](#rows-166) | Number of rows of a matrix. |
 | [scalar](#scalar-172) | Convert single-element matrix to scalar. |
-| [scalar](#scalar-611) | Convert single-element vector to scalar. |
+| [scalar](#scalar-612) | Convert single-element vector to scalar. |
 | [seed](#seed-311) | Seed the pseudorandom number generator. |
-| [solve](#solve-748) | Solve a system of equations. |
-| [solve](#solve-752) | Solve a system of equations. |
-| [squaredNorm](#squarednorm-735) | Squared norm of a vector. |
+| [solve](#solve-749) | Solve a system of equations. |
+| [solve](#solve-753) | Solve a system of equations. |
+| [squaredNorm](#squarednorm-736) | Squared norm of a vector. |
 | [sum](#sum-328) | Sum of a vector. |
 | [systematic_cumulative_offspring](#systematic-cumulative-offspring-18) | Systematic resampling. |
-| [transpose](#transpose-739) | Transpose of a matrix. |
-| [vector](#vector-616) | Create vector filled with a given scalar. |
+| [transpose](#transpose-740) | Transpose of a matrix. |
+| [vector](#vector-617) | Create vector filled with a given scalar. |
 
 | Program | Brief description |
 | --- | --- |
 | [build](#build-104) | Build the project. |
 | [check](#check-324) | Check the file structure of the project for possible issues. |
-| [clean](#clean-635) | Clean the project directory of all build files. |
+| [clean](#clean-636) | Clean the project directory of all build files. |
 | [dist](#dist-323) | Build a distributable archive for the project. |
 | [docs](#docs-187) | Build the reference documentation for the project. |
-| [init](#init-765) | Initialise the working directory for a new project. |
+| [init](#init-766) | Initialise the working directory for a new project. |
 | [install](#install-186) | Install the project. |
 | [uninstall](#uninstall-162) | Uninstall the project. |
 
 | Basic Type | Brief description |
 | --- | --- |
-| [Boolean](#boolean-958) | A Boolean value. |
-| [File](#file-564) | A file handle. |
-| [Integer32](#integer32-888) | A 32-bit integer. |
+| [Boolean](#boolean-959) | A Boolean value. |
+| [File](#file-565) | A file handle. |
+| [Integer32](#integer32-889) | A 32-bit integer. |
 | [Integer64](#integer64-394) | A 64-bit integer. |
 | [Real32](#real32-39) | A 32-bit (single precision) floating point value. |
-| [Real64](#real64-766) | A 64-bit (double precision) floating point value. |
-| [String](#string-971) | A string value. |
+| [Real64](#real64-767) | A 64-bit (double precision) floating point value. |
+| [String](#string-972) | A string value. |
 
 | Alias Type | Brief description |
 | --- | --- |
-| [Integer](#integer-753) | An integer value of default type. |
-| [Real](#real-947) | A floating point value of default type. |
+| [Integer](#integer-754) | An integer value of default type. |
+| [Real](#real-948) | A floating point value of default type. |
 
 | Class Type | Brief description |
 | --- | --- |
-| [AffineGaussian](#affinegaussian-836) | Gaussian that has a mean which is an affine transformation of another Gaussian. |
-| [AffineGaussianExpression](#affinegaussianexpression-643) | Expression used to accumulate affine transformations of Gaussians. |
-| [AffineMultivariateGaussian](#affinemultivariategaussian-879) | Multivariate Gaussian that has a mean which is an affine transformation of another multivariate Gaussian. |
+| [AffineGaussian](#affinegaussian-837) | Gaussian that has a mean which is an affine transformation of another Gaussian. |
+| [AffineGaussianExpression](#affinegaussianexpression-644) | Expression used to accumulate affine transformations of Gaussians. |
+| [AffineMultivariateGaussian](#affinemultivariategaussian-880) | Multivariate Gaussian that has a mean which is an affine transformation of another multivariate Gaussian. |
 | [AffineMultivariateGaussianExpression](#affinemultivariategaussianexpression-456) | Expression used to accumulate affine transformations of multivariate Gaussians. |
 | [Bernoulli](#bernoulli-390) | Bernoulli distribution. |
-| [Beta](#beta-601) | Beta distribution. |
-| [Delay](#delay-1075) | Node interface for delayed sampling. |
+| [Beta](#beta-602) | Beta distribution. |
+| [Delay](#delay-1079) | Node interface for delayed sampling. |
 | [DelayBoolean](#delayboolean-161) | Abstract delay variate with Boolean value. |
-| [DelayDiagnostics](#delaydiagnostics-525) | Outputs graphical representations of the delayed sampling state for diagnostic purposes. |
-| [DelayInteger](#delayinteger-634) | Abstract delay variate with Integer value. |
-| [DelayReal](#delayreal-563) | Abstract delay variate with Real value. |
-| [DelayRealVector](#delayrealvector-861) | Abstract delay variate with real vector value. |
-| [FileOutputStream](#fileoutputstream-574) | File output stream. |
-| [Gamma](#gamma-584) | Gamma distribution. |
+| [DelayDiagnostics](#delaydiagnostics-526) | Outputs graphical representations of the delayed sampling state for diagnostic purposes. |
+| [DelayInteger](#delayinteger-635) | Abstract delay variate with Integer value. |
+| [DelayReal](#delayreal-564) | Abstract delay variate with Real value. |
+| [DelayRealVector](#delayrealvector-862) | Abstract delay variate with real vector value. |
+| [FileOutputStream](#fileoutputstream-575) | File output stream. |
+| [Gamma](#gamma-585) | Gamma distribution. |
 | [Gaussian](#gaussian-379) | Gaussian distribution. |
-| [MultivariateGaussian](#multivariategaussian-540) | Multivariate Gaussian distribution. |
+| [MultivariateGaussian](#multivariategaussian-541) | Multivariate Gaussian distribution. |
 | [OutputStream](#outputstream-143) | Output stream. |
 | [StdErrStream](#stderrstream-105) | Output stream for stderr. |
 | [StdOutStream](#stdoutstream-94) | Output stream for stdout. |
@@ -134,53 +134,53 @@
 
 # Function Details
 
-#### Bernoulli(ρ:[Real](#real-947)) -> [Bernoulli](#bernoulli-390)
+#### Bernoulli(ρ:[Real](#real-948)) -> [Bernoulli](#bernoulli-390)
 
 <a name="bernoulli-393"></a>
 
 Create.
 
-#### Beta(α:[Real](#real-947), β:[Real](#real-947)) -> [Beta](#beta-601)
+#### Beta(α:[Real](#real-948), β:[Real](#real-948)) -> [Beta](#beta-602)
 
-<a name="beta-605"></a>
+<a name="beta-606"></a>
 
 Create a Beta distribution.
 
-#### Boolean(x:[Boolean](#boolean-958)) -> [Boolean](#boolean-958)
+#### Boolean(x:[Boolean](#boolean-959)) -> [Boolean](#boolean-959)
 
-<a name="boolean-960"></a>
+<a name="boolean-961"></a>
 
 Convert other basic types to Boolean. This is overloaded for Boolean and
 String.
 
-#### Gamma(k:[Real](#real-947), θ:[Real](#real-947)) -> [Gamma](#gamma-584)
+#### Gamma(k:[Real](#real-948), θ:[Real](#real-948)) -> [Gamma](#gamma-585)
 
-<a name="gamma-588"></a>
+<a name="gamma-589"></a>
 
 Create Gamma distribution.
 
-#### Gaussian(μ:[Real](#real-947), σ2:[Real](#real-947)) -> [Gaussian](#gaussian-379)
+#### Gaussian(μ:[Real](#real-948), σ2:[Real](#real-948)) -> [Gaussian](#gaussian-379)
 
 <a name="gaussian-383"></a>
 
 Create a Gaussian distribution.
 
-#### Gaussian(μ:[Real](#real-947)\[\_\], Σ:[Real](#real-947)\[\_,\_\]) -> [MultivariateGaussian](#multivariategaussian-540)
+#### Gaussian(μ:[Real](#real-948)\[\_\], Σ:[Real](#real-948)\[\_,\_\]) -> [MultivariateGaussian](#multivariategaussian-541)
 
-<a name="gaussian-545"></a>
+<a name="gaussian-546"></a>
 
 Create.
 
-#### Integer(x:[Integer64](#integer64-394)) -> [Integer](#integer-753)
+#### Integer(x:[Integer64](#integer64-394)) -> [Integer](#integer-754)
 
-<a name="integer-755"></a>
+<a name="integer-756"></a>
 
 Convert other basic types to Integer. This is overloaded for Real64,
 Real32, Integer64, Integer32 and String.
 
-#### Integer32(x:[Integer32](#integer32-888)) -> [Integer32](#integer32-888)
+#### Integer32(x:[Integer32](#integer32-889)) -> [Integer32](#integer32-889)
 
-<a name="integer32-890"></a>
+<a name="integer32-891"></a>
 
 Convert other basic types to Integer32. This is overloaded for Real64,
 Real32, Integer64, Integer32 and String.
@@ -192,9 +192,9 @@ Real32, Integer64, Integer32 and String.
 Convert other basic types to Integer64. This is overloaded for Real64,
 Real32, Integer64, Integer32 and String.
 
-#### Real(x:[Real64](#real64-766)) -> [Real](#real-947)
+#### Real(x:[Real64](#real64-767)) -> [Real](#real-948)
 
-<a name="real-949"></a>
+<a name="real-950"></a>
 
 Convert other basic types to Real. This is overloaded for Real64,
 Real32, Integer64, Integer32 and String.
@@ -206,29 +206,29 @@ Real32, Integer64, Integer32 and String.
 Convert other basic types to Real32. This is overloaded for Real64, Real32,
 Integer64, Integer32 and String.
 
-#### Real64(x:[Real64](#real64-766)) -> [Real64](#real64-766)
+#### Real64(x:[Real64](#real64-767)) -> [Real64](#real64-767)
 
-<a name="real64-768"></a>
+<a name="real64-769"></a>
 
 Convert other basic types to Real64. This is overloaded for Real64, Real32,
 Integer64, Integer32 and String.
 
-#### String(x:[String](#string-971)) -> [String](#string-971)
+#### String(x:[String](#string-972)) -> [String](#string-972)
 
-<a name="string-973"></a>
+<a name="string-974"></a>
 
 Convert other basic types to String. This is overloaded for Bolean, Real64,
 String, Integer64, Integer32 and String.
 
-#### Uniform(l:[Real](#real-947), u:[Real](#real-947)) -> [Uniform](#uniform-363)
+#### Uniform(l:[Real](#real-948), u:[Real](#real-948)) -> [Uniform](#uniform-363)
 
 <a name="uniform-367"></a>
 
 Create a Uniform distribution.
 
-#### abs(x:[Integer32](#integer32-888)) -> [Integer32](#integer32-888)
+#### abs(x:[Integer32](#integer32-889)) -> [Integer32](#integer32-889)
 
-<a name="abs-934"></a>
+<a name="abs-935"></a>
 
 Absolute value.
 
@@ -244,83 +244,83 @@ Absolute value.
 
 Absolute value.
 
-#### abs(x:[Real64](#real64-766)) -> [Real64](#real64-766)
+#### abs(x:[Real64](#real64-767)) -> [Real64](#real64-767)
 
-<a name="abs-812"></a>
+<a name="abs-813"></a>
 
 Absolute value.
 
-#### adjacent_difference(x:[Real](#real-947)\[\_\]) -> [Real](#real-947)\[\_\]
+#### adjacent_difference(x:[Real](#real-948)\[\_\]) -> [Real](#real-948)\[\_\]
 
 <a name="adjacent-difference-353"></a>
 
 Inclusive prefix sum.
 
-#### ancestor(w:[Real](#real-947)\[\_\]) -> [Integer](#integer-753)
+#### ancestor(w:[Real](#real-948)\[\_\]) -> [Integer](#integer-754)
 
 <a name="ancestor-11"></a>
 
 Sample a single ancestor for a vector of log-weights.
 
-#### ancestors(w:[Real](#real-947)\[\_\]) -> [Integer](#integer-753)\[\_\]
+#### ancestors(w:[Real](#real-948)\[\_\]) -> [Integer](#integer-754)\[\_\]
 
 <a name="ancestors-5"></a>
 
 Sample an ancestry vector for a vector of log-weights.
 
-#### columns(X:[Real](#real-947)\[\_,\_\]) -> [Integer64](#integer64-394)
+#### columns(X:[Real](#real-948)\[\_,\_\]) -> [Integer64](#integer64-394)
 
 <a name="columns-168"></a>
 
 Number of columns of a matrix.
 
-#### columns(X:[Integer](#integer-753)\[\_,\_\]) -> [Integer64](#integer64-394)
+#### columns(X:[Integer](#integer-754)\[\_,\_\]) -> [Integer64](#integer64-394)
 
 <a name="columns-170"></a>
 
 Number of columns of a matrix.
 
-#### cumulative_offspring_to_ancestors(O:[Integer](#integer-753)\[\_\]) -> [Integer](#integer-753)\[\_\]
+#### cumulative_offspring_to_ancestors(O:[Integer](#integer-754)\[\_\]) -> [Integer](#integer-754)\[\_\]
 
 <a name="cumulative-offspring-to-ancestors-26"></a>
 
 Convert a cumulative offspring vector into an ancestry vector.
 
-#### cumulative_weights(w:[Real](#real-947)\[\_\]) -> [Real](#real-947)\[\_\]
+#### cumulative_weights(w:[Real](#real-948)\[\_\]) -> [Real](#real-948)\[\_\]
 
 <a name="cumulative-weights-38"></a>
 
 Compute the cumulative weight vector from the log-weight vector.
 
-#### determinant(X:[Real](#real-947)\[\_,\_\]) -> [Real](#real-947)
+#### determinant(X:[Real](#real-948)\[\_,\_\]) -> [Real](#real-948)
 
-<a name="determinant-737"></a>
+<a name="determinant-738"></a>
 
 Determinant of a matrix.
 
-#### exclusive_prefix_sum(x:[Real](#real-947)\[\_\]) -> [Real](#real-947)\[\_\]
+#### exclusive_prefix_sum(x:[Real](#real-948)\[\_\]) -> [Real](#real-948)\[\_\]
 
 <a name="exclusive-prefix-sum-349"></a>
 
 Inclusive prefix sum.
 
-#### fclose(file:[File](#file-564))
+#### fclose(file:[File](#file-565))
 
-<a name="fclose-571"></a>
+<a name="fclose-572"></a>
 
 Close a file.
 
-#### fopen(file:[String](#string-971)) -> [File](#file-564)
+#### fopen(file:[String](#string-972)) -> [File](#file-565)
 
-<a name="fopen-566"></a>
+<a name="fopen-567"></a>
 
 Open a file for reading.
 
   - file : The file name.
 
-#### fopen(file:[String](#string-971), mode:[String](#string-971)) -> [File](#file-564)
+#### fopen(file:[String](#string-972), mode:[String](#string-972)) -> [File](#file-565)
 
-<a name="fopen-569"></a>
+<a name="fopen-570"></a>
 
 Open a file.
 
@@ -328,75 +328,75 @@ Open a file.
   - mode : The mode, either `r` (read), `w` (write), `a` (append) or any
     other modes as in system `fopen`.
 
-#### identity(rows:[Integer](#integer-753), columns:[Integer](#integer-753)) -> [Real](#real-947)\[\_,\_\]
+#### identity(rows:[Integer](#integer-754), columns:[Integer](#integer-754)) -> [Real](#real-948)\[\_,\_\]
 
 <a name="identity-185"></a>
 
 Create identity matrix.
 
-#### inclusive_prefix_sum(x:[Real](#real-947)\[\_\]) -> [Real](#real-947)\[\_\]
+#### inclusive_prefix_sum(x:[Real](#real-948)\[\_\]) -> [Real](#real-948)\[\_\]
 
 <a name="inclusive-prefix-sum-345"></a>
 
 Inclusive prefix sum.
 
-#### inverse(X:[Real](#real-947)\[\_,\_\]) -> [Real](#real-947)\[\_,\_\]
+#### inverse(X:[Real](#real-948)\[\_,\_\]) -> [Real](#real-948)\[\_,\_\]
 
-<a name="inverse-741"></a>
+<a name="inverse-742"></a>
 
 Inverse of a matrix.
 
-#### isnan(x:[Real32](#real32-39)) -> [Boolean](#boolean-958)
+#### isnan(x:[Real32](#real32-39)) -> [Boolean](#boolean-959)
 
 <a name="isnan-93"></a>
 
 Does this have the value NaN?
 
-#### isnan(x:[Real64](#real64-766)) -> [Boolean](#boolean-958)
+#### isnan(x:[Real64](#real64-767)) -> [Boolean](#boolean-959)
 
-<a name="isnan-820"></a>
+<a name="isnan-821"></a>
 
 Does this have the value NaN?
 
-#### length(x:[String](#string-971)) -> [Integer](#integer-753)
+#### length(x:[String](#string-972)) -> [Integer](#integer-754)
 
-<a name="length-1036"></a>
+<a name="length-1037"></a>
 
 Length of a string.
 
-#### length(x:[Real](#real-947)\[\_\]) -> [Integer64](#integer64-394)
+#### length(x:[Real](#real-948)\[\_\]) -> [Integer64](#integer64-394)
 
-<a name="length-607"></a>
-
-Length of a vector.
-
-#### length(x:[Integer](#integer-753)\[\_\]) -> [Integer64](#integer64-394)
-
-<a name="length-609"></a>
+<a name="length-608"></a>
 
 Length of a vector.
 
-#### llt(X:[Real](#real-947)\[\_,\_\]) -> [Real](#real-947)\[\_,\_\]
+#### length(x:[Integer](#integer-754)\[\_\]) -> [Integer64](#integer64-394)
 
-<a name="llt-744"></a>
+<a name="length-610"></a>
+
+Length of a vector.
+
+#### llt(X:[Real](#real-948)\[\_,\_\]) -> [Real](#real-948)\[\_,\_\]
+
+<a name="llt-745"></a>
 
 `LL^T` Cholesky decomposition of a matrix.
 
-#### log_sum_exp(x:[Real](#real-947)\[\_\]) -> [Real](#real-947)
+#### log_sum_exp(x:[Real](#real-948)\[\_\]) -> [Real](#real-948)
 
 <a name="log-sum-exp-341"></a>
 
 Exponentiate and sum a vector, return the logarithm of the sum.
 
-#### matrix(x:[Real](#real-947), rows:[Integer](#integer-753), columns:[Integer](#integer-753)) -> [Real](#real-947)\[\_,\_\]
+#### matrix(x:[Real](#real-948), rows:[Integer](#integer-754), columns:[Integer](#integer-754)) -> [Real](#real-948)\[\_,\_\]
 
 <a name="matrix-179"></a>
 
 Create matrix filled with a given scalar.
 
-#### max(x:[Integer32](#integer32-888), y:[Integer32](#integer32-888)) -> [Integer32](#integer32-888)
+#### max(x:[Integer32](#integer32-889), y:[Integer32](#integer32-889)) -> [Integer32](#integer32-889)
 
-<a name="max-937"></a>
+<a name="max-938"></a>
 
 Maximum of two values.
 
@@ -412,21 +412,21 @@ Maximum of two values.
 
 Maximum of two values.
 
-#### max(x:[Real64](#real64-766), y:[Real64](#real64-766)) -> [Real64](#real64-766)
+#### max(x:[Real64](#real64-767), y:[Real64](#real64-767)) -> [Real64](#real64-767)
 
-<a name="max-815"></a>
+<a name="max-816"></a>
 
 Maximum of two values.
 
-#### max(x:[Real](#real-947)\[\_\]) -> [Real](#real-947)
+#### max(x:[Real](#real-948)\[\_\]) -> [Real](#real-948)
 
 <a name="max-332"></a>
 
 Maximum of a vector.
 
-#### min(x:[Integer32](#integer32-888), y:[Integer32](#integer32-888)) -> [Integer32](#integer32-888)
+#### min(x:[Integer32](#integer32-889), y:[Integer32](#integer32-889)) -> [Integer32](#integer32-889)
 
-<a name="min-940"></a>
+<a name="min-941"></a>
 
 Minimum of two values.
 
@@ -442,86 +442,86 @@ Minimum of two values.
 
 Minimum of two values.
 
-#### min(x:[Real64](#real64-766), y:[Real64](#real64-766)) -> [Real64](#real64-766)
+#### min(x:[Real64](#real64-767), y:[Real64](#real64-767)) -> [Real64](#real64-767)
 
-<a name="min-818"></a>
+<a name="min-819"></a>
 
 Minimum of two values.
 
-#### min(x:[Real](#real-947)\[\_\]) -> [Real](#real-947)
+#### min(x:[Real](#real-948)\[\_\]) -> [Real](#real-948)
 
 <a name="min-336"></a>
 
 Minimum of a vector.
 
-#### norm(x:[Real](#real-947)\[\_\]) -> [Real](#real-947)
+#### norm(x:[Real](#real-948)\[\_\]) -> [Real](#real-948)
 
-<a name="norm-733"></a>
+<a name="norm-734"></a>
 
 Norm of a vector.
 
-#### permute_ancestors(a:[Integer](#integer-753)\[\_\]) -> [Integer](#integer-753)\[\_\]
+#### permute_ancestors(a:[Integer](#integer-754)\[\_\]) -> [Integer](#integer-754)\[\_\]
 
 <a name="permute-ancestors-32"></a>
 
 Permute an ancestry vector to ensure that, when a particle survives, at
 least one of its instances remains in the same place.
 
-#### random_bernoulli(ρ:[Real](#real-947)) -> [Boolean](#boolean-958)
+#### random_bernoulli(ρ:[Real](#real-948)) -> [Boolean](#boolean-959)
 
 <a name="random-bernoulli-313"></a>
 
 Simulate a Bernoulli variate.
 
-#### random_gamma(k:[Real](#real-947), θ:[Real](#real-947)) -> [Real](#real-947)
+#### random_gamma(k:[Real](#real-948), θ:[Real](#real-948)) -> [Real](#real-948)
 
 <a name="random-gamma-322"></a>
 
 Simulate a Gamma variate.
 
-#### random_gaussian(μ:[Real](#real-947), σ2:[Real](#real-947)) -> [Real](#real-947)
+#### random_gaussian(μ:[Real](#real-948), σ2:[Real](#real-948)) -> [Real](#real-948)
 
 <a name="random-gaussian-319"></a>
 
 Simulate a Gaussian variate.
 
-#### random_uniform(l:[Real](#real-947), u:[Real](#real-947)) -> [Real](#real-947)
+#### random_uniform(l:[Real](#real-948), u:[Real](#real-948)) -> [Real](#real-948)
 
 <a name="random-uniform-316"></a>
 
 Simulate a Uniform variate.
 
-#### read(file:[String](#string-971), N:[Integer](#integer-753)) -> [Real](#real-947)\[\_\]
+#### read(file:[String](#string-972), N:[Integer](#integer-754)) -> [Real](#real-948)\[\_\]
 
-<a name="read-946"></a>
+<a name="read-947"></a>
 
 Read numbers from a file.
 
-#### rows(X:[Real](#real-947)\[\_,\_\]) -> [Integer64](#integer64-394)
+#### rows(X:[Real](#real-948)\[\_,\_\]) -> [Integer64](#integer64-394)
 
 <a name="rows-164"></a>
 
 Number of rows of a matrix.
 
-#### rows(X:[Integer](#integer-753)\[\_,\_\]) -> [Integer64](#integer64-394)
+#### rows(X:[Integer](#integer-754)\[\_,\_\]) -> [Integer64](#integer64-394)
 
 <a name="rows-166"></a>
 
 Number of rows of a matrix.
 
-#### scalar(X:[Real](#real-947)\[\_,\_\]) -> [Real](#real-947)
+#### scalar(X:[Real](#real-948)\[\_,\_\]) -> [Real](#real-948)
 
 <a name="scalar-172"></a>
 
 Convert single-element matrix to scalar.
 
-#### scalar(x:[Real](#real-947)\[\_\]) -> [Real](#real-947)
+#### scalar(x:[Real](#real-948)\[\_\]) -> [Real](#real-948)
 
-<a name="scalar-611"></a>
+<a name="scalar-612"></a>
 
 Convert single-element vector to scalar.
 
-#### seed(s:[Integer](#integer-753))
+#### seed(s:[Integer](#integer-754))
 
 <a name="seed-311"></a>
 
@@ -529,52 +529,52 @@ Seed the pseudorandom number generator.
 
 `seed` Seed.
 
-#### solve(X:[Real](#real-947)\[\_,\_\], y:[Real](#real-947)\[\_\]) -> [Real](#real-947)\[\_\]
+#### solve(X:[Real](#real-948)\[\_,\_\], y:[Real](#real-948)\[\_\]) -> [Real](#real-948)\[\_\]
 
-<a name="solve-748"></a>
-
-Solve a system of equations.
-
-#### solve(X:[Real](#real-947)\[\_,\_\], Y:[Real](#real-947)\[\_,\_\]) -> [Real](#real-947)\[\_,\_\]
-
-<a name="solve-752"></a>
+<a name="solve-749"></a>
 
 Solve a system of equations.
 
-#### squaredNorm(x:[Real](#real-947)\[\_\]) -> [Real](#real-947)
+#### solve(X:[Real](#real-948)\[\_,\_\], Y:[Real](#real-948)\[\_,\_\]) -> [Real](#real-948)\[\_,\_\]
 
-<a name="squarednorm-735"></a>
+<a name="solve-753"></a>
+
+Solve a system of equations.
+
+#### squaredNorm(x:[Real](#real-948)\[\_\]) -> [Real](#real-948)
+
+<a name="squarednorm-736"></a>
 
 Squared norm of a vector.
 
-#### sum(x:[Real](#real-947)\[\_\]) -> [Real](#real-947)
+#### sum(x:[Real](#real-948)\[\_\]) -> [Real](#real-948)
 
 <a name="sum-328"></a>
 
 Sum of a vector.
 
-#### systematic_cumulative_offspring(W:[Real](#real-947)\[\_\]) -> [Integer](#integer-753)\[\_\]
+#### systematic_cumulative_offspring(W:[Real](#real-948)\[\_\]) -> [Integer](#integer-754)\[\_\]
 
 <a name="systematic-cumulative-offspring-18"></a>
 
 Systematic resampling.
 
-#### transpose(X:[Real](#real-947)\[\_,\_\]) -> [Real](#real-947)\[\_,\_\]
+#### transpose(X:[Real](#real-948)\[\_,\_\]) -> [Real](#real-948)\[\_,\_\]
 
-<a name="transpose-739"></a>
+<a name="transpose-740"></a>
 
 Transpose of a matrix.
 
-#### vector(x:[Real](#real-947), length:[Integer](#integer-753)) -> [Real](#real-947)\[\_\]
+#### vector(x:[Real](#real-948), length:[Integer](#integer-754)) -> [Real](#real-948)\[\_\]
 
-<a name="vector-616"></a>
+<a name="vector-617"></a>
 
 Create vector filled with a given scalar.
 
 
 # Program Details
 
-#### build(include_dir:[String](#string-971), lib_dir:[String](#string-971), share_dir:[String](#string-971), prefix:[String](#string-971), warnings:[Boolean](#boolean-958) <- true, debug:[Boolean](#boolean-958) <- true, verbose:[Boolean](#boolean-958) <- true)
+#### build(include_dir:[String](#string-972), lib_dir:[String](#string-972), share_dir:[String](#string-972), prefix:[String](#string-972), warnings:[Boolean](#boolean-959) <- true, debug:[Boolean](#boolean-959) <- true, verbose:[Boolean](#boolean-959) <- true)
 
 <a name="build-104"></a>
 
@@ -617,7 +617,7 @@ such as:
 
 #### clean()
 
-<a name="clean-635"></a>
+<a name="clean-636"></a>
 
 Clean the project directory of all build files.
 
@@ -638,9 +638,9 @@ Build the reference documentation for the project. This creates a Markdown
 file `DOCS.md` in the current working directory. It will be overwritten if
 it already exists.
 
-#### init(name:[String](#string-971) <- "untitled")
+#### init(name:[String](#string-972) <- "untitled")
 
-<a name="init-765"></a>
+<a name="init-766"></a>
 
 Initialise the working directory for a new project.
 
@@ -667,19 +667,19 @@ was not specified).
 
 #### type Boolean
 
-<a name="boolean-958"></a>
+<a name="boolean-959"></a>
 
 A Boolean value.
 
 #### type File
 
-<a name="file-564"></a>
+<a name="file-565"></a>
 
 A file handle.
 
 #### type Integer32
 
-<a name="integer32-888"></a>
+<a name="integer32-889"></a>
 
 A 32-bit integer.
 
@@ -697,13 +697,13 @@ A 32-bit (single precision) floating point value.
 
 #### type Real64
 
-<a name="real64-766"></a>
+<a name="real64-767"></a>
 
 A 64-bit (double precision) floating point value.
 
 #### type String
 
-<a name="string-971"></a>
+<a name="string-972"></a>
 
 A string value.
 
@@ -712,13 +712,13 @@ A string value.
 
 #### type Integer = [Integer64](#integer64-394)
 
-<a name="integer-753"></a>
+<a name="integer-754"></a>
 
 An integer value of default type.
 
-#### type Real = [Real64](#real64-766)
+#### type Real = [Real64](#real64-767)
 
-<a name="real-947"></a>
+<a name="real-948"></a>
 
 A floating point value of default type.
 
@@ -728,7 +728,7 @@ A floating point value of default type.
 
 ## AffineGaussian
 
-<a name="affinegaussian-836"></a>
+<a name="affinegaussian-837"></a>
 
   * Inherits from *[Gaussian](#gaussian-379)*
 
@@ -737,45 +737,45 @@ Gaussian.
 
 | Member Variable | Description |
 | --- | --- |
-| *a:[Real](#real-947)* | Multiplicative scalar of affine transformation. |
+| *a:[Real](#real-948)* | Multiplicative scalar of affine transformation. |
 | *μ:[Gaussian](#gaussian-379)* | Mean. |
-| *c:[Real](#real-947)* | Additive scalar of affine transformation. |
-| *q:[Real](#real-947)* | Variance. |
-| *y:[Real](#real-947)* | Marginalized prior mean. |
-| *s:[Real](#real-947)* | Marginalized prior variance. |
+| *c:[Real](#real-948)* | Additive scalar of affine transformation. |
+| *q:[Real](#real-948)* | Variance. |
+| *y:[Real](#real-948)* | Marginalized prior mean. |
+| *s:[Real](#real-948)* | Marginalized prior variance. |
 
 
 ## AffineGaussianExpression
 
-<a name="affinegaussianexpression-643"></a>
+<a name="affinegaussianexpression-644"></a>
 
 Expression used to accumulate affine transformations of Gaussians.
 
 | Member Variable | Description |
 | --- | --- |
-| *a:[Real](#real-947)* | Multiplicative scalar of affine transformation. |
+| *a:[Real](#real-948)* | Multiplicative scalar of affine transformation. |
 | *u:[Gaussian](#gaussian-379)* | Parent. |
-| *c:[Real](#real-947)* | Additive scalar of affine transformation. |
+| *c:[Real](#real-948)* | Additive scalar of affine transformation. |
 
 | Member Function | Brief description |
 | --- | --- |
-| [initialize](#initialize-642) | Initialize. |
+| [initialize](#initialize-643) | Initialize. |
 
 
 ### Member Function Details
 
-#### initialize(a:[Real](#real-947), u:[Gaussian](#gaussian-379), c:[Real](#real-947))
+#### initialize(a:[Real](#real-948), u:[Gaussian](#gaussian-379), c:[Real](#real-948))
 
-<a name="initialize-642"></a>
+<a name="initialize-643"></a>
 
 Initialize.
 
 
 ## AffineMultivariateGaussian
 
-<a name="affinemultivariategaussian-879"></a>
+<a name="affinemultivariategaussian-880"></a>
 
-  * Inherits from *[MultivariateGaussian](#multivariategaussian-540)*
+  * Inherits from *[MultivariateGaussian](#multivariategaussian-541)*
 
 Multivariate Gaussian that has a mean which is an affine transformation of
 another multivariate Gaussian.
@@ -785,12 +785,12 @@ another multivariate Gaussian.
 
 | Member Variable | Description |
 | --- | --- |
-| *A:[Real](#real-947)\[\_,\_\]* | Matrix of affine transformation. |
-| *μ:[MultivariateGaussian](#multivariategaussian-540)* | Mean. |
-| *c:[Real](#real-947)\[\_\]* | Vector of affine transformation. |
-| *Q:[Real](#real-947)\[\_,\_\]* | Disturbance covariance. |
-| *y:[Real](#real-947)\[\_\]* | Marginalized prior mean. |
-| *S:[Real](#real-947)\[\_,\_\]* | Marginalized prior covariance. |
+| *A:[Real](#real-948)\[\_,\_\]* | Matrix of affine transformation. |
+| *μ:[MultivariateGaussian](#multivariategaussian-541)* | Mean. |
+| *c:[Real](#real-948)\[\_\]* | Vector of affine transformation. |
+| *Q:[Real](#real-948)\[\_,\_\]* | Disturbance covariance. |
+| *y:[Real](#real-948)\[\_\]* | Marginalized prior mean. |
+| *S:[Real](#real-948)\[\_,\_\]* | Marginalized prior covariance. |
 
 
 ## AffineMultivariateGaussianExpression
@@ -805,9 +805,9 @@ Gaussians.
 
 | Member Variable | Description |
 | --- | --- |
-| *A:[Real](#real-947)\[\_,\_\]* | Matrix of affine transformation. |
-| *u:[MultivariateGaussian](#multivariategaussian-540)* | Parent. |
-| *c:[Real](#real-947)\[\_\]* | Vector of affine transformation. |
+| *A:[Real](#real-948)\[\_,\_\]* | Matrix of affine transformation. |
+| *u:[MultivariateGaussian](#multivariategaussian-541)* | Parent. |
+| *c:[Real](#real-948)\[\_\]* | Vector of affine transformation. |
 
 | Member Function | Brief description |
 | --- | --- |
@@ -816,7 +816,7 @@ Gaussians.
 
 ### Member Function Details
 
-#### initialize(A:[Real](#real-947)\[\_,\_\], u:[MultivariateGaussian](#multivariategaussian-540), c:[Real](#real-947)\[\_\])
+#### initialize(A:[Real](#real-948)\[\_,\_\], u:[MultivariateGaussian](#multivariategaussian-541), c:[Real](#real-948)\[\_\])
 
 <a name="initialize-455"></a>
 
@@ -833,79 +833,82 @@ Bernoulli distribution.
 
 | Member Variable | Description |
 | --- | --- |
-| *ρ:[Real](#real-947)* | Probability of a true result. |
+| *ρ:[Real](#real-948)* | Probability of a true result. |
 
 
 ## Beta
 
-<a name="beta-601"></a>
+<a name="beta-602"></a>
 
-  * Inherits from *[DelayReal](#delayreal-563)*
+  * Inherits from *[DelayReal](#delayreal-564)*
 
 Beta distribution.
 
 | Member Variable | Description |
 | --- | --- |
-| *α:[Real](#real-947)* | First shape parameter. |
-| *β:[Real](#real-947)* | Second shape parameter. |
+| *α:[Real](#real-948)* | First shape parameter. |
+| *β:[Real](#real-948)* | Second shape parameter. |
 
 
 ## Delay
 
-<a name="delay-1075"></a>
+<a name="delay-1079"></a>
 
 Node interface for delayed sampling.
 
 | Member Variable | Description |
 | --- | --- |
-| *state:[Integer](#integer-753)* | State of the variate. |
-| *missing:[Boolean](#boolean-958)* | Is the value missing? |
-| *parent:[Delay](#delay-1075)?* | Parent. |
-| *child:[Delay](#delay-1075)?* | Child, if one exists and it is on the stem. |
-| *id:[Integer](#integer-753)* | Unique id for delayed sampling diagnostics. |
+| *state:[Integer](#integer-754)* | State of the variate. |
+| *missing:[Boolean](#boolean-959)* | Is the value missing? |
+| *parent:[Delay](#delay-1079)?* | Parent. |
+| *child:[Delay](#delay-1079)?* | Child, if one exists and it is on the stem. |
+| *id:[Integer](#integer-754)* | Unique id for delayed sampling diagnostics. |
+| *nforward:[Integer](#integer-754)* | Number of observations absorbed in forward pass, for delayed sampling diagnostics. |
+| *nbackward:[Integer](#integer-754)* | Number of observations absorbed in backward pass, for delayed sampling diagnostics. |
 
 | Member Function | Brief description |
 | --- | --- |
-| [isRoot](#isroot-1046) | Is this a root node? |
-| [isTerminal](#isterminal-1047) | Is this the terminal node of a stem? |
-| [isUninitialized](#isuninitialized-1048) | Is this node in the uninitialized state? |
-| [isInitialized](#isinitialized-1049) | Is this node in the initialized state? |
-| [isMarginalized](#ismarginalized-1050) | Is this node in the marginalized state? |
-| [isRealized](#isrealized-1051) | Is this node in the realized state? |
-| [isMissing](#ismissing-1052) | Is the value of this node missing? |
-| [initialize](#initialize-1053) | Initialize as a root node. |
-| [initialize](#initialize-1055) | Initialize as a non-root node. |
-| [marginalize](#marginalize-1056) | Marginalize the variate. |
-| [forward](#forward-1057) | Forward simulate the variate. |
-| [realize](#realize-1058) | Realize the variate. |
-| [graft](#graft-1059) | Graft the stem to this node. |
-| [graft](#graft-1061) | Graft the stem to this node. |
-| [prune](#prune-1062) | Prune the stem from below this node. |
-| [setParent](#setparent-1064) | Set the parent. |
-| [removeParent](#removeparent-1065) | Remove the parent. |
-| [setChild](#setchild-1067) | Set the child. |
-| [removeChild](#removechild-1068) | Remove the child. |
-| [register](#register-1073) | Register with the diagnostic handler. |
-| [trigger](#trigger-1074) | Trigger an event with the diagnostic handler. |
+| [isRoot](#isroot-1049) | Is this a root node? |
+| [isTerminal](#isterminal-1050) | Is this the terminal node of a stem? |
+| [isUninitialized](#isuninitialized-1051) | Is this node in the uninitialized state? |
+| [isInitialized](#isinitialized-1052) | Is this node in the initialized state? |
+| [isMarginalized](#ismarginalized-1053) | Is this node in the marginalized state? |
+| [isRealized](#isrealized-1054) | Is this node in the realized state? |
+| [isMissing](#ismissing-1055) | Is the value of this node missing? |
+| [initialize](#initialize-1056) | Initialize as a root node. |
+| [initialize](#initialize-1058) | Initialize as a non-root node. |
+| [update](#update-1059) | Update the variate. |
+| [marginalize](#marginalize-1060) | Marginalize the variate. |
+| [forward](#forward-1061) | Forward simulate the variate. |
+| [realize](#realize-1062) | Realize the variate. |
+| [graft](#graft-1063) | Graft the stem to this node. |
+| [graft](#graft-1065) | Graft the stem to this node. |
+| [prune](#prune-1066) | Prune the stem from below this node. |
+| [setParent](#setparent-1068) | Set the parent. |
+| [removeParent](#removeparent-1069) | Remove the parent. |
+| [setChild](#setchild-1071) | Set the child. |
+| [removeChild](#removechild-1072) | Remove the child. |
+| [register](#register-1077) | Register with the diagnostic handler. |
+| [trigger](#trigger-1078) | Trigger an event with the diagnostic handler. |
 
 
 ### Member Function Details
 
 #### forward()
 
-<a name="forward-1057"></a>
+<a name="forward-1061"></a>
 
 Forward simulate the variate.
 
 #### graft()
 
-<a name="graft-1059"></a>
+<a name="graft-1063"></a>
 
 Graft the stem to this node.
 
-#### graft(c:[Delay](#delay-1075))
+#### graft(c:[Delay](#delay-1079))
 
-<a name="graft-1061"></a>
+<a name="graft-1065"></a>
 
 Graft the stem to this node.
 
@@ -914,141 +917,147 @@ of the stem.
 
 #### initialize()
 
-<a name="initialize-1053"></a>
+<a name="initialize-1056"></a>
 
 Initialize as a root node.
 
-#### initialize(parent:[Delay](#delay-1075))
+#### initialize(parent:[Delay](#delay-1079))
 
-<a name="initialize-1055"></a>
+<a name="initialize-1058"></a>
 
 Initialize as a non-root node.
 
 `parent` The parent node.
 
-#### isInitialized() -> [Boolean](#boolean-958)
+#### isInitialized() -> [Boolean](#boolean-959)
 
-<a name="isinitialized-1049"></a>
+<a name="isinitialized-1052"></a>
 
 Is this node in the initialized state?
 
-#### isMarginalized() -> [Boolean](#boolean-958)
+#### isMarginalized() -> [Boolean](#boolean-959)
 
-<a name="ismarginalized-1050"></a>
+<a name="ismarginalized-1053"></a>
 
 Is this node in the marginalized state?
 
-#### isMissing() -> [Boolean](#boolean-958)
+#### isMissing() -> [Boolean](#boolean-959)
 
-<a name="ismissing-1052"></a>
+<a name="ismissing-1055"></a>
 
 Is the value of this node missing?
 
-#### isRealized() -> [Boolean](#boolean-958)
+#### isRealized() -> [Boolean](#boolean-959)
 
-<a name="isrealized-1051"></a>
+<a name="isrealized-1054"></a>
 
 Is this node in the realized state?
 
-#### isRoot() -> [Boolean](#boolean-958)
+#### isRoot() -> [Boolean](#boolean-959)
 
-<a name="isroot-1046"></a>
+<a name="isroot-1049"></a>
 
 Is this a root node?
 
-#### isTerminal() -> [Boolean](#boolean-958)
+#### isTerminal() -> [Boolean](#boolean-959)
 
-<a name="isterminal-1047"></a>
+<a name="isterminal-1050"></a>
 
 Is this the terminal node of a stem?
 
-#### isUninitialized() -> [Boolean](#boolean-958)
+#### isUninitialized() -> [Boolean](#boolean-959)
 
-<a name="isuninitialized-1048"></a>
+<a name="isuninitialized-1051"></a>
 
 Is this node in the uninitialized state?
 
 #### marginalize()
 
-<a name="marginalize-1056"></a>
+<a name="marginalize-1060"></a>
 
 Marginalize the variate.
 
 #### prune()
 
-<a name="prune-1062"></a>
+<a name="prune-1066"></a>
 
 Prune the stem from below this node.
 
 #### realize()
 
-<a name="realize-1058"></a>
+<a name="realize-1062"></a>
 
 Realize the variate.
 
 #### register()
 
-<a name="register-1073"></a>
+<a name="register-1077"></a>
 
 Register with the diagnostic handler.
 
 #### removeChild()
 
-<a name="removechild-1068"></a>
+<a name="removechild-1072"></a>
 
 Remove the child.
 
 #### removeParent()
 
-<a name="removeparent-1065"></a>
+<a name="removeparent-1069"></a>
 
 Remove the parent.
 
-#### setChild(u:[Delay](#delay-1075))
+#### setChild(u:[Delay](#delay-1079))
 
-<a name="setchild-1067"></a>
+<a name="setchild-1071"></a>
 
 Set the child.
 
-#### setParent(u:[Delay](#delay-1075))
+#### setParent(u:[Delay](#delay-1079))
 
-<a name="setparent-1064"></a>
+<a name="setparent-1068"></a>
 
 Set the parent.
 
 #### trigger()
 
-<a name="trigger-1074"></a>
+<a name="trigger-1078"></a>
 
 Trigger an event with the diagnostic handler.
+
+#### update()
+
+<a name="update-1059"></a>
+
+Update the variate.
 
 
 ## DelayBoolean
 
 <a name="delayboolean-161"></a>
 
-  * Inherits from *[Delay](#delay-1075)*
+  * Inherits from *[Delay](#delay-1079)*
 
 Abstract delay variate with Boolean value.
 
 | Assignment | Description |
 | --- | --- |
-| *[Boolean](#boolean-958)* | Value assignment. |
-| *[String](#string-971)* | String assignment. |
+| *[Boolean](#boolean-959)* | Value assignment. |
+| *[String](#string-972)* | String assignment. |
 
 | Conversion | Description |
 | --- | --- |
-| *[Boolean](#boolean-958)* | Value conversion. |
+| *[Boolean](#boolean-959)* | Value conversion. |
 
 | Member Variable | Description |
 | --- | --- |
-| *x:[Boolean](#boolean-958)* | Value. |
-| *w:[Real](#real-947)* | Weight. |
+| *x:[Boolean](#boolean-959)* | Value. |
+| *w:[Real](#real-948)* | Weight. |
 
 
 ## DelayDiagnostics
 
-<a name="delaydiagnostics-525"></a>
+<a name="delaydiagnostics-526"></a>
 
 Outputs graphical representations of the delayed sampling state for
 diagnostic purposes.
@@ -1074,12 +1083,12 @@ automatic layout is desired, use `dot`, e.g.
 
 | Member Variable | Description |
 | --- | --- |
-| *nodes:[Delay](#delay-1075)?\[\_\]* | Registered nodes. |
-| *names:[String](#string-971)?\[\_\]* | Names of the nodes. |
-| *xs:[Integer](#integer-753)?\[\_\]* | $x$-coordinates of the nodes. |
-| *ys:[Integer](#integer-753)?\[\_\]* | $y$-coordinates of the nodes. |
-| *n:[Integer](#integer-753)* | Number of nodes that have been registered. |
-| *noutputs:[Integer](#integer-753)* | Number of graphs that have been output. |
+| *nodes:[Delay](#delay-1079)?\[\_\]* | Registered nodes. |
+| *names:[String](#string-972)?\[\_\]* | Names of the nodes. |
+| *xs:[Integer](#integer-754)?\[\_\]* | $x$-coordinates of the nodes. |
+| *ys:[Integer](#integer-754)?\[\_\]* | $y$-coordinates of the nodes. |
+| *n:[Integer](#integer-754)* | Number of nodes that have been registered. |
+| *noutputs:[Integer](#integer-754)* | Number of graphs that have been output. |
 
 | Member Function | Brief description |
 | --- | --- |
@@ -1087,18 +1096,18 @@ automatic layout is desired, use `dot`, e.g.
 | [name](#name-509) | Set the name of a node. |
 | [position](#position-513) | Set the position of a node. |
 | [trigger](#trigger-516) | Trigger an event. |
-| [dot](#dot-524) | Output a dot graph of the current state. |
+| [dot](#dot-525) | Output a dot graph of the current state. |
 
 
 ### Member Function Details
 
 #### dot()
 
-<a name="dot-524"></a>
+<a name="dot-525"></a>
 
 Output a dot graph of the current state.
 
-#### name(id:[Integer](#integer-753), name:[String](#string-971))
+#### name(id:[Integer](#integer-754), name:[String](#string-972))
 
 <a name="name-509"></a>
 
@@ -1107,7 +1116,7 @@ Set the name of a node.
   - id   : Id of the node.
   - name : The name.
 
-#### position(id:[Integer](#integer-753), x:[Integer](#integer-753), y:[Integer](#integer-753))
+#### position(id:[Integer](#integer-754), x:[Integer](#integer-754), y:[Integer](#integer-754))
 
 <a name="position-513"></a>
 
@@ -1117,7 +1126,7 @@ Set the position of a node.
   - x  : $x$-coordinate.
   - y  : $y$-coordinate.
 
-#### register(o:[Delay](#delay-1075)) -> [Integer](#integer-753)
+#### register(o:[Delay](#delay-1079)) -> [Integer](#integer-754)
 
 <a name="register-506"></a>
 
@@ -1135,55 +1144,55 @@ Trigger an event.
 
 ## DelayInteger
 
-<a name="delayinteger-634"></a>
+<a name="delayinteger-635"></a>
 
-  * Inherits from *[Delay](#delay-1075)*
+  * Inherits from *[Delay](#delay-1079)*
 
 Abstract delay variate with Integer value.
 
 | Assignment | Description |
 | --- | --- |
-| *[Integer](#integer-753)* | Value assignment. |
-| *[String](#string-971)* | String assignment. |
+| *[Integer](#integer-754)* | Value assignment. |
+| *[String](#string-972)* | String assignment. |
 
 | Conversion | Description |
 | --- | --- |
-| *[Integer](#integer-753)* | Value conversion. |
+| *[Integer](#integer-754)* | Value conversion. |
 
 | Member Variable | Description |
 | --- | --- |
-| *x:[Integer](#integer-753)* | Value. |
-| *w:[Real](#real-947)* | Weight. |
+| *x:[Integer](#integer-754)* | Value. |
+| *w:[Real](#real-948)* | Weight. |
 
 
 ## DelayReal
 
-<a name="delayreal-563"></a>
+<a name="delayreal-564"></a>
 
-  * Inherits from *[Delay](#delay-1075)*
+  * Inherits from *[Delay](#delay-1079)*
 
 Abstract delay variate with Real value.
 
 | Assignment | Description |
 | --- | --- |
-| *[Real](#real-947)* | Value assignment. |
-| *[String](#string-971)* | String assignment. |
+| *[Real](#real-948)* | Value assignment. |
+| *[String](#string-972)* | String assignment. |
 
 | Conversion | Description |
 | --- | --- |
-| *[Real](#real-947)* | Value conversion. |
+| *[Real](#real-948)* | Value conversion. |
 
 | Member Variable | Description |
 | --- | --- |
-| *x:[Real](#real-947)* | Value. |
-| *w:[Real](#real-947)* | Weight. |
+| *x:[Real](#real-948)* | Value. |
+| *w:[Real](#real-948)* | Weight. |
 
 
 ## DelayRealVector
 
-<a name="delayrealvector-861"></a>
+<a name="delayrealvector-862"></a>
 
-  * Inherits from *[Delay](#delay-1075)*
+  * Inherits from *[Delay](#delay-1079)*
 
 Abstract delay variate with real vector value.
 
@@ -1191,21 +1200,21 @@ Abstract delay variate with real vector value.
 
 | Assignment | Description |
 | --- | --- |
-| *[Real](#real-947)\[\_\]* | Value assignment. |
+| *[Real](#real-948)\[\_\]* | Value assignment. |
 
 | Conversion | Description |
 | --- | --- |
-| *[Real](#real-947)\[\_\]* | Value conversion. |
+| *[Real](#real-948)\[\_\]* | Value conversion. |
 
 | Member Variable | Description |
 | --- | --- |
-| *x:[Real](#real-947)\[\_\]* | Value. |
-| *w:[Real](#real-947)* | Weight. |
+| *x:[Real](#real-948)\[\_\]* | Value. |
+| *w:[Real](#real-948)* | Weight. |
 
 
 ## FileOutputStream
 
-<a name="fileoutputstream-574"></a>
+<a name="fileoutputstream-575"></a>
 
   * Inherits from *[OutputStream](#outputstream-143)*
 
@@ -1213,51 +1222,51 @@ File output stream.
 
 | Member Function | Brief description |
 | --- | --- |
-| [close](#close-573) | Close the file. |
+| [close](#close-574) | Close the file. |
 
 
 ### Member Function Details
 
 #### close()
 
-<a name="close-573"></a>
+<a name="close-574"></a>
 
 Close the file.
 
 
 ## Gamma
 
-<a name="gamma-584"></a>
+<a name="gamma-585"></a>
 
-  * Inherits from *[DelayReal](#delayreal-563)*
+  * Inherits from *[DelayReal](#delayreal-564)*
 
 Gamma distribution.
 
 | Member Variable | Description |
 | --- | --- |
-| *k:[Real](#real-947)* | Shape. |
-| *θ:[Real](#real-947)* | Scale. |
+| *k:[Real](#real-948)* | Shape. |
+| *θ:[Real](#real-948)* | Scale. |
 
 
 ## Gaussian
 
 <a name="gaussian-379"></a>
 
-  * Inherits from *[DelayReal](#delayreal-563)*
+  * Inherits from *[DelayReal](#delayreal-564)*
 
 Gaussian distribution.
 
 | Member Variable | Description |
 | --- | --- |
-| *μ:[Real](#real-947)* | Mean. |
-| *σ2:[Real](#real-947)* | Variance. |
+| *μ:[Real](#real-948)* | Mean. |
+| *σ2:[Real](#real-948)* | Variance. |
 
 
 ## MultivariateGaussian
 
-<a name="multivariategaussian-540"></a>
+<a name="multivariategaussian-541"></a>
 
-  * Inherits from *[DelayRealVector](#delayrealvector-861)*
+  * Inherits from *[DelayRealVector](#delayrealvector-862)*
 
 Multivariate Gaussian distribution.
 
@@ -1265,8 +1274,8 @@ Multivariate Gaussian distribution.
 
 | Member Variable | Description |
 | --- | --- |
-| *μ:[Real](#real-947)\[\_\]* | Mean. |
-| *Σ:[Real](#real-947)\[\_,\_\]* | Covariance matrix. |
+| *μ:[Real](#real-948)\[\_\]* | Mean. |
+| *Σ:[Real](#real-948)\[\_,\_\]* | Covariance matrix. |
 
 
 ## OutputStream
@@ -1293,73 +1302,73 @@ Output stream.
 
 ### Member Function Details
 
-#### print(value:[Boolean](#boolean-958))
+#### print(value:[Boolean](#boolean-959))
 
 <a name="print-122"></a>
 
 Print scalar.
 
-#### print(value:[Integer](#integer-753))
+#### print(value:[Integer](#integer-754))
 
 <a name="print-124"></a>
 
 Print scalar.
 
-#### print(value:[Real](#real-947))
+#### print(value:[Real](#real-948))
 
 <a name="print-126"></a>
 
 Print scalar.
 
-#### print(value:[String](#string-971))
+#### print(value:[String](#string-972))
 
 <a name="print-128"></a>
 
 Print scalar.
 
-#### print(x:[Integer](#integer-753)\[\_\])
+#### print(x:[Integer](#integer-754)\[\_\])
 
 <a name="print-131"></a>
 
 Print vector.
 
-#### print(x:[Real](#real-947)\[\_\])
+#### print(x:[Real](#real-948)\[\_\])
 
 <a name="print-134"></a>
 
 Print vector.
 
-#### print(X:[Integer](#integer-753)\[\_,\_\])
+#### print(X:[Integer](#integer-754)\[\_,\_\])
 
 <a name="print-138"></a>
 
 Print matrix.
 
-#### print(X:[Real](#real-947)\[\_,\_\])
+#### print(X:[Real](#real-948)\[\_,\_\])
 
 <a name="print-142"></a>
 
 Print matrix.
 
-#### printf(fmt:[String](#string-971), value:[Boolean](#boolean-958))
+#### printf(fmt:[String](#string-972), value:[Boolean](#boolean-959))
 
 <a name="printf-111"></a>
 
 Print with format. See system `printf`.
 
-#### printf(fmt:[String](#string-971), value:[Integer](#integer-753))
+#### printf(fmt:[String](#string-972), value:[Integer](#integer-754))
 
 <a name="printf-114"></a>
 
 Print with format. See system `printf`.
 
-#### printf(fmt:[String](#string-971), value:[Real](#real-947))
+#### printf(fmt:[String](#string-972), value:[Real](#real-948))
 
 <a name="printf-117"></a>
 
 Print with format. See system `printf`.
 
-#### printf(fmt:[String](#string-971), value:[String](#string-971))
+#### printf(fmt:[String](#string-972), value:[String](#string-972))
 
 <a name="printf-120"></a>
 
@@ -1388,12 +1397,12 @@ Output stream for stdout.
 
 <a name="uniform-363"></a>
 
-  * Inherits from *[DelayReal](#delayreal-563)*
+  * Inherits from *[DelayReal](#delayreal-564)*
 
 Uniform distribution.
 
 | Member Variable | Description |
 | --- | --- |
-| *l:[Real](#real-947)* | Lower bound. |
-| *u:[Real](#real-947)* | Upper bound. |
+| *l:[Real](#real-948)* | Lower bound. |
+| *u:[Real](#real-948)* | Upper bound. |
 

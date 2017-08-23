@@ -64,9 +64,15 @@ class AffineGaussian < Gaussian {
 }
 
 function Gaussian(μ:Gaussian, q:Real) -> Gaussian {
-  v:AffineGaussian;
-  v.initialize(1.0, μ, 0.0, q);
-  return v;
+  if (μ.isRealized()) {
+    v:Gaussian;
+    v.initialize(μ.value(), q);
+    return v;
+  } else {
+    v:AffineGaussian;
+    v.initialize(1.0, μ, 0.0, q);
+    return v;
+  }
 }
 
 function Gaussian(μ:AffineGaussianExpression, q:Real) -> Gaussian {
