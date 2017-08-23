@@ -145,12 +145,16 @@ class DelayDiagnostics(N:Integer) {
       
         /* output node */
         out.print("  X" + node.id + " [");
+        if (nupdates > 0) {
+          out.print("xlabel=" + nupdates);
+        }
+        out.print(" margin=\"0.04,0.02\"");
         if (node.isInitialized()) {
-          out.print("xlabel=" + nupdates + " style=solid fillcolor=white fontcolor=gray color=gray margin=\"0.04,0.02\"");
+          out.print(" style=solid fillcolor=white fontcolor=gray color=gray");
         } else if (node.isMarginalized()) {
-          out.print("xlabel=" + nupdates + " style=solid fillcolor=white margin=\"0.04,0.02\"");
+          out.print(" style=solid fillcolor=white");
         } else if (node.isRealized()) {
-          out.print("xlabel=" + nupdates + " style=filled fillcolor=gray margin=\"0.04,0.02\"");
+          out.print(" style=filled fillcolor=gray");
         }
         out.print(" label=\"" + names[i]! + "\"");
         if (xs[i]? && ys[i]?) {
@@ -163,11 +167,7 @@ class DelayDiagnostics(N:Integer) {
           parent:Delay <- node.parent!;
           out.print("  X" + parent.id + " -> X" + node.id + " ["); 
           if (node.isInitialized()) {
-            out.print("style=solid penwidth=1 color=gray");
-          } else if (node.isMarginalized() && parent.isMarginalized()) {
-            out.print("style=solid penwidth=1");
-          } else {
-            out.print("style=solid penwidth=1");
+            out.print("color=gray");
           }
           out.print("]\n");
         }
