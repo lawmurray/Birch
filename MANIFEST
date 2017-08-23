@@ -1,3 +1,4 @@
+bi/delay/delay_canonical.bi
 bi/delay/delay_iid.bi
 bi/delay/delay_kalman.bi
 bi/delay/delay_rbpf.bi
