@@ -20,7 +20,7 @@ endif
 precompile.hpp.pch: precompile.hpp
 	mkdir -p $(DEPDIR) && \
 	$(CXX) -M $(DEFS) -std=c++14 -Wno-pragma-once-outside-header -MF $(DEPDIR)/precompile.Plo -MT $@ $< && \
-	$(CXX) $(DEFS) -std=c++14 -Wno-pragma-once-outside-header -o $@ $<
+	$(CXX) $(DEFS) $(CXXFLAGS) -std=c++14 -Wno-pragma-once-outside-header -o $@ $<
 
 BUILT_SOURCES = precompile.hpp.pch
 CLEANFILES = precompile.hpp.pch
