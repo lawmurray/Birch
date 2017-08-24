@@ -231,11 +231,11 @@ bi::Expression* bi::ResolverSource::modify(
 bi::Statement* bi::ResolverSource::modify(Assignment* o) {
   if (*o->name == "<~") {
     /* replace with equivalent (by definition) code */
-    auto simulate = new Identifier<Unknown>(new Name("simulate"));
-    auto member = new Member(o->right, simulate);
-    auto call = new Call(member, new Parentheses());
-    auto assign = new Assignment(o->left, new Name("<-"), call);
-    return assign->accept(this);
+    auto initialize = new Assignment(o->left, new Name("~"), o->right);
+    auto value = new Call(new Identifier<Unknown>(new Name("value")), new Parentheses());
+    auto call = new ExpressionStatement(new Member(o->left, value));
+    auto result = new List<Statement>(initialize, call, o->loc);
+    return result->accept(this);
   } else if (*o->name == "~") {
     Modifier::modify(o);
     if (!o->left->type->assignable) {
