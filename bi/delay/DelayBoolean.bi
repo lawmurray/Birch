@@ -49,10 +49,9 @@ class DelayBoolean < Delay {
   
   function value() -> Boolean {
     if (isMissing()) {
-      return simulate();
-    } else {
-      return x;
+      simulate();
     }
+    return x;
   }
 
   function set(x:Boolean) {
@@ -62,19 +61,5 @@ class DelayBoolean < Delay {
   
   function setWeight(w:Real) {
     this.w <- w;
-  }
-    
-  function simulate() -> Boolean {
-    graft();
-    realize();
-    return x;
-  }
-
-  function observe(x:Boolean) -> Real {
-    graft();
-    set(x);
-    absorb(1);
-    realize();
-    return w;
   }
 }

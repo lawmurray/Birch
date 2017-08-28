@@ -147,14 +147,32 @@ class Delay {
     }
     trigger();
   }
+
+  /**
+   * Simulate the variate.
+   */
+  function simulate() {
+    realize();
+  }
+
+  /**
+   * Observe the variate.
+   */  
+  function observe() {
+    absorb(1);
+    realize();
+  }
   
   /**
    * Realize the variate.
    */
   function realize() {
-    assert isUninitialized() || isTerminal();
+    assert !isRealized();
     
-    if (isTerminal()) {
+    if (isUninitialized()) {
+      state <- REALIZED;
+    } else {
+      graft();
       state <- REALIZED;
       doRealize();
       if (parent?) {
@@ -165,8 +183,6 @@ class Delay {
         parent!.removeChild();
         removeParent();
       }
-    } else {
-      state <- REALIZED;
     }
     trigger();
   }

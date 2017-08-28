@@ -49,10 +49,9 @@ class DelayReal < Delay {
   
   function value() -> Real {
     if (isMissing()) {
-      return simulate();
-    } else {
-      return x;
+      simulate();
     }
+    return x;
   }
 
   function set(x:Real) {
@@ -62,19 +61,5 @@ class DelayReal < Delay {
   
   function setWeight(w:Real) {
     this.w <- w;
-  }
-    
-  function simulate() -> Real {
-    graft();
-    realize();
-    return x;
-  }
-
-  function observe(x:Real) -> Real {
-    graft();
-    set(x);
-    absorb(1);
-    realize();
-    return w;
   }
 }

@@ -44,10 +44,9 @@ class DelayRealVector(D:Integer) < Delay {
 
   function value() -> Real[_] {
     if (isMissing()) {
-      return simulate();
-    } else {
-      return x;
+      simulate();
     }
+    return x;
   }
   
   function set(x:Real[_]) {
@@ -59,19 +58,5 @@ class DelayRealVector(D:Integer) < Delay {
   
   function setWeight(w:Real) {
     this.w <- w;
-  }
-  
-  function simulate() -> Real[_] {
-    graft();
-    realize();
-    return x;
-  }
-  
-  function observe(x:Real[_]) -> Real {
-    graft();
-    set(x);
-    absorb(1);
-    realize();
-    return w;
   }
 }
