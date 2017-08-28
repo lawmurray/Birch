@@ -171,7 +171,6 @@ void bi::CppMemberFiberGenerator::visit(
 }
 
 void bi::CppMemberFiberGenerator::visit(const Member* o) {
-  ++inMember;
   const Super* leftSuper = dynamic_cast<const Super*>(o->left);
   if (leftSuper) {
     // tidier this way
@@ -179,6 +178,7 @@ void bi::CppMemberFiberGenerator::visit(const Member* o) {
   } else {
     middle(o->left << "->");
   }
+  ++inMember;
   middle(o->right);
   --inMember;
 }

@@ -31,18 +31,10 @@ bi::Expression* bi::ResolverSource::modify(Call* o) {
 bi::Expression* bi::ResolverSource::modify(BinaryCall* o) {
   auto op = dynamic_cast<OverloadedIdentifier<BinaryOperator>*>(o->single);
   assert(op);
-  if (*op->name == "~>") {
-    /* replace with equivalent (by definition) code */
-    auto observe = new Identifier<Unknown>(new Name("observe"));
-    auto member = new Member(o->args->getRight(), observe);
-    auto call = new Call(member, new Parentheses(o->args->getLeft()));
-    return call->accept(this);
-  } else {
-    Modifier::modify(o);
-    o->type = o->single->type->resolve(o->args->type);
-    o->type = o->type->accept(&cloner)->accept(this);
-    o->type->assignable = false;  // rvalue
-  }
+  Modifier::modify(o);
+  o->type = o->single->type->resolve(o->args->type);
+  o->type = o->type->accept(&cloner)->accept(this);
+  o->type->assignable = false;  // rvalue
   return o;
 }
 
@@ -231,10 +223,18 @@ bi::Expression* bi::ResolverSource::modify(
 bi::Statement* bi::ResolverSource::modify(Assignment* o) {
   if (*o->name == "<~") {
     /* replace with equivalent (by definition) code */
-    auto initialize = new Assignment(o->left, new Name("~"), o->right);
-    auto value = new Call(new Identifier<Unknown>(new Name("value")), new Parentheses());
-    auto call = new ExpressionStatement(new Member(o->left, value));
+    auto initialize = new Assignment(o->left->accept(&cloner), new Name("~"),
+        o->right->accept(&cloner));
+    auto value = new Call(new Identifier<Unknown>(new Name("value")),
+        new Parentheses());
+    auto call = new ExpressionStatement(
+        new Member(o->left->accept(&cloner), value));
     auto result = new List<Statement>(initialize, call, o->loc);
+    return result->accept(this);
+  } else if (*o->name == "~>") {
+    /* replace with equivalent (by definition) code */
+    auto result = new Assignment(o->left->accept(&cloner), new Name("~"),
+        o->right->accept(&cloner));
     return result->accept(this);
   } else if (*o->name == "~") {
     Modifier::modify(o);

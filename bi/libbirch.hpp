@@ -55,28 +55,13 @@ namespace type {
 }
 
 /**
- * Left tilde (`<~`) operator
- */
-template<class Left, class Right>
-void left_tilde_(Left& left, const Right& right) {
-  left = right->simulate_();
-}
-
-/**
- * Right tilde (`~>`) operator
- */
-template<class Left, class Right>
-auto right_tilde_(const Left& left, const Right& right) {
-  return right->observe_(left);
-}
-
-/**
  * Tilde (`~`) operator
  */
 template<class Left, class Right>
 void tilde_(Left& left, const Right& right) {
   if (!left->isMissing_()) {
-    right_tilde_(left->value_(), right);
+    right->set_(left->value_());
+    right->observe_();
   }
   left = right;
 }
