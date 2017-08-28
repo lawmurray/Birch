@@ -101,6 +101,13 @@ class Delay {
   }
 
   /**
+   * Is the value of this node not missing?
+   */
+  function isNotMissing() -> Boolean {
+    return !missing;
+  }
+
+  /**
    * Initialize as a root node.
    */
   function initialize() {

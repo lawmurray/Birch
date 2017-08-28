@@ -45,6 +45,24 @@ class MultivariateGaussian(D:Integer) < DelayRealVector(D) {
       setWeight(-0.5*squaredNorm(solve(L, x - μ)) - log(determinant(L)) - 0.5*Real(D)*log(2.0*π));
     }
   }
+
+  function tilde(left:MultivariateGaussian) -> MultivariateGaussian {
+    if (left.isNotMissing()) {
+      tildeRight(left);
+    }
+    return this;
+  }
+
+  function tildeLeft() -> MultivariateGaussian {
+    simulate();
+    return this;
+  }
+  
+  function tildeRight(left:MultivariateGaussian) -> MultivariateGaussian {
+    set(left.value());
+    observe();
+    return this;
+  }
 }
 
 /**

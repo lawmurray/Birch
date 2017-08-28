@@ -44,6 +44,24 @@ class Gamma < DelayReal {
       }
     }
   }
+
+  function tilde(left:Gamma) -> Gamma {
+    if (left.isNotMissing()) {
+      tildeRight(left);
+    }
+    return this;
+  }
+
+  function tildeLeft() -> Gamma {
+    simulate();
+    return this;
+  }
+  
+  function tildeRight(left:Gamma) -> Gamma {
+    set(left.value());
+    observe();
+    return this;
+  }
 }
 
 /**

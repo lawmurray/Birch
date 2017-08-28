@@ -47,6 +47,24 @@ class Beta < DelayReal {
       }
     }
   }
+
+  function tilde(left:Beta) -> Beta {
+    if (left.isNotMissing()) {
+      tildeRight(left);
+    }
+    return this;
+  }
+
+  function tildeLeft() -> Beta {
+    simulate();
+    return this;
+  }
+  
+  function tildeRight(left:Beta) -> Beta {
+    set(left.value());
+    observe();
+    return this;
+  }
 }
 
 /**

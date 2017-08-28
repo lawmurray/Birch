@@ -42,6 +42,24 @@ class Gaussian < DelayReal {
       setWeight(-0.5*(pow((x - μ), 2.0)/σ2 - log(σ2) - log(2.0*π)));
     }
   }
+
+  function tilde(left:Gaussian) -> Gaussian {
+    if (left.isNotMissing()) {
+      tildeRight(left);
+    }
+    return this;
+  }
+
+  function tildeLeft() -> Gaussian {
+    simulate();
+    return this;
+  }
+  
+  function tildeRight(left:Gaussian) -> Gaussian {
+    set(left.value());
+    observe();
+    return this;
+  }
 }
 
 /**

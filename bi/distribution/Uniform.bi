@@ -42,6 +42,24 @@ class Uniform < DelayReal {
       }
     }
   }
+
+  function tilde(left:Uniform) -> Uniform {
+    if (left.isNotMissing()) {
+      tildeRight(left);
+    }
+    return this;
+  }
+
+  function tildeLeft() -> Uniform {
+    simulate();
+    return this;
+  }
+  
+  function tildeRight(left:Uniform) -> Uniform {
+    set(left.value());
+    observe();
+    return this;
+  }
 }
 
 /**
