@@ -38,9 +38,9 @@ function delay_canonical_diagnostics() {
   o.name(4, "d");
   o.name(5, "e");
   
-  o.position(1, 2, 4);
-  o.position(2, 2, 3);
-  o.position(3, 1, 2);
-  o.position(4, 3, 2);
+  o.position(1, 1, 1);
+  o.position(2, 2, 1);
+  o.position(3, 2, 2);
+  o.position(4, 3, 1);
   o.position(5, 4, 1);
 }

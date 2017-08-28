@@ -18,16 +18,17 @@ program delay_spike_and_slab(diagnostics:Boolean <- false) {
     x ~ Gaussian(0.0, 1.0);
   } else {
     x <- 0.0;
+    if (diagnostics) {
+      x.register();
+    }
   }
   y ~ Gaussian(x, 1.0);
   
-  stdout.print("x is ");
-  if (x.isMarginalized()) {
-    stdout.print("marginalized");
+  if (x.isInitialized()) {
+    stdout.print("slab\n");
   } else {
-    stdout.print("realized");
+    stdout.print("spike\n");
   }
-  stdout.print("\n");
 }
 
 /*
@@ -41,7 +42,7 @@ function delay_spike_and_slab_diagnostics() {
   o.name(2, "x");
   o.name(3, "y");
 
-  o.position(1, 1, 2);
-  o.position(2, 2, 2);
-  o.position(3, 2, 1);
+  o.position(1, 1, 1);
+  o.position(2, 2, 1);
+  o.position(3, 3, 1);
 }
