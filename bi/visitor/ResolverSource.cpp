@@ -223,26 +223,31 @@ bi::Expression* bi::ResolverSource::modify(
 bi::Statement* bi::ResolverSource::modify(Assignment* o) {
   if (*o->name == "<~") {
     /* replace with equivalent (by definition) code */
-    auto initialize = new Assignment(o->left->accept(&cloner), new Name("~"),
-        o->right->accept(&cloner));
-    auto value = new Call(new Identifier<Unknown>(new Name("value")),
-        new Parentheses());
-    auto call = new ExpressionStatement(
-        new Member(o->left->accept(&cloner), value));
-    auto result = new List<Statement>(initialize, call, o->loc);
-    return result->accept(this);
+    auto right = new Call(
+        new Member(o->right->accept(&cloner),
+            new Identifier<Unknown>(new Name("tildeLeft"), o->loc), o->loc),
+        new Parentheses(new EmptyExpression(), o->loc), o->loc);
+    auto left = o->left->accept(&cloner);
+    auto assign = new Assignment(left, new Name("<-"), right, o->loc);
+    return assign->accept(this);
   } else if (*o->name == "~>") {
     /* replace with equivalent (by definition) code */
-    auto result = new Assignment(o->left->accept(&cloner), new Name("~"),
-        o->right->accept(&cloner));
-    return result->accept(this);
+    auto right = new Call(
+        new Member(o->right->accept(&cloner),
+            new Identifier<Unknown>(new Name("tildeRight"), o->loc), o->loc),
+        new Parentheses(o->left->accept(&cloner), o->loc), o->loc);
+    auto left = o->left->accept(&cloner);
+    auto assign = new Assignment(left, new Name("<-"), right, o->loc);
+    return assign->accept(this);
   } else if (*o->name == "~") {
-    Modifier::modify(o);
-    if (!o->left->type->assignable) {
-      throw NotAssignableException(o);
-    }
-    ///@todo Check that both sides are of Delay type
-    return o;
+    /* replace with equivalent (by definition) code */
+    auto right = new Call(
+        new Member(o->right->accept(&cloner),
+            new Identifier<Unknown>(new Name("tilde"), o->loc), o->loc),
+        new Parentheses(o->left->accept(&cloner), o->loc), o->loc);
+    auto left = o->left->accept(&cloner);
+    auto assign = new Assignment(left, new Name("<-"), right, o->loc);
+    return assign->accept(this);
   } else {
     /*
      * An assignment is valid if:

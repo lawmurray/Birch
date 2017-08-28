@@ -434,10 +434,10 @@ unary_operator_declaration
     ;
     
 assignment_operator
-    : LEFT_OP        { $$ = new bi::Name("<-"); }
-    | LEFT_TILDE_OP  { $$ = new bi::Name("<~"); }
-    | RIGHT_TILDE_OP  { $$ = new bi::Name("<~"); }
-    | '~'            { $$ = new bi::Name("~"); }
+    : LEFT_OP         { $$ = new bi::Name("<-"); }
+    | LEFT_TILDE_OP   { $$ = new bi::Name("<~"); }
+    | RIGHT_TILDE_OP  { $$ = new bi::Name("~>"); }
+    | '~'             { $$ = new bi::Name("~"); }
     ;
 
 assignment_operator_declaration

@@ -55,18 +55,6 @@ namespace type {
 }
 
 /**
- * Tilde (`~`) operator
- */
-template<class Left, class Right>
-void tilde_(Left& left, const Right& right) {
-  if (!left->isMissing_()) {
-    right->set_(left->value_());
-    right->observe_();
-  }
-  left = right;
-}
-
-/**
  * Make a span.
  *
  * @ingroup library
