@@ -30,15 +30,15 @@ void bi::CppBaseGenerator::visit(const List<Expression>* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Literal<bool>* o) {
-  middle(o->str);
+  middle("bi::type::Boolean_(" << o->str << ")");
 }
 
 void bi::CppBaseGenerator::visit(const Literal<int64_t>* o) {
-  middle(o->str);
+  middle("bi::type::Integer64_(" << o->str << ")");
 }
 
 void bi::CppBaseGenerator::visit(const Literal<double>* o) {
-  middle(o->str);
+  middle("bi::type::Real64_(" << o->str << ")");
 }
 
 void bi::CppBaseGenerator::visit(const Literal<const char*>* o) {
