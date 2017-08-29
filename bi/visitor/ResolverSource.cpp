@@ -3,7 +3,8 @@
  */
 #include "bi/visitor/ResolverSource.hpp"
 
-bi::ResolverSource::ResolverSource() {
+bi::ResolverSource::ResolverSource() :
+    inFiber(0) {
   //
 }
 
@@ -238,16 +239,30 @@ bi::Statement* bi::ResolverSource::modify(Assignment* o) {
         new Parentheses(o->left->accept(&cloner), o->loc), o->loc);
     auto left = o->left->accept(&cloner);
     auto assign = new Assignment(left, new Name("<-"), right, o->loc);
-    return assign->accept(this);
+    if (inFiber) {
+      auto yield = new Yield(
+          new Member(o->left->accept(&cloner),
+              new Identifier<MemberVariable>(new Name("w"), o->loc), o->loc),
+          o->loc);
+      auto result = new List<Statement>(assign, yield, o->loc);
+      return result->accept(this);
+    } else {
+      return assign->accept(this);
+    }
   } else if (*o->name == "~") {
     /* replace with equivalent (by definition) code */
-    auto right = new Call(
-        new Member(o->right->accept(&cloner),
-            new Identifier<Unknown>(new Name("tilde"), o->loc), o->loc),
-        new Parentheses(o->left->accept(&cloner), o->loc), o->loc);
-    auto left = o->left->accept(&cloner);
-    auto assign = new Assignment(left, new Name("<-"), right, o->loc);
-    return assign->accept(this);
+    auto cond = new Parentheses(
+        new Call(
+            new Member(o->left->accept(&cloner),
+                new Identifier<Unknown>(new Name("isNotMissing"), o->loc),
+                o->loc), new Parentheses(new EmptyExpression(), o->loc),
+            o->loc), o->loc);
+    auto trueBranch = new Assignment(o->left->accept(&cloner), new Name("~>"),
+        o->right->accept(&cloner), o->loc);
+    auto falseBranch = new Assignment(o->left->accept(&cloner),
+        new Name("<-"), o->right->accept(&cloner), o->loc);
+    auto result = new If(cond, trueBranch, falseBranch, o->loc);
+    return result->accept(this);
   } else {
     /*
      * An assignment is valid if:
@@ -293,7 +308,9 @@ bi::Statement* bi::ResolverSource::modify(Function* o) {
 
 bi::Statement* bi::ResolverSource::modify(Fiber* o) {
   scopes.push_back(o->scope);
+  ++inFiber;
   o->braces->accept(this);
+  --inFiber;
   scopes.pop_back();
   return o;
 }
@@ -314,7 +331,9 @@ bi::Statement* bi::ResolverSource::modify(MemberFunction* o) {
 
 bi::Statement* bi::ResolverSource::modify(MemberFiber* o) {
   scopes.push_back(o->scope);
+  ++inFiber;
   o->braces->accept(this);
+  --inFiber;
   scopes.pop_back();
   return o;
 }

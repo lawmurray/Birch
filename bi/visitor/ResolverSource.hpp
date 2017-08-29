@@ -74,5 +74,11 @@ public:
   virtual Statement* modify(Assert* o);
   virtual Statement* modify(Return* o);
   virtual Statement* modify(Yield* o);
+
+private:
+  /**
+   * Currently in the body of a fiber?
+   */
+  int inFiber;
 };
 }

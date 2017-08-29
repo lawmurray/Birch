@@ -128,7 +128,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   } else {
     finish(" {");
     in();
-    start("return make_fiber<" << o->returnType->unwrap() << ',' << o->name << "FiberState>(this");
+    start("return make_fiber<" << o->returnType->unwrap() << ',' << o->name << "FiberState>(pointer_from_this<this_type>()");
     for (auto iter = parameters.begin(); iter != parameters.end(); ++iter) {
       middle(", ");
       middle((*iter)->name);

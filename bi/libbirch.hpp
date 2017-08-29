@@ -24,6 +24,9 @@
 #include "boost/optional.hpp"
 
 #include <getopt.h>
+#ifndef NDEBUG
+#define GC_DEBUG 1
+#endif
 #include <gc.h>
 
 #include <iostream>
@@ -338,7 +341,8 @@ auto make_array(const Frame& frame = EmptyFrame()) {
  */
 template<class Type, class ... Args>
 Pointer<Type> make_object(Args ... args) {
-  auto raw = new (GC_MALLOC(sizeof(Type))) Type(args...);
+  auto placement = GC_MALLOC(sizeof(Type));
+  auto raw = new (placement) Type(args...);
   return Pointer<Type>(raw);
 }
 
@@ -355,7 +359,8 @@ Pointer<Type> make_object(Args ... args) {
  */
 template<class Type>
 Type* copy_object(Type* o) {
-  return new (GC_MALLOC(sizeof(Type))) Type(*o);
+  auto placement = GC_MALLOC(sizeof(Type));
+  return new (placement) Type(*o);
 }
 
 /**

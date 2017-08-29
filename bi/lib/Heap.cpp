@@ -66,6 +66,7 @@ bi::Object* bi::Heap::get(const size_t index) {
 }
 
 void bi::Heap::set(const size_t index, Object* raw) {
+  assert(index < heap.size());
   raw->setIndex(index);
   heap[index] = raw;
 }
