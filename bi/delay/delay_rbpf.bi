@@ -28,20 +28,17 @@ program delay_rbpf(N:Integer <- 100, T:Integer <- 10,
   /* initialize */
   for (n in 1..N) {
     x[n] <- particle(T);
-    if (x[n]?) {
-      w[n] <- x[n]!;
-    } else {
-      w[n] <- -inf;
-    }
   }
-  W <- log_sum_exp(w) - log(Real(N));
+  W <- 0.0;
   
-  for (t in 2..T) {
+  for (t in 1..T) {
     /* resample */
-    a <- ancestors(w);
-    for (n in 1..N) {
-      if (a[n] != n) {
-        x[n] <- x[a[n]];
+    if (t > 1 && mod(t, 2) == 1) {
+      a <- ancestors(w);
+      for (n in 1..N) {
+        if (a[n] != n) {
+          x[n] <- x[a[n]];
+        }
       }
     }
     
@@ -59,14 +56,13 @@ program delay_rbpf(N:Integer <- 100, T:Integer <- 10,
   }
     
   /* output */
-  //x[ancestor(w)].output();
-  stdout.print(W + "," + N + "\n");
+  stdout.print(W + "\n");
 }
-
 
 fiber particle(T:Integer) -> Real! {
   x:Example(T);
-  w:Real;
+  
+  x.input();
   f:Real! <- x.simulate();
   while (f?) {
     yield f!;  
@@ -90,18 +86,6 @@ class Example(T:Integer) {
   y_l:MultivariateGaussian[T](1);  // linear observation
 
   fiber simulate() -> Real! {
-    t:Integer <- 1;
-    input();
-    parameter();
-    initial();
-    yield observation(t);
-    for (t in 2..T) {
-      transition(t);
-      yield observation(t);
-    }
-  }
-
-  function parameter() {
     A[1,1] <- 1.0;
     A[1,2] <- 0.3;
     A[1,3] <- 0.0;
@@ -133,23 +117,23 @@ class Example(T:Integer) {
     Σ_x_n[1,1] <- 0.01;
     Σ_y_l[1,1] <- 0.1;
     Σ_y_n[1,1] <- 0.1;
-  }
-  
-  function initial() {
+
     x_n[1] ~ Gaussian(vector(0.0, 1), identity(1, 1));
     x_l[1] ~ Gaussian(vector(0.0, 3), identity(3, 3));
-  }
-  
-  function transition(t:Integer) {
-    x_n[t] ~ Gaussian(vector(atan(scalar(x_n[t-1])), 1) + B*x_l[t-1], Σ_x_n);
-    x_l[t] ~ Gaussian(A*x_l[t-1], Σ_x_l);
-  }
-  
-  function observation(t:Integer) -> Real {
-    y_n[t] ~ Gaussian(vector(0.1*copysign(pow(scalar(x_n[t]), 2.0), scalar(x_n[t])), 1), Σ_y_n);
-    y_l[t] ~ Gaussian(C*x_l[t], Σ_y_l);
-    
-    return y_n[t].w + y_l[t].w;
+
+    y_n[1] ~ Gaussian(vector(0.1*copysign(pow(scalar(x_n[1]), 2.0),
+        scalar(x_n[1])), 1), Σ_y_n);
+    y_l[1] ~ Gaussian(C*x_l[1], Σ_y_l);
+
+    t:Integer;
+    for (t in 2..T) {
+      x_n[t] ~ Gaussian(vector(atan(scalar(x_n[t-1])), 1) + B*x_l[t-1], Σ_x_n);
+      x_l[t] ~ Gaussian(A*x_l[t-1], Σ_x_l);
+
+      y_n[t] ~ Gaussian(vector(0.1*copysign(pow(scalar(x_n[t]), 2.0),
+          scalar(x_n[t])), 1), Σ_y_n);
+      y_l[t] ~ Gaussian(C*x_l[t], Σ_y_l);
+    }
   }
   
   function input() {
