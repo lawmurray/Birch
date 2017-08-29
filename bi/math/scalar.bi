@@ -82,18 +82,6 @@ function pow(x:Real32, y:Real32) -> Real32 {
   }}
 }
 
-function mod(x:Real64, y:Real64) -> Real64 {
-  cpp {{
-  return ::fmod(x_, y_);
-  }}
-}
-
-function mod(x:Real32, y:Real32) -> Real32 {
-  cpp {{
-  return ::fmodf(x_, y_);
-  }}
-}
-
 function ceil(x:Real64) -> Real64 {
   cpp {{
   return ::ceil(x_);

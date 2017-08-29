@@ -59,6 +59,15 @@ function abs(x:Real64) -> Real64 {
 }
 
 /**
+ * Modulus.
+ */
+function mod(x:Real64, y:Real64) -> Real64 {
+  cpp {{
+  return ::fmod(x_, y_);
+  }}
+}
+
+/**
  * Maximum of two values.
  */
 function max(x:Real64, y:Real64) -> Real64 {

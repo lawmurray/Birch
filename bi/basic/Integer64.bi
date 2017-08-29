@@ -59,6 +59,15 @@ function abs(x:Integer64) -> Integer64 {
 }
 
 /**
+ * Modulus.
+ */
+function mod(x:Integer64, y:Integer64) -> Integer64 {
+  cpp {{
+  return x_ % y_;
+  }}
+}
+
+/**
  * Maximum of two values.
  */
 function max(x:Integer64, y:Integer64) -> Integer64 {

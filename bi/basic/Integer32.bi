@@ -58,6 +58,14 @@ function abs(x:Integer32) -> Integer32 {
   }}
 }
 
+/**
+ * Modulus.
+ */
+function mod(x:Integer32, y:Integer32) -> Integer32 {
+  cpp {{
+  return x_ % y_;
+  }}
+}
 
 /**
  * Maximum of two values.

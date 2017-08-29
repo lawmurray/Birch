@@ -46,13 +46,6 @@ class MultivariateGaussian(D:Integer) < DelayRealVector(D) {
     }
   }
 
-  function tilde(left:MultivariateGaussian) -> MultivariateGaussian {
-    if (left.isNotMissing()) {
-      tildeRight(left);
-    }
-    return this;
-  }
-
   function tildeLeft() -> MultivariateGaussian {
     simulate();
     return this;

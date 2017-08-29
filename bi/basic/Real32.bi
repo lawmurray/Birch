@@ -59,6 +59,15 @@ function abs(x:Real32) -> Real32 {
 }
 
 /**
+ * Modulus.
+ */
+function mod(x:Real32, y:Real32) -> Real32 {
+  cpp {{
+  return ::fmodf(x_, y_);
+  }}
+}
+
+/**
  * Maximum of two values.
  */
 function max(x:Real32, y:Real32) -> Real32 {

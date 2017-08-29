@@ -36,13 +36,6 @@ class Bernoulli < DelayBoolean {
     }
   }
 
-  function tilde(left:Bernoulli) -> Bernoulli {
-    if (left.isNotMissing()) {
-      tildeRight(left);
-    }
-    return this;
-  }
-
   function tildeLeft() -> Bernoulli {
     simulate();
     return this;

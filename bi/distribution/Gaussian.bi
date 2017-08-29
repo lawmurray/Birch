@@ -43,13 +43,6 @@ class Gaussian < DelayReal {
     }
   }
 
-  function tilde(left:Gaussian) -> Gaussian {
-    if (left.isNotMissing()) {
-      tildeRight(left);
-    }
-    return this;
-  }
-
   function tildeLeft() -> Gaussian {
     simulate();
     return this;

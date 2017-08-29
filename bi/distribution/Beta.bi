@@ -48,13 +48,6 @@ class Beta < DelayReal {
     }
   }
 
-  function tilde(left:Beta) -> Beta {
-    if (left.isNotMissing()) {
-      tildeRight(left);
-    }
-    return this;
-  }
-
   function tildeLeft() -> Beta {
     simulate();
     return this;
