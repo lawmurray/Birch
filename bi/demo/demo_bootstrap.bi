@@ -48,7 +48,7 @@ program demo_bootstrap(N:Integer <- 10, T:Integer <- 10) {
   }
     
   /* output */
-  stdout.print(W + "," + N + "\n");
+  stdout.print(W + "\n");
 }
 
 
@@ -61,13 +61,11 @@ class BootstrapExample(T:Integer) {
   fiber simulate() -> Real! {
     x[1] <~ Gaussian(0.0, σ2);
     y[1] ~> Gaussian(x[1], σ2);
-    yield y[1].w;
   
     t:Integer <- 1;
     for (t in 2..T) {
       x[t] <~ Gaussian(a*x[t-1], σ2);
       y[t] ~> Gaussian(x[t], σ2);
-      yield y[t].w;
     }
   }
 
