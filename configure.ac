@@ -35,11 +35,6 @@ if test "x$YACC" = "xyacc"; then
 fi
 AX_CXX_COMPILE_STDCXX_14([noext], [mandatory])
 
-# Compiler characteristics                                                      
-if test x$openmp = xtrue; then
-  AC_OPENMP
-fi
-
 # Checks for libraries
 AC_CHECK_LIB([m], [main], [], [AC_MSG_ERROR([required standard math library not found])])
 AC_CHECK_LIB([gc], [main], [], [AC_MSG_ERROR([libgc not found])])
