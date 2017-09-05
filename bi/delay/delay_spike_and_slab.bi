@@ -1,8 +1,6 @@
 /**
  * Demonstrates how delayed sampling can yield to different runtime states
- * through a stochastic branch, inspired by a spike-and-slab prior. Outputs
- * whether the variable `y` is marginalized or realized at the end of the
- * program. This is random in each run.
+ * through a stochastic branch, inspired by a spike-and-slab prior.
  */
 program delay_spike_and_slab(diagnostics:Boolean <- false) {
   if (diagnostics) {
@@ -14,19 +12,12 @@ program delay_spike_and_slab(diagnostics:Boolean <- false) {
   y:Gaussian;
   
   ρ ~ Bernoulli(0.5);
+  x ~ Gaussian(0.0, 1.0);
   if (ρ) {
-    x ~ Gaussian(0.0, 1.0);
-  } else {
-    x <- 0.0;
-    if (diagnostics) {
-      x.register();
-    }
-  }
-  y ~ Gaussian(x, 1.0);
-  
-  if (x.isInitialized()) {
+    y ~ Gaussian(x, 1.0);
     stdout.print("slab\n");
   } else {
+    y ~ Gaussian(0.0, 1.0);
     stdout.print("spike\n");
   }
 }
