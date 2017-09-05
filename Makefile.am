@@ -13,7 +13,7 @@ ACLOCAL_AMFLAGS = -I m4
 # driver and compiler programs
 bin_PROGRAMS = birch birchc
 
-# compiler lirary
+# compiler library
 lib_LTLIBRARIES = libbirch.la
 
 # common sources for driver and compiler programs
@@ -350,7 +350,6 @@ noinst_HEADERS = \
   bi/lexer.hpp \
   bi/parser.hpp
 
-dist_noinst_SCRIPTS = autogen.sh
 dist_pkgdata_DATA = \
   share/gitignore \
   share/ax_cxx_compile_stdcxx.m4 \

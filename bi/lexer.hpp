@@ -3,8 +3,7 @@
  *
  * Flex externals.
  */
-#ifndef BI_LEXER_HPP
-#define BI_LEXER_HPP
+#pragma once
 
 #include <cstdio>
 #include <sstream>
@@ -20,5 +19,3 @@ void yywarn(const char *msg);
 void yylocation();
 void yycount();
 void yyreset();
-
-#endif
