@@ -16,8 +16,8 @@ boost::filesystem::path bi::find(
     return path;
   } else {
     auto iter = paths.begin();
-    for (; iter != paths.end() && !exists(*iter / path); ++iter) {
-      //
+    while (iter != paths.end() && !exists(*iter / path)) {
+      ++iter;
     }
     if (iter == paths.end()) {
       throw FileNotFoundException(path.string().c_str());

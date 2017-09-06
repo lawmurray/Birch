@@ -49,20 +49,18 @@ bi::Driver::Driver(int argc, char** argv) :
 
   int c, option_index;
   option long_options[] = {
-      { "share-dir", required_argument, 0, SHARE_DIR_ARG },
-      { "include-dir", required_argument, 0, INCLUDE_DIR_ARG },
-      { "lib-dir", required_argument, 0, LIB_DIR_ARG },
-      { "prefix", required_argument, 0, PREFIX_ARG },
-      { "enable-std", no_argument, 0, ENABLE_STD_ARG },
-      { "disable-std", no_argument, 0, DISABLE_STD_ARG },
-      { "enable-warnings", no_argument, 0, ENABLE_WARNINGS_ARG },
-      { "disable-warnings", no_argument, 0, DISABLE_WARNINGS_ARG },
-      { "enable-debug", no_argument, 0, ENABLE_DEBUG_ARG },
-      { "disable-debug", no_argument, 0, DISABLE_DEBUG_ARG },
-      { "enable-verbose", no_argument, 0, ENABLE_VERBOSE_ARG },
-      { "disable-verbose", no_argument, 0, DISABLE_VERBOSE_ARG },
-      { 0, 0, 0, 0 }
-  };
+      { "share-dir", required_argument, 0, SHARE_DIR_ARG }, { "include-dir",
+          required_argument, 0, INCLUDE_DIR_ARG }, { "lib-dir",
+          required_argument, 0, LIB_DIR_ARG }, { "prefix", required_argument,
+          0, PREFIX_ARG }, { "enable-std", no_argument, 0, ENABLE_STD_ARG }, {
+          "disable-std", no_argument, 0, DISABLE_STD_ARG }, {
+          "enable-warnings", no_argument, 0, ENABLE_WARNINGS_ARG }, {
+          "disable-warnings", no_argument, 0, DISABLE_WARNINGS_ARG }, {
+          "enable-debug", no_argument, 0, ENABLE_DEBUG_ARG }, {
+          "disable-debug", no_argument, 0, DISABLE_DEBUG_ARG }, {
+          "enable-verbose", no_argument, 0, ENABLE_VERBOSE_ARG }, {
+          "disable-verbose", no_argument, 0, DISABLE_VERBOSE_ARG }, { 0, 0, 0,
+          0 } };
   const char* short_options = "-";  // treats non-options as short option 1
 
   /* read project name */
@@ -139,50 +137,42 @@ bi::Driver::Driver(int argc, char** argv) :
   char* BIRCH_SHARE_PATH = getenv("BIRCH_SHARE_PATH");
   char* BIRCH_INCLUDE_PATH = getenv("BIRCH_INCLUDE_PATH");
   char* BIRCH_LIBRARY_PATH = getenv("BIRCH_LIBRARY_PATH");
-  std::string path;
+  std::string input;
 
   /* share dirs */
   if (BIRCH_SHARE_PATH) {
     std::stringstream birch_share_path(BIRCH_SHARE_PATH);
-    while (std::getline(birch_share_path, path, ':')) {
-      share_dirs.push_back(path);
+    while (std::getline(birch_share_path, input, ':')) {
+      share_dirs.push_back(input);
     }
   }
-  share_dirs.push_back("share");
 #ifdef DATADIR
-  share_dirs.push_back(STRINGIFY(DATADIR));
+  share_dirs.push_back(path(STRINGIFY(DATADIR)) / "birch");
 #endif
-  share_dirs.push_back("/usr/local/share");
-  share_dirs.push_back("/usr/share");
 
   /* include dirs */
   include_dirs.push_back(work_dir);
   include_dirs.push_back(build_dir);
   if (BIRCH_INCLUDE_PATH) {
     std::stringstream birch_include_path(BIRCH_INCLUDE_PATH);
-    while (std::getline(birch_include_path, path, ':')) {
-      include_dirs.push_back(path);
+    while (std::getline(birch_include_path, input, ':')) {
+      include_dirs.push_back(input);
     }
   }
 #ifdef INCLUDEDIR
   include_dirs.push_back(STRINGIFY(INCLUDEDIR));
 #endif
-  include_dirs.push_back("/usr/local/include");
-  include_dirs.push_back("/usr/include");
 
   /* lib dirs */
   if (BIRCH_LIBRARY_PATH) {
     std::stringstream birch_library_path(BIRCH_LIBRARY_PATH);
-    while (std::getline(birch_library_path, path, ':')) {
-      lib_dirs.push_back(path);
+    while (std::getline(birch_library_path, input, ':')) {
+      lib_dirs.push_back(input);
     }
   }
-  //lib_dirs.push_back("lib");
 #ifdef LIBDIR
   lib_dirs.push_back(STRINGIFY(LIBDIR));
 #endif
-  lib_dirs.push_back("/usr/local/lib");
-  lib_dirs.push_back("/usr/lib");
 }
 
 bi::Driver::~Driver() {
@@ -254,11 +244,6 @@ void bi::Driver::dist() {
 }
 
 void bi::Driver::clean() {
-  //setup();
-  //autogen();
-  //configure();
-  //target("clean");
-
   remove_all(build_dir);
   remove_all("autom4te.cache");
   remove_all("m4");
@@ -281,7 +266,8 @@ void bi::Driver::clean() {
 
 void bi::Driver::init() {
   create_directory("bi");
-  path biPath("bi");
+  create_directory("data");
+  create_directory("results");
   copy_with_prompt(find(share_dirs, "gitignore"), ".gitignore");
   copy_with_prompt(find(share_dirs, "LICENSE"), "LICENSE");
   copy_with_prompt(find(share_dirs, "MANIFEST"), "MANIFEST");
@@ -458,13 +444,12 @@ void bi::Driver::setup() {
   lock();
 
   /* copy built files into build directory */
-  path biPath("birch");
-  newAutogen = copy_if_newer(find(share_dirs, biPath / "autogen.sh"),
+  newAutogen = copy_if_newer(find(share_dirs, "autogen.sh"),
       work_dir / "autogen.sh");
   permissions(work_dir / "autogen.sh", add_perms | owner_exe);
-  newConfigure = copy_if_newer(find(share_dirs, biPath / "configure.ac"),
+  newConfigure = copy_if_newer(find(share_dirs, "configure.ac"),
       work_dir / "configure.ac");
-  newMake = copy_if_newer(find(share_dirs, biPath / "common.am"),
+  newMake = copy_if_newer(find(share_dirs, "common.am"),
       work_dir / "common.am");
   newManifest = !exists(work_dir / "Makefile.am")
       || last_write_time("MANIFEST")
@@ -478,13 +463,13 @@ void bi::Driver::setup() {
       throw DriverException(buf.str());
     }
   }
-  copy_if_newer(find(share_dirs, biPath / "ax_cxx_compile_stdcxx.m4"),
+  copy_if_newer(find(share_dirs, "ax_cxx_compile_stdcxx.m4"),
       m4_dir / "ax_cxx_compile_stdcxx.m4");
-  copy_if_newer(find(share_dirs, biPath / "ax_cxx_compile_stdcxx_11.m4"),
+  copy_if_newer(find(share_dirs, "ax_cxx_compile_stdcxx_11.m4"),
       m4_dir / "ax_cxx_compile_stdcxx_11.m4");
-  copy_if_newer(find(share_dirs, biPath / "ax_cxx_compile_stdcxx_14.m4"),
+  copy_if_newer(find(share_dirs, "ax_cxx_compile_stdcxx_14.m4"),
       m4_dir / "ax_cxx_compile_stdcxx_14.m4");
-  copy_if_newer(find(share_dirs, biPath / "precompile.hpp"),
+  copy_if_newer(find(share_dirs, "precompile.hpp"),
       build_dir / "precompile.hpp");
 
   /* build list of source files */
@@ -663,7 +648,8 @@ void bi::Driver::autogen() {
       buf << "autogen.sh died with signal " << ret
           << ". Make sure autoconf, automake and libtool are installed.";
       if (!verbose) {
-        buf << " See " << (build_dir / "autogen.log").string() << " for details.";
+        buf << " See " << (build_dir / "autogen.log").string()
+            << " for details.";
       }
       throw DriverException(buf.str());
     }
@@ -746,8 +732,7 @@ void bi::Driver::configure() {
       buf << "configure died with signal " << ret
           << ". Make sure all dependencies are installed.";
       if (!verbose) {
-        buf << "See "
-            << (build_dir / "configure.log").string() << " and "
+        buf << "See " << (build_dir / "configure.log").string() << " and "
             << (build_dir / "config.log").string() << " for details.";
       }
       throw DriverException(buf.str());
