@@ -6,7 +6,7 @@
 #define YY_USER_ACTION yycount();
 
 extern bi::Compiler* compiler;
-int yyline = 0, yycol = 0;
+int yyline = 1, yycol = 1;
 
 void yyerror(const char *msg) {
   yylocation();
