@@ -37,7 +37,7 @@ class VBD(T:Integer) {
     /* read in files */
   }
 
-  fiber simulate() -> Real! {
+  function simulate() {
     /* parameters */
     p_d_inc_h <~ Gaussian(17.8/7.0, pow(2.3/7.0, 2.0)); /// @todo truncate below at 0
     p_d_inf_h <~ Gaussian(4.7/7.0, pow(1.2/7.0, 2.0));  /// @todo truncate below at 0
@@ -51,6 +51,7 @@ class VBD(T:Integer) {
     p_p_over <~ Beta(1.0, 10.0);
     
     /* initial conditions */
+    N <- 100000;
     S[1] <- max(Real(N)*(1.0 - p_p_immune)*p_p_risk - initI, 0.0);
     E[1] <- 0.0;
     I[1] <- initI;
@@ -60,22 +61,26 @@ class VBD(T:Integer) {
     beta_track[1] <- p_R0/p_d_inf_h * (1.0 + p_s_amp*cos(6.283*(-p_s_peak)/52.0));
     reff[1] <- p_R0 * S[1] / (Real(N) * p_p_risk) * (1.0 + p_s_amp*cos(6.283*(-p_s_peak)/52.0));
 
+    incubation_rate:Real <- 1.0/p_d_inc_h;
+    recovery_rate:Real <- 1.0/p_d_inf_h;
+    infection_rate:Real <- p_R0/p_d_inf_h;
+
     t:Integer;
-    for (t in 2..T) {
-      incubation_rate:Real <- 1.0/p_d_inc_h;
-      recovery_rate:Real <- 1.0/p_d_inf_h;
-      infection_rate:Real <- p_R0/p_d_inf_h;
-      transmission_rate:Real <- infection_rate*(1.0 + p_s_amp*cos(6.283*(Real(t) - p_s_peak)/52.0));
-      
+    for (t in 2..T) {      
       /* transition */
+      transmission_rate:Real <- infection_rate*(1.0 + p_s_amp*cos(6.283*(Real(t) - p_s_peak)/52.0));
       beta_track[t] <- transmission_rate;
       reff[t] <- (transmission_rate/recovery_rate)*S[t]/(Real(N)*p_p_risk);
 
-      S[t] <- S[t-1] - transmission_rate*S[t-1]*I[t-1]/(Real(N)*p_p_risk);
-      E[t] <- E[t-1] + transmission_rate*S[t-1]*I[t-1]/(Real(N)*p_p_risk) - incubation_rate*E[t-1];
-      I[t] <- I[t-1] + incubation_rate*E[t-1] - recovery_rate*I[t-1];
-      R[t] <- R[t-1] + recovery_rate*I[t-1];
-      Z[t] <- incubation_rate*E[t-1];
+      transmitted:Real <- min(S[t-1], transmission_rate*S[t-1]*I[t-1]/(Real(N)*p_p_risk));
+      incubated:Real <- min(E[t-1], incubation_rate*E[t-1]);
+      recovered:Real <- min(I[t-1], recovery_rate*I[t-1]);
+      
+      S[t] <- S[t-1] - transmitted;
+      E[t] <- E[t-1] + transmitted - incubated;
+      I[t] <- I[t-1] + incubated - recovered;
+      R[t] <- R[t-1] + recovered;
+      Z[t] <- incubated;
       
       /* observe */
       if (Z[t] > 0.0) {
@@ -89,7 +94,7 @@ class VBD(T:Integer) {
     /* output a sample */
     t:Integer;
     for (t in 1..T) {
-      stdout.print(I[t] + "\n");
+      stdout.print(S[t] + "," + E[t] + "," + I[t] + "," + R[t] + "\n");
     }
   }
 }
