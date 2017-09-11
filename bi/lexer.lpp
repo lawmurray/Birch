@@ -121,11 +121,11 @@ IS                                 (u|U|l|L)*
 
 ({L}|{G})({L}|{G}|{U}|{D})*         { yylval.valString = yytext; return NAME; }
 
+{D}+{E}{FS}?                        { yylval.valReal = atof(yytext); return REAL_LITERAL; }
+{D}+\.{D}+({E})?{FS}?               { yylval.valReal = atof(yytext); return REAL_LITERAL; }
 0[xX]{H}+{IS}?                      { yylval.valInt = atoi(yytext); return INT_LITERAL; }
 0{D}+{IS}?                          { yylval.valInt = atoi(yytext); return INT_LITERAL; }
 {D}+{IS}?                           { yylval.valInt = atoi(yytext); return INT_LITERAL; }
-{D}+{E}{FS}?                        { yylval.valReal = atof(yytext); return REAL_LITERAL; }
-{D}+\.{D}+({E})?{FS}?               { yylval.valReal = atof(yytext); return REAL_LITERAL; }
 \"(\\\"|[^\"])*\"                   { yylval.valString = yytext; return STRING_LITERAL; }
 
 "<-"                                { return LEFT_OP; } 
