@@ -5,8 +5,8 @@
 
 #include "bi/visitor/Gatherer.hpp"
 
-bi::CppFiberGenerator::CppFiberGenerator(std::ostream& base,
-    const int level, const bool header) :
+bi::CppFiberGenerator::CppFiberGenerator(std::ostream& base, const int level,
+    const bool header) :
     CppBaseGenerator(base, level, header),
     label(0) {
   //
@@ -143,7 +143,8 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   } else {
     finish(" {");
     in();
-    start("return make_fiber<" << o->returnType->unwrap() << ',' << o->name << "FiberState>(");
+    start(
+        "return make_fiber<" << o->returnType->unwrap() << ',' << o->name << "FiberState>(");
     for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
       if (iter != o->params->begin()) {
         middle(", ");
@@ -177,16 +178,17 @@ void bi::CppFiberGenerator::visit(const Yield* o) {
 }
 
 void bi::CppFiberGenerator::visit(const Identifier<LocalVariable>* o) {
+  // there may be local variables in the fiber body that have the same name,
+  // distinguished only by scope; as these scopes are now collapsed, local
+  // variable names are suffixed with a unique number to distinguish them
   middle(o->name << o->target->number);
 }
 
 void bi::CppFiberGenerator::visit(const LocalVariable* o) {
-  if (o->type->isClass() || !o->parens->isEmpty() || !o->value->isEmpty()) {
-    start(o->name << o->number);
-    genInit(o);
-    finish(';');
-    ///@todo This will need to resize arrays, overload operator() for Array?
-  }
+  // see above for use of number here
+  middle(o->name << o->number);
+  genInit(o);
+  ///@todo This will need to resize arrays, overload operator() for Array?
 }
 
 void bi::CppFiberGenerator::genSwitch() {
