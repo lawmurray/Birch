@@ -3,23 +3,21 @@
  */
 #pragma once
 
-#include "bi/statement/Statement.hpp"
+#include "bi/expression/Expression.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Numbered.hpp"
-#include "bi/common/Typed.hpp"
 #include "bi/common/Parenthesised.hpp"
 #include "bi/common/Valued.hpp"
 
 namespace bi {
 /**
- * Global variable.
+ * Local variable.
  *
- * @ingroup compiler_statement
+ * @ingroup compiler_expression
  */
-class LocalVariable: public Statement,
+class LocalVariable: public Expression,
     public Named,
     public Numbered,
-    public Typed,
     public Parenthesised,
     public Valued {
 public:
@@ -41,8 +39,8 @@ public:
    */
   virtual ~LocalVariable();
 
-  virtual Statement* accept(Cloner* visitor) const;
-  virtual Statement* accept(Modifier* visitor);
+  virtual Expression* accept(Cloner* visitor) const;
+  virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 };
 }

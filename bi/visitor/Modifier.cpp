@@ -156,6 +156,13 @@ bi::Expression* bi::Modifier::modify(Identifier<Unknown>* o) {
   return o;
 }
 
+bi::Expression* bi::Modifier::modify(LocalVariable* o) {
+  o->type = o->type->accept(this);
+  o->parens = o->parens->accept(this);
+  o->value = o->value->accept(this);
+  return o;
+}
+
 bi::Expression* bi::Modifier::modify(Identifier<Parameter>* o) {
   return o;
 }
@@ -217,13 +224,6 @@ bi::Statement* bi::Modifier::modify(List<Statement>* o) {
 }
 
 bi::Statement* bi::Modifier::modify(GlobalVariable* o) {
-  o->type = o->type->accept(this);
-  o->parens = o->parens->accept(this);
-  o->value = o->value->accept(this);
-  return o;
-}
-
-bi::Statement* bi::Modifier::modify(LocalVariable* o) {
   o->type = o->type->accept(this);
   o->parens = o->parens->accept(this);
   o->value = o->value->accept(this);

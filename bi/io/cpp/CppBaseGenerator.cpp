@@ -206,8 +206,7 @@ void bi::CppBaseGenerator::visit(
   middle(o->name);
 }
 
-void bi::CppBaseGenerator::visit(
-    const OverloadedIdentifier<MemberFiber>* o) {
+void bi::CppBaseGenerator::visit(const OverloadedIdentifier<MemberFiber>* o) {
   middle(o->name);
 }
 
@@ -278,9 +277,8 @@ void bi::CppBaseGenerator::visit(const GlobalVariable* o) {
 }
 
 void bi::CppBaseGenerator::visit(const LocalVariable* o) {
-  start(o->type << ' ' << o->name);
+  middle(o->type << ' ' << o->name);
   genInit(o);
-  finish(';');
 }
 
 void bi::CppBaseGenerator::visit(const MemberVariable* o) {
@@ -446,8 +444,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
           start(name << " = bi::func::" << type->name);
           if (type->name->str() == "String") {
             middle("(std::string(optarg))");
-          }
-          else {
+          } else {
             middle("(std::string(optarg))");
           }
           finish(';');
@@ -622,9 +619,14 @@ void bi::CppBaseGenerator::visit(const If* o) {
 }
 
 void bi::CppBaseGenerator::visit(const For* o) {
-  ///@todo May need to be more sophisticated to accommodate arbitrary types
-  line(
-      "for (" << o->index << " = " << o->from << "; " << o->index << " <= " << o->to << "; ++" << o->index << ") {");
+  // o->index may be an identifier or a local variable, in the latter case
+  // need to ensure that it is only declared once in the first element of the
+  // for loop
+  Named* named = dynamic_cast<Named*>(o->index);
+  assert(named);
+  start("for (" << o->index << " = " << o->from << "; ");
+  middle(named->name << " <= " << o->to << "; ");
+  finish("++" << named->name << ") {");
   in();
   *this << o->braces;
   out();

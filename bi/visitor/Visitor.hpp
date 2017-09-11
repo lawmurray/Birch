@@ -48,6 +48,7 @@ public:
   virtual void visit(const Super* o);
   virtual void visit(const This* o);
   virtual void visit(const Nil* o);
+  virtual void visit(const LocalVariable* o);
   virtual void visit(const Parameter* o);
   virtual void visit(const MemberParameter* o);
   virtual void visit(const Identifier<Unknown>* o);
@@ -67,7 +68,6 @@ public:
   virtual void visit(const List<Statement>* o);
   virtual void visit(const Assignment* o);
   virtual void visit(const GlobalVariable* o);
-  virtual void visit(const LocalVariable* o);
   virtual void visit(const MemberVariable* o);
   virtual void visit(const Function* o);
   virtual void visit(const Fiber* o);

@@ -19,7 +19,6 @@
 #include "bi/statement/GlobalVariable.hpp"
 #include "bi/statement/If.hpp"
 #include "bi/statement/Import.hpp"
-#include "bi/statement/LocalVariable.hpp"
 #include "bi/statement/MemberFiber.hpp"
 #include "bi/statement/MemberFunction.hpp"
 #include "bi/statement/MemberVariable.hpp"

@@ -43,6 +43,7 @@ public:
   virtual Expression* modify(Super* o);
   virtual Expression* modify(This* o);
   virtual Expression* modify(Nil* o);
+  virtual Expression* modify(LocalVariable* o);
   virtual Expression* modify(Identifier<Unknown>* o);
   virtual Expression* modify(Identifier<Parameter>* o);
   virtual Expression* modify(Identifier<MemberParameter>* o);
@@ -57,7 +58,6 @@ public:
   virtual Expression* modify(OverloadedIdentifier<UnaryOperator>* o);
 
   virtual Statement* modify(Assignment* o);
-  virtual Statement* modify(LocalVariable* o);
   virtual Statement* modify(Function* o);
   virtual Statement* modify(Fiber* o);
   virtual Statement* modify(Program* o);

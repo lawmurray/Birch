@@ -46,6 +46,7 @@ public:
   virtual Expression* clone(const Super* o);
   virtual Expression* clone(const This* o);
   virtual Expression* clone(const Nil* o);
+  virtual Expression* clone(const LocalVariable* o);
   virtual Expression* clone(const Parameter* o);
   virtual Expression* clone(const MemberParameter* o);
   virtual Expression* clone(const Identifier<Unknown>* o);
@@ -65,7 +66,6 @@ public:
   virtual Statement* clone(const List<Statement>* o);
   virtual Statement* clone(const Assignment* o);
   virtual Statement* clone(const GlobalVariable* o);
-  virtual Statement* clone(const LocalVariable* o);
   virtual Statement* clone(const MemberVariable* o);
   virtual Statement* clone(const Function* o);
   virtual Statement* clone(const Fiber* o);

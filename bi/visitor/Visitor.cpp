@@ -130,6 +130,12 @@ void bi::Visitor::visit(const Member* o) {
   o->right->accept(this);
 }
 
+void bi::Visitor::visit(const LocalVariable* o) {
+  o->type->accept(this);
+  o->parens->accept(this);
+  o->value->accept(this);
+}
+
 void bi::Visitor::visit(const Parameter* o) {
   o->type->accept(this);
   o->value->accept(this);
@@ -203,12 +209,6 @@ void bi::Visitor::visit(const Assignment* o) {
 }
 
 void bi::Visitor::visit(const GlobalVariable* o) {
-  o->type->accept(this);
-  o->parens->accept(this);
-  o->value->accept(this);
-}
-
-void bi::Visitor::visit(const LocalVariable* o) {
   o->type->accept(this);
   o->parens->accept(this);
   o->value->accept(this);

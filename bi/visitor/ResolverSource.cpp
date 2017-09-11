@@ -169,6 +169,13 @@ bi::Expression* bi::ResolverSource::modify(Nil* o) {
   return o;
 }
 
+bi::Expression* bi::ResolverSource::modify(LocalVariable* o) {
+  Modifier::modify(o);
+  o->type->accept(&assigner);
+  scopes.back()->add(o);
+  return o;
+}
+
 bi::Expression* bi::ResolverSource::modify(Identifier<Unknown>* o) {
   return lookup(o, memberScope)->accept(this);
 }
@@ -290,13 +297,6 @@ bi::Statement* bi::ResolverSource::modify(Assignment* o) {
       }
     }
   }
-  return o;
-}
-
-bi::Statement* bi::ResolverSource::modify(LocalVariable* o) {
-  Modifier::modify(o);
-  o->type->accept(&assigner);
-  scopes.back()->add(o);
   return o;
 }
 

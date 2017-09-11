@@ -1,0 +1,31 @@
+/**
+ * @file
+ */
+#include "bi/expression/LocalVariable.hpp"
+
+#include "bi/visitor/all.hpp"
+
+bi::LocalVariable::LocalVariable(Name* name, Type* type, Expression* parens,
+    Expression* value, Location* loc) :
+    Expression(type, loc),
+    Named(name),
+    Parenthesised(parens),
+    Valued(value) {
+  //
+}
+
+bi::LocalVariable::~LocalVariable() {
+  //
+}
+
+bi::Expression* bi::LocalVariable::accept(Cloner* visitor) const {
+  return visitor->clone(this);
+}
+
+bi::Expression* bi::LocalVariable::accept(Modifier* visitor) {
+  return visitor->modify(this);
+}
+
+void bi::LocalVariable::accept(Visitor* visitor) const {
+  visitor->visit(this);
+}

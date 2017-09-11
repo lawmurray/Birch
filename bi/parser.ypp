@@ -88,12 +88,12 @@
 %type <valExpression> relational_expression equality_expression
 %type <valExpression> logical_and_expression logical_or_expression
 %type <valExpression> expression_list expression optional_expression
-%type <valExpression> parameter parameter_list parameters
+%type <valExpression> local_variable parameter parameter_list parameters
 %type <valExpression> option option_list options
 %type <valExpression> member_parameter member_parameter_list member_parameters
 %type <valExpression> optional_member_parameters
 %type <valExpression> arguments optional_arguments
-%type <valExpression> size_list size value optional_value
+%type <valExpression> size_list size value optional_value for_index
 
 %type <valStatement> global_variable_declaration local_variable_declaration
 %type <valStatement> function_declaration fiber_declaration program_declaration
@@ -304,6 +304,10 @@ optional_expression
     |             { $$ = new bi::EmptyExpression(); }
     ;
 
+local_variable
+    : name ':' type optional_arguments optional_value  { $$ = new bi::LocalVariable($1, $3, $4, $5, make_loc(@$)); }
+    ;
+
 parameters
     : '(' ')'                 { $$ = new bi::Parentheses(new bi::EmptyExpression(), make_loc(@$)); }
     | '(' parameter_list ')'  { $$ = new bi::Parentheses($2, make_loc(@$)); }
@@ -382,7 +386,7 @@ global_variable_declaration
     ;
 
 local_variable_declaration
-    : name ':' type optional_arguments optional_value ';'  { push_raw(); $$ = new bi::LocalVariable($1, $3, $4, $5, make_doc_loc(@$)); }
+    : local_variable ';'  { push_raw(); $$ = new bi::ExpressionStatement($1, make_doc_loc(@$)); }
     ;
 
 member_variable_declaration
@@ -492,8 +496,13 @@ if
     | IF parens_expression braces              { $$ = new bi::If($2, $3, new bi::EmptyStatement(), make_loc(@$)); }
     ;
 
+for_index
+    : identifier
+    | name ':' type  { $$ = new bi::LocalVariable($1, $3, new bi::EmptyExpression(), new bi::EmptyExpression(), make_loc(@$)); }
+    ;
+
 for
-    : FOR '(' identifier IN expression RANGE_OP expression ')' braces  { $$ = new bi::For($3, $5, $7, $9, make_loc(@$)); }
+    : FOR '(' for_index IN expression RANGE_OP expression ')' braces  { $$ = new bi::For($3, $5, $7, $9, make_loc(@$)); }
     ;
 
 while

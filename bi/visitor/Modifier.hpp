@@ -46,6 +46,7 @@ public:
   virtual Expression* modify(Super* o);
   virtual Expression* modify(This* o);
   virtual Expression* modify(Nil* o);
+  virtual Expression* modify(LocalVariable* o);
   virtual Expression* modify(Parameter* o);
   virtual Expression* modify(MemberParameter* o);
   virtual Expression* modify(Identifier<Unknown>* o);
@@ -65,7 +66,6 @@ public:
   virtual Statement* modify(List<Statement>* o);
   virtual Statement* modify(Assignment* o);
   virtual Statement* modify(GlobalVariable* o);
-  virtual Statement* modify(LocalVariable* o);
   virtual Statement* modify(MemberVariable* o);
   virtual Statement* modify(Function* o);
   virtual Statement* modify(Fiber* o);

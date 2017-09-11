@@ -99,23 +99,6 @@ void bi::bi_ostream::visit(const Nil* o) {
   *this << "nil";
 }
 
-void bi::bi_ostream::visit(const Parameter* o) {
-  *this << o->name << ':' << o->type;
-  if (!o->value->isEmpty()) {
-    *this << " <- " << o->value;
-  }
-}
-
-void bi::bi_ostream::visit(const GlobalVariable* o) {
-  *this << o->name << ':' << o->type;
-  if (!o->parens->isEmpty()) {
-    *this << o->value;
-  }
-  if (!o->value->isEmpty()) {
-    *this << " <- " << o->value;
-  }
-}
-
 void bi::bi_ostream::visit(const LocalVariable* o) {
   *this << o->name << ':' << o->type;
   if (!o->parens->isEmpty()) {
@@ -126,14 +109,40 @@ void bi::bi_ostream::visit(const LocalVariable* o) {
   }
 }
 
-void bi::bi_ostream::visit(const MemberVariable* o) {
+void bi::bi_ostream::visit(const Parameter* o) {
   *this << o->name << ':' << o->type;
+  if (!o->value->isEmpty()) {
+    *this << " <- " << o->value;
+  }
+}
+
+void bi::bi_ostream::visit(const MemberParameter* o) {
+  *this << o->name << ':' << o->type;
+  if (!o->value->isEmpty()) {
+    *this << " <- " << o->value;
+  }
+}
+
+void bi::bi_ostream::visit(const GlobalVariable* o) {
+  *this << indent << o->name << ':' << o->type;
   if (!o->parens->isEmpty()) {
     *this << o->value;
   }
   if (!o->value->isEmpty()) {
     *this << " <- " << o->value;
   }
+  *this << ';';
+}
+
+void bi::bi_ostream::visit(const MemberVariable* o) {
+  *this << indent << o->name << ':' << o->type;
+  if (!o->parens->isEmpty()) {
+    *this << o->value;
+  }
+  if (!o->value->isEmpty()) {
+    *this << " <- " << o->value;
+  }
+  *this << ';';
 }
 
 void bi::bi_ostream::visit(const Identifier<Parameter>* o) {

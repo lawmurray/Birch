@@ -13,6 +13,7 @@
 #include "bi/expression/Index.hpp"
 #include "bi/expression/LambdaFunction.hpp"
 #include "bi/expression/Literal.hpp"
+#include "bi/expression/LocalVariable.hpp"
 #include "bi/expression/MemberParameter.hpp"
 #include "bi/expression/Nil.hpp"
 #include "bi/expression/OverloadedIdentifier.hpp"

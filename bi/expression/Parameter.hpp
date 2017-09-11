@@ -11,7 +11,7 @@
 
 namespace bi {
 /**
- * Parameter to a function, Fiber, program or operator.
+ * Parameter to a function, fiber, program or operator.
  *
  * @ingroup compiler_expression
  */

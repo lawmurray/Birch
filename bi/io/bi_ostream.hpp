@@ -41,9 +41,10 @@ public:
   virtual void visit(const Super* o);
   virtual void visit(const This* o);
   virtual void visit(const Nil* o);
-  virtual void visit(const Parameter* o);
-  virtual void visit(const GlobalVariable* o);
   virtual void visit(const LocalVariable* o);
+  virtual void visit(const Parameter* o);
+  virtual void visit(const MemberParameter* o);
+  virtual void visit(const GlobalVariable* o);
   virtual void visit(const MemberVariable* o);
   virtual void visit(const Identifier<Parameter>* o);
   virtual void visit(const Identifier<GlobalVariable>* o);

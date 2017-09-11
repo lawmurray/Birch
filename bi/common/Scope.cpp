@@ -5,10 +5,10 @@
 
 #include "bi/expression/Identifier.hpp"
 #include "bi/expression/OverloadedIdentifier.hpp"
+#include "bi/expression/LocalVariable.hpp"
 #include "bi/expression/Parameter.hpp"
 #include "bi/expression/MemberParameter.hpp"
 #include "bi/statement/GlobalVariable.hpp"
-#include "bi/statement/LocalVariable.hpp"
 #include "bi/statement/MemberVariable.hpp"
 #include "bi/statement/Function.hpp"
 #include "bi/statement/Fiber.hpp"
