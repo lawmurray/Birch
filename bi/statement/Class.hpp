@@ -18,7 +18,7 @@ namespace bi {
 /**
  * Class.
  *
- * @ingroup compiler_type
+ * @ingroup compiler_statement
  */
 class Class: public Statement,
     public Named,

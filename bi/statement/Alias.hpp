@@ -12,7 +12,7 @@ namespace bi {
 /**
  * Alias of another type.
  *
- * @ingroup compiler_type
+ * @ingroup compiler_statement
  */
 class Alias: public Statement, public Named, public Numbered, public Based {
 public:

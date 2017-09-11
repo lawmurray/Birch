@@ -11,7 +11,7 @@ namespace bi {
 /**
  * Basic (built-in) type.
  *
- * @ingroup compiler_type
+ * @ingroup compiler_statement
  */
 class Basic: public Statement, public Named, public Numbered {
 public:
