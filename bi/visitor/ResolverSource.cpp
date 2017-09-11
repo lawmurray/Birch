@@ -384,7 +384,7 @@ bi::Statement* bi::ResolverSource::modify(If* o) {
   scopes.push_back(o->falseScope);
   o->falseBraces = o->falseBraces->accept(this);
   scopes.pop_back();
-  ///@todo Check that condition is of type Boolean
+  checkBoolean(o->cond->strip());
   return o;
 }
 
@@ -392,7 +392,9 @@ bi::Statement* bi::ResolverSource::modify(For* o) {
   scopes.push_back(o->scope);
   Modifier::modify(o);
   scopes.pop_back();
-  ///@todo Check that index, from and to are of type Integer
+  checkInteger(o->index);
+  checkInteger(o->from);
+  checkInteger(o->to);
   return o;
 }
 
@@ -400,13 +402,13 @@ bi::Statement* bi::ResolverSource::modify(While* o) {
   scopes.push_back(o->scope);
   Modifier::modify(o);
   scopes.pop_back();
-  ///@todo Check that condition is of type Boolean
+  checkBoolean(o->cond->strip());
   return o;
 }
 
 bi::Statement* bi::ResolverSource::modify(Assert* o) {
   Modifier::modify(o);
-  ///@todo Check that condition is of type Boolean
+  checkBoolean(o->cond);
   return o;
 }
 

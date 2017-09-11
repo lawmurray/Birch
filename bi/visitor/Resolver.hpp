@@ -77,6 +77,20 @@ protected:
   Type* lookup(IdentifierType* ref, Scope* scope = nullptr);
 
   /**
+   * Check that an expression is of boolean type.
+   *
+   * @param o The expression.
+   */
+  void checkBoolean(const Expression* o);
+
+  /**
+   * Check that an expression is of integer type.
+   *
+   * @param o The expression.
+   */
+  void checkInteger(const Expression* o);
+
+  /**
    * Generic implementation of modify() for variable identifiers.
    */
   template<class ObjectType>
@@ -91,7 +105,7 @@ protected:
       bi::OverloadedIdentifier<ObjectType>* o);
 
   /**
-   * Stack of containing scopes.
+   * List of scopes, innermost at the back.
    */
   std::list<Scope*> scopes;
 

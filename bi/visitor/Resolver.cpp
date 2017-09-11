@@ -129,3 +129,21 @@ bi::Type* bi::Resolver::lookup(IdentifierType* ref, Scope* scope) {
     throw UnresolvedException(ref);
   }
 }
+
+void bi::Resolver::checkBoolean(const Expression* o) {
+  static BasicType type(new Name("Boolean"));
+  scopes.front()->resolve(&type);
+  if (!o->type->definitely(type)) {
+    throw ConditionException(o);
+  }
+}
+
+void bi::Resolver::checkInteger(const Expression* o) {
+  static BasicType type32(new Name("Integer32"));
+  static BasicType type64(new Name("Integer64"));
+  scopes.front()->resolve(&type32);
+  scopes.front()->resolve(&type64);
+  if (!o->type->definitely(type32) && !o->type->definitely(type64)) {
+    throw IndexException(o);
+  }
+}

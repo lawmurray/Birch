@@ -49,10 +49,12 @@ COMMON_SOURCES = \
   bi/common/Valued.cpp \
   bi/exception/AmbiguousCallException.cpp \
   bi/exception/CompilerException.cpp \
+  bi/exception/ConditionException.cpp \
   bi/exception/DriverException.cpp \
   bi/exception/Exception.cpp \
   bi/exception/FileNotFoundException.cpp \
   bi/exception/GetException.cpp \
+  bi/exception/IndexException.cpp \
   bi/exception/InvalidAssignmentException.cpp \
   bi/exception/InvalidCallException.cpp \
   bi/exception/MemberException.cpp \
@@ -234,9 +236,11 @@ noinst_HEADERS = \
   bi/exception/all.hpp \
   bi/exception/AmbiguousCallException.hpp \
   bi/exception/CompilerException.hpp \
+  bi/exception/ConditionException.hpp \
   bi/exception/DriverException.hpp \
   bi/exception/FileNotFoundException.hpp \
   bi/exception/GetException.hpp \
+  bi/exception/IndexException.hpp \
   bi/exception/InvalidAssignmentException.hpp \
   bi/exception/InvalidCallException.hpp \
   bi/exception/MemberException.hpp \
