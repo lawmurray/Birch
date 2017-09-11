@@ -10,12 +10,9 @@ program demo_bootstrap(N:Integer <- 10, T:Integer <- 10) {
   w:Real[N];      // log-weights
   a:Integer[N];   // ancestor indices
   W:Real <- 0.0;  // marginal likelihood
-  
-  n:Integer;
-  t:Integer <- 1;
 
   /* initialize */
-  for (n in 1..N) {
+  for (n:Integer in 1..N) {
     x[n] <- run(T);
     if (x[n]?) {
       w[n] <- x[n]!;
@@ -25,17 +22,17 @@ program demo_bootstrap(N:Integer <- 10, T:Integer <- 10) {
   }
   W <- log_sum_exp(w) - log(Real(N));
 
-  for (t in 2..T) {
+  for (t:Integer in 2..T) {
     /* resample */
     a <- ancestors(w);
-    for (n in 1..N) {
+    for (n:Integer in 1..N) {
       if (a[n] != n) {
         x[n] <- x[a[n]];
       }
     }
     
     /* propagate and weight */
-    for (n in 1..N) {
+    for (n:Integer in 1..N) {
       if (x[n]?) {
         w[n] <- x[n]!;
       } else {
@@ -61,9 +58,7 @@ class BootstrapExample(T:Integer) {
   fiber simulate() -> Real! {
     x[1] <~ Gaussian(0.0, σ2);
     y[1] ~> Gaussian(x[1], σ2);
-  
-    t:Integer <- 1;
-    for (t in 2..T) {
+    for (t:Integer in 2..T) {
       x[t] <~ Gaussian(a*x[t-1], σ2);
       y[t] ~> Gaussian(x[t], σ2);
     }
@@ -71,10 +66,8 @@ class BootstrapExample(T:Integer) {
 
   function input() {
     v:Real[T];
-    v <- read("data/y.csv", T);
-    
-    t:Integer;
-    for (t in 1..T) {
+    v <- read("data/y.csv", T);    
+    for (t:Integer in 1..T) {
       y[t] <- v[t];
     }
   }
@@ -85,8 +78,7 @@ fiber run(T:Integer) -> Real! {
   x.input();
   
   f:Real! <- x.simulate();
-  t:Integer;
-  for (t in 1..T) {
+  for (t:Integer in 1..T) {
     if (f?) {
       yield f!;
     } else {

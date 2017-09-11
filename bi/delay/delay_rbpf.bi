@@ -22,20 +22,17 @@ program delay_rbpf(N:Integer <- 100, T:Integer <- 10,
   a:Integer[N];   // ancestor indices
   W:Real <- 0.0;  // marginal likelihood
   
-  n:Integer;
-  t:Integer <- 1;
-
   /* initialize */
-  for (n in 1..N) {
+  for (n:Integer in 1..N) {
     x[n] <- particle(T);
   }
   W <- 0.0;
   
-  for (t in 1..T) {
+  for (t:Integer in 1..T) {
     /* resample */
     if (t > 1 && mod(t, 2) == 1) {
       a <- ancestors(w);
-      for (n in 1..N) {
+      for (n:Integer in 1..N) {
         if (a[n] != n) {
           x[n] <- x[a[n]];
         }
@@ -43,7 +40,7 @@ program delay_rbpf(N:Integer <- 100, T:Integer <- 10,
     }
     
     /* propagate and weight */
-    for (n in 1..N) {
+    for (n:Integer in 1..N) {
       if (x[n]?) {
         w[n] <- x[n]!;
       } else {
@@ -65,7 +62,7 @@ fiber particle(T:Integer) -> Real! {
   x.input();
   f:Real! <- x.simulate();
   while (f?) {
-    yield f!;  
+    yield f!;
   }
 }
 
@@ -125,8 +122,7 @@ class Example(T:Integer) {
         scalar(x_n[1])), 1), Σ_y_n);
     y_l[1] ~ Gaussian(C*x_l[1], Σ_y_l);
 
-    t:Integer;
-    for (t in 2..T) {
+    for (t:Integer in 2..T) {
       x_n[t] ~ Gaussian(vector(atan(scalar(x_n[t-1])), 1) + B*x_l[t-1], Σ_x_n);
       x_l[t] ~ Gaussian(A*x_l[t-1], Σ_x_l);
 
@@ -138,22 +134,20 @@ class Example(T:Integer) {
   
   function input() {
     v:Real[T];
-    t:Integer;
 
     v <- read("data/y_n.csv", T);
-    for (t in 1..T) {
+    for (t:Integer in 1..T) {
       y_n[t] <- v[t..t];
     }
     
     v <- read("data/y_l.csv", T);
-    for (t in 1..T) {
+    for (t:Integer in 1..T) {
       y_l[t] <- v[t..t];
     }
   }
   
   function output() {
-    t:Integer;
-    for (t in 1..T) {
+    for (t:Integer in 1..T) {
       stdout.print(x_n[t]);
       stdout.print(", ");
       stdout.print(x_l[t]);
@@ -169,8 +163,7 @@ function delay_rbpf_diagnostics(T:Integer) {
   o:DelayDiagnostics(4*T);
   delayDiagnostics <- o;
   
-  t:Integer;
-  for (t in 1..T) {
+  for (t:Integer in 1..T) {
     o.name(4*t - 3, "x_n[" + t + "]");
     o.name(4*t - 2, "x_l[" + t + "]");
     o.name(4*t - 1, "y_n[" + t + "]");

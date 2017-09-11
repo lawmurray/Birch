@@ -18,10 +18,9 @@ program delay_iid(μ:Real <- 0.0, σ2:Real <- 1.0, N:Integer <- 100,
 
   x:Gaussian;
   y:Gaussian[N];
-  n:Integer;
   
   /* simulate data */
-  for (n in 1..N) {
+  for (n:Integer in 1..N) {
     y[n] <- random_gaussian(μ, σ2);
   }
   
@@ -29,7 +28,7 @@ program delay_iid(μ:Real <- 0.0, σ2:Real <- 1.0, N:Integer <- 100,
   x ~ Gaussian(0.0, 1.0);
   
   /* likelihood */
-  for (n in 1..N) {
+  for (n:Integer in 1..N) {
     y[n] ~ Gaussian(x, 1.0);
   }
   
@@ -47,8 +46,7 @@ function delay_iid_diagnostics(N:Integer) {
   o.name(1, "x");
   o.position(1, (N + 1)/2, 2);
 
-  n:Integer;
-  for (n in 1..N) {
+  for (n:Integer in 1..N) {
     o.name(n + 1, "y[" + n + "]");
     o.position(n + 1, n, 1);
   }
