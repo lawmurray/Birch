@@ -58,7 +58,9 @@ bi::Statement* bi::ResolverHeader::modify(Fiber* o) {
   o->type = o->type->accept(this);
   scopes.pop_back();
   scopes.back()->add(o);
-  ///@todo Check that return type is of fiber type
+  if (!o->returnType->isFiber()) {
+    throw FiberTypeException(o);
+  }
   return o;
 }
 
@@ -95,7 +97,9 @@ bi::Statement* bi::ResolverHeader::modify(MemberFiber* o) {
   o->type = o->type->accept(this);
   scopes.pop_back();
   scopes.back()->add(o);
-  ///@todo Check that return type is of fiber type
+  if (!o->returnType->isFiber()) {
+    throw FiberTypeException(o);
+  }
   return o;
 }
 
