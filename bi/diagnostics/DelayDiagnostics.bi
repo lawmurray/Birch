@@ -122,9 +122,8 @@ class DelayDiagnostics(N:Integer) {
   function dot() {
     /* pad file name with zeros */
     Z:Integer <- 8 - Integer(ceil(log10(Real(noutputs + 1))));
-    z:Integer;
     filename:String <- "diagnostics/state";
-    for (z in 1..Z) {
+    for (z:Integer in 1..Z) {
       filename <- filename + "0";
     }
     filename <- filename + noutputs + ".dot";
@@ -136,9 +135,8 @@ class DelayDiagnostics(N:Integer) {
     out.print("digraph {\n");
     out.print("  node [shape=circle pack=1]\n");
     out.print("\n");
-    i:Integer;
     
-    for (i in 1..N) {
+    for (i:Integer in 1..N) {
       if (nodes[i]? && names[i]?) {
         node:Delay <- nodes[i]!;
         nupdates:Integer <- node.nforward + node.nbackward;

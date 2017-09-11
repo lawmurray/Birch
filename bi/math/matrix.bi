@@ -50,10 +50,8 @@ function scalar(X:Real[_,_]) -> Real {
  */
 function matrix(x:Real, rows:Integer, columns:Integer) -> Real[_,_] {
   Z:Real[rows,columns];
-  i:Integer;
-  j:Integer;
-  for (i in 1..rows) {
-    for (j in 1..columns) {
+  for (i:Integer in 1..rows) {
+    for (j:Integer in 1..columns) {
       Z[i,j] <- x;
     }
   }
@@ -65,10 +63,8 @@ function matrix(x:Real, rows:Integer, columns:Integer) -> Real[_,_] {
  */
 function identity(rows:Integer, columns:Integer) -> Real[_,_] {
   Z:Real[rows,columns];
-  i:Integer;
-  j:Integer;
-  for (i in 1..rows) {
-    for (j in 1..columns) {
+  for (i:Integer in 1..rows) {
+    for (j:Integer in 1..columns) {
       if (i == j) {
         Z[i,j] <- 1.0;
       } else {

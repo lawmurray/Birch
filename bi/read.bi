@@ -8,9 +8,8 @@ function read(file:String, N:Integer) -> Real[_] {
   std::ifstream stream(file_);
   }}
   x:Real[N];
-  n:Integer;
   v:Real;
-  for (n in 1..N) {
+  for (n:Integer in 1..N) {
     cpp{{
     stream >> v_;
     }}

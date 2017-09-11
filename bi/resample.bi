@@ -40,11 +40,10 @@ function systematic_cumulative_offspring(W:Real[_]) -> Integer[_] {
   N:Integer <- length(W);
   u:Real;
   O:Integer[N];
-  n:Integer;
   r:Real;
 
   u <- random_uniform(0.0, 1.0);
-  for (n in 1..N) {
+  for (n:Integer in 1..N) {
     r <- Real(N)*W[n]/W[N];
     O[n] <- min(N, Integer(floor(r + u)));
   }
@@ -59,16 +58,14 @@ function cumulative_offspring_to_ancestors(O:Integer[_]) -> Integer[_] {
   a:Integer[N];
   start:Integer;
   o:Integer;
-  n:Integer;
-  j:Integer;
-  for (n in 1..N) {
+  for (n:Integer in 1..N) {
     if (n == 1) {
       start <- 0;
     } else {
       start <- O[n - 1];
     }
     o <- O[n] - start;
-    for (j in 1..o) {
+    for (j:Integer in 1..o) {
       a[start + j] <- n;
     }
   }
@@ -83,10 +80,9 @@ function permute_ancestors(a:Integer[_]) -> Integer[_] {
   N:Integer <- length(a);
   b:Integer[N];
   c:Integer;
-  n:Integer;
   
   b <- a;
-  for (n in 1..N) {
+  for (n:Integer in 1..N) {
     c <- b[n];
     if (c != n && b[c] != c) {
       b[n] <- b[c];
@@ -104,10 +100,9 @@ function cumulative_weights(w:Real[_]) -> Real[_] {
   N:Integer <- length(w);
   mx:Real <- max(w);
   W:Real[N];
-  n:Integer;
   
   W[1] <- exp(w[1] - mx);
-  for (n in 2..N) {
+  for (n:Integer in 2..N) {
     W[n] <- W[n - 1] + exp(w[n] - mx);
   }
   return W;

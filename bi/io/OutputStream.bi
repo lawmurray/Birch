@@ -77,8 +77,7 @@ class OutputStream(stream:File) {
    * Print vector.
    */
   function print(x:Integer[_]) {
-    i:Integer;
-    for (i in 1..length(x)) {
+    for (i:Integer in 1..length(x)) {
       if (i != 1) {
         print(", ");
       }
@@ -90,8 +89,7 @@ class OutputStream(stream:File) {
    * Print vector.
    */
   function print(x:Real[_]) {
-    i:Integer;
-    for (i in 1..length(x)) {
+    for (i:Integer in 1..length(x)) {
       if (i != 1) {
         print(" ");
       }
@@ -103,10 +101,8 @@ class OutputStream(stream:File) {
    * Print matrix.
    */
   function print(X:Integer[_,_]) {
-    i:Integer;
-    j:Integer;
-    for (i in 1..rows(X)) {
-      for (j in 1..columns(X)) {
+    for (i:Integer in 1..rows(X)) {
+      for (j:Integer in 1..columns(X)) {
         if (j != 1) {
           print("  ");
         }
@@ -120,10 +116,8 @@ class OutputStream(stream:File) {
    * Print matrix.
    */
   function print(X:Real[_,_]) {
-    i:Integer;
-    j:Integer;
-    for (i in 1..rows(X)) {
-      for (j in 1..columns(X)) {
+    for (i:Integer in 1..rows(X)) {
+      for (j:Integer in 1..columns(X)) {
         if (j != 1) {
           print(" ");
         }

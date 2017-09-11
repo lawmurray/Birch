@@ -6,8 +6,7 @@ import math;
 function sum(x:Real[_]) -> Real {
   assert length(x) > 0;
   r:Real <- x[1];
-  n:Integer;
-  for (n in 2..length(x)) {
+  for (n:Integer in 2..length(x)) {
     r <- r + x[n];
   }
   return r;
@@ -19,8 +18,7 @@ function sum(x:Real[_]) -> Real {
 function max(x:Real[_]) -> Real {
   assert length(x) > 0;
   r:Real <- x[1];
-  n:Integer;
-  for (n in 2..length(x)) {
+  for (n:Integer in 2..length(x)) {
     r <- max(r, x[n]);
   }
   return r;
@@ -32,8 +30,7 @@ function max(x:Real[_]) -> Real {
 function min(x:Real[_]) -> Real {
   assert length(x) > 0;
   r:Real <- x[1];
-  n:Integer;
-  for (n in 2..length(x)) {
+  for (n:Integer in 2..length(x)) {
     r <- min(r, x[n]);
   }
   return r;
@@ -46,8 +43,7 @@ function log_sum_exp(x:Real[_]) -> Real {
   assert length(x) > 0;
   mx:Real <- max(x);
   r:Real <- 0.0;
-  n:Integer;
-  for (n in 1..length(x)) {
+  for (n:Integer in 1..length(x)) {
     r <- r + exp(x[n] - mx);
   }
   return mx + log(r);
@@ -58,11 +54,9 @@ function log_sum_exp(x:Real[_]) -> Real {
  */
 function inclusive_prefix_sum(x:Real[_]) -> Real[_] {
   assert length(x) > 0;
-  r:Real[length(x)];
-  n:Integer;
-  
+  r:Real[length(x)];  
   r[1] <- x[1];
-  for (n in 2..length(x)) {
+  for (n:Integer in 2..length(x)) {
     r[n] <- r[n - 1] + x[n];
   }
   return r;
@@ -74,10 +68,8 @@ function inclusive_prefix_sum(x:Real[_]) -> Real[_] {
 function exclusive_prefix_sum(x:Real[_]) -> Real[_] {
   assert length(x) > 0;
   r:Real[length(x)];
-  n:Integer;
-  
   r[1] <- 0.0;
-  for (n in 2..length(x)) {
+  for (n:Integer in 2..length(x)) {
     r[n] <- r[n - 1] + x[n - 1];
   }
   return r;
@@ -89,10 +81,8 @@ function exclusive_prefix_sum(x:Real[_]) -> Real[_] {
 function adjacent_difference(x:Real[_]) -> Real[_] {
   assert length(x) > 0;
   r:Real[length(x)];
-  n:Integer;
-  
   r[1] <- x[1];
-  for (n in 2..length(x)) {
+  for (n:Integer in 2..length(x)) {
     r[n] <- x[n] - x[n - 1];
   }
   return r;

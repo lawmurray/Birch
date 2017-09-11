@@ -34,8 +34,7 @@ class MultivariateGaussian(D:Integer) < DelayRealVector(D) {
 
   function doRealize() {
     if (missing) {
-      d:Integer;
-      for (d in 1..D) {
+      for (d:Integer in 1..D) {
         x[d] <- random_gaussian(0.0, 1.0);
       }
       set(μ + llt(Σ)*x);
