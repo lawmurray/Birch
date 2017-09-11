@@ -4,7 +4,8 @@
 #include "bi/visitor/ResolverSource.hpp"
 
 bi::ResolverSource::ResolverSource() :
-    inFiber(0) {
+    currentReturnType(nullptr),
+    currentYieldType(nullptr) {
   //
 }
 
@@ -136,9 +137,9 @@ bi::Expression* bi::ResolverSource::modify(Member* o) {
 }
 
 bi::Expression* bi::ResolverSource::modify(This* o) {
-  if (classes.size() > 0) {
+  if (currentClass) {
     Modifier::modify(o);
-    o->type = new ClassType(classes.top(), o->loc);
+    o->type = new ClassType(currentClass, o->loc);
     o->type->accept(this);
   } else {
     throw ThisException(o);
@@ -147,12 +148,12 @@ bi::Expression* bi::ResolverSource::modify(This* o) {
 }
 
 bi::Expression* bi::ResolverSource::modify(Super* o) {
-  if (classes.size() > 0) {
-    if (classes.top()->base->isEmpty()) {
+  if (currentClass) {
+    if (currentClass->base->isEmpty()) {
       throw SuperBaseException(o);
     } else {
       Modifier::modify(o);
-      o->type = classes.top()->base->accept(&cloner);
+      o->type = currentClass->base->accept(&cloner);
       o->type->accept(this);
     }
   } else {
@@ -239,7 +240,7 @@ bi::Statement* bi::ResolverSource::modify(Assignment* o) {
         new Parentheses(o->left->accept(&cloner), o->loc), o->loc);
     auto left = o->left->accept(&cloner);
     auto assign = new Assignment(left, new Name("<-"), right, o->loc);
-    if (inFiber) {
+    if (currentYieldType) {
       auto yield = new Yield(
           new Member(o->left->accept(&cloner),
               new Identifier<MemberVariable>(new Name("w"), o->loc), o->loc),
@@ -301,16 +302,18 @@ bi::Statement* bi::ResolverSource::modify(LocalVariable* o) {
 
 bi::Statement* bi::ResolverSource::modify(Function* o) {
   scopes.push_back(o->scope);
+  currentReturnType = o->returnType;
   o->braces->accept(this);
+  currentReturnType = nullptr;
   scopes.pop_back();
   return o;
 }
 
 bi::Statement* bi::ResolverSource::modify(Fiber* o) {
   scopes.push_back(o->scope);
-  ++inFiber;
+  currentYieldType = o->returnType;
   o->braces->accept(this);
-  --inFiber;
+  currentYieldType = nullptr;
   scopes.pop_back();
   return o;
 }
@@ -324,30 +327,36 @@ bi::Statement* bi::ResolverSource::modify(Program* o) {
 
 bi::Statement* bi::ResolverSource::modify(MemberFunction* o) {
   scopes.push_back(o->scope);
+  currentReturnType = o->returnType;
   o->braces->accept(this);
+  currentReturnType = nullptr;
   scopes.pop_back();
   return o;
 }
 
 bi::Statement* bi::ResolverSource::modify(MemberFiber* o) {
   scopes.push_back(o->scope);
-  ++inFiber;
+  currentYieldType = o->returnType;
   o->braces->accept(this);
-  --inFiber;
+  currentYieldType = nullptr;
   scopes.pop_back();
   return o;
 }
 
 bi::Statement* bi::ResolverSource::modify(BinaryOperator* o) {
   scopes.push_back(o->scope);
+  currentReturnType = o->returnType;
   o->braces->accept(this);
+  currentReturnType = nullptr;
   scopes.pop_back();
   return o;
 }
 
 bi::Statement* bi::ResolverSource::modify(UnaryOperator* o) {
   scopes.push_back(o->scope);
+  currentReturnType = o->returnType;
   o->braces->accept(this);
+  currentReturnType = nullptr;
   scopes.pop_back();
   return o;
 }
@@ -361,17 +370,19 @@ bi::Statement* bi::ResolverSource::modify(AssignmentOperator* o) {
 
 bi::Statement* bi::ResolverSource::modify(ConversionOperator* o) {
   scopes.push_back(o->scope);
+  currentReturnType = o->returnType;
   o->braces->accept(this);
+  currentReturnType = nullptr;
   scopes.pop_back();
   return o;
 }
 
 bi::Statement* bi::ResolverSource::modify(Class* o) {
   scopes.push_back(o->scope);
-  classes.push(o);
+  currentClass = o;
   o->baseParens = o->baseParens->accept(this);
   o->braces = o->braces->accept(this);
-  classes.pop();
+  currentClass = nullptr;
   scopes.pop_back();
   return o;
 }
@@ -414,12 +425,24 @@ bi::Statement* bi::ResolverSource::modify(Assert* o) {
 
 bi::Statement* bi::ResolverSource::modify(Return* o) {
   Modifier::modify(o);
-  ///@todo Check that the type of the expression is correct
+  if (!currentReturnType) {
+    if (!o->single->type->isEmpty()) {
+      throw ReturnException(o);
+    }
+  } else if (!o->single->type->definitely(*currentReturnType)) {
+    throw ReturnTypeException(o, currentReturnType);
+  }
   return o;
 }
 
 bi::Statement* bi::ResolverSource::modify(Yield* o) {
   Modifier::modify(o);
-  ///@todo Check that the type of the expression is correct
+  if (!currentYieldType) {
+    if (!o->single->type->isEmpty()) {
+      throw YieldException(o);
+    }
+  } else if (!o->single->type->definitely(*currentYieldType)) {
+    throw YieldTypeException(o, currentYieldType);
+  }
   return o;
 }

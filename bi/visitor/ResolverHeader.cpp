@@ -127,7 +127,7 @@ bi::Statement* bi::ResolverHeader::modify(AssignmentOperator* o) {
   scopes.push_back(o->scope);
   o->single = o->single->accept(this);
   scopes.pop_back();
-  classes.top()->addAssignment(o->single->type);
+  currentClass->addAssignment(o->single->type);
   return o;
 }
 
@@ -135,20 +135,20 @@ bi::Statement* bi::ResolverHeader::modify(ConversionOperator* o) {
   scopes.push_back(o->scope);
   o->returnType = o->returnType->accept(this);
   scopes.pop_back();
-  classes.top()->addConversion(o->returnType);
+  currentClass->addConversion(o->returnType);
   return o;
 }
 
 bi::Statement* bi::ResolverHeader::modify(Class* o) {
   scopes.push_back(o->scope);
-  classes.push(o);
+  currentClass = o;
   o->parens = o->parens->accept(this);
   o->base = o->base->accept(this);
   if (!o->base->isEmpty()) {
     o->addSuper(o->base);
   }
   o->braces = o->braces->accept(this);
-  classes.pop();
+  currentClass = nullptr;
   scopes.pop_back();
   ///@todo Check that base type is of class type
   return o;

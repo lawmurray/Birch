@@ -77,8 +77,13 @@ public:
 
 private:
   /**
-   * Currently in the body of a fiber?
+   * Return type of current function.
    */
-  int inFiber;
+  Type* currentReturnType;
+
+  /**
+   * Yield type of current fiber.
+   */
+  Type* currentYieldType;
 };
 }

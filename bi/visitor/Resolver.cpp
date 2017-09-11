@@ -4,7 +4,8 @@
 #include "bi/visitor/Resolver.hpp"
 
 bi::Resolver::Resolver() :
-    memberScope(nullptr) {
+    memberScope(nullptr),
+    currentClass(nullptr) {
   //
 }
 
@@ -13,11 +14,9 @@ bi::Resolver::~Resolver() {
 }
 
 bi::File* bi::Resolver::modify(File* o) {
-  files.push(o);
   scopes.push_back(o->scope);
   o->root = o->root->accept(this);
   scopes.pop_back();
-  files.pop();
   return o;
 }
 

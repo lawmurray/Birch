@@ -62,11 +62,15 @@ COMMON_SOURCES = \
   bi/exception/NotFunctionException.cpp \
   bi/exception/PreviousDeclarationException.cpp \
   bi/exception/QueryException.cpp \
+  bi/exception/ReturnException.cpp \
+  bi/exception/ReturnTypeException.cpp \
   bi/exception/SuperException.cpp \
   bi/exception/SuperBaseException.cpp \
   bi/exception/ThisException.cpp \
   bi/exception/UnresolvedException.cpp \
   bi/exception/UnsupportedOptionTypeException.cpp \
+  bi/exception/YieldException.cpp \
+  bi/exception/YieldTypeException.cpp \
   bi/expression/Binary.cpp \
   bi/expression/BinaryCall.cpp \
   bi/expression/Brackets.cpp \
@@ -248,11 +252,15 @@ noinst_HEADERS = \
   bi/exception/NotFunctionException.hpp \
   bi/exception/PreviousDeclarationException.hpp \
   bi/exception/QueryException.hpp \
+  bi/exception/ReturnException.hpp \
+  bi/exception/ReturnTypeException.hpp \
   bi/exception/SuperBaseException.hpp \
   bi/exception/SuperException.hpp \
   bi/exception/ThisException.hpp \
   bi/exception/UnresolvedException.hpp \
   bi/exception/UnsupportedOptionTypeException.hpp \
+  bi/exception/YieldException.hpp \
+  bi/exception/YieldTypeException.hpp \
   bi/expression/all.hpp \
   bi/expression/Binary.hpp \
   bi/expression/BinaryCall.hpp \

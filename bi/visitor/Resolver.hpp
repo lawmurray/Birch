@@ -110,19 +110,14 @@ protected:
   std::list<Scope*> scopes;
 
   /**
-   * Class stack.
-   */
-  std::stack<Class*> classes;
-
-  /**
-   * File stack.
-   */
-  std::stack<File*> files;
-
-  /**
    * Scope for resolution of type members.
    */
   Scope* memberScope;
+
+  /**
+   * Current class.
+   */
+  Class* currentClass;
 
   /*
    * Auxiliary visitors.

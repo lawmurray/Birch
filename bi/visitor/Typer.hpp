@@ -36,8 +36,8 @@ public:
 
 protected:
   /**
-   * File stack.
+   * The file.
    */
-  std::stack<File*> files;
+  File* currentFile;
 };
 }
