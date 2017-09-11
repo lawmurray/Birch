@@ -20,6 +20,7 @@
 #include "bi/exception/QueryException.hpp"
 #include "bi/exception/ReturnException.hpp"
 #include "bi/exception/ReturnTypeException.hpp"
+#include "bi/exception/SliceException.hpp"
 #include "bi/exception/SuperException.hpp"
 #include "bi/exception/SuperBaseException.hpp"
 #include "bi/exception/ThisException.hpp"

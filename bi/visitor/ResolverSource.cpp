@@ -52,9 +52,12 @@ bi::Expression* bi::ResolverSource::modify(Slice* o) {
   Modifier::modify(o);
 
   const int typeSize = o->single->type->count();
-  const int indexSize = o->brackets->tupleSize();
+  const int sliceSize = o->brackets->tupleSize();
   const int rangeDims = o->brackets->tupleDims();
-  assert(typeSize == indexSize);  ///@todo Exception
+
+  if (typeSize != sliceSize) {
+    throw SliceException(o, typeSize, sliceSize);
+  }
 
   ArrayType* type = dynamic_cast<ArrayType*>(o->single->type);
   assert(type);

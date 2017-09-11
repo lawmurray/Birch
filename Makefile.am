@@ -65,6 +65,7 @@ COMMON_SOURCES = \
   bi/exception/QueryException.cpp \
   bi/exception/ReturnException.cpp \
   bi/exception/ReturnTypeException.cpp \
+  bi/exception/SliceException.cpp \
   bi/exception/SuperException.cpp \
   bi/exception/SuperBaseException.cpp \
   bi/exception/ThisException.cpp \
@@ -256,6 +257,7 @@ noinst_HEADERS = \
   bi/exception/QueryException.hpp \
   bi/exception/ReturnException.hpp \
   bi/exception/ReturnTypeException.hpp \
+  bi/exception/SliceException.hpp \
   bi/exception/SuperBaseException.hpp \
   bi/exception/SuperException.hpp \
   bi/exception/ThisException.hpp \
