@@ -312,7 +312,7 @@ bi::Statement* bi::ResolverSource::modify(Function* o) {
 bi::Statement* bi::ResolverSource::modify(Fiber* o) {
   scopes.push_back(o->scope);
   if (!o->returnType->isFiber()) {
-    ///@todo throw exception
+    throw FiberTypeException(o);
   } else {
     currentYieldType = dynamic_cast<FiberType*>(o->returnType)->single;
   }
@@ -341,7 +341,7 @@ bi::Statement* bi::ResolverSource::modify(MemberFunction* o) {
 bi::Statement* bi::ResolverSource::modify(MemberFiber* o) {
   scopes.push_back(o->scope);
   if (!o->returnType->isFiber()) {
-    ///@todo throw exception
+    throw FiberTypeException(o);
   } else {
     currentYieldType = dynamic_cast<FiberType*>(o->returnType)->single;
   }

@@ -7,6 +7,7 @@
 #include "bi/exception/CompilerException.hpp"
 #include "bi/exception/ConditionException.hpp"
 #include "bi/exception/DriverException.hpp"
+#include "bi/exception/FiberTypeException.hpp"
 #include "bi/exception/FileNotFoundException.hpp"
 #include "bi/exception/GetException.hpp"
 #include "bi/exception/IndexException.hpp"
