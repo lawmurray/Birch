@@ -87,7 +87,7 @@
 %type <valExpression> multiplicative_expression additive_expression
 %type <valExpression> relational_expression equality_expression
 %type <valExpression> logical_and_expression logical_or_expression
-%type <valExpression> expression_list expression
+%type <valExpression> expression_list expression optional_expression
 %type <valExpression> parameter parameter_list parameters
 %type <valExpression> option option_list options
 %type <valExpression> member_parameter member_parameter_list member_parameters
@@ -298,6 +298,11 @@ expression_list
 expression
     : logical_or_expression
     ;
+    
+optional_expression
+    : expression
+    |             { $$ = new bi::EmptyExpression(); }
+    ;
 
 parameters
     : '(' ')'                 { $$ = new bi::Parentheses(new bi::EmptyExpression(), make_loc(@$)); }
@@ -500,7 +505,7 @@ assertion
     ;
 
 return
-    : RETURN expression ';'  { $$ = new bi::Return($2, make_loc(@$)); }
+    : RETURN optional_expression ';'  { $$ = new bi::Return($2, make_loc(@$)); }
     ;
 
 yield
