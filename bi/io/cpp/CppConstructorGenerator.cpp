@@ -11,7 +11,7 @@ bi::CppConstructorGenerator::CppConstructorGenerator(std::ostream& base,
 
 void bi::CppConstructorGenerator::visit(const Class* o) {
   if (!header) {
-    start("bi::type::" << o->name << "::");
+    start("bi::" << o->name << "::");
   } else {
     start("");
   }
@@ -56,14 +56,17 @@ void bi::CppConstructorGenerator::visit(const MemberParameter* o) {
 void bi::CppConstructorGenerator::visit(const MemberVariable* o) {
   finish(',');
   start(o->name << '(');
-  if (o->type->isClass() && !o->parens->isEmpty()) {
+  if (o->type->isClass()) {
     ClassType* type = dynamic_cast<ClassType*>(o->type);
     assert(type);
     middle("bi::make_object<" << type->name << '>');
-    middle(o->parens);
+    if (o->parens->isEmpty()) {
+      middle("()");
+    } else {
+      middle(o->parens);
+    }
   } else if (o->type->isArray()) {
-    const ArrayType* type =
-        dynamic_cast<const ArrayType*>(o->type);
+    const ArrayType* type = dynamic_cast<const ArrayType*>(o->type);
     assert(type);
     middle("bi::make_frame(" << type->brackets << ")");
     if (!o->parens->isEmpty()) {

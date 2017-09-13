@@ -42,6 +42,8 @@ public:
 
   virtual bool isClass() const;
 
+  virtual void resolveConstructor(Type* args);
+
   virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;

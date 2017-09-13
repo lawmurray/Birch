@@ -72,7 +72,7 @@ void bi::Class::addAssignment(const Type* o) {
 
 bool bi::Class::hasAssignment(const Type* o) const {
   for (auto x : assignments) {
-    if (o->definitely(x)) {
+    if (o->definitely(*x)) {
       return true;
     }
   }

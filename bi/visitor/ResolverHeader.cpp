@@ -67,9 +67,6 @@ bi::Statement* bi::ResolverHeader::modify(Fiber* o) {
 bi::Statement* bi::ResolverHeader::modify(Program* o) {
   scopes.push_back(o->scope);
   o->params = o->params->accept(this);
-  o->params->accept(&assigner);
-  // ^ currently for backwards compatibility of delay_triplet example, can
-  //   be updated later
   scopes.pop_back();
   scopes.back()->add(o);
   ///@todo Check that can assign String to all option types

@@ -11,6 +11,7 @@ bi::BinaryOperator::BinaryOperator(Name* name, Expression* params,
     Named(name),
     Parameterised(params),
     ReturnTyped(returnType),
+    Typed(new EmptyType(loc)),
     Braced(braces) {
   //
 }

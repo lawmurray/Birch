@@ -47,15 +47,13 @@ namespace bi {
 /*
  * Basic types.
  */
-namespace type {
-  using Boolean_ = bool;
-  using Real64_ = double;
-  using Real32_ = float;
-  using Integer64_ = int64_t;
-  using Integer32_ = int32_t;
-  using String_ = std::string;
-  using File_ = FILE*;
-}
+using Boolean_ = bool;
+using Real64_ = double;
+using Real32_ = float;
+using Integer64_ = int64_t;
+using Integer32_ = int32_t;
+using String_ = std::string;
+using File_ = FILE*;
 
 /**
  * Make a span.
@@ -375,8 +373,8 @@ Type* copy_object(Type* o) {
  * For a member fiber, the first argument should be a raw pointer to the
  * containing object.
  */
-template<class YieldType, class StateType, class... Args>
-static Fiber<YieldType> make_fiber(Args... args) {
+template<class YieldType, class StateType, class ... Args>
+static Fiber<YieldType> make_fiber(Args ... args) {
   /* the key here is to ensure that both the internal fiber state, and the
    * pointer to the containing object (for a member fiber), are relative to
    * the new fiber's heap, and not that of the calling fiber, or the
@@ -384,7 +382,7 @@ static Fiber<YieldType> make_fiber(Args... args) {
   Fiber<YieldType> fiber;
   Heap* yieldTo = fiberHeap;
   fiberHeap = &fiber.heap;  // ensures on the new fiber's heap
-  fiber.state = make_object<StateType>(args...);
+  fiber.state = static_cast<FiberState<YieldType>*>(new (GC_MALLOC(sizeof(StateType))) StateType(args...));
   fiberHeap = yieldTo;
   return fiber;
 }

@@ -174,8 +174,14 @@ bi::Expression* bi::ResolverSource::modify(Nil* o) {
 
 bi::Expression* bi::ResolverSource::modify(LocalVariable* o) {
   Modifier::modify(o);
+  o->type->resolveConstructor(o->parens->type);
   o->type->accept(&assigner);
   scopes.back()->add(o);
+  return o;
+}
+
+bi::Expression* bi::ResolverSource::modify(MemberParameter* o) {
+  o->type->accept(&assigner);
   return o;
 }
 
@@ -238,7 +244,7 @@ bi::Statement* bi::ResolverSource::modify(Assignment* o) {
     auto right = new Call(
         new Member(o->right->accept(&cloner),
             new Identifier<Unknown>(new Name("tildeLeft"), o->loc), o->loc),
-        new Parentheses(new EmptyExpression(), o->loc), o->loc);
+        new Parentheses(new EmptyExpression(o->loc), o->loc), o->loc);
     auto left = o->left->accept(&cloner);
     auto assign = new Assignment(left, new Name("<-"), right, o->loc);
     return assign->accept(this);
@@ -266,7 +272,7 @@ bi::Statement* bi::ResolverSource::modify(Assignment* o) {
         new Call(
             new Member(o->left->accept(&cloner),
                 new Identifier<Unknown>(new Name("isNotMissing"), o->loc),
-                o->loc), new Parentheses(new EmptyExpression(), o->loc),
+                o->loc), new Parentheses(new EmptyExpression(o->loc), o->loc),
             o->loc), o->loc);
     auto trueBranch = new Assignment(o->left->accept(&cloner), new Name("~>"),
         o->right->accept(&cloner), o->loc);
@@ -303,6 +309,18 @@ bi::Statement* bi::ResolverSource::modify(Assignment* o) {
   return o;
 }
 
+bi::Statement* bi::ResolverSource::modify(GlobalVariable* o) {
+  Modifier::modify(o);
+  o->type->resolveConstructor(o->parens->type);
+  return o;
+}
+
+bi::Statement* bi::ResolverSource::modify(MemberVariable* o) {
+  Modifier::modify(o);
+  o->type->resolveConstructor(o->parens->type);
+  return o;
+}
+
 bi::Statement* bi::ResolverSource::modify(Function* o) {
   scopes.push_back(o->scope);
   currentReturnType = o->returnType;
@@ -327,6 +345,9 @@ bi::Statement* bi::ResolverSource::modify(Fiber* o) {
 
 bi::Statement* bi::ResolverSource::modify(Program* o) {
   scopes.push_back(o->scope);
+  o->params->accept(&assigner);
+  // ^ currently for backwards compatibility of delay_triplet example, can
+  //   be updated later
   o->braces->accept(this);
   scopes.pop_back();
   return o;
@@ -392,6 +413,7 @@ bi::Statement* bi::ResolverSource::modify(Class* o) {
   scopes.push_back(o->scope);
   currentClass = o;
   o->baseParens = o->baseParens->accept(this);
+  o->base->resolveConstructor(o->baseParens->type);
   o->braces = o->braces->accept(this);
   currentClass = nullptr;
   scopes.pop_back();

@@ -12,6 +12,7 @@ bi::MemberFiber::MemberFiber(Name* name,
     Named(name),
     Parameterised(params),
     ReturnTyped(returnType),
+    Typed(new EmptyType(loc)),
     Braced(braces) {
   //
 }

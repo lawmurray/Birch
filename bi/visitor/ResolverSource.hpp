@@ -44,6 +44,7 @@ public:
   virtual Expression* modify(This* o);
   virtual Expression* modify(Nil* o);
   virtual Expression* modify(LocalVariable* o);
+  virtual Expression* modify(MemberParameter* o);
   virtual Expression* modify(Identifier<Unknown>* o);
   virtual Expression* modify(Identifier<Parameter>* o);
   virtual Expression* modify(Identifier<MemberParameter>* o);
@@ -58,6 +59,8 @@ public:
   virtual Expression* modify(OverloadedIdentifier<UnaryOperator>* o);
 
   virtual Statement* modify(Assignment* o);
+  virtual Statement* modify(GlobalVariable* o);
+  virtual Statement* modify(MemberVariable* o);
   virtual Statement* modify(Function* o);
   virtual Statement* modify(Fiber* o);
   virtual Statement* modify(Program* o);
@@ -77,6 +80,20 @@ public:
 
 private:
   /**
+   * Generic implementation of modify() for variable identifiers.
+   */
+  template<class ObjectType>
+  Identifier<ObjectType>* modifyVariableIdentifier(
+      bi::Identifier<ObjectType>* o);
+
+  /**
+   * Generic implementation of modify() for function identifiers.
+   */
+  template<class ObjectType>
+  OverloadedIdentifier<ObjectType>* modifyFunctionIdentifier(
+      bi::OverloadedIdentifier<ObjectType>* o);
+
+  /**
    * Return type of current function.
    */
   Type* currentReturnType;
@@ -86,4 +103,22 @@ private:
    */
   Type* currentYieldType;
 };
+}
+
+template<class ObjectType>
+bi::Identifier<ObjectType>* bi::ResolverSource::modifyVariableIdentifier(
+    bi::Identifier<ObjectType>* o) {
+  Modifier::modify(o);
+  resolve(o);
+  o->type = o->target->type->accept(&cloner)->accept(this);
+  return o;
+}
+
+template<class ObjectType>
+bi::OverloadedIdentifier<ObjectType>* bi::ResolverSource::modifyFunctionIdentifier(
+    bi::OverloadedIdentifier<ObjectType>* o) {
+  Modifier::modify(o);
+  resolve(o);
+  o->type = new OverloadedType(o->target->params, o->target->returns, o->loc);
+  return o;
 }

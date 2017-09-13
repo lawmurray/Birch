@@ -14,7 +14,8 @@ bi::Expression::Expression(Type* type, Location* loc) :
 }
 
 bi::Expression::Expression(Location* loc) :
-    Located(loc) {
+    Located(loc),
+    Typed(new EmptyType(loc)) {
   //
 }
 

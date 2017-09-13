@@ -61,13 +61,13 @@ void bi::CppClassGenerator::visit(const Class* o) {
 
   /* clone function */
   if (!header) {
-    start("bi::type::");
+    start("bi::");
   } else {
     start("virtual ");
   }
   middle(o->name << "* ");
   if (!header) {
-    middle("bi::type::" << o->name << "::");
+    middle("bi::" << o->name << "::");
   }
   middle("clone()");
   if (header) {
@@ -115,7 +115,7 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
   }
   middle(o->returnType << ' ');
   if (!header) {
-    middle("bi::type::" << type->name << "::");
+    middle("bi::" << type->name << "::");
   }
   middle(internalise(o->name->str()) << o->params);
   //middle(" const");
@@ -144,11 +144,11 @@ void bi::CppClassGenerator::visit(const AssignmentOperator* o) {
     if (header) {
       start("virtual ");
     } else {
-      start("bi::type::");
+      start("bi::");
     }
     middle(type->name << "& ");
     if (!header) {
-      middle("bi::type::" << type->name << "::");
+      middle("bi::" << type->name << "::");
     }
     middle("operator=(" << o->single << ')');
     if (header) {
@@ -168,7 +168,7 @@ void bi::CppClassGenerator::visit(const AssignmentOperator* o) {
 void bi::CppClassGenerator::visit(const ConversionOperator* o) {
   if (!o->braces->isEmpty()) {
     if (!header) {
-      start("bi::type::" << type->name << "::");
+      start("bi::" << type->name << "::");
     } else {
       /* user-defined conversions should be marked explicit to work properly
        * with the Pointer class in the compiler library; see also

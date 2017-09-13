@@ -59,6 +59,14 @@ bool bi::AliasType::isFiber() const {
   return target->base->isFiber();
 }
 
+bi::Type* bi::AliasType::resolve(Type* args) {
+  return target->base->resolve(args);
+}
+
+void bi::AliasType::resolveConstructor(Type* args) {
+  target->base->resolveConstructor(args);
+}
+
 bool bi::AliasType::dispatchDefinitely(const Type& o) const {
   return o.definitely(*this);
 }

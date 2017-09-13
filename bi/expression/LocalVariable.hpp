@@ -30,8 +30,7 @@ public:
    * @param value Initial value.
    * @param loc Location.
    */
-  LocalVariable(Name* name, Type* type, Expression* parens =
-      new EmptyExpression(), Expression* value = new EmptyExpression(),
+  LocalVariable(Name* name, Type* type, Expression* parens, Expression* value,
       Location* loc = nullptr);
 
   /**

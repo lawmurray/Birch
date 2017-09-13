@@ -21,8 +21,7 @@ public:
    * @param single Expression in brackets.
    * @param loc Location.
    */
-  Brackets(Expression* single = new EmptyExpression(),
-      Location* loc = nullptr);
+  Brackets(Expression* single, Location* loc = nullptr);
 
   /**
    * Destructor.

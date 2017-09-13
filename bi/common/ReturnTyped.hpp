@@ -19,7 +19,7 @@ public:
    *
    * @param returnType Return type.
    */
-  ReturnTyped(Type* returnType = new EmptyType());
+  ReturnTyped(Type* returnType);
 
   /**
    * Destructor.

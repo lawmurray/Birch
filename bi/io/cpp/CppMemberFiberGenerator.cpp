@@ -28,7 +28,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   /* constructor, taking the arguments of the Fiber */
   start("");
   if (!header) {
-    middle("bi::type::" << type->name << "::" << o->name << "FiberState::");
+    middle("bi::" << type->name << "::" << o->name << "FiberState::");
   }
   middle(o->name << "FiberState(const Pointer<" << type->name << ">& self");
   if (!o->params->strip()->isEmpty()) {
@@ -57,13 +57,13 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
 
   /* clone function */
   if (!header) {
-    start("bi::type::" << type->name << "::");
+    start("bi::" << type->name << "::");
   } else {
     start("virtual ");
   }
   middle(o->name << "FiberState* ");
   if (!header) {
-    middle("bi::type::" << type->name << "::" << o->name << "FiberState::");
+    middle("bi::" << type->name << "::" << o->name << "FiberState::");
   }
   middle("clone()");
   if (header) {
@@ -83,7 +83,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   }
   middle("bool ");
   if (!header) {
-    middle("bi::type::" << type->name << "::" << o->name << "FiberState::");
+    middle("bi::" << type->name << "::" << o->name << "FiberState::");
   }
   middle("query()");
   if (header) {
@@ -120,7 +120,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   /* initialisation function */
   start(o->returnType << ' ');
   if (!header) {
-    middle("bi::type::" << type->name << "::");
+    middle("bi::" << type->name << "::");
   }
   middle(o->name << o->params);
   if (header) {

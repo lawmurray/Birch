@@ -21,8 +21,8 @@ public:
    * @param loc Location.
    * @param assignable Is this type assignable?
    */
-  FiberType(Type* single = new EmptyType(), Location* loc =
-      nullptr, const bool assignable = false);
+  FiberType(Type* single, Location* loc = nullptr, const bool assignable =
+      false);
 
   /**
    * Destructor.

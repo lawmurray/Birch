@@ -4,6 +4,7 @@
 #pragma once
 
 #include "bi/lib/global.hpp"
+#include "bi/lib/Object.hpp"
 
 namespace bi {
 /**
@@ -14,46 +15,21 @@ namespace bi {
  * @tparam T Type.
  */
 template<class T>
-class Pointer {
-  template<class U> friend class Pointer;
+class Pointer: public Pointer<typename super_type<T>::type> {
   friend class Object;
 public:
+  typedef Pointer<T> this_type;
+  typedef Pointer<typename super_type<T>::type> super_type;
+
   /**
-   * Constructor.
+   * Raw pointer constructor.
    */
   Pointer(T* raw = nullptr);
-
-  /**
-   * Generic constructor.
-   */
-  template<class U>
-  Pointer(U* raw = nullptr);
-
-  /**
-   * Copy constructor.
-   */
-  Pointer(const Pointer<T>& o) = default;
-
-  /**
-   * Generic copy constructor.
-   */
-  template<class U>
-  Pointer(const Pointer<U>& o);
 
   /**
    * Assignment operator.
    */
   Pointer<T>& operator=(const Pointer<T>& o) = default;
-
-  /**
-   * Generic assignment operator.
-   */
-  template<class U, typename = std::enable_if_t<
-      std::is_base_of<T,U>::value && !std::is_same<T,U>::value>>
-  Pointer<T>& operator=(const Pointer<U>& o) {
-    index = o.index;
-    return *this;
-  }
 
   /**
    * Raw pointer assignment operator.
@@ -63,10 +39,7 @@ public:
   /**
    * Null pointer assignment operator.
    */
-  Pointer<T>& operator=(const std::nullptr_t&) {
-    index = -1;
-    return *this;
-  }
+  Pointer<T>& operator=(const std::nullptr_t&);
 
   /**
    * Generic value assignment operator.
@@ -85,6 +58,10 @@ public:
   operator U() {
     /* conversion operators in generated code are marked explicit, so the
      * cast is necessary here */
+    return static_cast<U>(*get());
+  }
+  template<class U, typename = std::enable_if_t<has_conversion<T,U>::value>>
+  operator U() const {
     return static_cast<U>(*get());
   }
 
@@ -122,21 +99,26 @@ public:
     return (*get())(args...);
   }
 
-  /*
-   * Equality operators.
-   */
-  bool operator==(const Pointer<T>& o) const {
-    return get() == o;
-  }
-  bool operator!=(const Pointer<T>& o) const {
-    return !(*this == o);
-  }
-
-private:
+protected:
   /**
    * Constructor for pointer_from_this() in Object.
    */
   Pointer(T* raw, intptr_t index);
+};
+
+template<>
+class Pointer<Object> {
+public:
+  /**
+   * Raw pointer constructor.
+   */
+  Pointer(Object* raw = nullptr);
+
+protected:
+  /**
+   * Constructor for pointer_from_this().
+   */
+  Pointer(Object* raw, intptr_t index);
 
   /**
    * The index of the heap allocation, -1 for null.
@@ -149,32 +131,8 @@ private:
 #include "bi/lib/Fiber.hpp"
 
 template<class T>
-bi::Pointer<T>::Pointer(T* raw) {
-  assert(fiberHeap);
-  if (raw) {
-    index = fiberHeap->put(raw);
-    raw->setIndex(index);
-  } else {
-    index = -1;
-  }
-}
-
-template<class T>
-template<class U>
-bi::Pointer<T>::Pointer(U* raw) {
-  assert(fiberHeap);
-  if (raw) {
-    index = fiberHeap->put(raw);
-    raw->setIndex(index);
-  } else {
-    index = -1;
-  }
-}
-
-template<class T>
-template<class U>
-bi::Pointer<T>::Pointer(const Pointer<U>& o) :
-    index(o.index) {
+bi::Pointer<T>::Pointer(T* raw) :
+    super_type(raw) {
   //
 }
 
@@ -182,11 +140,17 @@ template<class T>
 bi::Pointer<T>& bi::Pointer<T>::operator=(T* raw) {
   assert(fiberHeap);
   if (raw) {
-    index = fiberHeap->put(raw);
-    raw->setIndex(index);
+    this->index = fiberHeap->put(raw);
+    raw->setIndex(this->index);
   } else {
-    index = -1;
+    this->index = -1;
   }
+  return *this;
+}
+
+template<class T>
+bi::Pointer<T>& bi::Pointer<T>::operator=(const std::nullptr_t&) {
+  this->index = -1;
   return *this;
 }
 
@@ -200,19 +164,19 @@ bi::Pointer<T>& bi::Pointer<T>::operator=(const U& o) {
 template<class T>
 T* bi::Pointer<T>::get() {
   T* raw;
-  if (index >= 0) {
+  if (this->index >= 0) {
     assert(fiberHeap);
 #ifdef NDEBUG
-    raw = static_cast<T*>(fiberHeap->get(index));
+    raw = static_cast<T*>(fiberHeap->get(this->index));
 #else
-    raw = dynamic_cast<T*>(fiberHeap->get(index));
+    raw = dynamic_cast<T*>(fiberHeap->get(this->index));
     assert(raw);
 #endif
     if (raw->isShared()) {
       /* shared and writeable, copy now (copy-on-write) */
       raw->disuse();
       raw = raw->clone();
-      fiberHeap->set(index, raw);
+      fiberHeap->set(this->index, raw);
     }
   } else {
     raw = nullptr;
@@ -223,19 +187,19 @@ T* bi::Pointer<T>::get() {
 template<class T>
 T* const bi::Pointer<T>::get() const {
   T* raw;
-  if (index >= 0) {
+  if (this->index >= 0) {
     assert(fiberHeap);
 #ifdef NDEBUG
-    raw = static_cast<T*>(fiberHeap->get(index));
+    raw = static_cast<T*>(fiberHeap->get(this->index));
 #else
-    raw = dynamic_cast<T*>(fiberHeap->get(index));
+    raw = dynamic_cast<T*>(fiberHeap->get(this->index));
     assert(raw);
 #endif
     if (raw->isShared()) {
       /* shared and writeable, copy now (copy-on-write) */
       raw->disuse();
       raw = raw->clone();
-      fiberHeap->set(index, raw);
+      fiberHeap->set(this->index, raw);
     }
   } else {
     raw = nullptr;
@@ -245,7 +209,23 @@ T* const bi::Pointer<T>::get() const {
 
 template<class T>
 bi::Pointer<T>::Pointer(T* raw, intptr_t index) :
-    index(index) {
+    super_type(raw, index) {
+  //
+}
+
+inline bi::Pointer<bi::Object>::Pointer(Object* raw) {
+  assert(fiberHeap);
+  if (raw) {
+    index = fiberHeap->put(raw);
+    raw->setIndex(index);
+  } else {
+    index = -1;
+  }
+}
+
+inline bi::Pointer<bi::Object>::Pointer(Object* raw, intptr_t index) {
   assert(index >= 0 || !raw);
   assert(index < 0 || fiberHeap->get(index) == raw);
+
+  this->index = index;
 }

@@ -20,8 +20,10 @@ public:
    * @param head First in list.
    * @param tail Remaining list.
    * @param loc Location.
+   * @param assignable Is this type assignable?
    */
-  ListType(Type* head, Type* tail, Location* loc = nullptr);
+  ListType(Type* head, Type* tail, Location* loc = nullptr,
+      const bool assignable = false);
 
   /**
    * Destructor.

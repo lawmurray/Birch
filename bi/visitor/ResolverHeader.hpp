@@ -7,8 +7,9 @@
 
 namespace bi {
 /**
- * This is the second pass of the abstract syntax tree after parsing, handling
- * declarations.
+ * This is the second pass of the abstract syntax tree after parsing,
+ * populating available variables, functions, etc (everything other than
+ * types).
  *
  * @ingroup compiler_visitor
  */

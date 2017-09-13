@@ -19,7 +19,7 @@ public:
    *
    * @param params Parameters.
    */
-  Parameterised(Expression* params = new EmptyExpression());
+  Parameterised(Expression* params);
 
   /**
    * Destructor.

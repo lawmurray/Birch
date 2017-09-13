@@ -6,6 +6,7 @@
 #include "bi/exception/AmbiguousCallException.hpp"
 #include "bi/exception/CompilerException.hpp"
 #include "bi/exception/ConditionException.hpp"
+#include "bi/exception/ConstructorException.hpp"
 #include "bi/exception/DriverException.hpp"
 #include "bi/exception/FiberTypeException.hpp"
 #include "bi/exception/FileNotFoundException.hpp"

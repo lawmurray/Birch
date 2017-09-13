@@ -40,6 +40,12 @@ bool bi::ClassType::isClass() const {
   return true;
 }
 
+void bi::ClassType::resolveConstructor(Type* args) {
+  if (!args->definitely(*target->parens->type)) {
+    throw ConstructorException(args, target);
+  }
+}
+
 bool bi::ClassType::dispatchDefinitely(const Type& o) const {
   return o.definitely(*this);
 }

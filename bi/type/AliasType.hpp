@@ -52,6 +52,9 @@ public:
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
+  virtual Type* resolve(Type* args);
+  virtual void resolveConstructor(Type* args);
+
   using Type::definitely;
   using Type::possibly;
 

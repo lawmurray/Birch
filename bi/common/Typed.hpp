@@ -19,7 +19,7 @@ public:
    *
    * @param type Type.
    */
-  Typed(Type* type = new EmptyType());
+  Typed(Type* type);
 
   /**
    * Destructor.

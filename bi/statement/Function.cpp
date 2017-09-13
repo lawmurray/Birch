@@ -11,6 +11,7 @@ bi::Function::Function(Name* name, Expression* params, Type* returnType,
     Named(name),
     Parameterised(params),
     ReturnTyped(returnType),
+    Typed(new EmptyType(loc)),
     Braced(braces) {
   //
 }

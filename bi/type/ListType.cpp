@@ -5,14 +5,14 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::ListType::ListType(Type* head, Type* tail, Location* loc) :
+bi::ListType::ListType(Type* head, Type* tail, Location* loc,
+    const bool assignable) :
+    Type(loc, assignable),
     head(head),
     tail(tail) {
   /* pre-conditions */
   assert(head);
   assert(tail);
-
-  this->loc = loc;
 }
 
 bi::ListType::~ListType() {

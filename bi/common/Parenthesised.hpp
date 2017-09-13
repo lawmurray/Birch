@@ -19,7 +19,7 @@ public:
    *
    * @param parens Parenthesised expression.
    */
-  Parenthesised(Expression* parens = new EmptyExpression());
+  Parenthesised(Expression* parens);
 
   /**
    * Destructor.

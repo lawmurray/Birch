@@ -19,7 +19,7 @@ public:
    *
    * @param value Value.
    */
-  Valued(Expression* value = new EmptyExpression());
+  Valued(Expression* value);
 
   /**
    * Destructor.

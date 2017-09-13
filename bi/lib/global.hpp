@@ -39,6 +39,15 @@ extern Heap* fiberHeap;
 extern std::mt19937_64 rng;
 
 /**
+ * The super type of type @p T. Specialised in forward declarations of
+ * classes.
+ */
+template<class T>
+struct super_type {
+  typedef class Object type;
+};
+
+/**
  * Does type @p T have a conversion operator to type @p U?
  */
 template<class T, class U>

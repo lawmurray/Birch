@@ -15,8 +15,10 @@ class EmptyExpression: public Expression {
 public:
   /**
    * Constructor.
+   *
+   * @param loc Location.
    */
-  EmptyExpression();
+  EmptyExpression(Location* loc = nullptr);
 
   /**
    * Destructor.

@@ -301,7 +301,7 @@ expression
     
 optional_expression
     : expression
-    |             { $$ = new bi::EmptyExpression(); }
+    |             { $$ = new bi::EmptyExpression(make_loc(@$)); }
     ;
 
 local_variable
@@ -309,7 +309,7 @@ local_variable
     ;
 
 parameters
-    : '(' ')'                 { $$ = new bi::Parentheses(new bi::EmptyExpression(), make_loc(@$)); }
+    : '(' ')'                 { $$ = new bi::Parentheses(new bi::EmptyExpression(make_loc(@$)), make_loc(@$)); }
     | '(' parameter_list ')'  { $$ = new bi::Parentheses($2, make_loc(@$)); }
     ;
 
@@ -319,11 +319,11 @@ parameter_list
     ;
 
 parameter
-    : name ':' type  { $$ = new bi::Parameter($1, $3, new bi::EmptyExpression(), make_loc(@$)); }
+    : name ':' type  { $$ = new bi::Parameter($1, $3, new bi::EmptyExpression(make_loc(@$)), make_loc(@$)); }
     ;
 
 options
-    : '(' ')'              { $$ = new bi::Parentheses(new bi::EmptyExpression(), make_loc(@$)); }
+    : '(' ')'              { $$ = new bi::Parentheses(new bi::EmptyExpression(make_loc(@$)), make_loc(@$)); }
     | '(' option_list ')'  { $$ = new bi::Parentheses($2, make_loc(@$)); }
     ;
 
@@ -337,13 +337,13 @@ option
     ;
 
 member_parameters
-    : '(' ')'                        { $$ = new bi::Parentheses(new bi::EmptyExpression(), make_loc(@$)); }
+    : '(' ')'                        { $$ = new bi::Parentheses(new bi::EmptyExpression(make_loc(@$)), make_loc(@$)); }
     | '(' member_parameter_list ')'  { $$ = new bi::Parentheses($2, make_loc(@$)); }
     ;
 
 optional_member_parameters
     : member_parameters
-    |                    { $$ = new bi::EmptyExpression(); }
+    |                    { $$ = new bi::EmptyExpression(make_loc(@$)); }
     ;
 
 member_parameter_list
@@ -352,23 +352,23 @@ member_parameter_list
     ;
 
 member_parameter
-    : name ':' type  { $$ = new bi::MemberParameter($1, $3, new bi::EmptyExpression(), make_loc(@$)); }
+    : name ':' type  { $$ = new bi::MemberParameter($1, $3, new bi::EmptyExpression(make_loc(@$)), make_loc(@$)); }
     ;
 
 arguments
-    : '(' ')'                  { $$ = new bi::Parentheses(new bi::EmptyExpression(), make_loc(@$)); }
+    : '(' ')'                  { $$ = new bi::Parentheses(new bi::EmptyExpression(make_loc(@$)), make_loc(@$)); }
     | '(' expression_list ')'  { $$ = new bi::Parentheses($2, make_loc(@$)); }
     ;
     ;
 
 optional_arguments
     : arguments
-    |            { $$ = new bi::EmptyExpression(); }
+    |            { $$ = new bi::EmptyExpression(make_loc(@$)); }
     ;
 
 size
     : expression  { $$ = new bi::Span($1, make_loc(@$)); }
-    | '_'         { $$ = new bi::Span(new bi::EmptyExpression(), make_loc(@$)); }
+    | '_'         { $$ = new bi::Span(new bi::EmptyExpression(make_loc(@$)), make_loc(@$)); }
     ;
 
 size_list
@@ -459,7 +459,7 @@ conversion_operator_declaration
 
 class_declaration
     : CLASS name optional_member_parameters '<' identifier_type optional_arguments { push_raw(); } optional_class_braces  { $$ = new bi::Class($2, $3, $5, $6, $8, make_doc_loc(@$)); }
-    | CLASS name optional_member_parameters { push_raw(); } optional_class_braces                                         { $$ = new bi::Class($2, $3, new bi::EmptyType(), new bi::EmptyExpression(), $5, make_doc_loc(@$)); }
+    | CLASS name optional_member_parameters { push_raw(); } optional_class_braces                                         { $$ = new bi::Class($2, $3, new bi::EmptyType(make_loc(@$)), new bi::EmptyExpression(make_loc(@$)), $5, make_doc_loc(@$)); }
     ;
 
 alias_type_declaration
@@ -498,7 +498,7 @@ if
 
 for_index
     : identifier
-    | name ':' type  { $$ = new bi::LocalVariable($1, $3, new bi::EmptyExpression(), new bi::EmptyExpression(), make_loc(@$)); }
+    | name ':' type  { $$ = new bi::LocalVariable($1, $3, new bi::EmptyExpression(make_loc(@$)), new bi::EmptyExpression(make_loc(@$)), make_loc(@$)); }
     ;
 
 for
@@ -598,7 +598,7 @@ result
     
 optional_result
     : result
-    |         { $$ = new bi::EmptyType(); }
+    |         { $$ = new bi::EmptyType(make_loc(@$)); }
     ;
 
 value
@@ -607,7 +607,7 @@ value
     
 optional_value
     : value
-    |        { $$ = new bi::EmptyExpression(); }
+    |        { $$ = new bi::EmptyExpression(make_loc(@$)); }
     ;
 
 braces
@@ -677,7 +677,7 @@ type_parameter_list
     ;
 
 type_parameters
-    : '(' ')'                      { $$ = new bi::EmptyType(); }
+    : '(' ')'                      { $$ = new bi::EmptyType(make_loc(@$)); }
     | '(' type_parameter_list ')'  { $$ = $2; }
     ;
     ;

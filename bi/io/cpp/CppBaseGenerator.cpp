@@ -30,15 +30,15 @@ void bi::CppBaseGenerator::visit(const List<Expression>* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Literal<bool>* o) {
-  middle("bi::type::Boolean_(" << o->str << ")");
+  middle("bi::Boolean_(" << o->str << ")");
 }
 
 void bi::CppBaseGenerator::visit(const Literal<int64_t>* o) {
-  middle("bi::type::Integer64_(" << o->str << ")");
+  middle("bi::Integer64_(" << o->str << ")");
 }
 
 void bi::CppBaseGenerator::visit(const Literal<double>* o) {
-  middle("bi::type::Real64_(" << o->str << ")");
+  middle("bi::Real64_(" << o->str << ")");
 }
 
 void bi::CppBaseGenerator::visit(const Literal<const char*>* o) {
@@ -362,7 +362,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
         } else if (param->type->isClass()) {
           auto type = dynamic_cast<const ClassType*>(param->type);
           assert(type);
-          middle(" = bi::make_object<bi::type::" << type->name << ">()");
+          middle(" = bi::make_object<bi::" << type->name << ">()");
         }
         finish(';');
       }
@@ -557,16 +557,10 @@ void bi::CppBaseGenerator::visit(const Basic* o) {
 void bi::CppBaseGenerator::visit(const Class* o) {
   if (header) {
     line("namespace bi {");
-    in();
-    line("namespace type {");
-    out();
   }
   CppClassGenerator auxClass(base, level, header);
   auxClass << o;
   if (header) {
-    in();
-    line("}");
-    out();
     line("}\n");
   }
 }
@@ -574,13 +568,7 @@ void bi::CppBaseGenerator::visit(const Class* o) {
 void bi::CppBaseGenerator::visit(const Alias* o) {
   if (header) {
     line("namespace bi {");
-    in();
-    line("namespace type {");
-    out();
     line("using " << o->name << " = " << o->base << ';');
-    in();
-    line("}");
-    out();
     line("}\n");
   }
 }
@@ -708,13 +696,13 @@ void bi::CppBaseGenerator::visit(const OptionalType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const ClassType* o) {
-  middle("bi::Pointer<bi::type::" << o->name << '>');
+  middle("bi::Pointer<bi::" << o->name << '>');
 }
 
 void bi::CppBaseGenerator::visit(const AliasType* o) {
-  middle("bi::type::" << o->name);
+  middle("bi::" << o->name);
 }
 
 void bi::CppBaseGenerator::visit(const BasicType* o) {
-  middle("bi::type::" << o->name);
+  middle("bi::" << o->name);
 }

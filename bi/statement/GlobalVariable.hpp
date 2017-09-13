@@ -32,9 +32,8 @@ public:
    * @param value Initial value.
    * @param loc Location.
    */
-  GlobalVariable(Name* name, Type* type, Expression* parens =
-      new EmptyExpression(), Expression* value = new EmptyExpression(),
-      Location* loc = nullptr);
+  GlobalVariable(Name* name, Type* type, Expression* parens,
+      Expression* value, Location* loc = nullptr);
 
   /**
    * Destructor.

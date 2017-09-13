@@ -77,6 +77,12 @@ bi::Type* bi::Type::resolve(Type* args) {
   throw InvalidCallException(args);
 }
 
+void bi::Type::resolveConstructor(Type* args) {
+  if (!args->isEmpty()) {
+    throw ConstructorException(args);
+  }
+}
+
 int bi::Type::count() const {
   return 0;
 }

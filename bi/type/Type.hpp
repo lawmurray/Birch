@@ -153,6 +153,13 @@ public:
   virtual Type* resolve(Type* args);
 
   /**
+   * Resolve a constructor call.
+   *
+   * @param args Argument types.
+   */
+  virtual void resolveConstructor(Type* args);
+
+  /**
    * How many dimensions does this type have?
    */
   virtual int count() const;

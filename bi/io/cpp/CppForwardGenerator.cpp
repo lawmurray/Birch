@@ -13,13 +13,7 @@ bi::CppForwardGenerator::CppForwardGenerator(std::ostream& base,
 
 void bi::CppForwardGenerator::visit(const File* o) {
   line("namespace bi {");
-  in();
-  line("namespace type {");
-  out();
   Visitor::visit(o);
-  in();
-  line("}");
-  out();
   line("}\n");
 }
 
@@ -31,6 +25,21 @@ void bi::CppForwardGenerator::visit(const Class* o) {
     CppBaseGenerator aux(base, level);
     aux << o->name;
     finish(';');
+    if (!o->base->isEmpty()) {
+      auto type = dynamic_cast<const ClassType*>(o->base);
+      assert(type);
+
+      /* forward super type declaration */
+      start("template<> struct super_type<");
+      aux << o->name;
+      finish("> {");
+      in();
+      start("typedef class ");
+      aux << type->name;
+      finish(" type;");
+      out();
+      line("};");
+    }
   }
 }
 

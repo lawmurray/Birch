@@ -50,6 +50,7 @@ COMMON_SOURCES = \
   bi/exception/AmbiguousCallException.cpp \
   bi/exception/CompilerException.cpp \
   bi/exception/ConditionException.cpp \
+  bi/exception/ConstructorException.cpp \
   bi/exception/DriverException.cpp \
   bi/exception/Exception.cpp \
   bi/exception/FiberTypeException.cpp \
@@ -243,6 +244,7 @@ noinst_HEADERS = \
   bi/exception/AmbiguousCallException.hpp \
   bi/exception/CompilerException.hpp \
   bi/exception/ConditionException.hpp \
+  bi/exception/ConstructorException.hpp \
   bi/exception/DriverException.hpp \
   bi/exception/FiberTypeException.hpp \
   bi/exception/FileNotFoundException.hpp \

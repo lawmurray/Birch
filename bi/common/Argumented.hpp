@@ -19,7 +19,7 @@ public:
    *
    * @param args Arguments.
    */
-  Argumented(Expression* args = new EmptyExpression());
+  Argumented(Expression* args);
 
   /**
    * Destructor.

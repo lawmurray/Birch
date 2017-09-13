@@ -19,7 +19,7 @@ public:
    *
    * @param brackets Expression in square brackets.
    */
-  Bracketed(Expression* brackets = new EmptyExpression());
+  Bracketed(Expression* brackets);
 
   /**
    * Destructor.

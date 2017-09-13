@@ -20,7 +20,7 @@ bi::File* bi::Cloner::clone(const File* o) {
 }
 
 bi::Expression* bi::Cloner::clone(const EmptyExpression* o) {
-  return new EmptyExpression();
+  return new EmptyExpression(o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const List<Expression>* o) {
@@ -303,14 +303,12 @@ bi::Statement* bi::Cloner::clone(const Raw* o) {
 }
 
 bi::Type* bi::Cloner::clone(const EmptyType* o) {
-  return new EmptyType(o->assignable);
+  return new EmptyType(o->loc, o->assignable);
 }
 
 bi::Type* bi::Cloner::clone(const ListType* o) {
-  ListType* result = new ListType(o->head->accept(this),
-      o->tail->accept(this), o->loc);
-  result->assignable = o->assignable;
-  return result;
+  return new ListType(o->head->accept(this), o->tail->accept(this), o->loc,
+      o->assignable);
 }
 
 bi::Type* bi::Cloner::clone(const IdentifierType* o) {

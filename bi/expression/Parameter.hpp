@@ -28,8 +28,8 @@ public:
    * @param value Default value.
    * @param loc Location.
    */
-  Parameter(Name* name, Type* type, Expression* value =
-      new EmptyExpression(), Location* loc = nullptr);
+  Parameter(Name* name, Type* type, Expression* value,
+      Location* loc = nullptr);
 
   /**
    * Destructor.

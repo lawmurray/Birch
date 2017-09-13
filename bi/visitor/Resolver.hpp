@@ -91,20 +91,6 @@ protected:
   void checkInteger(const Expression* o);
 
   /**
-   * Generic implementation of modify() for variable identifiers.
-   */
-  template<class ObjectType>
-  Identifier<ObjectType>* modifyVariableIdentifier(
-      bi::Identifier<ObjectType>* o);
-
-  /**
-   * Generic implementation of modify() for function identifiers.
-   */
-  template<class ObjectType>
-  OverloadedIdentifier<ObjectType>* modifyFunctionIdentifier(
-      bi::OverloadedIdentifier<ObjectType>* o);
-
-  /**
    * List of scopes, innermost at the back.
    */
   std::list<Scope*> scopes;
@@ -145,22 +131,4 @@ void bi::Resolver::resolve(ObjectType* o) {
   if (!o->target) {
     throw UnresolvedException(o);
   }
-}
-
-template<class ObjectType>
-bi::Identifier<ObjectType>* bi::Resolver::modifyVariableIdentifier(
-    bi::Identifier<ObjectType>* o) {
-  Modifier::modify(o);
-  resolve(o);
-  o->type = o->target->type->accept(&cloner)->accept(this);
-  return o;
-}
-
-template<class ObjectType>
-bi::OverloadedIdentifier<ObjectType>* bi::Resolver::modifyFunctionIdentifier(
-    bi::OverloadedIdentifier<ObjectType>* o) {
-  Modifier::modify(o);
-  resolve(o);
-  o->type = new OverloadedType(o->target->params, o->target->returns, o->loc);
-  return o;
 }

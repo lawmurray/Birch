@@ -18,6 +18,7 @@ bi::ArrayType::ArrayType(Type* single, const int ndims,
     Location* loc, const bool assignable) :
     Type(loc, assignable),
     Single<Type>(single),
+    Bracketed(new EmptyExpression(loc)),
     ndims(ndims) {
   //
 }
@@ -44,6 +45,10 @@ bi::Type* bi::ArrayType::accept(Modifier* visitor) {
 
 void bi::ArrayType::accept(Visitor* visitor) const {
   return visitor->visit(this);
+}
+
+void bi::ArrayType::resolveConstructor(Type* args) {
+  single->resolveConstructor(args);
 }
 
 bool bi::ArrayType::dispatchDefinitely(const Type& o) const {
