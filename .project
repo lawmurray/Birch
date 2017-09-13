@@ -3,6 +3,7 @@
 	<name>VBD</name>
 	<comment></comment>
 	<projects>
+		<project>Birch.Standard</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

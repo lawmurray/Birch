@@ -8,29 +8,28 @@
 class VBD(T:Integer) {
   N:Integer <- 0;
 
-  p_d_inc_h:Real;   // dealy infection by a human -> infectiousness of next human case
-  p_d_inf_h:Real;   // infectious period of humans
-  p_p_risk:Real;    // proportion of the population at risk
-  p_p_immune:Real;  // proportion of the population at risk
-  p_R0:Real;        // human-to-human basic reproduction number
-  p_p_rep:Real;     // proportion of cases reported
-  p_p_over:Real;    // multiplicative overdispersion of reporting
-  p_s_peak:Real;    // seasonal peak week
-  p_s_amp:Real;     // strength of seasonal forcing
+  p_d_inc_h:Gaussian;   // dealy infection by a human -> infectiousness of next human case
+  p_d_inf_h:Gaussian;   // infectious period of humans
+  p_p_risk:Uniform;    // proportion of the population at risk
+  p_p_immune:Gamma;  // proportion of the population at risk
+  p_R0:Uniform;        // human-to-human basic reproduction number
+  p_s_amp:Uniform;     // strength of seasonal forcing
+  p_s_peak:Gaussian;    // seasonal peak week
+  p_p_rep:Uniform;     // proportion of cases reported
+  p_p_over:Beta;    // multiplicative overdispersion of reporting
+  initI:Gamma;  // initial number of infectious
 
-  initI:Real;  // initial number of infectious
-
-  S:Real[T];  // susceptible
-  E:Real[T];  // incubating
-  I:Real[T];  // infectious
-  R:Real[T];  // recovered
-  Z:Real[T];  // incidence
+  S:Gaussian[T];  // susceptible
+  E:Gaussian[T];  // incubating
+  I:Gaussian[T];  // infectious
+  R:Gaussian[T];  // recovered
+  Z:Gaussian[T];  // incidence
   beta_track:Real[T];
   reff:Real[T];
 
   serology_sample:Integer[T];  // input
   
-  incidence:Real[T];    // observation
+  incidence:Gaussian[T];    // observation
   serology:Integer[T];  // observation
 
   function input() {
@@ -39,54 +38,55 @@ class VBD(T:Integer) {
 
   function simulate() {
     /* parameters */
-    p_d_inc_h <~ Gaussian(17.8/7.0, pow(2.3/7.0, 2.0)); /// @todo truncate below at 0
-    p_d_inf_h <~ Gaussian(4.7/7.0, pow(1.2/7.0, 2.0));  /// @todo truncate below at 0
-    p_p_immune <~ Gamma(1.0, 0.06);
-    p_p_risk <~ Uniform(0.1, 1.0);
-    p_R0 <~ Uniform(0.0, 25.0);
-    p_s_amp <~ Uniform(0.0, 1.0);
-    p_s_peak <~ Gaussian(20.0, 4.0);
-    p_p_rep <~ Uniform(0.0, 1.0);
-    initI <~ Gamma(1.0, 10.0);
-    p_p_over <~ Beta(1.0, 10.0);
+    p_d_inc_h ~ Gaussian(17.8/7.0, pow(2.3/7.0, 2.0)); /// @todo truncate below at 0
+    p_d_inf_h ~ Gaussian(4.7/7.0, pow(1.2/7.0, 2.0));  /// @todo truncate below at 0
+    p_p_risk ~ Uniform(0.1, 1.0);
+    p_p_immune ~ Gamma(1.0, 0.06);
+    p_R0 ~ Uniform(0.0, 25.0);
+    p_s_amp ~ Uniform(0.0, 1.0);
+    p_s_peak ~ Gaussian(20.0, 4.0);
+    p_p_rep ~ Uniform(0.0, 1.0);
+    p_p_over ~ Beta(1.0, 10.0);
+    initI ~ Gamma(1.0, 10.0);
     
     /* initial conditions */
     N <- 100000;
-    S[1] <- max(Real(N)*(1.0 - p_p_immune)*p_p_risk - initI, 0.0);
-    E[1] <- 0.0;
-    I[1] <- initI;
-    R[1] <- Real(N)*p_p_immune*p_p_risk;
-    Z[1] <- 0.0;
     
-    beta_track[1] <- p_R0/p_d_inf_h * (1.0 + p_s_amp*cos(6.283*(-p_s_peak)/52.0));
+    S[1] ~ Gaussian(max(Real(N)*(1.0 - p_p_immune)*p_p_risk - initI, 0.0), 1.0);
+    E[1] ~ Gaussian(0.0, 1.0);
+    I[1] ~ Gaussian(initI, 1.0);
+    R[1] ~ Gaussian(Real(N)*p_p_immune*p_p_risk, 1.0);
+    Z[1] ~ Gaussian(0.0, 1.0);
+
+    beta_track[1] <- p_R0.value()/p_d_inf_h * (1.0 + p_s_amp*cos(6.283*(-p_s_peak)/52.0));
     reff[1] <- p_R0 * S[1] / (Real(N) * p_p_risk) * (1.0 + p_s_amp*cos(6.283*(-p_s_peak)/52.0));
 
+    incidence[1] ~ Gaussian(p_p_rep*Z[1], p_p_rep*Z[1]/(1.0 - p_p_over));  ///@todo truncate below at 0, or make Poisson?
+    
     incubation_rate:Real <- 1.0/p_d_inc_h;
     recovery_rate:Real <- 1.0/p_d_inf_h;
-    infection_rate:Real <- p_R0/p_d_inf_h;
+    infection_rate:Real <- p_R0.value()/p_d_inf_h;
 
-    t:Integer;
-    for (t in 2..T) {      
+    for (t:Integer in 2..T) {      
       /* transition */
       transmission_rate:Real <- infection_rate*(1.0 + p_s_amp*cos(6.283*(Real(t) - p_s_peak)/52.0));
-      beta_track[t] <- transmission_rate;
-      reff[t] <- (transmission_rate/recovery_rate)*S[t]/(Real(N)*p_p_risk);
 
       transmitted:Real <- min(S[t-1], transmission_rate*S[t-1]*I[t-1]/(Real(N)*p_p_risk));
       incubated:Real <- min(E[t-1], incubation_rate*E[t-1]);
       recovered:Real <- min(I[t-1], recovery_rate*I[t-1]);
       
-      S[t] <- S[t-1] - transmitted;
-      E[t] <- E[t-1] + transmitted - incubated;
-      I[t] <- I[t-1] + incubated - recovered;
-      R[t] <- R[t-1] + recovered;
-      Z[t] <- incubated;
+      S[t] ~ Gaussian(S[t-1] - transmitted, 1.0);
+      E[t] ~ Gaussian(E[t-1] + transmitted - incubated, 1.0);
+      I[t] ~ Gaussian(I[t-1] + incubated - recovered, 1.0);
+      R[t] ~ Gaussian(R[t-1] + recovered, 1.0);
+      Z[t] ~ Gaussian(incubated, 1.0);
+
+      beta_track[t] <- transmission_rate;
+      reff[t] <- (transmission_rate/recovery_rate)*S[t]/(Real(N)*p_p_risk);
       
       /* observe */
-      if (Z[t] > 0.0) {
-        incidence[t] <~ Gaussian(p_p_rep*Z[t], p_p_rep*Z[t]/(1.0 - p_p_over));  ///@todo truncate below at 0, or make Poisson?
-      }
-      //serology[t] <~ Binomial(serology_sample, R[t] / (N * p_p_risk)); // parameters are size and prob
+      incidence[t] ~ Gaussian(p_p_rep*Z[t], p_p_rep*Z[t]/(1.0 - p_p_over));  ///@todo truncate below at 0, or make Poisson?
+      //serology[t] ~ Binomial(serology_sample, R[t] / (N * p_p_risk)); // parameters are size and prob
     }
   }
 
