@@ -81,7 +81,6 @@ class DelayDiagnostics(N:Integer) {
    *   - name : The name.
    */
   function name(id:Integer, name:String) {
-    assert n <= N;
     names[id] <- name;
   }
   
@@ -93,7 +92,6 @@ class DelayDiagnostics(N:Integer) {
    *   - y  : $y$-coordinate.
    */
   function position(id:Integer, x:Integer, y:Integer) {
-    assert n <= N;
     xs[id] <- x;
     ys[id] <- y;
   }
@@ -163,11 +161,13 @@ class DelayDiagnostics(N:Integer) {
         /* output edge */
         if (node.parent?) {
           parent:Delay <- node.parent!;
-          out.print("  X" + parent.id + " -> X" + node.id + " ["); 
-          if (node.isInitialized()) {
-            out.print("color=gray");
+          if (parent.id > 0 && names[parent.id]?) {
+            out.print("  X" + parent.id + " -> X" + node.id + " ["); 
+            if (node.isInitialized()) {
+              out.print("color=gray");
+            }
+            out.print("]\n");
           }
-          out.print("]\n");
         }
       } else if (names[i]? && xs[i]? && ys[i]?) {
         /* output an invisible node to preserve this position and the overall

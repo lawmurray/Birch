@@ -14,17 +14,17 @@ function Real64(x:Real64) -> Real64 {
 }
 function Real64(x:Real32) -> Real64 {
   cpp{{
-  return static_cast<bi::type::Real64_>(x_);
+  return static_cast<bi::Real64_>(x_);
   }}
 }
 function Real64(x:Integer64) -> Real64 {
   cpp{{
-  return static_cast<bi::type::Real64_>(x_);
+  return static_cast<bi::Real64_>(x_);
   }}
 }
 function Real64(x:Integer32) -> Real64 {
   cpp{{
-  return static_cast<bi::type::Real64_>(x_);
+  return static_cast<bi::Real64_>(x_);
   }}
 }
 function Real64(s:String) -> Real64 {

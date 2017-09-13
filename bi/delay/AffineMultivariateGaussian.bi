@@ -19,7 +19,7 @@ class AffineMultivariateGaussian(R:Integer, C:Integer) <
   /**
    * Mean.
    */
-  μ:MultivariateGaussian;
+  μ:MultivariateGaussian(C);
   
   /**
    * Vector of affine transformation.
@@ -78,7 +78,7 @@ function Gaussian(μ:MultivariateGaussian, Q:Real[_,_]) ->
 
 function Gaussian(μ:AffineMultivariateGaussianExpression, Q:Real[_,_]) ->
     MultivariateGaussian {
-  v:AffineMultivariateGaussian(μ.R, μ.C);
+  v:AffineMultivariateGaussian(rows(μ.A), columns(μ.A));
   v.initialize(μ.A, μ.u, μ.c, Q);
   return v;
 }

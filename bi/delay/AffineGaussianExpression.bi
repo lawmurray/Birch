@@ -3,36 +3,31 @@ import math;
 
 /**
  * Expression used to accumulate affine transformations of Gaussians.
+ *
+ *   - `a` Multiplicative scalar of affine transformation.
+ *   - `u` Parent.
+ *   - `c` Additive scalar of affine transformation.
  */
-class AffineGaussianExpression {
+class AffineGaussianExpression(a:Real, u:Gaussian, c:Real) {  
   /**
-   * Multiplicative scalar of affine transformation.
+   * Value conversion.
    */
-  a:Real;
-  
-  /**
-   * Parent.
-   */
-  u:Gaussian;
-
-  /**
-   * Additive scalar of affine transformation.
-   */
-  c:Real;
-  
-  /**
-   * Initialize.
-   */
-  function initialize(a:Real, u:Gaussian, c:Real) {
-    this.a <- a;
-    this.u <- u;
-    this.c <- c;
+  operator -> Real {
+    return a*u.value() + c;
   }
 }
 
+operator +u:Gaussian -> Gaussian {
+  return u;
+}
+
+operator -u:Gaussian -> AffineGaussianExpression {
+  v:AffineGaussianExpression(-1.0, u, 0.0);
+  return v;
+}
+
 operator u:Gaussian + c:Real -> AffineGaussianExpression {
-  v:AffineGaussianExpression;
-  v.initialize(1.0, u, c);
+  v:AffineGaussianExpression(1.0, u, c);
   return v;
 }
 
@@ -41,26 +36,31 @@ operator c:Real + u:Gaussian -> AffineGaussianExpression {
 }
 
 operator u:Gaussian - c:Real -> AffineGaussianExpression {
-  v:AffineGaussianExpression;
-  v.initialize(1.0, u, -c);
+  v:AffineGaussianExpression(1.0, u, -c);
   return v;
 }
 
 operator c:Real - u:Gaussian -> AffineGaussianExpression {
-  v:AffineGaussianExpression;
-  v.initialize(-1.0, u, c);
+  v:AffineGaussianExpression(-1.0, u, c);
   return v;
 }
 
 operator a:Real*u:Gaussian -> AffineGaussianExpression {
-  v:AffineGaussianExpression;
-  v.initialize(1.0, u, 0.0);
+  v:AffineGaussianExpression(1.0, u, 0.0);
+  return v;
+}
+
+operator +u:AffineGaussianExpression -> AffineGaussianExpression {
+  return u;
+}
+
+operator -u:AffineGaussianExpression -> AffineGaussianExpression {
+  v:AffineGaussianExpression(-u.a, u.u, -u.c);
   return v;
 }
 
 operator u:AffineGaussianExpression + c:Real -> AffineGaussianExpression {
-  v:AffineGaussianExpression;
-  v.initialize(u.a, u.u, u.c + c);
+  v:AffineGaussianExpression(u.a, u.u, u.c + c);
   return v;
 }
 
@@ -69,19 +69,16 @@ operator c:Real + u:AffineGaussianExpression -> AffineGaussianExpression {
 }
 
 operator u:AffineGaussianExpression - c:Real -> AffineGaussianExpression {
-  v:AffineGaussianExpression;
-  v.initialize(u.a, u.u, u.c - c);
+  v:AffineGaussianExpression(u.a, u.u, u.c - c);
   return v;
 }
 
 operator c:Real - u:AffineGaussianExpression -> AffineGaussianExpression {
-  v:AffineGaussianExpression;
-  v.initialize(-u.a, u.u, c - u.c);
+  v:AffineGaussianExpression(-u.a, u.u, c - u.c);
   return v;
 }
 
 operator a:Real*u:AffineGaussianExpression -> AffineGaussianExpression {
-  v:AffineGaussianExpression;
-  v.initialize(a*u.a, u.u, a*u.c);
+  v:AffineGaussianExpression(a*u.a, u.u, a*u.c);
   return v;
 }
