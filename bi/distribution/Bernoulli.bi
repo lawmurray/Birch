@@ -11,10 +11,8 @@ class Bernoulli < DelayBoolean {
   ρ:Real;
 
   function initialize(ρ:Real) {
-    assert 0.0 <= ρ && ρ <= 1.0;
-  
     super.initialize();
-    this.ρ <- ρ;
+    update(ρ);
   }
 
   function update(ρ:Real) {

@@ -16,12 +16,8 @@ class Gamma < DelayReal {
   θ:Real;
 
   function initialize(k:Real, θ:Real) {
-    assert k > 0.0;
-    assert θ > 0.0;
-  
     super.initialize();
-    this.k <- k;
-    this.θ <- θ;
+    update(k, θ);
   }
 
   function update(k:Real, θ:Real) {

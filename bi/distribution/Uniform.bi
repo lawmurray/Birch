@@ -16,11 +16,8 @@ class Uniform < DelayReal {
   u:Real;
 
   function initialize(l:Real, u:Real) {
-    assert l <= u;
-  
     super.initialize();
-    this.l <- l;
-    this.u <- u;
+    update(l, u);
   }
 
   function update(l:Real, u:Real) {

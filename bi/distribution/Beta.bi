@@ -16,12 +16,8 @@ class Beta < DelayReal {
   β:Real;
 
   function initialize(α:Real, β:Real) {
-    assert α > 0.0;
-    assert β > 0.0;
-  
     super.initialize();
-    this.α <- α;
-    this.β <- β;
+    update(α, β);
   }
 
   function update(α:Real, β:Real) {
