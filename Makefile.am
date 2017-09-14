@@ -110,6 +110,7 @@ COMMON_SOURCES = \
   bi/io/indentable_ostream.cpp \
   bi/io/md_ostream.cpp \
   bi/primitive/encode.cpp \
+  bi/primitive/poset.cpp \
   bi/statement/Alias.cpp \
   bi/statement/Assert.cpp \
   bi/statement/AssignmentOperator.cpp \
