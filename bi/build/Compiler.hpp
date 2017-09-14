@@ -8,9 +8,8 @@
 
 #include "boost/filesystem.hpp"
 
-#include <unordered_set>
-#include <unordered_map>
 #include <list>
+#include <string>
 
 namespace bi {
 /**
@@ -22,20 +21,13 @@ class Compiler {
 public:
   /**
    * Constructor.
+   *
+   * @param projectName Project name.
+   * @param work_dir Working directory.
+   * @param build_dir Build directory.
    */
-  Compiler(const std::list<boost::filesystem::path>& include_dirs,
-      const std::list<boost::filesystem::path> lib_dirs,
-      const bool std = false);
-
-  /**
-   * Constructor from command-line options.
-   */
-  Compiler(int argc, char** argv);
-
-  /**
-   * Destructor.
-   */
-  virtual ~Compiler();
+  Compiler(const std::string& projectName, const boost::filesystem::path& work_dir,
+      const boost::filesystem::path& build_dir);
 
   /**
    * Parse all input files.
@@ -53,22 +45,18 @@ public:
   void gen();
 
   /**
-   * Import a path.
+   * Queue an include file for parsing.
    *
-   * @param path Path given in import statement.
-   *
-   * @return File associated with the path.
+   * @param path File path.
    */
-  File* import(const Path* path);
+  void include(const boost::filesystem::path path);
 
   /**
-   * Queue a file for parsing.
+   * Queue a source file for parsing.
    *
-   * @param name File name.
-   *
-   * @return File associated with the path.
+   * @param name File path.
    */
-  File* queue(const std::string name);
+  void source(const boost::filesystem::path path);
 
   /**
    * Set the root statement of the file, adding an import for the
@@ -82,67 +70,35 @@ public:
   File* file;
 
   /**
-   * All files.
+   * Root scope.
+   */
+  Scope* scope;
+
+  /**
+   * All files (include and source).
    */
   std::list<File*> files;
 
+  /**
+   * Source files only.
+   */
+  std::list<File*> sources;
+
 private:
   /**
-   * Parse a specific file.
-   *
-   * @param name File name.
+   * Project name.
    */
-  void parse(const std::string name);
+  std::string projectName;
 
   /**
-   * File names to files.
+   * Working directory.
    */
-  std::unordered_map<std::string,File*> filesByName;
+  boost::filesystem::path work_dir;
 
   /**
-   * Unparsed files.
+   * Build directory.
    */
-  std::unordered_set<std::string> unparsed;
-
-  /**
-   * Parsed files.
-   */
-  std::unordered_set<std::string> parsed;
-
-  /**
-   * @name Command-line options
-   */
-  //@{
-  /**
-   * Input file.
-   */
-  boost::filesystem::path input_file;
-
-  /**
-   * Output file.
-   */
-  boost::filesystem::path output_file;
-
-  /**
-   * Include directories.
-   */
-  std::list<boost::filesystem::path> include_dirs;
-
-  /**
-   * Library directories.
-   */
-  std::list<boost::filesystem::path> lib_dirs;
-
-  /**
-   * Name of standard library.
-   */
-  std::string standard;
-
-  /**
-   * Enable standard library?
-   */
-  bool std;
-  //@}
+  boost::filesystem::path build_dir;
 };
 }
 

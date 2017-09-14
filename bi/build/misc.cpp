@@ -6,7 +6,7 @@
 #include <iostream>
 
 void bi::warn(const std::string& msg) {
-  std::cerr << "Warning: " << msg << std::endl;
+  std::cerr << "warning: " << msg << std::endl;
 }
 
 boost::filesystem::path bi::find(

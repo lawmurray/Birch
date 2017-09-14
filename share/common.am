@@ -6,16 +6,6 @@
 ACLOCAL_AMFLAGS = -I m4
 AM_CXXFLAGS = -include precompile.hpp
 
-if ENABLE_STD
-BIRCHFLAGS = --enable-std
-else
-BIRCHFLAGS = --disable-std
-endif
-
-# pattern for *.bi files
-%.cpp %.hpp: %.bi $(BIRCHC)
-	$(BIRCHC) $(BIRCHFLAGS) $(CPPFLAGS) -o $@ $<
-
 # precompile the Birch compiler library header
 precompile.hpp.pch: precompile.hpp
 	mkdir -p $(DEPDIR) && \

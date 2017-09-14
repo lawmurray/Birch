@@ -120,17 +120,6 @@ public:
   void inherit(Scope* scope);
 
   /**
-   * Import declarations from another scope into this scope. This is used for
-   * `import` statements.
-   *
-   * @param scope Scope to import.
-   *
-   * @return Were any new declarations imported, that were not already in the
-   * scope?
-   */
-  bool import(Scope* scope);
-
-  /**
    * Base scope.
    */
   std::set<Scope*> bases;

@@ -217,6 +217,7 @@ void bi::Driver::run(const std::string& prog) {
 
 void bi::Driver::build() {
   setup();
+  compile();
   autogen();
   configure();
   target();
@@ -224,6 +225,7 @@ void bi::Driver::build() {
 
 void bi::Driver::install() {
   setup();
+  compile();
   autogen();
   configure();
   target("install");
@@ -231,6 +233,7 @@ void bi::Driver::install() {
 
 void bi::Driver::uninstall() {
   setup();
+  compile();
   autogen();
   configure();
   target("uninstall");
@@ -238,6 +241,7 @@ void bi::Driver::uninstall() {
 
 void bi::Driver::dist() {
   setup();
+  compile();
   autogen();
   configure();
   target("dist");
@@ -359,9 +363,12 @@ void bi::Driver::docs() {
   readManifest();
 
   /* parse all files */
-  Compiler compiler(include_dirs, lib_dirs, std);
+  Compiler compiler(projectName, work_dir, build_dir);
+  if (std) {
+    compiler.include(find(include_dirs, "standard.bi"));
+  }
   for (auto file : biFiles) {
-    compiler.queue(file.string());
+    compiler.source(file);
   }
   compiler.parse();
   compiler.resolve();
@@ -371,7 +378,7 @@ void bi::Driver::docs() {
   ofstream stream(path);
   md_ostream output(stream);
 
-  Package package(compiler.files);
+  Package package(compiler.sources);
   output << &package;
 }
 
@@ -483,148 +490,59 @@ void bi::Driver::setup() {
 
     /* *.cpp files */
     makeStream << "lib" << projectName << "_la_SOURCES = ";
-    auto iter = cppFiles.begin();
-    while (iter != cppFiles.end()) {
-      if (iter != cppFiles.begin()) {
-        makeStream << "  ";
-      }
-      makeStream << iter->string();
-      if (++iter != cppFiles.end()) {
-        makeStream << " \\";
-      }
-      makeStream << '\n';
+    for (auto iter = cppFiles.begin(); iter != cppFiles.end(); ++iter) {
+      makeStream << " \\\n  " << iter->string();
     }
     makeStream << '\n';
 
     /* sources derived from *.bi files */
     makeStream << "nodist_lib" << projectName << "_la_SOURCES = ";
-    iter = biFiles.begin();
-    while (iter != biFiles.end()) {
+    for (auto iter = biFiles.begin(); iter != biFiles.end(); ++iter) {
       iter->replace_extension(".cpp");
-      if (iter != biFiles.begin()) {
-        makeStream << "  ";
-      }
-      makeStream << iter->string();
-      if (++iter != biFiles.end()) {
-        makeStream << " \\";
-      }
-      makeStream << '\n';
+      makeStream << " \\\n  " << iter->string();
     }
     makeStream << '\n';
 
     /* headers to install and distribute */
-    makeStream << "nobase_include_HEADERS = ";
-    iter = hppFiles.begin();
-    while (iter != hppFiles.end()) {
-      if (iter != hppFiles.begin()) {
-        makeStream << "  ";
-      }
-      makeStream << iter->string();
-      if (++iter != hppFiles.end() || !biFiles.empty()) {
-        makeStream << " \\";
-      }
-      makeStream << '\n';
+    makeStream << "nobase_include_HEADERS =";
+    makeStream << " \\\n  " << projectName << ".hpp";
+    for (auto iter = hppFiles.begin(); iter != hppFiles.end(); ++iter) {
+      makeStream << " \\\n  " << iter->string();
     }
-    iter = biFiles.begin();
-    while (iter != biFiles.end()) {
-      iter->replace_extension(".bi");
-      if (iter != biFiles.begin() || !hppFiles.empty()) {
-        makeStream << "  ";
-      }
-      makeStream << iter->string();
-      if (++iter != biFiles.end()) {
-        makeStream << " \\";
-      }
-      makeStream << '\n';
-    }
-    makeStream << '\n';
-
-    /* headers to install but not distribute */
-    makeStream << "nobase_nodist_include_HEADERS = ";
-    iter = biFiles.begin();
-    while (iter != biFiles.end()) {
-      iter->replace_extension(".hpp");
-      if (iter != biFiles.begin()) {
-        makeStream << "  ";
-      }
-      makeStream << iter->string();
-      if (++iter != biFiles.end()) {
-        makeStream << " \\";
-      }
-      makeStream << '\n';
-    }
-    makeStream << '\n';
-
-    /* built sources */
-    makeStream << "BUILT_SOURCES += ";
-    iter = biFiles.begin();
-    while (iter != biFiles.end()) {
-      iter->replace_extension(".cpp");
-      if (iter != biFiles.begin()) {
-        makeStream << "  ";
-      }
-      makeStream << iter->string();
-      makeStream << " \\\n  ";
-      iter->replace_extension(".hpp");
-      makeStream << iter->string();
-      if (++iter != biFiles.end()) {
-        makeStream << " \\";
-      }
-      makeStream << '\n';
-    }
-    makeStream << '\n';
-
-    /* clean files */
-    makeStream << "CLEANFILES += ";
-    iter = biFiles.begin();
-    while (iter != biFiles.end()) {
-      iter->replace_extension(".cpp");
-      if (iter != biFiles.begin()) {
-        makeStream << "  ";
-      }
-      makeStream << iter->string();
-      makeStream << " \\\n  ";
-      iter->replace_extension(".hpp");
-      makeStream << iter->string();
-      if (++iter != biFiles.end()) {
-        makeStream << " \\";
-      }
-      makeStream << '\n';
+    for (auto iter = biFiles.begin(); iter != biFiles.end(); ++iter) {
+      makeStream << " \\\n  " << iter->string();
     }
     makeStream << '\n';
 
     /* data files */
     makeStream << "dist_pkgdata_DATA = ";
-    iter = otherFiles.begin();
-    while (iter != otherFiles.end()) {
-      if (iter != otherFiles.begin()) {
-        makeStream << "  ";
-      }
-      makeStream << iter->string();
-      if (++iter != otherFiles.end()) {
-        makeStream << " \\";
-      }
-      makeStream << '\n';
+    for (auto iter = otherFiles.begin(); iter != otherFiles.end(); ++iter) {
+      makeStream << " \\\n  " << iter->string();
     }
     makeStream << '\n';
 
     /* meta files */
     makeStream << "noinst_DATA = ";
-    iter = metaFiles.begin();
-    while (iter != metaFiles.end()) {
-      if (iter != metaFiles.begin()) {
-        makeStream << "  ";
-      }
-      makeStream << iter->string();
-      if (++iter != metaFiles.end()) {
-        makeStream << " \\";
-      }
-      makeStream << '\n';
+    for (auto iter = metaFiles.begin(); iter != metaFiles.end(); ++iter) {
+      makeStream << " \\\n  " << iter->string();
     }
     makeStream << '\n';
 
     makeStream.close();
   }
+}
+
+void bi::Driver::compile() {
+  Compiler compiler(projectName, work_dir, build_dir);
+  if (std) {
+    compiler.include(find(include_dirs, "standard.bi"));
+  }
+  for (auto file : biFiles) {
+    compiler.source(file);
+  }
+  compiler.parse();
+  compiler.resolve();
+  compiler.gen();
 }
 
 void bi::Driver::autogen() {

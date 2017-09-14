@@ -37,23 +37,6 @@ void bi::Dictionary<ObjectType>::add(ObjectType* o) {
   assert(result.second);
 }
 
-template<class ObjectType>
-bool bi::Dictionary<ObjectType>::import(Dictionary<ObjectType>& o) {
-  bool haveNew = false;
-  for (auto object : o.objects) {
-    auto name = object.second->name->str();
-    if (!contains(object.second)) {
-      if (contains(name)) {
-        throw PreviousDeclarationException(object.second, get(name));
-      } else {
-        add(object.second);
-        haveNew = true;
-      }
-    }
-  }
-  return haveNew;
-}
-
 /*
  * Explicit instantiations.
  */

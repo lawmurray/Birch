@@ -18,7 +18,7 @@ public:
   /**
    * Constructor.
    */
-  Scoped();
+  Scoped(Scope* scope = new Scope());
 
   /**
    * Destructor.

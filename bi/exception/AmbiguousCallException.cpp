@@ -14,8 +14,11 @@ bi::AmbiguousCallException::AmbiguousCallException(const Type* o,
   if (o->loc) {
     buf << o->loc;
   }
-  buf << "error: ambiguous call with argument types '" << o << "'\n";
-  buf << o << '\n';
+  buf << "error: ambiguous call\n";
+  if (o->loc) {
+    buf << o->loc;
+  }
+  buf << "note: argument types '" << o << "'\n";
   for (auto match : matches) {
     if (match->loc) {
       buf << match->loc;

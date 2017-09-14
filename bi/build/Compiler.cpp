@@ -5,7 +5,6 @@
 
 #include "bi/build/misc.hpp"
 #include "bi/visitor/Typer.hpp"
-#include "bi/visitor/Importer.hpp"
 #include "bi/visitor/ResolverHeader.hpp"
 #include "bi/visitor/ResolverSource.hpp"
 #include "bi/io/bi_ostream.hpp"
@@ -24,124 +23,46 @@ namespace fs = boost::filesystem;
 bi::Compiler* compiler = nullptr;
 std::stringstream raw;
 
-bi::Compiler::Compiler(const std::list<fs::path>& include_dirs,
-    const std::list<fs::path> lib_dirs, const bool std) :
-    include_dirs(include_dirs),
-    lib_dirs(lib_dirs),
-    std(std) {
-  //
-}
-
-bi::Compiler::Compiler(int argc, char** argv) :
-    std(true) {
-  enum {
-    INCLUDE_DIR_ARG = 256, LIB_DIR_ARG, ENABLE_STD_ARG, DISABLE_STD_ARG
-  };
-
-  /* command-line arguments */
-  int c, option_index;
-  option long_options[] = {
-      { "include-dir", required_argument, 0, INCLUDE_DIR_ARG },
-      { "lib-dir", required_argument, 0, LIB_DIR_ARG },
-      { "enable-std", no_argument, 0, ENABLE_STD_ARG },
-      { "disable-std", no_argument, 0, DISABLE_STD_ARG },
-      { 0, 0, 0, 0 } };
-  const char* short_options = "o:D:I:L:";
-
-  opterr = 0;  // handle error reporting ourselves
-  c = getopt_long(argc, argv, short_options, long_options, &option_index);
-  while (c != -1) {
-    switch (c) {
-    case INCLUDE_DIR_ARG:
-      include_dirs.push_back(optarg);
-      break;
-    case LIB_DIR_ARG:
-      lib_dirs.push_back(optarg);
-      break;
-    case ENABLE_STD_ARG:
-      std = true;
-      break;
-    case DISABLE_STD_ARG:
-      std = false;
-      break;
-    case 'o':
-      output_file = optarg;
-      break;
-    case 'D':
-      // ignore
-      break;
-    case 'I':
-      include_dirs.push_back(optarg);
-      break;
-    case 'L':
-      lib_dirs.push_back(optarg);
-      break;
-    default:
-      // ignore anything else, don't error, as this allows the program to
-      // take any options that might be given to some other compiler through
-      // a Makefile.
-      break;
-    }
-    c = getopt_long(argc, argv, short_options, long_options, &option_index);
-  }
-
-  /* remaining argument is input file */
-  if (optind == argc - 1) {
-    input_file = find(include_dirs, argv[optind]).string();
-  } else if (optind == argc) {
-    throw CompilerException("No input file.");
-  } else {
-    throw CompilerException("Multiple input files.");
-  }
-
-  /* name of standard library */
-  if (std) {
-    Path path(new Name("standard"));
-    standard = find(include_dirs, path.file()).string();
-  }
-}
-
-bi::Compiler::~Compiler() {
+bi::Compiler::Compiler(const std::string& projectName,
+    const boost::filesystem::path& work_dir,
+    const boost::filesystem::path& build_dir) :
+    projectName(projectName),
+    work_dir(work_dir),
+    build_dir(build_dir),
+    scope(new Scope()) {
   //
 }
 
 void bi::Compiler::parse() {
-  /* queue standard library */
-  if (std) {
-    queue(standard);
-  }
+  compiler = this;  // set global variable needed by parser for callbacks
+  for (auto file : files) {
+    std::string name = (work_dir / file->path).string();
+    yyin = fopen(name.c_str(), "r");
+    if (!yyin) {
+      throw FileNotFoundException(name);
+    }
 
-  /* queue input files */
-  if (!input_file.empty()) {
-    queue(input_file.string());
+    this->file = file;  // member variable needed by GNU Bison parser
+    yyreset();
+    do {
+      try {
+        yyparse();
+      } catch (bi::Exception& e) {
+        yyerror(e.msg.c_str());
+      }
+    } while (!feof(yyin));
+    fclose(yyin);
+    this->file = nullptr;
   }
-
-  /* parse all input files, and any imported files along the way */
-  while (!unparsed.empty()) {
-    auto name = *unparsed.begin();
-    parse(name);
-    parsed.insert(name);
-    unparsed.erase(name);
-  }
+  compiler = nullptr;
 }
 
 void bi::Compiler::resolve() {
-  Importer importer;
-  bool haveNew;
-
   /* first pass: populate available types */
   for (auto file : files) {
     Typer pass1;
     file->accept(&pass1);
   }
-
-  /* propagate available types through graph of file imports */
-  do {
-    haveNew = false;
-    for (auto file : files) {
-      haveNew = importer.import(file) || haveNew;
-    }
-  } while (haveNew);
 
   /* second pass: populate available functions */
   for (auto file : files) {
@@ -149,100 +70,48 @@ void bi::Compiler::resolve() {
     file->accept(&pass2);
   }
 
-  /* propagate available functions through graph of file imports */
-  do {
-    haveNew = false;
-    for (auto file : files) {
-      haveNew = importer.import(file) || haveNew;
-    }
-  } while (haveNew);
-
-  /* third pass: resolve the bodies of functions in the input file */
-  if (!input_file.empty()) {
+  /* third pass: resolve the bodies of functions */
+  for (auto file : files) {
     ResolverSource pass3;
-    filesByName[input_file.string()]->accept(&pass3);
+    file->accept(&pass3);
   }
 }
 
 void bi::Compiler::gen() {
   fs::path biPath, hppPath, cppPath;
-  biPath = input_file;
-  if (!output_file.empty()) {
-    cppPath = output_file;
-    hppPath = output_file;
-  } else {
-    cppPath = input_file;
-    hppPath = input_file;
-  }
+
+  /* single *.hpp header file for project */
+  hppPath = build_dir / projectName;
   hppPath.replace_extension(".hpp");
-  cppPath.replace_extension(".cpp");
 
-  fs::ifstream biStream(biPath);
   fs::ofstream hppStream(hppPath);
-  fs::ofstream cppStream(cppPath);
-
   hpp_ostream hppOutput(hppStream);
-  cpp_ostream cppOutput(cppStream);
 
-  hppOutput << filesByName[input_file.string()];
+  /* separate source files */
+  for (auto source : sources) {
+    biPath = work_dir / source->path;
+    cppPath = build_dir / source->path;
+    cppPath.replace_extension(".cpp");
 
-  /* the original file is also appended to the header, this ensures that any
-   * changes to the *.bi file produce a different *.hpp file, even if those
-   * changes would not otherwise produce different C++ code; `install -p` can
-   * then be used when installing *.bi and *.hpp header files, and the last
-   * modified date of the *.hpp header will never be earlier than the *.bi
-   * header, important so that `make` does try to rebuild the *.hpp file */
-  hppOutput << "\n// Original file\n";
-  hppOutput << "#if 0\n";
-  hppOutput.append(biStream);
-  hppOutput << "\n#endif\n";
+    boost::filesystem::create_directories(cppPath.parent_path());
 
-  cppOutput << filesByName[input_file.string()];
+    fs::ofstream cppStream(cppPath);
+    cpp_ostream cppOutput(cppStream);
+
+    hppOutput << source;
+    cppOutput << source;
+  }
 }
 
 void bi::Compiler::setRoot(Statement* root) {
-  if (std) {
-    Import* import = new Import(new Path(new Name("standard")),
-        filesByName[standard]);
-    file->root = new List<Statement>(import, root);
-  } else {
-    file->root = root;
-  }
+  this->file->root = root;
 }
 
-bi::File* bi::Compiler::import(const Path* path) {
-  return queue(path->file());
+void bi::Compiler::include(const boost::filesystem::path path) {
+  files.push_back(new File(path.string(), scope));
 }
 
-bi::File* bi::Compiler::queue(const std::string name) {
-  std::string canonical = find(include_dirs, name).string();
-  if (filesByName.find(canonical) == filesByName.end()) {
-    files.push_back(new File(canonical));
-    filesByName.insert(std::make_pair(canonical, files.back()));
-    unparsed.insert(canonical);
-  }
-  return filesByName[canonical];
-}
-
-void bi::Compiler::parse(const std::string name) {
-  /* pre-condition */
-  assert(unparsed.find(name) != unparsed.end());
-
-  compiler = this;  // set global variable needed by parser for callbacks
-  yyin = fopen(name.c_str(), "r");
-  if (!yyin) {
-    throw FileNotFoundException(name.c_str());
-  }
-
-  file = filesByName[name];  // member variable needed by GNU Bison parser
-  yyreset();
-  do {
-    try {
-      yyparse();
-    } catch (bi::Exception& e) {
-      yyerror(e.msg.c_str());
-    }
-  } while (!feof(yyin));
-  fclose(yyin);
-  compiler = nullptr;
+void bi::Compiler::source(const boost::filesystem::path path) {
+  files.push_back(new File(path.string(), scope));
+  sources.push_back(files.back());
 }

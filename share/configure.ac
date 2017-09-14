@@ -17,7 +17,6 @@ AC_ARG_ENABLE([std],
 
 AC_PROG_CXXCPP
 AC_PROG_CXX
-AC_PATH_PROG([BIRCHC], [birchc], [./birchc])  # assumes will be compiled into working directory if not found
 AC_PROG_INSTALL
 AC_PROG_LIBTOOL
 AX_CXX_COMPILE_STDCXX_14([noext], [mandatory])

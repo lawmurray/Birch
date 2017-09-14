@@ -5,7 +5,8 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::File::File(const std::string& path, Statement* root) :
+bi::File::File(const std::string& path, Scope* scope, Statement* root) :
+    Scoped(scope),
     path(path),
     root(root) {
   //

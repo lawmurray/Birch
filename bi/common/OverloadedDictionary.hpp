@@ -60,15 +60,6 @@ public:
   void resolve(ReferenceType* ref);
 
   /**
-   * Import another dictionary into this one.
-   *
-   * @param o The other dictionary.
-   *
-   * @return Were any new declarations imported that did not already exist?
-   */
-  bool import(OverloadedDictionary<ObjectType>& o);
-
-  /**
    * Iterators.
    */
   auto begin() const {

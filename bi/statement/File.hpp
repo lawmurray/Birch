@@ -18,9 +18,11 @@ public:
    * Constructor.
    *
    * @param path File path.
+   * @param path Root scope.
    * @param root Root statement of file.
    */
-  File(const std::string& path = "", Statement* root = new EmptyStatement());
+  File(const std::string& path, Scope* scope, Statement* root =
+      new EmptyStatement());
 
   /**
    * Destructor.

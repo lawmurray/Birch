@@ -46,21 +46,6 @@ void bi::OverloadedDictionary<ObjectType>::add(ObjectType* o) {
   }
 }
 
-template<class ObjectType>
-bool bi::OverloadedDictionary<ObjectType>::import(
-    OverloadedDictionary<ObjectType>& o) {
-  bool haveNew = false;
-  for (auto object : o.objects) {
-    for (auto overload : object.second->overloads) {
-      if (!contains(overload)) {
-        add(overload);
-        haveNew = true;
-      }
-    }
-  }
-  return haveNew;
-}
-
 template class bi::OverloadedDictionary<bi::Function>;
 template class bi::OverloadedDictionary<bi::Fiber>;
 template class bi::OverloadedDictionary<bi::MemberFunction>;

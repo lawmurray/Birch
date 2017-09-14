@@ -309,19 +309,3 @@ void bi::Scope::resolve(AliasType* ref) {
 void bi::Scope::inherit(Scope* scope) {
   bases.insert(scope);
 }
-
-bool bi::Scope::import(Scope* scope) {
-  // only file-scope objects need to be imported here, e.g. no need for
-  // class members
-  bool haveNew = false;
-  haveNew = basics.import(scope->basics) || haveNew;
-  haveNew = classes.import(scope->classes) || haveNew;
-  haveNew = aliases.import(scope->aliases) || haveNew;
-  haveNew = globalVariables.import(scope->globalVariables) || haveNew;
-  haveNew = functions.import(scope->functions) || haveNew;
-  haveNew = fibers.import(scope->fibers) || haveNew;
-  haveNew = programs.import(scope->programs) || haveNew;
-  haveNew = binaryOperators.import(scope->binaryOperators) || haveNew;
-  haveNew = unaryOperators.import(scope->unaryOperators) || haveNew;
-  return haveNew;
-}

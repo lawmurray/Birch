@@ -15,6 +15,6 @@ struct FileNotFoundException: public Exception {
   /**
    * Constructor.
    */
-  FileNotFoundException(const char* name);
+  FileNotFoundException(const std::string& name);
 };
 }

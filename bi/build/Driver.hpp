@@ -93,6 +93,11 @@ private:
   void setup();
 
   /**
+   * Compile Birch files to C++.
+   */
+  void compile();
+
+  /**
    * Run autogen.sh.
    */
   void autogen();

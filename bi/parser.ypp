@@ -471,7 +471,7 @@ basic_type_declaration
     ;
 
 import
-    : IMPORT path ';'  { $$ = new bi::Import($2, compiler->import($2), make_loc(@$)); }
+    : IMPORT path ';'  { $$ = new bi::EmptyStatement(); }
     ;
 
 cpp

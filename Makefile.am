@@ -10,8 +10,8 @@ AM_CXXFLAGS = -Wno-deprecated-register -Wno-overloaded-virtual
 # ^ -Wno-deprecated-register to omit warnings for GNU Flex/Bison generated code
 ACLOCAL_AMFLAGS = -I m4
 
-# driver and compiler programs
-bin_PROGRAMS = birch birchc
+# driver program
+bin_PROGRAMS = birch
 
 # compiler library
 lib_LTLIBRARIES = libbirch.la
@@ -156,7 +156,6 @@ COMMON_SOURCES = \
   bi/visitor/Assigner.cpp \
   bi/visitor/Cloner.cpp \
   bi/visitor/Gatherer.cpp \
-  bi/visitor/Importer.cpp \
   bi/visitor/Modifier.cpp \
   bi/visitor/Resolver.cpp \
   bi/visitor/ResolverHeader.cpp \
@@ -167,19 +166,12 @@ COMMON_SOURCES = \
   bi/parser.ypp
 
 # sources
-birchc_LDADD = $(DEPS_LIBS)
-birchc_SOURCES = \
-  $(COMMON_SOURCES) \
-  bi/birchc.cpp
-
-birchc_CXXFLAGS = $(AM_CXXFLAGS)
-# ^ workaround for 'created with both libtool and without' error
-
 birch_LDADD = $(DEPS_LIBS)
 birch_SOURCES = \
   $(COMMON_SOURCES) \
   bi/birch.cpp
 birch_CXXFLAGS = $(AM_CXXFLAGS)
+# ^ workaround for 'created with both libtool and without' error
 
 libbirch_la_SOURCES = \
   bi/lib/global.cpp \
@@ -357,7 +349,6 @@ noinst_HEADERS = \
   bi/visitor/Assigner.hpp \
   bi/visitor/Cloner.hpp \
   bi/visitor/Gatherer.hpp \
-  bi/visitor/Importer.hpp \
   bi/visitor/Modifier.hpp \
   bi/visitor/Resolver.hpp \
   bi/visitor/ResolverHeader.hpp \
