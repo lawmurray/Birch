@@ -17,20 +17,19 @@ class VBD(T:Integer) {
   p_s_peak:Gaussian;    // seasonal peak week
   p_p_rep:Uniform;     // proportion of cases reported
   p_p_over:Beta;    // multiplicative overdispersion of reporting
-  initI:Gamma;  // initial number of infectious
 
-  S:Gaussian[T];  // susceptible
-  E:Gaussian[T];  // incubating
-  I:Gaussian[T];  // infectious
-  R:Gaussian[T];  // recovered
-  Z:Gaussian[T];  // incidence
-  beta_track:Real[T];
-  reff:Real[T];
+  λ:Binomial[T];  // newly infected population
+  δ:Binomial[T];  // newly incubated population
+  γ:Binomial[T];  // newly recovered population
+
+  S:Real[T];  // susceptible population
+  E:Real[T];  // incubating population
+  I:Real[T];  // infectious population
+  R:Real[T];  // recovered population
 
   serology_sample:Integer[T];  // input
-  
   incidence:Gaussian[T];    // observation
-  serology:Integer[T];  // observation
+  serology:Binomial[T];  // observation
 
   function input() {
     /* read in files */
@@ -47,46 +46,36 @@ class VBD(T:Integer) {
     p_s_peak ~ Gaussian(20.0, 4.0);
     p_p_rep ~ Uniform(0.0, 1.0);
     p_p_over ~ Beta(1.0, 10.0);
-    initI ~ Gamma(1.0, 10.0);
     
     /* initial conditions */
     N <- 100000;
     
-    S[1] ~ Gaussian(max(Real(N)*(1.0 - p_p_immune)*p_p_risk - initI, 0.0), 1.0);
-    E[1] ~ Gaussian(0.0, 1.0);
-    I[1] ~ Gaussian(initI, 1.0);
-    R[1] ~ Gaussian(Real(N)*p_p_immune*p_p_risk, 1.0);
-    Z[1] ~ Gaussian(0.0, 1.0);
-
-    beta_track[1] <- p_R0.value()/p_d_inf_h * (1.0 + p_s_amp*cos(6.283*(-p_s_peak)/52.0));
-    reff[1] <- p_R0 * S[1] / (Real(N) * p_p_risk) * (1.0 + p_s_amp*cos(6.283*(-p_s_peak)/52.0));
-
-    incidence[1] ~ Gaussian(p_p_rep*Z[1], p_p_rep*Z[1]/(1.0 - p_p_over));  ///@todo truncate below at 0, or make Poisson?
+    E[1] <- 0.0;
+    I[1] <~ Gamma(1.0, 10.0);
+    R[1] <- Real(N)*p_p_immune*p_p_risk;
+    S[1] <- max(Real(N) - I[1] - R[1], 0.0);
     
-    incubation_rate:Real <- 1.0/p_d_inc_h;
-    recovery_rate:Real <- 1.0/p_d_inf_h;
-    infection_rate:Real <- p_R0.value()/p_d_inf_h;
-
-    for (t:Integer in 2..T) {      
+    for (t:Integer in 2..T) {
       /* transition */
-      transmission_rate:Real <- infection_rate*(1.0 + p_s_amp*cos(6.283*(Real(t) - p_s_peak)/52.0));
+      incubation_rate:Real <- 1.0/p_d_inc_h;
+      recovery_rate:Real <- 1.0/p_d_inf_h;
+      infection_rate:Real <- p_R0.value()/p_d_inf_h;
+      transmission_rate:Real <- infection_rate*(1.0 + p_s_amp*cos(2.0*π*(Real(t) - p_s_peak)/52.0));
 
-      transmitted:Real <- min(S[t-1], transmission_rate*S[t-1]*I[t-1]/(Real(N)*p_p_risk));
-      incubated:Real <- min(E[t-1], incubation_rate*E[t-1]);
-      recovered:Real <- min(I[t-1], recovery_rate*I[t-1]);
+      λ[t] ~ Binomial(Integer(S[t-1]*I[t-1]/(Real(N)*p_p_risk)), transmission_rate);
+      δ[t] <- E[t-1]*incubation_rate;
+      γ[t] <- I[t-1]*recovery_rate;
       
-      S[t] ~ Gaussian(S[t-1] - transmitted, 1.0);
-      E[t] ~ Gaussian(E[t-1] + transmitted - incubated, 1.0);
-      I[t] ~ Gaussian(I[t-1] + incubated - recovered, 1.0);
-      R[t] ~ Gaussian(R[t-1] + recovered, 1.0);
-      Z[t] ~ Gaussian(incubated, 1.0);
-
-      beta_track[t] <- transmission_rate;
-      reff[t] <- (transmission_rate/recovery_rate)*S[t]/(Real(N)*p_p_risk);
+      S[t] <- S[t-1] - Real(λ[t]);
+      E[t] <- E[t-1] + Real(λ[t]) - Real(δ[t]);
+      I[t] <- I[t-1] + Real(δ[t]) - Real(γ[t]);
+      R[t] <- R[t-1] + Real(γ[t]);
       
       /* observe */
-      incidence[t] ~ Gaussian(p_p_rep*Z[t], p_p_rep*Z[t]/(1.0 - p_p_over));  ///@todo truncate below at 0, or make Poisson?
-      //serology[t] ~ Binomial(serology_sample, R[t] / (N * p_p_risk)); // parameters are size and prob
+      incidence[t] ~ Gaussian(p_p_rep*Real(δ[t]), p_p_rep*Real(δ[t])/(1.0 - p_p_over));  ///@todo truncate below at 0, or make Poisson?
+      // ^ use a negative binomial here, as an overdispersed Poisson?
+      serology[t] ~ Binomial(serology_sample[t], Real(R[t]) / (Real(N) * p_p_risk)); // parameters are size and prob
+      // ^ can probability be beta distributed?
     }
   }
 
