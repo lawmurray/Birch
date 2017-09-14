@@ -3,7 +3,6 @@
 	<name>Birch.Example</name>
 	<comment></comment>
 	<projects>
-		<project>Birch</project>
 		<project>Birch.Standard</project>
 	</projects>
 	<buildSpec>

@@ -17,6 +17,6 @@ program demo_copy_fiber(N:Integer <- 10) {
 
 fiber g(from:Integer, to:Integer) -> Real! {
   for (n:Integer in from..to) {
-    yield random_gaussian(0.0, 1.0);
+    yield simulate_gaussian(0.0, 1.0);
   }
 }

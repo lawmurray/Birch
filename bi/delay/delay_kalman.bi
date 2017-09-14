@@ -16,7 +16,7 @@ program delay_kalman(a:Real <- 0.9, T:Integer <- 10,
   
   /* simulate data */
   for (t:Integer in 1..T) {
-    y[t] <- random_gaussian(0.0, 1.0);
+    y[t] <- simulate_gaussian(0.0, 1.0);
   }
 
   /* initialise */

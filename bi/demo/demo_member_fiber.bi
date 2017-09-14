@@ -9,7 +9,7 @@ program demo_member_fiber(N:Integer <- 10) {
 class A(from:Integer, to:Integer) {
   fiber f() -> Real! {
     for (n:Integer in from..to) {
-      yield random_gaussian(0.0, 1.0);
+      yield simulate_gaussian(0.0, 1.0);
     }
   }
 }

@@ -21,7 +21,7 @@ program delay_iid(μ:Real <- 0.0, σ2:Real <- 1.0, N:Integer <- 100,
   
   /* simulate data */
   for (n:Integer in 1..N) {
-    y[n] <- random_gaussian(μ, σ2);
+    y[n] <- simulate_gaussian(μ, σ2);
   }
   
   /* prior */
