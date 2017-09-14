@@ -1,6 +1,5 @@
 import delay.Delay;
 import math;
-import math.simulate;
 
 /**
  * Abstract delay variate with Real value.

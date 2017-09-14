@@ -1,6 +1,5 @@
 import delay.DelayReal;
 import math;
-import math.simulate;
 
 /**
  * Gamma distribution.

@@ -1,6 +1,5 @@
 import delay.DelayRealVector;
 import math;
-import math.simulate;
 
 /**
  * Multivariate Gaussian distribution.

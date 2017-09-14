@@ -1,6 +1,5 @@
 import delay.DelayBoolean;
 import math;
-import math.simulate;
 
 /**
  * Bernoulli distribution.

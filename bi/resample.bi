@@ -1,5 +1,5 @@
 import primitive;
-import math.simulate;
+import math;
 
 /**
  * Sample an ancestry vector for a vector of log-weights.

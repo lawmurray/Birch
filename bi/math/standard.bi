@@ -118,30 +118,6 @@ function round(x:Real32) -> Real32 {
   }}
 }
 
-function gamma(x:Real64) -> Real64 {
-  cpp {{
-  return ::tgamma(x_);
-  }}
-}
-
-function gamma(x:Real32) -> Real32 {
-  cpp {{
-  return ::tgammaf(x_);
-  }}
-}
-
-function lgamma(x:Real64) -> Real64 {
-  cpp {{
-  return ::lgamma(x_);
-  }}
-}
-
-function lgamma(x:Real32) -> Real32 {
-  cpp {{
-  return ::lgammaf(x_);
-  }}
-}
-
 function sin(x:Real64) -> Real64 {
   cpp {{
   return ::sin(x_);
