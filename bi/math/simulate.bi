@@ -30,10 +30,26 @@ function simulate_bernoulli(ρ:Real) -> Boolean {
  * - ρ: Probability of a true result.
  */
 function simulate_binomial(n:Integer, ρ:Real) -> Integer {
-  assert n >= 0;
+  assert 0 <= n;
   assert 0.0 <= ρ && ρ <= 1.0;
   cpp {{
   return std::binomial_distribution<bi::Integer_>(n_, ρ_)(rng);
+  }}
+}
+
+/**
+ * Simulate a Negative Binomial variate.
+ *
+ * - k: Number of successes before the experiment is stopped.
+ * - ρ: Probability of success.
+ *
+ * Returns the number of failures.
+ */
+function simulate_negative_binomial(k:Integer, ρ:Real) -> Integer {
+  assert 0 < k;
+  assert 0.0 <= ρ && ρ <= 1.0;
+  cpp {{
+  return std::negative_binomial_distribution<bi::Integer_>(k_, ρ_)(rng);
   }}
 }
 
@@ -57,7 +73,7 @@ function simulate_uniform(l:Real, u:Real) -> Real {
  * - σ2: Variance.
  */
 function simulate_gaussian(μ:Real, σ2:Real) -> Real {
-  assert σ2 >= 0.0;
+  assert 0.0 <= σ2;
   if (σ2 == 0.0) {
     return μ;
   } else {
@@ -74,8 +90,8 @@ function simulate_gaussian(μ:Real, σ2:Real) -> Real {
  * - θ: Scale.
  */
 function simulate_gamma(k:Real, θ:Real) -> Real {
-  assert k > 0.0;
-  assert θ > 0.0;
+  assert 0.0 < k;
+  assert 0.0 < θ;
   cpp {{
   return std::gamma_distribution<bi::Real_>(k_, θ_)(rng);
   }}
@@ -88,8 +104,8 @@ function simulate_gamma(k:Real, θ:Real) -> Real {
  * - β: Shape.
  */
 function simulate_beta(α:Real, β:Real) -> Real {
-  assert α > 0.0;
-  assert β > 0.0;
+  assert 0.0 < α;
+  assert 0.0 < β;
   
   u:Real <- simulate_gamma(α, 1.0);
   v:Real <- simulate_gamma(β, 1.0);

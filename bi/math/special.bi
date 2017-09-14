@@ -1,4 +1,5 @@
 import basic;
+import math.standard;
 
 /**
  * The gamma function.
@@ -66,4 +67,40 @@ function lbeta(x:Real64, y:Real64) -> Real64 {
  */
 function lbeta(x:Real32, y:Real32) -> Real32 {
   return lgamma(x) + lgamma(y) - lgamma(x + y);
+}
+
+/**
+ * The binomial coefficient.
+ */
+function choose(x:Real64, y:Real64) -> Real64 {
+  assert 0.0 <= x;
+  assert 0.0 <= y;
+  return 1.0/(y*beta(y, x - y + 1.0));
+}
+
+/**
+ * The binomial coefficient.
+ */
+function choose(x:Real32, y:Real32) -> Real32 {
+  assert Real32(0.0) <= x;
+  assert Real32(0.0) <= y;
+  return Real32(1.0)/(y*beta(y, x - y + Real32(1.0)));
+}
+
+/**
+ * Logarithm of the binomial coefficient.
+ */
+function lchoose(x:Real64, y:Real64) -> Real64 {
+  assert 0.0 <= x;
+  assert 0.0 <= y;
+  return -log(y) - lbeta(y, x - y + 1.0);
+}
+
+/**
+ * Logarithm of the binomial coefficient.
+ */
+function lchoose(x:Real32, y:Real32) -> Real32 {
+  assert Real32(0.0) <= x;
+  assert Real32(0.0) <= y;
+  return -log(y) - lbeta(y, x - y + Real32(1.0));
 }
