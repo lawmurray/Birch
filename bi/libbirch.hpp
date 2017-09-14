@@ -22,6 +22,8 @@
 #include "bi/lib/global.hpp"
 
 #include "boost/optional.hpp"
+#include "boost/math/special_functions/beta.hpp"
+///@todo Replace both of the above with STL versions under C++17.
 
 #include <getopt.h>
 #ifndef NDEBUG
