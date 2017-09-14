@@ -29,9 +29,12 @@ function observe_bernoulli(x:Boolean, ρ:Real) -> Real {
 function observe_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
   assert 0 <= n;
   assert 0.0 <= ρ && ρ <= 1.0;
-  assert 0 <= x && x <= n;
 
-  return Real(x)*log(ρ) + Real(n - x)*log(1.0 - ρ) - lchoose(Real(n), Real(x));
+  if (0 <= x && x <= n) {
+    return Real(x)*log(ρ) + Real(n - x)*log(1.0 - ρ) - lchoose(Real(n), Real(x));
+  } else {
+    return -inf;
+  }
 }
 
 /**
@@ -46,9 +49,12 @@ function observe_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
 function observe_negative_binomial(x:Integer, k:Integer, ρ:Real) -> Real {
   assert 0 < k;
   assert 0.0 <= ρ && ρ <= 1.0;
-  assert 0 <= x;
 
-  return Real(k)*log(ρ) + Real(x)*log(1.0 - ρ) - lchoose(Real(x + k - 1), Real(x));
+  if (x >= 0) {
+    return Real(k)*log(ρ) + Real(x)*log(1.0 - ρ) - lchoose(Real(x + k - 1), Real(x));
+  } else {
+    return -inf;
+  }
 }
 
 /**
