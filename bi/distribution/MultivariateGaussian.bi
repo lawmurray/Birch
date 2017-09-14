@@ -1,6 +1,6 @@
 import delay.DelayRealVector;
 import math;
-import random;
+import math.simulate;
 
 /**
  * Multivariate Gaussian distribution.
@@ -35,7 +35,7 @@ class MultivariateGaussian(D:Integer) < DelayRealVector(D) {
   function doRealize() {
     if (missing) {
       for (d:Integer in 1..D) {
-        x[d] <- random_gaussian(0.0, 1.0);
+        x[d] <- simulate_gaussian(0.0, 1.0);
       }
       set(μ + llt(Σ)*x);
     } else {

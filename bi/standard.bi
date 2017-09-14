@@ -3,7 +3,7 @@ import io;
 import math;
 import primitive;
 import resample;
-import random;
+import math.simulate;
 import delay;
 import distribution;
 import read;

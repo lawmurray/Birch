@@ -40,6 +40,7 @@ bi/io/StdOutStream.bi
 bi/math/eigen.bi
 bi/math/matrix.bi
 bi/math/scalar.bi
+bi/math/simulate.bi
 bi/math/vector.bi
 bi/basic.bi
 bi/delay.bi
@@ -48,7 +49,6 @@ bi/distribution.bi
 bi/io.bi
 bi/math.bi
 bi/primitive.bi
-bi/random.bi
 bi/read.bi
 bi/resample.bi
 bi/standard.bi

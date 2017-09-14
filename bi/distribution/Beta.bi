@@ -1,6 +1,6 @@
 import delay.DelayReal;
 import math;
-import random;
+import math.simulate;
 
 /**
  * Beta distribution.
@@ -35,8 +35,8 @@ class Beta < DelayReal {
 
   function doRealize() {
     if (isMissing()) {
-      u:Real <- random_gamma(α, 1.0);
-      v:Real <- random_gamma(β, 1.0);
+      u:Real <- simulate_gamma(α, 1.0);
+      v:Real <- simulate_gamma(β, 1.0);
       set(u/(u + v));
     } else {
       if (0.0 < x && x < 1.0) {

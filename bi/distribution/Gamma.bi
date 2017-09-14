@@ -1,6 +1,6 @@
 import delay.DelayReal;
 import math;
-import random;
+import math.simulate;
 
 /**
  * Gamma distribution.
@@ -35,7 +35,7 @@ class Gamma < DelayReal {
 
   function doRealize() {
     if (isMissing()) {
-      set(random_gamma(k, θ));
+      set(simulate_gamma(k, θ));
     } else {
       if (x > 0.0) {
         setWeight((k - 1.0)*log(x) - x/θ - lgamma(k) - k*log(θ));

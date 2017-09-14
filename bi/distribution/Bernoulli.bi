@@ -1,6 +1,6 @@
 import delay.DelayBoolean;
 import math;
-import random;
+import math.simulate;
 
 /**
  * Bernoulli distribution.
@@ -26,7 +26,7 @@ class Bernoulli < DelayBoolean {
 
   function doRealize() {
     if (isMissing()) {
-      set(random_bernoulli(ρ));
+      set(simulate_bernoulli(ρ));
     } else {
       if (x) {
         setWeight(log(ρ));

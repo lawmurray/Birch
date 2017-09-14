@@ -1,6 +1,6 @@
 import delay.DelayReal;
 import math;
-import random;
+import math.simulate;
 
 /**
  * Uniform distribution.
@@ -33,7 +33,7 @@ class Uniform < DelayReal {
 
   function doRealize() {
     if (isMissing()) {
-      set(random_uniform(l, u));
+      set(simulate_uniform(l, u));
     } else {
       if (x >= l && x <= u) {
         setWeight(log(1.0/(u - l)));
