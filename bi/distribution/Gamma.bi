@@ -36,11 +36,7 @@ class Gamma < DelayReal {
     if (isMissing()) {
       set(simulate_gamma(k, θ));
     } else {
-      if (x > 0.0) {
-        setWeight((k - 1.0)*log(x) - x/θ - lgamma(k) - k*log(θ));
-      } else {
-        setWeight(-inf);
-      }
+      setWeight(observe_gamma(x, k, θ));
     }
   }
 

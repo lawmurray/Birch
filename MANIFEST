@@ -39,6 +39,7 @@ bi/io/StdErrStream.bi
 bi/io/StdOutStream.bi
 bi/math/eigen.bi
 bi/math/matrix.bi
+bi/math/observe.bi
 bi/math/simulate.bi
 bi/math/special.bi
 bi/math/standard.bi

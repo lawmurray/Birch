@@ -27,11 +27,7 @@ class Bernoulli < DelayBoolean {
     if (isMissing()) {
       set(simulate_bernoulli(ρ));
     } else {
-      if (x) {
-        setWeight(log(ρ));
-       } else {
-        setWeight(log(1.0 - ρ));
-      }
+      setWeight(observe_bernoulli(x, ρ));
     }
   }
 

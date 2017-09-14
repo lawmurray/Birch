@@ -16,8 +16,8 @@ class Beta < DelayReal {
   β:Real;
 
   function initialize(α:Real, β:Real) {
-    assert(α > 0.0);
-    assert(β > 0.0);
+    assert α > 0.0;
+    assert β > 0.0;
   
     super.initialize();
     this.α <- α;
@@ -25,8 +25,8 @@ class Beta < DelayReal {
   }
 
   function update(α:Real, β:Real) {
-    assert(α > 0.0);
-    assert(β > 0.0);
+    assert α > 0.0;
+    assert β > 0.0;
 
     this.α <- α;
     this.β <- β;
@@ -34,16 +34,9 @@ class Beta < DelayReal {
 
   function doRealize() {
     if (isMissing()) {
-      u:Real <- simulate_gamma(α, 1.0);
-      v:Real <- simulate_gamma(β, 1.0);
-      set(u/(u + v));
+      set(simulate_beta(α, β));
     } else {
-      if (0.0 < x && x < 1.0) {
-        logZ:Real <- lgamma(α) + lgamma(β) - lgamma(α + β);
-        setWeight((α - 1.0)*log(x) + (β - 1.0)*log(1.0 - x) - logZ);
-      } else {
-        setWeight(-inf);
-      }
+      setWeight(observe_beta(x, α, β));
     }
   }
 

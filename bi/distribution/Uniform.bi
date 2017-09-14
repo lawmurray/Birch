@@ -34,11 +34,7 @@ class Uniform < DelayReal {
     if (isMissing()) {
       set(simulate_uniform(l, u));
     } else {
-      if (x >= l && x <= u) {
-        setWeight(log(1.0/(u - l)));
-      } else {
-        setWeight(-inf);
-      }
+      setWeight(observe_uniform(x, l, u));
     }
   }
 

@@ -80,3 +80,19 @@ function simulate_gamma(k:Real, θ:Real) -> Real {
   return std::gamma_distribution<bi::Real_>(k_, θ_)(rng);
   }}
 }
+
+/**
+ * Simulate a Beta variate.
+ *
+ * - α: Shape.
+ * - β: Shape.
+ */
+function simulate_beta(α:Real, β:Real) -> Real {
+  assert α > 0.0;
+  assert β > 0.0;
+  
+  u:Real <- simulate_gamma(α, 1.0);
+  v:Real <- simulate_gamma(β, 1.0);
+  
+  return u/(u + v);
+}
