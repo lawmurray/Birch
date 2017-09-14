@@ -50,7 +50,8 @@ bool bi::FunctionType::definitely(const AliasType& o) const {
 }
 
 bool bi::FunctionType::definitely(const FunctionType& o) const {
-  return params->definitely(*o.params);
+  return params->definitely(*o.params)
+      && returnType->definitely(*o.returnType);
 }
 
 bool bi::FunctionType::definitely(const OptionalType& o) const {
@@ -70,7 +71,7 @@ bool bi::FunctionType::possibly(const AliasType& o) const {
 }
 
 bool bi::FunctionType::possibly(const FunctionType& o) const {
-  return params->possibly(*o.params);
+  return params->possibly(*o.params) && returnType->possibly(*o.returnType);
 }
 
 bool bi::FunctionType::possibly(const OptionalType& o) const {
