@@ -67,6 +67,14 @@ void bi::bi_ostream::visit(const Get* o) {
   middle(o->single << '!');
 }
 
+void bi::bi_ostream::visit(const Span* o) {
+  if (o->single->isEmpty()) {
+    middle('_');
+  } else {
+    middle(o->single);
+  }
+}
+
 void bi::bi_ostream::visit(const Index* o) {
   middle(o->single);
 }
@@ -138,6 +146,10 @@ void bi::bi_ostream::visit(const MemberVariable* o) {
 }
 
 void bi::bi_ostream::visit(const Identifier<Parameter>* o) {
+  middle(o->name);
+}
+
+void bi::bi_ostream::visit(const Identifier<MemberParameter>* o) {
   middle(o->name);
 }
 
@@ -387,19 +399,7 @@ void bi::bi_ostream::visit(const IdentifierType* o) {
 }
 
 void bi::bi_ostream::visit(const ArrayType* o) {
-  middle(o->single);
-  if (!o->brackets->isEmpty()) {
-    middle('[' << o->brackets << ']');
-  } else if (o->count() > 0) {
-    middle('[');
-    for (int i = 0; i < o->count(); ++i) {
-      if (i != 0) {
-        middle(',');
-      }
-      middle('_');
-    }
-    middle(']');
-  }
+  middle(o->single << '[' << o->brackets << ']');
 }
 
 void bi::bi_ostream::visit(const ParenthesesType* o) {
