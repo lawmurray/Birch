@@ -13,9 +13,9 @@
 
 namespace bi {
 /**
- * Birch compiler.
+ * Compiler.
  *
- * @ingroup compiler
+ * @ingroup driver
  */
 class Compiler {
 public:

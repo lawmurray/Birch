@@ -12,7 +12,7 @@
 
 namespace bi {
 /**
- * Birch driver.
+ * Driver.
  *
  * @ingroup driver
  */
