@@ -46,6 +46,7 @@ bool bi::FunctionType::dispatchDefinitely(const Type& o) const {
 }
 
 bool bi::FunctionType::definitely(const AliasType& o) const {
+  assert(o.target);
   return definitely(*o.target->base);
 }
 
@@ -67,6 +68,7 @@ bool bi::FunctionType::dispatchPossibly(const Type& o) const {
 }
 
 bool bi::FunctionType::possibly(const AliasType& o) const {
+  assert(o.target);
   return possibly(*o.target->base);
 }
 

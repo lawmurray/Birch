@@ -33,6 +33,7 @@ bi::Type* bi::OverloadedType::resolve(Type* args) {
     std::copy(params.begin(), params.end(), std::back_inserter(available));
     throw InvalidCallException(args, available);
   } else {
+    params.dot();
     throw AmbiguousCallException(args, matches);
   }
 }

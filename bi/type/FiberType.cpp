@@ -40,6 +40,7 @@ bool bi::FiberType::dispatchDefinitely(const Type& o) const {
 }
 
 bool bi::FiberType::definitely(const AliasType& o) const {
+  assert(o.target);
   return definitely(*o.target->base);
 }
 
@@ -60,6 +61,7 @@ bool bi::FiberType::dispatchPossibly(const Type& o) const {
 }
 
 bool bi::FiberType::possibly(const AliasType& o) const {
+  assert(o.target);
   return possibly(*o.target->base);
 }
 

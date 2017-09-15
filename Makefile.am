@@ -161,6 +161,7 @@ COMMON_SOURCES = \
   bi/visitor/Resolver.cpp \
   bi/visitor/ResolverHeader.cpp \
   bi/visitor/ResolverSource.cpp \
+  bi/visitor/ResolverSuper.cpp \
   bi/visitor/Typer.cpp \
   bi/visitor/Visitor.cpp \
   bi/lexer.lpp \
@@ -354,6 +355,7 @@ noinst_HEADERS = \
   bi/visitor/Resolver.hpp \
   bi/visitor/ResolverHeader.hpp \
   bi/visitor/ResolverSource.hpp \
+  bi/visitor/ResolverSuper.hpp \
   bi/visitor/Typer.hpp \
   bi/visitor/Visitor.hpp \
   bi/doxygen.hpp \

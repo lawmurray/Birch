@@ -5,6 +5,7 @@
 
 #include "bi/build/misc.hpp"
 #include "bi/visitor/Typer.hpp"
+#include "bi/visitor/ResolverSuper.hpp"
 #include "bi/visitor/ResolverHeader.hpp"
 #include "bi/visitor/ResolverSource.hpp"
 #include "bi/io/bi_ostream.hpp"
@@ -64,16 +65,22 @@ void bi::Compiler::resolve() {
     file->accept(&pass1);
   }
 
-  /* second pass: populate available functions */
+  /* second pass: resolve super type relationships */
   for (auto file : files) {
-    ResolverHeader pass2;
+    ResolverSuper pass2;
     file->accept(&pass2);
   }
 
-  /* third pass: resolve the bodies of functions */
+  /* third pass: populate available functions */
   for (auto file : files) {
-    ResolverSource pass3;
+    ResolverHeader pass3;
     file->accept(&pass3);
+  }
+
+  /* fourth pass: resolve the bodies of functions */
+  for (auto file : files) {
+    ResolverSource pass4;
+    file->accept(&pass4);
   }
 }
 

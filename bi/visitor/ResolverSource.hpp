@@ -9,7 +9,7 @@
 
 namespace bi {
 /**
- * This is the third pass of the abstract syntax tree after parsing, handling
+ * This is the fourth pass of the abstract syntax tree after parsing, handling
  * definitions.
  *
  * @ingroup compiler_visitor

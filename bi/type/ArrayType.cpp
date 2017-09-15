@@ -56,6 +56,7 @@ bool bi::ArrayType::dispatchDefinitely(const Type& o) const {
 }
 
 bool bi::ArrayType::definitely(const AliasType& o) const {
+  assert(o.target);
   return definitely(*o.target->base);
 }
 
@@ -76,6 +77,7 @@ bool bi::ArrayType::dispatchPossibly(const Type& o) const {
 }
 
 bool bi::ArrayType::possibly(const AliasType& o) const {
+  assert(o.target);
   return possibly(*o.target->base);
 }
 

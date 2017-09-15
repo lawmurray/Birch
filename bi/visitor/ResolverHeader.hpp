@@ -7,7 +7,7 @@
 
 namespace bi {
 /**
- * This is the second pass of the abstract syntax tree after parsing,
+ * This is the third pass of the abstract syntax tree after parsing,
  * populating available variables, functions, etc (everything other than
  * types).
  *
@@ -40,8 +40,6 @@ public:
   virtual Statement* modify(BinaryOperator* o);
   virtual Statement* modify(UnaryOperator* o);
   virtual Statement* modify(AssignmentOperator* o);
-  virtual Statement* modify(ConversionOperator* o);
   virtual Statement* modify(Class* o);
-  virtual Statement* modify(Alias* o);
 };
 }

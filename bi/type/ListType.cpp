@@ -36,6 +36,7 @@ bool bi::ListType::dispatchDefinitely(const Type& o) const {
 }
 
 bool bi::ListType::definitely(const AliasType& o) const {
+  assert(o.target);
   return definitely(*o.target->base);
 }
 
@@ -56,6 +57,7 @@ bool bi::ListType::dispatchPossibly(const Type& o) const {
 }
 
 bool bi::ListType::possibly(const AliasType& o) const {
+  assert(o.target);
   return possibly(*o.target->base);
 }
 

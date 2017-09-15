@@ -44,10 +44,13 @@ bool bi::BasicType::dispatchDefinitely(const Type& o) const {
 }
 
 bool bi::BasicType::definitely(const AliasType& o) const {
+  assert(o.target);
   return definitely(*o.target->base);
 }
 
 bool bi::BasicType::definitely(const BasicType& o) const {
+  assert(target);
+  assert(o.target);
   return target == o.target;
 }
 
@@ -64,6 +67,7 @@ bool bi::BasicType::dispatchPossibly(const Type& o) const {
 }
 
 bool bi::BasicType::possibly(const AliasType& o) const {
+  assert(o.target);
   return possibly(*o.target->base);
 }
 

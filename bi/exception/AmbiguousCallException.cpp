@@ -11,6 +11,7 @@ bi::AmbiguousCallException::AmbiguousCallException(const Type* o,
     const std::list<Type*>& matches) {
   std::stringstream base;
   bih_ostream buf(base);
+
   if (o->loc) {
     buf << o->loc;
   }

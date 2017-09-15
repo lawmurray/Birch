@@ -41,6 +41,7 @@ bool bi::OptionalType::dispatchDefinitely(const Type& o) const {
 }
 
 bool bi::OptionalType::definitely(const AliasType& o) const {
+  assert(o.target);
   return definitely(*o.target->base);
 }
 
@@ -57,6 +58,7 @@ bool bi::OptionalType::dispatchPossibly(const Type& o) const {
 }
 
 bool bi::OptionalType::possibly(const AliasType& o) const {
+  assert(o.target);
   return possibly(*o.target->base);
 }
 

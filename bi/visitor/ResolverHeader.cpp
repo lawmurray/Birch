@@ -132,30 +132,12 @@ bi::Statement* bi::ResolverHeader::modify(AssignmentOperator* o) {
   return o;
 }
 
-bi::Statement* bi::ResolverHeader::modify(ConversionOperator* o) {
-  scopes.push_back(o->scope);
-  o->returnType = o->returnType->accept(this);
-  scopes.pop_back();
-  currentClass->addConversion(o->returnType);
-  return o;
-}
-
 bi::Statement* bi::ResolverHeader::modify(Class* o) {
   scopes.push_back(o->scope);
   currentClass = o;
   o->parens = o->parens->accept(this);
-  o->base = o->base->accept(this);
-  if (!o->base->isEmpty()) {
-    o->addSuper(o->base);
-  }
   o->braces = o->braces->accept(this);
   currentClass = nullptr;
   scopes.pop_back();
-  ///@todo Check that base type is of class type
-  return o;
-}
-
-bi::Statement* bi::ResolverHeader::modify(Alias* o) {
-  o->base = o->base->accept(this);
   return o;
 }
