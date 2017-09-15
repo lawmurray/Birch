@@ -3,6 +3,8 @@
  */
 #include "bi/primitive/poset.hpp"
 
+#include "bi/type/Type.hpp"
+#include "bi/common/Parameterised.hpp"
 #include "bi/io/bih_ostream.hpp"
 
 #include <iostream>
@@ -15,8 +17,17 @@ bi::poset<T,Compare>::poset() :
 }
 
 template<class T, class Compare>
-bool bi::poset<T,Compare>::contains(T v) const {
-  return std::find(vertices.begin(), vertices.end(), v) != vertices.end();
+bool bi::poset<T,Compare>::contains(T v) {
+  std::list<T> matches;
+  match(v, matches);
+
+  /* are any of these an exact match? */
+  for (auto u : matches) {
+    if (compare(u, v) && compare(v, u)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 template<class T, class Compare>
@@ -191,4 +202,4 @@ void bi::poset<T,Compare>::dot() {
 }
 
 template class bi::poset<bi::Type*,bi::definitely>;
-template class bi::poset<bi::Type*,bi::possibly>;
+template class bi::poset<bi::Parameterised*,bi::definitely>;

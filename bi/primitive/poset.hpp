@@ -34,7 +34,7 @@ public:
   /**
    * Does the set contain this value?
    */
-  bool contains(T v) const;
+  bool contains(T v);
 
   /**
    * Get the children of a vertex.

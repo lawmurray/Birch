@@ -7,25 +7,36 @@
 
 #include <sstream>
 
-bi::AmbiguousCallException::AmbiguousCallException(const Type* o,
-    const std::list<Type*>& matches) {
+bi::AmbiguousCallException::AmbiguousCallException(const Argumented* o,
+    const std::list<Parameterised*>& matches) {
   std::stringstream base;
   bih_ostream buf(base);
 
-  if (o->loc) {
-    buf << o->loc;
+  auto expr = dynamic_cast<const Expression*>(o);
+  assert(expr);
+  if (expr->loc) {
+    buf << expr->loc;
   }
   buf << "error: ambiguous call\n";
-  if (o->loc) {
-    buf << o->loc;
+  if (expr->loc) {
+    buf << expr->loc;
   }
-  buf << "note: argument types '" << o << "'\n";
+  buf << "note: in\n";
+  buf << expr << "\n";
+  if (expr->loc) {
+    buf << expr->loc;
+  }
+  buf << "note: argument types\n";
+  buf << o->args->type << "\n";
+
   for (auto match : matches) {
-    if (match->loc) {
-      buf << match->loc;
+    auto stmt = dynamic_cast<Statement*>(match);
+    assert(stmt);
+    if (stmt->loc) {
+      buf << stmt->loc;
     }
     buf << "note: candidate\n";
-    buf << match << '\n';
+    buf << stmt << '\n';
   }
   msg = base.str();
 }

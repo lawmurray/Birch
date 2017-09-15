@@ -128,7 +128,9 @@ void bi::Scope::add(MemberVariable* param) {
 
 void bi::Scope::add(Function* param) {
   auto name = param->name->str();
-  if (fibers.contains(name)) {
+  if (functions.contains(param)) {
+    throw PreviousDeclarationException(param);
+  } else if (fibers.contains(name)) {
     throw PreviousDeclarationException(param);
   } else if (programs.contains(name)) {
     throw PreviousDeclarationException(param, programs.get(name));
@@ -141,7 +143,9 @@ void bi::Scope::add(Function* param) {
 
 void bi::Scope::add(Fiber* param) {
   auto name = param->name->str();
-  if (functions.contains(name)) {
+  if (fibers.contains(param)) {
+    throw PreviousDeclarationException(param);
+  } else if (functions.contains(name)) {
     throw PreviousDeclarationException(param);
   } else if (programs.contains(name)) {
     throw PreviousDeclarationException(param, programs.get(name));
@@ -154,7 +158,9 @@ void bi::Scope::add(Fiber* param) {
 
 void bi::Scope::add(Program* param) {
   auto name = param->name->str();
-  if (functions.contains(name)) {
+  if (programs.contains(name)) {
+    throw PreviousDeclarationException(param, programs.get(name));
+  } else if (functions.contains(name)) {
     throw PreviousDeclarationException(param);
   } else if (fibers.contains(name)) {
     throw PreviousDeclarationException(param);
@@ -167,7 +173,9 @@ void bi::Scope::add(Program* param) {
 
 void bi::Scope::add(MemberFunction* param) {
   auto name = param->name->str();
-  if (memberVariables.contains(name)) {
+  if (memberFunctions.contains(param)) {
+    throw PreviousDeclarationException(param);
+  } else if (memberVariables.contains(name)) {
     throw PreviousDeclarationException(param, memberVariables.get(name));
   } else if (memberParameters.contains(name)) {
     throw PreviousDeclarationException(param, memberParameters.get(name));
@@ -180,7 +188,9 @@ void bi::Scope::add(MemberFunction* param) {
 
 void bi::Scope::add(MemberFiber* param) {
   auto name = param->name->str();
-  if (memberVariables.contains(name)) {
+  if (memberFibers.contains(param)) {
+    throw PreviousDeclarationException(param);
+  } else if (memberVariables.contains(name)) {
     throw PreviousDeclarationException(param, memberVariables.get(name));
   } else if (memberParameters.contains(name)) {
     throw PreviousDeclarationException(param, memberParameters.get(name));

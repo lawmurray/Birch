@@ -7,10 +7,10 @@
 
 template<class ObjectType>
 bi::OverloadedIdentifier<ObjectType>::OverloadedIdentifier(Name* name,
-    Location* loc, Overloaded<ObjectType>* target) :
+    Location* loc, Overloaded* target) :
     Expression(loc),
     Named(name),
-    Reference<Overloaded<ObjectType>>(target) {
+    Reference<Overloaded>(target) {
   //
 }
 

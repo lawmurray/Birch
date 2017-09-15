@@ -7,20 +7,37 @@
 
 #include <sstream>
 
-bi::InvalidCallException::InvalidCallException(Type* o,
-    const std::list<Type*>& available) {
+bi::InvalidCallException::InvalidCallException(Argumented* o,
+    const std::list<Parameterised*>& available) {
   std::stringstream base;
   bih_ostream buf(base);
-  if (o->loc) {
-    buf << o->loc;
+
+  auto expr = dynamic_cast<Expression*>(o);
+  assert(expr);
+  if (expr->loc) {
+    buf << expr->loc;
   }
-  buf << "error: no overload for argument types '" << o << "'\n";
+  buf << "error: invalid call\n";
+  if (expr->loc) {
+    buf << expr->loc;
+  }
+  buf << "note: in\n";
+  buf << expr << "\n";
+  if (expr->loc) {
+    buf << expr->loc;
+  }
+  buf << "note: argument types\n";
+  buf << o->args->type << "\n";
+
+
   for (auto overload : available) {
-    if (overload->loc) {
-      buf << overload->loc;
+    auto stmt = dynamic_cast<Statement*>(overload);
+    assert(stmt);
+    if (stmt->loc) {
+      buf << stmt->loc;
     }
     buf << "note: candidate\n";
-    buf << overload << '\n';
+    buf << stmt << '\n';
   }
 
   msg = base.str();

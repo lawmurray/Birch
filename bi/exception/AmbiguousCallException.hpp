@@ -4,7 +4,8 @@
 #pragma once
 
 #include "bi/exception/CompilerException.hpp"
-#include "bi/expression/Call.hpp"
+#include "bi/common/Argumented.hpp"
+#include "bi/common/Parameterised.hpp"
 
 #include <list>
 
@@ -18,6 +19,7 @@ struct AmbiguousCallException: public CompilerException {
   /**
    * Constructor.
    */
-  AmbiguousCallException(const Type* o, const std::list<Type*>& matches);
+  AmbiguousCallException(const Argumented* o,
+      const std::list<Parameterised*>& matches);
 };
 }

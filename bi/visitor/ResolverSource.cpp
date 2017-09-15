@@ -21,7 +21,7 @@ bi::Expression* bi::ResolverSource::modify(Brackets* o) {
 bi::Expression* bi::ResolverSource::modify(Call* o) {
   Modifier::modify(o);
   if (o->single->type->isFunction() || o->single->type->isOverloaded()) {
-    o->type = o->single->type->resolve(o->args->type);
+    o->type = o->single->type->resolve(o);
     o->type = o->type->accept(&cloner)->accept(this);
     o->type->assignable = false;  // rvalue
     return o;
@@ -34,7 +34,7 @@ bi::Expression* bi::ResolverSource::modify(BinaryCall* o) {
   auto op = dynamic_cast<OverloadedIdentifier<BinaryOperator>*>(o->single);
   assert(op);
   Modifier::modify(o);
-  o->type = o->single->type->resolve(o->args->type);
+  o->type = o->single->type->resolve(o);
   o->type = o->type->accept(&cloner)->accept(this);
   o->type->assignable = false;  // rvalue
   return o;
@@ -42,7 +42,7 @@ bi::Expression* bi::ResolverSource::modify(BinaryCall* o) {
 
 bi::Expression* bi::ResolverSource::modify(UnaryCall* o) {
   Modifier::modify(o);
-  o->type = o->single->type->resolve(o->args->type);
+  o->type = o->single->type->resolve(o);
   o->type = o->type->accept(&cloner)->accept(this);
   o->type->assignable = false;  // rvalue
   return o;

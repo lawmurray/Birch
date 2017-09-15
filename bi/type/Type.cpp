@@ -73,7 +73,7 @@ bi::Type* bi::Type::unwrap() const {
   return nullptr;
 }
 
-bi::Type* bi::Type::resolve(Type* args) {
+bi::Type* bi::Type::resolve(Argumented* args) {
   throw InvalidCallException(args);
 }
 

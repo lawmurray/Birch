@@ -4,7 +4,8 @@
 #pragma once
 
 #include "bi/exception/CompilerException.hpp"
-#include "bi/type/Type.hpp"
+#include "bi/common/Argumented.hpp"
+#include "bi/common/Parameterised.hpp"
 
 #include <list>
 
@@ -21,7 +22,7 @@ struct InvalidCallException: public CompilerException {
    * @param o The invalid call.
    * @param available The available overloads.
    */
-  InvalidCallException(Type* o,
-      const std::list<Type*>& available = std::list<Type*>());
+  InvalidCallException(Argumented* o,
+      const std::list<Parameterised*>& available = std::list<Parameterised*>());
 };
 }

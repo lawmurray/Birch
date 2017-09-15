@@ -3,14 +3,25 @@
  */
 #pragma once
 
+#include "bi/type/Type.hpp"
+#include "bi/common/Parameterised.hpp"
+#include "bi/common/Argumented.hpp"
+
 namespace bi {
 /**
- * Less-than comparison of two objects using their possibly() function.
+ * Comparison of two objects using their possibly() function.
  */
 struct possibly {
-  template<class T1, class T2>
-  bool operator()(T1* o1, T2* o2) {
+  bool operator()(Type* o1, Type* o2) {
     return o1->possibly(*o2);
+  }
+
+  bool operator()(Parameterised* o1, Parameterised* o2) {
+    return o1->params->type->possibly(*o2->params->type);
+  }
+
+  bool operator()(Argumented* o1, Parameterised* o2) {
+    return o1->args->type->possibly(*o2->params->type);
   }
 };
 }

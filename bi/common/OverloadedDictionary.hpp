@@ -24,12 +24,12 @@ public:
    */
   ~OverloadedDictionary();
 
-  typedef std::unordered_map<std::string,Overloaded<ObjectType>*> map_type;
+  typedef std::unordered_map<std::string,Overloaded*> map_type;
 
   /**
    * Does the dictionary contain the given object?
    */
-  bool contains(ObjectType* o) const;
+  bool contains(ObjectType* o);
 
   /**
    * Does the dictionary contain the given object?
@@ -37,9 +37,9 @@ public:
   bool contains(const std::string& name) const;
 
   /**
-   * Get a object by name.
+   * Get an object by name.
    */
-  Overloaded<ObjectType>* get(const std::string& name);
+  Overloaded* get(const std::string& name);
 
   /**
    * Add object.

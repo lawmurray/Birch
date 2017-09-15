@@ -19,7 +19,7 @@ namespace bi {
  */
 template<class ObjectType>
 class OverloadedIdentifier: public Expression, public Named, public Reference<
-    Overloaded<ObjectType>> {
+    Overloaded> {
 public:
   /**
    * Constructor.
@@ -29,7 +29,7 @@ public:
    * @param target Target.
    */
   OverloadedIdentifier(Name* name, Location* loc = nullptr,
-      Overloaded<ObjectType>* target = nullptr);
+      Overloaded* target = nullptr);
 
   /**
    * Destructor.

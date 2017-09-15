@@ -16,7 +16,7 @@ bi::OverloadedDictionary<ObjectType>::~OverloadedDictionary() {
 }
 
 template<class ObjectType>
-bool bi::OverloadedDictionary<ObjectType>::contains(ObjectType* o) const {
+bool bi::OverloadedDictionary<ObjectType>::contains(ObjectType* o) {
   auto iter = objects.find(o->name->str());
   return iter != objects.end() && iter->second->contains(o);
 }
@@ -28,7 +28,7 @@ bool bi::OverloadedDictionary<ObjectType>::contains(
 }
 
 template<class ObjectType>
-bi::Overloaded<ObjectType>* bi::OverloadedDictionary<ObjectType>::get(
+bi::Overloaded* bi::OverloadedDictionary<ObjectType>::get(
     const std::string& name) {
   /* pre-condition */
   assert(contains(name));
@@ -38,11 +38,12 @@ bi::Overloaded<ObjectType>* bi::OverloadedDictionary<ObjectType>::get(
 
 template<class ObjectType>
 void bi::OverloadedDictionary<ObjectType>::add(ObjectType* o) {
-  if (this->contains(o->name->str())) {
-    this->get(o->name->str())->add(o);
+  assert(!contains(o));
+  auto name = o->name->str();
+  if (this->contains(name)) {
+    this->get(name)->add(o);
   } else {
-    objects.insert(
-        std::make_pair(o->name->str(), new Overloaded<ObjectType>(o)));
+    objects.insert(std::make_pair(name, new Overloaded(o)));
   }
 }
 

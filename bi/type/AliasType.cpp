@@ -64,7 +64,7 @@ bool bi::AliasType::isFiber() const {
   return target->base->isFiber();
 }
 
-bi::Type* bi::AliasType::resolve(Type* args) {
+bi::Type* bi::AliasType::resolve(Argumented* args) {
   assert(target);
   return target->base->resolve(args);
 }

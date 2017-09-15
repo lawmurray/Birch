@@ -10,6 +10,8 @@ class Cloner;
 class Modifier;
 class Visitor;
 
+class Argumented;
+
 class AliasType;
 class ArrayType;
 class BasicType;
@@ -144,13 +146,13 @@ public:
   /**
    * Resolve a call.
    *
-   * @param args Argument types.
+   * @param args Arguments.
    *
-   * @return If this is a function type, and the argument types match the
+   * @return If this is an overloaded type, and the argument types match the
    * parameter types of the function, the return type of the function. In all
    * other cases throws an exception.
    */
-  virtual Type* resolve(Type* args);
+  virtual Type* resolve(Argumented* args);
 
   /**
    * Resolve a constructor call.
