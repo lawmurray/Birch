@@ -21,13 +21,6 @@ void bi::Visitor::visit(const Name* o) {
   //
 }
 
-void bi::Visitor::visit(const Path* o) {
-  o->head->accept(this);
-  if (o->tail) {
-    o->tail->accept(this);
-  }
-}
-
 void bi::Visitor::visit(const EmptyExpression* o) {
   //
 }
@@ -284,10 +277,6 @@ void bi::Visitor::visit(const Alias* o) {
 
 void bi::Visitor::visit(const Basic* o) {
   //
-}
-
-void bi::Visitor::visit(const Import* o) {
-  o->path->accept(this);
 }
 
 void bi::Visitor::visit(const ExpressionStatement* o) {

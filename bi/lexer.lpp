@@ -93,7 +93,6 @@ IS                                 (u|U|l|L)*
 <DOUBLE_BRACE>"\n"                  { raw << yytext; }
 <DOUBLE_BRACE>.                     { raw << yytext; }
 
-"import"                            { return IMPORT; }
 "function"                          { return FUNCTION; }
 "fiber"                             { return FIBER; }
 "program"                           { return PROGRAM; }

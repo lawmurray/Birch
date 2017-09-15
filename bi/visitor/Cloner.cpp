@@ -260,10 +260,6 @@ bi::Statement* bi::Cloner::clone(const Basic* o) {
   return new Basic(o->name, o->loc);
 }
 
-bi::Statement* bi::Cloner::clone(const Import* o) {
-  return new Import(o->path, o->file, o->loc);
-}
-
 bi::Statement* bi::Cloner::clone(const ExpressionStatement* o) {
   return new ExpressionStatement(o->single->accept(this), o->loc);
 }

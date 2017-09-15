@@ -18,11 +18,6 @@ bi::indentable_ostream& bi::indentable_ostream::operator<<(const Name* o) {
   return *this;
 }
 
-bi::indentable_ostream& bi::indentable_ostream::operator<<(const Path* o) {
-  o->accept(this);
-  return *this;
-}
-
 bi::indentable_ostream& bi::indentable_ostream::operator<<(const File* o) {
   o->accept(this);
   return *this;

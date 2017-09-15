@@ -82,7 +82,6 @@ public:
    * Output operator for parse tree objects.
    */
   bi::indentable_ostream& operator<<(const Name* o);
-  bi::indentable_ostream& operator<<(const Path* o);
   bi::indentable_ostream& operator<<(const File* o);
   bi::indentable_ostream& operator<<(const Package* o);
   bi::indentable_ostream& operator<<(const Expression* o);

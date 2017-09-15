@@ -39,7 +39,6 @@ COMMON_SOURCES = \
   bi/common/OverloadedDictionary.cpp \
   bi/common/Parameterised.cpp \
   bi/common/Parenthesised.cpp \
-  bi/common/Path.cpp \
   bi/common/ReturnTyped.cpp \
   bi/common/Reference.cpp \
   bi/common/Scope.cpp \
@@ -130,7 +129,6 @@ COMMON_SOURCES = \
   bi/statement/Function.cpp \
   bi/statement/GlobalVariable.cpp \
   bi/statement/If.cpp \
-  bi/statement/Import.cpp \
   bi/statement/MemberFiber.cpp \
   bi/statement/MemberFunction.cpp \
   bi/statement/MemberVariable.cpp \
@@ -229,7 +227,6 @@ noinst_HEADERS = \
   bi/common/OverloadedDictionary.hpp \
   bi/common/Parameterised.hpp \
   bi/common/Parenthesised.hpp \
-  bi/common/Path.hpp \
   bi/common/Reference.hpp \
   bi/common/ReturnTyped.hpp \
   bi/common/Scope.hpp \
@@ -325,7 +322,6 @@ noinst_HEADERS = \
   bi/statement/Function.hpp \
   bi/statement/GlobalVariable.hpp \
   bi/statement/If.hpp \
-  bi/statement/Import.hpp \
   bi/statement/MemberFiber.hpp \
   bi/statement/MemberFunction.hpp \
   bi/statement/MemberVariable.hpp \

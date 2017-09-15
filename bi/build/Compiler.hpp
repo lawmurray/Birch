@@ -45,8 +45,7 @@ public:
   void gen();
 
   /**
-   * Set the root statement of the file, adding an import for the
-   * standard library if requested.
+   * Set the root statement of the current file.
    */
   void setRoot(Statement* root);
 

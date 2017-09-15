@@ -20,7 +20,6 @@ public:
 
   virtual void visit(const File* o);
   virtual void visit(const Name* o);
-  virtual void visit(const Path* o);
 
   virtual void visit(const List<Expression>* o);
   virtual void visit(const Literal<bool>* o);
@@ -72,7 +71,6 @@ public:
   virtual void visit(const Class* o);
   virtual void visit(const Alias* o);
   virtual void visit(const Basic* o);
-  virtual void visit(const Import* o);
   virtual void visit(const ExpressionStatement* o);
   virtual void visit(const If* o);
   virtual void visit(const For* o);

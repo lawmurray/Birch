@@ -54,13 +54,12 @@
   const char* valString;
 
   bi::Name* valName;
-  bi::Path* valPath;
   bi::Expression* valExpression;
   bi::Type* valType;
   bi::Statement* valStatement;
 }
 
-%token <valString> IMPORT PROGRAM CLASS TYPE FUNCTION FIBER OPERATOR
+%token <valString> PROGRAM CLASS TYPE FUNCTION FIBER OPERATOR
 %token <valString> IF ELSE FOR IN WHILE ASSERT RETURN YIELD CPP HPP
 %token <valString> THIS SUPER NIL
 %token <valString> FUNCTION_UPPER
@@ -73,7 +72,6 @@
 %token <valString> AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP RANGE_OP
 
 %type <valName> name binary_operator unary_operator assignment_operator
-%type <valPath> path
 
 %type <valExpression> prefix_operator
 %type <valExpression> multiplicative_operator additive_operator relational_operator
@@ -102,7 +100,7 @@
 %type <valStatement> binary_operator_declaration unary_operator_declaration
 %type <valStatement> conversion_operator_declaration assignment_operator_declaration
 %type <valStatement> class_declaration alias_type_declaration basic_type_declaration
-%type <valStatement> import cpp hpp assignment expression_statement if for
+%type <valStatement> cpp hpp assignment expression_statement if for
 %type <valStatement> while assertion return yield
 %type <valStatement> statement statements optional_statements
 %type <valStatement> class_statement class_statements optional_class_statements
@@ -122,16 +120,11 @@
 
 
 /***************************************************************************
- * Names and paths                                                         *
+ * Names                                                                   *
  ***************************************************************************/
 
 name
     : NAME  { $$ = new bi::Name($1); }
-    ;
-
-path
-    : name           { $$ = new bi::Path($1, nullptr, make_loc(@$)); }
-    | name '.' path  { $$ = new bi::Path($1, $3, make_loc(@$)); }
     ;
 
 
@@ -470,10 +463,6 @@ basic_type_declaration
     : TYPE name ';'  { push_raw(); $$ = new bi::Basic($2, make_doc_loc(@$)); }
     ;
 
-import
-    : IMPORT path ';'  { $$ = new bi::EmptyStatement(); }
-    ;
-
 cpp
     : CPP double_braces  { push_raw(); $$ = new bi::Raw(new bi::Name("cpp"), pop_raw(), make_loc(@$)); }
     ;
@@ -564,8 +553,7 @@ optional_class_statements
     ;
     
 file_statement
-    : import
-    | global_variable_declaration
+    : global_variable_declaration
     | function_declaration
     | fiber_declaration
     | program_declaration

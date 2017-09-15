@@ -112,7 +112,7 @@ public:
   void resolve(AliasType* o);
 
   /**
-   * Inherit another scope into this scope. This is used to import
+   * Inherit another scope into this scope. This is used to inherit
    * declarations from a base class into a derived class.
    *
    * @param scope Scope to inherit.

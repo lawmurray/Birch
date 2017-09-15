@@ -79,7 +79,6 @@ public:
   virtual Statement* modify(Class* o);
   virtual Statement* modify(Alias* o);
   virtual Statement* modify(Basic* o);
-  virtual Statement* modify(Import* o);
   virtual Statement* modify(ExpressionStatement* o);
   virtual Statement* modify(If* o);
   virtual Statement* modify(For* o);

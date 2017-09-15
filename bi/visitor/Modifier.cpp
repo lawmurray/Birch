@@ -314,10 +314,6 @@ bi::Statement* bi::Modifier::modify(Basic* o) {
   return o;
 }
 
-bi::Statement* bi::Modifier::modify(Import* o) {
-  return o;
-}
-
 bi::Statement* bi::Modifier::modify(ExpressionStatement* o) {
   o->single = o->single->accept(this);
   return o;

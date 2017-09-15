@@ -19,10 +19,6 @@ void bi::bi_ostream::visit(const Name* o) {
   *this << o->str();
 }
 
-void bi::bi_ostream::visit(const Path* o) {
-  *this << o->str();
-}
-
 void bi::bi_ostream::visit(const List<Expression>* o) {
   *this << o->head << ", " << o->tail;
 }
@@ -323,10 +319,6 @@ void bi::bi_ostream::visit(const Alias* o) {
 
 void bi::bi_ostream::visit(const Basic* o) {
   *this << indent << "type " << o->name;
-}
-
-void bi::bi_ostream::visit(const Import* o) {
-  *this << indent << "import " << o->path << ";\n";
 }
 
 void bi::bi_ostream::visit(const ExpressionStatement* o) {
