@@ -4,10 +4,9 @@
  * Birch is a compiled, imperative, object-oriented, and probabilistic
  * programming language. The latter is its primary research concern.
  *
- * It consists of three components:
+ * It consists of:
  *
- * @li the @c birch driver program,
- * @li the @c birchc compiler program, and
+ * @li the @c birch driver program, and
  * @li the @c libbirch.* compiler library and associated header files.
  *
  * This documentation relates to these components and is only of
@@ -16,9 +15,9 @@
  *
  * The @em Modules page is a good place to start.
  *
- * @defgroup driver Driver program
- *
- * @defgroup compiler Compiler program
+ * @defgroup driver Driver
+ * @defgroup library Library
+ * @defgroup compiler Compiler
  * @defgroup compiler_common Common
  * @ingroup compiler
  * @defgroup compiler_expression Expressions
@@ -33,6 +32,4 @@
  * @ingroup compiler
  * @defgroup compiler_exception Exceptions
  * @ingroup compiler
- *
- * @defgroup library Compiler library
  */
