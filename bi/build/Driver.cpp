@@ -417,7 +417,7 @@ void bi::Driver::manifest() {
   if (packageName != "Birch.Standard") {
     /* disable inclusion of the standard library when the project is, itself,
      * the standard library (!) */
-    package->addHeader(find(include_dirs, "birch_standard.bi").string());
+    package->addHeader(find(include_dirs, "birch_standard.bih").string());
   }
   for (auto file : biFiles) {
     package->addSource(file.string());
@@ -498,14 +498,15 @@ void bi::Driver::setup() {
     /* sources derived from *.bi files */
     makeStream << "nodist_lib" << package->tarname << "_la_SOURCES = ";
     for (auto iter = biFiles.begin(); iter != biFiles.end(); ++iter) {
-      iter->replace_extension(".cpp");
-      makeStream << " \\\n  " << iter->string();
+      path cppFile = *iter;
+      cppFile.replace_extension(".cpp");
+      makeStream << " \\\n  " << cppFile.string();
     }
     makeStream << '\n';
 
     /* headers to install and distribute */
     makeStream << "nobase_include_HEADERS =";
-    makeStream << " \\\n  " << package->tarname << ".hpp";
+    makeStream << " \\\n  bi/" << package->tarname << ".hpp";
     for (auto iter = hppFiles.begin(); iter != hppFiles.end(); ++iter) {
       makeStream << " \\\n  " << iter->string();
     }

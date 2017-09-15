@@ -67,9 +67,16 @@ boost::filesystem::path remove_first(const boost::filesystem::path& path);
 std::string read_all(const boost::filesystem::path& path);
 
 /**
- * Read the entirety of a file from a string.
+ * Write the entirety of a file from a string.
  */
 void write_all(const boost::filesystem::path& path,
+    const std::string& contents);
+
+/**
+ * Write the entirety of a file from a string, but only if the new contents
+ * differs from the old contents.
+ */
+void write_all_if_different(const boost::filesystem::path& path,
     const std::string& contents);
 
 }

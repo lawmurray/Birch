@@ -27,6 +27,14 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
   line("#ifdef ENABLE_STD");
   line("#include \"bi/birch_standard.hpp\"");
   line("#endif\n");
+
+  /* raw C++ code for headers */
+  Gatherer<Raw> raws;
+  o->accept(&raws);
+  for (auto o1 : raws) {
+    aux << o1;
+  }
+  line("");
   line("namespace bi {");
 
   /* forward class declarations */
@@ -46,7 +54,6 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
     auxSuper << file;
   }
   line("");
-
 
   /* class definnitions; even with the forward declarations above, base
    * classes must be defined before their derived classes, so these are
@@ -69,7 +76,7 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
   }
   line("");
 
-  /* function declarations */
+  /* function and fiber declarations */
   line("namespace func {");
   Gatherer<Function> functions;
   o->accept(&functions);
@@ -83,5 +90,24 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
   }
   line("}\n");
 
+  /* programs */
+  Gatherer<Program> programs;
+  o->accept(&programs);
+  for (auto o1 : programs) {
+    aux << o1;
+  }
+  line("");
   line("}\n");
+
+  /* operators */
+  Gatherer<BinaryOperator> binaries;
+  o->accept(&binaries);
+  for (auto o1 : binaries) {
+    aux << o1;
+  }
+  Gatherer<UnaryOperator> unaries;
+  o->accept(&unaries);
+  for (auto o1 : unaries) {
+    aux << o1;
+  }
 }

@@ -100,7 +100,20 @@ std::string bi::read_all(const boost::filesystem::path& path) {
 
 void bi::write_all(const boost::filesystem::path& path,
     const std::string& contents) {
+  boost::filesystem::create_directories(path.parent_path());
   boost::filesystem::ofstream out(path);
   std::stringstream buf(contents);
   out << buf.rdbuf();
+}
+
+void bi::write_all_if_different(const boost::filesystem::path& path,
+    const std::string& contents) {
+  if (boost::filesystem::exists(path)) {
+    std::string old = read_all(path);
+    if (contents != old) {
+      write_all(path, contents);
+    }
+  } else {
+    write_all(path, contents);
+  }
 }

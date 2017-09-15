@@ -84,33 +84,33 @@ void bi::Compiler::resolve() {
 }
 
 void bi::Compiler::gen() {
-  fs::path bihPath, biPath, hppPath, cppPath;
+  fs::path path;
+  std::stringstream stream;
+  bih_ostream bihOutput(stream);
+  hpp_ostream hppOutput(stream);
+  cpp_ostream cppOutput(stream);
 
   /* single *.bih header for whole package */
-  bihPath = build_dir / "bi" / package->tarname;
-  bihPath.replace_extension(".bih");
-  boost::filesystem::create_directories(bihPath.parent_path());
-  fs::ofstream bihStream(bihPath);
-  bih_ostream bihOutput(bihStream);
+  stream.str("");
   bihOutput << package;
+  path = build_dir / "bi" / package->tarname;
+  path.replace_extension(".bih");
+  write_all_if_different(path, stream.str());
 
   /* single *.hpp header for whole package */
-  hppPath = build_dir / "bi" / package->tarname;
-  hppPath.replace_extension(".hpp");
-  boost::filesystem::create_directories(hppPath.parent_path());
-  fs::ofstream hppStream(hppPath);
-  hpp_ostream hppOutput(hppStream);
+  stream.str("");
   hppOutput << package;
+  path = build_dir / "bi" / package->tarname;
+  path.replace_extension(".hpp");
+  write_all_if_different(path, stream.str());
 
   /* separate *.cpp source for each file */
   for (auto file : package->sources) {
-    biPath = work_dir / file->path;
-    cppPath = build_dir / file->path;
-    cppPath.replace_extension(".cpp");
-    boost::filesystem::create_directories(cppPath.parent_path());
-    fs::ofstream cppStream(cppPath);
-    cpp_ostream cppOutput(cppStream);
+    stream.str("");
     cppOutput << file;
+    path = build_dir / file->path;
+    path.replace_extension(".cpp");
+    write_all_if_different(path, stream.str());
   }
 }
 
