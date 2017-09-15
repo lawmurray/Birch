@@ -56,7 +56,6 @@ public:
   virtual void visit(const OverloadedIdentifier<UnaryOperator>* o);
 
   virtual void visit(const File* o);
-  virtual void visit(const Import* o);
   virtual void visit(const GlobalVariable* o);
   virtual void visit(const LocalVariable* o);
   virtual void visit(const MemberVariable* o);

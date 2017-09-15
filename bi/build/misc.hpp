@@ -61,4 +61,15 @@ void copy_with_force(boost::filesystem::path src,
  */
 boost::filesystem::path remove_first(const boost::filesystem::path& path);
 
+/**
+ * Read the entirety of a file to a string.
+ */
+std::string read_all(const boost::filesystem::path& path);
+
+/**
+ * Read the entirety of a file from a string.
+ */
+void write_all(const boost::filesystem::path& path,
+    const std::string& contents);
+
 }

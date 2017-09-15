@@ -24,10 +24,10 @@ namespace fs = boost::filesystem;
 bi::Compiler* compiler = nullptr;
 std::stringstream raw;
 
-bi::Compiler::Compiler(const std::string& projectName,
+bi::Compiler::Compiler(Package* package,
     const boost::filesystem::path& work_dir,
     const boost::filesystem::path& build_dir) :
-    projectName(projectName),
+    package(package),
     work_dir(work_dir),
     build_dir(build_dir),
     scope(new Scope()) {
@@ -36,13 +36,12 @@ bi::Compiler::Compiler(const std::string& projectName,
 
 void bi::Compiler::parse() {
   compiler = this;  // set global variable needed by parser for callbacks
-  for (auto file : files) {
+  for (auto file : package->files) {
     std::string name = (work_dir / file->path).string();
     yyin = fopen(name.c_str(), "r");
     if (!yyin) {
       throw FileNotFoundException(name);
     }
-
     this->file = file;  // member variable needed by GNU Bison parser
     yyreset();
     do {
@@ -60,65 +59,61 @@ void bi::Compiler::parse() {
 
 void bi::Compiler::resolve() {
   /* first pass: populate available types */
-  for (auto file : files) {
+  for (auto file : package->files) {
     Typer pass1;
     file->accept(&pass1);
   }
 
   /* second pass: resolve super type relationships */
-  for (auto file : files) {
+  for (auto file : package->files) {
     ResolverSuper pass2;
     file->accept(&pass2);
   }
 
   /* third pass: populate available functions */
-  for (auto file : files) {
+  for (auto file : package->files) {
     ResolverHeader pass3;
     file->accept(&pass3);
   }
 
   /* fourth pass: resolve the bodies of functions */
-  for (auto file : files) {
+  for (auto file : package->sources) {
     ResolverSource pass4;
     file->accept(&pass4);
   }
 }
 
 void bi::Compiler::gen() {
-  fs::path biPath, hppPath, cppPath;
+  fs::path bihPath, biPath, hppPath, cppPath;
 
-  /* single *.hpp header file for project */
-  hppPath = build_dir / projectName;
+  /* single *.bih header for whole package */
+  bihPath = build_dir / "bi" / package->tarname;
+  bihPath.replace_extension(".bih");
+  boost::filesystem::create_directories(bihPath.parent_path());
+  fs::ofstream bihStream(bihPath);
+  bih_ostream bihOutput(bihStream);
+  bihOutput << package;
+
+  /* single *.hpp header for whole package */
+  hppPath = build_dir / "bi" / package->tarname;
   hppPath.replace_extension(".hpp");
-
+  boost::filesystem::create_directories(hppPath.parent_path());
   fs::ofstream hppStream(hppPath);
   hpp_ostream hppOutput(hppStream);
+  hppOutput << package;
 
-  /* separate source files */
-  for (auto source : sources) {
-    biPath = work_dir / source->path;
-    cppPath = build_dir / source->path;
+  /* separate *.cpp source for each file */
+  for (auto file : package->sources) {
+    biPath = work_dir / file->path;
+    cppPath = build_dir / file->path;
     cppPath.replace_extension(".cpp");
-
     boost::filesystem::create_directories(cppPath.parent_path());
-
     fs::ofstream cppStream(cppPath);
     cpp_ostream cppOutput(cppStream);
-
-    hppOutput << source;
-    cppOutput << source;
+    cppOutput << file;
   }
 }
 
 void bi::Compiler::setRoot(Statement* root) {
   this->file->root = root;
-}
-
-void bi::Compiler::include(const boost::filesystem::path path) {
-  files.push_back(new File(path.string(), scope));
-}
-
-void bi::Compiler::source(const boost::filesystem::path path) {
-  files.push_back(new File(path.string(), scope));
-  sources.push_back(files.back());
 }

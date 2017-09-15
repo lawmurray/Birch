@@ -22,11 +22,11 @@ public:
   /**
    * Constructor.
    *
-   * @param projectName Project name.
+   * @param package The package.
    * @param work_dir Working directory.
    * @param build_dir Build directory.
    */
-  Compiler(const std::string& projectName, const boost::filesystem::path& work_dir,
+  Compiler(Package* package, const boost::filesystem::path& work_dir,
       const boost::filesystem::path& build_dir);
 
   /**
@@ -45,20 +45,6 @@ public:
   void gen();
 
   /**
-   * Queue an include file for parsing.
-   *
-   * @param path File path.
-   */
-  void include(const boost::filesystem::path path);
-
-  /**
-   * Queue a source file for parsing.
-   *
-   * @param name File path.
-   */
-  void source(const boost::filesystem::path path);
-
-  /**
    * Set the root statement of the file, adding an import for the
    * standard library if requested.
    */
@@ -74,21 +60,11 @@ public:
    */
   Scope* scope;
 
-  /**
-   * All files (include and source).
-   */
-  std::list<File*> files;
-
-  /**
-   * Source files only.
-   */
-  std::list<File*> sources;
-
 private:
   /**
-   * Project name.
+   * Package.
    */
-  std::string projectName;
+  Package* package;
 
   /**
    * Working directory.

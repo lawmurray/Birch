@@ -20,10 +20,6 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
 
   /* supporting class */
   if (header) {
-    line("namespace bi {");
-    in();
-    line("namespace func {");
-    out();
     start("class " << o->name << "FiberState : ");
     finish("public FiberState<" << o->returnType->unwrap() << "> {");
     line("public:");
@@ -120,19 +116,9 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
 
     out();
     line("};");
-    in();
-    line("}");
-    out();
-    line("}\n");
   }
 
   /* initialisation function */
-  if (header) {
-    line("namespace bi {");
-    in();
-    line("namespace func {");
-    out();
-  }
   start(o->returnType << ' ');
   if (!header) {
     middle("bi::func::");
@@ -156,12 +142,6 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     finish(");");
     out();
     finish("}\n");
-  }
-  if (header) {
-    in();
-    line("}");
-    out();
-    line("}\n");
   }
 }
 

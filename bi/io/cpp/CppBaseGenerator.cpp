@@ -5,7 +5,6 @@
 
 #include "bi/io/cpp/CppClassGenerator.hpp"
 #include "bi/io/cpp/CppFiberGenerator.hpp"
-#include "bi/io/cpp/CppForwardGenerator.hpp"
 #include "bi/primitive/encode.hpp"
 
 #include "boost/filesystem.hpp"
@@ -230,45 +229,15 @@ void bi::CppBaseGenerator::visit(const File* o) {
   if (header) {
     /* include guard */
     line("#pragma once\n");
-
-    /* compiler library header */
-    // included in precompiled header
-    line("//#include \"bi/libbirch.hpp\"");
-
-    /* forward type declarations */
-    CppForwardGenerator auxForward(base, level);
-    auxForward << o;
-  } else {
-    /* include main header file */
-    boost::filesystem::path file(o->path);
-    file.replace_extension(".hpp");
-    line("#include \"" << file.filename().string() << "\"\n");
-
-    line("");
   }
 
   /* main code */
   *this << o->root;
 }
 
-void bi::CppBaseGenerator::visit(const Import* o) {
-  if (header) {
-    boost::filesystem::path file = o->path->file();
-    file.replace_extension(".hpp");
-    if (file.string().compare("bi/standard.hpp") == 0) {
-      // included in precompiled header
-      line("//#include \"" << file.string() << "\"");
-    } else {
-      line("#include \"" << file.string() << "\"");
-    }
-  }
-}
-
 void bi::CppBaseGenerator::visit(const GlobalVariable* o) {
   if (header) {
-    line("namespace bi {");
     line("extern " << o->type << ' ' << o->name << ';');
-    line("}\n");
   } else {
     start(o->type << " bi::" << o->name);
     genInit(o);
@@ -287,13 +256,6 @@ void bi::CppBaseGenerator::visit(const MemberVariable* o) {
 
 void bi::CppBaseGenerator::visit(const Function* o) {
   if (!o->braces->isEmpty()) {
-    if (header) {
-      line("namespace bi {");
-      in();
-      line("namespace func {");
-      out();
-    }
-
     start(o->returnType << ' ');
     if (!header) {
       middle("bi::func::");
@@ -313,12 +275,6 @@ void bi::CppBaseGenerator::visit(const Function* o) {
       out();
       finish("}\n");
     }
-    if (header) {
-      in();
-      line("}");
-      out();
-      line("}\n");
-    }
   }
 }
 
@@ -337,17 +293,9 @@ void bi::CppBaseGenerator::visit(const MemberFiber* o) {
 
 void bi::CppBaseGenerator::visit(const Program* o) {
   if (header) {
-    line("namespace bi {");
-    in();
-    line("namespace program {");
-    out();
     line("extern \"C\" void " << o->name << "(int argc, char** argv);");
-    in();
-    line("}");
-    out();
-    line("}\n");
   } else {
-    line("void bi::program::" << o->name << "(int argc, char** argv) {");
+    line("void bi::" << o->name << "(int argc, char** argv) {");
     in();
 
     /* handle program options */
@@ -480,14 +428,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
 
 void bi::CppBaseGenerator::visit(const BinaryOperator* o) {
   if (!o->braces->isEmpty()) {
-    //if (header) {
-    //  line("namespace bi {");
-    //}
-
     start(o->returnType << ' ');
-    //if (!header) {
-    //  middle("bi::");
-    //}
     if (isTranslatable(o->name->str())) {
       middle("operator" << o->name->str());
     } else {
@@ -505,21 +446,12 @@ void bi::CppBaseGenerator::visit(const BinaryOperator* o) {
       out();
       finish("}\n");
     }
-    //if (header) {
-    //  line("}\n");
-    //}
   }
 }
 
 void bi::CppBaseGenerator::visit(const UnaryOperator* o) {
   if (!o->braces->isEmpty()) {
-    //if (header) {
-    //  line("namespace bi {");
-    //}
     start(o->returnType << ' ');
-    //if (!header) {
-    //  middle("bi::");
-    //}
     if (isTranslatable(o->name->str())) {
       middle("operator" << o->name->str());
     } else {
@@ -536,9 +468,6 @@ void bi::CppBaseGenerator::visit(const UnaryOperator* o) {
       out();
       finish("}\n");
     }
-    //if (header) {
-    //  line("}\n");
-    //}
   }
 }
 
@@ -555,21 +484,13 @@ void bi::CppBaseGenerator::visit(const Basic* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Class* o) {
-  if (header) {
-    line("namespace bi {");
-  }
   CppClassGenerator auxClass(base, level, header);
   auxClass << o;
-  if (header) {
-    line("}\n");
-  }
 }
 
 void bi::CppBaseGenerator::visit(const Alias* o) {
   if (header) {
-    line("namespace bi {");
     line("using " << o->name << " = " << o->base << ';');
-    line("}\n");
   }
 }
 

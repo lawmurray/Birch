@@ -1,4 +1,4 @@
-AC_INIT([Birch], [0.0.0], [], [birch], [])
+AC_INIT([PACKAGE_NAME], [0.0.0], [], [PACKAGE_TARNAME], [])
 AC_PREREQ([2.62])
 AC_LANG([C++])
 AM_INIT_AUTOMAKE([1.10 no-define foreign subdir-objects])

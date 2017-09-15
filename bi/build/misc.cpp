@@ -3,7 +3,10 @@
  */
 #include "bi/build/misc.hpp"
 
+#include "boost/filesystem/fstream.hpp"
+
 #include <iostream>
+#include <sstream>
 
 void bi::warn(const std::string& msg) {
   std::cerr << "warning: " << msg << std::endl;
@@ -86,4 +89,18 @@ boost::filesystem::path bi::remove_first(
   } else {
     return remove_first(path.parent_path()) / path.filename();
   }
+}
+
+std::string bi::read_all(const boost::filesystem::path& path) {
+  boost::filesystem::ifstream in(path);
+  std::stringstream buf;
+  buf << in.rdbuf();
+  return buf.str();
+}
+
+void bi::write_all(const boost::filesystem::path& path,
+    const std::string& contents) {
+  boost::filesystem::ofstream out(path);
+  std::stringstream buf(contents);
+  out << buf.rdbuf();
 }

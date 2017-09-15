@@ -7,13 +7,13 @@
 
 namespace bi {
 /**
- * C++ code generator for forward declarations of types.
+ * C++ code generator for forward declarations of super types.
  *
  * @ingroup compiler_io
  */
-class CppForwardGenerator: public indentable_ostream {
+class CppSuperGenerator: public indentable_ostream {
 public:
-  CppForwardGenerator(std::ostream& base, const int level = 0);
+  CppSuperGenerator(std::ostream& base, const int level = 0);
 
   using indentable_ostream::visit;
 

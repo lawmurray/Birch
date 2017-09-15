@@ -3,18 +3,18 @@
  */
 #pragma once
 
-#include "bi/io/cpp_ostream.hpp"
+#include "bi/io/cpp/CppHeaderGenerator.hpp"
 
 namespace bi {
 /**
- * Output stream for C++ source files.
+ * Output stream for C++ header files.
  *
  * @ingroup compiler_io
  */
-class hpp_ostream: public cpp_ostream {
+class hpp_ostream: public CppHeaderGenerator {
 public:
   hpp_ostream(std::ostream& base, const int level = 0) :
-      cpp_ostream(base, level, true) {
+    CppHeaderGenerator(base, level) {
     //
   }
 };

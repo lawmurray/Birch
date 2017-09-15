@@ -23,7 +23,6 @@ bi::Driver::Driver(int argc, char** argv) :
     work_dir(current_path()),
     build_dir(current_path() / "build"),
     prefix(""),
-    std(true),
     warnings(true),
     debug(true),
     verbose(true),
@@ -37,8 +36,6 @@ bi::Driver::Driver(int argc, char** argv) :
     INCLUDE_DIR_ARG,
     LIB_DIR_ARG,
     PREFIX_ARG,
-    ENABLE_STD_ARG,
-    DISABLE_STD_ARG,
     ENABLE_WARNINGS_ARG,
     DISABLE_WARNINGS_ARG,
     ENABLE_DEBUG_ARG,
@@ -49,27 +46,19 @@ bi::Driver::Driver(int argc, char** argv) :
 
   int c, option_index;
   option long_options[] = {
-      { "share-dir", required_argument, 0, SHARE_DIR_ARG }, { "include-dir",
-          required_argument, 0, INCLUDE_DIR_ARG }, { "lib-dir",
-          required_argument, 0, LIB_DIR_ARG }, { "prefix", required_argument,
-          0, PREFIX_ARG }, { "enable-std", no_argument, 0, ENABLE_STD_ARG }, {
-          "disable-std", no_argument, 0, DISABLE_STD_ARG }, {
-          "enable-warnings", no_argument, 0, ENABLE_WARNINGS_ARG }, {
-          "disable-warnings", no_argument, 0, DISABLE_WARNINGS_ARG }, {
-          "enable-debug", no_argument, 0, ENABLE_DEBUG_ARG }, {
-          "disable-debug", no_argument, 0, DISABLE_DEBUG_ARG }, {
-          "enable-verbose", no_argument, 0, ENABLE_VERBOSE_ARG }, {
-          "disable-verbose", no_argument, 0, DISABLE_VERBOSE_ARG }, { 0, 0, 0,
-          0 } };
+      { "share-dir", required_argument, 0, SHARE_DIR_ARG },
+      { "include-dir", required_argument, 0, INCLUDE_DIR_ARG },
+      { "lib-dir", required_argument, 0, LIB_DIR_ARG },
+      { "prefix", required_argument, 0, PREFIX_ARG },
+      { "enable-warnings", no_argument, 0, ENABLE_WARNINGS_ARG },
+      { "disable-warnings", no_argument, 0, DISABLE_WARNINGS_ARG },
+      { "enable-debug", no_argument, 0, ENABLE_DEBUG_ARG },
+      { "disable-debug", no_argument, 0, DISABLE_DEBUG_ARG },
+      { "enable-verbose", no_argument, 0, ENABLE_VERBOSE_ARG },
+      { "disable-verbose", no_argument, 0, DISABLE_VERBOSE_ARG },
+      { 0, 0, 0, 0 }
+  };
   const char* short_options = "-";  // treats non-options as short option 1
-
-  /* read project name */
-  readName();
-  if (projectName.compare("birch_standard") == 0) {
-    /* by default, disable inclusion of the standard library when the project
-     * is, itself,  the standard library (!) */
-    std = false;
-  }
 
   /* mutable copy of argv and argc */
   largv.insert(largv.begin(), argv, argv + argc);
@@ -96,12 +85,6 @@ bi::Driver::Driver(int argc, char** argv) :
       break;
     case PREFIX_ARG:
       prefix = optarg;
-      break;
-    case ENABLE_STD_ARG:
-      std = true;
-      break;
-    case DISABLE_STD_ARG:
-      std = false;
       break;
     case ENABLE_WARNINGS_ARG:
       warnings = true;
@@ -188,7 +171,7 @@ void bi::Driver::run(const std::string& prog) {
   char* msg;
   prog_t* fcn;
 
-  path so = std::string("lib") + projectName;
+  path so = std::string("lib") + package->tarname;
 #ifdef __APPLE__
   so.replace_extension(".dylib");
 #else
@@ -360,16 +343,10 @@ void bi::Driver::check() {
 
 void bi::Driver::docs() {
   current_path(work_dir);
-  readManifest();
+  manifest();
 
   /* parse all files */
-  Compiler compiler(projectName, work_dir, build_dir);
-  if (std) {
-    compiler.include(find(include_dirs, "standard.bi"));
-  }
-  for (auto file : biFiles) {
-    compiler.source(file);
-  }
+  Compiler compiler(package, work_dir, build_dir);
   compiler.parse();
   compiler.resolve();
 
@@ -378,8 +355,7 @@ void bi::Driver::docs() {
   ofstream stream(path);
   md_ostream output(stream);
 
-  Package package(compiler.sources);
-  output << &package;
+  output << package;
 }
 
 void bi::Driver::unlock() {
@@ -389,23 +365,22 @@ void bi::Driver::unlock() {
   isLocked = false;
 }
 
-void bi::Driver::readName() {
-  projectName = "birch_untitled";
+void bi::Driver::manifest() {
+  ///@todo Upgrade MANIFEST to MANIFEST.json to contain this information
+  /* read in package name */
+  std::string packageName = "Untitled";
   ifstream metaStream("README.md");
-  std::regex reg("^name:\\s*(\\w+)$");
+  std::regex reg("^name:\\s*([a-zA-Z0-9\\._]+)$");
   std::smatch match;
   std::string line;
   while (std::getline(metaStream, line)) {
     if (std::regex_match(line, match, reg)) {
-      projectName = "birch_";
-      projectName += match[1];
-      boost::algorithm::to_lower(projectName);
+      packageName = match[1];
       break;
     }
   }
-}
 
-void bi::Driver::readManifest() {
+  /* read in manifest */
   if (exists("MANIFEST")) {
     ifstream manifestStream("MANIFEST");
     std::string name;
@@ -435,6 +410,17 @@ void bi::Driver::readManifest() {
     }
   } else {
     throw DriverException("No MANIFEST file.");
+  }
+
+  /* create package */
+  package = new Package(packageName);
+  if (packageName != "Birch.Standard") {
+    /* disable inclusion of the standard library when the project is, itself,
+     * the standard library (!) */
+    package->addHeader(find(include_dirs, "birch_standard.bi").string());
+  }
+  for (auto file : biFiles) {
+    package->addSource(file.string());
   }
 }
 
@@ -476,27 +462,41 @@ void bi::Driver::setup() {
       m4_dir / "ax_cxx_compile_stdcxx_11.m4");
   copy_if_newer(find(share_dirs, "ax_cxx_compile_stdcxx_14.m4"),
       m4_dir / "ax_cxx_compile_stdcxx_14.m4");
-  copy_if_newer(find(share_dirs, "precompile.hpp"),
-      build_dir / "precompile.hpp");
 
   /* build list of source files */
-  readManifest();
+  manifest();
+
+  /* update configure.ac */
+  if (newConfigure) {
+    std::string contents = read_all(work_dir / "configure.ac");
+    boost::algorithm::replace_all(contents, "PACKAGE_NAME", package->name);
+    boost::algorithm::replace_all(contents, "PACKAGE_TARNAME", package->tarname);
+    write_all(work_dir / "configure.ac", contents);
+  }
+
+  /* update common.am */
+  if (newMake) {
+    std::string contents = read_all(work_dir / "common.am");
+    boost::algorithm::replace_all(contents, "PACKAGE_NAME", package->name);
+    boost::algorithm::replace_all(contents, "PACKAGE_TARNAME", package->tarname);
+    write_all(work_dir / "common.am", contents);
+  }
 
   /* create Makefile.am */
   if (newManifest) {
     ofstream makeStream(work_dir / "Makefile.am");
     makeStream << "include common.am\n\n";
-    makeStream << "lib_LTLIBRARIES = lib" << projectName << ".la\n\n";
+    makeStream << "lib_LTLIBRARIES = lib" << package->tarname << ".la\n\n";
 
     /* *.cpp files */
-    makeStream << "lib" << projectName << "_la_SOURCES = ";
+    makeStream << "lib" << package->tarname << "_la_SOURCES = ";
     for (auto iter = cppFiles.begin(); iter != cppFiles.end(); ++iter) {
       makeStream << " \\\n  " << iter->string();
     }
     makeStream << '\n';
 
     /* sources derived from *.bi files */
-    makeStream << "nodist_lib" << projectName << "_la_SOURCES = ";
+    makeStream << "nodist_lib" << package->tarname << "_la_SOURCES = ";
     for (auto iter = biFiles.begin(); iter != biFiles.end(); ++iter) {
       iter->replace_extension(".cpp");
       makeStream << " \\\n  " << iter->string();
@@ -505,7 +505,7 @@ void bi::Driver::setup() {
 
     /* headers to install and distribute */
     makeStream << "nobase_include_HEADERS =";
-    makeStream << " \\\n  " << projectName << ".hpp";
+    makeStream << " \\\n  " << package->tarname << ".hpp";
     for (auto iter = hppFiles.begin(); iter != hppFiles.end(); ++iter) {
       makeStream << " \\\n  " << iter->string();
     }
@@ -533,13 +533,7 @@ void bi::Driver::setup() {
 }
 
 void bi::Driver::compile() {
-  Compiler compiler(projectName, work_dir, build_dir);
-  if (std) {
-    compiler.include(find(include_dirs, "standard.bi"));
-  }
-  for (auto file : biFiles) {
-    compiler.source(file);
-  }
+  Compiler compiler(package, work_dir, build_dir);
   compiler.parse();
   compiler.resolve();
   compiler.gen();
@@ -627,7 +621,13 @@ void bi::Driver::configure() {
     //   the end of the generated *.hpp file to ensure that it always changes.
     //   see Compiler.
     options << " --config-cache";
-    options << (std ? " --enable-std" : " --disable-std");
+    if (package->name == "Birch.Standard") {
+      /* disable inclusion of the standard library when the project is, itself,
+       * the standard library (!) */
+      options << " --disable-std";
+    } else {
+      options << " --enable-std";
+    }
 
     /* command */
     cmd << (work_dir / "configure").string() << " " << options.str()

@@ -3,6 +3,8 @@
  */
 #pragma once
 
+#include "bi/statement/Package.hpp"
+
 #include "boost/filesystem.hpp"
 #include "boost/interprocess/sync/file_lock.hpp"
 
@@ -78,14 +80,9 @@ public:
 
 private:
   /**
-   * Read in the project name from meta files.
-   */
-  void readName();
-
-  /**
    * Read in the MANIFEST file.
    */
-  void readManifest();
+  void manifest();
 
   /**
    * Set up build directory.
@@ -154,11 +151,6 @@ private:
   boost::filesystem::path prefix;
 
   /**
-   * Enable Birch standard library.
-   */
-  bool std;
-
-  /**
    * Enable compiler warnings.
    */
   bool warnings;
@@ -177,17 +169,12 @@ private:
   /**
    * Name of the package.
    */
-  std::string projectName;
+  std::string package_name;
 
   /**
-   * Local command-line arguments.
+   * The package.
    */
-  std::vector<char*> largv;
-
-  /**
-   * Buffers for local command-line arguments.
-   */
-  std::list<std::string> fbufs;
+  Package* package;
 
   /**
    * Is the autogen.sh file new?
@@ -224,5 +211,10 @@ private:
    */
   std::list<boost::filesystem::path> files, biFiles, cppFiles, hppFiles,
       metaFiles, otherFiles;
+
+  /**
+   * Leftover command-line arguments for program calls.
+   */
+  std::vector<char*> largv;
 };
 }

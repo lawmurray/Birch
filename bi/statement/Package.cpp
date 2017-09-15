@@ -5,13 +5,33 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::Package::Package(const std::list<File*>& files) :
-    files(files) {
-  //
+#include "boost/algorithm/string.hpp"
+
+bi::Package::Package(const std::string& name, const std::list<File*>& headers,
+    const std::list<File*>& sources) :
+    name(name),
+    headers(headers),
+    sources(sources) {
+  tarname = name;
+  boost::to_lower(tarname);
+  boost::replace_all(tarname, ".", "_");
+  boost::replace_all(tarname, "-", "_");
+  files.insert(files.end(), headers.begin(), headers.end());
+  files.insert(files.end(), sources.begin(), sources.end());
 }
 
 bi::Package::~Package() {
   //
+}
+
+void bi::Package::addHeader(const std::string& path) {
+  headers.push_back(new File(path, scope));
+  files.push_back(headers.back());
+}
+
+void bi::Package::addSource(const std::string& path) {
+  sources.push_back(new File(path, scope));
+  files.push_back(sources.back());
 }
 
 bi::Package* bi::Package::accept(Cloner* visitor) const {
