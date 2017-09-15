@@ -1,6 +1,3 @@
-import basic;
-import math.standard;
-
 /**
  * The gamma function.
  */

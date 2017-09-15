@@ -1,5 +1,3 @@
-import math;
-
 /**
  * Seed the pseudorandom number generator.
  *

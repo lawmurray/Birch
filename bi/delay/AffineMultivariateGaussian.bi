@@ -1,7 +1,3 @@
-import distribution.MultivariateGaussian;
-import delay.AffineMultivariateGaussianExpression;
-import math;
-
 /**
  * Multivariate Gaussian that has a mean which is an affine transformation of
  * another multivariate Gaussian.

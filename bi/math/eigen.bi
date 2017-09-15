@@ -4,13 +4,7 @@
  * compiler library, in order to preserve the lazy evaluation of Eigen that
  * is a critical feature of its performance.
  */
-import basic;
-import math.vector;
-import math.matrix;
 
-/*
- * Basic operators
- */
 operator -x:Real[_] -> Real[_];
 operator +x:Real[_] -> Real[_];
 operator x:Real[_] + y:Real[_] -> Real[_];

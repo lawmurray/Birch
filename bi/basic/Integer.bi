@@ -1,5 +1,3 @@
-import basic;
-
 /**
  * An integer value of default type.
  */

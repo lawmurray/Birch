@@ -1,5 +1,3 @@
-import math.standard;
-
 /**
  * Number of rows of a matrix.
  */

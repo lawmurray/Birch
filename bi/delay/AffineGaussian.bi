@@ -1,7 +1,3 @@
-import distribution.Gaussian;
-import delay.AffineGaussianExpression;
-import math;
-
 /**
  * Gaussian that has a mean which is an affine transformation of another
  * Gaussian.

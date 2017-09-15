@@ -1,5 +1,3 @@
-import basic;
-
 /**
  * A 64-bit (double precision) floating point value.
  */

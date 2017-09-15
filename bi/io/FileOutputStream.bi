@@ -1,6 +1,3 @@
-import basic;
-import io.OutputStream;
-
 /**
  * File output stream.
  */

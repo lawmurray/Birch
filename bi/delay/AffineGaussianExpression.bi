@@ -1,6 +1,3 @@
-import distribution.Gaussian;
-import math;
-
 /**
  * Expression used to accumulate affine transformations of Gaussians.
  *

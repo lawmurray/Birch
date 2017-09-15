@@ -1,5 +1,3 @@
-import math;
-
 /**
  * Sum of a vector.
  */

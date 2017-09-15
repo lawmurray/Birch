@@ -1,5 +1,3 @@
-import basic;
-
 /**
  * A 32-bit integer.
  */

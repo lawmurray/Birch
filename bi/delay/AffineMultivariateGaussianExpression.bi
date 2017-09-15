@@ -1,6 +1,3 @@
-import distribution.MultivariateGaussian;
-import math;
-
 /**
  * Expression used to accumulate affine transformations of multivariate
  * Gaussians.

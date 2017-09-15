@@ -1,6 +1,3 @@
-import basic;
-import io.OutputStream;
-
 /**
  * Output stream for stderr.
  */

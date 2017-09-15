@@ -1,5 +1,3 @@
-import math;
-
 /**
  * Observe a Bernoulli variate.
  *

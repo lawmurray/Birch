@@ -1,6 +1,3 @@
-import delay.DelayReal;
-import math;
-
 /**
  * Gamma distribution.
  */

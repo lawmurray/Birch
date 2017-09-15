@@ -1,6 +1,3 @@
-import delay.Delay;
-import math;
-
 /**
  * Abstract delay variate with Real value.
  */

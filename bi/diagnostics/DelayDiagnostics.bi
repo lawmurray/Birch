@@ -1,7 +1,3 @@
-import basic;
-import io;
-import delay.Delay;
-
 /**
  * Global diagnostics handler for delayed sampling.
  */

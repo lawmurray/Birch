@@ -1,6 +1,3 @@
-import delay.DelayInteger;
-import math;
-
 /**
  * Negative binomial distribution.
  */

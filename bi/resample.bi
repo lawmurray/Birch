@@ -1,6 +1,3 @@
-import primitive;
-import math;
-
 /**
  * Sample an ancestry vector for a vector of log-weights.
  */

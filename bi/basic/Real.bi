@@ -1,5 +1,3 @@
-import basic;
-
 /**
  * A floating point value of default type.
  */

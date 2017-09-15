@@ -1,5 +1,3 @@
-import basic;
-
 /**
  * Read numbers from a file.
  */

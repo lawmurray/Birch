@@ -46,12 +46,6 @@ bi/math/simulate.bi
 bi/math/special.bi
 bi/math/standard.bi
 bi/math/vector.bi
-bi/basic.bi
-bi/delay.bi
-bi/diagnostics.bi
-bi/distribution.bi
-bi/io.bi
-bi/math.bi
 bi/primitive.bi
 bi/read.bi
 bi/resample.bi

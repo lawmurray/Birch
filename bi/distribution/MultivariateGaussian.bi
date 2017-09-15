@@ -1,6 +1,3 @@
-import delay.DelayRealVector;
-import math;
-
 /**
  * Multivariate Gaussian distribution.
  *

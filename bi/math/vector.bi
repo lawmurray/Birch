@@ -1,5 +1,3 @@
-import math.standard;
-
 /**
  * Length of a vector.
  */

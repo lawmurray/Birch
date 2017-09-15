@@ -1,5 +1,3 @@
-import basic;
-
 /**
  * A string value.
  */

@@ -1,6 +1,3 @@
-import delay.DelayBoolean;
-import math;
-
 /**
  * Bernoulli distribution.
  */

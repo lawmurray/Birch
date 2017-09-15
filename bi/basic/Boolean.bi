@@ -1,5 +1,3 @@
-import basic;
-
 /**
  * A Boolean value.
  */
