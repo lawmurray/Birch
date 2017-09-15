@@ -18,7 +18,6 @@ public:
 
   using indentable_ostream::visit;
 
-  virtual void visit(const File* o);
   virtual void visit(const Name* o);
 
   virtual void visit(const List<Expression>* o);
@@ -57,7 +56,7 @@ public:
   virtual void visit(const OverloadedIdentifier<BinaryOperator>* o);
   virtual void visit(const OverloadedIdentifier<UnaryOperator>* o);
 
-  virtual void visit(const List<Statement>* o);
+  virtual void visit(const Braces* o);
   virtual void visit(const Assignment* o);
   virtual void visit(const Function* o);
   virtual void visit(const Fiber* o);

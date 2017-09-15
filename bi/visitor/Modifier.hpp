@@ -63,6 +63,7 @@ public:
   virtual Expression* modify(OverloadedIdentifier<UnaryOperator>* o);
 
   virtual Statement* modify(EmptyStatement* o);
+  virtual Statement* modify(Braces* o);
   virtual Statement* modify(List<Statement>* o);
   virtual Statement* modify(Assignment* o);
   virtual Statement* modify(GlobalVariable* o);

@@ -182,6 +182,10 @@ bi::Statement* bi::Cloner::clone(const EmptyStatement* o) {
   return new EmptyStatement();
 }
 
+bi::Statement* bi::Cloner::clone(const Braces* o) {
+  return new Braces(o->single->accept(this), o->loc);
+}
+
 bi::Statement* bi::Cloner::clone(const List<Statement>* o) {
   return new List<Statement>(o->head->accept(this), o->tail->accept(this),
       o->loc);

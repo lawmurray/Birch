@@ -86,7 +86,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
   }
 
   /* member variables and functions */
-  *this << o->braces;
+  *this << o->braces->strip();
 
   /* end boilerplate */
   if (header) {
@@ -127,7 +127,7 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
 
     /* body */
     CppBaseGenerator auxBase(base, level, header);
-    auxBase << o->braces;
+    auxBase << o->braces->strip();
 
     out();
     finish("}\n");
@@ -157,7 +157,7 @@ void bi::CppClassGenerator::visit(const AssignmentOperator* o) {
       finish(" {");
       in();
       CppBaseGenerator auxBase(base, level, header);
-      auxBase << o->braces;
+      auxBase << o->braces->strip();
       line("return *this;");
       out();
       finish("}\n");
@@ -182,7 +182,7 @@ void bi::CppClassGenerator::visit(const ConversionOperator* o) {
       finish(" {");
       in();
       CppBaseGenerator auxBase(base, level, header);
-      auxBase << o->braces;
+      auxBase << o->braces->strip();
       out();
       finish("}\n");
     }

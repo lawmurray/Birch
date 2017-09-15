@@ -217,6 +217,11 @@ bi::Statement* bi::Modifier::modify(EmptyStatement* o) {
   return o;
 }
 
+bi::Statement* bi::Modifier::modify(Braces* o) {
+  o->single = o->single->accept(this);
+  return o;
+}
+
 bi::Statement* bi::Modifier::modify(List<Statement>* o) {
   o->head = o->head->accept(this);
   o->tail = o->tail->accept(this);

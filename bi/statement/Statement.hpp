@@ -54,6 +54,11 @@ public:
    */
   virtual void accept(Visitor* visitor) const = 0;
 
+  /**
+   * Strip braces, if any.
+   */
+  virtual Statement* strip();
+
   /*
    * Is statement empty?
    */

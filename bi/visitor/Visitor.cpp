@@ -191,6 +191,10 @@ void bi::Visitor::visit(const EmptyStatement* o) {
   //
 }
 
+void bi::Visitor::visit(const Braces* o) {
+  o->single->accept(this);
+}
+
 void bi::Visitor::visit(const List<Statement>* o) {
   o->head->accept(this);
   o->tail->accept(this);

@@ -12,6 +12,10 @@ bi::Statement::~Statement() {
   //
 }
 
+bi::Statement* bi::Statement::strip() {
+  return this;
+}
+
 bool bi::Statement::isEmpty() const {
   return false;
 }

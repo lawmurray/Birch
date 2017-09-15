@@ -90,7 +90,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     finish(" {");
     in();
     genSwitch();
-    *this << o->braces;
+    *this << o->braces->strip();
     genEnd();
     out();
     finish("}\n");

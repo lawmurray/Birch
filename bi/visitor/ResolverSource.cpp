@@ -96,9 +96,9 @@ bi::Expression* bi::ResolverSource::modify(Get* o) {
 
 bi::Expression* bi::ResolverSource::modify(LambdaFunction* o) {
   scopes.push_back(o->scope);
-  o->parens = o->parens->accept(this);
-  o->returnType->accept(this);
-  o->braces->accept(this);
+  o->parens = o->parens = o->parens->accept(this);
+  o->returnType = o->returnType->accept(this);
+  o->braces = o->braces->accept(this);
   scopes.pop_back();
   o->type = new FunctionType(o->parens->type->accept(&cloner),
       o->returnType->accept(&cloner), o->loc);
@@ -324,7 +324,7 @@ bi::Statement* bi::ResolverSource::modify(MemberVariable* o) {
 bi::Statement* bi::ResolverSource::modify(Function* o) {
   scopes.push_back(o->scope);
   currentReturnType = o->returnType;
-  o->braces->accept(this);
+  o->braces = o->braces->accept(this);
   currentReturnType = nullptr;
   scopes.pop_back();
   return o;
@@ -337,7 +337,7 @@ bi::Statement* bi::ResolverSource::modify(Fiber* o) {
   } else {
     currentYieldType = dynamic_cast<FiberType*>(o->returnType)->single;
   }
-  o->braces->accept(this);
+  o->braces = o->braces->accept(this);
   currentYieldType = nullptr;
   scopes.pop_back();
   return o;
@@ -345,10 +345,10 @@ bi::Statement* bi::ResolverSource::modify(Fiber* o) {
 
 bi::Statement* bi::ResolverSource::modify(Program* o) {
   scopes.push_back(o->scope);
-  o->params->accept(&assigner);
+  o->params = o->params->accept(&assigner);
   // ^ currently for backwards compatibility of delay_triplet example, can
   //   be updated later
-  o->braces->accept(this);
+  o->braces = o->braces->accept(this);
   scopes.pop_back();
   return o;
 }
@@ -356,7 +356,7 @@ bi::Statement* bi::ResolverSource::modify(Program* o) {
 bi::Statement* bi::ResolverSource::modify(MemberFunction* o) {
   scopes.push_back(o->scope);
   currentReturnType = o->returnType;
-  o->braces->accept(this);
+  o->braces = o->braces->accept(this);
   currentReturnType = nullptr;
   scopes.pop_back();
   return o;
@@ -369,7 +369,7 @@ bi::Statement* bi::ResolverSource::modify(MemberFiber* o) {
   } else {
     currentYieldType = dynamic_cast<FiberType*>(o->returnType)->single;
   }
-  o->braces->accept(this);
+  o->braces = o->braces->accept(this);
   currentYieldType = nullptr;
   scopes.pop_back();
   return o;
@@ -378,7 +378,7 @@ bi::Statement* bi::ResolverSource::modify(MemberFiber* o) {
 bi::Statement* bi::ResolverSource::modify(BinaryOperator* o) {
   scopes.push_back(o->scope);
   currentReturnType = o->returnType;
-  o->braces->accept(this);
+  o->braces = o->braces->accept(this);
   currentReturnType = nullptr;
   scopes.pop_back();
   return o;
@@ -387,7 +387,7 @@ bi::Statement* bi::ResolverSource::modify(BinaryOperator* o) {
 bi::Statement* bi::ResolverSource::modify(UnaryOperator* o) {
   scopes.push_back(o->scope);
   currentReturnType = o->returnType;
-  o->braces->accept(this);
+  o->braces = o->braces->accept(this);
   currentReturnType = nullptr;
   scopes.pop_back();
   return o;
@@ -395,7 +395,7 @@ bi::Statement* bi::ResolverSource::modify(UnaryOperator* o) {
 
 bi::Statement* bi::ResolverSource::modify(AssignmentOperator* o) {
   scopes.push_back(o->scope);
-  o->braces->accept(this);
+  o->braces = o->braces->accept(this);
   scopes.pop_back();
   return o;
 }
@@ -403,7 +403,7 @@ bi::Statement* bi::ResolverSource::modify(AssignmentOperator* o) {
 bi::Statement* bi::ResolverSource::modify(ConversionOperator* o) {
   scopes.push_back(o->scope);
   currentReturnType = o->returnType;
-  o->braces->accept(this);
+  o->braces = o->braces->accept(this);
   currentReturnType = nullptr;
   scopes.pop_back();
   return o;

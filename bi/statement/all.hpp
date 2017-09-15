@@ -9,6 +9,7 @@
 #include "bi/statement/Assignment.hpp"
 #include "bi/statement/Basic.hpp"
 #include "bi/statement/BinaryOperator.hpp"
+#include "bi/statement/Braces.hpp"
 #include "bi/statement/Class.hpp"
 #include "bi/statement/ConversionOperator.hpp"
 #include "bi/statement/EmptyStatement.hpp"

@@ -37,7 +37,7 @@ void bi::CppConstructorGenerator::visit(const Class* o) {
     for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
       *this << *iter;
     }
-    *this << o->braces;
+    *this << o->braces->strip();
     out();
     out();
     finish(" {");

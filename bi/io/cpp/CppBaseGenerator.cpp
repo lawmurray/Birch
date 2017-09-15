@@ -104,7 +104,7 @@ void bi::CppBaseGenerator::visit(const Get* o) {
 void bi::CppBaseGenerator::visit(const LambdaFunction* o) {
   middle("[&]" << o->parens << " {");
   in();
-  *this << o->braces;
+  *this << o->braces->strip();
   out();
   start("}");
 }
@@ -270,7 +270,7 @@ void bi::CppBaseGenerator::visit(const Function* o) {
 
       /* body */
       CppBaseGenerator aux(base, level, false);
-      aux << o->braces;
+      aux << o->braces->strip();
 
       out();
       finish("}\n");
@@ -418,7 +418,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
     /* body of program */
     if (!o->braces->isEmpty()) {
       CppBaseGenerator aux(base, level, header);
-      aux << o->braces;
+      aux << o->braces->strip();
     }
 
     out();
@@ -442,7 +442,7 @@ void bi::CppBaseGenerator::visit(const BinaryOperator* o) {
       finish(" {");
       in();
       CppBaseGenerator aux(base, level, false);
-      aux << o->braces;
+      aux << o->braces->strip();
       out();
       finish("}\n");
     }
@@ -464,7 +464,7 @@ void bi::CppBaseGenerator::visit(const UnaryOperator* o) {
       finish(" {");
       in();
       CppBaseGenerator aux(base, level, false);
-      aux << o->braces;
+      aux << o->braces->strip();
       out();
       finish("}\n");
     }
@@ -516,12 +516,12 @@ void bi::CppBaseGenerator::visit(const ExpressionStatement* o) {
 void bi::CppBaseGenerator::visit(const If* o) {
   line("if " << o->cond << " {");
   in();
-  *this << o->braces;
+  *this << o->braces->strip();
   out();
   if (!o->falseBraces->isEmpty()) {
     line("} else {");
     in();
-    *this << o->falseBraces;
+    *this << o->falseBraces->strip();
     out();
   }
   line("}");
@@ -543,7 +543,7 @@ void bi::CppBaseGenerator::visit(const For* o) {
     finish("++" << o->index << ") {");
   }
   in();
-  *this << o->braces;
+  *this << o->braces->strip();
   out();
   line("}");
 }
@@ -551,7 +551,7 @@ void bi::CppBaseGenerator::visit(const For* o) {
 void bi::CppBaseGenerator::visit(const While* o) {
   line("while " << o->cond << " {");
   in();
-  *this << o->braces;
+  *this << o->braces->strip();
   out();
   line("}");
 }

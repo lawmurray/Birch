@@ -11,412 +11,413 @@ bi::bi_ostream::bi_ostream(std::ostream& base, const int level,
   //   places
 }
 
-void bi::bi_ostream::visit(const File* o) {
-  *this << o->root;
-}
-
 void bi::bi_ostream::visit(const Name* o) {
-  *this << o->str();
+  middle(o->str());
 }
 
 void bi::bi_ostream::visit(const List<Expression>* o) {
-  *this << o->head << ", " << o->tail;
+  middle(o->head << ", " << o->tail);
 }
 
 void bi::bi_ostream::visit(const Literal<bool>* o) {
-  *this << o->str;
+  middle(o->str);
 }
 
 void bi::bi_ostream::visit(const Literal<int64_t>* o) {
-  *this << o->str;
+  middle(o->str);
 }
 
 void bi::bi_ostream::visit(const Literal<double>* o) {
-  *this << o->str;
+  middle(o->str);
 }
 
 void bi::bi_ostream::visit(const Literal<const char*>* o) {
-  *this << o->str;
+  middle(o->str);
 }
 
 void bi::bi_ostream::visit(const Parentheses* o) {
-  *this << '(' << o->single << ')';
+  middle('(' << o->single << ')');
 }
 
 void bi::bi_ostream::visit(const Brackets* o) {
-  *this << '[' << o->single << ']';
+  middle('[' << o->single << ']');
 }
 
 void bi::bi_ostream::visit(const Call* o) {
-  *this << o->single << o->args;
+  middle(o->single << o->args);
 }
 
 void bi::bi_ostream::visit(const BinaryCall* o) {
-  *this << o->args->getLeft() << ' ' << o->single << ' ' << o->args->getRight();
+  middle(o->args->getLeft() << ' ' << o->single << ' ' << o->args->getRight());
 }
 
 void bi::bi_ostream::visit(const UnaryCall* o) {
-  *this << o->single << o->args;
+  middle(o->single << o->args);
 }
 
 void bi::bi_ostream::visit(const Slice* o) {
-  *this << o->single << o->brackets;
+  middle(o->single << o->brackets);
 }
 
 void bi::bi_ostream::visit(const Query* o) {
-  *this << o->single << '?';
+  middle(o->single << '?');
 }
 
 void bi::bi_ostream::visit(const Get* o) {
-  *this << o->single << '!';
+  middle(o->single << '!');
 }
 
 void bi::bi_ostream::visit(const Index* o) {
-  *this << o->single;
+  middle(o->single);
 }
 
 void bi::bi_ostream::visit(const Range* o) {
-  *this << o->left << ".." << o->right;
+  middle(o->left << ".." << o->right);
 }
 
 void bi::bi_ostream::visit(const Member* o) {
-  *this << o->left << '.' << o->right;
+  middle(o->left << '.' << o->right);
 }
 
 void bi::bi_ostream::visit(const Super* o) {
-  *this << "super";
+  middle("super");
 }
 
 void bi::bi_ostream::visit(const This* o) {
-  *this << "this";
+  middle("this");
 }
 
 void bi::bi_ostream::visit(const Nil* o) {
-  *this << "nil";
+  middle("nil");
 }
 
 void bi::bi_ostream::visit(const LocalVariable* o) {
-  *this << o->name << ':' << o->type;
+  middle(o->name << ':' << o->type);
   if (!o->parens->isEmpty()) {
-    *this << o->value;
+    middle(o->parens);
   }
   if (!o->value->isEmpty()) {
-    *this << " <- " << o->value;
+    middle(" <- " << o->value);
   }
 }
 
 void bi::bi_ostream::visit(const Parameter* o) {
-  *this << o->name << ':' << o->type;
+  middle(o->name << ':' << o->type);
   if (!o->value->isEmpty()) {
-    *this << " <- " << o->value;
+    middle(" <- " << o->value);
   }
 }
 
 void bi::bi_ostream::visit(const MemberParameter* o) {
-  *this << o->name << ':' << o->type;
+  middle(o->name << ':' << o->type);
   if (!o->value->isEmpty()) {
-    *this << " <- " << o->value;
+    middle(" <- " << o->value);
   }
 }
 
 void bi::bi_ostream::visit(const GlobalVariable* o) {
-  *this << indent << o->name << ':' << o->type;
+  start(o->name << ':' << o->type);
   if (!o->parens->isEmpty()) {
-    *this << o->value;
+    middle(o->parens);
   }
   if (!o->value->isEmpty()) {
-    *this << " <- " << o->value;
+    middle(" <- " << o->value);
   }
-  *this << ';';
+  finish(';');
 }
 
 void bi::bi_ostream::visit(const MemberVariable* o) {
-  *this << indent << o->name << ':' << o->type;
+  start(o->name << ':' << o->type);
   if (!o->parens->isEmpty()) {
-    *this << o->value;
+    middle(o->parens);
   }
   if (!o->value->isEmpty()) {
-    *this << " <- " << o->value;
+    middle(" <- " << o->value);
   }
-  *this << ';';
+  finish(';');
 }
 
 void bi::bi_ostream::visit(const Identifier<Parameter>* o) {
-  *this << o->name;
+  middle(o->name);
 }
 
 void bi::bi_ostream::visit(const Identifier<GlobalVariable>* o) {
-  *this << o->name;
+  middle(o->name);
 }
 
 void bi::bi_ostream::visit(const Identifier<LocalVariable>* o) {
-  *this << o->name;
+  middle(o->name);
 }
 
 void bi::bi_ostream::visit(const Identifier<MemberVariable>* o) {
-  *this << o->name;
+  middle(o->name);
 }
 
 void bi::bi_ostream::visit(const OverloadedIdentifier<Function>* o) {
-  *this << o->name;
+  middle(o->name);
 }
 
 void bi::bi_ostream::visit(const OverloadedIdentifier<Fiber>* o) {
-  *this << o->name;
+  middle(o->name);
 }
 
 void bi::bi_ostream::visit(const OverloadedIdentifier<MemberFunction>* o) {
-  *this << o->name;
+  middle(o->name);
 }
 
 void bi::bi_ostream::visit(const OverloadedIdentifier<MemberFiber>* o) {
-  *this << o->name;
+  middle(o->name);
 }
 
 void bi::bi_ostream::visit(const OverloadedIdentifier<BinaryOperator>* o) {
-  *this << o->name;
+  middle(o->name);
 }
 
 void bi::bi_ostream::visit(const OverloadedIdentifier<UnaryOperator>* o) {
-  *this << o->name;
+  middle(o->name);
 }
 
 void bi::bi_ostream::visit(const Identifier<Unknown>* o) {
-  *this << o->name;
+  middle(o->name);
 }
 
-void bi::bi_ostream::visit(const List<Statement>* o) {
-  *this << o->head << o->tail;
+void bi::bi_ostream::visit(const Braces* o) {
+  finish(" {");
+  in();
+  middle(o->single);
+  out();
+  line('}');
 }
 
 void bi::bi_ostream::visit(const Assignment* o) {
-  *this << o->left << ' ' << o->name << ' ' << o->right;
+  line(o->left << ' ' << o->name << ' ' << o->right << ';');
 }
 
 void bi::bi_ostream::visit(const Function* o) {
-  *this << "function " << o->name << o->params;
+  start("function " << o->name << o->params);
   if (!o->returnType->isEmpty()) {
-    *this << " -> " << o->returnType;
+    middle(" -> " << o->returnType);
   }
   if (!header && !o->braces->isEmpty()) {
-    *this << o->braces;
+    finish(o->braces);
   } else {
-    *this << ';';
+    finish(';');
   }
 }
 
 void bi::bi_ostream::visit(const Fiber* o) {
-  *this << "fiber " << o->name << o->params;
+  start("fiber " << o->name << o->params);
   if (!o->returnType->isEmpty()) {
-    *this << " -> " << o->returnType;
+    middle(" -> " << o->returnType);
   }
   if (!header && !o->braces->isEmpty()) {
-    *this << o->braces;
+    finish(o->braces);
   } else {
-    *this << ';';
+    finish(';');
   }
 }
 
 void bi::bi_ostream::visit(const Program* o) {
-  *this << "program " << o->name << o->params;
+  start("program " << o->name << o->params);
   if (!header && !o->braces->isEmpty()) {
-    *this << o->braces;
+    finish(o->braces);
   } else {
-    *this << ';';
+    finish(';');
   }
 }
 
 void bi::bi_ostream::visit(const MemberFunction* o) {
-  *this << "function " << o->name << o->params;
+  start("function " << o->name << o->params);
   if (!o->returnType->isEmpty()) {
-    *this << " -> " << o->returnType;
+    middle(" -> " << o->returnType);
   }
   if (!header && !o->braces->isEmpty()) {
-    *this << o->braces;
+    finish(o->braces);
   } else {
-    *this << ';';
+    finish(';');
   }
 }
 
 void bi::bi_ostream::visit(const MemberFiber* o) {
-  *this << "fiber " << o->name << o->params;
+  start("fiber " << o->name << o->params);
   if (!o->returnType->isEmpty()) {
-    *this << " -> " << o->returnType;
+    middle(" -> " << o->returnType);
   }
   if (!header && !o->braces->isEmpty()) {
-    *this << o->braces;
+    finish(o->braces);
   } else {
-    *this << ';';
+    finish(';');
   }
 }
 
 void bi::bi_ostream::visit(const BinaryOperator* o) {
-  *this << "operator ";
-  *this << o->params->getLeft();
-  *this << ' ' << o->name << ' ';
-  *this << o->params->getRight();
+  start("operator ");
+  middle(o->params->getLeft());
+  middle(' ' << o->name << ' ');
+  middle(o->params->getRight());
   if (!o->returnType->isEmpty()) {
-    *this << " -> " << o->returnType;
+    middle(" -> " << o->returnType);
   }
   if (!header && !o->braces->isEmpty()) {
-    *this << o->braces;
+    finish(o->braces);
   } else {
-    *this << ';';
+    finish(';');
   }
 }
 
 void bi::bi_ostream::visit(const UnaryOperator* o) {
-  *this << "operator " << o->name << ' ' << o->params;
+  start("operator " << o->name << ' ' << o->params);
   if (!o->returnType->isEmpty()) {
-    *this << " -> " << o->returnType;
+    middle(" -> " << o->returnType);
   }
   if (!header && !o->braces->isEmpty()) {
-    *this << o->braces;
+    finish(o->braces);
   } else {
-    *this << ';';
+    finish(';');
   }
 }
 
 void bi::bi_ostream::visit(const AssignmentOperator* o) {
-  *this << "operator " << o->name << ' ' << o->single;
+  start("operator " << o->name << ' ' << o->single);
   if (!header && !o->braces->isEmpty()) {
-    *this << o->braces;
+    finish(o->braces);
   } else {
-    *this << ';';
+    finish(';');
   }
 }
 
 void bi::bi_ostream::visit(const ConversionOperator* o) {
-  *this << "operator -> " << o->returnType;
+  start("operator -> " << o->returnType);
   if (!header && !o->braces->isEmpty()) {
-    *this << o->braces;
+    finish(o->braces);
   } else {
-    *this << ';';
+    finish(';');
   }
 }
 
 void bi::bi_ostream::visit(const Class* o) {
-  *this << indent << "class " << o->name;
+  start("class " << o->name);
   if (!o->parens->isEmpty()) {
-    *this << o->parens;
+    middle(o->parens);
   }
   if (!o->base->isEmpty()) {
-    *this << " < " << o->base;
-  }
-  if (!o->baseParens->isEmpty()) {
-    *this << o->baseParens;
+    middle(" < " << o->base);
+    if (!o->baseParens->isEmpty()) {
+      middle(o->baseParens);
+    }
   }
   if (!o->braces->isEmpty()) {
-    *this << o->braces;
+    finish(o->braces);
   } else {
-    *this << ';';
+    finish(';');
   }
 }
 
 void bi::bi_ostream::visit(const Alias* o) {
-  *this << indent << "type " << o->name << " = " << o->base;
+  line("type " << o->name << " = " << o->base << ';');
 }
 
 void bi::bi_ostream::visit(const Basic* o) {
-  *this << indent << "type " << o->name;
+  line("type " << o->name << ';');
 }
 
 void bi::bi_ostream::visit(const ExpressionStatement* o) {
-  *this << indent << o->single << '\n';
+  line(o->single << ';');
 }
 
 void bi::bi_ostream::visit(const If* o) {
-  *this << indent << "if " << o->cond << o->braces;
+  start("if " << o->cond << o->braces);
   if (!o->falseBraces->isEmpty()) {
-    *this << " else" << o->falseBraces;
+    middle(" else" << o->falseBraces);
   }
-  *this << '\n';
+  finish("");
 }
 
 void bi::bi_ostream::visit(const For* o) {
-  *this << indent << "for (";
-  *this << o->index << " in " << o->from << ".." << o->to;
-  *this << ')' << o->braces << '\n';
+  start("for ("  << o->index << " in " << o->from << ".." << o->to << ')');
+  finish(o->braces);
 }
 
 void bi::bi_ostream::visit(const While* o) {
-  *this << indent << "while " << o->cond << o->braces << '\n';
+  line("while " << o->cond << o->braces);
 }
 
 void bi::bi_ostream::visit(const Assert* o) {
-  *this << indent << "assert " << o->cond << ";\n";
+  line("assert " << o->cond << ';');
 }
 
 void bi::bi_ostream::visit(const Return* o) {
-  *this << indent << "return " << o->single << ";\n";
+  line("return " << o->single << ';');
 }
 
 void bi::bi_ostream::visit(const Yield* o) {
-  *this << indent << "yield " << o->single << ";\n";
+  line("yield " << o->single << ';');
 }
 
 void bi::bi_ostream::visit(const Raw* o) {
-  *this << indent << o->name << " {{\n";
-  *this << indent << o->raw << '\n';
-  *this << indent << "}}\n";
+  if (!header) {
+    line(o->name << " {{");
+    line(o->raw);
+    line("}}");
+  }
 }
 
 void bi::bi_ostream::visit(const ListType* o) {
-  *this << o->head << ", " << o->tail;
+  middle(o->head << ", " << o->tail);
 }
 
 void bi::bi_ostream::visit(const ClassType* o) {
-  *this << o->name;
+  middle(o->name);
 }
 
 void bi::bi_ostream::visit(const AliasType* o) {
-  *this << o->name;
+  middle(o->name);
 }
 
 void bi::bi_ostream::visit(const BasicType* o) {
-  *this << o->name;
+  middle(o->name);
 }
 
 void bi::bi_ostream::visit(const BinaryType* o) {
-  *this << '(' << o->left << ", " << o->right << ')';
+  middle('(' << o->left << ", " << o->right << ')');
 }
 
 void bi::bi_ostream::visit(const IdentifierType* o) {
-  *this << o->name;
+  middle(o->name);
 }
 
 void bi::bi_ostream::visit(const ArrayType* o) {
-  *this << o->single;
+  middle(o->single);
   if (!o->brackets->isEmpty()) {
-    *this << '[' << o->brackets << ']';
+    middle('[' << o->brackets << ']');
   } else if (o->count() > 0) {
-    *this << '[';
+    middle('[');
     for (int i = 0; i < o->count(); ++i) {
       if (i != 0) {
-        *this << ',';
+        middle(',');
       }
-      *this << '_';
+      middle('_');
     }
-    *this << ']';
+    middle(']');
   }
 }
 
 void bi::bi_ostream::visit(const ParenthesesType* o) {
-  *this << '(' << o->single << ')';
+  middle('(' << o->single << ')');
 }
 
 void bi::bi_ostream::visit(const FunctionType* o) {
-  *this << "Function<" << o->params;
+  middle("Function<" << o->params);
   if (!o->returnType->isEmpty()) {
-    *this << " -> " << o->returnType;
+    middle(" -> " << o->returnType);
   }
-  *this << '>';
+  middle('>');
 }
 
 void bi::bi_ostream::visit(const FiberType* o) {
-  *this << o->single << '!';
+  middle(o->single << '!');
 }
 
 void bi::bi_ostream::visit(const OptionalType* o) {
-  *this << o->single << '?';
+  middle(o->single << '?');
 }

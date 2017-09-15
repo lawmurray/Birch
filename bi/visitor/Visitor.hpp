@@ -64,6 +64,7 @@ public:
   virtual void visit(const OverloadedIdentifier<UnaryOperator>* o);
 
   virtual void visit(const EmptyStatement* o);
+  virtual void visit(const Braces* o);
   virtual void visit(const List<Statement>* o);
   virtual void visit(const Assignment* o);
   virtual void visit(const GlobalVariable* o);

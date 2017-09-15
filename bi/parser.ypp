@@ -599,7 +599,7 @@ optional_value
     ;
 
 braces
-    : '{' optional_statements '}'  { $$ = $2; }
+    : '{' optional_statements '}'  { $$ = new bi::Braces($2, make_loc(@$)); }
     ;
 
 optional_braces
@@ -608,7 +608,7 @@ optional_braces
     ;
 
 class_braces
-    : '{' optional_class_statements '}'  { $$ = $2; }
+    : '{' optional_class_statements '}'  { $$ = new bi::Braces($2, make_loc(@$)); }
     ;
 
 optional_class_braces

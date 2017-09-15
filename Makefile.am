@@ -119,6 +119,7 @@ COMMON_SOURCES = \
   bi/statement/Assignment.cpp \
   bi/statement/Basic.cpp \
   bi/statement/BinaryOperator.cpp \
+  bi/statement/Braces.cpp \
   bi/statement/Class.cpp \
   bi/statement/ConversionOperator.cpp \
   bi/statement/EmptyStatement.cpp \
@@ -312,6 +313,7 @@ noinst_HEADERS = \
   bi/statement/Assignment.hpp \
   bi/statement/Basic.hpp \
   bi/statement/BinaryOperator.hpp \
+  bi/statement/Braces.hpp \
   bi/statement/Class.hpp \
   bi/statement/ConversionOperator.hpp \
   bi/statement/EmptyStatement.hpp \

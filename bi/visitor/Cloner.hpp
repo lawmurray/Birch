@@ -63,6 +63,7 @@ public:
   virtual Expression* clone(const OverloadedIdentifier<UnaryOperator>* o);
 
   virtual Statement* clone(const EmptyStatement* o);
+  virtual Statement* clone(const Braces* o);
   virtual Statement* clone(const List<Statement>* o);
   virtual Statement* clone(const Assignment* o);
   virtual Statement* clone(const GlobalVariable* o);
