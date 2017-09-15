@@ -507,10 +507,8 @@ void bi::Driver::setup() {
     /* headers to install and distribute */
     makeStream << "nobase_include_HEADERS =";
     makeStream << " \\\n  bi/" << package->tarname << ".hpp";
+    makeStream << " \\\n  bi/" << package->tarname << ".bih";
     for (auto iter = hppFiles.begin(); iter != hppFiles.end(); ++iter) {
-      makeStream << " \\\n  " << iter->string();
-    }
-    for (auto iter = biFiles.begin(); iter != biFiles.end(); ++iter) {
       makeStream << " \\\n  " << iter->string();
     }
     makeStream << '\n';
@@ -616,11 +614,6 @@ void bi::Driver::configure() {
     }
     options << " --disable-static";
     options << " INSTALL=\"install -p\"";
-    // ^ This can be problematic for headers, as while *.bi file may change,
-    //   this may not change the *.hpp file, and so make keeps trying to
-    //   rebuild it. The solution has been to append the entire *.bi file to
-    //   the end of the generated *.hpp file to ensure that it always changes.
-    //   see Compiler.
     options << " --config-cache";
     if (package->name == "Birch.Standard") {
       /* disable inclusion of the standard library when the project is, itself,
