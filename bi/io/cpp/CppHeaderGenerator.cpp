@@ -11,6 +11,8 @@
 #include "bi/primitive/poset.hpp"
 #include "bi/primitive/definitely.hpp"
 
+#include "boost/filesystem.hpp"
+
 bi::CppHeaderGenerator::CppHeaderGenerator(std::ostream& base,
     const int level) :
     indentable_ostream(base, level) {
@@ -24,13 +26,17 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
   CppBaseGenerator aux(base, level, true);
 
   line("#include \"bi/libbirch.hpp\"");
-  line("#ifdef ENABLE_STD");
-  line("#include \"bi/birch_standard.hpp\"");
-  line("#endif\n");
+  for (auto header : o->headers) {
+    boost::filesystem::path include = header->path;
+    include.replace_extension(".hpp");
+    line("#include \"" << include.string() << "\"");
+  }
 
   /* raw C++ code for headers */
   Gatherer<Raw> raws;
-  o->accept(&raws);
+  for (auto source: o->sources) {
+    source->accept(&raws);
+  }
   for (auto o1 : raws) {
     aux << o1;
   }
@@ -59,7 +65,9 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
    * classes must be defined before their derived classes, so these are
    * gathered and sorted first */
   Gatherer<Class> classes;
-  o->accept(&classes);
+  for (auto source: o->sources) {
+    source->accept(&classes);
+  }
   poset<Type*,definitely> sorted;
   for (auto type : classes) {
     sorted.insert(new ClassType(type));
@@ -70,7 +78,9 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
 
   /* global variable declarations */
   Gatherer<GlobalVariable> globals;
-  o->accept(&globals);
+  for (auto source: o->sources) {
+    source->accept(&globals);
+  }
   for (auto o1 : globals) {
     aux << o1;
   }
@@ -79,12 +89,16 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
   /* function and fiber declarations */
   line("namespace func {");
   Gatherer<Function> functions;
-  o->accept(&functions);
+  for (auto source: o->sources) {
+    source->accept(&functions);
+  }
   for (auto o1 : functions) {
     aux << o1;
   }
   Gatherer<Fiber> fibers;
-  o->accept(&fibers);
+  for (auto source: o->sources) {
+    source->accept(&fibers);
+  }
   for (auto o1 : fibers) {
     aux << o1;
   }
@@ -92,7 +106,9 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
 
   /* programs */
   Gatherer<Program> programs;
-  o->accept(&programs);
+  for (auto source: o->sources) {
+    source->accept(&programs);
+  }
   for (auto o1 : programs) {
     aux << o1;
   }
@@ -101,12 +117,16 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
 
   /* operators */
   Gatherer<BinaryOperator> binaries;
-  o->accept(&binaries);
+  for (auto source: o->sources) {
+    source->accept(&binaries);
+  }
   for (auto o1 : binaries) {
     aux << o1;
   }
   Gatherer<UnaryOperator> unaries;
-  o->accept(&unaries);
+  for (auto source: o->sources) {
+    source->accept(&unaries);
+  }
   for (auto o1 : unaries) {
     aux << o1;
   }

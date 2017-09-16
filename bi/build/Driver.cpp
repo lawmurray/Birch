@@ -417,7 +417,7 @@ void bi::Driver::manifest() {
   if (packageName != "Birch.Standard") {
     /* disable inclusion of the standard library when the project is, itself,
      * the standard library (!) */
-    package->addHeader(find(include_dirs, "birch_standard.bih").string());
+    package->addHeader(find(include_dirs, path("bi") / "birch_standard.bih").string());
   }
   for (auto file : biFiles) {
     package->addSource(file.string());

@@ -37,10 +37,9 @@ bi::Compiler::Compiler(Package* package,
 void bi::Compiler::parse() {
   compiler = this;  // set global variable needed by parser for callbacks
   for (auto file : package->files) {
-    std::string name = (work_dir / file->path).string();
-    yyin = fopen(name.c_str(), "r");
+    yyin = fopen(file->path.c_str(), "r");
     if (!yyin) {
-      throw FileNotFoundException(name);
+      throw FileNotFoundException(file->path);
     }
     this->file = file;  // member variable needed by GNU Bison parser
     yyreset();

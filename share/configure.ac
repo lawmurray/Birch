@@ -31,7 +31,7 @@ fi
 # Checks for header files
 AC_CHECK_HEADERS([bi/libbirch.hpp], [], [AC_MSG_ERROR([Birch compiler library header not found.])], [-])
 if test x$std = xtrue; then
-    AC_CHECK_HEADERS([bi/standard.hpp], [], [AC_MSG_ERROR([Birch standard library header not found.])], [-])
+    AC_CHECK_HEADERS([bi/birch_standard.hpp], [], [AC_MSG_ERROR([Birch standard library header not found.])], [-])
 fi
 
 # Defines

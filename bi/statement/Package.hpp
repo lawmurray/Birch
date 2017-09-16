@@ -22,8 +22,9 @@ public:
    * @param headers Header files needed by the package.
    * @param sources Source files of the package.
    */
-  Package(const std::string& name, const std::list<File*>& headers = std::list<File*>(),
-      const std::list<File*>& sources = std::list<File*>());
+  Package(const std::string& name, const std::list<File*>& headers =
+      std::list<File*>(), const std::list<File*>& sources =
+      std::list<File*>());
 
   /**
    * Destructor.
