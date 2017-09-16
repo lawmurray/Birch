@@ -18,6 +18,7 @@ public:
 
   using indentable_ostream::visit;
 
+  virtual void visit(const Package* o);
   virtual void visit(const Name* o);
 
   virtual void visit(const List<Expression>* o);

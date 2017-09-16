@@ -11,6 +11,12 @@ bi::bi_ostream::bi_ostream(std::ostream& base, const int level,
   //   places
 }
 
+void bi::bi_ostream::visit(const Package* o) {
+  for (auto source: o->sources) {
+    source->accept(this);
+  }
+}
+
 void bi::bi_ostream::visit(const Name* o) {
   middle(o->str());
 }
