@@ -22,12 +22,12 @@ bi::AmbiguousCallException::AmbiguousCallException(const Argumented* o,
     buf << expr->loc;
   }
   buf << "note: in\n";
-  buf << expr << "\n";
+  buf << expr << '\n';
   if (expr->loc) {
     buf << expr->loc;
   }
   buf << "note: argument types\n";
-  buf << o->args->type << "\n";
+  buf << o->args->type << '\n';
 
   for (auto match : matches) {
     auto stmt = dynamic_cast<Statement*>(match);
@@ -36,7 +36,7 @@ bi::AmbiguousCallException::AmbiguousCallException(const Argumented* o,
       buf << stmt->loc;
     }
     buf << "note: candidate\n";
-    buf << stmt << '\n';
+    buf << stmt;
   }
   msg = base.str();
 }

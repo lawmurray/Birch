@@ -37,7 +37,7 @@ bi::InvalidCallException::InvalidCallException(Argumented* o,
       buf << stmt->loc;
     }
     buf << "note: candidate\n";
-    buf << stmt << '\n';
+    buf << stmt;
   }
 
   msg = base.str();
