@@ -1,5 +1,3 @@
-import VBD;
-
 /**
  * Sample from the posterior distribution.
  *
