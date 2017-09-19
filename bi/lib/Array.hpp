@@ -116,6 +116,24 @@ public:
   }
 
   /**
+   * Construct with new allocation and copy in existing array.
+   *
+   * @tparam Frame1 Frame type.
+   *
+   * @param o Existing array.
+   * @param frame Frame.
+   *
+   * Memory is allocated for the array, and is freed on destruction. After
+   * allocation, the contents of the existing array are copied in.
+   */
+  template<class Frame1>
+  Array(const Array<Type,Frame1>& o, const Frame& frame) :
+      frame(frame) {
+    allocate(ptr, frame.volume());
+    copy(o);
+  }
+
+  /**
    * Constructor with existing allocation.
    *
    * @tparam Frame Frame type.
@@ -217,6 +235,17 @@ public:
    */
   //@{
   /**
+   * Compatibility check.
+   */
+  template<class DerivedType>
+  struct is_eigen_compatible {
+    static const bool value = (Frame::count() == 1
+        && DerivedType::ColsAtCompileTime == 1)
+        || (Frame::count() == 2
+            && DerivedType::ColsAtCompileTime == Eigen::Dynamic);
+  };
+
+  /**
    * Appropriate Eigen Matrix type for this Birch Array type.
    */
   using EigenType = typename std::conditional<Frame::count() == 2,
@@ -242,12 +271,26 @@ public:
   }
 
   /**
+   * Construct with new allocation and copy in existing array from Eigen
+   * Matrix expression.
+   *
+   * @param o Existing array.
+   * @param frame Frame.
+   *
+   * Memory is allocated for the array, and is freed on destruction. After
+   * allocation, the contents of the existing array are copied in.
+   */
+  template<class DerivedType, typename = std::enable_if_t<is_eigen_compatible<DerivedType>::value>>
+  Array(const Eigen::EigenBase<DerivedType>& o, const Frame& frame) :
+      frame(frame) {
+    allocate(ptr, frame.volume());
+    toEigen() = o;
+  }
+
+  /**
    * Construct from Eigen Matrix expression.
    */
-  template<class DerivedType, typename = std::enable_if_t<
-      (Frame::count() == 1 && DerivedType::ColsAtCompileTime == 1)
-          || (Frame::count() == 2
-              && DerivedType::ColsAtCompileTime == Eigen::Dynamic)>>
+  template<class DerivedType, typename = std::enable_if_t<is_eigen_compatible<DerivedType>::value>>
   Array(const Eigen::EigenBase<DerivedType>& o) :
       frame(o.rows(), o.cols()) {
     allocate(ptr, frame.volume());
@@ -257,10 +300,7 @@ public:
   /**
    * Assign from Eigen Matrix expression.
    */
-  template<class DerivedType, typename = std::enable_if_t<
-      (Frame::count() == 1 && DerivedType::ColsAtCompileTime == 1)
-          || (Frame::count() == 2
-              && DerivedType::ColsAtCompileTime == Eigen::Dynamic)>>
+  template<class DerivedType, typename = std::enable_if_t<is_eigen_compatible<DerivedType>::value>>
   Array<Type,Frame>& operator=(const Eigen::EigenBase<DerivedType>& o) {
     toEigen() = o;
     return *this;
