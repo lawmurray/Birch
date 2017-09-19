@@ -8,9 +8,6 @@
 #include "bi/build/misc.hpp"
 
 #include <iostream>
-#ifndef NDEBUG
-#define GC_DEBUG 1
-#endif
 #include <gc.h>
 
 int main(int argc, char** argv) {

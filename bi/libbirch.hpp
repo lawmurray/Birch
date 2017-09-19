@@ -26,9 +26,6 @@
 ///@todo Replace both of the above with STL versions under C++17.
 
 #include <getopt.h>
-#ifndef NDEBUG
-#define GC_DEBUG 1
-#endif
 #include <gc.h>
 
 #include <iostream>

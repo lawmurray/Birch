@@ -28,7 +28,7 @@ class Array {
   friend class Array;
 
   /**
-   * @internal These are declare ahead due to some issues with clang++ around
+   * @internal These are declared ahead due to some issues with clang++ around
    * the return type of operator(), which in turn calls viewReturn().
    */
 protected:
@@ -522,7 +522,7 @@ private:
     auto raw = GC_MALLOC_ATOMIC(sizeof(Pointer<Type1> ) * n);
     assert(raw);
     ptr = static_cast<Pointer<Type1>*>(raw);
-    // ^ while the buffer contains pointers, these a relocatable and do not
+    // ^ while the buffer contains pointers, these are relocatable and do not
     //   themselves contain addresses, so GC_MALLOC_ATOMIC can be used
   }
 

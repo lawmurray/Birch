@@ -579,7 +579,7 @@ void bi::Driver::configure() {
 
     /* compile and link flags */
     if (debug) {
-      cppflags << " -D_GLIBCXX_DEBUG";
+      cppflags << " -D_GLIBCXX_DEBUG -DGC_DEBUG=1";
       cxxflags << " -O0 -g -fno-inline";
       ldflags << " -O0 -g -fno-inline";
     } else {
