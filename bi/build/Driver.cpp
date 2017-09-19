@@ -163,6 +163,9 @@ bi::Driver::~Driver() {
 }
 
 void bi::Driver::run(const std::string& prog) {
+  /* get package information */
+  manifest();
+
   /* dynamically load possible programs */
   typedef void prog_t(int argc, char** argv);
 
@@ -199,6 +202,7 @@ void bi::Driver::run(const std::string& prog) {
 }
 
 void bi::Driver::build() {
+  manifest();
   setup();
   compile();
   autogen();
@@ -207,6 +211,7 @@ void bi::Driver::build() {
 }
 
 void bi::Driver::install() {
+  manifest();
   setup();
   compile();
   autogen();
@@ -215,6 +220,7 @@ void bi::Driver::install() {
 }
 
 void bi::Driver::uninstall() {
+  manifest();
   setup();
   compile();
   autogen();
@@ -223,6 +229,7 @@ void bi::Driver::uninstall() {
 }
 
 void bi::Driver::dist() {
+  manifest();
   setup();
   compile();
   autogen();
@@ -462,9 +469,6 @@ void bi::Driver::setup() {
       m4_dir / "ax_cxx_compile_stdcxx_11.m4");
   copy_if_newer(find(share_dirs, "ax_cxx_compile_stdcxx_14.m4"),
       m4_dir / "ax_cxx_compile_stdcxx_14.m4");
-
-  /* build list of source files */
-  manifest();
 
   /* update configure.ac */
   if (newConfigure) {
