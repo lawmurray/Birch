@@ -1,14 +1,14 @@
 /**
- * Gaussian distribution.
+ * Log-Gaussian distribution.
  */
-class Gaussian < DelayReal {
+class LogGaussian < DelayReal {
   /**
-   * Mean.
+   * Mean after log transformation.
    */
   μ:Real;
   
   /**
-   * Variance.
+   * Variance after log transformation.
    */
   σ2:Real;
 
@@ -34,18 +34,18 @@ class Gaussian < DelayReal {
 
   function doRealize() {
     if (isMissing()) {
-      set(simulate_gaussian(μ, σ2));
+      set(simulate_log_gaussian(μ, σ2));
     } else {
-      setWeight(observe_gaussian(x, μ, σ2));
+      setWeight(observe_log_gaussian(x, μ, σ2));
     }
   }
 
-  function tildeLeft() -> Gaussian {
+  function tildeLeft() -> LogGaussian {
     simulate();
     return this;
   }
   
-  function tildeRight(left:Gaussian) -> Gaussian {
+  function tildeRight(left:LogGaussian) -> LogGaussian {
     set(left.value());
     observe();
     return this;
@@ -53,15 +53,15 @@ class Gaussian < DelayReal {
 }
 
 /**
- * Synonym for Gaussian.
+ * Synonym for LogGaussian.
  */
-type Normal = Gaussian;
+type LogNormal = LogGaussian;
 
 /**
- * Create Gaussian distribution.
+ * Create log-Gaussian distribution.
  */
-function Gaussian(μ:Real, σ2:Real) -> Gaussian {
-  m:Gaussian;
+function LogGaussian(μ:Real, σ2:Real) -> LogGaussian {
+  m:LogGaussian;
   m.initialize(μ, σ2);
   return m;
 }

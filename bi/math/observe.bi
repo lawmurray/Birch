@@ -98,6 +98,23 @@ function observe_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
 }
 
 /**
+ * Observe a log-Gaussian variate.
+ *
+ * - x: The variate.
+ * - μ: Mean.
+ * - σ2: Variance.
+ *
+ * Returns the log probability density.
+ */
+function observe_log_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
+  if (x > 0.0) {
+    return observe_log_gaussian(log(x), μ, σ2) - log(x);
+  } else {
+    return -inf;
+  }
+}
+
+/**
  * Observe a Gamma variate.
  *
  * - x: The variate.

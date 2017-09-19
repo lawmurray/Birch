@@ -82,6 +82,23 @@ function simulate_gaussian(μ:Real, σ2:Real) -> Real {
 }
 
 /**
+ * Simulate a log-Gaussian variate.
+ *
+ * - μ: Mean (in log space).
+ * - σ2: Variance (in log space).
+ */
+function simulate_log_gaussian(μ:Real, σ2:Real) -> Real {
+  assert 0.0 <= σ2;
+  if (σ2 == 0.0) {
+    return μ;
+  } else {
+    cpp {{
+    return std::lognormal_distribution<bi::Real_>(μ_, ::sqrt(σ2_))(rng);
+    }}
+  }
+}
+
+/**
  * Simulate a Gamma variate.
  *
  * - k: Shape.

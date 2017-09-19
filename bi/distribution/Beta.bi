@@ -46,7 +46,7 @@ class Beta < DelayReal {
 }
 
 /**
- * Create a Beta distribution.
+ * Create Beta distribution.
  */
 function Beta(α:Real, β:Real) -> Beta {
   m:Beta;

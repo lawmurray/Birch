@@ -39,7 +39,7 @@ class Bernoulli < DelayBoolean {
 }
 
 /**
- * Create.
+ * Create Bernoulli distribution.
  */
 function Bernoulli(ρ:Real) -> Bernoulli {
   m:Bernoulli;

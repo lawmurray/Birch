@@ -10,7 +10,7 @@ class MultivariateGaussian(D:Integer) < DelayRealVector(D) {
   μ:Real[D];
   
   /**
-   * Covariance matrix.
+   * Covariance.
    */
   Σ:Real[D,D];
 
@@ -54,7 +54,12 @@ class MultivariateGaussian(D:Integer) < DelayRealVector(D) {
 }
 
 /**
- * Create.
+ * Synonym for MultivariateGaussian.
+ */
+type MultivariateNormal = MultivariateGaussian;
+
+/**
+ * Create multivariate Gaussian distribution.
  */
 function Gaussian(μ:Real[_], Σ:Real[_,_]) -> MultivariateGaussian {
   D:Integer <- length(μ);

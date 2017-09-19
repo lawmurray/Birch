@@ -46,7 +46,7 @@ class Binomial < DelayInteger {
 }
 
 /**
- * Create.
+ * Create binomial distribution.
  */
 function Binomial(n:Integer, ρ:Real) -> Binomial {
   m:Binomial;
