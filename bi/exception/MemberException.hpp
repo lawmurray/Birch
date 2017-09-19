@@ -4,7 +4,7 @@
 #pragma once
 
 #include "bi/exception/CompilerException.hpp"
-#include "bi/expression/Expression.hpp"
+#include "bi/expression/Member.hpp"
 
 namespace bi {
 /**
@@ -16,6 +16,6 @@ struct MemberException: public CompilerException {
   /**
    * Constructor.
    */
-  MemberException(const Expression* expr);
+  MemberException(const Member* expr);
 };
 }
