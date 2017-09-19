@@ -130,6 +130,9 @@ void bi::CppBaseGenerator::genInit(const T* o) {
     } else if (o->value->isEmpty()) {
       middle(" = bi::make_object<bi::" << type->name << ">()");
     }
+    if (!o->value->isEmpty()) {
+      middle(" = " << o->value);
+    }
   } else if (!o->value->isEmpty()) {
     middle(" = " << o->value);
   }
