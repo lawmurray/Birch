@@ -174,7 +174,9 @@ bi::Expression* bi::ResolverSource::modify(Nil* o) {
 
 bi::Expression* bi::ResolverSource::modify(LocalVariable* o) {
   Modifier::modify(o);
-  o->type->resolveConstructor(o->parens->type);
+  if (!o->parens->isEmpty() || o->value->isEmpty()) {
+    o->type->resolveConstructor(o->parens->type);
+  }
   o->type->accept(&assigner);
   scopes.back()->add(o);
   return o;
@@ -311,13 +313,17 @@ bi::Statement* bi::ResolverSource::modify(Assignment* o) {
 
 bi::Statement* bi::ResolverSource::modify(GlobalVariable* o) {
   Modifier::modify(o);
-  o->type->resolveConstructor(o->parens->type);
+  if (!o->parens->isEmpty() || o->value->isEmpty()) {
+    o->type->resolveConstructor(o->parens->type);
+  }
   return o;
 }
 
 bi::Statement* bi::ResolverSource::modify(MemberVariable* o) {
   Modifier::modify(o);
-  o->type->resolveConstructor(o->parens->type);
+  if (!o->parens->isEmpty() || o->value->isEmpty()) {
+    o->type->resolveConstructor(o->parens->type);
+  }
   return o;
 }
 
