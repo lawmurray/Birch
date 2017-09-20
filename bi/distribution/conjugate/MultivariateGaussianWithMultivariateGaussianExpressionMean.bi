@@ -44,8 +44,8 @@ class MultivariateGaussianWithMultivariateGaussianExpressionMean(
     assert μ?;
     m:MultivariateGaussianExpression <- μ!;
     
-    μ_0 <- m.A*m.x.μ + m.c;
-    Σ_0 <- m.x.Σ;
+    μ_0 <- m.A*m.x.x + m.c;
+    Σ_0 <- Σ;
     update(μ_0, Σ_0);
   }
   

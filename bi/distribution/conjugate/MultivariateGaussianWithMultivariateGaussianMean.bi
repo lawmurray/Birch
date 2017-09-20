@@ -38,8 +38,8 @@ class MultivariateGaussianWithMultivariateGaussianMean(D:Integer)
   }
 
   function doForward() {
-    μ_0 <- μ.μ;
-    Σ_0 <- μ.Σ;
+    μ_0 <- μ.x;
+    Σ_0 <- Σ;
     update(μ_0, Σ_0);
   }
   
