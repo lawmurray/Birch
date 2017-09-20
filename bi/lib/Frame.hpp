@@ -242,7 +242,7 @@ struct NonemptyFrame {
    */
   template<class Frame1>
   bool conforms(const Frame1& o) const {
-    return tail.conforms(o.tail)/* && head.conforms(o.head)*/;
+    return tail.conforms(o.tail) && head.conforms(o.head);
   }
 
   /**

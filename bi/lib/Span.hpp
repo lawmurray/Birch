@@ -98,7 +98,7 @@ struct Span: public Length<length_value>,
    * are equal.
    */
   template<class Span1>
-  bool conforms(const Span1& o) {
+  bool conforms(const Span1& o) const {
     return this->length == o.length;
   }
 
