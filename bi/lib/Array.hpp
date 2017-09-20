@@ -502,11 +502,8 @@ private:
    */
   template<class Type1>
   static void allocate(Type1*& ptr, const size_t n) {
-    auto raw = GC_MALLOC_ATOMIC(sizeof(Type1) * n);
-    assert(raw);
-    ptr = static_cast<Type1*>(raw);
-    // ^ buffer will not itself contain pointers, so GC_MALLOC_ATOMIC can be
-    //   used
+    ptr = static_cast<Type1*>(malloc(sizeof(Type1) * n));
+    assert(ptr);
   }
 
   /**
@@ -519,11 +516,8 @@ private:
    */
   template<class Type1>
   static void allocate(Pointer<Type1>*& ptr, const size_t n) {
-    auto raw = GC_MALLOC_ATOMIC(sizeof(Pointer<Type1> ) * n);
-    assert(raw);
-    ptr = static_cast<Pointer<Type1>*>(raw);
-    // ^ while the buffer contains pointers, these are relocatable and do not
-    //   themselves contain addresses, so GC_MALLOC_ATOMIC can be used
+    ptr = static_cast<Pointer<Type1>*>(malloc(sizeof(Pointer<Type1> ) * n));
+    assert(ptr);
   }
 
   /**
@@ -545,9 +539,7 @@ private:
    */
   template<class Type1, class ... Args>
   static void emplace(Pointer<Type1>& o, Args ... args) {
-    auto placement = GC_MALLOC_ATOMIC(sizeof(Type1));
-    assert(placement);
-    auto raw = new (placement) Type1(args...);
+    auto raw = new Type1(args...);
     new (&o) Pointer<Type1>(raw);
   }
 

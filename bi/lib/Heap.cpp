@@ -22,7 +22,11 @@ bi::Heap::Heap(const Heap& o) :
 bi::Heap::~Heap() {
   /* update fiber usage counts */
   for (auto o : heap) {
-    o->disuse();
+    if (o->isShared()) {
+      o->disuse();
+    } else {
+      delete o;
+    }
   }
 }
 

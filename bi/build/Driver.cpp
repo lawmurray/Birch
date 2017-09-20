@@ -579,7 +579,7 @@ void bi::Driver::configure() {
 
     /* compile and link flags */
     if (debug) {
-      cppflags << " -D_GLIBCXX_DEBUG -DGC_DEBUG=1";
+      cppflags << " -D_GLIBCXX_DEBUG";
       cxxflags << " -O0 -g -fno-inline";
       ldflags << " -O0 -g -fno-inline";
     } else {
@@ -593,7 +593,6 @@ void bi::Driver::configure() {
        */
       cxxflags << " -O3 -g -funroll-loops -flto";
       ldflags << " -O3 -g -funroll-loops -flto";
-      // ^ can also use -flto=n to use n threads internally
     }
     if (warnings) {
       cxxflags << " -Wall";

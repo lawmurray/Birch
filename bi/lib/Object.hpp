@@ -70,13 +70,6 @@ public:
   }
 
   /**
-   * Is this object fiber-local?
-   */
-  bool isLocal() const {
-    return index >= 0;
-  }
-
-  /**
    * Get the fiber-local heap index of the object.
    */
   size_t getIndex() const {

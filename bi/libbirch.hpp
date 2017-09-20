@@ -26,7 +26,6 @@
 ///@todo Replace both of the above with STL versions under C++17.
 
 #include <getopt.h>
-#include <gc.h>
 
 #include <iostream>
 #include <fstream>
@@ -338,8 +337,7 @@ auto make_array(const Frame& frame = EmptyFrame()) {
  */
 template<class Type, class ... Args>
 Pointer<Type> make_object(Args ... args) {
-  auto placement = GC_MALLOC(sizeof(Type));
-  auto raw = new (placement) Type(args...);
+  auto raw = new Type(args...);
   return Pointer<Type>(raw);
 }
 
@@ -356,8 +354,7 @@ Pointer<Type> make_object(Args ... args) {
  */
 template<class Type>
 Type* copy_object(Type* o) {
-  auto placement = GC_MALLOC(sizeof(Type));
-  return new (placement) Type(*o);
+  return new Type(*o);
 }
 
 /**
@@ -381,7 +378,7 @@ static Fiber<YieldType> make_fiber(Args ... args) {
   Fiber<YieldType> fiber;
   Heap* yieldTo = fiberHeap;
   fiberHeap = &fiber.heap;  // ensures on the new fiber's heap
-  fiber.state = static_cast<FiberState<YieldType>*>(new (GC_MALLOC(sizeof(StateType))) StateType(args...));
+  fiber.state = static_cast<FiberState<YieldType>*>(new StateType(args...));
   fiberHeap = yieldTo;
   return fiber;
 }
