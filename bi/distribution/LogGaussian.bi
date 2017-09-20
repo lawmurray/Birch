@@ -65,3 +65,10 @@ function LogGaussian(μ:Real, σ2:Real) -> LogGaussian {
   m.initialize(μ, σ2);
   return m;
 }
+
+/**
+ * Create log-Gaussian distribution.
+ */
+function LogNormal(μ:Real, σ2:Real) -> LogGaussian {
+  return LogGaussian(μ, σ2);
+}

@@ -65,3 +65,10 @@ function Gaussian(μ:Real, σ2:Real) -> Gaussian {
   m.initialize(μ, σ2);
   return m;
 }
+
+/**
+ * Create Gaussian distribution.
+ */
+function Normal(μ:Real, σ2:Real) -> Gaussian {
+  return Gaussian(μ, σ2);
+}

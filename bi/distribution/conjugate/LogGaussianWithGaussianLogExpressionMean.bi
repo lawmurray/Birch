@@ -51,3 +51,7 @@ function LogGaussian(μ:GaussianLogExpression, σ2:Real) -> LogGaussian {
   x.initialize(μ, σ2);
   return x;
 }
+
+function LogNormal(μ:GaussianLogExpression, σ2:Real) -> LogGaussian {
+  return LogGaussian(μ, σ2);
+}

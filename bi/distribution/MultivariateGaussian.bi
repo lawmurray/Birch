@@ -69,3 +69,10 @@ function Gaussian(μ:Real[_], Σ:Real[_,_]) -> MultivariateGaussian {
   m.initialize(μ, Σ);
   return m;
 }
+
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function Normal(μ:Real[_], Σ:Real[_,_]) -> MultivariateGaussian {
+  return Gaussian(μ, Σ);
+}

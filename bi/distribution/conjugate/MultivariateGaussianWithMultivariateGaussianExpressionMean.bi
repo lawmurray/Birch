@@ -64,3 +64,8 @@ function Gaussian(μ:MultivariateGaussianExpression, Σ:Real[_,_]) ->
   x.initialize(μ, Σ);
   return x;
 }
+
+function Normal(μ:MultivariateGaussianExpression, Σ:Real[_,_]) ->
+    MultivariateGaussian {
+  return Gaussian(μ, Σ);
+}

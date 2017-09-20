@@ -51,3 +51,7 @@ function Gaussian(μ:GaussianLogExpression, σ2:Real) -> Gaussian {
   x.initialize(μ, σ2);
   return x;
 }
+
+function Normal(μ:GaussianLogExpression, σ2:Real) -> Gaussian {
+  return Gaussian(μ, σ2);
+}
