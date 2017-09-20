@@ -28,7 +28,7 @@ then follow the instructions for *Installing from source*.
 
 ### Installing from source
 
-Birch requires the Boost libraries, Eigen linear algebra library and Boehm garbage collector (`libgc`). These should be installed first.
+Birch requires the Boost libraries and Eigen linear algebra library. These should be installed first.
 
 To build and install, run the following from within the `Birch` directory:
 
