@@ -2,6 +2,20 @@
 
 Birch is a compiled, imperative, object-oriented, and probabilistic programming language. The latter is its primary research concern. The Birch compiler uses C++ as a target language.
 
+Birch is in development and is not ready for serious work without the expert guidance of its developers. This repository has been opened to satisfy the curious and impatient. Mileage will vary. Contributions are welcome.
+
+The main developer of Birch is [Lawrence Murray](http://www.indii.org/research) at Uppsala University. It is financially supported by the Swedish Foundation for Strategic Research (SSF) via the project *ASSEMBLE*.
+
+An early paper on Birch, specifically the *delayed sampling* mechanism that it uses for partial analytical evaluations of probabilistic models, can be found here:
+
+  * L.M. Murray, D. Lundén, J. Kudlicka, D. Broman and T.B. Schön (2017). *Delayed Sampling and Automatic Rao--Blackwellization of Probabilistic Programs*. Online at <https://arxiv.org/abs/1708.07787>.
+
+## License
+
+Birch is open source software.
+
+It is licensed under the Apache License, Version 2.0 (the "License"); you may not use it except in compliance with the License. You may obtain a copy of the License at <http://www.apache.org/licenses/LICENSE-2.0>.
+
 ## Installation
 
 ### Installing from Git
@@ -21,14 +35,7 @@ To build and install, run the following from within the `Birch` directory:
     ./configure
     make
     make install
-    
-This installs three components:
 
-  1. `birch` (the driver program),
-  2. `birchc` (the compiler program), and
-  3. `libbirch.*` and associated `bi/*.hpp` header files (the compiler library).
-
-Typically, only the first of these is used directly. It provides a friendly wrapper for building and running Birch code, calling the compiler program, and linking in the compiler library, where appropriate. It is usually unnecessary to become familiar with the latter two.
 
 ### Installing the standard library
 
