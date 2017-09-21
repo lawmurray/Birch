@@ -16,7 +16,7 @@ function observe_bernoulli(x:Boolean, ρ:Real) -> Real {
 }
 
 /**
- * Observe a Binomial variate.
+ * Observe a binomial variate.
  *
  * - x: The variate.
  * - n: Number of trials.
@@ -36,7 +36,7 @@ function observe_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
 }
 
 /**
- * Observe a Negative Binomial variate.
+ * Observe a negative binomial variate.
  *
  * - x: The variate (number of failures).
  * - k: Number of successes before the experiment is stopped.
@@ -56,7 +56,25 @@ function observe_negative_binomial(x:Integer, k:Integer, ρ:Real) -> Real {
 }
 
 /**
- * Observe a Uniform variate.
+ * Observe a Poisson variate.
+ *
+ * - x: The variate.
+ * - λ: Rate.
+ *
+ * Returns the log probability mass.
+ */
+function observe_poisson(x:Integer, λ:Real) -> Real {
+  assert 0.0 < λ;
+  
+  if (x >= 0) {
+    return Real(x)*log(λ) - λ - lgamma(Real(x) + 1.0);
+  } else {
+    return -inf;
+  }
+}
+
+/**
+ * Observe a uniform variate.
  *
  * - x: The variate.
  * - l: Lower bound of interval.
@@ -115,7 +133,7 @@ function observe_log_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
 }
 
 /**
- * Observe a Gamma variate.
+ * Observe a gamma variate.
  *
  * - x: The variate.
  * - k: Shape.
@@ -135,7 +153,7 @@ function observe_gamma(x:Real, k:Real, θ:Real) -> Real {
 }
 
 /**
- * Observe a Beta variate.
+ * Observe a beta variate.
  *
  * - x: The variate.
  * - α: Shape.

@@ -35,6 +35,7 @@ bi/distribution/Gaussian.bi
 bi/distribution/LogGaussian.bi
 bi/distribution/MultivariateGaussian.bi
 bi/distribution/NegativeBinomial.bi
+bi/distribution/Poisson.bi
 bi/distribution/Uniform.bi
 bi/driver/build.bi
 bi/driver/check.bi

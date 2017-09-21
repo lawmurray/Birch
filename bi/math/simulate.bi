@@ -22,7 +22,7 @@ function simulate_bernoulli(ρ:Real) -> Boolean {
 }
 
 /**
- * Simulate a Binomial variate.
+ * Simulate a binomial variate.
  *
  * - n: Number of trials.
  * - ρ: Probability of a true result.
@@ -36,7 +36,7 @@ function simulate_binomial(n:Integer, ρ:Real) -> Integer {
 }
 
 /**
- * Simulate a Negative Binomial variate.
+ * Simulate a negative binomial variate.
  *
  * - k: Number of successes before the experiment is stopped.
  * - ρ: Probability of success.
@@ -52,7 +52,19 @@ function simulate_negative_binomial(k:Integer, ρ:Real) -> Integer {
 }
 
 /**
- * Simulate a Uniform variate.
+ * Simulate a Poisson variate.
+ *
+ * - λ: Rate.
+ */
+function simulate_poisson(λ:Real) -> Integer {
+  assert 0.0 < λ;
+  cpp {{
+  return std::poisson_distribution<bi::Integer_>(λ_)(rng);
+  }}
+}
+
+/**
+ * Simulate a uniform variate.
  *
  * - l: Lower bound of interval.
  * - u: Upper bound of interval.
@@ -99,7 +111,7 @@ function simulate_log_gaussian(μ:Real, σ2:Real) -> Real {
 }
 
 /**
- * Simulate a Gamma variate.
+ * Simulate a gamma variate.
  *
  * - k: Shape.
  * - θ: Scale.
@@ -113,7 +125,7 @@ function simulate_gamma(k:Real, θ:Real) -> Real {
 }
 
 /**
- * Simulate a Beta variate.
+ * Simulate a beta variate.
  *
  * - α: Shape.
  * - β: Shape.
