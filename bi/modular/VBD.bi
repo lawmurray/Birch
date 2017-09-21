@@ -29,12 +29,12 @@ class VBDBinomial {
 
   function initial() {
     h.n <- 100000;
-    h.r <~ Binomial(n, 0.06);
+    h.r <~ Binomial(h.n, 0.06);
     h.i <~ Poisson(10.0);
     h.e <- 0;
     h.s <- h.n - h.e - h.i - h.r;
     
-    m.n <- Integer(Real(h.n)*pow(10.0, random_uniform(-1.0, 2.0)));
+    m.n <- Integer(Real(h.n)*pow(10.0, simulate_uniform(-1.0, 2.0)));
     m.r <- 0;
     m.i <- 0;
     m.e <- 0;
@@ -44,14 +44,14 @@ class VBDBinomial {
   function transition() {
     n:SEIRExchange;
   
-    n.e <- h.s*m.i/m.n;
-    n.i <- h.e;
-    n.r <- h.i;
+    n.s <- h.s*m.i/m.n;
+    n.e <- h.e;
+    n.i <- h.i;
     h <- h.transition(n, θ);
     
-    n.e <- m.s*h.i/h.n;
-    n.i <- m.e;
-    n.r <- m.i;
+    n.s <- m.s*h.i/h.n;
+    n.e <- m.e;
+    n.i <- m.i;
     m <- m.transition(n, φ);
   }
   
