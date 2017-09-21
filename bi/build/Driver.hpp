@@ -8,7 +8,7 @@
 #include "boost/filesystem.hpp"
 #include "boost/interprocess/sync/file_lock.hpp"
 
-#include <list>
+#include <set>
 
 namespace bi {
 /**
@@ -209,7 +209,7 @@ private:
   /**
    * Lists of files from MANIFEST.
    */
-  std::list<boost::filesystem::path> files, biFiles, cppFiles, hppFiles,
+  std::set<boost::filesystem::path> files, biFiles, cppFiles, hppFiles,
       metaFiles, otherFiles;
 
   /**

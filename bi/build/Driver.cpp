@@ -394,20 +394,23 @@ void bi::Driver::manifest() {
     while (std::getline(manifestStream, name)) {
       path file(name);
       if (exists(file)) {
-        files.push_back(file);
+        auto inserted = files.insert(file);
+        if (!inserted.second) {
+          warn(std::string("file ") + file.string() + " repeated in MANIFEST.");
+        }
 
         /* collate by file extension */
         if (file.extension().compare(".bi") == 0) {
-          biFiles.push_back(file);
+          biFiles.insert(file);
         } else if (file.extension().compare(".cpp") == 0) {
-          cppFiles.push_back(file);
+          cppFiles.insert(file);
         } else if (file.extension().compare(".hpp") == 0) {
-          hppFiles.push_back(file);
+          hppFiles.insert(file);
         } else if (file.extension().compare("") == 0
             || file.extension().compare(".md") == 0) {
-          metaFiles.push_back(file);
+          metaFiles.insert(file);
         } else {
-          otherFiles.push_back(file);
+          otherFiles.insert(file);
         }
       } else {
         std::stringstream buf;
