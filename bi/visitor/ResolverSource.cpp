@@ -126,10 +126,8 @@ bi::Expression* bi::ResolverSource::modify(Range* o) {
 
 bi::Expression* bi::ResolverSource::modify(Member* o) {
   o->left = o->left->accept(this);
-  ClassType* type = dynamic_cast<ClassType*>(o->left->type);
-  if (type) {
-    assert(type->target);
-    memberScope = type->target->scope;
+  if (o->left->type->isClass()) {
+    memberScope = o->left->type->getClass()->scope;
   } else {
     throw MemberException(o);
   }

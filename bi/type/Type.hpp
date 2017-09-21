@@ -128,14 +128,19 @@ public:
   virtual bool isOverloaded() const;
 
   /**
-   * Get the left operand of a BinaryType, otherwise undefined.
+   * Get the left operand of a binary, otherwise undefined.
    */
   virtual Type* getLeft() const;
 
   /**
-   * Get the right operand of a BinaryType, otherwise undefined.
+   * Get the right operand of a binary type, otherwise undefined.
    */
   virtual Type* getRight() const;
+
+  /**
+   * Get the class associated with a class type, otherwise undefined.
+   */
+  virtual Class* getClass() const;
 
   /**
    * For an optional or fiber type, the type that is wrapped, otherwise

@@ -41,6 +41,7 @@ public:
   virtual ~ClassType();
 
   virtual bool isClass() const;
+  virtual Class* getClass() const;
 
   virtual void resolveConstructor(Type* args);
 

@@ -40,6 +40,10 @@ bool bi::ClassType::isClass() const {
   return true;
 }
 
+bi::Class* bi::ClassType::getClass() const {
+  return target;
+}
+
 void bi::ClassType::resolveConstructor(Type* args) {
   assert(target);
   if (!args->definitely(*target->parens->type)) {

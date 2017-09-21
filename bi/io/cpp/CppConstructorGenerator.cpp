@@ -57,9 +57,9 @@ void bi::CppConstructorGenerator::visit(const MemberVariable* o) {
   finish(',');
   start(o->name << '(');
   if (o->type->isClass()) {
-    ClassType* type = dynamic_cast<ClassType*>(o->type);
-    assert(type);
-    middle("bi::make_object<" << type->name << '>');
+    Named* named = dynamic_cast<Named*>(o->type);
+    assert(named);
+    middle("bi::make_object<" << named->name << '>');
     if (o->parens->isEmpty()) {
       middle("()");
     } else {
