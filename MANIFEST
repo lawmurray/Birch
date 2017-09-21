@@ -1,4 +1,6 @@
 bi/sample.bi
-bi/VBD.bi
+bi/SEIRBinomial.bi
+bi/SEIRContinuous.bi
+bi/VBDBinomial.bi
 MANIFEST
 README.md
