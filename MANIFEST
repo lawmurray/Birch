@@ -1,6 +1,11 @@
 bi/sample.bi
-bi/SEIRBinomial.bi
-bi/SEIRContinuous.bi
-bi/VBDBinomial.bi
+bi/modular/SEIRExchange.bi
+bi/modular/SEIRObservation.bi
+bi/modular/SEIRParameter.bi
+bi/modular/SEIRState.bi
+bi/modular/VBD.bi
+bi/monolithic/SEIRBinomial.bi
+bi/monolithic/SEIRContinuous.bi
+bi/sample.bi
 MANIFEST
 README.md
