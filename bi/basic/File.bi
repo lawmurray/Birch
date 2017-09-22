@@ -21,7 +21,7 @@ function fopen(file:String) -> File {
  */
 function fopen(file:String, mode:String) -> File {
   cpp{{
-  return fopen(file_.c_str(), mode_.c_str());
+  return ::fopen(file_.c_str(), mode_.c_str());
   }}
 }
 
