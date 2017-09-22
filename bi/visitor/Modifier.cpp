@@ -316,6 +316,7 @@ bi::Statement* bi::Modifier::modify(Alias* o) {
 }
 
 bi::Statement* bi::Modifier::modify(Basic* o) {
+  o->base = o->base->accept(this);
   return o;
 }
 

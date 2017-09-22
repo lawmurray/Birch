@@ -5,9 +5,10 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::Basic::Basic(Name* name, Location* loc) :
+bi::Basic::Basic(Name* name, Type* base, Location* loc) :
     Statement(loc),
-    Named(name) {
+    Named(name),
+    Based(base) {
   //
 }
 

@@ -51,7 +51,7 @@ bool bi::BasicType::definitely(const AliasType& o) const {
 bool bi::BasicType::definitely(const BasicType& o) const {
   assert(target);
   assert(o.target);
-  return target == o.target;
+  return target == o.target || target->base->definitely(o);
 }
 
 bool bi::BasicType::definitely(const OptionalType& o) const {

@@ -460,7 +460,8 @@ alias_type_declaration
     ;
     
 basic_type_declaration
-    : TYPE name ';'  { push_raw(); $$ = new bi::Basic($2, make_doc_loc(@$)); }
+    : TYPE name '<' identifier_type ';'  { push_raw(); $$ = new bi::Basic($2, $4, make_doc_loc(@$)); }
+    | TYPE name ';'  { push_raw(); $$ = new bi::Basic($2, new bi::EmptyType(make_loc(@$)), make_doc_loc(@$)); }
     ;
 
 cpp

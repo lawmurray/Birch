@@ -261,7 +261,7 @@ bi::Statement* bi::Cloner::clone(const Alias* o) {
 }
 
 bi::Statement* bi::Cloner::clone(const Basic* o) {
-  return new Basic(o->name, o->loc);
+  return new Basic(o->name, o->base, o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const ExpressionStatement* o) {

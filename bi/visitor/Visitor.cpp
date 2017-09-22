@@ -280,7 +280,7 @@ void bi::Visitor::visit(const Alias* o) {
 }
 
 void bi::Visitor::visit(const Basic* o) {
-  //
+  o->base->accept(this);
 }
 
 void bi::Visitor::visit(const ExpressionStatement* o) {

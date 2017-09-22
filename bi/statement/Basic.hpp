@@ -6,6 +6,7 @@
 #include "bi/statement/Statement.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Numbered.hpp"
+#include "bi/common/Based.hpp"
 
 namespace bi {
 /**
@@ -13,15 +14,16 @@ namespace bi {
  *
  * @ingroup compiler_statement
  */
-class Basic: public Statement, public Named, public Numbered {
+class Basic: public Statement, public Named, public Numbered, public Based {
 public:
   /**
    * Constructor.
    *
    * @param name Name.
+   * @param base Base type.
    * @param loc Location.
    */
-  Basic(Name* name, Location* loc = nullptr);
+  Basic(Name* name, Type* base, Location* loc = nullptr);
 
   /**
    * Destructor.
