@@ -29,7 +29,7 @@ function observe_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
   assert 0.0 <= ρ && ρ <= 1.0;
 
   if (0 <= x && x <= n) {
-    return Real(x)*log(ρ) + Real(n - x)*log(1.0 - ρ) - lchoose(Real(n), Real(x));
+    return x*log(ρ) + (n - x)*log(1.0 - ρ) - lchoose(n, x);
   } else {
     return -inf;
   }
@@ -49,7 +49,7 @@ function observe_negative_binomial(x:Integer, k:Integer, ρ:Real) -> Real {
   assert 0.0 <= ρ && ρ <= 1.0;
 
   if (x >= 0) {
-    return Real(k)*log(ρ) + Real(x)*log(1.0 - ρ) - lchoose(Real(x + k - 1), Real(x));
+    return k*log(ρ) + x*log(1.0 - ρ) - lchoose(x + k - 1, x);
   } else {
     return -inf;
   }
@@ -67,7 +67,7 @@ function observe_poisson(x:Integer, λ:Real) -> Real {
   assert 0.0 < λ;
   
   if (x >= 0) {
-    return Real(x)*log(λ) - λ - lgamma(Real(x) + 1.0);
+    return x*log(λ) - λ - lgamma(x + 1);
   } else {
     return -inf;
   }

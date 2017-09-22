@@ -1,7 +1,7 @@
 /**
  * A 32-bit integer.
  */
-type Integer32;
+type Integer32 < Integer64;
 
 /**
  * Convert other basic types to Integer32. This is overloaded for Real64,

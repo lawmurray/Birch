@@ -1,7 +1,7 @@
 /**
  * A 32-bit (single precision) floating point value.
  */
-type Real32;
+type Real32 < Real64;
 
 /**
  * Convert other basic types to Real32. This is overloaded for Real64, Real32,

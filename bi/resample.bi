@@ -41,7 +41,7 @@ function systematic_cumulative_offspring(W:Real[_]) -> Integer[_] {
 
   u <- simulate_uniform(0.0, 1.0);
   for (n:Integer in 1..N) {
-    r <- Real(N)*W[n]/W[N];
+    r <- N*W[n]/W[N];
     O[n] <- min(N, Integer(floor(r + u)));
   }
   return O;

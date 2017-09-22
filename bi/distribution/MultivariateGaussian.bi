@@ -37,7 +37,7 @@ class MultivariateGaussian(D:Integer) < DelayRealVector(D) {
     } else {
       L:Real[D,D];
       L <- llt(Σ);
-      setWeight(-0.5*squaredNorm(solve(L, x - μ)) - log(determinant(L)) - 0.5*Real(D)*log(2.0*π));
+      setWeight(-0.5*squaredNorm(solve(L, x - μ)) - log(determinant(L)) - 0.5*D*log(2.0*π));
     }
   }
 

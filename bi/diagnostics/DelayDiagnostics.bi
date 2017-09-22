@@ -115,7 +115,7 @@ class DelayDiagnostics(N:Integer) {
    */
   function dot() {
     /* pad file name with zeros */
-    Z:Integer <- 8 - Integer(ceil(log10(Real(noutputs + 1))));
+    Z:Integer <- 8 - Integer(ceil(log10(noutputs + 1)));
     filename:String <- "diagnostics/state";
     for (z:Integer in 1..Z) {
       filename <- filename + "0";
