@@ -28,6 +28,14 @@ void bi::ParenthesesType::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
+bi::Iterator<bi::Type> bi::ParenthesesType::begin() const {
+  return single->begin();
+}
+
+bi::Iterator<bi::Type> bi::ParenthesesType::end() const {
+  return single->end();
+}
+
 bool bi::ParenthesesType::dispatchDefinitely(const Type& o) const {
   return o.definitely(*this);
 }

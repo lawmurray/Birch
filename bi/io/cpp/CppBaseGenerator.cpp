@@ -53,7 +53,8 @@ void bi::CppBaseGenerator::visit(const Brackets* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Call* o) {
-  middle(o->single << o->args);
+  middle(o->single);
+  genArgs(o);
 }
 
 void bi::CppBaseGenerator::visit(const BinaryCall* o) {
@@ -61,15 +62,16 @@ void bi::CppBaseGenerator::visit(const BinaryCall* o) {
   assert(op);
   if (isTranslatable(op->name->str())) {
     /* can use corresponding C++ operator */
-    middle(o->args->getLeft());
+    genLeftArg(o);
     middle(' ' << op->name->str() << ' ');
-    middle(o->args->getRight());
+    genRightArg(o);
   } else {
     /* must use as function */
-    middle(o->single);
-    middle('(' << o->args->getLeft());
-    middle(' ' << op->name->str() << ' ');
-    middle(o->args->getRight() << ')');
+    middle(o->single << '(');
+    genLeftArg(o);
+    middle(", ");
+    genRightArg(o);
+    middle(')');
   }
 }
 
@@ -78,10 +80,13 @@ void bi::CppBaseGenerator::visit(const UnaryCall* o) {
   assert(op);
   if (isTranslatable(op->name->str())) {
     /* can use corresponding C++ operator */
-    middle(op->name->str() << o->args);
+    middle(op->name->str());
+    genSingleArg(o);
   } else {
     /* must use as function */
-    middle(o->single << '(' << o->args << ')');
+    middle(o->single << '(');
+    genSingleArg(o);
+    middle(')');
   }
 }
 
@@ -125,11 +130,9 @@ void bi::CppBaseGenerator::visit(const Member* o) {
   const This* leftThis = dynamic_cast<const This*>(o->left);
   const Super* leftSuper = dynamic_cast<const Super*>(o->left);
   if (leftThis) {
-    // tidier this way
     middle("this->");
   } else if (leftSuper) {
-    // tidier this way
-    middle("super_type::");
+    middle("this->super_type::");
   } else {
     middle(o->left << "->");
   }
@@ -137,9 +140,8 @@ void bi::CppBaseGenerator::visit(const Member* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Super* o) {
-  // only need to handle the case outside member expression, which shouldn't
-  // exist
-  assert(false);
+  // only need to handle the case outside member expression
+  middle("pointer_from_this<super_type>()");
 }
 
 void bi::CppBaseGenerator::visit(const This* o) {
@@ -626,4 +628,47 @@ void bi::CppBaseGenerator::visit(const AliasType* o) {
 
 void bi::CppBaseGenerator::visit(const BasicType* o) {
   middle("bi::" << o->name);
+}
+
+void bi::CppBaseGenerator::genArgs(const Call* o) {
+  middle('(');
+  auto iter1 = o->args->begin();
+  auto end1 = o->args->end();
+  auto iter2 = o->callType->params->begin();
+  auto end2 = o->callType->params->end();
+  while (iter1 != end1 && iter2 != end2) {
+    if (iter1 != o->args->begin()) {
+      middle(", ");
+    }
+    genArg(*iter1, *iter2);
+    ++iter1;
+    ++iter2;
+  }
+  middle(')');
+}
+
+void bi::CppBaseGenerator::genLeftArg(const BinaryCall* o) {
+  genArg(o->args->getLeft(), o->callType->params->getLeft());
+}
+
+void bi::CppBaseGenerator::genRightArg(const BinaryCall* o) {
+  genArg(o->args->getRight(), o->callType->params->getRight());
+}
+
+void bi::CppBaseGenerator::genSingleArg(const UnaryCall* o) {
+  genArg(o->args, o->callType->params);
+}
+
+void bi::CppBaseGenerator::genArg(const Expression* arg, const Type* type) {
+  /* Birch and C++ resolve overloads differently, explicit casting in
+   * some situations avoids situations where Birch considers a call
+   * unambiguous, whereas C++ does not */
+  bool cast = type->isBasic() && !type->equals(*arg->type);
+  if (cast) {
+    middle("static_cast<" << type << ">(");
+  }
+  middle(arg);
+  if (cast) {
+    middle(')');
+  }
 }

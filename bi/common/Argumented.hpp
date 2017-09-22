@@ -30,5 +30,10 @@ public:
    * Arguments.
    */
   Expression* args;
+
+  /**
+   * After resolution, the type of the function called.
+   */
+  FunctionType* callType;
 };
 }

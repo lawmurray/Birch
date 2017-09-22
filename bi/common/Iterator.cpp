@@ -4,6 +4,7 @@
 #include "bi/common/Iterator.hpp"
 
 #include "bi/common/List.hpp"
+#include "bi/type/ListType.hpp"
 
 template<class T>
 bi::Iterator<T>::Iterator(const T* o) : o(o) {
@@ -16,7 +17,12 @@ bi::Iterator<T>& bi::Iterator<T>::operator++() {
   if (list) {
     o = list->tail;
   } else {
-    o = nullptr;
+    const ListType* list = dynamic_cast<const ListType*>(o);
+    if (list) {
+      o = reinterpret_cast<T*>(list->tail);
+    } else {
+      o = nullptr;
+    }
   }
   return *this;
 }
@@ -34,7 +40,12 @@ const T* bi::Iterator<T>::operator*() {
   if (list) {
     return list->head;
   } else {
-    return o;
+    const ListType* list = dynamic_cast<const ListType*>(o);
+    if (list) {
+      return reinterpret_cast<T*>(list->head);
+    } else {
+      return o;
+    }
   }
 }
 

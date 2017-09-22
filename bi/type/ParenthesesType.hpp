@@ -33,6 +33,9 @@ public:
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
+  virtual Iterator<Type> begin() const;
+  virtual Iterator<Type> end() const;
+
   using Type::definitely;
   using Type::possibly;
 

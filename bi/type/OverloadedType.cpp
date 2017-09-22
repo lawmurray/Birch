@@ -21,11 +21,15 @@ bool bi::OverloadedType::isOverloaded() const {
   return true;
 }
 
-bi::Type* bi::OverloadedType::resolve(Argumented* args) {
+bi::FunctionType* bi::OverloadedType::resolve(Argumented* args) {
   std::list<Parameterised*> matches;
   overloaded->overloads.match(args, matches);
   if (matches.size() == 1) {
-    return dynamic_cast<ReturnTyped*>(matches.front())->returnType;
+    /* construct the appropriate function type */
+    auto target = matches.front();
+    Type* paramsType = target->params->type;
+    Type* returnType = dynamic_cast<ReturnTyped*>(target)->returnType;
+    return new FunctionType(paramsType, returnType);
   } else if (matches.size() == 0) {
     std::list<Parameterised*> available;
     std::copy(overloaded->overloads.begin(), overloaded->overloads.end(),

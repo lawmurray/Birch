@@ -16,9 +16,6 @@ namespace bi {
 template<class Type>
 class FiberState: public Object {
 public:
-  typedef FiberState<Type> this_type;
-  typedef Object super_type;
-
   /**
    * Constructor.
    */

@@ -157,7 +157,7 @@ public:
    * parameter types of the function, the return type of the function. In all
    * other cases throws an exception.
    */
-  virtual Type* resolve(Argumented* args);
+  virtual FunctionType* resolve(Argumented* args);
 
   /**
    * Resolve a constructor call.
@@ -175,12 +175,12 @@ public:
    * Iterator to first element if this is a list, to one-past-the-last if
    * this is empty, otherwise to this.
    */
-  Iterator<Type> begin() const;
+  virtual Iterator<Type> begin() const;
 
   /**
    * Iterator to one-past-the-last.
    */
-  Iterator<Type> end() const;
+  virtual Iterator<Type> end() const;
 
   /**
    * Is this type assignable?

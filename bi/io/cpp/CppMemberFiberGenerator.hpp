@@ -25,6 +25,7 @@ public:
   virtual void visit(const OverloadedIdentifier<MemberFiber>* o);
   virtual void visit(const Member* o);
   virtual void visit(const This* o);
+  virtual void visit(const Super* o);
 
 private:
   /**

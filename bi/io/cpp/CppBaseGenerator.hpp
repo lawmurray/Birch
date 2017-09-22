@@ -101,6 +101,16 @@ protected:
   template<class T>
   void genInit(const T* o);
 
+  /*
+   * Generate arguments for function calls with appropriate casts where
+   * necessary.
+   */
+  void genArgs(const Call* o);
+  void genLeftArg(const BinaryCall* o);
+  void genRightArg(const BinaryCall* o);
+  void genSingleArg(const UnaryCall* o);
+  void genArg(const Expression* arg, const Type* type);
+
   /**
    * Output header instead of source?
    */

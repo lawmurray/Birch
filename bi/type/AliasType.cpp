@@ -68,7 +68,7 @@ bi::Class* bi::AliasType::getClass() const {
   return target->base->getClass();
 }
 
-bi::Type* bi::AliasType::resolve(Argumented* args) {
+bi::FunctionType* bi::AliasType::resolve(Argumented* args) {
   assert(target);
   return target->base->resolve(args);
 }

@@ -39,7 +39,7 @@ public:
   virtual void accept(Visitor* visitor) const;
 
   virtual bool isOverloaded() const;
-  virtual Type* resolve(Argumented* args);
+  virtual FunctionType* resolve(Argumented* args);
 
   using Type::definitely;
   using Type::possibly;

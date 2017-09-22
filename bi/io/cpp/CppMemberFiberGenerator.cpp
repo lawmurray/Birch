@@ -185,10 +185,12 @@ void bi::CppMemberFiberGenerator::visit(
 }
 
 void bi::CppMemberFiberGenerator::visit(const Member* o) {
+  const This* leftThis = dynamic_cast<const This*>(o->left);
   const Super* leftSuper = dynamic_cast<const Super*>(o->left);
-  if (leftSuper) {
-    // tidier this way
-    middle("super_type::");
+  if (leftThis) {
+    middle("self->");
+  } else if (leftSuper) {
+    middle("self->super_type::");
   } else {
     middle(o->left << "->");
   }
@@ -198,5 +200,9 @@ void bi::CppMemberFiberGenerator::visit(const Member* o) {
 }
 
 void bi::CppMemberFiberGenerator::visit(const This* o) {
+  middle("self");
+}
+
+void bi::CppMemberFiberGenerator::visit(const Super* o) {
   middle("self");
 }
