@@ -29,7 +29,7 @@ function observe_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
   assert 0.0 <= ρ && ρ <= 1.0;
 
   if (0 <= x && x <= n) {
-    return x*log(ρ) + (n - x)*log(1.0 - ρ) - lchoose(n, x);
+    return x*log(ρ) + (n - x)*log(1.0 - ρ) + lchoose(n, x);
   } else {
     return -inf;
   }
@@ -49,7 +49,31 @@ function observe_negative_binomial(x:Integer, k:Integer, ρ:Real) -> Real {
   assert 0.0 <= ρ && ρ <= 1.0;
 
   if (x >= 0) {
-    return k*log(ρ) + x*log(1.0 - ρ) - lchoose(x + k - 1, x);
+    return k*log(ρ) + x*log(1.0 - ρ) + lchoose(x + k - 1, x);
+  } else {
+    return -inf;
+  }
+}
+
+/**
+ * Observe a beta-binomial variate.
+ *
+ * - x: The variate.
+ * - n: Number of trials.
+ * - α: Shape.
+ * - β: Shape.
+ *
+ * Returns the log probability density.
+ *
+ * Returns the log probability mass.
+ */
+function observe_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) -> Real {
+  assert 0 <= n;
+  assert 0.0 < α;
+  assert 0.0 < β;
+
+  if (x >= 0) {
+    return lbeta(x + α, n - x + β) - lbeta(α, β) + lchoose(n, x);
   } else {
     return -inf;
   }

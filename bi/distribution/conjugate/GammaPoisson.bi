@@ -1,5 +1,5 @@
 /**
- * Poisson with conjugate prior on mean. When the rate is known, this is
+ * Poisson with conjugate prior on rate. When the rate is known, this is
  * simply a Poisson distribution. When the rate is gamma distributed, this is
  * a negative binomial distribution.
  */
@@ -38,11 +38,10 @@ class GammaPoisson < DelayInteger {
         setWeight(observe_poisson(x, λ));
       }
     } else {
-      assert λ.k == Real(Integer(λ.k));
       if (isMissing()) {
-        set(simulate_negative_binomial(Integer(λ.k), λ.θ));
+        set(simulate_negative_binomial(k, ρ));
       } else {
-        setWeight(observe_negative_binomial(x, Integer(λ.k), λ.θ));
+        setWeight(observe_negative_binomial(x, k, ρ));
       }
     }
   }
@@ -60,7 +59,7 @@ class GammaPoisson < DelayInteger {
 }
 
 /**
- * Create Gamma-Poisson distribution.
+ * Create gamma-Poisson distribution.
  */
 function Poisson(λ:Gamma) -> GammaPoisson {
   /* the shape parameter of the rate must be an integer for the marginal

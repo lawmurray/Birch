@@ -52,6 +52,21 @@ function simulate_negative_binomial(k:Integer, ρ:Real) -> Integer {
 }
 
 /**
+ * Simulate a beta-binomial variate.
+ *
+ * - n: Number of trials.
+ * - α: Shape.
+ * - β: Shape.
+ */
+function simulate_beta_binomial(n:Integer, α:Real, β:Real) -> Integer {
+  assert 0 <= n;
+  assert 0.0 < α;
+  assert 0.0 < β;
+  
+  return simulate_binomial(n, simulate_beta(α, β));
+}
+
+/**
  * Simulate a Poisson variate.
  *
  * - λ: Rate.
