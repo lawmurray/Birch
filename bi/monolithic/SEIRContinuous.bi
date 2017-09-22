@@ -69,8 +69,8 @@ class SEIRContinuous(T:Integer) {
       y_δ[t] ~ LogNormal(log(p_rep*δ[t]), σ2_y_δ);
 
       lnS[t] <- lnS[t-1] - λ[t]/exp(lnS[t-1]);
-      lnE[t] <- lnE[t-1] + (λ[t].value() - δ[t])/exp(lnE[t-1]);
-      lnI[t] <- lnI[t-1] + (δ[t].value() - γ[t])/exp(lnI[t-1]);
+      lnE[t] <- lnE[t-1] + (λ[t] - δ[t])/exp(lnE[t-1]);
+      lnI[t] <- lnI[t-1] + (δ[t] - γ[t])/exp(lnI[t-1]);
       lnR[t] <- lnR[t-1] + γ[t]/exp(lnR[t-1]);
 
       y_R[t] ~ Binomial(y_N[t], exp(lnR[t])/N);
