@@ -336,7 +336,11 @@ void bi::bi_ostream::visit(const Alias* o) {
 }
 
 void bi::bi_ostream::visit(const Basic* o) {
-  line("type " << o->name << ';');
+  start("type " << o->name);
+  if (!o->base->isEmpty()) {
+    middle(" < " << o->base);
+  }
+  middle(';');
 }
 
 void bi::bi_ostream::visit(const ExpressionStatement* o) {
