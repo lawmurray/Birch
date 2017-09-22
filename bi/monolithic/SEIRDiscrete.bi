@@ -31,7 +31,7 @@ class SEIRDiscrete(T:Integer) {
     ρ_y ~ Beta(1.0, 1.0);
         
     N <- 100000;
-    R[1] <- Integer(Real(N)*0.06);
+    R[1] <- Integer(N*0.06);
     I[1] <- 10;
     E[1] <- 0;
     S[1] <- N - I[1] - R[1] - E[1];

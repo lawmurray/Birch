@@ -14,7 +14,7 @@ class YapState < VBDState {
     h.e <- 0;
     h.s <- h.n - h.e - h.i - h.r;
     
-    m.n <- Integer(Real(h.n)*pow(10.0, simulate_uniform(-1.0, 2.0)));
+    m.n <- Integer(h.n*pow(10.0, simulate_uniform(-1.0, 2.0)));
     m.r <- 0;
     m.i <- 0;
     m.e <- 0;

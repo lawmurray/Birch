@@ -59,7 +59,7 @@ class SEIRContinuous(T:Integer) {
     
     for (t:Integer in 2..T) {
       r_λ:Real <- 1.0/d_inc_h;
-      r_δ:Real <- (1.0/d_inf_h)*(1.0 + s_amp*cos(2.0*π*(Real(t) - s_peak)/52.0));
+      r_δ:Real <- (1.0/d_inf_h)*(1.0 + s_amp*cos(2.0*π*(t - s_peak)/52.0));
       r_γ:Real <- R0/d_inf_h;
 
       λ[t] ~ LogNormal(log(r_λ) + lnS[t-1] + lnI[t-1] - log(N), σ2_λ);
