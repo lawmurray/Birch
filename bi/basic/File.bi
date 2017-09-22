@@ -30,6 +30,6 @@ function fopen(file:String, mode:String) -> File {
  */
 function fclose(file:File) {
   cpp{{
-  fclose(file_);
+  ::fclose(file_);
   }}
 }
