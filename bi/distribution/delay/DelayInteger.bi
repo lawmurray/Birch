@@ -34,14 +34,6 @@ class DelayInteger < Delay {
   operator <- s:String {
     set(Integer(s));
   }
-
-  function initialize() {
-    super.initialize();
-  }
-
-  function initialize(u:DelayInteger) {
-    super.initialize(u);
-  }
   
   function value() -> Integer {
     if (isMissing()) {

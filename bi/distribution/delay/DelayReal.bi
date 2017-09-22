@@ -34,14 +34,6 @@ class DelayReal < Delay {
   operator <- s:String {
     set(Real(s));
   }
-
-  function initialize() {
-    super.initialize();
-  }
-
-  function initialize(u:DelayReal) {
-    super.initialize(u);
-  }
   
   function value() -> Real {
     if (isMissing()) {

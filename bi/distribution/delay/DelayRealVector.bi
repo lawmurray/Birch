@@ -30,14 +30,6 @@ class DelayRealVector(D:Integer) < Delay {
     realize();
   }
 
-  function initialize() {
-    super.initialize();
-  }
-
-  function initialize(u:DelayRealVector) {
-    super.initialize(u);
-  }
-
   function value() -> Real[_] {
     if (isMissing()) {
       simulate();

@@ -35,14 +35,6 @@ class DelayBoolean < Delay {
     set(Boolean(s));
   }
 
-  function initialize() {
-    super.initialize();
-  }
-
-  function initialize(u:DelayBoolean) {
-    super.initialize(u);
-  }
-  
   function value() -> Boolean {
     if (isMissing()) {
       simulate();

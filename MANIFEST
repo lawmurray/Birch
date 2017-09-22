@@ -10,6 +10,7 @@ bi/basic/Real32.bi
 bi/basic/Real64.bi
 bi/basic/String.bi
 bi/diagnostics/DelayDiagnostics.bi
+bi/distribution/conjugate/GammaPoisson.bi
 bi/distribution/conjugate/GaussianWithGaussianExpressionMean.bi
 bi/distribution/conjugate/GaussianWithGaussianLogExpressionMean.bi
 bi/distribution/conjugate/GaussianWithGaussianMean.bi
