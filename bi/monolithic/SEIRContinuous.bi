@@ -1,5 +1,6 @@
 /**
- * SEIR (susceptible-exposed-infectious-recovered) model.
+ * SEIR (susceptible-exposed-infectious-recovered) model with continuous
+ * states and log-normal transfer.
  *
  *   - `T` Number of time steps.
  */

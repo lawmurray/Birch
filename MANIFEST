@@ -1,10 +1,11 @@
-bi/modular/SEIRExchange.bi
-bi/modular/SEIRObservation.bi
-bi/modular/SEIRParameter.bi
-bi/modular/SEIRState.bi
-bi/modular/VBD.bi
-bi/monolithic/SEIRBinomial.bi
 bi/monolithic/SEIRContinuous.bi
+bi/monolithic/SEIRDiscrete.bi
+bi/seir/SEIRParameter.bi
+bi/seir/SEIRState.bi
+bi/site/YapParameter.bi
+bi/site/YapState.bi
+bi/vbd/VBDParameter.bi
+bi/vbd/VBDState.bi
 bi/sample.bi
 MANIFEST
 README.md

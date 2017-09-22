@@ -8,9 +8,13 @@ program sample(T:Integer <- 10, diagnostics:Boolean <- false) {
   if (diagnostics) {
     configure_diagnostics(T);
   }
-  x:SEIRBinomial(T);
-  x.simulate();
-  x.output();
+  /*x:SEIRDiscrete(T);
+  f:Real! <- x.run();
+  w:Real;
+  while (f?) {
+    w <- f!;
+  }
+  x.output();*/
 }
 
 /**

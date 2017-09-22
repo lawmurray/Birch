@@ -1,10 +1,10 @@
 /**
- * SEIR (susceptible-exposed-infectious-recovered) model with binomial
- * transfer.
+ * SEIR (susceptible-exposed-infectious-recovered) model with discrete states
+ * and binomial transfer.
  *
  *   - `T` Number of time steps.
  */
-class SEIRBinomial(T:Integer) {
+class SEIRDiscrete(T:Integer) {
   ρ_λ:Beta;  // exposure probability
   ρ_δ:Beta;  // infection probability
   ρ_γ:Beta;  // recovery probability
@@ -24,7 +24,7 @@ class SEIRBinomial(T:Integer) {
   y_N:Integer[T];   // number of serology samples
   y_R:Binomial[T];  // number of positive serology samples
 
-  function simulate() {
+  fiber run() -> Real! {
     ρ_λ ~ Beta(1.0, 1.0);
     ρ_δ ~ Beta(7.0/17.8, 1.0 - 7.0/17.8);
     ρ_γ ~ Beta(7.0/4.7, 1.0 - 7.0/4.7);    
