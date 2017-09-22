@@ -3,20 +3,18 @@
  */
 #pragma once
 
-#include "bi/expression/Expression.hpp"
-
 #include <string>
 
 namespace bi {
 /**
  * Encode a string of ASCII 0-127 in base 32.
  */
-void encode32(const std::string& in, std::string& out);
+std::string encode32(const std::string& in);
 
 /**
  * Decode a string of base 32 to ASCII 0-127.
  */
-void decode32(const std::string& in, std::string& out);
+std::string decode32(const std::string& in);
 
 /**
  * Translate a single character from decoded to encoded.

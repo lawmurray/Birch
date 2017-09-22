@@ -3,6 +3,12 @@
  */
 #include "bi/io/cpp/CppMemberFiberGenerator.hpp"
 
+#include "bi/visitor/Gatherer.hpp"
+#include "bi/io/bih_ostream.hpp"
+#include "bi/primitive/encode.hpp"
+
+#include <sstream>
+
 bi::CppMemberFiberGenerator::CppMemberFiberGenerator(const Class* type,
     std::ostream& base, const int level, const bool header) :
     CppFiberGenerator(base, level, header),
@@ -12,6 +18,13 @@ bi::CppMemberFiberGenerator::CppMemberFiberGenerator(const Class* type,
 }
 
 void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
+  /* generate a unique name (within this scope) for the state of the fiber */
+  std::stringstream base;
+  bih_ostream buf(base);
+  buf << o->params;
+  std::string stateName = o->name->str() + '_' + encode32(base.str())
+      + "_FiberState";
+
   /* gather important objects */
   o->params->accept(&parameters);
   o->braces->accept(&locals);
@@ -19,7 +32,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
 
   /* supporting class */
   if (header) {
-    start("class " << o->name << "FiberState : ");
+    start("class " << stateName << " : ");
     finish("public FiberState<" << o->returnType->unwrap() << "> {");
     line("public:");
     in();
@@ -28,9 +41,9 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   /* constructor, taking the arguments of the Fiber */
   start("");
   if (!header) {
-    middle("bi::" << type->name << "::" << o->name << "FiberState::");
+    middle("bi::" << type->name << "::" << stateName << "::");
   }
-  middle(o->name << "FiberState(const Pointer<" << type->name << ">& self");
+  middle(stateName << "(const Pointer<" << type->name << ">& self");
   if (!o->params->strip()->isEmpty()) {
     middle(", " << o->params->strip());
   }
@@ -61,9 +74,9 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   } else {
     start("virtual ");
   }
-  middle(o->name << "FiberState* ");
+  middle(stateName << "* ");
   if (!header) {
-    middle("bi::" << type->name << "::" << o->name << "FiberState::");
+    middle("bi::" << type->name << "::" << stateName << "::");
   }
   middle("clone()");
   if (header) {
@@ -83,7 +96,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   }
   middle("bool ");
   if (!header) {
-    middle("bi::" << type->name << "::" << o->name << "FiberState::");
+    middle("bi::" << type->name << "::" << stateName << "::");
   }
   middle("query()");
   if (header) {
@@ -128,7 +141,8 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   } else {
     finish(" {");
     in();
-    start("return make_fiber<" << o->returnType->unwrap() << ',' << o->name << "FiberState>(pointer_from_this<this_type>()");
+    start(
+        "return make_fiber<" << o->returnType->unwrap() << ',' << stateName << ">(pointer_from_this<this_type>()");
     for (auto iter = parameters.begin(); iter != parameters.end(); ++iter) {
       middle(", ");
       middle((*iter)->name);

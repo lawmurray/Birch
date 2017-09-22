@@ -11,7 +11,8 @@
 #include <unordered_map>
 #include <unordered_set>
 
-void bi::encode32(const std::string& in, std::string& out) {
+std::string bi::encode32(const std::string& in) {
+  std::string out;
   out.resize((in.length() + 4) / 5 * 7);
 
   unsigned long num, i1, i2, j;
@@ -28,9 +29,11 @@ void bi::encode32(const std::string& in, std::string& out) {
       num >>= 5;
     }
   }
+  return out;
 }
 
-void bi::decode32(const std::string& in, std::string& out) {
+std::string bi::decode32(const std::string& in) {
+  std::string out;
   out.resize((in.length() + 6) / 7 * 5);
 
   unsigned long num, i1, i2, j;
@@ -47,6 +50,7 @@ void bi::decode32(const std::string& in, std::string& out) {
       num >>= 7;
     }
   }
+  return out;
 }
 
 unsigned char bi::encode32(const unsigned char c) {
