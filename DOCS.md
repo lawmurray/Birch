@@ -296,9 +296,9 @@ When called, a fiber performs no execution except to construct an object of fibe
 
 The usage idiom for fibers is similar to optionals, but with a loop:
 
-    a:A! <- c();
-    while (a?) {
-      f(a!);
+    c:C! <- f(a, b);
+    while (c?) {
+      g(c!);  // do something with the yield value
     }
     
 It is the postfix `?` operator that triggers the continuation of the fiber execution, which proceeds until the next yield point. Repeated use of the postfix `!` operator between calls of the postfix `?` operator will retrieve the last yield value, without further execution.
@@ -306,6 +306,25 @@ It is the postfix `?` operator that triggers the continuation of the fiber execu
 Within the body of a fiber, the `yield` statement is used to pause execution. This yields execution to the caller, along with the given value.
 
 The fiber terminates when execution reaches the end of the body, if ever. When terminating, it does not yield a value. To terminate the execution of a fiber before reaching the end of the body, use an empty `return;` statement.
+
+### Fibers-within-fibers
+
+An outer fiber may call an inner fiber using the above syntax, as if the outer fiber were any other function. For convenience, the following implicit behaviour is also specified.
+
+If the outer fiber calls the inner fiber in such a way that its return value is ignored:
+
+    f(a, b);
+
+this implicitly behaves as:
+
+    c:C! <- f(a, b);
+    while (c?) {
+      yield c!;
+    }
+
+That is, the outer fiber yields the values of the inner fiber until the inner fiber completes execution.
+
+The same behaviour applies to an outer fiber that calls an inner *function*---not itself a fiber---which has a fiber return value.
 
 
 ## Classes
