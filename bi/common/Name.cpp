@@ -5,6 +5,16 @@
 
 #include "bi/visitor/all.hpp"
 
+#include <sstream>
+
+int bi::Name::COUNTER = 0;
+
+bi::Name::Name() {
+  std::stringstream buf;
+  buf << 'n' << (COUNTER++) << '_';
+  name = buf.str();
+}
+
 bi::Name::Name(const std::string& name) :
     name(name) {
   //

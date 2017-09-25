@@ -424,6 +424,29 @@ bi::Statement* bi::ResolverSource::modify(Class* o) {
   return o;
 }
 
+bi::Statement* bi::ResolverSource::modify(ExpressionStatement* o) {
+  Modifier::modify(o);
+
+  /* when in the body of a fiber and another fiber is called while ignoring
+   * its return type, this is syntactic sugar for a loop */
+  if (currentYieldType) {
+    auto call = dynamic_cast<Call*>(o->single);
+    if (call && call->type->isFiber()) {
+      auto name = new Name();
+      auto var = new LocalVariable(name, o->single->type->accept(&cloner), new EmptyExpression(o->loc), o->single, o->loc);
+      auto decl = new ExpressionStatement(var, o->loc);
+      auto query = new Query(new Identifier<LocalVariable>(name, o->loc), o->loc);
+      auto get = new Get(new Identifier<LocalVariable>(name, o->loc), o->loc);
+      auto yield = new Yield(get, o->loc);
+      auto loop = new While(new Parentheses(query, o->loc), new Braces(yield, o->loc), o->loc);
+      auto result = new List<Statement>(decl, loop, o->loc);
+
+      return result->accept(this);
+    }
+  }
+  return o;
+}
+
 bi::Statement* bi::ResolverSource::modify(If* o) {
   scopes.push_back(o->scope);
   o->cond = o->cond->accept(this);

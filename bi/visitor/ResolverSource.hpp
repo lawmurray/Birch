@@ -71,6 +71,7 @@ public:
   virtual Statement* modify(AssignmentOperator* o);
   virtual Statement* modify(ConversionOperator* o);
   virtual Statement* modify(Class* o);
+  virtual Statement* modify(ExpressionStatement* o);
   virtual Statement* modify(If* o);
   virtual Statement* modify(For* o);
   virtual Statement* modify(While* o);

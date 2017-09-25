@@ -17,6 +17,11 @@ class Visitor;
 class Name {
 public:
   /**
+   * Default constructor. Generates a package-wide unique name.
+   */
+  Name();
+
+  /**
    * Constructor.
    *
    * @param name Name.
@@ -28,7 +33,7 @@ public:
    *
    * @param name Name.
    */
-  Name(const char* name = "");
+  Name(const char* name);
 
   /**
    * Constructor.
@@ -62,5 +67,10 @@ private:
    * Name.
    */
   std::string name;
+
+  /**
+   * Counter for unique names.
+   */
+  static int COUNTER;
 };
 }
