@@ -23,8 +23,9 @@ program delay_rbpf(N:Integer <- 100, T:Integer <- 10,
   W:Real <- 0.0;  // marginal likelihood
   
   /* initialize */
+  p:Real! <- particle(T);
   for (n:Integer in 1..N) {
-    x[n] <- particle(T);
+    x[n] <- p;
   }
   W <- 0.0;
   
@@ -60,10 +61,7 @@ fiber particle(T:Integer) -> Real! {
   x:Example(T);
   
   x.input();
-  f:Real! <- x.simulate();
-  while (f?) {
-    yield f!;
-  }
+  x.simulate();
 }
 
 class Example(T:Integer) {
