@@ -72,10 +72,14 @@ function simulate_beta_binomial(n:Integer, α:Real, β:Real) -> Integer {
  * - λ: Rate.
  */
 function simulate_poisson(λ:Real) -> Integer {
-  assert 0.0 < λ;
-  cpp {{
-  return std::poisson_distribution<bi::Integer_>(λ_)(rng);
-  }}
+  assert 0.0 <= λ;
+  if (λ > 0.0) {
+    cpp {{
+    return std::poisson_distribution<bi::Integer_>(λ_)(rng);
+    }}
+  } else {
+    return 0;
+  }
 }
 
 /**

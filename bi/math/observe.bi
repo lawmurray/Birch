@@ -88,12 +88,20 @@ function observe_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) -> Real {
  * Returns the log probability mass.
  */
 function observe_poisson(x:Integer, λ:Real) -> Real {
-  assert 0.0 < λ;
-  
-  if (x >= 0) {
-    return x*log(λ) - λ - lgamma(x + 1);
+  assert 0.0 <= λ;
+
+  if (λ > 0.0) {
+    if (x >= 0) {
+      return x*log(λ) - λ - lgamma(x + 1);
+    } else {
+      return -inf;
+    }
   } else {
-    return -inf;
+    if (x == 0) {
+      return inf;
+    } else {
+      return -inf;
+    }
   }
 }
 

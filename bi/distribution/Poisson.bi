@@ -13,7 +13,7 @@ class Poisson < DelayInteger {
   }
 
   function update(λ:Real) {
-    assert 0.0 < λ;
+    assert 0.0 <= λ;
   
     this.λ <- λ;
   }
