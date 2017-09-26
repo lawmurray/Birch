@@ -18,9 +18,7 @@ public:
   /**
    * Constructor.
    */
-  Object() :
-      users(1),
-      index(-1) {
+  Object() {
     //
   }
 
@@ -28,7 +26,7 @@ public:
    * Copy constructor.
    */
   Object(const Object& o) :
-      users(1),
+      gen(o.gen),
       index(o.index) {
     //
   }
@@ -48,38 +46,30 @@ public:
   virtual Object* clone() = 0;
 
   /**
-   * Indicate that a(nother) fiber is using this object.
+   * Get the fiber generation of the object.
    */
-  void use() {
-    ++users;
+  size_t getGen() const {
+    return gen;
   }
 
   /**
-   * Indicate that a fiber is no longer using this object.
+   * Set the fiber generation of the object.
    */
-  void disuse() {
-    assert(users > 0);
-    --users;
-  }
-
-  /**
-   * Is this object being shared by two or more fibers?
-   */
-  bool isShared() const {
-    return users > 1;
+  void setGen(const size_t gen) {
+    this->gen = gen;
   }
 
   /**
    * Get the fiber-local heap index of the object.
    */
-  size_t getIndex() const {
+  intptr_t getIndex() const {
     return index;
   }
 
   /**
    * Set the fiber-local heap index of the object.
    */
-  void setIndex(const size_t index) {
+  void setIndex(const intptr_t index) {
     this->index = index;
   }
 
@@ -93,13 +83,12 @@ public:
 
 private:
   /**
-   * Number of fibers referencing this object.
+   * Fiber generation in which this object was created.
    */
-  size_t users;
+  size_t gen;
 
   /**
-   * For a fiber-local pointer, the index of the heap allocation,
-   * otherwise -1.
+   * Index of the heap allocation.
    */
   intptr_t index;
 };

@@ -376,10 +376,10 @@ static Fiber<YieldType> make_fiber(Args ... args) {
    * the new fiber's heap, and not that of the calling fiber, or the
    * process */
   Fiber<YieldType> fiber;
-  Heap* yieldTo = fiberHeap;
-  fiberHeap = &fiber.heap;  // ensures on the new fiber's heap
+  Heap* callerHeap = fiberHeap;
+  fiberHeap = &fiber.heap;
   fiber.state = static_cast<FiberState<YieldType>*>(new StateType(args...));
-  fiberHeap = yieldTo;
+  fiberHeap = callerHeap;
   return fiber;
 }
 }

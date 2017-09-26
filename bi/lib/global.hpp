@@ -28,8 +28,7 @@ static constexpr size_t mutable_value = 0;
 static constexpr size_t default_value = std::numeric_limits<size_t>::max();
 
 /**
- * Currently running fiber. If there is no currently running fiber, then
- * @c nullptr.
+ * Heap of the currently running fiber.
  */
 extern Heap* fiberHeap;
 

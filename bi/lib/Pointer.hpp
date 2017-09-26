@@ -141,7 +141,6 @@ bi::Pointer<T>& bi::Pointer<T>::operator=(T* raw) {
   assert(fiberHeap);
   if (raw) {
     this->index = fiberHeap->put(raw);
-    raw->setIndex(this->index);
   } else {
     this->index = -1;
   }
@@ -163,48 +162,45 @@ bi::Pointer<T>& bi::Pointer<T>::operator=(const U& o) {
 
 template<class T>
 T* bi::Pointer<T>::get() {
-  T* raw;
-  if (this->index >= 0) {
-    assert(fiberHeap);
-#ifdef NDEBUG
-    raw = static_cast<T*>(fiberHeap->get(this->index));
-#else
-    raw = dynamic_cast<T*>(fiberHeap->get(this->index));
-    assert(raw);
-#endif
-    if (raw->isShared()) {
-      /* shared and writeable, copy now (copy-on-write) */
-      raw->disuse();
-      raw = raw->clone();
-      fiberHeap->set(this->index, raw);
-    }
+  if (this->index < 0) {
+    return nullptr;
   } else {
-    raw = nullptr;
+    Object* o;
+    assert(fiberHeap);
+    o = fiberHeap->get(this->index);
+    if (o->getGen() < fiberHeap->getGen()) {
+      /* (possibly) shared and writeable, copy now (copy-on-write) */
+      o = o->clone();
+      fiberHeap->set(this->index, o);
+    }
+    T* raw;
+    #ifdef NDEBUG
+    raw = static_cast<T*>(o);
+    #else
+    raw = dynamic_cast<T*>(o);
+    assert(raw);
+    #endif
+    return raw;
   }
-  return raw;
 }
 
 template<class T>
 T* const bi::Pointer<T>::get() const {
-  T* raw;
-  if (this->index >= 0) {
-    assert(fiberHeap);
-#ifdef NDEBUG
-    raw = static_cast<T*>(fiberHeap->get(this->index));
-#else
-    raw = dynamic_cast<T*>(fiberHeap->get(this->index));
-    assert(raw);
-#endif
-    if (raw->isShared()) {
-      /* shared and writeable, copy now (copy-on-write) */
-      raw->disuse();
-      raw = raw->clone();
-      fiberHeap->set(this->index, raw);
-    }
+  if (this->index < 0) {
+    return nullptr;
   } else {
-    raw = nullptr;
+    Object* o;
+    assert(fiberHeap);
+    o = fiberHeap->get(this->index);
+    T* raw;
+    #ifdef NDEBUG
+    raw = static_cast<T*>(o);
+    #else
+    raw = dynamic_cast<T*>(o);
+    assert(raw);
+    #endif
+    return raw;
   }
-  return raw;
 }
 
 template<class T>
@@ -217,7 +213,6 @@ inline bi::Pointer<bi::Object>::Pointer(Object* raw) {
   assert(fiberHeap);
   if (raw) {
     index = fiberHeap->put(raw);
-    raw->setIndex(index);
   } else {
     index = -1;
   }

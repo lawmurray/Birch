@@ -75,10 +75,22 @@ public:
    */
   size_t put(Object* raw);
 
+  /**
+   * Get the generation of the object.
+   */
+  size_t getGen() const {
+    return gen;
+  }
+
 private:
   /**
    * Allocations.
    */
   std::vector<Object*> heap;
+
+  /**
+   * Generation of this heap.
+   */
+  size_t gen;
 };
 }

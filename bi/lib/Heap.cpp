@@ -4,62 +4,25 @@
 #include "bi/lib/Heap.hpp"
 
 #include "bi/lib/Object.hpp"
+#include "bi/lib/global.hpp"
 
-bi::Heap::Heap() {
+bi::Heap::Heap() : gen(fiberHeap ? fiberHeap->gen + 1 : 0) {
   //
 }
 
 bi::Heap::Heap(const Heap& o) :
-    heap(o.heap) {
-  /* update fiber usage counts */
-  for (auto o : heap) {
-    o->use();
-  }
-  /// @todo For multiple copies of the same fiber (common use case), could
-  /// update usage counts just once
+    heap(o.heap),
+    gen(o.gen + 1) {
+  //
 }
 
 bi::Heap::~Heap() {
-  /* update fiber usage counts */
-  for (auto o : heap) {
-    if (o->isShared()) {
-      o->disuse();
-    } else {
-      delete o;
-    }
-  }
+  //
 }
 
 bi::Heap& bi::Heap::operator=(const Heap& o) {
-  auto iter1 = heap.begin();
-  auto iter2 = o.heap.begin();
-  auto end1 = heap.end();
-  auto end2 = o.heap.end();
-
-  /* skip through common history */
-  while (iter1 != end1 && iter2 != end2 && *iter1 == *iter2) {
-    ++iter1;
-    ++iter2;
-  }
-
-  /* disuse remaining allocations on the left of the assignment */
-  while (iter1 != end1) {
-    (*iter1)->disuse();
-    ++iter1;
-  }
-
-  /* copy remaining allocations from the right side of the assignment */
-  heap.resize(o.heap.size());
-  iter1 = heap.begin() + std::distance(o.heap.begin(), iter2);
-  while (iter2 != end2) {
-    *iter1 = *iter2;
-    (*iter1)->use();
-    ++iter1;
-    ++iter2;
-  }
-  assert(iter1 == heap.end());
-  assert(iter2 == o.heap.end());
-
+  heap = o.heap;
+  gen = o.gen + 1;
   return *this;
 }
 
@@ -71,6 +34,7 @@ bi::Object* bi::Heap::get(const size_t index) {
 
 void bi::Heap::set(const size_t index, Object* raw) {
   assert(index < heap.size());
+  raw->setGen(gen);
   raw->setIndex(index);
   heap[index] = raw;
 }
@@ -78,6 +42,7 @@ void bi::Heap::set(const size_t index, Object* raw) {
 size_t bi::Heap::put(Object* raw) {
   heap.push_back(raw);
   size_t index = heap.size() - 1;
+  raw->setGen(gen);
   raw->setIndex(index);
   return index;
 }
