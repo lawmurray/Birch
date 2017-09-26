@@ -371,15 +371,8 @@ Type* copy_object(Type* o) {
  */
 template<class YieldType, class StateType, class ... Args>
 static Fiber<YieldType> make_fiber(Args ... args) {
-  /* the key here is to ensure that both the internal fiber state, and the
-   * pointer to the containing object (for a member fiber), are relative to
-   * the new fiber's heap, and not that of the calling fiber, or the
-   * process */
   Fiber<YieldType> fiber;
-  Heap* callerHeap = fiberHeap;
-  fiberHeap = &fiber.heap;
   fiber.state = static_cast<FiberState<YieldType>*>(new StateType(args...));
-  fiberHeap = callerHeap;
   return fiber;
 }
 }

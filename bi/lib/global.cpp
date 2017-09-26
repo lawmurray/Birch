@@ -5,7 +5,7 @@
 
 #include "bi/lib/Heap.hpp"
 
-static std::random_device rd; // for initial setup of random number generator
+static std::random_device rd;
 
 bi::Heap* bi::fiberHeap = new bi::Heap();
 std::mt19937_64 bi::rng(rd());

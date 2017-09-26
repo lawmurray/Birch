@@ -4,9 +4,8 @@
 #include "bi/lib/Heap.hpp"
 
 #include "bi/lib/Object.hpp"
-#include "bi/lib/global.hpp"
 
-bi::Heap::Heap() : gen(fiberHeap ? fiberHeap->gen + 1 : 0) {
+bi::Heap::Heap() : gen(0) {
   //
 }
 

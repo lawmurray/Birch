@@ -12,7 +12,7 @@ namespace bi {
  *
  * @ingroup library
  *
- * @tparam Type Return type.
+ * @tparam Type Yield type.
  */
 template<class Type>
 class Fiber {
@@ -20,16 +20,17 @@ public:
   /**
    * Default constructor.
    */
-  Fiber() {
-    if (fiberHeap) {
-      heap = *fiberHeap;
-    }
+  Fiber() : heap(fiberHeap), own(false) {
+    //
   }
 
   /**
    * Copy constructor. Fibers are copy-by-value.
    */
-  Fiber(const Fiber<Type>& o) = default;
+  Fiber(const Fiber<Type>& o) : state(o.state) {
+    heap = new Heap(*o.heap);
+    own = true;
+  }
 
   /**
    * Move constructor.
@@ -37,9 +38,26 @@ public:
   Fiber(Fiber<Type>&& o) = default;
 
   /**
+   * Destructor.
+   */
+  virtual ~Fiber() {
+    if (own) {
+      delete heap;
+    }
+  }
+
+  /**
    * Copy assignment.
    */
-  Fiber<Type>& operator=(const Fiber<Type>& o) = default;
+  Fiber<Type>& operator=(const Fiber<Type>& o) {
+    state = o.state;
+    if (own) {
+      delete heap;
+    }
+    heap = new Heap(*o.heap);
+    own = true;
+    return *this;
+  }
 
   /**
    * Move assignment.
@@ -53,7 +71,7 @@ public:
    */
   bool query() {
     Heap* callerHeap = fiberHeap;
-    fiberHeap = &heap;
+    fiberHeap = heap;
     bool result = state->query();
     fiberHeap = callerHeap;
     return result;
@@ -64,14 +82,14 @@ public:
    */
   Type& get() {
     Heap* callerHeap = fiberHeap;
-    fiberHeap = &heap;
+    fiberHeap = heap;
     Type& result = state->get();
     fiberHeap = callerHeap;
     return result;
   }
   const Type& get() const {
     Heap* callerHeap = fiberHeap;
-    fiberHeap = &heap;
+    fiberHeap = heap;
     const Type& result = state->get();
     fiberHeap = callerHeap;
     return result;
@@ -83,8 +101,13 @@ public:
   Pointer<FiberState<Type>> state;
 
   /**
-   * Fiber heap.
+   * Fiber-local heap, nullptr if shared with the parent fiber.
    */
-  Heap heap;
+  Heap* heap;
+
+  /**
+   * Does the fiber own this heap?
+   */
+  bool own;
 };
 }
