@@ -16,11 +16,11 @@ class SEIRDiscrete(T:Integer) {
   R:Integer[T];  // recovered population
   N:Integer;     // total population
 
-  λ:Binomial[T];  // newly infected population
-  δ:Binomial[T];  // newly incubated population
-  γ:Binomial[T];  // newly recovered population
+  λ:BetaBinomial[T];  // newly infected population
+  δ:BetaBinomial[T];  // newly incubated population
+  γ:BetaBinomial[T];  // newly recovered population
 
-  y_δ:Binomial[T];  // observed number of newly infected
+  y_δ:BetaBinomial[T];  // observed number of newly infected
   y_N:Integer[T];   // number of serology samples
   y_R:Binomial[T];  // number of positive serology samples
 

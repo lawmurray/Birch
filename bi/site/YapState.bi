@@ -2,7 +2,7 @@
  * State for Yap case study.
  */
 class YapState < VBDState {
-  y:Binomial;  // observable number of newly infected humans
+  y:BetaBinomial;  // observable number of newly infected humans
 
   /**
    * Initial state.

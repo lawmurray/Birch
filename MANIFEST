@@ -2,6 +2,7 @@ bi/monolithic/SEIRContinuous.bi
 bi/monolithic/SEIRDiscrete.bi
 bi/seir/SEIRParameter.bi
 bi/seir/SEIRState.bi
+bi/site/YapModel.bi
 bi/site/YapParameter.bi
 bi/site/YapState.bi
 bi/vbd/VBDParameter.bi

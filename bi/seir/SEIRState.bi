@@ -4,10 +4,10 @@
 class SEIRState {
   x:SEIRState?;     // previous state
 
-  Δs:Poisson;    // newly susceptible (births)
-  Δe:Binomial;   // newly exposed
-  Δi:Binomial;   // newly infected
-  Δr:Binomial;   // newly recovered
+  Δs:GammaPoisson;   // newly susceptible (births)
+  Δe:BetaBinomial;   // newly exposed
+  Δi:BetaBinomial;   // newly infected
+  Δr:BetaBinomial;   // newly recovered
 
   s:Binomial;    // susceptible population
   e:Binomial;    // incubating population
