@@ -113,19 +113,17 @@ class Example(T:Integer) {
     Σ_y_l[1,1] <- 0.1;
     Σ_y_n[1,1] <- 0.1;
 
-    x_n[1] ~ Gaussian(vector(0.0, 1), identity(1, 1));
-    x_l[1] ~ Gaussian(vector(0.0, 3), identity(3, 3));
+    x_n[1] ~ Gaussian(vector(0.0, 1), I(1, 1));
+    x_l[1] ~ Gaussian(vector(0.0, 3), I(3, 3));
 
-    y_n[1] ~ Gaussian(vector(0.1*copysign(pow(scalar(x_n[1]), 2.0),
-        scalar(x_n[1])), 1), Σ_y_n);
+    y_n[1] ~ Gaussian(vector(0.1*copysign(pow(scalar(x_n[1]), 2.0), scalar(x_n[1])), 1), Σ_y_n);
     y_l[1] ~ Gaussian(C*x_l[1], Σ_y_l);
 
     for (t:Integer in 2..T) {
       x_n[t] ~ Gaussian(vector(atan(scalar(x_n[t-1])), 1) + B*x_l[t-1], Σ_x_n);
       x_l[t] ~ Gaussian(A*x_l[t-1], Σ_x_l);
 
-      y_n[t] ~ Gaussian(vector(0.1*copysign(pow(scalar(x_n[t]), 2.0),
-          scalar(x_n[t])), 1), Σ_y_n);
+      y_n[t] ~ Gaussian(vector(0.1*copysign(pow(scalar(x_n[t]), 2.0), scalar(x_n[t])), 1), Σ_y_n);
       y_l[t] ~ Gaussian(C*x_l[t], Σ_y_l);
     }
   }

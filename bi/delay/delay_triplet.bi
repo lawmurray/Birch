@@ -17,9 +17,9 @@ program delay_triplet(x:Gaussian, y:Gaussian, z:Gaussian,
   y ~ Gaussian(x, 1.0);
   z ~ Gaussian(y, 1.0);
   
-  stdout.printf("x = %f\n", x);
-  stdout.printf("y = %f\n", y);
-  stdout.printf("z = %f\n", z);
+  stdout.print("x = " + x + "\n");
+  stdout.print("y = " + y + "\n");
+  stdout.print("z = " + z + "\n");
 }
 
 /*

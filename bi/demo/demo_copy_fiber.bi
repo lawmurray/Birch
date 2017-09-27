@@ -4,13 +4,13 @@ program demo_copy_fiber(N:Integer <- 10) {
   
   stdout.print("1st fiber:");
   while (a?) {
-    stdout.printf(" %f", a!);
+    stdout.print(" " + a!);
   }
   stdout.print("\n");
 
   stdout.print("2nd fiber:");
   while (b?) {
-    stdout.printf(" %f", b!);
+    stdout.print(" " + b!);
   }
   stdout.print("\n");
 }

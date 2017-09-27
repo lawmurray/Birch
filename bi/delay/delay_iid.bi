@@ -33,7 +33,7 @@ program delay_iid(μ:Real <- 0.0, σ2:Real <- 1.0, N:Integer <- 100,
   }
   
   /* output */
-  stdout.printf("x = %f\n", x);
+  stdout.print("x = " + x + "\n");
 }
 
 /*
