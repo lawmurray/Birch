@@ -72,7 +72,7 @@ function observe_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) -> Real {
   assert 0.0 < α;
   assert 0.0 < β;
 
-  if (x >= 0) {
+  if (0 <= x && x <= n) {
     return lbeta(x + α, n - x + β) - lbeta(α, β) + lchoose(n, x);
   } else {
     return -inf;

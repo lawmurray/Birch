@@ -10,11 +10,6 @@ class DelayRealVector(D:Integer) < Delay {
   x:Real[D];
   
   /**
-   * Weight.
-   */
-  w:Real;
-
-  /**
    * Value conversion.
    */
   operator -> Real[_] {

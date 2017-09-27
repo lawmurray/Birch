@@ -6,11 +6,6 @@ class DelayReal < Delay {
    * Value.
    */
   x:Real;
-  
-  /**
-   * Weight.
-   */
-  w:Real;
 
   /**
    * Value conversion.

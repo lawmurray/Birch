@@ -31,6 +31,11 @@ class Delay {
   child:Delay?;
   
   /**
+   * Weight.
+   */
+  w:Real;
+  
+  /**
    * Unique id for delayed sampling diagnostics.
    */
   id:Integer <- 0;
@@ -179,7 +184,9 @@ class Delay {
       state <- REALIZED;
       doRealize();
       if (parent?) {
-        if (!(parent!.isRealized())) {
+        if (!(parent!.isRealized()) && w > -inf) {
+          // ^ conditioning doesn't make sense if the observation is not
+          //   within the support
           doCondition();
           parent!.absorb(nbackward);
         }

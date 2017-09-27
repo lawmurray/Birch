@@ -6,11 +6,6 @@ class DelayInteger < Delay {
    * Value.
    */
   x:Integer;
-  
-  /**
-   * Weight.
-   */
-  w:Real;
 
   /**
    * Value conversion.

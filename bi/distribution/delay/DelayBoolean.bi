@@ -6,11 +6,6 @@ class DelayBoolean < Delay {
    * Value.
    */
   x:Boolean;
-  
-  /**
-   * Weight.
-   */
-  w:Real;
 
   /**
    * Value conversion.
