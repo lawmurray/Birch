@@ -96,12 +96,14 @@ function permute_ancestors(a:Integer[_]) -> Integer[_] {
  */
 function cumulative_weights(w:Real[_]) -> Real[_] {
   N:Integer <- length(w);
-  mx:Real <- max(w);
   W:Real[N];
   
-  W[1] <- exp(w[1] - mx);
-  for (n:Integer in 2..N) {
-    W[n] <- W[n - 1] + exp(w[n] - mx);
+  if (N > 0) {
+    mx:Real <- max(w);
+    W[1] <- exp(w[1] - mx);
+    for (n:Integer in 2..N) {
+      W[n] <- W[n - 1] + exp(w[n] - mx);
+    }
   }
   return W;
 }

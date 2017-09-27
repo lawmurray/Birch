@@ -63,8 +63,6 @@ function observe_negative_binomial(x:Integer, k:Integer, ρ:Real) -> Real {
  * - α: Shape.
  * - β: Shape.
  *
- * Returns the log probability density.
- *
  * Returns the log probability mass.
  */
 function observe_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) -> Real {
