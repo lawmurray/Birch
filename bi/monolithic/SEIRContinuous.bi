@@ -32,7 +32,7 @@ class SEIRContinuous(T:Integer) {
   y_N:Integer[T];    // number of serology samples
   y_R:Binomial[T];   // number of positive serology samples
 
-  function simulate() {
+  fiber run() -> Real! {
     d_inc_h <~ Gaussian(17.8/7.0, pow(2.3/7.0, 2.0));
     d_inf_h <~ Gaussian(4.7/7.0, pow(1.2/7.0, 2.0));
     

@@ -8,12 +8,14 @@ program sample(T:Integer <- 10, diagnostics:Boolean <- false) {
   if (diagnostics) {
     configure_diagnostics(T);
   }
+  
   x:YapModel(T);
   w:Real;
   f:Real! <- x.run();
   while (f?) {
-    w <- f!;
+    w <- w + f!;
   }
+  stdout.print(w + "\n");
 }
 
 /**

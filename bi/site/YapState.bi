@@ -2,7 +2,8 @@
  * State for Yap case study.
  */
 class YapState < VBDState {
-  y:BetaBinomial;  // observable number of newly infected humans
+  z:Integer;   // actual number of new cases since last observation
+  y:Integer?;  // observed number of new cases since last observation
 
   /**
    * Initial state.
@@ -19,6 +20,8 @@ class YapState < VBDState {
     m.i <- 0;
     m.e <- 0;
     m.s <- m.n;
+    
+    z <- 0;
   }
   
   /**
@@ -26,6 +29,13 @@ class YapState < VBDState {
    */
   fiber run(x:YapState, θ:YapParameter) -> Real! {
     super.run(x, θ);
-    y ~ Binomial(x.h.Δi, θ.ρ);
+    
+    /* observations are of the aggregated number of new cases of infection
+     * since the time of the last observation */
+    z <- z + x.h.Δi;
+    if (y?) {
+      y! ~> Binomial(z, θ.ρ);
+      z <- 0;
+    }
   }
 }
