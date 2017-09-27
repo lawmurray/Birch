@@ -7,7 +7,7 @@ class OutputStream(stream:File) {
    */
   function print(value:String) {
     cpp{{
-    ::printf("%s", value_.c_str());
+    ::fprintf(stream_, "%s", value_.c_str());
     }}
   }
 
