@@ -47,9 +47,12 @@ bi/driver/docs.bi
 bi/driver/init.bi
 bi/driver/install.bi
 bi/driver/uninstall.bi
+bi/io/FileInputStream.bi
 bi/io/FileOutputStream.bi
+bi/io/InputStream.bi
 bi/io/OutputStream.bi
 bi/io/StdErrStream.bi
+bi/io/StdInStream.bi
 bi/io/StdOutStream.bi
 bi/math/eigen.bi
 bi/math/matrix.bi
@@ -59,6 +62,5 @@ bi/math/special.bi
 bi/math/standard.bi
 bi/math/vector.bi
 bi/primitive.bi
-bi/read.bi
 bi/resample.bi
 bi/standard.bi
