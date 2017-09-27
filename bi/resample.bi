@@ -7,6 +7,7 @@ function ancestors(w:Real[_]) -> Integer[_] {
   O:Integer[N];
   
   O <- systematic_cumulative_offspring(cumulative_weights(w));
+  assert O[N] == N; // otherwise particle filter has degenerated
   a <- cumulative_offspring_to_ancestors(O);
   
   return permute_ancestors(a);
