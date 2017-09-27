@@ -5,9 +5,9 @@
 | --- | --- |
 | *delayDiagnostics:[DelayDiagnostics](#delaydiagnostics-367)?* | Global diagnostics handler for delayed sampling. |
 | *inf:[Real64](#real64-214)* | $\infty$ |
-| *stderr:[StdErrStream](#stderrstream-1076)* | Standard error. |
-| *stdin:[StdInStream](#stdinstream-1079)* | Standard input. |
-| *stdout:[StdOutStream](#stdoutstream-1082)* | Standard output. |
+| *stderr:[StdErrStream](#stderrstream-1077)* | Standard error. |
+| *stdin:[StdInStream](#stdinstream-1080)* | Standard input. |
+| *stdout:[StdOutStream](#stdoutstream-1083)* | Standard output. |
 | *π:[Real64](#real64-214)* | $\pi$ |
 
 | Function | Brief description |
@@ -20,7 +20,7 @@
 | [Gamma](#gamma-431) | Create Gamma distribution. |
 | [Gaussian](#gaussian-453) | Create Gaussian distribution. |
 | [Gaussian](#gaussian-505) | Create multivariate Gaussian distribution. |
-| [I](#i-1200) | Create identity matrix. |
+| [I](#i-1201) | Create identity matrix. |
 | [Integer](#integer-24) | Convert other basic types to Integer. |
 | [Integer32](#integer32-35) | Convert other basic types to Integer32. |
 | [Integer64](#integer64-91) | Convert other basic types to Integer64. |
@@ -40,99 +40,99 @@
 | [abs](#abs-135) | Absolute value. |
 | [abs](#abs-202) | Absolute value. |
 | [abs](#abs-260) | Absolute value. |
-| [adjacent_difference](#adjacent-difference-1468) | Inclusive prefix sum. |
-| [ancestor](#ancestor-1479) | Sample a single ancestor for a vector of log-weights. |
-| [ancestors](#ancestors-1473) | Sample an ancestry vector for a vector of log-weights. |
-| [beta](#beta-1283) | The beta function. |
-| [beta](#beta-1286) | The beta function. |
-| [choose](#choose-1295) | The binomial coefficient. |
-| [choose](#choose-1298) | The binomial coefficient. |
-| [columns](#columns-1163) | Number of columns of a matrix. |
-| [columns](#columns-1165) | Number of columns of a matrix. |
-| [columns](#columns-1167) | Number of columns of a matrix. |
-| [cumulative_offspring_to_ancestors](#cumulative-offspring-to-ancestors-1494) | Convert a cumulative offspring vector into an ancestry vector. |
-| [cumulative_weights](#cumulative-weights-1506) | Compute the cumulative weight vector from the log-weight vector. |
-| [determinant](#determinant-1140) | Determinant of a matrix. |
-| [exclusive_prefix_sum](#exclusive-prefix-sum-1464) | Inclusive prefix sum. |
+| [adjacent_difference](#adjacent-difference-1469) | Inclusive prefix sum. |
+| [ancestor](#ancestor-1480) | Sample a single ancestor for a vector of log-weights. |
+| [ancestors](#ancestors-1474) | Sample an ancestry vector for a vector of log-weights. |
+| [beta](#beta-1284) | The beta function. |
+| [beta](#beta-1287) | The beta function. |
+| [choose](#choose-1296) | The binomial coefficient. |
+| [choose](#choose-1299) | The binomial coefficient. |
+| [columns](#columns-1164) | Number of columns of a matrix. |
+| [columns](#columns-1166) | Number of columns of a matrix. |
+| [columns](#columns-1168) | Number of columns of a matrix. |
+| [cumulative_offspring_to_ancestors](#cumulative-offspring-to-ancestors-1495) | Convert a cumulative offspring vector into an ancestry vector. |
+| [cumulative_weights](#cumulative-weights-1507) | Compute the cumulative weight vector from the log-weight vector. |
+| [determinant](#determinant-1141) | Determinant of a matrix. |
+| [exclusive_prefix_sum](#exclusive-prefix-sum-1465) | Inclusive prefix sum. |
 | [fclose](#fclose-21) | Close a file. |
 | [fopen](#fopen-16) | Open a file for reading. |
 | [fopen](#fopen-19) | Open a file. |
-| [gamma](#gamma-1274) | The gamma function. |
-| [gamma](#gamma-1276) | The gamma function. |
-| [inclusive_prefix_sum](#inclusive-prefix-sum-1460) | Inclusive prefix sum. |
-| [inverse](#inverse-1144) | Inverse of a matrix. |
+| [gamma](#gamma-1275) | The gamma function. |
+| [gamma](#gamma-1277) | The gamma function. |
+| [inclusive_prefix_sum](#inclusive-prefix-sum-1461) | Inclusive prefix sum. |
+| [inverse](#inverse-1145) | Inverse of a matrix. |
 | [isnan](#isnan-213) | Does this have the value NaN? |
 | [isnan](#isnan-271) | Does this have the value NaN? |
-| [lbeta](#lbeta-1289) | Logarithm of the beta function. |
-| [lbeta](#lbeta-1292) | Logarithm of the beta function. |
-| [lchoose](#lchoose-1301) | Logarithm of the binomial coefficient. |
-| [lchoose](#lchoose-1304) | Logarithm of the binomial coefficient. |
+| [lbeta](#lbeta-1290) | Logarithm of the beta function. |
+| [lbeta](#lbeta-1293) | Logarithm of the beta function. |
+| [lchoose](#lchoose-1302) | Logarithm of the binomial coefficient. |
+| [lchoose](#lchoose-1305) | Logarithm of the binomial coefficient. |
 | [length](#length-337) | Length of a string. |
-| [length](#length-1414) | Length of a vector. |
-| [length](#length-1416) | Length of a vector. |
-| [length](#length-1418) | Length of a vector. |
-| [lgamma](#lgamma-1278) | Logarithm of the gamma function. |
-| [lgamma](#lgamma-1280) | Logarithm of the gamma function. |
-| [llt](#llt-1147) | `LL^T` Cholesky decomposition of a matrix. |
-| [log_sum_exp](#log-sum-exp-1456) | Exponentiate and sum a vector, return the logarithm of the sum. |
-| [matrix](#matrix-1174) | Create matrix filled with a given scalar value. |
-| [matrix](#matrix-1181) | Create matrix filled with a given scalar value. |
-| [matrix](#matrix-1188) | Create matrix filled with a given scalar value. |
+| [length](#length-1415) | Length of a vector. |
+| [length](#length-1417) | Length of a vector. |
+| [length](#length-1419) | Length of a vector. |
+| [lgamma](#lgamma-1279) | Logarithm of the gamma function. |
+| [lgamma](#lgamma-1281) | Logarithm of the gamma function. |
+| [llt](#llt-1148) | `LL^T` Cholesky decomposition of a matrix. |
+| [log_sum_exp](#log-sum-exp-1457) | Exponentiate and sum a vector, return the logarithm of the sum. |
+| [matrix](#matrix-1175) | Create matrix filled with a given scalar value. |
+| [matrix](#matrix-1182) | Create matrix filled with a given scalar value. |
+| [matrix](#matrix-1189) | Create matrix filled with a given scalar value. |
 | [max](#max-85) | Maximum of two values. |
 | [max](#max-141) | Maximum of two values. |
 | [max](#max-208) | Maximum of two values. |
 | [max](#max-266) | Maximum of two values. |
-| [max](#max-1447) | Maximum of a vector. |
+| [max](#max-1448) | Maximum of a vector. |
 | [min](#min-88) | Minimum of two values. |
 | [min](#min-144) | Minimum of two values. |
 | [min](#min-211) | Minimum of two values. |
 | [min](#min-269) | Minimum of two values. |
-| [min](#min-1451) | Minimum of a vector. |
+| [min](#min-1452) | Minimum of a vector. |
 | [mod](#mod-82) | Modulus. |
 | [mod](#mod-138) | Modulus. |
 | [mod](#mod-205) | Modulus. |
 | [mod](#mod-263) | Modulus. |
-| [norm](#norm-1136) | Norm of a vector. |
-| [observe_bernoulli](#observe-bernoulli-1203) | Observe a Bernoulli variate. |
-| [observe_beta](#observe-beta-1239) | Observe a beta variate. |
-| [observe_beta_binomial](#observe-beta-binomial-1216) | Observe a beta-binomial variate. |
-| [observe_binomial](#observe-binomial-1207) | Observe a binomial variate. |
-| [observe_gamma](#observe-gamma-1235) | Observe a gamma variate. |
-| [observe_gaussian](#observe-gaussian-1227) | Observe a Gaussian variate. |
-| [observe_log_gaussian](#observe-log-gaussian-1231) | Observe a log-Gaussian variate. |
-| [observe_negative_binomial](#observe-negative-binomial-1211) | Observe a negative binomial variate. |
-| [observe_poisson](#observe-poisson-1219) | Observe a Poisson variate. |
-| [observe_uniform](#observe-uniform-1223) | Observe a uniform variate. |
-| [permute_ancestors](#permute-ancestors-1500) | Permute an ancestry vector to ensure that, when a particle survives, at least one of its instances remains in the same place. |
-| [rows](#rows-1157) | Number of rows of a matrix. |
-| [rows](#rows-1159) | Number of rows of a matrix. |
-| [rows](#rows-1161) | Number of rows of a matrix. |
-| [scalar](#scalar-1190) | Convert single-element matrix to scalar value. |
-| [scalar](#scalar-1192) | Convert single-element matrix to scalar value. |
-| [scalar](#scalar-1194) | Convert single-element matrix to scalar value. |
-| [scalar](#scalar-1435) | Convert single-element vector to scalar value. |
-| [scalar](#scalar-1437) | Convert single-element vector to scalar value. |
-| [scalar](#scalar-1439) | Convert single-element vector to scalar value. |
-| [seed](#seed-1241) | Seed the pseudorandom number generator. |
-| [simulate_bernoulli](#simulate-bernoulli-1243) | Simulate a Bernoulli variate. |
-| [simulate_beta](#simulate-beta-1272) | Simulate a beta variate. |
-| [simulate_beta_binomial](#simulate-beta-binomial-1253) | Simulate a beta-binomial variate. |
-| [simulate_binomial](#simulate-binomial-1246) | Simulate a binomial variate. |
-| [simulate_gamma](#simulate-gamma-1267) | Simulate a gamma variate. |
-| [simulate_gaussian](#simulate-gaussian-1261) | Simulate a Gaussian variate. |
-| [simulate_log_gaussian](#simulate-log-gaussian-1264) | Simulate a log-Gaussian variate. |
-| [simulate_negative_binomial](#simulate-negative-binomial-1249) | Simulate a negative binomial variate. |
-| [simulate_poisson](#simulate-poisson-1255) | Simulate a Poisson variate. |
-| [simulate_uniform](#simulate-uniform-1258) | Simulate a uniform variate. |
-| [solve](#solve-1151) | Solve a system of equations. |
-| [solve](#solve-1155) | Solve a system of equations. |
-| [squaredNorm](#squarednorm-1138) | Squared norm of a vector. |
-| [sum](#sum-1443) | Sum of a vector. |
-| [systematic_cumulative_offspring](#systematic-cumulative-offspring-1486) | Systematic resampling. |
-| [transpose](#transpose-1142) | Transpose of a matrix. |
-| [vector](#vector-1423) | Create vector filled with a given scalar. |
-| [vector](#vector-1428) | Create vector filled with a given value. |
-| [vector](#vector-1433) | Create vector filled with a given value. |
+| [norm](#norm-1137) | Norm of a vector. |
+| [observe_bernoulli](#observe-bernoulli-1204) | Observe a Bernoulli variate. |
+| [observe_beta](#observe-beta-1240) | Observe a beta variate. |
+| [observe_beta_binomial](#observe-beta-binomial-1217) | Observe a beta-binomial variate. |
+| [observe_binomial](#observe-binomial-1208) | Observe a binomial variate. |
+| [observe_gamma](#observe-gamma-1236) | Observe a gamma variate. |
+| [observe_gaussian](#observe-gaussian-1228) | Observe a Gaussian variate. |
+| [observe_log_gaussian](#observe-log-gaussian-1232) | Observe a log-Gaussian variate. |
+| [observe_negative_binomial](#observe-negative-binomial-1212) | Observe a negative binomial variate. |
+| [observe_poisson](#observe-poisson-1220) | Observe a Poisson variate. |
+| [observe_uniform](#observe-uniform-1224) | Observe a uniform variate. |
+| [permute_ancestors](#permute-ancestors-1501) | Permute an ancestry vector to ensure that, when a particle survives, at least one of its instances remains in the same place. |
+| [rows](#rows-1158) | Number of rows of a matrix. |
+| [rows](#rows-1160) | Number of rows of a matrix. |
+| [rows](#rows-1162) | Number of rows of a matrix. |
+| [scalar](#scalar-1191) | Convert single-element matrix to scalar value. |
+| [scalar](#scalar-1193) | Convert single-element matrix to scalar value. |
+| [scalar](#scalar-1195) | Convert single-element matrix to scalar value. |
+| [scalar](#scalar-1436) | Convert single-element vector to scalar value. |
+| [scalar](#scalar-1438) | Convert single-element vector to scalar value. |
+| [scalar](#scalar-1440) | Convert single-element vector to scalar value. |
+| [seed](#seed-1242) | Seed the pseudorandom number generator. |
+| [simulate_bernoulli](#simulate-bernoulli-1244) | Simulate a Bernoulli variate. |
+| [simulate_beta](#simulate-beta-1273) | Simulate a beta variate. |
+| [simulate_beta_binomial](#simulate-beta-binomial-1254) | Simulate a beta-binomial variate. |
+| [simulate_binomial](#simulate-binomial-1247) | Simulate a binomial variate. |
+| [simulate_gamma](#simulate-gamma-1268) | Simulate a gamma variate. |
+| [simulate_gaussian](#simulate-gaussian-1262) | Simulate a Gaussian variate. |
+| [simulate_log_gaussian](#simulate-log-gaussian-1265) | Simulate a log-Gaussian variate. |
+| [simulate_negative_binomial](#simulate-negative-binomial-1250) | Simulate a negative binomial variate. |
+| [simulate_poisson](#simulate-poisson-1256) | Simulate a Poisson variate. |
+| [simulate_uniform](#simulate-uniform-1259) | Simulate a uniform variate. |
+| [solve](#solve-1152) | Solve a system of equations. |
+| [solve](#solve-1156) | Solve a system of equations. |
+| [squaredNorm](#squarednorm-1139) | Squared norm of a vector. |
+| [sum](#sum-1444) | Sum of a vector. |
+| [systematic_cumulative_offspring](#systematic-cumulative-offspring-1487) | Systematic resampling. |
+| [transpose](#transpose-1143) | Transpose of a matrix. |
+| [vector](#vector-1424) | Create vector filled with a given scalar. |
+| [vector](#vector-1429) | Create vector filled with a given value. |
+| [vector](#vector-1434) | Create vector filled with a given value. |
 
 | Program | Brief description |
 | --- | --- |
@@ -175,8 +175,8 @@
 | [DelayInteger](#delayinteger-812) | Abstract delay variate with Integer value. |
 | [DelayReal](#delayreal-824) | Abstract delay variate with Real value. |
 | [DelayRealVector](#delayrealvector-835) | Abstract delay variate with real vector value. |
-| [FileInputStream](#fileinputstream-1037) | File input stream. |
-| [FileOutputStream](#fileoutputstream-1040) | File output stream. |
+| [FileInputStream](#fileinputstream-1038) | File input stream. |
+| [FileOutputStream](#fileoutputstream-1041) | File output stream. |
 | [Gamma](#gamma-427) | Gamma distribution. |
 | [GammaPoisson](#gammapoisson-583) | Poisson with conjugate prior on rate. |
 | [Gaussian](#gaussian-448) | Gaussian distribution. |
@@ -185,7 +185,7 @@
 | [GaussianWithGaussianExpressionMean](#gaussianwithgaussianexpressionmean-598) | Gaussian with conjugate prior on mean. |
 | [GaussianWithGaussianLogExpressionMean](#gaussianwithgaussianlogexpressionmean-617) | Gaussian with conjugate prior on mean. |
 | [GaussianWithGaussianMean](#gaussianwithgaussianmean-636) | Gaussian with conjugate prior on mean. |
-| [InputStream](#inputstream-1044) | Input stream. |
+| [InputStream](#inputstream-1045) | Input stream. |
 | [LogGaussian](#loggaussian-473) | Log-Gaussian distribution. |
 | [LogGaussianExpression](#loggaussianexpression-947) | Expression that is a scaling of a log-Gaussian variable. |
 | [LogGaussianWithGaussianExpressionMean](#loggaussianwithgaussianexpressionmean-655) | Log-Gaussian with conjugate prior on mean. |
@@ -196,11 +196,11 @@
 | [MultivariateGaussianWithMultivariateGaussianExpressionMean](#multivariategaussianwithmultivariategaussianexpressionmean-716) | Multivariate Gaussian with conjugate prior on mean. |
 | [MultivariateGaussianWithMultivariateGaussianMean](#multivariategaussianwithmultivariategaussianmean-736) | Multivariate Gaussian with conjugate prior on mean. |
 | [NegativeBinomial](#negativebinomial-521) | Negative binomial distribution. |
-| [OutputStream](#outputstream-1075) | Output stream. |
+| [OutputStream](#outputstream-1076) | Output stream. |
 | [Poisson](#poisson-535) | Poisson distribution. |
-| [StdErrStream](#stderrstream-1076) | Output stream for stderr. |
-| [StdInStream](#stdinstream-1079) | Input stream for stdin. |
-| [StdOutStream](#stdoutstream-1082) | Output stream for stdout. |
+| [StdErrStream](#stderrstream-1077) | Output stream for stderr. |
+| [StdInStream](#stdinstream-1080) | Input stream for stdin. |
+| [StdOutStream](#stdoutstream-1083) | Output stream for stdout. |
 | [Uniform](#uniform-551) | Uniform distribution. |
 
 
@@ -257,7 +257,7 @@ Create multivariate Gaussian distribution.
 
 #### I(rows:[Integer](#integer-22), columns:[Integer](#integer-22)) -> [Real](#real-145)\[\_,\_\]
 
-<a name="i-1200"></a>
+<a name="i-1201"></a>
 
 Create identity matrix.
 
@@ -384,85 +384,85 @@ Absolute value.
 
 #### adjacent_difference(x:[Real](#real-145)\[\_\]) -> [Real](#real-145)\[\_\]
 
-<a name="adjacent-difference-1468"></a>
+<a name="adjacent-difference-1469"></a>
 
 Inclusive prefix sum.
 
 #### ancestor(w:[Real](#real-145)\[\_\]) -> [Integer](#integer-22)
 
-<a name="ancestor-1479"></a>
+<a name="ancestor-1480"></a>
 
 Sample a single ancestor for a vector of log-weights.
 
 #### ancestors(w:[Real](#real-145)\[\_\]) -> [Integer](#integer-22)\[\_\]
 
-<a name="ancestors-1473"></a>
+<a name="ancestors-1474"></a>
 
 Sample an ancestry vector for a vector of log-weights.
 
 #### beta(x:[Real64](#real64-214), y:[Real64](#real64-214)) -> [Real64](#real64-214)
 
-<a name="beta-1283"></a>
+<a name="beta-1284"></a>
 
 The beta function.
 
 #### beta(x:[Real32](#real32-156), y:[Real32](#real32-156)) -> [Real32](#real32-156)
 
-<a name="beta-1286"></a>
+<a name="beta-1287"></a>
 
 The beta function.
 
 #### choose(x:[Real64](#real64-214), y:[Real64](#real64-214)) -> [Real64](#real64-214)
 
-<a name="choose-1295"></a>
+<a name="choose-1296"></a>
 
 The binomial coefficient.
 
 #### choose(x:[Real32](#real32-156), y:[Real32](#real32-156)) -> [Real32](#real32-156)
 
-<a name="choose-1298"></a>
+<a name="choose-1299"></a>
 
 The binomial coefficient.
 
 #### columns(X:[Real](#real-145)\[\_,\_\]) -> [Integer64](#integer64-89)
 
-<a name="columns-1163"></a>
+<a name="columns-1164"></a>
 
 Number of columns of a matrix.
 
 #### columns(X:[Integer](#integer-22)\[\_,\_\]) -> [Integer64](#integer64-89)
 
-<a name="columns-1165"></a>
+<a name="columns-1166"></a>
 
 Number of columns of a matrix.
 
 #### columns(X:[Boolean](#boolean-1)\[\_,\_\]) -> [Integer64](#integer64-89)
 
-<a name="columns-1167"></a>
+<a name="columns-1168"></a>
 
 Number of columns of a matrix.
 
 #### cumulative_offspring_to_ancestors(O:[Integer](#integer-22)\[\_\]) -> [Integer](#integer-22)\[\_\]
 
-<a name="cumulative-offspring-to-ancestors-1494"></a>
+<a name="cumulative-offspring-to-ancestors-1495"></a>
 
 Convert a cumulative offspring vector into an ancestry vector.
 
 #### cumulative_weights(w:[Real](#real-145)\[\_\]) -> [Real](#real-145)\[\_\]
 
-<a name="cumulative-weights-1506"></a>
+<a name="cumulative-weights-1507"></a>
 
 Compute the cumulative weight vector from the log-weight vector.
 
 #### determinant(X:[Real](#real-145)\[\_,\_\]) -> [Real](#real-145)
 
-<a name="determinant-1140"></a>
+<a name="determinant-1141"></a>
 
 Determinant of a matrix.
 
 #### exclusive_prefix_sum(x:[Real](#real-145)\[\_\]) -> [Real](#real-145)\[\_\]
 
-<a name="exclusive-prefix-sum-1464"></a>
+<a name="exclusive-prefix-sum-1465"></a>
 
 Inclusive prefix sum.
 
@@ -492,25 +492,25 @@ Open a file.
 
 #### gamma(x:[Real64](#real64-214)) -> [Real64](#real64-214)
 
-<a name="gamma-1274"></a>
+<a name="gamma-1275"></a>
 
 The gamma function.
 
 #### gamma(x:[Real32](#real32-156)) -> [Real32](#real32-156)
 
-<a name="gamma-1276"></a>
+<a name="gamma-1277"></a>
 
 The gamma function.
 
 #### inclusive_prefix_sum(x:[Real](#real-145)\[\_\]) -> [Real](#real-145)\[\_\]
 
-<a name="inclusive-prefix-sum-1460"></a>
+<a name="inclusive-prefix-sum-1461"></a>
 
 Inclusive prefix sum.
 
 #### inverse(X:[Real](#real-145)\[\_,\_\]) -> [Real](#real-145)\[\_,\_\]
 
-<a name="inverse-1144"></a>
+<a name="inverse-1145"></a>
 
 Inverse of a matrix.
 
@@ -528,25 +528,25 @@ Does this have the value NaN?
 
 #### lbeta(x:[Real64](#real64-214), y:[Real64](#real64-214)) -> [Real64](#real64-214)
 
-<a name="lbeta-1289"></a>
+<a name="lbeta-1290"></a>
 
 Logarithm of the beta function.
 
 #### lbeta(x:[Real32](#real32-156), y:[Real32](#real32-156)) -> [Real32](#real32-156)
 
-<a name="lbeta-1292"></a>
+<a name="lbeta-1293"></a>
 
 Logarithm of the beta function.
 
 #### lchoose(x:[Real64](#real64-214), y:[Real64](#real64-214)) -> [Real64](#real64-214)
 
-<a name="lchoose-1301"></a>
+<a name="lchoose-1302"></a>
 
 Logarithm of the binomial coefficient.
 
 #### lchoose(x:[Real32](#real32-156), y:[Real32](#real32-156)) -> [Real32](#real32-156)
 
-<a name="lchoose-1304"></a>
+<a name="lchoose-1305"></a>
 
 Logarithm of the binomial coefficient.
 
@@ -558,61 +558,61 @@ Length of a string.
 
 #### length(x:[Real](#real-145)\[\_\]) -> [Integer64](#integer64-89)
 
-<a name="length-1414"></a>
+<a name="length-1415"></a>
 
 Length of a vector.
 
 #### length(x:[Integer](#integer-22)\[\_\]) -> [Integer64](#integer64-89)
 
-<a name="length-1416"></a>
+<a name="length-1417"></a>
 
 Length of a vector.
 
 #### length(x:[Boolean](#boolean-1)\[\_\]) -> [Integer64](#integer64-89)
 
-<a name="length-1418"></a>
+<a name="length-1419"></a>
 
 Length of a vector.
 
 #### lgamma(x:[Real64](#real64-214)) -> [Real64](#real64-214)
 
-<a name="lgamma-1278"></a>
+<a name="lgamma-1279"></a>
 
 Logarithm of the gamma function.
 
 #### lgamma(x:[Real32](#real32-156)) -> [Real32](#real32-156)
 
-<a name="lgamma-1280"></a>
+<a name="lgamma-1281"></a>
 
 Logarithm of the gamma function.
 
 #### llt(X:[Real](#real-145)\[\_,\_\]) -> [Real](#real-145)\[\_,\_\]
 
-<a name="llt-1147"></a>
+<a name="llt-1148"></a>
 
 `LL^T` Cholesky decomposition of a matrix.
 
 #### log_sum_exp(x:[Real](#real-145)\[\_\]) -> [Real](#real-145)
 
-<a name="log-sum-exp-1456"></a>
+<a name="log-sum-exp-1457"></a>
 
 Exponentiate and sum a vector, return the logarithm of the sum.
 
 #### matrix(x:[Real](#real-145), rows:[Integer](#integer-22), columns:[Integer](#integer-22)) -> [Real](#real-145)\[\_,\_\]
 
-<a name="matrix-1174"></a>
+<a name="matrix-1175"></a>
 
 Create matrix filled with a given scalar value.
 
 #### matrix(x:[Integer](#integer-22), rows:[Integer](#integer-22), columns:[Integer](#integer-22)) -> [Integer](#integer-22)\[\_,\_\]
 
-<a name="matrix-1181"></a>
+<a name="matrix-1182"></a>
 
 Create matrix filled with a given scalar value.
 
 #### matrix(x:[Boolean](#boolean-1), rows:[Integer](#integer-22), columns:[Integer](#integer-22)) -> [Boolean](#boolean-1)\[\_,\_\]
 
-<a name="matrix-1188"></a>
+<a name="matrix-1189"></a>
 
 Create matrix filled with a given scalar value.
 
@@ -642,7 +642,7 @@ Maximum of two values.
 
 #### max(x:[Real](#real-145)\[\_\]) -> [Real](#real-145)
 
-<a name="max-1447"></a>
+<a name="max-1448"></a>
 
 Maximum of a vector.
 
@@ -672,7 +672,7 @@ Minimum of two values.
 
 #### min(x:[Real](#real-145)\[\_\]) -> [Real](#real-145)
 
-<a name="min-1451"></a>
+<a name="min-1452"></a>
 
 Minimum of a vector.
 
@@ -702,13 +702,13 @@ Modulus.
 
 #### norm(x:[Real](#real-145)\[\_\]) -> [Real](#real-145)
 
-<a name="norm-1136"></a>
+<a name="norm-1137"></a>
 
 Norm of a vector.
 
 #### observe_bernoulli(x:[Boolean](#boolean-1), ρ:[Real](#real-145)) -> [Real](#real-145)
 
-<a name="observe-bernoulli-1203"></a>
+<a name="observe-bernoulli-1204"></a>
 
 Observe a Bernoulli variate.
 
@@ -719,7 +719,7 @@ Returns the log probability mass.
 
 #### observe_beta(x:[Real](#real-145), α:[Real](#real-145), β:[Real](#real-145)) -> [Real](#real-145)
 
-<a name="observe-beta-1239"></a>
+<a name="observe-beta-1240"></a>
 
 Observe a beta variate.
 
@@ -731,7 +731,7 @@ Returns the log probability density.
 
 #### observe_beta_binomial(x:[Integer](#integer-22), n:[Integer](#integer-22), α:[Real](#real-145), β:[Real](#real-145)) -> [Real](#real-145)
 
-<a name="observe-beta-binomial-1216"></a>
+<a name="observe-beta-binomial-1217"></a>
 
 Observe a beta-binomial variate.
 
@@ -746,7 +746,7 @@ Returns the log probability mass.
 
 #### observe_binomial(x:[Integer](#integer-22), n:[Integer](#integer-22), ρ:[Real](#real-145)) -> [Real](#real-145)
 
-<a name="observe-binomial-1207"></a>
+<a name="observe-binomial-1208"></a>
 
 Observe a binomial variate.
 
@@ -758,7 +758,7 @@ Returns the log probability mass.
 
 #### observe_gamma(x:[Real](#real-145), k:[Real](#real-145), θ:[Real](#real-145)) -> [Real](#real-145)
 
-<a name="observe-gamma-1235"></a>
+<a name="observe-gamma-1236"></a>
 
 Observe a gamma variate.
 
@@ -770,7 +770,7 @@ Returns the log probability density.
 
 #### observe_gaussian(x:[Real](#real-145), μ:[Real](#real-145), σ2:[Real](#real-145)) -> [Real](#real-145)
 
-<a name="observe-gaussian-1227"></a>
+<a name="observe-gaussian-1228"></a>
 
 Observe a Gaussian variate.
 
@@ -782,7 +782,7 @@ Returns the log probability density.
 
 #### observe_log_gaussian(x:[Real](#real-145), μ:[Real](#real-145), σ2:[Real](#real-145)) -> [Real](#real-145)
 
-<a name="observe-log-gaussian-1231"></a>
+<a name="observe-log-gaussian-1232"></a>
 
 Observe a log-Gaussian variate.
 
@@ -794,7 +794,7 @@ Returns the log probability density.
 
 #### observe_negative_binomial(x:[Integer](#integer-22), k:[Integer](#integer-22), ρ:[Real](#real-145)) -> [Real](#real-145)
 
-<a name="observe-negative-binomial-1211"></a>
+<a name="observe-negative-binomial-1212"></a>
 
 Observe a negative binomial variate.
 
@@ -806,7 +806,7 @@ Returns the log probability mass.
 
 #### observe_poisson(x:[Integer](#integer-22), λ:[Real](#real-145)) -> [Real](#real-145)
 
-<a name="observe-poisson-1219"></a>
+<a name="observe-poisson-1220"></a>
 
 Observe a Poisson variate.
 
@@ -817,7 +817,7 @@ Returns the log probability mass.
 
 #### observe_uniform(x:[Real](#real-145), l:[Real](#real-145), u:[Real](#real-145)) -> [Real](#real-145)
 
-<a name="observe-uniform-1223"></a>
+<a name="observe-uniform-1224"></a>
 
 Observe a uniform variate.
 
@@ -829,68 +829,68 @@ Returns the log probability density.
 
 #### permute_ancestors(a:[Integer](#integer-22)\[\_\]) -> [Integer](#integer-22)\[\_\]
 
-<a name="permute-ancestors-1500"></a>
+<a name="permute-ancestors-1501"></a>
 
 Permute an ancestry vector to ensure that, when a particle survives, at
 least one of its instances remains in the same place.
 
 #### rows(X:[Real](#real-145)\[\_,\_\]) -> [Integer64](#integer64-89)
 
-<a name="rows-1157"></a>
+<a name="rows-1158"></a>
 
 Number of rows of a matrix.
 
 #### rows(X:[Integer](#integer-22)\[\_,\_\]) -> [Integer64](#integer64-89)
 
-<a name="rows-1159"></a>
+<a name="rows-1160"></a>
 
 Number of rows of a matrix.
 
 #### rows(X:[Boolean](#boolean-1)\[\_,\_\]) -> [Integer64](#integer64-89)
 
-<a name="rows-1161"></a>
+<a name="rows-1162"></a>
 
 Number of rows of a matrix.
 
 #### scalar(X:[Real](#real-145)\[\_,\_\]) -> [Real](#real-145)
 
-<a name="scalar-1190"></a>
+<a name="scalar-1191"></a>
 
 Convert single-element matrix to scalar value.
 
 #### scalar(X:[Integer](#integer-22)\[\_,\_\]) -> [Integer](#integer-22)
 
-<a name="scalar-1192"></a>
+<a name="scalar-1193"></a>
 
 Convert single-element matrix to scalar value.
 
 #### scalar(X:[Boolean](#boolean-1)\[\_,\_\]) -> [Boolean](#boolean-1)
 
-<a name="scalar-1194"></a>
+<a name="scalar-1195"></a>
 
 Convert single-element matrix to scalar value.
 
 #### scalar(x:[Real](#real-145)\[\_\]) -> [Real](#real-145)
 
-<a name="scalar-1435"></a>
+<a name="scalar-1436"></a>
 
 Convert single-element vector to scalar value.
 
 #### scalar(x:[Integer](#integer-22)\[\_\]) -> [Integer](#integer-22)
 
-<a name="scalar-1437"></a>
+<a name="scalar-1438"></a>
 
 Convert single-element vector to scalar value.
 
 #### scalar(x:[Boolean](#boolean-1)\[\_\]) -> [Boolean](#boolean-1)
 
-<a name="scalar-1439"></a>
+<a name="scalar-1440"></a>
 
 Convert single-element vector to scalar value.
 
 #### seed(s:[Integer](#integer-22))
 
-<a name="seed-1241"></a>
+<a name="seed-1242"></a>
 
 Seed the pseudorandom number generator.
 
@@ -898,7 +898,7 @@ Seed the pseudorandom number generator.
 
 #### simulate_bernoulli(ρ:[Real](#real-145)) -> [Boolean](#boolean-1)
 
-<a name="simulate-bernoulli-1243"></a>
+<a name="simulate-bernoulli-1244"></a>
 
 Simulate a Bernoulli variate.
 
@@ -906,7 +906,7 @@ Simulate a Bernoulli variate.
 
 #### simulate_beta(α:[Real](#real-145), β:[Real](#real-145)) -> [Real](#real-145)
 
-<a name="simulate-beta-1272"></a>
+<a name="simulate-beta-1273"></a>
 
 Simulate a beta variate.
 
@@ -915,7 +915,7 @@ Simulate a beta variate.
 
 #### simulate_beta_binomial(n:[Integer](#integer-22), α:[Real](#real-145), β:[Real](#real-145)) -> [Integer](#integer-22)
 
-<a name="simulate-beta-binomial-1253"></a>
+<a name="simulate-beta-binomial-1254"></a>
 
 Simulate a beta-binomial variate.
 
@@ -925,7 +925,7 @@ Simulate a beta-binomial variate.
 
 #### simulate_binomial(n:[Integer](#integer-22), ρ:[Real](#real-145)) -> [Integer](#integer-22)
 
-<a name="simulate-binomial-1246"></a>
+<a name="simulate-binomial-1247"></a>
 
 Simulate a binomial variate.
 
@@ -934,7 +934,7 @@ Simulate a binomial variate.
 
 #### simulate_gamma(k:[Real](#real-145), θ:[Real](#real-145)) -> [Real](#real-145)
 
-<a name="simulate-gamma-1267"></a>
+<a name="simulate-gamma-1268"></a>
 
 Simulate a gamma variate.
 
@@ -943,7 +943,7 @@ Simulate a gamma variate.
 
 #### simulate_gaussian(μ:[Real](#real-145), σ2:[Real](#real-145)) -> [Real](#real-145)
 
-<a name="simulate-gaussian-1261"></a>
+<a name="simulate-gaussian-1262"></a>
 
 Simulate a Gaussian variate.
 
@@ -952,7 +952,7 @@ Simulate a Gaussian variate.
 
 #### simulate_log_gaussian(μ:[Real](#real-145), σ2:[Real](#real-145)) -> [Real](#real-145)
 
-<a name="simulate-log-gaussian-1264"></a>
+<a name="simulate-log-gaussian-1265"></a>
 
 Simulate a log-Gaussian variate.
 
@@ -961,7 +961,7 @@ Simulate a log-Gaussian variate.
 
 #### simulate_negative_binomial(k:[Integer](#integer-22), ρ:[Real](#real-145)) -> [Integer](#integer-22)
 
-<a name="simulate-negative-binomial-1249"></a>
+<a name="simulate-negative-binomial-1250"></a>
 
 Simulate a negative binomial variate.
 
@@ -972,7 +972,7 @@ Returns the number of failures.
 
 #### simulate_poisson(λ:[Real](#real-145)) -> [Integer](#integer-22)
 
-<a name="simulate-poisson-1255"></a>
+<a name="simulate-poisson-1256"></a>
 
 Simulate a Poisson variate.
 
@@ -980,7 +980,7 @@ Simulate a Poisson variate.
 
 #### simulate_uniform(l:[Real](#real-145), u:[Real](#real-145)) -> [Real](#real-145)
 
-<a name="simulate-uniform-1258"></a>
+<a name="simulate-uniform-1259"></a>
 
 Simulate a uniform variate.
 
@@ -989,55 +989,55 @@ Simulate a uniform variate.
 
 #### solve(X:[Real](#real-145)\[\_,\_\], y:[Real](#real-145)\[\_\]) -> [Real](#real-145)\[\_\]
 
-<a name="solve-1151"></a>
+<a name="solve-1152"></a>
 
 Solve a system of equations.
 
 #### solve(X:[Real](#real-145)\[\_,\_\], Y:[Real](#real-145)\[\_,\_\]) -> [Real](#real-145)\[\_,\_\]
 
-<a name="solve-1155"></a>
+<a name="solve-1156"></a>
 
 Solve a system of equations.
 
 #### squaredNorm(x:[Real](#real-145)\[\_\]) -> [Real](#real-145)
 
-<a name="squarednorm-1138"></a>
+<a name="squarednorm-1139"></a>
 
 Squared norm of a vector.
 
 #### sum(x:[Real](#real-145)\[\_\]) -> [Real](#real-145)
 
-<a name="sum-1443"></a>
+<a name="sum-1444"></a>
 
 Sum of a vector.
 
 #### systematic_cumulative_offspring(W:[Real](#real-145)\[\_\]) -> [Integer](#integer-22)\[\_\]
 
-<a name="systematic-cumulative-offspring-1486"></a>
+<a name="systematic-cumulative-offspring-1487"></a>
 
 Systematic resampling.
 
 #### transpose(X:[Real](#real-145)\[\_,\_\]) -> [Real](#real-145)\[\_,\_\]
 
-<a name="transpose-1142"></a>
+<a name="transpose-1143"></a>
 
 Transpose of a matrix.
 
 #### vector(x:[Real](#real-145), length:[Integer](#integer-22)) -> [Real](#real-145)\[\_\]
 
-<a name="vector-1423"></a>
+<a name="vector-1424"></a>
 
 Create vector filled with a given scalar.
 
 #### vector(x:[Integer](#integer-22), length:[Integer](#integer-22)) -> [Integer](#integer-22)\[\_\]
 
-<a name="vector-1428"></a>
+<a name="vector-1429"></a>
 
 Create vector filled with a given value.
 
 #### vector(x:[Boolean](#boolean-1), length:[Integer](#integer-22)) -> [Boolean](#boolean-1)\[\_\]
 
-<a name="vector-1433"></a>
+<a name="vector-1434"></a>
 
 Create vector filled with a given value.
 
@@ -1253,7 +1253,7 @@ Beta distribution.
   * Inherits from *[DelayInteger](#delayinteger-812)*
 
 Binomial with conjugate prior on success probability. When the success
-probability is known, this is simply a Binomial distribution. When unknown,
+probability is known, this is simply a Binomial distribution.
 
 | Member Variable | Description |
 | --- | --- |
@@ -1655,44 +1655,51 @@ Abstract delay variate with real vector value.
 
 ## FileInputStream
 
-<a name="fileinputstream-1037"></a>
+<a name="fileinputstream-1038"></a>
 
-  * Inherits from *[InputStream](#inputstream-1044)*
+  * Inherits from *[InputStream](#inputstream-1045)*
 
 File input stream.
 
 | Member Function | Brief description |
 | --- | --- |
-| [close](#close-1036) | Close the file. |
+| [eof](#eof-1036) | Check for end-of-file. |
+| [close](#close-1037) | Close the file. |
 
 
 ### Member Function Details
 
 #### close()
 
-<a name="close-1036"></a>
+<a name="close-1037"></a>
 
 Close the file.
+
+#### eof() -> [Boolean](#boolean-1)
+
+<a name="eof-1036"></a>
+
+Check for end-of-file.
 
 
 ## FileOutputStream
 
-<a name="fileoutputstream-1040"></a>
+<a name="fileoutputstream-1041"></a>
 
-  * Inherits from *[OutputStream](#outputstream-1075)*
+  * Inherits from *[OutputStream](#outputstream-1076)*
 
 File output stream.
 
 | Member Function | Brief description |
 | --- | --- |
-| [close](#close-1039) | Close the file. |
+| [close](#close-1040) | Close the file. |
 
 
 ### Member Function Details
 
 #### close()
 
-<a name="close-1039"></a>
+<a name="close-1040"></a>
 
 Close the file.
 
@@ -1851,27 +1858,27 @@ Gaussian with conjugate prior on mean.
 
 ## InputStream
 
-<a name="inputstream-1044"></a>
+<a name="inputstream-1045"></a>
 
 Input stream.
 
 | Member Function | Brief description |
 | --- | --- |
-| [readInteger](#readinteger-1042) | Read integer. |
-| [readReal](#readreal-1043) | Read real. |
+| [readInteger](#readinteger-1043) | Read integer. |
+| [readReal](#readreal-1044) | Read real. |
 
 
 ### Member Function Details
 
 #### readInteger() -> [Integer](#integer-22)
 
-<a name="readinteger-1042"></a>
+<a name="readinteger-1043"></a>
 
 Read integer.
 
 #### readReal() -> [Real](#real-145)
 
-<a name="readreal-1043"></a>
+<a name="readreal-1044"></a>
 
 Read real.
 
@@ -2068,83 +2075,83 @@ Negative binomial distribution.
 
 ## OutputStream
 
-<a name="outputstream-1075"></a>
+<a name="outputstream-1076"></a>
 
 Output stream.
 
 | Member Function | Brief description |
 | --- | --- |
-| [print](#print-1047) | Print string. |
-| [print](#print-1049) | Print value. |
-| [print](#print-1051) | Print value. |
-| [print](#print-1053) | Print value. |
-| [print](#print-1056) | Print vector. |
-| [print](#print-1059) | Print vector. |
-| [print](#print-1062) | Print vector. |
-| [print](#print-1066) | Print matrix. |
-| [print](#print-1070) | Print matrix. |
-| [print](#print-1074) | Print matrix. |
+| [print](#print-1048) | Print string. |
+| [print](#print-1050) | Print value. |
+| [print](#print-1052) | Print value. |
+| [print](#print-1054) | Print value. |
+| [print](#print-1057) | Print vector. |
+| [print](#print-1060) | Print vector. |
+| [print](#print-1063) | Print vector. |
+| [print](#print-1067) | Print matrix. |
+| [print](#print-1071) | Print matrix. |
+| [print](#print-1075) | Print matrix. |
 
 
 ### Member Function Details
 
 #### print(value:[String](#string-272))
 
-<a name="print-1047"></a>
+<a name="print-1048"></a>
 
 Print string.
 
 #### print(value:[Boolean](#boolean-1))
 
-<a name="print-1049"></a>
+<a name="print-1050"></a>
 
 Print value.
 
 #### print(value:[Integer](#integer-22))
 
-<a name="print-1051"></a>
+<a name="print-1052"></a>
 
 Print value.
 
 #### print(value:[Real](#real-145))
 
-<a name="print-1053"></a>
+<a name="print-1054"></a>
 
 Print value.
 
 #### print(x:[Boolean](#boolean-1)\[\_\])
 
-<a name="print-1056"></a>
+<a name="print-1057"></a>
 
 Print vector.
 
 #### print(x:[Integer](#integer-22)\[\_\])
 
-<a name="print-1059"></a>
+<a name="print-1060"></a>
 
 Print vector.
 
 #### print(x:[Real](#real-145)\[\_\])
 
-<a name="print-1062"></a>
+<a name="print-1063"></a>
 
 Print vector.
 
 #### print(X:[Boolean](#boolean-1)\[\_,\_\])
 
-<a name="print-1066"></a>
+<a name="print-1067"></a>
 
 Print matrix.
 
 #### print(X:[Integer](#integer-22)\[\_,\_\])
 
-<a name="print-1070"></a>
+<a name="print-1071"></a>
 
 Print matrix.
 
 #### print(X:[Real](#real-145)\[\_,\_\])
 
-<a name="print-1074"></a>
+<a name="print-1075"></a>
 
 Print matrix.
 
@@ -2164,27 +2171,27 @@ Poisson distribution.
 
 ## StdErrStream
 
-<a name="stderrstream-1076"></a>
+<a name="stderrstream-1077"></a>
 
-  * Inherits from *[OutputStream](#outputstream-1075)*
+  * Inherits from *[OutputStream](#outputstream-1076)*
 
 Output stream for stderr.
 
 
 ## StdInStream
 
-<a name="stdinstream-1079"></a>
+<a name="stdinstream-1080"></a>
 
-  * Inherits from *[InputStream](#inputstream-1044)*
+  * Inherits from *[InputStream](#inputstream-1045)*
 
 Input stream for stdin.
 
 
 ## StdOutStream
 
-<a name="stdoutstream-1082"></a>
+<a name="stdoutstream-1083"></a>
 
-  * Inherits from *[OutputStream](#outputstream-1075)*
+  * Inherits from *[OutputStream](#outputstream-1076)*
 
 Output stream for stdout.
 
