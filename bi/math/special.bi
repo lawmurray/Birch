@@ -72,7 +72,13 @@ function lbeta(x:Real32, y:Real32) -> Real32 {
 function choose(x:Real64, y:Real64) -> Real64 {
   assert 0.0 <= x;
   assert 0.0 <= y;
-  return 1.0/(y*beta(y, x - y + 1.0));
+  assert x <= y;
+  
+  if (x == 0.0 && y == 0.0) {
+    return 1.0;
+  } else {
+    return 1.0/(y*beta(y, x - y + 1.0));
+  }
 }
 
 /**
@@ -81,7 +87,13 @@ function choose(x:Real64, y:Real64) -> Real64 {
 function choose(x:Real32, y:Real32) -> Real32 {
   assert Real32(0.0) <= x;
   assert Real32(0.0) <= y;
-  return Real32(1.0)/(y*beta(y, x - y + Real32(1.0)));
+  assert x <= y;
+  
+  if (x == Real32(0.0) && y == Real32(0.0)) {
+    return Real32(1.0);
+  } else {
+    return Real32(1.0)/(y*beta(y, x - y + Real32(1.0)));
+  }
 }
 
 /**
@@ -90,7 +102,13 @@ function choose(x:Real32, y:Real32) -> Real32 {
 function lchoose(x:Real64, y:Real64) -> Real64 {
   assert 0.0 <= x;
   assert 0.0 <= y;
-  return -log(y) - lbeta(y, x - y + 1.0);
+  assert x <= y;
+  
+  if (x == 0.0 && y == 0.0) {
+    return log(1.0);
+  } else {
+    return -log(y) - lbeta(y, x - y + 1.0);
+  }
 }
 
 /**
@@ -99,5 +117,11 @@ function lchoose(x:Real64, y:Real64) -> Real64 {
 function lchoose(x:Real32, y:Real32) -> Real32 {
   assert Real32(0.0) <= x;
   assert Real32(0.0) <= y;
-  return -log(y) - lbeta(y, x - y + Real32(1.0));
+  assert x <= y;
+  
+  if (x == Real32(0.0) && y == Real32(0.0)) {
+    return log(Real32(1.0));
+  } else {
+    return -log(y) - lbeta(y, x - y + Real32(1.0));
+  }
 }
