@@ -41,7 +41,7 @@ operator x:MultivariateGaussian + c:Real[_]
     -> MultivariateGaussianExpression {
   assert x.D == length(c);
   y:MultivariateGaussianExpression(x.D, x.D);
-  y.initialize(identity(x.D, x.D), x, c);
+  y.initialize(I(x.D, x.D), x, c);
   return y;
 }
 
@@ -66,7 +66,7 @@ operator x:MultivariateGaussian - c:Real[_]
     -> MultivariateGaussianExpression {
   assert x.D == length(c);
   y:MultivariateGaussianExpression(x.D, x.D);
-  y.initialize(identity(x.D, x.D), x, -c);
+  y.initialize(I(x.D, x.D), x, -c);
   return y;
 }
 
@@ -81,7 +81,7 @@ operator c:Real[_] - x:MultivariateGaussian
     -> MultivariateGaussianExpression {
   assert x.D == length(c);
   y:MultivariateGaussianExpression(x.D, x.D);
-  y.initialize(-identity(x.D, x.D), x, c);
+  y.initialize(-I(x.D, x.D), x, c);
   return y;
 }
 

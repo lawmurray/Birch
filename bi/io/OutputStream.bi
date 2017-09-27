@@ -3,43 +3,16 @@
  */
 class OutputStream(stream:File) {
   /**
-   * Print with format. See system `printf`.
+   * Print string.
    */
-  function printf(fmt:String, value:Boolean) {
-    cpp {{
-    ::fprintf(stream_, fmt_.c_str(), value_);
+  function print(value:String) {
+    cpp{{
+    ::printf("%s", value_.c_str());
     }}
   }
 
   /**
-   * Print with format. See system `printf`.
-   */
-  function printf(fmt:String, value:Integer) {
-    cpp {{
-    ::fprintf(stream_, fmt_.c_str(), value_);
-    }}
-  }
-
-  /**
-   * Print with format. See system `printf`.
-   */
-  function printf(fmt:String, value:Real) {
-    cpp {{
-    ::fprintf(stream_, fmt_.c_str(), value_);
-    }}
-  }
-
-  /**
-   * Print with format. See system `printf`.
-   */
-  function printf(fmt:String, value:String) {
-    cpp {{
-    ::fprintf(stream_, fmt_.c_str(), value_.c_str());
-    }}
-  }
-
-  /**
-   * Print scalar.
+   * Print value.
    */
   function print(value:Boolean) {
     if (value) {
@@ -50,24 +23,29 @@ class OutputStream(stream:File) {
   }
 
   /**
-   * Print scalar.
+   * Print value.
    */
   function print(value:Integer) {
-    printf("%d", value);
+    print(String(value));
   }
 
   /**
-   * Print scalar.
+   * Print value.
    */
   function print(value:Real) {
-    printf("%f", value);
+    print(String(value));
   }
 
   /**
-   * Print scalar.
+   * Print vector.
    */
-  function print(value:String) {
-    printf("%s", value);
+  function print(x:Boolean[_]) {
+    for (i:Integer in 1..length(x)) {
+      if (i != 1) {
+        print(" ");
+      }
+      print(x[i]);
+    }
   }
 
   /**
@@ -76,7 +54,7 @@ class OutputStream(stream:File) {
   function print(x:Integer[_]) {
     for (i:Integer in 1..length(x)) {
       if (i != 1) {
-        print(", ");
+        print(" ");
       }
       print(x[i]);
     }
@@ -97,11 +75,26 @@ class OutputStream(stream:File) {
   /**
    * Print matrix.
    */
+  function print(X:Boolean[_,_]) {
+    for (i:Integer in 1..rows(X)) {
+      for (j:Integer in 1..columns(X)) {
+        if (j != 1) {
+          print(" ");
+        }
+        print(X[i,j]);
+      }
+      print("\n");
+    }
+  }
+
+  /**
+   * Print matrix.
+   */
   function print(X:Integer[_,_]) {
     for (i:Integer in 1..rows(X)) {
       for (j:Integer in 1..columns(X)) {
         if (j != 1) {
-          print("  ");
+          print(" ");
         }
         print(X[i,j]);
       }
