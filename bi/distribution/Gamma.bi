@@ -37,12 +37,6 @@ class Gamma < DelayReal {
     simulate();
     return this;
   }
-  
-  function tildeRight(left:Gamma) -> Gamma {
-    set(left.value());
-    observe();
-    return this;
-  }
 }
 
 /**

@@ -47,12 +47,6 @@ class BetaBinomial < DelayInteger {
     simulate();
     return this;
   }
-  
-  function tildeRight(left:BetaBinomial) -> BetaBinomial {
-    set(left.value());
-    observe();
-    return this;
-  }
 }
 
 /**

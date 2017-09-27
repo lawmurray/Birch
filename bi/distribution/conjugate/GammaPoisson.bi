@@ -50,12 +50,6 @@ class GammaPoisson < DelayInteger {
     simulate();
     return this;
   }
-  
-  function tildeRight(left:GammaPoisson) -> GammaPoisson {
-    set(left.value());
-    observe();
-    return this;
-  }
 }
 
 /**

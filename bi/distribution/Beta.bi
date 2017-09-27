@@ -37,12 +37,6 @@ class Beta < DelayReal {
     simulate();
     return this;
   }
-  
-  function tildeRight(left:Beta) -> Beta {
-    set(left.value());
-    observe();
-    return this;
-  }
 }
 
 /**

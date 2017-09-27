@@ -50,4 +50,10 @@ class DelayInteger < Delay {
   function setWeight(w:Real) {
     this.w <- w;
   }
+  
+  function tildeRight(left:Integer) -> Real {
+    set(left);
+    observe();
+    return w;
+  }
 }

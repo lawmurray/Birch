@@ -45,12 +45,6 @@ class MultivariateGaussian(D:Integer) < DelayRealVector(D) {
     simulate();
     return this;
   }
-  
-  function tildeRight(left:MultivariateGaussian) -> MultivariateGaussian {
-    set(left.value());
-    observe();
-    return this;
-  }
 }
 
 /**

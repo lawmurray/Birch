@@ -44,12 +44,6 @@ class Gaussian < DelayReal {
     simulate();
     return this;
   }
-  
-  function tildeRight(left:Gaussian) -> Gaussian {
-    set(left.value());
-    observe();
-    return this;
-  }
 }
 
 /**

@@ -37,12 +37,6 @@ class Binomial < DelayInteger {
     simulate();
     return this;
   }
-  
-  function tildeRight(left:Binomial) -> Binomial {
-    set(left.value());
-    observe();
-    return this;
-  }
 }
 
 /**

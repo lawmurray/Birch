@@ -36,12 +36,6 @@ class Uniform < DelayReal {
     simulate();
     return this;
   }
-  
-  function tildeRight(left:Uniform) -> Uniform {
-    set(left.value());
-    observe();
-    return this;
-  }
 }
 
 /**

@@ -30,12 +30,6 @@ class Poisson < DelayInteger {
     simulate();
     return this;
   }
-  
-  function tildeRight(left:Poisson) -> Poisson {
-    set(left.value());
-    observe();
-    return this;
-  }
 }
 
 /**

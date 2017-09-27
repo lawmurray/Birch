@@ -30,12 +30,6 @@ class Bernoulli < DelayBoolean {
     simulate();
     return this;
   }
-  
-  function tildeRight(left:Bernoulli) -> Bernoulli {
-    set(left.value());
-    observe();
-    return this;
-  }
 }
 
 /**

@@ -44,12 +44,6 @@ class LogGaussian < DelayReal {
     simulate();
     return this;
   }
-  
-  function tildeRight(left:LogGaussian) -> LogGaussian {
-    set(left.value());
-    observe();
-    return this;
-  }
 }
 
 /**

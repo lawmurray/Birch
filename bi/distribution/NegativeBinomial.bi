@@ -37,12 +37,6 @@ class NegativeBinomial < DelayInteger {
     simulate();
     return this;
   }
-  
-  function tildeRight(left:NegativeBinomial) -> NegativeBinomial {
-    set(left.value());
-    observe();
-    return this;
-  }
 }
 
 /**

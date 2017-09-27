@@ -47,4 +47,10 @@ class DelayRealVector(D:Integer) < Delay {
   function setWeight(w:Real) {
     this.w <- w;
   }
+
+  function tildeRight(left:Real[_]) -> Real {
+    set(left);
+    observe();
+    return w;
+  }
 }
