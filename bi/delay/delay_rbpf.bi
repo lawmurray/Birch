@@ -129,16 +129,14 @@ class Example(T:Integer) {
   }
   
   function input() {
-    v:Real[T];
-
-    v <- read("data/y_n.csv", T);
+    y_n_input:FileInputStream("data/y_n.csv");
     for (t:Integer in 1..T) {
-      y_n[t] <- v[t..t];
+      y_n[t] <- vector(y_n_input.readReal(), 1);
     }
-    
-    v <- read("data/y_l.csv", T);
+
+    y_l_input:FileInputStream("data/y_l.csv");
     for (t:Integer in 1..T) {
-      y_l[t] <- v[t..t];
+      y_l[t] <- vector(y_l_input.readReal(), 1);
     }
   }
   
