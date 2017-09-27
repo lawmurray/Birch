@@ -59,7 +59,7 @@ function Poisson(λ:Gamma) -> GammaPoisson {
   /* the shape parameter of the rate must be an integer for the marginal
    * to make sense as a negative binomial distribution; instantiate the
    * rate if this is not the case */
-  if (λ.k != Real(Integer(λ.k))) {
+  if (!λ.isRealized() && λ.k != Real(Integer(λ.k))) {
     λ.value();
   }
   

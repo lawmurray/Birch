@@ -33,7 +33,7 @@ class Delay {
   /**
    * Weight.
    */
-  w:Real;
+  w:Real <- 0.0;
   
   /**
    * Unique id for delayed sampling diagnostics.
