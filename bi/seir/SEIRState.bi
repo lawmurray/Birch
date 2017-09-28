@@ -63,10 +63,10 @@ class SEIRState {
     Δi ~ Binomial(ne, θ.δ);
     Δr ~ Binomial(ni, θ.γ);
 
-    s ~ Binomial(x.s + Δs - Δe, 1.0 - θ.μ);
-    e ~ Binomial(x.e + Δe - Δi, 1.0 - θ.μ);
-    i ~ Binomial(x.i + Δi - Δr, 1.0 - θ.μ);
-    r ~ Binomial(x.r + Δr, 1.0 - θ.μ);
+    s ~ Binomial(x.s + Δs - Δe, θ.μ);
+    e ~ Binomial(x.e + Δe - Δi, θ.μ);
+    i ~ Binomial(x.i + Δi - Δr, θ.μ);
+    r ~ Binomial(x.r + Δr, θ.μ);
     
     n <- s + e + i + r;
   }
