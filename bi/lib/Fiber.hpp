@@ -18,30 +18,38 @@ template<class Type>
 class Fiber {
 public:
   /**
-   * Default constructor.
+   * Constructor.
    */
-  Fiber() : heap(fiberHeap), own(false) {
+  Fiber(const bool closed = false) :
+      heap(closed ? new Heap(*fiberHeap) : nullptr) {
     //
   }
 
   /**
-   * Copy constructor. Fibers are copy-by-value.
+   * Copy constructor.
    */
-  Fiber(const Fiber<Type>& o) : state(o.state) {
-    heap = new Heap(*o.heap);
-    own = true;
+  Fiber(const Fiber<Type>& o) {
+    if (o.heap) {
+      heap = new Heap(*o.heap);
+    } else {
+      heap = nullptr;
+    }
+    state = o.state;
   }
 
   /**
    * Move constructor.
    */
-  Fiber(Fiber<Type>&& o) = default;
+  Fiber(Fiber<Type> && o) : heap(o.heap), state(o.state) {
+    o.heap = nullptr;
+    o.state = nullptr;
+  }
 
   /**
    * Destructor.
    */
   virtual ~Fiber() {
-    if (own) {
+    if (heap) {
       delete heap;
     }
   }
@@ -50,19 +58,28 @@ public:
    * Copy assignment.
    */
   Fiber<Type>& operator=(const Fiber<Type>& o) {
-    state = o.state;
-    if (own) {
-      delete heap;
+    if (heap) {
+      if (o.heap) {
+        *heap = *o.heap;
+      } else {
+        delete heap;
+        heap = nullptr;
+      }
+    } else if (o.heap) {
+      heap = new Heap(*o.heap);
     }
-    heap = new Heap(*o.heap);
-    own = true;
+    state = o.state;
     return *this;
   }
 
   /**
    * Move assignment.
    */
-  Fiber<Type>& operator=(Fiber<Type> && o) = default;
+  Fiber<Type>& operator=(Fiber<Type> && o) {
+    std::swap(heap, o.heap);
+    std::swap(state, o.state);
+    return *this;
+  }
 
   /**
    * Run to next yield point.
@@ -70,29 +87,41 @@ public:
    * @return Was a value yielded?
    */
   bool query() {
-    Heap* callerHeap = fiberHeap;
-    fiberHeap = heap;
-    bool result = state->query();
-    fiberHeap = callerHeap;
-    return result;
+    if (!state.isNull()) {
+      swap();
+      bool result = state->query();
+      swap();
+      return result;
+    } else {
+      return false;
+    }
   }
 
   /**
    * Get the last yield value.
    */
   Type& get() {
-    Heap* callerHeap = fiberHeap;
-    fiberHeap = heap;
+    assert(!state.isNull());
+    swap();
     Type& result = state->get();
-    fiberHeap = callerHeap;
+    swap();
     return result;
   }
   const Type& get() const {
-    Heap* callerHeap = fiberHeap;
-    fiberHeap = heap;
+    assert(!state.isNull());
+    swap();
     const Type& result = state->get();
-    fiberHeap = callerHeap;
+    swap();
     return result;
+  }
+
+  /**
+   * Swap in/out the fiber-local heap.
+   */
+  void swap() {
+    if (heap) {
+      std::swap(heap, fiberHeap);
+    }
   }
 
   /**
@@ -104,10 +133,5 @@ public:
    * Fiber-local heap, nullptr if shared with the parent fiber.
    */
   Heap* heap;
-
-  /**
-   * Does the fiber own this heap?
-   */
-  bool own;
 };
 }

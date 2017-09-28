@@ -114,6 +114,13 @@ public:
    */
   Pointer(Object* raw = nullptr);
 
+  /**
+   * Is this a null pointer?
+   */
+  bool isNull() const {
+    return index < 0;
+  }
+
 protected:
   /**
    * Constructor for pointer_from_this().
@@ -160,6 +167,7 @@ bi::Pointer<T>& bi::Pointer<T>::operator=(const U& o) {
   return *this;
 }
 
+#include <iostream>
 template<class T>
 T* bi::Pointer<T>::get() {
   if (this->index < 0) {
@@ -168,7 +176,7 @@ T* bi::Pointer<T>::get() {
     Object* o;
     assert(fiberHeap);
     o = fiberHeap->get(this->index);
-    if (o->getGen() < fiberHeap->getGen()) {
+    if (o->getGen() < fiberGen) {
       /* (possibly) shared and writeable, copy now (copy-on-write) */
       o = o->clone();
       fiberHeap->set(this->index, o);

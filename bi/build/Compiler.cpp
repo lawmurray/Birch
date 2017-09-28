@@ -27,10 +27,10 @@ std::stringstream raw;
 bi::Compiler::Compiler(Package* package,
     const boost::filesystem::path& work_dir,
     const boost::filesystem::path& build_dir) :
+    scope(new Scope()),
     package(package),
     work_dir(work_dir),
-    build_dir(build_dir),
-    scope(new Scope()) {
+    build_dir(build_dir) {
   //
 }
 

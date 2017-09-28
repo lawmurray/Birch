@@ -5,10 +5,10 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::MemberFiber::MemberFiber(Name* name,
-    Expression* params, Type* returnType, Statement* braces,
-    Location* loc) :
+bi::MemberFiber::MemberFiber(const Annotation annotation, Name* name,
+    Expression* params, Type* returnType, Statement* braces, Location* loc) :
     Statement(loc),
+    Annotated(annotation),
     Named(name),
     Parameterised(params),
     ReturnTyped(returnType),

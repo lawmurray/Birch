@@ -140,8 +140,13 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   } else {
     finish(" {");
     in();
-    start(
-        "return make_fiber<" << o->returnType->unwrap() << ',' << stateName << ">(");
+    start("return ");
+    if (o->isClosed()) {
+      middle("make_closed_fiber");
+    } else {
+      middle("make_fiber");
+    }
+    middle('<' << o->returnType->unwrap() << ',' << stateName << ">(");
     for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
       if (iter != o->params->begin()) {
         middle(", ");

@@ -21,6 +21,7 @@ COMMON_SOURCES = \
   bi/build/Compiler.cpp \
   bi/build/Driver.cpp \
   bi/build/misc.cpp \
+  bi/common/Annotated.cpp \
   bi/common/Argumented.cpp \
   bi/common/Based.cpp \
   bi/common/Braced.cpp \
@@ -210,6 +211,7 @@ noinst_HEADERS = \
   bi/build/Compiler.hpp \
   bi/build/Driver.hpp \
   bi/build/misc.hpp \
+  bi/common/Annotated.hpp \
   bi/common/Argumented.hpp \
   bi/common/Based.hpp \
   bi/common/Braced.hpp \

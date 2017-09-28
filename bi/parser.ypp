@@ -52,7 +52,8 @@
   int32_t valInt;
   double valReal;
   const char* valString;
-
+  
+  bi::Annotation valAnnotation;
   bi::Name* valName;
   bi::Expression* valExpression;
   bi::Type* valType;
@@ -61,7 +62,7 @@
 
 %token <valString> PROGRAM CLASS TYPE FUNCTION FIBER OPERATOR
 %token <valString> IF ELSE FOR IN WHILE ASSERT RETURN YIELD CPP HPP
-%token <valString> THIS SUPER NIL
+%token <valString> THIS SUPER NIL CLOSED
 %token <valString> FUNCTION_UPPER
 %token <valString> DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE NAME
 %token <valBool> BOOL_LITERAL
@@ -72,6 +73,8 @@
 %token <valString> AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP RANGE_OP
 
 %type <valName> name binary_operator unary_operator assignment_operator
+
+%type <valAnnotation> annotation annotations optional_annotations
 
 %type <valExpression> prefix_operator
 %type <valExpression> multiplicative_operator additive_operator relational_operator
@@ -125,6 +128,20 @@
 
 name
     : NAME  { $$ = new bi::Name($1); }
+    ;
+    
+annotation
+    : CLOSED  { $$ = bi::IS_CLOSED; }
+    ;
+    
+annotations
+    : annotation
+    | annotation annotations  { $$ = bi::Annotation($1|$2); }
+    ;
+    
+optional_annotations
+    : annotations
+    |              { $$ = bi::NONE; }
     ;
 
 
@@ -391,7 +408,7 @@ function_declaration
     ;
 
 fiber_declaration
-    : FIBER { push_raw(); }name parameters optional_result optional_braces  { $$ = new bi::Fiber($3, $4, $5, $6, make_doc_loc(@$)); }
+    : optional_annotations FIBER { push_raw(); } name parameters optional_result optional_braces  { $$ = new bi::Fiber($1, $4, $5, $6, $7, make_doc_loc(@$)); }
     ;
 
 program_declaration
@@ -403,7 +420,7 @@ member_function_declaration
     ;
 
 member_fiber_declaration
-    : FIBER { push_raw(); } name parameters optional_result optional_braces  { $$ = new bi::MemberFiber($3, $4, $5, $6, make_doc_loc(@$)); }
+    : optional_annotations FIBER { push_raw(); } name parameters optional_result optional_braces  { $$ = new bi::MemberFiber($1, $4, $5, $6, $7, make_doc_loc(@$)); }
     ;
     
 binary_operator

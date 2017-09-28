@@ -4,6 +4,7 @@
 #pragma once
 
 #include "bi/statement/Statement.hpp"
+#include "bi/common/Annotated.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Numbered.hpp"
 #include "bi/common/Parameterised.hpp"
@@ -18,6 +19,7 @@ namespace bi {
  * @ingroup compiler_statement
  */
 class Fiber: public Statement,
+    public Annotated,
     public Named,
     public Numbered,
     public Parameterised,
@@ -29,14 +31,15 @@ public:
   /**
    * Constructor.
    *
+   * @param annotation Annotation.
    * @param name Name.
    * @param params Parameters.
    * @param returnType Return type.
    * @param braces Body.
    * @param loc Location.
    */
-  Fiber(Name* name, Expression* params, Type* returnType,
-      Statement* braces, Location* loc = nullptr);
+  Fiber(const Annotation annotation, Name* name, Expression* params,
+      Type* returnType, Statement* braces, Location* loc = nullptr);
 
   /**
    * Destructor.

@@ -36,7 +36,7 @@ public:
 
   virtual bool isFunction() const;
 
-  virtual FunctionType* resolve(Type* args);
+  virtual FunctionType* resolve(Argumented* args);
 
   using Type::definitely;
   using Type::possibly;

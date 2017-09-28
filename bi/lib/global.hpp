@@ -33,6 +33,11 @@ static constexpr size_t default_value = std::numeric_limits<size_t>::max();
 extern Heap* fiberHeap;
 
 /**
+ * Youngest fiber generation.
+ */
+extern size_t fiberGen;
+
+/**
  * Random number generator.
  */
 extern std::mt19937_64 rng;

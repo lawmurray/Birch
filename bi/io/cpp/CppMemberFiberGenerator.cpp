@@ -141,8 +141,14 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   } else {
     finish(" {");
     in();
-    start(
-        "return make_fiber<" << o->returnType->unwrap() << ',' << stateName << ">(pointer_from_this<this_type>()");
+    start("return ");
+    if (o->isClosed()) {
+      middle("make_closed_fiber");
+    } else {
+      middle("make_fiber");
+    }
+    middle('<' << o->returnType->unwrap() << ',' << stateName << '>');
+    middle("(pointer_from_this<this_type>()");
     for (auto iter = parameters.begin(); iter != parameters.end(); ++iter) {
       middle(", ");
       middle((*iter)->name);

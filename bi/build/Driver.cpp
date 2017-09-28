@@ -64,9 +64,6 @@ bi::Driver::Driver(int argc, char** argv) :
   largv.insert(largv.begin(), argv, argv + argc);
   std::vector<char*> fargv;
 
-  /* first position argument is program name */
-  int i = 1;
-
   /* read options */
   std::vector<char*> unknown;
   opterr = 0;  // handle error reporting ourselves

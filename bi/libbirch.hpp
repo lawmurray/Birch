@@ -371,8 +371,30 @@ Type* copy_object(Type* o) {
  */
 template<class YieldType, class StateType, class ... Args>
 static Fiber<YieldType> make_fiber(Args ... args) {
-  Fiber<YieldType> fiber;
+  Fiber<YieldType> fiber(false);
   fiber.state = static_cast<FiberState<YieldType>*>(new StateType(args...));
   return fiber;
 }
+
+/**
+ * Make a closed fiber.
+ *
+ * @tparam YieldType The yield type of the fiber.
+ * @tparam StateType The state type of the fiber.
+ * @tparam Args Fiber state constructor parameter types.
+ *
+ * @param args Fiber state constructor arguments.
+ *
+ * For a member fiber, the first argument should be a raw pointer to the
+ * containing object.
+ */
+template<class YieldType, class StateType, class ... Args>
+static Fiber<YieldType> make_closed_fiber(Args ... args) {
+  Fiber<YieldType> fiber(true);
+  fiber.swap();
+  fiber.state = static_cast<FiberState<YieldType>*>(new StateType(args...));
+  fiber.swap();
+  return fiber;
+}
+
 }

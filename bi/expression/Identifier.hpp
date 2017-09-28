@@ -11,7 +11,7 @@ namespace bi {
 /**
  * Placeholder for identifier to unknown object.
  */
-struct Unknown {
+class Unknown {
   //
 };
 

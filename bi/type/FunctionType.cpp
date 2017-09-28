@@ -21,8 +21,8 @@ bool bi::FunctionType::isFunction() const {
   return true;
 }
 
-bi::FunctionType* bi::FunctionType::resolve(Type* args) {
-  if (args->definitely(*params)) {
+bi::FunctionType* bi::FunctionType::resolve(Argumented* o) {
+  if (o->args->type->definitely(*params)) {
     return this;
   } else {
     return nullptr;
