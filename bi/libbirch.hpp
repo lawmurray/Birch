@@ -25,6 +25,7 @@
 #include "boost/math/special_functions/beta.hpp"
 ///@todo Replace both of the above with STL versions under C++17.
 
+#include <gc.h>
 #include <getopt.h>
 
 #include <iostream>
@@ -337,7 +338,7 @@ auto make_array(const Frame& frame = EmptyFrame()) {
  */
 template<class Type, class ... Args>
 Pointer<Type> make_object(Args ... args) {
-  auto raw = new Type(args...);
+  auto raw = new (GC_MALLOC_ATOMIC(sizeof(Type))) Type(args...);
   return Pointer<Type>(raw);
 }
 
@@ -354,7 +355,7 @@ Pointer<Type> make_object(Args ... args) {
  */
 template<class Type>
 Type* copy_object(Type* o) {
-  return new Type(*o);
+  return new (GC_MALLOC_ATOMIC(sizeof(Type))) Type(*o);
 }
 
 /**
@@ -372,7 +373,8 @@ Type* copy_object(Type* o) {
 template<class YieldType, class StateType, class ... Args>
 static Fiber<YieldType> make_fiber(Args ... args) {
   Fiber<YieldType> fiber(false);
-  fiber.state = static_cast<FiberState<YieldType>*>(new StateType(args...));
+  FiberState<YieldType>* state = new (GC_MALLOC_ATOMIC(sizeof(StateType))) StateType(args...);
+  fiber.state = state;
   return fiber;
 }
 
@@ -392,7 +394,8 @@ template<class YieldType, class StateType, class ... Args>
 static Fiber<YieldType> make_closed_fiber(Args ... args) {
   Fiber<YieldType> fiber(true);
   fiber.swap();
-  fiber.state = static_cast<FiberState<YieldType>*>(new StateType(args...));
+  FiberState<YieldType>* state = new (GC_MALLOC_ATOMIC(sizeof(StateType))) StateType(args...);
+  fiber.state = state;
   fiber.swap();
   return fiber;
 }

@@ -5,6 +5,8 @@
 
 #include <vector>
 
+#include <gc/gc_allocator.h>
+
 namespace bi {
 class Object;
 
@@ -79,6 +81,6 @@ private:
   /**
    * Allocations.
    */
-  std::vector<Object*> heap;
+  std::vector<Object*,traceable_allocator<Object*>> heap;
 };
 }

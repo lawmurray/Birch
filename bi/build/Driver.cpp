@@ -11,11 +11,13 @@
 #include "boost/filesystem/fstream.hpp"
 #include "boost/algorithm/string.hpp"
 
+#include <gc.h>
+#include <getopt.h>
+#include <dlfcn.h>
+
 #include <iostream>
 #include <regex>
 #include <unordered_set>
-#include <getopt.h>
-#include <dlfcn.h>
 
 using namespace boost::filesystem;
 
@@ -162,6 +164,9 @@ bi::Driver::~Driver() {
 void bi::Driver::run(const std::string& prog) {
   /* get package information */
   manifest();
+
+  /* initialize garbage collector */
+  GC_INIT();
 
   /* dynamically load possible programs */
   typedef void prog_t(int argc, char** argv);

@@ -43,6 +43,11 @@ protected:
   Type* ptr;
 
   /**
+   * Does this array own its buffer?
+   */
+  bool own;
+
+  /**
    * Copy from another array.
    */
   template<class Frame1>
@@ -92,7 +97,8 @@ public:
    * Constructor with null allocation.
    */
   Array() :
-      ptr(nullptr) {
+      ptr(nullptr),
+      own(false) {
     //
   }
 
@@ -110,8 +116,9 @@ public:
    */
   template<class ... Args>
   Array(const Frame& frame, Args ... args) :
-      frame(frame) {
-    allocate(ptr, frame.volume());
+      frame(frame),
+      ptr(allocate(frame.volume())),
+      own(true) {
     initialise(args...);
   }
 
@@ -128,8 +135,9 @@ public:
    */
   template<class Frame1>
   Array(const Array<Type,Frame1>& o, const Frame& frame) :
-      frame(frame) {
-    allocate(ptr, frame.volume());
+      frame(frame),
+      ptr(allocate(frame.volume())),
+      own(true) {
     copy(o);
   }
 
@@ -143,7 +151,8 @@ public:
    */
   Array(Type* ptr, const Frame& frame) :
       frame(frame),
-      ptr(ptr) {
+      ptr(ptr),
+      own(false) {
     //
   }
 
@@ -151,8 +160,9 @@ public:
    * Copy constructor.
    */
   Array(const Array<Type,Frame>& o) :
-      frame(o.frame) {
-    allocate(ptr, frame.volume());
+      frame(o.frame),
+      ptr(allocate(frame.volume())),
+      own(false) {
     copy(o);
     *this = o;
   }
@@ -160,7 +170,21 @@ public:
   /**
    * Move constructor.
    */
-  Array(Array<Type,Frame> && o) = default;
+  Array(Array<Type,Frame> && o) :
+      frame(o.frame),
+      ptr(o.ptr),
+      own(o.own) {
+    o.own = false;
+  }
+
+  /**
+   * Destructor.
+   */
+  ~Array() {
+    if (own) {
+      free(ptr);
+    }
+  }
 
   /**
    * Copy assignment. The frames of the two arrays must conform.
@@ -280,10 +304,9 @@ public:
    * Memory is allocated for the array, and is freed on destruction. After
    * allocation, the contents of the existing array are copied in.
    */
-  template<class DerivedType, typename = std::enable_if_t<is_eigen_compatible<DerivedType>::value>>
-  Array(const Eigen::EigenBase<DerivedType>& o, const Frame& frame) :
-      frame(frame) {
-    allocate(ptr, frame.volume());
+  template<class DerivedType, typename = std::enable_if_t<
+      is_eigen_compatible<DerivedType>::value>>Array(const Eigen::EigenBase<DerivedType>& o, const Frame& frame) :
+  frame(frame), ptr(allocate(frame.volume())), own(true) {
     toEigen() = o;
   }
 
@@ -292,8 +315,7 @@ public:
    */
   template<class DerivedType, typename = std::enable_if_t<is_eigen_compatible<DerivedType>::value>>
   Array(const Eigen::EigenBase<DerivedType>& o) :
-      frame(o.rows(), o.cols()) {
-    allocate(ptr, frame.volume());
+  frame(o.rows(), o.cols()), ptr(allocate(frame.volume())), own(true) {
     toEigen() = o;
   }
 
@@ -493,31 +515,16 @@ private:
   }
 
   /**
-   * Allocate memory for array of value type.
+   * Allocate memory for array.
    *
    * @tparam Type1 Element type.
    *
-   * @param[out] ptr Pointer to start of allocated buffer.
    * @param size Number of elements to allocate.
    */
-  template<class Type1>
-  static void allocate(Type1*& ptr, const size_t n) {
-    ptr = static_cast<Type1*>(malloc(sizeof(Type1) * n));
-    assert(ptr);
-  }
-
-  /**
-   * Allocate memory for array of smart pointer type.
-   *
-   * @tparam Type1 Element type.
-   *
-   * @param[out] ptr Pointer to start of allocated buffer.
-   * @param size Number of elements to allocate.
-   */
-  template<class Type1>
-  static void allocate(Pointer<Type1>*& ptr, const size_t n) {
-    ptr = static_cast<Pointer<Type1>*>(malloc(sizeof(Pointer<Type1> ) * n));
-    assert(ptr);
+  static Type* allocate(const size_t n) {
+    Type* raw = static_cast<Type*>(malloc(sizeof(Type) * n));
+    assert(raw);
+    return raw;
   }
 
   /**
