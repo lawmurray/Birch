@@ -58,7 +58,7 @@ class SEIRState {
       ni:Integer) -> Real! {
     this.x <- x;
 
-    Δs ~ Poisson(θ.ν);
+    Δs ~ Binomial(x.n, θ.ν);
     Δe ~ Binomial(ns, θ.λ);
     Δi ~ Binomial(ne, θ.δ);
     Δr ~ Binomial(ni, θ.γ);
