@@ -34,6 +34,7 @@ class YapModel(T:Integer) {
       t <- input.readInteger();
       y <- input.readInteger();
     }
+    input.close();
   }
   
   function output() {
@@ -44,5 +45,6 @@ class YapModel(T:Integer) {
       output.print(x[t].h.i + ",");
       output.print(x[t].h.r + "\n");
     }
+    output.close();
   }
 }
