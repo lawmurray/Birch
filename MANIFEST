@@ -51,9 +51,7 @@ bi/io/FileInputStream.bi
 bi/io/FileOutputStream.bi
 bi/io/InputStream.bi
 bi/io/OutputStream.bi
-bi/io/StdErrStream.bi
-bi/io/StdInStream.bi
-bi/io/StdOutStream.bi
+bi/io/std.bi
 bi/math/eigen.bi
 bi/math/matrix.bi
 bi/math/observe.bi

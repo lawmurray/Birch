@@ -1,13 +1,18 @@
 /**
  * Output stream.
  */
-class OutputStream(stream:File) {
+class OutputStream {
+  /**
+   * File handle.
+   */
+  file:File;
+
   /**
    * Print string.
    */
   function print(value:String) {
     cpp{{
-    ::fprintf(stream_, "%s", value_.c_str());
+    ::fprintf(file_, "%s", value_.c_str());
     }}
   }
 
@@ -116,4 +121,13 @@ class OutputStream(stream:File) {
       print("\n");
     }
   }
+}
+
+/**
+ * Constructor for output stream.
+ */
+function OutputStream(file:File) -> OutputStream {
+  o:OutputStream;
+  o.file <- file;
+  return o;
 }

@@ -1,14 +1,19 @@
 /**
  * Input stream.
  */
-class InputStream(stream:File) {
+class InputStream {
+  /**
+   * File handle.
+   */
+  file:File;
+
   /**
    * Read integer.
    */
   function readInteger() -> Integer {
     cpp{{
     long long int x;  // ensure fscanf gets exactly the type it expects
-    ::fscanf(stream_, "%lld", &x);
+    ::fscanf(file_, "%lld", &x);
     return x;
     }}
   }
@@ -19,8 +24,17 @@ class InputStream(stream:File) {
   function readReal() -> Real {
     cpp{{
     double x;  // ensure fscanf gets exactly the type it expects
-    ::fscanf(stream_, "%lf", &x);
+    ::fscanf(file_, "%lf", &x);
     return x;
     }}
   }
+}
+
+/**
+ * Constructor for input stream.
+ */
+function InputStream(file:File) -> InputStream {
+  o:InputStream;
+  o.file <- file;
+  return o;
 }

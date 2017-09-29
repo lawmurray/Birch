@@ -123,7 +123,8 @@ class DelayDiagnostics(N:Integer) {
     filename <- filename + noutputs + ".dot";
     
     /* open file */
-    out:FileOutputStream(filename);
+    out:FileOutputStream;
+    out.open(filename);
     
     /* output dot graph */
     out.print("digraph {\n");
