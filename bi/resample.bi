@@ -14,7 +14,8 @@ function ancestors(w:Real[_]) -> Integer[_] {
 }
 
 /**
- * Sample a single ancestor for a vector of log-weights.
+ * Sample a single ancestor for a vector of log-weights. If the sum of
+ * weights is zero, returns zero.
  */
 function ancestor(w:Real[_]) -> Integer {
   N:Integer <- length(w);
@@ -23,12 +24,16 @@ function ancestor(w:Real[_]) -> Integer {
   n:Integer;
   
   W <- cumulative_weights(w);
-  u <- simulate_uniform(0.0, W[N]);
-  n <- 1;
-  while (W[n] < u) {
-    n <- n + 1;
+  if (W[N] > 0.0) {
+    u <- simulate_uniform(0.0, W[N]);
+    n <- 1;
+    while (W[n] < u) {
+      n <- n + 1;
+    }
+    return n;
+  } else {
+    return 0;
   }
-  return n;
 }
 
 /**
