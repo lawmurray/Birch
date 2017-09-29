@@ -27,13 +27,13 @@ class YapDengue(T:Integer) {
     
     h.n <- 7370;
     h.r <~ Binomial(h.n, 0.06);
-    h.i <- 1 + simulate_poisson(5.0);
-    h.e <- simulate_poisson(5.0);
+    h.i <- 1 + simulate_poisson(10.0);
+    h.e <- simulate_poisson(10.0);
     h.s <- h.n - h.e - h.i - h.r;
 
     h.Δs <- 0;
-    h.Δe <~ Binomial(h.e, 0.5);
-    h.Δi <~ Binomial(h.i, 0.5);
+    h.Δe <- h.e;
+    h.Δi <- h.i;
     h.Δr <- 0;
     
     m.n <- Integer(h.n*pow(10.0, simulate_uniform(-1.0, 2.0)));
