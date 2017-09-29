@@ -522,6 +522,9 @@ private:
    * @param size Number of elements to allocate.
    */
   static Type* allocate(const size_t n) {
+    // normal malloc() and free() are used by arrays, as array pointers are
+    // never stored in a fiber-local heap where the garbage collector will
+    // find them
     Type* raw = static_cast<Type*>(malloc(sizeof(Type) * n));
     assert(raw);
     return raw;
@@ -546,7 +549,7 @@ private:
    */
   template<class Type1, class ... Args>
   static void emplace(Pointer<Type1>& o, Args ... args) {
-    auto raw = new Type1(args...);
+    auto raw = new (GC_MALLOC_ATOMIC(sizeof(Type1))) Type1(args...);
     new (&o) Pointer<Type1>(raw);
   }
 
