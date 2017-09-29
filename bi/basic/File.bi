@@ -21,7 +21,9 @@ function fopen(file:String) -> File {
  */
 function fopen(file:String, mode:String) -> File {
   cpp{{
-  return ::fopen(file_.c_str(), mode_.c_str());
+  FILE* stream = ::fopen(file_.c_str(), mode_.c_str());
+  lockf(fileno(stream), F_LOCK, 0);
+  return stream;
   }}
 }
 
