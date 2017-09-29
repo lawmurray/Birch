@@ -15,7 +15,6 @@ class BetaBinomial < DelayInteger {
 
   function initialize(n:Integer, ρ:Beta) {
     assert 0 <= n;
-    assert 0.0 <= ρ && ρ <= 1.0;
   
     super.initialize(ρ);
     this.n <- n;
