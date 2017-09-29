@@ -6,6 +6,7 @@
 #include "bi/visitor/Visitor.hpp"
 
 #include <list>
+#include <functional>
 
 namespace bi {
 /**

@@ -4,6 +4,7 @@
 #pragma once
 
 #include <cassert>
+#include <cstdint>
 
 namespace bi {
 template<class T> class Pointer;

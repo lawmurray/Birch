@@ -6,6 +6,8 @@
 #include "bi/lib/global.hpp"
 #include "bi/lib/Object.hpp"
 
+#include <cstdint>
+
 namespace bi {
 /**
  * Smart pointer fiber-local heaps, with copy-on-write semantics.

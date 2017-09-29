@@ -186,13 +186,13 @@ std::string bi::internalise(const std::string& name) {
 
   /* translate Greek letters */
   std::stringstream buf;
-  //std::smatch match;
-  //while (std::regex_search(str, match, reg)) {
-  //  assert(greeks.find(match.str()) != greeks.end());
-  //  buf << match.prefix();
-  //  buf << greeks[match.str()];
-  //  str = match.suffix();
-  //}
+  std::smatch match;
+  while (std::regex_search(str, match, reg)) {
+    assert(greeks.find(match.str()) != greeks.end());
+    buf << match.prefix();
+    buf << greeks[match.str()];
+    str = match.suffix();
+  }
   buf << str;
 
   /* underscore on end to avoid conflicts with internal names */
