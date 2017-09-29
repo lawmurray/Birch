@@ -5,14 +5,15 @@ class OutputStream {
   /**
    * File handle.
    */
-  file:File;
+  file:File?;
 
   /**
    * Print string.
    */
   function print(value:String) {
+    assert file?;
     cpp{{
-    ::fprintf(file_, "%s", value_.c_str());
+    ::fprintf(file_.get(), "%s", value_.c_str());
     }}
   }
 

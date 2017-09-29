@@ -25,15 +25,17 @@ class FileInputStream < InputStream {
    * Close file.
    */
   function close() {
-    fclose(file);
+    assert file?;
+    fclose(file!);
   }
 
   /**
    * Check for end-of-file.
    */
   function eof() -> Boolean {
+    assert file?;
     cpp{{
-    return ::feof(file_);
+    return ::feof(file_.get());
     }}
   }
 }

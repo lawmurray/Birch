@@ -5,15 +5,16 @@ class InputStream {
   /**
    * File handle.
    */
-  file:File;
+  file:File?;
 
   /**
    * Read integer.
    */
   function readInteger() -> Integer {
+    assert file?;
     cpp{{
     long long int x;  // ensure fscanf gets exactly the type it expects
-    ::fscanf(file_, "%lld", &x);
+    ::fscanf(file_.get(), "%lld", &x);
     return x;
     }}
   }
@@ -22,9 +23,10 @@ class InputStream {
    * Read real.
    */
   function readReal() -> Real {
+    assert file?;
     cpp{{
     double x;  // ensure fscanf gets exactly the type it expects
-    ::fscanf(file_, "%lf", &x);
+    ::fscanf(file_.get(), "%lf", &x);
     return x;
     }}
   }

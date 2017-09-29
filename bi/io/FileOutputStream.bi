@@ -25,6 +25,7 @@ class FileOutputStream < OutputStream {
    * Close the file.
    */
   function close() {
-    fclose(file);
+    assert file?;
+    fclose(file!);
   }
 }
