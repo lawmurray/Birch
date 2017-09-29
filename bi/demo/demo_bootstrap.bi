@@ -65,7 +65,8 @@ class BootstrapExample(T:Integer) {
   }
 
   function input() {
-    input:FileInputStream("data/y.csv");    
+    input:FileInputStream;
+    input.open("data/y.csv");    
     for (t:Integer in 1..T) {
       y[t] <- input.readReal();
     }

@@ -129,12 +129,14 @@ class Example(T:Integer) {
   }
   
   function input() {
-    y_n_input:FileInputStream("data/y_n.csv");
+    y_n_input:FileInputStream;
+    y_n_input.open("data/y_n.csv");
     for (t:Integer in 1..T) {
       y_n[t] <- vector(y_n_input.readReal(), 1);
     }
 
-    y_l_input:FileInputStream("data/y_l.csv");
+    y_l_input:FileInputStream;
+    y_l_input.open("data/y_l.csv");
     for (t:Integer in 1..T) {
       y_l[t] <- vector(y_l_input.readReal(), 1);
     }
