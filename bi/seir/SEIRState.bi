@@ -4,15 +4,15 @@
 class SEIRState {
   x:SEIRState?;     // previous state
 
-  Δs:GammaPoisson;   // newly susceptible (births)
-  Δe:BetaBinomial;   // newly exposed
-  Δi:BetaBinomial;   // newly infected
-  Δr:BetaBinomial;   // newly recovered
+  Δs:Integer;   // newly susceptible (births)
+  Δe:Integer;   // newly exposed
+  Δi:Integer;   // newly infected
+  Δr:Integer;   // newly recovered
 
-  s:Binomial;    // susceptible population
-  e:Binomial;    // incubating population
-  i:Binomial;    // infectious population
-  r:Binomial;    // recovered population
+  s:Integer;    // susceptible population
+  e:Integer;    // incubating population
+  i:Integer;    // infectious population
+  r:Integer;    // recovered population
 
   n:Integer;     // total population
   
@@ -24,12 +24,12 @@ class SEIRState {
   fiber run(θ:SEIRParameter) -> Real! {
     Δs <- 0;
     Δe <- 0;
-    Δi <- 0;
+    Δi <- 1;
     Δr <- 0;
     
     s <- 0;
     e <- 0;
-    i <- 0;
+    i <- 1;
     r <- 0;
     
     n <- 0;
@@ -42,7 +42,7 @@ class SEIRState {
    *   - θ: parameters.
    */
   fiber run(x:SEIRState, θ:SEIRParameter) -> Real! {
-    run(x, θ, x.s*x.i/x.n, x.e, x.i);
+    run(x, θ, Integer(ceil(Real(x.s*x.i)/x.n)), x.e, x.i);
   }
   
   /**
@@ -58,16 +58,67 @@ class SEIRState {
       ni:Integer) -> Real! {
     this.x <- x;
 
-    Δs ~ Binomial(x.n, θ.ν);
-    Δe ~ Binomial(ns, θ.λ);
-    Δi ~ Binomial(ne, θ.δ);
-    Δr ~ Binomial(ni, θ.γ);
+    /* transfers */
+    Δe <~ Binomial(ns, θ.λ);
+    Δi <~ Binomial(ne, θ.δ);
+    Δr <~ Binomial(ni, θ.γ);
 
-    s ~ Binomial(x.s + Δs - Δe, θ.μ);
-    e ~ Binomial(x.e + Δe - Δi, θ.μ);
-    i ~ Binomial(x.i + Δi - Δr, θ.μ);
-    r ~ Binomial(x.r + Δr, θ.μ);
+    s <- x.s - Δe;
+    e <- x.e + Δe - Δi;
+    i <- x.i + Δi - Δr;
+    r <- x.r + Δr;
     
+    /* deaths */
+    s <~ Binomial(s, θ.μ);
+    e <~ Binomial(e, θ.μ);
+    i <~ Binomial(i, θ.μ);
+    r <~ Binomial(r, θ.μ);
+
+    /* births */
+    Δs <~ Binomial(x.n, θ.ν);
+    s <- s + Δs;
+    
+    /* update population */
     n <- s + e + i + r;
+  }
+  
+  function output(prefix:String) {
+    sout:FileOutputStream;
+    eout:FileOutputStream;
+    iout:FileOutputStream;
+    rout:FileOutputStream;
+    nout:FileOutputStream;
+    
+    sout.open(prefix + "s.csv", "a");
+    eout.open(prefix + "e.csv", "a");
+    iout.open(prefix + "i.csv", "a");
+    rout.open(prefix + "r.csv", "a");
+    nout.open(prefix + "n.csv", "a");
+
+    output(sout, eout, iout, rout, nout);
+
+    sout.print("\n");
+    eout.print("\n");
+    iout.print("\n");
+    rout.print("\n");
+    nout.print("\n");
+    
+    sout.close();
+    eout.close();
+    iout.close();
+    rout.close();
+    nout.close();
+  }
+  
+  function output(sout:FileOutputStream, eout:FileOutputStream,
+      iout:FileOutputStream, rout:FileOutputStream, nout:FileOutputStream) {
+    if (x?) {
+      x!.output(sout, eout, iout, rout, nout);
+    }
+    sout.print(" " + s);
+    eout.print(" " + e);
+    iout.print(" " + i);
+    rout.print(" " + r);
+    nout.print(" " + n);
   }
 }
