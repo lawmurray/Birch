@@ -107,3 +107,24 @@ function cumulative_weights(w:Real[_]) -> Real[_] {
   }
   return W;
 }
+
+/**
+ * Effective sample size (ESS) of the log-weight vector.
+ */
+function ess(w:Real[_]) -> Real {
+  if (length(w) == 0) {
+    return 0.0;
+  } else {
+    W:Real <- 0.0;
+    W2:Real <- 0.0;
+    m:Real <- max(w);
+    v:Real;
+    
+    for (n:Integer in 1..length(w)) {
+      v <- exp(w[n] - m);
+      W <- W + v;
+      W2 <- W2 + v*v;
+    }
+    return W*W/W2;
+  }
+}
