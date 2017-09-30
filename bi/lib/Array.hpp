@@ -43,11 +43,6 @@ protected:
   Type* ptr;
 
   /**
-   * Does this array own its buffer?
-   */
-  bool own;
-
-  /**
    * Copy from another array.
    */
   template<class Frame1>
@@ -97,8 +92,7 @@ public:
    * Constructor with null allocation.
    */
   Array() :
-      ptr(nullptr),
-      own(false) {
+      ptr(nullptr) {
     //
   }
 
@@ -117,8 +111,7 @@ public:
   template<class ... Args>
   Array(const Frame& frame, Args ... args) :
       frame(frame),
-      ptr(allocate(frame.volume())),
-      own(true) {
+      ptr(allocate(frame.volume())) {
     initialise(args...);
   }
 
@@ -136,8 +129,7 @@ public:
   template<class Frame1>
   Array(const Array<Type,Frame1>& o, const Frame& frame) :
       frame(frame),
-      ptr(allocate(frame.volume())),
-      own(true) {
+      ptr(allocate(frame.volume())) {
     copy(o);
   }
 
@@ -151,8 +143,7 @@ public:
    */
   Array(Type* ptr, const Frame& frame) :
       frame(frame),
-      ptr(ptr),
-      own(false) {
+      ptr(ptr) {
     //
   }
 
@@ -161,8 +152,7 @@ public:
    */
   Array(const Array<Type,Frame>& o) :
       frame(o.frame),
-      ptr(allocate(frame.volume())),
-      own(false) {
+      ptr(allocate(frame.volume())) {
     copy(o);
     *this = o;
   }
@@ -170,21 +160,7 @@ public:
   /**
    * Move constructor.
    */
-  Array(Array<Type,Frame> && o) :
-      frame(o.frame),
-      ptr(o.ptr),
-      own(o.own) {
-    o.own = false;
-  }
-
-  /**
-   * Destructor.
-   */
-  ~Array() {
-    if (own) {
-      free(ptr);
-    }
-  }
+  Array(Array<Type,Frame> && o) = default;
 
   /**
    * Copy assignment. The frames of the two arrays must conform.
@@ -306,7 +282,7 @@ public:
    */
   template<class DerivedType, typename = std::enable_if_t<
       is_eigen_compatible<DerivedType>::value>>Array(const Eigen::EigenBase<DerivedType>& o, const Frame& frame) :
-  frame(frame), ptr(allocate(frame.volume())), own(true) {
+  frame(frame), ptr(allocate(frame.volume())) {
     toEigen() = o;
   }
 
@@ -315,7 +291,7 @@ public:
    */
   template<class DerivedType, typename = std::enable_if_t<is_eigen_compatible<DerivedType>::value>>
   Array(const Eigen::EigenBase<DerivedType>& o) :
-  frame(o.rows(), o.cols()), ptr(allocate(frame.volume())), own(true) {
+  frame(o.rows(), o.cols()), ptr(allocate(frame.volume())) {
     toEigen() = o;
   }
 
@@ -522,10 +498,7 @@ private:
    * @param size Number of elements to allocate.
    */
   static Type* allocate(const size_t n) {
-    // normal malloc() and free() are used by arrays, as array pointers are
-    // never stored in a fiber-local heap where the garbage collector will
-    // find them
-    Type* raw = static_cast<Type*>(malloc(sizeof(Type) * n));
+    Type* raw = static_cast<Type*>(GC_MALLOC(sizeof(Type) * n));
     assert(raw);
     return raw;
   }
@@ -549,7 +522,7 @@ private:
    */
   template<class Type1, class ... Args>
   static void emplace(Pointer<Type1>& o, Args ... args) {
-    auto raw = new (GC_MALLOC_ATOMIC(sizeof(Type1))) Type1(args...);
+    auto raw = new (GC_MALLOC(sizeof(Type1))) Type1(args...);
     new (&o) Pointer<Type1>(raw);
   }
 
