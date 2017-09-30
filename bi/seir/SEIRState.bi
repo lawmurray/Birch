@@ -137,9 +137,9 @@ class SEIRState {
     eout.print(" " + e);
     iout.print(" " + i);
     rout.print(" " + r);
-    sout.print(" " + Δs);
-    eout.print(" " + Δe);
-    iout.print(" " + Δi);
-    rout.print(" " + Δr);
+    Δsout.print(" " + Δs);
+    Δeout.print(" " + Δe);
+    Δiout.print(" " + Δi);
+    Δrout.print(" " + Δr);
   }
 }
