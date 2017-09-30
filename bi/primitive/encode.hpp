@@ -36,11 +36,6 @@ unsigned char decode32(const unsigned char c);
 bool isTranslatable(const std::string& op);
 
 /**
- * Is character in the class [0-9a-zA-Z_]?
- */
-bool isSimple(const char c);
-
-/**
  * Generate C++ name. This is the original name, with any characters
  * outside the class [0-9a-zA-z_] translated to within that class, and an
  * underscore added to the end to avoid clashes with user variables.
@@ -48,9 +43,9 @@ bool isSimple(const char c);
 std::string internalise(const std::string& name);
 
 /**
- * Escape special characters in a string.
+ * Escape unicode characters in a string.
  */
-std::string escape(const std::string& str);
+std::string escape_unicode(const std::string& str);
 
 /**
  * Process a documentation comment to detailed description.

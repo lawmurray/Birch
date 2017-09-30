@@ -7,7 +7,10 @@
 
 #include <regex>
 #include <sstream>
+#include <iomanip>
 #include <cassert>
+#include <locale>
+#include <codecvt>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -100,15 +103,10 @@ bool bi::isTranslatable(const std::string& op) {
   return ops.find(op) != ops.end();
 }
 
-bool bi::isSimple(const char c) {
-  return (('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z')
-      || ('0' <= c && c <= '9') || c == '_');
-}
-
 std::string bi::internalise(const std::string& name) {
   /* translations */
   static std::regex reg;
-  static std::unordered_map<std::string,std::string> ops, greeks;
+  static std::unordered_map<std::string,std::string> ops;
   static bool init = false;
   if (!init) {
     ops["<-"] = "assign";
@@ -130,51 +128,6 @@ std::string bi::internalise(const std::string& name) {
     ops["||"] = "or";
     ops["&&"] = "and";
 
-    greeks["α"] = "alpha";
-    greeks["β"] = "beta";
-    greeks["γ"] = "gamma";
-    greeks["δ"] = "delta";
-    greeks["ε"] = "epsilon";
-    greeks["ζ"] = "zeta";
-    greeks["η"] = "eta";
-    greeks["θ"] = "theta";
-    greeks["ι"] = "iota";
-    greeks["κ"] = "kappa";
-    greeks["λ"] = "lambda";
-    greeks["μ"] = "mu";
-    greeks["ν"] = "nu";
-    greeks["ο"] = "omicron";
-    greeks["π"] = "pi";
-    greeks["ρ"] = "rho";
-    greeks["σ"] = "sigma";
-    greeks["τ"] = "tau";
-    greeks["υ"] = "upsilon";
-    greeks["φ"] = "phi";
-    greeks["χ"] = "chi";
-    greeks["ψ"] = "psi";
-    greeks["ω"] = "omega";
-    greeks["Γ"] = "Gamma";
-    greeks["Δ"] = "Delta";
-    greeks["Θ"] = "Theta";
-    greeks["Λ"] = "Lambda";
-    greeks["Π"] = "Pi";
-    greeks["Σ"] = "Sigma";
-    greeks["Υ"] = "Upsilon";
-    greeks["Φ"] = "Phi";
-    greeks["Ψ"] = "Psi";
-    greeks["Ω"] = "Omega";
-
-    std::stringstream buf;
-    buf << '(';
-    for (auto iter = greeks.begin(); iter != greeks.end(); ++iter) {
-      if (iter != greeks.begin()) {
-        buf << '|';
-      }
-      buf << iter->first;
-    }
-    buf << ')';
-    reg = std::regex(buf.str());
-
     init = true;
   }
 
@@ -184,34 +137,24 @@ std::string bi::internalise(const std::string& name) {
     str = ops[name];
   }
 
-  /* translate Greek letters */
-  std::stringstream buf;
-  std::smatch match;
-  while (std::regex_search(str, match, reg)) {
-    assert(greeks.find(match.str()) != greeks.end());
-    buf << match.prefix();
-    buf << greeks[match.str()];
-    str = match.suffix();
-  }
-  buf << str;
+  /* escape unicode characters */
+  str = escape_unicode(str);
 
   /* underscore on end to avoid conflicts with internal names */
-  buf << '_';
-
-  return buf.str();
+  return str + "_";
 }
 
-std::string bi::escape(const std::string& str) {
-  std::regex reg("[^0-9a-zA-Z_]");
+std::string bi::escape_unicode(const std::string& str) {
+  std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+  std::wstring wstr = converter.from_bytes(str);
   std::stringstream buf;
-  std::smatch match;
-  std::string str1 = str;
-  while (std::regex_search(str1, match, reg)) {
-    buf << match.prefix() << '\\' << match.str();
-    str1 = match.suffix();
+  for (int c : wstr) {
+    if (c < 127) {
+      buf << (char)c;
+    } else {
+      buf << "\\u" << std::setfill('0') << std::setw(4) << c;
+    }
   }
-  buf << str1;
-
   return buf.str();
 }
 

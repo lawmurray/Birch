@@ -575,7 +575,7 @@ void bi::CppBaseGenerator::visit(const Yield* o) {
 
 void bi::CppBaseGenerator::visit(const Raw* o) {
   if ((header && *o->name == "hpp") || (!header && *o->name == "cpp")) {
-    *this << o->raw;
+    *this << escape_unicode(o->raw);
     if (!std::isspace(o->raw.back())) {
       *this << ' ';
     }
