@@ -145,10 +145,10 @@ std::string bi::internalise(const std::string& name) {
 }
 
 std::string bi::escape_unicode(const std::string& str) {
-  std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-  std::wstring wstr = converter.from_bytes(str);
+  std::wstring_convert<std::codecvt_utf8_utf16<char16_t>,char16_t> converter;
+  std::u16string wstr = converter.from_bytes(str);
   std::stringstream buf;
-  for (int c : wstr) {
+  for (wchar_t c : wstr) {
     if (c < 127) {
       buf << (char)c;
     } else {
