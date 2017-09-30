@@ -83,42 +83,63 @@ class SEIRState {
   }
   
   function output(prefix:String) {
+    nout:FileOutputStream;
     sout:FileOutputStream;
     eout:FileOutputStream;
     iout:FileOutputStream;
     rout:FileOutputStream;
-    nout:FileOutputStream;
+    Δsout:FileOutputStream;
+    Δeout:FileOutputStream;
+    Δiout:FileOutputStream;
+    Δrout:FileOutputStream;
     
+    nout.open(prefix + "n.csv", "a");
     sout.open(prefix + "s.csv", "a");
     eout.open(prefix + "e.csv", "a");
     iout.open(prefix + "i.csv", "a");
     rout.open(prefix + "r.csv", "a");
-    nout.open(prefix + "n.csv", "a");
+    Δsout.open(prefix + "Δs.csv", "a");
+    Δeout.open(prefix + "Δe.csv", "a");
+    Δiout.open(prefix + "Δi.csv", "a");
+    Δrout.open(prefix + "Δr.csv", "a");
 
-    output(sout, eout, iout, rout, nout);
+    output(nout, sout, eout, iout, rout, Δsout, Δeout, Δiout, Δrout);
 
+    nout.print("\n");
     sout.print("\n");
     eout.print("\n");
     iout.print("\n");
     rout.print("\n");
-    nout.print("\n");
+    Δsout.print("\n");
+    Δeout.print("\n");
+    Δiout.print("\n");
+    Δrout.print("\n");
     
+    nout.close();
     sout.close();
     eout.close();
     iout.close();
     rout.close();
-    nout.close();
+    Δsout.close();
+    Δeout.close();
+    Δiout.close();
+    Δrout.close();
   }
   
-  function output(sout:FileOutputStream, eout:FileOutputStream,
-      iout:FileOutputStream, rout:FileOutputStream, nout:FileOutputStream) {
+  function output(nout:FileOutputStream, sout:FileOutputStream, eout:FileOutputStream,
+      iout:FileOutputStream, rout:FileOutputStream, Δsout:FileOutputStream,
+      Δeout:FileOutputStream, Δiout:FileOutputStream, Δrout:FileOutputStream) {
     if (x?) {
-      x!.output(sout, eout, iout, rout, nout);
+      x!.output(nout, sout, eout, iout, rout, Δsout, Δeout, Δiout, Δrout);
     }
+    nout.print(" " + n);
     sout.print(" " + s);
     eout.print(" " + e);
     iout.print(" " + i);
     rout.print(" " + r);
-    nout.print(" " + n);
+    sout.print(" " + Δs);
+    eout.print(" " + Δe);
+    iout.print(" " + Δi);
+    rout.print(" " + Δr);
   }
 }
