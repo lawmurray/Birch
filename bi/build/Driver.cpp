@@ -210,6 +210,7 @@ void bi::Driver::build() {
   autogen();
   configure();
   target();
+  unlock();
 }
 
 void bi::Driver::install() {
@@ -219,6 +220,7 @@ void bi::Driver::install() {
   autogen();
   configure();
   target("install");
+  unlock();
 }
 
 void bi::Driver::uninstall() {
@@ -228,6 +230,7 @@ void bi::Driver::uninstall() {
   autogen();
   configure();
   target("uninstall");
+  unlock();
 }
 
 void bi::Driver::dist() {
@@ -237,9 +240,11 @@ void bi::Driver::dist() {
   autogen();
   configure();
   target("dist");
+  unlock();
 }
 
 void bi::Driver::clean() {
+  lock();
   remove_all(build_dir);
   remove_all("autom4te.cache");
   remove_all("m4");
@@ -258,6 +263,7 @@ void bi::Driver::clean() {
   remove("Makefile.am");
   remove("Makefile.in");
   remove("missing");
+  unlock();
 }
 
 void bi::Driver::init() {
@@ -446,6 +452,8 @@ void bi::Driver::setup() {
     }
     ofstream stream(build_dir / "lock");  // creates lock file
   }
+
+  /* exclusive access to build directory */
   lock();
 
   /* copy built files into build directory */
