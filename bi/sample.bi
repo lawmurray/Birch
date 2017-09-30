@@ -40,6 +40,7 @@ program sample(
     out.print(" " + t);
   }
   out.print("\n");
+  out.close();
 
   /* sample */
   x:Real![nparticles];     // particles
@@ -83,8 +84,7 @@ program sample(
     /* output */
     b:Integer <- ancestor(w); // returns zero if degenerate
     if (b > 0 && !x[b]?) {
-      // ^ runs a chosen particle to the end, allowing it to output
-      
+      // ^ runs a chosen particle to the end, allowing it to output      
       out:FileOutputStream;
       out.open("results/yap_dengue/Z.csv", "a");
       out.print(Z + "\n");
