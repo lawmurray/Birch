@@ -54,7 +54,7 @@ program delay_rbpf(N:Integer <- 100, T:Integer <- 10,
   }
     
   /* output */
-  stdout.print(W + "\n");
+  stdout.print(N + " " + W + "\n");
 }
 
 fiber particle(T:Integer) -> Real! {
