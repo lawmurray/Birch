@@ -321,15 +321,10 @@ void bi::CppBaseGenerator::visit(const Program* o) {
       /* option flags */
       line("enum {");
       in();
-      for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
-        std::string flag = dynamic_cast<const Parameter*>(*iter)->name->str()
-            + "_ARG";
-        boost::to_upper(flag);
-        start(flag);
-        if (iter == o->params->begin()) {
-          middle(" = 256");
-        }
-        finish(',');
+      for (auto param : *o->params) {
+        auto name = dynamic_cast<const Parameter*>(param)->name;
+        std::string flag = internalise(name->str()) + "FLAG";
+        line(flag << ',');
       }
       out();
       line("};");
@@ -338,81 +333,54 @@ void bi::CppBaseGenerator::visit(const Program* o) {
       line("int c, option_index;");
       line("option long_options[] = {");
       in();
-      for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
-        const std::string& name =
-            dynamic_cast<const Parameter*>(*iter)->name->str();
-        //if (name.length() > 1) {
-        std::string flag = name + "_ARG";
-        boost::to_upper(flag);
-        std::string option = name;
+      for (auto param : *o->params) {
+        auto name = dynamic_cast<const Parameter*>(param)->name;
+        std::string flag = internalise(name->str()) + "FLAG";
+
+        std::string option = name->str();
         boost::replace_all(option, "_", "-");
 
-        line(
-            "{\"" << option << "\", required_argument, 0, " << flag << " },");
-        //}
+        start("{\"");
+        middle(option << "\", required_argument, 0, " << flag);
+        finish(" },");
       }
       line("{0, 0, 0, 0}");
       out();
       line("};");
 
       /* short options */
-      start("const char* short_options = \"");
-      //for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
-      //  const std::string& name = dynamic_cast<const Parameter*>(*iter)->name->str();
-      //  if (name.length() == 1) {
-      //    middle(name << ':');
-      //  }
-      //}
-      finish("\";");
+      line("const char* short_options = \"\";");
 
       /* read in options with getopt_long */
-      line("::opterr = 0; // handle error reporting ourselves");
-      line(
-          "c = getopt_long_only(argc, argv, short_options, long_options, &option_index);");
+      line("::opterr = 0;");  // handle error reporting ourselves
+      start("c = getopt_long_only(argc, argv, short_options, ");
+      finish("long_options, &option_index);");
       line("while (c != -1) {");
       in();
       line("switch (c) {");
       in();
 
-      for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
-        auto name = dynamic_cast<const Named*>(*iter)->name;
-        assert(name);
-        std::string flag = name->str() + "_ARG";
-        boost::to_upper(flag);
+      for (auto param : *o->params) {
+        auto name = dynamic_cast<const Parameter*>(param)->name;
+        std::string flag = internalise(name->str()) + "FLAG";
 
-        start("case ");
-        //if (name.length() > 1) {
-        middle(flag);
-        //} else {
-        //  middle('\'' << name << '\'');
-        //}
-        finish(':');
+        line("case " << flag << ':');
         in();
-        if ((*iter)->type->isBasic()) {
-          auto type = dynamic_cast<Named*>((*iter)->type);
+        if (param->type->isBasic()) {
+          auto type = dynamic_cast<Named*>(param->type);
           assert(type);
           start(name << " = bi::func::" << type->name);
-          if (type->name->str() == "String") {
-            middle("(std::string(optarg))");
-          } else {
-            middle("(std::string(optarg))");
-          }
-          finish(';');
+          finish("(std::string(optarg));");
         } else {
           line(name << " = std::string(optarg);");
         }
         line("break;");
         out();
       }
-      //line("default:");
-      //in();
-      //line("throw UnknownOptionException(argv[optind - 1]);");
-      //line("break;");
-      //out();
       out();
       line('}');
-      line(
-          "c = getopt_long_only(argc, argv, short_options, long_options, &option_index);");
+      start("c = getopt_long_only(argc, argv, short_options, ");
+      finish("long_options, &option_index);");
       out();
       line("}\n");
     }
