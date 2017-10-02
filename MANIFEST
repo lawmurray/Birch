@@ -1,5 +1,4 @@
-bi/monolithic/SEIRContinuous.bi
-bi/monolithic/SEIRDiscrete.bi
+bi/monolithic/SEIR.bi
 bi/seir/SEIRParameter.bi
 bi/seir/SEIRState.bi
 bi/site/YapDengue.bi
