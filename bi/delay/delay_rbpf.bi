@@ -23,9 +23,8 @@ program delay_rbpf(N:Integer <- 100, T:Integer <- 10,
   W:Real <- 0.0;  // marginal likelihood
   
   /* initialize */
-  p:Real! <- particle(T);
   for (n:Integer in 1..N) {
-    x[n] <- p;
+    x[n] <- particle(T);
   }
   W <- 0.0;
   
@@ -55,13 +54,6 @@ program delay_rbpf(N:Integer <- 100, T:Integer <- 10,
     
   /* output */
   stdout.print(N + " " + W + "\n");
-}
-
-fiber particle(T:Integer) -> Real! {
-  x:Example(T);
-  
-  x.input();
-  x.simulate();
 }
 
 class Example(T:Integer) {
@@ -134,12 +126,14 @@ class Example(T:Integer) {
     for (t:Integer in 1..T) {
       y_n[t] <- vector(y_n_input.readReal(), 1);
     }
+    y_n_input.close();
 
     y_l_input:FileInputStream;
     y_l_input.open("data/y_l.csv");
     for (t:Integer in 1..T) {
       y_l[t] <- vector(y_l_input.readReal(), 1);
     }
+    y_l_input.close();
   }
   
   function output() {
@@ -170,4 +164,11 @@ function delay_rbpf_diagnostics(T:Integer) {
     o.position(4*t, t, 2);
     o.position(4*t - 1, t, 1);
   }
+}
+
+closed fiber particle(T:Integer) -> Real! {
+  x:Example(T);
+  
+  x.input();
+  x.simulate();
 }

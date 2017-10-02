@@ -45,7 +45,7 @@ program demo_bootstrap(N:Integer <- 10, T:Integer <- 10) {
   }
     
   /* output */
-  stdout.print(W + "\n");
+  stdout.print(N + " " + W + "\n");
 }
 
 
@@ -73,7 +73,7 @@ class BootstrapExample(T:Integer) {
   }
 }
 
-fiber run(T:Integer) -> Real! {
+closed fiber run(T:Integer) -> Real! {
   x:BootstrapExample(T);
   x.input();
   
