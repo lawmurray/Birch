@@ -6,13 +6,18 @@
  *   - `-N`            : Number of particles.
  *   - `-T`            : Number of time steps.
  *   - `--diagnostics` : Enable/disable delayed sampling diagnostics.
+ *   - `--ess-rel`     : ESS threshold, as proportion of `N`, under which
+ *                       resampling is triggered.
  *
  * To disable delayed sampling, change the `~` operators to `<~` in the
  * `initial` and `transition` functions of the `Example` class, and to `~>`
  * in the `observation` function.
  */
-program delay_rbpf(N:Integer <- 100, T:Integer <- 10,
-    diagnostics:Boolean <- false) {  
+program delay_rbpf(
+    N:Integer <- 100,
+    T:Integer <- 10,
+    diagnostics:Boolean <- false,
+    ess_rel:Real <- 0.7) {  
   if (diagnostics) {
     delay_rbpf_diagnostics(T);
   }
@@ -30,27 +35,27 @@ program delay_rbpf(N:Integer <- 100, T:Integer <- 10,
   
   for (t:Integer in 1..T) {
     /* resample */
-    if (t > 1 && mod(t, 2) == 1) {
+    if (t > 1 && mod(t, 2) == 1 && ess(w) < ess_rel*N) {
+      W <- W + log_sum_exp(w) - log(N);
       a <- ancestors(w);
       for (n:Integer in 1..N) {
         if (a[n] != n) {
           x[n] <- x[a[n]];
         }
+        w[n] <- 0.0;
       }
     }
     
     /* propagate and weight */
     for (n:Integer in 1..N) {
       if (x[n]?) {
-        w[n] <- x[n]!;
+        w[n] <- w[n] + x[n]!;
       } else {
         w[n] <- -inf;
       }
     }
-    
-    /* marginal log-likelihood estimate */
-    W <- W + log_sum_exp(w) - log(Real(N));
   }
+  W <- W + log_sum_exp(w) - log(Real(N));
     
   /* output */
   stdout.print(N + " " + W + "\n");
