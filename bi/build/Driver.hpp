@@ -131,6 +131,11 @@ private:
   boost::filesystem::path build_dir;
 
   /**
+   * Built libraries directory.
+   */
+  boost::filesystem::path lib_dir;
+
+  /**
    * Share directories.
    */
   std::list<boost::filesystem::path> share_dirs;

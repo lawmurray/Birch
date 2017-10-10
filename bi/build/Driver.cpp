@@ -24,6 +24,7 @@ using namespace boost::filesystem;
 bi::Driver::Driver(int argc, char** argv) :
     work_dir(current_path()),
     build_dir(current_path() / "build"),
+    lib_dir(current_path() / "build" / ".libs"),
     prefix(""),
     warnings(true),
     debug(true),
@@ -32,7 +33,8 @@ bi::Driver::Driver(int argc, char** argv) :
     newConfigure(false),
     newMake(false),
     newManifest(false),
-    isLocked(false) {
+    isLocked(false),
+    package() {
   enum {
     SHARE_DIR_ARG = 256,
     INCLUDE_DIR_ARG,
@@ -182,6 +184,11 @@ void bi::Driver::run(const std::string& prog) {
 #else
   so.replace_extension(".so");
 #endif
+
+  /* Look in built libs first. */
+  if(exists(lib_dir / so))
+    so = lib_dir / so;
+
   handle = dlopen(so.c_str(), RTLD_NOW);
   msg = dlerror();
   if (handle == NULL) {
