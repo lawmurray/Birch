@@ -18,7 +18,18 @@ class YapDengue(T:Integer) {
    */
   fiber run(y:Integer?[_]) -> Real! {
     /* parameter model */
-    θ.run();
+    θ.h.ν <- 0.0;
+    θ.h.μ <- 1.0;
+    θ.h.λ ~ Beta(1.0, 1.0);
+    θ.h.δ ~ Beta(1.0 + 2.0/4.4, 3.0 - 2.0/4.4);
+    θ.h.γ ~ Beta(1.0 + 2.0/4.5, 3.0 - 2.0/4.5);
+
+    θ.m.ν <- 1.0/7.0;
+    θ.m.μ <- 6.0/7.0;
+    θ.m.λ ~ Beta(1.0, 1.0);
+    θ.m.δ ~ Beta(1.0 + 2.0/6.5, 3.0 - 2.0/6.5);
+    θ.m.γ <- 0.0;
+
     ρ ~ Beta(1.0, 1.0);
     
     /* initial model */
@@ -26,9 +37,9 @@ class YapDengue(T:Integer) {
     m:SEIRState <- x.m;
     
     h.n <- 7370;
-    h.r <~ Binomial(h.n, 0.06);
-    h.i <- 1 + simulate_poisson(10.0);
-    h.e <- simulate_poisson(10.0);
+    h.i <- 1 + simulate_poisson(5.0);
+    h.e <- simulate_poisson(5.0);
+    h.r <- Integer(simulate_uniform(0.0, h.n - h.i - h.e));
     h.s <- h.n - h.e - h.i - h.r;
 
     h.Δs <- 0;
