@@ -5,6 +5,7 @@ bi/basic/File.bi
 bi/basic/Integer.bi
 bi/basic/Integer32.bi
 bi/basic/Integer64.bi
+bi/basic/Object.bi
 bi/basic/Real.bi
 bi/basic/Real32.bi
 bi/basic/Real64.bi
