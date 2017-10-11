@@ -12,17 +12,20 @@ bi::CppSuperGenerator::CppSuperGenerator(std::ostream& base,
 }
 
 void bi::CppSuperGenerator::visit(const Class* o) {
-  if (!o->base->isEmpty()) {
-    auto super = dynamic_cast<const ClassType*>(o->base);
-    assert(super);
-
+  if (!o->braces->isEmpty()) {
     CppBaseGenerator aux(base, level);
     start("template<> struct super_type<");
     aux << o->name;
     finish("> {");
     in();
     start("typedef ");
-    aux << super->name;
+    if (!o->base->isEmpty()) {
+      auto super = dynamic_cast<const ClassType*>(o->base);
+      assert(super);
+      aux << super->name;
+    } else {
+      aux << "Object_";
+    }
     finish(" type;");
     out();
     line("};");

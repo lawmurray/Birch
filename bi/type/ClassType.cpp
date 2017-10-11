@@ -74,6 +74,7 @@ bool bi::ClassType::definitely(const ClassType& o) const {
   assert(target);
   assert(o.target);
   return target == o.target || target->hasConversion(&o)
+      || o.target->name->str() == "Object"
       || target->hasSuper(&o) || target->base->definitely(o);
 }
 

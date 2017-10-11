@@ -185,6 +185,7 @@ libbirch_la_SOURCES = \
 libbirch_la_CXXFLAGS = $(AM_CXXFLAGS)
 
 nobase_include_HEADERS = \
+  bi/lib/Any.hpp \
   bi/lib/Array.hpp \
   bi/lib/Eigen.hpp \
   bi/lib/EigenFunctions.hpp \

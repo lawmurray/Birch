@@ -15,83 +15,85 @@ bi::CppClassGenerator::CppClassGenerator(std::ostream& base, const int level,
 }
 
 void bi::CppClassGenerator::visit(const Class* o) {
-  type = o;
+  if (!o->braces->isEmpty()) {
+    type = o;
 
-  /* start boilerplate */
-  if (header) {
-    start("class " << o->name << " : public ");
-    if (!o->base->isEmpty()) {
-      auto type = dynamic_cast<const ClassType*>(o->base);
-      assert(type);
-      middle(type->name);
-    } else {
-      middle("Object");
+    /* start boilerplate */
+    if (header) {
+      start("class " << o->name << " : public ");
+      if (!o->base->isEmpty()) {
+        auto type = dynamic_cast<const ClassType*>(o->base);
+        assert(type);
+        middle(type->name);
+      } else {
+        middle("Object_");
+      }
+      finish(" {");
+      line("public:");
+      in();
+      line("typedef " << o->name << " this_type;");
+      if (o->base->isEmpty()) {
+        line("typedef Object_ super_type;");
+      } else {
+        auto type = dynamic_cast<const ClassType*>(o->base);
+        assert(type);
+        line("typedef " << type->name << " super_type;");
+      }
+      line("");
     }
-    finish(" {");
-    line("public:");
-    in();
-    line("typedef " << o->name << " this_type;");
-    if (o->base->isEmpty()) {
-      line("typedef Object super_type;");
-    } else {
-      auto type = dynamic_cast<const ClassType*>(o->base);
-      assert(type);
-      line("typedef " << type->name << " super_type;");
+
+    /* constructor */
+    CppConstructorGenerator auxConstructor(base, level, header);
+    auxConstructor << o;
+
+    /* destructor */
+    if (header) {
+      line("virtual ~" << o->name << "() {");
+      in();
+      line("//");
+      out();
+      line("}\n");
     }
-    line("");
-  }
 
-  /* constructor */
-  CppConstructorGenerator auxConstructor(base, level, header);
-  auxConstructor << o;
+    /* ensure super type assignments are visible */
+    if (header) {
+      line("using super_type::operator=;\n");
+    }
 
-  /* destructor */
-  if (header) {
-    line("virtual ~" << o->name << "() {");
-    in();
-    line("//");
-    out();
-    line("}\n");
-  }
+    /* clone function */
+    if (!header) {
+      start("bi::");
+    } else {
+      start("virtual ");
+    }
+    middle(o->name << "* ");
+    if (!header) {
+      middle("bi::" << o->name << "::");
+    }
+    middle("clone()");
+    if (header) {
+      finish(";\n");
+    } else {
+      finish(" {");
+      in();
+      line("return copy_object(this);");
+      out();
+      line("}\n");
+    }
 
-  /* ensure super type assignments are visible */
-  if (header) {
-    line("using super_type::operator=;\n");
-  }
+    /* member parameters */
+    for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
+      *this << *iter;
+    }
 
-  /* clone function */
-  if (!header) {
-    start("bi::");
-  } else {
-    start("virtual ");
-  }
-  middle(o->name << "* ");
-  if (!header) {
-    middle("bi::" << o->name << "::");
-  }
-  middle("clone()");
-  if (header) {
-    finish(";\n");
-  } else {
-    finish(" {");
-    in();
-    line("return copy_object(this);");
-    out();
-    line("}\n");
-  }
+    /* member variables and functions */
+    *this << o->braces->strip();
 
-  /* member parameters */
-  for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
-    *this << *iter;
-  }
-
-  /* member variables and functions */
-  *this << o->braces->strip();
-
-  /* end boilerplate */
-  if (header) {
-    out();
-    line("};\n");
+    /* end boilerplate */
+    if (header) {
+      out();
+      line("};\n");
+    }
   }
 }
 

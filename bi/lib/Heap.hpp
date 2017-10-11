@@ -8,7 +8,7 @@
 #include <gc/gc_allocator.h>
 
 namespace bi {
-class Object;
+class Any;
 
 /**
  * Heap-local heap.
@@ -57,7 +57,7 @@ public:
    *
    * @return The raw pointer at the heap index.
    */
-  Object* get(const size_t index);
+  Any* get(const size_t index);
 
   /**
    * Set an allocation.
@@ -66,7 +66,7 @@ public:
    *
    * @return Index on the heap.
    */
-  void set(const size_t index, Object* raw);
+  void set(const size_t index, Any* raw);
 
   /**
    * Add a new allocation.
@@ -75,12 +75,12 @@ public:
    *
    * @return Index on the heap.
    */
-  size_t put(Object* raw);
+  size_t put(Any* raw);
 
 private:
   /**
    * Allocations.
    */
-  std::vector<Object*,traceable_allocator<Object*>> heap;
+  std::vector<Any*,traceable_allocator<Any*>> heap;
 };
 }

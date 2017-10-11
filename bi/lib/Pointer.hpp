@@ -4,7 +4,7 @@
 #pragma once
 
 #include "bi/lib/global.hpp"
-#include "bi/lib/Object.hpp"
+#include "bi/lib/Any.hpp"
 
 #include <cstdint>
 
@@ -18,7 +18,7 @@ namespace bi {
  */
 template<class T>
 class Pointer: public Pointer<typename super_type<T>::type> {
-  friend class Object;
+  friend class Any;
 public:
   typedef Pointer<T> this_type;
   typedef Pointer<typename super_type<T>::type> super_type;
@@ -103,18 +103,18 @@ public:
 
 protected:
   /**
-   * Constructor for pointer_from_this() in Object.
+   * Constructor for pointer_from_this() in Any.
    */
   Pointer(T* raw, intptr_t index);
 };
 
 template<>
-class Pointer<Object> {
+class Pointer<Any> {
 public:
   /**
    * Raw pointer constructor.
    */
-  Pointer(Object* raw = nullptr);
+  Pointer(Any* raw = nullptr);
 
   /**
    * Is this a null pointer?
@@ -127,7 +127,7 @@ protected:
   /**
    * Constructor for pointer_from_this().
    */
-  Pointer(Object* raw, intptr_t index);
+  Pointer(Any* raw, intptr_t index);
 
   /**
    * The index of the heap allocation, -1 for null.
@@ -175,7 +175,7 @@ T* bi::Pointer<T>::get() {
   if (this->index < 0) {
     return nullptr;
   } else {
-    Object* o;
+    Any* o;
     assert(fiberHeap);
     o = fiberHeap->get(this->index);
     if (o->getGen() < fiberGen) {
@@ -199,7 +199,7 @@ T* const bi::Pointer<T>::get() const {
   if (this->index < 0) {
     return nullptr;
   } else {
-    Object* o;
+    Any* o;
     assert(fiberHeap);
     o = fiberHeap->get(this->index);
     T* raw;
@@ -219,7 +219,7 @@ bi::Pointer<T>::Pointer(T* raw, intptr_t index) :
   //
 }
 
-inline bi::Pointer<bi::Object>::Pointer(Object* raw) {
+inline bi::Pointer<bi::Any>::Pointer(Any* raw) {
   assert(fiberHeap);
   if (raw) {
     index = fiberHeap->put(raw);
@@ -228,7 +228,7 @@ inline bi::Pointer<bi::Object>::Pointer(Object* raw) {
   }
 }
 
-inline bi::Pointer<bi::Object>::Pointer(Object* raw, intptr_t index) {
+inline bi::Pointer<bi::Any>::Pointer(Any* raw, intptr_t index) {
   assert(index >= 0 || !raw);
   assert(index < 0 || fiberHeap->get(index) == raw);
 

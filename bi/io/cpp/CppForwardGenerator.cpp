@@ -12,8 +12,10 @@ bi::CppForwardGenerator::CppForwardGenerator(std::ostream& base,
 }
 
 void bi::CppForwardGenerator::visit(const Class* o) {
-  start("class ");
-  CppBaseGenerator aux(base, level);
-  aux << o->name;
-  finish(';');
+  if (!o->braces->isEmpty()) {
+    start("class ");
+    CppBaseGenerator aux(base, level);
+    aux << o->name;
+    finish(';');
+  }
 }

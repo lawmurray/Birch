@@ -3,7 +3,7 @@
  */
 #pragma once
 
-#include "bi/lib/Object.hpp"
+#include "bi/lib/Any.hpp"
 
 namespace bi {
 /**
@@ -14,7 +14,7 @@ namespace bi {
  * @tparam Type Return type.
  */
 template<class Type>
-class FiberState: public Object {
+class FiberState: public Any {
 public:
   /**
    * Constructor.

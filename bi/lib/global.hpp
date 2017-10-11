@@ -48,7 +48,7 @@ extern std::mt19937_64 rng;
  */
 template<class T>
 struct super_type {
-  typedef class Object type;
+  typedef class Any type;
 };
 
 /**

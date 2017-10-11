@@ -12,6 +12,7 @@
 #include "bi/lib/Frame.hpp"
 #include "bi/lib/View.hpp"
 #include "bi/lib/Array.hpp"
+#include "bi/lib/Any.hpp"
 #include "bi/lib/Object.hpp"
 #include "bi/lib/Pointer.hpp"
 #include "bi/lib/FiberState.hpp"
