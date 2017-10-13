@@ -3,9 +3,9 @@ name: VBD
 version: 0.0.0
 ---
 
-# Vector-bourne disease models
+# Vector-borne disease models
 
-This package implements a number of vector-bourne disease models in Birch, based on the following paper:
+This package implements a number of vector-borne disease models in Birch, based on the following paper:
 
 Funk, S.; Kucharski, A. J.; Camacho, A.; Eggo, R. M.; Yakob, L.; Murray, L. M. & Edmunds, W. J. [Comparative analysis of dengue and Zika outbreaks reveals differences by setting and virus](http://dx.doi.org/10.1101/043265). PLOS Neglected Tropical Diseases, 2016, 10, 1-16.
 

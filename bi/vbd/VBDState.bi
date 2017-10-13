@@ -1,5 +1,5 @@
 /**
- * Vector-bourne disease model state.
+ * Vector-borne disease model state.
  */
 class VBDState {
   h:SEIRState;  // humans

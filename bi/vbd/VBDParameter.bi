@@ -1,5 +1,5 @@
 /**
- * Vector-bourne disease model parameters.
+ * Vector-borne disease model parameters.
  */
 class VBDParameter {
   h:SEIRParameter;  // humans
