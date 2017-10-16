@@ -322,12 +322,13 @@ void bi::Driver::check() {
   std::unordered_set<std::string> interesting, exclude;
 
   interesting.insert(".bi");
-  interesting.insert(".conf");
   interesting.insert(".sh");
-  interesting.insert(".cpp");
-  interesting.insert(".hpp");
   interesting.insert(".m");
   interesting.insert(".R");
+  interesting.insert(".json");
+  interesting.insert(".ubj");
+  interesting.insert(".cpp");
+  interesting.insert(".hpp");
 
   exclude.insert("autogen.sh");
   exclude.insert("ltmain.sh");
@@ -337,7 +338,7 @@ void bi::Driver::check() {
     auto path = remove_first(iter->path());
     auto name = path.filename().string();
     auto ext = path.extension().string();
-    if (path.string().compare("build") == 0) {
+    if (path.string() == "build" || path.string() == "results") {
       iter.no_push();
     } else if (interesting.find(ext) != interesting.end() &&
         exclude.find(name) == exclude.end()) {
@@ -347,23 +348,6 @@ void bi::Driver::check() {
       }
     }
     ++iter;
-  }
-
-  if (is_directory("data")) {
-    interesting.clear();
-    interesting.insert(".nc");
-    recursive_directory_iterator dataIter("data");
-    while (dataIter != end) {
-      auto path = dataIter->path();
-      if (interesting.find(path.extension().string()) != interesting.end()) {
-        if (manifestFiles.find(path.string()) == manifestFiles.end()) {
-          warn(
-              std::string("is ") + path.string()
-                  + " missing from MANIFEST file?");
-        }
-      }
-      ++dataIter;
-    }
   }
 }
 
