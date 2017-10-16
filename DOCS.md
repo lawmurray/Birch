@@ -2,9 +2,11 @@
 
 The `birch` driver program can be used to set up a Birch project. From within a (usually empty) directory, run
 
-    birch init --name Example
+    birch init
     
-to create a new project, replacing `Example` with the name of your project. This creates a standard layout for a Birch project. It is recommended that you maintain this standard layout to make it easier to manage and distribute your project.
+to create a new project. This creates a standard layout for a Birch project. It is recommended that you maintain this standard layout to make it easier to manage and distribute your project.
+
+The first thing that you should do is modify the meta data at the top of the `README.md` file to give a name to your project.
 
 Now is a good time to set up your version control, such as Git, with this initial set of files.
 

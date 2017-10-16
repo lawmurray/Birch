@@ -319,7 +319,7 @@ void bi::Driver::check() {
   }
 
   /* check for files that might be missing from MANIFEST */
-  std::unordered_set<std::string> interesting;
+  std::unordered_set<std::string> interesting, exclude;
 
   interesting.insert(".bi");
   interesting.insert(".conf");
@@ -329,17 +329,21 @@ void bi::Driver::check() {
   interesting.insert(".m");
   interesting.insert(".R");
 
+  exclude.insert("autogen.sh");
+  exclude.insert("ltmain.sh");
+
   recursive_directory_iterator iter("."), end;
   while (iter != end) {
     auto path = remove_first(iter->path());
+    auto name = path.filename().string();
+    auto ext = path.extension().string();
     if (path.string().compare("build") == 0) {
       iter.no_push();
-    } else if (interesting.find(path.extension().string())
-        != interesting.end()) {
+    } else if (interesting.find(ext) != interesting.end() &&
+        exclude.find(name) == exclude.end()) {
       if (manifestFiles.find(path.string()) == manifestFiles.end()) {
-        warn(
-            std::string("is ") + path.string()
-                + " missing from MANIFEST file?");
+        warn(std::string("is ") + path.string() +
+            " missing from MANIFEST file?");
       }
     }
     ++iter;
