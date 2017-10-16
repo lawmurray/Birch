@@ -33,12 +33,19 @@ AC_CHECK_HEADERS([ \
     gc.h \
     gc/gc_allocator.h \
     ], [], AC_MSG_ERROR([required Boehm garbage collector header not found]), [-])
+    
 AC_CHECK_HEADERS([ \
     boost/filesystem.hpp \
     boost/filesystem/fstream.hpp \
     boost/interprocess/sync/file_lock.hpp \
     boost/algorithm/string.hpp \
     ], [], AC_MSG_ERROR([required Boost header not found]), [-])
+
+AC_CHECK_HEADERS([ \
+    eigen3/Eigen/Core \
+    eigen3/Eigen/Dense \
+    eigen3/Eigen/Cholesky \
+    ], [], AC_MSG_ERROR([required Eigen header not found]), [-])    
 
 # Checks for typedefs, structures, and compiler characteristics
 AC_HEADER_STDBOOL
