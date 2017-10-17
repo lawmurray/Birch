@@ -115,7 +115,13 @@ void bi::CppBaseGenerator::visit(const LambdaFunction* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Span* o) {
-  middle("bi::make_span(" << o->single << ')');
+  middle("bi::make_span(");
+  if (o->single->isEmpty()) {
+    middle('0');
+  } else {
+    middle(o->single);
+  }
+  middle(')');
 }
 
 void bi::CppBaseGenerator::visit(const Index* o) {
