@@ -158,3 +158,75 @@ function simulate_beta(α:Real, β:Real) -> Real {
   
   return u/(u + v);
 }
+
+/**
+ * Simulate a categorical variate.
+ *
+ * - ρ: Category probabilities.
+ */
+function simulate_categorical(ρ:Real[_]) -> Integer {
+  /* assertion checks throughout catch cases such as negative probabilities,
+   * or the sum of probabilities not being one */
+    
+  u:Real <- simulate_uniform(0.0, 1.0);
+  x:Integer <- 1;
+  assert length(ρ) > 0;
+  P:Real <- ρ[1];
+  assert 0.0 <= P && P <= 1.0;
+  while (u < P) {
+    x <- x + 1;
+    assert x <= length(ρ);
+    assert ρ[x] >= 0.0;
+    P <- P + ρ[x];
+    assert 0.0 <= P && P <= 1.0;
+  }
+  return x;
+}
+
+/**
+ * Simulate a multinomial variate.
+ *
+ * - n: Number of trials.
+ * - ρ: Category probabilities.
+ */
+function simulate_multinomial(n:Integer, ρ:Real[_]) -> Integer[_] {
+  D:Integer <- length(ρ);
+  x:Integer[_] <- vector(0, D);
+  R:Integer[_] <- inclusive_prefix_sum(ρ);
+  
+  i:Integer <- n;
+  j:Integer <- D;
+  mx:Real <- 0.0;
+  u:Real;
+  
+  for (i in 1..n) {
+    mx <- mx + log(simulate_uniform(0.0, 1.0))/(n - i + 1);
+    u <- 1.0 + mx;
+    while (j >= 1 && u < log(R[j])) {
+      j <- j - 1;
+    }
+    x[j] <- x[j] + 1;
+  }
+  return x;
+}
+
+/**
+ * Simulate a Dirichlet variate.
+ *
+ * - α: Concentrations.
+ */
+function simulate_dirichlet(α:Real[_]) -> Real[_] {
+  D:Integer <- length(α);
+  x:Real[D];
+  z:Real <- 0.0;
+
+  for (i:Integer in 1..D) {
+    x[i] <- simulate_gamma(α[i], 1.0);
+    z <- z + x[i];
+  }
+  z <- 1.0/z;
+  for (i:Integer in 1..D) {
+    x[i] <- z*x[i];
+  }
+  return x;
+}

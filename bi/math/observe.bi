@@ -201,3 +201,50 @@ function observe_beta(x:Real, α:Real, β:Real) -> Real {
     return -inf;
   }
 }
+
+/**
+ * Observe a categorical variate.
+ *
+ * - x: The variate.
+ * - ρ: Category probabilities.
+ *
+ * Returns the log probability mass.
+ */
+function observe_categorical(x:Integer, ρ:Real[_]) -> Real {
+  if (1 <= x && x <= length(ρ)) {
+    return log(ρ[x]);
+  } else {
+    return -inf;
+  }
+}
+
+/**
+ * Observe a multinomial variate.
+ *
+ * - x: The variate.
+ * - ρ: Category probabilities.
+ *
+ * Returns the log probability mass.
+ */
+function observe_multinomial(x:Integer[_], ρ:Real[_]) -> Real {
+  assert length(x) == length(ρ);
+
+  w:Real <- 0.0;
+  for (i:Integer in 1..length(x)) {
+    w <- w + x[i]*log(ρ[i]);
+  }
+  return w;
+}
+
+/**
+ * Observe a Dirichlet variate.
+ *
+ * - x: The variate.
+ * - α: Concentrations.
+ *
+ * Returns the log probability density.
+ */
+function observe_dirichlet(x:Real[_], α:Real[_]) -> Real {
+  assert length(x) == length(α);
+
+}
