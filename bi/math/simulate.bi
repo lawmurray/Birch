@@ -22,6 +22,19 @@ function simulate_bernoulli(ρ:Real) -> Boolean {
 }
 
 /**
+ * Simulate an integer uniform variate.
+ *
+ * - l: Lower bound of interval.
+ * - u: Upper bound of interval.
+ */
+function simulate_int_uniform(l:Integer, u:Integer) -> Integer {
+  assert l <= u;
+  cpp {{
+  return std::uniform_int_distribution<bi::Integer_>(l_, u_)(rng);
+  }}
+}
+
+/**
  * Simulate a binomial variate.
  *
  * - n: Number of trials.
@@ -92,6 +105,18 @@ function simulate_uniform(l:Real, u:Real) -> Real {
   assert l <= u;
   cpp {{
   return std::uniform_real_distribution<bi::Real_>(l_, u_)(rng);
+  }}
+}
+
+/**
+ * Simulate an exponential variate.
+ *
+ * - λ: Rate.
+ */
+function simulate_exponential(λ:Real) -> Real {
+  assert 0.0 <= λ;
+  cpp {{
+  return std::exponential_distribution<bi::Real_>(λ_)(rng);
   }}
 }
 
