@@ -56,5 +56,12 @@ struct Index: public Offset<offset_value>, public Length<1> {
   bool operator!=(const Index<offset_value1>& o) const {
     return !(*this == o);
   }
+
+  /**
+   * Used to count the number of ranges in a view.
+   */
+  static constexpr int rangeCount() {
+    return 0;
+  }
 };
 }

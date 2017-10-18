@@ -37,6 +37,10 @@ struct EmptyView {
     return 0;
   }
 
+  static constexpr int rangeCount() {
+    return 0;
+  }
+
   size_t size() const {
     return 1;
   }
@@ -161,6 +165,13 @@ struct NonemptyView {
    */
   static constexpr int count() {
     return Tail::count() + 1;
+  }
+
+  /**
+   * Number of ranges.
+   */
+  static constexpr int rangeCount() {
+    return Tail::rangeCount() + Head::rangeCount();
   }
 
   /**

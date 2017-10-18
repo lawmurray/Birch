@@ -48,6 +48,10 @@ struct EmptyFrame {
     return false;
   }
 
+  void resize(const EmptyFrame& o) {
+    //
+  }
+
   template<class Frame1>
   Frame1 prepend(const Frame1& o) const {
     return o;
@@ -243,6 +247,15 @@ struct NonemptyFrame {
   template<class Frame1>
   bool conforms(const Frame1& o) const {
     return tail.conforms(o.tail) && head.conforms(o.head);
+  }
+
+  /**
+   * Resize this frame to conform to another.
+   */
+  template<class Frame1>
+  void resize(const Frame1& o) {
+    tail.resize(o.tail);
+    head.resize(o.head);
   }
 
   /**

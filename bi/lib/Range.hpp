@@ -78,5 +78,12 @@ struct Range: public Offset<offset_value>,
       const Range<offset_value1,length_value1,stride_value1>& o) const {
     return !(*this == o);
   }
+
+  /**
+   * Used to count the number of ranges in a view.
+   */
+  static constexpr int rangeCount() {
+    return 1;
+  }
 };
 }

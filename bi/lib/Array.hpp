@@ -26,78 +26,9 @@ template<class Type, class Frame = EmptyFrame>
 class Array {
   template<class Type1, class Frame1>
   friend class Array;
-
-  /**
-   * @internal These are declared ahead due to some issues with clang++ around
-   * the return type of operator(), which in turn calls viewReturn().
-   */
-protected:
-  /**
-   * Frame.
-   */
-  Frame frame;
-
-  /**
-   * Buffer.
-   */
-  Type* ptr;
-
-  /**
-   * Copy from another array.
-   */
-  template<class Frame1>
-  void copy(const Array<Type,Frame1>& o) {
-    /* pre-condition */
-    assert(frame.conforms(o.frame));
-
-    size_t block1 = frame.block();
-    auto iter1 = begin();
-    auto end1 = end();
-
-    size_t block2 = o.frame.block();
-    auto iter2 = o.begin();
-    auto end2 = o.end();
-
-    size_t block = gcd(block1, block2);
-    for (; iter1 != end1; iter1 += block, iter2 += block) {
-      std::memcpy(&(*iter1), &(*iter2), block * sizeof(Type));
-    }
-    assert(iter2 == end2);
-  }
-
-  /**
-   * Return value of view when result is an array.
-   */
-  template<class Frame1>
-  Array<Type,Frame1> viewReturn(Type* ptr, const Frame1& frame) {
-    return Array<Type,Frame1>(ptr, frame);
-  }
-  template<class Frame1>
-  Array<Type,Frame1> viewReturn(Type* ptr, const Frame1& frame) const {
-    return Array<Type,Frame1>(ptr, frame);
-  }
-
-  /**
-   * Return value of view when result is a scalar.
-   */
-  Type& viewReturn(Type* ptr, const EmptyFrame& frame) {
-    return *ptr;
-  }
-  const Type& viewReturn(Type* ptr, const EmptyFrame& frame) const {
-    return *ptr;
-  }
-
 public:
   /**
-   * Constructor with null allocation.
-   */
-  Array() :
-      ptr(nullptr) {
-    //
-  }
-
-  /**
-   * Constructor with new allocation.
+   * Constructor.
    *
    * @tparam ...Args Arbitrary types.
    *
@@ -109,42 +40,10 @@ public:
    * arguments.
    */
   template<class ... Args>
-  Array(const Frame& frame, Args ... args) :
+  Array(const Frame& frame = Frame(), Args ... args) :
       frame(frame),
       ptr(allocate(frame.volume())) {
     initialise(args...);
-  }
-
-  /**
-   * Construct with new allocation and copy in existing array.
-   *
-   * @tparam Frame1 Frame type.
-   *
-   * @param o Existing array.
-   * @param frame Frame.
-   *
-   * Memory is allocated for the array, and is freed on destruction. After
-   * allocation, the contents of the existing array are copied in.
-   */
-  template<class Frame1>
-  Array(const Array<Type,Frame1>& o, const Frame& frame) :
-      frame(frame),
-      ptr(allocate(frame.volume())) {
-    copy(o);
-  }
-
-  /**
-   * Constructor with existing allocation.
-   *
-   * @tparam Frame Frame type.
-   *
-   * @param ptr Existing allocation.
-   * @param frame Frame.
-   */
-  Array(Type* ptr, const Frame& frame) :
-      frame(frame),
-      ptr(ptr) {
-    //
   }
 
   /**
@@ -154,7 +53,6 @@ public:
       frame(o.frame),
       ptr(allocate(frame.volume())) {
     copy(o);
-    *this = o;
   }
 
   /**
@@ -169,9 +67,7 @@ public:
     /* pre-condition */
     assert(frame.conforms(o.frame));
 
-    if (ptr != o.ptr) {
-      copy(o);
-    }
+    copy(o);
     return *this;
   }
 
@@ -179,20 +75,6 @@ public:
    * Move assignment. The frames of the two arrays must conform.
    */
   Array<Type,Frame>& operator=(Array<Type,Frame> && o) {
-    /* pre-condition */
-    assert(frame.conforms(o.frame));
-
-    if (ptr != o.ptr) {
-      copy(o);
-    }
-    return *this;
-  }
-
-  /**
-   * Generic assignment. The frames of the two arrays must conform.
-   */
-  template<class Frame1>
-  Array<Type,Frame>& operator=(const Array<Type,Frame1>& o) {
     /* pre-condition */
     assert(frame.conforms(o.frame));
 
@@ -212,19 +94,17 @@ public:
    * @internal The decltype use for the return type here seems necessary,
    * clang++ is otherwise giving these a const return type.
    */
-  template<class View1>
-  auto operator()(
-      const View1& view) -> decltype(viewReturn(ptr + frame.serial(view), this->frame(view))) {
-    return viewReturn(ptr + frame.serial(view), frame(view));
+  template<class View1, typename = std::enable_if_t<View1::rangeCount() != 0>>
+  auto operator()(const View1& view) const {
+    return Array<Type,decltype(frame(view))>(ptr + frame.serial(view), frame(view));
   }
-
-  /**
-   * View operator.
-   */
-  template<class View1>
-  auto operator()(
-      const View1& view) const -> decltype(viewReturn(ptr + frame.serial(view), frame(view))) {
-    return viewReturn(ptr + frame.serial(view), frame(view));
+  template<class View1, typename = std::enable_if_t<View1::rangeCount() == 0>>
+  auto& operator()(const View1& view) {
+    return *(ptr + frame.serial(view));
+  }
+  template<class View1, typename = std::enable_if_t<View1::rangeCount() == 0>>
+  const auto& operator()(const View1& view) const {
+    return *(ptr + frame.serial(view));
   }
 
   /**
@@ -302,39 +182,6 @@ public:
   Array<Type,Frame>& operator=(const Eigen::EigenBase<DerivedType>& o) {
     toEigen() = o;
     return *this;
-  }
-  //@}
-
-  /**
-   * @name Selections
-   */
-  //@{
-  /**
-   * Access the first element.
-   */
-  Type& front() {
-    return *ptr;
-  }
-
-  /**
-   * Access the first element.
-   */
-  const Type& front() const {
-    return *ptr;
-  }
-
-  /**
-   * Access the last element.
-   */
-  Type& back() {
-    return ptr + frame.volume() - 1;
-  }
-
-  /**
-   * Access the last element.
-   */
-  const Type& back() const {
-    return ptr + frame.volume() - 1;
   }
   //@}
 
@@ -479,6 +326,20 @@ public:
 
 private:
   /**
+   * Constructor for view.
+   *
+   * @tparam Frame Frame type.
+   *
+   * @param ptr Existing allocation.
+   * @param frame Frame.
+   */
+  Array(Type* ptr, const Frame& frame) :
+      frame(frame),
+      ptr(ptr) {
+    //
+  }
+
+  /**
    * Initialise allocated memory.
    *
    * @param args Constructor arguments.
@@ -527,6 +388,29 @@ private:
   }
 
   /**
+   * Copy from another array.
+   */
+  template<class Frame1>
+  void copy(const Array<Type,Frame1>& o) {
+    /* pre-condition */
+    assert(frame.conforms(o.frame));
+
+    size_t block1 = frame.block();
+    auto iter1 = begin();
+    auto end1 = end();
+
+    size_t block2 = o.frame.block();
+    auto iter2 = o.begin();
+    auto end2 = o.end();
+
+    size_t block = gcd(block1, block2);
+    for (; iter1 != end1; iter1 += block, iter2 += block) {
+      std::memcpy(&(*iter1), &(*iter2), block * sizeof(Type));
+    }
+    assert(iter2 == end2);
+  }
+
+  /**
    * Greatest common divisor of two positive integers.
    */
   static size_t gcd(const size_t a, const size_t b) {
@@ -541,6 +425,16 @@ private:
     }
     return a1;
   }
+
+  /**
+   * Frame.
+   */
+  Frame frame;
+
+  /**
+   * Buffer.
+   */
+  Type* ptr;
 };
 
 /**

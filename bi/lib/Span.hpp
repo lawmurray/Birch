@@ -103,6 +103,17 @@ struct Span: public Length<length_value>,
   }
 
   /**
+   * Resize this span to conform to another.
+   */
+  template<class Span1>
+  void resize(const Span1& o) {
+    assert(this->stride == 1);
+
+    this->length = o.length;
+    this->lead = o.length;
+  }
+
+  /**
    * Multiply stride.
    */
   Span<length_value,stride_value,lead_value>& operator*=(const ptrdiff_t n) {
