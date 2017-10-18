@@ -4,6 +4,7 @@ bi/delay/delay_kalman.bi
 bi/delay/delay_rbpf.bi
 bi/delay/delay_spike_and_slab.bi
 bi/delay/delay_triplet.bi
+bi/demo/demo_assign.bi
 bi/demo/demo_bootstrap.bi
 bi/demo/demo_copy_fiber.bi
 bi/demo/demo_echo.bi
