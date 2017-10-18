@@ -22,7 +22,8 @@ class GammaPoisson < DelayInteger {
   }
   
   function doMarginalize() {
-    this.k <- λ.k;
+    assert round(λ.k) == λ.k;  ///@todo Polya distribution with real value?
+    this.k <- Integer(λ.k);
     this.ρ <- 1.0/(λ.θ + 1.0);
   }
   
