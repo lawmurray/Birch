@@ -184,7 +184,6 @@ void bi::CppFiberGenerator::visit(const LocalVariable* o) {
   // see above for use of number here
   middle(o->name << o->number);
   genInit(o);
-  ///@todo This will need to resize arrays, overload operator() for Array?
 }
 
 void bi::CppFiberGenerator::genSwitch() {

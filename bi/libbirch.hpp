@@ -315,14 +315,16 @@ auto make_view(const NonemptyView<Tail,Head>& tail, Arg arg, Args ... args) {
  *
  * @tparam Type Value type.
  * @tparam Frame Frame type.
+ * @tparam Args Constructor parameter types.
  *
  * @param frame Frame.
+ * @param args Constructor arguments.
  *
  * @return The array.
  */
-template<class Type, class Frame = EmptyFrame>
-auto make_array(const Frame& frame = EmptyFrame()) {
-  return Array<Type,Frame>(frame);
+template<class Type, class Frame, class ... Args>
+auto make_array(const Frame& frame, Args ... args) {
+  return Array<Type,Frame>(frame, args...);
 }
 
 /**
