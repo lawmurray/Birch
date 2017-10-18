@@ -11,6 +11,7 @@ bi/demo/demo_fiber.bi
 bi/demo/demo_hello.bi
 bi/demo/demo_lambda.bi
 bi/demo/demo_member_fiber.bi
+bi/demo/demo_resize.bi
 bi/eigen/eigen_matrix.bi
 bi/eigen/eigen_vector.bi
 MANIFEST
