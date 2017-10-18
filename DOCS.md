@@ -246,6 +246,59 @@ Any of the standard unary operators may be used in place of `+`.
 
 Operators always have a return type. It is not possible to manipulate operator precedence.
 
+
+## Arrays
+
+An array `a` of type `A` with `n` elements is declared as:
+
+    a:A[n];
+
+Multidimensional arrays are supported, for example a matrix with `m` rows and `n` columns is declared as:
+
+    a:A[m,n];
+
+The rightmost dimension is the innermost in the memory layout. Matrices therefore use row-major storage.
+
+When using an array as a parameter, use the underscore `_` as a placeholder for any size:
+
+    function f(a:A[_,_]) {
+      ...
+    }
+
+The type `A[_]` denotes a one-dimensional array (vector) of `A`, `A[_,_]` denotes a two-dimensional array (matrix) of `A`, `A[_,_,_]` denotes a three-dimensional array of `A`, and so forth.
+
+Arrays are sliced (elements are selected) with square-bracket notation, using *indices* and *ranges*. Indices are base 1.
+
+To select the element at the position of row 2, column 3, use:
+
+    a[2,3]
+
+This returns a single element of type `A`; `2` and `3` are both *indices*.
+
+To select elements at the position row 2, columns 2 to 7, use:
+
+    a[2,2..7]
+    
+This returns a vector of type `A` of length 6; `2` is an *index*, `2..7` is a *range*.
+
+Note, in the previous example, that the result type is `A[_]` (with single dimension of length 6) not `A[_,_]` (with dimensions of length 1 and 6): indices reduce the number of dimensions in the result, rather than produce a dimension of length 1. If a dimension of length 1 is desired, use a range:
+
+    a[2..2,2..7]; 
+
+Arrays are resized by assignment, e.g.
+
+    b:Integer[20];
+    a:Integer[10];
+    a <- b;
+    
+The vector `a` is now a copy of `b`, with length 20. This may be used to resize an array, but not change its number of dimensions, which is a fundamental part of its type.
+
+When using a slice on the left, the lengths of dimensions on the left and right must match:
+
+    a[1..10] <- b;          // ERROR!
+    a[1..10] <- b[11..20];  // OKAY!
+
+
 ## Optionals
 
 A variable of class type must always point to an object. When declared, a variable of class type must be constructed:
