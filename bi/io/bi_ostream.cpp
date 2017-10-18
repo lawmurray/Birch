@@ -49,6 +49,10 @@ void bi::bi_ostream::visit(const Brackets* o) {
   middle('[' << o->single << ']');
 }
 
+void bi::bi_ostream::visit(const Cast* o) {
+  middle(o->returnType << '?' << '(' << o->single << ')');
+}
+
 void bi::bi_ostream::visit(const Call* o) {
   middle(o->single << o->args);
 }

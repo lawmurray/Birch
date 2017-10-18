@@ -18,6 +18,19 @@ bi::Expression* bi::ResolverSource::modify(Brackets* o) {
   return o;
 }
 
+bi::Expression* bi::ResolverSource::modify(Cast* o) {
+  Modifier::modify(o);
+  if (o->single->type->isClass() ||
+      (o->single->type->isOptional() && o->single->type->unwrap()->isClass())) {
+    o->type = new OptionalType(o->returnType->accept(&cloner));
+    o->type = o->type->accept(this);
+    o->type->assignable = false;  // rvalue
+    return o;
+  } else {
+    throw CastException(o);
+  }
+}
+
 bi::Expression* bi::ResolverSource::modify(Call* o) {
   Modifier::modify(o);
   if (o->single->type->isFunction() || o->single->type->isOverloaded()) {

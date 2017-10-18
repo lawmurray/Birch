@@ -48,6 +48,7 @@ COMMON_SOURCES = \
   bi/common/Typed.cpp \
   bi/common/Valued.cpp \
   bi/exception/AmbiguousCallException.cpp \
+  bi/exception/CastException.cpp \
   bi/exception/CompilerException.cpp \
   bi/exception/ConditionException.cpp \
   bi/exception/ConstructorException.cpp \
@@ -77,6 +78,7 @@ COMMON_SOURCES = \
   bi/expression/Binary.cpp \
   bi/expression/BinaryCall.cpp \
   bi/expression/Brackets.cpp \
+  bi/expression/Cast.cpp \
   bi/expression/Call.cpp \
   bi/expression/EmptyExpression.cpp \
   bi/expression/Expression.cpp \
@@ -269,6 +271,7 @@ noinst_HEADERS = \
   bi/expression/Binary.hpp \
   bi/expression/BinaryCall.hpp \
   bi/expression/Brackets.hpp \
+  bi/expression/Cast.hpp \
   bi/expression/Call.hpp \
   bi/expression/EmptyExpression.hpp \
   bi/expression/Expression.hpp \

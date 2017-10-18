@@ -53,6 +53,10 @@ bi::Expression* bi::Cloner::clone(const Binary* o) {
   return new Binary(o->left->accept(this), o->right->accept(this), o->loc);
 }
 
+bi::Expression* bi::Cloner::clone(const Cast* o) {
+  return new Cast(o->returnType->accept(this), o->single->accept(this), o->loc);
+}
+
 bi::Expression* bi::Cloner::clone(const Call* o) {
   return new Call(o->single->accept(this), o->args->accept(this), o->loc);
 }

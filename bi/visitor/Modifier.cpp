@@ -65,6 +65,12 @@ bi::Expression* bi::Modifier::modify(Binary* o) {
   return o;
 }
 
+bi::Expression* bi::Modifier::modify(Cast* o) {
+  o->returnType = o->returnType->accept(this);
+  o->single = o->single->accept(this);
+  return o;
+}
+
 bi::Expression* bi::Modifier::modify(Call* o) {
   o->single = o->single->accept(this);
   o->args = o->args->accept(this);

@@ -52,6 +52,23 @@ void bi::CppBaseGenerator::visit(const Brackets* o) {
   middle("bi::make_view(" << o->single << ')');
 }
 
+void bi::CppBaseGenerator::visit(const Cast* o) {
+  auto classType = dynamic_cast<ClassType*>(o->returnType);
+  if (o->single->type->isOptional()) {
+    middle("[](auto o) -> auto { return o.is_initialized()? ");
+    middle("o.get().template cast<bi::");
+    middle(classType->name);
+    middle(">(): boost::optional<bi::Pointer<bi:: ");
+    middle(classType->name);
+    middle(">>{}; }(");
+    middle(o->single);
+    middle(")");
+  } else {
+    middle(o->single);
+    middle(".cast<bi::" << classType->name << ">()");
+  }
+}
+
 void bi::CppBaseGenerator::visit(const Call* o) {
   middle(o->single);
   genArgs(o);

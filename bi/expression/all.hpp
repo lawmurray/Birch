@@ -7,6 +7,7 @@
 #include "bi/expression/BinaryCall.hpp"
 #include "bi/expression/Brackets.hpp"
 #include "bi/expression/Call.hpp"
+#include "bi/expression/Cast.hpp"
 #include "bi/expression/EmptyExpression.hpp"
 #include "bi/expression/Get.hpp"
 #include "bi/expression/Identifier.hpp"

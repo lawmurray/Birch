@@ -60,6 +60,9 @@
   bi::Statement* valStatement;
 }
 
+%glr-parser
+%expect-rr 2
+
 %token <valString> PROGRAM CLASS TYPE FUNCTION FIBER OPERATOR
 %token <valString> IF ELSE FOR IN WHILE ASSERT RETURN YIELD CPP HPP
 %token <valString> THIS SUPER NIL CLOSED
@@ -82,9 +85,9 @@
 %type <valExpression> bool_literal int_literal real_literal string_literal
 %type <valExpression> literal identifier
 %type <valExpression> this_expression super_expression nil_expression
-%type <valExpression> parens_expression function_expression primary_expression
+%type <valExpression> parens_expression cast_expression function_expression primary_expression
 %type <valExpression> brackets_expression index_expression index_list
-%type <valExpression> postfix_expression prefix_expression
+%type <valExpression> postfix_expression postfix_query_expression prefix_expression
 %type <valExpression> multiplicative_expression additive_expression
 %type <valExpression> relational_expression equality_expression
 %type <valExpression> logical_and_expression logical_or_expression
@@ -179,7 +182,11 @@ identifier
 parens_expression
     : '(' expression ')'  { $$ = new bi::Parentheses($2, make_loc(@$)); }
     ;
-    
+
+cast_expression
+    : identifier_type '?' '(' expression ')'  { $$ = new bi::Cast($1, $4, make_loc(@$)); }
+    ;
+
 function_expression
     : FUNCTION parameters optional_result optional_braces  { $$ = new bi::LambdaFunction($2, $3, $4, make_loc(@$)); }
     ;
@@ -200,6 +207,7 @@ primary_expression
     : literal
     | identifier
     | parens_expression
+    | cast_expression
     | function_expression
     | this_expression
     | super_expression
@@ -225,8 +233,12 @@ postfix_expression
     | postfix_expression '.' primary_expression  { $$ = new bi::Member($1, $3, make_loc(@$)); }
     | postfix_expression brackets_expression     { $$ = new bi::Slice($1, $2, make_loc(@$)); }
     | postfix_expression arguments               { $$ = new bi::Call($1, $2, make_loc(@$)); }
-    | postfix_expression '?'                     { $$ = new bi::Query($1, make_loc(@$)); }
     | postfix_expression '!'                     { $$ = new bi::Get($1, make_loc(@$)); }
+    ;
+
+postfix_query_expression
+    : postfix_expression
+    | postfix_expression '?'  { $$ = new bi::Query($1, make_loc(@$)); }
     ;
 
 prefix_operator
@@ -236,7 +248,7 @@ prefix_operator
     ;
 
 prefix_expression
-    : postfix_expression
+    : postfix_query_expression
     | prefix_operator prefix_expression  { $$ = new bi::UnaryCall($1, $2, make_loc(@$)); }
     ;
 

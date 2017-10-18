@@ -3,6 +3,7 @@
  */
 #pragma once
 
+#include "boost/optional.hpp"
 #include "bi/lib/global.hpp"
 #include "bi/lib/Any.hpp"
 
@@ -72,6 +73,12 @@ public:
    */
   T* get();
   T* const get() const;
+
+  /**
+   * Cast the pointer.
+   */
+  template<class U>
+  boost::optional<Pointer<U>> cast() const;
 
   /**
    * Dereference.
@@ -211,6 +218,21 @@ T* const bi::Pointer<T>::get() const {
     #endif
     return raw;
   }
+}
+
+template<class T>
+template<class U>
+boost::optional<bi::Pointer<U>> bi::Pointer<T>::cast() const {
+  boost::optional<bi::Pointer<U>> pointer;
+  if (this->index >= 0) {
+    assert(fiberHeap);
+    const auto o = fiberHeap->get(this->index);
+    U* raw = dynamic_cast<U*>(o);
+    if (raw) {
+      pointer = raw->template pointer_from_this<U>();
+    }
+  }
+  return pointer;
 }
 
 template<class T>

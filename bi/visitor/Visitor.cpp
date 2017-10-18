@@ -59,6 +59,11 @@ void bi::Visitor::visit(const Binary* o) {
   o->right->accept(this);
 }
 
+void bi::Visitor::visit(const Cast* o) {
+  o->returnType->accept(this);
+  o->single->accept(this);
+}
+
 void bi::Visitor::visit(const Call* o) {
   o->single->accept(this);
   o->args->accept(this);

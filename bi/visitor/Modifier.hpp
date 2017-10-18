@@ -32,6 +32,7 @@ public:
   virtual Expression* modify(Parentheses* o);
   virtual Expression* modify(Brackets* o);
   virtual Expression* modify(Binary* o);
+  virtual Expression* modify(Cast* o);
   virtual Expression* modify(Call* o);
   virtual Expression* modify(BinaryCall* o);
   virtual Expression* modify(UnaryCall* o);

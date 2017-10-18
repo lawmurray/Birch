@@ -33,6 +33,7 @@ public:
   virtual void visit(const Parentheses* o);
   virtual void visit(const Brackets* o);
   virtual void visit(const Binary* o);
+  virtual void visit(const Cast* o);
   virtual void visit(const Call* o);
   virtual void visit(const BinaryCall* o);
   virtual void visit(const UnaryCall* o);

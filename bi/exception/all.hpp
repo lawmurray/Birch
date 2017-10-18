@@ -4,6 +4,7 @@
 #pragma once
 
 #include "bi/exception/AmbiguousCallException.hpp"
+#include "bi/exception/CastException.hpp"
 #include "bi/exception/CompilerException.hpp"
 #include "bi/exception/ConditionException.hpp"
 #include "bi/exception/ConstructorException.hpp"
