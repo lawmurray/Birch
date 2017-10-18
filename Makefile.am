@@ -48,6 +48,8 @@ COMMON_SOURCES = \
   bi/common/Typed.cpp \
   bi/common/Valued.cpp \
   bi/exception/AmbiguousCallException.cpp \
+  bi/exception/AssignmentException.cpp \
+  bi/exception/CallException.cpp \
   bi/exception/CastException.cpp \
   bi/exception/CompilerException.cpp \
   bi/exception/ConditionException.cpp \
@@ -58,8 +60,6 @@ COMMON_SOURCES = \
   bi/exception/FileNotFoundException.cpp \
   bi/exception/GetException.cpp \
   bi/exception/IndexException.cpp \
-  bi/exception/InvalidAssignmentException.cpp \
-  bi/exception/InvalidCallException.cpp \
   bi/exception/MemberException.cpp \
   bi/exception/NotAssignableException.cpp \
   bi/exception/NotFunctionException.cpp \
@@ -242,6 +242,8 @@ noinst_HEADERS = \
   bi/common/Valued.hpp \
   bi/exception/all.hpp \
   bi/exception/AmbiguousCallException.hpp \
+  bi/exception/AssignmentException.hpp \
+  bi/exception/CallException.hpp \
   bi/exception/CompilerException.hpp \
   bi/exception/ConditionException.hpp \
   bi/exception/ConstructorException.hpp \
@@ -250,8 +252,6 @@ noinst_HEADERS = \
   bi/exception/FileNotFoundException.hpp \
   bi/exception/GetException.hpp \
   bi/exception/IndexException.hpp \
-  bi/exception/InvalidAssignmentException.hpp \
-  bi/exception/InvalidCallException.hpp \
   bi/exception/MemberException.hpp \
   bi/exception/NotAssignableException.hpp \
   bi/exception/NotFunctionException.hpp \

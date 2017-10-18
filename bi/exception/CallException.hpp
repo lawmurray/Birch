@@ -15,14 +15,14 @@ namespace bi {
  *
  * @ingroup compiler_exception
  */
-struct InvalidCallException: public CompilerException {
+struct CallException: public CompilerException {
   /**
    * Constructor.
    *
    * @param o The invalid call.
    * @param available The available overloads.
    */
-  InvalidCallException(Argumented* o,
+  CallException(Argumented* o,
       const std::list<Parameterised*>& available = std::list<Parameterised*>());
 };
 }

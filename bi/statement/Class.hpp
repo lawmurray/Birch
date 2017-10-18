@@ -47,11 +47,34 @@ public:
    */
   virtual ~Class();
 
+  /**
+   * Add a super type.
+   */
   void addSuper(const Type* o);
+
+  /**
+   * Is the given type a super type of this?
+   */
   bool hasSuper(const Type* o) const;
+
+  /**
+   * Add a conversion.
+   */
   void addConversion(const Type* o);
+
+  /**
+   * Does this class have a conversion for the given type?
+   */
   bool hasConversion(const Type* o) const;
+
+  /**
+   * Add an assignment.
+   */
   void addAssignment(const Type* o);
+
+  /**
+   * Does this class have an assignment for the given type?
+   */
   bool hasAssignment(const Type* o) const;
 
   virtual Statement* accept(Cloner* visitor) const;

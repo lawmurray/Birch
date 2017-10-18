@@ -33,24 +33,16 @@ void bi::Class::accept(Visitor* visitor) const {
 }
 
 void bi::Class::addSuper(const Type* o) {
-  auto type = dynamic_cast<const ClassType*>(o);
-  assert(type);
-
-  /* record all super types */
-  supers.insert(type->target);
-  for (auto x : type->target->supers) {
-    supers.insert(x);
-  }
-
-  /* inherit all members from most-immediate super type */
-  scope->inherit(type->target->scope);
+  auto base = o->getClass();
+  supers.insert(base);
+  scope->inherit(base->scope);
 }
 
 bool bi::Class::hasSuper(const Type* o) const {
-  auto type = dynamic_cast<const ClassType*>(o);
-  assert(type);
-
-  return supers.find(type->target) != supers.end();
+  bool result = supers.find(o->getClass()) != supers.end();
+  result = result || std::any_of(supers.begin(), supers.end(),
+      [&](auto x) { return x->hasSuper(o); });
+  return result;
 }
 
 void bi::Class::addConversion(const Type* o) {
@@ -58,12 +50,11 @@ void bi::Class::addConversion(const Type* o) {
 }
 
 bool bi::Class::hasConversion(const Type* o) const {
-  for (auto x : conversions) {
-    if (o->equals(*x)) {
-      return true;
-    }
-  }
-  return false;
+  bool result = std::any_of(conversions.begin(), conversions.end(),
+      [&](auto x) { return x->equals(*o); });
+  result = result || std::any_of(supers.begin(), supers.end(),
+      [&](auto x) { return x->hasConversion(o); });
+  return result;
 }
 
 void bi::Class::addAssignment(const Type* o) {
@@ -71,10 +62,9 @@ void bi::Class::addAssignment(const Type* o) {
 }
 
 bool bi::Class::hasAssignment(const Type* o) const {
-  for (auto x : assignments) {
-    if (o->definitely(*x)) {
-      return true;
-    }
-  }
-  return false;
+  bool result = std::any_of(assignments.begin(), assignments.end(),
+      [&](auto x) { return x->equals(*o); });
+  result = result || std::any_of(supers.begin(), supers.end(),
+      [&](auto x) { return x->hasAssignment(o); });
+  return result;
 }

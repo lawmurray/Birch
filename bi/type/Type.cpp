@@ -73,13 +73,18 @@ bi::Class* bi::Type::getClass() const {
   return nullptr;
 }
 
+bi::Basic* bi::Type::getBasic() const {
+  assert(false);
+  return nullptr;
+}
+
 bi::Type* bi::Type::unwrap() const {
   assert(false);
   return nullptr;
 }
 
 bi::FunctionType* bi::Type::resolve(Argumented* args) {
-  throw InvalidCallException(args);
+  throw CallException(args);
 }
 
 void bi::Type::resolveConstructor(Type* args) {

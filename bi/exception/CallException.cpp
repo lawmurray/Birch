@@ -1,13 +1,13 @@
 /**
  * @file
  */
-#include "bi/exception/InvalidCallException.hpp"
+#include "bi/exception/CallException.hpp"
 
 #include "bi/io/bih_ostream.hpp"
 
 #include <sstream>
 
-bi::InvalidCallException::InvalidCallException(Argumented* o,
+bi::CallException::CallException(Argumented* o,
     const std::list<Parameterised*>& available) {
   std::stringstream base;
   bih_ostream buf(base);

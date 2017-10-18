@@ -45,6 +45,7 @@ public:
   virtual ~BasicType();
 
   virtual bool isBasic() const;
+  virtual Basic* getBasic() const;
 
   virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);

@@ -20,8 +20,9 @@ bi::Expression* bi::ResolverSource::modify(Brackets* o) {
 
 bi::Expression* bi::ResolverSource::modify(Cast* o) {
   Modifier::modify(o);
-  if (o->single->type->isClass() ||
-      (o->single->type->isOptional() && o->single->type->unwrap()->isClass())) {
+  if (o->single->type->isClass()
+      || (o->single->type->isOptional()
+          && o->single->type->unwrap()->isClass())) {
     o->type = new OptionalType(o->returnType->accept(&cloner));
     o->type = o->type->accept(this);
     o->type->assignable = false;  // rvalue
@@ -289,29 +290,15 @@ bi::Statement* bi::ResolverSource::modify(Assignment* o) {
     auto result = new If(cond, trueBranch, falseBranch, o->loc);
     return result->accept(this);
   } else {
-    /*
-     * An assignment is valid if:
-     *
-     *   1. the right-side type is a the same as, or a subtype of, the
-     *      left-side type (either a polymorphic pointer),
-     *   2. a conversion operator for the left-side type is defined in the
-     *      right-side (class) type, or
-     *   3. an assignment operator for the right-side type is defined in the
-     *      left-side (class) type.
-     */
+    /* assignment operator */
     Modifier::modify(o);
     if (!o->left->type->assignable) {
       throw NotAssignableException(o);
     }
-    if (!o->right->type->definitely(*o->left->type)) {
-      // ^ the first two cases are covered by this check
-      Identifier<Class>* ref = dynamic_cast<Identifier<Class>*>(o->left->type);
-      if (ref) {
-        assert(ref->target);
-        memberScope = ref->target->scope;
-      } else {
-        //throw MemberException(o);
-      }
+    if (!o->right->type->definitely(*o->left->type)
+        && (!o->left->type->isClass()
+            || !o->left->type->getClass()->hasAssignment(o->right->type))) {
+      throw AssignmentException(o);
     }
   }
   return o;
@@ -358,8 +345,8 @@ bi::Statement* bi::ResolverSource::modify(Fiber* o) {
 bi::Statement* bi::ResolverSource::modify(Program* o) {
   scopes.push_back(o->scope);
   o->params = o->params->accept(&assigner);
-  // ^ currently for backwards compatibility of delay_triplet example, can
-  //   be updated later
+// ^ currently for backwards compatibility of delay_triplet example, can
+//   be updated later
   o->braces = o->braces->accept(this);
   scopes.pop_back();
   return o;

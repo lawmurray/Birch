@@ -138,9 +138,14 @@ public:
   virtual Type* getRight() const;
 
   /**
-   * Get the class associated with a class type, otherwise undefined.
+   * Get the statement associated with a class type, otherwise undefined.
    */
   virtual Class* getClass() const;
+
+  /**
+   * Get the statement associated with a basic type, otherwise undefined.
+   */
+  virtual Basic* getBasic() const;
 
   /**
    * For an optional or fiber type, the type that is wrapped, otherwise

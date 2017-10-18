@@ -39,6 +39,10 @@ bool bi::BasicType::isBasic() const {
   return true;
 }
 
+bi::Basic* bi::BasicType::getBasic() const {
+  return target;
+}
+
 bool bi::BasicType::dispatchDefinitely(const Type& o) const {
   return o.definitely(*this);
 }
@@ -51,7 +55,7 @@ bool bi::BasicType::definitely(const AliasType& o) const {
 bool bi::BasicType::definitely(const BasicType& o) const {
   assert(target);
   assert(o.target);
-  return target == o.target || target->base->definitely(o);
+  return target == o.target || target->hasSuper(&o);
 }
 
 bool bi::BasicType::definitely(const OptionalType& o) const {

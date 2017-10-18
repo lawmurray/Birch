@@ -27,3 +27,15 @@ bi::Statement* bi::Basic::accept(Modifier* visitor) {
 void bi::Basic::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
+
+void bi::Basic::addSuper(const Type* o) {
+  auto base = o->getBasic();
+  supers.insert(base);
+}
+
+bool bi::Basic::hasSuper(const Type* o) const {
+  bool result = supers.find(o->getBasic()) != supers.end();
+  result = result || std::any_of(supers.begin(), supers.end(),
+      [&](auto x) { return x->hasSuper(o); });
+  return result;
+}

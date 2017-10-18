@@ -64,6 +64,10 @@ bool bi::AliasType::isFiber() const {
   return target->base->isFiber();
 }
 
+bi::Basic* bi::AliasType::getBasic() const {
+  return target->base->getBasic();
+}
+
 bi::Class* bi::AliasType::getClass() const {
   return target->base->getClass();
 }

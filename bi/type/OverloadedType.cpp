@@ -34,7 +34,7 @@ bi::FunctionType* bi::OverloadedType::resolve(Argumented* args) {
     std::list<Parameterised*> available;
     std::copy(overloaded->overloads.begin(), overloaded->overloads.end(),
         std::back_inserter(available));
-    throw InvalidCallException(args, available);
+    throw CallException(args, available);
   } else {
     throw AmbiguousCallException(args, matches);
   }

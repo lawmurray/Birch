@@ -4,6 +4,8 @@
 #pragma once
 
 #include "bi/exception/AmbiguousCallException.hpp"
+#include "bi/exception/AssignmentException.hpp"
+#include "bi/exception/CallException.hpp"
 #include "bi/exception/CastException.hpp"
 #include "bi/exception/CompilerException.hpp"
 #include "bi/exception/ConditionException.hpp"
@@ -13,8 +15,6 @@
 #include "bi/exception/FileNotFoundException.hpp"
 #include "bi/exception/GetException.hpp"
 #include "bi/exception/IndexException.hpp"
-#include "bi/exception/InvalidAssignmentException.hpp"
-#include "bi/exception/InvalidCallException.hpp"
 #include "bi/exception/MemberException.hpp"
 #include "bi/exception/NotAssignableException.hpp"
 #include "bi/exception/NotFunctionException.hpp"

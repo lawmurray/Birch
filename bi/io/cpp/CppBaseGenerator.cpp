@@ -495,11 +495,7 @@ void bi::CppBaseGenerator::visit(const List<Statement>* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Assignment* o) {
-  if (o->name->str() == "~") {
-    line(o->name << '(' << o->left << ", " << o->right << ");");
-  } else {
-    line(o->left << " = " << o->right << ';');
-  }
+  line(o->left << " = " << o->right << ';');
 }
 
 void bi::CppBaseGenerator::visit(const ExpressionStatement* o) {

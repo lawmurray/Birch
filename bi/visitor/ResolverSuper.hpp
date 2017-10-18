@@ -29,5 +29,6 @@ public:
   virtual Statement* modify(ConversionOperator* o);
   virtual Statement* modify(Class* o);
   virtual Statement* modify(Alias* o);
+  virtual Statement* modify(Basic* o);
 };
 }
