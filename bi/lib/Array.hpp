@@ -30,20 +30,29 @@ public:
   /**
    * Constructor.
    *
-   * @tparam ...Args Arbitrary types.
+   * @param frame Frame.
+   */
+  Array(const Frame& frame = Frame()) :
+      frame(frame),
+      ptr(allocate(frame.volume())),
+      isView(false) {
+    //
+  }
+
+  /**
+   * Constructor.
+   *
+   * @tparam ...Args Constructor parameter types.
    *
    * @param frame Frame.
-   * @param args Constructor arguments.
-   *
-   * Memory is allocated for the array, and is freed on destruction. After
-   * allocation, the constructor is called for each element with the given
-   * arguments.
+   * @param args Constructor arguments for each element.
    */
   template<class ... Args>
-  Array(const Frame& frame = Frame(), Args ... args) :
+  Array(const Frame& frame, Args ... args) :
       frame(frame),
-      ptr(allocate(frame.volume())) {
-    initialise(args...);
+      ptr(allocate(frame.volume())),
+      isView(false) {
+    initialize(args...);
   }
 
   /**
@@ -51,7 +60,8 @@ public:
    */
   Array(const Array<Type,Frame>& o) :
       frame(o.frame),
-      ptr(allocate(frame.volume())) {
+      ptr(allocate(frame.volume())),
+      isView(false) {
     copy(o);
   }
 
@@ -61,12 +71,16 @@ public:
   Array(Array<Type,Frame> && o) = default;
 
   /**
-   * Copy assignment. The frames of the two arrays must conform.
+   * Copy assignment. For a view the frames of the two arrays must conform,
+   * otherwise a resize is permitted.
    */
   Array<Type,Frame>& operator=(const Array<Type,Frame>& o) {
     /* pre-condition */
-    assert(frame.conforms(o.frame));
+    assert(!isView || frame.conforms(o.frame));
 
+    if (!isView && !frame.conforms(o.frame)) {
+      frame.resize(o.frame);
+    }
     copy(o);
     return *this;
   }
@@ -76,9 +90,18 @@ public:
    */
   Array<Type,Frame>& operator=(Array<Type,Frame> && o) {
     /* pre-condition */
-    assert(frame.conforms(o.frame));
+    assert(!isView || frame.conforms(o.frame));
 
-    copy(o);
+    if (!isView && !frame.conforms(o.frame)) {
+      frame.resize(o.frame);
+      if (!o.isView) {
+        ptr = o.ptr;  // just move
+      } else {
+        copy(o);
+      }
+    } else {
+      copy(o);
+    }
     return *this;
   }
 
@@ -96,7 +119,8 @@ public:
    */
   template<class View1, typename = std::enable_if_t<View1::rangeCount() != 0>>
   auto operator()(const View1& view) const {
-    return Array<Type,decltype(frame(view))>(ptr + frame.serial(view), frame(view));
+    return Array<Type,decltype(frame(view))>(ptr + frame.serial(view),
+        frame(view));
   }
   template<class View1, typename = std::enable_if_t<View1::rangeCount() == 0>>
   auto& operator()(const View1& view) {
@@ -160,9 +184,11 @@ public:
    * Memory is allocated for the array, and is freed on destruction. After
    * allocation, the contents of the existing array are copied in.
    */
-  template<class DerivedType, typename = std::enable_if_t<
-      is_eigen_compatible<DerivedType>::value>>Array(const Eigen::EigenBase<DerivedType>& o, const Frame& frame) :
-  frame(frame), ptr(allocate(frame.volume())) {
+  template<class DerivedType, typename = std::enable_if_t<is_eigen_compatible<DerivedType>::value>>
+  Array(const Eigen::EigenBase<DerivedType>& o, const Frame& frame) :
+      frame(frame),
+      ptr(allocate(frame.volume())),
+      isView(false) {
     toEigen() = o;
   }
 
@@ -171,7 +197,9 @@ public:
    */
   template<class DerivedType, typename = std::enable_if_t<is_eigen_compatible<DerivedType>::value>>
   Array(const Eigen::EigenBase<DerivedType>& o) :
-  frame(o.rows(), o.cols()), ptr(allocate(frame.volume())) {
+      frame(o.rows(), o.cols()),
+      ptr(allocate(frame.volume())),
+      isView(false) {
     toEigen() = o;
   }
 
@@ -335,17 +363,18 @@ private:
    */
   Array(Type* ptr, const Frame& frame) :
       frame(frame),
-      ptr(ptr) {
+      ptr(ptr),
+      isView(true) {
     //
   }
 
   /**
-   * Initialise allocated memory.
+   * initialize allocated memory.
    *
    * @param args Constructor arguments.
    */
   template<class ... Args>
-  void initialise(Args ... args) {
+  void initialize(Args ... args) {
     for (auto iter = begin(); iter != end(); ++iter) {
       emplace(*iter, args...);
     }
@@ -435,6 +464,12 @@ private:
    * Buffer.
    */
   Type* ptr;
+
+  /**
+   * Is this a view of another array? A view has stricter assignment
+   * semantics, as it cannot be resized or moved.
+   */
+  bool isView;
 };
 
 /**
