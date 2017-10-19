@@ -217,7 +217,7 @@ function simulate_categorical(ρ:Real[_]) -> Integer {
 function simulate_multinomial(n:Integer, ρ:Real[_]) -> Integer[_] {
   D:Integer <- length(ρ);
   x:Integer[_] <- vector(0, D);
-  R:Integer[_] <- inclusive_prefix_sum(ρ);
+  R:Real[_] <- inclusive_prefix_sum(ρ);
   
   i:Integer <- n;
   j:Integer <- D;
