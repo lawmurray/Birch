@@ -58,7 +58,7 @@ void bi::CppBaseGenerator::visit(const Cast* o) {
     middle("[](auto o) -> auto { return o.is_initialized()? ");
     middle("o.get().template cast<bi::");
     middle(classType->name);
-    middle(">(): boost::optional<bi::Pointer<bi:: ");
+    middle(">(): boost::optional<bi::Pointer<bi::");
     middle(classType->name);
     middle(">>{}; }(");
     middle(o->single);

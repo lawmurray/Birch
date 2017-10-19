@@ -383,7 +383,6 @@ arguments
     : '(' ')'                  { $$ = new bi::Parentheses(new bi::EmptyExpression(make_loc(@$)), make_loc(@$)); }
     | '(' expression_list ')'  { $$ = new bi::Parentheses($2, make_loc(@$)); }
     ;
-    ;
 
 optional_arguments
     : arguments
@@ -703,7 +702,6 @@ type_parameter_list
 type_parameters
     : '(' ')'                      { $$ = new bi::EmptyType(make_loc(@$)); }
     | '(' type_parameter_list ')'  { $$ = $2; }
-    ;
     ;
 
 %%
