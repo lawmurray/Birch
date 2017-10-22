@@ -10,6 +10,8 @@ bi/basic/Real.bi
 bi/basic/Real32.bi
 bi/basic/Real64.bi
 bi/basic/String.bi
+bi/container/LinkedList.bi
+bi/container/LinkedListNode.bi
 bi/diagnostics/DelayDiagnostics.bi
 bi/distribution/conjugate/BetaBinomial.bi
 bi/distribution/conjugate/GammaPoisson.bi
