@@ -82,7 +82,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
     }
 
     /* member parameters */
-    for (auto iter = o->parens->begin(); iter != o->parens->end(); ++iter) {
+    for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
       *this << *iter;
     }
 
@@ -119,7 +119,7 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
   if (!header) {
     middle("bi::" << type->name << "::");
   }
-  middle(internalise(o->name->str()) << o->params);
+  middle(internalise(o->name->str()) << '(' << o->params << ')');
   //middle(" const");
   if (header) {
     finish(';');

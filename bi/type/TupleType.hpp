@@ -8,45 +8,42 @@
 
 namespace bi {
 /**
- * Fiber type.
+ * Parentheses type.
  *
  * @ingroup compiler_type
  */
-class FiberType: public Type, public Single<Type> {
+class TupleType: public Type, public Single<Type> {
 public:
   /**
    * Constructor.
    *
-   * @param single Yield type.
+   * @param single Type in parentheses.
    * @param loc Location.
    * @param assignable Is this type assignable?
    */
-  FiberType(Type* single, Location* loc = nullptr, const bool assignable =
-      false);
+  TupleType(Type* single, Location* loc = nullptr,
+      const bool assignable = false);
 
   /**
    * Destructor.
    */
-  virtual ~FiberType();
+  virtual ~TupleType();
 
   virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
-
-  virtual bool isFiber() const;
-  virtual Type* unwrap() const;
 
   using Type::definitely;
   using Type::possibly;
 
   virtual bool dispatchDefinitely(const Type& o) const;
   virtual bool definitely(const AliasType& o) const;
-  virtual bool definitely(const FiberType& o) const;
   virtual bool definitely(const OptionalType& o) const;
+  virtual bool definitely(const TupleType& o) const;
 
   virtual bool dispatchPossibly(const Type& o) const;
   virtual bool possibly(const AliasType& o) const;
-  virtual bool possibly(const FiberType& o) const;
   virtual bool possibly(const OptionalType& o) const;
+  virtual bool possibly(const TupleType& o) const;
 };
 }

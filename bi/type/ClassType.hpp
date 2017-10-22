@@ -61,12 +61,12 @@ public:
   virtual bool definitely(const FunctionType& o) const;
   virtual bool definitely(const ListType& o) const;
   virtual bool definitely(const OptionalType& o) const;
-  virtual bool definitely(const ParenthesesType& o) const;
+  virtual bool definitely(const TupleType& o) const;
 
   virtual bool dispatchPossibly(const Type& o) const;
   virtual bool possibly(const AliasType& o) const;
   virtual bool possibly(const ClassType& o) const;
   virtual bool possibly(const OptionalType& o) const;
-  virtual bool possibly(const ParenthesesType& o) const;
+  virtual bool possibly(const TupleType& o) const;
 };
 }

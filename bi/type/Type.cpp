@@ -38,6 +38,10 @@ bool bi::Type::isArray() const {
   return false;
 }
 
+bool bi::Type::isList() const {
+  return false;
+}
+
 bool bi::Type::isFunction() const {
   return false;
 }
@@ -165,7 +169,7 @@ bool bi::Type::definitely(const OverloadedType& o) const {
   return false;
 }
 
-bool bi::Type::definitely(const ParenthesesType& o) const {
+bool bi::Type::definitely(const TupleType& o) const {
   return false;
 }
 
@@ -225,7 +229,7 @@ bool bi::Type::possibly(const OverloadedType& o) const {
   return false;
 }
 
-bool bi::Type::possibly(const ParenthesesType& o) const {
+bool bi::Type::possibly(const TupleType& o) const {
   return false;
 }
 

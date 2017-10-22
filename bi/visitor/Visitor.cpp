@@ -274,9 +274,9 @@ void bi::Visitor::visit(const ConversionOperator* o) {
 }
 
 void bi::Visitor::visit(const Class* o) {
-  o->parens->accept(this);
+  o->params->accept(this);
   o->base->accept(this);
-  o->baseParens->accept(this);
+  o->baseArgs->accept(this);
   o->braces->accept(this);
 }
 
@@ -356,7 +356,7 @@ void bi::Visitor::visit(const ArrayType* o) {
   o->brackets->accept(this);
 }
 
-void bi::Visitor::visit(const ParenthesesType* o) {
+void bi::Visitor::visit(const TupleType* o) {
   o->single->accept(this);
 }
 

@@ -16,4 +16,4 @@
 #include "bi/type/NilType.hpp"
 #include "bi/type/OptionalType.hpp"
 #include "bi/type/OverloadedType.hpp"
-#include "bi/type/ParenthesesType.hpp"
+#include "bi/type/TupleType.hpp"

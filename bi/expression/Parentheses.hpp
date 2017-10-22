@@ -29,8 +29,6 @@ public:
   virtual ~Parentheses();
 
   virtual Expression* strip();
-  virtual Iterator<Expression> begin() const;
-  virtual Iterator<Expression> end() const;
 
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);

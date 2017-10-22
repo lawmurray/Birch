@@ -309,9 +309,9 @@ bi::Statement* bi::Modifier::modify(ConversionOperator* o) {
 }
 
 bi::Statement* bi::Modifier::modify(Class* o) {
-  o->parens = o->parens->accept(this);
+  o->params = o->params->accept(this);
   o->base = o->base->accept(this);
-  o->baseParens = o->baseParens->accept(this);
+  o->baseArgs = o->baseArgs->accept(this);
   o->braces = o->braces->accept(this);
   return o;
 }
@@ -403,7 +403,7 @@ bi::Type* bi::Modifier::modify(ArrayType* o) {
   return o;
 }
 
-bi::Type* bi::Modifier::modify(ParenthesesType* o) {
+bi::Type* bi::Modifier::modify(TupleType* o) {
   o->single = o->single->accept(this);
   return o;
 }

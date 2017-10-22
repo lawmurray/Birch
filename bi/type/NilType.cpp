@@ -38,10 +38,6 @@ bool bi::NilType::definitely(const OptionalType& o) const {
   return true;
 }
 
-bool bi::NilType::definitely(const ParenthesesType& o) const {
-  return definitely(*o.single);
-}
-
 bool bi::NilType::dispatchPossibly(const Type& o) const {
   return o.possibly(*this);
 }
@@ -52,8 +48,4 @@ bool bi::NilType::possibly(const NilType& o) const {
 
 bool bi::NilType::possibly(const OptionalType& o) const {
   return true;
-}
-
-bool bi::NilType::possibly(const ParenthesesType& o) const {
-  return possibly(*o.single);
 }

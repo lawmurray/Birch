@@ -13,6 +13,27 @@ bi::ResolverSource::~ResolverSource() {
   //
 }
 
+bi::Expression* bi::ResolverSource::modify(List<Expression>* o) {
+  Modifier::modify(o);
+  o->type = new ListType(o->head->type->accept(&cloner),
+      o->tail->type->accept(&cloner), o->loc);
+  o->type = o->type->accept(this);
+  o->type->assignable = o->head->type->assignable && o->tail->type->assignable;
+  return o;
+}
+
+bi::Expression* bi::ResolverSource::modify(Parentheses* o) {
+  Modifier::modify(o);
+  if (o->single->tupleSize() > 1) {
+    o->type = new TupleType(o->single->type->accept(&cloner), o->loc);
+    o->type = o->type->accept(this);
+    o->type->assignable = o->single->type->assignable;
+  } else {
+    o->type = o->single->type->accept(&cloner)->accept(this);
+  }
+  return o;
+}
+
 bi::Expression* bi::ResolverSource::modify(Brackets* o) {
   Modifier::modify(o);
   return o;
@@ -23,7 +44,7 @@ bi::Expression* bi::ResolverSource::modify(Cast* o) {
   if (o->single->type->isClass()
       || (o->single->type->isOptional()
           && o->single->type->unwrap()->isClass())) {
-    o->type = new OptionalType(o->returnType->accept(&cloner));
+    o->type = new OptionalType(o->returnType->accept(&cloner), o->loc);
     o->type = o->type->accept(this);
     o->type->assignable = false;  // rvalue
     return o;
@@ -411,8 +432,8 @@ bi::Statement* bi::ResolverSource::modify(ConversionOperator* o) {
 bi::Statement* bi::ResolverSource::modify(Class* o) {
   scopes.push_back(o->scope);
   currentClass = o;
-  o->baseParens = o->baseParens->accept(this);
-  o->base->resolveConstructor(o->baseParens->type);
+  o->baseArgs = o->baseArgs->accept(this);
+  o->base->resolveConstructor(o->baseArgs->type);
   o->braces = o->braces->accept(this);
   currentClass = nullptr;
   scopes.pop_back();

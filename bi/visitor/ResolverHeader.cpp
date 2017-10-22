@@ -135,7 +135,7 @@ bi::Statement* bi::ResolverHeader::modify(AssignmentOperator* o) {
 bi::Statement* bi::ResolverHeader::modify(Class* o) {
   scopes.push_back(o->scope);
   currentClass = o;
-  o->parens = o->parens->accept(this);
+  o->params = o->params->accept(this);
   o->braces = o->braces->accept(this);
   currentClass = nullptr;
   scopes.pop_back();

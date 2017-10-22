@@ -157,7 +157,7 @@ COMMON_SOURCES = \
   bi/type/NilType.cpp \
   bi/type/OptionalType.cpp \
   bi/type/OverloadedType.cpp \
-  bi/type/ParenthesesType.cpp \
+  bi/type/TupleType.cpp \
   bi/type/Type.cpp \
   bi/visitor/Assigner.cpp \
   bi/visitor/Cloner.cpp \
@@ -355,7 +355,7 @@ noinst_HEADERS = \
   bi/type/NilType.hpp \
   bi/type/OptionalType.hpp \
   bi/type/OverloadedType.hpp \
-  bi/type/ParenthesesType.hpp \
+  bi/type/TupleType.hpp \
   bi/type/Type.hpp \
   bi/visitor/all.hpp \
   bi/visitor/Assigner.hpp \

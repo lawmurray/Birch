@@ -46,7 +46,7 @@ bi::Class* bi::ClassType::getClass() const {
 
 void bi::ClassType::resolveConstructor(Type* args) {
   assert(target);
-  if (!args->definitely(*target->parens->type)) {
+  if (!args->definitely(*target->params->type)) {
     throw ConstructorException(args, target);
   }
 }
@@ -97,8 +97,9 @@ bool bi::ClassType::definitely(const OptionalType& o) const {
   return definitely(*o.single);
 }
 
-bool bi::ClassType::definitely(const ParenthesesType& o) const {
-  return definitely(*o.single);
+bool bi::ClassType::definitely(const TupleType& o) const {
+  assert(target);
+  return target->hasConversion(&o) || target->base->definitely(o);
 }
 
 bool bi::ClassType::dispatchPossibly(const Type& o) const {
@@ -119,6 +120,7 @@ bool bi::ClassType::possibly(const OptionalType& o) const {
   return possibly(*o.single);
 }
 
-bool bi::ClassType::possibly(const ParenthesesType& o) const {
-  return possibly(*o.single);
+bool bi::ClassType::possibly(const TupleType& o) const {
+  assert(target);
+  return target->hasConversion(&o) || target->base->possibly(o);
 }

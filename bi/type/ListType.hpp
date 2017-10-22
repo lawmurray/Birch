@@ -34,6 +34,8 @@ public:
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
+  virtual bool isList() const;
+
   /**
    * Left operand.
    */
@@ -51,12 +53,10 @@ public:
   virtual bool definitely(const AliasType& o) const;
   virtual bool definitely(const ListType& o) const;
   virtual bool definitely(const OptionalType& o) const;
-  virtual bool definitely(const ParenthesesType& o) const;
 
   virtual bool dispatchPossibly(const Type& o) const;
   virtual bool possibly(const AliasType& o) const;
   virtual bool possibly(const ListType& o) const;
   virtual bool possibly(const OptionalType& o) const;
-  virtual bool possibly(const ParenthesesType& o) const;
 };
 }

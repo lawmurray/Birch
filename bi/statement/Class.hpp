@@ -6,7 +6,7 @@
 #include "bi/statement/Statement.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Numbered.hpp"
-#include "bi/common/Parenthesised.hpp"
+#include "bi/common/Parameterised.hpp"
 #include "bi/common/Based.hpp"
 #include "bi/common/Braced.hpp"
 #include "bi/common/Scoped.hpp"
@@ -23,7 +23,7 @@ namespace bi {
 class Class: public Statement,
     public Named,
     public Numbered,
-    public Parenthesised,
+    public Parameterised,
     public Based,
     public Braced,
     public Scoped {
@@ -32,14 +32,14 @@ public:
    * Constructor.
    *
    * @param name Name.
-   * @param parens Constructor parameters.
+   * @param params Constructor parameters.
    * @param base Base type.
-   * @param baseParens Base type constructor arguments.
+   * @param baseArgs Base type constructor arguments.
    * @param braces Braces.
    * @param loc Location.
    */
   Class(Name* name, Expression* parens, Type* base,
-      Expression* baseParens, Statement* braces, Location* loc =
+      Expression* baseArgs, Statement* braces, Location* loc =
           nullptr);
 
   /**
@@ -84,7 +84,7 @@ public:
   /**
    * Base type constructor arguments.
    */
-  Expression* baseParens;
+  Expression* baseArgs;
 
 private:
   /**

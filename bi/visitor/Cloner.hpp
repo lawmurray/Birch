@@ -97,7 +97,7 @@ public:
   virtual Type* clone(const AliasType* o);
   virtual Type* clone(const BasicType* o);
   virtual Type* clone(const ArrayType* o);
-  virtual Type* clone(const ParenthesesType* o);
+  virtual Type* clone(const TupleType* o);
   virtual Type* clone(const BinaryType* o);
   virtual Type* clone(const FunctionType* o);
   virtual Type* clone(const OverloadedType* o);

@@ -28,6 +28,8 @@ public:
 
   using Resolver::modify;
 
+  virtual Expression* modify(List<Expression>* o);
+  virtual Expression* modify(Parentheses* o);
   virtual Expression* modify(Brackets* o);
   virtual Expression* modify(Cast* o);
   virtual Expression* modify(Call* o);

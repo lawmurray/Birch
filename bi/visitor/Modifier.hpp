@@ -97,7 +97,7 @@ public:
   virtual Type* modify(AliasType* o);
   virtual Type* modify(BasicType* o);
   virtual Type* modify(ArrayType* o);
-  virtual Type* modify(ParenthesesType* o);
+  virtual Type* modify(TupleType* o);
   virtual Type* modify(BinaryType* o);
   virtual Type* modify(FunctionType* o);
   virtual Type* modify(OverloadedType* o);

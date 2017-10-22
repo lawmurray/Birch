@@ -86,7 +86,7 @@ public:
   virtual void visit(const ListType* o);
   virtual void visit(const EmptyType* o);
   virtual void visit(const ArrayType* o);
-  virtual void visit(const ParenthesesType* o);
+  virtual void visit(const TupleType* o);
   virtual void visit(const FunctionType* o);
   virtual void visit(const FiberType* o);
   virtual void visit(const OptionalType* o);
@@ -130,7 +130,7 @@ void bi::CppBaseGenerator::genInit(const T* o) {
       middle(" = bi::make_array<" << type->single << ">(");
       middle("bi::make_frame(" << type->brackets << ')');
       if (!o->parens->isEmpty()) {
-        middle(", " << o->parens->strip());
+        middle(", " << o->parens);
       }
       middle(')');
     }
@@ -140,12 +140,7 @@ void bi::CppBaseGenerator::genInit(const T* o) {
     if (!o->value->isEmpty()) {
       middle(" = " << o->value);
     } else {
-      middle(" = bi::make_object<bi::" << named->name << '>');
-      if (!o->parens->isEmpty()) {
-        middle(o->parens);
-      } else {
-        middle("()");
-      }
+      middle(" = bi::make_object<bi::" << named->name << ">(" << o->parens << ')');
     }
   } else if (!o->value->isEmpty()) {
     middle(" = " << o->value);

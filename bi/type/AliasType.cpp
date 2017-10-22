@@ -131,7 +131,7 @@ bool bi::AliasType::definitely(const OptionalType& o) const {
   return target->base->definitely(o);
 }
 
-bool bi::AliasType::definitely(const ParenthesesType& o) const {
+bool bi::AliasType::definitely(const TupleType& o) const {
   assert(target);
   return target->base->definitely(o);
 }
@@ -185,7 +185,7 @@ bool bi::AliasType::possibly(const OptionalType& o) const {
   return target->base->possibly(o);
 }
 
-bool bi::AliasType::possibly(const ParenthesesType& o) const {
+bool bi::AliasType::possibly(const TupleType& o) const {
   assert(target);
   return target->base->possibly(o);
 }

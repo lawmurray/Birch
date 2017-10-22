@@ -44,8 +44,8 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     middle("bi::" << type->name << "::" << stateName << "::");
   }
   middle(stateName << "(const Pointer<" << type->name << ">& self");
-  if (!o->params->strip()->isEmpty()) {
-    middle(", " << o->params->strip());
+  if (!o->params->isEmpty()) {
+    middle(", " << o->params);
   }
   middle(')');
   if (header) {
@@ -135,7 +135,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   if (!header) {
     middle("bi::" << type->name << "::");
   }
-  middle(o->name << o->params);
+  middle(o->name << '(' << o->params << ')');
   if (header) {
     finish(';');
   } else {

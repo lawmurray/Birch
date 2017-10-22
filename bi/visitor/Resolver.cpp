@@ -30,7 +30,7 @@ bi::Expression* bi::Resolver::modify(List<Expression>* o) {
 
 bi::Expression* bi::Resolver::modify(Parentheses* o) {
   Modifier::modify(o);
-  o->type = new ParenthesesType(o->single->type->accept(&cloner), o->loc);
+  o->type = new TupleType(o->single->type->accept(&cloner), o->loc);
   o->type = o->type->accept(this);
   return o;
 }

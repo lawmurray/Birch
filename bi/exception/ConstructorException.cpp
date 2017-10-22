@@ -29,10 +29,10 @@ bi::ConstructorException::ConstructorException(const Type* args,
     if (type->loc) {
       buf << type->loc;
     }
-    if (type->parens->type->isEmpty()) {
+    if (type->params->type->isEmpty()) {
       buf << "note: no parameters\n";
     } else {
-      buf << "note: parameter type '" << type->parens->type << "'\n";
+      buf << "note: parameter type '" << type->params->type << "'\n";
     }
   }
   msg = base.str();

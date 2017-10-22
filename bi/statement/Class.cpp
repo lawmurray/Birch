@@ -5,14 +5,14 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::Class::Class(Name* name, Expression* parens, Type* base,
-    Expression* baseParens, Statement* braces, Location* loc) :
+bi::Class::Class(Name* name, Expression* params, Type* base,
+    Expression* baseArgs, Statement* braces, Location* loc) :
     Statement(loc),
     Named(name),
-    Parenthesised(parens),
+    Parameterised(params),
     Based(base),
     Braced(braces),
-    baseParens(baseParens) {
+    baseArgs(baseArgs) {
   //
 }
 

@@ -256,8 +256,8 @@ bi::Statement* bi::Cloner::clone(const ConversionOperator* o) {
 }
 
 bi::Statement* bi::Cloner::clone(const Class* o) {
-  return new Class(o->name, o->parens->accept(this), o->base->accept(this),
-      o->baseParens->accept(this), o->braces->accept(this), o->loc);
+  return new Class(o->name, o->params->accept(this), o->base->accept(this),
+      o->baseArgs->accept(this), o->braces->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const Alias* o) {
@@ -332,8 +332,8 @@ bi::Type* bi::Cloner::clone(const ArrayType* o) {
       o->assignable);
 }
 
-bi::Type* bi::Cloner::clone(const ParenthesesType* o) {
-  return new ParenthesesType(o->single->accept(this), o->loc, o->assignable);
+bi::Type* bi::Cloner::clone(const TupleType* o) {
+  return new TupleType(o->single->accept(this), o->loc, o->assignable);
 }
 
 bi::Type* bi::Cloner::clone(const BinaryType* o) {

@@ -155,7 +155,7 @@ void bi::md_ostream::visit(const ArrayType* o) {
   middle("\\]");
 }
 
-void bi::md_ostream::visit(const ParenthesesType* o) {
+void bi::md_ostream::visit(const TupleType* o) {
   middle('(' << o->single << ')');
 }
 

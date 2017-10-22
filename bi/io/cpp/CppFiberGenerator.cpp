@@ -42,7 +42,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   if (!header) {
     middle("bi::func::" << stateName << "::");
   }
-  middle(stateName << o->params);
+  middle(stateName << '(' << o->params << ')');
   if (header) {
     finish(';');
   } else {
@@ -134,7 +134,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   if (!header) {
     middle("bi::func::");
   }
-  middle(o->name << o->params);
+  middle(o->name << '(' << o->params << ')');
   if (header) {
     finish(';');
   } else {

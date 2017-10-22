@@ -19,7 +19,7 @@ bi::Type* bi::Assigner::modify(ArrayType* o) {
   return o;
 }
 
-bi::Type* bi::Assigner::modify(ParenthesesType* o) {
+bi::Type* bi::Assigner::modify(TupleType* o) {
   Modifier::modify(o);
   o->assignable = true;
   return o;

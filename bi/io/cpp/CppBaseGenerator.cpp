@@ -45,7 +45,15 @@ void bi::CppBaseGenerator::visit(const Literal<const char*>* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Parentheses* o) {
-  middle('(' << o->single << ')');
+  if (o->single->type->isList()) {
+    if (o->single->type->assignable) {
+      middle("std::tie(" << o->single << ')');
+    } else {
+      middle("std::make_tuple(" << o->single << ')');
+    }
+  } else {
+    middle('(' << o->single << ')');
+  }
 }
 
 void bi::CppBaseGenerator::visit(const Brackets* o) {
@@ -285,8 +293,7 @@ void bi::CppBaseGenerator::visit(const Function* o) {
     if (!header) {
       middle("bi::func::");
     }
-    middle(o->name << o->params);
-
+    middle(o->name << '(' << o->params << ')');
     if (header) {
       finish(';');
     } else {
@@ -427,8 +434,9 @@ void bi::CppBaseGenerator::visit(const BinaryOperator* o) {
     } else {
       middle(o->name);
     }
-    middle(
-        '(' << o->params->getLeft() << ", " << o->params->getRight() << ')');
+    middle('(');
+    middle(o->params->getLeft() << ", " << o->params->getRight());
+    middle(')');
     if (header) {
       finish(';');
     } else {
@@ -574,27 +582,24 @@ void bi::CppBaseGenerator::visit(const EmptyType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const ListType* o) {
-  middle(o->head);
-  Type* tail = o->tail;
-  ListType* list = dynamic_cast<ListType*>(tail);
-  while (list) {
-    middle(',' << list->head);
-    tail = list->tail;
-    list = dynamic_cast<ListType*>(tail);
+  for (auto iter = o->begin(); iter != o->end(); ++iter) {
+    if (iter != o->begin()) {
+      middle(',');
+    }
+    middle(*iter);
   }
-  middle(',' << tail);
 }
 
 void bi::CppBaseGenerator::visit(const ArrayType* o) {
   middle("bi::DefaultArray<" << o->single << ',' << o->count() << '>');
 }
 
-void bi::CppBaseGenerator::visit(const ParenthesesType* o) {
-  middle('(' << o->single << ')');
+void bi::CppBaseGenerator::visit(const TupleType* o) {
+  middle("std::tuple<" << o->single << '>');
 }
 
 void bi::CppBaseGenerator::visit(const FunctionType* o) {
-  middle("std::function<" << o->returnType << o->params);
+  middle("std::function<" << o->returnType << '(' << o->params << ')');
 }
 
 void bi::CppBaseGenerator::visit(const FiberType* o) {

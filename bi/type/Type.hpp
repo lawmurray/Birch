@@ -26,7 +26,7 @@ class ListType;
 class NilType;
 class OptionalType;
 class OverloadedType;
-class ParenthesesType;
+class TupleType;
 
 class Class;
 class Alias;
@@ -101,6 +101,11 @@ public:
    * Is this an array type?
    */
   virtual bool isArray() const;
+
+  /**
+   * Is this a list type?
+   */
+  virtual bool isList() const;
 
   /**
    * Is this a function type?
@@ -210,7 +215,7 @@ public:
   virtual bool definitely(const NilType& o) const;
   virtual bool definitely(const OptionalType& o) const;
   virtual bool definitely(const OverloadedType& o) const;
-  virtual bool definitely(const ParenthesesType& o) const;
+  virtual bool definitely(const TupleType& o) const;
 
   virtual bool possibly(const Type& o) const;
   virtual bool dispatchPossibly(const Type& o) const = 0;
@@ -227,7 +232,7 @@ public:
   virtual bool possibly(const NilType& o) const;
   virtual bool possibly(const OptionalType& o) const;
   virtual bool possibly(const OverloadedType& o) const;
-  virtual bool possibly(const ParenthesesType& o) const;
+  virtual bool possibly(const TupleType& o) const;
 
   /**
    * Are these two types the same?
