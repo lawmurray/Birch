@@ -5,10 +5,10 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::LambdaFunction::LambdaFunction(Expression* parens, Type* returnType,
+bi::LambdaFunction::LambdaFunction(Expression* params, Type* returnType,
     Statement* braces, Location* loc) :
     Expression(loc),
-    Parenthesised(parens),
+    Parameterised(params),
     ReturnTyped(returnType),
     Braced(braces) {
   //

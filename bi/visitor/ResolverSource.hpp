@@ -47,6 +47,7 @@ public:
   virtual Expression* modify(This* o);
   virtual Expression* modify(Nil* o);
   virtual Expression* modify(LocalVariable* o);
+  virtual Expression* modify(Parameter* o);
   virtual Expression* modify(MemberParameter* o);
   virtual Expression* modify(Identifier<Unknown>* o);
   virtual Expression* modify(Identifier<Parameter>* o);
@@ -98,9 +99,10 @@ private:
       bi::OverloadedIdentifier<ObjectType>* o);
 
   /**
-   * Return type of current function.
+   * Return type of current function. Stack as functions may contain lambda
+   * functions may contain lambda functions...
    */
-  Type* currentReturnType;
+  std::stack<Type*> returnTypes;
 
   /**
    * Yield type of current fiber.

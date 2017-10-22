@@ -106,7 +106,7 @@ bi::Expression* bi::Modifier::modify(Get* o) {
 }
 
 bi::Expression* bi::Modifier::modify(LambdaFunction* o) {
-  o->parens = o->parens->accept(this);
+  o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
   o->braces = o->braces->accept(this);
   return o;

@@ -66,7 +66,6 @@
 %token <valString> PROGRAM CLASS TYPE FUNCTION FIBER OPERATOR
 %token <valString> IF ELSE FOR IN WHILE ASSERT RETURN YIELD CPP HPP
 %token <valString> THIS SUPER NIL CLOSED
-%token <valString> FUNCTION_UPPER
 %token <valString> DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE NAME
 %token <valBool> BOOL_LITERAL
 %token <valInt> INT_LITERAL
@@ -188,7 +187,7 @@ cast_expression
     ;
 
 function_expression
-    : FUNCTION parameters optional_result optional_braces  { $$ = new bi::LambdaFunction($2, $3, $4, make_loc(@$)); }
+    : '@' parameters optional_result optional_braces  { $$ = new bi::LambdaFunction($2, $3, $4, make_loc(@$)); }
     ;
 
 this_expression
@@ -669,7 +668,7 @@ tuple_type
     ;
 
 function_type
-    : FUNCTION_UPPER '<' type_parameters optional_result '>'  { $$ = new bi::FunctionType($3, $4, make_loc(@$)); }
+    : '@' '(' type_parameters optional_result ')'  { $$ = new bi::FunctionType($3, $4, make_loc(@$)); }
     ;
 
 primary_type

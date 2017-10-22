@@ -4,7 +4,7 @@
 #pragma once
 
 #include "bi/expression/Expression.hpp"
-#include "bi/common/Parenthesised.hpp"
+#include "bi/common/Parameterised.hpp"
 #include "bi/common/ReturnTyped.hpp"
 #include "bi/common/Braced.hpp"
 #include "bi/common/Scoped.hpp"
@@ -16,7 +16,7 @@ namespace bi {
  * @ingroup compiler_expression
  */
 class LambdaFunction: public Expression,
-    public Parenthesised,
+    public Parameterised,
     public ReturnTyped,
     public Scoped,
     public Braced {
@@ -24,12 +24,12 @@ public:
   /**
    * Constructor.
    *
-   * @param parens Parentheses expression.
+   * @param params Parameters.
    * @param returnType Return type.
    * @param braces Braces expression.
    * @param loc Location.
    */
-  LambdaFunction(Expression* parens, Type* returnType, Statement* braces,
+  LambdaFunction(Expression* params, Type* returnType, Statement* braces,
       Location* loc = nullptr);
 
   /**

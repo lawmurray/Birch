@@ -25,7 +25,7 @@ bi::FunctionType* bi::FunctionType::resolve(Argumented* o) {
   if (o->args->type->definitely(*params)) {
     return this;
   } else {
-    return nullptr;
+    throw CallException(o, this);
   }
 }
 

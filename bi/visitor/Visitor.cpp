@@ -93,7 +93,7 @@ void bi::Visitor::visit(const Get* o) {
 }
 
 void bi::Visitor::visit(const LambdaFunction* o) {
-  o->parens->accept(this);
+  o->params->accept(this);
   o->returnType->accept(this);
   o->braces->accept(this);
 }

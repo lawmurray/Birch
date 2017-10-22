@@ -83,7 +83,7 @@ bi::Expression* bi::Cloner::clone(const Get* o) {
 }
 
 bi::Expression* bi::Cloner::clone(const LambdaFunction* o) {
-  return new LambdaFunction(o->parens->accept(this),
+  return new LambdaFunction(o->params->accept(this),
       o->returnType->accept(this), o->braces->accept(this), o->loc);
 }
 

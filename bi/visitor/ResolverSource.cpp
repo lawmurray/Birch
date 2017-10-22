@@ -4,7 +4,6 @@
 #include "bi/visitor/ResolverSource.hpp"
 
 bi::ResolverSource::ResolverSource() :
-    currentReturnType(nullptr),
     currentYieldType(nullptr) {
   //
 }
@@ -131,11 +130,13 @@ bi::Expression* bi::ResolverSource::modify(Get* o) {
 
 bi::Expression* bi::ResolverSource::modify(LambdaFunction* o) {
   scopes.push_back(o->scope);
-  o->parens = o->parens = o->parens->accept(this);
+  o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
+  returnTypes.push(o->returnType);
   o->braces = o->braces->accept(this);
+  returnTypes.pop();
   scopes.pop_back();
-  o->type = new FunctionType(o->parens->type->accept(&cloner),
+  o->type = new FunctionType(o->params->type->accept(&cloner),
       o->returnType->accept(&cloner), o->loc);
   o->type->accept(this);
 
@@ -211,6 +212,12 @@ bi::Expression* bi::ResolverSource::modify(LocalVariable* o) {
     o->type->resolveConstructor(o->parens->type);
   }
   o->type->accept(&assigner);
+  scopes.back()->add(o);
+  return o;
+}
+
+bi::Expression* bi::ResolverSource::modify(Parameter* o) {
+  Modifier::modify(o);
   scopes.back()->add(o);
   return o;
 }
@@ -343,9 +350,9 @@ bi::Statement* bi::ResolverSource::modify(MemberVariable* o) {
 
 bi::Statement* bi::ResolverSource::modify(Function* o) {
   scopes.push_back(o->scope);
-  currentReturnType = o->returnType;
+  returnTypes.push(o->returnType);
   o->braces = o->braces->accept(this);
-  currentReturnType = nullptr;
+  returnTypes.pop();
   scopes.pop_back();
   return o;
 }
@@ -375,9 +382,9 @@ bi::Statement* bi::ResolverSource::modify(Program* o) {
 
 bi::Statement* bi::ResolverSource::modify(MemberFunction* o) {
   scopes.push_back(o->scope);
-  currentReturnType = o->returnType;
+  returnTypes.push(o->returnType);
   o->braces = o->braces->accept(this);
-  currentReturnType = nullptr;
+  returnTypes.pop();
   scopes.pop_back();
   return o;
 }
@@ -397,18 +404,18 @@ bi::Statement* bi::ResolverSource::modify(MemberFiber* o) {
 
 bi::Statement* bi::ResolverSource::modify(BinaryOperator* o) {
   scopes.push_back(o->scope);
-  currentReturnType = o->returnType;
+  returnTypes.push(o->returnType);
   o->braces = o->braces->accept(this);
-  currentReturnType = nullptr;
+  returnTypes.pop();
   scopes.pop_back();
   return o;
 }
 
 bi::Statement* bi::ResolverSource::modify(UnaryOperator* o) {
   scopes.push_back(o->scope);
-  currentReturnType = o->returnType;
+  returnTypes.push(o->returnType);
   o->braces = o->braces->accept(this);
-  currentReturnType = nullptr;
+  returnTypes.pop();
   scopes.pop_back();
   return o;
 }
@@ -422,9 +429,9 @@ bi::Statement* bi::ResolverSource::modify(AssignmentOperator* o) {
 
 bi::Statement* bi::ResolverSource::modify(ConversionOperator* o) {
   scopes.push_back(o->scope);
-  currentReturnType = o->returnType;
+  returnTypes.push(o->returnType);
   o->braces = o->braces->accept(this);
-  currentReturnType = nullptr;
+  returnTypes.pop();
   scopes.pop_back();
   return o;
 }
@@ -504,12 +511,12 @@ bi::Statement* bi::ResolverSource::modify(Assert* o) {
 
 bi::Statement* bi::ResolverSource::modify(Return* o) {
   Modifier::modify(o);
-  if (!currentReturnType) {
+  if (returnTypes.empty()) {
     if (!o->single->type->isEmpty()) {
       throw ReturnException(o);
     }
-  } else if (!o->single->type->definitely(*currentReturnType)) {
-    throw ReturnTypeException(o, currentReturnType);
+  } else if (!o->single->type->definitely(*returnTypes.top())) {
+    throw ReturnTypeException(o, returnTypes.top());
   }
   return o;
 }

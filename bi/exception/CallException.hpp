@@ -24,5 +24,13 @@ struct CallException: public CompilerException {
    */
   CallException(Argumented* o,
       const std::list<Parameterised*>& available = std::list<Parameterised*>());
+
+  /**
+   * Constructor.
+   *
+   * @param o The invalid call.
+   * @param type The required type.
+   */
+  CallException(Argumented* o, FunctionType* type);
 };
 }

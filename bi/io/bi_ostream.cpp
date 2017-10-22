@@ -77,6 +77,13 @@ void bi::bi_ostream::visit(const Get* o) {
   middle(o->single << '!');
 }
 
+void bi::bi_ostream::visit(const LambdaFunction* o) {
+  middle("@(" << o->params << ')');
+  if (!o->returnType->isEmpty()) {
+    middle(" -> " << o->returnType);
+  }
+}
+
 void bi::bi_ostream::visit(const Span* o) {
   if (o->single->isEmpty()) {
     middle('_');
@@ -421,11 +428,11 @@ void bi::bi_ostream::visit(const TupleType* o) {
 }
 
 void bi::bi_ostream::visit(const FunctionType* o) {
-  middle("Function<(" << o->params << ')');
+  middle("@(" << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
-  middle('>');
+  middle(')');
 }
 
 void bi::bi_ostream::visit(const FiberType* o) {

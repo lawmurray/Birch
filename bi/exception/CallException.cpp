@@ -29,7 +29,6 @@ bi::CallException::CallException(Argumented* o,
   buf << "note: argument types\n";
   buf << o->args->type << "\n";
 
-
   for (auto overload : available) {
     auto stmt = dynamic_cast<Statement*>(overload);
     assert(stmt);
@@ -39,6 +38,35 @@ bi::CallException::CallException(Argumented* o,
     buf << "note: candidate\n";
     buf << stmt;
   }
+
+  msg = base.str();
+}
+
+bi::CallException::CallException(Argumented* o, FunctionType* type) {
+  std::stringstream base;
+  bih_ostream buf(base);
+
+  auto expr = dynamic_cast<Expression*>(o);
+  assert(expr);
+  if (expr->loc) {
+    buf << expr->loc;
+  }
+  buf << "error: invalid call\n";
+  if (expr->loc) {
+    buf << expr->loc;
+  }
+  buf << "note: in\n";
+  buf << expr << "\n";
+  if (expr->loc) {
+    buf << expr->loc;
+  }
+  buf << "note: argument types\n";
+  buf << o->args->type << "\n";
+  if (expr->loc) {
+    buf << expr->loc;
+  }
+  buf << "note: parameter types\n";
+  buf << type->params;
 
   msg = base.str();
 }

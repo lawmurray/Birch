@@ -117,8 +117,6 @@ IS                                 (u|U|l|L)*
 "true"                              { yylval.valBool = true; return BOOL_LITERAL; }
 "false"                             { yylval.valBool = false; return BOOL_LITERAL; }
 
-"Function"                          { return FUNCTION_UPPER; }
-
 ({L}|{G})({L}|{G}|{U}|{D})*         { yylval.valString = yytext; return NAME; }
 
 {D}+{E}{FS}?                        { yylval.valReal = atof(yytext); return REAL_LITERAL; }
@@ -160,6 +158,7 @@ IS                                 (u|U|l|L)*
 "]"                                 { return ']'; }
 "."                                 { return '.'; }
 "_"                                 { return '_'; }
+"@"                                 { return '@'; }
 .                                   { yyerror("syntax error"); }
 
 %%

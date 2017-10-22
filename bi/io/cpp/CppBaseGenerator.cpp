@@ -132,7 +132,7 @@ void bi::CppBaseGenerator::visit(const Get* o) {
 }
 
 void bi::CppBaseGenerator::visit(const LambdaFunction* o) {
-  middle("[&]" << o->parens << " {");
+  finish("[=](" << o->params << ") {");
   in();
   *this << o->braces->strip();
   out();
@@ -599,7 +599,7 @@ void bi::CppBaseGenerator::visit(const TupleType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const FunctionType* o) {
-  middle("std::function<" << o->returnType << '(' << o->params << ')');
+  middle("std::function<" << o->returnType << '(' << o->params << ")>");
 }
 
 void bi::CppBaseGenerator::visit(const FiberType* o) {

@@ -21,9 +21,9 @@ bool bi::OverloadedType::isOverloaded() const {
   return true;
 }
 
-bi::FunctionType* bi::OverloadedType::resolve(Argumented* args) {
+bi::FunctionType* bi::OverloadedType::resolve(Argumented* o) {
   std::list<Parameterised*> matches;
-  overloaded->overloads.match(args, matches);
+  overloaded->overloads.match(o, matches);
   if (matches.size() == 1) {
     /* construct the appropriate function type */
     auto target = matches.front();
@@ -34,9 +34,9 @@ bi::FunctionType* bi::OverloadedType::resolve(Argumented* args) {
     std::list<Parameterised*> available;
     std::copy(overloaded->overloads.begin(), overloaded->overloads.end(),
         std::back_inserter(available));
-    throw CallException(args, available);
+    throw CallException(o, available);
   } else {
-    throw AmbiguousCallException(args, matches);
+    throw AmbiguousCallException(o, matches);
   }
 }
 
