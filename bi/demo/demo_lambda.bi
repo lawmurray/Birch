@@ -4,13 +4,14 @@
  */
 program demo_lambda() {
   /* declare a lambda function */
-  //x:lambda();
+  x:@((Integer) -> Integer);
   
   /* assign a lambda function */
-  //x <- lambda() {
-  //  stdout.print("called lambda\n");
-  //};
+  x <- @(a:Integer) -> Integer {
+    stdout.print("called lambda with argument: " + a + "\n");
+    return 0;
+  };
   
   /* call a lambda function */
-  //x();
+  x(1);
 }
