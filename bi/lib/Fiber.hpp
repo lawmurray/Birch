@@ -40,7 +40,7 @@ public:
   /**
    * Move constructor.
    */
-  Fiber(Fiber<Type> && o) : heap(o.heap), state(o.state) {
+  Fiber(Fiber<Type> && o) : state(o.state), heap(o.heap)  {
     o.heap = nullptr;
     o.state = nullptr;
   }
