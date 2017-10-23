@@ -54,7 +54,7 @@ void bi::bi_ostream::visit(const Cast* o) {
 }
 
 void bi::bi_ostream::visit(const Call* o) {
-  middle(o->single << o->args);
+  middle(o->single << '(' << o->args << ')');
 }
 
 void bi::bi_ostream::visit(const BinaryCall* o) {
