@@ -247,4 +247,11 @@ function observe_multinomial(x:Integer[_], ρ:Real[_]) -> Real {
 function observe_dirichlet(x:Real[_], α:Real[_]) -> Real {
   assert length(x) == length(α);
 
+  D:Integer <- length(x);
+  w:Real <- 0.0;
+  for (i:Integer in 1..D) {
+    w <- w + (α[i] - 1.0)*log(x[i]) - lgamma(α[i]);
+  }
+  w <- w + lgamma(sum(α)); 
+  return w;
 }

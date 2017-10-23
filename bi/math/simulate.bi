@@ -192,7 +192,6 @@ function simulate_beta(α:Real, β:Real) -> Real {
 function simulate_categorical(ρ:Real[_]) -> Integer {
   /* assertion checks throughout catch cases such as negative probabilities,
    * or the sum of probabilities not being one */
-    
   u:Real <- simulate_uniform(0.0, 1.0);
   x:Integer <- 1;
   assert length(ρ) > 0;
@@ -213,24 +212,34 @@ function simulate_categorical(ρ:Real[_]) -> Integer {
  *
  * - n: Number of trials.
  * - ρ: Category probabilities.
+ *
+ * This uses an O(N) implementation based on:
+ *
+ * Bentley, J. L. and J. B. Saxe (1979). Generating sorted lists of random
+ * numbers. Technical Report 2450, Carnegie Mellon University, Computer
+ * Science Department.
  */
 function simulate_multinomial(n:Integer, ρ:Real[_]) -> Integer[_] {
   D:Integer <- length(ρ);
-  x:Integer[_] <- vector(0, D);
-  R:Real[_] <- inclusive_prefix_sum(ρ);
-  
-  i:Integer <- n;
+  R:Real[_] <- exclusive_prefix_sum(ρ);
+  W:Real <- R[D] + ρ[D];
+
+  lnMax:Real <- 0.0;
   j:Integer <- D;
-  mx:Real <- 0.0;
+  i:Integer <- n;
   u:Real;
-  
-  for (i in 1..n) {
-    mx <- mx + log(simulate_uniform(0.0, 1.0))/(n - i + 1);
-    u <- 1.0 + mx;
-    while (j >= 1 && u < log(R[j])) {
+
+  x:Integer[_] <- vector(0, D);
+    
+  while (i > 0) {
+    u <- simulate_uniform(0.0, 1.0);
+    lnMax <- lnMax + log(u)/i;
+    u <- W*exp(lnMax);
+    while (u < R[j]) {
       j <- j - 1;
     }
     x[j] <- x[j] + 1;
+    i <- i - 1;
   }
   return x;
 }
