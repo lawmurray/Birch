@@ -183,3 +183,84 @@ function simulate_beta(α:Real, β:Real) -> Real {
   
   return u/(u + v);
 }
+
+/**
+ * Simulate a categorical variate.
+ *
+ * - ρ: Category probabilities.
+ */
+function simulate_categorical(ρ:Real[_]) -> Integer {
+  /* assertion checks throughout catch cases such as negative probabilities,
+   * or the sum of probabilities not being one */
+  u:Real <- simulate_uniform(0.0, 1.0);
+  x:Integer <- 1;
+  assert length(ρ) > 0;
+  P:Real <- ρ[1];
+  assert 0.0 <= P && P <= 1.0;
+  while (u < P) {
+    x <- x + 1;
+    assert x <= length(ρ);
+    assert ρ[x] >= 0.0;
+    P <- P + ρ[x];
+    assert 0.0 <= P && P <= 1.0;
+  }
+  return x;
+}
+
+/**
+ * Simulate a multinomial variate.
+ *
+ * - n: Number of trials.
+ * - ρ: Category probabilities.
+ *
+ * This uses an O(N) implementation based on:
+ *
+ * Bentley, J. L. and J. B. Saxe (1979). Generating sorted lists of random
+ * numbers. Technical Report 2450, Carnegie Mellon University, Computer
+ * Science Department.
+ */
+function simulate_multinomial(n:Integer, ρ:Real[_]) -> Integer[_] {
+  D:Integer <- length(ρ);
+  R:Real[_] <- exclusive_prefix_sum(ρ);
+  W:Real <- R[D] + ρ[D];
+
+  lnMax:Real <- 0.0;
+  j:Integer <- D;
+  i:Integer <- n;
+  u:Real;
+
+  x:Integer[_] <- vector(0, D);
+    
+  while (i > 0) {
+    u <- simulate_uniform(0.0, 1.0);
+    lnMax <- lnMax + log(u)/i;
+    u <- W*exp(lnMax);
+    while (u < R[j]) {
+      j <- j - 1;
+    }
+    x[j] <- x[j] + 1;
+    i <- i - 1;
+  }
+  return x;
+}
+
+/**
+ * Simulate a Dirichlet variate.
+ *
+ * - α: Concentrations.
+ */
+function simulate_dirichlet(α:Real[_]) -> Real[_] {
+  D:Integer <- length(α);
+  x:Real[D];
+  z:Real <- 0.0;
+
+  for (i:Integer in 1..D) {
+    x[i] <- simulate_gamma(α[i], 1.0);
+    z <- z + x[i];
+  }
+  z <- 1.0/z;
+  for (i:Integer in 1..D) {
+    x[i] <- z*x[i];
+  }
+  return x;
+}
