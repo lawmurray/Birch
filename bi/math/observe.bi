@@ -212,6 +212,7 @@ function observe_beta(x:Real, α:Real, β:Real) -> Real {
  */
 function observe_categorical(x:Integer, ρ:Real[_]) -> Real {
   if (1 <= x && x <= length(ρ)) {
+    assert ρ[x] >= 0.0;
     return log(ρ[x]);
   } else {
     return -inf;
@@ -231,6 +232,8 @@ function observe_multinomial(x:Integer[_], ρ:Real[_]) -> Real {
 
   w:Real <- 0.0;
   for (i:Integer in 1..length(x)) {
+    assert x[i] >= 0;
+    assert ρ[i] >= 0.0;
     w <- w + x[i]*log(ρ[i]);
   }
   return w;
@@ -250,6 +253,7 @@ function observe_dirichlet(x:Real[_], α:Real[_]) -> Real {
   D:Integer <- length(x);
   w:Real <- 0.0;
   for (i:Integer in 1..D) {
+    assert x[i] >= 0.0;
     w <- w + (α[i] - 1.0)*log(x[i]) - lgamma(α[i]);
   }
   w <- w + lgamma(sum(α)); 
