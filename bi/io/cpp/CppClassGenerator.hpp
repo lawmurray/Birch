@@ -16,7 +16,7 @@ public:
   CppClassGenerator(std::ostream& base, const int level = 0,
       const bool header = false);
 
-  using indentable_ostream::visit;
+  using CppBaseGenerator::visit;
 
   virtual void visit(const Class* o);
   virtual void visit(const MemberParameter* o);
@@ -27,16 +27,6 @@ public:
   virtual void visit(const ConversionOperator* o);
 
 protected:
-  /**
-   * Generate code for template parameters (`template<...>`).
-   */
-  void genTemplateParams();
-
-  /**
-   * Generate code for template arguments (`<...>`).
-   */
-  void genTemplateArgs();
-
   /**
    * The class being generated.
    */

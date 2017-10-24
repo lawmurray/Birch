@@ -16,7 +16,7 @@ public:
   CppMemberFiberGenerator(const Class* type, std::ostream& base,
       const int level = 0, const bool header = false);
 
-  using indentable_ostream::visit;
+  using CppFiberGenerator::visit;
 
   virtual void visit(const MemberFiber* o);
   virtual void visit(const Identifier<MemberParameter>* o);

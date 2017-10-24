@@ -3,9 +3,6 @@
  */
 #include "bi/io/cpp/CppHeaderGenerator.hpp"
 
-#include "bi/io/cpp/CppForwardGenerator.hpp"
-#include "bi/io/cpp/CppAliasGenerator.hpp"
-#include "bi/io/cpp/CppSuperGenerator.hpp"
 #include "bi/io/cpp/CppBaseGenerator.hpp"
 #include "bi/visitor/Gatherer.hpp"
 #include "bi/primitive/poset.hpp"
@@ -14,17 +11,12 @@
 #include "boost/filesystem.hpp"
 
 bi::CppHeaderGenerator::CppHeaderGenerator(std::ostream& base,
-    const int level) :
-    indentable_ostream(base, level) {
+    const int level, const bool header) :
+    CppBaseGenerator(base, level, header) {
   //
 }
 
 void bi::CppHeaderGenerator::visit(const Package* o) {
-  CppForwardGenerator auxForward(base, level);
-  CppAliasGenerator auxAlias(base, level);
-  CppSuperGenerator auxSuper(base, level);
-  CppBaseGenerator aux(base, level, true);
-
   line("#include \"bi/libbirch.hpp\"");
   for (auto header : o->headers) {
     boost::filesystem::path include = header->path;
@@ -32,102 +24,115 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
     line("#include \"" << include.string() << "\"");
   }
 
-  /* raw C++ code for headers */
+  /* gather important objects */
+  Gatherer<Class> classes;
+  Gatherer<Alias> aliases;
   Gatherer<Raw> raws;
-  for (auto source: o->sources) {
+  Gatherer<GlobalVariable> globals;
+  Gatherer<Function> functions;
+  Gatherer<Fiber> fibers;
+  Gatherer<Program> programs;
+  Gatherer<BinaryOperator> binaries;
+  Gatherer<UnaryOperator> unaries;
+  for (auto source : o->sources) {
+    source->accept(&classes);
+    source->accept(&aliases);
     source->accept(&raws);
+    source->accept(&globals);
+    source->accept(&functions);
+    source->accept(&fibers);
+    source->accept(&programs);
+    source->accept(&binaries);
+    source->accept(&unaries);
   }
+
+  /* raw C++ code for headers */
   for (auto o1 : raws) {
-    aux << o1;
+    *this << o1;
   }
   line("");
   line("namespace bi {");
 
   /* forward class declarations */
-  for (auto file : o->sources) {
-    auxForward << file;
+  for (auto o : classes) {
+    if (!o->braces->isEmpty()) {
+      genTemplateParams(o);
+      line("class " << o->name << ';');
+    }
   }
   line("");
 
   /* typedef declarations */
-  for (auto file : o->sources) {
-    auxAlias << file;
+  for (auto o : aliases) {
+    line("using " << o->name << " = " << o->base << ';');
   }
   line("");
 
   /* forward super type declarations */
-  for (auto file : o->sources) {
-    auxSuper << file;
+  for (auto o : classes) {
+    if (!o->braces->isEmpty()) {
+      if (o->typeParams->isEmpty()) {
+        start("template<>");
+      } else {
+        genTemplateParams(o);
+      }
+      middle(" struct super_type<" << o->name);
+      genTemplateArgs(o);
+      finish("> {");
+      in();
+      start("typedef ");
+      if (!o->base->isEmpty()) {
+        auto super = dynamic_cast<const ClassType*>(o->base);
+        assert(super);
+        middle(super->name);
+      } else {
+        middle("Object_");
+      }
+      finish(" type;");
+      out();
+      line("};");
+    }
   }
-  line("");
 
-  /* class definnitions; even with the forward declarations above, base
+  /* class definitions; even with the forward declarations above, base
    * classes must be defined before their derived classes, so these are
    * gathered and sorted first */
-  Gatherer<Class> classes;
-  for (auto source: o->sources) {
-    source->accept(&classes);
-  }
   poset<Type*,definitely> sorted;
-  for (auto type : classes) {
-    sorted.insert(new ClassType(type));
+  for (auto o : classes) {
+    sorted.insert(new ClassType(o));
   }
-  for (auto type = sorted.rbegin(); type != sorted.rend(); ++type) {
-    aux << dynamic_cast<ClassType*>(*type)->target;
+  for (auto iter = sorted.rbegin(); iter != sorted.rend(); ++iter) {
+    *this << (*iter)->getClass();
   }
 
-  /* global variable declarations */
-  Gatherer<GlobalVariable> globals;
-  for (auto source: o->sources) {
-    source->accept(&globals);
-  }
-  for (auto o1 : globals) {
-    aux << o1;
+  /* global variables */
+  for (auto o : globals) {
+    *this << o;
   }
   line("");
 
-  /* function and fiber declarations */
+  /* functions and fibers */
   line("namespace func {");
-  Gatherer<Function> functions;
-  for (auto source: o->sources) {
-    source->accept(&functions);
+  for (auto o : functions) {
+    *this << o;
   }
-  for (auto o1 : functions) {
-    aux << o1;
-  }
-  Gatherer<Fiber> fibers;
-  for (auto source: o->sources) {
-    source->accept(&fibers);
-  }
-  for (auto o1 : fibers) {
-    aux << o1;
+  for (auto o : fibers) {
+    *this << o;
   }
   line("}\n");
 
   /* programs */
-  Gatherer<Program> programs;
-  for (auto source: o->sources) {
-    source->accept(&programs);
-  }
-  for (auto o1 : programs) {
-    aux << o1;
+  for (auto o : programs) {
+    *this << o;
   }
   line("");
   line("}\n");
 
   /* operators */
-  Gatherer<BinaryOperator> binaries;
-  for (auto source: o->sources) {
-    source->accept(&binaries);
+  for (auto o : binaries) {
+    *this << o;
   }
-  for (auto o1 : binaries) {
-    aux << o1;
-  }
-  Gatherer<UnaryOperator> unaries;
-  for (auto source: o->sources) {
-    source->accept(&unaries);
-  }
-  for (auto o1 : unaries) {
-    aux << o1;
+  for (auto o : unaries) {
+    *this << o;
   }
 }

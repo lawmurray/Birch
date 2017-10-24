@@ -10,8 +10,8 @@
 #include "boost/filesystem.hpp"
 #include "boost/algorithm/string.hpp"
 
-bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
-    const bool header) :
+bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base,
+    const int level, const bool header) :
     indentable_ostream(base, level),
     header(header) {
   //
@@ -621,6 +621,30 @@ void bi::CppBaseGenerator::visit(const TypeList* o) {
   middle(o->head << ", " << o->tail);
 }
 
+void bi::CppBaseGenerator::genTemplateParams(const Class* o) {
+  if (!o->typeParams->isEmpty()) {
+    start("template<");
+    if (o->typeParams->isList()) {
+      for (auto iter = o->typeParams->begin(); iter != o->typeParams->end();
+          ++iter) {
+        if (iter != o->typeParams->begin()) {
+          middle(", ");
+        }
+        middle("class " << *iter);
+      }
+    } else {
+      middle("class " << o->typeParams);
+    }
+    finish('>');
+  }
+}
+
+void bi::CppBaseGenerator::genTemplateArgs(const Class* o) {
+  if (!o->typeParams->isEmpty()) {
+    start('<' << o->typeParams << '>');
+  }
+}
+
 void bi::CppBaseGenerator::genArgs(const Call* o) {
   middle('(');
   auto iter1 = o->args->begin();
@@ -650,7 +674,8 @@ void bi::CppBaseGenerator::genSingleArg(const UnaryCall* o) {
   genArg(o->args, o->callType->params);
 }
 
-void bi::CppBaseGenerator::genArg(const Expression* arg, const Type* type) {
+void bi::CppBaseGenerator::genArg(const Expression* arg,
+    const Type* type) {
   /* Birch and C++ resolve overloads differently, explicit casting in
    * some situations avoids situations where Birch considers a call
    * unambiguous, whereas C++ does not */
