@@ -152,13 +152,13 @@ COMMON_SOURCES = \
   bi/type/EmptyType.cpp \
   bi/type/FiberType.cpp \
   bi/type/FunctionType.cpp \
-  bi/type/IdentifierType.cpp \
-  bi/type/ListType.cpp \
   bi/type/NilType.cpp \
   bi/type/OptionalType.cpp \
   bi/type/OverloadedType.cpp \
   bi/type/TupleType.cpp \
   bi/type/Type.cpp \
+  bi/type/TypeIdentifier.cpp \
+  bi/type/TypeList.cpp \
   bi/visitor/Assigner.cpp \
   bi/visitor/Cloner.cpp \
   bi/visitor/Gatherer.cpp \
@@ -350,13 +350,13 @@ noinst_HEADERS = \
   bi/type/EmptyType.hpp \
   bi/type/FiberType.hpp \
   bi/type/FunctionType.hpp \
-  bi/type/IdentifierType.hpp \
-  bi/type/ListType.hpp \
   bi/type/NilType.hpp \
   bi/type/OptionalType.hpp \
   bi/type/OverloadedType.hpp \
   bi/type/TupleType.hpp \
   bi/type/Type.hpp \
+  bi/type/TypeIdentifier.hpp \
+  bi/type/TypeList.hpp \
   bi/visitor/all.hpp \
   bi/visitor/Assigner.hpp \
   bi/visitor/Cloner.hpp \

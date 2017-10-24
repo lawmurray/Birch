@@ -54,7 +54,8 @@ bi::Expression* bi::Cloner::clone(const Binary* o) {
 }
 
 bi::Expression* bi::Cloner::clone(const Cast* o) {
-  return new Cast(o->returnType->accept(this), o->single->accept(this), o->loc);
+  return new Cast(o->returnType->accept(this), o->single->accept(this),
+      o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const Call* o) {
@@ -256,7 +257,8 @@ bi::Statement* bi::Cloner::clone(const ConversionOperator* o) {
 }
 
 bi::Statement* bi::Cloner::clone(const Class* o) {
-  return new Class(o->name, o->params->accept(this), o->base->accept(this),
+  return new Class(o->name, o->typeParams->accept(this),
+      o->params->accept(this), o->base->accept(this),
       o->baseArgs->accept(this), o->braces->accept(this), o->loc);
 }
 
@@ -306,13 +308,13 @@ bi::Type* bi::Cloner::clone(const EmptyType* o) {
   return new EmptyType(o->loc, o->assignable);
 }
 
-bi::Type* bi::Cloner::clone(const ListType* o) {
-  return new ListType(o->head->accept(this), o->tail->accept(this), o->loc,
+bi::Type* bi::Cloner::clone(const TypeList* o) {
+  return new TypeList(o->head->accept(this), o->tail->accept(this), o->loc,
       o->assignable);
 }
 
-bi::Type* bi::Cloner::clone(const IdentifierType* o) {
-  return new IdentifierType(o->name, o->loc, o->assignable);
+bi::Type* bi::Cloner::clone(const TypeIdentifier* o) {
+  return new TypeIdentifier(o->name, o->loc, o->assignable);
 }
 
 bi::Type* bi::Cloner::clone(const ClassType* o) {

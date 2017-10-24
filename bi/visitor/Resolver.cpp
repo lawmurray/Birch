@@ -22,7 +22,7 @@ bi::File* bi::Resolver::modify(File* o) {
 
 bi::Expression* bi::Resolver::modify(List<Expression>* o) {
   Modifier::modify(o);
-  o->type = new ListType(o->head->type->accept(&cloner),
+  o->type = new TypeList(o->head->type->accept(&cloner),
       o->tail->type->accept(&cloner), o->loc);
   o->type = o->type->accept(this);
   return o;
@@ -43,7 +43,7 @@ bi::Expression* bi::Resolver::modify(Binary* o) {
   return o;
 }
 
-bi::Type* bi::Resolver::modify(IdentifierType* o) {
+bi::Type* bi::Resolver::modify(TypeIdentifier* o) {
   return lookup(o)->accept(this);
 }
 
@@ -103,7 +103,7 @@ bi::Expression* bi::Resolver::lookup(Identifier<Unknown>* ref, Scope* scope) {
   }
 }
 
-bi::Type* bi::Resolver::lookup(IdentifierType* ref, Scope* scope) {
+bi::Type* bi::Resolver::lookup(TypeIdentifier* ref, Scope* scope) {
   LookupResult category = UNRESOLVED;
   if (scope) {
     /* use provided scope, usually a membership scope */

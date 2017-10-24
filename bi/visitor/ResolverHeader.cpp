@@ -136,7 +136,10 @@ bi::Statement* bi::ResolverHeader::modify(Class* o) {
   scopes.push_back(o->scope);
   currentClass = o;
   o->params = o->params->accept(this);
-  o->braces = o->braces->accept(this);
+  if (o->typeParams->isEmpty()) {
+    /* ^ otherwise uses generics, braces will be handled on instantiation */
+    o->braces = o->braces->accept(this);
+  }
   currentClass = nullptr;
   scopes.pop_back();
   return o;

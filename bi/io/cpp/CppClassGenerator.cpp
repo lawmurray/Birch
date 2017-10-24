@@ -20,6 +20,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
 
     /* start boilerplate */
     if (header) {
+      genTemplateParams();
       start("class " << o->name << " : public ");
       if (!o->base->isEmpty()) {
         auto type = dynamic_cast<const ClassType*>(o->base);
@@ -110,6 +111,7 @@ void bi::CppClassGenerator::visit(const MemberVariable* o) {
 }
 
 void bi::CppClassGenerator::visit(const MemberFunction* o) {
+  genTemplateParams();
   if (header) {
     start("virtual ");
   } else {
@@ -117,7 +119,9 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
   }
   middle(o->returnType << ' ');
   if (!header) {
-    middle("bi::" << type->name << "::");
+    middle("bi::" << type->name);
+    genTemplateArgs();
+    middle("::");
   }
   middle(internalise(o->name->str()) << '(' << o->params << ')');
   //middle(" const");
@@ -188,5 +192,25 @@ void bi::CppClassGenerator::visit(const ConversionOperator* o) {
       out();
       finish("}\n");
     }
+  }
+}
+
+void bi::CppClassGenerator::genTemplateParams() {
+  if (!type->typeParams->isEmpty()) {
+    start("template<");
+    for (auto iter = type->typeParams->begin();
+        iter != type->typeParams->end(); ++iter) {
+      if (iter != type->typeParams->begin()) {
+        middle(", ");
+      }
+      middle("class " << *iter);
+    }
+    finish('>');
+  }
+}
+
+void bi::CppClassGenerator::genTemplateArgs() {
+  if (!type->typeParams->isEmpty()) {
+    start('<' << type->typeParams << '>');
   }
 }

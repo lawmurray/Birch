@@ -326,6 +326,9 @@ void bi::bi_ostream::visit(const ConversionOperator* o) {
 
 void bi::bi_ostream::visit(const Class* o) {
   start("class " << o->name);
+  if (!o->typeParams->isEmpty()) {
+    middle('<' << o->typeParams << '>');
+  }
   if (!o->params->isEmpty()) {
     middle('(' << o->params << ')');
   }
@@ -395,10 +398,6 @@ void bi::bi_ostream::visit(const Raw* o) {
   }
 }
 
-void bi::bi_ostream::visit(const ListType* o) {
-  middle(o->head << ", " << o->tail);
-}
-
 void bi::bi_ostream::visit(const ClassType* o) {
   middle(o->name);
 }
@@ -413,10 +412,6 @@ void bi::bi_ostream::visit(const BasicType* o) {
 
 void bi::bi_ostream::visit(const BinaryType* o) {
   middle('(' << o->left << ", " << o->right << ')');
-}
-
-void bi::bi_ostream::visit(const IdentifierType* o) {
-  middle(o->name);
 }
 
 void bi::bi_ostream::visit(const ArrayType* o) {
@@ -441,4 +436,12 @@ void bi::bi_ostream::visit(const FiberType* o) {
 
 void bi::bi_ostream::visit(const OptionalType* o) {
   middle(o->single << '?');
+}
+
+void bi::bi_ostream::visit(const TypeIdentifier* o) {
+  middle(o->name);
+}
+
+void bi::bi_ostream::visit(const TypeList* o) {
+  middle(o->head << ", " << o->tail);
 }

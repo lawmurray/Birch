@@ -50,7 +50,7 @@ bi::LookupResult bi::Scope::lookup(const Identifier<Unknown>* ref) const {
   }
 }
 
-bi::LookupResult bi::Scope::lookup(const IdentifierType* ref) const {
+bi::LookupResult bi::Scope::lookup(const TypeIdentifier* ref) const {
   auto name = ref->name->str();
   if (basics.contains(name)) {
     return BASIC;

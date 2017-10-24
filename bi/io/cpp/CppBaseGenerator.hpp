@@ -83,7 +83,6 @@ public:
   virtual void visit(const Yield* o);
   virtual void visit(const Raw* o);
 
-  virtual void visit(const ListType* o);
   virtual void visit(const EmptyType* o);
   virtual void visit(const ArrayType* o);
   virtual void visit(const TupleType* o);
@@ -93,6 +92,8 @@ public:
   virtual void visit(const ClassType* o);
   virtual void visit(const BasicType* o);
   virtual void visit(const AliasType* o);
+  virtual void visit(const TypeIdentifier* o);
+  virtual void visit(const TypeList* o);
 
 protected:
   /**

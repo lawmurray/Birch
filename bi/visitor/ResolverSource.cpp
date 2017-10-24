@@ -14,7 +14,7 @@ bi::ResolverSource::~ResolverSource() {
 
 bi::Expression* bi::ResolverSource::modify(List<Expression>* o) {
   Modifier::modify(o);
-  o->type = new ListType(o->head->type->accept(&cloner),
+  o->type = new TypeList(o->head->type->accept(&cloner),
       o->tail->type->accept(&cloner), o->loc);
   o->type = o->type->accept(this);
   o->type->assignable = o->head->type->assignable && o->tail->type->assignable;

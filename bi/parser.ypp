@@ -45,6 +45,20 @@
     return new bi::Location(compiler->file, loc.first_line, loc.last_line,
         loc.first_column, loc.last_column, pop_raw());
   }
+
+  /**
+   * Make an empty type.
+   */
+  bi::Type* empty_type(YYLTYPE& loc) {
+    return new bi::EmptyType(make_loc(loc));
+  }
+
+  /**
+   * Make an empty expression.
+   */
+  bi::Expression* empty_expr(YYLTYPE& loc) {
+    return new bi::EmptyExpression(make_loc(loc));
+  }
 }
 
 %union {
@@ -61,7 +75,8 @@
 }
 
 %glr-parser
-%expect-rr 2
+%expect-rr 2  // Type?(...) vs x?
+//%expect 2     // class A < B vs class A<B>
 
 %token <valString> PROGRAM CLASS TYPE FUNCTION FIBER OPERATOR
 %token <valString> IF ELSE FOR IN WHILE ASSERT RETURN YIELD CPP HPP
@@ -94,7 +109,6 @@
 %type <valExpression> local_variable parameter parameter_list parameters
 %type <valExpression> option option_list options
 %type <valExpression> member_parameter member_parameter_list member_parameters
-%type <valExpression> optional_member_parameters
 %type <valExpression> arguments optional_arguments
 %type <valExpression> size_list size value optional_value for_index
 
@@ -104,7 +118,7 @@
 %type <valStatement> member_fiber_declaration
 %type <valStatement> binary_operator_declaration unary_operator_declaration
 %type <valStatement> conversion_operator_declaration assignment_operator_declaration
-%type <valStatement> class_declaration alias_type_declaration basic_type_declaration
+%type <valStatement> class_declaration alias_declaration basic_declaration
 %type <valStatement> cpp hpp assignment expression_statement if for
 %type <valStatement> while assertion return yield
 %type <valStatement> statement statements optional_statements
@@ -113,10 +127,10 @@
 %type <valStatement> braces optional_braces
 %type <valStatement> class_braces optional_class_braces
 
-%type <valType> identifier_type primary_type tuple_type function_type
+%type <valType> type_identifier primary_type tuple_type function_type
 %type <valType> postfix_type list_type type
-%type <valType> type_parameter_list type_parameters
-%type <valType> result optional_result
+%type <valType> parameter_type_list parameter_types
+%type <valType> result optional_result type_identifier_list
 
 %locations
 
@@ -183,7 +197,7 @@ parens_expression
     ;
 
 cast_expression
-    : identifier_type '?' '(' expression ')'  { $$ = new bi::Cast($1, $4, make_loc(@$)); }
+    : type_identifier '?' '(' expression ')'  { $$ = new bi::Cast($1, $4, make_loc(@$)); }
     ;
 
 function_expression
@@ -317,7 +331,7 @@ expression
 
 optional_expression
     : expression
-    |             { $$ = new bi::EmptyExpression(make_loc(@$)); }
+    |             { $$ = empty_expr(@$); }
     ;
 
 expression_list
@@ -326,13 +340,13 @@ expression_list
     ;
 
 local_variable
-    : name ':' type            { $$ = new bi::LocalVariable($1, $3, new bi::EmptyExpression(make_loc(@$)), new bi::EmptyExpression(make_loc(@$)), make_loc(@$)); }
-    | name ':' type arguments  { $$ = new bi::LocalVariable($1, $3, $4, new bi::EmptyExpression(make_loc(@$)), make_loc(@$)); }
-    | name ':' type value      { $$ = new bi::LocalVariable($1, $3, new bi::EmptyExpression(make_loc(@$)), $4, make_loc(@$)); }
+    : name ':' type            { $$ = new bi::LocalVariable($1, $3, empty_expr(@$), empty_expr(@$), make_loc(@$)); }
+    | name ':' type arguments  { $$ = new bi::LocalVariable($1, $3, $4, empty_expr(@$), make_loc(@$)); }
+    | name ':' type value      { $$ = new bi::LocalVariable($1, $3, empty_expr(@$), $4, make_loc(@$)); }
     ;
 
 parameters
-    : '(' ')'                 { $$ = new bi::EmptyExpression(make_loc(@$)); }
+    : '(' ')'                 { $$ = empty_expr(@$); }
     | '(' parameter_list ')'  { $$ = $2; }
     ;
 
@@ -342,11 +356,11 @@ parameter_list
     ;
 
 parameter
-    : name ':' type  { $$ = new bi::Parameter($1, $3, new bi::EmptyExpression(make_loc(@$)), make_loc(@$)); }
+    : name ':' type  { $$ = new bi::Parameter($1, $3, empty_expr(@$), make_loc(@$)); }
     ;
 
 options
-    : '(' ')'              { $$ = new bi::EmptyExpression(make_loc(@$)); }
+    : '(' ')'              { $$ = empty_expr(@$); }
     | '(' option_list ')'  { $$ = $2; }
     ;
 
@@ -360,13 +374,8 @@ option
     ;
 
 member_parameters
-    : '(' ')'                        { $$ = new bi::EmptyExpression(make_loc(@$)); }
+    : '(' ')'                        { $$ = empty_expr(@$); }
     | '(' member_parameter_list ')'  { $$ = $2; }
-    ;
-
-optional_member_parameters
-    : member_parameters
-    |                    { $$ = new bi::EmptyExpression(make_loc(@$)); }
     ;
 
 member_parameter_list
@@ -375,22 +384,22 @@ member_parameter_list
     ;
 
 member_parameter
-    : name ':' type  { $$ = new bi::MemberParameter($1, $3, new bi::EmptyExpression(make_loc(@$)), make_loc(@$)); }
+    : name ':' type  { $$ = new bi::MemberParameter($1, $3, empty_expr(@$), make_loc(@$)); }
     ;
 
 arguments
-    : '(' ')'                  { $$ = new bi::EmptyExpression(make_loc(@$)); }
+    : '(' ')'                  { $$ = empty_expr(@$); }
     | '(' expression_list ')'  { $$ = $2; }
     ;
 
 optional_arguments
     : arguments
-    |            { $$ = new bi::EmptyExpression(make_loc(@$)); }
+    |            { $$ = empty_expr(@$); }
     ;
 
 size
     : expression  { $$ = new bi::Span($1, make_loc(@$)); }
-    | '_'         { $$ = new bi::Span(new bi::EmptyExpression(make_loc(@$)), make_loc(@$)); }
+    | '_'         { $$ = new bi::Span(empty_expr(@$), make_loc(@$)); }
     ;
 
 size_list
@@ -404,9 +413,9 @@ size_list
  ***************************************************************************/
 
 global_variable_declaration
-    : name ':' type ';'            { push_raw(); $$ = new bi::GlobalVariable($1, $3, new bi::EmptyExpression(make_loc(@$)), new bi::EmptyExpression(make_loc(@$)), make_doc_loc(@$)); }
-    | name ':' type arguments ';'  { push_raw(); $$ = new bi::GlobalVariable($1, $3, $4, new bi::EmptyExpression(make_loc(@$)), make_doc_loc(@$)); }
-    | name ':' type value ';'      { push_raw(); $$ = new bi::GlobalVariable($1, $3, new bi::EmptyExpression(make_loc(@$)), $4, make_doc_loc(@$)); }
+    : name ':' type ';'            { push_raw(); $$ = new bi::GlobalVariable($1, $3, empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type arguments ';'  { push_raw(); $$ = new bi::GlobalVariable($1, $3, $4, empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type value ';'      { push_raw(); $$ = new bi::GlobalVariable($1, $3, empty_expr(@$), $4, make_doc_loc(@$)); }
     ;
 
 local_variable_declaration
@@ -414,9 +423,9 @@ local_variable_declaration
     ;
 
 member_variable_declaration
-    : name ':' type ';'            { push_raw(); $$ = new bi::MemberVariable($1, $3, new bi::EmptyExpression(make_loc(@$)), new bi::EmptyExpression(make_loc(@$)), make_doc_loc(@$)); }
-    | name ':' type arguments ';'  { push_raw(); $$ = new bi::MemberVariable($1, $3, $4, new bi::EmptyExpression(make_loc(@$)), make_doc_loc(@$)); }
-    | name ':' type value ';'      { push_raw(); $$ = new bi::MemberVariable($1, $3, new bi::EmptyExpression(make_loc(@$)), $4, make_doc_loc(@$)); }
+    : name ':' type ';'            { push_raw(); $$ = new bi::MemberVariable($1, $3, empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type arguments ';'  { push_raw(); $$ = new bi::MemberVariable($1, $3, $4, empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type value ';'      { push_raw(); $$ = new bi::MemberVariable($1, $3, empty_expr(@$), $4, make_doc_loc(@$)); }
     ;
 
 function_declaration
@@ -484,17 +493,26 @@ conversion_operator_declaration
     ;
 
 class_declaration
-    : CLASS name optional_member_parameters '<' identifier_type optional_arguments { push_raw(); } optional_class_braces  { $$ = new bi::Class($2, $3, $5, $6, $8, make_doc_loc(@$)); }
-    | CLASS name optional_member_parameters { push_raw(); } optional_class_braces                                         { $$ = new bi::Class($2, $3, new bi::EmptyType(make_loc(@$)), new bi::EmptyExpression(make_loc(@$)), $5, make_doc_loc(@$)); }
+    /* care is needed here to disambiguate the '<' used for type parameters
+     * and that for the base class, and constructor parameters; to do so we
+     * enumerate the eight cases for presence/absence of these */
+    : CLASS name '<' type_identifier_list '>' member_parameters '<' type_identifier optional_arguments { push_raw(); } optional_class_braces  { $$ = new bi::Class($2, $4, $6, $8, $9, $11, make_doc_loc(@$)); }
+    | CLASS name '<' type_identifier_list '>' member_parameters { push_raw(); } optional_class_braces                                         { $$ = new bi::Class($2, $4, $6, empty_type(@$), empty_expr(@$), $8, make_doc_loc(@$)); }
+    | CLASS name member_parameters '<' type_identifier optional_arguments { push_raw(); } optional_class_braces                               { $$ = new bi::Class($2, empty_type(@$), $3, $5, $6, $8, make_doc_loc(@$)); }
+    | CLASS name member_parameters { push_raw(); } optional_class_braces                                                                      { $$ = new bi::Class($2, empty_type(@$), $3, empty_type(@$), empty_expr(@$), $5, make_doc_loc(@$)); }
+    | CLASS name '<' type_identifier_list '>' '<' type_identifier optional_arguments { push_raw(); } optional_class_braces                    { $$ = new bi::Class($2, $4, empty_expr(@$), $7, $8, $10, make_doc_loc(@$)); }
+    | CLASS name '<' type_identifier_list '>' { push_raw(); } optional_class_braces                                                           { $$ = new bi::Class($2, $4, empty_expr(@$), empty_type(@$), empty_expr(@$), $7, make_doc_loc(@$)); }
+    | CLASS name '<' type_identifier optional_arguments { push_raw(); } optional_class_braces                                                 { $$ = new bi::Class($2, empty_type(@$), empty_expr(@$), $4, $5, $7, make_doc_loc(@$)); }
+    | CLASS name { push_raw(); } optional_class_braces                                                                                        { $$ = new bi::Class($2, empty_type(@$), empty_expr(@$), empty_type(@$), empty_expr(@$), $4, make_doc_loc(@$)); }
     ;
 
-alias_type_declaration
-    : TYPE name '=' identifier_type ';'  { push_raw(); $$ = new bi::Alias($2, $4, make_doc_loc(@$)); }
+alias_declaration
+    : TYPE name '=' type_identifier ';'  { push_raw(); $$ = new bi::Alias($2, $4, make_doc_loc(@$)); }
     ;
     
-basic_type_declaration
-    : TYPE name '<' identifier_type ';'  { push_raw(); $$ = new bi::Basic($2, $4, make_doc_loc(@$)); }
-    | TYPE name ';'                      { push_raw(); $$ = new bi::Basic($2, new bi::EmptyType(make_loc(@$)), make_doc_loc(@$)); }
+basic_declaration
+    : TYPE name '<' type_identifier ';'  { push_raw(); $$ = new bi::Basic($2, $4, make_doc_loc(@$)); }
+    | TYPE name ';'                      { push_raw(); $$ = new bi::Basic($2, empty_type(@$), make_doc_loc(@$)); }
     ;
 
 cpp
@@ -521,7 +539,7 @@ if
 
 for_index
     : identifier
-    | name ':' type  { $$ = new bi::LocalVariable($1, $3, new bi::EmptyExpression(make_loc(@$)), new bi::EmptyExpression(make_loc(@$)), make_loc(@$)); }
+    | name ':' type  { $$ = new bi::LocalVariable($1, $3, empty_expr(@$), empty_expr(@$), make_loc(@$)); }
     ;
 
 for
@@ -594,8 +612,8 @@ file_statement
     | binary_operator_declaration
     | unary_operator_declaration
     | class_declaration
-    | alias_type_declaration
-    | basic_type_declaration
+    | alias_declaration
+    | basic_declaration
     | cpp
     | hpp
     ;
@@ -620,7 +638,7 @@ result
     
 optional_result
     : result
-    |         { $$ = new bi::EmptyType(make_loc(@$)); }
+    |         { $$ = empty_type(@$); }
     ;
 
 value
@@ -629,7 +647,7 @@ value
     
 optional_value
     : value
-    |        { $$ = new bi::EmptyExpression(make_loc(@$)); }
+    |        { $$ = empty_expr(@$); }
     ;
 
 braces
@@ -659,8 +677,8 @@ double_braces
  * Types                                                                   *
  ***************************************************************************/
 
-identifier_type
-    : name  { $$ = new bi::IdentifierType($1, make_loc(@$)); }
+type_identifier
+    : name  { $$ = new bi::TypeIdentifier($1, make_loc(@$)); }
     ;
 
 tuple_type
@@ -668,11 +686,11 @@ tuple_type
     ;
 
 function_type
-    : '@' '(' type_parameters optional_result ')'  { $$ = new bi::FunctionType($3, $4, make_loc(@$)); }
+    : '@' '(' parameter_types optional_result ')'  { $$ = new bi::FunctionType($3, $4, make_loc(@$)); }
     ;
 
 primary_type
-    : identifier_type
+    : type_identifier
     | tuple_type
     | function_type
     ;
@@ -686,21 +704,26 @@ postfix_type
 
 list_type
     : postfix_type
-    | postfix_type ',' list_type  { $$ = new bi::ListType($1, $3, make_loc(@$)); }
+    | postfix_type ',' list_type  { $$ = new bi::TypeList($1, $3, make_loc(@$)); }
     ;
 
 type
     : postfix_type
     ;
 
-type_parameter_list
+parameter_type_list
     : type
-    | type ',' type_parameter_list  { $$ = new bi::ListType($1, $3, make_loc(@$)); }
+    | type ',' parameter_type_list  { $$ = new bi::TypeList($1, $3, make_loc(@$)); }
     ;
 
-type_parameters
-    : '(' ')'                      { $$ = new bi::EmptyType(make_loc(@$)); }
-    | '(' type_parameter_list ')'  { $$ = $2; }
+parameter_types
+    : '(' ')'                      { $$ = empty_type(@$); }
+    | '(' parameter_type_list ')'  { $$ = $2; }
+    ;
+    
+type_identifier_list
+    : type_identifier
+    | type_identifier ',' type_identifier_list  { $$ = new bi::TypeList($1, $3, make_loc(@$)); }
     ;
 
 %%

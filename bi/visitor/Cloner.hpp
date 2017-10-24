@@ -91,8 +91,8 @@ public:
   virtual Statement* clone(const Raw* o);
 
   virtual Type* clone(const EmptyType* o);
-  virtual Type* clone(const ListType* o);
-  virtual Type* clone(const IdentifierType* o);
+  virtual Type* clone(const TypeList* o);
+  virtual Type* clone(const TypeIdentifier* o);
   virtual Type* clone(const ClassType* o);
   virtual Type* clone(const AliasType* o);
   virtual Type* clone(const BasicType* o);

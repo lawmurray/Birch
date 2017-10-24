@@ -239,13 +239,13 @@ void bi::Visitor::visit(const Program* o) {
   o->braces->accept(this);
 }
 
-void bi::Visitor::visit(const MemberFiber* o) {
+void bi::Visitor::visit(const MemberFunction* o) {
   o->params->accept(this);
   o->returnType->accept(this);
   o->braces->accept(this);
 }
 
-void bi::Visitor::visit(const MemberFunction* o) {
+void bi::Visitor::visit(const MemberFiber* o) {
   o->params->accept(this);
   o->returnType->accept(this);
   o->braces->accept(this);
@@ -274,6 +274,7 @@ void bi::Visitor::visit(const ConversionOperator* o) {
 }
 
 void bi::Visitor::visit(const Class* o) {
+  o->typeParams->accept(this);
   o->params->accept(this);
   o->base->accept(this);
   o->baseArgs->accept(this);
@@ -330,12 +331,12 @@ void bi::Visitor::visit(const EmptyType* o) {
   //
 }
 
-void bi::Visitor::visit(const ListType* o) {
+void bi::Visitor::visit(const TypeList* o) {
   o->head->accept(this);
   o->tail->accept(this);
 }
 
-void bi::Visitor::visit(const IdentifierType* o) {
+void bi::Visitor::visit(const TypeIdentifier* o) {
   //
 }
 

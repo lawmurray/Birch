@@ -51,7 +51,7 @@ bi::Type* bi::Assigner::modify(OptionalType* o) {
   return o;
 }
 
-bi::Type* bi::Assigner::modify(ListType* o) {
+bi::Type* bi::Assigner::modify(TypeList* o) {
   Modifier::modify(o);
   o->assignable = true;
   return o;

@@ -28,7 +28,7 @@ public:
   virtual Type* modify(OverloadedType* o);
   virtual Type* modify(FiberType* o);
   virtual Type* modify(OptionalType* o);
-  virtual Type* modify(ListType* o);
+  virtual Type* modify(TypeList* o);
   virtual Type* modify(BasicType* o);
   virtual Type* modify(ClassType* o);
   virtual Type* modify(AliasType* o);

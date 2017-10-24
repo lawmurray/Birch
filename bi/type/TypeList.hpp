@@ -12,7 +12,7 @@ namespace bi {
  *
  * @ingroup compiler_common
  */
-class ListType: public Type {
+class TypeList: public Type {
 public:
   /**
    * Constructor.
@@ -22,13 +22,13 @@ public:
    * @param loc Location.
    * @param assignable Is this type assignable?
    */
-  ListType(Type* head, Type* tail, Location* loc = nullptr,
+  TypeList(Type* head, Type* tail, Location* loc = nullptr,
       const bool assignable = false);
 
   /**
    * Destructor.
    */
-  virtual ~ListType();
+  virtual ~TypeList();
 
   virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);
@@ -51,12 +51,12 @@ public:
 
   virtual bool dispatchDefinitely(const Type& o) const;
   virtual bool definitely(const AliasType& o) const;
-  virtual bool definitely(const ListType& o) const;
+  virtual bool definitely(const TypeList& o) const;
   virtual bool definitely(const OptionalType& o) const;
 
   virtual bool dispatchPossibly(const Type& o) const;
   virtual bool possibly(const AliasType& o) const;
-  virtual bool possibly(const ListType& o) const;
+  virtual bool possibly(const TypeList& o) const;
   virtual bool possibly(const OptionalType& o) const;
 };
 }

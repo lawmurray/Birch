@@ -581,15 +581,6 @@ void bi::CppBaseGenerator::visit(const EmptyType* o) {
   middle("void");
 }
 
-void bi::CppBaseGenerator::visit(const ListType* o) {
-  for (auto iter = o->begin(); iter != o->end(); ++iter) {
-    if (iter != o->begin()) {
-      middle(',');
-    }
-    middle(*iter);
-  }
-}
-
 void bi::CppBaseGenerator::visit(const ArrayType* o) {
   middle("bi::DefaultArray<" << o->single << ',' << o->count() << '>');
 }
@@ -620,6 +611,14 @@ void bi::CppBaseGenerator::visit(const AliasType* o) {
 
 void bi::CppBaseGenerator::visit(const BasicType* o) {
   middle("bi::" << o->name);
+}
+
+void bi::CppBaseGenerator::visit(const TypeIdentifier* o) {
+  middle(o->name);
+}
+
+void bi::CppBaseGenerator::visit(const TypeList* o) {
+  middle(o->head << ", " << o->tail);
 }
 
 void bi::CppBaseGenerator::genArgs(const Call* o) {

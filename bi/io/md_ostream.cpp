@@ -128,7 +128,7 @@ void bi::md_ostream::visit(const Class* o) {
   --depth;
 }
 
-void bi::md_ostream::visit(const ListType* o) {
+void bi::md_ostream::visit(const TypeList* o) {
   middle(o->head << ", " << o->tail);
 }
 

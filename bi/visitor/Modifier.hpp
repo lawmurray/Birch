@@ -91,8 +91,8 @@ public:
   virtual Statement* modify(Raw* o);
 
   virtual Type* modify(EmptyType* o);
-  virtual Type* modify(ListType* o);
-  virtual Type* modify(IdentifierType* o);
+  virtual Type* modify(TypeList* o);
+  virtual Type* modify(TypeIdentifier* o);
   virtual Type* modify(ClassType* o);
   virtual Type* modify(AliasType* o);
   virtual Type* modify(BasicType* o);

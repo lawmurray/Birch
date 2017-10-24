@@ -24,6 +24,7 @@ bi::Statement* bi::Typer::modify(Basic* o) {
 }
 
 bi::Statement* bi::Typer::modify(Class* o) {
+  o->typeParams = o->typeParams->accept(this);
   currentFile->scope->add(o);
   return o;
 }

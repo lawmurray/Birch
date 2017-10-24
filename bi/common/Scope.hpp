@@ -33,7 +33,7 @@ template<class ObjectType> class OverloadedIdentifier;
 class BasicType;
 class ClassType;
 class AliasType;
-class IdentifierType;
+class TypeIdentifier;
 
 /**
  * Categories of objects for identifier lookups.
@@ -51,6 +51,7 @@ enum LookupResult {
   BASIC,
   CLASS,
   ALIAS,
+  MEMBER_TYPE_PARAMETER,
   UNRESOLVED
 };
 
@@ -65,7 +66,7 @@ public:
    * Look up the category for an unknown identifier.
    */
   LookupResult lookup(const Identifier<Unknown>* ref) const;
-  LookupResult lookup(const IdentifierType* ref) const;
+  LookupResult lookup(const TypeIdentifier* ref) const;
 
   /**
    * Add declaration to scope.
@@ -84,14 +85,14 @@ public:
   void add(MemberFiber* o);
   void add(BinaryOperator* o);
   void add(UnaryOperator* o);
+  void add(Basic* o);
   void add(Class* o);
   void add(Alias* o);
-  void add(Basic* o);
 
   /**
    * Get the declaration to which an identifier corresponds.
    *
-   * @param o Identnfier.
+   * @param o Identifier.
    *
    * @return Declaration.
    */

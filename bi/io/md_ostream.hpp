@@ -38,7 +38,7 @@ public:
   virtual void visit(const ConversionOperator* o);
   virtual void visit(const Class* o);
 
-  virtual void visit(const ListType* o);
+  virtual void visit(const TypeList* o);
   virtual void visit(const ClassType* o);
   virtual void visit(const BasicType* o);
   virtual void visit(const AliasType* o);

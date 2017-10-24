@@ -32,13 +32,14 @@ public:
    * Constructor.
    *
    * @param name Name.
+   * @param typeParams Generic type parameters.
    * @param params Constructor parameters.
    * @param base Base type.
    * @param baseArgs Base type constructor arguments.
    * @param braces Braces.
    * @param loc Location.
    */
-  Class(Name* name, Expression* parens, Type* base,
+  Class(Name* name, Type* typeParams, Expression* parens, Type* base,
       Expression* baseArgs, Statement* braces, Location* loc =
           nullptr);
 
@@ -80,6 +81,11 @@ public:
   virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
+
+  /**
+   * Generic type parameters.
+   */
+  Type* typeParams;
 
   /**
    * Base type constructor arguments.

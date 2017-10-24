@@ -149,11 +149,11 @@ bool bi::Type::definitely(const FunctionType& o) const {
   return false;
 }
 
-bool bi::Type::definitely(const IdentifierType& o) const {
+bool bi::Type::definitely(const TypeIdentifier& o) const {
   return false;
 }
 
-bool bi::Type::definitely(const ListType& o) const {
+bool bi::Type::definitely(const TypeList& o) const {
   return false;
 }
 
@@ -209,11 +209,11 @@ bool bi::Type::possibly(const FunctionType& o) const {
   return false;
 }
 
-bool bi::Type::possibly(const IdentifierType& o) const {
+bool bi::Type::possibly(const TypeIdentifier& o) const {
   return false;
 }
 
-bool bi::Type::possibly(const ListType& o) const {
+bool bi::Type::possibly(const TypeList& o) const {
   return false;
 }
 

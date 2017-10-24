@@ -309,6 +309,7 @@ bi::Statement* bi::Modifier::modify(ConversionOperator* o) {
 }
 
 bi::Statement* bi::Modifier::modify(Class* o) {
+  o->typeParams = o->typeParams->accept(this);
   o->params = o->params->accept(this);
   o->base = o->base->accept(this);
   o->baseArgs = o->baseArgs->accept(this);
@@ -375,13 +376,13 @@ bi::Type* bi::Modifier::modify(EmptyType* o) {
   return o;
 }
 
-bi::Type* bi::Modifier::modify(ListType* o) {
+bi::Type* bi::Modifier::modify(TypeList* o) {
   o->head = o->head->accept(this);
   o->tail = o->tail->accept(this);
   return o;
 }
 
-bi::Type* bi::Modifier::modify(IdentifierType* o) {
+bi::Type* bi::Modifier::modify(TypeIdentifier* o) {
   return o;
 }
 

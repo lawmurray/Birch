@@ -28,6 +28,16 @@ public:
 
 protected:
   /**
+   * Generate code for template parameters (`template<...>`).
+   */
+  void genTemplateParams();
+
+  /**
+   * Generate code for template arguments (`<...>`).
+   */
+  void genTemplateArgs();
+
+  /**
    * The class being generated.
    */
   const Class* type;

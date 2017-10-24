@@ -14,7 +14,7 @@ namespace bi {
  *
  * @ingroup compiler_type
  */
-class IdentifierType: public Type, public Named {
+class TypeIdentifier: public Type, public Named {
 public:
   /**
    * Constructor.
@@ -23,13 +23,13 @@ public:
    * @param loc Location.
    * @param assignable Is this type assignable?
    */
-  IdentifierType(Name* name, Location* loc = nullptr,
+  TypeIdentifier(Name* name, Location* loc = nullptr,
       const bool assignable = false);
 
   /**
    * Destructor.
    */
-  virtual ~IdentifierType();
+  virtual ~TypeIdentifier();
 
   virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);

@@ -69,7 +69,7 @@ public:
   virtual bool definitely(const FiberType& o) const;
   virtual bool definitely(const EmptyType& o) const;
   virtual bool definitely(const FunctionType& o) const;
-  virtual bool definitely(const ListType& o) const;
+  virtual bool definitely(const TypeList& o) const;
   virtual bool definitely(const OptionalType& o) const;
   virtual bool definitely(const TupleType& o) const;
 
@@ -81,7 +81,7 @@ public:
   virtual bool possibly(const FiberType& o) const;
   virtual bool possibly(const EmptyType& o) const;
   virtual bool possibly(const FunctionType& o) const;
-  virtual bool possibly(const ListType& o) const;
+  virtual bool possibly(const TypeList& o) const;
   virtual bool possibly(const OptionalType& o) const;
   virtual bool possibly(const TupleType& o) const;
 };

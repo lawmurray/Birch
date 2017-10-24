@@ -36,7 +36,7 @@ public:
   virtual Expression* modify(Parentheses* o);
   virtual Expression* modify(Binary* o);
 
-  virtual Type* modify(IdentifierType* o);
+  virtual Type* modify(TypeIdentifier* o);
   virtual Type* modify(ClassType* o);
   virtual Type* modify(AliasType* o);
   virtual Type* modify(BasicType* o);
@@ -74,7 +74,7 @@ protected:
    *
    * @return A new, unambiguous, reference.
    */
-  Type* lookup(IdentifierType* ref, Scope* scope = nullptr);
+  Type* lookup(TypeIdentifier* ref, Scope* scope = nullptr);
 
   /**
    * Check that an expression is of boolean type.
