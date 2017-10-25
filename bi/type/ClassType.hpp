@@ -20,6 +20,18 @@ public:
    * Constructor.
    *
    * @param name Name.
+   * @param typeArgs Generic type arguments.
+   * @param loc Location.
+   * @param assignable Is this type assignable?
+   * @param target Target.
+   */
+  ClassType(Name* name, Type* typeArgs, Location* loc = nullptr,
+      const bool assignable = false, Class* target = nullptr);
+
+  /**
+   * Constructor.
+   *
+   * @param name Name.
    * @param loc Location.
    * @param assignable Is this type assignable?
    * @param target Target.
@@ -31,6 +43,8 @@ public:
    * Constructor.
    *
    * @param target Target.
+   * @param loc Location.
+   * @param assignable Is this type assignable?
    */
   ClassType(Class* target, Location* loc = nullptr, const bool assignable =
       false);
@@ -68,5 +82,10 @@ public:
   virtual bool possibly(const ClassType& o) const;
   virtual bool possibly(const OptionalType& o) const;
   virtual bool possibly(const TupleType& o) const;
+
+  /**
+   * Generic type arguments.
+   */
+  Type* typeArgs;
 };
 }

@@ -602,7 +602,11 @@ void bi::CppBaseGenerator::visit(const OptionalType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const ClassType* o) {
-  middle("bi::Pointer<bi::" << o->name << '>');
+  middle("bi::Pointer<bi::" << o->name);
+  if (!o->typeArgs->isEmpty()) {
+    middle('<' << o->typeArgs << '>');
+  }
+  middle('>');
 }
 
 void bi::CppBaseGenerator::visit(const AliasType* o) {

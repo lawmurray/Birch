@@ -5,18 +5,29 @@
 
 #include "bi/visitor/all.hpp"
 
+bi::ClassType::ClassType(Name* name, Type* typeArgs, Location* loc,
+    const bool assignable, Class* target) :
+    Type(loc, assignable),
+    Named(name),
+    Reference<Class>(target),
+    typeArgs(typeArgs) {
+  //
+}
+
 bi::ClassType::ClassType(Name* name, Location* loc, const bool assignable,
     Class* target) :
     Type(loc, assignable),
     Named(name),
-    Reference<Class>(target) {
+    Reference<Class>(target),
+    typeArgs(new EmptyType(loc)) {
   //
 }
 
 bi::ClassType::ClassType(Class* target, Location* loc, const bool assignable) :
     Type(loc, assignable),
     Named(target->name),
-    Reference<Class>(target) {
+    Reference<Class>(target),
+    typeArgs(new EmptyType(loc)) {
   //
 }
 
@@ -74,8 +85,8 @@ bool bi::ClassType::definitely(const ClassType& o) const {
   assert(target);
   assert(o.target);
   return target == o.target || target->hasConversion(&o)
-      || o.target->name->str() == "Object"
-      || target->hasSuper(&o) || target->base->definitely(o);
+      || o.target->name->str() == "Object" || target->hasSuper(&o)
+      || target->base->definitely(o);
 }
 
 bool bi::ClassType::definitely(const FiberType& o) const {

@@ -387,6 +387,7 @@ bi::Type* bi::Modifier::modify(TypeIdentifier* o) {
 }
 
 bi::Type* bi::Modifier::modify(ClassType* o) {
+  o->typeArgs = o->typeArgs->accept(this);
   return o;
 }
 

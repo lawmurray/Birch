@@ -318,7 +318,8 @@ bi::Type* bi::Cloner::clone(const TypeIdentifier* o) {
 }
 
 bi::Type* bi::Cloner::clone(const ClassType* o) {
-  return new ClassType(o->name, o->loc, o->assignable);
+  return new ClassType(o->name, o->typeArgs->accept(this), o->loc,
+      o->assignable);
 }
 
 bi::Type* bi::Cloner::clone(const AliasType* o) {

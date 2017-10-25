@@ -400,6 +400,9 @@ void bi::bi_ostream::visit(const Raw* o) {
 
 void bi::bi_ostream::visit(const ClassType* o) {
   middle(o->name);
+  if (!o->typeArgs->isEmpty()) {
+    middle('<' << o->typeArgs << '>');
+  }
 }
 
 void bi::bi_ostream::visit(const AliasType* o) {

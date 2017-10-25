@@ -341,7 +341,7 @@ void bi::Visitor::visit(const TypeIdentifier* o) {
 }
 
 void bi::Visitor::visit(const ClassType* o) {
-  //
+  o->typeArgs->accept(this);
 }
 
 void bi::Visitor::visit(const AliasType* o) {
