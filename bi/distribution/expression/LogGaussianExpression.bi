@@ -28,31 +28,31 @@ class LogGaussianExpression {
   }
 }
 
-operator a:Real*x:LogGaussian -> LogGaussianExpression {
+operator (a:Real*x:LogGaussian) -> LogGaussianExpression {
   y:LogGaussianExpression;
   y.initialize(a, x);
   return y;
 }
 
-operator a:Real*x:LogGaussianExpression -> LogGaussianExpression {
+operator (a:Real*x:LogGaussianExpression) -> LogGaussianExpression {
   y:LogGaussianExpression;
   y.initialize(a*x.a, x.x);
   return y;
 }
 
-operator x:LogGaussian*a:Real -> LogGaussianExpression {
+operator (x:LogGaussian*a:Real) -> LogGaussianExpression {
   return a*x;
 }
 
-operator x:LogGaussianExpression*a:Real -> LogGaussianExpression {
+operator (x:LogGaussianExpression*a:Real) -> LogGaussianExpression {
   return a*x;
 }
 
-operator x:LogGaussian/a:Real -> LogGaussianExpression {
+operator (x:LogGaussian/a:Real) -> LogGaussianExpression {
   return (1.0/a)*x;
 }
 
-operator x:LogGaussianExpression/a:Real -> LogGaussianExpression {
+operator (x:LogGaussianExpression/a:Real) -> LogGaussianExpression {
   return (1.0/a)*x;
 }
 

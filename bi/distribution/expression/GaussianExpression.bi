@@ -34,94 +34,94 @@ class GaussianExpression {
   }
 }
 
-operator +x:Gaussian -> Gaussian {
+operator (+x:Gaussian) -> Gaussian {
   return x;
 }
 
-operator +x:GaussianExpression -> GaussianExpression {
+operator (+x:GaussianExpression) -> GaussianExpression {
   return x;
 }
 
-operator -x:Gaussian -> GaussianExpression {
+operator (-x:Gaussian) -> GaussianExpression {
   y:GaussianExpression;
   y.initialize(-1.0, x, 0.0);
   return y;
 }
 
-operator -x:GaussianExpression -> GaussianExpression {
+operator (-x:GaussianExpression) -> GaussianExpression {
   y:GaussianExpression;
   y.initialize(-x.a, x.x, -x.c);
   return y;
 }
 
-operator x:Gaussian + c:Real -> GaussianExpression {
+operator (x:Gaussian + c:Real) -> GaussianExpression {
   y:GaussianExpression;
   y.initialize(1.0, x, c);
   return y;
 }
 
-operator x:GaussianExpression + c:Real -> GaussianExpression {
+operator (x:GaussianExpression + c:Real) -> GaussianExpression {
   y:GaussianExpression;
   y.initialize(x.a, x.x, x.c + c);
   return y;
 }
 
-operator c:Real + x:Gaussian -> GaussianExpression {
+operator (c:Real + x:Gaussian) -> GaussianExpression {
   return x + c;
 }
 
-operator c:Real + x:GaussianExpression -> GaussianExpression {
+operator (c:Real + x:GaussianExpression) -> GaussianExpression {
   return x + c;
 }
 
-operator x:Gaussian - c:Real -> GaussianExpression {
+operator (x:Gaussian - c:Real) -> GaussianExpression {
   y:GaussianExpression;
   y.initialize(1.0, x, -c);
   return y;
 }
 
-operator x:GaussianExpression - c:Real -> GaussianExpression {
+operator (x:GaussianExpression - c:Real) -> GaussianExpression {
   y:GaussianExpression;
   y.initialize(x.a, x.x, x.c - c);
   return y;
 }
 
-operator c:Real - x:Gaussian -> GaussianExpression {
+operator (c:Real - x:Gaussian) -> GaussianExpression {
   y:GaussianExpression;
   y.initialize(-1.0, x, c);
   return y;
 }
 
-operator c:Real - x:GaussianExpression -> GaussianExpression {
+operator (c:Real - x:GaussianExpression) -> GaussianExpression {
   y:GaussianExpression;
   y.initialize(-x.a, x.x, c - x.c);
   return y;
 }
 
-operator a:Real*x:Gaussian -> GaussianExpression {
+operator (a:Real*x:Gaussian) -> GaussianExpression {
   y:GaussianExpression;
   y.initialize(a, x, 0.0);
   return y;
 }
 
-operator a:Real*x:GaussianExpression -> GaussianExpression {
+operator (a:Real*x:GaussianExpression) -> GaussianExpression {
   y:GaussianExpression;
   y.initialize(a*x.a, x.x, a*x.c);
   return y;
 }
 
-operator x:Gaussian*a:Real -> GaussianExpression {
+operator (x:Gaussian*a:Real) -> GaussianExpression {
   return a*x;
 }
 
-operator x:GaussianExpression*a:Real -> GaussianExpression {
+operator (x:GaussianExpression*a:Real) -> GaussianExpression {
   return a*x;
 }
 
-operator x:Gaussian/a:Real -> GaussianExpression {
+operator (x:Gaussian/a:Real) -> GaussianExpression {
   return (1.0/a)*x;
 }
 
-operator x:GaussianExpression/a:Real -> GaussianExpression {
+operator (x:GaussianExpression/a:Real) -> GaussianExpression {
   return (1.0/a)*x;
 }

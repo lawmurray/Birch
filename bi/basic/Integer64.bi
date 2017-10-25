@@ -34,18 +34,18 @@ function Integer64(s:String) -> Integer64 {
 /*
  * Operators
  */
-operator x:Integer64 + y:Integer64 -> Integer64;
-operator x:Integer64 - y:Integer64 -> Integer64;
-operator x:Integer64 * y:Integer64 -> Integer64;
-operator x:Integer64 / y:Integer64 -> Integer64;
-operator +x:Integer64 -> Integer64;
-operator -x:Integer64 -> Integer64;
-operator x:Integer64 > y:Integer64 -> Boolean;
-operator x:Integer64 < y:Integer64 -> Boolean;
-operator x:Integer64 >= y:Integer64 -> Boolean;
-operator x:Integer64 <= y:Integer64 -> Boolean;
-operator x:Integer64 == y:Integer64 -> Boolean;
-operator x:Integer64 != y:Integer64 -> Boolean;
+operator (x:Integer64 + y:Integer64) -> Integer64;
+operator (x:Integer64 - y:Integer64) -> Integer64;
+operator (x:Integer64 * y:Integer64) -> Integer64;
+operator (x:Integer64 / y:Integer64) -> Integer64;
+operator (+x:Integer64) -> Integer64;
+operator (-x:Integer64) -> Integer64;
+operator (x:Integer64 > y:Integer64) -> Boolean;
+operator (x:Integer64 < y:Integer64) -> Boolean;
+operator (x:Integer64 >= y:Integer64) -> Boolean;
+operator (x:Integer64 <= y:Integer64) -> Boolean;
+operator (x:Integer64 == y:Integer64) -> Boolean;
+operator (x:Integer64 != y:Integer64) -> Boolean;
 
 /**
  * Absolute value.

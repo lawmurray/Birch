@@ -34,18 +34,18 @@ function Integer32(s:String) -> Integer32 {
 /*
  * Operators
  */
-operator x:Integer32 + y:Integer32 -> Integer32;
-operator x:Integer32 - y:Integer32 -> Integer32;
-operator x:Integer32 * y:Integer32 -> Integer32;
-operator x:Integer32 / y:Integer32 -> Integer32;
-operator +x:Integer32 -> Integer32;
-operator -x:Integer32 -> Integer32;
-operator x:Integer32 > y:Integer32 -> Boolean;
-operator x:Integer32 < y:Integer32 -> Boolean;
-operator x:Integer32 >= y:Integer32 -> Boolean;
-operator x:Integer32 <= y:Integer32 -> Boolean;
-operator x:Integer32 == y:Integer32 -> Boolean;
-operator x:Integer32 != y:Integer32 -> Boolean;
+operator (x:Integer32 + y:Integer32) -> Integer32;
+operator (x:Integer32 - y:Integer32) -> Integer32;
+operator (x:Integer32 * y:Integer32) -> Integer32;
+operator (x:Integer32 / y:Integer32) -> Integer32;
+operator (+x:Integer32) -> Integer32;
+operator (-x:Integer32) -> Integer32;
+operator (x:Integer32 > y:Integer32) -> Boolean;
+operator (x:Integer32 < y:Integer32) -> Boolean;
+operator (x:Integer32 >= y:Integer32) -> Boolean;
+operator (x:Integer32 <= y:Integer32) -> Boolean;
+operator (x:Integer32 == y:Integer32) -> Boolean;
+operator (x:Integer32 != y:Integer32) -> Boolean;
 
 /**
  * Absolute value.

@@ -17,6 +17,6 @@ function Boolean(x:String) -> Boolean {
 /*
  * Operators
  */
-operator x:Boolean && y:Boolean -> Boolean;
-operator x:Boolean || y:Boolean -> Boolean;
-operator !x:Boolean -> Boolean;
+operator (x:Boolean && y:Boolean) -> Boolean;
+operator (x:Boolean || y:Boolean) -> Boolean;
+operator (!x:Boolean) -> Boolean;

@@ -5,27 +5,27 @@
  * is a critical feature of its performance.
  */
 
-operator -x:Real[_] -> Real[_];
-operator +x:Real[_] -> Real[_];
-operator x:Real[_] + y:Real[_] -> Real[_];
-operator x:Real[_] - y:Real[_] -> Real[_];
+operator (-x:Real[_]) -> Real[_];
+operator (+x:Real[_]) -> Real[_];
+operator (x:Real[_] + y:Real[_]) -> Real[_];
+operator (x:Real[_] - y:Real[_]) -> Real[_];
 
-operator -X:Real[_,_] -> Real[_,_];
-operator +X:Real[_,_] -> Real[_,_];
-operator X:Real[_,_] + Y:Real[_,_] -> Real[_,_];
-operator X:Real[_,_] - Y:Real[_,_] -> Real[_,_];
+operator (-X:Real[_,_]) -> Real[_,_];
+operator (+X:Real[_,_]) -> Real[_,_];
+operator (X:Real[_,_] + Y:Real[_,_]) -> Real[_,_];
+operator (X:Real[_,_] - Y:Real[_,_]) -> Real[_,_];
 
-operator x:Real[_]*y:Real[_] -> Real[_];
-operator X:Real[_,_]*y:Real[_] -> Real[_];
-operator x:Real[_]*Y:Real[_,_] -> Real[_,_];
-operator X:Real[_,_]*Y:Real[_,_] -> Real[_,_];
+operator (x:Real[_]*y:Real[_]) -> Real[_];
+operator (X:Real[_,_]*y:Real[_]) -> Real[_];
+operator (x:Real[_]*Y:Real[_,_]) -> Real[_,_];
+operator (X:Real[_,_]*Y:Real[_,_]) -> Real[_,_];
 
-operator x:Real*y:Real[_] -> Real[_];
-operator x:Real[_]*y:Real -> Real[_];
-operator x:Real*Y:Real[_,_] -> Real[_,_];
-operator X:Real[_,_]*y:Real -> Real[_,_];
-operator x:Real[_]/y:Real -> Real[_];
-operator X:Real[_,_]/y:Real -> Real[_,_];
+operator (x:Real*y:Real[_]) -> Real[_];
+operator (x:Real[_]*y:Real) -> Real[_];
+operator (x:Real*Y:Real[_,_]) -> Real[_,_];
+operator (X:Real[_,_]*y:Real) -> Real[_,_];
+operator (x:Real[_]/y:Real) -> Real[_];
+operator (X:Real[_,_]/y:Real) -> Real[_,_];
 
 /**
  * Norm of a vector.

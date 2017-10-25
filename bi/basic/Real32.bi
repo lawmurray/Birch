@@ -34,18 +34,18 @@ function Real32(s:String) -> Real32 {
 /*
  * Operators
  */
-operator x:Real32 + y:Real32 -> Real32;
-operator x:Real32 - y:Real32 -> Real32;
-operator x:Real32 * y:Real32 -> Real32;
-operator x:Real32 / y:Real32 -> Real32;
-operator +x:Real32 -> Real32;
-operator -x:Real32 -> Real32;
-operator x:Real32 > y:Real32 -> Boolean;
-operator x:Real32 < y:Real32 -> Boolean;
-operator x:Real32 >= y:Real32 -> Boolean;
-operator x:Real32 <= y:Real32 -> Boolean;
-operator x:Real32 == y:Real32 -> Boolean;
-operator x:Real32 != y:Real32 -> Boolean;
+operator (x:Real32 + y:Real32) -> Real32;
+operator (x:Real32 - y:Real32) -> Real32;
+operator (x:Real32 * y:Real32) -> Real32;
+operator (x:Real32 / y:Real32) -> Real32;
+operator (+x:Real32) -> Real32;
+operator (-x:Real32) -> Real32;
+operator (x:Real32 > y:Real32) -> Boolean;
+operator (x:Real32 < y:Real32) -> Boolean;
+operator (x:Real32 >= y:Real32) -> Boolean;
+operator (x:Real32 <= y:Real32) -> Boolean;
+operator (x:Real32 == y:Real32) -> Boolean;
+operator (x:Real32 != y:Real32) -> Boolean;
 
 /**
  * Absolute value.

@@ -34,18 +34,18 @@ function Real64(s:String) -> Real64 {
 /*
  * Operators
  */
-operator x:Real64 + y:Real64 -> Real64;
-operator x:Real64 - y:Real64 -> Real64;
-operator x:Real64 * y:Real64 -> Real64;
-operator x:Real64 / y:Real64 -> Real64;
-operator +x:Real64 -> Real64;
-operator -x:Real64 -> Real64;
-operator x:Real64 > y:Real64 -> Boolean;
-operator x:Real64 < y:Real64 -> Boolean;
-operator x:Real64 >= y:Real64 -> Boolean;
-operator x:Real64 <= y:Real64 -> Boolean;
-operator x:Real64 == y:Real64 -> Boolean;
-operator x:Real64 != y:Real64 -> Boolean;
+operator (x:Real64 + y:Real64) -> Real64;
+operator (x:Real64 - y:Real64) -> Real64;
+operator (x:Real64 * y:Real64) -> Real64;
+operator (x:Real64 / y:Real64) -> Real64;
+operator (+x:Real64) -> Real64;
+operator (-x:Real64) -> Real64;
+operator (x:Real64 > y:Real64) -> Boolean;
+operator (x:Real64 < y:Real64) -> Boolean;
+operator (x:Real64 >= y:Real64) -> Boolean;
+operator (x:Real64 <= y:Real64) -> Boolean;
+operator (x:Real64 == y:Real64) -> Boolean;
+operator (x:Real64 != y:Real64) -> Boolean;
 
 /**
  * Absolute value.

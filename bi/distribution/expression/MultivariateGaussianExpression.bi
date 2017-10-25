@@ -37,7 +37,7 @@ class MultivariateGaussianExpression(R:Integer, C:Integer) {
   }
 }
 
-operator x:MultivariateGaussian + c:Real[_]
+operator (x:MultivariateGaussian + c:Real[_])
     -> MultivariateGaussianExpression {
   assert x.D == length(c);
   y:MultivariateGaussianExpression(x.D, x.D);
@@ -45,24 +45,24 @@ operator x:MultivariateGaussian + c:Real[_]
   return y;
 }
 
-operator x:MultivariateGaussianExpression + c:Real[_]
+operator (x:MultivariateGaussianExpression + c:Real[_])
     -> MultivariateGaussianExpression {
   y:MultivariateGaussianExpression(x.R, x.C);
   y.initialize(x.A, x.x, x.c + c);
   return y;
 }
 
-operator c:Real[_] + x:MultivariateGaussian
+operator (c:Real[_] + x:MultivariateGaussian)
     -> MultivariateGaussianExpression {
   return x + c;
 }
 
-operator c:Real[_] + x:MultivariateGaussianExpression
+operator (c:Real[_] + x:MultivariateGaussianExpression)
     -> MultivariateGaussianExpression {
   return x + c;
 }
 
-operator x:MultivariateGaussian - c:Real[_]
+operator (x:MultivariateGaussian - c:Real[_])
     -> MultivariateGaussianExpression {
   assert x.D == length(c);
   y:MultivariateGaussianExpression(x.D, x.D);
@@ -70,14 +70,14 @@ operator x:MultivariateGaussian - c:Real[_]
   return y;
 }
 
-operator x:MultivariateGaussianExpression - c:Real[_]
+operator (x:MultivariateGaussianExpression - c:Real[_])
     -> MultivariateGaussianExpression {
   y:MultivariateGaussianExpression(x.R, x.C);
   y.initialize(x.A, x.x, x.c - c);
   return y;
 }
 
-operator c:Real[_] - x:MultivariateGaussian
+operator (c:Real[_] - x:MultivariateGaussian)
     -> MultivariateGaussianExpression {
   assert x.D == length(c);
   y:MultivariateGaussianExpression(x.D, x.D);
@@ -85,14 +85,14 @@ operator c:Real[_] - x:MultivariateGaussian
   return y;
 }
 
-operator c:Real[_] - x:MultivariateGaussianExpression
+operator (c:Real[_] - x:MultivariateGaussianExpression)
     -> MultivariateGaussianExpression {
   y:MultivariateGaussianExpression(x.R, x.C);
   y.initialize(-x.A, x.x, c - x.c);
   return y;
 }
 
-operator A:Real[_,_]*x:MultivariateGaussian
+operator (A:Real[_,_]*x:MultivariateGaussian)
     -> MultivariateGaussianExpression {
   assert columns(A) == x.D;
   y:MultivariateGaussianExpression(rows(A), columns(A));
@@ -100,7 +100,7 @@ operator A:Real[_,_]*x:MultivariateGaussian
   return y;
 }
 
-operator A:Real[_,_]*x:MultivariateGaussianExpression
+operator (A:Real[_,_]*x:MultivariateGaussianExpression)
     -> MultivariateGaussianExpression {
   y:MultivariateGaussianExpression(rows(A), x.C);
   y.initialize(A*x.A, x.x, A*x.c);
