@@ -75,8 +75,8 @@
 }
 
 %glr-parser
-%expect-rr 2  // Type?(...) vs x?
-%expect 1     // operator (x:A<T> < y:B)
+%expect-rr 2  // `Type?(...)` vs `x?`
+%expect 2     // `operator (x:A<T> < y:B)` and `class A<T> < B`
 
 %token <valString> PROGRAM CLASS TYPE FUNCTION FIBER OPERATOR
 %token <valString> IF ELSE FOR IN WHILE ASSERT RETURN YIELD CPP HPP
@@ -108,7 +108,7 @@
 %type <valExpression> expression_list expression optional_expression
 %type <valExpression> local_variable parameter parameter_list parameters
 %type <valExpression> option option_list options
-%type <valExpression> member_parameter member_parameter_list member_parameters
+%type <valExpression> member_parameter member_parameter_list member_parameters optional_member_parameters
 %type <valExpression> arguments optional_arguments
 %type <valExpression> size_list size value optional_value for_index
 
@@ -130,7 +130,8 @@
 %type <valType> type_identifier type_list primary_type generic_type tuple_type
 %type <valType> postfix_type function_type type
 %type <valType> parameter_type_list parameter_types
-%type <valType> result optional_result type_identifier_list
+%type <valType> result optional_result
+%type <valType> type_parameter type_parameter_list type_parameters optional_type_parameters
 
 %locations
 
@@ -373,6 +374,25 @@ option
     : name ':' type optional_value  { $$ = new bi::Parameter($1, $3, $4, make_loc(@$)); }
     ;
 
+type_parameters
+    : '<' '>'                       { $$ = empty_type(@$); }
+    | '<' type_parameter_list '>'  { $$ = $2; }
+    ;
+
+type_parameter_list
+    : type_parameter
+    | type_parameters ',' type_parameter_list  { $$ = new bi::TypeList($1, $3, make_loc(@$)); }
+    ;
+
+type_parameter
+    : type_identifier
+    ;
+    
+optional_type_parameters
+    : type_parameters
+    |                  { $$ = empty_type(@$); }
+    ;
+
 member_parameters
     : '(' ')'                        { $$ = empty_expr(@$); }
     | '(' member_parameter_list ')'  { $$ = $2; }
@@ -385,6 +405,11 @@ member_parameter_list
 
 member_parameter
     : name ':' type  { $$ = new bi::MemberParameter($1, $3, empty_expr(@$), make_loc(@$)); }
+    ;
+
+optional_member_parameters
+    : member_parameters
+    |                    { $$ = empty_expr(@$); }
     ;
 
 arguments
@@ -471,14 +496,6 @@ unary_operator
 
 binary_operator_declaration
     : OPERATOR '(' parameter binary_operator parameter ')' optional_result { push_raw(); } optional_braces  { $$ = new bi::BinaryOperator($4, new bi::Binary($3, $5, make_loc(@$)), $7, $9, make_doc_loc(@$)); }
-    /* care is needed here to disambiguate the '<' used for type parameters
-     * and that for less-than comparison; to do so we enumerate the ambiguous
-     * cases explicitly */
-    //| OPERATOR '(' name ':' name '<' parameter ')' optional_result { push_raw(); } optional_braces  { $$ = new bi::BinaryOperator(new bi::Name('<'), new bi::Binary(new bi::Parameter($3, new bi::TypeIdentifier($5, make_loc(@$)), empty_expr(@$)), $7, make_loc(@$)), $9, $11, make_doc_loc(@$)); }
-    //| OPERATOR '(' name ':' name '<' type_list '>' '<' parameter ')' optional_result { push_raw(); } optional_braces  { $$ = new bi::BinaryOperator(new bi::Name('<'), new bi::Binary(new bi::Parameter($3, new bi::ClassType($5, $7, make_loc(@$)), empty_expr(@$)), $10, make_loc(@$)), $12, $14, make_doc_loc(@$)); }
-    //| OPERATOR '(' name ':' name '<' type_list '>' '[' size_list ']' '<' parameter ')' optional_result { push_raw(); } optional_braces  { $$ = new bi::BinaryOperator(new bi::Name('<'), new bi::Binary(new bi::Parameter($3, new bi::ArrayType(new bi::ClassType($5, $7, make_loc(@$)), $10, make_loc(@$)), empty_expr(@$)), $13, make_loc(@$)), $15, $17, make_doc_loc(@$)); }
-    //| OPERATOR '(' name ':' name '<' type_list '>' '!' '<' parameter ')' optional_result { push_raw(); } optional_braces  { $$ = new bi::BinaryOperator(new bi::Name('<'), new bi::Binary(new bi::Parameter($3, new bi::FiberType(new bi::ClassType($5, $7, make_loc(@$)), make_loc(@$)), empty_expr(@$)), $11, make_loc(@$)), $13, $15, make_doc_loc(@$)); }
-    //| OPERATOR '(' name ':' name '<' type_list '>' '?' '<' parameter ')' optional_result { push_raw(); } optional_braces  { $$ = new bi::BinaryOperator(new bi::Name('<'), new bi::Binary(new bi::Parameter($3, new bi::OptionalType(new bi::ClassType($5, $7, make_loc(@$)), make_loc(@$)), empty_expr(@$)), $11, make_loc(@$)), $13, $15, make_doc_loc(@$)); }
     ;
     
 unary_operator_declaration
@@ -501,17 +518,8 @@ conversion_operator_declaration
     ;
 
 class_declaration
-    /* care is needed here to disambiguate the '<' used for type parameters
-     * and that for the base class, and constructor parameters; to do so we
-     * enumerate the eight cases for presence/absence of these */
-    : CLASS name '<' type_identifier_list '>' member_parameters '<' type_identifier optional_arguments { push_raw(); } optional_class_braces  { $$ = new bi::Class($2, $4, $6, $8, $9, $11, make_doc_loc(@$)); }
-    | CLASS name '<' type_identifier_list '>' member_parameters { push_raw(); } optional_class_braces                                         { $$ = new bi::Class($2, $4, $6, empty_type(@$), empty_expr(@$), $8, make_doc_loc(@$)); }
-    | CLASS name member_parameters '<' type_identifier optional_arguments { push_raw(); } optional_class_braces                               { $$ = new bi::Class($2, empty_type(@$), $3, $5, $6, $8, make_doc_loc(@$)); }
-    | CLASS name member_parameters { push_raw(); } optional_class_braces                                                                      { $$ = new bi::Class($2, empty_type(@$), $3, empty_type(@$), empty_expr(@$), $5, make_doc_loc(@$)); }
-    | CLASS name '<' type_identifier_list '>' '<' type_identifier optional_arguments { push_raw(); } optional_class_braces                    { $$ = new bi::Class($2, $4, empty_expr(@$), $7, $8, $10, make_doc_loc(@$)); }
-    | CLASS name '<' type_identifier_list '>' { push_raw(); } optional_class_braces                                                           { $$ = new bi::Class($2, $4, empty_expr(@$), empty_type(@$), empty_expr(@$), $7, make_doc_loc(@$)); }
-    | CLASS name '<' type_identifier optional_arguments { push_raw(); } optional_class_braces                                                 { $$ = new bi::Class($2, empty_type(@$), empty_expr(@$), $4, $5, $7, make_doc_loc(@$)); }
-    | CLASS name { push_raw(); } optional_class_braces                                                                                        { $$ = new bi::Class($2, empty_type(@$), empty_expr(@$), empty_type(@$), empty_expr(@$), $4, make_doc_loc(@$)); }
+    : CLASS name optional_type_parameters optional_member_parameters '<' type_identifier optional_arguments { push_raw(); } optional_class_braces  { $$ = new bi::Class($2, $3, $4, $6, $7, $9, make_doc_loc(@$)); }
+    | CLASS name optional_type_parameters optional_member_parameters { push_raw(); } optional_class_braces                                         { $$ = new bi::Class($2, $3, $4, empty_type(@$), empty_expr(@$), $6, make_doc_loc(@$)); }
     ;
 
 alias_declaration
@@ -732,11 +740,6 @@ parameter_type_list
 parameter_types
     : '(' ')'                      { $$ = empty_type(@$); }
     | '(' parameter_type_list ')'  { $$ = $2; }
-    ;
-    
-type_identifier_list
-    : type_identifier
-    | type_identifier ',' type_identifier_list  { $$ = new bi::TypeList($1, $3, make_loc(@$)); }
     ;
 
 %%
