@@ -11,7 +11,10 @@ bi::CppConstructorGenerator::CppConstructorGenerator(std::ostream& base,
 
 void bi::CppConstructorGenerator::visit(const Class* o) {
   if (!header) {
-    start("bi::" << o->name << "::");
+    genTemplateParams(o);
+    start("bi::" << o->name);
+    genTemplateArgs(o);
+    middle("::");
   } else {
     start("");
   }
@@ -52,7 +55,7 @@ void bi::CppConstructorGenerator::visit(const MemberVariable* o) {
   if (o->type->isClass()) {
     finish(',');
     start(o->name << '(');
-    Named* named = dynamic_cast<Named*>(o->type);
+    const Named* named = dynamic_cast<const Named*>(o->type);
     assert(named);
     middle("bi::make_object<" << named->name << ">(" << o->parens << ')');
     middle(')');

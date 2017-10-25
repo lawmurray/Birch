@@ -20,7 +20,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
 
     /* start boilerplate */
     if (header) {
-      genTemplateParams(type);
+      genTemplateParams(o);
       start("class " << o->name << " : public ");
       if (!o->base->isEmpty()) {
         auto type = dynamic_cast<const ClassType*>(o->base);
@@ -63,13 +63,18 @@ void bi::CppClassGenerator::visit(const Class* o) {
 
     /* clone function */
     if (!header) {
+      genTemplateParams(o);
       start("bi::");
     } else {
       start("virtual ");
     }
-    middle(o->name << "* ");
+    middle(o->name);
+    genTemplateArgs(o);
+    middle("* ");
     if (!header) {
-      middle("bi::" << o->name << "::");
+      middle("bi::" << o->name);
+      genTemplateArgs(o);
+      middle("::");
     }
     middle("clone()");
     if (header) {
@@ -124,7 +129,6 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
     middle("::");
   }
   middle(internalise(o->name->str()) << '(' << o->params << ')');
-  //middle(" const");
   if (header) {
     finish(';');
   } else {
@@ -150,11 +154,14 @@ void bi::CppClassGenerator::visit(const AssignmentOperator* o) {
     if (header) {
       start("virtual ");
     } else {
+      genTemplateParams(type);
       start("bi::");
     }
     middle(type->name << "& ");
     if (!header) {
-      middle("bi::" << type->name << "::");
+      middle("bi::" << type->name);
+      genTemplateArgs(type);
+      middle("::");
     }
     middle("operator=(" << o->single << ')');
     if (header) {
@@ -174,7 +181,10 @@ void bi::CppClassGenerator::visit(const AssignmentOperator* o) {
 void bi::CppClassGenerator::visit(const ConversionOperator* o) {
   if (!o->braces->isEmpty()) {
     if (!header) {
-      start("bi::" << type->name << "::");
+      genTemplateParams(type);
+      start("bi::" << type->name);
+      genTemplateArgs(type);
+      middle("::");
     } else {
       /* user-defined conversions should be marked explicit to work properly
        * with the Pointer class in the compiler library; see also
