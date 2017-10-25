@@ -280,10 +280,11 @@ void bi::bi_ostream::visit(const MemberFiber* o) {
 }
 
 void bi::bi_ostream::visit(const BinaryOperator* o) {
-  start("operator ");
+  start("operator (");
   middle(o->params->getLeft());
   middle(' ' << o->name << ' ');
   middle(o->params->getRight());
+  middle(')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
@@ -295,7 +296,7 @@ void bi::bi_ostream::visit(const BinaryOperator* o) {
 }
 
 void bi::bi_ostream::visit(const UnaryOperator* o) {
-  start("operator " << o->name << ' ' << o->params);
+  start("operator (" << o->name << ' ' << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }

@@ -76,6 +76,7 @@
 
 %glr-parser
 %expect-rr 2  // Type?(...) vs x?
+%expect 1     // operator (x:A<T> < y:B)
 
 %token <valString> PROGRAM CLASS TYPE FUNCTION FIBER OPERATOR
 %token <valString> IF ELSE FOR IN WHILE ASSERT RETURN YIELD CPP HPP
@@ -88,7 +89,7 @@
 %token <valString> LEFT_OP RIGHT_OP LEFT_TILDE_OP RIGHT_TILDE_OP
 %token <valString> AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP RANGE_OP
 
-%type <valName> name operator assignment_operator
+%type <valName> name binary_operator unary_operator assignment_operator
 
 %type <valAnnotation> annotation annotations optional_annotations
 
@@ -114,7 +115,8 @@
 %type <valStatement> global_variable_declaration local_variable_declaration
 %type <valStatement> function_declaration fiber_declaration program_declaration
 %type <valStatement> member_variable_declaration member_function_declaration
-%type <valStatement> member_fiber_declaration operator_declaration
+%type <valStatement> member_fiber_declaration
+%type <valStatement> binary_operator_declaration unary_operator_declaration
 %type <valStatement> conversion_operator_declaration assignment_operator_declaration
 %type <valStatement> class_declaration alias_declaration basic_declaration
 %type <valStatement> cpp hpp assignment expression_statement if for
@@ -446,12 +448,12 @@ member_fiber_declaration
     : optional_annotations FIBER name parameters optional_result { push_raw(); } optional_braces  { $$ = new bi::MemberFiber($1, $3, $4, $5, $7, make_doc_loc(@$)); }
     ;
     
-operator
+binary_operator
     : '*'     { $$ = new bi::Name('*'); }
     | '/'     { $$ = new bi::Name('/'); }
     | '+'     { $$ = new bi::Name('+'); }
     | '-'     { $$ = new bi::Name('-'); }
-    | '<'     { $$ = new bi::Name('<'); }
+    | '<'     { $$ = new bi::Name('<'); }  // handle specially
     | '>'     { $$ = new bi::Name('>'); }
     | LE_OP   { $$ = new bi::Name("<="); }
     | GE_OP   { $$ = new bi::Name(">="); }
@@ -459,12 +461,28 @@ operator
     | NE_OP   { $$ = new bi::Name("!="); }
     | AND_OP  { $$ = new bi::Name("&&"); }
     | OR_OP   { $$ = new bi::Name("||"); }
+    ;    
+
+unary_operator
+    : '+'     { $$ = new bi::Name('+'); }
+    | '-'     { $$ = new bi::Name('-'); }
     | '!'     { $$ = new bi::Name('!'); }
     ;    
 
-operator_declaration
-    : OPERATOR operator '(' parameter ',' parameter ')' optional_result { push_raw(); } optional_braces  { $$ = new bi::BinaryOperator($2, new bi::Binary($4, $6, make_loc(@$)), $8, $10, make_doc_loc(@$)); }
-    | OPERATOR operator '(' parameter ')' optional_result { push_raw(); } optional_braces                 { $$ = new bi::UnaryOperator($2, $4, $6, $8, make_doc_loc(@$)); }
+binary_operator_declaration
+    : OPERATOR '(' parameter binary_operator parameter ')' optional_result { push_raw(); } optional_braces  { $$ = new bi::BinaryOperator($4, new bi::Binary($3, $5, make_loc(@$)), $7, $9, make_doc_loc(@$)); }
+    /* care is needed here to disambiguate the '<' used for type parameters
+     * and that for less-than comparison; to do so we enumerate the ambiguous
+     * cases explicitly */
+    //| OPERATOR '(' name ':' name '<' parameter ')' optional_result { push_raw(); } optional_braces  { $$ = new bi::BinaryOperator(new bi::Name('<'), new bi::Binary(new bi::Parameter($3, new bi::TypeIdentifier($5, make_loc(@$)), empty_expr(@$)), $7, make_loc(@$)), $9, $11, make_doc_loc(@$)); }
+    //| OPERATOR '(' name ':' name '<' type_list '>' '<' parameter ')' optional_result { push_raw(); } optional_braces  { $$ = new bi::BinaryOperator(new bi::Name('<'), new bi::Binary(new bi::Parameter($3, new bi::ClassType($5, $7, make_loc(@$)), empty_expr(@$)), $10, make_loc(@$)), $12, $14, make_doc_loc(@$)); }
+    //| OPERATOR '(' name ':' name '<' type_list '>' '[' size_list ']' '<' parameter ')' optional_result { push_raw(); } optional_braces  { $$ = new bi::BinaryOperator(new bi::Name('<'), new bi::Binary(new bi::Parameter($3, new bi::ArrayType(new bi::ClassType($5, $7, make_loc(@$)), $10, make_loc(@$)), empty_expr(@$)), $13, make_loc(@$)), $15, $17, make_doc_loc(@$)); }
+    //| OPERATOR '(' name ':' name '<' type_list '>' '!' '<' parameter ')' optional_result { push_raw(); } optional_braces  { $$ = new bi::BinaryOperator(new bi::Name('<'), new bi::Binary(new bi::Parameter($3, new bi::FiberType(new bi::ClassType($5, $7, make_loc(@$)), make_loc(@$)), empty_expr(@$)), $11, make_loc(@$)), $13, $15, make_doc_loc(@$)); }
+    //| OPERATOR '(' name ':' name '<' type_list '>' '?' '<' parameter ')' optional_result { push_raw(); } optional_braces  { $$ = new bi::BinaryOperator(new bi::Name('<'), new bi::Binary(new bi::Parameter($3, new bi::OptionalType(new bi::ClassType($5, $7, make_loc(@$)), make_loc(@$)), empty_expr(@$)), $11, make_loc(@$)), $13, $15, make_doc_loc(@$)); }
+    ;
+    
+unary_operator_declaration
+    : OPERATOR '(' unary_operator parameter ')' optional_result { push_raw(); } optional_braces            { $$ = new bi::UnaryOperator($3, $4, $6, $8, make_doc_loc(@$)); }
     ;
     
 assignment_operator
@@ -599,7 +617,8 @@ file_statement
     | function_declaration
     | fiber_declaration
     | program_declaration
-    | operator_declaration
+    | binary_operator_declaration
+    | unary_operator_declaration
     | class_declaration
     | alias_declaration
     | basic_declaration

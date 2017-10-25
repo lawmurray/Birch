@@ -117,14 +117,14 @@ IS                                 (u|U|l|L)*
 "true"                              { yylval.valBool = true; return BOOL_LITERAL; }
 "false"                             { yylval.valBool = false; return BOOL_LITERAL; }
 
-({L}|{G})({L}|{G}|{U}|{D})*         { yylval.valString = yytext; return NAME; }
+({L}|{G})({L}|{G}|{U}|{D})*         { yylval.valString = strdup(yytext); return NAME; }
 
 {D}+{E}{FS}?                        { yylval.valReal = atof(yytext); return REAL_LITERAL; }
 {D}+\.{D}+({E})?{FS}?               { yylval.valReal = atof(yytext); return REAL_LITERAL; }
 0[xX]{H}+{IS}?                      { yylval.valInt = atoi(yytext); return INT_LITERAL; }
 0{D}+{IS}?                          { yylval.valInt = atoi(yytext); return INT_LITERAL; }
 {D}+{IS}?                           { yylval.valInt = atoi(yytext); return INT_LITERAL; }
-\"(\\\"|[^\"])*\"                   { yylval.valString = yytext; return STRING_LITERAL; }
+\"(\\\"|[^\"])*\"                   { yylval.valString = strdup(yytext); return STRING_LITERAL; }
 
 "<-"                                { return LEFT_OP; } 
 "->"                                { return RIGHT_OP; }
