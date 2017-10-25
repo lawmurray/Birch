@@ -125,8 +125,8 @@
 %type <valStatement> braces optional_braces
 %type <valStatement> class_braces optional_class_braces
 
-%type <valType> type_identifier primary_type generic_type tuple_type function_type
-%type <valType> postfix_type type_list type
+%type <valType> type_identifier type_list primary_type generic_type tuple_type
+%type <valType> postfix_type function_type type
 %type <valType> parameter_type_list parameter_types
 %type <valType> result optional_result type_identifier_list
 
@@ -683,15 +683,10 @@ tuple_type
     : '(' type_list ')'  { $$ = new bi::TupleType($2, make_loc(@$)); }
     ;
 
-function_type
-    : '@' '(' parameter_types optional_result ')'  { $$ = new bi::FunctionType($3, $4, make_loc(@$)); }
-    ;
-
 primary_type
     : type_identifier
     | generic_type
     | tuple_type
-    | function_type
     ;
 
 postfix_type
@@ -701,8 +696,13 @@ postfix_type
     | postfix_type '?'                { $$ = new bi::OptionalType($1, make_loc(@$)); }
     ;
 
-type
+function_type
     : postfix_type
+    | '@' parameter_types optional_result  { $$ = new bi::FunctionType($2, $3, make_loc(@$)); }
+    ;
+
+type
+    : function_type
     ;
 
 parameter_type_list
