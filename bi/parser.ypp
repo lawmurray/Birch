@@ -76,7 +76,6 @@
 
 %glr-parser
 %expect-rr 2  // Type?(...) vs x?
-//%expect 2     // class A < B vs class A<B>
 
 %token <valString> PROGRAM CLASS TYPE FUNCTION FIBER OPERATOR
 %token <valString> IF ELSE FOR IN WHILE ASSERT RETURN YIELD CPP HPP
@@ -89,7 +88,7 @@
 %token <valString> LEFT_OP RIGHT_OP LEFT_TILDE_OP RIGHT_TILDE_OP
 %token <valString> AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP RANGE_OP
 
-%type <valName> name binary_operator unary_operator assignment_operator
+%type <valName> name operator assignment_operator
 
 %type <valAnnotation> annotation annotations optional_annotations
 
@@ -115,8 +114,7 @@
 %type <valStatement> global_variable_declaration local_variable_declaration
 %type <valStatement> function_declaration fiber_declaration program_declaration
 %type <valStatement> member_variable_declaration member_function_declaration
-%type <valStatement> member_fiber_declaration
-%type <valStatement> binary_operator_declaration unary_operator_declaration
+%type <valStatement> member_fiber_declaration operator_declaration
 %type <valStatement> conversion_operator_declaration assignment_operator_declaration
 %type <valStatement> class_declaration alias_declaration basic_declaration
 %type <valStatement> cpp hpp assignment expression_statement if for
@@ -127,8 +125,8 @@
 %type <valStatement> braces optional_braces
 %type <valStatement> class_braces optional_class_braces
 
-%type <valType> type_identifier primary_type tuple_type function_type
-%type <valType> postfix_type list_type type
+%type <valType> type_identifier primary_type generic_type tuple_type function_type
+%type <valType> postfix_type type_list type
 %type <valType> parameter_type_list parameter_types
 %type <valType> result optional_result type_identifier_list
 
@@ -429,26 +427,26 @@ member_variable_declaration
     ;
 
 function_declaration
-    : FUNCTION { push_raw(); } name parameters optional_result optional_braces  { $$ = new bi::Function($3, $4, $5, $6, make_doc_loc(@$)); }
+    : FUNCTION name parameters optional_result { push_raw(); } optional_braces  { $$ = new bi::Function($2, $3, $4, $6, make_doc_loc(@$)); }
     ;
 
 fiber_declaration
-    : optional_annotations FIBER { push_raw(); } name parameters optional_result optional_braces  { $$ = new bi::Fiber($1, $4, $5, $6, $7, make_doc_loc(@$)); }
+    : optional_annotations FIBER name parameters optional_result { push_raw(); } optional_braces  { $$ = new bi::Fiber($1, $3, $4, $5, $7, make_doc_loc(@$)); }
     ;
 
 program_declaration
-    : PROGRAM { push_raw(); } name options optional_braces  { $$ = new bi::Program($3, $4, $5, make_doc_loc(@$)); }
+    : PROGRAM name options { push_raw(); } optional_braces  { $$ = new bi::Program($2, $3, $5, make_doc_loc(@$)); }
     ;
 
 member_function_declaration
-    : FUNCTION { push_raw(); } name parameters optional_result optional_braces  { $$ = new bi::MemberFunction($3, $4, $5, $6, make_doc_loc(@$)); }
+    : FUNCTION name parameters optional_result { push_raw(); } optional_braces  { $$ = new bi::MemberFunction($2, $3, $4, $6, make_doc_loc(@$)); }
     ;
 
 member_fiber_declaration
-    : optional_annotations FIBER { push_raw(); } name parameters optional_result optional_braces  { $$ = new bi::MemberFiber($1, $4, $5, $6, $7, make_doc_loc(@$)); }
+    : optional_annotations FIBER name parameters optional_result { push_raw(); } optional_braces  { $$ = new bi::MemberFiber($1, $3, $4, $5, $7, make_doc_loc(@$)); }
     ;
     
-binary_operator
+operator
     : '*'     { $$ = new bi::Name('*'); }
     | '/'     { $$ = new bi::Name('/'); }
     | '+'     { $$ = new bi::Name('+'); }
@@ -461,20 +459,12 @@ binary_operator
     | NE_OP   { $$ = new bi::Name("!="); }
     | AND_OP  { $$ = new bi::Name("&&"); }
     | OR_OP   { $$ = new bi::Name("||"); }
-    ;
-    
-binary_operator_declaration
-    : OPERATOR { push_raw(); } parameter binary_operator parameter optional_result optional_braces  { $$ = new bi::BinaryOperator($4, new bi::Binary($3, $5, make_doc_loc(@$)), $6, $7, make_loc(@$)); }
-    ;
-
-unary_operator
-    : '+'  { $$ = new bi::Name('+'); }
-    | '-'  { $$ = new bi::Name('-'); }
-    | '!'  { $$ = new bi::Name('!'); }
+    | '!'     { $$ = new bi::Name('!'); }
     ;    
 
-unary_operator_declaration
-    : OPERATOR { push_raw(); } unary_operator parameter optional_result optional_braces  { $$ = new bi::UnaryOperator($3, $4, $5, $6, make_doc_loc(@$)); }
+operator_declaration
+    : OPERATOR operator '(' parameter ',' parameter ')' optional_result { push_raw(); } optional_braces  { $$ = new bi::BinaryOperator($2, new bi::Binary($4, $6, make_loc(@$)), $8, $10, make_doc_loc(@$)); }
+    | OPERATOR operator '(' parameter ')' optional_result { push_raw(); } optional_braces                 { $$ = new bi::UnaryOperator($2, $4, $6, $8, make_doc_loc(@$)); }
     ;
     
 assignment_operator
@@ -485,11 +475,11 @@ assignment_operator
     ;
 
 assignment_operator_declaration
-    : OPERATOR { push_raw(); } LEFT_OP parameter optional_braces  { $$ = new bi::AssignmentOperator(new bi::Name("<-"), $4, $5, make_doc_loc(@$)); }
+    : OPERATOR LEFT_OP parameter { push_raw(); } optional_braces  { $$ = new bi::AssignmentOperator(new bi::Name("<-"), $3, $5, make_doc_loc(@$)); }
     ;
 
 conversion_operator_declaration
-    : OPERATOR { push_raw(); } result optional_braces  { $$ = new bi::ConversionOperator($3, $4, make_doc_loc(@$)); }
+    : OPERATOR result { push_raw(); } optional_braces  { $$ = new bi::ConversionOperator($2, $4, make_doc_loc(@$)); }
     ;
 
 class_declaration
@@ -609,8 +599,7 @@ file_statement
     | function_declaration
     | fiber_declaration
     | program_declaration
-    | binary_operator_declaration
-    | unary_operator_declaration
+    | operator_declaration
     | class_declaration
     | alias_declaration
     | basic_declaration
@@ -681,8 +670,17 @@ type_identifier
     : name  { $$ = new bi::TypeIdentifier($1, make_loc(@$)); }
     ;
 
+type_list
+    : type
+    | type ',' type_list  { $$ = new bi::TypeList($1, $3, make_loc(@$)); }
+    ;
+
+generic_type
+    : name '<' type_list '>'  { $$ = new bi::ClassType($1, $3, make_loc(@$)); }
+    ;
+
 tuple_type
-    : '(' list_type ')'  { $$ = new bi::TupleType($2, make_loc(@$)); }
+    : '(' type_list ')'  { $$ = new bi::TupleType($2, make_loc(@$)); }
     ;
 
 function_type
@@ -691,6 +689,7 @@ function_type
 
 primary_type
     : type_identifier
+    | generic_type
     | tuple_type
     | function_type
     ;
@@ -700,11 +699,6 @@ postfix_type
     | postfix_type '[' size_list ']'  { $$ = new bi::ArrayType($1, $3, make_loc(@$)); }
     | postfix_type '!'                { $$ = new bi::FiberType($1, make_loc(@$)); }
     | postfix_type '?'                { $$ = new bi::OptionalType($1, make_loc(@$)); }
-    ;
-
-list_type
-    : postfix_type
-    | postfix_type ',' list_type  { $$ = new bi::TypeList($1, $3, make_loc(@$)); }
     ;
 
 type
