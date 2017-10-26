@@ -6,9 +6,9 @@
 #include "bi/visitor/all.hpp"
 
 bi::Cast::Cast(Type* returnType, Expression* single, Location* loc) :
-    ReturnTyped(returnType),
+    Expression(loc),
     Single<Expression>(single),
-    Expression(loc) {
+    ReturnTyped(returnType) {
   //
 }
 

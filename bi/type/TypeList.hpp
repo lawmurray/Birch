@@ -4,7 +4,7 @@
 #pragma once
 
 #include "bi/type/Type.hpp"
-#include "bi/common/Iterator.hpp"
+#include "bi/type/TypeIterator.hpp"
 
 namespace bi {
 /**

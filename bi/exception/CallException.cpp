@@ -62,11 +62,13 @@ bi::CallException::CallException(Argumented* o, FunctionType* type) {
   }
   buf << "note: argument types\n";
   buf << o->args->type << "\n";
-  if (expr->loc) {
-    buf << expr->loc;
+  if (type) {
+    if (type->loc) {
+      buf << type->loc;
+    }
+    buf << "note: candidate\n";
+    buf << type;
   }
-  buf << "note: parameter types\n";
-  buf << type->params;
 
   msg = base.str();
 }

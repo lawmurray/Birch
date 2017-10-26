@@ -3,7 +3,7 @@
  */
 #include "bi/type/Type.hpp"
 
-#include "bi/common/Iterator.hpp"
+#include "bi/type/TypeIterator.hpp"
 #include "bi/exception/all.hpp"
 
 #include <cassert>
@@ -87,13 +87,13 @@ bi::Type* bi::Type::unwrap() const {
   return nullptr;
 }
 
-bi::FunctionType* bi::Type::resolve(Argumented* args) {
-  throw CallException(args);
+bi::FunctionType* bi::Type::resolve(Argumented* o) {
+  throw CallException(o);
 }
 
-void bi::Type::resolveConstructor(Type* args) {
-  if (!args->isEmpty()) {
-    throw ConstructorException(args);
+void bi::Type::resolveConstructor(Argumented* o) {
+  if (!o->args->isEmpty()) {
+    throw ConstructorException(o);
   }
 }
 
@@ -101,16 +101,16 @@ int bi::Type::count() const {
   return 0;
 }
 
-bi::Iterator<bi::Type> bi::Type::begin() const {
+bi::TypeIterator bi::Type::begin() const {
   if (isEmpty()) {
     return end();
   } else {
-    return bi::Iterator<Type>(this);
+    return TypeIterator(this);
   }
 }
 
-bi::Iterator<bi::Type> bi::Type::end() const {
-  return bi::Iterator<Type>(nullptr);
+bi::TypeIterator bi::Type::end() const {
+  return TypeIterator(nullptr);
 }
 
 bool bi::Type::definitely(const Type& o) const {

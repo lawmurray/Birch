@@ -32,5 +32,6 @@ public:
   virtual Type* modify(BasicType* o);
   virtual Type* modify(ClassType* o);
   virtual Type* modify(AliasType* o);
+  virtual Type* modify(GenericType* o);
 };
 }

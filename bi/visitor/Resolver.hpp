@@ -32,7 +32,7 @@ public:
 
   virtual File* modify(File* file);
 
-  virtual Expression* modify(List<Expression>* o);
+  virtual Expression* modify(ExpressionList* o);
   virtual Expression* modify(Parentheses* o);
   virtual Expression* modify(Binary* o);
 
@@ -40,6 +40,7 @@ public:
   virtual Type* modify(ClassType* o);
   virtual Type* modify(AliasType* o);
   virtual Type* modify(BasicType* o);
+  virtual Type* modify(GenericType* o);
 
 protected:
   /**

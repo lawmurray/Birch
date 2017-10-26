@@ -45,7 +45,7 @@ public:
   virtual int count() const;
   virtual bool isArray() const;
 
-  virtual void resolveConstructor(Type* args);
+  virtual void resolveConstructor(Argumented* o);
 
   virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);

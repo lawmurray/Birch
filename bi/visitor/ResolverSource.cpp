@@ -12,7 +12,7 @@ bi::ResolverSource::~ResolverSource() {
   //
 }
 
-bi::Expression* bi::ResolverSource::modify(List<Expression>* o) {
+bi::Expression* bi::ResolverSource::modify(ExpressionList* o) {
   Modifier::modify(o);
   o->type = new TypeList(o->head->type->accept(&cloner),
       o->tail->type->accept(&cloner), o->loc);
@@ -30,11 +30,6 @@ bi::Expression* bi::ResolverSource::modify(Parentheses* o) {
   } else {
     o->type = o->single->type->accept(&cloner)->accept(this);
   }
-  return o;
-}
-
-bi::Expression* bi::ResolverSource::modify(Brackets* o) {
-  Modifier::modify(o);
   return o;
 }
 
@@ -206,16 +201,6 @@ bi::Expression* bi::ResolverSource::modify(Nil* o) {
   return o;
 }
 
-bi::Expression* bi::ResolverSource::modify(LocalVariable* o) {
-  Modifier::modify(o);
-  if (!o->parens->isEmpty() || o->value->isEmpty()) {
-    o->type->resolveConstructor(o->parens->type);
-  }
-  o->type->accept(&assigner);
-  scopes.back()->add(o);
-  return o;
-}
-
 bi::Expression* bi::ResolverSource::modify(Parameter* o) {
   Modifier::modify(o);
   scopes.back()->add(o);
@@ -224,6 +209,16 @@ bi::Expression* bi::ResolverSource::modify(Parameter* o) {
 
 bi::Expression* bi::ResolverSource::modify(MemberParameter* o) {
   o->type->accept(&assigner);
+  return o;
+}
+
+bi::Expression* bi::ResolverSource::modify(LocalVariable* o) {
+  Modifier::modify(o);
+  if (!o->args->isEmpty() || o->value->isEmpty()) {
+    o->type->resolveConstructor(o);
+  }
+  o->type->accept(&assigner);
+  scopes.back()->add(o);
   return o;
 }
 
@@ -334,16 +329,16 @@ bi::Statement* bi::ResolverSource::modify(Assignment* o) {
 
 bi::Statement* bi::ResolverSource::modify(GlobalVariable* o) {
   Modifier::modify(o);
-  if (!o->parens->isEmpty() || o->value->isEmpty()) {
-    o->type->resolveConstructor(o->parens->type);
+  if (!o->args->isEmpty() || o->value->isEmpty()) {
+    o->type->resolveConstructor(o);
   }
   return o;
 }
 
 bi::Statement* bi::ResolverSource::modify(MemberVariable* o) {
   Modifier::modify(o);
-  if (!o->parens->isEmpty() || o->value->isEmpty()) {
-    o->type->resolveConstructor(o->parens->type);
+  if (!o->args->isEmpty() || o->value->isEmpty()) {
+    o->type->resolveConstructor(o);
   }
   return o;
 }
@@ -439,8 +434,8 @@ bi::Statement* bi::ResolverSource::modify(ConversionOperator* o) {
 bi::Statement* bi::ResolverSource::modify(Class* o) {
   scopes.push_back(o->scope);
   currentClass = o;
-  o->baseArgs = o->baseArgs->accept(this);
-  o->base->resolveConstructor(o->baseArgs->type);
+  o->args = o->args->accept(this);
+  o->base->resolveConstructor(o);
   o->braces = o->braces->accept(this);
   currentClass = nullptr;
   scopes.pop_back();
@@ -465,7 +460,7 @@ bi::Statement* bi::ResolverSource::modify(ExpressionStatement* o) {
       auto yield = new Yield(get, o->loc);
       auto loop = new While(new Parentheses(query, o->loc),
           new Braces(yield, o->loc), o->loc);
-      auto result = new List<Statement>(decl, loop, o->loc);
+      auto result = new StatementList(decl, loop, o->loc);
 
       return result->accept(this);
     }

@@ -29,7 +29,6 @@ public:
 
   virtual Expression* modify(Parameter* o);
   virtual Expression* modify(MemberParameter* o);
-
   virtual Statement* modify(GlobalVariable* o);
   virtual Statement* modify(MemberVariable* o);
   virtual Statement* modify(Function* o);
@@ -41,5 +40,6 @@ public:
   virtual Statement* modify(UnaryOperator* o);
   virtual Statement* modify(AssignmentOperator* o);
   virtual Statement* modify(Class* o);
+  virtual Statement* modify(Generic* o);
 };
 }

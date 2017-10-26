@@ -17,9 +17,9 @@ struct ConstructorException: public CompilerException {
   /**
    * Constructor.
    *
-   * @param args Arguments.
+   * @param o Declaration.
    * @param type Class.
    */
-  ConstructorException(const Type* args, const Class* type = nullptr);
+  ConstructorException(const Argumented* o, const Class* type = nullptr);
 };
 }

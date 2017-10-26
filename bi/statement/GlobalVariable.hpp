@@ -7,7 +7,7 @@
 #include "bi/common/Named.hpp"
 #include "bi/common/Numbered.hpp"
 #include "bi/common/Typed.hpp"
-#include "bi/common/Parenthesised.hpp"
+#include "bi/common/Argumented.hpp"
 #include "bi/common/Valued.hpp"
 
 namespace bi {
@@ -20,7 +20,7 @@ class GlobalVariable: public Statement,
     public Named,
     public Numbered,
     public Typed,
-    public Parenthesised,
+    public Argumented,
     public Valued {
 public:
   /**
@@ -28,11 +28,11 @@ public:
    *
    * @param name Name.
    * @param type Type.
-   * @param parens Constructor arguments.
+   * @param args Constructor arguments.
    * @param value Initial value.
    * @param loc Location.
    */
-  GlobalVariable(Name* name, Type* type, Expression* parens,
+  GlobalVariable(Name* name, Type* type, Expression* args,
       Expression* value, Location* loc = nullptr);
 
   /**

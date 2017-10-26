@@ -5,11 +5,11 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::LocalVariable::LocalVariable(Name* name, Type* type, Expression* parens,
+bi::LocalVariable::LocalVariable(Name* name, Type* type, Expression* args,
     Expression* value, Location* loc) :
     Expression(type, loc),
     Named(name),
-    Parenthesised(parens),
+    Argumented(args),
     Valued(value) {
   //
 }

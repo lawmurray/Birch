@@ -33,8 +33,7 @@ bi::Driver::Driver(int argc, char** argv) :
     newConfigure(false),
     newMake(false),
     newManifest(false),
-    isLocked(false),
-    package() {
+    isLocked(false) {
   enum {
     SHARE_DIR_ARG = 256,
     INCLUDE_DIR_ARG,

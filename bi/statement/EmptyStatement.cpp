@@ -5,6 +5,11 @@
 
 #include "bi/visitor/all.hpp"
 
+bi::EmptyStatement::EmptyStatement(Location* loc) :
+    Statement(loc) {
+  //
+}
+
 bi::EmptyStatement::~EmptyStatement() {
   //
 }

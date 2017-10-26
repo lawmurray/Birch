@@ -7,33 +7,30 @@
 
 #include <sstream>
 
-bi::ConstructorException::ConstructorException(const Type* args,
+bi::ConstructorException::ConstructorException(const Argumented* o,
     const Class* type) {
   std::stringstream base;
   bih_ostream buf(base);
-  if (args->loc) {
-    buf << args->loc;
+  if (o->args->loc) {
+    buf << o->args->loc;
   }
   buf << "error: invalid call to constructor\n";
-  if (args) {
-    if (args->loc) {
-      buf << args->loc;
+  if (o->args) {
+    if (o->args->loc) {
+      buf << o->args->loc;
     }
-    if (args->isEmpty()) {
+    if (o->args->isEmpty()) {
       buf << "note: no arguments\n";
     } else {
-      buf << "note: argument type '" << args << "'\n";
+      buf << "note: argument type '" << o->args << "'\n";
     }
   }
   if (type) {
     if (type->loc) {
       buf << type->loc;
     }
-    if (type->params->type->isEmpty()) {
-      buf << "note: no parameters\n";
-    } else {
-      buf << "note: parameter type '" << type->params->type << "'\n";
-    }
+    buf << "note: candidate\n";
+    buf << type;
   }
   msg = base.str();
 }

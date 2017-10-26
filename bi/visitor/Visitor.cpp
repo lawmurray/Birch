@@ -25,7 +25,7 @@ void bi::Visitor::visit(const EmptyExpression* o) {
   //
 }
 
-void bi::Visitor::visit(const List<Expression>* o) {
+void bi::Visitor::visit(const ExpressionList* o) {
   o->head->accept(this);
   o->tail->accept(this);
 }
@@ -47,10 +47,6 @@ void bi::Visitor::visit(const Literal<const char*>* o) {
 }
 
 void bi::Visitor::visit(const Parentheses* o) {
-  o->single->accept(this);
-}
-
-void bi::Visitor::visit(const Brackets* o) {
   o->single->accept(this);
 }
 
@@ -130,7 +126,7 @@ void bi::Visitor::visit(const Member* o) {
 
 void bi::Visitor::visit(const LocalVariable* o) {
   o->type->accept(this);
-  o->parens->accept(this);
+  o->args->accept(this);
   o->value->accept(this);
 }
 
@@ -143,6 +139,7 @@ void bi::Visitor::visit(const MemberParameter* o) {
   o->type->accept(this);
   o->value->accept(this);
 }
+
 
 void bi::Visitor::visit(const Identifier<Unknown>* o) {
   //
@@ -200,7 +197,7 @@ void bi::Visitor::visit(const Braces* o) {
   o->single->accept(this);
 }
 
-void bi::Visitor::visit(const List<Statement>* o) {
+void bi::Visitor::visit(const StatementList* o) {
   o->head->accept(this);
   o->tail->accept(this);
 }
@@ -212,13 +209,13 @@ void bi::Visitor::visit(const Assignment* o) {
 
 void bi::Visitor::visit(const GlobalVariable* o) {
   o->type->accept(this);
-  o->parens->accept(this);
+  o->args->accept(this);
   o->value->accept(this);
 }
 
 void bi::Visitor::visit(const MemberVariable* o) {
   o->type->accept(this);
-  o->parens->accept(this);
+  o->args->accept(this);
   o->value->accept(this);
 }
 
@@ -277,7 +274,7 @@ void bi::Visitor::visit(const Class* o) {
   o->typeParams->accept(this);
   o->params->accept(this);
   o->base->accept(this);
-  o->baseArgs->accept(this);
+  o->args->accept(this);
   o->braces->accept(this);
 }
 
@@ -287,6 +284,10 @@ void bi::Visitor::visit(const Alias* o) {
 
 void bi::Visitor::visit(const Basic* o) {
   o->base->accept(this);
+}
+
+void bi::Visitor::visit(const Generic* o) {
+  //
 }
 
 void bi::Visitor::visit(const ExpressionStatement* o) {
@@ -349,6 +350,10 @@ void bi::Visitor::visit(const AliasType* o) {
 }
 
 void bi::Visitor::visit(const BasicType* o) {
+  //
+}
+
+void bi::Visitor::visit(const GenericType* o) {
   //
 }
 

@@ -21,7 +21,7 @@ class FiberType;
 class EmptyType;
 class FunctionType;
 class TypeIdentifier;
-template<class T> class Iterator;
+class TypeIterator;
 class TypeList;
 class NilType;
 class OptionalType;
@@ -167,14 +167,14 @@ public:
    * parameter types of the function, the return type of the function. In all
    * other cases throws an exception.
    */
-  virtual FunctionType* resolve(Argumented* args);
+  virtual FunctionType* resolve(Argumented* o);
 
   /**
    * Resolve a constructor call.
    *
    * @param args Argument types.
    */
-  virtual void resolveConstructor(Type* args);
+  virtual void resolveConstructor(Argumented* o);
 
   /**
    * How many dimensions does this type have?
@@ -185,12 +185,12 @@ public:
    * Iterator to first element if this is a list, to one-past-the-last if
    * this is empty, otherwise to this.
    */
-  virtual Iterator<Type> begin() const;
+  TypeIterator begin() const;
 
   /**
    * Iterator to one-past-the-last.
    */
-  virtual Iterator<Type> end() const;
+  TypeIterator end() const;
 
   /**
    * Is this type assignable?

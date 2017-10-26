@@ -25,13 +25,12 @@ public:
   virtual void visit(const Name* o);
 
   virtual void visit(const EmptyExpression* o);
-  virtual void visit(const List<Expression>* o);
+  virtual void visit(const ExpressionList* o);
   virtual void visit(const Literal<bool>* o);
   virtual void visit(const Literal<int64_t>* o);
   virtual void visit(const Literal<double>* o);
   virtual void visit(const Literal<const char*>* o);
   virtual void visit(const Parentheses* o);
-  virtual void visit(const Brackets* o);
   virtual void visit(const Binary* o);
   virtual void visit(const Cast* o);
   virtual void visit(const Call* o);
@@ -66,7 +65,7 @@ public:
 
   virtual void visit(const EmptyStatement* o);
   virtual void visit(const Braces* o);
-  virtual void visit(const List<Statement>* o);
+  virtual void visit(const StatementList* o);
   virtual void visit(const Assignment* o);
   virtual void visit(const GlobalVariable* o);
   virtual void visit(const MemberVariable* o);
@@ -82,6 +81,7 @@ public:
   virtual void visit(const Class* o);
   virtual void visit(const Alias* o);
   virtual void visit(const Basic* o);
+  virtual void visit(const Generic* o);
   virtual void visit(const ExpressionStatement* o);
   virtual void visit(const If* o);
   virtual void visit(const For* o);
@@ -97,6 +97,7 @@ public:
   virtual void visit(const ClassType* o);
   virtual void visit(const AliasType* o);
   virtual void visit(const BasicType* o);
+  virtual void visit(const GenericType* o);
   virtual void visit(const ArrayType* o);
   virtual void visit(const TupleType* o);
   virtual void visit(const BinaryType* o);

@@ -55,8 +55,8 @@ public:
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
-  virtual FunctionType* resolve(Argumented* args);
-  virtual void resolveConstructor(Type* args);
+  virtual FunctionType* resolve(Argumented* o);
+  virtual void resolveConstructor(Argumented* o);
 
   using Type::definitely;
   using Type::possibly;

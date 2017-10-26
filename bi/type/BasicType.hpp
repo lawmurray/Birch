@@ -13,9 +13,6 @@ namespace bi {
  * Basic type.
  *
  * @ingroup compiler_type
- *
- * @tparam ObjectType The particular type of object referred to by the
- * identifier.
  */
 class BasicType: public Type,
     public Named,

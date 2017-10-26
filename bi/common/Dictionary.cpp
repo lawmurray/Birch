@@ -49,3 +49,4 @@ template class bi::Dictionary<bi::Program>;
 template class bi::Dictionary<bi::Basic>;
 template class bi::Dictionary<bi::Class>;
 template class bi::Dictionary<bi::Alias>;
+template class bi::Dictionary<bi::Generic>;

@@ -72,14 +72,14 @@ bi::Class* bi::AliasType::getClass() const {
   return target->base->getClass();
 }
 
-bi::FunctionType* bi::AliasType::resolve(Argumented* args) {
+bi::FunctionType* bi::AliasType::resolve(Argumented* o) {
   assert(target);
-  return target->base->resolve(args);
+  return target->base->resolve(o);
 }
 
-void bi::AliasType::resolveConstructor(Type* args) {
+void bi::AliasType::resolveConstructor(Argumented* o) {
   assert(target);
-  target->base->resolveConstructor(args);
+  target->base->resolveConstructor(o);
 }
 
 bool bi::AliasType::dispatchDefinitely(const Type& o) const {

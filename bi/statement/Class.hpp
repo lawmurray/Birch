@@ -8,6 +8,7 @@
 #include "bi/common/Numbered.hpp"
 #include "bi/common/Parameterised.hpp"
 #include "bi/common/Based.hpp"
+#include "bi/common/Argumented.hpp"
 #include "bi/common/Braced.hpp"
 #include "bi/common/Scoped.hpp"
 
@@ -25,6 +26,7 @@ class Class: public Statement,
     public Numbered,
     public Parameterised,
     public Based,
+    public Argumented,
     public Braced,
     public Scoped {
 public:
@@ -35,12 +37,12 @@ public:
    * @param typeParams Generic type parameters.
    * @param params Constructor parameters.
    * @param base Base type.
-   * @param baseArgs Base type constructor arguments.
+   * @param args Base type constructor arguments.
    * @param braces Braces.
    * @param loc Location.
    */
-  Class(Name* name, Type* typeParams, Expression* parens, Type* base,
-      Expression* baseArgs, Statement* braces, Location* loc =
+  Class(Name* name, Statement* typeParams, Expression* params, Type* base,
+      Expression* args, Statement* braces, Location* loc =
           nullptr);
 
   /**
@@ -78,6 +80,19 @@ public:
    */
   bool hasAssignment(const Type* o) const;
 
+  /**
+   * Instantiate a generic class with type parameters, using the given type
+   * arguments. If this is the first time that these arguments have been
+   * encountered for a class, a new instantiation is made, otherwise a
+   * previous instantiation is reused.
+   *
+   * @param typeArgs Type arguments.
+   *
+   * @return The instantiated class, with type parameters replaced with the
+   * type arguments.
+   */
+  Class* instantiate(const Type* typeArgs);
+
   virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
@@ -85,12 +100,7 @@ public:
   /**
    * Generic type parameters.
    */
-  Type* typeParams;
-
-  /**
-   * Base type constructor arguments.
-   */
-  Expression* baseArgs;
+  Statement* typeParams;
 
 private:
   /**
@@ -107,5 +117,10 @@ private:
    * Types that can be assigned to this class.
    */
   std::list<const Type*> assignments;
+
+  /**
+   * Instantiations.
+   */
+  std::list<std::pair<const Type*,Class*>> instantiations;
 };
 }

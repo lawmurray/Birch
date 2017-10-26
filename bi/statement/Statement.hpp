@@ -9,6 +9,7 @@ namespace bi {
 class Cloner;
 class Modifier;
 class Visitor;
+class StatementIterator;
 
 /**
  * Statement.
@@ -63,5 +64,21 @@ public:
    * Is statement empty?
    */
   virtual bool isEmpty() const;
+
+  /**
+   * Iterator to first element if this is a list, to one-past-the-last if
+   * this is empty, otherwise to this.
+   */
+  StatementIterator begin() const;
+
+  /**
+   * Iterator to one-past-the-last.
+   */
+  StatementIterator end() const;
+
+  /**
+   * Number of elements when iterating.
+   */
+  int count() const;
 };
 }

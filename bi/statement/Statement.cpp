@@ -3,6 +3,8 @@
  */
 #include "bi/statement/Statement.hpp"
 
+#include "bi/statement/StatementIterator.hpp"
+
 bi::Statement::Statement(Location* loc) :
     Located(loc) {
   //
@@ -18,4 +20,26 @@ bi::Statement* bi::Statement::strip() {
 
 bool bi::Statement::isEmpty() const {
   return false;
+}
+
+bi::StatementIterator bi::Statement::begin() const {
+  if (isEmpty()) {
+    return end();
+  } else {
+    return StatementIterator(this);
+  }
+}
+
+bi::StatementIterator bi::Statement::end() const {
+  return StatementIterator(nullptr);
+}
+
+int bi::Statement::count() const {
+  int count = 0;
+  auto iter = begin();
+  while (iter != end()) {
+    ++count;
+    ++iter;
+  }
+  return count;
 }

@@ -25,6 +25,7 @@ class UnaryOperator;
 class Basic;
 class Class;
 class Alias;
+class Generic;
 class Unknown;
 
 template<class ObjectType> class Identifier;
@@ -33,6 +34,7 @@ template<class ObjectType> class OverloadedIdentifier;
 class BasicType;
 class ClassType;
 class AliasType;
+class GenericType;
 class TypeIdentifier;
 
 /**
@@ -51,7 +53,7 @@ enum LookupResult {
   BASIC,
   CLASS,
   ALIAS,
-  MEMBER_TYPE_PARAMETER,
+  GENERIC,
   UNRESOLVED
 };
 
@@ -88,6 +90,7 @@ public:
   void add(Basic* o);
   void add(Class* o);
   void add(Alias* o);
+  void add(Generic* o);
 
   /**
    * Get the declaration to which an identifier corresponds.
@@ -111,6 +114,7 @@ public:
   void resolve(BasicType* o);
   void resolve(ClassType* o);
   void resolve(AliasType* o);
+  void resolve(GenericType* o);
 
   /**
    * Inherit another scope into this scope. This is used to inherit
@@ -143,6 +147,7 @@ public:
   Dictionary<Basic> basics;
   Dictionary<Class> classes;
   Dictionary<Alias> aliases;
+  Dictionary<Generic> generics;
 
 private:
   /**
@@ -168,5 +173,29 @@ private:
       (*iter)->resolve(ref);
     }
   }
+
+  /**
+   * Check for previous declarations of the same name, at global scope.
+   */
+  template<class ParameterType>
+  void checkPreviousGlobal(ParameterType* param);
+
+  /**
+   * Check for previous declarations of the same name, at local scope.
+   */
+  template<class ParameterType>
+  void checkPreviousLocal(ParameterType* param);
+
+  /**
+   * Check for previous declarations of the same name, for a member.
+   */
+  template<class ParameterType>
+  void checkPreviousMember(ParameterType* param);
+
+  /**
+   * Check for previous declarations of the same name, for a type.
+   */
+  template<class ParameterType>
+  void checkPreviousType(ParameterType* param);
 };
 }

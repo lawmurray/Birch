@@ -47,8 +47,8 @@ void bi::ArrayType::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }
 
-void bi::ArrayType::resolveConstructor(Type* args) {
-  single->resolveConstructor(args);
+void bi::ArrayType::resolveConstructor(Argumented* o) {
+  single->resolveConstructor(o);
 }
 
 bool bi::ArrayType::dispatchDefinitely(const Type& o) const {

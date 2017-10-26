@@ -37,6 +37,11 @@ public:
   bool contains(const std::string& name) const;
 
   /**
+   * Get a matching object.
+   */
+  ObjectType* get(ObjectType* o);
+
+  /**
    * Get an object by name.
    */
   Overloaded* get(const std::string& name);

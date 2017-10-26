@@ -20,7 +20,7 @@ bi::File* bi::Resolver::modify(File* o) {
   return o;
 }
 
-bi::Expression* bi::Resolver::modify(List<Expression>* o) {
+bi::Expression* bi::Resolver::modify(ExpressionList* o) {
   Modifier::modify(o);
   o->type = new TypeList(o->head->type->accept(&cloner),
       o->tail->type->accept(&cloner), o->loc);
@@ -60,6 +60,12 @@ bi::Type* bi::Resolver::modify(AliasType* o) {
 }
 
 bi::Type* bi::Resolver::modify(BasicType* o) {
+  Modifier::modify(o);
+  resolve(o);
+  return o;
+}
+
+bi::Type* bi::Resolver::modify(GenericType* o) {
   Modifier::modify(o);
   resolve(o);
   return o;
@@ -124,6 +130,8 @@ bi::Type* bi::Resolver::lookup(TypeIdentifier* ref, Scope* scope) {
     return new ClassType(ref->name, ref->loc);
   case ALIAS:
     return new AliasType(ref->name, ref->loc);
+  case GENERIC:
+    return new GenericType(ref->name, ref->loc);
   default:
     throw UnresolvedException(ref);
   }

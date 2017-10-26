@@ -85,9 +85,8 @@ void bi::md_ostream::visit(const MemberFiber* o) {
 }
 
 void bi::md_ostream::visit(const BinaryOperator* o) {
-  middle(o->params->getLeft());
-  middle(' ' << o->name << ' ');
-  middle(o->params->getRight());
+  auto iter = o->params->begin();
+  middle(*(iter++) << ' ' << o->name << ' ' << *(iter++));
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }

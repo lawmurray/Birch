@@ -74,3 +74,9 @@ bi::Type* bi::Assigner::modify(AliasType* o) {
   o->assignable = true;
   return o;
 }
+
+bi::Type* bi::Assigner::modify(GenericType* o) {
+  Modifier::modify(o);
+  o->assignable = true;
+  return o;
+}

@@ -11,13 +11,13 @@ bi::ResolverHeader::~ResolverHeader() {
   //
 }
 
-bi::Expression* bi::ResolverHeader::modify(Parameter* o) {
+bi::Expression* bi::ResolverHeader::modify(MemberParameter* o) {
   Modifier::modify(o);
   scopes.back()->add(o);
   return o;
 }
 
-bi::Expression* bi::ResolverHeader::modify(MemberParameter* o) {
+bi::Expression* bi::ResolverHeader::modify(Parameter* o) {
   Modifier::modify(o);
   scopes.back()->add(o);
   return o;
@@ -139,6 +139,7 @@ bi::Statement* bi::ResolverHeader::modify(AssignmentOperator* o) {
 bi::Statement* bi::ResolverHeader::modify(Class* o) {
   scopes.push_back(o->scope);
   currentClass = o;
+  o->typeParams = o->typeParams->accept(this);
   o->params = o->params->accept(this);
   if (o->typeParams->isEmpty()) {
     /* ^ otherwise uses generics, braces will be handled on instantiation */
@@ -146,5 +147,11 @@ bi::Statement* bi::ResolverHeader::modify(Class* o) {
   }
   currentClass = nullptr;
   scopes.pop_back();
+  return o;
+}
+
+bi::Statement* bi::ResolverHeader::modify(Generic* o) {
+  Modifier::modify(o);
+  scopes.back()->add(o);
   return o;
 }

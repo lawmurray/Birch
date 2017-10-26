@@ -3,7 +3,7 @@
  */
 #include "bi/expression/Expression.hpp"
 
-#include "bi/common/Iterator.hpp"
+#include "bi/expression/ExpressionIterator.hpp"
 #include "bi/type/EmptyType.hpp"
 #include "bi/expression/Range.hpp"
 
@@ -59,14 +59,14 @@ int bi::Expression::tupleDims() const {
   return result;
 }
 
-bi::Iterator<bi::Expression> bi::Expression::begin() const {
+bi::ExpressionIterator bi::Expression::begin() const {
   if (isEmpty()) {
     return end();
   } else {
-    return bi::Iterator<Expression>(this);
+    return ExpressionIterator(this);
   }
 }
 
-bi::Iterator<bi::Expression> bi::Expression::end() const {
-  return bi::Iterator<Expression>(nullptr);
+bi::ExpressionIterator bi::Expression::end() const {
+  return ExpressionIterator(nullptr);
 }

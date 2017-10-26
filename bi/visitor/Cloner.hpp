@@ -24,13 +24,12 @@ public:
   virtual File* clone(const File* o);
 
   virtual Expression* clone(const EmptyExpression* o);
-  virtual Expression* clone(const List<Expression>* o);
+  virtual Expression* clone(const ExpressionList* o);
   virtual Expression* clone(const Literal<bool>* o);
   virtual Expression* clone(const Literal<int64_t>* o);
   virtual Expression* clone(const Literal<double>* o);
   virtual Expression* clone(const Literal<const char*>* o);
   virtual Expression* clone(const Parentheses* o);
-  virtual Expression* clone(const Brackets* o);
   virtual Expression* clone(const Binary* o);
   virtual Expression* clone(const Cast* o);
   virtual Expression* clone(const Call* o);
@@ -65,11 +64,11 @@ public:
 
   virtual Statement* clone(const EmptyStatement* o);
   virtual Statement* clone(const Braces* o);
-  virtual Statement* clone(const List<Statement>* o);
+  virtual Statement* clone(const StatementList* o);
   virtual Statement* clone(const Assignment* o);
   virtual Statement* clone(const GlobalVariable* o);
   virtual Statement* clone(const MemberVariable* o);
-  virtual Statement* clone(const Function* o);
+      virtual Statement* clone(const Function* o);
   virtual Statement* clone(const Fiber* o);
   virtual Statement* clone(const Program* o);
   virtual Statement* clone(const MemberFunction* o);
@@ -81,6 +80,7 @@ public:
   virtual Statement* clone(const Class* o);
   virtual Statement* clone(const Alias* o);
   virtual Statement* clone(const Basic* o);
+  virtual Statement* clone(const Generic* o);
   virtual Statement* clone(const ExpressionStatement* o);
   virtual Statement* clone(const If* o);
   virtual Statement* clone(const For* o);
@@ -96,6 +96,7 @@ public:
   virtual Type* clone(const ClassType* o);
   virtual Type* clone(const AliasType* o);
   virtual Type* clone(const BasicType* o);
+  virtual Type* clone(const GenericType* o);
   virtual Type* clone(const ArrayType* o);
   virtual Type* clone(const TupleType* o);
   virtual Type* clone(const BinaryType* o);

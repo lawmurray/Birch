@@ -31,6 +31,13 @@ public:
   bool contains(Parameterised* o);
 
   /**
+   * Get the given overload.
+   *
+   * @param o The overload.
+   */
+  Parameterised* get(Parameterised* o);
+
+  /**
    * Add an overload.
    *
    * @param o The overload.

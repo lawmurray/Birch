@@ -10,8 +10,8 @@
 #include "boost/filesystem.hpp"
 #include "boost/algorithm/string.hpp"
 
-bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base,
-    const int level, const bool header) :
+bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
+    const bool header) :
     indentable_ostream(base, level),
     header(header) {
   //
@@ -21,7 +21,7 @@ void bi::CppBaseGenerator::visit(const Name* o) {
   middle(internalise(o->str()));
 }
 
-void bi::CppBaseGenerator::visit(const List<Expression>* o) {
+void bi::CppBaseGenerator::visit(const ExpressionList* o) {
   middle(o->head);
   if (o->tail) {
     middle(", " << o->tail);
@@ -54,10 +54,6 @@ void bi::CppBaseGenerator::visit(const Parentheses* o) {
   } else {
     middle('(' << o->single << ')');
   }
-}
-
-void bi::CppBaseGenerator::visit(const Brackets* o) {
-  middle("bi::make_view(" << o->single << ')');
 }
 
 void bi::CppBaseGenerator::visit(const Cast* o) {
@@ -116,7 +112,7 @@ void bi::CppBaseGenerator::visit(const UnaryCall* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Slice* o) {
-  middle(o->single << '(' << o->brackets << ')');
+  middle(o->single << "(bi::make_view(" << o->brackets << "))");
 }
 
 void bi::CppBaseGenerator::visit(const Query* o) {
@@ -495,13 +491,6 @@ void bi::CppBaseGenerator::visit(const Alias* o) {
   }
 }
 
-void bi::CppBaseGenerator::visit(const List<Statement>* o) {
-  middle(o->head);
-  if (o->tail) {
-    middle(o->tail);
-  }
-}
-
 void bi::CppBaseGenerator::visit(const Assignment* o) {
   line(o->left << " = " << o->right << ';');
 }
@@ -577,6 +566,10 @@ void bi::CppBaseGenerator::visit(const Raw* o) {
   }
 }
 
+void bi::CppBaseGenerator::visit(const StatementList* o) {
+  middle(o->head << o->tail);
+}
+
 void bi::CppBaseGenerator::visit(const EmptyType* o) {
   middle("void");
 }
@@ -628,16 +621,12 @@ void bi::CppBaseGenerator::visit(const TypeList* o) {
 void bi::CppBaseGenerator::genTemplateParams(const Class* o) {
   if (!o->typeParams->isEmpty()) {
     start("template<");
-    if (o->typeParams->isList()) {
-      for (auto iter = o->typeParams->begin(); iter != o->typeParams->end();
-          ++iter) {
-        if (iter != o->typeParams->begin()) {
-          middle(", ");
-        }
-        middle("class " << *iter);
+    for (auto iter = o->typeParams->begin(); iter != o->typeParams->end();
+        ++iter) {
+      if (iter != o->typeParams->begin()) {
+        middle(", ");
       }
-    } else {
-      middle("class " << o->typeParams);
+      middle("class " << *iter);
     }
     finish('>');
   }
@@ -678,8 +667,7 @@ void bi::CppBaseGenerator::genSingleArg(const UnaryCall* o) {
   genArg(o->args, o->callType->params);
 }
 
-void bi::CppBaseGenerator::genArg(const Expression* arg,
-    const Type* type) {
+void bi::CppBaseGenerator::genArg(const Expression* arg, const Type* type) {
   /* Birch and C++ resolve overloads differently, explicit casting in
    * some situations avoids situations where Birch considers a call
    * unambiguous, whereas C++ does not */

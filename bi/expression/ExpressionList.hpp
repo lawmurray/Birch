@@ -4,18 +4,14 @@
 #pragma once
 
 #include "bi/expression/Expression.hpp"
-#include "bi/statement/Statement.hpp"
-#include "bi/type/Type.hpp"
-#include "bi/common/Iterator.hpp"
 
 namespace bi {
 /**
- * List.
+ * Expression list.
  *
  * @ingroup compiler_common
  */
-template<class T>
-class List: public T {
+class ExpressionList: public Expression {
 public:
   /**
    * Constructor.
@@ -24,12 +20,12 @@ public:
    * @param tail Remaining list.
    * @param loc Location.
    */
-  List(T* head, T* tail, Location* loc = nullptr);
+  ExpressionList(Expression* head, Expression* tail, Location* loc = nullptr);
 
   /**
    * Destructor.
    */
-  virtual ~List();
+  virtual ~ExpressionList();
 
   /**
    * Number of objects in the list.
@@ -41,18 +37,18 @@ public:
    */
   virtual int rangeCount() const;
 
-  virtual T* accept(Cloner* visitor) const;
-  virtual T* accept(Modifier* visitor);
+  virtual Expression* accept(Cloner* visitor) const;
+  virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
   /**
-   * Left operand.
+   * First element of list.
    */
-  T* head;
+  Expression* head;
 
   /**
-   * Right operand.
+   * Remainder of list.
    */
-  T* tail;
+  Expression* tail;
 };
 }

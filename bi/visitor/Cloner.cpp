@@ -19,8 +19,8 @@ bi::Expression* bi::Cloner::clone(const EmptyExpression* o) {
   return new EmptyExpression(o->loc);
 }
 
-bi::Expression* bi::Cloner::clone(const List<Expression>* o) {
-  return new List<Expression>(o->head->accept(this), o->tail->accept(this),
+bi::Expression* bi::Cloner::clone(const ExpressionList* o) {
+  return new ExpressionList(o->head->accept(this), o->tail->accept(this),
       o->loc);
 }
 
@@ -43,10 +43,6 @@ bi::Expression* bi::Cloner::clone(const Literal<const char*>* o) {
 
 bi::Expression* bi::Cloner::clone(const Parentheses* o) {
   return new Parentheses(o->single->accept(this), o->loc);
-}
-
-bi::Expression* bi::Cloner::clone(const Brackets* o) {
-  return new Brackets(o->single->accept(this), o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const Binary* o) {
@@ -118,7 +114,7 @@ bi::Expression* bi::Cloner::clone(const Nil* o) {
 
 bi::Expression* bi::Cloner::clone(const LocalVariable* o) {
   return new LocalVariable(o->name, o->type->accept(this),
-      o->parens->accept(this), o->value->accept(this), o->loc);
+      o->args->accept(this), o->value->accept(this), o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const Parameter* o) {
@@ -191,8 +187,8 @@ bi::Statement* bi::Cloner::clone(const Braces* o) {
   return new Braces(o->single->accept(this), o->loc);
 }
 
-bi::Statement* bi::Cloner::clone(const List<Statement>* o) {
-  return new List<Statement>(o->head->accept(this), o->tail->accept(this),
+bi::Statement* bi::Cloner::clone(const StatementList* o) {
+  return new StatementList(o->head->accept(this), o->tail->accept(this),
       o->loc);
 }
 
@@ -203,12 +199,12 @@ bi::Statement* bi::Cloner::clone(const Assignment* o) {
 
 bi::Statement* bi::Cloner::clone(const GlobalVariable* o) {
   return new GlobalVariable(o->name, o->type->accept(this),
-      o->parens->accept(this), o->value->accept(this), o->loc);
+      o->args->accept(this), o->value->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const MemberVariable* o) {
   return new MemberVariable(o->name, o->type->accept(this),
-      o->parens->accept(this), o->value->accept(this), o->loc);
+      o->args->accept(this), o->value->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const Function* o) {
@@ -259,7 +255,7 @@ bi::Statement* bi::Cloner::clone(const ConversionOperator* o) {
 bi::Statement* bi::Cloner::clone(const Class* o) {
   return new Class(o->name, o->typeParams->accept(this),
       o->params->accept(this), o->base->accept(this),
-      o->baseArgs->accept(this), o->braces->accept(this), o->loc);
+      o->args->accept(this), o->braces->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const Alias* o) {
@@ -267,7 +263,11 @@ bi::Statement* bi::Cloner::clone(const Alias* o) {
 }
 
 bi::Statement* bi::Cloner::clone(const Basic* o) {
-  return new Basic(o->name, o->base, o->loc);
+  return new Basic(o->name, o->base->accept(this), o->loc);
+}
+
+bi::Statement* bi::Cloner::clone(const Generic* o) {
+  return new Generic(o->name, o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const ExpressionStatement* o) {
@@ -328,6 +328,10 @@ bi::Type* bi::Cloner::clone(const AliasType* o) {
 
 bi::Type* bi::Cloner::clone(const BasicType* o) {
   return new BasicType(o->name, o->loc, o->assignable);
+}
+
+bi::Type* bi::Cloner::clone(const GenericType* o) {
+  return new GenericType(o->name, o->loc, o->assignable);
 }
 
 bi::Type* bi::Cloner::clone(const ArrayType* o) {

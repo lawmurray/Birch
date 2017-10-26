@@ -28,8 +28,8 @@ void bi::CppConstructorGenerator::visit(const Class* o) {
     in();
     in();
     start("super_type(");
-    if (!o->baseArgs->isEmpty()) {
-      middle(o->baseArgs);
+    if (!o->args->isEmpty()) {
+      middle(o->args);
     }
     middle(')');
     for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
@@ -57,7 +57,7 @@ void bi::CppConstructorGenerator::visit(const MemberVariable* o) {
     start(o->name << '(');
     const Named* named = dynamic_cast<const Named*>(o->type);
     assert(named);
-    middle("bi::make_object<" << named->name << ">(" << o->parens << ')');
+    middle("bi::make_object<" << named->name << ">(" << o->args << ')');
     middle(')');
   } else if (o->type->isArray()) {
     finish(',');
@@ -65,8 +65,8 @@ void bi::CppConstructorGenerator::visit(const MemberVariable* o) {
     const ArrayType* type = dynamic_cast<const ArrayType*>(o->type);
     assert(type);
     middle("bi::make_frame(" << type->brackets << ")");
-    if (!o->parens->isEmpty()) {
-      middle(", " << o->parens);
+    if (!o->args->isEmpty()) {
+      middle(", " << o->args);
     }
     middle(')');
   } else if (!o->value->isEmpty()) {

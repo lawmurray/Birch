@@ -21,7 +21,7 @@ void bi::bi_ostream::visit(const Name* o) {
   middle(o->str());
 }
 
-void bi::bi_ostream::visit(const List<Expression>* o) {
+void bi::bi_ostream::visit(const ExpressionList* o) {
   middle(o->head << ", " << o->tail);
 }
 
@@ -45,10 +45,6 @@ void bi::bi_ostream::visit(const Parentheses* o) {
   middle('(' << o->single << ')');
 }
 
-void bi::bi_ostream::visit(const Brackets* o) {
-  middle('[' << o->single << ']');
-}
-
 void bi::bi_ostream::visit(const Cast* o) {
   middle(o->returnType << '?' << '(' << o->single << ')');
 }
@@ -66,7 +62,7 @@ void bi::bi_ostream::visit(const UnaryCall* o) {
 }
 
 void bi::bi_ostream::visit(const Slice* o) {
-  middle(o->single << o->brackets);
+  middle(o->single << '[' << o->brackets << ']');
 }
 
 void bi::bi_ostream::visit(const Query* o) {
@@ -118,8 +114,8 @@ void bi::bi_ostream::visit(const Nil* o) {
 
 void bi::bi_ostream::visit(const LocalVariable* o) {
   middle(o->name << ':' << o->type);
-  if (!o->parens->isEmpty()) {
-    middle('(' << o->parens << ')');
+  if (!o->args->isEmpty()) {
+    middle('(' << o->args << ')');
   }
   if (!o->value->isEmpty()) {
     middle(" <- " << o->value);
@@ -142,8 +138,8 @@ void bi::bi_ostream::visit(const MemberParameter* o) {
 
 void bi::bi_ostream::visit(const GlobalVariable* o) {
   start(o->name << ':' << o->type);
-  if (!o->parens->isEmpty()) {
-    middle('(' << o->parens << ')');
+  if (!o->args->isEmpty()) {
+    middle('(' << o->args << ')');
   }
   if (!o->value->isEmpty()) {
     middle(" <- " << o->value);
@@ -153,8 +149,8 @@ void bi::bi_ostream::visit(const GlobalVariable* o) {
 
 void bi::bi_ostream::visit(const MemberVariable* o) {
   start(o->name << ':' << o->type);
-  if (!o->parens->isEmpty()) {
-    middle('(' << o->parens << ')');
+  if (!o->args->isEmpty()) {
+    middle('(' << o->args << ')');
   }
   if (!o->value->isEmpty()) {
     middle(" <- " << o->value);
@@ -335,8 +331,8 @@ void bi::bi_ostream::visit(const Class* o) {
   }
   if (!o->base->isEmpty()) {
     middle(" < " << o->base);
-    if (!o->baseArgs->isEmpty()) {
-      middle('(' << o->baseArgs << ')');
+    if (!o->args->isEmpty()) {
+      middle('(' << o->args << ')');
     }
   }
   if (!o->braces->isEmpty()) {
@@ -397,6 +393,10 @@ void bi::bi_ostream::visit(const Raw* o) {
     line(o->raw);
     line("}}");
   }
+}
+
+void bi::bi_ostream::visit(const StatementList* o) {
+  middle(o->head << o->tail);
 }
 
 void bi::bi_ostream::visit(const ClassType* o) {

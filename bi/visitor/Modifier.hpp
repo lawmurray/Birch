@@ -24,13 +24,12 @@ public:
   virtual File* modify(File* o);
 
   virtual Expression* modify(EmptyExpression* o);
-  virtual Expression* modify(List<Expression>* o);
+  virtual Expression* modify(ExpressionList* o);
   virtual Expression* modify(Literal<bool>* o);
   virtual Expression* modify(Literal<int64_t>* o);
   virtual Expression* modify(Literal<double>* o);
   virtual Expression* modify(Literal<const char*>* o);
   virtual Expression* modify(Parentheses* o);
-  virtual Expression* modify(Brackets* o);
   virtual Expression* modify(Binary* o);
   virtual Expression* modify(Cast* o);
   virtual Expression* modify(Call* o);
@@ -49,8 +48,8 @@ public:
   virtual Expression* modify(Nil* o);
   virtual Expression* modify(LocalVariable* o);
   virtual Expression* modify(Parameter* o);
-  virtual Expression* modify(MemberParameter* o);
-  virtual Expression* modify(Identifier<Unknown>* o);
+virtual Expression* modify(MemberParameter* o);
+virtual Expression* modify(Identifier<Unknown>* o);
   virtual Expression* modify(Identifier<Parameter>* o);
   virtual Expression* modify(Identifier<MemberParameter>* o);
   virtual Expression* modify(Identifier<GlobalVariable>* o);
@@ -65,11 +64,11 @@ public:
 
   virtual Statement* modify(EmptyStatement* o);
   virtual Statement* modify(Braces* o);
-  virtual Statement* modify(List<Statement>* o);
+  virtual Statement* modify(StatementList* o);
   virtual Statement* modify(Assignment* o);
   virtual Statement* modify(GlobalVariable* o);
   virtual Statement* modify(MemberVariable* o);
-  virtual Statement* modify(Function* o);
+      virtual Statement* modify(Function* o);
   virtual Statement* modify(Fiber* o);
   virtual Statement* modify(Program* o);
   virtual Statement* modify(MemberFunction* o);
@@ -81,6 +80,7 @@ public:
   virtual Statement* modify(Class* o);
   virtual Statement* modify(Alias* o);
   virtual Statement* modify(Basic* o);
+  virtual Statement* modify(Generic* o);
   virtual Statement* modify(ExpressionStatement* o);
   virtual Statement* modify(If* o);
   virtual Statement* modify(For* o);
@@ -96,6 +96,7 @@ public:
   virtual Type* modify(ClassType* o);
   virtual Type* modify(AliasType* o);
   virtual Type* modify(BasicType* o);
+  virtual Type* modify(GenericType* o);
   virtual Type* modify(ArrayType* o);
   virtual Type* modify(TupleType* o);
   virtual Type* modify(BinaryType* o);

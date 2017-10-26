@@ -12,6 +12,7 @@ namespace bi {
 class Cloner;
 class Modifier;
 class Visitor;
+class ExpressionIterator;
 
 /**
  * Expression.
@@ -76,12 +77,12 @@ public:
   virtual Expression* strip();
 
   /**
-   * Get the left operand of a Binary, otherwise undefined.
+   * Get the left operand of a binary, otherwise undefined.
    */
   virtual Expression* getLeft() const;
 
   /**
-   * Get the right operand of a Binary, otherwise undefined.
+   * Get the right operand of a binary, otherwise undefined.
    */
   virtual Expression* getRight() const;
 
@@ -99,11 +100,11 @@ public:
    * Iterator to first element if this is a list, to one-past-the-last if
    * this is empty, otherwise to this.
    */
-  virtual Iterator<Expression> begin() const;
+  ExpressionIterator begin() const;
 
   /**
    * Iterator to one-past-the-last.
    */
-  virtual Iterator<Expression> end() const;
+  ExpressionIterator end() const;
 };
 }

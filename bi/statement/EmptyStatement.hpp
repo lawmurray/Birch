@@ -14,6 +14,13 @@ namespace bi {
 class EmptyStatement: public Statement {
 public:
   /**
+   * Constructor.
+   *
+   * @param loc Location.
+   */
+  EmptyStatement(Location* loc = nullptr);
+
+  /**
    * Destructor.
    */
   virtual ~EmptyStatement();

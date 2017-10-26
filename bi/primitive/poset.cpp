@@ -31,6 +31,20 @@ bool bi::poset<T,Compare>::contains(T v) {
 }
 
 template<class T, class Compare>
+T bi::poset<T,Compare>::get(T v) {
+  std::list<T> matches;
+  match(v, matches);
+
+  /* are any of these an exact match? */
+  for (auto u : matches) {
+    if (compare(u, v) && compare(v, u)) {
+      return u;
+    }
+  }
+  assert(false);
+}
+
+template<class T, class Compare>
 void bi::poset<T,Compare>::insert(T v) {
   /* pre-condition */
   assert(!contains(v));

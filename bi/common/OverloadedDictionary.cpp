@@ -28,6 +28,15 @@ bool bi::OverloadedDictionary<ObjectType>::contains(
 }
 
 template<class ObjectType>
+ObjectType* bi::OverloadedDictionary<ObjectType>::get(ObjectType* o) {
+  /* pre-condition */
+  assert(contains(o));
+
+  auto iter = objects.find(o->name->str());
+  return dynamic_cast<ObjectType*>(iter->second->get(o));
+}
+
+template<class ObjectType>
 bi::Overloaded* bi::OverloadedDictionary<ObjectType>::get(
     const std::string& name) {
   /* pre-condition */

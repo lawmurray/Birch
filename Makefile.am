@@ -29,8 +29,6 @@ COMMON_SOURCES = \
   bi/common/Conditioned.cpp \
   bi/common/Couple.cpp \
   bi/common/Dictionary.cpp \
-  bi/common/Iterator.cpp \
-  bi/common/List.cpp \
   bi/common/Located.cpp \
   bi/common/Location.cpp \
   bi/common/Name.cpp \
@@ -77,11 +75,12 @@ COMMON_SOURCES = \
   bi/exception/YieldTypeException.cpp \
   bi/expression/Binary.cpp \
   bi/expression/BinaryCall.cpp \
-  bi/expression/Brackets.cpp \
   bi/expression/Cast.cpp \
   bi/expression/Call.cpp \
   bi/expression/EmptyExpression.cpp \
   bi/expression/Expression.cpp \
+  bi/expression/ExpressionIterator.cpp \
+  bi/expression/ExpressionList.cpp \
   bi/expression/Get.cpp \
   bi/expression/Identifier.cpp \
   bi/expression/Index.cpp \
@@ -128,6 +127,7 @@ COMMON_SOURCES = \
   bi/statement/File.cpp \
   bi/statement/For.cpp \
   bi/statement/Function.cpp \
+  bi/statement/Generic.cpp \
   bi/statement/GlobalVariable.cpp \
   bi/statement/If.cpp \
   bi/statement/MemberFiber.cpp \
@@ -138,6 +138,8 @@ COMMON_SOURCES = \
   bi/statement/Raw.cpp \
   bi/statement/Return.cpp \
   bi/statement/Statement.cpp \
+  bi/statement/StatementIterator.cpp \
+  bi/statement/StatementList.cpp \
   bi/statement/UnaryOperator.cpp \
   bi/statement/While.cpp \
   bi/statement/Yield.cpp \
@@ -149,16 +151,19 @@ COMMON_SOURCES = \
   bi/type/EmptyType.cpp \
   bi/type/FiberType.cpp \
   bi/type/FunctionType.cpp \
+  bi/type/GenericType.cpp \
   bi/type/NilType.cpp \
   bi/type/OptionalType.cpp \
   bi/type/OverloadedType.cpp \
   bi/type/TupleType.cpp \
   bi/type/Type.cpp \
   bi/type/TypeIdentifier.cpp \
+  bi/type/TypeIterator.cpp \
   bi/type/TypeList.cpp \
   bi/visitor/Assigner.cpp \
   bi/visitor/Cloner.cpp \
   bi/visitor/Gatherer.cpp \
+  bi/visitor/Instantiater.cpp \
   bi/visitor/Modifier.cpp \
   bi/visitor/Resolver.cpp \
   bi/visitor/ResolverHeader.cpp \
@@ -219,8 +224,6 @@ noinst_HEADERS = \
   bi/common/Conditioned.hpp \
   bi/common/Couple.hpp \
   bi/common/Dictionary.hpp \
-  bi/common/Iterator.hpp \
-  bi/common/List.hpp \
   bi/common/Located.hpp \
   bi/common/Location.hpp \
   bi/common/Name.hpp \
@@ -267,11 +270,12 @@ noinst_HEADERS = \
   bi/expression/all.hpp \
   bi/expression/Binary.hpp \
   bi/expression/BinaryCall.hpp \
-  bi/expression/Brackets.hpp \
   bi/expression/Cast.hpp \
   bi/expression/Call.hpp \
   bi/expression/EmptyExpression.hpp \
   bi/expression/Expression.hpp \
+  bi/expression/ExpressionIterator.hpp \
+  bi/expression/ExpressionList.hpp \
   bi/expression/Get.hpp \
   bi/expression/Identifier.hpp \
   bi/expression/Index.hpp \
@@ -322,6 +326,7 @@ noinst_HEADERS = \
   bi/statement/File.hpp \
   bi/statement/For.hpp \
   bi/statement/Function.hpp \
+  bi/statement/Generic.hpp \
   bi/statement/GlobalVariable.hpp \
   bi/statement/If.hpp \
   bi/statement/MemberFiber.hpp \
@@ -332,6 +337,8 @@ noinst_HEADERS = \
   bi/statement/Raw.hpp \
   bi/statement/Return.hpp \
   bi/statement/Statement.hpp \
+  bi/statement/StatementIterator.hpp \
+  bi/statement/StatementList.hpp \
   bi/statement/UnaryOperator.hpp \
   bi/statement/While.hpp \
   bi/statement/Yield.hpp \
@@ -344,6 +351,7 @@ noinst_HEADERS = \
   bi/type/EmptyType.hpp \
   bi/type/FiberType.hpp \
   bi/type/FunctionType.hpp \
+  bi/type/GenericType.hpp \
   bi/type/NilType.hpp \
   bi/type/OptionalType.hpp \
   bi/type/OverloadedType.hpp \
@@ -355,6 +363,7 @@ noinst_HEADERS = \
   bi/visitor/Assigner.hpp \
   bi/visitor/Cloner.hpp \
   bi/visitor/Gatherer.hpp \
+  bi/visitor/Instantiater.hpp \
   bi/visitor/Modifier.hpp \
   bi/visitor/Resolver.hpp \
   bi/visitor/ResolverHeader.hpp \

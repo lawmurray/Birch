@@ -37,6 +37,11 @@ public:
   bool contains(T v);
 
   /**
+   * Get the value, if the set contains it.
+   */
+  T get(T v);
+
+  /**
    * Get the children of a vertex.
    */
   template<class Container>

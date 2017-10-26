@@ -4,11 +4,10 @@
 #pragma once
 
 #include "bi/expression/Expression.hpp"
-#include "bi/expression/EmptyExpression.hpp"
 
 namespace bi {
 /**
- * Parameterised expression.
+ * Parameterised statement.
  *
  * @ingroup compiler_common
  */

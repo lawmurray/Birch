@@ -20,13 +20,12 @@ public:
 
   virtual void visit(const Name* o);
 
-  virtual void visit(const List<Expression>* o);
+  virtual void visit(const ExpressionList* o);
   virtual void visit(const Literal<bool>* o);
   virtual void visit(const Literal<int64_t>* o);
   virtual void visit(const Literal<double>* o);
   virtual void visit(const Literal<const char*>* o);
   virtual void visit(const Parentheses* o);
-  virtual void visit(const Brackets* o);
   virtual void visit(const Cast* o);
   virtual void visit(const Call* o);
   virtual void visit(const BinaryCall* o);
@@ -60,7 +59,6 @@ public:
   virtual void visit(const GlobalVariable* o);
   virtual void visit(const LocalVariable* o);
   virtual void visit(const MemberVariable* o);
-  virtual void visit(const List<Statement>* o);
   virtual void visit(const Function* o);
   virtual void visit(const Fiber* o);
   virtual void visit(const MemberFunction* o);
@@ -82,6 +80,7 @@ public:
   virtual void visit(const Return* o);
   virtual void visit(const Yield* o);
   virtual void visit(const Raw* o);
+  virtual void visit(const StatementList* o);
 
   virtual void visit(const EmptyType* o);
   virtual void visit(const ArrayType* o);
@@ -140,8 +139,8 @@ void bi::CppBaseGenerator::genInit(const T* o) {
     } else {
       middle(" = bi::make_array<" << type->single << ">(");
       middle("bi::make_frame(" << type->brackets << ')');
-      if (!o->parens->isEmpty()) {
-        middle(", " << o->parens);
+      if (!o->args->isEmpty()) {
+        middle(", " << o->args);
       }
       middle(')');
     }
@@ -151,7 +150,7 @@ void bi::CppBaseGenerator::genInit(const T* o) {
     if (!o->value->isEmpty()) {
       middle(" = " << o->value);
     } else {
-      middle(" = bi::make_object<bi::" << named->name << ">(" << o->parens << ')');
+      middle(" = bi::make_object<bi::" << named->name << ">(" << o->args << ')');
     }
   } else if (!o->value->isEmpty()) {
     middle(" = " << o->value);

@@ -55,10 +55,11 @@ bi::Class* bi::ClassType::getClass() const {
   return target;
 }
 
-void bi::ClassType::resolveConstructor(Type* args) {
+void bi::ClassType::resolveConstructor(Argumented* o) {
   assert(target);
-  if (!args->definitely(*target->params->type)) {
-    throw ConstructorException(args, target);
+  bi::definitely compare;
+  if (!compare(o, target)) {
+    throw ConstructorException(o, target);
   }
 }
 
