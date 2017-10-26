@@ -74,6 +74,7 @@ public:
   virtual void visit(const Class* o);
   virtual void visit(const Alias* o);
   virtual void visit(const Basic* o);
+  virtual void visit(const Generic* o);
   virtual void visit(const ExpressionStatement* o);
   virtual void visit(const If* o);
   virtual void visit(const For* o);
@@ -86,6 +87,7 @@ public:
 
   virtual void visit(const ClassType* o);
   virtual void visit(const BasicType* o);
+  virtual void visit(const GenericType* o);
   virtual void visit(const BinaryType* o);
   virtual void visit(const AliasType* o);
   virtual void visit(const ArrayType* o);

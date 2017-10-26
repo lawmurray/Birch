@@ -354,6 +354,10 @@ void bi::bi_ostream::visit(const Basic* o) {
   finish(';');
 }
 
+void bi::bi_ostream::visit(const Generic* o) {
+  middle(o->name);
+}
+
 void bi::bi_ostream::visit(const ExpressionStatement* o) {
   line(o->single << ';');
 }
@@ -411,6 +415,10 @@ void bi::bi_ostream::visit(const AliasType* o) {
 }
 
 void bi::bi_ostream::visit(const BasicType* o) {
+  middle(o->name);
+}
+
+void bi::bi_ostream::visit(const GenericType* o) {
   middle(o->name);
 }
 

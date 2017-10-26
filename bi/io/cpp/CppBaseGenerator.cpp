@@ -491,6 +491,10 @@ void bi::CppBaseGenerator::visit(const Alias* o) {
   }
 }
 
+void bi::CppBaseGenerator::visit(const Generic* o) {
+  middle(o->name);
+}
+
 void bi::CppBaseGenerator::visit(const Assignment* o) {
   line(o->left << " = " << o->right << ';');
 }
@@ -608,6 +612,10 @@ void bi::CppBaseGenerator::visit(const AliasType* o) {
 
 void bi::CppBaseGenerator::visit(const BasicType* o) {
   middle("bi::" << o->name);
+}
+
+void bi::CppBaseGenerator::visit(const GenericType* o) {
+  middle(o->name);
 }
 
 void bi::CppBaseGenerator::visit(const TypeIdentifier* o) {
