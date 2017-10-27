@@ -38,6 +38,9 @@ bi::Statement* bi::ResolverHeader::modify(Basic* o) {
 }
 
 bi::Statement* bi::ResolverHeader::modify(Class* o) {
+  if (!o->base->isEmpty()) {
+    o->scope->inherit(o->base->getClass()->scope);
+  }
   scopes.push_back(o->scope);
   currentClass = o;
   o->typeParams = o->typeParams->accept(this);
