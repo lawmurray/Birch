@@ -11,6 +11,18 @@ bi::ResolverHeader::~ResolverHeader() {
   //
 }
 
+bi::Type* bi::ResolverHeader::modify(ClassType* o) {
+  /* checks on generic type arguments are deferred until here, resolution may
+   * have already happened */
+  if (!o->target) {
+    Resolver::modify(o);
+  }
+  if (!o->typeArgs->definitely(*o->target->typeParams->type)) {
+    throw GenericException(o, o->target);
+  }
+  return o;
+}
+
 bi::Expression* bi::ResolverHeader::modify(Parameter* o) {
   Modifier::modify(o);
   scopes.back()->add(o);
@@ -18,6 +30,10 @@ bi::Expression* bi::ResolverHeader::modify(Parameter* o) {
 }
 
 bi::Expression* bi::ResolverHeader::modify(Generic* o) {
+  return o;
+}
+
+bi::Statement* bi::ResolverHeader::modify(Basic* o) {
   return o;
 }
 
@@ -32,8 +48,12 @@ bi::Statement* bi::ResolverHeader::modify(Class* o) {
   return o;
 }
 
+bi::Statement* bi::ResolverHeader::modify(Alias* o) {
+  return o;
+}
+
 bi::Statement* bi::ResolverHeader::modify(GlobalVariable* o) {
-  Modifier::modify(o);
+  o->type = o->type->accept(this);
   o->type->accept(&assigner);
   scopes.back()->add(o);
   return o;
@@ -110,7 +130,7 @@ bi::Expression* bi::ResolverHeader::modify(MemberParameter* o) {
 }
 
 bi::Statement* bi::ResolverHeader::modify(MemberVariable* o) {
-  Modifier::modify(o);
+  o->type = o->type->accept(this);
   o->type->accept(&assigner);
   scopes.back()->add(o);
   return o;

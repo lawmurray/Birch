@@ -118,3 +118,7 @@ bool bi::ClassType::definitely(const TupleType& o) const {
   assert(target);
   return target->hasConversion(&o) || target->base->definitely(o);
 }
+
+bool bi::ClassType::definitely(const EmptyType& o) const {
+  return true;
+}

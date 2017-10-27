@@ -233,6 +233,9 @@ void bi::Scope::resolve(AliasType* ref) {
 
 void bi::Scope::resolve(GenericType* ref) {
   generics.resolve(ref);
+  if (!ref->target) {
+    resolveInherit(ref);
+  }
 }
 
 void bi::Scope::inherit(Scope* scope) {

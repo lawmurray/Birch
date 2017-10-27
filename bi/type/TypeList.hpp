@@ -49,9 +49,6 @@ public:
   using Type::definitely;
 
   virtual bool dispatchDefinitely(const Type& o) const;
-  virtual bool definitely(const AliasType& o) const;
-  virtual bool definitely(const GenericType& o) const;
   virtual bool definitely(const TypeList& o) const;
-  virtual bool definitely(const OptionalType& o) const;
 };
 }

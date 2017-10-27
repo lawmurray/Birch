@@ -66,3 +66,7 @@ bool bi::BasicType::definitely(const BasicType& o) const {
 bool bi::BasicType::definitely(const OptionalType& o) const {
   return definitely(*o.single);
 }
+
+bool bi::BasicType::definitely(const EmptyType& o) const {
+  return true;
+}

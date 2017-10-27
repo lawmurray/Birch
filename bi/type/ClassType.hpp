@@ -76,6 +76,7 @@ public:
   virtual bool definitely(const TypeList& o) const;
   virtual bool definitely(const OptionalType& o) const;
   virtual bool definitely(const TupleType& o) const;
+  virtual bool definitely(const EmptyType& o) const;
 
   /**
    * Generic type arguments.

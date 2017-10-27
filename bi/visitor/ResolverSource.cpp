@@ -151,7 +151,6 @@ bi::Expression* bi::ResolverSource::modify(This* o) {
   if (currentClass) {
     Modifier::modify(o);
     o->type = new ClassType(currentClass, o->loc);
-    o->type->accept(this);
   } else {
     throw ThisException(o);
   }
@@ -311,7 +310,8 @@ bi::Statement* bi::ResolverSource::modify(Assignment* o) {
 }
 
 bi::Statement* bi::ResolverSource::modify(GlobalVariable* o) {
-  Modifier::modify(o);
+  o->args = o->args->accept(this);
+  o->value = o->value->accept(this);
   if (!o->args->isEmpty() || o->value->isEmpty()) {
     o->type->resolveConstructor(o);
   }
@@ -342,9 +342,6 @@ bi::Statement* bi::ResolverSource::modify(Fiber* o) {
 
 bi::Statement* bi::ResolverSource::modify(Program* o) {
   scopes.push_back(o->scope);
-  o->params = o->params->accept(&assigner);
-// ^ currently for backwards compatibility of delay_triplet example, can
-//   be updated later
   o->braces = o->braces->accept(this);
   scopes.pop_back();
   return o;
@@ -369,7 +366,8 @@ bi::Statement* bi::ResolverSource::modify(UnaryOperator* o) {
 }
 
 bi::Statement* bi::ResolverSource::modify(MemberVariable* o) {
-  Modifier::modify(o);
+  o->args = o->args->accept(this);
+  o->value = o->value->accept(this);
   if (!o->args->isEmpty() || o->value->isEmpty()) {
     o->type->resolveConstructor(o);
   }

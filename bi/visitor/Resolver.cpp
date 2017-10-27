@@ -56,27 +56,28 @@ bi::Type* bi::Resolver::modify(TypeIdentifier* o) {
 }
 
 bi::Type* bi::Resolver::modify(ClassType* o) {
+  assert(!o->target);
   Modifier::modify(o);
   resolve(o);
-  if (!o->typeArgs->definitely(*o->target->typeParams->type)) {
-    throw GenericException(o, o->target);
-  }
   return o;
 }
 
 bi::Type* bi::Resolver::modify(AliasType* o) {
+  assert(!o->target);
   Modifier::modify(o);
   resolve(o);
   return o;
 }
 
 bi::Type* bi::Resolver::modify(BasicType* o) {
+  assert(!o->target);
   Modifier::modify(o);
   resolve(o);
   return o;
 }
 
 bi::Type* bi::Resolver::modify(GenericType* o) {
+  assert(!o->target);
   Modifier::modify(o);
   resolve(o);
   return o;

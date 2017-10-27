@@ -53,3 +53,7 @@ bool bi::OptionalType::definitely(const GenericType& o) const {
 bool bi::OptionalType::definitely(const OptionalType& o) const {
   return single->definitely(*o.single);
 }
+
+bool bi::OptionalType::definitely(const EmptyType& o) const {
+  return true;
+}

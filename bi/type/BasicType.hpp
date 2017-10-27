@@ -55,5 +55,6 @@ public:
   virtual bool definitely(const BasicType& o) const;
   virtual bool definitely(const GenericType& o) const;
   virtual bool definitely(const OptionalType& o) const;
+  virtual bool definitely(const EmptyType& o) const;
 };
 }

@@ -41,6 +41,7 @@ bi::Statement* bi::ResolverSuper::modify(Class* o) {
 }
 
 bi::Statement* bi::ResolverSuper::modify(Alias* o) {
+  o->base = o->base->accept(this);
   return o;
 }
 

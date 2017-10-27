@@ -49,3 +49,7 @@ bool bi::TupleType::definitely(const OptionalType& o) const {
 bool bi::TupleType::definitely(const TupleType& o) const {
   return single->definitely(*o.single);
 }
+
+bool bi::TupleType::definitely(const EmptyType& o) const {
+  return true;
+}
