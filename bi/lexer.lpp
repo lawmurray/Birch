@@ -57,7 +57,7 @@ void yyreset() {
 
 %}
 
-%option noyywrap
+%option noyywrap nounput noinput
 
 %x COMMENT_EOL COMMENT_INLINE COMMENT_DOC DOUBLE_BRACE
 
