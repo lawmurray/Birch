@@ -18,7 +18,6 @@ bi::Expression* bi::ResolverHeader::modify(Parameter* o) {
 }
 
 bi::Expression* bi::ResolverHeader::modify(Generic* o) {
-  scopes.back()->add(o);
   return o;
 }
 

@@ -157,7 +157,9 @@ void bi::CppClassGenerator::visit(const AssignmentOperator* o) {
       genTemplateParams(type);
       start("bi::");
     }
-    middle(type->name << "& ");
+    middle(type->name);
+    genTemplateArgs(type);
+    middle("& ");
     if (!header) {
       middle("bi::" << type->name);
       genTemplateArgs(type);

@@ -11,6 +11,12 @@ bi::ResolverSuper::~ResolverSuper() {
   //
 }
 
+bi::Expression* bi::ResolverSuper::modify(Generic* o) {
+  o->type = o->type->accept(this);
+  scopes.back()->add(o);
+  return o;
+}
+
 bi::Statement* bi::ResolverSuper::modify(Basic* o) {
   o->base = o->base->accept(this);
   ///@todo Check that base type is of basic type

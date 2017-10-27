@@ -191,6 +191,10 @@ bi::Expression* bi::ResolverSource::modify(MemberParameter* o) {
   return o;
 }
 
+bi::Expression* bi::ResolverSource::modify(Generic* o) {
+  return o;
+}
+
 bi::Expression* bi::ResolverSource::modify(LocalVariable* o) {
   Modifier::modify(o);
   if (!o->args->isEmpty() || o->value->isEmpty()) {
@@ -314,14 +318,6 @@ bi::Statement* bi::ResolverSource::modify(GlobalVariable* o) {
   return o;
 }
 
-bi::Statement* bi::ResolverSource::modify(MemberVariable* o) {
-  Modifier::modify(o);
-  if (!o->args->isEmpty() || o->value->isEmpty()) {
-    o->type->resolveConstructor(o);
-  }
-  return o;
-}
-
 bi::Statement* bi::ResolverSource::modify(Function* o) {
   scopes.push_back(o->scope);
   returnTypes.push(o->returnType);
@@ -354,6 +350,32 @@ bi::Statement* bi::ResolverSource::modify(Program* o) {
   return o;
 }
 
+bi::Statement* bi::ResolverSource::modify(BinaryOperator* o) {
+  scopes.push_back(o->scope);
+  returnTypes.push(o->returnType);
+  o->braces = o->braces->accept(this);
+  returnTypes.pop();
+  scopes.pop_back();
+  return o;
+}
+
+bi::Statement* bi::ResolverSource::modify(UnaryOperator* o) {
+  scopes.push_back(o->scope);
+  returnTypes.push(o->returnType);
+  o->braces = o->braces->accept(this);
+  returnTypes.pop();
+  scopes.pop_back();
+  return o;
+}
+
+bi::Statement* bi::ResolverSource::modify(MemberVariable* o) {
+  Modifier::modify(o);
+  if (!o->args->isEmpty() || o->value->isEmpty()) {
+    o->type->resolveConstructor(o);
+  }
+  return o;
+}
+
 bi::Statement* bi::ResolverSource::modify(MemberFunction* o) {
   scopes.push_back(o->scope);
   returnTypes.push(o->returnType);
@@ -372,24 +394,6 @@ bi::Statement* bi::ResolverSource::modify(MemberFiber* o) {
   }
   o->braces = o->braces->accept(this);
   currentYieldType = nullptr;
-  scopes.pop_back();
-  return o;
-}
-
-bi::Statement* bi::ResolverSource::modify(BinaryOperator* o) {
-  scopes.push_back(o->scope);
-  returnTypes.push(o->returnType);
-  o->braces = o->braces->accept(this);
-  returnTypes.pop();
-  scopes.pop_back();
-  return o;
-}
-
-bi::Statement* bi::ResolverSource::modify(UnaryOperator* o) {
-  scopes.push_back(o->scope);
-  returnTypes.push(o->returnType);
-  o->braces = o->braces->accept(this);
-  returnTypes.pop();
   scopes.pop_back();
   return o;
 }
@@ -418,6 +422,14 @@ bi::Statement* bi::ResolverSource::modify(Class* o) {
   o->braces = o->braces->accept(this);
   currentClass = nullptr;
   scopes.pop_back();
+  return o;
+}
+
+bi::Statement* bi::ResolverSource::modify(Basic* o) {
+  return o;
+}
+
+bi::Statement* bi::ResolverSource::modify(Alias* o) {
   return o;
 }
 
