@@ -56,6 +56,7 @@ COMMON_SOURCES = \
   bi/exception/Exception.cpp \
   bi/exception/FiberTypeException.cpp \
   bi/exception/FileNotFoundException.cpp \
+  bi/exception/GenericException.cpp \
   bi/exception/GetException.cpp \
   bi/exception/IndexException.cpp \
   bi/exception/MemberException.cpp \
@@ -81,6 +82,7 @@ COMMON_SOURCES = \
   bi/expression/Expression.cpp \
   bi/expression/ExpressionIterator.cpp \
   bi/expression/ExpressionList.cpp \
+  bi/expression/Generic.cpp \
   bi/expression/Get.cpp \
   bi/expression/Identifier.cpp \
   bi/expression/Index.cpp \
@@ -127,7 +129,6 @@ COMMON_SOURCES = \
   bi/statement/File.cpp \
   bi/statement/For.cpp \
   bi/statement/Function.cpp \
-  bi/statement/Generic.cpp \
   bi/statement/GlobalVariable.cpp \
   bi/statement/If.cpp \
   bi/statement/MemberFiber.cpp \
@@ -163,7 +164,6 @@ COMMON_SOURCES = \
   bi/visitor/Assigner.cpp \
   bi/visitor/Cloner.cpp \
   bi/visitor/Gatherer.cpp \
-  bi/visitor/Instantiater.cpp \
   bi/visitor/Modifier.cpp \
   bi/visitor/Resolver.cpp \
   bi/visitor/ResolverHeader.cpp \
@@ -250,6 +250,7 @@ noinst_HEADERS = \
   bi/exception/DriverException.hpp \
   bi/exception/FiberTypeException.hpp \
   bi/exception/FileNotFoundException.hpp \
+  bi/exception/GenericException.hpp \
   bi/exception/GetException.hpp \
   bi/exception/IndexException.hpp \
   bi/exception/MemberException.hpp \
@@ -276,6 +277,7 @@ noinst_HEADERS = \
   bi/expression/Expression.hpp \
   bi/expression/ExpressionIterator.hpp \
   bi/expression/ExpressionList.hpp \
+  bi/expression/Generic.hpp \
   bi/expression/Get.hpp \
   bi/expression/Identifier.hpp \
   bi/expression/Index.hpp \
@@ -310,7 +312,6 @@ noinst_HEADERS = \
   bi/primitive/definitely.hpp \
   bi/primitive/encode.hpp \
   bi/primitive/poset.hpp \
-  bi/primitive/possibly.hpp \
   bi/statement/all.hpp \
   bi/statement/Alias.hpp \
   bi/statement/AssignmentOperator.hpp \
@@ -326,7 +327,6 @@ noinst_HEADERS = \
   bi/statement/File.hpp \
   bi/statement/For.hpp \
   bi/statement/Function.hpp \
-  bi/statement/Generic.hpp \
   bi/statement/GlobalVariable.hpp \
   bi/statement/If.hpp \
   bi/statement/MemberFiber.hpp \
@@ -363,7 +363,6 @@ noinst_HEADERS = \
   bi/visitor/Assigner.hpp \
   bi/visitor/Cloner.hpp \
   bi/visitor/Gatherer.hpp \
-  bi/visitor/Instantiater.hpp \
   bi/visitor/Modifier.hpp \
   bi/visitor/Resolver.hpp \
   bi/visitor/ResolverHeader.hpp \

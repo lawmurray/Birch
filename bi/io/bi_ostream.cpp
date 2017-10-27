@@ -136,6 +136,13 @@ void bi::bi_ostream::visit(const MemberParameter* o) {
   }
 }
 
+void bi::bi_ostream::visit(const Generic* o) {
+  middle(o->name);
+  if (!o->type->isEmpty()) {
+    middle(" <= " << o->type);
+  }
+}
+
 void bi::bi_ostream::visit(const GlobalVariable* o) {
   start(o->name << ':' << o->type);
   if (!o->args->isEmpty()) {
@@ -352,10 +359,6 @@ void bi::bi_ostream::visit(const Basic* o) {
     middle(" < " << o->base);
   }
   finish(';');
-}
-
-void bi::bi_ostream::visit(const Generic* o) {
-  middle(o->name);
 }
 
 void bi::bi_ostream::visit(const ExpressionStatement* o) {

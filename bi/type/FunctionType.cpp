@@ -50,6 +50,11 @@ bool bi::FunctionType::definitely(const AliasType& o) const {
   return definitely(*o.target->base);
 }
 
+bool bi::FunctionType::definitely(const GenericType& o) const {
+  assert(o.target);
+  return definitely(*o.target->type);
+}
+
 bool bi::FunctionType::definitely(const FunctionType& o) const {
   return params->definitely(*o.params)
       && returnType->definitely(*o.returnType);
@@ -57,21 +62,4 @@ bool bi::FunctionType::definitely(const FunctionType& o) const {
 
 bool bi::FunctionType::definitely(const OptionalType& o) const {
   return definitely(*o.single);
-}
-
-bool bi::FunctionType::dispatchPossibly(const Type& o) const {
-  return o.possibly(*this);
-}
-
-bool bi::FunctionType::possibly(const AliasType& o) const {
-  assert(o.target);
-  return possibly(*o.target->base);
-}
-
-bool bi::FunctionType::possibly(const FunctionType& o) const {
-  return params->possibly(*o.params) && returnType->possibly(*o.returnType);
-}
-
-bool bi::FunctionType::possibly(const OptionalType& o) const {
-  return possibly(*o.single);
 }

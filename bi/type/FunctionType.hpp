@@ -39,17 +39,12 @@ public:
   virtual FunctionType* resolve(Argumented* o);
 
   using Type::definitely;
-  using Type::possibly;
 
   virtual bool dispatchDefinitely(const Type& o) const;
   virtual bool definitely(const AliasType& o) const;
+  virtual bool definitely(const GenericType& o) const;
   virtual bool definitely(const FunctionType& o) const;
   virtual bool definitely(const OptionalType& o) const;
-
-  virtual bool dispatchPossibly(const Type& o) const;
-  virtual bool possibly(const AliasType& o) const;
-  virtual bool possibly(const FunctionType& o) const;
-  virtual bool possibly(const OptionalType& o) const;
 
   /**
    * Parameters type.

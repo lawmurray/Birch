@@ -336,9 +336,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
         if (!param->value->isEmpty()) {
           middle(" = " << param->value);
         } else if (param->type->isClass()) {
-          auto named = dynamic_cast<const Named*>(param->type);
-          assert(named);
-          middle(" = bi::make_object<bi::" << named->name << ">()");
+          middle(" = bi::make_object<" << param->type << ">()");
         }
         finish(';');
       }
@@ -642,7 +640,7 @@ void bi::CppBaseGenerator::genTemplateParams(const Class* o) {
 
 void bi::CppBaseGenerator::genTemplateArgs(const Class* o) {
   if (!o->typeParams->isEmpty()) {
-    start('<' << o->typeParams << '>');
+    middle('<' << o->typeParams << '>');
   }
 }
 

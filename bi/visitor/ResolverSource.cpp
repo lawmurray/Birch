@@ -12,27 +12,6 @@ bi::ResolverSource::~ResolverSource() {
   //
 }
 
-bi::Expression* bi::ResolverSource::modify(ExpressionList* o) {
-  Modifier::modify(o);
-  o->type = new TypeList(o->head->type->accept(&cloner),
-      o->tail->type->accept(&cloner), o->loc);
-  o->type = o->type->accept(this);
-  o->type->assignable = o->head->type->assignable && o->tail->type->assignable;
-  return o;
-}
-
-bi::Expression* bi::ResolverSource::modify(Parentheses* o) {
-  Modifier::modify(o);
-  if (o->single->tupleSize() > 1) {
-    o->type = new TupleType(o->single->type->accept(&cloner), o->loc);
-    o->type = o->type->accept(this);
-    o->type->assignable = o->single->type->assignable;
-  } else {
-    o->type = o->single->type->accept(&cloner)->accept(this);
-  }
-  return o;
-}
-
 bi::Expression* bi::ResolverSource::modify(Cast* o) {
   Modifier::modify(o);
   if (o->single->type->isClass()

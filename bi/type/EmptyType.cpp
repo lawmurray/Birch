@@ -38,10 +38,7 @@ bool bi::EmptyType::definitely(const EmptyType& o) const {
   return true;
 }
 
-bool bi::EmptyType::dispatchPossibly(const Type& o) const {
-  return o.possibly(*this);
-}
-
-bool bi::EmptyType::possibly(const EmptyType& o) const {
-  return true;
+bool bi::EmptyType::definitely(const GenericType& o) const {
+  assert(o.target);
+  return definitely(*o.target->type);
 }

@@ -45,10 +45,6 @@ bool bi::AliasType::isClass() const {
   return target->base->isClass();
 }
 
-bool bi::AliasType::isAlias() const {
-  return true;
-}
-
 bool bi::AliasType::isArray() const {
   assert(target);
   return target->base->isArray();
@@ -65,10 +61,12 @@ bool bi::AliasType::isFiber() const {
 }
 
 bi::Basic* bi::AliasType::getBasic() const {
+  assert(target);
   return target->base->getBasic();
 }
 
 bi::Class* bi::AliasType::getClass() const {
+  assert(target);
   return target->base->getClass();
 }
 
@@ -106,12 +104,12 @@ bool bi::AliasType::definitely(const ClassType& o) const {
   return target->base->definitely(o);
 }
 
-bool bi::AliasType::definitely(const FiberType& o) const {
+bool bi::AliasType::definitely(const EmptyType& o) const {
   assert(target);
   return target->base->definitely(o);
 }
 
-bool bi::AliasType::definitely(const EmptyType& o) const {
+bool bi::AliasType::definitely(const FiberType& o) const {
   assert(target);
   return target->base->definitely(o);
 }
@@ -121,7 +119,7 @@ bool bi::AliasType::definitely(const FunctionType& o) const {
   return target->base->definitely(o);
 }
 
-bool bi::AliasType::definitely(const TypeList& o) const {
+bool bi::AliasType::definitely(const GenericType& o) const {
   assert(target);
   return target->base->definitely(o);
 }
@@ -136,56 +134,7 @@ bool bi::AliasType::definitely(const TupleType& o) const {
   return target->base->definitely(o);
 }
 
-bool bi::AliasType::dispatchPossibly(const Type& o) const {
-  return o.possibly(*this);
-}
-
-bool bi::AliasType::possibly(const AliasType& o) const {
+bool bi::AliasType::definitely(const TypeList& o) const {
   assert(target);
-  return target->base->possibly(o);
-}
-
-bool bi::AliasType::possibly(const ArrayType& o) const {
-  assert(target);
-  return target->base->possibly(o);
-}
-
-bool bi::AliasType::possibly(const BasicType& o) const {
-  assert(target);
-  return target->base->possibly(o);
-}
-
-bool bi::AliasType::possibly(const ClassType& o) const {
-  assert(target);
-  return target->base->possibly(o);
-}
-
-bool bi::AliasType::possibly(const FiberType& o) const {
-  assert(target);
-  return target->base->possibly(o);
-}
-
-bool bi::AliasType::possibly(const EmptyType& o) const {
-  assert(target);
-  return target->base->possibly(o);
-}
-
-bool bi::AliasType::possibly(const FunctionType& o) const {
-  assert(target);
-  return target->base->possibly(o);
-}
-
-bool bi::AliasType::possibly(const TypeList& o) const {
-  assert(target);
-  return target->base->possibly(o);
-}
-
-bool bi::AliasType::possibly(const OptionalType& o) const {
-  assert(target);
-  return target->base->possibly(o);
-}
-
-bool bi::AliasType::possibly(const TupleType& o) const {
-  assert(target);
-  return target->base->possibly(o);
+  return target->base->definitely(o);
 }

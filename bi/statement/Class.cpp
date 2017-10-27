@@ -5,7 +5,7 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::Class::Class(Name* name, Statement* typeParams, Expression* params,
+bi::Class::Class(Name* name, Expression* typeParams, Expression* params,
     Type* base, Expression* args, Statement* braces, Location* loc) :
     Statement(loc),
     Named(name),
@@ -71,21 +71,4 @@ bool bi::Class::hasAssignment(const Type* o) const {
       || std::any_of(supers.begin(), supers.end(),
           [&](auto x) {return x->hasAssignment(o);});
   return result;
-}
-
-bi::Class* bi::Class::instantiate(const Type* typeArgs) {
-  /* search for an existing instantiation */
-  for (auto o : instantiations) {
-    if (typeArgs->equals(*o.first)) {
-      return o.second;
-    }
-  }
-
-  /* otherwise make a new instantiation */
-  Instantiater instantiater(typeParams, typeArgs);
-  Class* instantiation = dynamic_cast<Class*>(accept(&instantiater));
-  assert(instantiation);
-  instantiations.push_back(std::make_pair(typeArgs, instantiation));
-
-  return instantiation;
 }

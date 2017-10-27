@@ -8,6 +8,7 @@
 #include "bi/expression/LocalVariable.hpp"
 #include "bi/expression/Parameter.hpp"
 #include "bi/expression/MemberParameter.hpp"
+#include "bi/expression/Generic.hpp"
 #include "bi/statement/GlobalVariable.hpp"
 #include "bi/statement/MemberVariable.hpp"
 #include "bi/statement/Function.hpp"
@@ -22,7 +23,6 @@
 #include "bi/statement/Basic.hpp"
 #include "bi/statement/Class.hpp"
 #include "bi/statement/Alias.hpp"
-#include "bi/statement/Generic.hpp"
 #include "bi/exception/all.hpp"
 #include "bi/visitor/Cloner.hpp"
 

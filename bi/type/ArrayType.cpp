@@ -60,27 +60,15 @@ bool bi::ArrayType::definitely(const AliasType& o) const {
   return definitely(*o.target->base);
 }
 
+bool bi::ArrayType::definitely(const GenericType& o) const {
+  assert(o.target);
+  return definitely(*o.target->type);
+}
+
 bool bi::ArrayType::definitely(const ArrayType& o) const {
   return single->definitely(*o.single) && ndims == o.ndims;
 }
 
 bool bi::ArrayType::definitely(const OptionalType& o) const {
   return definitely(*o.single);
-}
-
-bool bi::ArrayType::dispatchPossibly(const Type& o) const {
-  return o.possibly(*this);
-}
-
-bool bi::ArrayType::possibly(const AliasType& o) const {
-  assert(o.target);
-  return possibly(*o.target->base);
-}
-
-bool bi::ArrayType::possibly(const ArrayType& o) const {
-  return single->possibly(*o.single) && ndims == o.ndims;
-}
-
-bool bi::ArrayType::possibly(const OptionalType& o) const {
-  return possibly(*o.single);
 }

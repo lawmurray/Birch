@@ -41,9 +41,14 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   /* constructor, taking the arguments of the Fiber */
   start("");
   if (!header) {
-    middle("bi::" << type->name << "::" << stateName << "::");
+    genTemplateParams(type);
+    middle("bi::" << type->name);
+    genTemplateArgs(type);
+    middle("::" << stateName << "::");
   }
-  middle(stateName << "(const Pointer<" << type->name << ">& self");
+  middle(stateName << "(const Pointer<" << type->name);
+  genTemplateArgs(type);
+  middle(">& self");
   if (!o->params->isEmpty()) {
     middle(", " << o->params);
   }
@@ -63,20 +68,30 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     out();
     finish(" {");
     in();
-    line("nlabels = " << (yields.size() + 1) << ';');
+    line("this->nlabels = " << (yields.size() + 1) << ';');
     out();
     line("}\n");
   }
 
   /* clone function */
   if (!header) {
-    start("bi::" << type->name << "::");
+    genTemplateParams(type);
+    if (!type->typeParams->isEmpty()) {
+      start("typename ");
+    } else {
+      start("");
+    }
+    middle("bi::" << type->name);
+    genTemplateArgs(type);
+    middle("::");
   } else {
     start("virtual ");
   }
   middle(stateName << "* ");
   if (!header) {
-    middle("bi::" << type->name << "::" << stateName << "::");
+    middle("bi::" << type->name);
+    genTemplateArgs(type);
+    middle("::" << stateName << "::");
   }
   middle("clone()");
   if (header) {
@@ -90,13 +105,17 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   }
 
   /* call function */
-  start("");
   if (header) {
-    middle("virtual ");
+    start("virtual ");
+  } else {
+    genTemplateParams(type);
+    start("");
   }
   middle("bool ");
   if (!header) {
-    middle("bi::" << type->name << "::" << stateName << "::");
+    middle("bi::" << type->name);
+    genTemplateArgs(type);
+    middle("::" << stateName << "::");
   }
   middle("query()");
   if (header) {
@@ -118,7 +137,9 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     in();
 
     /* parameters and local variables as class member variables */
-    line("Pointer<" << type->name << "> self;");
+    start("Pointer<" << type->name);
+    genTemplateArgs(type);
+    finish("> self;");
     for (auto iter = parameters.begin(); iter != parameters.end(); ++iter) {
       line((*iter)->type << ' ' << (*iter)->name << ';');
     }
@@ -131,9 +152,14 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   }
 
   /* initialisation function */
+  if (!header) {
+    genTemplateParams(type);
+  }
   start(o->returnType << ' ');
   if (!header) {
-    middle("bi::" << type->name << "::");
+    middle("bi::" << type->name);
+    genTemplateArgs(type);
+    middle("::");
   }
   middle(o->name << '(' << o->params << ')');
   if (header) {

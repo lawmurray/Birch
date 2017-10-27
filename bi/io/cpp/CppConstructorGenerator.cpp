@@ -55,9 +55,7 @@ void bi::CppConstructorGenerator::visit(const MemberVariable* o) {
   if (o->type->isClass()) {
     finish(',');
     start(o->name << '(');
-    const Named* named = dynamic_cast<const Named*>(o->type);
-    assert(named);
-    middle("bi::make_object<" << named->name << ">(" << o->args << ')');
+    middle("bi::make_object<" << o->type << ">(" << o->args << ')');
     middle(')');
   } else if (o->type->isArray()) {
     finish(',');

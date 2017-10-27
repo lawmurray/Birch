@@ -29,8 +29,6 @@
 #include <gc.h>
 #include <getopt.h>
 
-#include <iostream>
-#include <fstream>
 #include <random>
 #include <algorithm>
 #include <utility>
@@ -332,17 +330,18 @@ auto make_array(const Frame& frame, Args ... args) {
  *
  * @ingroup library
  *
- * @tparam Type Value type.
+ * @tparam PointerType Pointer type.
  * @tparam Args Constructor parameter types.
  *
  * @param args Constructor arguments.
  *
  * @return Pointer to the object.
  */
-template<class Type, class ... Args>
-Pointer<Type> make_object(Args ... args) {
-  auto raw = new (GC_MALLOC(sizeof(Type))) Type(args...);
-  return Pointer<Type>(raw);
+template<class PointerType, class ... Args>
+PointerType make_object(Args ... args) {
+  using ValueType = typename PointerType::value_type;
+  auto raw = new (GC_MALLOC(sizeof(ValueType))) ValueType(args...);
+  return PointerType(raw);
 }
 
 /**
@@ -350,15 +349,15 @@ Pointer<Type> make_object(Args ... args) {
  *
  * @ingroup library
  *
- * @tparam Type Value type.
+ * @tparam PointerType Pointer type.
  *
  * @param o The object to copy.
  *
  * @return Pointer to the new object.
  */
-template<class Type>
-Type* copy_object(Type* o) {
-  return new (GC_MALLOC(sizeof(Type))) Type(*o);
+template<class ValueType>
+ValueType* copy_object(ValueType* o) {
+  return new (GC_MALLOC(sizeof(ValueType))) ValueType(*o);
 }
 
 /**
@@ -374,7 +373,7 @@ Type* copy_object(Type* o) {
  * containing object.
  */
 template<class YieldType, class StateType, class ... Args>
-static Fiber<YieldType> make_fiber(Args ... args) {
+Fiber<YieldType> make_fiber(Args ... args) {
   Fiber<YieldType> fiber(false);
   FiberState<YieldType>* state = new (GC_MALLOC(sizeof(StateType))) StateType(args...);
   fiber.state = state;
@@ -394,7 +393,7 @@ static Fiber<YieldType> make_fiber(Args ... args) {
  * containing object.
  */
 template<class YieldType, class StateType, class ... Args>
-static Fiber<YieldType> make_closed_fiber(Args ... args) {
+Fiber<YieldType> make_closed_fiber(Args ... args) {
   Fiber<YieldType> fiber(true);
   fiber.swap();
   FiberState<YieldType>* state = new (GC_MALLOC(sizeof(StateType))) StateType(args...);

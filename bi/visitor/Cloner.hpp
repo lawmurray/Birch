@@ -49,6 +49,7 @@ public:
   virtual Expression* clone(const LocalVariable* o);
   virtual Expression* clone(const Parameter* o);
   virtual Expression* clone(const MemberParameter* o);
+  virtual Expression* clone(const Generic* o);
   virtual Expression* clone(const Identifier<Unknown>* o);
   virtual Expression* clone(const Identifier<Parameter>* o);
   virtual Expression* clone(const Identifier<MemberParameter>* o);
@@ -68,7 +69,7 @@ public:
   virtual Statement* clone(const Assignment* o);
   virtual Statement* clone(const GlobalVariable* o);
   virtual Statement* clone(const MemberVariable* o);
-      virtual Statement* clone(const Function* o);
+  virtual Statement* clone(const Function* o);
   virtual Statement* clone(const Fiber* o);
   virtual Statement* clone(const Program* o);
   virtual Statement* clone(const MemberFunction* o);
@@ -80,7 +81,6 @@ public:
   virtual Statement* clone(const Class* o);
   virtual Statement* clone(const Alias* o);
   virtual Statement* clone(const Basic* o);
-  virtual Statement* clone(const Generic* o);
   virtual Statement* clone(const ExpressionStatement* o);
   virtual Statement* clone(const If* o);
   virtual Statement* clone(const For* o);

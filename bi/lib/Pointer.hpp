@@ -21,6 +21,7 @@ template<class T>
 class Pointer: public Pointer<typename super_type<T>::type> {
   friend class Any;
 public:
+  typedef T value_type;
   typedef Pointer<T> this_type;
   typedef Pointer<typename super_type<T>::type> super_type;
 
@@ -185,7 +186,6 @@ bi::Pointer<T>& bi::Pointer<T>::operator=(const U& o) {
   return *this;
 }
 
-#include <iostream>
 template<class T>
 T* bi::Pointer<T>::get() {
   if (this->index < 0) {

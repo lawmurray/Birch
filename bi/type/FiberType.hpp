@@ -37,16 +37,11 @@ public:
   virtual Type* unwrap() const;
 
   using Type::definitely;
-  using Type::possibly;
 
   virtual bool dispatchDefinitely(const Type& o) const;
   virtual bool definitely(const AliasType& o) const;
+  virtual bool definitely(const GenericType& o) const;
   virtual bool definitely(const FiberType& o) const;
   virtual bool definitely(const OptionalType& o) const;
-
-  virtual bool dispatchPossibly(const Type& o) const;
-  virtual bool possibly(const AliasType& o) const;
-  virtual bool possibly(const FiberType& o) const;
-  virtual bool possibly(const OptionalType& o) const;
 };
 }

@@ -164,6 +164,11 @@ bi::Expression* bi::Modifier::modify(MemberParameter* o) {
   return o;
 }
 
+bi::Expression* bi::Modifier::modify(Generic* o) {
+  o->type = o->type->accept(this);
+  return o;
+}
+
 bi::Expression* bi::Modifier::modify(Identifier<Parameter>* o) {
   return o;
 }
@@ -319,10 +324,6 @@ bi::Statement* bi::Modifier::modify(Alias* o) {
 
 bi::Statement* bi::Modifier::modify(Basic* o) {
   o->base = o->base->accept(this);
-  return o;
-}
-
-bi::Statement* bi::Modifier::modify(Generic* o) {
   return o;
 }
 

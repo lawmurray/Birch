@@ -17,7 +17,6 @@
 #include "bi/statement/For.hpp"
 #include "bi/statement/Fiber.hpp"
 #include "bi/statement/Function.hpp"
-#include "bi/statement/Generic.hpp"
 #include "bi/statement/GlobalVariable.hpp"
 #include "bi/statement/If.hpp"
 #include "bi/statement/MemberFiber.hpp"

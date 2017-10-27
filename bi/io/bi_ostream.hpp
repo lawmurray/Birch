@@ -45,6 +45,7 @@ public:
   virtual void visit(const LocalVariable* o);
   virtual void visit(const Parameter* o);
   virtual void visit(const MemberParameter* o);
+  virtual void visit(const Generic* o);
   virtual void visit(const GlobalVariable* o);
   virtual void visit(const MemberVariable* o);
   virtual void visit(const Identifier<Parameter>* o);
@@ -74,7 +75,6 @@ public:
   virtual void visit(const Class* o);
   virtual void visit(const Alias* o);
   virtual void visit(const Basic* o);
-  virtual void visit(const Generic* o);
   virtual void visit(const ExpressionStatement* o);
   virtual void visit(const If* o);
   virtual void visit(const For* o);

@@ -37,15 +37,3 @@ bool bi::NilType::definitely(const NilType& o) const {
 bool bi::NilType::definitely(const OptionalType& o) const {
   return true;
 }
-
-bool bi::NilType::dispatchPossibly(const Type& o) const {
-  return o.possibly(*this);
-}
-
-bool bi::NilType::possibly(const NilType& o) const {
-  return true;
-}
-
-bool bi::NilType::possibly(const OptionalType& o) const {
-  return true;
-}

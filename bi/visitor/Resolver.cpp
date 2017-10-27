@@ -25,15 +25,23 @@ bi::Expression* bi::Resolver::modify(ExpressionList* o) {
   o->type = new TypeList(o->head->type->accept(&cloner),
       o->tail->type->accept(&cloner), o->loc);
   o->type = o->type->accept(this);
+  o->type->assignable = o->head->type->assignable
+      && o->tail->type->assignable;
   return o;
 }
 
 bi::Expression* bi::Resolver::modify(Parentheses* o) {
   Modifier::modify(o);
-  o->type = new TupleType(o->single->type->accept(&cloner), o->loc);
-  o->type = o->type->accept(this);
+  if (o->single->tupleSize() > 1) {
+    o->type = new TupleType(o->single->type->accept(&cloner), o->loc);
+    o->type = o->type->accept(this);
+    o->type->assignable = o->single->type->assignable;
+  } else {
+    o->type = o->single->type->accept(&cloner)->accept(this);
+  }
   return o;
 }
+
 
 bi::Expression* bi::Resolver::modify(Binary* o) {
   Modifier::modify(o);
@@ -50,6 +58,9 @@ bi::Type* bi::Resolver::modify(TypeIdentifier* o) {
 bi::Type* bi::Resolver::modify(ClassType* o) {
   Modifier::modify(o);
   resolve(o);
+  if (!o->typeArgs->definitely(*o->target->typeParams->type)) {
+    throw GenericException(o, o->target);
+  }
   return o;
 }
 

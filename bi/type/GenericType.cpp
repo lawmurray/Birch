@@ -35,8 +35,49 @@ void bi::GenericType::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::GenericType::isGeneric() const {
-  return true;
+bool bi::GenericType::isBasic() const {
+  assert(target);
+  return target->type->isBasic();
+}
+
+bool bi::GenericType::isClass() const {
+  assert(target);
+  return target->type->isClass();
+}
+
+bool bi::GenericType::isArray() const {
+  assert(target);
+  return target->type->isArray();
+}
+
+bool bi::GenericType::isFunction() const {
+  assert(target);
+  return target->type->isFunction();
+}
+
+bool bi::GenericType::isFiber() const {
+  assert(target);
+  return target->type->isFiber();
+}
+
+bi::Basic* bi::GenericType::getBasic() const {
+  assert(target);
+  return target->type->getBasic();
+}
+
+bi::Class* bi::GenericType::getClass() const {
+  assert(target);
+  return target->type->getClass();
+}
+
+bi::FunctionType* bi::GenericType::resolve(Argumented* o) {
+  assert(target);
+  return target->type->resolve(o);
+}
+
+void bi::GenericType::resolveConstructor(Argumented* o) {
+  assert(target);
+  target->type->resolveConstructor(o);
 }
 
 bool bi::GenericType::dispatchDefinitely(const Type& o) const {
@@ -44,31 +85,56 @@ bool bi::GenericType::dispatchDefinitely(const Type& o) const {
 }
 
 bool bi::GenericType::definitely(const AliasType& o) const {
-  assert(o.target);
-  return definitely(*o.target->base);
+  assert(target);
+  return target->type->definitely(o);
+}
+
+bool bi::GenericType::definitely(const ArrayType& o) const {
+  assert(target);
+  return target->type->definitely(o);
+}
+
+bool bi::GenericType::definitely(const BasicType& o) const {
+  assert(target);
+  return target->type->definitely(o);
+}
+
+bool bi::GenericType::definitely(const ClassType& o) const {
+  assert(target);
+  return target->type->definitely(o);
+}
+
+bool bi::GenericType::definitely(const EmptyType& o) const {
+  assert(target);
+  return target->type->definitely(o);
+}
+
+bool bi::GenericType::definitely(const FiberType& o) const {
+  assert(target);
+  return target->type->definitely(o);
+}
+
+bool bi::GenericType::definitely(const FunctionType& o) const {
+  assert(target);
+  return target->type->definitely(o);
 }
 
 bool bi::GenericType::definitely(const GenericType& o) const {
-  return target == o.target;
+  assert(target);
+  return target->type->definitely(o);
 }
 
 bool bi::GenericType::definitely(const OptionalType& o) const {
-  return definitely(*o.single);
+  assert(target);
+  return target->type->definitely(o);
 }
 
-bool bi::GenericType::dispatchPossibly(const Type& o) const {
-  return o.possibly(*this);
+bool bi::GenericType::definitely(const TupleType& o) const {
+  assert(target);
+  return target->type->definitely(o);
 }
 
-bool bi::GenericType::possibly(const AliasType& o) const {
-  assert(o.target);
-  return possibly(*o.target->base);
-}
-
-bool bi::GenericType::possibly(const GenericType& o) const {
-  return false;
-}
-
-bool bi::GenericType::possibly(const OptionalType& o) const {
-  return possibly(*o.single);
+bool bi::GenericType::definitely(const TypeList& o) const {
+  assert(target);
+  return target->type->definitely(o);
 }

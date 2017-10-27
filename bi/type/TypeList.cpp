@@ -44,27 +44,15 @@ bool bi::TypeList::definitely(const AliasType& o) const {
   return definitely(*o.target->base);
 }
 
+bool bi::TypeList::definitely(const GenericType& o) const {
+  assert(o.target);
+  return definitely(*o.target->type);
+}
+
 bool bi::TypeList::definitely(const TypeList& o) const {
   return head->definitely(*o.head) && tail->definitely(*o.tail);
 }
 
 bool bi::TypeList::definitely(const OptionalType& o) const {
   return definitely(*o.single);
-}
-
-bool bi::TypeList::dispatchPossibly(const Type& o) const {
-  return o.possibly(*this);
-}
-
-bool bi::TypeList::possibly(const AliasType& o) const {
-  assert(o.target);
-  return possibly(*o.target->base);
-}
-
-bool bi::TypeList::possibly(const TypeList& o) const {
-  return head->possibly(*o.head) && tail->possibly(*o.tail);
-}
-
-bool bi::TypeList::possibly(const OptionalType& o) const {
-  return possibly(*o.single);
 }

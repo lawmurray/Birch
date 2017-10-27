@@ -59,7 +59,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     }
     finish(" {");
     in();
-    line("nlabels = " << (yields.size() + 1) << ';');
+    line("this->nlabels = " << (yields.size() + 1) << ';');
     out();
     line("}\n");
   }
@@ -166,8 +166,8 @@ void bi::CppFiberGenerator::visit(const Return* o) {
 }
 
 void bi::CppFiberGenerator::visit(const Yield* o) {
-  line("value = " << o->single << ';');
-  line("label = " << label << ';');
+  line("this->value = " << o->single << ';');
+  line("this->label = " << label << ';');
   line("return true;");
   line("LABEL" << label << ": ;");
   ++label;
@@ -187,7 +187,7 @@ void bi::CppFiberGenerator::visit(const LocalVariable* o) {
 }
 
 void bi::CppFiberGenerator::genSwitch() {
-  line("switch (label) {");
+  line("switch (this->label) {");
   in();
   for (int s = 0; s <= yields.size(); ++s) {
     line("case " << s << ": goto LABEL" << s << ';');
@@ -201,6 +201,6 @@ void bi::CppFiberGenerator::genSwitch() {
 
 void bi::CppFiberGenerator::genEnd() {
   line("END:");
-  line("label = " << (yields.size() + 1) << ';');
+  line("this->label = " << (yields.size() + 1) << ';');
   line("return false;");
 }

@@ -10,6 +10,7 @@
 #include "bi/expression/EmptyExpression.hpp"
 #include "bi/expression/ExpressionIterator.hpp"
 #include "bi/expression/ExpressionList.hpp"
+#include "bi/expression/Generic.hpp"
 #include "bi/expression/Get.hpp"
 #include "bi/expression/Identifier.hpp"
 #include "bi/expression/Index.hpp"

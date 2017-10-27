@@ -116,10 +116,10 @@ void bi::CppClassGenerator::visit(const MemberVariable* o) {
 }
 
 void bi::CppClassGenerator::visit(const MemberFunction* o) {
-  genTemplateParams(type);
   if (header) {
     start("virtual ");
   } else {
+    genTemplateParams(type);
     start("");
   }
   middle(o->returnType << ' ');

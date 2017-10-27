@@ -37,27 +37,15 @@ bool bi::TupleType::definitely(const AliasType& o) const {
   return definitely(*o.target->base);
 }
 
+bool bi::TupleType::definitely(const GenericType& o) const {
+  assert(o.target);
+  return definitely(*o.target->type);
+}
+
 bool bi::TupleType::definitely(const OptionalType& o) const {
   return definitely(*o.single);
 }
 
 bool bi::TupleType::definitely(const TupleType& o) const {
   return single->definitely(*o.single);
-}
-
-bool bi::TupleType::dispatchPossibly(const Type& o) const {
-  return o.possibly(*this);
-}
-
-bool bi::TupleType::possibly(const AliasType& o) const {
-  assert(o.target);
-  return possibly(*o.target->base);
-}
-
-bool bi::TupleType::possibly(const OptionalType& o) const {
-  return possibly(*o.single);
-}
-
-bool bi::TupleType::possibly(const TupleType& o) const {
-  return single->possibly(*o.single);
 }

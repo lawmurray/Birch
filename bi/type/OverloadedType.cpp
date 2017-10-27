@@ -59,11 +59,3 @@ bool bi::OverloadedType::dispatchDefinitely(const Type& o) const {
 bool bi::OverloadedType::definitely(const OverloadedType& o) const {
   return false;
 }
-
-bool bi::OverloadedType::dispatchPossibly(const Type& o) const {
-  return o.possibly(*this);
-}
-
-bool bi::OverloadedType::possibly(const OverloadedType& o) const {
-  return false;
-}

@@ -30,10 +30,6 @@ bool bi::Type::isClass() const {
   return false;
 }
 
-bool bi::Type::isAlias() const {
-  return false;
-}
-
 bool bi::Type::isArray() const {
   return false;
 }
@@ -137,11 +133,11 @@ bool bi::Type::definitely(const ClassType& o) const {
   return false;
 }
 
-bool bi::Type::definitely(const FiberType& o) const {
+bool bi::Type::definitely(const EmptyType& o) const {
   return false;
 }
 
-bool bi::Type::definitely(const EmptyType& o) const {
+bool bi::Type::definitely(const FiberType& o) const {
   return false;
 }
 
@@ -149,11 +145,7 @@ bool bi::Type::definitely(const FunctionType& o) const {
   return false;
 }
 
-bool bi::Type::definitely(const TypeIdentifier& o) const {
-  return false;
-}
-
-bool bi::Type::definitely(const TypeList& o) const {
+bool bi::Type::definitely(const GenericType& o) const {
   return false;
 }
 
@@ -173,63 +165,11 @@ bool bi::Type::definitely(const TupleType& o) const {
   return false;
 }
 
-bool bi::Type::possibly(const Type& o) const {
-  return o.dispatchPossibly(*this);
-}
-
-bool bi::Type::possibly(const AliasType& o) const {
+bool bi::Type::definitely(const TypeIdentifier& o) const {
   return false;
 }
 
-bool bi::Type::possibly(const ArrayType& o) const {
-  return false;
-}
-
-bool bi::Type::possibly(const BasicType& o) const {
-  return false;
-}
-
-bool bi::Type::possibly(const BinaryType& o) const {
-  return false;
-}
-
-bool bi::Type::possibly(const ClassType& o) const {
-  return false;
-}
-
-bool bi::Type::possibly(const FiberType& o) const {
-  return false;
-}
-
-bool bi::Type::possibly(const EmptyType& o) const {
-  return false;
-}
-
-bool bi::Type::possibly(const FunctionType& o) const {
-  return false;
-}
-
-bool bi::Type::possibly(const TypeIdentifier& o) const {
-  return false;
-}
-
-bool bi::Type::possibly(const TypeList& o) const {
-  return false;
-}
-
-bool bi::Type::possibly(const NilType& o) const {
-  return false;
-}
-
-bool bi::Type::possibly(const OptionalType& o) const {
-  return false;
-}
-
-bool bi::Type::possibly(const OverloadedType& o) const {
-  return false;
-}
-
-bool bi::Type::possibly(const TupleType& o) const {
+bool bi::Type::definitely(const TypeList& o) const {
   return false;
 }
 

@@ -7,7 +7,6 @@
 #include "bi/common/Overloaded.hpp"
 #include "bi/primitive/poset.hpp"
 #include "bi/primitive/definitely.hpp"
-#include "bi/primitive/possibly.hpp"
 
 #include <map>
 
@@ -42,13 +41,9 @@ public:
   virtual FunctionType* resolve(Argumented* args);
 
   using Type::definitely;
-  using Type::possibly;
 
   virtual bool dispatchDefinitely(const Type& o) const;
   virtual bool definitely(const OverloadedType& o) const;
-
-  virtual bool dispatchPossibly(const Type& o) const;
-  virtual bool possibly(const OverloadedType& o) const;
 
   /**
    * Overloaded object.

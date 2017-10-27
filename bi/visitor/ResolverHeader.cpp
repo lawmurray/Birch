@@ -11,26 +11,29 @@ bi::ResolverHeader::~ResolverHeader() {
   //
 }
 
-bi::Expression* bi::ResolverHeader::modify(MemberParameter* o) {
-  Modifier::modify(o);
-  scopes.back()->add(o);
-  return o;
-}
-
 bi::Expression* bi::ResolverHeader::modify(Parameter* o) {
   Modifier::modify(o);
   scopes.back()->add(o);
   return o;
 }
 
-bi::Statement* bi::ResolverHeader::modify(GlobalVariable* o) {
-  Modifier::modify(o);
-  o->type->accept(&assigner);
+bi::Expression* bi::ResolverHeader::modify(Generic* o) {
   scopes.back()->add(o);
   return o;
 }
 
-bi::Statement* bi::ResolverHeader::modify(MemberVariable* o) {
+bi::Statement* bi::ResolverHeader::modify(Class* o) {
+  scopes.push_back(o->scope);
+  currentClass = o;
+  o->typeParams = o->typeParams->accept(this);
+  o->params = o->params->accept(this);
+  o->braces = o->braces->accept(this);
+  currentClass = nullptr;
+  scopes.pop_back();
+  return o;
+}
+
+bi::Statement* bi::ResolverHeader::modify(GlobalVariable* o) {
   Modifier::modify(o);
   o->type->accept(&assigner);
   scopes.back()->add(o);
@@ -73,33 +76,6 @@ bi::Statement* bi::ResolverHeader::modify(Program* o) {
   return o;
 }
 
-bi::Statement* bi::ResolverHeader::modify(MemberFunction* o) {
-  scopes.push_back(o->scope);
-  o->params = o->params->accept(this);
-  o->returnType = o->returnType->accept(this);
-  o->type = new FunctionType(o->params->type->accept(&cloner),
-      o->returnType->accept(&cloner), o->loc);
-  o->type = o->type->accept(this);
-  scopes.pop_back();
-  scopes.back()->add(o);
-  return o;
-}
-
-bi::Statement* bi::ResolverHeader::modify(MemberFiber* o) {
-  scopes.push_back(o->scope);
-  o->params = o->params->accept(this);
-  o->returnType = o->returnType->accept(this);
-  o->type = new FunctionType(o->params->type->accept(&cloner),
-      o->returnType->accept(&cloner), o->loc);
-  o->type = o->type->accept(this);
-  scopes.pop_back();
-  scopes.back()->add(o);
-  if (!o->returnType->isFiber()) {
-    throw FiberTypeException(o);
-  }
-  return o;
-}
-
 bi::Statement* bi::ResolverHeader::modify(BinaryOperator* o) {
   ///@todo Check that operator is in fact a binary operator, as parser no
   ///      longer distinguishes
@@ -128,6 +104,46 @@ bi::Statement* bi::ResolverHeader::modify(UnaryOperator* o) {
   return o;
 }
 
+bi::Expression* bi::ResolverHeader::modify(MemberParameter* o) {
+  Modifier::modify(o);
+  scopes.back()->add(o);
+  return o;
+}
+
+bi::Statement* bi::ResolverHeader::modify(MemberVariable* o) {
+  Modifier::modify(o);
+  o->type->accept(&assigner);
+  scopes.back()->add(o);
+  return o;
+}
+
+bi::Statement* bi::ResolverHeader::modify(MemberFunction* o) {
+  scopes.push_back(o->scope);
+  o->params = o->params->accept(this);
+  o->returnType = o->returnType->accept(this);
+  o->type = new FunctionType(o->params->type->accept(&cloner),
+      o->returnType->accept(&cloner), o->loc);
+  o->type = o->type->accept(this);
+  scopes.pop_back();
+  scopes.back()->add(o);
+  return o;
+}
+
+bi::Statement* bi::ResolverHeader::modify(MemberFiber* o) {
+  scopes.push_back(o->scope);
+  o->params = o->params->accept(this);
+  o->returnType = o->returnType->accept(this);
+  o->type = new FunctionType(o->params->type->accept(&cloner),
+      o->returnType->accept(&cloner), o->loc);
+  o->type = o->type->accept(this);
+  scopes.pop_back();
+  scopes.back()->add(o);
+  if (!o->returnType->isFiber()) {
+    throw FiberTypeException(o);
+  }
+  return o;
+}
+
 bi::Statement* bi::ResolverHeader::modify(AssignmentOperator* o) {
   scopes.push_back(o->scope);
   o->single = o->single->accept(this);
@@ -136,22 +152,7 @@ bi::Statement* bi::ResolverHeader::modify(AssignmentOperator* o) {
   return o;
 }
 
-bi::Statement* bi::ResolverHeader::modify(Class* o) {
-  scopes.push_back(o->scope);
-  currentClass = o;
-  o->typeParams = o->typeParams->accept(this);
-  o->params = o->params->accept(this);
-  if (o->typeParams->isEmpty()) {
-    /* ^ otherwise uses generics, braces will be handled on instantiation */
-    o->braces = o->braces->accept(this);
-  }
-  currentClass = nullptr;
-  scopes.pop_back();
+bi::Statement* bi::ResolverHeader::modify(ConversionOperator* o) {
   return o;
 }
 
-bi::Statement* bi::ResolverHeader::modify(Generic* o) {
-  Modifier::modify(o);
-  scopes.back()->add(o);
-  return o;
-}

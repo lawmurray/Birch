@@ -31,7 +31,3 @@ void bi::TypeIdentifier::accept(Visitor* visitor) const {
 bool bi::TypeIdentifier::dispatchDefinitely(const Type& o) const {
   return o.definitely(*this);
 }
-
-bool bi::TypeIdentifier::dispatchPossibly(const Type& o) const {
-  return o.possibly(*this);
-}

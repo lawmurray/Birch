@@ -47,11 +47,3 @@ bool bi::BinaryType::dispatchDefinitely(const Type& o) const {
 bool bi::BinaryType::definitely(const BinaryType& o) const {
   return left->definitely(*o.left) && right->definitely(*o.right);
 }
-
-bool bi::BinaryType::dispatchPossibly(const Type& o) const {
-  return o.possibly(*this);
-}
-
-bool bi::BinaryType::possibly(const BinaryType& o) const {
-  return left->possibly(*o.left) && right->possibly(*o.right);
-}

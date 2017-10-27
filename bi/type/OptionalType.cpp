@@ -45,19 +45,11 @@ bool bi::OptionalType::definitely(const AliasType& o) const {
   return definitely(*o.target->base);
 }
 
+bool bi::OptionalType::definitely(const GenericType& o) const {
+  assert(o.target);
+  return definitely(*o.target->type);
+}
+
 bool bi::OptionalType::definitely(const OptionalType& o) const {
   return single->definitely(*o.single);
-}
-
-bool bi::OptionalType::dispatchPossibly(const Type& o) const {
-  return o.possibly(*this);
-}
-
-bool bi::OptionalType::possibly(const AliasType& o) const {
-  assert(o.target);
-  return possibly(*o.target->base);
-}
-
-bool bi::OptionalType::possibly(const OptionalType& o) const {
-  return single->possibly(*o.single);
 }

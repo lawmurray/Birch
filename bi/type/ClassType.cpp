@@ -72,6 +72,11 @@ bool bi::ClassType::definitely(const AliasType& o) const {
   return definitely(*o.target->base);
 }
 
+bool bi::ClassType::definitely(const GenericType& o) const {
+  assert(o.target);
+  return definitely(*o.target->type);
+}
+
 bool bi::ClassType::definitely(const ArrayType& o) const {
   assert(target);
   return target->hasConversion(&o) || target->base->definitely(o);
@@ -112,27 +117,4 @@ bool bi::ClassType::definitely(const OptionalType& o) const {
 bool bi::ClassType::definitely(const TupleType& o) const {
   assert(target);
   return target->hasConversion(&o) || target->base->definitely(o);
-}
-
-bool bi::ClassType::dispatchPossibly(const Type& o) const {
-  return o.possibly(*this);
-}
-
-bool bi::ClassType::possibly(const AliasType& o) const {
-  assert(o.target);
-  return possibly(*o.target->base);
-}
-
-bool bi::ClassType::possibly(const ClassType& o) const {
-  assert(o.target);
-  return o.target->hasSuper(this);
-}
-
-bool bi::ClassType::possibly(const OptionalType& o) const {
-  return possibly(*o.single);
-}
-
-bool bi::ClassType::possibly(const TupleType& o) const {
-  assert(target);
-  return target->hasConversion(&o) || target->base->possibly(o);
 }

@@ -6,7 +6,6 @@
 #include "bi/expression/Expression.hpp"
 #include "bi/primitive/poset.hpp"
 #include "bi/primitive/definitely.hpp"
-#include "bi/primitive/possibly.hpp"
 
 namespace bi {
 /**

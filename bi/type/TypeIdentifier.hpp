@@ -36,9 +36,7 @@ public:
   virtual void accept(Visitor* visitor) const;
 
   using Type::definitely;
-  using Type::possibly;
 
   virtual bool dispatchDefinitely(const Type& o) const;
-  virtual bool dispatchPossibly(const Type& o) const;
 };
 }

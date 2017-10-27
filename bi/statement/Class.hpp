@@ -41,7 +41,7 @@ public:
    * @param braces Braces.
    * @param loc Location.
    */
-  Class(Name* name, Statement* typeParams, Expression* params, Type* base,
+  Class(Name* name, Expression* typeParams, Expression* params, Type* base,
       Expression* args, Statement* braces, Location* loc =
           nullptr);
 
@@ -80,19 +80,6 @@ public:
    */
   bool hasAssignment(const Type* o) const;
 
-  /**
-   * Instantiate a generic class with type parameters, using the given type
-   * arguments. If this is the first time that these arguments have been
-   * encountered for a class, a new instantiation is made, otherwise a
-   * previous instantiation is reused.
-   *
-   * @param typeArgs Type arguments.
-   *
-   * @return The instantiated class, with type parameters replaced with the
-   * type arguments.
-   */
-  Class* instantiate(const Type* typeArgs);
-
   virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
@@ -100,7 +87,7 @@ public:
   /**
    * Generic type parameters.
    */
-  Statement* typeParams;
+  Expression* typeParams;
 
 private:
   /**
@@ -117,10 +104,5 @@ private:
    * Types that can be assigned to this class.
    */
   std::list<const Type*> assignments;
-
-  /**
-   * Instantiations.
-   */
-  std::list<std::pair<const Type*,Class*>> instantiations;
 };
 }

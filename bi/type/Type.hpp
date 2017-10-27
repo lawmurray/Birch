@@ -20,13 +20,14 @@ class ClassType;
 class FiberType;
 class EmptyType;
 class FunctionType;
-class TypeIdentifier;
-class TypeIterator;
-class TypeList;
+class GenericType;
 class NilType;
 class OptionalType;
 class OverloadedType;
 class TupleType;
+class TypeIdentifier;
+class TypeIterator;
+class TypeList;
 
 class Class;
 class Alias;
@@ -91,11 +92,6 @@ public:
    * Is this a class type, or an alias of a class type?
    */
   virtual bool isClass() const;
-
-  /**
-   * Is this an type?
-   */
-  virtual bool isAlias() const;
 
   /**
    * Is this an array type?
@@ -207,32 +203,16 @@ public:
   virtual bool definitely(const BasicType& o) const;
   virtual bool definitely(const BinaryType& o) const;
   virtual bool definitely(const ClassType& o) const;
-  virtual bool definitely(const FiberType& o) const;
   virtual bool definitely(const EmptyType& o) const;
+  virtual bool definitely(const FiberType& o) const;
   virtual bool definitely(const FunctionType& o) const;
-  virtual bool definitely(const TypeIdentifier& o) const;
-  virtual bool definitely(const TypeList& o) const;
+  virtual bool definitely(const GenericType& o) const;
   virtual bool definitely(const NilType& o) const;
   virtual bool definitely(const OptionalType& o) const;
   virtual bool definitely(const OverloadedType& o) const;
   virtual bool definitely(const TupleType& o) const;
-
-  virtual bool possibly(const Type& o) const;
-  virtual bool dispatchPossibly(const Type& o) const = 0;
-  virtual bool possibly(const AliasType& o) const;
-  virtual bool possibly(const ArrayType& o) const;
-  virtual bool possibly(const BasicType& o) const;
-  virtual bool possibly(const BinaryType& o) const;
-  virtual bool possibly(const ClassType& o) const;
-  virtual bool possibly(const FiberType& o) const;
-  virtual bool possibly(const EmptyType& o) const;
-  virtual bool possibly(const FunctionType& o) const;
-  virtual bool possibly(const TypeIdentifier& o) const;
-  virtual bool possibly(const TypeList& o) const;
-  virtual bool possibly(const NilType& o) const;
-  virtual bool possibly(const OptionalType& o) const;
-  virtual bool possibly(const OverloadedType& o) const;
-  virtual bool possibly(const TupleType& o) const;
+  virtual bool definitely(const TypeIdentifier& o) const;
+  virtual bool definitely(const TypeList& o) const;
 
   /**
    * Are these two types the same?

@@ -54,13 +54,6 @@
   }
 
   /**
-   * Make an empty statement.
-   */
-  bi::Statement* empty_stmt(YYLTYPE& loc) {
-    return new bi::EmptyStatement(make_loc(loc));
-  }
-
-  /**
    * Make an empty type.
    */
   bi::Type* empty_type(YYLTYPE& loc) {
@@ -83,7 +76,7 @@
 
 %glr-parser
 %expect-rr 2  // `Type?(...)` vs `x?`
-%expect 2     // `operator (x:A<T> < y:B)` and `class A<T> < B`
+%expect 4     // for generics, '<' ambiguous, but closing '>' disambiguates
 
 %token <valString> PROGRAM CLASS TYPE FUNCTION FIBER OPERATOR
 %token <valString> IF ELSE FOR IN WHILE ASSERT RETURN YIELD CPP HPP
@@ -118,6 +111,7 @@
 %type <valExpression> member_parameter member_parameter_list member_parameters optional_member_parameters
 %type <valExpression> arguments optional_arguments
 %type <valExpression> size_list size value optional_value for_index
+%type <valExpression> generic generic_list generics optional_generics
 
 %type <valStatement> global_variable_declaration local_variable_declaration
 %type <valStatement> function_declaration fiber_declaration program_declaration
@@ -133,11 +127,10 @@
 %type <valStatement> file_statement file_statements optional_file_statements
 %type <valStatement> braces optional_braces
 %type <valStatement> class_braces optional_class_braces
-%type <valStatement> generic generic_list generics optional_generics
 
-%type <valType> type_identifier type_list primary_type class_type tuple_type
+%type <valType> type_identifier class_type primary_type tuple_type
 %type <valType> postfix_type function_type type
-%type <valType> parameter_type_list parameter_types
+%type <valType> type_list parameter_type_list parameter_types
 %type <valType> result optional_result
 
 %locations
@@ -205,7 +198,7 @@ parens_expression
     ;
 
 cast_expression
-    : type_identifier '?' '(' expression ')'  { $$ = new bi::Cast($1, $4, make_loc(@$)); }
+    : primary_type '?' '(' expression ')'  { $$ = new bi::Cast($1, $4, make_loc(@$)); }
     ;
 
 function_expression
@@ -381,25 +374,6 @@ option
     : name ':' type optional_value  { $$ = new bi::Parameter($1, $3, $4, make_loc(@$)); }
     ;
 
-generics
-    : '<' '>'               { $$ = empty_stmt(@$); }
-    | '<' generic_list '>'  { $$ = $2; }
-    ;
-
-generic_list
-    : generic
-    | generics ',' generic_list  { $$ = new bi::StatementList($1, $3, make_loc(@$)); }
-    ;
-
-generic
-    : name  { $$ = new bi::Generic($1, make_loc(@$)); }
-    ;
-    
-optional_generics
-    : generics
-    |                  { $$ = empty_stmt(@$); }
-    ;
-
 member_parameters
     : '(' ')'                        { $$ = empty_expr(@$); }
     | '(' member_parameter_list ')'  { $$ = $2; }
@@ -437,6 +411,26 @@ size
 size_list
     : size
     | size ',' size_list  { $$ = new bi::ExpressionList($1, $3, make_loc(@$)); }
+    ;
+
+generics
+    : '<' '>'               { $$ = empty_expr(@$); }
+    | '<' generic_list '>'  { $$ = $2; }
+    ;
+
+generic_list
+    : generic
+    | generics ',' generic_list  { $$ = new bi::ExpressionList($1, $3, make_loc(@$)); }
+    ;
+
+generic
+    : name LE_OP primary_type  { $$ = new bi::Generic($1, $3, make_loc(@$)); }
+    | name                     { $$ = new bi::Generic($1, empty_type(@$), make_loc(@$)); }
+    ;
+    
+optional_generics
+    : generics
+    |           { $$ = empty_expr(@$); }
     ;
 
 
@@ -525,12 +519,12 @@ conversion_operator_declaration
     ;
 
 class_declaration
-    : CLASS name optional_generics optional_member_parameters '<' type_identifier optional_arguments { push_raw(); } optional_class_braces  { $$ = new bi::Class($2, $3, $4, $6, $7, $9, make_doc_loc(@$)); }
+    : CLASS name optional_generics optional_member_parameters '<' primary_type optional_arguments { push_raw(); } optional_class_braces  { $$ = new bi::Class($2, $3, $4, $6, $7, $9, make_doc_loc(@$)); }
     | CLASS name optional_generics optional_member_parameters { push_raw(); } optional_class_braces                                         { $$ = new bi::Class($2, $3, $4, empty_type(@$), empty_expr(@$), $6, make_doc_loc(@$)); }
     ;
 
 alias_declaration
-    : TYPE name '=' type_identifier ';'  { push_raw(); $$ = new bi::Alias($2, $4, make_doc_loc(@$)); }
+    : TYPE name '=' type ';'  { push_raw(); $$ = new bi::Alias($2, $4, make_doc_loc(@$)); }
     ;
     
 basic_declaration
@@ -701,30 +695,25 @@ double_braces
  ***************************************************************************/
 
 type_identifier
-    : name  { $$ = new bi::TypeIdentifier($1, make_loc(@$)); }
-    ;
-
-type_list
-    : type
-    | type ',' type_list  { $$ = new bi::TypeList($1, $3, make_loc(@$)); }
+    : name                    { $$ = new bi::TypeIdentifier($1, make_loc(@$)); }
     ;
 
 class_type
     : name '<' type_list '>'  { $$ = new bi::ClassType($1, $3, make_loc(@$)); }
     ;
 
+primary_type
+    : type_identifier
+    | class_type
+    ;
+
 tuple_type
     : '(' type_list ')'  { $$ = new bi::TupleType($2, make_loc(@$)); }
     ;
 
-primary_type
-    : type_identifier
-    | class_type
-    | tuple_type
-    ;
-
 postfix_type
     : primary_type
+    | tuple_type
     | postfix_type '[' size_list ']'  { $$ = new bi::ArrayType($1, $3, make_loc(@$)); }
     | postfix_type '!'                { $$ = new bi::FiberType($1, make_loc(@$)); }
     | postfix_type '?'                { $$ = new bi::OptionalType($1, make_loc(@$)); }
@@ -737,6 +726,11 @@ function_type
 
 type
     : function_type
+    ;
+
+type_list
+    : type
+    | type ',' type_list  { $$ = new bi::TypeList($1, $3, make_loc(@$)); }
     ;
 
 parameter_type_list

@@ -43,7 +43,6 @@ public:
 
   virtual bool isBasic() const;
   virtual bool isClass() const;
-  virtual bool isAlias() const;
   virtual bool isArray() const;
   virtual bool isFunction() const;
   virtual bool isFiber() const;
@@ -59,30 +58,18 @@ public:
   virtual void resolveConstructor(Argumented* o);
 
   using Type::definitely;
-  using Type::possibly;
 
   virtual bool dispatchDefinitely(const Type& o) const;
   virtual bool definitely(const AliasType& o) const;
   virtual bool definitely(const ArrayType& o) const;
   virtual bool definitely(const BasicType& o) const;
   virtual bool definitely(const ClassType& o) const;
-  virtual bool definitely(const FiberType& o) const;
   virtual bool definitely(const EmptyType& o) const;
+  virtual bool definitely(const FiberType& o) const;
   virtual bool definitely(const FunctionType& o) const;
-  virtual bool definitely(const TypeList& o) const;
+  virtual bool definitely(const GenericType& o) const;
   virtual bool definitely(const OptionalType& o) const;
   virtual bool definitely(const TupleType& o) const;
-
-  virtual bool dispatchPossibly(const Type& o) const;
-  virtual bool possibly(const AliasType& o) const;
-  virtual bool possibly(const ArrayType& o) const;
-  virtual bool possibly(const BasicType& o) const;
-  virtual bool possibly(const ClassType& o) const;
-  virtual bool possibly(const FiberType& o) const;
-  virtual bool possibly(const EmptyType& o) const;
-  virtual bool possibly(const FunctionType& o) const;
-  virtual bool possibly(const TypeList& o) const;
-  virtual bool possibly(const OptionalType& o) const;
-  virtual bool possibly(const TupleType& o) const;
+  virtual bool definitely(const TypeList& o) const;
 };
 }
