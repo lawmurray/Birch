@@ -4,7 +4,7 @@
  */
 program demo_lambda() {
   /* declare a lambda function */
-  x:@((Integer) -> Integer);
+  x:@(Integer) -> Integer;
   
   /* assign a lambda function */
   x <- @(a:Integer) -> Integer {
