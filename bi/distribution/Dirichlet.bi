@@ -3,7 +3,7 @@
  *
  * `D` Number of components.
  */
-class Dirichlet(D:Integer) < DelayRealVector(D) {
+class Dirichlet(D:Integer) < Random<Real[_]> {
   /**
    * Concentration.
    */

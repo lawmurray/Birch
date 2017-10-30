@@ -3,7 +3,7 @@
  *
  * `D` Number of dimensions.
  */
-class MultivariateGaussian(D:Integer) < DelayRealVector(D) {
+class MultivariateGaussian(D:Integer) < Random<Real[_]> {
   /**
    * Mean.
    */

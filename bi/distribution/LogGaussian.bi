@@ -1,7 +1,7 @@
 /**
  * Log-Gaussian distribution.
  */
-class LogGaussian < DelayReal {
+class LogGaussian < Random<Real> {
   /**
    * Mean after log transformation.
    */

@@ -3,7 +3,7 @@
  * simply a Poisson distribution. When the rate is gamma distributed, this is
  * a negative binomial distribution.
  */
-class GammaPoisson < DelayInteger {
+class GammaPoisson < Random<Integer> {
   /**
    * Rate.
    */

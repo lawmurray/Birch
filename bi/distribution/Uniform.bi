@@ -1,7 +1,7 @@
 /**
  * Uniform distribution.
  */
-class Uniform < DelayReal {
+class Uniform < Random<Real> {
   /**
    * Lower bound.
    */

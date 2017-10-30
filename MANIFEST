@@ -24,11 +24,6 @@ bi/distribution/conjugate/LogGaussianWithGaussianMean.bi
 bi/distribution/conjugate/MultivariateGaussianWithMultivariateGaussianExpressionMean.bi
 bi/distribution/conjugate/MultivariateGaussianWithMultivariateGaussianMean.bi
 bi/distribution/delay/Delay.bi
-bi/distribution/delay/DelayBoolean.bi
-bi/distribution/delay/DelayInteger.bi
-bi/distribution/delay/DelayIntegerVector.bi
-bi/distribution/delay/DelayReal.bi
-bi/distribution/delay/DelayRealVector.bi
 bi/distribution/delay/Random.bi
 bi/distribution/expression/GaussianExpression.bi
 bi/distribution/expression/GaussianLogExpression.bi

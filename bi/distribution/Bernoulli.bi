@@ -1,7 +1,7 @@
 /**
  * Bernoulli distribution.
  */
-class Bernoulli < DelayBoolean {
+class Bernoulli < Random<Boolean> {
   /**
    * Probability of a true result.
    */

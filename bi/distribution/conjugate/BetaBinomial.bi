@@ -2,7 +2,7 @@
  * Binomial with conjugate prior on success probability. When the success
  * probability is known, this is simply a Binomial distribution.
  */
-class BetaBinomial < DelayInteger {
+class BetaBinomial < Random<Integer> {
   /**
    * Number of trials.
    */

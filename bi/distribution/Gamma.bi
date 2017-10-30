@@ -1,7 +1,7 @@
 /**
  * Gamma distribution.
  */
-class Gamma < DelayReal {
+class Gamma < Random<Real> {
   /**
    * Shape.
    */

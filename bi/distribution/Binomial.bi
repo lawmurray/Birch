@@ -1,7 +1,7 @@
 /**
  * Binomial distribution.
  */
-class Binomial < DelayInteger {
+class Binomial < Random<Integer> {
   /**
    * Number of trials.
    */

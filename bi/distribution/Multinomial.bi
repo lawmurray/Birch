@@ -3,7 +3,7 @@
  *
  * `D` Number of categories.
  */
-class Multinomial(D:Integer) < DelayIntegerVector(D) {
+class Multinomial(D:Integer) < Random<Integer[_]> {
   /**
    * Number of trials.
    */

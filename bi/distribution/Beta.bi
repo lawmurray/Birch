@@ -1,7 +1,7 @@
 /**
  * Beta distribution.
  */
-class Beta < DelayReal {
+class Beta < Random<Real> {
   /**
    * First shape parameter.
    */

@@ -3,7 +3,7 @@
  *
  * `D` Number of categories.
  */
-class Categorical(D:Integer) < DelayInteger {
+class Categorical(D:Integer) < Random<Integer> {
   /**
    * Category probabilities.
    */

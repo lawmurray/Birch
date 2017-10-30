@@ -1,7 +1,7 @@
 /**
  * Negative binomial distribution.
  */
-class NegativeBinomial < DelayInteger {
+class NegativeBinomial < Random<Integer> {
   /**
    * Number of successes before the experiment is stopped.
    */

@@ -1,7 +1,7 @@
 /**
  * Poisson distribution.
  */
-class Poisson < DelayInteger {
+class Poisson < Random<Integer> {
   /**
    * Rate.
    */
