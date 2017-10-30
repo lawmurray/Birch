@@ -1,7 +1,7 @@
 /**
  * Gaussian distribution.
  */
-class Gaussian < DelayReal {
+class Gaussian < Random<Real> {
   /**
    * Mean.
    */
