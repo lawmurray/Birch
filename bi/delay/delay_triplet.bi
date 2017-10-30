@@ -7,19 +7,32 @@
  *   - `-z`            : Value of the third variable.
  *   - `--diagnostics` : Enable/disable delayed sampling diagnostics.
  */
-program delay_triplet(x:Gaussian, y:Gaussian, z:Gaussian,
+program delay_triplet(x:Real?, y:Real?, z:Real?,
     diagnostics:Boolean <- false) {
   if (diagnostics) {
     delay_triplet_diagnostics();
   }
 
-  x ~ Gaussian(0.0, 1.0);
-  y ~ Gaussian(x, 1.0);
-  z ~ Gaussian(y, 1.0);
+  x1:Gaussian;
+  y1:Gaussian;
+  z1:Gaussian;
+  if (x?) {
+    x1 <- x!;
+  }
+  if (y?) {
+    y1 <- y!;
+  }
+  if (z?) {
+    z1 <- z!;
+  }
   
-  stdout.print("x = " + x + "\n");
-  stdout.print("y = " + y + "\n");
-  stdout.print("z = " + z + "\n");
+  x1 ~ Gaussian(0.0, 1.0);
+  y1 ~ Gaussian(x1, 1.0);
+  z1 ~ Gaussian(y1, 1.0);
+  
+  stdout.print("x = " + x1 + "\n");
+  stdout.print("y = " + y1 + "\n");
+  stdout.print("z = " + z1 + "\n");
 }
 
 /*
