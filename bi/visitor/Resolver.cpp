@@ -15,31 +15,25 @@ bi::Resolver::~Resolver() {
 
 bi::Expression* bi::Resolver::modify(ExpressionList* o) {
   Modifier::modify(o);
-  o->type = new TypeList(o->head->type->accept(&cloner),
-      o->tail->type->accept(&cloner), o->loc);
-  o->type = o->type->accept(this);
-  o->type->assignable = o->head->type->assignable
-      && o->tail->type->assignable;
+  o->type = new TypeList(o->head->type, o->tail->type, o->loc,
+      o->head->type->assignable && o->tail->type->assignable);
   return o;
 }
 
 bi::Expression* bi::Resolver::modify(Parentheses* o) {
   Modifier::modify(o);
   if (o->single->count() > 1) {
-    o->type = new TupleType(o->single->type->accept(&cloner), o->loc);
-    o->type = o->type->accept(this);
-    o->type->assignable = o->single->type->assignable;
+    o->type = new TupleType(o->single->type, o->loc,
+        o->single->type->assignable);
   } else {
-    o->type = o->single->type->accept(&cloner)->accept(this);
+    o->type = o->single->type;
   }
   return o;
 }
 
 bi::Expression* bi::Resolver::modify(Binary* o) {
   Modifier::modify(o);
-  o->type = new BinaryType(o->left->type->accept(&cloner),
-      o->right->type->accept(&cloner), o->loc);
-  o->type = o->type->accept(this);
+  o->type = new BinaryType(o->left->type, o->right->type, o->loc);
   return o;
 }
 
@@ -51,7 +45,7 @@ bi::Type* bi::Resolver::modify(ClassType* o) {
   assert(!o->target);
   Modifier::modify(o);
   resolve(o);
-  if (!o->typeArgs->isEmpty() || !o->target->typeParams->isEmpty()) {
+  if (!o->typeArgs->isEmpty() || o->target->isGeneric()) {
     if (o->typeArgs->count() == o->target->typeParams->count()) {
       Class* instantiation = o->target->getInstantiation(o->typeArgs);
       if (!instantiation) {
@@ -63,7 +57,7 @@ bi::Type* bi::Resolver::modify(ClassType* o) {
         instantiation->accept(this);
       }
       o->target = instantiation;
-   } else {
+    } else {
       throw GenericException(o, o->target);
     }
   }

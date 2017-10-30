@@ -147,6 +147,7 @@ bi::Expression* bi::Modifier::modify(Identifier<Unknown>* o) {
 
 bi::Expression* bi::Modifier::modify(LocalVariable* o) {
   o->type = o->type->accept(this);
+  o->brackets = o->brackets->accept(this);
   o->args = o->args->accept(this);
   o->value = o->value->accept(this);
   return o;
@@ -236,6 +237,7 @@ bi::Statement* bi::Modifier::modify(StatementList* o) {
 
 bi::Statement* bi::Modifier::modify(GlobalVariable* o) {
   o->type = o->type->accept(this);
+  o->brackets = o->brackets->accept(this);
   o->args = o->args->accept(this);
   o->value = o->value->accept(this);
   return o;
@@ -243,6 +245,7 @@ bi::Statement* bi::Modifier::modify(GlobalVariable* o) {
 
 bi::Statement* bi::Modifier::modify(MemberVariable* o) {
   o->type = o->type->accept(this);
+  o->brackets = o->brackets->accept(this);
   o->args = o->args->accept(this);
   o->value = o->value->accept(this);
   return o;
@@ -405,7 +408,6 @@ bi::Type* bi::Modifier::modify(GenericType* o) {
 
 bi::Type* bi::Modifier::modify(ArrayType* o) {
   o->single = o->single->accept(this);
-  o->brackets = o->brackets->accept(this);
   return o;
 }
 

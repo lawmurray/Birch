@@ -57,6 +57,9 @@ bi::Statement* bi::ResolverHeader::modify(Alias* o) {
 
 bi::Statement* bi::ResolverHeader::modify(GlobalVariable* o) {
   o->type = o->type->accept(this);
+  if (!o->brackets->isEmpty()) {
+    o->type = new ArrayType(o->type, o->brackets->count(), o->brackets->loc);
+  }
   o->type->accept(&assigner);
   scopes.back()->add(o);
   return o;
@@ -66,9 +69,7 @@ bi::Statement* bi::ResolverHeader::modify(Function* o) {
   scopes.push_back(o->scope);
   o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
-  o->type = new FunctionType(o->params->type->accept(&cloner),
-      o->returnType->accept(&cloner), o->loc);
-  o->type = o->type->accept(this);
+  o->type = new FunctionType(o->params->type, o->returnType, o->loc);
   scopes.pop_back();
   scopes.back()->add(o);
   return o;
@@ -78,9 +79,7 @@ bi::Statement* bi::ResolverHeader::modify(Fiber* o) {
   scopes.push_back(o->scope);
   o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
-  o->type = new FunctionType(o->params->type->accept(&cloner),
-      o->returnType->accept(&cloner), o->loc);
-  o->type = o->type->accept(this);
+  o->type = new FunctionType(o->params->type, o->returnType, o->loc);
   scopes.pop_back();
   scopes.back()->add(o);
   if (!o->returnType->isFiber()) {
@@ -104,9 +103,7 @@ bi::Statement* bi::ResolverHeader::modify(BinaryOperator* o) {
   scopes.push_back(o->scope);
   o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
-  o->type = new FunctionType(o->params->type->accept(&cloner),
-      o->returnType->accept(&cloner), o->loc);
-  o->type = o->type->accept(this);
+  o->type = new FunctionType(o->params->type, o->returnType, o->loc);
   scopes.pop_back();
   scopes.back()->add(o);
   return o;
@@ -118,9 +115,7 @@ bi::Statement* bi::ResolverHeader::modify(UnaryOperator* o) {
   scopes.push_back(o->scope);
   o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
-  o->type = new FunctionType(o->params->type->accept(&cloner),
-      o->returnType->accept(&cloner), o->loc);
-  o->type = o->type->accept(this);
+  o->type = new FunctionType(o->params->type, o->returnType, o->loc);
   scopes.pop_back();
   scopes.back()->add(o);
   return o;
@@ -134,6 +129,9 @@ bi::Expression* bi::ResolverHeader::modify(MemberParameter* o) {
 
 bi::Statement* bi::ResolverHeader::modify(MemberVariable* o) {
   o->type = o->type->accept(this);
+  if (!o->brackets->isEmpty()) {
+    o->type = new ArrayType(o->type, o->brackets->count(), o->brackets->loc);
+  }
   o->type->accept(&assigner);
   scopes.back()->add(o);
   return o;
@@ -143,9 +141,7 @@ bi::Statement* bi::ResolverHeader::modify(MemberFunction* o) {
   scopes.push_back(o->scope);
   o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
-  o->type = new FunctionType(o->params->type->accept(&cloner),
-      o->returnType->accept(&cloner), o->loc);
-  o->type = o->type->accept(this);
+  o->type = new FunctionType(o->params->type, o->returnType, o->loc);
   scopes.pop_back();
   scopes.back()->add(o);
   return o;
@@ -155,9 +151,7 @@ bi::Statement* bi::ResolverHeader::modify(MemberFiber* o) {
   scopes.push_back(o->scope);
   o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
-  o->type = new FunctionType(o->params->type->accept(&cloner),
-      o->returnType->accept(&cloner), o->loc);
-  o->type = o->type->accept(this);
+  o->type = new FunctionType(o->params->type, o->returnType, o->loc);
   scopes.pop_back();
   scopes.back()->add(o);
   if (!o->returnType->isFiber()) {

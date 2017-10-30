@@ -4,7 +4,6 @@
 #pragma once
 
 #include "bi/type/Type.hpp"
-#include "bi/common/Bracketed.hpp"
 #include "bi/common/Single.hpp"
 
 namespace bi {
@@ -13,19 +12,8 @@ namespace bi {
  *
  * @ingroup compiler_type
  */
-class ArrayType: public Type, public Single<Type>, public Bracketed {
+class ArrayType: public Type, public Single<Type> {
 public:
-  /**
-   * Constructor.
-   *
-   * @param single Type.
-   * @param brackets Brackets.
-   * @param loc Location.
-   * @param assignable Is this type assignable?
-   */
-  ArrayType(Type* single, Expression* brackets, Location* loc =
-      nullptr, const bool assignable = false);
-
   /**
    * Constructor.
    *

@@ -36,5 +36,6 @@ public:
 
   virtual bool dispatchDefinitely(const Type& o) const;
   virtual bool definitely(const EmptyType& o) const;
+  virtual bool definitely(const GenericType& o) const;
 };
 }

@@ -126,6 +126,7 @@ void bi::Visitor::visit(const Member* o) {
 
 void bi::Visitor::visit(const LocalVariable* o) {
   o->type->accept(this);
+  o->brackets->accept(this);
   o->args->accept(this);
   o->value->accept(this);
 }
@@ -209,12 +210,14 @@ void bi::Visitor::visit(const Assignment* o) {
 
 void bi::Visitor::visit(const GlobalVariable* o) {
   o->type->accept(this);
+  o->brackets->accept(this);
   o->args->accept(this);
   o->value->accept(this);
 }
 
 void bi::Visitor::visit(const MemberVariable* o) {
   o->type->accept(this);
+  o->brackets->accept(this);
   o->args->accept(this);
   o->value->accept(this);
 }
@@ -359,7 +362,6 @@ void bi::Visitor::visit(const GenericType* o) {
 
 void bi::Visitor::visit(const ArrayType* o) {
   o->single->accept(this);
-  o->brackets->accept(this);
 }
 
 void bi::Visitor::visit(const TupleType* o) {

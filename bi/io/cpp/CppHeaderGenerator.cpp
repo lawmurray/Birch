@@ -71,10 +71,10 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
   /* forward super type declarations */
   for (auto o : classes) {
     if (!o->braces->isEmpty()) {
-      if (o->typeParams->isEmpty()) {
-        start("template<>");
-      } else {
+      if (o->isGeneric()) {
         genTemplateParams(o);
+      } else {
+        start("template<>");
       }
       middle(" struct super_type<" << o->name);
       genTemplateArgs(o);

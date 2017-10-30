@@ -5,20 +5,10 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::ArrayType::ArrayType(Type* single, Expression* brackets,
-    Location* loc, const bool assignable) :
-    Type(loc, assignable),
-    Single<Type>(single),
-    Bracketed(brackets),
-    ndims(brackets->count()) {
-  //
-}
-
 bi::ArrayType::ArrayType(Type* single, const int ndims,
     Location* loc, const bool assignable) :
     Type(loc, assignable),
     Single<Type>(single),
-    Bracketed(new EmptyExpression(loc)),
     ndims(ndims) {
   //
 }

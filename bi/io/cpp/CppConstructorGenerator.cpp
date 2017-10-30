@@ -59,10 +59,7 @@ void bi::CppConstructorGenerator::visit(const MemberVariable* o) {
     middle(')');
   } else if (o->type->isArray()) {
     finish(',');
-    start(o->name << '(');
-    const ArrayType* type = dynamic_cast<const ArrayType*>(o->type);
-    assert(type);
-    middle("bi::make_frame(" << type->brackets << ")");
+    start(o->name << "(bi::make_frame(" << o->brackets << ')');
     if (!o->args->isEmpty()) {
       middle(", " << o->args);
     }

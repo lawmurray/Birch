@@ -118,7 +118,7 @@ bi::Identifier<ObjectType>* bi::ResolverSource::modifyVariableIdentifier(
     bi::Identifier<ObjectType>* o) {
   Modifier::modify(o);
   resolve(o);
-  o->type = o->target->type->accept(&cloner)->accept(this);
+  o->type = o->target->type;
   return o;
 }
 

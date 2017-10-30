@@ -61,6 +61,11 @@ public:
   virtual ~Class();
 
   /**
+   * Does this class have generic type parameters?
+   */
+  bool isGeneric() const;
+
+  /**
    * Add a super type.
    */
   void addSuper(const Type* o);

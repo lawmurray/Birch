@@ -76,7 +76,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   /* clone function */
   if (!header) {
     genTemplateParams(type);
-    if (!type->typeParams->isEmpty()) {
+    if (type->isGeneric()) {
       start("typename ");
     } else {
       start("");

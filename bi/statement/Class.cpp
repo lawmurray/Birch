@@ -34,6 +34,10 @@ void bi::Class::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
+bool bi::Class::isGeneric() const {
+  return !typeParams->isEmpty();
+}
+
 void bi::Class::addSuper(const Type* o) {
   auto base = o->getClass();
   supers.insert(base);

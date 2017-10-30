@@ -4,7 +4,7 @@
 #pragma once
 
 #include "bi/visitor/Modifier.hpp"
-#include "bi/visitor/CanonicalCloner.hpp"
+#include "bi/visitor/Cloner.hpp"
 #include "bi/visitor/Assigner.hpp"
 
 #include <stack>
@@ -105,7 +105,7 @@ protected:
   /*
    * Auxiliary visitors.
    */
-  CanonicalCloner cloner;
+  Cloner cloner;
   Assigner assigner;
 };
 }

@@ -113,7 +113,15 @@ void bi::bi_ostream::visit(const Nil* o) {
 }
 
 void bi::bi_ostream::visit(const LocalVariable* o) {
-  middle(o->name << ':' << o->type);
+  middle(o->name << ':');
+  if (o->type->isArray()) {
+    middle(dynamic_cast<const ArrayType*>(o->type)->single);
+  } else {
+    middle(o->type);
+  }
+  if (!o->brackets->isEmpty()) {
+    middle('[' << o->brackets << ']');
+  }
   if (!o->args->isEmpty()) {
     middle('(' << o->args << ')');
   }
@@ -144,7 +152,15 @@ void bi::bi_ostream::visit(const Generic* o) {
 }
 
 void bi::bi_ostream::visit(const GlobalVariable* o) {
-  start(o->name << ':' << o->type);
+  start(o->name << ':');
+  if (o->type->isArray()) {
+    middle(dynamic_cast<const ArrayType*>(o->type)->single);
+  } else {
+    middle(o->type);
+  }
+  if (!o->brackets->isEmpty()) {
+    middle('[' << o->brackets << ']');
+  }
   if (!o->args->isEmpty()) {
     middle('(' << o->args << ')');
   }
@@ -155,7 +171,15 @@ void bi::bi_ostream::visit(const GlobalVariable* o) {
 }
 
 void bi::bi_ostream::visit(const MemberVariable* o) {
-  start(o->name << ':' << o->type);
+  start(o->name << ':');
+  if (o->type->isArray()) {
+    middle(dynamic_cast<const ArrayType*>(o->type)->single);
+  } else {
+    middle(o->type);
+  }
+  if (!o->brackets->isEmpty()) {
+    middle('[' << o->brackets << ']');
+  }
   if (!o->args->isEmpty()) {
     middle('(' << o->args << ')');
   }
@@ -330,7 +354,7 @@ void bi::bi_ostream::visit(const ConversionOperator* o) {
 
 void bi::bi_ostream::visit(const Class* o) {
   start("class " << o->name);
-  if (!o->typeParams->isEmpty()) {
+  if (o->isGeneric()) {
     middle('<' << o->typeParams << '>');
   }
   if (!o->params->isEmpty()) {
@@ -430,7 +454,14 @@ void bi::bi_ostream::visit(const BinaryType* o) {
 }
 
 void bi::bi_ostream::visit(const ArrayType* o) {
-  middle(o->single << '[' << o->brackets << ']');
+  middle(o->single << '[');
+  for (int i = 0; i < o->dims(); ++i) {
+    if (i > 0) {
+      middle(',');
+    }
+    middle('_');
+  }
+  middle(']');
 }
 
 void bi::bi_ostream::visit(const TupleType* o) {

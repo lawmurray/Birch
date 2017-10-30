@@ -20,9 +20,7 @@ bi::Expression* bi::ResolverSource::modify(Cast* o) {
   if (o->single->type->isClass()
       || (o->single->type->isOptional()
           && o->single->type->unwrap()->isClass())) {
-    o->type = new OptionalType(o->returnType->accept(&cloner), o->loc);
-    o->type = o->type->accept(this);
-    o->type->assignable = false;  // rvalue
+    o->type = new OptionalType(o->returnType, o->loc);
     return o;
   } else {
     throw CastException(o);
@@ -33,8 +31,7 @@ bi::Expression* bi::ResolverSource::modify(Call* o) {
   Modifier::modify(o);
   if (o->single->type->isFunction() || o->single->type->isOverloaded()) {
     o->callType = o->single->type->resolve(o);
-    o->type = o->callType->returnType->accept(&cloner)->accept(this);
-    o->type->assignable = false;  // rvalue
+    o->type = o->callType->returnType;
     return o;
   } else {
     throw NotFunctionException(o);
@@ -46,16 +43,14 @@ bi::Expression* bi::ResolverSource::modify(BinaryCall* o) {
   assert(op);
   Modifier::modify(o);
   o->callType = o->single->type->resolve(o);
-  o->type = o->callType->returnType->accept(&cloner)->accept(this);
-  o->type->assignable = false;  // rvalue
+  o->type = o->callType->returnType;
   return o;
 }
 
 bi::Expression* bi::ResolverSource::modify(UnaryCall* o) {
   Modifier::modify(o);
   o->callType = o->single->type->resolve(o);
-  o->type = o->callType->returnType->accept(&cloner)->accept(this);
-  o->type->assignable = false;  // rvalue
+  o->type = o->callType->returnType;
   return o;
 }
 
@@ -73,13 +68,9 @@ bi::Expression* bi::ResolverSource::modify(Slice* o) {
   ArrayType* type = dynamic_cast<ArrayType*>(o->single->type);
   assert(type);
   if (rangeDims > 0) {
-    o->type = new ArrayType(type->single->accept(&cloner), rangeDims, o->loc);
-    o->type = o->type->accept(this);
+    o->type = new ArrayType(type->single, rangeDims, o->loc);
   } else {
-    o->type = type->single->accept(&cloner)->accept(this);
-  }
-  if (o->single->type->assignable) {
-    o->type->accept(&assigner);
+    o->type = type->single;
   }
   return o;
 }
@@ -98,7 +89,7 @@ bi::Expression* bi::ResolverSource::modify(Query* o) {
 bi::Expression* bi::ResolverSource::modify(Get* o) {
   Modifier::modify(o);
   if (o->single->type->isFiber() || o->single->type->isOptional()) {
-    o->type = o->single->type->unwrap()->accept(&cloner)->accept(this);
+    o->type = o->single->type->unwrap();
   } else {
     throw GetException(o);
   }
@@ -113,22 +104,20 @@ bi::Expression* bi::ResolverSource::modify(LambdaFunction* o) {
   o->braces = o->braces->accept(this);
   returnTypes.pop_back();
   scopes.pop_back();
-  o->type = new FunctionType(o->params->type->accept(&cloner),
-      o->returnType->accept(&cloner), o->loc);
-  o->type->accept(this);
+  o->type = new FunctionType(o->params->type, o->returnType, o->loc);
 
   return o;
 }
 
 bi::Expression* bi::ResolverSource::modify(Span* o) {
   Modifier::modify(o);
-  o->type = o->single->type->accept(&cloner)->accept(this);
+  o->type = o->single->type;
   return o;
 }
 
 bi::Expression* bi::ResolverSource::modify(Index* o) {
   Modifier::modify(o);
-  o->type = o->single->type->accept(&cloner)->accept(this);
+  o->type = o->single->type;
   return o;
 }
 
@@ -145,7 +134,7 @@ bi::Expression* bi::ResolverSource::modify(Member* o) {
     throw MemberException(o);
   }
   o->right = o->right->accept(this);
-  o->type = o->right->type->accept(&cloner)->accept(this);
+  o->type = o->right->type;
 
   return o;
 }
@@ -166,8 +155,7 @@ bi::Expression* bi::ResolverSource::modify(Super* o) {
       throw SuperBaseException(o);
     } else {
       Modifier::modify(o);
-      o->type = classes.back()->base->accept(&cloner);
-      o->type->accept(this);
+      o->type = classes.back()->base;
     }
   } else {
     throw SuperException(o);
@@ -201,6 +189,9 @@ bi::Expression* bi::ResolverSource::modify(LocalVariable* o) {
   Modifier::modify(o);
   if (!o->args->isEmpty() || o->value->isEmpty()) {
     o->type->resolveConstructor(o);
+  }
+  if (!o->brackets->isEmpty()) {
+    o->type = new ArrayType(o->type, o->brackets->count(), o->brackets->loc);
   }
   o->type->accept(&assigner);
   scopes.back()->add(o);
@@ -313,6 +304,7 @@ bi::Statement* bi::ResolverSource::modify(Assignment* o) {
 }
 
 bi::Statement* bi::ResolverSource::modify(GlobalVariable* o) {
+  o->brackets = o->brackets->accept(this);
   o->args = o->args->accept(this);
   o->value = o->value->accept(this);
   if (!o->args->isEmpty() || o->value->isEmpty()) {
@@ -369,6 +361,7 @@ bi::Statement* bi::ResolverSource::modify(UnaryOperator* o) {
 }
 
 bi::Statement* bi::ResolverSource::modify(MemberVariable* o) {
+  o->brackets = o->brackets->accept(this);
   o->args = o->args->accept(this);
   o->value = o->value->accept(this);
   if (!o->args->isEmpty() || o->value->isEmpty()) {
@@ -456,8 +449,8 @@ bi::Statement* bi::ResolverSource::modify(ExpressionStatement* o) {
   auto call = dynamic_cast<Call*>(o->single);
   if (call && call->type->isFiber()) {
     auto name = new Name();
-    auto var = new LocalVariable(name, o->single->type->accept(&cloner),
-        new EmptyExpression(o->loc), o->single, o->loc);
+    auto var = new LocalVariable(name, o->single->type,
+        new EmptyExpression(o->loc), new EmptyExpression(o->loc), o->single, o->loc);
     auto decl = new ExpressionStatement(var, o->loc);
     auto query = new Query(new Identifier<LocalVariable>(name, o->loc),
         o->loc);

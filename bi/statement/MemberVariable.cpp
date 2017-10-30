@@ -6,10 +6,11 @@
 #include "bi/visitor/all.hpp"
 
 bi::MemberVariable::MemberVariable(Name* name, Type* type,
-    Expression* args, Expression* value, Location* loc) :
+    Expression* brackets, Expression* args, Expression* value, Location* loc) :
     Statement(loc),
     Named(name),
     Typed(type),
+    Bracketed(brackets),
     Argumented(args),
     Valued(value) {
   //

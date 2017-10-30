@@ -91,6 +91,7 @@
 
 %type <valName> name binary_operator unary_operator assignment_operator
 
+%type <valInt> size
 %type <valAnnotation> annotation annotations optional_annotations
 
 %type <valExpression> prefix_operator
@@ -107,10 +108,10 @@
 %type <valExpression> logical_and_expression logical_or_expression
 %type <valExpression> expression_list expression optional_expression
 %type <valExpression> local_variable parameter parameter_list parameters
-%type <valExpression> option option_list options
+%type <valExpression> span_expression span_list brackets option option_list options
 %type <valExpression> member_parameter member_parameter_list member_parameters optional_member_parameters
 %type <valExpression> arguments optional_arguments
-%type <valExpression> size_list size value optional_value for_index
+%type <valExpression> value optional_value for_index
 %type <valExpression> generic generic_list generics optional_generics
 
 %type <valStatement> global_variable_declaration local_variable_declaration
@@ -129,7 +130,7 @@
 %type <valStatement> class_braces optional_class_braces
 
 %type <valType> type_identifier class_type primary_type tuple_type
-%type <valType> postfix_type function_type type
+%type <valType> postfix_type array_type function_type type
 %type <valType> type_list parameter_type_list parameter_types
 %type <valType> result optional_result
 
@@ -341,9 +342,25 @@ expression_list
     ;
 
 local_variable
-    : name ':' type            { $$ = new bi::LocalVariable($1, $3, empty_expr(@$), empty_expr(@$), make_loc(@$)); }
-    | name ':' type arguments  { $$ = new bi::LocalVariable($1, $3, $4, empty_expr(@$), make_loc(@$)); }
-    | name ':' type value      { $$ = new bi::LocalVariable($1, $3, empty_expr(@$), $4, make_loc(@$)); }
+    : name ':' type                             { $$ = new bi::LocalVariable($1, $3, empty_expr(@$), empty_expr(@$), empty_expr(@$), make_loc(@$)); }
+    | name ':' type arguments                   { $$ = new bi::LocalVariable($1, $3, empty_expr(@$), $4, empty_expr(@$), make_loc(@$)); }
+    | name ':' type value                       { $$ = new bi::LocalVariable($1, $3, empty_expr(@$), empty_expr(@$), $4, make_loc(@$)); }
+    | name ':' postfix_type brackets            { $$ = new bi::LocalVariable($1, $3, $4, empty_expr(@$), empty_expr(@$), make_loc(@$)); }
+    | name ':' postfix_type brackets arguments  { $$ = new bi::LocalVariable($1, $3, $4, $5, empty_expr(@$), make_loc(@$)); }
+    | name ':' postfix_type brackets value      { $$ = new bi::LocalVariable($1, $3, $4, empty_expr(@$), $5, make_loc(@$)); }
+    ;
+
+span_expression
+    : expression   { $$ = new bi::Span($1, make_loc(@$)); }
+    ;
+    
+span_list
+    : span_expression
+    | span_expression ',' span_list  { $$ = new bi::ExpressionList($1, $3, make_loc(@$)); }
+    ;
+
+brackets
+    : '[' span_list ']'  { $$ = $2; }
     ;
 
 parameters
@@ -404,13 +421,8 @@ optional_arguments
     ;
 
 size
-    : expression  { $$ = new bi::Span($1, make_loc(@$)); }
-    | '_'         { $$ = new bi::Span(empty_expr(@$), make_loc(@$)); }
-    ;
-
-size_list
-    : size
-    | size ',' size_list  { $$ = new bi::ExpressionList($1, $3, make_loc(@$)); }
+    : '_'           { $$ = 1; }
+    | '_' ',' size  { $$ = $3 + 1; }
     ;
 
 generics
@@ -439,9 +451,12 @@ optional_generics
  ***************************************************************************/
 
 global_variable_declaration
-    : name ':' type ';'            { push_raw(); $$ = new bi::GlobalVariable($1, $3, empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
-    | name ':' type arguments ';'  { push_raw(); $$ = new bi::GlobalVariable($1, $3, $4, empty_expr(@$), make_doc_loc(@$)); }
-    | name ':' type value ';'      { push_raw(); $$ = new bi::GlobalVariable($1, $3, empty_expr(@$), $4, make_doc_loc(@$)); }
+    : name ':' type ';'                             { push_raw(); $$ = new bi::GlobalVariable($1, $3, empty_expr(@$), empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type arguments ';'                   { push_raw(); $$ = new bi::GlobalVariable($1, $3, empty_expr(@$), $4, empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type value ';'                       { push_raw(); $$ = new bi::GlobalVariable($1, $3, empty_expr(@$), empty_expr(@$), $4, make_doc_loc(@$)); }
+    | name ':' postfix_type brackets ';'            { push_raw(); $$ = new bi::GlobalVariable($1, $3, $4, empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' postfix_type brackets arguments ';'  { push_raw(); $$ = new bi::GlobalVariable($1, $3, $4, $5, empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' postfix_type brackets value ';'      { push_raw(); $$ = new bi::GlobalVariable($1, $3, $4, empty_expr(@$), $5, make_doc_loc(@$)); }
     ;
 
 local_variable_declaration
@@ -449,9 +464,12 @@ local_variable_declaration
     ;
 
 member_variable_declaration
-    : name ':' type ';'            { push_raw(); $$ = new bi::MemberVariable($1, $3, empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
-    | name ':' type arguments ';'  { push_raw(); $$ = new bi::MemberVariable($1, $3, $4, empty_expr(@$), make_doc_loc(@$)); }
-    | name ':' type value ';'      { push_raw(); $$ = new bi::MemberVariable($1, $3, empty_expr(@$), $4, make_doc_loc(@$)); }
+    : name ':' type ';'                             { push_raw(); $$ = new bi::MemberVariable($1, $3, empty_expr(@$), empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type arguments ';'                   { push_raw(); $$ = new bi::MemberVariable($1, $3, empty_expr(@$), $4, empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type value ';'                       { push_raw(); $$ = new bi::MemberVariable($1, $3, empty_expr(@$), empty_expr(@$), $4, make_doc_loc(@$)); }
+    | name ':' postfix_type brackets ';'            { push_raw(); $$ = new bi::MemberVariable($1, $3, $4, empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' postfix_type brackets arguments ';'  { push_raw(); $$ = new bi::MemberVariable($1, $3, $4, $5, empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' postfix_type brackets value ';'      { push_raw(); $$ = new bi::MemberVariable($1, $3, $4, empty_expr(@$), $5, make_doc_loc(@$)); }
     ;
 
 function_declaration
@@ -556,7 +574,7 @@ if
 
 for_index
     : identifier
-    | name ':' type  { $$ = new bi::LocalVariable($1, $3, empty_expr(@$), empty_expr(@$), make_loc(@$)); }
+    | name ':' type  { $$ = new bi::LocalVariable($1, $3, empty_expr(@$), empty_expr(@$), empty_expr(@$), make_loc(@$)); }
     ;
 
 for
@@ -714,13 +732,17 @@ tuple_type
 postfix_type
     : primary_type
     | tuple_type
-    | postfix_type '[' size_list ']'  { $$ = new bi::ArrayType($1, $3, make_loc(@$)); }
-    | postfix_type '!'                { $$ = new bi::FiberType($1, make_loc(@$)); }
-    | postfix_type '?'                { $$ = new bi::OptionalType($1, make_loc(@$)); }
+    | postfix_type '!'  { $$ = new bi::FiberType($1, make_loc(@$)); }
+    | postfix_type '?'  { $$ = new bi::OptionalType($1, make_loc(@$)); }
+    ;
+
+array_type
+    : postfix_type
+    | postfix_type '[' size ']'  { $$ = new bi::ArrayType($1, $3, make_loc(@$)); }
     ;
 
 function_type
-    : postfix_type
+    : array_type
     | '@' parameter_types optional_result  { $$ = new bi::FunctionType($2, $3, make_loc(@$)); }
     ;
 
