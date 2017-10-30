@@ -15,6 +15,10 @@ bi::Slice::~Slice() {
   //
 }
 
+bool bi::Slice::isAssignable() const {
+  return single->isAssignable();
+}
+
 bi::Expression* bi::Slice::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

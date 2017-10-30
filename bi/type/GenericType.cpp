@@ -60,6 +60,11 @@ bool bi::GenericType::isFiber() const {
   return target->type->isFiber();
 }
 
+int bi::GenericType::dims() const {
+  assert(target);
+  return target->type->dims();
+}
+
 bi::Basic* bi::GenericType::getBasic() const {
   assert(target);
   return target->type->getBasic();
@@ -68,6 +73,11 @@ bi::Basic* bi::GenericType::getBasic() const {
 bi::Class* bi::GenericType::getClass() const {
   assert(target);
   return target->type->getClass();
+}
+
+bi::Type* bi::GenericType::canonical() {
+  assert(target);
+  return target->type->canonical();
 }
 
 const bi::Type* bi::GenericType::canonical() const {

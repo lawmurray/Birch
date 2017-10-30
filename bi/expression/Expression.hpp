@@ -72,6 +72,11 @@ public:
   virtual bool isEmpty() const;
 
   /**
+   * Is result of expression assignable?
+   */
+  virtual bool isAssignable() const;
+
+  /**
    * Strip parentheses, if any.
    */
   virtual Expression* strip();

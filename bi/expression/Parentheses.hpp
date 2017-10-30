@@ -29,6 +29,7 @@ public:
   virtual ~Parentheses();
 
   virtual Expression* strip();
+  virtual bool isAssignable() const;
 
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);

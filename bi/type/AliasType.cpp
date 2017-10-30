@@ -60,6 +60,11 @@ bool bi::AliasType::isFiber() const {
   return target->base->isFiber();
 }
 
+int bi::AliasType::dims() const {
+  assert(target);
+  return target->base->dims();
+}
+
 bi::Basic* bi::AliasType::getBasic() const {
   assert(target);
   return target->base->getBasic();
@@ -68,6 +73,16 @@ bi::Basic* bi::AliasType::getBasic() const {
 bi::Class* bi::AliasType::getClass() const {
   assert(target);
   return target->base->getClass();
+}
+
+bi::Type* bi::AliasType::canonical() {
+  assert(target);
+  return target->base->canonical();
+}
+
+const bi::Type* bi::AliasType::canonical() const {
+  assert(target);
+  return target->base->canonical();
 }
 
 bi::FunctionType* bi::AliasType::resolve(Argumented* o) {

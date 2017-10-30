@@ -5,7 +5,6 @@
  */
 #pragma once
 
-#include "bi/visitor/CanonicalCloner.hpp"
 #include "bi/visitor/Cloner.hpp"
 #include "bi/visitor/Gatherer.hpp"
 #include "bi/visitor/Instantiater.hpp"

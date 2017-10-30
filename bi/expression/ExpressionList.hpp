@@ -27,15 +27,8 @@ public:
    */
   virtual ~ExpressionList();
 
-  /**
-   * Number of objects in the list.
-   */
   virtual int count() const;
-
-  /**
-   * Number of Range objects in the list.
-   */
-  virtual int rangeCount() const;
+  virtual bool isAssignable() const;
 
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);

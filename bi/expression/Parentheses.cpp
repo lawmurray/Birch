@@ -20,6 +20,10 @@ bi::Expression* bi::Parentheses::strip() {
   return single->strip();
 }
 
+bool bi::Parentheses::isAssignable() const {
+  return single->isAssignable();
+}
+
 bi::Expression* bi::Parentheses::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

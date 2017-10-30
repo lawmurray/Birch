@@ -30,21 +30,8 @@ int bi::ExpressionList::count() const {
   }
 }
 
-int bi::ExpressionList::rangeCount() const {
-  const Range* rangeHead = dynamic_cast<const Range*>(head);
-  const Range* rangeTail = dynamic_cast<const Range*>(tail);
-  const ExpressionList* listTail = dynamic_cast<const ExpressionList*>(tail);
-  int count = 0;
-
-  if (rangeHead) {
-    ++count;
-  }
-  if (rangeTail) {
-    ++count;
-  } else if (listTail) {
-    count += listTail->rangeCount();
-  }
-  return count;
+bool bi::ExpressionList::isAssignable() const {
+  return head->isAssignable() && tail->isAssignable();
 }
 
 bi::Expression* bi::ExpressionList::accept(Cloner* visitor) const {

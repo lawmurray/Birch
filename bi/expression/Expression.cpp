@@ -27,6 +27,10 @@ bool bi::Expression::isEmpty() const {
   return false;
 }
 
+bool bi::Expression::isAssignable() const {
+  return false;
+}
+
 bi::Expression* bi::Expression::strip() {
   return this;
 }

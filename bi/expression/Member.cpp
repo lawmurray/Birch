@@ -16,6 +16,10 @@ bi::Member::~Member() {
   //
 }
 
+bool bi::Member::isAssignable() const {
+  return right->isAssignable();
+}
+
 bi::Expression* bi::Member::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

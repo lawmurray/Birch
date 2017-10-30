@@ -65,10 +65,10 @@ bi::Expression* bi::ResolverSource::modify(Slice* o) {
     throw SliceException(o, typeDims, sliceCount);
   }
 
-  ArrayType* type = dynamic_cast<ArrayType*>(o->single->type);
+  ArrayType* type = dynamic_cast<ArrayType*>(o->single->type->canonical());
   assert(type);
   if (rangeDims > 0) {
-    o->type = new ArrayType(type->single, rangeDims, o->loc);
+    o->type = new ArrayType(type->single, rangeDims, o->loc, type->single->assignable);
   } else {
     o->type = type->single;
   }
@@ -142,7 +142,7 @@ bi::Expression* bi::ResolverSource::modify(Member* o) {
 bi::Expression* bi::ResolverSource::modify(This* o) {
   if (!classes.empty()) {
     Modifier::modify(o);
-    o->type = new ClassType(classes.back(), o->loc);
+    o->type = new ClassType(classes.back(), o->loc, true);
   } else {
     throw ThisException(o);
   }
@@ -291,7 +291,7 @@ bi::Statement* bi::ResolverSource::modify(Assignment* o) {
   } else {
     /* assignment operator */
     Modifier::modify(o);
-    if (!o->left->type->assignable) {
+    if (!o->left->isAssignable()) {
       throw NotAssignableException(o);
     }
     if (!o->right->type->definitely(*o->left->type)

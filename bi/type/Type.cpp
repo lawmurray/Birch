@@ -98,6 +98,10 @@ const bi::Type* bi::Type::unwrap() const {
   return this;
 }
 
+bi::Type* bi::Type::canonical() {
+  return this;
+}
+
 const bi::Type* bi::Type::canonical() const {
   return this;
 }

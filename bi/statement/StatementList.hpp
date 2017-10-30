@@ -32,11 +32,6 @@ public:
    */
   virtual int count() const;
 
-  /**
-   * Number of Range objects in the list.
-   */
-  virtual int rangeCount() const;
-
   virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;

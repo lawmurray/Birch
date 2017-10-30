@@ -30,23 +30,6 @@ int bi::StatementList::count() const {
   }
 }
 
-int bi::StatementList::rangeCount() const {
-  const Range* rangeHead = dynamic_cast<const Range*>(head);
-  const Range* rangeTail = dynamic_cast<const Range*>(tail);
-  const StatementList* listTail = dynamic_cast<const StatementList*>(tail);
-  int count = 0;
-
-  if (rangeHead) {
-    ++count;
-  }
-  if (rangeTail) {
-    ++count;
-  } else if (listTail) {
-    count += listTail->rangeCount();
-  }
-  return count;
-}
-
 bi::Statement* bi::StatementList::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

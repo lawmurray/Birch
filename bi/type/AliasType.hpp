@@ -47,8 +47,13 @@ public:
   virtual bool isFunction() const;
   virtual bool isFiber() const;
 
+  virtual int dims() const;
+
   virtual Basic* getBasic() const;
   virtual Class* getClass() const;
+
+  virtual Type* canonical();
+  virtual const Type* canonical() const;
 
   virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);

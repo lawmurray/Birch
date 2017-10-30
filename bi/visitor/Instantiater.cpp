@@ -1,8 +1,12 @@
 /**
  * @file
  */
-#include "bi/visitor/CanonicalCloner.hpp"
+#include "bi/visitor/Instantiater.hpp"
 
-bi::Type* bi::CanonicalCloner::clone(const GenericType* o) {
-  return o->target->type->accept(this);
+bi::Instantiater::Instantiater(Type* typeArgs) : iter(typeArgs->begin()) {
+  //
+}
+
+bi::Expression* bi::Instantiater::clone(const Generic* o) {
+  return new Generic(o->name, (*(iter++))->accept(this), o->loc);
 }

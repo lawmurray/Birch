@@ -6,8 +6,8 @@
 #include "bi/visitor/all.hpp"
 
 template<class ObjectType>
-bi::Identifier<ObjectType>::Identifier(Name* name,
-    Location* loc, ObjectType* target) :
+bi::Identifier<ObjectType>::Identifier(Name* name, Location* loc,
+    ObjectType* target) :
     Expression(loc),
     Named(name),
     Reference<ObjectType>(target) {
@@ -17,6 +17,13 @@ bi::Identifier<ObjectType>::Identifier(Name* name,
 template<class ObjectType>
 bi::Identifier<ObjectType>::~Identifier() {
   //
+}
+
+template<class ObjectType>
+bool bi::Identifier<ObjectType>::isAssignable() const {
+  return std::is_same<ObjectType,GlobalVariable>::value
+      || std::is_same<ObjectType,MemberVariable>::value
+      || std::is_same<ObjectType,LocalVariable>::value;
 }
 
 template<class ObjectType>
