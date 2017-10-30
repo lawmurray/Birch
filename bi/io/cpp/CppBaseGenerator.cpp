@@ -390,8 +390,8 @@ void bi::CppBaseGenerator::visit(const Program* o) {
 
         line("case " << flag << ':');
         in();
-        if (param->type->isBasic()) {
-          auto type = dynamic_cast<Named*>(param->type);
+        if (param->type->unwrap()->isBasic()) {
+          auto type = dynamic_cast<Named*>(param->type->unwrap());
           assert(type);
           start(name << " = bi::func::" << type->name);
           finish("(std::string(optarg));");
@@ -679,7 +679,7 @@ void bi::CppBaseGenerator::genArg(const Expression* arg, const Type* type) {
    * unambiguous, whereas C++ does not */
   bool cast = type->isBasic() && !type->equals(*arg->type);
   if (cast) {
-    middle("static_cast<" << type << ">(");
+    middle("static_cast<" << type->canonical() << ">(");
   }
   middle(arg);
   if (cast) {

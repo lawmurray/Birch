@@ -70,6 +70,11 @@ bi::Class* bi::GenericType::getClass() const {
   return target->type->getClass();
 }
 
+const bi::Type* bi::GenericType::canonical() const {
+  assert(target);
+  return target->type->canonical();
+}
+
 bi::FunctionType* bi::GenericType::resolve(Argumented* o) {
   assert(target);
   return target->type->resolve(o);

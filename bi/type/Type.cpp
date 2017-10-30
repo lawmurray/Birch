@@ -90,9 +90,16 @@ int bi::Type::dims() const {
   return 0;
 }
 
-bi::Type* bi::Type::unwrap() const {
-  assert(false);
-  return nullptr;
+bi::Type* bi::Type::unwrap() {
+  return this;
+}
+
+const bi::Type* bi::Type::unwrap() const {
+  return this;
+}
+
+const bi::Type* bi::Type::canonical() const {
+  return this;
 }
 
 bi::FunctionType* bi::Type::resolve(Argumented* o) {

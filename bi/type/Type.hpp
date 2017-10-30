@@ -160,9 +160,15 @@ public:
 
   /**
    * For an optional or fiber type, the type that is wrapped, otherwise
-   * undefined.
+   * this.
    */
-  virtual Type* unwrap() const;
+  virtual Type* unwrap();
+  virtual const Type* unwrap() const;
+
+  /**
+   * For a generic type, the non-generic argument, otherwise this.
+   */
+  virtual const Type* canonical() const;
 
   /**
    * Resolve a call.

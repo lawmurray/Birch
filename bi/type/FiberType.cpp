@@ -31,7 +31,11 @@ bool bi::FiberType::isFiber() const {
   return true;
 }
 
-bi::Type* bi::FiberType::unwrap() const {
+bi::Type* bi::FiberType::unwrap() {
+  return single;
+}
+
+const bi::Type* bi::FiberType::unwrap() const {
   return single;
 }
 

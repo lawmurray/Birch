@@ -32,7 +32,11 @@ bool bi::OptionalType::isOptional() const {
   return true;
 }
 
-bi::Type* bi::OptionalType::unwrap() const {
+const bi::Type* bi::OptionalType::unwrap() const {
+  return single;
+}
+
+bi::Type* bi::OptionalType::unwrap() {
   return single;
 }
 

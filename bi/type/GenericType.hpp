@@ -49,6 +49,7 @@ public:
 
   virtual Basic* getBasic() const;
   virtual Class* getClass() const;
+  virtual const Type* canonical() const;
 
   virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);
