@@ -6,8 +6,8 @@
 #include "bi/visitor/all.hpp"
 
 bi::ArrayType::ArrayType(Type* single, const int ndims,
-    Location* loc, const bool assignable) :
-    Type(loc, assignable),
+    Location* loc) :
+    Type(loc),
     Single<Type>(single),
     ndims(ndims) {
   //

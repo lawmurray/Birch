@@ -17,9 +17,8 @@ public:
    * Constructor.
    *
    * @param loc Location.
-   * @param assignable Is this type assignable?
    */
-  EmptyType(Location* loc, const bool assignable = false);
+  EmptyType(Location* loc);
 
   /**
    * Destructor.

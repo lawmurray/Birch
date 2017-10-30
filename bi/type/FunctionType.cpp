@@ -5,9 +5,8 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::FunctionType::FunctionType(Type* params, Type* returnType, Location* loc,
-    const bool assignable) :
-    Type(loc, assignable),
+bi::FunctionType::FunctionType(Type* params, Type* returnType, Location* loc) :
+    Type(loc),
     ReturnTyped(returnType),
     params(params) {
   //

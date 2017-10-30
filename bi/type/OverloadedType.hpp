@@ -23,10 +23,8 @@ public:
    *
    * @param overloaded Overloaded object.
    * @param loc Location.
-   * @param assignable Is this type assignable?
    */
-  OverloadedType(Overloaded* overloaded, Location* loc = nullptr,
-      const bool assignable = false);
+  OverloadedType(Overloaded* overloaded, Location* loc = nullptr);
 
   /**
    * Destructor.

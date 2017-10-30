@@ -161,7 +161,6 @@ COMMON_SOURCES = \
   bi/type/TypeIdentifier.cpp \
   bi/type/TypeIterator.cpp \
   bi/type/TypeList.cpp \
-  bi/visitor/Assigner.cpp \
   bi/visitor/Cloner.cpp \
   bi/visitor/Gatherer.cpp \
   bi/visitor/Instantiater.cpp \
@@ -361,7 +360,6 @@ noinst_HEADERS = \
   bi/type/TypeIdentifier.hpp \
   bi/type/TypeList.hpp \
   bi/visitor/all.hpp \
-  bi/visitor/Assigner.hpp \
   bi/visitor/Cloner.hpp \
   bi/visitor/Gatherer.hpp \
   bi/visitor/Instantiater.hpp \

@@ -6,9 +6,8 @@
 #include "bi/visitor/all.hpp"
 #include "bi/exception/all.hpp"
 
-bi::OverloadedType::OverloadedType(Overloaded* overloaded, Location* loc,
-    const bool assignable) :
-    Type(loc, assignable),
+bi::OverloadedType::OverloadedType(Overloaded* overloaded, Location* loc) :
+    Type(loc),
     overloaded(overloaded) {
   //
 }

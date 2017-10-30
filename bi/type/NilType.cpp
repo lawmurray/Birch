@@ -5,8 +5,8 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::NilType::NilType(Location* loc, const bool assignable) :
-    Type(loc, assignable) {
+bi::NilType::NilType(Location* loc) :
+    Type(loc) {
   //
 }
 

@@ -68,7 +68,7 @@ bi::Expression* bi::ResolverSource::modify(Slice* o) {
   ArrayType* type = dynamic_cast<ArrayType*>(o->single->type->canonical());
   assert(type);
   if (rangeDims > 0) {
-    o->type = new ArrayType(type->single, rangeDims, o->loc, type->single->assignable);
+    o->type = new ArrayType(type->single, rangeDims, o->loc);
   } else {
     o->type = type->single;
   }
@@ -142,7 +142,7 @@ bi::Expression* bi::ResolverSource::modify(Member* o) {
 bi::Expression* bi::ResolverSource::modify(This* o) {
   if (!classes.empty()) {
     Modifier::modify(o);
-    o->type = new ClassType(classes.back(), o->loc, true);
+    o->type = new ClassType(classes.back(), o->loc);
   } else {
     throw ThisException(o);
   }
@@ -177,7 +177,6 @@ bi::Expression* bi::ResolverSource::modify(Parameter* o) {
 }
 
 bi::Expression* bi::ResolverSource::modify(MemberParameter* o) {
-  o->type->accept(&assigner);
   return o;
 }
 
@@ -193,7 +192,6 @@ bi::Expression* bi::ResolverSource::modify(LocalVariable* o) {
   if (!o->brackets->isEmpty()) {
     o->type = new ArrayType(o->type, o->brackets->count(), o->brackets->loc);
   }
-  o->type->accept(&assigner);
   scopes.back()->add(o);
   return o;
 }

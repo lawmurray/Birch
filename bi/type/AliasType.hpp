@@ -23,11 +23,9 @@ public:
    *
    * @param name Name.
    * @param loc Location.
-   * @param assignable Is this type assignable?
    * @param target Target.
    */
-  AliasType(Name* name, Location* loc = nullptr,
-      const bool assignable = false, Alias* target = nullptr);
+  AliasType(Name* name, Location* loc = nullptr, Alias* target = nullptr);
 
   /**
    * Constructor.

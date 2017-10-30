@@ -5,9 +5,8 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::BinaryType::BinaryType(Type* left, Type* right, Location* loc,
-    const bool assignable) :
-    Type(loc, assignable),
+bi::BinaryType::BinaryType(Type* left, Type* right, Location* loc) :
+    Type(loc),
     Couple<Type>(left, right) {
   //
 }

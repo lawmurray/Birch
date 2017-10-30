@@ -14,20 +14,16 @@ namespace bi {
  *
  * @ingroup compiler_type
  */
-class BasicType: public Type,
-    public Named,
-    public Reference<Basic> {
+class BasicType: public Type, public Named, public Reference<Basic> {
 public:
   /**
    * Constructor.
    *
    * @param name Name.
    * @param loc Location.
-   * @param assignable Is this type assignable?
    * @param target Target.
    */
-  BasicType(Name* name, Location* loc = nullptr,
-      const bool assignable = false, Basic* target = nullptr);
+  BasicType(Name* name, Location* loc = nullptr, Basic* target = nullptr);
 
   /**
    * Constructor.

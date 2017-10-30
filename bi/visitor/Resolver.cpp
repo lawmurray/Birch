@@ -15,16 +15,14 @@ bi::Resolver::~Resolver() {
 
 bi::Expression* bi::Resolver::modify(ExpressionList* o) {
   Modifier::modify(o);
-  o->type = new TypeList(o->head->type, o->tail->type, o->loc,
-      o->head->type->assignable && o->tail->type->assignable);
+  o->type = new TypeList(o->head->type, o->tail->type, o->loc);
   return o;
 }
 
 bi::Expression* bi::Resolver::modify(Parentheses* o) {
   Modifier::modify(o);
   if (o->single->count() > 1) {
-    o->type = new TupleType(o->single->type, o->loc,
-        o->single->type->assignable);
+    o->type = new TupleType(o->single->type, o->loc);
   } else {
     o->type = o->single->type;
   }

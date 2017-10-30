@@ -5,8 +5,8 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::FiberType::FiberType(Type* single, Location* loc, const bool assignable) :
-    Type(loc, assignable),
+bi::FiberType::FiberType(Type* single, Location* loc) :
+    Type(loc),
     Single<Type>(single) {
   //
 }

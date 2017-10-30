@@ -5,7 +5,6 @@
 
 #include "bi/visitor/Modifier.hpp"
 #include "bi/visitor/Cloner.hpp"
-#include "bi/visitor/Assigner.hpp"
 
 #include <stack>
 #include <list>
@@ -106,7 +105,6 @@ protected:
    * Auxiliary visitors.
    */
   Cloner cloner;
-  Assigner assigner;
 };
 }
 

@@ -6,25 +6,24 @@
 #include "bi/visitor/all.hpp"
 
 bi::ClassType::ClassType(Name* name, Type* typeArgs, Location* loc,
-    const bool assignable, Class* target) :
-    Type(loc, assignable),
+    Class* target) :
+    Type(loc),
     Named(name),
     Reference<Class>(target),
     typeArgs(typeArgs) {
   //
 }
 
-bi::ClassType::ClassType(Name* name, Location* loc, const bool assignable,
-    Class* target) :
-    Type(loc, assignable),
+bi::ClassType::ClassType(Name* name, Location* loc, Class* target) :
+    Type(loc),
     Named(name),
     Reference<Class>(target),
     typeArgs(new EmptyType(loc)) {
   //
 }
 
-bi::ClassType::ClassType(Class* target, Location* loc, const bool assignable) :
-    Type(loc, assignable),
+bi::ClassType::ClassType(Class* target, Location* loce) :
+    Type(loc),
     Named(target->name),
     Reference<Class>(target),
     typeArgs(new EmptyType(loc)) {

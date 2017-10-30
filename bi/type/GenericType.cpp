@@ -5,9 +5,8 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::GenericType::GenericType(Name* name, Location* loc, const bool assignable,
-    Generic* target) :
-    Type(loc, assignable),
+bi::GenericType::GenericType(Name* name, Location* loc, Generic* target) :
+    Type(loc),
     Named(name),
     Reference<Generic>(target) {
   //

@@ -17,9 +17,8 @@ public:
    * Constructor.
    *
    * @param loc Location.
-   * @param assignable Is this type assignable?
    */
-  NilType(Location* loc = nullptr, const bool assignable = false);
+  NilType(Location* loc = nullptr);
 
   /**
    * Destructor.

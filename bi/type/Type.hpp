@@ -44,9 +44,8 @@ public:
    * Constructor.
    *
    * @param loc Location.
-   * @param assignable Is this type assignable?
    */
-  Type(Location* loc = nullptr, const bool assignable = false);
+  Type(Location* loc = nullptr);
 
   /**
    * Destructor.
@@ -200,11 +199,6 @@ public:
    * Iterator to one-past-the-last.
    */
   TypeIterator end() const;
-
-  /**
-   * Is this type assignable?
-   */
-  bool assignable;
 
   /*
    * Double-dispatch partial order comparisons.

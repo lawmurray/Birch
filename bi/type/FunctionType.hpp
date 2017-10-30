@@ -20,10 +20,8 @@ public:
    * @param params Parameters type.
    * @param returnType Return type.
    * @param loc Location.
-   * @param assignable Is this type assignable?
    */
-  FunctionType(Type* params, Type* returnType, Location* loc = nullptr,
-      const bool assignable = false);
+  FunctionType(Type* params, Type* returnType, Location* loc = nullptr);
 
   /**
    * Destructor.

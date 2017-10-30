@@ -19,10 +19,8 @@ public:
    *
    * @param single Yield type.
    * @param loc Location.
-   * @param assignable Is this type assignable?
    */
-  FiberType(Type* single, Location* loc = nullptr, const bool assignable =
-      false);
+  FiberType(Type* single, Location* loc = nullptr);
 
   /**
    * Destructor.

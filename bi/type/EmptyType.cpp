@@ -5,8 +5,8 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::EmptyType::EmptyType(Location* loc, const bool assignable) :
-    Type(loc, assignable) {
+bi::EmptyType::EmptyType(Location* loc) :
+    Type(loc) {
   //
 }
 

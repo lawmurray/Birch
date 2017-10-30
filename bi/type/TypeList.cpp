@@ -5,9 +5,8 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::TypeList::TypeList(Type* head, Type* tail, Location* loc,
-    const bool assignable) :
-    Type(loc, assignable),
+bi::TypeList::TypeList(Type* head, Type* tail, Location* loc) :
+    Type(loc),
     head(head),
     tail(tail) {
   /* pre-conditions */

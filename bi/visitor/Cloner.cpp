@@ -308,66 +308,62 @@ bi::Statement* bi::Cloner::clone(const Raw* o) {
 }
 
 bi::Type* bi::Cloner::clone(const EmptyType* o) {
-  return new EmptyType(o->loc, o->assignable);
+  return new EmptyType(o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const TypeList* o) {
-  return new TypeList(o->head->accept(this), o->tail->accept(this), o->loc,
-      o->assignable);
+  return new TypeList(o->head->accept(this), o->tail->accept(this), o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const TypeIdentifier* o) {
-  return new TypeIdentifier(o->name, o->loc, o->assignable);
+  return new TypeIdentifier(o->name, o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const ClassType* o) {
-  return new ClassType(o->name, o->typeArgs->accept(this), o->loc,
-      o->assignable);
+  return new ClassType(o->name, o->typeArgs->accept(this), o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const AliasType* o) {
-  return new AliasType(o->name, o->loc, o->assignable);
+  return new AliasType(o->name, o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const BasicType* o) {
-  return new BasicType(o->name, o->loc, o->assignable);
+  return new BasicType(o->name, o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const GenericType* o) {
-  return new GenericType(o->name, o->loc, o->assignable);
+  return new GenericType(o->name, o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const ArrayType* o) {
-  return new ArrayType(o->single->accept(this), o->ndims, o->loc,
-      o->assignable);
+  return new ArrayType(o->single->accept(this), o->ndims, o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const TupleType* o) {
-  return new TupleType(o->single->accept(this), o->loc, o->assignable);
+  return new TupleType(o->single->accept(this), o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const BinaryType* o) {
-  return new BinaryType(o->left->accept(this), o->right->accept(this), o->loc,
-      o->assignable);
+  return new BinaryType(o->left->accept(this), o->right->accept(this), o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const FunctionType* o) {
   return new FunctionType(o->params->accept(this),
-      o->returnType->accept(this), o->loc, o->assignable);
+      o->returnType->accept(this), o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const OverloadedType* o) {
-  return new OverloadedType(o->overloaded, o->loc, o->assignable);
+  return new OverloadedType(o->overloaded, o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const FiberType* o) {
-  return new FiberType(o->single->accept(this), o->loc, o->assignable);
+  return new FiberType(o->single->accept(this), o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const OptionalType* o) {
-  return new OptionalType(o->single->accept(this), o->loc, o->assignable);
+  return new OptionalType(o->single->accept(this), o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const NilType* o) {
-  return new NilType(o->loc, o->assignable);
+  return new NilType(o->loc);
 }

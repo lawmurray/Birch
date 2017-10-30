@@ -20,10 +20,8 @@ public:
    * @param single Type.
    * @param ndims Number of dimensions.
    * @param loc Location.
-   * @param assignable Is this type assignable?
    */
-  ArrayType(Type* single, const int ndims, Location* loc =
-      nullptr, const bool assignable = false);
+  ArrayType(Type* single, const int ndims, Location* loc = nullptr);
 
   /**
    * Destructor.

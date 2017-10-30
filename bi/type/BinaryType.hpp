@@ -20,10 +20,8 @@ public:
    * @param left Type of left operand.
    * @param right Type of right operand.
    * @param loc Location.
-   * @param assignable Is this type assignable?
    */
-  BinaryType(Type* left, Type* right, Location* loc = nullptr,
-      const bool assignable = false);
+  BinaryType(Type* left, Type* right, Location* loc = nullptr);
 
   /**
    * Destructor.

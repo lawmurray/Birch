@@ -5,9 +5,8 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::TupleType::TupleType(Type* single, Location* loc,
-    const bool assignable) :
-    Type(loc, assignable),
+bi::TupleType::TupleType(Type* single, Location* loc) :
+    Type(loc),
     Single<Type>(single) {
   //
 }

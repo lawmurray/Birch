@@ -5,9 +5,8 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::OptionalType::OptionalType(Type* single, Location* loc,
-    const bool assignable) :
-    Type(loc, assignable),
+bi::OptionalType::OptionalType(Type* single, Location* loc) :
+    Type(loc),
     Single<Type>(single) {
   //
 }

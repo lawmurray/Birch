@@ -19,10 +19,8 @@ public:
    *
    * @param single Type.
    * @param loc Location.
-   * @param assignable Is this type assignable?
    */
-  OptionalType(Type* single, Location* loc = nullptr, const bool assignable =
-      false);
+  OptionalType(Type* single, Location* loc = nullptr);
 
   /**
    * Destructor.

@@ -19,10 +19,8 @@ public:
    *
    * @param single Type in parentheses.
    * @param loc Location.
-   * @param assignable Is this type assignable?
    */
-  TupleType(Type* single, Location* loc = nullptr,
-      const bool assignable = false);
+  TupleType(Type* single, Location* loc = nullptr);
 
   /**
    * Destructor.

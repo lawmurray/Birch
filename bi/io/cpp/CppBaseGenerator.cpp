@@ -46,7 +46,7 @@ void bi::CppBaseGenerator::visit(const Literal<const char*>* o) {
 
 void bi::CppBaseGenerator::visit(const Parentheses* o) {
   if (o->single->type->isList()) {
-    if (o->single->type->assignable) {
+    if (o->single->isAssignable()) {
       middle("std::tie(" << o->single << ')');
     } else {
       middle("std::make_tuple(" << o->single << ')');
@@ -182,20 +182,14 @@ void bi::CppBaseGenerator::visit(const Nil* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Parameter* o) {
-  if (!o->type->assignable) {
-    middle("const ");
-  }
-  middle(o->type << "& " << o->name);
+  middle("const " << o->type << "& " << o->name);
   if (!o->value->isEmpty()) {
     middle(" = " << o->value);
   }
 }
 
 void bi::CppBaseGenerator::visit(const MemberParameter* o) {
-  if (!o->type->assignable) {
-    middle("const ");
-  }
-  middle(o->type << "& " << o->name);
+    middle("const " << o->type << "& " << o->name);
   if (!o->value->isEmpty()) {
     middle(" = " << o->value);
   }

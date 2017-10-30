@@ -60,7 +60,6 @@ bi::Statement* bi::ResolverHeader::modify(GlobalVariable* o) {
   if (!o->brackets->isEmpty()) {
     o->type = new ArrayType(o->type, o->brackets->count(), o->brackets->loc);
   }
-  o->type->accept(&assigner);
   scopes.back()->add(o);
   return o;
 }
@@ -132,7 +131,6 @@ bi::Statement* bi::ResolverHeader::modify(MemberVariable* o) {
   if (!o->brackets->isEmpty()) {
     o->type = new ArrayType(o->type, o->brackets->count(), o->brackets->loc);
   }
-  o->type->accept(&assigner);
   scopes.back()->add(o);
   return o;
 }

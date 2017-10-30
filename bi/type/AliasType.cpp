@@ -5,9 +5,8 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::AliasType::AliasType(Name* name, Location* loc,
-    const bool assignable, Alias* target) :
-    Type(loc, assignable),
+bi::AliasType::AliasType(Name* name, Location* loc, Alias* target) :
+    Type(loc),
     Named(name),
     Reference<Alias>(target) {
   //

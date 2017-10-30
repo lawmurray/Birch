@@ -5,9 +5,8 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::BasicType::BasicType(Name* name, Location* loc,
-    const bool assignable, Basic* target) :
-    Type(loc, assignable),
+bi::BasicType::BasicType(Name* name, Location* loc, Basic* target) :
+    Type(loc),
     Named(name),
     Reference<Basic>(target) {
   //

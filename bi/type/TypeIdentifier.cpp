@@ -5,9 +5,8 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::TypeIdentifier::TypeIdentifier(Name* name,
-    Location* loc, const bool assignable) :
-    Type(loc, assignable),
+bi::TypeIdentifier::TypeIdentifier(Name* name, Location* loc) :
+    Type(loc),
     Named(name) {
   //
 }

@@ -21,10 +21,8 @@ public:
    *
    * @param name Name.
    * @param loc Location.
-   * @param assignable Is this type assignable?
    */
-  TypeIdentifier(Name* name, Location* loc = nullptr,
-      const bool assignable = false);
+  TypeIdentifier(Name* name, Location* loc = nullptr);
 
   /**
    * Destructor.

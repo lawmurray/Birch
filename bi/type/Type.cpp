@@ -8,9 +8,8 @@
 
 #include <cassert>
 
-bi::Type::Type(Location* loc, const bool assignable) :
-    Located(loc),
-    assignable(assignable) {
+bi::Type::Type(Location* loc) :
+    Located(loc) {
   //
 }
 
