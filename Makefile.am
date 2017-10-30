@@ -162,8 +162,10 @@ COMMON_SOURCES = \
   bi/type/TypeIterator.cpp \
   bi/type/TypeList.cpp \
   bi/visitor/Assigner.cpp \
+  bi/visitor/CanonicalCloner.cpp \
   bi/visitor/Cloner.cpp \
   bi/visitor/Gatherer.cpp \
+  bi/visitor/Instantiater.cpp \
   bi/visitor/Modifier.cpp \
   bi/visitor/Resolver.cpp \
   bi/visitor/ResolverHeader.cpp \
@@ -361,8 +363,10 @@ noinst_HEADERS = \
   bi/type/TypeList.hpp \
   bi/visitor/all.hpp \
   bi/visitor/Assigner.hpp \
+  bi/visitor/CanonicalCloner.hpp \
   bi/visitor/Cloner.hpp \
   bi/visitor/Gatherer.hpp \
+  bi/visitor/Instantiater.hpp \
   bi/visitor/Modifier.hpp \
   bi/visitor/Resolver.hpp \
   bi/visitor/ResolverHeader.hpp \

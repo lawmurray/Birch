@@ -3,21 +3,14 @@
  */
 #include "bi/visitor/Resolver.hpp"
 
-bi::Resolver::Resolver() :
-    memberScope(nullptr),
-    currentClass(nullptr) {
-  //
+#include "bi/visitor/Instantiater.hpp"
+
+bi::Resolver::Resolver(Scope* rootScope) {
+  scopes.push_back(rootScope);
 }
 
 bi::Resolver::~Resolver() {
   //
-}
-
-bi::File* bi::Resolver::modify(File* o) {
-  scopes.push_back(o->scope);
-  o->root = o->root->accept(this);
-  scopes.pop_back();
-  return o;
 }
 
 bi::Expression* bi::Resolver::modify(ExpressionList* o) {
@@ -32,7 +25,7 @@ bi::Expression* bi::Resolver::modify(ExpressionList* o) {
 
 bi::Expression* bi::Resolver::modify(Parentheses* o) {
   Modifier::modify(o);
-  if (o->single->tupleSize() > 1) {
+  if (o->single->count() > 1) {
     o->type = new TupleType(o->single->type->accept(&cloner), o->loc);
     o->type = o->type->accept(this);
     o->type->assignable = o->single->type->assignable;
@@ -41,7 +34,6 @@ bi::Expression* bi::Resolver::modify(Parentheses* o) {
   }
   return o;
 }
-
 
 bi::Expression* bi::Resolver::modify(Binary* o) {
   Modifier::modify(o);
@@ -59,6 +51,22 @@ bi::Type* bi::Resolver::modify(ClassType* o) {
   assert(!o->target);
   Modifier::modify(o);
   resolve(o);
+  if (!o->typeArgs->isEmpty() || !o->target->typeParams->isEmpty()) {
+    if (o->typeArgs->count() == o->target->typeParams->count()) {
+      Class* instantiation = o->target->getInstantiation(o->typeArgs);
+      if (!instantiation) {
+        Instantiater instantiater(o->typeArgs);
+        instantiation =
+            dynamic_cast<Class*>(o->target->accept(&instantiater));
+        assert(instantiation);
+        o->target->addInstantiation(instantiation);
+        instantiation->accept(this);
+      }
+      o->target = instantiation;
+   } else {
+      throw GenericException(o, o->target);
+    }
+  }
   return o;
 }
 
@@ -83,11 +91,11 @@ bi::Type* bi::Resolver::modify(GenericType* o) {
   return o;
 }
 
-bi::Expression* bi::Resolver::lookup(Identifier<Unknown>* ref, Scope* scope) {
+bi::Expression* bi::Resolver::lookup(Identifier<Unknown>* ref) {
   LookupResult category = UNRESOLVED;
-  if (scope) {
-    /* use provided scope, usually a membership scope */
-    category = scope->lookup(ref);
+  if (!memberScopes.empty()) {
+    /* use membership scope */
+    category = memberScopes.back()->lookup(ref);
   } else {
     /* use current stack of scopes */
     for (auto iter = scopes.rbegin();
@@ -121,11 +129,11 @@ bi::Expression* bi::Resolver::lookup(Identifier<Unknown>* ref, Scope* scope) {
   }
 }
 
-bi::Type* bi::Resolver::lookup(TypeIdentifier* ref, Scope* scope) {
+bi::Type* bi::Resolver::lookup(TypeIdentifier* ref) {
   LookupResult category = UNRESOLVED;
-  if (scope) {
-    /* use provided scope, usually a membership scope */
-    category = scope->lookup(ref);
+  if (!memberScopes.empty()) {
+    /* use membership scope */
+    category = memberScopes.back()->lookup(ref);
   } else {
     /* use current stack of scopes */
     for (auto iter = scopes.rbegin();

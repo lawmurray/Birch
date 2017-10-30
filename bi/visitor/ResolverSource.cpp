@@ -3,8 +3,11 @@
  */
 #include "bi/visitor/ResolverSource.hpp"
 
-bi::ResolverSource::ResolverSource() :
-    currentYieldType(nullptr) {
+#include "bi/visitor/ResolverSuper.hpp"
+#include "bi/visitor/ResolverHeader.hpp"
+
+bi::ResolverSource::ResolverSource(Scope* rootScope) :
+    Resolver(rootScope) {
   //
 }
 
@@ -59,12 +62,12 @@ bi::Expression* bi::ResolverSource::modify(UnaryCall* o) {
 bi::Expression* bi::ResolverSource::modify(Slice* o) {
   Modifier::modify(o);
 
-  const int typeSize = o->single->type->count();
-  const int sliceSize = o->brackets->tupleSize();
-  const int rangeDims = o->brackets->tupleDims();
+  const int typeDims = o->single->type->dims();
+  const int sliceCount = o->brackets->count();
+  const int rangeDims = o->brackets->dims();
 
-  if (typeSize != sliceSize) {
-    throw SliceException(o, typeSize, sliceSize);
+  if (typeDims != sliceCount) {
+    throw SliceException(o, typeDims, sliceCount);
   }
 
   ArrayType* type = dynamic_cast<ArrayType*>(o->single->type);
@@ -106,9 +109,9 @@ bi::Expression* bi::ResolverSource::modify(LambdaFunction* o) {
   scopes.push_back(o->scope);
   o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
-  returnTypes.push(o->returnType);
+  returnTypes.push_back(o->returnType);
   o->braces = o->braces->accept(this);
-  returnTypes.pop();
+  returnTypes.pop_back();
   scopes.pop_back();
   o->type = new FunctionType(o->params->type->accept(&cloner),
       o->returnType->accept(&cloner), o->loc);
@@ -137,7 +140,7 @@ bi::Expression* bi::ResolverSource::modify(Range* o) {
 bi::Expression* bi::ResolverSource::modify(Member* o) {
   o->left = o->left->accept(this);
   if (o->left->type->isClass()) {
-    memberScope = o->left->type->getClass()->scope;
+    memberScopes.push_back(o->left->type->getClass()->scope);
   } else {
     throw MemberException(o);
   }
@@ -148,9 +151,9 @@ bi::Expression* bi::ResolverSource::modify(Member* o) {
 }
 
 bi::Expression* bi::ResolverSource::modify(This* o) {
-  if (currentClass) {
+  if (!classes.empty()) {
     Modifier::modify(o);
-    o->type = new ClassType(currentClass, o->loc);
+    o->type = new ClassType(classes.back(), o->loc);
   } else {
     throw ThisException(o);
   }
@@ -158,12 +161,12 @@ bi::Expression* bi::ResolverSource::modify(This* o) {
 }
 
 bi::Expression* bi::ResolverSource::modify(Super* o) {
-  if (currentClass) {
-    if (currentClass->base->isEmpty()) {
+  if (!classes.empty()) {
+    if (classes.back()->base->isEmpty()) {
       throw SuperBaseException(o);
     } else {
       Modifier::modify(o);
-      o->type = currentClass->base->accept(&cloner);
+      o->type = classes.back()->base->accept(&cloner);
       o->type->accept(this);
     }
   } else {
@@ -205,7 +208,7 @@ bi::Expression* bi::ResolverSource::modify(LocalVariable* o) {
 }
 
 bi::Expression* bi::ResolverSource::modify(Identifier<Unknown>* o) {
-  return lookup(o, memberScope)->accept(this);
+  return lookup(o)->accept(this);
 }
 
 bi::Expression* bi::ResolverSource::modify(Identifier<Parameter>* o) {
@@ -273,7 +276,7 @@ bi::Statement* bi::ResolverSource::modify(Assignment* o) {
         new Member(o->right->accept(&cloner),
             new Identifier<Unknown>(new Name("tildeRight"), o->loc), o->loc),
         new Parentheses(o->left->accept(&cloner), o->loc), o->loc);
-    if (currentYieldType) {
+    if (!yieldTypes.empty()) {
       auto yield = new Yield(observe, o->loc);
       return yield->accept(this);
     } else {
@@ -320,9 +323,9 @@ bi::Statement* bi::ResolverSource::modify(GlobalVariable* o) {
 
 bi::Statement* bi::ResolverSource::modify(Function* o) {
   scopes.push_back(o->scope);
-  returnTypes.push(o->returnType);
+  returnTypes.push_back(o->returnType);
   o->braces = o->braces->accept(this);
-  returnTypes.pop();
+  returnTypes.pop_back();
   scopes.pop_back();
   return o;
 }
@@ -332,10 +335,10 @@ bi::Statement* bi::ResolverSource::modify(Fiber* o) {
   if (!o->returnType->isFiber()) {
     throw FiberTypeException(o);
   } else {
-    currentYieldType = dynamic_cast<FiberType*>(o->returnType)->single;
+    yieldTypes.push_back(dynamic_cast<FiberType*>(o->returnType)->single);
   }
   o->braces = o->braces->accept(this);
-  currentYieldType = nullptr;
+  yieldTypes.pop_back();
   scopes.pop_back();
   return o;
 }
@@ -349,18 +352,18 @@ bi::Statement* bi::ResolverSource::modify(Program* o) {
 
 bi::Statement* bi::ResolverSource::modify(BinaryOperator* o) {
   scopes.push_back(o->scope);
-  returnTypes.push(o->returnType);
+  returnTypes.push_back(o->returnType);
   o->braces = o->braces->accept(this);
-  returnTypes.pop();
+  returnTypes.pop_back();
   scopes.pop_back();
   return o;
 }
 
 bi::Statement* bi::ResolverSource::modify(UnaryOperator* o) {
   scopes.push_back(o->scope);
-  returnTypes.push(o->returnType);
+  returnTypes.push_back(o->returnType);
   o->braces = o->braces->accept(this);
-  returnTypes.pop();
+  returnTypes.pop_back();
   scopes.pop_back();
   return o;
 }
@@ -376,9 +379,9 @@ bi::Statement* bi::ResolverSource::modify(MemberVariable* o) {
 
 bi::Statement* bi::ResolverSource::modify(MemberFunction* o) {
   scopes.push_back(o->scope);
-  returnTypes.push(o->returnType);
+  returnTypes.push_back(o->returnType);
   o->braces = o->braces->accept(this);
-  returnTypes.pop();
+  returnTypes.pop_back();
   scopes.pop_back();
   return o;
 }
@@ -388,10 +391,10 @@ bi::Statement* bi::ResolverSource::modify(MemberFiber* o) {
   if (!o->returnType->isFiber()) {
     throw FiberTypeException(o);
   } else {
-    currentYieldType = dynamic_cast<FiberType*>(o->returnType)->single;
+    yieldTypes.push_back(dynamic_cast<FiberType*>(o->returnType)->single);
   }
   o->braces = o->braces->accept(this);
-  currentYieldType = nullptr;
+  yieldTypes.pop_back();
   scopes.pop_back();
   return o;
 }
@@ -405,21 +408,35 @@ bi::Statement* bi::ResolverSource::modify(AssignmentOperator* o) {
 
 bi::Statement* bi::ResolverSource::modify(ConversionOperator* o) {
   scopes.push_back(o->scope);
-  returnTypes.push(o->returnType);
+  returnTypes.push_back(o->returnType);
   o->braces = o->braces->accept(this);
-  returnTypes.pop();
+  returnTypes.pop_back();
   scopes.pop_back();
   return o;
 }
 
 bi::Statement* bi::ResolverSource::modify(Class* o) {
-  scopes.push_back(o->scope);
-  currentClass = o;
-  o->args = o->args->accept(this);
-  o->base->resolveConstructor(o);
-  o->braces = o->braces->accept(this);
-  currentClass = nullptr;
-  scopes.pop_back();
+  if (o->state < RESOLVED_SUPER) {
+    ResolverSuper resolver(scopes.front());
+    o->accept(&resolver);
+  }
+  if (o->state < RESOLVED_HEADER) {
+    ResolverHeader resolver(scopes.front());
+    o->accept(&resolver);
+  }
+  if (o->state < RESOLVED_SOURCE) {
+    scopes.push_back(o->scope);
+    classes.push_back(o);
+    o->args = o->args->accept(this);
+    o->base->resolveConstructor(o);
+    o->braces = o->braces->accept(this);
+    o->state = RESOLVED_SOURCE;
+    classes.pop_back();
+    scopes.pop_back();
+  }
+  for (auto instantiation : o->instantiations) {
+    instantiation->accept(this);
+  }
   return o;
 }
 
@@ -436,23 +453,21 @@ bi::Statement* bi::ResolverSource::modify(ExpressionStatement* o) {
 
   /* when in the body of a fiber and another fiber is called while ignoring
    * its return type, this is syntactic sugar for a loop */
-  if (currentYieldType) {
-    auto call = dynamic_cast<Call*>(o->single);
-    if (call && call->type->isFiber()) {
-      auto name = new Name();
-      auto var = new LocalVariable(name, o->single->type->accept(&cloner),
-          new EmptyExpression(o->loc), o->single, o->loc);
-      auto decl = new ExpressionStatement(var, o->loc);
-      auto query = new Query(new Identifier<LocalVariable>(name, o->loc),
-          o->loc);
-      auto get = new Get(new Identifier<LocalVariable>(name, o->loc), o->loc);
-      auto yield = new Yield(get, o->loc);
-      auto loop = new While(new Parentheses(query, o->loc),
-          new Braces(yield, o->loc), o->loc);
-      auto result = new StatementList(decl, loop, o->loc);
+  auto call = dynamic_cast<Call*>(o->single);
+  if (call && call->type->isFiber()) {
+    auto name = new Name();
+    auto var = new LocalVariable(name, o->single->type->accept(&cloner),
+        new EmptyExpression(o->loc), o->single, o->loc);
+    auto decl = new ExpressionStatement(var, o->loc);
+    auto query = new Query(new Identifier<LocalVariable>(name, o->loc),
+        o->loc);
+    auto get = new Get(new Identifier<LocalVariable>(name, o->loc), o->loc);
+    auto yield = new Yield(get, o->loc);
+    auto loop = new While(new Parentheses(query, o->loc),
+        new Braces(yield, o->loc), o->loc);
+    auto result = new StatementList(decl, loop, o->loc);
 
-      return result->accept(this);
-    }
+    return result->accept(this);
   }
   return o;
 }
@@ -499,20 +514,20 @@ bi::Statement* bi::ResolverSource::modify(Return* o) {
     if (!o->single->type->isEmpty()) {
       throw ReturnException(o);
     }
-  } else if (!o->single->type->definitely(*returnTypes.top())) {
-    throw ReturnTypeException(o, returnTypes.top());
+  } else if (!o->single->type->definitely(*returnTypes.back())) {
+    throw ReturnTypeException(o, returnTypes.back());
   }
   return o;
 }
 
 bi::Statement* bi::ResolverSource::modify(Yield* o) {
   Modifier::modify(o);
-  if (!currentYieldType) {
+  if (yieldTypes.empty()) {
     if (!o->single->type->isEmpty()) {
       throw YieldException(o);
     }
-  } else if (!o->single->type->definitely(*currentYieldType)) {
-    throw YieldTypeException(o, currentYieldType);
+  } else if (!o->single->type->definitely(*yieldTypes.back())) {
+    throw YieldTypeException(o, yieldTypes.back());
   }
   return o;
 }

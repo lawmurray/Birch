@@ -18,8 +18,10 @@ class ResolverSource: public Resolver {
 public:
   /**
    * Constructor.
+   *
+   * @param rootScope The root scope.
    */
-  ResolverSource();
+  ResolverSource(Scope* rootScope);
 
   /**
    * Destructor.
@@ -102,12 +104,12 @@ private:
    * Return type of current function. Stack as functions may contain lambda
    * functions may contain lambda functions...
    */
-  std::stack<Type*> returnTypes;
+  std::list<Type*> returnTypes;
 
   /**
    * Yield type of current fiber.
    */
-  Type* currentYieldType;
+  std::list<Type*> yieldTypes;
 };
 }
 

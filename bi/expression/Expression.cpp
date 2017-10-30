@@ -41,7 +41,7 @@ bi::Expression* bi::Expression::getRight() const {
   return nullptr;
 }
 
-int bi::Expression::tupleSize() const {
+int bi::Expression::count() const {
   int result = 0;
   for (auto iter = begin(); iter != end(); ++iter) {
     ++result;
@@ -49,7 +49,7 @@ int bi::Expression::tupleSize() const {
   return result;
 }
 
-int bi::Expression::tupleDims() const {
+int bi::Expression::dims() const {
   int result = 0;
   for (auto iter = begin(); iter != end(); ++iter) {
     if (dynamic_cast<const Range*>(*iter)) {

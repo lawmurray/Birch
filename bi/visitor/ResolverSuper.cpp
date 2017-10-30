@@ -1,9 +1,10 @@
 /**
  * @file
  */
-#include "ResolverSuper.hpp"
+#include "bi/visitor/ResolverSuper.hpp"
 
-bi::ResolverSuper::ResolverSuper() {
+bi::ResolverSuper::ResolverSuper(Scope* rootScope) :
+    Resolver(rootScope) {
   //
 }
 
@@ -26,17 +27,23 @@ bi::Statement* bi::ResolverSuper::modify(Basic* o) {
   return o;
 }
 bi::Statement* bi::ResolverSuper::modify(Class* o) {
-  scopes.push_back(o->scope);
-  currentClass = o;
-  o->typeParams = o->typeParams->accept(this);
-  o->base = o->base->accept(this);
-  ///@todo Check that base type is of class type
-  if (!o->base->isEmpty()) {
-    o->addSuper(o->base);
+  if (o->state < RESOLVED_SUPER) {
+    scopes.push_back(o->scope);
+    classes.push_back(o);
+    o->typeParams = o->typeParams->accept(this);
+    o->base = o->base->accept(this);
+    ///@todo Check that base type is of class type
+    if (!o->base->isEmpty()) {
+      o->addSuper(o->base);
+    }
+    o->braces = o->braces->accept(this);
+    o->state = RESOLVED_SUPER;
+    classes.pop_back();
+    scopes.pop_back();
   }
-  o->braces = o->braces->accept(this);
-  currentClass = nullptr;
-  scopes.pop_back();
+  for (auto instantiation : o->instantiations) {
+    instantiation->accept(this);
+  }
   return o;
 }
 
@@ -87,6 +94,6 @@ bi::Statement* bi::ResolverSuper::modify(AssignmentOperator* o) {
 
 bi::Statement* bi::ResolverSuper::modify(ConversionOperator* o) {
   o->returnType = o->returnType->accept(this);
-  currentClass->addConversion(o->returnType);
+  classes.back()->addConversion(o->returnType);
   return o;
 }

@@ -85,6 +85,9 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
         auto super = dynamic_cast<const ClassType*>(o->base);
         assert(super);
         middle(super->name);
+        if (!super->typeArgs->isEmpty()) {
+          middle('<' << super->typeArgs << '>');
+        }
       } else {
         middle("Object_");
       }

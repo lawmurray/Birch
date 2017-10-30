@@ -59,25 +59,25 @@ void bi::Compiler::parse() {
 void bi::Compiler::resolve() {
   /* first pass: populate available types */
   for (auto file : package->files) {
-    Typer pass1;
+    Typer pass1(file->scope);
     file->accept(&pass1);
   }
 
   /* second pass: resolve super type relationships */
   for (auto file : package->files) {
-    ResolverSuper pass2;
+    ResolverSuper pass2(file->scope);
     file->accept(&pass2);
   }
 
   /* third pass: populate available functions */
   for (auto file : package->files) {
-    ResolverHeader pass3;
+    ResolverHeader pass3(file->scope);
     file->accept(&pass3);
   }
 
   /* fourth pass: resolve the bodies of functions */
   for (auto file : package->sources) {
-    ResolverSource pass4;
+    ResolverSource pass4(file->scope);
     file->accept(&pass4);
   }
 }

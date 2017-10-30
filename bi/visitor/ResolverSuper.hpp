@@ -17,8 +17,10 @@ class ResolverSuper: public Resolver {
 public:
   /**
    * Constructor.
+   *
+   * @param rootScope The root scope.
    */
-  ResolverSuper();
+  ResolverSuper(Scope* rootScope);
 
   /**
    * Destructor.

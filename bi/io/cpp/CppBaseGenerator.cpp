@@ -327,7 +327,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
     in();
 
     /* handle program options */
-    if (o->params->tupleSize() > 0) {
+    if (o->params->count() > 0) {
       /* option variables */
       for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
         auto param = dynamic_cast<const Parameter*>(*iter);
@@ -577,7 +577,7 @@ void bi::CppBaseGenerator::visit(const EmptyType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const ArrayType* o) {
-  middle("bi::DefaultArray<" << o->single << ',' << o->count() << '>');
+  middle("bi::DefaultArray<" << o->single << ',' << o->dims() << '>');
 }
 
 void bi::CppBaseGenerator::visit(const TupleType* o) {

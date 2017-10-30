@@ -17,6 +17,16 @@
 
 namespace bi {
 /**
+ * Possible states of a class during parsing.
+ */
+enum ClassState {
+  CLONED = 0,
+  RESOLVED_SUPER = 1,
+  RESOLVED_HEADER = 2,
+  RESOLVED_SOURCE = 3
+};
+
+/**
  * Class.
  *
  * @ingroup compiler_statement
@@ -80,6 +90,17 @@ public:
    */
   bool hasAssignment(const Type* o) const;
 
+  /**
+   * Add an instantiation.
+   */
+  void addInstantiation(Class* o);
+
+  /**
+   * Get the instantiation, if any, that exactly matches the given generic
+   * type arguments. Returns `nullptr` if not such instantiation exists.
+   */
+  Class* getInstantiation(const Type* typeArgs) const;
+
   virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
@@ -89,7 +110,14 @@ public:
    */
   Expression* typeParams;
 
-private:
+  /**
+   * State of the class during parsing. Classes with generic type parameters
+   * are instantiated on use, which is why this is necessary: a new class
+   * may be instantiated during a later parsing phase and we must keep track
+   * of where we are for each class.
+   */
+  ClassState state;
+
   /**
    * Super classes.
    */
@@ -104,5 +132,10 @@ private:
    * Types that can be assigned to this class.
    */
   std::list<const Type*> assignments;
+
+  /**
+   * Instantiations of this class.
+   */
+  std::list<Class*> instantiations;
 };
 }

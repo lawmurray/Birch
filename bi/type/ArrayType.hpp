@@ -42,7 +42,7 @@ public:
    */
   virtual ~ArrayType();
 
-  virtual int count() const;
+  virtual int dims() const;
   virtual bool isArray() const;
 
   virtual void resolveConstructor(Argumented* o);

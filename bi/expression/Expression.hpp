@@ -87,14 +87,14 @@ public:
   virtual Expression* getRight() const;
 
   /**
-   * Number of expressions in tuple.
+   * Number of expresions in an expression list.
    */
-  virtual int tupleSize() const;
+  virtual int count() const;
 
   /**
-   * Number of range expressions in tuple.
+   * Number of range expressions in an expression list.
    */
-  virtual int tupleDims() const;
+  virtual int dims() const;
 
   /**
    * Iterator to first element if this is a list, to one-past-the-last if

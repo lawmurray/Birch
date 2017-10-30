@@ -10,7 +10,7 @@ bi::ArrayType::ArrayType(Type* single, Expression* brackets,
     Type(loc, assignable),
     Single<Type>(single),
     Bracketed(brackets),
-    ndims(brackets->tupleSize()) {
+    ndims(brackets->count()) {
   //
 }
 
@@ -27,7 +27,7 @@ bi::ArrayType::~ArrayType() {
   //
 }
 
-int bi::ArrayType::count() const {
+int bi::ArrayType::dims() const {
   return ndims;
 }
 

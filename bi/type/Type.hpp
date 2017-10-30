@@ -149,6 +149,16 @@ public:
   virtual Basic* getBasic() const;
 
   /**
+   * Number of types in a type list.
+   */
+  virtual int count() const;
+
+  /**
+   * Number of dimensions in an array type.
+   */
+  virtual int dims() const;
+
+  /**
    * For an optional or fiber type, the type that is wrapped, otherwise
    * undefined.
    */
@@ -171,11 +181,6 @@ public:
    * @param args Argument types.
    */
   virtual void resolveConstructor(Argumented* o);
-
-  /**
-   * How many dimensions does this type have?
-   */
-  virtual int count() const;
 
   /**
    * Iterator to first element if this is a list, to one-past-the-last if

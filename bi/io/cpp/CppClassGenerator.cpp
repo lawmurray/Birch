@@ -26,19 +26,28 @@ void bi::CppClassGenerator::visit(const Class* o) {
         auto type = dynamic_cast<const ClassType*>(o->base);
         assert(type);
         middle(type->name);
+        if (!type->typeArgs->isEmpty()) {
+          middle('<' << type->typeArgs << '>');
+        }
       } else {
         middle("Object_");
       }
       finish(" {");
       line("public:");
       in();
-      line("typedef " << o->name << " this_type;");
+      start("typedef " << o->name);
+      genTemplateArgs(o);
+      finish(" this_type;");
       if (o->base->isEmpty()) {
         line("typedef Object_ super_type;");
       } else {
         auto type = dynamic_cast<const ClassType*>(o->base);
         assert(type);
-        line("typedef " << type->name << " super_type;");
+        start("typedef " << type->name);
+        if (!type->typeArgs->isEmpty()) {
+          middle('<' << type->typeArgs << '>');
+        }
+        finish(" super_type;");
       }
       line("");
     }

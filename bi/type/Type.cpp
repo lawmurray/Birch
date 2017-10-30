@@ -78,6 +78,18 @@ bi::Basic* bi::Type::getBasic() const {
   return nullptr;
 }
 
+int bi::Type::count() const {
+  int result = 0;
+  for (auto iter = begin(); iter != end(); ++iter) {
+    ++result;
+  }
+  return result;
+}
+
+int bi::Type::dims() const {
+  return 0;
+}
+
 bi::Type* bi::Type::unwrap() const {
   assert(false);
   return nullptr;
@@ -91,10 +103,6 @@ void bi::Type::resolveConstructor(Argumented* o) {
   if (!o->args->isEmpty()) {
     throw ConstructorException(o);
   }
-}
-
-int bi::Type::count() const {
-  return 0;
 }
 
 bi::TypeIterator bi::Type::begin() const {

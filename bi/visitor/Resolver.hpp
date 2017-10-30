@@ -4,7 +4,7 @@
 #pragma once
 
 #include "bi/visitor/Modifier.hpp"
-#include "bi/visitor/Cloner.hpp"
+#include "bi/visitor/CanonicalCloner.hpp"
 #include "bi/visitor/Assigner.hpp"
 
 #include <stack>
@@ -20,8 +20,10 @@ class Resolver: public Modifier {
 public:
   /**
    * Constructor.
+   *
+   * @param rootScope The root scope.
    */
-  Resolver();
+  Resolver(Scope* rootScope);
 
   /**
    * Destructor.
@@ -29,8 +31,6 @@ public:
   virtual ~Resolver() = 0;
 
   using Modifier::modify;
-
-  virtual File* modify(File* file);
 
   virtual Expression* modify(ExpressionList* o);
   virtual Expression* modify(Parentheses* o);
@@ -58,24 +58,20 @@ protected:
    * context.
    *
    * @param ref The reference.
-   * @param scope The membership scope, if it is to be used for lookup,
-   * otherwise the containing scope is used.
    *
    * @return A new, unambiguous, reference.
    */
-  Expression* lookup(Identifier<Unknown>* ref, Scope* scope = nullptr);
+  Expression* lookup(Identifier<Unknown>* ref);
 
   /**
    * Look up a reference that is syntactically ambiguous in a type
    * context.
    *
    * @param ref The reference.
-   * @param scope The membership scope, if it is to be used for lookup,
-   * otherwise the containing scope is used.
    *
    * @return A new, unambiguous, reference.
    */
-  Type* lookup(TypeIdentifier* ref, Scope* scope = nullptr);
+  Type* lookup(TypeIdentifier* ref);
 
   /**
    * Check that an expression is of boolean type.
@@ -97,19 +93,19 @@ protected:
   std::list<Scope*> scopes;
 
   /**
-   * Scope for resolution of type members.
+   * List of scopes for resolution of type members.
    */
-  Scope* memberScope;
+  std::list<Scope*> memberScopes;
 
   /**
-   * Current class.
+   * Stack of classes.
    */
-  Class* currentClass;
+  std::list<Class*> classes;
 
   /*
    * Auxiliary visitors.
    */
-  Cloner cloner;
+  CanonicalCloner cloner;
   Assigner assigner;
 };
 }
@@ -118,10 +114,10 @@ protected:
 
 template<class ObjectType>
 void bi::Resolver::resolve(ObjectType* o) {
-  if (memberScope) {
+  if (!memberScopes.empty()) {
     /* use the scope for the current member lookup */
-    memberScope->resolve(o);
-    memberScope = nullptr;
+    memberScopes.back()->resolve(o);
+    memberScopes.pop_back();
   } else {
     /* use current stack of scopes */
     for (auto iter = scopes.rbegin(); !o->target && iter != scopes.rend();

@@ -19,8 +19,10 @@ class Typer: public Modifier {
 public:
   /**
    * Constructor.
+   *
+   * @param rootScope The root scope.
    */
-  Typer();
+  Typer(Scope* rootScope);
 
   /**
    * Destructor.
@@ -29,15 +31,14 @@ public:
 
   using Modifier::modify;
 
-  virtual File* modify(File* file);
   virtual Statement* modify(Basic* o);
   virtual Statement* modify(Class* o);
   virtual Statement* modify(Alias* o);
 
 protected:
   /**
-   * The file.
+   * The root scope.
    */
-  File* currentFile;
+  Scope* rootScope;
 };
 }

@@ -1,26 +1,17 @@
 /**
  * @file
  */
-#include "ResolverHeader.hpp"
+#include "bi/visitor/ResolverHeader.hpp"
 
-bi::ResolverHeader::ResolverHeader() {
+#include "bi/visitor/ResolverSuper.hpp"
+
+bi::ResolverHeader::ResolverHeader(Scope* rootScope) :
+    Resolver(rootScope) {
   //
 }
 
 bi::ResolverHeader::~ResolverHeader() {
   //
-}
-
-bi::Type* bi::ResolverHeader::modify(ClassType* o) {
-  /* checks on generic type arguments are deferred until here, resolution may
-   * have already happened */
-  if (!o->target) {
-    Resolver::modify(o);
-  }
-  if (!o->typeArgs->definitely(*o->target->typeParams->type)) {
-    throw GenericException(o, o->target);
-  }
-  return o;
 }
 
 bi::Expression* bi::ResolverHeader::modify(Parameter* o) {
@@ -38,16 +29,25 @@ bi::Statement* bi::ResolverHeader::modify(Basic* o) {
 }
 
 bi::Statement* bi::ResolverHeader::modify(Class* o) {
-  if (!o->base->isEmpty()) {
-    o->scope->inherit(o->base->getClass()->scope);
+  if (o->state < RESOLVED_SUPER) {
+    ResolverSuper resolver(scopes.front());
+    o->accept(&resolver);
   }
-  scopes.push_back(o->scope);
-  currentClass = o;
-  o->typeParams = o->typeParams->accept(this);
-  o->params = o->params->accept(this);
-  o->braces = o->braces->accept(this);
-  currentClass = nullptr;
-  scopes.pop_back();
+  if (o->state < RESOLVED_HEADER) {
+    if (!o->base->isEmpty()) {
+      o->scope->inherit(o->base->getClass()->scope);
+    }
+    scopes.push_back(o->scope);
+    classes.push_back(o);
+    o->params = o->params->accept(this);
+    o->braces = o->braces->accept(this);
+    o->state = RESOLVED_HEADER;
+    classes.pop_back();
+    scopes.pop_back();
+  }
+  for (auto instantiation : o->instantiations) {
+    instantiation->accept(this);
+  }
   return o;
 }
 
@@ -170,7 +170,7 @@ bi::Statement* bi::ResolverHeader::modify(AssignmentOperator* o) {
   scopes.push_back(o->scope);
   o->single = o->single->accept(this);
   scopes.pop_back();
-  currentClass->addAssignment(o->single->type);
+  classes.back()->addAssignment(o->single->type);
   return o;
 }
 

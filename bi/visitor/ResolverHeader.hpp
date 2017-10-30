@@ -17,8 +17,10 @@ class ResolverHeader: public Resolver {
 public:
   /**
    * Constructor.
+   *
+   * @param rootScope The root scope.
    */
-  ResolverHeader();
+  ResolverHeader(Scope* rootScope);
 
   /**
    * Destructor.
@@ -26,8 +28,6 @@ public:
   virtual ~ResolverHeader();
 
   using Resolver::modify;
-
-  virtual Type* modify(ClassType* o);
 
   virtual Expression* modify(Parameter* o);
   virtual Expression* modify(MemberParameter* o);

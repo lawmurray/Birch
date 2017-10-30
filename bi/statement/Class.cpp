@@ -13,7 +13,8 @@ bi::Class::Class(Name* name, Expression* typeParams, Expression* params,
     Based(base),
     Argumented(args),
     Braced(braces),
-    typeParams(typeParams) {
+    typeParams(typeParams),
+    state(CLONED) {
   //
 }
 
@@ -70,4 +71,22 @@ bool bi::Class::hasAssignment(const Type* o) const {
       || std::any_of(supers.begin(), supers.end(),
           [&](auto x) {return x->hasAssignment(o);});
   return result;
+}
+
+void bi::Class::addInstantiation(Class* o) {
+  instantiations.push_back(o);
+}
+
+bi::Class* bi::Class::getInstantiation(const Type* typeArgs) const {
+  for (auto o : instantiations) {
+    bool matches = typeArgs->count() == o->typeParams->count() &&
+        std::equal(typeArgs->begin(), typeArgs->end(), o->typeParams->begin(),
+        [](const Type* arg, const Expression* param) {
+           return arg->equals(*param->type);
+    });
+    if (matches) {
+      return o;
+    }
+  }
+  return nullptr;
 }
