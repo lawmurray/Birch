@@ -424,19 +424,21 @@ private:
     /* pre-condition */
     assert(frame.conforms(o.frame));
 
-    size_t block1 = frame.block();
-    auto iter1 = begin();
-    auto end1 = end();
+    if (frame.size() > 0) {
+      size_t block1 = frame.block();
+      auto iter1 = begin();
+      auto end1 = end();
 
-    size_t block2 = o.frame.block();
-    auto iter2 = o.begin();
-    auto end2 = o.end();
+      size_t block2 = o.frame.block();
+      auto iter2 = o.begin();
+      auto end2 = o.end();
 
-    size_t block = gcd(block1, block2);
-    for (; iter1 != end1; iter1 += block, iter2 += block) {
-      std::memcpy(&(*iter1), &(*iter2), block * sizeof(Type));
+      size_t block = gcd(block1, block2);
+      for (; iter1 != end1; iter1 += block, iter2 += block) {
+        std::memcpy(&(*iter1), &(*iter2), block * sizeof(Type));
+      }
+      assert(iter2 == end2);
     }
-    assert(iter2 == end2);
   }
 
   /**
