@@ -57,7 +57,7 @@ void bi::CppConstructorGenerator::visit(const MemberVariable* o) {
     start(o->name << '(');
     middle("bi::make_object<" << o->type << ">(" << o->args << ')');
     middle(')');
-  } else if (o->type->isArray()) {
+  } else if (o->type->isArray() && !o->brackets->isEmpty()) {
     finish(',');
     start(o->name << "(bi::make_frame(" << o->brackets << ')');
     if (!o->args->isEmpty()) {
