@@ -30,14 +30,9 @@ class MultivariateGaussian(D:Integer) < Random<Real[_]> {
 
   function doRealize() {
     if (missing) {
-      for (d:Integer in 1..D) {
-        x[d] <- simulate_gaussian(0.0, 1.0);
-      }
-      set(μ + llt(Σ)*x);
+      set(simulate_multivariate_gaussian(μ, Σ));
     } else {
-      L:Real[D,D];
-      L <- llt(Σ);
-      setWeight(-0.5*squaredNorm(solve(L, x - μ)) - log(determinant(L)) - 0.5*D*log(2.0*π));
+      setWeight(observe_multivariate_gaussian(x, μ, Σ));
     }
   }
 

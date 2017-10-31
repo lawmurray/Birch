@@ -146,6 +146,22 @@ function observe_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
 }
 
 /**
+ * Observe a multivariate Gaussian variate.
+ *
+ * - x: The variate.
+ * - μ: Mean.
+ * - Σ: Covariance.
+ *
+ * Returns the log probability density.
+ */
+function observe_multivariate_gaussian(x:Real[_], μ:Real[_], Σ:Real[_,_]) -> Real {
+  D:Integer <- length(μ);
+  L:Real[_,_] <- llt(Σ);
+  
+  return -0.5*squaredNorm(solve(L, x - μ)) - log(determinant(L)) - 0.5*D*log(2.0*π);
+}
+
+/**
  * Observe a log-Gaussian variate.
  *
  * - x: The variate.

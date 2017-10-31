@@ -138,6 +138,21 @@ function simulate_gaussian(μ:Real, σ2:Real) -> Real {
 }
 
 /**
+ * Simulate a multivariate Gaussian variate.
+ *
+ * - μ: Mean.
+ * - Σ: Covariance.
+ */
+function simulate_multivariate_gaussian(μ:Real[_], Σ:Real[_,_]) -> Real[_] {
+  D:Integer <- length(μ);
+  z:Real[D];
+  for (d:Integer in 1..D) {
+    z[d] <- simulate_gaussian(0.0, 1.0);
+  }
+  return μ + llt(Σ)*z;
+}
+
+/**
  * Simulate a log-Gaussian variate.
  *
  * - μ: Mean (in log space).
