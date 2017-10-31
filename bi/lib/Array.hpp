@@ -435,7 +435,8 @@ private:
 
       size_t block = gcd(block1, block2);
       for (; iter1 != end1; iter1 += block, iter2 += block) {
-        std::memcpy(&(*iter1), &(*iter2), block * sizeof(Type));
+        std::memmove(&(*iter1), &(*iter2), block * sizeof(Type));
+        // ^ memory regions may overlap, so avoid memcpy
       }
       assert(iter2 == end2);
     }
