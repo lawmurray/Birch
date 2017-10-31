@@ -493,6 +493,14 @@ bi::Statement* bi::ResolverSource::modify(While* o) {
   return o;
 }
 
+bi::Statement* bi::ResolverSource::modify(DoWhile* o) {
+  scopes.push_back(o->scope);
+  Modifier::modify(o);
+  scopes.pop_back();
+  checkBoolean(o->cond->strip());
+  return o;
+}
+
 bi::Statement* bi::ResolverSource::modify(Assert* o) {
   Modifier::modify(o);
   checkBoolean(o->cond);

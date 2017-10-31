@@ -356,6 +356,12 @@ bi::Statement* bi::Modifier::modify(While* o) {
   return o;
 }
 
+bi::Statement* bi::Modifier::modify(DoWhile* o) {
+  o->braces = o->braces->accept(this);
+  o->cond = o->cond->accept(this);
+  return o;
+}
+
 bi::Statement* bi::Modifier::modify(Assert* o) {
   o->cond = o->cond->accept(this);
   return o;

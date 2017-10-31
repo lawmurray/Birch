@@ -104,6 +104,7 @@ IS                                 (u|U|l|L)*
 "for"                               { return FOR; }
 "in"                                { return IN; }
 "while"                             { return WHILE; }
+"do"                                { return DO; }
 "assert"                            { return ASSERT; }
 "return"                            { return RETURN; }
 "yield"                             { return YIELD; }

@@ -81,6 +81,7 @@ public:
   virtual Statement* modify(If* o);
   virtual Statement* modify(For* o);
   virtual Statement* modify(While* o);
+  virtual Statement* modify(DoWhile* o);
   virtual Statement* modify(Assert* o);
   virtual Statement* modify(Return* o);
   virtual Statement* modify(Yield* o);

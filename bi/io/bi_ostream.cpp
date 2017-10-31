@@ -406,6 +406,10 @@ void bi::bi_ostream::visit(const While* o) {
   line("while " << o->cond << o->braces);
 }
 
+void bi::bi_ostream::visit(const DoWhile* o) {
+  line("do " << o->braces << " while " << o->cond << ';');
+}
+
 void bi::bi_ostream::visit(const Assert* o) {
   line("assert " << o->cond << ';');
 }

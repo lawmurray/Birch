@@ -12,6 +12,7 @@
 #include "bi/statement/Braces.hpp"
 #include "bi/statement/Class.hpp"
 #include "bi/statement/ConversionOperator.hpp"
+#include "bi/statement/DoWhile.hpp"
 #include "bi/statement/EmptyStatement.hpp"
 #include "bi/statement/ExpressionStatement.hpp"
 #include "bi/statement/For.hpp"

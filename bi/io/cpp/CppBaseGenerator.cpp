@@ -547,6 +547,14 @@ void bi::CppBaseGenerator::visit(const While* o) {
   line("}");
 }
 
+void bi::CppBaseGenerator::visit(const DoWhile* o) {
+  line("do {");
+  in();
+  *this << o->braces->strip();
+  out();
+  line("} while " << o->cond << ';');
+}
+
 void bi::CppBaseGenerator::visit(const Assert* o) {
   //if (o->loc) {
   //  line("#line " << o->loc->firstLine << " \"" << o->loc->file->path << '"');

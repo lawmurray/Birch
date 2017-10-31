@@ -79,7 +79,7 @@
 %expect 4     // for generics, '<' ambiguous, but closing '>' disambiguates
 
 %token <valString> PROGRAM CLASS TYPE FUNCTION FIBER OPERATOR
-%token <valString> IF ELSE FOR IN WHILE ASSERT RETURN YIELD CPP HPP
+%token <valString> IF ELSE FOR IN WHILE DO ASSERT RETURN YIELD CPP HPP
 %token <valString> THIS SUPER NIL CLOSED
 %token <valString> DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE NAME
 %token <valBool> BOOL_LITERAL
@@ -122,7 +122,7 @@
 %type <valStatement> conversion_operator_declaration assignment_operator_declaration
 %type <valStatement> class_declaration alias_declaration basic_declaration
 %type <valStatement> cpp hpp assignment expression_statement if for
-%type <valStatement> while assertion return yield
+%type <valStatement> while do_while assertion return yield
 %type <valStatement> statement statements optional_statements
 %type <valStatement> class_statement class_statements optional_class_statements
 %type <valStatement> file_statement file_statements optional_file_statements
@@ -585,6 +585,10 @@ while
     : WHILE parens_expression braces  { $$ = new bi::While($2, $3, make_loc(@$)); }
     ;
 
+do_while
+    : DO braces WHILE parens_expression ';'  { $$ = new bi::DoWhile($2, $4, make_loc(@$)); }
+    ;
+
 assertion
     : ASSERT expression ';'  { $$ = new bi::Assert($2, make_loc(@$)); }
     ;
@@ -604,6 +608,7 @@ statement
     | if
     | for
     | while
+    | do_while
     | assertion
     | return
     | yield

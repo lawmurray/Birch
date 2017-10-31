@@ -123,6 +123,7 @@ COMMON_SOURCES = \
   bi/statement/Braces.cpp \
   bi/statement/Class.cpp \
   bi/statement/ConversionOperator.cpp \
+  bi/statement/DoWhile.cpp \
   bi/statement/EmptyStatement.cpp \
   bi/statement/ExpressionStatement.cpp \
   bi/statement/Fiber.cpp \
@@ -321,6 +322,7 @@ noinst_HEADERS = \
   bi/statement/Braces.hpp \
   bi/statement/Class.hpp \
   bi/statement/ConversionOperator.hpp \
+  bi/statement/DoWhile.hpp \
   bi/statement/EmptyStatement.hpp \
   bi/statement/ExpressionStatement.hpp \
   bi/statement/Fiber.hpp \

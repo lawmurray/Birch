@@ -315,6 +315,11 @@ void bi::Visitor::visit(const While* o) {
   o->braces->accept(this);
 }
 
+void bi::Visitor::visit(const DoWhile* o) {
+  o->braces->accept(this);
+  o->cond->accept(this);
+}
+
 void bi::Visitor::visit(const Assert* o) {
   o->cond->accept(this);
 }
