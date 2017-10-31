@@ -16,6 +16,23 @@ function observe_bernoulli(x:Boolean, ρ:Real) -> Real {
 }
 
 /**
+ * Observe an integer uniform variate.
+ *
+ * - x: The variate.
+ * - l: Lower bound of interval.
+ * - u: Upper bound of interval.
+ *
+ * Returns the log probability mass.
+ */
+function observe_int_uniform(x:Integer, l:Integer, u:Integer) -> Real {
+  if (x >= l && x <= u) {
+    return -log(u - l + 1);
+  } else {
+    return -inf;
+  }
+}
+
+/**
  * Observe a binomial variate.
  *
  * - x: The variate.

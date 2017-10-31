@@ -39,7 +39,7 @@ class Uniform < Random<Real> {
 }
 
 /**
- * Create a Uniform distribution.
+ * Create a uniform distribution.
  */
 function Uniform(l:Real, u:Real) -> Uniform {
   m:Uniform;
