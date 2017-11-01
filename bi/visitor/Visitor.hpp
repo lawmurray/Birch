@@ -92,6 +92,7 @@ public:
   virtual void visit(const Yield* o);
   virtual void visit(const Raw* o);
 
+  virtual void visit(const AnyType* o);
   virtual void visit(const EmptyType* o);
   virtual void visit(const TypeList* o);
   virtual void visit(const TypeIdentifier* o);

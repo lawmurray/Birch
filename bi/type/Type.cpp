@@ -151,6 +151,10 @@ bool bi::Type::definitely(const ClassType& o) const {
   return false;
 }
 
+bool bi::Type::definitely(const AnyType& o) const {
+  return false;
+}
+
 bool bi::Type::definitely(const EmptyType& o) const {
   return false;
 }

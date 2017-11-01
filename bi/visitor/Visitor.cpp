@@ -336,6 +336,10 @@ void bi::Visitor::visit(const Raw* o) {
   //
 }
 
+void bi::Visitor::visit(const AnyType* o) {
+  //
+}
+
 void bi::Visitor::visit(const EmptyType* o) {
   //
 }

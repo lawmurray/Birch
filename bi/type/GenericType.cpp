@@ -118,6 +118,11 @@ bool bi::GenericType::definitely(const ClassType& o) const {
   return target->type->definitely(o);
 }
 
+bool bi::GenericType::definitely(const AnyType& o) const {
+  assert(target);
+  return target->type->definitely(o);
+}
+
 bool bi::GenericType::definitely(const EmptyType& o) const {
   assert(target);
   return target->type->definitely(o);

@@ -36,7 +36,7 @@ public:
       frame(frame),
       ptr(allocate(frame.volume())),
       isView(false) {
-    //
+    initialize();
   }
 
   /**
@@ -80,6 +80,7 @@ public:
 
     if (!isView && !frame.conforms(o.frame)) {
       frame.resize(o.frame);
+      ptr = allocate(frame.volume());
     }
     copy(o);
     return *this;
@@ -97,6 +98,7 @@ public:
       if (!o.isView) {
         ptr = o.ptr;  // just move
       } else {
+        ptr = allocate(frame.volume());
         copy(o);
       }
     } else {
@@ -208,6 +210,10 @@ public:
    */
   template<class DerivedType, typename = std::enable_if_t<is_eigen_compatible<DerivedType>::value>>
   Array<Type,Frame>& operator=(const Eigen::EigenBase<DerivedType>& o) {
+    if (!isView && !frame.conforms(o.rows(), o.cols())) {
+      frame.resize(o.rows(), o.cols());
+      ptr = allocate(frame.volume());
+    }
     toEigen() = o;
     return *this;
   }
@@ -369,7 +375,7 @@ private:
   }
 
   /**
-   * initialize allocated memory.
+   * Initialize allocated memory.
    *
    * @param args Constructor arguments.
    */

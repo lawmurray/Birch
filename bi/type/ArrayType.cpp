@@ -63,6 +63,6 @@ bool bi::ArrayType::definitely(const OptionalType& o) const {
   return definitely(*o.single);
 }
 
-bool bi::ArrayType::definitely(const EmptyType& o) const {
+bool bi::ArrayType::definitely(const AnyType& o) const {
   return true;
 }

@@ -22,7 +22,7 @@ bi::ClassType::ClassType(Name* name, Location* loc, Class* target) :
   //
 }
 
-bi::ClassType::ClassType(Class* target, Location* loce) :
+bi::ClassType::ClassType(Class* target, Location* loc) :
     Type(loc),
     Named(target->name),
     Reference<Class>(target),
@@ -118,6 +118,6 @@ bool bi::ClassType::definitely(const TupleType& o) const {
   return target->hasConversion(&o) || target->base->definitely(o);
 }
 
-bool bi::ClassType::definitely(const EmptyType& o) const {
+bool bi::ClassType::definitely(const AnyType& o) const {
   return true;
 }

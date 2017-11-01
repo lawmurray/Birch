@@ -37,8 +37,3 @@ bool bi::EmptyType::dispatchDefinitely(const Type& o) const {
 bool bi::EmptyType::definitely(const EmptyType& o) const {
   return true;
 }
-
-bool bi::EmptyType::definitely(const GenericType& o) const {
-  assert(o.target);
-  return definitely(*o.target->type);
-}

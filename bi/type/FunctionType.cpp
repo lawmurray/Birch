@@ -63,6 +63,6 @@ bool bi::FunctionType::definitely(const OptionalType& o) const {
   return definitely(*o.single);
 }
 
-bool bi::FunctionType::definitely(const EmptyType& o) const {
+bool bi::FunctionType::definitely(const AnyType& o) const {
   return true;
 }

@@ -11,19 +11,19 @@ namespace bi {
  *
  * @ingroup compiler_type
  */
-class EmptyType: public Type {
+class AnyType: public Type {
 public:
   /**
    * Constructor.
    *
    * @param loc Location.
    */
-  EmptyType(Location* loc);
+  AnyType(Location* loc);
 
   /**
    * Destructor.
    */
-  virtual ~EmptyType();
+  virtual ~AnyType();
 
   virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);
@@ -34,6 +34,7 @@ public:
   using Type::definitely;
 
   virtual bool dispatchDefinitely(const Type& o) const;
-  virtual bool definitely(const EmptyType& o) const;
+  virtual bool definitely(const AnyType& o) const;
+  virtual bool definitely(const GenericType& o) const;
 };
 }

@@ -13,6 +13,7 @@ class Visitor;
 class Argumented;
 
 class AliasType;
+class AnyType;
 class ArrayType;
 class BasicType;
 class BinaryType;
@@ -210,6 +211,7 @@ public:
   virtual bool definitely(const BasicType& o) const;
   virtual bool definitely(const BinaryType& o) const;
   virtual bool definitely(const ClassType& o) const;
+  virtual bool definitely(const AnyType& o) const;
   virtual bool definitely(const EmptyType& o) const;
   virtual bool definitely(const FiberType& o) const;
   virtual bool definitely(const FunctionType& o) const;

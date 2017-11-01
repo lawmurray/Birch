@@ -118,6 +118,11 @@ bool bi::AliasType::definitely(const ClassType& o) const {
   return target->base->definitely(o);
 }
 
+bool bi::AliasType::definitely(const AnyType& o) const {
+  assert(target);
+  return target->base->definitely(o);
+}
+
 bool bi::AliasType::definitely(const EmptyType& o) const {
   assert(target);
   return target->base->definitely(o);

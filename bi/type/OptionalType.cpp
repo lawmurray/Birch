@@ -57,6 +57,6 @@ bool bi::OptionalType::definitely(const OptionalType& o) const {
   return single->definitely(*o.single);
 }
 
-bool bi::OptionalType::definitely(const EmptyType& o) const {
+bool bi::OptionalType::definitely(const AnyType& o) const {
   return true;
 }

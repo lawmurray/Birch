@@ -48,7 +48,19 @@ struct EmptyFrame {
     return false;
   }
 
+  bool conforms(const Eigen::Index rows, const Eigen::Index cols) {
+    return false;
+  }
+
+  bool conforms(const Eigen::Index rows) {
+    return false;
+  }
+
   void resize(const EmptyFrame& o) {
+    //
+  }
+
+  void resize(const Eigen::Index rows) {
     //
   }
 
@@ -239,14 +251,16 @@ struct NonemptyFrame {
   bool conforms(const EmptyFrame& o) const {
     return false;
   }
-
-  /**
-   * Does this frame conform to another? Two frames conform if their spans
-   * conform.
-   */
   template<class Frame1>
   bool conforms(const Frame1& o) const {
     return tail.conforms(o.tail) && head.conforms(o.head);
+  }
+  bool conforms(const Eigen::Index rows, const Eigen::Index cols) {
+    return tail.conforms(tail_type::count() == 0 ? cols : rows) &&
+        head.conforms(tail_type::count() == 0 ? rows : cols);
+  }
+  bool conforms(const Eigen::Index rows) {
+    return head.conforms(rows);
   }
 
   /**
@@ -256,6 +270,13 @@ struct NonemptyFrame {
   void resize(const Frame1& o) {
     tail.resize(o.tail);
     head.resize(o.head);
+  }
+  void resize(const Eigen::Index rows, const Eigen::Index cols) {
+    tail.resize(tail_type::count() == 0 ? cols : rows);
+    head.resize(tail_type::count() == 0 ? rows : cols);
+  }
+  void resize(const Eigen::Index rows) {
+    head.resize(rows);
   }
 
   /**

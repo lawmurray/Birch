@@ -49,6 +49,6 @@ bool bi::TupleType::definitely(const TupleType& o) const {
   return single->definitely(*o.single);
 }
 
-bool bi::TupleType::definitely(const EmptyType& o) const {
+bool bi::TupleType::definitely(const AnyType& o) const {
   return true;
 }

@@ -146,6 +146,7 @@ COMMON_SOURCES = \
   bi/statement/While.cpp \
   bi/statement/Yield.cpp \
   bi/type/AliasType.cpp \
+  bi/type/AnyType.cpp \
   bi/type/ArrayType.cpp \
   bi/type/BasicType.cpp \
   bi/type/BinaryType.cpp \
@@ -346,6 +347,7 @@ noinst_HEADERS = \
   bi/statement/Yield.hpp \
   bi/type/all.hpp \
   bi/type/AliasType.hpp \
+  bi/type/AnyType.hpp \
   bi/type/ArrayType.hpp \
   bi/type/BasicType.hpp \
   bi/type/BinaryType.hpp \

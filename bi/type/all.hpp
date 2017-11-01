@@ -4,6 +4,7 @@
 #pragma once
 
 #include "bi/type/AliasType.hpp"
+#include "bi/type/AnyType.hpp"
 #include "bi/type/ArrayType.hpp"
 #include "bi/type/BasicType.hpp"
 #include "bi/type/BinaryType.hpp"

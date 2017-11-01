@@ -61,6 +61,6 @@ bool bi::FiberType::definitely(const OptionalType& o) const {
   return definitely(*o.single);
 }
 
-bool bi::FiberType::definitely(const EmptyType& o) const {
+bool bi::FiberType::definitely(const AnyType& o) const {
   return true;
 }

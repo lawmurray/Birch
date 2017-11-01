@@ -381,6 +381,10 @@ bi::Statement* bi::Modifier::modify(Raw* o) {
   return o;
 }
 
+bi::Type* bi::Modifier::modify(AnyType* o) {
+  return o;
+}
+
 bi::Type* bi::Modifier::modify(EmptyType* o) {
   return o;
 }

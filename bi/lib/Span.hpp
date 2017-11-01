@@ -8,6 +8,7 @@
 #include "bi/lib/Lead.hpp"
 #include "bi/lib/Index.hpp"
 #include "bi/lib/Range.hpp"
+#include "bi/lib/Eigen.hpp"
 
 namespace bi {
 /**
@@ -101,6 +102,9 @@ struct Span: public Length<length_value>,
   bool conforms(const Span1& o) const {
     return this->length == o.length;
   }
+  bool conforms(const Eigen::Index rows) {
+    return this->length == rows;
+  }
 
   /**
    * Resize this span to conform to another.
@@ -111,6 +115,12 @@ struct Span: public Length<length_value>,
 
     this->length = o.length;
     this->lead = o.length;
+  }
+  void resize(const Eigen::Index length) {
+    assert(this->stride == 1);
+
+    this->length = length;
+    this->lead = length;
   }
 
   /**

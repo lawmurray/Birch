@@ -114,7 +114,7 @@ void bi::bi_ostream::visit(const Nil* o) {
 
 void bi::bi_ostream::visit(const LocalVariable* o) {
   middle(o->name << ':');
-  if (o->type->isArray()) {
+  if (o->type->isArray() && !o->brackets->isEmpty()) {
     middle(dynamic_cast<const ArrayType*>(o->type)->single);
   } else {
     middle(o->type);
@@ -153,7 +153,7 @@ void bi::bi_ostream::visit(const Generic* o) {
 
 void bi::bi_ostream::visit(const GlobalVariable* o) {
   start(o->name << ':');
-  if (o->type->isArray()) {
+  if (o->type->isArray() && !o->brackets->isEmpty()) {
     middle(dynamic_cast<const ArrayType*>(o->type)->single);
   } else {
     middle(o->type);
@@ -172,7 +172,7 @@ void bi::bi_ostream::visit(const GlobalVariable* o) {
 
 void bi::bi_ostream::visit(const MemberVariable* o) {
   start(o->name << ':');
-  if (o->type->isArray()) {
+  if (o->type->isArray() && !o->brackets->isEmpty()) {
     middle(dynamic_cast<const ArrayType*>(o->type)->single);
   } else {
     middle(o->type);

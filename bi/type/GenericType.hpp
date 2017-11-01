@@ -65,6 +65,7 @@ public:
   virtual bool definitely(const ArrayType& o) const;
   virtual bool definitely(const BasicType& o) const;
   virtual bool definitely(const ClassType& o) const;
+  virtual bool definitely(const AnyType& o) const;
   virtual bool definitely(const EmptyType& o) const;
   virtual bool definitely(const FiberType& o) const;
   virtual bool definitely(const FunctionType& o) const;
