@@ -84,7 +84,8 @@ inline auto make_index(const ptrdiff_t i) {
  * @param end Last index.
  */
 inline auto make_range(const ptrdiff_t start, const ptrdiff_t end) {
-  return Range<mutable_value,mutable_value,1>(start, end - start + 1);
+  ptrdiff_t length = std::max(ptrdiff_t(0), end - start + 1);
+  return Range<mutable_value,mutable_value,1>(start, length);
 }
 
 /**
