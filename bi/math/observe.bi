@@ -154,7 +154,7 @@ function observe_multinomial(x:Integer[_], n:Integer, ρ:Real[_]) -> Real {
   for (i:Integer in 1..length(x)) {
     assert x[i] >= 0;
     assert ρ[i] >= 0.0;
-    m <- x[i];
+    m <- m + x[i];
     w <- w + x[i]*log(ρ[i]) - lgamma(x[i] + 1.0);
   }
   if (m == n) {
@@ -173,13 +173,19 @@ function observe_multinomial(x:Integer[_], n:Integer, ρ:Real[_]) -> Real {
  * Returns the log probability mass.
  */
 function observe_dirichlet_categorical(x:Integer, α:Real[_]) -> Real {
-
+  if (1 <= x && x <= length(α)) {
+    A:Real <- sum(α);
+    return lgamma(1.0 + α[x]) - lgamma(α[x]) + lgamma(A) - lgamma(1.0 + A);
+  } else {
+    return -inf;
+  }
 }
 
 /**
  * Observe a Dirichlet-multinomial variate.
  *
  * - x: The variate.
+ * - n: Number of trials.
  * - α: Concentrations.
  *
  * Returns the log probability mass.
@@ -187,6 +193,19 @@ function observe_dirichlet_categorical(x:Integer, α:Real[_]) -> Real {
 function observe_dirichlet_multinomial(x:Integer[_], n:Integer, α:Real[_]) -> Real {
   assert length(x) == length(α);
 
+  A:Real <- sum(α);
+  m:Integer <- 0;
+  w:Real <- lgamma(n + 1.0) + lgamma(A) - lgamma(n + A);
+  for (i:Integer in 1..length(α)) {
+    assert x[i] >= 0;
+    m <- m + x[i];
+    w <- w + lgamma(x[i] + α[i]) - lgamma(x[i] + 1.0) - lgamma(α[i]);
+  }
+  if (m == n) {
+    return w;
+  } else {
+    return -inf;
+  }
 }
 
 /**
