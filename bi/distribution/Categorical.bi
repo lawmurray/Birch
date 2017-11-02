@@ -3,11 +3,11 @@
  *
  * `D` Number of categories.
  */
-class Categorical(D:Integer) < Random<Integer> {
+class Categorical < Random<Integer> {
   /**
    * Category probabilities.
    */
-  ρ:Real[D];
+  ρ:Real[_];
 
   function initialize(ρ:Real[_]) {
     super.initialize();
@@ -36,7 +36,7 @@ class Categorical(D:Integer) < Random<Integer> {
  * Create categorical distribution.
  */
 function Categorical(ρ:Real[_]) -> Categorical {
-  m:Categorical(length(ρ));
+  m:Categorical;
   m.initialize(ρ);
   return m;
 }

@@ -205,19 +205,17 @@ function simulate_beta(α:Real, β:Real) -> Real {
  * - ρ: Category probabilities.
  */
 function simulate_categorical(ρ:Real[_]) -> Integer {
-  /* assertion checks throughout catch cases such as negative probabilities,
-   * or the sum of probabilities not being one */
+  assert length(ρ) > 0;
+
   u:Real <- simulate_uniform(0.0, 1.0);
   x:Integer <- 1;
-  assert length(ρ) > 0;
   P:Real <- ρ[1];
-  assert 0.0 <= P && P <= 1.0;
-  while (u < P) {
-    x <- x + 1;
+  while (P < u) {
     assert x <= length(ρ);
-    assert ρ[x] >= 0.0;
+    x <- x + 1;
+    assert 0.0 <= ρ[x] && ρ[x] <= 1.0;
     P <- P + ρ[x];
-    assert 0.0 <= P && P <= 1.0;
+    assert 0.0 <= P && P < 1.0 + 1.0e-6;
   }
   return x;
 }

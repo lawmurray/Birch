@@ -3,11 +3,11 @@
  *
  * `D` Number of components.
  */
-class Dirichlet(D:Integer) < Random<Real[_]> {
+class Dirichlet < Random<Real[_]> {
   /**
    * Concentration.
    */
-  α:Real[D];
+  α:Real[_];
 
   function initialize(α:Real[_]) {
     super.initialize();
@@ -36,7 +36,14 @@ class Dirichlet(D:Integer) < Random<Real[_]> {
  * Create Dirichlet distribution.
  */
 function Dirichlet(α:Real[_]) -> Dirichlet {
-  m:Dirichlet(length(α));
+  m:Dirichlet;
   m.initialize(α);
   return m;
+}
+
+/**
+ * Create Dirichlet distribution.
+ */
+function Dirichlet(α:Real, D:Integer) -> Dirichlet {
+  return Dirichlet(vector(α, D));
 }

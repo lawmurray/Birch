@@ -3,7 +3,7 @@
  *
  * `D` Number of categories.
  */
-class Multinomial(D:Integer) < Random<Integer[_]> {
+class Multinomial < Random<Integer[_]> {
   /**
    * Number of trials.
    */
@@ -12,7 +12,7 @@ class Multinomial(D:Integer) < Random<Integer[_]> {
   /**
    * Category probabilities.
    */
-  ρ:Real[D];
+  ρ:Real[_];
 
   function initialize(n:Integer, ρ:Real[_]) {
     super.initialize();
@@ -42,7 +42,7 @@ class Multinomial(D:Integer) < Random<Integer[_]> {
  * Create multinomial distribution.
  */
 function Multinomial(n:Integer, ρ:Real[_]) -> Multinomial {
-  m:Multinomial(length(ρ));
+  m:Multinomial;
   m.initialize(n, ρ);
   return m;
 }
