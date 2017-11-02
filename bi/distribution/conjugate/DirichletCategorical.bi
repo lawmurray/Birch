@@ -29,9 +29,9 @@ class DirichletCategorical < Random<Integer> {
       }
     } else {
       if (isMissing()) {
-        set(simulate_dirichlet_categorical(ρ));
+        set(simulate_dirichlet_categorical(ρ.α));
       } else {
-        setWeight(observe_dirichlet_categorical(x, ρ));
+        setWeight(observe_dirichlet_categorical(x, ρ.α));
       }
     }
   }

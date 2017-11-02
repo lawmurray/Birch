@@ -37,9 +37,9 @@ class DirichletMultinomial < Random<Integer[_]> {
       }
     } else {
       if (isMissing()) {
-        set(simulate_dirichlet_multinomial(n, ρ));
+        set(simulate_dirichlet_multinomial(n, ρ.α));
       } else {
-        setWeight(observe_dirichlet_multinomial(x, n, ρ));
+        setWeight(observe_dirichlet_multinomial(x, n, ρ.α));
       }
     }
   }
