@@ -121,6 +121,75 @@ function observe_poisson(x:Integer, λ:Real) -> Real {
 }
 
 /**
+ * Observe a categorical variate.
+ *
+ * - x: The variate.
+ * - ρ: Category probabilities.
+ *
+ * Returns the log probability mass.
+ */
+function observe_categorical(x:Integer, ρ:Real[_]) -> Real {
+  if (1 <= x && x <= length(ρ)) {
+    assert ρ[x] >= 0.0;
+    return log(ρ[x]);
+  } else {
+    return -inf;
+  }
+}
+
+/**
+ * Observe a multinomial variate.
+ *
+ * - x: The variate.
+ * - n: Number of trials.
+ * - ρ: Category probabilities.
+ *
+ * Returns the log probability mass.
+ */
+function observe_multinomial(x:Integer[_], n:Integer, ρ:Real[_]) -> Real {
+  assert length(x) == length(ρ);
+
+  m:Integer <- 0;
+  w:Real <- lgamma(n + 1.0);
+  for (i:Integer in 1..length(x)) {
+    assert x[i] >= 0;
+    assert ρ[i] >= 0.0;
+    m <- x[i];
+    w <- w + x[i]*log(ρ[i]) - lgamma(x[i] + 1.0);
+  }
+  if (m == n) {
+    return w;
+  } else {
+    return -inf;
+  }
+}
+
+/**
+ * Observe a Dirichlet-categorical variate.
+ *
+ * - x: The variate.
+ * - α: Concentrations.
+ *
+ * Returns the log probability mass.
+ */
+function observe_dirichlet_categorical(x:Integer, α:Real[_]) -> Real {
+
+}
+
+/**
+ * Observe a Dirichlet-multinomial variate.
+ *
+ * - x: The variate.
+ * - α: Concentrations.
+ *
+ * Returns the log probability mass.
+ */
+function observe_dirichlet_multinomial(x:Integer[_], n:Integer, α:Real[_]) -> Real {
+  assert length(x) == length(α);
+
+}
+
+/**
  * Observe a uniform variate.
  *
  * - x: The variate.
@@ -233,43 +302,6 @@ function observe_beta(x:Real, α:Real, β:Real) -> Real {
   } else {
     return -inf;
   }
-}
-
-/**
- * Observe a categorical variate.
- *
- * - x: The variate.
- * - ρ: Category probabilities.
- *
- * Returns the log probability mass.
- */
-function observe_categorical(x:Integer, ρ:Real[_]) -> Real {
-  if (1 <= x && x <= length(ρ)) {
-    assert ρ[x] >= 0.0;
-    return log(ρ[x]);
-  } else {
-    return -inf;
-  }
-}
-
-/**
- * Observe a multinomial variate.
- *
- * - x: The variate.
- * - ρ: Category probabilities.
- *
- * Returns the log probability mass.
- */
-function observe_multinomial(x:Integer[_], ρ:Real[_]) -> Real {
-  assert length(x) == length(ρ);
-
-  w:Real <- 0.0;
-  for (i:Integer in 1..length(x)) {
-    assert x[i] >= 0;
-    assert ρ[i] >= 0.0;
-    w <- w + x[i]*log(ρ[i]);
-  }
-  return w;
 }
 
 /**

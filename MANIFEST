@@ -14,6 +14,8 @@ bi/container/LinkedList.bi
 bi/container/LinkedListNode.bi
 bi/diagnostics/DelayDiagnostics.bi
 bi/distribution/conjugate/BetaBinomial.bi
+bi/distribution/conjugate/DirichletCategorical.bi
+bi/distribution/conjugate/DirichletMultinomial.bi
 bi/distribution/conjugate/GammaPoisson.bi
 bi/distribution/conjugate/GaussianWithGaussianExpressionMean.bi
 bi/distribution/conjugate/GaussianWithGaussianLogExpressionMean.bi

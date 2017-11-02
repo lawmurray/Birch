@@ -28,7 +28,7 @@ class Multinomial < Random<Integer[_]> {
     if (missing) {
       set(simulate_multinomial(n, ρ));
     } else {
-      setWeight(observe_multinomial(x, ρ));
+      setWeight(observe_multinomial(x, n, ρ));
     }
   }
 

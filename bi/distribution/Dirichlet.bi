@@ -11,11 +11,24 @@ class Dirichlet < Random<Real[_]> {
 
   function initialize(α:Real[_]) {
     super.initialize();
-    update(α);
+    this.α <- α;
   }
 
-  function update(α:Real[_]) {
-    this.α <- α;
+  /**
+   * Update with draw from multinomial distribution.
+   */
+  function update(x:Integer[_]) {
+    assert length(x) == length(α);
+    for (i:Integer in 1..length(x)) {
+      α[i] <- α[i] + x[i];
+    }
+  }
+
+  /**
+   * Update with draw from categorical distribution.
+   */
+  function update(x:Integer) {
+    α[x] <- α[x] + 1.0;
   }
 
   function doRealize() {
