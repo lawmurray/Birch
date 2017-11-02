@@ -75,9 +75,6 @@ public:
    * otherwise a resize is permitted.
    */
   Array<Type,Frame>& operator=(const Array<Type,Frame>& o) {
-    /* pre-condition */
-    assert(!isView || frame.conforms(o.frame));
-
     if (!isView && !frame.conforms(o.frame)) {
       frame.resize(o.frame);
       ptr = allocate(frame.volume());
@@ -90,15 +87,17 @@ public:
    * Move assignment. The frames of the two arrays must conform.
    */
   Array<Type,Frame>& operator=(Array<Type,Frame> && o) {
-    /* pre-condition */
-    assert(!isView || frame.conforms(o.frame));
-
-    if (!isView && !frame.conforms(o.frame)) {
-      frame.resize(o.frame);
+    if (!isView) {
       if (!o.isView) {
-        ptr = o.ptr;  // just move
+        /* move */
+        frame = o.frame;
+        ptr = o.ptr;
       } else {
-        ptr = allocate(frame.volume());
+        if (!frame.conforms(o.frame)) {
+          /* resize */
+          frame.resize(o.frame);
+          ptr = allocate(frame.volume());
+        }
         copy(o);
       }
     } else {

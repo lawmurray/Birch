@@ -11,6 +11,9 @@
 #include "boost/filesystem/fstream.hpp"
 #include "boost/algorithm/string.hpp"
 
+#ifndef NDEBUG
+#define GC_DEBUG 1
+#endif
 #include <gc.h>
 #include <getopt.h>
 #include <dlfcn.h>

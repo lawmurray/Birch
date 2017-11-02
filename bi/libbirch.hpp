@@ -26,6 +26,9 @@
 #include "boost/math/special_functions/beta.hpp"
 ///@todo Replace both of the above with STL versions under C++17.
 
+#ifndef NDEBUG
+#define GC_DEBUG 1
+#endif
 #include <gc.h>
 #include <getopt.h>
 
