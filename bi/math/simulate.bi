@@ -173,6 +173,32 @@ function simulate_dirichlet_multinomial(n:Integer, α:Real[_]) -> Integer[_] {
 }
 
 /**
+ * Simulate a categorical variate with Chinese restaurant process prior.
+ */
+function simulate_crp_categorical(α:Real, θ:Real, n:Integer[_], N:Integer) -> Integer {
+  k:Integer <- 0;
+  K:Integer <- length(n);
+  if (N == 0) {
+    /* first component */
+    k <- 1;
+  } else {
+    u:Real <- simulate_uniform(0.0, N + θ);
+    if (u < K*α + θ) {
+      /* new component */
+      k <- K + 1;
+    } else {
+      /* existing component */
+      U:Real <- K*α - θ;
+      while (k <= K && U <= u) {
+        k <- k + 1;
+        U <- U + n[k] - α;
+      }
+    }
+  }
+  return k;
+}
+
+/**
  * Simulate a uniform variate.
  *
  * - l: Lower bound of interval.

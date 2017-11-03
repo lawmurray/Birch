@@ -25,6 +25,7 @@ bi/distribution/conjugate/LogGaussianWithGaussianLogExpressionMean.bi
 bi/distribution/conjugate/LogGaussianWithGaussianMean.bi
 bi/distribution/conjugate/MultivariateGaussianWithMultivariateGaussianExpressionMean.bi
 bi/distribution/conjugate/MultivariateGaussianWithMultivariateGaussianMean.bi
+bi/distribution/conjugate/RestaurantProcessCategorical.bi
 bi/distribution/delay/Delay.bi
 bi/distribution/delay/Random.bi
 bi/distribution/expression/GaussianExpression.bi
@@ -43,6 +44,7 @@ bi/distribution/Multinomial.bi
 bi/distribution/MultivariateGaussian.bi
 bi/distribution/NegativeBinomial.bi
 bi/distribution/Poisson.bi
+bi/distribution/RestaurantProcess.bi
 bi/distribution/Uniform.bi
 bi/distribution/UniformInteger.bi
 bi/driver/build.bi

@@ -209,6 +209,20 @@ function observe_dirichlet_multinomial(x:Integer[_], n:Integer, α:Real[_]) -> R
 }
 
 /**
+ * Observe a categorical variate with Chinese restaurant process prior.
+ */
+function observe_crp_categorical(k:Integer, α:Real, θ:Real, n:Integer[_], N:Integer) -> Real {
+  K:Integer <- length(n);
+  if (k > K + 1) {
+    return -inf;
+  } else if (k == K + 1) {
+    return (K*α + θ)/(N + θ);
+  } else {
+    return (n[k] - α)/(N + θ);
+  }
+}
+
+/**
  * Observe a uniform variate.
  *
  * - x: The variate.

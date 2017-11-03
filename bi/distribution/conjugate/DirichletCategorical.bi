@@ -54,6 +54,11 @@ function Categorical(ρ:Random<Real[_]>) -> Random<Integer> {
   if (ρ1?) {
     return Categorical(ρ1!);
   } else {
-    return Categorical(ρ.value());
+    ρ2:RestaurantProcess? <- RestaurantProcess?(ρ);
+    if (ρ2?) {
+      return Categorical(ρ2!);
+    } else {
+      return Categorical(ρ.value());
+    }
   }
 }
