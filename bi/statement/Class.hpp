@@ -104,7 +104,7 @@ public:
    * Get the instantiation, if any, that exactly matches the given generic
    * type arguments. Returns `nullptr` if not such instantiation exists.
    */
-  Class* getInstantiation(const Type* typeArgs) const;
+  Class* getInstantiation(const Type* typeArgs);
 
   virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);

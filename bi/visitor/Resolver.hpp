@@ -124,6 +124,7 @@ void bi::Resolver::resolve(ObjectType* o) {
     }
   }
   if (!o->target) {
+    assert(false);
     throw UnresolvedException(o);
   }
 }

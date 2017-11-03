@@ -81,15 +81,20 @@ void bi::Class::addInstantiation(Class* o) {
   instantiations.push_back(o);
 }
 
-bi::Class* bi::Class::getInstantiation(const Type* typeArgs) const {
-  for (auto o : instantiations) {
-    bool matches = typeArgs->count() == o->typeParams->count() &&
-        std::equal(typeArgs->begin(), typeArgs->end(), o->typeParams->begin(),
-        [](const Type* arg, const Expression* param) {
-           return arg->equals(*param->type);
-    });
-    if (matches) {
-      return o;
+bi::Class* bi::Class::getInstantiation(const Type* typeArgs) {
+  auto compare = [](const Type* arg, const Expression* param) {
+    return arg->equals(*param->type);
+  };
+  if (compare(typeArgs, typeParams)) {
+    return this;
+  } else {
+    for (auto o : instantiations) {
+      bool matches = typeArgs->count() == o->typeParams->count()
+          && std::equal(typeArgs->begin(), typeArgs->end(),
+              o->typeParams->begin(), compare);
+      if (matches) {
+        return o;
+      }
     }
   }
   return nullptr;
