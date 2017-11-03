@@ -25,11 +25,6 @@ class Bernoulli < Random<Boolean> {
       setWeight(observe_bernoulli(x, ρ));
     }
   }
-
-  function tildeLeft() -> Bernoulli {
-    simulate();
-    return this;
-  }
 }
 
 /**

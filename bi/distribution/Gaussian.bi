@@ -39,11 +39,6 @@ class Gaussian < Random<Real> {
       setWeight(observe_gaussian(x, μ, σ2));
     }
   }
-
-  function tildeLeft() -> Gaussian {
-    simulate();
-    return this;
-  }
 }
 
 /**

@@ -41,6 +41,11 @@ class Random<Value> < Delay {
     this.w <- w;
   }
   
+  function tildeLeft() -> Random<Value> {
+    simulate();
+    return this;
+  }
+  
   function tildeRight(left:Value) -> Real {
     set(left);
     observe();

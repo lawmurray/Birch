@@ -35,11 +35,6 @@ class MultivariateGaussian(D:Integer) < Random<Real[_]> {
       setWeight(observe_multivariate_gaussian(x, μ, Σ));
     }
   }
-
-  function tildeLeft() -> MultivariateGaussian {
-    simulate();
-    return this;
-  }
 }
 
 /**

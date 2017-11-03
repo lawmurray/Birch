@@ -31,11 +31,6 @@ class Multinomial < Random<Integer[_]> {
       setWeight(observe_multinomial(x, n, ρ));
     }
   }
-
-  function tildeLeft() -> Multinomial {
-    simulate();
-    return this;
-  }
 }
 
 /**

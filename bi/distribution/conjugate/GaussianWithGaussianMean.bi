@@ -46,12 +46,37 @@ class GaussianWithGaussianMean < Gaussian {
   }
 }
 
+/**
+ * Create Gaussian distribution.
+ */
 function Gaussian(μ:Gaussian, σ2:Real) -> Gaussian {
   x:GaussianWithGaussianMean;
   x.initialize(μ, σ2);
   return x;
 }
 
+/**
+ * Create Gaussian distribution.
+ */
+function Gaussian(μ:Random<Real>, σ2:Real) -> Gaussian {
+  μ1:Gaussian? <- Gaussian?(μ);
+  if (μ1?) {
+    return Gaussian(μ1!, σ2);
+  } else {
+    return Gaussian(μ.value(), σ2);
+  }
+}
+
+/**
+ * Create Gaussian distribution.
+ */
 function Normal(μ:Gaussian, σ2:Real) -> Gaussian {
+  return Gaussian(μ, σ2);
+}
+
+/**
+ * Create Gaussian distribution.
+ */
+function Normal(μ:Random<Real>, σ2:Real) -> Gaussian {
   return Gaussian(μ, σ2);
 }

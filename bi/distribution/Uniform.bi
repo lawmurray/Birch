@@ -31,11 +31,6 @@ class Uniform < Random<Real> {
       setWeight(observe_uniform(x, l, u));
     }
   }
-
-  function tildeLeft() -> Uniform {
-    simulate();
-    return this;
-  }
 }
 
 /**

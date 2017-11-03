@@ -32,11 +32,6 @@ class Gamma < Random<Real> {
       setWeight(observe_gamma(x, k, θ));
     }
   }
-
-  function tildeLeft() -> Gamma {
-    simulate();
-    return this;
-  }
 }
 
 /**

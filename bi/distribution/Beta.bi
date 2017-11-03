@@ -32,11 +32,6 @@ class Beta < Random<Real> {
       setWeight(observe_beta(x, α, β));
     }
   }
-
-  function tildeLeft() -> Beta {
-    simulate();
-    return this;
-  }
 }
 
 /**

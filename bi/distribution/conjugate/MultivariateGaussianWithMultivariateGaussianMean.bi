@@ -49,6 +49,9 @@ class MultivariateGaussianWithMultivariateGaussianMean(D:Integer)
   }
 }
 
+/**
+ * Create Gaussian distribution.
+ */
 function Gaussian(μ:MultivariateGaussian, Σ:Real[_,_]) ->
     MultivariateGaussian {
   x:MultivariateGaussianWithMultivariateGaussianMean(μ.D);
@@ -56,7 +59,28 @@ function Gaussian(μ:MultivariateGaussian, Σ:Real[_,_]) ->
   return x;
 }
 
-function Normal(μ:MultivariateGaussian, Σ:Real[_,_]) ->
-    MultivariateGaussian {
+/**
+ * Create Gaussian distribution.
+ */
+function Gaussian(μ:Random<Real[_]>, Σ:Real[_,_]) -> MultivariateGaussian {
+  μ1:MultivariateGaussian? <- MultivariateGaussian?(μ);
+  if (μ1?) {
+    return Gaussian(μ1!, Σ);
+  } else {
+    return Gaussian(μ.value(), Σ);
+  }
+}
+
+/**
+ * Create Gaussian distribution.
+ */
+function Normal(μ:MultivariateGaussian, Σ:Real[_,_]) -> MultivariateGaussian {
+  return Gaussian(μ, Σ);
+}
+
+/**
+ * Create Gaussian distribution.
+ */
+function Normal(μ:Random<Real[_]>, Σ:Real[_,_]) -> MultivariateGaussian {
   return Gaussian(μ, Σ);
 }

@@ -58,6 +58,9 @@ class MultivariateGaussianWithMultivariateGaussianExpressionMean(
   }
 }
 
+/**
+ * Create Gaussian distribution.
+ */
 function Gaussian(μ:MultivariateGaussianExpression, Σ:Real[_,_]) ->
     MultivariateGaussian {
   x:MultivariateGaussianWithMultivariateGaussianExpressionMean(μ.R);
@@ -65,6 +68,9 @@ function Gaussian(μ:MultivariateGaussianExpression, Σ:Real[_,_]) ->
   return x;
 }
 
+/**
+ * Create Gaussian distribution.
+ */
 function Normal(μ:MultivariateGaussianExpression, Σ:Real[_,_]) ->
     MultivariateGaussian {
   return Gaussian(μ, Σ);

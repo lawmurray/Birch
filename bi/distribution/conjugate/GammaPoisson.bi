@@ -46,15 +46,10 @@ class GammaPoisson < Random<Integer> {
       }
     }
   }
-
-  function tildeLeft() -> GammaPoisson {
-    simulate();
-    return this;
-  }
 }
 
 /**
- * Create gamma-Poisson distribution.
+ * Create Poisson distribution.
  */
 function Poisson(λ:Gamma) -> GammaPoisson {
   /* the shape parameter of the rate must be an integer for the marginal
@@ -67,4 +62,16 @@ function Poisson(λ:Gamma) -> GammaPoisson {
   x:GammaPoisson;
   x.initialize(λ);
   return x;
+}
+
+/**
+ * Create Poisson distribution.
+ */
+function Poisson(λ:Random<Real>) -> Random<Integer> {
+  λ1:Gamma? <- Gamma?(λ);
+  if (λ1?) {
+    return Poisson(λ1!);
+  } else {
+    return Poisson(λ.value());
+  }
 }

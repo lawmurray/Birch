@@ -46,12 +46,18 @@ class GaussianWithGaussianExpressionMean < Gaussian {
   }
 }
 
+/**
+ * Create Gaussian distribution.
+ */
 function Gaussian(μ:GaussianExpression, σ2:Real) -> Gaussian {
   x:GaussianWithGaussianExpressionMean;
   x.initialize(μ, σ2);
   return x;
 }
 
+/**
+ * Create Gaussian distribution.
+ */
 function Normal(μ:GaussianExpression, σ2:Real) -> Gaussian {
   return Gaussian(μ, σ2);
 }

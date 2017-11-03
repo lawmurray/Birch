@@ -32,11 +32,6 @@ class Binomial < Random<Integer> {
       setWeight(observe_binomial(x, n, ρ));
     }
   }
-
-  function tildeLeft() -> Binomial {
-    simulate();
-    return this;
-  }
 }
 
 /**

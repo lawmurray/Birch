@@ -38,11 +38,6 @@ class Dirichlet < Random<Real[_]> {
       setWeight(observe_dirichlet(x, α));
     }
   }
-
-  function tildeLeft() -> Dirichlet {
-    simulate();
-    return this;
-  }
 }
 
 /**

@@ -35,18 +35,25 @@ class DirichletCategorical < Random<Integer> {
       }
     }
   }
-
-  function tildeLeft() -> DirichletCategorical {
-    simulate();
-    return this;
-  }
 }
 
 /**
- * Create Dirichlet-categorical distribution.
+ * Create categorical distribution.
  */
 function Categorical(ρ:Dirichlet) -> DirichletCategorical {
   x:DirichletCategorical;
   x.initialize(ρ);
   return x;
+}
+
+/**
+ * Create categorical distribution.
+ */
+function Categorical(ρ:Random<Real[_]>) -> Random<Integer> {
+  ρ1:Dirichlet? <- Dirichlet?(ρ);
+  if (ρ1?) {
+    return Categorical(ρ1!);
+  } else {
+    return Categorical(ρ.value());
+  }
 }

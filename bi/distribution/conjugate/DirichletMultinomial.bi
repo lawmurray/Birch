@@ -43,18 +43,25 @@ class DirichletMultinomial < Random<Integer[_]> {
       }
     }
   }
-
-  function tildeLeft() -> DirichletMultinomial {
-    simulate();
-    return this;
-  }
 }
 
 /**
- * Create Dirichlet-multinomial distribution.
+ * Create multinomial distribution.
  */
 function Multinomial(n:Integer, ρ:Dirichlet) -> DirichletMultinomial {
   x:DirichletMultinomial;
   x.initialize(n, ρ);
   return x;
+}
+
+/**
+ * Create multinomial distribution.
+ */
+function Multinomial(n:Integer, ρ:Random<Real[_]>) -> Random<Integer[_]> {
+  ρ1:Dirichlet? <- Dirichlet?(ρ);
+  if (ρ1?) {
+    return Multinomial(n, ρ1!);
+  } else {
+    return Multinomial(n, ρ.value());
+  }
 }

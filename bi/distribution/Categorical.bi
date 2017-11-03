@@ -25,11 +25,6 @@ class Categorical < Random<Integer> {
       setWeight(observe_categorical(x, ρ));
     }
   }
-
-  function tildeLeft() -> Categorical {
-    simulate();
-    return this;
-  }
 }
 
 /**

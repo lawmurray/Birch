@@ -25,11 +25,6 @@ class Poisson < Random<Integer> {
       setWeight(observe_poisson(x, λ));
     }
   }
-
-  function tildeLeft() -> Poisson {
-    simulate();
-    return this;
-  }
 }
 
 /**

@@ -46,12 +46,18 @@ class GaussianWithGaussianLogExpressionMean < Gaussian {
   }
 }
 
+/**
+ * Create Gaussian distribution.
+ */
 function Gaussian(μ:GaussianLogExpression, σ2:Real) -> Gaussian {
   x:GaussianWithGaussianLogExpressionMean;
   x.initialize(μ, σ2);
   return x;
 }
 
+/**
+ * Create Gaussian distribution.
+ */
 function Normal(μ:GaussianLogExpression, σ2:Real) -> Gaussian {
   return Gaussian(μ, σ2);
 }

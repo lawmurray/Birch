@@ -31,11 +31,6 @@ class UniformInteger < Random<Integer> {
       setWeight(observe_int_uniform(x, l, u));
     }
   }
-
-  function tildeLeft() -> UniformInteger {
-    simulate();
-    return this;
-  }
 }
 
 /**

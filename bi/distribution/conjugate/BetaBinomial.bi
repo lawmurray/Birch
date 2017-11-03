@@ -44,18 +44,25 @@ class BetaBinomial < Random<Integer> {
       }
     }
   }
-
-  function tildeLeft() -> BetaBinomial {
-    simulate();
-    return this;
-  }
 }
 
 /**
- * Create beta-binomial distribution.
+ * Create binomial distribution.
  */
 function Binomial(n:Integer, ρ:Beta) -> BetaBinomial {
   x:BetaBinomial;
   x.initialize(n, ρ);
   return x;
+}
+
+/**
+ * Create binomial distribution.
+ */
+function Binomial(n:Integer, ρ:Random<Real>) -> Random<Integer> {
+  ρ1:Beta? <- Beta?(ρ);
+  if (ρ1?) {
+    return Binomial(n, ρ1!);
+  } else {
+    return Binomial(n, ρ.value());
+  }
 }

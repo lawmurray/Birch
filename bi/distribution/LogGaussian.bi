@@ -39,11 +39,6 @@ class LogGaussian < Random<Real> {
       setWeight(observe_log_gaussian(x, μ, σ2));
     }
   }
-
-  function tildeLeft() -> LogGaussian {
-    simulate();
-    return this;
-  }
 }
 
 /**

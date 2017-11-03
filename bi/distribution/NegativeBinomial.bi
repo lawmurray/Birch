@@ -32,11 +32,6 @@ class NegativeBinomial < Random<Integer> {
       setWeight(observe_negative_binomial(x, k, ρ));
     }
   }
-
-  function tildeLeft() -> NegativeBinomial {
-    simulate();
-    return this;
-  }
 }
 
 /**
