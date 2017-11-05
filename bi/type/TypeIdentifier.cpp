@@ -30,3 +30,7 @@ void bi::TypeIdentifier::accept(Visitor* visitor) const {
 bool bi::TypeIdentifier::dispatchDefinitely(const Type& o) const {
   return o.definitely(*this);
 }
+
+bi::Type* bi::TypeIdentifier::dispatchCommon(const Type& o) const {
+  return o.common(*this);
+}

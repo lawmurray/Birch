@@ -148,6 +148,11 @@ bool bi::AliasType::definitely(const OptionalType& o) const {
   return target->base->definitely(o);
 }
 
+bool bi::AliasType::definitely(const SequenceType& o) const {
+  assert(target);
+  return target->base->definitely(o);
+}
+
 bool bi::AliasType::definitely(const TupleType& o) const {
   assert(target);
   return target->base->definitely(o);
@@ -156,4 +161,73 @@ bool bi::AliasType::definitely(const TupleType& o) const {
 bool bi::AliasType::definitely(const TypeList& o) const {
   assert(target);
   return target->base->definitely(o);
+}
+
+bi::Type* bi::AliasType::dispatchCommon(const Type& o) const {
+  return o.common(*this);
+}
+
+bi::Type* bi::AliasType::common(const AliasType& o) const {
+  assert(target);
+  return target->base->common(o);
+}
+
+bi::Type* bi::AliasType::common(const ArrayType& o) const {
+  assert(target);
+  return target->base->common(o);
+}
+
+bi::Type* bi::AliasType::common(const BasicType& o) const {
+  assert(target);
+  return target->base->common(o);
+}
+
+bi::Type* bi::AliasType::common(const ClassType& o) const {
+  assert(target);
+  return target->base->common(o);
+}
+
+bi::Type* bi::AliasType::common(const AnyType& o) const {
+  assert(target);
+  return target->base->common(o);
+}
+
+bi::Type* bi::AliasType::common(const EmptyType& o) const {
+  assert(target);
+  return target->base->common(o);
+}
+
+bi::Type* bi::AliasType::common(const FiberType& o) const {
+  assert(target);
+  return target->base->common(o);
+}
+
+bi::Type* bi::AliasType::common(const FunctionType& o) const {
+  assert(target);
+  return target->base->common(o);
+}
+
+bi::Type* bi::AliasType::common(const GenericType& o) const {
+  assert(target);
+  return target->base->common(o);
+}
+
+bi::Type* bi::AliasType::common(const OptionalType& o) const {
+  assert(target);
+  return target->base->common(o);
+}
+
+bi::Type* bi::AliasType::common(const SequenceType& o) const {
+  assert(target);
+  return target->base->common(o);
+}
+
+bi::Type* bi::AliasType::common(const TupleType& o) const {
+  assert(target);
+  return target->base->common(o);
+}
+
+bi::Type* bi::AliasType::common(const TypeList& o) const {
+  assert(target);
+  return target->base->common(o);
 }

@@ -44,8 +44,12 @@ public:
   Type* tail;
 
   using Type::definitely;
+  using Type::common;
 
   virtual bool dispatchDefinitely(const Type& o) const;
   virtual bool definitely(const TypeList& o) const;
+
+  virtual Type* dispatchCommon(const Type& o) const;
+  virtual Type* common(const TypeList& o) const;
 };
 }

@@ -37,3 +37,11 @@ bool bi::EmptyType::dispatchDefinitely(const Type& o) const {
 bool bi::EmptyType::definitely(const EmptyType& o) const {
   return true;
 }
+
+bi::Type* bi::EmptyType::dispatchCommon(const Type& o) const {
+  return o.common(*this);
+}
+
+bi::Type* bi::EmptyType::common(const EmptyType& o) const {
+  return new EmptyType();
+}

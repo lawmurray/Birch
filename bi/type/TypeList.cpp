@@ -41,3 +41,17 @@ bool bi::TypeList::dispatchDefinitely(const Type& o) const {
 bool bi::TypeList::definitely(const TypeList& o) const {
   return head->definitely(*o.head) && tail->definitely(*o.tail);
 }
+
+bi::Type* bi::TypeList::dispatchCommon(const Type& o) const {
+  return o.common(*this);
+}
+
+bi::Type* bi::TypeList::common(const TypeList& o) const {
+  auto head1 = head->common(*o.head);
+  auto tail1 = tail->common(*o.tail);
+  if (head1 && tail1) {
+    return new TypeList(head1, tail1);
+  } else {
+    return nullptr;
+  }
+}

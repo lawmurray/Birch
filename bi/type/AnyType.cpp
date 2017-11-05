@@ -42,3 +42,16 @@ bool bi::AnyType::definitely(const GenericType& o) const {
   assert(o.target);
   return definitely(*o.target->type);
 }
+
+bi::Type* bi::AnyType::dispatchCommon(const Type& o) const {
+  return o.common(*this);
+}
+
+bi::Type* bi::AnyType::common(const AnyType& o) const {
+  return new AnyType();
+}
+
+bi::Type* bi::AnyType::common(const GenericType& o) const {
+  assert(o.target);
+  return common(*o.target->type);
+}

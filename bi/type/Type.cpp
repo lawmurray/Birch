@@ -140,6 +140,10 @@ bi::TypeConstIterator bi::Type::end() const {
   return TypeConstIterator(nullptr);
 }
 
+bool bi::Type::equals(const Type& o) const {
+  return definitely(o) && o.definitely(*this);
+}
+
 bool bi::Type::definitely(const Type& o) const {
   return o.dispatchDefinitely(*this);
 }
@@ -213,9 +217,73 @@ bool bi::Type::definitely(const TypeList& o) const {
 }
 
 bi::Type* bi::Type::common(const Type& o) const {
+  return o.dispatchCommon(*this);
+}
+
+bi::Type* bi::Type::common(const AliasType& o) const {
   return nullptr;
 }
 
-bool bi::Type::equals(const Type& o) const {
-  return definitely(o) && o.definitely(*this);
+bi::Type* bi::Type::common(const ArrayType& o) const {
+  return nullptr;
+}
+
+bi::Type* bi::Type::common(const BasicType& o) const {
+  return nullptr;
+}
+
+bi::Type* bi::Type::common(const BinaryType& o) const {
+  return nullptr;
+}
+
+bi::Type* bi::Type::common(const ClassType& o) const {
+  return nullptr;
+}
+
+bi::Type* bi::Type::common(const AnyType& o) const {
+  return nullptr;
+}
+
+bi::Type* bi::Type::common(const EmptyType& o) const {
+  return nullptr;
+}
+
+bi::Type* bi::Type::common(const FiberType& o) const {
+  return nullptr;
+}
+
+bi::Type* bi::Type::common(const FunctionType& o) const {
+  return nullptr;
+}
+
+bi::Type* bi::Type::common(const GenericType& o) const {
+  return nullptr;
+}
+
+bi::Type* bi::Type::common(const NilType& o) const {
+  return nullptr;
+}
+
+bi::Type* bi::Type::common(const OptionalType& o) const {
+  return nullptr;
+}
+
+bi::Type* bi::Type::common(const OverloadedType& o) const {
+  return nullptr;
+}
+
+bi::Type* bi::Type::common(const SequenceType& o) const {
+  return nullptr;
+}
+
+bi::Type* bi::Type::common(const TupleType& o) const {
+  return nullptr;
+}
+
+bi::Type* bi::Type::common(const TypeIdentifier& o) const {
+  return nullptr;
+}
+
+bi::Type* bi::Type::common(const TypeList& o) const {
+  return nullptr;
 }

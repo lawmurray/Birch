@@ -58,3 +58,12 @@ bool bi::OverloadedType::dispatchDefinitely(const Type& o) const {
 bool bi::OverloadedType::definitely(const OverloadedType& o) const {
   return false;
 }
+
+bi::Type* bi::OverloadedType::dispatchCommon(const Type& o) const {
+  return o.common(*this);
+}
+
+bi::Type* bi::OverloadedType::common(const OverloadedType& o) const {
+  assert(false);
+  return nullptr;
+}

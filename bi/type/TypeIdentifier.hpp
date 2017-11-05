@@ -34,7 +34,9 @@ public:
   virtual void accept(Visitor* visitor) const;
 
   using Type::definitely;
+  using Type::common;
 
   virtual bool dispatchDefinitely(const Type& o) const;
+  virtual Type* dispatchCommon(const Type& o) const;
 };
 }

@@ -148,6 +148,11 @@ bool bi::GenericType::definitely(const OptionalType& o) const {
   return target->type->definitely(o);
 }
 
+bool bi::GenericType::definitely(const SequenceType& o) const {
+  assert(target);
+  return target->type->definitely(o);
+}
+
 bool bi::GenericType::definitely(const TupleType& o) const {
   assert(target);
   return target->type->definitely(o);
@@ -156,4 +161,73 @@ bool bi::GenericType::definitely(const TupleType& o) const {
 bool bi::GenericType::definitely(const TypeList& o) const {
   assert(target);
   return target->type->definitely(o);
+}
+
+bi::Type* bi::GenericType::dispatchCommon(const Type& o) const {
+  return o.common(*this);
+}
+
+bi::Type* bi::GenericType::common(const AliasType& o) const {
+  assert(target);
+  return target->type->common(o);
+}
+
+bi::Type* bi::GenericType::common(const ArrayType& o) const {
+  assert(target);
+  return target->type->common(o);
+}
+
+bi::Type* bi::GenericType::common(const BasicType& o) const {
+  assert(target);
+  return target->type->common(o);
+}
+
+bi::Type* bi::GenericType::common(const ClassType& o) const {
+  assert(target);
+  return target->type->common(o);
+}
+
+bi::Type* bi::GenericType::common(const AnyType& o) const {
+  assert(target);
+  return target->type->common(o);
+}
+
+bi::Type* bi::GenericType::common(const EmptyType& o) const {
+  assert(target);
+  return target->type->common(o);
+}
+
+bi::Type* bi::GenericType::common(const FiberType& o) const {
+  assert(target);
+  return target->type->common(o);
+}
+
+bi::Type* bi::GenericType::common(const FunctionType& o) const {
+  assert(target);
+  return target->type->common(o);
+}
+
+bi::Type* bi::GenericType::common(const GenericType& o) const {
+  assert(target);
+  return target->type->common(o);
+}
+
+bi::Type* bi::GenericType::common(const OptionalType& o) const {
+  assert(target);
+  return target->type->common(o);
+}
+
+bi::Type* bi::GenericType::common(const SequenceType& o) const {
+  assert(target);
+  return target->type->common(o);
+}
+
+bi::Type* bi::GenericType::common(const TupleType& o) const {
+  assert(target);
+  return target->type->common(o);
+}
+
+bi::Type* bi::GenericType::common(const TypeList& o) const {
+  assert(target);
+  return target->type->common(o);
 }

@@ -69,3 +69,44 @@ bool bi::BasicType::definitely(const OptionalType& o) const {
 bool bi::BasicType::definitely(const AnyType& o) const {
   return true;
 }
+
+bi::Type* bi::BasicType::dispatchCommon(const Type& o) const {
+  return o.common(*this);
+}
+
+bi::Type* bi::BasicType::common(const AliasType& o) const {
+  assert(o.target);
+  return common(*o.target->base);
+}
+
+bi::Type* bi::BasicType::common(const GenericType& o) const {
+  assert(o.target);
+  return common(*o.target->type);
+}
+
+bi::Type* bi::BasicType::common(const BasicType& o) const {
+  assert(target);
+  assert(o.target);
+  if (target == o.target) {
+    return new BasicType(target);
+  } else if (target->hasSuper(&o)) {
+    return new BasicType(o.target);
+  } else if (o.target->hasSuper(this)) {
+    return new BasicType(target);
+  } else {
+    return target->base->common(*o.target->base);
+  }
+}
+
+bi::Type* bi::BasicType::common(const OptionalType& o) const {
+  auto single1 = common(*o.single);
+  if (single1) {
+    return new OptionalType(single1);
+  } else {
+    return nullptr;
+  }
+}
+
+bi::Type* bi::BasicType::common(const AnyType& o) const {
+  return new AnyType();
+}
