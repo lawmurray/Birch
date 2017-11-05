@@ -36,7 +36,9 @@
 #include <algorithm>
 #include <utility>
 #include <functional>
+#include <initializer_list>
 #include <string>
+
 #include <cstdio>
 #include <cstdlib>
 #include <cstdint>

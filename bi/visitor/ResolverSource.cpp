@@ -255,7 +255,7 @@ bi::Statement* bi::ResolverSource::modify(Assignment* o) {
     auto right = new Call(
         new Member(o->right->accept(&cloner),
             new Identifier<Unknown>(new Name("tildeLeft"), o->loc), o->loc),
-        new Parentheses(new EmptyExpression(o->loc), o->loc), o->loc);
+        new EmptyExpression(o->loc), o->loc);
     auto left = o->left->accept(&cloner);
     auto assign = new Assignment(left, new Name("<-"), right, o->loc);
     return assign->accept(this);
@@ -264,7 +264,7 @@ bi::Statement* bi::ResolverSource::modify(Assignment* o) {
     auto observe = new Call(
         new Member(o->right->accept(&cloner),
             new Identifier<Unknown>(new Name("tildeRight"), o->loc), o->loc),
-        new Parentheses(o->left->accept(&cloner), o->loc), o->loc);
+        o->left->accept(&cloner), o->loc);
     if (!yieldTypes.empty()) {
       auto yield = new Yield(observe, o->loc);
       return yield->accept(this);
@@ -448,7 +448,8 @@ bi::Statement* bi::ResolverSource::modify(ExpressionStatement* o) {
   if (call && call->type->isFiber()) {
     auto name = new Name();
     auto var = new LocalVariable(name, o->single->type->accept(&cloner),
-        new EmptyExpression(o->loc), new EmptyExpression(o->loc), o->single, o->loc);
+        new EmptyExpression(o->loc), new EmptyExpression(o->loc), o->single,
+        o->loc);
     auto decl = new ExpressionStatement(var, o->loc);
     auto query = new Query(new Identifier<LocalVariable>(name, o->loc),
         o->loc);

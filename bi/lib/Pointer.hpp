@@ -11,7 +11,7 @@
 
 namespace bi {
 /**
- * Smart pointer fiber-local heaps, with copy-on-write semantics.
+ * Smart pointer for fiber-local heaps, with copy-on-write semantics.
  *
  * @ingroup library
  *

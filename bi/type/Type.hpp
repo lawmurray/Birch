@@ -4,6 +4,8 @@
 #pragma once
 
 #include "bi/common/Located.hpp"
+#include "bi/type/TypeIterator.hpp"
+#include "bi/type/TypeConstIterator.hpp"
 
 namespace bi {
 class Cloner;
@@ -25,9 +27,10 @@ class GenericType;
 class NilType;
 class OptionalType;
 class OverloadedType;
+class SequenceType;
 class TupleType;
+class TypeConstIterator;
 class TypeIdentifier;
-class TypeIterator;
 class TypeList;
 
 class Class;
@@ -194,12 +197,14 @@ public:
    * Iterator to first element if this is a list, to one-past-the-last if
    * this is empty, otherwise to this.
    */
-  TypeIterator begin() const;
+  TypeIterator begin();
+  TypeConstIterator begin() const;
 
   /**
    * Iterator to one-past-the-last.
    */
-  TypeIterator end() const;
+  TypeIterator end();
+  TypeConstIterator end() const;
 
   /*
    * Double-dispatch partial order comparisons.
@@ -219,9 +224,15 @@ public:
   virtual bool definitely(const NilType& o) const;
   virtual bool definitely(const OptionalType& o) const;
   virtual bool definitely(const OverloadedType& o) const;
+  virtual bool definitely(const SequenceType& o) const;
   virtual bool definitely(const TupleType& o) const;
   virtual bool definitely(const TypeIdentifier& o) const;
   virtual bool definitely(const TypeList& o) const;
+
+  /*
+   * Double-dispatch common type reductions.
+   */
+  virtual Type* common(const Type& o) const;
 
   /**
    * Are these two types the same?

@@ -3,9 +3,8 @@
  */
 #pragma once
 
-#include "bi/type/Type.hpp"
-
 namespace bi {
+class Type;
 /**
  * Iterator over type list.
  *
@@ -18,11 +17,11 @@ public:
    *
    * @param o The list, `nullptr` gives a one-past-end iterator.
    */
-  TypeIterator(const Type* o = nullptr);
+  TypeIterator(Type* o = nullptr);
 
   TypeIterator& operator++();
   TypeIterator operator++(int);
-  const Type* operator*();
+  Type* operator*();
   bool operator==(const TypeIterator& o) const;
   bool operator!=(const TypeIterator& o) const;
 
@@ -30,6 +29,6 @@ private:
   /**
    * The list.
    */
-  const Type* o;
+  Type* o;
 };
 }

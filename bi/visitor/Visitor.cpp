@@ -50,6 +50,10 @@ void bi::Visitor::visit(const Parentheses* o) {
   o->single->accept(this);
 }
 
+void bi::Visitor::visit(const Sequence* o) {
+  o->single->accept(this);
+}
+
 void bi::Visitor::visit(const Binary* o) {
   o->left->accept(this);
   o->right->accept(this);
@@ -374,6 +378,10 @@ void bi::Visitor::visit(const ArrayType* o) {
 }
 
 void bi::Visitor::visit(const TupleType* o) {
+  o->single->accept(this);
+}
+
+void bi::Visitor::visit(const SequenceType* o) {
   o->single->accept(this);
 }
 

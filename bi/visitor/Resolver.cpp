@@ -29,6 +29,23 @@ bi::Expression* bi::Resolver::modify(Parentheses* o) {
   return o;
 }
 
+bi::Expression* bi::Resolver::modify(Sequence* o) {
+  Modifier::modify(o);
+  auto iter = o->single->type->begin();
+  auto common = *iter;
+  ++iter;
+  while (common && iter != o->single->type->end()) {
+    common = common->common(**iter);
+    ++iter;
+  }
+  if (!common) {
+    throw SequenceException(o);
+  } else {
+    o->type = new SequenceType(common, o->loc);
+  }
+  return o;
+}
+
 bi::Expression* bi::Resolver::modify(Binary* o) {
   Modifier::modify(o);
   o->type = new BinaryType(o->left->type, o->right->type, o->loc);

@@ -24,6 +24,7 @@
 #include "bi/expression/Parentheses.hpp"
 #include "bi/expression/Query.hpp"
 #include "bi/expression/Range.hpp"
+#include "bi/expression/Sequence.hpp"
 #include "bi/expression/Slice.hpp"
 #include "bi/expression/Span.hpp"
 #include "bi/expression/Super.hpp"

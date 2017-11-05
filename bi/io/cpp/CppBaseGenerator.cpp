@@ -56,6 +56,10 @@ void bi::CppBaseGenerator::visit(const Parentheses* o) {
   }
 }
 
+void bi::CppBaseGenerator::visit(const Sequence* o) {
+  middle('{' << o->single << '}');
+}
+
 void bi::CppBaseGenerator::visit(const Cast* o) {
   auto classType = dynamic_cast<ClassType*>(o->returnType);
   if (o->single->type->isOptional()) {
@@ -593,6 +597,10 @@ void bi::CppBaseGenerator::visit(const ArrayType* o) {
 
 void bi::CppBaseGenerator::visit(const TupleType* o) {
   middle("std::tuple<" << o->single << '>');
+}
+
+void bi::CppBaseGenerator::visit(const SequenceType* o) {
+  middle("std::initializer_list<" << o->single << '>');
 }
 
 void bi::CppBaseGenerator::visit(const FunctionType* o) {

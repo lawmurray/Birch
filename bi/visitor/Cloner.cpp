@@ -45,6 +45,10 @@ bi::Expression* bi::Cloner::clone(const Parentheses* o) {
   return new Parentheses(o->single->accept(this), o->loc);
 }
 
+bi::Expression* bi::Cloner::clone(const Sequence* o) {
+  return new Sequence(o->single->accept(this), o->loc);
+}
+
 bi::Expression* bi::Cloner::clone(const Binary* o) {
   return new Binary(o->left->accept(this), o->right->accept(this), o->loc);
 }
@@ -349,6 +353,10 @@ bi::Type* bi::Cloner::clone(const ArrayType* o) {
 
 bi::Type* bi::Cloner::clone(const TupleType* o) {
   return new TupleType(o->single->accept(this), o->loc);
+}
+
+bi::Type* bi::Cloner::clone(const SequenceType* o) {
+  return new SequenceType(o->single->accept(this), o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const BinaryType* o) {

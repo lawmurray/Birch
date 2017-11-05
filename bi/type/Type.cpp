@@ -4,6 +4,7 @@
 #include "bi/type/Type.hpp"
 
 #include "bi/type/TypeIterator.hpp"
+#include "bi/type/TypeConstIterator.hpp"
 #include "bi/exception/all.hpp"
 
 #include <cassert>
@@ -115,7 +116,7 @@ void bi::Type::resolveConstructor(Argumented* o) {
   }
 }
 
-bi::TypeIterator bi::Type::begin() const {
+bi::TypeIterator bi::Type::begin() {
   if (isEmpty()) {
     return end();
   } else {
@@ -123,8 +124,20 @@ bi::TypeIterator bi::Type::begin() const {
   }
 }
 
-bi::TypeIterator bi::Type::end() const {
+bi::TypeConstIterator bi::Type::begin() const {
+  if (isEmpty()) {
+    return end();
+  } else {
+    return TypeConstIterator(this);
+  }
+}
+
+bi::TypeIterator bi::Type::end() {
   return TypeIterator(nullptr);
+}
+
+bi::TypeConstIterator bi::Type::end() const {
+  return TypeConstIterator(nullptr);
 }
 
 bool bi::Type::definitely(const Type& o) const {
@@ -183,6 +196,10 @@ bool bi::Type::definitely(const OverloadedType& o) const {
   return false;
 }
 
+bool bi::Type::definitely(const SequenceType& o) const {
+  return false;
+}
+
 bool bi::Type::definitely(const TupleType& o) const {
   return false;
 }
@@ -193,6 +210,10 @@ bool bi::Type::definitely(const TypeIdentifier& o) const {
 
 bool bi::Type::definitely(const TypeList& o) const {
   return false;
+}
+
+bi::Type* bi::Type::common(const Type& o) const {
+  return nullptr;
 }
 
 bool bi::Type::equals(const Type& o) const {

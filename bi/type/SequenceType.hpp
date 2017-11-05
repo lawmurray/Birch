@@ -8,24 +8,24 @@
 
 namespace bi {
 /**
- * Tuple type.
+ * Sequence type.
  *
  * @ingroup compiler_type
  */
-class TupleType: public Type, public Single<Type> {
+class SequenceType: public Type, public Single<Type> {
 public:
   /**
    * Constructor.
    *
-   * @param single Type in parentheses.
+   * @param single Type of all elements of the sequence.
    * @param loc Location.
    */
-  TupleType(Type* single, Location* loc = nullptr);
+  SequenceType(Type* single, Location* loc = nullptr);
 
   /**
    * Destructor.
    */
-  virtual ~TupleType();
+  virtual ~SequenceType();
 
   virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);
@@ -35,9 +35,10 @@ public:
 
   virtual bool dispatchDefinitely(const Type& o) const;
   virtual bool definitely(const AliasType& o) const;
+  virtual bool definitely(const ArrayType& o) const;
   virtual bool definitely(const GenericType& o) const;
   virtual bool definitely(const OptionalType& o) const;
-  virtual bool definitely(const TupleType& o) const;
+  virtual bool definitely(const SequenceType& o) const;
   virtual bool definitely(const AnyType& o) const;
 };
 }

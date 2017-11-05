@@ -5,7 +5,7 @@
 
 #include "bi/type/TypeList.hpp"
 
-bi::TypeIterator::TypeIterator(const Type* o) :
+bi::TypeIterator::TypeIterator(Type* o) :
     o(o) {
   //
 }
@@ -26,7 +26,7 @@ bi::TypeIterator bi::TypeIterator::operator++(int) {
   return result;
 }
 
-const bi::Type* bi::TypeIterator::operator*() {
+bi::Type* bi::TypeIterator::operator*() {
   auto list = dynamic_cast<const TypeList*>(o);
   if (list) {
     return list->head;

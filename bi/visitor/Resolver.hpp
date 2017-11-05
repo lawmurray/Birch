@@ -33,6 +33,7 @@ public:
 
   virtual Expression* modify(ExpressionList* o);
   virtual Expression* modify(Parentheses* o);
+  virtual Expression* modify(Sequence* o);
   virtual Expression* modify(Binary* o);
 
   virtual Type* modify(TypeIdentifier* o);

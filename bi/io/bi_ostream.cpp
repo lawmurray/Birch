@@ -45,6 +45,10 @@ void bi::bi_ostream::visit(const Parentheses* o) {
   middle('(' << o->single << ')');
 }
 
+void bi::bi_ostream::visit(const Sequence* o) {
+  middle('[' << o->single << ']');
+}
+
 void bi::bi_ostream::visit(const Cast* o) {
   middle(o->returnType << '?' << '(' << o->single << ')');
 }
@@ -470,6 +474,10 @@ void bi::bi_ostream::visit(const ArrayType* o) {
 
 void bi::bi_ostream::visit(const TupleType* o) {
   middle('(' << o->single << ')');
+}
+
+void bi::bi_ostream::visit(const SequenceType* o) {
+  middle('[' << o->single << ']');
 }
 
 void bi::bi_ostream::visit(const FunctionType* o) {

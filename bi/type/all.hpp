@@ -16,7 +16,7 @@
 #include "bi/type/NilType.hpp"
 #include "bi/type/OptionalType.hpp"
 #include "bi/type/OverloadedType.hpp"
+#include "bi/type/SequenceType.hpp"
 #include "bi/type/TupleType.hpp"
 #include "bi/type/TypeIdentifier.hpp"
-#include "bi/type/TypeIterator.hpp"
 #include "bi/type/TypeList.hpp"

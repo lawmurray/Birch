@@ -31,6 +31,7 @@ public:
   virtual void visit(const Literal<double>* o);
   virtual void visit(const Literal<const char*>* o);
   virtual void visit(const Parentheses* o);
+  virtual void visit(const Sequence* o);
   virtual void visit(const Binary* o);
   virtual void visit(const Cast* o);
   virtual void visit(const Call* o);
@@ -102,6 +103,7 @@ public:
   virtual void visit(const GenericType* o);
   virtual void visit(const ArrayType* o);
   virtual void visit(const TupleType* o);
+  virtual void visit(const SequenceType* o);
   virtual void visit(const BinaryType* o);
   virtual void visit(const FunctionType* o);
   virtual void visit(const OverloadedType* o);

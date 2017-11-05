@@ -66,6 +66,7 @@ COMMON_SOURCES = \
   bi/exception/QueryException.cpp \
   bi/exception/ReturnException.cpp \
   bi/exception/ReturnTypeException.cpp \
+  bi/exception/SequenceException.cpp \
   bi/exception/SliceException.cpp \
   bi/exception/SuperException.cpp \
   bi/exception/SuperBaseException.cpp \
@@ -97,6 +98,7 @@ COMMON_SOURCES = \
   bi/expression/Parentheses.cpp \
   bi/expression/Query.cpp \
   bi/expression/Range.cpp \
+  bi/expression/Sequence.cpp \
   bi/expression/Slice.cpp \
   bi/expression/Span.cpp \
   bi/expression/Super.cpp \
@@ -158,8 +160,10 @@ COMMON_SOURCES = \
   bi/type/NilType.cpp \
   bi/type/OptionalType.cpp \
   bi/type/OverloadedType.cpp \
+  bi/type/SequenceType.cpp \
   bi/type/TupleType.cpp \
   bi/type/Type.cpp \
+  bi/type/TypeConstIterator.cpp \
   bi/type/TypeIdentifier.cpp \
   bi/type/TypeIterator.cpp \
   bi/type/TypeList.cpp \
@@ -262,6 +266,7 @@ noinst_HEADERS = \
   bi/exception/QueryException.hpp \
   bi/exception/ReturnException.hpp \
   bi/exception/ReturnTypeException.hpp \
+  bi/exception/SequenceException.hpp \
   bi/exception/SliceException.hpp \
   bi/exception/SuperBaseException.hpp \
   bi/exception/SuperException.hpp \
@@ -294,6 +299,7 @@ noinst_HEADERS = \
   bi/expression/Parentheses.hpp \
   bi/expression/Query.hpp \
   bi/expression/Range.hpp \
+  bi/expression/Sequence.hpp \
   bi/expression/Slice.hpp \
   bi/expression/Span.hpp \
   bi/expression/Super.hpp \
@@ -359,9 +365,12 @@ noinst_HEADERS = \
   bi/type/NilType.hpp \
   bi/type/OptionalType.hpp \
   bi/type/OverloadedType.hpp \
+  bi/type/SequenceType.hpp \
   bi/type/TupleType.hpp \
   bi/type/Type.hpp \
+  bi/type/TypeConstIterator.hpp \
   bi/type/TypeIdentifier.hpp \
+  bi/type/TypeIterator.hpp \
   bi/type/TypeList.hpp \
   bi/visitor/all.hpp \
   bi/visitor/Cloner.hpp \

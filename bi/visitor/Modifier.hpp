@@ -30,6 +30,7 @@ public:
   virtual Expression* modify(Literal<double>* o);
   virtual Expression* modify(Literal<const char*>* o);
   virtual Expression* modify(Parentheses* o);
+  virtual Expression* modify(Sequence* o);
   virtual Expression* modify(Binary* o);
   virtual Expression* modify(Cast* o);
   virtual Expression* modify(Call* o);
@@ -101,6 +102,7 @@ public:
   virtual Type* modify(GenericType* o);
   virtual Type* modify(ArrayType* o);
   virtual Type* modify(TupleType* o);
+  virtual Type* modify(SequenceType* o);
   virtual Type* modify(BinaryType* o);
   virtual Type* modify(FunctionType* o);
   virtual Type* modify(OverloadedType* o);
