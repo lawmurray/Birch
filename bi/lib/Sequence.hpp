@@ -28,10 +28,31 @@ public:
   }
 
   /**
+   * Width.
+   */
+  size_t width() const {
+    return values.size();
+  }
+
+  /**
    * Depth.
    */
   static int depth() {
     return depth_impl<Sequence<Type>>::value;
+  }
+
+  /**
+   * Does this sequence conform in size to the frame of an array?
+   */
+  template<class Frame>
+  bool conforms(const Frame& frame) const {
+    if (frame.count() != depth()) {
+      return false;
+    } else {
+      size_t lengths[depth()];
+      frame.lengths(lengths);
+      return conforms(lengths);
+    }
   }
 
   /*
@@ -57,6 +78,22 @@ private:
   std::initializer_list<Type> values;
 
   /**
+   * Implementation of conforms().
+   */
+  bool conforms(const size_t lengths[]) const {
+    if (lengths[0] != width()) {
+      return false;
+    } else if (depth() > 1) {
+      for (auto o: values) {
+        if (!o.conforms(lengths + 1)) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  /**
    * Depth of a sequence.
    */
   template<class Type1>
@@ -68,4 +105,18 @@ private:
     static const int value = 1 + depth_impl<Type1>::value;
   };
 };
+
+template<class Type, class Iterator>
+void copy(const Sequence<Type>& from, Iterator& to) {
+  for (auto o: from) {
+    copy(o, to);
+  }
+}
+
+template<class Type, class Iterator>
+void copy(const Type& from, Iterator& to) {
+  *to = from;
+  ++to;
+}
+
 }

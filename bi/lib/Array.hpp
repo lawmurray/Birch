@@ -79,7 +79,9 @@ public:
    */
   template<class Type1>
   Array(const Sequence<Type1>& o) {
-    copy(o);
+    auto iter = begin();
+    bi::copy(o, iter);
+    assert(iter == end());
   }
 
   /**
@@ -125,7 +127,10 @@ public:
    */
   template<class Type1>
   Array<Type,Frame>& operator=(const Sequence<Type1>& o) {
-    copy(o);
+    auto iter = begin();
+    bi::copy(o, iter);
+    assert(iter == end());
+    return *this;
   }
 
   /**
@@ -449,7 +454,7 @@ private:
   template<class Frame1>
   void copy(const Array<Type,Frame1>& o) {
     /* pre-condition */
-    assert(frame.conforms(o.frame));
+    assert(o.frame.conforms(frame));
 
     if (frame.size() > 0) {
       size_t block1 = frame.block();
@@ -467,16 +472,6 @@ private:
       }
       assert(iter2 == end2);
     }
-  }
-
-  /**
-   * Copy from a sequence.
-   */
-  template<class Type1>
-  void copy(const Sequence<Type1>& o) {
-    /* pre-condition */
-    assert(o.depth() == frame.count());
-
   }
 
   /**
