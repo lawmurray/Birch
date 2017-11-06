@@ -213,6 +213,7 @@ nobase_include_HEADERS = \
   bi/lib/Offset.hpp \
   bi/lib/Range.hpp \
   bi/lib/Pointer.hpp \
+  bi/lib/Sequence.hpp \
   bi/lib/Span.hpp \
   bi/lib/Stride.hpp \
   bi/lib/View.hpp \

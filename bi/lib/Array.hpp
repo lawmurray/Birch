@@ -6,10 +6,12 @@
 #include "bi/lib/Frame.hpp"
 #include "bi/lib/Iterator.hpp"
 #include "bi/lib/Pointer.hpp"
+#include "bi/lib/Sequence.hpp"
 #include "bi/lib/Eigen.hpp"
 #include "bi/lib/global.hpp"
 
 #include <cstring>
+#include <iostream>
 
 namespace bi {
 /**
@@ -71,6 +73,16 @@ public:
   Array(Array<Type,Frame> && o) = default;
 
   /**
+   * Sequence constructor.
+   *
+   * @param o Sequence.
+   */
+  template<class Type1>
+  Array(const Sequence<Type1>& o) {
+    copy(o);
+  }
+
+  /**
    * Copy assignment. For a view the frames of the two arrays must conform,
    * otherwise a resize is permitted.
    */
@@ -104,6 +116,16 @@ public:
       copy(o);
     }
     return *this;
+  }
+
+  /**
+   * Sequence assignment.
+   *
+   * @param o Sequence.
+   */
+  template<class Type1>
+  Array<Type,Frame>& operator=(const Sequence<Type1>& o) {
+    copy(o);
   }
 
   /**
@@ -445,6 +467,16 @@ private:
       }
       assert(iter2 == end2);
     }
+  }
+
+  /**
+   * Copy from a sequence.
+   */
+  template<class Type1>
+  void copy(const Sequence<Type1>& o) {
+    /* pre-condition */
+    assert(o.depth() == frame.count());
+
   }
 
   /**

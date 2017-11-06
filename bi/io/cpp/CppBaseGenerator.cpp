@@ -57,7 +57,7 @@ void bi::CppBaseGenerator::visit(const Parentheses* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Sequence* o) {
-  middle('{' << o->single << '}');
+  middle("bi::make_sequence({" << o->single << "})");
 }
 
 void bi::CppBaseGenerator::visit(const Cast* o) {
@@ -600,7 +600,7 @@ void bi::CppBaseGenerator::visit(const TupleType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const SequenceType* o) {
-  middle("std::initializer_list<" << o->single << '>');
+  middle("bi::Sequence<" << o->single << '>');
 }
 
 void bi::CppBaseGenerator::visit(const FunctionType* o) {

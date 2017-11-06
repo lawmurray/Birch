@@ -12,6 +12,7 @@
 #include "bi/lib/Frame.hpp"
 #include "bi/lib/View.hpp"
 #include "bi/lib/Array.hpp"
+#include "bi/lib/Sequence.hpp"
 #include "bi/lib/Any.hpp"
 #include "bi/lib/Object.hpp"
 #include "bi/lib/Pointer.hpp"
@@ -36,7 +37,6 @@
 #include <algorithm>
 #include <utility>
 #include <functional>
-#include <initializer_list>
 #include <string>
 
 #include <cstdio>
@@ -329,6 +329,22 @@ auto make_view(const NonemptyView<Tail,Head>& tail, Arg arg, Args ... args) {
 template<class Type, class Frame, class ... Args>
 auto make_array(const Frame& frame, Args ... args) {
   return Array<Type,Frame>(frame, args...);
+}
+
+/**
+ * Make a sequence.
+ *
+ * @ingroup library
+ *
+ * @tparam Type Value type.
+ *
+ * @param values Values.
+ *
+ * @return The sequence.
+ */
+template<class Type>
+auto make_sequence(const std::initializer_list<Type> values) {
+  return Sequence<Type>(values);
 }
 
 /**
