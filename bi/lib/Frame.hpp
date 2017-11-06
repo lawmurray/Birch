@@ -100,6 +100,33 @@ struct EmptyFrame {
     //
   }
 
+  void setLength(const int i, const size_t value) {
+    assert(false);
+  }
+
+  void setStride(const int i, const ptrdiff_t value) {
+    assert(false);
+  }
+
+  void setLead(const int i, const size_t value) {
+    assert(false);
+  }
+
+  template<class T1>
+  void setLengths(T1* in) {
+    //
+  }
+
+  template<class T1>
+  void setStrides(T1* in) {
+    //
+  }
+
+  template<class T1>
+  void setLeads(T1* in) {
+    //
+  }
+
   static constexpr int count() {
     return 0;
   }
@@ -301,7 +328,7 @@ struct NonemptyFrame {
   }
 
   /**
-   * @name Queries
+   * @name Getters
    */
   //@{
   /**
@@ -344,12 +371,7 @@ struct NonemptyFrame {
       return tail.lead(i);
     }
   }
-  //@}
 
-  /**
-   * @name Collections
-   */
-  //@{
   /**
    * Get lengths.
    *
@@ -387,6 +409,91 @@ struct NonemptyFrame {
   void leads(T1* out) const {
     tail.leads(out);
     *(out + Tail::count()) = head.lead;
+  }
+  //@}
+
+  /**
+   * @name Setters
+   */
+  //@{
+  /**
+   * Set the length of the @p i th dimension.
+   */
+  void setLength(const int i, const size_t value) {
+    /* pre-condition */
+    assert(i >= 0 && i < count());
+    if (i == count() - 1) {
+      head.length = value;
+    } else {
+      tail.setLength(i, value);
+    }
+  }
+
+  /**
+   * Set the stride of the @p i th dimension.
+   */
+  void setStride(const int i, const ptrdiff_t value) {
+    /* pre-condition */
+    assert(i >= 0 && i < count());
+
+    if (i == count() - 1) {
+      head.stride = value;
+    } else {
+      tail.setStride(i, value);
+    }
+  }
+
+  /**
+   * Set the lead of the @p i th dimension.
+   */
+  void setLead(const int i, const size_t value) {
+    /* pre-condition */
+    assert(i >= 0 && i < count());
+
+    if (i == count() - 1) {
+      head.lead = value;
+    } else {
+      tail.setLead(i, value);
+    }
+  }
+
+  /**
+   * Set lengths.
+   *
+   * @tparam T1 Integer type.
+   *
+   * @param in Array assumed to have at least count() elements.
+   */
+  template<class T1>
+  void setLengths(T1* in) {
+    tail.setLengths(in);
+    head.length = *(in + Tail::count());
+  }
+
+  /**
+   * Set strides.
+   *
+   * @tparam T1 Integer type.
+   *
+   * @param in Array assumed to have at least count() elements.
+   */
+  template<class T1>
+  void setStrides(T1* in) {
+    tail.setStrides(in);
+    head.stride = *(in + Tail::count());
+  }
+
+  /**
+   * Get leads.
+   *
+   * @tparam T1 Integer type.
+   *
+   * @param in Array assumed to have at least count() elements.
+   */
+  template<class T1>
+  void setLeads(T1* in) {
+    tail.setLeads(in);
+    head.lead = *(in + Tail::count());
   }
   //@}
 

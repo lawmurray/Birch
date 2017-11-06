@@ -78,10 +78,11 @@ public:
    * @param o Sequence.
    */
   template<class Type1>
-  Array(const Sequence<Type1>& o) {
-    auto iter = begin();
-    bi::copy(o, iter);
-    assert(iter == end());
+  Array(const Sequence<Type1>& o) :
+      frame(sequence_frame(o)),
+      ptr(allocate(frame.volume())),
+      isView(false) {
+    copy(o);
   }
 
   /**
@@ -127,9 +128,7 @@ public:
    */
   template<class Type1>
   Array<Type,Frame>& operator=(const Sequence<Type1>& o) {
-    auto iter = begin();
-    bi::copy(o, iter);
-    assert(iter == end());
+    copy(o);
     return *this;
   }
 
@@ -212,11 +211,11 @@ public:
    * Memory is allocated for the array, and is freed on destruction. After
    * allocation, the contents of the existing array are copied in.
    */
-  template<class DerivedType, typename = std::enable_if_t<is_eigen_compatible<DerivedType>::value>>
-  Array(const Eigen::EigenBase<DerivedType>& o, const Frame& frame) :
-      frame(frame),
-      ptr(allocate(frame.volume())),
-      isView(false) {
+  template<class DerivedType, typename = std::enable_if_t<
+      is_eigen_compatible<DerivedType>::value>>Array(const Eigen::EigenBase<DerivedType>& o, const Frame& frame) :
+  frame(frame),
+  ptr(allocate(frame.volume())),
+  isView(false) {
     toEigen() = o;
   }
 
@@ -225,9 +224,9 @@ public:
    */
   template<class DerivedType, typename = std::enable_if_t<is_eigen_compatible<DerivedType>::value>>
   Array(const Eigen::EigenBase<DerivedType>& o) :
-      frame(o.rows(), o.cols()),
-      ptr(allocate(frame.volume())),
-      isView(false) {
+  frame(o.rows(), o.cols()),
+  ptr(allocate(frame.volume())),
+  isView(false) {
     toEigen() = o;
   }
 
@@ -394,9 +393,9 @@ private:
    * @param frame Frame.
    */
   Array(Type* ptr, const Frame& frame) :
-      frame(frame),
-      ptr(ptr),
-      isView(true) {
+  frame(frame),
+  ptr(ptr),
+  isView(true) {
     //
   }
 
@@ -472,6 +471,18 @@ private:
       }
       assert(iter2 == end2);
     }
+  }
+
+  template<class Type1>
+  void copy(const Sequence<Type1>& o) {
+    assert(Frame::count() == sequence_depth<Sequence<Type1>>::value);
+
+    size_t sizes[Frame::count()];
+    frame.lengths(sizes);
+    assert(sequence_conforms(sizes, o));
+    auto iter = begin();
+    sequence_copy(o, iter);
+    assert(iter == end());
   }
 
   /**

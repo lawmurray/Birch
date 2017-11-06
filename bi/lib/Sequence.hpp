@@ -3,120 +3,88 @@
  */
 #pragma once
 
-#include "bi/lib/global.hpp"
-
 #include <initializer_list>
 
 namespace bi {
-
-
 /**
  * Sequence.
- *
- * @ingroup library
- *
- * @tparam Type Value type.
  */
 template<class Type>
-class Sequence {
-public:
-  /**
-   * Constructor.
-   */
-  Sequence(const std::initializer_list<Type>& values) : values(values) {
-    //
-  }
+using Sequence = std::initializer_list<Type>;
 
-  /**
-   * Width.
-   */
-  size_t width() const {
-    return values.size();
-  }
-
-  /**
-   * Depth.
-   */
-  static int depth() {
-    return depth_impl<Sequence<Type>>::value;
-  }
-
-  /**
-   * Does this sequence conform in size to the frame of an array?
-   */
-  template<class Frame>
-  bool conforms(const Frame& frame) const {
-    if (frame.count() != depth()) {
-      return false;
-    } else {
-      size_t lengths[depth()];
-      frame.lengths(lengths);
-      return conforms(lengths);
-    }
-  }
-
-  /*
-   * Iterators.
-   */
-  auto begin() {
-    return values.begin();
-  }
-  auto begin() const {
-    return values.begin();
-  }
-  auto end() {
-    return values.end();
-  }
-  auto end() const {
-    return values.end();
-  }
-
-private:
-  /**
-   * Values.
-   */
-  std::initializer_list<Type> values;
-
-  /**
-   * Implementation of conforms().
-   */
-  bool conforms(const size_t lengths[]) const {
-    if (lengths[0] != width()) {
-      return false;
-    } else if (depth() > 1) {
-      for (auto o: values) {
-        if (!o.conforms(lengths + 1)) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-
-  /**
-   * Depth of a sequence.
-   */
-  template<class Type1>
-  struct depth_impl {
-    static const int value = 0;
-  };
-  template<class Type1>
-  struct depth_impl<Sequence<Type1>> {
-    static const int value = 1 + depth_impl<Type1>::value;
-  };
+/**
+ * Depth of a sequence.
+ */
+template<class Type>
+struct sequence_depth {
+  static const int value = 0;
+};
+template<class Type>
+struct sequence_depth<Sequence<Type>> {
+  static const int value = 1 + sequence_depth<Type>::value;
 };
 
-template<class Type, class Iterator>
-void copy(const Sequence<Type>& from, Iterator& to) {
-  for (auto o: from) {
-    copy(o, to);
-  }
+/**
+ * Collect the lengths of nested sequences into an array.
+ */
+template<class Type>
+void sequence_lengths(const Type& o, size_t* lengths) {
+  //
+}
+template<class Type>
+void sequence_lengths(const Sequence<Type>& o,
+    size_t* lengths) {
+  *lengths = o.size();
+  sequence_lengths(*o.begin(), lengths + 1);
 }
 
+/**
+ * Create an appropriate frame for an array to be constructed from a sequence.
+ */
+template<class Type>
+auto sequence_frame(const Sequence<Type>& o) {
+  size_t lengths[sequence_depth<Sequence<Type>>::value];
+  sequence_lengths(o, lengths);
+
+  typename DefaultFrame<sequence_depth<Sequence<Type>>::value>::type frame;
+  frame.setLengths(lengths);
+
+  return frame;
+}
+
+/**
+ * Does the shape of a sequence conform with that of the frame of an array?
+ */
+template<class Type>
+bool sequence_conforms(const size_t* sizes, const Type& o) {
+  return true;
+}
+template<class Type>
+bool sequence_conforms(const size_t* sizes, const Sequence<Type>& o) {
+  if (*sizes != o.size()) {
+    return false;
+  }
+  for (auto o1: o) {
+    if (!sequence_conforms(sizes + 1, o1)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
+ * Copy from a sequence into an array.
+ */
 template<class Type, class Iterator>
-void copy(const Type& from, Iterator& to) {
+void sequence_copy(const Type& from, Iterator& to) {
   *to = from;
   ++to;
+}
+template<class Type, class Iterator>
+void sequence_copy(const Sequence<Type>& from, Iterator& to) {
+  for (auto o : from) {
+    sequence_copy(o, to);
+  }
 }
 
 }
