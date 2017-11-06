@@ -90,7 +90,7 @@ bi::Type* bi::SequenceType::common(const OptionalType& o) const {
 }
 
 bi::Type* bi::SequenceType::common(const SequenceType& o) const {
-  auto single1 = common(*o.single);
+  auto single1 = single->common(*o.single);
   if (single1) {
     return new SequenceType(single1);
   } else {
