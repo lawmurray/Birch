@@ -145,11 +145,11 @@ void bi::md_ostream::visit(const BasicType* o) {
 
 void bi::md_ostream::visit(const ArrayType* o) {
   middle(o->single << "\\[");
-  if (o->dims() > 0) {
-    middle("\\_");
-    for (int i = 1; i < o->count(); ++i) {
-      middle(",\\_");
+  for (int i = 0; i < o->depth(); ++i) {
+    if (i > 0) {
+      middle(',');
     }
+    middle("\\_");
   }
   middle("\\]");
 }

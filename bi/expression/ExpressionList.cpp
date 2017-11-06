@@ -21,10 +21,10 @@ bi::ExpressionList::~ExpressionList() {
   //
 }
 
-int bi::ExpressionList::count() const {
+int bi::ExpressionList::width() const {
   const ExpressionList* listTail = dynamic_cast<const ExpressionList*>(tail);
   if (listTail) {
-    return 1 + listTail->count();
+    return 1 + listTail->width();
   } else {
     return 2;
   }

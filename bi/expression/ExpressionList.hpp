@@ -27,7 +27,7 @@ public:
    */
   virtual ~ExpressionList();
 
-  virtual int count() const;
+  virtual int width() const;
   virtual bool isAssignable() const;
 
   virtual Expression* accept(Cloner* visitor) const;

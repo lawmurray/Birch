@@ -59,9 +59,9 @@ bool bi::GenericType::isFiber() const {
   return target->type->isFiber();
 }
 
-int bi::GenericType::dims() const {
+int bi::GenericType::depth() const {
   assert(target);
-  return target->type->dims();
+  return target->type->depth();
 }
 
 bi::Basic* bi::GenericType::getBasic() const {

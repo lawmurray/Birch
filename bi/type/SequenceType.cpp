@@ -15,6 +15,18 @@ bi::SequenceType::~SequenceType() {
   //
 }
 
+int bi::SequenceType::depth() const {
+  return 1 + single->depth();
+}
+
+bi::Type* bi::SequenceType::element() {
+  return single->element();
+}
+
+const bi::Type* bi::SequenceType::element() const {
+  return single->element();
+}
+
 bi::Type* bi::SequenceType::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
@@ -37,7 +49,8 @@ bool bi::SequenceType::definitely(const AliasType& o) const {
 }
 
 bool bi::SequenceType::definitely(const ArrayType& o) const {
-  return single->definitely(*o.single);
+  return single->element()->definitely(*o.single->element())
+      && depth() == o.depth();
 }
 
 bool bi::SequenceType::definitely(const GenericType& o) const {
@@ -67,9 +80,9 @@ bi::Type* bi::SequenceType::common(const AliasType& o) const {
 }
 
 bi::Type* bi::SequenceType::common(const ArrayType& o) const {
-  auto single1 = single->common(*o.single);
-  if (single1) {
-    return new ArrayType(single1, o.ndims);
+  auto single1 = single->element()->common(*o.single->element());
+  if (single1 && depth() == o.depth()) {
+    return new ArrayType(single1, depth());
   } else {
     return nullptr;
   }

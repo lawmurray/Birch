@@ -28,9 +28,10 @@ public:
    */
   virtual ~ArrayType();
 
-  virtual int dims() const;
+  virtual int depth() const;
+  virtual Type* element();
+  virtual const Type* element() const;
   virtual bool isArray() const;
-
   virtual void resolveConstructor(Argumented* o);
 
   virtual Type* accept(Cloner* visitor) const;

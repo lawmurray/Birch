@@ -45,7 +45,7 @@ bi::Expression* bi::Expression::getRight() const {
   return nullptr;
 }
 
-int bi::Expression::count() const {
+int bi::Expression::width() const {
   int result = 0;
   for (auto iter = begin(); iter != end(); ++iter) {
     ++result;
@@ -53,7 +53,7 @@ int bi::Expression::count() const {
   return result;
 }
 
-int bi::Expression::dims() const {
+int bi::Expression::depth() const {
   int result = 0;
   for (auto iter = begin(); iter != end(); ++iter) {
     if (dynamic_cast<const Range*>(*iter)) {

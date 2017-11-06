@@ -58,7 +58,7 @@ bi::Statement* bi::ResolverHeader::modify(Alias* o) {
 bi::Statement* bi::ResolverHeader::modify(GlobalVariable* o) {
   o->type = o->type->accept(this);
   if (!o->brackets->isEmpty()) {
-    o->type = new ArrayType(o->type, o->brackets->count(), o->brackets->loc);
+    o->type = new ArrayType(o->type, o->brackets->width(), o->brackets->loc);
   }
   scopes.back()->add(o);
   return o;
@@ -129,7 +129,7 @@ bi::Expression* bi::ResolverHeader::modify(MemberParameter* o) {
 bi::Statement* bi::ResolverHeader::modify(MemberVariable* o) {
   o->type = o->type->accept(this);
   if (!o->brackets->isEmpty()) {
-    o->type = new ArrayType(o->type, o->brackets->count(), o->brackets->loc);
+    o->type = new ArrayType(o->type, o->brackets->width(), o->brackets->loc);
   }
   scopes.back()->add(o);
   return o;

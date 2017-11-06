@@ -57,18 +57,18 @@ bi::Expression* bi::ResolverSource::modify(UnaryCall* o) {
 bi::Expression* bi::ResolverSource::modify(Slice* o) {
   Modifier::modify(o);
 
-  const int typeDims = o->single->type->dims();
-  const int sliceCount = o->brackets->count();
-  const int rangeDims = o->brackets->dims();
+  const int typeDepth = o->single->type->depth();
+  const int sliceWidth = o->brackets->width();
+  const int rangeDepth = o->brackets->depth();
 
-  if (typeDims != sliceCount) {
-    throw SliceException(o, typeDims, sliceCount);
+  if (typeDepth != sliceWidth) {
+    throw SliceException(o, typeDepth, sliceWidth);
   }
 
   ArrayType* type = dynamic_cast<ArrayType*>(o->single->type->canonical());
   assert(type);
-  if (rangeDims > 0) {
-    o->type = new ArrayType(type->single, rangeDims, o->loc);
+  if (rangeDepth > 0) {
+    o->type = new ArrayType(type->single, rangeDepth, o->loc);
   } else {
     o->type = type->single;
   }
@@ -190,7 +190,7 @@ bi::Expression* bi::ResolverSource::modify(LocalVariable* o) {
     o->type->resolveConstructor(o);
   }
   if (!o->brackets->isEmpty()) {
-    o->type = new ArrayType(o->type, o->brackets->count(), o->brackets->loc);
+    o->type = new ArrayType(o->type, o->brackets->width(), o->brackets->loc);
   }
   scopes.back()->add(o);
   return o;

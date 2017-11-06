@@ -59,9 +59,9 @@ bool bi::AliasType::isFiber() const {
   return target->base->isFiber();
 }
 
-int bi::AliasType::dims() const {
+int bi::AliasType::depth() const {
   assert(target);
-  return target->base->dims();
+  return target->base->depth();
 }
 
 bi::Basic* bi::AliasType::getBasic() const {

@@ -43,7 +43,7 @@ public:
   virtual bool isFunction() const;
   virtual bool isFiber() const;
 
-  virtual int dims() const;
+  virtual int depth() const;
 
   virtual Basic* getBasic() const;
   virtual Class* getClass() const;

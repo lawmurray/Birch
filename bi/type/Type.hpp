@@ -152,14 +152,15 @@ public:
   virtual Basic* getBasic() const;
 
   /**
-   * Number of types in a type list.
+   * Number of elements in a type list.
    */
-  virtual int count() const;
+  virtual int width() const;
 
   /**
-   * Number of dimensions in an array type.
+   * For an array type, the number of dimensions, for a sequence type, the
+   * number of nested sequences, otherwise zero.
    */
-  virtual int dims() const;
+  virtual int depth() const;
 
   /**
    * For an optional or fiber type, the type that is wrapped, otherwise
@@ -174,6 +175,12 @@ public:
    */
   virtual Type* canonical();
   virtual const Type* canonical() const;
+
+  /**
+   * For a sequence or array type, the element type, otherwise this.
+   */
+  virtual Type* element();
+  virtual const Type* element() const;
 
   /**
    * Resolve a call.

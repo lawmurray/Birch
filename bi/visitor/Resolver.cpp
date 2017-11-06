@@ -21,7 +21,7 @@ bi::Expression* bi::Resolver::modify(ExpressionList* o) {
 
 bi::Expression* bi::Resolver::modify(Parentheses* o) {
   Modifier::modify(o);
-  if (o->single->count() > 1) {
+  if (o->single->width() > 1) {
     o->type = new TupleType(o->single->type, o->loc);
   } else {
     o->type = o->single->type;
@@ -61,7 +61,7 @@ bi::Type* bi::Resolver::modify(ClassType* o) {
   Modifier::modify(o);
   resolve(o);
   if (!o->typeArgs->isEmpty() || o->target->isGeneric()) {
-    if (o->typeArgs->count() == o->target->typeParams->count()) {
+    if (o->typeArgs->width() == o->target->typeParams->width()) {
       Class* instantiation = o->target->getInstantiation(o->typeArgs);
       if (!instantiation) {
         Instantiater instantiater(o->typeArgs);

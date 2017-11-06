@@ -353,7 +353,6 @@ local_variable
     | name ':' type value                       { $$ = new bi::LocalVariable($1, $3, empty_expr(@$), empty_expr(@$), $4, make_loc(@$)); }
     | name ':' postfix_type brackets            { $$ = new bi::LocalVariable($1, $3, $4, empty_expr(@$), empty_expr(@$), make_loc(@$)); }
     | name ':' postfix_type brackets arguments  { $$ = new bi::LocalVariable($1, $3, $4, $5, empty_expr(@$), make_loc(@$)); }
-    | name ':' postfix_type brackets value      { $$ = new bi::LocalVariable($1, $3, $4, empty_expr(@$), $5, make_loc(@$)); }
     ;
 
 span_expression
@@ -462,7 +461,6 @@ global_variable_declaration
     | name ':' type value ';'                       { push_raw(); $$ = new bi::GlobalVariable($1, $3, empty_expr(@$), empty_expr(@$), $4, make_doc_loc(@$)); }
     | name ':' postfix_type brackets ';'            { push_raw(); $$ = new bi::GlobalVariable($1, $3, $4, empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
     | name ':' postfix_type brackets arguments ';'  { push_raw(); $$ = new bi::GlobalVariable($1, $3, $4, $5, empty_expr(@$), make_doc_loc(@$)); }
-    | name ':' postfix_type brackets value ';'      { push_raw(); $$ = new bi::GlobalVariable($1, $3, $4, empty_expr(@$), $5, make_doc_loc(@$)); }
     ;
 
 local_variable_declaration
@@ -475,7 +473,6 @@ member_variable_declaration
     | name ':' type value ';'                       { push_raw(); $$ = new bi::MemberVariable($1, $3, empty_expr(@$), empty_expr(@$), $4, make_doc_loc(@$)); }
     | name ':' postfix_type brackets ';'            { push_raw(); $$ = new bi::MemberVariable($1, $3, $4, empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
     | name ':' postfix_type brackets arguments ';'  { push_raw(); $$ = new bi::MemberVariable($1, $3, $4, $5, empty_expr(@$), make_doc_loc(@$)); }
-    | name ':' postfix_type brackets value ';'      { push_raw(); $$ = new bi::MemberVariable($1, $3, $4, empty_expr(@$), $5, make_doc_loc(@$)); }
     ;
 
 function_declaration

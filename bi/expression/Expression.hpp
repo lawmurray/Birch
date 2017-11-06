@@ -94,12 +94,12 @@ public:
   /**
    * Number of expresions in an expression list.
    */
-  virtual int count() const;
+  virtual int width() const;
 
   /**
    * Number of range expressions in an expression list.
    */
-  virtual int dims() const;
+  virtual int depth() const;
 
   /**
    * Iterator to first element if this is a list, to one-past-the-last if

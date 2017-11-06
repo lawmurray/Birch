@@ -78,7 +78,7 @@ bi::Basic* bi::Type::getBasic() const {
   return nullptr;
 }
 
-int bi::Type::count() const {
+int bi::Type::width() const {
   int result = 0;
   for (auto iter = begin(); iter != end(); ++iter) {
     ++result;
@@ -86,7 +86,7 @@ int bi::Type::count() const {
   return result;
 }
 
-int bi::Type::dims() const {
+int bi::Type::depth() const {
   return 0;
 }
 
@@ -103,6 +103,14 @@ bi::Type* bi::Type::canonical() {
 }
 
 const bi::Type* bi::Type::canonical() const {
+  return this;
+}
+
+bi::Type* bi::Type::element() {
+  return this;
+}
+
+const bi::Type* bi::Type::element() const {
   return this;
 }
 

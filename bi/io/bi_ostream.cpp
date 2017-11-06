@@ -463,7 +463,7 @@ void bi::bi_ostream::visit(const BinaryType* o) {
 
 void bi::bi_ostream::visit(const ArrayType* o) {
   middle(o->single << '[');
-  for (int i = 0; i < o->dims(); ++i) {
+  for (int i = 0; i < o->depth(); ++i) {
     if (i > 0) {
       middle(',');
     }

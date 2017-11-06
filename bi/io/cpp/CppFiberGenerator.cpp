@@ -46,7 +46,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   if (header) {
     finish(';');
   } else {
-    if (o->params->count() > 0) {
+    if (o->params->width() > 0) {
       finish(" :");
       in();
       for (auto iter = parameters.begin(); iter != parameters.end(); ++iter) {

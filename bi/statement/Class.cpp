@@ -89,7 +89,7 @@ bi::Class* bi::Class::getInstantiation(const Type* typeArgs) {
     return this;
   } else {
     for (auto o : instantiations) {
-      bool matches = typeArgs->count() == o->typeParams->count()
+      bool matches = typeArgs->width() == o->typeParams->width()
           && std::equal(typeArgs->begin(), typeArgs->end(),
               o->typeParams->begin(), compare);
       if (matches) {
