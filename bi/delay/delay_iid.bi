@@ -16,8 +16,8 @@ program delay_iid(μ:Real <- 0.0, σ2:Real <- 1.0, N:Integer <- 100,
     delay_iid_diagnostics(N);
   }
 
-  x:Gaussian;
-  y:Gaussian[N];
+  x:Random<Real>;
+  y:Random<Real>[N];
   
   /* simulate data */
   for (n:Integer in 1..N) {

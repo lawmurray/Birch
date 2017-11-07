@@ -71,55 +71,27 @@ class Example(T:Integer) {
   B:Real[1,3];  // nonlinear-linear state transition matrix
   C:Real[1,3];  // linear observation matrix
 
-  x_n:MultivariateGaussian[T](1);  // nonlinear state
-  x_l:MultivariateGaussian[T](3);  // linear state
-  
-  y_n:MultivariateGaussian[T](1);  // nonlinear observation
-  y_l:MultivariateGaussian[T](1);  // linear observation
+  x_n:Random<Real[_]>[T];  // nonlinear state
+  x_l:Random<Real[_]>[T];  // linear state
+  y_n:Random<Real[_]>[T];  // nonlinear observation
+  y_l:Random<Real[_]>[T];  // linear observation
 
   fiber simulate() -> Real! {
-    A[1,1] <- 1.0;
-    A[1,2] <- 0.3;
-    A[1,3] <- 0.0;
-    A[2,1] <- 0.0;
-    A[2,2] <- 0.92;
-    A[2,3] <- -0.3;
-    A[3,1] <- 0.0;
-    A[3,2] <- 0.3;
-    A[3,3] <- 0.92;
-    
-    B[1,1] <- 1.0;
-    B[1,2] <- 0.0;
-    B[1,3] <- 0.0;
-    
-    C[1,1] <- 1.0;
-    C[1,2] <- -1.0;
-    C[1,3] <- 1.0;
-    
-    Σ_x_l[1,1] <- 0.01;
-    Σ_x_l[1,2] <- 0.0;
-    Σ_x_l[1,3] <- 0.0;
-    Σ_x_l[2,1] <- 0.0;
-    Σ_x_l[2,2] <- 0.01;
-    Σ_x_l[2,3] <- 0.0;
-    Σ_x_l[3,1] <- 0.0;
-    Σ_x_l[3,2] <- 0.0;
-    Σ_x_l[3,3] <- 0.01;
-    
-    Σ_x_n[1,1] <- 0.01;
-    Σ_y_l[1,1] <- 0.1;
-    Σ_y_n[1,1] <- 0.1;
+    A     <- [[1.0, 0.3, 0.0], [0.0, 0.92, -0.3], [0.0, 0.3, 0.92]];
+    B     <- [[1.0, 0.0, 0.0]];
+    C     <- [[1.0, -1.00, 1.00]];
+    Σ_x_l <- [[0.01, 0.0, 0.0], [0.0, 0.01, 0.0], [0.0, 0.0, 0.01]];
+    Σ_x_n <- [[0.01]];
+    Σ_y_l <- [[0.1]];
+    Σ_y_n <- [[0.1]];
 
     x_n[1] ~ Gaussian(vector(0.0, 1), I(1, 1));
     x_l[1] ~ Gaussian(vector(0.0, 3), I(3, 3));
-
-    y_n[1] ~ Gaussian(vector(0.1*copysign(pow(scalar(x_n[1]), 2.0), scalar(x_n[1])), 1), Σ_y_n);
+    y_n[1] ~ Gaussian([0.1*copysign(pow(scalar(x_n[1]), 2.0), scalar(x_n[1]))], Σ_y_n);
     y_l[1] ~ Gaussian(C*x_l[1], Σ_y_l);
-
     for (t:Integer in 2..T) {
-      x_n[t] ~ Gaussian(vector(atan(scalar(x_n[t-1])), 1) + B*x_l[t-1], Σ_x_n);
+      x_n[t] ~ Gaussian([atan(scalar(x_n[t-1]))] + B*x_l[t-1], Σ_x_n);
       x_l[t] ~ Gaussian(A*x_l[t-1], Σ_x_l);
-
       y_n[t] ~ Gaussian(vector(0.1*copysign(pow(scalar(x_n[t]), 2.0), scalar(x_n[t])), 1), Σ_y_n);
       y_l[t] ~ Gaussian(C*x_l[t], Σ_y_l);
     }
@@ -173,7 +145,6 @@ function delay_rbpf_diagnostics(T:Integer) {
 
 closed fiber particle(T:Integer) -> Real! {
   x:Example(T);
-  
   x.input();
   x.simulate();
 }

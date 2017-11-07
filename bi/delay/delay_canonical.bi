@@ -9,11 +9,12 @@ program delay_canonical(diagnostics:Boolean <- false) {
     delay_canonical_diagnostics();
   }
 
-  a:Gaussian;
-  b:Gaussian;
-  c:Gaussian;
-  d:Gaussian;
-  e:Gaussian;
+  a:Random<Real>;
+  b:Random<Real>;
+  c:Random<Real>;
+  d:Random<Real>;
+  e:Random<Real>;
+  
   e <- 4.0;
 
   a ~ Gaussian(0.0, 1.0);

@@ -11,8 +11,8 @@ program delay_kalman(a:Real <- 0.9, T:Integer <- 10,
     delay_kalman_diagnostics(T);
   }
 
-  x:Gaussian[T];  // state
-  y:Gaussian[T];  // observation
+  x:Random<Real>[T];  // state
+  y:Random<Real>[T];  // observation
   
   /* simulate data */
   for (t:Integer in 1..T) {

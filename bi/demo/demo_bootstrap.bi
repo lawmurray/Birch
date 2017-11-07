@@ -52,8 +52,8 @@ program demo_bootstrap(N:Integer <- 10, T:Integer <- 10) {
 class BootstrapExample(T:Integer) {
   a:Real <- 0.8;
   σ2:Real <- 1.0;
-  x:Gaussian[T];
-  y:Gaussian[T];
+  x:Random<Real>[T];
+  y:Random<Real>[T];
 
   fiber simulate() -> Real! {
     x[1] <~ Gaussian(0.0, σ2);

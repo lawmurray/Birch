@@ -7,9 +7,9 @@ program delay_spike_and_slab(diagnostics:Boolean <- false) {
     delay_spike_and_slab_diagnostics();
   }
 
-  ρ:Bernoulli;
-  x:Gaussian;
-  y:Gaussian;
+  ρ:Random<Boolean>;
+  x:Random<Real>;
+  y:Random<Real>;
   
   ρ ~ Bernoulli(0.5);
   x ~ Gaussian(0.0, 1.0);

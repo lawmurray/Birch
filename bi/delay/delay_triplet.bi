@@ -13,9 +13,10 @@ program delay_triplet(x:Real?, y:Real?, z:Real?,
     delay_triplet_diagnostics();
   }
 
-  x1:Gaussian;
-  y1:Gaussian;
-  z1:Gaussian;
+  x1:Random<Real>;
+  y1:Random<Real>;
+  z1:Random<Real>;
+  
   if (x?) {
     x1 <- x!;
   }
