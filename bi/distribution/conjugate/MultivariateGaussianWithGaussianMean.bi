@@ -1,9 +1,9 @@
 /**
- * Multivariate Gaussian with conjugate prior on mean.
+ * Multivariate Gaussian with another multivariate Gaussian as mean.
  *
  * `D` Number of dimensions.
  */
-class MultivariateGaussianWithMultivariateGaussianMean(D:Integer)
+class MultivariateGaussianWithGaussianMean(D:Integer)
     < MultivariateGaussian(D) {
   /**
    * Mean.
@@ -44,8 +44,8 @@ class MultivariateGaussianWithMultivariateGaussianMean(D:Integer)
   }
   
   function doCondition() {
-    K:Real[D,D] <- μ.Σ*inverse(Σ_0);
-    μ.update(μ.μ + K*(x - μ_0), μ.Σ - K*μ.Σ);
+    K:Real[_,_] <- μ.Σ*inverse(Σ_0);
+    μ.update(μ.μ + K*(value() - μ_0), μ.Σ - K*μ.Σ);
   }
 }
 
@@ -54,7 +54,7 @@ class MultivariateGaussianWithMultivariateGaussianMean(D:Integer)
  */
 function Gaussian(μ:MultivariateGaussian, Σ:Real[_,_]) ->
     MultivariateGaussian {
-  x:MultivariateGaussianWithMultivariateGaussianMean(μ.D);
+  x:MultivariateGaussianWithGaussianMean(μ.D);
   x.initialize(μ, Σ);
   return x;
 }
