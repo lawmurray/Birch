@@ -6,6 +6,7 @@
 #include "bi/lib/Any.hpp"
 
 namespace bi {
+  namespace type {
 /**
  * Root of the class hierarchy for all classes implemented in Birch.
  *
@@ -16,4 +17,5 @@ class Object_: public Any {
     return new Object_();
   }
 };
+  }
 }

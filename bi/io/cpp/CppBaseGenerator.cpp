@@ -29,15 +29,15 @@ void bi::CppBaseGenerator::visit(const ExpressionList* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Literal<bool>* o) {
-  middle("bi::Boolean_(" << o->str << ")");
+  middle("bi::type::Boolean_(" << o->str << ")");
 }
 
 void bi::CppBaseGenerator::visit(const Literal<int64_t>* o) {
-  middle("bi::Integer64_(" << o->str << ")");
+  middle("bi::type::Integer64_(" << o->str << ")");
 }
 
 void bi::CppBaseGenerator::visit(const Literal<double>* o) {
-  middle("bi::Real64_(" << o->str << ")");
+  middle("bi::type::Real64_(" << o->str << ")");
 }
 
 void bi::CppBaseGenerator::visit(const Literal<const char*>* o) {
@@ -73,7 +73,7 @@ void bi::CppBaseGenerator::visit(const Cast* o) {
     middle(")");
   } else {
     middle(o->single);
-    middle(".cast<bi::" << classType->name << ">()");
+    middle(".cast<bi::type::" << classType->name << ">()");
   }
 }
 
@@ -220,11 +220,11 @@ void bi::CppBaseGenerator::visit(const Identifier<MemberVariable>* o) {
 }
 
 void bi::CppBaseGenerator::visit(const OverloadedIdentifier<Function>* o) {
-  middle("bi::func::" << o->name);
+  middle("bi::" << o->name);
 }
 
 void bi::CppBaseGenerator::visit(const OverloadedIdentifier<Fiber>* o) {
-  middle("bi::func::" << o->name);
+  middle("bi::" << o->name);
 }
 
 void bi::CppBaseGenerator::visit(
@@ -285,7 +285,7 @@ void bi::CppBaseGenerator::visit(const Function* o) {
   if (!o->braces->isEmpty()) {
     start(o->returnType << ' ');
     if (!header) {
-      middle("bi::func::");
+      middle("bi::");
     }
     middle(o->name << '(' << o->params << ')');
     if (header) {
@@ -391,7 +391,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
         if (param->type->unwrap()->isBasic()) {
           auto type = dynamic_cast<Named*>(param->type->unwrap());
           assert(type);
-          start(name << " = bi::func::" << type->name);
+          start(name << " = bi::" << type->name);
           finish("(std::string(optarg));");
         } else {
           line(name << " = std::string(optarg);");
@@ -421,6 +421,9 @@ void bi::CppBaseGenerator::visit(const Program* o) {
 void bi::CppBaseGenerator::visit(const BinaryOperator* o) {
   if (!o->braces->isEmpty()) {
     start(o->returnType << ' ');
+    if (!header) {
+      middle("bi::");
+    }
     if (isTranslatable(o->name->str())) {
       middle("operator" << o->name->str());
     } else {
@@ -445,6 +448,9 @@ void bi::CppBaseGenerator::visit(const BinaryOperator* o) {
 void bi::CppBaseGenerator::visit(const UnaryOperator* o) {
   if (!o->braces->isEmpty()) {
     start(o->returnType << ' ');
+    if (!header) {
+      middle("bi::");
+    }
     if (isTranslatable(o->name->str())) {
       middle("operator" << o->name->str());
     } else {
@@ -616,7 +622,7 @@ void bi::CppBaseGenerator::visit(const OptionalType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const ClassType* o) {
-  middle("bi::Pointer<bi::" << o->name);
+  middle("bi::Pointer<bi::type::" << o->name);
   if (!o->typeArgs->isEmpty()) {
     middle('<' << o->typeArgs << '>');
   }
@@ -624,11 +630,11 @@ void bi::CppBaseGenerator::visit(const ClassType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const AliasType* o) {
-  middle("bi::" << o->name);
+  middle("bi::type::" << o->name);
 }
 
 void bi::CppBaseGenerator::visit(const BasicType* o) {
-  middle("bi::" << o->name);
+  middle("bi::type::" << o->name);
 }
 
 void bi::CppBaseGenerator::visit(const GenericType* o) {

@@ -16,9 +16,6 @@
     return op x.toEigen(); \
   }
 
-UNARY_OPERATOR(+)
-UNARY_OPERATOR(-)
-
 #define BINARY_OPERATOR(op) \
   template<class OtherType1, class Type2, class Frame2> \
   auto operator op(const OtherType1& x, const bi::Array<Type2,Frame2>& y) { \
@@ -35,7 +32,12 @@ UNARY_OPERATOR(-)
     return x.toEigen() op y.toEigen(); \
   }
 
+namespace bi {
+UNARY_OPERATOR(+)
+UNARY_OPERATOR(-)
+
 BINARY_OPERATOR(+)
 BINARY_OPERATOR(-)
 BINARY_OPERATOR(*)
 BINARY_OPERATOR(/)
+}

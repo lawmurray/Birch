@@ -6,7 +6,6 @@
 #pragma once
 
 namespace bi {
-  namespace func {
 
 template<class EigenType>
 auto norm_(const EigenType& o) {
@@ -58,5 +57,4 @@ auto inverse_(const Array<Type,Frame>& o) {
   return inverse_(o.toEigen());
 }
 
-  }
 }

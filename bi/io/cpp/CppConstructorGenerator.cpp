@@ -12,7 +12,7 @@ bi::CppConstructorGenerator::CppConstructorGenerator(std::ostream& base,
 void bi::CppConstructorGenerator::visit(const Class* o) {
   if (!header) {
     genTemplateParams(o);
-    start("bi::" << o->name);
+    start("bi::type::" << o->name);
     genTemplateArgs(o);
     middle("::");
   } else {

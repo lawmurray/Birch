@@ -52,6 +52,7 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
   }
   line("");
   line("namespace bi {");
+  line("namespace type {");
 
   /* forward class declarations */
   for (auto o : classes) {
@@ -66,6 +67,7 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
   for (auto o : aliases) {
     line("using " << o->name << " = " << o->base << ';');
   }
+  line("}\n");
   line("");
 
   /* forward super type declarations */
@@ -76,7 +78,7 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
       } else {
         start("template<>");
       }
-      middle(" struct super_type<" << o->name);
+      middle(" struct super_type<type::" << o->name);
       genTemplateArgs(o);
       finish("> {");
       in();
@@ -84,18 +86,20 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
       if (!o->base->isEmpty()) {
         auto super = dynamic_cast<const ClassType*>(o->base);
         assert(super);
-        middle(super->name);
+        middle("type::" << super->name);
         if (!super->typeArgs->isEmpty()) {
           middle('<' << super->typeArgs << '>');
         }
       } else {
-        middle("Object_");
+        middle("type::Object_");
       }
       finish(" type;");
       out();
       line("};");
     }
   }
+  line("}\n");
+  line("");
 
   /* class definitions; even with the forward declarations above, base
    * classes must be defined before their derived classes, so these are
@@ -108,28 +112,25 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
     *this << (*iter)->getClass();
   }
 
+  line("namespace bi {");
+
   /* global variables */
   for (auto o : globals) {
     *this << o;
   }
-  line("");
 
   /* functions and fibers */
-  line("namespace func {");
   for (auto o : functions) {
     *this << o;
   }
   for (auto o : fibers) {
     *this << o;
   }
-  line("}\n");
 
   /* programs */
   for (auto o : programs) {
     *this << o;
   }
-  line("");
-  line("}\n");
 
   /* operators */
   for (auto o : binaries) {
@@ -138,4 +139,7 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
   for (auto o : unaries) {
     *this << o;
   }
+
+  line("}\n");
+  line("");
 }

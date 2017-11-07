@@ -42,7 +42,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   start("");
   if (!header) {
     genTemplateParams(type);
-    middle("bi::" << type->name);
+    middle("bi::type::" << type->name);
     genTemplateArgs(type);
     middle("::" << stateName << "::");
   }
@@ -81,7 +81,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     } else {
       start("");
     }
-    middle("bi::" << type->name);
+    middle("bi::type::" << type->name);
     genTemplateArgs(type);
     middle("::");
   } else {
@@ -89,7 +89,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   }
   middle(stateName << "* ");
   if (!header) {
-    middle("bi::" << type->name);
+    middle("bi::type::" << type->name);
     genTemplateArgs(type);
     middle("::" << stateName << "::");
   }
@@ -113,7 +113,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   }
   middle("bool ");
   if (!header) {
-    middle("bi::" << type->name);
+    middle("bi::type::" << type->name);
     genTemplateArgs(type);
     middle("::" << stateName << "::");
   }
@@ -157,7 +157,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   }
   start(o->returnType << ' ');
   if (!header) {
-    middle("bi::" << type->name);
+    middle("bi::type::" << type->name);
     genTemplateArgs(type);
     middle("::");
   }

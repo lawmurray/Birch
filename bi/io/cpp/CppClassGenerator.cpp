@@ -20,6 +20,10 @@ void bi::CppClassGenerator::visit(const Class* o) {
 
     /* start boilerplate */
     if (header) {
+      line("namespace bi {");
+      in();
+      line("namespace type {");
+      out();
       genTemplateParams(o);
       start("class " << o->name << " : public ");
       if (!o->base->isEmpty()) {
@@ -73,7 +77,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
     /* clone function */
     if (!header) {
       genTemplateParams(o);
-      start("bi::");
+      start("bi::type::");
     } else {
       start("virtual ");
     }
@@ -81,7 +85,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
     genTemplateArgs(o);
     middle("* ");
     if (!header) {
-      middle("bi::" << o->name);
+      middle("bi::type::" << o->name);
       genTemplateArgs(o);
       middle("::");
     }
@@ -108,6 +112,10 @@ void bi::CppClassGenerator::visit(const Class* o) {
     if (header) {
       out();
       line("};\n");
+      in();
+      line('}');
+      out();
+      line('}');
     }
   }
 }
@@ -133,7 +141,7 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
   }
   middle(o->returnType << ' ');
   if (!header) {
-    middle("bi::" << type->name);
+    middle("bi::type::" << type->name);
     genTemplateArgs(type);
     middle("::");
   }
@@ -164,13 +172,13 @@ void bi::CppClassGenerator::visit(const AssignmentOperator* o) {
       start("virtual ");
     } else {
       genTemplateParams(type);
-      start("bi::");
+      start("bi::type::");
     }
     middle(type->name);
     genTemplateArgs(type);
     middle("& ");
     if (!header) {
-      middle("bi::" << type->name);
+      middle("bi::type::" << type->name);
       genTemplateArgs(type);
       middle("::");
     }
@@ -193,7 +201,7 @@ void bi::CppClassGenerator::visit(const ConversionOperator* o) {
   if (!o->braces->isEmpty()) {
     if (!header) {
       genTemplateParams(type);
-      start("bi::" << type->name);
+      start("bi::type::" << type->name);
       genTemplateArgs(type);
       middle("::");
     } else {

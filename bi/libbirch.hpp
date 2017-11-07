@@ -47,6 +47,8 @@
 #include <cassert>
 
 namespace bi {
+
+namespace type {
 /*
  * Basic types.
  */
@@ -57,6 +59,7 @@ using Integer64_ = int64_t;
 using Integer32_ = int32_t;
 using String_ = std::string;
 using File_ = FILE*;
+}
 
 /**
  * Make a span.
