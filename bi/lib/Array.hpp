@@ -11,7 +11,6 @@
 #include "bi/lib/global.hpp"
 
 #include <cstring>
-#include <iostream>
 
 namespace bi {
 /**

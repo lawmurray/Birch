@@ -32,8 +32,7 @@ void sequence_lengths(const Type& o, size_t* lengths) {
   //
 }
 template<class Type>
-void sequence_lengths(const Sequence<Type>& o,
-    size_t* lengths) {
+void sequence_lengths(const Sequence<Type>& o, size_t* lengths) {
   *lengths = o.size();
   sequence_lengths(*o.begin(), lengths + 1);
 }
@@ -43,12 +42,11 @@ void sequence_lengths(const Sequence<Type>& o,
  */
 template<class Type>
 auto sequence_frame(const Sequence<Type>& o) {
+  typename DefaultFrame<sequence_depth<Sequence<Type>>::value>::type frame;
   size_t lengths[sequence_depth<Sequence<Type>>::value];
   sequence_lengths(o, lengths);
-
-  typename DefaultFrame<sequence_depth<Sequence<Type>>::value>::type frame;
   frame.setLengths(lengths);
-
+  frame.setLeads(lengths);
   return frame;
 }
 
