@@ -13,11 +13,8 @@
  * `initial` and `transition` functions of the `Example` class, and to `~>`
  * in the `observation` function.
  */
-program delay_rbpf(
-    N:Integer <- 100,
-    T:Integer <- 10,
-    diagnostics:Boolean <- false,
-    ess_rel:Real <- 0.7) {  
+program delay_rbpf(N:Integer <- 100, T:Integer <- 10,
+    diagnostics:Boolean <- false, ess_rel:Real <- 0.7) {  
   if (diagnostics) {
     delay_rbpf_diagnostics(T);
   }
@@ -62,36 +59,72 @@ program delay_rbpf(
 }
 
 class Example(T:Integer) {
-  Σ_x_l:Real[3,3];  // linear state noise covariance
-  Σ_x_n:Real[1,1];  // nonlinear state noise covariance
-  Σ_y_l:Real[1,1];  // linear observation noise covariance
-  Σ_y_n:Real[1,1];  // nonlinear observation noise covariance
+  /**
+   * Linear-linear state transition matrix.
+   */
+  A:Real[_,_] <- [[1.0, 0.3, 0.0], [0.0, 0.92, -0.3], [0.0, 0.3, 0.92]];
   
-  A:Real[3,3];  // linear-linear state transition matrix
-  B:Real[1,3];  // nonlinear-linear state transition matrix
-  C:Real[1,3];  // linear observation matrix
+  /**
+   * Nonlinear-linear state transition matrix.
+   */
+  B:Real[_,_] <- [[1.0, 0.0, 0.0]];
+  
+  /**
+   * Linear observation matrix.
+   */
+  C:Real[_,_] <- [[1.0, -1.0, 1.0]];
+    
+  /**
+   * Linear state noise covariance.
+   */
+  Σ_x_l:Real[_,_] <- [[0.01, 0.0, 0.0], [0.0, 0.01, 0.0], [0.0, 0.0, 0.01]];
+  
+  /**
+   * Nonlinear state noise covariance.
+   */
+  Σ_x_n:Real[_,_] <- [[0.01]];
+  
+  /**
+   * Linear observation noise covariance.
+   */
+  Σ_y_l:Real[_,_] <- [[0.1]];
+  
+  /**
+   * Nonlinear observation noise covariance.
+   */
+  Σ_y_n:Real[_,_] <- [[0.1]];
 
-  x_n:Random<Real[_]>[T];  // nonlinear state
-  x_l:Random<Real[_]>[T];  // linear state
-  y_n:Random<Real[_]>[T];  // nonlinear observation
-  y_l:Random<Real[_]>[T];  // linear observation
+  /**
+   * Nonlinear state.
+   */
+  x_n:Random<Real[_]>[T];
+  
+  /**
+   * Linear state.
+   */
+  x_l:Random<Real[_]>[T];
 
-  fiber simulate() -> Real! {
-    A     <- [[1.0, 0.3, 0.0], [0.0, 0.92, -0.3], [0.0, 0.3, 0.92]];
-    B     <- [[1.0, 0.0, 0.0]];
-    C     <- [[1.0, -1.00, 1.00]];
-    Σ_x_l <- [[0.01, 0.0, 0.0], [0.0, 0.01, 0.0], [0.0, 0.0, 0.01]];
-    Σ_x_n <- [[0.01]];
-    Σ_y_l <- [[0.1]];
-    Σ_y_n <- [[0.1]];
+  /**
+   * Nonlinear observation.
+   */
+  y_n:Random<Real[_]>[T];
+  
+  /**
+   * Linear observation.
+   */
+  y_l:Random<Real[_]>[T];
 
+  fiber simulate() -> Real! {  
     x_n[1] ~ Gaussian(vector(0.0, 1), I(1, 1));
     x_l[1] ~ Gaussian(vector(0.0, 3), I(3, 3));
+    
     y_n[1] ~ Gaussian([0.1*copysign(pow(scalar(x_n[1]), 2.0), scalar(x_n[1]))], Σ_y_n);
     y_l[1] ~ Gaussian(C*x_l[1], Σ_y_l);
+    
     for (t:Integer in 2..T) {
       x_n[t] ~ Gaussian([atan(scalar(x_n[t-1]))] + B*x_l[t-1], Σ_x_n);
       x_l[t] ~ Gaussian(A*x_l[t-1], Σ_x_l);
+      
       y_n[t] ~ Gaussian(vector(0.1*copysign(pow(scalar(x_n[t]), 2.0), scalar(x_n[t])), 1), Σ_y_n);
       y_l[t] ~ Gaussian(C*x_l[t], Σ_y_l);
     }
