@@ -67,8 +67,6 @@ U                                  _
 G                                  (α|β|γ|δ|ε|ζ|η|θ|ι|κ|λ|μ|ν|ξ|ο|π|ρ|σ|τ|υ|φ|χ|ψ|ω|Γ|Δ|Θ|Λ|Ξ|Π|Σ|Υ|Φ|Ψ|Ω)
 H                                  [a-fA-F0-9]
 E                                  [Ee][+-]?{D}+
-FS                                 (f|F|l|L)
-IS                                 (u|U|l|L)*
 
 %%
 
@@ -120,11 +118,11 @@ IS                                 (u|U|l|L)*
 
 ({L}|{G})({L}|{G}|{U}|{D})*         { yylval.valString = strdup(yytext); return NAME; }
 
-{D}+{E}{FS}?                        { yylval.valReal = atof(yytext); return REAL_LITERAL; }
-{D}+\.{D}+({E})?{FS}?               { yylval.valReal = atof(yytext); return REAL_LITERAL; }
-0[xX]{H}+{IS}?                      { yylval.valInt = atoi(yytext); return INT_LITERAL; }
-0{D}+{IS}?                          { yylval.valInt = atoi(yytext); return INT_LITERAL; }
-{D}+{IS}?                           { yylval.valInt = atoi(yytext); return INT_LITERAL; }
+{D}+{E}                             { yylval.valReal = atof(yytext); return REAL_LITERAL; }
+{D}+\.{D}+({E})?                    { yylval.valReal = atof(yytext); return REAL_LITERAL; }
+0[xX]{H}+                           { yylval.valInt = atoi(yytext); return INT_LITERAL; }
+0{D}+                               { yylval.valInt = atoi(yytext); return INT_LITERAL; }
+{D}+                                { yylval.valInt = atoi(yytext); return INT_LITERAL; }
 \"(\\\"|[^\"])*\"                   { yylval.valString = strdup(yytext); return STRING_LITERAL; }
 
 "<-"                                { return LEFT_OP; } 
