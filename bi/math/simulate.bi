@@ -30,7 +30,7 @@ function simulate_bernoulli(ρ:Real) -> Boolean {
 function simulate_int_uniform(l:Integer, u:Integer) -> Integer {
   assert l <= u;
   cpp {{
-  return std::uniform_int_distribution<bi::Integer_>(l_, u_)(rng);
+  return std::uniform_int_distribution<bi::type::Integer_>(l_, u_)(rng);
   }}
 }
 
@@ -44,7 +44,7 @@ function simulate_binomial(n:Integer, ρ:Real) -> Integer {
   assert 0 <= n;
   assert 0.0 <= ρ && ρ <= 1.0;
   cpp {{
-  return std::binomial_distribution<bi::Integer_>(n_, ρ_)(rng);
+  return std::binomial_distribution<bi::type::Integer_>(n_, ρ_)(rng);
   }}
 }
 
@@ -60,7 +60,7 @@ function simulate_negative_binomial(k:Integer, ρ:Real) -> Integer {
   assert 0 < k;
   assert 0.0 <= ρ && ρ <= 1.0;
   cpp {{
-  return std::negative_binomial_distribution<bi::Integer_>(k_, ρ_)(rng);
+  return std::negative_binomial_distribution<bi::type::Integer_>(k_, ρ_)(rng);
   }}
 }
 
@@ -88,7 +88,7 @@ function simulate_poisson(λ:Real) -> Integer {
   assert 0.0 <= λ;
   if (λ > 0.0) {
     cpp {{
-    return std::poisson_distribution<bi::Integer_>(λ_)(rng);
+    return std::poisson_distribution<bi::type::Integer_>(λ_)(rng);
     }}
   } else {
     return 0;
@@ -207,7 +207,7 @@ function simulate_crp_categorical(α:Real, θ:Real, n:Integer[_], N:Integer) -> 
 function simulate_uniform(l:Real, u:Real) -> Real {
   assert l <= u;
   cpp {{
-  return std::uniform_real_distribution<bi::Real_>(l_, u_)(rng);
+  return std::uniform_real_distribution<bi::type::Real_>(l_, u_)(rng);
   }}
 }
 
@@ -219,7 +219,7 @@ function simulate_uniform(l:Real, u:Real) -> Real {
 function simulate_exponential(λ:Real) -> Real {
   assert 0.0 <= λ;
   cpp {{
-  return std::exponential_distribution<bi::Real_>(λ_)(rng);
+  return std::exponential_distribution<bi::type::Real_>(λ_)(rng);
   }}
 }
 
@@ -235,7 +235,7 @@ function simulate_gaussian(μ:Real, σ2:Real) -> Real {
     return μ;
   } else {
     cpp {{
-    return std::normal_distribution<bi::Real_>(μ_, ::sqrt(σ2_))(rng);
+    return std::normal_distribution<bi::type::Real_>(μ_, ::sqrt(σ2_))(rng);
     }}
   }
 }
@@ -267,7 +267,7 @@ function simulate_log_gaussian(μ:Real, σ2:Real) -> Real {
     return μ;
   } else {
     cpp {{
-    return std::lognormal_distribution<bi::Real_>(μ_, ::sqrt(σ2_))(rng);
+    return std::lognormal_distribution<bi::type::Real_>(μ_, ::sqrt(σ2_))(rng);
     }}
   }
 }
@@ -282,7 +282,7 @@ function simulate_gamma(k:Real, θ:Real) -> Real {
   assert 0.0 < k;
   assert 0.0 < θ;
   cpp {{
-  return std::gamma_distribution<bi::Real_>(k_, θ_)(rng);
+  return std::gamma_distribution<bi::type::Real_>(k_, θ_)(rng);
   }}
 }
 

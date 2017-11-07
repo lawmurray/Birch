@@ -12,17 +12,17 @@ function Integer32(x:Integer32) -> Integer32 {
 }
 function Integer32(x:Real64) -> Integer32 {
   cpp{{
-  return static_cast<bi::Integer32_>(x_);
+  return static_cast<bi::type::Integer32_>(x_);
   }}
 }
 function Integer32(x:Real32) -> Integer32 {
   cpp{{
-  return static_cast<bi::Integer32_>(x_);
+  return static_cast<bi::type::Integer32_>(x_);
   }}
 }
 function Integer32(x:Integer64) -> Integer32 {
   cpp{{
-  return static_cast<bi::Integer32_>(x_);
+  return static_cast<bi::type::Integer32_>(x_);
   }}
 }
 function Integer32(s:String) -> Integer32 {
