@@ -418,7 +418,7 @@ private:
    * @param size Number of elements to allocate.
    */
   static Type* allocate(const size_t n) {
-    Type* raw = new Type[sizeof(Type) * n];
+    Type* raw = new (GC) Type[sizeof(Type) * n];
     assert(raw);
     return raw;
   }
@@ -442,7 +442,7 @@ private:
    */
   template<class Type1, class ... Args>
   static void emplace(Pointer<Type1>& o, Args ... args) {
-    auto raw = new Type1(args...);
+    auto raw = new (GC) Type1(args...);
     new (&o) Pointer<Type1>(raw);
   }
 

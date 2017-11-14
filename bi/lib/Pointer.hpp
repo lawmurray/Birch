@@ -5,7 +5,7 @@
 
 #include "boost/optional.hpp"
 #include "bi/lib/global.hpp"
-#include "bi/lib/Any.hpp"
+#include "bi/lib/AllocationMap.hpp"
 
 #include <cstdint>
 
@@ -228,7 +228,7 @@ boost::optional<bi::Pointer<U>> bi::Pointer<T>::cast() const {
   boost::optional<bi::Pointer<U>> pointer;
   U* raw1 = dynamic_cast<U*>(this->raw);
   if (raw1) {
-    pointer = raw1->template pointer_from_this<U>();
+    pointer = raw1;
   }
   return pointer;
 }

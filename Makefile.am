@@ -190,6 +190,7 @@ birch_CXXFLAGS = $(AM_CXXFLAGS)
 
 libbirch_la_SOURCES = \
   bi/lib/AllocationMap.cpp \
+  bi/lib/Any.cpp \
   bi/lib/global.cpp \
   bi/libbirch.cpp
 libbirch_la_CXXFLAGS = $(AM_CXXFLAGS)

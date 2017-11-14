@@ -7,5 +7,5 @@
 
 static std::random_device rd;
 
-bi::AllocationMap* bi::fiberAllocationMap = new bi::AllocationMap();
+bi::AllocationMap* bi::fiberAllocationMap = new (GC) bi::AllocationMap();
 std::mt19937_64 bi::rng(rd());

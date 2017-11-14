@@ -14,7 +14,7 @@ namespace bi {
  */
 class Object_: public Any {
   virtual Object_* clone() {
-    return new Object_();
+    return new (GC) Object_();
   }
 };
   }

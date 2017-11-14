@@ -22,6 +22,10 @@ bi::AllocationMap& bi::AllocationMap::operator=(const AllocationMap& o) {
   return *this;
 }
 
+bi::AllocationMap* bi::AllocationMap::clone() {
+  return new (GC) AllocationMap(*this);
+}
+
 bi::Any* bi::AllocationMap::get(Any* from) {
   auto result = from;
   auto iter = map.find(result);

@@ -3,7 +3,6 @@
  */
 #pragma once
 
-#include "bi/lib/AllocationMap.hpp"
 #include "bi/lib/FiberState.hpp"
 
 namespace bi {
@@ -20,26 +19,12 @@ public:
   /**
    * Constructor.
    */
-  Fiber(const bool closed = false) :
-      allocationMap(
-          closed ?
-              new AllocationMap(*fiberAllocationMap) : nullptr),
-      closed(closed) {
-    //
-  }
+  Fiber(const bool closed = false);
 
   /**
    * Copy constructor.
    */
-  Fiber(const Fiber<Type>& o) :
-      state(o.state),
-      closed(o.closed) {
-    if (closed) {
-      allocationMap = new AllocationMap(*o.allocationMap);
-    } else {
-      allocationMap = nullptr;
-    }
-  }
+  Fiber(const Fiber<Type>& o);
 
   /**
    * Move constructor.
@@ -49,16 +34,7 @@ public:
   /**
    * Copy assignment.
    */
-  Fiber<Type>& operator=(const Fiber<Type>& o) {
-    state = o.state;
-    closed = o.closed;
-    if (closed) {
-      allocationMap = new AllocationMap(*o.allocationMap);
-    } else {
-      allocationMap = nullptr;
-    }
-    return *this;
-  }
+  Fiber<Type>& operator=(const Fiber<Type>& o);
 
   /**
    * Move assignment.
@@ -70,43 +46,18 @@ public:
    *
    * @return Was a value yielded?
    */
-  bool query() {
-    if (!state.isNull()) {
-      swap();
-      bool result = state->query();
-      swap();
-      return result;
-    } else {
-      return false;
-    }
-  }
+  bool query();
 
   /**
    * Get the last yield value.
    */
-  Type& get() {
-    assert(!state.isNull());
-    swap();
-    Type& result = state->get();
-    swap();
-    return result;
-  }
-  const Type& get() const {
-    assert(!state.isNull());
-    swap();
-    const Type& result = state->get();
-    swap();
-    return result;
-  }
+  Type& get();
+  const Type& get() const;
 
   /**
    * Swap in/out from global variables.
    */
-  void swap() {
-    if (allocationMap != nullptr) {
-      std::swap(allocationMap, fiberAllocationMap);
-    }
-  }
+  void swap();
 
   /**
    * Fiber state.
@@ -123,4 +74,73 @@ public:
    */
   bool closed;
 };
+}
+
+#include "bi/lib/AllocationMap.hpp"
+
+template<class Type>
+bi::Fiber<Type>::Fiber(const bool closed) :
+    allocationMap(closed ? new (GC) AllocationMap(*fiberAllocationMap) : nullptr),
+    closed(closed) {
+  //
+}
+
+template<class Type>
+bi::Fiber<Type>::Fiber(const Fiber<Type>& o) :
+    state(o.state),
+    closed(o.closed) {
+  if (closed) {
+    allocationMap = new (GC) AllocationMap(*o.allocationMap);
+  } else {
+    allocationMap = nullptr;
+  }
+}
+
+template<class Type>
+bi::Fiber<Type>& bi::Fiber<Type>::operator=(const Fiber<Type>& o) {
+  state = o.state;
+  closed = o.closed;
+  if (closed) {
+    allocationMap = new (GC) AllocationMap(*o.allocationMap);
+  } else {
+    allocationMap = nullptr;
+  }
+  return *this;
+}
+
+template<class Type>
+bool bi::Fiber<Type>::query() {
+  if (!state.isNull()) {
+    swap();
+    bool result = state->query();
+    swap();
+    return result;
+  } else {
+    return false;
+  }
+}
+
+template<class Type>
+Type& bi::Fiber<Type>::get() {
+  assert(!state.isNull());
+  swap();
+  Type& result = state->get();
+  swap();
+  return result;
+}
+
+template<class Type>
+const Type& bi::Fiber<Type>::get() const {
+  assert(!state.isNull());
+  swap();
+  const Type& result = state->get();
+  swap();
+  return result;
+}
+
+template<class Type>
+void bi::Fiber<Type>::swap() {
+  if (allocationMap != nullptr) {
+    std::swap(allocationMap, fiberAllocationMap);
+  }
 }

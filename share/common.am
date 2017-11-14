@@ -1,16 +1,13 @@
-##
-## @file
-##
-
 # compile and link flags
 ACLOCAL_AMFLAGS = -I m4
-AM_CXXFLAGS = -include gc.h -include gc_cpp.h -include bi/PACKAGE_TARNAME.hpp
+GC_FLAGS = -DGC_OPERATOR_NEW_ARRAY -include gc.h -include gc_cpp.h
+AM_CXXFLAGS = -include bi/PACKAGE_TARNAME.hpp
 
 # precompiled header
 bi/PACKAGE_TARNAME.hpp.pch: bi/PACKAGE_TARNAME.hpp
 	mkdir -p bi/$(DEPDIR) && \
 	$(CXX) -M $(DEFS) -std=c++14 -Wno-pragma-once-outside-header -MF bi/$(DEPDIR)/PACKAGE_TARNAME.Plo -MT $@ $< && \
-	$(CXX) $(DEFS) $(CXXFLAGS) -std=c++14 -Wno-pragma-once-outside-header -o $@ $<
+	$(CXX) $(DEFS) $(GC_FLAGS) $(CXXFLAGS) -std=c++14 -Wno-pragma-once-outside-header -o $@ $<
 
 BUILT_SOURCES = bi/PACKAGE_TARNAME.hpp.pch
 CLEANFILES = bi/PACKAGE_TARNAME.hpp.pch

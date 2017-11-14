@@ -41,6 +41,11 @@ public:
   AllocationMap& operator=(AllocationMap&& o) = default;
 
   /**
+   * Clone the object.
+   */
+  virtual AllocationMap* clone();
+
+  /**
    * Get an allocation through the mapping.
    *
    * @param from The original pointer.
