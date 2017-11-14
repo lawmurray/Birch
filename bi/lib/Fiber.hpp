@@ -3,7 +3,7 @@
  */
 #pragma once
 
-#include "bi/lib/Heap.hpp"
+#include "bi/lib/AllocationMap.hpp"
 #include "bi/lib/FiberState.hpp"
 
 namespace bi {
@@ -21,65 +21,49 @@ public:
    * Constructor.
    */
   Fiber(const bool closed = false) :
-      heap(closed ? new Heap(*fiberHeap) : nullptr) {
+      allocationMap(
+          closed ?
+              new AllocationMap(*fiberAllocationMap) : nullptr),
+      closed(closed) {
     //
   }
 
   /**
    * Copy constructor.
    */
-  Fiber(const Fiber<Type>& o) {
-    if (o.heap) {
-      heap = new Heap(*o.heap);
+  Fiber(const Fiber<Type>& o) :
+      state(o.state),
+      closed(o.closed) {
+    if (closed) {
+      allocationMap = new AllocationMap(*o.allocationMap);
     } else {
-      heap = nullptr;
+      allocationMap = nullptr;
     }
-    state = o.state;
   }
 
   /**
    * Move constructor.
    */
-  Fiber(Fiber<Type> && o) : state(o.state), heap(o.heap)  {
-    o.heap = nullptr;
-    o.state = nullptr;
-  }
-
-  /**
-   * Destructor.
-   */
-  virtual ~Fiber() {
-    if (heap) {
-      delete heap;
-    }
-  }
+  Fiber(Fiber<Type> && o) = default;
 
   /**
    * Copy assignment.
    */
   Fiber<Type>& operator=(const Fiber<Type>& o) {
-    if (heap) {
-      if (o.heap) {
-        *heap = *o.heap;
-      } else {
-        delete heap;
-        heap = nullptr;
-      }
-    } else if (o.heap) {
-      heap = new Heap(*o.heap);
-    }
     state = o.state;
+    closed = o.closed;
+    if (closed) {
+      allocationMap = new AllocationMap(*o.allocationMap);
+    } else {
+      allocationMap = nullptr;
+    }
     return *this;
   }
 
   /**
    * Move assignment.
    */
-  Fiber<Type>& operator=(Fiber<Type> && o) {
-    std::swap(heap, o.heap);
-    std::swap(state, o.state);
-    return *this;
-  }
+  Fiber<Type>& operator=(Fiber<Type> && o) = default;
 
   /**
    * Run to next yield point.
@@ -116,11 +100,11 @@ public:
   }
 
   /**
-   * Swap in/out the fiber-local heap.
+   * Swap in/out from global variables.
    */
   void swap() {
-    if (heap) {
-      std::swap(heap, fiberHeap);
+    if (allocationMap != nullptr) {
+      std::swap(allocationMap, fiberAllocationMap);
     }
   }
 
@@ -130,8 +114,13 @@ public:
   Pointer<FiberState<Type>> state;
 
   /**
-   * Fiber-local heap, nullptr if shared with the parent fiber.
+   * Fiber allocation map. If shared with the parent fiber, then nullptr.
    */
-  Heap* heap;
+  AllocationMap* allocationMap;
+
+  /**
+   * Is this a closed fiber?
+   */
+  bool closed;
 };
 }

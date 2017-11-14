@@ -6,7 +6,7 @@ AM_FLAGS =
 
 # compiler setup
 AM_CPPFLAGS = -DDATADIR="$(datadir)" -DINCLUDEDIR="$(includedir)" -DLIBDIR="$(libdir)"
-AM_CXXFLAGS = -Wno-deprecated-register -Wno-overloaded-virtual
+AM_CXXFLAGS = -Wno-deprecated-register -Wno-overloaded-virtual  -include gc.h -include gc_cpp.h
 # ^ -Wno-deprecated-register to omit warnings for GNU Flex/Bison generated code
 ACLOCAL_AMFLAGS = -I m4
 
@@ -189,12 +189,13 @@ birch_CXXFLAGS = $(AM_CXXFLAGS)
 # ^ workaround for 'created with both libtool and without' error
 
 libbirch_la_SOURCES = \
+  bi/lib/AllocationMap.cpp \
   bi/lib/global.cpp \
-  bi/lib/Heap.cpp \
   bi/libbirch.cpp
 libbirch_la_CXXFLAGS = $(AM_CXXFLAGS)
 
 nobase_include_HEADERS = \
+  bi/lib/AllocationMap.hpp \
   bi/lib/Any.hpp \
   bi/lib/Array.hpp \
   bi/lib/Eigen.hpp \
@@ -204,7 +205,6 @@ nobase_include_HEADERS = \
   bi/lib/FiberState.hpp \
   bi/lib/Frame.hpp \
   bi/lib/global.hpp \
-  bi/lib/Heap.hpp \
   bi/lib/Index.hpp \
   bi/lib/Iterator.hpp \
   bi/lib/Lead.hpp \

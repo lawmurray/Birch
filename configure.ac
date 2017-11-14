@@ -31,7 +31,7 @@ AC_HEADER_ASSERT
 
 AC_CHECK_HEADERS([ \
     gc.h \
-    gc/gc_allocator.h \
+    gc/gc_cpp.h \
     ], [], AC_MSG_ERROR([required Boehm garbage collector header not found]), [-])
     
 AC_CHECK_HEADERS([ \

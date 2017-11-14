@@ -27,10 +27,6 @@
 #include "boost/math/special_functions/beta.hpp"
 ///@todo Replace both of the above with STL versions under C++17.
 
-#ifndef NDEBUG
-#define GC_DEBUG 1
-#endif
-#include <gc.h>
 #include <getopt.h>
 
 #include <random>
@@ -365,7 +361,7 @@ auto make_sequence(const std::initializer_list<Type> values) {
 template<class PointerType, class ... Args>
 PointerType make_object(Args ... args) {
   using ValueType = typename PointerType::value_type;
-  auto raw = new (GC_MALLOC(sizeof(ValueType))) ValueType(args...);
+  auto raw = new ValueType(args...);
   return PointerType(raw);
 }
 
@@ -382,7 +378,7 @@ PointerType make_object(Args ... args) {
  */
 template<class ValueType>
 ValueType* copy_object(ValueType* o) {
-  return new (GC_MALLOC(sizeof(ValueType))) ValueType(*o);
+  return new ValueType(*o);
 }
 
 /**
@@ -400,7 +396,7 @@ ValueType* copy_object(ValueType* o) {
 template<class YieldType, class StateType, class ... Args>
 Fiber<YieldType> make_fiber(Args ... args) {
   Fiber<YieldType> fiber(false);
-  FiberState<YieldType>* state = new (GC_MALLOC(sizeof(StateType))) StateType(args...);
+  FiberState<YieldType>* state = new StateType(args...);
   fiber.state = state;
   return fiber;
 }
@@ -421,7 +417,7 @@ template<class YieldType, class StateType, class ... Args>
 Fiber<YieldType> make_closed_fiber(Args ... args) {
   Fiber<YieldType> fiber(true);
   fiber.swap();
-  FiberState<YieldType>* state = new (GC_MALLOC(sizeof(StateType))) StateType(args...);
+  FiberState<YieldType>* state = new StateType(args...);
   fiber.state = state;
   fiber.swap();
   return fiber;

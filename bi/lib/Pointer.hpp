@@ -11,7 +11,7 @@
 
 namespace bi {
 /**
- * Smart pointer for fiber-local heaps, with copy-on-write semantics.
+ * Smart pointer for fibers with copy-on-write semantics.
  *
  * @ingroup library
  *
@@ -40,7 +40,7 @@ public:
    */
   template<class U, typename = std::enable_if<std::is_base_of<T,U>::value>>
   Pointer<T>& operator=(const Pointer<U>& o) {
-    this->index = o.index;
+    this->raw = o.raw;
     return *this;
   }
 
@@ -117,12 +117,6 @@ public:
   auto operator()(Args ... args) const {
     return (*get())(args...);
   }
-
-protected:
-  /**
-   * Constructor for pointer_from_this() in Any.
-   */
-  Pointer(T* raw, intptr_t index);
 };
 
 template<>
@@ -137,19 +131,14 @@ public:
    * Is this a null pointer?
    */
   bool isNull() const {
-    return index < 0;
+    return raw == nullptr;
   }
 
-protected:
+//protected:
   /**
-   * Constructor for pointer_from_this().
+   * Raw pointer.
    */
-  Pointer(Any* raw, intptr_t index);
-
-  /**
-   * The index of the heap allocation, -1 for null.
-   */
-  intptr_t index;
+  Any* raw;
 };
 }
 
@@ -164,18 +153,13 @@ bi::Pointer<T>::Pointer(T* raw) :
 
 template<class T>
 bi::Pointer<T>& bi::Pointer<T>::operator=(T* raw) {
-  assert(fiberHeap);
-  if (raw) {
-    this->index = fiberHeap->put(raw);
-  } else {
-    this->index = -1;
-  }
+  this->raw = raw;
   return *this;
 }
 
 template<class T>
 bi::Pointer<T>& bi::Pointer<T>::operator=(const std::nullptr_t&) {
-  this->index = -1;
+  this->raw = nullptr;
   return *this;
 }
 
@@ -188,80 +172,67 @@ bi::Pointer<T>& bi::Pointer<T>::operator=(const U& o) {
 
 template<class T>
 T* bi::Pointer<T>::get() {
-  if (this->index < 0) {
+  if (this->isNull()) {
     return nullptr;
-  } else {
-    Any* o;
-    assert(fiberHeap);
-    o = fiberHeap->get(this->index);
-    if (o->getGen() < fiberGen) {
-      /* (possibly) shared and writeable, copy now (copy-on-write) */
-      o = o->clone();
-      fiberHeap->set(this->index, o);
+  } else if (this->raw->isShared()) {
+    /* object is shared; it may have been cloned already via another pointer,
+     * so update this pointer via the current fiber's allocation map */
+    assert(fiberAllocationMap);
+    this->raw = fiberAllocationMap->get(this->raw);
+
+    /* object is writeable; if it is still shared, then clone it and add a
+     * new entry to the current fiber's allocation map */
+    if (this->raw->isShared()) {
+      Any* to = this->raw->clone();
+      fiberAllocationMap->set(this->raw, to);
+      this->raw = to;
     }
-    T* raw;
-    #ifdef NDEBUG
-    raw = static_cast<T*>(o);
-    #else
-    raw = dynamic_cast<T*>(o);
-    assert(raw);
-    #endif
-    return raw;
   }
+
+  /* return pointer, cast to the right type */
+  T* result;
+#ifdef NDEBUG
+  result = static_cast<T*>(this->raw);
+#else
+  result = dynamic_cast<T*>(this->raw);
+  assert(result);
+#endif
+  return result;
 }
 
 template<class T>
 T* const bi::Pointer<T>::get() const {
-  if (this->index < 0) {
+  if (this->isNull()) {
     return nullptr;
-  } else {
-    Any* o;
-    assert(fiberHeap);
-    o = fiberHeap->get(this->index);
-    T* raw;
-    #ifdef NDEBUG
-    raw = static_cast<T*>(o);
-    #else
-    raw = dynamic_cast<T*>(o);
-    assert(raw);
-    #endif
-    return raw;
+  } else if (this->raw->isShared()) {
+    /* object is shared; it may have been cloned already via another pointer,
+     * so update this pointer via the current fiber's allocation map */
+    assert(fiberAllocationMap);
+    const_cast<Pointer<T>*>(this)->raw = fiberAllocationMap->get(this->raw);
   }
+
+  /* return pointer, cast to the right type */
+  T* result;
+  #ifdef NDEBUG
+  result = static_cast<T*>(this->raw);
+  #else
+  result = dynamic_cast<T*>(this->raw);
+  assert(result);
+  #endif
+  return result;
 }
 
 template<class T>
 template<class U>
 boost::optional<bi::Pointer<U>> bi::Pointer<T>::cast() const {
   boost::optional<bi::Pointer<U>> pointer;
-  if (this->index >= 0) {
-    assert(fiberHeap);
-    const auto o = fiberHeap->get(this->index);
-    U* raw = dynamic_cast<U*>(o);
-    if (raw) {
-      pointer = raw->template pointer_from_this<U>();
-    }
+  U* raw1 = dynamic_cast<U*>(this->raw);
+  if (raw1) {
+    pointer = raw1->template pointer_from_this<U>();
   }
   return pointer;
 }
 
-template<class T>
-bi::Pointer<T>::Pointer(T* raw, intptr_t index) :
-    super_type(raw, index) {
+inline bi::Pointer<bi::Any>::Pointer(Any* raw) : raw(raw) {
   //
-}
-
-inline bi::Pointer<bi::Any>::Pointer(Any* raw) {
-  assert(fiberHeap);
-  if (raw) {
-    index = fiberHeap->put(raw);
-  } else {
-    index = -1;
-  }
-}
-
-inline bi::Pointer<bi::Any>::Pointer(Any* raw, intptr_t index) {
-  assert(index >= 0 || !raw);
-  assert(index < 0 || fiberHeap->get(index) == raw);
-
-  this->index = index;
 }

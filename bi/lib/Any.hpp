@@ -3,6 +3,9 @@
  */
 #pragma once
 
+#include "bi/lib/global.hpp"
+#include "bi/lib/AllocationMap.hpp"
+
 #include <cassert>
 #include <cstdint>
 
@@ -19,7 +22,7 @@ public:
   /**
    * Constructor.
    */
-  Any() {
+  Any() : gen(fiberAllocationMap->gen) {
     //
   }
 
@@ -27,8 +30,7 @@ public:
    * Copy constructor.
    */
   Any(const Any& o) :
-      gen(o.gen),
-      index(o.index) {
+      gen(fiberAllocationMap->gen) {
     //
   }
 
@@ -47,31 +49,10 @@ public:
   virtual Any* clone() = 0;
 
   /**
-   * Get the fiber generation of the object.
+   * Is this object (possibly) shared?
    */
-  size_t getGen() const {
-    return gen;
-  }
-
-  /**
-   * Set the fiber generation of the object.
-   */
-  void setGen(const size_t gen) {
-    this->gen = gen;
-  }
-
-  /**
-   * Get the fiber-local heap index of the object.
-   */
-  intptr_t getIndex() const {
-    return index;
-  }
-
-  /**
-   * Set the fiber-local heap index of the object.
-   */
-  void setIndex(const intptr_t index) {
-    this->index = index;
+  size_t isShared() const {
+    return gen < fiberAllocationMap->gen;
   }
 
   /**
@@ -82,16 +63,11 @@ public:
   template<class T>
   Pointer<const T> pointer_from_this() const;
 
-private:
+//private:
   /**
-   * Fiber generation in which this object was created.
+   * Generation in which this object was created.
    */
   size_t gen;
-
-  /**
-   * Index of the heap allocation.
-   */
-  intptr_t index;
 };
 }
 
@@ -99,10 +75,10 @@ private:
 
 template<class T>
 bi::Pointer<T> bi::Any::pointer_from_this() {
-  return Pointer<T>(static_cast<T*>(this), index);
+  return Pointer<T>(static_cast<T*>(this));
 }
 
 template<class T>
 bi::Pointer<const T> bi::Any::pointer_from_this() const {
-  return Pointer<const T>(static_cast<T* const>(this), index);
+  return Pointer<const T>(static_cast<T* const>(this));
 }
