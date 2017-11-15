@@ -3,6 +3,8 @@
  */
 #pragma once
 
+#include "gc/gc_allocator.h"
+
 #include <map>
 
 namespace bi {
@@ -67,7 +69,7 @@ public:
   /**
    * Mapped allocations.
    */
-  std::map<Any*,Any*> map;
+  std::map<Any*,Any*,std::less<const Any*>,gc_allocator<std::pair<Any* const,Any*>>> map;
 
   /**
    * Generation.
