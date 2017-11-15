@@ -5,7 +5,7 @@
 
 #include "gc/gc_allocator.h"
 
-#include <map>
+#include <vector>
 
 namespace bi {
 class Any;
@@ -66,10 +66,12 @@ public:
   void set(Any* from, Any* to);
 
 //private:
-  /**
-   * Mapped allocations.
+  /*
+   * Mapped allocations. Keys and values are stored separately, as keys
+   * should not be traceable for the purposes of garbage collection.
    */
-  std::map<Any*,Any*,std::less<const Any*>,gc_allocator<std::pair<Any* const,Any*>>> map;
+  std::vector<Any*,gc_allocator<Any*>> keys;
+  std::vector<Any*,gc_allocator<Any*>> values;
 
   /**
    * Generation.
