@@ -24,32 +24,41 @@ See below to set up an appropriate system and install dependencies. Once these a
 
 If you have acquired Birch directly from its Git repository, first run the following command from within the `Birch` directory:
 
-    ./autogen.sh
+```sh
+./autogen.sh
+```
 
 To build and install, run the following from within the `Birch` directory:
 
-    ./configure
-    make
-    make install
-
+```sh
+./configure
+make
+make install
+```
 
 ### Installing the standard library
 
 You will also want to install the standard library. It is in a separate `Birch.Standard` repository. To build and install, run the following from within the `Birch.Standard` directory:
 
-    birch build
-    birch install
+```sh
+birch build
+birch install
+```
 
 ### Installing the examples
 
 You may also want to install the example programs. These are in a separate `Birch.Example` repository. To build and install, run the following from within the `Birch.Example` directory:
 
-    birch build
-    birch install
+```sh
+birch build
+birch install
+```
 
 Then, to run an example, use:
 
-    birch example
+```sh
+birch example
+```
 
 replacing `example` with the name of the example program. See the `DOCS.md` file for programs and their options.
 
@@ -73,7 +82,9 @@ These are all widely available through package managers. See the guides below fo
 
 Use:
 
-    apt-get install autoconf libtool flex bison libgc-dev libboost-all-dev libeigen3-dev
+```sh
+apt-get install autoconf libtool flex bison libgc-dev libboost-all-dev libeigen3-dev
+```
 
 For other Linux distributions, similar packages will be available.
 
@@ -81,7 +92,9 @@ For other Linux distributions, similar packages will be available.
 
 The recommended package manager is [Homebrew](http://brew.sh). Use:
 
-    brew install autoconf automake libtool flex bison boost eigen bdw-gc
+```sh
+brew install autoconf automake libtool flex bison boost eigen bdw-gc
+```
 
 Note that Birch needs a newer version of Bison than that provided by macOS. The above command installs a newer version.
     
@@ -91,33 +104,35 @@ Birch can run through the Bash shell.
 
 First, if you haven't already, activate the developer mode:
 
-  1. Go to _Settings_.
-  2. Go to _Update and security_.
-  3. Go to _For developer_.
-  4. Activate the developer mode.
-  5. Wait for the package configuration.
+1. Go to _Settings_.
+2. Go to _Update and security_.
+3. Go to _For developer_.
+4. Activate the developer mode.
+5. Wait for the package configuration.
 
 Then configure the Bash shell:
 
-  1. Go to _Control panel_.
-  2. Go to _Programs and features_.
-  3. Go to _Turn Windows features on or off_.
-  4. Check _Windows subsystem for Linux_.
-  5. Press OK.
-  6. Restart Windows.
-  7. Afer the restart open the _Command prompt_ (search for `cmd`).
-  8. Run the command:
+1. Go to _Control panel_.
+2. Go to _Programs and features_.
+3. Go to _Turn Windows features on or off_.
+4. Check _Windows subsystem for Linux_.
+5. Press OK.
+6. Restart Windows.
+7. Afer the restart open the _Command prompt_ (search for `cmd`).
+8. Run the command:
+    ```sh
+    lxrun /install /y
+    ```
 
-        lxrun /install /y
-      
-  9. Open the program _Bash on Ubuntu on Windows_ (search for `Bash`). This is a fully-functional Linux Bash shell with access to the Ubuntu repository. You can also access the file system using the usual Bash commands, noting that the folder `C:\` is called `mnt/c/` here.
+9. Open the program _Bash on Ubuntu on Windows_ (search for `Bash`). This is a fully-functional Linux Bash shell with access to the Ubuntu repository. You can also access the file system using the usual Bash commands, noting that the folder `C:\` is called `mnt/c/` here.
 
-  10. Update the Linux packages installed:
+10. Update Linux packages:
+    ```sh
+    apt-get upgrade
+    apt-get update
+    ```
 
-        apt-get upgrade
-		apt-get update
-
-With the Bash shell now working, follow the instructions for Ubuntu above to install dependencies.
+With the Bash shell now working, follow the instructions for Ubuntu Linux above to install dependencies.
 
 
 ## Version history
