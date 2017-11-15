@@ -33,7 +33,7 @@ void bi::CppBaseGenerator::visit(const Literal<bool>* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Literal<int64_t>* o) {
-  middle(o->str << "ll");
+  middle("int64_t(" << o->str << ')');
 }
 
 void bi::CppBaseGenerator::visit(const Literal<double>* o) {
