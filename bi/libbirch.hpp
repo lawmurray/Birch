@@ -361,7 +361,7 @@ auto make_sequence(const std::initializer_list<Type> values) {
 template<class PointerType, class ... Args>
 PointerType make_object(Args ... args) {
   using ValueType = typename PointerType::value_type;
-  auto raw = new ValueType(args...);
+  auto raw = new (GC) ValueType(args...);
   return PointerType(raw);
 }
 

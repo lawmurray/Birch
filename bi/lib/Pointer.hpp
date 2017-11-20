@@ -3,9 +3,9 @@
  */
 #pragma once
 
-#include "boost/optional.hpp"
 #include "bi/lib/global.hpp"
-#include "bi/lib/AllocationMap.hpp"
+
+#include "boost/optional.hpp"
 
 #include <cstdint>
 
@@ -31,18 +31,24 @@ public:
   Pointer(T* raw = nullptr);
 
   /**
-   * Assignment operator.
+   * Copy constructor.
+   */
+  Pointer(const Pointer<T>& o) = default;
+
+  /**
+   * Move constructor.
+   */
+  Pointer(Pointer<T>&& o) = default;
+
+  /**
+   * Copy assignment operator.
    */
   Pointer<T>& operator=(const Pointer<T>& o) = default;
 
   /**
-   * Generic assignment operator.
+   * Move assignment operator.
    */
-  template<class U, typename = std::enable_if<std::is_base_of<T,U>::value>>
-  Pointer<T>& operator=(const Pointer<U>& o) {
-    this->raw = o.raw;
-    return *this;
-  }
+  Pointer<T>& operator=(Pointer<T>&& o) = default;
 
   /**
    * Raw pointer assignment operator.
@@ -50,9 +56,10 @@ public:
   Pointer<T>& operator=(T* raw);
 
   /**
-   * Null pointer assignment operator.
+   * Generic assignment operator.
    */
-  Pointer<T>& operator=(const std::nullptr_t&);
+  template<class U, typename = std::enable_if<std::is_base_of<T,U>::value>>
+  Pointer<T>& operator=(const Pointer<U>& o);
 
   /**
    * Value assignment operator.
@@ -68,15 +75,9 @@ public:
    * @seealso has_conversion
    */
   template<class U, typename = std::enable_if_t<has_conversion<T,U>::value>>
-  operator U() {
-    /* conversion operators in generated code are marked explicit, so the
-     * cast is necessary here */
-    return static_cast<U>(*get());
-  }
+  operator U();
   template<class U, typename = std::enable_if_t<has_conversion<T,U>::value>>
-  operator U() const {
-    return static_cast<U>(*get());
-  }
+  operator U() const;
 
   /**
    * Get the raw pointer.
@@ -122,28 +123,30 @@ public:
 template<>
 class Pointer<Any> {
 public:
-  /**
-   * Raw pointer constructor.
-   */
-  Pointer(Any* raw = nullptr);
+  Pointer(Any* raw);
+  Pointer(const Pointer<Any>& o) = default;
+  Pointer(Pointer<Any>&& o) = default;
 
-  /**
-   * Is this a null pointer?
-   */
-  bool isNull() const {
-    return raw == nullptr;
-  }
+  Pointer<Any>& operator=(const Pointer<Any>& o) = default;
+  Pointer<Any>& operator=(Pointer<Any>&& o) = default;
+  Pointer<Any>& operator=(Any* raw);
+
+  bool isNull() const;
+  Any* get();
+  Any* const get() const;
 
 //protected:
   /**
    * Raw pointer.
    */
   Any* raw;
+
+  /**
+   * Generation.
+   */
+  size_t gen;
 };
 }
-
-#include "bi/lib/global.hpp"
-#include "bi/lib/Fiber.hpp"
 
 template<class T>
 bi::Pointer<T>::Pointer(T* raw) :
@@ -153,13 +156,14 @@ bi::Pointer<T>::Pointer(T* raw) :
 
 template<class T>
 bi::Pointer<T>& bi::Pointer<T>::operator=(T* raw) {
-  this->raw = raw;
+  Pointer<Any>::operator=(raw);
   return *this;
 }
 
 template<class T>
-bi::Pointer<T>& bi::Pointer<T>::operator=(const std::nullptr_t&) {
-  this->raw = nullptr;
+template<class U, typename >
+bi::Pointer<T>& bi::Pointer<T>::operator=(const Pointer<U>& o) {
+  Pointer<Any>::operator=(o);
   return *this;
 }
 
@@ -171,55 +175,49 @@ bi::Pointer<T>& bi::Pointer<T>::operator=(const U& o) {
 }
 
 template<class T>
+template<class U, typename >
+bi::Pointer<T>::operator U() {
+  /* conversion operators in generated code are marked explicit, so the
+   * cast is necessary here */
+  return static_cast<U>(*get());
+}
+
+template<class T>
+template<class U, typename >
+bi::Pointer<T>::operator U() const {
+  return static_cast<U>(*get());
+}
+
+template<class T>
 T* bi::Pointer<T>::get() {
-  if (this->isNull()) {
-    return nullptr;
-  } else if (this->raw->isShared()) {
-    /* object is shared; it may have been cloned already via another pointer,
-     * so update this pointer via the current fiber's allocation map */
-    assert(fiberAllocationMap);
-    this->raw = fiberAllocationMap->get(this->raw);
-
-    /* object is writeable; if it is still shared, then clone it and add a
-     * new entry to the current fiber's allocation map */
-    if (this->raw->isShared()) {
-      Any* to = this->raw->clone();
-      fiberAllocationMap->set(this->raw, to);
-      this->raw = to;
-    }
-  }
-
-  /* return pointer, cast to the right type */
-  T* result;
 #ifdef NDEBUG
-  result = static_cast<T*>(this->raw);
+  return static_cast<T*>(Pointer<Any>::get());
 #else
-  result = dynamic_cast<T*>(this->raw);
-  assert(result);
+  auto raw = Pointer<Any>::get();
+  if (raw) {
+    auto result = dynamic_cast<T*>(raw);
+    assert(result);
+    return result;
+  } else {
+    return nullptr;
+  }
 #endif
-  return result;
 }
 
 template<class T>
 T* const bi::Pointer<T>::get() const {
-  if (this->isNull()) {
+#ifdef NDEBUG
+  return static_cast<T*>(Pointer<Any>::get());
+#else
+  auto raw = Pointer<Any>::get();
+  if (raw) {
+    auto result = dynamic_cast<T* const>(raw);
+    assert(result);
+    return result;
+  } else {
     return nullptr;
-  } else if (this->raw->isShared()) {
-    /* object is shared; it may have been cloned already via another pointer,
-     * so update this pointer via the current fiber's allocation map */
-    assert(fiberAllocationMap);
-    const_cast<Pointer<T>*>(this)->raw = fiberAllocationMap->get(this->raw);
   }
-
-  /* return pointer, cast to the right type */
-  T* result;
-  #ifdef NDEBUG
-  result = static_cast<T*>(this->raw);
-  #else
-  result = dynamic_cast<T*>(this->raw);
-  assert(result);
-  #endif
-  return result;
+#endif
 }
 
 template<class T>
@@ -231,8 +229,4 @@ boost::optional<bi::Pointer<U>> bi::Pointer<T>::cast() const {
     pointer = raw1;
   }
   return pointer;
-}
-
-inline bi::Pointer<bi::Any>::Pointer(Any* raw) : raw(raw) {
-  //
 }

@@ -98,13 +98,17 @@ bi::Fiber<Type>::Fiber(const Fiber<Type>& o) :
 
 template<class Type>
 bi::Fiber<Type>& bi::Fiber<Type>::operator=(const Fiber<Type>& o) {
-  state = o.state;
-  closed = o.closed;
-  if (closed) {
-    allocationMap = new (GC) AllocationMap(*o.allocationMap);
+  if (o.closed) {
+    //if (closed) {
+    //  *allocationMap = *o.allocationMap;
+    //} else {
+      allocationMap = new (GC) AllocationMap(*o.allocationMap);
+    //}
   } else {
     allocationMap = nullptr;
   }
+  state = o.state;
+  closed = o.closed;
   return *this;
 }
 
@@ -124,7 +128,7 @@ template<class Type>
 Type& bi::Fiber<Type>::get() {
   assert(!state.isNull());
   swap();
-  Type& result = state->get();
+  auto result = state->get();
   swap();
   return result;
 }
@@ -133,7 +137,7 @@ template<class Type>
 const Type& bi::Fiber<Type>::get() const {
   assert(!state.isNull());
   swap();
-  const Type& result = state->get();
+  auto result = state->get();
   swap();
   return result;
 }

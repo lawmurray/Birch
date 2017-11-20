@@ -139,9 +139,6 @@ public:
    * @param o View.
    *
    * @return The new array.
-   *
-   * @internal The decltype use for the return type here seems necessary,
-   * clang++ is otherwise giving these a const return type.
    */
   template<class View1, typename = std::enable_if_t<View1::rangeCount() != 0>>
   auto operator()(const View1& view) const {
@@ -399,6 +396,19 @@ private:
   }
 
   /**
+   * Allocate memory for array.
+   *
+   * @tparam Type1 Element type.
+   *
+   * @param size Number of elements to allocate.
+   */
+  static Type* allocate(const size_t n) {
+    Type* raw = (Type*)GC_MALLOC(sizeof(Type) * n);
+    assert(raw);
+    return raw;
+  }
+
+  /**
    * Initialize allocated memory.
    *
    * @param args Constructor arguments.
@@ -408,19 +418,6 @@ private:
     for (auto iter = begin(); iter != end(); ++iter) {
       emplace(*iter, args...);
     }
-  }
-
-  /**
-   * Allocate memory for array.
-   *
-   * @tparam Type1 Element type.
-   *
-   * @param size Number of elements to allocate.
-   */
-  static Type* allocate(const size_t n) {
-    Type* raw = new (GC) Type[sizeof(Type) * n];
-    assert(raw);
-    return raw;
   }
 
   /**

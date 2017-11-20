@@ -191,6 +191,7 @@ birch_CXXFLAGS = $(AM_CXXFLAGS)
 libbirch_la_SOURCES = \
   bi/lib/AllocationMap.cpp \
   bi/lib/Any.cpp \
+  bi/lib/Pointer.cpp \
   bi/lib/global.cpp \
   bi/libbirch.cpp
 libbirch_la_CXXFLAGS = $(AM_CXXFLAGS)
@@ -199,6 +200,7 @@ nobase_include_HEADERS = \
   bi/lib/AllocationMap.hpp \
   bi/lib/Any.hpp \
   bi/lib/Array.hpp \
+  bi/lib/atomic_allocator.hpp \
   bi/lib/Eigen.hpp \
   bi/lib/EigenFunctions.hpp \
   bi/lib/EigenOperators.hpp \
