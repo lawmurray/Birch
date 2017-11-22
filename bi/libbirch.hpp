@@ -395,10 +395,7 @@ ValueType* copy_object(ValueType* o) {
  */
 template<class YieldType, class StateType, class ... Args>
 Fiber<YieldType> make_fiber(Args ... args) {
-  Fiber<YieldType> fiber(false);
-  FiberState<YieldType>* state = new (GC) StateType(args...);
-  fiber.state = state;
-  return fiber;
+  return Fiber<YieldType>(new (GC) StateType(args...), false);
 }
 
 /**
@@ -415,12 +412,7 @@ Fiber<YieldType> make_fiber(Args ... args) {
  */
 template<class YieldType, class StateType, class ... Args>
 Fiber<YieldType> make_closed_fiber(Args ... args) {
-  Fiber<YieldType> fiber(true);
-  fiber.swap();
-  FiberState<YieldType>* state = new (GC) StateType(args...);
-  fiber.state = state;
-  fiber.swap();
-  return fiber;
+  return Fiber<YieldType>(new (GC) StateType(args...), true);
 }
 
 /**

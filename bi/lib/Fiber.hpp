@@ -19,7 +19,7 @@ public:
   /**
    * Constructor.
    */
-  Fiber(const bool closed = false);
+  Fiber(FiberState<Type>* state = nullptr, const bool closed = false);
 
   /**
    * Copy constructor.
@@ -55,9 +55,9 @@ public:
   const Type& get() const;
 
   /**
-   * Swap in/out from global variables.
+   * Fiber allocation map.
    */
-  void swap();
+  AllocationMap* allocationMap;
 
   /**
    * Fiber state.
@@ -65,9 +65,9 @@ public:
   Pointer<FiberState<Type>> state;
 
   /**
-   * Fiber allocation map. If shared with the parent fiber, then nullptr.
+   * Generation of the fiber.
    */
-  AllocationMap* allocationMap;
+  size_t gen;
 
   /**
    * Is this a closed fiber?
@@ -79,37 +79,33 @@ public:
 #include "bi/lib/AllocationMap.hpp"
 
 template<class Type>
-bi::Fiber<Type>::Fiber(const bool closed) :
-    allocationMap(closed ? new (GC) AllocationMap(*fiberAllocationMap) : nullptr),
+bi::Fiber<Type>::Fiber(FiberState<Type>* state, const bool closed) :
+    allocationMap(
+        closed ?
+            new (GC) AllocationMap(*fiberAllocationMap) : fiberAllocationMap),
+    state(state, fiberGen),
+    gen(closed ? ++fiberGen : fiberGen),
     closed(closed) {
   //
 }
 
 template<class Type>
 bi::Fiber<Type>::Fiber(const Fiber<Type>& o) :
+    allocationMap(
+        o.closed ?
+            new (GC) AllocationMap(*o.allocationMap) : o.allocationMap),
     state(o.state),
+    gen(o.closed ? ++const_cast<Fiber<Type>&>(o).gen : o.gen),
     closed(o.closed) {
-  if (closed) {
-    allocationMap = new (GC) AllocationMap(*o.allocationMap);
-  } else {
-    allocationMap = nullptr;
-  }
+  //
 }
 
 template<class Type>
 bi::Fiber<Type>& bi::Fiber<Type>::operator=(const Fiber<Type>& o) {
-  if (o.closed) {
-    if (closed) {
-      *allocationMap = *o.allocationMap;
-    } else {
-      allocationMap = new (GC) AllocationMap(*o.allocationMap);
-    }
-  } else {
-    allocationMap = nullptr;
-  }
-  swap();
+  allocationMap =
+      o.closed ? new (GC) AllocationMap(*o.allocationMap) : o.allocationMap;
   state = o.state;
-  swap();
+  gen = o.closed ? ++const_cast<Fiber<Type>&>(o).gen : o.gen;
   closed = o.closed;
   return *this;
 }
@@ -117,9 +113,24 @@ bi::Fiber<Type>& bi::Fiber<Type>::operator=(const Fiber<Type>& o) {
 template<class Type>
 bool bi::Fiber<Type>::query() {
   if (!state.isNull()) {
-    swap();
+    auto callerAllocationMap = fiberAllocationMap;
+    auto callerGen = fiberGen;
+
+    if (closed) {
+      fiberGen = gen;
+      fiberAllocationMap = allocationMap;
+    }
+
     bool result = state->query();
-    swap();
+
+    if (closed) {
+      allocationMap = fiberAllocationMap;
+      gen = fiberGen;
+
+      fiberAllocationMap = callerAllocationMap;
+      fiberGen = callerGen;
+    }
+
     return result;
   } else {
     return false;
@@ -129,24 +140,39 @@ bool bi::Fiber<Type>::query() {
 template<class Type>
 Type& bi::Fiber<Type>::get() {
   assert(!state.isNull());
-  swap();
+
+  auto callerAllocationMap = fiberAllocationMap;
+  auto callerGen = fiberGen;
+  if (closed) {
+    fiberGen = gen;
+    fiberAllocationMap = allocationMap;
+  }
+
   auto result = state->get();
-  swap();
+
+  if (closed) {
+    fiberAllocationMap = callerAllocationMap;
+    fiberGen = callerGen;
+  }
   return result;
 }
 
 template<class Type>
 const Type& bi::Fiber<Type>::get() const {
   assert(!state.isNull());
-  swap();
-  auto result = state->get();
-  swap();
-  return result;
-}
 
-template<class Type>
-void bi::Fiber<Type>::swap() {
-  if (allocationMap != nullptr) {
-    std::swap(allocationMap, fiberAllocationMap);
+  auto callerAllocationMap = fiberAllocationMap;
+  auto callerGen = fiberGen;
+  if (closed) {
+    fiberGen = gen;
+    fiberAllocationMap = allocationMap;
   }
+
+  auto result = state->get();
+
+  if (closed) {
+    fiberAllocationMap = callerAllocationMap;
+    fiberGen = callerGen;
+  }
+  return result;
 }

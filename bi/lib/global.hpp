@@ -33,6 +33,11 @@ static constexpr size_t default_value = std::numeric_limits<size_t>::max();
 extern AllocationMap* fiberAllocationMap;
 
 /**
+ * Generation of the currently running fiber.
+ */
+extern size_t fiberGen;
+
+/**
  * Random number generator.
  */
 extern std::mt19937_64 rng;

@@ -3,13 +3,12 @@
  */
 #pragma once
 
-#include "bi/lib/Pointer.hpp"
 #include "bi/lib/Any.hpp"
+#include "bi/lib/Pointer.hpp"
 
 #include "gc/gc_allocator.h"
 
 #include <unordered_map>
-#include <list>
 
 namespace bi {
 /**
@@ -17,7 +16,7 @@ namespace bi {
  *
  * @ingroup library
  */
-class AllocationMap {
+class AllocationMap : public Any {
 public:
   using pointer_type = Pointer<Any>;
   using hash_type = std::hash<pointer_type>;
@@ -70,11 +69,6 @@ public:
    * @param to The new pointer.
    */
   void set(const pointer_type& from, const pointer_type& to);
-
-  /**
-   * Generation.
-   */
-  size_t gen;
 
 private:
   /**

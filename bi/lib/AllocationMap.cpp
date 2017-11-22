@@ -9,19 +9,17 @@
 
 #include <cassert>
 
-bi::AllocationMap::AllocationMap() :
-    gen(0) {
+bi::AllocationMap::AllocationMap() {
   //
 }
 
 bi::AllocationMap::AllocationMap(const AllocationMap& o) :
-    map(o.map),
-    gen(++const_cast<AllocationMap&>(o).gen) {
+    map(o.map)  {
+  //
 }
 
 bi::AllocationMap& bi::AllocationMap::operator=(const AllocationMap& o) {
   map = o.map;
-  gen = ++const_cast<AllocationMap&>(o).gen;
   return *this;
 }
 
@@ -41,9 +39,6 @@ bi::Pointer<bi::Any> bi::AllocationMap::get(const Pointer<Any>& from) const {
 
 void bi::AllocationMap::set(const Pointer<Any>& from,
     const Pointer<Any>& to) {
-  assert(from.gen < to.gen);
-  assert(to.gen == gen);
-
   auto result = map.insert(std::make_pair(from, to));
   assert(result.second);
 }
