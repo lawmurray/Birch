@@ -4,8 +4,7 @@
 #pragma once
 
 #include "bi/lib/global.hpp"
-
-#include "boost/optional.hpp"
+#include "bi/lib/Optional.hpp"
 
 #include <cstdint>
 
@@ -29,26 +28,6 @@ public:
    * Raw pointer constructor.
    */
   Pointer(T* raw = nullptr);
-
-  /**
-   * Copy constructor.
-   */
-  Pointer(const Pointer<T>& o) = default;
-
-  /**
-   * Move constructor.
-   */
-  Pointer(Pointer<T>&& o) = default;
-
-  /**
-   * Copy assignment operator.
-   */
-  Pointer<T>& operator=(const Pointer<T>& o) = default;
-
-  /**
-   * Move assignment operator.
-   */
-  Pointer<T>& operator=(Pointer<T>&& o) = default;
 
   /**
    * Raw pointer assignment operator.
@@ -82,14 +61,14 @@ public:
   /**
    * Get the raw pointer.
    */
-  T* get();
-  T* const get() const;
+  T* get() const;
+  //T* const get() const;
 
   /**
    * Cast the pointer.
    */
   template<class U>
-  boost::optional<Pointer<U>> cast() const;
+  Optional<Pointer<U>> cast() const;
 
   /**
    * Dereference.
@@ -122,29 +101,47 @@ public:
 
 template<>
 class Pointer<Any> {
+  friend class std::hash<bi::Pointer<bi::Any>>;
+  friend class std::equal_to<bi::Pointer<bi::Any>>;
 public:
   Pointer(Any* raw);
-  Pointer(const Pointer<Any>& o) = default;
-  Pointer(Pointer<Any>&& o) = default;
-
-  Pointer<Any>& operator=(const Pointer<Any>& o) = default;
-  Pointer<Any>& operator=(Pointer<Any>&& o) = default;
   Pointer<Any>& operator=(Any* raw);
 
   bool isNull() const;
-  Any* get();
-  Any* const get() const;
-
-//protected:
-  /**
-   * Raw pointer.
-   */
-  Any* raw;
+  Any* get() const;
+  //Any* const get() const;
 
   /**
    * Generation.
    */
   size_t gen;
+
+protected:
+  /**
+   * Raw pointer.
+   */
+  Any* raw;
+};
+}
+
+namespace std {
+template<>
+struct hash<bi::Pointer<bi::Any>> : public std::hash<bi::Any*> {
+  size_t operator()(const bi::Pointer<bi::Any>& o) const {
+    /* the generation is ignored in the hash, as it is reasonably unlikely
+     * for two pointers with the same raw pointer but different generation to
+     * occur in the same allocation map; this only occurs if memory is
+     * garbage collected and reused within the same fiber */
+    return std::hash<bi::Any*>::operator()(o.raw);
+  }
+};
+
+template<>
+struct equal_to<bi::Pointer<bi::Any>> {
+  bool operator()(const bi::Pointer<bi::Any>& o1,
+      const bi::Pointer<bi::Any>& o2) const {
+    return o1.raw == o2.raw && o1.gen == o2.gen;
+  }
 };
 }
 
@@ -189,7 +186,7 @@ bi::Pointer<T>::operator U() const {
 }
 
 template<class T>
-T* bi::Pointer<T>::get() {
+T* bi::Pointer<T>::get() const {
 #ifdef NDEBUG
   return static_cast<T*>(Pointer<Any>::get());
 #else
@@ -204,7 +201,7 @@ T* bi::Pointer<T>::get() {
 #endif
 }
 
-template<class T>
+/*template<class T>
 T* const bi::Pointer<T>::get() const {
 #ifdef NDEBUG
   return static_cast<T*>(Pointer<Any>::get());
@@ -218,13 +215,13 @@ T* const bi::Pointer<T>::get() const {
     return nullptr;
   }
 #endif
-}
+}*/
 
 template<class T>
 template<class U>
-boost::optional<bi::Pointer<U>> bi::Pointer<T>::cast() const {
-  boost::optional<bi::Pointer<U>> pointer;
-  U* raw1 = dynamic_cast<U*>(this->raw);
+bi::Optional<bi::Pointer<U>> bi::Pointer<T>::cast() const {
+  Optional<bi::Pointer<U>> pointer;
+  auto raw1 = dynamic_cast<U*>(this->raw);
   if (raw1) {
     pointer = raw1;
   }

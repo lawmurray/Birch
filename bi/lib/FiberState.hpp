@@ -52,7 +52,7 @@ public:
     return value;
   }
 
-//protected:
+protected:
   /**
    * Last yielded value.
    */

@@ -6,6 +6,8 @@
 #include "bi/lib/AllocationMap.hpp"
 #include "bi/lib/global.hpp"
 
+#include <cassert>
+
 bi::Pointer<bi::Any>::Pointer(Any* raw) :
     raw(raw),
     gen(fiberAllocationMap->gen) {
@@ -22,11 +24,7 @@ bool bi::Pointer<bi::Any>::isNull() const {
   return !raw;
 }
 
-
-#include <iostream>
-
-bi::Any* bi::Pointer<bi::Any>::get() {
-  /* pre-condition */
+bi::Any* bi::Pointer<bi::Any>::get() const {
   assert(fiberAllocationMap);
 
   if (gen < fiberAllocationMap->gen && raw) {
@@ -42,21 +40,16 @@ bi::Any* bi::Pointer<bi::Any>::get() {
       to = from.raw->clone();
       fiberAllocationMap->set(from, to);
     }
-
-    //*const_cast<Pointer<Any>*>(this) = to;
-    raw = to.raw;
-    gen = to.gen;
+    *const_cast<Pointer<Any>*>(this) = to;
   }
-  assert(gen == fiberAllocationMap->gen || !raw);
   return raw;
 }
 
-bi::Any* const bi::Pointer<bi::Any>::get() const {
-  /* pre-condition */
+/*bi::Any* const bi::Pointer<bi::Any>::get() const {
   assert(fiberAllocationMap);
 
   if (gen < fiberAllocationMap->gen && raw) {
     *const_cast<Pointer<Any>*>(this) = fiberAllocationMap->get(*this);
   }
   return raw;
-}
+}*/

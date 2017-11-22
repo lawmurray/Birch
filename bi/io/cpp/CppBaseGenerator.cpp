@@ -66,7 +66,7 @@ void bi::CppBaseGenerator::visit(const Cast* o) {
     middle("[](auto o) -> auto { return o.is_initialized()? ");
     middle("o.get().template cast<bi::");
     middle(classType->name);
-    middle(">(): boost::optional<bi::Pointer<bi::");
+    middle(">(): bi::Optional<bi::Pointer<bi::");
     middle(classType->name);
     middle(">>{}; }(");
     middle(o->single);
@@ -120,11 +120,7 @@ void bi::CppBaseGenerator::visit(const Slice* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Query* o) {
-  if (o->single->type->isOptional()) {
-    middle("static_cast<bool>(" << o->single << ')');
-  } else {
-    middle(o->single << ".query()");
-  }
+  middle(o->single << ".query()");
 }
 
 void bi::CppBaseGenerator::visit(const Get* o) {
@@ -181,7 +177,7 @@ void bi::CppBaseGenerator::visit(const This* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Nil* o) {
-  middle("boost::none");
+  middle("nullptr");
 }
 
 void bi::CppBaseGenerator::visit(const Parameter* o) {
@@ -617,7 +613,7 @@ void bi::CppBaseGenerator::visit(const FiberType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const OptionalType* o) {
-  middle("boost::optional<" << o->single << '>');
+  middle("bi::Optional<" << o->single << '>');
 }
 
 void bi::CppBaseGenerator::visit(const ClassType* o) {

@@ -200,7 +200,6 @@ nobase_include_HEADERS = \
   bi/lib/AllocationMap.hpp \
   bi/lib/Any.hpp \
   bi/lib/Array.hpp \
-  bi/lib/atomic_allocator.hpp \
   bi/lib/Eigen.hpp \
   bi/lib/EigenFunctions.hpp \
   bi/lib/EigenOperators.hpp \
@@ -214,6 +213,7 @@ nobase_include_HEADERS = \
   bi/lib/Length.hpp \
   bi/lib/Object.hpp \
   bi/lib/Offset.hpp \
+  bi/lib/Optional.hpp \
   bi/lib/Range.hpp \
   bi/lib/Pointer.hpp \
   bi/lib/Sequence.hpp \

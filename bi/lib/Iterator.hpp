@@ -11,95 +11,95 @@ namespace bi {
  *
  * @ingroup library
  *
- * @tparam Type Value type.
- * @tparam Frame Frame type.
+ * @tparam T Value type.
+ * @tparam F F type.
  */
-template<class Type, class Frame = EmptyFrame>
+template<class T, class F = EmptyFrame>
 class Iterator {
 public:
   /**
    * Constructor.
    *
    * @param ptr Buffer.
-   * @param frame Frame.
+   * @param frame F.
    */
-  Iterator(Type* ptr, const Frame& frame) :
+  Iterator(T* ptr, const F& frame) :
       frame(frame),
       ptr(ptr),
       serial(0) {
     //
   }
 
-  Type& operator*() {
+  T& operator*() {
     return *(ptr + frame.offset(serial));
   }
 
-  const Type& operator*() const {
+  const T& operator*() const {
     return *(ptr + frame.offset(serial));
   }
 
-  bool operator==(const Iterator<Type,Frame>& o) const {
+  bool operator==(const Iterator<T,F>& o) const {
     return ptr == o.ptr && serial == o.serial;
   }
 
-  bool operator!=(const Iterator<Type,Frame>& o) const {
+  bool operator!=(const Iterator<T,F>& o) const {
     return !(*this == o);
   }
 
-  Iterator<Type,Frame>& operator+=(const ptrdiff_t i) {
+  Iterator<T,F>& operator+=(const ptrdiff_t i) {
     serial += i;
     return *this;
   }
 
-  Iterator<Type,Frame> operator+(const ptrdiff_t i) const {
-    Iterator<Type,Frame> result(*this);
+  Iterator<T,F> operator+(const ptrdiff_t i) const {
+    Iterator<T,F> result(*this);
     result += i;
     return result;
   }
 
-  Iterator<Type,Frame>& operator-=(const ptrdiff_t i) {
+  Iterator<T,F>& operator-=(const ptrdiff_t i) {
     serial -= i;
     return *this;
   }
 
-  Iterator<Type,Frame> operator-(const ptrdiff_t i) const {
-    Iterator<Type,Frame> result(*this);
+  Iterator<T,F> operator-(const ptrdiff_t i) const {
+    Iterator<T,F> result(*this);
     result -= i;
     return result;
   }
 
-  Iterator<Type,Frame>& operator++() {
+  Iterator<T,F>& operator++() {
     serial += 1;
     return *this;
   }
 
-  Iterator<Type,Frame> operator++(int) {
-    Iterator<Type,Frame> result(*this);
+  Iterator<T,F> operator++(int) {
+    Iterator<T,F> result(*this);
     ++*this;
     return result;
   }
 
-  Iterator<Type,Frame>& operator--() {
+  Iterator<T,F>& operator--() {
     serial -= 1;
     return *this;
   }
 
-  Iterator<Type,Frame> operator--(int) {
-    Iterator<Type,Frame> result(*this);
+  Iterator<T,F> operator--(int) {
+    Iterator<T,F> result(*this);
     --*this;
     return result;
   }
 
-//protected:
+protected:
   /**
-   * Frame.
+   * F.
    */
-  Frame frame;
+  F frame;
 
   /**
    * Value.
    */
-  Type* ptr;
+  T* ptr;
 
   /**
    * Serialised offset into the frame.

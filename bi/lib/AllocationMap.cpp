@@ -7,6 +7,8 @@
 #include "bi/lib/Pointer.hpp"
 #include "bi/lib/Any.hpp"
 
+#include <cassert>
+
 bi::AllocationMap::AllocationMap() :
     gen(0) {
   //
@@ -14,13 +16,11 @@ bi::AllocationMap::AllocationMap() :
 
 bi::AllocationMap::AllocationMap(const AllocationMap& o) :
     map(o.map),
-    values(o.values),
     gen(++const_cast<AllocationMap&>(o).gen) {
 }
 
 bi::AllocationMap& bi::AllocationMap::operator=(const AllocationMap& o) {
   map = o.map;
-  values = o.values;
   gen = ++const_cast<AllocationMap&>(o).gen;
   return *this;
 }
@@ -29,7 +29,7 @@ bi::AllocationMap* bi::AllocationMap::clone() {
   return new (GC) AllocationMap(*this);
 }
 
-bi::Pointer<bi::Any> bi::AllocationMap::get(const Pointer<Any>& from) {
+bi::Pointer<bi::Any> bi::AllocationMap::get(const Pointer<Any>& from) const {
   auto to = from;
   auto iter = map.find(to);
   while (iter != map.end()) {
@@ -41,7 +41,9 @@ bi::Pointer<bi::Any> bi::AllocationMap::get(const Pointer<Any>& from) {
 
 void bi::AllocationMap::set(const Pointer<Any>& from,
     const Pointer<Any>& to) {
+  assert(from.gen < to.gen);
+  assert(to.gen == gen);
+
   auto result = map.insert(std::make_pair(from, to));
   assert(result.second);
-  values.push_back(to);
 }

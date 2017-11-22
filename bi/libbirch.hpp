@@ -15,6 +15,7 @@
 #include "bi/lib/Sequence.hpp"
 #include "bi/lib/Any.hpp"
 #include "bi/lib/Object.hpp"
+#include "bi/lib/Optional.hpp"
 #include "bi/lib/Pointer.hpp"
 #include "bi/lib/FiberState.hpp"
 #include "bi/lib/Fiber.hpp"
@@ -23,9 +24,8 @@
 #include "bi/lib/EigenOperators.hpp"
 #include "bi/lib/global.hpp"
 
-#include "boost/optional.hpp"
 #include "boost/math/special_functions/beta.hpp"
-///@todo Replace both of the above with STL versions under C++17.
+///@todo Replace the above with STL version under C++17.
 
 #include <getopt.h>
 
