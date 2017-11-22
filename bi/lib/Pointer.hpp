@@ -4,7 +4,6 @@
 #pragma once
 
 #include "bi/lib/global.hpp"
-#include "bi/lib/Optional.hpp"
 
 #include <cstdint>
 
@@ -25,9 +24,14 @@ public:
   typedef Pointer<typename super_type<T>::type> super_type;
 
   /**
-   * Raw pointer constructor.
+   * Constructor.
    */
   Pointer(T* raw = nullptr);
+
+  /**
+   * Constructor.
+   */
+  Pointer(T* raw, const size_t gen);
 
   /**
    * Raw pointer assignment operator.
@@ -62,13 +66,12 @@ public:
    * Get the raw pointer.
    */
   T* get() const;
-  //T* const get() const;
 
   /**
-   * Cast the pointer.
+   * Cast the pointer. Returns a null pointer if the case is unsuccessful.
    */
   template<class U>
-  Optional<Pointer<U>> cast() const;
+  Pointer<U> cast() const;
 
   /**
    * Dereference.
@@ -104,12 +107,12 @@ class Pointer<Any> {
   friend class std::hash<bi::Pointer<bi::Any>>;
   friend class std::equal_to<bi::Pointer<bi::Any>>;
 public:
-  Pointer(Any* raw);
+  Pointer(Any* raw = nullptr);
+  Pointer(Any* raw, const size_t gen);
   Pointer<Any>& operator=(Any* raw);
 
   bool isNull() const;
   Any* get() const;
-  //Any* const get() const;
 
   /**
    * Generation.
@@ -148,6 +151,12 @@ struct equal_to<bi::Pointer<bi::Any>> {
 template<class T>
 bi::Pointer<T>::Pointer(T* raw) :
     super_type(raw) {
+  //
+}
+
+template<class T>
+bi::Pointer<T>::Pointer(T* raw, const size_t gen) :
+    super_type(raw, gen) {
   //
 }
 
@@ -201,29 +210,8 @@ T* bi::Pointer<T>::get() const {
 #endif
 }
 
-/*template<class T>
-T* const bi::Pointer<T>::get() const {
-#ifdef NDEBUG
-  return static_cast<T*>(Pointer<Any>::get());
-#else
-  auto raw = Pointer<Any>::get();
-  if (raw) {
-    auto result = dynamic_cast<T* const>(raw);
-    assert(result);
-    return result;
-  } else {
-    return nullptr;
-  }
-#endif
-}*/
-
 template<class T>
 template<class U>
-bi::Optional<bi::Pointer<U>> bi::Pointer<T>::cast() const {
-  Optional<bi::Pointer<U>> pointer;
-  auto raw1 = dynamic_cast<U*>(this->raw);
-  if (raw1) {
-    pointer = raw1;
-  }
-  return pointer;
+bi::Pointer<U> bi::Pointer<T>::cast() const {
+  return Pointer<U>(dynamic_cast<U*>(this->raw), this->gen);
 }

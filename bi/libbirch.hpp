@@ -15,8 +15,8 @@
 #include "bi/lib/Sequence.hpp"
 #include "bi/lib/Any.hpp"
 #include "bi/lib/Object.hpp"
-#include "bi/lib/Optional.hpp"
 #include "bi/lib/Pointer.hpp"
+#include "bi/lib/Optional.hpp"
 #include "bi/lib/FiberState.hpp"
 #include "bi/lib/Fiber.hpp"
 #include "bi/lib/Eigen.hpp"
@@ -421,6 +421,26 @@ Fiber<YieldType> make_closed_fiber(Args ... args) {
   fiber.state = state;
   fiber.swap();
   return fiber;
+}
+
+/**
+ * Cast an object.
+ */
+template<class To, class From>
+Optional<Pointer<To>> cast(const Pointer<From>& from) {
+  return Optional<Pointer<To>>(from.template cast<To>());
+}
+
+/**
+ * Cast an object.
+ */
+template<class To, class From>
+Optional<Pointer<To>> cast(const Optional<Pointer<From>>& from) {
+  if (from.query()) {
+    return cast<Pointer<To>>(from.get());
+  } else {
+    return Optional<Pointer<To>>();
+  }
 }
 
 }

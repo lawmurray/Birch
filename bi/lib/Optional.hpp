@@ -76,4 +76,71 @@ private:
    */
   bool hasValue;
 };
+
+/**
+ * Optional for pointer types. Uses the pointer itself, set to nullptr, to
+ * denote a missing value, rather than keeping a separate boolean flag.
+ *
+ * @ingroup library
+ *
+ * @tparam T Type.
+ */
+template<class T>
+class Optional<Pointer<T>> {
+public:
+  /**
+   * Constructor for no value.
+   */
+  Optional() : value() {
+    //
+  }
+
+  /**
+   * Constructor for a value.
+   */
+  Optional(const Pointer<T>& value) : value(value) {
+    //
+  }
+
+  /**
+   * Assign no value.
+   */
+  Optional<Pointer<T>>& operator=(const std::nullptr_t&) {
+    this->value = static_cast<T*>(nullptr);
+    return *this;
+  }
+
+  /**
+   * Assign a value.
+   */
+  Optional<Pointer<T>>& operator=(const Pointer<T>& value) {
+    this->value = value;
+    return *this;
+  }
+
+  /**
+   * Is there a value?
+   */
+  bool query() const {
+    return !value.isNull();
+  }
+
+  /**
+   * Get the value.
+   */
+  Pointer<T>& get() {
+    assert(query());
+    return value;
+  }
+  const Pointer<T>& get() const {
+    assert(query());
+    return value;
+  }
+
+private:
+  /**
+   * The contained value, if any.
+   */
+  Pointer<T> value;
+};
 }

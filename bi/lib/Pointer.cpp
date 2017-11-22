@@ -14,6 +14,12 @@ bi::Pointer<bi::Any>::Pointer(Any* raw) :
   //
 }
 
+bi::Pointer<bi::Any>::Pointer(Any* raw, const size_t gen) :
+    raw(raw),
+    gen(gen) {
+  //
+}
+
 bi::Pointer<bi::Any>& bi::Pointer<bi::Any>::operator=(Any* raw) {
   this->raw = raw;
   this->gen = fiberAllocationMap->gen;
@@ -44,12 +50,3 @@ bi::Any* bi::Pointer<bi::Any>::get() const {
   }
   return raw;
 }
-
-/*bi::Any* const bi::Pointer<bi::Any>::get() const {
-  assert(fiberAllocationMap);
-
-  if (gen < fiberAllocationMap->gen && raw) {
-    *const_cast<Pointer<Any>*>(this) = fiberAllocationMap->get(*this);
-  }
-  return raw;
-}*/
