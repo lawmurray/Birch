@@ -45,6 +45,22 @@ public:
   }
 
   /**
+   * Generic comparison operator.
+   */
+  template<class U>
+  bool operator!=(const Pointer<U>& o) {
+    return (this->index != o.index);
+  }
+
+  /**
+   * Generic comparison operator.
+   */
+  template<class U>
+  bool operator==(const Pointer<U>& o) {
+    return (this->index == o.index);
+  }
+
+  /**
    * Raw pointer assignment operator.
    */
   Pointer<T>& operator=(T* raw);
