@@ -38,7 +38,7 @@ public:
    */
   template<class U>
   bool operator!=(const Pointer<U>& o) {
-    return (this->index != o.index);
+    return this->raw != o.raw || this->gen != o.gen;
   }
 
   /**
@@ -46,7 +46,7 @@ public:
    */
   template<class U>
   bool operator==(const Pointer<U>& o) {
-    return (this->index == o.index);
+    return this->raw == o.raw && this->gen == o.gen;
   }
 
   /**
