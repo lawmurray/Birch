@@ -10,7 +10,7 @@
 #include <random>
 
 namespace bi {
-class Heap;
+class AllocationMap;
 
 /**
  * Constant to indicate a mutable value. Zero is convenient here, as it
@@ -28,12 +28,12 @@ static constexpr size_t mutable_value = 0;
 static constexpr size_t default_value = std::numeric_limits<size_t>::max();
 
 /**
- * Heap of the currently running fiber.
+ * Allocation map of the currently running fiber.
  */
-extern Heap* fiberHeap;
+extern AllocationMap* fiberAllocationMap;
 
 /**
- * Youngest fiber generation.
+ * Generation of the currently running fiber.
  */
 extern size_t fiberGen;
 

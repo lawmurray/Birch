@@ -23,9 +23,9 @@ namespace bi {
  * @tparam Type Value type.
  * @tparam Frame Frame type.
  */
-template<class Type, class Frame = EmptyFrame>
+template<class T, class F = EmptyFrame>
 class Array {
-  template<class Type1, class Frame1>
+  template<class U, class G>
   friend class Array;
 public:
   /**
@@ -33,7 +33,7 @@ public:
    *
    * @param frame Frame.
    */
-  Array(const Frame& frame = Frame()) :
+  Array(const F& frame = F()) :
       frame(frame),
       ptr(allocate(frame.volume())),
       isView(false) {
@@ -49,7 +49,7 @@ public:
    * @param args Constructor arguments for each element.
    */
   template<class ... Args>
-  Array(const Frame& frame, Args ... args) :
+  Array(const F& frame, Args ... args) :
       frame(frame),
       ptr(allocate(frame.volume())),
       isView(false) {
@@ -59,7 +59,7 @@ public:
   /**
    * Copy constructor.
    */
-  Array(const Array<Type,Frame>& o) :
+  Array(const Array<T,F>& o) :
       frame(o.frame),
       ptr(allocate(frame.volume())),
       isView(false) {
@@ -69,15 +69,15 @@ public:
   /**
    * Move constructor.
    */
-  Array(Array<Type,Frame> && o) = default;
+  Array(Array<T,F> && o) = default;
 
   /**
    * Sequence constructor.
    *
    * @param o Sequence.
    */
-  template<class Type1>
-  Array(const Sequence<Type1>& o) :
+  template<class U>
+  Array(const Sequence<U>& o) :
       frame(sequence_frame(o)),
       ptr(allocate(frame.volume())),
       isView(false) {
@@ -88,7 +88,7 @@ public:
    * Copy assignment. For a view the frames of the two arrays must conform,
    * otherwise a resize is permitted.
    */
-  Array<Type,Frame>& operator=(const Array<Type,Frame>& o) {
+  Array<T,F>& operator=(const Array<T,F>& o) {
     if (!isView && !frame.conforms(o.frame)) {
       frame.resize(o.frame);
       ptr = allocate(frame.volume());
@@ -100,7 +100,7 @@ public:
   /**
    * Move assignment. The frames of the two arrays must conform.
    */
-  Array<Type,Frame>& operator=(Array<Type,Frame> && o) {
+  Array<T,F>& operator=(Array<T,F> && o) {
     if (!isView) {
       if (!o.isView) {
         /* move */
@@ -125,8 +125,8 @@ public:
    *
    * @param o Sequence.
    */
-  template<class Type1>
-  Array<Type,Frame>& operator=(const Sequence<Type1>& o) {
+  template<class U>
+  Array<T,F>& operator=(const Sequence<U>& o) {
     copy(o);
     return *this;
   }
@@ -139,13 +139,10 @@ public:
    * @param o View.
    *
    * @return The new array.
-   *
-   * @internal The decltype use for the return type here seems necessary,
-   * clang++ is otherwise giving these a const return type.
    */
   template<class View1, typename = std::enable_if_t<View1::rangeCount() != 0>>
   auto operator()(const View1& view) const {
-    return Array<Type,decltype(frame(view))>(ptr + frame.serial(view),
+    return Array<T,decltype(frame(view))>(ptr + frame.serial(view),
         frame(view));
   }
   template<class View1, typename = std::enable_if_t<View1::rangeCount() == 0>>
@@ -169,24 +166,24 @@ public:
    */
   template<class DerivedType>
   struct is_eigen_compatible {
-    static const bool value = (Frame::count() == 1
+    static const bool value = (F::count() == 1
         && DerivedType::ColsAtCompileTime == 1)
-        || (Frame::count() == 2
+        || (F::count() == 2
             && DerivedType::ColsAtCompileTime == Eigen::Dynamic);
   };
 
   /**
    * Appropriate Eigen Matrix type for this Birch Array type.
    */
-  using EigenType = typename std::conditional<Frame::count() == 2,
-  EigenMatrixMap<Type>,
-  typename std::conditional<Frame::count() == 1,
-  EigenVectorMap<Type>,
+  using EigenType = typename std::conditional<F::count() == 2,
+  EigenMatrixMap<T>,
+  typename std::conditional<F::count() == 1,
+  EigenVectorMap<T>,
   void>::type>::type;
 
-  using EigenStrideType = typename std::conditional<Frame::count() == 2,
+  using EigenStrideType = typename std::conditional<F::count() == 2,
   EigenMatrixStride,
-  typename std::conditional<Frame::count() == 1,
+  typename std::conditional<F::count() == 1,
   EigenVectorStride,
   void>::type>::type;
 
@@ -194,8 +191,8 @@ public:
    * Convert to Eigen Matrix type.
    */
   EigenType toEigen() const {
-    return EigenType(buf(), length(0), (Frame::count() == 1 ? 1 : length(1)),
-        (Frame::count() == 1 ?
+    return EigenType(buf(), length(0), (F::count() == 1 ? 1 : length(1)),
+        (F::count() == 1 ?
             EigenStrideType(1, stride(0)) :
             EigenStrideType(lead(1), stride(1))));
   }
@@ -211,7 +208,7 @@ public:
    * allocation, the contents of the existing array are copied in.
    */
   template<class DerivedType, typename = std::enable_if_t<
-      is_eigen_compatible<DerivedType>::value>>Array(const Eigen::EigenBase<DerivedType>& o, const Frame& frame) :
+      is_eigen_compatible<DerivedType>::value>>Array(const Eigen::EigenBase<DerivedType>& o, const F& frame) :
   frame(frame),
   ptr(allocate(frame.volume())),
   isView(false) {
@@ -233,7 +230,7 @@ public:
    * Assign from Eigen Matrix expression.
    */
   template<class DerivedType, typename = std::enable_if_t<is_eigen_compatible<DerivedType>::value>>
-  Array<Type,Frame>& operator=(const Eigen::EigenBase<DerivedType>& o) {
+  Array<T,F>& operator=(const Eigen::EigenBase<DerivedType>& o) {
     if (!isView && !frame.conforms(o.rows(), o.cols())) {
       frame.resize(o.rows(), o.cols());
       ptr = allocate(frame.volume());
@@ -318,7 +315,7 @@ public:
    * Number of spans in the frame.
    */
   static constexpr int count() {
-    return Frame::count();
+    return F::count();
   }
 
   /**
@@ -343,42 +340,42 @@ public:
    *
    * The idiom of iterator usage is as for the STL.
    */
-  Iterator<Type,Frame> begin() {
-    return Iterator<Type,Frame>(ptr, frame);
+  Iterator<T,F> begin() {
+    return Iterator<T,F>(ptr, frame);
   }
 
   /**
    * Iterator pointing to the first element.
    */
-  Iterator<const Type,Frame> begin() const {
-    return Iterator<const Type,Frame>(ptr, frame);
+  Iterator<const T,F> begin() const {
+    return Iterator<const T,F>(ptr, frame);
   }
 
   /**
    * Iterator pointing to one beyond the last element.
    */
-  Iterator<Type,Frame> end() {
+  Iterator<T,F> end() {
     return begin() + frame.size();
   }
 
   /**
    * Iterator pointing to one beyond the last element.
    */
-  Iterator<const Type,Frame> end() const {
+  Iterator<const T,F> end() const {
     return begin() + frame.size();
   }
 
   /**
    * Raw pointer to underlying buffer.
    */
-  Type* buf() {
+  T* buf() {
     return ptr;
   }
 
   /**
    * Raw pointer to underlying buffer.
    */
-  Type* const buf() const {
+  T* const buf() const {
     return ptr;
   }
 
@@ -391,11 +388,24 @@ private:
    * @param ptr Existing allocation.
    * @param frame Frame.
    */
-  Array(Type* ptr, const Frame& frame) :
+  Array(T* ptr, const F& frame) :
   frame(frame),
   ptr(ptr),
   isView(true) {
     //
+  }
+
+  /**
+   * Allocate memory for array.
+   *
+   * @tparam U Element type.
+   *
+   * @param size Number of elements to allocate.
+   */
+  static T* allocate(const size_t n) {
+    T* raw = (T*)GC_MALLOC(sizeof(T) * n);
+    assert(raw);
+    return raw;
   }
 
   /**
@@ -411,27 +421,14 @@ private:
   }
 
   /**
-   * Allocate memory for array.
-   *
-   * @tparam Type1 Element type.
-   *
-   * @param size Number of elements to allocate.
-   */
-  static Type* allocate(const size_t n) {
-    Type* raw = static_cast<Type*>(GC_MALLOC(sizeof(Type) * n));
-    assert(raw);
-    return raw;
-  }
-
-  /**
    * Construct element of value type in place.
    *
    * @param o Element.
    * @param args Constructor arguments.
    */
-  template<class Type1, class ... Args>
-  static void emplace(Type1& o, Args ... args) {
-    new (&o) Type1(args...);
+  template<class U, class ... Args>
+  static void emplace(U& o, Args ... args) {
+    new (&o) U(args...);
   }
 
   /**
@@ -440,17 +437,17 @@ private:
    * @param o Element.
    * @param args Constructor arguments.
    */
-  template<class Type1, class ... Args>
-  static void emplace(Pointer<Type1>& o, Args ... args) {
-    auto raw = new (GC_MALLOC(sizeof(Type1))) Type1(args...);
-    new (&o) Pointer<Type1>(raw);
+  template<class U, class ... Args>
+  static void emplace(Pointer<U>& o, Args ... args) {
+    auto raw = new (GC) U(args...);
+    new (&o) Pointer<U>(raw);
   }
 
   /**
    * Copy from another array.
    */
-  template<class Frame1>
-  void copy(const Array<Type,Frame1>& o) {
+  template<class G>
+  void copy(const Array<T,G>& o) {
     /* pre-condition */
     assert(o.frame.conforms(frame));
 
@@ -465,18 +462,18 @@ private:
 
       size_t block = gcd(block1, block2);
       for (; iter1 != end1; iter1 += block, iter2 += block) {
-        std::memmove(&(*iter1), &(*iter2), block * sizeof(Type));
+        std::memmove(&(*iter1), &(*iter2), block * sizeof(T));
         // ^ memory regions may overlap, so avoid memcpy
       }
       assert(iter2 == end2);
     }
   }
 
-  template<class Type1>
-  void copy(const Sequence<Type1>& o) {
-    assert(Frame::count() == sequence_depth<Sequence<Type1>>::value);
+  template<class U>
+  void copy(const Sequence<U>& o) {
+    assert(F::count() == sequence_depth<Sequence<U>>::value);
 
-    size_t sizes[Frame::count()];
+    size_t sizes[F::count()];
     frame.lengths(sizes);
     assert(sequence_conforms(sizes, o));
     auto iter = begin();
@@ -503,12 +500,12 @@ private:
   /**
    * Frame.
    */
-  Frame frame;
+  F frame;
 
   /**
    * Buffer.
    */
-  Type* ptr;
+  T* ptr;
 
   /**
    * Is this a view of another array? A view has stricter assignment
@@ -520,6 +517,6 @@ private:
 /**
  * Default array for `D` dimensions.
  */
-template<class Type, int D>
-using DefaultArray = Array<Type,typename DefaultFrame<D>::type>;
+template<class T, int D>
+using DefaultArray = Array<T,typename DefaultFrame<D>::type>;
 }

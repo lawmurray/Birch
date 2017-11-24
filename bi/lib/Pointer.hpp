@@ -3,15 +3,13 @@
  */
 #pragma once
 
-#include "boost/optional.hpp"
 #include "bi/lib/global.hpp"
-#include "bi/lib/Any.hpp"
 
 #include <cstdint>
 
 namespace bi {
 /**
- * Smart pointer for fiber-local heaps, with copy-on-write semantics.
+ * Smart pointer for fibers with copy-on-write semantics.
  *
  * @ingroup library
  *
@@ -26,23 +24,14 @@ public:
   typedef Pointer<typename super_type<T>::type> super_type;
 
   /**
-   * Raw pointer constructor.
+   * Constructor.
    */
   Pointer(T* raw = nullptr);
 
   /**
-   * Assignment operator.
+   * Constructor.
    */
-  Pointer<T>& operator=(const Pointer<T>& o) = default;
-
-  /**
-   * Generic assignment operator.
-   */
-  template<class U, typename = std::enable_if<std::is_base_of<T,U>::value>>
-  Pointer<T>& operator=(const Pointer<U>& o) {
-    this->index = o.index;
-    return *this;
-  }
+  Pointer(T* raw, const size_t gen);
 
   /**
    * Generic comparison operator.
@@ -66,9 +55,10 @@ public:
   Pointer<T>& operator=(T* raw);
 
   /**
-   * Null pointer assignment operator.
+   * Generic assignment operator.
    */
-  Pointer<T>& operator=(const std::nullptr_t&);
+  template<class U, typename = std::enable_if<std::is_base_of<T,U>::value>>
+  Pointer<T>& operator=(const Pointer<U>& o);
 
   /**
    * Value assignment operator.
@@ -84,27 +74,20 @@ public:
    * @seealso has_conversion
    */
   template<class U, typename = std::enable_if_t<has_conversion<T,U>::value>>
-  operator U() {
-    /* conversion operators in generated code are marked explicit, so the
-     * cast is necessary here */
-    return static_cast<U>(*get());
-  }
+  operator U();
   template<class U, typename = std::enable_if_t<has_conversion<T,U>::value>>
-  operator U() const {
-    return static_cast<U>(*get());
-  }
+  operator U() const;
 
   /**
    * Get the raw pointer.
    */
-  T* get();
-  T* const get() const;
+  T* get() const;
 
   /**
-   * Cast the pointer.
+   * Cast the pointer. Returns a null pointer if the case is unsuccessful.
    */
   template<class U>
-  boost::optional<Pointer<U>> cast() const;
+  Pointer<U> cast() const;
 
   /**
    * Dereference.
@@ -133,44 +116,53 @@ public:
   auto operator()(Args ... args) const {
     return (*get())(args...);
   }
-
-protected:
-  /**
-   * Constructor for pointer_from_this() in Any.
-   */
-  Pointer(T* raw, intptr_t index);
 };
 
 template<>
 class Pointer<Any> {
+  friend class std::hash<bi::Pointer<bi::Any>>;
+  friend class std::equal_to<bi::Pointer<bi::Any>>;
 public:
-  /**
-   * Raw pointer constructor.
-   */
   Pointer(Any* raw = nullptr);
+  Pointer(Any* raw, const size_t gen);
+  Pointer<Any>& operator=(Any* raw);
+
+  bool isNull() const;
+  Any* get() const;
 
   /**
-   * Is this a null pointer?
+   * Generation.
    */
-  bool isNull() const {
-    return index < 0;
-  }
+  size_t gen;
 
 protected:
   /**
-   * Constructor for pointer_from_this().
+   * Raw pointer.
    */
-  Pointer(Any* raw, intptr_t index);
-
-  /**
-   * The index of the heap allocation, -1 for null.
-   */
-  intptr_t index;
+  Any* raw;
 };
 }
 
-#include "bi/lib/global.hpp"
-#include "bi/lib/Fiber.hpp"
+namespace std {
+template<>
+struct hash<bi::Pointer<bi::Any>> : public std::hash<bi::Any*> {
+  size_t operator()(const bi::Pointer<bi::Any>& o) const {
+    /* the generation is ignored in the hash, as it is reasonably unlikely
+     * for two pointers with the same raw pointer but different generation to
+     * occur in the same allocation map; this only occurs if memory is
+     * garbage collected and reused within the same fiber */
+    return std::hash<bi::Any*>::operator()(o.raw);
+  }
+};
+
+template<>
+struct equal_to<bi::Pointer<bi::Any>> {
+  bool operator()(const bi::Pointer<bi::Any>& o1,
+      const bi::Pointer<bi::Any>& o2) const {
+    return o1.raw == o2.raw && o1.gen == o2.gen;
+  }
+};
+}
 
 template<class T>
 bi::Pointer<T>::Pointer(T* raw) :
@@ -179,19 +171,21 @@ bi::Pointer<T>::Pointer(T* raw) :
 }
 
 template<class T>
+bi::Pointer<T>::Pointer(T* raw, const size_t gen) :
+    super_type(raw, gen) {
+  //
+}
+
+template<class T>
 bi::Pointer<T>& bi::Pointer<T>::operator=(T* raw) {
-  assert(fiberHeap);
-  if (raw) {
-    this->index = fiberHeap->put(raw);
-  } else {
-    this->index = -1;
-  }
+  Pointer<Any>::operator=(raw);
   return *this;
 }
 
 template<class T>
-bi::Pointer<T>& bi::Pointer<T>::operator=(const std::nullptr_t&) {
-  this->index = -1;
+template<class U, typename >
+bi::Pointer<T>& bi::Pointer<T>::operator=(const Pointer<U>& o) {
+  Pointer<Any>::operator=(o);
   return *this;
 }
 
@@ -203,81 +197,37 @@ bi::Pointer<T>& bi::Pointer<T>::operator=(const U& o) {
 }
 
 template<class T>
-T* bi::Pointer<T>::get() {
-  if (this->index < 0) {
-    return nullptr;
-  } else {
-    Any* o;
-    assert(fiberHeap);
-    o = fiberHeap->get(this->index);
-    if (o->getGen() < fiberGen) {
-      /* (possibly) shared and writeable, copy now (copy-on-write) */
-      o = o->clone();
-      fiberHeap->set(this->index, o);
-    }
-    T* raw;
-    #ifdef NDEBUG
-    raw = static_cast<T*>(o);
-    #else
-    raw = dynamic_cast<T*>(o);
-    assert(raw);
-    #endif
-    return raw;
-  }
+template<class U, typename >
+bi::Pointer<T>::operator U() {
+  /* conversion operators in generated code are marked explicit, so the
+   * cast is necessary here */
+  return static_cast<U>(*get());
 }
 
 template<class T>
-T* const bi::Pointer<T>::get() const {
-  if (this->index < 0) {
-    return nullptr;
+template<class U, typename >
+bi::Pointer<T>::operator U() const {
+  return static_cast<U>(*get());
+}
+
+template<class T>
+T* bi::Pointer<T>::get() const {
+#ifdef NDEBUG
+  return static_cast<T*>(Pointer<Any>::get());
+#else
+  auto raw = Pointer<Any>::get();
+  if (raw) {
+    auto result = dynamic_cast<T*>(raw);
+    assert(result);
+    return result;
   } else {
-    Any* o;
-    assert(fiberHeap);
-    o = fiberHeap->get(this->index);
-    T* raw;
-    #ifdef NDEBUG
-    raw = static_cast<T*>(o);
-    #else
-    raw = dynamic_cast<T*>(o);
-    assert(raw);
-    #endif
-    return raw;
+    return nullptr;
   }
+#endif
 }
 
 template<class T>
 template<class U>
-boost::optional<bi::Pointer<U>> bi::Pointer<T>::cast() const {
-  boost::optional<bi::Pointer<U>> pointer;
-  if (this->index >= 0) {
-    assert(fiberHeap);
-    const auto o = fiberHeap->get(this->index);
-    U* raw = dynamic_cast<U*>(o);
-    if (raw) {
-      pointer = raw->template pointer_from_this<U>();
-    }
-  }
-  return pointer;
-}
-
-template<class T>
-bi::Pointer<T>::Pointer(T* raw, intptr_t index) :
-    super_type(raw, index) {
-  //
-}
-
-inline bi::Pointer<bi::Any>::Pointer(Any* raw) {
-  assert(fiberHeap);
-  if (raw) {
-    index = fiberHeap->put(raw);
-  } else {
-    index = -1;
-  }
-}
-
-inline bi::Pointer<bi::Any>::Pointer(Any* raw, intptr_t index) {
-  assert(index >= 0 || !raw);
-  assert(index < 0 || fiberHeap->get(index) == raw);
-
-  this->index = index;
+bi::Pointer<U> bi::Pointer<T>::cast() const {
+  return Pointer<U>(dynamic_cast<U*>(this->raw), this->gen);
 }

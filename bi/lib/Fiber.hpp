@@ -3,7 +3,6 @@
  */
 #pragma once
 
-#include "bi/lib/Heap.hpp"
 #include "bi/lib/FiberState.hpp"
 
 namespace bi {
@@ -20,109 +19,45 @@ public:
   /**
    * Constructor.
    */
-  Fiber(const bool closed = false) :
-      heap(closed ? new Heap(*fiberHeap) : nullptr) {
-    //
-  }
+  Fiber(FiberState<Type>* state = nullptr, const bool closed = false);
 
   /**
    * Copy constructor.
    */
-  Fiber(const Fiber<Type>& o) {
-    if (o.heap) {
-      heap = new Heap(*o.heap);
-    } else {
-      heap = nullptr;
-    }
-    state = o.state;
-  }
+  Fiber(const Fiber<Type>& o);
 
   /**
    * Move constructor.
    */
-  Fiber(Fiber<Type> && o) : state(o.state), heap(o.heap)  {
-    o.heap = nullptr;
-    o.state = nullptr;
-  }
-
-  /**
-   * Destructor.
-   */
-  virtual ~Fiber() {
-    if (heap) {
-      delete heap;
-    }
-  }
+  Fiber(Fiber<Type> && o) = default;
 
   /**
    * Copy assignment.
    */
-  Fiber<Type>& operator=(const Fiber<Type>& o) {
-    if (heap) {
-      if (o.heap) {
-        *heap = *o.heap;
-      } else {
-        delete heap;
-        heap = nullptr;
-      }
-    } else if (o.heap) {
-      heap = new Heap(*o.heap);
-    }
-    state = o.state;
-    return *this;
-  }
+  Fiber<Type>& operator=(const Fiber<Type>& o);
 
   /**
    * Move assignment.
    */
-  Fiber<Type>& operator=(Fiber<Type> && o) {
-    std::swap(heap, o.heap);
-    std::swap(state, o.state);
-    return *this;
-  }
+  Fiber<Type>& operator=(Fiber<Type> && o) = default;
 
   /**
    * Run to next yield point.
    *
    * @return Was a value yielded?
    */
-  bool query() {
-    if (!state.isNull()) {
-      swap();
-      bool result = state->query();
-      swap();
-      return result;
-    } else {
-      return false;
-    }
-  }
+  bool query();
 
   /**
    * Get the last yield value.
    */
-  Type& get() {
-    assert(!state.isNull());
-    swap();
-    Type& result = state->get();
-    swap();
-    return result;
-  }
-  const Type& get() const {
-    assert(!state.isNull());
-    swap();
-    const Type& result = state->get();
-    swap();
-    return result;
-  }
+  Type& get();
+  const Type& get() const;
 
   /**
-   * Swap in/out the fiber-local heap.
+   * Fiber allocation map.
    */
-  void swap() {
-    if (heap) {
-      std::swap(heap, fiberHeap);
-    }
-  }
+  AllocationMap* allocationMap;
 
   /**
    * Fiber state.
@@ -130,8 +65,114 @@ public:
   Pointer<FiberState<Type>> state;
 
   /**
-   * Fiber-local heap, nullptr if shared with the parent fiber.
+   * Generation of the fiber.
    */
-  Heap* heap;
+  size_t gen;
+
+  /**
+   * Is this a closed fiber?
+   */
+  bool closed;
 };
+}
+
+#include "bi/lib/AllocationMap.hpp"
+
+template<class Type>
+bi::Fiber<Type>::Fiber(FiberState<Type>* state, const bool closed) :
+    allocationMap(
+        closed ?
+            new (GC) AllocationMap(*fiberAllocationMap) : fiberAllocationMap),
+    state(state, fiberGen),
+    gen(closed ? ++fiberGen : fiberGen),
+    closed(closed) {
+  //
+}
+
+template<class Type>
+bi::Fiber<Type>::Fiber(const Fiber<Type>& o) :
+    allocationMap(
+        o.closed ?
+            new (GC) AllocationMap(*o.allocationMap) : o.allocationMap),
+    state(o.state),
+    gen(o.closed ? ++const_cast<Fiber<Type>&>(o).gen : o.gen),
+    closed(o.closed) {
+  //
+}
+
+template<class Type>
+bi::Fiber<Type>& bi::Fiber<Type>::operator=(const Fiber<Type>& o) {
+  allocationMap =
+      o.closed ? new (GC) AllocationMap(*o.allocationMap) : o.allocationMap;
+  state = o.state;
+  gen = o.closed ? ++const_cast<Fiber<Type>&>(o).gen : o.gen;
+  closed = o.closed;
+  return *this;
+}
+
+template<class Type>
+bool bi::Fiber<Type>::query() {
+  if (!state.isNull()) {
+    auto callerAllocationMap = fiberAllocationMap;
+    auto callerGen = fiberGen;
+
+    if (closed) {
+      fiberGen = gen;
+      fiberAllocationMap = allocationMap;
+    }
+
+    bool result = state->query();
+
+    if (closed) {
+      allocationMap = fiberAllocationMap;
+      gen = fiberGen;
+
+      fiberAllocationMap = callerAllocationMap;
+      fiberGen = callerGen;
+    }
+
+    return result;
+  } else {
+    return false;
+  }
+}
+
+template<class Type>
+Type& bi::Fiber<Type>::get() {
+  assert(!state.isNull());
+
+  auto callerAllocationMap = fiberAllocationMap;
+  auto callerGen = fiberGen;
+  if (closed) {
+    fiberGen = gen;
+    fiberAllocationMap = allocationMap;
+  }
+
+  auto result = state->get();
+
+  if (closed) {
+    fiberAllocationMap = callerAllocationMap;
+    fiberGen = callerGen;
+  }
+  return result;
+}
+
+template<class Type>
+const Type& bi::Fiber<Type>::get() const {
+  assert(!state.isNull());
+
+  auto callerAllocationMap = fiberAllocationMap;
+  auto callerGen = fiberGen;
+  if (closed) {
+    fiberGen = gen;
+    fiberAllocationMap = allocationMap;
+  }
+
+  auto result = state->get();
+
+  if (closed) {
+    fiberAllocationMap = callerAllocationMap;
+    fiberGen = callerGen;
+  }
+  return result;
 }

@@ -16,6 +16,7 @@
 #include "bi/lib/Any.hpp"
 #include "bi/lib/Object.hpp"
 #include "bi/lib/Pointer.hpp"
+#include "bi/lib/Optional.hpp"
 #include "bi/lib/FiberState.hpp"
 #include "bi/lib/Fiber.hpp"
 #include "bi/lib/Eigen.hpp"
@@ -23,14 +24,9 @@
 #include "bi/lib/EigenOperators.hpp"
 #include "bi/lib/global.hpp"
 
-#include "boost/optional.hpp"
 #include "boost/math/special_functions/beta.hpp"
-///@todo Replace both of the above with STL versions under C++17.
+///@todo Replace the above with STL version under C++17.
 
-#ifndef NDEBUG
-#define GC_DEBUG 1
-#endif
-#include <gc.h>
 #include <getopt.h>
 
 #include <random>
@@ -365,7 +361,7 @@ auto make_sequence(const std::initializer_list<Type> values) {
 template<class PointerType, class ... Args>
 PointerType make_object(Args ... args) {
   using ValueType = typename PointerType::value_type;
-  auto raw = new (GC_MALLOC(sizeof(ValueType))) ValueType(args...);
+  auto raw = new (GC) ValueType(args...);
   return PointerType(raw);
 }
 
@@ -382,7 +378,7 @@ PointerType make_object(Args ... args) {
  */
 template<class ValueType>
 ValueType* copy_object(ValueType* o) {
-  return new (GC_MALLOC(sizeof(ValueType))) ValueType(*o);
+  return new (GC) ValueType(*o);
 }
 
 /**
@@ -399,10 +395,7 @@ ValueType* copy_object(ValueType* o) {
  */
 template<class YieldType, class StateType, class ... Args>
 Fiber<YieldType> make_fiber(Args ... args) {
-  Fiber<YieldType> fiber(false);
-  FiberState<YieldType>* state = new (GC_MALLOC(sizeof(StateType))) StateType(args...);
-  fiber.state = state;
-  return fiber;
+  return Fiber<YieldType>(new (GC) StateType(args...), false);
 }
 
 /**
@@ -419,12 +412,27 @@ Fiber<YieldType> make_fiber(Args ... args) {
  */
 template<class YieldType, class StateType, class ... Args>
 Fiber<YieldType> make_closed_fiber(Args ... args) {
-  Fiber<YieldType> fiber(true);
-  fiber.swap();
-  FiberState<YieldType>* state = new (GC_MALLOC(sizeof(StateType))) StateType(args...);
-  fiber.state = state;
-  fiber.swap();
-  return fiber;
+  return Fiber<YieldType>(new (GC) StateType(args...), true);
+}
+
+/**
+ * Cast an object.
+ */
+template<class To, class From>
+Optional<Pointer<To>> cast(const Pointer<From>& from) {
+  return Optional<Pointer<To>>(from.template cast<To>());
+}
+
+/**
+ * Cast an object.
+ */
+template<class To, class From>
+Optional<Pointer<To>> cast(const Optional<Pointer<From>>& from) {
+  if (from.query()) {
+    return cast<Pointer<To>>(from.get());
+  } else {
+    return Optional<Pointer<To>>();
+  }
 }
 
 }

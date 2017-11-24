@@ -141,7 +141,7 @@ void bi::CppBaseGenerator::genInit(const T* o) {
     assert(type);
     if (!o->value->isEmpty()) {
       middle(" = " << o->value);
-    } else {
+    } else if (!o->brackets->isEmpty()) {
       middle(" = bi::make_array<" << type->single << ">(");
       middle("bi::make_frame(" << o->brackets << ')');
       if (!o->args->isEmpty()) {

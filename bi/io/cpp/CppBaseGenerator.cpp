@@ -62,19 +62,7 @@ void bi::CppBaseGenerator::visit(const Sequence* o) {
 
 void bi::CppBaseGenerator::visit(const Cast* o) {
   auto classType = dynamic_cast<ClassType*>(o->returnType);
-  if (o->single->type->isOptional()) {
-    middle("[](auto o) -> auto { return o.is_initialized()? ");
-    middle("o.get().template cast<bi::");
-    middle(classType->name);
-    middle(">(): boost::optional<bi::Pointer<bi::");
-    middle(classType->name);
-    middle(">>{}; }(");
-    middle(o->single);
-    middle(")");
-  } else {
-    middle(o->single);
-    middle(".cast<bi::type::" << classType->name << ">()");
-  }
+  middle("bi::cast<bi::type::" << classType->name << ">(" << o->single << ')');
 }
 
 void bi::CppBaseGenerator::visit(const Call* o) {
@@ -120,11 +108,7 @@ void bi::CppBaseGenerator::visit(const Slice* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Query* o) {
-  if (o->single->type->isOptional()) {
-    middle("static_cast<bool>(" << o->single << ')');
-  } else {
-    middle(o->single << ".query()");
-  }
+  middle(o->single << ".query()");
 }
 
 void bi::CppBaseGenerator::visit(const Get* o) {
@@ -172,17 +156,16 @@ void bi::CppBaseGenerator::visit(const Member* o) {
 
 void bi::CppBaseGenerator::visit(const Super* o) {
   // only need to handle the case outside member expression
-  middle("pointer_from_this<super_type>()");
+  middle("static_cast<super_type*>(this)");
 }
 
 void bi::CppBaseGenerator::visit(const This* o) {
-  // only need to handle the case outside member expression, where must
-  // ensure correct global or fiber-local pointer is used
-  middle("pointer_from_this<this_type>()");
+  // only need to handle the case outside member expression
+  middle("this");
 }
 
 void bi::CppBaseGenerator::visit(const Nil* o) {
-  middle("boost::none");
+  middle("nullptr");
 }
 
 void bi::CppBaseGenerator::visit(const Parameter* o) {
@@ -618,7 +601,7 @@ void bi::CppBaseGenerator::visit(const FiberType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const OptionalType* o) {
-  middle("boost::optional<" << o->single << '>');
+  middle("bi::Optional<" << o->single << '>');
 }
 
 void bi::CppBaseGenerator::visit(const ClassType* o) {
