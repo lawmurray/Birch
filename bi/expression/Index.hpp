@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Index expression.
  *
- * @ingroup compiler_expression
+ * @ingroup birch_expression
  */
 class Index: public Expression, public Single<Expression> {
 public:

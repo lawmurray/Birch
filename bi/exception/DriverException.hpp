@@ -9,7 +9,7 @@ namespace bi {
 /**
  * Driver exception.
  *
- * @ingroup compiler_exception
+ * @ingroup birch_exception
  */
 struct DriverException: public Exception {
   /**

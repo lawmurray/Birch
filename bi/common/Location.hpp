@@ -11,7 +11,7 @@ class File;
 /**
  * Location within a file being parsed.
  *
- * @ingroup compiler_common
+ * @ingroup birch_common
  */
 struct Location {
   /**

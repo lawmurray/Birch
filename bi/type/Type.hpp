@@ -40,7 +40,7 @@ class Basic;
 /**
  * Type.
  *
- * @ingroup compiler_type
+ * @ingroup birch_type
  */
 class Type: public Located {
 public:

@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Type of operands to a binary operator.
  *
- * @ingroup compiler_type
+ * @ingroup birch_type
  */
 class BinaryType: public Type, public Couple<Type> {
 public:

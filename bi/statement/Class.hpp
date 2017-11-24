@@ -29,7 +29,7 @@ enum ClassState {
 /**
  * Class.
  *
- * @ingroup compiler_statement
+ * @ingroup birch_statement
  */
 class Class: public Statement,
     public Named,

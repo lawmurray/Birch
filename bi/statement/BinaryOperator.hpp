@@ -16,7 +16,7 @@ namespace bi {
 /**
  * Binary operator.
  *
- * @ingroup compiler_statement
+ * @ingroup birch_statement
  */
 class BinaryOperator: public Statement,
     public Named,

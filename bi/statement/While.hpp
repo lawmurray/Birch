@@ -12,7 +12,7 @@ namespace bi {
 /**
  * While loop.
  *
- * @ingroup compiler_statement
+ * @ingroup birch_statement
  */
 class While: public Statement, public Conditioned, public Braced, public Scoped {
 public:

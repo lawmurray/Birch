@@ -11,7 +11,7 @@ namespace bi {
 /**
  * Operands to a binary operator.
  *
- * @ingroup compiler_expression
+ * @ingroup birch_expression
  */
 class Binary: public Expression, public Couple<Expression> {
 public:

@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Incorrect yield type for fiber declaration.
  *
- * @ingroup compiler_exception
+ * @ingroup birch_exception
  */
 struct FiberTypeException: public CompilerException {
   /**

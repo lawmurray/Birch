@@ -9,7 +9,7 @@ namespace bi {
 /**
  * Output stream for C++ source files.
  *
- * @ingroup compiler_io
+ * @ingroup birch_io
  */
 typedef CppBaseGenerator cpp_ostream;
 }

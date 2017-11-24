@@ -11,7 +11,7 @@ namespace bi {
 /**
  * Literal.
  *
- * @ingroup compiler_expression
+ * @ingroup birch_expression
  */
 template<class T1>
 class Literal: public Expression {

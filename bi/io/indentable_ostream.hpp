@@ -16,7 +16,7 @@ namespace bi {
 /**
  * Output stream with indenting and basic output for names and literals.
  *
- * @ingroup compiler_io
+ * @ingroup birch_io
  */
 class indentable_ostream: public Visitor {
 public:

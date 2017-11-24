@@ -13,7 +13,7 @@ namespace bi {
 /**
  * Invalid function call.
  *
- * @ingroup compiler_exception
+ * @ingroup birch_exception
  */
 struct CallException: public CompilerException {
   /**

@@ -12,7 +12,7 @@ namespace bi {
 /**
  * Alias type.
  *
- * @ingroup compiler_type
+ * @ingroup birch_type
  */
 class AliasType: public Type,
     public Named,

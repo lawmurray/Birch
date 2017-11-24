@@ -11,7 +11,7 @@ namespace bi {
 /**
  * Incorrect type in yield statement.
  *
- * @ingroup compiler_exception
+ * @ingroup birch_exception
  */
 struct YieldTypeException: public CompilerException {
   /**

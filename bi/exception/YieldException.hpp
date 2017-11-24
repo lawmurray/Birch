@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Yield statement outside of fiber.
  *
- * @ingroup compiler_exception
+ * @ingroup birch_exception
  */
 struct YieldException: public CompilerException {
   /**

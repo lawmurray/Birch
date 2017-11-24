@@ -11,7 +11,7 @@ namespace bi {
 /**
  * Invalid generic type arguments.
  *
- * @ingroup compiler_exception
+ * @ingroup birch_exception
  */
 struct GenericException: public CompilerException {
   /**

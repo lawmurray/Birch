@@ -9,7 +9,7 @@ namespace bi {
 /**
  * Empty expression.
  *
- * @ingroup compiler_expression
+ * @ingroup birch_expression
  */
 class EmptyExpression: public Expression {
 public:

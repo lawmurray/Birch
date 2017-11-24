@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Assertion statement.
  *
- * @ingroup compiler_statement
+ * @ingroup birch_statement
  */
 class Assert: public Statement, public Conditioned {
 public:

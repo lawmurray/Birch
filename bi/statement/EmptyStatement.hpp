@@ -9,7 +9,7 @@ namespace bi {
 /**
  * Empty statement.
  *
- * @ingroup compiler_statement
+ * @ingroup birch_statement
  */
 class EmptyStatement: public Statement {
 public:

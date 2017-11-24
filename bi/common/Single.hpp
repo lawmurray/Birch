@@ -11,7 +11,7 @@ namespace bi {
 /**
  * Object containing another single object.
  *
- * @ingroup compiler_common
+ * @ingroup birch_common
  */
 template<class T>
 class Single {

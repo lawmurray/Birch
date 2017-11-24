@@ -8,7 +8,7 @@ class Type;
 /**
  * Iterator over type list.
  *
- * @ingroup compiler_common
+ * @ingroup birch_common
  */
 class TypeIterator {
 public:

@@ -12,7 +12,7 @@ namespace bi {
 /**
  * DoWhile loop.
  *
- * @ingroup compiler_statement
+ * @ingroup birch_statement
  */
 class DoWhile: public Statement,
     public Braced,

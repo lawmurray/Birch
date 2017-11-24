@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Call on something that is not of function type.
  *
- * @ingroup compiler_exception
+ * @ingroup birch_exception
  */
 struct NotFunctionException: public CompilerException {
   /**

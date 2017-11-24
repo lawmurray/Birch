@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Range expression.
  *
- * @ingroup compiler_expression
+ * @ingroup birch_expression
  */
 class Range: public Expression, public Couple<Expression> {
 public:

@@ -5,6 +5,9 @@ AM_INIT_AUTOMAKE([1.10 no-define foreign])
 #AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
+# Checks for programs
+AC_PROG_CPP
+AC_PROG_CC
 AC_PROG_CXXCPP
 AC_PROG_CXX
 AC_PROG_INSTALL
@@ -16,6 +19,10 @@ fi
 AC_PROG_YACC
 if test "x$YACC" = "xyacc"; then
   AC_MSG_ERROR([Bison not found.])
+fi
+AC_PATH_PROG([LEMON], [lemon], [])
+if test "$LEMON" = ""; then
+  AC_MSG_ERROR([lemon not found.])
 fi
 AX_CXX_COMPILE_STDCXX_14([noext], [mandatory])
 
@@ -35,6 +42,8 @@ AC_CHECK_HEADERS([ \
     ], [], AC_MSG_ERROR([required Boehm garbage collector header not found]), [-])
     
 AC_CHECK_HEADERS([ \
+    boost/optional.hpp \
+    boost/variant.hpp \
     boost/filesystem.hpp \
     boost/filesystem/fstream.hpp \
     boost/interprocess/sync/file_lock.hpp \

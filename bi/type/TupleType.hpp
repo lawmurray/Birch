@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Tuple type.
  *
- * @ingroup compiler_type
+ * @ingroup birch_type
  */
 class TupleType: public Type, public Single<Type> {
 public:

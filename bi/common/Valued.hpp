@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Statement or expression with a default or initial value.
  *
- * @ingroup compiler_common
+ * @ingroup birch_common
  */
 class Valued {
 public:

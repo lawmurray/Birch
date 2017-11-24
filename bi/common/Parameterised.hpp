@@ -9,7 +9,7 @@ namespace bi {
 /**
  * Parameterised statement.
  *
- * @ingroup compiler_common
+ * @ingroup birch_common
  */
 class Parameterised {
 public:

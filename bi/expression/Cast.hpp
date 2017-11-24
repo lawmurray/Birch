@@ -11,7 +11,7 @@ namespace bi {
 /**
  * Cast.
  *
- * @ingroup compiler_expression
+ * @ingroup birch_expression
  */
 class Cast: public Expression, public Single<Expression>, public ReturnTyped {
 public:

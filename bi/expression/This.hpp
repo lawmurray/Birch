@@ -9,7 +9,7 @@ namespace bi {
 /**
  * Self-reference to an object.
  *
- * @ingroup compiler_expression
+ * @ingroup birch_expression
  */
 class This: public Expression {
 public:

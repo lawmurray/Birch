@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Get expression.
  *
- * @ingroup compiler_expression
+ * @ingroup birch_expression
  */
 class Get: public Expression, public Single<Expression> {
 public:

@@ -60,7 +60,7 @@ enum LookupResult {
 /**
  * Scope.
  *
- * @ingroup compiler_common
+ * @ingroup birch_common
  */
 class Scope {
 public:

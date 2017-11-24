@@ -9,7 +9,7 @@ namespace bi {
 /**
  * Parameter list.
  *
- * @ingroup compiler_common
+ * @ingroup birch_common
  */
 class StatementList : public Statement {
 public:

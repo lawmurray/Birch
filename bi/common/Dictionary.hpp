@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Dictionary for variables, functions, operators etc.
  *
- * @ingroup compiler_common
+ * @ingroup birch_common
  *
  * @tparam ObjectType Type of objects.
  */

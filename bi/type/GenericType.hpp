@@ -12,7 +12,7 @@ namespace bi {
 /**
  * Generic type.
  *
- * @ingroup compiler_type
+ * @ingroup birch_type
  */
 class GenericType: public Type, public Named, public Reference<Generic> {
 public:

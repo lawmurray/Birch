@@ -12,7 +12,7 @@ namespace bi {
 /**
  * Identifier for overloaded function.
  *
- * @ingroup compiler_expression
+ * @ingroup birch_expression
  *
  * @tparam ObjectType The particular type of object referred to by the
  * identifier.

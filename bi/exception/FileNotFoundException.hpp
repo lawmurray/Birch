@@ -9,7 +9,7 @@ namespace bi {
 /**
  * File not found when parsing.
  *
- * @ingroup compiler_exception
+ * @ingroup birch_exception
  */
 struct FileNotFoundException: public Exception {
   /**

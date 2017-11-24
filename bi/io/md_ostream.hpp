@@ -13,7 +13,7 @@ namespace bi {
 /**
  * Output stream for Markdown files.
  *
- * @ingroup compiler_io
+ * @ingroup birch_io
  */
 class md_ostream: public bih_ostream {
 public:

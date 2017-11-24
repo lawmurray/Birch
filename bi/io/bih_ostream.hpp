@@ -9,7 +9,7 @@ namespace bi {
 /**
  * Output stream for Birch header files.
  *
- * @ingroup compiler_io
+ * @ingroup birch_io
  */
 class bih_ostream: public bi_ostream {
 public:

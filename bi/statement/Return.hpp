@@ -11,7 +11,7 @@ namespace bi {
 /**
  * Return statement.
  *
- * @ingroup compiler_statement
+ * @ingroup birch_statement
  */
 class Return: public Statement, public Single<Expression> {
 public:

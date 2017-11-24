@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Left hand side of assignment operator is not assignable.
  *
- * @ingroup compiler_exception
+ * @ingroup birch_exception
  */
 struct NotAssignableException: public CompilerException {
   /**

@@ -17,7 +17,7 @@ class ExpressionIterator;
 /**
  * Expression.
  *
- * @ingroup compiler_expression
+ * @ingroup birch_expression
  */
 class Expression: public Located, public Typed {
 public:

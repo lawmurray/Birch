@@ -11,7 +11,7 @@ namespace bi {
 /**
  * Incorrect type in return statement.
  *
- * @ingroup compiler_exception
+ * @ingroup birch_exception
  */
 struct ReturnTypeException: public CompilerException {
   /**

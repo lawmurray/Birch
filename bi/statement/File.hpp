@@ -10,7 +10,7 @@ namespace bi {
 /**
  * File.
  *
- * @ingroup compiler_statement
+ * @ingroup birch_statement
  */
 class File: public Scoped {
 public:

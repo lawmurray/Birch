@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Invalid use of the cast operator.
  *
- * @ingroup compiler_exception
+ * @ingroup birch_exception
  */
 struct CastException: public CompilerException {
   /**

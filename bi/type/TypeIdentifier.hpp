@@ -12,7 +12,7 @@ namespace bi {
  * parser for identifiers used in a type context, before they have been
  * resolved to an actual type.
  *
- * @ingroup compiler_type
+ * @ingroup birch_type
  */
 class TypeIdentifier: public Type, public Named {
 public:

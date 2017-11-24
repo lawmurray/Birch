@@ -11,7 +11,7 @@ namespace bi {
  * establishing super type and conversion type relationships, and resolving
  * generic type parameters.
  *
- * @ingroup compiler_visitor
+ * @ingroup birch_visitor
  */
 class ResolverSuper: public Resolver {
 public:

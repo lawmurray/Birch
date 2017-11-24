@@ -12,7 +12,7 @@ namespace bi {
 /**
  * Type conversion operator.
  *
- * @ingroup compiler_statement
+ * @ingroup birch_statement
  */
 class ConversionOperator: public Statement,
     public ReturnTyped,

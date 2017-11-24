@@ -10,7 +10,7 @@ namespace bi {
 /**
  * ReturnTyped expression or statement.
  *
- * @ingroup compiler_common
+ * @ingroup birch_common
  */
 class ReturnTyped {
 public:

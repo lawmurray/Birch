@@ -9,7 +9,7 @@ namespace bi {
 /**
  * Statement with a condition (e.g. conditional, loop).
  *
- * @ingroup compiler_common
+ * @ingroup birch_common
  */
 class Conditioned {
 public:

@@ -11,7 +11,7 @@ namespace bi {
 /**
  * Call to a binary operator.
  *
- * @ingroup compiler_expression
+ * @ingroup birch_expression
  */
 class BinaryCall: public Expression,
     public Single<Expression>,

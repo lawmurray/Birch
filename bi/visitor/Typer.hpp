@@ -13,7 +13,7 @@ namespace bi {
  * populating available types. This is analogous to having forward
  * declarations of all types as in C++.
  *
- * @ingroup compiler_visitor
+ * @ingroup birch_visitor
  */
 class Typer: public Modifier {
 public:

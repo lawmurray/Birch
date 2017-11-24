@@ -12,7 +12,7 @@ namespace bi {
 /**
  * Raw C++ block.
  *
- * @ingroup compiler_statement
+ * @ingroup birch_statement
  */
 class Raw: public Statement, public Named {
 public:

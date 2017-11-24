@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Invalid use of "!" get operator.
  *
- * @ingroup compiler_exception
+ * @ingroup birch_exception
  */
 struct GetException: public CompilerException {
   /**

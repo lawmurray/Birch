@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Span expression.
  *
- * @ingroup compiler_expression
+ * @ingroup birch_expression
  */
 class Span: public Expression, public Single<Expression> {
 public:

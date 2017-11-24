@@ -11,7 +11,7 @@ namespace bi {
 /**
  * Incorrect number of dimensions in slice.
  *
- * @ingroup compiler_exception
+ * @ingroup birch_exception
  */
 struct SliceException: public CompilerException {
   /**

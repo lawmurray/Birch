@@ -9,7 +9,7 @@ namespace bi {
 /**
  * Object containing two other objects, denoted left and right.
  *
- * @ingroup compiler_common
+ * @ingroup birch_common
  */
 template<class T>
 class Couple {

@@ -9,7 +9,7 @@ namespace bi {
 /**
  * Output stream for C++ header files.
  *
- * @ingroup compiler_io
+ * @ingroup birch_io
  */
 class hpp_ostream: public CppHeaderGenerator {
 public:

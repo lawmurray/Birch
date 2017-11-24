@@ -15,7 +15,7 @@ namespace bi {
 /**
  * Function.
  *
- * @ingroup compiler_statement
+ * @ingroup birch_statement
  */
 class Function: public Statement,
     public Named,

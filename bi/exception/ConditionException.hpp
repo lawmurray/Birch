@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Incorrect type for condition in conditional or loop.
  *
- * @ingroup compiler_exception
+ * @ingroup birch_exception
  */
 struct ConditionException: public CompilerException {
   /**

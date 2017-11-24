@@ -9,7 +9,7 @@ namespace bi {
 /**
  * Named object.
  *
- * @ingroup compiler_common
+ * @ingroup birch_common
  */
 class Named {
 public:

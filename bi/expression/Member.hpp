@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Membership operator expression.
  *
- * @ingroup compiler_expression
+ * @ingroup birch_expression
  */
 class Member: public Expression, public Couple<Expression> {
 public:

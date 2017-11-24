@@ -1,0 +1,234 @@
+/**
+ * @file
+ *
+ * Parser for Universal Binary UBJ files.
+ *
+ * As a binary format, some kludges are required to get this working with
+ * Flex and Bison, although the end result is still more appealing than a
+ * custom parser. In particular, in the syntax below, "unput()" is used at
+ * times to insert tokens into the lexer stream that do not actually occur in
+ * the file: type markers (e.g. 'i', 'd') in members of container types when
+ * using the optimized format, likewise ']' and '}' to terminate these
+ * containers (in the latter case, when the prescribed number of members or
+ * elements have been parsed, the terminating ']' or '}' is "unput()").
+ */
+%skeleton "lalr1.cc" /* -*- C++ -*- */
+%require "3.0.4"
+%defines
+%define parser_class_name {ubj}
+
+%code requires {
+  #include "libubjpp/tag.hpp"
+  #include "libubjpp/value.hpp"
+
+  class UBJDriver;
+}
+
+%param {
+  UBJDriver& driver
+}
+
+%locations
+%initial-action {
+  // initial location
+  @$.begin.filename = @$.end.filename = &driver.file;
+};
+
+%define api.token.constructor
+%define api.value.type variant
+%define parse.assert
+
+%code {
+#include "libubjpp/ubj/UBJDriver.hpp"
+}
+
+%define api.token.prefix {UBJ_}
+%define api.prefix {ubj}
+
+%token END 0
+%token CHARACTER
+%token LEFT_BRACE     "{"
+%token RIGHT_BRACE    "}"
+%token COMMA          ","
+%token COLON          ":"
+%token LEFT_BRACKET   "["
+%token RIGHT_BRACKET  "]"
+%token QUOTE          "\""
+
+%token <libubjpp::float_type> FLOAT
+%token <libubjpp::double_type> DOUBLE
+%token <libubjpp::int8_type> INT8
+%token <libubjpp::uint8_type> UINT8
+%token <libubjpp::int16_type> INT16
+%token <libubjpp::int32_type> INT32
+%token <libubjpp::int64_type> INT64
+%token <libubjpp::bool_type> BOOL
+%token <libubjpp::char_type> CHAR
+%token <libubjpp::nil_type> NIL
+%token <libubjpp::noop_type> NO_OP
+
+%type <std::pair<std::string,libubjpp::value>> pair typed_pair
+%type <libubjpp::object_type> object members optional_members counted_members optional_counted_members typed_members optional_typed_members
+%type <libubjpp::array_type> array elements optional_elements counted_elements optional_counted_elements typed_elements optional_typed_elements
+%type <libubjpp::string_type> key string high_precision_number
+%type <libubjpp::value> value typed_value
+%type <libubjpp::char_type> type
+%type <libubjpp::int64_type> length
+
+%start root
+%%
+
+root
+  : object  { driver.root = $1; }
+  ;
+
+object
+  : '{' optional_members '}'                                                            { $$ = $2; }
+  | '{' '#' length { driver.push_object(0, $3); } optional_counted_members '}'          { $$ = $5; driver.pop(); }
+  | '{' '$' type '#' length { driver.push_object($3, $5); } optional_typed_members '}'  { $$ = $7; driver.pop(); }
+  ;
+
+members
+  : pair          { $$ = libubjpp::object_type(); $$.insert($1); }
+  | members pair  { $$ = $1; $$.insert($2); }
+  ;
+  
+optional_members
+  : members
+  |               { $$ = libubjpp::object_type(); }
+  ;
+
+counted_members
+  : pair                  { $$ = libubjpp::object_type(); $$.insert($1); driver.count_member(); }
+  | counted_members pair  { $$ = $1; $$.insert($2); driver.count_member(); }
+  ;
+  
+optional_counted_members
+  : counted_members
+  |                  { $$ = libubjpp::object_type(); }
+  ;
+
+pair
+  : key value  { $$ = std::make_pair($1, $2); }
+  ;
+
+key
+  : length { driver.push_array('S', $1); } payload  { $$ = libubjpp::string_type(); }
+  ;
+
+typed_members
+  : typed_pair                { $$ = libubjpp::object_type(); $$.insert($1);driver.count_member(); }
+  | typed_members typed_pair  { $$ = $1; $$.insert($2); driver.count_member(); }
+  ;
+  
+optional_typed_members
+  : typed_members
+  |                { $$ = libubjpp::object_type(); }
+  ;
+
+typed_pair
+  : key typed_value  { $$ = std::make_pair($1, $2); }
+  ;
+
+array
+  : '[' optional_elements ']'                                                           { $$ = $2; }
+  | '[' '#' length { driver.push_array(0, $3); } optional_counted_elements ']'          { $$ = $5; driver.pop(); }
+  | '[' '$' type '#' length { driver.push_array($3, $5); } optional_typed_elements ']'  { $$ = $7; driver.pop(); }
+  ;
+  
+elements
+  : value           { $$ = libubjpp::array_type(); $$.push_back($1); }
+  | elements value  { $$ = $1; $$.push_back($2); }
+  ;
+
+optional_elements
+  : elements
+  |           { $$ = libubjpp::array_type(); }
+  ;
+  
+counted_elements
+  : value                   { $$ = libubjpp::array_type(); $$.push_back($1); driver.count_element(); }
+  | counted_elements value  { $$ = $1; $$.push_back($2); driver.count_element(); }
+  ;
+  
+optional_counted_elements
+  : counted_elements
+  |                   { $$ = libubjpp::array_type(); }
+  ;
+  
+typed_elements
+  : typed_value                 { $$ = libubjpp::array_type(); $$.push_back($1); driver.count_element(); }
+  | typed_elements typed_value  { $$ = $1; $$.push_back($2); driver.count_element(); }
+  ;
+  
+optional_typed_elements
+  : typed_elements
+  |                 { $$ = libubjpp::array_type(); }
+  ;
+
+value
+  : object                 { $$ = libubjpp::value($1); }
+  | array                  { $$ = libubjpp::value($1); }
+  | string                 { $$ = libubjpp::value($1); }
+  | high_precision_number  { $$ = libubjpp::value($1); }
+  | FLOAT                  { $$ = libubjpp::value($1); }
+  | DOUBLE                 { $$ = libubjpp::value($1); }
+  | INT8                   { $$ = libubjpp::value($1); }
+  | UINT8                  { $$ = libubjpp::value($1); }
+  | INT16                  { $$ = libubjpp::value($1); }
+  | INT32                  { $$ = libubjpp::value($1); }
+  | INT64                  { $$ = libubjpp::value($1); }
+  | CHAR                   { $$ = libubjpp::value($1); }
+  | BOOL                   { $$ = libubjpp::value($1); }
+  | NIL                    { $$ = libubjpp::value($1); }
+  | NO_OP                  { $$ = libubjpp::value($1); }
+  ;
+
+typed_value
+  : { ubj_unput(driver.types.top()); } value  { $$ = $2; }
+  ;
+
+string
+  : 'S' length { driver.push_array('S', $2); } payload  { $$ = libubjpp::string_type(); }
+  ;
+
+high_precision_number
+  : 'H' length { driver.push_array('H', $2); } payload  { $$ = libubjpp::string_type(); }
+  ;
+
+type
+  : 'S'  { $$ = 'S'; }
+  | 'i'  { $$ = 'i'; }
+  | 'U'  { $$ = 'U'; }
+  | 'I'  { $$ = 'I'; }
+  | 'l'  { $$ = 'l'; }
+  | 'L'  { $$ = 'L'; }
+  | 'd'  { $$ = 'd'; }
+  | 'D'  { $$ = 'D'; }
+  | 'H'  { $$ = 'H'; }
+  | 'C'  { $$ = 'C'; }
+  | 'T'  { $$ = 'T'; }
+  | 'F'  { $$ = 'F'; }
+  | 'Z'  { $$ = 'Z'; }
+  | 'N'  { $$ = 'N'; }
+  | '{'  { $$ = '{'; }
+  | '['  { $$ = '['; }
+  ;
+
+length
+  : INT8   { $$ = $1; }
+  | UINT8  { $$ = $1; }
+  | INT16  { $$ = $1; }
+  | INT32  { $$ = $1; }
+  | INT64  { $$ = $1; }
+  ;
+
+payload
+  : { driver.consume_payload(); }
+  ;
+
+%%
+
+void yy::ubj::error(const location_type& l, const std::string& m) {
+  driver.error(l, m);
+}

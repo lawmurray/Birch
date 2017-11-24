@@ -9,7 +9,7 @@ namespace bi {
 /**
  * List type.
  *
- * @ingroup compiler_common
+ * @ingroup birch_common
  */
 class TypeList: public Type {
 public:

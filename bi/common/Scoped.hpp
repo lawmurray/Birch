@@ -11,7 +11,7 @@ class Scope;
 /**
  * Statement with a scope.
  *
- * @ingroup compiler_common
+ * @ingroup birch_common
  */
 class Scoped {
 public:

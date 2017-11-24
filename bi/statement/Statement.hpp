@@ -14,7 +14,7 @@ class StatementIterator;
 /**
  * Statement.
  *
- * @ingroup compiler_statement
+ * @ingroup birch_statement
  */
 class Statement: public Located {
 public:

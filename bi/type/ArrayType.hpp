@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Array type.
  *
- * @ingroup compiler_type
+ * @ingroup birch_type
  */
 class ArrayType: public Type, public Single<Type> {
 public:

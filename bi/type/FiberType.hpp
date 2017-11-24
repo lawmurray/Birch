@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Fiber type.
  *
- * @ingroup compiler_type
+ * @ingroup birch_type
  */
 class FiberType: public Type, public Single<Type> {
 public:
