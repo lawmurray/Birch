@@ -2,11 +2,11 @@
  * Parameters of an SEIR model.
  */
 class SEIRParameter {
-  ν:Beta;   // birth probability
-  μ:Beta;   // survival probability
-  λ:Beta;   // exposure probability
-  δ:Beta;   // infection probability
-  γ:Beta;   // recovery probability
+  ν:Random<Real>;   // birth probability
+  μ:Random<Real>;   // survival probability
+  λ:Random<Real>;   // exposure probability
+  δ:Random<Real>;   // infection probability
+  γ:Random<Real>;   // recovery probability
   
   fiber run() -> Real! {
     ν <- 0.0;
