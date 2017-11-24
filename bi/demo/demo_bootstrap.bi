@@ -70,19 +70,12 @@ class BootstrapExample(T:Integer) {
     for (t:Integer in 1..T) {
       y[t] <- input.readReal();
     }
+    input.close();
   }
 }
 
 closed fiber run(T:Integer) -> Real! {
   x:BootstrapExample(T);
   x.input();
-  
-  f:Real! <- x.simulate();
-  for (t:Integer in 1..T) {
-    if (f?) {
-      yield f!;
-    } else {
-      yield -inf;
-    }
-  }
+  x.simulate();
 }
