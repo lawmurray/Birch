@@ -3,11 +3,13 @@
  */
 function ancestors(w:Real[_]) -> Integer[_] {
   N:Integer <- length(w);
-  a:Integer[N];
+  W:Real[N];
   O:Integer[N];
+  a:Integer[N];
   
-  O <- systematic_cumulative_offspring(cumulative_weights(w));
-  assert O[N] == N; // otherwise particle filter has degenerated
+  W <- cumulative_weights(w);
+  assert W[N] > 0.0;  // otherwise particle filter has degenerated
+  O <- systematic_cumulative_offspring(W);
   a <- cumulative_offspring_to_ancestors(O);
   
   return permute_ancestors(a);
