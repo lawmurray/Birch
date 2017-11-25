@@ -1,7 +1,3 @@
-name: Untitled
-version: 0.0.0
----
-
 # Untitled (package for Birch)
 
 ## Installation

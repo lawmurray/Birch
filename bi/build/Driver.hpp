@@ -80,9 +80,9 @@ public:
 
 private:
   /**
-   * Read in the MANIFEST file.
+   * Read in the META.json file.
    */
-  void manifest();
+  void meta();
 
   /**
    * Set up build directory.
@@ -197,9 +197,9 @@ private:
   bool newMake;
 
   /**
-   * Is MANIFEST new?
+   * Is META.json new?
    */
-  bool newManifest;
+  bool newMeta;
 
   /**
    * Is build directory locked?
@@ -212,10 +212,10 @@ private:
   boost::interprocess::file_lock lockFile;
 
   /**
-   * Lists of files from MANIFEST.
+   * Lists of files from META.json.
    */
-  std::set<boost::filesystem::path> files, biFiles, cppFiles, hppFiles,
-      metaFiles, otherFiles;
+  std::set<boost::filesystem::path> allFiles, biFiles, cppFiles, hppFiles,
+      dataFiles, otherFiles;
 
   /**
    * Leftover command-line arguments for program calls.

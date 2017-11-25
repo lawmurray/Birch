@@ -211,7 +211,8 @@ libubjpp_la_SOURCES = \
   libubjpp/json/JSONGenerator.cpp \
   libubjpp/json/JSONTokenizer.cpp \
   libubjpp/ubj/UBJDriver.cpp \
-  libubjpp/ubj/UBJGenerator.cpp
+  libubjpp/ubj/UBJGenerator.cpp \
+  libubjpp/value.cpp
 libubjpp_la_CXXFLAGS = $(AM_CXXFLAGS)
 
 nobase_include_HEADERS = \
@@ -425,7 +426,7 @@ dist_pkgdata_DATA = \
   share/ax_cxx_compile_stdcxx_11.m4 \
   share/ax_cxx_compile_stdcxx_14.m4 \
   share/LICENSE \
-  share/MANIFEST \
+  share/META.json \
   share/README.md \
   share/autogen.sh \
   share/common.am \

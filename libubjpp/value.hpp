@@ -71,20 +71,20 @@ struct noop_type {
  * Variant value type.
  */
 using value_type = boost::variant<object_type,array_type,string_type,
-    float_type,double_type,int8_type,uint8_type,int16_type,int32_type,
-    int64_type,bool_type,char_type,nil_type,noop_type>;
+float_type,double_type,int8_type,uint8_type,int16_type,int32_type,
+int64_type,bool_type,char_type,nil_type,noop_type>;
 
 /**
  * Value.
+ *
+ * @ingroup libubjpp
  */
 class value {
 public:
   /**
    * Default constructor. Creates a value of object type.
    */
-  value() : value(object_type()) {
-    //
-  }
+  value();
 
   /**
    * Constructor.
@@ -94,7 +94,8 @@ public:
    * @param value x.
    */
   template<class T>
-  value(const T& x) : x(x) {
+  value(const T& x) :
+      x(x) {
     //
   }
 
@@ -102,15 +103,14 @@ public:
    * Get.
    *
    * @tparam T value type.
-   * @tparam Container Container type.
    *
-   * @param path Container of strings giving names of the items.
+   * @param path List of strings giving names of the items.
    *
    * @return An optional that will be empty if the value does not exist or
    * is not of type @p T, otherwise it will contain the x.
    */
-  template<class T, class Container>
-  boost::optional<T&> get(const Container& path) {
+  template<class T>
+  boost::optional<T&> get(const std::initializer_list<const char*>& path) {
     auto node = this;
     for (auto name : path) {
       if (node->x.type() == typeid(object_type)) {
@@ -132,15 +132,15 @@ public:
    * Get.
    *
    * @tparam T value type.
-   * @tparam Container Container type.
    *
-   * @param path Container of strings giving names of the items.
+   * @param path List of strings giving names of the items.
    *
    * @return An optional that will be empty if the value does not exist or
    * is not of type @p T, otherwise it will contain the x.
    */
-  template<class T, class Container>
-  boost::optional<const T&> get(const Container& path) const {
+  template<class T>
+  boost::optional<const T&> get(
+      const std::initializer_list<const char*>& path) const {
     auto node = this;
     for (auto name : path) {
       if (node->x.type() == typeid(object_type)) {
@@ -162,14 +162,13 @@ public:
    * Get.
    *
    * @tparam T value type.
-   * @tparam Container Container type.
    *
    * @param name Name of the item.
    *
    * @return An optional that will be empty if the value does not exist or
    * is not of type @p T, otherwise it will contain the x.
    */
-  template<class T, class Container>
+  template<class T>
   boost::optional<T&> get(const std::string& name) {
     if (x.type() == typeid(object_type)) {
       auto& o = boost::get<object_type&>(x);
@@ -185,14 +184,13 @@ public:
    * Get.
    *
    * @tparam T value type.
-   * @tparam Container Container type.
    *
    * @param name Name of the item.
    *
    * @return An optional that will be empty if the value does not exist or
    * is not of type @p T, otherwise it will contain the x.
    */
-  template<class T, class Container>
+  template<class T>
   boost::optional<const T&> get(const std::string& name) const {
     if (x.type() == typeid(object_type)) {
       auto& o = boost::get<object_type&>(x);
@@ -241,104 +239,44 @@ public:
   /**
    * Get.
    *
-   * @tparam Container Container type.
-   *
-   * @param path Container of strings giving names of the items.
+   * @param path List of strings giving names of the items.
    *
    * @return An optional that will be empty if the value does not exist,
    * otherwise it will contain the value of variant type.
    */
-  template<class Container>
-  boost::optional<value_type&> get(const Container& path) {
-    auto node = this;
-    for (auto name : path) {
-      if (node->x.type() == typeid(object_type)) {
-        auto& o = boost::get<object_type>(node->x);
-        auto iter = o.find(name);
-        if (iter != o.end()) {
-          node = &iter->second;
-        } else {
-          return boost::none;
-        }
-      } else {
-        return boost::none;
-      }
-    }
-    return node->get();
-  }
+  boost::optional<value_type&> get(
+      const std::initializer_list<const char*>& path);
 
   /**
    * Get.
    *
-   * @tparam Container Container type.
-   *
-   * @param path Container of strings giving names of the items.
+   * @param path List of strings giving names of the items.
    *
    * @return An optional that will be empty if the value does not exist,
    * otherwise it will contain the value of variant type.
    */
-  template<class Container>
-  boost::optional<const value_type&> get(const Container& path) const {
-    auto node = this;
-    for (auto name : path) {
-      if (node->x.type() == typeid(object_type)) {
-        auto& o = boost::get<object_type>(node->x);
-        auto iter = o.find(name);
-        if (iter != o.end()) {
-          node = &iter->second;
-        } else {
-          return boost::none;
-        }
-      } else {
-        return boost::none;
-      }
-    }
-    return node->get();
-  }
+  boost::optional<const value_type&> get(
+      const std::initializer_list<const char*>& path) const;
 
   /**
    * Get.
-   *
-   * @tparam Container Container type.
    *
    * @param name Name of the item.
    *
    * @return An optional that will be empty if the value does not exist,
    * otherwise it will contain the value of variant type.
    */
-  template<class Container>
-  boost::optional<value_type&> get(const std::string& name) {
-    if (x.type() == typeid(object_type)) {
-      auto& o = boost::get<object_type&>(x);
-      auto iter = o.find(name);
-      if (iter != o.end()) {
-        return iter->second.get();
-      }
-    }
-    return boost::none;
-  }
+  boost::optional<value_type&> get(const std::string& name);
 
   /**
    * Get.
-   *
-   * @tparam Container Container type.
    *
    * @param name Name of the item.
    *
    * @return An optional that will be empty if the value does not exist,
    * otherwise it will contain the value of variant type.
    */
-  template<class Container>
-  boost::optional<const value_type&> get(const std::string& name) const {
-    if (x.type() == typeid(object_type)) {
-      auto& o = boost::get<object_type&>(x);
-      auto iter = o.find(name);
-      if (iter != o.end()) {
-        return iter->second.get();
-      }
-    }
-    return boost::none;
-  }
+  boost::optional<const value_type&> get(const std::string& name) const;
 
   /**
    * Get.

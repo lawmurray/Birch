@@ -10,6 +10,8 @@
 namespace libubjpp {
 /**
  * Generator for JSON files.
+ *
+ * @ingroup libubjpp
  */
 class JSONGenerator {
 public:

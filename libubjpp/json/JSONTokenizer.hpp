@@ -10,6 +10,12 @@
 #include <string>
 #include <sstream>
 
+namespace libubjpp {
+/**
+ * Tokenizer for JSON files.
+ *
+ * @ingroup libubjpp
+ */
 class JSONTokenizer {
 public:
   /**
@@ -56,3 +62,4 @@ private:
    */
   std::string::iterator begin, iter, end;
 };
+}

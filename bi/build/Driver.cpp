@@ -5,8 +5,10 @@
 
 #include "bi/build/Compiler.hpp"
 #include "bi/build/misc.hpp"
-#include "bi/exception/DriverException.hpp"
 #include "bi/io/md_ostream.hpp"
+#include "bi/exception/DriverException.hpp"
+
+#include "libubjpp/libubjpp.hpp"
 
 #include "boost/filesystem/fstream.hpp"
 #include "boost/algorithm/string.hpp"
@@ -31,7 +33,7 @@ bi::Driver::Driver(int argc, char** argv) :
     newAutogen(false),
     newConfigure(false),
     newMake(false),
-    newManifest(false),
+    newMeta(false),
     isLocked(false) {
   enum {
     SHARE_DIR_ARG = 256,
@@ -48,18 +50,16 @@ bi::Driver::Driver(int argc, char** argv) :
 
   int c, option_index;
   option long_options[] = {
-      { "share-dir", required_argument, 0, SHARE_DIR_ARG },
-      { "include-dir", required_argument, 0, INCLUDE_DIR_ARG },
-      { "lib-dir", required_argument, 0, LIB_DIR_ARG },
-      { "prefix", required_argument, 0, PREFIX_ARG },
-      { "enable-warnings", no_argument, 0, ENABLE_WARNINGS_ARG },
-      { "disable-warnings", no_argument, 0, DISABLE_WARNINGS_ARG },
-      { "enable-debug", no_argument, 0, ENABLE_DEBUG_ARG },
-      { "disable-debug", no_argument, 0, DISABLE_DEBUG_ARG },
-      { "enable-verbose", no_argument, 0, ENABLE_VERBOSE_ARG },
-      { "disable-verbose", no_argument, 0, DISABLE_VERBOSE_ARG },
-      { 0, 0, 0, 0 }
-  };
+      { "share-dir", required_argument, 0, SHARE_DIR_ARG }, { "include-dir",
+      required_argument, 0, INCLUDE_DIR_ARG }, { "lib-dir",
+      required_argument, 0, LIB_DIR_ARG }, { "prefix", required_argument, 0,
+          PREFIX_ARG }, { "enable-warnings", no_argument, 0,
+          ENABLE_WARNINGS_ARG }, { "disable-warnings", no_argument, 0,
+          DISABLE_WARNINGS_ARG }, { "enable-debug", no_argument, 0,
+          ENABLE_DEBUG_ARG }, { "disable-debug", no_argument, 0,
+          DISABLE_DEBUG_ARG }, { "enable-verbose", no_argument, 0,
+          ENABLE_VERBOSE_ARG }, { "disable-verbose", no_argument, 0,
+          DISABLE_VERBOSE_ARG }, { 0, 0, 0, 0 } };
   const char* short_options = "-";  // treats non-options as short option 1
 
   /* mutable copy of argv and argc */
@@ -163,7 +163,7 @@ bi::Driver::~Driver() {
 
 void bi::Driver::run(const std::string& prog) {
   /* get package information */
-  manifest();
+  meta();
 
   /* initialize garbage collector */
   GC_INIT();
@@ -184,7 +184,7 @@ void bi::Driver::run(const std::string& prog) {
 #endif
 
   /* Look in built libs first. */
-  if(exists(lib_dir / so))
+  if (exists(lib_dir / so))
     so = lib_dir / so;
 
   handle = dlopen(so.c_str(), RTLD_NOW);
@@ -209,7 +209,7 @@ void bi::Driver::run(const std::string& prog) {
 }
 
 void bi::Driver::build() {
-  manifest();
+  meta();
   setup();
   compile();
   autogen();
@@ -219,7 +219,7 @@ void bi::Driver::build() {
 }
 
 void bi::Driver::install() {
-  manifest();
+  meta();
   setup();
   compile();
   autogen();
@@ -229,7 +229,7 @@ void bi::Driver::install() {
 }
 
 void bi::Driver::uninstall() {
-  manifest();
+  meta();
   setup();
   compile();
   autogen();
@@ -239,7 +239,7 @@ void bi::Driver::uninstall() {
 }
 
 void bi::Driver::dist() {
-  manifest();
+  meta();
   setup();
   compile();
   autogen();
@@ -277,46 +277,35 @@ void bi::Driver::init() {
   create_directory("results");
   copy_with_prompt(find(share_dirs, "gitignore"), ".gitignore");
   copy_with_prompt(find(share_dirs, "LICENSE"), "LICENSE");
-  copy_with_prompt(find(share_dirs, "MANIFEST"), "MANIFEST");
+  copy_with_prompt(find(share_dirs, "META.json"), "META.json");
   copy_with_prompt(find(share_dirs, "README.md"), "README.md");
 }
 
 void bi::Driver::check() {
-  std::unordered_set<std::string> manifestFiles;
-
-  /* check MANIFEST */
-  if (!exists("MANIFEST")) {
-    warn(
-        "no MANIFEST file; create a MANIFEST file with a list of files, one per line, to be contained in the package.");
+  /* read META.json */
+  if (!exists("META.json")) {
+    warn("no META.json file.");
   } else {
-    ifstream manifestStream("MANIFEST");
-    std::string name;
-    while (std::getline(manifestStream, name)) {
-      boost::trim(name);
-      manifestFiles.insert(name);
-      if (!exists(name)) {
-        warn(name + " file listed in MANIFEST file does not exist.");
-      }
-    }
+    meta();
   }
 
   /* check LICENSE */
   if (!exists("LICENSE")) {
     warn(
         "no LICENSE file; create a LICENSE file containing the distribution license (e.g. GPL or BSD) of the package.");
-  } else if (manifestFiles.find("LICENSE") == manifestFiles.end()) {
-    warn("LICENSE file is not listed in MANIFEST file.");
+  } else if (allFiles.find("LICENSE") == allFiles.end()) {
+    warn("LICENSE file is not listed in META.json file.");
   }
 
   /* check README.md */
   if (!exists("README.md")) {
     warn(
         "no README.md file; create a README.md file documenting the package in Markdown format.");
-  } else if (manifestFiles.find("README.md") == manifestFiles.end()) {
-    warn("README.md file is not listed in MANIFEST file.");
+  } else if (allFiles.find("README.md") == allFiles.end()) {
+    warn("README.md file is not listed in META.json file.");
   }
 
-  /* check for files that might be missing from MANIFEST */
+  /* check for files that might be missing from META.json */
   std::unordered_set<std::string> interesting, exclude;
 
   interesting.insert(".bi");
@@ -338,11 +327,12 @@ void bi::Driver::check() {
     auto ext = path.extension().string();
     if (path.string() == "build" || path.string() == "results") {
       iter.no_push();
-    } else if (interesting.find(ext) != interesting.end() &&
-        exclude.find(name) == exclude.end()) {
-      if (manifestFiles.find(path.string()) == manifestFiles.end()) {
-        warn(std::string("is ") + path.string() +
-            " missing from MANIFEST file?");
+    } else if (interesting.find(ext) != interesting.end()
+        && exclude.find(name) == exclude.end()) {
+      if (allFiles.find(path.string()) == allFiles.end()) {
+        warn(
+            std::string("is ") + path.string()
+                + " missing from META.json file?");
       }
     }
     ++iter;
@@ -351,7 +341,7 @@ void bi::Driver::check() {
 
 void bi::Driver::docs() {
   current_path(work_dir);
-  manifest();
+  meta();
 
   /* parse all files */
   Compiler compiler(package, work_dir, build_dir);
@@ -373,31 +363,33 @@ void bi::Driver::unlock() {
   isLocked = false;
 }
 
-void bi::Driver::manifest() {
-  ///@todo Upgrade MANIFEST to MANIFEST.json to contain this information
-  /* read in package name */
-  std::string packageName = "Untitled";
-  ifstream metaStream("README.md");
-  std::regex reg("^name:\\s*([a-zA-Z0-9\\._]+)$");
-  std::smatch match;
-  std::string line;
-  while (std::getline(metaStream, line)) {
-    if (std::regex_match(line, match, reg)) {
-      packageName = match[1];
-      break;
-    }
+void bi::Driver::meta() {
+  using namespace libubjpp;
+
+  /* parse META.json */
+  JSONDriver driver;
+  auto top = driver.parse("META.json");
+
+  /* package name */
+  std::string packageName;
+  auto name = top.get("name");
+  if (name) {
+    packageName = boost::get<libubjpp::string_type>(name.get());
+  } else {
+    packageName = "Untitled";
   }
 
-  /* read in manifest */
-  if (exists("MANIFEST")) {
-    ifstream manifestStream("MANIFEST");
-    std::string name;
-    while (std::getline(manifestStream, name)) {
-      path file(name);
+  /* source files */
+  auto files = top.get("files");
+  if (files) {
+    auto filesValue = boost::get<libubjpp::array_type>(files.get());
+    for (auto fileName : filesValue) {
+      path file(boost::get<libubjpp::string_type>(fileName.get()));
       if (exists(file)) {
-        auto inserted = files.insert(file);
+        auto inserted = allFiles.insert(file);
         if (!inserted.second) {
-          warn(std::string("file ") + file.string() + " repeated in MANIFEST.");
+          warn(std::string("file ") + file.string() +
+              " repeated in META.json.");
         }
 
         /* collate by file extension */
@@ -407,20 +399,19 @@ void bi::Driver::manifest() {
           cppFiles.insert(file);
         } else if (file.extension().compare(".hpp") == 0) {
           hppFiles.insert(file);
-        } else if (file.extension().compare("") == 0
-            || file.extension().compare(".md") == 0) {
-          metaFiles.insert(file);
+        } else if (file.extension().compare(".ubj") == 0
+            || file.extension().compare(".json") == 0
+            || file.extension().compare(".csv") == 0) {
+          dataFiles.insert(file);
         } else {
           otherFiles.insert(file);
         }
       } else {
         std::stringstream buf;
-        buf << file.string() << " in MANIFEST does not exist.";
+        buf << file.string() << " in META.json does not exist.";
         warn(buf.str());
       }
     }
-  } else {
-    throw DriverException("No MANIFEST file.");
   }
 
   /* create package */
@@ -428,7 +419,8 @@ void bi::Driver::manifest() {
   if (packageName != "Birch.Standard") {
     /* disable inclusion of the standard library when the project is, itself,
      * the standard library (!) */
-    package->addHeader(find(include_dirs, path("bi") / "birch_standard.bih").string());
+    package->addHeader(
+        find(include_dirs, path("bi") / "birch_standard.bih").string());
   }
   for (auto file : biFiles) {
     package->addSource(file.string());
@@ -457,8 +449,8 @@ void bi::Driver::setup() {
       work_dir / "configure.ac");
   newMake = copy_if_newer(find(share_dirs, "common.am"),
       work_dir / "common.am");
-  newManifest = !exists(work_dir / "Makefile.am")
-      || last_write_time("MANIFEST")
+  newMeta = !exists(work_dir / "Makefile.am")
+      || last_write_time("META.json")
           > last_write_time(work_dir / "Makefile.am");
 
   path m4_dir = work_dir / "m4";
@@ -480,7 +472,8 @@ void bi::Driver::setup() {
   if (newConfigure) {
     std::string contents = read_all(work_dir / "configure.ac");
     boost::algorithm::replace_all(contents, "PACKAGE_NAME", package->name);
-    boost::algorithm::replace_all(contents, "PACKAGE_TARNAME", package->tarname);
+    boost::algorithm::replace_all(contents, "PACKAGE_TARNAME",
+        package->tarname);
     write_all(work_dir / "configure.ac", contents);
   }
 
@@ -488,12 +481,13 @@ void bi::Driver::setup() {
   if (newMake) {
     std::string contents = read_all(work_dir / "common.am");
     boost::algorithm::replace_all(contents, "PACKAGE_NAME", package->name);
-    boost::algorithm::replace_all(contents, "PACKAGE_TARNAME", package->tarname);
+    boost::algorithm::replace_all(contents, "PACKAGE_TARNAME",
+        package->tarname);
     write_all(work_dir / "common.am", contents);
   }
 
   /* create Makefile.am */
-  if (newManifest) {
+  if (newMeta) {
     ofstream makeStream(work_dir / "Makefile.am");
     makeStream << "include common.am\n\n";
     makeStream << "lib_LTLIBRARIES = lib" << package->tarname << ".la\n\n";
@@ -532,7 +526,7 @@ void bi::Driver::setup() {
 
     /* meta files */
     makeStream << "noinst_DATA = ";
-    for (auto iter = metaFiles.begin(); iter != metaFiles.end(); ++iter) {
+    for (auto iter = dataFiles.begin(); iter != dataFiles.end(); ++iter) {
       makeStream << " \\\n  " << iter->string();
     }
     makeStream << '\n';
@@ -549,7 +543,7 @@ void bi::Driver::compile() {
 }
 
 void bi::Driver::autogen() {
-  if (newAutogen || newConfigure || newMake || newManifest
+  if (newAutogen || newConfigure || newMake || newMeta
       || !exists(work_dir / "configure")
       || !exists(work_dir / "install-sh")) {
     std::stringstream cmd;
@@ -578,7 +572,7 @@ void bi::Driver::autogen() {
 }
 
 void bi::Driver::configure() {
-  if (newAutogen || newConfigure || newMake || newManifest
+  if (newAutogen || newConfigure || newMake || newMeta
       || !exists(build_dir / "Makefile")) {
     /* working directory */
     std::stringstream cppflags, cxxflags, ldflags, options, cmd;

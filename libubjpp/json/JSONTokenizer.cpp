@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-JSONTokenizer::JSONTokenizer(std::string& data) :
+libubjpp::JSONTokenizer::JSONTokenizer(std::string& data) :
     data(data),
     begin(data.begin()),
     iter(begin),
@@ -21,7 +21,7 @@ JSONTokenizer::JSONTokenizer(std::string& data) :
   regexNull = std::regex("null", options);
 }
 
-int JSONTokenizer::next(ParserState* state) {
+int libubjpp::JSONTokenizer::next(ParserState* state) {
   auto options = std::regex_constants::match_continuous;
   std::string::iterator first, last;
   int token;

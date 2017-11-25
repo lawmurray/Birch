@@ -13,7 +13,7 @@ extern "C" void *ParseAlloc(void *(*mallocProc)(size_t));
 extern "C" void ParseFree(void* p, void (*freeProc)(void*));
 extern "C" void Parse(void *parser, int token, int value, ParserState* state);
 
-libubjpp::value JSONDriver::parse(const std::string &f) {
+libubjpp::value libubjpp::JSONDriver::parse(const std::string &f) {
   /* slurp in the whole file */
   std::ifstream in(f);
   std::string data;
