@@ -370,7 +370,7 @@ void bi::Driver::meta() {
   JSONDriver driver;
   auto top = driver.parse("META.json");
 
-  /* package name */
+  /* meta */
   std::string packageName;
   if (auto name = top.get<string_type>("name")) {
     packageName = name.get();
@@ -378,8 +378,8 @@ void bi::Driver::meta() {
     packageName = "Untitled";
   }
 
-  /* source files */
-  if (auto files = top.get<array_type>("files")) {
+  /*  manifest */
+  if (auto files = top.get<array_type>({"manifest", "source"})) {
     for (auto file : files.get()) {
       if (auto str = file.get<string_type>()) {
         path path(str.get());
@@ -397,13 +397,45 @@ void bi::Driver::meta() {
             cppFiles.insert(path);
           } else if (path.extension().compare(".hpp") == 0) {
             hppFiles.insert(path);
-          } else if (path.extension().compare(".ubj") == 0
-              || path.extension().compare(".json") == 0
-              || path.extension().compare(".csv") == 0) {
-            dataFiles.insert(path);
-          } else {
-            otherFiles.insert(path);
           }
+        } else {
+          std::stringstream buf;
+          buf << path.string() << " in META.json does not exist.";
+          warn(buf.str());
+        }
+      }
+    }
+  }
+  if (auto files = top.get<array_type>({"manifest", "data"})) {
+    for (auto file : files.get()) {
+      if (auto str = file.get<string_type>()) {
+        path path(str.get());
+        if (exists(path)) {
+          auto inserted = allFiles.insert(path);
+          if (!inserted.second) {
+            warn(std::string("file ") + path.string() +
+                " repeated in META.json.");
+          }
+          dataFiles.insert(path);
+        } else {
+          std::stringstream buf;
+          buf << path.string() << " in META.json does not exist.";
+          warn(buf.str());
+        }
+      }
+    }
+  }
+  if (auto files = top.get<array_type>({"manifest", "other"})) {
+    for (auto file : files.get()) {
+      if (auto str = file.get<string_type>()) {
+        path path(str.get());
+        if (exists(path)) {
+          auto inserted = allFiles.insert(path);
+          if (!inserted.second) {
+            warn(std::string("file ") + path.string() +
+                " repeated in META.json.");
+          }
+          otherFiles.insert(path);
         } else {
           std::stringstream buf;
           buf << path.string() << " in META.json does not exist.";
@@ -516,16 +548,16 @@ void bi::Driver::setup() {
     }
     makeStream << '\n';
 
-    /* data files */
+    /* data files to distribute */
     makeStream << "dist_pkgdata_DATA = ";
-    for (auto iter = otherFiles.begin(); iter != otherFiles.end(); ++iter) {
+    for (auto iter = dataFiles.begin(); iter != dataFiles.end(); ++iter) {
       makeStream << " \\\n  " << iter->string();
     }
     makeStream << '\n';
 
-    /* meta files */
+    /* other files to not distribute */
     makeStream << "noinst_DATA = ";
-    for (auto iter = dataFiles.begin(); iter != dataFiles.end(); ++iter) {
+    for (auto iter = otherFiles.begin(); iter != otherFiles.end(); ++iter) {
       makeStream << " \\\n  " << iter->string();
     }
     makeStream << '\n';
