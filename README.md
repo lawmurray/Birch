@@ -1,9 +1,3 @@
----
-name: Birch.Standard
-version: 0.0.0
-description: The Birch standard library.
----
-
 # The Birch Standard Library
 
 Provides the basic functionality needed by most Birch programs, such as standard math, linear algebra, probability distributions, and I/O.
