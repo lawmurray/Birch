@@ -372,44 +372,43 @@ void bi::Driver::meta() {
 
   /* package name */
   std::string packageName;
-  auto name = top.get("name");
-  if (name) {
-    packageName = boost::get<libubjpp::string_type>(name.get());
+  if (auto name = top.get<string_type>("name")) {
+    packageName = name.get();
   } else {
     packageName = "Untitled";
   }
 
   /* source files */
-  auto files = top.get("files");
-  if (files) {
-    auto filesValue = boost::get<libubjpp::array_type>(files.get());
-    for (auto fileName : filesValue) {
-      path file(boost::get<libubjpp::string_type>(fileName.get()));
-      if (exists(file)) {
-        auto inserted = allFiles.insert(file);
-        if (!inserted.second) {
-          warn(std::string("file ") + file.string() +
-              " repeated in META.json.");
-        }
+  if (auto files = top.get<array_type>("files")) {
+    for (auto file : files.get()) {
+      if (auto str = file.get<string_type>()) {
+        path path(str.get());
+        if (exists(path)) {
+          auto inserted = allFiles.insert(path);
+          if (!inserted.second) {
+            warn(std::string("file ") + path.string() +
+                " repeated in META.json.");
+          }
 
-        /* collate by file extension */
-        if (file.extension().compare(".bi") == 0) {
-          biFiles.insert(file);
-        } else if (file.extension().compare(".cpp") == 0) {
-          cppFiles.insert(file);
-        } else if (file.extension().compare(".hpp") == 0) {
-          hppFiles.insert(file);
-        } else if (file.extension().compare(".ubj") == 0
-            || file.extension().compare(".json") == 0
-            || file.extension().compare(".csv") == 0) {
-          dataFiles.insert(file);
+          /* collate by file extension */
+          if (path.extension().compare(".bi") == 0) {
+            biFiles.insert(path);
+          } else if (path.extension().compare(".cpp") == 0) {
+            cppFiles.insert(path);
+          } else if (path.extension().compare(".hpp") == 0) {
+            hppFiles.insert(path);
+          } else if (path.extension().compare(".ubj") == 0
+              || path.extension().compare(".json") == 0
+              || path.extension().compare(".csv") == 0) {
+            dataFiles.insert(path);
+          } else {
+            otherFiles.insert(path);
+          }
         } else {
-          otherFiles.insert(file);
+          std::stringstream buf;
+          buf << path.string() << " in META.json does not exist.";
+          warn(buf.str());
         }
-      } else {
-        std::stringstream buf;
-        buf << file.string() << " in META.json does not exist.";
-        warn(buf.str());
       }
     }
   }
