@@ -53,40 +53,40 @@ void bi::md_ostream::visit(const MemberVariable* o) {
 }
 
 void bi::md_ostream::visit(const Function* o) {
-  middle(o->name << o->params);
+  middle(o->name << '(' << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
 }
 
 void bi::md_ostream::visit(const Fiber* o) {
-  middle(o->name << o->params);
+  middle(o->name << '(' << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
 }
 
 void bi::md_ostream::visit(const Program* o) {
-  middle(o->name << o->params);
+  middle(o->name << '(' << o->params << ')');
 }
 
 void bi::md_ostream::visit(const MemberFunction* o) {
-  middle(o->name << o->params);
+  middle(o->name << '(' << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
 }
 
 void bi::md_ostream::visit(const MemberFiber* o) {
-  middle(o->name << o->params);
+  middle(o->name << '(' << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
 }
 
 void bi::md_ostream::visit(const BinaryOperator* o) {
-  auto iter = o->params->begin();
-  middle(*(iter++) << ' ' << o->name << ' ' << *(iter++));
+  middle(
+      o->params->getLeft() << ' ' << o->name << ' ' << o->params->getRight());
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
@@ -132,15 +132,18 @@ void bi::md_ostream::visit(const TypeList* o) {
 }
 
 void bi::md_ostream::visit(const ClassType* o) {
-  middle("[" << o->name << "](#" << anchor(o->name->str(), o->target->number) << ")");
+  middle(
+      "[" << o->name << "](#" << anchor(o->name->str(), o->target->number) << ")");
 }
 
 void bi::md_ostream::visit(const AliasType* o) {
-  middle("[" << o->name << "](#" << anchor(o->name->str(), o->target->number) << ")");
+  middle(
+      "[" << o->name << "](#" << anchor(o->name->str(), o->target->number) << ")");
 }
 
 void bi::md_ostream::visit(const BasicType* o) {
-  middle("[" << o->name << "](#" << anchor(o->name->str(), o->target->number) << ")");
+  middle(
+      "[" << o->name << "](#" << anchor(o->name->str(), o->target->number) << ")");
 }
 
 void bi::md_ostream::visit(const ArrayType* o) {
@@ -163,7 +166,7 @@ void bi::md_ostream::visit(const SequenceType* o) {
 }
 
 void bi::md_ostream::visit(const FunctionType* o) {
-  middle('@' << o->params);
+  middle('@' << '(' << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
