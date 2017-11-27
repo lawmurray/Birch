@@ -73,10 +73,6 @@ void libubjpp::JSONGenerator::operator()(const bool_type& value) {
   stream << (value ? "true" : "false");
 }
 
-void libubjpp::JSONGenerator::operator()(const char_type& value) {
-  stream << value;
-}
-
 void libubjpp::JSONGenerator::operator()(const nil_type& value) {
   stream << "null";
 }

@@ -3,7 +3,7 @@
  */
 #include "bi/io/cpp/CppHeaderGenerator.hpp"
 
-#include "bi/io/cpp/CppBaseGenerator.hpp"
+#include "bi/io/cpp/CppRawGenerator.hpp"
 #include "bi/visitor/Gatherer.hpp"
 #include "bi/primitive/poset.hpp"
 #include "bi/primitive/definitely.hpp"
@@ -27,7 +27,6 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
   /* gather important objects */
   Gatherer<Class> classes;
   Gatherer<Alias> aliases;
-  Gatherer<Raw> raws;
   Gatherer<GlobalVariable> globals;
   Gatherer<Function> functions;
   Gatherer<Fiber> fibers;
@@ -37,7 +36,6 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
   for (auto source : o->sources) {
     source->accept(&classes);
     source->accept(&aliases);
-    source->accept(&raws);
     source->accept(&globals);
     source->accept(&functions);
     source->accept(&fibers);
@@ -47,9 +45,9 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
   }
 
   /* raw C++ code for headers */
-  for (auto o1 : raws) {
-    *this << o1;
-  }
+  CppRawGenerator auxRaw(base, level, header);
+  auxRaw << o;
+
   line("");
   line("namespace bi {");
   line("namespace type {");

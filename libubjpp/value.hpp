@@ -49,11 +49,6 @@ using int64_type = int64_t;
 using bool_type = bool;
 
 /**
- * Character type.
- */
-using char_type = char;
-
-/**
  * Nil type.
  */
 struct nil_type {
@@ -72,7 +67,7 @@ struct noop_type {
  */
 using value_type = boost::variant<object_type,array_type,string_type,
 float_type,double_type,int8_type,uint8_type,int16_type,int32_type,
-int64_type,bool_type,char_type,nil_type,noop_type>;
+int64_type,bool_type,nil_type,noop_type>;
 
 /**
  * Value.
@@ -110,7 +105,7 @@ public:
    * is not of type @p T, otherwise it will contain the x.
    */
   template<class T>
-  boost::optional<T&> get(const std::initializer_list<const char*>& path) {
+  boost::optional<T&> get(const std::initializer_list<std::string>& path) {
     auto node = this;
     for (auto name : path) {
       if (node->x.type() == typeid(object_type)) {
@@ -140,7 +135,7 @@ public:
    */
   template<class T>
   boost::optional<const T&> get(
-      const std::initializer_list<const char*>& path) const {
+      const std::initializer_list<std::string>& path) const {
     auto node = this;
     for (auto name : path) {
       if (node->x.type() == typeid(object_type)) {
@@ -245,7 +240,7 @@ public:
    * otherwise it will contain the value of variant type.
    */
   boost::optional<value_type&> get(
-      const std::initializer_list<const char*>& path);
+      const std::initializer_list<std::string>& path);
 
   /**
    * Get.
@@ -256,7 +251,7 @@ public:
    * otherwise it will contain the value of variant type.
    */
   boost::optional<const value_type&> get(
-      const std::initializer_list<const char*>& path) const;
+      const std::initializer_list<std::string>& path) const;
 
   /**
    * Get.

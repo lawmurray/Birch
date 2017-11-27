@@ -8,7 +8,7 @@
 
 namespace bi {
 /**
- * C++ code generator for Fibers.
+ * C++ code generator for fibers.
  *
  * @ingroup birch_io
  */

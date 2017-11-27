@@ -17,14 +17,18 @@ public:
   /**
    * Constructor for no value.
    */
-  Optional() : value(), hasValue(false) {
+  Optional() :
+      value(),
+      hasValue(false) {
     //
   }
 
   /**
    * Constructor for a value.
    */
-  Optional(const T& value) : value(value), hasValue(true) {
+  Optional(const T& value) :
+      value(value),
+      hasValue(true) {
     //
   }
 
@@ -91,14 +95,16 @@ public:
   /**
    * Constructor for no value.
    */
-  Optional() : value() {
+  Optional() :
+      value() {
     //
   }
 
   /**
    * Constructor for a value.
    */
-  Optional(const Pointer<T>& value) : value(value) {
+  Optional(const Pointer<T>& value) :
+      value(value) {
     //
   }
 

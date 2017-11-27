@@ -44,7 +44,6 @@ public:
   void operator()(const int32_type& value);
   void operator()(const int64_type& value);
   void operator()(const bool_type& value);
-  void operator()(const char_type& value);
   void operator()(const nil_type& value);
   void operator()(const noop_type& value);
 

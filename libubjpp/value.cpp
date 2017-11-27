@@ -9,7 +9,7 @@ libubjpp::value::value() :
 }
 
 boost::optional<libubjpp::value_type&> libubjpp::value::get(
-    const std::initializer_list<const char*>& path) {
+    const std::initializer_list<std::string>& path) {
   auto node = this;
   for (auto name : path) {
     if (node->x.type() == typeid(object_type)) {
@@ -28,7 +28,7 @@ boost::optional<libubjpp::value_type&> libubjpp::value::get(
 }
 
 boost::optional<const libubjpp::value_type&> libubjpp::value::get(
-    const std::initializer_list<const char*>& path) const {
+    const std::initializer_list<std::string>& path) const {
   auto node = this;
   for (auto name : path) {
     if (node->x.type() == typeid(object_type)) {

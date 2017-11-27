@@ -110,6 +110,7 @@ COMMON_SOURCES = \
   bi/io/cpp/CppFiberGenerator.cpp \
   bi/io/cpp/CppHeaderGenerator.cpp \
   bi/io/cpp/CppMemberFiberGenerator.cpp \
+  bi/io/cpp/CppRawGenerator.cpp \
   bi/io/bi_ostream.cpp \
   bi/io/cpp_ostream.cpp \
   bi/io/indentable_ostream.cpp \

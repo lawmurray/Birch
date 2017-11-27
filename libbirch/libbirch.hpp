@@ -24,6 +24,8 @@
 #include "libbirch/EigenOperators.hpp"
 #include "libbirch/global.hpp"
 
+#include "libubjpp/libubjpp.hpp"
+
 #include "boost/math/special_functions/beta.hpp"
 ///@todo Replace the above with STL version under C++17.
 
