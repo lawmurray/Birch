@@ -2,9 +2,14 @@
   "name": "Untitled",
   "version": "0.0.0",
   "description": "",
-  "files": [
-    "LICENSE",
-    "META.json",
-    "README.md"
-  ]
+  "manifest": {
+    "source": [
+    
+    ],
+    "other": [
+      "LICENSE",
+      "META.json",
+      "README.md"
+    ]
+  }
 }
