@@ -8,6 +8,34 @@ class OutputStream {
   file:File?;
 
   /**
+   * Open file.
+   *
+   *   - path: Path.
+   *   - mode: Mode. 
+   */
+  function open(path:String, mode:String) {
+    file <- fopen(path, mode);
+  }
+
+  /**
+   * Open file with default mode.
+   *
+   *   - path: Path.
+   */
+  function open(path:String) {
+    open(path, "w");
+  }
+
+  /**
+   * Close file.
+   */
+  function close() {
+    assert file?;
+    fclose(file!);
+    file <- nil;
+  }
+
+  /**
    * Print string.
    */
   function print(value:String) {
@@ -125,7 +153,7 @@ class OutputStream {
 }
 
 /**
- * Constructor for output stream.
+ * Create an output stream for an already-open file.
  */
 function OutputStream(file:File) -> OutputStream {
   o:OutputStream;
