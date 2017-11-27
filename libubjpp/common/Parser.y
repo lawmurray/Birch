@@ -7,28 +7,34 @@
 
 root ::= object.
 
-object ::= LEFT_BRACE RIGHT_BRACE.
-object ::= LEFT_BRACE members RIGHT_BRACE.
+left_brace ::= LEFT_BRACE.  { object(state); }
 
-members ::= STRING COLON value.                { member(state); }
-members ::= members COMMA STRING COLON value.  { member(state); }
+object ::= left_brace RIGHT_BRACE.
+object ::= left_brace members RIGHT_BRACE.
 
-array ::= LEFT_BRACKET RIGHT_BRACKET.
-array ::= LEFT_BRACKET elements RIGHT_BRACKET.
+members ::= key COLON value.                { member(state); }
+members ::= members COMMA key COLON value.  { member(state); }
+
+left_bracket ::= LEFT_BRACKET.  { array(state); }
+
+array ::= left_bracket RIGHT_BRACKET.
+array ::= left_bracket elements RIGHT_BRACKET.
 
 elements ::= value.                 { element(state); }
 elements ::= elements COMMA value.  { element(state); }
 
+key ::= STRING.  { push(state); }
+
 value ::= object.
 value ::= array.
-value ::= STRING.
-value ::= INT8.
-value ::= UINT8.
-value ::= INT16.
-value ::= INT32.
-value ::= INT64.
-value ::= FLOAT.
-value ::= DOUBLE.
-value ::= BOOL.
-value ::= NIL.
-value ::= NO_OP.
+value ::= STRING.  { push(state); }
+value ::= INT8.    { push(state); }
+value ::= UINT8.   { push(state); }
+value ::= INT16.   { push(state); }
+value ::= INT32.   { push(state); }
+value ::= INT64.   { push(state); }
+value ::= FLOAT.   { push(state); }
+value ::= DOUBLE.  { push(state); }
+value ::= BOOL.    { push(state); }
+value ::= NIL.     { push(state); }
+value ::= NO_OP.   { push(state); }

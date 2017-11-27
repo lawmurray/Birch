@@ -14,9 +14,21 @@ libubjpp::value ParserState::root() {
   return root;
 }
 
-void ParserState::push(const libubjpp::value& value) {
+void ParserState::push() {
   if (!failed) {
-    values.push(value);
+    values.push(std::move(value));
+  }
+}
+
+void ParserState::object() {
+  if (!failed) {
+    values.push(libubjpp::object_type());
+  }
+}
+
+void ParserState::array() {
+  if (!failed) {
+    values.push(libubjpp::array_type());
   }
 }
 
@@ -46,6 +58,18 @@ void ParserState::element() {
 
 void ParserState::error() {
   failed = true;
+}
+
+void push(ParserState* state) {
+  state->push();
+}
+
+void object(ParserState* state) {
+  state->object();
+}
+
+void array(ParserState* state) {
+  state->array();
 }
 
 void member(ParserState* state) {

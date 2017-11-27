@@ -20,11 +20,9 @@ struct ParserState {
    */
   libubjpp::value root();
 
-  /**
-   * Push a value onto the stack (used by tokenizer).
-   */
-  void push(const libubjpp::value& value);
-
+  void push();
+  void object();
+  void array();
   void member();
   void element();
   void error();
@@ -37,10 +35,30 @@ struct ParserState {
   bool failed;
 
   /**
+   * Last token value.
+   */
+  libubjpp::value value;
+
+  /**
    * Stack of values.
    */
   std::stack<libubjpp::value> values;
 };
+
+/**
+ * Push the last token value onto the stack.
+ */
+extern "C" void push(ParserState* s);
+
+/**
+ * Push an object onto the stack.
+ */
+extern "C" void object(ParserState* s);
+
+/**
+ * Push an array onto the stack.
+ */
+extern "C" void array(ParserState* s);
 
 /**
  * Reduce an object member.
