@@ -13,7 +13,10 @@ int main(int argc, char** argv) {
   for (int i = 1; i < argc; ++i) {
     JSONDriver driver;
     JSONGenerator generator(std::cout);
-    generator.write(driver.parse(argv[i]));
+    auto data = driver.parse(argv[i]);
+    if (data) {
+      generator.write(data.get());
+    }
   }
   return 0;
 }

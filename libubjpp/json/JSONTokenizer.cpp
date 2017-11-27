@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-libubjpp::JSONTokenizer::JSONTokenizer(std::string& data) :
+libubjpp::JSONTokenizer::JSONTokenizer(const std::string& data) :
     data(data),
     begin(data.begin()),
     iter(begin),
@@ -23,7 +23,7 @@ libubjpp::JSONTokenizer::JSONTokenizer(std::string& data) :
 
 int libubjpp::JSONTokenizer::next(ParserState* state) {
   auto options = std::regex_constants::match_continuous;
-  std::string::iterator first, last;
+  std::string::const_iterator first, last;
   int token;
 
   token = 0;
@@ -32,7 +32,7 @@ int libubjpp::JSONTokenizer::next(ParserState* state) {
     last = iter;
 
     if (std::regex_search(iter, end, match, regexInt, options)) {
-      /* definitely matched an integer, possibly a float point */
+      /* definitely matched an integer, possibly a floating point */
       first = match[0].first;
       last = match[0].second;
       token = INT64;
@@ -115,7 +115,7 @@ int libubjpp::JSONTokenizer::next(ParserState* state) {
         ++last;
       }
       assert(last != end);  // syntax error, unclosed string
-      ++last; // remove final quote
+      ++last;  // remove final quote
       state->push(libubjpp::string_type(buf.str()));
     } else {
       /* check the next character */

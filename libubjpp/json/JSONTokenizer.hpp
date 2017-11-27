@@ -23,7 +23,7 @@ public:
    *
    * @param data The JSON data.
    */
-  JSONTokenizer(std::string& data);
+  JSONTokenizer(const std::string& data);
 
   /**
    * Next token.
@@ -40,7 +40,7 @@ private:
   /**
    * Input data.
    */
-  std::string& data;
+  const std::string& data;
 
   /**
    * Input buffer for strings.
@@ -50,7 +50,7 @@ private:
   /**
    * Token match results.
    */
-  std::match_results<std::string::iterator> match;
+  std::match_results<std::string::const_iterator> match;
 
   /*
    * Patterns.
@@ -60,6 +60,6 @@ private:
   /*
    * Iterators over stream.
    */
-  std::string::iterator begin, iter, end;
+  std::string::const_iterator begin, iter, end;
 };
 }

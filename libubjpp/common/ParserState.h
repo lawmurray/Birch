@@ -9,3 +9,4 @@ typedef struct ParserState ParserState;
 
 void member(ParserState* s);
 void element(ParserState* s);
+void error(ParserState* s);

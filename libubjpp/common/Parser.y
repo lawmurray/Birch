@@ -3,6 +3,7 @@
   #include <assert.h>
 }
 %extra_argument { ParserState* state }
+%syntax_error   { error(state); }
 
 root ::= object.
 
