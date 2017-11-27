@@ -1,9 +1,3 @@
----
-name: Birch.Example
-version: 0.0.0
-description: Demonstration and test programs.
----
-
 # The Birch Example Programs
 
 Demonstration and test programs for the Birch probabilistic programming language.

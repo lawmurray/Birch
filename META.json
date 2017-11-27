@@ -1,0 +1,34 @@
+{
+  "name": "Birch.Example",
+  "version": "0.0.0",
+  "description": "Demonstration and test programs.",
+  "manifest": {
+    "source": [
+      "bi/delay/delay_canonical.bi",
+      "bi/delay/delay_iid.bi",
+      "bi/delay/delay_kalman.bi",
+      "bi/delay/delay_rbpf.bi",
+      "bi/delay/delay_spike_and_slab.bi",
+      "bi/delay/delay_triplet.bi",
+      "bi/demo/demo_assign.bi",
+      "bi/demo/demo_bootstrap.bi",
+      "bi/demo/demo_copy_fiber.bi",
+      "bi/demo/demo_echo.bi",
+      "bi/demo/demo_fiber.bi",
+      "bi/demo/demo_generic.bi",
+      "bi/demo/demo_hello.bi",
+      "bi/demo/demo_lambda.bi",
+      "bi/demo/demo_member_fiber.bi",
+      "bi/demo/demo_resize.bi",
+      "bi/demo/demo_sequence.bi",
+      "bi/demo/demo_tuple.bi",
+      "bi/eigen/eigen_matrix.bi",
+      "bi/eigen/eigen_vector.bi"
+    ],
+    "other": [
+      "LICENSE",
+      "META.json",
+      "README.md"
+    ]
+  }
+}
