@@ -249,8 +249,8 @@ void bi::Driver::dist() {
 }
 
 void bi::Driver::clean() {
-  lock();
-  remove_all(build_dir);
+  meta();
+  setup();
   remove_all("autom4te.cache");
   remove_all("m4");
   remove("aclocal.m4");
@@ -268,6 +268,7 @@ void bi::Driver::clean() {
   remove("Makefile.am");
   remove("Makefile.in");
   remove("missing");
+  remove_all(build_dir);
   unlock();
 }
 
@@ -366,20 +367,31 @@ void bi::Driver::unlock() {
 void bi::Driver::meta() {
   using namespace libubjpp;
 
+  /* check for META.json */
+  if (!exists("META.json")) {
+    if (exists("MANIFEST")) {
+      warn("MANIFEST is deprecated, use META.json instead.");
+    }
+    throw DriverException("META.json does not exist.");
+  }
+
   /* parse META.json */
   JSONDriver driver;
   auto top = driver.parse("META.json");
+  if (!top) {
+    throw DriverException("syntax error in META.json");
+  }
 
   /* meta */
   std::string packageName;
-  if (auto name = top.get<string_type>("name")) {
+  if (auto name = top.get().get<string_type>("name")) {
     packageName = name.get();
   } else {
-    packageName = "Untitled";
+    throw DriverException("META.json must provide a 'name' entry with the name of this package.");
   }
 
   /*  manifest */
-  if (auto files = top.get<array_type>({"manifest", "source"})) {
+  if (auto files = top.get().get<array_type>({"manifest", "source"})) {
     for (auto file : files.get()) {
       if (auto str = file.get<string_type>()) {
         path path(str.get());
@@ -406,7 +418,7 @@ void bi::Driver::meta() {
       }
     }
   }
-  if (auto files = top.get<array_type>({"manifest", "data"})) {
+  if (auto files = top.get().get<array_type>({"manifest", "data"})) {
     for (auto file : files.get()) {
       if (auto str = file.get<string_type>()) {
         path path(str.get());
@@ -425,7 +437,7 @@ void bi::Driver::meta() {
       }
     }
   }
-  if (auto files = top.get<array_type>({"manifest", "other"})) {
+  if (auto files = top.get().get<array_type>({"manifest", "other"})) {
     for (auto file : files.get()) {
       if (auto str = file.get<string_type>()) {
         path path(str.get());
@@ -466,7 +478,11 @@ void bi::Driver::setup() {
       buf << "Could not create build directory " << build_dir << '.';
       throw DriverException(buf.str());
     }
-    ofstream stream(build_dir / "lock");  // creates lock file
+  }
+
+  /* create lock file */
+  if (!exists(build_dir / "lock")) {
+    ofstream stream(build_dir / "lock");
   }
 
   /* exclusive access to build directory */
