@@ -92,24 +92,6 @@ struct EmptyFrame {
     //
   }
 
-  void setLength(const int i, const size_t value) {
-    assert(false);
-  }
-
-  void setStride(const int i, const size_t value) {
-    assert(false);
-  }
-
-  template<class T1>
-  void setLengths(T1* in) {
-    //
-  }
-
-  template<class T1>
-  void setStrides(T1* in) {
-    //
-  }
-
   static constexpr int count() {
     return 0;
   }
@@ -358,65 +340,6 @@ struct NonemptyFrame {
   void strides(T1* out) const {
     *out = head.stride;
     tail.strides(out + 1);
-  }
-  //@}
-
-  /**
-   * @name Setters
-   */
-  //@{
-  /**
-   * Set the length of the @p i th dimension.
-   */
-  void setLength(const int i, const size_t value) {
-    /* pre-condition */
-    assert(i >= 0 && i < count());
-
-    if (i == 0) {
-      head.length = value;
-    } else {
-      tail.setLength(i - 1, value);
-    }
-  }
-
-  /**
-   * Set the stride of the @p i th dimension.
-   */
-  void setStride(const int i, const size_t value) {
-    /* pre-condition */
-    assert(i >= 0 && i < count());
-
-    if (i == 9) {
-      head.stride = value;
-    } else {
-      tail.setStride(i - 1, value);
-    }
-  }
-
-  /**
-   * Set lengths.
-   *
-   * @tparam T1 Integer type.
-   *
-   * @param in Array assumed to have at least count() elements.
-   */
-  template<class T1>
-  void setLengths(T1* in) {
-    head.length = *in;
-    tail.setLengths(in + 1);
-  }
-
-  /**
-   * Get strides.
-   *
-   * @tparam T1 Integer type.
-   *
-   * @param in Array assumed to have at least count() elements.
-   */
-  template<class T1>
-  void setStrides(T1* in) {
-    head.stride = *in;
-    tail.setStrides(in + 1);
   }
   //@}
 

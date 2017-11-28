@@ -260,54 +260,6 @@ public:
   //@}
 
   /**
-   * @name Collections
-   */
-  //@{
-  /**
-   * Get lengths.
-   *
-   * @tparam Integer Integer type.
-   *
-   * @param[out] out Array assumed to have at least count() elements.
-   */
-  template<class Integer>
-  void lengths(Integer* out) const {
-    frame.lengths(out);
-  }
-
-  /**
-   * Get strides.
-   *
-   * @tparam Integer Integer type.
-   *
-   * @param[out] out Array assumed to have at least count() elements.
-   */
-  template<class Integer>
-  void strides(Integer* out) const {
-    frame.strides(out);
-  }
-  //@}
-
-  /**
-   * @name Reductions
-   */
-  //@{
-  /**
-   * Number of spans in the frame.
-   */
-  static constexpr int count() {
-    return F::count();
-  }
-
-  /**
-   * Are all elements stored contiguously in memory?
-   */
-  bool contiguous() const {
-    return frame.contiguous();
-  }
-  //@}
-
-  /**
    * @name Iteration
    */
   //@{
