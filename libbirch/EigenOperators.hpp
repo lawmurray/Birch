@@ -8,8 +8,6 @@
 #include "libbirch/Eigen.hpp"
 #include "libbirch/Array.hpp"
 
-#include <type_traits>
-
 #define UNARY_OPERATOR(op) \
   template<class Type, class Frame> \
   auto operator op(const bi::Array<Type,Frame>& x) { \

@@ -5,6 +5,9 @@
  */
 #pragma once
 
+#include "libbirch/Eigen.hpp"
+#include "libbirch/Array.hpp"
+
 namespace bi {
 
 template<class EigenType>

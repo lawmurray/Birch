@@ -50,7 +50,7 @@ struct super_type {
 template<class T, class U>
 struct has_conversion {
   /* conversion operators in generated code are marked explicit, they return
-   * true for std::is_consructible, but false for std::is_convertible as they
+   * true for std::is_constructible, but false for std::is_convertible as they
    * cannot partipicate in implicit casts; if they were not marked explicit,
    * std::is_constructible would also use standard conversions before and
    * after the user-defined conversion, which causes ambiguity (e.g. a

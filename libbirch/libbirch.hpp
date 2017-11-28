@@ -60,6 +60,24 @@ using File_ = FILE*;
 }
 
 /**
+ * Default array for `D` dimensions.
+ */
+template<class T, int D>
+using DefaultArray = Array<T,typename DefaultFrame<D>::type>;
+
+/**
+ * Default view for `D`-dimensional indexing of a single element.
+ */
+template<int D>
+struct DefaultView {
+  typedef NonemptyView<Index<>,typename DefaultView<D - 1>::type> type;
+};
+template<>
+struct DefaultView<0> {
+  typedef EmptyView type;
+};
+
+/**
  * Make a range.
  *
  * @ingroup libbirch

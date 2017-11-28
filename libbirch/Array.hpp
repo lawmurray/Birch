@@ -35,8 +35,9 @@ public:
    */
   Array(const F& frame = F()) :
       frame(frame),
-      ptr(allocate(frame.volume())),
-      isView(false) {
+      isView(false),
+      isShared(false) {
+    allocate();
     initialize();
   }
 
@@ -51,8 +52,9 @@ public:
   template<class ... Args>
   Array(const F& frame, Args ... args) :
       frame(frame),
-      ptr(allocate(frame.volume())),
-      isView(false) {
+      isView(false),
+      isShared(false) {
+    allocate();
     initialize(args...);
   }
 
@@ -61,9 +63,10 @@ public:
    */
   Array(const Array<T,F>& o) :
       frame(o.frame),
-      ptr(allocate(frame.volume())),
-      isView(false) {
-    copy(o);
+      ptr(o.ptr),
+      isView(false),
+      isShared(true) {
+    const_cast<Array<T,F>&>(o).isShared = true;
   }
 
   /**
@@ -79,9 +82,10 @@ public:
   template<class U>
   Array(const Sequence<U>& o) :
       frame(sequence_frame(o)),
-      ptr(allocate(frame.volume())),
-      isView(false) {
-    copy(o);
+      isView(false),
+      isShared(false) {
+    allocate();
+    assign(o);
   }
 
   /**
@@ -89,11 +93,14 @@ public:
    * otherwise a resize is permitted.
    */
   Array<T,F>& operator=(const Array<T,F>& o) {
-    if (!isView && !frame.conforms(o.frame)) {
+    if (isView) {
+      assign(o);
+    } else {
       frame.resize(o.frame);
-      ptr = allocate(frame.volume());
+      ptr = o.ptr;
+      isShared = true;
+      const_cast<Array<T,F>&>(o).isShared = true;
     }
-    copy(o);
     return *this;
   }
 
@@ -101,21 +108,20 @@ public:
    * Move assignment. The frames of the two arrays must conform.
    */
   Array<T,F>& operator=(Array<T,F> && o) {
-    if (!isView) {
-      if (!o.isView) {
-        /* move */
-        frame = o.frame;
-        ptr = o.ptr;
-      } else {
-        if (!frame.conforms(o.frame)) {
-          /* resize */
-          frame.resize(o.frame);
-          ptr = allocate(frame.volume());
-        }
-        copy(o);
-      }
+    if (isView) {
+      assign(o);
     } else {
-      copy(o);
+      if (o.isView) {
+        if (!frame.conforms(o.frame)) {
+          frame.resize(o.frame);
+          allocate();
+        }
+        assign(o);
+      } else {
+        frame = std::move(o.frame);
+        ptr = std::move(o.ptr);
+        isShared = std::move(o.isShared);
+      }
     }
     return *this;
   }
@@ -127,7 +133,7 @@ public:
    */
   template<class U>
   Array<T,F>& operator=(const Sequence<U>& o) {
-    copy(o);
+    assign(o);
     return *this;
   }
 
@@ -141,17 +147,22 @@ public:
    * @return The new array.
    */
   template<class View1, typename = std::enable_if_t<View1::rangeCount() != 0>>
+  auto operator()(const View1& view) {
+    return Array<T,decltype(frame(view))>(buf() + frame.serial(view),
+        frame(view));
+  }
+  template<class View1, typename = std::enable_if_t<View1::rangeCount() != 0>>
   auto operator()(const View1& view) const {
-    return Array<T,decltype(frame(view))>(ptr + frame.serial(view),
+    return Array<T,decltype(frame(view))>(buf() + frame.serial(view),
         frame(view));
   }
   template<class View1, typename = std::enable_if_t<View1::rangeCount() == 0>>
   auto& operator()(const View1& view) {
-    return *(ptr + frame.serial(view));
+    return *(buf() + frame.serial(view));
   }
   template<class View1, typename = std::enable_if_t<View1::rangeCount() == 0>>
   const auto& operator()(const View1& view) const {
-    return *(ptr + frame.serial(view));
+    return *(buf() + frame.serial(view));
   }
 
   /**
@@ -208,10 +219,12 @@ public:
    * allocation, the contents of the existing array are copied in.
    */
   template<class DerivedType, typename = std::enable_if_t<
-      is_eigen_compatible<DerivedType>::value>>Array(const Eigen::EigenBase<DerivedType>& o, const F& frame) :
-  frame(frame),
-  ptr(allocate(frame.volume())),
-  isView(false) {
+      is_eigen_compatible<DerivedType>::value>>
+  Array(const Eigen::MatrixBase<DerivedType>& o, const F& frame) :
+      frame(frame),
+      isView(false),
+      isShared(false) {
+    allocate();
     toEigen() = o;
   }
 
@@ -219,10 +232,11 @@ public:
    * Construct from Eigen Matrix expression.
    */
   template<class DerivedType, typename = std::enable_if_t<is_eigen_compatible<DerivedType>::value>>
-  Array(const Eigen::EigenBase<DerivedType>& o) :
-  frame(o.rows(), o.cols()),
-  ptr(allocate(frame.volume())),
-  isView(false) {
+  Array(const Eigen::MatrixBase<DerivedType>& o) :
+      frame(o.rows(), o.cols()),
+      isView(false),
+      isShared(false) {
+    allocate();
     toEigen() = o;
   }
 
@@ -230,10 +244,10 @@ public:
    * Assign from Eigen Matrix expression.
    */
   template<class DerivedType, typename = std::enable_if_t<is_eigen_compatible<DerivedType>::value>>
-  Array<T,F>& operator=(const Eigen::EigenBase<DerivedType>& o) {
+  Array<T,F>& operator=(const Eigen::MatrixBase<DerivedType>& o) {
     if (!isView && !frame.conforms(o.rows(), o.cols())) {
       frame.resize(o.rows(), o.cols());
-      ptr = allocate(frame.volume());
+      allocate();
     }
     toEigen() = o;
     return *this;
@@ -256,6 +270,16 @@ public:
    */
   size_t stride(const int i) const {
     return frame.stride(i);
+  }
+
+  /**
+   * Get this. Used for compatibility with Shared<Array<...>>.
+   */
+  auto& get() {
+    return *this;
+  }
+  auto& get() const {
+    return *this;
   }
   //@}
 
@@ -302,6 +326,9 @@ public:
    * Raw pointer to underlying buffer.
    */
   T* buf() {
+    if (isShared) {
+      copy();
+    }
     return ptr;
   }
 
@@ -322,23 +349,32 @@ private:
    * @param frame Frame.
    */
   Array(T* ptr, const F& frame) :
-  frame(frame),
-  ptr(ptr),
-  isView(true) {
+      frame(frame),
+      ptr(ptr),
+      isView(true),
+      isShared(false) {
     //
   }
 
   /**
    * Allocate memory for array.
-   *
-   * @tparam U Element type.
-   *
-   * @param size Number of elements to allocate.
    */
-  static T* allocate(const size_t n) {
-    T* raw = (T*)GC_MALLOC(sizeof(T) * n);
-    assert(raw);
-    return raw;
+  void allocate() {
+    ptr = (T*)GC_MALLOC(sizeof(T) * frame.volume());
+    assert(ptr);
+    isShared = false;
+  }
+
+  /**
+   * Copy memory of array.
+   */
+  void copy() {
+    T* old = ptr;
+    size_t size = sizeof(T) * frame.volume();
+    ptr = (T*)GC_MALLOC(size);
+    assert(ptr);
+    std::memcpy(ptr, old, size);
+    isShared = false;
   }
 
   /**
@@ -380,7 +416,7 @@ private:
    * Copy from another array.
    */
   template<class G>
-  void copy(const Array<T,G>& o) {
+  void assign(const Array<T,G>& o) {
     /* pre-condition */
     assert(o.frame.conforms(frame));
 
@@ -403,14 +439,14 @@ private:
   }
 
   template<class U>
-  void copy(const Sequence<U>& o) {
+  void assign(const Sequence<U>& o) {
     assert(F::count() == sequence_depth<Sequence<U>>::value);
 
     size_t sizes[F::count()];
     frame.lengths(sizes);
     assert(sequence_conforms(sizes, o));
     auto iter = begin();
-    sequence_copy(o, iter);
+    sequence_assign(o, iter);
     assert(iter == end());
   }
 
@@ -445,11 +481,10 @@ private:
    * semantics, as it cannot be resized or moved.
    */
   bool isView;
-};
 
-/**
- * Default array for `D` dimensions.
- */
-template<class T, int D>
-using DefaultArray = Array<T,typename DefaultFrame<D>::type>;
+  /**
+   * Is the buffer shared with another array?
+   */
+  bool isShared;
+};
 }

@@ -74,8 +74,6 @@ public:
    * @seealso has_conversion
    */
   template<class U, typename = std::enable_if_t<has_conversion<T,U>::value>>
-  operator U();
-  template<class U, typename = std::enable_if_t<has_conversion<T,U>::value>>
   operator U() const;
 
   /**
@@ -112,6 +110,10 @@ public:
   /**
    * Call operator.
    */
+  template<class ... Args>
+  auto operator()(Args ... args) {
+    return (*get())(args...);
+  }
   template<class ... Args>
   auto operator()(Args ... args) const {
     return (*get())(args...);
@@ -194,14 +196,6 @@ template<class U>
 bi::Pointer<T>& bi::Pointer<T>::operator=(const U& o) {
   *get() = o;
   return *this;
-}
-
-template<class T>
-template<class U, typename >
-bi::Pointer<T>::operator U() {
-  /* conversion operators in generated code are marked explicit, so the
-   * cast is necessary here */
-  return static_cast<U>(*get());
 }
 
 template<class T>

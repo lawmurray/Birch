@@ -201,16 +201,4 @@ struct NonemptyView {
    */
   Tail tail;
 };
-
-/**
- * Default view for `D`-dimensional indexing of a single element.
- */
-template<int D>
-struct DefaultView {
-  typedef NonemptyView<Index<>,typename DefaultView<D - 1>::type> type;
-};
-template<>
-struct DefaultView<0> {
-  typedef EmptyView type;
-};
 }

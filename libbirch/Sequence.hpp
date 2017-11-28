@@ -73,14 +73,14 @@ bool sequence_conforms(const size_t* sizes, const Sequence<Type>& o) {
  * Copy from a sequence into an array.
  */
 template<class Type, class Iterator>
-void sequence_copy(const Type& from, Iterator& to) {
+void sequence_assign(const Type& from, Iterator& to) {
   *to = from;
   ++to;
 }
 template<class Type, class Iterator>
-void sequence_copy(const Sequence<Type>& from, Iterator& to) {
+void sequence_assign(const Sequence<Type>& from, Iterator& to) {
   for (auto o : from) {
-    sequence_copy(o, to);
+    sequence_assign(o, to);
   }
 }
 
