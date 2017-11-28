@@ -67,30 +67,21 @@ using File_ = FILE*;
  * @param start First index.
  * @param end Last index.
  */
-inline auto make_range(const ptrdiff_t start, const ptrdiff_t end) {
-  ptrdiff_t length = std::max(ptrdiff_t(0), end - start + 1);
-  return Range<mutable_value,mutable_value>(start, length);
-}
+Range<> make_range(const ptrdiff_t start, const ptrdiff_t end);
 
 /**
  * Make a frame, no arguments.
  *
  * @ingroup libbirch
  */
-inline auto make_frame() {
-  return EmptyFrame();
-}
+EmptyFrame make_frame();
 
 /**
  * Make a frame, single argument.
  *
  * @ingroup libbirch
  */
-inline auto make_frame(const size_t arg) {
-  auto tail = make_frame();
-  auto head = Span<mutable_value,mutable_value>(arg, tail.volume());
-  return NonemptyFrame<decltype(head),decltype(tail)>(head, tail);
-}
+NonemptyFrame<Span<>,EmptyFrame> make_frame(const size_t arg);
 
 /**
  * Make a frame, multiple arguments.
@@ -100,7 +91,7 @@ inline auto make_frame(const size_t arg) {
 template<class ... Args>
 auto make_frame(const size_t arg, Args ... args) {
   auto tail = make_frame(args...);
-  auto head = Span<mutable_value,mutable_value>(arg, tail.volume());
+  auto head = Span<>(arg, tail.volume());
   return NonemptyFrame<decltype(head),decltype(tail)>(head, tail);
 }
 
@@ -109,9 +100,7 @@ auto make_frame(const size_t arg, Args ... args) {
  *
  * @ingroup libbirch
  */
-inline auto make_view() {
-  return EmptyView();
-}
+EmptyView make_view();
 
 /**
  * Make a view, single argument.
@@ -130,11 +119,7 @@ auto make_view(const Range<offset_value,length_value>& arg) {
  *
  * @ingroup libbirch
  */
-inline auto make_view(const ptrdiff_t arg) {
-  auto head = Index<mutable_value>(arg);
-  auto tail = make_view();
-  return NonemptyView<decltype(head),decltype(tail)>(head, tail);
-}
+NonemptyView<Index<>,EmptyView> make_view(const ptrdiff_t arg);
 
 /**
  * Make a view, multiple arguments.

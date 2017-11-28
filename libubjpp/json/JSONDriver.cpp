@@ -26,7 +26,7 @@ boost::optional<libubjpp::value> libubjpp::JSONDriver::parse(
 
 boost::optional<libubjpp::value> libubjpp::JSONDriver::parseString(
     const std::string& data) {
-  int value, token;
+  int value = 0, token;
   ParserState state;
   JSONTokenizer tokenizer(data);
   void* parser = ParseAlloc(malloc);

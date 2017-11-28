@@ -9,14 +9,13 @@
 #include <cassert>
 
 bi::Pointer<bi::Any>::Pointer(Any* raw) :
-    raw(raw),
-    gen(fiberGen) {
+    gen(fiberGen), raw(raw) {
   //
 }
 
 bi::Pointer<bi::Any>::Pointer(Any* raw, const size_t gen) :
-    raw(raw),
-    gen(gen) {
+    gen(gen) , raw(raw)
+    {
   //
 }
 

@@ -120,8 +120,8 @@ public:
 
 template<>
 class Pointer<Any> {
-  friend class std::hash<bi::Pointer<bi::Any>>;
-  friend class std::equal_to<bi::Pointer<bi::Any>>;
+  friend struct std::hash<bi::Pointer<bi::Any>>;
+  friend struct std::equal_to<bi::Pointer<bi::Any>>;
 public:
   Pointer(Any* raw = nullptr);
   Pointer(Any* raw, const size_t gen);
