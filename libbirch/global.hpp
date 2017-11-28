@@ -21,13 +21,6 @@ class AllocationMap;
 static constexpr size_t mutable_value = 0;
 
 /**
- * Constant to indicate default value for lead.
- *
- * @ingroup libbirch
- */
-static constexpr size_t default_value = std::numeric_limits<size_t>::max();
-
-/**
  * Allocation map of the currently running fiber.
  */
 extern AllocationMap* fiberAllocationMap;

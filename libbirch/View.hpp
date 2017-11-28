@@ -28,11 +28,6 @@ struct EmptyView {
     //
   }
 
-  template<class T1>
-  void strides(T1* out) const {
-    //
-  }
-
   static constexpr int count() {
     return 0;
   }
@@ -65,25 +60,25 @@ struct EmptyView {
  *
  * @ingroup libbirch
  *
- * @tparam Tail View type.
  * @tparam Head Range or Index type.
+ * @tparam Tail View type.
  *
  * A view describes the active elements over `D` dimensions of an array. It
- * consists of a @em tail view for the first `D - 1` dimensions, recursively,
- * and a @em head Range or Index for the remaining dimension. The tail view
- * is EmptyView for the first dimension.
+ * consists of a @em head range or index for the first dimension, and a
+ * @em tail view for the remaining `D - 1` dimensions, recursively. The tail
+ * view is EmptyView for the last dimension.
  */
-template<class Tail, class Head>
+template<class Head, class Tail>
 struct NonemptyView {
-  /**
-   * Tail type.
-   */
-  typedef Tail tail_type;
-
   /**
    * Head type.
    */
   typedef Head head_type;
+
+  /**
+   * Tail type.
+   */
+  typedef Tail tail_type;
 
   /**
    * Default constructor.
@@ -95,20 +90,20 @@ struct NonemptyView {
   /**
    * Generic constructor.
    */
-  template<class Tail1, class Head1>
-  NonemptyView(const Tail1 tail, const Head1 head) :
-      tail(tail),
-      head(head) {
+  template<class Head1, class Tail1>
+  NonemptyView(const Head1 head, const Tail1 tail) :
+      head(head),
+      tail(tail) {
     //
   }
 
   /**
    * Generic copy constructor.
    */
-  template<class Tail1, class Head1>
-  NonemptyView(const NonemptyView<Tail1,Head1>& o) :
-      tail(o.tail),
-      head(o.head) {
+  template<class Head1, class Tail1>
+  NonemptyView(const NonemptyView<Head1,Tail1>& o) :
+      head(o.head),
+      tail(o.tail) {
     //
   }
 
@@ -125,8 +120,8 @@ struct NonemptyView {
    */
   template<class T1>
   void offsets(T1* out) const {
-    tail.offsets(out);
-    *(out + Tail::count()) = head.offset;
+    *out = head.offset;
+    tail.offsets(out + 1);
   }
 
   /**
@@ -138,21 +133,8 @@ struct NonemptyView {
    */
   template<class T1>
   void lengths(T1* out) const {
-    tail.lengths(out);
-    *(out + Tail::count()) = head.length;
-  }
-
-  /**
-   * Get strides.
-   *
-   * @tparam T1 Integer type.
-   *
-   * @param[out] out Array assumed to have at least count() elements.
-   */
-  template<class T1>
-  void strides(T1* out) const {
-    tail.strides(out);
-    *(out + Tail::count()) = head.stride;
+    *out = head.length;
+    tail.lengths(out + 1);
   }
   //@}
 
@@ -164,21 +146,21 @@ struct NonemptyView {
    * Number of dimensions.
    */
   static constexpr int count() {
-    return Tail::count() + 1;
+    return 1 + Tail::count();
   }
 
   /**
    * Number of ranges.
    */
   static constexpr int rangeCount() {
-    return Tail::rangeCount() + Head::rangeCount();
+    return Head::rangeCount() + Tail::rangeCount();
   }
 
   /**
    * Size (the product of all lengths).
    */
   size_t size() const {
-    return tail.size() * head.length;
+    return head.length * tail.size();
   }
   //@}
 
@@ -191,7 +173,7 @@ struct NonemptyView {
    */
   template<class Head1, class Tail1>
   bool operator==(const NonemptyView<Head1,Tail1>& o) const {
-    return tail == o.tail && head == o.head;
+    return head == o.head && tail == o.tail;
   }
 
   /**
@@ -210,14 +192,14 @@ struct NonemptyView {
   }
 
   /**
-   * Tail.
-   */
-  Tail tail;
-
-  /**
    * Head.
    */
   Head head;
+
+  /**
+   * Tail.
+   */
+  Tail tail;
 };
 
 /**
@@ -225,7 +207,7 @@ struct NonemptyView {
  */
 template<int D>
 struct DefaultView {
-  typedef NonemptyView<typename DefaultView<D - 1>::type,Index<>> type;
+  typedef NonemptyView<Index<>,typename DefaultView<D - 1>::type> type;
 };
 template<>
 struct DefaultView<0> {

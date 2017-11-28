@@ -229,7 +229,6 @@ nobase_include_HEADERS = \
   libbirch/global.hpp \
   libbirch/Index.hpp \
   libbirch/Iterator.hpp \
-  libbirch/Lead.hpp \
   libbirch/Length.hpp \
   libbirch/Object.hpp \
   libbirch/Offset.hpp \

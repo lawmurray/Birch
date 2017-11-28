@@ -124,17 +124,15 @@ void bi::CppBaseGenerator::visit(const LambdaFunction* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Span* o) {
-  middle("bi::make_span(");
   if (o->single->isEmpty()) {
     middle('0');
   } else {
     middle(o->single);
   }
-  middle(')');
 }
 
 void bi::CppBaseGenerator::visit(const Index* o) {
-  middle("bi::make_index(" << o->single << " - 1)");
+  middle(o->single << " - 1");
 }
 
 void bi::CppBaseGenerator::visit(const Range* o) {

@@ -193,8 +193,8 @@ public:
   EigenType toEigen() const {
     return EigenType(buf(), length(0), (F::count() == 1 ? 1 : length(1)),
         (F::count() == 1 ?
-            EigenStrideType(1, stride(0)) :
-            EigenStrideType(lead(1), stride(1))));
+            EigenStrideType(stride(0), 1) :
+            EigenStrideType(stride(0), stride(1))));
   }
 
   /**
@@ -254,15 +254,8 @@ public:
   /**
    * Get the stride of the @p i th dimension.
    */
-  ptrdiff_t stride(const int i) const {
+  size_t stride(const int i) const {
     return frame.stride(i);
-  }
-
-  /**
-   * Get the lead of the @p i th dimension.
-   */
-  size_t lead(const int i) const {
-    return frame.lead(i);
   }
   //@}
 
@@ -292,18 +285,6 @@ public:
   template<class Integer>
   void strides(Integer* out) const {
     frame.strides(out);
-  }
-
-  /**
-   * Get leads.
-   *
-   * @tparam Integer Integer type.
-   *
-   * @param[out] out Array assumed to have at least count() elements.
-   */
-  template<class Integer>
-  void leads(Integer* out) const {
-    frame.leads(out);
   }
   //@}
 

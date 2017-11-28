@@ -45,8 +45,7 @@ auto sequence_frame(const Sequence<Type>& o) {
   typename DefaultFrame<sequence_depth<Sequence<Type>>::value>::type frame;
   size_t lengths[sequence_depth<Sequence<Type>>::value];
   sequence_lengths(o, lengths);
-  frame.setLengths(lengths);
-  frame.setLeads(lengths);
+  frame.resize(lengths);
   return frame;
 }
 
