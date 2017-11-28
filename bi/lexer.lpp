@@ -123,7 +123,7 @@ E                                  [Ee][+-]?{D}+
 0[xX]{H}+                           { yylval.valInt = atoi(yytext); return INT_LITERAL; }
 0{D}+                               { yylval.valInt = atoi(yytext); return INT_LITERAL; }
 {D}+                                { yylval.valInt = atoi(yytext); return INT_LITERAL; }
-\"(\\\"|[^\"])*\"                   { yylval.valString = strdup(yytext); return STRING_LITERAL; }
+\"(\\\"|[^\"\n\r\f])*\"             { yylval.valString = strdup(yytext); return STRING_LITERAL; }
 
 "<-"                                { return LEFT_OP; } 
 "->"                                { return RIGHT_OP; }
