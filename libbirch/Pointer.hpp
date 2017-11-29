@@ -34,22 +34,6 @@ public:
   Pointer(T* raw, const size_t gen);
 
   /**
-   * Generic comparison operator.
-   */
-  template<class U>
-  bool operator!=(const Pointer<U>& o) {
-    return this->raw != o.raw || this->gen != o.gen;
-  }
-
-  /**
-   * Generic comparison operator.
-   */
-  template<class U>
-  bool operator==(const Pointer<U>& o) {
-    return this->raw == o.raw && this->gen == o.gen;
-  }
-
-  /**
    * Raw pointer assignment operator.
    */
   Pointer<T>& operator=(T* raw);
@@ -117,6 +101,18 @@ public:
   template<class ... Args>
   auto operator()(Args ... args) const {
     return (*get())(args...);
+  }
+
+  /**
+   * Comparison operators.
+   */
+  template<class U>
+  bool operator!=(const Pointer<U>& o) const {
+    return this->raw != o.raw || this->gen != o.gen;
+  }
+  template<class U>
+  bool operator==(const Pointer<U>& o) const {
+    return this->raw == o.raw && this->gen == o.gen;
   }
 };
 

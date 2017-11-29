@@ -141,38 +141,29 @@ template<class Type>
 Type& bi::Fiber<Type>::get() {
   assert(!state.isNull());
 
-  auto callerAllocationMap = fiberAllocationMap;
-  auto callerGen = fiberGen;
-  if (closed) {
-    fiberGen = gen;
-    fiberAllocationMap = allocationMap;
+  ///@todo Yield value may not have been mapped through fiber's allocation
+  ///      map, and even if it has, its member attributes may not have been.
+  ///      Does the allocation map need to be global?
+  ///@todo When caller copies out yield value the first time, entry is put in
+  ///      allocation map... this needs to be removed for subsequent calls or
+  ///      the value is never copied again, the first copy is just reused.
+  ///      Similar applies to its member attributes.
+  if (closed && !state->yieldIsValue()) {
+    /* update the generation of the fiber retrieving the result to make sure
+     * that it will not modify it without copying it */
+    fiberGen = std::max(fiberGen, gen + 1);
   }
-
-  auto result = state->get();
-
-  if (closed) {
-    fiberAllocationMap = callerAllocationMap;
-    fiberGen = callerGen;
-  }
-  return result;
+  return state->get();
 }
 
 template<class Type>
 const Type& bi::Fiber<Type>::get() const {
   assert(!state.isNull());
 
-  auto callerAllocationMap = fiberAllocationMap;
-  auto callerGen = fiberGen;
-  if (closed) {
-    fiberGen = gen;
-    fiberAllocationMap = allocationMap;
+  if (closed && !state->yieldIsValue()) {
+    /* update the generation of the fiber retrieving the result to make sure
+     * that it will not modify it without copying it */
+    fiberGen = std::max(fiberGen, gen + 1);
   }
-
-  auto result = state->get();
-
-  if (closed) {
-    fiberAllocationMap = callerAllocationMap;
-    fiberGen = callerGen;
-  }
-  return result;
+  return state->get();
 }

@@ -46,20 +46,25 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   if (header) {
     finish(';');
   } else {
-    if (o->params->width() > 0) {
-      finish(" :");
-      in();
-      for (auto iter = parameters.begin(); iter != parameters.end(); ++iter) {
-        if (iter != parameters.begin()) {
-          finish(',');
-        }
-        start((*iter)->name << '(' << (*iter)->name << ')');
-      }
-      out();
+    finish(" :");
+    in();
+    in();
+    start("FiberState<" << o->returnType->unwrap() <<">(0, ");
+    middle(yields.size() + 1);
+    middle(", ");
+    if (o->returnType->isValue()) {
+      middle("true");
+    } else {
+      middle("false");
+    }
+    middle(')');
+    for (auto iter = parameters.begin(); iter != parameters.end(); ++iter) {
+      finish(',');
+      start((*iter)->name << '(' << (*iter)->name << ')');
     }
     finish(" {");
-    in();
-    line("this->nlabels = " << (yields.size() + 1) << ';');
+    out();
+    line("//");
     out();
     line("}\n");
   }

@@ -132,6 +132,12 @@ public:
   virtual bool isOverloaded() const;
 
   /**
+   * Is this a value type? A type expression specifies a value type if it
+   * contains no class types.
+   */
+  bool isValue() const;
+
+  /**
    * Get the left operand of a binary, otherwise undefined.
    */
   virtual Type* getLeft() const;

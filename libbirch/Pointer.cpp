@@ -14,14 +14,13 @@ bi::Pointer<bi::Any>::Pointer(Any* raw) :
 }
 
 bi::Pointer<bi::Any>::Pointer(Any* raw, const size_t gen) :
-    gen(gen) , raw(raw)
-    {
+    gen(gen) , raw(raw) {
   //
 }
 
 bi::Pointer<bi::Any>& bi::Pointer<bi::Any>::operator=(Any* raw) {
-  this->raw = raw;
   this->gen = fiberGen;
+  this->raw = raw;
   return *this;
 }
 

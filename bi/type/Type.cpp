@@ -6,6 +6,7 @@
 #include "bi/type/TypeIterator.hpp"
 #include "bi/type/TypeConstIterator.hpp"
 #include "bi/exception/all.hpp"
+#include "bi/visitor/all.hpp"
 
 #include <cassert>
 
@@ -56,6 +57,11 @@ bool bi::Type::isBinary() const {
 
 bool bi::Type::isOverloaded() const {
   return false;
+}
+
+bool bi::Type::isValue() const {
+  IsValue visitor;
+  return visitor.apply(this);
 }
 
 bi::Type* bi::Type::getLeft() const {

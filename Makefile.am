@@ -171,6 +171,7 @@ COMMON_SOURCES = \
   bi/visitor/Cloner.cpp \
   bi/visitor/Gatherer.cpp \
   bi/visitor/Instantiater.cpp \
+  bi/visitor/IsValue.cpp \
   bi/visitor/Modifier.cpp \
   bi/visitor/Resolver.cpp \
   bi/visitor/ResolverHeader.cpp \
@@ -409,6 +410,7 @@ noinst_HEADERS = \
   bi/visitor/Cloner.hpp \
   bi/visitor/Gatherer.hpp \
   bi/visitor/Instantiater.hpp \
+  bi/visitor/IsValue.hpp \
   bi/visitor/Modifier.hpp \
   bi/visitor/Resolver.hpp \
   bi/visitor/ResolverHeader.hpp \

@@ -11,7 +11,7 @@ namespace bi {
  *
  * @ingroup libbirch
  *
- * @tparam Type Return type.
+ * @tparam Type Yield type.
  */
 template<class Type>
 class FiberState: public Any {
@@ -19,9 +19,11 @@ public:
   /**
    * Constructor.
    */
-  FiberState() :
-      label(0),
-      nlabels(0) {
+  FiberState(const int label = 0, const int nlabels = 0, const bool isBasic =
+      false) :
+      label(label),
+      nlabels(nlabels),
+      isValue(isValue) {
     //
   }
 
@@ -52,6 +54,13 @@ public:
     return value;
   }
 
+  /**
+   * Is the yield type a value type?
+   */
+  bool yieldIsValue() const {
+    return isValue;
+  }
+
 protected:
   /**
    * Last yielded value.
@@ -67,5 +76,12 @@ protected:
    * Number of labels.
    */
   int nlabels;
+
+  /**
+   * Does the fiber yield a value type? When not a value type, the yield
+   * result is shared between the fiber and its caller, and copy-on-write
+   * mechanisms must be used accordingly.
+   */
+  bool isValue;
 };
 }

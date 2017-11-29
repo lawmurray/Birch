@@ -59,16 +59,23 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     finish(" :");
     in();
     in();
+    start("FiberState<" << o->returnType->unwrap() <<">(0, ");
+    middle(yields.size() + 1);
+    middle(", ");
+    if (o->returnType->isValue()) {
+      middle("true");
+    } else {
+      middle("false");
+    }
+    finish("),");
     start("self(self)");
     for (auto iter = parameters.begin(); iter != parameters.end(); ++iter) {
       finish(',');
       start((*iter)->name << '(' << (*iter)->name << ')');
     }
-    out();
-    out();
     finish(" {");
-    in();
-    line("this->nlabels = " << (yields.size() + 1) << ';');
+    out();
+    line("//");
     out();
     line("}\n");
   }
