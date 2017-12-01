@@ -201,6 +201,7 @@ ubj2json_LDADD = libubjpp.la
 libbirch_la_SOURCES = \
   libbirch/AllocationMap.cpp \
   libbirch/Any.cpp \
+  libbirch/FiberWorld.cpp \
   libbirch/Pointer.cpp \
   libbirch/global.cpp \
   libbirch/libbirch.cpp
@@ -226,6 +227,7 @@ nobase_include_HEADERS = \
   libbirch/EigenOperators.hpp \
   libbirch/Fiber.hpp \
   libbirch/FiberState.hpp \
+  libbirch/FiberWorld.hpp \
   libbirch/Frame.hpp \
   libbirch/global.hpp \
   libbirch/Index.hpp \

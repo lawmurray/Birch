@@ -18,9 +18,8 @@ namespace bi {
  */
 class AllocationMap : public Any {
 public:
-  using pointer_type = Pointer<Any>;
-  using hash_type = std::hash<pointer_type>;
-  using equal_to_type = std::equal_to<pointer_type>;
+  using hash_type = std::hash<Pointer<Any>>;
+  using equal_to_type = std::equal_to<Pointer<Any>>;
 
   /**
    * Constructor.
@@ -60,7 +59,7 @@ public:
    * @return The new pointer, or the original pointer if no mapping is
    * provided for it.
    */
-  Pointer<Any> get(const pointer_type& from) const;
+  Any* get(const Pointer<Any>& from) const;
 
   /**
    * Set a mapping.
@@ -68,13 +67,13 @@ public:
    * @param from The original pointer.
    * @param to The new pointer.
    */
-  void set(const pointer_type& from, const pointer_type& to);
+  void set(const Pointer<Any>& from, Any* to);
 
 private:
   /**
    * Mapped allocations.
    */
-  std::unordered_map<pointer_type,pointer_type,hash_type,equal_to_type,
-      gc_allocator<std::pair<const pointer_type,pointer_type>>> map;
+  std::unordered_map<Pointer<Any>,Any*,hash_type,equal_to_type,
+      gc_allocator<std::pair<const Pointer<Any>,Any*>>> map;
 };
 }

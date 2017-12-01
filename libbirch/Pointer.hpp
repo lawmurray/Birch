@@ -5,8 +5,6 @@
 
 #include "libbirch/global.hpp"
 
-#include <cstdint>
-
 namespace bi {
 /**
  * Smart pointer for fibers with copy-on-write semantics.
@@ -27,11 +25,6 @@ public:
    * Constructor.
    */
   Pointer(T* raw = nullptr);
-
-  /**
-   * Constructor.
-   */
-  Pointer(T* raw, const size_t gen);
 
   /**
    * Raw pointer assignment operator.
@@ -63,7 +56,7 @@ public:
   /**
    * Get the raw pointer.
    */
-  T* get() const;
+  T* get();
 
   /**
    * Cast the pointer. Returns a null pointer if the case is unsuccessful.
@@ -122,16 +115,15 @@ class Pointer<Any> {
   friend struct std::equal_to<bi::Pointer<bi::Any>>;
 public:
   Pointer(Any* raw = nullptr);
-  Pointer(Any* raw, const size_t gen);
   Pointer<Any>& operator=(Any* raw);
 
   bool isNull() const;
   Any* get() const;
 
   /**
-   * Generation.
+   * The world in which this pointer exists.
    */
-  size_t gen;
+  FiberWorld* world;
 
 protected:
   /**
@@ -143,34 +135,20 @@ protected:
 
 namespace std {
 template<>
-struct hash<bi::Pointer<bi::Any>> : public std::hash<bi::Any*> {
-  size_t operator()(const bi::Pointer<bi::Any>& o) const {
-    /* the generation is ignored in the hash, as it is reasonably unlikely
-     * for two pointers with the same raw pointer but different generation to
-     * occur in the same allocation map; this only occurs if memory is
-     * garbage collected and reused within the same fiber */
-    return std::hash<bi::Any*>::operator()(o.raw);
-  }
+struct hash<bi::Pointer<bi::Any>> : public std::hash<int64_t> {
+  size_t operator()(const bi::Pointer<bi::Any>& o) const;
 };
 
 template<>
 struct equal_to<bi::Pointer<bi::Any>> {
   bool operator()(const bi::Pointer<bi::Any>& o1,
-      const bi::Pointer<bi::Any>& o2) const {
-    return o1.raw == o2.raw && o1.gen == o2.gen;
-  }
+      const bi::Pointer<bi::Any>& o2) const;
 };
 }
 
 template<class T>
 bi::Pointer<T>::Pointer(T* raw) :
     super_type(raw) {
-  //
-}
-
-template<class T>
-bi::Pointer<T>::Pointer(T* raw, const size_t gen) :
-    super_type(raw, gen) {
   //
 }
 

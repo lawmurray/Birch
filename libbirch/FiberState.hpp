@@ -7,7 +7,7 @@
 
 namespace bi {
 /**
- * Fiber state.
+ * State of a fiber.
  *
  * @ingroup libbirch
  *

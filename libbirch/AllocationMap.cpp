@@ -27,14 +27,14 @@ bi::AllocationMap* bi::AllocationMap::clone() {
   return new (GC) AllocationMap(*this);
 }
 
-bi::Pointer<bi::Any> bi::AllocationMap::get(const Pointer<Any>& from) const {
-  auto to = from;
+Any* bi::AllocationMap::get(const Pointer<Any>& from) const {
+  auto to = from.raw;
   auto iter = map.find(to);
   while (iter != map.end()) {
     to = iter->second;
     iter = map.find(to);
   }
-  return to;
+  return to.raw;
 }
 
 void bi::AllocationMap::set(const Pointer<Any>& from,

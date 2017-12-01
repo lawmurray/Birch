@@ -4,6 +4,7 @@
 #pragma once
 
 #include "libbirch/FiberState.hpp"
+#include "libbirch/FiberWorld.hpp"
 
 namespace bi {
 /**
@@ -55,24 +56,19 @@ public:
   const Type& get() const;
 
   /**
-   * Fiber allocation map.
-   */
-  AllocationMap* allocationMap;
-
-  /**
    * Fiber state.
    */
   Pointer<FiberState<Type>> state;
 
   /**
-   * Generation of the fiber.
+   * World of the fiber.
    */
-  size_t gen;
+  FiberWorld* world;
 
   /**
    * Is this a closed fiber?
    */
-  bool closed;
+  const bool closed;
 };
 }
 
@@ -80,57 +76,59 @@ public:
 
 template<class Type>
 bi::Fiber<Type>::Fiber(FiberState<Type>* state, const bool closed) :
-    allocationMap(
-        closed ?
-            new (GC) AllocationMap(*fiberAllocationMap) : fiberAllocationMap),
-    state(state, fiberGen),
-    gen(closed ? ++fiberGen : fiberGen),
+    state(state),
     closed(closed) {
-  //
+  if (closed) {
+    /* the currently running fiber has exported from its world, which must
+     * now become read only, with modifications copy-on-write */
+    world = new (GC_MALLOC(sizeof(FiberWorld))) FiberWorld(fiberWorld);
+    fiberWorld = new (GC_MALLOC(sizeof(FiberWorld))) FiberWorld(fiberWorld);
+  } else {
+    world = fiberWorld;
+  }
 }
 
 template<class Type>
 bi::Fiber<Type>::Fiber(const Fiber<Type>& o) :
-    allocationMap(
-        o.closed ?
-            new (GC) AllocationMap(*o.allocationMap) : o.allocationMap),
     state(o.state),
-    gen(o.closed ? ++const_cast<Fiber<Type>&>(o).gen : o.gen),
     closed(o.closed) {
-  //
+  if (closed) {
+    /* the copied fiber has exported from its world, which must
+     * now become read only, with modifications copy-on-write */
+    world = new (GC_MALLOC(sizeof(FiberWorld))) FiberWorld(o.world);
+    const_cast<Fiber<Type>&>(o).world = new (GC_MALLOC(sizeof(FiberWorld))) FiberWorld(o.world);
+  } else {
+    world = o.world;
+  }
 }
 
 template<class Type>
 bi::Fiber<Type>& bi::Fiber<Type>::operator=(const Fiber<Type>& o) {
-  allocationMap =
-      o.closed ? new (GC) AllocationMap(*o.allocationMap) : o.allocationMap;
   state = o.state;
-  gen = o.closed ? ++const_cast<Fiber<Type>&>(o).gen : o.gen;
   closed = o.closed;
+  if (closed) {
+    /* the copied fiber has exported from its world, which must
+     * now become read only, with modifications copy-on-write */
+    world = new (GC_MALLOC(sizeof(FiberWorld))) FiberWorld(o.world);
+    const_cast<Fiber<Type>&>(o).world = new (GC_MALLOC(sizeof(FiberWorld))) FiberWorld(o.world);
+  } else {
+    world = o.world;
+  }
   return *this;
 }
 
 template<class Type>
 bool bi::Fiber<Type>::query() {
   if (!state.isNull()) {
-    auto callerAllocationMap = fiberAllocationMap;
-    auto callerGen = fiberGen;
-
+    auto callerWorld = fiberWorld;
     if (closed) {
-      fiberGen = gen;
-      fiberAllocationMap = allocationMap;
+      fiberWorld = world;
     }
-
     bool result = state->query();
-
     if (closed) {
-      allocationMap = fiberAllocationMap;
-      gen = fiberGen;
-
-      fiberAllocationMap = callerAllocationMap;
-      fiberGen = callerGen;
+      world = fiberWorld;
+      fiberWorld = callerWorld;
     }
-
     return result;
   } else {
     return false;
@@ -141,17 +139,10 @@ template<class Type>
 Type& bi::Fiber<Type>::get() {
   assert(!state.isNull());
 
-  ///@todo Yield value may not have been mapped through fiber's allocation
-  ///      map, and even if it has, its member attributes may not have been.
-  ///      Does the allocation map need to be global?
-  ///@todo When caller copies out yield value the first time, entry is put in
-  ///      allocation map... this needs to be removed for subsequent calls or
-  ///      the value is never copied again, the first copy is just reused.
-  ///      Similar applies to its member attributes.
   if (closed && !state->yieldIsValue()) {
-    /* update the generation of the fiber retrieving the result to make sure
-     * that it will not modify it without copying it */
-    fiberGen = std::max(fiberGen, gen + 1);
+    /* this fiber, which is yielding, has exported from its world, which must
+     * now become read only, with modifications copy-on-write */
+    world = new FiberWorld(world);
   }
   return state->get();
 }
@@ -161,9 +152,9 @@ const Type& bi::Fiber<Type>::get() const {
   assert(!state.isNull());
 
   if (closed && !state->yieldIsValue()) {
-    /* update the generation of the fiber retrieving the result to make sure
-     * that it will not modify it without copying it */
-    fiberGen = std::max(fiberGen, gen + 1);
+    /* this fiber, which is yielding, has exported from its world, which must
+     * now become read only, with modifications copy-on-write */
+    world = new FiberWorld(world);
   }
   return state->get();
 }

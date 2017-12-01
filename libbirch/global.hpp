@@ -11,6 +11,22 @@
 
 namespace bi {
 class AllocationMap;
+class FiberWorld;
+
+/**
+ * The allocation map for copy-on-write of objects between worlds.
+ */
+extern AllocationMap* allocationMap;
+
+/**
+ * The world of the currently running fiber.
+ */
+extern FiberWorld* fiberWorld;
+
+/**
+ * Random number generator.
+ */
+extern std::mt19937_64 rng;
 
 /**
  * Constant to indicate a mutable value. Zero is convenient here, as it
@@ -19,21 +35,6 @@ class AllocationMap;
  * @ingroup libbirch
  */
 static constexpr size_t mutable_value = 0;
-
-/**
- * Allocation map of the currently running fiber.
- */
-extern AllocationMap* fiberAllocationMap;
-
-/**
- * Generation of the currently running fiber.
- */
-extern size_t fiberGen;
-
-/**
- * Random number generator.
- */
-extern std::mt19937_64 rng;
 
 /**
  * The super type of type @p T. Specialised in forward declarations of
