@@ -24,6 +24,17 @@ class Random<Value> < Delay {
     set(x);
     realize();
   }
+
+  /**
+   * Optional value assignment.
+   */
+  operator <- x:Value? {
+    assert isUninitialized();
+    if (x?) {
+      set(x!);
+      realize();
+    }
+  }
     
   function value() -> Value {
     if (isMissing()) {
