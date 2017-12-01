@@ -17,15 +17,9 @@ program delay_triplet(x:Real?, y:Real?, z:Real?,
   y1:Random<Real>;
   z1:Random<Real>;
   
-  if (x?) {
-    x1 <- x!;
-  }
-  if (y?) {
-    y1 <- y!;
-  }
-  if (z?) {
-    z1 <- z!;
-  }
+  x1 <- x;
+  y1 <- y;
+  z1 <- z;
   
   x1 ~ Gaussian(0.0, 1.0);
   y1 ~ Gaussian(x1, 1.0);
