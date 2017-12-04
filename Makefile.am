@@ -199,9 +199,9 @@ ubj2json_CXXFLAGS = $(AM_CXXFLAGS)
 ubj2json_LDADD = libubjpp.la
 
 libbirch_la_SOURCES = \
+  libbirch/Allocation.cpp \
   libbirch/AllocationMap.cpp \
   libbirch/Any.cpp \
-  libbirch/FiberWorld.cpp \
   libbirch/Pointer.cpp \
   libbirch/global.cpp \
   libbirch/libbirch.cpp
@@ -219,6 +219,7 @@ libubjpp_la_SOURCES = \
 libubjpp_la_CXXFLAGS = $(AM_CXXFLAGS)
 
 nobase_include_HEADERS = \
+  libbirch/Allocation.hpp \
   libbirch/AllocationMap.hpp \
   libbirch/Any.hpp \
   libbirch/Array.hpp \
@@ -227,7 +228,6 @@ nobase_include_HEADERS = \
   libbirch/EigenOperators.hpp \
   libbirch/Fiber.hpp \
   libbirch/FiberState.hpp \
-  libbirch/FiberWorld.hpp \
   libbirch/Frame.hpp \
   libbirch/global.hpp \
   libbirch/Index.hpp \

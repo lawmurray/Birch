@@ -3,42 +3,21 @@
  */
 #include "libbirch/AllocationMap.hpp"
 
-#include "libbirch/global.hpp"
-#include "libbirch/Pointer.hpp"
+#include "libbirch/Allocation.hpp"
 #include "libbirch/Any.hpp"
 
 #include <cassert>
 
-bi::AllocationMap::AllocationMap() {
-  //
-}
-
-bi::AllocationMap::AllocationMap(const AllocationMap& o) :
-    map(o.map)  {
-  //
-}
-
-bi::AllocationMap& bi::AllocationMap::operator=(const AllocationMap& o) {
-  map = o.map;
-  return *this;
-}
-
-bi::AllocationMap* bi::AllocationMap::clone() {
-  return new (GC) AllocationMap(*this);
-}
-
-Any* bi::AllocationMap::get(const Pointer<Any>& from) const {
-  auto to = from.raw;
-  auto iter = map.find(to);
-  while (iter != map.end()) {
-    to = iter->second;
-    iter = map.find(to);
+bi::Any* bi::AllocationMap::get(Allocation* from) const {
+  auto to = map.find(from);
+  if (to != map.end()) {
+    return to->second;
+  } else {
+    return from->object;
   }
-  return to.raw;
 }
 
-void bi::AllocationMap::set(const Pointer<Any>& from,
-    const Pointer<Any>& to) {
+void bi::AllocationMap::set(Allocation* from, Any* to) {
   auto result = map.insert(std::make_pair(from, to));
   assert(result.second);
 }

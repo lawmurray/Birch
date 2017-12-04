@@ -111,8 +111,8 @@ public:
   /**
    * Assign no value.
    */
-  Optional<Pointer<T>>& operator=(const std::nullptr_t&) {
-    this->value = static_cast<T*>(nullptr);
+  Optional<Pointer<T>>& operator=(const std::nullptr_t& o) {
+    this->value = o;
     return *this;
   }
 

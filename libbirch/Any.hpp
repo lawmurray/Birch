@@ -4,8 +4,6 @@
 #pragma once
 
 namespace bi {
-class FiberWorld;
-
 /**
  * Base class for all class types.
  *
@@ -19,6 +17,11 @@ public:
   Any();
 
   /**
+   * Destructor.
+   */
+  virtual ~Any() = 0;
+
+  /**
    * Clone the object. This is a shallow clone with fiber usage counts of
    * member attributes incremented, deferring their cloning until they are
    * used.
@@ -26,8 +29,8 @@ public:
   virtual Any* clone() = 0;
 
   /**
-   * The world in which this object exists.
+   * Create a pointer for this object.
    */
-  FiberWorld* world;
+  Pointer<Any> pointer_from_this();
 };
 }

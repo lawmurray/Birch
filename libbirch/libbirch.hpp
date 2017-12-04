@@ -213,7 +213,7 @@ auto make_sequence(const std::initializer_list<Type> values) {
 template<class PointerType, class ... Args>
 PointerType make_object(Args ... args) {
   using ValueType = typename PointerType::value_type;
-  auto raw = new (GC) ValueType(args...);
+  auto raw = new ValueType(args...);
   return PointerType(raw);
 }
 
@@ -230,7 +230,7 @@ PointerType make_object(Args ... args) {
  */
 template<class ValueType>
 ValueType* copy_object(ValueType* o) {
-  return new (GC) ValueType(*o);
+  return new ValueType(*o);
 }
 
 /**
@@ -247,7 +247,7 @@ ValueType* copy_object(ValueType* o) {
  */
 template<class YieldType, class StateType, class ... Args>
 Fiber<YieldType> make_fiber(Args ... args) {
-  return Fiber<YieldType>(new (GC) StateType(args...), false);
+  return Fiber<YieldType>(new StateType(args...), false);
 }
 
 /**
@@ -264,7 +264,7 @@ Fiber<YieldType> make_fiber(Args ... args) {
  */
 template<class YieldType, class StateType, class ... Args>
 Fiber<YieldType> make_closed_fiber(Args ... args) {
-  return Fiber<YieldType>(new (GC) StateType(args...), true);
+  return Fiber<YieldType>(new StateType(args...), true);
 }
 
 /**

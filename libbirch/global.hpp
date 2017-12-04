@@ -11,17 +11,21 @@
 
 namespace bi {
 class AllocationMap;
-class FiberWorld;
 
 /**
  * The allocation map for copy-on-write of objects between worlds.
  */
-extern AllocationMap* allocationMap;
+extern AllocationMap allocationMap;
 
 /**
  * The world of the currently running fiber.
  */
-extern FiberWorld* fiberWorld;
+extern uint64_t fiberWorld;
+
+/**
+ * The number of worlds enumerated so far.
+ */
+extern uint64_t nworlds;
 
 /**
  * Random number generator.

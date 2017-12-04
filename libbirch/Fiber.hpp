@@ -4,7 +4,6 @@
 #pragma once
 
 #include "libbirch/FiberState.hpp"
-#include "libbirch/FiberWorld.hpp"
 
 namespace bi {
 /**
@@ -63,7 +62,7 @@ public:
   /**
    * World of the fiber.
    */
-  FiberWorld* world;
+  uint64_t world;
 
   /**
    * Is this a closed fiber?
@@ -81,8 +80,8 @@ bi::Fiber<Type>::Fiber(FiberState<Type>* state, const bool closed) :
   if (closed) {
     /* the currently running fiber has exported from its world, which must
      * now become read only, with modifications copy-on-write */
-    world = new (GC_MALLOC(sizeof(FiberWorld))) FiberWorld(fiberWorld);
-    fiberWorld = new (GC_MALLOC(sizeof(FiberWorld))) FiberWorld(fiberWorld);
+    world = ++nworlds;
+    fiberWorld = ++nworlds;
   } else {
     world = fiberWorld;
   }
@@ -95,8 +94,8 @@ bi::Fiber<Type>::Fiber(const Fiber<Type>& o) :
   if (closed) {
     /* the copied fiber has exported from its world, which must
      * now become read only, with modifications copy-on-write */
-    world = new (GC_MALLOC(sizeof(FiberWorld))) FiberWorld(o.world);
-    const_cast<Fiber<Type>&>(o).world = new (GC_MALLOC(sizeof(FiberWorld))) FiberWorld(o.world);
+    world = ++nworlds;
+    const_cast<Fiber<Type>&>(o).world = ++nworlds;
   } else {
     world = o.world;
   }
@@ -109,8 +108,8 @@ bi::Fiber<Type>& bi::Fiber<Type>::operator=(const Fiber<Type>& o) {
   if (closed) {
     /* the copied fiber has exported from its world, which must
      * now become read only, with modifications copy-on-write */
-    world = new (GC_MALLOC(sizeof(FiberWorld))) FiberWorld(o.world);
-    const_cast<Fiber<Type>&>(o).world = new (GC_MALLOC(sizeof(FiberWorld))) FiberWorld(o.world);
+    world = ++nworlds;
+    const_cast<Fiber<Type>&>(o).world = ++nworlds;
   } else {
     world = o.world;
   }
@@ -142,7 +141,7 @@ Type& bi::Fiber<Type>::get() {
   if (closed && !state->yieldIsValue()) {
     /* this fiber, which is yielding, has exported from its world, which must
      * now become read only, with modifications copy-on-write */
-    world = new FiberWorld(world);
+    world = ++nworlds;
   }
   return state->get();
 }
@@ -154,7 +153,7 @@ const Type& bi::Fiber<Type>::get() const {
   if (closed && !state->yieldIsValue()) {
     /* this fiber, which is yielding, has exported from its world, which must
      * now become read only, with modifications copy-on-write */
-    world = new FiberWorld(world);
+    world = ++nworlds;
   }
   return state->get();
 }
