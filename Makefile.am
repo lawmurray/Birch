@@ -202,9 +202,10 @@ libbirch_la_SOURCES = \
   libbirch/Allocation.cpp \
   libbirch/AllocationMap.cpp \
   libbirch/Any.cpp \
-  libbirch/Pointer.cpp \
   libbirch/global.cpp \
-  libbirch/libbirch.cpp
+  libbirch/libbirch.cpp \
+  libbirch/SharedPointer.cpp \
+  libbirch/WeakPointer.cpp
 libbirch_la_CXXFLAGS = $(AM_CXXFLAGS)
 
 libubjpp_la_SOURCES = \
@@ -237,11 +238,12 @@ nobase_include_HEADERS = \
   libbirch/Offset.hpp \
   libbirch/Optional.hpp \
   libbirch/Range.hpp \
-  libbirch/Pointer.hpp \
   libbirch/Sequence.hpp \
+  libbirch/SharedPointer.hpp \
   libbirch/Span.hpp \
   libbirch/Stride.hpp \
   libbirch/View.hpp \
+  libbirch/WeakPointer.hpp \
   libbirch/libbirch.hpp \
   libubjpp/value.hpp \
   libubjpp/common/Parser.h \

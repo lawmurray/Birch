@@ -48,8 +48,7 @@ bi::Any* bi::Allocation::get() {
      * apply these */
     assert(parent);
     object = parent->get();
-    parent->sharedDec();
-    parent = nullptr;
+    detach();
 
     object = allocationMap.get(this);
     object = object->clone();
@@ -57,7 +56,13 @@ bi::Any* bi::Allocation::get() {
   return object;
 }
 
+uint32_t bi::Allocation::sharedCount() const {
+  return shared;
+}
+
 void bi::Allocation::sharedInc() {
+  assert(shared > 0);
+  // ^ can't restore a released resoure, e.g. via a weak pointer to the same
   ++shared;
 }
 
@@ -65,15 +70,15 @@ void bi::Allocation::sharedDec() {
   --shared;
   assert(shared >= 0);
   if (shared == 0) {
-    delete object;
-    object = nullptr;
+    deallocate();
     if (weak == 0) {
-      if (parent) {
-        parent->sharedDec();
-      }
-      delete this;
+      destroy();
     }
   }
+}
+
+uint32_t bi::Allocation::weakCount() const {
+  return weak;
 }
 
 void bi::Allocation::weakInc() {
@@ -84,11 +89,26 @@ void bi::Allocation::weakDec() {
   --weak;
   assert(weak >= 0);
   if (shared == 0 && weak == 0) {
-    if (parent) {
-      parent->sharedDec();
-    }
-    delete this;
+    destroy();
   }
+}
+
+void bi::Allocation::deallocate() {
+  if (object) {
+    delete object;
+    object = nullptr;
+  }
+}
+
+void bi::Allocation::detach() {
+  if (parent) {
+    parent->sharedDec();
+    parent = nullptr;
+  }
+}
+
+void bi::Allocation::destroy() {
+  delete this;
 }
 
 size_t std::hash<bi::Allocation>::operator()(const bi::Allocation& o) const {

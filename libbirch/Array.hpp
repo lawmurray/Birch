@@ -5,7 +5,7 @@
 
 #include "libbirch/Frame.hpp"
 #include "libbirch/Iterator.hpp"
-#include "libbirch/Pointer.hpp"
+#include "libbirch/SharedPointer.hpp"
 #include "libbirch/Sequence.hpp"
 #include "libbirch/Eigen.hpp"
 #include "libbirch/global.hpp"
@@ -407,9 +407,9 @@ private:
    * @param args Constructor arguments.
    */
   template<class U, class ... Args>
-  static void emplace(Pointer<U>& o, Args ... args) {
+  static void emplace(SharedPointer<U>& o, Args ... args) {
     auto raw = new (GC) U(args...);
-    new (&o) Pointer<U>(raw);
+    new (&o) SharedPointer<U>(raw);
   }
 
   /**

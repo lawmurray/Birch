@@ -46,7 +46,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     genTemplateArgs(type);
     middle("::" << stateName << "::");
   }
-  middle(stateName << "(const Pointer<" << type->name);
+  middle(stateName << "(const SharedPointer<" << type->name);
   genTemplateArgs(type);
   middle(">& self");
   if (!o->params->isEmpty()) {
@@ -144,7 +144,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     in();
 
     /* parameters and local variables as class member variables */
-    start("Pointer<" << type->name);
+    start("SharedPointer<" << type->name);
     genTemplateArgs(type);
     finish("> self;");
     for (auto iter = parameters.begin(); iter != parameters.end(); ++iter) {
@@ -243,5 +243,5 @@ void bi::CppMemberFiberGenerator::visit(const This* o) {
 }
 
 void bi::CppMemberFiberGenerator::visit(const Super* o) {
-  middle("self");
+  middle("static_cast<SharedPointer<typename decltype(self)::super_type>>(self)");
 }

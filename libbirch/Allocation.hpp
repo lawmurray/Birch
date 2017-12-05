@@ -3,6 +3,9 @@
  */
 #pragma once
 
+#include "libbirch/SharedPointer.hpp"
+#include "libbirch/WeakPointer.hpp"
+
 #include <unordered_map>
 
 namespace bi {
@@ -28,7 +31,7 @@ private:
   /**
    * Constructor.
    *
-   * @param object The object.
+   * @param object The object to manage.
    */
   Allocation(Any* object);
 
@@ -48,7 +51,7 @@ public:
   /**
    * Factory method.
    *
-   * @param object The object.
+   * @param object The object to manage.
    */
   static Allocation* make(Any* object);
 
@@ -56,6 +59,11 @@ public:
    * Get the object.
    */
   Any* get();
+
+  /**
+   * The current shared count.
+   */
+  uint32_t sharedCount() const;
 
   /**
    * Increment shared count.
@@ -66,6 +74,11 @@ public:
    * Decrement shared count.
    */
   void sharedDec();
+
+  /**
+   * The current weak count.
+   */
+  uint32_t weakCount() const;
 
   /**
    * Increment weak count.
@@ -83,6 +96,25 @@ public:
   const uint64_t world;
 
 private:
+  /**
+   * Deallocate the managed object, if any. This occurs when the share count
+   * is zero.
+   */
+  void deallocate();
+
+  /**
+   * Detach the deallocation object from its parent, if any. This occurs when
+   * the managed object is copied so that the parent is no longer needed, or
+   * when the object is destroyed.
+   */
+  void detach();
+
+  /**
+   * Destroy the allocation object. This occurs when both the share and weak
+   * counts are zero.
+   */
+  void destroy();
+
   /**
    * Parent allocation for copy-on-write.
    */

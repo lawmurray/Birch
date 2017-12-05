@@ -90,7 +90,7 @@ private:
  * @tparam T Type.
  */
 template<class T>
-class Optional<Pointer<T>> {
+class Optional<SharedPointer<T>> {
 public:
   /**
    * Constructor for no value.
@@ -103,7 +103,7 @@ public:
   /**
    * Constructor for a value.
    */
-  Optional(const Pointer<T>& value) :
+  Optional(const SharedPointer<T>& value) :
       value(value) {
     //
   }
@@ -111,7 +111,7 @@ public:
   /**
    * Assign no value.
    */
-  Optional<Pointer<T>>& operator=(const std::nullptr_t& o) {
+  Optional<SharedPointer<T>>& operator=(const std::nullptr_t& o) {
     this->value = o;
     return *this;
   }
@@ -119,7 +119,7 @@ public:
   /**
    * Assign a value.
    */
-  Optional<Pointer<T>>& operator=(const Pointer<T>& value) {
+  Optional<SharedPointer<T>>& operator=(const SharedPointer<T>& value) {
     this->value = value;
     return *this;
   }
@@ -128,17 +128,17 @@ public:
    * Is there a value?
    */
   bool query() const {
-    return !value.isNull();
+    return value.query();
   }
 
   /**
    * Get the value.
    */
-  Pointer<T>& get() {
+  SharedPointer<T>& get() {
     assert(query());
     return value;
   }
-  const Pointer<T>& get() const {
+  const SharedPointer<T>& get() const {
     assert(query());
     return value;
   }
@@ -147,6 +147,6 @@ private:
   /**
    * The contained value, if any.
    */
-  Pointer<T> value;
+  SharedPointer<T> value;
 };
 }

@@ -57,7 +57,7 @@ public:
   /**
    * Fiber state.
    */
-  Pointer<FiberState<Type>> state;
+  SharedPointer<FiberState<Type>> state;
 
   /**
    * World of the fiber.
@@ -67,7 +67,7 @@ public:
   /**
    * Is this a closed fiber?
    */
-  const bool closed;
+  bool closed;
 };
 }
 
@@ -118,7 +118,7 @@ bi::Fiber<Type>& bi::Fiber<Type>::operator=(const Fiber<Type>& o) {
 
 template<class Type>
 bool bi::Fiber<Type>::query() {
-  if (!state.isNull()) {
+  if (state.query()) {
     auto callerWorld = fiberWorld;
     if (closed) {
       fiberWorld = world;
@@ -136,7 +136,7 @@ bool bi::Fiber<Type>::query() {
 
 template<class Type>
 Type& bi::Fiber<Type>::get() {
-  assert(!state.isNull());
+  assert(state.query());
 
   if (closed && !state->yieldIsValue()) {
     /* this fiber, which is yielding, has exported from its world, which must
@@ -148,7 +148,7 @@ Type& bi::Fiber<Type>::get() {
 
 template<class Type>
 const Type& bi::Fiber<Type>::get() const {
-  assert(!state.isNull());
+  assert(state.query());
 
   if (closed && !state->yieldIsValue()) {
     /* this fiber, which is yielding, has exported from its world, which must

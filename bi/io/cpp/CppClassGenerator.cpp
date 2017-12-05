@@ -206,7 +206,7 @@ void bi::CppClassGenerator::visit(const ConversionOperator* o) {
       middle("::");
     } else {
       /* user-defined conversions should be marked explicit to work properly
-       * with the Pointer class in the compiler library; see also
+       * with the SharedPointer class in the compiler library; see also
        * has_conversion */
       start("virtual explicit ");
     }

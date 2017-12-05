@@ -62,7 +62,7 @@ void bi::CppBaseGenerator::visit(const Sequence* o) {
 
 void bi::CppBaseGenerator::visit(const Cast* o) {
   auto classType = dynamic_cast<ClassType*>(o->returnType);
-  middle("bi::cast<bi::type::" << classType->name << ">(" << o->single << ')');
+  middle("bi::dynamic_pointer_cast<bi::type::" << classType->name << ">(" << o->single << ')');
 }
 
 void bi::CppBaseGenerator::visit(const Call* o) {
@@ -154,12 +154,12 @@ void bi::CppBaseGenerator::visit(const Member* o) {
 
 void bi::CppBaseGenerator::visit(const Super* o) {
   // only need to handle the case outside member expression
-  middle("static_cast<super_type*>(this)");
+  middle("shared_from_this<super_type>()");
 }
 
 void bi::CppBaseGenerator::visit(const This* o) {
   // only need to handle the case outside member expression
-  middle("this");
+  middle("shared_from_this<this_type>()");
 }
 
 void bi::CppBaseGenerator::visit(const Nil* o) {
@@ -603,7 +603,7 @@ void bi::CppBaseGenerator::visit(const OptionalType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const ClassType* o) {
-  middle("bi::Pointer<bi::type::" << o->name);
+  middle("bi::SharedPointer<bi::type::" << o->name);
   if (!o->typeArgs->isEmpty()) {
     middle('<' << o->typeArgs << '>');
   }

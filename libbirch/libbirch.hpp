@@ -15,7 +15,7 @@
 #include "libbirch/Sequence.hpp"
 #include "libbirch/Any.hpp"
 #include "libbirch/Object.hpp"
-#include "libbirch/Pointer.hpp"
+#include "libbirch/SharedPointer.hpp"
 #include "libbirch/Optional.hpp"
 #include "libbirch/FiberState.hpp"
 #include "libbirch/Fiber.hpp"
@@ -203,18 +203,18 @@ auto make_sequence(const std::initializer_list<Type> values) {
  *
  * @ingroup libbirch
  *
- * @tparam PointerType Pointer type.
+ * @tparam SharedPointerType SharedPointer type.
  * @tparam Args Constructor parameter types.
  *
  * @param args Constructor arguments.
  *
- * @return Pointer to the object.
+ * @return SharedPointer to the object.
  */
-template<class PointerType, class ... Args>
-PointerType make_object(Args ... args) {
-  using ValueType = typename PointerType::value_type;
+template<class SharedPointerType, class ... Args>
+SharedPointerType make_object(Args ... args) {
+  using ValueType = typename SharedPointerType::value_type;
   auto raw = new ValueType(args...);
-  return PointerType(raw);
+  return SharedPointerType(raw);
 }
 
 /**
@@ -222,11 +222,11 @@ PointerType make_object(Args ... args) {
  *
  * @ingroup libbirch
  *
- * @tparam PointerType Pointer type.
+ * @tparam SharedPointerType SharedPointer type.
  *
  * @param o The object to copy.
  *
- * @return Pointer to the new object.
+ * @return SharedPointer to the new object.
  */
 template<class ValueType>
 ValueType* copy_object(ValueType* o) {
@@ -271,19 +271,21 @@ Fiber<YieldType> make_closed_fiber(Args ... args) {
  * Cast an object.
  */
 template<class To, class From>
-Optional<Pointer<To>> cast(const Pointer<From>& from) {
-  return Optional<Pointer<To>>(from.template cast<To>());
+Optional<SharedPointer<To>> dynamic_pointer_cast(
+    const SharedPointer<From>& from) {
+  return Optional<SharedPointer<To>>(from.template dynamic_pointer_cast<To>());
 }
 
 /**
  * Cast an object.
  */
 template<class To, class From>
-Optional<Pointer<To>> cast(const Optional<Pointer<From>>& from) {
+Optional<SharedPointer<To>> dynamic_pointer_cast(
+    const Optional<SharedPointer<From>>& from) {
   if (from.query()) {
-    return cast<Pointer<To>>(from.get());
+    return dynamic_pointer_cast<SharedPointer<To>>(from.get());
   } else {
-    return Optional<Pointer<To>>();
+    return Optional<SharedPointer<To>>();
   }
 }
 
