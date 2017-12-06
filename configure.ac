@@ -29,17 +29,11 @@ AX_CXX_COMPILE_STDCXX_14([noext], [mandatory])
 # Checks for libraries
 AC_SEARCH_LIBS([dlopen], [dl], [], [])
 AC_CHECK_LIB([m], [main], [], [AC_MSG_ERROR([required standard math library not found])])
-AC_CHECK_LIB([gc], [main], [], [AC_MSG_ERROR([required Boehm garbage collector library not found])])
 AC_CHECK_LIB([boost_filesystem], [main], [], [AC_CHECK_LIB([boost_filesystem-mt], [main], [], [AC_MSG_ERROR([Boost.FileSystem library not found])])])
 AC_CHECK_LIB([boost_system], [main], [], [AC_CHECK_LIB([boost_system-mt], [main], [], [AC_MSG_ERROR([Boost.System library not found])])])
 
 # Checks for header files
 AC_HEADER_ASSERT
-
-AC_CHECK_HEADERS([ \
-    gc.h \
-    gc/gc_cpp.h \
-    ], [], AC_MSG_ERROR([required Boehm garbage collector header not found]), [-])
     
 AC_CHECK_HEADERS([ \
     boost/optional.hpp \

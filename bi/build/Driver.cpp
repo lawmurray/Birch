@@ -165,9 +165,6 @@ void bi::Driver::run(const std::string& prog) {
   /* get package information */
   meta();
 
-  /* initialize garbage collector */
-  GC_INIT();
-
   /* dynamically load possible programs */
   typedef void prog_t(int argc, char** argv);
 

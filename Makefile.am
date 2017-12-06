@@ -6,7 +6,7 @@ AM_FLAGS =
 
 # compiler setup
 AM_CPPFLAGS = -DDATADIR="$(datadir)" -DINCLUDEDIR="$(includedir)" -DLIBDIR="$(libdir)"
-AM_CXXFLAGS = -Wno-deprecated-register -Wno-overloaded-virtual  -include gc.h -include gc_cpp.h
+AM_CXXFLAGS = -Wno-deprecated-register -Wno-overloaded-virtual
 # ^ -Wno-deprecated-register to omit warnings for GNU Flex/Bison generated code
 ACLOCAL_AMFLAGS = -I m4
 
