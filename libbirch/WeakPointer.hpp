@@ -26,6 +26,11 @@ public:
   WeakPointer(T* raw = nullptr);
 
   /**
+   * Constructor from allocation.
+   */
+  WeakPointer(Allocation* allocation);
+
+  /**
    * Copy constructor.
    */
   WeakPointer(const WeakPointer<T>& o);
@@ -155,6 +160,7 @@ class WeakPointer<Any> {
   friend class SharedPointer<Any> ;
 public:
   WeakPointer(Any* raw = nullptr);
+  WeakPointer(Allocation* allocation);
   WeakPointer(const WeakPointer<Any>& o);
   WeakPointer(const SharedPointer<Any>& o);
   WeakPointer(const WeakPointer<Any>& o, const world_t world);
@@ -223,6 +229,12 @@ protected:
 template<class T>
 bi::WeakPointer<T>::WeakPointer(T* raw) :
     super_type(raw) {
+  //
+}
+
+template<class T>
+bi::WeakPointer<T>::WeakPointer(Allocation* allocation) :
+    super_type(allocation) {
   //
 }
 

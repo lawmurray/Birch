@@ -14,6 +14,11 @@ bi::WeakPointer<bi::Any>::WeakPointer(Any* raw) :
   assert(allocation->weakCount() == 1);
 }
 
+bi::WeakPointer<bi::Any>::WeakPointer(Allocation* allocation) :
+    allocation(allocation) {
+  allocation->weakInc();
+}
+
 bi::WeakPointer<bi::Any>::WeakPointer(const WeakPointer<Any>& o) :
     allocation(o.allocation) {
   allocation->weakInc();

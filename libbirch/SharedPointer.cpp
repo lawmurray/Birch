@@ -14,6 +14,11 @@ bi::SharedPointer<bi::Any>::SharedPointer(Any* raw) :
   assert(allocation->sharedCount() == 1);
 }
 
+bi::SharedPointer<bi::Any>::SharedPointer(Allocation* allocation) :
+    allocation(allocation) {
+  allocation->sharedInc();
+}
+
 bi::SharedPointer<bi::Any>::SharedPointer(const SharedPointer<Any>& o) :
     allocation(o.allocation) {
   allocation->sharedInc();
