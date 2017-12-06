@@ -93,7 +93,7 @@ template<class T>
 class Optional<SharedPointer<T>> {
 public:
   /**
-   * Constructor for no value.
+   * Default constructo.
    */
   Optional() :
       value() {
@@ -101,10 +101,18 @@ public:
   }
 
   /**
-   * Constructor for a value.
+   * Value constructor.
    */
   Optional(const SharedPointer<T>& value) :
       value(value) {
+    //
+  }
+
+  /**
+   * Copy constructor.
+   */
+  Optional(const world_t world, Optional<SharedPointer<T>>& o) :
+      value(world, o.value) {
     //
   }
 

@@ -13,23 +13,27 @@ namespace bi {
  * @ingroup libbirch
  */
 class Any {
+  friend class Allocation;
 public:
   /**
-   * Constructor.
+   * Default constructor.
    */
   Any();
 
   /**
-   * Destructor.
+   * Copy constructor.
    */
-  virtual ~Any() = 0;
+  Any(const world_t world, const Any& o);
 
   /**
-   * Clone the object. This is a shallow clone with fiber usage counts of
-   * member attributes incremented, deferring their cloning until they are
-   * used.
+   * Destructor.
    */
-  virtual Any* clone() = 0;
+  virtual ~Any();
+
+  /**
+   * Clone the object.
+   */
+  virtual Any* clone(const world_t world);
 
 protected:
   /**

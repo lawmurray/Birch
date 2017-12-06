@@ -6,12 +6,8 @@
 #include "libbirch/global.hpp"
 
 namespace bi {
-class Allocation;
-class Any;
-template<class T> class SharedPointer;
-
 /**
- * Weak pointer with copy-on-write semantics.
+ * Shared pointer with copy-on-write semantics.
  *
  * @ingroup libbirch
  *
@@ -30,19 +26,24 @@ public:
   WeakPointer(T* raw = nullptr);
 
   /**
-   * Construct with existing allocation.
+   * Copy constructor.
    */
-  WeakPointer(Allocation* allocation);
+  WeakPointer(const WeakPointer<T>& o);
 
   /**
-   * Constructor from shared pointer.
+   * Copy constructor.
    */
   WeakPointer(const SharedPointer<T>& o);
 
   /**
    * Constructor from weak pointer.
    */
-  WeakPointer(const WeakPointer<T>& o) = default;
+  WeakPointer(const WeakPointer<T>& o, const world_t world);
+
+  /**
+   * Constructor from shared pointer.
+   */
+  WeakPointer(const SharedPointer<T>& o, const world_t world);
 
   /**
    * Assignment from null pointer.
@@ -50,26 +51,26 @@ public:
   WeakPointer<T>& operator=(const std::nullptr_t& o);
 
   /**
+   * Assignment from weak pointer.
+   */
+  WeakPointer<T>& operator=(const WeakPointer<T>& o);
+
+  /**
    * Assignment from shared pointer.
    */
   WeakPointer<T>& operator=(const SharedPointer<T>& o);
-
-  /**
-   * Assignment from weak pointer.
-   */
-  WeakPointer<T>& operator=(const WeakPointer<T>& o) = default;
-
-  /**
-   * Generic assignment from shared pointer.
-   */
-  template<class U, typename = std::enable_if<std::is_base_of<T,U>::value>>
-  WeakPointer<T>& operator=(const SharedPointer<U>& o);
 
   /**
    * Generic assignment from weak pointer.
    */
   template<class U, typename = std::enable_if<std::is_base_of<T,U>::value>>
   WeakPointer<T>& operator=(const WeakPointer<U>& o);
+
+  /**
+   * Generic assignment from shared pointer.
+   */
+  template<class U, typename = std::enable_if<std::is_base_of<T,U>::value>>
+  WeakPointer<T>& operator=(const SharedPointer<U>& o);
 
   /**
    * Value assignment.
@@ -154,12 +155,13 @@ class WeakPointer<Any> {
   friend class SharedPointer<Any> ;
 public:
   WeakPointer(Any* raw = nullptr);
-  WeakPointer(Allocation* allocation);
-  WeakPointer(const SharedPointer<Any>& o);
   WeakPointer(const WeakPointer<Any>& o);
+  WeakPointer(const SharedPointer<Any>& o);
+  WeakPointer(const WeakPointer<Any>& o, const world_t world);
+  WeakPointer(const SharedPointer<Any>& o, const world_t world);
   WeakPointer<Any>& operator=(const std::nullptr_t& o);
-  WeakPointer<Any>& operator=(const SharedPointer<Any>& o);
   WeakPointer<Any>& operator=(const WeakPointer<Any>& o);
+  WeakPointer<Any>& operator=(const SharedPointer<Any>& o);
   ~WeakPointer();
 
   /**
@@ -177,11 +179,36 @@ public:
    */
   void release();
 
+  /**
+   * Reset the allocation.
+   */
+  void reset(Allocation* allocation);
+
   template<class U>
   WeakPointer<U> dynamic_pointer_cast() const;
 
   template<class U>
   WeakPointer<U> static_pointer_cast() const;
+
+  /**
+   * Dereference.
+   */
+  Any& operator*() {
+    return *get();
+  }
+  const Any& operator*() const {
+    return *get();
+  }
+
+  /**
+   * Member access.
+   */
+  Any* operator->() {
+    return get();
+  }
+  Any* const operator->() const {
+    return get();
+  }
 
 protected:
   /**
@@ -200,8 +227,27 @@ bi::WeakPointer<T>::WeakPointer(T* raw) :
 }
 
 template<class T>
+bi::WeakPointer<T>::WeakPointer(const WeakPointer<T>& o) :
+    super_type(o) {
+  //
+}
+
+template<class T>
 bi::WeakPointer<T>::WeakPointer(const SharedPointer<T>& o) :
     super_type(o) {
+  //
+}
+
+template<class T>
+bi::WeakPointer<T>::WeakPointer(const WeakPointer<T>& o, const world_t world) :
+    super_type(o, world) {
+  //
+}
+
+template<class T>
+bi::WeakPointer<T>::WeakPointer(const SharedPointer<T>& o,
+    const world_t world) :
+    super_type(o, world) {
   //
 }
 
@@ -213,14 +259,14 @@ bi::WeakPointer<T>& bi::WeakPointer<T>::operator=(const std::nullptr_t& o) {
 
 template<class T>
 template<class U, typename >
-bi::WeakPointer<T>& bi::WeakPointer<T>::operator=(const SharedPointer<U>& o) {
+bi::WeakPointer<T>& bi::WeakPointer<T>::operator=(const WeakPointer<U>& o) {
   WeakPointer<Any>::operator=(o);
   return *this;
 }
 
 template<class T>
 template<class U, typename >
-bi::WeakPointer<T>& bi::WeakPointer<T>::operator=(const WeakPointer<U>& o) {
+bi::WeakPointer<T>& bi::WeakPointer<T>::operator=(const SharedPointer<U>& o) {
   WeakPointer<Any>::operator=(o);
   return *this;
 }
@@ -271,12 +317,6 @@ bi::WeakPointer<U> bi::WeakPointer<T>::static_pointer_cast() const {
   assert(dynamic_cast<U*>(get()));
 #endif
   return WeakPointer<U>(this->allocation);
-}
-
-template<class T>
-bi::WeakPointer<T>::WeakPointer(Allocation* allocation) :
-    super_type(allocation) {
-  //
 }
 
 template<class U>

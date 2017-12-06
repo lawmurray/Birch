@@ -35,8 +35,7 @@ public:
    */
   Array(const F& frame = F()) :
       frame(frame),
-      isView(false),
-      isShared(false) {
+      isView(false) {
     allocate();
     initialize();
   }
@@ -52,8 +51,7 @@ public:
   template<class ... Args>
   Array(const F& frame, Args ... args) :
       frame(frame),
-      isView(false),
-      isShared(false) {
+      isView(false) {
     allocate();
     initialize(args...);
   }
@@ -61,12 +59,11 @@ public:
   /**
    * Copy constructor.
    */
-  Array(const Array<T,F>& o) :
+  Array(const Array<T,F>& o, const world_t world) :
       frame(o.frame),
-      ptr(o.ptr),
-      isView(false),
-      isShared(true) {
-    const_cast<Array<T,F>&>(o).isShared = true;
+      isView(false) {
+    allocate();
+    copy(o, world);
   }
 
   /**
@@ -80,12 +77,20 @@ public:
    * @param o Sequence.
    */
   template<class U>
-  Array(const Sequence<U>& o) :
+  Array(const Sequence<U>& o, const world_t world) :
       frame(sequence_frame(o)),
-      isView(false),
-      isShared(false) {
+      isView(false) {
     allocate();
-    assign(o);
+    copy(o, world);
+  }
+
+  /**
+   * Destructor.
+   */
+  ~Array() {
+    if (!isView) {
+      delete[] ptr;
+    }
   }
 
   /**
@@ -96,10 +101,11 @@ public:
     if (isView) {
       assign(o);
     } else {
-      frame.resize(o.frame);
-      ptr = o.ptr;
-      isShared = true;
-      const_cast<Array<T,F>&>(o).isShared = true;
+      if (!frame.conforms(o.frame)) {
+        frame.resize(o.frame);
+        allocate();
+      }
+      assign(o);
     }
     return *this;
   }
@@ -120,7 +126,6 @@ public:
       } else {
         frame = std::move(o.frame);
         ptr = std::move(o.ptr);
-        isShared = std::move(o.isShared);
       }
     }
     return *this;
@@ -222,8 +227,7 @@ public:
       is_eigen_compatible<DerivedType>::value>>
   Array(const Eigen::MatrixBase<DerivedType>& o, const F& frame) :
       frame(frame),
-      isView(false),
-      isShared(false) {
+      isView(false) {
     allocate();
     toEigen() = o;
   }
@@ -234,8 +238,7 @@ public:
   template<class DerivedType, typename = std::enable_if_t<is_eigen_compatible<DerivedType>::value>>
   Array(const Eigen::MatrixBase<DerivedType>& o) :
       frame(o.rows(), o.cols()),
-      isView(false),
-      isShared(false) {
+      isView(false) {
     allocate();
     toEigen() = o;
   }
@@ -326,9 +329,6 @@ public:
    * Raw pointer to underlying buffer.
    */
   T* buf() {
-    if (isShared) {
-      copy();
-    }
     return ptr;
   }
 
@@ -351,8 +351,7 @@ private:
   Array(T* ptr, const F& frame) :
       frame(frame),
       ptr(ptr),
-      isView(true),
-      isShared(false) {
+      isView(true) {
     //
   }
 
@@ -360,9 +359,7 @@ private:
    * Allocate memory for array.
    */
   void allocate() {
-    ptr = (T*)GC_MALLOC(sizeof(T) * frame.volume());
-    assert(ptr);
-    isShared = false;
+    ptr = new T[frame.volume()];
   }
 
   /**
@@ -370,11 +367,11 @@ private:
    */
   void copy() {
     T* old = ptr;
-    size_t size = sizeof(T) * frame.volume();
-    ptr = (T*)GC_MALLOC(size);
-    assert(ptr);
-    std::memcpy(ptr, old, size);
-    isShared = false;
+    ptr = new T[frame.volume()];
+    //std::memcpy(ptr, old, size);
+    for (size_t i = 0; i < frame.volume(); ++i) {
+      ptr[i] = old[i];
+    }
   }
 
   /**
@@ -387,6 +384,77 @@ private:
     for (auto iter = begin(); iter != end(); ++iter) {
       emplace(*iter, args...);
     }
+  }
+
+  /**
+   * Copy from another array.
+   */
+  template<class G>
+  void copy(const Array<T,G>& o, const world_t world) {
+    /* pre-condition */
+    assert(o.frame.conforms(frame));
+
+    if (frame.size() > 0) {
+      auto iter1 = begin();
+      auto end1 = end();
+      auto iter2 = o.begin();
+      auto end2 = o.end();
+
+      for (; iter1 != end1; ++iter1, ++iter2) {
+        emplace(*iter1, *iter2, world);
+      }
+      assert(iter2 == end2);
+    }
+  }
+
+  template<class U>
+  void copy(const Sequence<U>& o, const world_t world) {
+    assert(F::count() == sequence_depth<Sequence<U>>::value);
+
+    size_t sizes[F::count()];
+    frame.lengths(sizes);
+    assert(sequence_conforms(sizes, o));
+    sequence_copy(begin(), o, world);
+  }
+
+  /**
+   * Assign from another array.
+   */
+  template<class G>
+  void assign(const Array<T,G>& o) {
+    /* pre-condition */
+    assert(o.frame.conforms(frame));
+
+    if (frame.size() > 0) {
+      auto iter1 = begin();
+      auto end1 = end();
+
+      auto iter2 = o.begin();
+      auto end2 = o.end();
+
+      //size_t block1 = frame.block();
+      //size_t block2 = o.frame.block();
+      //size_t block = gcd(block1, block2);
+
+      //for (; iter1 != end1; iter1 += block, iter2 += block) {
+      //  std::memmove(&(*iter1), &(*iter2), block * sizeof(T));
+      //  // ^ memory regions may overlap, so avoid memcpy
+      //}
+      for (; iter1 != end1; ++iter1, ++iter2) {
+        *iter1 = *iter2;
+      }
+      assert(iter2 == end2);
+    }
+  }
+
+  template<class U>
+  void assign(const Sequence<U>& o) {
+    assert(F::count() == sequence_depth<Sequence<U>>::value);
+
+    size_t sizes[F::count()];
+    frame.lengths(sizes);
+    assert(sequence_conforms(sizes, o));
+    sequence_assign(begin(), o);
   }
 
   /**
@@ -408,46 +476,7 @@ private:
    */
   template<class U, class ... Args>
   static void emplace(SharedPointer<U>& o, Args ... args) {
-    auto raw = new (GC) U(args...);
-    new (&o) SharedPointer<U>(raw);
-  }
-
-  /**
-   * Copy from another array.
-   */
-  template<class G>
-  void assign(const Array<T,G>& o) {
-    /* pre-condition */
-    assert(o.frame.conforms(frame));
-
-    if (frame.size() > 0) {
-      size_t block1 = frame.block();
-      auto iter1 = begin();
-      auto end1 = end();
-
-      size_t block2 = o.frame.block();
-      auto iter2 = o.begin();
-      auto end2 = o.end();
-
-      size_t block = gcd(block1, block2);
-      for (; iter1 != end1; iter1 += block, iter2 += block) {
-        std::memmove(&(*iter1), &(*iter2), block * sizeof(T));
-        // ^ memory regions may overlap, so avoid memcpy
-      }
-      assert(iter2 == end2);
-    }
-  }
-
-  template<class U>
-  void assign(const Sequence<U>& o) {
-    assert(F::count() == sequence_depth<Sequence<U>>::value);
-
-    size_t sizes[F::count()];
-    frame.lengths(sizes);
-    assert(sequence_conforms(sizes, o));
-    auto iter = begin();
-    sequence_assign(o, iter);
-    assert(iter == end());
+    new (&o) SharedPointer<U>(new U(args...));
   }
 
   /**
@@ -481,10 +510,5 @@ private:
    * semantics, as it cannot be resized or moved.
    */
   bool isView;
-
-  /**
-   * Is the buffer shared with another array?
-   */
-  bool isShared;
 };
 }

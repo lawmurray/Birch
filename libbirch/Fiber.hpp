@@ -62,7 +62,7 @@ public:
   /**
    * World of the fiber.
    */
-  uint64_t world;
+  world_t world;
 
   /**
    * Is this a closed fiber?

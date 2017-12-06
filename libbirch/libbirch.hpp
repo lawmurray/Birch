@@ -14,7 +14,6 @@
 #include "libbirch/Array.hpp"
 #include "libbirch/Sequence.hpp"
 #include "libbirch/Any.hpp"
-#include "libbirch/Object.hpp"
 #include "libbirch/SharedPointer.hpp"
 #include "libbirch/Optional.hpp"
 #include "libbirch/FiberState.hpp"
@@ -213,24 +212,7 @@ auto make_sequence(const std::initializer_list<Type> values) {
 template<class SharedPointerType, class ... Args>
 SharedPointerType make_object(Args ... args) {
   using ValueType = typename SharedPointerType::value_type;
-  auto raw = new ValueType(args...);
-  return SharedPointerType(raw);
-}
-
-/**
- * Shallow-copy an object.
- *
- * @ingroup libbirch
- *
- * @tparam SharedPointerType SharedPointer type.
- *
- * @param o The object to copy.
- *
- * @return SharedPointer to the new object.
- */
-template<class ValueType>
-ValueType* copy_object(ValueType* o) {
-  return new ValueType(*o);
+  return SharedPointerType(new ValueType(args...));
 }
 
 /**

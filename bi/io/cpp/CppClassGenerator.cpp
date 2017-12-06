@@ -95,7 +95,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
     } else {
       finish(" {");
       in();
-      line("return copy_object(this);");
+      line("return new this_type(*this);");
       out();
       line("}\n");
     }

@@ -6,10 +6,6 @@
 #include "libbirch/global.hpp"
 
 namespace bi {
-class Allocation;
-class Any;
-template<class T> class WeakPointer;
-
 /**
  * Shared pointer with copy-on-write semantics.
  *
@@ -30,19 +26,24 @@ public:
   SharedPointer(T* raw = nullptr);
 
   /**
-   * Construct with existing allocation.
+   * Copy constructor.
    */
-  SharedPointer(Allocation* allocation);
+  SharedPointer(const SharedPointer<T>& o);
+
+  /**
+   * Copy constructor.
+   */
+  SharedPointer(const WeakPointer<T>& o);
 
   /**
    * Constructor from shared pointer.
    */
-  SharedPointer(const SharedPointer<T>& o) = default;
+  SharedPointer(const SharedPointer<T>& o, const world_t world);
 
   /**
    * Constructor from weak pointer.
    */
-  SharedPointer(const WeakPointer<T>& o);
+  SharedPointer(const WeakPointer<T>& o, const world_t world);
 
   /**
    * Assignment from null pointer.
@@ -52,7 +53,7 @@ public:
   /**
    * Assignment from shared pointer.
    */
-  SharedPointer<T>& operator=(const SharedPointer<T>& o) = default;
+  SharedPointer<T>& operator=(const SharedPointer<T>& o);
 
   /**
    * Assignment from weak pointer.
@@ -154,9 +155,10 @@ class SharedPointer<Any> {
   friend class WeakPointer<Any> ;
 public:
   SharedPointer(Any* raw = nullptr);
-  SharedPointer(Allocation* allocation);
   SharedPointer(const SharedPointer<Any>& o);
   SharedPointer(const WeakPointer<Any>& o);
+  SharedPointer(const SharedPointer<Any>& o, const world_t world);
+  SharedPointer(const WeakPointer<Any>& o, const world_t world);
   SharedPointer<Any>& operator=(const std::nullptr_t& o);
   SharedPointer<Any>& operator=(const SharedPointer<Any>& o);
   SharedPointer<Any>& operator=(const WeakPointer<Any>& o);
@@ -177,11 +179,36 @@ public:
    */
   void release();
 
+  /**
+   * Reset the allocation.
+   */
+  void reset(Allocation* allocation);
+
   template<class U>
   SharedPointer<U> dynamic_pointer_cast() const;
 
   template<class U>
   SharedPointer<U> static_pointer_cast() const;
+
+  /**
+   * Dereference.
+   */
+  Any& operator*() {
+    return *get();
+  }
+  const Any& operator*() const {
+    return *get();
+  }
+
+  /**
+   * Member access.
+   */
+  Any* operator->() {
+    return get();
+  }
+  Any* const operator->() const {
+    return get();
+  }
 
 protected:
   /**
@@ -200,8 +227,28 @@ bi::SharedPointer<T>::SharedPointer(T* raw) :
 }
 
 template<class T>
+bi::SharedPointer<T>::SharedPointer(const SharedPointer<T>& o) :
+    super_type(o) {
+  //
+}
+
+template<class T>
 bi::SharedPointer<T>::SharedPointer(const WeakPointer<T>& o) :
     super_type(o) {
+  //
+}
+
+template<class T>
+bi::SharedPointer<T>::SharedPointer(const SharedPointer<T>& o,
+    const world_t world) :
+    super_type(o, world) {
+  //
+}
+
+template<class T>
+bi::SharedPointer<T>::SharedPointer(const WeakPointer<T>& o,
+    const world_t world) :
+    super_type(o, world) {
   //
 }
 
@@ -274,12 +321,6 @@ bi::SharedPointer<U> bi::SharedPointer<T>::static_pointer_cast() const {
   assert(dynamic_cast<U*>(get()));
 #endif
   return SharedPointer<U>(this->allocation);
-}
-
-template<class T>
-bi::SharedPointer<T>::SharedPointer(Allocation* allocation) :
-    super_type(allocation) {
-  //
 }
 
 template<class U>

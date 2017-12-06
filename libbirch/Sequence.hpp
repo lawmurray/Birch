@@ -72,15 +72,30 @@ bool sequence_conforms(const size_t* sizes, const Sequence<Type>& o) {
 /**
  * Copy from a sequence into an array.
  */
-template<class Type, class Iterator>
-void sequence_assign(const Type& from, Iterator& to) {
+template<class Iterator, class Type>
+void sequence_copy(Iterator& to, const Type& from, const world_t world) {
+  new (&*to) Type(from, world);
+  ++to;
+}
+template<class Iterator, class Type>
+void sequence_copy(Iterator& to, const Sequence<Type>& from, const world_t world) {
+  for (auto o : from) {
+    sequence_copy(to, o, world);
+  }
+}
+
+/**
+ * Assign from a sequence into an array.
+ */
+template<class Iterator, class Type>
+void sequence_assign(Iterator& to, const Type& from) {
   *to = from;
   ++to;
 }
-template<class Type, class Iterator>
-void sequence_assign(const Sequence<Type>& from, Iterator& to) {
+template<class Iterator, class Type>
+void sequence_assign(Iterator& to, const Sequence<Type>& from) {
   for (auto o : from) {
-    sequence_assign(o, to);
+    sequence_assign(to, o);
   }
 }
 

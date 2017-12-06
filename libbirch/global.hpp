@@ -10,7 +10,16 @@
 #include <random>
 
 namespace bi {
+class Allocation;
 class AllocationMap;
+class Any;
+template<class T> class SharedPointer;
+template<class T> class WeakPointer;
+
+/**
+ * World type.
+ */
+using world_t = uint64_t;
 
 /**
  * The allocation map for copy-on-write of objects between worlds.
@@ -20,12 +29,12 @@ extern AllocationMap allocationMap;
 /**
  * The world of the currently running fiber.
  */
-extern uint64_t fiberWorld;
+extern world_t fiberWorld;
 
 /**
  * The number of worlds enumerated so far.
  */
-extern uint64_t nworlds;
+extern world_t nworlds;
 
 /**
  * Random number generator.

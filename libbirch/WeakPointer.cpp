@@ -9,8 +9,14 @@
 
 #include <cassert>
 
-bi::WeakPointer<bi::Any>::WeakPointer(Any* raw) {
-  allocation = Allocation::make(raw);
+bi::WeakPointer<bi::Any>::WeakPointer(Any* raw) :
+    allocation(new Allocation(raw)) {
+  assert(allocation->weakCount() == 1);
+}
+
+bi::WeakPointer<bi::Any>::WeakPointer(const WeakPointer<Any>& o) :
+    allocation(o.allocation) {
+  allocation->weakInc();
 }
 
 bi::WeakPointer<bi::Any>::WeakPointer(const SharedPointer<Any>& o) :
@@ -18,18 +24,16 @@ bi::WeakPointer<bi::Any>::WeakPointer(const SharedPointer<Any>& o) :
   allocation->weakInc();
 }
 
-bi::WeakPointer<bi::Any>::WeakPointer(const WeakPointer<Any>& o) {
-  /* pointers are only copied when objects are cloned; objects are only cloned
-   * when being moved between worlds (e.g. copy-on-write for fibers) */
-  if (o.allocation) {
-    allocation = Allocation::make(o.allocation);
-  } else {
-    allocation = nullptr;
-  }
+bi::WeakPointer<bi::Any>::WeakPointer(const WeakPointer<Any>& o,
+    const world_t world) :
+    allocation(allocationMap.get(o.allocation, world)) {
+  allocation->weakInc();
 }
 
-bi::WeakPointer<bi::Any>::~WeakPointer() {
-  release();
+bi::WeakPointer<bi::Any>::WeakPointer(const SharedPointer<Any>& o,
+    const world_t world) :
+    allocation(allocationMap.get(o.allocation, world)) {
+  allocation->weakInc();
 }
 
 bi::WeakPointer<bi::Any>& bi::WeakPointer<bi::Any>::operator=(
@@ -39,47 +43,38 @@ bi::WeakPointer<bi::Any>& bi::WeakPointer<bi::Any>::operator=(
 }
 
 bi::WeakPointer<bi::Any>& bi::WeakPointer<bi::Any>::operator=(
-    const SharedPointer<Any>& o) {
-  if (allocation) {
-    release();
-  }
-  if (o.allocation) {
-    assert(o.allocation->world == fiberWorld);
-    allocation = o.allocation;
-    allocation->weakInc();
-  }
+    const WeakPointer<Any>& o) {
+  reset(allocationMap.get(o.allocation, allocation->world));
   return *this;
 }
 
 bi::WeakPointer<bi::Any>& bi::WeakPointer<bi::Any>::operator=(
-    const WeakPointer<Any>& o) {
-  if (allocation) {
-    release();
-  }
-  if (o.allocation) {
-    assert(o.allocation->world == fiberWorld);
-    allocation = o.allocation;
-    allocation->weakInc();
-  }
+    const SharedPointer<Any>& o) {
+  reset(allocationMap.get(o.allocation, allocation->world));
   return *this;
+}
+
+bi::WeakPointer<bi::Any>::~WeakPointer() {
+  release();
 }
 
 bool bi::WeakPointer<bi::Any>::query() const {
   return allocation && allocation->sharedCount() > 0;
 }
 
-bi::Any* bi::WeakPointer<bi::Any>::get() const {
-  return allocation ? allocation->get() : nullptr;
+bi::Any * bi::WeakPointer<bi::Any>::get() const {
+  return allocation->get();
 }
 
-void bi::WeakPointer<bi::Any>::release() {
-  if (allocation) {
-    allocation->weakDec();
-    allocation = nullptr;
+void bi::WeakPointer<bi::Any>::reset(Allocation* allocation) {
+  if (this->allocation != allocation) {
+    this->allocation->weakDec();
+    this->allocation = allocation;
+    this->allocation->weakInc();
   }
 }
 
-bi::WeakPointer<bi::Any>::WeakPointer(Allocation* allocation) :
-    allocation(allocation) {
-  //
+void bi::WeakPointer<bi::Any>::release() {
+  allocation->weakDec();
+  allocation = nullptr;
 }
