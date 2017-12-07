@@ -244,6 +244,20 @@ bi::WeakPointer<T>& bi::WeakPointer<T>::operator=(const std::nullptr_t& o) {
 }
 
 template<class T>
+bi::WeakPointer<T>& bi::WeakPointer<T>::operator=(
+    const WeakPointer<T>& o) {
+  WeakPointer<Any>::operator=(o);
+  return *this;
+}
+
+template<class T>
+bi::WeakPointer<T>& bi::WeakPointer<T>::operator=(
+    const SharedPointer<T>& o) {
+  WeakPointer<Any>::operator=(o);
+  return *this;
+}
+
+template<class T>
 template<class U, typename >
 bi::WeakPointer<T>& bi::WeakPointer<T>::operator=(const WeakPointer<U>& o) {
   WeakPointer<Any>::operator=(o);

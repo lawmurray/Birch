@@ -259,6 +259,20 @@ bi::SharedPointer<T>& bi::SharedPointer<T>::operator=(
 }
 
 template<class T>
+bi::SharedPointer<T>& bi::SharedPointer<T>::operator=(
+    const SharedPointer<T>& o) {
+  SharedPointer<Any>::operator=(o);
+  return *this;
+}
+
+template<class T>
+bi::SharedPointer<T>& bi::SharedPointer<T>::operator=(
+    const WeakPointer<T>& o) {
+  SharedPointer<Any>::operator=(o);
+  return *this;
+}
+
+template<class T>
 template<class U, typename >
 bi::SharedPointer<T>& bi::SharedPointer<T>::operator=(
     const SharedPointer<U>& o) {
