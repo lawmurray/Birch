@@ -21,9 +21,14 @@ public:
   typedef SharedPointer<typename super_type<T>::type> super_type;
 
   /**
+   * Default constructor.
+   */
+  SharedPointer();
+
+  /**
    * Constructor from raw pointer.
    */
-  SharedPointer(T* raw = nullptr);
+  SharedPointer(T* raw);
 
   /**
    * Constructor from allocation.
@@ -151,7 +156,8 @@ class SharedPointer<Any> {
 public:
   typedef Any value_type;
 
-  SharedPointer(Any* raw = nullptr);
+  SharedPointer();
+  SharedPointer(Any* raw);
   SharedPointer(Allocation* allocation);
   SharedPointer(const SharedPointer<Any>& o);
   SharedPointer(const WeakPointer<Any>& o);
@@ -215,6 +221,11 @@ protected:
 }
 
 #include <cassert>
+
+template<class T>
+bi::SharedPointer<T>::SharedPointer() {
+  //
+}
 
 template<class T>
 bi::SharedPointer<T>::SharedPointer(T* raw) :

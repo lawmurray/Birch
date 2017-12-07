@@ -82,7 +82,7 @@ private:
 };
 
 /**
- * Optional for pointer types. Uses the pointer itself, set to nullptr, to
+ * Optional for shared pointers. Uses the pointer itself, set to nullptr, to
  * denote a missing value, rather than keeping a separate boolean flag.
  *
  * @ingroup libbirch
@@ -93,7 +93,7 @@ template<class T>
 class Optional<SharedPointer<T>> {
 public:
   /**
-   * Default constructo.
+   * Default constructor.
    */
   Optional() :
       value() {
@@ -148,5 +148,74 @@ private:
    * The contained value, if any.
    */
   SharedPointer<T> value;
+};
+
+/**
+ * Optional for weak pointers. Uses the pointer itself, set to nullptr, to
+ * denote a missing value, rather than keeping a separate boolean flag.
+ *
+ * @ingroup libbirch
+ *
+ * @tparam T Type.
+ */
+template<class T>
+class Optional<WeakPointer<T>> {
+public:
+  /**
+   * Default constructo.
+   */
+  Optional() :
+      value() {
+    //
+  }
+
+  /**
+   * Value constructor.
+   */
+  Optional(const WeakPointer<T>& value) :
+      value(value) {
+    //
+  }
+
+  /**
+   * Assign no value.
+   */
+  Optional<WeakPointer<T>>& operator=(const std::nullptr_t& o) {
+    this->value = o;
+    return *this;
+  }
+
+  /**
+   * Assign a value.
+   */
+  Optional<WeakPointer<T>>& operator=(const WeakPointer<T>& value) {
+    this->value = value;
+    return *this;
+  }
+
+  /**
+   * Is there a value?
+   */
+  bool query() const {
+    return value.query();
+  }
+
+  /**
+   * Get the value.
+   */
+  WeakPointer<T>& get() {
+    assert(query());
+    return value;
+  }
+  const WeakPointer<T>& get() const {
+    assert(query());
+    return value;
+  }
+
+private:
+  /**
+   * The contained value, if any.
+   */
+  WeakPointer<T> value;
 };
 }

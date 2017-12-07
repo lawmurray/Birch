@@ -29,7 +29,7 @@ bool std::equal_to<std::pair<bi::Allocation*,bi::world_t>>::operator()(
 }
 
 bi::Allocation* bi::AllocationMap::get(Allocation* src) {
-  if (src->world == fiberWorld) {
+  if (!src || src->world == fiberWorld) {
     return src;
   } else {
     auto pair = std::make_pair(src, fiberWorld);
