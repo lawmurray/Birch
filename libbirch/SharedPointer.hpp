@@ -23,7 +23,7 @@ public:
   /**
    * Default constructor.
    */
-  SharedPointer();
+  SharedPointer(const std::nullptr_t = nullptr);
 
   /**
    * Constructor from raw pointer.
@@ -156,7 +156,7 @@ class SharedPointer<Any> {
 public:
   typedef Any value_type;
 
-  SharedPointer();
+  SharedPointer(const std::nullptr_t = nullptr);
   SharedPointer(Any* raw);
   SharedPointer(Allocation* allocation);
   SharedPointer(const SharedPointer<Any>& o);
@@ -223,7 +223,7 @@ protected:
 #include <cassert>
 
 template<class T>
-bi::SharedPointer<T>::SharedPointer() {
+bi::SharedPointer<T>::SharedPointer(const std::nullptr_t) {
   //
 }
 

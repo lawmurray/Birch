@@ -23,7 +23,7 @@ public:
   /**
    * Default constructor.
    */
-  WeakPointer();
+  WeakPointer(const std::nullptr_t = nullptr);
 
   /**
    * Constructor from allocation.
@@ -149,7 +149,7 @@ template<>
 class WeakPointer<Any> {
   friend class SharedPointer<Any> ;
 public:
-  WeakPointer();
+  WeakPointer(const std::nullptr_t = nullptr);
   WeakPointer(Allocation* allocation);
   WeakPointer(const WeakPointer<Any>& o);
   WeakPointer(const SharedPointer<Any>& o);
@@ -215,7 +215,7 @@ protected:
 #include <cassert>
 
 template<class T>
-bi::WeakPointer<T>::WeakPointer() {
+bi::WeakPointer<T>::WeakPointer(const std::nullptr_t) {
   //
 }
 

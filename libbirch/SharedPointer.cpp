@@ -9,20 +9,25 @@
 
 #include <cassert>
 
-bi::SharedPointer<bi::Any>::SharedPointer() :
+bi::SharedPointer<bi::Any>::SharedPointer(const std::nullptr_t) :
     allocation(nullptr) {
   //
 }
 
-bi::SharedPointer<bi::Any>::SharedPointer(Any* raw) :
-    allocation(new Allocation(raw)) {
-  assert(allocation->sharedCount() == 1);
+bi::SharedPointer<bi::Any>::SharedPointer(Any* raw) {
+  if (raw) {
+    allocation = new Allocation(raw);
+    assert(allocation->sharedCount() == 1);
+  } else {
+    allocation = nullptr;
+  }
 }
 
 bi::SharedPointer<bi::Any>::SharedPointer(Allocation* allocation) :
     allocation(allocation) {
-  assert(allocation);
-  allocation->sharedInc();
+  if (allocation) {
+    allocation->sharedInc();
+  }
 }
 
 bi::SharedPointer<bi::Any>::SharedPointer(const SharedPointer<Any>& o) {
@@ -51,14 +56,12 @@ bi::SharedPointer<bi::Any>& bi::SharedPointer<bi::Any>::operator=(
 
 bi::SharedPointer<bi::Any>& bi::SharedPointer<bi::Any>::operator=(
     const SharedPointer<Any>& o) {
-  assert(!allocation || allocation->world == fiberWorld);
   reset(allocationMap.get(o.allocation));
   return *this;
 }
 
 bi::SharedPointer<bi::Any>& bi::SharedPointer<bi::Any>::operator=(
     const WeakPointer<Any>& o) {
-  assert(!allocation || allocation->world == fiberWorld);
   reset(allocationMap.get(o.allocation));
   return *this;
 }

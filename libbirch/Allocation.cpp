@@ -15,6 +15,7 @@ bi::Allocation::Allocation(Allocation* parent) :
     object(nullptr),
     shared(1),
     weak(1) {
+  assert(parent);
   parent->sharedInc();
 }
 
@@ -24,6 +25,7 @@ bi::Allocation::Allocation(Any* object) :
     object(object),
     shared(1),
     weak(1) {
+  assert(object);
   object->ptr.reset(this);
 }
 
@@ -37,6 +39,7 @@ bi::Any* bi::Allocation::get() {
     world_t prevWorld = fiberWorld;
     fiberWorld = world;
     object = parent->get()->clone();
+    assert(world == fiberWorld);  // shouldn't change in clone
     fiberWorld = prevWorld;
     detach();
     object->ptr.reset(this);

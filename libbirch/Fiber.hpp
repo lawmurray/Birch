@@ -89,49 +89,57 @@ bi::Fiber<Type>::Fiber(FiberState<Type>* state, const bool closed) :
 
 template<class Type>
 bi::Fiber<Type>::Fiber(const Fiber<Type>& o) :
-    state(o.state),
     closed(o.closed) {
   if (closed) {
     /* the copied fiber has exported from its world, which must
      * now become read only, with modifications copy-on-write */
-    world = ++nworlds;
     const_cast<Fiber<Type>&>(o).world = ++nworlds;
+    world = ++nworlds;
   } else {
     world = o.world;
   }
+  auto prevWorld = fiberWorld;
+  fiberWorld = world;
+  state = o.state;
+  world = fiberWorld;
+  fiberWorld = prevWorld;
 }
 
 template<class Type>
 bi::Fiber<Type>& bi::Fiber<Type>::operator=(const Fiber<Type>& o) {
-  state = o.state;
   closed = o.closed;
   if (closed) {
     /* the copied fiber has exported from its world, which must
      * now become read only, with modifications copy-on-write */
-    world = ++nworlds;
     const_cast<Fiber<Type>&>(o).world = ++nworlds;
+    world = ++nworlds;
   } else {
     world = o.world;
   }
+  auto prevWorld = fiberWorld;
+  fiberWorld = world;
+  state = o.state;
+  world = fiberWorld;
+  fiberWorld = prevWorld;
+
   return *this;
 }
 
 template<class Type>
 bool bi::Fiber<Type>::query() {
+  bool result = false;
   if (state.query()) {
-    auto callerWorld = fiberWorld;
+    auto prevWorld = fiberWorld;
     if (closed) {
       fiberWorld = world;
     }
-    bool result = state->query();
+    result = state->query();
+    world = fiberWorld;
     if (closed) {
-      world = fiberWorld;
-      fiberWorld = callerWorld;
+      fiberWorld = prevWorld;
     }
-    return result;
-  } else {
-    return false;
   }
+  return result;
 }
 
 template<class Type>

@@ -69,7 +69,12 @@ public:
   /**
    * Move constructor.
    */
-  Array(Array<T,F> && o) = default;
+  Array(Array<T,F> && o) :
+      frame(o.frame),
+      ptr(o.ptr),
+      isView(o.isView) {
+    o.isView = false;  // prevents deletion of ptr
+  }
 
   /**
    * Sequence constructor.
@@ -88,9 +93,7 @@ public:
    * Destructor.
    */
   ~Array() {
-    if (!isView) {
-      delete[] ptr;
-    }
+    deallocate();
   }
 
   /**
@@ -103,6 +106,7 @@ public:
     } else {
       if (!frame.conforms(o.frame)) {
         frame.resize(o.frame);
+        deallocate();
         allocate();
       }
       assign(o);
@@ -120,12 +124,15 @@ public:
       if (o.isView) {
         if (!frame.conforms(o.frame)) {
           frame.resize(o.frame);
+          deallocate();
           allocate();
         }
         assign(o);
       } else {
+        deallocate();
         frame = std::move(o.frame);
         ptr = std::move(o.ptr);
+        o.isView = true;  // prevents deletion of ptr
       }
     }
     return *this;
@@ -250,6 +257,7 @@ public:
   Array<T,F>& operator=(const Eigen::MatrixBase<DerivedType>& o) {
     if (!isView && !frame.conforms(o.rows(), o.cols())) {
       frame.resize(o.rows(), o.cols());
+      deallocate();
       allocate();
     }
     toEigen() = o;
@@ -360,6 +368,15 @@ private:
    */
   void allocate() {
     ptr = new T[frame.volume()];
+  }
+
+  /**
+   * Deallocate memory of array.
+   */
+  void deallocate() {
+    if (!isView) {
+      delete[] ptr;
+    }
   }
 
   /**

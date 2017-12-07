@@ -9,15 +9,16 @@
 
 #include <cassert>
 
-bi::WeakPointer<bi::Any>::WeakPointer() :
+bi::WeakPointer<bi::Any>::WeakPointer(const std::nullptr_t) :
     allocation(nullptr) {
   //
 }
 
 bi::WeakPointer<bi::Any>::WeakPointer(Allocation* allocation) :
     allocation(allocation) {
-  assert(allocation);
-  allocation->weakInc();
+  if (allocation) {
+    allocation->weakInc();
+  }
 }
 
 bi::WeakPointer<bi::Any>::WeakPointer(const WeakPointer<Any>& o) {
@@ -46,14 +47,12 @@ bi::WeakPointer<bi::Any>& bi::WeakPointer<bi::Any>::operator=(
 
 bi::WeakPointer<bi::Any>& bi::WeakPointer<bi::Any>::operator=(
     const WeakPointer<Any>& o) {
-  assert(!allocation || allocation->world == fiberWorld);
   reset(allocationMap.get(o.allocation));
   return *this;
 }
 
 bi::WeakPointer<bi::Any>& bi::WeakPointer<bi::Any>::operator=(
     const SharedPointer<Any>& o) {
-  assert(!allocation || allocation->world == fiberWorld);
   reset(allocationMap.get(o.allocation));
   return *this;
 }
