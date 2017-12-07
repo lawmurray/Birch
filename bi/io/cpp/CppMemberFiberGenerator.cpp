@@ -106,7 +106,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   } else {
     finish(" {");
     in();
-    line("return bi::copy_object(this);");
+    line("return bi::copy_object(*this);");
     out();
     line("}\n");
   }

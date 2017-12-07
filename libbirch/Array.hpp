@@ -401,7 +401,7 @@ private:
       auto end2 = o.end();
 
       for (; iter1 != end1; ++iter1, ++iter2) {
-        emplace(*iter1, *iter2);
+        new (&(*iter1)) T(*iter2);
       }
       assert(iter2 == end2);
     }
@@ -414,7 +414,8 @@ private:
     size_t sizes[F::count()];
     frame.lengths(sizes);
     assert(sequence_conforms(sizes, o));
-    sequence_copy(begin(), o);
+    auto iter = begin();
+    sequence_copy(iter, o);
   }
 
   /**
@@ -454,7 +455,8 @@ private:
     size_t sizes[F::count()];
     frame.lengths(sizes);
     assert(sequence_conforms(sizes, o));
-    sequence_assign(begin(), o);
+    auto iter = begin();
+    sequence_assign(iter, o);
   }
 
   /**

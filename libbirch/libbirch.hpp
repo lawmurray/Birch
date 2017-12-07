@@ -225,8 +225,8 @@ Type* make_object(Args ... args) {
  * @return The new object.
  */
 template<class Type>
-Type* copy_object(const Type* o) {
-  return new Type(*o);
+Type* copy_object(const Type& o) {
+  return new Type(o);
 }
 
 /**

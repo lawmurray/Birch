@@ -85,7 +85,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   } else {
     finish(" {");
     in();
-    line("return bi::copy_object(this);");
+    line("return bi::copy_object(*this);");
     out();
     line("}\n");
   }
