@@ -9,8 +9,8 @@
 
 #include <cassert>
 
-bi::Allocation::Allocation(Allocation* parent, const world_t world) :
-    world(world),
+bi::Allocation::Allocation(Allocation* parent) :
+    world(fiberWorld),
     parent(parent),
     object(nullptr),
     shared(1),
@@ -34,7 +34,10 @@ bi::Allocation::~Allocation() {
 
 bi::Any* bi::Allocation::get() {
   if (parent) {
-    object = parent->get()->clone(world);
+    world_t prevWorld = fiberWorld;
+    fiberWorld = world;
+    object = parent->get()->clone();
+    fiberWorld = prevWorld;
     detach();
     object->ptr.reset(this);
   }

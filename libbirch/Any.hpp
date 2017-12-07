@@ -23,7 +23,7 @@ public:
   /**
    * Copy constructor.
    */
-  Any(const world_t world, const Any& o);
+  Any(const Any& o);
 
   /**
    * Destructor.
@@ -33,7 +33,7 @@ public:
   /**
    * Clone the object.
    */
-  virtual Any* clone(const world_t world);
+  virtual Any* clone();
 
 protected:
   /**

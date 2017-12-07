@@ -35,23 +35,19 @@ public:
    * Retrieve (and possibly create) an allocation.
    *
    * @param src The source allocation.
-   * @param world The world into which the source allocation is being
-   * imported.
    *
    * @return The allocation for this import. If no such allocation exists yet,
    * one is created and returned.
    */
-  Allocation* get(Allocation* src, const world_t world);
+  Allocation* get(Allocation* src);
 
   /**
    * Insert a mapping.
    *
    * @param src The source allocation.
-   * @param world The world into which the source allocation is being
-   * imported.
-   * @param dst The resulting allocation.
+   * @param dst The destination allocation.
    */
-  void insert(Allocation* src, const world_t world, Allocation* dst);
+  void insert(Allocation* src, Allocation* dst);
 
   /**
    * Remove all mappings for a given allocation. This is used whem the

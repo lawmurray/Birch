@@ -315,7 +315,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
         if (!param->value->isEmpty()) {
           middle(" = " << param->value);
         } else if (param->type->isClass()) {
-          middle(" = bi::make_object<" << param->type << ">()");
+          middle(" = bi::make_pointer<" << param->type << ">()");
         }
         finish(';');
       }

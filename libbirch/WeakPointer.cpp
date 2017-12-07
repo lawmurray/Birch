@@ -9,9 +9,9 @@
 
 #include <cassert>
 
-bi::WeakPointer<bi::Any>::WeakPointer(Any* raw) :
-    allocation(new Allocation(raw)) {
-  assert(allocation->weakCount() == 1);
+bi::WeakPointer<bi::Any>::WeakPointer() :
+    allocation(nullptr) {
+  //
 }
 
 bi::WeakPointer<bi::Any>::WeakPointer(Allocation* allocation) :
@@ -20,24 +20,12 @@ bi::WeakPointer<bi::Any>::WeakPointer(Allocation* allocation) :
 }
 
 bi::WeakPointer<bi::Any>::WeakPointer(const WeakPointer<Any>& o) :
-    allocation(o.allocation) {
+    allocation(allocationMap.get(o.allocation)) {
   allocation->weakInc();
 }
 
 bi::WeakPointer<bi::Any>::WeakPointer(const SharedPointer<Any>& o) :
-    allocation(o.allocation) {
-  allocation->weakInc();
-}
-
-bi::WeakPointer<bi::Any>::WeakPointer(const WeakPointer<Any>& o,
-    const world_t world) :
-    allocation(allocationMap.get(o.allocation, world)) {
-  allocation->weakInc();
-}
-
-bi::WeakPointer<bi::Any>::WeakPointer(const SharedPointer<Any>& o,
-    const world_t world) :
-    allocation(allocationMap.get(o.allocation, world)) {
+    allocation(allocationMap.get(o.allocation)) {
   allocation->weakInc();
 }
 
@@ -49,13 +37,15 @@ bi::WeakPointer<bi::Any>& bi::WeakPointer<bi::Any>::operator=(
 
 bi::WeakPointer<bi::Any>& bi::WeakPointer<bi::Any>::operator=(
     const WeakPointer<Any>& o) {
-  reset(allocationMap.get(o.allocation, allocation->world));
+  assert(fiberWorld == allocation->world);
+  reset(allocationMap.get(o.allocation));
   return *this;
 }
 
 bi::WeakPointer<bi::Any>& bi::WeakPointer<bi::Any>::operator=(
     const SharedPointer<Any>& o) {
-  reset(allocationMap.get(o.allocation, allocation->world));
+  assert(fiberWorld == allocation->world);
+  reset(allocationMap.get(o.allocation));
   return *this;
 }
 

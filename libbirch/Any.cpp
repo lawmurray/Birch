@@ -7,7 +7,7 @@ bi::Any::Any() {
   //
 }
 
-bi::Any::Any(const world_t world, const Any& o) :
+bi::Any::Any(const Any& o) :
     ptr() {
   //
 }
@@ -16,6 +16,6 @@ bi::Any::~Any() {
   //
 }
 
-bi::Any* bi::Any::clone(const world_t world) {
-  return new Any(world, *this);
+bi::Any* bi::Any::clone() {
+  return new Any(*this);
 }

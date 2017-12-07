@@ -4,7 +4,6 @@
 #include "bi/io/cpp/CppClassGenerator.hpp"
 
 #include "bi/io/cpp/CppConstructorGenerator.hpp"
-#include "bi/io/cpp/CppCopyConstructorGenerator.hpp"
 #include "bi/io/cpp/CppMemberFiberGenerator.hpp"
 #include "bi/primitive/encode.hpp"
 
@@ -61,10 +60,6 @@ void bi::CppClassGenerator::visit(const Class* o) {
     CppConstructorGenerator auxConstructor(base, level, header);
     auxConstructor << o;
 
-    /* copy constructor */
-    CppCopyConstructorGenerator auxCopyConstructor(base, level, header);
-    auxCopyConstructor << o;
-
     /* destructor */
     if (header) {
       line("virtual ~" << o->name << "() {");
@@ -94,13 +89,13 @@ void bi::CppClassGenerator::visit(const Class* o) {
       genTemplateArgs(o);
       middle("::");
     }
-    middle("clone(const world_t world)");
+    middle("clone()");
     if (header) {
       finish(";\n");
     } else {
       finish(" {");
       in();
-      line("return new this_type(*this, world);");
+      line("return bi::copy_object(this);");
       out();
       line("}\n");
     }

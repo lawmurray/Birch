@@ -20,9 +20,8 @@ public:
    * Constructor.
    *
    * @param parent Parent for lazy copy.
-   * @param world World number.
    */
-  Allocation(Allocation* parent, const world_t world);
+  Allocation(Allocation* parent);
 
   /**
    * Constructor.

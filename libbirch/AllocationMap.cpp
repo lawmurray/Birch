@@ -19,7 +19,7 @@ size_t std::hash<std::pair<bi::Allocation*,bi::world_t>>::operator()(
    * process. We then trust std::hash on the result. */
   uint64_t value = (reinterpret_cast<uint64_t>(o.first) << 16)
       | (reinterpret_cast<uint64_t>(o.second) & 0xFFFFF);
-  return std::hash < uint64_t > ::operator()(value);
+  return std::hash<uint64_t>::operator()(value);
 }
 
 bool std::equal_to<std::pair<bi::Allocation*,bi::world_t>>::operator()(
@@ -28,16 +28,16 @@ bool std::equal_to<std::pair<bi::Allocation*,bi::world_t>>::operator()(
   return o1.first == o2.first && o1.second == o2.second;
 }
 
-bi::Allocation* bi::AllocationMap::get(Allocation* src, const world_t world) {
-  if (src->world == world) {
+bi::Allocation* bi::AllocationMap::get(Allocation* src) {
+  if (src->world == fiberWorld) {
     return src;
   } else {
-    auto pair = std::make_pair(src, world);
+    auto pair = std::make_pair(src, fiberWorld);
     auto iter = map.find(pair);
     if (iter != map.end()) {
       return iter->second;
     } else {
-      auto dst = new Allocation(src, world);
+      auto dst = new Allocation(src);
       map.insert(std::make_pair(pair, dst));
       imports.insert(pair);
       return dst;
@@ -45,9 +45,8 @@ bi::Allocation* bi::AllocationMap::get(Allocation* src, const world_t world) {
   }
 }
 
-void bi::AllocationMap::insert(Allocation* src, const world_t world,
-    Allocation* dst) {
-  auto pair = std::make_pair(src, world);
+void bi::AllocationMap::insert(Allocation* src, Allocation* dst) {
+  auto pair = std::make_pair(src, fiberWorld);
   auto result = map.insert(std::make_pair(pair, dst));
   assert(result.second);
   imports.insert(pair);

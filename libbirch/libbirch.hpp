@@ -203,17 +203,48 @@ auto make_sequence(const std::initializer_list<Type> values) {
  *
  * @ingroup libbirch
  *
- * @tparam SharedPointerType SharedPointer type.
+ * @tparam Type Class type.
  * @tparam Args Constructor parameter types.
  *
  * @param args Constructor arguments.
  *
- * @return SharedPointer to the object.
+ * @return The new object.
  */
-template<class SharedPointerType, class ... Args>
-SharedPointerType make_object(Args ... args) {
-  using ValueType = typename SharedPointerType::value_type;
-  return SharedPointerType(new ValueType(args...));
+template<class Type, class ... Args>
+Type* make_object(Args ... args) {
+  return new Type(args...);
+}
+
+/**
+ * Copy an object.
+ *
+ * @ingroup libbirch
+ *
+ * @tparam Type Class type.
+ *
+ * @return The new object.
+ */
+template<class Type>
+Type* copy_object(const Type* o) {
+  return new Type(*o);
+}
+
+/**
+ * Make a pointer to a new object.
+ *
+ * @ingroup libbirch
+ *
+ * @tparam PointerType Pointer type.
+ * @tparam Args Constructor parameter types.
+ *
+ * @param args Constructor arguments.
+ *
+ * @return The pointer to the new object.
+ */
+template<class PointerType, class ... Args>
+PointerType make_pointer(Args ... args) {
+  using Type = typename PointerType::value_type;
+  return PointerType(make_object<Type>(args...));
 }
 
 /**

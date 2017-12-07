@@ -59,11 +59,11 @@ public:
   /**
    * Copy constructor.
    */
-  Array(const Array<T,F>& o, const world_t world) :
+  Array(const Array<T,F>& o) :
       frame(o.frame),
       isView(false) {
     allocate();
-    copy(o, world);
+    copy(o);
   }
 
   /**
@@ -77,11 +77,11 @@ public:
    * @param o Sequence.
    */
   template<class U>
-  Array(const Sequence<U>& o, const world_t world) :
+  Array(const Sequence<U>& o) :
       frame(sequence_frame(o)),
       isView(false) {
     allocate();
-    copy(o, world);
+    copy(o);
   }
 
   /**
@@ -390,7 +390,7 @@ private:
    * Copy from another array.
    */
   template<class G>
-  void copy(const Array<T,G>& o, const world_t world) {
+  void copy(const Array<T,G>& o) {
     /* pre-condition */
     assert(o.frame.conforms(frame));
 
@@ -401,20 +401,20 @@ private:
       auto end2 = o.end();
 
       for (; iter1 != end1; ++iter1, ++iter2) {
-        emplace(*iter1, *iter2, world);
+        emplace(*iter1, *iter2);
       }
       assert(iter2 == end2);
     }
   }
 
   template<class U>
-  void copy(const Sequence<U>& o, const world_t world) {
+  void copy(const Sequence<U>& o) {
     assert(F::count() == sequence_depth<Sequence<U>>::value);
 
     size_t sizes[F::count()];
     frame.lengths(sizes);
     assert(sequence_conforms(sizes, o));
-    sequence_copy(begin(), o, world);
+    sequence_copy(begin(), o);
   }
 
   /**

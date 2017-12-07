@@ -41,16 +41,6 @@ public:
   SharedPointer(const WeakPointer<T>& o);
 
   /**
-   * Constructor from shared pointer.
-   */
-  SharedPointer(const SharedPointer<T>& o, const world_t world);
-
-  /**
-   * Constructor from weak pointer.
-   */
-  SharedPointer(const WeakPointer<T>& o, const world_t world);
-
-  /**
    * Assignment from null pointer.
    */
   SharedPointer<T>& operator=(const std::nullptr_t& o);
@@ -159,12 +149,12 @@ template<>
 class SharedPointer<Any> {
   friend class WeakPointer<Any> ;
 public:
+  typedef Any value_type;
+
   SharedPointer(Any* raw = nullptr);
   SharedPointer(Allocation* allocation);
   SharedPointer(const SharedPointer<Any>& o);
   SharedPointer(const WeakPointer<Any>& o);
-  SharedPointer(const SharedPointer<Any>& o, const world_t world);
-  SharedPointer(const WeakPointer<Any>& o, const world_t world);
   SharedPointer<Any>& operator=(const std::nullptr_t& o);
   SharedPointer<Any>& operator=(const SharedPointer<Any>& o);
   SharedPointer<Any>& operator=(const WeakPointer<Any>& o);
@@ -247,20 +237,6 @@ bi::SharedPointer<T>::SharedPointer(const SharedPointer<T>& o) :
 template<class T>
 bi::SharedPointer<T>::SharedPointer(const WeakPointer<T>& o) :
     super_type(o) {
-  //
-}
-
-template<class T>
-bi::SharedPointer<T>::SharedPointer(const SharedPointer<T>& o,
-    const world_t world) :
-    super_type(o, world) {
-  //
-}
-
-template<class T>
-bi::SharedPointer<T>::SharedPointer(const WeakPointer<T>& o,
-    const world_t world) :
-    super_type(o, world) {
   //
 }
 

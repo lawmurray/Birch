@@ -20,24 +20,12 @@ bi::SharedPointer<bi::Any>::SharedPointer(Allocation* allocation) :
 }
 
 bi::SharedPointer<bi::Any>::SharedPointer(const SharedPointer<Any>& o) :
-    allocation(o.allocation) {
+    allocation(allocationMap.get(o.allocation)) {
   allocation->sharedInc();
 }
 
 bi::SharedPointer<bi::Any>::SharedPointer(const WeakPointer<Any>& o) :
-    allocation(o.allocation) {
-  allocation->sharedInc();
-}
-
-bi::SharedPointer<bi::Any>::SharedPointer(const SharedPointer<Any>& o,
-    const world_t world) :
-    allocation(allocationMap.get(o.allocation, world)) {
-  allocation->sharedInc();
-}
-
-bi::SharedPointer<bi::Any>::SharedPointer(const WeakPointer<Any>& o,
-    const world_t world) :
-    allocation(allocationMap.get(o.allocation, world)) {
+    allocation(allocationMap.get(o.allocation)) {
   allocation->sharedInc();
 }
 
@@ -49,13 +37,15 @@ bi::SharedPointer<bi::Any>& bi::SharedPointer<bi::Any>::operator=(
 
 bi::SharedPointer<bi::Any>& bi::SharedPointer<bi::Any>::operator=(
     const SharedPointer<Any>& o) {
-  reset(allocationMap.get(o.allocation, allocation->world));
+  assert(fiberWorld == allocation->world);
+  reset(allocationMap.get(o.allocation));
   return *this;
 }
 
 bi::SharedPointer<bi::Any>& bi::SharedPointer<bi::Any>::operator=(
     const WeakPointer<Any>& o) {
-  reset(allocationMap.get(o.allocation, allocation->world));
+  assert(fiberWorld == allocation->world);
+  reset(allocationMap.get(o.allocation));
   return *this;
 }
 

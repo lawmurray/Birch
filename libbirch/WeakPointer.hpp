@@ -21,9 +21,9 @@ public:
   typedef WeakPointer<typename super_type<T>::type> super_type;
 
   /**
-   * Constructor from raw pointer.
+   * Default constructor.
    */
-  WeakPointer(T* raw = nullptr);
+  WeakPointer();
 
   /**
    * Constructor from allocation.
@@ -39,16 +39,6 @@ public:
    * Copy constructor.
    */
   WeakPointer(const SharedPointer<T>& o);
-
-  /**
-   * Constructor from weak pointer.
-   */
-  WeakPointer(const WeakPointer<T>& o, const world_t world);
-
-  /**
-   * Constructor from shared pointer.
-   */
-  WeakPointer(const SharedPointer<T>& o, const world_t world);
 
   /**
    * Assignment from null pointer.
@@ -159,12 +149,10 @@ template<>
 class WeakPointer<Any> {
   friend class SharedPointer<Any> ;
 public:
-  WeakPointer(Any* raw = nullptr);
+  WeakPointer();
   WeakPointer(Allocation* allocation);
   WeakPointer(const WeakPointer<Any>& o);
   WeakPointer(const SharedPointer<Any>& o);
-  WeakPointer(const WeakPointer<Any>& o, const world_t world);
-  WeakPointer(const SharedPointer<Any>& o, const world_t world);
   WeakPointer<Any>& operator=(const std::nullptr_t& o);
   WeakPointer<Any>& operator=(const WeakPointer<Any>& o);
   WeakPointer<Any>& operator=(const SharedPointer<Any>& o);
@@ -227,8 +215,7 @@ protected:
 #include <cassert>
 
 template<class T>
-bi::WeakPointer<T>::WeakPointer(T* raw) :
-    super_type(raw) {
+bi::WeakPointer<T>::WeakPointer() {
   //
 }
 
@@ -247,19 +234,6 @@ bi::WeakPointer<T>::WeakPointer(const WeakPointer<T>& o) :
 template<class T>
 bi::WeakPointer<T>::WeakPointer(const SharedPointer<T>& o) :
     super_type(o) {
-  //
-}
-
-template<class T>
-bi::WeakPointer<T>::WeakPointer(const WeakPointer<T>& o, const world_t world) :
-    super_type(o, world) {
-  //
-}
-
-template<class T>
-bi::WeakPointer<T>::WeakPointer(const SharedPointer<T>& o,
-    const world_t world) :
-    super_type(o, world) {
   //
 }
 

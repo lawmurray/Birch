@@ -109,14 +109,6 @@ public:
   }
 
   /**
-   * Copy constructor.
-   */
-  Optional(const world_t world, Optional<SharedPointer<T>>& o) :
-      value(world, o.value) {
-    //
-  }
-
-  /**
    * Assign no value.
    */
   Optional<SharedPointer<T>>& operator=(const std::nullptr_t& o) {
