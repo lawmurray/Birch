@@ -152,9 +152,11 @@ public:
   WeakPointer(const std::nullptr_t = nullptr);
   WeakPointer(Allocation* allocation);
   WeakPointer(const WeakPointer<Any>& o);
+  WeakPointer(WeakPointer<Any>&& o);
   WeakPointer(const SharedPointer<Any>& o);
   WeakPointer<Any>& operator=(const std::nullptr_t& o);
   WeakPointer<Any>& operator=(const WeakPointer<Any>& o);
+  WeakPointer<Any>& operator=(WeakPointer<Any>&& o);
   WeakPointer<Any>& operator=(const SharedPointer<Any>& o);
   ~WeakPointer();
 

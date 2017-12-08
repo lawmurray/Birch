@@ -160,9 +160,11 @@ public:
   SharedPointer(Any* raw);
   SharedPointer(Allocation* allocation);
   SharedPointer(const SharedPointer<Any>& o);
+  SharedPointer(SharedPointer<Any>&& o);
   SharedPointer(const WeakPointer<Any>& o);
   SharedPointer<Any>& operator=(const std::nullptr_t& o);
   SharedPointer<Any>& operator=(const SharedPointer<Any>& o);
+  SharedPointer<Any>& operator=(SharedPointer<Any>&& o);
   SharedPointer<Any>& operator=(const WeakPointer<Any>& o);
   ~SharedPointer();
 
@@ -180,6 +182,11 @@ public:
    * Release the pointer.
    */
   void release();
+
+  /**
+   * Reset the object.
+   */
+  void reset(Any* raw);
 
   /**
    * Reset the allocation.
@@ -212,7 +219,7 @@ public:
     return get();
   }
 
-protected:
+//protected:
   /**
    * Allocation control structure.
    */

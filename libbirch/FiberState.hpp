@@ -19,7 +19,7 @@ public:
   /**
    * Constructor.
    */
-  FiberState(const int label = 0, const int nlabels = 0, const bool isBasic =
+  FiberState(const int label = 0, const int nlabels = 0, const bool isValue =
       false) :
       label(label),
       nlabels(nlabels),

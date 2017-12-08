@@ -30,6 +30,15 @@ bi::WeakPointer<bi::Any>::WeakPointer(const WeakPointer<Any>& o) {
   }
 }
 
+bi::WeakPointer<bi::Any>::WeakPointer(WeakPointer<Any>&& o) {
+  if (o.allocation) {
+    allocation = allocationMap.get(o.allocation);
+    allocation->weakInc();
+  } else {
+    allocation = nullptr;
+  }
+}
+
 bi::WeakPointer<bi::Any>::WeakPointer(const SharedPointer<Any>& o) {
   if (o.allocation) {
     allocation = allocationMap.get(o.allocation);
@@ -47,6 +56,12 @@ bi::WeakPointer<bi::Any>& bi::WeakPointer<bi::Any>::operator=(
 
 bi::WeakPointer<bi::Any>& bi::WeakPointer<bi::Any>::operator=(
     const WeakPointer<Any>& o) {
+  reset(allocationMap.get(o.allocation));
+  return *this;
+}
+
+bi::WeakPointer<bi::Any>& bi::WeakPointer<bi::Any>::operator=(
+    WeakPointer<Any>&& o) {
   reset(allocationMap.get(o.allocation));
   return *this;
 }

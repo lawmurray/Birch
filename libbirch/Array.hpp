@@ -367,7 +367,8 @@ private:
    * Allocate memory for array.
    */
   void allocate() {
-    ptr = new T[frame.volume()];
+    ptr = (T*)std::malloc(sizeof(T)*frame.volume());
+    assert(ptr);
   }
 
   /**
@@ -375,19 +376,7 @@ private:
    */
   void deallocate() {
     if (!isView) {
-      delete[] ptr;
-    }
-  }
-
-  /**
-   * Copy memory of array.
-   */
-  void copy() {
-    T* old = ptr;
-    ptr = new T[frame.volume()];
-    //std::memcpy(ptr, old, size);
-    for (size_t i = 0; i < frame.volume(); ++i) {
-      ptr[i] = old[i];
+      std::free(ptr);
     }
   }
 

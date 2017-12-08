@@ -95,6 +95,10 @@ private:
 
   /**
    * Parent for lazy copy.
+   *
+   * @internal SharedPointer cannot be used here, as Allocation is not
+   * derived from Any, and the use of SharedPointer within the control
+   * structure for SharedPointer may lead to confusion.
    */
   Allocation* parent;
 

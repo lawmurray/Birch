@@ -58,6 +58,7 @@ bi::SharedPointer<T> bi::Any::shared_from_this() const {
 #else
   auto result = ptr.template dynamic_pointer_cast<T>();
   assert(result.query());
+  assert(result.get() == this);
   return result;
 #endif
 }
