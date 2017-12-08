@@ -431,12 +431,12 @@ dist_pkgdata_DATA = \
   share/ax_cxx_compile_stdcxx.m4 \
   share/ax_cxx_compile_stdcxx_11.m4 \
   share/ax_cxx_compile_stdcxx_14.m4 \
-  share/LICENSE \
-  share/META.json \
-  share/README.md \
   share/autogen.sh \
-  share/common.am \
-  share/configure.ac
+  share/configure.ac \
+  share/LICENSE \
+  share/Makefile.am \
+  share/META.json \
+  share/README.md
 
 BUILT_SOURCES = bi/parser.hpp libubjpp/common/Parser.h libubjpp/common/Parser.c
 CLEANFILES = $(BUILT_SOURCES)

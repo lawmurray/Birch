@@ -21,6 +21,10 @@ AC_PROG_INSTALL
 AC_PROG_LIBTOOL
 AX_CXX_COMPILE_STDCXX_14([noext], [mandatory])
 
+# Checks for typedefs, structures, and compiler characteristics
+AC_HEADER_STDBOOL
+AC_C_INLINE
+
 # Checks for libraries
 AC_CHECK_LIB([birch], [bi_present], [], [AC_MSG_ERROR([Birch compiler library not found])])
 AC_CHECK_LIB([profiler], [main], [], [])
@@ -34,12 +38,5 @@ if test x$std = xtrue; then
     AC_CHECK_HEADERS([bi/birch_standard.hpp], [], [AC_MSG_ERROR([Birch standard library header not found.])], [-])
 fi
 
-# Defines
-AM_CONDITIONAL([ENABLE_STD], [test x$std = xtrue])
-
-# Checks for typedefs, structures, and compiler characteristics
-AC_HEADER_STDBOOL
-AC_C_INLINE
-
-AC_CONFIG_FILES([Makefile])
-AC_OUTPUT
+#AC_CONFIG_FILES([Makefile])
+#AC_OUTPUT

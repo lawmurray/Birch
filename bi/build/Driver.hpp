@@ -5,9 +5,12 @@
 
 #include "bi/statement/Package.hpp"
 
+#include "libubjpp/libubjpp.hpp"
+
 #include "boost/filesystem.hpp"
 #include "boost/interprocess/sync/file_lock.hpp"
 
+#include <map>
 #include <set>
 
 namespace bi {
@@ -117,6 +120,16 @@ private:
   void lock();
 
   /**
+   * Consume a list of files from the meta file.
+   *
+   * @param meta The root object of the meta file.
+   * @param key The key to use in the list of files.
+   * @param path The path from which to read in the meta file.
+   */
+  void readFiles(const libubjpp::value meta, const std::string& key,
+      const std::initializer_list<std::string>& path);
+
+  /**
    * @name Command-line options
    */
   //@{
@@ -174,7 +187,7 @@ private:
   /**
    * Name of the package.
    */
-  std::string package_name;
+  std::string packageName;
 
   /**
    * The package.
@@ -192,7 +205,7 @@ private:
   bool newConfigure;
 
   /**
-   * Is the common.am file new?
+   * Is the Makefile.am file new?
    */
   bool newMake;
 
@@ -212,10 +225,10 @@ private:
   boost::interprocess::file_lock lockFile;
 
   /**
-   * Lists of files from META.json.
+   * Lists of files from meta.
    */
-  std::set<boost::filesystem::path> allFiles, biFiles, cppFiles, hppFiles,
-      dataFiles, otherFiles;
+  std::map<std::string,std::set<boost::filesystem::path>> metaFiles;
+  std::set<boost::filesystem::path> allFiles;
 
   /**
    * Leftover command-line arguments for program calls.
