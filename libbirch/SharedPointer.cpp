@@ -104,15 +104,9 @@ void bi::SharedPointer<bi::Any>::reset(Any* raw) {
 }
 
 void bi::SharedPointer<bi::Any>::reset(Allocation* allocation) {
-  if (this->allocation != allocation) {
-    if (this->allocation) {
-      this->allocation->sharedDec();
-    }
-    this->allocation = allocation;
-    if (this->allocation) {
-      this->allocation->sharedInc();
-    }
-  }
+  allocation->sharedInc();
+  release();
+  this->allocation = allocation;
 }
 
 void bi::SharedPointer<bi::Any>::release() {

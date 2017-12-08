@@ -14,7 +14,7 @@ bi::Allocation::Allocation(Allocation* parent) :
     parent(parent),
     object(nullptr),
     shared(1),
-    weak(1) {
+    weak(0) {
   assert(parent);
   parent->sharedInc();
 }
@@ -24,7 +24,7 @@ bi::Allocation::Allocation(Any* object) :
     parent(nullptr),
     object(object),
     shared(1),
-    weak(1) {
+    weak(0) {
   assert(object);
   object->ptr.reset(this);
 }
@@ -58,14 +58,16 @@ void bi::Allocation::sharedInc() {
 }
 
 void bi::Allocation::sharedDec() {
+  assert(shared > 0);
   --shared;
-  assert(shared >= 0);
   if (shared == 0) {
+    /* as each object holds a weak pointer to itself, the weak count should
+     * never be zero at this point; if the last weak pointer is that held by
+     * the object itself, the destructor of the object will in turn call
+     * weakDec() to clean up the rest */
+    assert(weak > 0);
     detach();
     deallocate();
-    if (weak == 0) {
-      destroy();
-    }
   }
 }
 
@@ -78,9 +80,13 @@ void bi::Allocation::weakInc() {
 }
 
 void bi::Allocation::weakDec() {
+  assert(weak > 0);
   --weak;
-  assert(weak >= 0);
-  if (shared == 0 && weak == 0) {
+  if (weak == 0 && shared == 0) {
+    /* as each object holds a weak pointer to itself, the weak count should
+     * never be zero unless the object has been destroyed, in which case the
+     * shared count should be zero too */
+    //assert(shared == 0);  // not sure, what if object isn't created yet?
     destroy();
   }
 }
@@ -94,8 +100,13 @@ void bi::Allocation::detach() {
 
 void bi::Allocation::deallocate() {
   if (object) {
-    delete object;
+    /* if the last weak pointer is held by the object itself, deleting the
+     * object will call destroy(), which will delete this object; in case this
+     * happens, we should not write nullptr to this object, so copy to
+     * temporary first */
+    auto tmp = object;
     object = nullptr;
+    delete tmp;
   }
 }
 

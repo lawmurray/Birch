@@ -87,15 +87,9 @@ bi::Any * bi::WeakPointer<bi::Any>::get() const {
 }
 
 void bi::WeakPointer<bi::Any>::reset(Allocation* allocation) {
-  if (this->allocation != allocation) {
-    if (this->allocation) {
-      this->allocation->weakDec();
-    }
-    this->allocation = allocation;
-    if (this->allocation) {
-      this->allocation->weakInc();
-    }
-  }
+  allocation->weakInc();
+  release();
+  this->allocation = allocation;
 }
 
 void bi::WeakPointer<bi::Any>::release() {

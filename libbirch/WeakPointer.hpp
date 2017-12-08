@@ -33,7 +33,12 @@ public:
   /**
    * Copy constructor.
    */
-  WeakPointer(const WeakPointer<T>& o);
+  WeakPointer(const WeakPointer<T>& o) = default;
+
+  /**
+   * Move constructor.
+   */
+  WeakPointer(WeakPointer<T>&& o) = default;
 
   /**
    * Copy constructor.
@@ -46,9 +51,14 @@ public:
   WeakPointer<T>& operator=(const std::nullptr_t& o);
 
   /**
-   * Assignment from weak pointer.
+   * Copy assignment.
    */
-  WeakPointer<T>& operator=(const WeakPointer<T>& o);
+  WeakPointer<T>& operator=(const WeakPointer<T>& o) = default;
+
+  /**
+   * Move assignment.
+   */
+  WeakPointer<T>& operator=(WeakPointer<T>&& o) = default;
 
   /**
    * Assignment from shared pointer.
@@ -228,12 +238,6 @@ bi::WeakPointer<T>::WeakPointer(Allocation* allocation) :
 }
 
 template<class T>
-bi::WeakPointer<T>::WeakPointer(const WeakPointer<T>& o) :
-    super_type(o) {
-  //
-}
-
-template<class T>
 bi::WeakPointer<T>::WeakPointer(const SharedPointer<T>& o) :
     super_type(o) {
   //
@@ -241,13 +245,6 @@ bi::WeakPointer<T>::WeakPointer(const SharedPointer<T>& o) :
 
 template<class T>
 bi::WeakPointer<T>& bi::WeakPointer<T>::operator=(const std::nullptr_t& o) {
-  WeakPointer<Any>::operator=(o);
-  return *this;
-}
-
-template<class T>
-bi::WeakPointer<T>& bi::WeakPointer<T>::operator=(
-    const WeakPointer<T>& o) {
   WeakPointer<Any>::operator=(o);
   return *this;
 }

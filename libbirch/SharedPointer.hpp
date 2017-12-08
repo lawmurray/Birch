@@ -38,7 +38,12 @@ public:
   /**
    * Copy constructor.
    */
-  SharedPointer(const SharedPointer<T>& o);
+  SharedPointer(const SharedPointer<T>& o) = default;
+
+  /**
+   * Move constructor.
+   */
+  SharedPointer(SharedPointer<T>&& o) = default;
 
   /**
    * Copy constructor.
@@ -51,9 +56,14 @@ public:
   SharedPointer<T>& operator=(const std::nullptr_t& o);
 
   /**
-   * Assignment from shared pointer.
+   * Copy assignment.
    */
-  SharedPointer<T>& operator=(const SharedPointer<T>& o);
+  SharedPointer<T>& operator=(const SharedPointer<T>& o) = default;
+
+  /**
+   * Move assignment.
+   */
+  SharedPointer<T>& operator=(SharedPointer<T>&& o) = default;
 
   /**
    * Assignment from weak pointer.
@@ -247,12 +257,6 @@ bi::SharedPointer<T>::SharedPointer(Allocation* allocation) :
 }
 
 template<class T>
-bi::SharedPointer<T>::SharedPointer(const SharedPointer<T>& o) :
-    super_type(o) {
-  //
-}
-
-template<class T>
 bi::SharedPointer<T>::SharedPointer(const WeakPointer<T>& o) :
     super_type(o) {
   //
@@ -261,13 +265,6 @@ bi::SharedPointer<T>::SharedPointer(const WeakPointer<T>& o) :
 template<class T>
 bi::SharedPointer<T>& bi::SharedPointer<T>::operator=(
     const std::nullptr_t& o) {
-  SharedPointer<Any>::operator=(o);
-  return *this;
-}
-
-template<class T>
-bi::SharedPointer<T>& bi::SharedPointer<T>::operator=(
-    const SharedPointer<T>& o) {
   SharedPointer<Any>::operator=(o);
   return *this;
 }
