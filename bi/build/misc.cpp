@@ -15,18 +15,14 @@ void bi::warn(const std::string& msg) {
 boost::filesystem::path bi::find(
     const std::list<boost::filesystem::path>& paths,
     const boost::filesystem::path path) {
-  if (exists(path)) {
-    return path;
+  auto iter = paths.begin();
+  while (iter != paths.end() && !exists(*iter / path)) {
+    ++iter;
+  }
+  if (iter == paths.end()) {
+    throw FileNotFoundException(path.string().c_str());
   } else {
-    auto iter = paths.begin();
-    while (iter != paths.end() && !exists(*iter / path)) {
-      ++iter;
-    }
-    if (iter == paths.end()) {
-      throw FileNotFoundException(path.string().c_str());
-    } else {
-      return *iter / path;
-    }
+    return *iter / path;
   }
 }
 

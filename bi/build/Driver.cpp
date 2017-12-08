@@ -50,16 +50,17 @@ bi::Driver::Driver(int argc, char** argv) :
 
   int c, option_index;
   option long_options[] = {
-      { "share-dir", required_argument, 0, SHARE_DIR_ARG }, { "include-dir",
-      required_argument, 0, INCLUDE_DIR_ARG }, { "lib-dir",
-      required_argument, 0, LIB_DIR_ARG }, { "prefix", required_argument, 0,
-          PREFIX_ARG }, { "enable-warnings", no_argument, 0,
-          ENABLE_WARNINGS_ARG }, { "disable-warnings", no_argument, 0,
-          DISABLE_WARNINGS_ARG }, { "enable-debug", no_argument, 0,
-          ENABLE_DEBUG_ARG }, { "disable-debug", no_argument, 0,
-          DISABLE_DEBUG_ARG }, { "enable-verbose", no_argument, 0,
-          ENABLE_VERBOSE_ARG }, { "disable-verbose", no_argument, 0,
-          DISABLE_VERBOSE_ARG }, { 0, 0, 0, 0 } };
+      { "share-dir", required_argument, 0, SHARE_DIR_ARG },
+      { "include-dir", required_argument, 0, INCLUDE_DIR_ARG },
+      { "lib-dir", required_argument, 0, LIB_DIR_ARG },
+      { "prefix", required_argument, 0, PREFIX_ARG },
+      { "enable-warnings", no_argument, 0, ENABLE_WARNINGS_ARG },
+      { "disable-warnings", no_argument, 0, DISABLE_WARNINGS_ARG },
+      { "enable-debug", no_argument, 0, ENABLE_DEBUG_ARG },
+      { "disable-debug", no_argument, 0, DISABLE_DEBUG_ARG },
+      { "enable-verbose", no_argument, 0, ENABLE_VERBOSE_ARG },
+      { "disable-verbose", no_argument, 0, DISABLE_VERBOSE_ARG },
+      { 0, 0, 0, 0 } };
   const char* short_options = "-";  // treats non-options as short option 1
 
   /* mutable copy of argv and argc */
