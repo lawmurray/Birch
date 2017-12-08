@@ -145,7 +145,7 @@ int libubjpp::JSONTokenizer::next(ParserState* state) {
         token = 0;
         break;
       default:
-        assert(false);  // syntax error
+        error(state);
         token = 0;
         break;
       }
