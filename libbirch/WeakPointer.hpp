@@ -23,7 +23,7 @@ public:
   /**
    * Default constructor.
    */
-  WeakPointer(const std::nullptr_t = nullptr);
+  WeakPointer(const std::nullptr_t& o = nullptr);
 
   /**
    * Constructor from allocation.
@@ -38,7 +38,7 @@ public:
   /**
    * Move constructor.
    */
-  WeakPointer(WeakPointer<T>&& o) = default;
+  WeakPointer(WeakPointer<T> && o) = default;
 
   /**
    * Copy constructor.
@@ -58,7 +58,7 @@ public:
   /**
    * Move assignment.
    */
-  WeakPointer<T>& operator=(WeakPointer<T>&& o) = default;
+  WeakPointer<T>& operator=(WeakPointer<T> && o) = default;
 
   /**
    * Assignment from shared pointer.
@@ -159,14 +159,14 @@ template<>
 class WeakPointer<Any> {
   friend class SharedPointer<Any> ;
 public:
-  WeakPointer(const std::nullptr_t = nullptr);
+  WeakPointer(const std::nullptr_t& o = nullptr);
   WeakPointer(Allocation* allocation);
   WeakPointer(const WeakPointer<Any>& o);
-  WeakPointer(WeakPointer<Any>&& o);
+  WeakPointer(WeakPointer<Any> && o);
   WeakPointer(const SharedPointer<Any>& o);
   WeakPointer<Any>& operator=(const std::nullptr_t& o);
   WeakPointer<Any>& operator=(const WeakPointer<Any>& o);
-  WeakPointer<Any>& operator=(WeakPointer<Any>&& o);
+  WeakPointer<Any>& operator=(WeakPointer<Any> && o);
   WeakPointer<Any>& operator=(const SharedPointer<Any>& o);
   ~WeakPointer();
 
@@ -227,7 +227,8 @@ protected:
 #include <cassert>
 
 template<class T>
-bi::WeakPointer<T>::WeakPointer(const std::nullptr_t) {
+bi::WeakPointer<T>::WeakPointer(const std::nullptr_t& o) :
+    super_type(o) {
   //
 }
 
@@ -250,8 +251,7 @@ bi::WeakPointer<T>& bi::WeakPointer<T>::operator=(const std::nullptr_t& o) {
 }
 
 template<class T>
-bi::WeakPointer<T>& bi::WeakPointer<T>::operator=(
-    const SharedPointer<T>& o) {
+bi::WeakPointer<T>& bi::WeakPointer<T>::operator=(const SharedPointer<T>& o) {
   WeakPointer<Any>::operator=(o);
   return *this;
 }
@@ -305,7 +305,7 @@ bi::WeakPointer<U> bi::WeakPointer<T>::dynamic_pointer_cast() const {
   if (dynamic_cast<U*>(get())) {
     return WeakPointer<U>(this->allocation);
   } else {
-    return WeakPointer<U>();
+    return WeakPointer<U>(nullptr);
   }
 }
 
@@ -323,7 +323,7 @@ bi::WeakPointer<U> bi::WeakPointer<bi::Any>::dynamic_pointer_cast() const {
   if (dynamic_cast<U*>(get())) {
     return WeakPointer<U>(this->allocation);
   } else {
-    return WeakPointer<U>();
+    return WeakPointer<U>(nullptr);
   }
 }
 

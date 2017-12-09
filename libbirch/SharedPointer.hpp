@@ -23,7 +23,12 @@ public:
   /**
    * Default constructor.
    */
-  SharedPointer(const std::nullptr_t = nullptr);
+  SharedPointer();
+
+  /**
+   * Null constructor.
+   */
+  SharedPointer(const std::nullptr_t& o);
 
   /**
    * Constructor from raw pointer.
@@ -43,7 +48,7 @@ public:
   /**
    * Move constructor.
    */
-  SharedPointer(SharedPointer<T>&& o) = default;
+  SharedPointer(SharedPointer<T> && o) = default;
 
   /**
    * Copy constructor.
@@ -63,7 +68,7 @@ public:
   /**
    * Move assignment.
    */
-  SharedPointer<T>& operator=(SharedPointer<T>&& o) = default;
+  SharedPointer<T>& operator=(SharedPointer<T> && o) = default;
 
   /**
    * Assignment from weak pointer.
@@ -166,15 +171,16 @@ class SharedPointer<Any> {
 public:
   typedef Any value_type;
 
-  SharedPointer(const std::nullptr_t = nullptr);
+  SharedPointer();
+  SharedPointer(const std::nullptr_t& o);
   SharedPointer(Any* raw);
   SharedPointer(Allocation* allocation);
   SharedPointer(const SharedPointer<Any>& o);
-  SharedPointer(SharedPointer<Any>&& o);
+  SharedPointer(SharedPointer<Any> && o);
   SharedPointer(const WeakPointer<Any>& o);
   SharedPointer<Any>& operator=(const std::nullptr_t& o);
   SharedPointer<Any>& operator=(const SharedPointer<Any>& o);
-  SharedPointer<Any>& operator=(SharedPointer<Any>&& o);
+  SharedPointer<Any>& operator=(SharedPointer<Any> && o);
   SharedPointer<Any>& operator=(const WeakPointer<Any>& o);
   ~SharedPointer();
 
@@ -240,7 +246,14 @@ public:
 #include <cassert>
 
 template<class T>
-bi::SharedPointer<T>::SharedPointer(const std::nullptr_t) {
+bi::SharedPointer<T>::SharedPointer() :
+    super_type(new T()) {
+  //
+}
+
+template<class T>
+bi::SharedPointer<T>::SharedPointer(const std::nullptr_t& o) :
+    super_type(o) {
   //
 }
 
@@ -327,7 +340,7 @@ bi::SharedPointer<U> bi::SharedPointer<T>::dynamic_pointer_cast() const {
   if (dynamic_cast<U*>(get())) {
     return SharedPointer<U>(this->allocation);
   } else {
-    return SharedPointer<U>();
+    return SharedPointer<U>(nullptr);
   }
 }
 
@@ -345,7 +358,7 @@ bi::SharedPointer<U> bi::SharedPointer<bi::Any>::dynamic_pointer_cast() const {
   if (dynamic_cast<U*>(get())) {
     return SharedPointer<U>(this->allocation);
   } else {
-    return SharedPointer<U>();
+    return SharedPointer<U>(nullptr);
   }
 }
 

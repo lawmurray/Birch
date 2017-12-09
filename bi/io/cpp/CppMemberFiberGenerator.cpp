@@ -70,8 +70,16 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     finish("),");
     start("self(self)");
     for (auto iter = parameters.begin(); iter != parameters.end(); ++iter) {
+      auto param = *iter;
       finish(',');
-      start((*iter)->name << '(' << (*iter)->name << ')');
+      start(param->name << '(' << param->name << ')');
+    }
+    for (auto iter = locals.begin(); iter != locals.end(); ++iter) {
+      auto param = *iter;
+      if (param->type->isClass()) {
+        finish(',');
+        start(param->name << "(nullptr)");
+      }
     }
     finish(" {");
     out();

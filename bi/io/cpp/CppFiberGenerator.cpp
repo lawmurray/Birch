@@ -60,9 +60,18 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     }
     middle(')');
     for (auto iter = parameters.begin(); iter != parameters.end(); ++iter) {
+      auto param = *iter;
       finish(',');
-      start((*iter)->name << '(' << (*iter)->name << ')');
+      start(param->name << '(' << param->name << ')');
     }
+    for (auto iter = locals.begin(); iter != locals.end(); ++iter) {
+      auto param = *iter;
+      if (param->type->isClass()) {
+        finish(',');
+        start(param->name << "(nullptr)");
+      }
+    }
+
     finish(" {");
     out();
     line("//");
@@ -193,6 +202,10 @@ void bi::CppFiberGenerator::visit(const LocalVariable* o) {
     inFor = false;
     middle(getName(o->name->str(), o->number));
     genInit(o);
+  } else if (o->type->isClass()) {
+    /* make sure objects are initialized, not just null pointers */
+    auto name = getName(o->name->str(), o->number);
+    middle(name << " = decltype(" << name << ")()");
   }
 }
 

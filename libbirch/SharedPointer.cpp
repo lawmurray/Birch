@@ -6,21 +6,23 @@
 #include "libbirch/AllocationMap.hpp"
 #include "libbirch/Allocation.hpp"
 #include "libbirch/WeakPointer.hpp"
+#include "libbirch/Any.hpp"
 
 #include <cassert>
 
-bi::SharedPointer<bi::Any>::SharedPointer(const std::nullptr_t) :
+bi::SharedPointer<bi::Any>::SharedPointer() :
+    SharedPointer(new Any()) {
+  //
+}
+
+bi::SharedPointer<bi::Any>::SharedPointer(const std::nullptr_t& o) :
     allocation(nullptr) {
   //
 }
 
 bi::SharedPointer<bi::Any>::SharedPointer(Any* raw) {
-  if (raw) {
-    allocation = new Allocation(raw);
-    assert(allocation->sharedCount() == 1);
-  } else {
-    allocation = nullptr;
-  }
+  allocation = new Allocation(raw);
+  assert(allocation->sharedCount() == 1);
 }
 
 bi::SharedPointer<bi::Any>::SharedPointer(Allocation* allocation) :
@@ -39,7 +41,7 @@ bi::SharedPointer<bi::Any>::SharedPointer(const SharedPointer<Any>& o) {
   }
 }
 
-bi::SharedPointer<bi::Any>::SharedPointer(SharedPointer<Any>&& o) {
+bi::SharedPointer<bi::Any>::SharedPointer(SharedPointer<Any> && o) {
   if (o.allocation) {
     allocation = allocationMap.get(o.allocation);
     allocation->sharedInc();
@@ -70,7 +72,7 @@ bi::SharedPointer<bi::Any>& bi::SharedPointer<bi::Any>::operator=(
 }
 
 bi::SharedPointer<bi::Any>& bi::SharedPointer<bi::Any>::operator=(
-    SharedPointer<Any>&& o) {
+    SharedPointer<Any> && o) {
   reset(allocationMap.get(o.allocation));
   return *this;
 }

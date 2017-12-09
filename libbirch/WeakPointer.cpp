@@ -9,7 +9,7 @@
 
 #include <cassert>
 
-bi::WeakPointer<bi::Any>::WeakPointer(const std::nullptr_t) :
+bi::WeakPointer<bi::Any>::WeakPointer(const std::nullptr_t& o) :
     allocation(nullptr) {
   //
 }
@@ -30,7 +30,7 @@ bi::WeakPointer<bi::Any>::WeakPointer(const WeakPointer<Any>& o) {
   }
 }
 
-bi::WeakPointer<bi::Any>::WeakPointer(WeakPointer<Any>&& o) {
+bi::WeakPointer<bi::Any>::WeakPointer(WeakPointer<Any> && o) {
   if (o.allocation) {
     allocation = allocationMap.get(o.allocation);
     allocation->weakInc();
@@ -61,7 +61,7 @@ bi::WeakPointer<bi::Any>& bi::WeakPointer<bi::Any>::operator=(
 }
 
 bi::WeakPointer<bi::Any>& bi::WeakPointer<bi::Any>::operator=(
-    WeakPointer<Any>&& o) {
+    WeakPointer<Any> && o) {
   reset(allocationMap.get(o.allocation));
   return *this;
 }

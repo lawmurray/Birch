@@ -96,7 +96,7 @@ public:
    * Default constructor.
    */
   Optional() :
-      value() {
+      value(nullptr) {
     //
   }
 
@@ -165,7 +165,7 @@ public:
    * Default constructo.
    */
   Optional() :
-      value() {
+      value(nullptr) {
     //
   }
 

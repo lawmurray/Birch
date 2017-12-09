@@ -65,7 +65,7 @@ void bi::Allocation::sharedDec() {
      * never be zero at this point; if the last weak pointer is that held by
      * the object itself, the destructor of the object will in turn call
      * weakDec() to clean up the rest */
-    assert(weak > 0);
+    assert(!object || weak > 0);
     detach();
     deallocate();
   }
@@ -86,7 +86,7 @@ void bi::Allocation::weakDec() {
     /* as each object holds a weak pointer to itself, the weak count should
      * never be zero unless the object has been destroyed, in which case the
      * shared count should be zero too */
-    //assert(shared == 0);  // not sure, what if object isn't created yet?
+    assert(!object || shared == 0);
     destroy();
   }
 }
