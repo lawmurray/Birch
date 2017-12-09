@@ -151,7 +151,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
       line((*iter)->type << ' ' << (*iter)->name << ';');
     }
     for (auto iter = locals.begin(); iter != locals.end(); ++iter) {
-      line((*iter)->type << ' ' << (*iter)->name << (*iter)->number << ';');
+      line((*iter)->type << ' ' << getName((*iter)->name->str(), (*iter)->number) << ';');
     }
 
     out();

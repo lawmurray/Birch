@@ -12,7 +12,8 @@
 bi::CppFiberGenerator::CppFiberGenerator(std::ostream& base, const int level,
     const bool header) :
     CppBaseGenerator(base, level, header),
-    label(0) {
+    label(0),
+    inFor(false) {
   //
 }
 
@@ -127,7 +128,8 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     for (auto iter = locals.begin(); iter != locals.end(); ++iter) {
       auto param = dynamic_cast<const LocalVariable*>(*iter);
       assert(param);
-      line(param->type << ' ' << param->name << param->number << ';');
+      line(
+          param->type << ' ' << getName(param->name->str(), param->number) << ';');
     }
 
     out();
@@ -179,16 +181,28 @@ void bi::CppFiberGenerator::visit(const Yield* o) {
 }
 
 void bi::CppFiberGenerator::visit(const Identifier<LocalVariable>* o) {
-  // there may be local variables in the fiber body that have the same name,
-  // distinguished only by scope; as these scopes are now collapsed, local
-  // variable names are suffixed with a unique number to distinguish them
-  middle(o->name << o->target->number);
+  middle(getName(o->name->str(), o->target->number));
 }
 
 void bi::CppFiberGenerator::visit(const LocalVariable* o) {
-  // see above for use of number here
-  middle(o->name << o->number);
-  genInit(o);
+  if (inFor || !o->value->isEmpty() || !o->args->isEmpty()
+      || !o->brackets->isEmpty()) {
+    /* the variable is declared in the fiber state, so there is no need to
+     * do anything here unless there is some initialization associated with
+     * it */
+    inFor = false;
+    middle(getName(o->name->str(), o->number));
+    genInit(o);
+  }
+}
+
+void bi::CppFiberGenerator::visit(const For* o) {
+  /* special exemption for the handling of local variable initialisation
+   * above: do need to initialise a local variable when it is declared as the
+   * index of a for loop; the inFor flag is switched off after the first
+   * local variable encountered */
+  inFor = true;
+  CppBaseGenerator::visit(o);
 }
 
 void bi::CppFiberGenerator::genSwitch() {
@@ -208,4 +222,27 @@ void bi::CppFiberGenerator::genEnd() {
   line("END:");
   line("this->label = " << (yields.size() + 1) << ';');
   line("return false;");
+}
+
+std::string bi::CppFiberGenerator::getName(const std::string& name,
+    const int number) {
+  std::stringstream buf;
+  std::string result;
+  auto iter = names.find(number);
+  if (iter == names.end()) {
+    auto count = counts.find(name);
+    if (count == counts.end()) {
+      buf << name << '_';
+      result = buf.str();
+      counts.insert(std::make_pair(name, 1));
+    } else {
+      buf << name << '_' << count->second << '_';
+      result = buf.str();
+      ++count->second;
+    }
+    names.insert(std::make_pair(number, result));
+  } else {
+    result = iter->second;
+  }
+  return result;
 }
