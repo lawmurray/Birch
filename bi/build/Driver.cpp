@@ -394,6 +394,7 @@ void bi::Driver::meta() {
   /* external requirements */
   readFiles(top.get(), "require.header", { "require", "header" });
   readFiles(top.get(), "require.library", { "require", "library" });
+  readFiles(top.get(), "require.program", { "require", "program" });
 
   /* create package */
   package = new Package(packageName);
@@ -473,8 +474,17 @@ void bi::Driver::setup() {
     /* required libraries */
     for (auto file : metaFiles["require.library"]) {
       configureStream << "AC_CHECK_LIB([" << file.string() << "], [main], " <<
-          "[], [AC_MSG_ERROR([header required by " << packageName <<
-          " package not found])])\n";
+          "[], [AC_MSG_ERROR([library required by " << packageName <<
+          " package not found.])])\n";
+    }
+
+    /* required programs */
+    for (auto file : metaFiles["require.program"]) {
+      configureStream << "AC_PATH_PROG([PROG], [" << file.string() << "], [])\n";
+      configureStream << "if test \"$PROG\" = \"\"; then\n";
+      configureStream << "  AC_MSG_ERROR([" << file.string() << " program " <<
+          "required by " << packageName << " package not found.])\n";
+      configureStream << "fi\n";
     }
 
     /* footer */
