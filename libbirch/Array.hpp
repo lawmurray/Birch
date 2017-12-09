@@ -108,8 +108,10 @@ public:
         frame.resize(o.frame);
         deallocate();
         allocate();
+        copy(o);
+      } else {
+        assign(o);
       }
-      assign(o);
     }
     return *this;
   }
@@ -126,8 +128,10 @@ public:
           frame.resize(o.frame);
           deallocate();
           allocate();
+          copy(o);
+        } else {
+          assign(o);
         }
-        assign(o);
       } else {
         deallocate();
         frame = std::move(o.frame);
