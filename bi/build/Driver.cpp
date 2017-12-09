@@ -456,7 +456,7 @@ void bi::Driver::setup() {
 
   /* update configure.ac */
   if (newConfigure || newMeta) {
-    std::string contents = read_all(work_dir / "configure.ac");
+    std::string contents = read_all(find(share_dirs, "configure.ac"));
     replace_all(contents, "PACKAGE_NAME", package->name);
     replace_all(contents, "PACKAGE_TARNAME", package->tarname);
 
@@ -486,7 +486,7 @@ void bi::Driver::setup() {
 
   /* update Makefile.am */
   if (newMake || newMeta) {
-    std::string contents = read_all(work_dir / "Makefile.am");
+    std::string contents = read_all(find(share_dirs, "Makefile.am"));
     replace_all(contents, "PACKAGE_NAME", package->name);
     replace_all(contents, "PACKAGE_TARNAME", package->tarname);
 
