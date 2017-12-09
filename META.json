@@ -77,7 +77,8 @@
       "bi/math/vector.bi",
       "bi/primitive.bi",
       "bi/resample.bi",
-      "bi/standard.bi"
+      "bi/standard.bi",
+      "bi/system.bi"
     ],
     "other": [
       "LICENSE",

@@ -187,6 +187,7 @@
 | [solve](#solve-1378) | Solve a system of equations. |
 | [squaredNorm](#squarednorm-1361) | Squared norm of a vector. |
 | [sum](#sum-1759) | Sum of a vector. |
+| [system](#system-1832) | Execute a command. |
 | [systematic_cumulative_offspring](#systematic-cumulative-offspring-1803) | Systematic resampling. |
 | [transpose](#transpose-1365) | Transpose of a matrix. |
 | [vector](#vector-1739) | Create vector filled with a given scalar. |
@@ -302,7 +303,7 @@ Create binomial distribution.
 
 Create binomial distribution.
 
-#### Binomial(n:[Integer](#integer-22), ρ:[Random](#random-1860)) -> [Random](#random-1875)
+#### Binomial(n:[Integer](#integer-22), ρ:[Random](#random-1862)) -> [Random](#random-1877)
 
 <a name="binomial-644"></a>
 
@@ -327,7 +328,7 @@ Create categorical distribution.
 
 Create categorical distribution.
 
-#### Categorical(ρ:[Random](#random-1890)) -> [Random](#random-1875)
+#### Categorical(ρ:[Random](#random-1892)) -> [Random](#random-1877)
 
 <a name="categorical-658"></a>
 
@@ -387,7 +388,7 @@ Create Gaussian distribution.
 
 Create Gaussian distribution.
 
-#### Gaussian(μ:[Random](#random-1860), σ2:[Real](#real-146)) -> [Gaussian](#gaussian-492)
+#### Gaussian(μ:[Random](#random-1862), σ2:[Real](#real-146)) -> [Gaussian](#gaussian-492)
 
 <a name="gaussian-758"></a>
 
@@ -411,7 +412,7 @@ Create Gaussian distribution.
 
 Create Gaussian distribution.
 
-#### Gaussian(μ:[Random](#random-1890), Σ:[Real](#real-146)\[\_,\_\]) -> [MultivariateGaussian](#multivariategaussian-549)
+#### Gaussian(μ:[Random](#random-1892), Σ:[Real](#real-146)\[\_,\_\]) -> [MultivariateGaussian](#multivariategaussian-549)
 
 <a name="gaussian-924"></a>
 
@@ -480,7 +481,7 @@ Create log-Gaussian distribution.
 
 Create log-Gaussian distribution.
 
-#### LogGaussian(μ:[Random](#random-1860), σ2:[Real](#real-146)) -> [LogGaussian](#loggaussian-514)
+#### LogGaussian(μ:[Random](#random-1862), σ2:[Real](#real-146)) -> [LogGaussian](#loggaussian-514)
 
 <a name="loggaussian-852"></a>
 
@@ -516,7 +517,7 @@ Create log-Gaussian distribution.
 
 Create log-Gaussian distribution.
 
-#### LogNormal(μ:[Random](#random-1860), σ2:[Real](#real-146)) -> [LogGaussian](#loggaussian-514)
+#### LogNormal(μ:[Random](#random-1862), σ2:[Real](#real-146)) -> [LogGaussian](#loggaussian-514)
 
 <a name="lognormal-858"></a>
 
@@ -540,7 +541,7 @@ Create multinomial distribution.
 
 Create multinomial distribution.
 
-#### Multinomial(n:[Integer](#integer-22), ρ:[Random](#random-1890)) -> [Random](#random-1905)
+#### Multinomial(n:[Integer](#integer-22), ρ:[Random](#random-1892)) -> [Random](#random-1907)
 
 <a name="multinomial-675"></a>
 
@@ -582,7 +583,7 @@ Create Gaussian distribution.
 
 Create Gaussian distribution.
 
-#### Normal(μ:[Random](#random-1860), σ2:[Real](#real-146)) -> [Gaussian](#gaussian-492)
+#### Normal(μ:[Random](#random-1862), σ2:[Real](#real-146)) -> [Gaussian](#gaussian-492)
 
 <a name="normal-764"></a>
 
@@ -606,7 +607,7 @@ Create Gaussian distribution.
 
 Create Gaussian distribution.
 
-#### Normal(μ:[Random](#random-1890), Σ:[Real](#real-146)\[\_,\_\]) -> [MultivariateGaussian](#multivariategaussian-549)
+#### Normal(μ:[Random](#random-1892), Σ:[Real](#real-146)\[\_,\_\]) -> [MultivariateGaussian](#multivariategaussian-549)
 
 <a name="normal-930"></a>
 
@@ -630,7 +631,7 @@ Create Poisson distribution.
 
 Create Poisson distribution.
 
-#### Poisson(λ:[Random](#random-1860)) -> [Random](#random-1875)
+#### Poisson(λ:[Random](#random-1862)) -> [Random](#random-1877)
 
 <a name="poisson-690"></a>
 
@@ -1501,6 +1502,16 @@ Squared norm of a vector.
 
 Sum of a vector.
 
+#### system(cmd:[String](#string-273)) -> [Integer32](#integer32-33)
+
+<a name="system-1832"></a>
+
+Execute a command.
+
+  - cmd: The command string.
+
+Returns the return value of the execution.
+
 #### systematic_cumulative_offspring(W:[Real](#real-146)\[\_\]) -> [Integer](#integer-22)\[\_\]
 
 <a name="systematic-cumulative-offspring-1803"></a>
@@ -1738,7 +1749,7 @@ Affine transformation of a random variable.
 | Member Variable | Description |
 | --- | --- |
 | *a:[Real](#real-146)* | Scale. |
-| *x:[Random](#random-1860)* | Random variable. |
+| *x:[Random](#random-1862)* | Random variable. |
 | *c:[Real](#real-146)* | Offset. |
 
 | Member Function | Brief description |
@@ -1749,7 +1760,7 @@ Affine transformation of a random variable.
 
 ### Member Function Details
 
-#### initialize(a:[Real](#real-146), x:[Random](#random-1860), c:[Real](#real-146))
+#### initialize(a:[Real](#real-146), x:[Random](#random-1862), c:[Real](#real-146))
 
 <a name="initialize-1009"></a>
 
@@ -1803,7 +1814,7 @@ Value conversion.
 
 <a name="bernoulli-407"></a>
 
-  * Inherits from *[Random](#random-1845)*
+  * Inherits from *[Random](#random-1847)*
 
 Bernoulli distribution.
 
@@ -1816,7 +1827,7 @@ Bernoulli distribution.
 
 <a name="beta-420"></a>
 
-  * Inherits from *[Random](#random-1860)*
+  * Inherits from *[Random](#random-1862)*
 
 Beta distribution.
 
@@ -1830,7 +1841,7 @@ Beta distribution.
 
 <a name="betabinomial-636"></a>
 
-  * Inherits from *[Random](#random-1875)*
+  * Inherits from *[Random](#random-1877)*
 
 Binomial with conjugate prior on success probability. When the success
 probability is known, this is simply a Binomial distribution.
@@ -1845,7 +1856,7 @@ probability is known, this is simply a Binomial distribution.
 
 <a name="binomial-434"></a>
 
-  * Inherits from *[Random](#random-1875)*
+  * Inherits from *[Random](#random-1877)*
 
 Binomial distribution.
 
@@ -1859,7 +1870,7 @@ Binomial distribution.
 
 <a name="categorical-445"></a>
 
-  * Inherits from *[Random](#random-1875)*
+  * Inherits from *[Random](#random-1877)*
 
 Categorical distribution.
 
@@ -2160,7 +2171,7 @@ Trigger an event.
 
 <a name="dirichlet-458"></a>
 
-  * Inherits from *[Random](#random-1890)*
+  * Inherits from *[Random](#random-1892)*
 
 Dirichlet distribution.
 
@@ -2195,7 +2206,7 @@ Update with draw from categorical distribution.
 
 <a name="dirichletcategorical-651"></a>
 
-  * Inherits from *[Random](#random-1875)*
+  * Inherits from *[Random](#random-1877)*
 
 Categorical distribution with conjugate prior on category probabilities.
 
@@ -2208,7 +2219,7 @@ Categorical distribution with conjugate prior on category probabilities.
 
 <a name="dirichletmultinomial-667"></a>
 
-  * Inherits from *[Random](#random-1905)*
+  * Inherits from *[Random](#random-1907)*
 
 Multinomial with conjugate prior on category probabilities.
 
@@ -2222,7 +2233,7 @@ Multinomial with conjugate prior on category probabilities.
 
 <a name="gamma-474"></a>
 
-  * Inherits from *[Random](#random-1860)*
+  * Inherits from *[Random](#random-1862)*
 
 Gamma distribution.
 
@@ -2236,7 +2247,7 @@ Gamma distribution.
 
 <a name="gammapoisson-684"></a>
 
-  * Inherits from *[Random](#random-1875)*
+  * Inherits from *[Random](#random-1877)*
 
 Poisson with conjugate prior on rate. When the rate is known, this is
 simply a Poisson distribution. When the rate is gamma distributed, this is
@@ -2251,7 +2262,7 @@ a negative binomial distribution.
 
 <a name="gaussian-492"></a>
 
-  * Inherits from *[Random](#random-1860)*
+  * Inherits from *[Random](#random-1862)*
 
 Gaussian distribution.
 
@@ -2453,7 +2464,7 @@ Logaritmic transformation of a random variable.
 
 | Member Variable | Description |
 | --- | --- |
-| *x:[Random](#random-1860)* | Random variable. |
+| *x:[Random](#random-1862)* | Random variable. |
 
 | Member Function | Brief description |
 | --- | --- |
@@ -2463,7 +2474,7 @@ Logaritmic transformation of a random variable.
 
 ### Member Function Details
 
-#### initialize(x:[Random](#random-1860))
+#### initialize(x:[Random](#random-1862))
 
 <a name="initialize-1143"></a>
 
@@ -2480,7 +2491,7 @@ Value conversion.
 
 <a name="loggaussian-514"></a>
 
-  * Inherits from *[Random](#random-1860)*
+  * Inherits from *[Random](#random-1862)*
 
 Log-Gaussian distribution.
 
@@ -2563,7 +2574,7 @@ Log-Gaussian with logarithm of a log-Gaussian as its mean.
 
 <a name="multinomial-532"></a>
 
-  * Inherits from *[Random](#random-1905)*
+  * Inherits from *[Random](#random-1907)*
 
 Multinomial distribution.
 
@@ -2588,7 +2599,7 @@ Multivariate affine transformation of a random variable.
 | Member Variable | Description |
 | --- | --- |
 | *A:[Real](#real-146)\[\_,\_\]* | Scale. |
-| *x:[Random](#random-1890)* | Random variable. |
+| *x:[Random](#random-1892)* | Random variable. |
 | *c:[Real](#real-146)\[\_\]* | Offset. |
 
 | Member Function | Brief description |
@@ -2599,7 +2610,7 @@ Multivariate affine transformation of a random variable.
 
 ### Member Function Details
 
-#### initialize(A:[Real](#real-146)\[\_,\_\], x:[Random](#random-1890), c:[Real](#real-146)\[\_\])
+#### initialize(A:[Real](#real-146)\[\_,\_\], x:[Random](#random-1892), c:[Real](#real-146)\[\_\])
 
 <a name="initialize-1155"></a>
 
@@ -2616,7 +2627,7 @@ Value conversion.
 
 <a name="multivariategaussian-549"></a>
 
-  * Inherits from *[Random](#random-1890)*
+  * Inherits from *[Random](#random-1892)*
 
 Multivariate Gaussian distribution.
 
@@ -2671,7 +2682,7 @@ Multivariate Gaussian with another multivariate Gaussian as mean.
 
 <a name="negativebinomial-568"></a>
 
-  * Inherits from *[Random](#random-1875)*
+  * Inherits from *[Random](#random-1877)*
 
 Negative binomial distribution.
 
@@ -2805,7 +2816,7 @@ Print matrix.
 
 <a name="poisson-579"></a>
 
-  * Inherits from *[Random](#random-1875)*
+  * Inherits from *[Random](#random-1877)*
 
 Poisson distribution.
 
@@ -2927,7 +2938,7 @@ compatible type.
 
 <a name="restaurantprocess-595"></a>
 
-  * Inherits from *[Random](#random-1890)*
+  * Inherits from *[Random](#random-1892)*
 
 (Chinese) restaurant process.
 
@@ -2960,7 +2971,7 @@ Constructor.
 
 <a name="restaurantprocesscategorical-937"></a>
 
-  * Inherits from *[Random](#random-1875)*
+  * Inherits from *[Random](#random-1877)*
 
 Categorical with conjugate restaurant process prior on category
 probabilities.
@@ -2974,7 +2985,7 @@ probabilities.
 
 <a name="uniform-609"></a>
 
-  * Inherits from *[Random](#random-1860)*
+  * Inherits from *[Random](#random-1862)*
 
 Uniform distribution.
 
@@ -2988,7 +2999,7 @@ Uniform distribution.
 
 <a name="uniforminteger-623"></a>
 
-  * Inherits from *[Random](#random-1875)*
+  * Inherits from *[Random](#random-1877)*
 
 Uniform distribution over integers.
 
