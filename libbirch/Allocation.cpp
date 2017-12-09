@@ -27,6 +27,7 @@ bi::Allocation::Allocation(Any* object) :
     weak(0) {
   assert(object);
   object->ptr.reset(this);
+  assert(weak == 1);
 }
 
 bi::Allocation::~Allocation() {
