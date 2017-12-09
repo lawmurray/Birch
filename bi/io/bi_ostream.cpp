@@ -327,7 +327,7 @@ void bi::bi_ostream::visit(const BinaryOperator* o) {
 }
 
 void bi::bi_ostream::visit(const UnaryOperator* o) {
-  start("operator (" << o->name << ' ' << o->params << ')');
+  start("operator (" << o->name << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
