@@ -2,23 +2,22 @@
 
 The `birch` driver program can be used to set up a Birch project. From within a (usually empty) directory, run
 
-    birch init
+    birch init --name Example
     
-to create a new project. This creates a standard layout for a Birch project. It is recommended that you maintain this standard layout to make it easier to manage and distribute your project.
+to create a new project, replacing `Example` with the name of the project. This creates the standard files and subdirectories for a Birch project. It is recommended that you maintain this standard structure to make it easier to manage and distribute your project.
 
-The first thing that you should do is modify the meta data at the top of the `README.md` file to give a name to your project.
+Now is a good time to set up version control, such as Git, with this initial set of files.
 
-Now is a good time to set up your version control, such as Git, with this initial set of files.
-
-The standard directory structure consists of the subdirectories:
+The standard structure consists of the subdirectories:
 
   * `bi/` for source code,
-  * `data/` for data files,
   * `build/` for build files,
+  * `data/` for input files,
+  * `results/` for output files.
 
-and a number of other meta files in the base directory. The most important of these meta files is `MANIFEST`, which contains a list of all source files, as well as other files that should be distributed with the project (e.g. data files). As you add files to the project, especially `.bi` source files in the `bi/` subdirectory, you should add them to the `MANIFEST` file to include them in the build.
+and a number of other meta files in the base directory. The most important of these meta files is `META.json`, which contains meta information such as a name, version, and description of the project, and a manifest of source files. As you add files to the project, especially `.bi` source files in the `bi/` subdirectory, you should add them to the `manifest.source` list in `META.json` to include them in the build.
 
-To check for possible issues with the `MANIFEST` file, use:
+To check for possible issues with the structure, use:
 
     birch check
 
@@ -30,19 +29,19 @@ To install the project (required to run), use:
 
     birch install
 
-To run a program that is either part of the standard library or amongst the project code, use
+To run a program that is either part of the standard library or among the source files of the code, use
 
     birch example
     
 replacing `example` with the name of the program. Arguments to the program may be given as command-line options, e.g.:
 
-    birch example -N 10 -T 10
+    birch example -n 10 --input-file data/input.json
 
-When building, Birch will create a number of additional files in the current working directory. Most of these are created in a `build/` subdirectory to keep them out of the way as much as possible. To delete all of the additional files, use:
+When building, Birch will create a number of additional files in the current working directory. Most of these are created in a `build/` subdirectory, although some will appear in the root directory of the project. To delete all of these additional files, use:
 
     birch clean
 
-Debugging mode is enabled by default, and this will (dramatically) slow down execution times. It is recommended that you keep debugging mode enabled when developing and testing code on small problems, but disable it when running tested code on serious problems:
+Debugging mode is enabled by default, and this will (dramatically) slow down execution times. It is recommended that you keep debugging mode enabled when developing and testing code (perhaps on small problems), but disable it when running tested code (perhaps on serious problems):
 
     birch build --disable-debug
 

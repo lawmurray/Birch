@@ -1,4 +1,4 @@
-# Untitled (package for Birch)
+# PACKAGE_NAME package
 
 ## Installation
 
@@ -15,4 +15,4 @@ To install system wide, use:
 
 ### v0.0.0
 
-* Initialised project.
+* First version.

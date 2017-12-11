@@ -26,9 +26,11 @@ bi::Driver::Driver(int argc, char** argv) :
     build_dir(current_path() / "build"),
     lib_dir(current_path() / "build" / ".libs"),
     prefix(""),
+    packageName("Untitled"),
     warnings(true),
     debug(true),
     verbose(true),
+    package(nullptr),
     newAutogen(false),
     newConfigure(false),
     newMake(false),
@@ -39,6 +41,7 @@ bi::Driver::Driver(int argc, char** argv) :
     INCLUDE_DIR_ARG,
     LIB_DIR_ARG,
     PREFIX_ARG,
+    NAME_ARG,
     ENABLE_WARNINGS_ARG,
     DISABLE_WARNINGS_ARG,
     ENABLE_DEBUG_ARG,
@@ -49,16 +52,18 @@ bi::Driver::Driver(int argc, char** argv) :
 
   int c, option_index;
   option long_options[] = {
-      { "share-dir", required_argument, 0, SHARE_DIR_ARG }, { "include-dir",
-      required_argument, 0, INCLUDE_DIR_ARG }, { "lib-dir",
-      required_argument, 0, LIB_DIR_ARG }, { "prefix", required_argument, 0,
-          PREFIX_ARG }, { "enable-warnings", no_argument, 0,
-          ENABLE_WARNINGS_ARG }, { "disable-warnings", no_argument, 0,
-          DISABLE_WARNINGS_ARG }, { "enable-debug", no_argument, 0,
-          ENABLE_DEBUG_ARG }, { "disable-debug", no_argument, 0,
-          DISABLE_DEBUG_ARG }, { "enable-verbose", no_argument, 0,
-          ENABLE_VERBOSE_ARG }, { "disable-verbose", no_argument, 0,
-          DISABLE_VERBOSE_ARG }, { 0, 0, 0, 0 } };
+      { "share-dir", required_argument, 0, SHARE_DIR_ARG },
+      { "include-dir", required_argument, 0, INCLUDE_DIR_ARG },
+      { "lib-dir", required_argument, 0, LIB_DIR_ARG },
+      { "prefix", required_argument, 0, PREFIX_ARG },
+      { "name", required_argument, 0, NAME_ARG },
+      { "enable-warnings", no_argument, 0, ENABLE_WARNINGS_ARG },
+      { "disable-warnings", no_argument, 0, DISABLE_WARNINGS_ARG },
+      { "enable-debug", no_argument, 0, ENABLE_DEBUG_ARG },
+      { "disable-debug", no_argument, 0, DISABLE_DEBUG_ARG },
+      { "enable-verbose", no_argument, 0, ENABLE_VERBOSE_ARG },
+      { "disable-verbose", no_argument, 0, DISABLE_VERBOSE_ARG },
+      { 0, 0, 0, 0 } };
   const char* short_options = "-";  // treats non-options as short option 1
 
   /* mutable copy of argv and argc */
@@ -83,6 +88,9 @@ bi::Driver::Driver(int argc, char** argv) :
       break;
     case PREFIX_ARG:
       prefix = optarg;
+      break;
+    case NAME_ARG:
+      packageName = optarg;
       break;
     case ENABLE_WARNINGS_ARG:
       warnings = true;
@@ -273,8 +281,18 @@ void bi::Driver::init() {
   create_directory("results");
   copy_with_prompt(find(share_dirs, "gitignore"), ".gitignore");
   copy_with_prompt(find(share_dirs, "LICENSE"), "LICENSE");
-  copy_with_prompt(find(share_dirs, "META.json"), "META.json");
-  copy_with_prompt(find(share_dirs, "README.md"), "README.md");
+
+  std::string contents;
+
+  contents = read_all(find(share_dirs, "META.json"));
+  replace_all(contents, "PACKAGE_NAME", packageName);
+  ofstream metaStream(work_dir / "META.json");
+  metaStream << contents;
+
+  contents = read_all(find(share_dirs, "README.md"));
+  replace_all(contents, "PACKAGE_NAME", packageName);
+  ofstream readmeStream(work_dir / "README.md");
+  readmeStream << contents;
 }
 
 void bi::Driver::check() {
@@ -460,7 +478,6 @@ void bi::Driver::setup() {
     std::string contents = read_all(find(share_dirs, "configure.ac"));
     replace_all(contents, "PACKAGE_NAME", package->name);
     replace_all(contents, "PACKAGE_TARNAME", package->tarname);
-
     ofstream configureStream(work_dir / "configure.ac");
     configureStream << contents << "\n\n";
 

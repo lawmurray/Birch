@@ -169,6 +169,11 @@ private:
   boost::filesystem::path prefix;
 
   /**
+   * Name of the package.
+   */
+  std::string packageName;
+
+  /**
    * Enable compiler warnings.
    */
   bool warnings;
@@ -183,11 +188,6 @@ private:
    */
   bool verbose;
   //@}
-
-  /**
-   * Name of the package.
-   */
-  std::string packageName;
 
   /**
    * The package.
