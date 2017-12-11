@@ -15,7 +15,7 @@ program demo_copy_fiber(N:Integer <- 10) {
   stdout.print("\n");
 }
 
-fiber g(from:Integer, to:Integer) -> Real! {
+closed fiber g(from:Integer, to:Integer) -> Real! {
   for (n:Integer in from..to) {
     yield simulate_gaussian(0.0, 1.0);
   }
