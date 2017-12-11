@@ -50,47 +50,187 @@ More information on the `init`, `check`, and `build` programs is available in th
 
 # The Birch Language
 
-This section assumes that the reader has basic programming experience, but may be arriving at probabilistic programming for the first time. It assumes an understanding of imperative and object-oriented programming paradigms. Syntax is given by example, while the semantics are as an experienced programmer will expect and so not detailed.
+This section assumes that the reader has basic programming experience, but may be arriving at probabilistic programming for the first time. It assumes an understanding of imperative and object-oriented programming paradigms. The introduction is mostly be example.
 
-Greater focus is given to the probabilistic programming paradigm, which may be less familiar. This includes more detail on programming concepts that the reader may not have encountered, but that play an important role in Birch, such as fibers and multimethods.
+## Comments
 
-## Programs
+Comments in Birch are as per C++:
 
-A program represents an entry point into Birch code from the command line or other host software. It cannot be called from other Birch code. It is declared as follows:
+    // end-of-line comment
+    /* block comment */
 
-    program example(a:Real, b:Integer <- 0, msg:String) {
-      ...
-    }
+In the spirit of JavaDoc and Doxygen, block comments that begin with two stars denote special documentation comments that are extracted by the `birch doc` command:
 
-where `a`, `b` and `msg` are program options, with `b` given a default value.
+    /** documentation comment */
+    
+These typically appear immediately prior to class and function declarations to document their behaviour.
 
-The `birch` driver can then be used from the command line to call this program:
+## Types
 
-    birch example -a 10.0 -b 10 --msg "Hello world!"
+A thorough treatment of types is deferred to below. There are many categories of types in Birch. Two important categories are:
 
-Note that program options may be given in any order but must be named. The name is usually prefixed with a double dash (`--`), but can be prefixed with a single dash (`-`) instead if the name is only one character long.
-
-Program options may be of any built-in type, or any class type for which an assignment from type `String` has been declared.
+  1. *Basic types*, such as `Boolean`, `Integer`, `Real`, and `String`.
+  2. *Class types* as declared in user code, such as `InputStream`, `OutputStream`, and `Gaussian` from the standard library.
 
 ## Variables
 
-A variable `a` of type `A` is declared as follows:
+A variable `x` of type `X` is declared as follows:
 
-    a:A;
-
-Basic types, provided by the standard library, include `Boolean`, `Integer`, `Real` and `String`.
+    x:X;
 
 ## Assignments
 
 Assignment statements use the `<-` operator.
 
-    a <- b;
-
-Behaviour depends on assignment and conversion declarations in any class types involved. In the absence of these, assignment of objects of basic type is by value, and of class type by reference.
+    x <- y;
     
-An assignment has no return type, and as it is a statement, not an expression. That is, the line of code `a <- b;` is valid, while `a <- b <- c;` is not, as assignment operators cannot be chained together in expressions.
+A variable may be given an initial value when declared:
 
-Note that the assignment operator is always `<-`. The operator `=`, sometimes used for assignment in other languages, is currently reserved for future use (e.g. for declaring equations).
+    x:X <- y;
+
+Assignment is a statement, not an expression; the operator does not return a value:
+
+    x <- y;       // OK!
+    x <- y <- z;  // ERROR!
+
+Assignent of objects of basic type is by value, while those of class type is by reference.
+
+It is possible to declare assignment and conversion operators within a class, allowing assignment of objects of basic type, or conversion to an object of basic type, where sensible.
+
+> The operator `=`, sometimes used for assignment in other languages, is currently reserved for future use (e.g. for declaring equations).
+
+## Tuples
+
+Tuples are tied using parentheses:
+
+    (x, y, z)
+    
+For `x:X`, `y:Y`, and `z:Z`, the type of such a tuple is `(X, Y, Z)`.
+
+It is possible to declare a variable of the *tuple type*:
+
+    a:(X, Y, Z);
+    
+and to assign values to it:
+
+    a <- (x, y, z);
+    
+To untie a tuple, use parentheses on the left:
+
+    (x, y, z) <- a;
+
+## Sequences
+
+Sequences are constructed using square brackets:
+
+    [x, y, z]
+    
+For `x:X`, `y:Y`, and `z:Z`, the type of such a sequence is `[W]`, where `W` is the least common super type of `X`, `Y`, and `Z`. Such a super type must exist. In the simplest case, `x`, `y` and `z` are all of the same type `W`, and so the sequence is of type `[W]`.
+
+It is possible to declare a variable of the *sequence type*:
+
+    w:[W];
+
+and to assign values to it:
+
+    w <- [x, y, z];
+    
+It is possible to nest sequences:
+
+    [[x, y, z], [a, b, c]]
+    
+If the least common subtype of all elements is `W`, this is a sequence of sequences of `W`, with the type `[[W]]`.
+
+It is not possible to access the individual elements of a sequence, either for reading or writing. To access the individual elements, assign the sequence to an array, and access them via the array.
+
+> In future, it may be possible to use a `for` loop to iterate over the elements of a sequence for read-only access. The primary  motivation for sequences in the language is for the easy initialization of arrays, however.
+
+## Arrays
+
+An array `x` with elements of type `X` is declared as:
+
+    x:X[_];
+    
+Multidimensional arrays, with any number of dimensions, are declared as:
+
+    x:X[_,_];    // two-dimensional array
+    x:X[_,_,_];  // three-dimensional array, etc
+
+The rightmost dimension is the innermost (fastest moving) in the memory layout. Two-dimensional arrays that represent matrices are therefore in row-major order.
+
+The size of the array may be given in the square brackets when it is declared, in place of `_`:
+
+    x:W[4];
+    y:W[4,8];
+
+Array slicing is with square brackets. To select the element of `y` at row 2 and column 6, use:
+
+    y[2,6]
+
+This returns a single element of type `W`. To select a range of elements of `y` at row 2 and columns 5 to 8, use:
+
+    y[2,5..8]
+    
+This returns a vector of type `W[_]`.
+
+In the context of array slicing, the term *index* denotes a single index, as in `2` and `6` above; the term *range* denotes a pair of indices separated by the `..` operator, as in `5..8` above.
+
+Indices reduce the number of dimensions in the result, as opposed to creating singleton dimensions. Thus, in the last example, the result is of type `W[_]` with size 4, not of type `W[_,_]` with size 1 by 4. If a singleton dimension is desired, a range can be used:
+
+    y[2..2,5..8] 
+
+Arrays are resized by assignment, e.g.
+
+    z:W[2];
+    z <- x;
+    
+The vector `z` is now a copy of `x` with a size of 4. Assignment may be used to resize an array, but not to change its number of dimensions.
+
+When using a slice on the left size of an assignment, array sizes must match on the left and right:
+
+    z[1..2] <- x[1..2];  // OK! Both left and right have size 2
+    z[1..2] <- x;          // ERROR! Left has size 2, right has size 4
+
+Sequences can be assigned to arrays, but not vice versa:
+
+    x <- [a, b, c];
+    x <- [[a, b, c], [d, e, f]];
+
+## Optionals
+
+A variable of class type must always point to an object. When declared, a variable of class type must be constructed:
+
+    a:A(b, c);
+    
+or be assigned a value:
+
+    a:A <- b;
+
+If the constructor for the class type takes no parameters, the parentheses may be omitted:
+
+    a:A;
+
+but this is equivalent to:
+
+    a:A();
+
+and an object is constructed in this case.
+
+Some use cases require that a variable may not have a value. *Optional types* are provided for this purpose. An optional type is indicated by following any other type with the `?` type operator, like so:
+
+    a:A?;
+    
+To check whether a variable of optional type has a value, use the postfix `?` operator, which returns a `Boolean` giving `true` if there is a value. To get that value, use the postfix `!` operator, which returns a value of the original type.
+
+A common usage idiom is as follows:
+
+    a:A?;
+    ...
+    if (a?) {  // a? gives a Boolean
+      f(a!);  // when a? is true, a! gives an A, otherwise an error
+    }
+
+## Casts
 
 ## Conditionals
 
@@ -137,6 +277,75 @@ For a function without parameters, empty parentheses are required:
     function f() {
       ...
     }
+
+## Programs
+
+A program represents an entry point into Birch code from the command line or other host software. It cannot be called from other Birch code. It is declared as follows:
+
+    program example(x:Boolean, y:Integer <- 0, message:String,
+        long_name:Real) {
+      // ...
+    }
+
+where `x`, `y` and `message` are program options, with `y` given a default value of zero.
+
+The `birch` driver can then be used from the command line to call this program:
+
+    birch example -x true -y 10 --message "Hello world!" --long-name 10.0
+
+Program options may be given in any order but must be named. The name is usually prefixed with a double dash (`--`), but can be prefixed with a single dash (`-`) in the case that it is a single character.
+
+Program option names that contain an underscore are specified with a dash on the command line, as in `long_name`/`--long-name` above.
+
+Program options may be of any type for which an assignment from type `String` has been declared. This includes all basic types.
+
+## Fibers
+
+A fiber is like a function for which execution can be paused and later resumed. Unlike a function, which can return just one value, a fiber yields a value each time it is paused.
+
+A fiber with two parameters (of type `A` and `B`) and yield type `C` is declared as follows:
+
+    fiber f(a:A, b:B) -> C! {
+      c:C;
+      ...
+      yield c;
+    }
+
+Note the decoration of the yield type `C` with `!` to make it a fiber type `C!`. This is required.
+
+When called, a fiber performs no execution except to construct an object of fiber type `C!` and return it; execution of the body of the fiber is then controlled through that object.
+
+The usage idiom for fibers is similar to optionals, but with a loop:
+
+    c:C! <- f(a, b);
+    while (c?) {
+      g(c!);  // do something with the yield value
+    }
+    
+It is the postfix `?` operator that triggers the continuation of the fiber execution, which proceeds until the next yield point. Repeated use of the postfix `!` operator between calls of the postfix `?` operator will retrieve the last yield value, without further execution.
+
+Within the body of a fiber, the `yield` statement is used to pause execution. This yields execution to the caller, along with the given value.
+
+The fiber terminates when execution reaches the end of the body, if ever. When terminating, it does not yield a value. To terminate the execution of a fiber before reaching the end of the body, use an empty `return;` statement.
+
+### Fibers-within-fibers
+
+An outer fiber may call an inner fiber using the above syntax, as if the outer fiber were any other function. For convenience, the following implicit behaviour is also specified.
+
+If the outer fiber calls the inner fiber in such a way that its return value is ignored:
+
+    f(a, b);
+
+this implicitly behaves as:
+
+    c:C! <- f(a, b);
+    while (c?) {
+      yield c!;
+    }
+
+That is, the outer fiber yields the values of the inner fiber until the inner fiber completes execution.
+
+The same behaviour applies to an outer fiber that calls an inner *function*---not itself a fiber---which has a fiber return value.
 
 ## Operators
 
@@ -244,142 +453,6 @@ A unary operator `+` with one operand (of type `A`) and return type `C` is decla
 Any of the standard unary operators may be used in place of `+`.
 
 Operators always have a return type. It is not possible to manipulate operator precedence.
-
-
-## Arrays
-
-An array `a` of type `A` with `n` elements is declared as:
-
-    a:A[n];
-
-Multidimensional arrays are supported, for example a matrix with `m` rows and `n` columns is declared as:
-
-    a:A[m,n];
-
-The rightmost dimension is the innermost in the memory layout. Matrices therefore use row-major storage.
-
-When using an array as a parameter, use the underscore `_` as a placeholder for any size:
-
-    function f(a:A[_,_]) {
-      ...
-    }
-
-The type `A[_]` denotes a one-dimensional array (vector) of `A`, `A[_,_]` denotes a two-dimensional array (matrix) of `A`, `A[_,_,_]` denotes a three-dimensional array of `A`, and so forth.
-
-Arrays are sliced (elements are selected) with square-bracket notation, using *indices* and *ranges*. Indices are base 1.
-
-To select the element at the position of row 2, column 3, use:
-
-    a[2,3]
-
-This returns a single element of type `A`; `2` and `3` are both *indices*.
-
-To select elements at the position row 2, columns 2 to 7, use:
-
-    a[2,2..7]
-    
-This returns a vector of type `A` of length 6; `2` is an *index*, `2..7` is a *range*.
-
-Note, in the previous example, that the result type is `A[_]` (with single dimension of length 6) not `A[_,_]` (with dimensions of length 1 and 6): indices reduce the number of dimensions in the result, rather than produce a dimension of length 1. If a dimension of length 1 is desired, use a range:
-
-    a[2..2,2..7]; 
-
-Arrays are resized by assignment, e.g.
-
-    b:Integer[20];
-    a:Integer[10];
-    a <- b;
-    
-The vector `a` is now a copy of `b`, with length 20. This may be used to resize an array, but not change its number of dimensions, which is a fundamental part of its type.
-
-When using a slice on the left, the lengths of dimensions on the left and right must match:
-
-    a[1..10] <- b;          // ERROR!
-    a[1..10] <- b[11..20];  // OKAY!
-
-
-## Optionals
-
-A variable of class type must always point to an object. When declared, a variable of class type must be constructed:
-
-    a:A(b, c);
-    
-or be assigned a value:
-
-    a:A <- b;
-
-If the constructor for the class type takes no parameters, the parentheses may be omitted:
-
-    a:A;
-
-but this is equivalent to:
-
-    a:A();
-
-and an object is constructed in this case.
-
-Some use cases require that a variable may not have a value. *Optional types* are provided for this purpose. An optional type is indicated by following any other type with the `?` type operator, like so:
-
-    a:A?;
-    
-To check whether a variable of optional type has a value, use the postfix `?` operator, which returns a `Boolean` giving `true` if there is a value. To get that value, use the postfix `!` operator, which returns a value of the original type.
-
-A common usage idiom is as follows:
-
-    a:A?;
-    ...
-    if (a?) {  // a? gives a Boolean
-      f(a!);  // when a? is true, a! gives an A, otherwise an error
-    }
-
-## Fibers
-
-A fiber is like a function for which execution can be paused and later resumed. Unlike a function, which can return just one value, a fiber yields a value each time it is paused.
-
-A fiber with two parameters (of type `A` and `B`) and yield type `C` is declared as follows:
-
-    fiber f(a:A, b:B) -> C! {
-      c:C;
-      ...
-      yield c;
-    }
-
-Note the decoration of the yield type `C` with `!` to make it a fiber type `C!`. This is required.
-
-When called, a fiber performs no execution except to construct an object of fiber type `C!` and return it; execution of the body of the fiber is then controlled through that object.
-
-The usage idiom for fibers is similar to optionals, but with a loop:
-
-    c:C! <- f(a, b);
-    while (c?) {
-      g(c!);  // do something with the yield value
-    }
-    
-It is the postfix `?` operator that triggers the continuation of the fiber execution, which proceeds until the next yield point. Repeated use of the postfix `!` operator between calls of the postfix `?` operator will retrieve the last yield value, without further execution.
-
-Within the body of a fiber, the `yield` statement is used to pause execution. This yields execution to the caller, along with the given value.
-
-The fiber terminates when execution reaches the end of the body, if ever. When terminating, it does not yield a value. To terminate the execution of a fiber before reaching the end of the body, use an empty `return;` statement.
-
-### Fibers-within-fibers
-
-An outer fiber may call an inner fiber using the above syntax, as if the outer fiber were any other function. For convenience, the following implicit behaviour is also specified.
-
-If the outer fiber calls the inner fiber in such a way that its return value is ignored:
-
-    f(a, b);
-
-this implicitly behaves as:
-
-    c:C! <- f(a, b);
-    while (c?) {
-      yield c!;
-    }
-
-That is, the outer fiber yields the values of the inner fiber until the inner fiber completes execution.
-
-The same behaviour applies to an outer fiber that calls an inner *function*---not itself a fiber---which has a fiber return value.
-
 
 ## Classes
 
@@ -496,3 +569,13 @@ The body of the operator should construct the object that is the result of the c
     
     o:Derived;
     f(o);
+
+## Generics
+
+# Special Topics
+
+## Build system
+
+## Documentation system
+
+## Nested C++ code
