@@ -46,11 +46,11 @@ public:
 
   /**
    * Get the last yield value.
+   *
+   * @internal Returns by value to ensure that pointers, from the fiber's
+   * world, are mapped to the caller's world.
    */
-  Type& get() {
-    return value;
-  }
-  const Type& get() const {
+  const Type get() const {
     return value;
   }
 

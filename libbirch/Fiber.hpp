@@ -55,9 +55,11 @@ public:
 
   /**
    * Get the last yield value.
+   *
+   * @internal Returns by value to ensure that pointers, from the fiber's
+   * world, are mapped to the caller's world.
    */
-  Type& get();
-  const Type& get() const;
+  const Type get() const;
 
 private:
   /**
@@ -79,8 +81,6 @@ private:
 
 #include "libbirch/AllocationMap.hpp"
 #include "libbirch/Allocation.hpp"
-
-#include <iostream>
 
 template<class Type>
 bi::Fiber<Type>::Fiber(FiberState<Type>* state, const bool closed) :
@@ -165,28 +165,17 @@ bool bi::Fiber<Type>::query() {
       world = fiberWorld;
       fiberWorld = prevWorld;
     }
+    if (world > 0 && !state->yieldIsValue()) {
+      /* this fiber, which is yielding, has exported from its world, which must
+       * now become read only, with modifications copy-on-write */
+      world = ++nworlds;
+    }
   }
   return result;
 }
 
 template<class Type>
-Type& bi::Fiber<Type>::get() {
+const Type bi::Fiber<Type>::get() const {
   assert(state);
-  if (world > 0 && !state->yieldIsValue()) {
-    /* this fiber, which is yielding, has exported from its world, which must
-     * now become read only, with modifications copy-on-write */
-    world = ++nworlds;
-  }
-  return state->get();
-}
-
-template<class Type>
-const Type& bi::Fiber<Type>::get() const {
-  assert(state);
-  if (world > 0 && !state->yieldIsValue()) {
-    /* this fiber, which is yielding, has exported from its world, which must
-     * now become read only, with modifications copy-on-write */
-    world = ++nworlds;
-  }
   return state->get();
 }
