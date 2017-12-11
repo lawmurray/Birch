@@ -380,6 +380,9 @@ private:
    */
   void deallocate() {
     if (!isView) {
+      for (auto iter = begin(); iter != end(); ++iter) {
+        iter->~T();
+      }
       std::free(ptr);
     }
   }

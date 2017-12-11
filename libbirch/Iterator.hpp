@@ -38,6 +38,14 @@ public:
     return *(ptr + frame.offset(serial));
   }
 
+  T* operator->() {
+    return ptr + frame.offset(serial);
+  }
+
+  T* const operator->() const {
+    return ptr + frame.offset(serial);
+  }
+
   bool operator==(const Iterator<T,F>& o) const {
     return ptr == o.ptr && serial == o.serial;
   }
