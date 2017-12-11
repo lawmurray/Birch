@@ -74,163 +74,172 @@ A thorough treatment of types is deferred to below. There are many categories of
 
 ## Variables
 
-A variable `x` of type `X` is declared as follows:
+A variable `a` of type `A` is declared as follows:
 
-    x:X;
+    a:A;
+
+A variable may be given an initial value when declared:
+
+    a:A <- b;
 
 ## Assignments
 
 Assignment statements use the `<-` operator.
 
-    x <- y;
-    
-A variable may be given an initial value when declared:
-
-    x:X <- y;
+    a <- b;
 
 Assignment is a statement, not an expression; the operator does not return a value:
 
-    x <- y;       // OK!
-    x <- y <- z;  // ERROR!
+    a <- b;       // OK!
+    a <- b <- c;  // ERROR!
 
-Assignent of objects of basic type is by value, while those of class type is by reference.
+Assignment of objects of basic type is by value, while those of class type is by reference.
 
 It is possible to declare assignment and conversion operators within a class, allowing assignment of objects of basic type, or conversion to an object of basic type, where sensible.
 
-> The operator `=`, sometimes used for assignment in other languages, is currently reserved for future use (e.g. for declaring equations).
+> **Note**
+> The operator `=`, often used for assignment in other languages, is reserved for possible future use in Birch (e.g. for declaring equations).
 
 ## Tuples
 
 Tuples are tied using parentheses:
 
-    (x, y, z)
+    (a, b, c)
     
-For `x:X`, `y:Y`, and `z:Z`, the type of such a tuple is `(X, Y, Z)`.
+For `a:A`, `b:B`, and `c:C`, the type of such a tuple is `(A, B, C)`.
 
 It is possible to declare a variable of the *tuple type*:
 
-    a:(X, Y, Z);
+    d:(A, B, C);
     
 and to assign values to it:
 
-    a <- (x, y, z);
+    d <- (a, b, c);
     
 To untie a tuple, use parentheses on the left:
 
-    (x, y, z) <- a;
+    (a, b, c) <- d;
 
 ## Sequences
 
 Sequences are constructed using square brackets:
 
-    [x, y, z]
-    
-For `x:X`, `y:Y`, and `z:Z`, the type of such a sequence is `[W]`, where `W` is the least common super type of `X`, `Y`, and `Z`. Such a super type must exist. In the simplest case, `x`, `y` and `z` are all of the same type `W`, and so the sequence is of type `[W]`.
+    [a, b, c]
+
+For `a:A`, `b:A`, and `c:A`, the type of such a sequence is `[A]`.
+
+Generally, for `a:A`, `b:B`, and `c:C`, the type of such a sequence is `[D]`, where `D` is the least common super type of `A`, `B`, and `C`. Such a super type must exist for a sequence to be valid.
 
 It is possible to declare a variable of the *sequence type*:
 
-    w:[W];
+    d:[D];
 
 and to assign values to it:
 
-    w <- [x, y, z];
+    d <- [a, b, c];
     
 It is possible to nest sequences:
 
-    [[x, y, z], [a, b, c]]
-    
-If the least common subtype of all elements is `W`, this is a sequence of sequences of `W`, with the type `[[W]]`.
+    [[a, b, c], [e, f, g]]
+
+If the type of the inner sequences is `[D]`, then the type of the outer sequence is `[[D]]`; i.e. it is a sequence of sequences of `D`.
 
 It is not possible to access the individual elements of a sequence, either for reading or writing. To access the individual elements, assign the sequence to an array, and access them via the array.
 
-> In future, it may be possible to use a `for` loop to iterate over the elements of a sequence for read-only access. The primary  motivation for sequences in the language is for the easy initialization of arrays, however.
+> **Note**
+> The functionality of sequences is limited at this stage. The primary motivation for their inclusion in the language is for the easy initialization of arrays.
 
 ## Arrays
 
-An array `x` with elements of type `X` is declared as:
+An array `a` with elements of type `A` is declared as:
 
-    x:X[_];
+    a:A[_];
     
 Multidimensional arrays, with any number of dimensions, are declared as:
 
-    x:X[_,_];    // two-dimensional array
-    x:X[_,_,_];  // three-dimensional array, etc
+    b:B[_,_];    // two-dimensional array
+    c:C[_,_,_];  // three-dimensional array, etc
 
 The rightmost dimension is the innermost (fastest moving) in the memory layout. Two-dimensional arrays that represent matrices are therefore in row-major order.
 
 The size of the array may be given in the square brackets when it is declared, in place of `_`:
 
-    x:W[4];
-    y:W[4,8];
+    a:A[4];
+    b:B[4,8];
 
-Array slicing is with square brackets. To select the element of `y` at row 2 and column 6, use:
+Arrays are sliced with square brackets. To select the element of `b` at row 2 and column 6, use:
 
-    y[2,6]
+    b[2,6]
 
-This returns a single element of type `W`. To select a range of elements of `y` at row 2 and columns 5 to 8, use:
+This returns a single element of type `B`. To select the range of elements of `b` at row 2 and columns 5 to 8, use:
 
-    y[2,5..8]
+    b[2,5..8]
     
-This returns a vector of type `W[_]`.
+This returns a vector of type `B[_]`.
 
-In the context of array slicing, the term *index* denotes a single index, as in `2` and `6` above; the term *range* denotes a pair of indices separated by the `..` operator, as in `5..8` above.
+In the context of array slicing, the term *index* denotes a single index, as in `2` and `6` above; while the term *range* denotes a pair of indices separated by `..`, as in `5..8` above.
 
-Indices reduce the number of dimensions in the result, as opposed to creating singleton dimensions. Thus, in the last example, the result is of type `W[_]` with size 4, not of type `W[_,_]` with size 1 by 4. If a singleton dimension is desired, a range can be used:
+Indices reduce the number of dimensions in the result; they do not create singleton dimensions. Revisiting the previous example for emphasis, the result is of type `B[_]` with size 4, not of type `B[_,_]` with size 1 by 4. When a singleton dimension is desired, use a singleton range that starts and ends at the same index:
 
-    y[2..2,5..8] 
+    b[2..2,5..8] 
 
 Arrays are resized by assignment, e.g.
 
-    z:W[2];
-    z <- x;
+    a:A[4];
+    d:A[2];
+    d <- a;
     
-The vector `z` is now a copy of `x` with a size of 4. Assignment may be used to resize an array, but not to change its number of dimensions.
+The vector `d` is now a copy of `a`, with size 4. Its previous value is discarded.
 
-When using a slice on the left size of an assignment, array sizes must match on the left and right:
+When slicing an array on the left side of an assignment, suggesting a view of the existing array, sizes must match on the left and right:
 
-    z[1..2] <- x[1..2];  // OK! Both left and right have size 2
-    z[1..2] <- x;          // ERROR! Left has size 2, right has size 4
+    d[1..2] <- a[1..2];  // OK! Both left and right have size 2
+    d[1..2] <- a;          // ERROR! Left has size 2, right has size 4
 
-Sequences can be assigned to arrays, but not vice versa:
+Assignment may be used to resize an array, but not to change its number of dimensions. The number of dimensions of an array is a fundamental part of its type.
+
+Sequences can be assigned to arrays:
 
     x <- [a, b, c];
     x <- [[a, b, c], [d, e, f]];
 
+But arrays cannot be assigned to sequences, as sequences are read-only.
+
 ## Optionals
 
-A variable of class type must always point to an object. When declared, a variable of class type must be constructed:
-
-    a:A(b, c);
-    
-or be assigned a value:
-
-    a:A <- b;
-
-If the constructor for the class type takes no parameters, the parentheses may be omitted:
-
-    a:A;
-
-but this is equivalent to:
-
-    a:A();
-
-and an object is constructed in this case.
-
-Some use cases require that a variable may not have a value. *Optional types* are provided for this purpose. An optional type is indicated by following any other type with the `?` type operator, like so:
+Optional types allow variables to have a value of a particular type, or no value at all. An optional type is indicated by following any other type with `?`, like so:
 
     a:A?;
     
-To check whether a variable of optional type has a value, use the postfix `?` operator, which returns a `Boolean` giving `true` if there is a value. To get that value, use the postfix `!` operator, which returns a value of the original type.
+To check whether a variable of optional type has a value, use the postfix `?` operator, which returns `true` if there is a value and `false` if not. If there is a value, use the postfix `!` operator to retrieve it. A common usage idiom is as follows:
 
-A common usage idiom is as follows:
-
-    a:A?;
-    ...
-    if (a?) {  // a? gives a Boolean
-      f(a!);  // when a? is true, a! gives an A, otherwise an error
+    if (a?) {  // check if a has a value
+      f(a!);  // if so, do something with the value of a
     }
 
+The special value of `nil` may be assigned to an optional to remove an existing value (if any):
+
+    a <- nil;
+
+> **Note**
+> In Birch, a variable of class type always has a value. In some other languages (e.g. Java), variables of class type may have a null value, and this null value is often used to denote no value. In Birch, optionals are always used where a variable may have no value. This is particularly useful when writing functions that accept arguments of class type, as there is no need to check whether those arguments actually have a value or not; they will always have a value, unless denoted as optional.
+
 ## Casts
+
+A variable of one type can be cast down to a more-specific target type by using a cast function. The name of the cast function is the name of the target type, followed by `?`. The cast function returns an optional of the target type, with a value if the cast was successful, or no value if the cast was unsuccessful.
+
+For `A < B`, with `a:A`, `b:B`, and `c:A?`:
+
+    b <- a;      // OK, as B > A
+    c <- A?(b);  // OK, but A < B so must use cast
+    
+The optional `c` may be used to check whether the cast succeeded, and if so, to retrieve the result:
+    
+    if (c?) {
+      f(c!);  // cast was successful, can do something with c
+    }
+    
+It is possible to cast an optional in the same way, without first checking for a value. The cast of an optional succeeds if that optional has a value, and that value can be cast to the target type. So for `b:B?` instead of `b:B`, the above example is the same.
 
 ## Conditionals
 
@@ -500,6 +509,14 @@ If the constructor of `Base` is parameterized, the parameters of the constructor
 A variable of type `Base` should provide arguments for these parameters when declared:
 
     o:Base(a, b);
+
+If the constructor for the class type takes no parameters, the parentheses may be omitted:
+
+    o:Base;
+
+but this is equivalent to:
+
+    o:Base();
 
 Constructor parameters may be passed to a base type and used to initialize other member variables:
 
