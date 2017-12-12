@@ -100,6 +100,38 @@ It is possible to declare assignment and conversion operators within a class, al
 > **Note**
 > The operator `=`, often used for assignment in other languages, is reserved for possible future use in Birch (e.g. for declaring equations).
 
+## Control flow
+
+For `a:Boolean` and `b:Boolean`, conditionals can be written as follows:
+
+    if (a) {
+      // ...
+    } else if (b) {
+      // ...
+    } else {
+      // ...
+    }
+    
+where zero or more `else if` blocks may appear, and zero or one `else` block.
+
+Conditional loops are written as:
+
+    while (a) {
+      // ...
+    }
+
+or:
+
+    do {
+      // ...
+    } while (a);
+
+For `a:Integer`, `b:Integer`, and `c:Integer`, a for-loop is written as:
+
+    for (a in b..c) {
+      // ...
+    }
+
 ## Tuples
 
 Tuples are tied using parentheses:
@@ -241,26 +273,6 @@ The optional `c` may be used to check whether the cast succeeded, and if so, to 
     
 It is possible to cast an optional in the same way, without first checking for a value. The cast of an optional succeeds if that optional has a value, and that value can be cast to the target type. So for `b:B?` instead of `b:B`, the above example is the same.
 
-## Conditionals
-
-    if (condition) {
-      ...
-    } else if (condition) {
-      ...
-    } else {
-      ...
-    }
-
-## Loops
-
-    while (condition) {
-      ...
-    }
-
-    for (n in from..to) {
-      ...
-    }
-
 ## Functions
 
 Functions are called by giving arguments in parentheses:
@@ -308,53 +320,105 @@ Program option names that contain an underscore are specified with a dash on the
 
 Program options may be of any type for which an assignment from type `String` has been declared. This includes all basic types.
 
+## Lambdas
+
+Lambda (anonymous) functions may appear in expressions as:
+
+    @(a:A, b:B) -> C {
+      c:C;
+      // ...
+      return c;
+    }
+    
+The type of such a lambda is `@(A, B) -> C`. It is possible to declare a variable of this *function type*:
+
+    f:@(A, B) -> C;
+
+to assign values to it:
+
+    f <- @(a:A, b:B) -> C {
+          c:C;
+          // ...
+          return c;
+      };
+    
+and to call it:
+
+    f(a, b);
+    
+Functions can accept lambdas as arguments. Such a function may be declared:
+
+    function g(f:@(a:A, b:B) -> C) -> D {
+      d:D;
+      // ...
+      return d;
+    }
+    
+and be called with:
+
+    g(@(a:A, b:B) -> C {
+          c:C;
+          // ...
+          return c;
+        });
+  
+or, if the lambda was previously assigned to a variable `f:@(a:A, b:B) -> C` as above:
+  
+      g(f);
+  
+
 ## Fibers
 
-A fiber is like a function for which execution can be paused and later resumed. Unlike a function, which can return just one value, a fiber yields a value each time it is paused.
+A fiber works similarly to a function, but its execution can be paused and resumed. Where a function, when called, executes to completion and may *return* a value to the caller, a fiber, when resumed, executes to its next pause point, and may *yield* a value to the caller. The caller can then proceed with some other computation, and later resume the fiber again, at which point it will execute to its next yield point. The state of a fiber is maintained between the pause and resume, so that it always resumes execution from where it last paused.
 
-A fiber with two parameters (of type `A` and `B`) and yield type `C` is declared as follows:
+A fiber is declared with:
 
     fiber f(a:A, b:B) -> C! {
       c:C;
-      ...
+      // ...
       yield c;
     }
+    
+where `C` is the yield type and `C!` the *fiber type*. The `yield` statement is used to pause execution and yield a value to the caller, analogous to the `return` statement for functions. The fiber terminates when execution reaches the end of the body. When terminating, it does not yield a value. To terminate the execution of a fiber before reaching the end of the body, use an empty `return;` statement.
 
-Note the decoration of the yield type `C` with `!` to make it a fiber type `C!`. This is required.
-
-When called, a fiber performs no execution except to construct an object of fiber type `C!` and return it; execution of the body of the fiber is then controlled through that object.
-
-The usage idiom for fibers is similar to optionals, but with a loop:
+When called, a fiber performs no execution except to construct an object of the fiber type and return it. The execution of the fiber is controlled via this object. The usage idiom for controlling fibers is analogous to optionals, except that where an optional has zero or one value, a fiber has zero or more values. The if-statement for optionals is replaced with a while-loop for fibers:
 
     c:C! <- f(a, b);
     while (c?) {
       g(c!);  // do something with the yield value
     }
-    
-It is the postfix `?` operator that triggers the continuation of the fiber execution, which proceeds until the next yield point. Repeated use of the postfix `!` operator between calls of the postfix `?` operator will retrieve the last yield value, without further execution.
 
-Within the body of a fiber, the `yield` statement is used to pause execution. This yields execution to the caller, along with the given value.
+It is the query operator (`?`) that resumes the fiber. The fiber then continues execution until it yields another value, or it terminates. If it yields a value, the query operator returns true to the caller, otherwise it returns false to the caller. If returns true, the get operator (`!`) is then used to retrieve the yield value. Repeated use of the get operator between calls to the query operator will retrieve the last yield value without further execution.
 
-The fiber terminates when execution reaches the end of the body, if ever. When terminating, it does not yield a value. To terminate the execution of a fiber before reaching the end of the body, use an empty `return;` statement.
+It is not necessary for the caller to run the fiber to termination. Likewise, it is not necessary for a fiber to ever terminate, which may be a design choice.
 
-### Fibers-within-fibers
+> **Note** Consider the following code:
+>
+>     fiber iota() -> Integer! {
+>       n:Integer <- 0;
+>       while (true) {
+>         n <- n + 1;
+>         yield n;
+>     }
+>
+> This fiber yields the positive integers in order. It never terminates, but need not: the caller will decide how many times it is resumed.
 
-An outer fiber may call an inner fiber using the above syntax, as if the outer fiber were any other function. For convenience, the following implicit behaviour is also specified.
+Fibers may call other fibers. No special syntax is required for this. There is a common use case, however, where a fiber with yield type `C` calls another fiber with yield type `C`, and wishes the pass the yield values of that second fiber back to the original caller. For the convenience of this common use case, the following implicit behaviour is defined.
 
-If the outer fiber calls the inner fiber in such a way that its return value is ignored:
+If a fiber calls another fiber, but ignores the return object that would otherwise be used to control the execution of that fiber:
 
     f(a, b);
 
-this implicitly behaves as:
+this implicitly behaves as though the following were written:
 
     c:C! <- f(a, b);
     while (c?) {
       yield c!;
     }
 
-That is, the outer fiber yields the values of the inner fiber until the inner fiber completes execution.
+That is, the second fiber yields values to the first fiber, which in turn yields those values back to its caller.
 
-The same behaviour applies to an outer fiber that calls an inner *function*---not itself a fiber---which has a fiber return value.
+The same implicit behaviour applies when a fiber calls a *function*---not itself a fiber---but that returns a fiber type.
 
 ## Operators
 
