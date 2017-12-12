@@ -256,6 +256,12 @@ The special value of `nil` may be assigned to an optional to remove an existing 
 > **Note**
 > In Birch, a variable of class type always has a value. In some other languages (e.g. Java), variables of class type may have a null value, and this null value is often used to denote no value. In Birch, optionals are always used where a variable may have no value. This is particularly useful when writing functions that accept arguments of class type, as there is no need to check whether those arguments actually have a value or not; they will always have a value, unless denoted as optional.
 
+## Type aliases
+
+The type `A` may be declared as an alias (synonym) for the type `B` with:
+
+    type A = B;
+
 ## Casts
 
 A variable of one type can be cast down to a more-specific target type by using a cast function. The name of the cast function is the name of the target type, followed by `?`. The cast function returns an optional of the target type, with a value if the cast was successful, or no value if the cast was unsuccessful.
@@ -275,50 +281,33 @@ It is possible to cast an optional in the same way, without first checking for a
 
 ## Functions
 
-Functions are called by giving arguments in parentheses:
-
-    f(a, b)
-
-A function with two parameters (of type `A` and `B`) and return type `C` is declared as follows:
+A function with two parameters `a:A` and `b:B`, and return type `C`, is declared as:
 
     function f(a:A, b:B) -> C {
       c:C;
-      ...
+      // ...
       return c;
     }
 
-For a function without a return, omit the right-arrow syntax:
+For a function without a return value, omit the `->`:
 
     function f(a:A, b:B) {
-      ...
-    }
-
-For a function without parameters, empty parentheses are required:
-
-    function f() {
-      ...
-    }
-
-## Programs
-
-A program represents an entry point into Birch code from the command line or other host software. It cannot be called from other Birch code. It is declared as follows:
-
-    program example(x:Boolean, y:Integer <- 0, message:String,
-        long_name:Real) {
       // ...
     }
 
-where `x`, `y` and `message` are program options, with `y` given a default value of zero.
+For a function without parameters, use empty parentheses:
 
-The `birch` driver can then be used from the command line to call this program:
+    function f() {
+      // ...
+    }
 
-    birch example -x true -y 10 --message "Hello world!" --long-name 10.0
+Functions are called by giving arguments in parentheses:
 
-Program options may be given in any order but must be named. The name is usually prefixed with a double dash (`--`), but can be prefixed with a single dash (`-`) in the case that it is a single character.
+    f(a, b)
+    
+When calling a function without parameters, use empty parentheses:
 
-Program option names that contain an underscore are specified with a dash on the command line, as in `long_name`/`--long-name` above.
-
-Program options may be of any type for which an assignment from type `String` has been declared. This includes all basic types.
+    f()
 
 ## Lambdas
 
@@ -420,6 +409,25 @@ That is, the second fiber yields values to the first fiber, which in turn yields
 
 The same implicit behaviour applies when a fiber calls a *function*---not itself a fiber---but that returns a fiber type.
 
+## Programs
+
+A program is a special function that is an entry point into Birch code from the command line. It cannot be called from other Birch code. Declare a program with:
+
+    program example(x:Boolean, y:Integer <- 0, message:String,
+        long_name:Real) {
+      // ...
+    }
+
+where `x`, `y`, `message`, and `long_name` are program options, with `y` given a default value of zero. A program has no return value.
+
+To call a program from the command line, use `birch`, followed by the program name, following by a list of program options:
+
+    birch example --message "Hello!" --long-name 10.0 -x true -y 10
+
+Program options may be given in any order but must be named. The name is usually prefixed with double-dash (`--`), but may be prefixed with single-dash (`-`) if the name is a single character. Whenever an underscore (`_`) appears in a name, it should be replaced with a dash (`-`), as in `long_name`/`--long-name` above.
+
+Program options may be of any type for which an assignment from type `String` has been declared. This includes all basic types.
+
 ## Operators
 
 Birch supports the most common arithmetic and logical operators found in other programming languages.
@@ -461,7 +469,7 @@ This operator is syntactic sugar; `a ~> b` is defined to mean exactly:
 
     b.observe(a);
     
-and, in fact, is internally transformed to this on use. Consequently, it is necessary that `b` is of a class type with an appropriate `observe()` member function defined.
+Consequently, it is necessary that `b` is of a class type with an appropriate `observe()` member function defined.
 
 The two remaining probabilistic operators are:
 
@@ -485,8 +493,6 @@ and `a ~ b;` means exactly:
     
 If `a` and `b` are expressions, they are evaluated only once, and this code applied to their evaluations.
 
-A higher-level treatment of these operators is given in later sections, which is more meaningful for a reader who is approaching Birch for the first time.
-
 ### Query-Get
 
 These are postfix unary operators used with optional and fiber types. They are of equal precedence, and of higher precedence than all other operators:
@@ -495,31 +501,27 @@ These are postfix unary operators used with optional and fiber types. They are o
 | ------------ | ------------ |
 | `?` Query    | `!` Get      |
 
-See below for the behaviour of these operators.
-
 ### Overloading
 
-The action of standard operators is defined by overloads in Birch code, declared using the `operator` statement.
+The action of standard operators is defined by overloads, declared using the `operator` statement. Only the standard operators may be overloaded. All other operators have in-built behaviour as described above.
 
-The precedence of operators is always the same. It cannot be manipulated by Birch code.
+> **Note** It is still possible to manipulate the behaviour of some operators that cannot be overloaded. For example, the behaviour of the assignment operator `<-` can be manipulated by declaring assignments and conversions in class declarations.
 
-Only the standard operators may be overloaded. All other operators have in-built behaviour as described above. It is still possible to manipulate the behaviour of some operators that cannot be overloaded. For example, the behaviour of the assignment operator `<-` can be manipulated by declaring assignments and conversions in class declarations, as described below.
+A binary operator `+` with two operands `a:A` and `b:B`, and return type `C`, is declared as:
 
-A binary operator `+` with two operands (of type `A` and `B`) and return type `C` is overloaded as follows:
-
-    operator a:A + b:B -> C {
+    operator (a:A + b:B) -> C {
       c:C;
-      ...
+      // ...
       return c;
     }
     
 Any of the standard binary operators may be used in place of `+`.
 
-A unary operator `+` with one operand (of type `A`) and return type `C` is declared as follows:
+A unary operator `+` with one operand `a:A`, and return type `C`, is declared as:
 
-    operator +a:A -> C {
+    operator (+a:A) -> C {
       c:C;
-      ...
+      // ...
       return c;
     }
     
@@ -529,40 +531,81 @@ Operators always have a return type. It is not possible to manipulate operator p
 
 ## Classes
 
-A class type named `Base` is declared as follows:
+A class named `A` is declared as:
 
-    class Base {
-      ...
+    class A {
+      // ...
     }
 
-A class named `Derived` that inherits from `Base` is declared as follows:
+An object of class type `A` is then declared as usual:
 
-    class Derived < Base {
-      ...
+    a:A;
+
+### Inheritance
+
+A class type named `A` that inherits from a class type named `B` is declared as:
+
+    class A < B {
+      // ...
     }
     
+The class `B` is referred to as the *super type* of `A`.
+
 ### Member variables
+
+Variable declarations that appear within the body of a class are *member variables*:
+
+    class A {
+      c:C;
+      d:D;
+    }
+
+An object of this class type contains instantiations of these member variables, which may be accessed with the dot (`.`) operator:
+
+    f(a.c);
+    f(a.d);
 
 ### Member functions
 
-From within a member function, it is possible to use the keyword `this` to refer to the current object, e.g.
+Function declarations that appear within the body of a class are *member functions*:
 
-    function f(a:A) {
-      this.a <- a;
+    class A {
+      function f(b:B, c:C) -> D {
+        // ...
+      }
     }
 
-All member functions are virtual. It is possible to delegate to a member function in the most-immediate base type by using the `super` keyword, e.g.
+These member functions can be called on an object of the class type, again accessed with the dot (`.`) operator. For `a:A`, `b:B`, `c:C`, `d:D`:
 
-    function f(a:A) {
-      super.f(a);
-      ...
+    d <- a.f(b, c);
+
+The body of a member function may use any member variables of the object on which the member function is called. The keyword `this` is used to explicitly refer to the object on which the member function is called. If the class has a super type, the keyword `super` is also used to explicitly refer to the object on which the member function is called, but cast to the super type.
+
+All member functions are virtual. To delegate a call to a member function of the super type, also use the `super` keyword:
+
+    class A < B {
+      function f(c:C) {
+        super.f(c);  // calls f(c:C) in class B
+      }
     }
 
 ### Member fibers
-    
-All member fibers are virtual.
-    
+
+Fiber declarations that appear within the body of a class are *member fibers*. Their behaviour is analogous to member functions.
+
 ### Constructors
+
+A class may take parameters.
+
+Constructor parameters may be passed to a base type and used to initialize other member variables:
+
+    class Derived(a:A:, b:B) < Base(a) {
+      c:C(a, b);
+      d:D(a, b);
+      ...
+    }
+
+Parameters of the constructor are also private member variables, and may be used by member functions.
 
 If the constructor of `Base` is parameterized, the parameters of the constructor are declared as follows:
 
@@ -582,15 +625,7 @@ but this is equivalent to:
 
     o:Base();
 
-Constructor parameters may be passed to a base type and used to initialize other member variables:
-
-    class Derived(a:A:, b:B) < Base(a) {
-      c:C(a, b);
-      d:D(a, b);
-      ...
-    }
-
-Parameters of the constructor are also private member variables, and may be used by member functions.
+### Generics
 
 ### Assignments
 
@@ -645,15 +680,15 @@ For other types, it is possible to declare conversions *by value*. This is done 
 The body of the operator should construct the object that is the result of the conversion. The following conversion would then be valid:
 
     function f(a:A) {
-      ...
+      // ...
     }
     
     o:Derived;
     f(o);
 
-## Generics
-
 # Special Topics
+
+## Type system
 
 ## Build system
 
