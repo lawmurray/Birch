@@ -29,7 +29,7 @@ class Gamma < Random<Real> {
     if (isMissing()) {
       set(simulate_gamma(k, θ));
     } else {
-      setWeight(observe_gamma(x, k, θ));
+      setWeight(observe_gamma(value(), k, θ));
     }
   }
 }

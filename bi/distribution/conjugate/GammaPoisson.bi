@@ -28,7 +28,7 @@ class GammaPoisson < Random<Integer> {
   }
   
   function doCondition() {
-    λ.update(λ.k + x, λ.θ/(λ.θ + 1.0));
+    λ.update(λ.k + value(), λ.θ/(λ.θ + 1.0));
   }
 
   function doRealize() {
@@ -36,13 +36,13 @@ class GammaPoisson < Random<Integer> {
       if (isMissing()) {
         set(simulate_poisson(λ));
       } else {
-        setWeight(observe_poisson(x, λ));
+        setWeight(observe_poisson(value(), λ));
       }
     } else {
       if (isMissing()) {
         set(simulate_negative_binomial(k, ρ));
       } else {
-        setWeight(observe_negative_binomial(x, k, ρ));
+        setWeight(observe_negative_binomial(value(), k, ρ));
       }
     }
   }

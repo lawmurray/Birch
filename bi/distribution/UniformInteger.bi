@@ -28,7 +28,7 @@ class UniformInteger < Random<Integer> {
     if (isMissing()) {
       set(simulate_int_uniform(l, u));
     } else {
-      setWeight(observe_int_uniform(x, l, u));
+      setWeight(observe_int_uniform(value(), l, u));
     }
   }
 }

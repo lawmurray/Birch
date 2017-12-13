@@ -18,14 +18,14 @@ class RestaurantProcessCategorical < Random<Integer> {
   }
   
   function doCondition() {
-    ρ.update(x);
+    ρ.update(value());
   }
 
   function doRealize() {
     if (isMissing()) {
       set(simulate_crp_categorical(ρ.α, ρ.θ, ρ.n[1..ρ.K], ρ.N));
     } else {
-      setWeight(observe_crp_categorical(x, ρ.α, ρ.θ, ρ.n[1..ρ.K], ρ.N));
+      setWeight(observe_crp_categorical(value(), ρ.α, ρ.θ, ρ.n[1..ρ.K], ρ.N));
     }
   }
 }

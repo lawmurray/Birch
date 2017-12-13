@@ -25,7 +25,7 @@ class DirichletMultinomial < Random<Integer[_]> {
   }
   
   function doCondition() {
-    ρ.update(x);
+    ρ.update(value());
   }
 
   function doRealize() {
@@ -33,13 +33,13 @@ class DirichletMultinomial < Random<Integer[_]> {
       if (isMissing()) {
         set(simulate_multinomial(n, ρ));
       } else {
-        setWeight(observe_multinomial(x, n, ρ));
+        setWeight(observe_multinomial(value(), n, ρ));
       }
     } else {
       if (isMissing()) {
         set(simulate_dirichlet_multinomial(n, ρ.α));
       } else {
-        setWeight(observe_dirichlet_multinomial(x, n, ρ.α));
+        setWeight(observe_dirichlet_multinomial(value(), n, ρ.α));
       }
     }
   }

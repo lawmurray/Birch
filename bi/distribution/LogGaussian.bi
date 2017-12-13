@@ -36,7 +36,7 @@ class LogGaussian < Random<Real> {
     if (isMissing()) {
       set(simulate_log_gaussian(μ, σ2));
     } else {
-      setWeight(observe_log_gaussian(x, μ, σ2));
+      setWeight(observe_log_gaussian(value(), μ, σ2));
     }
   }
 }

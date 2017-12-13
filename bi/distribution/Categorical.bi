@@ -19,10 +19,10 @@ class Categorical < Random<Integer> {
   }
 
   function doRealize() {
-    if (missing) {
+    if (isMissing()) {
       set(simulate_categorical(ρ));
     } else {
-      setWeight(observe_categorical(x, ρ));
+      setWeight(observe_categorical(value(), ρ));
     }
   }
 }

@@ -29,7 +29,7 @@ class NegativeBinomial < Random<Integer> {
     if (isMissing()) {
       set(simulate_negative_binomial(k, ρ));
     } else {
-      setWeight(observe_negative_binomial(x, k, ρ));
+      setWeight(observe_negative_binomial(value(), k, ρ));
     }
   }
 }

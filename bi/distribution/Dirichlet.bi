@@ -32,10 +32,10 @@ class Dirichlet < Random<Real[_]> {
   }
 
   function doRealize() {
-    if (missing) {
+    if (isMissing()) {
       set(simulate_dirichlet(α));
     } else {
-      setWeight(observe_dirichlet(x, α));
+      setWeight(observe_dirichlet(value(), α));
     }
   }
 }

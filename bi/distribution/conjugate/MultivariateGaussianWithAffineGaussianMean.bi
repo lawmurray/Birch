@@ -54,7 +54,7 @@ class MultivariateGaussianWithAffineGaussianMean(
 
   function doForward() {
     assert x?;
-    μ_0 <- A*x!.x + c;
+    μ_0 <- A*x!.value() + c;
     Σ_0 <- Σ;
     update(μ_0, Σ_0);
   }

@@ -11,16 +11,6 @@ REALIZED:Integer <- 3;
  */
 class Delay {
   /**
-   * State of the variate.
-   */
-  state:Integer <- UNINITIALIZED;
-  
-  /**
-   * Is the value missing?
-   */
-  missing:Boolean <- true;
-  
-  /**
    * Parent.
    */
   parent:Delay?;
@@ -34,6 +24,11 @@ class Delay {
    * Weight.
    */
   w:Real <- 0.0;
+
+  /**
+   * State of the variate.
+   */
+  state:Integer <- UNINITIALIZED;
   
   /**
    * Unique id for delayed sampling diagnostics.
@@ -92,20 +87,6 @@ class Delay {
    */
   function isRealized() -> Boolean {
     return state == REALIZED;
-  }
-  
-  /**
-   * Is the value of this node missing?
-   */
-  function isMissing() -> Boolean {
-    return missing;
-  }
-
-  /**
-   * Is the value of this node not missing?
-   */
-  function isNotMissing() -> Boolean {
-    return !missing;
   }
 
   /**

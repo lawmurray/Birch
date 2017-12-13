@@ -35,14 +35,14 @@ class LogGaussianWithGaussianMean < LogGaussian {
   }
 
   function doForward() {
-    μ_0 <- μ.x;
+    μ_0 <- μ.value();
     σ2_0 <- σ2;
     update(μ_0, σ2_0);
   }
   
   function doCondition() {
     k:Real <- μ.σ2/σ2_0;
-    μ.update(μ.μ + k*(log(x) - μ_0), μ.σ2 - k*μ.σ2);
+    μ.update(μ.μ + k*(log(value()) - μ_0), μ.σ2 - k*μ.σ2);
   }
 }
 

@@ -22,7 +22,7 @@ class Bernoulli < Random<Boolean> {
     if (isMissing()) {
       set(simulate_bernoulli(ρ));
     } else {
-      setWeight(observe_bernoulli(x, ρ));
+      setWeight(observe_bernoulli(value(), ρ));
     }
   }
 }

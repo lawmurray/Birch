@@ -29,7 +29,7 @@ class Beta < Random<Real> {
     if (isMissing()) {
       set(simulate_beta(α, β));
     } else {
-      setWeight(observe_beta(x, α, β));
+      setWeight(observe_beta(value(), α, β));
     }
   }
 }

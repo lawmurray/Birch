@@ -36,7 +36,7 @@ class Gaussian < Random<Real> {
     if (isMissing()) {
       set(simulate_gaussian(μ, σ2));
     } else {
-      setWeight(observe_gaussian(x, μ, σ2));
+      setWeight(observe_gaussian(value(), μ, σ2));
     }
   }
 }

@@ -7,7 +7,7 @@ class Random<Value> < Delay {
   /**
    * Value.
    */
-  x:Value;
+  x:Value?;
 
   /**
    * Value conversion.
@@ -40,12 +40,16 @@ class Random<Value> < Delay {
     if (isMissing()) {
       simulate();
     }
-    return x;
+    assert x?;
+    return x!;
+  }
+
+  function isMissing() -> Boolean {
+    return !(x?);
   }
 
   function set(x:Value) {
     this.x <- x;
-    this.missing <- false;
   }
   
   function setWeight(w:Real) {

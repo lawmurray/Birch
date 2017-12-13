@@ -28,7 +28,7 @@ class Uniform < Random<Real> {
     if (isMissing()) {
       set(simulate_uniform(l, u));
     } else {
-      setWeight(observe_uniform(x, l, u));
+      setWeight(observe_uniform(value(), l, u));
     }
   }
 }

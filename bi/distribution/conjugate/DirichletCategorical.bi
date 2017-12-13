@@ -17,7 +17,7 @@ class DirichletCategorical < Random<Integer> {
   }
   
   function doCondition() {
-    ρ.update(x);
+    ρ.update(value());
   }
 
   function doRealize() {
@@ -25,13 +25,13 @@ class DirichletCategorical < Random<Integer> {
       if (isMissing()) {
         set(simulate_categorical(ρ));
       } else {
-        setWeight(observe_categorical(x, ρ));
+        setWeight(observe_categorical(value(), ρ));
       }
     } else {
       if (isMissing()) {
         set(simulate_dirichlet_categorical(ρ.α));
       } else {
-        setWeight(observe_dirichlet_categorical(x, ρ.α));
+        setWeight(observe_dirichlet_categorical(value(), ρ.α));
       }
     }
   }

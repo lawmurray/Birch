@@ -35,7 +35,7 @@ class LogGaussianWithLogMean < LogGaussian {
   }
 
   function doForward() {
-    μ_0 <- μ.x;
+    μ_0 <- μ.value();
     σ2_0 <- σ2;
     update(μ_0, σ2_0);
   }

@@ -26,7 +26,7 @@ class BetaBinomial < Random<Integer> {
   }
   
   function doCondition() {
-    ρ.update(ρ.α + x, ρ.β + n - x);
+    ρ.update(ρ.α + value(), ρ.β + n - value());
   }
 
   function doRealize() {
@@ -34,13 +34,13 @@ class BetaBinomial < Random<Integer> {
       if (isMissing()) {
         set(simulate_binomial(n, ρ));
       } else {
-        setWeight(observe_binomial(x, n, ρ));
+        setWeight(observe_binomial(value(), n, ρ));
       }
     } else {
       if (isMissing()) {
         set(simulate_beta_binomial(n, ρ.α, ρ.β));
       } else {
-        setWeight(observe_beta_binomial(x, n, ρ.α, ρ.β));
+        setWeight(observe_beta_binomial(value(), n, ρ.α, ρ.β));
       }
     }
   }

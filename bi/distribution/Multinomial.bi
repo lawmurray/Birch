@@ -25,10 +25,10 @@ class Multinomial < Random<Integer[_]> {
   }
 
   function doRealize() {
-    if (missing) {
+    if (isMissing()) {
       set(simulate_multinomial(n, ρ));
     } else {
-      setWeight(observe_multinomial(x, n, ρ));
+      setWeight(observe_multinomial(value(), n, ρ));
     }
   }
 }

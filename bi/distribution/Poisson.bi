@@ -22,7 +22,7 @@ class Poisson < Random<Integer> {
     if (isMissing()) {
       set(simulate_poisson(λ));
     } else {
-      setWeight(observe_poisson(x, λ));
+      setWeight(observe_poisson(value(), λ));
     }
   }
 }
