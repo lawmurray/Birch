@@ -65,13 +65,6 @@ In the spirit of JavaDoc and Doxygen, block comments that begin with two stars d
     
 These typically appear immediately prior to class and function declarations to document their behaviour.
 
-## Types
-
-A thorough treatment of types is deferred to below. There are many categories of types in Birch. Two important categories are:
-
-  1. *Basic types*, such as `Boolean`, `Integer`, `Real`, and `String`.
-  2. *Class types* as declared in user code, such as `InputStream`, `OutputStream`, and `Gaussian` from the standard library.
-
 ## Variables
 
 A variable `a` of type `A` is declared as follows:
@@ -81,6 +74,15 @@ A variable `a` of type `A` is declared as follows:
 A variable may be given an initial value when declared:
 
     a:A <- b;
+
+## Types
+
+A thorough treatment of types is deferred to below. There are many categories of types in Birch. Two important categories are:
+
+  1. *Basic types*, such as `Boolean`, `Integer`, `Real`, and `String`.
+  2. *Class types* as declared in user code, such as `InputStream`, `OutputStream`, and `Gaussian` from the standard library.
+
+Instantiations of basic types (e.g. variables, expression results) are typically *values*, while those of class types are called *objects*.
 
 ## Assignments
 
@@ -93,9 +95,9 @@ Assignment is a statement, not an expression; the operator does not return a val
     a <- b;       // OK!
     a <- b <- c;  // ERROR!
 
-Assignment of objects of basic type is by value, while those of class type is by reference.
+Assignment of basic types is by value, and of class types by reference.
 
-It is possible to declare assignment and conversion operators within a class, allowing assignment of objects of basic type, or conversion to an object of basic type, where sensible.
+It is possible to declare assignment and conversion operators within a class, allowing assignment to objects from values, or conversion of objects to values, where sensible.
 
 > **Note**
 > The operator `=`, often used for assignment in other languages, is reserved for possible future use in Birch (e.g. for declaring equations).
@@ -370,7 +372,7 @@ A fiber is declared with:
     
 where `C` is the yield type and `C!` the *fiber type*. The `yield` statement is used to pause execution and yield a value to the caller, analogous to the `return` statement for functions. The fiber terminates when execution reaches the end of the body. When terminating, it does not yield a value. To terminate the execution of a fiber before reaching the end of the body, use an empty `return;` statement.
 
-When called, a fiber performs no execution except to construct an object of the fiber type and return it. The execution of the fiber is controlled via this object. The usage idiom for controlling fibers is analogous to optionals, except that where an optional has zero or one value, a fiber has zero or more values. The if-statement for optionals is replaced with a while-loop for fibers:
+When called, a fiber performs no execution except to construct a value of the fiber type and return it. The execution of the fiber is controlled via this value. The usage idiom for controlling fibers is analogous to optionals, except that where an optional has zero or one value, a fiber has zero or more values. The if-statement for optionals is replaced with a while-loop for fibers:
 
     c:C! <- f(a, b);
     while (c?) {
@@ -394,7 +396,7 @@ It is not necessary for the caller to run the fiber to termination. Likewise, it
 
 Fibers may call other fibers. No special syntax is required for this. There is a common use case, however, where a fiber with yield type `C` calls another fiber with yield type `C`, and wishes the pass the yield values of that second fiber back to the original caller. For the convenience of this common use case, the following implicit behaviour is defined.
 
-If a fiber calls another fiber, but ignores the return object that would otherwise be used to control the execution of that fiber:
+If a fiber calls another fiber, but ignores the return value that would otherwise be used to control the execution of that fiber:
 
     f(a, b);
 
@@ -537,7 +539,7 @@ A class named `A` is declared as:
       // ...
     }
 
-An object of class type `A` is then declared as usual:
+A variable of class type `A` is then declared as usual:
 
     a:A;
 
@@ -560,7 +562,7 @@ Variable declarations that appear within the body of a class are *member variabl
       d:D;
     }
 
-An object of this class type contains instantiations of these member variables, which may be accessed with the dot (`.`) operator:
+An object of the class type contains instantiations of these member variables, which may be accessed with the dot (`.`) operator:
 
     f(a.c);
     f(a.d);
@@ -593,98 +595,132 @@ All member functions are virtual. To delegate a call to a member function of the
 
 Fiber declarations that appear within the body of a class are *member fibers*. Their behaviour is analogous to member functions.
 
-### Constructors
+### Generic parameters
 
-A class may take parameters.
+A class declaration may include parameters for generic types that are to be specified when the class is used. These are declared using angle brackets in the class declaration:
 
-Constructor parameters may be passed to a base type and used to initialize other member variables:
-
-    class Derived(a:A:, b:B) < Base(a) {
-      c:C(a, b);
-      d:D(a, b);
-      ...
+    class A<T,U> {
+      // ...
     }
 
-Parameters of the constructor are also private member variables, and may be used by member functions.
+When a variable of this type is declared, arguments are specified for the generic types, also using angle brackets:
 
-If the constructor of `Base` is parameterized, the parameters of the constructor are declared as follows:
+    a:A<B,C>;
 
-    class Base(a:A, b:B) {
-       ...
+These arguments may be of any type. A type argument may be restricted to be some specific type or any subtype of it by using a `<=` operator in the declaration:
+
+    class A<T <= V, U <= Number> {
+      // ..
+    }
+
+Within the body of the class, the type parameters may be used as though a type themselves:
+
+    class A<T,U> {
+      t:T;
+      u:U;
+      
+      function get() -> U {
+        return u;
+      }
+    }
+
+### Initialization parameters
+
+When an object of a class type is declared, its member variables are initialized according to the initial values given in the class body. For the class:
+
+    class A {
+      b:Integer <- 0;
+      c:Integer;
     }
     
-A variable of type `Base` should provide arguments for these parameters when declared:
+and variable declaration:
 
-    o:Base(a, b);
+    a:A;
 
-If the constructor for the class type takes no parameters, the parentheses may be omitted:
+The member variables of `a` are initialized such that `a.b == 0`, while `a.c` is uninitialized.
 
-    o:Base;
+A class can be given initialization parameters, which may be used to initialize any member variables. These are given in parentheses (after any generic parameters, if used):
 
-but this is equivalent to:
+    class A(d:Integer) {
+      b:Integer <- 0;
+      c:Integer <- d;
+    }
 
-    o:Base();
+Arguments to these parameters must be given when an object of the class type is declared:
 
-### Generics
+    a:A(1);
+    
+The member variables of `a` are now initialized such that `a.b == 0`, and `a.c == 1`.
+
+The declarations `a:A;` and `a:A();` are equivalent.
+
+Initialization arguments can be passed onto the super type if required:
+
+    class A(d:Integer) < B(d) {
+      // ...
+    }
+
+> **Note** Initialization parameters in Birch play a similar role to initialization lists in C++.
+
+Initialization parameters are used for simple object construction, such as to set initial values and array sizes. They do not allow arbitrary code to be executed upon object construction. This is the role of a *constructor*. Birch does not, however, have any special language support for constructors. Instead, it is idiomatic to use *factory functions*, exploiting the fact that the same name can be used for both a function and a class in the Birch language.
+
+A factory function is given the same name as the class it is intended to construct:
+
+    function A(b:B, c:C) -> A {
+      a:A;
+      // ...
+      return a;
+    }
+
+This function is treated as any other---there is nothing special about it---but it is idiomatic that such a function should return an object of the same type as its name, or of a subtype of that type. The possibility of returning a subtype makes a factory function slightly more flexible than an ordinary constructor.
+
+For complex object construction, it can be useful to define a member function within the class that does most of the work, with the factory function simply instantiating the object, then passing its arguments to this function. It is idiomatic for such a member function to be given the name `make`.
 
 ### Assignments
 
-Objects of class type `Base` may be assigned an object of type `Base` or of any type that derives from `Base`. For example, if `Derived` derives from `Base`:
+> **Note** Recall that, for basic types, assignment is by value, while for class types, assignment is by reference.
 
-    o1:Base;
-    o2:Derived;
-    
-it is possible to assign `o1 <- o2` but not `o2 <- o1`.
+Objects of class type `A` may be assigned another object of type `A` or an object of any subtype of `A`; i.e. if `a:A` and `b:B` with `A < B`, it is possible to assign `b <- a` but not `a <- b`.
 
-Such assignments are *by reference*. For example, after executing `o1 <- o2`, both `o1` and `o2` point to the same object.
+Such assignments are by reference. Objects of class type `A` may be assigned *by value* if an appropriate declaration has been made within the class body. To permit assignment of type `C`, for example:
 
-For other types, it is possible to declare assignments *by value*. This is done by including a member operator in the class declaration. To permit value assignment of objects of type `A`, for example:
-
-    class Base {
-      operator <- a:A {
-        ...
+    class A {
+      operator <- c:C {
+        // ...
       }
-      ...
     }
     
-The body of the operator should update the state of the object for a value assignment from the argument. The following assignment would then be valid:
-
-    o:Base;
-    a:A;
-    o <- a;
+The body of the operator should update the state of the object using the argument. There is no return value. For `a:A` and `c:C`, the assignment `a <- c` would then be valid, even though `C` is not a subtype of `A`.
 
 ### Conversions
 
-Objects of class type `Derived` may be treated as an object of type `Derived`, or of any base type of `Derived`. For example, if `Derived` derives from `Base`, an object of type `Derived` may be passed to a function that expects an argument of type `Base`:
+Objects of class type `A` may be implicitly cast to an object of any super type of `A`; i.e. if `a:A` and `b:B` with `A < B`, the object `a` can be implicitly converted to an object of type `B`, as in the following:
 
-    function f(o:Base) {
-       ...
+    function f(b:B) {
+      // ...
     }
+    a:A;
+    f(a);
     
-    o:Derived;
-    f(o);
-    
-Such conversions are *by reference*.
+Such casts are *by reference*. For other types, it is possible to declare implicit conversions *by value*, if an appropriate declaration has been made within the class body. To permit conversion to type `C`, for example:
 
-For other types, it is possible to declare conversions *by value*. This is done by including a member operator in the class declaration. To permit value conversion of objects of type `A`, for example:
-
-    class Derived {
-      operator -> A {
-        a:A;
-        ...
-        return a;
+    class A {
+      operator -> C {
+        c:C;
+        // ...
+        return c;
       }
       ...
     }
     
-The body of the operator should construct the object that is the result of the conversion. The following conversion would then be valid:
+The body of the operator should construct the object to be returned as the result of the conversion. For `a:A` and `c:C`, the following would then be valid, even though `C` is not a super type of `A`
 
-    function f(a:A) {
+    function f(c:C) {
       // ...
     }
     
-    o:Derived;
-    f(o);
+    a:A;
+    f(a);
 
 # Special Topics
 
