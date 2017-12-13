@@ -275,10 +275,14 @@ bi::Statement* bi::ResolverSource::modify(Assignment* o) {
   } else if (*o->name == "~") {
     /* replace with equivalent (by definition) code */
     auto cond = new Parentheses(
-        new Call(
-            new Member(o->left->accept(&cloner),
-                new Identifier<Unknown>(new Name("isNotMissing"), o->loc),
-                o->loc), new Parentheses(new EmptyExpression(o->loc), o->loc),
+        new UnaryCall(
+            new bi::OverloadedIdentifier<bi::UnaryOperator>(new bi::Name("!"),
+                o->loc),
+            new Call(
+                new Member(o->left->accept(&cloner),
+                    new Identifier<Unknown>(new Name("isMissing"), o->loc),
+                    o->loc),
+                new Parentheses(new EmptyExpression(o->loc), o->loc), o->loc),
             o->loc), o->loc);
     auto trueBranch = new Assignment(o->left->accept(&cloner), new Name("~>"),
         o->right->accept(&cloner), o->loc);
