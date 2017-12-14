@@ -38,7 +38,7 @@ class Random<Value> < Delay {
     
   function value() -> Value {
     if (isMissing()) {
-      simulate();
+      realize();
     }
     assert x?;
     return x!;
@@ -57,13 +57,14 @@ class Random<Value> < Delay {
   }
   
   function tildeLeft() -> Random<Value> {
-    simulate();
+    realize();
     return this;
   }
   
   function tildeRight(left:Value) -> Real {
     set(left);
-    observe();
+    absorb(1);
+    realize();
     return w;
   }
 }

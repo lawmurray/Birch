@@ -136,21 +136,6 @@ class Delay {
     }
     trigger();
   }
-
-  /**
-   * Simulate the variate.
-   */
-  function simulate() {
-    realize();
-  }
-
-  /**
-   * Observe the variate.
-   */  
-  function observe() {
-    absorb(1);
-    realize();
-  }
   
   /**
    * Realize the variate.
@@ -256,10 +241,10 @@ class Delay {
   function doForward() {
     //
   }
-  function doRealize() {
+  function doCondition() {
     //
   }
-  function doCondition() {
+  function doRealize() {
     //
   }
   
