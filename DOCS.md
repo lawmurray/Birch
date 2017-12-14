@@ -469,9 +469,9 @@ The remaining operators are introduced for concise probabilistic statements. The
 
 This operator is syntactic sugar; `a ~> b` is defined to mean exactly:
 
-    b.observe(a);
-    
-Consequently, it is necessary that `b` is of a class type with an appropriate `observe()` member function defined.
+    yield b.observe(a);
+
+Consequently, it is necessary that `b` is of a class type with an appropriate `observe()` member function defined. If the operator is used outside of a fiber, the `yield` is omitted.
 
 The two remaining probabilistic operators are:
 
@@ -487,13 +487,11 @@ These are also syntactic sugar; `a <~ b;` means exactly:
     
 and `a ~ b;` means exactly:
 
-    assert(a.isUninitialized());
-    if (!a.isMissing()) {
-      yield a ~> b;
+    if (a.isMissing()) {
+      a <- b;
+    } else {
+      a ~> b;
     }
-    a <- b;
-    
-If `a` and `b` are expressions, they are evaluated only once, and this code applied to their evaluations.
 
 ### Query-Get
 

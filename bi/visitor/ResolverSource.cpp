@@ -272,6 +272,7 @@ bi::Statement* bi::ResolverSource::modify(Assignment* o) {
     }
   } else if (*o->name == "~") {
     /* replace with equivalent (by definition) code */
+    ///@todo Can left be evaluated only once?
     auto cond = new Parentheses(
         new Call(new Member(o->left->accept(&cloner),
         new Identifier<Unknown>(new Name("isMissing"), o->loc)),
