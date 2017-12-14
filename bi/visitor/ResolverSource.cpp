@@ -252,19 +252,17 @@ bi::Expression* bi::ResolverSource::modify(
 bi::Statement* bi::ResolverSource::modify(Assignment* o) {
   if (*o->name == "<~") {
     /* replace with equivalent (by definition) code */
+    auto left = o->left;
     auto right = new Call(
-        new Member(o->right->accept(&cloner),
-            new Identifier<Unknown>(new Name("tildeLeft"), o->loc), o->loc),
-        new EmptyExpression(o->loc), o->loc);
-    auto left = o->left->accept(&cloner);
+        new Member(o->right, new Identifier<Unknown>(new Name("simulate"),
+        o->loc), o->loc), new EmptyExpression(o->loc), o->loc);
     auto assign = new Assignment(left, new Name("<-"), right, o->loc);
     return assign->accept(this);
   } else if (*o->name == "~>") {
     /* replace with equivalent (by definition) code */
-    auto observe = new Call(
-        new Member(o->right->accept(&cloner),
-            new Identifier<Unknown>(new Name("tildeRight"), o->loc), o->loc),
-        o->left->accept(&cloner), o->loc);
+    auto observe = new Call(new Member(o->right,
+        new Identifier<Unknown>(new Name("observe"), o->loc), o->loc),
+        o->left, o->loc);
     if (!yieldTypes.empty()) {
       auto yield = new Yield(observe, o->loc);
       return yield->accept(this);
@@ -275,19 +273,13 @@ bi::Statement* bi::ResolverSource::modify(Assignment* o) {
   } else if (*o->name == "~") {
     /* replace with equivalent (by definition) code */
     auto cond = new Parentheses(
-        new UnaryCall(
-            new bi::OverloadedIdentifier<bi::UnaryOperator>(new bi::Name("!"),
-                o->loc),
-            new Call(
-                new Member(o->left->accept(&cloner),
-                    new Identifier<Unknown>(new Name("isMissing"), o->loc),
-                    o->loc),
-                new Parentheses(new EmptyExpression(o->loc), o->loc), o->loc),
-            o->loc), o->loc);
-    auto trueBranch = new Assignment(o->left->accept(&cloner), new Name("~>"),
-        o->right->accept(&cloner), o->loc);
-    auto falseBranch = new Assignment(o->left->accept(&cloner),
+        new Call(new Member(o->left->accept(&cloner),
+        new Identifier<Unknown>(new Name("isMissing"), o->loc)),
+        new Parentheses(new EmptyExpression(o->loc), o->loc), o->loc), o->loc);
+    auto trueBranch = new Assignment(o->left->accept(&cloner),
         new Name("<-"), o->right->accept(&cloner), o->loc);
+    auto falseBranch = new Assignment(o->left->accept(&cloner), new Name("~>"),
+        o->right->accept(&cloner), o->loc);
     auto result = new If(cond, trueBranch, falseBranch, o->loc);
     return result->accept(this);
   } else {
