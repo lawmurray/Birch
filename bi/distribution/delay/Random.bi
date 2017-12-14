@@ -56,13 +56,13 @@ class Random<Value> < Delay {
     this.w <- w;
   }
   
-  function tildeLeft() -> Random<Value> {
+  function simulate() -> Value {
     realize();
-    return this;
+    return value();
   }
   
-  function tildeRight(left:Value) -> Real {
-    set(left);
+  function observe(x:Value) -> Real {
+    set(x);
     absorb(1);
     realize();
     return w;
