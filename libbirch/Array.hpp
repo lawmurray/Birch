@@ -105,8 +105,8 @@ public:
       assign(o);
     } else {
       if (!frame.conforms(o.frame)) {
-        frame.resize(o.frame);
         deallocate();
+        frame.resize(o.frame);
         allocate();
         copy(o);
       } else {
@@ -125,8 +125,8 @@ public:
     } else {
       if (o.isView) {
         if (!frame.conforms(o.frame)) {
-          frame.resize(o.frame);
           deallocate();
+          frame.resize(o.frame);
           allocate();
           copy(o);
         } else {
@@ -260,8 +260,8 @@ public:
   template<class DerivedType, typename = std::enable_if_t<is_eigen_compatible<DerivedType>::value>>
   Array<T,F>& operator=(const Eigen::MatrixBase<DerivedType>& o) {
     if (!isView && !frame.conforms(o.rows(), o.cols())) {
-      frame.resize(o.rows(), o.cols());
       deallocate();
+      frame.resize(o.rows(), o.cols());
       allocate();
     }
     toEigen() = o;
