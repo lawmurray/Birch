@@ -322,3 +322,25 @@ function simulate_dirichlet(α:Real[_]) -> Real[_] {
   }
   return x;
 }
+
+/**
+ * Simulate a Dirichlet variate.
+ *
+ * - α: Concentration.
+ * - D: Number of dimensions.
+ */
+function simulate_dirichlet(α:Real, D:Integer) -> Real[_] {
+  assert D >= 0;
+  x:Real[D];
+  z:Real <- 0.0;
+
+  for (i:Integer in 1..D) {
+    x[i] <- simulate_gamma(α, 1.0);
+    z <- z + x[i];
+  }
+  z <- 1.0/z;
+  for (i:Integer in 1..D) {
+    x[i] <- z*x[i];
+  }
+  return x;
+}
