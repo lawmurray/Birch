@@ -277,8 +277,8 @@ void bi::Driver::clean() {
 
 void bi::Driver::init() {
   create_directory("bi");
-  create_directory("data");
-  create_directory("results");
+  create_directory("input");
+  create_directory("output");
   copy_with_prompt(find(share_dirs, "gitignore"), ".gitignore");
   copy_with_prompt(find(share_dirs, "LICENSE"), "LICENSE");
 
