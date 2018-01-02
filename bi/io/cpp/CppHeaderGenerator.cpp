@@ -17,6 +17,7 @@ bi::CppHeaderGenerator::CppHeaderGenerator(std::ostream& base,
 }
 
 void bi::CppHeaderGenerator::visit(const Package* o) {
+  line("#pragma once");
   line("#include \"libbirch/libbirch.hpp\"");
   for (auto header : o->headers) {
     boost::filesystem::path include = header->path;

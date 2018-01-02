@@ -906,11 +906,14 @@ Each Birch project contains a `META.json` file providing a name, version and des
   - *require*
     : An object containing the following keys, describing the dependencies of the project. Their presence is checked during the build of the project.
 
+    - *package*
+      : A list of other Birch packages (as strings).
+
     - *header*
-      : A list of header files (as strings). This is typically only used for C/C++ dependencies, in which case these files are likely to have `.h` or `.hpp` file extensions.
+      : A list of external C/C++ header files (as strings).
 
     - *library*
-      : A list of names of libraries (as strings). This is typically only used for C/C++ library dependencies.
+      : A list of external libraries (as strings).
 
     - *program*
-      : A list of names of programs (as strings).
+      : A list of external programs (as strings).

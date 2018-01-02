@@ -125,9 +125,10 @@ private:
    * @param meta The root object of the meta file.
    * @param key The key to use in the list of files.
    * @param path The path from which to read in the meta file.
+   * @param checkExists Check if the files exists?
    */
   void readFiles(const libubjpp::value meta, const std::string& key,
-      const std::initializer_list<std::string>& path);
+      const std::initializer_list<std::string>& path, const bool checkExists);
 
   /**
    * @name Command-line options

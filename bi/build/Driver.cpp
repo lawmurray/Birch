@@ -404,23 +404,35 @@ void bi::Driver::meta() {
   }
 
   /*  manifest */
-  readFiles(top.get(), "manifest.header", { "manifest", "header" });
-  readFiles(top.get(), "manifest.source", { "manifest", "source" });
-  readFiles(top.get(), "manifest.data", { "manifest", "data" });
-  readFiles(top.get(), "manifest.other", { "manifest", "other" });
+  readFiles(top.get(), "manifest.header", { "manifest", "header" }, true);
+  readFiles(top.get(), "manifest.source", { "manifest", "source" }, true);
+  readFiles(top.get(), "manifest.data", { "manifest", "data" }, true);
+  readFiles(top.get(), "manifest.other", { "manifest", "other" }, true);
 
   /* external requirements */
-  readFiles(top.get(), "require.header", { "require", "header" });
-  readFiles(top.get(), "require.library", { "require", "library" });
-  readFiles(top.get(), "require.program", { "require", "program" });
+  readFiles(top.get(), "require.package", { "require", "package" }, false);
+  readFiles(top.get(), "require.header", { "require", "header" }, false);
+  readFiles(top.get(), "require.library", { "require", "library" }, false);
+  readFiles(top.get(), "require.program", { "require", "program" }, false);
 
   /* create package */
   package = new Package(packageName);
   if (packageName != "Birch.Standard") {
     /* disable inclusion of the standard library when the project is, itself,
      * the standard library (!) */
-    package->addHeader(
-        find(include_dirs, path("bi") / "birch_standard.bih").string());
+    auto header = path("bi") / "birch_standard.bih";
+    package->addHeader(find(include_dirs, header).string());
+  }
+  for (auto name: metaFiles["require.package"]) {
+    Package depends(name.string());
+
+    /* add *.bih and *.hpp header and library dependencies */
+    path header = path("bi") / depends.tarname;
+    header.replace_extension(".bih");
+    package->addHeader(find(include_dirs, header).string());
+    header.replace_extension(".hpp");
+    metaFiles["require.header"].insert(header.string());
+    metaFiles["require.library"].insert(depends.tarname);
   }
   for (auto file : metaFiles["manifest.source"]) {
     if (file.extension().compare(".bi") == 0) {
@@ -736,20 +748,19 @@ void bi::Driver::lock() {
 }
 
 void bi::Driver::readFiles(const libubjpp::value meta, const std::string& key,
-    const std::initializer_list<std::string>& path) {
+    const std::initializer_list<std::string>& path, bool checkExists) {
   if (auto files = meta.get<libubjpp::array_type>(path)) {
     if (files) {
       for (auto file : files.get()) {
         if (auto str = file.get<libubjpp::string_type>()) {
           if (str) {
             boost::filesystem::path filePath(str.get());
-            if (!exists(filePath)) {
+            if (checkExists && !exists(filePath)) {
               warn(filePath.string() + " in META.json does not exist.");
             }
             auto inserted = allFiles.insert(filePath);
             if (!inserted.second) {
-              warn(std::string("file ") + filePath.string() +
-                  " repeated in META.json.");
+              warn(filePath.string() + " repeated in META.json.");
             }
             metaFiles[key].insert(filePath);
           }
