@@ -18,12 +18,7 @@ To install system wide, use:
 
 ## Usage
 
-To use `Birch.Cairo` from another Birch package, firstly modify its `META.json` file as follows:
-
-* `requires.header`: add `birch_cairo.bih` and `birch_cairo.hpp`,
-* `requires.library`: add `birch_cairo`.
-
-This will add checks for `Birch.Cairo` during build.
+To use from another Birch package, first add `Birch.Cairo` to the `require.package` item in its `META.json`. This will add checks for package files during the build.
 
 Basic usage then looks something like this:
 
@@ -43,7 +38,7 @@ Basic usage then looks something like this:
     cr.destroy();
     surface.destroy();
 
-Usage idioms are preserved from Cairo itself. See the Cairo documentation for more details, and the `Birch.Cairo` package documentation (or code) for the subset of functionality provided.
+Usage idioms are mostly preserved from Cairo itself. See the Cairo documentation for more details, and the package documentation (or code) for the subset of functionality provided.
 
 
 ## Version history
