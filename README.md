@@ -72,9 +72,8 @@ Birch requires:
 
   * GNU autoconf, automake and libtool,
   * Flex and Bison,
-  * the Boost libraries,
-  * the Eigen 3 linear algebra library, and
-  * the Boehm garbage collector.
+  * the Boost libraries, and
+  * the Eigen 3 linear algebra library.
 
 These are all widely available through package managers. See the guides below for set up on some major operating systems.
 
