@@ -30,7 +30,6 @@ bi::Driver::Driver(int argc, char** argv) :
     warnings(true),
     debug(true),
     verbose(true),
-    package(nullptr),
     newAutogen(false),
     newConfigure(false),
     newMake(false),
@@ -180,7 +179,7 @@ void bi::Driver::run(const std::string& prog) {
   char* msg;
   prog_t* fcn;
 
-  path so = std::string("lib") + package->tarname;
+  path so = std::string("lib") + tarname(packageName);
 #ifdef __APPLE__
   so.replace_extension(".dylib");
 #else
@@ -356,6 +355,7 @@ void bi::Driver::check() {
 void bi::Driver::docs() {
   current_path(work_dir);
   meta();
+  Package* package = createPackage();
 
   /* parse all files */
   Compiler compiler(package, work_dir, build_dir);
@@ -368,6 +368,7 @@ void bi::Driver::docs() {
   md_ostream output(stream);
 
   output << package;
+  delete package;
 }
 
 void bi::Driver::unlock() {
@@ -414,34 +415,12 @@ void bi::Driver::meta() {
   readFiles(top.get(), "require.header", { "require", "header" }, false);
   readFiles(top.get(), "require.library", { "require", "library" }, false);
   readFiles(top.get(), "require.program", { "require", "program" }, false);
-
-  /* create package */
-  package = new Package(packageName);
-  if (packageName != "Birch.Standard") {
-    /* disable inclusion of the standard library when the project is, itself,
-     * the standard library (!) */
-    auto header = path("bi") / "birch_standard.bih";
-    package->addHeader(find(include_dirs, header).string());
-  }
-  for (auto name: metaFiles["require.package"]) {
-    Package depends(name.string());
-
-    /* add *.bih and *.hpp header and library dependencies */
-    path header = path("bi") / depends.tarname;
-    header.replace_extension(".bih");
-    package->addHeader(find(include_dirs, header).string());
-    header.replace_extension(".hpp");
-    metaFiles["require.header"].insert(header.string());
-    metaFiles["require.library"].insert(depends.tarname);
-  }
-  for (auto file : metaFiles["manifest.source"]) {
-    if (file.extension().compare(".bi") == 0) {
-      package->addSource(file.string());
-    }
-  }
 }
 
 void bi::Driver::setup() {
+  /* internal name of package */
+  auto internalName = tarname(packageName);
+
   /* create build directory */
   if (!exists(build_dir)) {
     if (!create_directory(build_dir)) {
@@ -488,8 +467,8 @@ void bi::Driver::setup() {
   /* update configure.ac */
   if (newConfigure || newMeta) {
     std::string contents = read_all(find(share_dirs, "configure.ac"));
-    replace_all(contents, "PACKAGE_NAME", package->name);
-    replace_all(contents, "PACKAGE_TARNAME", package->tarname);
+    replace_all(contents, "PACKAGE_NAME", packageName);
+    replace_all(contents, "PACKAGE_TARNAME", internalName);
     ofstream configureStream(work_dir / "configure.ac");
     configureStream << contents << "\n\n";
 
@@ -526,15 +505,15 @@ void bi::Driver::setup() {
   /* update Makefile.am */
   if (newMake || newMeta) {
     std::string contents = read_all(find(share_dirs, "Makefile.am"));
-    replace_all(contents, "PACKAGE_NAME", package->name);
-    replace_all(contents, "PACKAGE_TARNAME", package->tarname);
+    replace_all(contents, "PACKAGE_NAME", packageName);
+    replace_all(contents, "PACKAGE_TARNAME", internalName);
 
     ofstream makeStream(work_dir / "Makefile.am");
     makeStream << contents << "\n\n";
-    makeStream << "lib_LTLIBRARIES = lib" << package->tarname << ".la\n\n";
+    makeStream << "lib_LTLIBRARIES = lib" << internalName << ".la\n\n";
 
     /* *.cpp files */
-    makeStream << "lib" << package->tarname << "_la_SOURCES = ";
+    makeStream << "lib" << internalName << "_la_SOURCES = ";
     for (auto file : metaFiles["manifest.source"]) {
       if (file.extension().compare(".cpp") == 0) {
         makeStream << " \\\n  " << file.string();
@@ -543,7 +522,7 @@ void bi::Driver::setup() {
     makeStream << '\n';
 
     /* sources derived from *.bi files */
-    makeStream << "nodist_lib" << package->tarname << "_la_SOURCES = ";
+    makeStream << "nodist_lib" << internalName << "_la_SOURCES = ";
     for (auto file : metaFiles["manifest.source"]) {
       if (file.extension().compare(".bi") == 0) {
         path cppFile = file;
@@ -555,8 +534,8 @@ void bi::Driver::setup() {
 
     /* headers to install and distribute */
     makeStream << "nobase_include_HEADERS =";
-    makeStream << " \\\n  bi/" << package->tarname << ".hpp";
-    makeStream << " \\\n  bi/" << package->tarname << ".bih";
+    makeStream << " \\\n  bi/" << internalName << ".hpp";
+    makeStream << " \\\n  bi/" << internalName << ".bih";
     for (auto file : metaFiles["manifest.header"]) {
       if (file.extension().compare(".hpp") == 0) {
         makeStream << " \\\n  " << file.string();
@@ -582,11 +561,39 @@ void bi::Driver::setup() {
   }
 }
 
+bi::Package* bi::Driver::createPackage() {
+  Package* package = new Package(packageName);
+  if (packageName != "Birch.Standard") {
+    /* disable inclusion of the standard library when the project is, itself,
+     * the standard library (!) */
+    auto header = path("bi") / "birch_standard.bih";
+    package->addHeader(find(include_dirs, header).string());
+  }
+  for (auto name: metaFiles["require.package"]) {
+    /* add *.bih and *.hpp header and library dependencies */
+    auto internalName = tarname(name.string());
+    path header = path("bi") / internalName;
+    header.replace_extension(".bih");
+    package->addHeader(find(include_dirs, header).string());
+    header.replace_extension(".hpp");
+    metaFiles["require.header"].insert(header.string());
+    metaFiles["require.library"].insert(internalName);
+  }
+  for (auto file : metaFiles["manifest.source"]) {
+    if (file.extension().compare(".bi") == 0) {
+      package->addSource(file.string());
+    }
+  }
+  return package;
+}
+
 void bi::Driver::compile() {
+  Package* package = createPackage();
   Compiler compiler(package, work_dir, build_dir);
   compiler.parse();
   compiler.resolve();
   compiler.gen();
+  delete package;
 }
 
 void bi::Driver::autogen() {
@@ -665,7 +672,7 @@ void bi::Driver::configure() {
     options << " --disable-static";
     options << " INSTALL=\"install -p\"";
     options << " --config-cache";
-    if (package->name == "Birch.Standard") {
+    if (packageName == "Birch.Standard") {
       /* disable inclusion of the standard library when the project is, itself,
        * the standard library (!) */
       options << " --disable-std";

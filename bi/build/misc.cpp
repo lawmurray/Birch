@@ -4,6 +4,7 @@
 #include "bi/build/misc.hpp"
 
 #include "boost/filesystem/fstream.hpp"
+#include "boost/algorithm/string.hpp"
 
 #include <iostream>
 #include <sstream>
@@ -112,4 +113,12 @@ void bi::write_all_if_different(const boost::filesystem::path& path,
   } else {
     write_all(path, contents);
   }
+}
+
+std::string bi::tarname(const std::string& name) {
+  std::string result = name;
+  boost::to_lower(result);
+  boost::replace_all(result, ".", "_");
+  boost::replace_all(result, "-", "_");
+  return result;
 }

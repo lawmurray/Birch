@@ -51,11 +51,6 @@ public:
   std::string name;
 
   /**
-   * Package tar name.
-   */
-  std::string tarname;
-
-  /**
    * Header files needed by the package.
    */
   std::list<File*> headers;

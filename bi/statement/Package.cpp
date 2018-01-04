@@ -5,17 +5,11 @@
 
 #include "bi/visitor/all.hpp"
 
-#include "boost/algorithm/string.hpp"
-
 bi::Package::Package(const std::string& name, const std::list<File*>& headers,
     const std::list<File*>& sources) :
     name(name),
     headers(headers),
     sources(sources) {
-  tarname = name;
-  boost::to_lower(tarname);
-  boost::replace_all(tarname, ".", "_");
-  boost::replace_all(tarname, "-", "_");
   files.insert(files.end(), headers.begin(), headers.end());
   files.insert(files.end(), sources.begin(), sources.end());
 }

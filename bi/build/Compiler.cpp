@@ -92,14 +92,14 @@ void bi::Compiler::gen() {
   /* single *.bih header for whole package */
   stream.str("");
   bihOutput << package;
-  path = build_dir / "bi" / package->tarname;
+  path = build_dir / "bi" / tarname(package->name);
   path.replace_extension(".bih");
   write_all_if_different(path, stream.str());
 
   /* single *.hpp header for whole package */
   stream.str("");
   hppOutput << package;
-  path = build_dir / "bi" / package->tarname;
+  path = build_dir / "bi" / tarname(package->name);
   path.replace_extension(".hpp");
   write_all_if_different(path, stream.str());
 

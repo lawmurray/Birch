@@ -79,4 +79,9 @@ void write_all(const boost::filesystem::path& path,
 void write_all_if_different(const boost::filesystem::path& path,
     const std::string& contents);
 
+/**
+ * Internal name for a package.
+ */
+std::string tarname(const std::string& name);
+
 }

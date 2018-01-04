@@ -93,6 +93,11 @@ private:
   void setup();
 
   /**
+   * Create the package.
+   */
+  Package* createPackage();
+
+  /**
    * Compile Birch files to C++.
    */
   void compile();
@@ -189,11 +194,6 @@ private:
    */
   bool verbose;
   //@}
-
-  /**
-   * The package.
-   */
-  Package* package;
 
   /**
    * Is the autogen.sh file new?
