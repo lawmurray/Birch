@@ -26,6 +26,7 @@
 
 #include "libubjpp/libubjpp.hpp"
 
+#include "boost/filesystem.hpp"
 #include "boost/math/special_functions/beta.hpp"
 ///@todo Replace the above with STL version under C++17.
 
