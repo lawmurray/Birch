@@ -71,7 +71,9 @@ See the `DOCS.md` file.
 Birch requires:
 
   * GNU autoconf, automake and libtool,
-  * Flex and Bison,
+  * the Flex lexer,
+  * the Bison parser generator,
+  * the Lemon parser generator,
   * the Boost libraries, and
   * the Eigen 3 linear algebra library.
 
@@ -82,7 +84,7 @@ These are all widely available through package managers. See the guides below fo
 Use:
 
 ```sh
-apt-get install autoconf libtool flex bison libgc-dev libboost-all-dev libeigen3-dev
+apt-get install autoconf libtool flex bison lemon libgc-dev libboost-all-dev libeigen3-dev
 ```
 
 For other Linux distributions, similar packages will be available.
@@ -92,7 +94,7 @@ For other Linux distributions, similar packages will be available.
 The recommended package manager is [Homebrew](http://brew.sh). Use:
 
 ```sh
-brew install autoconf automake libtool flex bison boost eigen bdw-gc
+brew install autoconf automake libtool flex bison lemon boost eigen bdw-gc
 ```
 
 Note that Birch needs a newer version of Bison than that provided by macOS. The above command installs a newer version.
