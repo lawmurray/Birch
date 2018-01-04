@@ -1,12 +1,14 @@
+# precompiled header; note $(CXXCOMPILE) has a -include flag for the header,
+# ensure that this won't use the old precompiled header by removing it first
+bi/PACKAGE_TARNAME.hpp.pch: bi/PACKAGE_TARNAME.hpp
+	rm $@
+	mkdir -p bi/$(DEPDIR) && \
+	$(CXXCOMPILE) -M -MF bi/$(DEPDIR)/PACKAGE_TARNAME.Plo -MT $@ $< && \
+	$(CXXCOMPILE) -o $@ $<
+
 # compile and link flags
 ACLOCAL_AMFLAGS = -I m4
 AM_CXXFLAGS = -include bi/PACKAGE_TARNAME.hpp
-
-# precompiled header
-bi/PACKAGE_TARNAME.hpp.pch: bi/PACKAGE_TARNAME.hpp
-	mkdir -p bi/$(DEPDIR) && \
-	$(CXX) -M $(DEFS) -std=c++14 -Wno-pragma-once-outside-header -MF bi/$(DEPDIR)/PACKAGE_TARNAME.Plo -MT $@ $< && \
-	$(CXX) $(DEFS) $(CXXFLAGS) -std=c++14 -Wno-pragma-once-outside-header -o $@ $<
 
 BUILT_SOURCES = bi/PACKAGE_TARNAME.hpp.pch
 CLEANFILES = bi/PACKAGE_TARNAME.hpp.pch

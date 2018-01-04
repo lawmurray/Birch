@@ -7,6 +7,7 @@
 #include "bi/visitor/Gatherer.hpp"
 #include "bi/primitive/poset.hpp"
 #include "bi/primitive/definitely.hpp"
+#include "bi/build/misc.hpp"
 
 #include "boost/filesystem.hpp"
 
@@ -17,7 +18,16 @@ bi::CppHeaderGenerator::CppHeaderGenerator(std::ostream& base,
 }
 
 void bi::CppHeaderGenerator::visit(const Package* o) {
-  line("#pragma once");
+  /* a `#define` include guard is preferred to `#pragma once`; the header of
+   * each package is included in sources with the `-include` compile option
+   * rather than `#include` preprocessor directive, including (for
+   * convenience/laziness) when precompiling the header itself; this seems
+   * to cause a double inclusion with `#pragma once` but not with a `#define`
+   * include guard */
+  line("#ifndef BI_" << tarname(o->name) << "_HPP");
+  line("#define BI_" << tarname(o->name) << "_HPP");
+  line("");
+
   line("#include \"libbirch/libbirch.hpp\"");
   for (auto header : o->headers) {
     boost::filesystem::path include = header->path;
@@ -141,4 +151,5 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
 
   line("}\n");
   line("");
+  line("#endif");
 }
