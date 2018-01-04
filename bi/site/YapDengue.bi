@@ -79,7 +79,8 @@ class YapDengue(T:Integer) {
   }
     
   function output() {
-    prefix:String <- "results/yap_dengue/";
+    prefix:String <- "output/yap_dengue/";
+    
     θ.output(prefix);
     x.output(prefix);
     

@@ -16,7 +16,7 @@ program sample(
     ess_rel:Real <- 0.7) {
   /* read observations */
   input:InputStream;
-  input.open("data/yap_dengue.csv");
+  input.open("input/yap_dengue.csv");
 
   y:Integer?[end_time - start_time + 1];
   
@@ -33,9 +33,12 @@ program sample(
   }
   input.close();
   
+  /* create directories */
+  mkdir("output/yap_dengue");
+  
   /* output times */
   out:OutputStream;
-  out.open("results/yap_dengue/t.csv", "w");
+  out.open("output/yap_dengue/t.csv", "w");
   for (t:Integer in start_time..end_time) {
     out.print(" " + t);
   }
@@ -86,7 +89,7 @@ program sample(
     if (b > 0 && !x[b]?) {
       // ^ runs a chosen particle to the end, allowing it to output      
       out:OutputStream;
-      out.open("results/yap_dengue/Z.csv", "a");
+      out.open("output/yap_dengue/Z.csv", "a");
       out.print(Z + "\n");
       out.close();
     }
