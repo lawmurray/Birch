@@ -5,7 +5,7 @@ class VBDParameter {
   h:SEIRParameter;  // humans
   m:SEIRParameter;  // mosquitos
 
-  fiber run() -> Real! {
+  fiber simulate() -> Real! {
     h.ν <- 0.0;
     h.μ <- 1.0;
     h.λ ~ Beta(1.0, 1.0);

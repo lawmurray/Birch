@@ -8,7 +8,7 @@ class SEIRParameter {
   δ:Random<Real>;   // infection probability
   γ:Random<Real>;   // recovery probability
   
-  fiber run() -> Real! {
+  fiber simulate() -> Real! {
     ν <- 0.0;
     μ <- 1.0;
     λ ~ Beta(1.0, 1.0);

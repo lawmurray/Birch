@@ -9,14 +9,14 @@ class YapDengue(T:Integer) {
   
   /* observations are of the aggregated number of new cases of infection
    * since the time of the last observation */
-  z:Integer;      // actual number of new cases since last observation
-  y:Integer?[T];  // observed number of new cases since last observation
-  ρ:Beta;         // probability of an actual case being observed
+  z:Integer;       // actual number of new cases since last observation
+  y:Integer?[T];   // observed number of new cases since last observation
+  ρ:Random<Real>;  // probability of an actual case being observed
   
   /**
    * Run the model.
    */
-  fiber run(y:Integer?[_]) -> Real! {
+  fiber simulate(y:Integer?[_]) -> Real! {
     /* parameter model */
     θ.h.ν <- 0.0;
     θ.h.μ <- 1.0;
@@ -67,7 +67,7 @@ class YapDengue(T:Integer) {
     /* transition model */
     for (t:Integer in 2..T) {
       new:VBDState;
-      new.run(x, θ);
+      new.simulate(x, θ);
       x <- new;
       
       z <- z + x.h.Δi;

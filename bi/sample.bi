@@ -66,6 +66,7 @@ program sample(
         Z <- Z + log_sum_exp(w) - log(nparticles);
         a <- ancestors(w);
         for (n:Integer in 1..nparticles) {
+          assert 1 <= a[n] && a[n] <= nparticles;
           if (a[n] != n) {
             x[n] <- x[a[n]];
           }
@@ -86,7 +87,10 @@ program sample(
     
     /* output */
     b:Integer <- ancestor(w); // returns zero if degenerate
-    if (b > 0 && !x[b]?) {
+    if (b == 0) {
+      b <- 1;
+    }
+    if (!x[b]?) {
       // ^ runs a chosen particle to the end, allowing it to output      
       out:OutputStream;
       out.open("output/yap_dengue/Z.csv", "a");
@@ -101,6 +105,6 @@ program sample(
  */
 closed fiber particle(T:Integer, y:Integer?[_]) -> Real! {
   x:YapDengue(T);
-  x.run(y);
+  x.simulate(y);
   x.output();
 }

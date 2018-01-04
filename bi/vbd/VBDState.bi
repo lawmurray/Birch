@@ -5,20 +5,20 @@ class VBDState {
   h:SEIRState;  // humans
   m:SEIRState;  // mosquitos
 
-  fiber run(θ:VBDParameter) -> Real! {
-    h.run(θ.h);
-    m.run(θ.m);
+  fiber simulate(θ:VBDParameter) -> Real! {
+    h.simulate(θ.h);
+    m.simulate(θ.m);
   }
   
-  fiber run(x:VBDState, θ:VBDParameter) -> Real! {
+  fiber simulate(x:VBDState, θ:VBDParameter) -> Real! {
     nhe:Integer;
     nme:Integer;
     
-    nhe <~ Binomial(x.h.s, 1.0 - exp(-x.m.i/x.h.n));
-    nme <~ Binomial(x.m.s, 1.0 - exp(-x.h.i/x.h.n));
+    nhe <~ Binomial(x.h.s, 1.0 - exp(-x.m.i/Real(x.h.n)));
+    nme <~ Binomial(x.m.s, 1.0 - exp(-x.h.i/Real(x.h.n)));
     
-    h.run(x.h, θ.h, nhe, x.h.e, x.h.i);
-    m.run(x.m, θ.m, nme, x.m.e, x.m.i);
+    h.simulate(x.h, θ.h, nhe, x.h.e, x.h.i);
+    m.simulate(x.m, θ.m, nme, x.m.e, x.m.i);
   }
 
   function output(prefix:String) {

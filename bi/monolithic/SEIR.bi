@@ -23,7 +23,7 @@ class SEIR(T:Integer) {
 
   n:Integer[T];    // total population
 
-  fiber run() -> Real! {
+  fiber simulate() -> Real! {
     /* parameters */
     ν <- 0.0;
     μ <- 1.0;

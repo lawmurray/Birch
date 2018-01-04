@@ -21,7 +21,7 @@ class SEIRState {
    *
    *   - θ: parameters.
    */
-  fiber run(θ:SEIRParameter) -> Real! {
+  fiber simulate(θ:SEIRParameter) -> Real! {
     Δs <- 0;
     Δe <- 0;
     Δi <- 1;
@@ -41,8 +41,8 @@ class SEIRState {
    *   - x: previous state.
    *   - θ: parameters.
    */
-  fiber run(x:SEIRState, θ:SEIRParameter) -> Real! {
-    run(x, θ, Integer(ceil(Real(x.s*x.i)/x.n)), x.e, x.i);
+  fiber simulate(x:SEIRState, θ:SEIRParameter) -> Real! {
+    simulate(x, θ, Integer(ceil(Real(x.s*x.i)/x.n)), x.e, x.i);
   }
   
   /**
@@ -54,7 +54,7 @@ class SEIRState {
    *   - ne: number of trials in exposed population.
    *   - ni: number of trials in infected population.
    */
-  fiber run(x:SEIRState, θ:SEIRParameter, ns:Integer, ne:Integer,
+  fiber simulate(x:SEIRState, θ:SEIRParameter, ns:Integer, ne:Integer,
       ni:Integer) -> Real! {
     this.x <- x;
 
