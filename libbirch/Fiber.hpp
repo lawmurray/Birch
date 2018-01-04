@@ -96,19 +96,23 @@ bi::Fiber<Type>::Fiber(FiberState<Type>* state, const bool closed) :
 template<class Type>
 bi::Fiber<Type>::Fiber(const Fiber<Type>& o) :
     world((o.world > 0) ? ++nworlds : 0) {
-  auto prevWorld = fiberWorld;
-  if (world > 0) {
-    fiberWorld = world;
-  }
-  state = o.state->clone();
-  if (world > 0) {
-    assert(world == fiberWorld);  // shouldn't change
-    fiberWorld = prevWorld;
-  }
-  if (o.world > 0) {
-    /* the copied fiber has exported from its world, which must
-     * now become read only, with modifications copy-on-write */
-    const_cast<Fiber<Type>&>(o).world = ++nworlds;
+  if (o.state) {
+    auto prevWorld = fiberWorld;
+    if (world > 0) {
+      fiberWorld = world;
+    }
+    state = o.state->clone();
+    if (world > 0) {
+      assert(world == fiberWorld);  // shouldn't change
+      fiberWorld = prevWorld;
+    }
+    if (o.world > 0) {
+      /* the copied fiber has exported from its world, which must
+       * now become read only, with modifications copy-on-write */
+      const_cast<Fiber<Type>&>(o).world = ++nworlds;
+    }
+  } else {
+    state = nullptr;
   }
 }
 
@@ -128,19 +132,23 @@ template<class Type>
 bi::Fiber<Type>& bi::Fiber<Type>::operator=(const Fiber<Type>& o) {
   world = (o.world > 0) ? ++nworlds : 0;
 
-  auto prevWorld = fiberWorld;
-  if (world > 0) {
-    fiberWorld = world;
-  }
-  state = o.state->clone();
-  if (world > 0) {
-    assert(world == fiberWorld);  // shouldn't change
-    fiberWorld = prevWorld;
-  }
-  if (o.world > 0) {
-    /* the source fiber has exported from its world, which must
-     * now become read only, with modifications copy-on-write */
-    const_cast<Fiber<Type>&>(o).world = ++nworlds;
+  if (o.state) {
+    auto prevWorld = fiberWorld;
+    if (world > 0) {
+      fiberWorld = world;
+    }
+    state = o.state->clone();
+    if (world > 0) {
+      assert(world == fiberWorld);  // shouldn't change
+      fiberWorld = prevWorld;
+    }
+    if (o.world > 0) {
+      /* the source fiber has exported from its world, which must
+       * now become read only, with modifications copy-on-write */
+      const_cast<Fiber<Type>&>(o).world = ++nworlds;
+    }
+  } else {
+    state = nullptr;
   }
   return *this;
 }
