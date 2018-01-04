@@ -67,6 +67,7 @@
       "bi/math/special.bi",
       "bi/math/standard.bi",
       "bi/math/vector.bi",
+      "bi/filesystem.bi",
       "bi/primitive.bi",
       "bi/resample.bi",
       "bi/standard.bi",
