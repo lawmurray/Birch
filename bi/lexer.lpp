@@ -3,6 +3,10 @@
 #include "lexer.hpp"
 #include "build/Compiler.hpp"
 
+/* Flex uses the register keyword, this is deprecated in C++11, and removed
+ * in C++17, so define it away */
+#define register
+
 #define YY_USER_ACTION yycount();
 
 extern bi::Compiler* compiler;

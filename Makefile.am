@@ -6,8 +6,6 @@ AM_FLAGS =
 
 # compiler setup
 AM_CPPFLAGS = -DDATADIR="$(datadir)" -DINCLUDEDIR="$(includedir)" -DLIBDIR="$(libdir)"
-AM_CXXFLAGS = -Wno-deprecated-register -Wno-overloaded-virtual
-# ^ -Wno-deprecated-register to omit warnings for GNU Flex/Bison generated code
 ACLOCAL_AMFLAGS = -I m4
 
 # driver program
@@ -431,6 +429,7 @@ dist_pkgdata_DATA = \
   share/ax_cxx_compile_stdcxx.m4 \
   share/ax_cxx_compile_stdcxx_11.m4 \
   share/ax_cxx_compile_stdcxx_14.m4 \
+  share/ax_cxx_compile_stdcxx_17.m4 \
   share/autogen.sh \
   share/configure.ac \
   share/LICENSE \
