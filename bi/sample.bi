@@ -62,7 +62,6 @@ program sample(
     /* filter */
     for (t:Integer in 1..ntimes) {
       /* resample */
-      stdout.print(ess(w) + "\n");
       if (t > 1 && ess(w) <= ess_rel*nparticles) {
         Z <- Z + log_sum_exp(w) - log(nparticles);
         a <- ancestors(w);
