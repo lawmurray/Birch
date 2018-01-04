@@ -1,0 +1,21 @@
+{
+  "name": "VBD",
+  "version": "0.0.0",
+  "description": "Vector-borne disease models.",
+  "manifest": {
+    "source": [
+      "bi/monolithic/SEIR.bi",
+      "bi/seir/SEIRParameter.bi",
+      "bi/seir/SEIRState.bi",
+      "bi/site/YapDengue.bi",
+      "bi/vbd/VBDParameter.bi",
+      "bi/vbd/VBDState.bi",
+      "bi/sample.bi"
+    ],
+    "other": [
+      "LICENSE",
+      "META.json",
+      "README.md"
+    ]
+  }
+}

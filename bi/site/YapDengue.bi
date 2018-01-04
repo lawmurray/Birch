@@ -83,7 +83,7 @@ class YapDengue(T:Integer) {
     θ.output(prefix);
     x.output(prefix);
     
-    output:FileOutputStream;
+    output:OutputStream;
     output.open(prefix + "ρ.csv", "a");
     output.print(ρ + "\n");
     output.close();

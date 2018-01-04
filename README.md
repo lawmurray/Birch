@@ -1,8 +1,3 @@
----
-name: VBD
-version: 0.0.0
----
-
 # Vector-borne disease models
 
 This package implements a number of vector-borne disease models in Birch, based on the following paper:

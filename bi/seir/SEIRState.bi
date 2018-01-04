@@ -83,15 +83,15 @@ class SEIRState {
   }
   
   function output(prefix:String) {
-    nout:FileOutputStream;
-    sout:FileOutputStream;
-    eout:FileOutputStream;
-    iout:FileOutputStream;
-    rout:FileOutputStream;
-    Δsout:FileOutputStream;
-    Δeout:FileOutputStream;
-    Δiout:FileOutputStream;
-    Δrout:FileOutputStream;
+    nout:OutputStream;
+    sout:OutputStream;
+    eout:OutputStream;
+    iout:OutputStream;
+    rout:OutputStream;
+    Δsout:OutputStream;
+    Δeout:OutputStream;
+    Δiout:OutputStream;
+    Δrout:OutputStream;
     
     nout.open(prefix + "n.csv", "a");
     sout.open(prefix + "s.csv", "a");
@@ -126,9 +126,9 @@ class SEIRState {
     Δrout.close();
   }
   
-  function output(nout:FileOutputStream, sout:FileOutputStream, eout:FileOutputStream,
-      iout:FileOutputStream, rout:FileOutputStream, Δsout:FileOutputStream,
-      Δeout:FileOutputStream, Δiout:FileOutputStream, Δrout:FileOutputStream) {
+  function output(nout:OutputStream, sout:OutputStream, eout:OutputStream,
+      iout:OutputStream, rout:OutputStream, Δsout:OutputStream,
+      Δeout:OutputStream, Δiout:OutputStream, Δrout:OutputStream) {
     if (x?) {
       x!.output(nout, sout, eout, iout, rout, Δsout, Δeout, Δiout, Δrout);
     }

@@ -25,7 +25,7 @@ class SEIRParameter {
   }
   
   function output(prefix:String, name:String, value:Real) {
-    out:FileOutputStream;
+    out:OutputStream;
     out.open(prefix + name + ".csv", "a");
     out.print(value + "\n");
     out.close();

@@ -1,9 +1,0 @@
-bi/monolithic/SEIR.bi
-bi/seir/SEIRParameter.bi
-bi/seir/SEIRState.bi
-bi/site/YapDengue.bi
-bi/vbd/VBDParameter.bi
-bi/vbd/VBDState.bi
-bi/sample.bi
-MANIFEST
-README.md

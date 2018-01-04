@@ -15,7 +15,7 @@ program sample(
     nparticles:Integer <- 100,
     ess_rel:Real <- 0.7) {
   /* read observations */
-  input:FileInputStream;
+  input:InputStream;
   input.open("data/yap_dengue.csv");
 
   y:Integer?[end_time - start_time + 1];
@@ -34,7 +34,7 @@ program sample(
   input.close();
   
   /* output times */
-  out:FileOutputStream;
+  out:OutputStream;
   out.open("results/yap_dengue/t.csv", "w");
   for (t:Integer in start_time..end_time) {
     out.print(" " + t);
@@ -85,7 +85,7 @@ program sample(
     b:Integer <- ancestor(w); // returns zero if degenerate
     if (b > 0 && !x[b]?) {
       // ^ runs a chosen particle to the end, allowing it to output      
-      out:FileOutputStream;
+      out:OutputStream;
       out.open("results/yap_dengue/Z.csv", "a");
       out.print(Z + "\n");
       out.close();
