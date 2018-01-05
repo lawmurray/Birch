@@ -159,12 +159,15 @@ void bi::Fiber<Type>::dirty() const {
 
 template<class Type>
 void bi::Fiber<Type>::isolate() {
-  assert(state);
-  assert(world);
   assert(isDirty);
   assert(isClosed);
 
-  state = state->clone();
   world = std::make_shared<World>(world);
+  if (state) {
+    auto prevWorld = fiberWorld;
+    fiberWorld = world;
+    state = state->clone();
+    fiberWorld = prevWorld;
+  }
   isDirty = false;
 }
