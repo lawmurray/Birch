@@ -91,6 +91,7 @@ public:
   /**
    * Get the raw pointer.
    */
+  T* get();
   T* get() const;
 
   /**
@@ -162,6 +163,7 @@ public:
   /**
    * Get the pointer.
    */
+  Any* get();
   Any* get() const;
 
   template<class U>
@@ -248,6 +250,15 @@ template<class T>
 template<class U, typename >
 bi::SharedPointer<T>::operator U() const {
   return static_cast<U>(*get());
+}
+
+template<class T>
+T* bi::SharedPointer<T>::get() {
+#ifndef NDEBUG
+  return dynamic_cast<T*>(SharedPointer<Any>::get());
+#else
+  return static_cast<T*>(SharedPointer<Any>::get());
+#endif
 }
 
 template<class T>

@@ -61,8 +61,8 @@ void bi::CppBaseGenerator::visit(const Sequence* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Cast* o) {
-  auto classType = dynamic_cast<ClassType*>(o->returnType);
-  middle("bi::dynamic_pointer_cast<bi::type::" << classType->name << ">(" << o->single << ')');
+  middle("bi::dynamic_pointer_cast<" << o->returnType << '>');
+  middle('(' << o->single << ')');
 }
 
 void bi::CppBaseGenerator::visit(const Call* o) {
@@ -601,7 +601,8 @@ void bi::CppBaseGenerator::visit(const OptionalType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const ClassType* o) {
-  middle("bi::SharedPointer<bi::type::" << o->name);
+  middle("bi::SharedPointer<");
+  middle("bi::type::" << o->name);
   if (!o->typeArgs->isEmpty()) {
     middle('<' << o->typeArgs << '>');
   }

@@ -89,32 +89,25 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   }
 
   /* clone function */
-  if (!header) {
-    genTemplateParams(type);
-    if (type->isGeneric()) {
-      start("typename ");
-    } else {
-      start("");
-    }
-    middle("bi::type::" << type->name);
-    genTemplateArgs(type);
-    middle("::");
-  } else {
+  if (header) {
     start("virtual ");
+  } else {
+    genTemplateParams(type);
+    start("");
   }
-  middle(stateName << "* ");
+  middle("std::shared_ptr<bi::FiberState<" << o->returnType->unwrap() <<">> ");
   if (!header) {
     middle("bi::type::" << type->name);
     genTemplateArgs(type);
     middle("::" << stateName << "::");
   }
-  middle("clone()");
+  middle("clone() const");
   if (header) {
     finish(";\n");
   } else {
     finish(" {");
     in();
-    line("return bi::copy_object(*this);");
+    line("return std::make_shared<" << stateName << ">(*this);");
     out();
     line("}\n");
   }

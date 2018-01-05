@@ -200,37 +200,6 @@ auto make_sequence(const std::initializer_list<Type> values) {
 }
 
 /**
- * Make an object.
- *
- * @ingroup libbirch
- *
- * @tparam Type Class type.
- * @tparam Args Constructor parameter types.
- *
- * @param args Constructor arguments.
- *
- * @return The new object.
- */
-template<class Type, class ... Args>
-Type* make_object(Args ... args) {
-  return new Type(args...);
-}
-
-/**
- * Copy an object.
- *
- * @ingroup libbirch
- *
- * @tparam Type Class type.
- *
- * @return The new object.
- */
-template<class Type>
-Type* copy_object(const Type& o) {
-  return new Type(o);
-}
-
-/**
  * Make a pointer to a new object.
  *
  * @ingroup libbirch
@@ -245,7 +214,7 @@ Type* copy_object(const Type& o) {
 template<class PointerType, class ... Args>
 PointerType make_pointer(Args ... args) {
   using Type = typename PointerType::value_type;
-  return PointerType(make_object<Type>(args...));
+  return PointerType(std::make_shared<Type>(args...));
 }
 
 /**
@@ -262,7 +231,7 @@ PointerType make_pointer(Args ... args) {
  */
 template<class YieldType, class StateType, class ... Args>
 Fiber<YieldType> make_fiber(Args ... args) {
-  return Fiber<YieldType>(new StateType(args...), false);
+  return Fiber<YieldType>(std::make_shared<StateType>(args...), false);
 }
 
 /**
@@ -279,16 +248,16 @@ Fiber<YieldType> make_fiber(Args ... args) {
  */
 template<class YieldType, class StateType, class ... Args>
 Fiber<YieldType> make_closed_fiber(Args ... args) {
-  return Fiber<YieldType>(new StateType(args...), true);
+  return Fiber<YieldType>(std::make_shared<StateType>(args...), true);
 }
 
 /**
  * Cast an object.
  */
-template<class To, class From>
-Optional<SharedPointer<To>> dynamic_pointer_cast(
-    const SharedPointer<From>& from) {
-  return from.template dynamic_pointer_cast<To>();
+template<class ToPointerType, class FromPointerType>
+ToPointerType dynamic_pointer_cast(const FromPointerType& from) {
+  using ToType = typename ToPointerType::value_type;
+  return from.template dynamic_pointer_cast<ToType>();
 }
 
 /**

@@ -19,7 +19,8 @@ public:
   /**
    * Constructor.
    */
-  Fiber(FiberState<Type>* state = nullptr, const bool isClosed = false);
+  Fiber(const std::shared_ptr<FiberState<Type>>& state = nullptr,
+      const bool isClosed = false);
 
   /**
    * Copy constructor.
@@ -58,23 +59,23 @@ public:
 
 private:
   /**
-   * Mark as dirty.
+   * Mark a fiber as dirty, when it is copied.
    *
    * @internal This must be const as it is applied, via a const_cast, to the
-   * src fiber when the copy constructor or copy assignment operator are
-   * called.
+   * argumet of the copy constructor and assignment operator.
    */
   void dirty() const;
 
   /**
-   * Close.
+   * Isolate a fiber, when it is queried while dirty. A new world is created
+   * for the fiber, with its parent the existing world.
    */
-  void close();
+  void isolate();
 
   /**
    * Fiber state.
    */
-  std::unique_ptr<FiberState<Type>> state;
+  std::shared_ptr<FiberState<Type>> state;
 
   /**
    * Fiber world.
@@ -82,12 +83,12 @@ private:
   std::shared_ptr<World> world;
 
   /**
-   * Is this fiber closed?
+   * Is the fiber closed?
    */
   bool isClosed;
 
   /**
-   * Is this fiber dirty?
+   * Is the fiber dirty?
    */
   bool isDirty;
 };
@@ -96,45 +97,58 @@ private:
 #include "libbirch/World.hpp"
 
 template<class Type>
-bi::Fiber<Type>::Fiber(FiberState<Type>* state, const bool isClosed) :
+bi::Fiber<Type>::Fiber(const std::shared_ptr<FiberState<Type>>& state,
+    const bool isClosed) :
     state(state),
-    world(isClosed ? std::make_shared<World>(fiberWorld) : fiberWorld),
+    world(isClosed ? std::make_shared<World>() : fiberWorld),
     isClosed(isClosed),
     isDirty(false) {
-  assert(state);
+  //
 }
 
 template<class Type>
 bi::Fiber<Type>::Fiber(const Fiber<Type>& o) :
-    state(o.state->clone()),
-    world(o.isClosed ? std::make_shared<World>(o.world) : o.world),
+    state(o.state),
+    world(o.world),
     isClosed(o.isClosed),
-    isDirty(false) {
-  o.dirty();
+    isDirty(o.isDirty) {
+  if (isClosed) {
+    dirty();
+    o.dirty();
+  }
 }
 
 template<class Type>
 bi::Fiber<Type>& bi::Fiber<Type>::operator=(const Fiber<Type>& o) {
-  state.reset(o.state->clone());
-  world = o.isClosed ? std::make_shared<World>(o.world) : o.world;
+  state = o.state;
+  world = o.world;
   isClosed = o.isClosed;
-  isDirty = false;
-  o.dirty();
+  isDirty = o.isDirty;
+  if (isClosed) {
+    dirty();
+    o.dirty();
+  }
   return *this;
 }
 
 template<class Type>
 bool bi::Fiber<Type>::query() {
   bool result = false;
-  auto prevWorld = fiberWorld;
-  fiberWorld = world;
-  result = state->query();
-  fiberWorld = prevWorld;
+  if (state) {
+    if (isDirty) {
+      isolate();
+    }
+    auto prevWorld = fiberWorld;
+    fiberWorld = world;
+    result = state->query();
+    fiberWorld = prevWorld;
+  }
   return result;
 }
 
 template<class Type>
 const Type bi::Fiber<Type>::get() const {
+  assert(state);
   return state->get();
 }
 
@@ -144,8 +158,13 @@ void bi::Fiber<Type>::dirty() const {
 }
 
 template<class Type>
-void bi::Fiber<Type>::close() {
+void bi::Fiber<Type>::isolate() {
+  assert(state);
+  assert(world);
+  assert(isDirty);
+  assert(isClosed);
+
+  state = state->clone();
   world = std::make_shared<World>(world);
-  isClosed = true;
   isDirty = false;
 }

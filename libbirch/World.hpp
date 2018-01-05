@@ -5,7 +5,7 @@
 
 #include "libbirch/global.hpp"
 
-#include <unordered_map>
+#include <map>
 
 namespace bi {
 /**
@@ -13,7 +13,7 @@ namespace bi {
  *
  * @ingroup libbirch
  */
-class World {
+class World : public std::enable_shared_from_this<World> {
 public:
   /**
    * Constructor.
@@ -23,22 +23,23 @@ public:
   World(const std::shared_ptr<World>& parent = nullptr);
 
   /**
-   * Retrieve (and possibly create) an allocation.
+   * Recursively pull an object from its current world this world,
+   * applying any mappings along the way.
    *
-   * @param src The source allocation.
+   * @param src The source object.
    *
-   * @return The allocation for this import. If no such allocation exists yet,
-   * one is created and returned.
+   * @return The destination object.
    */
-  Any* get(Any* src);
+  std::shared_ptr<Any> pull(const std::shared_ptr<Any>& src);
 
   /**
    * Insert a mapping.
    *
-   * @param src The source allocation.
-   * @param dst The destination allocation.
+   * @param src The source object.
+   * @param dst The destination object.
    */
-  void insert(Any* src, Any* dst);
+  void insert(const std::shared_ptr<Any>& src,
+      const std::shared_ptr<Any>& dst);
 
 private:
   /**
@@ -49,6 +50,7 @@ private:
   /**
    * Mapped allocations.
    */
-  std::unordered_map<Any*,Any*> map;
+  std::map<std::weak_ptr<Any>,std::shared_ptr<Any>,
+      std::owner_less<std::weak_ptr<Any>>> map;
 };
 }

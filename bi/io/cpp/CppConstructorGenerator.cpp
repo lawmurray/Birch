@@ -55,7 +55,8 @@ void bi::CppConstructorGenerator::visit(const MemberVariable* o) {
   if (o->type->isClass()) {
     finish(',');
     start(o->name << '(');
-    middle("bi::make_pointer<" << o->type << ">(" << o->args << ')');
+    middle("bi::make_pointer<" << o->type << '>');
+    middle('(' << o->args << ')');
     middle(')');
   } else if (o->type->isArray() && !o->brackets->isEmpty()) {
     finish(',');

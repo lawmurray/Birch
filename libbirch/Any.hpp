@@ -14,6 +14,16 @@ namespace bi {
 class Any: public std::enable_shared_from_this<Any> {
 public:
   /**
+   * Constructor.
+   */
+  Any();
+
+  /**
+   * Copy constructor.
+   */
+  Any(const Any& o);
+
+  /**
    * Destructor.
    */
   virtual ~Any();
@@ -21,7 +31,12 @@ public:
   /**
    * Clone the object.
    */
-  virtual Any* clone();
+  virtual std::shared_ptr<Any> clone() const;
+
+  /**
+   * Get the object world.
+   */
+  std::weak_ptr<World> getWorld();
 
 protected:
   /**
@@ -29,6 +44,11 @@ protected:
    */
   template<class T>
   SharedPointer<T> shared_from_this();
+
+  /**
+   * The world to which this object belongs.
+   */
+  std::weak_ptr<World> world;
 };
 }
 

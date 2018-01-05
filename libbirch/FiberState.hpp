@@ -3,8 +3,6 @@
  */
 #pragma once
 
-#include "libbirch/Any.hpp"
-
 namespace bi {
 /**
  * State of a fiber.
@@ -14,7 +12,7 @@ namespace bi {
  * @tparam Type Yield type.
  */
 template<class Type>
-class FiberState: public Any {
+class FiberState {
 public:
   /**
    * Constructor.
@@ -37,7 +35,7 @@ public:
   /**
    * Clone the object.
    */
-  virtual FiberState<Type>* clone() = 0;
+  virtual std::shared_ptr<FiberState<Type>> clone() const = 0;
 
   /**
    * Run to next yield point.

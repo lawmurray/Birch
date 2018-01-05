@@ -80,22 +80,21 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   }
 
   /* clone function */
-  if (!header) {
-    start("bi::");
-  } else {
-    start("virtual ");
+  start("");
+  if (header) {
+    middle("virtual ");
   }
-  middle(stateName << "* ");
+  middle("std::shared_ptr<bi::FiberState<" << o->returnType->unwrap() <<">> ");
   if (!header) {
     middle("bi::" << stateName << "::");
   }
-  middle("clone()");
+  middle("clone() const");
   if (header) {
     finish(";\n");
   } else {
     finish(" {");
     in();
-    line("return bi::copy_object(*this);");
+    line("return std::make_shared<" << stateName << ">(*this);");
     out();
     line("}\n");
   }

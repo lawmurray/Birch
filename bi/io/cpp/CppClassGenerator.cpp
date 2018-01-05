@@ -77,25 +77,23 @@ void bi::CppClassGenerator::visit(const Class* o) {
     /* clone function */
     if (!header) {
       genTemplateParams(o);
-      start("bi::type::");
+      start("");
     } else {
       start("virtual ");
     }
-    middle(o->name);
-    genTemplateArgs(o);
-    middle("* ");
+    middle("std::shared_ptr<bi::Any> ");
     if (!header) {
       middle("bi::type::" << o->name);
       genTemplateArgs(o);
       middle("::");
     }
-    middle("clone()");
+    middle("clone() const");
     if (header) {
       finish(";\n");
     } else {
       finish(" {");
       in();
-      line("return bi::copy_object(*this);");
+      line("return std::make_shared<this_type>(*this);");
       out();
       line("}\n");
     }
