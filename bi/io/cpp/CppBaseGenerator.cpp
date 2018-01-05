@@ -108,11 +108,7 @@ void bi::CppBaseGenerator::visit(const Slice* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Query* o) {
-  if (o->single->type->isOptional()) {
-    middle(o->single);
-  } else {
-    middle(o->single << ".query()");
-  }
+  middle(o->single << ".query()");
 }
 
 void bi::CppBaseGenerator::visit(const Get* o) {
@@ -303,6 +299,9 @@ void bi::CppBaseGenerator::visit(const Program* o) {
   } else {
     line("void bi::" << o->name << "(int argc, char** argv) {");
     in();
+
+    /* create program (root fiber) world */
+    line("fiberWorld = std::make_shared<bi::World>();\n");
 
     /* handle program options */
     if (o->params->width() > 0) {
@@ -598,7 +597,7 @@ void bi::CppBaseGenerator::visit(const FiberType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const OptionalType* o) {
-  middle("boost::optional<" << o->single << '>');
+  middle("bi::Optional<" << o->single << '>');
 }
 
 void bi::CppBaseGenerator::visit(const ClassType* o) {

@@ -15,6 +15,7 @@
 #include "libbirch/Sequence.hpp"
 #include "libbirch/Any.hpp"
 #include "libbirch/Object.hpp"
+#include "libbirch/Optional.hpp"
 #include "libbirch/SharedPointer.hpp"
 #include "libbirch/FiberState.hpp"
 #include "libbirch/Fiber.hpp"
@@ -26,7 +27,6 @@
 #include "libubjpp/libubjpp.hpp"
 
 #include "boost/filesystem.hpp"
-#include "boost/optional.hpp"
 #include "boost/math/special_functions/beta.hpp"
 ///@todo Replace these with STL versions under C++17
 
@@ -286,21 +286,21 @@ Fiber<YieldType> make_closed_fiber(Args ... args) {
  * Cast an object.
  */
 template<class To, class From>
-boost::optional<SharedPointer<To>> dynamic_pointer_cast(
+Optional<SharedPointer<To>> dynamic_pointer_cast(
     const SharedPointer<From>& from) {
-  return boost::optional<SharedPointer<To>>(from.template dynamic_pointer_cast<To>());
+  return from.template dynamic_pointer_cast<To>();
 }
 
 /**
  * Cast an object.
  */
 template<class To, class From>
-boost::optional<SharedPointer<To>> dynamic_pointer_cast(
-    const boost::optional<SharedPointer<From>>& from) {
+Optional<SharedPointer<To>> dynamic_pointer_cast(
+    const Optional<SharedPointer<From>>& from) {
   if (from.query()) {
     return dynamic_pointer_cast<SharedPointer<To>>(from.get());
   } else {
-    return boost::optional<SharedPointer<To>>();
+    return nullptr;
   }
 }
 

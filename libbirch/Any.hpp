@@ -4,7 +4,6 @@
 #pragma once
 
 #include "libbirch/SharedPointer.hpp"
-#include "libbirch/WeakPointer.hpp"
 
 namespace bi {
 /**
@@ -12,19 +11,8 @@ namespace bi {
  *
  * @ingroup libbirch
  */
-class Any {
-  friend class Allocation;
+class Any: public std::enable_shared_from_this<Any> {
 public:
-  /**
-   * Default constructor.
-   */
-  Any();
-
-  /**
-   * Copy constructor.
-   */
-  Any(const Any& o);
-
   /**
    * Destructor.
    */
@@ -40,25 +28,16 @@ protected:
    * Create a shared pointer from this object.
    */
   template<class T>
-  SharedPointer<T> shared_from_this() const;
-
-private:
-  /**
-   * Weak pointer to self, used by shared_from_this() to construct a shared
-   * pointer to this object.
-   */
-  WeakPointer<Any> ptr;
+  SharedPointer<T> shared_from_this();
 };
 }
 
 template<class T>
-bi::SharedPointer<T> bi::Any::shared_from_this() const {
-#ifdef NDEBUG
-  return ptr.template static_pointer_cast<T>();
+bi::SharedPointer<T> bi::Any::shared_from_this() {
+  auto ptr = enable_shared_from_this<Any>::shared_from_this();
+#ifndef NDEBUG
+  return std::dynamic_pointer_cast<T>(ptr);
 #else
-  auto result = ptr.template dynamic_pointer_cast<T>();
-  assert(result.query());
-  assert(result.get() == this);
-  return result;
+  return std::static_pointer_cast<T>(ptr);
 #endif
 }

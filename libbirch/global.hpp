@@ -3,15 +3,14 @@
  */
 #pragma once
 
-#include <limits>
 #include <type_traits>
+#include <random>
+#include <memory>
 #include <cstdint>
 #include <cstddef>
-#include <random>
 
 namespace bi {
-class Allocation;
-class AllocationMap;
+class World;
 class Any;
 template<class T> class SharedPointer;
 template<class T> class WeakPointer;
@@ -22,19 +21,9 @@ template<class T> class WeakPointer;
 using world_t = uint64_t;
 
 /**
- * The allocation map for copy-on-write of objects between worlds.
- */
-extern AllocationMap allocationMap;
-
-/**
  * The world of the currently running fiber.
  */
-extern world_t fiberWorld;
-
-/**
- * The number of worlds enumerated so far.
- */
-extern world_t nworlds;
+extern std::shared_ptr<World> fiberWorld;
 
 /**
  * Random number generator.

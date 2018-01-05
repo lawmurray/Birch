@@ -197,13 +197,12 @@ ubj2json_CXXFLAGS = $(AM_CXXFLAGS)
 ubj2json_LDADD = libubjpp.la
 
 libbirch_la_SOURCES = \
-  libbirch/Allocation.cpp \
-  libbirch/AllocationMap.cpp \
   libbirch/Any.cpp \
   libbirch/global.cpp \
   libbirch/libbirch.cpp \
   libbirch/SharedPointer.cpp \
-  libbirch/WeakPointer.cpp
+  libbirch/WeakPointer.cpp \
+  libbirch/World.cpp
 libbirch_la_CXXFLAGS = $(AM_CXXFLAGS)
 
 libubjpp_la_SOURCES = \
@@ -218,8 +217,6 @@ libubjpp_la_SOURCES = \
 libubjpp_la_CXXFLAGS = $(AM_CXXFLAGS)
 
 nobase_include_HEADERS = \
-  libbirch/Allocation.hpp \
-  libbirch/AllocationMap.hpp \
   libbirch/Any.hpp \
   libbirch/Array.hpp \
   libbirch/Eigen.hpp \
@@ -234,6 +231,7 @@ nobase_include_HEADERS = \
   libbirch/Length.hpp \
   libbirch/Offset.hpp \
   libbirch/Object.hpp \
+  libbirch/Optional.hpp \
   libbirch/Range.hpp \
   libbirch/Sequence.hpp \
   libbirch/SharedPointer.hpp \
@@ -241,6 +239,7 @@ nobase_include_HEADERS = \
   libbirch/Stride.hpp \
   libbirch/View.hpp \
   libbirch/WeakPointer.hpp \
+  libbirch/World.hpp \
   libbirch/libbirch.hpp \
   libubjpp/value.hpp \
   libubjpp/common/Parser.h \
