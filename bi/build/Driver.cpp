@@ -459,12 +459,6 @@ void bi::Driver::setup() {
   }
   copy_if_newer(find(share_dirs, "ax_cxx_compile_stdcxx.m4"),
       m4_dir / "ax_cxx_compile_stdcxx.m4");
-  copy_if_newer(find(share_dirs, "ax_cxx_compile_stdcxx_11.m4"),
-      m4_dir / "ax_cxx_compile_stdcxx_11.m4");
-  copy_if_newer(find(share_dirs, "ax_cxx_compile_stdcxx_14.m4"),
-      m4_dir / "ax_cxx_compile_stdcxx_14.m4");
-  copy_if_newer(find(share_dirs, "ax_cxx_compile_stdcxx_17.m4"),
-      m4_dir / "ax_cxx_compile_stdcxx_17.m4");
 
   /* update configure.ac */
   if (newConfigure || newMeta) {

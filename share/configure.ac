@@ -19,7 +19,7 @@ AC_PROG_CXXCPP
 AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_LIBTOOL
-AX_CXX_COMPILE_STDCXX_14([noext], [mandatory])
+AX_CXX_COMPILE_STDCXX(17, [noext], [mandatory])
 
 # Checks for typedefs, structures, and compiler characteristics
 AC_HEADER_STDBOOL

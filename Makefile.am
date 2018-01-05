@@ -427,9 +427,6 @@ noinst_HEADERS = \
 dist_pkgdata_DATA = \
   share/gitignore \
   share/ax_cxx_compile_stdcxx.m4 \
-  share/ax_cxx_compile_stdcxx_11.m4 \
-  share/ax_cxx_compile_stdcxx_14.m4 \
-  share/ax_cxx_compile_stdcxx_17.m4 \
   share/autogen.sh \
   share/configure.ac \
   share/LICENSE \

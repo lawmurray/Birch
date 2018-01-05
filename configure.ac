@@ -24,7 +24,7 @@ AC_PATH_PROG([LEMON], [lemon], [])
 if test "$LEMON" = ""; then
   AC_MSG_ERROR([lemon not found.])
 fi
-AX_CXX_COMPILE_STDCXX_14([noext], [mandatory])
+AX_CXX_COMPILE_STDCXX(17, [noext], [mandatory])
 
 # Checks for libraries
 AC_SEARCH_LIBS([dlopen], [dl], [], [])
