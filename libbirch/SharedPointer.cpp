@@ -8,16 +8,11 @@
 #include "libbirch/Any.hpp"
 
 bi::SharedPointer<bi::Any>::SharedPointer() :
-    SharedPointer(new Any()) {
+    SharedPointer(std::make_shared<Any>()) {
   //
 }
 
 bi::SharedPointer<bi::Any>::SharedPointer(const std::nullptr_t& o) {
-  //
-}
-
-bi::SharedPointer<bi::Any>::SharedPointer(Any* raw) :
-    ptr(raw) {
   //
 }
 

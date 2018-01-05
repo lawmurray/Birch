@@ -491,7 +491,7 @@ private:
    */
   template<class U, class ... Args>
   static void emplace(SharedPointer<U>& o, Args ... args) {
-    new (&o) SharedPointer<U>(new U(args...));
+    new (&o) SharedPointer<U>(std::make_shared<U>(args...));
   }
 
   /**

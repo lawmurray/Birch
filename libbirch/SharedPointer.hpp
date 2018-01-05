@@ -32,11 +32,6 @@ public:
   SharedPointer(const std::nullptr_t& o);
 
   /**
-   * Constructor from raw pointer.
-   */
-  SharedPointer(T* raw);
-
-  /**
    * Constructor for STL shared pointer.
    */
   SharedPointer(const std::shared_ptr<T>& ptr);
@@ -147,7 +142,6 @@ public:
 
   SharedPointer();
   SharedPointer(const std::nullptr_t& o);
-  SharedPointer(Any* raw);
   SharedPointer(const std::shared_ptr<Any>& ptr);
   SharedPointer(const SharedPointer<Any>& o) = default;
   SharedPointer(SharedPointer<Any> && o) = default;
@@ -202,19 +196,13 @@ protected:
 
 template<class T>
 bi::SharedPointer<T>::SharedPointer() :
-    super_type(new T()) {
+    super_type(std::make_shared<T>()) {
   //
 }
 
 template<class T>
 bi::SharedPointer<T>::SharedPointer(const std::nullptr_t& o) :
     super_type(o) {
-  //
-}
-
-template<class T>
-bi::SharedPointer<T>::SharedPointer(T* raw) :
-    super_type(raw) {
   //
 }
 
