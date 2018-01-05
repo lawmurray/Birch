@@ -1,7 +1,7 @@
 # precompiled header; note $(CXXCOMPILE) has a -include flag for the header,
 # ensure that this won't use the old precompiled header by removing it first
 bi/PACKAGE_TARNAME.hpp.pch: bi/PACKAGE_TARNAME.hpp
-	rm $@
+	rm -f $@
 	mkdir -p bi/$(DEPDIR) && \
 	$(CXXCOMPILE) -M -MF bi/$(DEPDIR)/PACKAGE_TARNAME.Plo -MT $@ $< && \
 	$(CXXCOMPILE) -o $@ $<

@@ -108,7 +108,11 @@ void bi::CppBaseGenerator::visit(const Slice* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Query* o) {
-  middle(o->single << ".query()");
+  if (o->single->type->isOptional()) {
+    middle(o->single);
+  } else {
+    middle(o->single << ".query()");
+  }
 }
 
 void bi::CppBaseGenerator::visit(const Get* o) {
@@ -594,7 +598,7 @@ void bi::CppBaseGenerator::visit(const FiberType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const OptionalType* o) {
-  middle("bi::Optional<" << o->single << '>');
+  middle("boost::optional<" << o->single << '>');
 }
 
 void bi::CppBaseGenerator::visit(const ClassType* o) {
