@@ -73,7 +73,7 @@ public:
       frame(o.frame),
       ptr(o.ptr),
       isView(o.isView) {
-    o.isView = false;  // prevents deletion of ptr
+    o.isView = true;  // prevents deletion of ptr
   }
 
   /**
