@@ -32,9 +32,11 @@ bool bi::SharedPointer<bi::Any>::query() const {
 }
 
 bi::Any* bi::SharedPointer<bi::Any>::get() {
-  return fiberWorld->get(ptr).get();
+  ptr = fiberWorld->get(ptr);
+  return ptr.get();
 }
 
 bi::Any* bi::SharedPointer<bi::Any>::get() const {
-  return fiberWorld->get(ptr).get();
+  const_cast<std::shared_ptr<bi::Any>&>(ptr) = fiberWorld->get(ptr);
+  return ptr.get();
 }
