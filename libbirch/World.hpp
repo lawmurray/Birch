@@ -23,6 +23,16 @@ public:
   World(const std::shared_ptr<World>& parent = nullptr);
 
   /**
+   * Get the mapped version of the given object for this world.
+   *
+   * @param src The source object.
+   *
+   * @return The destination object.
+   */
+  std::shared_ptr<Any> get(const std::shared_ptr<Any>& src);
+
+private:
+  /**
    * Recursively pull an object from its current world this world,
    * applying any mappings along the way.
    *
@@ -30,7 +40,7 @@ public:
    *
    * @return The destination object.
    */
-  std::shared_ptr<Any> pull(const std::shared_ptr<Any>& src);
+  std::shared_ptr<Any> pull(const std::shared_ptr<Any>& src) const;
 
   /**
    * Insert a mapping.
@@ -41,7 +51,6 @@ public:
   void insert(const std::shared_ptr<Any>& src,
       const std::shared_ptr<Any>& dst);
 
-private:
   /**
    * Parent world.
    */

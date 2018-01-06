@@ -100,7 +100,7 @@ template<class Type>
 bi::Fiber<Type>::Fiber(const std::shared_ptr<FiberState<Type>>& state,
     const bool isClosed) :
     state(state),
-    world(isClosed ? std::make_shared<World>() : fiberWorld),
+    world(isClosed ? std::make_shared<World>() : nullptr),
     isClosed(isClosed),
     isDirty(false) {
   //
@@ -135,13 +135,30 @@ template<class Type>
 bool bi::Fiber<Type>::query() {
   bool result = false;
   if (state) {
-    if (isDirty) {
-      isolate();
-    }
+    /* save current world */
     auto prevWorld = fiberWorld;
-    fiberWorld = world;
+
+    if (isClosed) {
+      /* load world, creating new world if the fiber is dirty */
+      if (isDirty) {
+        world = std::make_shared<World>(world);
+      }
+      fiberWorld = world;
+
+      /* clone state also if the fiber is dirty */
+      if (isDirty) {
+        state = state->clone();
+        isDirty = false;
+      }
+    }
+
+    /* run */
     result = state->query();
-    fiberWorld = prevWorld;
+
+    if (isClosed) {
+      /* restore previous world */
+      fiberWorld = prevWorld;
+    }
   }
   return result;
 }
@@ -155,19 +172,4 @@ const Type bi::Fiber<Type>::get() const {
 template<class Type>
 void bi::Fiber<Type>::dirty() const {
   const_cast<Fiber<Type>*>(this)->isDirty = true;
-}
-
-template<class Type>
-void bi::Fiber<Type>::isolate() {
-  assert(isDirty);
-  assert(isClosed);
-
-  world = std::make_shared<World>(world);
-  if (state) {
-    auto prevWorld = fiberWorld;
-    fiberWorld = world;
-    state = state->clone();
-    fiberWorld = prevWorld;
-  }
-  isDirty = false;
 }

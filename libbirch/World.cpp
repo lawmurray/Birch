@@ -12,13 +12,42 @@ bi::World::World(const std::shared_ptr<World>& parent) :
   //
 }
 
-std::shared_ptr<bi::Any> bi::World::pull(const std::shared_ptr<Any>& src) {
+std::shared_ptr<bi::Any> bi::World::get(const std::shared_ptr<Any>& src) {
   assert(src);
   if (shared_from_this() == src->getWorld().lock()) {
+    /* in this world */
     return src;
   } else {
+    /* not in this world, propagate through ancestor world mappings */
     assert(parent);
     auto dst = parent->pull(src);
+
+    /* apply own mapping, in case the object has been seen before; if it has
+     * not then clone it and create a new mapping */
+    auto iter = map.find(dst);
+    if (iter != map.end()) {
+      return iter->second;
+    } else {
+      assert(shared_from_this() == fiberWorld);
+      auto clone = dst->clone();
+      insert(dst, clone);
+      return clone;
+    }
+  }
+}
+
+std::shared_ptr<bi::Any> bi::World::pull(
+    const std::shared_ptr<Any>& src) const {
+  assert(src);
+  if (shared_from_this() == src->getWorld().lock()) {
+    /* in this world */
+    return src;
+  } else {
+    /* not in this world, propagate through ancestor world mappings */
+    assert(parent);
+    auto dst = parent->pull(src);
+
+    /* apply own mapping, in case the object has been seen before */
     auto iter = map.find(dst);
     if (iter != map.end()) {
       dst = iter->second;

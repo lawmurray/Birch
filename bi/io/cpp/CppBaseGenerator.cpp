@@ -300,9 +300,6 @@ void bi::CppBaseGenerator::visit(const Program* o) {
     line("void bi::" << o->name << "(int argc, char** argv) {");
     in();
 
-    /* create program (root fiber) world */
-    line("fiberWorld = std::make_shared<bi::World>();\n");
-
     /* handle program options */
     if (o->params->width() > 0) {
       /* option variables */
