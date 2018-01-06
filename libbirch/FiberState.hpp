@@ -59,7 +59,7 @@ public:
     return isValue;
   }
 
-protected:
+//protected:
   /**
    * Last yielded value.
    */
