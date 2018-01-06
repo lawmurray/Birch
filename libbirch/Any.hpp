@@ -36,7 +36,7 @@ public:
   /**
    * Get the object world.
    */
-  std::weak_ptr<World> getWorld();
+  World* getWorld();
 
 protected:
   /**
@@ -48,7 +48,7 @@ protected:
   /**
    * The world to which this object belongs.
    */
-  std::weak_ptr<World> world;
+  World* world;
 };
 }
 

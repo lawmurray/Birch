@@ -14,7 +14,7 @@ bi::World::World(const std::shared_ptr<World>& parent) :
 
 std::shared_ptr<bi::Any> bi::World::get(const std::shared_ptr<Any>& src) {
   assert(src);
-  if (shared_from_this() == src->getWorld().lock()) {
+  if (this == src->getWorld()) {
     /* in this world */
     return src;
   } else {
@@ -39,7 +39,7 @@ std::shared_ptr<bi::Any> bi::World::get(const std::shared_ptr<Any>& src) {
 std::shared_ptr<bi::Any> bi::World::pull(
     const std::shared_ptr<Any>& src) const {
   assert(src);
-  if (shared_from_this() == src->getWorld().lock()) {
+  if (this == src->getWorld()) {
     /* in this world */
     return src;
   } else {
