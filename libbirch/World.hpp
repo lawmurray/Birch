@@ -5,7 +5,7 @@
 
 #include "libbirch/global.hpp"
 
-#include <map>
+#include <unordered_map>
 
 namespace bi {
 /**
@@ -13,7 +13,7 @@ namespace bi {
  *
  * @ingroup libbirch
  */
-class World : public std::enable_shared_from_this<World> {
+class World: public std::enable_shared_from_this<World> {
 public:
   /**
    * Constructor.
@@ -59,7 +59,6 @@ private:
   /**
    * Mapped allocations.
    */
-  std::map<std::weak_ptr<Any>,std::shared_ptr<Any>,
-      std::owner_less<std::weak_ptr<Any>>> map;
+  std::unordered_map<Any*,std::shared_ptr<Any>> map;
 };
 }

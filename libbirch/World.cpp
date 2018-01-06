@@ -24,7 +24,7 @@ std::shared_ptr<bi::Any> bi::World::get(const std::shared_ptr<Any>& src) {
 
     /* apply own mapping, in case the object has been seen before; if it has
      * not then clone it and create a new mapping */
-    auto iter = map.find(dst);
+    auto iter = map.find(dst.get());
     if (iter != map.end()) {
       return iter->second;
     } else {
@@ -48,7 +48,7 @@ std::shared_ptr<bi::Any> bi::World::pull(
     auto dst = parent->pull(src);
 
     /* apply own mapping, in case the object has been seen before */
-    auto iter = map.find(dst);
+    auto iter = map.find(dst.get());
     if (iter != map.end()) {
       dst = iter->second;
     }
@@ -58,6 +58,6 @@ std::shared_ptr<bi::Any> bi::World::pull(
 
 void bi::World::insert(const std::shared_ptr<Any>& src,
     const std::shared_ptr<Any>& dst) {
-  auto result = map.insert(std::make_pair(src, dst));
+  auto result = map.insert(std::make_pair(src.get(), dst));
   assert(result.second);
 }
