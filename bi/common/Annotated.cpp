@@ -13,5 +13,9 @@ bi::Annotated::~Annotated() {
 }
 
 bool bi::Annotated::isClosed() const {
-  return (annotation & IS_CLOSED) > 0;
+  return (annotation & IS_CLOSED);
+}
+
+bool bi::Annotated::isReadOnly() const {
+  return (annotation & IS_READ_ONLY);
 }

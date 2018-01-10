@@ -54,6 +54,13 @@
   }
 
   /**
+   * Make an empty statement.
+   */
+  bi::Statement* empty_stmt(YYLTYPE& loc) {
+    return new bi::EmptyStatement(make_loc(loc));
+  }
+
+  /**
    * Make an empty type.
    */
   bi::Type* empty_type(YYLTYPE& loc) {
@@ -121,7 +128,7 @@
 %type <valStatement> member_fiber_declaration
 %type <valStatement> binary_operator_declaration unary_operator_declaration
 %type <valStatement> conversion_operator_declaration assignment_operator_declaration
-%type <valStatement> class_declaration alias_declaration basic_declaration
+%type <valStatement> class_declaration basic_declaration
 %type <valStatement> cpp hpp assignment expression_statement if for
 %type <valStatement> while do_while assertion return yield
 %type <valStatement> statement statements optional_statements
@@ -130,10 +137,13 @@
 %type <valStatement> braces optional_braces
 %type <valStatement> class_braces optional_class_braces
 
-%type <valType> type_identifier class_type primary_type tuple_type
+%type <valType> basic_type class_type unknown_type tuple_type
 %type <valType> sequence_type postfix_type array_type function_type type
 %type <valType> type_list parameter_type_list parameter_types
 %type <valType> result optional_result
+%type <valType> generic_argument generic_argument_list generic_arguments optional_generic_arguments
+
+%type <valBool> weak_modifier read_modifier
 
 %locations
 
@@ -173,11 +183,11 @@ bool_literal
     ;
 
 int_literal
-    : INT_LITERAL  { $$ = new bi::Literal<int64_t>($1, yytext, new bi::AliasType(new bi::Name("Integer")), make_loc(@$)); }
+    : INT_LITERAL  { $$ = new bi::Literal<int64_t>($1, yytext, new bi::BasicType(new bi::Name("Integer")), make_loc(@$)); }
     ;
 
 real_literal
-    : REAL_LITERAL  { $$ = new bi::Literal<double>($1, yytext, new bi::AliasType(new bi::Name("Real")), make_loc(@$)); }
+    : REAL_LITERAL  { $$ = new bi::Literal<double>($1, yytext, new bi::BasicType(new bi::Name("Real")), make_loc(@$)); }
     ;
 
 string_literal
@@ -204,7 +214,7 @@ sequence_expression
     ;
 
 cast_expression
-    : primary_type '?' '(' expression ')'  { $$ = new bi::Cast($1, $4, make_loc(@$)); }
+    : class_type '?' '(' expression ')'  { $$ = new bi::Cast($1, $4, make_loc(@$)); }
     ;
 
 function_expression
@@ -437,17 +447,36 @@ generics
 
 generic_list
     : generic
-    | generics ',' generic_list  { $$ = new bi::ExpressionList($1, $3, make_loc(@$)); }
+    | generic ',' generic_list  { $$ = new bi::ExpressionList($1, $3, make_loc(@$)); }
     ;
 
 generic
-    : name LE_OP primary_type  { $$ = new bi::Generic($1, $3, make_loc(@$)); }
+    : name LE_OP unknown_type  { $$ = new bi::Generic($1, $3, make_loc(@$)); }
     | name                     { $$ = new bi::Generic($1, new bi::AnyType(make_loc(@$)), make_loc(@$)); }
     ;
-    
+
 optional_generics
     : generics
     |           { $$ = empty_expr(@$); }
+    ;
+
+generic_arguments
+    : '<' '>'                        { $$ = empty_type(@$); }
+    | '<' generic_argument_list '>'  { $$ = $2; }
+    ;
+
+generic_argument_list
+    : generic_argument
+    | generic_argument ',' generic_argument_list  { $$ = new bi::TypeList($1, $3, make_loc(@$)); }
+    ;
+
+generic_argument
+    : type
+    ;
+    
+optional_generic_arguments
+    : generic_arguments
+    |                    { $$ = empty_type(@$); }
     ;
 
 
@@ -468,11 +497,11 @@ local_variable_declaration
     ;
 
 member_variable_declaration
-    : name ':' type ';'                             { push_raw(); $$ = new bi::MemberVariable($1, $3, empty_expr(@$), empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
-    | name ':' type arguments ';'                   { push_raw(); $$ = new bi::MemberVariable($1, $3, empty_expr(@$), $4, empty_expr(@$), make_doc_loc(@$)); }
-    | name ':' type value ';'                       { push_raw(); $$ = new bi::MemberVariable($1, $3, empty_expr(@$), empty_expr(@$), $4, make_doc_loc(@$)); }
-    | name ':' postfix_type brackets ';'            { push_raw(); $$ = new bi::MemberVariable($1, $3, $4, empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
-    | name ':' postfix_type brackets arguments ';'  { push_raw(); $$ = new bi::MemberVariable($1, $3, $4, $5, empty_expr(@$), make_doc_loc(@$)); }
+    : name ':' type ';'                             { push_raw(); $$ = new bi::MemberVariable(bi::NONE, $1, $3, empty_expr(@$), empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type arguments ';'                   { push_raw(); $$ = new bi::MemberVariable(bi::NONE, $1, $3, empty_expr(@$), $4, empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type value ';'                       { push_raw(); $$ = new bi::MemberVariable(bi::NONE, $1, $3, empty_expr(@$), empty_expr(@$), $4, make_doc_loc(@$)); }
+    | name ':' postfix_type brackets ';'            { push_raw(); $$ = new bi::MemberVariable(bi::NONE, $1, $3, $4, empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' postfix_type brackets arguments ';'  { push_raw(); $$ = new bi::MemberVariable(bi::NONE, $1, $3, $4, $5, empty_expr(@$), make_doc_loc(@$)); }
     ;
 
 function_declaration
@@ -488,11 +517,11 @@ program_declaration
     ;
 
 member_function_declaration
-    : FUNCTION name parameters optional_result { push_raw(); } optional_braces  { $$ = new bi::MemberFunction($2, $3, $4, $6, make_doc_loc(@$)); }
+    : FUNCTION read_modifier name parameters optional_result { push_raw(); } optional_braces  { $$ = new bi::MemberFunction($2 ? bi::IS_READ_ONLY : bi::NONE, $3, $4, $5, $7, make_doc_loc(@$)); }
     ;
 
 member_fiber_declaration
-    : optional_annotations FIBER name parameters optional_result { push_raw(); } optional_braces  { $$ = new bi::MemberFiber($1, $3, $4, $5, $7, make_doc_loc(@$)); }
+    : optional_annotations FIBER read_modifier name parameters optional_result { push_raw(); } optional_braces  { $$ = new bi::MemberFiber(bi::Annotation($1|($3 ? bi::IS_READ_ONLY : bi::NONE)), $4, $5, $6, $8, make_doc_loc(@$)); }
     ;
     
 binary_operator
@@ -540,17 +569,15 @@ conversion_operator_declaration
     ;
 
 class_declaration
-    : CLASS name optional_generics optional_member_parameters '<' primary_type optional_arguments { push_raw(); } optional_class_braces  { $$ = new bi::Class($2, $3, $4, $6, $7, $9, make_doc_loc(@$)); }
-    | CLASS name optional_generics optional_member_parameters { push_raw(); } optional_class_braces                                         { $$ = new bi::Class($2, $3, $4, empty_type(@$), empty_expr(@$), $6, make_doc_loc(@$)); }
-    ;
-
-alias_declaration
-    : TYPE name '=' type ';'  { push_raw(); $$ = new bi::Alias($2, $4, make_doc_loc(@$)); }
+    : CLASS name optional_generics optional_member_parameters '<' class_type optional_arguments { push_raw(); } optional_class_braces  { $$ = new bi::Class($2, $3, $4, $6, false, $7, $9, make_doc_loc(@$)); }
+    | CLASS name optional_generics optional_member_parameters { push_raw(); } optional_class_braces                                    { $$ = new bi::Class($2, $3, $4, empty_type(@$), false, empty_expr(@$), $6, make_doc_loc(@$)); }
+    | CLASS name optional_generics '=' class_type { push_raw(); } ';'                                                                  { $$ = new bi::Class($2, $3, empty_expr(@$), $5, true, empty_expr(@$), empty_stmt(@$), make_doc_loc(@$)); }
     ;
     
 basic_declaration
-    : TYPE name '<' type_identifier ';'  { push_raw(); $$ = new bi::Basic($2, $4, make_doc_loc(@$)); }
-    | TYPE name ';'                      { push_raw(); $$ = new bi::Basic($2, empty_type(@$), make_doc_loc(@$)); }
+    : TYPE name '<' basic_type ';'  { push_raw(); $$ = new bi::Basic($2, $4, false, make_doc_loc(@$)); }
+    | TYPE name '=' basic_type ';'  { push_raw(); $$ = new bi::Basic($2, $4, true, make_doc_loc(@$)); }
+    | TYPE name ';'                 { push_raw(); $$ = new bi::Basic($2, empty_type(@$), false, make_doc_loc(@$)); }
     ;
 
 cpp
@@ -572,7 +599,7 @@ expression_statement
 if
     : IF parens_expression braces ELSE braces  { $$ = new bi::If($2, $3, $5, make_loc(@$)); }
     | IF parens_expression braces ELSE if      { $$ = new bi::If($2, $3, $5, make_loc(@$)); }
-    | IF parens_expression braces              { $$ = new bi::If($2, $3, new bi::EmptyStatement(), make_loc(@$)); }
+    | IF parens_expression braces              { $$ = new bi::If($2, $3, empty_stmt(@$), make_loc(@$)); }
     ;
 
 for_index
@@ -625,7 +652,7 @@ statements
 
 optional_statements
     : statements
-    |             { $$ = new bi::EmptyStatement(); }
+    |             { $$ = empty_stmt(@$); }
     ;
 
 class_statement
@@ -644,7 +671,7 @@ class_statements
     
 optional_class_statements
     : class_statements
-    |                   { $$ = new bi::EmptyStatement(); }
+    |                   { $$ = empty_stmt(@$); }
     ;
     
 file_statement
@@ -655,7 +682,6 @@ file_statement
     | binary_operator_declaration
     | unary_operator_declaration
     | class_declaration
-    | alias_declaration
     | basic_declaration
     | cpp
     | hpp
@@ -668,7 +694,7 @@ file_statements
 
 optional_file_statements
     : file_statements
-    |                  { $$ = new bi::EmptyStatement(); }
+    |                  { $$ = empty_stmt(@$); }
     ;
     
 file
@@ -699,7 +725,7 @@ braces
 
 optional_braces
     : braces
-    | ';'     { $$ = new bi::EmptyStatement(); }
+    | ';'     { $$ = empty_stmt(@$); }
     ;
 
 class_braces
@@ -708,7 +734,7 @@ class_braces
 
 optional_class_braces
     : class_braces
-    | ';'           { $$ = new bi::EmptyStatement(); }
+    | ';'           { $$ = empty_stmt(@$); }
     ;
     
 double_braces
@@ -720,17 +746,26 @@ double_braces
  * Types                                                                   *
  ***************************************************************************/
 
-type_identifier
-    : name                    { $$ = new bi::TypeIdentifier($1, make_loc(@$)); }
+weak_modifier
+    : '&'  { $$ = true; }
+    |      { $$ = false; }
+    ;
+
+read_modifier
+    : '\''  { $$ = true; }
+    |      { $$ = false; }
+    ;
+
+basic_type
+    : name  { $$ = new bi::BasicType($1, make_loc(@$)); }
     ;
 
 class_type
-    : name '<' type_list '>'  { $$ = new bi::ClassType($1, $3, make_loc(@$)); }
+    : name optional_generic_arguments  { $$ = new bi::ClassType($1, $2, make_loc(@$)); }
     ;
 
-primary_type
-    : type_identifier
-    | class_type
+unknown_type
+    : weak_modifier name optional_generic_arguments read_modifier  { $$ = new bi::UnknownType($1, $2, $3, $4, make_loc(@$)); }
     ;
 
 tuple_type
@@ -742,7 +777,7 @@ sequence_type
     ;
 
 postfix_type
-    : primary_type
+    : unknown_type
     | tuple_type
     | sequence_type
     | postfix_type '!'  { $$ = new bi::FiberType($1, make_loc(@$)); }

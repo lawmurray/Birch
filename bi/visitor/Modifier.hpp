@@ -80,7 +80,6 @@ public:
   virtual Statement* modify(AssignmentOperator* o);
   virtual Statement* modify(ConversionOperator* o);
   virtual Statement* modify(Class* o);
-  virtual Statement* modify(Alias* o);
   virtual Statement* modify(Basic* o);
   virtual Statement* modify(ExpressionStatement* o);
   virtual Statement* modify(If* o);
@@ -95,9 +94,8 @@ public:
   virtual Type* modify(AnyType* o);
   virtual Type* modify(EmptyType* o);
   virtual Type* modify(TypeList* o);
-  virtual Type* modify(TypeIdentifier* o);
+  virtual Type* modify(UnknownType* o);
   virtual Type* modify(ClassType* o);
-  virtual Type* modify(AliasType* o);
   virtual Type* modify(BasicType* o);
   virtual Type* modify(GenericType* o);
   virtual Type* modify(ArrayType* o);
@@ -108,6 +106,7 @@ public:
   virtual Type* modify(OverloadedType* o);
   virtual Type* modify(FiberType* o);
   virtual Type* modify(OptionalType* o);
+  virtual Type* modify(PointerType* o);
   virtual Type* modify(NilType* o);
 };
 }

@@ -325,11 +325,6 @@ bi::Statement* bi::Modifier::modify(Class* o) {
   return o;
 }
 
-bi::Statement* bi::Modifier::modify(Alias* o) {
-  o->base = o->base->accept(this);
-  return o;
-}
-
 bi::Statement* bi::Modifier::modify(Basic* o) {
   o->base = o->base->accept(this);
   return o;
@@ -400,16 +395,13 @@ bi::Type* bi::Modifier::modify(TypeList* o) {
   return o;
 }
 
-bi::Type* bi::Modifier::modify(TypeIdentifier* o) {
+bi::Type* bi::Modifier::modify(UnknownType* o) {
+  o->typeArgs = o->typeArgs->accept(this);
   return o;
 }
 
 bi::Type* bi::Modifier::modify(ClassType* o) {
   o->typeArgs = o->typeArgs->accept(this);
-  return o;
-}
-
-bi::Type* bi::Modifier::modify(AliasType* o) {
   return o;
 }
 
@@ -458,6 +450,11 @@ bi::Type* bi::Modifier::modify(FiberType* o) {
 }
 
 bi::Type* bi::Modifier::modify(OptionalType* o) {
+  o->single = o->single->accept(this);
+  return o;
+}
+
+bi::Type* bi::Modifier::modify(PointerType* o) {
   o->single = o->single->accept(this);
   return o;
 }

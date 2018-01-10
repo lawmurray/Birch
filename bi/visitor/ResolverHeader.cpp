@@ -51,10 +51,6 @@ bi::Statement* bi::ResolverHeader::modify(Class* o) {
   return o;
 }
 
-bi::Statement* bi::ResolverHeader::modify(Alias* o) {
-  return o;
-}
-
 bi::Statement* bi::ResolverHeader::modify(GlobalVariable* o) {
   o->type = o->type->accept(this);
   if (!o->brackets->isEmpty()) {

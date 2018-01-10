@@ -20,10 +20,7 @@ namespace bi {
  * Possible states of a class during parsing.
  */
 enum ClassState {
-  CLONED = 0,
-  RESOLVED_SUPER = 1,
-  RESOLVED_HEADER = 2,
-  RESOLVED_SOURCE = 3
+  CLONED = 0, RESOLVED_SUPER = 1, RESOLVED_HEADER = 2, RESOLVED_SOURCE = 3
 };
 
 /**
@@ -47,12 +44,13 @@ public:
    * @param typeParams Generic type parameters.
    * @param params Constructor parameters.
    * @param base Base type.
+   * @param alias Is this an alias relationship?
    * @param args Base type constructor arguments.
    * @param braces Braces.
    * @param loc Location.
    */
   Class(Name* name, Expression* typeParams, Expression* params, Type* base,
-      Expression* args, Statement* braces, Location* loc =
+      const bool alias, Expression* args, Statement* braces, Location* loc =
           nullptr);
 
   /**

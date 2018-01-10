@@ -41,13 +41,13 @@ public:
   virtual void visit(const TypeList* o);
   virtual void visit(const ClassType* o);
   virtual void visit(const BasicType* o);
-  virtual void visit(const AliasType* o);
   virtual void visit(const ArrayType* o);
   virtual void visit(const TupleType* o);
   virtual void visit(const SequenceType* o);
   virtual void visit(const FunctionType* o);
   virtual void visit(const FiberType* o);
   virtual void visit(const OptionalType* o);
+  virtual void visit(const PointerType* o);
 
 private:
   void genHead(const std::string& name);

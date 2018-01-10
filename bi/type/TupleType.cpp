@@ -31,11 +31,6 @@ bool bi::TupleType::dispatchDefinitely(const Type& o) const {
   return o.definitely(*this);
 }
 
-bool bi::TupleType::definitely(const AliasType& o) const {
-  assert(o.target);
-  return definitely(*o.target->base);
-}
-
 bool bi::TupleType::definitely(const GenericType& o) const {
   assert(o.target);
   return definitely(*o.target->type);
@@ -55,11 +50,6 @@ bool bi::TupleType::definitely(const AnyType& o) const {
 
 bi::Type* bi::TupleType::dispatchCommon(const Type& o) const {
   return o.common(*this);
-}
-
-bi::Type* bi::TupleType::common(const AliasType& o) const {
-  assert(o.target);
-  return common(*o.target->base);
 }
 
 bi::Type* bi::TupleType::common(const GenericType& o) const {

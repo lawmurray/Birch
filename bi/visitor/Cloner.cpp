@@ -213,7 +213,7 @@ bi::Statement* bi::Cloner::clone(const GlobalVariable* o) {
 }
 
 bi::Statement* bi::Cloner::clone(const MemberVariable* o) {
-  return new MemberVariable(o->name, o->type->accept(this),
+  return new MemberVariable(o->annotation, o->name, o->type->accept(this),
       o->brackets->accept(this), o->args->accept(this),
       o->value->accept(this), o->loc);
 }
@@ -234,7 +234,7 @@ bi::Statement* bi::Cloner::clone(const Program* o) {
 }
 
 bi::Statement* bi::Cloner::clone(const MemberFunction* o) {
-  return new MemberFunction(o->name, o->params->accept(this),
+  return new MemberFunction(o->annotation, o->name, o->params->accept(this),
       o->returnType->accept(this), o->braces->accept(this), o->loc);
 }
 
@@ -265,16 +265,12 @@ bi::Statement* bi::Cloner::clone(const ConversionOperator* o) {
 
 bi::Statement* bi::Cloner::clone(const Class* o) {
   return new Class(o->name, o->typeParams->accept(this),
-      o->params->accept(this), o->base->accept(this), o->args->accept(this),
-      o->braces->accept(this), o->loc);
-}
-
-bi::Statement* bi::Cloner::clone(const Alias* o) {
-  return new Alias(o->name, o->base->accept(this), o->loc);
+      o->params->accept(this), o->base->accept(this), o->alias,
+      o->args->accept(this), o->braces->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const Basic* o) {
-  return new Basic(o->name, o->base->accept(this), o->loc);
+  return new Basic(o->name, o->base->accept(this), o->alias, o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const ExpressionStatement* o) {
@@ -327,16 +323,13 @@ bi::Type* bi::Cloner::clone(const TypeList* o) {
   return new TypeList(o->head->accept(this), o->tail->accept(this), o->loc);
 }
 
-bi::Type* bi::Cloner::clone(const TypeIdentifier* o) {
-  return new TypeIdentifier(o->name, o->loc);
+bi::Type* bi::Cloner::clone(const UnknownType* o) {
+  return new UnknownType(o->weak, o->name, o->typeArgs->accept(this), o->read,
+      o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const ClassType* o) {
   return new ClassType(o->name, o->typeArgs->accept(this), o->loc);
-}
-
-bi::Type* bi::Cloner::clone(const AliasType* o) {
-  return new AliasType(o->name, o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const BasicType* o) {
@@ -378,6 +371,10 @@ bi::Type* bi::Cloner::clone(const FiberType* o) {
 
 bi::Type* bi::Cloner::clone(const OptionalType* o) {
   return new OptionalType(o->single->accept(this), o->loc);
+}
+
+bi::Type* bi::Cloner::clone(const PointerType* o) {
+  return new PointerType(o->weak, o->single, o->read, o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const NilType* o) {

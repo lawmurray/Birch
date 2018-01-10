@@ -52,7 +52,7 @@ void bi::CppConstructorGenerator::visit(const MemberParameter* o) {
 }
 
 void bi::CppConstructorGenerator::visit(const MemberVariable* o) {
-  if (o->type->isClass()) {
+  if (o->type->isPointer()) {
     finish(',');
     start(o->name << '(');
     middle("bi::make_pointer<" << o->type << '>');

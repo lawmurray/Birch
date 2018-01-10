@@ -36,9 +36,8 @@ public:
   virtual Expression* modify(Sequence* o);
   virtual Expression* modify(Binary* o);
 
-  virtual Type* modify(TypeIdentifier* o);
+  virtual Type* modify(UnknownType* o);
   virtual Type* modify(ClassType* o);
-  virtual Type* modify(AliasType* o);
   virtual Type* modify(BasicType* o);
   virtual Type* modify(GenericType* o);
 
@@ -71,7 +70,7 @@ protected:
    *
    * @return A new, unambiguous, reference.
    */
-  Type* lookup(TypeIdentifier* ref);
+  Type* lookup(UnknownType* ref);
 
   /**
    * Check that an expression is of boolean type.

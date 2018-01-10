@@ -32,7 +32,6 @@ public:
   virtual Expression* modify(Generic* o);
   virtual Statement* modify(Basic* o);
   virtual Statement* modify(Class* o);
-  virtual Statement* modify(Alias* o);
   virtual Statement* modify(GlobalVariable* o);
   virtual Statement* modify(Function* o);
   virtual Statement* modify(Fiber* o);

@@ -33,7 +33,6 @@ public:
 
   virtual Statement* modify(Basic* o);
   virtual Statement* modify(Class* o);
-  virtual Statement* modify(Alias* o);
 
 protected:
   /**

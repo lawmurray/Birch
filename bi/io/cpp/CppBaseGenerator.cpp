@@ -309,7 +309,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
         start(param->type << ' ' << param->name);
         if (!param->value->isEmpty()) {
           middle(" = " << param->value);
-        } else if (param->type->isClass()) {
+        } else if (param->type->isPointer()) {
           middle(" = bi::make_pointer<" << param->type << ">()");
         }
         finish(';');
@@ -455,11 +455,17 @@ void bi::CppBaseGenerator::visit(const ConversionOperator* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Basic* o) {
-  // assumed to be built in to compiler library headers
+  if (header && o->alias) {
+    line("using " << o->name << " = " << o->base << ';');
+  }
 }
 
 void bi::CppBaseGenerator::visit(const Class* o) {
-  if (o->isGeneric()) {
+  if (o->alias) {
+    if (header) {
+      line("using " << o->name << " = " << o->base << ';');
+    }
+  } else if (o->isGeneric()) {
     if (header) {
       CppClassGenerator auxClass1(base, level, true);
       CppClassGenerator auxClass2(base, level, false);
@@ -469,12 +475,6 @@ void bi::CppBaseGenerator::visit(const Class* o) {
   } else {
     CppClassGenerator auxClass(base, level, header);
     auxClass << o;
-  }
-}
-
-void bi::CppBaseGenerator::visit(const Alias* o) {
-  if (header) {
-    line("using " << o->name << " = " << o->base << ';');
   }
 }
 
@@ -597,17 +597,24 @@ void bi::CppBaseGenerator::visit(const OptionalType* o) {
   middle("bi::Optional<" << o->single << '>');
 }
 
+void bi::CppBaseGenerator::visit(const PointerType* o) {
+  if (o->weak) {
+    middle("bi::WeakPointer<");
+  } else {
+    middle("bi::SharedPointer<");
+  }
+  if (o->read) {
+    middle("const ");
+  }
+  middle(o->single);
+  middle('>');
+}
+
 void bi::CppBaseGenerator::visit(const ClassType* o) {
-  middle("bi::SharedPointer<");
   middle("bi::type::" << o->name);
   if (!o->typeArgs->isEmpty()) {
     middle('<' << o->typeArgs << '>');
   }
-  middle('>');
-}
-
-void bi::CppBaseGenerator::visit(const AliasType* o) {
-  middle("bi::type::" << o->name);
 }
 
 void bi::CppBaseGenerator::visit(const BasicType* o) {
@@ -618,7 +625,7 @@ void bi::CppBaseGenerator::visit(const GenericType* o) {
   middle(o->name);
 }
 
-void bi::CppBaseGenerator::visit(const TypeIdentifier* o) {
+void bi::CppBaseGenerator::visit(const UnknownType* o) {
   middle(o->name);
 }
 

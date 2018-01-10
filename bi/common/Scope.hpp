@@ -24,7 +24,6 @@ class BinaryOperator;
 class UnaryOperator;
 class Basic;
 class Class;
-class Alias;
 class Generic;
 class Unknown;
 
@@ -33,9 +32,8 @@ template<class ObjectType> class OverloadedIdentifier;
 
 class BasicType;
 class ClassType;
-class AliasType;
 class GenericType;
-class TypeIdentifier;
+class UnknownType;
 
 /**
  * Categories of objects for identifier lookups.
@@ -68,7 +66,7 @@ public:
    * Look up the category for an unknown identifier.
    */
   LookupResult lookup(const Identifier<Unknown>* ref) const;
-  LookupResult lookup(const TypeIdentifier* ref) const;
+  LookupResult lookup(const UnknownType* ref) const;
 
   /**
    * Add declaration to scope.
@@ -89,7 +87,6 @@ public:
   void add(UnaryOperator* o);
   void add(Basic* o);
   void add(Class* o);
-  void add(Alias* o);
   void add(Generic* o);
 
   /**
@@ -113,7 +110,6 @@ public:
   void resolve(OverloadedIdentifier<UnaryOperator>* o);
   void resolve(BasicType* o);
   void resolve(ClassType* o);
-  void resolve(AliasType* o);
   void resolve(GenericType* o);
 
   /**
@@ -146,7 +142,6 @@ public:
   OverloadedDictionary<UnaryOperator> unaryOperators;
   Dictionary<Basic> basics;
   Dictionary<Class> classes;
-  Dictionary<Alias> aliases;
   Dictionary<Generic> generics;
 
 private:

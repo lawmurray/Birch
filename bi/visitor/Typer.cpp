@@ -20,8 +20,3 @@ bi::Statement* bi::Typer::modify(Class* o) {
   rootScope->add(o);
   return o;
 }
-
-bi::Statement* bi::Typer::modify(Alias* o) {
-  rootScope->add(o);
-  return o;
-}

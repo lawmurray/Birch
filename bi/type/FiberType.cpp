@@ -43,11 +43,6 @@ bool bi::FiberType::dispatchDefinitely(const Type& o) const {
   return o.definitely(*this);
 }
 
-bool bi::FiberType::definitely(const AliasType& o) const {
-  assert(o.target);
-  return definitely(*o.target->base);
-}
-
 bool bi::FiberType::definitely(const GenericType& o) const {
   assert(o.target);
   return definitely(*o.target->type);
@@ -67,11 +62,6 @@ bool bi::FiberType::definitely(const AnyType& o) const {
 
 bi::Type* bi::FiberType::dispatchCommon(const Type& o) const {
   return o.common(*this);
-}
-
-bi::Type* bi::FiberType::common(const AliasType& o) const {
-  assert(o.target);
-  return common(*o.target->base);
 }
 
 bi::Type* bi::FiberType::common(const GenericType& o) const {

@@ -17,8 +17,9 @@ public:
    * Constructor.
    *
    * @param base Base type.
+   * @param alias Is this an alias relationship?
    */
-  Based(Type* base);
+  Based(Type* base, const bool alias);
 
   /**
    * Destructor.
@@ -29,5 +30,10 @@ public:
    * Base type.
    */
   Type* base;
+
+  /**
+   * Is this an alias relationship?
+   */
+  bool alias;
 };
 }

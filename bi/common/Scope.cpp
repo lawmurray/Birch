@@ -22,7 +22,6 @@
 #include "bi/statement/Assignment.hpp"
 #include "bi/statement/Basic.hpp"
 #include "bi/statement/Class.hpp"
-#include "bi/statement/Alias.hpp"
 #include "bi/exception/all.hpp"
 #include "bi/visitor/Cloner.hpp"
 
@@ -51,14 +50,12 @@ bi::LookupResult bi::Scope::lookup(const Identifier<Unknown>* ref) const {
   }
 }
 
-bi::LookupResult bi::Scope::lookup(const TypeIdentifier* ref) const {
+bi::LookupResult bi::Scope::lookup(const UnknownType* ref) const {
   auto name = ref->name->str();
   if (basics.contains(name)) {
     return BASIC;
   } else if (classes.contains(name)) {
     return CLASS;
-  } else if (aliases.contains(name)) {
-    return ALIAS;
   } else if (generics.contains(name)) {
     return GENERIC;
   } else {
@@ -153,11 +150,6 @@ void bi::Scope::add(Class* param) {
   classes.add(param);
 }
 
-void bi::Scope::add(Alias* param) {
-  checkPreviousType(param);
-  aliases.add(param);
-}
-
 void bi::Scope::add(Generic* param) {
   checkPreviousType(param);
   generics.add(param);
@@ -227,10 +219,6 @@ void bi::Scope::resolve(ClassType* ref) {
   classes.resolve(ref);
 }
 
-void bi::Scope::resolve(AliasType* ref) {
-  aliases.resolve(ref);
-}
-
 void bi::Scope::resolve(GenericType* ref) {
   generics.resolve(ref);
   if (!ref->target) {
@@ -279,8 +267,6 @@ void bi::Scope::checkPreviousType(ParameterType* param) {
     throw PreviousDeclarationException(param, basics.get(name));
   } else if (classes.contains(name)) {
     throw PreviousDeclarationException(param, classes.get(name));
-  } else if (aliases.contains(name)) {
-    throw PreviousDeclarationException(param, aliases.get(name));
   } else if (generics.contains(name)) {
     throw PreviousDeclarationException(param, generics.get(name));
   }

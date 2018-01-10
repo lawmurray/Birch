@@ -285,10 +285,6 @@ void bi::Visitor::visit(const Class* o) {
   o->braces->accept(this);
 }
 
-void bi::Visitor::visit(const Alias* o) {
-  o->base->accept(this);
-}
-
 void bi::Visitor::visit(const Basic* o) {
   o->base->accept(this);
 }
@@ -353,16 +349,12 @@ void bi::Visitor::visit(const TypeList* o) {
   o->tail->accept(this);
 }
 
-void bi::Visitor::visit(const TypeIdentifier* o) {
-  //
+void bi::Visitor::visit(const UnknownType* o) {
+  o->typeArgs->accept(this);
 }
 
 void bi::Visitor::visit(const ClassType* o) {
   o->typeArgs->accept(this);
-}
-
-void bi::Visitor::visit(const AliasType* o) {
-  //
 }
 
 void bi::Visitor::visit(const BasicType* o) {
@@ -404,6 +396,10 @@ void bi::Visitor::visit(const FiberType* o) {
 }
 
 void bi::Visitor::visit(const OptionalType* o) {
+  o->single->accept(this);
+}
+
+void bi::Visitor::visit(const PointerType* o) {
   o->single->accept(this);
 }
 

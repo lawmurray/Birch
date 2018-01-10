@@ -44,6 +44,11 @@ bool bi::GenericType::isClass() const {
   return target->type->isClass();
 }
 
+bool bi::GenericType::isPointer() const {
+  assert(target);
+  return target->type->isPointer();
+}
+
 bool bi::GenericType::isArray() const {
   assert(target);
   return target->type->isArray();
@@ -96,11 +101,6 @@ void bi::GenericType::resolveConstructor(Argumented* o) {
 
 bool bi::GenericType::dispatchDefinitely(const Type& o) const {
   return o.definitely(*this);
-}
-
-bool bi::GenericType::definitely(const AliasType& o) const {
-  assert(target);
-  return target->type->definitely(o);
 }
 
 bool bi::GenericType::definitely(const ArrayType& o) const {
@@ -165,11 +165,6 @@ bool bi::GenericType::definitely(const TypeList& o) const {
 
 bi::Type* bi::GenericType::dispatchCommon(const Type& o) const {
   return o.common(*this);
-}
-
-bi::Type* bi::GenericType::common(const AliasType& o) const {
-  assert(target);
-  return target->type->common(o);
 }
 
 bi::Type* bi::GenericType::common(const ArrayType& o) const {

@@ -42,13 +42,26 @@ bi::Basic* bi::BasicType::getBasic() const {
   return target;
 }
 
-bool bi::BasicType::dispatchDefinitely(const Type& o) const {
-  return o.definitely(*this);
+bi::Type* bi::BasicType::canonical() {
+  assert(target);
+  if (target->alias) {
+    return target->base->canonical();
+  } else {
+    return this;
+  }
 }
 
-bool bi::BasicType::definitely(const AliasType& o) const {
-  assert(o.target);
-  return definitely(*o.target->base);
+const bi::Type* bi::BasicType::canonical() const {
+  assert(target);
+  if (target->alias) {
+    return target->base->canonical();
+  } else {
+    return this;
+  }
+}
+
+bool bi::BasicType::dispatchDefinitely(const Type& o) const {
+  return o.definitely(*this);
 }
 
 bool bi::BasicType::definitely(const GenericType& o) const {
@@ -72,11 +85,6 @@ bool bi::BasicType::definitely(const AnyType& o) const {
 
 bi::Type* bi::BasicType::dispatchCommon(const Type& o) const {
   return o.common(*this);
-}
-
-bi::Type* bi::BasicType::common(const AliasType& o) const {
-  assert(o.target);
-  return common(*o.target->base);
 }
 
 bi::Type* bi::BasicType::common(const GenericType& o) const {

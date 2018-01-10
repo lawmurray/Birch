@@ -80,7 +80,6 @@ public:
   virtual Statement* clone(const AssignmentOperator* o);
   virtual Statement* clone(const ConversionOperator* o);
   virtual Statement* clone(const Class* o);
-  virtual Statement* clone(const Alias* o);
   virtual Statement* clone(const Basic* o);
   virtual Statement* clone(const ExpressionStatement* o);
   virtual Statement* clone(const If* o);
@@ -95,9 +94,8 @@ public:
   virtual Type* clone(const AnyType* o);
   virtual Type* clone(const EmptyType* o);
   virtual Type* clone(const TypeList* o);
-  virtual Type* clone(const TypeIdentifier* o);
+  virtual Type* clone(const UnknownType* o);
   virtual Type* clone(const ClassType* o);
-  virtual Type* clone(const AliasType* o);
   virtual Type* clone(const BasicType* o);
   virtual Type* clone(const GenericType* o);
   virtual Type* clone(const ArrayType* o);
@@ -108,6 +106,7 @@ public:
   virtual Type* clone(const OverloadedType* o);
   virtual Type* clone(const FiberType* o);
   virtual Type* clone(const OptionalType* o);
+  virtual Type* clone(const PointerType* o);
   virtual Type* clone(const NilType* o);
 };
 }

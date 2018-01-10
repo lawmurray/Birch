@@ -6,11 +6,12 @@
 #include "bi/visitor/all.hpp"
 
 bi::Class::Class(Name* name, Expression* typeParams, Expression* params,
-    Type* base, Expression* args, Statement* braces, Location* loc) :
+    Type* base, const bool alias, Expression* args, Statement* braces,
+    Location* loc) :
     Statement(loc),
     Named(name),
     Parameterised(params),
-    Based(base),
+    Based(base, alias),
     Argumented(args),
     Braced(braces),
     typeParams(typeParams),

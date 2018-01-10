@@ -36,8 +36,8 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
   }
 
   /* gather important objects */
+  Gatherer<Basic> basics;
   Gatherer<Class> classes;
-  Gatherer<Alias> aliases;
   Gatherer<GlobalVariable> globals;
   Gatherer<Function> functions;
   Gatherer<Fiber> fibers;
@@ -45,8 +45,8 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
   Gatherer<BinaryOperator> binaries;
   Gatherer<UnaryOperator> unaries;
   for (auto source : o->sources) {
+    source->accept(&basics);
     source->accept(&classes);
-    source->accept(&aliases);
     source->accept(&globals);
     source->accept(&functions);
     source->accept(&fibers);
@@ -72,8 +72,8 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
   }
   line("");
 
-  /* typedef declarations */
-  for (auto o : aliases) {
+  /* type declarations */
+  for (auto o : basics) {
     line("using " << o->name << " = " << o->base << ';');
   }
   line("}\n");
@@ -93,12 +93,7 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
       in();
       start("typedef ");
       if (!o->base->isEmpty()) {
-        auto super = dynamic_cast<const ClassType*>(o->base);
-        assert(super);
-        middle("type::" << super->name);
-        if (!super->typeArgs->isEmpty()) {
-          middle('<' << super->typeArgs << '>');
-        }
+        middle(o->base);
       } else {
         middle("type::Object_");
       }

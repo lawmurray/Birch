@@ -80,7 +80,6 @@ public:
   virtual void visit(const AssignmentOperator* o);
   virtual void visit(const ConversionOperator* o);
   virtual void visit(const Class* o);
-  virtual void visit(const Alias* o);
   virtual void visit(const Basic* o);
   virtual void visit(const Generic* o);
   virtual void visit(const ExpressionStatement* o);
@@ -96,9 +95,8 @@ public:
   virtual void visit(const AnyType* o);
   virtual void visit(const EmptyType* o);
   virtual void visit(const TypeList* o);
-  virtual void visit(const TypeIdentifier* o);
+  virtual void visit(const UnknownType* o);
   virtual void visit(const ClassType* o);
-  virtual void visit(const AliasType* o);
   virtual void visit(const BasicType* o);
   virtual void visit(const GenericType* o);
   virtual void visit(const ArrayType* o);
@@ -109,6 +107,7 @@ public:
   virtual void visit(const OverloadedType* o);
   virtual void visit(const FiberType* o);
   virtual void visit(const OptionalType* o);
+  virtual void visit(const PointerType* o);
   virtual void visit(const NilType* o);
 };
 }

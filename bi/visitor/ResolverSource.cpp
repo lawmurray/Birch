@@ -17,9 +17,9 @@ bi::ResolverSource::~ResolverSource() {
 
 bi::Expression* bi::ResolverSource::modify(Cast* o) {
   Modifier::modify(o);
-  if (o->single->type->isClass()
+  if (o->single->type->isPointer()
       || (o->single->type->isOptional()
-          && o->single->type->unwrap()->isClass())) {
+          && o->single->type->unwrap()->isPointer())) {
     o->type = new OptionalType(o->returnType, o->loc);
     return o;
   } else {
@@ -128,8 +128,8 @@ bi::Expression* bi::ResolverSource::modify(Range* o) {
 
 bi::Expression* bi::ResolverSource::modify(Member* o) {
   o->left = o->left->accept(this);
-  if (o->left->type->isClass()) {
-    memberScopes.push_back(o->left->type->getClass()->scope);
+  if (o->left->type->unwrap()->isClass()) {
+    memberScopes.push_back(o->left->type->unwrap()->getClass()->scope);
   } else {
     throw MemberException(o);
   }
@@ -254,14 +254,16 @@ bi::Statement* bi::ResolverSource::modify(Assignment* o) {
     /* replace with equivalent (by definition) code */
     auto left = o->left;
     auto right = new Call(
-        new Member(o->right, new Identifier<Unknown>(new Name("simulate"),
-        o->loc), o->loc), new EmptyExpression(o->loc), o->loc);
+        new Member(o->right,
+            new Identifier<Unknown>(new Name("simulate"), o->loc), o->loc),
+        new EmptyExpression(o->loc), o->loc);
     auto assign = new Assignment(left, new Name("<-"), right, o->loc);
     return assign->accept(this);
   } else if (*o->name == "~>") {
     /* replace with equivalent (by definition) code */
-    auto observe = new Call(new Member(o->right,
-        new Identifier<Unknown>(new Name("observe"), o->loc), o->loc),
+    auto observe = new Call(
+        new Member(o->right,
+            new Identifier<Unknown>(new Name("observe"), o->loc), o->loc),
         o->left, o->loc);
     if (!yieldTypes.empty()) {
       auto yield = new Yield(observe, o->loc);
@@ -274,13 +276,15 @@ bi::Statement* bi::ResolverSource::modify(Assignment* o) {
     /* replace with equivalent (by definition) code */
     ///@todo Can left be evaluated only once?
     auto cond = new Parentheses(
-        new Call(new Member(o->left->accept(&cloner),
-        new Identifier<Unknown>(new Name("isMissing"), o->loc)),
-        new Parentheses(new EmptyExpression(o->loc), o->loc), o->loc), o->loc);
-    auto trueBranch = new Assignment(o->left->accept(&cloner),
-        new Name("<-"), o->right->accept(&cloner), o->loc);
-    auto falseBranch = new Assignment(o->left->accept(&cloner), new Name("~>"),
+        new Call(
+            new Member(o->left->accept(&cloner),
+                new Identifier<Unknown>(new Name("isMissing"), o->loc)),
+            new Parentheses(new EmptyExpression(o->loc), o->loc), o->loc),
+        o->loc);
+    auto trueBranch = new Assignment(o->left->accept(&cloner), new Name("<-"),
         o->right->accept(&cloner), o->loc);
+    auto falseBranch = new Assignment(o->left->accept(&cloner),
+        new Name("~>"), o->right->accept(&cloner), o->loc);
     auto result = new If(cond, trueBranch, falseBranch, o->loc);
     return result->accept(this);
   } else {
@@ -290,8 +294,9 @@ bi::Statement* bi::ResolverSource::modify(Assignment* o) {
       throw NotAssignableException(o);
     }
     if (!o->right->type->definitely(*o->left->type)
-        && (!o->left->type->isClass()
-            || !o->left->type->getClass()->hasAssignment(o->right->type))) {
+        && (!o->left->type->unwrap()->isClass()
+            || !o->left->type->unwrap()->getClass()->hasAssignment(
+                o->right->type))) {
       throw AssignmentException(o);
     }
   }
@@ -429,10 +434,6 @@ bi::Statement* bi::ResolverSource::modify(Class* o) {
 }
 
 bi::Statement* bi::ResolverSource::modify(Basic* o) {
-  return o;
-}
-
-bi::Statement* bi::ResolverSource::modify(Alias* o) {
   return o;
 }
 

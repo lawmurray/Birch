@@ -5,9 +5,10 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::MemberFunction::MemberFunction(Name* name, Expression* params,
-    Type* returnType, Statement* braces, Location* loc) :
+bi::MemberFunction::MemberFunction(const Annotation annotation, Name* name,
+    Expression* params, Type* returnType, Statement* braces, Location* loc) :
     Statement(loc),
+    Annotated(annotation),
     Named(name),
     Parameterised(params),
     ReturnTyped(returnType),

@@ -47,21 +47,20 @@ bool bi::Type::isFiber() const {
   return false;
 }
 
+bool bi::Type::isBinary() const {
+  return false;
+}
+
 bool bi::Type::isOptional() const {
   return false;
 }
 
-bool bi::Type::isBinary() const {
+bool bi::Type::isPointer() const {
   return false;
 }
 
 bool bi::Type::isOverloaded() const {
   return false;
-}
-
-bool bi::Type::isValue() const {
-  IsValue visitor;
-  return visitor.apply(this);
 }
 
 bi::Type* bi::Type::getLeft() const {
@@ -162,10 +161,6 @@ bool bi::Type::definitely(const Type& o) const {
   return o.dispatchDefinitely(*this);
 }
 
-bool bi::Type::definitely(const AliasType& o) const {
-  return false;
-}
-
 bool bi::Type::definitely(const ArrayType& o) const {
   return false;
 }
@@ -214,6 +209,10 @@ bool bi::Type::definitely(const OverloadedType& o) const {
   return false;
 }
 
+bool bi::Type::definitely(const PointerType& o) const {
+  return false;
+}
+
 bool bi::Type::definitely(const SequenceType& o) const {
   return false;
 }
@@ -222,7 +221,7 @@ bool bi::Type::definitely(const TupleType& o) const {
   return false;
 }
 
-bool bi::Type::definitely(const TypeIdentifier& o) const {
+bool bi::Type::definitely(const UnknownType& o) const {
   return false;
 }
 
@@ -232,10 +231,6 @@ bool bi::Type::definitely(const TypeList& o) const {
 
 bi::Type* bi::Type::common(const Type& o) const {
   return o.dispatchCommon(*this);
-}
-
-bi::Type* bi::Type::common(const AliasType& o) const {
-  return nullptr;
 }
 
 bi::Type* bi::Type::common(const ArrayType& o) const {
@@ -286,6 +281,10 @@ bi::Type* bi::Type::common(const OverloadedType& o) const {
   return nullptr;
 }
 
+bi::Type* bi::Type::common(const PointerType& o) const {
+  return nullptr;
+}
+
 bi::Type* bi::Type::common(const SequenceType& o) const {
   return nullptr;
 }
@@ -294,7 +293,7 @@ bi::Type* bi::Type::common(const TupleType& o) const {
   return nullptr;
 }
 
-bi::Type* bi::Type::common(const TypeIdentifier& o) const {
+bi::Type* bi::Type::common(const UnknownType& o) const {
   return nullptr;
 }
 

@@ -52,7 +52,7 @@ bi::Expression* bi::Resolver::modify(Binary* o) {
   return o;
 }
 
-bi::Type* bi::Resolver::modify(TypeIdentifier* o) {
+bi::Type* bi::Resolver::modify(UnknownType* o) {
   return lookup(o)->accept(this);
 }
 
@@ -76,13 +76,6 @@ bi::Type* bi::Resolver::modify(ClassType* o) {
       throw GenericException(o, o->target);
     }
   }
-  return o;
-}
-
-bi::Type* bi::Resolver::modify(AliasType* o) {
-  assert(!o->target);
-  Modifier::modify(o);
-  resolve(o);
   return o;
 }
 
@@ -138,7 +131,7 @@ bi::Expression* bi::Resolver::lookup(Identifier<Unknown>* ref) {
   }
 }
 
-bi::Type* bi::Resolver::lookup(TypeIdentifier* ref) {
+bi::Type* bi::Resolver::lookup(UnknownType* ref) {
   LookupResult category = UNRESOLVED;
   if (!memberScopes.empty()) {
     /* use membership scope */
@@ -152,18 +145,24 @@ bi::Type* bi::Resolver::lookup(TypeIdentifier* ref) {
   }
 
   /* replace the reference of unknown object type with that of a known one */
+  Type* result;
   switch (category) {
   case BASIC:
-    return new BasicType(ref->name, ref->loc);
+    result = new BasicType(ref->name, ref->loc);
+    break;
   case CLASS:
-    return new ClassType(ref->name, ref->loc);
-  case ALIAS:
-    return new AliasType(ref->name, ref->loc);
+    result = new ClassType(ref->name, ref->typeArgs, ref->loc);
+    break;
   case GENERIC:
-    return new GenericType(ref->name, ref->loc);
+    result = new GenericType(ref->name, ref->loc);
+    break;
   default:
     throw UnresolvedException(ref);
   }
+  if (result->isClass()) {
+    result = new PointerType(ref->weak, result, ref->read, ref->loc);
+  }
+  return result;
 }
 
 void bi::Resolver::checkBoolean(const Expression* o) {

@@ -14,14 +14,6 @@ bi::ClassType::ClassType(Name* name, Type* typeArgs, Location* loc,
   //
 }
 
-bi::ClassType::ClassType(Name* name, Location* loc, Class* target) :
-    Type(loc),
-    Named(name),
-    Reference<Class>(target),
-    typeArgs(new EmptyType(loc)) {
-  //
-}
-
 bi::ClassType::ClassType(Class* target, Location* loc) :
     Type(loc),
     Named(target->name),
@@ -54,6 +46,24 @@ bi::Class* bi::ClassType::getClass() const {
   return target;
 }
 
+bi::Type* bi::ClassType::canonical() {
+  assert(target);
+  if (target->alias) {
+    return target->base->canonical();
+  } else {
+    return this;
+  }
+}
+
+const bi::Type* bi::ClassType::canonical() const {
+  assert(target);
+  if (target->alias) {
+    return target->base->canonical();
+  } else {
+    return this;
+  }
+}
+
 void bi::ClassType::resolveConstructor(Argumented* o) {
   assert(target);
   bi::definitely compare;
@@ -64,11 +74,6 @@ void bi::ClassType::resolveConstructor(Argumented* o) {
 
 bool bi::ClassType::dispatchDefinitely(const Type& o) const {
   return o.definitely(*this);
-}
-
-bool bi::ClassType::definitely(const AliasType& o) const {
-  assert(o.target);
-  return definitely(*o.target->base);
 }
 
 bool bi::ClassType::definitely(const GenericType& o) const {
@@ -89,9 +94,9 @@ bool bi::ClassType::definitely(const BasicType& o) const {
 bool bi::ClassType::definitely(const ClassType& o) const {
   assert(target);
   assert(o.target);
-  return target == o.target || target->hasConversion(&o)
+  return (target == o.target || target->hasConversion(&o)
       || o.target->name->str() == "Object" || target->hasSuper(&o)
-      || target->base->definitely(o);
+      || target->base->definitely(o));
 }
 
 bool bi::ClassType::definitely(const FiberType& o) const {
@@ -120,11 +125,6 @@ bool bi::ClassType::definitely(const AnyType& o) const {
 
 bi::Type* bi::ClassType::dispatchCommon(const Type& o) const {
   return o.common(*this);
-}
-
-bi::Type* bi::ClassType::common(const AliasType& o) const {
-  assert(o.target);
-  return common(*o.target->base);
 }
 
 bi::Type* bi::ClassType::common(const GenericType& o) const {

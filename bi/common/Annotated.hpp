@@ -8,7 +8,7 @@ namespace bi {
  * Annotations for declarations.
  */
 enum Annotation {
-  NONE = 0, IS_CLOSED = 1
+  NONE = 0, IS_CLOSED = 1, IS_READ_ONLY = 2
 };
 
 /**
@@ -34,6 +34,11 @@ public:
    * Is this closed?
    */
   bool isClosed() const;
+
+  /**
+   * Is this read only?
+   */
+  bool isReadOnly() const;
 
   /**
    * Annotation.

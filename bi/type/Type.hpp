@@ -14,7 +14,6 @@ class Visitor;
 
 class Argumented;
 
-class AliasType;
 class AnyType;
 class ArrayType;
 class BasicType;
@@ -27,14 +26,14 @@ class GenericType;
 class NilType;
 class OptionalType;
 class OverloadedType;
+class PointerType;
 class SequenceType;
 class TupleType;
 class TypeConstIterator;
-class TypeIdentifier;
+class UnknownType;
 class TypeList;
 
 class Class;
-class Alias;
 class Basic;
 
 /**
@@ -92,7 +91,7 @@ public:
   virtual bool isBasic() const;
 
   /**
-   * Is this a class type, or an alias of a class type?
+   * Is this a class type?
    */
   virtual bool isClass() const;
 
@@ -122,6 +121,11 @@ public:
   virtual bool isOptional() const;
 
   /**
+   * Is this a pointer type?
+   */
+  virtual bool isPointer() const;
+
+  /**
    * Is this a binary operator type?
    */
   virtual bool isBinary() const;
@@ -130,12 +134,6 @@ public:
    * Is this an overloaded type?
    */
   virtual bool isOverloaded() const;
-
-  /**
-   * Is this a value type? A type expression specifies a value type if it
-   * contains no class types.
-   */
-  bool isValue() const;
 
   /**
    * Get the left operand of a binary, otherwise undefined.
@@ -169,8 +167,8 @@ public:
   virtual int depth() const;
 
   /**
-   * For an optional or fiber type, the type that is wrapped, otherwise
-   * this.
+   * For an optional, fiber or pointer type, the type that is wrapped,
+   * otherwise this.
    */
   virtual Type* unwrap();
   virtual const Type* unwrap() const;
@@ -229,7 +227,6 @@ public:
    */
   virtual bool definitely(const Type& o) const;
   virtual bool dispatchDefinitely(const Type& o) const = 0;
-  virtual bool definitely(const AliasType& o) const;
   virtual bool definitely(const ArrayType& o) const;
   virtual bool definitely(const BasicType& o) const;
   virtual bool definitely(const BinaryType& o) const;
@@ -242,9 +239,10 @@ public:
   virtual bool definitely(const NilType& o) const;
   virtual bool definitely(const OptionalType& o) const;
   virtual bool definitely(const OverloadedType& o) const;
+  virtual bool definitely(const PointerType& o) const;
   virtual bool definitely(const SequenceType& o) const;
   virtual bool definitely(const TupleType& o) const;
-  virtual bool definitely(const TypeIdentifier& o) const;
+  virtual bool definitely(const UnknownType& o) const;
   virtual bool definitely(const TypeList& o) const;
 
   /*
@@ -252,7 +250,6 @@ public:
    */
   virtual Type* common(const Type& o) const;
   virtual Type* dispatchCommon(const Type& o) const = 0;
-  virtual Type* common(const AliasType& o) const;
   virtual Type* common(const ArrayType& o) const;
   virtual Type* common(const BasicType& o) const;
   virtual Type* common(const BinaryType& o) const;
@@ -265,9 +262,10 @@ public:
   virtual Type* common(const NilType& o) const;
   virtual Type* common(const OptionalType& o) const;
   virtual Type* common(const OverloadedType& o) const;
+  virtual Type* common(const PointerType& o) const;
   virtual Type* common(const SequenceType& o) const;
   virtual Type* common(const TupleType& o) const;
-  virtual Type* common(const TypeIdentifier& o) const;
+  virtual Type* common(const UnknownType& o) const;
   virtual Type* common(const TypeList& o) const;
 };
 }

@@ -43,11 +43,6 @@ bool bi::SequenceType::dispatchDefinitely(const Type& o) const {
   return o.definitely(*this);
 }
 
-bool bi::SequenceType::definitely(const AliasType& o) const {
-  assert(o.target);
-  return definitely(*o.target->base);
-}
-
 bool bi::SequenceType::definitely(const ArrayType& o) const {
   return single->element()->definitely(*o.single->element())
       && depth() == o.depth();
@@ -72,11 +67,6 @@ bool bi::SequenceType::definitely(const AnyType& o) const {
 
 bi::Type* bi::SequenceType::dispatchCommon(const Type& o) const {
   return o.common(*this);
-}
-
-bi::Type* bi::SequenceType::common(const AliasType& o) const {
-  assert(o.target);
-  return common(*o.target->base);
 }
 
 bi::Type* bi::SequenceType::common(const ArrayType& o) const {

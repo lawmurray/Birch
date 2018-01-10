@@ -39,6 +39,7 @@ public:
 
   virtual bool isBasic() const;
   virtual bool isClass() const;
+  virtual bool isPointer() const;
   virtual bool isArray() const;
   virtual bool isFunction() const;
   virtual bool isFiber() const;
@@ -62,7 +63,6 @@ public:
   using Type::common;
 
   virtual bool dispatchDefinitely(const Type& o) const;
-  virtual bool definitely(const AliasType& o) const;
   virtual bool definitely(const ArrayType& o) const;
   virtual bool definitely(const BasicType& o) const;
   virtual bool definitely(const ClassType& o) const;
@@ -77,7 +77,6 @@ public:
   virtual bool definitely(const TypeList& o) const;
 
   virtual Type* dispatchCommon(const Type& o) const;
-  virtual Type* common(const AliasType& o) const;
   virtual Type* common(const ArrayType& o) const;
   virtual Type* common(const BasicType& o) const;
   virtual Type* common(const ClassType& o) const;

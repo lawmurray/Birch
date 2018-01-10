@@ -71,7 +71,6 @@ public:
   virtual void visit(const ConversionOperator* o);
   virtual void visit(const Basic* o);
   virtual void visit(const Class* o);
-  virtual void visit(const Alias* o);
   virtual void visit(const Generic* o);
   virtual void visit(const Assignment* o);
   virtual void visit(const ExpressionStatement* o);
@@ -92,11 +91,11 @@ public:
   virtual void visit(const FunctionType* o);
   virtual void visit(const FiberType* o);
   virtual void visit(const OptionalType* o);
+  virtual void visit(const PointerType* o);
   virtual void visit(const ClassType* o);
   virtual void visit(const BasicType* o);
-  virtual void visit(const AliasType* o);
   virtual void visit(const GenericType* o);
-  virtual void visit(const TypeIdentifier* o);
+  virtual void visit(const UnknownType* o);
   virtual void visit(const TypeList* o);
 
 protected:
@@ -149,7 +148,7 @@ void bi::CppBaseGenerator::genInit(const T* o) {
       }
       middle(')');
     }
-  } else if (o->type->isClass()) {
+  } else if (o->type->isPointer()) {
     if (!o->value->isEmpty()) {
       middle(" = " << o->value);
     } else {

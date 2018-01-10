@@ -3,7 +3,6 @@
  */
 #pragma once
 
-#include "bi/statement/Alias.hpp"
 #include "bi/statement/Assert.hpp"
 #include "bi/statement/AssignmentOperator.hpp"
 #include "bi/statement/Assignment.hpp"

@@ -287,7 +287,11 @@ void bi::bi_ostream::visit(const Program* o) {
 }
 
 void bi::bi_ostream::visit(const MemberFunction* o) {
-  start("function " << o->name << '(' << o->params << ')');
+  start("function");
+  if (o->isReadOnly()) {
+    middle('\'');
+  }
+  middle(' ' << o->name << '(' << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
@@ -299,7 +303,11 @@ void bi::bi_ostream::visit(const MemberFunction* o) {
 }
 
 void bi::bi_ostream::visit(const MemberFiber* o) {
-  start("fiber " << o->name << '(' << o->params << ')');
+  start("fiber");
+  if (o->isReadOnly()) {
+    middle('\'');
+  }
+  middle(' ' << o->name << '(' << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
@@ -365,7 +373,12 @@ void bi::bi_ostream::visit(const Class* o) {
     middle('(' << o->params << ')');
   }
   if (!o->base->isEmpty()) {
-    middle(" < " << o->base);
+    if (o->alias) {
+      middle(" = ");
+    } else {
+      middle(" < ");
+    }
+    middle(o->base);
     if (!o->args->isEmpty()) {
       middle('(' << o->args << ')');
     }
@@ -377,14 +390,15 @@ void bi::bi_ostream::visit(const Class* o) {
   }
 }
 
-void bi::bi_ostream::visit(const Alias* o) {
-  line("type " << o->name << " = " << o->base << ';');
-}
-
 void bi::bi_ostream::visit(const Basic* o) {
   start("type " << o->name);
   if (!o->base->isEmpty()) {
-    middle(" < " << o->base);
+    if (o->alias) {
+      middle(" = ");
+    } else {
+      middle(" < ");
+    }
+    middle(o->base);
   }
   finish(';');
 }
@@ -445,10 +459,6 @@ void bi::bi_ostream::visit(const ClassType* o) {
   }
 }
 
-void bi::bi_ostream::visit(const AliasType* o) {
-  middle(o->name);
-}
-
 void bi::bi_ostream::visit(const BasicType* o) {
   middle(o->name);
 }
@@ -496,8 +506,27 @@ void bi::bi_ostream::visit(const OptionalType* o) {
   middle(o->single << '?');
 }
 
-void bi::bi_ostream::visit(const TypeIdentifier* o) {
+void bi::bi_ostream::visit(const PointerType* o) {
+  if (o->weak) {
+    middle('&');
+  }
+  middle(o->single);
+  if (o->read) {
+    middle('\'');
+  }
+}
+
+void bi::bi_ostream::visit(const UnknownType* o) {
+  if (o->weak) {
+    middle('&');
+  }
   middle(o->name);
+  if (!o->typeArgs->isEmpty()) {
+    middle('<' << o->typeArgs << '>');
+  }
+  if (o->read) {
+    middle('\'');
+  }
 }
 
 void bi::bi_ostream::visit(const TypeList* o) {

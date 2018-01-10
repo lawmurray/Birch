@@ -27,12 +27,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
       genTemplateParams(o);
       start("class " << o->name << " : public ");
       if (!o->base->isEmpty()) {
-        auto type = dynamic_cast<const ClassType*>(o->base);
-        assert(type);
-        middle(type->name);
-        if (!type->typeArgs->isEmpty()) {
-          middle('<' << type->typeArgs << '>');
-        }
+        middle(o->base);
       } else {
         middle("Object_");
       }
@@ -45,13 +40,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
       if (o->base->isEmpty()) {
         line("typedef Object_ super_type;");
       } else {
-        auto type = dynamic_cast<const ClassType*>(o->base);
-        assert(type);
-        start("typedef " << type->name);
-        if (!type->typeArgs->isEmpty()) {
-          middle('<' << type->typeArgs << '>');
-        }
-        finish(" super_type;");
+        line("typedef " << o->base << " super_type;");
       }
       line("");
     }
@@ -144,6 +133,9 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
     middle("::");
   }
   middle(internalise(o->name->str()) << '(' << o->params << ')');
+  if (o->isReadOnly()) {
+    middle(" const");
+  }
   if (header) {
     finish(';');
   } else {

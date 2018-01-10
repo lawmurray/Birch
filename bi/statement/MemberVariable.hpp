@@ -4,6 +4,7 @@
 #pragma once
 
 #include "bi/statement/Statement.hpp"
+#include "bi/common/Annotated.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Numbered.hpp"
 #include "bi/common/Typed.hpp"
@@ -18,6 +19,7 @@ namespace bi {
  * @ingroup birch_statement
  */
 class MemberVariable: public Statement,
+    public Annotated,
     public Named,
     public Numbered,
     public Typed,
@@ -28,6 +30,7 @@ public:
   /**
    * Constructor.
    *
+   * @param annotation Annotation.
    * @param name Name.
    * @param type Type.
    * @param brackets Array size.
@@ -35,8 +38,9 @@ public:
    * @param value Initial value.
    * @param loc Location.
    */
-  MemberVariable(Name* name, Type* type, Expression* brackets,
-      Expression* args, Expression* value, Location* loc = nullptr);
+  MemberVariable(const Annotation annotation, Name* name, Type* type,
+      Expression* brackets, Expression* args, Expression* value,
+      Location* loc = nullptr);
 
   /**
    * Destructor.

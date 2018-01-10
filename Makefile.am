@@ -115,7 +115,6 @@ COMMON_SOURCES = \
   bi/io/md_ostream.cpp \
   bi/primitive/encode.cpp \
   bi/primitive/poset.cpp \
-  bi/statement/Alias.cpp \
   bi/statement/Assert.cpp \
   bi/statement/AssignmentOperator.cpp \
   bi/statement/Assignment.cpp \
@@ -146,7 +145,6 @@ COMMON_SOURCES = \
   bi/statement/UnaryOperator.cpp \
   bi/statement/While.cpp \
   bi/statement/Yield.cpp \
-  bi/type/AliasType.cpp \
   bi/type/AnyType.cpp \
   bi/type/ArrayType.cpp \
   bi/type/BasicType.cpp \
@@ -159,17 +157,17 @@ COMMON_SOURCES = \
   bi/type/NilType.cpp \
   bi/type/OptionalType.cpp \
   bi/type/OverloadedType.cpp \
+  bi/type/PointerType.cpp \
   bi/type/SequenceType.cpp \
   bi/type/TupleType.cpp \
   bi/type/Type.cpp \
   bi/type/TypeConstIterator.cpp \
-  bi/type/TypeIdentifier.cpp \
+  bi/type/UnknownType.cpp \
   bi/type/TypeIterator.cpp \
   bi/type/TypeList.cpp \
   bi/visitor/Cloner.cpp \
   bi/visitor/Gatherer.cpp \
   bi/visitor/Instantiater.cpp \
-  bi/visitor/IsValue.cpp \
   bi/visitor/Modifier.cpp \
   bi/visitor/Resolver.cpp \
   bi/visitor/ResolverHeader.cpp \
@@ -355,7 +353,6 @@ noinst_HEADERS = \
   bi/primitive/encode.hpp \
   bi/primitive/poset.hpp \
   bi/statement/all.hpp \
-  bi/statement/Alias.hpp \
   bi/statement/AssignmentOperator.hpp \
   bi/statement/Assignment.hpp \
   bi/statement/Basic.hpp \
@@ -386,7 +383,6 @@ noinst_HEADERS = \
   bi/statement/While.hpp \
   bi/statement/Yield.hpp \
   bi/type/all.hpp \
-  bi/type/AliasType.hpp \
   bi/type/AnyType.hpp \
   bi/type/ArrayType.hpp \
   bi/type/BasicType.hpp \
@@ -399,18 +395,18 @@ noinst_HEADERS = \
   bi/type/NilType.hpp \
   bi/type/OptionalType.hpp \
   bi/type/OverloadedType.hpp \
+  bi/type/PointerType.hpp \
   bi/type/SequenceType.hpp \
   bi/type/TupleType.hpp \
   bi/type/Type.hpp \
   bi/type/TypeConstIterator.hpp \
-  bi/type/TypeIdentifier.hpp \
+  bi/type/UnknownType.hpp \
   bi/type/TypeIterator.hpp \
   bi/type/TypeList.hpp \
   bi/visitor/all.hpp \
   bi/visitor/Cloner.hpp \
   bi/visitor/Gatherer.hpp \
   bi/visitor/Instantiater.hpp \
-  bi/visitor/IsValue.hpp \
   bi/visitor/Modifier.hpp \
   bi/visitor/Resolver.hpp \
   bi/visitor/ResolverHeader.hpp \

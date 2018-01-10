@@ -3,7 +3,6 @@
  */
 #pragma once
 
-#include "bi/type/AliasType.hpp"
 #include "bi/type/AnyType.hpp"
 #include "bi/type/ArrayType.hpp"
 #include "bi/type/BasicType.hpp"
@@ -16,7 +15,8 @@
 #include "bi/type/NilType.hpp"
 #include "bi/type/OptionalType.hpp"
 #include "bi/type/OverloadedType.hpp"
+#include "bi/type/PointerType.hpp"
 #include "bi/type/SequenceType.hpp"
 #include "bi/type/TupleType.hpp"
-#include "bi/type/TypeIdentifier.hpp"
+#include "bi/type/UnknownType.hpp"
 #include "bi/type/TypeList.hpp"

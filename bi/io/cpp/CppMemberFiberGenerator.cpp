@@ -46,7 +46,11 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     genTemplateArgs(type);
     middle("::" << stateName << "::");
   }
-  middle(stateName << "(const SharedPointer<" << type->name);
+  middle(stateName << "(const SharedPointer<");
+  if (o->isReadOnly()) {
+    middle("const ");
+  }
+  middle(type->name);
   genTemplateArgs(type);
   middle(">& self");
   if (!o->params->isEmpty()) {
@@ -61,12 +65,6 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     in();
     start("FiberState<" << o->returnType->unwrap() <<">(0, ");
     middle(yields.size() + 1);
-    middle(", ");
-    if (o->returnType->isValue()) {
-      middle("true");
-    } else {
-      middle("false");
-    }
     finish("),");
     start("self(self)");
     for (auto iter = parameters.begin(); iter != parameters.end(); ++iter) {
@@ -76,7 +74,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     }
     for (auto iter = locals.begin(); iter != locals.end(); ++iter) {
       auto param = *iter;
-      if (param->type->isClass()) {
+      if (param->type->isPointer()) {
         finish(',');
         start(param->name << "(nullptr)");
       }
@@ -170,6 +168,9 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     middle("::");
   }
   middle(o->name << '(' << o->params << ')');
+  if (o->isReadOnly()) {
+    middle(" const");
+  }
   if (header) {
     finish(';');
   } else {

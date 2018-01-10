@@ -23,9 +23,10 @@ public:
    *
    * @param name Name.
    * @param base Base type.
+   * @param alias Is this an alias relationship?
    * @param loc Location.
    */
-  Basic(Name* name, Type* base, Location* loc = nullptr);
+  Basic(Name* name, Type* base, const bool alias, Location* loc = nullptr);
 
   /**
    * Destructor.
