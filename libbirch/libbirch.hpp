@@ -254,20 +254,19 @@ Fiber<YieldType> make_closed_fiber(Args ... args) {
 /**
  * Cast an object.
  */
-template<class ToPointerType, class FromPointerType>
-ToPointerType dynamic_pointer_cast(const FromPointerType& from) {
-  using ToType = typename ToPointerType::value_type;
-  return from.template dynamic_pointer_cast<ToType>();
+template<class To, class From>
+SharedPointer<To> dynamic_pointer_cast(const SharedPointer<From>& from) {
+  return from.template dynamic_pointer_cast<To>();
 }
 
 /**
- * Cast an object.
+ * Cast an object optional.
  */
 template<class To, class From>
 Optional<SharedPointer<To>> dynamic_pointer_cast(
     const Optional<SharedPointer<From>>& from) {
   if (from.query()) {
-    return dynamic_pointer_cast<SharedPointer<To>>(from.get());
+    return dynamic_pointer_cast<To>(from.get());
   } else {
     return nullptr;
   }

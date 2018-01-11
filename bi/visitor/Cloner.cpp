@@ -374,7 +374,7 @@ bi::Type* bi::Cloner::clone(const OptionalType* o) {
 }
 
 bi::Type* bi::Cloner::clone(const PointerType* o) {
-  return new PointerType(o->weak, o->single, o->read, o->loc);
+  return new PointerType(o->weak, o->single->accept(this), o->read, o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const NilType* o) {

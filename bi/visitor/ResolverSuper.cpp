@@ -20,8 +20,8 @@ bi::Expression* bi::ResolverSuper::modify(Generic* o) {
 
 bi::Statement* bi::ResolverSuper::modify(Basic* o) {
   o->base = o->base->accept(this);
-  ///@todo Check that base type is of basic type
   if (!o->base->isEmpty()) {
+    assert(o->base->isBasic());
     o->addSuper(o->base);
   }
   return o;
@@ -32,8 +32,8 @@ bi::Statement* bi::ResolverSuper::modify(Class* o) {
     classes.push_back(o);
     o->typeParams = o->typeParams->accept(this);
     o->base = o->base->accept(this);
-    ///@todo Check that base type is of class type
     if (!o->base->isEmpty()) {
+      assert(o->base->isClass());
       o->addSuper(o->base);
     }
     o->braces = o->braces->accept(this);
