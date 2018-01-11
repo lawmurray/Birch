@@ -52,36 +52,42 @@ bool bi::PointerType::definitely(const GenericType& o) const {
 }
 
 bool bi::PointerType::definitely(const ArrayType& o) const {
-  return single->definitely(o);
+  return !weak && single->definitely(o);
 }
 
 bool bi::PointerType::definitely(const BasicType& o) const {
-  return single->definitely(o);
+  return !weak && single->definitely(o);
 }
 
 bool bi::PointerType::definitely(const ClassType& o) const {
-  return single->definitely(o);
+  return !weak && single->definitely(o);
 }
 
 bool bi::PointerType::definitely(const FiberType& o) const {
-  return single->definitely(o);
+  return !weak && single->definitely(o);
 }
 
 bool bi::PointerType::definitely(const FunctionType& o) const {
-  return single->definitely(o);
+  return !weak && single->definitely(o);
 }
 
 bool bi::PointerType::definitely(const OptionalType& o) const {
-  return definitely(*o.single);
+  if (o.single->isPointer()) {
+    /* a weak pointer can be assigned to an optional of a shared or weak
+     * pointer */
+    return single->definitely(*o.single->unwrap());
+  } else {
+    return definitely(*o.single);
+  }
 }
 
 bool bi::PointerType::definitely(const TupleType& o) const {
-  return single->definitely(o);
+  return !weak && single->definitely(o);
 }
 
 bool bi::PointerType::definitely(const PointerType& o) const {
-  return single->definitely(*o.single) && (!weak || o.weak)
-      && (!read || o.read);
+  return (!weak || o.weak) && (!read || o.read)
+      && single->definitely(*o.single);
 }
 
 bool bi::PointerType::definitely(const AnyType& o) const {
@@ -98,36 +104,50 @@ bi::Type* bi::PointerType::common(const GenericType& o) const {
 }
 
 bi::Type* bi::PointerType::common(const ArrayType& o) const {
-  return single->common(o);
+  return weak ? nullptr : single->common(o);
 }
 
 bi::Type* bi::PointerType::common(const BasicType& o) const {
-  return single->common(o);
+  return weak ? nullptr : single->common(o);
 }
 
 bi::Type* bi::PointerType::common(const ClassType& o) const {
-  return single->common(o);
+  return weak ? nullptr : single->common(o);
 }
 
 bi::Type* bi::PointerType::common(const FiberType& o) const {
-  return single->common(o);
+  return weak ? nullptr : single->common(o);
 }
 
 bi::Type* bi::PointerType::common(const FunctionType& o) const {
-  return single->common(o);
+  return weak ? nullptr : single->common(o);
 }
 
 bi::Type* bi::PointerType::common(const OptionalType& o) const {
-  auto single1 = single->common(*o.single);
-  if (single1) {
-    return new OptionalType(single1);
+  if (o.single->isPointer()) {
+    /* the least common type of any pointer and an optional of any pointer is
+     * the latter, as e.g. for A& and A?, an A& can be assigned to an A? but
+     * not vice-versa, and both can be assigned to a A&?, so A? is the least
+     * common type */
+    auto single1 = dynamic_cast<PointerType*>(common(*o.single));
+    if (single1) {
+      single1->weak = false;
+      return new OptionalType(single1);
+    } else {
+      return nullptr;
+    }
   } else {
-    return nullptr;
+    auto single1 = common(*o.single);
+    if (single1) {
+      return new OptionalType(single1);
+    } else {
+      return nullptr;
+    }
   }
 }
 
 bi::Type* bi::PointerType::common(const TupleType& o) const {
-  return single->common(o);
+  return weak ? nullptr : single->common(o);
 }
 
 bi::Type* bi::PointerType::common(const PointerType& o) const {

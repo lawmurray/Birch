@@ -27,6 +27,6 @@ bi::WeakPointer<bi::Any>& bi::WeakPointer<bi::Any>::operator=(
   return *this;
 }
 
-bi::Optional<bi::SharedPointer<bi::Any>> bi::WeakPointer<bi::Any>::lock() const {
-  return bi::Optional<SharedPointer<Any>>(ptr.lock());
+bi::SharedPointer<bi::Any> bi::WeakPointer<bi::Any>::lock() const {
+  return SharedPointer<Any>(ptr.lock());
 }

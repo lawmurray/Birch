@@ -137,6 +137,8 @@ E                                  [Ee][+-]?{D}+
 ".."                                { return RANGE_OP; }
 "?"                                 { return '?'; }
 "!"                                 { return '!'; }
+"&"                                 { return '&'; }
+"'"                                 { return '\''; }
 "&&"                                { return AND_OP; }
 "||"                                { return OR_OP; }
 "<"                                 { return '<'; }

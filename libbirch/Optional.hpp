@@ -130,6 +130,14 @@ public:
   }
 
   /**
+   * Assign a value.
+   */
+  Optional<SharedPointer<T>>& operator=(const WeakPointer<T>& value) {
+    this->value = value.lock();
+    return *this;
+  }
+
+  /**
    * Is there a value?
    */
   bool query() const {

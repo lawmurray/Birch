@@ -753,7 +753,7 @@ weak_modifier
 
 read_modifier
     : '\''  { $$ = true; }
-    |      { $$ = false; }
+    |       { $$ = false; }
     ;
 
 basic_type
@@ -765,7 +765,7 @@ class_type
     ;
 
 unknown_type
-    : weak_modifier name optional_generic_arguments read_modifier  { $$ = new bi::UnknownType($1, $2, $3, $4, make_loc(@$)); }
+    : name optional_generic_arguments read_modifier weak_modifier  { $$ = new bi::UnknownType($4, $1, $2, $3, make_loc(@$)); }
     ;
 
 tuple_type

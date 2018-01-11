@@ -17,6 +17,7 @@
 #include "libbirch/Object.hpp"
 #include "libbirch/Optional.hpp"
 #include "libbirch/SharedPointer.hpp"
+#include "libbirch/WeakPointer.hpp"
 #include "libbirch/FiberState.hpp"
 #include "libbirch/Fiber.hpp"
 #include "libbirch/Eigen.hpp"

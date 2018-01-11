@@ -82,7 +82,7 @@ public:
   /**
    * Lock the pointer.
    */
-  Optional<SharedPointer<T>> lock() const;
+  SharedPointer<T> lock() const;
 };
 
 template<>
@@ -98,7 +98,7 @@ public:
   WeakPointer<Any>& operator=(WeakPointer<Any> && o) = default;
   WeakPointer<Any>& operator=(const SharedPointer<Any>& o);
 
-  Optional<SharedPointer<Any>> lock() const;
+  SharedPointer<Any> lock() const;
 
 protected:
   /**
@@ -140,7 +140,7 @@ bi::WeakPointer<T>& bi::WeakPointer<T>::operator=(const SharedPointer<U>& o) {
 }
 
 template<class T>
-bi::Optional<bi::SharedPointer<T>> bi::WeakPointer<T>::lock() const {
+bi::SharedPointer<T> bi::WeakPointer<T>::lock() const {
 #ifndef NDEBUG
   return WeakPointer<Any>::lock().template dynamic_pointer_cast<T>();
 #else

@@ -507,25 +507,25 @@ void bi::bi_ostream::visit(const OptionalType* o) {
 }
 
 void bi::bi_ostream::visit(const PointerType* o) {
-  if (o->weak) {
-    middle('&');
-  }
   middle(o->single);
   if (o->read) {
     middle('\'');
   }
-}
-
-void bi::bi_ostream::visit(const UnknownType* o) {
   if (o->weak) {
     middle('&');
   }
+}
+
+void bi::bi_ostream::visit(const UnknownType* o) {
   middle(o->name);
   if (!o->typeArgs->isEmpty()) {
     middle('<' << o->typeArgs << '>');
   }
   if (o->read) {
     middle('\'');
+  }
+  if (o->weak) {
+    middle('&');
   }
 }
 
