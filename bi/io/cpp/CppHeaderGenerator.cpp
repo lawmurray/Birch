@@ -68,20 +68,32 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
     if (!o->braces->isEmpty()) {
       genTemplateParams(o);
       line("class " << o->name << ';');
+    } else if (o->alias) {
+      line("using " << o->name << " = " << o->base << ';');
     }
   }
   line("");
 
-  /* type declarations */
+  /* basic type aliases */
   for (auto o : basics) {
-    line("using " << o->name << " = " << o->base << ';');
+    if (o->alias) {
+      line("using " << o->name << " = " << o->base << ';');
+    }
+  }
+  line("");
+
+  /* class type aliases */
+  for (auto o : classes) {
+    if (o->alias) {
+      line("using " << o->name << " = " << o->base << ';');
+    }
   }
   line("}\n");
   line("");
 
   /* forward super type declarations */
   for (auto o : classes) {
-    if (!o->base->isEmpty()) {
+    if (!o->alias && !o->base->isEmpty()) {
       if (o->isGeneric()) {
         genTemplateParams(o);
       } else {
@@ -104,7 +116,9 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
    * gathered and sorted first */
   poset<Type*,definitely> sorted;
   for (auto o : classes) {
-    sorted.insert(new ClassType(o));
+    if (!o->alias) {
+      sorted.insert(new ClassType(o));
+    }
   }
   for (auto iter = sorted.rbegin(); iter != sorted.rend(); ++iter) {
     *this << (*iter)->getClass();
