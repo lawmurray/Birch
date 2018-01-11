@@ -51,8 +51,32 @@ bool bi::PointerType::definitely(const GenericType& o) const {
   return definitely(*o.target->type);
 }
 
+bool bi::PointerType::definitely(const ArrayType& o) const {
+  return single->definitely(o);
+}
+
+bool bi::PointerType::definitely(const BasicType& o) const {
+  return single->definitely(o);
+}
+
+bool bi::PointerType::definitely(const ClassType& o) const {
+  return single->definitely(o);
+}
+
+bool bi::PointerType::definitely(const FiberType& o) const {
+  return single->definitely(o);
+}
+
+bool bi::PointerType::definitely(const FunctionType& o) const {
+  return single->definitely(o);
+}
+
 bool bi::PointerType::definitely(const OptionalType& o) const {
   return definitely(*o.single);
+}
+
+bool bi::PointerType::definitely(const TupleType& o) const {
+  return single->definitely(o);
 }
 
 bool bi::PointerType::definitely(const PointerType& o) const {
@@ -73,6 +97,26 @@ bi::Type* bi::PointerType::common(const GenericType& o) const {
   return common(*o.target->type);
 }
 
+bi::Type* bi::PointerType::common(const ArrayType& o) const {
+  return single->common(o);
+}
+
+bi::Type* bi::PointerType::common(const BasicType& o) const {
+  return single->common(o);
+}
+
+bi::Type* bi::PointerType::common(const ClassType& o) const {
+  return single->common(o);
+}
+
+bi::Type* bi::PointerType::common(const FiberType& o) const {
+  return single->common(o);
+}
+
+bi::Type* bi::PointerType::common(const FunctionType& o) const {
+  return single->common(o);
+}
+
 bi::Type* bi::PointerType::common(const OptionalType& o) const {
   auto single1 = single->common(*o.single);
   if (single1) {
@@ -80,6 +124,10 @@ bi::Type* bi::PointerType::common(const OptionalType& o) const {
   } else {
     return nullptr;
   }
+}
+
+bi::Type* bi::PointerType::common(const TupleType& o) const {
+  return single->common(o);
 }
 
 bi::Type* bi::PointerType::common(const PointerType& o) const {
