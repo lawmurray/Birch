@@ -52,7 +52,7 @@ bool bi::PointerType::definitely(const GenericType& o) const {
 }
 
 bool bi::PointerType::definitely(const OptionalType& o) const {
-  return single->definitely(*o.single);
+  return definitely(*o.single);
 }
 
 bool bi::PointerType::definitely(const PointerType& o) const {

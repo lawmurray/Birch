@@ -187,7 +187,7 @@ bi::Expression* bi::ResolverSource::modify(Generic* o) {
 bi::Expression* bi::ResolverSource::modify(LocalVariable* o) {
   Modifier::modify(o);
   if (!o->args->isEmpty() || o->value->isEmpty()) {
-    o->type->resolveConstructor(o);
+    o->type->unwrap()->resolveConstructor(o);
   }
   if (!o->brackets->isEmpty()) {
     o->type = new ArrayType(o->type, o->brackets->width(), o->brackets->loc);
@@ -308,7 +308,7 @@ bi::Statement* bi::ResolverSource::modify(GlobalVariable* o) {
   o->args = o->args->accept(this);
   o->value = o->value->accept(this);
   if (!o->args->isEmpty() || o->value->isEmpty()) {
-    o->type->resolveConstructor(o);
+    o->type->unwrap()->resolveConstructor(o);
   }
   return o;
 }
@@ -365,7 +365,7 @@ bi::Statement* bi::ResolverSource::modify(MemberVariable* o) {
   o->args = o->args->accept(this);
   o->value = o->value->accept(this);
   if (!o->args->isEmpty() || o->value->isEmpty()) {
-    o->type->resolveConstructor(o);
+    o->type->unwrap()->resolveConstructor(o);
   }
   return o;
 }
@@ -421,7 +421,9 @@ bi::Statement* bi::ResolverSource::modify(Class* o) {
     scopes.push_back(o->scope);
     classes.push_back(o);
     o->args = o->args->accept(this);
-    o->base->resolveConstructor(o);
+    if (!o->alias) {
+      o->base->resolveConstructor(o);
+    }
     o->braces = o->braces->accept(this);
     o->state = RESOLVED_SOURCE;
     classes.pop_back();
