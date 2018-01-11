@@ -23,6 +23,8 @@ program demo_bootstrap(N:Integer <- 10, T:Integer <- 10) {
   W <- log_sum_exp(w) - log(Real(N));
 
   for (t:Integer in 2..T) {
+    stdout.print(t + "\n");
+    
     /* resample */
     a <- ancestors(w);
     for (n:Integer in 1..N) {
@@ -78,4 +80,16 @@ closed fiber run(T:Integer) -> Real! {
   x:BootstrapExample(T);
   x.input();
   x.simulate();
+}
+
+class TestTest {
+  x:Random<Integer>;
+  
+  fiber f() -> Boolean! {
+    yield !x.isMissing();
+    x <- 1;
+    while (true) {
+      yield !x.isMissing();
+    }
+  }
 }

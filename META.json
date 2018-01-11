@@ -23,6 +23,7 @@
       "bi/demo/demo_resize.bi",
       "bi/demo/demo_sequence.bi",
       "bi/demo/demo_tuple.bi",
+      "bi/demo/demo_weak.bi",
       "bi/eigen/eigen_matrix.bi",
       "bi/eigen/eigen_vector.bi"
     ],
