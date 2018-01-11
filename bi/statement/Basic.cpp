@@ -34,7 +34,7 @@ void bi::Basic::addSuper(const Type* o) {
 }
 
 bool bi::Basic::hasSuper(const Type* o) const {
-  bool result = supers.find(o->getBasic()) != supers.end();
+  bool result = supers.find(o->canonical()->getBasic()) != supers.end();
   result = result || std::any_of(supers.begin(), supers.end(),
       [&](auto x) { return x->hasSuper(o); });
   return result;

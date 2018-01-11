@@ -81,7 +81,7 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
 
   /* forward super type declarations */
   for (auto o : classes) {
-    if (!o->braces->isEmpty()) {
+    if (!o->base->isEmpty()) {
       if (o->isGeneric()) {
         genTemplateParams(o);
       } else {
@@ -91,13 +91,7 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
       genTemplateArgs(o);
       finish("> {");
       in();
-      start("typedef ");
-      if (!o->base->isEmpty()) {
-        middle(o->base);
-      } else {
-        middle("type::Object_");
-      }
-      finish(" type;");
+      line("using type = " << o->base << ';');
       out();
       line("};");
     }

@@ -21,8 +21,9 @@ public:
    * Constructor.
    *
    * @param rootScope The root scope.
+   * @param pointers Wrap class types in pointers?
    */
-  Resolver(Scope* rootScope);
+  Resolver(Scope* rootScope, const bool pointers);
 
   /**
    * Destructor.
@@ -73,6 +74,11 @@ protected:
   Type* lookup(UnknownType* ref);
 
   /**
+   * Instantiate a class type with generic arguments.
+   */
+  void instantiate(ClassType* o);
+
+  /**
    * Check that an expression is of boolean type.
    *
    * @param o The expression.
@@ -101,6 +107,11 @@ protected:
    */
   std::list<Class*> classes;
 
+  /**
+   * Wrap class types in pointers?
+   */
+  bool pointers;
+
   /*
    * Auxiliary visitors.
    */
@@ -124,7 +135,6 @@ void bi::Resolver::resolve(ObjectType* o) {
     }
   }
   if (!o->target) {
-    assert(false);
     throw UnresolvedException(o);
   }
 }

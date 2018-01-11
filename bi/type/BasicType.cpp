@@ -71,8 +71,8 @@ bool bi::BasicType::definitely(const GenericType& o) const {
 
 bool bi::BasicType::definitely(const BasicType& o) const {
   assert(target);
-  assert(o.target);
-  return target == o.target || target->hasSuper(&o);
+  auto o1 = o.canonical();
+  return target == o1->getBasic() || target->hasSuper(o1);
 }
 
 bool bi::BasicType::definitely(const OptionalType& o) const {

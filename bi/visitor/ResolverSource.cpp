@@ -7,7 +7,7 @@
 #include "bi/visitor/ResolverHeader.hpp"
 
 bi::ResolverSource::ResolverSource(Scope* rootScope) :
-    Resolver(rootScope) {
+    Resolver(rootScope, true) {
   //
 }
 

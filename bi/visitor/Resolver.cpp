@@ -5,7 +5,8 @@
 
 #include "bi/visitor/Instantiater.hpp"
 
-bi::Resolver::Resolver(Scope* rootScope) {
+bi::Resolver::Resolver(Scope* rootScope, const bool pointers) :
+    pointers(pointers) {
   scopes.push_back(rootScope);
 }
 
@@ -60,22 +61,7 @@ bi::Type* bi::Resolver::modify(ClassType* o) {
   assert(!o->target);
   Modifier::modify(o);
   resolve(o);
-  if (!o->typeArgs->isEmpty() || o->target->isGeneric()) {
-    if (o->typeArgs->width() == o->target->typeParams->width()) {
-      Class* instantiation = o->target->getInstantiation(o->typeArgs);
-      if (!instantiation) {
-        Instantiater instantiater(o->typeArgs);
-        instantiation =
-            dynamic_cast<Class*>(o->target->accept(&instantiater));
-        assert(instantiation);
-        o->target->addInstantiation(instantiation);
-        instantiation->accept(this);
-      }
-      o->target = instantiation;
-    } else {
-      throw GenericException(o, o->target);
-    }
-  }
+  instantiate(o);
   return o;
 }
 
@@ -145,24 +131,35 @@ bi::Type* bi::Resolver::lookup(UnknownType* ref) {
   }
 
   /* replace the reference of unknown object type with that of a known one */
-  Type* result;
   switch (category) {
   case BASIC:
-    result = new BasicType(ref->name, ref->loc);
-    break;
+    return new BasicType(ref->name, ref->loc);
   case CLASS:
-    result = new ClassType(ref->name, ref->typeArgs, ref->loc);
-    break;
+    return new PointerType(ref->weak, new ClassType(ref->name, ref->typeArgs, ref->loc), ref->read, ref->loc);
   case GENERIC:
-    result = new GenericType(ref->name, ref->loc);
-    break;
+    return new GenericType(ref->name, ref->loc);
   default:
     throw UnresolvedException(ref);
   }
-  if (result->isClass()) {
-    result = new PointerType(ref->weak, result, ref->read, ref->loc);
+}
+
+void bi::Resolver::instantiate(ClassType* o) {
+  if (!o->typeArgs->isEmpty() || o->target->isGeneric()) {
+    if (o->typeArgs->width() == o->target->typeParams->width()) {
+      Class* instantiation = o->target->getInstantiation(o->typeArgs);
+      if (!instantiation) {
+        Instantiater instantiater(o->typeArgs);
+        instantiation =
+            dynamic_cast<Class*>(o->target->accept(&instantiater));
+        assert(instantiation);
+        o->target->addInstantiation(instantiation);
+        instantiation->accept(this);
+      }
+      o->target = instantiation;
+    } else {
+      throw GenericException(o, o->target);
+    }
   }
-  return result;
 }
 
 void bi::Resolver::checkBoolean(const Expression* o) {
@@ -174,11 +171,9 @@ void bi::Resolver::checkBoolean(const Expression* o) {
 }
 
 void bi::Resolver::checkInteger(const Expression* o) {
-  static BasicType type32(new Name("Integer32"));
-  static BasicType type64(new Name("Integer64"));
-  scopes.front()->resolve(&type32);
-  scopes.front()->resolve(&type64);
-  if (!o->type->definitely(type32) && !o->type->definitely(type64)) {
+  static BasicType type(new Name("Integer"));
+  scopes.front()->resolve(&type);
+  if (!o->type->definitely(type)) {
     throw IndexException(o);
   }
 }

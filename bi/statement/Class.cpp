@@ -45,10 +45,9 @@ void bi::Class::addSuper(const Type* o) {
 }
 
 bool bi::Class::hasSuper(const Type* o) const {
-  bool result = supers.find(o->getClass()) != supers.end();
-  result = result
-      || std::any_of(supers.begin(), supers.end(),
-          [&](auto x) {return x->hasSuper(o);});
+  bool result = supers.find(o->canonical()->getClass()) != supers.end();
+  result = result || std::any_of(supers.begin(), supers.end(),
+      [&](auto x) {return x->hasSuper(o);});
   return result;
 }
 

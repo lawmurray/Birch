@@ -11,5 +11,5 @@ namespace bi {
  *
  * @ingroup birch_io
  */
-typedef CppBaseGenerator cpp_ostream;
+using cpp_ostream = CppBaseGenerator;
 }

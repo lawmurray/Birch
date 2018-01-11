@@ -28,19 +28,15 @@ void bi::CppClassGenerator::visit(const Class* o) {
       start("class " << o->name << " : public ");
       if (!o->base->isEmpty()) {
         middle(o->base);
-      } else {
-        middle("Object_");
       }
       finish(" {");
       line("public:");
       in();
-      start("typedef " << o->name);
+      start("using this_type = " << o->name);
       genTemplateArgs(o);
-      finish(" this_type;");
-      if (o->base->isEmpty()) {
-        line("typedef Object_ super_type;");
-      } else {
-        line("typedef " << o->base << " super_type;");
+      finish(';');
+      if (!o->base->isEmpty()) {
+        line("using super_type = " << o->base << ';');
       }
       line("");
     }

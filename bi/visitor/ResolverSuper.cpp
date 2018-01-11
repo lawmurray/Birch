@@ -4,7 +4,7 @@
 #include "bi/visitor/ResolverSuper.hpp"
 
 bi::ResolverSuper::ResolverSuper(Scope* rootScope) :
-    Resolver(rootScope) {
+    Resolver(rootScope, false) {
   //
 }
 

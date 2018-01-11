@@ -93,10 +93,9 @@ bool bi::ClassType::definitely(const BasicType& o) const {
 
 bool bi::ClassType::definitely(const ClassType& o) const {
   assert(target);
-  assert(o.target);
-  return (target == o.target || target->hasConversion(&o)
-      || o.target->name->str() == "Object" || target->hasSuper(&o)
-      || target->base->definitely(o));
+  auto o1 = o.canonical();
+  return target == o1->getClass() || target->hasSuper(o1)
+      || target->hasConversion(o1);
 }
 
 bool bi::ClassType::definitely(const FiberType& o) const {
