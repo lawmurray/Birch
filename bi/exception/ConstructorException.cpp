@@ -22,7 +22,7 @@ bi::ConstructorException::ConstructorException(const Argumented* o,
     if (o->args->isEmpty()) {
       buf << "note: no arguments\n";
     } else {
-      buf << "note: argument type '" << o->args << "'\n";
+      buf << "note: argument type '" << o->args->type << "'\n";
     }
   }
   if (type) {
