@@ -44,7 +44,7 @@ class LogGaussian < Random<Real> {
 /**
  * Synonym for LogGaussian.
  */
-type LogNormal = LogGaussian;
+class LogNormal = LogGaussian;
 
 /**
  * Create log-Gaussian distribution.

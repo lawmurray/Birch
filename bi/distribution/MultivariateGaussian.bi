@@ -40,7 +40,7 @@ class MultivariateGaussian(D:Integer) < Random<Real[_]> {
 /**
  * Synonym for MultivariateGaussian.
  */
-type MultivariateNormal = MultivariateGaussian;
+class MultivariateNormal = MultivariateGaussian;
 
 /**
  * Create multivariate Gaussian distribution.

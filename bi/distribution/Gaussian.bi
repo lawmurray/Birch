@@ -44,7 +44,7 @@ class Gaussian < Random<Real> {
 /**
  * Synonym for Gaussian.
  */
-type Normal = Gaussian;
+class Normal = Gaussian;
 
 /**
  * Create Gaussian distribution.

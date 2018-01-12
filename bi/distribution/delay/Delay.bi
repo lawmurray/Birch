@@ -242,10 +242,10 @@ class Delay {
     //
   }
   function doCondition() {
-    //
+    assert false;
   }
   function doRealize() {
-    //
+    assert false;
   }
   
   /**
