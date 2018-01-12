@@ -16,7 +16,6 @@
       "bi/basic/String.bi",
       "bi/container/LinkedList.bi",
       "bi/container/LinkedListNode.bi",
-      "bi/diagnostics/DelayDiagnostics.bi",
       "bi/distribution/conjugate/BetaBinomial.bi",
       "bi/distribution/conjugate/DirichletCategorical.bi",
       "bi/distribution/conjugate/DirichletMultinomial.bi",

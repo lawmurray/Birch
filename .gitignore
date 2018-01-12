@@ -21,3 +21,4 @@
 /Makefile.in
 /missing
 /.autotools
+.deps

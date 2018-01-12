@@ -16,7 +16,7 @@ class Delay {
   parent:Delay?;
   
   /**
-   * Child, if one exists and it is on the stem.
+   * Child, if one exists and it is on the M-path.
    */
   child:Delay?;
   
@@ -29,23 +29,6 @@ class Delay {
    * State of the variate.
    */
   state:Integer <- UNINITIALIZED;
-  
-  /**
-   * Unique id for delayed sampling diagnostics.
-   */
-  id:Integer <- 0;
-  
-  /**
-   * Number of observations absorbed in forward pass, for delayed sampling
-   * diagnostics.
-   */
-  nforward:Integer <- 0;
-  
-  /**
-   * Number of observations absorbed in backward pass, for delayed sampling
-   * diagnostics.
-   */
-  nbackward:Integer <- 0;
     
   /**
    * Is this a root node?
@@ -55,7 +38,7 @@ class Delay {
   }
   
   /**
-   * Is this the terminal node of a stem?
+   * Is this the terminal node of an M-path?
    */
   function isTerminal() -> Boolean {
     return isMarginalized() && !(child?);
@@ -94,8 +77,6 @@ class Delay {
    */
   function initialize() {
     this.state <- INITIALIZED;
-    register();
-    trigger();
   }
   
   /**
@@ -106,17 +87,6 @@ class Delay {
   function initialize(parent:Delay) {
     this.parent <- parent;
     this.state <- INITIALIZED;
-    register();
-    trigger();
-  }
-
-  /**
-   * Increment number of observations absorbed.
-   *
-   *   - `nbackward` : Number of new observations absorbed.
-   */
-  function absorb(nbackward:Integer) {
-    this.nbackward <- this.nbackward + nbackward;
   }
 
   /**
@@ -131,10 +101,6 @@ class Delay {
     } else {
       doMarginalize();
     }
-    if (parent?) {
-      nforward <- parent!.nforward + parent!.nbackward;
-    }
-    trigger();
   }
   
   /**
@@ -154,17 +120,15 @@ class Delay {
           // ^ conditioning doesn't make sense if the observation is not
           //   within the support
           doCondition();
-          parent!.absorb(nbackward);
         }
         parent!.removeChild();
         removeParent();
       }
     }
-    trigger();
   }
   
   /**
-   * Graft the stem to this node.
+   * Graft the M-path to this node.
    */
   function graft() {
     if (isMarginalized()) {
@@ -181,10 +145,9 @@ class Delay {
   }
 
   /**
-   * Graft the stem to this node.
+   * Graft the M-path to this node.
    *
-   * `c` The child node that called this, and that will itself be part
-   * of the stem.
+   * `c` The child node (caller) that will itself be part of the M-path.
    */
   function graft(c:Delay) {
     graft();
@@ -192,7 +155,7 @@ class Delay {
   }
   
   /**
-   * Prune the stem from below this node.
+   * Prune the M-path from below this node.
    */
   function prune() {
     assert isMarginalized();
@@ -246,23 +209,5 @@ class Delay {
   }
   function doRealize() {
     assert false;
-  }
-  
-  /**
-   * Register with the diagnostic handler.
-   */
-  function register() {
-    if (delayDiagnostics?) {
-      id <- delayDiagnostics!.register(this);
-    }
-  }
-  
-  /**
-   * Trigger an event with the diagnostic handler.
-   */
-  function trigger() {
-    if (delayDiagnostics?) {
-      delayDiagnostics!.trigger();
-    }
   }
 }

@@ -63,7 +63,6 @@ class Random<Value> < Delay {
   
   function observe(x:Value) -> Real {
     set(x);
-    absorb(1);
     realize();
     return w;
   }
