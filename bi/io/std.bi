@@ -27,14 +27,14 @@ function getStdErr() -> File {
 /**
  * Input stream for stdin.
  */
-stdin:InputStream <- InputStream(getStdIn());
+stdin:InputStream' <- InputStream(getStdIn());
 
 /**
  * Output stream for stdout.
  */
-stdout:OutputStream <- OutputStream(getStdOut());
+stdout:OutputStream' <- OutputStream(getStdOut());
 
 /**
  * Output stream for stderr.
  */
-stderr:OutputStream <- OutputStream(getStdErr());
+stderr:OutputStream' <- OutputStream(getStdErr());
