@@ -39,7 +39,7 @@ class InputStream {
   /**
    * Check for end-of-file.
    */
-  function eof() -> Boolean {
+  function' eof() -> Boolean {
     assert file?;
     cpp{{
     return ::feof(file_.get());
@@ -49,7 +49,7 @@ class InputStream {
   /**
    * Read integer.
    */
-  function readInteger() -> Integer {
+  function' readInteger() -> Integer {
     assert file?;
     cpp{{
     long long int x;  // ensure fscanf gets exactly the type it expects
@@ -61,7 +61,7 @@ class InputStream {
   /**
    * Read real.
    */
-  function readReal() -> Real {
+  function' readReal() -> Real {
     assert file?;
     cpp{{
     double x;  // ensure fscanf gets exactly the type it expects

@@ -24,7 +24,7 @@ class JSONReader < Reader {
     }}
   }
 
-  function readBoolean(name:String) -> Boolean? {
+  function' readBoolean(name:String) -> Boolean? {
     result:Boolean?;
     cpp{{
     auto value = top.get<libubjpp::bool_type>(name_);
@@ -35,7 +35,7 @@ class JSONReader < Reader {
     return result;
   }
   
-  function readInteger(name:String) -> Integer? {
+  function' readInteger(name:String) -> Integer? {
     result:Integer?;
     cpp{{
     auto value = top.get<libubjpp::int64_type>(name_);
@@ -46,7 +46,7 @@ class JSONReader < Reader {
     return result;
   }
   
-  function readReal(name:String) -> Real? {
+  function' readReal(name:String) -> Real? {
     result:Real?;
     cpp{{
     auto value = top.get<libubjpp::double_type>(name_);
@@ -57,7 +57,7 @@ class JSONReader < Reader {
     return result;
   }
   
-  function readBoolean(path:[String]) -> Boolean? {
+  function' readBoolean(path:[String]) -> Boolean? {
     result:Boolean?;
     cpp{{
     auto value = top.get<libubjpp::bool_type>(path_);
@@ -68,7 +68,7 @@ class JSONReader < Reader {
     return result;
   }
   
-  function readInteger(path:[String]) -> Integer? {
+  function' readInteger(path:[String]) -> Integer? {
     result:Integer?;
     cpp{{
     auto value = top.get<libubjpp::int64_type>(path_);
@@ -79,7 +79,7 @@ class JSONReader < Reader {
     return result;
   }
   
-  function readReal(path:[String]) -> Real? {
+  function' readReal(path:[String]) -> Real? {
     result:Real?;
     cpp{{
     auto value = top.get<libubjpp::double_type>(path_);

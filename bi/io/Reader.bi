@@ -10,7 +10,7 @@ class Reader {
    * Returns an optional with a value of the given entry exists and is of a
    * compatible type.
    */
-  function readBoolean(name:String) -> Boolean?;
+  function' readBoolean(name:String) -> Boolean?;
 
   /**
    * Read an integer.
@@ -20,7 +20,7 @@ class Reader {
    * Returns an optional with a value of the given entry exists and is of a
    * compatible type.
    */
-  function readInteger(name:String) -> Integer?;
+  function' readInteger(name:String) -> Integer?;
 
   /**
    * Read a real.
@@ -30,7 +30,7 @@ class Reader {
    * Returns an optional with a value of the given entry exists and is of a
    * compatible type.
    */
-  function readReal(name:String) -> Real?;
+  function' readReal(name:String) -> Real?;
   
   /**
    * Read a Boolean.
@@ -40,7 +40,7 @@ class Reader {
    * Returns an optional with a value of the given entry exists and is of a
    * compatible type.
    */
-  function readBoolean(path:[String]) -> Boolean?;
+  function' readBoolean(path:[String]) -> Boolean?;
 
   /**
    * Read an integer.
@@ -50,7 +50,7 @@ class Reader {
    * Returns an optional with a value of the given entry exists and is of a
    * compatible type.
    */
-  function readInteger(path:[String]) -> Integer?;
+  function' readInteger(path:[String]) -> Integer?;
 
   /**
    * Read a real.
@@ -60,5 +60,5 @@ class Reader {
    * Returns an optional with a value of the given entry exists and is of a
    * compatible type.
    */
-  function readReal(path:[String]) -> Real?;
+  function' readReal(path:[String]) -> Real?;
 }
