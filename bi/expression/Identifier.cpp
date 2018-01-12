@@ -21,8 +21,7 @@ bi::Identifier<ObjectType>::~Identifier() {
 
 template<class ObjectType>
 bool bi::Identifier<ObjectType>::isAssignable() const {
-  return std::is_same<ObjectType,GlobalVariable>::value
-      || std::is_same<ObjectType,MemberVariable>::value
+  return std::is_same<ObjectType,MemberVariable>::value
       || std::is_same<ObjectType,LocalVariable>::value;
 }
 

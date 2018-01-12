@@ -136,6 +136,11 @@ public:
   virtual bool isOverloaded() const;
 
   /**
+   * Is this a read-only type?
+   */
+  virtual bool isReadOnly() const;
+
+  /**
    * Get the left operand of a binary, otherwise undefined.
    */
   virtual Type* getLeft() const;

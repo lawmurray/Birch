@@ -62,6 +62,7 @@ COMMON_SOURCES = \
   bi/exception/NotFunctionException.cpp \
   bi/exception/PreviousDeclarationException.cpp \
   bi/exception/QueryException.cpp \
+  bi/exception/ReadOnlyException.cpp \
   bi/exception/ReturnException.cpp \
   bi/exception/ReturnTypeException.cpp \
   bi/exception/SequenceException.cpp \
@@ -168,6 +169,7 @@ COMMON_SOURCES = \
   bi/visitor/Cloner.cpp \
   bi/visitor/Gatherer.cpp \
   bi/visitor/Instantiater.cpp \
+  bi/visitor/IsReadOnly.cpp \
   bi/visitor/Modifier.cpp \
   bi/visitor/Resolver.cpp \
   bi/visitor/ResolverHeader.cpp \
@@ -296,6 +298,7 @@ noinst_HEADERS = \
   bi/exception/NotFunctionException.hpp \
   bi/exception/PreviousDeclarationException.hpp \
   bi/exception/QueryException.hpp \
+  bi/exception/ReadOnlyException.hpp \
   bi/exception/ReturnException.hpp \
   bi/exception/ReturnTypeException.hpp \
   bi/exception/SequenceException.hpp \
@@ -408,6 +411,7 @@ noinst_HEADERS = \
   bi/visitor/Gatherer.hpp \
   bi/visitor/Instantiater.hpp \
   bi/visitor/Modifier.hpp \
+  bi/visitor/IsReadOnly.hpp \
   bi/visitor/Resolver.hpp \
   bi/visitor/ResolverHeader.hpp \
   bi/visitor/ResolverSource.hpp \

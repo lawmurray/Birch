@@ -53,6 +53,9 @@ bi::Statement* bi::ResolverHeader::modify(Class* o) {
 
 bi::Statement* bi::ResolverHeader::modify(GlobalVariable* o) {
   o->type = o->type->accept(this);
+  if (!o->type->isReadOnly()) {
+    throw ReadOnlyException(o->type);
+  }
   if (!o->brackets->isEmpty()) {
     o->type = new ArrayType(o->type, o->brackets->width(), o->brackets->loc);
   }
@@ -73,7 +76,13 @@ bi::Statement* bi::ResolverHeader::modify(Function* o) {
 bi::Statement* bi::ResolverHeader::modify(Fiber* o) {
   scopes.push_back(o->scope);
   o->params = o->params->accept(this);
+  if (o->isClosed() && !o->params->type->isReadOnly()) {
+    throw ReadOnlyException(o->params->type);
+  }
   o->returnType = o->returnType->accept(this);
+  if (o->isClosed() && !o->returnType->isReadOnly()) {
+    throw ReadOnlyException(o->returnType);
+  }
   o->type = new FunctionType(o->params->type, o->returnType, o->loc);
   scopes.pop_back();
   scopes.back()->add(o);
@@ -144,7 +153,13 @@ bi::Statement* bi::ResolverHeader::modify(MemberFunction* o) {
 bi::Statement* bi::ResolverHeader::modify(MemberFiber* o) {
   scopes.push_back(o->scope);
   o->params = o->params->accept(this);
+  if (o->isClosed() && !o->params->type->isReadOnly()) {
+    throw ReadOnlyException(o->params->type);
+  }
   o->returnType = o->returnType->accept(this);
+  if (o->isClosed() && !o->returnType->isReadOnly()) {
+    throw ReadOnlyException(o->returnType);
+  }
   o->type = new FunctionType(o->params->type, o->returnType, o->loc);
   scopes.pop_back();
   scopes.back()->add(o);

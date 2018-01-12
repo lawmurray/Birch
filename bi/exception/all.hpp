@@ -21,6 +21,7 @@
 #include "bi/exception/NotFunctionException.hpp"
 #include "bi/exception/PreviousDeclarationException.hpp"
 #include "bi/exception/QueryException.hpp"
+#include "bi/exception/ReadOnlyException.hpp"
 #include "bi/exception/ReturnException.hpp"
 #include "bi/exception/ReturnTypeException.hpp"
 #include "bi/exception/SequenceException.hpp"
