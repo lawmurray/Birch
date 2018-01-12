@@ -17,9 +17,10 @@ namespace bi {
 template<class T>
 class WeakPointer: public WeakPointer<typename super_type<T>::type> {
 public:
-  typedef T value_type;
-  typedef WeakPointer<T> this_type;
-  typedef WeakPointer<typename super_type<T>::type> super_type;
+  using value_type = T;
+  using this_type = WeakPointer<T>;
+  using super_type = WeakPointer<typename super_type<T>::type>;
+  using root_type = typename super_type::root_type;
 
   /**
    * Default constructor.
@@ -87,15 +88,20 @@ public:
 
 template<>
 class WeakPointer<Any> {
-  friend class SharedPointer<Any> ;
+  friend class SharedPointer<Any>;
+  friend class WeakPointer<const Any>;
 public:
+  using value_type = Any;
+  using this_type = WeakPointer<value_type>;
+  using root_type = this_type;
+
   WeakPointer(const std::nullptr_t& o = nullptr);
   WeakPointer(const WeakPointer<Any>& o) = default;
   WeakPointer(WeakPointer<Any> && o) = default;
   WeakPointer(const SharedPointer<Any>& o);
   WeakPointer<Any>& operator=(const std::nullptr_t& o);
   WeakPointer<Any>& operator=(const WeakPointer<Any>& o) = default;
-  WeakPointer<Any>& operator=(WeakPointer<Any> && o) = default;
+  WeakPointer<Any>& operator=(WeakPointer<Any>&& o) = default;
   WeakPointer<Any>& operator=(const SharedPointer<Any>& o);
 
   SharedPointer<Any> lock() const;
@@ -105,6 +111,36 @@ protected:
    * Wrapped smart pointer.
    */
   std::weak_ptr<Any> ptr;
+};
+
+template<>
+class WeakPointer<const Any> {
+  friend class SharedPointer<const Any>;
+public:
+  using value_type = const Any;
+  using this_type = WeakPointer<const Any>;
+  using root_type = this_type;
+
+  WeakPointer(const std::nullptr_t& o = nullptr);
+  WeakPointer(const WeakPointer<const Any>& o) = default;
+  WeakPointer(WeakPointer<const Any>&& o) = default;
+  WeakPointer(const SharedPointer<const Any>& o);
+  WeakPointer(const WeakPointer<Any>& o);
+  WeakPointer(const SharedPointer<Any>& o);
+  WeakPointer<const Any>& operator=(const std::nullptr_t& o);
+  WeakPointer<const Any>& operator=(const WeakPointer<const Any>& o) = default;
+  WeakPointer<const Any>& operator=(WeakPointer<const Any>&& o) = default;
+  WeakPointer<const Any>& operator=(const SharedPointer<const Any>& o);
+  WeakPointer<const Any>& operator=(const WeakPointer<Any>& o);
+  WeakPointer<const Any>& operator=(const SharedPointer<Any>& o);
+
+  SharedPointer<const Any> lock() const;
+
+protected:
+  /**
+   * Wrapped smart pointer.
+   */
+  std::weak_ptr<const Any> ptr;
 };
 }
 
@@ -122,28 +158,28 @@ bi::WeakPointer<T>::WeakPointer(const SharedPointer<T>& o) :
 
 template<class T>
 bi::WeakPointer<T>& bi::WeakPointer<T>::operator=(const std::nullptr_t& o) {
-  WeakPointer<Any>::operator=(o);
+  root_type::operator=(o);
   return *this;
 }
 
 template<class T>
 bi::WeakPointer<T>& bi::WeakPointer<T>::operator=(const SharedPointer<T>& o) {
-  WeakPointer<Any>::operator=(o);
+  root_type::operator=(o);
   return *this;
 }
 
 template<class T>
 template<class U, typename >
 bi::WeakPointer<T>& bi::WeakPointer<T>::operator=(const SharedPointer<U>& o) {
-  WeakPointer<Any>::operator=(o);
+  root_type::operator=(o);
   return *this;
 }
 
 template<class T>
 bi::SharedPointer<T> bi::WeakPointer<T>::lock() const {
 #ifndef NDEBUG
-  return WeakPointer<Any>::lock().template dynamic_pointer_cast<T>();
+  return root_type::lock().template dynamic_pointer_cast<T>();
 #else
-  return WeakPointer<Any>::lock().template static_pointer_cast<T>();
+  return root_type::lock().template static_pointer_cast<T>();
 #endif
 }

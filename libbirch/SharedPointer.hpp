@@ -17,9 +17,10 @@ template<class T>
 class SharedPointer: public SharedPointer<typename super_type<T>::type> {
   friend class WeakPointer<T> ;
 public:
-  typedef T value_type;
-  typedef SharedPointer<T> this_type;
-  typedef SharedPointer<typename super_type<T>::type> super_type;
+  using value_type = T;
+  using this_type = SharedPointer<T>;
+  using super_type = SharedPointer<typename super_type<T>::type>;
+  using root_type = typename super_type::root_type;
 
   /**
    * Default constructor.
@@ -86,7 +87,6 @@ public:
   /**
    * Get the raw pointer.
    */
-  T* get();
   T* get() const;
 
   /**
@@ -104,30 +104,20 @@ public:
   /**
    * Dereference.
    */
-  T& operator*() {
-    return *get();
-  }
-  const T& operator*() const {
+  T& operator*() const {
     return *get();
   }
 
   /**
    * Member access.
    */
-  T* operator->() {
-    return get();
-  }
-  T* const operator->() const {
+  T* operator->() const {
     return get();
   }
 
   /**
    * Call operator.
    */
-  template<class ... Args>
-  auto operator()(Args ... args) {
-    return (*get())(args...);
-  }
   template<class ... Args>
   auto operator()(Args ... args) const {
     return (*get())(args...);
@@ -136,9 +126,13 @@ public:
 
 template<>
 class SharedPointer<Any> {
-  friend class WeakPointer<Any> ;
+  friend class WeakPointer<Any>;
+  friend class WeakPointer<const Any>;
+  friend class SharedPointer<const Any>;
 public:
-  typedef Any value_type;
+  using value_type = Any;
+  using this_type = SharedPointer<value_type>;
+  using root_type = this_type;
 
   SharedPointer();
   SharedPointer(const std::nullptr_t& o);
@@ -157,7 +151,6 @@ public:
   /**
    * Get the pointer.
    */
-  Any* get();
   Any* get() const;
 
   template<class U>
@@ -169,20 +162,14 @@ public:
   /**
    * Dereference.
    */
-  Any& operator*() {
-    return *get();
-  }
-  const Any& operator*() const {
+  Any& operator*() const {
     return *get();
   }
 
   /**
    * Member access.
    */
-  Any* operator->() {
-    return get();
-  }
-  Any* const operator->() const {
+  Any* operator->() const {
     return get();
   }
 
@@ -191,6 +178,63 @@ protected:
    * Wrapped smart pointer.
    */
   std::shared_ptr<Any> ptr;
+};
+
+template<>
+class SharedPointer<const Any> {
+  friend class WeakPointer<const Any>;
+public:
+  using value_type = const Any;
+  using this_type = SharedPointer<const Any>;
+  using root_type = this_type;
+
+  SharedPointer();
+  SharedPointer(const std::nullptr_t& o);
+  SharedPointer(const std::shared_ptr<const Any>& ptr);
+  SharedPointer(const SharedPointer<const Any>& o) = default;
+  SharedPointer(SharedPointer<const Any> && o) = default;
+  SharedPointer(const std::shared_ptr<Any>& ptr);
+  SharedPointer(const SharedPointer<Any>& o);
+  SharedPointer<const Any>& operator=(const std::nullptr_t& o);
+  SharedPointer<const Any>& operator=(const SharedPointer<const Any>& o) = default;
+  SharedPointer<const Any>& operator=(SharedPointer<const Any> && o) = default;
+  SharedPointer<const Any>& operator=(const SharedPointer<Any>& o);
+
+  /**
+   * Is the pointer not null?
+   */
+  bool query() const;
+
+  /**
+   * Get the pointer.
+   */
+  const Any* get() const;
+
+  template<class U>
+  SharedPointer<const U> dynamic_pointer_cast() const;
+
+  template<class U>
+  SharedPointer<const U> static_pointer_cast() const;
+
+  /**
+   * Dereference.
+   */
+  const Any& operator*() const {
+    return *get();
+  }
+
+  /**
+   * Member access.
+   */
+  const Any* operator->() const {
+    return get();
+  }
+
+protected:
+  /**
+   * Wrapped smart pointer.
+   */
+  std::shared_ptr<const Any> ptr;
 };
 }
 
@@ -215,7 +259,7 @@ bi::SharedPointer<T>::SharedPointer(const std::shared_ptr<T>& ptr) :
 template<class T>
 bi::SharedPointer<T>& bi::SharedPointer<T>::operator=(
     const std::nullptr_t& o) {
-  SharedPointer<Any>::operator=(o);
+  root_type::operator=(o);
   return *this;
 }
 
@@ -223,7 +267,7 @@ template<class T>
 template<class U, typename >
 bi::SharedPointer<T>& bi::SharedPointer<T>::operator=(
     const SharedPointer<U>& o) {
-  SharedPointer<Any>::operator=(o);
+  root_type::operator=(o);
   return *this;
 }
 
@@ -241,20 +285,11 @@ bi::SharedPointer<T>::operator U() const {
 }
 
 template<class T>
-T* bi::SharedPointer<T>::get() {
-#ifndef NDEBUG
-  return dynamic_cast<T*>(SharedPointer<Any>::get());
-#else
-  return static_cast<T*>(SharedPointer<Any>::get());
-#endif
-}
-
-template<class T>
 T* bi::SharedPointer<T>::get() const {
 #ifndef NDEBUG
-  return dynamic_cast<T*>(SharedPointer<Any>::get());
+  return dynamic_cast<T*>(root_type::get());
 #else
-  return static_cast<T*>(SharedPointer<Any>::get());
+  return static_cast<T*>(root_type::get());
 #endif
 }
 
@@ -278,4 +313,14 @@ bi::SharedPointer<U> bi::SharedPointer<bi::Any>::dynamic_pointer_cast() const {
 template<class U>
 bi::SharedPointer<U> bi::SharedPointer<bi::Any>::static_pointer_cast() const {
   return SharedPointer<U>(std::static_pointer_cast<U>(ptr));
+}
+
+template<class U>
+bi::SharedPointer<const U> bi::SharedPointer<const bi::Any>::dynamic_pointer_cast() const {
+  return SharedPointer<const U>(std::dynamic_pointer_cast<const U>(ptr));
+}
+
+template<class U>
+bi::SharedPointer<const U> bi::SharedPointer<const bi::Any>::static_pointer_cast() const {
+  return SharedPointer<const U>(std::static_pointer_cast<const U>(ptr));
 }

@@ -39,7 +39,12 @@ static constexpr size_t mutable_value = 0;
  */
 template<class T>
 struct super_type {
-  typedef class Any type;
+  using type = Any;
+};
+
+template<class T>
+struct super_type<const T> {
+  using type = const typename super_type<T>::type;
 };
 
 /**
