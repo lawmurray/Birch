@@ -258,29 +258,6 @@ The special value of `nil` may be assigned to an optional to remove an existing 
 > **Note**
 > In Birch, a variable of class type always has a value. In some other languages (e.g. Java), variables of class type may have a null value, and this null value is often used to denote no value. In Birch, optionals are always used where a variable may have no value. This is particularly useful when writing functions that accept arguments of class type, as there is no need to check whether those arguments actually have a value or not; they will always have a value, unless denoted as optional.
 
-## Type aliases
-
-The type `A` may be declared as an alias (synonym) for the type `B` with:
-
-    type A = B;
-
-## Casts
-
-A variable of one type can be cast down to a more-specific target type by using a cast function. The name of the cast function is the name of the target type, followed by `?`. The cast function returns an optional of the target type, with a value if the cast was successful, or no value if the cast was unsuccessful.
-
-For `A < B`, with `a:A`, `b:B`, and `c:A?`:
-
-    b <- a;      // OK, as B > A
-    c <- A?(b);  // OK, but A < B so must use cast
-    
-The optional `c` may be used to check whether the cast succeeded, and if so, to retrieve the result:
-    
-    if (c?) {
-      f(c!);  // cast was successful, can do something with c
-    }
-    
-It is possible to cast an optional in the same way, without first checking for a value. The cast of an optional succeeds if that optional has a value, and that value can be cast to the target type. So for `b:B?` instead of `b:B`, the above example is the same.
-
 ## Functions
 
 A function with two parameters `a:A` and `b:B`, and return type `C`, is declared as:
@@ -588,10 +565,20 @@ All member functions are virtual. To delegate a call to a member function of the
         super.f(c);  // calls f(c:C) in class B
       }
     }
+    
+Member functions that do not modify the state of an object may be marked as read-only by placing a prime (`'`) immediately after the `function` keyword:
+
+    class A {
+      function' f(c:C) {
+        //
+      }
+    }
+
+When an object is accessed through a read-only reference, the only member functions that may be called upon it are such read-only member functions.
 
 ### Member fibers
 
-Fiber declarations that appear within the body of a class are *member fibers*. Their behaviour is analogous to member functions.
+Fiber declarations that appear within the body of a class are *member fibers*. Their behaviour is analogous to member functions. They may be similarly marked as read-only by placing a prime (`'`) immediately after the `fiber` keyword.
 
 ### Generic parameters
 
@@ -719,6 +706,63 @@ The body of the operator should construct the object to be returned as the resul
     
     a:A;
     f(a);
+
+## Aliases
+
+The basic type `A` may be declared as an alias (synonym) for the basic type `B` with:
+
+    type A = B;
+    
+The same applies to class types, but use the `class` keyword:
+
+    class A = B;
+
+## Casts
+
+A variable of one type can be cast down to a more-specific target type by using a cast function. The name of the cast function is the name of the target type, followed by `?`. The cast function returns an optional of the target type, with a value if the cast was successful, or no value if the cast was unsuccessful.
+
+For `A < B`, with `a:A`, `b:B`, and `c:A?`:
+
+    b <- a;      // OK, as B > A
+    c <- A?(b);  // OK, but A < B so must use cast
+    
+The optional `c` may be used to check whether the cast succeeded, and if so, to retrieve the result:
+    
+    if (c?) {
+      f(c!);  // cast was successful, can do something with c
+    }
+    
+It is possible to cast an optional in the same way, without first checking for a value. The cast of an optional succeeds if that optional has a value, and that value can be cast to the target type. So for `b:B?` instead of `b:B`, the above example is the same.
+
+## Weak references
+
+Birch uses reference counting to determine when objects should be destroyed. Some usage patterns create reference cycles that prevent object destruction. To break these cycles, weak references may be used. A weak reference is marked by placing an ampersand (`&`) immediately after a class type:
+
+    a:A&;
+
+Weak references do not participate in reference counting. An object is destroyed as soon it has no references to it besides weak references. As a consequence of this, it is necessary to check the validity of a weak reference before attempting to access an object through it, as that object may have been destroyed. The usage idiom is to assign the weak reference to an optional, then check whether the optional has a value, and if so, to do something with the value:
+
+    b:A?;
+    b <- a;  // assign the weak reference to the optional
+    if (b?) {  // check if b has a value
+      f(b!);  // if so, do something with the value of b
+    }
+
+If the weak reference still points to a valid object, this creates a new reference to that object, contained in the optional. As this is not a weak reference, the object will not be destroyed while the reference exists. If the weak reference no longer points to a valid object, as it has previously been destroyed, then the optional will have no value.
+
+This is the only way to access an object via a weak reference. A weak reference cannot be assigned to a non-weak reference of the same type, but a non-weak reference can be assigned to a weak reference.
+
+## Read-only references
+
+A class type may be followed by an apostrophe (prime) symbol (`'`) to denote it read-only:
+
+    a:A';
+
+For a reference that is both weak and read-only, the prime precedes the ampersand:
+
+    a:A'&;
+
+With a read-only reference to an object, only read-only functions and fibers may be called on that object. These are marked in the class definition by using a prime immediately after the `function` or `fiber` keyword.
 
 ## Special Topics
 
