@@ -2,11 +2,7 @@
  * Demonstrates how delayed sampling can yield to different runtime states
  * through a stochastic branch, inspired by a spike-and-slab prior.
  */
-program delay_spike_and_slab(diagnostics:Boolean <- false) {
-  if (diagnostics) {
-    delay_spike_and_slab_diagnostics();
-  }
-
+program delay_spike_and_slab() {
   ρ:Random<Boolean>;
   x:Random<Real>;
   y:Random<Real>;
@@ -20,20 +16,4 @@ program delay_spike_and_slab(diagnostics:Boolean <- false) {
     y ~ Gaussian(0.0, 1.0);
     stdout.print("spike\n");
   }
-}
-
-/*
- * Set up diagnostics.
- */
-function delay_spike_and_slab_diagnostics() {
-  o:DelayDiagnostics(3);
-  delayDiagnostics <- o;
-  
-  o.name(1, "ρ");
-  o.name(2, "x");
-  o.name(3, "y");
-
-  o.position(1, 1, 1);
-  o.position(2, 2, 1);
-  o.position(3, 3, 1);
 }

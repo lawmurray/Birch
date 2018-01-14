@@ -5,7 +5,6 @@
  *
  *   - `-N`            : Number of particles.
  *   - `-T`            : Number of time steps.
- *   - `--diagnostics` : Enable/disable delayed sampling diagnostics.
  *   - `--ess-rel`     : ESS threshold, as proportion of `N`, under which
  *                       resampling is triggered.
  *
@@ -13,12 +12,7 @@
  * `initial` and `transition` functions of the `Example` class, and to `~>`
  * in the `observation` function.
  */
-program delay_rbpf(N:Integer <- 100, T:Integer <- 10,
-    diagnostics:Boolean <- false, ess_rel:Real <- 0.7) {  
-  if (diagnostics) {
-    delay_rbpf_diagnostics(T);
-  }
-
+program delay_rbpf(N:Integer <- 100, T:Integer <- 10, ess_rel:Real <- 0.7) {  
   x:Real![N];     // particles
   w:Real[N];      // log-weights
   a:Integer[N];   // ancestor indices
@@ -153,26 +147,6 @@ class Example(T:Integer) {
       stdout.print(x_l[t]);
       stdout.print(", ");
     }
-  }
-}
-
-/*
- * Set up diagnostics.
- */
-function delay_rbpf_diagnostics(T:Integer) {
-  o:DelayDiagnostics(4*T);
-  delayDiagnostics <- o;
-  
-  for (t:Integer in 1..T) {
-    o.name(4*t - 3, "x_n[" + t + "]");
-    o.name(4*t - 2, "x_l[" + t + "]");
-    o.name(4*t - 1, "y_n[" + t + "]");
-    o.name(4*t, "y_l[" + t + "]");
-    
-    o.position(4*t - 3, t, 4);
-    o.position(4*t - 2, t, 3);
-    o.position(4*t, t, 2);
-    o.position(4*t - 1, t, 1);
   }
 }
 

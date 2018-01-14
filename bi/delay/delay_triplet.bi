@@ -5,14 +5,8 @@
  *   - `-x`            : Value of the first variable.
  *   - `-y`            : Value of the second variable.
  *   - `-z`            : Value of the third variable.
- *   - `--diagnostics` : Enable/disable delayed sampling diagnostics.
  */
-program delay_triplet(x:Real?, y:Real?, z:Real?,
-    diagnostics:Boolean <- false) {
-  if (diagnostics) {
-    delay_triplet_diagnostics();
-  }
-
+program delay_triplet(x:Real?, y:Real?, z:Real?) {
   x1:Random<Real>;
   y1:Random<Real>;
   z1:Random<Real>;
@@ -28,20 +22,4 @@ program delay_triplet(x:Real?, y:Real?, z:Real?,
   stdout.print("x = " + x1 + "\n");
   stdout.print("y = " + y1 + "\n");
   stdout.print("z = " + z1 + "\n");
-}
-
-/*
- * Set up diagnostics.
- */
-function delay_triplet_diagnostics() {
-  o:DelayDiagnostics(3);
-  delayDiagnostics <- o;
-
-  o.name(1, "x");
-  o.name(2, "y");
-  o.name(3, "z");
-  
-  o.position(1, 1, 1);
-  o.position(2, 2, 1);
-  o.position(3, 3, 1);
 }

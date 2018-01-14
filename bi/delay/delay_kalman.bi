@@ -3,14 +3,8 @@
  *
  *   - `-a`            : Autoregressive coefficient.
  *   - `-T`            : Number of time steps.
- *   - `--diagnostics` : Enable/disable delayed sampling diagnostics.
  */
-program delay_kalman(a:Real <- 0.9, T:Integer <- 10,
-    diagnostics:Boolean <- false) {
-  if (diagnostics) {
-    delay_kalman_diagnostics(T);
-  }
-
+program delay_kalman(a:Real <- 0.9, T:Integer <- 10) {
   x:Random<Real>[T];  // state
   y:Random<Real>[T];  // observation
   
@@ -32,21 +26,5 @@ program delay_kalman(a:Real <- 0.9, T:Integer <- 10,
   /* output */
   for (t:Integer in 1..T) {
     stdout.print(x[t] + "\n");
-  }
-}
-
-/*
- * Set up diagnostics.
- */
-function delay_kalman_diagnostics(T:Integer) {
-  o:DelayDiagnostics(2*T);
-  delayDiagnostics <- o;
-
-  for (t:Integer in 1..T) {
-    o.name(2*t - 1, "x[" + t + "]");
-    o.name(2*t, "y[" + t + "]");
-    
-    o.position(2*t - 1, t, 2);
-    o.position(2*t, t, 1);
   }
 }
