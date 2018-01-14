@@ -28,7 +28,6 @@ AX_CXX_COMPILE_STDCXX(14, [noext], [mandatory])
 
 # Checks for libraries
 AC_SEARCH_LIBS([dlopen], [dl], [], [])
-AC_CHECK_LIB([m], [main], [], [AC_MSG_ERROR([required standard math library not found])])
 AC_CHECK_LIB([boost_filesystem], [main], [], [AC_CHECK_LIB([boost_filesystem-mt], [main], [], [AC_MSG_ERROR([Boost.FileSystem library not found])])])
 AC_CHECK_LIB([boost_system], [main], [], [AC_CHECK_LIB([boost_system-mt], [main], [], [AC_MSG_ERROR([Boost.System library not found])])])
 
