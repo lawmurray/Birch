@@ -170,6 +170,11 @@ private:
   std::list<boost::filesystem::path> lib_dirs;
 
   /**
+   * Target architecture.
+   */
+  std::string arch;
+
+  /**
    * Installation directory.
    */
   boost::filesystem::path prefix;
@@ -178,6 +183,16 @@ private:
    * Name of the package.
    */
   std::string packageName;
+
+  /**
+   * Enable shared library build.
+   */
+  bool sharedLib;
+
+  /**
+   * Enable static library build.
+   */
+  bool staticLib;
 
   /**
    * Enable compiler warnings.

@@ -25,8 +25,11 @@ bi::Driver::Driver(int argc, char** argv) :
     work_dir(current_path()),
     build_dir(current_path() / "build"),
     lib_dir(current_path() / "build" / ".libs"),
+    arch("native"),
     prefix(""),
     packageName("Untitled"),
+    sharedLib(true),
+    staticLib(false),
     warnings(true),
     debug(true),
     verbose(true),
@@ -39,8 +42,13 @@ bi::Driver::Driver(int argc, char** argv) :
     SHARE_DIR_ARG = 256,
     INCLUDE_DIR_ARG,
     LIB_DIR_ARG,
+    ARCH_ARG,
     PREFIX_ARG,
     NAME_ARG,
+    ENABLE_STATIC_ARG,
+    DISABLE_STATIC_ARG,
+    ENABLE_SHARED_ARG,
+    DISABLE_SHARED_ARG,
     ENABLE_WARNINGS_ARG,
     DISABLE_WARNINGS_ARG,
     ENABLE_DEBUG_ARG,
@@ -54,8 +62,13 @@ bi::Driver::Driver(int argc, char** argv) :
       { "share-dir", required_argument, 0, SHARE_DIR_ARG },
       { "include-dir", required_argument, 0, INCLUDE_DIR_ARG },
       { "lib-dir", required_argument, 0, LIB_DIR_ARG },
+      { "arch", required_argument, 0, ARCH_ARG },
       { "prefix", required_argument, 0, PREFIX_ARG },
       { "name", required_argument, 0, NAME_ARG },
+      { "enable-static", no_argument, 0, ENABLE_STATIC_ARG },
+      { "disable-static", no_argument, 0, DISABLE_STATIC_ARG },
+      { "enable-shared", no_argument, 0, ENABLE_SHARED_ARG },
+      { "disable-shared", no_argument, 0, DISABLE_SHARED_ARG },
       { "enable-warnings", no_argument, 0, ENABLE_WARNINGS_ARG },
       { "disable-warnings", no_argument, 0, DISABLE_WARNINGS_ARG },
       { "enable-debug", no_argument, 0, ENABLE_DEBUG_ARG },
@@ -85,11 +98,20 @@ bi::Driver::Driver(int argc, char** argv) :
     case LIB_DIR_ARG:
       lib_dirs.push_back(optarg);
       break;
+    case ARCH_ARG:
+      arch = optarg;
+      break;
     case PREFIX_ARG:
       prefix = optarg;
       break;
     case NAME_ARG:
       packageName = optarg;
+      break;
+    case ENABLE_SHARED_ARG:
+      sharedLib = true;
+      break;
+    case ENABLE_STATIC_ARG:
+      staticLib = true;
       break;
     case ENABLE_WARNINGS_ARG:
       warnings = true;
@@ -468,26 +490,40 @@ void bi::Driver::setup() {
     ofstream configureStream(work_dir / "configure.ac");
     configureStream << contents << "\n\n";
 
+    /* open conditional on checks */
+    if (!metaFiles["require.header"].empty() ||
+        !metaFiles["require.library"].empty() ||
+        !metaFiles["require.program"].empty()) {
+      configureStream << "if test x$check = xtrue; then\n";
+    }
+
     /* required headers */
     for (auto file : metaFiles["require.header"]) {
-      configureStream << "AC_CHECK_HEADERS([" << file.string() << "], [], " <<
+      configureStream << "  AC_CHECK_HEADERS([" << file.string() << "], [], " <<
           "[AC_MSG_ERROR([header required by " << packageName <<
           " package not found.])], [-])\n";
     }
 
     /* required libraries */
     for (auto file : metaFiles["require.library"]) {
-      configureStream << "AC_CHECK_LIB([" << file.string() << "], [main], " <<
+      configureStream << "  AC_CHECK_LIB([" << file.string() << "], [main], " <<
           "[], [AC_MSG_ERROR([library required by " << packageName <<
           " package not found.])])\n";
     }
 
     /* required programs */
     for (auto file : metaFiles["require.program"]) {
-      configureStream << "AC_PATH_PROG([PROG], [" << file.string() << "], [])\n";
-      configureStream << "if test \"$PROG\" = \"\"; then\n";
-      configureStream << "  AC_MSG_ERROR([" << file.string() << " program " <<
+      configureStream << "  AC_PATH_PROG([PROG], [" << file.string() << "], [])\n";
+      configureStream << "  if test \"$PROG\" = \"\"; then\n";
+      configureStream << "    AC_MSG_ERROR([" << file.string() << " program " <<
           "required by " << packageName << " package not found.])\n";
+      configureStream << "  fi\n";
+    }
+
+    /* close conditional on checks */
+    if (!metaFiles["require.header"].empty() ||
+        !metaFiles["require.library"].empty() ||
+        !metaFiles["require.program"].empty()) {
       configureStream << "fi\n";
     }
 
@@ -628,6 +664,25 @@ void bi::Driver::configure() {
     std::stringstream cppflags, cxxflags, ldflags, options, cmd;
 
     /* compile and link flags */
+    if (arch == "js" || arch == "wasm") {
+      options << " --disable-check";
+      // ^ header and library checks seem to fail under emconfigure, although
+      //   make is still successful
+      if (sharedLib) {
+        warn("automatically disabling shared library build for architecture '" + arch + "'");
+        sharedLib = false;
+      }
+      if (!staticLib) {
+        warn("automatically enabling static library build for architecture '" + arch + "'");
+        staticLib = true;
+      }
+      if (arch == "wasm") {
+        cxxflags << " -s WASM=1";
+      }
+    } else if (arch != "native") {
+      throw DriverException("unknown architecture '" + arch +
+          "'; valid values are 'native', 'js' and 'wasm'");
+    }
     if (debug) {
       cppflags << " -D_GLIBCXX_DEBUG";
       cxxflags << " -O0 -g -fno-inline";
@@ -665,7 +720,16 @@ void bi::Driver::configure() {
     if (!prefix.empty()) {
       options << " --prefix=" << absolute(prefix).string();
     }
-    options << " --disable-static";
+    if (staticLib) {
+      options << " --enable-static";
+    } else {
+      options << " --disable-static";
+    }
+    if (sharedLib) {
+      options << " --enable-shared";
+    } else {
+      options << " --disable-shared";
+    }
     options << " INSTALL=\"install -p\"";
     options << " --config-cache";
     if (packageName == "Birch.Standard") {
@@ -677,9 +741,19 @@ void bi::Driver::configure() {
     }
 
     /* command */
-    cmd << (work_dir / "configure").string() << " " << options.str()
-        << " CPPFLAGS='" << cppflags.str() << "' CXXFLAGS='" << cxxflags.str()
-        << "' LDFLAGS='" << ldflags.str() << "'";
+    if (arch == "js" || arch == "wasm") {
+      cmd << "emconfigure ";
+    }
+    cmd << (work_dir / "configure").string() << " " << options.str();
+    if (!cppflags.str().empty()) {
+      cmd << " CPPFLAGS='" << cppflags.str() << "'";
+    }
+    if (!cxxflags.str().empty()) {
+      cmd << " CXXFLAGS='" << cxxflags.str() << "'";
+    }
+    if (!ldflags.str().empty()) {
+      cmd << " LDFLAGS='" << ldflags.str() << "'";
+    }
     if (verbose) {
       std::cerr << cmd.str() << std::endl;
     } else {
@@ -711,6 +785,9 @@ void bi::Driver::configure() {
 void bi::Driver::target(const std::string& cmd) {
   /* command */
   std::stringstream buf;
+  if (arch == "js" || arch == "wasm") {
+    buf << "emmake ";
+  }
   buf << "make -j 4 " << cmd;
 
   /* handle output */

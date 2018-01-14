@@ -15,6 +15,14 @@ AC_ARG_ENABLE([std],
        *) AC_MSG_ERROR([bad value ${enableval} for --enable-std]) ;;
      esac],[std=true])
 
+AC_ARG_ENABLE([check],
+     [  --enable-check            enable dependency checks],
+     [case "${enableval}" in
+       yes) check=true ;;
+       no)  check=false ;;
+       *) AC_MSG_ERROR([bad value ${enableval} for --enable-check]) ;;
+     esac],[check=true])
+
 AC_PROG_CXXCPP
 AC_PROG_CXX
 AC_PROG_INSTALL
@@ -25,18 +33,17 @@ AX_CXX_COMPILE_STDCXX(14, [noext], [mandatory])
 AC_HEADER_STDBOOL
 AC_C_INLINE
 
-# Checks for libraries
-AC_CHECK_LIB([birch], [bi_present], [], [AC_MSG_ERROR([Birch compiler library not found])])
-AC_CHECK_LIB([profiler], [main], [], [])
-if test x$std = xtrue; then
-    AC_CHECK_LIB([birch_standard], [bi_standard_present], [], [AC_MSG_ERROR([Birch standard library not found])])
+if test x$check = xtrue; then
+  # Checks for libraries
+  AC_CHECK_LIB([birch], [bi_present], [], [AC_MSG_ERROR([Birch compiler library not found])])
+  AC_CHECK_LIB([profiler], [main], [], [])
+  if test x$std = xtrue; then
+      AC_CHECK_LIB([birch_standard], [bi_standard_present], [], [AC_MSG_ERROR([Birch standard library not found])])
+  fi
+  
+  # Checks for header files
+  AC_CHECK_HEADERS([bi/libbirch.hpp], [], [AC_MSG_ERROR([Birch compiler library header not found.])], [-])
+  if test x$std = xtrue; then
+      AC_CHECK_HEADERS([bi/birch_standard.hpp], [], [AC_MSG_ERROR([Birch standard library header not found.])], [-])
+  fi
 fi
-
-# Checks for header files
-AC_CHECK_HEADERS([bi/libbirch.hpp], [], [AC_MSG_ERROR([Birch compiler library header not found.])], [-])
-if test x$std = xtrue; then
-    AC_CHECK_HEADERS([bi/birch_standard.hpp], [], [AC_MSG_ERROR([Birch standard library header not found.])], [-])
-fi
-
-#AC_CONFIG_FILES([Makefile])
-#AC_OUTPUT
