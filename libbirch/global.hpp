@@ -48,10 +48,22 @@ struct super_type<const T> {
 };
 
 /**
+ * Can type @p T be assigned to from type @p U?
+ */
+template<class T, class U>
+struct is_assignable {
+  using T1 = typename std::remove_const<T>::type;
+  using U1 = typename std::remove_const<U>::type;
+
+  static const bool value = std::is_assignable<T1,U1>::value &&
+      (!std::is_const<U>::value || std::is_const<T>::value);
+};
+
+/**
  * Does type @p T have a conversion operator to type @p U?
  */
 template<class T, class U>
-struct has_conversion {
+struct is_convertible {
   /* conversion operators in generated code are marked explicit, they return
    * true for std::is_constructible, but false for std::is_convertible as they
    * cannot partipicate in implicit casts; if they were not marked explicit,

@@ -33,7 +33,7 @@ public:
   SharedPointer(const std::nullptr_t& o);
 
   /**
-   * Constructor for STL shared pointer.
+   * Constructor from STL shared pointer.
    */
   SharedPointer(const std::shared_ptr<T>& ptr);
 
@@ -46,6 +46,12 @@ public:
    * Move constructor.
    */
   SharedPointer(SharedPointer<T> && o) = default;
+
+  /**
+   * Generic copy constructor.
+   */
+  template<class U, typename = std::enable_if_t<is_assignable<T,U>::value>>
+  SharedPointer(const SharedPointer<U>& o);
 
   /**
    * Assignment from null pointer.
@@ -63,9 +69,9 @@ public:
   SharedPointer<T>& operator=(SharedPointer<T> && o) = default;
 
   /**
-   * Generic assignment from shared pointer.
+   * Generic assignment.
    */
-  template<class U, typename = std::enable_if<std::is_base_of<T,U>::value>>
+  template<class U, typename = std::enable_if_t<is_assignable<T,U>::value>>
   SharedPointer<T>& operator=(const SharedPointer<U>& o);
 
   /**
@@ -79,9 +85,9 @@ public:
    * to functions with value type parameters, where the type of the object
    * pointed to has a conversion to the value type.
    *
-   * @seealso has_conversion
+   * @seealso is_convertible
    */
-  template<class U, typename = std::enable_if_t<has_conversion<T,U>::value>>
+  template<class U, typename = std::enable_if_t<is_convertible<T,U>::value>>
   operator U() const;
 
   /**
@@ -252,6 +258,13 @@ bi::SharedPointer<T>::SharedPointer(const std::nullptr_t& o) :
 
 template<class T>
 bi::SharedPointer<T>::SharedPointer(const std::shared_ptr<T>& ptr) :
+    super_type(ptr) {
+  //
+}
+
+template<class T>
+template<class U, typename>
+bi::SharedPointer<T>::SharedPointer(const SharedPointer<U>& ptr) :
     super_type(ptr) {
   //
 }

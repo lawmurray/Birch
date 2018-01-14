@@ -43,6 +43,18 @@ public:
   WeakPointer(const SharedPointer<T>& o);
 
   /**
+   * Generic copy constructor.
+   */
+  template<class U, typename = std::enable_if_t<is_assignable<T,U>::value>>
+  WeakPointer(const WeakPointer<U>& o);
+
+  /**
+   * Generic copy constructor.
+   */
+  template<class U, typename = std::enable_if_t<is_assignable<T,U>::value>>
+  WeakPointer(const SharedPointer<U>& o);
+
+  /**
    * Assignment from null pointer.
    */
   WeakPointer<T>& operator=(const std::nullptr_t& o);
@@ -65,13 +77,13 @@ public:
   /**
    * Generic assignment from weak pointer.
    */
-  template<class U, typename = std::enable_if<std::is_base_of<T,U>::value>>
+  template<class U, typename = std::enable_if<is_assignable<T,U>::value>>
   WeakPointer<T>& operator=(const WeakPointer<U>& o);
 
   /**
    * Generic assignment from shared pointer.
    */
-  template<class U, typename = std::enable_if<std::is_base_of<T,U>::value>>
+  template<class U, typename = std::enable_if<is_assignable<T,U>::value>>
   WeakPointer<T>& operator=(const SharedPointer<U>& o);
 
   /**
@@ -88,8 +100,8 @@ public:
 
 template<>
 class WeakPointer<Any> {
-  friend class SharedPointer<Any>;
-  friend class WeakPointer<const Any>;
+  friend class SharedPointer<Any> ;
+  friend class WeakPointer<const Any> ;
 public:
   using value_type = Any;
   using this_type = WeakPointer<value_type>;
@@ -101,7 +113,7 @@ public:
   WeakPointer(const SharedPointer<Any>& o);
   WeakPointer<Any>& operator=(const std::nullptr_t& o);
   WeakPointer<Any>& operator=(const WeakPointer<Any>& o) = default;
-  WeakPointer<Any>& operator=(WeakPointer<Any>&& o) = default;
+  WeakPointer<Any>& operator=(WeakPointer<Any> && o) = default;
   WeakPointer<Any>& operator=(const SharedPointer<Any>& o);
 
   SharedPointer<Any> lock() const;
@@ -115,7 +127,7 @@ protected:
 
 template<>
 class WeakPointer<const Any> {
-  friend class SharedPointer<const Any>;
+  friend class SharedPointer<const Any> ;
 public:
   using value_type = const Any;
   using this_type = WeakPointer<const Any>;
@@ -123,13 +135,13 @@ public:
 
   WeakPointer(const std::nullptr_t& o = nullptr);
   WeakPointer(const WeakPointer<const Any>& o) = default;
-  WeakPointer(WeakPointer<const Any>&& o) = default;
+  WeakPointer(WeakPointer<const Any> && o) = default;
   WeakPointer(const SharedPointer<const Any>& o);
   WeakPointer(const WeakPointer<Any>& o);
   WeakPointer(const SharedPointer<Any>& o);
   WeakPointer<const Any>& operator=(const std::nullptr_t& o);
   WeakPointer<const Any>& operator=(const WeakPointer<const Any>& o) = default;
-  WeakPointer<const Any>& operator=(WeakPointer<const Any>&& o) = default;
+  WeakPointer<const Any>& operator=(WeakPointer<const Any> && o) = default;
   WeakPointer<const Any>& operator=(const SharedPointer<const Any>& o);
   WeakPointer<const Any>& operator=(const WeakPointer<Any>& o);
   WeakPointer<const Any>& operator=(const SharedPointer<Any>& o);
@@ -152,6 +164,20 @@ bi::WeakPointer<T>::WeakPointer(const std::nullptr_t& o) :
 
 template<class T>
 bi::WeakPointer<T>::WeakPointer(const SharedPointer<T>& o) :
+    super_type(o) {
+  //
+}
+
+template<class T>
+template<class U, typename>
+bi::WeakPointer<T>::WeakPointer(const WeakPointer<U>& o) :
+    super_type(o) {
+  //
+}
+
+template<class T>
+template<class U, typename>
+bi::WeakPointer<T>::WeakPointer(const SharedPointer<U>& o) :
     super_type(o) {
   //
 }
