@@ -1,9 +1,9 @@
 /**
  * (Doubly) linked list.
  */
-class LinkedList {
-  head:LinkedListNode?;
-  tail:LinkedListNode?;
+class LinkedList<Type> {
+  head:LinkedListNode<Type>?;
+  tail:LinkedListNode<Type>?;
   count:Integer <- 0;
 
   function isEmpty() -> Boolean {
@@ -11,14 +11,15 @@ class LinkedList {
   }
 
   function empty() {
-    obj:Object? <- pop();
+    obj:Type? <- pop();
     while (obj?) {
       obj <- pop();
     }
   }
 
-  function push(obj:Object) {
-    node:LinkedListNode <- LinkedListNode(obj);
+  function push(obj:Type) {
+    node:LinkedListNode<Type>;
+    node.obj <- obj;
     if (tail?) {
       tail!.next <- node;
       node.prev <- tail;
@@ -29,8 +30,9 @@ class LinkedList {
     count <- count + 1;
   }
 
-  function unshift(obj:Object) {
-    node:LinkedListNode <- LinkedListNode(obj);
+  function unshift(obj:Type) {
+    node:LinkedListNode<Type>;
+    node.obj <- obj;
     if (head?) {
       head!.prev <- node;
       node.next <- head;
@@ -41,9 +43,9 @@ class LinkedList {
     count <- count + 1;
   }
 
-  function pop() -> Object? {
-    obj:Object?;
-    curr:LinkedListNode? <- tail;
+  function pop() -> Type? {
+    obj:Type?;
+    curr:LinkedListNode<Type>? <- tail;
     if (curr?) {
       tail <- curr!.prev;
       if (tail?) {
@@ -58,12 +60,12 @@ class LinkedList {
     return obj;
   }
 
-  function pop(i:Integer) -> Object? {
-    obj:Object?;
+  function pop(i:Integer) -> Type? {
+    obj:Type?;
     if (i > count) {
       return obj;
     }
-    curr:LinkedListNode?;
+    curr:LinkedListNode<Type>?;
     if (2*i <= count) {
       curr <- head;
       for (j:Integer in 1..i-1) {
@@ -98,12 +100,12 @@ class LinkedList {
     return obj;
   }
 
-  function shift() -> Object? {
+  function shift() -> Type? {
     return pop(1);
   }
 
-  fiber walk() -> Object! {
-    curr:LinkedListNode? <- head;
+  fiber walk() -> Type! {
+    curr:LinkedListNode<Type>? <- head;
     while (curr?) {
       yield curr!.obj;
       curr <- curr!.next;
