@@ -35,9 +35,12 @@ public:
   virtual void accept(Visitor* visitor) const;
 
   virtual bool isPointer() const;
+  virtual bool isWeak() const;
 
   virtual Type* unwrap();
   virtual const Type* unwrap() const;
+
+  virtual void resolveConstructor(Argumented* args);
 
   using Type::definitely;
   using Type::common;

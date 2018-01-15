@@ -34,12 +34,24 @@ bool bi::PointerType::isPointer() const {
   return true;
 }
 
+bool bi::PointerType::isWeak() const {
+  return weak;
+}
+
 const bi::Type* bi::PointerType::unwrap() const {
   return single;
 }
 
 bi::Type* bi::PointerType::unwrap() {
   return single;
+}
+
+void bi::PointerType::resolveConstructor(Argumented* o) {
+  if (!weak) {
+    single->resolveConstructor(o);
+  } else if (!o->args->isEmpty()) {
+    throw ConstructorException(o);
+  }
 }
 
 bool bi::PointerType::dispatchDefinitely(const Type& o) const {

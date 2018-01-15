@@ -59,6 +59,10 @@ bool bi::Type::isPointer() const {
   return false;
 }
 
+bool bi::Type::isWeak() const {
+  return false;
+}
+
 bool bi::Type::isOverloaded() const {
   return false;
 }

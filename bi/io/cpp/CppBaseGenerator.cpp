@@ -309,7 +309,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
         start(param->type << ' ' << param->name);
         if (!param->value->isEmpty()) {
           middle(" = " << param->value);
-        } else if (param->type->isPointer()) {
+        } else if (param->type->isPointer() && !param->type->isWeak()) {
           middle(" = bi::make_pointer<" << param->type << ">()");
         }
         finish(';');

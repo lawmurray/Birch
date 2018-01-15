@@ -126,6 +126,11 @@ public:
   virtual bool isPointer() const;
 
   /**
+   * Is this a weak pointer type?
+   */
+  virtual bool isWeak() const;
+
+  /**
    * Is this a binary operator type?
    */
   virtual bool isBinary() const;

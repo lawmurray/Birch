@@ -151,7 +151,7 @@ void bi::CppBaseGenerator::genInit(const T* o) {
   } else if (o->type->isPointer()) {
     if (!o->value->isEmpty()) {
       middle(" = " << o->value);
-    } else {
+    } else if (!o->type->isWeak()) {
       middle(" = bi::make_pointer<" << o->type << '>');
       middle('(' << o->args << ')');
     }
