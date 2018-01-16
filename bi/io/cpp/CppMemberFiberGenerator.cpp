@@ -76,7 +76,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
       auto param = *iter;
       if (param->type->isPointer()) {
         finish(',');
-        start(param->name << "(nullptr)");
+        start(getName((*iter)->name->str(), (*iter)->number) << "(nullptr)");
       }
     }
     finish(" {");
