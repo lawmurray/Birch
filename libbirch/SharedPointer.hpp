@@ -50,7 +50,7 @@ public:
   /**
    * Generic copy constructor.
    */
-  template<class U, typename = std::enable_if_t<is_assignable<T,U>::value>>
+  template<class U>
   SharedPointer(const SharedPointer<U>& o);
 
   /**
@@ -71,24 +71,8 @@ public:
   /**
    * Generic assignment.
    */
-  template<class U, typename = std::enable_if_t<is_assignable<T,U>::value>>
-  SharedPointer<T>& operator=(const SharedPointer<U>& o);
-
-  /**
-   * Value assignment.
-   */
   template<class U>
-  SharedPointer<T>& operator=(const U& o);
-
-  /**
-   * User-defined conversions. This allows pointers to be passed as arguments
-   * to functions with value type parameters, where the type of the object
-   * pointed to has a conversion to the value type.
-   *
-   * @seealso is_convertible
-   */
-  template<class U, typename = std::enable_if_t<is_convertible<T,U>::value>>
-  operator U() const;
+  SharedPointer<T>& operator=(const SharedPointer<U>& o);
 
   /**
    * Get the raw pointer.
@@ -263,13 +247,6 @@ bi::SharedPointer<T>::SharedPointer(const std::shared_ptr<T>& ptr) :
 }
 
 template<class T>
-template<class U, typename>
-bi::SharedPointer<T>::SharedPointer(const SharedPointer<U>& ptr) :
-    super_type(ptr) {
-  //
-}
-
-template<class T>
 bi::SharedPointer<T>& bi::SharedPointer<T>::operator=(
     const std::nullptr_t& o) {
   root_type::operator=(o);
@@ -277,24 +254,11 @@ bi::SharedPointer<T>& bi::SharedPointer<T>::operator=(
 }
 
 template<class T>
-template<class U, typename >
+template<class U>
 bi::SharedPointer<T>& bi::SharedPointer<T>::operator=(
     const SharedPointer<U>& o) {
   root_type::operator=(o);
   return *this;
-}
-
-template<class T>
-template<class U>
-bi::SharedPointer<T>& bi::SharedPointer<T>::operator=(const U& o) {
-  *get() = o;
-  return *this;
-}
-
-template<class T>
-template<class U, typename >
-bi::SharedPointer<T>::operator U() const {
-  return static_cast<U>(*get());
 }
 
 template<class T>
