@@ -136,25 +136,11 @@ bi::Type* bi::PointerType::common(const FunctionType& o) const {
 }
 
 bi::Type* bi::PointerType::common(const OptionalType& o) const {
-  if (o.single->isPointer()) {
-    /* the least common type of any pointer and an optional of any pointer is
-     * the latter, as e.g. for A& and A?, an A& can be assigned to an A? but
-     * not vice-versa, and both can be assigned to a A&?, so A? is the least
-     * common type */
-    auto single1 = dynamic_cast<PointerType*>(common(*o.single));
-    if (single1) {
-      single1->weak = false;
-      return new OptionalType(single1);
-    } else {
-      return nullptr;
-    }
+  auto single1 = common(*o.single);
+  if (single1) {
+    return new OptionalType(single1);
   } else {
-    auto single1 = common(*o.single);
-    if (single1) {
-      return new OptionalType(single1);
-    } else {
-      return nullptr;
-    }
+    return nullptr;
   }
 }
 
