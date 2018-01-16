@@ -72,6 +72,7 @@ public:
   virtual bool definitely(const FunctionType& o) const;
   virtual bool definitely(const GenericType& o) const;
   virtual bool definitely(const OptionalType& o) const;
+  virtual bool definitely(const PointerType& o) const;
   virtual bool definitely(const SequenceType& o) const;
   virtual bool definitely(const TupleType& o) const;
   virtual bool definitely(const TypeList& o) const;
@@ -86,6 +87,7 @@ public:
   virtual Type* common(const FunctionType& o) const;
   virtual Type* common(const GenericType& o) const;
   virtual Type* common(const OptionalType& o) const;
+  virtual Type* common(const PointerType& o) const;
   virtual Type* common(const SequenceType& o) const;
   virtual Type* common(const TupleType& o) const;
   virtual Type* common(const TypeList& o) const;

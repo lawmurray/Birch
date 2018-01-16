@@ -34,6 +34,9 @@ public:
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
+  virtual bool isClass() const;
+  virtual Class* getClass() const;
+
   virtual bool isPointer() const;
   virtual bool isWeak() const;
 

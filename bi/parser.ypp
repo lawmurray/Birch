@@ -451,8 +451,8 @@ generic_list
     ;
 
 generic
-    : name LE_OP class_type  { $$ = new bi::Generic($1, $3, make_loc(@$)); }
-    | name                   { $$ = new bi::Generic($1, new bi::AnyType(make_loc(@$)), make_loc(@$)); }
+    : name LE_OP unknown_type  { $$ = new bi::Generic($1, $3, make_loc(@$)); }
+    | name                     { $$ = new bi::Generic($1, new bi::AnyType(make_loc(@$)), make_loc(@$)); }
     ;
 
 optional_generics

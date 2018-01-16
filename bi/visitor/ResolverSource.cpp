@@ -128,8 +128,8 @@ bi::Expression* bi::ResolverSource::modify(Range* o) {
 
 bi::Expression* bi::ResolverSource::modify(Member* o) {
   o->left = o->left->accept(this);
-  if (o->left->type->unwrap()->isClass()) {
-    memberScopes.push_back(o->left->type->unwrap()->getClass()->scope);
+  if (o->left->type->isClass()) {
+    memberScopes.push_back(o->left->type->getClass()->scope);
   } else {
     throw MemberException(o);
   }
@@ -156,8 +156,7 @@ bi::Expression* bi::ResolverSource::modify(Super* o) {
       throw SuperBaseException(o);
     } else {
       Modifier::modify(o);
-      o->type = new PointerType(false,
-          classes.back()->base->accept(&cloner)->accept(this), false, o->loc);
+      o->type = new PointerType(false, classes.back()->base, false, o->loc);
     }
   } else {
     throw SuperException(o);
@@ -296,8 +295,8 @@ bi::Statement* bi::ResolverSource::modify(Assignment* o) {
       throw NotAssignableException(o);
     }
     if (!o->right->type->definitely(*o->left->type)
-        && (!o->left->type->unwrap()->isClass()
-            || !o->left->type->unwrap()->getClass()->hasAssignment(
+        && (!o->left->type->isClass()
+            || !o->left->type->getClass()->hasAssignment(
                 o->right->type))) {
       throw AssignmentException(o);
     }
@@ -449,7 +448,7 @@ bi::Statement* bi::ResolverSource::modify(ExpressionStatement* o) {
   auto call = dynamic_cast<Call*>(o->single);
   if (call && call->type->isFiber()) {
     auto name = new Name();
-    auto var = new LocalVariable(name, o->single->type->accept(&cloner),
+    auto var = new LocalVariable(name, o->single->type,
         new EmptyExpression(o->loc), new EmptyExpression(o->loc), o->single,
         o->loc);
     auto decl = new ExpressionStatement(var, o->loc);

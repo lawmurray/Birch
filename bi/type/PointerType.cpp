@@ -30,6 +30,14 @@ void bi::PointerType::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }
 
+bool bi::PointerType::isClass() const {
+  return single->isClass();
+}
+
+bi::Class* bi::PointerType::getClass() const {
+  return single->getClass();
+}
+
 bool bi::PointerType::isPointer() const {
   return true;
 }
