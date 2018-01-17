@@ -291,6 +291,36 @@ public:
     return x;
   }
 
+  /**
+   * Set.
+   *
+   * @param path List of strings giving names of the items.
+   * @param x The value.
+   *
+   * @return The new item.
+   */
+  value& set(const std::initializer_list<std::string>& path,
+      const value_type& x);
+
+  /**
+   * Set.
+   *
+   * @param name Name of the item.
+   * @param x The value.
+   *
+   * @param The new item.
+   */
+  value& set(const std::string& name, const value_type& x);
+
+  /**
+   * Set.
+   *
+   * @param x The value.
+   *
+   * @param The new item.
+   */
+  value& set(const value_type& x);
+
 private:
   /**
    * The value.

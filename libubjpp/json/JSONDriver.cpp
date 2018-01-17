@@ -14,17 +14,16 @@ extern "C" void ParseFree(void* p, void (*freeProc)(void*));
 extern "C" void Parse(void *parser, int token, int value, ParserState* state);
 
 boost::optional<libubjpp::value> libubjpp::JSONDriver::parse(
-    const std::string &f) {
-  /* slurp in the whole file */
-  std::ifstream in(f);
+    std::istream& stream) {
+  /* slurp in the whole stream */
   std::string data;
-  getline(in, data,
+  getline(stream, data,
       std::string::traits_type::to_char_type(
           std::string::traits_type::eof()));
-  return parseString(data);
+  return parse(data);
 }
 
-boost::optional<libubjpp::value> libubjpp::JSONDriver::parseString(
+boost::optional<libubjpp::value> libubjpp::JSONDriver::parse(
     const std::string& data) {
   int value = 0, token;
   ParserState state;

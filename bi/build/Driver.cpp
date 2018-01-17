@@ -413,7 +413,8 @@ void bi::Driver::meta() {
 
   /* parse META.json */
   JSONDriver driver;
-  auto top = driver.parse("META.json");
+  std::ifstream stream("META.json");
+  auto top = driver.parse(stream);
   if (!top) {
     throw DriverException("syntax error in META.json");
   }

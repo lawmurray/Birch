@@ -45,13 +45,13 @@ public:
   /**
    * Generic copy constructor.
    */
-  template<class U, typename = std::enable_if_t<is_assignable<T,U>::value>>
+  template<class U>
   WeakPointer(const WeakPointer<U>& o);
 
   /**
    * Generic copy constructor.
    */
-  template<class U, typename = std::enable_if_t<is_assignable<T,U>::value>>
+  template<class U>
   WeakPointer(const SharedPointer<U>& o);
 
   /**
@@ -77,20 +77,14 @@ public:
   /**
    * Generic assignment from weak pointer.
    */
-  template<class U, typename = std::enable_if<is_assignable<T,U>::value>>
+  template<class U>
   WeakPointer<T>& operator=(const WeakPointer<U>& o);
 
   /**
    * Generic assignment from shared pointer.
    */
-  template<class U, typename = std::enable_if<is_assignable<T,U>::value>>
-  WeakPointer<T>& operator=(const SharedPointer<U>& o);
-
-  /**
-   * Value assignment.
-   */
   template<class U>
-  WeakPointer<T>& operator=(const U& o);
+  WeakPointer<T>& operator=(const SharedPointer<U>& o);
 
   /**
    * Lock the pointer.
@@ -169,14 +163,14 @@ bi::WeakPointer<T>::WeakPointer(const SharedPointer<T>& o) :
 }
 
 template<class T>
-template<class U, typename>
+template<class U>
 bi::WeakPointer<T>::WeakPointer(const WeakPointer<U>& o) :
     super_type(o) {
   //
 }
 
 template<class T>
-template<class U, typename>
+template<class U>
 bi::WeakPointer<T>::WeakPointer(const SharedPointer<U>& o) :
     super_type(o) {
   //
@@ -195,7 +189,7 @@ bi::WeakPointer<T>& bi::WeakPointer<T>::operator=(const SharedPointer<T>& o) {
 }
 
 template<class T>
-template<class U, typename >
+template<class U>
 bi::WeakPointer<T>& bi::WeakPointer<T>::operator=(const SharedPointer<U>& o) {
   root_type::operator=(o);
   return *this;

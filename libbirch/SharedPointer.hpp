@@ -247,6 +247,13 @@ bi::SharedPointer<T>::SharedPointer(const std::shared_ptr<T>& ptr) :
 }
 
 template<class T>
+template<class U>
+bi::SharedPointer<T>::SharedPointer(const SharedPointer<U>& ptr) :
+    super_type(ptr) {
+  //
+}
+
+template<class T>
 bi::SharedPointer<T>& bi::SharedPointer<T>::operator=(
     const std::nullptr_t& o) {
   root_type::operator=(o);

@@ -16,17 +16,17 @@ namespace libubjpp {
 class JSONDriver {
 public:
   /**
-   * Parse a file.
+   * Parse a stream.
    *
-   * @param file The file name.
+   * @param stream Input stream.
    */
-  boost::optional<value> parse(const std::string& file);
+  boost::optional<value> parse(std::istream& stream);
 
   /**
    * Parse a string.
    *
-   * @param data The string.
+   * @param data String.
    */
-  boost::optional<value> parseString(const std::string& data);
+  boost::optional<value> parse(const std::string& data);
 };
 }
