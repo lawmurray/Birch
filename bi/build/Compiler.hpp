@@ -3,10 +3,9 @@
  */
 #pragma once
 
+#include "bi/build/misc.hpp"
 #include "bi/statement/all.hpp"
 #include "bi/exception/all.hpp"
-
-#include "boost/filesystem.hpp"
 
 #include <list>
 #include <string>
@@ -26,8 +25,8 @@ public:
    * @param work_dir Working directory.
    * @param build_dir Build directory.
    */
-  Compiler(Package* package, const boost::filesystem::path& work_dir,
-      const boost::filesystem::path& build_dir);
+  Compiler(Package* package, const fs::path& work_dir,
+      const fs::path& build_dir);
 
   /**
    * Parse all input files.
@@ -68,12 +67,12 @@ private:
   /**
    * Working directory.
    */
-  boost::filesystem::path work_dir;
+  fs::path work_dir;
 
   /**
    * Build directory.
    */
-  boost::filesystem::path build_dir;
+  fs::path build_dir;
 };
 }
 

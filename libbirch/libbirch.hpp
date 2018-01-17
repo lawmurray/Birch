@@ -31,8 +31,6 @@
 #include "boost/math/special_functions/beta.hpp"
 ///@todo Replace these with STL versions under C++17
 
-#include <getopt.h>
-
 #include <random>
 #include <algorithm>
 #include <utility>
@@ -45,6 +43,8 @@
 #include <cstddef>
 #include <cmath>
 #include <cassert>
+
+#include <getopt.h>
 
 namespace bi {
 

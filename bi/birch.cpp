@@ -10,9 +10,7 @@
 #include <iostream>
 
 int main(int argc, char** argv) {
-  using namespace boost::filesystem;
   using namespace bi;
-
   try {
     /* first option (should be a program name) */
     std::string prog;

@@ -7,7 +7,6 @@
 #include "bi/io/cpp/CppFiberGenerator.hpp"
 #include "bi/primitive/encode.hpp"
 
-#include "boost/filesystem.hpp"
 #include "boost/algorithm/string.hpp"
 
 bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,

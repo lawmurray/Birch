@@ -3,7 +3,6 @@
  */
 #include "Compiler.hpp"
 
-#include "bi/build/misc.hpp"
 #include "bi/visitor/Typer.hpp"
 #include "bi/visitor/ResolverSuper.hpp"
 #include "bi/visitor/ResolverHeader.hpp"
@@ -13,20 +12,15 @@
 #include "bi/io/hpp_ostream.hpp"
 #include "bi/lexer.hpp"
 
-#include "boost/filesystem/fstream.hpp"
-
 #include <getopt.h>
 #include <dlfcn.h>
 #include <cstdlib>
 
-namespace fs = boost::filesystem;
-
 bi::Compiler* compiler = nullptr;
 std::stringstream raw;
 
-bi::Compiler::Compiler(Package* package,
-    const boost::filesystem::path& work_dir,
-    const boost::filesystem::path& build_dir) :
+bi::Compiler::Compiler(Package* package, const fs::path& work_dir,
+    const fs::path& build_dir) :
     scope(new Scope()),
     package(package),
     work_dir(work_dir),

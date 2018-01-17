@@ -9,8 +9,6 @@
 #include "bi/primitive/definitely.hpp"
 #include "bi/build/misc.hpp"
 
-#include "boost/filesystem.hpp"
-
 bi::CppHeaderGenerator::CppHeaderGenerator(std::ostream& base,
     const int level, const bool header) :
     CppBaseGenerator(base, level, header) {
@@ -30,7 +28,7 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
 
   line("#include \"libbirch/libbirch.hpp\"");
   for (auto header : o->headers) {
-    boost::filesystem::path include = header->path;
+    fs::path include = header->path;
     include.replace_extension(".hpp");
     line("#include \"" << include.string() << "\"");
   }

@@ -8,7 +8,6 @@
 #include "bi/io/md_ostream.hpp"
 #include "bi/exception/DriverException.hpp"
 
-#include "boost/filesystem/fstream.hpp"
 #include "boost/algorithm/string.hpp"
 
 #include <getopt.h>
@@ -18,26 +17,20 @@
 #include <regex>
 #include <unordered_set>
 
-using namespace boost::filesystem;
-using namespace boost::algorithm;
-
 bi::Driver::Driver(int argc, char** argv) :
-    work_dir(current_path()),
-    build_dir(current_path() / "build"),
-    lib_dir(current_path() / "build" / ".libs"),
+    work_dir(fs::current_path()),
+    build_dir(fs::current_path() / "build"),
+    lib_dir(fs::current_path() / "build" / ".libs"),
     arch("native"),
     prefix(""),
     packageName("Untitled"),
-    sharedLib(true),
-    staticLib(false),
     warnings(true),
     debug(true),
     verbose(true),
     newAutogen(false),
     newConfigure(false),
     newMake(false),
-    newMeta(false),
-    isLocked(false) {
+    newMeta(false) {
   enum {
     SHARE_DIR_ARG = 256,
     INCLUDE_DIR_ARG,
@@ -45,10 +38,6 @@ bi::Driver::Driver(int argc, char** argv) :
     ARCH_ARG,
     PREFIX_ARG,
     NAME_ARG,
-    ENABLE_STATIC_ARG,
-    DISABLE_STATIC_ARG,
-    ENABLE_SHARED_ARG,
-    DISABLE_SHARED_ARG,
     ENABLE_WARNINGS_ARG,
     DISABLE_WARNINGS_ARG,
     ENABLE_DEBUG_ARG,
@@ -65,10 +54,6 @@ bi::Driver::Driver(int argc, char** argv) :
       { "arch", required_argument, 0, ARCH_ARG },
       { "prefix", required_argument, 0, PREFIX_ARG },
       { "name", required_argument, 0, NAME_ARG },
-      { "enable-static", no_argument, 0, ENABLE_STATIC_ARG },
-      { "disable-static", no_argument, 0, DISABLE_STATIC_ARG },
-      { "enable-shared", no_argument, 0, ENABLE_SHARED_ARG },
-      { "disable-shared", no_argument, 0, DISABLE_SHARED_ARG },
       { "enable-warnings", no_argument, 0, ENABLE_WARNINGS_ARG },
       { "disable-warnings", no_argument, 0, DISABLE_WARNINGS_ARG },
       { "enable-debug", no_argument, 0, ENABLE_DEBUG_ARG },
@@ -106,12 +91,6 @@ bi::Driver::Driver(int argc, char** argv) :
       break;
     case NAME_ARG:
       packageName = optarg;
-      break;
-    case ENABLE_SHARED_ARG:
-      sharedLib = true;
-      break;
-    case ENABLE_STATIC_ARG:
-      staticLib = true;
       break;
     case ENABLE_WARNINGS_ARG:
       warnings = true;
@@ -157,7 +136,7 @@ bi::Driver::Driver(int argc, char** argv) :
     }
   }
 #ifdef DATADIR
-  share_dirs.push_back(path(STRINGIFY(DATADIR)) / "birch");
+  share_dirs.push_back(fs::path(STRINGIFY(DATADIR)) / "birch");
 #endif
 
   /* include dirs */
@@ -185,10 +164,6 @@ bi::Driver::Driver(int argc, char** argv) :
 #endif
 }
 
-bi::Driver::~Driver() {
-  unlock();
-}
-
 void bi::Driver::run(const std::string& prog) {
   /* get package information */
   meta();
@@ -201,7 +176,7 @@ void bi::Driver::run(const std::string& prog) {
   char* msg;
   prog_t* fcn;
 
-  path so = std::string("lib") + tarname(packageName);
+  fs::path so = std::string("lib") + tarname(packageName);
 #ifdef __APPLE__
   so.replace_extension(".dylib");
 #else
@@ -240,7 +215,6 @@ void bi::Driver::build() {
   autogen();
   configure();
   target();
-  unlock();
 }
 
 void bi::Driver::install() {
@@ -250,7 +224,6 @@ void bi::Driver::install() {
   autogen();
   configure();
   target("install");
-  unlock();
 }
 
 void bi::Driver::uninstall() {
@@ -260,7 +233,6 @@ void bi::Driver::uninstall() {
   autogen();
   configure();
   target("uninstall");
-  unlock();
 }
 
 void bi::Driver::dist() {
@@ -270,62 +242,60 @@ void bi::Driver::dist() {
   autogen();
   configure();
   target("dist");
-  unlock();
 }
 
 void bi::Driver::clean() {
   meta();
   setup();
-  remove_all("autom4te.cache");
-  remove_all("m4");
-  remove("aclocal.m4");
-  remove("autogen.log");
-  remove("autogen.sh");
-  remove("compile");
-  remove("config.guess");
-  remove("config.sub");
-  remove("configure");
-  remove("configure.ac");
-  remove("depcomp");
-  remove("install-sh");
-  remove("ltmain.sh");
-  remove("Makefile.am");
-  remove("Makefile.in");
-  remove("missing");
-  remove_all(build_dir);
-  unlock();
+  fs::remove_all("autom4te.cache");
+  fs::remove_all("m4");
+  fs::remove("aclocal.m4");
+  fs::remove("autogen.log");
+  fs::remove("autogen.sh");
+  fs::remove("compile");
+  fs::remove("config.guess");
+  fs::remove("config.sub");
+  fs::remove("configure");
+  fs::remove("configure.ac");
+  fs::remove("depcomp");
+  fs::remove("install-sh");
+  fs::remove("ltmain.sh");
+  fs::remove("Makefile.am");
+  fs::remove("Makefile.in");
+  fs::remove("missing");
+  fs::remove_all(build_dir);
 }
 
 void bi::Driver::init() {
-  create_directory("bi");
-  create_directory("input");
-  create_directory("output");
+  fs::create_directory("bi");
+  fs::create_directory("input");
+  fs::create_directory("output");
   copy_with_prompt(find(share_dirs, "gitignore"), ".gitignore");
   copy_with_prompt(find(share_dirs, "LICENSE"), "LICENSE");
 
   std::string contents;
 
   contents = read_all(find(share_dirs, "META.json"));
-  replace_all(contents, "PACKAGE_NAME", packageName);
-  ofstream metaStream(work_dir / "META.json");
+  boost::replace_all(contents, "PACKAGE_NAME", packageName);
+  fs::ofstream metaStream(work_dir / "META.json");
   metaStream << contents;
 
   contents = read_all(find(share_dirs, "README.md"));
-  replace_all(contents, "PACKAGE_NAME", packageName);
-  ofstream readmeStream(work_dir / "README.md");
+  boost::replace_all(contents, "PACKAGE_NAME", packageName);
+  fs::ofstream readmeStream(work_dir / "README.md");
   readmeStream << contents;
 }
 
 void bi::Driver::check() {
   /* read META.json */
-  if (!exists("META.json")) {
+  if (!fs::exists("META.json")) {
     warn("no META.json file.");
   } else {
     meta();
   }
 
   /* check LICENSE */
-  if (!exists("LICENSE")) {
+  if (!fs::exists("LICENSE")) {
     warn("no LICENSE file; create a LICENSE file containing the "
         "distribution license (e.g. GPL or BSD) of the package.");
   } else if (allFiles.find("LICENSE") == allFiles.end()) {
@@ -333,7 +303,7 @@ void bi::Driver::check() {
   }
 
   /* check README.md */
-  if (!exists("README.md")) {
+  if (!fs::exists("README.md")) {
     warn("no README.md file; create a README.md file documenting the "
         "package in Markdown format.");
   } else if (allFiles.find("README.md") == allFiles.end()) {
@@ -355,7 +325,7 @@ void bi::Driver::check() {
   exclude.insert("autogen.sh");
   exclude.insert("ltmain.sh");
 
-  recursive_directory_iterator iter("."), end;
+  fs::recursive_directory_iterator iter("."), end;
   while (iter != end) {
     auto path = remove_first(iter->path());
     auto name = path.filename().string();
@@ -385,27 +355,20 @@ void bi::Driver::docs() {
   compiler.resolve();
 
   /* output everything, categorised by object type, and sorted */
-  path path = "DOCS.md";
-  ofstream stream(path);
+  fs::path path = "DOCS.md";
+  fs::ofstream stream(path);
   md_ostream output(stream);
 
   output << package;
   delete package;
 }
 
-void bi::Driver::unlock() {
-  if (isLocked) {
-    lockFile.unlock();
-  }
-  isLocked = false;
-}
-
 void bi::Driver::meta() {
   using namespace libubjpp;
 
   /* check for META.json */
-  if (!exists("META.json")) {
-    if (exists("MANIFEST")) {
+  if (!fs::exists("META.json")) {
+    if (fs::exists("MANIFEST")) {
       warn("MANIFEST is deprecated, use META.json instead.");
     }
     throw DriverException("META.json does not exist.");
@@ -445,36 +408,28 @@ void bi::Driver::setup() {
   auto internalName = tarname(packageName);
 
   /* create build directory */
-  if (!exists(build_dir)) {
-    if (!create_directory(build_dir)) {
+  if (!fs::exists(build_dir)) {
+    if (!fs::create_directory(build_dir)) {
       std::stringstream buf;
       buf << "Could not create build directory " << build_dir << '.';
       throw DriverException(buf.str());
     }
   }
 
-  /* create lock file */
-  if (!exists(build_dir / "lock")) {
-    ofstream stream(build_dir / "lock");
-  }
-
-  /* exclusive access to build directory */
-  lock();
-
   /* copy build files into build directory */
   newAutogen = copy_if_newer(find(share_dirs, "autogen.sh"),
       work_dir / "autogen.sh");
-  permissions(work_dir / "autogen.sh", add_perms | owner_exe);
+  fs::permissions(work_dir / "autogen.sh", fs::add_perms | fs::owner_exe);
   newConfigure = copy_if_newer(find(share_dirs, "configure.ac"),
       work_dir / "configure.ac");
   newMake = copy_if_newer(find(share_dirs, "Makefile.am"),
       work_dir / "Makefile.am");
-  newMeta = last_write_time("META.json")
+  newMeta = fs::last_write_time("META.json")
       > last_write_time(work_dir / "Makefile.am");
 
-  path m4_dir = work_dir / "m4";
-  if (!exists(m4_dir)) {
-    if (!create_directory(m4_dir)) {
+  fs::path m4_dir = work_dir / "m4";
+  if (!fs::exists(m4_dir)) {
+    if (!fs::create_directory(m4_dir)) {
       std::stringstream buf;
       buf << "Could not create m4 directory " << m4_dir << '.';
       throw DriverException(buf.str());
@@ -482,20 +437,22 @@ void bi::Driver::setup() {
   }
   copy_if_newer(find(share_dirs, "ax_cxx_compile_stdcxx.m4"),
       m4_dir / "ax_cxx_compile_stdcxx.m4");
+  copy_if_newer(find(share_dirs, "ax_check_define.m4"),
+      m4_dir / "ax_check_define.m4");
 
   /* update configure.ac */
   if (newConfigure || newMeta) {
     std::string contents = read_all(find(share_dirs, "configure.ac"));
-    replace_all(contents, "PACKAGE_NAME", packageName);
-    replace_all(contents, "PACKAGE_TARNAME", internalName);
-    ofstream configureStream(work_dir / "configure.ac");
+    boost::replace_all(contents, "PACKAGE_NAME", packageName);
+    boost::replace_all(contents, "PACKAGE_TARNAME", internalName);
+    fs::ofstream configureStream(work_dir / "configure.ac");
     configureStream << contents << "\n\n";
 
     /* open conditional on checks */
     if (!metaFiles["require.header"].empty() ||
         !metaFiles["require.library"].empty() ||
         !metaFiles["require.program"].empty()) {
-      configureStream << "if test x$check = xtrue; then\n";
+      configureStream << "if test x$emscripten = xfalse; then\n";
     }
 
     /* required headers */
@@ -538,10 +495,10 @@ void bi::Driver::setup() {
   /* update Makefile.am */
   if (newMake || newMeta) {
     std::string contents = read_all(find(share_dirs, "Makefile.am"));
-    replace_all(contents, "PACKAGE_NAME", packageName);
-    replace_all(contents, "PACKAGE_TARNAME", internalName);
+    boost::replace_all(contents, "PACKAGE_NAME", packageName);
+    boost::replace_all(contents, "PACKAGE_TARNAME", internalName);
 
-    ofstream makeStream(work_dir / "Makefile.am");
+    fs::ofstream makeStream(work_dir / "Makefile.am");
     makeStream << contents << "\n\n";
     makeStream << "lib_LTLIBRARIES = lib" << internalName << ".la\n\n";
 
@@ -558,7 +515,7 @@ void bi::Driver::setup() {
     makeStream << "nodist_lib" << internalName << "_la_SOURCES = ";
     for (auto file : metaFiles["manifest.source"]) {
       if (file.extension().compare(".bi") == 0) {
-        path cppFile = file;
+        fs::path cppFile = file;
         cppFile.replace_extension(".cpp");
         makeStream << " \\\n  " << cppFile.string();
       }
@@ -599,13 +556,13 @@ bi::Package* bi::Driver::createPackage() {
   if (packageName != "Birch.Standard") {
     /* disable inclusion of the standard library when the project is, itself,
      * the standard library (!) */
-    auto header = path("bi") / "birch_standard.bih";
+    auto header = fs::path("bi") / "birch_standard.bih";
     package->addHeader(find(include_dirs, header).string());
   }
   for (auto name: metaFiles["require.package"]) {
     /* add *.bih and *.hpp header and library dependencies */
     auto internalName = tarname(name.string());
-    path header = path("bi") / internalName;
+    fs::path header = fs::path("bi") / internalName;
     header.replace_extension(".bih");
     package->addHeader(find(include_dirs, header).string());
     header.replace_extension(".hpp");
@@ -635,7 +592,7 @@ void bi::Driver::autogen() {
       || !exists(work_dir / "install-sh")) {
     std::stringstream cmd;
 
-    cmd << (path(".") / "autogen.sh").string();
+    cmd << (fs::path(".") / "autogen.sh").string();
     if (verbose) {
       std::cerr << cmd.str() << std::endl;
     } else {
@@ -665,21 +622,10 @@ void bi::Driver::configure() {
     std::stringstream cppflags, cxxflags, ldflags, options, cmd;
 
     /* compile and link flags */
-    if (arch == "js" || arch == "wasm") {
-      options << " --disable-check";
-      // ^ header and library checks seem to fail under emconfigure, although
-      //   make is still successful
-      if (sharedLib) {
-        warn("automatically disabling shared library build for architecture '" + arch + "'");
-        sharedLib = false;
-      }
-      if (!staticLib) {
-        warn("automatically enabling static library build for architecture '" + arch + "'");
-        staticLib = true;
-      }
-      if (arch == "wasm") {
-        cxxflags << " -s WASM=1";
-      }
+    if (arch == "js") {
+      //
+    } else if (arch == "wasm") {
+      cxxflags << " -s WASM=1";
     } else if (arch != "native") {
       throw DriverException("unknown architecture '" + arch +
           "'; valid values are 'native', 'js' and 'wasm'");
@@ -721,25 +667,8 @@ void bi::Driver::configure() {
     if (!prefix.empty()) {
       options << " --prefix=" << absolute(prefix).string();
     }
-    if (staticLib) {
-      options << " --enable-static";
-    } else {
-      options << " --disable-static";
-    }
-    if (sharedLib) {
-      options << " --enable-shared";
-    } else {
-      options << " --disable-shared";
-    }
     options << " INSTALL=\"install -p\"";
     options << " --config-cache";
-    if (packageName == "Birch.Standard") {
-      /* disable inclusion of the standard library when the project is, itself,
-       * the standard library (!) */
-      options << " --disable-std";
-    } else {
-      options << " --enable-std";
-    }
 
     /* command */
     if (arch == "js" || arch == "wasm") {
@@ -821,13 +750,6 @@ void bi::Driver::target(const std::string& cmd) {
   current_path(work_dir);
 }
 
-void bi::Driver::lock() {
-  boost::interprocess::file_lock lockFile1((build_dir / "lock").c_str());
-  lockFile.swap(lockFile1);
-  lockFile.lock();
-  isLocked = true;
-}
-
 void bi::Driver::readFiles(const libubjpp::value meta, const std::string& key,
     const std::initializer_list<std::string>& path, bool checkExists) {
   if (auto files = meta.get<libubjpp::array_type>(path)) {
@@ -835,7 +757,7 @@ void bi::Driver::readFiles(const libubjpp::value meta, const std::string& key,
       for (auto file : files.get()) {
         if (auto str = file.get<libubjpp::string_type>()) {
           if (str) {
-            boost::filesystem::path filePath(str.get());
+            fs::path filePath(str.get());
             if (checkExists && !exists(filePath)) {
               warn(filePath.string() + " in META.json does not exist.");
             }

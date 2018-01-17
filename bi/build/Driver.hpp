@@ -3,12 +3,10 @@
  */
 #pragma once
 
+#include "bi/build/misc.hpp"
 #include "bi/statement/Package.hpp"
 
 #include "libubjpp/libubjpp.hpp"
-
-#include "boost/filesystem.hpp"
-#include "boost/interprocess/sync/file_lock.hpp"
 
 #include <map>
 #include <set>
@@ -25,11 +23,6 @@ public:
    * Constructor.
    */
   Driver(int argc, char** argv);
-
-  /**
-   * Destructor.
-   */
-  ~Driver();
 
   /**
    * Run user program.
@@ -76,11 +69,6 @@ public:
    */
   void docs();
 
-  /**
-   * Unlock the build directory.
-   */
-  void unlock();
-
 private:
   /**
    * Read in the META.json file.
@@ -120,11 +108,6 @@ private:
   void target(const std::string& cmd = "");
 
   /**
-   * Lock the build directory.
-   */
-  void lock();
-
-  /**
    * Consume a list of files from the meta file.
    *
    * @param meta The root object of the meta file.
@@ -142,32 +125,32 @@ private:
   /**
    * Working directory.
    */
-  boost::filesystem::path work_dir;
+  fs::path work_dir;
 
   /**
    * Build directory.
    */
-  boost::filesystem::path build_dir;
+  fs::path build_dir;
 
   /**
    * Built libraries directory.
    */
-  boost::filesystem::path lib_dir;
+  fs::path lib_dir;
 
   /**
    * Share directories.
    */
-  std::list<boost::filesystem::path> share_dirs;
+  std::list<fs::path> share_dirs;
 
   /**
    * Include directories.
    */
-  std::list<boost::filesystem::path> include_dirs;
+  std::list<fs::path> include_dirs;
 
   /**
    * Library directories.
    */
-  std::list<boost::filesystem::path> lib_dirs;
+  std::list<fs::path> lib_dirs;
 
   /**
    * Target architecture.
@@ -177,22 +160,12 @@ private:
   /**
    * Installation directory.
    */
-  boost::filesystem::path prefix;
+  fs::path prefix;
 
   /**
    * Name of the package.
    */
   std::string packageName;
-
-  /**
-   * Enable shared library build.
-   */
-  bool sharedLib;
-
-  /**
-   * Enable static library build.
-   */
-  bool staticLib;
 
   /**
    * Enable compiler warnings.
@@ -231,20 +204,10 @@ private:
   bool newMeta;
 
   /**
-   * Is build directory locked?
-   */
-  bool isLocked;
-
-  /**
-   * File lock.
-   */
-  boost::interprocess::file_lock lockFile;
-
-  /**
    * Lists of files from meta.
    */
-  std::map<std::string,std::set<boost::filesystem::path>> metaFiles;
-  std::set<boost::filesystem::path> allFiles;
+  std::map<std::string,std::set<fs::path>> metaFiles;
+  std::set<fs::path> allFiles;
 
   /**
    * Leftover command-line arguments for program calls.

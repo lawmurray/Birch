@@ -3,10 +3,6 @@
  */
 #include "libbirch/libbirch.hpp"
 
-extern "C" int bi_present() {
-  return 0;
-}
-
 bi::Range<> bi::make_range(const ptrdiff_t start, const ptrdiff_t end) {
   ptrdiff_t length = std::max(ptrdiff_t(0), end - start + 1);
   return Range<>(start, length);
