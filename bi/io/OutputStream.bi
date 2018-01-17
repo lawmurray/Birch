@@ -13,7 +13,7 @@ class OutputStream {
    *   - path: Path.
    *   - mode: Mode. 
    */
-  function open(path:String, mode:String) {
+  function open(path:String, mode:Integer) {
     file <- fopen(path, mode);
   }
 
@@ -23,7 +23,7 @@ class OutputStream {
    *   - path: Path.
    */
   function open(path:String) {
-    open(path, "w");
+    open(path, WRITE);
   }
 
   /**

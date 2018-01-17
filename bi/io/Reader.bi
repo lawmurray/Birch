@@ -1,64 +1,64 @@
 /**
- * Generic reader.
+ * Abstract reader.
  */
 class Reader {
   /**
    * Read a Boolean.
    *
-   * name: Name of the entry.
+   * - name: Name of the entry.
    *
-   * Returns an optional with a value of the given entry exists and is of a
+   * Return: An optional with a value if the given entry exists and is of a
    * compatible type.
    */
-  function' readBoolean(name:String) -> Boolean?;
+  function' getBoolean(name:String) -> Boolean?;
 
   /**
    * Read an integer.
    *
-   * name: Name of the entry.
+   * - name: Name of the entry.
    *
-   * Returns an optional with a value of the given entry exists and is of a
+   * Return: An optional with a value if the given entry exists and is of a
    * compatible type.
    */
-  function' readInteger(name:String) -> Integer?;
+  function' getInteger(name:String) -> Integer?;
 
   /**
    * Read a real.
    *
-   * name: Name of the entry.
+   * - name: Name of the entry.
    *
-   * Returns an optional with a value of the given entry exists and is of a
+   * Return: An optional with a value if the given entry exists and is of a
    * compatible type.
    */
-  function' readReal(name:String) -> Real?;
+  function' getReal(name:String) -> Real?;
   
   /**
    * Read a Boolean.
    *
-   * path: Path of the entry.
+   * - path: Path of the entry.
    *
-   * Returns an optional with a value of the given entry exists and is of a
+   * Return: An optional with a value if the given entry exists and is of a
    * compatible type.
    */
-  function' readBoolean(path:[String]) -> Boolean?;
+  function' getBoolean(path:[String]) -> Boolean?;
 
   /**
    * Read an integer.
    *
-   * path: Path of the entry.
+   * - path: Path of the entry.
    *
-   * Returns an optional with a value of the given entry exists and is of a
+   * Return: An optional with a value if the given entry exists and is of a
    * compatible type.
    */
-  function' readInteger(path:[String]) -> Integer?;
+  function' getInteger(path:[String]) -> Integer?;
 
   /**
    * Read a real.
    *
    * path: Path of the entry.
    *
-   * Returns an optional with a value of the given entry exists and is of a
+   * Return: An optional with a value if the given entry exists and is of a
    * compatible type.
    */
-  function' readReal(path:[String]) -> Real?;
+  function' getReal(path:[String]) -> Real?;
 }

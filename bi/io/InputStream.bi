@@ -13,7 +13,7 @@ class InputStream {
    *   - path: Path.
    *   - mode: Mode. 
    */
-  function open(path:String, mode:String) {
+  function open(path:String, mode:Integer) {
     assert !(file?);
     file <- fopen(path, mode);
   }
@@ -24,7 +24,7 @@ class InputStream {
    *   - path: Path.
    */
   function open(path:String) {
-    open(path, "r");
+    open(path, READ);
   }
 
   /**
@@ -49,7 +49,7 @@ class InputStream {
   /**
    * Read integer.
    */
-  function' readInteger() -> Integer {
+  function' scanInteger() -> Integer {
     assert file?;
     cpp{{
     long long int x;  // ensure fscanf gets exactly the type it expects
@@ -61,7 +61,7 @@ class InputStream {
   /**
    * Read real.
    */
-  function' readReal() -> Real {
+  function' scanReal() -> Real {
     assert file?;
     cpp{{
     double x;  // ensure fscanf gets exactly the type it expects

@@ -55,6 +55,8 @@
       "bi/io/InputStream.bi",
       "bi/io/JSONReader.bi",
       "bi/io/JSONWriter.bi",
+      "bi/io/MemoryReader.bi",
+      "bi/io/MemoryWriter.bi",
       "bi/io/OutputStream.bi",
       "bi/io/Reader.bi",
       "bi/io/Writer.bi",
