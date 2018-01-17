@@ -6,6 +6,7 @@
 %syntax_error   { error(state); }
 
 root ::= object.
+root ::= array.
 
 left_brace ::= LEFT_BRACE.  { object(state); }
 
