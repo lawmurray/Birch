@@ -4,9 +4,9 @@
 | Variable | Description |
 | --- | --- |
 | *inf:[Real64](#real64-219)* | $\infty$ |
-| *stderr:[OutputStream](#outputstream-1270)'* | Output stream for stderr. |
+| *stderr:[OutputStream](#outputstream-1303)'* | Output stream for stderr. |
 | *stdin:[InputStream](#inputstream-1186)'* | Input stream for stdin. |
-| *stdout:[OutputStream](#outputstream-1270)'* | Output stream for stdout. |
+| *stdout:[OutputStream](#outputstream-1303)'* | Output stream for stdout. |
 | *π:[Real64](#real64-219)* | $\pi$ |
 
 | Function | Brief description |
@@ -34,7 +34,7 @@
 | [Gaussian](#gaussian-890) | Create Gaussian distribution. |
 | [Gaussian](#gaussian-910) | Create Gaussian distribution. |
 | [Gaussian](#gaussian-914) | Create Gaussian distribution. |
-| [I](#i-1427) | Create identity matrix. |
+| [I](#i-1477) | Create identity matrix. |
 | [InputStream](#inputstream-1189) | Create an input stream from an already-open file. |
 | [Integer](#integer-28) | Convert other basic types to Integer. |
 | [Integer32](#integer32-39) | Convert other basic types to Integer32. |
@@ -65,7 +65,7 @@
 | [Normal](#normal-893) | Create Gaussian distribution. |
 | [Normal](#normal-917) | Create Gaussian distribution. |
 | [Normal](#normal-920) | Create Gaussian distribution. |
-| [OutputStream](#outputstream-1273) | Create an output stream for an already-open file. |
+| [OutputStream](#outputstream-1306) | Create an output stream for an already-open file. |
 | [Poisson](#poisson-572) | Create Poisson distribution. |
 | [Poisson](#poisson-677) | Create Poisson distribution. |
 | [Poisson](#poisson-680) | Create Poisson distribution. |
@@ -79,120 +79,121 @@
 | [abs](#abs-139) | Absolute value. |
 | [abs](#abs-207) | Absolute value. |
 | [abs](#abs-265) | Absolute value. |
-| [adjacent_difference](#adjacent-difference-1842) | Inclusive prefix sum. |
-| [ancestor](#ancestor-1854) | Sample a single ancestor for a vector of log-weights. |
-| [ancestors](#ancestors-1848) | Sample an ancestry vector for a vector of log-weights. |
-| [beta](#beta-1610) | The beta function. |
-| [beta](#beta-1613) | The beta function. |
-| [choose](#choose-1622) | The binomial coefficient. |
-| [choose](#choose-1625) | The binomial coefficient. |
-| [columns](#columns-1390) | Number of columns of a matrix. |
-| [columns](#columns-1392) | Number of columns of a matrix. |
-| [columns](#columns-1394) | Number of columns of a matrix. |
-| [cumulative_offspring_to_ancestors](#cumulative-offspring-to-ancestors-1869) | Convert a cumulative offspring vector into an ancestry vector. |
-| [cumulative_weights](#cumulative-weights-1881) | Compute the cumulative weight vector from the log-weight vector. |
-| [determinant](#determinant-1367) | Determinant of a matrix. |
-| [ess](#ess-1888) | Effective sample size (ESS) of the log-weight vector. |
-| [exclusive_prefix_sum](#exclusive-prefix-sum-1838) | Inclusive prefix sum. |
+| [adjacent_difference](#adjacent-difference-1894) | Inclusive prefix sum. |
+| [ancestor](#ancestor-1906) | Sample a single ancestor for a vector of log-weights. |
+| [ancestors](#ancestors-1900) | Sample an ancestry vector for a vector of log-weights. |
+| [beta](#beta-1660) | The beta function. |
+| [beta](#beta-1663) | The beta function. |
+| [choose](#choose-1672) | The binomial coefficient. |
+| [choose](#choose-1675) | The binomial coefficient. |
+| [columns](#columns-1440) | Number of columns of a matrix. |
+| [columns](#columns-1442) | Number of columns of a matrix. |
+| [columns](#columns-1444) | Number of columns of a matrix. |
+| [cumulative_offspring_to_ancestors](#cumulative-offspring-to-ancestors-1921) | Convert a cumulative offspring vector into an ancestry vector. |
+| [cumulative_weights](#cumulative-weights-1933) | Compute the cumulative weight vector from the log-weight vector. |
+| [determinant](#determinant-1417) | Determinant of a matrix. |
+| [ess](#ess-1940) | Effective sample size (ESS) of the log-weight vector. |
+| [exclusive_prefix_sum](#exclusive-prefix-sum-1890) | Inclusive prefix sum. |
 | [fclose](#fclose-25) | Close a file. |
 | [fopen](#fopen-19) | Open a file for reading. |
 | [fopen](#fopen-23) | Open a file. |
-| [gamma](#gamma-1601) | The gamma function. |
-| [gamma](#gamma-1603) | The gamma function. |
-| [inclusive_prefix_sum](#inclusive-prefix-sum-1834) | Inclusive prefix sum. |
-| [inverse](#inverse-1371) | Inverse of a matrix. |
+| [gamma](#gamma-1651) | The gamma function. |
+| [gamma](#gamma-1653) | The gamma function. |
+| [inclusive_prefix_sum](#inclusive-prefix-sum-1886) | Inclusive prefix sum. |
+| [inverse](#inverse-1421) | Inverse of a matrix. |
 | [isnan](#isnan-218) | Does this have the value NaN? |
 | [isnan](#isnan-276) | Does this have the value NaN? |
-| [lbeta](#lbeta-1616) | Logarithm of the beta function. |
-| [lbeta](#lbeta-1619) | Logarithm of the beta function. |
-| [lchoose](#lchoose-1628) | Logarithm of the binomial coefficient. |
-| [lchoose](#lchoose-1631) | Logarithm of the binomial coefficient. |
+| [lbeta](#lbeta-1666) | Logarithm of the beta function. |
+| [lbeta](#lbeta-1669) | Logarithm of the beta function. |
+| [lchoose](#lchoose-1678) | Logarithm of the binomial coefficient. |
+| [lchoose](#lchoose-1681) | Logarithm of the binomial coefficient. |
 | [length](#length-342) | Length of a string. |
-| [length](#length-1741) | Length of a vector. |
-| [length](#length-1743) | Length of a vector. |
-| [length](#length-1745) | Length of a vector. |
-| [lgamma](#lgamma-1605) | Logarithm of the gamma function. |
-| [lgamma](#lgamma-1607) | Logarithm of the gamma function. |
-| [llt](#llt-1374) | `LL^T` Cholesky decomposition of a matrix. |
-| [log_sum_exp](#log-sum-exp-1830) | Exponentiate and sum a vector, return the logarithm of the sum. |
-| [matrix](#matrix-1401) | Create matrix filled with a given scalar value. |
-| [matrix](#matrix-1408) | Create matrix filled with a given scalar value. |
-| [matrix](#matrix-1415) | Create matrix filled with a given scalar value. |
+| [length](#length-1791) | Length of a vector. |
+| [length](#length-1793) | Length of a vector. |
+| [length](#length-1795) | Length of a vector. |
+| [lgamma](#lgamma-1655) | Logarithm of the gamma function. |
+| [lgamma](#lgamma-1657) | Logarithm of the gamma function. |
+| [llt](#llt-1424) | `LL^T` Cholesky decomposition of a matrix. |
+| [log_sum_exp](#log-sum-exp-1882) | Exponentiate and sum a vector, return the logarithm of the sum. |
+| [make](#make-1946) | Make an object. |
+| [matrix](#matrix-1451) | Create matrix filled with a given scalar value. |
+| [matrix](#matrix-1458) | Create matrix filled with a given scalar value. |
+| [matrix](#matrix-1465) | Create matrix filled with a given scalar value. |
 | [max](#max-89) | Maximum of two values. |
 | [max](#max-145) | Maximum of two values. |
 | [max](#max-213) | Maximum of two values. |
 | [max](#max-271) | Maximum of two values. |
-| [max](#max-1821) | Maximum of a vector. |
+| [max](#max-1873) | Maximum of a vector. |
 | [min](#min-92) | Minimum of two values. |
 | [min](#min-148) | Minimum of two values. |
 | [min](#min-216) | Minimum of two values. |
 | [min](#min-274) | Minimum of two values. |
-| [min](#min-1825) | Minimum of a vector. |
+| [min](#min-1877) | Minimum of a vector. |
 | [mkdir](#mkdir-1175) | Create a directory. |
 | [mod](#mod-86) | Modulus. |
 | [mod](#mod-142) | Modulus. |
 | [mod](#mod-210) | Modulus. |
 | [mod](#mod-268) | Modulus. |
-| [norm](#norm-1363) | Norm of a vector. |
-| [observe_bernoulli](#observe-bernoulli-1430) | Observe a Bernoulli variate. |
-| [observe_beta](#observe-beta-1505) | Observe a beta variate. |
-| [observe_beta_binomial](#observe-beta-binomial-1447) | Observe a beta-binomial variate. |
-| [observe_binomial](#observe-binomial-1438) | Observe a binomial variate. |
-| [observe_categorical](#observe-categorical-1453) | Observe a categorical variate. |
-| [observe_crp_categorical](#observe-crp-categorical-1479) | Observe a categorical variate with Chinese restaurant process prior. |
-| [observe_dirichlet](#observe-dirichlet-1511) | Observe a Dirichlet variate. |
-| [observe_dirichlet_categorical](#observe-dirichlet-categorical-1464) | Observe a Dirichlet-categorical variate. |
-| [observe_dirichlet_multinomial](#observe-dirichlet-multinomial-1472) | Observe a Dirichlet-multinomial variate. |
-| [observe_gamma](#observe-gamma-1501) | Observe a gamma variate. |
-| [observe_gaussian](#observe-gaussian-1487) | Observe a Gaussian variate. |
-| [observe_int_uniform](#observe-int-uniform-1434) | Observe an integer uniform variate. |
-| [observe_log_gaussian](#observe-log-gaussian-1497) | Observe a log-Gaussian variate. |
-| [observe_multinomial](#observe-multinomial-1460) | Observe a multinomial variate. |
-| [observe_multivariate_gaussian](#observe-multivariate-gaussian-1493) | Observe a multivariate Gaussian variate. |
-| [observe_negative_binomial](#observe-negative-binomial-1442) | Observe a negative binomial variate. |
-| [observe_poisson](#observe-poisson-1450) | Observe a Poisson variate. |
-| [observe_uniform](#observe-uniform-1483) | Observe a uniform variate. |
-| [permute_ancestors](#permute-ancestors-1875) | Permute an ancestry vector to ensure that, when a particle survives, at least one of its instances remains in the same place. |
-| [rows](#rows-1384) | Number of rows of a matrix. |
-| [rows](#rows-1386) | Number of rows of a matrix. |
-| [rows](#rows-1388) | Number of rows of a matrix. |
-| [scalar](#scalar-1417) | Convert single-element matrix to scalar value. |
-| [scalar](#scalar-1419) | Convert single-element matrix to scalar value. |
-| [scalar](#scalar-1421) | Convert single-element matrix to scalar value. |
-| [scalar](#scalar-1762) | Convert single-element vector to scalar value. |
-| [scalar](#scalar-1764) | Convert single-element vector to scalar value. |
-| [scalar](#scalar-1766) | Convert single-element vector to scalar value. |
-| [seed](#seed-1513) | Seed the pseudorandom number generator. |
-| [simulate_bernoulli](#simulate-bernoulli-1515) | Simulate a Bernoulli variate. |
-| [simulate_beta](#simulate-beta-1585) | Simulate a beta variate. |
-| [simulate_beta_binomial](#simulate-beta-binomial-1528) | Simulate a beta-binomial variate. |
-| [simulate_binomial](#simulate-binomial-1521) | Simulate a binomial variate. |
-| [simulate_categorical](#simulate-categorical-1535) | Simulate a categorical variate. |
-| [simulate_crp_categorical](#simulate-crp-categorical-1560) | Simulate a categorical variate with Chinese restaurant process prior. |
-| [simulate_dirichlet](#simulate-dirichlet-1592) | Simulate a Dirichlet variate. |
-| [simulate_dirichlet](#simulate-dirichlet-1599) | Simulate a Dirichlet variate. |
-| [simulate_dirichlet_categorical](#simulate-dirichlet-categorical-1548) | Simulate a Dirichlet-categorical variate. |
-| [simulate_dirichlet_multinomial](#simulate-dirichlet-multinomial-1551) | Simulate a Dirichlet-multinomial variate. |
-| [simulate_exponential](#simulate-exponential-1565) | Simulate an exponential variate. |
-| [simulate_gamma](#simulate-gamma-1580) | Simulate a gamma variate. |
-| [simulate_gaussian](#simulate-gaussian-1568) | Simulate a Gaussian variate. |
-| [simulate_int_uniform](#simulate-int-uniform-1518) | Simulate an integer uniform variate. |
-| [simulate_log_gaussian](#simulate-log-gaussian-1577) | Simulate a log-Gaussian variate. |
-| [simulate_multinomial](#simulate-multinomial-1546) | Simulate a multinomial variate. |
-| [simulate_multivariate_gaussian](#simulate-multivariate-gaussian-1574) | Simulate a multivariate Gaussian variate. |
-| [simulate_negative_binomial](#simulate-negative-binomial-1524) | Simulate a negative binomial variate. |
-| [simulate_poisson](#simulate-poisson-1530) | Simulate a Poisson variate. |
-| [simulate_uniform](#simulate-uniform-1563) | Simulate a uniform variate. |
-| [solve](#solve-1378) | Solve a system of equations. |
-| [solve](#solve-1382) | Solve a system of equations. |
-| [squaredNorm](#squarednorm-1365) | Squared norm of a vector. |
-| [sum](#sum-1817) | Sum of a vector. |
-| [system](#system-1890) | Execute a command. |
-| [systematic_cumulative_offspring](#systematic-cumulative-offspring-1861) | Systematic resampling. |
-| [transpose](#transpose-1369) | Transpose of a matrix. |
-| [vector](#vector-1750) | Create vector filled with a given scalar. |
-| [vector](#vector-1755) | Create vector filled with a given value. |
-| [vector](#vector-1760) | Create vector filled with a given value. |
+| [norm](#norm-1413) | Norm of a vector. |
+| [observe_bernoulli](#observe-bernoulli-1480) | Observe a Bernoulli variate. |
+| [observe_beta](#observe-beta-1555) | Observe a beta variate. |
+| [observe_beta_binomial](#observe-beta-binomial-1497) | Observe a beta-binomial variate. |
+| [observe_binomial](#observe-binomial-1488) | Observe a binomial variate. |
+| [observe_categorical](#observe-categorical-1503) | Observe a categorical variate. |
+| [observe_crp_categorical](#observe-crp-categorical-1529) | Observe a categorical variate with Chinese restaurant process prior. |
+| [observe_dirichlet](#observe-dirichlet-1561) | Observe a Dirichlet variate. |
+| [observe_dirichlet_categorical](#observe-dirichlet-categorical-1514) | Observe a Dirichlet-categorical variate. |
+| [observe_dirichlet_multinomial](#observe-dirichlet-multinomial-1522) | Observe a Dirichlet-multinomial variate. |
+| [observe_gamma](#observe-gamma-1551) | Observe a gamma variate. |
+| [observe_gaussian](#observe-gaussian-1537) | Observe a Gaussian variate. |
+| [observe_int_uniform](#observe-int-uniform-1484) | Observe an integer uniform variate. |
+| [observe_log_gaussian](#observe-log-gaussian-1547) | Observe a log-Gaussian variate. |
+| [observe_multinomial](#observe-multinomial-1510) | Observe a multinomial variate. |
+| [observe_multivariate_gaussian](#observe-multivariate-gaussian-1543) | Observe a multivariate Gaussian variate. |
+| [observe_negative_binomial](#observe-negative-binomial-1492) | Observe a negative binomial variate. |
+| [observe_poisson](#observe-poisson-1500) | Observe a Poisson variate. |
+| [observe_uniform](#observe-uniform-1533) | Observe a uniform variate. |
+| [permute_ancestors](#permute-ancestors-1927) | Permute an ancestry vector to ensure that, when a particle survives, at least one of its instances remains in the same place. |
+| [rows](#rows-1434) | Number of rows of a matrix. |
+| [rows](#rows-1436) | Number of rows of a matrix. |
+| [rows](#rows-1438) | Number of rows of a matrix. |
+| [scalar](#scalar-1467) | Convert single-element matrix to scalar value. |
+| [scalar](#scalar-1469) | Convert single-element matrix to scalar value. |
+| [scalar](#scalar-1471) | Convert single-element matrix to scalar value. |
+| [scalar](#scalar-1812) | Convert single-element vector to scalar value. |
+| [scalar](#scalar-1814) | Convert single-element vector to scalar value. |
+| [scalar](#scalar-1816) | Convert single-element vector to scalar value. |
+| [seed](#seed-1563) | Seed the pseudorandom number generator. |
+| [simulate_bernoulli](#simulate-bernoulli-1565) | Simulate a Bernoulli variate. |
+| [simulate_beta](#simulate-beta-1635) | Simulate a beta variate. |
+| [simulate_beta_binomial](#simulate-beta-binomial-1578) | Simulate a beta-binomial variate. |
+| [simulate_binomial](#simulate-binomial-1571) | Simulate a binomial variate. |
+| [simulate_categorical](#simulate-categorical-1585) | Simulate a categorical variate. |
+| [simulate_crp_categorical](#simulate-crp-categorical-1610) | Simulate a categorical variate with Chinese restaurant process prior. |
+| [simulate_dirichlet](#simulate-dirichlet-1642) | Simulate a Dirichlet variate. |
+| [simulate_dirichlet](#simulate-dirichlet-1649) | Simulate a Dirichlet variate. |
+| [simulate_dirichlet_categorical](#simulate-dirichlet-categorical-1598) | Simulate a Dirichlet-categorical variate. |
+| [simulate_dirichlet_multinomial](#simulate-dirichlet-multinomial-1601) | Simulate a Dirichlet-multinomial variate. |
+| [simulate_exponential](#simulate-exponential-1615) | Simulate an exponential variate. |
+| [simulate_gamma](#simulate-gamma-1630) | Simulate a gamma variate. |
+| [simulate_gaussian](#simulate-gaussian-1618) | Simulate a Gaussian variate. |
+| [simulate_int_uniform](#simulate-int-uniform-1568) | Simulate an integer uniform variate. |
+| [simulate_log_gaussian](#simulate-log-gaussian-1627) | Simulate a log-Gaussian variate. |
+| [simulate_multinomial](#simulate-multinomial-1596) | Simulate a multinomial variate. |
+| [simulate_multivariate_gaussian](#simulate-multivariate-gaussian-1624) | Simulate a multivariate Gaussian variate. |
+| [simulate_negative_binomial](#simulate-negative-binomial-1574) | Simulate a negative binomial variate. |
+| [simulate_poisson](#simulate-poisson-1580) | Simulate a Poisson variate. |
+| [simulate_uniform](#simulate-uniform-1613) | Simulate a uniform variate. |
+| [solve](#solve-1428) | Solve a system of equations. |
+| [solve](#solve-1432) | Solve a system of equations. |
+| [squaredNorm](#squarednorm-1415) | Squared norm of a vector. |
+| [sum](#sum-1869) | Sum of a vector. |
+| [system](#system-1942) | Execute a command. |
+| [systematic_cumulative_offspring](#systematic-cumulative-offspring-1913) | Systematic resampling. |
+| [transpose](#transpose-1419) | Transpose of a matrix. |
+| [vector](#vector-1800) | Create vector filled with a given scalar. |
+| [vector](#vector-1805) | Create vector filled with a given value. |
+| [vector](#vector-1810) | Create vector filled with a given value. |
 
 | Binary Operator | Brief description |
 | --- | --- |
@@ -242,8 +243,9 @@
 | [LogGaussianWithGaussianMean](#loggaussianwithgaussianmean-834) | Log-Gaussian with Gaussian as its mean. |
 | [LogGaussianWithLogMean](#loggaussianwithlogmean-860) | Log-Gaussian with logarithm of a log-Gaussian as its mean. |
 | [LogNormal](#lognormal-505) | Synonym for LogGaussian. |
-| [MemoryReader](#memoryreader-1214) | In-memory reader. |
-| [MemoryWriter](#memorywriter-1233) | In-memory writer. |
+| [MarkovModel](#markovmodel-1849) | A Markov model, structured as a sequence of states, where each state is conditionally independent of the state history, given the previous state. |
+| [MemoryReader](#memoryreader-1247) | In-memory reader. |
+| [MemoryWriter](#memorywriter-1266) | In-memory writer. |
 | [Multinomial](#multinomial-522) | Multinomial distribution. |
 | [MultivariateAffineExpression](#multivariateaffineexpression-1135) | Multivariate affine transformation of a random variable. |
 | [MultivariateGaussian](#multivariategaussian-539) | Multivariate Gaussian distribution. |
@@ -253,18 +255,16 @@
 | [NegativeBinomial](#negativebinomial-558) | Negative binomial distribution. |
 | [Normal](#normal-483) | Synonym for Gaussian. |
 | [Object](#object-149) | Class Object is the root of the class hierarchy. |
-| [OutputStream](#outputstream-1270) | Output stream. |
-| [Parameter](#parameter-1803) | Concept for a parameter. |
+| [OutputStream](#outputstream-1303) | Output stream. |
 | [Poisson](#poisson-569) | Poisson distribution. |
 | [Random](#random-980) | Random variate. |
-| [Reader](#reader-1286) | Abstract reader. |
+| [Reader](#reader-1336) | Abstract reader. |
 | [RestaurantProcess](#restaurantprocess-585) | (Chinese) restaurant process. |
 | [RestaurantProcessCategorical](#restaurantprocesscategorical-927) | Categorical with conjugate restaurant process prior on category probabilities. |
-| [State](#state-1807) | Concept for a state. |
-| [StateWithParameter](#statewithparameter-1813) | Concept for a state with a parameter. |
+| [State](#state-1865) | Concept for a state. |
 | [Uniform](#uniform-599) | Uniform distribution. |
 | [UniformInteger](#uniforminteger-613) | Uniform distribution over integers. |
-| [Writer](#writer-1305) | Abstract writer. |
+| [Writer](#writer-1355) | Abstract writer. |
 
 
 # Function Details
@@ -293,7 +293,7 @@ Create binomial distribution.
 
 Create binomial distribution.
 
-#### function Binomial(n:[Integer](#integer-26), ρ:[Random](#random-1922)) -> [Random](#random-1938)
+#### function Binomial(n:[Integer](#integer-26), ρ:[Random](#random-1978)) -> [Random](#random-1994)
 
 <a name="binomial-634"></a>
 
@@ -318,7 +318,7 @@ Create categorical distribution.
 
 Create categorical distribution.
 
-#### function Categorical(ρ:[Random](#random-1954)) -> [Random](#random-1938)
+#### function Categorical(ρ:[Random](#random-2010)) -> [Random](#random-1994)
 
 <a name="categorical-648"></a>
 
@@ -378,7 +378,7 @@ Create Gaussian distribution.
 
 Create Gaussian distribution.
 
-#### function Gaussian(μ:[Random](#random-1922), σ2:[Real](#real-150)) -> [Gaussian](#gaussian-482)
+#### function Gaussian(μ:[Random](#random-1978), σ2:[Real](#real-150)) -> [Gaussian](#gaussian-482)
 
 <a name="gaussian-748"></a>
 
@@ -402,7 +402,7 @@ Create Gaussian distribution.
 
 Create Gaussian distribution.
 
-#### function Gaussian(μ:[Random](#random-1954), Σ:[Real](#real-150)\[\_,\_\]) -> [MultivariateGaussian](#multivariategaussian-539)
+#### function Gaussian(μ:[Random](#random-2010), Σ:[Real](#real-150)\[\_,\_\]) -> [MultivariateGaussian](#multivariategaussian-539)
 
 <a name="gaussian-914"></a>
 
@@ -410,7 +410,7 @@ Create Gaussian distribution.
 
 #### function I(rows:[Integer](#integer-26), columns:[Integer](#integer-26)) -> [Real](#real-150)\[\_,\_\]
 
-<a name="i-1427"></a>
+<a name="i-1477"></a>
 
 Create identity matrix.
 
@@ -465,7 +465,7 @@ Create log-Gaussian distribution.
 
 Create log-Gaussian distribution.
 
-#### function LogGaussian(μ:[Random](#random-1922), σ2:[Real](#real-150)) -> [LogGaussian](#loggaussian-504)
+#### function LogGaussian(μ:[Random](#random-1978), σ2:[Real](#real-150)) -> [LogGaussian](#loggaussian-504)
 
 <a name="loggaussian-842"></a>
 
@@ -501,7 +501,7 @@ Create log-Gaussian distribution.
 
 Create log-Gaussian distribution.
 
-#### function LogNormal(μ:[Random](#random-1922), σ2:[Real](#real-150)) -> [LogGaussian](#loggaussian-504)
+#### function LogNormal(μ:[Random](#random-1978), σ2:[Real](#real-150)) -> [LogGaussian](#loggaussian-504)
 
 <a name="lognormal-848"></a>
 
@@ -525,7 +525,7 @@ Create multinomial distribution.
 
 Create multinomial distribution.
 
-#### function Multinomial(n:[Integer](#integer-26), ρ:[Random](#random-1954)) -> [Random](#random-1970)
+#### function Multinomial(n:[Integer](#integer-26), ρ:[Random](#random-2010)) -> [Random](#random-2026)
 
 <a name="multinomial-665"></a>
 
@@ -567,7 +567,7 @@ Create Gaussian distribution.
 
 Create Gaussian distribution.
 
-#### function Normal(μ:[Random](#random-1922), σ2:[Real](#real-150)) -> [Gaussian](#gaussian-482)
+#### function Normal(μ:[Random](#random-1978), σ2:[Real](#real-150)) -> [Gaussian](#gaussian-482)
 
 <a name="normal-754"></a>
 
@@ -591,15 +591,15 @@ Create Gaussian distribution.
 
 Create Gaussian distribution.
 
-#### function Normal(μ:[Random](#random-1954), Σ:[Real](#real-150)\[\_,\_\]) -> [MultivariateGaussian](#multivariategaussian-539)
+#### function Normal(μ:[Random](#random-2010), Σ:[Real](#real-150)\[\_,\_\]) -> [MultivariateGaussian](#multivariategaussian-539)
 
 <a name="normal-920"></a>
 
 Create Gaussian distribution.
 
-#### function OutputStream(file:[File](#file-14)) -> [OutputStream](#outputstream-1270)
+#### function OutputStream(file:[File](#file-14)) -> [OutputStream](#outputstream-1303)
 
-<a name="outputstream-1273"></a>
+<a name="outputstream-1306"></a>
 
 Create an output stream for an already-open file.
 
@@ -615,7 +615,7 @@ Create Poisson distribution.
 
 Create Poisson distribution.
 
-#### function Poisson(λ:[Random](#random-1922)) -> [Random](#random-1938)
+#### function Poisson(λ:[Random](#random-1978)) -> [Random](#random-1994)
 
 <a name="poisson-680"></a>
 
@@ -687,92 +687,92 @@ Absolute value.
 
 #### function adjacent_difference(x:[Real](#real-150)\[\_\]) -> [Real](#real-150)\[\_\]
 
-<a name="adjacent-difference-1842"></a>
+<a name="adjacent-difference-1894"></a>
 
 Inclusive prefix sum.
 
 #### function ancestor(w:[Real](#real-150)\[\_\]) -> [Integer](#integer-26)
 
-<a name="ancestor-1854"></a>
+<a name="ancestor-1906"></a>
 
 Sample a single ancestor for a vector of log-weights. If the sum of
 weights is zero, returns zero.
 
 #### function ancestors(w:[Real](#real-150)\[\_\]) -> [Integer](#integer-26)\[\_\]
 
-<a name="ancestors-1848"></a>
+<a name="ancestors-1900"></a>
 
 Sample an ancestry vector for a vector of log-weights.
 
 #### function beta(x:[Real64](#real64-219), y:[Real64](#real64-219)) -> [Real64](#real64-219)
 
-<a name="beta-1610"></a>
+<a name="beta-1660"></a>
 
 The beta function.
 
 #### function beta(x:[Real32](#real32-161), y:[Real32](#real32-161)) -> [Real32](#real32-161)
 
-<a name="beta-1613"></a>
+<a name="beta-1663"></a>
 
 The beta function.
 
 #### function choose(x:[Real64](#real64-219), y:[Real64](#real64-219)) -> [Real64](#real64-219)
 
-<a name="choose-1622"></a>
+<a name="choose-1672"></a>
 
 The binomial coefficient.
 
 #### function choose(x:[Real32](#real32-161), y:[Real32](#real32-161)) -> [Real32](#real32-161)
 
-<a name="choose-1625"></a>
+<a name="choose-1675"></a>
 
 The binomial coefficient.
 
 #### function columns(X:[Real](#real-150)\[\_,\_\]) -> [Integer64](#integer64-93)
 
-<a name="columns-1390"></a>
+<a name="columns-1440"></a>
 
 Number of columns of a matrix.
 
 #### function columns(X:[Integer](#integer-26)\[\_,\_\]) -> [Integer64](#integer64-93)
 
-<a name="columns-1392"></a>
+<a name="columns-1442"></a>
 
 Number of columns of a matrix.
 
 #### function columns(X:[Boolean](#boolean-1)\[\_,\_\]) -> [Integer64](#integer64-93)
 
-<a name="columns-1394"></a>
+<a name="columns-1444"></a>
 
 Number of columns of a matrix.
 
 #### function cumulative_offspring_to_ancestors(O:[Integer](#integer-26)\[\_\]) -> [Integer](#integer-26)\[\_\]
 
-<a name="cumulative-offspring-to-ancestors-1869"></a>
+<a name="cumulative-offspring-to-ancestors-1921"></a>
 
 Convert a cumulative offspring vector into an ancestry vector.
 
 #### function cumulative_weights(w:[Real](#real-150)\[\_\]) -> [Real](#real-150)\[\_\]
 
-<a name="cumulative-weights-1881"></a>
+<a name="cumulative-weights-1933"></a>
 
 Compute the cumulative weight vector from the log-weight vector.
 
 #### function determinant(X:[Real](#real-150)\[\_,\_\]) -> [Real](#real-150)
 
-<a name="determinant-1367"></a>
+<a name="determinant-1417"></a>
 
 Determinant of a matrix.
 
 #### function ess(w:[Real](#real-150)\[\_\]) -> [Real](#real-150)
 
-<a name="ess-1888"></a>
+<a name="ess-1940"></a>
 
 Effective sample size (ESS) of the log-weight vector.
 
 #### function exclusive_prefix_sum(x:[Real](#real-150)\[\_\]) -> [Real](#real-150)\[\_\]
 
-<a name="exclusive-prefix-sum-1838"></a>
+<a name="exclusive-prefix-sum-1890"></a>
 
 Inclusive prefix sum.
 
@@ -801,25 +801,25 @@ Open a file.
 
 #### function gamma(x:[Real64](#real64-219)) -> [Real64](#real64-219)
 
-<a name="gamma-1601"></a>
+<a name="gamma-1651"></a>
 
 The gamma function.
 
 #### function gamma(x:[Real32](#real32-161)) -> [Real32](#real32-161)
 
-<a name="gamma-1603"></a>
+<a name="gamma-1653"></a>
 
 The gamma function.
 
 #### function inclusive_prefix_sum(x:[Real](#real-150)\[\_\]) -> [Real](#real-150)\[\_\]
 
-<a name="inclusive-prefix-sum-1834"></a>
+<a name="inclusive-prefix-sum-1886"></a>
 
 Inclusive prefix sum.
 
 #### function inverse(X:[Real](#real-150)\[\_,\_\]) -> [Real](#real-150)\[\_,\_\]
 
-<a name="inverse-1371"></a>
+<a name="inverse-1421"></a>
 
 Inverse of a matrix.
 
@@ -837,25 +837,25 @@ Does this have the value NaN?
 
 #### function lbeta(x:[Real64](#real64-219), y:[Real64](#real64-219)) -> [Real64](#real64-219)
 
-<a name="lbeta-1616"></a>
+<a name="lbeta-1666"></a>
 
 Logarithm of the beta function.
 
 #### function lbeta(x:[Real32](#real32-161), y:[Real32](#real32-161)) -> [Real32](#real32-161)
 
-<a name="lbeta-1619"></a>
+<a name="lbeta-1669"></a>
 
 Logarithm of the beta function.
 
 #### function lchoose(x:[Real64](#real64-219), y:[Real64](#real64-219)) -> [Real64](#real64-219)
 
-<a name="lchoose-1628"></a>
+<a name="lchoose-1678"></a>
 
 Logarithm of the binomial coefficient.
 
 #### function lchoose(x:[Real32](#real32-161), y:[Real32](#real32-161)) -> [Real32](#real32-161)
 
-<a name="lchoose-1631"></a>
+<a name="lchoose-1681"></a>
 
 Logarithm of the binomial coefficient.
 
@@ -867,61 +867,78 @@ Length of a string.
 
 #### function length(x:[Real](#real-150)\[\_\]) -> [Integer64](#integer64-93)
 
-<a name="length-1741"></a>
+<a name="length-1791"></a>
 
 Length of a vector.
 
 #### function length(x:[Integer](#integer-26)\[\_\]) -> [Integer64](#integer64-93)
 
-<a name="length-1743"></a>
+<a name="length-1793"></a>
 
 Length of a vector.
 
 #### function length(x:[Boolean](#boolean-1)\[\_\]) -> [Integer64](#integer64-93)
 
-<a name="length-1745"></a>
+<a name="length-1795"></a>
 
 Length of a vector.
 
 #### function lgamma(x:[Real64](#real64-219)) -> [Real64](#real64-219)
 
-<a name="lgamma-1605"></a>
+<a name="lgamma-1655"></a>
 
 Logarithm of the gamma function.
 
 #### function lgamma(x:[Real32](#real32-161)) -> [Real32](#real32-161)
 
-<a name="lgamma-1607"></a>
+<a name="lgamma-1657"></a>
 
 Logarithm of the gamma function.
 
 #### function llt(X:[Real](#real-150)\[\_,\_\]) -> [Real](#real-150)\[\_,\_\]
 
-<a name="llt-1374"></a>
+<a name="llt-1424"></a>
 
 `LL^T` Cholesky decomposition of a matrix.
 
 #### function log_sum_exp(x:[Real](#real-150)\[\_\]) -> [Real](#real-150)
 
-<a name="log-sum-exp-1830"></a>
+<a name="log-sum-exp-1882"></a>
 
 Exponentiate and sum a vector, return the logarithm of the sum.
 
+#### function make(name:[String](#string-277)) -> [Object](#object-149)?
+
+<a name="make-1946"></a>
+
+Make an object.
+
+  - name: Name of the class.
+
+Return: an optional with a value of the object if the make is successful,
+or with no value otherwise.
+
+This is used to construct an object where the class is given in a string,
+e.g. from user input. The class must not have constructor parameters.
+Internally, it uses `dlsym()` to search the current process for a symbol
+`make_name` with C linkage, as generated by the Birch compiler for all
+compatible types.
+
 #### function matrix(x:[Real](#real-150), rows:[Integer](#integer-26), columns:[Integer](#integer-26)) -> [Real](#real-150)\[\_,\_\]
 
-<a name="matrix-1401"></a>
+<a name="matrix-1451"></a>
 
 Create matrix filled with a given scalar value.
 
 #### function matrix(x:[Integer](#integer-26), rows:[Integer](#integer-26), columns:[Integer](#integer-26)) -> [Integer](#integer-26)\[\_,\_\]
 
-<a name="matrix-1408"></a>
+<a name="matrix-1458"></a>
 
 Create matrix filled with a given scalar value.
 
 #### function matrix(x:[Boolean](#boolean-1), rows:[Integer](#integer-26), columns:[Integer](#integer-26)) -> [Boolean](#boolean-1)\[\_,\_\]
 
-<a name="matrix-1415"></a>
+<a name="matrix-1465"></a>
 
 Create matrix filled with a given scalar value.
 
@@ -951,7 +968,7 @@ Maximum of two values.
 
 #### function max(x:[Real](#real-150)\[\_\]) -> [Real](#real-150)
 
-<a name="max-1821"></a>
+<a name="max-1873"></a>
 
 Maximum of a vector.
 
@@ -981,7 +998,7 @@ Minimum of two values.
 
 #### function min(x:[Real](#real-150)\[\_\]) -> [Real](#real-150)
 
-<a name="min-1825"></a>
+<a name="min-1877"></a>
 
 Minimum of a vector.
 
@@ -1017,13 +1034,13 @@ Modulus.
 
 #### function norm(x:[Real](#real-150)\[\_\]) -> [Real](#real-150)
 
-<a name="norm-1363"></a>
+<a name="norm-1413"></a>
 
 Norm of a vector.
 
 #### function observe_bernoulli(x:[Boolean](#boolean-1), ρ:[Real](#real-150)) -> [Real](#real-150)
 
-<a name="observe-bernoulli-1430"></a>
+<a name="observe-bernoulli-1480"></a>
 
 Observe a Bernoulli variate.
 
@@ -1034,7 +1051,7 @@ Returns the log probability mass.
 
 #### function observe_beta(x:[Real](#real-150), α:[Real](#real-150), β:[Real](#real-150)) -> [Real](#real-150)
 
-<a name="observe-beta-1505"></a>
+<a name="observe-beta-1555"></a>
 
 Observe a beta variate.
 
@@ -1046,7 +1063,7 @@ Returns the log probability density.
 
 #### function observe_beta_binomial(x:[Integer](#integer-26), n:[Integer](#integer-26), α:[Real](#real-150), β:[Real](#real-150)) -> [Real](#real-150)
 
-<a name="observe-beta-binomial-1447"></a>
+<a name="observe-beta-binomial-1497"></a>
 
 Observe a beta-binomial variate.
 
@@ -1059,7 +1076,7 @@ Returns the log probability mass.
 
 #### function observe_binomial(x:[Integer](#integer-26), n:[Integer](#integer-26), ρ:[Real](#real-150)) -> [Real](#real-150)
 
-<a name="observe-binomial-1438"></a>
+<a name="observe-binomial-1488"></a>
 
 Observe a binomial variate.
 
@@ -1071,7 +1088,7 @@ Returns the log probability mass.
 
 #### function observe_categorical(x:[Integer](#integer-26), ρ:[Real](#real-150)\[\_\]) -> [Real](#real-150)
 
-<a name="observe-categorical-1453"></a>
+<a name="observe-categorical-1503"></a>
 
 Observe a categorical variate.
 
@@ -1082,13 +1099,13 @@ Returns the log probability mass.
 
 #### function observe_crp_categorical(k:[Integer](#integer-26), α:[Real](#real-150), θ:[Real](#real-150), n:[Integer](#integer-26)\[\_\], N:[Integer](#integer-26)) -> [Real](#real-150)
 
-<a name="observe-crp-categorical-1479"></a>
+<a name="observe-crp-categorical-1529"></a>
 
 Observe a categorical variate with Chinese restaurant process prior.
 
 #### function observe_dirichlet(x:[Real](#real-150)\[\_\], α:[Real](#real-150)\[\_\]) -> [Real](#real-150)
 
-<a name="observe-dirichlet-1511"></a>
+<a name="observe-dirichlet-1561"></a>
 
 Observe a Dirichlet variate.
 
@@ -1099,7 +1116,7 @@ Returns the log probability density.
 
 #### function observe_dirichlet_categorical(x:[Integer](#integer-26), α:[Real](#real-150)\[\_\]) -> [Real](#real-150)
 
-<a name="observe-dirichlet-categorical-1464"></a>
+<a name="observe-dirichlet-categorical-1514"></a>
 
 Observe a Dirichlet-categorical variate.
 
@@ -1110,7 +1127,7 @@ Returns the log probability mass.
 
 #### function observe_dirichlet_multinomial(x:[Integer](#integer-26)\[\_\], n:[Integer](#integer-26), α:[Real](#real-150)\[\_\]) -> [Real](#real-150)
 
-<a name="observe-dirichlet-multinomial-1472"></a>
+<a name="observe-dirichlet-multinomial-1522"></a>
 
 Observe a Dirichlet-multinomial variate.
 
@@ -1122,7 +1139,7 @@ Returns the log probability mass.
 
 #### function observe_gamma(x:[Real](#real-150), k:[Real](#real-150), θ:[Real](#real-150)) -> [Real](#real-150)
 
-<a name="observe-gamma-1501"></a>
+<a name="observe-gamma-1551"></a>
 
 Observe a gamma variate.
 
@@ -1134,7 +1151,7 @@ Returns the log probability density.
 
 #### function observe_gaussian(x:[Real](#real-150), μ:[Real](#real-150), σ2:[Real](#real-150)) -> [Real](#real-150)
 
-<a name="observe-gaussian-1487"></a>
+<a name="observe-gaussian-1537"></a>
 
 Observe a Gaussian variate.
 
@@ -1146,7 +1163,7 @@ Returns the log probability density.
 
 #### function observe_int_uniform(x:[Integer](#integer-26), l:[Integer](#integer-26), u:[Integer](#integer-26)) -> [Real](#real-150)
 
-<a name="observe-int-uniform-1434"></a>
+<a name="observe-int-uniform-1484"></a>
 
 Observe an integer uniform variate.
 
@@ -1158,7 +1175,7 @@ Returns the log probability mass.
 
 #### function observe_log_gaussian(x:[Real](#real-150), μ:[Real](#real-150), σ2:[Real](#real-150)) -> [Real](#real-150)
 
-<a name="observe-log-gaussian-1497"></a>
+<a name="observe-log-gaussian-1547"></a>
 
 Observe a log-Gaussian variate.
 
@@ -1170,7 +1187,7 @@ Returns the log probability density.
 
 #### function observe_multinomial(x:[Integer](#integer-26)\[\_\], n:[Integer](#integer-26), ρ:[Real](#real-150)\[\_\]) -> [Real](#real-150)
 
-<a name="observe-multinomial-1460"></a>
+<a name="observe-multinomial-1510"></a>
 
 Observe a multinomial variate.
 
@@ -1182,7 +1199,7 @@ Returns the log probability mass.
 
 #### function observe_multivariate_gaussian(x:[Real](#real-150)\[\_\], μ:[Real](#real-150)\[\_\], Σ:[Real](#real-150)\[\_,\_\]) -> [Real](#real-150)
 
-<a name="observe-multivariate-gaussian-1493"></a>
+<a name="observe-multivariate-gaussian-1543"></a>
 
 Observe a multivariate Gaussian variate.
 
@@ -1194,7 +1211,7 @@ Returns the log probability density.
 
 #### function observe_negative_binomial(x:[Integer](#integer-26), k:[Integer](#integer-26), ρ:[Real](#real-150)) -> [Real](#real-150)
 
-<a name="observe-negative-binomial-1442"></a>
+<a name="observe-negative-binomial-1492"></a>
 
 Observe a negative binomial variate.
 
@@ -1206,7 +1223,7 @@ Returns the log probability mass.
 
 #### function observe_poisson(x:[Integer](#integer-26), λ:[Real](#real-150)) -> [Real](#real-150)
 
-<a name="observe-poisson-1450"></a>
+<a name="observe-poisson-1500"></a>
 
 Observe a Poisson variate.
 
@@ -1217,7 +1234,7 @@ Returns the log probability mass.
 
 #### function observe_uniform(x:[Real](#real-150), l:[Real](#real-150), u:[Real](#real-150)) -> [Real](#real-150)
 
-<a name="observe-uniform-1483"></a>
+<a name="observe-uniform-1533"></a>
 
 Observe a uniform variate.
 
@@ -1229,68 +1246,68 @@ Returns the log probability density.
 
 #### function permute_ancestors(a:[Integer](#integer-26)\[\_\]) -> [Integer](#integer-26)\[\_\]
 
-<a name="permute-ancestors-1875"></a>
+<a name="permute-ancestors-1927"></a>
 
 Permute an ancestry vector to ensure that, when a particle survives, at
 least one of its instances remains in the same place.
 
 #### function rows(X:[Real](#real-150)\[\_,\_\]) -> [Integer64](#integer64-93)
 
-<a name="rows-1384"></a>
+<a name="rows-1434"></a>
 
 Number of rows of a matrix.
 
 #### function rows(X:[Integer](#integer-26)\[\_,\_\]) -> [Integer64](#integer64-93)
 
-<a name="rows-1386"></a>
+<a name="rows-1436"></a>
 
 Number of rows of a matrix.
 
 #### function rows(X:[Boolean](#boolean-1)\[\_,\_\]) -> [Integer64](#integer64-93)
 
-<a name="rows-1388"></a>
+<a name="rows-1438"></a>
 
 Number of rows of a matrix.
 
 #### function scalar(X:[Real](#real-150)\[\_,\_\]) -> [Real](#real-150)
 
-<a name="scalar-1417"></a>
+<a name="scalar-1467"></a>
 
 Convert single-element matrix to scalar value.
 
 #### function scalar(X:[Integer](#integer-26)\[\_,\_\]) -> [Integer](#integer-26)
 
-<a name="scalar-1419"></a>
+<a name="scalar-1469"></a>
 
 Convert single-element matrix to scalar value.
 
 #### function scalar(X:[Boolean](#boolean-1)\[\_,\_\]) -> [Boolean](#boolean-1)
 
-<a name="scalar-1421"></a>
+<a name="scalar-1471"></a>
 
 Convert single-element matrix to scalar value.
 
 #### function scalar(x:[Real](#real-150)\[\_\]) -> [Real](#real-150)
 
-<a name="scalar-1762"></a>
+<a name="scalar-1812"></a>
 
 Convert single-element vector to scalar value.
 
 #### function scalar(x:[Integer](#integer-26)\[\_\]) -> [Integer](#integer-26)
 
-<a name="scalar-1764"></a>
+<a name="scalar-1814"></a>
 
 Convert single-element vector to scalar value.
 
 #### function scalar(x:[Boolean](#boolean-1)\[\_\]) -> [Boolean](#boolean-1)
 
-<a name="scalar-1766"></a>
+<a name="scalar-1816"></a>
 
 Convert single-element vector to scalar value.
 
 #### function seed(s:[Integer](#integer-26))
 
-<a name="seed-1513"></a>
+<a name="seed-1563"></a>
 
 Seed the pseudorandom number generator.
 
@@ -1298,7 +1315,7 @@ Seed the pseudorandom number generator.
 
 #### function simulate_bernoulli(ρ:[Real](#real-150)) -> [Boolean](#boolean-1)
 
-<a name="simulate-bernoulli-1515"></a>
+<a name="simulate-bernoulli-1565"></a>
 
 Simulate a Bernoulli variate.
 
@@ -1306,7 +1323,7 @@ Simulate a Bernoulli variate.
 
 #### function simulate_beta(α:[Real](#real-150), β:[Real](#real-150)) -> [Real](#real-150)
 
-<a name="simulate-beta-1585"></a>
+<a name="simulate-beta-1635"></a>
 
 Simulate a beta variate.
 
@@ -1315,7 +1332,7 @@ Simulate a beta variate.
 
 #### function simulate_beta_binomial(n:[Integer](#integer-26), α:[Real](#real-150), β:[Real](#real-150)) -> [Integer](#integer-26)
 
-<a name="simulate-beta-binomial-1528"></a>
+<a name="simulate-beta-binomial-1578"></a>
 
 Simulate a beta-binomial variate.
 
@@ -1325,7 +1342,7 @@ Simulate a beta-binomial variate.
 
 #### function simulate_binomial(n:[Integer](#integer-26), ρ:[Real](#real-150)) -> [Integer](#integer-26)
 
-<a name="simulate-binomial-1521"></a>
+<a name="simulate-binomial-1571"></a>
 
 Simulate a binomial variate.
 
@@ -1334,7 +1351,7 @@ Simulate a binomial variate.
 
 #### function simulate_categorical(ρ:[Real](#real-150)\[\_\]) -> [Integer](#integer-26)
 
-<a name="simulate-categorical-1535"></a>
+<a name="simulate-categorical-1585"></a>
 
 Simulate a categorical variate.
 
@@ -1342,13 +1359,13 @@ Simulate a categorical variate.
 
 #### function simulate_crp_categorical(α:[Real](#real-150), θ:[Real](#real-150), n:[Integer](#integer-26)\[\_\], N:[Integer](#integer-26)) -> [Integer](#integer-26)
 
-<a name="simulate-crp-categorical-1560"></a>
+<a name="simulate-crp-categorical-1610"></a>
 
 Simulate a categorical variate with Chinese restaurant process prior.
 
 #### function simulate_dirichlet(α:[Real](#real-150)\[\_\]) -> [Real](#real-150)\[\_\]
 
-<a name="simulate-dirichlet-1592"></a>
+<a name="simulate-dirichlet-1642"></a>
 
 Simulate a Dirichlet variate.
 
@@ -1356,7 +1373,7 @@ Simulate a Dirichlet variate.
 
 #### function simulate_dirichlet(α:[Real](#real-150), D:[Integer](#integer-26)) -> [Real](#real-150)\[\_\]
 
-<a name="simulate-dirichlet-1599"></a>
+<a name="simulate-dirichlet-1649"></a>
 
 Simulate a Dirichlet variate.
 
@@ -1365,7 +1382,7 @@ Simulate a Dirichlet variate.
 
 #### function simulate_dirichlet_categorical(α:[Real](#real-150)\[\_\]) -> [Integer](#integer-26)
 
-<a name="simulate-dirichlet-categorical-1548"></a>
+<a name="simulate-dirichlet-categorical-1598"></a>
 
 Simulate a Dirichlet-categorical variate.
 
@@ -1373,7 +1390,7 @@ Simulate a Dirichlet-categorical variate.
 
 #### function simulate_dirichlet_multinomial(n:[Integer](#integer-26), α:[Real](#real-150)\[\_\]) -> [Integer](#integer-26)\[\_\]
 
-<a name="simulate-dirichlet-multinomial-1551"></a>
+<a name="simulate-dirichlet-multinomial-1601"></a>
 
 Simulate a Dirichlet-multinomial variate.
 
@@ -1382,7 +1399,7 @@ Simulate a Dirichlet-multinomial variate.
 
 #### function simulate_exponential(λ:[Real](#real-150)) -> [Real](#real-150)
 
-<a name="simulate-exponential-1565"></a>
+<a name="simulate-exponential-1615"></a>
 
 Simulate an exponential variate.
 
@@ -1390,7 +1407,7 @@ Simulate an exponential variate.
 
 #### function simulate_gamma(k:[Real](#real-150), θ:[Real](#real-150)) -> [Real](#real-150)
 
-<a name="simulate-gamma-1580"></a>
+<a name="simulate-gamma-1630"></a>
 
 Simulate a gamma variate.
 
@@ -1399,7 +1416,7 @@ Simulate a gamma variate.
 
 #### function simulate_gaussian(μ:[Real](#real-150), σ2:[Real](#real-150)) -> [Real](#real-150)
 
-<a name="simulate-gaussian-1568"></a>
+<a name="simulate-gaussian-1618"></a>
 
 Simulate a Gaussian variate.
 
@@ -1408,7 +1425,7 @@ Simulate a Gaussian variate.
 
 #### function simulate_int_uniform(l:[Integer](#integer-26), u:[Integer](#integer-26)) -> [Integer](#integer-26)
 
-<a name="simulate-int-uniform-1518"></a>
+<a name="simulate-int-uniform-1568"></a>
 
 Simulate an integer uniform variate.
 
@@ -1417,7 +1434,7 @@ Simulate an integer uniform variate.
 
 #### function simulate_log_gaussian(μ:[Real](#real-150), σ2:[Real](#real-150)) -> [Real](#real-150)
 
-<a name="simulate-log-gaussian-1577"></a>
+<a name="simulate-log-gaussian-1627"></a>
 
 Simulate a log-Gaussian variate.
 
@@ -1426,7 +1443,7 @@ Simulate a log-Gaussian variate.
 
 #### function simulate_multinomial(n:[Integer](#integer-26), ρ:[Real](#real-150)\[\_\]) -> [Integer](#integer-26)\[\_\]
 
-<a name="simulate-multinomial-1546"></a>
+<a name="simulate-multinomial-1596"></a>
 
 Simulate a multinomial variate.
 
@@ -1441,7 +1458,7 @@ Science Department.
 
 #### function simulate_multivariate_gaussian(μ:[Real](#real-150)\[\_\], Σ:[Real](#real-150)\[\_,\_\]) -> [Real](#real-150)\[\_\]
 
-<a name="simulate-multivariate-gaussian-1574"></a>
+<a name="simulate-multivariate-gaussian-1624"></a>
 
 Simulate a multivariate Gaussian variate.
 
@@ -1450,7 +1467,7 @@ Simulate a multivariate Gaussian variate.
 
 #### function simulate_negative_binomial(k:[Integer](#integer-26), ρ:[Real](#real-150)) -> [Integer](#integer-26)
 
-<a name="simulate-negative-binomial-1524"></a>
+<a name="simulate-negative-binomial-1574"></a>
 
 Simulate a negative binomial variate.
 
@@ -1461,7 +1478,7 @@ Returns the number of failures.
 
 #### function simulate_poisson(λ:[Real](#real-150)) -> [Integer](#integer-26)
 
-<a name="simulate-poisson-1530"></a>
+<a name="simulate-poisson-1580"></a>
 
 Simulate a Poisson variate.
 
@@ -1469,7 +1486,7 @@ Simulate a Poisson variate.
 
 #### function simulate_uniform(l:[Real](#real-150), u:[Real](#real-150)) -> [Real](#real-150)
 
-<a name="simulate-uniform-1563"></a>
+<a name="simulate-uniform-1613"></a>
 
 Simulate a uniform variate.
 
@@ -1478,65 +1495,65 @@ Simulate a uniform variate.
 
 #### function solve(X:[Real](#real-150)\[\_,\_\], y:[Real](#real-150)\[\_\]) -> [Real](#real-150)\[\_\]
 
-<a name="solve-1378"></a>
+<a name="solve-1428"></a>
 
 Solve a system of equations.
 
 #### function solve(X:[Real](#real-150)\[\_,\_\], Y:[Real](#real-150)\[\_,\_\]) -> [Real](#real-150)\[\_,\_\]
 
-<a name="solve-1382"></a>
+<a name="solve-1432"></a>
 
 Solve a system of equations.
 
 #### function squaredNorm(x:[Real](#real-150)\[\_\]) -> [Real](#real-150)
 
-<a name="squarednorm-1365"></a>
+<a name="squarednorm-1415"></a>
 
 Squared norm of a vector.
 
 #### function sum(x:[Real](#real-150)\[\_\]) -> [Real](#real-150)
 
-<a name="sum-1817"></a>
+<a name="sum-1869"></a>
 
 Sum of a vector.
 
 #### function system(cmd:[String](#string-277)) -> [Integer32](#integer32-37)
 
-<a name="system-1890"></a>
+<a name="system-1942"></a>
 
 Execute a command.
 
   - cmd: The command string.
 
-Returns the return value of the execution.
+Return: the return code of the execution.
 
 #### function systematic_cumulative_offspring(W:[Real](#real-150)\[\_\]) -> [Integer](#integer-26)\[\_\]
 
-<a name="systematic-cumulative-offspring-1861"></a>
+<a name="systematic-cumulative-offspring-1913"></a>
 
 Systematic resampling.
 
 #### function transpose(X:[Real](#real-150)\[\_,\_\]) -> [Real](#real-150)\[\_,\_\]
 
-<a name="transpose-1369"></a>
+<a name="transpose-1419"></a>
 
 Transpose of a matrix.
 
 #### function vector(x:[Real](#real-150), length:[Integer](#integer-26)) -> [Real](#real-150)\[\_\]
 
-<a name="vector-1750"></a>
+<a name="vector-1800"></a>
 
 Create vector filled with a given scalar.
 
 #### function vector(x:[Integer](#integer-26), length:[Integer](#integer-26)) -> [Integer](#integer-26)\[\_\]
 
-<a name="vector-1755"></a>
+<a name="vector-1805"></a>
 
 Create vector filled with a given value.
 
 #### function vector(x:[Boolean](#boolean-1), length:[Integer](#integer-26)) -> [Boolean](#boolean-1)\[\_\]
 
-<a name="vector-1760"></a>
+<a name="vector-1810"></a>
 
 Create vector filled with a given value.
 
@@ -1634,7 +1651,7 @@ Affine transformation of a random variable.
 | Member Variable | Description |
 | --- | --- |
 | *a:[Real](#real-150)* | Scale. |
-| *x:[Random](#random-1922)* | Random variable. |
+| *x:[Random](#random-1978)* | Random variable. |
 | *c:[Real](#real-150)* | Offset. |
 
 | Member Function | Brief description |
@@ -1645,7 +1662,7 @@ Affine transformation of a random variable.
 
 ### Member Function Details
 
-#### function initialize(a:[Real](#real-150), x:[Random](#random-1922), c:[Real](#real-150))
+#### function initialize(a:[Real](#real-150), x:[Random](#random-1978), c:[Real](#real-150))
 
 <a name="initialize-988"></a>
 
@@ -1701,7 +1718,7 @@ Value conversion.
 
 <a name="bernoulli-397"></a>
 
-  * Inherits from *[Random](#random-1906)*
+  * Inherits from *[Random](#random-1962)*
 
 Bernoulli distribution.
 
@@ -1714,7 +1731,7 @@ Bernoulli distribution.
 
 <a name="beta-410"></a>
 
-  * Inherits from *[Random](#random-1922)*
+  * Inherits from *[Random](#random-1978)*
 
 Beta distribution.
 
@@ -1728,7 +1745,7 @@ Beta distribution.
 
 <a name="betabinomial-626"></a>
 
-  * Inherits from *[Random](#random-1938)*
+  * Inherits from *[Random](#random-1994)*
 
 Binomial with conjugate prior on success probability. When the success
 probability is known, this is simply a Binomial distribution.
@@ -1743,7 +1760,7 @@ probability is known, this is simply a Binomial distribution.
 
 <a name="binomial-424"></a>
 
-  * Inherits from *[Random](#random-1938)*
+  * Inherits from *[Random](#random-1994)*
 
 Binomial distribution.
 
@@ -1757,7 +1774,7 @@ Binomial distribution.
 
 <a name="categorical-435"></a>
 
-  * Inherits from *[Random](#random-1938)*
+  * Inherits from *[Random](#random-1994)*
 
 Categorical distribution.
 
@@ -1917,7 +1934,7 @@ Set the parent.
 
 <a name="dirichlet-448"></a>
 
-  * Inherits from *[Random](#random-1954)*
+  * Inherits from *[Random](#random-2010)*
 
 Dirichlet distribution.
 
@@ -1952,7 +1969,7 @@ Update with draw from categorical distribution.
 
 <a name="dirichletcategorical-641"></a>
 
-  * Inherits from *[Random](#random-1938)*
+  * Inherits from *[Random](#random-1994)*
 
 Categorical distribution with conjugate prior on category probabilities.
 
@@ -1965,7 +1982,7 @@ Categorical distribution with conjugate prior on category probabilities.
 
 <a name="dirichletmultinomial-657"></a>
 
-  * Inherits from *[Random](#random-1970)*
+  * Inherits from *[Random](#random-2026)*
 
 Multinomial with conjugate prior on category probabilities.
 
@@ -1979,7 +1996,7 @@ Multinomial with conjugate prior on category probabilities.
 
 <a name="gamma-464"></a>
 
-  * Inherits from *[Random](#random-1922)*
+  * Inherits from *[Random](#random-1978)*
 
 Gamma distribution.
 
@@ -1993,7 +2010,7 @@ Gamma distribution.
 
 <a name="gammapoisson-674"></a>
 
-  * Inherits from *[Random](#random-1938)*
+  * Inherits from *[Random](#random-1994)*
 
 Poisson with conjugate prior on rate. When the rate is known, this is
 simply a Poisson distribution. When the rate is gamma distributed, this is
@@ -2008,7 +2025,7 @@ a negative binomial distribution.
 
 <a name="gaussian-482"></a>
 
-  * Inherits from *[Random](#random-1922)*
+  * Inherits from *[Random](#random-1978)*
 
 Gaussian distribution.
 
@@ -2157,7 +2174,7 @@ Read real.
 
 <a name="jsonreader-1192"></a>
 
-  * Inherits from *[MemoryReader](#memoryreader-1214)*
+  * Inherits from *[MemoryReader](#memoryreader-1247)*
 
 JSON file reader.
 
@@ -2181,7 +2198,7 @@ Load data from file.
 
 <a name="jsonwriter-1195"></a>
 
-  * Inherits from *[MemoryWriter](#memorywriter-1233)*
+  * Inherits from *[MemoryWriter](#memorywriter-1266)*
 
 JSON file writer.
 
@@ -2391,7 +2408,7 @@ Logaritmic transformation of a random variable.
 
 | Member Variable | Description |
 | --- | --- |
-| *x:[Random](#random-1922)* | Random variable. |
+| *x:[Random](#random-1978)* | Random variable. |
 
 | Member Function | Brief description |
 | --- | --- |
@@ -2401,7 +2418,7 @@ Logaritmic transformation of a random variable.
 
 ### Member Function Details
 
-#### function initialize(x:[Random](#random-1922))
+#### function initialize(x:[Random](#random-1978))
 
 <a name="initialize-1122"></a>
 
@@ -2418,7 +2435,7 @@ Value conversion.
 
 <a name="loggaussian-504"></a>
 
-  * Inherits from *[Random](#random-1922)*
+  * Inherits from *[Random](#random-1978)*
 
 Log-Gaussian distribution.
 
@@ -2506,20 +2523,37 @@ Log-Gaussian with logarithm of a log-Gaussian as its mean.
 Synonym for LogGaussian.
 
 
+## MarkovModel
+
+<a name="markovmodel-1849"></a>
+
+  * Inherits from *[Model](#model-1855)*
+
+A Markov model, structured as a sequence of states, where each state is
+conditionally independent of the state history, given the previous
+state.
+
+| Member Variable | Description |
+| --- | --- |
+| *θ:ParameterType* | Parameter. |
+| *history:[List](#list-2060)* | State history. |
+| *future:[List](#list-2060)* | State future. |
+
+
 ## MemoryReader
 
-<a name="memoryreader-1214"></a>
+<a name="memoryreader-1247"></a>
 
-  * Inherits from *[Object](#object-149)*
+  * Inherits from *[Reader](#reader-1336)*
 
 In-memory reader.
 
 
 ## MemoryWriter
 
-<a name="memorywriter-1233"></a>
+<a name="memorywriter-1266"></a>
 
-  * Inherits from *[Writer](#writer-1305)*
+  * Inherits from *[Writer](#writer-1355)*
 
 In-memory writer.
 
@@ -2528,7 +2562,7 @@ In-memory writer.
 
 <a name="multinomial-522"></a>
 
-  * Inherits from *[Random](#random-1970)*
+  * Inherits from *[Random](#random-2026)*
 
 Multinomial distribution.
 
@@ -2555,7 +2589,7 @@ Multivariate affine transformation of a random variable.
 | Member Variable | Description |
 | --- | --- |
 | *A:[Real](#real-150)\[\_,\_\]* | Scale. |
-| *x:[Random](#random-1954)* | Random variable. |
+| *x:[Random](#random-2010)* | Random variable. |
 | *c:[Real](#real-150)\[\_\]* | Offset. |
 
 | Member Function | Brief description |
@@ -2566,7 +2600,7 @@ Multivariate affine transformation of a random variable.
 
 ### Member Function Details
 
-#### function initialize(A:[Real](#real-150)\[\_,\_\], x:[Random](#random-1954), c:[Real](#real-150)\[\_\])
+#### function initialize(A:[Real](#real-150)\[\_,\_\], x:[Random](#random-2010), c:[Real](#real-150)\[\_\])
 
 <a name="initialize-1134"></a>
 
@@ -2583,7 +2617,7 @@ Value conversion.
 
 <a name="multivariategaussian-539"></a>
 
-  * Inherits from *[Random](#random-1954)*
+  * Inherits from *[Random](#random-2010)*
 
 Multivariate Gaussian distribution.
 
@@ -2647,7 +2681,7 @@ Synonym for MultivariateGaussian.
 
 <a name="negativebinomial-558"></a>
 
-  * Inherits from *[Random](#random-1938)*
+  * Inherits from *[Random](#random-1994)*
 
 Negative binomial distribution.
 
@@ -2675,7 +2709,7 @@ Class Object is the root of the class hierarchy.
 
 ## OutputStream
 
-<a name="outputstream-1270"></a>
+<a name="outputstream-1303"></a>
 
   * Inherits from *[Object](#object-149)*
 
@@ -2687,32 +2721,32 @@ Output stream.
 
 | Member Function | Brief description |
 | --- | --- |
-| [open](#open-1237) | Open file. |
-| [open](#open-1239) | Open file with default mode. |
-| [close](#close-1240) | Close file. |
-| [print](#print-1242) | Print string. |
-| [print](#print-1244) | Print value. |
-| [print](#print-1246) | Print value. |
-| [print](#print-1248) | Print value. |
-| [print](#print-1251) | Print vector. |
-| [print](#print-1254) | Print vector. |
-| [print](#print-1257) | Print vector. |
-| [print](#print-1261) | Print matrix. |
-| [print](#print-1265) | Print matrix. |
-| [print](#print-1269) | Print matrix. |
+| [open](#open-1270) | Open file. |
+| [open](#open-1272) | Open file with default mode. |
+| [close](#close-1273) | Close file. |
+| [print](#print-1275) | Print string. |
+| [print](#print-1277) | Print value. |
+| [print](#print-1279) | Print value. |
+| [print](#print-1281) | Print value. |
+| [print](#print-1284) | Print vector. |
+| [print](#print-1287) | Print vector. |
+| [print](#print-1290) | Print vector. |
+| [print](#print-1294) | Print matrix. |
+| [print](#print-1298) | Print matrix. |
+| [print](#print-1302) | Print matrix. |
 
 
 ### Member Function Details
 
 #### function close()
 
-<a name="close-1240"></a>
+<a name="close-1273"></a>
 
 Close file.
 
 #### function open(path:[String](#string-277), mode:[Integer](#integer-26))
 
-<a name="open-1237"></a>
+<a name="open-1270"></a>
 
 Open file.
 
@@ -2721,7 +2755,7 @@ Open file.
 
 #### function open(path:[String](#string-277))
 
-<a name="open-1239"></a>
+<a name="open-1272"></a>
 
 Open file with default mode.
 
@@ -2729,92 +2763,70 @@ Open file with default mode.
 
 #### function' print(value:[String](#string-277))
 
-<a name="print-1242"></a>
+<a name="print-1275"></a>
 
 Print string.
 
 #### function' print(value:[Boolean](#boolean-1))
 
-<a name="print-1244"></a>
+<a name="print-1277"></a>
 
 Print value.
 
 #### function' print(value:[Integer](#integer-26))
 
-<a name="print-1246"></a>
+<a name="print-1279"></a>
 
 Print value.
 
 #### function' print(value:[Real](#real-150))
 
-<a name="print-1248"></a>
+<a name="print-1281"></a>
 
 Print value.
 
 #### function' print(x:[Boolean](#boolean-1)\[\_\])
 
-<a name="print-1251"></a>
+<a name="print-1284"></a>
 
 Print vector.
 
 #### function' print(x:[Integer](#integer-26)\[\_\])
 
-<a name="print-1254"></a>
+<a name="print-1287"></a>
 
 Print vector.
 
 #### function' print(x:[Real](#real-150)\[\_\])
 
-<a name="print-1257"></a>
+<a name="print-1290"></a>
 
 Print vector.
 
 #### function' print(X:[Boolean](#boolean-1)\[\_,\_\])
 
-<a name="print-1261"></a>
+<a name="print-1294"></a>
 
 Print matrix.
 
 #### function' print(X:[Integer](#integer-26)\[\_,\_\])
 
-<a name="print-1265"></a>
+<a name="print-1298"></a>
 
 Print matrix.
 
 #### function' print(X:[Real](#real-150)\[\_,\_\])
 
-<a name="print-1269"></a>
+<a name="print-1302"></a>
 
 Print matrix.
-
-
-## Parameter
-
-<a name="parameter-1803"></a>
-
-  * Inherits from *[Object](#object-149)*
-
-Concept for a parameter.
-
-| Member Fiber | Brief description |
-| --- | --- |
-| [simulate](#simulate-1802) | Simulate. |
-
-
-### Member Fiber Details
-
-#### fiber simulate() -> [Real](#real-150)!
-
-<a name="simulate-1802"></a>
-
-Simulate.
 
 
 ## Poisson
 
 <a name="poisson-569"></a>
 
-  * Inherits from *[Random](#random-1938)*
+  * Inherits from *[Random](#random-1994)*
 
 Poisson distribution.
 
@@ -2849,7 +2861,7 @@ Random variate.
 
 ## Reader
 
-<a name="reader-1286"></a>
+<a name="reader-1336"></a>
 
   * Inherits from *[Object](#object-149)*
 
@@ -2857,19 +2869,67 @@ Abstract reader.
 
 | Member Function | Brief description |
 | --- | --- |
-| [getBoolean](#getboolean-1275) | Read a Boolean. |
-| [getInteger](#getinteger-1277) | Read an integer. |
-| [getReal](#getreal-1279) | Read a real. |
-| [getBoolean](#getboolean-1281) | Read a Boolean. |
-| [getInteger](#getinteger-1283) | Read an integer. |
-| [getReal](#getreal-1285) | Read a real. |
+| [get](#get-1307) | This as an object. |
+| [getBoolean](#getboolean-1309) | This as a boolean. |
+| [getInteger](#getinteger-1310) | This as an integer. |
+| [getReal](#getreal-1311) | This as a real. |
+| [get](#get-1313) | Read an object. |
+| [getBoolean](#getboolean-1317) | Read a Boolean. |
+| [getInteger](#getinteger-1319) | Read an integer. |
+| [getReal](#getreal-1321) | Read a real. |
+| [getString](#getstring-1323) | Read a string. |
+| [get](#get-1325) | Read an object. |
+| [getBoolean](#getboolean-1329) | Read a Boolean. |
+| [getInteger](#getinteger-1331) | Read an integer. |
+| [getReal](#getreal-1333) | Read a real. |
+| [getString](#getstring-1335) | Read a string. |
+
+| Member Fiber | Brief description |
+| --- | --- |
+| [getArray](#getarray-1308) | This as an array. |
+| [getArray](#getarray-1315) | Read an array. |
+| [getArray](#getarray-1327) | Read an array. |
 
 
 ### Member Function Details
 
+#### function' get() -> [Reader](#reader-1336)'?
+
+<a name="get-1307"></a>
+
+This as an object.
+
+#### function' get(name:[String](#string-277)) -> [Reader](#reader-1336)'?
+
+<a name="get-1313"></a>
+
+Read an object.
+
+- name: Name of the entry.
+
+Return: An optional with a value if the given entry exists and is of a
+compatible type.
+
+#### function' get(path:[[String](#string-277)]) -> [Reader](#reader-1336)'?
+
+<a name="get-1325"></a>
+
+Read an object.
+
+- path: Path of the entry.
+
+Return: An optional with a value if the given entry exists and is of a
+compatible type.
+
+#### function' getBoolean() -> [Boolean](#boolean-1)?
+
+<a name="getboolean-1309"></a>
+
+This as a boolean.
+
 #### function' getBoolean(name:[String](#string-277)) -> [Boolean](#boolean-1)?
 
-<a name="getboolean-1275"></a>
+<a name="getboolean-1317"></a>
 
 Read a Boolean.
 
@@ -2880,7 +2940,7 @@ compatible type.
 
 #### function' getBoolean(path:[[String](#string-277)]) -> [Boolean](#boolean-1)?
 
-<a name="getboolean-1281"></a>
+<a name="getboolean-1329"></a>
 
 Read a Boolean.
 
@@ -2889,9 +2949,15 @@ Read a Boolean.
 Return: An optional with a value if the given entry exists and is of a
 compatible type.
 
+#### function' getInteger() -> [Integer](#integer-26)?
+
+<a name="getinteger-1310"></a>
+
+This as an integer.
+
 #### function' getInteger(name:[String](#string-277)) -> [Integer](#integer-26)?
 
-<a name="getinteger-1277"></a>
+<a name="getinteger-1319"></a>
 
 Read an integer.
 
@@ -2902,7 +2968,7 @@ compatible type.
 
 #### function' getInteger(path:[[String](#string-277)]) -> [Integer](#integer-26)?
 
-<a name="getinteger-1283"></a>
+<a name="getinteger-1331"></a>
 
 Read an integer.
 
@@ -2911,9 +2977,15 @@ Read an integer.
 Return: An optional with a value if the given entry exists and is of a
 compatible type.
 
+#### function' getReal() -> [Real](#real-150)?
+
+<a name="getreal-1311"></a>
+
+This as a real.
+
 #### function' getReal(name:[String](#string-277)) -> [Real](#real-150)?
 
-<a name="getreal-1279"></a>
+<a name="getreal-1321"></a>
 
 Read a real.
 
@@ -2924,7 +2996,7 @@ compatible type.
 
 #### function' getReal(path:[[String](#string-277)]) -> [Real](#real-150)?
 
-<a name="getreal-1285"></a>
+<a name="getreal-1333"></a>
 
 Read a real.
 
@@ -2933,12 +3005,71 @@ path: Path of the entry.
 Return: An optional with a value if the given entry exists and is of a
 compatible type.
 
+#### function' getString(name:[String](#string-277)) -> [String](#string-277)?
+
+<a name="getstring-1323"></a>
+
+Read a string.
+
+- name: Name of the entry.
+
+Return: An optional with a value if the given entry exists and is of a
+compatible type.
+
+#### function' getString(path:[[String](#string-277)]) -> [String](#string-277)?
+
+<a name="getstring-1335"></a>
+
+Read a string.
+
+path: Path of the entry.
+
+Return: An optional with a value if the given entry exists and is of a
+compatible type.
+
+
+### Member Fiber Details
+
+#### fiber' getArray() -> [Reader](#reader-1336)'!
+
+<a name="getarray-1308"></a>
+
+This as an array.
+
+Return: a fiber object that yields each of the elements of the array in
+turn, or which never yields if this is an empty array or not an array
+at all.
+
+#### fiber' getArray(name:[String](#string-277)) -> [Reader](#reader-1336)'!
+
+<a name="getarray-1315"></a>
+
+Read an array.
+
+- name: Name of the entry.
+
+Return: a fiber object that yields each of the elements of the array in
+turn, or which never yields if this is an empty array or not an array
+at all.
+
+#### fiber' getArray(path:[[String](#string-277)]) -> [Reader](#reader-1336)'!
+
+<a name="getarray-1327"></a>
+
+Read an array.
+
+- path: Path of the entry.
+
+Return: a fiber object that yields each of the elements of the array in
+turn, or which never yields if this is an empty array or not an array
+at all.
+
 
 ## RestaurantProcess
 
 <a name="restaurantprocess-585"></a>
 
-  * Inherits from *[Random](#random-1954)*
+  * Inherits from *[Random](#random-2010)*
 
 (Chinese) restaurant process.
 
@@ -2971,7 +3102,7 @@ Constructor.
 
 <a name="restaurantprocesscategorical-927"></a>
 
-  * Inherits from *[Random](#random-1938)*
+  * Inherits from *[Random](#random-1994)*
 
 Categorical with conjugate restaurant process prior on category
 probabilities.
@@ -2983,62 +3114,51 @@ probabilities.
 
 ## State
 
-<a name="state-1807"></a>
+<a name="state-1865"></a>
 
   * Inherits from *[Object](#object-149)*
 
 Concept for a state.
 
+| Member Function | Brief description |
+| --- | --- |
+| [input](#input-1862) | Input to the state. |
+| [output](#output-1864) | Output from the state. |
+
 | Member Fiber | Brief description |
 | --- | --- |
-| [simulate](#simulate-1804) | Simulate initial state. |
-| [simulate](#simulate-1806) | Simulate transition. |
+| [simulate](#simulate-1857) | Simulate initial state. |
+| [simulate](#simulate-1860) | Simulate transition. |
+
+
+### Member Function Details
+
+#### function input(reader:[Reader](#reader-1336)')
+
+<a name="input-1862"></a>
+
+Input to the state.
+
+#### function output(writer:[Writer](#writer-1355))
+
+<a name="output-1864"></a>
+
+Output from the state.
 
 
 ### Member Fiber Details
 
-#### fiber simulate() -> [Real](#real-150)!
+#### fiber simulate(θ:[Model](#model-1855)) -> [Real](#real-150)!
 
-<a name="simulate-1804"></a>
-
-Simulate initial state.
-
-#### fiber simulate(x:[State](#state-1807)) -> [Real](#real-150)!
-
-<a name="simulate-1806"></a>
-
-Simulate transition.
-
-- x: Previous state.
-
-
-## StateWithParameter
-
-<a name="statewithparameter-1813"></a>
-
-  * Inherits from *[Object](#object-149)*
-
-Concept for a state with a parameter.
-
-| Member Fiber | Brief description |
-| --- | --- |
-| [simulate](#simulate-1809) | Simulate initial state. |
-| [simulate](#simulate-1812) | Simulate transition. |
-
-
-### Member Fiber Details
-
-#### fiber simulate(θ:[Parameter](#parameter-1803)) -> [Real](#real-150)!
-
-<a name="simulate-1809"></a>
+<a name="simulate-1857"></a>
 
 Simulate initial state.
 
 - θ: Parameter.
 
-#### fiber simulate(x:[StateWithParameter](#statewithparameter-1813), θ:[Parameter](#parameter-1803)) -> [Real](#real-150)!
+#### fiber simulate(x:[State](#state-1865), θ:[Model](#model-1855)) -> [Real](#real-150)!
 
-<a name="simulate-1812"></a>
+<a name="simulate-1860"></a>
 
 Simulate transition.
 
@@ -3050,7 +3170,7 @@ Simulate transition.
 
 <a name="uniform-599"></a>
 
-  * Inherits from *[Random](#random-1922)*
+  * Inherits from *[Random](#random-1978)*
 
 Uniform distribution.
 
@@ -3064,7 +3184,7 @@ Uniform distribution.
 
 <a name="uniforminteger-613"></a>
 
-  * Inherits from *[Random](#random-1938)*
+  * Inherits from *[Random](#random-1994)*
 
 Uniform distribution over integers.
 
@@ -3076,7 +3196,7 @@ Uniform distribution over integers.
 
 ## Writer
 
-<a name="writer-1305"></a>
+<a name="writer-1355"></a>
 
   * Inherits from *[Object](#object-149)*
 
@@ -3084,64 +3204,64 @@ Abstract writer.
 
 | Member Function | Brief description |
 | --- | --- |
-| [putBoolean](#putboolean-1289) | Write a Boolean. |
-| [putInteger](#putinteger-1292) | Write an integer. |
-| [putReal](#putreal-1295) | Write a real. |
-| [putBoolean](#putboolean-1298) | Write a Boolean. |
-| [putInteger](#putinteger-1301) | Write an integer. |
-| [putReal](#putreal-1304) | Write a real. |
+| [set](#set-1339) | Write a Boolean. |
+| [set](#set-1342) | Write an integer. |
+| [set](#set-1345) | Write a real. |
+| [set](#set-1348) | Write a Boolean. |
+| [set](#set-1351) | Write an integer. |
+| [set](#set-1354) | Write a real. |
 
 
 ### Member Function Details
 
-#### function' putBoolean(name:[String](#string-277), value:[Boolean](#boolean-1))
+#### function set(name:[String](#string-277), value:[Boolean](#boolean-1))
 
-<a name="putboolean-1289"></a>
+<a name="set-1339"></a>
 
 Write a Boolean.
 
 - name: Name of the entry.
 - value: Value of the entry.
 
-#### function' putBoolean(path:[[String](#string-277)], value:[Boolean](#boolean-1))
+#### function set(name:[String](#string-277), value:[Integer](#integer-26))
 
-<a name="putboolean-1298"></a>
-
-Write a Boolean.
-
-- path: Path of the entry.
-- value: Value of the entry.
-
-#### function' putInteger(name:[String](#string-277), value:[Integer](#integer-26))
-
-<a name="putinteger-1292"></a>
+<a name="set-1342"></a>
 
 Write an integer.
 
 - name: Name of the entry.
 - value: Value of the entry.
 
-#### function' putInteger(path:[[String](#string-277)], value:[Integer](#integer-26))
+#### function set(name:[String](#string-277), value:[Real](#real-150))
 
-<a name="putinteger-1301"></a>
-
-Write an integer.
-
-- path: Path of the entry.
-- value: Value of the entry.
-
-#### function' putReal(name:[String](#string-277), value:[Real](#real-150))
-
-<a name="putreal-1295"></a>
+<a name="set-1345"></a>
 
 Write a real.
 
 - name: Name of the entry.
 - value: Value of the entry.
 
-#### function' putReal(path:[[String](#string-277)], value:[Real](#real-150))
+#### function set(path:[[String](#string-277)], value:[Boolean](#boolean-1))
 
-<a name="putreal-1304"></a>
+<a name="set-1348"></a>
+
+Write a Boolean.
+
+- path: Path of the entry.
+- value: Value of the entry.
+
+#### function set(path:[[String](#string-277)], value:[Integer](#integer-26))
+
+<a name="set-1351"></a>
+
+Write an integer.
+
+- path: Path of the entry.
+- value: Value of the entry.
+
+#### function set(path:[[String](#string-277)], value:[Real](#real-150))
+
+<a name="set-1354"></a>
 
 Write a real.
 
