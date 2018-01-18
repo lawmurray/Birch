@@ -8,7 +8,7 @@ class Writer {
    * - name: Name of the entry.
    * - value: Value of the entry.
    */
-  function' putBoolean(name:String, value:Boolean);
+  function set(name:String, value:Boolean);
 
   /**
    * Write an integer.
@@ -16,7 +16,7 @@ class Writer {
    * - name: Name of the entry.
    * - value: Value of the entry.
    */
-  function' putInteger(name:String, value:Integer);
+  function set(name:String, value:Integer);
 
   /**
    * Write a real.
@@ -24,7 +24,7 @@ class Writer {
    * - name: Name of the entry.
    * - value: Value of the entry.
    */
-  function' putReal(name:String, value:Real);
+  function set(name:String, value:Real);
   
   /**
    * Write a Boolean.
@@ -32,7 +32,7 @@ class Writer {
    * - path: Path of the entry.
    * - value: Value of the entry.
    */
-  function' putBoolean(path:[String], value:Boolean);
+  function set(path:[String], value:Boolean);
 
   /**
    * Write an integer.
@@ -40,7 +40,7 @@ class Writer {
    * - path: Path of the entry.
    * - value: Value of the entry.
    */
-  function' putInteger(path:[String], value:Integer);
+  function set(path:[String], value:Integer);
 
   /**
    * Write a real.
@@ -48,5 +48,5 @@ class Writer {
    * - path: Path of the entry.
    * - value: Value of the entry.
    */
-  function' putReal(path:[String], value:Real);
+  function set(path:[String], value:Real);
 }

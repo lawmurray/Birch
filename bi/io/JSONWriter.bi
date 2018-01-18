@@ -18,5 +18,4 @@ class JSONWriter < MemoryWriter {
     generator.write(top);
     }}
   }
-
 }
