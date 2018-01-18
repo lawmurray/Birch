@@ -143,7 +143,11 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     in();
 
     /* parameters and local variables as class member variables */
-    start("SharedPointer<" << type->name);
+    start("SharedPointer<");
+    if (o->isReadOnly()) {
+      middle("const ");
+    }
+    middle(type->name);
     genTemplateArgs(type);
     finish("> self;");
     for (auto iter = parameters.begin(); iter != parameters.end(); ++iter) {
