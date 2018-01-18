@@ -239,7 +239,7 @@ public:
    * @return An optional that will be empty if the value does not exist,
    * otherwise it will contain the value of variant type.
    */
-  boost::optional<value_type&> get(
+  boost::optional<value&> get(
       const std::initializer_list<std::string>& path);
 
   /**
@@ -250,7 +250,7 @@ public:
    * @return An optional that will be empty if the value does not exist,
    * otherwise it will contain the value of variant type.
    */
-  boost::optional<const value_type&> get(
+  boost::optional<const value&> get(
       const std::initializer_list<std::string>& path) const;
 
   /**
@@ -261,7 +261,7 @@ public:
    * @return An optional that will be empty if the value does not exist,
    * otherwise it will contain the value of variant type.
    */
-  boost::optional<value_type&> get(const std::string& name);
+  boost::optional<value&> get(const std::string& name);
 
   /**
    * Get.
@@ -271,15 +271,15 @@ public:
    * @return An optional that will be empty if the value does not exist,
    * otherwise it will contain the value of variant type.
    */
-  boost::optional<const value_type&> get(const std::string& name) const;
+  boost::optional<const value&> get(const std::string& name) const;
 
   /**
    * Get.
    *
    * @return The value, of variant type.
    */
-  value_type& get() {
-    return x;
+  value& get() {
+    return *this;
   }
 
   /**
@@ -287,8 +287,8 @@ public:
    *
    * @return The value, of variant type.
    */
-  const value_type& get() const {
-    return x;
+  const value& get() const {
+    return *this;
   }
 
   /**
@@ -320,6 +320,24 @@ public:
    * @param The new item.
    */
   value& set(const value_type& x);
+
+  /**
+   * Unwrap.
+   *
+   * @return The variant object.
+   */
+  value_type& unwrap() {
+    return x;
+  }
+
+  /**
+   * Unwrap.
+   *
+   * @return The variant object.
+   */
+  const value_type& unwrap() const {
+    return x;
+  }
 
 private:
   /**

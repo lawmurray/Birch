@@ -10,7 +10,7 @@ libubjpp::JSONGenerator::JSONGenerator(std::ostream& stream) :
 }
 
 void libubjpp::JSONGenerator::write(const value& value) {
-  boost::apply_visitor(*this, value.get());
+  boost::apply_visitor(*this, value.unwrap());
 }
 
 void libubjpp::JSONGenerator::operator()(const object_type& value) {

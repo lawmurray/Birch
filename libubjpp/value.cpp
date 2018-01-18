@@ -8,7 +8,7 @@ libubjpp::value::value() :
   //
 }
 
-boost::optional<libubjpp::value_type&> libubjpp::value::get(
+boost::optional<libubjpp::value&> libubjpp::value::get(
     const std::initializer_list<std::string>& path) {
   auto node = this;
   for (auto name : path) {
@@ -27,7 +27,7 @@ boost::optional<libubjpp::value_type&> libubjpp::value::get(
   return node->get();
 }
 
-boost::optional<const libubjpp::value_type&> libubjpp::value::get(
+boost::optional<const libubjpp::value&> libubjpp::value::get(
     const std::initializer_list<std::string>& path) const {
   auto node = this;
   for (auto name : path) {
@@ -46,7 +46,7 @@ boost::optional<const libubjpp::value_type&> libubjpp::value::get(
   return node->get();
 }
 
-boost::optional<libubjpp::value_type&> libubjpp::value::get(
+boost::optional<libubjpp::value&> libubjpp::value::get(
     const std::string& name) {
   if (x.type() == typeid(object_type)) {
     auto& o = boost::get<object_type&>(x);
@@ -58,7 +58,7 @@ boost::optional<libubjpp::value_type&> libubjpp::value::get(
   return boost::none;
 }
 
-boost::optional<const libubjpp::value_type&> libubjpp::value::get(
+boost::optional<const libubjpp::value&> libubjpp::value::get(
     const std::string& name) const {
   if (x.type() == typeid(object_type)) {
     auto& o = boost::get<object_type&>(x);
