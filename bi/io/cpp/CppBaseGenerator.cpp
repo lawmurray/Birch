@@ -464,14 +464,7 @@ void bi::CppBaseGenerator::visit(const Class* o) {
     if (header) {
       line("using " << o->name << " = " << o->base << ';');
     }
-  } else if (o->isGeneric()) {
-    if (header) {
-      CppClassGenerator auxClass1(base, level, true);
-      CppClassGenerator auxClass2(base, level, false);
-      auxClass1 << o;
-      auxClass2 << o;
-    }
-  } else {
+  } else if (header || !o->isGeneric()) {
     CppClassGenerator auxClass(base, level, header);
     auxClass << o;
   }

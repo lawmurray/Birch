@@ -4,6 +4,7 @@
 #include "bi/io/cpp/CppHeaderGenerator.hpp"
 
 #include "bi/io/cpp/CppRawGenerator.hpp"
+#include "bi/io/cpp/CppClassGenerator.hpp"
 #include "bi/visitor/Gatherer.hpp"
 #include "bi/primitive/poset.hpp"
 #include "bi/primitive/definitely.hpp"
@@ -148,6 +149,14 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
   }
   for (auto o : unaries) {
     *this << o;
+  }
+
+  /* generic class definitions */
+  CppClassGenerator auxClass(base, level, false);
+  for (auto o : classes) {
+    if (o->isGeneric()) {
+      auxClass << o;
+    }
   }
 
   line("}\n");
