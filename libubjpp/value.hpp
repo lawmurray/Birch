@@ -21,7 +21,7 @@ using object_type = std::map<std::string,value>;
 /**
  * Array type.
  */
-using array_type = std::list<value>;
+using array_type = std::vector<value>;
 
 /**
  * String type.
