@@ -45,6 +45,7 @@
 #include <cassert>
 
 #include <getopt.h>
+#include <dlfcn.h>
 
 namespace bi {
 

@@ -183,10 +183,10 @@ void bi::Driver::run(const std::string& prog) {
   so.replace_extension(".so");
 #endif
 
-  /* Look in built libs first. */
-  if (exists(lib_dir / so))
+  /* look in built libs first */
+  if (exists(lib_dir / so)) {
     so = lib_dir / so;
-
+  }
   handle = dlopen(so.c_str(), RTLD_NOW);
   msg = dlerror();
   if (handle == NULL) {

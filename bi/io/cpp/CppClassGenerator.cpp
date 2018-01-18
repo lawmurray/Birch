@@ -91,10 +91,28 @@ void bi::CppClassGenerator::visit(const Class* o) {
     /* member variables and functions */
     *this << o->braces->strip();
 
-    /* end boilerplate */
+    /* end class */
     if (header) {
       out();
       line("};\n");
+    }
+
+    /* C linkage function */
+    if (!o->isGeneric() && o->params->isEmpty()) {
+      if (header) {
+        line("extern \"C\" " << o->name << "* make_" << o->name << "();");
+      } else {
+        line("bi::type::" << o->name << "* bi::type::make_" << o->name << "() {");
+        in();
+        line("return new bi::type::" << o->name << "();");
+        out();
+        line("}");
+      }
+      line("");
+    }
+
+    /* end namespace */
+    if (header) {
       in();
       line('}');
       out();
