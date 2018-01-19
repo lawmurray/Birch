@@ -35,7 +35,8 @@ public:
   /**
    * Null constructor.
    */
-  SharedPointer(const std::nullptr_t& o) {
+  SharedPointer(const std::nullptr_t& o) :
+      super_type(o) {
     //
   }
 
@@ -124,7 +125,8 @@ public:
     //
   }
 
-  SharedPointer(const std::nullptr_t& o) {
+  SharedPointer(const std::nullptr_t& o) :
+      ptr(o) {
     //
   }
 
@@ -196,7 +198,8 @@ public:
     //
   }
 
-  SharedPointer(const std::nullptr_t& o) {
+  SharedPointer(const std::nullptr_t& o) :
+      ptr(o) {
     //
   }
 

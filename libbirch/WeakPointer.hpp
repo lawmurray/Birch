@@ -78,7 +78,8 @@ public:
   using this_type = WeakPointer<value_type>;
   using root_type = this_type;
 
-  WeakPointer(const std::nullptr_t& o = nullptr) {
+  WeakPointer(const std::nullptr_t& o = nullptr) :
+      ptr() {
     //
   }
 
@@ -95,10 +96,9 @@ public:
   }
 
   template<class U>
-  WeakPointer(const Optional<SharedPointer<U>>& o) {
-    if (o.query()) {
-      *this = o.get();
-    }
+  WeakPointer(const Optional<SharedPointer<U>>& o) :
+      WeakPointer(o.query() ? o.get() : nullptr) {
+    //
   }
 
   SharedPointer<Any> lock() const {
@@ -120,7 +120,8 @@ public:
   using this_type = WeakPointer<const Any>;
   using root_type = this_type;
 
-  WeakPointer(const std::nullptr_t& o = nullptr) {
+  WeakPointer(const std::nullptr_t& o = nullptr) :
+      ptr() {
     //
   }
 
@@ -137,10 +138,9 @@ public:
   }
 
   template<class U>
-  WeakPointer(const Optional<SharedPointer<U>>& o) {
-    if (o.query()) {
-      *this = o.get();
-    }
+  WeakPointer(const Optional<SharedPointer<U>>& o) :
+      WeakPointer(o.query() ? o.get() : nullptr) {
+    //
   }
 
   SharedPointer<const Any> lock() const {
