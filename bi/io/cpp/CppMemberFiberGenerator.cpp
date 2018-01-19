@@ -110,7 +110,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     line("}\n");
   }
 
-  /* call function */
+  /* query function */
   if (header) {
     start("virtual ");
   } else {
@@ -161,11 +161,14 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     line("};");
   }
 
-  /* initialisation function */
-  if (!header) {
+  /* call function */
+  if (header) {
+    start("virtual ");
+  } else {
     genTemplateParams(type);
+    start("");
   }
-  start(o->returnType << ' ');
+  middle(o->returnType << ' ');
   if (!header) {
     middle("bi::type::" << type->name);
     genTemplateArgs(type);
