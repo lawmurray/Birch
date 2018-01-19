@@ -31,8 +31,7 @@ function make(name:String) -> Object? {
   cpp{{
   using make_t = bi::type::Object_*();
   void* addr = dlsym(RTLD_DEFAULT, symbol_.c_str());
-  char* msg = dlerror();
-  if (msg != NULL) {
+  if (addr) {
     auto raw = reinterpret_cast<make_t*>(addr)();
     result_ = bi::SharedPointer<bi::type::Object_>(std::shared_ptr<bi::type::Object_>(raw));
   }

@@ -3,12 +3,12 @@
  */
 class Reader {
   /**
-   * This as an object.
+   * Get this as an object.
    */
-  function' get() -> Reader'?;
+  function' getObject() -> Reader'?;
 
   /**
-   * This as an array.
+   * Get this as an array.
    *
    * Return: a fiber object that yields each of the elements of the array in
    * turn, or which never yields if this is an empty array or not an array
@@ -17,32 +17,32 @@ class Reader {
   fiber' getArray() -> Reader'!;
   
   /**
-   * This as a boolean.
+   * Get this as a Boolean.
    */
   function' getBoolean() -> Boolean?;
 
   /**
-   * This as an integer.
+   * Get this as an integer.
    */
   function' getInteger() -> Integer?;
 
   /**
-   * This as a real.
+   * Get this as a real.
    */
   function' getReal() -> Real?;
 
   /**
-   * Read an object.
+   * Get an object.
    *
    * - name: Name of the entry.
    *
    * Return: An optional with a value if the given entry exists and is of a
    * compatible type.
    */
-  function' get(name:String) -> Reader'?;
+  function' getObject(name:String) -> Reader'?;
 
   /**
-   * Read an array.
+   * Get an array.
    *
    * - name: Name of the entry.
    *
@@ -53,7 +53,7 @@ class Reader {
   fiber' getArray(name:String) -> Reader'!;
 
   /**
-   * Read a Boolean.
+   * Get a Boolean.
    *
    * - name: Name of the entry.
    *
@@ -63,7 +63,7 @@ class Reader {
   function' getBoolean(name:String) -> Boolean?;
 
   /**
-   * Read an integer.
+   * Get an integer.
    *
    * - name: Name of the entry.
    *
@@ -73,7 +73,7 @@ class Reader {
   function' getInteger(name:String) -> Integer?;
 
   /**
-   * Read a real.
+   * Get a real.
    *
    * - name: Name of the entry.
    *
@@ -83,7 +83,7 @@ class Reader {
   function' getReal(name:String) -> Real?;
 
   /**
-   * Read a string.
+   * Get a string.
    *
    * - name: Name of the entry.
    *
@@ -93,17 +93,17 @@ class Reader {
   function' getString(name:String) -> String?;
 
   /**
-   * Read an object.
+   * Get an object.
    *
    * - path: Path of the entry.
    *
    * Return: An optional with a value if the given entry exists and is of a
    * compatible type.
    */
-  function' get(path:[String]) -> Reader'?;
+  function' getObject(path:[String]) -> Reader'?;
 
   /**
-   * Read an array.
+   * Get an array.
    *
    * - path: Path of the entry.
    *
@@ -114,7 +114,7 @@ class Reader {
   fiber' getArray(path:[String]) -> Reader'!;
 
   /**
-   * Read a Boolean.
+   * Get a Boolean.
    *
    * - path: Path of the entry.
    *
@@ -124,7 +124,7 @@ class Reader {
   function' getBoolean(path:[String]) -> Boolean?;
 
   /**
-   * Read an integer.
+   * Get an integer.
    *
    * - path: Path of the entry.
    *
@@ -134,7 +134,7 @@ class Reader {
   function' getInteger(path:[String]) -> Integer?;
 
   /**
-   * Read a real.
+   * Get a real.
    *
    * path: Path of the entry.
    *
@@ -144,7 +144,7 @@ class Reader {
   function' getReal(path:[String]) -> Real?;
 
   /**
-   * Read a string.
+   * Get a string.
    *
    * path: Path of the entry.
    *

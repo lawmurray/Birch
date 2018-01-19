@@ -6,8 +6,17 @@ class MemoryReader < Reader {
   libubjpp::value* group;
   }}
 
-  function' get() -> Reader'? {
-    return this;
+  function' getObject() -> Reader'? {
+    exists:Boolean;
+    cpp{{
+    auto value = group->get<libubjpp::object_type>();
+    exists_ = static_cast<bool>(value);
+    }}
+    if (exists) {
+      return this;
+    } else {
+      return nil;
+    }
   }
 
   fiber' getArray() -> Reader'! {
@@ -80,7 +89,7 @@ class MemoryReader < Reader {
     return result;
   }
 
-  function' get(name:String) -> Reader'? {
+  function' getObject(name:String) -> Reader'? {
     exists:Boolean;
     cpp{{
     auto value = group->get(name_);
@@ -98,7 +107,7 @@ class MemoryReader < Reader {
   }
 
   fiber' getArray(name:String) -> Reader'! {
-    reader:Reader'? <- get(name);
+    reader:Reader'? <- getObject(name);
     if (reader?) {
       reader!.getArray();  // implicit fiber call
     } 
@@ -148,7 +157,7 @@ class MemoryReader < Reader {
     return result;
   }
 
-  function' get(path:[String]) -> Reader'? {
+  function' getObject(path:[String]) -> Reader'? {
     exists:Boolean;
     cpp{{
     auto value = group->get(path_);
@@ -166,7 +175,7 @@ class MemoryReader < Reader {
   }
 
   fiber' getArray(path:[String]) -> Reader'! {
-    reader:Reader'? <- get(path);
+    reader:Reader'? <- getObject(path);
     if (reader?) {
       reader!.getArray();  // implicit fiber call
     } 

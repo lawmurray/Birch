@@ -25,5 +25,5 @@ class State {
   /**
    * Output from the state.
    */
-  function output(writer:Writer);
+  function' output(writer:Writer);
 }

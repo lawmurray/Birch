@@ -75,6 +75,7 @@
       "bi/filesystem.bi",
       "bi/primitive.bi",
       "bi/resample.bi",
+      "bi/sample.bi",
       "bi/system.bi"
     ],
     "other": [
