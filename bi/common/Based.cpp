@@ -11,3 +11,7 @@ bi::Based::Based(Type* base, const bool alias) :
 bi::Based::~Based() {
   //
 }
+
+bool bi::Based::isAlias() const {
+  return alias;
+}

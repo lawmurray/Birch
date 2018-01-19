@@ -39,7 +39,11 @@ bi::Statement* bi::ResolverHeader::modify(Class* o) {
     }
     scopes.push_back(o->scope);
     classes.push_back(o);
-    o->params = o->params->accept(this);
+    if (o->isAlias()) {
+      o->params = o->base->canonical()->getClass()->params->accept(&cloner)->accept(this);
+    } else {
+      o->params = o->params->accept(this);
+    }
     o->braces = o->braces->accept(this);
     o->state = RESOLVED_HEADER;
     classes.pop_back();

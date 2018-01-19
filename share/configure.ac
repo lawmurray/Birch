@@ -15,6 +15,7 @@ if test x$emscripten = xtrue; then
   AC_DISABLE_SHARED
   AX_CXX_COMPILE_STDCXX(17, [noext], [mandatory])
 else
+  AC_DISABLE_STATIC
   AX_CXX_COMPILE_STDCXX(14, [noext], [mandatory])
 fi
 AC_PROG_LIBTOOL

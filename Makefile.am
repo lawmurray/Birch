@@ -200,8 +200,6 @@ libbirch_la_SOURCES = \
   libbirch/Any.cpp \
   libbirch/global.cpp \
   libbirch/libbirch.cpp \
-  libbirch/SharedPointer.cpp \
-  libbirch/WeakPointer.cpp \
   libbirch/World.cpp
 libbirch_la_CXXFLAGS = $(AM_CXXFLAGS)
 

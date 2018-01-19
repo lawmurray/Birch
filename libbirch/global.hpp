@@ -48,31 +48,26 @@ struct super_type<const T> {
 };
 
 /**
- * Can type @p T be assigned to from type @p U?
+ * Does type @p T hs an assignment operator for type @p U?
  */
 template<class T, class U>
-struct is_assignable {
-  using T1 = typename std::remove_const<T>::type;
-  using U1 = typename std::remove_const<U>::type;
-
-  static const bool value = std::is_assignable<T1,U1>::value &&
-      (!std::is_const<U>::value || std::is_const<T>::value);
+struct has_assignment {
+  static const bool value = has_assignment<typename super_type<T>::type,U>::value;
+};
+template<class U>
+struct has_assignment<Any,U> {
+  static const bool value = false;
 };
 
 /**
- * Does type @p T have a conversion operator to type @p U?
+ * Does type @p T have a conversion operator for type @p U?
  */
 template<class T, class U>
-struct is_convertible {
-  /* conversion operators in generated code are marked explicit, they return
-   * true for std::is_constructible, but false for std::is_convertible as they
-   * cannot partipicate in implicit casts; if they were not marked explicit,
-   * std::is_constructible would also use standard conversions before and
-   * after the user-defined conversion, which causes ambiguity (e.g. a
-   * user-defined conversion to int can be further standard-converted to
-   * double, which would allow type @c T to be converted to type double
-   * unintentionally */
-  static const bool value = std::is_constructible<U,T>::value &&
-      !std::is_convertible<T,U>::value;
+struct has_conversion {
+  static const bool value = has_conversion<typename super_type<T>::type,U>::value;
+};
+template<class U>
+struct has_conversion<Any,U> {
+  static const bool value = false;
 };
 }

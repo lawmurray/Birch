@@ -3,7 +3,7 @@
  */
 #pragma once
 
-#include "libbirch/global.hpp"
+#include "libbirch/SharedPointer.hpp"
 #include "libbirch/Optional.hpp"
 
 namespace bi {
@@ -25,7 +25,10 @@ public:
   /**
    * Default constructor.
    */
-  WeakPointer(const std::nullptr_t& o = nullptr);
+  WeakPointer(const std::nullptr_t& o = nullptr) :
+      super_type(o) {
+    //
+  }
 
   /**
    * Copy constructor.
@@ -38,26 +41,31 @@ public:
   WeakPointer(WeakPointer<T> && o) = default;
 
   /**
-   * Copy constructor.
-   */
-  WeakPointer(const SharedPointer<T>& o);
-
-  /**
    * Generic copy constructor.
    */
   template<class U>
-  WeakPointer(const WeakPointer<U>& o);
+  WeakPointer(const WeakPointer<U>& o) :
+      super_type(o) {
+    //
+  }
 
   /**
-   * Generic copy constructor.
+   * Generic copy constructor from shared pointer.
    */
   template<class U>
-  WeakPointer(const SharedPointer<U>& o);
+  WeakPointer(const SharedPointer<U>& o) :
+      super_type(o) {
+    //
+  }
 
   /**
-   * Assignment from null pointer.
+   * Generic copy constructor from optional shared pointer.
    */
-  WeakPointer<T>& operator=(const std::nullptr_t& o);
+  template<class U>
+  WeakPointer(const Optional<SharedPointer<U>>& o) :
+      super_type(o) {
+    //
+  }
 
   /**
    * Copy assignment.
@@ -70,26 +78,15 @@ public:
   WeakPointer<T>& operator=(WeakPointer<T> && o) = default;
 
   /**
-   * Assignment from shared pointer.
-   */
-  WeakPointer<T>& operator=(const SharedPointer<T>& o);
-
-  /**
-   * Generic assignment from weak pointer.
-   */
-  template<class U>
-  WeakPointer<T>& operator=(const WeakPointer<U>& o);
-
-  /**
-   * Generic assignment from shared pointer.
-   */
-  template<class U>
-  WeakPointer<T>& operator=(const SharedPointer<U>& o);
-
-  /**
    * Lock the pointer.
    */
-  SharedPointer<T> lock() const;
+  SharedPointer<T> lock() const {
+#ifndef NDEBUG
+    return root_type::lock().template dynamic_pointer_cast<T>();
+#else
+    return root_type::lock().template static_pointer_cast<T>();
+#endif
+  }
 };
 
 template<>
@@ -101,16 +98,38 @@ public:
   using this_type = WeakPointer<value_type>;
   using root_type = this_type;
 
-  WeakPointer(const std::nullptr_t& o = nullptr);
+  WeakPointer(const std::nullptr_t& o = nullptr) {
+    //
+  }
+
   WeakPointer(const WeakPointer<Any>& o) = default;
   WeakPointer(WeakPointer<Any> && o) = default;
-  WeakPointer(const SharedPointer<Any>& o);
-  WeakPointer<Any>& operator=(const std::nullptr_t& o);
+
+  template<class U>
+  WeakPointer(const WeakPointer<U>& o) :
+      ptr(o.ptr) {
+    //
+  }
+
+  template<class U>
+  WeakPointer(const SharedPointer<U>& o) :
+      ptr(o.ptr) {
+    //
+  }
+
+  template<class U>
+  WeakPointer(const Optional<SharedPointer<U>>& o) {
+    if (o.query()) {
+      *this = o.get();
+    }
+  }
+
   WeakPointer<Any>& operator=(const WeakPointer<Any>& o) = default;
   WeakPointer<Any>& operator=(WeakPointer<Any> && o) = default;
-  WeakPointer<Any>& operator=(const SharedPointer<Any>& o);
 
-  SharedPointer<Any> lock() const;
+  SharedPointer<Any> lock() const {
+    return ptr.lock();
+  }
 
 protected:
   /**
@@ -127,20 +146,35 @@ public:
   using this_type = WeakPointer<const Any>;
   using root_type = this_type;
 
-  WeakPointer(const std::nullptr_t& o = nullptr);
+  WeakPointer(const std::nullptr_t& o = nullptr) {
+    //
+  }
+
   WeakPointer(const WeakPointer<const Any>& o) = default;
   WeakPointer(WeakPointer<const Any> && o) = default;
-  WeakPointer(const SharedPointer<const Any>& o);
-  WeakPointer(const WeakPointer<Any>& o);
-  WeakPointer(const SharedPointer<Any>& o);
-  WeakPointer<const Any>& operator=(const std::nullptr_t& o);
-  WeakPointer<const Any>& operator=(const WeakPointer<const Any>& o) = default;
-  WeakPointer<const Any>& operator=(WeakPointer<const Any> && o) = default;
-  WeakPointer<const Any>& operator=(const SharedPointer<const Any>& o);
-  WeakPointer<const Any>& operator=(const WeakPointer<Any>& o);
-  WeakPointer<const Any>& operator=(const SharedPointer<Any>& o);
 
-  SharedPointer<const Any> lock() const;
+  template<class U>
+  WeakPointer(const WeakPointer<U>& o) :
+      ptr(o.ptr) {
+    //
+  }
+
+  template<class U>
+  WeakPointer(const SharedPointer<U>& o) :
+      ptr(o.ptr) {
+    //
+  }
+
+  template<class U>
+  WeakPointer(const Optional<SharedPointer<U>>& o) {
+    if (o.query()) {
+      *this = o.get();
+    }
+  }
+
+  SharedPointer<const Any> lock() const {
+    return SharedPointer<const Any>(ptr.lock());
+  }
 
 protected:
   /**
@@ -148,58 +182,4 @@ protected:
    */
   std::weak_ptr<const Any> ptr;
 };
-}
-
-template<class T>
-bi::WeakPointer<T>::WeakPointer(const std::nullptr_t& o) :
-    super_type(o) {
-  //
-}
-
-template<class T>
-bi::WeakPointer<T>::WeakPointer(const SharedPointer<T>& o) :
-    super_type(o) {
-  //
-}
-
-template<class T>
-template<class U>
-bi::WeakPointer<T>::WeakPointer(const WeakPointer<U>& o) :
-    super_type(o) {
-  //
-}
-
-template<class T>
-template<class U>
-bi::WeakPointer<T>::WeakPointer(const SharedPointer<U>& o) :
-    super_type(o) {
-  //
-}
-
-template<class T>
-bi::WeakPointer<T>& bi::WeakPointer<T>::operator=(const std::nullptr_t& o) {
-  root_type::operator=(o);
-  return *this;
-}
-
-template<class T>
-bi::WeakPointer<T>& bi::WeakPointer<T>::operator=(const SharedPointer<T>& o) {
-  root_type::operator=(o);
-  return *this;
-}
-
-template<class T>
-template<class U>
-bi::WeakPointer<T>& bi::WeakPointer<T>::operator=(const SharedPointer<U>& o) {
-  root_type::operator=(o);
-  return *this;
-}
-
-template<class T>
-bi::SharedPointer<T> bi::WeakPointer<T>::lock() const {
-#ifndef NDEBUG
-  return root_type::lock().template dynamic_pointer_cast<T>();
-#else
-  return root_type::lock().template static_pointer_cast<T>();
-#endif
 }

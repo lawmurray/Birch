@@ -461,17 +461,13 @@ void bi::CppBaseGenerator::visit(const ConversionOperator* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Basic* o) {
-  if (header && o->alias) {
+  if (header && o->isAlias()) {
     line("using " << o->name << " = " << o->base << ';');
   }
 }
 
 void bi::CppBaseGenerator::visit(const Class* o) {
-  if (o->alias) {
-    if (header) {
-      line("using " << o->name << " = " << o->base << ';');
-    }
-  } else if (header || !o->isGeneric()) {
+  if (header || !o->isGeneric()) {
     CppClassGenerator auxClass(base, level, header);
     auxClass << o;
   }
@@ -482,11 +478,7 @@ void bi::CppBaseGenerator::visit(const Generic* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Assignment* o) {
-  if (o->left->type->isClass() && !o->right->type->isClass()) {
-    line("*(" << o->left << ") = " << o->right << ';');
-  } else {
-    line(o->left << " = " << o->right << ';');
-  }
+  line(o->left << " = " << o->right << ';');
 }
 
 void bi::CppBaseGenerator::visit(const ExpressionStatement* o) {
@@ -707,19 +699,12 @@ void bi::CppBaseGenerator::genArg(const Expression* arg, const Type* type) {
   /* Birch and C++ resolve overloads differently, explicit casting in
    * some situations avoids situations where Birch considers a call
    * unambiguous, whereas C++ does not */
-  bool deref = arg->type->isClass() && !type->isClass();
-  bool cast = type->isBasic() && !type->equals(*arg->type);
-  if (cast || deref) {
+  bool cast = !type->isClass() && !type->equals(*arg->type);
+  if (cast) {
     middle("static_cast<" << type->canonical() << ">(");
   }
-  if (deref) {
-    middle("*(");
-  }
   middle(arg);
-  if (deref) {
-    middle(')');
-  }
-  if (cast || deref) {
+  if (cast) {
     middle(')');
   }
 }

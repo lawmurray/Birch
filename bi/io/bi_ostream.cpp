@@ -369,11 +369,11 @@ void bi::bi_ostream::visit(const Class* o) {
   if (o->isGeneric()) {
     middle('<' << o->typeParams << '>');
   }
-  if (!o->params->isEmpty()) {
+  if (!o->isAlias() && !o->params->isEmpty()) {
     middle('(' << o->params << ')');
   }
   if (!o->base->isEmpty()) {
-    if (o->alias) {
+    if (o->isAlias()) {
       middle(" = ");
     } else {
       middle(" < ");
@@ -393,7 +393,7 @@ void bi::bi_ostream::visit(const Class* o) {
 void bi::bi_ostream::visit(const Basic* o) {
   start("type " << o->name);
   if (!o->base->isEmpty()) {
-    if (o->alias) {
+    if (o->isAlias()) {
       middle(" = ");
     } else {
       middle(" < ");

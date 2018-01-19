@@ -3,6 +3,8 @@
  */
 #pragma once
 
+#include <cassert>
+
 namespace bi {
 /**
  * Optional.
@@ -127,7 +129,7 @@ public:
    */
   template<class U>
   Optional(const WeakPointer<U>& value) :
-      value(value) {
+      value(value.lock()) {
     //
   }
 

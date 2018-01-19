@@ -4,6 +4,8 @@
 #pragma once
 
 #include "libbirch/global.hpp"
+#include "libbirch/World.hpp"
+#include "libbirch/Any.hpp"
 
 namespace bi {
 /**
@@ -25,17 +27,25 @@ public:
   /**
    * Default constructor.
    */
-  SharedPointer();
+  SharedPointer() :
+      SharedPointer(std::make_shared<T>()) {
+    //
+  }
 
   /**
    * Null constructor.
    */
-  SharedPointer(const std::nullptr_t& o);
+  SharedPointer(const std::nullptr_t& o) {
+    //
+  }
 
   /**
-   * Constructor from STL shared pointer.
+   * Generic constructor from STL shared pointer.
    */
-  SharedPointer(const std::shared_ptr<T>& ptr);
+  SharedPointer(const std::shared_ptr<T>& ptr) :
+      super_type(ptr) {
+
+  }
 
   /**
    * Copy constructor.
@@ -48,15 +58,13 @@ public:
   SharedPointer(SharedPointer<T> && o) = default;
 
   /**
-   * Generic copy constructor.
+   * Generic constructor.
    */
   template<class U>
-  SharedPointer(const SharedPointer<U>& o);
-
-  /**
-   * Assignment from null pointer.
-   */
-  SharedPointer<T>& operator=(const std::nullptr_t& o);
+  SharedPointer(const SharedPointer<U>& o) :
+      super_type(o) {
+    //
+  }
 
   /**
    * Copy assignment.
@@ -69,27 +77,34 @@ public:
   SharedPointer<T>& operator=(SharedPointer<T> && o) = default;
 
   /**
-   * Generic assignment.
+   * Value assignment.
    */
-  template<class U>
-  SharedPointer<T>& operator=(const SharedPointer<U>& o);
+  template<class U,
+      typename = std::enable_if_t<bi::has_assignment<T,U>::value>>
+  SharedPointer<T>& operator=(const U& o) {
+    *get() = o;
+    return *this;
+  }
+
+  /**
+   * Value conversion.
+   */
+  template<class U,
+      typename = std::enable_if_t<bi::has_conversion<T,U>::value>>
+  operator U() const {
+    return static_cast<U>(*get());
+  }
 
   /**
    * Get the raw pointer.
    */
-  T* get() const;
-
-  /**
-   * Dynamic cast. Returns `nullptr` if the cast if unsuccessful.
-   */
-  template<class U>
-  SharedPointer<U> dynamic_pointer_cast() const;
-
-  /**
-   * Static cast. Undefined if unsuccessful.
-   */
-  template<class U>
-  SharedPointer<U> static_pointer_cast() const;
+  T* get() const {
+#ifndef NDEBUG
+    return dynamic_cast<T*>(root_type::get());
+#else
+    return static_cast<T*>(root_type::get());
+#endif
+  }
 
   /**
    * Dereference.
@@ -116,51 +131,75 @@ public:
 
 template<>
 class SharedPointer<Any> {
-  friend class WeakPointer<Any>;
-  friend class WeakPointer<const Any>;
-  friend class SharedPointer<const Any>;
+  friend class WeakPointer<Any> ;
+  friend class WeakPointer<const Any> ;
+  friend class SharedPointer<const Any> ;
 public:
   using value_type = Any;
   using this_type = SharedPointer<value_type>;
   using root_type = this_type;
 
-  SharedPointer();
-  SharedPointer(const std::nullptr_t& o);
-  SharedPointer(const std::shared_ptr<Any>& ptr);
+  SharedPointer() :
+      SharedPointer(std::make_shared<Any>()) {
+    //
+  }
+
+  SharedPointer(const std::nullptr_t& o) {
+    //
+  }
+
+  SharedPointer(const std::shared_ptr<Any>& ptr) :
+      ptr(ptr) {
+    //
+  }
+
   SharedPointer(const SharedPointer<Any>& o) = default;
   SharedPointer(SharedPointer<Any> && o) = default;
-  SharedPointer<Any>& operator=(const std::nullptr_t& o);
+
+  template<class U>
+  SharedPointer(const SharedPointer<U>& o) :
+      ptr(o.ptr) {
+    //
+  }
+
   SharedPointer<Any>& operator=(const SharedPointer<Any>& o) = default;
   SharedPointer<Any>& operator=(SharedPointer<Any> && o) = default;
 
   /**
    * Is the pointer not null?
    */
-  bool query() const;
+  bool query() const {
+    return static_cast<bool>(ptr);
+  }
 
-  /**
-   * Get the pointer.
-   */
-  Any* get() const;
+  Any* get() const {
+    /* copy-on-write */
+    const_cast<std::shared_ptr<bi::Any>&>(ptr) = fiberWorld->get(ptr);
+    return ptr.get();
+  }
 
-  template<class U>
-  SharedPointer<U> dynamic_pointer_cast() const;
-
-  template<class U>
-  SharedPointer<U> static_pointer_cast() const;
-
-  /**
-   * Dereference.
-   */
   Any& operator*() const {
     return *get();
   }
 
-  /**
-   * Member access.
-   */
   Any* operator->() const {
     return get();
+  }
+
+  /**
+   * Dynamic cast. Returns `nullptr` if the cast if unsuccessful.
+   */
+  template<class U>
+  SharedPointer<U> dynamic_pointer_cast() const {
+    return SharedPointer<U>(std::dynamic_pointer_cast<U>(ptr));
+  }
+
+  /**
+   * Static cast. Undefined if unsuccessful.
+   */
+  template<class U>
+  SharedPointer<U> static_pointer_cast() const {
+    return SharedPointer<U>(std::static_pointer_cast<U>(ptr));
   }
 
 protected:
@@ -172,52 +211,64 @@ protected:
 
 template<>
 class SharedPointer<const Any> {
-  friend class WeakPointer<const Any>;
+  friend class WeakPointer<const Any> ;
 public:
   using value_type = const Any;
   using this_type = SharedPointer<const Any>;
   using root_type = this_type;
 
-  SharedPointer();
-  SharedPointer(const std::nullptr_t& o);
-  SharedPointer(const std::shared_ptr<const Any>& ptr);
+  SharedPointer() :
+      SharedPointer(std::make_shared<const Any>()) {
+    //
+  }
+
+  SharedPointer(const std::nullptr_t& o) {
+    //
+  }
+
   SharedPointer(const SharedPointer<const Any>& o) = default;
   SharedPointer(SharedPointer<const Any> && o) = default;
-  SharedPointer(const std::shared_ptr<Any>& ptr);
-  SharedPointer(const SharedPointer<Any>& o);
-  SharedPointer<const Any>& operator=(const std::nullptr_t& o);
+
+  template<class U>
+  SharedPointer(const std::shared_ptr<U>& ptr) :
+      ptr(ptr) {
+    //
+  }
+
+  template<class U>
+  SharedPointer(const SharedPointer<U>& o) :
+      ptr(o.ptr) {
+    //
+  }
+
   SharedPointer<const Any>& operator=(const SharedPointer<const Any>& o) = default;
   SharedPointer<const Any>& operator=(SharedPointer<const Any> && o) = default;
-  SharedPointer<const Any>& operator=(const SharedPointer<Any>& o);
 
-  /**
-   * Is the pointer not null?
-   */
-  bool query() const;
+  bool query() const {
+    return static_cast<bool>(ptr);
+  }
 
-  /**
-   * Get the pointer.
-   */
-  const Any* get() const;
+  const Any* get() const {
+    /* read-only, so no need for copy-on-write */
+    return ptr.get();
+  }
 
-  template<class U>
-  SharedPointer<const U> dynamic_pointer_cast() const;
-
-  template<class U>
-  SharedPointer<const U> static_pointer_cast() const;
-
-  /**
-   * Dereference.
-   */
   const Any& operator*() const {
     return *get();
   }
 
-  /**
-   * Member access.
-   */
   const Any* operator->() const {
     return get();
+  }
+
+  template<class U>
+  SharedPointer<const U> dynamic_pointer_cast() const {
+    return SharedPointer<const U>(std::dynamic_pointer_cast<const U>(ptr));
+  }
+
+  template<class U>
+  SharedPointer<const U> static_pointer_cast() const {
+    return SharedPointer<const U>(std::static_pointer_cast<const U>(ptr));
   }
 
 protected:
@@ -226,85 +277,4 @@ protected:
    */
   std::shared_ptr<const Any> ptr;
 };
-}
-
-template<class T>
-bi::SharedPointer<T>::SharedPointer() :
-    super_type(std::make_shared<T>()) {
-  //
-}
-
-template<class T>
-bi::SharedPointer<T>::SharedPointer(const std::nullptr_t& o) :
-    super_type(o) {
-  //
-}
-
-template<class T>
-bi::SharedPointer<T>::SharedPointer(const std::shared_ptr<T>& ptr) :
-    super_type(ptr) {
-  //
-}
-
-template<class T>
-template<class U>
-bi::SharedPointer<T>::SharedPointer(const SharedPointer<U>& ptr) :
-    super_type(ptr) {
-  //
-}
-
-template<class T>
-bi::SharedPointer<T>& bi::SharedPointer<T>::operator=(
-    const std::nullptr_t& o) {
-  root_type::operator=(o);
-  return *this;
-}
-
-template<class T>
-template<class U>
-bi::SharedPointer<T>& bi::SharedPointer<T>::operator=(
-    const SharedPointer<U>& o) {
-  root_type::operator=(o);
-  return *this;
-}
-
-template<class T>
-T* bi::SharedPointer<T>::get() const {
-#ifndef NDEBUG
-  return dynamic_cast<T*>(root_type::get());
-#else
-  return static_cast<T*>(root_type::get());
-#endif
-}
-
-template<class T>
-template<class U>
-bi::SharedPointer<U> bi::SharedPointer<T>::dynamic_pointer_cast() const {
-  return SharedPointer<U>(std::dynamic_pointer_cast<U>(this->ptr));
-}
-
-template<class T>
-template<class U>
-bi::SharedPointer<U> bi::SharedPointer<T>::static_pointer_cast() const {
-  return SharedPointer<U>(std::static_pointer_cast<U>(this->ptr));
-}
-
-template<class U>
-bi::SharedPointer<U> bi::SharedPointer<bi::Any>::dynamic_pointer_cast() const {
-  return SharedPointer<U>(std::dynamic_pointer_cast<U>(ptr));
-}
-
-template<class U>
-bi::SharedPointer<U> bi::SharedPointer<bi::Any>::static_pointer_cast() const {
-  return SharedPointer<U>(std::static_pointer_cast<U>(ptr));
-}
-
-template<class U>
-bi::SharedPointer<const U> bi::SharedPointer<const bi::Any>::dynamic_pointer_cast() const {
-  return SharedPointer<const U>(std::dynamic_pointer_cast<const U>(ptr));
-}
-
-template<class U>
-bi::SharedPointer<const U> bi::SharedPointer<const bi::Any>::static_pointer_cast() const {
-  return SharedPointer<const U>(std::static_pointer_cast<const U>(ptr));
 }

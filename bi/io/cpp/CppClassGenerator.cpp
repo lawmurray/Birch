@@ -15,7 +15,7 @@ bi::CppClassGenerator::CppClassGenerator(std::ostream& base, const int level,
 }
 
 void bi::CppClassGenerator::visit(const Class* o) {
-  if (!o->braces->isEmpty()) {
+  if (o->isAlias() || !o->braces->isEmpty()) {
     type = o;
 
     /* start boilerplate */
@@ -24,77 +24,81 @@ void bi::CppClassGenerator::visit(const Class* o) {
       in();
       line("namespace type {");
       out();
-      genTemplateParams(o);
-      start("class " << o->name << " : public ");
-      if (!o->base->isEmpty()) {
-        middle(o->base);
+      if (!o->isAlias()) {
+        genTemplateParams(o);
+        start("class " << o->name << " : public ");
+        if (!o->base->isEmpty()) {
+          middle(o->base);
+        }
+        finish(" {");
+        line("public:");
+        in();
+        start("using this_type = " << o->name);
+        genTemplateArgs(o);
+        finish(';');
+        if (!o->base->isEmpty()) {
+          line("using super_type = " << o->base << ';');
+        }
+        line("");
       }
-      finish(" {");
-      line("public:");
-      in();
-      start("using this_type = " << o->name);
-      genTemplateArgs(o);
-      finish(';');
-      if (!o->base->isEmpty()) {
-        line("using super_type = " << o->base << ';');
+    }
+
+    if (!o->isAlias()) {
+      /* constructor */
+      CppConstructorGenerator auxConstructor(base, level, header);
+      auxConstructor << o;
+
+      /* destructor */
+      if (header) {
+        line("virtual ~" << o->name << "() {");
+        in();
+        line("//");
+        out();
+        line("}\n");
       }
-      line("");
-    }
 
-    /* constructor */
-    CppConstructorGenerator auxConstructor(base, level, header);
-    auxConstructor << o;
+      /* ensure super type assignments are visible */
+      if (header) {
+        line("using super_type::operator=;\n");
+      }
 
-    /* destructor */
-    if (header) {
-      line("virtual ~" << o->name << "() {");
-      in();
-      line("//");
-      out();
-      line("}\n");
-    }
+      /* clone function */
+      if (!header) {
+        genTemplateParams(o);
+        start("");
+      } else {
+        start("virtual ");
+      }
+      middle("std::shared_ptr<bi::Any> ");
+      if (!header) {
+        middle("bi::type::" << o->name);
+        genTemplateArgs(o);
+        middle("::");
+      }
+      middle("clone() const");
+      if (header) {
+        finish(";\n");
+      } else {
+        finish(" {");
+        in();
+        line("return std::make_shared<this_type>(*this);");
+        out();
+        line("}\n");
+      }
 
-    /* ensure super type assignments are visible */
-    if (header) {
-      line("using super_type::operator=;\n");
-    }
+      /* member parameters */
+      for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
+        *this << *iter;
+      }
 
-    /* clone function */
-    if (!header) {
-      genTemplateParams(o);
-      start("");
-    } else {
-      start("virtual ");
-    }
-    middle("std::shared_ptr<bi::Any> ");
-    if (!header) {
-      middle("bi::type::" << o->name);
-      genTemplateArgs(o);
-      middle("::");
-    }
-    middle("clone() const");
-    if (header) {
-      finish(";\n");
-    } else {
-      finish(" {");
-      in();
-      line("return std::make_shared<this_type>(*this);");
-      out();
-      line("}\n");
-    }
+      /* member variables and functions */
+      *this << o->braces->strip();
 
-    /* member parameters */
-    for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
-      *this << *iter;
-    }
-
-    /* member variables and functions */
-    *this << o->braces->strip();
-
-    /* end class */
-    if (header) {
-      out();
-      line("};\n");
+      /* end class */
+      if (header) {
+        out();
+        line("};\n");
+      }
     }
 
     /* C linkage function */
@@ -209,10 +213,7 @@ void bi::CppClassGenerator::visit(const ConversionOperator* o) {
       genTemplateArgs(type);
       middle("::");
     } else {
-      /* user-defined conversions should be marked explicit to work properly
-       * with the SharedPointer class in the compiler library; see also
-       * has_conversion */
-      start("virtual explicit ");
+      start("virtual ");
     }
     middle("operator " << o->returnType << "()");
     if (header) {

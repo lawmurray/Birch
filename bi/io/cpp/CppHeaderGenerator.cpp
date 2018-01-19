@@ -67,7 +67,7 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
     if (!o->braces->isEmpty()) {
       genTemplateParams(o);
       line("class " << o->name << ';');
-    } else if (o->alias) {
+    } else if (o->isAlias()) {
       line("using " << o->name << " = " << o->base << ';');
     }
   }
@@ -75,30 +75,23 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
 
   /* basic type aliases */
   for (auto o : basics) {
-    if (o->alias) {
+    if (o->isAlias()) {
       line("using " << o->name << " = " << o->base << ';');
     }
   }
   line("");
-
-  /* class type aliases */
-  for (auto o : classes) {
-    if (o->alias) {
-      line("using " << o->name << " = " << o->base << ';');
-    }
-  }
   line("}\n");
   line("");
 
   /* forward super type declarations */
   for (auto o : classes) {
-    if (!o->alias && !o->base->isEmpty()) {
+    if (!o->isAlias() && !o->base->isEmpty()) {
       if (o->isGeneric()) {
         genTemplateParams(o);
       } else {
-        start("template<>");
+        start("template<> ");
       }
-      middle(" struct super_type<type::" << o->name);
+      middle("struct super_type<type::" << o->name);
       genTemplateArgs(o);
       finish("> {");
       in();
@@ -107,20 +100,64 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
       line("};");
     }
   }
+
+  /* forward assignment operator declarations */
+  for (auto o : classes) {
+    if (!o->isAlias()) {
+      for (auto o1 : o->assignments) {
+        if (o->isGeneric()) {
+          genTemplateParams(o);
+        } else {
+          start("template<> ");
+        }
+        middle("struct has_assignment<type::" << o->name);
+        genTemplateArgs(o);
+        finish("," << o1 << "> {");
+        in();
+        line("static const bool value = true;");
+        out();
+        line("};");
+      }
+    }
+  }
+
+  /* forward conversion operator declarations */
+  for (auto o : classes) {
+    if (!o->isAlias()) {
+      for (auto o1 : o->conversions) {
+        if (o->isGeneric()) {
+          genTemplateParams(o);
+        } else {
+          start("template<> ");
+        }
+        middle("struct has_conversion<type::" << o->name);
+        genTemplateArgs(o);
+        finish("," << o1 << "> {");
+        in();
+        line("static const bool value = true;");
+        out();
+        line("};");
+      }
+    }
+  }
   line("}\n");
-  line("");
 
   /* class definitions; even with the forward declarations above, base
    * classes must be defined before their derived classes, so these are
    * gathered and sorted first */
   poset<Type*,definitely> sorted;
   for (auto o : classes) {
-    if (!o->alias) {
+    if (!o->isAlias()) {
       sorted.insert(new ClassType(o));
     }
   }
   for (auto iter = sorted.rbegin(); iter != sorted.rend(); ++iter) {
     *this << (*iter)->getClass();
+  }
+  for (auto o : classes) {
+    if (o->isAlias()) {
+      *this << o;
+    }
   }
 
   line("namespace bi {");
@@ -152,10 +189,10 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
   }
 
   /* generic class definitions */
-  CppClassGenerator auxClass(base, level, false);
+  CppClassGenerator auxGeneric(base, level, false);
   for (auto o : classes) {
     if (o->isGeneric()) {
-      auxClass << o;
+      auxGeneric << o;
     }
   }
 
