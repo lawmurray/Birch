@@ -31,16 +31,6 @@ public:
   }
 
   /**
-   * Copy constructor.
-   */
-  WeakPointer(const WeakPointer<T>& o) = default;
-
-  /**
-   * Move constructor.
-   */
-  WeakPointer(WeakPointer<T> && o) = default;
-
-  /**
    * Generic copy constructor.
    */
   template<class U>
@@ -68,16 +58,6 @@ public:
   }
 
   /**
-   * Copy assignment.
-   */
-  WeakPointer<T>& operator=(const WeakPointer<T>& o) = default;
-
-  /**
-   * Move assignment.
-   */
-  WeakPointer<T>& operator=(WeakPointer<T> && o) = default;
-
-  /**
    * Lock the pointer.
    */
   SharedPointer<T> lock() const {
@@ -102,9 +82,6 @@ public:
     //
   }
 
-  WeakPointer(const WeakPointer<Any>& o) = default;
-  WeakPointer(WeakPointer<Any> && o) = default;
-
   template<class U>
   WeakPointer(const WeakPointer<U>& o) :
       ptr(o.ptr) {
@@ -123,9 +100,6 @@ public:
       *this = o.get();
     }
   }
-
-  WeakPointer<Any>& operator=(const WeakPointer<Any>& o) = default;
-  WeakPointer<Any>& operator=(WeakPointer<Any> && o) = default;
 
   SharedPointer<Any> lock() const {
     return ptr.lock();
@@ -149,9 +123,6 @@ public:
   WeakPointer(const std::nullptr_t& o = nullptr) {
     //
   }
-
-  WeakPointer(const WeakPointer<const Any>& o) = default;
-  WeakPointer(WeakPointer<const Any> && o) = default;
 
   template<class U>
   WeakPointer(const WeakPointer<U>& o) :

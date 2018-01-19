@@ -24,7 +24,7 @@ public:
   /**
    * Constructor for no value.
    */
-  Optional() :
+  Optional(const std::nullptr_t& = nullptr) :
       value(),
       hasValue(false) {
     //
@@ -37,24 +37,6 @@ public:
       value(value),
       hasValue(true) {
     //
-  }
-
-  /**
-   * Assign no value.
-   */
-  Optional<T>& operator=(const std::nullptr_t&) {
-    this->value = T();
-    this->hasValue = false;
-    return *this;
-  }
-
-  /**
-   * Assign a value.
-   */
-  Optional<T>& operator=(const T& value) {
-    this->value = value;
-    this->hasValue = true;
-    return *this;
   }
 
   /**
@@ -131,48 +113,6 @@ public:
   Optional(const WeakPointer<U>& value) :
       value(value.lock()) {
     //
-  }
-
-  /**
-   * Null assignment.
-   */
-  Optional<SharedPointer<T>>& operator=(const std::nullptr_t& o) {
-    this->value = o;
-    return *this;
-  }
-
-  /**
-   * Value assignment.
-   */
-  Optional<SharedPointer<T>>& operator=(const SharedPointer<T>& value) {
-    this->value = value;
-    return *this;
-  }
-
-  /**
-   * Value assignment.
-   */
-  Optional<SharedPointer<T>>& operator=(const WeakPointer<T>& value) {
-    this->value = value.lock();
-    return *this;
-  }
-
-  /**
-   * Generic value assignment.
-   */
-  template<class U>
-  Optional<SharedPointer<T>>& operator=(const SharedPointer<U>& value) {
-    this->value = value;
-    return *this;
-  }
-
-  /**
-   * Generic value assignment.
-   */
-  template<class U>
-  Optional<SharedPointer<T>>& operator=(const WeakPointer<U>& value) {
-    this->value = value.lock();
-    return *this;
   }
 
   /**

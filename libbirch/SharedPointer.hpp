@@ -48,16 +48,6 @@ public:
   }
 
   /**
-   * Copy constructor.
-   */
-  SharedPointer(const SharedPointer<T>& o) = default;
-
-  /**
-   * Move constructor.
-   */
-  SharedPointer(SharedPointer<T> && o) = default;
-
-  /**
    * Generic constructor.
    */
   template<class U>
@@ -65,16 +55,6 @@ public:
       super_type(o) {
     //
   }
-
-  /**
-   * Copy assignment.
-   */
-  SharedPointer<T>& operator=(const SharedPointer<T>& o) = default;
-
-  /**
-   * Move assignment.
-   */
-  SharedPointer<T>& operator=(SharedPointer<T> && o) = default;
 
   /**
    * Value assignment.
@@ -153,17 +133,11 @@ public:
     //
   }
 
-  SharedPointer(const SharedPointer<Any>& o) = default;
-  SharedPointer(SharedPointer<Any> && o) = default;
-
   template<class U>
   SharedPointer(const SharedPointer<U>& o) :
       ptr(o.ptr) {
     //
   }
-
-  SharedPointer<Any>& operator=(const SharedPointer<Any>& o) = default;
-  SharedPointer<Any>& operator=(SharedPointer<Any> && o) = default;
 
   /**
    * Is the pointer not null?
@@ -226,9 +200,6 @@ public:
     //
   }
 
-  SharedPointer(const SharedPointer<const Any>& o) = default;
-  SharedPointer(SharedPointer<const Any> && o) = default;
-
   template<class U>
   SharedPointer(const std::shared_ptr<U>& ptr) :
       ptr(ptr) {
@@ -240,9 +211,6 @@ public:
       ptr(o.ptr) {
     //
   }
-
-  SharedPointer<const Any>& operator=(const SharedPointer<const Any>& o) = default;
-  SharedPointer<const Any>& operator=(SharedPointer<const Any> && o) = default;
 
   bool query() const {
     return static_cast<bool>(ptr);
