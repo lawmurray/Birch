@@ -3,7 +3,7 @@
  */
 class MemoryReader < Reader {
   hpp{{
-  libubjpp::value* group;
+  libubjpp::value* group = nullptr;
   }}
 
   function' getObject() -> Reader'? {
@@ -107,10 +107,24 @@ class MemoryReader < Reader {
   }
 
   fiber' getArray(name:String) -> Reader'! {
-    reader:Reader'? <- getObject(name);
-    if (reader?) {
-      reader!.getArray();  // implicit fiber call
-    } 
+    length:Integer;
+    result:MemoryReader;
+    cpp{{
+    {
+      auto value = self->group->get<libubjpp::array_type>(name_);
+      length_ = value ? value.get().size() : 0;
+    }
+    }}
+    for (i:Integer in 1..length) {
+      cpp{{
+      {
+        auto value = self->group->get<libubjpp::array_type>(name_);
+        assert(value);
+        result_->group = &value.get()[i_ - 1];
+      }
+      }}
+      yield result;
+    }
   }
 
   function' getBoolean(name:String) -> Boolean? {
@@ -175,10 +189,24 @@ class MemoryReader < Reader {
   }
 
   fiber' getArray(path:[String]) -> Reader'! {
-    reader:Reader'? <- getObject(path);
-    if (reader?) {
-      reader!.getArray();  // implicit fiber call
-    } 
+    length:Integer;
+    result:MemoryReader;
+    cpp{{
+    {
+      auto value = self->group->get<libubjpp::array_type>(path_);
+      length_ = value ? value.get().size() : 0;
+    }
+    }}
+    for (i:Integer in 1..length) {
+      cpp{{
+      {
+        auto value = self->group->get<libubjpp::array_type>(path_);
+        assert(value);
+        result_->group = &value.get()[i_ - 1];
+      }
+      }}
+      yield result;
+    }
   }
 
   function' getBoolean(path:[String]) -> Boolean? {

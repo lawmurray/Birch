@@ -31,17 +31,25 @@ program sample(
     ncheckpoints:Integer <- 1,
     nparticles:Integer <- 1,
     ess_trigger:Real <- 0.7) {
+  /* input */
   input:JSONReader;
   if (input_file?) {
-    input.load(input_file!);
+    input.open(input_file!);
   }
+  
+  /* output */
   output:JSONWriter;  
+  if (output_file?) {
+    output.open(output_file!);
+  }
+  
+  /* sample */
   method:SMC;
   for (n:Integer in 1..nsamples) {
     method.simulate(model, input, output, ncheckpoints, nparticles,
         ess_trigger);
   }
-  if (output_file?) {
-    output.save(output_file!);
-  }
+  
+  /* write output */
+  output.flush();
 }

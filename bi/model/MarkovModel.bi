@@ -74,7 +74,7 @@ class MarkovModel<StateType <= State, ParameterType <= Model> < Model {
     }
   }
   
-  function' output(writer:Writer) {
+  function output(writer:Writer) {
     f:StateType! <- history.walk();
     writer.setArray();
     while (f?) {

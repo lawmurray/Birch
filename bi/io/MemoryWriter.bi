@@ -3,7 +3,7 @@
  */
 class MemoryWriter < Writer {
   hpp{{
-  libubjpp::value* group;
+  libubjpp::value* group = nullptr;
   }}
 
   function setObject() {

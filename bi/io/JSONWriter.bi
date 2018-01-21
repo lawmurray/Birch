@@ -7,15 +7,29 @@ class JSONWriter < MemoryWriter {
   }}
 
   /**
-   * Save data to file.
+   * Path.
+   */
+  path:String;
+
+  /**
+   * Open file.
    *
    *   - path: Path.
    */
-  function save(path:String) {
+  function open(path:String) {
+    this.path <- path;
     cpp{{
-    std::ofstream stream(path_);
-    libubjpp::JSONGenerator generator(stream);
-    generator.write(top);
+    group = &top;
+    }}
+  }
+
+  function flush() {
+    cpp{{
+    if (!path_.empty() && group) {
+      std::ofstream stream(path_);
+      libubjpp::JSONGenerator generator(stream);
+      generator.write(*group);
+    }
     }}
   }
 }

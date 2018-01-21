@@ -7,11 +7,11 @@ class JSONReader < MemoryReader {
   }}
 
   /**
-   * Load data from file.
+   * Open file.
    *
    *   - path: Path.
    */
-  function load(path:String) {
+  function open(path:String) {
     cpp{{
     libubjpp::JSONDriver driver;
     std::ifstream stream(path_);

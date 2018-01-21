@@ -138,4 +138,11 @@ class Writer {
    * Returns: a writer for modifying the new element.
    */
   function push() -> Writer;
+  
+  /**
+   * Flush in-memory buffers.
+   */
+  function flush() {
+    //
+  }
 }

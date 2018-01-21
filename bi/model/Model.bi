@@ -16,7 +16,7 @@ class Model {
   /**
    * Write outputs.
    */
-  function' output(writer:Writer) {
+  function output(writer:Writer) {
     //
   }
 }
