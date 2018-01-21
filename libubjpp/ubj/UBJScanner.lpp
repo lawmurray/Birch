@@ -1,0 +1,82 @@
+/**
+ * @file
+ */
+%{ /* -*- C++ -*- */
+#include "libubjpp/ubj/UBJParser.hpp"
+#include "libubjpp/ubj/UBJDriver.hpp"
+
+// The location of the current token.
+static yy::location loc;
+
+#define yyterminate() return yy::ubj::make_END(loc)
+%}
+
+%option noyywrap
+%option prefix="json"
+
+%array
+
+%{
+  // run each time a pattern is matched
+  #define YY_USER_ACTION  loc.columns(yyleng);
+%}
+
+%%
+
+%{
+  // run each time yylex is called
+  loc.step();
+%}
+
+"{"        { return yy::ubj::make_LEFT_BRACE(loc); }
+"}"        { return yy::ubj::make_RIGHT_BRACE(loc); }
+"["        { return yy::ubj::make_LEFT_BRACKET(loc); }
+"]"        { return yy::ubj::make_RIGHT_BRACKET(loc); }
+"Z"        { return yy::ubj::make_NIL(libubjpp::nil_type(), loc); }
+"N"        { return yy::ubj::make_NO_OP(libubjpp::noop_type(), loc); }
+"T"        { return yy::ubj::make_BOOL(true, loc); }
+"F"        { return yy::ubj::make_BOOL(false, loc);  }
+"i.{1}"    { return yy::ubj::make_INT8(*(yytext + 1), loc); }
+"U.{1}"    { return yy::ubj::make_UINT8(*(yytext + 1), loc); }
+"I.{2}"    { return yy::ubj::make_INT16(*(yytext + 1), loc); }
+"l.{4}"    { return yy::ubj::make_INT32(*(yytext + 1), loc); }
+"L.{8}"    { return yy::ubj::make_INT64(*(yytext + 1), loc); }
+"d.{4}"    { return yy::ubj::make_FLOAT(*(yytext + 1), loc); }
+"D.{8}"    { return yy::ubj::make_DOUBLE(*(yytext + 1), loc); }
+"H"        { return yy::ubj::make_CHAR('H', loc); }
+"C.{1}"    { return yy::ubj::make_CHAR(*(yytext + 1), loc); }
+"S"        { return yy::ubj::make_CHAR('S', loc); }
+"$"        { return yy::ubj::make_CHAR('$', loc); }
+"#"        { return yy::ubj::make_CHAR('#', loc); }
+.          { return yy::ubj::make_CHAR(*yytext, loc); }
+
+%%
+
+void UBJDriver::scan_begin() {
+  if (file.empty() || file == "-") {
+    yyin = stdin;
+  } else if (!(yyin = fopen(file.c_str(), "r"))) {
+    error("cannot open " + file + ": " + strerror(errno));
+    exit(EXIT_FAILURE);
+  }
+}
+
+void UBJDriver::scan_end() {
+  fclose(yyin);
+}
+
+/**
+ * Externally visible function to allow the parser to call unput, which is
+ * defined in Flex-generated code as a macro calling a static function.
+ */
+void ubj_unput(const char ch) {
+  unput(ch);
+}
+
+/**
+ * Externally visible function to allow the parser to call input, which is
+ * defined in Flex-generated code.
+ */
+int ubj_input() {
+  return yyinput();
+}
