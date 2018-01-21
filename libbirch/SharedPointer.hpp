@@ -17,7 +17,8 @@ namespace bi {
  */
 template<class T>
 class SharedPointer: public SharedPointer<typename super_type<T>::type> {
-  friend class WeakPointer<T> ;
+  template<class U> friend class SharedPointer;
+  template<class U> friend class WeakPointer;
 public:
   using value_type = T;
   using this_type = SharedPointer<T>;
@@ -134,9 +135,8 @@ public:
 
 template<>
 class SharedPointer<Any> {
-  friend class WeakPointer<Any> ;
-  friend class WeakPointer<const Any> ;
-  friend class SharedPointer<const Any> ;
+  template<class U> friend class SharedPointer;
+  template<class U> friend class WeakPointer;
 public:
   using value_type = Any;
   using this_type = SharedPointer<value_type>;
@@ -229,7 +229,8 @@ protected:
 
 template<>
 class SharedPointer<const Any> {
-  friend class WeakPointer<const Any> ;
+  template<class U> friend class SharedPointer;
+  template<class U> friend class WeakPointer;
 public:
   using value_type = const Any;
   using this_type = SharedPointer<const Any>;

@@ -51,11 +51,8 @@ public:
 
   /**
    * Get the last yield value.
-   *
-   * @internal Returns by value to ensure that pointers, from the fiber's
-   * world, are mapped to the caller's world.
    */
-  const Type get() const;
+  Type get();
 
 private:
   /**
@@ -143,7 +140,7 @@ bool bi::Fiber<Type>::query() {
 }
 
 template<class Type>
-const Type bi::Fiber<Type>::get() const {
+Type bi::Fiber<Type>::get() {
   assert(state);
   return state->get();
 }

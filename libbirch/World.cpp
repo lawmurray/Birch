@@ -17,6 +17,9 @@ std::shared_ptr<bi::Any> bi::World::get(const std::shared_ptr<Any>& src) {
   if (this == src->getWorld()) {
     /* in this world */
     return src;
+  } else if (!parent) {
+    ///@todo Escaped pointer
+    return src;
   } else {
     /* not in this world, propagate through ancestor world mappings */
     assert(parent);
