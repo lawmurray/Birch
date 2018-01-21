@@ -12,7 +12,7 @@ namespace bi {
 /**
  * Parameter to a function, fiber, program or operator.
  *
- * @ingroup birch_statement
+ * @ingroup statement
  */
 class Parameter: public Expression,
     public Named,

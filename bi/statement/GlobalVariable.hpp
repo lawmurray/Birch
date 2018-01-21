@@ -15,7 +15,7 @@ namespace bi {
 /**
  * Global variable.
  *
- * @ingroup birch_statement
+ * @ingroup statement
  */
 class GlobalVariable: public Statement,
     public Named,

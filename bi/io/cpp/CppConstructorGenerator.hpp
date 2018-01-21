@@ -9,7 +9,7 @@ namespace bi {
 /**
  * C++ code generator for constructors.
  *
- * @ingroup birch_io
+ * @ingroup io
  */
 class CppConstructorGenerator : public CppBaseGenerator {
 public:

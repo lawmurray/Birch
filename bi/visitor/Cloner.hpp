@@ -11,7 +11,7 @@ namespace bi {
 /**
  * Cloning visitor.
  *
- * @ingroup birch_visitor
+ * @ingroup visitor
  */
 class Cloner {
 public:

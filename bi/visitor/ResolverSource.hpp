@@ -12,7 +12,7 @@ namespace bi {
  * This is the fourth pass of the abstract syntax tree after parsing, handling
  * definitions.
  *
- * @ingroup birch_visitor
+ * @ingroup visitor
  */
 class ResolverSource: public Resolver {
 public:

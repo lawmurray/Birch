@@ -14,7 +14,7 @@ namespace bi {
 /**
  * Assignment operator.
  *
- * @ingroup birch_statement
+ * @ingroup statement
  */
 class AssignmentOperator: public Statement,
     public Named,

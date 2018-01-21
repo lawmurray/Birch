@@ -9,7 +9,7 @@ namespace bi {
 /**
  * Iterator over expression list.
  *
- * @ingroup birch_common
+ * @ingroup common
  */
 class ExpressionIterator {
 public:

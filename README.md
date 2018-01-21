@@ -1,4 +1,4 @@
-# Birch
+# Birch Compiler
 
 Birch is a compiled, imperative, object-oriented, and probabilistic programming language. The latter is its primary research concern. The Birch compiler uses C++14 as a target language. It runs on Linux, macOS and Windows.
 
@@ -10,11 +10,13 @@ An early paper on Birch, specifically the *delayed sampling* mechanism that it u
 
   * L.M. Murray, D. Lundén, J. Kudlicka, D. Broman and T.B. Schön (2017). *Delayed Sampling and Automatic Rao--Blackwellization of Probabilistic Programs*. Online at <https://arxiv.org/abs/1708.07787>.
 
+
 ## License
 
 Birch is open source software.
 
 It is licensed under the Apache License, Version 2.0 (the "License"); you may not use it except in compliance with the License. You may obtain a copy of the License at <http://www.apache.org/licenses/LICENSE-2.0>.
+
 
 ## Installing
 
@@ -62,9 +64,11 @@ birch example
 
 replacing `example` with the name of the example program. See the `DOCS.md` file for programs and their options.
 
+
 ## Documentation
 
 See the `DOCS.md` file.
+
 
 ## Setting up your system and installing dependencies
 
@@ -73,7 +77,6 @@ Birch requires:
   * GNU autoconf, automake and libtool,
   * the Flex lexer,
   * the Bison parser generator,
-  * the Lemon parser generator,
   * the Boost libraries, and
   * the Eigen 3 linear algebra library.
 
@@ -84,7 +87,7 @@ These are all widely available through package managers. See the guides below fo
 Use:
 
 ```sh
-apt-get install autoconf libtool flex bison lemon libgc-dev libboost-all-dev libeigen3-dev
+apt-get install autoconf libtool flex bison libgc-dev libboost-all-dev libeigen3-dev
 ```
 
 For other Linux distributions, similar packages will be available.
@@ -94,7 +97,7 @@ For other Linux distributions, similar packages will be available.
 The recommended package manager is [Homebrew](http://brew.sh). Use:
 
 ```sh
-brew install autoconf automake libtool flex bison lemon boost eigen bdw-gc
+brew install autoconf automake libtool flex bison boost eigen bdw-gc
 ```
 
 Note that Birch needs a newer version of Bison than that provided by macOS. The above command installs a newer version.

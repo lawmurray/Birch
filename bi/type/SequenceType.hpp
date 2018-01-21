@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Sequence type.
  *
- * @ingroup birch_type
+ * @ingroup type
  */
 class SequenceType: public Type, public Single<Type> {
 public:

@@ -12,7 +12,7 @@ namespace bi {
 /**
  * Dictionary for overloaded functions, operators etc.
  *
- * @ingroup birch_common
+ * @ingroup common
  *
  * @tparam ObjectType Type of objects.
  */

@@ -9,10 +9,7 @@ AM_CPPFLAGS = -DDATADIR="$(datadir)" -DINCLUDEDIR="$(includedir)" -DLIBDIR="$(li
 ACLOCAL_AMFLAGS = -I m4
 
 # driver program
-bin_PROGRAMS = birch json2ubj ubj2json
-
-# compiler library
-lib_LTLIBRARIES = libbirch.la libubjpp.la
+bin_PROGRAMS = birch
 
 # common sources for driver and compiler programs
 COMMON_SOURCES = \
@@ -185,70 +182,6 @@ birch_SOURCES = \
   $(COMMON_SOURCES) \
   bi/birch.cpp
 birch_CXXFLAGS = $(AM_CXXFLAGS)
-birch_LDADD = $(DEPS_LIBS) libubjpp.la
-# ^ workaround for 'created with both libtool and without' error
-
-json2ubj_SOURCES = libubjpp/json2ubj.cpp
-json2ubj_CXXFLAGS = $(AM_CXXFLAGS)
-json2ubj_LDADD = libubjpp.la
-
-ubj2json_SOURCES = libubjpp/ubj2json.cpp
-ubj2json_CXXFLAGS = $(AM_CXXFLAGS)
-ubj2json_LDADD = libubjpp.la
-
-libbirch_la_SOURCES = \
-  libbirch/Any.cpp \
-  libbirch/global.cpp \
-  libbirch/libbirch.cpp \
-  libbirch/World.cpp
-libbirch_la_CXXFLAGS = $(AM_CXXFLAGS)
-
-libubjpp_la_SOURCES = \
-  libubjpp/common/Parser.c \
-  libubjpp/common/ParserState.cpp \
-  libubjpp/json/JSONDriver.cpp \
-  libubjpp/json/JSONGenerator.cpp \
-  libubjpp/json/JSONTokenizer.cpp \
-  libubjpp/ubj/UBJDriver.cpp \
-  libubjpp/ubj/UBJGenerator.cpp \
-  libubjpp/value.cpp
-libubjpp_la_CXXFLAGS = $(AM_CXXFLAGS)
-
-nobase_include_HEADERS = \
-  libbirch/Any.hpp \
-  libbirch/Array.hpp \
-  libbirch/Eigen.hpp \
-  libbirch/EigenFunctions.hpp \
-  libbirch/EigenOperators.hpp \
-  libbirch/Fiber.hpp \
-  libbirch/FiberState.hpp \
-  libbirch/Frame.hpp \
-  libbirch/global.hpp \
-  libbirch/Index.hpp \
-  libbirch/Iterator.hpp \
-  libbirch/Length.hpp \
-  libbirch/Offset.hpp \
-  libbirch/Object.hpp \
-  libbirch/Optional.hpp \
-  libbirch/Range.hpp \
-  libbirch/Sequence.hpp \
-  libbirch/SharedPointer.hpp \
-  libbirch/Span.hpp \
-  libbirch/Stride.hpp \
-  libbirch/View.hpp \
-  libbirch/WeakPointer.hpp \
-  libbirch/World.hpp \
-  libbirch/libbirch.hpp \
-  libubjpp/value.hpp \
-  libubjpp/common/Parser.h \
-  libubjpp/common/ParserState.h \
-  libubjpp/common/ParserState.hpp \
-  libubjpp/json/JSONDriver.hpp \
-  libubjpp/json/JSONGenerator.hpp \
-  libubjpp/json/JSONTokenizer.hpp \
-  libubjpp/ubj/UBJDriver.hpp \
-  libubjpp/ubj/UBJGenerator.hpp \
-  libubjpp/libubjpp.hpp
   
 noinst_HEADERS = \
   bi/build/Compiler.hpp \
@@ -431,8 +364,5 @@ dist_pkgdata_DATA = \
   share/META.json \
   share/README.md
 
-BUILT_SOURCES = bi/parser.hpp libubjpp/common/Parser.h libubjpp/common/Parser.c
+BUILT_SOURCES = bi/parser.hpp
 CLEANFILES = $(BUILT_SOURCES)
-
-libubjpp/common/Parser.h libubjpp/common/Parser.c: libubjpp/common/Parser.y
-	$(LEMON) $<

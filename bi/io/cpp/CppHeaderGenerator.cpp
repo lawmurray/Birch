@@ -27,7 +27,6 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
   line("#define BI_" << tarname(o->name) << "_HPP");
   line("");
 
-  line("#include \"libbirch/libbirch.hpp\"");
   for (auto header : o->headers) {
     fs::path include = header->path;
     include.replace_extension(".hpp");

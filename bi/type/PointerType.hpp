@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Pointer type.
  *
- * @ingroup birch_type
+ * @ingroup type
  */
 class PointerType: public Type, public Single<Type> {
 public:

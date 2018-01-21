@@ -12,7 +12,7 @@ namespace bi {
 /**
  * Gathers formal parameters and arguments for a function call.
  *
- * @ingroup birch_visitor
+ * @ingroup visitor
  */
 template<class T>
 class Gatherer: public Visitor {

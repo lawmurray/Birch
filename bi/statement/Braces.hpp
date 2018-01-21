@@ -11,7 +11,7 @@ namespace bi {
 /**
  * Statement in braces.
  *
- * @ingroup birch_expression
+ * @ingroup expression
  */
 class Braces: public Statement, public Single<Statement> {
 public:

@@ -13,7 +13,7 @@ namespace bi {
 /**
  * Ambiguous overloaded function call.
  *
- * @ingroup birch_exception
+ * @ingroup exception
  */
 struct AmbiguousCallException: public CompilerException {
   /**

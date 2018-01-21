@@ -12,7 +12,7 @@ namespace bi {
 /**
  * Parameter to a class constructor.
  *
- * @ingroup birch_expression
+ * @ingroup expression
  */
 class MemberParameter: public Expression,
     public Named,

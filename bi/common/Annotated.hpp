@@ -14,7 +14,7 @@ enum Annotation {
 /**
  * Annotated object.
  *
- * @ingroup birch_common
+ * @ingroup common
  */
 class Annotated {
 public:

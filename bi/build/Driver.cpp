@@ -48,19 +48,17 @@ bi::Driver::Driver(int argc, char** argv) :
 
   int c, option_index;
   option long_options[] = {
-      { "share-dir", required_argument, 0, SHARE_DIR_ARG },
-      { "include-dir", required_argument, 0, INCLUDE_DIR_ARG },
-      { "lib-dir", required_argument, 0, LIB_DIR_ARG },
-      { "arch", required_argument, 0, ARCH_ARG },
-      { "prefix", required_argument, 0, PREFIX_ARG },
-      { "name", required_argument, 0, NAME_ARG },
-      { "enable-warnings", no_argument, 0, ENABLE_WARNINGS_ARG },
-      { "disable-warnings", no_argument, 0, DISABLE_WARNINGS_ARG },
-      { "enable-debug", no_argument, 0, ENABLE_DEBUG_ARG },
-      { "disable-debug", no_argument, 0, DISABLE_DEBUG_ARG },
-      { "enable-verbose", no_argument, 0, ENABLE_VERBOSE_ARG },
-      { "disable-verbose", no_argument, 0, DISABLE_VERBOSE_ARG },
-      { 0, 0, 0, 0 } };
+      { "share-dir", required_argument, 0, SHARE_DIR_ARG }, { "include-dir",
+      required_argument, 0, INCLUDE_DIR_ARG }, { "lib-dir",
+      required_argument, 0, LIB_DIR_ARG }, { "arch", required_argument, 0,
+          ARCH_ARG }, { "prefix", required_argument, 0, PREFIX_ARG }, {
+          "name", required_argument, 0, NAME_ARG }, { "enable-warnings",
+      no_argument, 0, ENABLE_WARNINGS_ARG }, { "disable-warnings",
+      no_argument, 0, DISABLE_WARNINGS_ARG }, { "enable-debug",
+      no_argument, 0, ENABLE_DEBUG_ARG }, { "disable-debug", no_argument, 0,
+          DISABLE_DEBUG_ARG }, { "enable-verbose", no_argument, 0,
+          ENABLE_VERBOSE_ARG }, { "disable-verbose", no_argument, 0,
+          DISABLE_VERBOSE_ARG }, { 0, 0, 0, 0 } };
   const char* short_options = "-";  // treats non-options as short option 1
 
   /* mutable copy of argv and argc */
@@ -364,8 +362,6 @@ void bi::Driver::docs() {
 }
 
 void bi::Driver::meta() {
-  using namespace libubjpp;
-
   /* check for META.json */
   if (!fs::exists("META.json")) {
     if (fs::exists("MANIFEST")) {
@@ -375,15 +371,15 @@ void bi::Driver::meta() {
   }
 
   /* parse META.json */
-  JSONDriver driver;
-  std::ifstream stream("META.json");
-  auto top = driver.parse(stream);
-  if (!top) {
-    throw DriverException("syntax error in META.json");
+  boost::property_tree::ptree meta;
+  try {
+    boost::property_tree::read_json("META.json", meta);
+  } catch (boost::exception& e) {
+    throw DriverException("syntax error in META.json.");
   }
 
   /* meta */
-  if (auto name = top.get().get<string_type>("name")) {
+  if (auto name = meta.get_optional<std::string>("name")) {
     packageName = name.get();
   } else {
     throw DriverException(
@@ -391,16 +387,16 @@ void bi::Driver::meta() {
   }
 
   /*  manifest */
-  readFiles(top.get(), "manifest.header", { "manifest", "header" }, true);
-  readFiles(top.get(), "manifest.source", { "manifest", "source" }, true);
-  readFiles(top.get(), "manifest.data", { "manifest", "data" }, true);
-  readFiles(top.get(), "manifest.other", { "manifest", "other" }, true);
+  readFiles(meta, "manifest.header", true);
+  readFiles(meta, "manifest.source", true);
+  readFiles(meta, "manifest.data", true);
+  readFiles(meta, "manifest.other", true);
 
   /* external requirements */
-  readFiles(top.get(), "require.package", { "require", "package" }, false);
-  readFiles(top.get(), "require.header", { "require", "header" }, false);
-  readFiles(top.get(), "require.library", { "require", "library" }, false);
-  readFiles(top.get(), "require.program", { "require", "program" }, false);
+  readFiles(meta, "require.package", false);
+  readFiles(meta, "require.header", false);
+  readFiles(meta, "require.library", false);
+  readFiles(meta, "require.program", false);
 }
 
 void bi::Driver::setup() {
@@ -449,39 +445,40 @@ void bi::Driver::setup() {
     configureStream << contents << "\n\n";
 
     /* open conditional on checks */
-    if (!metaFiles["require.header"].empty() ||
-        !metaFiles["require.library"].empty() ||
-        !metaFiles["require.program"].empty()) {
+    if (!metaFiles["require.header"].empty()
+        || !metaFiles["require.library"].empty()
+        || !metaFiles["require.program"].empty()) {
       configureStream << "if test x$emscripten = xfalse; then\n";
     }
 
     /* required headers */
     for (auto file : metaFiles["require.header"]) {
-      configureStream << "  AC_CHECK_HEADERS([" << file.string() << "], [], " <<
-          "[AC_MSG_ERROR([header required by " << packageName <<
-          " package not found.])], [-])\n";
+      configureStream << "  AC_CHECK_HEADERS([" << file.string() << "], [], "
+          << "[AC_MSG_ERROR([header required by " << packageName
+          << " package not found.])], [-])\n";
     }
 
     /* required libraries */
     for (auto file : metaFiles["require.library"]) {
-      configureStream << "  AC_CHECK_LIB([" << file.string() << "], [main], " <<
-          "[], [AC_MSG_ERROR([library required by " << packageName <<
-          " package not found.])])\n";
+      configureStream << "  AC_CHECK_LIB([" << file.string() << "], [main], "
+          << "[], [AC_MSG_ERROR([library required by " << packageName
+          << " package not found.])])\n";
     }
 
     /* required programs */
     for (auto file : metaFiles["require.program"]) {
-      configureStream << "  AC_PATH_PROG([PROG], [" << file.string() << "], [])\n";
+      configureStream << "  AC_PATH_PROG([PROG], [" << file.string()
+          << "], [])\n";
       configureStream << "  if test \"$PROG\" = \"\"; then\n";
-      configureStream << "    AC_MSG_ERROR([" << file.string() << " program " <<
-          "required by " << packageName << " package not found.])\n";
+      configureStream << "    AC_MSG_ERROR([" << file.string() << " program "
+          << "required by " << packageName << " package not found.])\n";
       configureStream << "  fi\n";
     }
 
     /* close conditional on checks */
-    if (!metaFiles["require.header"].empty() ||
-        !metaFiles["require.library"].empty() ||
-        !metaFiles["require.program"].empty()) {
+    if (!metaFiles["require.header"].empty()
+        || !metaFiles["require.library"].empty()
+        || !metaFiles["require.program"].empty()) {
       configureStream << "fi\n";
     }
 
@@ -559,7 +556,7 @@ bi::Package* bi::Driver::createPackage() {
     auto header = fs::path("bi") / "birch_standard.bih";
     package->addHeader(find(include_dirs, header).string());
   }
-  for (auto name: metaFiles["require.package"]) {
+  for (auto name : metaFiles["require.package"]) {
     /* add *.bih and *.hpp header and library dependencies */
     auto internalName = tarname(name.string());
     fs::path header = fs::path("bi") / internalName;
@@ -627,8 +624,9 @@ void bi::Driver::configure() {
     } else if (arch == "wasm") {
       cxxflags << " -s WASM=1";
     } else if (arch != "native") {
-      throw DriverException("unknown architecture '" + arch +
-          "'; valid values are 'native', 'js' and 'wasm'");
+      throw DriverException(
+          "unknown architecture '" + arch
+              + "'; valid values are 'native', 'js' and 'wasm'");
     }
     if (debug) {
       cppflags << " -D_GLIBCXX_DEBUG";
@@ -750,23 +748,22 @@ void bi::Driver::target(const std::string& cmd) {
   current_path(work_dir);
 }
 
-void bi::Driver::readFiles(const libubjpp::value meta, const std::string& key,
-    const std::initializer_list<std::string>& path, bool checkExists) {
-  if (auto files = meta.get<libubjpp::array_type>(path)) {
-    if (files) {
-      for (auto file : files.get()) {
-        if (auto str = file.get<libubjpp::string_type>()) {
-          if (str) {
-            fs::path filePath(str.get());
-            if (checkExists && !exists(filePath)) {
-              warn(filePath.string() + " in META.json does not exist.");
-            }
-            auto inserted = allFiles.insert(filePath);
-            if (!inserted.second) {
-              warn(filePath.string() + " repeated in META.json.");
-            }
-            metaFiles[key].insert(filePath);
+void bi::Driver::readFiles(const boost::property_tree::ptree& meta,
+    const std::string& key, bool checkExists) {
+  auto files = meta.get_child_optional(key);
+  if (files) {
+    for (auto file : files.get()) {
+      if (auto str = file.second.get_value_optional<std::string>()) {
+        if (str) {
+          fs::path filePath(str.get());
+          if (checkExists && !exists(filePath)) {
+            warn(filePath.string() + " in META.json does not exist.");
           }
+          auto inserted = allFiles.insert(filePath);
+          if (!inserted.second) {
+            warn(filePath.string() + " repeated in META.json.");
+          }
+          metaFiles[key].insert(filePath);
         }
       }
     }

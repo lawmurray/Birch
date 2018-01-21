@@ -9,7 +9,7 @@ namespace bi {
 /**
  * Nil literal.
  *
- * @ingroup birch_expression
+ * @ingroup expression
  */
 class Nil: public Expression {
 public:

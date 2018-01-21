@@ -11,7 +11,7 @@ namespace bi {
  * populating available variables, functions, etc (everything other than
  * types).
  *
- * @ingroup birch_visitor
+ * @ingroup visitor
  */
 class ResolverHeader: public Resolver {
 public:

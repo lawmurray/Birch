@@ -6,7 +6,9 @@
 #include "bi/build/misc.hpp"
 #include "bi/statement/Package.hpp"
 
-#include "libubjpp/libubjpp.hpp"
+#undef line // line() macro in indentable_iostream clashes with property_tree
+#include "boost/property_tree/ptree.hpp"
+#include "boost/property_tree/json_parser.hpp"
 
 #include <map>
 #include <set>
@@ -110,13 +112,12 @@ private:
   /**
    * Consume a list of files from the meta file.
    *
-   * @param meta The root object of the meta file.
-   * @param key The key to use in the list of files.
-   * @param path The path from which to read in the meta file.
+   * @param meta Property tree of the meta file.
+   * @param key The key.
    * @param checkExists Check if the files exists?
    */
-  void readFiles(const libubjpp::value meta, const std::string& key,
-      const std::initializer_list<std::string>& path, const bool checkExists);
+  void readFiles(const boost::property_tree::ptree& meta,
+      const std::string& key, const bool checkExists);
 
   /**
    * @name Command-line options

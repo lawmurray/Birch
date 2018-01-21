@@ -8,7 +8,7 @@ class Type;
 /**
  * Iterator over type list.
  *
- * @ingroup birch_common
+ * @ingroup common
  */
 class TypeConstIterator {
 public:

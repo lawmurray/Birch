@@ -9,7 +9,7 @@ namespace bi {
 /**
  * Type of @c nil literal.
  *
- * @ingroup birch_type
+ * @ingroup type
  */
 class NilType: public Type {
 public:

@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Invalid use of assignment operator.
  *
- * @ingroup birch_exception
+ * @ingroup exception
  */
 struct AssignmentException: public CompilerException {
   /**

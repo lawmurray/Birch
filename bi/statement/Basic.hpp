@@ -14,7 +14,7 @@ namespace bi {
 /**
  * Basic type.
  *
- * @ingroup birch_statement
+ * @ingroup statement
  */
 class Basic: public Statement, public Named, public Numbered, public Based {
 public:

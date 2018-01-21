@@ -11,7 +11,7 @@ namespace bi {
 /**
  * Sequence expression.
  *
- * @ingroup birch_expression
+ * @ingroup expression
  */
 class Sequence: public Expression, public Single<Expression> {
 public:

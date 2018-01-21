@@ -11,7 +11,7 @@ namespace bi {
 /**
  * Program option with unsupported type.
  *
- * @ingroup birch_exception
+ * @ingroup exception
  */
 struct UnsupportedOptionTypeException: public CompilerException {
   /**

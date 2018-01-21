@@ -9,7 +9,7 @@ namespace bi {
 /**
  * Output stream for Birch source files.
  *
- * @ingroup birch_io
+ * @ingroup io
  */
 class bi_ostream: public indentable_ostream {
 public:

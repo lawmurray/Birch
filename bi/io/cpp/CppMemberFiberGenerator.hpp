@@ -9,7 +9,7 @@ namespace bi {
 /**
  * C++ code generator for member Fibers.
  *
- * @ingroup birch_io
+ * @ingroup io
  */
 class CppMemberFiberGenerator: public CppFiberGenerator {
 public:

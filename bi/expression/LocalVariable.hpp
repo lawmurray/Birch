@@ -14,7 +14,7 @@ namespace bi {
 /**
  * Local variable.
  *
- * @ingroup birch_expression
+ * @ingroup expression
  */
 class LocalVariable: public Expression,
     public Named,

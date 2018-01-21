@@ -12,7 +12,7 @@ namespace bi {
  * the base class of those type parameters with more-specific types, provided
  * as the generic type arguments.
  *
- * @ingroup birch_visitor
+ * @ingroup visitor
  */
 class Instantiater : public Cloner {
 public:

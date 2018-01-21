@@ -11,7 +11,7 @@ namespace bi {
 /**
  * Expression with proceeding square brackets.
  *
- * @ingroup birch_expression
+ * @ingroup expression
  */
 class Slice: public Expression, public Single<Expression>, public Bracketed {
 public:

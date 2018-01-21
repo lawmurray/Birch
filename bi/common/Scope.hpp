@@ -58,7 +58,7 @@ enum LookupResult {
 /**
  * Scope.
  *
- * @ingroup birch_common
+ * @ingroup common
  */
 class Scope {
 public:

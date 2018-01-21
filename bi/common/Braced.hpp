@@ -9,7 +9,7 @@ namespace bi {
 /**
  * Object with braces.
  *
- * @ingroup birch_common
+ * @ingroup common
  */
 class Braced {
 public:

@@ -12,7 +12,7 @@ namespace bi {
  * for types that cannot be resolved syntactically, and must be deferred to
  * resolution passes.
  *
- * @ingroup birch_type
+ * @ingroup type
  */
 class UnknownType: public Type, public Named {
 public:

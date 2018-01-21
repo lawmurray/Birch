@@ -26,7 +26,7 @@ enum ClassState {
 /**
  * Class.
  *
- * @ingroup birch_statement
+ * @ingroup statement
  */
 class Class: public Statement,
     public Named,

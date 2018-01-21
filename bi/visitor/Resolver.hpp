@@ -13,7 +13,7 @@ namespace bi {
 /**
  * Abstract class for resolvers, with common functionality.
  *
- * @ingroup birch_visitor
+ * @ingroup visitor
  */
 class Resolver: public Modifier {
 public:

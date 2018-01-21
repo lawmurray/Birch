@@ -11,7 +11,7 @@ namespace bi {
 /**
  * Call to a unary operator.
  *
- * @ingroup birch_expression
+ * @ingroup expression
  */
 class UnaryCall: public Expression,
     public Single<Expression>,

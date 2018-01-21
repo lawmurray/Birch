@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Parenthesised expression.
  *
- * @ingroup birch_common
+ * @ingroup common
  */
 class Parenthesised {
 public:

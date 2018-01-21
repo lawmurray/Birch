@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Incorrect type for array or loop index.
  *
- * @ingroup birch_exception
+ * @ingroup exception
  */
 struct IndexException: public CompilerException {
   /**

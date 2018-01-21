@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Use of "super" keyword outside of a class.
  *
- * @ingroup birch_exception
+ * @ingroup exception
  */
 struct SuperException: public CompilerException {
   /**

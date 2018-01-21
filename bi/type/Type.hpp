@@ -39,7 +39,7 @@ class Basic;
 /**
  * Type.
  *
- * @ingroup birch_type
+ * @ingroup type
  */
 class Type: public Located {
 public:

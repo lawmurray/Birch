@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Incorrect use of '.' operator
  *
- * @ingroup birch_exception
+ * @ingroup exception
  */
 struct MemberException: public CompilerException {
   /**

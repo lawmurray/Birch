@@ -9,7 +9,7 @@ namespace bi {
 /**
  * Compiler exception.
  *
- * @ingroup birch_exception
+ * @ingroup exception
  */
 struct CompilerException: public Exception {
   /**

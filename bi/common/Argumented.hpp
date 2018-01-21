@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Expression with arguments.
  *
- * @ingroup birch_common
+ * @ingroup common
  */
 class Argumented {
 public:

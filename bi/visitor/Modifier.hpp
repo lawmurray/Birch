@@ -11,7 +11,7 @@ namespace bi {
 /**
  * Modifying visitor.
  *
- * @ingroup birch_visitor
+ * @ingroup visitor
  */
 class Modifier {
 public:

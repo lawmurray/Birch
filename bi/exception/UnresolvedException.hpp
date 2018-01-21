@@ -9,7 +9,7 @@ namespace bi {
 /**
  * Unresolved identifier.
  *
- * @ingroup birch_exception
+ * @ingroup exception
  */
 struct UnresolvedException: public Exception {
   /**

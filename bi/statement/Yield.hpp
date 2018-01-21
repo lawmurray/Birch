@@ -11,7 +11,7 @@ namespace bi {
 /**
  * Yield statement.
  *
- * @ingroup birch_statement
+ * @ingroup statement
  */
 class Yield: public Statement, public Single<Expression> {
 public:

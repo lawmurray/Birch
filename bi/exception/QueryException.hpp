@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Invalid use of "?" query operator.
  *
- * @ingroup birch_exception
+ * @ingroup exception
  */
 struct QueryException: public CompilerException {
   /**

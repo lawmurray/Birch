@@ -11,7 +11,7 @@ namespace bi {
 /**
  * Expression in parentheses.
  *
- * @ingroup birch_expression
+ * @ingroup expression
  */
 class Parentheses: public Expression, public Single<Expression> {
 public:

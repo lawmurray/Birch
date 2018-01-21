@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Typed expression or statement.
  *
- * @ingroup birch_common
+ * @ingroup common
  */
 class Typed {
 public:

@@ -50,6 +50,8 @@ if test x$emscripten = xfalse; then
       boost/variant.hpp \
       boost/filesystem.hpp \
       boost/filesystem/fstream.hpp \
+      boost/property_tree/ptree.hpp \
+      boost/property_tree/json_parser.hpp \
       boost/algorithm/string.hpp \
       ], [], AC_MSG_ERROR([required Boost header not found]), [-])
       

@@ -16,7 +16,7 @@ namespace bi {
 /**
  * Class member variable.
  *
- * @ingroup birch_statement
+ * @ingroup statement
  */
 class MemberVariable: public Statement,
     public Annotated,

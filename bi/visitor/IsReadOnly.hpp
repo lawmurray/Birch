@@ -9,7 +9,7 @@ namespace bi {
 /**
  * Checks if a type is read-only.
  *
- * @ingroup birch_visitor
+ * @ingroup visitor
  */
 class IsReadOnly: public Visitor {
 public:

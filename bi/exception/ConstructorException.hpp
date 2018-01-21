@@ -11,7 +11,7 @@ namespace bi {
 /**
  * Invalid constructor call.
  *
- * @ingroup birch_exception
+ * @ingroup exception
  */
 struct ConstructorException: public CompilerException {
   /**

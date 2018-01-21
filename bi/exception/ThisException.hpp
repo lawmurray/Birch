@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Use of "this" keyword outside of a class.
  *
- * @ingroup birch_exception
+ * @ingroup exception
  */
 struct ThisException: public CompilerException {
   /**

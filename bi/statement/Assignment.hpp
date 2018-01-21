@@ -13,7 +13,7 @@ namespace bi {
 /**
  * Reference to assignment operator.
  *
- * @ingroup birch_statement
+ * @ingroup statement
  */
 class Assignment: public Statement,
     public Named,

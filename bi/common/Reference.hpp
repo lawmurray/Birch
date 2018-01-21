@@ -9,7 +9,7 @@ namespace bi {
 /**
  * Expression with a target (e.g. a reference).
  *
- * @ingroup birch_common
+ * @ingroup common
  */
 template<class Target>
 class Reference {

@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Object with brackets.
  *
- * @ingroup birch_common
+ * @ingroup common
  */
 class Bracketed {
 public:

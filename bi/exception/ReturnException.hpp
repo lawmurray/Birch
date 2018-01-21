@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Return value in function with no return type.
  *
- * @ingroup birch_exception
+ * @ingroup exception
  */
 struct ReturnException: public CompilerException {
   /**

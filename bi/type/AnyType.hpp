@@ -9,7 +9,7 @@ namespace bi {
 /**
  * Empty type.
  *
- * @ingroup birch_type
+ * @ingroup type
  */
 class AnyType: public Type {
 public:

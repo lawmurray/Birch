@@ -18,7 +18,7 @@ class Unknown {
 /**
  * Identifier.
  *
- * @ingroup birch_expression
+ * @ingroup expression
  *
  * @tparam ObjectType The particular type of object referred to by the
  * identifier.

@@ -15,7 +15,7 @@ namespace bi {
 /**
  * Program parameter.
  *
- * @ingroup birch_program
+ * @ingroup program
  */
 class Program: public Statement,
     public Named,

@@ -9,7 +9,7 @@ namespace bi {
 /**
  * Type with base.
  *
- * @ingroup birch_common
+ * @ingroup common
  */
 class Based {
 public:

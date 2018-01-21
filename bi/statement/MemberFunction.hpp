@@ -16,7 +16,7 @@ namespace bi {
 /**
  * Class member function.
  *
- * @ingroup birch_statement
+ * @ingroup statement
  */
 class MemberFunction: public Statement,
     public Annotated,

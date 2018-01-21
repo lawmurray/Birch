@@ -10,7 +10,7 @@ namespace bi {
 /**
  * No common type for elements in a sequence.
  *
- * @ingroup birch_exception
+ * @ingroup exception
  */
 struct SequenceException: public CompilerException {
   /**

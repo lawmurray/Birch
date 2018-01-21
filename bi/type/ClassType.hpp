@@ -12,7 +12,7 @@ namespace bi {
 /**
  * Class type.
  *
- * @ingroup birch_type
+ * @ingroup type
  */
 class ClassType: public Type, public Named, public Reference<Class> {
 public:

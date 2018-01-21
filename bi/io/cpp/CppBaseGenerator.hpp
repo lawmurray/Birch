@@ -9,7 +9,7 @@ namespace bi {
 /**
  * C++ code generator.
  *
- * @ingroup birch_io
+ * @ingroup io
  */
 class CppBaseGenerator: public indentable_ostream {
 public:

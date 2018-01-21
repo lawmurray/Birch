@@ -11,7 +11,7 @@ namespace bi {
 /**
  * Call to a function.
  *
- * @ingroup birch_expression
+ * @ingroup expression
  */
 class Call: public Expression, public Single<Expression>, public Argumented {
 public:

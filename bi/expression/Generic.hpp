@@ -11,7 +11,7 @@ namespace bi {
 /**
  * Generic type.
  *
- * @ingroup birch_expression
+ * @ingroup expression
  */
 class Generic: public Expression, public Named, public Numbered {
 public:

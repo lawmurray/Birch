@@ -9,7 +9,7 @@ namespace bi {
 /**
  * Iterator over statement list.
  *
- * @ingroup birch_common
+ * @ingroup common
  */
 class StatementIterator {
 public:

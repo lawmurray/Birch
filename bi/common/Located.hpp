@@ -9,7 +9,7 @@ namespace bi {
 /**
  * Object with a location within a file being parsed.
  *
- * @ingroup birch_common
+ * @ingroup common
  */
 class Located {
 public:

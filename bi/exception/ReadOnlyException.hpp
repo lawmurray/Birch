@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Type that is not read-only, but should be.
  *
- * @ingroup birch_exception
+ * @ingroup exception
  */
 struct ReadOnlyException: public CompilerException {
   /**

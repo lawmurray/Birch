@@ -11,7 +11,7 @@ namespace bi {
 /**
  * ExpressionStatement.
  *
- * @ingroup birch_statement
+ * @ingroup statement
  */
 class ExpressionStatement: public Statement, public Single<Expression> {
 public:

@@ -12,7 +12,7 @@ namespace bi {
 /**
  * For loop.
  *
- * @ingroup birch_statement
+ * @ingroup statement
  */
 class For: public Statement, public Braced, public Scoped {
 public:

@@ -13,7 +13,7 @@ namespace bi {
 /**
  * If.
  *
- * @ingroup birch_statement
+ * @ingroup statement
  */
 class If: public Statement,
     public Conditioned,

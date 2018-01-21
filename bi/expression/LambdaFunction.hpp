@@ -13,7 +13,7 @@ namespace bi {
 /**
  * Lambda function.
  *
- * @ingroup birch_expression
+ * @ingroup expression
  */
 class LambdaFunction: public Expression,
     public Parameterised,

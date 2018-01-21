@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Function type.
  *
- * @ingroup birch_type
+ * @ingroup type
  */
 class FunctionType: public Type, public ReturnTyped {
 public:

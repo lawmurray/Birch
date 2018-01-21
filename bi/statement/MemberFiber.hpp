@@ -16,7 +16,7 @@ namespace bi {
 /**
  * Class member Fiber.
  *
- * @ingroup birch_statement
+ * @ingroup statement
  */
 class MemberFiber: public Statement,
     public Annotated,

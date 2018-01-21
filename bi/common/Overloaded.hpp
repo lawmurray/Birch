@@ -11,7 +11,7 @@ namespace bi {
 /**
  * Overloaded object. Groups all overloads into one object.
  *
- * @ingroup birch_common
+ * @ingroup common
  */
 class Overloaded {
 public:

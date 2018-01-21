@@ -11,7 +11,7 @@ namespace bi {
 /**
  * Visitor.
  *
- * @ingroup birch_visitor
+ * @ingroup visitor
  */
 class Visitor {
 public:

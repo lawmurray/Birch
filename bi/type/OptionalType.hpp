@@ -10,7 +10,7 @@ namespace bi {
 /**
  * Optional type.
  *
- * @ingroup birch_type
+ * @ingroup type
  */
 class OptionalType: public Type, public Single<Type> {
 public:

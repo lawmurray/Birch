@@ -9,7 +9,7 @@ namespace bi {
 /**
  * Expression list.
  *
- * @ingroup birch_common
+ * @ingroup common
  */
 class ExpressionList: public Expression {
 public:

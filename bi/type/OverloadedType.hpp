@@ -14,7 +14,7 @@ namespace bi {
 /**
  * Overloaded type. Typically used for the type of first-class functions.
  *
- * @ingroup birch_common
+ * @ingroup common
  */
 class OverloadedType: public Type {
 public:
