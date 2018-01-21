@@ -27,16 +27,12 @@ AC_C_INLINE
 
 if test x$emscripten = xfalse; then
   # Checks for libraries
-  AC_CHECK_LIB([birch], [main], [], [AC_MSG_ERROR([Birch compiler library not found])])
-  AC_CHECK_LIB([ubjpp], [main], [], [AC_MSG_ERROR([Birch compiler library not found])])
   AC_CHECK_LIB([profiler], [main], [], [])
   if test xPACKAGE_TARNAME != xbirch_standard; then
       AC_CHECK_LIB([birch_standard], [main], [], [AC_MSG_ERROR([Birch standard library not found])])
   fi
   
   # Checks for headers
-  AC_CHECK_HEADERS([libbirch/libbirch.hpp], [], [AC_MSG_ERROR([Birch compiler library header not found.])], [-])
-  AC_CHECK_HEADERS([libubjpp/libubjpp.hpp], [], [AC_MSG_ERROR([Birch compiler library header not found.])], [-])
   if test xPACKAGE_TARNAME != xbirch_standard; then
       AC_CHECK_HEADERS([bi/birch_standard.hpp], [], [AC_MSG_ERROR([Birch standard library header not found.])], [-])
   fi
