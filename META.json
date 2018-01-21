@@ -132,5 +132,12 @@
       "META.json",
       "README.md"
     ]
+  },
+  "require": {
+    "header": [
+      "eigen3/Eigen/Core",
+      "eigen3/Eigen/Dense",
+      "eigen3/Eigen/Cholesky"
+    ]
   }
 }
