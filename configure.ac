@@ -18,10 +18,6 @@ AC_PROG_YACC
 if test "x$YACC" = "xyacc"; then
   AC_MSG_ERROR([Bison not found.])
 fi
-AC_PATH_PROG([LEMON], [lemon], [])
-if test "$LEMON" = ""; then
-  AC_MSG_ERROR([lemon not found.])
-fi
 
 # Check if we're compiling with Emscripten, and when using Emscripten:
 #
@@ -54,12 +50,6 @@ if test x$emscripten = xfalse; then
       boost/property_tree/json_parser.hpp \
       boost/algorithm/string.hpp \
       ], [], AC_MSG_ERROR([required Boost header not found]), [-])
-      
-  AC_CHECK_HEADERS([ \
-      eigen3/Eigen/Core \
-      eigen3/Eigen/Dense \
-      eigen3/Eigen/Cholesky \
-      ], [], AC_MSG_ERROR([required Eigen header not found]), [-])    
 
   # Checks for libraries
   AC_SEARCH_LIBS([dlopen], [dl], [], [])
