@@ -35,6 +35,10 @@ bool bi::Type::isArray() const {
   return false;
 }
 
+bool bi::Type::isSequence() const {
+  return false;
+}
+
 bool bi::Type::isList() const {
   return false;
 }

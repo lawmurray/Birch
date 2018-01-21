@@ -166,21 +166,28 @@ void bi::CppBaseGenerator::visit(const Nil* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Parameter* o) {
-  if (!o->type->isFiber()) {
+  if (o->type->isArray() || o->type->isSequence()) {
     middle("const ");
   }
   middle(o->type);
-  if (!o->type->isFiber()) {
-    middle("& ");
+  if (o->type->isArray() || o->type->isSequence()) {
+    middle('&');
   }
-  middle(o->name);
+  middle(' ' << o->name);
   if (!o->value->isEmpty()) {
     middle(" = " << o->value);
   }
 }
 
 void bi::CppBaseGenerator::visit(const MemberParameter* o) {
-    middle("const " << o->type << "& " << o->name);
+  if (o->type->isArray() || o->type->isSequence()) {
+    middle("const ");
+  }
+  middle(o->type);
+  if (o->type->isArray() || o->type->isSequence()) {
+    middle('&');
+  }
+  middle(' ' << o->name);
   if (!o->value->isEmpty()) {
     middle(" = " << o->value);
   }

@@ -30,6 +30,7 @@ public:
   virtual int depth() const;
   virtual Type* element();
   virtual const Type* element() const;
+  virtual bool isSequence() const;
 
   virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);

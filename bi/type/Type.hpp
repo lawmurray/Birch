@@ -101,6 +101,11 @@ public:
   virtual bool isArray() const;
 
   /**
+   * Is this a sequence type?
+   */
+  virtual bool isSequence() const;
+
+  /**
    * Is this a list type?
    */
   virtual bool isList() const;

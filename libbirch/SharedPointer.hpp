@@ -72,6 +72,11 @@ public:
    */
   template<class U,
       typename = std::enable_if_t<bi::has_conversion<T,U>::value>>
+  operator U() {
+    return static_cast<U>(*get());
+  }
+  template<class U,
+      typename = std::enable_if_t<bi::has_conversion<T,U>::value>>
   operator U() const {
     return static_cast<U>(*get());
   }
@@ -79,31 +84,48 @@ public:
   /**
    * Get the raw pointer.
    */
-  T* get() const {
+  T* get() {
 #ifndef NDEBUG
     return dynamic_cast<T*>(root_type::get());
 #else
     return static_cast<T*>(root_type::get());
 #endif
   }
+  const T* get() const {
+#ifndef NDEBUG
+    return dynamic_cast<const T*>(root_type::get());
+#else
+    return static_cast<const T*>(root_type::get());
+#endif
+  }
 
   /**
    * Dereference.
    */
-  T& operator*() const {
+  T& operator*() {
+    return *get();
+  }
+  const T& operator*() const {
     return *get();
   }
 
   /**
    * Member access.
    */
-  T* operator->() const {
+  T* operator->() {
+    return get();
+  }
+  const T* operator->() const {
     return get();
   }
 
   /**
    * Call operator.
    */
+  template<class ... Args>
+  auto operator()(Args ... args) {
+    return (*get())(args...);
+  }
   template<class ... Args>
   auto operator()(Args ... args) const {
     return (*get())(args...);
@@ -148,17 +170,29 @@ public:
     return static_cast<bool>(ptr);
   }
 
-  Any* get() const {
-    /* copy-on-write */
-    const_cast<std::shared_ptr<bi::Any>&>(ptr) = fiberWorld->get(ptr);
+  Any* get() {
+    /* copy-on-write, and update the pointer for next time */
+    ptr = fiberWorld->get(ptr);
+    return ptr.get();
+  }
+  const Any* get() const {
+    /* given the way C++ code is generated, a const SharedPointer<Any> only
+     * occurs for member variables when a read-only function or fiber is
+     * called; so treat this as though it were a SharedPointer<const Any> */
     return ptr.get();
   }
 
-  Any& operator*() const {
+  Any& operator*() {
+    return *get();
+  }
+  const Any& operator*() const {
     return *get();
   }
 
-  Any* operator->() const {
+  Any* operator->() {
+    return get();
+  }
+  const Any* operator->() const {
     return get();
   }
 
@@ -166,16 +200,24 @@ public:
    * Dynamic cast. Returns `nullptr` if the cast if unsuccessful.
    */
   template<class U>
-  SharedPointer<U> dynamic_pointer_cast() const {
+  SharedPointer<U> dynamic_pointer_cast() {
     return SharedPointer<U>(std::dynamic_pointer_cast<U>(ptr));
+  }
+  template<class U>
+  SharedPointer<const U> dynamic_pointer_cast() const {
+    return SharedPointer<const U>(std::dynamic_pointer_cast<const U>(ptr));
   }
 
   /**
    * Static cast. Undefined if unsuccessful.
    */
   template<class U>
-  SharedPointer<U> static_pointer_cast() const {
+  SharedPointer<U> static_pointer_cast() {
     return SharedPointer<U>(std::static_pointer_cast<U>(ptr));
+  }
+  template<class U>
+  SharedPointer<U> static_pointer_cast() const {
+    return SharedPointer<const U>(std::static_pointer_cast<const U>(ptr));
   }
 
 protected:
@@ -219,15 +261,25 @@ public:
     return static_cast<bool>(ptr);
   }
 
+  const Any* get() {
+    /* read-only, so no need for copy-on-write */
+    return ptr.get();
+  }
   const Any* get() const {
     /* read-only, so no need for copy-on-write */
     return ptr.get();
   }
 
+  const Any& operator*() {
+    return *get();
+  }
   const Any& operator*() const {
     return *get();
   }
 
+  const Any* operator->() {
+    return get();
+  }
   const Any* operator->() const {
     return get();
   }

@@ -19,6 +19,10 @@ int bi::SequenceType::depth() const {
   return 1 + single->depth();
 }
 
+bool bi::SequenceType::isSequence() const {
+  return true;
+}
+
 bi::Type* bi::SequenceType::element() {
   return single->element();
 }
