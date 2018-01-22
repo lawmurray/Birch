@@ -80,12 +80,29 @@ private:
  */
 template<class T>
 class Optional<SharedPointer<T>> {
+  template<class U> friend class Optional;
 public:
   /**
    * Null constructor.
    */
   Optional(const std::nullptr_t& value = nullptr) :
       value(value) {
+    //
+  }
+
+  /**
+   * Generic copy constructor.
+   */
+  template<class U>
+  Optional(const Optional<SharedPointer<U>>& o) : value(o.value) {
+    //
+  }
+
+  /**
+   * Generic copy constructor.
+   */
+  template<class U>
+  Optional(const Optional<WeakPointer<U>>& o) : value(o.value.lock()) {
     //
   }
 
