@@ -12,6 +12,17 @@ function system(cmd:String) -> Integer32 {
 }
 
 /**
+ * Exit.
+ *
+ *   - code: An exit code.
+ */
+function exit(code:Integer) {
+  cpp{{
+  std::exit(code_);
+  }}
+}
+
+/**
  * Make an object.
  *
  *   - name: Name of the class.
