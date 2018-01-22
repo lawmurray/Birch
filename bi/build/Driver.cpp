@@ -502,7 +502,8 @@ void bi::Driver::setup() {
     /* *.cpp files */
     makeStream << "lib" << internalName << "_la_SOURCES = ";
     for (auto file : metaFiles["manifest.source"]) {
-      if (file.extension().compare(".cpp") == 0) {
+      if (file.extension().compare(".cpp") == 0
+          || file.extension().compare(".c") == 0) {
         makeStream << " \\\n  " << file.string();
       }
     }
@@ -524,7 +525,8 @@ void bi::Driver::setup() {
     makeStream << " \\\n  bi/" << internalName << ".hpp";
     makeStream << " \\\n  bi/" << internalName << ".bih";
     for (auto file : metaFiles["manifest.header"]) {
-      if (file.extension().compare(".hpp") == 0) {
+      if (file.extension().compare(".hpp") == 0
+          || file.extension().compare(".h") == 0) {
         makeStream << " \\\n  " << file.string();
       }
     }
