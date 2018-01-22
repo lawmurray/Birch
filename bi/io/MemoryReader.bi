@@ -4,7 +4,7 @@
 class MemoryReader < Reader {
   hpp{{
   libubjpp::value* group = nullptr;
-  }}
+  }}  
 
   function' getObject() -> Reader'? {
     exists:Boolean;

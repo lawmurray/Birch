@@ -5,7 +5,7 @@ class SMC {
   /**
    * Simulate.
    */
-  function simulate(model:String, input:Reader, output:Writer, T:Integer,
+  function simulate(model:String, input:Reader?, output:Writer?, T:Integer,
       N:Integer, trigger:Real) {
     f:(Model, Real)![N];  // particles
     w:Real[N];             // log-weights
@@ -47,12 +47,14 @@ class SMC {
     Z <- Z + log_sum_exp(w) - log(N);
     
     /* output */
-    (x, v) <- f[ancestor(w)]!;
-    x.output(output);
+    if (output?) {
+      (x, v) <- f[ancestor(w)]!;
+      x.output(output!);
+    }
   }
 }
 
-closed fiber particle(model:String, input:Reader') -> (Model, Real)! {
+closed fiber particle(model:String, input:Reader?) -> (Model, Real)! {
   /* create model */
   x:Model? <- Model?(make(model));
   if (!x?) {
@@ -61,7 +63,9 @@ closed fiber particle(model:String, input:Reader') -> (Model, Real)! {
   }
   
   /* input */
-  x!.input(input);
+  if (input?) {
+    x!.input(input!);
+  }
   
   /* simulate */
   f:Real! <- x!.simulate();

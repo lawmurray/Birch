@@ -7,29 +7,45 @@ class JSONWriter < MemoryWriter {
   }}
 
   /**
-   * Path.
+   * File path.
    */
   path:String;
-
+  
   /**
-   * Open file.
-   *
-   *   - path: Path.
+   * Constructor.
    */
-  function open(path:String) {
+  function make(path:String) {
     this.path <- path;
     cpp{{
     group = &top;
     }}
   }
-
-  function flush() {
+  
+  /**
+   * Save data to file.
+   */
+  function save() {
+    success:Boolean;
     cpp{{
-    if (!path_.empty() && group) {
-      std::ofstream stream(path_);
-      libubjpp::JSONGenerator generator(stream);
-      generator.write(*group);
-    }
+    std::ofstream stream(path_);
+    success_ = stream.is_open();
     }}
+    if (success) {
+      cpp{{
+      libubjpp::JSONGenerator generator(stream);
+      generator.write(top);
+      }}
+    } else {
+      stderr.print("warning: could not save to \'" + path + "'\n");
+    }
   }
+}
+
+/**
+ * Factory function.
+ */
+function JSONWriter(path:String) -> JSONWriter {
+  writer:JSONWriter;
+  writer.make(path);
+  return writer;
 }

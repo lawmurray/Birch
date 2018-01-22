@@ -31,16 +31,14 @@ program sample(
     ncheckpoints:Integer <- 1,
     nparticles:Integer <- 1,
     ess_trigger:Real <- 0.7) {
-  /* input */
-  input:JSONReader;
+  /* set up I/O */
+  input:JSONReader?;
+  output:JSONWriter?;
   if (input_file?) {
-    input.open(input_file!);
+    input <- JSONReader(input_file!);
   }
-  
-  /* output */
-  output:JSONWriter;  
   if (output_file?) {
-    output.open(output_file!);
+    output <- JSONWriter(output_file!);
   }
   
   /* sample */
@@ -50,6 +48,8 @@ program sample(
         ess_trigger);
   }
   
-  /* write output */
-  output.flush();
+  /* output */
+  if (output?) {
+    output!.save();
+  }
 }
