@@ -444,18 +444,17 @@ void bi::Driver::setup() {
     fs::ofstream configureStream(work_dir / "configure.ac");
     configureStream << contents << "\n\n";
 
-    /* open conditional on checks */
-    if (!metaFiles["require.header"].empty()
-        || !metaFiles["require.library"].empty()
-        || !metaFiles["require.program"].empty()) {
+    /* required headers */
+    if (!metaFiles["require.header"].empty()) {
       configureStream << "if test x$emscripten = xfalse; then\n";
     }
-
-    /* required headers */
     for (auto file : metaFiles["require.header"]) {
       configureStream << "  AC_CHECK_HEADERS([" << file.string() << "], [], "
           << "[AC_MSG_ERROR([header required by " << packageName
           << " package not found.])], [-])\n";
+    }
+    if (!metaFiles["require.header"].empty()) {
+      configureStream << "fi\n";
     }
 
     /* required libraries */
@@ -473,13 +472,6 @@ void bi::Driver::setup() {
       configureStream << "    AC_MSG_ERROR([" << file.string() << " program "
           << "required by " << packageName << " package not found.])\n";
       configureStream << "  fi\n";
-    }
-
-    /* close conditional on checks */
-    if (!metaFiles["require.header"].empty()
-        || !metaFiles["require.library"].empty()
-        || !metaFiles["require.program"].empty()) {
-      configureStream << "fi\n";
     }
 
     /* footer */

@@ -6,11 +6,21 @@ bi/PACKAGE_TARNAME.hpp.pch: bi/PACKAGE_TARNAME.hpp
 	$(CXXCOMPILE) -M -MF bi/$(DEPDIR)/PACKAGE_TARNAME.Plo -MT $@ $< && \
 	$(CXXCOMPILE) -o $@ $<
 
+# placeholder source file for Emscripten program wrapper
+main.cpp:
+	touch main.cpp
+
+# Emscripten program wrapper
+EXTRA_PROGRAMS = birch.js
+birch_js_LDADD = libPACKAGE_TARNAME.la
+birch_js_SOURCES = main.cpp
+birch_js_CXXFLAGS = -s MAIN_MODULE=1
+
 # compile and link flags
 ACLOCAL_AMFLAGS = -I m4
 AM_CXXFLAGS = -include bi/PACKAGE_TARNAME.hpp
 
-BUILT_SOURCES = bi/PACKAGE_TARNAME.hpp.pch
+BUILT_SOURCES = bi/PACKAGE_TARNAME.hpp.pch main.cpp
 CLEANFILES = bi/PACKAGE_TARNAME.hpp.pch
 
 include bi/$(DEPDIR)/PACKAGE_TARNAME.Plo
