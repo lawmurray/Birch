@@ -108,11 +108,13 @@ bi::Fiber<Type>::Fiber(const Fiber<Type>& o) :
 
 template<class Type>
 bi::Fiber<Type>& bi::Fiber<Type>::operator=(const Fiber<Type>& o) {
-  state = o.state;
-  world = o.world;
-  isClosed = o.isClosed;
-  dirty();
-  o.dirty();
+  if (this != &o) {  // for self-assignment, needn't dirty
+    state = o.state;
+    world = o.world;
+    isClosed = o.isClosed;
+    dirty();
+    o.dirty();
+  }
   return *this;
 }
 
