@@ -76,10 +76,12 @@ struct EmptyFrame {
 
   size_t length(const int i) const {
     assert(false);
+    return 0;
   }
 
   size_t stride(const int i) const {
     assert(false);
+    return 0;
   }
 
   template<class T1>

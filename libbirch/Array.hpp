@@ -411,12 +411,11 @@ private:
       auto iter1 = begin();
       auto end1 = end();
       auto iter2 = o.begin();
-      auto end2 = o.end();
 
       for (; iter1 != end1; ++iter1, ++iter2) {
         new (&(*iter1)) T(*iter2);
       }
-      assert(iter2 == end2);
+      assert(iter2 == o.end());
     }
   }
 
@@ -442,9 +441,7 @@ private:
     if (frame.size() > 0) {
       auto iter1 = begin();
       auto end1 = end();
-
       auto iter2 = o.begin();
-      auto end2 = o.end();
 
       //size_t block1 = frame.block();
       //size_t block2 = o.frame.block();
@@ -457,7 +454,7 @@ private:
       for (; iter1 != end1; ++iter1, ++iter2) {
         *iter1 = *iter2;
       }
-      assert(iter2 == end2);
+      assert(iter2 == o.end());
     }
   }
 
