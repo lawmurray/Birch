@@ -11,10 +11,15 @@ main.cpp:
 	touch main.cpp
 
 # Emscripten program wrapper
-EXTRA_PROGRAMS = birch.js
+EXTRA_PROGRAMS = birch.js birch.html
+
 birch_js_LDADD = libPACKAGE_TARNAME.la
 birch_js_SOURCES = main.cpp
-birch_js_CXXFLAGS = -s MAIN_MODULE=1
+birch_js_LDFLAGS = -s MAIN_MODULE=1 --emrun
+
+birch_html_LDADD = libPACKAGE_TARNAME.la
+birch_html_SOURCES = main.cpp
+birch_html_LDFLAGS = -s MAIN_MODULE=1 --emrun
 
 # compile and link flags
 ACLOCAL_AMFLAGS = -I m4

@@ -213,6 +213,9 @@ void bi::Driver::build() {
   autogen();
   configure();
   target();
+  if (arch == "js" || arch == "wasm") {
+    target("birch.html");
+  }
 }
 
 void bi::Driver::install() {
