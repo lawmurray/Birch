@@ -31,24 +31,30 @@ program sample(
     ncheckpoints:Integer <- 1,
     nparticles:Integer <- 1,
     ess_trigger:Real <- 0.7) {
-  /* set up I/O */
+  /* set up input and output */
   input:JSONReader?;
   output:JSONWriter?;
   if (input_file?) {
     input <- JSONReader(input_file!);
+    input!.load();
   }
   if (output_file?) {
     output <- JSONWriter(output_file!);
+    output!.setArray();
   }
   
   /* sample */
   method:SMC;
+  x:Model;
+  Z:Real;
   for (n:Integer in 1..nsamples) {
-    method.simulate(model, input, output, ncheckpoints, nparticles,
-        ess_trigger);
+    (x, Z) <- method.simulate(model, input, ncheckpoints, nparticles, ess_trigger);
+    if (output?) {
+      x.output(output!.push());
+    }
   }
   
-  /* output */
+  /* finalize output */
   if (output?) {
     output!.save();
   }

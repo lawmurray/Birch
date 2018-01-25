@@ -12,7 +12,7 @@ function ancestors(w:Real[_]) -> Integer[_] {
   O <- systematic_cumulative_offspring(W);
   a <- cumulative_offspring_to_ancestors(O);
   
-  return permute_ancestors(a);
+  return a;
 }
 
 /**

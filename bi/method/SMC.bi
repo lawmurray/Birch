@@ -5,8 +5,8 @@ class SMC {
   /**
    * Simulate.
    */
-  function simulate(model:String, input:Reader?, output:Writer?, T:Integer,
-      N:Integer, trigger:Real) {
+  function simulate(model:String, input:Reader?, T:Integer, N:Integer,
+      trigger:Real) -> (Model, Real) {
     f:(Model, Real)![N];  // particles
     w:Real[N];             // log-weights
     a:Integer[N];          // ancestors
@@ -26,12 +26,11 @@ class SMC {
     /* filter */
     for (t in 1..T) {
       if (ess(w) < trigger*N) {
+        /* resample */
         Z <- Z + log_sum_exp(w) - log(N);
-        a <- ancestors(w);
+        a <- permute_ancestors(ancestors(w));
         for (n in 1..N) {
-          if (a[n] != n) {
-            f[n] <- f[a[n]];
-          }
+          f[n] <- f[a[n]];
           w[n] <- 0.0;
         }
       }
@@ -41,16 +40,16 @@ class SMC {
         if (f[n]?) {
           (x, v) <- f[n]!;
           w[n] <- w[n] + v;
+        } else {
+          assert false;
         } 
       }
     }
     Z <- Z + log_sum_exp(w) - log(N);
     
-    /* output */
-    if (output?) {
-      (x, v) <- f[ancestor(w)]!;
-      x.output(output!);
-    }
+    /* result */
+    (x, v) <- f[ancestor(w)]!;
+    return (x, Z);
   }
 }
 

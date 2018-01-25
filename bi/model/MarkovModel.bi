@@ -28,8 +28,6 @@ class MarkovModel<StateType <= State, ParameterType <= Model> < Model {
     while (f?) {
       w <- w + f!;
     }
-    yield w;
-    w <- 0.0;
 
     /* initial state */
     x:StateType;
@@ -52,7 +50,7 @@ class MarkovModel<StateType <= State, ParameterType <= Model> < Model {
         x <- future.front();
         future.popFront();
       }
-      
+
       /* propagate and weight */
       w <- 0.0;
       f <- x.simulate(history.back(), θ);
@@ -75,8 +73,8 @@ class MarkovModel<StateType <= State, ParameterType <= Model> < Model {
   }
   
   function output(writer:Writer) {
-    f:StateType! <- history.walk();
     writer.setArray();
+    f:StateType! <- history.walk();
     while (f?) {
       f!.output(writer.push());
     }
