@@ -23,7 +23,13 @@ public:
   World(const std::shared_ptr<World>& parent = nullptr);
 
   /**
-   * Get the mapped version of the given object for this world.
+   * Is the given world reachable from this world through the ancestry?
+   */
+  bool isReachable(const World* o) const;
+
+  /**
+   * Pull an object from its current world to this world, copying it into
+   * the current world if it is not already there.
    *
    * @param src The source object.
    *
@@ -31,10 +37,9 @@ public:
    */
   std::shared_ptr<Any> get(const std::shared_ptr<Any>& src);
 
-private:
   /**
-   * Recursively pull an object from its current world this world,
-   * applying any mappings along the way.
+   * Pull an object from its current world to this world,  but without copying
+   * it into the current world if it is not already there.
    *
    * @param src The source object.
    *
@@ -42,6 +47,7 @@ private:
    */
   std::shared_ptr<Any> pull(const std::shared_ptr<Any>& src) const;
 
+private:
   /**
    * Insert a mapping.
    *

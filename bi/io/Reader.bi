@@ -5,7 +5,7 @@ class Reader {
   /**
    * Get this as an object.
    */
-  function' getObject() -> Reader'?;
+  function getObject() -> Reader?;
 
   /**
    * Get this as an array.
@@ -14,22 +14,22 @@ class Reader {
    * turn, or which never yields if this is an empty array or not an array
    * at all.
    */
-  fiber' getArray() -> Reader'!;
+  fiber getArray() -> Reader!;
   
   /**
    * Get this as a Boolean.
    */
-  function' getBoolean() -> Boolean?;
+  function getBoolean() -> Boolean?;
 
   /**
    * Get this as an integer.
    */
-  function' getInteger() -> Integer?;
+  function getInteger() -> Integer?;
 
   /**
    * Get this as a real.
    */
-  function' getReal() -> Real?;
+  function getReal() -> Real?;
 
   /**
    * Get an object.
@@ -39,7 +39,7 @@ class Reader {
    * Return: An optional with a value if the given entry exists and is of a
    * compatible type.
    */
-  function' getObject(name:String) -> Reader'?;
+  function getObject(name:String) -> Reader?;
 
   /**
    * Get an array.
@@ -50,7 +50,7 @@ class Reader {
    * turn, or which never yields if this is an empty array or not an array
    * at all.
    */
-  fiber' getArray(name:String) -> Reader'!;
+  fiber getArray(name:String) -> Reader!;
 
   /**
    * Get a Boolean.
@@ -60,7 +60,7 @@ class Reader {
    * Return: An optional with a value if the given entry exists and is of a
    * compatible type.
    */
-  function' getBoolean(name:String) -> Boolean?;
+  function getBoolean(name:String) -> Boolean?;
 
   /**
    * Get an integer.
@@ -70,7 +70,7 @@ class Reader {
    * Return: An optional with a value if the given entry exists and is of a
    * compatible type.
    */
-  function' getInteger(name:String) -> Integer?;
+  function getInteger(name:String) -> Integer?;
 
   /**
    * Get a real.
@@ -80,7 +80,7 @@ class Reader {
    * Return: An optional with a value if the given entry exists and is of a
    * compatible type.
    */
-  function' getReal(name:String) -> Real?;
+  function getReal(name:String) -> Real?;
 
   /**
    * Get a string.
@@ -90,7 +90,7 @@ class Reader {
    * Return: An optional with a value if the given entry exists and is of a
    * compatible type.
    */
-  function' getString(name:String) -> String?;
+  function getString(name:String) -> String?;
 
   /**
    * Get an object.
@@ -100,7 +100,7 @@ class Reader {
    * Return: An optional with a value if the given entry exists and is of a
    * compatible type.
    */
-  function' getObject(path:[String]) -> Reader'?;
+  function getObject(path:[String]) -> Reader?;
 
   /**
    * Get an array.
@@ -111,7 +111,7 @@ class Reader {
    * turn, or which never yields if this is an empty array or not an array
    * at all.
    */
-  fiber' getArray(path:[String]) -> Reader'!;
+  fiber getArray(path:[String]) -> Reader!;
 
   /**
    * Get a Boolean.
@@ -121,7 +121,7 @@ class Reader {
    * Return: An optional with a value if the given entry exists and is of a
    * compatible type.
    */
-  function' getBoolean(path:[String]) -> Boolean?;
+  function getBoolean(path:[String]) -> Boolean?;
 
   /**
    * Get an integer.
@@ -131,7 +131,7 @@ class Reader {
    * Return: An optional with a value if the given entry exists and is of a
    * compatible type.
    */
-  function' getInteger(path:[String]) -> Integer?;
+  function getInteger(path:[String]) -> Integer?;
 
   /**
    * Get a real.
@@ -141,7 +141,7 @@ class Reader {
    * Return: An optional with a value if the given entry exists and is of a
    * compatible type.
    */
-  function' getReal(path:[String]) -> Real?;
+  function getReal(path:[String]) -> Real?;
 
   /**
    * Get a string.
@@ -151,5 +151,5 @@ class Reader {
    * Return: An optional with a value if the given entry exists and is of a
    * compatible type.
    */
-  function' getString(path:[String]) -> String?;
+  function getString(path:[String]) -> String?;
 }

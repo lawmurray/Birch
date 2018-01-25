@@ -6,7 +6,7 @@ class MemoryReader < Reader {
   libubjpp::value* group = nullptr;
   }}  
 
-  function' getObject() -> Reader'? {
+  function getObject() -> Reader? {
     exists:Boolean;
     cpp{{
     auto value = group->get<libubjpp::object_type>();
@@ -19,7 +19,7 @@ class MemoryReader < Reader {
     }
   }
 
-  fiber' getArray() -> Reader'! {
+  fiber getArray() -> Reader! {
     /* fibers do not preserve variables declared in raw C++ code between
      * yields, and the switch and jump mechanism for resumption cannot jump
      * over variable initialization; so the value variable below is
@@ -45,7 +45,7 @@ class MemoryReader < Reader {
     }
   }
 
-  function' getBoolean() -> Boolean? {
+  function getBoolean() -> Boolean? {
     result:Boolean?;
     cpp{{
     auto value = group->get<libubjpp::bool_type>();
@@ -56,7 +56,7 @@ class MemoryReader < Reader {
     return result;
   }
   
-  function' getInteger() -> Integer? {
+  function getInteger() -> Integer? {
     result:Integer?;
     cpp{{
     auto value = group->get<libubjpp::int64_type>();
@@ -67,7 +67,7 @@ class MemoryReader < Reader {
     return result;
   }
   
-  function' getReal() -> Real? {
+  function getReal() -> Real? {
     result:Real?;
     cpp{{
     auto value = group->get<libubjpp::double_type>();
@@ -78,7 +78,7 @@ class MemoryReader < Reader {
     return result;
   }
   
-  function' getString() -> String? {
+  function getString() -> String? {
     result:String?;
     cpp{{
     auto value = group->get<libubjpp::string_type>();
@@ -89,7 +89,7 @@ class MemoryReader < Reader {
     return result;
   }
 
-  function' getObject(name:String) -> Reader'? {
+  function getObject(name:String) -> Reader? {
     exists:Boolean;
     cpp{{
     auto value = group->get(name_);
@@ -106,7 +106,7 @@ class MemoryReader < Reader {
     }
   }
 
-  fiber' getArray(name:String) -> Reader'! {
+  fiber getArray(name:String) -> Reader! {
     length:Integer;
     result:MemoryReader;
     cpp{{
@@ -127,7 +127,7 @@ class MemoryReader < Reader {
     }
   }
 
-  function' getBoolean(name:String) -> Boolean? {
+  function getBoolean(name:String) -> Boolean? {
     result:Boolean?;
     cpp{{
     auto value = group->get<libubjpp::bool_type>(name_);
@@ -138,7 +138,7 @@ class MemoryReader < Reader {
     return result;
   }
   
-  function' getInteger(name:String) -> Integer? {
+  function getInteger(name:String) -> Integer? {
     result:Integer?;
     cpp{{
     auto value = group->get<libubjpp::int64_type>(name_);
@@ -149,7 +149,7 @@ class MemoryReader < Reader {
     return result;
   }
   
-  function' getReal(name:String) -> Real? {
+  function getReal(name:String) -> Real? {
     result:Real?;
     cpp{{
     auto value = group->get<libubjpp::double_type>(name_);
@@ -160,7 +160,7 @@ class MemoryReader < Reader {
     return result;
   }
   
-  function' getString(name:String) -> String? {
+  function getString(name:String) -> String? {
     result:String?;
     cpp{{
     auto value = group->get<libubjpp::string_type>(name_);
@@ -171,7 +171,7 @@ class MemoryReader < Reader {
     return result;
   }
 
-  function' getObject(path:[String]) -> Reader'? {
+  function getObject(path:[String]) -> Reader? {
     exists:Boolean;
     cpp{{
     auto value = group->get(path_);
@@ -188,7 +188,7 @@ class MemoryReader < Reader {
     }
   }
 
-  fiber' getArray(path:[String]) -> Reader'! {
+  fiber getArray(path:[String]) -> Reader! {
     length:Integer;
     result:MemoryReader;
     cpp{{
@@ -209,7 +209,7 @@ class MemoryReader < Reader {
     }
   }
 
-  function' getBoolean(path:[String]) -> Boolean? {
+  function getBoolean(path:[String]) -> Boolean? {
     result:Boolean?;
     cpp{{
     auto value = group->get<libubjpp::bool_type>(path_);
@@ -220,7 +220,7 @@ class MemoryReader < Reader {
     return result;
   }
   
-  function' getInteger(path:[String]) -> Integer? {
+  function getInteger(path:[String]) -> Integer? {
     result:Integer?;
     cpp{{
     auto value = group->get<libubjpp::int64_type>(path_);
@@ -231,7 +231,7 @@ class MemoryReader < Reader {
     return result;
   }
   
-  function' getReal(path:[String]) -> Real? {
+  function getReal(path:[String]) -> Real? {
     result:Real?;
     cpp{{
     auto value = group->get<libubjpp::double_type>(path_);
@@ -242,7 +242,7 @@ class MemoryReader < Reader {
     return result;
   }
 
-  function' getString(path:[String]) -> String? {
+  function getString(path:[String]) -> String? {
     result:String?;
     cpp{{
     auto value = group->get<libubjpp::string_type>(path_);

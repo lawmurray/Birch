@@ -49,11 +49,7 @@ public:
   /**
    * Get the value.
    */
-  T& get() {
-    assert(hasValue);
-    return value;
-  }
-  const T& get() const {
+  T get() const {
     assert(hasValue);
     return value;
   }
@@ -102,7 +98,7 @@ public:
    * Generic copy constructor.
    */
   template<class U>
-  Optional(const Optional<WeakPointer<U>>& o) : value(o.value.lock()) {
+  Optional(const Optional<WeakPointer<U>>& o) : value(o.value) {
     //
   }
 
@@ -128,7 +124,7 @@ public:
    */
   template<class U>
   Optional(const WeakPointer<U>& value) :
-      value(value.lock()) {
+      value(value) {
     //
   }
 
@@ -142,11 +138,7 @@ public:
   /**
    * Get the value.
    */
-  SharedPointer<T>& get() {
-    assert(query());
-    return value;
-  }
-  const SharedPointer<T>& get() const {
+  SharedPointer<T> get() const {
     assert(query());
     return value;
   }

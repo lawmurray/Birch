@@ -20,7 +20,7 @@ class State {
   /**
    * Input to the state.
    */
-  function input(reader:Reader');
+  function input(reader:Reader);
   
   /**
    * Output from the state.

@@ -5,11 +5,11 @@
 
 #include "libbirch/global.hpp"
 
-bi::Any::Any() : world(fiberWorld.get()) {
+bi::Any::Any() : world(fiberWorld) {
   //
 }
 
-bi::Any::Any(const Any& o) : world(fiberWorld.get()) {
+bi::Any::Any(const Any& o) : world(fiberWorld) {
   //
 }
 
@@ -22,5 +22,5 @@ std::shared_ptr<bi::Any> bi::Any::clone() const {
 }
 
 bi::World* bi::Any::getWorld() {
-  return world;
+  return world.get();
 }

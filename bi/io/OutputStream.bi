@@ -38,7 +38,7 @@ class OutputStream {
   /**
    * Print string.
    */
-  function' print(value:String) {
+  function print(value:String) {
     assert file?;
     cpp{{
     ::fprintf(file_.get(), "%s", value_.c_str());
@@ -48,7 +48,7 @@ class OutputStream {
   /**
    * Print value.
    */
-  function' print(value:Boolean) {
+  function print(value:Boolean) {
     if (value) {
       print("true");
     } else {
@@ -59,21 +59,21 @@ class OutputStream {
   /**
    * Print value.
    */
-  function' print(value:Integer) {
+  function print(value:Integer) {
     print(String(value));
   }
 
   /**
    * Print value.
    */
-  function' print(value:Real) {
+  function print(value:Real) {
     print(String(value));
   }
 
   /**
    * Print vector.
    */
-  function' print(x:Boolean[_]) {
+  function print(x:Boolean[_]) {
     for (i:Integer in 1..length(x)) {
       if (i != 1) {
         print(" ");
@@ -85,7 +85,7 @@ class OutputStream {
   /**
    * Print vector.
    */
-  function' print(x:Integer[_]) {
+  function print(x:Integer[_]) {
     for (i:Integer in 1..length(x)) {
       if (i != 1) {
         print(" ");
@@ -97,7 +97,7 @@ class OutputStream {
   /**
    * Print vector.
    */
-  function' print(x:Real[_]) {
+  function print(x:Real[_]) {
     for (i:Integer in 1..length(x)) {
       if (i != 1) {
         print(" ");
@@ -109,7 +109,7 @@ class OutputStream {
   /**
    * Print matrix.
    */
-  function' print(X:Boolean[_,_]) {
+  function print(X:Boolean[_,_]) {
     for (i:Integer in 1..rows(X)) {
       for (j:Integer in 1..columns(X)) {
         if (j != 1) {
@@ -124,7 +124,7 @@ class OutputStream {
   /**
    * Print matrix.
    */
-  function' print(X:Integer[_,_]) {
+  function print(X:Integer[_,_]) {
     for (i:Integer in 1..rows(X)) {
       for (j:Integer in 1..columns(X)) {
         if (j != 1) {
@@ -139,7 +139,7 @@ class OutputStream {
   /**
    * Print matrix.
    */
-  function' print(X:Real[_,_]) {
+  function print(X:Real[_,_]) {
     for (i:Integer in 1..rows(X)) {
       for (j:Integer in 1..columns(X)) {
         if (j != 1) {

@@ -9,7 +9,7 @@ class Model {
   /**
    * Read inputs.
    */
-  function input(reader:Reader') {
+  function input(reader:Reader) {
     //
   }
   

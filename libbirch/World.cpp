@@ -12,13 +12,15 @@ bi::World::World(const std::shared_ptr<World>& parent) :
   //
 }
 
+bool bi::World::isReachable(const World* o) const {
+  return this == o || (parent && parent->isReachable(o));
+}
+
+
 std::shared_ptr<bi::Any> bi::World::get(const std::shared_ptr<Any>& src) {
   assert(src);
   if (this == src->getWorld()) {
-    /* in this world */
-    return src;
-  } else if (!parent) {
-    ///@todo Escaped pointer
+    /* already in this world */
     return src;
   } else {
     /* not in this world, propagate through ancestor world mappings */
@@ -31,8 +33,10 @@ std::shared_ptr<bi::Any> bi::World::get(const std::shared_ptr<Any>& src) {
     if (iter != map.end()) {
       return iter->second;
     } else {
-      assert(shared_from_this() == fiberWorld);
+      auto prevWorld = fiberWorld;
+      fiberWorld = shared_from_this();
       auto clone = dst->clone();
+      fiberWorld = prevWorld;
       insert(dst, clone);
       return clone;
     }
@@ -43,7 +47,7 @@ std::shared_ptr<bi::Any> bi::World::pull(
     const std::shared_ptr<Any>& src) const {
   assert(src);
   if (this == src->getWorld()) {
-    /* in this world */
+    /* already in this world */
     return src;
   } else {
     /* not in this world, propagate through ancestor world mappings */

@@ -58,17 +58,6 @@ public:
       super_type(o) {
     //
   }
-
-  /**
-   * Lock the pointer.
-   */
-  SharedPointer<T> lock() const {
-#ifndef NDEBUG
-    return root_type::lock().template dynamic_pointer_cast<T>();
-#else
-    return root_type::lock().template static_pointer_cast<T>();
-#endif
-  }
 };
 
 template<>
@@ -81,19 +70,22 @@ public:
   using root_type = this_type;
 
   WeakPointer(const std::nullptr_t& o = nullptr) :
-      ptr() {
+      ptr(),
+      world(fiberWorld) {
     //
   }
 
   template<class U>
   WeakPointer(const WeakPointer<U>& o) :
-      ptr(o.ptr) {
+      ptr(o.ptr),
+      world(fiberWorld->isReachable(o.world.get()) ? fiberWorld : o.world) {
     //
   }
 
   template<class U>
   WeakPointer(const SharedPointer<U>& o) :
-      ptr(o.ptr) {
+      ptr(o.ptr),
+      world(fiberWorld->isReachable(o.world.get()) ? fiberWorld : o.world) {
     //
   }
 
@@ -103,57 +95,15 @@ public:
     //
   }
 
-  SharedPointer<Any> lock() const {
-    return ptr.lock();
-  }
-
 protected:
   /**
-   * Wrapped smart pointer.
+   * Weak pointer to the object.
    */
   std::weak_ptr<Any> ptr;
-};
 
-template<>
-class WeakPointer<const Any> {
-  template<class U> friend class SharedPointer;
-  template<class U> friend class WeakPointer;
-public:
-  using value_type = const Any;
-  using this_type = WeakPointer<const Any>;
-  using root_type = this_type;
-
-  WeakPointer(const std::nullptr_t& o = nullptr) :
-      ptr() {
-    //
-  }
-
-  template<class U>
-  WeakPointer(const WeakPointer<U>& o) :
-      ptr(o.ptr) {
-    //
-  }
-
-  template<class U>
-  WeakPointer(const SharedPointer<U>& o) :
-      ptr(o.ptr) {
-    //
-  }
-
-  template<class U>
-  WeakPointer(const Optional<SharedPointer<U>>& o) :
-      WeakPointer(o.query() ? o.get() : nullptr) {
-    //
-  }
-
-  SharedPointer<const Any> lock() const {
-    return SharedPointer<const Any>(ptr.lock());
-  }
-
-protected:
   /**
-   * Wrapped smart pointer.
+   * Shared pointer to the world in which the object is required.
    */
-  std::weak_ptr<const Any> ptr;
+  std::shared_ptr<World> world;
 };
 }

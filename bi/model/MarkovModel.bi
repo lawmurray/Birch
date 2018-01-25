@@ -63,8 +63,8 @@ class MarkovModel<StateType <= State, ParameterType <= Model> < Model {
     }
   }
   
-  function input(reader:Reader') {
-    f:Reader'! <- reader.getArray();
+  function input(reader:Reader) {
+    f:Reader! <- reader.getArray();
     while (f?) {
       x:StateType;
       x.input(f!);

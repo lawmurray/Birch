@@ -29,7 +29,7 @@ public:
    * Default constructor.
    */
   SharedPointer() :
-      SharedPointer(std::make_shared<T>()) {
+      SharedPointer(std::make_shared<T>(), fiberWorld) {
     //
   }
 
@@ -42,11 +42,12 @@ public:
   }
 
   /**
-   * Generic constructor from STL shared pointer.
+   * Constructor.
    */
-  SharedPointer(const std::shared_ptr<T>& ptr) :
-      super_type(ptr) {
-
+  SharedPointer(const std::shared_ptr<T>& ptr,
+      const std::shared_ptr<World>& world = fiberWorld) :
+      super_type(ptr, world) {
+    //
   }
 
   /**
@@ -56,6 +57,31 @@ public:
   SharedPointer(const SharedPointer<U>& o) :
       super_type(o) {
     //
+  }
+
+  /**
+   * Generic constructor.
+   */
+  template<class U>
+  SharedPointer(const WeakPointer<U>& o) :
+      super_type(o) {
+    //
+  }
+
+  /**
+   * Copy constructor.
+   */
+  SharedPointer(const SharedPointer<T>& o) :
+      super_type(o) {
+    //
+  }
+
+  /**
+   * Copy assignment.
+   */
+  SharedPointer<T>& operator=(const SharedPointer<T>& o) {
+    super_type::operator=(o);
+    return *this;
   }
 
   /**
@@ -76,11 +102,6 @@ public:
   operator U() {
     return static_cast<U>(*get());
   }
-  template<class U,
-      typename = std::enable_if_t<bi::has_conversion<T,U>::value>>
-  operator U() const {
-    return static_cast<U>(*get());
-  }
 
   /**
    * Get the raw pointer.
@@ -92,21 +113,11 @@ public:
     return static_cast<T*>(root_type::get());
 #endif
   }
-  const T* get() const {
-#ifndef NDEBUG
-    return dynamic_cast<const T*>(root_type::get());
-#else
-    return static_cast<const T*>(root_type::get());
-#endif
-  }
 
   /**
    * Dereference.
    */
   T& operator*() {
-    return *get();
-  }
-  const T& operator*() const {
     return *get();
   }
 
@@ -116,19 +127,12 @@ public:
   T* operator->() {
     return get();
   }
-  const T* operator->() const {
-    return get();
-  }
 
   /**
    * Call operator.
    */
   template<class ... Args>
   auto operator()(Args ... args) {
-    return (*get())(args...);
-  }
-  template<class ... Args>
-  auto operator()(Args ... args) const {
     return (*get())(args...);
   }
 };
@@ -143,24 +147,48 @@ public:
   using root_type = this_type;
 
   SharedPointer() :
-      SharedPointer(std::make_shared<Any>()) {
+      ptr(std::make_shared<Any>()),
+      world(fiberWorld) {
     //
   }
 
   SharedPointer(const std::nullptr_t& o) :
-      ptr(o) {
+      ptr(o),
+      world(fiberWorld) {
     //
   }
 
-  SharedPointer(const std::shared_ptr<Any>& ptr) :
-      ptr(ptr) {
+  SharedPointer(const std::shared_ptr<Any>& ptr,
+      const std::shared_ptr<World>& world = fiberWorld) :
+      ptr(ptr),
+      world(fiberWorld->isReachable(world.get()) ? fiberWorld : world) {
     //
   }
 
   template<class U>
   SharedPointer(const SharedPointer<U>& o) :
-      ptr(o.ptr) {
+      ptr(o.ptr),
+      world(fiberWorld->isReachable(o.world.get()) ? fiberWorld : o.world) {
     //
+  }
+
+  template<class U>
+  SharedPointer(const WeakPointer<U>& o) :
+      ptr(o.ptr.lock()),
+      world(fiberWorld->isReachable(o.world.get()) ? fiberWorld : o.world) {
+    //
+  }
+
+  SharedPointer(const SharedPointer<Any>& o) :
+      ptr(o.ptr),
+      world(fiberWorld->isReachable(o.world.get()) ? fiberWorld : o.world) {
+    //
+  }
+
+  SharedPointer<Any>& operator=(const SharedPointer<Any>& o) {
+    ptr = o.ptr;
+    world = fiberWorld->isReachable(o.world.get()) ? fiberWorld : o.world;
+    return *this;
   }
 
   /**
@@ -171,28 +199,15 @@ public:
   }
 
   Any* get() {
-    /* copy-on-write, and update the pointer for next time */
-    ptr = fiberWorld->get(ptr);
-    return ptr.get();
-  }
-  const Any* get() const {
-    /* given the way C++ code is generated, a const SharedPointer<Any> only
-     * occurs for member variables when a read-only function or fiber is
-     * called; so treat this as though it were a SharedPointer<const Any> */
+    ptr = world->get(ptr);
     return ptr.get();
   }
 
   Any& operator*() {
     return *get();
   }
-  const Any& operator*() const {
-    return *get();
-  }
 
   Any* operator->() {
-    return get();
-  }
-  const Any* operator->() const {
     return get();
   }
 
@@ -201,11 +216,7 @@ public:
    */
   template<class U>
   SharedPointer<U> dynamic_pointer_cast() {
-    return SharedPointer<U>(std::dynamic_pointer_cast<U>(ptr));
-  }
-  template<class U>
-  SharedPointer<const U> dynamic_pointer_cast() const {
-    return SharedPointer<const U>(std::dynamic_pointer_cast<const U>(ptr));
+    return SharedPointer<U>(std::dynamic_pointer_cast < U > (ptr), world);
   }
 
   /**
@@ -213,92 +224,18 @@ public:
    */
   template<class U>
   SharedPointer<U> static_pointer_cast() {
-    return SharedPointer<U>(std::static_pointer_cast<U>(ptr));
-  }
-  template<class U>
-  SharedPointer<U> static_pointer_cast() const {
-    return SharedPointer<const U>(std::static_pointer_cast<const U>(ptr));
+    return SharedPointer<U>(std::static_pointer_cast < U > (ptr), world);
   }
 
 protected:
   /**
-   * Wrapped smart pointer.
+   * Shared pointer to the object.
    */
   std::shared_ptr<Any> ptr;
-};
 
-template<>
-class SharedPointer<const Any> {
-  template<class U> friend class SharedPointer;
-  template<class U> friend class WeakPointer;
-public:
-  using value_type = const Any;
-  using this_type = SharedPointer<const Any>;
-  using root_type = this_type;
-
-  SharedPointer() :
-      SharedPointer(std::make_shared<const Any>()) {
-    //
-  }
-
-  SharedPointer(const std::nullptr_t& o) :
-      ptr(o) {
-    //
-  }
-
-  template<class U>
-  SharedPointer(const std::shared_ptr<U>& ptr) :
-      ptr(ptr) {
-    //
-  }
-
-  template<class U>
-  SharedPointer(const SharedPointer<U>& o) :
-      ptr(o.ptr) {
-    //
-  }
-
-  bool query() const {
-    return static_cast<bool>(ptr);
-  }
-
-  const Any* get() {
-    /* read-only, so no need for copy-on-write */
-    return ptr.get();
-  }
-  const Any* get() const {
-    /* read-only, so no need for copy-on-write */
-    return ptr.get();
-  }
-
-  const Any& operator*() {
-    return *get();
-  }
-  const Any& operator*() const {
-    return *get();
-  }
-
-  const Any* operator->() {
-    return get();
-  }
-  const Any* operator->() const {
-    return get();
-  }
-
-  template<class U>
-  SharedPointer<const U> dynamic_pointer_cast() const {
-    return SharedPointer<const U>(std::dynamic_pointer_cast<const U>(ptr));
-  }
-
-  template<class U>
-  SharedPointer<const U> static_pointer_cast() const {
-    return SharedPointer<const U>(std::static_pointer_cast<const U>(ptr));
-  }
-
-protected:
   /**
-   * Wrapped smart pointer.
+   * Shared pointer to the world in which the object is required.
    */
-  std::shared_ptr<const Any> ptr;
+  std::shared_ptr<World> world;
 };
 }
