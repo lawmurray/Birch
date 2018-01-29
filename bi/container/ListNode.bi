@@ -1,8 +1,7 @@
 /**
- * Linked list node.
+ * List node.
  */
-class ListNode<Type> {
-  x:Type;
+class ListNode<Type>(x:Type) {
   prev:ListNode<Type>&;
   next:ListNode<Type>?;
 

@@ -16,6 +16,8 @@
       "bi/basic/String.bi",
       "bi/container/List.bi",
       "bi/container/ListNode.bi",
+      "bi/container/Stack.bi",
+      "bi/container/StackNode.bi",
       "bi/distribution/conjugate/BetaBinomial.bi",
       "bi/distribution/conjugate/DirichletCategorical.bi",
       "bi/distribution/conjugate/DirichletMultinomial.bi",

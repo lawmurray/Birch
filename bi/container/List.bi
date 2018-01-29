@@ -7,21 +7,21 @@ class List<Type> {
   count:Integer <- 0;
 
   /**
-   * Get the size of the list.
+   * Number of elements.
    */
   function size() -> Integer {
     return count;
   }
 
   /**
-   * Is this list empty?
+   * Is this empty?
    */
   function empty() -> Boolean {
     return count == 0;
   }
 
   /**
-   * Clear the contents of the list.
+   * Clear all elements.
    */
   function clear() {
     head <- nil;
@@ -30,7 +30,7 @@ class List<Type> {
   }
 
   /**
-   * Get the first element of the list.
+   * Get the first element.
    */
   function front() -> Type {
     assert head?;
@@ -38,7 +38,7 @@ class List<Type> {
   }
 
   /**
-   * Get the last element of the list.
+   * Get the last element.
    */
   function back() -> Type {
     tail:ListNode<Type>? <- this.tail;
@@ -47,13 +47,12 @@ class List<Type> {
   }
 
   /**
-   * Insert a new element at the start of the list.
+   * Insert a new element at the start.
    *
    * - x: the element.
    */
   function pushFront(x:Type) {
-    node:ListNode<Type>;
-    node.x <- x;
+    node:ListNode<Type>(x);
     
     if (head?) {
       head!.prev <- node;
@@ -66,14 +65,13 @@ class List<Type> {
   }
 
   /**
-   * Insert a new element at the end of the list.
+   * Insert a new element at the end.
    *
    * - x: the element.
    */
   function pushBack(x:Type) {
     tail:ListNode<Type>? <- this.tail;
-    node:ListNode<Type>;
-    node.x <- x;
+    node:ListNode<Type>(x);
     
     if (tail?) {
       tail!.next <- node;
@@ -86,7 +84,7 @@ class List<Type> {
   }
 
   /**
-   * Remove the first element of the list.
+   * Remove the first element.
    */
   function popFront() {
     assert head?;
@@ -98,7 +96,7 @@ class List<Type> {
   }
 
   /**
-   * Remove the last element of the list
+   * Remove the last element.
    */
   function popBack() {
     tail:ListNode<Type>? <- this.tail;
@@ -111,7 +109,7 @@ class List<Type> {
   }
 
   /**
-   * Insert a new element into the list.
+   * Insert a new element.
    *
    * - i: the position at which to insert,
    * - x: the element.
@@ -127,15 +125,14 @@ class List<Type> {
     } else if (i == count + 1) {
       pushBack(x);
     } else {
-      node:ListNode<Type>;
-      node.x <- x;
+      node:ListNode<Type>(x);
       get(i).insert(node);
       count <- count + 1;
     }
   }
 
   /**
-   * Erase an element of the list.
+   * Erase an element.
    *
    * - i: the position of the element.
    */
@@ -152,7 +149,7 @@ class List<Type> {
   }
 
   /**
-   * Iterate over the elements of the list.
+   * Iterate over the elements.
    *
    * Return: a fiber object that yields each element in forward order.
    */
@@ -165,7 +162,9 @@ class List<Type> {
   }
 
   /**
-   * Get an arbitrary node of the list.
+   * Get an element.
+   *
+   *   - i: the position of the element.
    */
   function get(i:Integer) -> ListNode<Type> {
     assert 1 <= i && i <= count;
