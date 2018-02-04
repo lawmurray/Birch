@@ -192,12 +192,10 @@ std::string bi::one_line(const std::string& str) {
   return str1;
 }
 
-std::string bi::anchor(const std::string& name, const int number) {
-  std::stringstream buf;
-  buf << name << '-' << number;
-  std::string str1 = buf.str();
-  boost::to_lower(str1);
-  boost::replace_all(str1, " ", "-");
-  boost::replace_all(str1, "_", "-");
-  return str1;
+std::string bi::anchor(const std::string& name) {
+  std::string str = name;
+  boost::to_lower(str);
+  boost::replace_all(str, " ", "-");
+  boost::replace_all(str, "_", "-");
+  return str;
 }

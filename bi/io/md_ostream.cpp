@@ -10,25 +10,14 @@ bi::md_ostream::md_ostream(std::ostream& base) :
 }
 
 void bi::md_ostream::visit(const Package* o) {
-  genHead("Summary");
-  ++depth;
-  genOneLine<GlobalVariable>("Variable", o, true);
-  genBrief<Function>("Function", o, true);
-  genBrief<Fiber>("Fiber", o, true);
-  genBrief<Program>("Program", o, true);
-  genBrief<UnaryOperator>("Unary Operator", o, true);
-  genBrief<BinaryOperator>("Binary Operator", o, true);
-  genBrief<Basic>("Basic Type", o, true);
-  genBrief<Class>("Class Type", o, true);
-  --depth;
-
-  genDetailed<Function>("Function Details", o, true);
-  genDetailed<Fiber>("Fiber Details", o, true);
-  genDetailed<Program>("Program Details", o, true);
-  genDetailed<UnaryOperator>("Unary Operator Details", o, true);
-  genDetailed<BinaryOperator>("Binary Operator Details", o, true);
-  genDetailed<Basic>("Basic Type Details", o, true);
-  genSections<Class>("Class Type Details", o, true);
+  genOneLine<Basic>("Types", o, true);
+  genOneLine<GlobalVariable>("Variables", o, true);
+  genDetailed<Program>("Programs", o, true);
+  genDetailed<Function>("Functions", o, true);
+  genDetailed<Fiber>("Fibers", o, true);
+  genDetailed<UnaryOperator>("Unary Operators", o, true);
+  genDetailed<BinaryOperator>("Binary Operators", o, true);
+  genSections<Class>("Classes", o, true);
 }
 
 void bi::md_ostream::visit(const Name* o) {
@@ -51,25 +40,27 @@ void bi::md_ostream::visit(const MemberVariable* o) {
 }
 
 void bi::md_ostream::visit(const Function* o) {
-  middle("function " << o->name << '(' << o->params << ')');
+  start("function " << o->name << '(' << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
+  finish("");
 }
 
 void bi::md_ostream::visit(const Fiber* o) {
-  middle("fiber " << o->name << '(' << o->params << ')');
+  start("fiber " << o->name << '(' << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
+  finish("");
 }
 
 void bi::md_ostream::visit(const Program* o) {
-  middle("program " << o->name << '(' << o->params << ')');
+  //
 }
 
 void bi::md_ostream::visit(const MemberFunction* o) {
-  middle("function");
+  start("function");
   if (o->isReadOnly()) {
     middle('\'');
   }
@@ -77,10 +68,11 @@ void bi::md_ostream::visit(const MemberFunction* o) {
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
+  finish("");
 }
 
 void bi::md_ostream::visit(const MemberFiber* o) {
-  middle("fiber");
+  start("fiber");
   if (o->isReadOnly()) {
     middle('\'');
   }
@@ -88,23 +80,26 @@ void bi::md_ostream::visit(const MemberFiber* o) {
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
+  finish("");
 }
 
 void bi::md_ostream::visit(const BinaryOperator* o) {
-  middle("operator (");
+  start("operator (");
   middle(o->params->getLeft() << ' ' << o->name << ' ');
   middle(o->params->getRight() << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
+  finish("");
 }
 
 void bi::md_ostream::visit(const UnaryOperator* o) {
-  middle("operator (");
+  start("operator (");
   middle(o->name << ' ' << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
+  finish("");
 }
 
 void bi::md_ostream::visit(const AssignmentOperator* o) {
@@ -115,23 +110,40 @@ void bi::md_ostream::visit(const ConversionOperator* o) {
   middle(o->returnType);
 }
 
+void bi::md_ostream::visit(const Basic* o) {
+  middle(o->name);
+  if (!o->base->isEmpty()) {
+    if (o->isAlias()) {
+      middle(" = ");
+    } else {
+      middle(" < ");
+    }
+    middle(o->base);
+  }
+}
+
 void bi::md_ostream::visit(const Class* o) {
   /* anchor for internal links */
-  line("<a name=\"" << anchor(o->name->str(), o->number) << "\"></a>\n");
+  line("<a name=\"" << anchor(o->name->str()) << "\"></a>\n");
 
   if (!o->base->isEmpty()) {
-    line("  * Inherits from *" << o->base << "*\n");
+    line("  * Inherits: " << o->base << "\n");
   }
+  if (o->isGeneric()) {
+    line("  * Generic type parameters: " << o->typeParams);
+  }
+  line("");
   line(detailed(o->loc->doc) << "\n");
 
   ++depth;
-  genOneLine<AssignmentOperator>("Assignment", o, false);
-  genOneLine<ConversionOperator>("Conversion", o, false);
-  genOneLine<MemberVariable>("Member Variable", o, false);
-  genBrief<MemberFunction>("Member Function", o, false);
-  genBrief<MemberFiber>("Member Fiber", o, false);
-  genDetailed<MemberFunction>("Member Function Details", o, true);
-  genDetailed<MemberFiber>("Member Fiber Details", o, true);
+  genOneLine<AssignmentOperator>("Assignments", o, false);
+  genOneLine<ConversionOperator>("Conversions", o, false);
+  genOneLine<MemberVariable>("Member Variables", o, false);
+  genBrief<MemberFunction>("Member Functions", o, false);
+  genBrief<MemberFiber>("Member Fibers", o, false);
+
+  genDetailed<MemberFunction>("Member Function Details", o, false);
+  genDetailed<MemberFiber>("Member Fiber Details", o, false);
   --depth;
 }
 
@@ -140,13 +152,14 @@ void bi::md_ostream::visit(const TypeList* o) {
 }
 
 void bi::md_ostream::visit(const ClassType* o) {
-  middle(
-      "[" << o->name << "](#" << anchor(o->name->str(), o->target->number) << ")");
+  middle("[" << o->name << "](#" << anchor(o->name->str()) << ")");
+  if (!o->typeArgs->isEmpty()) {
+    middle('<' << o->typeArgs << '>');
+  }
 }
 
 void bi::md_ostream::visit(const BasicType* o) {
-  middle(
-      "[" << o->name << "](#" << anchor(o->name->str(), o->target->number) << ")");
+  middle("[" << o->name << "](#" << anchor(o->name->str()) << ")");
 }
 
 void bi::md_ostream::visit(const ArrayType* o) {

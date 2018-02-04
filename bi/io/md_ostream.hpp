@@ -36,6 +36,7 @@ public:
   virtual void visit(const UnaryOperator* o);
   virtual void visit(const AssignmentOperator* o);
   virtual void visit(const ConversionOperator* o);
+  virtual void visit(const Basic* o);
   virtual void visit(const Class* o);
 
   virtual void visit(const TypeList* o);
@@ -96,13 +97,14 @@ void bi::md_ostream::genBrief(const std::string& name, const RootType* root,
   }
 
   if (sorted.size() > 0) {
-    line("| " << name << " | Brief description |");
+    genHead(name);
+    line("| Name | Brief description |");
     line("| --- | --- |");
     ++depth;
     for (auto o : sorted) {
       start("| ");
       middle('[' << o->name->str() << ']');
-      middle("(#" << anchor(o->name->str(), o->number) << ')');
+      middle("(#" << anchor(o->name->str()) << ')');
       finish(" | " << brief(o->loc->doc) << " |");
     }
     line("");
@@ -131,11 +133,12 @@ void bi::md_ostream::genOneLine(const std::string& name, const RootType* root,
   }
 
   if (sorted.size() > 0) {
-    line("| " << name << " | Description |");
+    genHead(name);
+    line("| Name | Description |");
     line("| --- | --- |");
     ++depth;
     for (auto o : sorted) {
-      line("| *" << o << "* | " << one_line(o->loc->doc) << " |");
+      line("| " << o << " | " << one_line(o->loc->doc) << " |");
     }
     line("");
     --depth;
@@ -145,9 +148,7 @@ void bi::md_ostream::genOneLine(const std::string& name, const RootType* root,
 template<class ObjectType, class RootType>
 void bi::md_ostream::genDetailed(const std::string& name,
     const RootType* root, const bool sort) {
-  Gatherer<ObjectType> gatherer([](const ObjectType* o) {
-    return !detailed(o->loc->doc).empty();
-  });
+  Gatherer<ObjectType> gatherer;
   root->accept(&gatherer);
 
   std::vector<ObjectType*> sorted(gatherer.size());
@@ -162,10 +163,19 @@ void bi::md_ostream::genDetailed(const std::string& name,
   if (sorted.size() > 0) {
     genHead(name);
     ++depth;
+    std::string name, desc;
     for (auto o : sorted) {
-      line("#### " << o << "\n");
-      line("<a name=\"" << anchor(o->name->str(), o->number) << "\"></a>\n");
-      line(detailed(o->loc->doc) << "\n");
+      if (o->name->str() != name) {
+        /* heading for the first overload of this name */
+        genHead(o->name->str());
+        line("<a name=\"" << anchor(o->name->str()) << "\"></a>\n");
+      }
+      name = o->name->str();
+      desc = detailed(o->loc->doc);
+      *this << o;
+      line("");
+      line(desc);
+      line("");
     }
     --depth;
   }
@@ -174,9 +184,7 @@ void bi::md_ostream::genDetailed(const std::string& name,
 template<class ObjectType, class RootType>
 void bi::md_ostream::genSections(const std::string& name,
     const RootType* root, const bool sort) {
-  Gatherer<ObjectType> gatherer([](const ObjectType* o) {
-    return !detailed(o->loc->doc).empty();
-  });
+  Gatherer<ObjectType> gatherer;
   root->accept(&gatherer);
 
   std::vector<ObjectType*> sorted(gatherer.size());

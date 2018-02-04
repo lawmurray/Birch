@@ -169,6 +169,11 @@ private:
   std::string packageName;
 
   /**
+   * Description of the package.
+   */
+  std::string packageDesc;
+
+  /**
    * Enable compiler warnings.
    */
   bool warnings;

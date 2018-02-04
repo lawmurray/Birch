@@ -355,12 +355,77 @@ void bi::Driver::docs() {
   compiler.parse();
   compiler.resolve();
 
-  /* output everything, categorised by object type, and sorted */
-  fs::path path = "DOCS.md";
-  fs::ofstream stream(path);
+  /* output everything into single file */
+  fs::ofstream stream("DOCS.md");
   md_ostream output(stream);
-
   output << package;
+  stream.close();
+
+  /* split that file into multiple files for mkdocs */
+  fs::ofstream mkdocs("mkdocs.yml");
+  mkdocs << "site_name: '" << packageName << "'\n";
+  mkdocs << "theme: readthedocs\n";
+  mkdocs << "pages:\n";
+
+  fs::path docs("docs"), file;
+  fs::create_directories(docs);
+  fs::create_directories(docs / "programs");
+  fs::create_directories(docs / "functions");
+  fs::create_directories(docs / "fibers");
+  fs::create_directories(docs / "unary_operators");
+  fs::create_directories(docs / "binary_operators");
+  fs::create_directories(docs / "classes");
+
+  stream.open(docs / "index.md");
+  stream << packageDesc << '\n';
+  stream.close();
+  mkdocs << "  - index.md\n";
+
+  std::string str = read_all("DOCS.md");
+  std::regex reg("(?:^|\r?\n)(##?) (.*?)(?=\r?\n|$)", std::regex_constants::ECMAScript);
+  std::smatch match;
+  std::string str1 = str, h1, h2;
+  while (std::regex_search(str1, match, reg)) {
+    if (stream.is_open()) {
+      stream << match.prefix();
+    }
+    if (match.str(1) == "#") {
+      /* first level header */
+      h1 = match.str(2);
+      mkdocs << "  - '" << h1 << "': ";
+
+      /* among first-level headers, only variables and types have their own
+       * page, rather than being further split into a page per item */
+      if (h1 == "Variables" || h1 == "Types") {
+        file = fs::path(h1 + ".md");
+        mkdocs << file.string();
+        if (stream.is_open()) {
+          stream.close();
+        }
+        stream.open(docs / file);
+        stream << "# " << h1 << "\n\n";
+      }
+      mkdocs << '\n';
+      boost::to_lower(h1);
+      boost::replace_all(h1, " ", "_");
+    } else {
+      /* second level header */
+      h2 = match.str(2);
+      mkdocs << "    - '" << h2 << "': ";
+      file = fs::path(h1) / (h2 + ".md");
+      mkdocs << file.string() << "\n";
+      if (stream.is_open()) {
+        stream.close();
+      }
+      stream.open(docs / file);
+      stream << "## " << h2 << "\n\n";
+    }
+    str1 = match.suffix();
+  }
+  if (stream.is_open()) {
+    stream << str1;
+    stream.close();
+  }
   delete package;
 }
 
@@ -387,6 +452,9 @@ void bi::Driver::meta() {
   } else {
     throw DriverException(
         "META.json must provide a 'name' entry with the name of this package.");
+  }
+  if (auto desc = meta.get_optional<std::string>("description")) {
+    packageDesc = desc.get();
   }
 
   /*  manifest */
