@@ -199,3 +199,9 @@ std::string bi::anchor(const std::string& name) {
   boost::replace_all(str, "_", "-");
   return str;
 }
+
+std::string bi::quote(const std::string& str, const std::string& indent) {
+  std::string result = indent + str;
+  boost::replace_all(result, "\n", std::string("\n") + indent);
+  return result;
+}

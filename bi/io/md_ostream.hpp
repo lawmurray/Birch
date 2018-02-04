@@ -82,9 +82,7 @@ private:
 template<class ObjectType, class RootType>
 void bi::md_ostream::genBrief(const std::string& name, const RootType* root,
     const bool sort) {
-  Gatherer<ObjectType> gatherer([](const ObjectType* o) {
-    return !detailed(o->loc->doc).empty();
-  });
+  Gatherer<ObjectType> gatherer;
   root->accept(&gatherer);
 
   std::vector<ObjectType*> sorted(gatherer.size());
@@ -115,9 +113,7 @@ void bi::md_ostream::genBrief(const std::string& name, const RootType* root,
 template<class ObjectType, class RootType>
 void bi::md_ostream::genOneLine(const std::string& name, const RootType* root,
     const bool sort) {
-  Gatherer<ObjectType> gatherer([](const ObjectType* o) {
-    return !detailed(o->loc->doc).empty();
-  });
+  Gatherer<ObjectType> gatherer;
   root->accept(&gatherer);
 
   std::vector<ObjectType*> sorted(gatherer.size());
@@ -171,10 +167,10 @@ void bi::md_ostream::genDetailed(const std::string& name,
         line("<a name=\"" << anchor(o->name->str()) << "\"></a>\n");
       }
       name = o->name->str();
-      desc = detailed(o->loc->doc);
+      desc = quote(detailed(o->loc->doc), "    ");
       *this << o;
       line("");
-      line("    " << desc);
+      line(desc);
       line("");
     }
     --depth;

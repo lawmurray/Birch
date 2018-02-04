@@ -56,7 +56,7 @@ void bi::md_ostream::visit(const Fiber* o) {
 }
 
 void bi::md_ostream::visit(const Program* o) {
-  //
+  start("!!! note \"program " << o->name << '(' << o->params << ")\"");
 }
 
 void bi::md_ostream::visit(const MemberFunction* o) {
@@ -116,7 +116,7 @@ void bi::md_ostream::visit(const Basic* o) {
     if (o->isAlias()) {
       middle(" = ");
     } else {
-      middle(" \\< ");
+      middle(" < ");
     }
     middle(o->base);
   }
@@ -145,7 +145,7 @@ void bi::md_ostream::visit(const Class* o) {
     }
   }
   finish("\"\n");
-  line("    " << detailed(o->loc->doc) << "\n");
+  line(quote(detailed(o->loc->doc), "    ") << "\n");
 
   ++depth;
   genOneLine<AssignmentOperator>("Assignments", o, false);
@@ -154,8 +154,8 @@ void bi::md_ostream::visit(const Class* o) {
   genBrief<MemberFunction>("Member Functions", o, false);
   genBrief<MemberFiber>("Member Fibers", o, false);
 
-  genDetailed<MemberFunction>("Member Function Details", o, false);
-  genDetailed<MemberFiber>("Member Fiber Details", o, false);
+  genDetailed<MemberFunction>("Member Function Details", o, true);
+  genDetailed<MemberFiber>("Member Fiber Details", o, true);
   --depth;
 }
 

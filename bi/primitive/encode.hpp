@@ -66,4 +66,10 @@ std::string one_line(const std::string& str);
  * Process a string into an anchor name for Markdown.
  */
 std::string anchor(const std::string& str);
+
+/**
+ * Quote lines in a string with the given prefix.
+ */
+std::string quote(const std::string& str, const std::string& indent);
+
 }
