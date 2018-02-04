@@ -365,6 +365,7 @@ void bi::Driver::docs() {
   fs::ofstream mkdocs("mkdocs.yml");
   mkdocs << "site_name: '" << packageName << "'\n";
   mkdocs << "theme: readthedocs\n";
+  mkdocs << "markdown_extensions: [admonition]\n";
   mkdocs << "pages:\n";
 
   fs::path docs("docs"), file;

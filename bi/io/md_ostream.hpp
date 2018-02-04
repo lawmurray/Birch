@@ -174,7 +174,7 @@ void bi::md_ostream::genDetailed(const std::string& name,
       desc = detailed(o->loc->doc);
       *this << o;
       line("");
-      line(desc);
+      line("    " << desc);
       line("");
     }
     --depth;

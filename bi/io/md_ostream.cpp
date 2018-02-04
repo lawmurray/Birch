@@ -40,19 +40,19 @@ void bi::md_ostream::visit(const MemberVariable* o) {
 }
 
 void bi::md_ostream::visit(const Function* o) {
-  start("function " << o->name << '(' << o->params << ')');
+  start("!!! note \"function " << o->name << '(' << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
-  finish("");
+  finish("\"");
 }
 
 void bi::md_ostream::visit(const Fiber* o) {
-  start("fiber " << o->name << '(' << o->params << ')');
+  start("!!! note \"fiber " << o->name << '(' << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
-  finish("");
+  finish("\"");
 }
 
 void bi::md_ostream::visit(const Program* o) {
@@ -60,7 +60,7 @@ void bi::md_ostream::visit(const Program* o) {
 }
 
 void bi::md_ostream::visit(const MemberFunction* o) {
-  start("function");
+  start("!!! note \"function");
   if (o->isReadOnly()) {
     middle('\'');
   }
@@ -68,11 +68,11 @@ void bi::md_ostream::visit(const MemberFunction* o) {
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
-  finish("");
+  finish("\"");
 }
 
 void bi::md_ostream::visit(const MemberFiber* o) {
-  start("fiber");
+  start("!!! note \"fiber");
   if (o->isReadOnly()) {
     middle('\'');
   }
@@ -80,26 +80,26 @@ void bi::md_ostream::visit(const MemberFiber* o) {
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
-  finish("");
+  finish("\"");
 }
 
 void bi::md_ostream::visit(const BinaryOperator* o) {
-  start("operator (");
+  start("!!! note \"operator (");
   middle(o->params->getLeft() << ' ' << o->name << ' ');
   middle(o->params->getRight() << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
-  finish("");
+  finish("\"");
 }
 
 void bi::md_ostream::visit(const UnaryOperator* o) {
-  start("operator (");
+  start("!!! note \"operator (");
   middle(o->name << ' ' << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
-  finish("");
+  finish("\"");
 }
 
 void bi::md_ostream::visit(const AssignmentOperator* o) {
@@ -116,7 +116,7 @@ void bi::md_ostream::visit(const Basic* o) {
     if (o->isAlias()) {
       middle(" = ");
     } else {
-      middle(" < ");
+      middle(" \\< ");
     }
     middle(o->base);
   }
@@ -126,14 +126,26 @@ void bi::md_ostream::visit(const Class* o) {
   /* anchor for internal links */
   line("<a name=\"" << anchor(o->name->str()) << "\"></a>\n");
 
-  if (!o->base->isEmpty()) {
-    line("  * Inherits: " << o->base << "\n");
-  }
+  start("!!! note \"class " << o->name);
   if (o->isGeneric()) {
-    line("  * Generic type parameters: " << o->typeParams);
+    middle("&lt;" << o->typeParams << "&gt;");
   }
-  line("");
-  line(detailed(o->loc->doc) << "\n");
+  if (!o->isAlias() && !o->params->isEmpty()) {
+    middle('(' << o->params << ')');
+  }
+  if (!o->base->isEmpty()) {
+    if (o->isAlias()) {
+      middle(" = ");
+    } else {
+      middle(" < ");
+    }
+    middle(o->base);
+    if (!o->args->isEmpty()) {
+      middle('(' << o->args << ')');
+    }
+  }
+  finish("\"\n");
+  line("    " << detailed(o->loc->doc) << "\n");
 
   ++depth;
   genOneLine<AssignmentOperator>("Assignments", o, false);
@@ -154,7 +166,7 @@ void bi::md_ostream::visit(const TypeList* o) {
 void bi::md_ostream::visit(const ClassType* o) {
   middle("[" << o->name << "](#" << anchor(o->name->str()) << ")");
   if (!o->typeArgs->isEmpty()) {
-    middle('<' << o->typeArgs << '>');
+    middle("&lt;" << o->typeArgs << "&gt;");
   }
 }
 
