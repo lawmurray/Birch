@@ -1,0 +1,39 @@
+site_name: Birch
+markdown_extensions:
+  - admonition
+pages:
+  - 'Getting Started': index.md
+  - 'Driver Guide':
+    - 'Introduction': driver/index.md
+    - 'META.json file': driver/meta_file.md
+    - 'Commands':
+      - 'init': driver/commands/init.md
+      - 'check': driver/commands/check.md
+      - 'build': driver/commands/build.md
+      - 'install': driver/commands/install.md
+      - 'uninstall': driver/commands/uninstall.md
+      - 'dist': driver/commands/dist.md
+      - 'docs': driver/commands/docs.md
+      - 'clean': driver/commands/clean.md
+  - 'Language Guide':
+    - 'Introduction': language/index.md
+    - 'Comments': language/comments.md
+    - 'Variables': language/variables.md
+    - 'Types': language/types.md
+    - 'Assignments': language/assignments.md
+    - 'Control Flow': language/control_flow.md
+    - 'Tuples': language/tuples.md
+    - 'Sequences': language/sequences.md
+    - 'Arrays': language/arrays.md
+    - 'Optionals': language/optionals.md
+    - 'Functions': language/functions.md
+    - 'Lambdas': language/lambdas.md
+    - 'Fibers': language/fibers.md
+    - 'Programs': language/programs.md
+    - 'Operators': language/operators.md
+    - 'Classes': language/classes.md
+    - 'Aliases': language/aliases.md
+    - 'Casts': language/casts.md
+    - 'Weak References': language/weak_references.md
+    - 'Read-Only References': language/read_only_references.md
+    - 'Special Topics': language/special_topics.md

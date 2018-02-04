@@ -62,12 +62,16 @@ Then, to run an example, use:
 birch example
 ```
 
-replacing `example` with the name of the example program. See the `DOCS.md` file for programs and their options.
+replacing `example` with the name of the example program.
 
 
 ## Documentation
 
-See the `DOCS.md` file.
+Use the following from within the root directory to build and serve the documentation using `mkdocs`:
+
+    mkdocs serve
+    
+then point your browser towards the URL indicated by the command, usually `http://localhost:8000`.
 
 
 ## Setting up your system and installing dependencies
