@@ -175,14 +175,14 @@ void bi::md_ostream::visit(const BasicType* o) {
 }
 
 void bi::md_ostream::visit(const ArrayType* o) {
-  middle(o->single << "\\[");
+  middle(o->single << "[");
   for (int i = 0; i < o->depth(); ++i) {
     if (i > 0) {
       middle(',');
     }
     middle("\\_");
   }
-  middle("\\]");
+  middle("]");
 }
 
 void bi::md_ostream::visit(const TupleType* o) {

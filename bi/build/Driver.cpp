@@ -365,7 +365,12 @@ void bi::Driver::docs() {
   fs::ofstream mkdocs("mkdocs.yml");
   mkdocs << "site_name: '" << packageName << "'\n";
   mkdocs << "theme: readthedocs\n";
-  mkdocs << "markdown_extensions: [admonition]\n";
+  mkdocs << "markdown_extensions:\n";
+  mkdocs << "  - admonition\n";
+  mkdocs << "  - mdx_math:\n";
+  mkdocs << "      enable_dollar_delimiter: True\n";
+  mkdocs << "extra_javascript:\n";
+  mkdocs << "  - 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'\n";
   mkdocs << "pages:\n";
 
   fs::path docs("docs"), file;
