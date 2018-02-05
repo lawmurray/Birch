@@ -22,3 +22,5 @@
 /missing
 /.autotools
 .deps
+/site/
+/mkdocs.yml

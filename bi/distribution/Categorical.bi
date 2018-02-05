@@ -1,7 +1,5 @@
 /**
  * Categorical distribution.
- *
- * `D` Number of categories.
  */
 class Categorical < Random<Integer> {
   /**

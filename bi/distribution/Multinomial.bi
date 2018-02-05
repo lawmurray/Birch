@@ -1,7 +1,5 @@
 /**
  * Multinomial distribution.
- *
- * `D` Number of categories.
  */
 class Multinomial < Random<Integer[_]> {
   /**

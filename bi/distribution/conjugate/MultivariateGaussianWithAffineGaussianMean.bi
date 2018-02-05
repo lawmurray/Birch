@@ -2,7 +2,7 @@
  * Multivariate Gaussian with affine transformation of another multivariate
  * Gaussian as mean.
  *
- * `D` Number of dimensions.
+ *   - D: Number of dimensions.
  */
 class MultivariateGaussianWithAffineGaussianMean(
     D:Integer) < MultivariateGaussian(D) {

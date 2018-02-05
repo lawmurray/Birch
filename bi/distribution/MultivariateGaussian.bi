@@ -1,7 +1,7 @@
 /**
  * Multivariate Gaussian distribution.
  *
- * `D` Number of dimensions.
+ *   - D: Number of dimensions.
  */
 class MultivariateGaussian(D:Integer) < Random<Real[_]> {
   /**

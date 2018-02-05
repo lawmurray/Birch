@@ -1,7 +1,5 @@
 /**
  * Dirichlet distribution.
- *
- * `D` Number of components.
  */
 class Dirichlet < Random<Real[_]> {
   /**
