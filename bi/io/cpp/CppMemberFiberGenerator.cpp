@@ -12,8 +12,7 @@
 bi::CppMemberFiberGenerator::CppMemberFiberGenerator(const Class* type,
     std::ostream& base, const int level, const bool header) :
     CppFiberGenerator(base, level, header),
-    type(type),
-    inMember(0) {
+    type(type) {
   //
 }
 
@@ -33,9 +32,17 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   /* supporting class */
   if (header) {
     start("class " << stateName << " : ");
-    finish("public FiberState<" << o->returnType->unwrap() << "> {");
+    middle("public MemberFiberState<" << o->returnType->unwrap() << ',');
+    middle(type->name);
+    genTemplateArgs(type);
+    finish("> {");
     line("public:");
     in();
+    start("using fiber_super_type = MemberFiberState<");
+    middle(o->returnType->unwrap() << ',');
+    middle(type->name);
+    genTemplateArgs(type);
+    finish(">;");
   }
 
   /* constructor, taking the arguments of the Fiber */
@@ -52,7 +59,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   }
   middle(type->name);
   genTemplateArgs(type);
-  middle(">& self");
+  middle(">& o");
   if (!o->params->isEmpty()) {
     middle(", " << o->params);
   }
@@ -63,21 +70,11 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     finish(" :");
     in();
     in();
-    start("FiberState<" << o->returnType->unwrap() <<">(0, ");
-    middle(yields.size() + 1);
-    finish("),");
-    start("self(self)");
+    line("fiber_super_type(o, 0, " << (yields.size() + 1) << ")");
     for (auto iter = parameters.begin(); iter != parameters.end(); ++iter) {
       auto param = *iter;
       finish(',');
       start(param->name << '(' << param->name << ')');
-    }
-    for (auto iter = locals.begin(); iter != locals.end(); ++iter) {
-      auto param = *iter;
-      if (param->type->isPointer()) {
-        finish(',');
-        start(getName((*iter)->name->str(), (*iter)->number) << "(nullptr)");
-      }
     }
     finish(" {");
     out();
@@ -143,13 +140,6 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     in();
 
     /* parameters and local variables as class member variables */
-    start("SharedPointer<");
-    if (o->isReadOnly()) {
-      middle("const ");
-    }
-    middle(type->name);
-    genTemplateArgs(type);
-    finish("> self;");
     for (auto iter = parameters.begin(); iter != parameters.end(); ++iter) {
       line((*iter)->type << ' ' << (*iter)->name << ';');
     }
@@ -183,13 +173,8 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   } else {
     finish(" {");
     in();
-    start("return ");
-    if (o->isClosed()) {
-      middle("make_closed_fiber");
-    } else {
-      middle("make_fiber");
-    }
-    middle('<' << o->returnType->unwrap() << ',' << stateName << '>');
+    start("return make_member_fiber<");
+    middle(o->returnType->unwrap() << ',' << stateName << '>');
     middle("(shared_from_this<this_type>()");
     for (auto iter = parameters.begin(); iter != parameters.end(); ++iter) {
       middle(", ");
@@ -199,58 +184,4 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     out();
     finish("}\n");
   }
-}
-
-void bi::CppMemberFiberGenerator::visit(const Identifier<MemberVariable>* o) {
-  if (!inMember) {
-    middle("self->");
-  }
-  middle(o->name);
-}
-
-void bi::CppMemberFiberGenerator::visit(
-    const Identifier<MemberParameter>* o) {
-  if (!inMember) {
-    middle("self->");
-  }
-  middle(o->name);
-}
-
-void bi::CppMemberFiberGenerator::visit(
-    const OverloadedIdentifier<MemberFunction>* o) {
-  if (!inMember) {
-    middle("self->");
-  }
-  middle(o->name);
-}
-
-void bi::CppMemberFiberGenerator::visit(
-    const OverloadedIdentifier<MemberFiber>* o) {
-  if (!inMember) {
-    middle("self->");
-  }
-  middle(o->name);
-}
-
-void bi::CppMemberFiberGenerator::visit(const Member* o) {
-  const This* leftThis = dynamic_cast<const This*>(o->left);
-  const Super* leftSuper = dynamic_cast<const Super*>(o->left);
-  if (leftThis) {
-    middle("self->");
-  } else if (leftSuper) {
-    middle("self->super_type::");
-  } else {
-    middle(o->left << "->");
-  }
-  ++inMember;
-  middle(o->right);
-  --inMember;
-}
-
-void bi::CppMemberFiberGenerator::visit(const This* o) {
-  middle("self");
-}
-
-void bi::CppMemberFiberGenerator::visit(const Super* o) {
-  middle("static_cast<SharedPointer<typename decltype(self)::super_type>>(self)");
 }

@@ -130,6 +130,11 @@ protected:
    * Output header instead of source?
    */
   bool header;
+
+  /**
+   * Are we in a membership expression?
+   */
+  int inMember;
 };
 }
 

@@ -33,9 +33,12 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   /* supporting class */
   if (header) {
     start("class " << stateName << " : ");
-    finish("public FiberState<" << o->returnType->unwrap() << "> {");
+    finish("public GlobalFiberState<" << o->returnType->unwrap() << "> {");
     line("public:");
     in();
+    start("using super_type = GlobalFiberState<");
+    middle(o->returnType->unwrap());
+    finish(">;");
   }
 
   /* constructor, taking the arguments of the Fiber */
@@ -50,22 +53,12 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     finish(" :");
     in();
     in();
-    start("FiberState<" << o->returnType->unwrap() <<">(0, ");
-    middle(yields.size() + 1);
-    middle(')');
+    start("super_type(0, " << (yields.size() + 1) << ')');
     for (auto iter = parameters.begin(); iter != parameters.end(); ++iter) {
       auto param = *iter;
       finish(',');
       start(param->name << '(' << param->name << ')');
     }
-    for (auto iter = locals.begin(); iter != locals.end(); ++iter) {
-      auto param = *iter;
-      if (param->type->isPointer()) {
-        finish(',');
-        start(getName((*iter)->name->str(), (*iter)->number) << "(nullptr)");
-      }
-    }
-
     finish(" {");
     out();
     line("//");
@@ -149,13 +142,8 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   } else {
     finish(" {");
     in();
-    start("return ");
-    if (o->isClosed()) {
-      middle("make_closed_fiber");
-    } else {
-      middle("make_fiber");
-    }
-    middle('<' << o->returnType->unwrap() << ',' << stateName << ">(");
+    start("return make_fiber<");
+    middle(o->returnType->unwrap() << ',' << stateName << ">(");
     for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
       if (iter != o->params->begin()) {
         middle(", ");

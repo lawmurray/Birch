@@ -12,7 +12,8 @@
 bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
     const bool header) :
     indentable_ostream(base, level),
-    header(header) {
+    header(header),
+    inMember(0) {
   //
 }
 
@@ -142,13 +143,15 @@ void bi::CppBaseGenerator::visit(const Member* o) {
   const This* leftThis = dynamic_cast<const This*>(o->left);
   const Super* leftSuper = dynamic_cast<const Super*>(o->left);
   if (leftThis) {
-    middle("this->");
+    middle("this->template self<this_type>()->");
   } else if (leftSuper) {
-    middle("this->super_type::");
+    middle("this->template self<super_type>()->");
   } else {
     middle(o->left << "->");
   }
+  ++inMember;
   middle(o->right);
+  --inMember;
 }
 
 void bi::CppBaseGenerator::visit(const Super* o) {
@@ -198,6 +201,9 @@ void bi::CppBaseGenerator::visit(const Identifier<Parameter>* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Identifier<MemberParameter>* o) {
+  if (!inMember) {
+    middle("this->template self<this_type>()->");
+  }
   middle(o->name);
 }
 
@@ -210,6 +216,9 @@ void bi::CppBaseGenerator::visit(const Identifier<LocalVariable>* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Identifier<MemberVariable>* o) {
+  if (!inMember) {
+    middle("this->template self<this_type>()->");
+  }
   middle(o->name);
 }
 
@@ -223,10 +232,16 @@ void bi::CppBaseGenerator::visit(const OverloadedIdentifier<Fiber>* o) {
 
 void bi::CppBaseGenerator::visit(
     const OverloadedIdentifier<MemberFunction>* o) {
+  if (!inMember) {
+    middle("this->template self<this_type>()->");
+  }
   middle(o->name);
 }
 
 void bi::CppBaseGenerator::visit(const OverloadedIdentifier<MemberFiber>* o) {
+  if (!inMember) {
+    middle("this->template self<this_type>()->");
+  }
   middle(o->name);
 }
 
