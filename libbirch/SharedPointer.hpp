@@ -143,7 +143,7 @@ public:
   }
 
   SharedPointer<Any>& operator=(const SharedPointer<Any>& o) {
-    assert(!o.ptr || o.ptr->getWorld() == fiberWorld);
+    assert(!o.ptr || fiberWorld->hasCloneAncestor(o.ptr->getWorld()));
     ptr = o.ptr;
     return *this;
   }

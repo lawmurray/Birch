@@ -29,6 +29,7 @@ public:
    * Copy constructor.
    */
   GlobalFiberState(const GlobalFiberState<YieldType>& o) :
+      FiberState<YieldType>(o),
       world(std::make_shared<World>(fiberWorld, o.world)) {
     //
   }

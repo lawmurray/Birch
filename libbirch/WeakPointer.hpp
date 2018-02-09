@@ -91,7 +91,7 @@ public:
   }
 
   WeakPointer<Any>& operator=(const WeakPointer<Any>& o) {
-    assert(!o.ptr.lock() || o.ptr.lock()->getWorld() == fiberWorld);
+    assert(!o.ptr.lock() || fiberWorld->hasCloneAncestor(o.ptr.lock()->getWorld()));
     ptr = o.ptr;
     return *this;
   }
