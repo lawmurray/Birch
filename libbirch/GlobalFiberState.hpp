@@ -21,7 +21,7 @@ public:
    */
   GlobalFiberState(const int label = 0, const int nlabels = 0) :
       FiberState<YieldType>(label, nlabels),
-      world(std::make_shared<World>()) {
+      world(std::make_shared<World>(fiberWorld, nullptr)) {
     //
   }
 
@@ -29,7 +29,7 @@ public:
    * Copy constructor.
    */
   GlobalFiberState(const GlobalFiberState<YieldType>& o) :
-      world(std::make_shared<World>(world)) {
+      world(std::make_shared<World>(fiberWorld, o.world)) {
     //
   }
 

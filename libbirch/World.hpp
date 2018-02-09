@@ -18,19 +18,21 @@ public:
   /**
    * Constructor.
    *
-   * @param parent Parent world, if any.
+   * @param launchSource World from which this was launched.
+   * @param cloneSource World from which this was cloned.
    */
-  World(const std::shared_ptr<World>& parent = nullptr);
-
-  /**
-   * Does this world have the given world as a clone ancestor?
-   */
-  bool hasCloneAncestor(const std::shared_ptr<World>& o) const;
+  World(const std::shared_ptr<World>& launchSource = nullptr,
+      const std::shared_ptr<World>& cloneSource = nullptr);
 
   /**
    * Does this world have the given world as a launch ancestor?
    */
   bool hasLaunchAncestor(const std::shared_ptr<World>& o) const;
+
+  /**
+   * Does this world have the given world as a clone ancestor?
+   */
+  bool hasCloneAncestor(const std::shared_ptr<World>& o) const;
 
   /**
    * Map an object to the present context.
@@ -71,14 +73,14 @@ private:
       const std::shared_ptr<Any>& dst);
 
   /**
-   * The world from which this world was cloned.
-   */
-  std::shared_ptr<World> cloneSource;
-
-  /**
    * The world from which this world was launched.
    */
   std::shared_ptr<World> launchSource;
+
+  /**
+   * The world from which this world was cloned.
+   */
+  std::shared_ptr<World> cloneSource;
 
   /**
    * Mapped allocations.

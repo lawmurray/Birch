@@ -7,20 +7,21 @@
 
 #include <cassert>
 
-bi::World::World(const std::shared_ptr<World>& cloneSource) :
-    cloneSource(cloneSource),
-    launchSource(fiberWorld) {
+bi::World::World(const std::shared_ptr<World>& launchSource,
+    const std::shared_ptr<World>& cloneSource) :
+    launchSource(launchSource),
+    cloneSource(cloneSource) {
   //
 }
 
-bool bi::World::hasCloneAncestor(const std::shared_ptr<World>& world) const {
-  return this == world.get() || (cloneSource &&
-      cloneSource->hasCloneAncestor(world));
+bool bi::World::hasLaunchAncestor(const std::shared_ptr<World>& world) const {
+  return this == world.get()
+      || (launchSource && launchSource->hasLaunchAncestor(world));
 }
 
-bool bi::World::hasLaunchAncestor(const std::shared_ptr<World>& world) const {
-  return this == world.get() || (launchSource &&
-      launchSource->hasLaunchAncestor(world));
+bool bi::World::hasCloneAncestor(const std::shared_ptr<World>& world) const {
+  return this == world.get()
+      || (cloneSource && cloneSource->hasCloneAncestor(world));
 }
 
 std::shared_ptr<bi::Any> bi::World::get(const std::shared_ptr<Any>& o) {
@@ -37,7 +38,8 @@ std::shared_ptr<bi::Any> bi::World::get(const std::shared_ptr<Any>& o) {
   }
 }
 
-std::shared_ptr<bi::Any> bi::World::pullAndCopy(const std::shared_ptr<Any>& o) {
+std::shared_ptr<bi::Any> bi::World::pullAndCopy(
+    const std::shared_ptr<Any>& o) {
   assert(o && hasCloneAncestor(o->getWorld()));
 
   auto src = o->getWorld().get();
