@@ -5,41 +5,36 @@ class SMC {
   /**
    * Simulate.
    */
-  function simulate(model:String, input:Reader?, T:Integer, N:Integer,
-      trigger:Real) -> (Model, Real) {
-    f:(Model, Real)![N];  // particles
-    w:Real[N];             // log-weights
-    a:Integer[N];          // ancestors
-    Z:Real <- 0.0;         // marginal log-likelihood estimate
-    x:Model;
-    n:Integer;
-    t:Integer;
-    v:Real;
+  function simulate(model:String, input:Reader?, output:Writer?, T:Integer,
+      N:Integer, trigger:Real) {
+    f:Model![N];    // particles
+    w:Real[N];      // log-weights
+    a:Integer[N];   // ancestors
+    Z:Real <- 0.0;  // marginal log-likelihood estimate
   
     /* initialize */
-    for (n in 1..N) {
+    for (n:Integer in 1..N) {
       f[n] <- particle(model, input);
       w[n] <- 0.0;
       a[n] <- n;
     }
   
     /* filter */
-    for (t in 1..T) {
+    for (t:Integer in 1..T) {
       if (ess(w) < trigger*N) {
         /* resample */
         Z <- Z + log_sum_exp(w) - log(N);
         a <- permute_ancestors(ancestors(w));
-        for (n in 1..N) {
+        for (n:Integer in 1..N) {
           f[n] <- f[a[n]];
           w[n] <- 0.0;
         }
       }
     
       /* propagate and weight */
-      for (n in 1..N) {
+      for (n:Integer in 1..N) {
         if (f[n]?) {
-          (x, v) <- f[n]!;
-          w[n] <- w[n] + v;
+          w[n] <- w[n] + f[n]!.w;
         } else {
           assert false;
         } 
@@ -47,13 +42,14 @@ class SMC {
     }
     Z <- Z + log_sum_exp(w) - log(N);
     
-    /* result */
-    (x, v) <- f[ancestor(w)]!;
-    return (x, Z);
+    /* output */
+    if (output?) {
+      f[ancestor(w)]!.output(output!.push());
+    }
   }
 }
 
-closed fiber particle(model:String, input:Reader?) -> (Model, Real)! {
+fiber particle(model:String, input:Reader?) -> Model! {
   /* create model */
   x:Model? <- Model?(make(model));
   if (!x?) {
@@ -69,6 +65,7 @@ closed fiber particle(model:String, input:Reader?) -> (Model, Real)! {
   /* simulate */
   f:Real! <- x!.simulate();
   while (f?) {
-    yield (x!, f!);
+    x!.w <- f!;
+    yield x!;
   }
 }

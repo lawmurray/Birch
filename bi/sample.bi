@@ -48,10 +48,7 @@ program sample(
   x:Model;
   Z:Real;
   for (n:Integer in 1..nsamples) {
-    (x, Z) <- method.simulate(model, input, ncheckpoints, nparticles, ess_trigger);
-    if (output?) {
-      x.output(output!.push());
-    }
+    method.simulate(model, input, output, ncheckpoints, nparticles, ess_trigger);
   }
   
   /* finalize output */

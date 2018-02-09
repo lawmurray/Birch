@@ -7,59 +7,74 @@
 
 #include <cassert>
 
-bi::World::World(const std::shared_ptr<World>& parent) :
-    parent(parent) {
+bi::World::World(const std::shared_ptr<World>& cloneSource) :
+    cloneSource(cloneSource),
+    launchSource(fiberWorld) {
   //
 }
 
-bool bi::World::isReachable(const World* o) const {
-  return this == o || (parent && parent->isReachable(o));
+bool bi::World::hasCloneAncestor(const std::shared_ptr<World>& world) const {
+  return this == world.get() || (cloneSource &&
+      cloneSource->hasCloneAncestor(world));
 }
 
+bool bi::World::hasLaunchAncestor(const std::shared_ptr<World>& world) const {
+  return this == world.get() || (launchSource &&
+      launchSource->hasLaunchAncestor(world));
+}
 
-std::shared_ptr<bi::Any> bi::World::get(const std::shared_ptr<Any>& src) {
-  assert(src);
-  if (this == src->getWorld()) {
-    /* already in this world */
-    return src;
+std::shared_ptr<bi::Any> bi::World::get(const std::shared_ptr<Any>& o) {
+  assert(o);
+  auto src = o->getWorld();
+  auto dst = this;
+  while (dst && !dst->hasCloneAncestor(src)) {
+    dst = dst->launchSource.get();
+  }
+  if (dst) {
+    return dst->pullAndCopy(o);
   } else {
-    /* not in this world, propagate through ancestor world mappings */
-    assert(parent);
-    auto dst = parent->pull(src);
+    return o;
+  }
+}
 
-    /* apply own mapping, in case the object has been seen before; if it has
-     * not then clone it and create a new mapping */
-    auto iter = map.find(dst.get());
+std::shared_ptr<bi::Any> bi::World::pullAndCopy(const std::shared_ptr<Any>& o) {
+  assert(o && hasCloneAncestor(o->getWorld()));
+
+  auto src = o->getWorld().get();
+  if (this == src) {
+    return o;
+  } else {
+    assert(cloneSource);
+    auto result = cloneSource->pull(o);
+    auto iter = map.find(result.get());
     if (iter != map.end()) {
       return iter->second;
     } else {
       auto prevWorld = fiberWorld;
       fiberWorld = shared_from_this();
-      auto clone = dst->clone();
+      auto clone = result->clone();
       fiberWorld = prevWorld;
-      insert(dst, clone);
+      insert(result, clone);
       return clone;
     }
   }
 }
 
 std::shared_ptr<bi::Any> bi::World::pull(
-    const std::shared_ptr<Any>& src) const {
-  assert(src);
-  if (this == src->getWorld()) {
-    /* already in this world */
-    return src;
-  } else {
-    /* not in this world, propagate through ancestor world mappings */
-    assert(parent);
-    auto dst = parent->pull(src);
+    const std::shared_ptr<Any>& o) const {
+  assert(o && hasCloneAncestor(o->getWorld()));
 
-    /* apply own mapping, in case the object has been seen before */
-    auto iter = map.find(dst.get());
+  auto src = o->getWorld().get();
+  if (this == src) {
+    return o;
+  } else {
+    assert(cloneSource);
+    auto result = cloneSource->pull(o);
+    auto iter = map.find(result.get());
     if (iter != map.end()) {
-      dst = iter->second;
+      result = iter->second;
     }
-    return dst;
+    return result;
   }
 }
 

@@ -58,10 +58,6 @@ class RestaurantProcess < Random<Real[_]> {
     }
     N <- N + 1;
   }
-  
-  function doRealize() {
-    assert false;  // should not be realized, only marginalized
-  }
 }
 
 function RestaurantProcess(α:Real, θ:Real) -> RestaurantProcess {

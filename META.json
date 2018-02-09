@@ -102,9 +102,11 @@
       "libbirch/Fiber.hpp",
       "libbirch/FiberState.hpp",
       "libbirch/Frame.hpp",
+      "libbirch/GlobalFiberState.hpp",
       "libbirch/global.hpp",
       "libbirch/Index.hpp",
       "libbirch/Iterator.hpp",
+      "libbirch/MemberFiberState.hpp",
       "libbirch/Length.hpp",
       "libbirch/Offset.hpp",
       "libbirch/Object.hpp",
@@ -117,6 +119,7 @@
       "libbirch/View.hpp",
       "libbirch/WeakPointer.hpp",
       "libbirch/World.hpp",
+      "libbirch/Wrapper.hpp",
       "libbirch/libbirch.hpp",
       "libubjpp/value.hpp",
       "libubjpp/common/Parser.h",
@@ -139,7 +142,9 @@
     "header": [
       "eigen3/Eigen/Core",
       "eigen3/Eigen/Dense",
-      "eigen3/Eigen/Cholesky"
+      "eigen3/Eigen/Cholesky",
+      "boost/filesystem.hpp",
+      "boost/math/special_functions/beta.hpp"
     ]
   }
 }

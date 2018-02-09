@@ -19,4 +19,9 @@ class Model {
   function output(writer:Writer) {
     //
   }
+  
+  /**
+   * Weight.
+   */
+  w:Real <- 0.0;
 }

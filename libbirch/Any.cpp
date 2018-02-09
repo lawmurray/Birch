@@ -21,6 +21,6 @@ std::shared_ptr<bi::Any> bi::Any::clone() const {
   return std::make_shared<Any>(*this);
 }
 
-bi::World* bi::Any::getWorld() {
-  return world.get();
+const std::shared_ptr<bi::World>& bi::Any::getWorld() {
+  return world;
 }

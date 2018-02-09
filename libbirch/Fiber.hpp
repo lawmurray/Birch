@@ -11,36 +11,35 @@ namespace bi {
  *
  * @ingroup libbirch
  *
- * @tparam Type Yield type.
+ * @tparam YieldType Yield type.
  */
-template<class Type>
+template<class YieldType>
 class Fiber {
 public:
   /**
    * Constructor.
    */
-  Fiber(const std::shared_ptr<FiberState<Type>>& state = nullptr,
-      const bool isClosed = false);
+  Fiber(const std::shared_ptr<FiberState<YieldType>>& state = nullptr);
 
   /**
    * Copy constructor.
    */
-  Fiber(const Fiber<Type>& o);
+  Fiber(const Fiber<YieldType>& o);
 
   /**
    * Move constructor.
    */
-  Fiber(Fiber<Type> && o) = default;
+  Fiber(Fiber<YieldType> && o) = default;
 
   /**
    * Copy assignment.
    */
-  Fiber<Type>& operator=(const Fiber<Type>& o);
+  Fiber<YieldType>& operator=(const Fiber<YieldType>& o);
 
   /**
    * Move assignment.
    */
-  Fiber<Type>& operator=(Fiber<Type> && o) = default;
+  Fiber<YieldType>& operator=(Fiber<YieldType> && o) = default;
 
   /**
    * Run to next yield point.
@@ -52,7 +51,7 @@ public:
   /**
    * Get the last yield value.
    */
-  Type get();
+  YieldType get();
 
 private:
   /**
@@ -66,17 +65,7 @@ private:
   /**
    * Fiber state.
    */
-  std::shared_ptr<FiberState<Type>> state;
-
-  /**
-   * Fiber world.
-   */
-  std::shared_ptr<World> world;
-
-  /**
-   * Is the fiber closed?
-   */
-  bool isClosed;
+  std::shared_ptr<FiberState<YieldType>> state;
 
   /**
    * Is the fiber dirty?
@@ -85,69 +74,55 @@ private:
 };
 }
 
-#include "libbirch/World.hpp"
-
-template<class Type>
-bi::Fiber<Type>::Fiber(const std::shared_ptr<FiberState<Type>>& state,
-    const bool isClosed) :
+template<class YieldType>
+bi::Fiber<YieldType>::Fiber(
+    const std::shared_ptr<FiberState<YieldType>>& state) :
     state(state),
-    world(isClosed ? std::make_shared<World>() : nullptr),
-    isClosed(isClosed),
     isDirty(false) {
   //
 }
 
-template<class Type>
-bi::Fiber<Type>::Fiber(const Fiber<Type>& o) :
-    state(o.state),
-    world(o.world),
-    isClosed(o.isClosed) {
+template<class YieldType>
+bi::Fiber<YieldType>::Fiber(const Fiber<YieldType>& o) :
+    state(o.state) {
   dirty();
   o.dirty();
 }
 
-template<class Type>
-bi::Fiber<Type>& bi::Fiber<Type>::operator=(const Fiber<Type>& o) {
+template<class YieldType>
+bi::Fiber<YieldType>& bi::Fiber<YieldType>::operator=(
+    const Fiber<YieldType>& o) {
   if (this != &o) {  // for self-assignment, needn't dirty
     state = o.state;
-    world = o.world;
-    isClosed = o.isClosed;
     dirty();
     o.dirty();
   }
   return *this;
 }
 
-template<class Type>
-bool bi::Fiber<Type>::query() {
+template<class YieldType>
+bool bi::Fiber<YieldType>::query() {
   bool result = false;
   if (state) {
-    auto prevWorld = fiberWorld;
-    if (isClosed) {
-      if (isDirty) {
-        world = std::make_shared<World>(world);
-      }
-      fiberWorld = world;
-    }
     if (isDirty) {
       state = state->clone();
       isDirty = false;
     }
+    auto prevWorld = fiberWorld;
+    fiberWorld = state->getWorld();
     result = state->query();
-    if (isClosed) {
-      fiberWorld = prevWorld;
-    }
+    fiberWorld = prevWorld;
   }
   return result;
 }
 
-template<class Type>
-Type bi::Fiber<Type>::get() {
+template<class YieldType>
+YieldType bi::Fiber<YieldType>::get() {
   assert(state);
   return state->get();
 }
 
-template<class Type>
-void bi::Fiber<Type>::dirty() const {
-  const_cast<Fiber<Type>*>(this)->isDirty = true;
+template<class YieldType>
+void bi::Fiber<YieldType>::dirty() const {
+  const_cast<Fiber<YieldType>*>(this)->isDirty = true;
 }

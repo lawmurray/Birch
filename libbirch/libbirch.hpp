@@ -19,6 +19,8 @@
 #include "libbirch/SharedPointer.hpp"
 #include "libbirch/WeakPointer.hpp"
 #include "libbirch/FiberState.hpp"
+#include "libbirch/GlobalFiberState.hpp"
+#include "libbirch/MemberFiberState.hpp"
 #include "libbirch/Fiber.hpp"
 #include "libbirch/Eigen.hpp"
 #include "libbirch/EigenFunctions.hpp"
@@ -29,7 +31,7 @@
 
 #include "boost/filesystem.hpp"
 #include "boost/math/special_functions/beta.hpp"
-///@todo Replace these with STL versions under C++17
+///@todo Replace with STL versions under C++17
 
 #include <random>
 #include <algorithm>
@@ -227,30 +229,26 @@ PointerType make_pointer(Args ... args) {
  * @tparam Args Fiber state constructor parameter types.
  *
  * @param args Fiber state constructor arguments.
- *
- * For a member fiber, the first argument should be a raw pointer to the
- * containing object.
  */
 template<class YieldType, class StateType, class ... Args>
 Fiber<YieldType> make_fiber(Args ... args) {
-  return Fiber<YieldType>(std::make_shared<StateType>(args...), false);
+  return Fiber<YieldType>(std::make_shared<StateType>(args...));
 }
 
 /**
- * Make a closed fiber.
+ * Make a member fiber.
  *
+ * @tparam ObjectType The object type.
  * @tparam YieldType The yield type of the fiber.
  * @tparam StateType The state type of the fiber.
  * @tparam Args Fiber state constructor parameter types.
  *
+ * @param self Object.
  * @param args Fiber state constructor arguments.
- *
- * For a member fiber, the first argument should be a raw pointer to the
- * containing object.
  */
-template<class YieldType, class StateType, class ... Args>
-Fiber<YieldType> make_closed_fiber(Args ... args) {
-  return Fiber<YieldType>(std::make_shared<StateType>(args...), true);
+template<class YieldType, class StateType, class ObjectType, class ... Args>
+Fiber<YieldType> make_member_fiber(SharedPointer<ObjectType> self, Args ... args) {
+  return Fiber<YieldType>(std::make_shared<StateType>(self, args...));
 }
 
 /**

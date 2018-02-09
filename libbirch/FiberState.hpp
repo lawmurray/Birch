@@ -9,9 +9,9 @@ namespace bi {
  *
  * @ingroup libbirch
  *
- * @tparam Type Yield type.
+ * @tparam YieldType Yield type.
  */
-template<class Type>
+template<class YieldType>
 class FiberState {
 public:
   /**
@@ -33,7 +33,12 @@ public:
   /**
    * Clone the object.
    */
-  virtual std::shared_ptr<FiberState<Type>> clone() const = 0;
+  virtual std::shared_ptr<FiberState<YieldType>> clone() const = 0;
+
+  /**
+   * Get the world in which the fiber runs.
+   */
+  virtual const std::shared_ptr<World>& getWorld() = 0;
 
   /**
    * Run to next yield point.
@@ -46,15 +51,15 @@ public:
    * @internal Returns by value to ensure that pointers, from the fiber's
    * world, are mapped to the caller's world.
    */
-  const Type get() const {
+  const YieldType get() const {
     return value;
   }
 
-//protected:
+protected:
   /**
    * Last yielded value.
    */
-  Type value;
+  YieldType value;
 
   /**
    * Label to which to jump on next query.

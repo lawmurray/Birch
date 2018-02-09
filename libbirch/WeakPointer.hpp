@@ -27,8 +27,7 @@ public:
   /**
    * Default constructor.
    */
-  WeakPointer(const std::nullptr_t& o = nullptr) :
-      super_type(o) {
+  WeakPointer(const std::nullptr_t& o = nullptr) {
     //
   }
 
@@ -69,23 +68,19 @@ public:
   using this_type = WeakPointer<value_type>;
   using root_type = this_type;
 
-  WeakPointer(const std::nullptr_t& o = nullptr) :
-      ptr(),
-      world(fiberWorld) {
+  WeakPointer(const std::nullptr_t& o = nullptr) {
     //
   }
 
   template<class U>
   WeakPointer(const WeakPointer<U>& o) :
-      ptr(o.ptr),
-      world(fiberWorld->isReachable(o.world.get()) ? fiberWorld : o.world) {
+      ptr(o.ptr) {
     //
   }
 
   template<class U>
   WeakPointer(const SharedPointer<U>& o) :
-      ptr(o.ptr),
-      world(fiberWorld->isReachable(o.world.get()) ? fiberWorld : o.world) {
+      ptr(o.ptr) {
     //
   }
 
@@ -95,15 +90,16 @@ public:
     //
   }
 
+  WeakPointer<Any>& operator=(const WeakPointer<Any>& o) {
+    assert(!o.ptr.lock() || o.ptr.lock()->getWorld() == fiberWorld);
+    ptr = o.ptr;
+    return *this;
+  }
+
 protected:
   /**
    * Weak pointer to the object.
    */
   std::weak_ptr<Any> ptr;
-
-  /**
-   * Shared pointer to the world in which the object is required.
-   */
-  std::shared_ptr<World> world;
 };
 }
