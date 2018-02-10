@@ -29,14 +29,14 @@ class MemoryReader < Reader {
     result:MemoryReader;
     cpp{{
     {
-      auto value = this->template self<this_type>()->group->get<libubjpp::array_type>();
+      auto value = this->self()->group->get<libubjpp::array_type>();
       length_ = value ? value.get().size() : 0;
     }
     }}
     for (i:Integer in 1..length) {
       cpp{{
       {
-        auto value = this->template self<this_type>()->group->get<libubjpp::array_type>();
+        auto value = this->self()->group->get<libubjpp::array_type>();
         assert(value);
         result_->group = &value.get()[i_ - 1];
       }
@@ -111,14 +111,14 @@ class MemoryReader < Reader {
     result:MemoryReader;
     cpp{{
     {
-      auto value = this->template self<this_type>()->group->get<libubjpp::array_type>(name_);
+      auto value = this->self()->group->get<libubjpp::array_type>(name_);
       length_ = value ? value.get().size() : 0;
     }
     }}
     for (i:Integer in 1..length) {
       cpp{{
       {
-        auto value = this->template self<this_type>()->group->get<libubjpp::array_type>(name_);
+        auto value = this->self()->group->get<libubjpp::array_type>(name_);
         assert(value);
         result_->group = &value.get()[i_ - 1];
       }
@@ -193,14 +193,14 @@ class MemoryReader < Reader {
     result:MemoryReader;
     cpp{{
     {
-      auto value = this->template self<this_type>()->group->get<libubjpp::array_type>(path_);
+      auto value = this->self()->group->get<libubjpp::array_type>(path_);
       length_ = value ? value.get().size() : 0;
     }
     }}
     for (i:Integer in 1..length) {
       cpp{{
       {
-        auto value = this->template self<this_type>()->group->get<libubjpp::array_type>(path_);
+        auto value = this->self()->group->get<libubjpp::array_type>(path_);
         assert(value);
         result_->group = &value.get()[i_ - 1];
       }

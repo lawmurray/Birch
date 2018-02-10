@@ -6,7 +6,6 @@
 #include "libbirch/global.hpp"
 #include "libbirch/World.hpp"
 #include "libbirch/Any.hpp"
-#include "libbirch/Wrapper.hpp"
 
 namespace bi {
 /**
@@ -36,8 +35,8 @@ public:
   /**
    * Constructor.
    */
-  SharedPointer(const std::shared_ptr<T>& ptr) :
-      super_type(ptr) {
+  SharedPointer(const std::shared_ptr<T>& object) :
+      super_type(object) {
     //
   }
 
@@ -65,7 +64,7 @@ public:
   template<class U,
       typename = std::enable_if_t<bi::has_assignment<T,U>::value>>
   SharedPointer<T>& operator=(const U& o) {
-    *Wrapper<T>(get()) = o;
+    *get() = o;
     return *this;
   }
 
@@ -75,7 +74,7 @@ public:
   template<class U,
       typename = std::enable_if_t<bi::has_conversion<T,U>::value>>
   operator U() {
-    return static_cast<U>(*Wrapper<T>(get()));
+    return static_cast<U>(*get());
   }
 
   /**
@@ -99,8 +98,8 @@ public:
   /**
    * Member access.
    */
-  Wrapper<T> operator->() {
-    return Wrapper<T>(get());
+  T* operator->() {
+    return get();
   }
 
   /**
@@ -125,26 +124,35 @@ public:
     //
   }
 
-  SharedPointer(const std::shared_ptr<Any>& ptr) :
-      ptr(ptr) {
+  SharedPointer(const std::shared_ptr<Any>& object) :
+      object(object),
+      world(fiberWorld) {
+    //
+  }
+
+  SharedPointer(const SharedPointer<Any>& o) :
+      object(o.object),
+      world(fiberWorld) {
     //
   }
 
   template<class U>
   SharedPointer(const SharedPointer<U>& o) :
-      ptr(o.ptr) {
+      object(o.object),
+      world(fiberWorld) {
     //
   }
 
   template<class U>
   SharedPointer(const WeakPointer<U>& o) :
-      ptr(o.ptr.lock()) {
+      object(o.object.lock()),
+      world(o.world) {
     //
   }
 
   SharedPointer<Any>& operator=(const SharedPointer<Any>& o) {
-    assert(!o.ptr || fiberWorld->hasCloneAncestor(o.ptr->getWorld()));
-    ptr = o.ptr;
+    assert(world == o.world);
+    object = o.object;
     return *this;
   }
 
@@ -152,12 +160,12 @@ public:
    * Is the pointer not null?
    */
   bool query() const {
-    return static_cast<bool>(ptr);
+    return static_cast<bool>(object);
   }
 
   Any* get() {
-    ptr = fiberWorld->get(ptr);
-    return ptr.get();
+    object = world->get(object);
+    return object.get();
   }
 
   Any& operator*() {
@@ -173,7 +181,7 @@ public:
    */
   template<class U>
   SharedPointer<U> dynamic_pointer_cast() {
-    return SharedPointer<U>(std::dynamic_pointer_cast < U > (ptr));
+    return SharedPointer<U>(std::dynamic_pointer_cast < U > (object));
   }
 
   /**
@@ -181,13 +189,19 @@ public:
    */
   template<class U>
   SharedPointer<U> static_pointer_cast() {
-    return SharedPointer<U>(std::static_pointer_cast < U > (ptr));
+    return SharedPointer<U>(std::static_pointer_cast < U > (object));
   }
 
 protected:
   /**
-   * Shared pointer to the object.
+   * The object.
    */
-  std::shared_ptr<Any> ptr;
+  std::shared_ptr<Any> object;
+
+  /**
+   * The world to which the object should belong (although it may belong to
+   * a clone ancestor of this world).
+   */
+  std::shared_ptr<World> world;
 };
 }

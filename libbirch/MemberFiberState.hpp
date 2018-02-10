@@ -39,14 +39,20 @@ public:
     return o->getWorld();
   }
 
-  template<class T>
-  auto self() {
-    return o->template self<T>();
+  this_type* self() {
+    return o->self();
   }
 
-  template<class T>
-  auto shared_from_this() {
-    return o->template shared_from_this<T>();
+  super_type* super() {
+    return o->super();
+  }
+
+  SharedPointer<this_type> shared_self() {
+    return o->shared_self();
+  }
+
+  SharedPointer<super_type> shared_super() {
+    return o->shared_super();
   }
 
 protected:

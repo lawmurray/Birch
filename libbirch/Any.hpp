@@ -4,7 +4,6 @@
 #pragma once
 
 #include "libbirch/SharedPointer.hpp"
-#include "libbirch/Wrapper.hpp"
 
 namespace bi {
 /**
@@ -40,18 +39,10 @@ public:
   const std::shared_ptr<World>& getWorld();
 
   /**
-   * Pointer to this with wrapper for world.
-   */
-  template<class T>
-  auto self() {
-    return Wrapper<T>(static_cast<T*>(this));
-  }
-
-  /**
    * Create a shared pointer from this object.
    */
   template<class T>
-  auto shared_from_this() {
+  SharedPointer<T> shared_from_this() {
     auto ptr = enable_shared_from_this<Any>::shared_from_this();
     return SharedPointer<T>(std::static_pointer_cast<T>(ptr));
   }

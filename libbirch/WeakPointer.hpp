@@ -72,15 +72,23 @@ public:
     //
   }
 
+  WeakPointer(const WeakPointer<Any>& o) :
+      object(o.object),
+      world(fiberWorld) {
+    //
+  }
+
   template<class U>
   WeakPointer(const WeakPointer<U>& o) :
-      ptr(o.ptr) {
+      object(o.object),
+      world(fiberWorld) {
     //
   }
 
   template<class U>
   WeakPointer(const SharedPointer<U>& o) :
-      ptr(o.ptr) {
+      object(o.object),
+      world(fiberWorld) {
     //
   }
 
@@ -91,15 +99,21 @@ public:
   }
 
   WeakPointer<Any>& operator=(const WeakPointer<Any>& o) {
-    assert(!o.ptr.lock() || fiberWorld->hasCloneAncestor(o.ptr.lock()->getWorld()));
-    ptr = o.ptr;
+    assert(world == o.world);
+    object = o.object;
     return *this;
   }
 
 protected:
   /**
-   * Weak pointer to the object.
+   * The object.
    */
-  std::weak_ptr<Any> ptr;
+  std::weak_ptr<Any> object;
+
+  /**
+   * The world to which the object should belong (although it may belong to
+   * a clone ancestor of this world).
+   */
+  std::shared_ptr<World> world;
 };
 }

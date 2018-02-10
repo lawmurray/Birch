@@ -22,6 +22,7 @@
 #include "libbirch/GlobalFiberState.hpp"
 #include "libbirch/MemberFiberState.hpp"
 #include "libbirch/Fiber.hpp"
+#include "libbirch/Enter.hpp"
 #include "libbirch/Eigen.hpp"
 #include "libbirch/EigenFunctions.hpp"
 #include "libbirch/EigenOperators.hpp"
