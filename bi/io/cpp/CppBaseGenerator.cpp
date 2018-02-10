@@ -143,9 +143,9 @@ void bi::CppBaseGenerator::visit(const Member* o) {
   const This* leftThis = dynamic_cast<const This*>(o->left);
   const Super* leftSuper = dynamic_cast<const Super*>(o->left);
   if (leftThis) {
-    middle("this->template self<this_type>()->");
+    middle("this->self()->");
   } else if (leftSuper) {
-    middle("this->template self<super_type>()->");
+    middle("this->super()->");
   } else {
     middle(o->left << "->");
   }
@@ -154,14 +154,14 @@ void bi::CppBaseGenerator::visit(const Member* o) {
   --inMember;
 }
 
-void bi::CppBaseGenerator::visit(const Super* o) {
-  // only need to handle the case outside member expression
-  middle("shared_from_this<super_type>()");
-}
-
 void bi::CppBaseGenerator::visit(const This* o) {
   // only need to handle the case outside member expression
-  middle("shared_from_this<this_type>()");
+  middle("this->shared_self()");
+}
+
+void bi::CppBaseGenerator::visit(const Super* o) {
+  // only need to handle the case outside member expression
+  middle("this->shared_super()");
 }
 
 void bi::CppBaseGenerator::visit(const Nil* o) {
@@ -202,7 +202,7 @@ void bi::CppBaseGenerator::visit(const Identifier<Parameter>* o) {
 
 void bi::CppBaseGenerator::visit(const Identifier<MemberParameter>* o) {
   if (!inMember) {
-    middle("this->template self<this_type>()->");
+    middle("this->self()->");
   }
   middle(o->name);
 }
@@ -217,7 +217,7 @@ void bi::CppBaseGenerator::visit(const Identifier<LocalVariable>* o) {
 
 void bi::CppBaseGenerator::visit(const Identifier<MemberVariable>* o) {
   if (!inMember) {
-    middle("this->template self<this_type>()->");
+    middle("this->self()->");
   }
   middle(o->name);
 }
@@ -233,14 +233,14 @@ void bi::CppBaseGenerator::visit(const OverloadedIdentifier<Fiber>* o) {
 void bi::CppBaseGenerator::visit(
     const OverloadedIdentifier<MemberFunction>* o) {
   if (!inMember) {
-    middle("this->template self<this_type>()->");
+    middle("this->self()->");
   }
   middle(o->name);
 }
 
 void bi::CppBaseGenerator::visit(const OverloadedIdentifier<MemberFiber>* o) {
   if (!inMember) {
-    middle("this->template self<this_type>()->");
+    middle("this->self()->");
   }
   middle(o->name);
 }

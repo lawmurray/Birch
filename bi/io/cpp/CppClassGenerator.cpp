@@ -62,6 +62,33 @@ void bi::CppClassGenerator::visit(const Class* o) {
         line("using super_type::operator=;\n");
       }
 
+      /* self-reference functions */
+      if (header) {
+        line("this_type* self() {");
+        in();
+        line("return this;");
+        out();
+        line("}\n");
+
+        line("super_type* super() {");
+        in();
+        line("return this;");
+        out();
+        line("}\n");
+
+        line("SharedPointer<this_type> shared_self() {");
+        in();
+        line("return shared_from_this<this_type>();");
+        out();
+        line("}\n");
+
+        line("SharedPointer<super_type> shared_super() {");
+        in();
+        line("return shared_from_this<super_type>();");
+        out();
+        line("}\n");
+      }
+
       /* clone function */
       if (!header) {
         genTemplateParams(o);
@@ -106,7 +133,8 @@ void bi::CppClassGenerator::visit(const Class* o) {
       if (header) {
         line("extern \"C\" " << o->name << "* make_" << o->name << "();");
       } else {
-        line("bi::type::" << o->name << "* bi::type::make_" << o->name << "() {");
+        line(
+            "bi::type::" << o->name << "* bi::type::make_" << o->name << "() {");
         in();
         line("return new bi::type::" << o->name << "();");
         out();
