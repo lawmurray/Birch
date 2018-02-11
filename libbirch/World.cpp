@@ -23,7 +23,7 @@ std::shared_ptr<bi::Any> bi::World::get(const std::shared_ptr<Any>& o) {
     if (iter != map.end()) {
       return iter->second;
     } else {
-      Enter enter(shared_from_this());
+      EnterClone enter(shared_from_this());
       auto clone = result->clone();
       insert(result, clone);
       return clone;

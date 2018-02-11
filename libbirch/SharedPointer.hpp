@@ -28,7 +28,8 @@ public:
   /**
    * Default constructor.
    */
-  SharedPointer(const std::nullptr_t& o = nullptr) {
+  SharedPointer(const std::nullptr_t& object = nullptr) :
+      super_type(object) {
     //
   }
 
@@ -120,7 +121,8 @@ public:
   using this_type = SharedPointer<value_type>;
   using root_type = this_type;
 
-  SharedPointer(const std::nullptr_t& o = nullptr) {
+  SharedPointer(const std::nullptr_t& object = nullptr) :
+      world(fiberWorld) {
     //
   }
 
@@ -132,14 +134,14 @@ public:
 
   SharedPointer(const SharedPointer<Any>& o) :
       object(o.object),
-      world(fiberWorld) {
+      world(fiberCloning ? fiberWorld : o.world) {
     //
   }
 
   template<class U>
   SharedPointer(const SharedPointer<U>& o) :
       object(o.object),
-      world(fiberWorld) {
+      world(o.world) {
     //
   }
 
@@ -166,6 +168,10 @@ public:
   Any* get() {
     object = world->get(object);
     return object.get();
+  }
+
+  const std::shared_ptr<World>& getWorld() {
+    return world;
   }
 
   Any& operator*() {

@@ -21,6 +21,11 @@ template<class T> class WeakPointer;
 extern std::shared_ptr<World> fiberWorld;
 
 /**
+ * Flag set when an object is being cloned.
+ */
+extern bool fiberCloning;
+
+/**
  * Random number generator.
  */
 extern std::mt19937_64 rng;

@@ -4,6 +4,8 @@
 #pragma once
 
 #include "libbirch/FiberState.hpp"
+#include "libbirch/Enter.hpp"
+#include "libbirch/Cloning.hpp"
 
 namespace bi {
 /**
@@ -108,10 +110,8 @@ bool bi::Fiber<YieldType>::query() {
       state = state->clone();
       isDirty = false;
     }
-    auto prevWorld = fiberWorld;
-    fiberWorld = state->getWorld();
+    Enter enter(state->getWorld());
     result = state->query();
-    fiberWorld = prevWorld;
   }
   return result;
 }

@@ -23,6 +23,8 @@
 #include "libbirch/MemberFiberState.hpp"
 #include "libbirch/Fiber.hpp"
 #include "libbirch/Enter.hpp"
+#include "libbirch/Cloning.hpp"
+#include "libbirch/Wrap.hpp"
 #include "libbirch/Eigen.hpp"
 #include "libbirch/EigenFunctions.hpp"
 #include "libbirch/EigenOperators.hpp"
@@ -233,6 +235,10 @@ PointerType make_pointer(Args ... args) {
  */
 template<class YieldType, class StateType, class ... Args>
 Fiber<YieldType> make_fiber(Args ... args) {
+  /* the constructor for GlobalFiberState enters the new world of the new
+   * fiber, this ensures that the current world is restored after creation
+   * of the fiber */
+  Enter enter(fiberWorld);
   return Fiber<YieldType>(std::make_shared<StateType>(args...));
 }
 

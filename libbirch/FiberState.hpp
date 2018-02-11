@@ -16,6 +16,9 @@ class FiberState {
 public:
   /**
    * Constructor.
+   *
+   * @param label Initial label.
+   * @param nlabels Number of labels.
    */
   FiberState(const int label = 0, const int nlabels = 0) :
       label(label),
@@ -47,22 +50,12 @@ public:
 
   /**
    * Get the last yield value.
-   *
-   * @internal Returns by value to ensure that pointers, from the fiber's
-   * world, are mapped to the caller's world.
    */
-  const YieldType get() const {
-    return value;
-  }
+  virtual YieldType get() = 0;
 
 protected:
   /**
-   * Last yielded value.
-   */
-  YieldType value;
-
-  /**
-   * Label to which to jump on next query.
+   * Current label.
    */
   int label;
 

@@ -27,7 +27,8 @@ public:
   /**
    * Default constructor.
    */
-  WeakPointer(const std::nullptr_t& o = nullptr) {
+  WeakPointer(const std::nullptr_t& object = nullptr) :
+      super_type(object) {
     //
   }
 
@@ -68,13 +69,14 @@ public:
   using this_type = WeakPointer<value_type>;
   using root_type = this_type;
 
-  WeakPointer(const std::nullptr_t& o = nullptr) {
+  WeakPointer(const std::nullptr_t& object = nullptr) :
+      world(fiberWorld) {
     //
   }
 
   WeakPointer(const WeakPointer<Any>& o) :
       object(o.object),
-      world(fiberWorld) {
+      world(fiberCloning ? fiberWorld : o.world) {
     //
   }
 
