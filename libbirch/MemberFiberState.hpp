@@ -34,14 +34,14 @@ public:
    * @param arg Arguments to fiber call on owning object.
    */
   MemberFiberState(const int label, const int nlabels,
-      const std::shared_ptr<ObjectType>& object,
+      const SharedPointer<ObjectType>& object,
       const std::shared_ptr<ArgumentType>& arg) :
       super_type(label, nlabels),
       object(object),
       arg(arg),
-      local(object->getWorld()),
-      value(object->getWorld()) {
-    Enter enter(object->getWorld());
+      local(object.getWorld()),
+      value(object.getWorld()) {
+    Enter enter(object.getWorld());
     local = std::make_shared<LocalType>();
     value = std::make_shared<YieldType>();
   }
@@ -53,15 +53,15 @@ public:
       super_type(o),
       object(o.object),
       arg(o.arg),
-      local(object->getWorld()),
-      value(object->getWorld()) {
-    EnterClone enter(object->getWorld());
+      local(object.getWorld()),
+      value(object.getWorld()) {
+    EnterClone enter(object.getWorld());
     local.reset(new LocalType(*o.local));
     value.reset(new YieldType(*o.value));
   }
 
   virtual const std::shared_ptr<World>& getWorld() {
-    return object->getWorld();
+    return object.getWorld();
   }
 
   virtual YieldType get() {

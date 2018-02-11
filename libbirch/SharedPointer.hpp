@@ -170,7 +170,7 @@ public:
     return object.get();
   }
 
-  const std::shared_ptr<World>& getWorld() {
+  const std::shared_ptr<World>& getWorld() const {
     return world;
   }
 
