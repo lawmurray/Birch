@@ -26,10 +26,11 @@ public:
   using root_type = typename super_type::root_type;
 
   /**
-   * Default constructor.
+   * Constructor.
    */
-  SharedPointer(const std::nullptr_t& object = nullptr) :
-      super_type(object) {
+  SharedPointer(const std::nullptr_t& object = nullptr,
+      const std::shared_ptr<World>& world = fiberWorld) :
+      super_type(object, world) {
     //
   }
 
@@ -121,8 +122,9 @@ public:
   using this_type = SharedPointer<value_type>;
   using root_type = this_type;
 
-  SharedPointer(const std::nullptr_t& object = nullptr) :
-      world(fiberWorld) {
+  SharedPointer(const std::nullptr_t& object = nullptr,
+      const std::shared_ptr<World>& world = fiberWorld) :
+      world(world) {
     //
   }
 

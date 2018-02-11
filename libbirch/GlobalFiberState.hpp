@@ -36,8 +36,8 @@ public:
       super_type(label, nlabels),
       arg(arg),
       world(std::make_shared<World>()),
-      local(world),
-      value(world) {
+      local(nullptr, world),
+      value(nullptr, world) {
     Enter enter(world);
     local = std::make_shared<LocalType>();
     value = std::make_shared<YieldType>();
@@ -50,11 +50,11 @@ public:
       super_type(o),
       arg(o.arg),
       world(std::make_shared<World>(o.world)),
-      local(world),
-      value(world) {
+      local(nullptr, world),
+      value(nullptr, world) {
     EnterClone enter(world);
-    local.reset(new LocalType(*o.local));
-    value.reset(new YieldType(*o.value));
+    local = std::make_shared<LocalType>(*o.local);
+    value = std::make_shared<YieldType>(*o.value);
   }
 
   virtual const std::shared_ptr<World>& getWorld() {
@@ -72,21 +72,21 @@ protected:
   /**
    * Arguments.
    */
-  std::shared_ptr<ArgumentType> arg;
+  SharedPointer<ArgumentType> arg;
 
   /**
-   * Local world.
+   * World.
    */
   std::shared_ptr<World> world;
 
   /**
    * Local variables.
    */
-  std::shared_ptr<LocalType> local;
+  SharedPointer<LocalType> local;
 
   /**
-   * Local yield value.
+   * Yield value.
    */
-  std::shared_ptr<YieldType> value;
+  SharedPointer<YieldType> value;
 };
 }
