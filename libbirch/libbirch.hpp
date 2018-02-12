@@ -22,9 +22,6 @@
 #include "libbirch/GlobalFiberState.hpp"
 #include "libbirch/MemberFiberState.hpp"
 #include "libbirch/Fiber.hpp"
-#include "libbirch/Enter.hpp"
-#include "libbirch/Cloning.hpp"
-#include "libbirch/Wrap.hpp"
 #include "libbirch/Eigen.hpp"
 #include "libbirch/EigenFunctions.hpp"
 #include "libbirch/EigenOperators.hpp"
@@ -227,35 +224,15 @@ PointerType make_pointer(Args ... args) {
 /**
  * Make a fiber.
  *
- * @tparam YieldType The yield type of the fiber.
  * @tparam StateType The state type of the fiber.
  * @tparam Args Fiber state constructor parameter types.
  *
  * @param args Fiber state constructor arguments.
  */
-template<class YieldType, class StateType, class ... Args>
-Fiber<YieldType> make_fiber(Args ... args) {
-  /* the constructor for GlobalFiberState enters the new world of the new
-   * fiber, this ensures that the current world is restored after creation
-   * of the fiber */
-  Enter enter(fiberWorld);
-  return Fiber<YieldType>(std::make_shared<StateType>(args...));
-}
-
-/**
- * Make a member fiber.
- *
- * @tparam ObjectType The object type.
- * @tparam YieldType The yield type of the fiber.
- * @tparam StateType The state type of the fiber.
- * @tparam Args Fiber state constructor parameter types.
- *
- * @param self Object.
- * @param args Fiber state constructor arguments.
- */
-template<class YieldType, class StateType, class ObjectType, class ... Args>
-Fiber<YieldType> make_member_fiber(SharedPointer<ObjectType> self, Args ... args) {
-  return Fiber<YieldType>(std::make_shared<StateType>(self, args...));
+template<class StateType, class ... Args>
+auto make_fiber(Args ... args) {
+  using yield_type = typename StateType::yield_type;
+  return Fiber<yield_type>(std::make_shared<StateType>(args...));
 }
 
 /**

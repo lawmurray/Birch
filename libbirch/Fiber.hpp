@@ -5,7 +5,7 @@
 
 #include "libbirch/FiberState.hpp"
 #include "libbirch/Enter.hpp"
-#include "libbirch/Cloning.hpp"
+#include "libbirch/Clone.hpp"
 
 namespace bi {
 /**
@@ -53,7 +53,7 @@ public:
   /**
    * Get the last yield value.
    */
-  YieldType get();
+  YieldType& get();
 
 private:
   /**
@@ -107,6 +107,7 @@ bool bi::Fiber<YieldType>::query() {
   bool result = false;
   if (state) {
     if (isDirty) {
+      Clone clone;
       state = state->clone();
       isDirty = false;
     }
@@ -117,7 +118,7 @@ bool bi::Fiber<YieldType>::query() {
 }
 
 template<class YieldType>
-YieldType bi::Fiber<YieldType>::get() {
+YieldType& bi::Fiber<YieldType>::get() {
   assert(state);
   return state->get();
 }

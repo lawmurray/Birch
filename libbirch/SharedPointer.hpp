@@ -136,7 +136,7 @@ public:
 
   SharedPointer(const SharedPointer<Any>& o) :
       object(o.object),
-      world(fiberCloning ? fiberWorld : o.world) {
+      world(fiberClone ? fiberWorld : o.world) {
     //
   }
 

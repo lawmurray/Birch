@@ -4,6 +4,7 @@
 #include "libbirch/World.hpp"
 
 #include "libbirch/Any.hpp"
+#include "libbirch/Clone.hpp"
 
 #include <cassert>
 
@@ -23,10 +24,11 @@ std::shared_ptr<bi::Any> bi::World::get(const std::shared_ptr<Any>& o) {
     if (iter != map.end()) {
       return iter->second;
     } else {
-      EnterClone enter(shared_from_this());
-      auto clone = result->clone();
-      insert(result, clone);
-      return clone;
+      Enter enter(shared_from_this());
+      Clone clone;
+      auto copy = result->clone();
+      insert(result, copy);
+      return copy;
     }
   }
 }

@@ -23,7 +23,7 @@ extern std::shared_ptr<World> fiberWorld;
 /**
  * Flag set when an object is being cloned.
  */
-extern bool fiberCloning;
+extern bool fiberClone;
 
 /**
  * Random number generator.

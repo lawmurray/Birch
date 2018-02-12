@@ -4,9 +4,9 @@
 #pragma once
 
 #include "libbirch/FiberState.hpp"
+#include "libbirch/GlobalFiberWorld.hpp"
 #include "libbirch/World.hpp"
 #include "libbirch/Enter.hpp"
-#include "libbirch/EnterClone.hpp"
 
 namespace bi {
 /**
@@ -19,74 +19,47 @@ namespace bi {
  * @tparam LocalType Type of local variables of fiber.
  */
 template<class YieldType, class ArgumentType, class LocalType>
-class GlobalFiberState: public FiberState<YieldType> {
+class GlobalFiberState:
+    public ArgumentType,
+    public GlobalFiberWorld,
+    public Enter,
+    public LocalType,
+    public FiberState<YieldType> {
 public:
-  using this_type = GlobalFiberState<YieldType,ArgumentType,LocalType>;
-  using super_type = FiberState<YieldType>;
-
   /**
    * Constructor.
    *
+   * @tparam Args... Argument types.
+   *
    * @param label Initial label.
    * @param nlabels Number of labels.
-   * @param arg Arguments to fiber call.
+   * @param args Arguments to fiber call.
    */
-  GlobalFiberState(const int label, const int nlabels,
-      const std::shared_ptr<ArgumentType>& arg) :
-      super_type(label, nlabels),
-      arg(arg),
-      world(std::make_shared<World>()),
-      local(nullptr, world),
-      value(nullptr, world) {
-    Enter enter(world);
-    local = std::make_shared<LocalType>();
-    value = std::make_shared<YieldType>();
+  template<class ... Args>
+  GlobalFiberState(const int label, const int nlabels, Args ... args) :
+      ArgumentType( { args... }),
+      GlobalFiberWorld(),  // creates fiber's world
+      Enter(getWorld()),  // enters fiber's world
+      LocalType(),
+      FiberState<YieldType>(label, nlabels) {
+    exit();  // exits fiber's world
   }
 
   /**
    * Copy constructor.
    */
-  GlobalFiberState(const this_type& o) :
-      super_type(o),
-      arg(o.arg),
-      world(std::make_shared<World>(o.world)),
-      local(nullptr, world),
-      value(nullptr, world) {
-    EnterClone enter(world);
-    local = std::make_shared<LocalType>(*o.local);
-    value = std::make_shared<YieldType>(*o.value);
+  GlobalFiberState(
+      const GlobalFiberState<YieldType,ArgumentType,LocalType>& o) :
+      ArgumentType(o),
+      GlobalFiberWorld(o.world),  // creates fiber's world
+      Enter(getWorld()),  // enters fiber's world
+      LocalType(o),
+      FiberState<YieldType>(o) {
+    exit();  // exits fiber's world
   }
 
   virtual const std::shared_ptr<World>& getWorld() {
     return world;
   }
-
-  virtual YieldType get() {
-    return *value;
-  }
-
-protected:
-  /* the order in which these are declared is important, in particular world
-   * must be initialized before local and value, which will belong to that
-   * world, while arg belongs to the caller world */
-  /**
-   * Arguments.
-   */
-  SharedPointer<ArgumentType> arg;
-
-  /**
-   * World.
-   */
-  std::shared_ptr<World> world;
-
-  /**
-   * Local variables.
-   */
-  SharedPointer<LocalType> local;
-
-  /**
-   * Yield value.
-   */
-  SharedPointer<YieldType> value;
 };
 }

@@ -14,6 +14,8 @@ namespace bi {
 template<class YieldType>
 class FiberState {
 public:
+  using yield_type = YieldType;
+
   /**
    * Constructor.
    *
@@ -51,7 +53,9 @@ public:
   /**
    * Get the last yield value.
    */
-  virtual YieldType get() = 0;
+  YieldType& get() {
+    return value;
+  }
 
 protected:
   /**
@@ -63,5 +67,10 @@ protected:
    * Number of labels.
    */
   int nlabels;
+
+  /**
+   * Yield value.
+   */
+  YieldType value;
 };
 }

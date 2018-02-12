@@ -4,9 +4,9 @@
 #pragma once
 
 #include "libbirch/FiberState.hpp"
+#include "libbirch/MemberFiberWorld.hpp"
 #include "libbirch/World.hpp"
 #include "libbirch/Enter.hpp"
-#include "libbirch/EnterClone.hpp"
 
 namespace bi {
 /**
@@ -19,90 +19,63 @@ namespace bi {
  * @tparam ArgumentType Type of arguments to fiber.
  * @tparam LocalType Type of local variables of fiber.
  */
-template<class YieldType, class ObjectType, class ArgumentType, class LocalType>
-class MemberFiberState: public FiberState<YieldType> {
+template<class YieldType, class ObjectType, class ArgumentType,
+    class LocalType>
+class MemberFiberState: public ArgumentType, public MemberFiberWorld<
+    ObjectType>, public Enter, public LocalType, public FiberState<YieldType> {
 public:
-  using this_type = MemberFiberState<YieldType,ObjectType,ArgumentType,LocalType>;
-  using super_type = FiberState<YieldType>;
-
   /**
    * Constructor.
+   *
+   * @tparam Args... Argument types.
    *
    * @param label Initial label.
    * @param nlabels Number of labels.
    * @param object Owning object.
-   * @param arg Arguments to fiber call on owning object.
+   * @param args Arguments to fiber call.
    */
+  template<class ... Args>
   MemberFiberState(const int label, const int nlabels,
-      const SharedPointer<ObjectType>& object,
-      const std::shared_ptr<ArgumentType>& arg) :
-      super_type(label, nlabels),
-      object(object),
-      arg(arg),
-      local(nullptr, object.getWorld()),
-      value(nullptr, object.getWorld()) {
-    Enter enter(object.getWorld());
-    local = std::make_shared<LocalType>();
-    value = std::make_shared<YieldType>();
+      const SharedPointer<ObjectType>& object, Args ... args) :
+      ArgumentType({ args... }),
+      MemberFiberWorld<ObjectType>(object),
+      Enter(getWorld()),  // enters owning object's world
+      LocalType(),
+      FiberState<YieldType>(label, nlabels) {
+    exit();  // exits owning object's world
   }
 
   /**
    * Copy constructor.
    */
-  MemberFiberState(const this_type& o) :
-      super_type(o),
-      object(o.object),
-      arg(o.arg),
-      local(nullptr, object.getWorld()),
-      value(nullptr, object.getWorld()) {
-    EnterClone enter(object.getWorld());
-    local = std::make_shared<LocalType>(*o.local);
-    value = std::make_shared<YieldType>(*o.value);
+  MemberFiberState(
+      const MemberFiberState<YieldType,ObjectType,ArgumentType,LocalType>& o) :
+      ArgumentType(o),
+      MemberFiberWorld<ObjectType>(o),
+      Enter(getWorld()),  // enters owning object's world
+      LocalType(o),
+      FiberState<YieldType>(o) {
+    exit();  // exits owning object's world
   }
 
   virtual const std::shared_ptr<World>& getWorld() {
-    return object.getWorld();
-  }
-
-  virtual YieldType get() {
-    return *value;
+    return this->object.getWorld();
   }
 
   ObjectType* self() {
-    return object->self();
+    return this->object->self();
   }
 
   typename ObjectType::super_type* super() {
-    return object->super();
+    return this->object->super();
   }
 
   SharedPointer<ObjectType> shared_self() {
-    return object->shared_self();
+    return this->object->shared_self();
   }
 
   SharedPointer<typename ObjectType::super_type> shared_super() {
-    return object->shared_super();
+    return this->object->shared_super();
   }
-
-protected:
-  /**
-   * Owning object.
-   */
-  SharedPointer<ObjectType> object;
-
-  /**
-   * Arguments.
-   */
-  SharedPointer<ArgumentType> arg;
-
-  /**
-   * Local variables.
-   */
-  SharedPointer<LocalType> local;
-
-  /**
-   * Yield value.
-   */
-  SharedPointer<YieldType> value;
 };
 }
