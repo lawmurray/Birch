@@ -21,62 +21,90 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   std::stringstream base;
   bih_ostream buf(base);
   buf << o->params;
-  std::string stateName = o->name->str() + '_' + encode32(base.str())
-      + "_FiberState";
+  std::string baseName = o->name->str() + '_' + encode32(base.str());
+  std::string stateName = baseName + "_FiberState";
+  std::string localName = baseName + "_FiberLocal";
+  std::string argName = baseName + "_FiberArg";
 
   /* gather important objects */
-  o->params->accept(&parameters);
+  o->params->accept(&params);
   o->braces->accept(&locals);
   o->braces->accept(&yields);
 
-  /* supporting class */
+  /* supporting class for arguments */
   if (header) {
-    start("class " << stateName << " : ");
-    middle("public MemberFiberState<" << o->returnType->unwrap() << ',');
+    line("class " << argName << " {");
+    in();
+    line("public:");
+    for (auto param : params) {
+      line(param->type << ' ' << param->name << ';');
+    }
+    out();
+    line("};\n");
+  }
+
+  /* supporting class for local variables */
+  if (header) {
+    line("class " << localName << " {");
+    in();
+    line("public:");
+    for (auto local : locals) {
+      start(local->type << ' ');
+      finish(getName(local->name->str(), local->number) << ';');
+    }
+    out();
+    line("};\n");
+  }
+
+  /* supporting class for state */
+  if (header) {
+    line("class " << stateName << " : ");
+    in();
+    in();
+    start("public MemberFiberState<" << o->returnType->unwrap() << ',');
     middle(type->name);
     genTemplateArgs(type);
-    finish("> {");
+    middle(',');
+    middle(argName << ',');
+    middle(localName << '>');
+    finish(" {");
+    out();
+    out();
     line("public:");
     in();
-    start("using fiber_super_type = MemberFiberState<");
+    line("using this_type = " << stateName << ';');
+    start("using super_type = MemberFiberState<");
     middle(o->returnType->unwrap() << ',');
     middle(type->name);
     genTemplateArgs(type);
-    finish(">;");
+    middle(',');
+    middle(argName << ',');
+    middle(localName << '>');
+    finish(';');
   }
 
-  /* constructor, taking the arguments of the Fiber */
-  start("");
+  /* constructor */
   if (!header) {
     genTemplateParams(type);
+  }
+  line("template<class... Args>");
+  start("");
+  if (!header) {
     middle("bi::type::" << type->name);
     genTemplateArgs(type);
     middle("::" << stateName << "::");
   }
   middle(stateName << "(const SharedPointer<");
-  if (o->isReadOnly()) {
-    middle("const ");
-  }
   middle(type->name);
   genTemplateArgs(type);
-  middle(">& o");
-  if (!o->params->isEmpty()) {
-    middle(", " << o->params);
-  }
-  middle(')');
+  middle(">& object, Args... args)");
   if (header) {
     finish(';');
   } else {
     finish(" :");
     in();
     in();
-    line("fiber_super_type(o, 0, " << (yields.size() + 1) << ")");
-    for (auto iter = parameters.begin(); iter != parameters.end(); ++iter) {
-      auto param = *iter;
-      finish(',');
-      start(param->name << '(' << param->name << ')');
-    }
-    finish(" {");
+    line("super_type(0, " << (yields.size() + 1) << ", object, args...) {");
     out();
     line("//");
     out();
@@ -132,26 +160,11 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     out();
     finish("}\n");
   }
-
   if (header) {
-    line("");
-    out();
-    line("private:");
-    in();
-
-    /* parameters and local variables as class member variables */
-    for (auto iter = parameters.begin(); iter != parameters.end(); ++iter) {
-      line((*iter)->type << ' ' << (*iter)->name << ';');
-    }
-    for (auto iter = locals.begin(); iter != locals.end(); ++iter) {
-      line((*iter)->type << ' ' << getName((*iter)->name->str(), (*iter)->number) << ';');
-    }
-
-    out();
-    line("};");
+    line("};\n");
   }
 
-  /* call function */
+  /* initialisation function */
   if (header) {
     start("virtual ");
   } else {
@@ -165,20 +178,16 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     middle("::");
   }
   middle(o->name << '(' << o->params << ')');
-  if (o->isReadOnly()) {
-    middle(" const");
-  }
   if (header) {
     finish(';');
   } else {
     finish(" {");
     in();
-    start("return make_member_fiber<");
-    middle(o->returnType->unwrap() << ',' << stateName << '>');
-    middle("(shared_from_this<this_type>()");
-    for (auto iter = parameters.begin(); iter != parameters.end(); ++iter) {
+    start("return make_fiber<" << stateName << ">(");
+    middle("this->shared_self()");
+    for (auto param: params) {
       middle(", ");
-      middle((*iter)->name);
+      middle(param->name);
     }
     finish(");");
     out();

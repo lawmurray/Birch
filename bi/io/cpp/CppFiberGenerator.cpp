@@ -22,44 +22,76 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   std::stringstream base;
   bih_ostream buf(base);
   buf << o->params;
-  std::string stateName = o->name->str() + '_' + encode32(base.str())
-      + "_FiberState";
+  std::string baseName = o->name->str() + '_' + encode32(base.str());
+  std::string stateName = baseName + "_FiberState";
+  std::string localName = baseName + "_FiberLocal";
+  std::string argName = baseName + "_FiberArg";
 
   /* gather important objects */
-  o->params->accept(&parameters);
+  o->params->accept(&params);
   o->braces->accept(&locals);
   o->braces->accept(&yields);
 
-  /* supporting class */
+  /* supporting class for arguments */
   if (header) {
-    start("class " << stateName << " : ");
-    finish("public GlobalFiberState<" << o->returnType->unwrap() << "> {");
-    line("public:");
+    line("class " << argName << " {");
     in();
-    start("using super_type = GlobalFiberState<");
-    middle(o->returnType->unwrap());
-    finish(">;");
+    line("public:");
+    for (auto param : params) {
+      line(param->type << ' ' << param->name << ';');
+    }
+    out();
+    line("};\n");
   }
 
-  /* constructor, taking the arguments of the Fiber */
+  /* supporting class for local variables */
+  if (header) {
+    line("class " << localName << " {");
+    in();
+    line("public:");
+    for (auto local : locals) {
+      start(local->type << ' ');
+      finish(getName(local->name->str(), local->number) << ';');
+    }
+    out();
+    line("};\n");
+  }
+
+  /* supporting class for state */
+  if (header) {
+    line("class " << stateName << " : ");
+    in();
+    in();
+    start("public GlobalFiberState<" << o->returnType->unwrap() << ',');
+    middle(argName << ',');
+    middle(localName << '>');
+    finish(" {");
+    out();
+    out();
+    line("public:");
+    in();
+    line("using this_type = " << stateName << ';');
+    start("using super_type = GlobalFiberState<");
+    middle(o->returnType->unwrap() << ',');
+    middle(argName << ',');
+    middle(localName << '>');
+    finish(';');
+  }
+
+  /* constructor */
+  line("template<class... Args>");
   start("");
   if (!header) {
     middle("bi::" << stateName << "::");
   }
-  middle(stateName << '(' << o->params << ')');
+  middle(stateName << "(Args... args)");
   if (header) {
     finish(';');
   } else {
     finish(" :");
     in();
     in();
-    start("super_type(0, " << (yields.size() + 1) << ')');
-    for (auto iter = parameters.begin(); iter != parameters.end(); ++iter) {
-      auto param = *iter;
-      finish(',');
-      start(param->name << '(' << param->name << ')');
-    }
-    finish(" {");
+    line("super_type(0, " << (yields.size() + 1) << ", args...) {");
     out();
     line("//");
     out();
@@ -71,7 +103,8 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   if (header) {
     middle("virtual ");
   }
-  middle("std::shared_ptr<bi::FiberState<" << o->returnType->unwrap() <<">> ");
+  middle("std::shared_ptr<bi::FiberState<");
+  middle(o->returnType->unwrap() << ">> ");
   if (!header) {
     middle("bi::" << stateName << "::");
   }
@@ -86,7 +119,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     line("}\n");
   }
 
-  /* call function */
+  /* query function */
   start("");
   if (header) {
     middle("virtual ");
@@ -107,28 +140,8 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     out();
     finish("}\n");
   }
-
   if (header) {
-    line("");
-    out();
-    line("private:");
-    in();
-
-    /* parameters and local variables as class member variables */
-    for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
-      auto param = dynamic_cast<const Parameter*>(*iter);
-      assert(param);
-      line(param->type << ' ' << param->name << ';');
-    }
-    for (auto iter = locals.begin(); iter != locals.end(); ++iter) {
-      auto param = dynamic_cast<const LocalVariable*>(*iter);
-      assert(param);
-      line(
-          param->type << ' ' << getName(param->name->str(), param->number) << ';');
-    }
-
-    out();
-    line("};");
+    line("};\n");
   }
 
   /* initialisation function */
@@ -142,15 +155,12 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   } else {
     finish(" {");
     in();
-    start("return make_fiber<");
-    middle(o->returnType->unwrap() << ',' << stateName << ">(");
-    for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
-      if (iter != o->params->begin()) {
+    start("return make_fiber<" << stateName << ">(");
+    for (auto iter = params.begin(); iter != params.end(); ++iter) {
+      if (iter != params.begin()) {
         middle(", ");
       }
-      const Parameter* param = dynamic_cast<const Parameter*>(*iter);
-      assert(param);
-      middle(param->name);
+      middle((*iter)->name);
     }
     finish(");");
     out();
@@ -170,8 +180,12 @@ void bi::CppFiberGenerator::visit(const Yield* o) {
   ++label;
 }
 
+void bi::CppFiberGenerator::visit(const Identifier<Parameter>* o) {
+  middle("this->" << o->name);
+}
+
 void bi::CppFiberGenerator::visit(const Identifier<LocalVariable>* o) {
-  middle(getName(o->name->str(), o->target->number));
+  middle("this->" << getName(o->name->str(), o->target->number));
 }
 
 void bi::CppFiberGenerator::visit(const LocalVariable* o) {
@@ -181,12 +195,12 @@ void bi::CppFiberGenerator::visit(const LocalVariable* o) {
      * do anything here unless there is some initialization associated with
      * it */
     inFor = false;
-    middle(getName(o->name->str(), o->number));
+    middle("this->" << getName(o->name->str(), o->number));
     genInit(o);
   } else if (o->type->isPointer() && !o->type->isWeak()) {
     /* make sure objects are initialized, not just null pointers */
     auto name = getName(o->name->str(), o->number);
-    middle(name << " = bi::make_pointer<" << o->type << ">()");
+    middle("this->" << name << " = bi::make_pointer<" << o->type << ">()");
   }
 }
 

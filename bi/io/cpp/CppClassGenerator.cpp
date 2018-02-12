@@ -187,6 +187,7 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
   } else {
     finish(" {");
     in();
+    line("Enter enter(getWorld());");
 
     /* body */
     CppBaseGenerator auxBase(base, level, header);
@@ -224,6 +225,7 @@ void bi::CppClassGenerator::visit(const AssignmentOperator* o) {
     } else {
       finish(" {");
       in();
+      line("Enter enter(getWorld());");
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces->strip();
       line("return *this;");
@@ -249,6 +251,7 @@ void bi::CppClassGenerator::visit(const ConversionOperator* o) {
     } else {
       finish(" {");
       in();
+      line("Enter enter(getWorld());");
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces->strip();
       out();

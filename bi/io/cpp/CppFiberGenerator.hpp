@@ -22,6 +22,7 @@ public:
   virtual void visit(const Fiber* o);
   virtual void visit(const Return* o);
   virtual void visit(const Yield* o);
+  virtual void visit(const Identifier<Parameter>* o);
   virtual void visit(const Identifier<LocalVariable>* o);
   virtual void visit(const LocalVariable* o);
   virtual void visit(const For* o);
@@ -38,9 +39,9 @@ protected:
   /*
    * Gatherers for important objects.
    */
-  Gatherer<Yield> yields;
-  Gatherer<Parameter> parameters;
+  Gatherer<Parameter> params;
   Gatherer<LocalVariable> locals;
+  Gatherer<Yield> yields;
 
   /**
    * Name mappings. Local variables become member variables of the fiber
