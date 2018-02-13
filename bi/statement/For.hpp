@@ -14,7 +14,7 @@ namespace bi {
  *
  * @ingroup statement
  */
-class For: public Statement, public Braced, public Scoped {
+class For: public Statement, public Scoped, public Braced {
 public:
   /**
    * Constructor.

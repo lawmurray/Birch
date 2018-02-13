@@ -17,8 +17,8 @@ namespace bi {
  */
 class If: public Statement,
     public Conditioned,
-    public Braced,
-    public Scoped {
+    public Scoped,
+    public Braced {
 public:
   /**
    * Constructor.

@@ -202,52 +202,85 @@ bi::Expression* bi::ResolverSource::modify(Identifier<Unknown>* o) {
 }
 
 bi::Expression* bi::ResolverSource::modify(Identifier<Parameter>* o) {
-  return modifyVariableIdentifier(o);
+  Modifier::modify(o);
+  resolve(o, LOCAL_SCOPE);
+  o->type = o->target->type;
+  return o;
 }
 
 bi::Expression* bi::ResolverSource::modify(Identifier<MemberParameter>* o) {
-  return modifyVariableIdentifier(o);
+  Modifier::modify(o);
+  resolve(o, CLASS_SCOPE);
+  o->type = o->target->type;
+  return o;
 }
 
 bi::Expression* bi::ResolverSource::modify(Identifier<GlobalVariable>* o) {
-  return modifyVariableIdentifier(o);
+  Modifier::modify(o);
+  resolve(o, GLOBAL_SCOPE);
+  o->type = o->target->type;
+  return o;
 }
 
 bi::Expression* bi::ResolverSource::modify(Identifier<LocalVariable>* o) {
-  return modifyVariableIdentifier(o);
+  Modifier::modify(o);
+  resolve(o, LOCAL_SCOPE);
+  o->type = o->target->type;
+  return o;
 }
 
 bi::Expression* bi::ResolverSource::modify(Identifier<MemberVariable>* o) {
-  return modifyVariableIdentifier(o);
+  Modifier::modify(o);
+  resolve(o, CLASS_SCOPE);
+  o->type = o->target->type;
+  return o;
 }
 
 bi::Expression* bi::ResolverSource::modify(
     OverloadedIdentifier<Function>* o) {
-  return modifyFunctionIdentifier(o);
+  Modifier::modify(o);
+  resolve(o, GLOBAL_SCOPE);
+  o->type = new OverloadedType(o->target, o->loc);
+  return o;
 }
 
 bi::Expression* bi::ResolverSource::modify(OverloadedIdentifier<Fiber>* o) {
-  return modifyFunctionIdentifier(o);
+  Modifier::modify(o);
+  resolve(o, GLOBAL_SCOPE);
+  o->type = new OverloadedType(o->target, o->loc);
+  return o;
 }
 
 bi::Expression* bi::ResolverSource::modify(
     OverloadedIdentifier<MemberFunction>* o) {
-  return modifyFunctionIdentifier(o);
+  Modifier::modify(o);
+  resolve(o, CLASS_SCOPE);
+  o->type = new OverloadedType(o->target, o->loc);
+  return o;
 }
 
 bi::Expression* bi::ResolverSource::modify(
     OverloadedIdentifier<MemberFiber>* o) {
-  return modifyFunctionIdentifier(o);
+  Modifier::modify(o);
+  resolve(o, CLASS_SCOPE);
+  o->type = new OverloadedType(o->target, o->loc);
+  return o;
 }
 
 bi::Expression* bi::ResolverSource::modify(
     OverloadedIdentifier<BinaryOperator>* o) {
-  return modifyFunctionIdentifier(o);
+  Modifier::modify(o);
+  resolve(o, GLOBAL_SCOPE);
+  o->type = new OverloadedType(o->target, o->loc);
+  return o;
 }
 
 bi::Expression* bi::ResolverSource::modify(
     OverloadedIdentifier<UnaryOperator>* o) {
-  return modifyFunctionIdentifier(o);
+  Modifier::modify(o);
+  resolve(o, GLOBAL_SCOPE);
+  o->type = new OverloadedType(o->target, o->loc);
+  return o;
 }
 
 bi::Statement* bi::ResolverSource::modify(Assignment* o) {
@@ -296,8 +329,7 @@ bi::Statement* bi::ResolverSource::modify(Assignment* o) {
     }
     if (!o->right->type->definitely(*o->left->type)
         && (!o->left->type->isClass()
-            || !o->left->type->getClass()->hasAssignment(
-                o->right->type))) {
+            || !o->left->type->getClass()->hasAssignment(o->right->type))) {
       throw AssignmentException(o);
     }
   }
@@ -362,9 +394,11 @@ bi::Statement* bi::ResolverSource::modify(UnaryOperator* o) {
 }
 
 bi::Statement* bi::ResolverSource::modify(MemberVariable* o) {
+  scopes.push_back(classes.back()->initScope);
   o->brackets = o->brackets->accept(this);
   o->args = o->args->accept(this);
   o->value = o->value->accept(this);
+  scopes.pop_back();
   if (!o->args->isEmpty() || o->value->isEmpty()) {
     o->type->resolveConstructor(o);
   }
@@ -419,12 +453,14 @@ bi::Statement* bi::ResolverSource::modify(Class* o) {
     o->accept(&resolver);
   }
   if (o->state < RESOLVED_SOURCE) {
-    scopes.push_back(o->scope);
     classes.push_back(o);
+    scopes.push_back(o->scope);
+    scopes.push_back(o->initScope);
     o->args = o->args->accept(this);
     if (!o->alias) {
       o->base->resolveConstructor(o);
     }
+    scopes.pop_back();
     o->braces = o->braces->accept(this);
     o->state = RESOLVED_SOURCE;
     classes.pop_back();

@@ -9,9 +9,10 @@ bi::If::If(Expression* cond, Statement* braces,
     Statement* falseBraces, Location* loc) :
     Statement(loc),
     Conditioned(cond),
+    Scoped(LOCAL_SCOPE),
     Braced(braces),
     falseBraces(falseBraces),
-    falseScope(new Scope()) {
+    falseScope(new Scope(LOCAL_SCOPE)) {
   /* pre-condition */
   assert(falseBraces);
 }

@@ -13,6 +13,7 @@ bi::MemberFiber::MemberFiber(const Annotation annotation, Name* name,
     Parameterised(params),
     ReturnTyped(returnType),
     Typed(new EmptyType(loc)),
+    Scoped(LOCAL_SCOPE),
     Braced(braces) {
   //
 }

@@ -9,6 +9,7 @@ bi::ConversionOperator::ConversionOperator(Type* returnType, Statement* braces,
     Location* loc) :
     Statement(loc),
     ReturnTyped(returnType),
+    Scoped(LOCAL_SCOPE),
     Braced(braces) {
   //
 }

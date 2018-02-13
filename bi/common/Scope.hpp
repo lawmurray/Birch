@@ -56,6 +56,15 @@ enum LookupResult {
 };
 
 /**
+ * Scope categories.
+ */
+enum ScopeCategory {
+  LOCAL_SCOPE,
+  CLASS_SCOPE,
+  GLOBAL_SCOPE
+};
+
+/**
  * Scope.
  *
  * @ingroup common
@@ -63,9 +72,18 @@ enum LookupResult {
 class Scope {
 public:
   /**
+   * Constructor.
+   */
+  Scope(const ScopeCategory category);
+
+  /**
    * Look up the category for an unknown identifier.
    */
   LookupResult lookup(const Identifier<Unknown>* ref) const;
+
+  /**
+   * Look up the category for an unknown type.
+   */
   LookupResult lookup(const UnknownType* ref) const;
 
   /**
@@ -123,7 +141,12 @@ public:
   /**
    * Base scope.
    */
-  std::set<Scope*> bases;
+  Scope* base;
+
+  /**
+   * Scope category.
+   */
+  ScopeCategory category;
 
   /*
    * Dictionaries.
@@ -148,26 +171,12 @@ private:
   /**
    * Defer lookup to inherited scopes.
    */
-  template<class ReferenceType>
-  LookupResult lookupInherit(const ReferenceType* ref) const {
-    LookupResult result = UNRESOLVED;
-    for (auto iter = bases.begin();
-        result == UNRESOLVED && iter != bases.end(); ++iter) {
-      result = (*iter)->lookup(ref);
-    }
-    return result;
-  }
+  LookupResult lookupInherit(const Identifier<Unknown>* ref) const;
 
   /**
-   * Defer resolution to inherited scopes.
+   * Defer lookup to inherited scopes.
    */
-  template<class ReferenceType>
-  void resolveInherit(ReferenceType* ref) {
-    for (auto iter = bases.begin(); !ref->target && iter != bases.end();
-        ++iter) {
-      (*iter)->resolve(ref);
-    }
-  }
+  LookupResult lookupInherit(const UnknownType* ref) const;
 
   /**
    * Check for previous declarations of the same name, at global scope.

@@ -115,9 +115,8 @@
 %type <valExpression> relational_expression equality_expression
 %type <valExpression> logical_and_expression logical_or_expression
 %type <valExpression> expression_list expression optional_expression
-%type <valExpression> local_variable parameter parameter_list parameters
+%type <valExpression> local_variable parameter parameter_list parameters optional_parameters
 %type <valExpression> span_expression span_list brackets option option_list options
-%type <valExpression> member_parameter member_parameter_list member_parameters optional_member_parameters
 %type <valExpression> arguments optional_arguments
 %type <valExpression> value optional_value for_index
 %type <valExpression> generic generic_list generics optional_generics
@@ -383,6 +382,11 @@ parameters
     | '(' parameter_list ')'  { $$ = $2; }
     ;
 
+optional_parameters
+    : parameters
+    |             { $$ = empty_expr(@$); }
+    ;
+
 parameter_list
     : parameter
     | parameter ',' parameter_list  { $$ = new bi::ExpressionList($1, $3, make_loc(@$)); }
@@ -404,25 +408,6 @@ option_list
 
 option
     : name ':' type optional_value  { $$ = new bi::Parameter($1, $3, $4, make_loc(@$)); }
-    ;
-
-member_parameters
-    : '(' ')'                        { $$ = empty_expr(@$); }
-    | '(' member_parameter_list ')'  { $$ = $2; }
-    ;
-
-member_parameter_list
-    : member_parameter
-    | member_parameter ',' member_parameter_list  { $$ = new bi::ExpressionList($1, $3, make_loc(@$)); }
-    ;
-
-member_parameter
-    : name ':' type  { $$ = new bi::MemberParameter($1, $3, empty_expr(@$), make_loc(@$)); }
-    ;
-
-optional_member_parameters
-    : member_parameters
-    |                    { $$ = empty_expr(@$); }
     ;
 
 arguments
@@ -569,9 +554,9 @@ conversion_operator_declaration
     ;
 
 class_declaration
-    : CLASS name optional_generics optional_member_parameters '<' class_type optional_arguments { push_raw(); } optional_class_braces  { $$ = new bi::Class($2, $3, $4, $6, false, $7, $9, make_doc_loc(@$)); }
-    | CLASS name optional_generics optional_member_parameters { push_raw(); } optional_class_braces                                    { $$ = new bi::Class($2, $3, $4, empty_type(@$), false, empty_expr(@$), $6, make_doc_loc(@$)); }
-    | CLASS name optional_generics '=' class_type { push_raw(); } ';'                                                                  { $$ = new bi::Class($2, $3, empty_expr(@$), $5, true, empty_expr(@$), empty_stmt(@$), make_doc_loc(@$)); }
+    : CLASS name optional_generics optional_parameters '<' class_type optional_arguments { push_raw(); } optional_class_braces  { $$ = new bi::Class($2, $3, $4, $6, false, $7, $9, make_doc_loc(@$)); }
+    | CLASS name optional_generics optional_parameters { push_raw(); } optional_class_braces                                    { $$ = new bi::Class($2, $3, $4, empty_type(@$), false, empty_expr(@$), $6, make_doc_loc(@$)); }
+    | CLASS name optional_generics '=' class_type { push_raw(); } ';'                                                           { $$ = new bi::Class($2, $3, empty_expr(@$), $5, true, empty_expr(@$), empty_stmt(@$), make_doc_loc(@$)); }
     ;
     
 basic_declaration

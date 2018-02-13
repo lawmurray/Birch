@@ -10,6 +10,7 @@ bi::LambdaFunction::LambdaFunction(Expression* params, Type* returnType,
     Expression(loc),
     Parameterised(params),
     ReturnTyped(returnType),
+    Scoped(LOCAL_SCOPE),
     Braced(braces) {
   //
 }

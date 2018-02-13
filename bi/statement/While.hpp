@@ -14,7 +14,10 @@ namespace bi {
  *
  * @ingroup statement
  */
-class While: public Statement, public Conditioned, public Braced, public Scoped {
+class While: public Statement,
+    public Conditioned,
+    public Scoped,
+    public Braced {
 public:
   /**
    * Constructor.
@@ -23,8 +26,7 @@ public:
    * @param braces Body of loop.
    * @param loc Location.
    */
-  While(Expression* cond, Statement* braces,
-      Location* loc = nullptr);
+  While(Expression* cond, Statement* braces, Location* loc = nullptr);
 
   /**
    * Destructor.

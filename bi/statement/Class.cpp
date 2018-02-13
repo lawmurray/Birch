@@ -13,8 +13,10 @@ bi::Class::Class(Name* name, Expression* typeParams, Expression* params,
     Parameterised(params),
     Based(base, alias),
     Argumented(args),
+    Scoped(CLASS_SCOPE),
     Braced(braces),
     typeParams(typeParams),
+    initScope(new Scope(LOCAL_SCOPE)),
     state(CLONED) {
   //
 }

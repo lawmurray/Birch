@@ -87,20 +87,6 @@ public:
 
 private:
   /**
-   * Generic implementation of modify() for variable identifiers.
-   */
-  template<class ObjectType>
-  Identifier<ObjectType>* modifyVariableIdentifier(
-      bi::Identifier<ObjectType>* o);
-
-  /**
-   * Generic implementation of modify() for function identifiers.
-   */
-  template<class ObjectType>
-  OverloadedIdentifier<ObjectType>* modifyFunctionIdentifier(
-      bi::OverloadedIdentifier<ObjectType>* o);
-
-  /**
    * Return type of current function. Stack as functions may contain lambda
    * functions may contain lambda functions...
    */
@@ -111,22 +97,4 @@ private:
    */
   std::list<Type*> yieldTypes;
 };
-}
-
-template<class ObjectType>
-bi::Identifier<ObjectType>* bi::ResolverSource::modifyVariableIdentifier(
-    bi::Identifier<ObjectType>* o) {
-  Modifier::modify(o);
-  resolve(o);
-  o->type = o->target->type;
-  return o;
-}
-
-template<class ObjectType>
-bi::OverloadedIdentifier<ObjectType>* bi::ResolverSource::modifyFunctionIdentifier(
-    bi::OverloadedIdentifier<ObjectType>* o) {
-  Modifier::modify(o);
-  resolve(o);
-  o->type = new OverloadedType(o->target, o->loc);
-  return o;
 }

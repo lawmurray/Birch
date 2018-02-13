@@ -12,6 +12,7 @@ bi::UnaryOperator::UnaryOperator(Name* name, Expression* params,
     Parameterised(params),
     ReturnTyped(returnType),
     Typed(new EmptyType(loc)),
+    Scoped(LOCAL_SCOPE),
     Braced(braces) {
   //
 }

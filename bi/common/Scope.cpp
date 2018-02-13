@@ -25,6 +25,12 @@
 #include "bi/exception/all.hpp"
 #include "bi/visitor/Cloner.hpp"
 
+bi::Scope::Scope(const ScopeCategory category) :
+    base(nullptr),
+    category(category) {
+  //
+}
+
 bi::LookupResult bi::Scope::lookup(const Identifier<Unknown>* ref) const {
   auto name = ref->name->str();
   if (localVariables.contains(name)) {
@@ -45,8 +51,10 @@ bi::LookupResult bi::Scope::lookup(const Identifier<Unknown>* ref) const {
     return FUNCTION;
   } else if (fibers.contains(name)) {
     return FIBER;
+  } else if (base) {
+    return base->lookupInherit(ref);
   } else {
-    return lookupInherit(ref);
+    return UNRESOLVED;
   }
 }
 
@@ -58,8 +66,43 @@ bi::LookupResult bi::Scope::lookup(const UnknownType* ref) const {
     return CLASS;
   } else if (generics.contains(name)) {
     return GENERIC;
+  } else if (base) {
+    return base->lookupInherit(ref);
   } else {
-    return lookupInherit(ref);
+    return UNRESOLVED;
+  }
+}
+
+bi::LookupResult bi::Scope::lookupInherit(
+    const Identifier<Unknown>* ref) const {
+  auto name = ref->name->str();
+  if (memberVariables.contains(name)) {
+    return MEMBER_VARIABLE;
+  } else if (memberParameters.contains(name)) {
+    return MEMBER_PARAMETER;
+  } else if (memberFunctions.contains(name)) {
+    return MEMBER_FUNCTION;
+  } else if (memberFibers.contains(name)) {
+    return MEMBER_FIBER;
+  } else if (base) {
+    return base->lookupInherit(ref);
+  } else {
+    return UNRESOLVED;
+  }
+}
+
+bi::LookupResult bi::Scope::lookupInherit(const UnknownType* ref) const {
+  auto name = ref->name->str();
+  if (basics.contains(name)) {
+    return BASIC;
+  } else if (classes.contains(name)) {
+    return CLASS;
+  } else if (generics.contains(name)) {
+    return GENERIC;
+  } else if (base) {
+    return base->lookupInherit(ref);
+  } else {
+    return UNRESOLVED;
   }
 }
 
@@ -161,8 +204,8 @@ void bi::Scope::resolve(Identifier<Parameter>* ref) {
 
 void bi::Scope::resolve(Identifier<MemberParameter>* ref) {
   memberParameters.resolve(ref);
-  if (!ref->target) {
-    resolveInherit(ref);
+  if (!ref->target && base) {
+    base->resolve(ref);
   }
 }
 
@@ -176,8 +219,8 @@ void bi::Scope::resolve(Identifier<LocalVariable>* ref) {
 
 void bi::Scope::resolve(Identifier<MemberVariable>* ref) {
   memberVariables.resolve(ref);
-  if (!ref->target) {
-    resolveInherit(ref);
+  if (!ref->target && base) {
+    base->resolve(ref);
   }
 }
 
@@ -191,15 +234,15 @@ void bi::Scope::resolve(OverloadedIdentifier<Fiber>* ref) {
 
 void bi::Scope::resolve(OverloadedIdentifier<MemberFunction>* ref) {
   memberFunctions.resolve(ref);
-  if (!ref->target) {
-    resolveInherit(ref);
+  if (!ref->target && base) {
+    base->resolve(ref);
   }
 }
 
 void bi::Scope::resolve(OverloadedIdentifier<MemberFiber>* ref) {
   memberFibers.resolve(ref);
-  if (!ref->target) {
-    resolveInherit(ref);
+  if (!ref->target && base) {
+    base->resolve(ref);
   }
 }
 
@@ -221,13 +264,14 @@ void bi::Scope::resolve(ClassType* ref) {
 
 void bi::Scope::resolve(GenericType* ref) {
   generics.resolve(ref);
-  if (!ref->target) {
-    resolveInherit(ref);
+  if (!ref->target && base) {
+    base->resolve(ref);
   }
 }
 
 void bi::Scope::inherit(Scope* scope) {
-  bases.insert(scope);
+  assert(!base);
+  base = scope;
 }
 
 template<class ParameterType>

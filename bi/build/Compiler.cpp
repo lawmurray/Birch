@@ -21,7 +21,7 @@ std::stringstream raw;
 
 bi::Compiler::Compiler(Package* package, const fs::path& work_dir,
     const fs::path& build_dir) :
-    scope(new Scope()),
+    scope(new Scope(GLOBAL_SCOPE)),
     package(package),
     work_dir(work_dir),
     build_dir(build_dir) {

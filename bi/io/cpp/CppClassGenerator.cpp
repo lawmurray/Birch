@@ -113,11 +113,6 @@ void bi::CppClassGenerator::visit(const Class* o) {
         line("}\n");
       }
 
-      /* member parameters */
-      for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
-        *this << *iter;
-      }
-
       /* member variables and functions */
       *this << o->braces->strip();
 
@@ -150,12 +145,6 @@ void bi::CppClassGenerator::visit(const Class* o) {
       out();
       line('}');
     }
-  }
-}
-
-void bi::CppClassGenerator::visit(const MemberParameter* o) {
-  if (header) {
-    line(o->type << ' ' << o->name << ';');
   }
 }
 

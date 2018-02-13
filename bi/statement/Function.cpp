@@ -12,6 +12,7 @@ bi::Function::Function(Name* name, Expression* params, Type* returnType,
     Parameterised(params),
     ReturnTyped(returnType),
     Typed(new EmptyType(loc)),
+    Scoped(LOCAL_SCOPE),
     Braced(braces) {
   //
 }

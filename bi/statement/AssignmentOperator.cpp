@@ -10,6 +10,7 @@ bi::AssignmentOperator::AssignmentOperator(Name* name,
     Statement(loc),
     Named(name),
     Single(single),
+    Scoped(LOCAL_SCOPE),
     Braced(braces) {
   //
 }

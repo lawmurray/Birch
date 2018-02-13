@@ -60,7 +60,7 @@ bi::Type* bi::Resolver::modify(UnknownType* o) {
 bi::Type* bi::Resolver::modify(ClassType* o) {
   assert(!o->target);
   Modifier::modify(o);
-  resolve(o);
+  resolve(o, GLOBAL_SCOPE);
   instantiate(o);
   return o;
 }
@@ -68,14 +68,14 @@ bi::Type* bi::Resolver::modify(ClassType* o) {
 bi::Type* bi::Resolver::modify(BasicType* o) {
   assert(!o->target);
   Modifier::modify(o);
-  resolve(o);
+  resolve(o, GLOBAL_SCOPE);
   return o;
 }
 
 bi::Type* bi::Resolver::modify(GenericType* o) {
   assert(!o->target);
   Modifier::modify(o);
-  resolve(o);
+  resolve(o, GLOBAL_SCOPE);
   return o;
 }
 

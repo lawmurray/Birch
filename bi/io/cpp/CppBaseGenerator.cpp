@@ -201,9 +201,6 @@ void bi::CppBaseGenerator::visit(const Identifier<Parameter>* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Identifier<MemberParameter>* o) {
-  if (!inMember) {
-    middle("this->self()->");
-  }
   middle(o->name);
 }
 

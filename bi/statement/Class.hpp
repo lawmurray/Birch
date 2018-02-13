@@ -34,8 +34,8 @@ class Class: public Statement,
     public Parameterised,
     public Based,
     public Argumented,
-    public Braced,
-    public Scoped {
+    public Scoped,
+    public Braced {
 public:
   /**
    * Constructor.
@@ -112,6 +112,11 @@ public:
    * Generic type parameters.
    */
   Expression* typeParams;
+
+  /**
+   * Scope for initialization parameters.
+   */
+  Scope* initScope;
 
   /**
    * State of the class during parsing. Classes with generic type parameters

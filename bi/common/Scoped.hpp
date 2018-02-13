@@ -18,7 +18,12 @@ public:
   /**
    * Constructor.
    */
-  Scoped(Scope* scope = new Scope());
+  Scoped(Scope* scope);
+
+  /**
+   * Constructor.
+   */
+  Scoped(const ScopeCategory category);
 
   /**
    * Destructor.

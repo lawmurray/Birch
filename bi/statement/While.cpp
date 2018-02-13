@@ -8,6 +8,7 @@
 bi::While::While(Expression* cond, Statement* braces, Location* loc) :
     Statement(loc),
     Conditioned(cond),
+    Scoped(LOCAL_SCOPE),
     Braced(braces) {
   //
 }

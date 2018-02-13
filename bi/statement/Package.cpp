@@ -7,6 +7,7 @@
 
 bi::Package::Package(const std::string& name, const std::list<File*>& headers,
     const std::list<File*>& sources) :
+    Scoped(GLOBAL_SCOPE),
     name(name),
     headers(headers),
     sources(sources) {

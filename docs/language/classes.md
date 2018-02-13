@@ -140,7 +140,7 @@ Initialization arguments can be passed onto the super type if required:
 !!! note
     Initialization parameters in Birch play a similar role to initialization lists in C++.
 
-Initialization parameters are used for simple object construction, such as to set initial values and array sizes. They do not allow arbitrary code to be executed upon object construction. This is the role of a *constructor*. Birch does not, however, have any special language support for constructors. Instead, it is idiomatic to use *factory functions*, exploiting the fact that the same name can be used for both a function and a class in the Birch language.
+Initialization parameters are used for simple object initialization, such as to set initial values and array sizes. They do not allow arbitrary code to be executed upon object construction. This is the role of a *constructor*. Birch does not, however, have any special language support for constructors. Instead, it is idiomatic to use *factory functions*, exploiting the fact that the same name can be used for both a function and a class in the Birch language.
 
 A factory function is given the same name as the class it is intended to construct:
 

@@ -8,6 +8,7 @@
 bi::For::For(Expression* index, Expression* from, Expression* to,
     Statement* braces, Location* loc) :
     Statement(loc),
+    Scoped(LOCAL_SCOPE),
     Braced(braces),
     index(index),
     from(from),

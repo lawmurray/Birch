@@ -15,9 +15,9 @@ namespace bi {
  * @ingroup statement
  */
 class DoWhile: public Statement,
+    public Scoped,
     public Braced,
-    public Conditioned,
-    public Scoped {
+    public Conditioned {
 public:
   /**
    * Constructor.

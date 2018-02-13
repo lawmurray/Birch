@@ -7,6 +7,7 @@
 
 bi::DoWhile::DoWhile(Statement* braces, Expression* cond, Location* loc) :
     Statement(loc),
+    Scoped(LOCAL_SCOPE),
     Braced(braces),
     Conditioned(cond) {
   //
