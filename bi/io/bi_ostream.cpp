@@ -277,9 +277,6 @@ void bi::bi_ostream::visit(const Program* o) {
 
 void bi::bi_ostream::visit(const MemberFunction* o) {
   start("function");
-  if (o->isReadOnly()) {
-    middle('\'');
-  }
   middle(' ' << o->name << '(' << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
@@ -293,9 +290,6 @@ void bi::bi_ostream::visit(const MemberFunction* o) {
 
 void bi::bi_ostream::visit(const MemberFiber* o) {
   start("fiber");
-  if (o->isReadOnly()) {
-    middle('\'');
-  }
   middle(' ' << o->name << '(' << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);

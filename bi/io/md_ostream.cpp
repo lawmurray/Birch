@@ -61,9 +61,6 @@ void bi::md_ostream::visit(const Program* o) {
 
 void bi::md_ostream::visit(const MemberFunction* o) {
   start("!!! note \"function");
-  if (o->isReadOnly()) {
-    middle('\'');
-  }
   middle(' ' << o->name << '(' << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
@@ -73,9 +70,6 @@ void bi::md_ostream::visit(const MemberFunction* o) {
 
 void bi::md_ostream::visit(const MemberFiber* o) {
   start("!!! note \"fiber");
-  if (o->isReadOnly()) {
-    middle('\'');
-  }
   middle(' ' << o->name << '(' << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);

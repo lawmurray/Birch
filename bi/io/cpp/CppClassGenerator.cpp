@@ -168,9 +168,6 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
     middle("::");
   }
   middle(internalise(o->name->str()) << '(' << o->params << ')');
-  if (o->isReadOnly()) {
-    middle(" const");
-  }
   if (header) {
     finish(';');
   } else {

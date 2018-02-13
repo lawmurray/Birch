@@ -71,12 +71,6 @@ bool bi::Type::isOverloaded() const {
   return false;
 }
 
-bool bi::Type::isReadOnly() const {
-  IsReadOnly visitor;
-  accept(&visitor);
-  return visitor.result;
-}
-
 bi::Type* bi::Type::getLeft() const {
   assert(false);
   return nullptr;
