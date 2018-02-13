@@ -152,7 +152,7 @@ class Example(T:Integer) {
   }
 }
 
-closed fiber particle(T:Integer) -> Real! {
+fiber particle(T:Integer) -> Real! {
   x:Example(T);
   x.input();
   x.simulate();
