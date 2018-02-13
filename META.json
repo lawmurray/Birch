@@ -11,7 +11,6 @@
       "bi/delay/delay_spike_and_slab.bi",
       "bi/delay/delay_triplet.bi",
       "bi/demo/demo_assign.bi",
-      "bi/demo/demo_bootstrap.bi",
       "bi/demo/demo_copy_fiber.bi",
       "bi/demo/demo_echo.bi",
       "bi/demo/demo_fiber.bi",
@@ -19,13 +18,13 @@
       "bi/demo/demo_hello.bi",
       "bi/demo/demo_lambda.bi",
       "bi/demo/demo_member_fiber.bi",
-      "bi/demo/demo_read.bi",
       "bi/demo/demo_resize.bi",
       "bi/demo/demo_sequence.bi",
       "bi/demo/demo_tuple.bi",
       "bi/demo/demo_weak.bi",
       "bi/eigen/eigen_matrix.bi",
-      "bi/eigen/eigen_vector.bi"
+      "bi/eigen/eigen_vector.bi",
+      "bi/model/LinearGaussianSSM.bi"
     ],
     "other": [
       "LICENSE",

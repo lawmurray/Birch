@@ -53,6 +53,8 @@ program delay_rbpf(N:Integer <- 100, T:Integer <- 10, ess_rel:Real <- 0.7) {
 }
 
 class Example(T:Integer) {
+  T:Integer <- T;
+
   /**
    * Linear-linear state transition matrix.
    */
@@ -126,16 +128,16 @@ class Example(T:Integer) {
   
   function input() {
     y_n_input:InputStream;
-    y_n_input.open("data/y_n.csv");
+    y_n_input.open("input/y_n.csv");
     for (t:Integer in 1..T) {
-      y_n[t] <- vector(y_n_input.readReal(), 1);
+      y_n[t] <- vector(y_n_input.scanReal(), 1);
     }
     y_n_input.close();
 
     y_l_input:InputStream;
-    y_l_input.open("data/y_l.csv");
+    y_l_input.open("input/y_l.csv");
     for (t:Integer in 1..T) {
-      y_l[t] <- vector(y_l_input.readReal(), 1);
+      y_l[t] <- vector(y_l_input.scanReal(), 1);
     }
     y_l_input.close();
   }
