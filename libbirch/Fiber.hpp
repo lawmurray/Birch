@@ -113,6 +113,9 @@ bool bi::Fiber<YieldType>::query() {
     }
     Enter enter(state->getWorld());
     result = state->query();
+    if (!result) {
+      state.reset();  // fiber has finished, delete the state
+    }
   }
   return result;
 }
