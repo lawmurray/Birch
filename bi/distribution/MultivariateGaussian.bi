@@ -14,6 +14,10 @@ class MultivariateGaussian(D:Integer) < Random<Real[_]> {
    */
   Σ:Real[D,D];
 
+  function size() -> Integer {
+    return length(μ);
+  }
+
   function initialize(u:MultivariateGaussian) {
     super.initialize(u);
   }

@@ -54,7 +54,7 @@ class MultivariateGaussianWithGaussianMean(D:Integer)
  */
 function Gaussian(μ:MultivariateGaussian, Σ:Real[_,_]) ->
     MultivariateGaussian {
-  x:MultivariateGaussianWithGaussianMean(μ.D);
+  x:MultivariateGaussianWithGaussianMean(μ.size());
   x.initialize(μ, Σ);
   return x;
 }
