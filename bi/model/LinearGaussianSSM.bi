@@ -1,9 +1,15 @@
+/**
+ * Linear-Gaussian state-space model parameter.
+ */
 class LinearGaussianSSMParameter < Model {
   a:Real <- 0.8;
   σ2_x:Real <- 1.0;
   σ2_y:Real <- 0.1;
 }
 
+/**
+ * Linear-Gaussian state-space model state.
+ */
 class LinearGaussianSSMState < State {
   x:Random<Real>;
   y:Random<Real>;
@@ -27,4 +33,8 @@ class LinearGaussianSSMState < State {
   }
 }
 
-class LinearGaussianSSM = MarkovModel<LinearGaussianSSMState,LinearGaussianSSMParameter>;
+/**
+ * Linear-Gaussian state-space model.
+ */
+class LinearGaussianSSM = MarkovModel<LinearGaussianSSMState,
+    LinearGaussianSSMParameter>;

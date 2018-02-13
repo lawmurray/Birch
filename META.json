@@ -7,7 +7,6 @@
       "bi/delay/delay_canonical.bi",
       "bi/delay/delay_iid.bi",
       "bi/delay/delay_kalman.bi",
-      "bi/delay/delay_rbpf.bi",
       "bi/delay/delay_spike_and_slab.bi",
       "bi/delay/delay_triplet.bi",
       "bi/demo/demo_assign.bi",
@@ -24,7 +23,8 @@
       "bi/demo/demo_weak.bi",
       "bi/eigen/eigen_matrix.bi",
       "bi/eigen/eigen_vector.bi",
-      "bi/model/LinearGaussianSSM.bi"
+      "bi/model/LinearGaussianSSM.bi",
+      "bi/model/LinearNonlinearSSM.bi"
     ],
     "other": [
       "LICENSE",
