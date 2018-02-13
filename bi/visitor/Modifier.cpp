@@ -164,22 +164,12 @@ bi::Expression* bi::Modifier::modify(Parameter* o) {
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(MemberParameter* o) {
-  o->type = o->type->accept(this);
-  o->value = o->value->accept(this);
-  return o;
-}
-
 bi::Expression* bi::Modifier::modify(Generic* o) {
   o->type = o->type->accept(this);
   return o;
 }
 
 bi::Expression* bi::Modifier::modify(Identifier<Parameter>* o) {
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(Identifier<MemberParameter>* o) {
   return o;
 }
 

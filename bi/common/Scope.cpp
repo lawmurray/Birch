@@ -7,7 +7,6 @@
 #include "bi/expression/OverloadedIdentifier.hpp"
 #include "bi/expression/LocalVariable.hpp"
 #include "bi/expression/Parameter.hpp"
-#include "bi/expression/MemberParameter.hpp"
 #include "bi/expression/Generic.hpp"
 #include "bi/statement/GlobalVariable.hpp"
 #include "bi/statement/MemberVariable.hpp"
@@ -39,8 +38,6 @@ bi::LookupResult bi::Scope::lookup(const Identifier<Unknown>* ref) const {
     return PARAMETER;
   } else if (memberVariables.contains(name)) {
     return MEMBER_VARIABLE;
-  } else if (memberParameters.contains(name)) {
-    return MEMBER_PARAMETER;
   } else if (memberFunctions.contains(name)) {
     return MEMBER_FUNCTION;
   } else if (memberFibers.contains(name)) {
@@ -78,8 +75,6 @@ bi::LookupResult bi::Scope::lookupInherit(
   auto name = ref->name->str();
   if (memberVariables.contains(name)) {
     return MEMBER_VARIABLE;
-  } else if (memberParameters.contains(name)) {
-    return MEMBER_PARAMETER;
   } else if (memberFunctions.contains(name)) {
     return MEMBER_FUNCTION;
   } else if (memberFibers.contains(name)) {
@@ -109,11 +104,6 @@ bi::LookupResult bi::Scope::lookupInherit(const UnknownType* ref) const {
 void bi::Scope::add(Parameter* param) {
   checkPreviousLocal(param);
   parameters.add(param);
-}
-
-void bi::Scope::add(MemberParameter* param) {
-  checkPreviousMember(param);
-  memberParameters.add(param);
 }
 
 void bi::Scope::add(GlobalVariable* param) {
@@ -200,13 +190,6 @@ void bi::Scope::add(Generic* param) {
 
 void bi::Scope::resolve(Identifier<Parameter>* ref) {
   parameters.resolve(ref);
-}
-
-void bi::Scope::resolve(Identifier<MemberParameter>* ref) {
-  memberParameters.resolve(ref);
-  if (!ref->target && base) {
-    base->resolve(ref);
-  }
 }
 
 void bi::Scope::resolve(Identifier<GlobalVariable>* ref) {
@@ -299,8 +282,6 @@ void bi::Scope::checkPreviousMember(ParameterType* param) {
   auto name = param->name->str();
   if (memberVariables.contains(name)) {
     throw PreviousDeclarationException(param, memberVariables.get(name));
-  } else if (memberParameters.contains(name)) {
-    throw PreviousDeclarationException(param, memberParameters.get(name));
   }
 }
 

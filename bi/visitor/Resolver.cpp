@@ -96,8 +96,6 @@ bi::Expression* bi::Resolver::lookup(Identifier<Unknown>* ref) {
   switch (category) {
   case PARAMETER:
     return new Identifier<Parameter>(ref->name, ref->loc);
-  case MEMBER_PARAMETER:
-    return new Identifier<MemberParameter>(ref->name, ref->loc);
   case GLOBAL_VARIABLE:
     return new Identifier<GlobalVariable>(ref->name, ref->loc);
   case LOCAL_VARIABLE:

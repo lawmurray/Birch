@@ -182,25 +182,7 @@ void bi::CppBaseGenerator::visit(const Parameter* o) {
   }
 }
 
-void bi::CppBaseGenerator::visit(const MemberParameter* o) {
-  if (o->type->isArray() || o->type->isSequence()) {
-    middle("const ");
-  }
-  middle(o->type);
-  if (o->type->isArray() || o->type->isSequence()) {
-    middle('&');
-  }
-  middle(' ' << o->name);
-  if (!o->value->isEmpty()) {
-    middle(" = " << o->value);
-  }
-}
-
 void bi::CppBaseGenerator::visit(const Identifier<Parameter>* o) {
-  middle(o->name);
-}
-
-void bi::CppBaseGenerator::visit(const Identifier<MemberParameter>* o) {
   middle(o->name);
 }
 

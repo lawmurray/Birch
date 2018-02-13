@@ -141,13 +141,6 @@ void bi::bi_ostream::visit(const Parameter* o) {
   }
 }
 
-void bi::bi_ostream::visit(const MemberParameter* o) {
-  middle(o->name << ':' << o->type);
-  if (!o->value->isEmpty()) {
-    middle(" <- " << o->value);
-  }
-}
-
 void bi::bi_ostream::visit(const Generic* o) {
   middle(o->name);
   if (!o->type->isEmpty()) {
@@ -194,10 +187,6 @@ void bi::bi_ostream::visit(const MemberVariable* o) {
 }
 
 void bi::bi_ostream::visit(const Identifier<Parameter>* o) {
-  middle(o->name);
-}
-
-void bi::bi_ostream::visit(const Identifier<MemberParameter>* o) {
   middle(o->name);
 }
 

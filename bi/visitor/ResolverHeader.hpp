@@ -30,7 +30,6 @@ public:
   using Resolver::modify;
 
   virtual Expression* modify(Parameter* o);
-  virtual Expression* modify(MemberParameter* o);
   virtual Expression* modify(Generic* o);
 
   virtual Statement* modify(Basic* o);

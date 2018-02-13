@@ -177,10 +177,6 @@ bi::Expression* bi::ResolverSource::modify(Parameter* o) {
   return o;
 }
 
-bi::Expression* bi::ResolverSource::modify(MemberParameter* o) {
-  return o;
-}
-
 bi::Expression* bi::ResolverSource::modify(Generic* o) {
   return o;
 }
@@ -204,13 +200,6 @@ bi::Expression* bi::ResolverSource::modify(Identifier<Unknown>* o) {
 bi::Expression* bi::ResolverSource::modify(Identifier<Parameter>* o) {
   Modifier::modify(o);
   resolve(o, LOCAL_SCOPE);
-  o->type = o->target->type;
-  return o;
-}
-
-bi::Expression* bi::ResolverSource::modify(Identifier<MemberParameter>* o) {
-  Modifier::modify(o);
-  resolve(o, CLASS_SCOPE);
   o->type = o->target->type;
   return o;
 }

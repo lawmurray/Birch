@@ -140,21 +140,12 @@ void bi::Visitor::visit(const Parameter* o) {
   o->value->accept(this);
 }
 
-void bi::Visitor::visit(const MemberParameter* o) {
-  o->type->accept(this);
-  o->value->accept(this);
-}
-
 
 void bi::Visitor::visit(const Identifier<Unknown>* o) {
   //
 }
 
 void bi::Visitor::visit(const Identifier<Parameter>* o) {
-  //
-}
-
-void bi::Visitor::visit(const Identifier<MemberParameter>* o) {
   //
 }
 

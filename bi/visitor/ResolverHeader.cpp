@@ -131,12 +131,6 @@ bi::Statement* bi::ResolverHeader::modify(UnaryOperator* o) {
   return o;
 }
 
-bi::Expression* bi::ResolverHeader::modify(MemberParameter* o) {
-  Modifier::modify(o);
-  scopes.back()->add(o);
-  return o;
-}
-
 bi::Statement* bi::ResolverHeader::modify(MemberVariable* o) {
   o->type = o->type->accept(this);
   if (!o->brackets->isEmpty()) {

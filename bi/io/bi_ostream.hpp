@@ -45,12 +45,10 @@ public:
   virtual void visit(const Nil* o);
   virtual void visit(const LocalVariable* o);
   virtual void visit(const Parameter* o);
-  virtual void visit(const MemberParameter* o);
   virtual void visit(const Generic* o);
   virtual void visit(const GlobalVariable* o);
   virtual void visit(const MemberVariable* o);
   virtual void visit(const Identifier<Parameter>* o);
-  virtual void visit(const Identifier<MemberParameter>* o);
   virtual void visit(const Identifier<GlobalVariable>* o);
   virtual void visit(const Identifier<LocalVariable>* o);
   virtual void visit(const Identifier<MemberVariable>* o);

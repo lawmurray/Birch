@@ -115,7 +115,6 @@ E                                  [Ee][+-]?{D}+
 "this"                              { return THIS; }
 "super"                             { return SUPER; }
 "nil"                               { return NIL; }
-"closed"                            { return CLOSED; }
 
 "true"                              { yylval.valBool = true; return BOOL_LITERAL; }
 "false"                             { yylval.valBool = false; return BOOL_LITERAL; }

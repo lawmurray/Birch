@@ -49,11 +49,9 @@ public:
   virtual Expression* modify(Nil* o);
   virtual Expression* modify(LocalVariable* o);
   virtual Expression* modify(Parameter* o);
-  virtual Expression* modify(MemberParameter* o);
   virtual Expression* modify(Generic* o);
   virtual Expression* modify(Identifier<Unknown>* o);
   virtual Expression* modify(Identifier<Parameter>* o);
-  virtual Expression* modify(Identifier<MemberParameter>* o);
   virtual Expression* modify(Identifier<GlobalVariable>* o);
   virtual Expression* modify(Identifier<LocalVariable>* o);
   virtual Expression* modify(Identifier<MemberVariable>* o);

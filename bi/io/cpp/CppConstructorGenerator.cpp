@@ -43,11 +43,6 @@ void bi::CppConstructorGenerator::visit(const Class* o) {
   }
 }
 
-void bi::CppConstructorGenerator::visit(const MemberParameter* o) {
-  finish(',');
-  start(o->name << '(' << o->name << ')');
-}
-
 void bi::CppConstructorGenerator::visit(const MemberVariable* o) {
   if (o->type->isPointer() && !o->type->isWeak()) {
     finish(',');

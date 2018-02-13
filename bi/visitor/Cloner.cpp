@@ -127,11 +127,6 @@ bi::Expression* bi::Cloner::clone(const Parameter* o) {
       o->loc);
 }
 
-bi::Expression* bi::Cloner::clone(const MemberParameter* o) {
-  return new MemberParameter(o->name, o->type->accept(this),
-      o->value->accept(this), o->loc);
-}
-
 bi::Expression* bi::Cloner::clone(const Generic* o) {
   return new Generic(o->name, o->type->accept(this), o->loc);
 }
@@ -142,10 +137,6 @@ bi::Expression* bi::Cloner::clone(const Identifier<Unknown>* o) {
 
 bi::Expression* bi::Cloner::clone(const Identifier<Parameter>* o) {
   return new Identifier<Parameter>(o->name, o->loc);
-}
-
-bi::Expression* bi::Cloner::clone(const Identifier<MemberParameter>* o) {
-  return new Identifier<MemberParameter>(o->name, o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const Identifier<GlobalVariable>* o) {
@@ -219,7 +210,7 @@ bi::Statement* bi::Cloner::clone(const MemberVariable* o) {
 }
 
 bi::Statement* bi::Cloner::clone(const Function* o) {
-  return new Function(o->name, o->params->accept(this),
+  return new Function(o->annotation, o->name, o->params->accept(this),
       o->returnType->accept(this), o->braces->accept(this), o->loc);
 }
 

@@ -42,7 +42,6 @@ void bi::Identifier<ObjectType>::accept(Visitor* visitor) const {
 
 template class bi::Identifier<bi::Unknown>;
 template class bi::Identifier<bi::Parameter>;
-template class bi::Identifier<bi::MemberParameter>;
 template class bi::Identifier<bi::GlobalVariable>;
 template class bi::Identifier<bi::LocalVariable>;
 template class bi::Identifier<bi::MemberVariable>;
