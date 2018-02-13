@@ -101,7 +101,7 @@ public:
   }
 
   WeakPointer<Any>& operator=(const WeakPointer<Any>& o) {
-    assert(world == o.world);
+    assert(world->hasLaunchAncestor(o.world));
     object = o.object;
     return *this;
   }

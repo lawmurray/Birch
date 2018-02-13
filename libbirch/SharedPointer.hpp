@@ -155,7 +155,7 @@ public:
   }
 
   SharedPointer<Any>& operator=(const SharedPointer<Any>& o) {
-    assert(world == o.world);
+    assert(world->hasLaunchAncestor(o.world));
     object = o.object;
     return *this;
   }

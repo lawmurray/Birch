@@ -34,7 +34,6 @@ class SMC {
       /* propagate and weight */
       for (n:Integer in 1..N) {
         if (f[n]?) {
-        stdout.print(f[n]!.w + "\n");
           w[n] <- w[n] + f[n]!.w;
         } else {
           assert false;
