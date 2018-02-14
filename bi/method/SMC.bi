@@ -41,6 +41,7 @@ class SMC {
       }
     }
     Z <- Z + log_sum_exp(w) - log(N);
+    stdout.print(Z + "\n");
     
     /* output */
     if (output?) {

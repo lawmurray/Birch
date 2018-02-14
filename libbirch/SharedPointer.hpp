@@ -6,6 +6,7 @@
 #include "libbirch/global.hpp"
 #include "libbirch/World.hpp"
 #include "libbirch/Any.hpp"
+#include "libbirch/Nil.hpp"
 
 namespace bi {
 /**
@@ -30,6 +31,15 @@ public:
    */
   SharedPointer(const std::nullptr_t& object = nullptr,
       const std::shared_ptr<World>& world = fiberWorld) :
+      super_type(object, world) {
+    //
+  }
+
+  /**
+   * Constructor.
+   */
+  SharedPointer(const Nil& object, const std::shared_ptr<World>& world =
+      fiberWorld) :
       super_type(object, world) {
     //
   }
@@ -124,6 +134,12 @@ public:
 
   SharedPointer(const std::nullptr_t& object = nullptr,
       const std::shared_ptr<World>& world = fiberWorld) :
+      world(world) {
+    //
+  }
+
+  SharedPointer(const Nil& object, const std::shared_ptr<World>& world =
+      fiberWorld) :
       world(world) {
     //
   }

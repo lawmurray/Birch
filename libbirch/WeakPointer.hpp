@@ -25,9 +25,17 @@ public:
   using root_type = typename super_type::root_type;
 
   /**
-   * Default constructor.
+   * Constructor.
    */
   WeakPointer(const std::nullptr_t& object = nullptr) :
+      super_type(object) {
+    //
+  }
+
+  /**
+   * Constructor.
+   */
+  WeakPointer(const Nil& object) :
       super_type(object) {
     //
   }
@@ -70,6 +78,11 @@ public:
   using root_type = this_type;
 
   WeakPointer(const std::nullptr_t& object = nullptr) :
+      world(fiberWorld) {
+    //
+  }
+
+  WeakPointer(const Nil& object) :
       world(fiberWorld) {
     //
   }

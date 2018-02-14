@@ -111,6 +111,7 @@
       "libbirch/Iterator.hpp",
       "libbirch/MemberFiberState.hpp",
       "libbirch/MemberFiberWorld.hpp",
+      "libbirch/Nil.hpp",
       "libbirch/Length.hpp",
       "libbirch/Offset.hpp",
       "libbirch/Object.hpp",

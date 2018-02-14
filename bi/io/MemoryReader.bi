@@ -45,48 +45,55 @@ class MemoryReader < Reader {
     }
   }
 
-  function getBoolean() -> Boolean? {
-    result:Boolean?;
+  function getLength() -> Integer? {
     cpp{{
-    auto value = group->get<libubjpp::bool_type>();
-    if (value) {
-      result_ = value.get();
+    auto array = group->get<libubjpp::array_type>();
+    if (array) {
+      return array.get().size();
+    } else {
+      return nullptr;
     }
     }}
-    return result;
+  }
+
+  function getBoolean() -> Boolean? {
+    cpp{{
+    return group->get<libubjpp::bool_type>();
+    }}
   }
   
   function getInteger() -> Integer? {
-    result:Integer?;
     cpp{{
-    auto value = group->get<libubjpp::int64_type>();
-    if (value) {
-      result_ = value.get();
-    }
+    return group->get<libubjpp::int64_type>();
     }}
-    return result;
   }
   
   function getReal() -> Real? {
-    result:Real?;
     cpp{{
-    auto value = group->get<libubjpp::double_type>();
-    if (value) {
-      result_ = value.get();
-    }
+    return group->get<libubjpp::double_type>();
     }}
-    return result;
   }
   
   function getString() -> String? {
-    result:String?;
     cpp{{
-    auto value = group->get<libubjpp::string_type>();
-    if (value) {
-      result_ = value.get();
-    }
+    return group->get<libubjpp::string_type>();
     }}
-    return result;
+  }
+
+  function getBooleanArray() -> Boolean[_]? {
+    return getBooleanArray([]);
+  }
+  
+  function getIntegerArray() -> Integer[_]? {
+    return getIntegerArray([]);
+  }
+  
+  function getRealArray() -> Real[_]? {
+    return getRealArray([]);
+  }
+  
+  function getStringArray() -> String[_]? {
+    return getStringArray([]);
   }
 
   function getObject(name:String) -> Reader? {
@@ -127,48 +134,55 @@ class MemoryReader < Reader {
     }
   }
 
-  function getBoolean(name:String) -> Boolean? {
-    result:Boolean?;
+  function getLength(name:String) -> Integer? {
     cpp{{
-    auto value = group->get<libubjpp::bool_type>(name_);
-    if (value) {
-      result_ = value.get();
+    auto array = group->get<libubjpp::array_type>(name_);
+    if (array) {
+      return array.get().size();
+    } else {
+      return nullptr;
     }
     }}
-    return result;
+  }
+
+  function getBoolean(name:String) -> Boolean? {
+    cpp{{
+    return group->get<libubjpp::bool_type>(name_);
+    }}
   }
   
   function getInteger(name:String) -> Integer? {
-    result:Integer?;
     cpp{{
-    auto value = group->get<libubjpp::int64_type>(name_);
-    if (value) {
-      result_ = value.get();
-    }
+    return group->get<libubjpp::int64_type>(name_);
     }}
-    return result;
   }
   
   function getReal(name:String) -> Real? {
-    result:Real?;
     cpp{{
-    auto value = group->get<libubjpp::double_type>(name_);
-    if (value) {
-      result_ = value.get();
-    }
+    return group->get<libubjpp::double_type>(name_);
     }}
-    return result;
   }
   
   function getString(name:String) -> String? {
-    result:String?;
     cpp{{
-    auto value = group->get<libubjpp::string_type>(name_);
-    if (value) {
-      result_ = value.get();
-    }
+    return group->get<libubjpp::string_type>(name_);
     }}
-    return result;
+  }
+
+  function getBooleanArray(name:String) -> Boolean[_]? {
+    return getBooleanArray([name]);
+  }
+
+  function getIntegerArray(name:String) -> Integer[_]? {
+    return getIntegerArray([name]);
+  }
+
+  function getRealArray(name:String) -> Real[_]? {
+    return getRealArray([name]);
+  }
+
+  function getStringArray(name:String) -> String[_]? {
+    return getStringArray([name]);
   }
 
   function getObject(path:[String]) -> Reader? {
@@ -209,47 +223,134 @@ class MemoryReader < Reader {
     }
   }
 
-  function getBoolean(path:[String]) -> Boolean? {
-    result:Boolean?;
+  function getLength(path:[String]) -> Integer? {
     cpp{{
-    auto value = group->get<libubjpp::bool_type>(path_);
-    if (value) {
-      result_ = value.get();
+    auto array = group->get<libubjpp::array_type>(path_);
+    if (array) {
+      return array.get().size();
+    } else {
+      return nullptr;
     }
     }}
-    return result;
+  }
+
+  function getBoolean(path:[String]) -> Boolean? {
+    cpp{{
+    return group->get<libubjpp::bool_type>(path_);
+    }}
   }
   
   function getInteger(path:[String]) -> Integer? {
-    result:Integer?;
     cpp{{
-    auto value = group->get<libubjpp::int64_type>(path_);
-    if (value) {
-      result_ = value.get();
-    }
+    return group->get<libubjpp::int64_type>(path_);
     }}
-    return result;
   }
   
   function getReal(path:[String]) -> Real? {
-    result:Real?;
     cpp{{
-    auto value = group->get<libubjpp::double_type>(path_);
-    if (value) {
-      result_ = value.get();
-    }
+    return group->get<libubjpp::double_type>(path_);
     }}
-    return result;
   }
 
   function getString(path:[String]) -> String? {
-    result:String?;
     cpp{{
-    auto value = group->get<libubjpp::string_type>(path_);
-    if (value) {
-      result_ = value.get();
-    }
+    return group->get<libubjpp::string_type>(path_);
     }}
-    return result;
+  }
+
+  function getBooleanArray(path:[String]) -> Boolean[_]? {
+    length:Integer? <- getLength(path);
+    if (length?) {
+      cpp{{
+      auto array = group->get<libubjpp::array_type>(path_).get();
+      }}
+      result:Boolean[length!];
+      value:Boolean?;
+      for (i:Integer in 1..length!) {
+        cpp{{
+        value_ = array[i_ - 1].get<libubjpp::bool_type>();
+        }}
+        if (value?) {
+          result[i] <- value!;
+        } else {
+          return nil;
+        }
+      }
+      return result;
+    } else {
+      return nil;
+    }
+  }
+
+  function getIntegerArray(path:[String]) -> Integer[_]? {
+    length:Integer? <- getLength(path);
+    if (length?) {
+      cpp{{
+      auto array = group->get<libubjpp::array_type>(path_).get();
+      }}
+      result:Integer[length!];
+      value:Integer?;
+      for (i:Integer in 1..length!) {
+        cpp{{
+        value_ = array[i_ - 1].get<libubjpp::int64_type>();
+        }}
+        if (value?) {
+          result[i] <- value!;
+        } else {
+          return nil;
+        }
+      }
+      return result;
+    } else {
+      return nil;
+    }
+  }
+
+  function getRealArray(path:[String]) -> Real[_]? {
+    length:Integer? <- getLength(path);
+    if (length?) {
+      cpp{{
+      auto array = group->get<libubjpp::array_type>(path_).get();
+      }}
+      result:Real[length!];
+      value:Real?;
+      for (i:Integer in 1..length!) {
+        cpp{{
+        value_ = array[i_ - 1].get<libubjpp::double_type>();
+        }}
+        if (value?) {
+          result[i] <- value!;
+        } else {
+          return nil;
+        }
+      }
+      return result;
+    } else {
+      return nil;
+    }
+  }
+
+  function getStringArray(path:[String]) -> String[_]? {
+    length:Integer? <- getLength(path);
+    if (length?) {
+      cpp{{
+      auto array = group->get<libubjpp::array_type>(path_).get();
+      }}
+      result:String[length!];
+      value:String?;
+      for (i:Integer in 1..length!) {
+        cpp{{
+        value_ = array[i_ - 1].get<libubjpp::string_type>();
+        }}
+        if (value?) {
+          result[i] <- value!;
+        } else {
+          return nil;
+        }
+      }
+      return result;
+    } else {
+      return nil;
+    }
   }
 }
