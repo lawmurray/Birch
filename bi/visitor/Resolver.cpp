@@ -33,16 +33,20 @@ bi::Expression* bi::Resolver::modify(Parentheses* o) {
 bi::Expression* bi::Resolver::modify(Sequence* o) {
   Modifier::modify(o);
   auto iter = o->single->type->begin();
-  auto common = *iter;
-  ++iter;
-  while (common && iter != o->single->type->end()) {
-    common = common->common(**iter);
-    ++iter;
-  }
-  if (!common) {
-    throw SequenceException(o);
+  if (iter == o->single->type->end()) {
+    o->type = new NilType(o->loc);
   } else {
-    o->type = new SequenceType(common, o->loc);
+    auto common = *iter;
+    ++iter;
+    while (common && iter != o->single->type->end()) {
+      common = common->common(**iter);
+      ++iter;
+    }
+    if (!common) {
+      throw SequenceException(o);
+    } else {
+      o->type = new SequenceType(common, o->loc);
+    }
   }
   return o;
 }

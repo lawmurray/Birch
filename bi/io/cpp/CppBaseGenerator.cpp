@@ -57,7 +57,11 @@ void bi::CppBaseGenerator::visit(const Parentheses* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Sequence* o) {
-  middle("bi::make_sequence({" << o->single << "})");
+  if (o->single->isEmpty()) {
+    middle("bi::nil");
+  } else {
+    middle('{' << o->single << '}');
+  }
 }
 
 void bi::CppBaseGenerator::visit(const Cast* o) {
@@ -165,7 +169,7 @@ void bi::CppBaseGenerator::visit(const Super* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Nil* o) {
-  middle("nullptr");
+  middle("bi::nil");
 }
 
 void bi::CppBaseGenerator::visit(const Parameter* o) {
@@ -596,7 +600,7 @@ void bi::CppBaseGenerator::visit(const TupleType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const SequenceType* o) {
-  middle("bi::Sequence<" << o->single << '>');
+  middle("std::initializer_list<" << o->single << '>');
 }
 
 void bi::CppBaseGenerator::visit(const FunctionType* o) {
