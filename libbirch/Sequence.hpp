@@ -7,12 +7,6 @@
 
 namespace bi {
 /**
- * Sequence.
- */
-template<class Type>
-using Sequence = std::initializer_list<Type>;
-
-/**
  * Depth of a sequence.
  */
 template<class Type>
@@ -20,7 +14,7 @@ struct sequence_depth {
   static const int value = 0;
 };
 template<class Type>
-struct sequence_depth<Sequence<Type>> {
+struct sequence_depth<std::initializer_list<Type>> {
   static const int value = 1 + sequence_depth<Type>::value;
 };
 
@@ -32,7 +26,7 @@ void sequence_lengths(const Type& o, size_t* lengths) {
   //
 }
 template<class Type>
-void sequence_lengths(const Sequence<Type>& o, size_t* lengths) {
+void sequence_lengths(const std::initializer_list<Type>& o, size_t* lengths) {
   *lengths = o.size();
   sequence_lengths(*o.begin(), lengths + 1);
 }
@@ -41,9 +35,9 @@ void sequence_lengths(const Sequence<Type>& o, size_t* lengths) {
  * Create an appropriate frame for an array to be constructed from a sequence.
  */
 template<class Type>
-auto sequence_frame(const Sequence<Type>& o) {
-  typename DefaultFrame<sequence_depth<Sequence<Type>>::value>::type frame;
-  size_t lengths[sequence_depth<Sequence<Type>>::value];
+auto sequence_frame(const std::initializer_list<Type>& o) {
+  typename DefaultFrame<sequence_depth<std::initializer_list<Type>>::value>::type frame;
+  size_t lengths[sequence_depth<std::initializer_list<Type>>::value];
   sequence_lengths(o, lengths);
   frame.resize(lengths);
   return frame;
@@ -57,7 +51,7 @@ bool sequence_conforms(const size_t* sizes, const Type& o) {
   return true;
 }
 template<class Type>
-bool sequence_conforms(const size_t* sizes, const Sequence<Type>& o) {
+bool sequence_conforms(const size_t* sizes, const std::initializer_list<Type>& o) {
   if (*sizes != o.size()) {
     return false;
   }
@@ -78,7 +72,7 @@ void sequence_copy(Iterator& to, const Type& from) {
   ++to;
 }
 template<class Iterator, class Type>
-void sequence_copy(Iterator& to, const Sequence<Type>& from) {
+void sequence_copy(Iterator& to, const std::initializer_list<Type>& from) {
   for (auto o : from) {
     sequence_copy(to, o);
   }
@@ -93,7 +87,7 @@ void sequence_assign(Iterator& to, const Type& from) {
   ++to;
 }
 template<class Iterator, class Type>
-void sequence_assign(Iterator& to, const Sequence<Type>& from) {
+void sequence_assign(Iterator& to, const std::initializer_list<Type>& from) {
   for (auto o : from) {
     sequence_assign(to, o);
   }

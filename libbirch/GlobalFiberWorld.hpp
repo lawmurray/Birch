@@ -7,6 +7,8 @@ namespace bi {
 /**
  * Auxiliary class for GlobalFiberState to ensure correct order of
  * initialization.
+ *
+ * @ingroup libbirch
  */
 class GlobalFiberWorld {
 public:

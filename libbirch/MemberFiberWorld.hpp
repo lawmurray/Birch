@@ -8,6 +8,8 @@ namespace bi {
  * Auxiliary class for MemberFiberState to ensure correct order of
  * initialization.
  *
+ * @ingroup libbirch
+ *
  * @tparam ObjectType Type of owning object.
  */
 template<class ObjectType>

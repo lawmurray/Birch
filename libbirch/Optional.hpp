@@ -3,6 +3,10 @@
  */
 #pragma once
 
+#include "libbirch/Nil.hpp"
+
+#include "boost/optional.hpp"
+
 #include <cassert>
 
 namespace bi {
@@ -31,12 +35,36 @@ public:
   }
 
   /**
+   * Null constructor.
+   */
+  Optional(const Nil&) :
+      hasValue(false) {
+    //
+  }
+
+  /**
    * Constructor for a value.
    */
   Optional(const T& value) :
       value(value),
       hasValue(true) {
     //
+  }
+
+  /**
+   * Constructor from Boost optional.
+   */
+  Optional(const boost::optional<T>& o) :
+      hasValue(o) {
+    if (hasValue) {
+      value = o.get();
+    }
+  }
+  Optional(const boost::optional<T&>& o) :
+      hasValue(o) {
+    if (hasValue) {
+      value = o.get();
+    }
   }
 
   /**
@@ -82,7 +110,15 @@ public:
    * Null constructor.
    */
   Optional(const std::nullptr_t& value = nullptr) :
-      value(value) {
+      value() {
+    //
+  }
+
+  /**
+   * Null constructor.
+   */
+  Optional(const Nil&) :
+      value() {
     //
   }
 
@@ -90,7 +126,8 @@ public:
    * Generic copy constructor.
    */
   template<class U>
-  Optional(const Optional<SharedPointer<U>>& o) : value(o.value) {
+  Optional(const Optional<SharedPointer<U>>& o) :
+      value(o.value) {
     //
   }
 
@@ -98,7 +135,8 @@ public:
    * Generic copy constructor.
    */
   template<class U>
-  Optional(const Optional<WeakPointer<U>>& o) : value(o.value) {
+  Optional(const Optional<WeakPointer<U>>& o) :
+      value(o.value) {
     //
   }
 

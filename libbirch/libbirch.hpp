@@ -16,6 +16,7 @@
 #include "libbirch/Any.hpp"
 #include "libbirch/Object.hpp"
 #include "libbirch/Optional.hpp"
+#include "libbirch/Nil.hpp"
 #include "libbirch/SharedPointer.hpp"
 #include "libbirch/WeakPointer.hpp"
 #include "libbirch/FiberState.hpp"
@@ -185,22 +186,6 @@ auto make_view(const ptrdiff_t arg, Args ... args) {
 template<class Type, class Frame, class ... Args>
 auto make_array(const Frame& frame, Args ... args) {
   return Array<Type,Frame>(frame, args...);
-}
-
-/**
- * Make a sequence.
- *
- * @ingroup libbirch
- *
- * @tparam Type Value type.
- *
- * @param values Values.
- *
- * @return The sequence.
- */
-template<class Type>
-auto make_sequence(const std::initializer_list<Type> values) {
-  return Sequence<Type>(values);
 }
 
 /**

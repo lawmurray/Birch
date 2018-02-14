@@ -82,7 +82,7 @@ public:
    * @param o Sequence.
    */
   template<class U>
-  Array(const Sequence<U>& o) :
+  Array(const std::initializer_list<U>& o) :
       frame(sequence_frame(o)),
       isView(false) {
     allocate();
@@ -148,7 +148,7 @@ public:
    * @param o Sequence.
    */
   template<class U>
-  Array<T,F>& operator=(const Sequence<U>& o) {
+  Array<T,F>& operator=(const std::initializer_list<U>& o) {
     assign(o);
     return *this;
   }
@@ -420,8 +420,8 @@ private:
   }
 
   template<class U>
-  void copy(const Sequence<U>& o) {
-    assert(F::count() == sequence_depth<Sequence<U>>::value);
+  void copy(const std::initializer_list<U>& o) {
+    assert(F::count() == sequence_depth<std::initializer_list<U>>::value);
 
     size_t sizes[F::count()];
     frame.lengths(sizes);
@@ -459,8 +459,8 @@ private:
   }
 
   template<class U>
-  void assign(const Sequence<U>& o) {
-    assert(F::count() == sequence_depth<Sequence<U>>::value);
+  void assign(const std::initializer_list<U>& o) {
+    assert(F::count() == sequence_depth<std::initializer_list<U>>::value);
 
     size_t sizes[F::count()];
     frame.lengths(sizes);
