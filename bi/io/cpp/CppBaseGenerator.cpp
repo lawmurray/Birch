@@ -60,7 +60,7 @@ void bi::CppBaseGenerator::visit(const Sequence* o) {
   if (o->single->isEmpty()) {
     middle("bi::nil");
   } else {
-    middle('{' << o->single << '}');
+    middle("bi::make_sequence({" << o->single << "})");
   }
 }
 
