@@ -77,13 +77,14 @@ class LinearNonlinearSSMState < State {
   }
 
   function input(reader:Reader) {
-    //y_l <- reader.getRealArray("y_l");
-    //y_n <- reader.getRealArray("y_n");
+    y_l <- reader.getRealArray("y_l");
+    y_n <- reader.getRealArray("y_n");
   }
 
   function output(writer:Writer) {
-    //writer.setRealArray("x_l", x_l);
-    //writer.setRealArray("x_n", x_n);
+    writer.setObject();
+    writer.setRealArray("x_l", x_l);
+    writer.setRealArray("x_n", x_n);
   }
 }
 
