@@ -36,10 +36,26 @@ class MemoryWriter < Writer {
     }}
   }
 
-  function setValue(value:String) {
+  function setString(value:String) {
     cpp{{
     group->set(value_);
     }}
+  }
+
+  function setBooleanArray(value:Boolean[_]) {
+    setBooleanArray([], value);
+  }
+  
+  function setIntegerArray(value:Integer[_]) {
+    setIntegerArray([], value);
+  }
+  
+  function setRealArray(value:Real[_]) {
+    setRealArray([], value);
+  }
+
+  function setStringArray(value:String[_]) {
+    setStringArray([], value);
   }
 
   function setObject(name:String) {
@@ -77,6 +93,22 @@ class MemoryWriter < Writer {
     group->set(name_, value_);
     }}
   }
+
+  function setBooleanArray(name:String, value:Boolean[_]) {
+    setBooleanArray([name], value);
+  }
+  
+  function setIntegerArray(name:String, value:Integer[_]) {
+    setIntegerArray([name], value);
+  }
+  
+  function setRealArray(name:String, value:Real[_]) {
+    setRealArray([name], value);
+  }
+
+  function setStringArray(name:String, value:String[_]) {
+    setStringArray([name], value);
+  }
   
   function setObject(path:[String]) {
     cpp{{
@@ -111,6 +143,38 @@ class MemoryWriter < Writer {
   function setString(path:[String], value:String) {
     cpp{{
     group->set(path_, value_);
+    }}
+  }
+
+  function setBooleanArray(path:[String], value:Boolean[_]) {
+    cpp{{
+    libubjpp::array_type array(value_.length(0));
+    std::copy(value_.begin(), value_.end(), array.begin());
+    group->set(path_, std::move(array));
+    }}
+  }
+  
+  function setIntegerArray(path:[String], value:Integer[_]) {
+    cpp{{
+    libubjpp::array_type array(value_.length(0));
+    std::copy(value_.begin(), value_.end(), array.begin());
+    group->set(path_, std::move(array));
+    }}
+  }
+  
+  function setRealArray(path:[String], value:Real[_]) {
+    cpp{{
+    libubjpp::array_type array(value_.length(0));
+    std::copy(value_.begin(), value_.end(), array.begin());
+    group->set(path_, std::move(array));
+    }}
+  }
+
+  function setStringArray(path:[String], value:String[_]) {
+    cpp{{
+    libubjpp::array_type array(value_.length(0));
+    std::copy(value_.begin(), value_.end(), array.begin());
+    group->set(path_, std::move(array));
     }}
   }
 

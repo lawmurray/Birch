@@ -248,7 +248,7 @@ class Reader {
   /**
    * Get a real.
    *
-   *   - path: Path of the entry.
+   * - path: Path of the entry.
    *
    * Return: An optional with a value if the given entry exists and is of a
    * compatible type.
@@ -258,7 +258,7 @@ class Reader {
   /**
    * Get a string.
    *
-   *   - path: Path of the entry.
+   * - path: Path of the entry.
    *
    * Return: An optional with a value if the given entry exists and is of a
    * compatible type.
@@ -268,7 +268,7 @@ class Reader {
   /**
    * Get an array of Booleans.
    *
-   *   - path: Path of the entry.
+   * - path: Path of the entry.
    *
    * Return: An optional with a value if this is an array with all elements
    * of a compatible type.
@@ -278,7 +278,7 @@ class Reader {
   /**
    * Get an array of integers.
    *
-   *   - path: Path of the entry.
+   * - path: Path of the entry.
    *
    * Return: An optional with a value if this is an array with all elements
    * of a compatible type.
@@ -288,7 +288,7 @@ class Reader {
   /**
    * Get an array of reals.
    *
-   *   - path: Path of the entry.
+   * - path: Path of the entry.
    *
    * Return: An optional with a value if this is an array with all elements
    * of a compatible type.
@@ -298,7 +298,7 @@ class Reader {
   /**
    * Get an array of strings.
    *
-   *   - path: Path of the entry.
+   * - path: Path of the entry.
    *
    * Return: An optional with a value if this is an array with all elements
    * of a compatible type.

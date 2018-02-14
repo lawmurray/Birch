@@ -41,6 +41,34 @@ class Writer {
   function setString(value:String);
 
   /**
+   * Set this as an array of Booleans.
+   *
+   * - value: Value of the entry.
+   */
+  function setBooleanArray(value:Boolean[_]);
+
+  /**
+   * Set this as an array of integers.
+   *
+   * - value: Value of the entry.
+   */
+  function setIntegerArray(value:Integer[_]);
+
+  /**
+   * Set this as an array of reals.
+   *
+   * - value: Value of the entry.
+   */
+  function setRealArray(value:Real[_]);
+
+  /**
+   * Set this as an array of strings.
+   *
+   * - value: Value of the entry.
+   */
+  function setStringArray(value:String[_]);
+
+  /**
    * Set an object.
    *
    * - name: Name of the entry.
@@ -85,6 +113,38 @@ class Writer {
    * - value: Value of the entry.
    */
   function setString(name:String, value:String);
+
+  /**
+   * Set an array of Booleans.
+   *
+   * - name: Name of the entry.
+   * - value: Value of the entry.
+   */
+  function setBooleanArray(name:String, value:Boolean[_]);
+
+  /**
+   * Set an array of integers.
+   *
+   * - name: Name of the entry.
+   * - value: Value of the entry.
+   */
+  function setIntegerArray(name:String, value:Integer[_]);
+
+  /**
+   * Set an array of reals.
+   *
+   * - name: Name of the entry.
+   * - value: Value of the entry.
+   */
+  function setRealArray(name:String, value:Real[_]);
+
+  /**
+   * Set an array of strings.
+   *
+   * - name: Name of the entry.
+   * - value: Value of the entry.
+   */
+  function setStringArray(name:String, value:String[_]);
   
   /**
    * Set an object.
@@ -131,6 +191,38 @@ class Writer {
    * - value: Value of the entry.
    */
   function setString(path:[String], value:String);
+
+  /**
+   * Set an array of Booleans.
+   *
+   * - path: Path of the entry.
+   * - value: Value of the entry.
+   */
+  function setBooleanArray(path:[String], value:Boolean[_]);
+
+  /**
+   * Set an array of integers.
+   *
+   * - path: Path of the entry.
+   * - value: Value of the entry.
+   */
+  function setIntegerArray(path:[String], value:Integer[_]);
+
+  /**
+   * Set an array of reals.
+   *
+   * - path: Path of the entry.
+   * - value: Value of the entry.
+   */
+  function setRealArray(path:[String], value:Real[_]);
+
+  /**
+   * Set an array of strings.
+   *
+   * - path: Path of the entry.
+   * - value: Value of the entry.
+   */
+  function setStringArray(path:[String], value:String[_]);
   
   /**
    * Push a new element onto the end of an array.
