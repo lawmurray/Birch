@@ -118,11 +118,14 @@ bi::Expression* bi::ResolverSource::modify(Span* o) {
 bi::Expression* bi::ResolverSource::modify(Index* o) {
   Modifier::modify(o);
   o->type = o->single->type;
+  checkInteger(o);
   return o;
 }
 
 bi::Expression* bi::ResolverSource::modify(Range* o) {
   Modifier::modify(o);
+  checkInteger(o->left);
+  checkInteger(o->right);
   return o;
 }
 

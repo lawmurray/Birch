@@ -13,7 +13,7 @@ bi::IndexException::IndexException(const Expression* o) {
   if (o->loc) {
     buf << o->loc;
   }
-  buf << "error: incompatible type in index";
+  buf << "error: incompatible type in index\n";
   if (o->loc) {
     buf << o->loc;
   }
