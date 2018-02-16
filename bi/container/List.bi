@@ -47,6 +47,15 @@ class List<Type> {
   }
 
   /**
+   * Get an element.
+   *
+   * - i: the position of the element.
+   */
+  function get(i:Integer) -> Type {
+    return getNode(i).x;
+  }
+
+  /**
    * Insert a new element at the start.
    *
    * - x: the element.
@@ -106,15 +115,6 @@ class List<Type> {
     if (count <= 1) {
       head <- tail;
     }
-  }
-
-  /**
-   * Get an element.
-   *
-   * - i: the position of the element.
-   */
-  function get(i:Integer) -> Type {
-    return getNode(i).x;
   }
   
   /**

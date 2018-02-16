@@ -21,13 +21,13 @@ auto norm_(const Array<Type,Frame>& o) {
 }
 
 template<class EigenType>
-auto squaredNorm_(const EigenType& o) {
+auto dot_(const EigenType& o) {
   return o.squaredNorm();
 }
 
 template<class Type, class Frame>
-auto squaredNorm_(const Array<Type,Frame>& o) {
-  return squaredNorm_(o.toEigen());
+auto dot_(const Array<Type,Frame>& o) {
+  return dot_(o.toEigen());
 }
 
 template<class EigenType>

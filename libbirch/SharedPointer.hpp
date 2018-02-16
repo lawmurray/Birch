@@ -200,6 +200,14 @@ public:
     return get();
   }
 
+  bool operator==(SharedPointer<Any>& o) {
+    return get() == o.get();
+  }
+
+  bool operator!=(SharedPointer<Any>& o) {
+    return get() != o.get();
+  }
+
   /**
    * Dynamic cast. Returns `nullptr` if the cast if unsuccessful.
    */

@@ -277,7 +277,7 @@ function observe_multivariate_gaussian(x:Real[_], μ:Real[_], Σ:Real[_,_]) -> R
   D:Integer <- length(μ);
   L:Real[_,_] <- llt(Σ);
   
-  return -0.5*squaredNorm(solve(L, x - μ)) - log(determinant(L)) - 0.5*D*log(2.0*π);
+  return -0.5*dot(solve(L, x - μ)) - log(determinant(L)) - 0.5*D*log(2.0*π);
 }
 
 /**
