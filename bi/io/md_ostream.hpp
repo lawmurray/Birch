@@ -55,19 +55,19 @@ private:
 
   template<class ObjectType, class RootType>
   void genBrief(const std::string& name, const RootType* root,
-      const bool sort = false);
+      const bool sort = false, const bool hideNoDoc = false);
 
   template<class ObjectType, class RootType>
   void genOneLine(const std::string& name, const RootType* root,
-      const bool sort = false);
+      const bool sort = false, const bool hideNoDoc = false);
 
   template<class ObjectType, class RootType>
   void genDetailed(const std::string& name, const RootType* root,
-      const bool sort = false);
+      const bool sort = false, const bool hideNoDoc = false);
 
   template<class ObjectType, class RootType>
   void genSections(const std::string& name, const RootType* root,
-      const bool sort = false);
+      const bool sort = false, const bool hideNoDoc = false);
 
   /**
    * Current section depth.
@@ -81,8 +81,10 @@ private:
 
 template<class ObjectType, class RootType>
 void bi::md_ostream::genBrief(const std::string& name, const RootType* root,
-    const bool sort) {
-  Gatherer<ObjectType> gatherer;
+    const bool sort, const bool hideNoDoc) {
+  Gatherer<ObjectType> gatherer([&](const ObjectType* o) {
+    return !hideNoDoc || !o->loc->doc.empty();
+  });
   root->accept(&gatherer);
 
   std::vector<ObjectType*> sorted(gatherer.size());
@@ -112,8 +114,10 @@ void bi::md_ostream::genBrief(const std::string& name, const RootType* root,
 
 template<class ObjectType, class RootType>
 void bi::md_ostream::genOneLine(const std::string& name, const RootType* root,
-    const bool sort) {
-  Gatherer<ObjectType> gatherer;
+    const bool sort, const bool hideNoDoc) {
+  Gatherer<ObjectType> gatherer([&](const ObjectType* o) {
+        return !hideNoDoc || !o->loc->doc.empty();
+      });
   root->accept(&gatherer);
 
   std::vector<ObjectType*> sorted(gatherer.size());
@@ -143,8 +147,10 @@ void bi::md_ostream::genOneLine(const std::string& name, const RootType* root,
 
 template<class ObjectType, class RootType>
 void bi::md_ostream::genDetailed(const std::string& name,
-    const RootType* root, const bool sort) {
-  Gatherer<ObjectType> gatherer;
+    const RootType* root, const bool sort, const bool hideNoDoc) {
+  Gatherer<ObjectType> gatherer([&](const ObjectType* o) {
+    return !hideNoDoc || !o->loc->doc.empty();
+  });
   root->accept(&gatherer);
 
   std::vector<ObjectType*> sorted(gatherer.size());
@@ -179,8 +185,10 @@ void bi::md_ostream::genDetailed(const std::string& name,
 
 template<class ObjectType, class RootType>
 void bi::md_ostream::genSections(const std::string& name,
-    const RootType* root, const bool sort) {
-  Gatherer<ObjectType> gatherer;
+    const RootType* root, const bool sort, const bool hideNoDoc) {
+  Gatherer<ObjectType> gatherer([&](const ObjectType* o) {
+    return !hideNoDoc || !o->loc->doc.empty();
+  });
   root->accept(&gatherer);
 
   std::vector<ObjectType*> sorted(gatherer.size());

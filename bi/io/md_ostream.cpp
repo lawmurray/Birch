@@ -10,14 +10,14 @@ bi::md_ostream::md_ostream(std::ostream& base) :
 }
 
 void bi::md_ostream::visit(const Package* o) {
-  genOneLine<Basic>("Types", o, true);
-  genOneLine<GlobalVariable>("Variables", o, true);
-  genDetailed<Program>("Programs", o, true);
-  genDetailed<Function>("Functions", o, true);
-  genDetailed<Fiber>("Fibers", o, true);
-  genDetailed<UnaryOperator>("Unary Operators", o, true);
-  genDetailed<BinaryOperator>("Binary Operators", o, true);
-  genSections<Class>("Classes", o, true);
+  genOneLine<Basic>("Types", o, true, false);
+  genOneLine<GlobalVariable>("Variables", o, true, true);
+  genDetailed<Program>("Programs", o, true, true);
+  genDetailed<Function>("Functions", o, true, true);
+  genDetailed<Fiber>("Fibers", o, true, true);
+  genDetailed<UnaryOperator>("Unary Operators", o, true, false);
+  genDetailed<BinaryOperator>("Binary Operators", o, true, false);
+  genSections<Class>("Classes", o, true, false);
 }
 
 void bi::md_ostream::visit(const Name* o) {
@@ -142,14 +142,14 @@ void bi::md_ostream::visit(const Class* o) {
   line(quote(detailed(o->loc->doc), "    ") << "\n");
 
   ++depth;
-  genOneLine<AssignmentOperator>("Assignments", o, false);
-  genOneLine<ConversionOperator>("Conversions", o, false);
-  genOneLine<MemberVariable>("Member Variables", o, false);
-  genBrief<MemberFunction>("Member Functions", o, false);
-  genBrief<MemberFiber>("Member Fibers", o, false);
+  genOneLine<AssignmentOperator>("Assignments", o, false, false);
+  genOneLine<ConversionOperator>("Conversions", o, false, false);
+  genOneLine<MemberVariable>("Member Variables", o, false, true);
+  genBrief<MemberFunction>("Member Functions", o, false, true);
+  genBrief<MemberFiber>("Member Fibers", o, false, true);
 
-  genDetailed<MemberFunction>("Member Function Details", o, true);
-  genDetailed<MemberFiber>("Member Fiber Details", o, true);
+  genDetailed<MemberFunction>("Member Function Details", o, true, true);
+  genDetailed<MemberFiber>("Member Fiber Details", o, true, true);
   --depth;
 }
 
