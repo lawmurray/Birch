@@ -1,4 +1,4 @@
-/**
+/*
  * Gaussian with another Gaussian as its mean.
  */
 class GaussianWithGaussianMean < Gaussian {

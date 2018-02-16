@@ -1,4 +1,4 @@
-/**
+/*
  * Log-Gaussian with affine transformation of Gaussian as mean.
  */
 class LogGaussianWithAffineGaussianMean < LogGaussian {

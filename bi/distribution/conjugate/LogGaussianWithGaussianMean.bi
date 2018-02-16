@@ -1,4 +1,4 @@
-/**
+/*
  * Log-Gaussian with Gaussian as its mean.
  */
 class LogGaussianWithGaussianMean < LogGaussian {

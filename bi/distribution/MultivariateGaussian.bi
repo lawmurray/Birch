@@ -47,7 +47,7 @@ class MultivariateGaussian(D:Integer) < Random<Real[_]> {
 class MultivariateNormal = MultivariateGaussian;
 
 /**
- * Create multivariate Gaussian distribution.
+ * Create Gaussian distribution.
  */
 function Gaussian(μ:Real[_], Σ:Real[_,_]) -> MultivariateGaussian {
   D:Integer <- length(μ);
@@ -59,7 +59,7 @@ function Gaussian(μ:Real[_], Σ:Real[_,_]) -> MultivariateGaussian {
 }
 
 /**
- * Create multivariate Gaussian distribution.
+ * Create Gaussian distribution.
  */
 function Normal(μ:Real[_], Σ:Real[_,_]) -> MultivariateGaussian {
   return Gaussian(μ, Σ);

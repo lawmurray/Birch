@@ -1,4 +1,4 @@
-/**
+/*
  * Log-Gaussian with affine transformation of the logarithm of a log-Gaussian
  * as its mean.
  */

@@ -1,7 +1,7 @@
-/**
+/*
  * Multivariate Gaussian with another multivariate Gaussian as mean.
  *
- *   - D: Number of dimensions.
+ * - D: Number of dimensions.
  */
 class MultivariateGaussianWithGaussianMean(D:Integer)
     < MultivariateGaussian(D) {

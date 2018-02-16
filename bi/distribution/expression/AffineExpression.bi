@@ -1,4 +1,4 @@
-/**
+/*
  * Affine transformation of a random variable.
  */
 class AffineExpression {  

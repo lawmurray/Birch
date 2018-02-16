@@ -1,4 +1,4 @@
-/**
+/*
  * Logaritmic transformation of a random variable.
  */
 class LogExpression {

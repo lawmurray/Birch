@@ -1,4 +1,4 @@
-/**
+/*
  * Affine transformation of the logarithm of a random variable.
  */
 class AffineLogExpression {

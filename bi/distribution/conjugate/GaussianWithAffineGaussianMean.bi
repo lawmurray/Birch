@@ -1,4 +1,4 @@
-/**
+/*
  * Gaussian with affine transformation of another Gaussian as its mean.
  */
 class GaussianWithAffineGaussianMean < Gaussian {

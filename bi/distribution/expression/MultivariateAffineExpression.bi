@@ -1,4 +1,4 @@
-/**
+/*
  * Multivariate affine transformation of a random variable.
  */
 class MultivariateAffineExpression {

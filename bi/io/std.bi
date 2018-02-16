@@ -15,6 +15,7 @@ function getStdOut() -> File {
   return stdout;
   }}
 }
+
 /*
  * Returns the file associated with stderr.
  */

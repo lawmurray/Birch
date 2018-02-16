@@ -1,4 +1,4 @@
-/**
+/*
  * List node.
  */
 class ListNode<Type>(x:Type) {
