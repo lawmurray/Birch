@@ -10,14 +10,14 @@ bi::md_ostream::md_ostream(std::ostream& base) :
 }
 
 void bi::md_ostream::visit(const Package* o) {
-  genOneLine<Basic>("Types", o, true, false);
+  genOneLine<Basic>("Types", o, true, true);
   genOneLine<GlobalVariable>("Variables", o, true, true);
   genDetailed<Program>("Programs", o, true, true);
   genDetailed<Function>("Functions", o, true, true);
   genDetailed<Fiber>("Fibers", o, true, true);
   genDetailed<UnaryOperator>("Unary Operators", o, true, false);
   genDetailed<BinaryOperator>("Binary Operators", o, true, false);
-  genSections<Class>("Classes", o, true, false);
+  genSections<Class>("Classes", o, true, true);
 }
 
 void bi::md_ostream::visit(const Name* o) {
