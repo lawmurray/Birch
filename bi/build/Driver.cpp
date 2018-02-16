@@ -403,7 +403,9 @@ void bi::Driver::docs() {
       /* among first-level headers, only variables and types have their own
        * page, rather than being further split into a page per item */
       if (h1 == "Variables" || h1 == "Types") {
-        file = fs::path(h1 + ".md");
+        std::string filename = h1;
+        boost::to_lower(filename);
+        file = fs::path(filename + ".md");
         mkdocs << file.string();
         if (stream.is_open()) {
           stream.close();

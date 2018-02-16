@@ -158,25 +158,25 @@ void bi::md_ostream::visit(const TypeList* o) {
 }
 
 void bi::md_ostream::visit(const ClassType* o) {
-  middle("[" << o->name << "](#" << anchor(o->name->str()) << ")");
+  middle('[' << o->name << "](/classes/" << o->name->str() << ".md)");
   if (!o->typeArgs->isEmpty()) {
     middle("&lt;" << o->typeArgs << "&gt;");
   }
 }
 
 void bi::md_ostream::visit(const BasicType* o) {
-  middle("[" << o->name << "](#" << anchor(o->name->str()) << ")");
+  middle('[' << o->name << "](/types.md#" << o->name->str() << ')');
 }
 
 void bi::md_ostream::visit(const ArrayType* o) {
-  middle(o->single << "[");
+  middle(o->single << '[');
   for (int i = 0; i < o->depth(); ++i) {
     if (i > 0) {
       middle(',');
     }
     middle("\\_");
   }
-  middle("]");
+  middle(']');
 }
 
 void bi::md_ostream::visit(const TupleType* o) {
