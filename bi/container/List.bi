@@ -109,6 +109,15 @@ class List<Type> {
   }
 
   /**
+   * Get an element.
+   *
+   * - i: the position of the element.
+   */
+  function get(i:Integer) -> Type {
+    return getNode(i).x;
+  }
+  
+  /**
    * Insert a new element.
    *
    * - i: the position at which to insert,
@@ -126,7 +135,7 @@ class List<Type> {
       pushBack(x);
     } else {
       node:ListNode<Type>(x);
-      get(i).insert(node);
+      getNode(i).insert(node);
       count <- count + 1;
     }
   }
@@ -143,7 +152,7 @@ class List<Type> {
     } else if (i == count) {
       popBack();
     } else {
-      get(i).erase();
+      getNode(i).erase();
       count <- count - 1;
     }
   }
@@ -162,11 +171,11 @@ class List<Type> {
   }
 
   /**
-   * Get an element.
+   * Get a node.
    *
-   *   - i: the position of the element.
+   * - i: the position of the node.
    */
-  function get(i:Integer) -> ListNode<Type> {
+  function getNode(i:Integer) -> ListNode<Type> {
     assert 1 <= i && i <= count;
     node:ListNode<Type>?;
     if (2*i <= count) {
