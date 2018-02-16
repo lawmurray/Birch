@@ -21,7 +21,7 @@ namespace bi {
  * that value) or a dynamic value (indicated by a template parameter of
  * mutable_value and initial value given in the constructor).
  */
-template<size_t length_value = mutable_value, size_t stride_value =
+template<int64_t length_value = mutable_value, int64_t stride_value =
     mutable_value>
 struct Span: public Length<length_value>, public Stride<stride_value> {
   typedef Length<length_value> length_type;
@@ -36,7 +36,7 @@ struct Span: public Length<length_value>, public Stride<stride_value> {
    * For static values, the initial values given must match the static values
    * or an error is given.
    */
-  Span(const size_t length = 0, const size_t stride = 0) :
+  Span(const int64_t length = 0, const int64_t stride = 0) :
       length_type(length),
       stride_type(stride) {
     //
@@ -45,7 +45,7 @@ struct Span: public Length<length_value>, public Stride<stride_value> {
   /**
    * Generic copy constructor.
    */
-  template<size_t length_value1, size_t stride_value1>
+  template<int64_t length_value1, int64_t stride_value1>
   Span(const Span<length_value1,stride_value1>& o) :
       length_type(o.length),
       stride_type(o.stride) {
@@ -55,17 +55,17 @@ struct Span: public Length<length_value>, public Stride<stride_value> {
   /**
    * View operator.
    */
-  template<ptrdiff_t offset_value1, size_t length_value1>
+  template<ptrdiff_t offset_value1, int64_t length_value1>
   auto operator()(const Range<offset_value1,length_value1>& arg) const {
-    static const size_t new_length_value = length_value1;
-    static const size_t new_stride_value = stride_value;
+    static const int64_t new_length_value = length_value1;
+    static const int64_t new_stride_value = stride_value;
     return Span<new_length_value,new_stride_value>(arg.length, this->stride);
   }
 
   /**
    * Generic equality operator.
    */
-  template<size_t length_value1, size_t stride_value1>
+  template<int64_t length_value1, int64_t stride_value1>
   bool operator==(const Span<length_value1,stride_value1>& o) const {
     return this->length == o.length && this->stride == o.stride;
   }
@@ -73,7 +73,7 @@ struct Span: public Length<length_value>, public Stride<stride_value> {
   /**
    * Generic inequality operator.
    */
-  template<size_t length_value1, size_t stride_value1>
+  template<int64_t length_value1, int64_t stride_value1>
   bool operator!=(const Span<length_value1,stride_value1>& o) const {
     return !(*this == o);
   }

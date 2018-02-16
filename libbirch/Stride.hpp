@@ -14,20 +14,20 @@ namespace bi {
  *
  * @ingroup libbirch
  */
-template<size_t n>
+template<int64_t n>
 struct Stride {
-  static const size_t stride_value = n;
-  static const size_t stride = n;
+  static const int64_t stride_value = n;
+  static const int64_t stride = n;
 
-  Stride(const size_t stride) {
+  Stride(const int64_t stride) {
     assert(stride == this->stride);
   }
 };
 template<>
 struct Stride<mutable_value> {
-  static const size_t stride_value = mutable_value;
-  size_t stride;
-  Stride(const size_t stride) :
+  static const int64_t stride_value = mutable_value;
+  int64_t stride;
+  Stride(const int64_t stride) :
       stride(stride) {
     //
   }

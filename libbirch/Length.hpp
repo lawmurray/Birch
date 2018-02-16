@@ -13,21 +13,21 @@ namespace bi {
  *
  * @ingroup libbirch
  */
-template<size_t n>
+template<int64_t n>
 struct Length {
-  static const size_t length_value = n;
-  static const size_t length = n;
+  static const int64_t length_value = n;
+  static const int64_t length = n;
 
-  Length(const size_t length) {
+  Length(const int64_t length) {
     assert(length == this->length);
   }
 };
 template<>
 struct Length<mutable_value> {
-  static const size_t length_value = mutable_value;
-  size_t length;
+  static const int64_t length_value = mutable_value;
+  int64_t length;
 
-  Length(const size_t length) :
+  Length(const int64_t length) :
       length(length) {
     //
   }

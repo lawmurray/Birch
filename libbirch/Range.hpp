@@ -18,7 +18,7 @@ namespace bi {
  * dynamic value (indicated by a template parameter of mutable_value and
  * initial value given in the constructor).
  */
-template<ptrdiff_t offset_value = 0, size_t length_value = mutable_value>
+template<ptrdiff_t offset_value = 0, int64_t length_value = mutable_value>
 struct Range: public Offset<offset_value>, public Length<length_value> {
   typedef Offset<offset_value> offset_type;
   typedef Length<length_value> length_type;
@@ -32,7 +32,7 @@ struct Range: public Offset<offset_value>, public Length<length_value> {
    * For static values, the initial values given must match the static values
    * or an error is given.
    */
-  Range(const ptrdiff_t offset, const size_t length) :
+  Range(const ptrdiff_t offset, const int64_t length) :
       offset_type(offset),
       length_type(length) {
     //
@@ -41,7 +41,7 @@ struct Range: public Offset<offset_value>, public Length<length_value> {
   /**
    * Generic copy constructor.
    */
-  template<ptrdiff_t offset_value1, size_t length_value1>
+  template<ptrdiff_t offset_value1, int64_t length_value1>
   Range(const Range<offset_value1,length_value1>& o) :
       offset_type(o.offset),
       length_type(o.length) {
@@ -51,7 +51,7 @@ struct Range: public Offset<offset_value>, public Length<length_value> {
   /**
    * Generic equality operator.
    */
-  template<ptrdiff_t offset_value1, size_t length_value1>
+  template<ptrdiff_t offset_value1, int64_t length_value1>
   bool operator==(const Range<offset_value1,length_value1>& o) const {
     return this->offset == o.offset && this->length == o.length;
   }
@@ -59,7 +59,7 @@ struct Range: public Offset<offset_value>, public Length<length_value> {
   /**
    * Generic inequality operator.
    */
-  template<ptrdiff_t offset_value1, size_t length_value1>
+  template<ptrdiff_t offset_value1, int64_t length_value1>
   bool operator!=(const Range<offset_value1,length_value1>& o) const {
     return !(*this == o);
   }

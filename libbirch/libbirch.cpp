@@ -13,7 +13,7 @@ bi::EmptyFrame bi::make_frame() {
 }
 
 bi::NonemptyFrame<bi::Span<>,bi::EmptyFrame> bi::make_frame(
-    const size_t arg) {
+    const int64_t arg) {
   auto tail = EmptyFrame();
   auto head = Span<>(arg, tail.volume());
   return NonemptyFrame<Span<>,EmptyFrame>(head, tail);

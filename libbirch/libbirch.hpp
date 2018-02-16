@@ -105,7 +105,7 @@ EmptyFrame make_frame();
  *
  * @ingroup libbirch
  */
-NonemptyFrame<Span<>,EmptyFrame> make_frame(const size_t arg);
+NonemptyFrame<Span<>,EmptyFrame> make_frame(const int64_t arg);
 
 /**
  * Make a frame, multiple arguments.
@@ -113,7 +113,7 @@ NonemptyFrame<Span<>,EmptyFrame> make_frame(const size_t arg);
  * @ingroup libbirch
  */
 template<class ... Args>
-auto make_frame(const size_t arg, Args ... args) {
+auto make_frame(const int64_t arg, Args ... args) {
   auto tail = make_frame(args...);
   auto head = Span<>(arg, tail.volume());
   return NonemptyFrame<decltype(head),decltype(tail)>(head, tail);
@@ -131,7 +131,7 @@ EmptyView make_view();
  *
  * @ingroup libbirch
  */
-template<ptrdiff_t offset_value, size_t length_value>
+template<ptrdiff_t offset_value, int64_t length_value>
 auto make_view(const Range<offset_value,length_value>& arg) {
   auto head = arg;
   auto tail = make_view();
@@ -150,7 +150,7 @@ NonemptyView<Index<>,EmptyView> make_view(const ptrdiff_t arg);
  *
  * @ingroup libbirch
  */
-template<ptrdiff_t offset_value, size_t length_value, class ... Args>
+template<ptrdiff_t offset_value, int64_t length_value, class ... Args>
 auto make_view(const Range<offset_value,length_value>& arg, Args ... args) {
   auto head = arg;
   auto tail = make_view(args...);

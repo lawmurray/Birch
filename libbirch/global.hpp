@@ -36,7 +36,7 @@ extern std::mt19937_64 rng;
  *
  * @ingroup libbirch
  */
-static constexpr size_t mutable_value = 0;
+static constexpr int64_t mutable_value = 0;
 
 /**
  * The super type of type @p T. Specialised in forward declarations of

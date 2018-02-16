@@ -22,11 +22,11 @@ struct sequence_depth<std::initializer_list<Type>> {
  * Collect the lengths of nested sequences into an array.
  */
 template<class Type>
-void sequence_lengths(const Type& o, size_t* lengths) {
+void sequence_lengths(const Type& o, int64_t* lengths) {
   //
 }
 template<class Type>
-void sequence_lengths(const std::initializer_list<Type>& o, size_t* lengths) {
+void sequence_lengths(const std::initializer_list<Type>& o, int64_t* lengths) {
   *lengths = o.size();
   sequence_lengths(*o.begin(), lengths + 1);
 }
@@ -37,7 +37,7 @@ void sequence_lengths(const std::initializer_list<Type>& o, size_t* lengths) {
 template<class Type>
 auto sequence_frame(const std::initializer_list<Type>& o) {
   typename DefaultFrame<sequence_depth<std::initializer_list<Type>>::value>::type frame;
-  size_t lengths[sequence_depth<std::initializer_list<Type>>::value];
+  int64_t lengths[sequence_depth<std::initializer_list<Type>>::value];
   sequence_lengths(o, lengths);
   frame.resize(lengths);
   return frame;
@@ -47,11 +47,11 @@ auto sequence_frame(const std::initializer_list<Type>& o) {
  * Does the shape of a sequence conform with that of the frame of an array?
  */
 template<class Type>
-bool sequence_conforms(const size_t* sizes, const Type& o) {
+bool sequence_conforms(const int64_t* sizes, const Type& o) {
   return true;
 }
 template<class Type>
-bool sequence_conforms(const size_t* sizes, const std::initializer_list<Type>& o) {
+bool sequence_conforms(const int64_t* sizes, const std::initializer_list<Type>& o) {
   if (*sizes != o.size()) {
     return false;
   }

@@ -276,14 +276,14 @@ public:
   /**
    * Get the length of the @p i th dimension.
    */
-  size_t length(const int i) const {
+  int64_t length(const int i) const {
     return frame.length(i);
   }
 
   /**
    * Get the stride of the @p i th dimension.
    */
-  size_t stride(const int i) const {
+  int64_t stride(const int i) const {
     return frame.stride(i);
   }
 
@@ -423,7 +423,7 @@ private:
   void copy(const std::initializer_list<U>& o) {
     assert(F::count() == sequence_depth<std::initializer_list<U>>::value);
 
-    size_t sizes[F::count()];
+    int64_t sizes[F::count()];
     frame.lengths(sizes);
     assert(sequence_conforms(sizes, o));
     auto iter = begin();
@@ -443,9 +443,9 @@ private:
       auto end1 = end();
       auto iter2 = o.begin();
 
-      //size_t block1 = frame.block();
-      //size_t block2 = o.frame.block();
-      //size_t block = gcd(block1, block2);
+      //int64_t block1 = frame.block();
+      //int64_t block2 = o.frame.block();
+      //int64_t block = gcd(block1, block2);
 
       //for (; iter1 != end1; iter1 += block, iter2 += block) {
       //  std::memmove(&(*iter1), &(*iter2), block * sizeof(T));
@@ -462,7 +462,7 @@ private:
   void assign(const std::initializer_list<U>& o) {
     assert(F::count() == sequence_depth<std::initializer_list<U>>::value);
 
-    size_t sizes[F::count()];
+    int64_t sizes[F::count()];
     frame.lengths(sizes);
     assert(sequence_conforms(sizes, o));
     auto iter = begin();
@@ -494,12 +494,12 @@ private:
   /**
    * Greatest common divisor of two positive integers.
    */
-  static size_t gcd(const size_t a, const size_t b) {
+  static int64_t gcd(const int64_t a, const int64_t b) {
     /* pre-condition */
     assert(a > 0);
     assert(b > 0);
 
-    size_t a1 = a, b1 = b;
+    int64_t a1 = a, b1 = b;
     while (a1 != b1 && b1 != 0) {
       a1 = a1 % b1;
       std::swap(a1, b1);

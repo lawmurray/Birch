@@ -36,7 +36,7 @@ struct EmptyView {
     return 0;
   }
 
-  size_t size() const {
+  int64_t size() const {
     return 1;
   }
 
@@ -159,7 +159,7 @@ struct NonemptyView {
   /**
    * Size (the product of all lengths).
    */
-  size_t size() const {
+  int64_t size() const {
     return head.length * tail.size();
   }
   //@}

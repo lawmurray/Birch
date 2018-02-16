@@ -74,12 +74,12 @@ struct EmptyFrame {
     return 0;
   }
 
-  size_t length(const int i) const {
+  int64_t length(const int i) const {
     assert(false);
     return 0;
   }
 
-  size_t stride(const int i) const {
+  int64_t stride(const int i) const {
     assert(false);
     return 0;
   }
@@ -98,15 +98,15 @@ struct EmptyFrame {
     return 0;
   }
 
-  static constexpr size_t size() {
+  static constexpr int64_t size() {
     return 1;
   }
 
-  static constexpr size_t volume() {
+  static constexpr int64_t volume() {
     return 1;
   }
 
-  static constexpr size_t block() {
+  static constexpr int64_t block() {
     return 1;
   }
 
@@ -209,7 +209,7 @@ struct NonemptyFrame {
   /**
    * View operator.
    */
-  template<ptrdiff_t offset_value1, size_t length_value1, class Tail1>
+  template<ptrdiff_t offset_value1, int64_t length_value1, class Tail1>
   auto operator()(
       const NonemptyView<Range<offset_value1,length_value1>,Tail1>& o) const {
     /* pre-conditions */
@@ -293,7 +293,7 @@ struct NonemptyFrame {
   /**
    * Get the length of the @p i th dimension.
    */
-  size_t length(const int i) const {
+  int64_t length(const int i) const {
     /* pre-condition */
     assert(i >= 0 && i < count());
 
@@ -307,7 +307,7 @@ struct NonemptyFrame {
   /**
    * Get the stride of the @p i th dimension.
    */
-  size_t stride(const int i) const {
+  int64_t stride(const int i) const {
     /* pre-condition */
     assert(i >= 0 && i < count());
 
@@ -359,22 +359,22 @@ struct NonemptyFrame {
   /**
    * Product of all lengths.
    */
-  size_t size() const {
+  int64_t size() const {
     return head.length*tail.size();
   }
 
   /**
    * Product of all strides.
    */
-  size_t volume() const {
+  int64_t volume() const {
     return head.length*head.stride;
   }
 
   /**
    * Size of contiguous blocks.
    */
-  size_t block() const {
-    size_t block = tail.block();
+  int64_t block() const {
+    int64_t block = tail.block();
     return head.stride == block ? head.length*head.stride : block;
   }
 
