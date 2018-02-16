@@ -1,5 +1,5 @@
 /**
- * A Boolean value.
+ * Boolean.
  */
 type Boolean;
 

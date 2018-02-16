@@ -1,5 +1,5 @@
 /**
- * A 32-bit (single precision) floating point value.
+ * 32-bit (single precision) floating point.
  */
 type Real32 < Real64;
 

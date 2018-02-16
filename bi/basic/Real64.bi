@@ -1,5 +1,5 @@
 /**
- * A 64-bit (double precision) floating point value.
+ * 64-bit (double precision) floating point.
  */
 type Real64;
 

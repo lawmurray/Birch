@@ -1,5 +1,5 @@
 /**
- * A floating point value of default type.
+ * Default floating point.
  */
 type Real = Real64;
 

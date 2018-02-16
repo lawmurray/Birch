@@ -1,5 +1,5 @@
 /**
- * An integer value of default type.
+ * Default integer.
  */
 type Integer = Integer64;
 

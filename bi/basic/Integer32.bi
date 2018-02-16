@@ -1,5 +1,5 @@
 /**
- * A 32-bit integer.
+ * 32-bit integer.
  */
 type Integer32 < Integer64;
 

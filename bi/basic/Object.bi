@@ -1,5 +1,5 @@
 /**
- * Class Object is the root of the class hierarchy.
+ * Root class of all other classes.
  */
 class Object;
 

@@ -1,5 +1,5 @@
 /**
- * A file handle.
+ * File handle.
  */
 type File;
 

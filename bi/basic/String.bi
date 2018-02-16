@@ -1,5 +1,5 @@
 /**
- * A string value.
+ * Character string.
  */
 type String;
 

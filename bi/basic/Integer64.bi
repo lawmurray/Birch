@@ -1,5 +1,5 @@
 /**
- * A 64-bit integer.
+ * 64-bit integer.
  */
 type Integer64 < Real64;
 
