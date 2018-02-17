@@ -1,5 +1,5 @@
 /**
- * A Markov model, structured as a sequence of states, where each state is
+ * Markov model, structured as a sequence of states, where each state is
  * conditionally independent of the state history, given the previous
  * state.
  */

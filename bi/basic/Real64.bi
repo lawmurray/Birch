@@ -4,27 +4,42 @@
 type Real64;
 
 /**
- * Convert other basic types to Real64. This is overloaded for Real64, Real32,
- * Integer64, Integer32 and String.
+ * Convert to Real64.
  */
 function Real64(x:Real64) -> Real64 {
   return x;
 }
+
+/**
+ * Convert to Real64.
+ */
 function Real64(x:Real32) -> Real64 {
   cpp{{
   return static_cast<bi::type::Real64_>(x_);
   }}
 }
+
+/**
+ * Convert to Real64.
+ */
 function Real64(x:Integer64) -> Real64 {
   cpp{{
   return static_cast<bi::type::Real64_>(x_);
   }}
 }
+
+/**
+ * Convert to Real64.
+ */
 function Real64(x:Integer32) -> Real64 {
   cpp{{
   return static_cast<bi::type::Real64_>(x_);
   }}
 }
+
+/**
+ * Convert to Real64.
+ */
 function Real64(s:String) -> Real64 {
   cpp{{
   return ::strtod(s_.c_str(), nullptr);

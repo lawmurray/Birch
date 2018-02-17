@@ -4,27 +4,42 @@
 type Real32 < Real64;
 
 /**
- * Convert other basic types to Real32. This is overloaded for Real64, Real32,
- * Integer64, Integer32 and String.
+ * Convert to Real32.
  */
 function Real32(x:Real32) -> Real32 {
   return x;
 }
+
+/**
+ * Convert to Real32.
+ */
 function Real32(x:Real64) -> Real32 {
   cpp{{
   return static_cast<bi::type::Real32_>(x_);
   }}
 }
+
+/**
+ * Convert to Real32.
+ */
 function Real32(x:Integer64) -> Real32 {
   cpp{{
   return static_cast<bi::type::Real32_>(x_);
   }}
 }
+
+/**
+ * Convert to Real32.
+ */
 function Real32(x:Integer32) -> Real32 {
   cpp{{
   return static_cast<bi::type::Real32_>(x_);
   }}
 }
+
+/**
+ * Convert to Real32.
+ */
 function Real32(s:String) -> Real32 {
   cpp{{
   return ::strtof(s_.c_str(), nullptr);

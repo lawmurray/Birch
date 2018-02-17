@@ -1,3 +1,6 @@
+/**
+ * Abstract model.
+ */
 class Model {
   /**
    * Simulate.

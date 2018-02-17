@@ -1,5 +1,5 @@
 /**
- * Concept for a state.
+ * State concept.
  */
 class State {
   /**

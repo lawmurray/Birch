@@ -4,27 +4,42 @@
 type Integer32 < Integer64;
 
 /**
- * Convert other basic types to Integer32. This is overloaded for Real64,
- * Real32, Integer64, Integer32 and String.
+ * Convert to Integer32.
  */
 function Integer32(x:Integer32) -> Integer32 {
   return x;
 }
+
+/**
+ * Convert to Integer32.
+ */
 function Integer32(x:Real64) -> Integer32 {
   cpp{{
   return static_cast<bi::type::Integer32_>(x_);
   }}
 }
+
+/**
+ * Convert to Integer32.
+ */
 function Integer32(x:Real32) -> Integer32 {
   cpp{{
   return static_cast<bi::type::Integer32_>(x_);
   }}
 }
+
+/**
+ * Convert to Integer32.
+ */
 function Integer32(x:Integer64) -> Integer32 {
   cpp{{
   return static_cast<bi::type::Integer32_>(x_);
   }}
 }
+
+/**
+ * Convert to Integer32.
+ */
 function Integer32(s:String) -> Integer32 {
   cpp{{
   return ::atoi(s_.c_str());

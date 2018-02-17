@@ -4,27 +4,42 @@
 type Integer64 < Real64;
 
 /**
- * Convert other basic types to Integer64. This is overloaded for Real64,
- * Real32, Integer64, Integer32 and String.
+ * Convert to Integer64.
  */
 function Integer64(x:Integer64) -> Integer64 {
   return x;
 }
+
+/**
+ * Convert to Integer64.
+ */
 function Integer64(x:Real64) -> Integer64 {
   cpp{{
   return static_cast<bi::type::Integer64_>(x_);
   }}
 }
+
+/**
+ * Convert to Integer64.
+ */
 function Integer64(x:Real32) -> Integer64 {
   cpp{{
   return static_cast<bi::type::Integer64_>(x_);
   }}
 }
+
+/**
+ * Convert to Integer64.
+ */
 function Integer64(x:Integer32) -> Integer64 {
   cpp{{
   return static_cast<bi::type::Integer64_>(x_);
   }}
 }
+
+/**
+ * Convert to Integer64.
+ */
 function Integer64(s:String) -> Integer64 {
   cpp{{
   return ::atol(s_.c_str());

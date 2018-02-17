@@ -4,19 +4,30 @@
 type Boolean;
 
 /**
- * Convert other basic types to Boolean. This is overloaded for Boolean and
- * String.
+ * Convert to Boolean.
  */
 function Boolean(x:Boolean) -> Boolean {
   return x;
 }
+
+/**
+ * Convert to Boolean.
+ */
 function Boolean(x:String) -> Boolean {
   return x == "true";
 }
 
-/*
- * Operators
+/**
+ * Logical *and*.
  */
 operator (x:Boolean && y:Boolean) -> Boolean;
+
+/**
+ * Logical *or*.
+ */
 operator (x:Boolean || y:Boolean) -> Boolean;
+
+/**
+ * Logical *not*.
+ */
 operator (!x:Boolean) -> Boolean;
