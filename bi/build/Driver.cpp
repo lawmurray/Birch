@@ -48,17 +48,20 @@ bi::Driver::Driver(int argc, char** argv) :
 
   int c, option_index;
   option long_options[] = {
-      { "share-dir", required_argument, 0, SHARE_DIR_ARG }, { "include-dir",
-      required_argument, 0, INCLUDE_DIR_ARG }, { "lib-dir",
-      required_argument, 0, LIB_DIR_ARG }, { "arch", required_argument, 0,
-          ARCH_ARG }, { "prefix", required_argument, 0, PREFIX_ARG }, {
-          "name", required_argument, 0, NAME_ARG }, { "enable-warnings",
-      no_argument, 0, ENABLE_WARNINGS_ARG }, { "disable-warnings",
-      no_argument, 0, DISABLE_WARNINGS_ARG }, { "enable-debug",
-      no_argument, 0, ENABLE_DEBUG_ARG }, { "disable-debug", no_argument, 0,
-          DISABLE_DEBUG_ARG }, { "enable-verbose", no_argument, 0,
-          ENABLE_VERBOSE_ARG }, { "disable-verbose", no_argument, 0,
-          DISABLE_VERBOSE_ARG }, { 0, 0, 0, 0 } };
+      { "share-dir", required_argument, 0, SHARE_DIR_ARG },
+      { "include-dir", required_argument, 0, INCLUDE_DIR_ARG },
+      { "lib-dir", required_argument, 0, LIB_DIR_ARG },
+      { "arch", required_argument, 0, ARCH_ARG },
+      { "prefix", required_argument, 0, PREFIX_ARG },
+      { "name", required_argument, 0, NAME_ARG },
+      { "enable-warnings", no_argument, 0, ENABLE_WARNINGS_ARG },
+      { "disable-warnings", no_argument, 0, DISABLE_WARNINGS_ARG },
+      { "enable-debug", no_argument, 0, ENABLE_DEBUG_ARG },
+      { "disable-debug", no_argument, 0, DISABLE_DEBUG_ARG },
+      { "enable-verbose", no_argument, 0, ENABLE_VERBOSE_ARG },
+      { "disable-verbose", no_argument, 0, DISABLE_VERBOSE_ARG },
+      { 0, 0, 0, 0 }
+  };
   const char* short_options = "-";  // treats non-options as short option 1
 
   /* mutable copy of argv and argc */
@@ -336,8 +339,7 @@ void bi::Driver::check() {
     } else if (interesting.find(ext) != interesting.end()
         && exclude.find(name) == exclude.end()) {
       if (allFiles.find(path.string()) == allFiles.end()) {
-        warn(
-            std::string("is ") + path.string()
+        warn(std::string("is ") + path.string()
                 + " missing from META.json file?");
       }
     }
@@ -440,9 +442,6 @@ void bi::Driver::docs() {
 void bi::Driver::meta() {
   /* check for META.json */
   if (!fs::exists("META.json")) {
-    if (fs::exists("MANIFEST")) {
-      warn("MANIFEST is deprecated, use META.json instead.");
-    }
     throw DriverException("META.json does not exist.");
   }
 
@@ -486,7 +485,7 @@ void bi::Driver::setup() {
   if (!fs::exists(build_dir)) {
     if (!fs::create_directory(build_dir)) {
       std::stringstream buf;
-      buf << "Could not create build directory " << build_dir << '.';
+      buf << "could not create build directory " << build_dir << '.';
       throw DriverException(buf.str());
     }
   }
@@ -506,7 +505,7 @@ void bi::Driver::setup() {
   if (!fs::exists(m4_dir)) {
     if (!fs::create_directory(m4_dir)) {
       std::stringstream buf;
-      buf << "Could not create m4 directory " << m4_dir << '.';
+      buf << "could not create m4 directory " << m4_dir << '.';
       throw DriverException(buf.str());
     }
   }
@@ -662,7 +661,7 @@ void bi::Driver::autogen() {
       || !exists(work_dir / "install-sh")) {
     std::stringstream cmd;
 
-    cmd << (fs::path(".") / "autogen.sh").string();
+    cmd << (work_dir / "autogen.sh");
     if (verbose) {
       std::cerr << cmd.str() << std::endl;
     } else {
@@ -675,11 +674,12 @@ void bi::Driver::autogen() {
     } else if (ret != 0) {
       std::stringstream buf;
       buf << "autogen.sh died with signal " << ret
-          << ". Make sure autoconf, automake and libtool are installed.";
+          << "; make sure autoconf, automake and libtool are installed";
       if (!verbose) {
-        buf << " See " << (build_dir / "autogen.log").string()
-            << " for details.";
+        buf << ", see " << (build_dir / "autogen.log").string()
+            << " for details";
       }
+      buf << '.';
       throw DriverException(buf.str());
     }
   }
@@ -697,8 +697,7 @@ void bi::Driver::configure() {
     } else if (arch == "wasm") {
       cxxflags << " -s WASM=1";
     } else if (arch != "native") {
-      throw DriverException(
-          "unknown architecture '" + arch
+      throw DriverException("unknown architecture '" + arch
               + "'; valid values are 'native', 'js' and 'wasm'");
     }
     if (debug) {
@@ -736,7 +735,7 @@ void bi::Driver::configure() {
 
     /* configure options */
     if (!prefix.empty()) {
-      options << " --prefix=" << absolute(prefix).string();
+      options << " --prefix=" << absolute(prefix);
     }
     options << " INSTALL=\"install -p\"";
     options << " --config-cache";
@@ -745,7 +744,7 @@ void bi::Driver::configure() {
     if (arch == "js" || arch == "wasm") {
       cmd << "emconfigure ";
     }
-    cmd << (work_dir / "configure").string() << " " << options.str();
+    cmd << (work_dir / "configure") << " " << options.str();
     if (!cppflags.str().empty()) {
       cmd << " CPPFLAGS='" << cppflags.str() << "'";
     }
@@ -770,11 +769,12 @@ void bi::Driver::configure() {
     } else if (ret != 0) {
       std::stringstream buf;
       buf << "configure died with signal " << ret
-          << ". Make sure all dependencies are installed.";
+          << "; make sure all dependencies are installed";
       if (!verbose) {
-        buf << "See " << (build_dir / "configure.log").string() << " and "
-            << (build_dir / "config.log").string() << " for details.";
+        buf << ", see " << (build_dir / "configure.log").string() << " and "
+            << (build_dir / "config.log").string() << " for details";
       }
+      buf << '.';
       throw DriverException(buf.str());
     }
 
@@ -807,13 +807,14 @@ void bi::Driver::target(const std::string& cmd) {
     buf.str("make ");
     buf << cmd;
     if (ret == -1) {
-      buf << " failed to execute.";
+      buf << " failed to execute";
     } else {
-      buf << " died with signal " << ret << '.';
+      buf << " died with signal " << ret;
     }
     if (!verbose) {
-      buf << " See " << (build_dir / log).string() << " for details.";
+      buf << ", see " << (build_dir / log).string() << " for details.";
     }
+    buf << '.';
     throw DriverException(buf.str());
   }
 
@@ -829,12 +830,16 @@ void bi::Driver::readFiles(const boost::property_tree::ptree& meta,
       if (auto str = file.second.get_value_optional<std::string>()) {
         if (str) {
           fs::path filePath(str.get());
+          std::string fileStr = filePath.string();
           if (checkExists && !exists(filePath)) {
-            warn(filePath.string() + " in META.json does not exist.");
+            warn(fileStr + " in META.json does not exist.");
+          }
+          if (std::regex_search(fileStr, std::regex("\\s", std::regex_constants::ECMAScript))) {
+            throw DriverException(std::string("file name ") + fileStr + " in META.json contains whitespace, which is not supported.");
           }
           auto inserted = allFiles.insert(filePath);
           if (!inserted.second) {
-            warn(filePath.string() + " repeated in META.json.");
+            warn(fileStr + " repeated in META.json.");
           }
           metaFiles[key].insert(filePath);
         }
