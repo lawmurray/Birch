@@ -49,16 +49,26 @@ class List<Type> {
   /**
    * Get an element.
    *
-   * - i: the position of the element.
+   * - i: Position.
    */
   function get(i:Integer) -> Type {
     return getNode(i).x;
   }
 
   /**
+   * Set an element.
+   *
+   * - i: Position.
+   * - x: Value.
+   */
+  function set(i:Integer, x:Type) {
+    getNode(i).x <- x;
+  }
+
+  /**
    * Insert a new element at the start.
    *
-   * - x: the element.
+   * - x: Value.
    */
   function pushFront(x:Type) {
     node:ListNode<Type>(x);
@@ -76,7 +86,7 @@ class List<Type> {
   /**
    * Insert a new element at the end.
    *
-   * - x: the element.
+   * - x: Value.
    */
   function pushBack(x:Type) {
     tail:ListNode<Type>? <- this.tail;
@@ -120,8 +130,8 @@ class List<Type> {
   /**
    * Insert a new element.
    *
-   * - i: the position at which to insert,
-   * - x: the element.
+   * - i: Position.
+   * - x: Value.
    *
    * Inserts the new element immediately before the current element at
    * position `i`. To insert at the end of the list, use a position that is
@@ -143,7 +153,7 @@ class List<Type> {
   /**
    * Erase an element.
    *
-   * - i: the position of the element.
+   * - i: Position.
    */
   function erase(i:Integer) {
     assert 1 <= i && i <= count;
@@ -173,7 +183,7 @@ class List<Type> {
   /**
    * Get a node.
    *
-   * - i: the position of the node.
+   * - i: Position.
    */
   function getNode(i:Integer) -> ListNode<Type> {
     assert 1 <= i && i <= count;
