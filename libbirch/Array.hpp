@@ -29,11 +29,21 @@ class Array {
   friend class Array;
 public:
   /**
+   * Default constructor.
+   */
+  Array() :
+      frame(),
+      ptr(nullptr),
+      isView(false) {
+    assert(frame.volume() == 0);
+  }
+
+  /**
    * Constructor.
    *
    * @param frame Frame.
    */
-  Array(const F& frame = F()) :
+  Array(const F& frame) :
       frame(frame),
       isView(false) {
     allocate();
@@ -235,10 +245,9 @@ public:
    * allocation, the contents of the existing array are copied in.
    */
   template<class DerivedType, typename = std::enable_if_t<
-      is_eigen_compatible<DerivedType>::value>>
-  Array(const Eigen::MatrixBase<DerivedType>& o, const F& frame) :
-      frame(frame),
-      isView(false) {
+      is_eigen_compatible<DerivedType>::value>>Array(const Eigen::MatrixBase<DerivedType>& o, const F& frame) :
+  frame(frame),
+  isView(false) {
     allocate();
     toEigen() = o;
   }
@@ -248,8 +257,8 @@ public:
    */
   template<class DerivedType, typename = std::enable_if_t<is_eigen_compatible<DerivedType>::value>>
   Array(const Eigen::MatrixBase<DerivedType>& o) :
-      frame(o.rows(), o.cols()),
-      isView(false) {
+  frame(o.rows(), o.cols()),
+  isView(false) {
     allocate();
     toEigen() = o;
   }
@@ -361,9 +370,9 @@ private:
    * @param frame Frame.
    */
   Array(T* ptr, const F& frame) :
-      frame(frame),
-      ptr(ptr),
-      isView(true) {
+  frame(frame),
+  ptr(ptr),
+  isView(true) {
     //
   }
 
