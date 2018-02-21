@@ -44,7 +44,10 @@ void bi::CppConstructorGenerator::visit(const Class* o) {
 }
 
 void bi::CppConstructorGenerator::visit(const MemberVariable* o) {
-  if (o->type->isPointer() && !o->type->isWeak()) {
+  if (!o->value->isEmpty()) {
+    finish(',');
+    start(o->name << '(' << o->value << ')');
+  } else if (o->type->isPointer() && !o->type->isWeak()) {
     finish(',');
     start(o->name << '(');
     middle("bi::make_pointer<" << o->type << '>');
@@ -57,9 +60,6 @@ void bi::CppConstructorGenerator::visit(const MemberVariable* o) {
       middle(", " << o->args);
     }
     middle(')');
-  } else if (!o->value->isEmpty()) {
-    finish(',');
-    start(o->name << '(' << o->value << ')');
   }
 }
 
