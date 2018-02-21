@@ -82,7 +82,7 @@ class Delay {
   /**
    * Initialize as a non-root node.
    *
-   * `parent` The parent node.
+   * - parent: The parent node.
    */
   function initialize(parent:Delay) {
     this.parent <- parent;
@@ -147,7 +147,7 @@ class Delay {
   /**
    * Graft the M-path to this node.
    *
-   * `c` The child node (caller) that will itself be part of the M-path.
+   * - c: The child node (caller) that will itself be part of the M-path.
    */
   function graft(c:Delay) {
     graft();
