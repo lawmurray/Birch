@@ -41,6 +41,11 @@ public:
    */
   virtual ~LocalVariable();
 
+  /**
+   * Does this variable need intialization arguments?
+   */
+  virtual bool needsConstruction() const;
+
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;

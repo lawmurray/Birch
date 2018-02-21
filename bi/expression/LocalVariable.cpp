@@ -19,6 +19,11 @@ bi::LocalVariable::~LocalVariable() {
   //
 }
 
+bool bi::LocalVariable::needsConstruction() const {
+  return !args->isEmpty()
+      || (value->isEmpty() && (!type->isArray() || !brackets->isEmpty()));
+}
+
 bi::Expression* bi::LocalVariable::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

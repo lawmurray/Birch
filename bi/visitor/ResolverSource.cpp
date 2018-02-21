@@ -186,7 +186,7 @@ bi::Expression* bi::ResolverSource::modify(Generic* o) {
 
 bi::Expression* bi::ResolverSource::modify(LocalVariable* o) {
   Modifier::modify(o);
-  if (!o->args->isEmpty() || o->value->isEmpty()) {
+  if (o->needsConstruction()) {
     o->type->resolveConstructor(o);
   }
   if (!o->brackets->isEmpty()) {
@@ -332,7 +332,7 @@ bi::Statement* bi::ResolverSource::modify(GlobalVariable* o) {
   o->brackets = o->brackets->accept(this);
   o->args = o->args->accept(this);
   o->value = o->value->accept(this);
-  if (!o->args->isEmpty() || o->value->isEmpty()) {
+  if (o->needsConstruction()) {
     o->type->resolveConstructor(o);
   }
   return o;
@@ -391,7 +391,7 @@ bi::Statement* bi::ResolverSource::modify(MemberVariable* o) {
   o->args = o->args->accept(this);
   o->value = o->value->accept(this);
   scopes.pop_back();
-  if (!o->args->isEmpty() || o->value->isEmpty()) {
+  if (o->needsConstruction()) {
     o->type->resolveConstructor(o);
   }
   return o;

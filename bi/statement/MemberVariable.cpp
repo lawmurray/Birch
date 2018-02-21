@@ -22,6 +22,11 @@ bi::MemberVariable::~MemberVariable() {
   //
 }
 
+bool bi::MemberVariable::needsConstruction() const {
+  return !args->isEmpty()
+      || (value->isEmpty() && (!type->isArray() || !brackets->isEmpty()));
+}
+
 bi::Statement* bi::MemberVariable::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
