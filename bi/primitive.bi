@@ -11,11 +11,35 @@ function sum(x:Real[_]) -> Real {
 }
 
 /**
+ * Sum of a vector.
+ */
+function sum(x:Integer[_]) -> Integer {
+  assert length(x) > 0;
+  r:Integer <- x[1];
+  for (n:Integer in 2..length(x)) {
+    r <- r + x[n];
+  }
+  return r;
+}
+
+/**
  * Maximum of a vector.
  */
 function max(x:Real[_]) -> Real {
   assert length(x) > 0;
   r:Real <- x[1];
+  for (n:Integer in 2..length(x)) {
+    r <- max(r, x[n]);
+  }
+  return r;
+}
+
+/**
+ * Maximum of a vector.
+ */
+function max(x:Integer[_]) -> Integer {
+  assert length(x) > 0;
+  r:Integer <- x[1];
   for (n:Integer in 2..length(x)) {
     r <- max(r, x[n]);
   }
@@ -35,16 +59,15 @@ function min(x:Real[_]) -> Real {
 }
 
 /**
- * Exponentiate and sum a vector, return the logarithm of the sum.
+ * Minimum of a vector.
  */
-function log_sum_exp(x:Real[_]) -> Real {
+function min(x:Integer[_]) -> Integer {
   assert length(x) > 0;
-  mx:Real <- max(x);
-  r:Real <- 0.0;
-  for (n:Integer in 1..length(x)) {
-    r <- r + exp(x[n] - mx);
+  r:Integer <- x[1];
+  for (n:Integer in 2..length(x)) {
+    r <- min(r, x[n]);
   }
-  return mx + log(r);
+  return r;
 }
 
 /**

@@ -1,4 +1,17 @@
 /**
+ * Exponentiate and sum a vector, return the logarithm of the sum.
+ */
+function log_sum_exp(x:Real[_]) -> Real {
+  assert length(x) > 0;
+  mx:Real <- max(x);
+  r:Real <- 0.0;
+  for (n:Integer in 1..length(x)) {
+    r <- r + exp(x[n] - mx);
+  }
+  return mx + log(r);
+}
+
+/**
  * Sample an ancestry vector for a vector of log-weights.
  */
 function ancestors(w:Real[_]) -> Integer[_] {
