@@ -14,7 +14,7 @@ bi::ConstructorException::ConstructorException(const Argumented* o,
   if (o->args->loc) {
     buf << o->args->loc;
   }
-  buf << "error: invalid call to constructor\n";
+  buf << "error: invalid call to initializer\n";
   if (o->args) {
     if (o->args->loc) {
       buf << o->args->loc;
@@ -30,7 +30,7 @@ bi::ConstructorException::ConstructorException(const Argumented* o,
       buf << type->loc;
     }
     buf << "note: candidate\n";
-    buf << type;
+    buf << type->name << '(' << type->params << ')';
   }
   msg = base.str();
 }
