@@ -656,7 +656,7 @@ void bi::Driver::compile() {
 }
 
 void bi::Driver::autogen() {
-  if (newAutogen || newConfigure || newMake || newMeta
+  if (newAutogen || newConfigure || newMake
       || !exists(work_dir / "configure")
       || !exists(work_dir / "install-sh")) {
     std::stringstream cmd;
@@ -686,7 +686,7 @@ void bi::Driver::autogen() {
 }
 
 void bi::Driver::configure() {
-  if (newAutogen || newConfigure || newMake || newMeta
+  if (newAutogen || newConfigure || newMake
       || !exists(build_dir / "Makefile")) {
     /* working directory */
     std::stringstream cppflags, cxxflags, ldflags, options, cmd;
