@@ -77,6 +77,17 @@ public:
   }
 
   /**
+   * Generic copy constructor.
+   */
+  template<class U, class G>
+  Array(const Array<U,G>& o) :
+      frame(o.frame),
+      isView(false) {
+    allocate();
+    copy(o);
+  }
+
+  /**
    * Move constructor.
    */
   Array(Array<T,F> && o) :
@@ -111,6 +122,27 @@ public:
    * otherwise a resize is permitted.
    */
   Array<T,F>& operator=(const Array<T,F>& o) {
+    if (isView) {
+      assign(o);
+    } else {
+      if (!frame.conforms(o.frame)) {
+        deallocate();
+        frame.resize(o.frame);
+        allocate();
+        copy(o);
+      } else {
+        assign(o);
+      }
+    }
+    return *this;
+  }
+
+  /**
+   * Generic copy assignment. For a view the frames of the two arrays must
+   * conform, otherwise a resize is permitted.
+   */
+  template<class U, class G>
+  Array<T,F>& operator=(const Array<U,G>& o) {
     if (isView) {
       assign(o);
     } else {
@@ -411,8 +443,8 @@ private:
   /**
    * Copy from another array.
    */
-  template<class G>
-  void copy(const Array<T,G>& o) {
+  template<class U, class G>
+  void copy(const Array<U,G>& o) {
     /* pre-condition */
     assert(o.frame.conforms(frame));
 
@@ -442,8 +474,8 @@ private:
   /**
    * Assign from another array.
    */
-  template<class G>
-  void assign(const Array<T,G>& o) {
+  template<class U, class G>
+  void assign(const Array<U,G>& o) {
     /* pre-condition */
     assert(o.frame.conforms(frame));
 
