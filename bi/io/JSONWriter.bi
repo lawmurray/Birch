@@ -25,17 +25,16 @@ class JSONWriter < MemoryWriter {
    * Save data to file.
    */
   function save() {
-    success:Boolean;
+    success:Boolean <- false;
     cpp{{
     std::ofstream stream(path_);
-    success_ = stream.is_open();
-    }}
-    if (success) {
-      cpp{{
+    if (stream.is_open()) {
       libubjpp::JSONGenerator generator(stream);
       generator.write(top);
-      }}
-    } else {
+      success_ = true;
+    }
+    }}
+    if (!success) {
       stderr.print("warning: could not save to \'" + path + "'\n");
     }
   }

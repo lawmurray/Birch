@@ -25,20 +25,19 @@ class JSONReader < MemoryReader {
    * Load data from file.
    */
   function load() {
-    success:Boolean;
+    success:Boolean <- false;
     cpp{{
     std::ifstream stream(path_);
-    success_ = stream.is_open();
-    }}
-    if (success) {
-      cpp{{
+    if (stream.is_open()) {
       libubjpp::JSONDriver driver;
       if (auto result = driver.parse(stream)) {
         top = result.get();
         group = &top;
+        success_ = true;
       }
-      }}
-    } else {
+    }
+    }}
+    if (!success) {
       stderr.print("warning: could not load from \'" + path + "'\n");
     }
   }
