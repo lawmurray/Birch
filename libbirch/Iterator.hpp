@@ -15,7 +15,7 @@ namespace bi {
  * @tparam F F type.
  */
 template<class T, class F = EmptyFrame>
-class Iterator {
+class Iterator : public std::iterator<std::bidirectional_iterator_tag,T> {
 public:
   /**
    * Constructor.

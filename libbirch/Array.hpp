@@ -11,6 +11,7 @@
 #include "libbirch/global.hpp"
 
 #include <cstring>
+#include <algorithm>
 
 namespace bi {
 /**
@@ -221,6 +222,22 @@ public:
   template<class View1, typename = std::enable_if_t<View1::rangeCount() == 0>>
   const auto& operator()(const View1& view) const {
     return *(buf() + frame.serial(view));
+  }
+
+  /**
+   * Equal comparison.
+   */
+  template<class G>
+  bool operator==(const Array<T,G>& o) const {
+    return frame.conforms(o.frame) && std::equal(begin(), end(), o.begin());
+  }
+
+  /**
+   * Not equal comparison.
+   */
+  template<class G>
+  bool operator!=(const Array<T,G>& o) const {
+    return !(*this == o);
   }
 
   /**

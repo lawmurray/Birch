@@ -383,7 +383,7 @@ struct NonemptyFrame {
    */
   template<class View>
   ptrdiff_t serial(const View& o) const {
-    assert(o.head.offset >= 0 && o.head.offset < head.length);
+    assert(o.head.offset >= 0);
     return o.head.offset * head.stride + tail.serial(o.tail);
   }
 
