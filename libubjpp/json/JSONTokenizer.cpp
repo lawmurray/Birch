@@ -60,12 +60,15 @@ int libubjpp::JSONTokenizer::next(ParserState* state) {
         state->value = double_type(doubleValue);
       }
     } else if (std::regex_search(iter, end, match, regexTrue, options)) {
+      last = match[0].second;
       token = BOOL;
       state->value = bool_type(true);
     } else if (std::regex_search(iter, end, match, regexFalse, options)) {
+      last = match[0].second;
       token = BOOL;
       state->value = bool_type(false);
     } else if (std::regex_search(iter, end, match, regexNull, options)) {
+      last = match[0].second;
       token = NIL;
       state->value = nil_type();
     } else if (*iter == '"') {
