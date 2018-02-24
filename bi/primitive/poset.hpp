@@ -71,22 +71,6 @@ public:
   void match(Comparable v, Container& matches);
 
   /**
-   * Find all matches.
-   *
-   * @tparam Comparable Type comparable to value type.
-   * @tparam Container Container type with push_back() function.
-   *
-   * @param v The value.
-   * @param[out] matches Container to hold matches.
-   *
-   * @p matches may contain duplicates if the container type permits. It is
-   * recommended that a container that does not permit duplicates, such as
-   * std::set.
-   */
-  template<class Comparable, class Container>
-  void match_all(Comparable v, Container& matches);
-
-  /**
    * Insert vertex.
    *
    * @param v Value at the vertex.
@@ -164,12 +148,6 @@ private:
   template<class Comparable, class Container>
   bool match(T u, Comparable v, Container& matches);
 
-  /**
-   * Sub-operation for match_all.
-   */
-  template<class Comparable, class Container>
-  void match_all(T u, Comparable v, Container& matches);
-
   /*
    * Sub-operations for insert.
    */
@@ -229,19 +207,9 @@ template<class T, class Compare>
 template<class Comparable, class Container>
 void bi::poset<T,Compare>::match(Comparable v, Container& matches) {
   matches.clear();
+  ++colour;
   for (auto iter = rbegin(); iter != rend(); ++iter) {
-    ++colour;
     match(*iter, v, matches);
-  }
-}
-
-template<class T, class Compare>
-template<class Comparable, class Container>
-void bi::poset<T,Compare>::match_all(Comparable v, Container& matches) {
-  matches.clear();
-  for (auto iter = rbegin(); iter != rend(); ++iter) {
-    ++colour;
-    match_all(*iter, v, matches);
   }
 }
 
@@ -267,22 +235,9 @@ bool bi::poset<T,Compare>::match(T u, Comparable v, Container& matches) {
         deeper = true;
       }
     }
+  } else {
+    /* already visited */
+    deeper = compare(v, u);
   }
   return deeper;
-}
-
-template<class T, class Compare>
-template<class Comparable, class Container>
-void bi::poset<T,Compare>::match_all(T u, Comparable v, Container& matches) {
-  if (colours[u] < colour) {
-    /* not visited yet */
-    colours[u] = colour;
-    if (compare(v, u)) {
-      auto range = forwards.equal_range(u);
-      for (auto iter = range.first; iter != range.second; ++iter) {
-        match_all(iter->second, v, matches);
-      }
-      matches.insert(u);
-    }
-  }
 }
