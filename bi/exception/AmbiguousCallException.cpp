@@ -8,7 +8,7 @@
 #include <sstream>
 
 bi::AmbiguousCallException::AmbiguousCallException(const Argumented* o,
-    const std::list<Parameterised*>& matches) {
+    const std::set<Parameterised*>& matches) {
   std::stringstream base;
   bih_ostream buf(base);
 

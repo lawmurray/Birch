@@ -315,8 +315,7 @@ bi::Type* bi::Cloner::clone(const TypeList* o) {
 }
 
 bi::Type* bi::Cloner::clone(const UnknownType* o) {
-  return new UnknownType(o->weak, o->name, o->typeArgs->accept(this), o->read,
-      o->loc);
+  return new UnknownType(o->weak, o->name, o->typeArgs->accept(this), o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const ClassType* o) {
@@ -365,7 +364,7 @@ bi::Type* bi::Cloner::clone(const OptionalType* o) {
 }
 
 bi::Type* bi::Cloner::clone(const PointerType* o) {
-  return new PointerType(o->weak, o->single->accept(this), o->read, o->loc);
+  return new PointerType(o->weak, o->single->accept(this), o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const NilType* o) {

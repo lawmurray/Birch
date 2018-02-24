@@ -621,9 +621,6 @@ void bi::CppBaseGenerator::visit(const PointerType* o) {
   } else {
     middle("bi::SharedPointer<");
   }
-  if (o->read) {
-    middle("const ");
-  }
   middle(o->single);
   middle('>');
 }

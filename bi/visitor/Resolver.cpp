@@ -137,7 +137,8 @@ bi::Type* bi::Resolver::lookup(UnknownType* ref) {
   case BASIC:
     return new BasicType(ref->name, ref->loc);
   case CLASS:
-    return new PointerType(ref->weak, new ClassType(ref->name, ref->typeArgs, ref->loc), ref->read, ref->loc);
+    return new PointerType(ref->weak,
+        new ClassType(ref->name, ref->typeArgs, ref->loc), ref->loc);
   case GENERIC:
     return new GenericType(ref->name, ref->loc);
   default:

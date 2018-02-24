@@ -204,9 +204,6 @@ void bi::md_ostream::visit(const OptionalType* o) {
 
 void bi::md_ostream::visit(const PointerType* o) {
   middle(o->single);
-  if (o->read) {
-    middle('\'');
-  }
   if (o->weak) {
     middle('&');
   }

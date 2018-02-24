@@ -7,7 +7,7 @@
 #include "bi/common/Argumented.hpp"
 #include "bi/common/Parameterised.hpp"
 
-#include <list>
+#include <set>
 
 namespace bi {
 /**
@@ -20,6 +20,6 @@ struct AmbiguousCallException: public CompilerException {
    * Constructor.
    */
   AmbiguousCallException(const Argumented* o,
-      const std::list<Parameterised*>& matches);
+      const std::set<Parameterised*>& matches);
 };
 }

@@ -146,7 +146,7 @@ bi::Expression* bi::ResolverSource::modify(This* o) {
   if (!classes.empty()) {
     Modifier::modify(o);
     o->type = new PointerType(false, new ClassType(classes.back(), o->loc),
-        false, o->loc);
+        o->loc);
   } else {
     throw ThisException(o);
   }
@@ -159,7 +159,7 @@ bi::Expression* bi::ResolverSource::modify(Super* o) {
       throw SuperBaseException(o);
     } else {
       Modifier::modify(o);
-      o->type = new PointerType(false, classes.back()->base, false, o->loc);
+      o->type = new PointerType(false, classes.back()->base, o->loc);
     }
   } else {
     throw SuperException(o);

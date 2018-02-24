@@ -22,11 +22,10 @@ public:
    * @param weak Does this have a weak marker?
    * @param name Name.
    * @param typeArgs Generic type arguments.
-   * @param read Does this have a read-only marker?
    * @param loc Location.
    */
   UnknownType(const bool weak, Name* name, Type* typeArgs,
-      const bool read, Location* loc = nullptr);
+      Location* loc = nullptr);
 
   /**
    * Destructor.
@@ -52,10 +51,5 @@ public:
    * Generic type arguments.
    */
   Type* typeArgs;
-
-  /**
-   * Does this have a read-only marker?
-   */
-  bool read;
 };
 }

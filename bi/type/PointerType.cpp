@@ -5,12 +5,11 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::PointerType::PointerType(const bool weak, Type* single, const bool read,
+bi::PointerType::PointerType(const bool weak, Type* single,
     Location* loc) :
     Type(loc),
     Single<Type>(single),
-    weak(weak),
-    read(read) {
+    weak(weak) {
   //
 }
 
@@ -106,8 +105,7 @@ bool bi::PointerType::definitely(const TupleType& o) const {
 }
 
 bool bi::PointerType::definitely(const PointerType& o) const {
-  return (!weak || o.weak) && (!read || o.read)
-      && single->definitely(*o.single);
+  return (!weak || o.weak) && single->definitely(*o.single);
 }
 
 bool bi::PointerType::definitely(const AnyType& o) const {
@@ -159,7 +157,7 @@ bi::Type* bi::PointerType::common(const TupleType& o) const {
 bi::Type* bi::PointerType::common(const PointerType& o) const {
   auto single1 = single->common(*o.single);
   if (single1) {
-    return new PointerType(weak || o.weak, single1, read || o.read);
+    return new PointerType(weak || o.weak, single1);
   } else {
     return nullptr;
   }

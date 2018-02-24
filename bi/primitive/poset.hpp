@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <algorithm>
 #include <map>
+#include <set>
 #include <list>
 
 namespace bi {
@@ -61,6 +62,10 @@ public:
    *
    * @param v The value.
    * @param[out] matches Container to hold matches.
+   *
+   * @p matches may contain duplicates if the container type permits. It is
+   * recommended that a container that does not permit duplicates, such as
+   * std::set.
    */
   template<class Comparable, class Container>
   void match(Comparable v, Container& matches);
@@ -72,8 +77,11 @@ public:
    * @tparam Container Container type with push_back() function.
    *
    * @param v The value.
-   * @param[out] matches Container to hold matches. Matches are inserted in
-   * topological order, more specific first.
+   * @param[out] matches Container to hold matches.
+   *
+   * @p matches may contain duplicates if the container type permits. It is
+   * recommended that a container that does not permit duplicates, such as
+   * std::set.
    */
   template<class Comparable, class Container>
   void match_all(Comparable v, Container& matches);
@@ -221,8 +229,8 @@ template<class T, class Compare>
 template<class Comparable, class Container>
 void bi::poset<T,Compare>::match(Comparable v, Container& matches) {
   matches.clear();
-  ++colour;
   for (auto iter = rbegin(); iter != rend(); ++iter) {
+    ++colour;
     match(*iter, v, matches);
   }
 }
@@ -231,8 +239,8 @@ template<class T, class Compare>
 template<class Comparable, class Container>
 void bi::poset<T,Compare>::match_all(Comparable v, Container& matches) {
   matches.clear();
-  ++colour;
   for (auto iter = rbegin(); iter != rend(); ++iter) {
+    ++colour;
     match_all(*iter, v, matches);
   }
 }
@@ -255,7 +263,7 @@ bool bi::poset<T,Compare>::match(T u, Comparable v, Container& matches) {
       if (!deeper) {
         /* no more-specific matches in the subgraph beneath this vertex, so
          * this is the most-specific match */
-        matches.push_back(u);
+        matches.insert(u);
         deeper = true;
       }
     }
@@ -274,7 +282,7 @@ void bi::poset<T,Compare>::match_all(T u, Comparable v, Container& matches) {
       for (auto iter = range.first; iter != range.second; ++iter) {
         match_all(iter->second, v, matches);
       }
-      matches.push_back(u);
+      matches.insert(u);
     }
   }
 }

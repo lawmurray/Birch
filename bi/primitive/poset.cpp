@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <cassert>
+#include <set>
 
 template<class T, class Compare>
 bi::poset<T,Compare>::poset() :
@@ -18,7 +19,7 @@ bi::poset<T,Compare>::poset() :
 
 template<class T, class Compare>
 bool bi::poset<T,Compare>::contains(T v) {
-  std::list<T> matches;
+  std::set<T> matches;
   match(v, matches);
 
   /* are any of these an exact match? */
@@ -32,7 +33,7 @@ bool bi::poset<T,Compare>::contains(T v) {
 
 template<class T, class Compare>
 T bi::poset<T,Compare>::get(T v) {
-  std::list<T> matches;
+  std::set<T> matches;
   match(v, matches);
 
   /* are any of these an exact match? */
@@ -203,14 +204,18 @@ void bi::poset<T,Compare>::reduce(T u) {
 
 template<class T, class Compare>
 void bi::poset<T,Compare>::dot() {
-  ++colour;
-  bih_ostream buf(std::cout);
+  bih_ostream buf(std::cerr);
   buf << "digraph {\n";
   for (auto iter = vertices.begin(); iter != vertices.end(); ++iter) {
-    buf << "  \"" << *iter << "\"\n";
+    auto param = dynamic_cast<Parameterised*>(*iter);
+    if (param) {
+      buf << "  \"" << param->params << "\"\n";
+    }
   }
   for (auto iter = forwards.begin(); iter != forwards.end(); ++iter) {
-    buf << "  \"" << iter->first << "\" -> \"" << iter->second << "\"\n";
+    auto first = dynamic_cast<Parameterised*>(iter->first);
+    auto second = dynamic_cast<Parameterised*>(iter->second);
+    buf << "  \"" << first->params << "\" -> \"" << second->params << "\"\n";
   }
   buf << "}\n";
 }

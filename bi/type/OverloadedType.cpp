@@ -21,11 +21,11 @@ bool bi::OverloadedType::isOverloaded() const {
 }
 
 bi::FunctionType* bi::OverloadedType::resolve(Argumented* o) {
-  std::list<Parameterised*> matches;
+  std::set<Parameterised*> matches;
   overloaded->overloads.match(o, matches);
   if (matches.size() == 1) {
     /* construct the appropriate function type */
-    auto target = matches.front();
+    auto target = *matches.begin();
     Type* paramsType = target->params->type;
     Type* returnType = dynamic_cast<ReturnTyped*>(target)->returnType;
     return new FunctionType(paramsType, returnType);

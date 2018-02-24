@@ -6,12 +6,11 @@
 #include "bi/visitor/all.hpp"
 
 bi::UnknownType::UnknownType(const bool weak, Name* name,
-    Type* typeArgs, const bool read, Location* loc) :
+    Type* typeArgs, Location* loc) :
     Type(loc),
     Named(name),
     weak(weak),
-    typeArgs(typeArgs),
-    read(read) {
+    typeArgs(typeArgs) {
   //
 }
 

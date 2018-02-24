@@ -19,11 +19,9 @@ public:
    *
    * @param weak Is this a weak pointer type?
    * @param single Type.
-   * @param read Is this a read-only pointer type?
    * @param loc Location.
    */
-  PointerType(const bool weak, Type* single, const bool read, Location* loc =
-      nullptr);
+  PointerType(const bool weak, Type* single, Location* loc = nullptr);
 
   /**
    * Destructor.
@@ -76,11 +74,5 @@ public:
    * Is this a weak pointer type?
    */
   bool weak;
-
-  /**
-   * Is this a read-only pointer type?
-   */
-  bool read;
-
 };
 }
