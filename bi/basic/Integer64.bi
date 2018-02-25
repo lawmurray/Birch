@@ -97,3 +97,21 @@ function min(x:Integer64, y:Integer64) -> Integer64 {
   return std::min(x_, y_);
   }}
 }
+
+/**
+ * Round an integer up to the next power of two. Zero and negative integers
+ * return zero.
+ */
+function pow2(x:Integer64) -> Integer64 {
+  if (x < 0) {
+    return Integer64(0);
+  } else {
+    y:Integer64 <- x/2;
+    z:Integer64 <- 1;
+    while (y > 0) {
+      y <- y/2;
+      z <- z*2;
+    }
+    return z;
+  }
+}

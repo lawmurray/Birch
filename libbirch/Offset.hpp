@@ -14,21 +14,21 @@ namespace bi {
  *
  * @ingroup libbirch
  */
-template<ptrdiff_t n>
+template<int64_t n>
 struct Offset {
-  static const ptrdiff_t offset_value = n;
-  static const ptrdiff_t offset = n;
+  static const int64_t offset_value = n;
+  static const int64_t offset = n;
 
-  Offset(const ptrdiff_t offset) {
+  Offset(const int64_t offset) {
     assert(offset == this->offset);
   }
 };
 template<>
 struct Offset<mutable_value> {
-  static const ptrdiff_t offset_value = mutable_value;
-  ptrdiff_t offset;
+  static const int64_t offset_value = mutable_value;
+  int64_t offset;
 
-  Offset(const ptrdiff_t offset) :
+  Offset(const int64_t offset) :
       offset(offset) {
     //
   }

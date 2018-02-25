@@ -295,8 +295,8 @@ public:
    */
   template<class DerivedType, typename = std::enable_if_t<
       is_eigen_compatible<DerivedType>::value>>Array(const Eigen::MatrixBase<DerivedType>& o, const F& frame) :
-  frame(frame),
-  isView(false) {
+      frame(frame),
+      isView(false) {
     allocate();
     toEigen() = o;
   }
@@ -306,8 +306,8 @@ public:
    */
   template<class DerivedType, typename = std::enable_if_t<is_eigen_compatible<DerivedType>::value>>
   Array(const Eigen::MatrixBase<DerivedType>& o) :
-  frame(o.rows(), o.cols()),
-  isView(false) {
+      frame(o.rows(), o.cols()),
+      isView(false) {
     allocate();
     toEigen() = o;
   }
@@ -370,28 +370,17 @@ public:
    *
    * The idiom of iterator usage is as for the STL.
    */
-  Iterator<T,F> begin() {
+  /**
+   * Iterator pointing to the first element.
+   */
+  Iterator<T,F> begin() const {
     return Iterator<T,F>(ptr, frame);
   }
 
   /**
-   * Iterator pointing to the first element.
-   */
-  Iterator<const T,F> begin() const {
-    return Iterator<const T,F>(ptr, frame);
-  }
-
-  /**
    * Iterator pointing to one beyond the last element.
    */
-  Iterator<T,F> end() {
-    return begin() + frame.size();
-  }
-
-  /**
-   * Iterator pointing to one beyond the last element.
-   */
-  Iterator<const T,F> end() const {
+  Iterator<T,F> end() const {
     return begin() + frame.size();
   }
 
@@ -409,6 +398,52 @@ public:
     return ptr;
   }
 
+  /**
+   * Shrink a one-dimensional array in-place.
+   *
+   * @tparam G Frame type.
+   *
+   * @param frame New frame.
+   */
+  template<class G>
+  void shrink(const G& frame) {
+    static_assert(F::count() == 1, "can only shrink one-dimensional arrays");
+    static_assert(G::count() == 1, "can only shrink one-dimensional arrays");
+    assert(!isView);
+    assert(frame.size() < this->frame.size());
+
+    /* destroy elements that will be removed */
+    for (auto iter = begin() + frame.size(); iter != end(); ++iter) {
+      iter->~T();
+    }
+
+    this->frame.resize(frame);
+    ptr = (T*)std::realloc(ptr, sizeof(T)*this->frame.volume());
+    assert(ptr);
+  }
+
+  /**
+   * Enlarge a one-dimensional array in-place.
+   *
+   * @tparam G Frame type.
+   *
+   * @param frame New frame.
+   * @param x Value to assign to new elements.
+   */
+  template<class G>
+  void enlarge(const G& frame, const T& x) {
+    static_assert(F::count() == 1, "can only enlarge one-dimensional arrays");
+    static_assert(G::count() == 1, "can only enlarge one-dimensional arrays");
+    assert(!isView);
+    assert(frame.size() > this->frame.size());
+
+    int64_t oldSize = this->frame.size();  // old size
+    this->frame.resize(frame);
+    ptr = (T*)std::realloc(ptr, sizeof(T)*this->frame.volume());
+    assert(ptr);
+    std::uninitialized_fill(begin() + oldSize, end(), x);
+  }
+
 private:
   /**
    * Constructor for view.
@@ -419,9 +454,9 @@ private:
    * @param frame Frame.
    */
   Array(T* ptr, const F& frame) :
-  frame(frame),
-  ptr(ptr),
-  isView(true) {
+      frame(frame),
+      ptr(ptr),
+      isView(true) {
     //
   }
 
@@ -462,19 +497,9 @@ private:
    */
   template<class U, class G>
   void copy(const Array<U,G>& o) {
-    /* pre-condition */
     assert(o.frame.conforms(frame));
 
-    if (frame.size() > 0) {
-      auto iter1 = begin();
-      auto end1 = end();
-      auto iter2 = o.begin();
-
-      for (; iter1 != end1; ++iter1, ++iter2) {
-        new (&(*iter1)) T(*iter2);
-      }
-      assert(iter2 == o.end());
-    }
+    std::uninitialized_copy(o.begin(), o.end(), begin());
   }
 
   template<class U>
@@ -493,13 +518,21 @@ private:
    */
   template<class U, class G>
   void assign(const Array<U,G>& o) {
-    /* pre-condition */
     assert(o.frame.conforms(frame));
-
-    if (frame.size() > 0) {
-      auto iter1 = begin();
-      auto end1 = end();
-      auto iter2 = o.begin();
+    
+    auto begin1 = o.begin();
+    auto end1 = o.end();
+    auto begin2 = begin();
+    auto end2 = end();
+    if (begin1 <= begin2 && begin2 <= end1) {
+      std::copy_backward(begin1, end1, end2);
+    } else {
+      std::copy(begin1, end1, begin2);
+    }
+    //if (frame.size() > 0) {
+      //auto iter1 = begin();
+      //auto end1 = end();
+      //auto iter2 = o.begin();
 
       //int64_t block1 = frame.block();
       //int64_t block2 = o.frame.block();
@@ -509,11 +542,8 @@ private:
       //  std::memmove(&(*iter1), &(*iter2), block * sizeof(T));
       //  // ^ memory regions may overlap, so avoid memcpy
       //}
-      for (; iter1 != end1; ++iter1, ++iter2) {
-        *iter1 = *iter2;
-      }
-      assert(iter2 == o.end());
-    }
+      //assert(iter2 == o.end());
+    //}
   }
 
   template<class U>

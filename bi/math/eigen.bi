@@ -5,90 +5,73 @@
  * feature of its performance.
  */
 
+operator (x:Real + y:Real[_]) -> Real[_];
+operator (x:Real[_] + y:Real) -> Real[_];
+operator (x:Real + Y:Real[_,_]) -> Real[_,_];
+operator (X:Real[_,_] + y:Real) -> Real[_,_];
+operator (x:Real - y:Real[_]) -> Real[_];
+operator (x:Real[_] - y:Real) -> Real[_];
+operator (x:Real - Y:Real[_,_]) -> Real[_,_];
+operator (X:Real[_,_] - y:Real) -> Real[_,_];
+operator (x:Real*y:Real[_]) -> Real[_];
+operator (x:Real[_]*y:Real) -> Real[_];
+operator (x:Real*Y:Real[_,_]) -> Real[_,_];
+operator (X:Real[_,_]*y:Real) -> Real[_,_];
+operator (x:Real[_]/y:Real) -> Real[_];
+operator (X:Real[_,_]/y:Real) -> Real[_,_];
 operator (x:Real[_] == y:Real[_]) -> Boolean;
 operator (x:Real[_] != y:Real[_]) -> Boolean;
 operator (X:Real[_,_] == Y:Real[_,_]) -> Boolean;
 operator (X:Real[_,_] != Y:Real[_,_]) -> Boolean;
-
 operator (-x:Real[_]) -> Real[_];
 operator (+x:Real[_]) -> Real[_];
 operator (-X:Real[_,_]) -> Real[_,_];
 operator (+X:Real[_,_]) -> Real[_,_];
-
 operator (x:Real[_] + y:Real[_]) -> Real[_];
 operator (x:Real[_] - y:Real[_]) -> Real[_];
 operator (X:Real[_,_] + Y:Real[_,_]) -> Real[_,_];
 operator (X:Real[_,_] - Y:Real[_,_]) -> Real[_,_];
-
 operator (x:Real[_]*y:Real[_]) -> Real[_];
 operator (X:Real[_,_]*y:Real[_]) -> Real[_];
 operator (x:Real[_]*Y:Real[_,_]) -> Real[_,_];
 operator (X:Real[_,_]*Y:Real[_,_]) -> Real[_,_];
 
-operator (x:Real*y:Real[_]) -> Real[_];
-operator (x:Real[_]*y:Real) -> Real[_];
-operator (x:Real*Y:Real[_,_]) -> Real[_,_];
-operator (X:Real[_,_]*y:Real) -> Real[_,_];
-
-operator (x:Real[_]/y:Real) -> Real[_];
-operator (X:Real[_,_]/y:Real) -> Real[_,_];
-
-operator (x:Integer[_] == y:Integer[_]) -> Boolean;
-operator (x:Integer[_] != y:Integer[_]) -> Boolean;
-operator (X:Integer[_,_] == Y:Integer[_,_]) -> Boolean;
-operator (X:Integer[_,_] != Y:Integer[_,_]) -> Boolean;
-
-operator (-x:Integer[_]) -> Integer[_];
-operator (+x:Integer[_]) -> Integer[_];
-operator (-X:Integer[_,_]) -> Integer[_,_];
-operator (+X:Integer[_,_]) -> Integer[_,_];
-
-operator (x:Integer[_] + y:Integer[_]) -> Integer[_];
-operator (x:Integer[_] - y:Integer[_]) -> Integer[_];
-operator (X:Integer[_,_] + Y:Integer[_,_]) -> Integer[_,_];
-operator (X:Integer[_,_] - Y:Integer[_,_]) -> Integer[_,_];
-
-operator (x:Integer[_]*y:Integer[_]) -> Integer[_];
-operator (X:Integer[_,_]*y:Integer[_]) -> Integer[_];
-operator (x:Integer[_]*Y:Integer[_,_]) -> Integer[_,_];
-operator (X:Integer[_,_]*Y:Integer[_,_]) -> Integer[_,_];
-
+operator (x:Integer + y:Integer[_]) -> Integer[_];
+operator (x:Integer[_] + y:Integer) -> Integer[_];
+operator (x:Integer + Y:Integer[_,_]) -> Integer[_,_];
+operator (X:Integer[_,_] + y:Integer) -> Integer[_,_];
+operator (x:Integer - y:Integer[_]) -> Integer[_];
+operator (x:Integer[_] - y:Integer) -> Integer[_];
+operator (x:Integer - Y:Integer[_,_]) -> Integer[_,_];
+operator (X:Integer[_,_] - y:Integer) -> Integer[_,_];
 operator (x:Integer*y:Integer[_]) -> Integer[_];
 operator (x:Integer[_]*y:Integer) -> Integer[_];
 operator (x:Integer*Y:Integer[_,_]) -> Integer[_,_];
 operator (X:Integer[_,_]*y:Integer) -> Integer[_,_];
-
-operator (x:Boolean[_] == y:Boolean[_]) -> Boolean;
-operator (x:Boolean[_] != y:Boolean[_]) -> Boolean;
-operator (X:Boolean[_,_] == Y:Boolean[_,_]) -> Boolean;
-operator (X:Boolean[_,_] != Y:Boolean[_,_]) -> Boolean;
-
-operator (-x:Boolean[_]) -> Boolean[_];
-operator (+x:Boolean[_]) -> Boolean[_];
-operator (-X:Boolean[_,_]) -> Boolean[_,_];
-operator (+X:Boolean[_,_]) -> Boolean[_,_];
-
-operator (x:Boolean[_] + y:Boolean[_]) -> Boolean[_];
-operator (x:Boolean[_] - y:Boolean[_]) -> Boolean[_];
-operator (X:Boolean[_,_] + Y:Boolean[_,_]) -> Boolean[_,_];
-operator (X:Boolean[_,_] - Y:Boolean[_,_]) -> Boolean[_,_];
-
-operator (x:Boolean[_]*y:Boolean[_]) -> Boolean[_];
-operator (X:Boolean[_,_]*y:Boolean[_]) -> Boolean[_];
-operator (x:Boolean[_]*Y:Boolean[_,_]) -> Boolean[_,_];
-operator (X:Boolean[_,_]*Y:Boolean[_,_]) -> Boolean[_,_];
-
-operator (x:Boolean*y:Boolean[_]) -> Boolean[_];
-operator (x:Boolean[_]*y:Boolean) -> Boolean[_];
-operator (x:Boolean*Y:Boolean[_,_]) -> Boolean[_,_];
-operator (X:Boolean[_,_]*y:Boolean) -> Boolean[_,_];
+operator (x:Integer[_]/y:Integer) -> Integer[_];
+operator (X:Integer[_,_]/y:Integer) -> Integer[_,_];
+operator (x:Integer[_] == y:Integer[_]) -> Boolean;
+operator (x:Integer[_] != y:Integer[_]) -> Boolean;
+operator (X:Integer[_,_] == Y:Integer[_,_]) -> Boolean;
+operator (X:Integer[_,_] != Y:Integer[_,_]) -> Boolean;
+operator (-x:Integer[_]) -> Integer[_];
+operator (+x:Integer[_]) -> Integer[_];
+operator (-X:Integer[_,_]) -> Integer[_,_];
+operator (+X:Integer[_,_]) -> Integer[_,_];
+operator (x:Integer[_] + y:Integer[_]) -> Integer[_];
+operator (x:Integer[_] - y:Integer[_]) -> Integer[_];
+operator (X:Integer[_,_] + Y:Integer[_,_]) -> Integer[_,_];
+operator (X:Integer[_,_] - Y:Integer[_,_]) -> Integer[_,_];
+operator (x:Integer[_]*y:Integer[_]) -> Integer[_];
+operator (X:Integer[_,_]*y:Integer[_]) -> Integer[_];
+operator (x:Integer[_]*Y:Integer[_,_]) -> Integer[_,_];
+operator (X:Integer[_,_]*Y:Integer[_,_]) -> Integer[_,_];
 
 /**
  * Dot product of a vector with itself.
  */
 function dot(x:Real[_]) -> Real;
 function dot(x:Integer[_]) -> Integer;
-function dot(x:Boolean[_]) -> Boolean;
 
 /**
  * Transpose of a matrix.

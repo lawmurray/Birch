@@ -21,6 +21,7 @@ class SMC {
   
     /* filter */
     for (t:Integer in 1..T) {
+    stderr.print(t + " ");
       if (ess(w) < trigger*N) {
         /* resample */
         Z <- Z + log_sum_exp(w) - log(N);
@@ -36,6 +37,7 @@ class SMC {
         if (f[n]?) {
           w[n] <- w[n] + f[n]!.w;
         } else {
+          stderr.print("error: particles terminated before " + T + " checkpoints.\n");
           assert false;
         } 
       }

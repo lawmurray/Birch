@@ -134,8 +134,8 @@ class List<Type> {
    * - x: Value.
    *
    * Inserts the new element immediately before the current element at
-   * position `i`. To insert at the end of the list, use a position that is
-   * one more than the current size of the list, or `pushBack()`.
+   * position `i`. To insert at the end of the container, use a position that
+   * is one more than the current size, or `pushBack()`.
    */
   function insert(i:Integer, x:Type) {
     assert 1 <= i && i <= count + 1;

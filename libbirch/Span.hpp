@@ -55,7 +55,7 @@ struct Span: public Length<length_value>, public Stride<stride_value> {
   /**
    * View operator.
    */
-  template<ptrdiff_t offset_value1, int64_t length_value1>
+  template<int64_t offset_value1, int64_t length_value1>
   auto operator()(const Range<offset_value1,length_value1>& arg) const {
     static const int64_t new_length_value = length_value1;
     static const int64_t new_stride_value = stride_value;
@@ -110,7 +110,7 @@ struct Span: public Length<length_value>, public Stride<stride_value> {
   /**
    * Multiply stride.
    */
-  Span<length_value,stride_value>& operator*=(const ptrdiff_t n) {
+  Span<length_value,stride_value>& operator*=(const int64_t n) {
     /* pre-condition */
     static_assert(stride_value == mutable_value,
         "must use a mutable stride to multiply");
@@ -123,7 +123,7 @@ struct Span: public Length<length_value>, public Stride<stride_value> {
   /**
    * Multiply stride.
    */
-  auto operator*(const ptrdiff_t n) const {
+  auto operator*(const int64_t n) const {
     Span<length_value,mutable_value> result(*this);
     result *= n;
     return result;

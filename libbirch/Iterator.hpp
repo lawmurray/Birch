@@ -30,47 +30,67 @@ public:
     //
   }
 
+  T* get() const {
+    return ptr + frame.offset(serial);
+  }
+
   T& operator*() {
-    return *(ptr + frame.offset(serial));
+    return *get();
   }
 
   const T& operator*() const {
-    return *(ptr + frame.offset(serial));
+    return *get();
   }
 
   T* operator->() {
-    return ptr + frame.offset(serial);
+    return get();
   }
 
   T* const operator->() const {
-    return ptr + frame.offset(serial);
+    return get();
   }
 
   bool operator==(const Iterator<T,F>& o) const {
-    return ptr == o.ptr && serial == o.serial;
+    return get() == o.get();
   }
 
   bool operator!=(const Iterator<T,F>& o) const {
-    return !(*this == o);
+    return get() != o.get();
   }
 
-  Iterator<T,F>& operator+=(const ptrdiff_t i) {
+  bool operator<=(const Iterator<T,F>& o) const {
+    return get() <= o.get();
+  }
+
+  bool operator<(const Iterator<T,F>& o) const {
+    return get() < o.get();
+  }
+
+  bool operator>=(const Iterator<T,F>& o) const {
+    return get() >= o.get();
+  }
+
+  bool operator>(const Iterator<T,F>& o) const {
+    return get() > o.get();
+  }
+
+  Iterator<T,F>& operator+=(const int64_t i) {
     serial += i;
     return *this;
   }
 
-  Iterator<T,F> operator+(const ptrdiff_t i) const {
+  Iterator<T,F> operator+(const int64_t i) const {
     Iterator<T,F> result(*this);
     result += i;
     return result;
   }
 
-  Iterator<T,F>& operator-=(const ptrdiff_t i) {
+  Iterator<T,F>& operator-=(const int64_t i) {
     serial -= i;
     return *this;
   }
 
-  Iterator<T,F> operator-(const ptrdiff_t i) const {
+  Iterator<T,F> operator-(const int64_t i) const {
     Iterator<T,F> result(*this);
     result -= i;
     return result;
@@ -100,18 +120,18 @@ public:
 
 protected:
   /**
-   * F.
+   * Frame.
    */
   F frame;
 
   /**
-   * Value.
+   * Buffer.
    */
   T* ptr;
 
   /**
    * Serialised offset into the frame.
    */
-  ptrdiff_t serial;
+  int64_t serial;
 };
 }

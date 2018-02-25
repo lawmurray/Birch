@@ -3,8 +3,8 @@
  */
 #include "libbirch/libbirch.hpp"
 
-bi::Range<> bi::make_range(const ptrdiff_t start, const ptrdiff_t end) {
-  ptrdiff_t length = std::max(ptrdiff_t(0), end - start + 1);
+bi::Range<> bi::make_range(const int64_t start, const int64_t end) {
+  int64_t length = std::max(int64_t(0), end - start + 1);
   return Range<>(start, length);
 }
 
@@ -24,7 +24,7 @@ bi::EmptyView bi::make_view() {
 }
 
 bi::NonemptyView<bi::Index<>,bi::EmptyView> bi::make_view(
-    const ptrdiff_t arg) {
+    const int64_t arg) {
   auto head = Index<>(arg);
   auto tail = EmptyView();
   return NonemptyView<Index<>,EmptyView>(head, tail);

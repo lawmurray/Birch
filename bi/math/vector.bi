@@ -1,31 +1,4 @@
 /**
- * Length of a vector.
- */
-function length(x:Real[_]) -> Integer64 {
-  cpp{{
-  return x_.length(0);
-  }}
-}
-
-/**
- * Length of a vector.
- */
-function length(x:Integer[_]) -> Integer64 {
-  cpp{{
-  return x_.length(0);
-  }}
-}
-
-/**
- * Length of a vector.
- */
-function length(x:Boolean[_]) -> Integer64 {
-  cpp{{
-  return x_.length(0);
-  }}
-}
-
-/**
  * Create vector filled with a given scalar.
  */
 function vector(x:Real, length:Integer) -> Real[_] {

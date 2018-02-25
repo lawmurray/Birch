@@ -70,7 +70,7 @@ struct EmptyFrame {
     assert(cols == 1);
   }
 
-  ptrdiff_t offset(const ptrdiff_t n) {
+  int64_t offset(const int64_t n) const {
     return 0;
   }
 
@@ -111,7 +111,7 @@ struct EmptyFrame {
   }
 
   template<class View>
-  ptrdiff_t serial(const View& o) const {
+  int64_t serial(const View& o) const {
     return 0;
   }
 
@@ -133,11 +133,11 @@ struct EmptyFrame {
     return !operator==(o);
   }
 
-  EmptyFrame& operator*=(const ptrdiff_t n) {
+  EmptyFrame& operator*=(const int64_t n) {
     return *this;
   }
 
-  EmptyFrame operator*(const ptrdiff_t n) const {
+  EmptyFrame operator*(const int64_t n) const {
     EmptyFrame result(*this);
     result *= n;
     return result;
@@ -209,7 +209,7 @@ struct NonemptyFrame {
   /**
    * View operator.
    */
-  template<ptrdiff_t offset_value1, int64_t length_value1, class Tail1>
+  template<int64_t offset_value1, int64_t length_value1, class Tail1>
   auto operator()(
       const NonemptyView<Range<offset_value1,length_value1>,Tail1>& o) const {
     /* pre-conditions */
@@ -223,7 +223,7 @@ struct NonemptyFrame {
   /**
    * View operator.
    */
-  template<ptrdiff_t offset_value1, class Tail1>
+  template<int64_t offset_value1, class Tail1>
   auto operator()(const NonemptyView<Index<offset_value1>,Tail1>& o) const {
     /* pre-condition */
     assert(o.head.offset >= 0 && o.head.offset < head.length);
@@ -279,11 +279,12 @@ struct NonemptyFrame {
    *
    * @param n Element number.
    */
-  ptrdiff_t offset(const ptrdiff_t n) {
-    ptrdiff_t q = n / head.length;
-    ptrdiff_t r = n % head.length;
+  int64_t offset(const int64_t n) const {
+    int64_t s = tail.size();
+    int64_t q = n / s;
+    int64_t r = n % s;
 
-    return r * head.stride + tail.offset(q);
+    return q * head.stride + tail.offset(r);
   }
 
   /**
@@ -382,7 +383,7 @@ struct NonemptyFrame {
    * Serial offset for a view.
    */
   template<class View>
-  ptrdiff_t serial(const View& o) const {
+  int64_t serial(const View& o) const {
     assert(o.head.offset >= 0);
     return o.head.offset * head.stride + tail.serial(o.tail);
   }
