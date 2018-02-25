@@ -281,10 +281,13 @@ struct NonemptyFrame {
    */
   int64_t offset(const int64_t n) const {
     int64_t s = tail.size();
-    int64_t q = n / s;
-    int64_t r = n % s;
-
-    return q * head.stride + tail.offset(r);
+    if (s > 0) {
+      int64_t q = n / s;
+      int64_t r = n % s;
+      return q * head.stride + tail.offset(r);
+    } else {
+      return 0;
+    }
   }
 
   /**
