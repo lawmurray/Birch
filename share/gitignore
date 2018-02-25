@@ -20,3 +20,6 @@
 /Makefile.in
 /missing
 /.autotools
+/site/
+/mkdocs.yml
+/DOCS.md
