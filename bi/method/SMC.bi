@@ -12,11 +12,18 @@ class SMC {
     a:Integer[N];   // ancestors
     Z:Real <- 0.0;  // marginal log-likelihood estimate
   
-    /* initialize */
-    for (n:Integer in 1..N) {
-      f[n] <- particle(model, input);
-      w[n] <- 0.0;
-      a[n] <- n;
+    /* initialize, running one particle to its first checkpoint, which occurs
+     * after the input file has been read, then copy it around */
+    f0:Model! <- particle(model, input);
+    if (f0?) {
+      for (n:Integer in 1..N) {
+        f[n] <- f0;
+        w[n] <- 0.0;
+        a[n] <- n;
+      }
+    } else {
+      stderr.print("error: particles terminated prematurely.\n");
+      assert false;
     }
   
     /* filter */
@@ -37,7 +44,7 @@ class SMC {
         if (f[n]?) {
           w[n] <- w[n] + f[n]!.w;
         } else {
-          stderr.print("error: particles terminated before " + T + " checkpoints.\n");
+          stderr.print("error: particles terminated prematurely.\n");
           assert false;
         } 
       }
@@ -64,6 +71,7 @@ fiber particle(model:String, input:Reader?) -> Model! {
   if (input?) {
     x!.input(input!);
   }
+  yield x!;
   
   /* simulate */
   f:Real! <- x!.simulate();
