@@ -166,7 +166,7 @@ public:
   template<class T>
   boost::optional<T&> get(const std::string& name) {
     if (x.type() == typeid(object_type)) {
-      auto& o = boost::get<object_type&>(x);
+      auto& o = boost::get<object_type>(x);
       auto iter = o.find(name);
       if (iter != o.end()) {
         return iter->second.get<T>();
@@ -188,7 +188,7 @@ public:
   template<class T>
   boost::optional<const T&> get(const std::string& name) const {
     if (x.type() == typeid(object_type)) {
-      auto& o = boost::get<object_type&>(x);
+      auto& o = boost::get<object_type>(x);
       auto iter = o.find(name);
       if (iter != o.end()) {
         return iter->second.get<T>();
