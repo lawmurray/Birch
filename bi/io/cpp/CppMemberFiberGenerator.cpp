@@ -21,7 +21,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   std::stringstream base;
   bih_ostream buf(base);
   buf << o->params;
-  std::string baseName = o->name->str() + '_' + encode32(base.str());
+  std::string baseName = internalise(o->name->str()) + encode32(base.str());
   std::string stateName = baseName + "_FiberState";
   std::string localName = baseName + "_FiberLocal";
   std::string argName = baseName + "_FiberArg";

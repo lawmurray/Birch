@@ -22,7 +22,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   std::stringstream base;
   bih_ostream buf(base);
   buf << o->params;
-  std::string baseName = o->name->str() + '_' + encode32(base.str());
+  std::string baseName = internalise(o->name->str()) + '_' + encode32(base.str());
   std::string stateName = baseName + "_FiberState";
   std::string localName = baseName + "_FiberLocal";
   std::string argName = baseName + "_FiberArg";
@@ -246,11 +246,11 @@ std::string bi::CppFiberGenerator::getName(const std::string& name,
   if (iter == names.end()) {
     auto count = counts.find(name);
     if (count == counts.end()) {
-      buf << name << '_';
+      buf << internalise(name);
       result = buf.str();
       counts.insert(std::make_pair(name, 1));
     } else {
-      buf << name << '_' << count->second << '_';
+      buf << internalise(name) << count->second << '_';
       result = buf.str();
       ++count->second;
     }
