@@ -5,7 +5,7 @@
 
 #include "libbirch/global.hpp"
 
-#include <unordered_map>
+#include <map>
 
 namespace bi {
 /**
@@ -16,11 +16,16 @@ namespace bi {
 class World: public std::enable_shared_from_this<World> {
 public:
   /**
+   * Default constructor.
+   */
+  World();
+
+  /**
    * Constructor.
    *
    * @param cloneSource Clone parent.
    */
-  World(const std::shared_ptr<World>& cloneSource = nullptr);
+  World(const std::shared_ptr<World>& cloneSource);
 
   /**
    * Does this world have the given world as a clone ancestor?
@@ -31,6 +36,11 @@ public:
    * Does this world have the given world as a launch ancestor?
    */
   bool hasLaunchAncestor(const World* world) const;
+
+  /**
+   * Get launch depth.
+   */
+  int depth() const;
 
   /**
    * Map an object to the present context.
@@ -83,6 +93,11 @@ private:
   /**
    * Mapped allocations.
    */
-  std::unordered_map<Any*,std::shared_ptr<Any>> map;
+  std::map<Any*,std::shared_ptr<Any>> map;
+
+  /**
+   * Launch depth.
+   */
+  int launchDepth;
 };
 }

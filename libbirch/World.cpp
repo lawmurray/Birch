@@ -9,9 +9,17 @@
 
 #include <cassert>
 
+bi::World::World() :
+    cloneSource(nullptr),
+    launchSource(fiberWorld),
+    launchDepth(fiberWorld ? fiberWorld->launchDepth + 1 : 0) {
+  //
+}
+
 bi::World::World(const std::shared_ptr<World>& cloneSource) :
     cloneSource(cloneSource),
-    launchSource(fiberWorld) {
+    launchSource(fiberWorld),
+    launchDepth(cloneSource->launchDepth) {
   //
 }
 
@@ -25,14 +33,19 @@ bool bi::World::hasLaunchAncestor(const World* world) const {
       || (launchSource && launchSource->hasLaunchAncestor(world));
 }
 
+int bi::World::depth() const {
+  return launchDepth;
+}
+
 std::shared_ptr<bi::Any> bi::World::get(const std::shared_ptr<Any>& o) {
   assert(o);
-  auto src = o->getWorld().get();
-  auto dst = this;
-  while (dst && !dst->hasCloneAncestor(src)) {
-    dst = dst->launchSource.get();
-  }
-  if (dst) {
+  int d = depth() - o->getWorld()->depth();
+  if (d >= 0) {
+    auto dst = this;
+    for (int i = 0; i < d && dst; ++i) {
+      dst = dst->launchSource.get();
+    }
+    assert(dst && dst->hasCloneAncestor(o->getWorld().get()));
     return dst->pullAndCopy(o);
   } else {
     return o;
