@@ -13,7 +13,7 @@ bi::ConditionException::ConditionException(const Expression* o) {
   if (o->loc) {
     buf << o->loc;
   }
-  buf << "error: incompatible type in condition";
+  buf << "error: incompatible type in condition\n";
   if (o->loc) {
     buf << o->loc;
   }
