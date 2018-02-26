@@ -13,7 +13,7 @@ inf:Real64 <- 1.0/0.0;
  */
 function log(x:Real64) -> Real64 {
   cpp {{
-  return std::log(x_);
+  return ::log(x_);
   }}
 }
 
@@ -22,7 +22,7 @@ function log(x:Real64) -> Real64 {
  */
 function log(x:Real32) -> Real32 {
   cpp {{
-  return std::logf(x_);
+  return ::logf(x_);
   }}
 }
 
@@ -31,7 +31,7 @@ function log(x:Real32) -> Real32 {
  */
 function log2(x:Real64) -> Real64 {
   cpp {{
-  return std::log2(x_);
+  return ::log2(x_);
   }}
 }
 
@@ -40,7 +40,7 @@ function log2(x:Real64) -> Real64 {
  */
 function log2(x:Real32) -> Real32 {
   cpp {{
-  return std::log2f(x_);
+  return ::log2f(x_);
   }}
 }
 
@@ -49,7 +49,7 @@ function log2(x:Real32) -> Real32 {
  */
 function log10(x:Real64) -> Real64 {
   cpp {{
-  return std::log10(x_);
+  return ::log10(x_);
   }}
 }
 
@@ -58,7 +58,7 @@ function log10(x:Real64) -> Real64 {
  */
 function log10(x:Real32) -> Real32 {
   cpp {{
-  return std::log10f(x_);
+  return ::log10f(x_);
   }}
 }
 
@@ -67,7 +67,7 @@ function log10(x:Real32) -> Real32 {
  */
 function exp(x:Real64) -> Real64 {
   cpp {{
-  return std::exp(x_);
+  return ::exp(x_);
   }}
 }
 
@@ -76,7 +76,7 @@ function exp(x:Real64) -> Real64 {
  */
 function exp(x:Real32) -> Real32 {
   cpp {{
-  return std::expf(x_);
+  return ::expf(x_);
   }}
 }
 
@@ -85,7 +85,7 @@ function exp(x:Real32) -> Real32 {
  */
 function sqrt(x:Real64) -> Real64 {
   cpp {{
-  return std::sqrt(x_);
+  return ::sqrt(x_);
   }}
 }
 
@@ -94,7 +94,7 @@ function sqrt(x:Real64) -> Real64 {
  */
 function sqrt(x:Real32) -> Real32 {
   cpp {{
-  return std::sqrtf(x_);
+  return ::sqrtf(x_);
   }}
 }
 
@@ -103,7 +103,7 @@ function sqrt(x:Real32) -> Real32 {
  */
 function pow(x:Real64, y:Real64) -> Real64 {
   cpp {{
-  return std::pow(x_, y_);
+  return ::pow(x_, y_);
   }}
 }
 
@@ -112,7 +112,7 @@ function pow(x:Real64, y:Real64) -> Real64 {
  */
 function pow(x:Real32, y:Real32) -> Real32 {
   cpp {{
-  return std::powf(x_, y_);
+  return ::powf(x_, y_);
   }}
 }
 
@@ -121,7 +121,7 @@ function pow(x:Real32, y:Real32) -> Real32 {
  */
 function ceil(x:Real64) -> Real64 {
   cpp {{
-  return std::ceil(x_);
+  return ::ceil(x_);
   }}
 }
 
@@ -130,7 +130,7 @@ function ceil(x:Real64) -> Real64 {
  */
 function ceil(x:Real32) -> Real32 {
   cpp {{
-  return std::ceilf(x_);
+  return ::ceilf(x_);
   }}
 }
 
@@ -139,7 +139,7 @@ function ceil(x:Real32) -> Real32 {
  */
 function floor(x:Real64) -> Real64 {
   cpp {{
-  return std::floor(x_);
+  return ::floor(x_);
   }}
 }
 
@@ -148,7 +148,7 @@ function floor(x:Real64) -> Real64 {
  */
 function floor(x:Real32) -> Real32 {
   cpp {{
-  return std::floorf(x_);
+  return ::floorf(x_);
   }}
 }
 
@@ -157,7 +157,7 @@ function floor(x:Real32) -> Real32 {
  */
 function round(x:Real64) -> Real64 {
   cpp {{
-  return std::round(x_);
+  return ::round(x_);
   }}
 }
 
@@ -166,7 +166,7 @@ function round(x:Real64) -> Real64 {
  */
 function round(x:Real32) -> Real32 {
   cpp {{
-  return std::roundf(x_);
+  return ::roundf(x_);
   }}
 }
 
@@ -175,7 +175,7 @@ function round(x:Real32) -> Real32 {
  */
 function sin(x:Real64) -> Real64 {
   cpp {{
-  return std::sin(x_);
+  return ::sin(x_);
   }}
 }
 
@@ -184,7 +184,7 @@ function sin(x:Real64) -> Real64 {
  */
 function sin(x:Real32) -> Real32 {
   cpp {{
-  return std::sinf(x_);
+  return ::sinf(x_);
   }}
 }
 
@@ -193,7 +193,7 @@ function sin(x:Real32) -> Real32 {
  */
 function cos(x:Real64) -> Real64 {
   cpp {{
-  return std::cos(x_);
+  return ::cos(x_);
   }}
 }
 
@@ -202,7 +202,7 @@ function cos(x:Real64) -> Real64 {
  */
 function cos(x:Real32) -> Real32 {
   cpp {{
-  return std::cosf(x_);
+  return ::cosf(x_);
   }}
 }
 
@@ -211,7 +211,7 @@ function cos(x:Real32) -> Real32 {
  */
 function tan(x:Real64) -> Real64 {
   cpp {{
-  return std::tan(x_);
+  return ::tan(x_);
   }}
 }
 
@@ -220,7 +220,7 @@ function tan(x:Real64) -> Real64 {
  */
 function tan(x:Real32) -> Real32 {
   cpp {{
-  return std::tanf(x_);
+  return ::tanf(x_);
   }}
 }
 
@@ -229,7 +229,7 @@ function tan(x:Real32) -> Real32 {
  */
 function asin(x:Real64) -> Real64 {
   cpp {{
-  return std::asin(x_);
+  return ::asin(x_);
   }}
 }
 
@@ -247,7 +247,7 @@ function asin(x:Real32) -> Real32 {
  */
 function acos(x:Real64) -> Real64 {
   cpp {{
-  return std::acos(x_);
+  return ::acos(x_);
   }}
 }
 
@@ -256,7 +256,7 @@ function acos(x:Real64) -> Real64 {
  */
 function acos(x:Real32) -> Real32 {
   cpp {{
-  return std::acosf(x_);
+  return ::acosf(x_);
   }}
 }
 
@@ -265,7 +265,7 @@ function acos(x:Real32) -> Real32 {
  */
 function atan(x:Real64) -> Real64 {
   cpp {{
-  return std::atan(x_);
+  return ::atan(x_);
   }}
 }
 
@@ -274,7 +274,7 @@ function atan(x:Real64) -> Real64 {
  */
 function atan(x:Real32) -> Real32 {
   cpp {{
-  return std::atanf(x_);
+  return ::atanf(x_);
   }}
 }
 
@@ -283,7 +283,7 @@ function atan(x:Real32) -> Real32 {
  */
 function atan2(x:Real64, y:Real64) -> Real64 {
   cpp {{
-  return std::atan2(x_, y_);
+  return ::atan2(x_, y_);
   }}
 }
 
@@ -292,7 +292,7 @@ function atan2(x:Real64, y:Real64) -> Real64 {
  */
 function atan2(x:Real32, y:Real32) -> Real32 {
   cpp {{
-  return std::atan2f(x_, y_);
+  return ::atan2f(x_, y_);
   }}
 }
 
@@ -301,7 +301,7 @@ function atan2(x:Real32, y:Real32) -> Real32 {
  */
 function sinh(x:Real64) -> Real64 {
   cpp {{
-  return std::sinh(x_);
+  return ::sinh(x_);
   }}
 }
 
@@ -310,7 +310,7 @@ function sinh(x:Real64) -> Real64 {
  */
 function sinh(x:Real32) -> Real32 {
   cpp {{
-  return std::sinhf(x_);
+  return ::sinhf(x_);
   }}
 }
 
@@ -319,7 +319,7 @@ function sinh(x:Real32) -> Real32 {
  */
 function cosh(x:Real64) -> Real64 {
   cpp {{
-  return std::cosh(x_);
+  return ::cosh(x_);
   }}
 }
 
@@ -328,7 +328,7 @@ function cosh(x:Real64) -> Real64 {
  */
 function cosh(x:Real32) -> Real32 {
   cpp {{
-  return std::coshf(x_);
+  return ::coshf(x_);
   }}
 }
 
@@ -337,7 +337,7 @@ function cosh(x:Real32) -> Real32 {
  */
 function tanh(x:Real64) -> Real64 {
   cpp {{
-  return std::tanh(x_);
+  return ::tanh(x_);
   }}
 }
 
@@ -346,7 +346,7 @@ function tanh(x:Real64) -> Real64 {
  */
 function tanh(x:Real32) -> Real32 {
   cpp {{
-  return std::tanhf(x_);
+  return ::tanhf(x_);
   }}
 }
 
@@ -355,7 +355,7 @@ function tanh(x:Real32) -> Real32 {
  */
 function asinh(x:Real64) -> Real64 {
   cpp {{
-  return std::asinh(x_);
+  return ::asinh(x_);
   }}
 }
 
@@ -364,7 +364,7 @@ function asinh(x:Real64) -> Real64 {
  */
 function asinh(x:Real32) -> Real32 {
   cpp {{
-  return std::asinhf(x_);
+  return ::asinhf(x_);
   }}
 }
 
@@ -373,7 +373,7 @@ function asinh(x:Real32) -> Real32 {
  */
 function acosh(x:Real64) -> Real64 {
   cpp {{
-  return std::acosh(x_);
+  return ::acosh(x_);
   }}
 }
 
@@ -382,7 +382,7 @@ function acosh(x:Real64) -> Real64 {
  */
 function acosh(x:Real32) -> Real32 {
   cpp {{
-  return std::acoshf(x_);
+  return ::acoshf(x_);
   }}
 }
 
@@ -391,7 +391,7 @@ function acosh(x:Real32) -> Real32 {
  */
 function atanh(x:Real64) -> Real64 {
   cpp {{
-  return std::atanh(x_);
+  return ::atanh(x_);
   }}
 }
 
@@ -400,7 +400,7 @@ function atanh(x:Real64) -> Real64 {
  */
 function atanh(x:Real32) -> Real32 {
   cpp {{
-  return std::atanhf(x_);
+  return ::atanhf(x_);
   }}
 }
 
@@ -409,7 +409,7 @@ function atanh(x:Real32) -> Real32 {
  */
 function erf(x:Real64) -> Real64 {
   cpp {{
-  return std::erf(x_);
+  return ::erf(x_);
   }}
 }
 
@@ -418,7 +418,7 @@ function erf(x:Real64) -> Real64 {
  */
 function erf(x:Real32) -> Real32 {
   cpp {{
-  return std::erff(x_);
+  return ::erff(x_);
   }}
 }
 
@@ -427,7 +427,7 @@ function erf(x:Real32) -> Real32 {
  */
 function erfc(x:Real64) -> Real64 {
   cpp {{
-  return std::erfc(x_);
+  return ::erfc(x_);
   }}
 }
 
@@ -436,7 +436,7 @@ function erfc(x:Real64) -> Real64 {
  */
 function erfc(x:Real32) -> Real32 {
   cpp {{
-  return std::erfcf(x_);
+  return ::erfcf(x_);
   }}
 }
 
@@ -445,7 +445,7 @@ function erfc(x:Real32) -> Real32 {
  */
 function copysign(x:Real64, y:Real64) -> Real64 {
   cpp {{
-  return std::copysign(x_, y_);
+  return ::copysign(x_, y_);
   }}
 }
 
@@ -454,6 +454,6 @@ function copysign(x:Real64, y:Real64) -> Real64 {
  */
 function copysign(x:Real32, y:Real32) -> Real32 {
   cpp {{
-  return std::copysignf(x_, y_);
+  return ::copysignf(x_, y_);
   }}
 }
