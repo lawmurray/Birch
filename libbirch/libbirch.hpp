@@ -39,6 +39,7 @@
 #include <utility>
 #include <functional>
 #include <string>
+#include <fstream>
 
 #include <cstdio>
 #include <cstdlib>
