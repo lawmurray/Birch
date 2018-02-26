@@ -139,7 +139,7 @@ public:
     auto node = this;
     for (auto name : path) {
       if (node->x.type() == typeid(object_type)) {
-        auto& o = boost::get<const object_type>(node->x);
+        auto& o = boost::get<object_type>(node->x);
         auto iter = o.find(name);
         if (iter != o.end()) {
           node = &iter->second;
@@ -188,7 +188,7 @@ public:
   template<class T>
   boost::optional<const T&> get(const std::string& name) const {
     if (x.type() == typeid(object_type)) {
-      auto& o = boost::get<const object_type&>(x);
+      auto& o = boost::get<object_type&>(x);
       auto iter = o.find(name);
       if (iter != o.end()) {
         return iter->second.get<T>();
@@ -225,7 +225,7 @@ public:
   template<class T>
   boost::optional<const T&> get() const {
     if (x.type() == typeid(T)) {
-      return boost::get<const T>(x);
+      return boost::get<T>(x);
     } else {
       return boost::none;
     }
