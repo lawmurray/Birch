@@ -5,8 +5,8 @@ class SMC {
   /**
    * Simulate.
    */
-  function simulate(model:String, input:Reader?, output:Writer?, T:Integer,
-      N:Integer, trigger:Real) {
+  function simulate(model:String, input:Reader?, output:Writer?,
+      diagnostic:Writer?, T:Integer, N:Integer, trigger:Real) {
     f:Model![N];    // particles
     w:Real[N];      // log-weights
     a:Integer[N];   // ancestors
@@ -27,9 +27,12 @@ class SMC {
     }
   
     /* filter */
+    e:Real[T];
+    r:Boolean[T];
     for (t:Integer in 1..T) {
-    stderr.print(t + " ");
-      if (ess(w) < trigger*N) {
+      e[t] <- ess(w);
+      r[t] <- e[t] < trigger*N;
+      if (r[t]) {
         /* resample */
         Z <- Z + log_sum_exp(w) - log(N);
         a <- permute_ancestors(ancestors(w));
@@ -38,7 +41,7 @@ class SMC {
           w[n] <- 0.0;
         }
       }
-    
+
       /* propagate and weight */
       for (n:Integer in 1..N) {
         if (f[n]?) {
@@ -55,6 +58,13 @@ class SMC {
     /* output */
     if (output?) {
       f[ancestor(w)]!.output(output!.push());
+    }
+    
+    /* diagnostic */
+    if (diagnostic?) {
+      diagnostic!.setObject();
+      diagnostic!.setRealArray("ess", e);
+      diagnostic!.setBooleanArray("resample", r);
     }
   }
 }

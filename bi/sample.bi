@@ -9,6 +9,8 @@
  *
  *   - `--output-file`: Name of the output file, if any.
  *
+ *   - `--diagnostic-file`: Name of the diagnostics file, if any.
+ *
  *   - `--nsamples`: Number of samples to draw.
  *
  *   - `--ncheckpoints`: Number of checkpoints for which to run. The
@@ -27,20 +29,28 @@ program sample(
     model:String <- "Model",
     input_file:String?,
     output_file:String?,
+    diagnostic_file:String?,
     nsamples:Integer <- 1,
     ncheckpoints:Integer <- 1,
     nparticles:Integer <- 1,
     ess_trigger:Real <- 0.7) {
-  /* set up input and output */
+  /* set up I/I */
   input:JSONReader?;
-  output:JSONWriter?;
   if (input_file?) {
     input <- JSONReader(input_file!);
     input!.load();
   }
+  
+  output:JSONWriter?;
   if (output_file?) {
     output <- JSONWriter(output_file!);
     output!.setArray();
+  }
+
+  diagnostic:JSONWriter?;
+  if (diagnostic_file?) {
+    diagnostic <- JSONWriter(diagnostic_file!);
+    diagnostic!.setArray();
   }
   
   /* sample */
@@ -48,11 +58,15 @@ program sample(
   x:Model;
   Z:Real;
   for (n:Integer in 1..nsamples) {
-    method.simulate(model, input, output, ncheckpoints, nparticles, ess_trigger);
+    method.simulate(model, input, output, diagnostic, ncheckpoints,
+        nparticles, ess_trigger);
   }
   
-  /* finalize output */
+  /* finalize I/O */
   if (output?) {
     output!.save();
+  }
+  if (diagnostic?) {
+    diagnostic!.save();
   }
 }
