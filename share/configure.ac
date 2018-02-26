@@ -35,6 +35,7 @@ fi
 # Checks for things that will fail under Emscripten, but won't prevent
 # compilation
 if test x$emscripten = xfalse; then  
+  AC_SEARCH_LIBS([dlopen], [dl], [], [])
   AC_CHECK_LIB([profiler], [main], [], [])
 
   # Checks for headers
