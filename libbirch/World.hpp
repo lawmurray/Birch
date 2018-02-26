@@ -25,12 +25,12 @@ public:
   /**
    * Does this world have the given world as a clone ancestor?
    */
-  bool hasCloneAncestor(const std::shared_ptr<World>& o) const;
+  bool hasCloneAncestor(const World* world) const;
 
   /**
    * Does this world have the given world as a launch ancestor?
    */
-  bool hasLaunchAncestor(const std::shared_ptr<World>& o) const;
+  bool hasLaunchAncestor(const World* world) const;
 
   /**
    * Map an object to the present context.

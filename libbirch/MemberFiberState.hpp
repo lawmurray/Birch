@@ -59,7 +59,7 @@ public:
   }
 
   virtual const std::shared_ptr<World>& getWorld() {
-    return this->object.getWorld();
+    return this->object->getWorld();
   }
 
   ObjectType* self() {

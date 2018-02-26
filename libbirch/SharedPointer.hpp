@@ -134,25 +134,25 @@ public:
 
   SharedPointer(const std::nullptr_t& object = nullptr,
       const std::shared_ptr<World>& world = fiberWorld) :
-      world(world) {
+      world(world.get()) {
     //
   }
 
   SharedPointer(const Nil& object, const std::shared_ptr<World>& world =
       fiberWorld) :
-      world(world) {
+      world(world.get()) {
     //
   }
 
   SharedPointer(const std::shared_ptr<Any>& object) :
       object(object),
-      world(fiberWorld) {
+      world(fiberWorld.get()) {
     //
   }
 
   SharedPointer(const SharedPointer<Any>& o) :
       object(o.object),
-      world(fiberClone ? fiberWorld : o.world) {
+      world(fiberClone ? fiberWorld.get() : o.world) {
     //
   }
 
@@ -188,7 +188,7 @@ public:
     return object.get();
   }
 
-  const std::shared_ptr<World>& getWorld() const {
+  const World* getWorld() const {
     return world;
   }
 
@@ -234,6 +234,6 @@ protected:
    * The world to which the object should belong (although it may belong to
    * a clone ancestor of this world).
    */
-  std::shared_ptr<World> world;
+  World* world;
 };
 }
