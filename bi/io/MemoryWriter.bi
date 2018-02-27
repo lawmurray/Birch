@@ -6,16 +6,18 @@ class MemoryWriter < Writer {
   libubjpp::value* group = nullptr;
   }}
 
-  function setObject() {
+  function setObject() -> Writer {
     cpp{{
     group->set(libubjpp::object_type());
     }}
+    return this;
   }
 
-  function setArray() {
+  function setArray() -> Writer {
     cpp{{
     group->set(libubjpp::array_type());
     }}
+    return this;
   }
 
   function setBoolean(value:Boolean) {
@@ -58,16 +60,20 @@ class MemoryWriter < Writer {
     setStringArray([], value);
   }
 
-  function setObject(name:String) {
+  function setObject(name:String) -> Writer {
+    result:MemoryWriter;
     cpp{{
-    group->set(name_, libubjpp::object_type());
+    result_->group = &group->set(name_, libubjpp::object_type());
     }}
+    return result;
   }
 
-  function setArray(name:String) {
+  function setArray(name:String) -> Writer {
+    result:MemoryWriter;
     cpp{{
-    group->set(name_, libubjpp::array_type());
+    result_->group = &group->set(name_, libubjpp::array_type());
     }}
+    return result;
   }
 
   function setBoolean(name:String, value:Boolean) {
@@ -110,16 +116,20 @@ class MemoryWriter < Writer {
     setStringArray([name], value);
   }
   
-  function setObject(path:[String]) {
+  function setObject(path:[String]) -> Writer {
+    result:MemoryWriter;
     cpp{{
-    group->set(path_, libubjpp::object_type());
+    result_->group = &group->set(path_, libubjpp::object_type());
     }}
+    return result;
   }
 
-  function setArray(path:[String]) {
+  function setArray(path:[String]) -> Writer {
+    result:MemoryWriter;
     cpp{{
-    group->set(path_, libubjpp::array_type());
+    result_->group = &group->set(path_, libubjpp::array_type());
     }}
+    return result;
   }
   
   function setBoolean(path:[String], value:Boolean) {

@@ -44,13 +44,11 @@ program sample(
   output:JSONWriter?;
   if (output_file?) {
     output <- JSONWriter(output_file!);
-    output!.setArray();
   }
 
   diagnostic:JSONWriter?;
   if (diagnostic_file?) {
     diagnostic <- JSONWriter(diagnostic_file!);
-    diagnostic!.setArray();
   }
   
   /* sample */

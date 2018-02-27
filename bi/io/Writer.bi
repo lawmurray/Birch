@@ -4,13 +4,17 @@
 class Writer {
   /**
    * Set this as an object.
+   *
+   * Returns: a writer (this one) for modifying the new element.
    */
-  function setObject();
+  function setObject() -> Writer;
   
   /**
    * Set this as an array.
+   *
+   * Returns: a writer (this one) for modifying the new element.
    */
-  function setArray();
+  function setArray() -> Writer;
 
   /**
    * Set this as a Boolean.
@@ -72,15 +76,19 @@ class Writer {
    * Set an object.
    *
    * - name: Name of the entry.
+   *
+   * Returns: a writer for modifying the new element.
    */
-  function setObject(name:String);
+  function setObject(name:String) -> Writer;
   
   /**
    * Set an array.
    *
    * - name: Name of the entry.
+   *
+   * Returns: a writer for modifying the new element.
    */
-  function setArray(name:String);
+  function setArray(name:String) -> Writer;
 
   /**
    * Set a Boolean.
@@ -150,15 +158,19 @@ class Writer {
    * Set an object.
    *
    * - path: Path of the entry.
+   *
+   * Returns: a writer for modifying the new element.
    */
-  function setObject(path:[String]);
+  function setObject(path:[String]) -> Writer;
   
   /**
    * Set an array.
    *
    * - path: Path of the entry.
+   *
+   * Returns: a writer for modifying the new element.
    */
-  function setArray(path:[String]);
+  function setArray(path:[String]) -> Writer;
 
   /**
    * Set a Boolean.

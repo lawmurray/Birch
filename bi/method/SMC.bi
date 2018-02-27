@@ -30,6 +30,7 @@ class SMC {
     e:Real[T];
     r:Boolean[T];
     for (t:Integer in 1..T) {
+      stderr.print(t + " ");
       e[t] <- ess(w);
       r[t] <- e[t] < trigger*N;
       if (r[t]) {
@@ -57,7 +58,13 @@ class SMC {
     
     /* output */
     if (output?) {
-      f[ancestor(w)]!.output(output!.push());
+      b:Integer <- ancestor(w);
+      if (b > 0) {
+        f[b]!.output(output!);
+      } else {
+        stderr.print("error: filter degenerated.\n");
+        assert false;
+      }
     }
     
     /* diagnostic */

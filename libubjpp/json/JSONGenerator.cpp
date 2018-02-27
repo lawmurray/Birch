@@ -14,7 +14,6 @@ void libubjpp::JSONGenerator::apply(const value& value) {
 }
 
 void libubjpp::JSONGenerator::operator()(const object_type& value) {
-  indent();
   write("{\n");
   in();
   for (auto iter = value.begin(); iter != value.end(); ++iter) {
@@ -26,9 +25,10 @@ void libubjpp::JSONGenerator::operator()(const object_type& value) {
     write(": ");
     apply(iter->second);
   }
+  write("\n");
   out();
   indent();
-  write("\n}");
+  write("}");
 }
 
 void libubjpp::JSONGenerator::operator()(const array_type& value) {
