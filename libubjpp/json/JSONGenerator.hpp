@@ -26,9 +26,9 @@ public:
   JSONGenerator(std::ostream& stream);
 
   /**
-   * Output.
+   * Apply the writer to a value.
    */
-  void write(const value& value);
+  void apply(const value& value);
 
   /*
    * Output different value types.
@@ -48,6 +48,31 @@ public:
   void operator()(const noop_type& value);
 
 private:
+  /**
+   * Output a string.
+   */
+  void write(const std::string& value);
+
+  /**
+   * Output a string with escapes.
+   */
+  void escape(const std::string& value);
+
+  /**
+   * Output an indent.
+   */
+  void indent();
+
+  /**
+   * Increase the indentation level.
+   */
+  void in();
+
+  /**
+   * Decrease the indentation level.
+   */
+  void out();
+
   /**
    * Stream.
    */

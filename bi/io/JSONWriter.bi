@@ -30,7 +30,7 @@ class JSONWriter < MemoryWriter {
     std::ofstream stream(path_);
     if (stream.is_open()) {
       libubjpp::JSONGenerator generator(stream);
-      generator.write(top);
+      generator.apply(top);
       success_ = true;
     }
     }}
