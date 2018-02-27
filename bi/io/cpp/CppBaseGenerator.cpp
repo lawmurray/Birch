@@ -191,7 +191,7 @@ void bi::CppBaseGenerator::visit(const Identifier<Parameter>* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Identifier<GlobalVariable>* o) {
-  middle(o->name);
+  middle(o->name << "()");
 }
 
 void bi::CppBaseGenerator::visit(const Identifier<LocalVariable>* o) {
@@ -250,12 +250,25 @@ void bi::CppBaseGenerator::visit(const File* o) {
 }
 
 void bi::CppBaseGenerator::visit(const GlobalVariable* o) {
+  /* C++ does not guarantee static initialization order across compilation
+   * units. Global variables are therefore used through accessor functions
+   * that initialize their values on first use. */
+  start(o->type << "& ");
+  if (!header) {
+    middle("bi::");
+  }
+  middle(o->name << "()");
   if (header) {
-    line("extern " << o->type << ' ' << o->name << ';');
+    finish(';');
   } else {
-    start(o->type << " bi::" << o->name);
+    finish(" {");
+    in();
+    start("static " << o->type << " result");
     genInit(o);
     finish(';');
+    line("return result;");
+    out();
+    line("}\n");
   }
 }
 
