@@ -23,7 +23,7 @@ class SMC {
       }
     } else {
       stderr.print("error: particles terminated prematurely.\n");
-      assert false;
+      exit(1);
     }
   
     /* filter */
@@ -32,6 +32,10 @@ class SMC {
     for (t:Integer in 1..T) {
       stderr.print(t + " ");
       e[t] <- ess(w);
+      if (!(e[t] > 0.0)) {  // may be nan
+        stderr.print("error: filter degenerated.\n");
+        exit(1);
+      }
       r[t] <- e[t] < trigger*N;
       if (r[t]) {
         /* resample */
@@ -49,7 +53,7 @@ class SMC {
           w[n] <- w[n] + f[n]!.w;
         } else {
           stderr.print("error: particles terminated prematurely.\n");
-          assert false;
+          exit(1);
         } 
       }
     }
@@ -63,7 +67,7 @@ class SMC {
         f[b]!.output(output!);
       } else {
         stderr.print("error: filter degenerated.\n");
-        assert false;
+        exit(1);
       }
     }
     
@@ -81,7 +85,7 @@ fiber particle(model:String, input:Reader?) -> Model! {
   x:Model? <- Model?(make(model));
   if (!x?) {
     stderr.print("error: " + model + " must be a subtype of Model with no initialization parameters.\n");
-    assert false;
+    exit(1);
   }
   
   /* input */
