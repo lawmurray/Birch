@@ -40,10 +40,61 @@ function Real64(x:Integer32) -> Real64 {
 /**
  * Convert to Real64.
  */
-function Real64(s:String) -> Real64 {
+function Real64(x:String) -> Real64 {
   cpp{{
-  return ::strtod(s_.c_str(), nullptr);
+  return ::strtod(x_.c_str(), nullptr);
   }}
+}
+
+/**
+ * Convert to Real64.
+ */
+function Real64(x:Real64?) -> Real64? {
+  return x;
+}
+
+/**
+ * Convert to Real64.
+ */
+function Real64(x:Real32?) -> Real64? {
+  if (x?) {
+    return Real64(x!);
+  } else {
+    return nil;
+  }
+}
+
+/**
+ * Convert to Real64.
+ */
+function Real64(x:Integer64?) -> Real64? {
+  if (x?) {
+    return Real64(x!);
+  } else {
+    return nil;
+  }
+}
+
+/**
+ * Convert to Real64.
+ */
+function Real64(x:Integer32?) -> Real64? {
+  if (x?) {
+    return Real64(x!);
+  } else {
+    return nil;
+  }
+}
+
+/**
+ * Convert to Real64.
+ */
+function Real64(x:String?) -> Real64? {
+  if (x?) {
+    return Real64(x!);
+  } else {
+    return nil;
+  }
 }
 
 /*

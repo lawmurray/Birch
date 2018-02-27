@@ -40,10 +40,61 @@ function Integer64(x:Integer32) -> Integer64 {
 /**
  * Convert to Integer64.
  */
-function Integer64(s:String) -> Integer64 {
+function Integer64(x:String) -> Integer64 {
   cpp{{
-  return ::atol(s_.c_str());
+  return ::atol(x_.c_str());
   }}
+}
+
+/**
+ * Convert to Integer64.
+ */
+function Integer64(x:Integer64?) -> Integer64? {
+  return x;
+}
+
+/**
+ * Convert to Integer64.
+ */
+function Integer64(x:Real64?) -> Integer64? {
+  if (x?) {
+    return Integer64(x!);
+  } else {
+    return nil;
+  }
+}
+
+/**
+ * Convert to Integer64.
+ */
+function Integer64(x:Real32?) -> Integer64? {
+  if (x?) {
+    return Integer64(x!);
+  } else {
+    return nil;
+  }
+}
+
+/**
+ * Convert to Integer64.
+ */
+function Integer64(x:Integer32?) -> Integer64? {
+  if (x?) {
+    return Integer64(x!);
+  } else {
+    return nil;
+  }
+}
+
+/**
+ * Convert to Integer64.
+ */
+function Integer64(x:String?) -> Integer64? {
+  if (x?) {
+    return Integer64(x!);
+  } else {
+    return nil;
+  }
 }
 
 /*

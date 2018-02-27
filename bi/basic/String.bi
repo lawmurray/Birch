@@ -4,7 +4,7 @@
 type String;
 
 /**
- * Identity.
+ * Convert to string.
  */
 function String(x:String) -> String {
   return x;
@@ -55,6 +55,68 @@ function String(x:Integer32) -> String {
   cpp{{
   return std::to_string(x_);
   }}
+}
+
+/**
+ * Convert to string.
+ */
+function String(x:String?) -> String? {
+  return x;
+}
+
+/**
+ * Convert to string.
+ */
+function String(x:Boolean?) -> String? {
+  if (x?) {
+    return String(x!);
+  } else {
+    return nil;
+  }
+}
+
+/**
+ * Convert to string.
+ */
+function String(x:Real64?) -> String? {
+  if (x?) {
+    return String(x!);
+  } else {
+    return nil;
+  }
+}
+
+/**
+ * Convert to string.
+ */
+function String(x:Real32?) -> String? {
+  if (x?) {
+    return String(x!);
+  } else {
+    return nil;
+  }
+}
+
+/**
+ * Convert to string.
+ */
+function String(x:Integer64?) -> String? {
+  if (x?) {
+    return String(x!);
+  } else {
+    return nil;
+  }
+}
+
+/**
+ * Convert to string.
+ */
+function String(x:Integer32?) -> String? {
+  if (x?) {
+    return String(x!);
+  } else {
+    return nil;
+  }
 }
 
 /**

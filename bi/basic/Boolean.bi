@@ -18,6 +18,24 @@ function Boolean(x:String) -> Boolean {
 }
 
 /**
+ * Convert to Boolean.
+ */
+function Boolean(x:Boolean?) -> Boolean? {
+  return x;
+}
+
+/**
+ * Convert to Boolean.
+ */
+function Boolean(x:String?) -> Boolean? {
+  if (x?) {
+    return Boolean(x!);
+  } else {
+    return nil;
+  }
+}
+
+/**
  * Logical *and*.
  */
 operator (x:Boolean && y:Boolean) -> Boolean;

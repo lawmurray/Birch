@@ -40,10 +40,61 @@ function Integer32(x:Integer64) -> Integer32 {
 /**
  * Convert to Integer32.
  */
-function Integer32(s:String) -> Integer32 {
+function Integer32(x:String) -> Integer32 {
   cpp{{
-  return ::atoi(s_.c_str());
+  return ::atoi(x_.c_str());
   }}
+}
+
+/**
+ * Convert to Integer32.
+ */
+function Integer32(x:Integer32?) -> Integer32? {
+  return x;
+}
+
+/**
+ * Convert to Integer32.
+ */
+function Integer32(x:Real64?) -> Integer32? {
+  if (x?) {
+    return Integer32(x!);
+  } else {
+    return nil;
+  }
+}
+
+/**
+ * Convert to Integer32.
+ */
+function Integer32(x:Real32?) -> Integer32? {
+  if (x?) {
+    return Integer32(x!);
+  } else {
+    return nil;
+  }
+}
+
+/**
+ * Convert to Integer32.
+ */
+function Integer32(x:Integer64?) -> Integer32? {
+  if (x?) {
+    return Integer32(x!);
+  } else {
+    return nil;
+  }
+}
+
+/**
+ * Convert to Integer32.
+ */
+function Integer32(x:String?) -> Integer32? {
+  if (x?) {
+    return Integer32(x!);
+  } else {
+    return nil;
+  }
 }
 
 /*
