@@ -4,6 +4,20 @@
   "description": "The Birch standard library.",
   "manifest": {
     "source": [
+      "libbirch/global.cpp",
+      "libbirch/libbirch.cpp",
+      "libbirch/Any.cpp",
+      "libbirch/World.cpp",
+      
+      "libubjpp/common/Parser.c",
+      "libubjpp/common/ParserState.cpp",
+      "libubjpp/json/JSONDriver.cpp",
+      "libubjpp/json/JSONGenerator.cpp",
+      "libubjpp/json/JSONTokenizer.cpp",
+      "libubjpp/ubj/UBJDriver.cpp",
+      "libubjpp/ubj/UBJGenerator.cpp",
+      "libubjpp/value.cpp",
+      
       "bi/basic/Boolean.bi",
       "bi/basic/File.bi",
       "bi/basic/Integer.bi",
@@ -82,19 +96,7 @@
       "bi/primitive.bi",
       "bi/resample.bi",
       "bi/sample.bi",
-      "bi/system.bi",
-      "libbirch/Any.cpp",
-      "libbirch/global.cpp",
-      "libbirch/libbirch.cpp",
-      "libbirch/World.cpp",
-      "libubjpp/common/Parser.c",
-      "libubjpp/common/ParserState.cpp",
-      "libubjpp/json/JSONDriver.cpp",
-      "libubjpp/json/JSONGenerator.cpp",
-      "libubjpp/json/JSONTokenizer.cpp",
-      "libubjpp/ubj/UBJDriver.cpp",
-      "libubjpp/ubj/UBJGenerator.cpp",
-      "libubjpp/value.cpp"
+      "bi/system.bi"
     ],
     "header": [
       "libbirch/Any.hpp",
