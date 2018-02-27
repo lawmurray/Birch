@@ -40,16 +40,13 @@ int bi::World::depth() const {
 std::shared_ptr<bi::Any> bi::World::get(const std::shared_ptr<Any>& o) {
   assert(o);
   int d = depth() - o->getWorld()->depth();
-  if (d >= 0) {
-    auto dst = this;
-    for (int i = 0; i < d && dst; ++i) {
-      dst = dst->launchSource.get();
-    }
-    assert(dst && dst->hasCloneAncestor(o->getWorld().get()));
-    return dst->pullAndCopy(o);
-  } else {
-    return o;
+  assert(d >= 0);
+  auto dst = this;
+  for (int i = 0; i < d; ++i) {
+    dst = dst->launchSource.get();
   }
+  assert(dst && dst->hasCloneAncestor(o->getWorld().get()));
+  return dst->pullAndCopy(o);
 }
 
 std::shared_ptr<bi::Any> bi::World::pullAndCopy(
