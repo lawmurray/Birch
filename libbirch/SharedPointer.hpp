@@ -9,6 +9,9 @@
 #include "libbirch/Nil.hpp"
 
 namespace bi {
+template<class T> class SharedPointer;
+template<class T> class WeakPointer;
+
 /**
  * Shared pointer with copy-on-write semantics.
  *
@@ -30,7 +33,7 @@ public:
    * Constructor.
    */
   SharedPointer(const std::nullptr_t& object = nullptr,
-      const std::shared_ptr<World>& world = fiberWorld) :
+      const std::weak_ptr<World>& world = fiberWorld) :
       super_type(object, world) {
     //
   }
@@ -38,7 +41,7 @@ public:
   /**
    * Constructor.
    */
-  SharedPointer(const Nil& object, const std::shared_ptr<World>& world =
+  SharedPointer(const Nil& object, const std::weak_ptr<World>& world =
       fiberWorld) :
       super_type(object, world) {
     //
@@ -133,26 +136,26 @@ public:
   using root_type = this_type;
 
   SharedPointer(const std::nullptr_t& object = nullptr,
-      const std::shared_ptr<World>& world = fiberWorld) :
-      world(world.get()) {
+      std::weak_ptr<World> world = fiberWorld) :
+      world(world) {
     //
   }
 
-  SharedPointer(const Nil& object, const std::shared_ptr<World>& world =
+  SharedPointer(const Nil& object, const std::weak_ptr<World>& world =
       fiberWorld) :
-      world(world.get()) {
+      world(world) {
     //
   }
 
   SharedPointer(const std::shared_ptr<Any>& object) :
       object(object),
-      world(fiberWorld.get()) {
+      world(fiberWorld) {
     //
   }
 
   SharedPointer(const SharedPointer<Any>& o) :
       object(o.object),
-      world(fiberClone ? fiberWorld.get() : o.world) {
+      world(fiberClone ? fiberWorld : o.world) {
     //
   }
 
@@ -171,7 +174,7 @@ public:
   }
 
   SharedPointer<Any>& operator=(const SharedPointer<Any>& o) {
-    assert(world->hasLaunchAncestor(o.world));
+    assert(world.lock()->hasLaunchAncestor(o.world));
     object = o.object;
     return *this;
   }
@@ -184,11 +187,11 @@ public:
   }
 
   Any* get() {
-    object = world->get(object);
+    object = world.lock()->get(object);
     return object.get();
   }
 
-  const World* getWorld() const {
+  const std::weak_ptr<World>& getWorld() {
     return world;
   }
 
@@ -234,6 +237,6 @@ protected:
    * The world to which the object should belong (although it may belong to
    * a clone ancestor of this world).
    */
-  World* world;
+  std::weak_ptr<World> world;
 };
 }

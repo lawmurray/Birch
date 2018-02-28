@@ -5,7 +5,7 @@
 
 #include "libbirch/global.hpp"
 
-#include <map>
+#include <unordered_map>
 
 namespace bi {
 /**
@@ -30,12 +30,12 @@ public:
   /**
    * Does this world have the given world as a clone ancestor?
    */
-  bool hasCloneAncestor(const World* world) const;
+  bool hasCloneAncestor(const std::weak_ptr<World>& world) const;
 
   /**
    * Does this world have the given world as a launch ancestor?
    */
-  bool hasLaunchAncestor(const World* world) const;
+  bool hasLaunchAncestor(const std::weak_ptr<World>& world) const;
 
   /**
    * Get launch depth.
@@ -93,7 +93,7 @@ private:
   /**
    * Mapped allocations.
    */
-  std::map<Any*,std::shared_ptr<Any>> map;
+  std::unordered_map<Any*,std::shared_ptr<Any>> map;
 
   /**
    * Launch depth.

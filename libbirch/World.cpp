@@ -8,6 +8,7 @@
 #include "libbirch/Clone.hpp"
 
 #include <cassert>
+#include <iostream>
 
 bi::World::World() :
     cloneSource(nullptr),
@@ -23,13 +24,15 @@ bi::World::World(const std::shared_ptr<World>& cloneSource) :
   //
 }
 
-bool bi::World::hasCloneAncestor(const World* world) const {
-  return this == world
+bool bi::World::hasCloneAncestor(const std::weak_ptr<World>& world) const {
+  ///@todo Can use weak_from_this() under C++17
+  return this == world.lock().get()
       || (cloneSource && cloneSource->hasCloneAncestor(world));
 }
 
-bool bi::World::hasLaunchAncestor(const World* world) const {
-  return this == world
+bool bi::World::hasLaunchAncestor(const std::weak_ptr<World>& world) const {
+  ///@todo Can use weak_from_this() under C++17
+  return this == world.lock().get()
       || (launchSource && launchSource->hasLaunchAncestor(world));
 }
 
@@ -39,22 +42,22 @@ int bi::World::depth() const {
 
 std::shared_ptr<bi::Any> bi::World::get(const std::shared_ptr<Any>& o) {
   assert(o);
-  int d = depth() - o->getWorld()->depth();
+  int d = depth() - o->getWorld().lock()->depth();
   assert(d >= 0);
   auto dst = this;
   for (int i = 0; i < d; ++i) {
     dst = dst->launchSource.get();
   }
-  assert(dst && dst->hasCloneAncestor(o->getWorld().get()));
+  assert(dst && dst->hasCloneAncestor(o->getWorld()));
   return dst->pullAndCopy(o);
 }
 
 std::shared_ptr<bi::Any> bi::World::pullAndCopy(
     const std::shared_ptr<Any>& o) {
-  assert(o && hasCloneAncestor(o->getWorld().get()));
+  assert(o && hasCloneAncestor(o->getWorld()));
 
-  auto src = o->getWorld().get();
-  if (this == src) {
+  auto src = o->getWorld().lock();
+  if (this == src.get()) {
     return o;
   } else {
     assert(cloneSource);
@@ -74,10 +77,10 @@ std::shared_ptr<bi::Any> bi::World::pullAndCopy(
 
 std::shared_ptr<bi::Any> bi::World::pull(
     const std::shared_ptr<Any>& o) const {
-  assert(o && hasCloneAncestor(o->getWorld().get()));
+  assert(o && hasCloneAncestor(o->getWorld()));
 
-  auto src = o->getWorld().get();
-  if (this == src) {
+  auto src = o->getWorld().lock();
+  if (this == src.get()) {
     return o;
   } else {
     assert(cloneSource);

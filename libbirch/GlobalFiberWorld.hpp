@@ -28,6 +28,13 @@ public:
     //
   }
 
+  /**
+   * Destructor.
+   */
+  virtual ~GlobalFiberWorld() {
+    //
+  }
+
 protected:
   /**
    * Fiber world.

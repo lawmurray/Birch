@@ -37,7 +37,7 @@ public:
   template<class ... Args>
   MemberFiberState(const int label, const int nlabels,
       const SharedPointer<ObjectType>& object, Args ... args) :
-      ArgumentType({ args... }),
+      ArgumentType( { args... }),
       MemberFiberWorld<ObjectType>(object),
       Enter(getWorld()),  // enters owning object's world
       LocalType(),
@@ -58,7 +58,14 @@ public:
     exit();  // exits owning object's world
   }
 
-  virtual const std::shared_ptr<World>& getWorld() {
+  /**
+   * Destructor.
+   */
+  virtual ~MemberFiberState() {
+    //
+  }
+
+  virtual const std::weak_ptr<World>& getWorld() {
     return this->object->getWorld();
   }
 

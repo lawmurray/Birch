@@ -23,6 +23,13 @@ public:
     //
   }
 
+  /**
+   * Destructor.
+   */
+  virtual ~MemberFiberWorld() {
+    //
+  }
+
 protected:
   /**
    * Owning object.

@@ -58,7 +58,14 @@ public:
     exit();  // exits fiber's world
   }
 
-  virtual const std::shared_ptr<World>& getWorld() {
+  /**
+   * Destructor.
+   */
+  virtual ~GlobalFiberState() {
+    //
+  }
+
+  virtual const std::weak_ptr<World>& getWorld() {
     return world;
   }
 };

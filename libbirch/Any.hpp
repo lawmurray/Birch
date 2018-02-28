@@ -3,9 +3,9 @@
  */
 #pragma once
 
-#include "libbirch/SharedPointer.hpp"
-
 namespace bi {
+template<class T> class SharedPointer;
+
 /**
  * Base class for all class types.
  *
@@ -36,7 +36,7 @@ public:
   /**
    * Get the object world.
    */
-  const std::shared_ptr<World>& getWorld();
+  const std::weak_ptr<World>& getWorld();
 
   /**
    * Create a shared pointer from this object.
@@ -51,6 +51,6 @@ protected:
   /**
    * The world to which this object belongs.
    */
-  std::shared_ptr<World> world;
+  std::weak_ptr<World> world;
 };
 }

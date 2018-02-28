@@ -78,32 +78,32 @@ public:
   using root_type = this_type;
 
   WeakPointer(const std::nullptr_t& object = nullptr) :
-      world(fiberWorld.get()) {
+      world(fiberWorld) {
     //
   }
 
   WeakPointer(const Nil& object) :
-      world(fiberWorld.get()) {
+      world(fiberWorld) {
     //
   }
 
   WeakPointer(const WeakPointer<Any>& o) :
       object(o.object),
-      world(fiberClone ? fiberWorld.get() : o.world) {
+      world(fiberClone ? fiberWorld : o.world) {
     //
   }
 
   template<class U>
   WeakPointer(const WeakPointer<U>& o) :
       object(o.object),
-      world(fiberWorld.get()) {
+      world(fiberWorld) {
     //
   }
 
   template<class U>
   WeakPointer(const SharedPointer<U>& o) :
       object(o.object),
-      world(fiberWorld.get()) {
+      world(fiberWorld) {
     //
   }
 
@@ -114,7 +114,7 @@ public:
   }
 
   WeakPointer<Any>& operator=(const WeakPointer<Any>& o) {
-    assert(world->hasLaunchAncestor(o.world));
+    assert(world.lock()->hasLaunchAncestor(o.world));
     object = o.object;
     return *this;
   }
@@ -129,6 +129,6 @@ protected:
    * The world to which the object should belong (although it may belong to
    * a clone ancestor of this world).
    */
-  World* world;
+  std::weak_ptr<World> world;
 };
 }

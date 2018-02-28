@@ -34,6 +34,17 @@ public:
   }
 
   /**
+   * Constructor.
+   *
+   * @param world The world to enter.
+   */
+  Enter(const std::weak_ptr<World>& world) :
+      prevWorld(world.lock()) {
+    assert(prevWorld);
+    std::swap(prevWorld, fiberWorld);
+  }
+
+  /**
    * Destructor.
    */
   ~Enter() {
@@ -46,7 +57,7 @@ public:
   void exit() {
     if (prevWorld) {
       std::swap(prevWorld, fiberWorld);
-      prevWorld.reset();
+      prevWorld = nullptr;
     }
   }
 
