@@ -176,6 +176,9 @@ function simulate_dirichlet_multinomial(n:Integer, α:Real[_]) -> Integer[_] {
  * Simulate a categorical variate with Chinese restaurant process prior.
  */
 function simulate_crp_categorical(α:Real, θ:Real, n:Integer[_], N:Integer) -> Integer {
+  assert N >= 0;
+  assert sum(n) == N;
+
   k:Integer <- 0;
   K:Integer <- length(n);
   if (N == 0) {
@@ -183,13 +186,13 @@ function simulate_crp_categorical(α:Real, θ:Real, n:Integer[_], N:Integer) -> 
     k <- 1;
   } else {
     u:Real <- simulate_uniform(0.0, N + θ);
-    if (u < K*α + θ) {
+    U:Real <- K*α + θ;
+    if (u < U) {
       /* new component */
       k <- K + 1;
     } else {
       /* existing component */
-      U:Real <- K*α - θ;
-      while (k <= K && U <= u) {
+      while (k < K && u > U) {
         k <- k + 1;
         U <- U + n[k] - α;
       }
