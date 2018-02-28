@@ -39,7 +39,7 @@ public:
   GlobalFiberState(const int label, const int nlabels, Args ... args) :
       ArgumentType( { args... }),
       GlobalFiberWorld(),  // creates fiber's world
-      Enter(getWorld()),  // enters fiber's world
+      Enter(world),  // enters fiber's world
       LocalType(),
       FiberState<YieldType>(label, nlabels) {
     exit();  // exits fiber's world
@@ -52,7 +52,7 @@ public:
       const GlobalFiberState<YieldType,ArgumentType,LocalType>& o) :
       ArgumentType(o),
       GlobalFiberWorld(o.world),  // creates fiber's world
-      Enter(getWorld()),  // enters fiber's world
+      Enter(world),  // enters fiber's world
       LocalType(o),
       FiberState<YieldType>(o) {
     exit();  // exits fiber's world
@@ -65,7 +65,7 @@ public:
     //
   }
 
-  virtual const std::weak_ptr<World>& getWorld() {
+  virtual std::shared_ptr<World> getWorld() {
     return world;
   }
 };

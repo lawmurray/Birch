@@ -39,7 +39,7 @@ public:
       const SharedPointer<ObjectType>& object, Args ... args) :
       ArgumentType( { args... }),
       MemberFiberWorld<ObjectType>(object),
-      Enter(getWorld()),  // enters owning object's world
+      Enter(MemberFiberWorld<ObjectType>::object->getWorld()),  // enters owning object's world
       LocalType(),
       FiberState<YieldType>(label, nlabels) {
     exit();  // exits owning object's world
@@ -52,7 +52,7 @@ public:
       const MemberFiberState<YieldType,ObjectType,ArgumentType,LocalType>& o) :
       ArgumentType(o),
       MemberFiberWorld<ObjectType>(o),
-      Enter(getWorld()),  // enters owning object's world
+      Enter(MemberFiberWorld<ObjectType>::object->getWorld()),  // enters owning object's world
       LocalType(o),
       FiberState<YieldType>(o) {
     exit();  // exits owning object's world
@@ -65,8 +65,8 @@ public:
     //
   }
 
-  virtual const std::weak_ptr<World>& getWorld() {
-    return this->object->getWorld();
+  virtual std::shared_ptr<World> getWorld() {
+    return this->object->getWorld().lock();
   }
 
   ObjectType* self() {

@@ -21,7 +21,12 @@ public:
   World();
 
   /**
-   * Constructor.
+   * Constructor for root.
+   */
+  World(int);
+
+  /**
+   * Constructor for clone.
    *
    * @param cloneSource Clone parent.
    */

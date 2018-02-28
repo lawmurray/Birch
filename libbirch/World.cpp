@@ -8,12 +8,18 @@
 #include "libbirch/Clone.hpp"
 
 #include <cassert>
-#include <iostream>
 
 bi::World::World() :
     cloneSource(nullptr),
     launchSource(fiberWorld),
-    launchDepth(fiberWorld ? fiberWorld->launchDepth + 1 : 0) {
+    launchDepth(fiberWorld->launchDepth + 1) {
+  //
+}
+
+bi::World::World(int) :
+    cloneSource(nullptr),
+    launchSource(nullptr),
+    launchDepth(0) {
   //
 }
 

@@ -43,7 +43,7 @@ public:
   /**
    * Get the world in which the fiber runs.
    */
-  virtual const std::weak_ptr<World>& getWorld() = 0;
+  virtual std::shared_ptr<World> getWorld() = 0;
 
   /**
    * Run to next yield point.
