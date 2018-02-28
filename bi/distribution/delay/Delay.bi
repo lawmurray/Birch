@@ -18,7 +18,7 @@ class Delay {
   /**
    * Child, if one exists and it is on the M-path.
    */
-  child:Delay?;
+  child:Delay&;
   
   /**
    * Weight.
@@ -41,6 +41,7 @@ class Delay {
    * Is this the terminal node of an M-path?
    */
   function isTerminal() -> Boolean {
+    child:Delay? <- this.child;
     return isMarginalized() && !(child?);
   }
 
@@ -132,6 +133,7 @@ class Delay {
    */
   function graft() {
     if (isMarginalized()) {
+      child:Delay? <- this.child;
       if (child?) {
         child!.prune();
         removeChild();
@@ -160,6 +162,7 @@ class Delay {
   function prune() {
     assert isMarginalized();
     
+    child:Delay? <- this.child;
     if (child?) {
       child!.prune();
       removeChild();
