@@ -93,7 +93,7 @@ private:
   /**
    * The world from which this world was launched.
    */
-  std::shared_ptr<World> launchSource;
+  std::weak_ptr<World> launchSource;
 
   /**
    * Mapped allocations.

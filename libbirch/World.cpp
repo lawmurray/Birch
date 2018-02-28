@@ -10,15 +10,12 @@
 #include <cassert>
 
 bi::World::World() :
-    cloneSource(nullptr),
     launchSource(fiberWorld),
     launchDepth(fiberWorld->launchDepth + 1) {
   //
 }
 
 bi::World::World(int) :
-    cloneSource(nullptr),
-    launchSource(nullptr),
     launchDepth(0) {
   //
 }
@@ -38,6 +35,7 @@ bool bi::World::hasCloneAncestor(const std::weak_ptr<World>& world) const {
 
 bool bi::World::hasLaunchAncestor(const std::weak_ptr<World>& world) const {
   ///@todo Can use weak_from_this() under C++17
+  auto launchSource = this->launchSource.lock();
   return this == world.lock().get()
       || (launchSource && launchSource->hasLaunchAncestor(world));
 }
@@ -52,9 +50,10 @@ std::shared_ptr<bi::Any> bi::World::get(const std::shared_ptr<Any>& o) {
   assert(d >= 0);
   auto dst = this;
   for (int i = 0; i < d; ++i) {
-    dst = dst->launchSource.get();
+    dst = dst->launchSource.lock().get();
+    assert(dst);
   }
-  assert(dst && dst->hasCloneAncestor(o->getWorld()));
+  assert(dst->hasCloneAncestor(o->getWorld()));
   return dst->pullAndCopy(o);
 }
 
