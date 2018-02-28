@@ -15,12 +15,12 @@ class LinearGaussianSSMState < State {
   y:Random<Real>;
 
   fiber simulate(θ:LinearGaussianSSMParameter) -> Real! {
-    x <~ Gaussian(0.0, θ.σ2_x);
+    x ~ Gaussian(0.0, θ.σ2_x);
     y ~ Gaussian(x, θ.σ2_y);
   }
 
   fiber simulate(χ:LinearGaussianSSMState, θ:LinearGaussianSSMParameter) -> Real! {
-    x <~ Gaussian(θ.a*χ.x, θ.σ2_x);
+    x ~ Gaussian(θ.a*χ.x, θ.σ2_x);
     y ~ Gaussian(x, θ.σ2_y);
   }
 
