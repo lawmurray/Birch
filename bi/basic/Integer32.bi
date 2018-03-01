@@ -1,14 +1,7 @@
 /**
- * 32-bit integer.
+ * 32-bit signed integer.
  */
 type Integer32 < Integer64;
-
-/**
- * Convert to Integer32.
- */
-function Integer32(x:Integer32) -> Integer32 {
-  return x;
-}
 
 /**
  * Convert to Integer32.
@@ -40,17 +33,26 @@ function Integer32(x:Integer64) -> Integer32 {
 /**
  * Convert to Integer32.
  */
-function Integer32(x:String) -> Integer32 {
+function Integer32(x:Integer32) -> Integer32 {
+  return x;
+}
+
+/**
+ * Convert to Integer32.
+ */
+function Integer32(x:Integer16) -> Integer32 {
   cpp{{
-  return ::atoi(x_.c_str());
+  return static_cast<bi::type::Integer32_>(x_);
   }}
 }
 
 /**
  * Convert to Integer32.
  */
-function Integer32(x:Integer32?) -> Integer32? {
-  return x;
+function Integer32(x:String) -> Integer32 {
+  cpp{{
+  return ::atoi(x_.c_str());
+  }}
 }
 
 /**
@@ -79,6 +81,24 @@ function Integer32(x:Real32?) -> Integer32? {
  * Convert to Integer32.
  */
 function Integer32(x:Integer64?) -> Integer32? {
+  if (x?) {
+    return Integer32(x!);
+  } else {
+    return nil;
+  }
+}
+
+/**
+ * Convert to Integer32.
+ */
+function Integer32(x:Integer32?) -> Integer32? {
+  return x;
+}
+
+/**
+ * Convert to Integer32.
+ */
+function Integer32(x:Integer16?) -> Integer32? {
   if (x?) {
     return Integer32(x!);
   } else {

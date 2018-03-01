@@ -40,6 +40,15 @@ function Real64(x:Integer32) -> Real64 {
 /**
  * Convert to Real64.
  */
+function Real64(x:Integer16) -> Real64 {
+  cpp{{
+  return static_cast<bi::type::Real64_>(x_);
+  }}
+}
+
+/**
+ * Convert to Real64.
+ */
 function Real64(x:String) -> Real64 {
   cpp{{
   return ::strtod(x_.c_str(), nullptr);
@@ -79,6 +88,17 @@ function Real64(x:Integer64?) -> Real64? {
  * Convert to Real64.
  */
 function Real64(x:Integer32?) -> Real64? {
+  if (x?) {
+    return Real64(x!);
+  } else {
+    return nil;
+  }
+}
+
+/**
+ * Convert to Real64.
+ */
+function Real64(x:Integer16?) -> Real64? {
   if (x?) {
     return Real64(x!);
   } else {

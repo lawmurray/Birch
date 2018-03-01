@@ -1,5 +1,5 @@
 /**
- * 64-bit integer.
+ * 64-bit signed integer.
  */
 type Integer64 < Real64;
 
@@ -32,6 +32,15 @@ function Integer64(x:Real32) -> Integer64 {
  * Convert to Integer64.
  */
 function Integer64(x:Integer32) -> Integer64 {
+  cpp{{
+  return static_cast<bi::type::Integer64_>(x_);
+  }}
+}
+
+/**
+ * Convert to Integer64.
+ */
+function Integer64(x:Integer16) -> Integer64 {
   cpp{{
   return static_cast<bi::type::Integer64_>(x_);
   }}
@@ -79,6 +88,17 @@ function Integer64(x:Real32?) -> Integer64? {
  * Convert to Integer64.
  */
 function Integer64(x:Integer32?) -> Integer64? {
+  if (x?) {
+    return Integer64(x!);
+  } else {
+    return nil;
+  }
+}
+
+/**
+ * Convert to Integer64.
+ */
+function Integer64(x:Integer16?) -> Integer64? {
   if (x?) {
     return Integer64(x!);
   } else {

@@ -62,6 +62,7 @@ using Real64_ = double;
 using Real32_ = float;
 using Integer64_ = int64_t;
 using Integer32_ = int32_t;
+using Integer16_ = int16_t;
 using String_ = std::string;
 using File_ = FILE*;
 }
