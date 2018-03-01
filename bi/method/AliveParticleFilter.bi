@@ -4,6 +4,17 @@
  * than $N$ particles in total as with the standard particle filter.
  */
 class AliveParticleFilter < ParticleFilter {
+  /**
+   * For each checkpoint, the number of propagations that were performed to
+   * achieve $N$ acceptances.
+   */
+  propagations:Integer[_];
+
+  function initialize(T:Integer, N:Integer, trigger:Real) {
+    super.initialize(T, N, trigger);
+    propagations <- vector(0, T);
+  }
+
   function step(t:Integer) {
     /* diagnostics */
     e[t] <- ess(w);
@@ -61,5 +72,15 @@ class AliveParticleFilter < ParticleFilter {
     W:Real <- log_sum_exp(w);
     w <- w - W;
     Z <- Z + W - log(P - 1);
+    
+    /* diagnostics */
+    propagations[t] <- P;
+  }
+
+  function diagnose(writer:Writer?) {
+    super.diagnose(writer);
+    if (writer?) {
+      writer!.setIntegerArray("propagations", propagations);
+    }
   }
 }

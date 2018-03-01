@@ -55,18 +55,7 @@ class ParticleFilter {
    */
   function filter(model:String, inputReader:Reader?, outputWriter:Writer?,
       diagnosticWriter:Writer?, T:Integer, N:Integer, trigger:Real) {
-    /* initialize state */
-    f1:Model![N];
-    this.f <- f1;
-    this.w <- vector(-log(N), N);
-    this.e <- vector(0.0, T);
-    this.r <- vector(false, T);
-    this.T <- T;
-    this.N <- N;
-    this.trigger <- trigger;
-    this.Z <- 0.0;
-
-    /* filter */
+    initialize(T, N, trigger);
     start(model, inputReader);
     for (t:Integer in 1..T) {
       stderr.print(t + " ");
@@ -76,6 +65,25 @@ class ParticleFilter {
     stderr.print(Z + "\n");    
     output(outputWriter);
     diagnose(diagnosticWriter);
+  }
+
+  /**
+   * Initialize the method.
+   *
+   * - T: Number of checkpoints.
+   * - N: Number of particles.
+   * - trigger: Relative ESS below which resampling should be triggered.
+   */
+  function initialize(T:Integer, N:Integer, trigger:Real) {
+    f1:Model![N];
+    this.f <- f1;
+    this.w <- vector(-log(N), N);
+    this.e <- vector(0.0, T);
+    this.r <- vector(false, T);
+    this.T <- T;
+    this.N <- N;
+    this.trigger <- trigger;
+    this.Z <- 0.0;
   }
 
   /**
