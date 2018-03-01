@@ -5,6 +5,8 @@
  *
  *   - `--model`: Name of the model class to use.
  *
+ *   - `--method`: Name of the method class to use.
+ *
  *   - `--input-file`: Name of the input file, if any.
  *
  *   - `--output-file`: Name of the output file, if any.
@@ -17,7 +19,7 @@
  *     interpretation of this is model-dependent, e.g. for a Markov model
  *     it is the number of states.
  *
- * SMC method-specific options:
+ * Particle filter-specific options:
  *
  *   - `--nparticles`: Number of particles to use.
  *
@@ -27,6 +29,7 @@
  */
 program sample(
     model:String <- "Model",
+    method:String <- "ParticleFilter",
     input_file:String?,
     output_file:String?,
     diagnostic_file:String?,
@@ -34,29 +37,32 @@ program sample(
     ncheckpoints:Integer <- 1,
     nparticles:Integer <- 1,
     ess_trigger:Real <- 0.7) {
-  /* set up I/I */
+  /* set up I/O */
   input:JSONReader?;
+  output:JSONWriter?;
+  diagnostic:JSONWriter?;
+  
   if (input_file?) {
     input <- JSONReader(input_file!);
     input!.load();
   }
-  
-  output:JSONWriter?;
   if (output_file?) {
     output <- JSONWriter(output_file!);
   }
-
-  diagnostic:JSONWriter?;
   if (diagnostic_file?) {
     diagnostic <- JSONWriter(diagnostic_file!);
   }
   
+  /* set up method */
+  filter:ParticleFilter? <- ParticleFilter?(make(method));
+  if (!filter?) {
+    stderr.print("error: " + method + " must be a subtype of ParticleFilter with no initialization parameters.\n");
+    exit(1);
+  }
+
   /* sample */
-  method:SMC;
-  x:Model;
-  Z:Real;
   for (n:Integer in 1..nsamples) {
-    method.simulate(model, input, output, diagnostic, ncheckpoints,
+    filter!.filter(model, input, output, diagnostic, ncheckpoints,
         nparticles, ess_trigger);
   }
   
