@@ -58,13 +58,6 @@ public:
     exit();  // exits owning object's world
   }
 
-  /**
-   * Destructor.
-   */
-  virtual ~MemberFiberState() {
-    //
-  }
-
   virtual std::shared_ptr<World> getWorld() {
     return this->object->getWorld().lock();
   }
