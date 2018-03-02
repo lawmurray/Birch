@@ -49,6 +49,15 @@ function Integer16(x:Integer16) -> Integer16 {
 /**
  * Convert to Integer16.
  */
+function Integer16(x:Integer8) -> Integer16 {
+  cpp{{
+  return static_cast<bi::type::Integer8_>(x_);
+  }}
+}
+
+/**
+ * Convert to Integer16.
+ */
 function Integer16(x:String) -> Integer16 {
   cpp{{
   return ::atoi(x_.c_str());
@@ -104,6 +113,17 @@ function Integer16(x:Integer32?) -> Integer16? {
  */
 function Integer16(x:Integer16?) -> Integer16? {
   return x;
+}
+
+/**
+ * Convert to Integer16.
+ */
+function Integer16(x:Integer8?) -> Integer16? {
+  if (x?) {
+    return Integer16(x!);
+  } else {
+    return nil;
+  }
 }
 
 /**

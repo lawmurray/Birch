@@ -49,6 +49,15 @@ function Integer64(x:Integer16) -> Integer64 {
 /**
  * Convert to Integer64.
  */
+function Integer64(x:Integer8) -> Integer64 {
+  cpp{{
+  return static_cast<bi::type::Integer64_>(x_);
+  }}
+}
+
+/**
+ * Convert to Integer64.
+ */
 function Integer64(x:String) -> Integer64 {
   cpp{{
   return ::atol(x_.c_str());
@@ -99,6 +108,17 @@ function Integer64(x:Integer32?) -> Integer64? {
  * Convert to Integer64.
  */
 function Integer64(x:Integer16?) -> Integer64? {
+  if (x?) {
+    return Integer64(x!);
+  } else {
+    return nil;
+  }
+}
+
+/**
+ * Convert to Integer64.
+ */
+function Integer64(x:Integer8?) -> Integer64? {
   if (x?) {
     return Integer64(x!);
   } else {

@@ -21,6 +21,7 @@
       "bi/basic/Boolean.bi",
       "bi/basic/File.bi",
       "bi/basic/Integer.bi",
+      "bi/basic/Integer8.bi",
       "bi/basic/Integer16.bi",
       "bi/basic/Integer32.bi",
       "bi/basic/Integer64.bi",

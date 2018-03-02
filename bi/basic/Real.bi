@@ -41,6 +41,13 @@ function Real(x:Integer16) -> Real {
 /**
  * Convert to Real.
  */
+function Real(x:Integer8) -> Real {
+  return Real64(x);
+}
+
+/**
+ * Convert to Real.
+ */
 function Real(x:String) -> Real {
   return Real64(x);
 }
@@ -77,6 +84,13 @@ function Real(x:Integer32?) -> Real? {
  * Convert to Real.
  */
 function Real(x:Integer16?) -> Real? {
+  return Real64(x);
+}
+
+/**
+ * Convert to Real.
+ */
+function Real(x:Integer8?) -> Real? {
   return Real64(x);
 }
 

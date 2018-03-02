@@ -49,6 +49,15 @@ function Integer32(x:Integer16) -> Integer32 {
 /**
  * Convert to Integer32.
  */
+function Integer32(x:Integer8) -> Integer32 {
+  cpp{{
+  return static_cast<bi::type::Integer32_>(x_);
+  }}
+}
+
+/**
+ * Convert to Integer32.
+ */
 function Integer32(x:String) -> Integer32 {
   cpp{{
   return ::atoi(x_.c_str());
@@ -99,6 +108,17 @@ function Integer32(x:Integer32?) -> Integer32? {
  * Convert to Integer32.
  */
 function Integer32(x:Integer16?) -> Integer32? {
+  if (x?) {
+    return Integer32(x!);
+  } else {
+    return nil;
+  }
+}
+
+/**
+ * Convert to Integer32.
+ */
+function Integer32(x:Integer8?) -> Integer32? {
   if (x?) {
     return Integer32(x!);
   } else {

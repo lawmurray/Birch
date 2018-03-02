@@ -49,6 +49,15 @@ function Real32(x:Integer16) -> Real32 {
 /**
  * Convert to Real32.
  */
+function Real32(x:Integer8) -> Real32 {
+  cpp{{
+  return static_cast<bi::type::Real32_>(x_);
+  }}
+}
+
+/**
+ * Convert to Real32.
+ */
 function Real32(x:String) -> Real32 {
   cpp{{
   return ::strtof(x_.c_str(), nullptr);
@@ -99,6 +108,17 @@ function Real32(x:Integer32?) -> Real32? {
  * Convert to Real32.
  */
 function Real32(x:Integer16?) -> Real32? {
+  if (x?) {
+    return Real32(x!);
+  } else {
+    return nil;
+  }
+}
+
+/**
+ * Convert to Real32.
+ */
+function Real32(x:Integer8?) -> Real32? {
   if (x?) {
     return Real32(x!);
   } else {

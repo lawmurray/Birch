@@ -62,6 +62,15 @@ function String(x:Integer16) -> String {
 /**
  * Convert to string.
  */
+function String(x:Integer8) -> String {
+  cpp{{
+  return std::to_string(x_);
+  }}
+}
+
+/**
+ * Convert to string.
+ */
 function String(x:String) -> String {
   return x;
 }
@@ -125,6 +134,17 @@ function String(x:Integer32?) -> String? {
  * Convert to string.
  */
 function String(x:Integer16?) -> String? {
+  if (x?) {
+    return String(x!);
+  } else {
+    return nil;
+  }
+}
+
+/**
+ * Convert to string.
+ */
+function String(x:Integer8?) -> String? {
   if (x?) {
     return String(x!);
   } else {
