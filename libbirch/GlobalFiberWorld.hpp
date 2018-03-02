@@ -23,8 +23,8 @@ public:
   /**
    * Constructor.
    */
-  GlobalFiberWorld(const std::shared_ptr<World>& parent) :
-      world(std::make_shared<World>(parent)) {
+  GlobalFiberWorld(const std::shared_ptr<World> cloneSource) :
+      world(std::make_shared<World>(cloneSource)) {
     //
   }
 

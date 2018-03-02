@@ -18,7 +18,7 @@ template<class T> class WeakPointer;
 /**
  * The world of the currently running fiber.
  */
-extern std::shared_ptr<World> fiberWorld;
+extern World* fiberWorld;
 
 /**
  * Flag set when an object is being cloned.

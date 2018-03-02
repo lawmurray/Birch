@@ -36,7 +36,7 @@ public:
   /**
    * Get the object world.
    */
-  const std::weak_ptr<World>& getWorld();
+  World* getWorld();
 
   /**
    * Create a shared pointer from this object.
@@ -51,6 +51,6 @@ protected:
   /**
    * The world to which this object belongs.
    */
-  std::weak_ptr<World> world;
+  World* world;
 };
 }

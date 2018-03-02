@@ -32,8 +32,8 @@ public:
   /**
    * Constructor.
    */
-  SharedPointer(const std::nullptr_t& object = nullptr,
-      const std::weak_ptr<World>& world = fiberWorld) :
+  SharedPointer(const std::nullptr_t& object = nullptr, World* world =
+      fiberWorld) :
       super_type(object, world) {
     //
   }
@@ -41,8 +41,7 @@ public:
   /**
    * Constructor.
    */
-  SharedPointer(const Nil& object, const std::weak_ptr<World>& world =
-      fiberWorld) :
+  SharedPointer(const Nil& object, World* world = fiberWorld) :
       super_type(object, world) {
     //
   }
@@ -135,14 +134,13 @@ public:
   using this_type = SharedPointer<value_type>;
   using root_type = this_type;
 
-  SharedPointer(const std::nullptr_t& object = nullptr,
-      std::weak_ptr<World> world = fiberWorld) :
+  SharedPointer(const std::nullptr_t& object = nullptr, World* world =
+      fiberWorld) :
       world(world) {
     //
   }
 
-  SharedPointer(const Nil& object, const std::weak_ptr<World>& world =
-      fiberWorld) :
+  SharedPointer(const Nil& object, World* world = fiberWorld) :
       world(world) {
     //
   }
@@ -174,7 +172,7 @@ public:
   }
 
   SharedPointer<Any>& operator=(const SharedPointer<Any>& o) {
-    assert(world.lock()->hasLaunchAncestor(o.world));
+    assert(world->hasLaunchAncestor(o.world));
     object = o.object;
     return *this;
   }
@@ -187,11 +185,11 @@ public:
   }
 
   Any* get() {
-    object = world.lock()->get(object);
+    object = world->get(object);
     return object.get();
   }
 
-  const std::weak_ptr<World>& getWorld() {
+  World* getWorld() {
     return world;
   }
 
@@ -237,6 +235,6 @@ protected:
    * The world to which the object should belong (although it may belong to
    * a clone ancestor of this world).
    */
-  std::weak_ptr<World> world;
+  World* world;
 };
 }

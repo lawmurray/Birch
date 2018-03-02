@@ -35,12 +35,12 @@ public:
   /**
    * Does this world have the given world as a clone ancestor?
    */
-  bool hasCloneAncestor(const std::weak_ptr<World>& world) const;
+  bool hasCloneAncestor(World* world) const;
 
   /**
    * Does this world have the given world as a launch ancestor?
    */
-  bool hasLaunchAncestor(const std::weak_ptr<World>& world) const;
+  bool hasLaunchAncestor(World* world) const;
 
   /**
    * Get launch depth.
@@ -93,7 +93,7 @@ private:
   /**
    * The world from which this world was launched.
    */
-  std::weak_ptr<World> launchSource;
+  World* launchSource;
 
   /**
    * Mapped allocations.

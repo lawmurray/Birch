@@ -114,7 +114,7 @@ public:
   }
 
   WeakPointer<Any>& operator=(const WeakPointer<Any>& o) {
-    assert(world.lock()->hasLaunchAncestor(o.world));
+    assert(world->hasLaunchAncestor(o.world));
     object = o.object;
     return *this;
   }
@@ -129,6 +129,6 @@ protected:
    * The world to which the object should belong (although it may belong to
    * a clone ancestor of this world).
    */
-  std::weak_ptr<World> world;
+  World* world;
 };
 }

@@ -20,10 +20,10 @@ namespace bi {
  */
 template<class YieldType, class ArgumentType, class LocalType>
 class GlobalFiberState:
-    public ArgumentType,
+    protected ArgumentType,
     public GlobalFiberWorld,
-    public Enter,
-    public LocalType,
+    protected Enter,
+    protected LocalType,
     public FiberState<YieldType> {
 public:
   /**
@@ -37,9 +37,9 @@ public:
    */
   template<class ... Args>
   GlobalFiberState(const int label, const int nlabels, Args ... args) :
-      ArgumentType( { args... }),
+      ArgumentType{args...},
       GlobalFiberWorld(),  // creates fiber's world
-      Enter(world),  // enters fiber's world
+      Enter(getWorld()),  // enters fiber's world
       LocalType(),
       FiberState<YieldType>(label, nlabels) {
     exit();  // exits fiber's world
@@ -52,14 +52,14 @@ public:
       const GlobalFiberState<YieldType,ArgumentType,LocalType>& o) :
       ArgumentType(o),
       GlobalFiberWorld(o.world),  // creates fiber's world
-      Enter(world),  // enters fiber's world
+      Enter(getWorld()),  // enters fiber's world
       LocalType(o),
       FiberState<YieldType>(o) {
     exit();  // exits fiber's world
   }
 
-  virtual std::shared_ptr<World> getWorld() {
-    return world;
+  virtual World* getWorld() {
+    return world.get();
   }
 };
 }

@@ -28,19 +28,8 @@ public:
    *
    * @param world The world to enter.
    */
-  Enter(const std::shared_ptr<World>& world) :
+  Enter(World* world) :
       prevWorld(world) {
-    std::swap(prevWorld, fiberWorld);
-  }
-
-  /**
-   * Constructor.
-   *
-   * @param world The world to enter.
-   */
-  Enter(const std::weak_ptr<World>& world) :
-      prevWorld(world.lock()) {
-    assert(prevWorld);
     std::swap(prevWorld, fiberWorld);
   }
 
@@ -65,6 +54,6 @@ private:
   /**
    * The previous world.
    */
-  std::shared_ptr<World> prevWorld;
+  World* prevWorld;
 };
 }

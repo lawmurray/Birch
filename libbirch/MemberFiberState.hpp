@@ -21,8 +21,12 @@ namespace bi {
  */
 template<class YieldType, class ObjectType, class ArgumentType,
     class LocalType>
-class MemberFiberState: public ArgumentType, public MemberFiberWorld<
-    ObjectType>, public Enter, public LocalType, public FiberState<YieldType> {
+class MemberFiberState:
+    protected ArgumentType,
+    public MemberFiberWorld<ObjectType>,
+    protected Enter,
+    protected LocalType,
+    public FiberState<YieldType> {
 public:
   /**
    * Constructor.
@@ -37,9 +41,9 @@ public:
   template<class ... Args>
   MemberFiberState(const int label, const int nlabels,
       const SharedPointer<ObjectType>& object, Args ... args) :
-      ArgumentType( { args... }),
+      ArgumentType { args... },
       MemberFiberWorld<ObjectType>(object),
-      Enter(MemberFiberWorld<ObjectType>::object->getWorld()),  // enters owning object's world
+      Enter(getWorld()),  // enters owning object's world
       LocalType(),
       FiberState<YieldType>(label, nlabels) {
     exit();  // exits owning object's world
@@ -52,14 +56,14 @@ public:
       const MemberFiberState<YieldType,ObjectType,ArgumentType,LocalType>& o) :
       ArgumentType(o),
       MemberFiberWorld<ObjectType>(o),
-      Enter(MemberFiberWorld<ObjectType>::object->getWorld()),  // enters owning object's world
+      Enter(getWorld()),  // enters owning object's world
       LocalType(o),
       FiberState<YieldType>(o) {
     exit();  // exits owning object's world
   }
 
-  virtual std::shared_ptr<World> getWorld() {
-    return this->object->getWorld().lock();
+  virtual World* getWorld() {
+    return this->object->getWorld();
   }
 
   ObjectType* self() {
