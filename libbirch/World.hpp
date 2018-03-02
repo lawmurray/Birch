@@ -5,7 +5,7 @@
 
 #include "libbirch/global.hpp"
 
-#include <unordered_map>
+#include <map>
 
 namespace bi {
 /**
@@ -54,7 +54,7 @@ public:
    *
    * @return The mapped object.
    */
-  std::shared_ptr<Any> get(const std::shared_ptr<Any>& o);
+  const std::shared_ptr<Any>& get(const std::shared_ptr<Any>& o);
 
 private:
   /**
@@ -65,7 +65,7 @@ private:
    *
    * @return The mapped object.
    */
-  std::shared_ptr<Any> pullAndCopy(const std::shared_ptr<Any>& o);
+  const std::shared_ptr<Any>& pullAndCopy(const std::shared_ptr<Any>& o);
 
   /**
    * Pull an object from a clone ancestor into this world.
@@ -74,15 +74,17 @@ private:
    *
    * @return The mapped object.
    */
-  std::shared_ptr<Any> pull(const std::shared_ptr<Any>& o) const;
+  const std::shared_ptr<Any>& pull(const std::shared_ptr<Any>& o) const;
 
   /**
    * Insert a mapping.
    *
    * @param src The source object.
    * @param dst The destination object.
+   *
+   * @return Reference to the newly inserted destination object.
    */
-  void insert(const std::shared_ptr<Any>& src,
+  const std::shared_ptr<Any>& insert(const std::shared_ptr<Any>& src,
       const std::shared_ptr<Any>& dst);
 
   /**
@@ -98,7 +100,7 @@ private:
   /**
    * Mapped allocations.
    */
-  std::unordered_map<Any*,std::shared_ptr<Any>> map;
+  std::map<Any*,std::shared_ptr<Any>> map;
 
   /**
    * Launch depth.

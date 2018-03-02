@@ -43,7 +43,8 @@ int bi::World::depth() const {
   return launchDepth;
 }
 
-std::shared_ptr<bi::Any> bi::World::get(const std::shared_ptr<Any>& o) {
+const std::shared_ptr<bi::Any>& bi::World::get(
+    const std::shared_ptr<Any>& o) {
   assert(o);
   int d = depth() - o->getWorld()->depth();
   assert(d >= 0);
@@ -56,7 +57,7 @@ std::shared_ptr<bi::Any> bi::World::get(const std::shared_ptr<Any>& o) {
   return dst->pullAndCopy(o);
 }
 
-std::shared_ptr<bi::Any> bi::World::pullAndCopy(
+const std::shared_ptr<bi::Any>& bi::World::pullAndCopy(
     const std::shared_ptr<Any>& o) {
   assert(o && hasCloneAncestor(o->getWorld()));
 
@@ -65,21 +66,19 @@ std::shared_ptr<bi::Any> bi::World::pullAndCopy(
     return o;
   } else {
     assert(cloneSource);
-    auto result = cloneSource->pull(o);
+    auto& result = cloneSource->pull(o);
     auto iter = map.find(result.get());
     if (iter != map.end()) {
       return iter->second;
     } else {
       Enter enter(this);
       Clone clone;
-      auto copy = result->clone();
-      insert(result, copy);
-      return copy;
+      return insert(result, result->clone());
     }
   }
 }
 
-std::shared_ptr<bi::Any> bi::World::pull(
+const std::shared_ptr<bi::Any>& bi::World::pull(
     const std::shared_ptr<Any>& o) const {
   assert(o && hasCloneAncestor(o->getWorld()));
 
@@ -88,17 +87,19 @@ std::shared_ptr<bi::Any> bi::World::pull(
     return o;
   } else {
     assert(cloneSource);
-    auto result = cloneSource->pull(o);
+    auto& result = cloneSource->pull(o);
     auto iter = map.find(result.get());
     if (iter != map.end()) {
-      result = iter->second;
+      return iter->second;
+    } else {
+      return result;
     }
-    return result;
   }
 }
 
-void bi::World::insert(const std::shared_ptr<Any>& src,
+const std::shared_ptr<bi::Any>& bi::World::insert(const std::shared_ptr<Any>& src,
     const std::shared_ptr<Any>& dst) {
   auto result = map.insert(std::make_pair(src.get(), dst));
   assert(result.second);
+  return result.first->second;
 }
