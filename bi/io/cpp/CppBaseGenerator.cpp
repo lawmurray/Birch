@@ -149,7 +149,7 @@ void bi::CppBaseGenerator::visit(const Member* o) {
   if (leftThis) {
     middle("this->self()->");
   } else if (leftSuper) {
-    middle("super_type::");
+    middle("this->self()->super_type::");
   } else {
     middle(o->left << "->");
   }

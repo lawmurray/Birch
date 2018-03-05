@@ -70,8 +70,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     out();
     line("public:");
     in();
-    line("using this_type = " << stateName << ';');
-    start("using super_type = GlobalFiberState<");
+    start("using state_type = GlobalFiberState<");
     middle(o->returnType->unwrap() << ',');
     middle(argName << ',');
     middle(localName << '>');
@@ -91,7 +90,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     finish(" :");
     in();
     in();
-    line("super_type(0, " << (yields.size() + 1) << ", args...) {");
+    line("state_type(0, " << (yields.size() + 1) << ", args...) {");
     out();
     line("//");
     out();

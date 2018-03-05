@@ -72,8 +72,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     out();
     line("public:");
     in();
-    line("using this_type = " << stateName << ';');
-    start("using super_type = MemberFiberState<");
+    start("using state_type = MemberFiberState<");
     middle(o->returnType->unwrap() << ',');
     middle(type->name);
     genTemplateArgs(type);
@@ -104,7 +103,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     finish(" :");
     in();
     in();
-    line("super_type(0, " << (yields.size() + 1) << ", object, args...) {");
+    line("state_type(0, " << (yields.size() + 1) << ", object, args...) {");
     out();
     line("//");
     out();
