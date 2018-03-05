@@ -477,8 +477,8 @@ bi::Statement* bi::ResolverSource::modify(ExpressionStatement* o) {
   if (call && call->type->isFiber()) {
     auto name = new Name();
     auto var = new LocalVariable(name, o->single->type->accept(&cloner),
-        new EmptyExpression(o->loc), new EmptyExpression(o->loc), o->single,
-        o->loc);
+        new EmptyExpression(o->loc), new EmptyExpression(o->loc),
+        o->single->accept(&cloner), o->loc);
     auto decl = new ExpressionStatement(var, o->loc);
     auto query = new Query(new Identifier<LocalVariable>(name, o->loc),
         o->loc);
