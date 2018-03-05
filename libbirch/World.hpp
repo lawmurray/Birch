@@ -108,3 +108,104 @@ private:
   int launchDepth;
 };
 }
+
+#include "libbirch/Any.hpp"
+#include "libbirch/Enter.hpp"
+#include "libbirch/Clone.hpp"
+
+#include <cassert>
+
+inline bi::World::World() :
+    launchSource(fiberWorld),
+    launchDepth(fiberWorld->launchDepth + 1) {
+  //
+}
+
+inline bi::World::World(int) :
+    launchDepth(0) {
+  //
+}
+
+inline bi::World::World(const std::shared_ptr<World>& cloneSource) :
+    cloneSource(cloneSource),
+    launchSource(fiberWorld),
+    launchDepth(cloneSource->launchDepth) {
+  //
+}
+
+inline bool bi::World::hasCloneAncestor(World* world) const {
+  ///@todo Can use weak_from_this() under C++17
+  return this == world
+      || (cloneSource && cloneSource->hasCloneAncestor(world));
+}
+
+inline bool bi::World::hasLaunchAncestor(World* world) const {
+  ///@todo Can use weak_from_this() under C++17
+  return this == world
+      || (launchSource && launchSource->hasLaunchAncestor(world));
+}
+
+inline int bi::World::depth() const {
+  return launchDepth;
+}
+
+inline const std::shared_ptr<bi::Any>& bi::World::get(
+    const std::shared_ptr<Any>& o) {
+  assert(o);
+  int d = depth() - o->getWorld()->depth();
+  assert(d >= 0);
+  auto dst = this;
+  for (int i = 0; i < d; ++i) {
+    dst = dst->launchSource;
+    assert(dst);
+  }
+  assert(dst->hasCloneAncestor(o->getWorld()));
+  return dst->pullAndCopy(o);
+}
+
+inline const std::shared_ptr<bi::Any>& bi::World::pullAndCopy(
+    const std::shared_ptr<Any>& o) {
+  assert(o && hasCloneAncestor(o->getWorld()));
+
+  auto src = o->getWorld();
+  if (this == src) {
+    return o;
+  } else {
+    assert(cloneSource);
+    auto& result = cloneSource->pull(o);
+    auto iter = map.find(result.get());
+    if (iter != map.end()) {
+      return iter->second;
+    } else {
+      Enter enter(this);
+      Clone clone;
+      return insert(result, result->clone());
+    }
+  }
+}
+
+inline const std::shared_ptr<bi::Any>& bi::World::pull(
+    const std::shared_ptr<Any>& o) const {
+  assert(o && hasCloneAncestor(o->getWorld()));
+
+  auto src = o->getWorld();
+  if (this == src) {
+    return o;
+  } else {
+    assert(cloneSource);
+    auto& result = cloneSource->pull(o);
+    auto iter = map.find(result.get());
+    if (iter != map.end()) {
+      return iter->second;
+    } else {
+      return result;
+    }
+  }
+}
+
+inline const std::shared_ptr<bi::Any>& bi::World::insert(const std::shared_ptr<Any>& src,
+    const std::shared_ptr<Any>& dst) {
+  auto result = map.insert(std::make_pair(src.get(), dst));
+  assert(result.second);
+  return result.first->second;
+}

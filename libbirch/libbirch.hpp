@@ -94,21 +94,30 @@ struct DefaultView<0> {
  * @param start First index.
  * @param end Last index.
  */
-Range<> make_range(const int64_t start, const int64_t end);
+inline Range<> make_range(const int64_t start, const int64_t end) {
+  int64_t length = std::max(int64_t(0), end - start + 1);
+  return Range<>(start, length);
+}
 
 /**
  * Make a frame, no arguments.
  *
  * @ingroup libbirch
  */
-EmptyFrame make_frame();
+inline EmptyFrame make_frame() {
+  return EmptyFrame();
+}
 
 /**
  * Make a frame, single argument.
  *
  * @ingroup libbirch
  */
-NonemptyFrame<Span<>,EmptyFrame> make_frame(const int64_t arg);
+inline NonemptyFrame<Span<>,EmptyFrame> make_frame(const int64_t arg) {
+  auto tail = EmptyFrame();
+  auto head = Span<>(arg, tail.volume());
+  return NonemptyFrame<Span<>,EmptyFrame>(head, tail);
+}
 
 /**
  * Make a frame, multiple arguments.
@@ -127,7 +136,9 @@ auto make_frame(const int64_t arg, Args ... args) {
  *
  * @ingroup libbirch
  */
-EmptyView make_view();
+inline EmptyView make_view() {
+  return EmptyView();
+}
 
 /**
  * Make a view, single argument.
@@ -146,7 +157,11 @@ auto make_view(const Range<offset_value,length_value>& arg) {
  *
  * @ingroup libbirch
  */
-NonemptyView<Index<>,EmptyView> make_view(const int64_t arg);
+inline NonemptyView<Index<>,EmptyView> make_view(const int64_t arg) {
+  auto head = Index<>(arg);
+  auto tail = EmptyView();
+  return NonemptyView<Index<>,EmptyView>(head, tail);
+}
 
 /**
  * Make a view, multiple arguments.

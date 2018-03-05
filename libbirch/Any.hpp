@@ -54,3 +54,25 @@ protected:
   World* world;
 };
 }
+
+#include "libbirch/global.hpp"
+
+inline bi::Any::Any() : world(fiberWorld) {
+  //
+}
+
+inline bi::Any::Any(const Any& o) : world(fiberWorld) {
+  //
+}
+
+inline bi::Any::~Any() {
+  //
+}
+
+inline std::shared_ptr<bi::Any> bi::Any::clone() const {
+  return std::make_shared<Any>(*this);
+}
+
+inline bi::World* bi::Any::getWorld() {
+  return world;
+}

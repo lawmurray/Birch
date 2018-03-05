@@ -5,9 +5,6 @@
   "manifest": {
     "source": [
       "libbirch/global.cpp",
-      "libbirch/libbirch.cpp",
-      "libbirch/Any.cpp",
-      "libbirch/World.cpp",
       
       "libubjpp/common/Parser.c",
       "libubjpp/common/ParserState.cpp",
