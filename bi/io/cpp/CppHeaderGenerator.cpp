@@ -66,11 +66,14 @@ void bi::CppHeaderGenerator::visit(const Package* o) {
     if (!o->braces->isEmpty()) {
       genTemplateParams(o);
       line("class " << o->name << ';');
-    } else if (o->isAlias()) {
-      line("using " << o->name << " = " << o->base << ';');
     }
   }
   line("");
+  for (auto o : classes) {
+    if (o->isAlias()) {
+      line("using " << o->name << " = " << o->base << ';');
+    }
+  }
 
   /* basic type aliases */
   for (auto o : basics) {
