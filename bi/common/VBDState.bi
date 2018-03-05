@@ -1,7 +1,7 @@
 /**
  * Vector-borne disease model state.
  */
-class VBDState {
+class VBDState < State {
   h:SEIRState;  // humans
   m:SEIRState;  // mosquitos
 
@@ -21,8 +21,8 @@ class VBDState {
     m.simulate(x.m, θ.m, nme, x.m.e, x.m.i);
   }
 
-  function output(prefix:String) {
-    h.output(prefix + "h.");
-    m.output(prefix + "m.");
+  function output(writer:Writer) {
+    h.output(writer.setObject("h"));
+    m.output(writer.setObject("m"));
   }
 }

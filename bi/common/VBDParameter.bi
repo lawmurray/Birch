@@ -1,7 +1,7 @@
 /**
  * Vector-borne disease model parameters.
  */
-class VBDParameter {
+class VBDParameter < Model {
   h:SEIRParameter;  // humans
   m:SEIRParameter;  // mosquitos
 
@@ -18,9 +18,9 @@ class VBDParameter {
     m.δ ~ Beta(1.0, 1.0);
     m.γ <- 0.0;
   }
-  
-  function output(prefix:String) {
-    h.output(prefix + "h.");
-    m.output(prefix + "m.");
+
+  function output(writer:Writer) {
+    h.output(writer.setObject("h"));
+    m.output(writer.setObject("m"));
   }
 }

@@ -1,7 +1,7 @@
 /**
  * Parameters of an SEIR model.
  */
-class SEIRParameter {
+class SEIRParameter < Model {
   ν:Random<Real>;   // birth probability
   μ:Random<Real>;   // survival probability
   λ:Random<Real>;   // exposure probability
@@ -16,18 +16,11 @@ class SEIRParameter {
     γ ~ Beta(1.0, 1.0);
   }
 
-  function output(prefix:String) {    
-    output(prefix, "ν", ν);
-    output(prefix, "μ", μ);
-    output(prefix, "λ", λ);
-    output(prefix, "δ", δ);
-    output(prefix, "γ", γ);
-  }
-  
-  function output(prefix:String, name:String, value:Real) {
-    out:OutputStream;
-    out.open(prefix + name + ".csv", "a");
-    out.print(value + "\n");
-    out.close();
+  function output(writer:Writer) {
+    writer.setReal("ν", ν);
+    writer.setReal("μ", μ);
+    writer.setReal("λ", λ);
+    writer.setReal("δ", δ);
+    writer.setReal("γ", γ);
   }
 }

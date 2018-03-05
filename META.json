@@ -4,13 +4,13 @@
   "description": "Vector-borne disease models.",
   "manifest": {
     "source": [
-      "bi/monolithic/SEIR.bi",
-      "bi/seir/SEIRParameter.bi",
-      "bi/seir/SEIRState.bi",
-      "bi/site/YapDengue.bi",
-      "bi/vbd/VBDParameter.bi",
-      "bi/vbd/VBDState.bi",
-      "bi/sample.bi"
+      "bi/common/SEIRParameter.bi",
+      "bi/common/SEIRState.bi",
+      "bi/common/VBDParameter.bi",
+      "bi/common/VBDState.bi",
+      "bi/study/YapModel.bi",
+      "bi/study/YapParameter.bi",
+      "bi/study/YapState.bi"
     ],
     "other": [
       "LICENSE",
