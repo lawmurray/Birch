@@ -488,6 +488,12 @@ void bi::Driver::setup() {
       buf << "could not create build directory " << build_dir << '.';
       throw DriverException(buf.str());
     }
+
+    /* workaround for error given by some versions of autotools, "Something
+     * went wrong bootstrapping makefile fragments for automatic dependency
+     * tracking..." */
+    fs::create_directories(build_dir / "bi" / ".deps");
+    fs::ofstream(build_dir / "bi" / ".deps" / (internalName + ".Plo"));
   }
 
   /* copy build files into build directory */
