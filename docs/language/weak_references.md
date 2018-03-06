@@ -1,5 +1,3 @@
-## Weak references
-
 Birch uses reference counting to determine when objects should be destroyed. Some usage patterns create reference cycles that prevent object destruction. To break these cycles, weak references may be used. A weak reference is marked by placing an ampersand (`&`) immediately after a class type:
 
     a:A&;

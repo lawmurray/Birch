@@ -1,5 +1,3 @@
-## Programs
-
 A program is a special function that is an entry point into Birch code from the command line. It cannot be called from other Birch code. Declare a program with:
 
     program example(x:Boolean, y:Integer <- 0, message:String,

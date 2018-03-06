@@ -12,8 +12,8 @@ The standard structure consists of the subdirectories:
 
   * `bi/` for source code,
   * `build/` for build files,
-  * `data/` for input files,
-  * `results/` for output files.
+  * `input/` for input files,
+  * `output/` for output files.
 
 and a number of other meta files in the base directory. The most important of these meta files is `META.json`, which contains meta information such as a name, version, and description of the project, and a manifest of source files. As you add files to the project, especially `.bi` source files in the `bi/` subdirectory, you should add them to the `manifest.source` list in `META.json` to include them in the build.
 

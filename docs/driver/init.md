@@ -1,5 +1,3 @@
-### init
-
     birch init [options]
 
 Initialise the working directory for a new project.

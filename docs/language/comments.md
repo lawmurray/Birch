@@ -1,5 +1,3 @@
-## Comments
-
 Comments in Birch are as per C++:
 
     // end-of-line comment

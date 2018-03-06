@@ -1,5 +1,3 @@
-## Classes
-
 A class named `A` is declared as:
 
     class A {

@@ -1,5 +1,3 @@
-## Variables
-
 A variable `a` of type `A` is declared as follows:
 
     a:A;

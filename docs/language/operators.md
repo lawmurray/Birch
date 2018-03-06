@@ -1,5 +1,3 @@
-## Operators
-
 Birch supports the most common arithmetic and logical operators found in other programming languages.
 
 ### Binary operators

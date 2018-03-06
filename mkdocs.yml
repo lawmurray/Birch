@@ -4,27 +4,28 @@ theme:
   palette:
     primary: 'green'
     accent: 'green'
+  feature:
+    tabs: true
 markdown_extensions:
   - admonition
   - mdx_math:
-      enable_dollar_delimiter: True
+      enable_dollar_delimiter: true
 extra_javascript:
   - 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'
 pages:
   - 'Getting Started': index.md
-  - 'Driver Guide':
+  - 'Driver':
     - 'Introduction': driver/index.md
-    - 'META.json file': driver/meta_file.md
-    - 'Commands':
-      - 'init': driver/commands/init.md
-      - 'check': driver/commands/check.md
-      - 'build': driver/commands/build.md
-      - 'install': driver/commands/install.md
-      - 'uninstall': driver/commands/uninstall.md
-      - 'dist': driver/commands/dist.md
-      - 'docs': driver/commands/docs.md
-      - 'clean': driver/commands/clean.md
-  - 'Language Guide':
+    - 'Meta file': driver/meta_file.md
+    - 'init': driver/init.md
+    - 'check': driver/check.md
+    - 'build': driver/build.md
+    - 'install': driver/install.md
+    - 'uninstall': driver/uninstall.md
+    - 'dist': driver/dist.md
+    - 'docs': driver/docs.md
+    - 'clean': driver/clean.md
+  - 'Language':
     - 'Introduction': language/index.md
     - 'Comments': language/comments.md
     - 'Variables': language/variables.md

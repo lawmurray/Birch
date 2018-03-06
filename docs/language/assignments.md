@@ -1,5 +1,3 @@
-## Assignments
-
 Assignment statements use the `<-` operator.
 
     a <- b;

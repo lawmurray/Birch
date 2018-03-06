@@ -1,5 +1,3 @@
-## Fibers
-
 A fiber works similarly to a function, but its execution can be paused and resumed. Where a function, when called, executes to completion and may *return* a value to the caller, a fiber, when resumed, executes to its next pause point, and may *yield* a value to the caller. The caller can then proceed with some other computation, and later resume the fiber again, at which point it will execute to its next yield point. The state of a fiber is maintained between the pause and resume, so that it always resumes execution from where it last paused.
 
 A fiber is declared with:

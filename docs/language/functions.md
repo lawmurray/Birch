@@ -1,5 +1,3 @@
-## Functions
-
 A function with two parameters `a:A` and `b:B`, and return type `C`, is declared as:
 
     function f(a:A, b:B) -> C {

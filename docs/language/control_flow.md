@@ -1,5 +1,3 @@
-## Control flow
-
 For `a:Boolean` and `b:Boolean`, conditionals can be written as follows:
 
     if (a) {

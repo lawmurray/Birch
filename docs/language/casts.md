@@ -1,5 +1,3 @@
-## Casts
-
 A variable of one type can be cast down to a more-specific target type by using a cast function. The name of the cast function is the name of the target type, followed by `?`. The cast function returns an optional of the target type, with a value if the cast was successful, or no value if the cast was unsuccessful.
 
 For `A < B`, with `a:A`, `b:B`, and `c:A?`:

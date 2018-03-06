@@ -1,5 +1,3 @@
-## Types
-
 A thorough treatment of types is deferred to below. There are many categories of types in Birch. Two important categories are:
 
   1. *Basic types*, such as `Boolean`, `Integer`, `Real`, and `String`.

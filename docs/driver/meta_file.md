@@ -1,5 +1,3 @@
-## META.json file
-
 Each Birch project contains a `META.json` file providing a name, version and description of the project, as well as a manifest of its files and dependencies. The file may contain the following keys.
 
   - *name*

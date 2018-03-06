@@ -1,5 +1,3 @@
-## Special topics
-
 ### Nested C++ code
 
 The Birch language permits raw C++ code to be nested. Nesting C++ code requires some understanding of how the Birch compiler translates Birch code to C++ code, and this translation is still in flux.

@@ -1,5 +1,3 @@
-## Tuples
-
 Tuples are tied using parentheses:
 
     (a, b, c)

@@ -1,5 +1,3 @@
-### build
-
     birch build [options]
 
 Build the project.

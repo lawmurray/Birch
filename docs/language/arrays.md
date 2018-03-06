@@ -1,5 +1,3 @@
-## Arrays
-
 An array `a` with elements of type `A` is declared as:
 
     a:A[_];

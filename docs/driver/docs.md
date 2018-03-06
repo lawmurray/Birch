@@ -1,5 +1,3 @@
-### docs
-
     birch docs
 
 Build the reference documentation for the project. This creates a Markdown

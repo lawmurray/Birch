@@ -1,5 +1,3 @@
-## Sequences
-
 Sequences are constructed using square brackets:
 
     [a, b, c]

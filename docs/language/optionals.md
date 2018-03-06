@@ -1,5 +1,3 @@
-## Optionals
-
 Optional types allow variables to have a value of a particular type, or no value at all. An optional type is indicated by following any other type with `?`, like so:
 
     a:A?;
