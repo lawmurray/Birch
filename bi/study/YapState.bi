@@ -46,6 +46,6 @@ class YapState < VBDState {
   }
   
   function input(reader:Reader) {
-    y <- reader.getInteger("y");
+    y <- reader.getInteger();
   }
 }
