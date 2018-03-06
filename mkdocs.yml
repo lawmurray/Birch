@@ -1,6 +1,15 @@
 site_name: Birch
+theme:
+  name: 'material'
+  palette:
+    primary: 'green'
+    accent: 'green'
 markdown_extensions:
   - admonition
+  - mdx_math:
+      enable_dollar_delimiter: True
+extra_javascript:
+  - 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'
 pages:
   - 'Getting Started': index.md
   - 'Driver Guide':
