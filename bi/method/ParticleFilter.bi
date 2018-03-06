@@ -77,7 +77,7 @@ class ParticleFilter {
   function initialize(T:Integer, N:Integer, trigger:Real) {
     f1:Model![N];
     this.f <- f1;
-    this.w <- vector(-log(N), N);
+    this.w <- vector(0.0, N);
     this.e <- vector(0.0, T);
     this.r <- vector(false, T);
     this.T <- T;
@@ -139,8 +139,8 @@ class ParticleFilter {
     
     /* update normalizing constant estimate */
     W:Real <- log_sum_exp(w);
-    w <- w - W;
-    Z <- Z + W - log(N);
+    w <- w - (W - log(N));
+    Z <- Z + (W - log(N));
   }
   
   /**
