@@ -40,7 +40,7 @@ void bi::md_ostream::visit(const MemberVariable* o) {
 }
 
 void bi::md_ostream::visit(const Function* o) {
-  start("!!! note \"function " << o->name << '(' << o->params << ')');
+  start("!!! quote \"function " << o->name << '(' << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
@@ -48,7 +48,7 @@ void bi::md_ostream::visit(const Function* o) {
 }
 
 void bi::md_ostream::visit(const Fiber* o) {
-  start("!!! note \"fiber " << o->name << '(' << o->params << ')');
+  start("!!! quote \"fiber " << o->name << '(' << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
@@ -56,11 +56,11 @@ void bi::md_ostream::visit(const Fiber* o) {
 }
 
 void bi::md_ostream::visit(const Program* o) {
-  start("!!! note \"program " << o->name << '(' << o->params << ")\"");
+  start("!!! quote \"program " << o->name << '(' << o->params << ")\"");
 }
 
 void bi::md_ostream::visit(const MemberFunction* o) {
-  start("!!! note \"function");
+  start("!!! quote \"function");
   middle(' ' << o->name << '(' << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
@@ -69,7 +69,7 @@ void bi::md_ostream::visit(const MemberFunction* o) {
 }
 
 void bi::md_ostream::visit(const MemberFiber* o) {
-  start("!!! note \"fiber");
+  start("!!! quote \"fiber");
   middle(' ' << o->name << '(' << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
@@ -78,7 +78,7 @@ void bi::md_ostream::visit(const MemberFiber* o) {
 }
 
 void bi::md_ostream::visit(const BinaryOperator* o) {
-  start("!!! note \"operator (");
+  start("!!! quote \"operator (");
   middle(o->params->getLeft() << ' ' << o->name << ' ');
   middle(o->params->getRight() << ')');
   if (!o->returnType->isEmpty()) {
@@ -88,7 +88,7 @@ void bi::md_ostream::visit(const BinaryOperator* o) {
 }
 
 void bi::md_ostream::visit(const UnaryOperator* o) {
-  start("!!! note \"operator (");
+  start("!!! quote \"operator (");
   middle(o->name << ' ' << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
@@ -120,7 +120,7 @@ void bi::md_ostream::visit(const Class* o) {
   /* anchor for internal links */
   line("<a name=\"" << anchor(o->name->str()) << "\"></a>\n");
 
-  start("!!! note \"class " << o->name);
+  start("!!! quote \"class " << o->name);
   if (o->isGeneric()) {
     middle("&lt;" << o->typeParams << "&gt;");
   }

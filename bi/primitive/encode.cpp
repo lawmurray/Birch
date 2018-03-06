@@ -103,7 +103,7 @@ bool bi::isTranslatable(const std::string& op) {
   return ops.find(op) != ops.end();
 }
 
-std::string bi::internalise(const std::string& name) {
+std::string bi::nice(const std::string& name) {
   /* translations */
   static std::regex reg;
   static std::unordered_map<std::string,std::string> ops;
@@ -136,12 +136,12 @@ std::string bi::internalise(const std::string& name) {
   if (ops.find(name) != ops.end()) {
     str = ops[name];
   }
+  return str;
+}
 
-  /* escape unicode characters */
-  str = escape_unicode(str);
-
+std::string bi::internalise(const std::string& name) {
   /* underscore on end to avoid conflicts with internal names */
-  return str + "_";
+  return escape_unicode(nice(name)) + "_";
 }
 
 std::string bi::escape_unicode(const std::string& str) {

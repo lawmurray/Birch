@@ -366,7 +366,11 @@ void bi::Driver::docs() {
   /* split that file into multiple files for mkdocs */
   fs::ofstream mkdocs("mkdocs.yml");
   mkdocs << "site_name: '" << packageName << "'\n";
-  mkdocs << "theme: readthedocs\n";
+  mkdocs << "theme:\n";
+  mkdocs << "  name: 'material'\n";
+  mkdocs << "  palette:\n";
+  mkdocs << "    primary: 'green'\n";
+  mkdocs << "    accent: 'green'\n";
   mkdocs << "markdown_extensions:\n";
   mkdocs << "  - admonition\n";
   mkdocs << "  - mdx_math:\n";
@@ -422,13 +426,12 @@ void bi::Driver::docs() {
       /* second level header */
       h2 = match.str(2);
       mkdocs << "    - '" << h2 << "': ";
-      file = fs::path(h1) / (h2 + ".md");
+      file = fs::path(nice(h1)) / (nice(h2) + ".md");
       mkdocs << file.string() << "\n";
       if (stream.is_open()) {
         stream.close();
       }
       stream.open(docs / file);
-      stream << "## " << h2 << "\n\n";
     }
     str1 = match.suffix();
   }

@@ -36,6 +36,11 @@ unsigned char decode32(const unsigned char c);
 bool isTranslatable(const std::string& op);
 
 /**
+ * Generate nice name. This replaces operators with words.
+ */
+std::string nice(const std::string& name);
+
+/**
  * Generate C++ name. This is the original name, with any characters
  * outside the class [0-9a-zA-z_] translated to within that class, and an
  * underscore added to the end to avoid clashes with user variables.
