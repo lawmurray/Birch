@@ -174,7 +174,6 @@ class ParticleFilter {
    */
   function diagnose(writer:Writer?) {
     if (writer?) {
-      writer!.setObject();
       writer!.setRealArray("ess", e);
       writer!.setBooleanArray("resample", r);
     }

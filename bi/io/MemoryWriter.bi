@@ -193,7 +193,7 @@ class MemoryWriter < Writer {
     cpp{{
     auto array = group->get<libubjpp::array_type>();
     assert(array);
-    array.get().push_back(libubjpp::nil_type());
+    array.get().push_back(libubjpp::object_type());
     result_->group = &array.get().back();
     ///@todo Writer object will be invalid if array resized again
     }}

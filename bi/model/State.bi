@@ -10,7 +10,7 @@ class State {
   fiber simulate(θ:Model) -> Real!;
 
   /**
-   * Simulate transition.
+   * Simulate transition from previous state.
    *
    * - x: Previous state.
    * - θ: Parameter.

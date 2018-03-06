@@ -1,7 +1,6 @@
 /**
  * Markov model, structured as a sequence of states, where each state is
- * conditionally independent of the state history, given the previous
- * state.
+ * conditionally independent of the state history, given the previous state.
  */
 class MarkovModel<StateType <= State, ParameterType <= Model> < Model {
   /**
@@ -64,7 +63,17 @@ class MarkovModel<StateType <= State, ParameterType <= Model> < Model {
   }
   
   function input(reader:Reader) {
-    f:Reader! <- reader.getArray();
+    parameter:Reader? <- reader.getObject("parameter");
+    if (parameter?) {
+      θ.input(parameter!);
+    }
+    
+    state:Reader? <- reader.getObject("state");
+    if (!state?) {
+      /* try root instead */
+      state <- reader;
+    }    
+    f:Reader! <- state!.getArray();
     while (f?) {
       x:StateType;
       x.input(f!);
@@ -73,10 +82,12 @@ class MarkovModel<StateType <= State, ParameterType <= Model> < Model {
   }
   
   function output(writer:Writer) {
-    writer.setArray();
+    θ.output(writer.setObject("parameter"));
+    
+    state:Writer <- writer.setArray("state");
     f:StateType! <- history.walk();
     while (f?) {
-      f!.output(writer.push());
+      f!.output(state.push());
     }
   }
 }
