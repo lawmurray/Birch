@@ -123,7 +123,7 @@ class ParticleFilter {
       a:Integer[_] <- permute_ancestors(ancestors(w));
       for (n:Integer in 1..N) {
         f[n] <- f[a[n]];
-        w[n] <- -log(N);
+        w[n] <- 0.0;
       }
     }
 
