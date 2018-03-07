@@ -158,14 +158,18 @@ void bi::md_ostream::visit(const TypeList* o) {
 }
 
 void bi::md_ostream::visit(const ClassType* o) {
-  middle('[' << o->name << "](/classes/" << o->name->str() << ".md)");
+  if (!o->target->loc->doc.empty()) {
+    middle('[' << o->name << "](../classes/" << o->name->str() << ".md)");
+  } else {
+    middle(o->name);
+  }
   if (!o->typeArgs->isEmpty()) {
     middle("&lt;" << o->typeArgs << "&gt;");
   }
 }
 
 void bi::md_ostream::visit(const BasicType* o) {
-  middle('[' << o->name << "](/types.md#" << o->name->str() << ')');
+  middle('[' << o->name << "](../types/index.md#" << o->name->str() << ')');
 }
 
 void bi::md_ostream::visit(const ArrayType* o) {

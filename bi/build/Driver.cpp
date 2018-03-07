@@ -381,6 +381,8 @@ void bi::Driver::docs() {
 
   fs::path docs("docs"), file;
   fs::create_directories(docs);
+  fs::create_directories(docs / "types");
+  fs::create_directories(docs / "variables");
   fs::create_directories(docs / "programs");
   fs::create_directories(docs / "functions");
   fs::create_directories(docs / "fibers");
@@ -409,9 +411,9 @@ void bi::Driver::docs() {
       /* among first-level headers, only variables and types have their own
        * page, rather than being further split into a page per item */
       if (h1 == "Variables" || h1 == "Types") {
-        std::string filename = h1;
-        boost::to_lower(filename);
-        file = fs::path(filename + ".md");
+        std::string dir = h1;
+        boost::to_lower(dir);
+        file = fs::path(dir) / "index.md";
         mkdocs << file.string();
         if (stream.is_open()) {
           stream.close();
