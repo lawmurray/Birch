@@ -173,11 +173,8 @@ void bi::CppBaseGenerator::visit(const Nil* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Parameter* o) {
-  if (o->type->isArray() || o->type->isSequence()) {
-    middle("const ");
-  }
-  middle(o->type);
-  if (o->type->isArray() || o->type->isSequence()) {
+  middle("const " << o->type);
+  if (!o->type->isBasic()) {
     middle('&');
   }
   middle(' ' << o->name);
