@@ -87,14 +87,14 @@ public:
    */
   template<class U,
       typename = std::enable_if_t<bi::has_conversion<T,U>::value>>
-  operator U() {
+  operator U() const {
     return static_cast<U>(*get());
   }
 
   /**
    * Get the raw pointer.
    */
-  T* get() {
+  T* get() const {
 #ifndef NDEBUG
     return dynamic_cast<T*>(root_type::get());
 #else
@@ -105,14 +105,14 @@ public:
   /**
    * Dereference.
    */
-  T& operator*() {
+  T& operator*() const {
     return *get();
   }
 
   /**
    * Member access.
    */
-  T* operator->() {
+  T* operator->() const {
     return get();
   }
 
@@ -120,7 +120,7 @@ public:
    * Call operator.
    */
   template<class ... Args>
-  auto operator()(Args ... args) {
+  auto operator()(Args ... args) const {
     return (*get())(args...);
   }
 };
@@ -184,28 +184,31 @@ public:
     return static_cast<bool>(object);
   }
 
-  Any* get() {
-    object = world->get(object);
+  Any* get() const {
+    /* despite the pointer being accessed in a const context, we do want to
+     * update it through the copy-on-write mechanism for performance reasons*/
+    auto self = const_cast<SharedPointer<Any>*>(this);
+    self->object = self->world->get(object);
     return object.get();
   }
 
-  World* getWorld() {
+  World* getWorld() const {
     return world;
   }
 
-  Any& operator*() {
+  Any& operator*() const {
     return *get();
   }
 
-  Any* operator->() {
+  Any* operator->() const {
     return get();
   }
 
-  bool operator==(SharedPointer<Any>& o) {
+  bool operator==(SharedPointer<Any>& o) const {
     return get() == o.get();
   }
 
-  bool operator!=(SharedPointer<Any>& o) {
+  bool operator!=(SharedPointer<Any>& o) const {
     return get() != o.get();
   }
 
@@ -213,7 +216,7 @@ public:
    * Dynamic cast. Returns `nullptr` if the cast if unsuccessful.
    */
   template<class U>
-  SharedPointer<U> dynamic_pointer_cast() {
+  SharedPointer<U> dynamic_pointer_cast() const {
     return SharedPointer<U>(std::dynamic_pointer_cast < U > (object));
   }
 
@@ -221,7 +224,7 @@ public:
    * Static cast. Undefined if unsuccessful.
    */
   template<class U>
-  SharedPointer<U> static_pointer_cast() {
+  SharedPointer<U> static_pointer_cast() const {
     return SharedPointer<U>(std::static_pointer_cast < U > (object));
   }
 
