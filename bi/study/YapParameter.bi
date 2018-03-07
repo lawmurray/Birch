@@ -19,4 +19,9 @@ class YapParameter < VBDParameter {
 
     ρ ~ Beta(1.0, 1.0);
   }
+  
+  function output(writer:Writer) {
+    super.output(writer);
+    writer.setReal("ρ", ρ);
+  }  
 }
