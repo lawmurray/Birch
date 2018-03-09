@@ -28,17 +28,16 @@ class YapState < VBDState {
     m.Δi <- 0;
     m.Δr <- 0;
 
+    z <- h.Δi;
     if (y?) {
       y! ~> Binomial(z, θ.ρ);
       z <- 0;
-    } else {
-      z <- h.Δi;
     }
   }
   
   fiber simulate(x:YapState, θ:YapParameter) -> Real! {
     super.simulate(x, θ);
-    z <- z + x.h.Δi;
+    z <- x.z + h.Δi;
     if (y?) {
       y! ~> Binomial(z, θ.ρ);
       z <- 0;
