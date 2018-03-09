@@ -243,7 +243,8 @@ struct NonemptyFrame {
     return head.conforms(o.head) && tail.conforms(o.tail);
   }
   bool conforms(const Eigen::Index rows, const Eigen::Index cols) {
-    return head.conforms(rows) && tail.conforms(cols);
+    return head.conforms(rows) && (tail.conforms(cols) ||
+        (std::is_same<Tail,EmptyFrame>::value && cols == 1));
   }
   bool conforms(const Eigen::Index rows) {
     return head.conforms(rows);
