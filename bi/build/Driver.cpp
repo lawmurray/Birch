@@ -5,6 +5,7 @@
 
 #include "bi/build/Compiler.hpp"
 #include "bi/build/misc.hpp"
+#include "bi/primitive/encode.hpp"
 #include "bi/io/md_ostream.hpp"
 #include "bi/exception/DriverException.hpp"
 

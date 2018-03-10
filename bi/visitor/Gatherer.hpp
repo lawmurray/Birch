@@ -5,7 +5,7 @@
 
 #include "bi/visitor/Visitor.hpp"
 
-#include <list>
+#include <vector>
 #include <functional>
 
 namespace bi {
@@ -64,7 +64,7 @@ protected:
   /**
    * Gathered objects.
    */
-  std::list<T*> gathered;
+  std::vector<T*> gathered;
 };
 }
 
