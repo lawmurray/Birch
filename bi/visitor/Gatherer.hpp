@@ -20,11 +20,12 @@ public:
   /**
    * Constructor.
    *
-   * @param predicate Optional predicate function to filter objects of type
-   * T.
+   * @param predicate Optional predicate function to filter objects of type T.
+   * @param headers For packages, recurse into header files as well (or just
+   * source files)?
    */
   Gatherer(std::function<bool(const T*)> predicate =
-      [](const T* o) -> bool {return true;});
+      [](const T* o) -> bool {return true;}, const bool headers = true);
 
   /**
    * Destructor.
@@ -53,6 +54,7 @@ public:
   }
 
   using Visitor::visit;
+  virtual void visit(const Package* o);
   virtual void visit(const T* o);
 
 protected:
@@ -62,6 +64,11 @@ protected:
   std::function<bool(const T*)> predicate;
 
   /**
+   * Recurse into headers?
+   */
+  bool headers;
+
+  /**
    * Gathered objects.
    */
   std::vector<T*> gathered;
@@ -69,14 +76,26 @@ protected:
 }
 
 template<class T>
-bi::Gatherer<T>::Gatherer(std::function<bool(const T*)> predicate) :
-    predicate(predicate) {
+bi::Gatherer<T>::Gatherer(std::function<bool(const T*)> predicate, const bool headers) :
+    predicate(predicate), headers(headers) {
   //
 }
 
 template<class T>
 bi::Gatherer<T>::~Gatherer() {
   //
+}
+
+template<class T>
+void bi::Gatherer<T>::visit(const Package* o) {
+  if (headers) {
+    for (auto file : o->headers) {
+      file->accept(this);
+    }
+  }
+  for (auto file : o->sources) {
+    file->accept(this);
+  }
 }
 
 template<class T>

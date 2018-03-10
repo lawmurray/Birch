@@ -33,6 +33,9 @@ void bi::md_ostream::visit(const Package* o) {
   }
 
   /* lambdas */
+  auto all = [](const void*) {
+    return true;
+  };
   auto docsNotEmpty = [](const Located* o) {
     return !o->loc->doc.empty();
   };
@@ -50,7 +53,7 @@ void bi::md_ostream::visit(const Package* o) {
   };
 
   /* basic types */
-  Gatherer<Basic> basics(docsNotEmpty);
+  Gatherer<Basic> basics(docsNotEmpty, false);
   o->accept(&basics);
   std::stable_sort(basics.begin(), basics.end(), sortByName);
   if (basics.size() > 0) {
@@ -63,7 +66,7 @@ void bi::md_ostream::visit(const Package* o) {
     }
     line("");
 
-    Gatherer<Function> basicFactories(docsNotEmptyAndBasicFactory);
+    Gatherer<Function> basicFactories(docsNotEmptyAndBasicFactory, false);
     o->accept(&basicFactories);
     std::stable_sort(basicFactories.begin(), basicFactories.end(), sortByName);
 
@@ -81,7 +84,7 @@ void bi::md_ostream::visit(const Package* o) {
   }
 
   /* global variables */
-  Gatherer<GlobalVariable> variables(docsNotEmpty);
+  Gatherer<GlobalVariable> variables(docsNotEmpty, false);
   o->accept(&variables);
   std::stable_sort(variables.begin(), variables.end(), sortByName);
   if (variables.size() > 0) {
@@ -97,7 +100,7 @@ void bi::md_ostream::visit(const Package* o) {
   }
 
   /* programs */
-  Gatherer<Program> programs(docsNotEmpty);
+  Gatherer<Program> programs(docsNotEmpty, false);
   o->accept(&programs);
   std::stable_sort(programs.begin(), programs.end(), sortByName);
   if (programs.size() > 0) {
@@ -118,7 +121,7 @@ void bi::md_ostream::visit(const Package* o) {
   }
 
   /* functions */
-  Gatherer<Function> functions(docsNotEmptyAndNotFactory);
+  Gatherer<Function> functions(docsNotEmptyAndNotFactory, false);
   o->accept(&functions);
   std::stable_sort(functions.begin(), functions.end(), sortByName);
   if (functions.size() > 0) {
@@ -143,7 +146,7 @@ void bi::md_ostream::visit(const Package* o) {
   }
 
   /* fibers */
-  Gatherer<Fiber> fibers(docsNotEmpty);
+  Gatherer<Fiber> fibers(docsNotEmpty, false);
   o->accept(&fibers);
   std::stable_sort(fibers.begin(), fibers.end(), sortByName);
   if (fibers.size() > 0) {
@@ -168,7 +171,7 @@ void bi::md_ostream::visit(const Package* o) {
   }
 
   /* unary operators */
-  Gatherer<UnaryOperator> unaries;
+  Gatherer<UnaryOperator> unaries(all, false);
   o->accept(&unaries);
   std::stable_sort(unaries.begin(), unaries.end(), sortByName);
   if (unaries.size() > 0) {
@@ -193,7 +196,7 @@ void bi::md_ostream::visit(const Package* o) {
   }
 
   /* binary operators */
-  Gatherer<BinaryOperator> binaries;
+  Gatherer<BinaryOperator> binaries(all, false);
   o->accept(&binaries);
   std::stable_sort(binaries.begin(), binaries.end(), sortByName);
   if (binaries.size() > 0) {
@@ -218,7 +221,7 @@ void bi::md_ostream::visit(const Package* o) {
   }
 
   /* classes */
-  Gatherer<Class> classes(docsNotEmpty);
+  Gatherer<Class> classes(docsNotEmpty, false);
   o->accept(&classes);
   std::stable_sort(classes.begin(), classes.end(), sortByName);
   if (classes.size() > 0) {
@@ -366,7 +369,7 @@ void bi::md_ostream::visit(const Class* o) {
   ++depth;
 
   /* factory functions */
-  Gatherer<Function> factories(isFactory);
+  Gatherer<Function> factories(isFactory, false);
   if (package) {
     package->accept(&factories);
     if (factories.size() > 0) {
@@ -544,7 +547,11 @@ void bi::md_ostream::visit(const ClassType* o) {
 }
 
 void bi::md_ostream::visit(const BasicType* o) {
-  middle('[' << o->name << "](../types/index.md#" << o->name->str() << ')');
+  if (!o->target->loc->doc.empty()) {
+    middle('[' << o->name << "](../types/index.md#" << o->name->str() << ')');
+  } else {
+    middle(o->name);
+  }
 }
 
 void bi::md_ostream::visit(const ArrayType* o) {
