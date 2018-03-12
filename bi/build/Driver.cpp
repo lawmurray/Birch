@@ -368,10 +368,7 @@ void bi::Driver::docs() {
   fs::ofstream mkdocs("mkdocs.yml");
   mkdocs << "site_name: '" << packageName << "'\n";
   mkdocs << "theme:\n";
-  mkdocs << "  name: 'material'\n";
-  mkdocs << "  palette:\n";
-  mkdocs << "    primary: 'green'\n";
-  mkdocs << "    accent: 'green'\n";
+  mkdocs << "  name: 'readthedocs'\n";
   mkdocs << "markdown_extensions:\n";
   mkdocs << "  - admonition\n";
   mkdocs << "  - mdx_math:\n";
