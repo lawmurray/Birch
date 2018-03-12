@@ -17,12 +17,12 @@ To build and install, use:
     birch build
     birch install
 
-See the `DOCS.md` file for reference documentation.
+Documentation for the standard library is readily accessible at <http://www.birch-lang.org>.
 
 
 ## Developer notes
 
-The standard library include parsers for several file formats that are contained in `*.y` files. The `lemon` parser generator is used to build C sources for these. These C sources are included in the repository so that users of the standard library need not build them themselves. For developers, however, after modifications to any `*.y` files, run `make_parser.sh` manually to rebuild the C sources.
+The standard library includes parsers for several file formats that are contained in `*.y` files. The `lemon` parser generator is used to build C sources for these. These C sources are included in the repository so that users of the standard library need not build them themselves. For developers, however, after modifications to any `*.y` files, run `make_parser.sh` manually to rebuild the C sources.
 
 
 ## Version history
