@@ -41,6 +41,7 @@
       "bi/distribution/conjugate/GaussianWithAffineLogMean.bi",
       "bi/distribution/conjugate/GaussianWithGaussianMean.bi",
       "bi/distribution/conjugate/GaussianWithLogMean.bi",
+      "bi/distribution/conjugate/InverseGammaGaussian.bi",
       "bi/distribution/conjugate/LogGaussianWithAffineGaussianMean.bi",
       "bi/distribution/conjugate/LogGaussianWithAffineLogMean.bi",
       "bi/distribution/conjugate/LogGaussianWithGaussianMean.bi",
