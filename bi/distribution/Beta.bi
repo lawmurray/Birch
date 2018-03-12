@@ -35,7 +35,7 @@ class Beta < Random<Real> {
 }
 
 /**
- * Create Beta distribution.
+ * Create beta distribution.
  */
 function Beta(α:Real, β:Real) -> Beta {
   m:Beta;

@@ -34,7 +34,7 @@ class UniformInteger < Random<Integer> {
 }
 
 /**
- * Create a uniform distribution over integers.
+ * Create uniform distribution over integers.
  */
 function Uniform(l:Integer, u:Integer) -> UniformInteger {
   m:UniformInteger;

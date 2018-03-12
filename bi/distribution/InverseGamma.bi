@@ -1,7 +1,7 @@
 /**
- * Gamma distribution.
+ * Inverse-gamma distribution.
  */
-class Gamma < Random<Real> {
+class InverseGamma < Random<Real> {
   /**
    * Shape.
    */
@@ -27,18 +27,18 @@ class Gamma < Random<Real> {
 
   function doRealize() {
     if (isMissing()) {
-      set(simulate_gamma(k, θ));
+      set(simulate_inverse_gamma(k, θ));
     } else {
-      setWeight(observe_gamma(value(), k, θ));
+      setWeight(observe_inverse_gamma(value(), k, θ));
     }
   }
 }
 
 /**
- * Create gamma distribution.
+ * Create inverse-gamma distribution.
  */
-function Gamma(k:Real, θ:Real) -> Gamma {
-  m:Gamma;
+function InverseGamma(k:Real, θ:Real) -> InverseGamma {
+  m:InverseGamma;
   m.initialize(k, θ);
   return m;
 }

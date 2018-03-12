@@ -298,6 +298,21 @@ function observe_log_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
 }
 
 /**
+ * Observe a Student's $t$ variate.
+ *
+ * - x: The variate.
+ * - ν: Degrees of freedom.
+ *
+ * Returns the log probability density.
+ */
+function observe_student_t(x:Real, ν:Real) -> Real {
+  assert 0.0 < ν;
+  
+  z:Real <- 0.5*(ν + 1.0);
+  return lgamma(z) - 0.5*lgamma(π*ν) - lgamma(0.5*ν) - z*log(1.0 + x*x/ν);
+}
+
+/**
  * Observe a gamma variate.
  *
  * - x: The variate.
@@ -356,4 +371,24 @@ function observe_dirichlet(x:Real[_], α:Real[_]) -> Real {
   }
   w <- w + lgamma(sum(α)); 
   return w;
+}
+
+/**
+ * Observe an inverse-gamma variate.
+ *
+ * - x: The variate.
+ * - k: Shape.
+ * - θ: Scale.
+ *
+ * Returns the log probability density.
+ */
+function observe_inverse_gamma(x:Real, k:Real, θ:Real) -> Real {
+  assert 0.0 < k;
+  assert 0.0 < θ;
+  
+  if (x > 0.0) {
+    return k*log(θ) - (k + 1.0)*log(x) - θ/x - lgamma(k);
+  } else {
+    return -inf;
+  }
 }

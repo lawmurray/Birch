@@ -1,5 +1,5 @@
 /**
- * (Chinese) restaurant process.
+ * Chinese restaurant process.
  */
 class RestaurantProcess < Random<Real[_]> {
   /**
@@ -60,6 +60,9 @@ class RestaurantProcess < Random<Real[_]> {
   }
 }
 
+/**
+ * Create Chinest restaurant process.
+ */
 function RestaurantProcess(α:Real, θ:Real) -> RestaurantProcess {
   x:RestaurantProcess;
   x.initialize(α, θ);

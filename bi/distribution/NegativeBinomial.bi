@@ -35,7 +35,7 @@ class NegativeBinomial < Random<Integer> {
 }
 
 /**
- * Create.
+ * Create negative binomial distribution.
  */
 function NegativeBinomial(k:Integer, ρ:Real) -> NegativeBinomial {
   m:NegativeBinomial;

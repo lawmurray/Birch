@@ -276,6 +276,18 @@ function simulate_log_gaussian(μ:Real, σ2:Real) -> Real {
 }
 
 /**
+ * Simulate a Student's $t$ variate.
+ *
+ * - ν: Degrees of freedom.
+ */
+function simulate_student_t(ν:Real) -> Real {
+  assert 0.0 < ν;
+  cpp {{
+  return std::student_t_distribution<bi::type::Real_>(ν_)(rng);
+  }}
+}
+
+/**
  * Simulate a gamma variate.
  *
  * - k: Shape.
@@ -346,4 +358,14 @@ function simulate_dirichlet(α:Real, D:Integer) -> Real[_] {
     x[i] <- z*x[i];
   }
   return x;
+}
+
+/**
+ * Simulate an inverse-gamma variate.
+ *
+ * - k: Shape.
+ * - θ: Scale.
+ */
+function simulate_inverse_gamma(k:Real, θ:Real) -> Real {
+  return 1.0/simulate_gamma(k, θ);
 }
