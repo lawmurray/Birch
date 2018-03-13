@@ -5,31 +5,31 @@ class InverseGamma < Random<Real> {
   /**
    * Shape.
    */
-  k:Real;
+  α:Real;
   
   /**
    * Scale.
    */
-  θ:Real;
+  β:Real;
 
-  function initialize(k:Real, θ:Real) {
+  function initialize(α:Real, β:Real) {
     super.initialize();
-    update(k, θ);
+    update(α, β);
   }
 
-  function update(k:Real, θ:Real) {
-    assert k > 0.0;
-    assert θ > 0.0;
+  function update(α:Real, β:Real) {
+    assert α > 0.0;
+    assert β > 0.0;
 
-    this.k <- k;
-    this.θ <- θ;
+    this.α <- α;
+    this.β <- β;
   }
 
   function doRealize() {
     if (isMissing()) {
-      set(simulate_inverse_gamma(k, θ));
+      set(simulate_inverse_gamma(α, β));
     } else {
-      setWeight(observe_inverse_gamma(value(), k, θ));
+      setWeight(observe_inverse_gamma(value(), α, β));
     }
   }
 }
@@ -37,8 +37,8 @@ class InverseGamma < Random<Real> {
 /**
  * Create inverse-gamma distribution.
  */
-function InverseGamma(k:Real, θ:Real) -> InverseGamma {
+function InverseGamma(α:Real, β:Real) -> InverseGamma {
   m:InverseGamma;
-  m.initialize(k, θ);
+  m.initialize(α, β);
   return m;
 }

@@ -313,6 +313,22 @@ function observe_student_t(x:Real, ν:Real) -> Real {
 }
 
 /**
+ * Observe a Student's $t$ variate with location and scale.
+ *
+ * - x: The variate.
+ * - ν: Degrees of freedom.
+ * - μ: Location.
+ * - σ2: Squared scale.
+ *
+ * Returns the log probability density.
+ */
+function observe_student_t(x:Real, ν:Real, μ:Real, σ2:Real) -> Real {
+  assert 0.0 < ν;
+  assert 0.0 < σ2;
+  return observe_student_t((x - μ)/sqrt(σ2), ν) - 0.5*log(σ2);
+}
+
+/**
  * Observe a gamma variate.
  *
  * - x: The variate.
@@ -377,17 +393,17 @@ function observe_dirichlet(x:Real[_], α:Real[_]) -> Real {
  * Observe an inverse-gamma variate.
  *
  * - x: The variate.
- * - k: Shape.
- * - θ: Scale.
+ * - α: Shape.
+ * - β: Scale.
  *
  * Returns the log probability density.
  */
-function observe_inverse_gamma(x:Real, k:Real, θ:Real) -> Real {
-  assert 0.0 < k;
-  assert 0.0 < θ;
+function observe_inverse_gamma(x:Real, α:Real, β:Real) -> Real {
+  assert 0.0 < α;
+  assert 0.0 < β;
   
   if (x > 0.0) {
-    return k*log(θ) - (k + 1.0)*log(x) - θ/x - lgamma(k);
+    return α*log(β) - (α + 1.0)*log(x) - β/x - lgamma(α);
   } else {
     return -inf;
   }

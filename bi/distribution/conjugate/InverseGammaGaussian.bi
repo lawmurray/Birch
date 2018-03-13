@@ -19,23 +19,23 @@ class InverseGammaGaussian < Random<Real> {
   }
   
   function doCondition() {
-    σ2.update(σ2.k + 0.5, σ2.θ + 0.5*pow(value() - μ, 2.0));
+    σ2.update(σ2.α + 0.5, σ2.β + 0.5*pow(value() - μ, 2.0));
   }
 
   function doRealize() {
     if (σ2.isRealized()) {
       if (isMissing()) {
-        set(simulate_gaussian(μ, σ2));
+        set(simulate_gaussian(μ, σ2.value()));
       } else {
-        setWeight(observe_gaussian(value(), μ, σ2));
+        setWeight(observe_gaussian(value(), μ, σ2.value()));
       }
     } else {
-      ν:Real <- 2.0*σ2.k;         // degrees of freedom
-      a:Real <- sqrt(σ2.θ/σ2.k);  // scale
+      ν:Real <- 2.0*σ2.α;    // degrees of freedom
+      s2:Real <- σ2.β/σ2.α;  // squared scale
       if (isMissing()) {
-        set(simulate_student_t(ν)*a + μ);
+        set(simulate_student_t(ν, μ, s2));
       } else {
-        setWeight(observe_student_t((value() - μ)/a, ν) - log(a));
+        setWeight(observe_student_t(value(), ν, μ, s2));
       }
     }
   }

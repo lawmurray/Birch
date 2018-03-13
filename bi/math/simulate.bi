@@ -288,6 +288,33 @@ function simulate_student_t(ν:Real) -> Real {
 }
 
 /**
+ * Simulate a Student's $t$-distribution variate with location and
+ * scale.
+ *
+ * - ν: Degrees of freedom.
+ * - μ: Location.
+ * - σ2: Squared scale.
+ */
+function simulate_student_t(ν:Real, μ:Real, σ2:Real) -> Real {
+  assert 0.0 < ν;
+  assert 0.0 < σ2;
+  return μ + sqrt(σ2)*simulate_student_t(ν);
+}
+
+/**
+ * Simulate a normal inverse-gamma variate.
+ *
+ * - μ: Mean.
+ * - a2: Variance.
+ * - k: Shape of inverse-gamma on scale.
+ * - θ: Scale of inverse-gamma on scale.
+ */
+function simulate_normal_inverse_gamma(μ:Real, a2:Real, k:Real,
+    θ:Real) -> Real {
+  return simulate_gaussian(μ, a2*simulate_inverse_gamma(k, θ));
+}
+
+/**
  * Simulate a gamma variate.
  *
  * - k: Shape.
@@ -363,9 +390,9 @@ function simulate_dirichlet(α:Real, D:Integer) -> Real[_] {
 /**
  * Simulate an inverse-gamma variate.
  *
- * - k: Shape.
- * - θ: Scale.
+ * - α: Shape.
+ * - β: Scale.
  */
-function simulate_inverse_gamma(k:Real, θ:Real) -> Real {
-  return 1.0/simulate_gamma(k, θ);
+function simulate_inverse_gamma(α:Real, β:Real) -> Real {
+  return 1.0/simulate_gamma(α, 1.0/β);
 }
