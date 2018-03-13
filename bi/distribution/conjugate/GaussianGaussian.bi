@@ -1,7 +1,7 @@
 /*
  * Gaussian with another Gaussian as its mean.
  */
-class GaussianWithGaussianMean < Gaussian {
+class GaussianGaussian < Gaussian {
   /**
    * Mean.
    */
@@ -50,7 +50,7 @@ class GaussianWithGaussianMean < Gaussian {
  * Create Gaussian distribution.
  */
 function Gaussian(μ:Gaussian, σ2:Real) -> Gaussian {
-  x:GaussianWithGaussianMean;
+  x:GaussianGaussian;
   x.initialize(μ, σ2);
   return x;
 }

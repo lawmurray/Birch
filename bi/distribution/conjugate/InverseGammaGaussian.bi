@@ -1,5 +1,5 @@
 /**
- * Gaussian with conjugate prior on variance.
+ * Gaussian with inverse-gamma prior on variance.
  */
 class InverseGammaGaussian < Random<Real> {
   /**

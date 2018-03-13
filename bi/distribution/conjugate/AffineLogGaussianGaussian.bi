@@ -1,7 +1,8 @@
 /*
- * Gaussian with affine transformation of another Gaussian as its mean.
+ * Gaussian with affine transformation of the logarithm of a
+ * log-Gaussian as its mean.
  */
-class GaussianWithAffineGaussianMean < Gaussian {
+class AffineLogGaussianGaussian < Gaussian {
   /**
    * Scale.
    */
@@ -10,7 +11,7 @@ class GaussianWithAffineGaussianMean < Gaussian {
   /**
    * Random variable.
    */
-  x:Gaussian;
+  x:LogGaussian;
   
   /**
    * Offset.
@@ -32,7 +33,7 @@ class GaussianWithAffineGaussianMean < Gaussian {
    */
   σ2_0:Real;
 
-  function initialize(a:Real, x:Gaussian, c:Real, σ2:Real) {
+  function initialize(a:Real, x:LogGaussian, c:Real, σ2:Real) {
     super.initialize(x);
     this.a <- a;
     this.x <- x;
@@ -61,10 +62,10 @@ class GaussianWithAffineGaussianMean < Gaussian {
 /**
  * Create Gaussian distribution.
  */
-function Gaussian(μ:AffineExpression, σ2:Real) -> Gaussian {
-  x:Gaussian? <- Gaussian?(μ.x);
+function Gaussian(μ:AffineLogExpression, σ2:Real) -> Gaussian {
+  x:LogGaussian? <- LogGaussian?(μ.x);
   if (x?) {
-    y:GaussianWithAffineGaussianMean;
+    y:AffineLogGaussianGaussian;
     y.initialize(μ.a, x!, μ.c, σ2);
     return y;
   } else {
@@ -75,6 +76,6 @@ function Gaussian(μ:AffineExpression, σ2:Real) -> Gaussian {
 /**
  * Create Gaussian distribution.
  */
-function Normal(μ:AffineExpression, σ2:Real) -> Gaussian {
+function Normal(μ:AffineLogExpression, σ2:Real) -> Gaussian {
   return Gaussian(μ, σ2);
 }

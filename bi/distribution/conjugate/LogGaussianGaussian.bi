@@ -1,7 +1,7 @@
 /*
  * Gaussian with logaritm of a log-Gaussian as its mean.
  */
-class GaussianWithLogMean < Gaussian {
+class LogGaussianGaussian < Gaussian {
   /**
    * Exponential of mean.
    */
@@ -52,7 +52,7 @@ class GaussianWithLogMean < Gaussian {
 function Gaussian(μ:LogExpression, σ2:Real) -> Gaussian {
   x:LogGaussian? <- LogGaussian?(μ.x);
   if (x?) {
-    y:GaussianWithLogMean;
+    y:LogGaussianGaussian;
     y.initialize(x!, σ2);
     return y;
   } else {

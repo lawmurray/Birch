@@ -2,7 +2,7 @@
  * Log-Gaussian with affine transformation of the logarithm of a log-Gaussian
  * as its mean.
  */
-class LogGaussianWithAffineLogMean < LogGaussian {
+class AffineLogGaussianLogGaussian < LogGaussian {
   /**
    * Scale.
    */
@@ -65,7 +65,7 @@ class LogGaussianWithAffineLogMean < LogGaussian {
 function LogGaussian(μ:AffineLogExpression, σ2:Real) -> LogGaussian {
   x:LogGaussian? <- LogGaussian?(μ.x);
   if (x?) {
-    y:LogGaussianWithAffineLogMean;
+    y:AffineLogGaussianLogGaussian;
     y.initialize(μ.a, x!, μ.c, σ2);
     return y;
   } else {

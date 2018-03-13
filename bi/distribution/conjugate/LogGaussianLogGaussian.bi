@@ -1,11 +1,11 @@
 /*
- * Log-Gaussian with Gaussian as its mean.
+ * Log-Gaussian with logarithm of a log-Gaussian as its mean.
  */
-class LogGaussianWithGaussianMean < LogGaussian {
+class LogGaussianLogGaussian < LogGaussian {
   /**
-   * Mean.
+   * Exponential of mean.
    */
-  μ:Gaussian;
+  μ:LogGaussian;
 
   /**
    * Variance.
@@ -22,7 +22,7 @@ class LogGaussianWithGaussianMean < LogGaussian {
    */
   σ2_0:Real;
 
-  function initialize(μ:Gaussian, σ2:Real) {
+  function initialize(μ:LogGaussian, σ2:Real) {
     super.initialize(μ);
     this.μ <- μ;
     this.σ2 <- σ2;
@@ -49,19 +49,12 @@ class LogGaussianWithGaussianMean < LogGaussian {
 /**
  * Create log-Gaussian distribution.
  */
-function LogGaussian(μ:Gaussian, σ2:Real) -> LogGaussian {
-  x:LogGaussianWithGaussianMean;
-  x.initialize(μ, σ2);
-  return x;
-}
-
-/**
- * Create log-Gaussian distribution.
- */
-function LogGaussian(μ:Random<Real>, σ2:Real) -> LogGaussian {
-  μ1:Gaussian? <- Gaussian?(μ);
-  if (μ1?) {
-    return LogGaussian(μ1!, σ2);
+function LogGaussian(μ:LogExpression, σ2:Real) -> LogGaussian {
+  x:LogGaussian? <- LogGaussian?(μ.x);
+  if (x?) {
+    y:LogGaussianLogGaussian;
+    y.initialize(x!, σ2);
+    return y;
   } else {
     return LogGaussian(μ.value(), σ2);
   }
@@ -70,13 +63,6 @@ function LogGaussian(μ:Random<Real>, σ2:Real) -> LogGaussian {
 /**
  * Create log-Gaussian distribution.
  */
-function LogNormal(μ:Gaussian, σ2:Real) -> LogGaussian {
-  return LogGaussian(μ, σ2);
-}
-
-/**
- * Create log-Gaussian distribution.
- */
-function LogNormal(μ:Random<Real>, σ2:Real) -> LogGaussian {
+function LogNormal(μ:LogExpression, σ2:Real) -> LogGaussian {
   return LogGaussian(μ, σ2);
 }

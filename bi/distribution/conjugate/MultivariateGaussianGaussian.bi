@@ -3,7 +3,7 @@
  *
  * - D: Number of dimensions.
  */
-class MultivariateGaussianWithGaussianMean(D:Integer)
+class MultivariateGaussianGaussian(D:Integer)
     < MultivariateGaussian(D) {
   /**
    * Mean.
@@ -54,7 +54,7 @@ class MultivariateGaussianWithGaussianMean(D:Integer)
  */
 function Gaussian(μ:MultivariateGaussian, Σ:Real[_,_]) ->
     MultivariateGaussian {
-  x:MultivariateGaussianWithGaussianMean(μ.size());
+  x:MultivariateGaussianGaussian(μ.size());
   x.initialize(μ, Σ);
   return x;
 }

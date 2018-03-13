@@ -4,7 +4,7 @@
  *
  * - D: Number of dimensions.
  */
-class MultivariateGaussianWithAffineGaussianMean(D:Integer) <
+class MultivariateAffineGaussianGaussian(D:Integer) <
     MultivariateGaussian(D) {
   /**
    * Scale.
@@ -73,7 +73,7 @@ class MultivariateGaussianWithAffineGaussianMean(D:Integer) <
     MultivariateGaussian {
   x:MultivariateGaussian? <- MultivariateGaussian?(μ.x);
   if (x?) {
-    y:MultivariateGaussianWithAffineGaussianMean(rows(μ.A));
+    y:MultivariateAffineGaussianGaussian(rows(μ.A));
     y.initialize(μ.A, x!, μ.c, Σ);
     return y;
   } else {
