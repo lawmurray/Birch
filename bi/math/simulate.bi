@@ -22,19 +22,6 @@ function simulate_bernoulli(ρ:Real) -> Boolean {
 }
 
 /**
- * Simulate an integer uniform variate.
- *
- * - l: Lower bound of interval.
- * - u: Upper bound of interval.
- */
-function simulate_int_uniform(l:Integer, u:Integer) -> Integer {
-  assert l <= u;
-  cpp {{
-  return std::uniform_int_distribution<bi::type::Integer_>(l_, u_)(rng);
-  }}
-}
-
-/**
  * Simulate a binomial variate.
  *
  * - n: Number of trials.
@@ -65,21 +52,6 @@ function simulate_negative_binomial(k:Integer, ρ:Real) -> Integer {
 }
 
 /**
- * Simulate a beta-binomial variate.
- *
- * - n: Number of trials.
- * - α: Shape.
- * - β: Shape.
- */
-function simulate_beta_binomial(n:Integer, α:Real, β:Real) -> Integer {
-  assert 0 <= n;
-  assert 0.0 < α;
-  assert 0.0 < β;
-  
-  return simulate_binomial(n, simulate_beta(α, β));
-}
-
-/**
  * Simulate a Poisson variate.
  *
  * - λ: Rate.
@@ -93,6 +65,19 @@ function simulate_poisson(λ:Real) -> Integer {
   } else {
     return 0;
   }
+}
+
+/**
+ * Simulate an integer uniform variate.
+ *
+ * - l: Lower bound of interval.
+ * - u: Upper bound of interval.
+ */
+function simulate_int_uniform(l:Integer, u:Integer) -> Integer {
+  assert l <= u;
+  cpp {{
+  return std::uniform_int_distribution<bi::type::Integer_>(l_, u_)(rng);
+  }}
 }
 
 /**
@@ -154,51 +139,46 @@ function simulate_multinomial(n:Integer, ρ:Real[_]) -> Integer[_] {
 }
 
 /**
- * Simulate a Dirichlet-categorical variate.
+ * Simulate a Dirichlet variate.
  *
  * - α: Concentrations.
  */
-function simulate_dirichlet_categorical(α:Real[_]) -> Integer {
-  return simulate_categorical(simulate_dirichlet(α));
-}
+function simulate_dirichlet(α:Real[_]) -> Real[_] {
+  D:Integer <- length(α);
+  x:Real[D];
+  z:Real <- 0.0;
 
-/**
- * Simulate a Dirichlet-multinomial variate.
- *
- * - n: Number of trials.
- * - α: Concentrations.
- */
-function simulate_dirichlet_multinomial(n:Integer, α:Real[_]) -> Integer[_] {
-  return simulate_multinomial(n, simulate_dirichlet(α));
-}
-
-/**
- * Simulate a categorical variate with Chinese restaurant process prior.
- */
-function simulate_crp_categorical(α:Real, θ:Real, n:Integer[_], N:Integer) -> Integer {
-  assert N >= 0;
-  assert sum(n) == N;
-
-  k:Integer <- 0;
-  K:Integer <- length(n);
-  if (N == 0) {
-    /* first component */
-    k <- 1;
-  } else {
-    u:Real <- simulate_uniform(0.0, N + θ);
-    U:Real <- K*α + θ;
-    if (u < U) {
-      /* new component */
-      k <- K + 1;
-    } else {
-      /* existing component */
-      while (k < K && u > U) {
-        k <- k + 1;
-        U <- U + n[k] - α;
-      }
-    }
+  for (i:Integer in 1..D) {
+    x[i] <- simulate_gamma(α[i], 1.0);
+    z <- z + x[i];
   }
-  return k;
+  z <- 1.0/z;
+  for (i:Integer in 1..D) {
+    x[i] <- z*x[i];
+  }
+  return x;
+}
+
+/**
+ * Simulate a Dirichlet variate.
+ *
+ * - α: Concentration.
+ * - D: Number of dimensions.
+ */
+function simulate_dirichlet(α:Real, D:Integer) -> Real[_] {
+  assert D >= 0;
+  x:Real[D];
+  z:Real <- 0.0;
+
+  for (i:Integer in 1..D) {
+    x[i] <- simulate_gamma(α, 1.0);
+    z <- z + x[i];
+  }
+  z <- 1.0/z;
+  for (i:Integer in 1..D) {
+    x[i] <- z*x[i];
+  }
+  return x;
 }
 
 /**
@@ -220,7 +200,7 @@ function simulate_uniform(l:Real, u:Real) -> Real {
  * - λ: Rate.
  */
 function simulate_exponential(λ:Real) -> Real {
-  assert 0.0 <= λ;
+  assert 0.0 < λ;
   cpp {{
   return std::exponential_distribution<bi::type::Real_>(λ_)(rng);
   }}
@@ -241,21 +221,6 @@ function simulate_gaussian(μ:Real, σ2:Real) -> Real {
     return std::normal_distribution<bi::type::Real_>(μ_, ::sqrt(σ2_))(rng);
     }}
   }
-}
-
-/**
- * Simulate a multivariate Gaussian variate.
- *
- * - μ: Mean.
- * - Σ: Covariance.
- */
-function simulate_multivariate_gaussian(μ:Real[_], Σ:Real[_,_]) -> Real[_] {
-  D:Integer <- length(μ);
-  z:Real[D];
-  for (d:Integer in 1..D) {
-    z[d] <- simulate_gaussian(0.0, 1.0);
-  }
-  return μ + llt(Σ)*z;
 }
 
 /**
@@ -302,16 +267,19 @@ function simulate_student_t(ν:Real, μ:Real, σ2:Real) -> Real {
 }
 
 /**
- * Simulate a normal inverse-gamma variate.
+ * Simulate a beta variate.
  *
- * - μ: Mean.
- * - a2: Variance.
- * - k: Shape of inverse-gamma on scale.
- * - θ: Scale of inverse-gamma on scale.
+ * - α: Shape.
+ * - β: Shape.
  */
-function simulate_normal_inverse_gamma(μ:Real, a2:Real, k:Real,
-    θ:Real) -> Real {
-  return simulate_gaussian(μ, a2*simulate_inverse_gamma(k, θ));
+function simulate_beta(α:Real, β:Real) -> Real {
+  assert 0.0 < α;
+  assert 0.0 < β;
+  
+  u:Real <- simulate_gamma(α, 1.0);
+  v:Real <- simulate_gamma(β, 1.0);
+  
+  return u/(u + v);
 }
 
 /**
@@ -329,65 +297,6 @@ function simulate_gamma(k:Real, θ:Real) -> Real {
 }
 
 /**
- * Simulate a beta variate.
- *
- * - α: Shape.
- * - β: Shape.
- */
-function simulate_beta(α:Real, β:Real) -> Real {
-  assert 0.0 < α;
-  assert 0.0 < β;
-  
-  u:Real <- simulate_gamma(α, 1.0);
-  v:Real <- simulate_gamma(β, 1.0);
-  
-  return u/(u + v);
-}
-
-/**
- * Simulate a Dirichlet variate.
- *
- * - α: Concentrations.
- */
-function simulate_dirichlet(α:Real[_]) -> Real[_] {
-  D:Integer <- length(α);
-  x:Real[D];
-  z:Real <- 0.0;
-
-  for (i:Integer in 1..D) {
-    x[i] <- simulate_gamma(α[i], 1.0);
-    z <- z + x[i];
-  }
-  z <- 1.0/z;
-  for (i:Integer in 1..D) {
-    x[i] <- z*x[i];
-  }
-  return x;
-}
-
-/**
- * Simulate a Dirichlet variate.
- *
- * - α: Concentration.
- * - D: Number of dimensions.
- */
-function simulate_dirichlet(α:Real, D:Integer) -> Real[_] {
-  assert D >= 0;
-  x:Real[D];
-  z:Real <- 0.0;
-
-  for (i:Integer in 1..D) {
-    x[i] <- simulate_gamma(α, 1.0);
-    z <- z + x[i];
-  }
-  z <- 1.0/z;
-  for (i:Integer in 1..D) {
-    x[i] <- z*x[i];
-  }
-  return x;
-}
-
-/**
  * Simulate an inverse-gamma variate.
  *
  * - α: Shape.
@@ -395,4 +304,96 @@ function simulate_dirichlet(α:Real, D:Integer) -> Real[_] {
  */
 function simulate_inverse_gamma(α:Real, β:Real) -> Real {
   return 1.0/simulate_gamma(α, 1.0/β);
+}
+
+/**
+ * Simulate a normal inverse-gamma variate.
+ *
+ * - μ: Mean.
+ * - a2: Variance.
+ * - k: Shape of inverse-gamma on scale.
+ * - θ: Scale of inverse-gamma on scale.
+ */
+function simulate_normal_inverse_gamma(μ:Real, a2:Real, k:Real,
+    θ:Real) -> Real {
+  return simulate_gaussian(μ, a2*simulate_inverse_gamma(k, θ));
+}
+
+/**
+ * Simulate a multivariate Gaussian variate.
+ *
+ * - μ: Mean.
+ * - Σ: Covariance.
+ */
+function simulate_multivariate_gaussian(μ:Real[_], Σ:Real[_,_]) -> Real[_] {
+  D:Integer <- length(μ);
+  z:Real[D];
+  for (d:Integer in 1..D) {
+    z[d] <- simulate_gaussian(0.0, 1.0);
+  }
+  return μ + llt(Σ)*z;
+}
+
+/**
+ * Simulate a beta-binomial variate.
+ *
+ * - n: Number of trials.
+ * - α: Shape.
+ * - β: Shape.
+ */
+function simulate_beta_binomial(n:Integer, α:Real, β:Real) -> Integer {
+  assert 0 <= n;
+  assert 0.0 < α;
+  assert 0.0 < β;
+  
+  return simulate_binomial(n, simulate_beta(α, β));
+}
+
+
+/**
+ * Simulate a Dirichlet-categorical variate.
+ *
+ * - α: Concentrations.
+ */
+function simulate_dirichlet_categorical(α:Real[_]) -> Integer {
+  return simulate_categorical(simulate_dirichlet(α));
+}
+
+/**
+ * Simulate a Dirichlet-multinomial variate.
+ *
+ * - n: Number of trials.
+ * - α: Concentrations.
+ */
+function simulate_dirichlet_multinomial(n:Integer, α:Real[_]) -> Integer[_] {
+  return simulate_multinomial(n, simulate_dirichlet(α));
+}
+
+/**
+ * Simulate a categorical variate with Chinese restaurant process prior.
+ */
+function simulate_crp_categorical(α:Real, θ:Real, n:Integer[_], N:Integer) -> Integer {
+  assert N >= 0;
+  assert sum(n) == N;
+
+  k:Integer <- 0;
+  K:Integer <- length(n);
+  if (N == 0) {
+    /* first component */
+    k <- 1;
+  } else {
+    u:Real <- simulate_uniform(0.0, N + θ);
+    U:Real <- K*α + θ;
+    if (u < U) {
+      /* new component */
+      k <- K + 1;
+    } else {
+      /* existing component */
+      while (k < K && u > U) {
+        k <- k + 1;
+        U <- U + n[k] - α;
+      }
+    }
+  }
+  return k;
 }
