@@ -23,14 +23,14 @@ class AffineGaussianGaussian < Gaussian {
   σ2:Real;
   
   /**
-   * Prior (marginalized) mean.
+   * Marginal mean.
    */
-  μ_0:Real;
+  μ_m:Real;
   
   /**
-   * Prior (marginalized) variance.
+   * Marginal variance.
    */
-  σ2_0:Real;
+  σ2_m:Real;
 
   function initialize(a:Real, x:Gaussian, c:Real, σ2:Real) {
     super.initialize(x);
@@ -41,20 +41,22 @@ class AffineGaussianGaussian < Gaussian {
   }
   
   function doMarginalize() {
-    μ_0 <- a*x.μ + c;
-    σ2_0 <- a*a*x.σ2 + σ2;
-    update(μ_0, σ2_0);
+    μ_m <- a*x.μ + c;
+    σ2_m <- a*a*x.σ2 + σ2;
+    update(μ_m, σ2_m);
   }
 
   function doForward() {
-    μ_0 <- a*x.value() + c;
-    σ2_0 <- σ2;
-    update(μ_0, σ2_0);
+    μ_m <- a*x.value() + c;
+    σ2_m <- σ2;
+    update(μ_m, σ2_m);
   }
   
   function doCondition() {
-    k:Real <- x.σ2*a/σ2_0;
-    x.update(x.μ + k*(value() - μ_0), x.σ2 - k*a*x.σ2);
+    μ_1:Real;
+    σ2_1:Real;
+    (μ_1, σ2_1) <- update_affine_gaussian_gaussian(value(), a, x.μ, x.σ2, μ_m, σ2_m);
+    x.update(μ_1, σ2_1);
   }
 }
 

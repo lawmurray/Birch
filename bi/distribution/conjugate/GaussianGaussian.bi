@@ -13,14 +13,14 @@ class GaussianGaussian < Gaussian {
   σ2:Real;
   
   /**
-   * Prior (marginalized) mean.
+   * Marginal mean.
    */
-  μ_0:Real;
+  μ_m:Real;
   
   /**
-   * Prior (marginalized) variance.
+   * Marginal variance.
    */
-  σ2_0:Real;
+  σ2_m:Real;
 
   function initialize(μ:Gaussian, σ2:Real) {
     super.initialize(μ);
@@ -29,20 +29,22 @@ class GaussianGaussian < Gaussian {
   }
   
   function doMarginalize() {
-    μ_0 <- μ.μ;
-    σ2_0 <- μ.σ2 + σ2;
-    update(μ_0, σ2_0);
+    μ_m <- μ.μ;
+    σ2_m <- μ.σ2 + σ2;
+    update(μ_m, σ2_m);
   }
 
   function doForward() {
-    μ_0 <- μ.value();
-    σ2_0 <- σ2;
-    update(μ_0, σ2_0);
+    μ_m <- μ.value();
+    σ2_m <- σ2;
+    update(μ_m, σ2_m);
   }
   
   function doCondition() {
-    k:Real <- μ.σ2/σ2_0;
-    μ.update(μ.μ + k*(value() - μ_0), μ.σ2 - k*μ.σ2);
+    μ_1:Real;
+    σ2_1:Real;
+    (μ_1, σ2_1) <- update_gaussian_gaussian(value(), μ.μ, μ.σ2, μ_m, σ2_m);
+    μ.update(μ_1, σ2_1);
   }
 }
 

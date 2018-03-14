@@ -489,7 +489,7 @@ function observe_normal_inverse_gamma_gaussian(x:Real, μ:Real, a2:Real,
  * - x: The variate.
  * - a: Scale.
  * - μ: Mean.
- * - c: Location.
+ * - c: Offset.
  * - a2: Variance.
  * - α: Shape of the inverse-gamma.
  * - β: Scale of the inverse-gamma.

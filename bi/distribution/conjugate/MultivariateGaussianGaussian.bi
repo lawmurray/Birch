@@ -16,12 +16,12 @@ class MultivariateGaussianGaussian(D:Integer)
   Σ:Real[D,D];
   
   /**
-   * Marginalized prior mean.
+   * Marginal mean.
    */
   μ_0:Real[D];
   
   /**
-   * Marginalized prior covariance.
+   * Marginal covariance.
    */
   Σ_0:Real[D,D];
 

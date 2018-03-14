@@ -90,6 +90,7 @@
       "bi/math/simulate.bi",
       "bi/math/special.bi",
       "bi/math/standard.bi",
+      "bi/math/update.bi",
       "bi/math/vector.bi",
       "bi/method/AliveParticleFilter.bi",
       "bi/method/ParticleFilter.bi",

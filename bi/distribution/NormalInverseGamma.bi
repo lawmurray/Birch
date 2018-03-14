@@ -56,7 +56,10 @@ class NormalInverseGamma < Random<Real> {
   }
 
   function doCondition() {
-    σ2.update(σ2.α + 0.5, σ2.β + 0.5*pow(value() - μ, 2.0)/a2);
+    α:Real;
+    β:Real;
+    (α, β) <- update_normal_inverse_gamma(value(), μ, a2, σ2.α, σ2.β);
+    σ2.update(α, β);
   }
 
   function doRealize() {

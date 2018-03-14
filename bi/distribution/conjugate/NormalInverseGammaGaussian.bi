@@ -20,18 +20,24 @@ class NormalInverseGammaGaussian < Random<Real> {
   }
   
   function doCondition() {
-    μ_0:Real <- μ.μ;
-    λ_0:Real <- 1.0/μ.a2;
-    α_0:Real <- σ2.α;
-    β_0:Real <- σ2.β;
-
-    μ_1:Real <- (λ_0*μ_0 + value())/(λ_0 + 1.0);
-    λ_1:Real <- λ_0 + 1.0;
-    α_1:Real <- α_0 + 0.5;
-    β_1:Real <- β_0 + 0.5*(λ_0/λ_1)*pow(value() - μ_0, 2.0);
+    μ_1:Real;
+    a2_1:Real;
+    α_1:Real;
+    β_1:Real;
     
-    μ.update(μ_1, 1.0/λ_1);
-    σ2.update(α_1, β_1);
+    if (μ.isRealized() && !σ2.isRealized()) {
+      (α_1, β_1) <- update_inverse_gamma_gaussian(value(), μ.value(), σ2.α, σ2.β);
+      σ2.update(α_1, β_1);
+    } else if (!μ.isRealized() && σ2.isRealized()) {
+      μ_1 <- μ.μ;
+      a2_1 <- μ.a2*σ2.value();
+      (μ_1, a2_1) <- update_gaussian_gaussian(value(), μ_1, a2_1, μ_1, a2_1 + σ2.value());
+      μ.update(μ_1, a2_1);
+    } else {
+      (μ_1, a2_1, α_1, β_1) <- update_gaussian_normal_inverse_gamma(value(), μ.μ, μ.a2, σ2.α, σ2.β);
+      μ.update(μ_1, a2_1);
+      σ2.update(α_1, β_1);
+    }
   }
 
   function doRealize() {

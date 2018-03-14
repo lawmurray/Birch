@@ -34,20 +34,24 @@ class AffineNormalInverseGammaGaussian < Random<Real> {
   }
   
   function doCondition() {
-    y:Real <- value() - c;
-
-    μ_0:Real <- x.μ;
-    λ_0:Real <- 1.0/x.a2;
-    α_0:Real <- σ2.α;
-    β_0:Real <- σ2.β;
-
-    μ_1:Real <- (λ_0*μ_0 + a*y)/(λ_0 + a*a);
-    λ_1:Real <- λ_0 + a*a;
-    α_1:Real <- α_0 + 0.5;
-    β_1:Real <- β_0 + 0.5*(y*y + μ_0*μ_0*λ_0 - μ_1*μ_1*λ_1);
+    μ_1:Real;
+    a2_1:Real;
+    α_1:Real;
+    β_1:Real;
     
-    x.update(μ_1, 1.0/λ_1);
-    σ2.update(α_1, β_1);
+    if (x.isRealized() && !σ2.isRealized()) {
+      (α_1, β_1) <- update_inverse_gamma_gaussian(value(), a*x.value() + c, σ2.α, σ2.β);
+      σ2.update(α_1, β_1);
+    } else if (!x.isRealized() && σ2.isRealized()) {
+      μ_1 <- x.μ;
+      a2_1 <- x.a2*σ2.value();
+      (μ_1, a2_1) <- update_affine_gaussian_gaussian(value(), a, μ_1, a2_1, a*μ_1 + c, a*a*a2_1 + σ2.value());
+      x.update(μ_1, a2_1);
+    } else {
+      (μ_1, a2_1, α_1, β_1) <- update_affine_gaussian_normal_inverse_gamma(a, value(), c, x.μ, x.a2, σ2.α, σ2.β);
+      x.update(μ_1, a2_1);
+      σ2.update(α_1, β_1);
+    }
   }
 
   function doRealize() {

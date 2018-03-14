@@ -436,7 +436,7 @@ function simulate_normal_inverse_gamma_gaussian(μ:Real, a2:Real,
  *
  * - a: Scale.
  * - μ: Mean.
- * - c: Location.
+ * - c: Offset.
  * - a2: Variance.
  * - α: Shape of the inverse-gamma.
  * - β: Scale of the inverse-gamma.
