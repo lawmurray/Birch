@@ -1,5 +1,6 @@
 /*
- * Log-Gaussian with logarithm of a log-Gaussian as its mean.
+ * Log-Gaussian with cobjugate (logarithm of a) log-Gaussian prior on
+ * mean.
  */
 class LogGaussianLogGaussian < LogGaussian {
   /**

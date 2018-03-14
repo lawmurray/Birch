@@ -1,4 +1,4 @@
-/**
+/*
  * Gaussian with normal inverse-gamma prior on mean and variance,
  * where the normal on the mean is further modified with an affine
  * transformation.

@@ -1,5 +1,5 @@
 /*
- * Log-Gaussian with Gaussian as its mean.
+ * Log-Gaussian with conjugate Gaussian prior on mean.
  */
 class GaussianLogGaussian < LogGaussian {
   /**

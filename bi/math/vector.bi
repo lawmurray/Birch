@@ -3,9 +3,9 @@
  */
 function vector(x:Real, length:Integer) -> Real[_] {
   z:Real[length];
-  for (i:Integer in 1..length) {
-    z[i] <- x;
-  }
+  cpp{{
+  std::fill(z_.begin(), z_.end(), x_);
+  }}
   return z;
 }
 
@@ -14,9 +14,9 @@ function vector(x:Real, length:Integer) -> Real[_] {
  */
 function vector(x:Integer, length:Integer) -> Integer[_] {
   z:Integer[length];
-  for (i:Integer in 1..length) {
-    z[i] <- x;
-  }
+  cpp{{
+  std::fill(z_.begin(), z_.end(), x_);
+  }}
   return z;
 }
 
@@ -25,9 +25,9 @@ function vector(x:Integer, length:Integer) -> Integer[_] {
  */
 function vector(x:Boolean, length:Integer) -> Boolean[_] {
   z:Boolean[length];
-  for (i:Integer in 1..length) {
-    z[i] <- x;
-  }
+  cpp{{
+  std::fill(z_.begin(), z_.end(), x_);
+  }}
   return z;
 }
 

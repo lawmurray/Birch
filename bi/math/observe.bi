@@ -348,22 +348,6 @@ function observe_normal_inverse_gamma(x:Real, μ:Real, a2:Real, α:Real,
 }
 
 /**
- * Observe a multivariate Gaussian variate.
- *
- * - x: The variate.
- * - μ: Mean.
- * - Σ: Covariance.
- *
- * Returns: the log probability density.
- */
-function observe_multivariate_gaussian(x:Real[_], μ:Real[_], Σ:Real[_,_]) -> Real {
-  D:Integer <- length(μ);
-  L:Real[_,_] <- llt(Σ);
-  
-  return -0.5*dot(solve(L, x - μ)) - log(determinant(L)) - 0.5*D*log(2.0*π);
-}
-
-/**
  * Observe a beta-binomial variate.
  *
  * - x: The variate.
@@ -499,4 +483,20 @@ function observe_normal_inverse_gamma_gaussian(x:Real, μ:Real, a2:Real,
 function observe_affine_normal_inverse_gamma_gaussian(x:Real, a:Real,
     μ:Real, c:Real, a2:Real, α:Real, β:Real) -> Real {
   return observe_student_t(x, 2.0*α, a*μ + c, β*(1.0 + a*a*a2)/α);
+}
+
+/**
+ * Observe a multivariate Gaussian variate.
+ *
+ * - x: The variate.
+ * - μ: Mean.
+ * - Σ: Covariance.
+ *
+ * Returns: the log probability density.
+ */
+function observe_multivariate_gaussian(x:Real[_], μ:Real[_], Σ:Real[_,_]) -> Real {
+  D:Integer <- length(μ);
+  L:Real[_,_] <- chol(Σ);
+  
+  return -0.5*dot(solve(L, x - μ)) - log(det(L)) - 0.5*D*log(2.0*π);
 }

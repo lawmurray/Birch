@@ -57,11 +57,9 @@ function columns(X:Boolean[_,_]) -> Integer64 {
  */
 function matrix(x:Real, rows:Integer, columns:Integer) -> Real[_,_] {
   Z:Real[rows,columns];
-  for (i:Integer in 1..rows) {
-    for (j:Integer in 1..columns) {
-      Z[i,j] <- x;
-    }
-  }
+  cpp{{
+  std::fill(Z_.begin(), Z_.end(), x_);
+  }}
   return Z;
 }
 
@@ -70,11 +68,9 @@ function matrix(x:Real, rows:Integer, columns:Integer) -> Real[_,_] {
  */
 function matrix(x:Integer, rows:Integer, columns:Integer) -> Integer[_,_] {
   Z:Integer[rows,columns];
-  for (i:Integer in 1..rows) {
-    for (j:Integer in 1..columns) {
-      Z[i,j] <- x;
-    }
-  }
+  cpp{{
+  std::fill(Z_.begin(), Z_.end(), x_);
+  }}
   return Z;
 }
 
@@ -83,10 +79,21 @@ function matrix(x:Integer, rows:Integer, columns:Integer) -> Integer[_,_] {
  */
 function matrix(x:Boolean, rows:Integer, columns:Integer) -> Boolean[_,_] {
   Z:Boolean[rows,columns];
-  for (i:Integer in 1..rows) {
-    for (j:Integer in 1..columns) {
-      Z[i,j] <- x;
-    }
+  cpp{{
+  std::fill(Z_.begin(), Z_.end(), x_);
+  }}
+  return Z;
+}
+
+/**
+ * Create identity matrix.
+ *
+ * - length: Number of rows/columns.
+ */
+function identity(length:Integer) -> Real[_,_] {
+  Z:Real[_,_] <- matrix(0.0, length, length);
+  for (i:Integer in 1..length) {
+    Z[i,i] <- 1.0;
   }
   return Z;
 }
@@ -116,21 +123,4 @@ function scalar(X:Boolean[_,_]) -> Boolean {
   assert rows(X) == 1;  
   assert columns(X) == 1;  
   return X[1,1];
-}
-
-/**
- * Create identity matrix.
- */
-function I(rows:Integer, columns:Integer) -> Real[_,_] {
-  Z:Real[rows,columns];
-  for (i:Integer in 1..rows) {
-    for (j:Integer in 1..columns) {
-      if (i == j) {
-        Z[i,j] <- 1.0;
-      } else {
-        Z[i,j] <- 0.0;
-      }
-    }
-  }
-  return Z;
 }

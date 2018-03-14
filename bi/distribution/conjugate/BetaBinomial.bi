@@ -1,6 +1,5 @@
-/**
- * Binomial with conjugate prior on success probability. When the success
- * probability is known, this is simply a Binomial distribution.
+/*
+ * Binomial with conjugate beta prior on success probability.
  */
 class BetaBinomial < Random<Integer> {
   /**

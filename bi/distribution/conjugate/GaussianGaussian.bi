@@ -1,5 +1,5 @@
 /*
- * Gaussian with another Gaussian as its mean.
+ * Gaussian with conjugate Gaussian prior on mean.
  */
 class GaussianGaussian < Gaussian {
   /**

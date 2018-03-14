@@ -320,21 +320,6 @@ function simulate_normal_inverse_gamma(μ:Real, a2:Real, α:Real,
 }
 
 /**
- * Simulate a multivariate Gaussian variate.
- *
- * - μ: Mean.
- * - Σ: Covariance.
- */
-function simulate_multivariate_gaussian(μ:Real[_], Σ:Real[_,_]) -> Real[_] {
-  D:Integer <- length(μ);
-  z:Real[D];
-  for (d:Integer in 1..D) {
-    z[d] <- simulate_gaussian(0.0, 1.0);
-  }
-  return μ + llt(Σ)*z;
-}
-
-/**
  * Simulate a beta-binomial variate.
  *
  * - n: Number of trials.
@@ -348,7 +333,6 @@ function simulate_beta_binomial(n:Integer, α:Real, β:Real) -> Integer {
   
   return simulate_binomial(n, simulate_beta(α, β));
 }
-
 
 /**
  * Simulate a Dirichlet-categorical variate.
@@ -444,4 +428,19 @@ function simulate_normal_inverse_gamma_gaussian(μ:Real, a2:Real,
 function simulate_affine_normal_inverse_gamma_gaussian(a:Real, μ:Real,
     c:Real, a2:Real, α:Real, β:Real) -> Real {
   return simulate_student_t(2.0*α, a*μ + c, β*(1.0 + a*a*a2)/α);
+}
+
+/**
+ * Simulate a multivariate Gaussian variate.
+ *
+ * - μ: Mean.
+ * - Σ: Covariance.
+ */
+function simulate_multivariate_gaussian(μ:Real[_], Σ:Real[_,_]) -> Real[_] {
+  D:Integer <- length(μ);
+  z:Real[D];
+  for (d:Integer in 1..D) {
+    z[d] <- simulate_gaussian(0.0, 1.0);
+  }
+  return μ + chol(Σ)*z;
 }

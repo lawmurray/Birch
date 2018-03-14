@@ -44,7 +44,7 @@ class MultivariateGaussianGaussian(D:Integer)
   }
   
   function doCondition() {
-    K:Real[_,_] <- μ.Σ*inverse(Σ_0);
+    K:Real[_,_] <- μ.Σ*inv(Σ_0);
     μ.update(μ.μ + K*(value() - μ_0), μ.Σ - K*μ.Σ);
   }
 }

@@ -1,5 +1,6 @@
-/**
- * Gaussian with normal inverse-gamma prior on mean and variance.
+/*
+ * Gaussian with conjugate normal inverse-gamma prior on mean and
+ * variance.
  */
 class NormalInverseGammaGaussian < Random<Real> {
   /**

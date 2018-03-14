@@ -76,9 +76,9 @@ function dot(x:Integer[_]) -> Integer;
 /**
  * Transpose of a matrix.
  */
-function transpose(X:Real[_,_]) -> Real[_,_];
-function transpose(X:Integer[_,_]) -> Integer[_,_];
-function transpose(X:Boolean[_,_]) -> Boolean[_,_];
+function trans(X:Real[_,_]) -> Real[_,_];
+function trans(X:Integer[_,_]) -> Integer[_,_];
+function trans(X:Boolean[_,_]) -> Boolean[_,_];
 
 /**
  * Norm of a vector.
@@ -88,21 +88,23 @@ function norm(x:Real[_]) -> Real;
 /**
  * Determinant of a matrix.
  */
-function determinant(X:Real[_,_]) -> Real;
+function det(X:Real[_,_]) -> Real;
 
 /**
  * Inverse of a matrix.
  */
-function inverse(X:Real[_,_]) -> Real[_,_];
+function inv(X:Real[_,_]) -> Real[_,_];
 
 /*
  * for the below functions, need to assign the result to a new matrix, as, it
  * seems, they return a view of a matrix that will be destroyed on return
  */
 /**
- * `LL^T` Cholesky decomposition of a matrix.
+ * Cholesky decomposition of a matrix, $X = LL^{\top}$.
+ *
+ * Returns: the lower-triangular factor $L$.
  */
-function llt(X:Real[_,_]) -> Real[_,_] {
+function chol(X:Real[_,_]) -> Real[_,_] {
   assert rows(X) == columns(X);
   
   L:Real[rows(X),columns(X)];

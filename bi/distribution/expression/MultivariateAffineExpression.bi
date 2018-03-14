@@ -43,7 +43,7 @@ class MultivariateAffineExpression {
 
 operator (x:Random<Real[_]> + c:Real[_]) -> MultivariateAffineExpression {
   y:MultivariateAffineExpression;
-  y.initialize(I(length(x), length(x)), x, c);
+  y.initialize(identity(length(x)), x, c);
   return y;
 }
 
@@ -65,7 +65,7 @@ operator (c:Real[_] + x:MultivariateAffineExpression)
 
 operator (x:Random<Real[_]> - c:Real[_]) -> MultivariateAffineExpression {
   y:MultivariateAffineExpression;
-  y.initialize(I(length(x), length(x)), x, -c);
+  y.initialize(identity(length(x)), x, -c);
   return y;
 }
 
@@ -78,7 +78,7 @@ operator (x:MultivariateAffineExpression - c:Real[_])
 
 operator (c:Real[_] - x:Random<Real[_]>) -> MultivariateAffineExpression {
   y:MultivariateAffineExpression;
-  y.initialize(-I(length(x), length(x)), x, c);
+  y.initialize(-identity(length(x)), x, c);
   return y;
 }
 

@@ -1,7 +1,5 @@
-/**
- * Poisson with conjugate prior on rate. When the rate is known, this is
- * simply a Poisson distribution. When the rate is gamma distributed, this is
- * a negative binomial distribution.
+/*
+ * Poisson with conjugate gamma prior on rate.
  */
 class GammaPoisson < Random<Integer> {
   /**

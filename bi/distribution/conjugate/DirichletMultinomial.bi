@@ -1,4 +1,4 @@
-/**
+/*
  * Multinomial with conjugate prior on category probabilities.
  */
 class DirichletMultinomial < Random<Integer[_]> {

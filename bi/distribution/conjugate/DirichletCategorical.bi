@@ -1,4 +1,4 @@
-/**
+/*
  * Categorical distribution with conjugate prior on category probabilities.
  */
 class DirichletCategorical < Random<Integer> {

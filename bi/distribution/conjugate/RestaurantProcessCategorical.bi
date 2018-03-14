@@ -1,6 +1,5 @@
-/**
- * Categorical with conjugate restaurant process prior on category
- * probabilities.
+/*
+ * Categorical with conjugate restaurant process prior.
  */
 class RestaurantProcessCategorical < Random<Integer> {
   /**

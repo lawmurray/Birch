@@ -31,33 +31,33 @@ auto dot_(const Array<Type,Frame>& o) {
 }
 
 template<class EigenType>
-auto determinant_(const EigenType& o) {
+auto det_(const EigenType& o) {
   return o.determinant();
 }
 
 template<class Type, class Frame>
-auto determinant_(const Array<Type,Frame>& o) {
-  return determinant_(o.toEigen());
+auto det_(const Array<Type,Frame>& o) {
+  return det_(o.toEigen());
 }
 
 template<class EigenType>
-auto transpose_(const EigenType& o) {
+auto trans_(const EigenType& o) {
   return o.transpose();
 }
 
 template<class Type, class Frame>
-auto transpose_(const Array<Type,Frame>& o) {
-  return transpose_(o.toEigen());
+auto trans_(const Array<Type,Frame>& o) {
+  return trans_(o.toEigen());
 }
 
 template<class EigenType>
-auto inverse_(const EigenType& o) {
+auto inv_(const EigenType& o) {
   return o.inverse();
 }
 
 template<class Type, class Frame>
-auto inverse_(const Array<Type,Frame>& o) {
-  return inverse_(o.toEigen());
+auto inv_(const Array<Type,Frame>& o) {
+  return inv_(o.toEigen());
 }
 
 }
