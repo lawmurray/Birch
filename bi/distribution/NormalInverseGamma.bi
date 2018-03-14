@@ -30,12 +30,12 @@ class NormalInverseGamma < Random<Real> {
   μ:Real;
 
   /**
-   * Precision.
+   * Variance.
    */
   a2:Real;
   
   /**
-   * Scale.
+   * Variance scale.
    */
   σ2:InverseGamma;
 
@@ -67,12 +67,10 @@ class NormalInverseGamma < Random<Real> {
         setWeight(observe_gaussian(value(), μ, a2*σ2.value()));
       }
     } else {
-      ν:Real <- 2.0*σ2.α;       // degrees of freedom
-      s2:Real <- a2*σ2.β/σ2.α;  // squared scale
       if (isMissing()) {
-        set(simulate_student_t(ν, μ, s2));
+        set(simulate_normal_inverse_gamma(μ, a2, σ2.α, σ2.β));
       } else {
-        setWeight(observe_student_t(value(), ν, μ, s2));
+        setWeight(observe_normal_inverse_gamma(value(), μ, a2, σ2.α, σ2.β));
       }
     }
   }

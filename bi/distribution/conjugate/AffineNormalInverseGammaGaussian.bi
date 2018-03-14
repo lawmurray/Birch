@@ -51,41 +51,39 @@ class AffineNormalInverseGammaGaussian < Random<Real> {
   }
 
   function doRealize() {
+    μ_1:Real;
+    σ2_1:Real;
+    
     if (x.isRealized() && σ2.isRealized()) {
-      μ_1:Real <- a*x.value() + c;
-      σ2_1:Real <- σ2.value();
+      μ_1 <- a*x.value() + c;
+      σ2_1 <- σ2.value();
       if (isMissing()) {
         set(simulate_gaussian(μ_1, σ2_1));
       } else {
-        setWeight(observe_gaussian(value(), μ_1, σ2_1));
+        setWeight(observe_gaussian(value(), μ_1, σ2));
       }
     } else if (x.isRealized() && !σ2.isRealized()) {
-      /* just like InverseGammaGaussian */
-      μ_1:Real <- a*x.value() + c;
-      ν:Real <- 2.0*σ2.α;
-      s2:Real <- σ2.β/σ2.α;
+      μ_1 <- a*x.value() + c;
       if (isMissing()) {
-        set(simulate_student_t(ν, μ_1, s2));
+        set(simulate_inverse_gamma_gaussian(μ_1, σ2.α, σ2.β));
       } else {
-        setWeight(observe_student_t(value(), ν, μ_1, s2));
+        setWeight(observe_inverse_gamma_gaussian(value(), μ_1, σ2.α, σ2.β));
       }
     } else if (!x.isRealized() && σ2.isRealized()) {
-      /* just like GaussianGaussian */
-      μ_1:Real <- a*x.μ + c;
-      σ2_1:Real <- (a*a*x.a2 + 1.0)*σ2.value();
+      μ_1 <- a*x.μ + c;
+      σ2_1 <- (a*a*x.a2 + 1.0)*σ2.value();
       if (isMissing()) {
         set(simulate_gaussian(μ_1, σ2_1));
       } else {
         setWeight(observe_gaussian(value(), μ_1, σ2_1));
       }
     } else {
-      ν:Real <- 2.0*σ2.α;
-      μ_1:Real <- a*x.μ + c;
-      σ2_1:Real <- σ2.β*(1.0 + a*a*x.a2)/σ2.α;
       if (isMissing()) {
-        set(simulate_student_t(ν, μ_1, σ2_1));
+        set(simulate_affine_normal_inverse_gamma_gaussian(a, x.μ, c,
+            x.a2, σ2.α, σ2.β));
       } else {
-        setWeight(observe_student_t(value(), ν, μ_1, σ2_1));
+        setWeight(observe_affine_normal_inverse_gamma_gaussian(value(),
+            a, x.μ, c, x.a2, σ2.α, σ2.β));
       }
     }
   }

@@ -43,29 +43,27 @@ class NormalInverseGammaGaussian < Random<Real> {
         setWeight(observe_gaussian(value(), μ.value(), σ2.value()));
       }
     } else if (μ.isRealized() && !σ2.isRealized()) {
-      /* just like InverseGammaGaussian */
-      ν:Real <- 2.0*σ2.α;    // degrees of freedom
-      s2:Real <- σ2.β/σ2.α;  // squared scale
       if (isMissing()) {
-        set(simulate_student_t(ν, μ.value(), s2));
+        set(simulate_inverse_gamma_gaussian(μ.value(), σ2.α, σ2.β));
       } else {
-        setWeight(observe_student_t(value(), ν, μ.value(), s2));
+        setWeight(observe_inverse_gamma_gaussian(value(), μ.value(),
+            σ2.α, σ2.β));
       }
     } else if (!μ.isRealized() && σ2.isRealized()) {
-      /* just like GaussianGaussian */
-      s2:Real <- (μ.a2 + 1.0)*σ2.value();
+      μ_1:Real <- μ.μ;
+      σ2_1:Real <- (μ.a2 + 1.0)*σ2.value();
       if (isMissing()) {
-        set(simulate_gaussian(μ.μ, s2));
+        set(simulate_gaussian(μ_1, σ2_1));
       } else {
-        setWeight(observe_gaussian(value(), μ.μ, s2));
+        setWeight(observe_gaussian(value(), μ_1, σ2_1));
       }
     } else {
-      ν:Real <- 2.0*σ2.α;         // degrees of freedom
-      s2:Real <- σ2.β*(1.0 + μ.a2)/σ2.α;  // squared scale
       if (isMissing()) {
-        set(simulate_student_t(ν, μ.μ, s2));
+        set(simulate_normal_inverse_gamma_gaussian(μ.μ, μ.a2, σ2.α,
+            σ2.β));
       } else {
-        setWeight(observe_student_t(value(), ν, μ.μ, s2));
+        setWeight(observe_normal_inverse_gamma_gaussian(value(), μ.μ,
+            μ.a2, σ2.α, σ2.β));
       }
     }
   }
@@ -74,7 +72,8 @@ class NormalInverseGammaGaussian < Random<Real> {
 /**
  * Create Gaussian distribution.
  */
-function Gaussian(μ:NormalInverseGamma, σ2:InverseGamma) -> NormalInverseGammaGaussian {
+function Gaussian(μ:NormalInverseGamma, σ2:InverseGamma) ->
+    NormalInverseGammaGaussian {
   ///@todo Check μ.σ2 == σ2
   x:NormalInverseGammaGaussian;
   x.initialize(μ, σ2);

@@ -4,7 +4,7 @@
  * - x: The variate.
  * - ρ: Probability of a true result.
  *
- * Returns the log probability mass.
+ * Returns: the log probability mass.
  */
 function observe_bernoulli(x:Boolean, ρ:Real) -> Real {
   assert 0.0 <= ρ && ρ <= 1.0;
@@ -22,7 +22,7 @@ function observe_bernoulli(x:Boolean, ρ:Real) -> Real {
  * - n: Number of trials.
  * - ρ: Probability of a true result.
  
- * Returns the log probability mass.
+ * Returns: the log probability mass.
  */
 function observe_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
   assert 0 <= n;
@@ -42,7 +42,7 @@ function observe_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
  * - k: Number of successes before the experiment is stopped.
  * - ρ: Probability of success.
  *
- * Returns the log probability mass.
+ * Returns: the log probability mass.
  */
 function observe_negative_binomial(x:Integer, k:Integer, ρ:Real) -> Real {
   assert 0 < k;
@@ -61,7 +61,7 @@ function observe_negative_binomial(x:Integer, k:Integer, ρ:Real) -> Real {
  * - x: The variate.
  * - λ: Rate.
  *
- * Returns the log probability mass.
+ * Returns: the log probability mass.
  */
 function observe_poisson(x:Integer, λ:Real) -> Real {
   assert 0.0 <= λ;
@@ -88,7 +88,7 @@ function observe_poisson(x:Integer, λ:Real) -> Real {
  * - l: Lower bound of interval.
  * - u: Upper bound of interval.
  *
- * Returns the log probability mass.
+ * Returns: the log probability mass.
  */
 function observe_int_uniform(x:Integer, l:Integer, u:Integer) -> Real {
   if (x >= l && x <= u) {
@@ -104,7 +104,7 @@ function observe_int_uniform(x:Integer, l:Integer, u:Integer) -> Real {
  * - x: The variate.
  * - ρ: Category probabilities.
  *
- * Returns the log probability mass.
+ * Returns: the log probability mass.
  */
 function observe_categorical(x:Integer, ρ:Real[_]) -> Real {
   if (1 <= x && x <= length(ρ)) {
@@ -122,7 +122,7 @@ function observe_categorical(x:Integer, ρ:Real[_]) -> Real {
  * - n: Number of trials.
  * - ρ: Category probabilities.
  *
- * Returns the log probability mass.
+ * Returns: the log probability mass.
  */
 function observe_multinomial(x:Integer[_], n:Integer, ρ:Real[_]) -> Real {
   assert length(x) == length(ρ);
@@ -148,7 +148,7 @@ function observe_multinomial(x:Integer[_], n:Integer, ρ:Real[_]) -> Real {
  * - x: The variate.
  * - α: Concentrations.
  *
- * Returns the log probability density.
+ * Returns: the log probability density.
  */
 function observe_dirichlet(x:Real[_], α:Real[_]) -> Real {
   assert length(x) == length(α);
@@ -170,7 +170,7 @@ function observe_dirichlet(x:Real[_], α:Real[_]) -> Real {
  * - l: Lower bound of interval.
  * - u: Upper bound of interval.
  *
- * Returns the log probability density.
+ * Returns: the log probability density.
  */
 function observe_uniform(x:Real, l:Real, u:Real) -> Real {
   assert l <= u;
@@ -188,7 +188,7 @@ function observe_uniform(x:Real, l:Real, u:Real) -> Real {
  * - x: The variate.
  * - λ: Rate.
  *
- * Returns the log probability density.
+ * Returns: the log probability density.
  */
 function observe_exponential(x:Real, λ:Real) -> Real {
   assert 0.0 < λ;
@@ -207,7 +207,7 @@ function observe_exponential(x:Real, λ:Real) -> Real {
  * - μ: Mean.
  * - σ2: Variance.
  *
- * Returns the log probability density.
+ * Returns: the log probability density.
  */
 function observe_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
   assert 0.0 <= σ2;
@@ -230,7 +230,7 @@ function observe_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
  * - μ: Mean.
  * - σ2: Variance.
  *
- * Returns the log probability density.
+ * Returns: the log probability density.
  */
 function observe_log_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
   if (x > 0.0) {
@@ -246,7 +246,7 @@ function observe_log_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
  * - x: The variate.
  * - ν: Degrees of freedom.
  *
- * Returns the log probability density.
+ * Returns: the log probability density.
  */
 function observe_student_t(x:Real, ν:Real) -> Real {
   assert 0.0 < ν;
@@ -263,7 +263,7 @@ function observe_student_t(x:Real, ν:Real) -> Real {
  * - μ: Location.
  * - σ2: Squared scale.
  *
- * Returns the log probability density.
+ * Returns: the log probability density.
  */
 function observe_student_t(x:Real, ν:Real, μ:Real, σ2:Real) -> Real {
   assert 0.0 < ν;
@@ -278,7 +278,7 @@ function observe_student_t(x:Real, ν:Real, μ:Real, σ2:Real) -> Real {
  * - α: Shape.
  * - β: Shape.
  *
- * Returns the log probability density.
+ * Returns: the log probability density.
  */
 function observe_beta(x:Real, α:Real, β:Real) -> Real {
   assert 0.0 < α;
@@ -298,7 +298,7 @@ function observe_beta(x:Real, α:Real, β:Real) -> Real {
  * - k: Shape.
  * - θ: Scale.
  *
- * Returns the log probability density.
+ * Returns: the log probability density.
  */
 function observe_gamma(x:Real, k:Real, θ:Real) -> Real {
   assert 0.0 < k;
@@ -318,7 +318,7 @@ function observe_gamma(x:Real, k:Real, θ:Real) -> Real {
  * - α: Shape.
  * - β: Scale.
  *
- * Returns the log probability density.
+ * Returns: the log probability density.
  */
 function observe_inverse_gamma(x:Real, α:Real, β:Real) -> Real {
   assert 0.0 < α;
@@ -332,13 +332,29 @@ function observe_inverse_gamma(x:Real, α:Real, β:Real) -> Real {
 }
 
 /**
+ * Observe a normal inverse-gamma variate.
+ *
+ * - x: The variate.
+ * - μ: Mean.
+ * - a2: Variance.
+ * - α: Shape of inverse-gamma on scale.
+ * - β: Scale of inverse-gamma on scale.
+ *
+ * Returns: the log probability density.
+ */
+function observe_normal_inverse_gamma(x:Real, μ:Real, a2:Real, α:Real,
+    β:Real) -> Real {
+  return observe_student_t(x, 2.0*α, μ, a2*β/α);
+}
+
+/**
  * Observe a multivariate Gaussian variate.
  *
  * - x: The variate.
  * - μ: Mean.
  * - Σ: Covariance.
  *
- * Returns the log probability density.
+ * Returns: the log probability density.
  */
 function observe_multivariate_gaussian(x:Real[_], μ:Real[_], Σ:Real[_,_]) -> Real {
   D:Integer <- length(μ);
@@ -355,7 +371,7 @@ function observe_multivariate_gaussian(x:Real[_], μ:Real[_], Σ:Real[_,_]) -> R
  * - α: Shape.
  * - β: Shape.
  *
- * Returns the log probability mass.
+ * Returns: the log probability mass.
  */
 function observe_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) -> Real {
   assert 0 <= n;
@@ -375,7 +391,7 @@ function observe_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) -> Real {
  * - x: The variate.
  * - α: Concentrations.
  *
- * Returns the log probability mass.
+ * Returns: the log probability mass.
  */
 function observe_dirichlet_categorical(x:Integer, α:Real[_]) -> Real {
   if (1 <= x && x <= length(α)) {
@@ -393,7 +409,7 @@ function observe_dirichlet_categorical(x:Integer, α:Real[_]) -> Real {
  * - n: Number of trials.
  * - α: Concentrations.
  *
- * Returns the log probability mass.
+ * Returns: the log probability mass.
  */
 function observe_dirichlet_multinomial(x:Integer[_], n:Integer, α:Real[_]) -> Real {
   assert length(x) == length(α);
@@ -414,9 +430,17 @@ function observe_dirichlet_multinomial(x:Integer[_], n:Integer, α:Real[_]) -> R
 }
 
 /**
- * Observe a categorical variate with Chinese restaurant process prior.
+ * Observe a categorical variate with Chinese restaurant process
+ * prior.
+ *
+ * - x: The variate.
+ * - α: Concentration.
+ * - θ: Discount.
+ * - n: Enumerated items.
+ * - N: Total number of items.
  */
-function observe_crp_categorical(k:Integer, α:Real, θ:Real, n:Integer[_], N:Integer) -> Real {
+function observe_crp_categorical(k:Integer, α:Real, θ:Real,
+    n:Integer[_], N:Integer) -> Real {
   K:Integer <- length(n);
   if (k > K + 1) {
     return -inf;
@@ -425,4 +449,54 @@ function observe_crp_categorical(k:Integer, α:Real, θ:Real, n:Integer[_], N:In
   } else {
     return (n[k] - α)/(N + θ);
   }
+}
+
+/**
+ * Observe a Gaussian variate with an inverse-gamma distribution over
+ * the variance.
+ *
+ * - x: The variate.
+ * - μ: Mean.
+ * - α: Shape of the inverse-gamma.
+ * - β: Scale of the inverse-gamma.
+ *
+ * Returns: the log probability density.
+ */
+function observe_inverse_gamma_gaussian(x:Real, μ:Real, α:Real,
+    β:Real) -> Real {
+  return observe_student_t(x, 2.0*α, μ, β/α);
+}
+
+/**
+ * Observe a Gaussian variate with a normal inverse-gamma prior.
+ *
+ * - x: The variate.
+ * - μ: Mean.
+ * - a2: Variance.
+ * - α: Shape of the inverse-gamma.
+ * - β: Scale of the inverse-gamma.
+ *
+ * Returns: the log probability density.
+ */
+function observe_normal_inverse_gamma_gaussian(x:Real, μ:Real, a2:Real,
+    α:Real, β:Real) -> Real {
+  return observe_student_t(x, 2.0*α, μ, β*(1.0 + a2)/α);
+}
+
+/**
+ * Observe a Gaussian variate with a normal inverse-gamma prior.
+ *
+ * - x: The variate.
+ * - a: Scale.
+ * - μ: Mean.
+ * - c: Location.
+ * - a2: Variance.
+ * - α: Shape of the inverse-gamma.
+ * - β: Scale of the inverse-gamma.
+ *
+ * Returns: the log probability density.
+ */
+function observe_affine_normal_inverse_gamma_gaussian(x:Real, a:Real,
+    μ:Real, c:Real, a2:Real, α:Real, β:Real) -> Real {
+  return observe_student_t(x, 2.0*α, a*μ + c, β*(1.0 + a*a*a2)/α);
 }

@@ -311,12 +311,12 @@ function simulate_inverse_gamma(α:Real, β:Real) -> Real {
  *
  * - μ: Mean.
  * - a2: Variance.
- * - k: Shape of inverse-gamma on scale.
- * - θ: Scale of inverse-gamma on scale.
+ * - α: Shape of inverse-gamma on scale.
+ * - β: Scale of inverse-gamma on scale.
  */
-function simulate_normal_inverse_gamma(μ:Real, a2:Real, k:Real,
-    θ:Real) -> Real {
-  return simulate_gaussian(μ, a2*simulate_inverse_gamma(k, θ));
+function simulate_normal_inverse_gamma(μ:Real, a2:Real, α:Real,
+    β:Real) -> Real {
+  return simulate_student_t(2.0*α, μ, a2*β/α);
 }
 
 /**
@@ -365,14 +365,22 @@ function simulate_dirichlet_categorical(α:Real[_]) -> Integer {
  * - n: Number of trials.
  * - α: Concentrations.
  */
-function simulate_dirichlet_multinomial(n:Integer, α:Real[_]) -> Integer[_] {
+function simulate_dirichlet_multinomial(n:Integer, α:Real[_]) ->
+    Integer[_] {
   return simulate_multinomial(n, simulate_dirichlet(α));
 }
 
 /**
- * Simulate a categorical variate with Chinese restaurant process prior.
+ * Simulate a categorical variate with Chinese restaurant process
+ * prior.
+ *
+ * - α: Concentration.
+ * - θ: Discount.
+ * - n: Enumerated items.
+ * - N: Total number of items.
  */
-function simulate_crp_categorical(α:Real, θ:Real, n:Integer[_], N:Integer) -> Integer {
+function simulate_crp_categorical(α:Real, θ:Real, n:Integer[_],
+    N:Integer) -> Integer {
   assert N >= 0;
   assert sum(n) == N;
 
@@ -396,4 +404,44 @@ function simulate_crp_categorical(α:Real, θ:Real, n:Integer[_], N:Integer) -> 
     }
   }
   return k;
+}
+
+/**
+ * Simulate a Gaussian variate with an inverse-gamma prior over
+ * the variance.
+ *
+ * - μ: Mean.
+ * - α: Shape of the inverse-gamma.
+ * - β: Scale of the inverse-gamma.
+ */
+function simulate_inverse_gamma_gaussian(μ:Real, α:Real, β:Real) -> Real {
+  return simulate_student_t(2.0*α, μ, β/α);
+}
+
+/**
+ * Simulate a Gaussian variate with a normal inverse-gamma prior.
+ *
+ * - μ: Mean.
+ * - a2: Variance.
+ * - α: Shape of the inverse-gamma.
+ * - β: Scale of the inverse-gamma.
+ */
+function simulate_normal_inverse_gamma_gaussian(μ:Real, a2:Real,
+    α:Real, β:Real) -> Real {
+  return simulate_student_t(2.0*α, μ, β*(1.0 + a2)/α);
+}
+
+/**
+ * Simulate a Gaussian variate with a normal inverse-gamma prior.
+ *
+ * - a: Scale.
+ * - μ: Mean.
+ * - c: Location.
+ * - a2: Variance.
+ * - α: Shape of the inverse-gamma.
+ * - β: Scale of the inverse-gamma.
+ */
+function simulate_affine_normal_inverse_gamma_gaussian(a:Real, μ:Real,
+    c:Real, a2:Real, α:Real, β:Real) -> Real {
+  return simulate_student_t(2.0*α, a*μ + c, β*(1.0 + a*a*a2)/α);
 }
