@@ -47,9 +47,9 @@ class NormalInverseGammaGaussian < Random<Real> {
       ν:Real <- 2.0*σ2.α;    // degrees of freedom
       s2:Real <- σ2.β/σ2.α;  // squared scale
       if (isMissing()) {
-        set(simulate_student_t(ν, μ, s2));
+        set(simulate_student_t(ν, μ.value(), s2));
       } else {
-        setWeight(observe_student_t(value(), ν, μ, s2));
+        setWeight(observe_student_t(value(), ν, μ.value(), s2));
       }
     } else if (!μ.isRealized() && σ2.isRealized()) {
       /* just like GaussianGaussian */
