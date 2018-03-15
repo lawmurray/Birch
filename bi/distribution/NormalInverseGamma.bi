@@ -3,18 +3,18 @@
  * distribution:
  *
  * $$x \mid \sigma^2 \sim \mathrm{N}(\mu, a^2 \sigma^2),$$
- * $$\sigma^2 \sim \Gamma^{-1}(k, \theta).$$
+ * $$\sigma^2 \sim \Gamma^{-1}(\alpha, \beta).$$
  *
  * which may be denoted:
  *
- * $$(x, \sigma^2) \sim \mathrm{N-}\Gamma^{-1}(\mu, a^2, k, \theta),$$
+ * $$(x, \sigma^2) \sim \mathrm{N-}\Gamma^{-1}(\mu, a^2, \alpha, \beta),$$
  *
  * and is the conjugate prior of a Gaussian distribution with both
  * unknown mean and unknown variance.
  *
- * It is establihed via code such as the following:
+ * It is established via code such as the following:
  *
- *     σ2 ~ InverseGamma(k, θ);
+ *     σ2 ~ InverseGamma(α, β);
  *     x ~ Gaussian(μ, a2*σ2);
  *     y ~ Gaussian(x, σ2);
  *

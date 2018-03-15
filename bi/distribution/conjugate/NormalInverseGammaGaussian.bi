@@ -35,7 +35,7 @@ class NormalInverseGammaGaussian < Random<Real> {
       (μ_1, a2_1) <- update_gaussian_gaussian(value(), μ_1, a2_1, μ_1, a2_1 + σ2.value());
       μ.update(μ_1, a2_1);
     } else {
-      (μ_1, a2_1, α_1, β_1) <- update_gaussian_normal_inverse_gamma(value(), μ.μ, μ.a2, σ2.α, σ2.β);
+      (μ_1, a2_1, α_1, β_1) <- update_normal_inverse_gamma_gaussian(value(), μ.μ, μ.a2, σ2.α, σ2.β);
       μ.update(μ_1, a2_1);
       σ2.update(α_1, β_1);
     }

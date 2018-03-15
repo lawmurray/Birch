@@ -463,6 +463,19 @@ function simulate_multivariate_student_t(ν:Real, μ:Real[_], Σ:Real[_,_]) ->
 }
 
 /**
+ * Simulate a multivariate normal inverse-gamma distribution.
+ *
+ * - μ: Mean.
+ * - Σ: Covariance.
+ * - α: Shape of inverse-gamma on scale.
+ * - β: Scale of inverse-gamma on scale.
+ */
+function simulate_multivariate_normal_inverse_gamma(μ:Real[_], Σ:Real[_,_],
+    α:Real, β:Real) -> Real[_] {
+  return simulate_multivariate_student_t(2.0*α, μ, Σ*(β/α));
+}
+
+/**
  * Simulate a multivariate Gaussian distribution with an inverse-gamma prior
  * over a diagonal covariance.
  *

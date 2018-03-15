@@ -3,8 +3,7 @@
  *
  * - D: Number of dimensions.
  */
-class MultivariateGaussianGaussian(D:Integer)
-    < MultivariateGaussian(D) {
+class MultivariateGaussianGaussian(D:Integer) < MultivariateGaussian(D) {
   /**
    * Mean.
    */

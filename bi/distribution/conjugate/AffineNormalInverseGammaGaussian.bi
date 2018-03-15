@@ -48,7 +48,7 @@ class AffineNormalInverseGammaGaussian < Random<Real> {
       (μ_1, a2_1) <- update_affine_gaussian_gaussian(value(), a, μ_1, a2_1, a*μ_1 + c, a*a*a2_1 + σ2.value());
       x.update(μ_1, a2_1);
     } else {
-      (μ_1, a2_1, α_1, β_1) <- update_affine_gaussian_normal_inverse_gamma(a, value(), c, x.μ, x.a2, σ2.α, σ2.β);
+      (μ_1, a2_1, α_1, β_1) <- update_affine_normal_inverse_gamma_gaussian(a, value(), c, x.μ, x.a2, σ2.α, σ2.β);
       x.update(μ_1, a2_1);
       σ2.update(α_1, β_1);
     }

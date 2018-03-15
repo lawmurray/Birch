@@ -511,6 +511,8 @@ function observe_multivariate_gaussian(x:Real[_], μ:Real[_], Σ:Real[_,_]) ->
  * - ν: Degrees of freedom.
  * - μ: Location.
  * - Σ: Squared scale.
+ *
+ * Returns: the log probability density.
  */
 function observe_multivariate_student_t(x:Real[_], ν:Real, μ:Real[_],
     Σ:Real[_,_]) -> Real {
@@ -519,6 +521,22 @@ function observe_multivariate_student_t(x:Real[_], ν:Real, μ:Real[_],
   return -0.5*(ν + D)*log(1.0 + dot(solve(L, x - μ))/ν) +
       lgamma(0.5*(ν + D)) - lgamma(0.5*ν) - log(det(L)) - 0.5*D*log(ν*π) ;
   //@todo Introduce a det() for triangular matrices
+}
+
+/**
+ * Observe a multivariate normal inverse-gamma variate.
+ *
+ * - x: The variate.
+ * - μ: Mean.
+ * - Σ: Covariance.
+ * - α: Shape of inverse-gamma on scale.
+ * - β: Scale of inverse-gamma on scale.
+ *
+ * Returns: the log probability density.
+ */
+function observe_multivariate_normal_inverse_gamma(x:Real[_], μ:Real[_],
+    Σ:Real[_,_], α:Real, β:Real) -> Real {
+  return observe_multivariate_student_t(x, 2.0*α, μ, Σ*(β/α));
 }
 
 /**
