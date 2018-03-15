@@ -48,6 +48,7 @@
       "bi/distribution/conjugate/LogGaussianGaussian.bi",
       "bi/distribution/conjugate/LogGaussianLogGaussian.bi",
       "bi/distribution/conjugate/MultivariateAffineGaussianGaussian.bi",
+      "bi/distribution/conjugate/MultivariateAffineNormalInverseGammaGaussian.bi",
       "bi/distribution/conjugate/MultivariateGaussianGaussian.bi",
       "bi/distribution/conjugate/MultivariateInverseGammaGaussian.bi",
       "bi/distribution/conjugate/MultivariateNormalInverseGammaGaussian.bi",

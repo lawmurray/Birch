@@ -57,7 +57,7 @@ class MultivariateNormalInverseGammaGaussian < Random<Real[_]> {
       }
     } else if (!μ.isRealized() && σ2.isRealized()) {
       D:Integer <- length(μ.μ);
-      Σ_1:Real <- (μ.Σ + identity(D))*σ2.value();
+      Σ_1:Real[_,_] <- (μ.Σ + identity(D))*σ2.value();
       if (isMissing()) {
         set(simulate_multivariate_gaussian(μ.μ, Σ_1));
       } else {
