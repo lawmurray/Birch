@@ -499,8 +499,22 @@ function observe_multivariate_gaussian(x:Real[_], μ:Real[_], Σ:Real[_,_]) ->
     Real {
   D:Integer <- length(μ);
   L:Real[_,_] <- chol(Σ);
-  return -0.5*dot(solve(L, x - μ)) - log(det(L)) - 0.5*D*log(2.0*π);
+  return -0.5*(dot(solve(L, x - μ)) + D*log(2.0*π)) - log(det(L));
   //@todo Introduce a det() for triangular matrices
+}
+
+/**
+ * Simulate a multivariate Gaussian distribution with diagonal covariance.
+ *
+ * - x: The variate.
+ * - μ: Mean.
+ * - σ2: Variance.
+ *
+ * Returns: the log probability density.
+ */
+function observe_multivariate_gaussian(x:Real[_], μ:Real[_], σ2:Real) -> Real {
+  D:Integer <- length(μ);
+  return -0.5*(dot(x - μ)/σ2 + D*log(2.0*π*σ2));
 }
 
 /**
@@ -521,6 +535,25 @@ function observe_multivariate_student_t(x:Real[_], ν:Real, μ:Real[_],
   return -0.5*(ν + D)*log(1.0 + dot(solve(L, x - μ))/ν) +
       lgamma(0.5*(ν + D)) - lgamma(0.5*ν) - log(det(L)) - 0.5*D*log(ν*π) ;
   //@todo Introduce a det() for triangular matrices
+}
+
+/**
+ * Observe a multivariate Student's $t$-distribution variate with location
+ * and diagonal scale.
+ *
+ * - x: The variate.
+ * - ν: Degrees of freedom.
+ * - μ: Location.
+ * - σ2: Squared scale.
+ *
+ * Returns: the log probability density.
+ */
+function observe_multivariate_student_t(x:Real[_], ν:Real, μ:Real[_],
+    σ2:Real) -> Real {
+  D:Integer <- length(μ);
+  σ:Real <- sqrt(σ2);
+  return -0.5*(ν + D)*log(1.0 + dot(x - μ)/(σ2*ν)) +
+      lgamma(0.5*(ν + D)) - lgamma(0.5*ν) - 0.5*D*log(σ2*ν*π) ;
 }
 
 /**
@@ -550,10 +583,10 @@ function observe_multivariate_normal_inverse_gamma(x:Real[_], μ:Real[_],
  *
  * Returns: the log probability density.
  */
-function observe_inverse_gamma_gaussian(x:Real[_], μ:Real[_], α:Real,
-    β:Real) -> Real {
+function observe_multivariate_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
+    α:Real, β:Real) -> Real {
   D:Integer <- length(μ);
-  return observe_multivariate_student_t(x, 2.0*α, μ, diagonal(β/α, D));
+  return observe_multivariate_student_t(x, 2.0*α, μ, β/α);
 }
 
 /**

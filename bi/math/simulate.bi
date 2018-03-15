@@ -445,6 +445,22 @@ function simulate_multivariate_gaussian(μ:Real[_], Σ:Real[_,_]) -> Real[_] {
 }
 
 /**
+ * Simulate a multivariate Gaussian distribution with diagonal covariance.
+ *
+ * - μ: Mean.
+ * - σ2: Variance.
+ */
+function simulate_multivariate_gaussian(μ:Real[_], σ2:Real) -> Real[_] {
+  D:Integer <- length(μ);
+  z:Real[D];
+  σ:Real <- sqrt(σ2);
+  for (d:Integer in 1..D) {
+    z[d] <- μ[d] + σ*simulate_gaussian(0.0, 1.0);
+  }
+  return z;
+}
+
+/**
  * Simulate a multivariate Student's $t$-distribution variate with
  * location and scale.
  *
@@ -460,6 +476,25 @@ function simulate_multivariate_student_t(ν:Real, μ:Real[_], Σ:Real[_,_]) ->
     z[d] <- simulate_student_t(ν);
   }
   return μ + chol(Σ)*z;
+}
+
+/**
+ * Simulate a multivariate Student's $t$-distribution variate with
+ * location and diagonal scaling.
+ *
+ * - ν: Degrees of freedom.
+ * - μ: Location.
+ * - σ2: Squared scale.
+ */
+function simulate_multivariate_student_t(ν:Real, μ:Real[_], σ2:Real) ->
+    Real[_] {
+  D:Integer <- length(μ);
+  z:Real[D];
+  σ:Real <- sqrt(σ2);
+  for (d:Integer in 1..D) {
+    z[d] <- μ[d] + σ*simulate_student_t(ν);
+  }
+  return z;
 }
 
 /**
@@ -486,7 +521,12 @@ function simulate_multivariate_normal_inverse_gamma(μ:Real[_], Σ:Real[_,_],
 function simulate_multivariate_inverse_gamma_gaussian(μ:Real[_], α:Real,
     β:Real) -> Real[_] {
   D:Integer <- length(μ);
-  return simulate_multivariate_student_t(2.0*α, μ, diagonal(β/α, D));
+  z:Real[D];
+  a:Real <- sqrt(β/α);
+  for (d:Integer in 1..D) {
+    z[d] <- μ[d] + a*simulate_student_t(2.0*α);
+  }
+  return z;
 }
 
 /**
