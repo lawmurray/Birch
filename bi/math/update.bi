@@ -238,8 +238,8 @@ function update_multivariate_affine_normal_inverse_gamma_gaussian(
   D:Integer <- length(μ);
   
   Λ:Real[_,_] <- inv(Σ);
-  Λ_1:Real[_,_] <- Λ + A*trans(A);
-  μ_1:Real[_] <- inv(Λ_1)*(Λ*μ + A*(x - c));
+  Λ_1:Real[_,_] <- Λ + trans(A)*A;
+  μ_1:Real[_] <- inv(Λ_1)*(Λ*μ + trans(A)*(x - c));
   L:Real[_,_] <- chol(Λ);
   L_1:Real[_,_] <- chol(Λ_1);
   
