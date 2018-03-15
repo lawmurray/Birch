@@ -10,7 +10,7 @@ function seed(s:Integer) {
 }
 
 /**
- * Simulate a Bernoulli variate.
+ * Simulate a Bernoulli distribution.
  *
  * - ρ: Probability of a true result.
  */
@@ -22,7 +22,7 @@ function simulate_bernoulli(ρ:Real) -> Boolean {
 }
 
 /**
- * Simulate a binomial variate.
+ * Simulate a binomial distribution.
  *
  * - n: Number of trials.
  * - ρ: Probability of a true result.
@@ -36,7 +36,7 @@ function simulate_binomial(n:Integer, ρ:Real) -> Integer {
 }
 
 /**
- * Simulate a negative binomial variate.
+ * Simulate a negative binomial distribution.
  *
  * - k: Number of successes before the experiment is stopped.
  * - ρ: Probability of success.
@@ -52,7 +52,7 @@ function simulate_negative_binomial(k:Integer, ρ:Real) -> Integer {
 }
 
 /**
- * Simulate a Poisson variate.
+ * Simulate a Poisson distribution.
  *
  * - λ: Rate.
  */
@@ -68,7 +68,7 @@ function simulate_poisson(λ:Real) -> Integer {
 }
 
 /**
- * Simulate an integer uniform variate.
+ * Simulate an integer uniform distribution.
  *
  * - l: Lower bound of interval.
  * - u: Upper bound of interval.
@@ -81,7 +81,7 @@ function simulate_int_uniform(l:Integer, u:Integer) -> Integer {
 }
 
 /**
- * Simulate a categorical variate.
+ * Simulate a categorical distribution.
  *
  * - ρ: Category probabilities.
  */
@@ -102,7 +102,7 @@ function simulate_categorical(ρ:Real[_]) -> Integer {
 }
 
 /**
- * Simulate a multinomial variate.
+ * Simulate a multinomial distribution.
  *
  * - n: Number of trials.
  * - ρ: Category probabilities.
@@ -139,7 +139,7 @@ function simulate_multinomial(n:Integer, ρ:Real[_]) -> Integer[_] {
 }
 
 /**
- * Simulate a Dirichlet variate.
+ * Simulate a Dirichlet distribution.
  *
  * - α: Concentrations.
  */
@@ -160,7 +160,7 @@ function simulate_dirichlet(α:Real[_]) -> Real[_] {
 }
 
 /**
- * Simulate a Dirichlet variate.
+ * Simulate a Dirichlet distribution.
  *
  * - α: Concentration.
  * - D: Number of dimensions.
@@ -182,7 +182,7 @@ function simulate_dirichlet(α:Real, D:Integer) -> Real[_] {
 }
 
 /**
- * Simulate a uniform variate.
+ * Simulate a uniform distribution.
  *
  * - l: Lower bound of interval.
  * - u: Upper bound of interval.
@@ -195,7 +195,7 @@ function simulate_uniform(l:Real, u:Real) -> Real {
 }
 
 /**
- * Simulate an exponential variate.
+ * Simulate an exponential distribution.
  *
  * - λ: Rate.
  */
@@ -207,7 +207,7 @@ function simulate_exponential(λ:Real) -> Real {
 }
 
 /**
- * Simulate a Gaussian variate.
+ * Simulate a Gaussian distribution.
  *
  * - μ: Mean.
  * - σ2: Variance.
@@ -224,10 +224,10 @@ function simulate_gaussian(μ:Real, σ2:Real) -> Real {
 }
 
 /**
- * Simulate a log-Gaussian variate.
+ * Simulate a log-Gaussian distribution.
  *
- * - μ: Mean (in log space).
- * - σ2: Variance (in log space).
+ * - μ: Mean (of logarithm).
+ * - σ2: Variance (of logarithm).
  */
 function simulate_log_gaussian(μ:Real, σ2:Real) -> Real {
   assert 0.0 <= σ2;
@@ -241,7 +241,7 @@ function simulate_log_gaussian(μ:Real, σ2:Real) -> Real {
 }
 
 /**
- * Simulate a Student's $t$ variate.
+ * Simulate a Student's $t$-distribution.
  *
  * - ν: Degrees of freedom.
  */
@@ -253,8 +253,7 @@ function simulate_student_t(ν:Real) -> Real {
 }
 
 /**
- * Simulate a Student's $t$-distribution variate with location and
- * scale.
+ * Simulate a Student's $t$-distribution with location and scale.
  *
  * - ν: Degrees of freedom.
  * - μ: Location.
@@ -267,7 +266,7 @@ function simulate_student_t(ν:Real, μ:Real, σ2:Real) -> Real {
 }
 
 /**
- * Simulate a beta variate.
+ * Simulate a beta distribution.
  *
  * - α: Shape.
  * - β: Shape.
@@ -283,7 +282,7 @@ function simulate_beta(α:Real, β:Real) -> Real {
 }
 
 /**
- * Simulate a gamma variate.
+ * Simulate a gamma distribution.
  *
  * - k: Shape.
  * - θ: Scale.
@@ -297,7 +296,7 @@ function simulate_gamma(k:Real, θ:Real) -> Real {
 }
 
 /**
- * Simulate an inverse-gamma variate.
+ * Simulate an inverse-gamma distribution.
  *
  * - α: Shape.
  * - β: Scale.
@@ -307,7 +306,7 @@ function simulate_inverse_gamma(α:Real, β:Real) -> Real {
 }
 
 /**
- * Simulate a normal inverse-gamma variate.
+ * Simulate a normal inverse-gamma distribution.
  *
  * - μ: Mean.
  * - a2: Variance.
@@ -320,7 +319,7 @@ function simulate_normal_inverse_gamma(μ:Real, a2:Real, α:Real,
 }
 
 /**
- * Simulate a beta-binomial variate.
+ * Simulate a beta-binomial distribution.
  *
  * - n: Number of trials.
  * - α: Shape.
@@ -335,7 +334,7 @@ function simulate_beta_binomial(n:Integer, α:Real, β:Real) -> Integer {
 }
 
 /**
- * Simulate a Dirichlet-categorical variate.
+ * Simulate a Dirichlet-categorical distribution.
  *
  * - α: Concentrations.
  */
@@ -344,7 +343,7 @@ function simulate_dirichlet_categorical(α:Real[_]) -> Integer {
 }
 
 /**
- * Simulate a Dirichlet-multinomial variate.
+ * Simulate a Dirichlet-multinomial distribution.
  *
  * - n: Number of trials.
  * - α: Concentrations.
@@ -355,7 +354,7 @@ function simulate_dirichlet_multinomial(n:Integer, α:Real[_]) ->
 }
 
 /**
- * Simulate a categorical variate with Chinese restaurant process
+ * Simulate a categorical distribution with Chinese restaurant process
  * prior.
  *
  * - α: Concentration.
@@ -391,7 +390,7 @@ function simulate_crp_categorical(α:Real, θ:Real, n:Integer[_],
 }
 
 /**
- * Simulate a Gaussian variate with an inverse-gamma prior over
+ * Simulate a Gaussian distribution with an inverse-gamma prior over
  * the variance.
  *
  * - μ: Mean.
@@ -403,7 +402,7 @@ function simulate_inverse_gamma_gaussian(μ:Real, α:Real, β:Real) -> Real {
 }
 
 /**
- * Simulate a Gaussian variate with a normal inverse-gamma prior.
+ * Simulate a Gaussian distribution with a normal inverse-gamma prior.
  *
  * - μ: Mean.
  * - a2: Variance.
@@ -412,11 +411,11 @@ function simulate_inverse_gamma_gaussian(μ:Real, α:Real, β:Real) -> Real {
  */
 function simulate_normal_inverse_gamma_gaussian(μ:Real, a2:Real,
     α:Real, β:Real) -> Real {
-  return simulate_student_t(2.0*α, μ, β*(1.0 + a2)/α);
+  return simulate_student_t(2.0*α, μ, (β/α)*(1.0 + a2));
 }
 
 /**
- * Simulate a Gaussian variate with a normal inverse-gamma prior.
+ * Simulate a Gaussian distribution with a normal inverse-gamma prior.
  *
  * - a: Scale.
  * - μ: Mean.
@@ -427,11 +426,11 @@ function simulate_normal_inverse_gamma_gaussian(μ:Real, a2:Real,
  */
 function simulate_affine_normal_inverse_gamma_gaussian(a:Real, μ:Real,
     c:Real, a2:Real, α:Real, β:Real) -> Real {
-  return simulate_student_t(2.0*α, a*μ + c, β*(1.0 + a*a*a2)/α);
+  return simulate_student_t(2.0*α, a*μ + c, (β/α)*(1.0 + a*a*a2));
 }
 
 /**
- * Simulate a multivariate Gaussian variate.
+ * Simulate a multivariate Gaussian distribution.
  *
  * - μ: Mean.
  * - Σ: Covariance.
@@ -443,4 +442,69 @@ function simulate_multivariate_gaussian(μ:Real[_], Σ:Real[_,_]) -> Real[_] {
     z[d] <- simulate_gaussian(0.0, 1.0);
   }
   return μ + chol(Σ)*z;
+}
+
+/**
+ * Simulate a multivariate Student's $t$-distribution variate with
+ * location and scale.
+ *
+ * - ν: Degrees of freedom.
+ * - μ: Location.
+ * - Σ: Squared scale.
+ */
+function simulate_multivariate_student_t(ν:Real, μ:Real[_], Σ:Real[_,_]) ->
+    Real[_] {
+  D:Integer <- length(μ);
+  z:Real[D];
+  for (d:Integer in 1..D) {
+    z[d] <- simulate_student_t(ν);
+  }
+  return μ + chol(Σ)*z;
+}
+
+/**
+ * Simulate a multivariate Gaussian distribution with an inverse-gamma prior
+ * over a diagonal covariance.
+ *
+ * - μ: Mean.
+ * - α: Shape of the inverse-gamma.
+ * - β: Scale of the inverse-gamma.
+ */
+function simulate_multivariate_inverse_gamma_gaussian(μ:Real[_], α:Real,
+    β:Real) -> Real[_] {
+  D:Integer <- length(μ);
+  return simulate_multivariate_student_t(2.0*α, μ, diagonal(β/α, D));
+}
+
+/**
+ * Simulate a multivariate Gaussian distribution with a multivariate normal
+ * inverse-gamma prior.
+ *
+ * - μ: Mean.
+ * - Σ: Covariance.
+ * - α: Shape of the inverse-gamma.
+ * - β: Scale of the inverse-gamma.
+ */
+function simulate_multivariate_normal_inverse_gamma_gaussian(μ:Real[_],
+    Σ:Real[_,_], α:Real, β:Real) -> Real[_] {
+  D:Integer <- length(μ);
+  return simulate_multivariate_student_t(2.0*α, μ, (β/α)*(identity(D) + Σ));
+}
+
+/**
+ * Simulate a Gaussian distribution with a multivariate normal inverse-gamma
+ * prior.
+ *
+ * - A: Scale.
+ * - μ: Mean.
+ * - c: Offset.
+ * - Σ: Variance.
+ * - α: Shape of the inverse-gamma.
+ * - β: Scale of the inverse-gamma.
+ */
+function simulate_multivariate_affine_normal_inverse_gamma_gaussian(
+    A:Real[_,_], μ:Real[_], c:Real[_], Σ:Real[_,_], α:Real, β:Real) -> Real[_] {
+  D:Integer <- length(μ);
+  return simulate_multivariate_student_t(2.0*α, A*μ + c,
+      (β/α)*(identity(D) + A*Σ*trans(A)));
 }

@@ -464,11 +464,12 @@ function observe_inverse_gamma_gaussian(x:Real, μ:Real, α:Real,
  */
 function observe_normal_inverse_gamma_gaussian(x:Real, μ:Real, a2:Real,
     α:Real, β:Real) -> Real {
-  return observe_student_t(x, 2.0*α, μ, β*(1.0 + a2)/α);
+  return observe_student_t(x, 2.0*α, μ, (β/α)*(1.0 + a2));
 }
 
 /**
- * Observe a Gaussian variate with a normal inverse-gamma prior.
+ * Observe a Gaussian variate with a normal inverse-gamma prior with affine
+ * transformation.
  *
  * - x: The variate.
  * - a: Scale.
@@ -482,7 +483,7 @@ function observe_normal_inverse_gamma_gaussian(x:Real, μ:Real, a2:Real,
  */
 function observe_affine_normal_inverse_gamma_gaussian(x:Real, a:Real,
     μ:Real, c:Real, a2:Real, α:Real, β:Real) -> Real {
-  return observe_student_t(x, 2.0*α, a*μ + c, β*(1.0 + a*a*a2)/α);
+  return observe_student_t(x, 2.0*α, a*μ + c, (β/α)*(1.0 + a*a*a2));
 }
 
 /**
@@ -494,9 +495,84 @@ function observe_affine_normal_inverse_gamma_gaussian(x:Real, a:Real,
  *
  * Returns: the log probability density.
  */
-function observe_multivariate_gaussian(x:Real[_], μ:Real[_], Σ:Real[_,_]) -> Real {
+function observe_multivariate_gaussian(x:Real[_], μ:Real[_], Σ:Real[_,_]) ->
+    Real {
   D:Integer <- length(μ);
   L:Real[_,_] <- chol(Σ);
-  
   return -0.5*dot(solve(L, x - μ)) - log(det(L)) - 0.5*D*log(2.0*π);
+  //@todo Introduce a det() for triangular matrices
+}
+
+/**
+ * Observe a multivariate Student's $t$-distribution variate with location
+ * and scale.
+ *
+ * - x: The variate.
+ * - ν: Degrees of freedom.
+ * - μ: Location.
+ * - Σ: Squared scale.
+ */
+function observe_multivariate_student_t(x:Real[_], ν:Real, μ:Real[_],
+    Σ:Real[_,_]) -> Real {
+  D:Integer <- length(μ);
+  L:Real[_,_] <- chol(Σ);
+  return -0.5*(ν + D)*log(1.0 + dot(solve(L, x - μ))/ν) +
+      lgamma(0.5*(ν + D)) - lgamma(0.5*ν) - log(det(L)) - 0.5*D*log(ν*π) ;
+  //@todo Introduce a det() for triangular matrices
+}
+
+/**
+ * Observe a multivariate Gaussian variate with an inverse-gamma distribution
+ * over a diagonal covariance.
+ *
+ * - x: The variate.
+ * - μ: Mean.
+ * - α: Shape of the inverse-gamma.
+ * - β: Scale of the inverse-gamma.
+ *
+ * Returns: the log probability density.
+ */
+function observe_inverse_gamma_gaussian(x:Real[_], μ:Real[_], α:Real,
+    β:Real) -> Real {
+  D:Integer <- length(μ);
+  return observe_multivariate_student_t(x, 2.0*α, μ, diagonal(β/α, D));
+}
+
+/**
+ * Observe a multivariate Gaussian variate with a multivariate normal
+ * inverse-gamma prior.
+ *
+ * - x: The variate.
+ * - μ: Mean.
+ * - Σ: Covariance.
+ * - α: Shape of the inverse-gamma.
+ * - β: Scale of the inverse-gamma.
+ *
+ * Returns: the log probability density.
+ */
+function observe_normal_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
+    Σ:Real[_,_], α:Real, β:Real) -> Real {
+  D:Integer <- length(μ);
+  return observe_multivariate_student_t(x, 2.0*α, μ, (β/α)*(identity(D) + Σ));
+}
+
+/**
+ * Observe a multivariate Gaussian variate with a multivariate normal
+ * inverse-gamma prior with affine transformation.
+ *
+ * - x: The variate.
+ * - A: Scale.
+ * - μ: Mean.
+ * - c: Offset.
+ * - Σ: Covariance.
+ * - α: Shape of the inverse-gamma.
+ * - β: Scale of the inverse-gamma.
+ *
+ * Returns: the log probability density.
+ */
+function observe_affine_normal_inverse_gamma_gaussian(x:Real[_], A:Real[_,_],
+    μ:Real[_], c:Real[_], Σ:Real[_,_], α:Real, β:Real) -> Real {
+  D:Integer <- length(μ);
+  return observe_multivariate_student_t(x, 2.0*α, A*μ + c,
+      (β/α)*(identity(D) + A*Σ*trans(A)));
 }

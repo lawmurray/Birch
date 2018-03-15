@@ -54,6 +54,10 @@ function columns(X:Boolean[_,_]) -> Integer64 {
 
 /**
  * Create matrix filled with a given scalar value.
+ *
+ * - x: The value.
+ * - rows: Number of rows.
+ * - columns: Number of columns.
  */
 function matrix(x:Real, rows:Integer, columns:Integer) -> Real[_,_] {
   Z:Real[rows,columns];
@@ -65,6 +69,10 @@ function matrix(x:Real, rows:Integer, columns:Integer) -> Real[_,_] {
 
 /**
  * Create matrix filled with a given scalar value.
+ *
+ * - x: The value.
+ * - rows: Number of rows.
+ * - columns: Number of columns.
  */
 function matrix(x:Integer, rows:Integer, columns:Integer) -> Integer[_,_] {
   Z:Integer[rows,columns];
@@ -76,6 +84,10 @@ function matrix(x:Integer, rows:Integer, columns:Integer) -> Integer[_,_] {
 
 /**
  * Create matrix filled with a given scalar value.
+ *
+ * - x: The value.
+ * - rows: Number of rows.
+ * - columns: Number of columns.
  */
 function matrix(x:Boolean, rows:Integer, columns:Integer) -> Boolean[_,_] {
   Z:Boolean[rows,columns];
@@ -86,16 +98,54 @@ function matrix(x:Boolean, rows:Integer, columns:Integer) -> Boolean[_,_] {
 }
 
 /**
+ * Create diagonal matrix, filling the diagonal with a given scalar value.
+ *
+ * - x: The value.
+ * - length: Number of rows/columns.
+ */
+function diagonal(x:Real, length:Integer) -> Real[_,_] {
+  Z:Real[_,_] <- matrix(0.0, length, length);
+  for (i:Integer in 1..length) {
+    Z[i,i] <- x;
+  }
+  return Z;
+}
+
+/**
+ * Create diagonal matrix, filling the diagonal with a given scalar value.
+ *
+ * - x: The value.
+ * - length: Number of rows/columns.
+ */
+function diagonal(x:Integer, length:Integer) -> Integer[_,_] {
+  Z:Integer[_,_] <- matrix(0.0, length, length);
+  for (i:Integer in 1..length) {
+    Z[i,i] <- x;
+  }
+  return Z;
+}
+
+/**
+ * Create diagonal matrix, filling the diagonal with a given scalar value.
+ *
+ * - x: The value.
+ * - length: Number of rows/columns.
+ */
+function diagonal(x:Boolean, length:Integer) -> Boolean[_,_] {
+  Z:Boolean[_,_] <- matrix(0.0, length, length);
+  for (i:Integer in 1..length) {
+    Z[i,i] <- x;
+  }
+  return Z;
+}
+
+/**
  * Create identity matrix.
  *
  * - length: Number of rows/columns.
  */
 function identity(length:Integer) -> Real[_,_] {
-  Z:Real[_,_] <- matrix(0.0, length, length);
-  for (i:Integer in 1..length) {
-    Z[i,i] <- 1.0;
-  }
-  return Z;
+  return diagonal(1.0, length);
 }
 
 /**
