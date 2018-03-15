@@ -43,7 +43,6 @@ class NormalInverseGammaGaussian < Random<Real> {
 
   function doRealize() {
     if (μ.isRealized() && σ2.isRealized()) {
-      /* just like Gaussian */
       if (isMissing()) {
         set(simulate_gaussian(μ.value(), σ2.value()));
       } else {

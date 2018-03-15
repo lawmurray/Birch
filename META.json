@@ -50,6 +50,7 @@
       "bi/distribution/conjugate/MultivariateAffineGaussianGaussian.bi",
       "bi/distribution/conjugate/MultivariateGaussianGaussian.bi",
       "bi/distribution/conjugate/MultivariateInverseGammaGaussian.bi",
+      "bi/distribution/conjugate/MultivariateNormalInverseGammaGaussian.bi",
       "bi/distribution/conjugate/NormalInverseGammaGaussian.bi",
       "bi/distribution/conjugate/RestaurantProcessCategorical.bi",
       "bi/distribution/delay/Delay.bi",

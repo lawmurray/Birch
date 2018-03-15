@@ -60,6 +60,6 @@ function Gaussian(μ:Real[_], σ2:Random<Real>) -> Random<Real[_]> {
   if (s2?) {
     return Gaussian(μ, s2!);
   } else {
-    return Gaussian(μ, identity(length(μ))*σ2.value());
+    return Gaussian(μ, diagonal(σ2.value(), length(μ)));
   }
 }
