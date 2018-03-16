@@ -705,7 +705,9 @@ void bi::Driver::configure() {
       //
     } else if (arch == "wasm") {
       cxxflags << " -s WASM=1";
-    } else if (arch != "native") {
+    } else if (arch == "native") {
+      cxxflags << " -march=native";
+    } else {
       throw DriverException("unknown architecture '" + arch
               + "'; valid values are 'native', 'js' and 'wasm'");
     }
