@@ -30,46 +30,46 @@ class MultivariateNormalInverseGamma < Random<Real[_]> {
   μ:Real[_];
 
   /**
-   * Variance.
+   * Precision.
    */
-  Σ:Real[_,_];
+  Λ:Real[_,_];
   
   /**
    * Variance scale.
    */
   σ2:InverseGamma;
 
-  function initialize(μ:Real[_], Σ:Real[_,_], σ2:InverseGamma) {
+  function initialize(μ:Real[_], Λ:Real[_,_], σ2:InverseGamma) {
     super.initialize(σ2);
     this.μ <- μ;
-    this.Σ <- Σ;
+    this.Λ <- Λ;
     this.σ2 <- σ2;
   }
 
-  function update(μ:Real[_], Σ:Real[_,_]) {
+  function update(μ:Real[_], Λ:Real[_,_]) {
     this.μ <- μ;
-    this.Σ <- Σ;
+    this.Λ <- Λ;
   }
 
   function doCondition() {
     α:Real;
     β:Real;
-    (α, β) <- update_multivariate_normal_inverse_gamma(value(), μ, Σ, σ2.α, σ2.β);
+    (α, β) <- update_multivariate_normal_inverse_gamma(value(), μ, Λ, σ2.α, σ2.β);
     σ2.update(α, β);
   }
 
   function doRealize() {
     if (σ2.isRealized()) {
       if (isMissing()) {
-        set(simulate_multivariate_gaussian(μ, Σ*σ2.value()));
+        set(simulate_multivariate_gaussian(μ, inv(Λ)*σ2.value()));
       } else {
-        setWeight(observe_multivariate_gaussian(value(), μ, Σ*σ2.value()));
+        setWeight(observe_multivariate_gaussian(value(), μ, inv(Λ)*σ2.value()));
       }
     } else {
       if (isMissing()) {
-        set(simulate_multivariate_normal_inverse_gamma(μ, Σ, σ2.α, σ2.β));
+        set(simulate_multivariate_normal_inverse_gamma(μ, Λ, σ2.α, σ2.β));
       } else {
-        setWeight(observe_multivariate_normal_inverse_gamma(value(), μ, Σ, σ2.α, σ2.β));
+        setWeight(observe_multivariate_normal_inverse_gamma(value(), μ, Λ, σ2.α, σ2.β));
       }
     }
   }
@@ -85,7 +85,7 @@ function Gaussian(μ:Real[_], Σ:MatrixScalarExpression) -> Random<Real[_]> {
   S:InverseGamma? <- InverseGamma?(Σ.x);
   if (S? && det(Σ.A) > 0.0) {
     x:MultivariateNormalInverseGamma;
-    x.initialize(μ, Σ.A, S!);
+    x.initialize(μ, inv(Σ.A), S!);
     return x;
   } else {
     return Gaussian(μ, Σ.value());

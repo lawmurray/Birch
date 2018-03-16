@@ -24,6 +24,7 @@ class MultivariateNormalInverseGammaGaussian < Random<Real[_]> {
     D:Integer <- length(μ.μ);
     μ_1:Real[_];
     Σ_1:Real[_,_];
+    Λ_1:Real[_,_];
     α_1:Real;
     β_1:Real;
     
@@ -32,12 +33,12 @@ class MultivariateNormalInverseGammaGaussian < Random<Real[_]> {
       σ2.update(α_1, β_1);
     } else if (!μ.isRealized() && σ2.isRealized()) {
       μ_1 <- μ.μ;
-      Σ_1 <- μ.Σ*σ2.value();
+      Σ_1 <- inv(μ.Λ)*σ2.value();
       (μ_1, Σ_1) <- update_multivariate_gaussian_gaussian(value(), μ_1, Σ_1, μ_1, Σ_1 + diagonal(σ2.value(), D));
-      μ.update(μ_1, Σ_1);
+      μ.update(μ_1, inv(Σ_1));
     } else {
-      (μ_1, Σ_1, α_1, β_1) <- update_multivariate_normal_inverse_gamma_gaussian(value(), μ.μ, μ.Σ, σ2.α, σ2.β);
-      μ.update(μ_1, Σ_1);
+      (μ_1, Λ_1, α_1, β_1) <- update_multivariate_normal_inverse_gamma_gaussian(value(), μ.μ, μ.Λ, σ2.α, σ2.β);
+      μ.update(μ_1, Λ_1);
       σ2.update(α_1, β_1);
     }
   }
@@ -57,7 +58,7 @@ class MultivariateNormalInverseGammaGaussian < Random<Real[_]> {
       }
     } else if (!μ.isRealized() && σ2.isRealized()) {
       D:Integer <- length(μ.μ);
-      Σ_1:Real[_,_] <- (μ.Σ + identity(D))*σ2.value();
+      Σ_1:Real[_,_] <- (inv(μ.Λ) + identity(D))*σ2.value();
       if (isMissing()) {
         set(simulate_multivariate_gaussian(μ.μ, Σ_1));
       } else {
@@ -65,9 +66,9 @@ class MultivariateNormalInverseGammaGaussian < Random<Real[_]> {
       }
     } else {
       if (isMissing()) {
-        set(simulate_multivariate_normal_inverse_gamma_gaussian(μ.μ, μ.Σ, σ2.α, σ2.β));
+        set(simulate_multivariate_normal_inverse_gamma_gaussian(μ.μ, μ.Λ, σ2.α, σ2.β));
       } else {
-        setWeight(observe_multivariate_normal_inverse_gamma_gaussian(value(), μ.μ, μ.Σ, σ2.α, σ2.β));
+        setWeight(observe_multivariate_normal_inverse_gamma_gaussian(value(), μ.μ, μ.Λ, σ2.α, σ2.β));
       }
     }
   }

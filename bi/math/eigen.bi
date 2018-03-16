@@ -71,13 +71,35 @@ operator (X:Integer[_,_]*Y:Integer[_,_]) -> Integer[_,_];
  * Dot product of a vector with itself.
  */
 function dot(x:Real[_]) -> Real;
+
+/**
+ * Dot product of a vector with itself.
+ */
 function dot(x:Integer[_]) -> Integer;
+
+/**
+ * Dot product of one vector with another.
+ */
+function dot(x:Real[_], y:Real[_]) -> Real;
+
+/**
+ * Dot product of one vector with another.
+ */
+function dot(x:Integer[_], y:Integer[_]) -> Integer;
 
 /**
  * Transpose of a matrix.
  */
 function trans(X:Real[_,_]) -> Real[_,_];
+
+/**
+ * Transpose of a matrix.
+ */
 function trans(X:Integer[_,_]) -> Integer[_,_];
+
+/**
+ * Transpose of a matrix.
+ */
 function trans(X:Boolean[_,_]) -> Boolean[_,_];
 
 /**
@@ -91,14 +113,37 @@ function norm(x:Real[_]) -> Real;
 function det(X:Real[_,_]) -> Real;
 
 /**
+ * Determinant of a symmetric positive-definite matrix, computed using the
+ * Cholesky decomposition.
+ */
+function choldet(X:Real[_,_]) -> Real {
+  L:Real[_,_] <- chol(X);
+  n:Integer <- rows(X);
+  d:Real <- 1.0;
+  for (i:Integer in 1..n) {
+    d <- d*L[i,i];
+  }
+  return d*d;
+}
+
+/**
+ * Logarithm of the determinant of a symmetric positive-definite matrix,
+ * computed using the Cholesky decomposition.
+ */
+function lcholdet(X:Real[_,_]) -> Real {
+  L:Real[_,_] <- chol(X);
+  n:Integer <- rows(X);
+  d:Real <- 0.0;
+  for (i:Integer in 1..n) {
+    d <- d + log(L[i,i]);
+  }
+  return 2.0*d;
+}
+/**
  * Inverse of a matrix.
  */
 function inv(X:Real[_,_]) -> Real[_,_];
 
-/*
- * for the below functions, need to assign the result to a new matrix, as, it
- * seems, they return a view of a matrix that will be destroyed on return
- */
 /**
  * Cholesky decomposition of a matrix, $X = LL^{\top}$.
  *

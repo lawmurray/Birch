@@ -30,6 +30,26 @@ auto dot_(const Array<Type,Frame>& o) {
   return dot_(o.toEigen());
 }
 
+template<class Type, class Frame1, class Frame2>
+Type dot_(const Array<Type,Frame1>& o1, const Array<Type,Frame2>& o2) {
+  return o1.toEigen().transpose()*o2.toEigen();
+}
+
+template<class Type, class EigenType1, class Frame2>
+Type dot_(const EigenType1& o1, const Array<Type,Frame2>& o2) {
+  return o1.transpose()*o2.toEigen();
+}
+
+template<class Type, class Frame1, class EigenType2>
+Type dot_(const Array<Type,Frame1>& o1, const EigenType2& o2) {
+  return o1.toEigen().transpose()*o2;
+}
+
+template<class EigenType1, class EigenType2>
+typename EigenType1::value_type dot_(const EigenType1& o1, const EigenType2& o2) {
+  return o1.transpose()*o2;
+}
+
 template<class EigenType>
 auto det_(const EigenType& o) {
   return o.determinant();

@@ -160,16 +160,16 @@ function update_multivariate_affine_gaussian_gaussian(x:Real[_], A:Real[_,_],
  *
  * - x: The variate.
  * - μ: Mean.
- * - Σ: Variance.
+ * - Λ: Precision.
  * - α: Shape of the inverse-gamma.
  * - β: Scale of the inverse-gamma.
  *
  * Returns: the updated parameters `α` and `β`.
  */
 function update_multivariate_normal_inverse_gamma(x:Real[_], μ:Real[_],
-    Σ:Real[_,_], α:Real, β:Real) -> (Real, Real) {
+    Λ:Real[_,_], α:Real, β:Real) -> (Real, Real) {
   D:Integer <- length(μ);
-  return (α + 0.5*D, β + 0.5*dot(solve(chol(Σ), x - μ)));
+  return (α + 0.5*D, β + 0.5*dot(x - μ, Λ*(x - μ)));
 }
 
 /**
@@ -195,27 +195,23 @@ function update_multivariate_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
  *
  * - x: The variate.
  * - μ: Mean.
- * - Σ: Variance.
+ * - Λ: Precision.
  * - α: Shape of the inverse-gamma.
  * - β: Scale of the inverse-gamma.
  *
  * Returns: the updated parameters `μ`, `Σ`, `α` and `β`.
  */
 function update_multivariate_normal_inverse_gamma_gaussian(x:Real[_],
-    μ:Real[_], Σ:Real[_,_], α:Real, β:Real) -> (Real[_], Real[_,_], Real, Real) {
+    μ:Real[_], Λ:Real[_,_], α:Real, β:Real) -> (Real[_], Real[_,_], Real, Real) {
   D:Integer <- length(μ);
   
-  Λ:Real[_,_] <- inv(Σ);
   Λ_1:Real[_,_] <- Λ + identity(D);
-  μ_1:Real[_] <- inv(Λ_1)*(Λ*μ + x);
-  L:Real[_,_] <- chol(Λ);
-  L_1:Real[_,_] <- chol(Λ_1);
+  μ_1:Real[_] <- solve(Λ_1, Λ*μ + x);
 
   α_1:Real <- α + D*0.5;
-  β_1:Real <- β + 0.5*(dot(x) + dot(trans(L)*μ) - dot(trans(L_1)*μ_1));
+  β_1:Real <- β + 0.5*(dot(x) + dot(μ, Λ*μ) - dot(μ_1, Λ_1*μ_1));
 
-  return (μ_1, inv(Λ_1), α_1, β_1);
-  ///@todo Introduce more efficient matrix operations to use here
+  return (μ_1, Λ_1, α_1, β_1);
 }
 
 /**
@@ -226,26 +222,22 @@ function update_multivariate_normal_inverse_gamma_gaussian(x:Real[_],
  * - x: The variate.
  * - c: Offset.
  * - μ: Mean.
- * - Σ: Variance.
+ * - Λ: Precision.
  * - α: Shape of the inverse-gamma.
  * - β: Scale of the inverse-gamma.
  *
  * Returns: the updated parameters `μ`, `Σ`, `α` and `β`.
  */
 function update_multivariate_affine_normal_inverse_gamma_gaussian(
-    A:Real[_,_], x:Real[_], c:Real[_], μ:Real[_], Σ:Real[_,_], α:Real,
+    A:Real[_,_], x:Real[_], c:Real[_], μ:Real[_], Λ:Real[_,_], α:Real,
     β:Real) -> (Real[_], Real[_,_], Real, Real) {
   D:Integer <- length(μ);
   
-  Λ:Real[_,_] <- inv(Σ);
   Λ_1:Real[_,_] <- Λ + trans(A)*A;
-  μ_1:Real[_] <- inv(Λ_1)*(Λ*μ + trans(A)*(x - c));
-  L:Real[_,_] <- chol(Λ);
-  L_1:Real[_,_] <- chol(Λ_1);
+  μ_1:Real[_] <- solve(Λ_1, Λ*μ + trans(A)*(x - c));
   
   α_1:Real <- α + D*0.5;
-  β_1:Real <- β + 0.5*(dot(x - c) + dot(trans(L)*μ) - dot(trans(L_1)*μ_1));
+  β_1:Real <- β + 0.5*(dot(x - c) + dot(μ, Λ*μ) - dot(μ_1, Λ_1*μ_1));
 
-  return (μ_1, inv(Λ_1), α_1, β_1);
-  ///@todo Introduce more efficient matrix operations to use here
+  return (μ_1, Λ_1, α_1, β_1);
 }

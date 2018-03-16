@@ -466,16 +466,16 @@ function simulate_multivariate_gaussian(μ:Real[_], σ2:Real) -> Real[_] {
  *
  * - ν: Degrees of freedom.
  * - μ: Location.
- * - Σ: Squared scale.
+ * - Λ: Precision.
  */
-function simulate_multivariate_student_t(ν:Real, μ:Real[_], Σ:Real[_,_]) ->
+function simulate_multivariate_student_t(ν:Real, μ:Real[_], Λ:Real[_,_]) ->
     Real[_] {
   D:Integer <- length(μ);
   z:Real[D];
   for (d:Integer in 1..D) {
     z[d] <- simulate_student_t(ν);
   }
-  return μ + chol(Σ)*z;
+  return μ + solve(trans(chol(Λ)), z);
 }
 
 /**
@@ -484,13 +484,13 @@ function simulate_multivariate_student_t(ν:Real, μ:Real[_], Σ:Real[_,_]) ->
  *
  * - ν: Degrees of freedom.
  * - μ: Location.
- * - σ2: Squared scale.
+ * - λ: Precision.
  */
-function simulate_multivariate_student_t(ν:Real, μ:Real[_], σ2:Real) ->
+function simulate_multivariate_student_t(ν:Real, μ:Real[_], λ:Real) ->
     Real[_] {
   D:Integer <- length(μ);
   z:Real[D];
-  σ:Real <- sqrt(σ2);
+  σ:Real <- sqrt(1.0/λ);
   for (d:Integer in 1..D) {
     z[d] <- μ[d] + σ*simulate_student_t(ν);
   }
@@ -501,13 +501,13 @@ function simulate_multivariate_student_t(ν:Real, μ:Real[_], σ2:Real) ->
  * Simulate a multivariate normal inverse-gamma distribution.
  *
  * - μ: Mean.
- * - Σ: Covariance.
+ * - Λ: Precision.
  * - α: Shape of inverse-gamma on scale.
  * - β: Scale of inverse-gamma on scale.
  */
-function simulate_multivariate_normal_inverse_gamma(μ:Real[_], Σ:Real[_,_],
+function simulate_multivariate_normal_inverse_gamma(μ:Real[_], Λ:Real[_,_],
     α:Real, β:Real) -> Real[_] {
-  return simulate_multivariate_student_t(2.0*α, μ, Σ*(β/α));
+  return simulate_multivariate_student_t(2.0*α, μ, Λ*(α/β));
 }
 
 /**
@@ -534,14 +534,14 @@ function simulate_multivariate_inverse_gamma_gaussian(μ:Real[_], α:Real,
  * inverse-gamma prior.
  *
  * - μ: Mean.
- * - Σ: Covariance.
+ * - Λ: Precision.
  * - α: Shape of the inverse-gamma.
  * - β: Scale of the inverse-gamma.
  */
 function simulate_multivariate_normal_inverse_gamma_gaussian(μ:Real[_],
-    Σ:Real[_,_], α:Real, β:Real) -> Real[_] {
+    Λ:Real[_,_], α:Real, β:Real) -> Real[_] {
   D:Integer <- length(μ);
-  return simulate_multivariate_student_t(2.0*α, μ, (β/α)*(identity(D) + Σ));
+  return simulate_multivariate_student_t(2.0*α, μ, (α/β)*inv(identity(D) + inv(Λ)));
 }
 
 /**
@@ -551,13 +551,13 @@ function simulate_multivariate_normal_inverse_gamma_gaussian(μ:Real[_],
  * - A: Scale.
  * - μ: Mean.
  * - c: Offset.
- * - Σ: Variance.
+ * - Λ: Precision.
  * - α: Shape of the inverse-gamma.
  * - β: Scale of the inverse-gamma.
  */
 function simulate_multivariate_affine_normal_inverse_gamma_gaussian(
-    A:Real[_,_], μ:Real[_], c:Real[_], Σ:Real[_,_], α:Real, β:Real) -> Real[_] {
+    A:Real[_,_], μ:Real[_], c:Real[_], Λ:Real[_,_], α:Real, β:Real) -> Real[_] {
   D:Integer <- length(μ);
   return simulate_multivariate_student_t(2.0*α, A*μ + c,
-      (β/α)*(identity(D) + A*Σ*trans(A)));
+      (α/β)*inv(identity(D) + A*solve(Λ, trans(A))));
 }

@@ -61,8 +61,17 @@ program sample(
   }
 
   /* sample */
+  if (output? && nsamples > 1) {
+    output!.setArray();
+  }
   for (n:Integer in 1..nsamples) {
-    filter!.filter(model, input, output, diagnostic, ncheckpoints,
+    writer:Writer?;
+    if (output? && nsamples > 1) {
+      writer <- output!.push();
+    } else {
+      writer <- output;
+    }
+    filter!.filter(model, input, writer, diagnostic, ncheckpoints,
         nparticles, ess_trigger);
   }
   

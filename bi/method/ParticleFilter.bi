@@ -159,7 +159,8 @@ class ParticleFilter {
     if (writer?) {
       b:Integer <- ancestor(w);
       if (b > 0) {
-        f[b]!.output(writer!);
+        f[b]!.output(writer!.setObject("sample"));
+        writer!.setReal("weight", Z);
       } else {
         stderr.print("error: filter degenerated.\n");
         exit(1);
