@@ -174,8 +174,8 @@ class ParticleFilter {
    */
   function diagnose(writer:Writer?) {
     if (writer?) {
-      writer!.setRealArray("ess", e);
-      writer!.setBooleanArray("resample", r);
+      writer!.setRealVector("ess", e);
+      writer!.setBooleanVector("resample", r);
     }
   }
 }
@@ -203,4 +203,8 @@ fiber particle(model:String, reader:Reader?) -> Model! {
     x!.w <- f!;
     yield x!;
   }
+  
+  /* final yield, ensuring that even with no observations, the particle
+   * yields at least once after initialization */
+  yield x!;
 }

@@ -80,7 +80,7 @@ class AliveParticleFilter < ParticleFilter {
   function diagnose(writer:Writer?) {
     super.diagnose(writer);
     if (writer?) {
-      writer!.setIntegerArray("propagations", propagations);
+      writer!.setIntegerVector("propagations", propagations);
     }
   }
 }

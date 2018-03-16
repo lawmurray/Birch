@@ -44,20 +44,28 @@ class MemoryWriter < Writer {
     }}
   }
 
-  function setBooleanArray(value:Boolean[_]) {
-    setBooleanArray([], value);
+  function setBooleanVector(value:Boolean[_]) {
+    setBooleanVector([], value);
   }
   
-  function setIntegerArray(value:Integer[_]) {
-    setIntegerArray([], value);
+  function setIntegerVector(value:Integer[_]) {
+    setIntegerVector([], value);
   }
   
-  function setRealArray(value:Real[_]) {
-    setRealArray([], value);
+  function setRealVector(value:Real[_]) {
+    setRealVector([], value);
   }
 
-  function setStringArray(value:String[_]) {
-    setStringArray([], value);
+  function setBooleanMatrix(value:Boolean[_,_]) {
+    setBooleanMatrix([], value);
+  }
+  
+  function setIntegerMatrix(value:Integer[_,_]) {
+    setIntegerMatrix([], value);
+  }
+  
+  function setRealMatrix(value:Real[_,_]) {
+    setRealMatrix([], value);
   }
 
   function setObject(name:String) -> Writer {
@@ -100,22 +108,30 @@ class MemoryWriter < Writer {
     }}
   }
 
-  function setBooleanArray(name:String, value:Boolean[_]) {
-    setBooleanArray([name], value);
+  function setBooleanVector(name:String, value:Boolean[_]) {
+    setBooleanVector([name], value);
   }
   
-  function setIntegerArray(name:String, value:Integer[_]) {
-    setIntegerArray([name], value);
+  function setIntegerVector(name:String, value:Integer[_]) {
+    setIntegerVector([name], value);
   }
   
-  function setRealArray(name:String, value:Real[_]) {
-    setRealArray([name], value);
+  function setRealVector(name:String, value:Real[_]) {
+    setRealVector([name], value);
   }
 
-  function setStringArray(name:String, value:String[_]) {
-    setStringArray([name], value);
+  function setBooleanMatrix(name:String, value:Boolean[_,_]) {
+    setBooleanMatrix([name], value);
   }
   
+  function setIntegerMatrix(name:String, value:Integer[_,_]) {
+    setIntegerMatrix([name], value);
+  }
+  
+  function setRealMatrix(name:String, value:Real[_,_]) {
+    setRealMatrix([name], value);
+  }
+
   function setObject(path:[String]) -> Writer {
     result:MemoryWriter;
     cpp{{
@@ -156,7 +172,7 @@ class MemoryWriter < Writer {
     }}
   }
 
-  function setBooleanArray(path:[String], value:Boolean[_]) {
+  function setBooleanVector(path:[String], value:Boolean[_]) {
     cpp{{
     libubjpp::array_type array(value_.length(0));
     std::copy(value_.begin(), value_.end(), array.begin());
@@ -164,7 +180,7 @@ class MemoryWriter < Writer {
     }}
   }
   
-  function setIntegerArray(path:[String], value:Integer[_]) {
+  function setIntegerVector(path:[String], value:Integer[_]) {
     cpp{{
     libubjpp::array_type array(value_.length(0));
     std::copy(value_.begin(), value_.end(), array.begin());
@@ -172,7 +188,7 @@ class MemoryWriter < Writer {
     }}
   }
   
-  function setRealArray(path:[String], value:Real[_]) {
+  function setRealVector(path:[String], value:Real[_]) {
     cpp{{
     libubjpp::array_type array(value_.length(0));
     std::copy(value_.begin(), value_.end(), array.begin());
@@ -180,12 +196,31 @@ class MemoryWriter < Writer {
     }}
   }
 
-  function setStringArray(path:[String], value:String[_]) {
-    cpp{{
-    libubjpp::array_type array(value_.length(0));
-    std::copy(value_.begin(), value_.end(), array.begin());
-    group->set(path_, std::move(array));
-    }}
+  function setBooleanMatrix(path:[String], value:Boolean[_,_]) {
+    nrows:Integer <- rows(value);
+    ncols:Integer <- columns(value);
+    writer:Writer <- setArray(path);
+    for (i:Integer in 1..nrows) {
+      writer.push().setBooleanVector(value[i,1..ncols]);
+    }
+  }
+  
+  function setIntegerMatrix(path:[String], value:Integer[_,_]) {
+    nrows:Integer <- rows(value);
+    ncols:Integer <- columns(value);
+    writer:Writer <- setArray(path);
+    for (i:Integer in 1..nrows) {
+      writer.push().setIntegerVector(value[i,1..ncols]);
+    }
+  }
+  
+  function setRealMatrix(path:[String], value:Real[_,_]) {
+    nrows:Integer <- rows(value);
+    ncols:Integer <- columns(value);
+    writer:Writer <- setArray(path);
+    for (i:Integer in 1..nrows) {
+      writer.push().setRealVector(value[i,1..ncols]);
+    }
   }
 
   function push() -> Writer {
@@ -195,8 +230,8 @@ class MemoryWriter < Writer {
     assert(array);
     array.get().push_back(libubjpp::object_type());
     result_->group = &array.get().back();
-    ///@todo Writer object will be invalid if array resized again
     }}
+    ///@todo Writer object will be invalid if array resized again
     return result;
   }
 }

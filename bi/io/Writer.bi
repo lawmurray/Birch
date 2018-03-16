@@ -45,32 +45,46 @@ class Writer {
   function setString(value:String);
 
   /**
-   * Set this as an array of Booleans.
+   * Set this as a vector of Booleans.
    *
    * - value: Value of the entry.
    */
-  function setBooleanArray(value:Boolean[_]);
+  function setBooleanVector(value:Boolean[_]);
 
   /**
-   * Set this as an array of integers.
+   * Set this as a vector of integers.
    *
    * - value: Value of the entry.
    */
-  function setIntegerArray(value:Integer[_]);
+  function setIntegerVector(value:Integer[_]);
 
   /**
-   * Set this as an array of reals.
+   * Set this as a vector of reals.
    *
    * - value: Value of the entry.
    */
-  function setRealArray(value:Real[_]);
+  function setRealVector(value:Real[_]);
 
   /**
-   * Set this as an array of strings.
+   * Set this as matrix of Booleans.
    *
    * - value: Value of the entry.
    */
-  function setStringArray(value:String[_]);
+  function setBooleanMatrix(value:Boolean[_,_]);
+
+  /**
+   * Set this as a matrix of integers.
+   *
+   * - value: Value of the entry.
+   */
+  function setIntegerMatrix(value:Integer[_,_]);
+
+  /**
+   * Set this as a matrix of reals.
+   *
+   * - value: Value of the entry.
+   */
+  function setRealMatrix(value:Real[_,_]);
 
   /**
    * Set an object.
@@ -123,36 +137,52 @@ class Writer {
   function setString(name:String, value:String);
 
   /**
-   * Set an array of Booleans.
+   * Set a vector of Booleans.
    *
    * - name: Name of the entry.
    * - value: Value of the entry.
    */
-  function setBooleanArray(name:String, value:Boolean[_]);
+  function setBooleanVector(name:String, value:Boolean[_]);
 
   /**
-   * Set an array of integers.
+   * Set a vector of integers.
    *
    * - name: Name of the entry.
    * - value: Value of the entry.
    */
-  function setIntegerArray(name:String, value:Integer[_]);
+  function setIntegerVector(name:String, value:Integer[_]);
 
   /**
-   * Set an array of reals.
+   * Set a vector of reals.
    *
    * - name: Name of the entry.
    * - value: Value of the entry.
    */
-  function setRealArray(name:String, value:Real[_]);
+  function setRealVector(name:String, value:Real[_]);
 
   /**
-   * Set an array of strings.
+   * Set a matrix of Booleans.
    *
    * - name: Name of the entry.
    * - value: Value of the entry.
    */
-  function setStringArray(name:String, value:String[_]);
+  function setBooleanMatrix(name:String, value:Boolean[_,_]);
+
+  /**
+   * Set a matrix of integers.
+   *
+   * - name: Name of the entry.
+   * - value: Value of the entry.
+   */
+  function setIntegerVector(name:String, value:Integer[_,_]);
+
+  /**
+   * Set a matrix of reals.
+   *
+   * - name: Name of the entry.
+   * - value: Value of the entry.
+   */
+  function setRealVector(name:String, value:Real[_,_]);
   
   /**
    * Set an object.
@@ -205,37 +235,53 @@ class Writer {
   function setString(path:[String], value:String);
 
   /**
-   * Set an array of Booleans.
+   * Set a vector of Booleans.
    *
    * - path: Path of the entry.
    * - value: Value of the entry.
    */
-  function setBooleanArray(path:[String], value:Boolean[_]);
+  function setBooleanVector(path:[String], value:Boolean[_]);
 
   /**
-   * Set an array of integers.
+   * Set a vector of integers.
    *
    * - path: Path of the entry.
    * - value: Value of the entry.
    */
-  function setIntegerArray(path:[String], value:Integer[_]);
+  function setIntegerVector(path:[String], value:Integer[_]);
 
   /**
-   * Set an array of reals.
+   * Set a vector of reals.
    *
    * - path: Path of the entry.
    * - value: Value of the entry.
    */
-  function setRealArray(path:[String], value:Real[_]);
+  function setRealVector(path:[String], value:Real[_]);
 
   /**
-   * Set an array of strings.
+   * Set a matrix of Booleans.
    *
    * - path: Path of the entry.
    * - value: Value of the entry.
    */
-  function setStringArray(path:[String], value:String[_]);
-  
+  function setBooleanMatrix(path:[String], value:Boolean[_,_]);
+
+  /**
+   * Set a matrix of integers.
+   *
+   * - path: Path of the entry.
+   * - value: Value of the entry.
+   */
+  function setIntegerMatrix(path:[String], value:Integer[_,_]);
+
+  /**
+   * Set a matrix of reals.
+   *
+   * - path: Path of the entry.
+   * - value: Value of the entry.
+   */
+  function setRealMatrix(path:[String], value:Real[_,_]);
+
   /**
    * Push a new element onto the end of an array.
    *

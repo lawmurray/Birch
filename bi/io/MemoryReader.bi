@@ -7,16 +7,7 @@ class MemoryReader < Reader {
   }}  
 
   function getObject() -> Reader? {
-    exists:Boolean;
-    cpp{{
-    auto value = group->get<libubjpp::object_type>();
-    exists_ = static_cast<bool>(value);
-    }}
-    if (exists) {
-      return this;
-    } else {
-      return nil;
-    }
+    return getObject([]);
   }
 
   fiber getArray() -> Reader! {
@@ -46,71 +37,51 @@ class MemoryReader < Reader {
   }
 
   function getLength() -> Integer? {
-    cpp{{
-    auto array = group->get<libubjpp::array_type>();
-    if (array) {
-      return array.get().size();
-    } else {
-      return nullptr;
-    }
-    }}
+    return getLength([]);
   }
 
   function getBoolean() -> Boolean? {
-    cpp{{
-    return group->get<libubjpp::bool_type>();
-    }}
+    return getBoolean([]);
   }
   
   function getInteger() -> Integer? {
-    cpp{{
-    return group->get<libubjpp::int64_type>();
-    }}
+    return getInteger([]);
   }
   
   function getReal() -> Real? {
-    cpp{{
-    return group->get<libubjpp::double_type>();
-    }}
+    return getReal([]);
   }
   
   function getString() -> String? {
-    cpp{{
-    return group->get<libubjpp::string_type>();
-    }}
+    return getString([]);
   }
 
-  function getBooleanArray() -> Boolean[_]? {
-    return getBooleanArray([]);
+  function getBooleanVector() -> Boolean[_]? {
+    return getBooleanVector([]);
   }
   
-  function getIntegerArray() -> Integer[_]? {
-    return getIntegerArray([]);
+  function getIntegerVector() -> Integer[_]? {
+    return getIntegerVector([]);
   }
   
-  function getRealArray() -> Real[_]? {
-    return getRealArray([]);
+  function getRealVector() -> Real[_]? {
+    return getRealVector([]);
+  }
+
+  function getBooleanMatrix() -> Boolean[_,_]? {
+    return getBooleanMatrix([]);
   }
   
-  function getStringArray() -> String[_]? {
-    return getStringArray([]);
+  function getIntegerMatrix() -> Integer[_,_]? {
+    return getIntegerMatrix([]);
+  }
+  
+  function getRealMatrix() -> Real[_,_]? {
+    return getRealMatrix([]);
   }
 
   function getObject(name:String) -> Reader? {
-    exists:Boolean;
-    cpp{{
-    auto value = group->get(name_);
-    exists_ = static_cast<bool>(value);
-    }}
-    if (exists) {
-      result:MemoryReader;
-      cpp{{
-      result_->group = &value.get();
-      }}
-      return result;
-    } else {
-      return nil;
-    }
+    return getObject([name]);
   }
 
   fiber getArray(name:String) -> Reader! {
@@ -135,54 +106,47 @@ class MemoryReader < Reader {
   }
 
   function getLength(name:String) -> Integer? {
-    cpp{{
-    auto array = group->get<libubjpp::array_type>(name_);
-    if (array) {
-      return array.get().size();
-    } else {
-      return nullptr;
-    }
-    }}
+    return getLength([name]);
   }
 
   function getBoolean(name:String) -> Boolean? {
-    cpp{{
-    return group->get<libubjpp::bool_type>(name_);
-    }}
+    return getBoolean([name]);
   }
   
   function getInteger(name:String) -> Integer? {
-    cpp{{
-    return group->get<libubjpp::int64_type>(name_);
-    }}
+    return getInteger([name]);
   }
   
   function getReal(name:String) -> Real? {
-    cpp{{
-    return group->get<libubjpp::double_type>(name_);
-    }}
+    return getReal([name]);
   }
   
   function getString(name:String) -> String? {
-    cpp{{
-    return group->get<libubjpp::string_type>(name_);
-    }}
+    return getString([name]);
   }
 
-  function getBooleanArray(name:String) -> Boolean[_]? {
-    return getBooleanArray([name]);
+  function getBooleanVector(name:String) -> Boolean[_]? {
+    return getBooleanVector([name]);
   }
 
-  function getIntegerArray(name:String) -> Integer[_]? {
-    return getIntegerArray([name]);
+  function getIntegerVector(name:String) -> Integer[_]? {
+    return getIntegerVector([name]);
   }
 
-  function getRealArray(name:String) -> Real[_]? {
-    return getRealArray([name]);
+  function getRealVector(name:String) -> Real[_]? {
+    return getRealVector([name]);
   }
 
-  function getStringArray(name:String) -> String[_]? {
-    return getStringArray([name]);
+  function getBooleanMatrix(name:String) -> Boolean[_,_]? {
+    return getBooleanMatrix([name]);
+  }
+
+  function getIntegerMatrix(name:String) -> Integer[_,_]? {
+    return getIntegerMatrix([name]);
+  }
+
+  function getRealMatrix(name:String) -> Real[_,_]? {
+    return getRealMatrix([name]);
   }
 
   function getObject(path:[String]) -> Reader? {
@@ -247,9 +211,18 @@ class MemoryReader < Reader {
   }
   
   function getReal(path:[String]) -> Real? {
+    value1:Real?;
+    value2:Integer?;
     cpp{{
-    return group->get<libubjpp::double_type>(path_);
+    value1_ = group->get<libubjpp::double_type>(path_);
     }}
+    if (!value1?) {
+      cpp{{
+      value2_ = group->get<libubjpp::int64_type>(path_);
+      }}
+      value1 <- value2;
+    }
+    return value1;
   }
 
   function getString(path:[String]) -> String? {
@@ -258,7 +231,7 @@ class MemoryReader < Reader {
     }}
   }
 
-  function getBooleanArray(path:[String]) -> Boolean[_]? {
+  function getBooleanVector(path:[String]) -> Boolean[_]? {
     length:Integer? <- getLength(path);
     if (length?) {
       cpp{{
@@ -282,7 +255,7 @@ class MemoryReader < Reader {
     }
   }
 
-  function getIntegerArray(path:[String]) -> Integer[_]? {
+  function getIntegerVector(path:[String]) -> Integer[_]? {
     length:Integer? <- getLength(path);
     if (length?) {
       cpp{{
@@ -306,22 +279,30 @@ class MemoryReader < Reader {
     }
   }
 
-  function getRealArray(path:[String]) -> Real[_]? {
+  function getRealVector(path:[String]) -> Real[_]? {
     length:Integer? <- getLength(path);
     if (length?) {
       cpp{{
       auto array = group->get<libubjpp::array_type>(path_).get();
       }}
       result:Real[length!];
-      value:Real?;
+      value1:Real?;
+      value2:Integer?;
       for (i:Integer in 1..length!) {
         cpp{{
-        value_ = array[i_ - 1].get<libubjpp::double_type>();
+        value1_ = array[i_ - 1].get<libubjpp::double_type>();
         }}
-        if (value?) {
-          result[i] <- value!;
+        if (value1?) {
+          result[i] <- value1!;
         } else {
-          return nil;
+          cpp{{
+          value2_ = array[i_ - 1].get<libubjpp::int64_type>();
+          }}
+          if (value2?) {
+            result[i] <- value2!;
+          } else {
+            return nil;
+          }
         }
       }
       return result;
@@ -330,27 +311,132 @@ class MemoryReader < Reader {
     }
   }
 
-  function getStringArray(path:[String]) -> String[_]? {
-    length:Integer? <- getLength(path);
-    if (length?) {
-      cpp{{
-      auto array = group->get<libubjpp::array_type>(path_).get();
-      }}
-      result:String[length!];
-      value:String?;
-      for (i:Integer in 1..length!) {
-        cpp{{
-        value_ = array[i_ - 1].get<libubjpp::string_type>();
-        }}
-        if (value?) {
-          result[i] <- value!;
-        } else {
-          return nil;
+  function getBooleanMatrix(path:[String]) -> Boolean[_,_]? {
+    nrows:Integer? <- getLength(path);
+    if (nrows?) {
+      row:Reader! <- getArray(path);
+      if (row?) {
+        /* determine number of columns from first row */
+        ncols:Integer? <- row!.getLength();
+        X:Boolean[_,_];
+        x:Boolean[_]?;
+        if (ncols?) {
+          X <- matrix(false, nrows!, ncols!);
+          x <- row!.getBooleanVector();
+          if (x?) {
+            X[1,1..ncols!] <- x!;
+          } else {
+            return nil;
+          }
         }
+        
+        /* reader in remaining rows, requiring that they have the same
+         * number of columns as the first */
+        i:Integer <- 1;
+        while (row?) {
+          ncols <- row!.getLength();
+          if (ncols? && ncols! == columns(X)) {
+            x <- row!.getBooleanVector();
+            if (x?) {
+              i <- i + 1;
+              X[i,1..ncols!] <- x!;
+            } else {
+              return nil;
+            }
+          } else {
+            return nil;
+          }
+        }
+        assert i == nrows!;
+        return X;
       }
-      return result;
-    } else {
-      return nil;
     }
+    return nil;
+  }
+
+  function getIntegerMatrix(path:[String]) -> Integer[_,_]? {
+    nrows:Integer? <- getLength(path);
+    if (nrows?) {
+      row:Reader! <- getArray(path);
+      if (row?) {
+        /* determine number of columns from first row */
+        ncols:Integer? <- row!.getLength();
+        X:Integer[_,_];
+        x:Integer[_]?;
+        if (ncols?) {
+          X <- matrix(0, nrows!, ncols!);
+          x <- row!.getIntegerVector();
+          if (x?) {
+            X[1,1..ncols!] <- x!;
+          } else {
+            return nil;
+          }
+        }
+        
+        /* reader in remaining rows, requiring that they have the same
+         * number of columns as the first */
+        i:Integer <- 1;
+        while (row?) {
+          ncols <- row!.getLength();
+          if (ncols? && ncols! == columns(X)) {
+            x <- row!.getIntegerVector();
+            if (x?) {
+              i <- i + 1;
+              X[i,1..ncols!] <- x!;
+            } else {
+              return nil;
+            }
+          } else {
+            return nil;
+          }
+        }
+        assert i == nrows!;
+        return X;
+      }
+    }
+    return nil;
+  }
+
+  function getRealMatrix(path:[String]) -> Real[_,_]? {
+    nrows:Integer? <- getLength(path);
+    if (nrows?) {
+      row:Reader! <- getArray(path);
+      if (row?) {
+        /* determine number of columns from first row */
+        ncols:Integer? <- row!.getLength();
+        X:Real[_,_];
+        x:Real[_]?;
+        if (ncols?) {
+          X <- matrix(0.0, nrows!, ncols!);
+          x <- row!.getRealVector();
+          if (x?) {
+            X[1,1..ncols!] <- x!;
+          } else {
+            return nil;
+          }
+        }
+        
+        /* reader in remaining rows, requiring that they have the same
+         * number of columns as the first */
+        i:Integer <- 1;
+        while (row?) {
+          ncols <- row!.getLength();
+          if (ncols? && ncols! == columns(X)) {
+            x <- row!.getRealVector();
+            if (x?) {
+              i <- i + 1;
+              X[i,1..ncols!] <- x!;
+            } else {
+              return nil;
+            }
+          } else {
+            return nil;
+          }
+        }
+        assert i == nrows!;
+        return X;
+      }
+    }
+    return nil;
   }
 }

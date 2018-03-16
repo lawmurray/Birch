@@ -52,36 +52,52 @@ class Reader {
   function getString() -> String?;
 
   /**
-   * Get this as an array of Booleans.
+   * Get this as a vector of Booleans.
    *
    * Return: An optional with a value if this is an array with all elements
    * of a compatible type.
    */
-  function getBooleanArray() -> Boolean[_]?;
+  function getBooleanVector() -> Boolean[_]?;
 
   /**
-   * Get this as an array of integers.
+   * Get this as a vector of integers.
    *
    * Return: An optional with a value if this is an array with all elements
    * of a compatible type.
    */
-  function getIntegerArray() -> Integer[_]?;
+  function getIntegerVector() -> Integer[_]?;
 
   /**
-   * Get this as an array of reals.
+   * Get this as a vector of reals.
    *
    * Return: An optional with a value if this is an array with all elements
    * of a compatible type.
    */
-  function getRealArray() -> Real[_]?;
+  function getRealVector() -> Real[_]?;
 
   /**
-   * Get this as an array of strings.
+   * Get this as a matrix of Booleans.
    *
-   * Return: An optional with a value if this is an array with all elements
-   * of a compatible type.
+   * Return: An optional with a value if this is an array where all elements
+   * are themselves arrays of the same length and compatible type.
    */
-  function getStringArray() -> String[_]?;
+  function getBooleanMatrix() -> Boolean[_,_]?;
+
+  /**
+   * Get this as a matrix of integers.
+   *
+   * Return: An optional with a value if this is an array where all elements
+   * are themselves arrays of the same length and compatible type.
+   */
+  function getIntegerMatrix() -> Integer[_,_]?;
+
+  /**
+   * Get this as a matrix of reals.
+   *
+   * Return: An optional with a value if this is an array where all elements
+   * are themselves arrays of the same length and compatible type.
+   */
+  function getRealMatrix() -> Real[_,_]?;
 
   /**
    * Get an object.
@@ -155,44 +171,64 @@ class Reader {
   function getString(name:String) -> String?;
 
   /**
-   * Get an array of Booleans.
+   * Get a vector of Booleans.
    *
    * - name: Name of the entry.
    *
    * Return: An optional with a value if this is an array with all elements
    * of a compatible type.
    */
-  function getBooleanArray(name:String) -> Boolean[_]?;
+  function getBooleanVector(name:String) -> Boolean[_]?;
 
   /**
-   * Get an array of integers.
+   * Get a vector of integers.
    *
    * - name: Name of the entry.
    *
    * Return: An optional with a value if this is an array with all elements
    * of a compatible type.
    */
-  function getIntegerArray(name:String) -> Integer[_]?;
+  function getIntegerVector(name:String) -> Integer[_]?;
 
   /**
-   * Get an array of reals.
+   * Get a vector of reals.
    *
    * - name: Name of the entry.
    *
    * Return: An optional with a value if this is an array with all elements
    * of a compatible type.
    */
-  function getRealArray(name:String) -> Real[_]?;
+  function getRealVector(name:String) -> Real[_]?;
 
   /**
-   * Get an array of strings.
+   * Get a matrix of Booleans.
    *
    * - name: Name of the entry.
    *
-   * Return: An optional with a value if this is an array with all elements
-   * of a compatible type.
+   * Return: An optional with a value if this is an array where all elements
+   * are themselves arrays of the same length and compatible type.
    */
-  function getStringArray(name:String) -> String[_]?;
+  function getBooleanMatrix(name:String) -> Boolean[_,_]?;
+
+  /**
+   * Get a matrix of integers.
+   *
+   * - name: Name of the entry.
+   *
+   * Return: An optional with a value if this is an array where all elements
+   * are themselves arrays of the same length and compatible type.
+   */
+  function getIntegerMatrix(name:String) -> Integer[_,_]?;
+
+  /**
+   * Get a matrix of reals.
+   *
+   * - name: Name of the entry.
+   *
+   * Return: An optional with a value if this is an array where all elements
+   * are themselves arrays of the same length and compatible type.
+   */
+  function getRealMatrix(name:String) -> Real[_,_]?;
 
   /**
    * Get an object.
@@ -266,42 +302,62 @@ class Reader {
   function getString(path:[String]) -> String?;
 
   /**
-   * Get an array of Booleans.
+   * Get a vector of Booleans.
    *
    * - path: Path of the entry.
    *
    * Return: An optional with a value if this is an array with all elements
    * of a compatible type.
    */
-  function getBooleanArray(path:[String]) -> Boolean[_]?;
+  function getBooleanVector(path:[String]) -> Boolean[_]?;
 
   /**
-   * Get an array of integers.
+   * Get a vector of integers.
    *
    * - path: Path of the entry.
    *
    * Return: An optional with a value if this is an array with all elements
    * of a compatible type.
    */
-  function getIntegerArray(path:[String]) -> Integer[_]?;
+  function getIntegerVector(path:[String]) -> Integer[_]?;
 
   /**
-   * Get an array of reals.
+   * Get a vector of reals.
    *
    * - path: Path of the entry.
    *
    * Return: An optional with a value if this is an array with all elements
    * of a compatible type.
    */
-  function getRealArray(path:[String]) -> Real[_]?;
+  function getRealVector(path:[String]) -> Real[_]?;
 
   /**
-   * Get an array of strings.
+   * Get a matrix of Booleans.
    *
    * - path: Path of the entry.
    *
-   * Return: An optional with a value if this is an array with all elements
-   * of a compatible type.
+   * Return: An optional with a value if this is an array where all elements
+   * are themselves arrays of the same length and compatible type.
    */
-  function getStringArray(path:[String]) -> String[_]?;
+  function getBooleanMatrix(path:[String]) -> Boolean[_,_]?;
+
+  /**
+   * Get a matrix of integers.
+   *
+   * - path: Path of the entry.
+   *
+   * Return: An optional with a value if this is an array where all elements
+   * are themselves arrays of the same length and compatible type.
+   */
+  function getIntegerMatrix(path:[String]) -> Integer[_,_]?;
+
+  /**
+   * Get a matrix of reals.
+   *
+   * - path: Path of the entry.
+   *
+   * Return: An optional with a value if this is an array where all elements
+   * are themselves arrays of the same length and compatible type.
+   */
+  function getRealMatrix(path:[String]) -> Real[_,_]?;
 }
