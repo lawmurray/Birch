@@ -228,7 +228,7 @@ struct NonemptyFrame {
     /* pre-condition */
     assert(o.head.offset >= 0 && o.head.offset < head.length);
 
-    return o.head.offset * head.stride + tail(o.tail);
+    return tail(o.tail);
   }
 
   /**
