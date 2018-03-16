@@ -79,6 +79,9 @@ class MultivariateNormalInverseGamma < Random<Real[_]> {
  * Create Gaussian distribution.
  */
 function Gaussian(μ:Real[_], Σ:MatrixScalarExpression) -> Random<Real[_]> {
+  assert length(μ) == rows(Σ.A);
+  assert length(μ) > 0;
+  
   S:InverseGamma? <- InverseGamma?(Σ.x);
   if (S? && det(Σ.A) > 0.0) {
     x:MultivariateNormalInverseGamma;

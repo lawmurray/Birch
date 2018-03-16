@@ -51,6 +51,7 @@ class MultivariateNormal = MultivariateGaussian;
  */
 function Gaussian(μ:Real[_], Σ:Real[_,_]) -> MultivariateGaussian {
   D:Integer <- length(μ);
+  assert D > 0;
   assert rows(Σ) == D;
   assert columns(Σ) == D;
   m:MultivariateGaussian(D);

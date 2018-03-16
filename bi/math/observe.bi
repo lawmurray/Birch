@@ -551,7 +551,6 @@ function observe_multivariate_student_t(x:Real[_], ν:Real, μ:Real[_],
 function observe_multivariate_student_t(x:Real[_], ν:Real, μ:Real[_],
     σ2:Real) -> Real {
   D:Integer <- length(μ);
-  σ:Real <- sqrt(σ2);
   return -0.5*(ν + D)*log(1.0 + dot(x - μ)/(σ2*ν)) +
       lgamma(0.5*(ν + D)) - lgamma(0.5*ν) - 0.5*D*log(σ2*ν*π) ;
 }
@@ -585,7 +584,6 @@ function observe_multivariate_normal_inverse_gamma(x:Real[_], μ:Real[_],
  */
 function observe_multivariate_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
     α:Real, β:Real) -> Real {
-  D:Integer <- length(μ);
   return observe_multivariate_student_t(x, 2.0*α, μ, β/α);
 }
 
@@ -623,7 +621,6 @@ function observe_multivariate_normal_inverse_gamma_gaussian(x:Real[_],
  */
 function observe_multivariate_affine_normal_inverse_gamma_gaussian(x:Real[_],
     A:Real[_,_], μ:Real[_], c:Real[_], Σ:Real[_,_], α:Real, β:Real) -> Real {
-  D:Integer <- length(μ);
   return observe_multivariate_student_t(x, 2.0*α, A*μ + c,
-      (β/α)*(identity(D) + A*Σ*trans(A)));
+      (β/α)*(identity(rows(A)) + A*Σ*trans(A)));
 }
