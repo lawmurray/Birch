@@ -52,6 +52,19 @@ public:
   }
 
   /**
+   * Generic copy constructor.
+   *
+   * @tparam U Value type (convertible to @p T).
+   */
+  template<class U>
+  Optional(const Optional<U>& o) :
+      hasValue(o.query()) {
+    if (hasValue) {
+      value = o.get();
+    }
+  }
+
+  /**
    * Constructor from Boost optional.
    */
   Optional(const boost::optional<T>& o) :
