@@ -19,9 +19,9 @@
 #include <unordered_set>
 
 bi::Driver::Driver(int argc, char** argv) :
-    work_dir(fs::current_path()),
-    build_dir(fs::current_path() / "build"),
-    lib_dir(fs::current_path() / "build" / ".libs"),
+    work_dir("."),
+    build_dir("build"),
+    lib_dir(build_dir / ".libs"),
     arch("native"),
     prefix(""),
     packageName("Untitled"),
@@ -349,12 +349,11 @@ void bi::Driver::check() {
 }
 
 void bi::Driver::docs() {
-  current_path(work_dir);
   meta();
   Package* package = createPackage();
 
   /* parse all files */
-  Compiler compiler(package, work_dir, build_dir);
+  Compiler compiler(package, build_dir);
   compiler.parse();
   compiler.resolve();
 
@@ -657,7 +656,7 @@ bi::Package* bi::Driver::createPackage() {
 
 void bi::Driver::compile() {
   Package* package = createPackage();
-  Compiler compiler(package, work_dir, build_dir);
+  Compiler compiler(package, build_dir);
   compiler.parse();
   compiler.resolve();
   compiler.gen();
@@ -669,8 +668,7 @@ void bi::Driver::autogen() {
       || !exists(work_dir / "configure")
       || !exists(work_dir / "install-sh")) {
     std::stringstream cmd;
-
-    cmd << (work_dir / "autogen.sh");
+    cmd << (fs::path(".") / "autogen.sh");
     if (verbose) {
       std::cerr << cmd.str() << std::endl;
     } else {
@@ -735,13 +733,13 @@ void bi::Driver::configure() {
 
     for (auto iter = include_dirs.begin(); iter != include_dirs.end();
         ++iter) {
-      cppflags << " -I" << iter->string();
+      cppflags << " -I'" << iter->string() << "'";
     }
     for (auto iter = lib_dirs.begin(); iter != lib_dirs.end(); ++iter) {
-      ldflags << " -L" << iter->string();
+      ldflags << " -L'" << iter->string() << "'";
     }
     for (auto iter = lib_dirs.begin(); iter != lib_dirs.end(); ++iter) {
-      ldflags << " -Wl,-rpath," << iter->string();
+      ldflags << " -Wl,-rpath,'" << iter->string() << "'";
     }
 
     /* configure options */
@@ -755,15 +753,15 @@ void bi::Driver::configure() {
     if (arch == "js" || arch == "wasm") {
       cmd << "emconfigure ";
     }
-    cmd << (work_dir / "configure") << " " << options.str();
+    cmd << (fs::path("..") / "configure") << " " << options.str();
     if (!cppflags.str().empty()) {
-      cmd << " CPPFLAGS='" << cppflags.str() << "'";
+      cmd << " CPPFLAGS=\"" << cppflags.str() << "\"";
     }
     if (!cxxflags.str().empty()) {
-      cmd << " CXXFLAGS='" << cxxflags.str() << "'";
+      cmd << " CXXFLAGS=\"" << cxxflags.str() << "\"";
     }
     if (!ldflags.str().empty()) {
-      cmd << " LDFLAGS='" << ldflags.str() << "'";
+      cmd << " LDFLAGS=\"" << ldflags.str() << "\"";
     }
     if (verbose) {
       std::cerr << cmd.str() << std::endl;
@@ -790,7 +788,7 @@ void bi::Driver::configure() {
     }
 
     /* change back to original working dir */
-    current_path(work_dir);
+    current_path(fs::path(".."));
   }
 }
 
@@ -830,7 +828,7 @@ void bi::Driver::target(const std::string& cmd) {
   }
 
   /* change back to original working dir */
-  current_path(work_dir);
+  current_path(fs::path(".."));
 }
 
 void bi::Driver::readFiles(const boost::property_tree::ptree& meta,

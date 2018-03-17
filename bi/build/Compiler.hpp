@@ -22,11 +22,9 @@ public:
    * Constructor.
    *
    * @param package The package.
-   * @param work_dir Working directory.
    * @param build_dir Build directory.
    */
-  Compiler(Package* package, const fs::path& work_dir,
-      const fs::path& build_dir);
+  Compiler(Package* package, const fs::path& build_dir);
 
   /**
    * Parse all input files.
@@ -63,11 +61,6 @@ private:
    * Package.
    */
   Package* package;
-
-  /**
-   * Working directory.
-   */
-  fs::path work_dir;
 
   /**
    * Build directory.
