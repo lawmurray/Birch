@@ -15,7 +15,7 @@
  * It is established via code such as the following:
  *
  *     σ2 ~ InverseGamma(α, β);
- *     x ~ Gaussian(μ, \Sigma*σ2);
+ *     x ~ Gaussian(μ, Σ*σ2);
  *     y ~ Gaussian(x, σ2);
  *
  * where the last argument in the distribution of `y` appears in the
