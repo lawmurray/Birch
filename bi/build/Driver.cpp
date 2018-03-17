@@ -19,9 +19,13 @@
 #include <unordered_set>
 
 bi::Driver::Driver(int argc, char** argv) :
+    /* keep these paths relative, or at least call configure with a
+     * relative path from the build directory to the work directory,
+     * otherwise a work directory containing spaces causes problems */
     work_dir("."),
     build_dir("build"),
     lib_dir(build_dir / ".libs"),
+
     arch("native"),
     prefix(""),
     packageName("Untitled"),
