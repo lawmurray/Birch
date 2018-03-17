@@ -63,8 +63,8 @@ class LinearNonlinearSSMState < State {
   y_l:Random<Real[_]>;
 
   fiber simulate(θ:LinearNonlinearSSMParameter) -> Real! {
-    x_n ~ Gaussian(vector(0.0, 1), I(1, 1));
-    x_l ~ Gaussian(vector(0.0, 3), I(3, 3));
+    x_n ~ Gaussian(vector(0.0, 1), identity(1));
+    x_l ~ Gaussian(vector(0.0, 3), identity(3));
     y_n ~ Gaussian([0.1*copysign(pow(scalar(x_n), 2.0), scalar(x_n))], θ.Σ_y_n);
     y_l ~ Gaussian(θ.C*x_l, θ.Σ_y_l);
   }
@@ -77,14 +77,14 @@ class LinearNonlinearSSMState < State {
   }
 
   function input(reader:Reader) {
-    y_l <- reader.getRealArray("y_l");
-    y_n <- reader.getRealArray("y_n");
+    y_l <- reader.getRealVector("y_l");
+    y_n <- reader.getRealVector("y_n");
   }
 
   function output(writer:Writer) {
     writer.setObject();
-    writer.setRealArray("x_l", x_l);
-    writer.setRealArray("x_n", x_n);
+    writer.setRealVector("x_l", x_l);
+    writer.setRealVector("x_n", x_n);
   }
 }
 
