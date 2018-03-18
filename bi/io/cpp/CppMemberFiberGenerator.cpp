@@ -63,7 +63,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     in();
     start("public MemberFiberState<" << o->returnType->unwrap() << ',');
     middle(type->name);
-    genTemplateArgs(type);
+    genTemplateSpec(type);
     middle(',');
     middle(argName << ',');
     middle(localName << '>');
@@ -75,7 +75,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     start("using state_type = MemberFiberState<");
     middle(o->returnType->unwrap() << ',');
     middle(type->name);
-    genTemplateArgs(type);
+    genTemplateSpec(type);
     middle(',');
     middle(argName << ',');
     middle(localName << '>');
@@ -83,19 +83,16 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   }
 
   /* constructor */
-  if (!header) {
-    genTemplateParams(type);
-  }
   line("template<class... Args>");
   start("");
   if (!header) {
     middle("bi::type::" << type->name);
-    genTemplateArgs(type);
+    genTemplateSpec(type);
     middle("::" << stateName << "::");
   }
   middle(stateName << "(const SharedPointer<");
   middle(type->name);
-  genTemplateArgs(type);
+  genTemplateSpec(type);
   middle(">& object, Args... args)");
   if (header) {
     finish(';');
@@ -114,13 +111,12 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   if (header) {
     start("virtual ");
   } else {
-    genTemplateParams(type);
     start("");
   }
   middle("std::shared_ptr<bi::FiberState<" << o->returnType->unwrap() <<">> ");
   if (!header) {
     middle("bi::type::" << type->name);
-    genTemplateArgs(type);
+    genTemplateSpec(type);
     middle("::" << stateName << "::");
   }
   middle("clone() const");
@@ -138,13 +134,12 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   if (header) {
     start("virtual ");
   } else {
-    genTemplateParams(type);
     start("");
   }
   middle("bool ");
   if (!header) {
     middle("bi::type::" << type->name);
-    genTemplateArgs(type);
+    genTemplateSpec(type);
     middle("::" << stateName << "::");
   }
   middle("query()");
@@ -167,13 +162,12 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   if (header) {
     start("virtual ");
   } else {
-    genTemplateParams(type);
     start("");
   }
   middle(o->returnType << ' ');
   if (!header) {
     middle("bi::type::" << type->name);
-    genTemplateArgs(type);
+    genTemplateSpec(type);
     middle("::");
   }
   middle(o->name << '(' << o->params << ')');

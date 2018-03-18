@@ -155,9 +155,9 @@ void bi::Resolver::instantiate(ClassType* o) {
         instantiation =
             dynamic_cast<Class*>(o->target->accept(&instantiater));
         assert(instantiation);
+        instantiation->isInstantiation = true;
         o->target->addInstantiation(instantiation);
         instantiation->accept(this);
-        instantiation->isInstantiation = true;
       }
       o->target = instantiation;
     } else {

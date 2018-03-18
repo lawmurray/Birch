@@ -69,7 +69,7 @@ void bi::Compiler::resolve() {
   }
 
   /* fourth pass: resolve the bodies of functions */
-  for (auto file : package->sources) {
+  for (auto file : package->files) {
     ResolverSource pass4(file->scope);
     file->accept(&pass4);
   }

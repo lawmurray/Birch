@@ -53,7 +53,9 @@ bi::Statement* bi::ResolverHeader::modify(Class* o) {
       o->params = o->params->accept(this);
     }
     scopes.pop_back();
-    o->braces = o->braces->accept(this);
+    if (o->isBound()) {
+      o->braces = o->braces->accept(this);
+    }
     o->state = RESOLVED_HEADER;
     classes.pop_back();
     scopes.pop_back();

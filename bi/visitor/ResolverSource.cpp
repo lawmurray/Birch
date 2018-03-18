@@ -453,7 +453,9 @@ bi::Statement* bi::ResolverSource::modify(Class* o) {
       o->base->resolveConstructor(o);
     }
     scopes.pop_back();
-    o->braces = o->braces->accept(this);
+    if (o->isBound()) {
+      o->braces = o->braces->accept(this);
+    }
     o->state = RESOLVED_SOURCE;
     classes.pop_back();
     scopes.pop_back();

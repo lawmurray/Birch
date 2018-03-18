@@ -3,6 +3,8 @@
  */
 #include "bi/io/bi_ostream.hpp"
 
+#include "bi/visitor/Gatherer.hpp"
+
 bi::bi_ostream::bi_ostream(std::ostream& base, const int level,
     const bool header) :
     indentable_ostream(base, level, header),
@@ -13,8 +15,29 @@ bi::bi_ostream::bi_ostream(std::ostream& base, const int level,
 }
 
 void bi::bi_ostream::visit(const Package* o) {
-  for (auto source: o->sources) {
+  for (auto source : o->sources) {
     source->accept(this);
+  }
+
+  /* explicitly declare the existence of any generic class instantiations
+   * that will be compiled by this package and so needn't be by dependent
+   * packages */
+  Gatherer<Class> classes;
+  o->accept(&classes);
+  for (auto o : classes) {
+    for (auto instantiation : o->instantiations) {
+      if (!instantiation->isExplicit) {
+        start("explicit " << instantiation->name << '<');
+        for (auto iter = instantiation->typeParams->begin();
+            iter != instantiation->typeParams->end(); ++iter) {
+          if (iter != instantiation->typeParams->begin()) {
+            middle(',');
+          }
+          middle((*iter)->type);
+        }
+        finish(">;");
+      }
+    }
   }
 }
 
@@ -59,7 +82,8 @@ void bi::bi_ostream::visit(const Call* o) {
 }
 
 void bi::bi_ostream::visit(const BinaryCall* o) {
-  middle(o->args->getLeft() << ' ' << o->single << ' ' << o->args->getRight());
+  middle(
+      o->args->getLeft() << ' ' << o->single << ' ' << o->args->getRight());
 }
 
 void bi::bi_ostream::visit(const UnaryCall* o) {
@@ -402,7 +426,7 @@ void bi::bi_ostream::visit(const If* o) {
 }
 
 void bi::bi_ostream::visit(const For* o) {
-  start("for ("  << o->index << " in " << o->from << ".." << o->to << ')');
+  start("for (" << o->index << " in " << o->from << ".." << o->to << ')');
   finish(o->braces);
 }
 

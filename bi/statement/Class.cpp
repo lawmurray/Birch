@@ -43,6 +43,15 @@ bool bi::Class::isGeneric() const {
   return !typeParams->isEmpty();
 }
 
+bool bi::Class::isBound() const {
+  for (auto param : *typeParams) {
+    if (param->type->isEmpty()) {
+      return false;
+    }
+  }
+  return true;
+}
+
 void bi::Class::addSuper(const Type* o) {
   auto base = o->getClass();
   supers.insert(base);

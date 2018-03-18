@@ -17,6 +17,54 @@ bi::CppPackageGenerator::CppPackageGenerator(std::ostream& base,
 }
 
 void bi::CppPackageGenerator::visit(const Package* o) {
+  /* gather important objects */
+  Gatherer<Basic> basics;
+  Gatherer<Class> classes, headerClasses;
+  Gatherer<GlobalVariable> globals;
+  Gatherer<Function> functions;
+  Gatherer<Fiber> fibers;
+  Gatherer<Program> programs;
+  Gatherer<BinaryOperator> binaries;
+  Gatherer<UnaryOperator> unaries;
+  for (auto file : o->sources) {
+    file->accept(&basics);
+    file->accept(&classes);
+    file->accept(&globals);
+    file->accept(&functions);
+    file->accept(&fibers);
+    file->accept(&programs);
+    file->accept(&binaries);
+    file->accept(&unaries);
+  }
+  for (auto file : o->headers) {
+    file->accept(&headerClasses);
+  }
+
+  /* base classes must be defined before their derived classes, so these are
+   * gathered and sorted first */
+  poset<Type*,definitely> sorted;
+  for (auto o : classes) {
+    if (!o->isAlias()) {
+      sorted.insert(new ClassType(o));
+    }
+    for (auto instantiation : o->instantiations) {
+      if (!instantiation->isExplicit) {
+        sorted.insert(new ClassType(instantiation));
+      }
+    }
+  }
+  for (auto o : headerClasses) {
+    for (auto instantiation : o->instantiations) {
+      if (!instantiation->isExplicit) {
+        sorted.insert(new ClassType(instantiation));
+      }
+    }
+  }
+  std::list<Class*> sortedClasses;
+  for (auto iter = sorted.rbegin(); iter != sorted.rend(); ++iter) {
+    sortedClasses.push_back((*iter)->getClass());
+  }
+
   if (header) {
     /* a `#define` include guard is preferred to `#pragma once`; the header of
      * each package is included in sources with the `-include` compile option
@@ -32,26 +80,6 @@ void bi::CppPackageGenerator::visit(const Package* o) {
       fs::path include = header->path;
       include.replace_extension(".hpp");
       line("#include \"" << include.string() << "\"");
-    }
-
-    /* gather important objects */
-    Gatherer < Basic > basics;
-    Gatherer < Class > classes;
-    Gatherer < GlobalVariable > globals;
-    Gatherer < Function > functions;
-    Gatherer < Fiber > fibers;
-    Gatherer < Program > programs;
-    Gatherer < BinaryOperator > binaries;
-    Gatherer < UnaryOperator > unaries;
-    for (auto source : o->sources) {
-      source->accept(&basics);
-      source->accept(&classes);
-      source->accept(&globals);
-      source->accept(&functions);
-      source->accept(&fibers);
-      source->accept(&programs);
-      source->accept(&binaries);
-      source->accept(&unaries);
     }
 
     /* raw C++ code for headers */
@@ -87,15 +115,11 @@ void bi::CppPackageGenerator::visit(const Package* o) {
     line("");
 
     /* forward super type declarations */
-    for (auto o : classes) {
-      if (!o->isAlias() && !o->base->isEmpty()) {
-        if (o->isGeneric()) {
-          genTemplateParams(o);
-        } else {
-          start("template<> ");
-        }
+    for (auto o : sortedClasses) {
+      if (!o->base->isEmpty() && (!o->isGeneric() || o->isInstantiation)) {
+        start("template<> ");
         middle("struct super_type<type::" << o->name);
-        genTemplateArgs(o);
+        genTemplateSpec(o);
         finish("> {");
         in();
         line("using type = " << o->base << ';');
@@ -105,16 +129,12 @@ void bi::CppPackageGenerator::visit(const Package* o) {
     }
 
     /* forward assignment operator declarations */
-    for (auto o : classes) {
-      if (!o->isAlias()) {
-        for (auto o1 : o->assignments) {
-          if (o->isGeneric()) {
-            genTemplateParams(o);
-          } else {
-            start("template<> ");
-          }
+    for (auto o : sortedClasses) {
+      for (auto o1 : o->assignments) {
+        if (!o->isGeneric() || o->isInstantiation) {
+          start("template<> ");
           middle("struct has_assignment<type::" << o->name);
-          genTemplateArgs(o);
+          genTemplateSpec(o);
           finish("," << o1 << "> {");
           in();
           line("static const bool value = true;");
@@ -125,16 +145,12 @@ void bi::CppPackageGenerator::visit(const Package* o) {
     }
 
     /* forward conversion operator declarations */
-    for (auto o : classes) {
-      if (!o->isAlias()) {
-        for (auto o1 : o->conversions) {
-          if (o->isGeneric()) {
-            genTemplateParams(o);
-          } else {
-            start("template<> ");
-          }
+    for (auto o : sortedClasses) {
+      for (auto o1 : o->conversions) {
+        if (!o->isGeneric() || o->isInstantiation) {
+          start("template<> ");
           middle("struct has_conversion<type::" << o->name);
-          genTemplateArgs(o);
+          genTemplateSpec(o);
           finish("," << o1 << "> {");
           in();
           line("static const bool value = true;");
@@ -143,27 +159,19 @@ void bi::CppPackageGenerator::visit(const Package* o) {
         }
       }
     }
-    line("}\n");
 
-    /* class definitions; even with the forward declarations above, base
-     * classes must be defined before their derived classes, so these are
-     * gathered and sorted first */
-    poset<Type*,definitely> sorted;
-    for (auto o : classes) {
-      if (!o->isAlias()) {
-        sorted.insert(new ClassType(o));
-      }
-    }
-    for (auto iter = sorted.rbegin(); iter != sorted.rend(); ++iter) {
-      *this << (*iter)->getClass();
+    /* class definitions */
+    line("namespace type {");
+    for (auto o : sortedClasses) {
+      *this << o;
     }
     for (auto o : classes) {
       if (o->isAlias()) {
         *this << o;
       }
     }
-
-    line("namespace bi {");
+    line("");
+    line("}\n");
 
     /* global variables */
     for (auto o : globals) {
@@ -191,16 +199,15 @@ void bi::CppPackageGenerator::visit(const Package* o) {
       *this << o;
     }
 
-    /* generic class definitions */
-    CppClassGenerator auxGeneric(base, level, false);
-    for (auto o : classes) {
-      if (o->isGeneric()) {
-        auxGeneric << o;
-      }
-    }
-
     line("}\n");
     line("");
     line("#endif");
+  } else {
+    /* instantiations of generic classes go in the package source file */
+    for (auto o : sortedClasses) {
+      if (o->isInstantiation && !o->isExplicit) {
+        *this << o;
+      }
+    }
   }
 }

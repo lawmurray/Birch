@@ -562,7 +562,7 @@ basic_declaration
     ;
 
 explicit_declaration
-    : EXPLICIT name generic_arguments ';'   { $$ = new bi::Explicit(new bi::ClassType($2, $3, make_loc(@$)), make_doc_loc(@$)); }
+    : EXPLICIT name generic_arguments ';'   { push_raw(); $$ = new bi::Explicit(new bi::ClassType($2, $3, make_loc(@$)), make_doc_loc(@$)); }
     ;
 
 cpp

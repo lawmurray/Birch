@@ -20,30 +20,32 @@ void bi::CppClassGenerator::visit(const Class* o) {
 
     /* start boilerplate */
     if (header) {
-      line("namespace bi {");
-      in();
-      line("namespace type {");
-      out();
       if (!o->isAlias()) {
         genTemplateParams(o);
-        start("class " << o->name << " : public ");
+        start("class " << o->name);
+        if (o->isInstantiation) {
+          genTemplateSpec(o);
+        }
         if (!o->base->isEmpty()) {
+          middle(" : public ");
           middle(o->base);
         }
         finish(" {");
         line("public:");
         in();
-        start("using this_type = " << o->name);
-        genTemplateArgs(o);
-        finish(';');
-        if (!o->base->isEmpty()) {
-          line("using super_type = " << o->base << ';');
+        if (!o->isGeneric() || o->isInstantiation) {
+          start("using this_type = " << o->name);
+          genTemplateSpec(o);
+          finish(';');
+          if (!o->base->isEmpty()) {
+            line("using super_type = " << o->base << ';');
+          }
         }
         line("");
       }
     }
 
-    if (!o->isAlias()) {
+    if (!o->isAlias() && (!o->isGeneric() || o->isInstantiation)) {
       /* constructor */
       CppConstructorGenerator auxConstructor(base, level, header);
       auxConstructor << o;
@@ -91,7 +93,6 @@ void bi::CppClassGenerator::visit(const Class* o) {
 
       /* clone function */
       if (!header) {
-        genTemplateParams(o);
         start("");
       } else {
         start("virtual ");
@@ -99,7 +100,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
       middle("std::shared_ptr<bi::Any> ");
       if (!header) {
         middle("bi::type::" << o->name);
-        genTemplateArgs(o);
+        genTemplateSpec(o);
         middle("::");
       }
       middle("clone() const");
@@ -115,12 +116,12 @@ void bi::CppClassGenerator::visit(const Class* o) {
 
       /* member variables and functions */
       *this << o->braces->strip();
+    }
 
-      /* end class */
-      if (header) {
-        out();
-        line("};\n");
-      }
+    /* end class */
+    if (!o->isAlias() && header) {
+      out();
+      line("};\n");
     }
 
     /* C linkage function */
@@ -137,14 +138,6 @@ void bi::CppClassGenerator::visit(const Class* o) {
       }
       line("");
     }
-
-    /* end namespace */
-    if (header) {
-      in();
-      line('}');
-      out();
-      line('}');
-    }
   }
 }
 
@@ -158,13 +151,12 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
   if (header) {
     start("virtual ");
   } else {
-    genTemplateParams(type);
     start("");
   }
   middle(o->returnType << ' ');
   if (!header) {
     middle("bi::type::" << type->name);
-    genTemplateArgs(type);
+    genTemplateSpec(type);
     middle("::");
   }
   middle(internalise(o->name->str()) << '(' << o->params << ')');
@@ -194,15 +186,14 @@ void bi::CppClassGenerator::visit(const AssignmentOperator* o) {
     if (header) {
       start("virtual ");
     } else {
-      genTemplateParams(type);
       start("bi::type::");
     }
     middle(type->name);
-    genTemplateArgs(type);
+    genTemplateSpec(type);
     middle("& ");
     if (!header) {
       middle("bi::type::" << type->name);
-      genTemplateArgs(type);
+      genTemplateSpec(type);
       middle("::");
     }
     middle("operator=(" << o->single << ')');
@@ -224,9 +215,8 @@ void bi::CppClassGenerator::visit(const AssignmentOperator* o) {
 void bi::CppClassGenerator::visit(const ConversionOperator* o) {
   if (!o->braces->isEmpty()) {
     if (!header) {
-      genTemplateParams(type);
       start("bi::type::" << type->name);
-      genTemplateArgs(type);
+      genTemplateSpec(type);
       middle("::");
     } else {
       start("virtual ");

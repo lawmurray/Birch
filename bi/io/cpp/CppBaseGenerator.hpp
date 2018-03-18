@@ -108,6 +108,11 @@ protected:
   void genTemplateArgs(const Class* o);
 
   /**
+   * Generate code for template specialization (`<...>`).
+   */
+  void genTemplateSpec(const Class* o);
+
+  /**
    * Generate the initialization of a variable, including the call to the
    * constructor and/or assignment of the initial value.
    */

@@ -64,6 +64,12 @@ public:
   bool isGeneric() const;
 
   /**
+   * Are all the generic type parameters of this class bound? (i.e. they all
+   * have a base type defined).
+   */
+  bool isBound() const;
+
+  /**
    * Add a super type.
    */
   void addSuper(const Type* o);

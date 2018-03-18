@@ -482,10 +482,8 @@ void bi::CppBaseGenerator::visit(const Basic* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Class* o) {
-  if (header || !o->isGeneric()) {
-    CppClassGenerator auxClass(base, level, header);
-    auxClass << o;
-  }
+  CppClassGenerator auxClass(base, level, header);
+  auxClass << o;
 }
 
 void bi::CppBaseGenerator::visit(const Generic* o) {
@@ -661,12 +659,14 @@ void bi::CppBaseGenerator::visit(const TypeList* o) {
 void bi::CppBaseGenerator::genTemplateParams(const Class* o) {
   if (o->isGeneric()) {
     start("template<");
-    for (auto iter = o->typeParams->begin(); iter != o->typeParams->end();
-        ++iter) {
-      if (iter != o->typeParams->begin()) {
-        middle(", ");
+    if (!o->isInstantiation) {
+      for (auto iter = o->typeParams->begin(); iter != o->typeParams->end();
+          ++iter) {
+        if (iter != o->typeParams->begin()) {
+          middle(", ");
+        }
+        middle("class " << *iter);
       }
-      middle("class " << *iter);
     }
     finish('>');
   }
@@ -675,6 +675,20 @@ void bi::CppBaseGenerator::genTemplateParams(const Class* o) {
 void bi::CppBaseGenerator::genTemplateArgs(const Class* o) {
   if (o->isGeneric()) {
     middle('<' << o->typeParams << '>');
+  }
+}
+
+void bi::CppBaseGenerator::genTemplateSpec(const Class* o) {
+  if (o->isGeneric()) {
+    middle('<');
+    for (auto iter = o->typeParams->begin(); iter != o->typeParams->end();
+        ++iter) {
+      if (iter != o->typeParams->begin()) {
+        middle(',');
+      }
+      middle((*iter)->type);
+    }
+    middle('>');
   }
 }
 
