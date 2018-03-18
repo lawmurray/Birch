@@ -65,7 +65,16 @@ bool bi::Class::hasSuper(const Type* o) const {
 }
 
 void bi::Class::addConversion(const Type* o) {
-  conversions.push_back(o);
+  bool result = std::any_of(conversions.begin(), conversions.end(),
+      [&](auto x) {return x->equals(*o);});
+  if (!result) {
+    conversions.push_back(o);
+    if (o->isBasic()) {
+      addConversion(o->getBasic()->base);
+    } else if (o->isClass()) {
+      addConversion(o->getClass()->base);
+    }
+  }
 }
 
 bool bi::Class::hasConversion(const Type* o) const {
@@ -78,7 +87,16 @@ bool bi::Class::hasConversion(const Type* o) const {
 }
 
 void bi::Class::addAssignment(const Type* o) {
-  assignments.push_back(o);
+  bool result = std::any_of(assignments.begin(), assignments.end(),
+      [&](auto x) {return x->equals(*o);});
+  if (!result) {
+    assignments.push_back(o);
+    if (o->isBasic()) {
+      addAssignment(o->getBasic()->base);
+    } else if (o->isClass()) {
+      addAssignment(o->getClass()->base);
+    }
+  }
 }
 
 bool bi::Class::hasAssignment(const Type* o) const {

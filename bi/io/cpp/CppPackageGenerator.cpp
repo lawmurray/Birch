@@ -130,8 +130,8 @@ void bi::CppPackageGenerator::visit(const Package* o) {
 
     /* forward assignment operator declarations */
     for (auto o : sortedClasses) {
-      for (auto o1 : o->assignments) {
-        if (!o->isGeneric() || o->isInstantiation) {
+      if (!o->isGeneric() || o->isInstantiation) {
+        for (auto o1 : o->assignments) {
           start("template<> ");
           middle("struct has_assignment<type::" << o->name);
           genTemplateSpec(o);
@@ -146,8 +146,8 @@ void bi::CppPackageGenerator::visit(const Package* o) {
 
     /* forward conversion operator declarations */
     for (auto o : sortedClasses) {
-      for (auto o1 : o->conversions) {
-        if (!o->isGeneric() || o->isInstantiation) {
+      if (!o->isGeneric() || o->isInstantiation) {
+        for (auto o1 : o->conversions) {
           start("template<> ");
           middle("struct has_conversion<type::" << o->name);
           genTemplateSpec(o);
