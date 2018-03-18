@@ -24,7 +24,11 @@ class AnyDelta < Random<Integer> {
     if (isMissing()) {
       set(μ.value());
     } else {
-      setWeight(μ.observe(value()));
+      if (μ.isMissing()) {
+        setWeight(μ.observe(value()));
+      } else {
+        setWeight(observe_delta(value(), μ.value()));
+      }
     }
   }
 }

@@ -31,7 +31,11 @@ class TranslateAnyDelta < Random<Integer> {
     if (isMissing()) {
       set(x.value() + c);
     } else {
-      setWeight(x.observe(value() - c));
+      if (x.isMissing()) {
+        setWeight(x.observe(value() - c));
+      } else {
+        setWeight(observe_delta(value(), x.value() - c));
+      }
     }
   }
 }
