@@ -3,6 +3,12 @@
  */
 class ParticleFilter {
   /**
+   * Canonical particle from which others are initialized. Ensures that
+   * input is only consumed once.
+   */
+  f0:Model!;
+
+  /**
    * Particles.
    */
   f:Model![_];
@@ -49,22 +55,50 @@ class ParticleFilter {
    * - inputReader: Reader for input.
    * - outputWriter: Writer for output.
    * - diagnosticWriter: Writer for diagnostics.
+   * - M: Number of samples.
    * - T: Number of checkpoints.
    * - N: Number of particles.
    * - trigger: Relative ESS below which resampling should be triggered.
    */
-  function filter(model:String, inputReader:Reader?, outputWriter:Writer?,
-      diagnosticWriter:Writer?, T:Integer, N:Integer, trigger:Real) {
-    initialize(T, N, trigger);
-    start(model, inputReader);
-    for (t:Integer in 1..T) {
-      stderr.print(t + " ");
-      step(t);
+  function sample(model:String, inputReader:Reader?, outputWriter:Writer?,
+      diagnosticWriter:Writer?, M:Integer, T:Integer, N:Integer,
+      trigger:Real) {
+    /* set up output */
+    if (M > 1) {
+      if (outputWriter?) {
+        outputWriter!.setArray();
+      }
+      if (diagnosticWriter?) {
+        diagnosticWriter!.setArray();
+      }
     }
-    stderr.print("\n");
-    finish();
-    output(outputWriter);
-    diagnose(diagnosticWriter);
+
+    initialize(model, inputReader, T, N, trigger);    
+    for (m:Integer in 1..M) {
+      start();
+      for (t:Integer in 1..T) {
+        stderr.print(t + " ");
+        step(t);
+      }
+      stderr.print("\n");
+      finish();
+      
+      /* output results and diagnostics */
+      if (outputWriter?) {
+        if (M > 1) {
+          output(outputWriter!.push());
+        } else {
+          output(outputWriter!);
+        }
+      }
+      if (diagnosticWriter?) {
+        if (M > 1) {
+          diagnose(diagnosticWriter!.push());
+        } else {
+          diagnose(diagnosticWriter!);
+        }
+      }
+    }
   }
 
   /**
@@ -74,16 +108,18 @@ class ParticleFilter {
    * - N: Number of particles.
    * - trigger: Relative ESS below which resampling should be triggered.
    */
-  function initialize(T:Integer, N:Integer, trigger:Real) {
+  function initialize(model:String, inputReader:Reader?, T:Integer, N:Integer, trigger:Real) {
+    f0 <- particle(model, inputReader);
+    if (!(f0?)) {
+      stderr.print("error: particles terminated prematurely.\n");
+      exit(1);
+    }
+
     f1:Model![N];
     this.f <- f1;
-    this.w <- vector(0.0, N);
-    this.e <- vector(0.0, T);
-    this.r <- vector(false, T);
     this.T <- T;
     this.N <- N;
     this.trigger <- trigger;
-    this.Z <- 0.0;
   }
 
   /**
@@ -92,18 +128,14 @@ class ParticleFilter {
    * - model: Name of the model class.
    * - inputReader: Reader for input.
    */  
-  function start(model:String, inputReader:Reader?) {
-    /* run one particle to its first checkpoint, which occurs immediately
-     * after the input file has been read, then copy it around */     
-    f0:Model! <- particle(model, inputReader);
-    if (f0?) {
-      for (n:Integer in 1..N) {
-        f[n] <- f0;
-      }
-    } else {
-      stderr.print("error: particles terminated prematurely.\n");
-      exit(1);
+  function start() {
+    for (n:Integer in 1..N) {
+      f[n] <- f0;
     }
+    this.w <- vector(0.0, N);
+    this.e <- vector(0.0, T);
+    this.r <- vector(false, T);
+    this.Z <- 0.0;
   }
   
   /**

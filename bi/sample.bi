@@ -54,26 +54,15 @@ program sample(
   }
   
   /* set up method */
-  filter:ParticleFilter? <- ParticleFilter?(make(method));
-  if (!filter?) {
+  sampler:ParticleFilter? <- ParticleFilter?(make(method));
+  if (!sampler?) {
     stderr.print("error: " + method + " must be a subtype of ParticleFilter with no initialization parameters.\n");
     exit(1);
   }
 
   /* sample */
-  if (output? && nsamples > 1) {
-    output!.setArray();
-  }
-  for (n:Integer in 1..nsamples) {
-    writer:Writer?;
-    if (output? && nsamples > 1) {
-      writer <- output!.push();
-    } else {
-      writer <- output;
-    }
-    filter!.filter(model, input, writer, diagnostic, ncheckpoints,
-        nparticles, ess_trigger);
-  }
+  sampler!.sample(model, input, output, diagnostic, nsamples, ncheckpoints,
+      nparticles, ess_trigger);
   
   /* finalize I/O */
   if (output?) {

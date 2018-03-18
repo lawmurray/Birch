@@ -10,8 +10,8 @@ class AliveParticleFilter < ParticleFilter {
    */
   propagations:Integer[_];
 
-  function initialize(T:Integer, N:Integer, trigger:Real) {
-    super.initialize(T, N, trigger);
+  function start() {
+    super.start();
     propagations <- vector(0, T);
   }
 
