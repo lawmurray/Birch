@@ -41,9 +41,19 @@ function Boolean(x:String?) -> Boolean? {
 operator (x:Boolean && y:Boolean) -> Boolean;
 
 /**
+ * Logical *and*.
+ */
+operator (x:Boolean * y:Boolean) -> Boolean;
+
+/**
  * Logical *or*.
  */
 operator (x:Boolean || y:Boolean) -> Boolean;
+
+/**
+ * Logical *or*.
+ */
+operator (x:Boolean + y:Boolean) -> Boolean;
 
 /**
  * Logical *not*.

@@ -81,6 +81,11 @@ operator (c:Real + x:AffineExpression) -> AffineExpression {
   return x + c;
 }
 
+operator (x:Random<Real> + c:Random<Real>) -> AffineExpression {
+  /* favour keeping the random variable on the left */
+  return x + c.value();
+}
+
 operator (x:Random<Real> - c:Real) -> AffineExpression {
   y:AffineExpression;
   y.initialize(1.0, x, -c);
@@ -105,6 +110,11 @@ operator (c:Real - x:AffineExpression) -> AffineExpression {
   return y;
 }
 
+operator (x:Random<Real> - c:Random<Real>) -> AffineExpression {
+  /* favour keeping the random variable on the left */
+  return x - c.value();
+}
+
 operator (a:Real*x:Random<Real>) -> AffineExpression {
   y:AffineExpression;
   y.initialize(a, x, 0.0);
@@ -123,6 +133,11 @@ operator (x:Random<Real>*a:Real) -> AffineExpression {
 
 operator (x:AffineExpression*a:Real) -> AffineExpression {
   return a*x;
+}
+
+operator (a:Random<Real>*x:Random<Real>) -> AffineExpression {
+  /* favour keeping the random variable on the right */
+  return a.value()*x;
 }
 
 operator (x:Random<Real>/a:Real) -> AffineExpression {

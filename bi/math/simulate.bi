@@ -22,6 +22,15 @@ function simulate_bernoulli(ρ:Real) -> Boolean {
 }
 
 /**
+ * Simulate a delta distribution.
+ *
+ * - μ: Location.
+ */
+function simulate_delta(μ:Integer) -> Integer {
+  return μ;
+}
+
+/**
  * Simulate a binomial distribution.
  *
  * - n: Number of trials.

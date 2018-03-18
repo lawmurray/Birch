@@ -16,12 +16,28 @@ function observe_bernoulli(x:Boolean, ρ:Real) -> Real {
 }
 
 /**
+ * Observe a delta variate.
+ *
+ * - x: The variate.
+ * - μ: Location.
+ *
+ * Returns: the log probability mass.
+ */
+function observe_delta(x:Integer, μ:Integer) -> Real {
+  if (x == μ) {
+    return 0.0;
+  } else {
+    return -inf;
+  }
+}
+
+/**
  * Observe a binomial variate.
  *
  * - x: The variate.
  * - n: Number of trials.
  * - ρ: Probability of a true result.
- 
+ *
  * Returns: the log probability mass.
  */
 function observe_binomial(x:Integer, n:Integer, ρ:Real) -> Real {

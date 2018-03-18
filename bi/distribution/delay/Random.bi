@@ -35,7 +35,11 @@ class Random<Value> < Delay {
       realize();
     }
   }
-    
+  
+  /**
+   * Get the value of the random variable, forcing its instantiation if
+   * it has not already been instantiated.
+   */
   function value() -> Value {
     if (isMissing()) {
       realize();
@@ -44,6 +48,9 @@ class Random<Value> < Delay {
     return x!;
   }
 
+  /**
+   * Is the value of the random variable missing?
+   */
   function isMissing() -> Boolean {
     return !(x?);
   }
@@ -56,11 +63,21 @@ class Random<Value> < Delay {
     this.w <- w;
   }
   
+  /**
+   * Simulate the random variable.
+   */
   function simulate() -> Value {
     realize();
     return value();
   }
   
+  /**
+   * Observe the random variable.
+   *
+   * - x: The observed value.
+   *
+   * Returns: the log likelihood.
+   */
   function observe(x:Value) -> Real {
     set(x);
     realize();
