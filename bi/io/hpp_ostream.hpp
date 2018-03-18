@@ -3,7 +3,7 @@
  */
 #pragma once
 
-#include "bi/io/cpp/CppHeaderGenerator.hpp"
+#include "bi/io/cpp_ostream.hpp"
 
 namespace bi {
 /**
@@ -11,10 +11,10 @@ namespace bi {
  *
  * @ingroup io
  */
-class hpp_ostream: public CppHeaderGenerator {
+class hpp_ostream: public cpp_ostream {
 public:
   hpp_ostream(std::ostream& base, const int level = 0) :
-    CppHeaderGenerator(base, level) {
+      cpp_ostream(base, level, true) {
     //
   }
 };

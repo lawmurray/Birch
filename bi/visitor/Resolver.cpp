@@ -157,6 +157,7 @@ void bi::Resolver::instantiate(ClassType* o) {
         assert(instantiation);
         o->target->addInstantiation(instantiation);
         instantiation->accept(this);
+        instantiation->isInstantiation = true;
       }
       o->target = instantiation;
     } else {

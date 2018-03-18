@@ -28,7 +28,6 @@ bi::Statement* bi::ResolverSuper::modify(Basic* o) {
 }
 
 bi::Statement* bi::ResolverSuper::modify(Explicit* o) {
-  o->base = o->base->accept(this);
   return o;
 }
 

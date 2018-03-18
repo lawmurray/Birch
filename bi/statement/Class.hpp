@@ -145,5 +145,15 @@ public:
    * Instantiations of this class.
    */
   std::list<Class*> instantiations;
+
+  /**
+   * Is this an instantiation of some other (generic) class?
+   */
+  bool isInstantiation;
+
+  /**
+   * Is this, additionally, an explicit instantiation?
+   */
+  bool isExplicit;
 };
 }

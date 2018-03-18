@@ -11,9 +11,9 @@ namespace bi {
  *
  * @ingroup io
  */
-class CppHeaderGenerator: public CppBaseGenerator {
+class CppPackageGenerator: public CppBaseGenerator {
 public:
-  CppHeaderGenerator(std::ostream& base, const int level = 0,
+  CppPackageGenerator(std::ostream& base, const int level = 0,
       const bool header = true);
 
   using CppBaseGenerator::visit;

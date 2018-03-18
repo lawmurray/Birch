@@ -17,7 +17,9 @@ bi::Class::Class(Name* name, Expression* typeParams, Expression* params,
     Braced(braces),
     typeParams(typeParams),
     initScope(new Scope(LOCAL_SCOPE)),
-    state(CLONED) {
+    state(CLONED),
+    isInstantiation(false),
+    isExplicit(false) {
   //
 }
 

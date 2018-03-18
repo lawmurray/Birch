@@ -29,6 +29,9 @@ bi::Statement* bi::ResolverHeader::modify(Basic* o) {
 }
 
 bi::Statement* bi::ResolverHeader::modify(Explicit* o) {
+  o->base = o->base->accept(this);
+  assert(o->base->getClass());
+  o->base->getClass()->isExplicit = true;
   return o;
 }
 

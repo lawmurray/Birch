@@ -7,6 +7,7 @@
 #include "bi/visitor/ResolverSuper.hpp"
 #include "bi/visitor/ResolverHeader.hpp"
 #include "bi/visitor/ResolverSource.hpp"
+#include "bi/io/cpp/CppPackageGenerator.hpp"
 #include "bi/io/bi_ostream.hpp"
 #include "bi/io/cpp_ostream.hpp"
 #include "bi/io/hpp_ostream.hpp"
@@ -77,9 +78,12 @@ void bi::Compiler::resolve() {
 void bi::Compiler::gen() {
   fs::path path;
   std::stringstream stream;
+
   bih_ostream bihOutput(stream);
-  hpp_ostream hppOutput(stream);
   cpp_ostream cppOutput(stream);
+
+  CppPackageGenerator hppPackageOutput(stream, 0, true);
+  CppPackageGenerator cppPackageOutput(stream, 0, false);
 
   /* single *.bih header for whole package */
   stream.str("");
@@ -90,9 +94,16 @@ void bi::Compiler::gen() {
 
   /* single *.hpp header for whole package */
   stream.str("");
-  hppOutput << package;
+  hppPackageOutput << package;
   path = build_dir / "bi" / tarname(package->name);
   path.replace_extension(".hpp");
+  write_all_if_different(path, stream.str());
+
+  /* *.cpp source for generic class specialization definitions */
+  stream.str("");
+  cppPackageOutput << package;
+  path = build_dir / "bi" / tarname(package->name);
+  path.replace_extension(".cpp");
   write_all_if_different(path, stream.str());
 
   /* separate *.cpp source for each file */

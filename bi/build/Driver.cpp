@@ -592,7 +592,8 @@ void bi::Driver::setup() {
     makeStream << '\n';
 
     /* sources derived from *.bi files */
-    makeStream << "nodist_lib" << internalName << "_la_SOURCES = ";
+    makeStream << "nodist_lib" << internalName << "_la_SOURCES =";
+    makeStream << " \\\n  bi/" << internalName << ".cpp";
     for (auto file : metaFiles["manifest.source"]) {
       if (file.extension().compare(".bi") == 0) {
         fs::path cppFile = file;
