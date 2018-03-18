@@ -320,6 +320,11 @@ bi::Statement* bi::Modifier::modify(Basic* o) {
   return o;
 }
 
+bi::Statement* bi::Modifier::modify(Explicit* o) {
+  o->base = o->base->accept(this);
+  return o;
+}
+
 bi::Statement* bi::Modifier::modify(ExpressionStatement* o) {
   o->single = o->single->accept(this);
   return o;

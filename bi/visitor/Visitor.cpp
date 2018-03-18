@@ -280,6 +280,10 @@ void bi::Visitor::visit(const Basic* o) {
   o->base->accept(this);
 }
 
+void bi::Visitor::visit(const Explicit* o) {
+  o->base->accept(this);
+}
+
 void bi::Visitor::visit(const Generic* o) {
   //
 }

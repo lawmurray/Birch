@@ -85,7 +85,7 @@
 %expect-rr 2  // `Type?(...)` vs `x?`
 %expect 4     // for generics, '<' ambiguous, but closing '>' disambiguates
 
-%token <valString> PROGRAM CLASS TYPE FUNCTION FIBER OPERATOR
+%token <valString> PROGRAM CLASS TYPE FUNCTION FIBER OPERATOR EXPLICIT
 %token <valString> IF ELSE FOR IN WHILE DO ASSERT RETURN YIELD CPP HPP
 %token <valString> THIS SUPER NIL
 %token <valString> DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE NAME
@@ -127,7 +127,7 @@
 %type <valStatement> member_fiber_declaration
 %type <valStatement> binary_operator_declaration unary_operator_declaration
 %type <valStatement> conversion_operator_declaration assignment_operator_declaration
-%type <valStatement> class_declaration basic_declaration
+%type <valStatement> class_declaration basic_declaration explicit_declaration
 %type <valStatement> cpp hpp assignment expression_statement if for
 %type <valStatement> while do_while assertion return yield
 %type <valStatement> statement statements optional_statements
@@ -561,6 +561,10 @@ basic_declaration
     | TYPE name ';'                 { push_raw(); $$ = new bi::Basic($2, empty_type(@$), false, make_doc_loc(@$)); }
     ;
 
+explicit_declaration
+    : EXPLICIT name generic_arguments ';'   { $$ = new bi::Explicit(new bi::ClassType($2, $3, make_loc(@$)), make_doc_loc(@$)); }
+    ;
+
 cpp
     : CPP double_braces  { push_raw(); $$ = new bi::Raw(new bi::Name("cpp"), pop_raw(), make_loc(@$)); }
     ;
@@ -664,6 +668,7 @@ file_statement
     | unary_operator_declaration
     | class_declaration
     | basic_declaration
+    | explicit_declaration
     | cpp
     | hpp
     ;

@@ -468,6 +468,10 @@ bi::Statement* bi::ResolverSource::modify(Basic* o) {
   return o;
 }
 
+bi::Statement* bi::ResolverSource::modify(Explicit* o) {
+  return o;
+}
+
 bi::Statement* bi::ResolverSource::modify(ExpressionStatement* o) {
   Modifier::modify(o);
 

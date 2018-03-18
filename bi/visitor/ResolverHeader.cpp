@@ -28,6 +28,10 @@ bi::Statement* bi::ResolverHeader::modify(Basic* o) {
   return o;
 }
 
+bi::Statement* bi::ResolverHeader::modify(Explicit* o) {
+  return o;
+}
+
 bi::Statement* bi::ResolverHeader::modify(Class* o) {
   if (o->state < RESOLVED_SUPER) {
     ResolverSuper resolver(scopes.front());

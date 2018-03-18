@@ -97,5 +97,11 @@ public:
   virtual void visit(const PointerType* o);
   virtual void visit(const UnknownType* o);
   virtual void visit(const TypeList* o);
+
+private:
+  /**
+   * The current class.
+   */
+  const Class* type;
 };
 }

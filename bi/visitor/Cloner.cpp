@@ -264,6 +264,10 @@ bi::Statement* bi::Cloner::clone(const Basic* o) {
   return new Basic(o->name, o->base->accept(this), o->alias, o->loc);
 }
 
+bi::Statement* bi::Cloner::clone(const Explicit* o) {
+  return new Explicit(o->base->accept(this), o->loc);
+}
+
 bi::Statement* bi::Cloner::clone(const ExpressionStatement* o) {
   return new ExpressionStatement(o->single->accept(this), o->loc);
 }

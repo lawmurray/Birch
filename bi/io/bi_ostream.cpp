@@ -5,7 +5,8 @@
 
 bi::bi_ostream::bi_ostream(std::ostream& base, const int level,
     const bool header) :
-    indentable_ostream(base, level, header) {
+    indentable_ostream(base, level, header),
+    type(nullptr) {
   base << std::fixed;
   // ^ forces floating point representation of integers to have decimal
   //   places
@@ -235,7 +236,7 @@ void bi::bi_ostream::visit(const Braces* o) {
   in();
   middle(o->single);
   out();
-  line('}');
+  start('}');
 }
 
 void bi::bi_ostream::visit(const Assignment* o) {
@@ -248,7 +249,7 @@ void bi::bi_ostream::visit(const Function* o) {
     middle(" -> " << o->returnType);
   }
   if (!header && !o->braces->isEmpty()) {
-    finish(o->braces);
+    finish(o->braces << "\n");
   } else {
     finish(';');
   }
@@ -260,7 +261,7 @@ void bi::bi_ostream::visit(const Fiber* o) {
     middle(" -> " << o->returnType);
   }
   if (!header && !o->braces->isEmpty()) {
-    finish(o->braces);
+    finish(o->braces << "\n");
   } else {
     finish(';');
   }
@@ -269,7 +270,7 @@ void bi::bi_ostream::visit(const Fiber* o) {
 void bi::bi_ostream::visit(const Program* o) {
   start("program " << o->name << '(' << o->params << ')');
   if (!header && !o->braces->isEmpty()) {
-    finish(o->braces);
+    finish(o->braces << "\n");
   } else {
     finish(';');
   }
@@ -281,8 +282,8 @@ void bi::bi_ostream::visit(const MemberFunction* o) {
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
-  if (!header && !o->braces->isEmpty()) {
-    finish(o->braces);
+  if (!o->braces->isEmpty() && (!header || type->isGeneric())) {
+    finish(o->braces << "\n");
   } else {
     finish(';');
   }
@@ -294,8 +295,8 @@ void bi::bi_ostream::visit(const MemberFiber* o) {
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
-  if (!header && !o->braces->isEmpty()) {
-    finish(o->braces);
+  if (!o->braces->isEmpty() && (!header || type->isGeneric())) {
+    finish(o->braces << "\n");
   } else {
     finish(';');
   }
@@ -311,7 +312,7 @@ void bi::bi_ostream::visit(const BinaryOperator* o) {
     middle(" -> " << o->returnType);
   }
   if (!header && !o->braces->isEmpty()) {
-    finish(o->braces);
+    finish(o->braces << "\n");
   } else {
     finish(';');
   }
@@ -323,7 +324,7 @@ void bi::bi_ostream::visit(const UnaryOperator* o) {
     middle(" -> " << o->returnType);
   }
   if (!header && !o->braces->isEmpty()) {
-    finish(o->braces);
+    finish(o->braces << "\n");
   } else {
     finish(';');
   }
@@ -331,8 +332,8 @@ void bi::bi_ostream::visit(const UnaryOperator* o) {
 
 void bi::bi_ostream::visit(const AssignmentOperator* o) {
   start("operator " << o->name << ' ' << o->single);
-  if (!header && !o->braces->isEmpty()) {
-    finish(o->braces);
+  if (!o->braces->isEmpty() && (!header || type->isGeneric())) {
+    finish(o->braces << "\n");
   } else {
     finish(';');
   }
@@ -340,14 +341,15 @@ void bi::bi_ostream::visit(const AssignmentOperator* o) {
 
 void bi::bi_ostream::visit(const ConversionOperator* o) {
   start("operator -> " << o->returnType);
-  if (!header && !o->braces->isEmpty()) {
-    finish(o->braces);
+  if (!o->braces->isEmpty() && (!header || type->isGeneric())) {
+    finish(o->braces << "\n");
   } else {
     finish(';');
   }
 }
 
 void bi::bi_ostream::visit(const Class* o) {
+  type = o;
   start("class " << o->name);
   if (o->isGeneric()) {
     middle('<' << o->typeParams << '>');
@@ -367,10 +369,11 @@ void bi::bi_ostream::visit(const Class* o) {
     }
   }
   if (!o->braces->isEmpty()) {
-    finish(o->braces);
+    finish(o->braces << "\n");
   } else {
     finish(';');
   }
+  type = nullptr;
 }
 
 void bi::bi_ostream::visit(const Basic* o) {

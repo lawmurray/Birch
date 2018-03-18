@@ -26,6 +26,12 @@ bi::Statement* bi::ResolverSuper::modify(Basic* o) {
   }
   return o;
 }
+
+bi::Statement* bi::ResolverSuper::modify(Explicit* o) {
+  o->base = o->base->accept(this);
+  return o;
+}
+
 bi::Statement* bi::ResolverSuper::modify(Class* o) {
   if (o->state < RESOLVED_SUPER) {
     scopes.push_back(o->scope);

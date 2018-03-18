@@ -122,6 +122,7 @@ COMMON_SOURCES = \
   bi/statement/ConversionOperator.cpp \
   bi/statement/DoWhile.cpp \
   bi/statement/EmptyStatement.cpp \
+  bi/statement/Explicit.cpp \
   bi/statement/ExpressionStatement.cpp \
   bi/statement/Fiber.cpp \
   bi/statement/File.cpp \
@@ -293,6 +294,7 @@ noinst_HEADERS = \
   bi/statement/ConversionOperator.hpp \
   bi/statement/DoWhile.hpp \
   bi/statement/EmptyStatement.hpp \
+  bi/statement/Explicit.hpp \
   bi/statement/ExpressionStatement.hpp \
   bi/statement/Fiber.hpp \
   bi/statement/File.hpp \
