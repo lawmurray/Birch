@@ -20,6 +20,7 @@ class MarkovModel<StateType <= State, ParameterType <= Model> < Model {
 
   fiber simulate() -> Real! {
     f:Real!;
+    x:StateType;
     w:Real <- 0.0;
     
     /* parameter model */
@@ -29,14 +30,16 @@ class MarkovModel<StateType <= State, ParameterType <= Model> < Model {
     }
 
     /* initial state */
-    x:StateType;
+    if (!future.empty()) {
+      x <- future.front();
+      future.popFront();
+    }
     f <- x.simulate(θ);
     while (f?) {
       w <- w + f!;
     }
     history.pushBack(x);
     yield w;
-    w <- 0.0;
     
     /* transition */
     while (true) {
@@ -58,7 +61,6 @@ class MarkovModel<StateType <= State, ParameterType <= Model> < Model {
       }
       history.pushBack(x);      
       yield w;
-      w <- 0.0;
     }
   }
   
@@ -72,7 +74,7 @@ class MarkovModel<StateType <= State, ParameterType <= Model> < Model {
     if (!state?) {
       /* try root instead */
       state <- reader;
-    }    
+    }
     f:Reader! <- state!.getArray();
     while (f?) {
       x:StateType;

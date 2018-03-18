@@ -58,8 +58,10 @@ class ParticleFilter {
     initialize(T, N, trigger);
     start(model, inputReader);
     for (t:Integer in 1..T) {
+      stderr.print(t + " ");
       step(t);
     }
+    stderr.print("\n");
     finish();
     output(outputWriter);
     diagnose(diagnosticWriter);

@@ -15,7 +15,7 @@ class AliveParticleFilter < ParticleFilter {
     propagations <- vector(0, T);
   }
 
-  function step(t:Integer) {
+  function step(t:Integer) {  
     /* diagnostics */
     e[t] <- ess(w);
     r[t] <- true;

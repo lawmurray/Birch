@@ -27,6 +27,13 @@ class TranslateExpression<Value> {
   }
   
   /**
+   * Is the value of the random variable missing?
+   */
+  function isMissing() -> Boolean {
+    return x.isMissing();
+  }
+  
+  /**
    * Initialize.
    */
   function initialize(x:Random<Value>, c:Value) {
@@ -46,13 +53,19 @@ operator (x:Random<Integer> + c:Integer) -> TranslateExpression<Integer> {
 }
 
 operator (x:Random<Integer> + c:Random<Integer>) -> TranslateExpression<Integer> {
-  /* favour keeping the random variable on the left */
-  return x + c.value();
+  if (x.isMissing()) {
+    return x + c.value();
+  } else {
+    return x.value() + c;
+  }
 }
 
 operator (x:Random<Integer> + c:TranslateExpression<Integer>) -> TranslateExpression<Integer> {
-  /* favour keeping the random variable on the left */
-  return x + c.value();
+  if (x.isMissing()) {
+    return x + c.value();
+  } else {
+    return x.value() + c;
+  }
 }
 
 operator (x:TranslateExpression<Integer> + c:Integer) -> TranslateExpression<Integer> {
@@ -62,13 +75,19 @@ operator (x:TranslateExpression<Integer> + c:Integer) -> TranslateExpression<Int
 }
 
 operator (x:TranslateExpression<Integer> + c:Random<Integer>) -> TranslateExpression<Integer> {
-  /* favour keeping the random variable on the left */
-  return x + c.value();
+  if (x.isMissing()) {
+    return x + c.value();
+  } else {
+    return x.value() + c;
+  }
 }
 
 operator (x:TranslateExpression<Integer> + c:TranslateExpression<Integer>) -> TranslateExpression<Integer> {
-  /* favour keeping the random variable on the left */
-  return x + c.value();
+  if (x.isMissing()) {
+    return x + c.value();
+  } else {
+    return x.value() + c;
+  }
 }
 
 operator (c:Integer + x:Random<Integer>) -> TranslateExpression<Integer> {
@@ -85,28 +104,8 @@ operator (x:Random<Integer> - c:Integer) -> TranslateExpression<Integer> {
   return y;
 }
 
-operator (x:Random<Integer> - c:Random<Integer>) -> TranslateExpression<Integer> {
-  /* favour keeping the random variable on the left */
-  return x - c.value();
-}
-
-operator (x:Random<Integer> - c:TranslateExpression<Integer>) -> TranslateExpression<Integer> {
-  /* favour keeping the random variable on the left */
-  return x - c.value();
-}
-
 operator (x:TranslateExpression<Integer> - c:Integer) -> TranslateExpression<Integer> {
   y:TranslateExpression<Integer>;
   y.initialize(x.x, x.c - c);
   return y;
-}
-
-operator (x:TranslateExpression<Integer> - c:Random<Integer>) -> TranslateExpression<Integer> {
-  /* favour keeping the random variable on the left */
-  return x - c.value();
-}
-
-operator (x:TranslateExpression<Integer> - c:TranslateExpression<Integer>) -> TranslateExpression<Integer> {
-  /* favour keeping the random variable on the left */
-  return x - c.value();
 }

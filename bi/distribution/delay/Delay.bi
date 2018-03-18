@@ -115,6 +115,12 @@ class Delay {
     } else {
       graft();
       state <- REALIZED;
+      if (parent?) {
+        parent!.removeChild();
+        // ^ doing this now makes the parent a terminal node, so that within
+        //   doRealize(), realization of the parent can be forced also for
+        //   deterministic relationships (e.g. see Delta class)
+      }
       doRealize();
       if (parent?) {
         if (!(parent!.isRealized()) && w > -inf) {
@@ -122,7 +128,6 @@ class Delay {
           //   within the support
           doCondition();
         }
-        parent!.removeChild();
         removeParent();
       }
     }
