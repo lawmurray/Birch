@@ -77,10 +77,14 @@ class ParticleFilter {
     for (m:Integer in 1..M) {
       start();
       for (t:Integer in 1..T) {
-        stderr.print(t + " ");
+        if (T > 1) {
+          stderr.print(t + " ");
+        }
         step(t);
       }
-      stderr.print("\n");
+      if (T > 1) {
+        stderr.print("\n");
+      }
       finish();
       
       /* output results and diagnostics */
