@@ -21,15 +21,10 @@
 .dirstamp
 /.autotools
 /bin/
-/birchc
 /birch
 /include/
 /lib/
 /config.guess
 /config.sub
-/libbirch.la
 /libtool
 /ltmain.sh
-/json2ubj
-/libubjpp.la
-/ubj2json

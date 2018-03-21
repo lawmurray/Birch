@@ -1,5 +1,2 @@
 /parser.output
 /parser.tab.cpp
-/lexer.cpp
-/parser.cpp
-/parser.hpp
