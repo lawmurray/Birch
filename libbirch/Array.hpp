@@ -103,8 +103,7 @@ public:
    *
    * @param o Sequence.
    */
-  template<class U>
-  Array(const std::initializer_list<U>& o) :
+  Array(const typename sequence_type<T,F::count()>::type& o) :
       frame(sequence_frame(o)),
       isView(false) {
     allocate();
@@ -160,7 +159,7 @@ public:
   }
 
   /**
-   * Move assignment. The frames of the two arrays must conform.
+   * Move assignment.
    */
   Array<T,F>& operator=(Array<T,F> && o) {
     if (isView) {
@@ -186,13 +185,23 @@ public:
   }
 
   /**
-   * Sequence assignment.
-   *
-   * @param o Sequence.
+   * Generic sequence assignment. For a view the frames of array must
+   * conform to that of the sequence, otherwise a resize is permitted.
    */
-  template<class U>
-  Array<T,F>& operator=(const std::initializer_list<U>& o) {
-    assign(o);
+  Array<T,F>& operator=(const typename sequence_type<T,F::count()>::type& o) {
+    if (isView) {
+      assign(o);
+    } else {
+      auto frame1 = sequence_frame(o);
+      if (!frame.conforms(frame1)) {
+        deallocate();
+        frame = frame1;
+        allocate();
+        copy(o);
+      } else {
+        assign(o);
+      }
+    }
     return *this;
   }
 
@@ -502,13 +511,8 @@ private:
     std::uninitialized_copy(o.begin(), o.end(), begin());
   }
 
-  template<class U>
-  void copy(const std::initializer_list<U>& o) {
-    assert(F::count() == sequence_depth<std::initializer_list<U>>::value);
-
-    int64_t sizes[F::count()];
-    frame.lengths(sizes);
-    assert(sequence_conforms(sizes, o));
+  void copy(const typename sequence_type<T,F::count()>::type& o) {
+    assert(frame.conforms(sequence_frame(o)));
     auto iter = begin();
     sequence_copy(iter, o);
   }
@@ -546,13 +550,8 @@ private:
     //}
   }
 
-  template<class U>
-  void assign(const std::initializer_list<U>& o) {
-    assert(F::count() == sequence_depth<std::initializer_list<U>>::value);
-
-    int64_t sizes[F::count()];
-    frame.lengths(sizes);
-    assert(sequence_conforms(sizes, o));
+  void assign(const typename sequence_type<T,F::count()>::type& o) {
+    assert(frame.conforms(sequence_frame(o)));
     auto iter = begin();
     sequence_assign(iter, o);
   }

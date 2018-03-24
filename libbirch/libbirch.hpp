@@ -207,22 +207,6 @@ auto make_array(const Frame& frame, Args ... args) {
 }
 
 /**
- * Make a sequence.
- *
- * @ingroup libbirch
- *
- * @tparam Type Value type.
- *
- * @param values Values.
- *
- * @return The sequence.
- */
-template<class Type>
-auto make_sequence(const std::initializer_list<Type> values) {
-  return values;
-}
-
-/**
  * Make a pointer to a new object.
  *
  * @ingroup libbirch

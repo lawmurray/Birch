@@ -7,6 +7,25 @@
 
 namespace bi {
 /**
+ * Sequence type.
+ *
+ * @param Type Element type.
+ * @param depth Number of dimensions.
+ */
+template<class Type, int depth>
+struct sequence_type {
+  using type = std::initializer_list<typename sequence_type<Type,depth - 1>::type>;
+};
+
+/**
+ * Sequence type base case.
+ */
+template<class Type>
+struct sequence_type<Type,1> {
+  using type = std::initializer_list<Type>;
+};
+
+/**
  * Depth of a sequence.
  */
 template<class Type>
@@ -26,7 +45,8 @@ void sequence_lengths(const Type& o, int64_t* lengths) {
   //
 }
 template<class Type>
-void sequence_lengths(const std::initializer_list<Type>& o, int64_t* lengths) {
+void sequence_lengths(const std::initializer_list<Type>& o,
+    int64_t* lengths) {
   *lengths = o.size();
   sequence_lengths(*o.begin(), lengths + 1);
 }
@@ -44,31 +64,11 @@ auto sequence_frame(const std::initializer_list<Type>& o) {
 }
 
 /**
- * Does the shape of a sequence conform with that of the frame of an array?
- */
-template<class Type>
-bool sequence_conforms(const int64_t* sizes, const Type& o) {
-  return true;
-}
-template<class Type>
-bool sequence_conforms(const int64_t* sizes, const std::initializer_list<Type>& o) {
-  if (*sizes != o.size()) {
-    return false;
-  }
-  for (auto o1: o) {
-    if (!sequence_conforms(sizes + 1, o1)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-/**
  * Copy from a sequence into an array.
  */
 template<class Iterator, class Type>
 void sequence_copy(Iterator& to, const Type& from) {
-  new (&*to) Type(from);
+  new (to.get()) typename Iterator::value_type(from);
   ++to;
 }
 template<class Iterator, class Type>

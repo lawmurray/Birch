@@ -31,7 +31,7 @@ struct EmptyFrame {
    * is reached, it means the array is a vector, and @p length should be one
    * (and is checked for this).
    */
-  EmptyFrame(const Eigen::Index cols) {
+  explicit EmptyFrame(const Eigen::Index cols) {
     assert(cols == 1);
   }
 
@@ -180,7 +180,7 @@ struct NonemptyFrame {
    * Special constructor for Eigen integration where all matrices and vectors
    * are treated as matrices, with row and column counts.
    */
-  NonemptyFrame(const Eigen::Index rows, const Eigen::Index cols = 1) :
+  explicit NonemptyFrame(const Eigen::Index rows, const Eigen::Index cols = 1) :
       head(rows, cols),
       tail(cols) {
     //
@@ -190,7 +190,7 @@ struct NonemptyFrame {
    * Generic constructor.
    */
   template<class Head1, class Tail1>
-  NonemptyFrame(const Head1 head, const Tail1 tail) :
+  explicit NonemptyFrame(const Head1 head, const Tail1 tail) :
       head(head),
       tail(tail) {
     //
