@@ -60,7 +60,7 @@ void bi::CppBaseGenerator::visit(const Sequence* o) {
   if (o->single->isEmpty()) {
     middle("bi::nil");
   } else {
-    middle("bi::make_sequence({" << o->single << "})");
+    middle("{ " << o->single << " }");
   }
 }
 
@@ -727,7 +727,7 @@ void bi::CppBaseGenerator::genArg(const Expression* arg, const Type* type) {
    * unambiguous, whereas C++ does not */
   bool cast = !type->isClass() && !type->equals(*arg->type);
   if (cast) {
-    middle("static_cast<" << type->canonical() << ">(");
+    middle(type->canonical() << '(');
   }
   middle(arg);
   if (cast) {
