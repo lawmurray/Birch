@@ -261,10 +261,10 @@ public:
    */
   template<class DerivedType>
   struct is_eigen_compatible {
-    static const bool value = (F::count() == 1
-        && DerivedType::ColsAtCompileTime == 1)
-        || (F::count() == 2
-            && DerivedType::ColsAtCompileTime == Eigen::Dynamic);
+    static const bool value =
+        std::is_same<T,typename DerivedType::value_type>::value &&
+        ((F::count() == 1 && DerivedType::ColsAtCompileTime == 1) ||
+        (F::count() == 2 && DerivedType::ColsAtCompileTime == Eigen::Dynamic));
   };
 
   /**
@@ -302,8 +302,8 @@ public:
    * Memory is allocated for the array, and is freed on destruction. After
    * allocation, the contents of the existing array are copied in.
    */
-  template<class DerivedType, typename = std::enable_if_t<
-      is_eigen_compatible<DerivedType>::value>>Array(const Eigen::MatrixBase<DerivedType>& o, const F& frame) :
+  template<class DerivedType, typename = std::enable_if_t<is_eigen_compatible<DerivedType>::value>>
+  Array(const Eigen::MatrixBase<DerivedType>& o, const F& frame) :
       frame(frame),
       isView(false) {
     allocate();
