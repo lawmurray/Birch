@@ -98,13 +98,10 @@ bi::Statement* bi::ResolverHeader::modify(Function* o) {
 bi::Statement* bi::ResolverHeader::modify(Fiber* o) {
   scopes.push_back(o->scope);
   o->params = o->params->accept(this);
-  o->returnType = o->returnType->accept(this);
+  o->returnType = new FiberType(o->returnType->accept(this));
   o->type = new FunctionType(o->params->type, o->returnType, o->loc);
   scopes.pop_back();
   scopes.back()->add(o);
-  if (!o->returnType->isFiber()) {
-    throw FiberTypeException(o);
-  }
   return o;
 }
 
@@ -163,13 +160,10 @@ bi::Statement* bi::ResolverHeader::modify(MemberFunction* o) {
 bi::Statement* bi::ResolverHeader::modify(MemberFiber* o) {
   scopes.push_back(o->scope);
   o->params = o->params->accept(this);
-  o->returnType = o->returnType->accept(this);
+  o->returnType = new FiberType(o->returnType->accept(this));
   o->type = new FunctionType(o->params->type, o->returnType, o->loc);
   scopes.pop_back();
   scopes.back()->add(o);
-  if (!o->returnType->isFiber()) {
-    throw FiberTypeException(o);
-  }
   return o;
 }
 

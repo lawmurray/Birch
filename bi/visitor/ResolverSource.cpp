@@ -349,11 +349,7 @@ bi::Statement* bi::ResolverSource::modify(Function* o) {
 
 bi::Statement* bi::ResolverSource::modify(Fiber* o) {
   scopes.push_back(o->scope);
-  if (!o->returnType->isFiber()) {
-    throw FiberTypeException(o);
-  } else {
-    yieldTypes.push_back(dynamic_cast<FiberType*>(o->returnType)->single);
-  }
+  yieldTypes.push_back(o->returnType->unwrap());
   o->braces = o->braces->accept(this);
   yieldTypes.pop_back();
   scopes.pop_back();
@@ -408,11 +404,7 @@ bi::Statement* bi::ResolverSource::modify(MemberFunction* o) {
 
 bi::Statement* bi::ResolverSource::modify(MemberFiber* o) {
   scopes.push_back(o->scope);
-  if (!o->returnType->isFiber()) {
-    throw FiberTypeException(o);
-  } else {
-    yieldTypes.push_back(dynamic_cast<FiberType*>(o->returnType)->single);
-  }
+  yieldTypes.push_back(o->returnType->unwrap());
   o->braces = o->braces->accept(this);
   yieldTypes.pop_back();
   scopes.pop_back();
