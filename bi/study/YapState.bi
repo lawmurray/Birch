@@ -5,7 +5,7 @@ class YapState < VBDState {
   z:Integer;   // actual number of new cases since last observation
   y:Integer?;  // observed number of cases since last observation
 
-  fiber simulate(θ:YapParameter) -> Real! {
+  fiber initial(θ:YapParameter) -> Real {
     h.n <- 7370;
     h.i <- 1 + simulate_poisson(5.0);
     h.e <- simulate_poisson(5.0);
@@ -35,8 +35,8 @@ class YapState < VBDState {
     }
   }
   
-  fiber simulate(x:YapState, θ:YapParameter) -> Real! {
-    super.simulate(x, θ);
+  fiber transition(x:YapState, θ:YapParameter) -> Real {
+    super.transition(x, θ);
     z <- x.z + h.Δi;
     if (y?) {
       y! ~> Binomial(z, θ.ρ);

@@ -4,7 +4,7 @@
 class YapParameter < VBDParameter {
   ρ:Random<Real>;  // probability of an actual case being observed
   
-  fiber simulate() -> Real! {
+  fiber parameter() -> Real {
     h.ν <- 0.0;
     h.μ <- 1.0;
     h.λ ~ Beta(1.0, 1.0);

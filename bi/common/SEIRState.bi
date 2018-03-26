@@ -19,7 +19,7 @@ class SEIRState < State {
    *
    * - θ: Parameters.
    */
-  fiber simulate(θ:SEIRParameter) -> Real! {
+  fiber initial(θ:SEIRParameter) -> Real {
     Δs <- 0;
     Δe <- 0;
     Δi <- 1;
@@ -39,8 +39,8 @@ class SEIRState < State {
    * - x: Previous state.
    * - θ: Parameters.
    */
-  fiber simulate(x:SEIRState, θ:SEIRParameter) -> Real! {
-    simulate(x, θ, (x.s*x.i + x.n - 1)/x.n, x.e, x.i);
+  fiber transition(x:SEIRState, θ:SEIRParameter) -> Real {
+    transition(x, θ, (x.s*x.i + x.n - 1)/x.n, x.e, x.i);
   }
   
   /**
@@ -52,8 +52,8 @@ class SEIRState < State {
    * - ne: Number of trials in exposed population.
    * - ni: Number of trials in infected population.
    */
-  fiber simulate(x:SEIRState, θ:SEIRParameter, ns:Integer, ne:Integer,
-      ni:Integer) -> Real! {
+  fiber transition(x:SEIRState, θ:SEIRParameter, ns:Integer, ne:Integer,
+      ni:Integer) -> Real {
     /* transfers */
     Δe <~ Binomial(ns, θ.λ);
     Δi <~ Binomial(ne, θ.δ);
