@@ -105,6 +105,7 @@
       "bi/method/ParticleFilter.bi",
       "bi/model/MarkovModel.bi",
       "bi/model/Model.bi",
+      "bi/model/Parameter.bi",
       "bi/model/State.bi",
       "bi/array.bi",
       "bi/filesystem.bi",

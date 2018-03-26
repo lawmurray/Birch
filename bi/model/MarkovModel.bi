@@ -2,7 +2,7 @@
  * Markov model, structured as a sequence of states, where each state is
  * conditionally independent of the state history, given the previous state.
  */
-class MarkovModel<StateType <= State, ParameterType <= Model> < Model {
+class MarkovModel<StateType <= State, ParameterType <= Parameter> < Model {
   /**
    * Parameter.
    */
@@ -18,13 +18,13 @@ class MarkovModel<StateType <= State, ParameterType <= Model> < Model {
    */
   future:List<StateType>;
 
-  fiber simulate() -> Real! {
+  fiber simulate() -> Real {
     f:Real!;
     x:StateType;
     w:Real <- 0.0;
     
     /* parameter model */
-    f <- θ.simulate();
+    f <- θ.parameter();
     while (f?) {
       w <- w + f!;
     }
@@ -34,7 +34,7 @@ class MarkovModel<StateType <= State, ParameterType <= Model> < Model {
       x <- future.front();
       future.popFront();
     }
-    f <- x.simulate(θ);
+    f <- x.initial(θ);
     while (f?) {
       w <- w + f!;
     }
@@ -55,7 +55,7 @@ class MarkovModel<StateType <= State, ParameterType <= Model> < Model {
 
       /* propagate and weight */
       w <- 0.0;
-      f <- x.simulate(history.back(), θ);
+      f <- x.transition(history.back(), θ);
       while (f?) {
         w <- w + f!;
       }

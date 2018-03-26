@@ -125,7 +125,7 @@ class RaggedArray<Type> {
    *
    * Return: a fiber object that yields each row in forward order.
    */
-  fiber walk() -> Type[_]! {
+  fiber walk() -> Type[_] {
     for (i:Integer in 1..nrows) {
       yield get(i);
     }

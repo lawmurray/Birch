@@ -10,7 +10,7 @@ class MemoryReader < Reader {
     return getObject([]);
   }
 
-  fiber getArray() -> Reader! {
+  fiber getArray() -> Reader {
     /* fibers do not preserve variables declared in raw C++ code between
      * yields, and the switch and jump mechanism for resumption cannot jump
      * over variable initialization; so the value variable below is
@@ -84,7 +84,7 @@ class MemoryReader < Reader {
     return getObject([name]);
   }
 
-  fiber getArray(name:String) -> Reader! {
+  fiber getArray(name:String) -> Reader {
     length:Integer;
     result:MemoryReader;
     cpp{{
@@ -166,7 +166,7 @@ class MemoryReader < Reader {
     }
   }
 
-  fiber getArray(path:[String]) -> Reader! {
+  fiber getArray(path:[String]) -> Reader {
     length:Integer;
     result:MemoryReader;
     cpp{{

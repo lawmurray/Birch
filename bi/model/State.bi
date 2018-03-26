@@ -3,27 +3,31 @@
  */
 class State {
   /**
-   * Simulate initial state.
+   * Initial model.
    *
    * - θ: Parameter.
    */
-  fiber simulate(θ:Model) -> Real!;
+  fiber initial(θ:Parameter) -> Real;
 
   /**
-   * Simulate transition from previous state.
+   * Transition model.
    *
    * - x: Previous state.
    * - θ: Parameter.
    */
-  fiber simulate(x:State, θ:Model) -> Real!;
+  fiber transition(x:State, θ:Parameter) -> Real;
   
   /**
-   * Input to the state.
+   * Input.
    */
-  function input(reader:Reader);
+  function input(reader:Reader) {
+    //
+  }
   
   /**
-   * Output from the state.
+   * Output.
    */
-  function output(writer:Writer);
+  function output(writer:Writer) {
+    //
+  }
 }

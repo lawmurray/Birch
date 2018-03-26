@@ -119,7 +119,7 @@ class Vector<Type> {
    *
    * Return: a fiber object that yields each element in forward order.
    */
-  fiber walk() -> Type! {
+  fiber walk() -> Type {
     for (i:Integer in 1..nelements) {
       yield values[i];
     }

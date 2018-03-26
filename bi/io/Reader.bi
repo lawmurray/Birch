@@ -14,7 +14,7 @@ class Reader {
    * turn, or which never yields if this is an empty array or not an array
    * at all.
    */
-  fiber getArray() -> Reader!;
+  fiber getArray() -> Reader;
   
   /**
    * Get the length of an array.
@@ -118,7 +118,7 @@ class Reader {
    * turn, or which never yields if this is an empty array or not an array
    * at all.
    */
-  fiber getArray(name:String) -> Reader!;
+  fiber getArray(name:String) -> Reader;
 
   /**
    * Get the length of an array.
@@ -249,7 +249,7 @@ class Reader {
    * turn, or which never yields if this is an empty array or not an array
    * at all.
    */
-  fiber getArray(path:[String]) -> Reader!;
+  fiber getArray(path:[String]) -> Reader;
 
   /**
    * Get the length of an array.

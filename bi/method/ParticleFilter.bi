@@ -220,7 +220,7 @@ class ParticleFilter {
 /*
  * Particle.
  */
-fiber particle(model:String, reader:Reader?) -> Model! {
+fiber particle(model:String, reader:Reader?) -> Model {
   /* create model */
   x:Model? <- Model?(make(model));
   if (!x?) {

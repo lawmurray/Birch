@@ -5,7 +5,7 @@ class Model {
   /**
    * Simulate.
    */
-  fiber simulate() -> Real! {
+  fiber simulate() -> Real {
     //
   }
   

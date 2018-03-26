@@ -172,7 +172,7 @@ class List<Type> {
    *
    * Return: a fiber object that yields each element in forward order.
    */
-  fiber walk() -> Type! {
+  fiber walk() -> Type {
     node:ListNode<Type>? <- head;
     while (node?) {
       yield node!.x;
