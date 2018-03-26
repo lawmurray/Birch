@@ -78,7 +78,7 @@ protected:
   /**
    * Instantiate a class type with generic arguments.
    */
-  void instantiate(ClassType* o);
+  virtual void instantiate(ClassType* o);
 
   /**
    * Check that an expression is of boolean type.

@@ -44,5 +44,7 @@ public:
   virtual Statement* modify(MemberFiber* o);
   virtual Statement* modify(ConversionOperator* o);
   virtual Statement* modify(AssignmentOperator* o);
+
+  virtual void instantiate(ClassType* o);
 };
 }

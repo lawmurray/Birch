@@ -81,5 +81,10 @@ public:
    * Generic type arguments.
    */
   Type* typeArgs;
+
+  /**
+   * The original target after switching to an instantiation.
+   */
+  Class* original;
 };
 }

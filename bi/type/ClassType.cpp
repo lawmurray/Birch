@@ -10,7 +10,8 @@ bi::ClassType::ClassType(Name* name, Type* typeArgs, Location* loc,
     Type(loc),
     Named(name),
     Reference<Class>(target),
-    typeArgs(typeArgs) {
+    typeArgs(typeArgs),
+    original(nullptr) {
   //
 }
 
@@ -18,7 +19,8 @@ bi::ClassType::ClassType(Class* target, Location* loc) :
     Type(loc),
     Named(target->name),
     Reference<Class>(target),
-    typeArgs(new EmptyType(loc)) {
+    typeArgs(new EmptyType(loc)),
+    original(nullptr) {
   //
 }
 

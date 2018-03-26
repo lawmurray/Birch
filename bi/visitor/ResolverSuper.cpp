@@ -3,6 +3,8 @@
  */
 #include "bi/visitor/ResolverSuper.hpp"
 
+#include "bi/visitor/Instantiater.hpp"
+
 bi::ResolverSuper::ResolverSuper(Scope* rootScope) :
     Resolver(rootScope, false) {
   //
@@ -96,4 +98,28 @@ bi::Statement* bi::ResolverSuper::modify(ConversionOperator* o) {
   o->returnType = o->returnType->accept(this);
   classes.back()->addConversion(o->returnType);
   return o;
+}
+
+void bi::ResolverSuper::instantiate(ClassType* o) {
+  if (!o->typeArgs->isEmpty() || o->target->isGeneric()) {
+    // the next check differs from Resolver::instantiate(), it is a simple
+    // check on the number of arguments, but not their type, as super
+    // type relationships are still being resolved
+    if (o->typeArgs->width() == o->target->typeParams->width()) {
+      Class* instantiation = o->target->getInstantiation(o->typeArgs);
+      if (!instantiation) {
+        Instantiater instantiater(o->typeArgs);
+        instantiation =
+            dynamic_cast<Class*>(o->target->accept(&instantiater));
+        assert(instantiation);
+        instantiation->isInstantiation = true;
+        o->target->addInstantiation(instantiation);
+        instantiation->accept(this);
+      }
+      o->original = o->target;
+      o->target = instantiation;
+    } else {
+      throw GenericException(o, o->target);
+    }
+  }
 }

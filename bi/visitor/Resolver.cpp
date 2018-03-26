@@ -148,7 +148,7 @@ bi::Type* bi::Resolver::lookup(UnknownType* ref) {
 
 void bi::Resolver::instantiate(ClassType* o) {
   if (!o->typeArgs->isEmpty() || o->target->isGeneric()) {
-    if (o->typeArgs->width() == o->target->typeParams->width()) {
+    if (o->typeArgs->definitely(*o->target->typeParams->type)) {
       Class* instantiation = o->target->getInstantiation(o->typeArgs);
       if (!instantiation) {
         Instantiater instantiater(o->typeArgs);
@@ -159,6 +159,7 @@ void bi::Resolver::instantiate(ClassType* o) {
         o->target->addInstantiation(instantiation);
         instantiation->accept(this);
       }
+      o->original = o->target;
       o->target = instantiation;
     } else {
       throw GenericException(o, o->target);

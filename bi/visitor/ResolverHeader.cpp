@@ -41,6 +41,14 @@ bi::Statement* bi::ResolverHeader::modify(Class* o) {
     o->accept(&resolver);
   }
   if (o->state < RESOLVED_HEADER) {
+      /* actual type check skipped for inheritance in ResolverSuper, so do
+       * that now */
+    auto base = dynamic_cast<ClassType*>(o->base);
+    if (base && base->original &&
+        !base->typeArgs->definitely(*base->original->typeParams->type)) {
+      throw GenericException(base, base->original);
+    }
+
     if (!o->base->isEmpty()) {
       o->scope->inherit(o->base->getClass()->scope);
     }
@@ -48,7 +56,9 @@ bi::Statement* bi::ResolverHeader::modify(Class* o) {
     scopes.push_back(o->scope);
     scopes.push_back(o->initScope);
     if (o->isAlias()) {
-      o->params = o->base->canonical()->getClass()->params->accept(&cloner)->accept(this);
+      o->params =
+          o->base->canonical()->getClass()->params->accept(&cloner)->accept(
+              this);
     } else {
       o->params = o->params->accept(this);
     }
