@@ -1,7 +1,15 @@
 /**
+ * Linear-nonlinear state-space model. When applied to this model, SMC with
+ * delayed sampling yields a Rao--Blackwellized particle filter with
+ * locally-optimal proposal.
+ */
+class LinearNonlinearSSM = MarkovModel<LinearNonlinearSSMState,
+    LinearNonlinearSSMParameter>;
+
+/**
  * Linear-nonlinear state-space model parameter.
  */
-class LinearNonlinearSSMParameter < Model {
+class LinearNonlinearSSMParameter < Parameter {
   /**
    * Linear-linear state transition matrix.
    */
@@ -62,14 +70,14 @@ class LinearNonlinearSSMState < State {
    */
   y_l:Random<Real[_]>;
 
-  fiber simulate(θ:LinearNonlinearSSMParameter) -> Real! {
+  fiber initial(θ:LinearNonlinearSSMParameter) -> Real {
     x_n ~ Gaussian(vector(0.0, 1), identity(1));
     x_l ~ Gaussian(vector(0.0, 3), identity(3));
     y_n ~ Gaussian([0.1*copysign(pow(scalar(x_n), 2.0), scalar(x_n))], θ.Σ_y_n);
     y_l ~ Gaussian(θ.C*x_l, θ.Σ_y_l);
   }
 
-  fiber simulate(χ:LinearNonlinearSSMState, θ:LinearNonlinearSSMParameter) -> Real! {    
+  fiber transition(χ:LinearNonlinearSSMState, θ:LinearNonlinearSSMParameter) -> Real {    
     x_n ~ Gaussian([atan(scalar(χ.x_n))] + θ.B*χ.x_l, θ.Σ_x_n);
     x_l ~ Gaussian(θ.A*χ.x_l, θ.Σ_x_l);
     y_n ~ Gaussian(vector(0.1*copysign(pow(scalar(x_n), 2.0), scalar(x_n)), 1), θ.Σ_y_n);
@@ -87,11 +95,3 @@ class LinearNonlinearSSMState < State {
     writer.setRealVector("x_n", x_n);
   }
 }
-
-/**
- * Linear-nonlinear state-space model. When applied to this model, SMC with
- * delayed sampling yields a Rao--Blackwellized particle filter with
- * locally-optimal proposal.
- */
-class LinearNonlinearSSM = MarkovModel<LinearNonlinearSSMState,
-    LinearNonlinearSSMParameter>;

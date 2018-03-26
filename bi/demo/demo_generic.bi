@@ -12,7 +12,7 @@ class DemoGeneric<T <= Gaussian> {
     return a;
   }
   
-  fiber run() -> T! {
+  fiber run() -> T {
     yield a;
   }
 }

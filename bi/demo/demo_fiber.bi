@@ -5,7 +5,7 @@ program demo_fiber(N:Integer <- 10) {
   }
 }
 
-fiber f(from:Integer, to:Integer) -> Real! {
+fiber f(from:Integer, to:Integer) -> Real {
   for (n:Integer in from..to) {
     yield simulate_gaussian(0.0, 1.0);
   }
