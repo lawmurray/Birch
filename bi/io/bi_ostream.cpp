@@ -451,11 +451,9 @@ void bi::bi_ostream::visit(const Yield* o) {
 }
 
 void bi::bi_ostream::visit(const Raw* o) {
-  if (!header) {
-    line(o->name << " {{");
-    line(o->raw);
-    line("}}");
-  }
+  line(o->name << " {{");
+  line(o->raw);
+  line("}}");
 }
 
 void bi::bi_ostream::visit(const StatementList* o) {
