@@ -1,0 +1,15 @@
+digraph {
+  graph [layout=dot]
+  node [shape=circle]
+
+  θ [label=<<i>θ</i>>]
+  x0 [label=<<i>x</i><sub>0</sub>>]
+  x1 [label=<<i>x</i><sub>1</sub>>]
+  x2 [label=<<i>x</i><sub>2</sub>>]
+  x3 [label=<<i>x</i><sub>3</sub>>]
+
+  θ -> x0
+  θ -> x1
+  θ -> x2
+  θ -> x3
+}

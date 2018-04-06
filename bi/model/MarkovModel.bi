@@ -1,6 +1,16 @@
 /**
  * Markov model, structured as a sequence of states, where each state is
  * conditionally independent of the state history, given the previous state.
+ *
+ * The joint distribution is:
+ *
+ * $$p(\mathrm{d}x_{0:T}, \mathrm{d}\theta) = p(\mathrm{d}\theta)
+ *   p(\mathrm{d}x_0 \mid \theta) \prod_{t=1}^T p(\mathrm{d}x_t \mid x_{t-1},
+ *   \theta)$$
+ *
+ * <center>
+ * ![Graphical model depiction of MarkovModel.](/figs/MarkovModel.svg)
+ * </center>
  */
 class MarkovModel<StateType <= State, ParameterType <= Parameter> < Model {
   /**

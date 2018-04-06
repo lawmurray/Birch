@@ -108,6 +108,8 @@
       "bi/model/MarkovModel.bi",
       "bi/model/Model.bi",
       "bi/model/Parameter.bi",
+      "bi/model/Spoke.bi",
+      "bi/model/SpokeModel.bi",
       "bi/model/State.bi",
       "bi/array.bi",
       "bi/filesystem.bi",
@@ -163,7 +165,12 @@
     "other": [
       "LICENSE",
       "META.json",
-      "README.md"
+      "README.md",
+      "make_parsers.sh",
+      "docs/figs/MarkovModel.dot",
+      "docs/figs/MarkovModel.svg",
+      "docs/figs/SpokeModel.dot",
+      "docs/figs/SpokeModel.svg"
     ]
   },
   "require": {
