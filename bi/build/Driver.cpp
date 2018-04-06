@@ -339,7 +339,8 @@ void bi::Driver::check() {
     auto path = remove_first(iter->path());
     auto name = path.filename().string();
     auto ext = path.extension().string();
-    if (path.string() == "build" || path.string() == "output") {
+    if (path.string() == "build" || path.string() == "output" ||
+        path.string() == "site") {
       iter.no_push();
     } else if (interesting.find(ext) != interesting.end()
         && exclude.find(name) == exclude.end()) {
