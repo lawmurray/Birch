@@ -132,6 +132,19 @@ class RaggedArray<Type> {
   }
 
   /**
+   * Iterate over the columns of a row.
+   *
+   * - i: Row.
+   *
+   * Return: a fiber object that yields each row in forward order.
+   */
+  fiber walk(i:Integer) -> Type {
+    for (j:Integer in 1..ncols[i]) {
+      yield get(i, j);
+    }
+  }
+
+  /**
    * Decrease the number of rows.
    *
    * - n: Number of rows.
