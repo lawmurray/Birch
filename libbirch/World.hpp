@@ -48,7 +48,7 @@ public:
   int depth() const;
 
   /**
-   * Map an object to the present context.
+   * Get an object, copying it if necessary.
    *
    * @param o The object.
    *
@@ -56,16 +56,25 @@ public:
    */
   const std::shared_ptr<Any>& get(const std::shared_ptr<Any>& o);
 
-private:
   /**
-   * Pull an object from a clone ancestor into this world, creating a copy
-   * of its latest incarnation in this world if it doesn't already exist.
+   * Get an object.
    *
    * @param o The object.
    *
    * @return The mapped object.
    */
-  const std::shared_ptr<Any>& pullAndCopy(const std::shared_ptr<Any>& o);
+  const std::shared_ptr<Any>& getNoCopy(const std::shared_ptr<Any>& o);
+
+private:
+  /**
+   * Pull and copy (if necessary) an object from a clone ancestor into this
+   * world.
+   *
+   * @param o The object.
+   *
+   * @return The mapped and copied object.
+   */
+  const std::shared_ptr<Any>& pull(const std::shared_ptr<Any>& o);
 
   /**
    * Pull an object from a clone ancestor into this world.
@@ -74,7 +83,7 @@ private:
    *
    * @return The mapped object.
    */
-  const std::shared_ptr<Any>& pull(const std::shared_ptr<Any>& o) const;
+  const std::shared_ptr<Any>& pullNoCopy(const std::shared_ptr<Any>& o) const;
 
   /**
    * Insert a mapping.
@@ -134,13 +143,11 @@ inline bi::World::World(const std::shared_ptr<World>& cloneSource) :
 }
 
 inline bool bi::World::hasCloneAncestor(World* world) const {
-  ///@todo Can use weak_from_this() under C++17
   return this == world
       || (cloneSource && cloneSource->hasCloneAncestor(world));
 }
 
 inline bool bi::World::hasLaunchAncestor(World* world) const {
-  ///@todo Can use weak_from_this() under C++17
   return this == world
       || (launchSource && launchSource->hasLaunchAncestor(world));
 }
@@ -160,10 +167,24 @@ inline const std::shared_ptr<bi::Any>& bi::World::get(
     assert(dst);
   }
   assert(dst->hasCloneAncestor(o->getWorld()));
-  return dst->pullAndCopy(o);
+  return dst->pull(o);
 }
 
-inline const std::shared_ptr<bi::Any>& bi::World::pullAndCopy(
+inline const std::shared_ptr<bi::Any>& bi::World::getNoCopy(
+    const std::shared_ptr<Any>& o) {
+  assert(o);
+  int d = depth() - o->getWorld()->depth();
+  assert(d >= 0);
+  auto dst = this;
+  for (int i = 0; i < d; ++i) {
+    dst = dst->launchSource;
+    assert(dst);
+  }
+  assert(dst->hasCloneAncestor(o->getWorld()));
+  return dst->pullNoCopy(o);
+}
+
+inline const std::shared_ptr<bi::Any>& bi::World::pull(
     const std::shared_ptr<Any>& o) {
   assert(o && hasCloneAncestor(o->getWorld()));
 
@@ -172,7 +193,7 @@ inline const std::shared_ptr<bi::Any>& bi::World::pullAndCopy(
     return o;
   } else {
     assert(cloneSource);
-    auto& result = cloneSource->pull(o);
+    auto& result = cloneSource->pullNoCopy(o);
     auto iter = map.find(result.get());
     if (iter != map.end()) {
       return iter->second;
@@ -184,7 +205,7 @@ inline const std::shared_ptr<bi::Any>& bi::World::pullAndCopy(
   }
 }
 
-inline const std::shared_ptr<bi::Any>& bi::World::pull(
+inline const std::shared_ptr<bi::Any>& bi::World::pullNoCopy(
     const std::shared_ptr<Any>& o) const {
   assert(o && hasCloneAncestor(o->getWorld()));
 
@@ -193,7 +214,7 @@ inline const std::shared_ptr<bi::Any>& bi::World::pull(
     return o;
   } else {
     assert(cloneSource);
-    auto& result = cloneSource->pull(o);
+    auto& result = cloneSource->pullNoCopy(o);
     auto iter = map.find(result.get());
     if (iter != map.end()) {
       return iter->second;

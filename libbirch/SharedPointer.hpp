@@ -103,6 +103,19 @@ public:
   }
 
   /**
+   * Get the raw pointer while mapping, but not copying, into the current
+   * world. The caller assumes responsibility for the validity of this; it is
+   * used as an optimization.
+   */
+  const T* getNoCopy() const {
+#ifndef NDEBUG
+    return dynamic_cast<const T*>(root_type::getNoCopy());
+#else
+    return static_cast<const T*>(root_type::getNoCopy());
+#endif
+  }
+
+  /**
    * Dereference.
    */
   T& operator*() const {
@@ -189,6 +202,14 @@ public:
      * update it through the copy-on-write mechanism for performance reasons*/
     auto self = const_cast<SharedPointer<Any>*>(this);
     self->object = self->world->get(object);
+    return object.get();
+  }
+
+  const Any* getNoCopy() const {
+    /* despite the pointer being accessed in a const context, we do want to
+     * update it through the copy-on-write mechanism for performance reasons*/
+    auto self = const_cast<SharedPointer<Any>*>(this);
+    self->object = self->world->getNoCopy(object);
     return object.get();
   }
 
