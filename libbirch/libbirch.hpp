@@ -30,10 +30,6 @@
 
 #include "libubjpp/libubjpp.hpp"
 
-#include "boost/filesystem.hpp"
-#include "boost/math/special_functions/beta.hpp"
-///@todo Replace with STL versions under C++17
-
 #include <random>
 #include <algorithm>
 #include <utility>

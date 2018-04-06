@@ -386,6 +386,22 @@ function observe_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) -> Real {
 }
 
 /**
+ * Observe a gamma-Poisson variate.
+ *
+ * - x: The variate.
+ * - k: Shape.
+ * - θ: Scale.
+ *
+ * Returns: the log probability mass.
+ */
+function observe_gamma_poisson(x:Integer, k:Integer, θ:Real) -> Real {
+  assert 0.0 < k;
+  assert 0.0 < θ;
+
+  return observe_negative_binomial(x, k, 1.0/(θ + 1.0));
+}
+
+/**
  * Observe a Dirichlet-categorical variate.
  *
  * - x: The variate.
@@ -445,9 +461,9 @@ function observe_crp_categorical(k:Integer, α:Real, θ:Real,
   if (k > K + 1) {
     return -inf;
   } else if (k == K + 1) {
-    return (K*α + θ)/(N + θ);
+    return log(K*α + θ) - log(N + θ);
   } else {
-    return (n[k] - α)/(N + θ);
+    return log(n[k] - α) - log(N + θ);
   }
 }
 
@@ -518,7 +534,7 @@ function observe_multivariate_gaussian(x:Real[_], μ:Real[_], Σ:Real[_,_]) ->
 }
 
 /**
- * Simulate a multivariate Gaussian distribution with diagonal covariance.
+ * Observe a multivariate Gaussian distribution with diagonal covariance.
  *
  * - x: The variate.
  * - μ: Mean.

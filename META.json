@@ -93,9 +93,11 @@
       "bi/io/Reader.bi",
       "bi/io/Writer.bi",
       "bi/io/std.bi",
+      "bi/math/cdf.bi",
       "bi/math/eigen.bi",
       "bi/math/matrix.bi",
       "bi/math/observe.bi",
+      "bi/math/pdf.bi",
       "bi/math/simulate.bi",
       "bi/math/special.bi",
       "bi/math/standard.bi",
@@ -170,7 +172,8 @@
       "eigen3/Eigen/Dense",
       "eigen3/Eigen/Cholesky",
       "boost/filesystem.hpp",
-      "boost/math/special_functions/beta.hpp"
+      "boost/math/special_functions.hpp",
+      "boost/math/distributions.hpp"
     ]
   }
 }

@@ -1,3 +1,7 @@
+cpp{{
+#include "boost/math/special_functions.hpp"
+}}
+
 /**
  * The gamma function.
  */

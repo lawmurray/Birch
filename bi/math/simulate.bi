@@ -343,6 +343,19 @@ function simulate_beta_binomial(n:Integer, α:Real, β:Real) -> Integer {
 }
 
 /**
+ * Simulate a gamma-Poisson distribution.
+ *
+ * - k: Shape.
+ * - θ: Scale.
+ */
+function simulate_gamma_poisson(k:Integer, θ:Real) -> Integer {
+  assert 0.0 < k;
+  assert 0.0 < θ;
+  
+  return simulate_negative_binomial(k, 1.0/(θ + 1.0));
+}
+
+/**
  * Simulate a Dirichlet-categorical distribution.
  *
  * - α: Concentrations.
