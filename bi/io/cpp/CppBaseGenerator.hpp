@@ -138,6 +138,11 @@ protected:
    * Are we in a membership expression?
    */
   int inMember;
+
+  /**
+   * Are we on the left side of an assignment statement?
+   */
+  int inAssign;
 };
 }
 

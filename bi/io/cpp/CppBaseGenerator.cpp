@@ -13,7 +13,8 @@ bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
     const bool header) :
     indentable_ostream(base, level),
     header(header),
-    inMember(0) {
+    inMember(0),
+    inAssign(0) {
   //
 }
 
@@ -150,6 +151,11 @@ void bi::CppBaseGenerator::visit(const Member* o) {
     middle("this->self()->");
   } else if (leftSuper) {
     middle("this->self()->super_type::");
+  } else if (!inAssign && o->right->type->isBasic() &&
+      dynamic_cast<const Identifier<MemberVariable>*>(o->right)) {
+    /* optimization: just reading a value, so no need to copy-on-write the
+     * owning object */
+    middle(o->left << ".getNoCopy()->");
   } else {
     middle(o->left << "->");
   }
@@ -491,7 +497,10 @@ void bi::CppBaseGenerator::visit(const Generic* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Assignment* o) {
-  line(o->left << " = " << o->right << ';');
+  ++inAssign;
+  start(o->left);
+  --inAssign;
+  finish(" = " << o->right << ';');
 }
 
 void bi::CppBaseGenerator::visit(const ExpressionStatement* o) {
