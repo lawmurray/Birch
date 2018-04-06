@@ -9,7 +9,7 @@
  *   \prod_{n=1}^N p(\mathrm{d}x_n \mid \theta)$$
  *
  * <center>
- * ![Graphical model depiction of SpokeModel.](/figs/SpokeModel.svg)
+ * ![Graphical model depiction of SpokeModel.](../figs/SpokeModel.svg)
  * </center>
  */
 class SpokeModel<SpokeType <= Spoke, ParameterType <= Parameter> < Model {

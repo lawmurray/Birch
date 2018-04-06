@@ -9,7 +9,7 @@
  *   \theta)$$
  *
  * <center>
- * ![Graphical model depiction of MarkovModel.](/figs/MarkovModel.svg)
+ * ![Graphical model depiction of MarkovModel.](../figs/MarkovModel.svg)
  * </center>
  */
 class MarkovModel<StateType <= State, ParameterType <= Parameter> < Model {
