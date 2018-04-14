@@ -1,20 +1,13 @@
 /**
- * Random variate.
+ * Delayed random variate.
  *
  * - Value: Value type.
  */
-class Random<Value> < Delay {
+class Random<Value> < Expression<Value> {
   /**
    * Value.
    */
   x:Value?;
-
-  /**
-   * Value conversion.
-   */
-  operator -> Value {
-    return value();
-  }
 
   /**
    * Value assignment.

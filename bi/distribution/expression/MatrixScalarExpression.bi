@@ -1,7 +1,7 @@
 /*
  * Matrix scaling of a scalar random variable.
  */
-class MatrixScalarExpression {
+class MatrixScalarExpression < Expression<Real[_,_]> {
   /**
    * Scale.
    */
@@ -11,13 +11,6 @@ class MatrixScalarExpression {
    * Random variable.
    */
   x:Random<Real>;
-
-  /**
-   * Value conversion.
-   */
-  operator -> Real[_,_] {
-    return value();
-  }
 
   /**
    * Value conversion.

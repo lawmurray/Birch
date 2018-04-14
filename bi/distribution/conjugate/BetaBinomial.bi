@@ -10,9 +10,9 @@ class BetaBinomial < Random<Integer> {
   /**
    * Probability of a true result.
    */
-  ρ:Beta;
+  ρ:Expression<Real>;
 
-  function initialize(n:Integer, ρ:Beta) {
+  function initialize(n:Integer, ρ:Expression<Real>) {
     assert 0 <= n;
   
     super.initialize(ρ);
@@ -25,21 +25,25 @@ class BetaBinomial < Random<Integer> {
   }
   
   function doCondition() {
-    ρ.update(ρ.α + value(), ρ.β + n - value());
+    ρ1:Beta? <- Beta?(ρ);
+    if (ρ1?) {
+      ρ1!.update(ρ1!.α + value(), ρ1!.β + n - value());
+    }
   }
 
   function doRealize() {
-    if (ρ.isRealized()) {
+    ρ1:Beta? <- Beta?(ρ);
+    if (ρ1? && !ρ1!.isRealized()) {
       if (isMissing()) {
-        set(simulate_binomial(n, ρ));
+        set(simulate_beta_binomial(n, ρ1!.α, ρ1!.β));
       } else {
-        setWeight(observe_binomial(value(), n, ρ));
+        setWeight(observe_beta_binomial(value(), n, ρ1!.α, ρ1!.β));
       }
     } else {
       if (isMissing()) {
-        set(simulate_beta_binomial(n, ρ.α, ρ.β));
+        set(simulate_binomial(n, ρ.value()));
       } else {
-        setWeight(observe_beta_binomial(value(), n, ρ.α, ρ.β));
+        setWeight(observe_binomial(value(), n, ρ.value()));
       }
     }
   }
@@ -48,20 +52,8 @@ class BetaBinomial < Random<Integer> {
 /**
  * Create binomial distribution.
  */
-function Binomial(n:Integer, ρ:Beta) -> BetaBinomial {
+function Binomial(n:Integer, ρ:Expression<Real>) -> BetaBinomial {
   x:BetaBinomial;
   x.initialize(n, ρ);
   return x;
-}
-
-/**
- * Create binomial distribution.
- */
-function Binomial(n:Integer, ρ:Random<Real>) -> Random<Integer> {
-  ρ1:Beta? <- Beta?(ρ);
-  if (ρ1?) {
-    return Binomial(n, ρ1!);
-  } else {
-    return Binomial(n, ρ.value());
-  }
 }

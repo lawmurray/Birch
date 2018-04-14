@@ -1,7 +1,7 @@
 /*
  * Multivariate affine transformation of a random variable.
  */
-class MultivariateAffineExpression {
+class MultivariateAffineExpression < Expression<Real[_]> {
   /**
    * Scale.
    */
@@ -16,13 +16,6 @@ class MultivariateAffineExpression {
    * Offset.
    */
   c:Real[_];
-
-  /**
-   * Value conversion.
-   */
-  operator -> Real[_] {
-    return value();
-  }
 
   /**
    * Value conversion.

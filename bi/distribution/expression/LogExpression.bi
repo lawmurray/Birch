@@ -1,18 +1,11 @@
 /*
  * Logaritmic transformation of a random variable.
  */
-class LogExpression {
+class LogExpression < Expression<Real> {
   /**
    * Random variable.
    */
   x:Random<Real>;
-
-  /**
-   * Value conversion.
-   */
-  operator -> Real {
-    return value();
-  }
 
   /**
    * Value conversion.

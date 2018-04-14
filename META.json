@@ -57,6 +57,7 @@
       "bi/distribution/conjugate/RestaurantProcessCategorical.bi",
       "bi/distribution/conjugate/TranslateAnyDelta.bi",
       "bi/distribution/delay/Delay.bi",
+      "bi/distribution/delay/Expression.bi",
       "bi/distribution/delay/Random.bi",
       "bi/distribution/expression/AffineExpression.bi",
       "bi/distribution/expression/AffineLogExpression.bi",

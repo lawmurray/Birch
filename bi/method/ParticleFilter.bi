@@ -82,11 +82,12 @@ class ParticleFilter {
         }
         step(t);
       }
+      stderr.print(Z);
       if (T > 1) {
         stderr.print("\n");
       }
       finish();
-      
+            
       /* output results and diagnostics */
       if (outputWriter?) {
         if (M > 1) {

@@ -1,7 +1,7 @@
 /*
  * Affine transformation of the logarithm of a random variable.
  */
-class AffineLogExpression {
+class AffineLogExpression < Expression<Real> {
   /**
    * Scale.
    */
@@ -16,13 +16,6 @@ class AffineLogExpression {
    * Offset.
    */
   c:Real;
-
-  /**
-   * Value conversion.
-   */
-  operator -> Real {
-    return value();
-  }
   
   /**
    * Value conversion.

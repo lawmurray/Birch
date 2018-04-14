@@ -1,7 +1,7 @@
 /*
  * Translation of a random variable.
  */
-class TranslateExpression<Value> {  
+class TranslateExpression<Value> < Expression<Value> {  
   /**
    * Random variable.
    */
@@ -11,13 +11,6 @@ class TranslateExpression<Value> {
    * Offset.
    */
   c:Value;
-
-  /**
-   * Value conversion.
-   */
-  operator -> Value {
-    return value();
-  }
   
   /**
    * Value conversion.

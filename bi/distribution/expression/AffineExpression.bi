@@ -1,7 +1,7 @@
 /*
  * Affine transformation of a random variable.
  */
-class AffineExpression {  
+class AffineExpression < Expression<Real> {  
   /**
    * Scale.
    */
@@ -16,13 +16,6 @@ class AffineExpression {
    * Offset.
    */
   c:Real;
-
-  /**
-   * Value conversion.
-   */
-  operator -> Real {
-    return value();
-  }
   
   /**
    * Value conversion.

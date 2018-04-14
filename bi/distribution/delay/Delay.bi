@@ -7,7 +7,7 @@ MARGINALIZED:Integer <- 2;
 REALIZED:Integer <- 3;
 
 /**
- * Node interface for delayed sampling.
+ * Delayed evaluation functionality.
  */
 class Delay {
   /**
