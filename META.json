@@ -54,7 +54,6 @@
       "bi/distribution/conjugate/MultivariateInverseGammaGaussian.bi",
       "bi/distribution/conjugate/MultivariateNormalInverseGammaGaussian.bi",
       "bi/distribution/conjugate/NormalInverseGammaGaussian.bi",
-      "bi/distribution/conjugate/RestaurantProcessCategorical.bi",
       "bi/distribution/conjugate/TranslateAnyDelta.bi",
       "bi/distribution/delay/Delay.bi",
       "bi/distribution/delay/Expression.bi",

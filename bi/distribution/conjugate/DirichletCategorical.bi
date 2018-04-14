@@ -5,9 +5,9 @@ class DirichletCategorical < Random<Integer> {
   /**
    * Category probabilities.
    */
-  ρ:Dirichlet;
+  ρ:Random<Real[_]>;
 
-  function initialize(ρ:Dirichlet) {
+  function initialize(ρ:Random<Real[_]>) {
     super.initialize(ρ);
     this.ρ <- ρ;
   }
@@ -17,21 +17,33 @@ class DirichletCategorical < Random<Integer> {
   }
   
   function doCondition() {
-    ρ.update(value());
+    ρ1:Dirichlet? <- Dirichlet?(ρ);
+    if (ρ1?) {
+      ρ1!.update(value());
+    }
   }
 
   function doRealize() {
-    if (ρ.isRealized()) {
+    ρ1:Dirichlet? <- Dirichlet?(ρ);
+    ρ2:RestaurantProcess? <- RestaurantProcess?(ρ);
+    if (ρ1? && !ρ1!.isRealized()) {
       if (isMissing()) {
-        set(simulate_categorical(ρ));
+        set(simulate_dirichlet_categorical(ρ1!.α));
       } else {
-        setWeight(observe_categorical(value(), ρ));
+        setWeight(observe_dirichlet_categorical(value(), ρ1!.α));
+      }
+    } else if (ρ2? && !ρ2!.isRealized()) {
+      if (isMissing()) {
+        set(simulate_crp_categorical(ρ2!.α, ρ2!.θ, ρ2!.n[1..ρ2!.K], ρ2!.N));
+      } else {
+        setWeight(observe_crp_categorical(value(), ρ2!.α, ρ2!.θ,
+            ρ2!.n[1..ρ2!.K], ρ2!.N));
       }
     } else {
       if (isMissing()) {
-        set(simulate_dirichlet_categorical(ρ.α));
+        set(simulate_categorical(ρ.value()));
       } else {
-        setWeight(observe_dirichlet_categorical(value(), ρ.α));
+        setWeight(observe_categorical(value(), ρ.value()));
       }
     }
   }
@@ -40,25 +52,8 @@ class DirichletCategorical < Random<Integer> {
 /**
  * Create categorical distribution.
  */
-function Categorical(ρ:Dirichlet) -> DirichletCategorical {
+function Categorical(ρ:Random<Real[_]>) -> DirichletCategorical {
   x:DirichletCategorical;
   x.initialize(ρ);
   return x;
-}
-
-/**
- * Create categorical distribution.
- */
-function Categorical(ρ:Random<Real[_]>) -> Random<Integer> {
-  ρ1:Dirichlet? <- Dirichlet?(ρ);
-  if (ρ1?) {
-    return Categorical(ρ1!);
-  } else {
-    ρ2:RestaurantProcess? <- RestaurantProcess?(ρ);
-    if (ρ2?) {
-      return Categorical(ρ2!);
-    } else {
-      return Categorical(ρ.value());
-    }
-  }
 }

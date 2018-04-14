@@ -10,9 +10,9 @@ class DirichletMultinomial < Random<Integer[_]> {
   /**
    * Category probabilities.
    */
-  ρ:Dirichlet;
+  ρ:Random<Real[_]>;
 
-  function initialize(n:Integer, ρ:Dirichlet) {
+  function initialize(n:Integer, ρ:Random<Real[_]>) {
     assert 0 <= n;
   
     super.initialize(ρ);
@@ -25,21 +25,25 @@ class DirichletMultinomial < Random<Integer[_]> {
   }
   
   function doCondition() {
-    ρ.update(value());
+    ρ1:Dirichlet? <- Dirichlet?(ρ);
+    if (ρ1?) {
+      ρ1!.update(value());
+    }
   }
 
   function doRealize() {
-    if (ρ.isRealized()) {
+    ρ1:Dirichlet? <- Dirichlet?(ρ);
+    if (ρ1? && !ρ1!.isRealized()) {
+      if (isMissing()) {
+        set(simulate_dirichlet_multinomial(n, ρ1!.α));
+      } else {
+        setWeight(observe_dirichlet_multinomial(value(), n, ρ1!.α));
+      }
+    } else {
       if (isMissing()) {
         set(simulate_multinomial(n, ρ));
       } else {
         setWeight(observe_multinomial(value(), n, ρ));
-      }
-    } else {
-      if (isMissing()) {
-        set(simulate_dirichlet_multinomial(n, ρ.α));
-      } else {
-        setWeight(observe_dirichlet_multinomial(value(), n, ρ.α));
       }
     }
   }
@@ -48,20 +52,8 @@ class DirichletMultinomial < Random<Integer[_]> {
 /**
  * Create multinomial distribution.
  */
-function Multinomial(n:Integer, ρ:Dirichlet) -> DirichletMultinomial {
+function Multinomial(n:Integer, ρ:Random<Real[_]>) -> DirichletMultinomial {
   x:DirichletMultinomial;
   x.initialize(n, ρ);
   return x;
-}
-
-/**
- * Create multinomial distribution.
- */
-function Multinomial(n:Integer, ρ:Random<Real[_]>) -> Random<Integer[_]> {
-  ρ1:Dirichlet? <- Dirichlet?(ρ);
-  if (ρ1?) {
-    return Multinomial(n, ρ1!);
-  } else {
-    return Multinomial(n, ρ.value());
-  }
 }
