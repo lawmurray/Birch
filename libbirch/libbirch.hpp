@@ -238,7 +238,8 @@ auto make_fiber(Args ... args) {
  * Cast an object.
  */
 template<class To, class From>
-SharedPointer<To> dynamic_pointer_cast(SharedPointer<From> from) {
+Optional<SharedPointer<To>> dynamic_pointer_cast(
+    const SharedPointer<From>& from) {
   return from.template dynamic_pointer_cast<To>();
 }
 
@@ -247,7 +248,7 @@ SharedPointer<To> dynamic_pointer_cast(SharedPointer<From> from) {
  */
 template<class To, class From>
 Optional<SharedPointer<To>> dynamic_pointer_cast(
-    Optional<SharedPointer<From>> from) {
+    const Optional<SharedPointer<From>>& from) {
   if (from.query()) {
     return dynamic_pointer_cast<To>(from.get());
   } else {
