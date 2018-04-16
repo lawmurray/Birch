@@ -41,14 +41,13 @@ class AffineGaussianGaussian < Gaussian {
   }
   
   function doMarginalize() {
-    μ_m <- a*x.μ + c;
-    σ2_m <- a*a*x.σ2 + σ2;
-    update(μ_m, σ2_m);
-  }
-
-  function doForward() {
-    μ_m <- a*x.value() + c;
-    σ2_m <- σ2;
+    if (x.isRealized()) {
+      μ_m <- a*x.value() + c;
+      σ2_m <- σ2;
+    } else {
+      μ_m <- a*x.μ + c;
+      σ2_m <- a*a*x.σ2 + σ2;
+    }
     update(μ_m, σ2_m);
   }
   

@@ -30,14 +30,13 @@ class LogGaussianLogGaussian < LogGaussian {
   }
   
   function doMarginalize() {
-    μ_0 <- μ.μ;
-    σ2_0 <- μ.σ2 + σ2;
-    update(μ_0, σ2_0);
-  }
-
-  function doForward() {
-    μ_0 <- μ.value();
-    σ2_0 <- σ2;
+    if (μ.isRealized()) {
+      μ_0 <- μ.value();
+      σ2_0 <- σ2;
+    } else {
+      μ_0 <- μ.μ;
+      σ2_0 <- μ.σ2 + σ2;
+    }
     update(μ_0, σ2_0);
   }
   

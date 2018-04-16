@@ -31,14 +31,13 @@ class MultivariateGaussianGaussian(D:Integer) < MultivariateGaussian(D) {
   }
   
   function doMarginalize() {
-    μ_0 <- μ.μ;
-    Σ_0 <- μ.Σ + Σ;
-    update(μ_0, Σ_0);
-  }
-
-  function doForward() {
-    μ_0 <- μ.value();
-    Σ_0 <- Σ;
+    if (μ.isRealized()) {
+      μ_0 <- μ.value();
+      Σ_0 <- Σ;
+    } else {
+      μ_0 <- μ.μ;
+      Σ_0 <- μ.Σ + Σ;
+    }
     update(μ_0, Σ_0);
   }
   

@@ -41,14 +41,13 @@ class AffineGaussianLogGaussian < LogGaussian {
   }
   
   function doMarginalize() {
-    μ_0 <- a*x.μ + c;
-    σ2_0 <- a*a*x.σ2 + σ2;
-    update(μ_0, σ2_0);
-  }
-
-  function doForward() {
-    μ_0 <- a*x.value() + c;
-    σ2_0 <- σ2;
+    if (x.isRealized()) {
+      μ_0 <- a*x.value() + c;
+      σ2_0 <- σ2;
+    } else {
+      μ_0 <- a*x.μ + c;
+      σ2_0 <- a*a*x.σ2 + σ2;
+    }
     update(μ_0, σ2_0);
   }
   

@@ -97,11 +97,7 @@ class Delay {
     assert isInitialized();
     
     state <- MARGINALIZED;
-    if (parent? && parent!.isRealized()) {
-      doForward();
-    } else {
-      doMarginalize();
-    }
+    doMarginalize();
   }
   
   /**
@@ -207,9 +203,6 @@ class Delay {
    * Derived type requirements.
    */
   function doMarginalize() {
-    //
-  }
-  function doForward() {
     //
   }
   function doCondition() {

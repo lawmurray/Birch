@@ -47,15 +47,13 @@ class MultivariateAffineGaussianGaussian(D:Integer) <
   
   function doMarginalize() {
     assert x?;
-    μ_0 <- A*x!.μ + c;
-    Σ_0 <- A*x!.Σ*trans(A) + Σ;
-    update(μ_0, Σ_0);
-  }
-
-  function doForward() {
-    assert x?;
-    μ_0 <- A*x!.value() + c;
-    Σ_0 <- Σ;
+    if (x!.isRealized()) {
+      μ_0 <- A*x!.value() + c;
+      Σ_0 <- Σ;
+    } else {
+      μ_0 <- A*x!.μ + c;
+      Σ_0 <- A*x!.Σ*trans(A) + Σ;
+    }
     update(μ_0, Σ_0);
   }
   

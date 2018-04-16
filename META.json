@@ -43,7 +43,7 @@
       "bi/distribution/conjugate/DirichletCategorical.bi",
       "bi/distribution/conjugate/DirichletMultinomial.bi",
       "bi/distribution/conjugate/GammaPoisson.bi",
-      "bi/distribution/conjugate/GaussianGaussian.bi",
+      "bi/distribution/conjugate/GaussianConjugate.bi",
       "bi/distribution/conjugate/GaussianLogGaussian.bi",
       "bi/distribution/conjugate/InverseGammaGaussian.bi",
       "bi/distribution/conjugate/LogGaussianGaussian.bi",
