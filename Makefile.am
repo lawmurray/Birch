@@ -81,6 +81,7 @@ COMMON_SOURCES = \
   bi/expression/ExpressionList.cpp \
   bi/expression/Generic.cpp \
   bi/expression/Get.cpp \
+  bi/expression/Global.cpp \
   bi/expression/Identifier.cpp \
   bi/expression/Index.cpp \
   bi/expression/LambdaFunction.cpp \
@@ -251,6 +252,7 @@ noinst_HEADERS = \
   bi/expression/ExpressionList.hpp \
   bi/expression/Generic.hpp \
   bi/expression/Get.hpp \
+  bi/expression/Global.hpp \
   bi/expression/Identifier.hpp \
   bi/expression/Index.hpp \
   bi/expression/LambdaFunction.hpp \

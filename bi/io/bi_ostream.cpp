@@ -129,6 +129,10 @@ void bi::bi_ostream::visit(const Member* o) {
   middle(o->left << '.' << o->right);
 }
 
+void bi::bi_ostream::visit(const Global* o) {
+  middle("global");
+}
+
 void bi::bi_ostream::visit(const Super* o) {
   middle("super");
 }

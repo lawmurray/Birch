@@ -87,7 +87,7 @@
 
 %token <valString> PROGRAM CLASS TYPE FUNCTION FIBER OPERATOR EXPLICIT
 %token <valString> IF ELSE FOR IN WHILE DO ASSERT RETURN YIELD CPP HPP
-%token <valString> THIS SUPER NIL
+%token <valString> THIS SUPER GLOBAL NIL
 %token <valString> DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE NAME
 %token <valBool> BOOL_LITERAL
 %token <valInt> INT_LITERAL
@@ -106,7 +106,7 @@
 %type <valExpression> equality_operator logical_and_operator logical_or_operator
 %type <valExpression> bool_literal int_literal real_literal string_literal
 %type <valExpression> literal identifier
-%type <valExpression> this_expression super_expression nil_expression
+%type <valExpression> this_expression super_expression global_expression nil_expression
 %type <valExpression> parens_expression sequence_expression cast_expression
 %type <valExpression> function_expression primary_expression
 %type <valExpression> slice index_expression index_list
@@ -224,6 +224,10 @@ super_expression
     : SUPER  { $$ = new bi::Super(make_loc(@$)); }
     ;
 
+global_expression
+    : GLOBAL  { $$ = new bi::Global(make_loc(@$)); }
+    ;
+
 nil_expression
     : NIL  { $$ = new bi::Nil(make_loc(@$)); }
     ;
@@ -236,7 +240,6 @@ primary_expression
     | cast_expression
     | function_expression
     | this_expression
-    | super_expression
     | nil_expression
     ;
 
@@ -256,10 +259,12 @@ slice
 
 postfix_expression
     : primary_expression
-    | postfix_expression '.' primary_expression  { $$ = new bi::Member($1, $3, make_loc(@$)); }
-    | postfix_expression slice                   { $$ = new bi::Slice($1, $2, make_loc(@$)); }
-    | postfix_expression arguments               { $$ = new bi::Call($1, $2, make_loc(@$)); }
-    | postfix_expression '!'                     { $$ = new bi::Get($1, make_loc(@$)); }
+    | super_expression '.' identifier    { $$ = new bi::Member($1, $3, make_loc(@$)); }
+    | global_expression '.' identifier   { $$ = new bi::Member($1, $3, make_loc(@$)); }
+    | postfix_expression '.' identifier  { $$ = new bi::Member($1, $3, make_loc(@$)); }
+    | postfix_expression slice           { $$ = new bi::Slice($1, $2, make_loc(@$)); }
+    | postfix_expression arguments       { $$ = new bi::Call($1, $2, make_loc(@$)); }
+    | postfix_expression '!'             { $$ = new bi::Get($1, make_loc(@$)); }
     ;
 
 postfix_query_expression

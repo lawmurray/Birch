@@ -45,6 +45,7 @@ public:
   virtual void visit(const Span* o);
   virtual void visit(const Range* o);
   virtual void visit(const Member* o);
+  virtual void visit(const Global* o);
   virtual void visit(const Super* o);
   virtual void visit(const This* o);
   virtual void visit(const Nil* o);

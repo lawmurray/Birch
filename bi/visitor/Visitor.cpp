@@ -111,6 +111,10 @@ void bi::Visitor::visit(const Range* o) {
   o->right->accept(this);
 }
 
+void bi::Visitor::visit(const Global* o) {
+  //
+}
+
 void bi::Visitor::visit(const Super* o) {
   //
 }

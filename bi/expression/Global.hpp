@@ -7,23 +7,23 @@
 
 namespace bi {
 /**
- * Keyword `super`.
+ * Keyword `global`.
  *
  * @ingroup expression
  */
-class Super: public Expression {
+class Global: public Expression {
 public:
   /**
    * Constructor.
    *
    * @param loc Location.
    */
-  Super(Location* loc = nullptr);
+  Global(Location* loc = nullptr);
 
   /**
    * Destructor.
    */
-  virtual ~Super();
+  virtual ~Global();
 
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);

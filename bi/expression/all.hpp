@@ -12,6 +12,7 @@
 #include "bi/expression/ExpressionList.hpp"
 #include "bi/expression/Generic.hpp"
 #include "bi/expression/Get.hpp"
+#include "bi/expression/Global.hpp"
 #include "bi/expression/Identifier.hpp"
 #include "bi/expression/Index.hpp"
 #include "bi/expression/LambdaFunction.hpp"

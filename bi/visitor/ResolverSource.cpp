@@ -131,7 +131,9 @@ bi::Expression* bi::ResolverSource::modify(Range* o) {
 
 bi::Expression* bi::ResolverSource::modify(Member* o) {
   o->left = o->left->accept(this);
-  if (o->left->type->isClass()) {
+  if (dynamic_cast<Global*>(o->left)) {
+    memberScopes.push_back(scopes.front());
+  } else if (o->left->type->isClass()) {
     memberScopes.push_back(o->left->type->getClass()->scope);
   } else {
     throw MemberException(o);

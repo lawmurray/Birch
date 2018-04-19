@@ -7,7 +7,7 @@
 
 namespace bi {
 /**
- * Self-reference to an object.
+ * Keyword `this`.
  *
  * @ingroup expression
  */

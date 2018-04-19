@@ -147,10 +147,13 @@ void bi::CppBaseGenerator::visit(const Range* o) {
 void bi::CppBaseGenerator::visit(const Member* o) {
   const This* leftThis = dynamic_cast<const This*>(o->left);
   const Super* leftSuper = dynamic_cast<const Super*>(o->left);
+  const Global* leftGlobal = dynamic_cast<const Global*>(o->left);
   if (leftThis) {
     middle("this->self()->");
   } else if (leftSuper) {
     middle("this->self()->super_type::");
+  } else if (leftGlobal) {
+    middle("bi::");
   } else if (!inAssign && o->right->type->isBasic() &&
       dynamic_cast<const Identifier<MemberVariable>*>(o->right)) {
     /* optimization: just reading a value, so no need to copy-on-write the
@@ -170,8 +173,11 @@ void bi::CppBaseGenerator::visit(const This* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Super* o) {
-  // only need to handle the case outside member expression
-  middle("this->shared_super()");
+  assert(false);  // syntax should not allow outside member expression
+}
+
+void bi::CppBaseGenerator::visit(const Global* o) {
+  assert(false);  // syntax should not allow outside member expression
 }
 
 void bi::CppBaseGenerator::visit(const Nil* o) {
