@@ -32,6 +32,18 @@ class AffineExpression < Expression<Real> {
     this.x <- x;
     this.c <- c;
   }
+
+  function isGaussian() -> Boolean {
+    return x.isGaussian();
+  }
+  
+  function marginalizeGaussian(σ2:Real) -> (Real, Real) {
+    return (a*μ_m + c, a*a*σ2_m + σ2);
+  }
+  
+  function conditionGaussian(y:Real, μ_m:Real, σ2_m:Real) {
+    x.updateGaussian(update_affine_gaussian_gaussian(y, a, x.μ, x.σ2, μ_m, σ2_m));
+  }
 }
 
 operator (+x:Random<Real>) -> Random<Real> {

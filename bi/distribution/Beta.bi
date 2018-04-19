@@ -1,44 +1,59 @@
 /**
  * Beta distribution.
  */
-class Beta < Random<Real> {
+class Beta<Type1,Type2>(α:Type1, β:Type2) < Random<Real> {
   /**
    * First shape parameter.
    */
-  α:Real;
+  α:Type1 <- α;
 
   /**
    * Second shape parameter.
    */
-  β:Real;
+  β:Type2 <- β;
 
-  function initialize(α:Real, β:Real) {
-    super.initialize();
-    update(α, β);
+  function doSimulate() -> Real {
+    return simulate_beta(global.value(α), global.value(β));
   }
-
-  function update(α:Real, β:Real) {
-    assert α > 0.0;
-    assert β > 0.0;
-
-    this.α <- α;
-    this.β <- β;
-  }
-
-  function doRealize() {
-    if (isMissing()) {
-      set(simulate_beta(α, β));
-    } else {
-      setWeight(observe_beta(value(), α, β));
-    }
+  
+  function doObserve(x:Real) -> Real {
+    return observe_beta(x, global.value(α), global.value(β));
   }
 }
 
 /**
  * Create beta distribution.
  */
-function Beta(α:Real, β:Real) -> Beta {
-  m:Beta;
-  m.initialize(α, β);
+function Beta(α:Real, β:Real) -> Beta<Real,Real> {
+  m:Beta<Real,Real>(α, β);
+  m.initialize();
+  return m;
+}
+
+/**
+ * Create beta distribution.
+ */
+function Beta(α:Expression<Real>, β:Real) -> Beta<Expression<Real>,Real> {
+  m:Beta<Expression<Real>,Real>(α, β);
+  m.initialize();
+  return m;
+}
+
+/**
+ * Create beta distribution.
+ */
+function Beta(α:Real, β:Expression<Real>) -> Beta<Real,Expression<Real>> {
+  m:Beta<Real,Expression<Real>>(α, β);
+  m.initialize();
+  return m;
+}
+
+/**
+ * Create beta distribution.
+ */
+function Beta(α:Expression<Real>, β:Expression<Real>) ->
+    Beta<Expression<Real>,Expression<Real>> {
+  m:Beta<Expression<Real>,Expression<Real>>(α, β);
+  m.initialize();
   return m;
 }

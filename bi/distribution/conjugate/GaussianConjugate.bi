@@ -38,35 +38,34 @@ class GaussianConjugate < Random<Real> {
     this.σ2 <- σ2;
   }
   
+  function isGaussian() -> Boolean {
+    return true;
+  }
+  
+  function updateGaussian(μ:Real, σ2:Real) {
+    (μ_p, σ2_p) <- (μ, σ2);
+  }
+  
+  function marginalizeGaussian(σ2:Real) -> (Real, Real) {
+    return (μ_m, σ2_m + σ2);
+  }
+  
+  function conditionGaussian(x:Real, μ_m:Real, σ2_m:Real) {
+    (μ_p, σ2_p) <- update_gaussian_gaussian(x, μ_p, σ2_p, μ_m, σ2_m);
+  }
+  
   function doMarginalize() {
-    if (μ.isRealized()) {
-      μ_m <- μ.value();
-      σ2_m <- σ2;
+    if (μ.isGaussian() && !μ.isRealized()) {
+      (μ_m, σ2_m) <- μ.marginalizeGaussian(σ2);
     } else {
-      μ1:Gaussian? <- Gaussian?(μ);
-      μ2:GaussianConjugate? <- GaussianConjugate?(μ);
-      if (μ1?) {
-        μ_m <- μ1!.μ;
-        σ2_m <- μ1!.σ2 + σ2;
-      } else if (μ2?) {
-        μ_m <- μ2!.μ_p;
-        σ2_m <- μ2!.σ2_p + σ2;
-      } else {
-        μ_m <- μ.value();
-        σ2_m <- σ2;
-      }
+      (μ_m, σ2_m) <- (μ.value(), σ2);
     }
-    μ_p <- μ_m;
-    σ2_p <- σ2_m;
+    (μ_p, σ2_p) <- (μ_m, σ2_m);
   }
   
   function doCondition() {
-    μ1:Gaussian? <- Gaussian?(μ);
-    μ2:GaussianConjugate? <- GaussianConjugate?(μ);
-    if (μ1?) {
-      (μ1!.μ, μ1!.σ2) <- update_gaussian_gaussian(value(), μ1!.μ, μ1!.σ2, μ_m, σ2_m);
-    } else if (μ2?) {
-      (μ2!.μ_p, μ2!.σ2_p) <- update_gaussian_gaussian(value(), μ2!.μ_p, μ2!.σ2_p, μ_m, σ2_m);
+    if (μ.isGaussian() && !μ.isRealized()) {
+      μ.conditionGaussian(value(), μ_m, σ2_m);
     }
   }
 

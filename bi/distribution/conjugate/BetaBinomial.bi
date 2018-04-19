@@ -48,12 +48,3 @@ class BetaBinomial < Random<Integer> {
     }
   }
 }
-
-/**
- * Create binomial distribution.
- */
-function Binomial(n:Integer, ρ:Expression<Real>) -> BetaBinomial {
-  x:BetaBinomial;
-  x.initialize(n, ρ);
-  return x;
-}

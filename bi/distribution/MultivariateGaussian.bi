@@ -1,67 +1,71 @@
 /**
  * Multivariate Gaussian distribution.
- *
- *   - D: Number of dimensions.
  */
-class MultivariateGaussian(D:Integer) < Random<Real[_]> {
+class MultivariateGaussian<Type1,Type2>(μ:Type1, Σ:Type2) < Random<Real[_]> {
   /**
    * Mean.
    */
-  μ:Real[D];
+  μ:Type1 <- μ;
   
   /**
    * Covariance.
    */
-  Σ:Real[D,D];
+  Σ:Type2 <- Σ;
 
   function size() -> Integer {
     return length(μ);
   }
 
-  function initialize(u:MultivariateGaussian) {
-    super.initialize(u);
-  }
-
-  function initialize(μ:Real[_], Σ:Real[_,_]) {
-    super.initialize();
-    update(μ, Σ);
-  }
-
-  function update(μ:Real[_], Σ:Real[_,_]) {
+  function update(μ:Type1, Σ:Type2) {
     this.μ <- μ;
     this.Σ <- Σ;
   }
 
-  function doRealize() {
-    if (isMissing()) {
-      set(simulate_multivariate_gaussian(μ, Σ));
-    } else {
-      setWeight(observe_multivariate_gaussian(value(), μ, Σ));
-    }
+  function doSimulate() -> Real[_] {
+    return simulate_multivariate_gaussian(global.value(μ), global.value(Σ));
+  }
+  
+  function doObserve(x:Real[_]) -> Real {
+    return observe_multivariate_gaussian(x, global.value(μ), global.value(Σ));
   }
 }
 
 /**
- * Synonym for MultivariateGaussian.
- */
-class MultivariateNormal = MultivariateGaussian;
-
-/**
  * Create multivariate Gaussian distribution.
  */
-function Gaussian(μ:Real[_], Σ:Real[_,_]) -> MultivariateGaussian {
-  D:Integer <- length(μ);
-  assert D > 0;
-  assert rows(Σ) == D;
-  assert columns(Σ) == D;
-  m:MultivariateGaussian(D);
-  m.initialize(μ, Σ);
+function Gaussian(μ:Real[_], Σ:Real[_,_]) ->
+    MultivariateGaussian<Real[_],Real[_,_]> {
+  m:MultivariateGaussian<Real[_],Real[_,_]>(μ, Σ);
+  m.initialize();
   return m;
 }
 
 /**
  * Create multivariate Gaussian distribution.
  */
-function Normal(μ:Real[_], Σ:Real[_,_]) -> MultivariateGaussian {
-  return Gaussian(μ, Σ);
+function Gaussian(μ:Expression<Real[_]>, Σ:Real[_,_]) ->
+    MultivariateGaussian<Expression<Real[_]>,Real[_,_]> {
+  m:MultivariateGaussian<Expression<Real[_]>,Real[_,_]>(μ, Σ);
+  m.initialize();
+  return m;
+}
+
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function Gaussian(μ:Real[_], Σ:Expression<Real[_,_]>) ->
+    MultivariateGaussian<Real[_],Expression<Real[_,_]>> {
+  m:MultivariateGaussian<Real[_],Expression<Real[_,_]>>(μ, Σ);
+  m.initialize();
+  return m;
+}
+
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function Gaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) ->
+    MultivariateGaussian<Expression<Real[_]>,Expression<Real[_,_]>> {
+  m:MultivariateGaussian<Expression<Real[_]>,Expression<Real[_,_]>>(μ, Σ);
+  m.initialize();
+  return m;
 }

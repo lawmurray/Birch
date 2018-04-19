@@ -1,44 +1,67 @@
 /**
  * Negative binomial distribution.
  */
-class NegativeBinomial < Random<Integer> {
+class NegativeBinomial<Type1,Type2>(k:Type1, ρ:Type2) < Random<Integer> {
   /**
    * Number of successes before the experiment is stopped.
    */
-  k:Integer;
+  k:Type1 <- k;
 
   /**
    * Probability of success.
    */
-  ρ:Real;
+  ρ:Type2 <- ρ;
 
-  function initialize(k:Integer, ρ:Real) {
-    super.initialize();
-    update(k, ρ);
-  }
-
-  function update(k:Integer, ρ:Real) {
-    assert 0 < k;
-    assert 0.0 <= ρ && ρ <= 1.0;
-  
+  function update(k:Type1, ρ:Type2) {
     this.k <- k;
     this.ρ <- ρ;
   }
 
-  function doRealize() {
-    if (isMissing()) {
-      set(simulate_negative_binomial(k, ρ));
-    } else {
-      setWeight(observe_negative_binomial(value(), k, ρ));
-    }
+  function doSimulate() -> Integer {
+    return simulate_negative_binomial(global.value(k), global.value(ρ));
+  }
+  
+  function doObserve(x:Integer) -> Real {
+    return observe_negative_binomial(x, global.value(k), global.value(ρ));
   }
 }
 
 /**
  * Create negative binomial distribution.
  */
-function NegativeBinomial(k:Integer, ρ:Real) -> NegativeBinomial {
-  m:NegativeBinomial;
-  m.initialize(k, ρ);
+function NegativeBinomial(k:Integer, ρ:Real) ->
+    NegativeBinomial<Integer,Real> {
+  m:NegativeBinomial<Integer,Real>(k, ρ);
+  m.initialize();
+  return m;
+}
+
+/**
+ * Create negative binomial distribution.
+ */
+function NegativeBinomial(k:Expression<Integer>, ρ:Real) ->
+    NegativeBinomial<Expression<Integer>,Real> {
+  m:NegativeBinomial<Expression<Integer>,Real>(k, ρ);
+  m.initialize();
+  return m;
+}
+
+/**
+ * Create negative binomial distribution.
+ */
+function NegativeBinomial(k:Integer, ρ:Expression<Real>) ->
+    NegativeBinomial<Integer,Expression<Real>> {
+  m:NegativeBinomial<Integer,Expression<Real>>(k, ρ);
+  m.initialize();
+  return m;
+}
+
+/**
+ * Create negative binomial distribution.
+ */
+function NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) ->
+    NegativeBinomial<Expression<Integer>,Expression<Real>> {
+  m:NegativeBinomial<Expression<Integer>,Expression<Real>>(k, ρ);
+  m.initialize();
   return m;
 }

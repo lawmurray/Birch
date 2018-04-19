@@ -14,7 +14,7 @@ class Random<Value> < Expression<Value> {
    */
   operator <- x:Value {
     assert isUninitialized();
-    set(x);
+    this.x <- x;
     realize();
   }
 
@@ -24,7 +24,7 @@ class Random<Value> < Expression<Value> {
   operator <- x:Value? {
     assert isUninitialized();
     if (x?) {
-      set(x!);
+      this.x <- x;
       realize();
     }
   }
@@ -48,20 +48,12 @@ class Random<Value> < Expression<Value> {
     return !(x?);
   }
 
-  function set(x:Value) {
-    this.x <- x;
-  }
-  
-  function setWeight(w:Real) {
-    this.w <- w;
-  }
-  
   /**
    * Simulate the random variable.
    */
   function simulate() -> Value {
     realize();
-    return value();
+    return x;
   }
   
   /**
@@ -72,8 +64,24 @@ class Random<Value> < Expression<Value> {
    * Returns: the log likelihood.
    */
   function observe(x:Value) -> Real {
-    set(x);
+    this.x <- x;
     realize();
     return w;
+  }
+  
+  function doRealize() {
+    if (isMissing()) {
+      x <- doSimulate();
+    } else {
+      w <- doObserve(x);
+    }
+  }
+  
+  function doSimulate() -> Value {
+    assert false;
+  }
+  
+  function doObserve(x:Value) -> Real {
+    assert false;
   }
 }

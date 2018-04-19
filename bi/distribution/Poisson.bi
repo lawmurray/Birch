@@ -1,37 +1,39 @@
 /**
  * Poisson distribution.
  */
-class Poisson < Random<Integer> {
+class Poisson<Type1>(λ:Type1) < Random<Integer> {
   /**
    * Rate.
    */
-  λ:Real;
+  λ:Type1 <- λ;
 
-  function initialize(λ:Real) {
-    super.initialize();
-    update(λ);
-  }
-
-  function update(λ:Real) {
-    assert 0.0 <= λ;
-  
+  function update(λ:Type1) {
     this.λ <- λ;
   }
 
-  function doRealize() {
-    if (isMissing()) {
-      set(simulate_poisson(λ));
-    } else {
-      setWeight(observe_poisson(value(), λ));
-    }
+  function doSimulate() -> Integer {
+    return simulate_poisson(global.value(λ));
+  }
+  
+  function doObserve(x:Integer) -> Real {
+    return observe_poisson(x, global.value(λ));
   }
 }
 
 /**
  * Create Poisson distribution.
  */
-function Poisson(λ:Real) -> Poisson {
-  m:Poisson;
-  m.initialize(λ);
+function Poisson(λ:Real) -> Poisson<Real> {
+  m:Poisson<Real>(λ);
+  m.initialize();
+  return m;
+}
+
+/**
+ * Create Poisson distribution.
+ */
+function Poisson(λ:Expression<Real>) -> Poisson<Expression<Real>> {
+  m:Poisson<Expression<Real>>(λ);
+  m.initialize();
   return m;
 }

@@ -62,19 +62,19 @@ class NormalInverseGamma < Random<Real> {
     σ2.update(α, β);
   }
 
-  function doRealize() {
+  function doSimulate() -> Real {
     if (σ2.isRealized()) {
-      if (isMissing()) {
-        set(simulate_gaussian(μ, a2*σ2.value()));
-      } else {
-        setWeight(observe_gaussian(value(), μ, a2*σ2.value()));
-      }
+      return simulate_gaussian(μ, a2*σ2.value());
     } else {
-      if (isMissing()) {
-        set(simulate_normal_inverse_gamma(μ, a2, σ2.α, σ2.β));
-      } else {
-        setWeight(observe_normal_inverse_gamma(value(), μ, a2, σ2.α, σ2.β));
-      }
+      return simulate_normal_inverse_gamma(μ, a2, σ2.α, σ2.β);
+    }
+  }
+
+  function doObserve(x:Real) -> Real {
+    if (σ2.isRealized()) {
+      return observe_gaussian(x, μ, a2*σ2.value());
+    } else {
+      return observe_normal_inverse_gamma(x, μ, a2, σ2.α, σ2.β);
     }
   }
 }

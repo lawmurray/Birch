@@ -2,27 +2,22 @@
  * Delta distribution, representing a distribution on a discrete space with
  * all probability mass at one location.
  */
-class Delta < Random<Integer> {
+class Delta<Type1>(μ:Type1) < Random<Integer> {
   /**
    * Location.
    */
-  μ:Integer;
+  μ:Integer <- μ;
 
-  function initialize(μ:Integer) {
-    super.initialize();
-    update(μ);
-  }
-
-  function update(μ:Integer) {
+  function update(μ:Type1) {
     this.μ <- μ;
   }
 
-  function doRealize() {
-    if (isMissing()) {
-      set(simulate_delta(μ));
-    } else {
-      setWeight(observe_delta(value(), μ));
-    }
+  function doSimulate() -> Integer {
+    return simulate_delta(global.value(μ));
+  }
+  
+  function doObserve(x:Integer) -> Real {
+    return observe_delta(x, global.value(μ));
   }
 }
 
@@ -31,8 +26,19 @@ class Delta < Random<Integer> {
  *
  * - μ: Location.
  */
-function Delta(μ:Integer) -> Delta {
-  m:Delta;
-  m.initialize(μ);
+function Delta(μ:Integer) -> Delta<Integer> {
+  m:Delta<Integer>(μ);
+  m.initialize();
+  return m;
+}
+
+/**
+ * Create delta distribution.
+ *
+ * - μ: Location.
+ */
+function Delta(μ:Expression<Integer>) -> Delta<Expression<Integer>> {
+  m:Delta<Expression<Integer>>(μ);
+  m.initialize();
   return m;
 }

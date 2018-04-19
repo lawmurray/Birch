@@ -58,19 +58,19 @@ class MultivariateNormalInverseGamma < Random<Real[_]> {
     σ2.update(α, β);
   }
 
-  function doRealize() {
+  function doSimulate() -> Real[_] {
     if (σ2.isRealized()) {
-      if (isMissing()) {
-        set(simulate_multivariate_gaussian(μ, inv(Λ)*σ2.value()));
-      } else {
-        setWeight(observe_multivariate_gaussian(value(), μ, inv(Λ)*σ2.value()));
-      }
+      return simulate_multivariate_gaussian(μ, inv(Λ)*σ2.value());
     } else {
-      if (isMissing()) {
-        set(simulate_multivariate_normal_inverse_gamma(μ, Λ, σ2.α, σ2.β));
-      } else {
-        setWeight(observe_multivariate_normal_inverse_gamma(value(), μ, Λ, σ2.α, σ2.β));
-      }
+      return simulate_multivariate_normal_inverse_gamma(μ, Λ, σ2.α, σ2.β);
+    }
+  }
+
+  function doObserve(x:Real[_]) -> Real {
+    if (σ2.isRealized()) {
+      return observe_multivariate_gaussian(x, μ, inv(Λ)*σ2.value());
+    } else {
+      return observe_multivariate_normal_inverse_gamma(x, μ, Λ, σ2.α, σ2.β);
     }
   }
 }

@@ -1,44 +1,64 @@
 /**
  * Gamma distribution.
  */
-class Gamma < Random<Real> {
+class Gamma<Type1,Type2>(k:Type1, θ:Type2) < Random<Real> {
   /**
    * Shape.
    */
-  k:Real;
+  k:Type1 <- k;
   
   /**
    * Scale.
    */
-  θ:Real;
+  θ:Type2 <- θ;
 
-  function initialize(k:Real, θ:Real) {
-    super.initialize();
-    update(k, θ);
-  }
-
-  function update(k:Real, θ:Real) {
-    assert k > 0.0;
-    assert θ > 0.0;
-
+  function update(k:Type1, θ:Type2) {
     this.k <- k;
     this.θ <- θ;
   }
 
-  function doRealize() {
-    if (isMissing()) {
-      set(simulate_gamma(k, θ));
-    } else {
-      setWeight(observe_gamma(value(), k, θ));
-    }
+  function doSimulate() -> Real {
+    return simulate_gamma(global.value(k), global.value(θ));
+  }
+  
+  function doObserve(x:Real) -> Real {
+    return observe_gamma(x, global.value(k), global.value(θ));
   }
 }
 
 /**
  * Create gamma distribution.
  */
-function Gamma(k:Real, θ:Real) -> Gamma {
-  m:Gamma;
-  m.initialize(k, θ);
+function Gamma(k:Real, θ:Real) -> Gamma<Real,Real> {
+  m:Gamma<Real,Real>(k, θ);
+  m.initialize();
+  return m;
+}
+
+/**
+ * Create gamma distribution.
+ */
+function Gamma(k:Expression<Real>, θ:Real) -> Gamma<Expression<Real>,Real> {
+  m:Gamma<Expression<Real>,Real>(k, θ);
+  m.initialize();
+  return m;
+}
+
+/**
+ * Create gamma distribution.
+ */
+function Gamma(k:Real, θ:Expression<Real>) -> Gamma<Real,Expression<Real>> {
+  m:Gamma<Real,Expression<Real>>(k, θ);
+  m.initialize();
+  return m;
+}
+
+/**
+ * Create gamma distribution.
+ */
+function Gamma(k:Expression<Real>, θ:Expression<Real>) ->
+    Gamma<Expression<Real>,Expression<Real>> {
+  m:Gamma<Expression<Real>,Expression<Real>>(k, θ);
+  m.initialize();
   return m;
 }

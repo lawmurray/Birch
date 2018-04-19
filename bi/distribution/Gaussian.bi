@@ -1,63 +1,66 @@
 /**
  * Gaussian distribution.
  */
-class Gaussian < Random<Real> {
+class Gaussian<Type1,Type2>(μ:Type1, σ2:Type2) < Random<Real> {
   /**
    * Mean.
    */
-  μ:Real;
+  μ:Type1 <- μ;
   
   /**
    * Variance.
    */
-  σ2:Real;
+  σ2:Type2 <- σ2;
 
-  function initialize(u:Gaussian) {
-    super.initialize(u);
-  }
-
-  function initialize(u:LogGaussian) {
-    super.initialize(u);
-  }
-
-  function initialize(μ:Real, σ2:Real) {
-    super.initialize();
-    update(μ, σ2);
-  }
-
-  function update(μ:Real, σ2:Real) {
-    assert σ2 >= 0.0;
-    
+  function update(μ:Type1, σ2:Type2) {
     this.μ <- μ;
     this.σ2 <- σ2;
   }
 
-  function doRealize() {
-    if (isMissing()) {
-      set(simulate_gaussian(μ, σ2));
-    } else {
-      setWeight(observe_gaussian(value(), μ, σ2));
-    }
+  function doSimulate() -> Real {
+    return simulate_gaussian(global.value(μ), global.value(σ2));
+  }
+  
+  function doObserve(x:Real) -> Real {
+    return observe_gaussian(x, global.value(μ), global.value(σ2));
   }
 }
 
 /**
- * Synonym for Gaussian.
- */
-class Normal = Gaussian;
-
-/**
  * Create Gaussian distribution.
  */
-function Gaussian(μ:Real, σ2:Real) -> Gaussian {
-  m:Gaussian;
-  m.initialize(μ, σ2);
+function Gaussian(μ:Real, σ2:Real) -> Gaussian<Real,Real> {
+  m:Gaussian<Real,Real>(μ, σ2);
+  m.initialize();
   return m;
 }
 
 /**
  * Create Gaussian distribution.
  */
-function Normal(μ:Real, σ2:Real) -> Gaussian {
-  return Gaussian(μ, σ2);
+function Gaussian(μ:Expression<Real>, σ2:Real) ->
+    Gaussian<Expression<Real>,Real> {
+  m:Gaussian<Expression<Real>,Real>(μ, σ2);
+  m.initialize();
+  return m;
+}
+
+/**
+ * Create Gaussian distribution.
+ */
+function Gaussian(μ:Real, σ2:Expression<Real>) ->
+    Gaussian<Real,Expression<Real>> {
+  m:Gaussian<Real,Expression<Real>>(μ, σ2);
+  m.initialize();
+  return m;
+}
+
+/**
+ * Create Gaussian distribution.
+ */
+function Gaussian(μ:Expression<Real>, σ2:Expression<Real>) ->
+    Gaussian<Expression<Real>,Expression<Real>> {
+  m:Gaussian<Expression<Real>,Expression<Real>>(μ, σ2);
+  m.initialize();
+  return m;
 }

@@ -1,55 +1,56 @@
 /**
  * Dirichlet distribution.
  */
-class Dirichlet < Random<Real[_]> {
+class Dirichlet<Type1>(α:Type1) < Random<Real[_]> {
   /**
    * Concentration.
    */
-  α:Real[_];
-
-  function initialize(α:Real[_]) {
-    super.initialize();
-    this.α <- α;
-  }
+  α:Type1;
 
   /**
    * Update with draw from multinomial distribution.
    */
   function update(x:Integer[_]) {
-    assert length(x) == length(α);
-    for (i:Integer in 1..length(x)) {
-      α[i] <- α[i] + x[i];
-    }
+    //α <- α + x;
   }
 
   /**
    * Update with draw from categorical distribution.
    */
   function update(x:Integer) {
-    α[x] <- α[x] + 1.0;
+    //α[x] <- α[x] + 1.0;
   }
 
-  function doRealize() {
-    if (isMissing()) {
-      set(simulate_dirichlet(α));
-    } else {
-      setWeight(observe_dirichlet(value(), α));
-    }
+  function doSimulate() -> Real[_] {
+    return simulate_dirichlet(global.value(α));
+  }
+  
+  function doObserve(x:Real[_]) -> Real {
+    return observe_dirichlet(x, global.value(α));
   }
 }
 
 /**
  * Create Dirichlet distribution.
  */
-function Dirichlet(α:Real[_]) -> Dirichlet {
-  m:Dirichlet;
-  m.initialize(α);
+function Dirichlet(α:Real[_]) -> Dirichlet<Real[_]> {
+  m:Dirichlet<Real[_]>(α);
+  m.initialize();
   return m;
 }
 
 /**
  * Create Dirichlet distribution.
  */
-function Dirichlet(α:Real, D:Integer) -> Dirichlet {
+function Dirichlet(α:Expression<Real[_]>) -> Dirichlet<Expression<Real[_]>> {
+  m:Dirichlet<Expression<Real[_]>>(α);
+  m.initialize();
+  return m;
+}
+
+/**
+ * Create Dirichlet distribution.
+ */
+function Dirichlet(α:Real, D:Integer) -> Dirichlet<Real[_]> {
   return Dirichlet(vector(α, D));
 }
