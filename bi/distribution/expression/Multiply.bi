@@ -44,6 +44,32 @@ class Multiply<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>)
     }
   }
 
+  function isScaledInverseGamma(σ2:Expression<Real>) -> Boolean {
+    return left.isScaledInverseGamma(σ2) || right.isScaledInverseGamma(σ2);
+  }
+
+  function getScaledInverseGamma(σ2:Expression<Real>) -> (Real, Real, Real) {
+    a2:Real;
+    α:Real;
+    β:Real;
+    if (left.isScaledInverseGamma(σ2)) {
+      (a2, α, β) <- left.getScaledInverseGamma(σ2);
+      a2 <- a2*right.value();
+    } else if (right.isScaledInverseGamma(σ2)) {
+      (a2, α, β) <- right.getScaledInverseGamma(σ2);
+      a2 <- left.value()*a2;
+    }
+    return (a2, α, β);
+  }
+
+  function setScaledInverseGamma(σ2:Expression<Real>, θ:(Real, Real)) {
+    if (left.isScaledInverseGamma(σ2)) {
+      left.setScaledInverseGamma(σ2, θ);
+    } else if (right.isScaledInverseGamma(σ2)) {
+      right.setScaledInverseGamma(σ2, θ);
+    }
+  }
+
   function doValue() -> Value {
     return left.value()*right.value();
   }

@@ -131,6 +131,71 @@ class Expression<Value> < Delay {
   }
 
   /**
+   * Does this evaluate to an inverse Gamma distribution?
+   */
+  function isInverseGamma() -> Boolean {
+    return false;
+  }
+  
+  /**
+   * If `isInverseGamma()`, get its parameters, otherwise undefined.
+   */
+  function getInverseGamma() -> (Real, Real) {
+    assert false;
+  }
+
+  /**
+   * If `isInverseGamma()`, set its parameters, otherwise undefined.
+   */
+  function setInverseGamma(θ:(Real, Real)) {
+    assert false;
+  }
+
+  /**
+   * Does this evaluate to a scaled inverse gamma distribution with the given
+   * inverse gamma marginal?
+   */
+  function isScaledInverseGamma(σ2:Expression<Real>) -> Boolean {
+    return false;
+  }
+  
+  /**
+   * If `isScaledInverseGamma()`, get its parameters, otherwise undefined.
+   */
+  function getScaledInverseGamma(σ2:Expression<Real>) -> (Real, Real, Real) {
+    assert false;
+  }
+
+  /**
+   * If `isScaledInverseGamma()`, set its parameters, otherwise undefined.
+   */
+  function setScaledInverseGamma(σ2:Expression<Real>, θ:(Real, Real)) {
+    assert false;
+  }
+
+  /**
+   * Does this evaluate to a normal inverse Gamma distribution with the given
+   * inverse gamma marginal?
+   */
+  function isNormalInverseGamma(σ2:Expression<Real>) -> Boolean {
+    return false;
+  }
+  
+  /**
+   * If `isNormalInverseGamma()`, get its parameters, otherwise undefined.
+   */
+  function getNormalInverseGamma(σ2:Expression<Real>) -> (Real, Real, Real, Real) {
+    assert false;
+  }
+
+  /**
+   * If `isNormalInverseGamma()`, set its parameters, otherwise undefined.
+   */
+  function setNormalInverseGamma(σ2:Expression<Real>, θ:(Real, Real, Real, Real)) {
+    assert false;
+  }
+
+  /**
    * Does this evaluate to a Dirichlet distribution?
    */
   function isDirichlet() -> Boolean {

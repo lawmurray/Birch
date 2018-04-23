@@ -1,5 +1,31 @@
 /**
  * Gaussian distribution.
+ *
+ * ### Unknown mean and variance
+ *
+ * Normal inverse-gamma distribution. This represents the joint
+ * distribution:
+ *
+ * $$x \mid \sigma^2 \sim \mathrm{N}(\mu, a^2 \sigma^2),$$
+ * $$\sigma^2 \sim \Gamma^{-1}(\alpha, \beta).$$
+ *
+ * which may be denoted:
+ *
+ * $$(x, \sigma^2) \sim \mathrm{N-}\Gamma^{-1}(\mu, a^2, \alpha, \beta),$$
+ *
+ * and is the conjugate prior of a Gaussian distribution with both
+ * unknown mean and unknown variance.
+ *
+ * It is established via code such as the following:
+ *
+ *     σ2 ~ InverseGamma(α, β);
+ *     x ~ Gaussian(μ, a2*σ2);
+ *     y ~ Gaussian(x, σ2);
+ *
+ * where the last argument in the distribution of `y` appears in the
+ * last argument of the distribution of `x`. The operation of `a2` on
+ * `σ2` may be multiplication on left (as above) or right, or division
+ * on right.
  */
 class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Random<Real> {
   /**
@@ -64,8 +90,44 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Random<Real> {
     (μ_p, σ2_p) <- θ;
   }
 
+  function isAffineGaussian() -> Boolean {
+    return isMissing();
+  }
+
+  function getAffineGaussian() -> (Real, Real, Real, Real) {
+    return (1.0, μ_p, σ2_p, 0.0);
+  }
+
+  function setAffineGaussian(θ:(Real, Real)) {
+    (μ_p, σ2_p) <- θ;
+  }
+
+  function isNormalInverseGamma(σ2:Expression<Real>) -> Boolean {
+    return σ2.isScaledInverseGamma(σ2);
+  }
+  
+  function getNormalInverseGamma(σ2:Expression<Real>) -> (Real, Real, Real, Real) {
+    a2:Real;
+    α:Real;
+    β:Real;
+    (a2, α, β) <- σ2.getScaledInverseGamma(σ2);
+    // ^ a2 is ignored, initializes σ2_p but may have since been updated
+    return (μ_p, σ2_p, α, β);
+  }
+
+  function setNormalInverseGamma(σ2:Expression<Real>, θ:(Real, Real, Real, Real)) {
+    α:Real;
+    β:Real;
+    (μ_p, σ2_p, α, β) <- θ;
+    σ2.setScaledInverseGamma(σ2, (α, β));
+  }
+  
   function doParent() -> Delay? {
-    if (μ.isGaussian() || μ.isAffineGaussian()) {
+    if (μ.isNormalInverseGamma(σ2)) {
+      return μ;
+    } else if (σ2.isInverseGamma()) {
+      return σ2;
+    } else if (μ.isGaussian() || μ.isAffineGaussian()) {
       return μ;
     } else {
       return nil;
@@ -73,7 +135,14 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Random<Real> {
   }
 
   function doMarginalize() {
-    if (μ.isGaussian()) {
+    if (μ.isNormalInverseGamma(σ2)) {
+      α:Real;
+      β:Real;
+      (μ_m, σ2_m, α, β) <- μ.getNormalInverseGamma(σ2);
+    } else if (σ2.isInverseGamma()) {
+      μ_m <- μ.value();
+      σ2_m <- 1.0;
+    } else if (μ.isGaussian()) {
       (μ_0, σ2_0) <- μ.getGaussian();
       μ_m <- μ_0;
       σ2_m <- σ2_0 + σ2.value();
@@ -90,15 +159,52 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Random<Real> {
   }
 
   function doSimulate() -> Real {
-    return simulate_gaussian(μ_p, σ2_p);
+    μ1:Real;
+    a2:Real;
+    α:Real;
+    β:Real;
+    
+    if (μ.isNormalInverseGamma(σ2)) {
+      (μ1, a2, α, β) <- μ.getNormalInverseGamma(σ2);
+      return simulate_normal_inverse_gamma_gaussian(μ1, a2, α, β);
+    } else if (σ2.isInverseGamma()) {
+      (α, β) <- σ2.getInverseGamma();
+      return simulate_inverse_gamma_gaussian(μ.value(), α, β);
+    } else {
+      return simulate_gaussian(μ_p, σ2_p);
+    }
   }
   
   function doObserve(x:Real) -> Real {
-    return observe_gaussian(x, μ_p, σ2_p);
+    μ1:Real;
+    a2:Real;
+    α:Real;
+    β:Real;
+    
+    if (μ.isNormalInverseGamma(σ2)) {
+      (μ1, a2, α, β) <- μ.getNormalInverseGamma(σ2);
+      return observe_normal_inverse_gamma_gaussian(x, μ1, a2, α, β);
+    } else if (σ2.isInverseGamma()) {
+      (α, β) <- σ2.getInverseGamma();
+      return observe_inverse_gamma_gaussian(x, μ.value(), α, β);
+    } else {
+      return observe_gaussian(x, μ_p, σ2_p);
+    }
   }
 
   function doCondition(x:Real) {
-    if (μ.isGaussian()) {
+    μ1:Real;
+    a2:Real;
+    α:Real;
+    β:Real;
+    
+    if (μ.isNormalInverseGamma(σ2)) {
+      (μ1, a2, α, β) <- μ.getNormalInverseGamma(σ2);
+      μ.setNormalInverseGamma(σ2, update_normal_inverse_gamma_gaussian(x, μ1, a2, α, β));
+    } else if (σ2.isInverseGamma()) {
+      (α, β) <- σ2.getInverseGamma();
+      σ2.setInverseGamma(update_inverse_gamma_gaussian(x, μ.value(), α, β));
+    } else if (μ.isGaussian()) {
       μ.setGaussian(update_gaussian_gaussian(x, μ_0, σ2_0, μ_m, σ2_m));
     } else if (μ.isAffineGaussian()) {
       μ.setAffineGaussian(update_affine_gaussian_gaussian(x, a, μ_0, σ2_0, μ_m, σ2_m));
