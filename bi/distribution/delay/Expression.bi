@@ -28,6 +28,17 @@ class Expression<Value> < Delay {
   }
   
   /**
+   * Observe the value.
+   *
+   * - x: The observed value.
+   *
+   * Returns: the log likelihood.
+   */
+  function observe(x:Value) -> Real {
+    assert false;
+  }
+  
+  /**
    * Are the values of any random variables within this expression missing?
    */
   function isMissing() -> Boolean {

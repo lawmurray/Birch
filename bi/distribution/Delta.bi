@@ -8,12 +8,32 @@ class Delta(μ:Expression<Integer>) < Random<Integer> {
    */
   μ:Expression<Integer> <- μ;
 
+  function doParent() -> Delay? {
+    if (μ.isMissing()) {
+      return μ;
+    } else {
+      return nil;
+    }
+  }
+
+  function doMarginalize() {
+    //
+  }
+
   function doSimulate() -> Integer {
     return simulate_delta(μ.value());
   }
   
   function doObserve(x:Integer) -> Real {
-    return observe_delta(x, μ.value());
+    if (μ.isMissing()) {
+      return μ.observe(x);
+    } else {
+      return observe_delta(x, μ.value());
+    }
+  }
+
+  function doCondition(x:Integer) {
+    //
   }
 }
 

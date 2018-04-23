@@ -36,7 +36,6 @@ class Random<Value> < Expression<Value> {
    * Value assignment.
    */
   operator <- x:Value {
-    assert isUninitialized();
     this.x <- x;
     realize();
   }
@@ -45,7 +44,6 @@ class Random<Value> < Expression<Value> {
    * Optional value assignment.
    */
   operator <- x:Value? {
-    assert isUninitialized();
     if (x?) {
       this.x <- x;
       realize();
