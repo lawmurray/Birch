@@ -1,10 +1,10 @@
 /*
  * Node states for delayed sampling.
  */
-UNINITIALIZED:Integer <- 0;
-INITIALIZED:Integer <- 1;
-MARGINALIZED:Integer <- 2;
-REALIZED:Integer <- 3;
+UNINITIALIZED:Integer8 <- 0;
+INITIALIZED:Integer8 <- 1;
+MARGINALIZED:Integer8 <- 2;
+REALIZED:Integer8 <- 3;
 
 /**
  * Random variate.
@@ -30,7 +30,7 @@ class Random<Value> < Expression<Value> {
   /**
    * State of the variate.
    */
-  state:Integer <- UNINITIALIZED;
+  state:Integer8 <- UNINITIALIZED;
 
   /**
    * Value assignment.

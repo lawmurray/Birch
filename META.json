@@ -36,6 +36,7 @@
       "bi/distribution/delay/Delay.bi",
       "bi/distribution/delay/Expression.bi",
       "bi/distribution/delay/Random.bi",
+      "bi/distribution/expression/Add.bi",
       "bi/distribution/expression/Literal.bi",
       "bi/distribution/expression/Multiply.bi",
       "bi/distribution/Beta.bi",
