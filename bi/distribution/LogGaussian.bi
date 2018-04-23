@@ -12,12 +12,85 @@ class LogGaussian(μ:Expression<Real>, σ2:Expression<Real>) < Random<Real> {
    */
   σ2:Expression<Real> <- σ2;
 
+  /**
+   * Marginal mean.
+   */
+  μ_m:Real;
+  
+  /**
+   * Marginal variance
+   */
+  σ2_m:Real;
+  
+  /**
+   * Updated mean.
+   */
+  μ_p:Real;
+  
+  /**
+   * Updated variance.
+   */
+  σ2_p:Real;
+
+  /**
+   * Prior mean on `μ`;
+   */
+  μ_0:Real;
+
+  /**
+   * Prior variance on `σ2`;
+   */
+  σ2_0:Real;
+
+  /**
+   * Scaling of `μ` for affine transformation.
+   */
+  a:Real;
+
+  /**
+   * Translation of `μ` for affine transformation.
+   */
+  c:Real;
+
+  function doParent() -> Delay? {
+    if (μ.isGaussian() || μ.isAffineGaussian()) {
+      return μ;
+    } else {
+      return nil;
+    }
+  }
+
+  function doMarginalize() {
+    if (μ.isGaussian()) {
+      (μ_0, σ2_0) <- μ.getGaussian();
+      μ_m <- μ_0;
+      σ2_m <- σ2_0 + σ2.value();
+    } else if (μ.isAffineGaussian()) {
+      (a, μ_0, σ2_0, c) <- μ.getAffineGaussian();
+      μ_m <- a*μ_0 + c;
+      σ2_m <- a*a*σ2_0 + σ2.value();
+    } else {
+      μ_m <- μ.value();
+      σ2_m <- σ2.value();
+    }
+    μ_p <- μ_m;
+    σ2_p <- σ2_m;
+  }
+
   function doSimulate() -> Real {
-    return simulate_log_gaussian(μ.value(), σ2.value());
+    return simulate_log_gaussian(μ_p, σ2_p);
   }
   
   function doObserve(x:Real) -> Real {
-    return observe_log_gaussian(value(), μ.value(), σ2.value());
+    return observe_log_gaussian(x, μ_p, σ2_p);
+  }
+
+  function doCondition(x:Real) {
+    if (μ.isGaussian()) {
+      μ.setGaussian(update_gaussian_gaussian(log(x), μ_0, σ2_0, μ_m, σ2_m));
+    } else if (μ.isAffineGaussian()) {
+      μ.setAffineGaussian(update_affine_gaussian_gaussian(log(x), a, μ_0, σ2_0, μ_m, σ2_m));
+    }
   }
 }
 

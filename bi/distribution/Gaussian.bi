@@ -65,7 +65,7 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Random<Real> {
   }
 
   function doParent() -> Delay? {
-    if (μ.isGaussian()) {
+    if (μ.isGaussian() || μ.isAffineGaussian()) {
       return μ;
     } else {
       return nil;

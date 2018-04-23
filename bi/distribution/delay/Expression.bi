@@ -5,7 +5,7 @@
  */
 class Expression<Value> < Delay {  
   /**
-   * Memoized result of expression.
+   * Memoized result of evaluation.
    */
   x:Value?;
 
