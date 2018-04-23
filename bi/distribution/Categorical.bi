@@ -1,30 +1,26 @@
 /**
  * Categorical distribution.
  */
-class Categorical<Type1>(ρ:Type1) < Random<Integer> {
+class Categorical(ρ:Expression<Real[_]>) < Random<Integer> {
   /**
    * Category probabilities.
    */
-  ρ:Type1 <- ρ;
-
-  function update(ρ:Type1) {
-    this.ρ <- ρ;
-  }
+  ρ:Expression<Real[_]> <- ρ;
 
   function doSimulate()-> Integer {
-    return simulate_categorical(global.value(ρ));
+    return simulate_categorical(ρ.value());
   }
   
   function doObserve(x:Integer) -> Real {
-    return observe_categorical(x, global.value(ρ));
+    return observe_categorical(x, ρ.value());
   }
 }
 
 /**
  * Create categorical distribution.
  */
-function Categorical(ρ:Real[_]) -> Categorical<Real[_]> {
-  m:Categorical<Real[_]>(ρ);
+function Categorical(ρ:Expression<Real[_]>) -> Categorical {
+  m:Categorical(ρ);
   m.initialize();
   return m;
 }
@@ -32,8 +28,6 @@ function Categorical(ρ:Real[_]) -> Categorical<Real[_]> {
 /**
  * Create categorical distribution.
  */
-function Categorical(ρ:Expression<Real[_]>) -> Categorical<Expression<Real[_]>> {
-  m:Categorical<Expression<Real[_]>>(ρ);
-  m.initialize();
-  return m;
+function Categorical(ρ:Real[_]) -> Categorical {
+  return Categorical(Literal(ρ));
 }

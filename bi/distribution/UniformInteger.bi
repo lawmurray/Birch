@@ -1,36 +1,31 @@
 /**
  * Uniform distribution over integers.
  */
-class UniformInteger<Type1,Type2>(l:Type1, u:Type2) < Random<Integer> {
+class UniformInteger(l:Expression<Integer>, u:Expression<Integer>) < Random<Integer> {
   /**
    * Lower bound.
    */
-  l:Type1 <- l;
+  l:Expression<Integer> <- l;
   
   /**
    * Upper bound.
    */
-  u:Type2 <- u;
+  u:Expression<Integer> <- u;
 
-  function update(l:Type1, u:Type2) {
-    this.l <- l;
-    this.u <- u;
-  }
-
-  function doRealize() -> Integer {
-    return simulate_int_uniform(global.value(l), global.value(u));
+  function doSimulate() -> Integer {
+    return simulate_int_uniform(l.value(), u.value());
   }
   
   function doObserve(x:Integer) -> Real {
-    return observe_int_uniform(x, global.value(l), global.value(u));
+    return observe_int_uniform(x, l.value(), u.value());
   }
 }
 
 /**
  * Create uniform distribution over integers.
  */
-function Uniform(l:Integer, u:Integer) -> UniformInteger<Integer,Integer> {
-  m:UniformInteger<Integer,Integer>(l, u);
+function Uniform(l:Expression<Integer>, u:Expression<Integer>) -> UniformInteger {
+  m:UniformInteger(l, u);
   m.initialize();
   return m;
 }
@@ -38,29 +33,20 @@ function Uniform(l:Integer, u:Integer) -> UniformInteger<Integer,Integer> {
 /**
  * Create uniform distribution over integers.
  */
-function Uniform(l:Expression<Integer>, u:Integer) ->
-    UniformInteger<Expression<Integer>,Integer> {
-  m:UniformInteger<Expression<Integer>,Integer>(l, u);
-  m.initialize();
-  return m;
+function Uniform(l:Expression<Integer>, u:Integer) -> UniformInteger {
+  return Uniform(l, Literal(u));
 }
 
 /**
  * Create uniform distribution over integers.
  */
-function Uniform(l:Integer, u:Expression<Integer>) ->
-    UniformInteger<Integer,Expression<Integer>> {
-  m:UniformInteger<Integer,Expression<Integer>>(l, u);
-  m.initialize();
-  return m;
+function Uniform(l:Integer, u:Expression<Integer>) -> UniformInteger {
+  return Uniform(Literal(l), u);
 }
 
 /**
  * Create uniform distribution over integers.
  */
-function Uniform(l:Expression<Integer>, u:Expression<Integer>) ->
-    UniformInteger<Expression<Integer>,Expression<Integer>> {
-  m:UniformInteger<Expression<Integer>,Expression<Integer>>(l, u);
-  m.initialize();
-  return m;
+function Uniform(l:Integer, u:Integer) -> UniformInteger {
+  return Uniform(Literal(l), Literal(u));
 }

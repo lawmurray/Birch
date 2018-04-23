@@ -1,37 +1,31 @@
 /**
  * Negative binomial distribution.
  */
-class NegativeBinomial<Type1,Type2>(k:Type1, ρ:Type2) < Random<Integer> {
+class NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) < Random<Integer> {
   /**
    * Number of successes before the experiment is stopped.
    */
-  k:Type1 <- k;
+  k:Expression<Integer> <- k;
 
   /**
    * Probability of success.
    */
-  ρ:Type2 <- ρ;
-
-  function update(k:Type1, ρ:Type2) {
-    this.k <- k;
-    this.ρ <- ρ;
-  }
+  ρ:Expression<Real> <- ρ;
 
   function doSimulate() -> Integer {
-    return simulate_negative_binomial(global.value(k), global.value(ρ));
+    return simulate_negative_binomial(k.value(), ρ.value());
   }
   
   function doObserve(x:Integer) -> Real {
-    return observe_negative_binomial(x, global.value(k), global.value(ρ));
+    return observe_negative_binomial(x, k.value(), ρ.value());
   }
 }
 
 /**
  * Create negative binomial distribution.
  */
-function NegativeBinomial(k:Integer, ρ:Real) ->
-    NegativeBinomial<Integer,Real> {
-  m:NegativeBinomial<Integer,Real>(k, ρ);
+function NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) -> NegativeBinomial {
+  m:NegativeBinomial(k, ρ);
   m.initialize();
   return m;
 }
@@ -39,29 +33,20 @@ function NegativeBinomial(k:Integer, ρ:Real) ->
 /**
  * Create negative binomial distribution.
  */
-function NegativeBinomial(k:Expression<Integer>, ρ:Real) ->
-    NegativeBinomial<Expression<Integer>,Real> {
-  m:NegativeBinomial<Expression<Integer>,Real>(k, ρ);
-  m.initialize();
-  return m;
+function NegativeBinomial(k:Expression<Integer>, ρ:Real) -> NegativeBinomial {
+  return NegativeBinomial(k, Literal(ρ));
 }
 
 /**
  * Create negative binomial distribution.
  */
-function NegativeBinomial(k:Integer, ρ:Expression<Real>) ->
-    NegativeBinomial<Integer,Expression<Real>> {
-  m:NegativeBinomial<Integer,Expression<Real>>(k, ρ);
-  m.initialize();
-  return m;
+function NegativeBinomial(k:Integer, ρ:Expression<Real>) -> NegativeBinomial {
+  return NegativeBinomial(Literal(k), ρ);
 }
 
 /**
  * Create negative binomial distribution.
  */
-function NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) ->
-    NegativeBinomial<Expression<Integer>,Expression<Real>> {
-  m:NegativeBinomial<Expression<Integer>,Expression<Real>>(k, ρ);
-  m.initialize();
-  return m;
+function NegativeBinomial(k:Integer, ρ:Real) -> NegativeBinomial {
+  return NegativeBinomial(Literal(k), Literal(ρ));
 }

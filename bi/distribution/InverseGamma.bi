@@ -1,37 +1,31 @@
 /**
  * Inverse-gamma distribution.
  */
-class InverseGamma<Type1,Type2>(α:Type1, β:Type2) < Random<Real> {
+class InverseGamma(α:Expression<Real>, β:Expression<Real>) < Random<Real> {
   /**
    * Shape.
    */
-  α:Type1 <- α;
+  α:Expression<Real> <- α;
   
   /**
    * Scale.
    */
-  β:Type2 <- β;
-
-  function update(α:Type1, β:Type2) {
-    this.α <- α;
-    this.β <- β;
-  }
+  β:Expression<Real> <- β;
 
   function doSimulate() -> Real {
-    return simulate_inverse_gamma(global.value(α), global.value(β));
+    return simulate_inverse_gamma(α.value(), β.value());
   }
   
   function doObserve(x:Real) -> Real {
-    return observe_inverse_gamma(x, global.value(α), global.value(β));
+    return observe_inverse_gamma(x, α.value(), β.value());
   }
 }
 
 /**
  * Create inverse-gamma distribution.
  */
-function InverseGamma(α:Real, β:Real) ->
-    InverseGamma<Real,Real> {
-  m:InverseGamma<Real,Real>(α, β);
+function InverseGamma(α:Expression<Real>, β:Expression<Real>) -> InverseGamma {
+  m:InverseGamma(α, β);
   m.initialize();
   return m;
 }
@@ -39,29 +33,20 @@ function InverseGamma(α:Real, β:Real) ->
 /**
  * Create inverse-gamma distribution.
  */
-function InverseGamma(α:Expression<Real>, β:Real) ->
-    InverseGamma<Expression<Real>,Real> {
-  m:InverseGamma<Expression<Real>,Real>(α, β);
-  m.initialize();
-  return m;
+function InverseGamma(α:Expression<Real>, β:Real) -> InverseGamma {
+  return InverseGamma(α, Literal(β));
 }
 
 /**
  * Create inverse-gamma distribution.
  */
-function InverseGamma(α:Real, β:Expression<Real>) ->
-    InverseGamma<Real,Expression<Real>> {
-  m:InverseGamma<Real,Expression<Real>>(α, β);
-  m.initialize();
-  return m;
+function InverseGamma(α:Real, β:Expression<Real>) -> InverseGamma {
+  return InverseGamma(Literal(α), β);
 }
 
 /**
  * Create inverse-gamma distribution.
  */
-function InverseGamma(α:Expression<Real>, β:Expression<Real>) ->
-    InverseGamma<Expression<Real>,Expression<Real>> {
-  m:InverseGamma<Expression<Real>,Expression<Real>>(α, β);
-  m.initialize();
-  return m;
+function InverseGamma(α:Real, β:Real) -> InverseGamma {
+  return InverseGamma(Literal(α), Literal(β));
 }

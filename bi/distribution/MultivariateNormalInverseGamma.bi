@@ -23,40 +23,29 @@
  * `σ2` may be multiplication on left (as above) or right, or division
  * on right.
  */
-class MultivariateNormalInverseGamma < Random<Real[_]> {
+class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
+    Λ:Expression<Real[_,_]>, σ2:Expression<Real>) < Random<Real[_]> {
   /**
    * Mean.
    */
-  μ:Real[_];
+  μ:Expression<Real[_]> <- μ;
 
   /**
    * Precision.
    */
-  Λ:Real[_,_];
+  Λ:Expression<Real[_,_]> <- Λ;
   
   /**
    * Variance scale.
    */
-  σ2:InverseGamma;
+  σ2:Expression<Real> <- σ2;
 
-  function initialize(μ:Real[_], Λ:Real[_,_], σ2:InverseGamma) {
-    super.initialize(σ2);
-    this.μ <- μ;
-    this.Λ <- Λ;
-    this.σ2 <- σ2;
-  }
-
-  function update(μ:Real[_], Λ:Real[_,_]) {
-    this.μ <- μ;
-    this.Λ <- Λ;
-  }
-
-  function doCondition() {
+  /*function doCondition() {
     α:Real;
     β:Real;
     (α, β) <- update_multivariate_normal_inverse_gamma(value(), μ, Λ, σ2.α, σ2.β);
     σ2.update(α, β);
-  }
+  }*/
 
   function doSimulate() -> Real[_] {
     if (σ2.isRealized()) {
@@ -78,7 +67,7 @@ class MultivariateNormalInverseGamma < Random<Real[_]> {
 /**
  * Create Gaussian distribution.
  */
-function Gaussian(μ:Real[_], Σ:MatrixScalarExpression) -> Random<Real[_]> {
+/*function Gaussian(μ:Real[_], Σ:MatrixScalarExpression) -> Random<Real[_]> {
   assert length(μ) == rows(Σ.A);
   assert length(μ) > 0;
   
@@ -90,4 +79,4 @@ function Gaussian(μ:Real[_], Σ:MatrixScalarExpression) -> Random<Real[_]> {
   } else {
     return Gaussian(μ, Σ.value());
   }
-}
+}*/

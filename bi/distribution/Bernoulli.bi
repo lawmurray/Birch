@@ -1,30 +1,26 @@
 /**
  * Bernoulli distribution.
  */
-class Bernoulli<Type1>(ρ:Type1) < Random<Boolean> {
+class Bernoulli(ρ:Expression<Real>) < Random<Boolean> {
   /**
    * Probability of a true result.
    */
-  ρ:Type1 <- ρ;
-
-  function update(ρ:Type1) {
-    this.ρ <- ρ;
-  }
+  ρ:Expression<Real> <- ρ;
 
   function doSimulate() -> Boolean {
-    return simulate_bernoulli(ρ);
+    return simulate_bernoulli(ρ.value());
   }
   
   function doObserve(x:Boolean) -> Real {
-    return observe_bernoulli(x, ρ);
+    return observe_bernoulli(x, ρ.value());
   }
 }
 
 /**
  * Create Bernoulli distribution.
  */
-function Bernoulli(ρ:Real) -> Bernoulli<Real> {
-  m:Bernoulli<Real>(ρ);
+function Bernoulli(ρ:Expression<Real>) -> Bernoulli {
+  m:Bernoulli(ρ);
   m.initialize();
   return m;
 }
@@ -32,8 +28,6 @@ function Bernoulli(ρ:Real) -> Bernoulli<Real> {
 /**
  * Create Bernoulli distribution.
  */
-function Bernoulli(ρ:Expression<Real>) -> Bernoulli<Expression<Real>> {
-  m:Bernoulli<Expression<Real>>(ρ);
-  m.initialize();
-  return m;
+function Bernoulli(ρ:Real) -> Bernoulli {
+  return Bernoulli(Literal(ρ));
 }

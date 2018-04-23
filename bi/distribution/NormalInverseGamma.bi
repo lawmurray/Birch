@@ -82,7 +82,7 @@ class NormalInverseGamma < Random<Real> {
 /**
  * Create Gaussian distribution.
  */
-function Gaussian(μ:Real, σ2:AffineExpression) -> Random<Real> {
+/*function Gaussian(μ:Real, σ2:AffineExpression) -> Random<Real> {
   s2:InverseGamma? <- InverseGamma?(σ2.x);
   if (s2? && σ2.a > 0.0 && σ2.c == 0.0) {
     x:NormalInverseGamma;
@@ -91,4 +91,4 @@ function Gaussian(μ:Real, σ2:AffineExpression) -> Random<Real> {
   } else {
     return Gaussian(μ, σ2.value());
   }
-}
+}*/

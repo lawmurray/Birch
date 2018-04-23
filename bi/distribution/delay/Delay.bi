@@ -16,7 +16,7 @@ class Delay {
   parent:Delay?;
   
   /**
-   * Child, if one exists and it is on the M-path.
+   * Child, if one exists and it is on the $M$-path.
    */
   child:Delay&;
   
@@ -29,21 +29,6 @@ class Delay {
    * State of the variate.
    */
   state:Integer <- UNINITIALIZED;
-    
-  /**
-   * Is this a root node?
-   */
-  function isRoot() -> Boolean {
-    return !(parent?);
-  }
-  
-  /**
-   * Is this the terminal node of an M-path?
-   */
-  function isTerminal() -> Boolean {
-    child:Delay? <- this.child;
-    return isMarginalized() && !(child?);
-  }
 
   /**
    * Is this node in the uninitialized state?
@@ -74,24 +59,14 @@ class Delay {
   }
 
   /**
-   * Initialize as a root node.
+   * Initialize.
    */
   function initialize() {
     this.state <- INITIALIZED;
   }
-  
-  /**
-   * Initialize as a non-root node.
-   *
-   * - parent: The parent node.
-   */
-  function initialize(parent:Delay) {
-    this.parent <- parent;
-    this.state <- INITIALIZED;
-  }
 
   /**
-   * Marginalize the variate.
+   * Marginalize.
    */
   function marginalize() {
     assert isInitialized();
@@ -101,7 +76,7 @@ class Delay {
   }
   
   /**
-   * Realize the variate.
+   * Realize (simulate or observe).
    */
   function realize() {
     assert !isRealized();
@@ -112,7 +87,7 @@ class Delay {
       graft();
       state <- REALIZED;
       if (parent?) {
-        parent!.removeChild();
+        parent!.child <- nil;
         // ^ doing this now makes the parent a terminal node, so that within
         //   doRealize(), realization of the parent can be forced also for
         //   deterministic relationships (e.g. see Delta class)
@@ -124,22 +99,31 @@ class Delay {
           //   within the support
           doCondition();
         }
-        removeParent();
+        parent <- nil;
       }
     }
   }
   
   /**
-   * Graft the M-path to this node.
+   * Select a parent. This is used for lazy construction of the $M$-path,
+   * allowing each node to select its parent only when required.
+   */
+  function attach() {
+    parent <- doParent();
+  }
+  
+  /**
+   * Graft the $M$-path to this node.
    */
   function graft() {
     if (isMarginalized()) {
       child:Delay? <- this.child;
       if (child?) {
         child!.prune();
-        removeChild();
+        child <- nil;
       }
     } else if (isInitialized()) {
+      attach();
       if (parent?) {
         parent!.graft(this);
       }
@@ -148,17 +132,17 @@ class Delay {
   }
 
   /**
-   * Graft the M-path to this node.
+   * Graft the $M$-path to this node.
    *
-   * - c: The child node (caller) that will itself be part of the M-path.
+   * - c: The child node (caller) that will itself be part of the $M$-path.
    */
   function graft(c:Delay) {
     graft();
-    setChild(c);
+    child <- c;
   }
   
   /**
-   * Prune the M-path from below this node.
+   * Prune the $M$-path from below this node.
    */
   function prune() {
     assert isMarginalized();
@@ -166,48 +150,35 @@ class Delay {
     child:Delay? <- this.child;
     if (child?) {
       child!.prune();
-      removeChild();
+      child <- nil;
     }
     realize();
   }
-
+  
   /**
-   * Set the parent.
+   * Node-specific parent selection.
    */
-  function setParent(u:Delay) {
-    parent <- u;
-  }
-
-  /**
-   * Remove the parent.
-   */
-  function removeParent() {
-    parent <- nil;
-  }
-
-  /**
-   * Set the child.
-   */
-  function setChild(u:Delay) {
-    child <- u;
-  }
-
-  /**
-   * Remove the child.
-   */
-  function removeChild() {
-    child <- nil;
+  function doParent() -> Delay? {
+    return nil;
   }
   
-  /*
-   * Derived type requirements.
+  /**
+   * Node-specific marginalization.
    */
   function doMarginalize() {
     //
   }
+  
+  /**
+   * Node-specific conditioning.
+   */
   function doCondition() {
     assert false;
   }
+  
+  /**
+   * Node-specific realization.
+   */
   function doRealize() {
     assert false;
   }

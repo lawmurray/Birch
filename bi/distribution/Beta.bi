@@ -1,31 +1,31 @@
 /**
  * Beta distribution.
  */
-class Beta<Type1,Type2>(α:Type1, β:Type2) < Random<Real> {
+class Beta(α:Expression<Real>, β:Expression<Real>) < Random<Real> {
   /**
    * First shape parameter.
    */
-  α:Type1 <- α;
+  α:Expression<Real> <- α;
 
   /**
    * Second shape parameter.
    */
-  β:Type2 <- β;
+  β:Expression<Real> <- β;
 
   function doSimulate() -> Real {
-    return simulate_beta(global.value(α), global.value(β));
+    return simulate_beta(α.value(), β.value());
   }
   
   function doObserve(x:Real) -> Real {
-    return observe_beta(x, global.value(α), global.value(β));
+    return observe_beta(x, α.value(), β.value());
   }
 }
 
 /**
  * Create beta distribution.
  */
-function Beta(α:Real, β:Real) -> Beta<Real,Real> {
-  m:Beta<Real,Real>(α, β);
+function Beta(α:Expression<Real>, β:Expression<Real>) -> Beta {
+  m:Beta(α, β);
   m.initialize();
   return m;
 }
@@ -33,27 +33,20 @@ function Beta(α:Real, β:Real) -> Beta<Real,Real> {
 /**
  * Create beta distribution.
  */
-function Beta(α:Expression<Real>, β:Real) -> Beta<Expression<Real>,Real> {
-  m:Beta<Expression<Real>,Real>(α, β);
-  m.initialize();
-  return m;
+function Beta(α:Expression<Real>, β:Real) -> Beta {
+  return Beta(α, Literal(β));
 }
 
 /**
  * Create beta distribution.
  */
-function Beta(α:Real, β:Expression<Real>) -> Beta<Real,Expression<Real>> {
-  m:Beta<Real,Expression<Real>>(α, β);
-  m.initialize();
-  return m;
+function Beta(α:Real, β:Expression<Real>) -> Beta {
+  return Beta(Literal(α), β);
 }
 
 /**
  * Create beta distribution.
  */
-function Beta(α:Expression<Real>, β:Expression<Real>) ->
-    Beta<Expression<Real>,Expression<Real>> {
-  m:Beta<Expression<Real>,Expression<Real>>(α, β);
-  m.initialize();
-  return m;
+function Beta(α:Real, β:Real) -> Beta {
+  return Beta(Literal(α), Literal(β));
 }

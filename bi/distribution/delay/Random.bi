@@ -5,11 +5,6 @@
  */
 class Random<Value> < Expression<Value> {
   /**
-   * Value.
-   */
-  x:Value?;
-
-  /**
    * Value assignment.
    */
   operator <- x:Value {
@@ -53,7 +48,7 @@ class Random<Value> < Expression<Value> {
    */
   function simulate() -> Value {
     realize();
-    return x;
+    return x!;
   }
   
   /**
@@ -73,7 +68,7 @@ class Random<Value> < Expression<Value> {
     if (isMissing()) {
       x <- doSimulate();
     } else {
-      w <- doObserve(x);
+      w <- doObserve(x!);
     }
   }
   

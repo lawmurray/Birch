@@ -1,31 +1,31 @@
 /**
  * Binomial distribution.
  */
-class Binomial<Type1,Type2>(n:Type1, ρ:Type2) < Random<Integer> {
+class Binomial(n:Expression<Integer>, ρ:Expression<Real>) < Random<Integer> {
   /**
    * Number of trials.
    */
-  n:Type1 <- n;
+  n:Expression<Integer> <- n;
 
   /**
    * Probability of a true result.
    */
-  ρ:Type2 <- ρ;
+  ρ:Expression<Real> <- ρ;
 
   function doSimulate() -> Integer {
-    return simulate_binomial(global.value(n), global.value(ρ));
+    return simulate_binomial(n.value(), ρ.value());
   }
   
   function doObserve(x:Integer) -> Real {
-    return observe_binomial(x, global.value(n), global.value(ρ));
+    return observe_binomial(x, n.value(), ρ.value());
   }
 }
 
 /**
  * Create binomial distribution.
  */
-function Binomial(n:Integer, ρ:Real) -> Binomial<Integer,Real> {
-  m:Binomial<Integer,Real>(n, ρ);
+function Binomial(n:Expression<Integer>, ρ:Expression<Real>) -> Binomial {
+  m:Binomial(n, ρ);
   m.initialize();
   return m;
 }
@@ -33,29 +33,20 @@ function Binomial(n:Integer, ρ:Real) -> Binomial<Integer,Real> {
 /**
  * Create binomial distribution.
  */
-function Binomial(n:Expression<Integer>, ρ:Real) ->
-    Binomial<Expression<Integer>,Real> {
-  m:Binomial<Expression<Integer>,Real>(n, ρ);
-  m.initialize();
-  return m;
+function Binomial(n:Expression<Integer>, ρ:Real) -> Binomial {
+  return Binomial(n, Literal(ρ));
 }
 
 /**
  * Create binomial distribution.
  */
-function Binomial(n:Integer, ρ:Expression<Real>) ->
-    Binomial<Integer,Expression<Real>> {
-  m:Binomial<Integer,Expression<Real>>(n, ρ);
-  m.initialize();
-  return m;
+function Binomial(n:Integer, ρ:Expression<Real>) -> Binomial {
+  return Binomial(Literal(n), ρ);
 }
 
 /**
  * Create binomial distribution.
  */
-function Binomial(n:Expression<Integer>, ρ:Expression<Real>) ->
-    Binomial<Expression<Integer>,Expression<Real>> {
-  m:Binomial<Expression<Integer>,Expression<Real>>(n, ρ);
-  m.initialize();
-  return m;
+function Binomial(n:Integer, ρ:Real) -> Binomial {
+  return Binomial(Literal(n), Literal(ρ));
 }

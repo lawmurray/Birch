@@ -5,6 +5,11 @@
  */
 class Expression<Value> < Delay {  
   /**
+   * Memoized result of expression.
+   */
+  x:Value?;
+
+  /**
    * Value conversion.
    */
   operator -> Value {
@@ -15,7 +20,11 @@ class Expression<Value> < Delay {
    * Value conversion.
    */
   function value() -> Value {
-    assert false;
+    if (!x?) {
+      x <- doValue();
+      assert x?;
+    }
+    return x!;
   }
   
   /**
@@ -24,100 +33,54 @@ class Expression<Value> < Delay {
   function isMissing() -> Boolean {
     assert false;
   }
-}
+  
+  /**
+   * Does this evaluate to a Gaussian distribution?
+   */
+  function isGaussian() -> Boolean {
+    assert false;
+  }
+  
+  /**
+   * If `isGaussian()`, get its parameters, otherwise undefined.
+   */
+  function getGaussian() -> (Real, Real) {
+    assert false;
+  }
 
-function value(x:Expression<Real>) -> Real {
-  return x.value();
-}
+  /**
+   * If `isGaussian()`, set its parameters, otherwise undefined.
+   */
+  function setGaussian(θ:(Real, Real)) {
+    assert false;
+  }
 
-function value(x:Expression<Integer>) -> Integer {
-  return x.value();
-}
+  /**
+   * Does this evaluate to an affine transformation of a Gaussian
+   * distribution?
+   */
+  function isAffineGaussian() -> Boolean {
+    assert false;
+  }
+  
+  /**
+   * If `isAffineGaussian()`, get its parameters, otherwise undefined.
+   */
+  function getAffineGaussian() -> (Real, Real, Real, Real) {
+    assert false;
+  }
 
-function value(x:Expression<Real[_]>) -> Real[_] {
-  return x.value();
-}
-
-function value(x:Expression<Integer[_]>) -> Integer[_] {
-  return x.value();
-}
-
-function value(x:Expression<Real[_,_]>) -> Real[_,_] {
-  return x.value();
-}
-
-function value(x:Expression<Integer[_,_]>) -> Integer[_,_] {
-  return x.value();
-}
-
-function value(x:Real) -> Real {
-  return x;
-}
-
-function value(x:Integer) -> Integer {
-  return x;
-}
-
-function value(x:Real[_]) -> Real[_] {
-  return x;
-}
-
-function value(x:Integer[_]) -> Integer[_] {
-  return x;
-}
-
-function value(x:Real[_,_]) -> Real[_,_] {
-  return x;
-}
-
-function value(x:Integer[_,_]) -> Integer[_,_] {
-  return x;
-}
-
-function isMissing(x:Expression<Real>) -> Boolean {
-  return x.isMissing();
-}
-
-function isMissing(x:Expression<Integer>) -> Boolean {
-  return x.isMissing();
-}
-
-function isMissing(x:Expression<Real[_]>) -> Boolean {
-  return x.isMissing();
-}
-
-function isMissing(x:Expression<Integer[_]>) -> Boolean {
-  return x.isMissing();
-}
-
-function isMissing(x:Expression<Real[_,_]>) -> Boolean {
-  return x.isMissing();
-}
-
-function isMissing(x:Expression<Integer[_,_]>) -> Boolean {
-  return x.isMissing();
-}
-
-function isMissing(x:Real) -> Boolean {
-  return false;
-}
-
-function isMissing(x:Integer) -> Boolean {
-  return false;
-}
-
-function isMissing(x:Real[_]) -> Boolean {
-  return false;
-}
-
-function isMissing(x:Integer[_]) -> Boolean {
-  return false;
-}
-
-function isMissing(x:Real[_,_]) -> Boolean {
-  return false;
-}
-
-function isMissing(x:Integer[_,_]) -> Boolean {
-  return false;
+  /**
+   * If `isAffineGaussian()`, set its parameters, otherwise undefined.
+   */
+  function setAffineGaussian(θ:(Real, Real)) {
+    assert false;
+  }
+  
+  /**
+   * Node-specific value.
+   */
+  function doValue() -> Value {
+    assert false;
+  }
 }

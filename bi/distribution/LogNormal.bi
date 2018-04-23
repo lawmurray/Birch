@@ -1,35 +1,32 @@
 /**
  * Synonym for LogGaussian.
  */
-class LogNormal<Type1,Type2> = LogGaussian<Type1,Type2>;
+class LogNormal = LogGaussian;
 
 /**
  * Create log-Gaussian distribution.
  */
-function LogNormal(μ:Real, σ2:Real) -> LogGaussian<Real,Real> {
+function LogNormal(μ:Expression<Real>, σ2:Expression<Real>) -> LogNormal {
   return LogGaussian(μ, σ2);
 }
 
 /**
  * Create log-Gaussian distribution.
  */
-function LogNormal(μ:Expression<Real>, σ2:Real) ->
-    LogGaussian<Expression<Real>,Real> {
+function LogNormal(μ:Expression<Real>, σ2:Real) -> LogNormal {
   return LogGaussian(μ, σ2);
 }
 
 /**
  * Create log-Gaussian distribution.
  */
-function LogNormal(μ:Real, σ2:Expression<Real>) ->
-    LogGaussian<Real,Expression<Real>> {
+function LogNormal(μ:Real, σ2:Expression<Real>) -> LogNormal {
   return LogGaussian(μ, σ2);
 }
 
 /**
  * Create log-Gaussian distribution.
  */
-function LogNormal(μ:Expression<Real>, σ2:Expression<Real>) ->
-    LogGaussian<Expression<Real>,Expression<Real>> {
+function LogNormal(μ:Real, σ2:Real) -> LogNormal {
   return LogGaussian(μ, σ2);
 }

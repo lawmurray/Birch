@@ -1,36 +1,31 @@
 /**
  * Log-Gaussian distribution.
  */
-class LogGaussian<Type1,Type2>(μ:Type1, σ2:Type2) < Random<Real> {
+class LogGaussian(μ:Expression<Real>, σ2:Expression<Real>) < Random<Real> {
   /**
    * Mean after log transformation.
    */
-  μ:Type1 <- μ;
+  μ:Expression<Real> <- μ;
   
   /**
    * Variance after log transformation.
    */
-  σ2:Type2 <- σ2;
-
-  function update(μ:Type1, σ2:Type2) {
-    this.μ <- μ;
-    this.σ2 <- σ2;
-  }
+  σ2:Expression<Real> <- σ2;
 
   function doSimulate() -> Real {
-    return simulate_log_gaussian(global.value(μ), global.value(σ2));
+    return simulate_log_gaussian(μ.value(), σ2.value());
   }
   
   function doObserve(x:Real) -> Real {
-    return observe_log_gaussian(value(), global.value(μ), global.value(σ2));
+    return observe_log_gaussian(value(), μ.value(), σ2.value());
   }
 }
 
 /**
  * Create log-Gaussian distribution.
  */
-function LogGaussian(μ:Real, σ2:Real) -> LogGaussian<Real,Real> {
-  m:LogGaussian<Real,Real>(μ, σ2);
+function LogGaussian(μ:Expression<Real>, σ2:Expression<Real>) -> LogGaussian {
+  m:LogGaussian(μ, σ2);
   m.initialize();
   return m;
 }
@@ -38,29 +33,20 @@ function LogGaussian(μ:Real, σ2:Real) -> LogGaussian<Real,Real> {
 /**
  * Create log-Gaussian distribution.
  */
-function LogGaussian(μ:Expression<Real>, σ2:Real) ->
-    LogGaussian<Expression<Real>,Real> {
-  m:LogGaussian<Expression<Real>,Real>(μ, σ2);
-  m.initialize();
-  return m;
+function LogGaussian(μ:Expression<Real>, σ2:Real) -> LogGaussian {
+  return LogGaussian(μ, Literal(σ2));
 }
 
 /**
  * Create log-Gaussian distribution.
  */
-function LogGaussian(μ:Real, σ2:Expression<Real>) ->
-    LogGaussian<Real,Expression<Real>> {
-  m:LogGaussian<Real,Expression<Real>>(μ, σ2);
-  m.initialize();
-  return m;
+function LogGaussian(μ:Real, σ2:Expression<Real>) -> LogGaussian {
+  return LogGaussian(Literal(μ), σ2);
 }
 
 /**
  * Create log-Gaussian distribution.
  */
-function LogGaussian(μ:Expression<Real>, σ2:Expression<Real>) ->
-    LogGaussian<Expression<Real>,Expression<Real>> {
-  m:LogGaussian<Expression<Real>,Expression<Real>>(μ, σ2);
-  m.initialize();
-  return m;
+function LogGaussian(μ:Real, σ2:Real) -> LogGaussian {
+  return LogGaussian(Literal(μ), Literal(σ2));
 }

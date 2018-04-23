@@ -1,36 +1,101 @@
 /**
  * Gaussian distribution.
  */
-class Gaussian<Type1,Type2>(μ:Type1, σ2:Type2) < Random<Real> {
+class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Random<Real> {
   /**
    * Mean.
    */
-  μ:Type1 <- μ;
+  μ:Expression<Real> <- μ;
   
   /**
    * Variance.
    */
-  σ2:Type2 <- σ2;
+  σ2:Expression<Real> <- σ2;
 
-  function update(μ:Type1, σ2:Type2) {
-    this.μ <- μ;
-    this.σ2 <- σ2;
+  /**
+   * Marginal mean.
+   */
+  μ_m:Real;
+  
+  /**
+   * Marginal variance
+   */
+  σ2_m:Real;
+  
+  /**
+   * Updated mean.
+   */
+  μ_p:Real;
+  
+  /**
+   * Updated variance.
+   */
+  σ2_p:Real;
+
+  function isGaussian() -> Boolean {
+    return isMissing();
+  }
+
+  function getGaussian() -> (Real, Real) {
+    return (μ_p, σ2_p);
+  }
+
+  function setGaussian(θ:(Real, Real)) {
+    (μ_p, σ2_p) <- θ;
+  }
+
+  function isAffineGaussian() -> Boolean {
+    return isMissing();
+  }
+
+  function getAffineGaussian() -> (Real, Real, Real, Real) {
+    return (1.0, μ_p, σ2_p, 0.0);
+  }
+
+  function setAffineGaussian(θ:(Real, Real)) {
+    (μ_p, σ2_p) <- θ;
+  }
+
+  function doParent() -> Delay? {
+    if (μ.isGaussian()) {
+      return μ;
+    } else {
+      return nil;
+    }
+  }
+
+  function doMarginalize() {
+    if (μ.isGaussian()) {
+      (μ_m, σ2_m) <- μ.getGaussian();
+      σ2_m <- σ2_m + σ2.value();
+    } else {
+      μ_m <- μ.value();
+      σ2_m <- σ2.value();
+    }
+    μ_p <- μ_m;
+    σ2_p <- σ2_m;
+  }
+
+  function doCondition() {
+    if (μ.isGaussian()) {
+      μ.setGaussian(update_gaussian_gaussian(x!, μ_p, σ2_p, μ_m, σ2_m));
+    }
   }
 
   function doSimulate() -> Real {
-    return simulate_gaussian(global.value(μ), global.value(σ2));
+    return simulate_gaussian(μ_p, σ2_p);
   }
   
   function doObserve(x:Real) -> Real {
-    return observe_gaussian(x, global.value(μ), global.value(σ2));
+    return observe_gaussian(x, μ_p, σ2_p);
   }
 }
 
 /**
  * Create Gaussian distribution.
  */
-function Gaussian(μ:Real, σ2:Real) -> Gaussian<Real,Real> {
-  m:Gaussian<Real,Real>(μ, σ2);
+function Gaussian(μ:Expression<Real>, σ2:Expression<Real>) -> Gaussian {
+  m:Gaussian(μ, σ2);
   m.initialize();
   return m;
 }
@@ -38,29 +103,20 @@ function Gaussian(μ:Real, σ2:Real) -> Gaussian<Real,Real> {
 /**
  * Create Gaussian distribution.
  */
-function Gaussian(μ:Expression<Real>, σ2:Real) ->
-    Gaussian<Expression<Real>,Real> {
-  m:Gaussian<Expression<Real>,Real>(μ, σ2);
-  m.initialize();
-  return m;
+function Gaussian(μ:Expression<Real>, σ2:Real) -> Gaussian {
+  return Gaussian(μ, Literal(σ2));
 }
 
 /**
  * Create Gaussian distribution.
  */
-function Gaussian(μ:Real, σ2:Expression<Real>) ->
-    Gaussian<Real,Expression<Real>> {
-  m:Gaussian<Real,Expression<Real>>(μ, σ2);
-  m.initialize();
-  return m;
+function Gaussian(μ:Real, σ2:Expression<Real>) -> Gaussian {
+  return Gaussian(Literal(μ), σ2);
 }
 
 /**
  * Create Gaussian distribution.
  */
-function Gaussian(μ:Expression<Real>, σ2:Expression<Real>) ->
-    Gaussian<Expression<Real>,Expression<Real>> {
-  m:Gaussian<Expression<Real>,Expression<Real>>(μ, σ2);
-  m.initialize();
-  return m;
+function Gaussian(μ:Real, σ2:Real) -> Gaussian {
+  return Gaussian(Literal(μ), Literal(σ2));
 }

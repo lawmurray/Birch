@@ -1,30 +1,26 @@
 /**
  * Student's $t$-distribution.
  */
-class Student<Type1>(ν:Type1) < Random<Real> {
+class Student(ν:Expression<Real>) < Random<Real> {
   /**
    * Degrees of freedom.
    */
-  ν:Type1 <- ν;
-
-  function update(ν:Type1) {
-    this.ν <- ν;
-  }
+  ν:Expression<Real> <- ν;
 
   function doSimulate() -> Real {
-    return simulate_student_t(ν);
+    return simulate_student_t(ν.value());
   }
   
   function doObserve(x:Real) -> Real {
-    return observe_student_t(x, ν);
+    return observe_student_t(x, ν.value());
   }
 }
 
 /**
  * Create Student's $t$-distribution.
  */
-function Student(ν:Real) -> Student<Real> {
-  m:Student<Real>(ν);
+function Student(ν:Expression<Real>) -> Student {
+  m:Student(ν);
   m.initialize();
   return m;
 }
@@ -32,8 +28,6 @@ function Student(ν:Real) -> Student<Real> {
 /**
  * Create Student's $t$-distribution.
  */
-function Student(ν:Expression<Real>) -> Student<Expression<Real>> {
-  m:Student<Expression<Real>>(ν);
-  m.initialize();
-  return m;
+function Student(ν:Real) -> Student {
+  return Student(Literal(ν));
 }
