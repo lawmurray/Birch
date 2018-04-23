@@ -27,7 +27,7 @@ class Beta(α:Expression<Real>, β:Expression<Real>) < Random<Real> {
   }
 
   function getBeta() -> (Real, Real) {
-    return (α.value(), β.value());
+    return (α_p, β_p);
   }
 
   function setBeta(θ:(Real, Real)) {

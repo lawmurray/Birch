@@ -7,12 +7,34 @@ class Poisson(λ:Expression<Real>) < Random<Integer> {
    */
   λ:Expression<Real> <- λ;
 
+  function doParent() -> Delay? {
+    if (λ.isGamma()) {
+      return λ;
+    } else {
+      return nil;
+    }
+  }
+
   function doSimulate() -> Integer {
-    return simulate_poisson(λ.value());
+    if (λ.isGamma()) {
+      k:Real;
+      θ:Real;
+      (k, θ) <- λ.getGamma();
+      return simulate_gamma_poisson(k, θ);
+    } else {
+      return simulate_poisson(λ.value());
+    }
   }
   
   function doObserve(x:Integer) -> Real {
-    return observe_poisson(x, λ.value());
+    if (λ.isGamma()) {
+      k:Real;
+      θ:Real;
+      (k, θ) <- λ.getGamma();
+      return observe_gamma_poisson(x, k, θ);
+    } else {
+      return observe_poisson(x, λ.value());
+    }
   }
 }
 

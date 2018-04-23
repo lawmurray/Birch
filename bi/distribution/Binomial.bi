@@ -21,11 +21,25 @@ class Binomial(n:Expression<Integer>, ρ:Expression<Real>) < Random<Integer> {
   }
 
   function doSimulate() -> Integer {
-    return simulate_binomial(n.value(), ρ.value());
+    if (ρ.isBeta()) {
+      α:Real;
+      β:Real;
+      (α, β) <- ρ.getBeta();
+      return simulate_beta_binomial(n.value(), α, β);
+    } else {
+      return simulate_binomial(n.value(), ρ.value());
+    }
   }
   
   function doObserve(x:Integer) -> Real {
-    return observe_binomial(x, n.value(), ρ.value());
+    if (ρ.isBeta()) {
+      α:Real;
+      β:Real;
+      (α, β) <- ρ.getBeta();
+      return observe_beta_binomial(x, n.value(), α, β);
+    } else {
+      return observe_binomial(x, n.value(), ρ.value());
+    }
   }
 }
 

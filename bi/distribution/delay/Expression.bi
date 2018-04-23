@@ -99,6 +99,27 @@ class Expression<Value> < Delay {
   }
 
   /**
+   * Does this evaluate to a Gamma distribution?
+   */
+  function isGamma() -> Boolean {
+    return false;
+  }
+  
+  /**
+   * If `isGamma()`, get its parameters, otherwise undefined.
+   */
+  function getGamma() -> (Real, Real) {
+    assert false;
+  }
+
+  /**
+   * If `isGamma()`, set its parameters, otherwise undefined.
+   */
+  function setGamma(θ:(Real, Real)) {
+    assert false;
+  }
+
+  /**
    * Node-specific value.
    */
   function doValue() -> Value {

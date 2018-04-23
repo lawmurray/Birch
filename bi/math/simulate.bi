@@ -348,11 +348,12 @@ function simulate_beta_binomial(n:Integer, α:Real, β:Real) -> Integer {
  * - k: Shape.
  * - θ: Scale.
  */
-function simulate_gamma_poisson(k:Integer, θ:Real) -> Integer {
+function simulate_gamma_poisson(k:Real, θ:Real) -> Integer {
   assert 0.0 < k;
   assert 0.0 < θ;
+  assert k == floor(k);
   
-  return simulate_negative_binomial(k, 1.0/(θ + 1.0));
+  return simulate_negative_binomial(Integer(k), 1.0/(θ + 1.0));
 }
 
 /**

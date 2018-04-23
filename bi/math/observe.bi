@@ -394,11 +394,12 @@ function observe_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) -> Real {
  *
  * Returns: the log probability mass.
  */
-function observe_gamma_poisson(x:Integer, k:Integer, θ:Real) -> Real {
+function observe_gamma_poisson(x:Integer, k:Real, θ:Real) -> Real {
   assert 0.0 < k;
   assert 0.0 < θ;
+  assert k == floor(k);
 
-  return observe_negative_binomial(x, k, 1.0/(θ + 1.0));
+  return observe_negative_binomial(x, Integer(k), 1.0/(θ + 1.0));
 }
 
 /**
