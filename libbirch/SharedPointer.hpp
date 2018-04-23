@@ -225,11 +225,11 @@ public:
     return get();
   }
 
-  bool operator==(SharedPointer<Any>& o) const {
+  bool operator==(const SharedPointer<Any>& o) const {
     return get() == o.get();
   }
 
-  bool operator!=(SharedPointer<Any>& o) const {
+  bool operator!=(const SharedPointer<Any>& o) const {
     return get() != o.get();
   }
 
