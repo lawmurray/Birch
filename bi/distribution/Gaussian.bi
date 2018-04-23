@@ -121,9 +121,29 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Random<Real> {
     (μ_p, σ2_p, α, β) <- θ;
     σ2.setScaledInverseGamma(σ2, (α, β));
   }
+
+  function isAffineNormalInverseGamma(σ2:Expression<Real>) -> Boolean {
+    return σ2.isScaledInverseGamma(σ2);
+  }
+  
+  function getAffineNormalInverseGamma(σ2:Expression<Real>) -> (Real, Real, Real, Real, Real, Real) {
+    a2:Real;
+    α:Real;
+    β:Real;
+    (a2, α, β) <- σ2.getScaledInverseGamma(σ2);
+    // ^ a2 is ignored, initializes σ2_p but may have since been updated
+    return (1.0, μ_p, σ2_p, 0.0, α, β);
+  }
+
+  function setAffineNormalInverseGamma(σ2:Expression<Real>, θ:(Real, Real, Real, Real)) {
+    α:Real;
+    β:Real;
+    (μ_p, σ2_p, α, β) <- θ;
+    σ2.setScaledInverseGamma(σ2, (α, β));
+  }
   
   function doParent() -> Delay? {
-    if (μ.isNormalInverseGamma(σ2)) {
+    if (μ.isNormalInverseGamma(σ2) || μ.isAffineNormalInverseGamma(σ2)) {
       return μ;
     } else if (σ2.isInverseGamma()) {
       return σ2;
@@ -135,10 +155,12 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Random<Real> {
   }
 
   function doMarginalize() {
+    α:Real;
+    β:Real;
     if (μ.isNormalInverseGamma(σ2)) {
-      α:Real;
-      β:Real;
       (μ_m, σ2_m, α, β) <- μ.getNormalInverseGamma(σ2);
+    } else if (μ.isAffineNormalInverseGamma(σ2)) {
+      (a, μ_m, c, σ2_m, α, β) <- μ.getAffineNormalInverseGamma(σ2);
     } else if (σ2.isInverseGamma()) {
       μ_m <- μ.value();
       σ2_m <- 1.0;
@@ -167,6 +189,9 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Random<Real> {
     if (μ.isNormalInverseGamma(σ2)) {
       (μ1, a2, α, β) <- μ.getNormalInverseGamma(σ2);
       return simulate_normal_inverse_gamma_gaussian(μ1, a2, α, β);
+    } else if (μ.isAffineNormalInverseGamma(σ2)) {
+      (a, μ1, c, a2, α, β) <- μ.getAffineNormalInverseGamma(σ2);
+      return simulate_affine_normal_inverse_gamma_gaussian(a, μ1, c, a2, α, β);
     } else if (σ2.isInverseGamma()) {
       (α, β) <- σ2.getInverseGamma();
       return simulate_inverse_gamma_gaussian(μ.value(), α, β);
@@ -184,6 +209,9 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Random<Real> {
     if (μ.isNormalInverseGamma(σ2)) {
       (μ1, a2, α, β) <- μ.getNormalInverseGamma(σ2);
       return observe_normal_inverse_gamma_gaussian(x, μ1, a2, α, β);
+    } else if (μ.isAffineNormalInverseGamma(σ2)) {
+      (a, μ1, c, a2, α, β) <- μ.getAffineNormalInverseGamma(σ2);
+      return observe_affine_normal_inverse_gamma_gaussian(x, a, μ1, c, a2, α, β);
     } else if (σ2.isInverseGamma()) {
       (α, β) <- σ2.getInverseGamma();
       return observe_inverse_gamma_gaussian(x, μ.value(), α, β);
@@ -201,6 +229,9 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Random<Real> {
     if (μ.isNormalInverseGamma(σ2)) {
       (μ1, a2, α, β) <- μ.getNormalInverseGamma(σ2);
       μ.setNormalInverseGamma(σ2, update_normal_inverse_gamma_gaussian(x, μ1, a2, α, β));
+    } else if (μ.isAffineNormalInverseGamma(σ2)) {
+      (a, μ1, c, a2, α, β) <- μ.getAffineNormalInverseGamma(σ2);
+      μ.setAffineNormalInverseGamma(σ2, update_affine_normal_inverse_gamma_gaussian(x, a, μ1, c, a2, α, β));
     } else if (σ2.isInverseGamma()) {
       (α, β) <- σ2.getInverseGamma();
       σ2.setInverseGamma(update_inverse_gamma_gaussian(x, μ.value(), α, β));

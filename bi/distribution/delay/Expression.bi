@@ -174,7 +174,7 @@ class Expression<Value> < Delay {
   }
 
   /**
-   * Does this evaluate to a normal inverse Gamma distribution with the given
+   * Does this evaluate to a normal inverse gamma distribution with the given
    * inverse gamma marginal?
    */
   function isNormalInverseGamma(σ2:Expression<Real>) -> Boolean {
@@ -192,6 +192,28 @@ class Expression<Value> < Delay {
    * If `isNormalInverseGamma()`, set its parameters, otherwise undefined.
    */
   function setNormalInverseGamma(σ2:Expression<Real>, θ:(Real, Real, Real, Real)) {
+    assert false;
+  }
+
+  /**
+   * Does this evaluate to an affine transformation of a normal inverse gamma
+   * distribution with the given inverse gamma marginal?
+   */
+  function isAffineNormalInverseGamma(σ2:Expression<Real>) -> Boolean {
+    return false;
+  }
+  
+  /**
+   * If `isAffineNormalInverseGamma()`, get its parameters, otherwise undefined.
+   */
+  function getAffineNormalInverseGamma(σ2:Expression<Real>) -> (Real, Real, Real, Real, Real, Real) {
+    assert false;
+  }
+
+  /**
+   * If `isAffineNormalInverseGamma()`, set its parameters, otherwise undefined.
+   */
+  function setAffineNormalInverseGamma(σ2:Expression<Real>, θ:(Real, Real, Real, Real)) {
     assert false;
   }
 

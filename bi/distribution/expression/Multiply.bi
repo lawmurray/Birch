@@ -29,7 +29,7 @@ class Multiply<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>)
     } else if (right.isAffineGaussian()) {
       (a, μ, σ2, c) <- right.getAffineGaussian();
       a <- left.value()*a;
-      c <- right.value()*c;
+      c <- left.value()*c;
     } else {
       assert false;
     }
@@ -67,6 +67,39 @@ class Multiply<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>)
       left.setScaledInverseGamma(σ2, θ);
     } else if (right.isScaledInverseGamma(σ2)) {
       right.setScaledInverseGamma(σ2, θ);
+    }
+  }
+
+  function isAffineNormalInverseGamma(σ2:Expression<Real>) -> Boolean {
+    return left.isAffineNormalInverseGamma(σ2) || right.isAffineNormalInverseGamma(σ2);
+  }
+  
+  function getAffineNormalInverseGamma(σ2:Expression<Real>) -> (Real, Real, Real, Real, Real, Real) {
+    a:Real;
+    μ:Real;
+    c:Real;
+    a2:Real;
+    α:Real;
+    β:Real;
+    if (left.isAffineNormalInverseGamma(σ2)) {
+      (a, μ, c, a2, α, β) <- left.getAffineNormalInverseGamma(σ2);
+      a <- a*right.value();
+      c <- c*right.value();
+    } else if (right.isAffineNormalInverseGamma(σ2)) {
+      (a, μ, c, a2, α, β) <- right.getAffineNormalInverseGamma(σ2);
+      a <- left.value()*a;
+      c <- left.value()*c;
+    } else {
+      assert false;
+    }
+    return (a, μ, c, a2, α, β);
+  }
+  
+  function setAffineNormalInverseGamma(σ2:Expression<Real>, θ:(Real, Real, Real, Real)) {
+    if (left.isAffineNormalInverseGamma(σ2)) {
+      left.setAffineNormalInverseGamma(σ2, θ);
+    } else if (right.isAffineNormalInverseGamma(σ2)) {
+      right.setAffineNormalInverseGamma(σ2, θ);
     }
   }
 
