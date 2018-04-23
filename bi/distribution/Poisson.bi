@@ -36,6 +36,15 @@ class Poisson(λ:Expression<Real>) < Random<Integer> {
       return observe_poisson(x, λ.value());
     }
   }
+
+  function doCondition(x:Integer) {
+    if (λ.isGamma()) {
+      k:Real;
+      θ:Real;
+      (k, θ) <- λ.getGamma();
+      λ.setGamma(update_gamma_poisson(x, k, θ));
+    }
+  }
 }
 
 /**

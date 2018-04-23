@@ -3,22 +3,22 @@
  */
 class Beta(α:Expression<Real>, β:Expression<Real>) < Random<Real> {
   /**
-   * First shape parameter.
+   * First shape.
    */
   α:Expression<Real> <- α;
 
   /**
-   * Second shape parameter.
+   * Second shape.
    */
   β:Expression<Real> <- β;
   
   /**
-   * Updated first shape parameter.
+   * Updated first shape.
    */
   α_p:Real;
 
   /**
-   * Updated second shape parameter.
+   * Updated second shape.
    */
   β_p:Real;
 

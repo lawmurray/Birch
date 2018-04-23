@@ -76,18 +76,18 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Random<Real> {
     σ2_p <- σ2_m;
   }
 
-  function doCondition() {
-    if (μ.isGaussian()) {
-      μ.setGaussian(update_gaussian_gaussian(x!, μ_p, σ2_p, μ_m, σ2_m));
-    }
-  }
-
   function doSimulate() -> Real {
     return simulate_gaussian(μ_p, σ2_p);
   }
   
   function doObserve(x:Real) -> Real {
     return observe_gaussian(x, μ_p, σ2_p);
+  }
+
+  function doCondition(x:Real) {
+    if (μ.isGaussian()) {
+      μ.setGaussian(update_gaussian_gaussian(x, μ_p, σ2_p, μ_m, σ2_m));
+    }
   }
 }
 

@@ -1,4 +1,31 @@
 /**
+ * Update the parameters of a Beta distribution with a Binomial likelihood.
+ *
+ * - x: The variate.
+ * - n: Number of trials.
+ * - α: Prior first shape.
+ * - β: Prior second shape.
+ *
+ * Returns: the updated parameters `α` and `β`.
+ */
+function update_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) -> (Real, Real) {
+  return (α + x, β + (n - x));
+}
+
+/**
+ * Update the parameters of a Gamma distribution with a Poisson likelihood.
+ *
+ * - x: The variate.
+ * - k: Shape.
+ * - θ: Scale.
+ *
+ * Returns: the updated parameters `k` and `θ`.
+ */
+function update_gamma_poisson(x:Integer, k:Real, θ:Real) -> (Real, Real) {
+  return (k + x, θ/(θ + 1.0));
+}
+
+/**
  * Update the parameters of a Gaussian distribution with a Gaussian
  * likelihood.
  *

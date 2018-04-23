@@ -41,6 +41,15 @@ class Binomial(n:Expression<Integer>, ρ:Expression<Real>) < Random<Integer> {
       return observe_binomial(x, n.value(), ρ.value());
     }
   }
+
+  function doCondition(x:Integer) {
+    if (ρ.isBeta()) {
+      α:Real;
+      β:Real;
+      (α, β) <- ρ.getBeta();
+      ρ.setBeta(update_beta_binomial(x, n.value(), α, β));
+    }
+  }
 }
 
 /**

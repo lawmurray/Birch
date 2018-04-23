@@ -135,7 +135,7 @@ class Random<Value> < Expression<Value> {
         if (!(parent!.isRealized()) && w > -inf) {
           // ^ conditioning doesn't make sense if the observation is not
           //   within the support
-          doCondition();
+          doCondition(x!);
         }
         setParent(nil);
       }
@@ -231,13 +231,6 @@ class Random<Value> < Expression<Value> {
   function doMarginalize() {
     //
   }
-  
-  /**
-   * Node-specific conditioning.
-   */
-  function doCondition() {
-    assert false;
-  }
 
   /**
    * Node-specific simulation.
@@ -250,6 +243,13 @@ class Random<Value> < Expression<Value> {
    * Node-specific observation.
    */
   function doObserve(x:Value) -> Real {
+    assert false;
+  }
+
+  /**
+   * Node-specific conditioning.
+   */
+  function doCondition(x:Value) {
     assert false;
   }
 }
