@@ -7,12 +7,34 @@ class Categorical(ρ:Expression<Real[_]>) < Random<Integer> {
    */
   ρ:Expression<Real[_]> <- ρ;
 
-  function doSimulate()-> Integer {
-    return simulate_categorical(ρ.value());
+  function doParent() -> Delay? {
+    if (ρ.isDirichlet()) {
+      return ρ;
+    } else {
+      return nil;
+    }
   }
-  
+
+  function doSimulate() -> Integer {
+    if (ρ.isDirichlet()) {
+      return simulate_dirichlet_categorical(ρ.getDirichlet());
+    } else {
+      return simulate_categorical(ρ.value());
+    }
+  }
+
   function doObserve(x:Integer) -> Real {
-    return observe_categorical(x, ρ.value());
+    if (ρ.isDirichlet()) {
+      return observe_dirichlet_categorical(x, ρ.getDirichlet());
+    } else {
+      return observe_categorical(x, ρ.value());
+    }
+  }
+
+  function doCondition(x:Integer) {
+    if (ρ.isDirichlet()) {
+      ρ.setDirichlet(update_dirichlet_categorical(x, ρ.getDirichlet()));
+    }
   }
 }
 

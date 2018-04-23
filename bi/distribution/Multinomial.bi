@@ -12,12 +12,34 @@ class Multinomial(n:Expression<Integer>, ρ:Expression<Real[_]>) < Random<Intege
    */
   ρ:Expression<Real[_]>;
 
-  function doSimulate() -> Integer[_] {
-    return simulate_multinomial(n.value(), ρ.value());
+  function doParent() -> Delay? {
+    if (ρ.isDirichlet()) {
+      return ρ;
+    } else {
+      return nil;
+    }
   }
-  
+
+  function doSimulate() -> Integer[_] {
+    if (ρ.isDirichlet()) {
+      return simulate_dirichlet_multinomial(n.value(), ρ.getDirichlet());
+    } else {
+      return simulate_multinomial(n.value(), ρ.value());
+    }
+  }
+
   function doObserve(x:Integer[_]) -> Real {
-    return observe_multinomial(x, n.value(), ρ.value());
+    if (ρ.isDirichlet()) {
+      return observe_dirichlet_multinomial(x, n.value(), ρ.getDirichlet());
+    } else {
+      return observe_multinomial(x, n.value(), ρ.value());
+    }
+  }
+
+  function doCondition(x:Integer[_]) {
+    if (ρ.isDirichlet()) {
+      ρ.setDirichlet(update_dirichlet_multinomial(x, n.value(), ρ.getDirichlet()));
+    }
   }
 }
 

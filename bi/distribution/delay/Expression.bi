@@ -120,6 +120,27 @@ class Expression<Value> < Delay {
   }
 
   /**
+   * Does this evaluate to a Dirichlet distribution?
+   */
+  function isDirichlet() -> Boolean {
+    return false;
+  }
+  
+  /**
+   * If `isDirichlet()`, get its parameters, otherwise undefined.
+   */
+  function getDirichlet() -> Real[_] {
+    assert false;
+  }
+
+  /**
+   * If `isDirichlet()`, set its parameters, otherwise undefined.
+   */
+  function setDirichlet(θ:Real[_]) {
+    assert false;
+  }
+
+  /**
    * Node-specific value.
    */
   function doValue() -> Value {

@@ -26,6 +26,36 @@ function update_gamma_poisson(x:Integer, k:Real, θ:Real) -> (Real, Real) {
 }
 
 /**
+ * Update the parameters of a Dirichlet distribution with a categorical
+ * likelihood.
+ *
+ * - x: The variate.
+ * - α: Concentrations.
+ *
+ * Returns: the updated parameters `α`.
+ */
+function update_dirichlet_categorical(x:Integer, α:Real[_]) -> Real[_] {
+  α1:Real[_] <- α;
+  α1[x] <- α1[x] + 1;
+  return α1;
+}
+
+/**
+ * Update the parameters of a Dirichlet distribution with a multinomial
+ * likelihood.
+ *
+ * - x: The variate.
+ * - n: Number of trials.
+ * - α: Concentrations.
+ *
+ * Returns: the updated parameters `α`.
+ */
+function update_dirichlet_multinomial(x:Integer[_], n:Integer, α:Real[_]) -> Real[_] {
+  assert sum(x) == n;
+  return α + x;
+}
+
+/**
  * Update the parameters of a Gaussian distribution with a Gaussian
  * likelihood.
  *

@@ -32,6 +32,26 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Random<Real> {
    */
   σ2_p:Real;
 
+  /**
+   * Prior mean on `μ`;
+   */
+  μ_0:Real;
+
+  /**
+   * Prior variance on `σ2`;
+   */
+  σ2_0:Real;
+
+  /**
+   * Scaling of `μ` for affine transformation.
+   */
+  a:Real;
+
+  /**
+   * Translation of `μ` for affine transformation.
+   */
+  c:Real;
+
   function isGaussian() -> Boolean {
     return isMissing();
   }
@@ -41,18 +61,6 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Random<Real> {
   }
 
   function setGaussian(θ:(Real, Real)) {
-    (μ_p, σ2_p) <- θ;
-  }
-
-  function isAffineGaussian() -> Boolean {
-    return isMissing();
-  }
-
-  function getAffineGaussian() -> (Real, Real, Real, Real) {
-    return (1.0, μ_p, σ2_p, 0.0);
-  }
-
-  function setAffineGaussian(θ:(Real, Real)) {
     (μ_p, σ2_p) <- θ;
   }
 
@@ -66,8 +74,13 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Random<Real> {
 
   function doMarginalize() {
     if (μ.isGaussian()) {
-      (μ_m, σ2_m) <- μ.getGaussian();
-      σ2_m <- σ2_m + σ2.value();
+      (μ_0, σ2_0) <- μ.getGaussian();
+      μ_m <- μ_0;
+      σ2_m <- σ2_0 + σ2.value();
+    } else if (μ.isAffineGaussian()) {
+      (a, μ_0, σ2_0, c) <- μ.getAffineGaussian();
+      μ_m <- a*μ_0 + c;
+      σ2_m <- a*a*σ2_0 + σ2.value();
     } else {
       μ_m <- μ.value();
       σ2_m <- σ2.value();
@@ -86,7 +99,9 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Random<Real> {
 
   function doCondition(x:Real) {
     if (μ.isGaussian()) {
-      μ.setGaussian(update_gaussian_gaussian(x, μ_p, σ2_p, μ_m, σ2_m));
+      μ.setGaussian(update_gaussian_gaussian(x, μ_0, σ2_0, μ_m, σ2_m));
+    } else if (μ.isAffineGaussian()) {
+      μ.setAffineGaussian(update_affine_gaussian_gaussian(x, a, μ_0, σ2_0, μ_m, σ2_m));
     }
   }
 }

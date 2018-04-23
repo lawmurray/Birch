@@ -7,12 +7,33 @@ class Dirichlet(α:Expression<Real[_]>) < Random<Real[_]> {
    */
   α:Expression<Real[_]>;
 
+  /**
+   * Updated concentrations.
+   */
+  α_p:Real[_];
+
+  function isDirichlet() -> Boolean {
+    return isMissing();
+  }
+
+  function getDirichlet() -> Real[_] {
+    return α_p;
+  }
+
+  function setDirichlet(θ:Real[_]) {
+    α_p <- θ;
+  }
+
+  function doMarginalize() {
+    α_p <- α.value();
+  }
+
   function doSimulate() -> Real[_] {
-    return simulate_dirichlet(α.value());
+    return simulate_dirichlet(α_p);
   }
   
   function doObserve(x:Real[_]) -> Real {
-    return observe_dirichlet(x, α.value());
+    return observe_dirichlet(x, α_p);
   }
 }
 
