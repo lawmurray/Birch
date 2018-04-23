@@ -65,13 +65,6 @@ class Random<Value> < Expression<Value> {
   }
 
   /**
-   * Is the value of the random variable missing?
-   */
-  function isMissing() -> Boolean {
-    return !(x?);
-  }
-
-  /**
    * Is this node in the uninitialized state?
    */
   function isUninitialized() -> Boolean {

@@ -31,14 +31,14 @@ class Expression<Value> < Delay {
    * Are the values of any random variables within this expression missing?
    */
   function isMissing() -> Boolean {
-    assert false;
+    return !x?;
   }
   
   /**
    * Does this evaluate to a Gaussian distribution?
    */
   function isGaussian() -> Boolean {
-    assert false;
+    return false;
   }
   
   /**
@@ -60,7 +60,7 @@ class Expression<Value> < Delay {
    * distribution?
    */
   function isAffineGaussian() -> Boolean {
-    assert false;
+    return false;
   }
   
   /**
@@ -76,7 +76,28 @@ class Expression<Value> < Delay {
   function setAffineGaussian(θ:(Real, Real)) {
     assert false;
   }
+
+  /**
+   * Does this evaluate to a Beta distribution?
+   */
+  function isBeta() -> Boolean {
+    return false;
+  }
   
+  /**
+   * If `isBeta()`, get its parameters, otherwise undefined.
+   */
+  function getBeta() -> (Real, Real) {
+    assert false;
+  }
+
+  /**
+   * If `isBeta()`, set its parameters, otherwise undefined.
+   */
+  function setBeta(θ:(Real, Real)) {
+    assert false;
+  }
+
   /**
    * Node-specific value.
    */

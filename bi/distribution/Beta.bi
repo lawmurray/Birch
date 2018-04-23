@@ -11,13 +11,40 @@ class Beta(α:Expression<Real>, β:Expression<Real>) < Random<Real> {
    * Second shape parameter.
    */
   β:Expression<Real> <- β;
+  
+  /**
+   * Updated first shape parameter.
+   */
+  α_p:Real;
+
+  /**
+   * Updated second shape parameter.
+   */
+  β_p:Real;
+
+  function isBeta() -> Boolean {
+    return isMissing();
+  }
+
+  function getBeta() -> (Real, Real) {
+    return (α.value(), β.value());
+  }
+
+  function setBeta(θ:(Real, Real)) {
+    (α_p, β_p) <- θ;
+  }
+
+  function doMarginalize() {
+    α_p <- α.value();
+    β_p <- β.value();
+  }
 
   function doSimulate() -> Real {
-    return simulate_beta(α.value(), β.value());
+    return simulate_beta(α_p, β_p);
   }
   
   function doObserve(x:Real) -> Real {
-    return observe_beta(x, α.value(), β.value());
+    return observe_beta(x, α_p, β_p);
   }
 }
 

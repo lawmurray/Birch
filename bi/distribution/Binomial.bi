@@ -12,6 +12,14 @@ class Binomial(n:Expression<Integer>, ρ:Expression<Real>) < Random<Integer> {
    */
   ρ:Expression<Real> <- ρ;
 
+  function doParent() -> Delay? {
+    if (ρ.isBeta()) {
+      return ρ;
+    } else {
+      return nil;
+    }
+  }
+
   function doSimulate() -> Integer {
     return simulate_binomial(n.value(), ρ.value());
   }
