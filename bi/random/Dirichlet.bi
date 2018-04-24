@@ -7,11 +7,6 @@ class Dirichlet(α:Expression<Real[_]>) < Random<Real[_]> {
    */
   α:Expression<Real[_]>;
 
-  /**
-   * Delayed sampling node.
-   */
-  delay:DelayDirichlet?;
-
   function isDirichlet() -> Boolean {
     return isMissing();
   }
@@ -21,15 +16,7 @@ class Dirichlet(α:Expression<Real[_]>) < Random<Real[_]> {
       delay:DelayDirichlet(this, α.value());
       this.delay <- delay;
     }
-    return delay!;
-  }
-
-  function doSimulate() -> Real[_] {
-    return delay!.doSimulate();
-  }
-  
-  function doObserve(x:Real[_]) -> Real {
-    return delay!.doObserve(x);
+    return DelayDirichlet?(delay)!;
   }
 }
 

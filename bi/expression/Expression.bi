@@ -176,6 +176,86 @@ class Expression<Value> {
   }
 
   /**
+   * Does this evaluate to a multivariate Gaussian distribution?
+   */
+  function isMultivariateGaussian() -> Boolean {
+    return false;
+  }
+  
+  /**
+   * If `iMultivariatesGaussian()`, get its parameters, otherwise undefined.
+   */
+  function getMultivariateGaussian() -> DelayMultivariateGaussian {
+    assert false;
+  }
+
+  /**
+   * Does this evaluate to an affine transformation of a multivariate Gaussian
+   * distribution?
+   */
+  function isMultivariateAffineGaussian() -> Boolean {
+    return false;
+  }
+  
+  /**
+   * If `isMultivariateAffineGaussian()`, get its parameters, otherwise undefined.
+   */
+  function getMultivariateAffineGaussian() -> (Real[_,_], DelayMultivariateGaussian, Real[_]) {
+    assert false;
+  }
+
+  /**
+   * Does this evaluate to a multivariate scaled inverse gamma distribution
+   * with the given inverse gamma marginal?
+   */
+  function isMultivariateScaledInverseGamma(σ2:Expression<Real>) -> Boolean {
+    return false;
+  }
+  
+  /**
+   * If `isMultivariateScaledInverseGamma()`, get its parameters, otherwise
+   * undefined.
+   */
+  function getMultivariateScaledInverseGamma(σ2:Expression<Real>) ->
+      (Real[_,_], DelayInverseGamma) {
+    assert false;
+  }
+
+  /**
+   * Does this evaluate to a multivariate normal inverse gamma distribution
+   * with the given inverse gamma marginal?
+   */
+  /*function isMultivariateNormalInverseGamma(σ2:Expression<Real>) -> Boolean {
+    return false;
+  }*/
+  
+  /**
+   * If `isMultivariateNormalInverseGamma()`, get its parameters, otherwise
+   * undefined.
+   */
+  /*function getMultivariateNormalInverseGamma(σ2:Expression<Real>) ->
+      DelayMultivariateNormalInverseGamma {
+    assert false;
+  }*/
+
+  /**
+   * Does this evaluate to an affine transformation of a multivariate normal
+   * inverse gamma distribution with the given inverse gamma marginal?
+   */
+  /*function isMultivariateAffineNormalInverseGamma(σ2:Expression<Real>) -> Boolean {
+    return false;
+  }*/
+  
+  /**
+   * If `isMultivariateAffineNormalInverseGamma()`, get its parameters,
+   * otherwise undefined.
+   */
+  /*function getMultivariateAffineNormalInverseGamma(σ2:Expression<Real>) ->
+      (Real[_,_], DelayMultivariateNormalInverseGamma, Real[_]) {
+    assert false;
+  }*/
+
+  /**
    * Node-specific value.
    */
   function doValue() -> Value {

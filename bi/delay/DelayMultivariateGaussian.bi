@@ -1,0 +1,23 @@
+/**
+ * Multivariate Gaussian random variable with delayed sampling.
+ */
+class DelayMultivariateGaussian(x:Random<Real[_]>, μ:Real[_], Σ:Real[_,_]) <
+    DelayValue<Real[_]>(x) {
+  /**
+   * Mean.
+   */
+  μ:Real[_] <- μ;
+
+  /**
+   * Covariance.
+   */
+  Σ:Real[_,_] <- Σ;
+
+  function doSimulate() -> Real[_] {
+    return simulate_multivariate_gaussian(μ, Σ);
+  }
+  
+  function doObserve(x:Real[_]) -> Real {
+    return observe_multivariate_gaussian(x, μ, Σ);
+  }
+}

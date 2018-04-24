@@ -18,7 +18,7 @@ class DelayNormalInverseGammaLogGaussian(x:Random<Real>,
         μ.σ2.β) - log(x);
   }
 
-  function doCondition(x:Real) -> Real {
+  function doCondition(x:Real) {
     (μ.μ, μ.a2, μ.σ2.α, μ.σ2.β) <- update_normal_inverse_gamma_gaussian(
         log(x), μ.μ, μ.a2, μ.σ2.α, μ.σ2.β);
   }

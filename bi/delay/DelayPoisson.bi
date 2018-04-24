@@ -1,7 +1,7 @@
 /**
  * Poisson random variable with delayed sampling.
  */
-class DelayPoisson(x:Random<Value>, λ:Real) < DelayValue<Integer>(x) {
+class DelayPoisson(x:Random<Integer>, λ:Real) < DelayValue<Integer>(x) {
   /**
    * Rate.
    */

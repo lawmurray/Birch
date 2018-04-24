@@ -11,11 +11,6 @@ class Beta(α:Expression<Real>, β:Expression<Real>) < Random<Real> {
    * Second shape.
    */
   β:Expression<Real> <- β;
-  
-  /**
-   * Delayed sampling node.
-   */
-  delay:DelayBeta?;
 
   function isBeta() -> Boolean {
     return isMissing();
@@ -26,7 +21,7 @@ class Beta(α:Expression<Real>, β:Expression<Real>) < Random<Real> {
       delay:DelayBeta(this, α.value(), β.value());
       this.delay <- delay;
     }
-    return delay!;
+    return DelayBeta?(delay)!;
   }
 }
 

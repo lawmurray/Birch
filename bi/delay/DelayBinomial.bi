@@ -1,7 +1,7 @@
 /**
  * Binomial random variable with delayed sampling.
  */
-class DelayBinomial(x:Random<Value>, n:Integer, ρ:Real) < DelayValue<Integer>(x) {
+class DelayBinomial(x:Random<Integer>, n:Integer, ρ:Real) < DelayValue<Integer>(x) {
   /**
    * Number of trials.
    */
