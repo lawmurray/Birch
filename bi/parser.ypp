@@ -209,7 +209,7 @@ sequence_expression
     ;
 
 cast_expression
-    : class_type '?' '(' expression ')'  { $$ = new bi::Cast(new bi::PointerType(false, $1, make_loc(@$)), $4, make_loc(@$)); }
+    : class_type '?' '(' expression ')'  { $$ = new bi::Cast($1, $4, make_loc(@$)); }
     ;
 
 function_expression

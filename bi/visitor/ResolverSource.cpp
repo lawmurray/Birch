@@ -20,7 +20,7 @@ bi::Expression* bi::ResolverSource::modify(Cast* o) {
   if (o->single->type->isPointer()
       || (o->single->type->isOptional()
           && o->single->type->unwrap()->isPointer())) {
-    o->type = new OptionalType(o->returnType, o->loc);
+    o->type = new OptionalType(new PointerType(false, o->returnType, o->loc), o->loc);
     return o;
   } else {
     throw CastException(o);

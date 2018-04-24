@@ -1467,7 +1467,7 @@ yyuserAction (yyRuleNum yyn, size_t yyrhslen, yyGLRStackItem* yyvsp,
 
   case 15:
 #line 212 "bi/parser.ypp" /* glr.c:816  */
-    { ((*yyvalp).valExpression) = new bi::Cast(new bi::PointerType(false, (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valType), make_loc((*yylocp))), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
+    { ((*yyvalp).valExpression) = new bi::Cast((((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
 #line 1472 "bi/parser.cpp" /* glr.c:816  */
     break;
 
