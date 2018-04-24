@@ -64,6 +64,7 @@
       "bi/expression/Expression.bi",
       "bi/expression/Add.bi",
       "bi/expression/Literal.bi",
+      "bi/expression/Log.bi",
       "bi/expression/Multiply.bi",
       "bi/io/InputStream.bi",
       "bi/io/JSONReader.bi",
