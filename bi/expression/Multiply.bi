@@ -39,43 +39,42 @@ class Multiply<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>)
     return left.isScaledInverseGamma(σ2) || right.isScaledInverseGamma(σ2);
   }
 
-  function getScaledInverseGamma(σ2:Expression<Real>) -> (Real, Real, Real) {
+  function getScaledInverseGamma(σ2:Expression<Real>) ->
+      (Real, DelayInverseGamma) {
     a2:Real;
-    α:Real;
-    β:Real;
+    s2:DelayInverseGamma?;
     if (left.isScaledInverseGamma(σ2)) {
-      (a2, α, β) <- left.getScaledInverseGamma(σ2);
+      (a2, s2) <- left.getScaledInverseGamma(σ2);
       a2 <- a2*right.value();
     } else if (right.isScaledInverseGamma(σ2)) {
-      (a2, α, β) <- right.getScaledInverseGamma(σ2);
+      (a2, s2) <- right.getScaledInverseGamma(σ2);
       a2 <- left.value()*a2;
     }
-    return (a2, α, β);
+    return (a2, s2!);
   }
   
   function isAffineNormalInverseGamma(σ2:Expression<Real>) -> Boolean {
-    return left.isAffineNormalInverseGamma(σ2) || right.isAffineNormalInverseGamma(σ2);
+    return left.isAffineNormalInverseGamma(σ2) ||
+        right.isAffineNormalInverseGamma(σ2);
   }
   
-  function getAffineNormalInverseGamma(σ2:Expression<Real>) -> (Real, Real, Real, Real, Real, Real) {
+  function getAffineNormalInverseGamma(σ2:Expression<Real>) ->
+      (Real, DelayNormalInverseGamma, Real) {
     a:Real;
-    μ:Real;
+    μ:DelayNormalInverseGamma?;
     c:Real;
-    a2:Real;
-    α:Real;
-    β:Real;
     if (left.isAffineNormalInverseGamma(σ2)) {
-      (a, μ, c, a2, α, β) <- left.getAffineNormalInverseGamma(σ2);
+      (a, μ, c) <- left.getAffineNormalInverseGamma(σ2);
       a <- a*right.value();
       c <- c*right.value();
     } else if (right.isAffineNormalInverseGamma(σ2)) {
-      (a, μ, c, a2, α, β) <- right.getAffineNormalInverseGamma(σ2);
+      (a, μ, c) <- right.getAffineNormalInverseGamma(σ2);
       a <- left.value()*a;
       c <- left.value()*c;
     } else {
       assert false;
     }
-    return (a, μ, c, a2, α, β);
+    return (a, μ!, c);
   }
 
   function doValue() -> Value {

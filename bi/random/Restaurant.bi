@@ -49,7 +49,6 @@ class Restaurant(α:Expression<Real>, θ:Expression<Real>) < Random<Real[_]> {
  */
 function Restaurant(α:Expression<Real>, θ:Expression<Real>) -> Restaurant {
   x:Restaurant(α, θ);
-  x.initialize();
   return x;
 }
 

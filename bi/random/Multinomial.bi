@@ -14,11 +14,11 @@ class Multinomial(n:Expression<Integer>, ρ:Expression<Real[_]>) < Random<Intege
 
   function graft() {
     if (ρ.isDirichlet()) {
-      m:DelayDirichletCategorical(this, n.value(), ρ.getDirichlet());
+      m:DelayDirichletMultinomial(this, n.value(), ρ.getDirichlet());
       m.graft();
       delay <- m;
     } else {
-      m:DelayCategorical(this, n.value(), ρ.value());
+      m:DelayMultinomial(this, n.value(), ρ.value());
       m.graft();
       delay <- m;
     }

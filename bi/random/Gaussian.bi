@@ -81,7 +81,7 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Random<Real> {
       μ_0:DelayNormalInverseGamma?;
       c:Real;
       (a, μ_0, c) <- μ.getAffineNormalInverseGamma(σ2);
-      m:DelayNormalInverseGammaGaussian(this, a, μ_0, c);
+      m:DelayAffineNormalInverseGammaGaussian(this, a, μ_0!, c);
       m.graft();
       delay <- m;
     } else if (σ2.isInverseGamma()) {

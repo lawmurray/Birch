@@ -28,14 +28,6 @@ class Beta(α:Expression<Real>, β:Expression<Real>) < Random<Real> {
     }
     return delay!;
   }
-
-  function doSimulate() -> Real {
-    return delay!.doSimulate();
-  }
-  
-  function doObserve(x:Real) -> Real {
-    return delay!.doObserve(x);
-  }
 }
 
 /**

@@ -22,6 +22,6 @@ class DelayInverseGammaGaussian(x:Random<Real>, μ:Real, σ2:DelayInverseGamma) 
   }
 
   function doCondition(x:Real) {
-    (σ2.α, σ2.β) <- observe_inverse_gamma_gaussian(x, μ, σ2.α, σ2.β);
+    (σ2.α, σ2.β) <- update_inverse_gamma_gaussian(x, μ, σ2.α, σ2.β);
   }
 }

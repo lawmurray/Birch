@@ -98,7 +98,7 @@ class Expression<Value> {
   /**
    * If `isGamma()`, get its parameters, otherwise undefined.
    */
-  function getGamma() -> (Real, Real) {
+  function getGamma() -> DelayGamma {
     assert false;
   }
 
@@ -112,7 +112,7 @@ class Expression<Value> {
   /**
    * If `isInverseGamma()`, get its parameters, otherwise undefined.
    */
-  function getInverseGamma() -> (Real, Real) {
+  function getInverseGamma() -> DelayInverseGamma {
     assert false;
   } 
 
@@ -127,7 +127,7 @@ class Expression<Value> {
   /**
    * If `isScaledInverseGamma()`, get its parameters, otherwise undefined.
    */
-  function getScaledInverseGamma(σ2:Expression<Real>) -> (Real, Real, Real) {
+  function getScaledInverseGamma(σ2:Expression<Real>) -> (Real, DelayInverseGamma) {
     assert false;
   }
 
@@ -142,7 +142,7 @@ class Expression<Value> {
   /**
    * If `isNormalInverseGamma()`, get its parameters, otherwise undefined.
    */
-  function getNormalInverseGamma(σ2:Expression<Real>) -> (Real, Real, Real, Real) {
+  function getNormalInverseGamma(σ2:Expression<Real>) -> DelayNormalInverseGamma {
     assert false;
   }
 
@@ -157,7 +157,7 @@ class Expression<Value> {
   /**
    * If `isAffineNormalInverseGamma()`, get its parameters, otherwise undefined.
    */
-  function getAffineNormalInverseGamma(σ2:Expression<Real>) -> (Real, Real, Real, Real, Real, Real) {
+  function getAffineNormalInverseGamma(σ2:Expression<Real>) -> (Real, DelayNormalInverseGamma, Real) {
     assert false;
   }
 

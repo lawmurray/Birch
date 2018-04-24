@@ -15,7 +15,9 @@ class Random<Value> < Expression<Value> {
    */
   operator <- x:Value {
     this.x <- x;
-    realize();
+    if (delay?) {
+      delay!.realize();
+    }
   }
 
   /**
@@ -24,7 +26,9 @@ class Random<Value> < Expression<Value> {
   operator <- x:Value? {
     if (x?) {
       this.x <- x;
-      realize();
+      if (delay?) {
+        delay!.realize();
+      }
     }
   }
   
@@ -33,8 +37,8 @@ class Random<Value> < Expression<Value> {
    * it has not already been instantiated.
    */
   function value() -> Value {
-    if (isMissing()) {
-      realize();
+    if (isMissing() && delay?) {
+      delay!.realize();
     }
     assert x?;
     return x!;
@@ -44,7 +48,9 @@ class Random<Value> < Expression<Value> {
    * Simulate the random variable.
    */
   function simulate() -> Value {
-    realize();
+    if (delay?) {
+      delay!.realize();
+    }
     return x!;
   }
   
@@ -57,8 +63,10 @@ class Random<Value> < Expression<Value> {
    */
   function observe(x:Value) -> Real {
     this.x <- x;
-    realize();
-    return w;
+    if (delay?) {
+      delay!.realize();
+    }
+    return delay!.w;
   }
 
   /**
@@ -66,17 +74,18 @@ class Random<Value> < Expression<Value> {
    */
   function graft();
 
-  function doSimulate() -> Integer {
+  function doSimulate() -> Value {
     assert delay?;
     return delay!.doSimulate();
   }
   
-  function doObserve(x:Integer) -> Real {
+  function doObserve(x:Value) -> Real {
     assert delay?;
     return delay!.doObserve(x);
   }
 
-  function doCondition(x:Integer) {
+  function doCondition(x:Value) {
     assert delay?;
     delay!.doCondition(x);
-  }}
+  }
+}
