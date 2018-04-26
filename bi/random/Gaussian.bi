@@ -21,28 +21,16 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Random<Real> {
     return DelayGaussian?(delay)!;
   }
 
-  function isAffineGaussian() -> Boolean {
-    return isGaussian();
-  }
-
-  function getAffineGaussian() -> (Real, DelayGaussian, Real) {
-    return (1.0, getGaussian(), 0.0);
-  }
-
   function isNormalInverseGamma(σ2:Expression<Real>) -> Boolean {
     return σ2.isScaledInverseGamma(σ2);
   }
   
   function getNormalInverseGamma(σ2:Expression<Real>) -> DelayNormalInverseGamma {
-    return DelayNormalInverseGamma?(delay)!;
-  }
-
-  function isAffineNormalInverseGamma(σ2:Expression<Real>) -> Boolean {
-    return isNormalInverseGamma(σ2);
-  }
-  
-  function getAffineNormalInverseGamma(σ2:Expression<Real>) -> (Real, DelayNormalInverseGamma, Real) {
-    return (1.0, getNormalInverseGamma(σ2), 0.0);
+    a2:Real;
+    s2:DelayInverseGamma?;
+    (a2, s2) <- σ2.getScaledInverseGamma(σ2);
+    m:DelayNormalInverseGamma(this, μ.value(), a2, s2!);
+    return m;
   }
   
   function graft() {

@@ -25,7 +25,7 @@
  * on right.
  */
 class DelayNormalInverseGamma(x:Random<Real>, μ:Real, a2:Real,
-    σ2:InverseGamma) < DelayValue<Real>(x) {
+    σ2:DelayInverseGamma) < DelayValue<Real>(x) {
   /**
    * Mean.
    */

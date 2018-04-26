@@ -13,6 +13,10 @@ class DelayMultivariateGaussian(x:Random<Real[_]>, μ:Real[_], Σ:Real[_,_]) <
    */
   Σ:Real[_,_] <- Σ;
 
+  function size() -> Integer {
+    return length(μ);
+  }
+
   function doSimulate() -> Real[_] {
     return simulate_multivariate_gaussian(μ, Σ);
   }

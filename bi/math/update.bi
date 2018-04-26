@@ -275,10 +275,10 @@ function update_multivariate_normal_inverse_gamma_gaussian(x:Real[_],
  * Update the parameters of a normal inverse-gamma distribution with a
  * multivariate Gaussian likelihood and scaling.
  *
- * - A: Scale.
  * - x: The variate.
- * - c: Offset.
+ * - A: Scale.
  * - μ: Mean.
+ * - c: Offset.
  * - Λ: Precision.
  * - α: Shape of the inverse-gamma.
  * - β: Scale of the inverse-gamma.
@@ -286,7 +286,7 @@ function update_multivariate_normal_inverse_gamma_gaussian(x:Real[_],
  * Returns: the updated parameters `μ`, `Σ`, `α` and `β`.
  */
 function update_multivariate_affine_normal_inverse_gamma_gaussian(
-    A:Real[_,_], x:Real[_], c:Real[_], μ:Real[_], Λ:Real[_,_], α:Real,
+    x:Real[_], A:Real[_,_], μ:Real[_], c:Real[_], Λ:Real[_,_], α:Real,
     β:Real) -> (Real[_], Real[_,_], Real, Real) {
   D:Integer <- length(μ);
   
