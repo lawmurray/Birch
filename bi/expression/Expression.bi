@@ -12,10 +12,17 @@ class Expression<Value> {
   }
 
   /**
-   * Value conversion.
+   * Value evaluation.
    */
   function value() -> Value {
     assert false;
+  }
+  
+  /**
+   * Boxed value evaluation.
+   */
+  function boxed() -> Boxed<Value> {
+    return Boxed(value());
   }
   
   /**

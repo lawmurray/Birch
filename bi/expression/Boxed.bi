@@ -6,6 +6,14 @@ class Boxed<Value>(x:Value) < Expression<Value> {
    * Value.
    */
   x:Value <- x;
+
+  function value() -> Value {
+    return x;
+  }
+
+  function box() -> Boxed<Value> {
+    return this;
+  }
 }
 
 function Boxed(x:Boolean) -> Boxed<Boolean> {
