@@ -23,6 +23,12 @@ bool bi::Type::isEmpty() const {
   return false;
 }
 
+bool bi::Type::isValue() const {
+  Gatherer<ClassType> gatherer;
+  this->accept(&gatherer);
+  return gatherer.size() == 0;
+}
+
 bool bi::Type::isBasic() const {
   return false;
 }

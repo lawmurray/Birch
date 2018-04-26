@@ -41,12 +41,15 @@ COMMON_SOURCES = \
   bi/common/Typed.cpp \
   bi/common/Valued.cpp \
   bi/exception/AmbiguousCallException.cpp \
+  bi/exception/AssignmentOperatorException.cpp \
   bi/exception/AssignmentException.cpp \
+  bi/exception/BaseException.cpp \
   bi/exception/CallException.cpp \
   bi/exception/CastException.cpp \
   bi/exception/CompilerException.cpp \
   bi/exception/ConditionException.cpp \
   bi/exception/ConstructorException.cpp \
+  bi/exception/ConversionOperatorException.cpp \
   bi/exception/DriverException.cpp \
   bi/exception/Exception.cpp \
   bi/exception/FiberTypeException.cpp \
@@ -214,10 +217,13 @@ noinst_HEADERS = \
   bi/exception/all.hpp \
   bi/exception/AmbiguousCallException.hpp \
   bi/exception/AssignmentException.hpp \
+  bi/exception/AssignmentOperatorException.hpp \
+  bi/exception/BaseException.hpp \
   bi/exception/CallException.hpp \
   bi/exception/CompilerException.hpp \
   bi/exception/ConditionException.hpp \
   bi/exception/ConstructorException.hpp \
+  bi/exception/ConversionOperatorException.hpp \
   bi/exception/DriverException.hpp \
   bi/exception/FiberTypeException.hpp \
   bi/exception/FileNotFoundException.hpp \

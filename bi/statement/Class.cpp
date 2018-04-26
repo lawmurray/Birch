@@ -78,12 +78,10 @@ void bi::Class::addConversion(const Type* o) {
 }
 
 bool bi::Class::hasConversion(const Type* o) const {
-  bool result = std::any_of(conversions.begin(), conversions.end(),
-      [&](auto x) {return x->equals(*o);});
-  result = result
-      || std::any_of(supers.begin(), supers.end(),
-          [&](auto x) {return x->hasConversion(o);});
-  return result;
+  return std::any_of(conversions.begin(), conversions.end(),
+      [&](auto x) {return x->equals(*o);}) ||
+      std::any_of(supers.begin(), supers.end(),
+      [&](auto x) {return x->hasConversion(o);});
 }
 
 void bi::Class::addAssignment(const Type* o) {
@@ -100,12 +98,10 @@ void bi::Class::addAssignment(const Type* o) {
 }
 
 bool bi::Class::hasAssignment(const Type* o) const {
-  bool result = std::any_of(assignments.begin(), assignments.end(),
-      [&](auto x) {return x->equals(*o);});
-  result = result
-      || std::any_of(supers.begin(), supers.end(),
-          [&](auto x) {return x->hasAssignment(o);});
-  return result;
+  return std::any_of(assignments.begin(), assignments.end(),
+      [&](auto x) {return x->equals(*o);}) ||
+      std::any_of(supers.begin(), supers.end(),
+      [&](auto x) {return x->hasAssignment(o);});
 }
 
 void bi::Class::addInstantiation(Class* o) {

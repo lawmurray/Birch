@@ -167,6 +167,9 @@ bi::Statement* bi::ResolverHeader::modify(AssignmentOperator* o) {
   scopes.push_back(o->scope);
   o->single = o->single->accept(this);
   scopes.pop_back();
+  if (!o->single->type->isValue()) {
+    throw AssignmentOperatorException(o);
+  }
   classes.back()->addAssignment(o->single->type);
   return o;
 }

@@ -86,7 +86,12 @@ public:
   virtual bool isEmpty() const;
 
   /**
-   * Is this a built-in type?
+   * Is this a value type?
+   */
+  virtual bool isValue() const;
+
+  /**
+   * Is this a basic type?
    */
   virtual bool isBasic() const;
 

@@ -23,7 +23,9 @@ bi::Expression* bi::ResolverSuper::modify(Generic* o) {
 bi::Statement* bi::ResolverSuper::modify(Basic* o) {
   o->base = o->base->accept(this);
   if (!o->base->isEmpty()) {
-    assert(o->base->isBasic());
+    if (!o->base->isBasic()) {
+      throw BaseException(o);
+    }
     o->addSuper(o->base);
   }
   return o;
@@ -40,7 +42,9 @@ bi::Statement* bi::ResolverSuper::modify(Class* o) {
     o->typeParams = o->typeParams->accept(this);
     o->base = o->base->accept(this);
     if (!o->base->isEmpty()) {
-      assert(o->base->isClass());
+      if (!o->base->isClass()) {
+        throw BaseException(o);
+      }
       o->addSuper(o->base);
     }
     o->braces = o->braces->accept(this);
@@ -96,6 +100,9 @@ bi::Statement* bi::ResolverSuper::modify(AssignmentOperator* o) {
 
 bi::Statement* bi::ResolverSuper::modify(ConversionOperator* o) {
   o->returnType = o->returnType->accept(this);
+  if (!o->returnType->isValue()) {
+    throw ConversionOperatorException(o);
+  }
   classes.back()->addConversion(o->returnType);
   return o;
 }
