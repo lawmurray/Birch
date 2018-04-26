@@ -28,5 +28,5 @@ function Student(ν:Expression<Real>) -> Student {
  * Create Student's $t$-distribution.
  */
 function Student(ν:Real) -> Student {
-  return Student(Literal(ν));
+  return Student(Boxed(ν));
 }

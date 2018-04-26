@@ -86,19 +86,19 @@ function Gaussian(μ:Expression<Real[_]>, σ2:Expression<Real>) -> MultivariateI
  * Create multivariate Gaussian distribution.
  */
 function Gaussian(μ:Expression<Real[_]>, σ2:Real) -> MultivariateIndependentGaussian {
-  return Gaussian(μ, Literal(σ2));
+  return Gaussian(μ, Boxed(σ2));
 }
 
 /**
  * Create multivariate Gaussian distribution.
  */
 function Gaussian(μ:Real[_], σ2:Expression<Real>) -> MultivariateIndependentGaussian {
-  return Gaussian(Literal(μ), σ2);
+  return Gaussian(Boxed(μ), σ2);
 }
 
 /**
  * Create multivariate Gaussian distribution.
  */
 function Gaussian(μ:Real[_], σ2:Real) -> MultivariateIndependentGaussian {
-  return Gaussian(Literal(μ), Literal(σ2));
+  return Gaussian(Boxed(μ), Boxed(σ2));
 }

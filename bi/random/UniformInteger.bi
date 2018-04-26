@@ -33,19 +33,19 @@ function Uniform(l:Expression<Integer>, u:Expression<Integer>) -> UniformInteger
  * Create uniform distribution over integers.
  */
 function Uniform(l:Expression<Integer>, u:Integer) -> UniformInteger {
-  return Uniform(l, Literal(u));
+  return Uniform(l, Boxed(u));
 }
 
 /**
  * Create uniform distribution over integers.
  */
 function Uniform(l:Integer, u:Expression<Integer>) -> UniformInteger {
-  return Uniform(Literal(l), u);
+  return Uniform(Boxed(l), u);
 }
 
 /**
  * Create uniform distribution over integers.
  */
 function Uniform(l:Integer, u:Integer) -> UniformInteger {
-  return Uniform(Literal(l), Literal(u));
+  return Uniform(Boxed(l), Boxed(u));
 }

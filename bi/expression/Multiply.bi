@@ -88,9 +88,9 @@ operator (left:Expression<Real>*right:Expression<Real>) -> Multiply<Real,Real,Re
 }
 
 operator (left:Real*right:Expression<Real>) -> Multiply<Real,Real,Real> {
-  return Literal(left)*right;
+  return Boxed(left)*right;
 }
 
 operator (left:Expression<Real>*right:Real) -> Multiply<Real,Real,Real> {
-  return left*Literal(right);
+  return left*Boxed(right);
 }

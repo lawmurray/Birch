@@ -37,19 +37,19 @@ function Binomial(n:Expression<Integer>, ρ:Expression<Real>) -> Binomial {
  * Create binomial distribution.
  */
 function Binomial(n:Expression<Integer>, ρ:Real) -> Binomial {
-  return Binomial(n, Literal(ρ));
+  return Binomial(n, Boxed(ρ));
 }
 
 /**
  * Create binomial distribution.
  */
 function Binomial(n:Integer, ρ:Expression<Real>) -> Binomial {
-  return Binomial(Literal(n), ρ);
+  return Binomial(Boxed(n), ρ);
 }
 
 /**
  * Create binomial distribution.
  */
 function Binomial(n:Integer, ρ:Real) -> Binomial {
-  return Binomial(Literal(n), Literal(ρ));
+  return Binomial(Boxed(n), Boxed(ρ));
 }

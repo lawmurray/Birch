@@ -37,19 +37,19 @@ function Gamma(k:Expression<Real>, θ:Expression<Real>) -> Gamma {
  * Create gamma distribution.
  */
 function Gamma(k:Expression<Real>, θ:Real) -> Gamma {
-  return Gamma(k, Literal(θ));
+  return Gamma(k, Boxed(θ));
 }
 
 /**
  * Create gamma distribution.
  */
 function Gamma(k:Real, θ:Expression<Real>) -> Gamma {
-  return Gamma(Literal(k), θ);
+  return Gamma(Boxed(k), θ);
 }
 
 /**
  * Create gamma distribution.
  */
 function Gamma(k:Real, θ:Real) -> Gamma {
-  return Gamma(Literal(k), Literal(θ));
+  return Gamma(Boxed(k), Boxed(θ));
 }

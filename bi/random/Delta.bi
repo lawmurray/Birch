@@ -31,5 +31,5 @@ function Delta(μ:Expression<Integer>) -> Delta {
  * - μ: Location.
  */
 function Delta(μ:Integer) -> Delta {
-  return Delta(Literal(μ));
+  return Delta(Boxed(μ));
 }

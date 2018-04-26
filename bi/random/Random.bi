@@ -6,6 +6,11 @@
  */
 class Random<Value> < Expression<Value> {
   /**
+   * Value.
+   */
+  x:Value?;
+
+  /**
    * Associated node in delayed sampling $M$-path.
    */
   delay:DelayValue<Value>?;
@@ -30,6 +35,13 @@ class Random<Value> < Expression<Value> {
         delay!.realize();
       }
     }
+  }
+
+  /**
+   * Are the values of any random variables within this expression missing?
+   */
+  function isMissing() -> Boolean {
+    return !x?;
   }
   
   /**

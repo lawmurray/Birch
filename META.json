@@ -72,7 +72,7 @@
       "bi/delay/DelayValue.bi",
       "bi/expression/Expression.bi",
       "bi/expression/Add.bi",
-      "bi/expression/Literal.bi",
+      "bi/expression/Boxed.bi",
       "bi/expression/Log.bi",
       "bi/expression/Multiply.bi",
       "bi/expression/MultivariateAdd.bi",

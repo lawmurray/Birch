@@ -82,19 +82,19 @@ function Gaussian(μ:Expression<Real>, σ2:Expression<Real>) -> Gaussian {
  * Create Gaussian distribution.
  */
 function Gaussian(μ:Expression<Real>, σ2:Real) -> Gaussian {
-  return Gaussian(μ, Literal(σ2));
+  return Gaussian(μ, Boxed(σ2));
 }
 
 /**
  * Create Gaussian distribution.
  */
 function Gaussian(μ:Real, σ2:Expression<Real>) -> Gaussian {
-  return Gaussian(Literal(μ), σ2);
+  return Gaussian(Boxed(μ), σ2);
 }
 
 /**
  * Create Gaussian distribution.
  */
 function Gaussian(μ:Real, σ2:Real) -> Gaussian {
-  return Gaussian(Literal(μ), Literal(σ2));
+  return Gaussian(Boxed(μ), Boxed(σ2));
 }

@@ -1,30 +1,21 @@
 /**
- * Delayed expression.
+ * Lazily-evaluated expression.
  *
  * - Value: Value type.
  */
 class Expression<Value> {  
-  /**
-   * Memoized result of evaluation.
-   */
-  x:Value?;
-
   /**
    * Value conversion.
    */
   operator -> Value {
     return value();
   }
-  
+
   /**
    * Value conversion.
    */
   function value() -> Value {
-    if (!x?) {
-      x <- doValue();
-      assert x?;
-    }
-    return x!;
+    assert false;
   }
   
   /**
@@ -37,14 +28,7 @@ class Expression<Value> {
   function observe(x:Value) -> Real {
     assert false;
   }
-  
-  /**
-   * Are the values of any random variables within this expression missing?
-   */
-  function isMissing() -> Boolean {
-    return !x?;
-  }
-  
+
   /**
    * Does this evaluate to a Gaussian distribution?
    */
@@ -252,13 +236,6 @@ class Expression<Value> {
    */
   function getMultivariateAffineNormalInverseGamma(σ2:Expression<Real>) ->
       (Real[_,_], DelayMultivariateNormalInverseGamma, Real[_]) {
-    assert false;
-  }
-
-  /**
-   * Node-specific value.
-   */
-  function doValue() -> Value {
     assert false;
   }
 }

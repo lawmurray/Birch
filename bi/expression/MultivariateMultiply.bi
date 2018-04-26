@@ -77,10 +77,10 @@ operator (left:Expression<Real[_,_]>*right:Expression<Real[_]>) ->
 
 operator (left:Real[_,_]*right:Expression<Real[_]>) ->
     MultivariateMultiply<Real[_,_],Real[_],Real[_]> {
-  return Literal(left)*right;
+  return Boxed(left)*right;
 }
 
 operator (left:Expression<Real[_,_]>*right:Real[_]) ->
     MultivariateMultiply<Real[_,_],Real[_],Real[_]> {
-  return left*Literal(right);
+  return left*Boxed(right);
 }

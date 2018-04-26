@@ -32,5 +32,5 @@ function Categorical(ρ:Expression<Real[_]>) -> Categorical {
  * Create categorical distribution.
  */
 function Categorical(ρ:Real[_]) -> Categorical {
-  return Categorical(Literal(ρ));
+  return Categorical(Boxed(ρ));
 }

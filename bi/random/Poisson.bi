@@ -32,5 +32,5 @@ function Poisson(λ:Expression<Real>) -> Poisson {
  * Create Poisson distribution.
  */
 function Poisson(λ:Real) -> Poisson {
-  return Poisson(Literal(λ));
+  return Poisson(Boxed(λ));
 }

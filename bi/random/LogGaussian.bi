@@ -61,19 +61,19 @@ function LogGaussian(μ:Expression<Real>, σ2:Expression<Real>) -> LogGaussian {
  * Create log-Gaussian distribution.
  */
 function LogGaussian(μ:Expression<Real>, σ2:Real) -> LogGaussian {
-  return LogGaussian(μ, Literal(σ2));
+  return LogGaussian(μ, Boxed(σ2));
 }
 
 /**
  * Create log-Gaussian distribution.
  */
 function LogGaussian(μ:Real, σ2:Expression<Real>) -> LogGaussian {
-  return LogGaussian(Literal(μ), σ2);
+  return LogGaussian(Boxed(μ), σ2);
 }
 
 /**
  * Create log-Gaussian distribution.
  */
 function LogGaussian(μ:Real, σ2:Real) -> LogGaussian {
-  return LogGaussian(Literal(μ), Literal(σ2));
+  return LogGaussian(Boxed(μ), Boxed(σ2));
 }

@@ -70,10 +70,10 @@ operator (left:Expression<Real[_]> + right:Expression<Real[_]>) ->
 
 operator (left:Real[_] + right:Expression<Real[_]>) ->
     MultivariateAdd<Real[_],Real[_],Real[_]> {
-  return Literal(left) + right;
+  return Boxed(left) + right;
 }
 
 operator (left:Expression<Real[_]> + right:Real[_]) ->
     MultivariateAdd<Real[_],Real[_],Real[_]> {
-  return left + Literal(right);
+  return left + Boxed(right);
 }
