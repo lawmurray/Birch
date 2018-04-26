@@ -166,10 +166,16 @@ void bi::Scope::add(MemberFiber* param) {
 }
 
 void bi::Scope::add(BinaryOperator* param) {
+  if (binaryOperators.contains(param)) {
+    throw PreviousDeclarationException(param);
+  }
   binaryOperators.add(param);
 }
 
 void bi::Scope::add(UnaryOperator* param) {
+  if (unaryOperators.contains(param)) {
+    throw PreviousDeclarationException(param);
+  }
   unaryOperators.add(param);
 }
 

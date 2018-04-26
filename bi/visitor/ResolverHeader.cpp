@@ -115,8 +115,6 @@ bi::Statement* bi::ResolverHeader::modify(Program* o) {
 }
 
 bi::Statement* bi::ResolverHeader::modify(BinaryOperator* o) {
-  ///@todo Check that operator is in fact a binary operator, as parser no
-  ///      longer distinguishes
   scopes.push_back(o->scope);
   o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
@@ -127,8 +125,6 @@ bi::Statement* bi::ResolverHeader::modify(BinaryOperator* o) {
 }
 
 bi::Statement* bi::ResolverHeader::modify(UnaryOperator* o) {
-  ///@todo Check that operator is in fact a unary operator, as parser no
-  ///      longer distinguishes
   scopes.push_back(o->scope);
   o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
