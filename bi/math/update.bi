@@ -1,4 +1,21 @@
 /**
+ * Update the parameters of a Beta distribution with a Bernoulli likelihood.
+ *
+ * - x: The variate.
+ * - α: Prior first shape.
+ * - β: Prior second shape.
+ *
+ * Returns: the updated parameters `α` and `β`.
+ */
+function update_beta_bernoulli(x:Boolean, α:Real, β:Real) -> (Real, Real) {
+  if (x) {
+    return (α + 1.0, β);
+  } else {
+    return (α, β + 1.0);
+  }
+}
+
+/**
  * Update the parameters of a Beta distribution with a Binomial likelihood.
  *
  * - x: The variate.

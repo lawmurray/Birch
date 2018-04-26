@@ -8,7 +8,7 @@ class Binomial(n:Expression<Integer>, ρ:Expression<Real>) < Random<Integer> {
   n:Expression<Integer> <- n;
 
   /**
-   * Probability of a true result.
+   * Success probability.
    */
   ρ:Expression<Real> <- ρ;
 

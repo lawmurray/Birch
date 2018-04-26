@@ -3,16 +3,20 @@
  */
 class Bernoulli(ρ:Expression<Real>) < Random<Boolean> {
   /**
-   * Probability of a true result.
+   * Success probability.
    */
   ρ:Expression<Real> <- ρ;
 
-  function doSimulate() -> Boolean {
-    return simulate_bernoulli(ρ.value());
-  }
-  
-  function doObserve(x:Boolean) -> Real {
-    return observe_bernoulli(x, ρ.value());
+  function graft() {
+    if (ρ.isBeta()) {
+      m:DelayBetaBernoulli(this, ρ.getBeta());
+      m.graft();
+      delay <- m;
+    } else {
+      m:DelayBernoulli(this, ρ.value());
+      m.graft();
+      delay <- m;
+    }
   }
 }
 

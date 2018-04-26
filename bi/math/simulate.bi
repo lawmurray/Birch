@@ -328,6 +328,19 @@ function simulate_normal_inverse_gamma(μ:Real, a2:Real, α:Real,
 }
 
 /**
+ * Simulate a beta-bernoulli distribution.
+ *
+ * - α: Shape.
+ * - β: Shape.
+ */
+function simulate_beta_bernoulli(α:Real, β:Real) -> Boolean {
+  assert 0.0 < α;
+  assert 0.0 < β;
+  
+  return simulate_bernoulli(simulate_beta(α, β));
+}
+
+/**
  * Simulate a beta-binomial distribution.
  *
  * - n: Number of trials.

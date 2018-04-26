@@ -8,7 +8,7 @@ class DelayBinomial(x:Random<Integer>, n:Integer, ρ:Real) < DelayValue<Integer>
   n:Integer <- n;
 
   /**
-   * Probability of a true result.
+   * Probability of success.
    */
   ρ:Real <- ρ;
 

@@ -364,6 +364,26 @@ function observe_normal_inverse_gamma(x:Real, μ:Real, a2:Real, α:Real,
 }
 
 /**
+ * Observe a beta-bernoulli variate.
+ *
+ * - x: The variate.
+ * - α: Shape.
+ * - β: Shape.
+ *
+ * Returns: the log probability mass.
+ */
+function observe_beta_bernoulli(x:Boolean, α:Real, β:Real) -> Real {
+  assert 0.0 < α;
+  assert 0.0 < β;
+
+  if (x) {
+    return lbeta(1.0 + α, β) - lbeta(α, β);
+  } else {
+    return lbeta(α, 1.0 + β) - lbeta(α, β);
+  }
+}
+
+/**
  * Observe a beta-binomial variate.
  *
  * - x: The variate.
