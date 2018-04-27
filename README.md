@@ -27,12 +27,12 @@ There are several different programs that can be found in the `bi/` subdirectory
     birch delay_spike_and_slab
     birch delay_kalman
 
-Two more interesting examples are models on which the generic `sample` program from the Birch standard library can be run. The first is a linear-Gaussian state-space model, for which Birch will run a Kalman filter:
+Two more interesting examples are models on which the generic `sample` program from the Birch standard library can be run. The first is a linear-Gaussian state-space model, for which Birch will run a Kalman filter (make sure to create the `output/` folder if it does not exist):
 
     birch sample \
         --model LinearGaussianSSM \
         --input-file input/LinearGaussianSSM.json \
-        --output-file input/LinearGaussianSSM.json \
+        --output-file output/LinearGaussianSSM.json \
         --ncheckpoints 10
 
 and a mixed linear-nonlinear Gaussian state-space model, for which Birch will run a particle filter:
@@ -40,10 +40,10 @@ and a mixed linear-nonlinear Gaussian state-space model, for which Birch will ru
     birch sample \
         --model LinearNonlinearSSM \
         --input-file input/LinearNonlinearSSM.json \
-        --output-file input/LinearNonlinearSSM.json \
+        --output-file output/LinearNonlinearSSM.json \
         --nparticles 256 \
         --ncheckpoints 50
-        
+
 You can find these models in the `bi/model` subdirectory. Each is implemented as a separate class. The (simulated) data sets used with them are in the `input/` subdirectory. After running, a single posterior sample is output to the `output/` subdirectory.
 
 
