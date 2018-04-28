@@ -1,5 +1,7 @@
 /**
- * Typed interface for delayed sampling of random variables.
+ * Type-specific interface for delayed sampling of random variables.
+ *
+ * - Value: Value type.
  *
  * - x: Associated random variable.
  */
@@ -14,8 +16,9 @@ class DelayValue<Value>(x:Random<Value>) < Delay {
     if (parent?) {
       parent!.child <- nil;
       // ^ doing this now makes the parent a terminal node, so that within
-      //   doRealize(), realization of the parent can be forced also for
-      //   deterministic relationships (e.g. see DelayDelta)
+      //   doSimulate() or doObserve(), realization of the parent can be
+      //   forced also; this is useful for deterministic relationships (e.g.
+      //   see DelayDelta)
     }
       
     y:Random<Value>? <- x;

@@ -82,8 +82,10 @@ class Random<Value> < Expression<Value> {
    */
   function realize() {
     graft();
-    delay!.realize();
-    delay <- nil;
+    if (delay?) {
+      delay!.realize();
+      delay <- nil;
+    }
   }
 
   /**
@@ -92,13 +94,12 @@ class Random<Value> < Expression<Value> {
   function graft() {
     if (!delay?) {
       doGraft();
-      assert delay?;
     }
   }
 
   function graftGaussian() -> DelayGaussian? {
     if (delay?) {
-      return delay!.doGraftGaussian();
+      return delay!.graftGaussian();
     } else {
       return doGraftGaussian();
     }
@@ -106,7 +107,7 @@ class Random<Value> < Expression<Value> {
 
   function graftAffineGaussianGaussian() -> DelayAffineGaussianGaussian? {
     if (delay?) {
-      return delay!.doGraftAffineGaussianGaussian();
+      return delay!.graftAffineGaussianGaussian();
     } else {
       return doGraftAffineGaussianGaussian();
     }
@@ -114,7 +115,7 @@ class Random<Value> < Expression<Value> {
 
   function graftBeta() -> DelayBeta? {
     if (delay?) {
-      return delay!.doGraftBeta();
+      return delay!.graftBeta();
     } else {
       return doGraftBeta();
     }
@@ -122,7 +123,7 @@ class Random<Value> < Expression<Value> {
 
   function graftGamma() -> DelayGamma? {
     if (delay?) {
-      return delay!.doGraftGamma();
+      return delay!.graftGamma();
     } else {
       return doGraftGamma();
     }
@@ -130,7 +131,7 @@ class Random<Value> < Expression<Value> {
 
   function graftInverseGamma() -> DelayInverseGamma? {
     if (delay?) {
-      return delay!.doGraftInverseGamma();
+      return delay!.graftInverseGamma();
     } else {
       return doGraftInverseGamma();
     }
@@ -139,7 +140,7 @@ class Random<Value> < Expression<Value> {
   function graftNormalInverseGamma(σ2:Expression<Real>) ->
       DelayNormalInverseGamma? {
     if (delay?) {
-      return delay!.doGraftNormalInverseGamma();
+      return delay!.graftNormalInverseGamma();
     } else {
       return doGraftNormalInverseGamma();
     }
@@ -147,7 +148,7 @@ class Random<Value> < Expression<Value> {
 
   function graftDirichlet() -> DelayDirichlet? {
     if (delay?) {
-      return delay!.doGraftDirichlet();
+      return delay!.graftDirichlet();
     } else {
       return doGraftDirichlet();
     }
@@ -155,7 +156,7 @@ class Random<Value> < Expression<Value> {
 
   function graftMultivariateGaussian() -> DelayMultivariateGaussian? {
     if (delay?) {
-      return delay!.doGraftMultivariateGaussian();
+      return delay!.graftMultivariateGaussian();
     } else {
       return doGraftMultivariateGaussian();
     }
@@ -164,7 +165,7 @@ class Random<Value> < Expression<Value> {
   function graftMultivariateAffineGaussianGaussian() ->
       DelayAffineMultivariateGaussianGaussian? {
     if (delay?) {
-      return delay!.doGraftMultivariateAffineGaussianGaussian();
+      return delay!.graftMultivariateAffineGaussianGaussian();
     } else {
       return doGraftMultivariateAffineGaussianGaussian();
     }
@@ -173,7 +174,7 @@ class Random<Value> < Expression<Value> {
   function graftMultivariateNormalInverseGamma(σ2:Expression<Real>) ->
       DelayMultivariateNormalInverseGamma? {
     if (delay?) {
-      return delay!.doGraftMultivariateNormalInverseGamma();
+      return delay!.graftMultivariateNormalInverseGamma();
     } else {
       return doGraftMultivariateNormalInverseGamma();
     }
@@ -182,7 +183,7 @@ class Random<Value> < Expression<Value> {
   function graftMultivariateNormalInverseGammaGaussian(
       σ2:Expression<Real>) -> DelayMultivariateNormalInverseGammaGaussian? {
     if (delay?) {
-      return delay!.doGraftMultivariateNormalInverseGammaGaussian();
+      return delay!.graftMultivariateNormalInverseGammaGaussian();
     } else {
       return doGraftMultivariateNormalInverseGammaGaussian();
     }
@@ -192,14 +193,14 @@ class Random<Value> < Expression<Value> {
       σ2:Expression<Real>) ->
       DelayMultivariateAffineNormalInverseGammaGaussian? {
     if (delay?) {
-      return delay!.doGraftMultivariateAffineNormalInverseGammaGaussian();
+      return delay!.graftMultivariateAffineNormalInverseGammaGaussian();
     } else {
       return doGraftMultivariateAffineNormalInverseGammaGaussian();
     }
   }
 
   function doGraft() {
-    assert false;
+    //
   }
 
   function doGraftGaussian() -> DelayGaussian? {

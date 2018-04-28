@@ -26,7 +26,6 @@ class DelayMultivariateGaussian(x:Random<Real[_]>, μ:Expression<Real[_]>,
   }
   
   function doGraftMultivariateGaussian() -> DelayMultivariateGaussian? {
-    prune();
     return this;
   }
 }
