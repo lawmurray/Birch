@@ -1,7 +1,8 @@
 /**
  * Multivariate Gaussian distribution.
  */
-class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) < Random<Real[_]> {
+class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) <
+    Random<Real[_]> {
   /**
    * Mean.
    */
@@ -12,44 +13,46 @@ class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) < R
    */
   Σ:Expression<Real[_,_]> <- Σ;
   
-  function isMultivariateGaussian() -> Boolean {
-    return isMissing();
-  }
-
-  function getMultivariateGaussian() -> DelayMultivariateGaussian {
-    assert isMultivariateGaussian();
-    return DelayMultivariateGaussian?(delay)!;
-  }
-
-  function isMultivariateNormalInverseGamma(σ2:Expression<Real>) -> Boolean {
-    return Σ.isScaledInverseGamma(σ2);
-  }
-  
-  function getMultivariateNormalInverseGamma(σ2:Expression<Real>) -> DelayMultivariateNormalInverseGamma {
-    A:Real[_,_];
-    s2:DelayInverseGamma?;
-    (A, s2) <- σ2.getMultivariateScaledInverseGamma(σ2);
-    m:DelayMultivariateNormalInverseGamma(this, μ.value(), inv(A), s2!);
-    return m;
-  }
-  
-  function graft() {
-    if (μ.isMultivariateGaussian()) {
-      m:DelayMultivariateGaussianGaussian(this, μ.getMultivariateGaussian(), Σ.value());
-      m.graft();
-      delay <- m;
-    } else if (μ.isMultivariateAffineGaussian()) {
-      A:Real[_,_];
-      μ_0:DelayMultivariateGaussian?;
-      c:Real[_];
-      (A, μ_0, c) <- μ.getMultivariateAffineGaussian();
-      m:DelayMultivariateAffineGaussianGaussian(this, A, μ_0!, c, Σ.value());
-      m.graft();
-      delay <- m;
+  function doGraft() {
+    σ2:DelayInverseGamma? <- Σ.graftInverseGamma();
+    m1:DelayMultivariateAffineNormalInverseGamma? <-
+        μ.graftMultivariateAffineNormalInverseGamma(σ2);
+    m2:DelayMultivariateNormalInverseGamma? <-
+        μ.graftMultivariateNormalInverseGamma(σ2);
+    m3:TransformMultivariateAffineGaussian? <-
+        μ.graftMultivariateAffineGaussian();
+    m4:DelayMultivariateGaussian? <- μ.graftMultivariateGaussian();
+        
+    if (σ2?) {
+      if (m1?) {
+        delay <- DelayMultivariateAffineNormalInverseGammaGaussian(this,
+            m1!);
+      } else if (m2?) {
+        delay <- DelayMultivariateNormalInverseGammaGaussian(this, m2!);
+      } else {
+        delay <- DelayMultivariateInverseGammaGaussian(this, μ, σ2!);
+      }
+    } else if (m3?) {
+      delay <- DelayMultivariateAffineGaussian(this, m3!, Σ);
+    } else if (m4?) {
+      delay <- DelayMultivariateGaussianGaussian(this, m4!, Σ);
     } else {
-      m:DelayMultivariateGaussian(this, μ.value(), Σ.value());
-      m.graft();
-      delay <- m;
+      delay <- DelayMultivariateGaussian(this, μ, Σ);
+    }
+  }
+
+  function doGraftMultivariateGaussian() -> DelayMultivariateGaussian? {
+    return DelayMultivariateGaussian(this, μ, Σ);
+  }
+
+  function doGraftMultivariateNormalInverseGamma(σ2:DelayInverseGamma) ->
+      DelayMultivariateNormalInverseGamma? {
+    S:TransformMultivarateScaledInverseGamma? <-
+        Σ.graftMultivariateScaledInverseGamma(σ2);
+    if (S?) {
+      return DelayMultivariateNormalInverseGamma(this, μ, S!);
+    } else {
+      return nil;
     }
   }
 }
@@ -57,7 +60,8 @@ class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) < R
 /**
  * Create multivariate Gaussian distribution.
  */
-function Gaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) -> MultivariateGaussian {
+function Gaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) ->
+    MultivariateGaussian {
   m:MultivariateGaussian(μ, Σ);
   return m;
 }
@@ -65,14 +69,16 @@ function Gaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) -> Multivari
 /**
  * Create multivariate Gaussian distribution.
  */
-function Gaussian(μ:Expression<Real[_]>, Σ:Real[_,_]) -> MultivariateGaussian {
+function Gaussian(μ:Expression<Real[_]>, Σ:Real[_,_]) ->
+    MultivariateGaussian {
   return Gaussian(μ, Boxed(Σ));
 }
 
 /**
  * Create multivariate Gaussian distribution.
  */
-function Gaussian(μ:Real[_], Σ:Expression<Real[_,_]>) -> MultivariateGaussian {
+function Gaussian(μ:Real[_], Σ:Expression<Real[_,_]>) ->
+    MultivariateGaussian {
   return Gaussian(Boxed(μ), Σ);
 }
 

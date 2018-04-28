@@ -12,11 +12,13 @@ class Beta(α:Expression<Real>, β:Expression<Real>) < Random<Real> {
    */
   β:Expression<Real> <- β;
 
-  function isBeta() -> Boolean {
-    return isMissing();
+  function graft() {
+    if (!delay?) {
+      delay <- graftBeta();
+    }
   }
 
-  function getBeta() -> DelayBeta {
+  function graftBeta() -> DelayBeta? {
     if (!delay?) {
       delay:DelayBeta(this, α.value(), β.value());
       this.delay <- delay;

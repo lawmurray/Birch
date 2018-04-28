@@ -34,6 +34,7 @@
       "bi/container/StackNode.bi",
       "bi/container/Vector.bi",
       "bi/delay/Delay.bi",
+      "bi/delay/DelayAffineGaussian.bi",
       "bi/delay/DelayAffineGaussianGaussian.bi",
       "bi/delay/DelayAffineGaussianLogGaussian.bi",
       "bi/delay/DelayAffineNormalInverseGammaGaussian.bi",

@@ -26,223 +26,190 @@ class Expression<Value> {
   }
   
   /**
-   * Observe the value.
+   * Attempt to graft this expression onto the delayed sampling graph.
    *
-   * - x: The observed value.
+   * Return: The node if successful, nil if not.
+   */
+  function graftGaussian() -> DelayGaussian? {
+    return nil;
+  }
+  
+  /**
+   * Attempt to graft this expression onto the delayed sampling graph.
    *
-   * Returns: the log likelihood.
+   * Return: The node if successful, nil if not.
    */
-  function observe(x:Value) -> Real {
-    assert false;
+  function graftAffineGaussian() -> DelayAffineGaussian? {
+    return nil;
   }
 
   /**
-   * Does this evaluate to a Gaussian distribution?
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
+   * Return: The node if successful, nil if not.
    */
-  function isGaussian() -> Boolean {
-    return false;
+  function graftAffineGaussianGaussian() -> DelayAffineGaussianGaussian? {
+    return nil;
   }
   
   /**
-   * If `isGaussian()`, get its parameters, otherwise undefined.
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
+   * Return: The node if successful, nil if not.
    */
-  function getGaussian() -> DelayGaussian {
-    assert false;
-  }
-
-  /**
-   * Does this evaluate to an affine transformation of a Gaussian
-   * distribution?
-   */
-  function isAffineGaussian() -> Boolean {
-    return false;
+  function graftBeta() -> DelayBeta? {
+    return nil;
   }
   
   /**
-   * If `isAffineGaussian()`, get its parameters, otherwise undefined.
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
+   * Return: The node if successful, nil if not.
    */
-  function getAffineGaussian() -> (Real, DelayGaussian, Real) {
-    assert false;
-  }
-
-  /**
-   * Does this evaluate to a Beta distribution?
-   */
-  function isBeta() -> Boolean {
-    return false;
+  function graftGamma() -> DelayGamma? {
+    return nil;
   }
   
   /**
-   * If `isBeta()`, get its parameters, otherwise undefined.
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
+   * Return: The node if successful, nil if not.
    */
-  function getBeta() -> DelayBeta {
-    assert false;
-  }
-
-  /**
-   * Does this evaluate to a Gamma distribution?
-   */
-  function isGamma() -> Boolean {
-    return false;
-  }
-  
-  /**
-   * If `isGamma()`, get its parameters, otherwise undefined.
-   */
-  function getGamma() -> DelayGamma {
-    assert false;
-  }
-
-  /**
-   * Does this evaluate to an inverse Gamma distribution?
-   */
-  function isInverseGamma() -> Boolean {
-    return false;
-  }
-  
-  /**
-   * If `isInverseGamma()`, get its parameters, otherwise undefined.
-   */
-  function getInverseGamma() -> DelayInverseGamma {
-    assert false;
+  function graftInverseGamma() -> DelayInverseGamma? {
+    return nil;
   } 
 
   /**
-   * Does this evaluate to a scaled inverse gamma distribution with the given
-   * inverse gamma marginal?
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
+   * - σ2: Inverse gamma expression that must appear.
+   *
+   * Return: The node if successful, nil if not.
    */
-  function isScaledInverseGamma(σ2:Expression<Real>) -> Boolean {
-    return false;
+  function graftScaledInverseGamma(σ2:Expression<Real>) -> 
+      DelayScaledInverseGamma? {
+    return nil;
   }
   
   /**
-   * If `isScaledInverseGamma()`, get its parameters, otherwise undefined.
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
+   * - σ2: Inverse gamma expression that must appear.
+   *
+   * Return: The node if successful, nil if not.
    */
-  function getScaledInverseGamma(σ2:Expression<Real>) -> (Real, DelayInverseGamma) {
-    assert false;
+  function graftNormalInverseGamma(σ2:Expression<Real>) ->
+      DelayNormalInverseGamma? {
+    return nil;
   }
 
   /**
-   * Does this evaluate to a normal inverse gamma distribution with the given
-   * inverse gamma marginal?
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
+   * - σ2: Inverse gamma expression that must appear.
+   *
+   * Return: The node if successful, nil if not.
    */
-  function isNormalInverseGamma(σ2:Expression<Real>) -> Boolean {
-    return false;
+  function graftAffineNormalInverseGamma(σ2:Expression<Real>) ->
+      DelayAffineNormalInverseGamma? {
+    return nil;
   }
   
   /**
-   * If `isNormalInverseGamma()`, get its parameters, otherwise undefined.
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
+   * Return: The node if successful, nil if not.
    */
-  function getNormalInverseGamma(σ2:Expression<Real>) -> DelayNormalInverseGamma {
-    assert false;
+  function graftDirichlet() -> DelayDirichlet? {
+    return nil;
   }
 
   /**
-   * Does this evaluate to an affine transformation of a normal inverse gamma
-   * distribution with the given inverse gamma marginal?
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
+   * Return: The node if successful, nil if not.
    */
-  function isAffineNormalInverseGamma(σ2:Expression<Real>) -> Boolean {
-    return false;
-  }
-  
-  /**
-   * If `isAffineNormalInverseGamma()`, get its parameters, otherwise undefined.
-   */
-  function getAffineNormalInverseGamma(σ2:Expression<Real>) -> (Real, DelayNormalInverseGamma, Real) {
-    assert false;
+  function graftMultivariateGaussian() -> DelayMultivariateGaussian? {
+    return nil;
   }
 
   /**
-   * Does this evaluate to a Dirichlet distribution?
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
+   * Return: The node if successful, nil if not.
    */
-  function isDirichlet() -> Boolean {
-    return false;
-  }
-  
-  /**
-   * If `isDirichlet()`, get its parameters, otherwise undefined.
-   */
-  function getDirichlet() -> DelayDirichlet {
-    assert false;
+  function graftMultivariateAffineGaussian() ->
+      DelayAffineMultivariateGaussian? {
+    return nil;
   }
 
   /**
-   * Does this evaluate to a multivariate Gaussian distribution?
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
+   * Return: The node if successful, nil if not.
    */
-  function isMultivariateGaussian() -> Boolean {
-    return false;
-  }
-  
-  /**
-   * If `iMultivariatesGaussian()`, get its parameters, otherwise undefined.
-   */
-  function getMultivariateGaussian() -> DelayMultivariateGaussian {
-    assert false;
+  function graftMultivariateAffineGaussianGaussian() ->
+      DelayAffineMultivariateGaussianGaussian? {
+    return nil;
   }
 
   /**
-   * Does this evaluate to an affine transformation of a multivariate Gaussian
-   * distribution?
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
+   * - σ2: Inverse gamma expression that must appear.
+   *
+   * Return: The node if successful, nil if not.
    */
-  function isMultivariateAffineGaussian() -> Boolean {
-    return false;
-  }
-  
-  /**
-   * If `isMultivariateAffineGaussian()`, get its parameters, otherwise undefined.
-   */
-  function getMultivariateAffineGaussian() -> (Real[_,_], DelayMultivariateGaussian, Real[_]) {
-    assert false;
+  function graftMultivariateScaledInverseGamma(σ2:Expression<Real>) ->
+      DelayScaledInverseGamma? {
+    return nil;
   }
 
   /**
-   * Does this evaluate to a multivariate scaled inverse gamma distribution
-   * with the given inverse gamma marginal?
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
+   * - σ2: Inverse gamma expression that must appear.
+   *
+   * Return: The node if successful, nil if not.
    */
-  function isMultivariateScaledInverseGamma(σ2:Expression<Real>) -> Boolean {
-    return false;
-  }
-  
-  /**
-   * If `isMultivariateScaledInverseGamma()`, get its parameters, otherwise
-   * undefined.
-   */
-  function getMultivariateScaledInverseGamma(σ2:Expression<Real>) ->
-      (Real[_,_], DelayInverseGamma) {
-    assert false;
+  function graftMultivariateNormalInverseGamma(σ2:Expression<Real>) ->
+      DelayMultivariateNormalInverseGamma? {
+    return nil;
   }
 
   /**
-   * Does this evaluate to a multivariate normal inverse gamma distribution
-   * with the given inverse gamma marginal?
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
+   * - σ2: Inverse gamma expression that must appear.
+   *
+   * Return: The node if successful, nil if not.
    */
-  function isMultivariateNormalInverseGamma(σ2:Expression<Real>) -> Boolean {
-    return false;
-  }
-  
-  /**
-   * If `isMultivariateNormalInverseGamma()`, get its parameters, otherwise
-   * undefined.
-   */
-  function getMultivariateNormalInverseGamma(σ2:Expression<Real>) ->
-      DelayMultivariateNormalInverseGamma {
-    assert false;
+  function graftMultivariateNormalInverseGammaGaussian(σ2:Expression<Real>) ->
+      DelayMultivariateNormalInverseGammaGaussian? {
+    return nil;
   }
 
   /**
-   * Does this evaluate to an affine transformation of a multivariate normal
-   * inverse gamma distribution with the given inverse gamma marginal?
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
+   * - σ2: Inverse gamma expression that must appear.
+   *
+   * Return: The node if successful, nil if not.
    */
-  function isMultivariateAffineNormalInverseGamma(σ2:Expression<Real>) -> Boolean {
-    return false;
+  function graftMultivariateAffineNormalInverseGamma(σ2:Expression<Real>) ->
+      DelayMultivariateAffineNormalInverseGamma? {
+    return nil;
   }
-  
+
   /**
-   * If `isMultivariateAffineNormalInverseGamma()`, get its parameters,
-   * otherwise undefined.
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
+   * - σ2: Inverse gamma expression that must appear.
+   *
+   * Return: The node if successful, nil if not.
    */
-  function getMultivariateAffineNormalInverseGamma(σ2:Expression<Real>) ->
-      (Real[_,_], DelayMultivariateNormalInverseGamma, Real[_]) {
-    assert false;
+  function graftMultivariateAffineNormalInverseGammaGaussian(σ2:Expression<Real>) ->
+      DelayMultivariateAffineNormalInverseGammaGaussian? {
+    return nil;
   }
 }

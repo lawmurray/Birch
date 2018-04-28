@@ -1,11 +1,3 @@
-/*
- * Node states for delayed sampling.
- */
-UNINITIALIZED:Integer8 <- 0;
-INITIALIZED:Integer8 <- 1;
-MARGINALIZED:Integer8 <- 2;
-REALIZED:Integer8 <- 3;
-
 /**
  * Interface for delayed sampling of random variables.
  */
@@ -19,69 +11,79 @@ class Delay {
    * Child, if one exists and it is on the $M$-path.
    */
   child:Delay&;
-
-  /**
-   * State of the variate.
-   */
-  state:Integer8 <- UNINITIALIZED;
-
-  /**
-   * Is this node in the uninitialized state?
-   */
-  function isUninitialized() -> Boolean {
-    return state == UNINITIALIZED;
-  }
-  
-  /**
-   * Is this node in the initialized state?
-   */
-  function isInitialized() -> Boolean {
-    return state == INITIALIZED;
-  }
-
-  /**
-   * Is this node in the marginalized state?
-   */
-  function isMarginalized() -> Boolean {
-    return state == MARGINALIZED;
-  }
-
-  /**
-   * Is this node in the realized state?
-   */
-  function isRealized() -> Boolean {
-    return state == REALIZED;
-  }
-
-  /**
-   * Initialize.
-   */
-  function initialize();
-
-  /**
-   * Marginalize.
-   */
-  function marginalize();
   
   /**
    * Realize (simulate or observe).
    */
   function realize();
-
-  /**
-   * Graft the $M$-path to this node.
-   */
-  function graft();
-
-  /**
-   * Graft the $M$-path to this node.
-   *
-   * - c: The child node (caller) that will itself be part of the $M$-path.
-   */
-  function graft(c:Delay);
   
   /**
    * Prune the $M$-path from below this node.
    */
-  function prune();
+  function prune() {
+    child:Delay? <- this.child;
+    if (child?) {
+      child!.prune();
+      child!.realize();
+      child <- nil;
+    }
+  }
+
+  function doGraft() {
+    assert false;
+  }
+
+  function doGraftGaussian() -> DelayGaussian? {
+    return nil;
+  }
+
+  function doGraftAffineGaussianGaussian() -> DelayAffineGaussianGaussian? {
+    return nil;
+  }
+
+  function doGraftBeta() -> DelayBeta? {
+    return nil;
+  }
+
+  function doGraftGamma() -> DelayGamma? {
+    return nil;
+  }
+
+  function doGraftInverseGamma() -> DelayInverseGamma? {
+    return nil;
+  } 
+
+  function doGraftNormalInverseGamma(σ2:Expression<Real>) ->
+      DelayNormalInverseGamma? {
+    return nil;
+  }
+
+  function doGraftDirichlet() -> DelayDirichlet? {
+    return nil;
+  }
+
+  function doGraftMultivariateGaussian() -> DelayMultivariateGaussian? {
+    return nil;
+  }
+
+  function doGraftMultivariateAffineGaussianGaussian() ->
+      DelayAffineMultivariateGaussianGaussian? {
+    return nil;
+  }
+
+  function doGraftMultivariateNormalInverseGamma(σ2:Expression<Real>) ->
+      DelayMultivariateNormalInverseGamma? {
+    return nil;
+  }
+
+  function doGraftMultivariateNormalInverseGammaGaussian(
+      σ2:Expression<Real>) -> DelayMultivariateNormalInverseGammaGaussian? {
+    return nil;
+  }
+
+  function doGraftMultivariateAffineNormalInverseGammaGaussian(
+      σ2:Expression<Real>) ->
+      DelayMultivariateAffineNormalInverseGammaGaussian? {
+    return nil;
+  }
 }
