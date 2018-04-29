@@ -15,3 +15,8 @@ class DelayPoisson(x:Random<Integer>, λ:Real) < DelayValue<Integer>(x) {
     return observe_poisson(x, λ);
   }
 }
+
+function DelayPoisson(x:Random<Integer>, λ:Real) -> DelayPoisson {
+  m:DelayPoisson(x, λ);
+  return m;
+}

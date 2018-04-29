@@ -20,3 +20,8 @@ class DelayGaussian(x:Random<Real>, μ:Real, σ2:Real) < DelayValue<Real>(x) {
     return observe_gaussian(x, μ, σ2);
   }
 }
+
+function DelayGaussian(x:Random<Real>, μ:Real, σ2:Real) -> DelayGaussian {
+  m:DelayGaussian(x, μ, σ2);
+  return m;
+}

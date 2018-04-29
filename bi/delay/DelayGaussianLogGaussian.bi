@@ -23,3 +23,9 @@ class DelayGaussianLogGaussian(x:Random<Real>, μ_0:DelayGaussian, σ2:Real) <
         σ2_m);
   }
 }
+
+function DelayGaussianLogGaussian(x:Random<Real>, μ_0:DelayGaussian,
+    σ2:Real) -> DelayGaussianLogGaussian {
+  m:DelayGaussianLogGaussian(x, μ_0, σ2);
+  return m;
+}

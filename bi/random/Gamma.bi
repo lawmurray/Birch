@@ -12,16 +12,12 @@ class Gamma(k:Expression<Real>, θ:Expression<Real>) < Random<Real> {
    */
   θ:Expression<Real> <- θ;
 
-  function isGamma() -> Boolean {
-    return isMissing();
+  function doGraft() -> Delay? {
+    return DelayGamma(this, k.value(), θ.value());
   }
 
-  function getGamma() -> DelayGamma {
-    if (!delay?) {
-      delay:DelayGamma(this, k.value(), θ.value());
-      this.delay <- delay;
-    }
-    return DelayGamma?(delay)!;
+  function doGraftGamma() -> DelayGamma? {
+    return DelayGamma(this, k.value(), θ.value());
   }
 }
 

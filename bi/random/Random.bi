@@ -93,7 +93,7 @@ class Random<Value> < Expression<Value> {
    */
   function graft() {
     if (!delay?) {
-      doGraft();
+      delay <- doGraft();
     }
   }
 
@@ -163,7 +163,7 @@ class Random<Value> < Expression<Value> {
   }
 
   function graftMultivariateAffineGaussianGaussian() ->
-      DelayAffineMultivariateGaussianGaussian? {
+      DelayMultivariateAffineGaussianGaussian? {
     if (delay?) {
       return delay!.graftMultivariateAffineGaussianGaussian();
     } else {
@@ -199,7 +199,7 @@ class Random<Value> < Expression<Value> {
     }
   }
 
-  function doGraft() {
+  function doGraft() -> Delay? {
     //
   }
 
@@ -237,7 +237,7 @@ class Random<Value> < Expression<Value> {
   }
 
   function doGraftMultivariateAffineGaussianGaussian() ->
-      DelayAffineMultivariateGaussianGaussian? {
+      DelayMultivariateAffineGaussianGaussian? {
     return nil;
   }
 

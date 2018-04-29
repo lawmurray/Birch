@@ -20,3 +20,8 @@ class DelayGamma(x:Random<Real>, k:Real, θ:Real) < DelayValue<Real>(x) {
     return observe_gamma(x, k, θ);
   }
 }
+
+function DelayGamma(x:Random<Real>, k:Real, θ:Real) -> DelayGamma {
+  m:DelayGamma(x, k, θ);
+  return m;
+}

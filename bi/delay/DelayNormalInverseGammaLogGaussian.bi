@@ -23,3 +23,9 @@ class DelayNormalInverseGammaLogGaussian(x:Random<Real>,
         log(x), μ.μ, μ.a2, μ.σ2.α, μ.σ2.β);
   }
 }
+
+function DelayNormalInverseGammaLogGaussian(x:Random<Real>,
+    μ:DelayNormalInverseGamma) -> DelayNormalInverseGammaLogGaussian {
+  m:DelayNormalInverseGammaLogGaussian(x, μ);
+  return m;
+}

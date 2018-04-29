@@ -22,3 +22,9 @@ class DelayGaussianGaussian(x:Random<Real>, μ_0:DelayGaussian, σ2:Real) <
     (μ_0.μ, μ_0.σ2) <- update_gaussian_gaussian(x, μ_0.μ, μ_0.σ2, μ_m, σ2_m);
   }
 }
+
+function DelayGaussianGaussian(x:Random<Real>, μ_0:DelayGaussian, σ2:Real) ->
+    DelayGaussianGaussian {
+  m:DelayGaussianGaussian(x, μ_0, σ2);
+  return m;
+}

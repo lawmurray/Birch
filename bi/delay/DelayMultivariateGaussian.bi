@@ -1,17 +1,17 @@
 /**
  * Multivariate Gaussian random variable with delayed sampling.
  */
-class DelayMultivariateGaussian(x:Random<Real[_]>, μ:Expression<Real[_]>,
-    Σ:Expression<Real[_,_]>) < DelayValue<Real[_]>(x) {
+class DelayMultivariateGaussian(x:Random<Real[_]>, μ:Real[_], Σ:Real[_,_]) <
+    DelayValue<Real[_]>(x) {
   /**
    * Mean.
    */
-  μ:Real[_] <- μ.value();
+  μ:Real[_] <- μ;
 
   /**
    * Covariance.
    */
-  Σ:Real[_,_] <- Σ.value();
+  Σ:Real[_,_] <- Σ;
 
   function size() -> Integer {
     return length(μ);
@@ -28,4 +28,10 @@ class DelayMultivariateGaussian(x:Random<Real[_]>, μ:Expression<Real[_]>,
   function doGraftMultivariateGaussian() -> DelayMultivariateGaussian? {
     return this;
   }
+}
+
+function DelayMultivariateGaussian(x:Random<Real[_]>, μ:Real[_],
+    Σ:Real[_,_]) -> DelayMultivariateGaussian {
+  m:DelayMultivariateGaussian(x, μ, Σ);
+  return m;
 }

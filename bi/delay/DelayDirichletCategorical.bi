@@ -1,7 +1,8 @@
 /**
  * Dirichlet-categorical random variable for delayed sampling.
  */
-class DelayDirichletCategorical(x:Random<Integer>, ρ:DelayDirichlet) < DelayValue<Integer>(x) {
+class DelayDirichletCategorical(x:Random<Integer>, ρ:DelayDirichlet) <
+    DelayValue<Integer>(x) {
   /**
    * Category probabilities.
    */
@@ -18,4 +19,10 @@ class DelayDirichletCategorical(x:Random<Integer>, ρ:DelayDirichlet) < DelayVal
   function doCondition(x:Integer) {
     ρ.α <- update_dirichlet_categorical(x, ρ.α);
   }
+}
+
+function DelayDirichletCategorical(x:Random<Integer>, ρ:DelayDirichlet) ->
+    DelayDirichletCategorical {
+  m:DelayDirichletCategorical(x, ρ);
+  return m;
 }

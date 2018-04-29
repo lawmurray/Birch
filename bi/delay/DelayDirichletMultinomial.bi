@@ -1,7 +1,8 @@
 /**
  * Dirichlet-multinomial random variable for delayed sampling.
  */
-class DelayDirichletMultinomial(x:Random<Integer[_]>, n:Integer, ρ:DelayDirichlet) < DelayValue<Integer[_]>(x) {
+class DelayDirichletMultinomial(x:Random<Integer[_]>, n:Integer,
+    ρ:DelayDirichlet) < DelayValue<Integer[_]>(x) {
   /**
    * Number of trials.
    */
@@ -23,4 +24,10 @@ class DelayDirichletMultinomial(x:Random<Integer[_]>, n:Integer, ρ:DelayDirichl
   function doCondition(x:Integer[_]) {
     ρ.α <- update_dirichlet_multinomial(x, n, ρ.α);
   }
+}
+
+function DelayDirichletMultinomial(x:Random<Integer[_]>, n:Integer,
+    ρ:DelayDirichlet) -> DelayDirichletMultinomial {
+  m:DelayDirichletMultinomial(x, n, ρ);
+  return m;
 }

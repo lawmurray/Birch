@@ -7,15 +7,12 @@ class Poisson(λ:Expression<Real>) < Random<Integer> {
    */
   λ:Expression<Real> <- λ;
 
-  function graft() {
-    if (λ.isGamma()) {
-      m:DelayGammaPoisson(this, λ.getGamma());
-      m.graft();
-      delay <- m;
+  function doGraft() -> Delay? {
+    m:DelayGamma?;
+    if (m <- λ.graftGamma())? {
+      return DelayGammaPoisson(this, m!);
     } else {
-      m:DelayPoisson(this, λ.value());
-      m.graft();
-      delay <- m;
+      return DelayPoisson(this, λ.value());
     }
   }
 }

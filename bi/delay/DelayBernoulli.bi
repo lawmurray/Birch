@@ -15,3 +15,8 @@ class DelayBernoulli(x:Random<Boolean>, ρ:Real) < DelayValue<Boolean>(x) {
     return observe_bernoulli(x, ρ);
   }
 }
+
+function DelayBernoulli(x:Random<Boolean>, ρ:Real) -> DelayBernoulli {
+  m:DelayBernoulli(x, ρ);
+  return m;
+}

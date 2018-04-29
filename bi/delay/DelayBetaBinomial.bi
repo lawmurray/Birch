@@ -1,7 +1,8 @@
 /**
  * Beta-binomial random variable for delayed sampling.
  */
-class DelayBetaBinomial(x:Random<Integer>, n:Integer, ρ:DelayBeta) < DelayValue<Integer>(x) {
+class DelayBetaBinomial(x:Random<Integer>, n:Integer, ρ:DelayBeta) <
+    DelayValue<Integer>(x) {
   /**
    * Number of trials.
    */
@@ -23,4 +24,10 @@ class DelayBetaBinomial(x:Random<Integer>, n:Integer, ρ:DelayBeta) < DelayValue
   function doCondition(x:Integer) {
     (ρ.α, ρ.β) <- update_beta_binomial(x, n, ρ.α, ρ.β);
   }
+}
+
+function DelayBetaBinomial(x:Random<Integer>, n:Integer, ρ:DelayBeta) ->
+    DelayBetaBinomial {
+  m:DelayBetaBinomial(x, n, ρ);
+  return m;
 }

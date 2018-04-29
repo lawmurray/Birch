@@ -12,48 +12,38 @@ class Add<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>) <
    * Right operand.
    */
   right:Expression<Right> <- right;
-  
-  function isAffineGaussian() -> Boolean {
-    return left.isAffineGaussian() || right.isAffineGaussian();
-  }
-  
-  function getAffineGaussian() -> (Real, DelayGaussian, Real) {
-    a:Real;
-    μ:DelayGaussian?;
-    c:Real;
     
-    if (left.isAffineGaussian()) {
-      (a, μ, c) <- left.getAffineGaussian();
-      c <- c + right.value();
-    } else if (right.isAffineGaussian()) {
-      (a, μ, c) <- right.getAffineGaussian();
-      c <- left.value() + c;
-    } else {
-      assert false;
+  function graftAffineGaussian() -> TransformAffineGaussian? {
+    y:TransformAffineGaussian?;
+    z:DelayGaussian?;
+    
+    if (y <- left.graftAffineGaussian())? {
+      y!.add(right.value());
+    } else if (y <- right.graftAffineGaussian())? {
+      y!.add(left.value());
+    } else if (z <- left.graftGaussian())? {
+      y <- TransformAffineGaussian(1.0, z!, right.value());
+    } else if (z <- right.graftGaussian())? {
+      y <- TransformAffineGaussian(1.0, z!, left.value());
     }
-    return (a, μ!, c);
-  }
-
-  function isAffineNormalInverseGamma(σ2:Expression<Real>) -> Boolean {
-    return left.isAffineNormalInverseGamma(σ2) ||
-        right.isAffineNormalInverseGamma(σ2);
+    return y;
   }
   
-  function getAffineNormalInverseGamma(σ2:Expression<Real>) ->
-      (Real, DelayNormalInverseGamma, Real) {
-    a:Real;
-    μ:DelayNormalInverseGamma?;
-    c:Real;
-    if (left.isAffineNormalInverseGamma(σ2)) {
-      (a, μ, c) <- left.getAffineNormalInverseGamma(σ2);
-      c <- c + right.value();
-    } else if (right.isAffineNormalInverseGamma(σ2)) {
-      (a, μ, c) <- right.getAffineNormalInverseGamma(σ2);
-      c <- left.value() + c;
-    } else {
-      assert false;
+  function graftAffineNormalInverseGamma(σ2:Expression<Real>) ->
+      TransformAffineNormalInverseGamma? {
+    y:TransformAffineNormalInverseGamma?;
+    z:DelayNormalInverseGamma?;
+
+    if (y <- left.graftAffineNormalInverseGamma(σ2))? {
+      y!.add(right.value());
+    } else if (y <- right.graftAffineNormalInverseGamma(σ2))? {
+      y!.add(left.value());
+    } else if (z <- left.graftNormalInverseGamma(σ2))? {
+      y <- TransformAffineNormalInverseGamma(1.0, z!, right.value());
+    } else if (z <- right.graftNormalInverseGamma(σ2))? {
+      y <- TransformAffineNormalInverseGamma(1.0, z!, left.value());
     }
-    return (a, μ!, c);
+    return y;
   }
 
   function doValue() -> Value {

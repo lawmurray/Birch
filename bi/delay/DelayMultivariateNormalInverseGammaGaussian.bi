@@ -24,3 +24,10 @@ class DelayMultivariateNormalInverseGammaGaussian(x:Random<Real[_]>,
         x, μ.μ, μ.Λ, μ.σ2.α, μ.σ2.β);
   }
 }
+
+function DelayMultivariateNormalInverseGammaGaussian(x:Random<Real[_]>,
+    μ:DelayMultivariateNormalInverseGamma) ->
+    DelayMultivariateNormalInverseGammaGaussian {
+  m:DelayMultivariateNormalInverseGammaGaussian(x, μ);
+  return m;
+}

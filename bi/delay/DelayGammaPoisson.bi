@@ -19,3 +19,9 @@ class DelayGammaPoisson(x:Random<Integer>, λ:DelayGamma) < DelayValue<Integer>(
     (λ.k, λ.θ) <- update_gamma_poisson(x, λ.k, λ.θ);
   }
 }
+
+function DelayGammaPoisson(x:Random<Integer>, λ:DelayGamma) -> 
+    DelayGammaPoisson {
+  m:DelayGammaPoisson(x, λ);
+  return m;
+}

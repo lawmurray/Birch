@@ -1,8 +1,8 @@
 /**
  * Delayed multivariation addition.
  */
-class MultivariateAdd<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>) <
-    Expression<Value> {  
+class MultivariateAdd<Left,Right,Value>(left:Expression<Left>,
+    right:Expression<Right>) < Expression<Value> {  
   /**
    * Left operand.
    */
@@ -12,49 +12,43 @@ class MultivariateAdd<Left,Right,Value>(left:Expression<Left>, right:Expression<
    * Right operand.
    */
   right:Expression<Right> <- right;
-  
-  function isMultivariateAffineGaussian() -> Boolean {
-    return left.isMultivariateAffineGaussian() ||
-        right.isMultivariateAffineGaussian();
-  }
-  
-  function getMultivariateAffineGaussian() -> (Real[_,_], DelayMultivariateGaussian, Real[_]) {
-    A:Real[_,_];
-    μ:DelayMultivariateGaussian?;
-    c:Real[_];
     
-    if (left.isMultivariateAffineGaussian()) {
-      (A, μ, c) <- left.getMultivariateAffineGaussian();
-      c <- c + right.value();
-    } else if (right.isMultivariateAffineGaussian()) {
-      (A, μ, c) <- right.getMultivariateAffineGaussian();
-      c <- left.value() + c;
-    } else {
-      assert false;
-    }
-    return (A, μ!, c);
-  }
+  function graftMultivariateAffineGaussian() ->
+      TransformMultivariateAffineGaussian? {
+    y:TransformMultivariateAffineGaussian?;
+    z:DelayMultivariateGaussian?;
 
-  function isMultivariateAffineNormalInverseGamma(σ2:Expression<Real>) -> Boolean {
-    return left.isMultivariateAffineNormalInverseGamma(σ2) ||
-        right.isMultivariateAffineNormalInverseGamma(σ2);
+    if (y <- left.graftMultivariateAffineGaussian())? {
+      y!.add(right.value());
+    } else if (y <- right.graftMultivariateAffineGaussian())? {
+      y!.add(left.value());
+    } else if (z <- left.graftMultivariateGaussian())? {
+      y <- TransformMultivariateAffineGaussian(identity(z!.size()), z!,
+          right.value());
+    } else if (z <- right.graftMultivariateGaussian())? {
+      y <- TransformMultivariateAffineGaussian(identity(z!.size()), z!,
+          left.value());
+    }
+    return y;
   }
   
   function getMultivariateAffineNormalInverseGamma(σ2:Expression<Real>) ->
-      (Real[_,_], DelayMultivariateNormalInverseGamma, Real[_]) {
-    A:Real[_,_];
-    μ:DelayMultivariateNormalInverseGamma?;
-    c:Real[_];
-    if (left.isMultivariateAffineNormalInverseGamma(σ2)) {
-      (A, μ, c) <- left.getMultivariateAffineNormalInverseGamma(σ2);
-      c <- c + right.value();
-    } else if (right.isMultivariateAffineNormalInverseGamma(σ2)) {
-      (A, μ, c) <- right.getMultivariateAffineNormalInverseGamma(σ2);
-      c <- left.value() + c;
-    } else {
-      assert false;
+      TransformMultivariateAffineNormalInverseGamma? {
+    y:TransformMultivariateAffineNormalInverseGamma?;
+    z:DelayMultivariateNormalInverseGamma?;
+
+    if (y <- left.graftMultivariateAffineNormalInverseGamma(σ2))? {
+      y!.add(right.value());
+    } else if (y <- right.graftMultivariateAffineNormalInverseGamma(σ2))? {
+      y!.add(left.value());
+    } else if (z <- left.graftMultivariateNormalInverseGamma(σ2))? {
+      y <- TransformMultivariateAffineNormalInverseGamma(identity(z!.size()),
+          z!, right.value());
+    } else if (z <- right.graftMultivariateNormalInverseGamma(σ2))? {
+      y <- TransformMultivariateAffineNormalInverseGamma(identity(z!.size()),
+          z!, left.value());
     }
-    return (A, μ!, c);
+    return y;
   }
 
   function doValue() -> Value {

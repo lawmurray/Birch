@@ -12,60 +12,44 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Random<Real> {
    */
   σ2:Expression<Real> <- σ2;
 
-  function isGaussian() -> Boolean {
-    return isMissing();
-  }
-
-  function getGaussian() -> DelayGaussian {
-    assert isGaussian();
-    return DelayGaussian?(delay)!;
-  }
-
-  function isNormalInverseGamma(σ2:Expression<Real>) -> Boolean {
-    return σ2.isScaledInverseGamma(σ2);
-  }
-  
-  function getNormalInverseGamma(σ2:Expression<Real>) -> DelayNormalInverseGamma {
-    a2:Real;
+  function doGraft() -> Delay? {
     s2:DelayInverseGamma?;
-    (a2, s2) <- σ2.getScaledInverseGamma(σ2);
-    m:DelayNormalInverseGamma(this, μ.value(), a2, s2!);
-    return m;
-  }
-  
-  function graft() {
-    if (μ.isNormalInverseGamma(σ2)) {
-      m:DelayNormalInverseGammaGaussian(this, μ.getNormalInverseGamma(σ2));
-      m.graft();
-      delay <- m;
-    } else if (μ.isAffineNormalInverseGamma(σ2)) {
-      a:Real;
-      μ_0:DelayNormalInverseGamma?;
-      c:Real;
-      (a, μ_0, c) <- μ.getAffineNormalInverseGamma(σ2);
-      m:DelayAffineNormalInverseGammaGaussian(this, a, μ_0!, c);
-      m.graft();
-      delay <- m;
-    } else if (σ2.isInverseGamma()) {
-      m:DelayInverseGammaGaussian(this, μ.value(), σ2.getInverseGamma());
-      m.graft();
-      delay <- m;
-    } else if (μ.isGaussian()) {
-      m:DelayGaussianGaussian(this, μ.getGaussian(), σ2.value());
-      m.graft();
-      delay <- m;
-    } else if (μ.isAffineGaussian()) {
-      a:Real;
-      μ_0:DelayGaussian?;
-      c:Real;
-      (a, μ_0, c) <- μ.getAffineGaussian();
-      m:DelayAffineGaussianGaussian(this, a, μ_0!, c, σ2.value());
-      m.graft();
-      delay <- m;
+    m1:DelayAffineNormalInverseGamma?;
+    m2:DelayNormalInverseGamma?;
+    m3:TransformAffineGaussian?;
+    m4:DelayGaussian?;
+        
+    if (s2 <- σ2.graftInverseGamma())? {
+      if (m1 <- μ.graftAffineNormalInverseGamma(σ2))? {
+        return DelayAffineNormalInverseGammaGaussian(this, m1!);
+      } else if (m2 <- μ.graftNormalInverseGamma(σ2))? {
+        return DelayNormalInverseGammaGaussian(this, m2!);
+      } else {
+        return DelayInverseGammaGaussian(this, μ, σ2!);
+      }
+    } else if (m3 <- μ.graftAffineGaussian())? {
+      return DelayAffineGaussian(this, m3!, σ2);
+    } else if (m4 <- μ.graftGaussian())? {
+      return DelayGaussianGaussian(this, m4!, σ2);
     } else {
-      m:DelayGaussian(this, μ.value(), σ2.value());
-      m.graft();
-      delay <- m;
+      return DelayGaussian(this, μ, σ2);
+    }
+  }
+
+  function doGraftGaussian() -> DelayGaussian? {
+    return DelayGaussian(this, μ, σ2);
+  }
+
+  function doGraftNormalInverseGamma(σ2:Expression<Real>) ->
+      DelayNormalInverseGamma? {
+    s2:TransformScaledInverseGamma?;
+    t2:DelayInverseGamma?;
+    if (s2 <- this.σ2.graftScaledInverseGamma(σ2))? {
+      return DelayNormalInverseGamma(this, μ, s2!.a2, s2!.σ2);
+    } else if (t2 <- this.σ2.graftInverseGamma(σ2))? {
+      return DelayNormalInverseGamma(this, μ, 1.0, t2!);
+    } else {
+      return nil;
     }
   }
 }

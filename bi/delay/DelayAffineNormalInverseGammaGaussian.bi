@@ -7,7 +7,7 @@ class DelayAffineNormalInverseGammaGaussian(x:Random<Real>, a:Real,
   /**
    * Scale.
    */
-  a:Real;
+  a:Real <- a;
     
   /**
    * Mean.
@@ -25,12 +25,19 @@ class DelayAffineNormalInverseGammaGaussian(x:Random<Real>, a:Real,
   }
   
   function doObserve(x:Real) -> Real {
-    return observe_affine_normal_inverse_gamma_gaussian(x, a, μ.μ, c, μ.a2,
-        μ.σ2.α, μ.σ2.β);
+    return observe_affine_normal_inverse_gamma_gaussian(x, a, μ.μ, c,
+        μ.a2, μ.σ2.α, μ.σ2.β);
   }
 
   function doCondition(x:Real) {
     (μ.μ, μ.a2, μ.σ2.α, μ.σ2.β) <- update_affine_normal_inverse_gamma_gaussian(
         x, a, μ.μ, c, μ.a2, μ.σ2.α, μ.σ2.β);
   }
+}
+
+function DelayAffineNormalInverseGammaGaussian(x:Random<Real>, a:Real,
+    μ:DelayNormalInverseGamma, c:Real) ->
+    DelayAffineNormalInverseGammaGaussian {
+  m:DelayAffineNormalInverseGammaGaussian(x, a, μ, c);
+  return m;
 }

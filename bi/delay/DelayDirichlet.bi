@@ -15,3 +15,8 @@ class DelayDirichlet(x:Random<Real[_]>, α:Real[_]) < DelayValue<Real[_]>(x) {
     return observe_dirichlet(x, α);
   }
 }
+
+function DelayDirichlet(x:Random<Real[_]>, α:Real[_]) -> DelayDirichlet {
+  m:DelayDirichlet(x, α);
+  return m;
+}

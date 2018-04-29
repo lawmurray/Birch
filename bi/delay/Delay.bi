@@ -57,7 +57,7 @@ class Delay {
   function graftNormalInverseGamma(σ2:Expression<Real>) ->
       DelayNormalInverseGamma? {
     prune();
-    return doGraftNormalInverseGamma();
+    return doGraftNormalInverseGamma(σ2);
   }
 
   function graftDirichlet() -> DelayDirichlet? {
@@ -71,7 +71,7 @@ class Delay {
   }
 
   function graftMultivariateAffineGaussianGaussian() ->
-      DelayAffineMultivariateGaussianGaussian? {
+      DelayMultivariateAffineGaussianGaussian? {
     prune();
     return doGraftMultivariateAffineGaussianGaussian();
   }
@@ -79,20 +79,20 @@ class Delay {
   function graftMultivariateNormalInverseGamma(σ2:Expression<Real>) ->
       DelayMultivariateNormalInverseGamma? {
     prune();
-    return doGraftMultivariateNormalInverseGamma();
+    return doGraftMultivariateNormalInverseGamma(σ2);
   }
 
   function graftMultivariateNormalInverseGammaGaussian(
       σ2:Expression<Real>) -> DelayMultivariateNormalInverseGammaGaussian? {
     prune();
-    return doGraftMultivariateNormalInverseGammaGaussian();
+    return doGraftMultivariateNormalInverseGammaGaussian(σ2);
   }
 
   function graftMultivariateAffineNormalInverseGammaGaussian(
       σ2:Expression<Real>) ->
       DelayMultivariateAffineNormalInverseGammaGaussian? {
     prune();
-    return doGraftMultivariateAffineNormalInverseGammaGaussian();
+    return doGraftMultivariateAffineNormalInverseGammaGaussian(σ2);
   }
 
   function doGraftGaussian() -> DelayGaussian? {
@@ -129,7 +129,7 @@ class Delay {
   }
 
   function doGraftMultivariateAffineGaussianGaussian() ->
-      DelayAffineMultivariateGaussianGaussian? {
+      DelayMultivariateAffineGaussianGaussian? {
     return nil;
   }
 

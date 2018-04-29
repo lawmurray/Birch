@@ -3,13 +3,13 @@
  * delayed sampling.
  */
 class DelayMultivariateAffineNormalInverseGammaGaussian(x:Random<Real[_]>,
-    Λ:Real[_,_], μ:DelayMultivariateNormalInverseGamma, c:Real[_]) <
+    A:Real[_,_], μ:DelayMultivariateNormalInverseGamma, c:Real[_]) <
     DelayValue<Real[_]>(x) {
   /**
    * Scale.
    */
-  A:Real[_,_];
-    
+  A:Real[_,_] <- A;
+
   /**
    * Mean.
    */
@@ -34,4 +34,11 @@ class DelayMultivariateAffineNormalInverseGammaGaussian(x:Random<Real[_]>,
     (μ.μ, μ.Λ, μ.σ2.α, μ.σ2.β) <- update_multivariate_affine_normal_inverse_gamma_gaussian(
         x, A, μ.μ, c, μ.Λ, μ.σ2.α, μ.σ2.β);
   }
+}
+
+function DelayMultivariateAffineNormalInverseGammaGaussian(x:Random<Real[_]>,
+    A:Real[_,_], μ:DelayMultivariateNormalInverseGamma, c:Real[_]) ->
+    DelayMultivariateAffineNormalInverseGammaGaussian {
+  m:DelayMultivariateAffineNormalInverseGammaGaussian(x, A, μ, c);
+  return m;
 }

@@ -20,3 +20,9 @@ class DelayInverseGamma(x:Random<Real>, α:Real, β:Real) < DelayValue<Real>(x) 
     return observe_inverse_gamma(x, α, β);
   }
 }
+
+function DelayInverseGamma(x:Random<Real>, α:Real, β:Real) ->
+    DelayInverseGamma {
+  m:DelayInverseGamma(x, α, β);
+  return m;
+}

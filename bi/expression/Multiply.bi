@@ -12,69 +12,54 @@ class Multiply<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>)
    */
   right:Expression<Right> <- right;
   
-  function isAffineGaussian() -> Boolean {
-    return left.isAffineGaussian() || right.isAffineGaussian();
-  }
-  
-  function getAffineGaussian() -> (Real, DelayGaussian, Real) {
-    a:Real;
-    μ:DelayGaussian?;
-    c:Real;
+  function graftAffineGaussian() -> TransformAffineGaussian? {
+    y:TransformAffineGaussian?;
+    z:DelayGaussian?;
     
-    if (left.isAffineGaussian()) {
-      (a, μ, c) <- left.getAffineGaussian();
-      a <- a*right.value();
-      c <- c*right.value();
-    } else if (right.isAffineGaussian()) {
-      (a, μ, c) <- right.getAffineGaussian();
-      a <- left.value()*a;
-      c <- left.value()*c;
-    } else {
-      assert false;
+    if (y <- left.graftAffineGaussian())? {
+      y!.multiply(right.value());
+    } else if (y <- right.graftAffineGaussian())? {
+      y!.multiply(left.value());
+    } else if (z <- left.graftGaussian())? {
+      y <- TransformAffineGaussian(right.value(), z!, 0.0);
+    } else if (z <- right.graftGaussian())? {
+      y <- TransformAffineGaussian(left.value(), z!, 0.0);
     }
-    return (a, μ!, c);
-  }
-
-  function isScaledInverseGamma(σ2:Expression<Real>) -> Boolean {
-    return left.isScaledInverseGamma(σ2) || right.isScaledInverseGamma(σ2);
-  }
-
-  function getScaledInverseGamma(σ2:Expression<Real>) ->
-      (Real, DelayInverseGamma) {
-    a2:Real;
-    s2:DelayInverseGamma?;
-    if (left.isScaledInverseGamma(σ2)) {
-      (a2, s2) <- left.getScaledInverseGamma(σ2);
-      a2 <- a2*right.value();
-    } else if (right.isScaledInverseGamma(σ2)) {
-      (a2, s2) <- right.getScaledInverseGamma(σ2);
-      a2 <- left.value()*a2;
-    }
-    return (a2, s2!);
-  }
-  
-  function isAffineNormalInverseGamma(σ2:Expression<Real>) -> Boolean {
-    return left.isAffineNormalInverseGamma(σ2) ||
-        right.isAffineNormalInverseGamma(σ2);
+    return y;
   }
   
   function getAffineNormalInverseGamma(σ2:Expression<Real>) ->
-      (Real, DelayNormalInverseGamma, Real) {
-    a:Real;
-    μ:DelayNormalInverseGamma?;
-    c:Real;
-    if (left.isAffineNormalInverseGamma(σ2)) {
-      (a, μ, c) <- left.getAffineNormalInverseGamma(σ2);
-      a <- a*right.value();
-      c <- c*right.value();
-    } else if (right.isAffineNormalInverseGamma(σ2)) {
-      (a, μ, c) <- right.getAffineNormalInverseGamma(σ2);
-      a <- left.value()*a;
-      c <- left.value()*c;
-    } else {
-      assert false;
+      TransformAffineNormalInverseGamma? {
+    y:TransformAffineNormalInverseGamma?;
+    z:DelayNormalInverseGamma?;
+    
+    if (y <- left.graftAffineNormalInverseGamma(σ2))? {
+      y!.multiply(right.value());
+    } else if (y <- right.graftAffineNormalInverseGamma(σ2))? {
+      y!.multiply(left.value());
+    } else if (z <- left.graftNormalInverseGamma(σ2))? {
+      y <- TransformAffineNormalInverseGamma(right.value(), z!, 0.0);
+    } else if (z <- right.graftNormalInverseGamma(σ2))? {
+      y <- TransformAffineNormalInverseGamma(left.value(), z!, 0.0);
     }
-    return (a, μ!, c);
+    return y;
+  }
+  
+  function graftScaledInverseGamma(σ2:DelayInverseGamma) ->
+      TransformScaledInverseGamma? {
+    y:TransformScaledInverseGamma?;
+    z:DelayInverseGamma?;
+    
+    if (y <- left.graftScaledInverseGamma(σ2))? {
+      y!.multiply(right.value());
+    } else if (y <- right.graftScaledInverseGamma(σ2))? {
+      y!.multiply(left.value());
+    } else if (z <- left.graftInverseGamma(σ2))? {
+      y <- TransformScaledInverseGamma(right.value(), z!);        
+    } else if (z <- right.graftInverseGamma(σ2))? {
+      y <- TransformScaledInverseGamma(left.value(), z!);
+    }
+    return y;
   }
 
   function doValue() -> Value {

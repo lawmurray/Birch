@@ -20,3 +20,8 @@ class DelayBeta(x:Random<Real>, α:Real, β:Real) < DelayValue<Real>(x) {
     return observe_beta(x, α, β);
   }
 }
+
+function DelayBeta(x:Random<Real>, α:Real, β:Real) -> DelayBeta {
+  m:DelayBeta(x, α, β);
+  return m;
+}

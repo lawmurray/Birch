@@ -20,3 +20,9 @@ class DelayBinomial(x:Random<Integer>, n:Integer, ρ:Real) < DelayValue<Integer>
     return observe_binomial(x, n, ρ);
   }
 }
+
+function DelayBinomial(x:Random<Integer>, n:Integer, ρ:Real) ->
+    DelayBinomial {
+  m:DelayBinomial(x, n, ρ);
+  return m;
+}

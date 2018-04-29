@@ -2,8 +2,8 @@
  * Multivariate affine-Gaussian-Gaussian random variable with delayed
  * sampling.
  */
-class DelayMultivariateAffineGaussianGaussian(x:Random<Real[_]>, A:Real[_,_],
-    μ_0:DelayMultivariateGaussian, c:Real[_], Σ:Real[_,_]) <
+class DelayMultivariateAffineGaussianGaussian(x:Random<Real[_]>,
+    A:Real[_,_], μ_0:DelayMultivariateGaussian, c:Real[_], Σ:Real[_,_]) <
     DelayMultivariateGaussian(x, A*μ_0.μ + c, A*μ_0.Σ*trans(A) + Σ) {
   /**
    * Scale.
@@ -31,6 +31,14 @@ class DelayMultivariateAffineGaussianGaussian(x:Random<Real[_]>, A:Real[_,_],
   Σ_m:Real[_,_] <- Σ;
 
   function doCondition(x:Real[_]) {
-    (μ_0.μ, μ_0.Σ) <- update_multivariate_affine_gaussian_gaussian(x, A, μ_0.μ, μ_0.Σ, μ_m, Σ_m);
+    (μ_0.μ, μ_0.Σ) <- update_multivariate_affine_gaussian_gaussian(x, A,
+        μ_0.μ, μ_0.Σ, μ_m, Σ_m);
   }
+}
+
+function DelayMultivariateAffineGaussianGaussian(x:Random<Real[_]>,
+    A:Real[_,_], μ_0:DelayMultivariateGaussian, c:Real[_], Σ:Real[_,_]) ->
+    DelayMultivariateAffineGaussianGaussian {
+  m:DelayMultivariateAffineGaussianGaussian(x, A, μ_0, c, Σ);
+  return m;
 }

@@ -12,15 +12,12 @@ class Binomial(n:Expression<Integer>, ρ:Expression<Real>) < Random<Integer> {
    */
   ρ:Expression<Real> <- ρ;
 
-  function graft() {
-    if (ρ.isBeta()) {
-      m:DelayBetaBinomial(this, n.value(), ρ.getBeta());
-      m.graft();
-      delay <- m;
+  function doGraft() -> Delay? {
+    m:DelayBeta?;
+    if (m <- ρ.graftBeta())? {
+      return DelayBetaBinomial(this, n, m!);
     } else {
-      m:DelayBinomial(this, n.value(), ρ.value());
-      m.graft();
-      delay <- m;
+      return DelayBinomial(this, n, ρ.value());
     }
   }
 }

@@ -12,7 +12,6 @@ class DelayValue<Value>(x:Random<Value>) < Delay {
   x:Random<Value>& <- x;
   
   function realize() {
-    graft();
     if (parent?) {
       parent!.child <- nil;
       // ^ doing this now makes the parent a terminal node, so that within

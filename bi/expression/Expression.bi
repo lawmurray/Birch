@@ -39,7 +39,7 @@ class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftAffineGaussian() -> DelayAffineGaussian? {
+  function graftAffineGaussian() -> TransformAffineGaussian? {
     return nil;
   }
 
@@ -87,7 +87,7 @@ class Expression<Value> {
    * Return: The node if successful, nil if not.
    */
   function graftScaledInverseGamma(σ2:Expression<Real>) -> 
-      DelayScaledInverseGamma? {
+      TransformScaledInverseGamma? {
     return nil;
   }
   
@@ -111,7 +111,7 @@ class Expression<Value> {
    * Return: The node if successful, nil if not.
    */
   function graftAffineNormalInverseGamma(σ2:Expression<Real>) ->
-      DelayAffineNormalInverseGamma? {
+      TransformAffineNormalInverseGamma? {
     return nil;
   }
   
@@ -139,7 +139,7 @@ class Expression<Value> {
    * Return: The node if successful, nil if not.
    */
   function graftMultivariateAffineGaussian() ->
-      DelayAffineMultivariateGaussian? {
+      TransformMultivariateAffineGaussian? {
     return nil;
   }
 
@@ -149,7 +149,7 @@ class Expression<Value> {
    * Return: The node if successful, nil if not.
    */
   function graftMultivariateAffineGaussianGaussian() ->
-      DelayAffineMultivariateGaussianGaussian? {
+      DelayMultivariateAffineGaussianGaussian? {
     return nil;
   }
 
@@ -161,7 +161,7 @@ class Expression<Value> {
    * Return: The node if successful, nil if not.
    */
   function graftMultivariateScaledInverseGamma(σ2:Expression<Real>) ->
-      DelayScaledInverseGamma? {
+      TransformMultivariateScaledInverseGamma? {
     return nil;
   }
 
@@ -197,7 +197,7 @@ class Expression<Value> {
    * Return: The node if successful, nil if not.
    */
   function graftMultivariateAffineNormalInverseGamma(σ2:Expression<Real>) ->
-      DelayMultivariateAffineNormalInverseGamma? {
+      TransformMultivariateAffineNormalInverseGamma? {
     return nil;
   }
 

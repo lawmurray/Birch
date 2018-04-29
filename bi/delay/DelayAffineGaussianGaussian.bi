@@ -32,3 +32,9 @@ class DelayAffineGaussianGaussian(x:Random<Real>, a:Real, μ_0:DelayGaussian,
     (μ_0.μ, μ_0.σ2) <- update_affine_gaussian_gaussian(x, a, μ_0.μ, μ_0.σ2, μ_m, σ2_m);
   }
 }
+
+function DelayAffineGaussianGaussian(x:Random<Real>, a:Real,
+    μ_0:DelayGaussian, c:Real, σ2:Real) -> DelayAffineGaussianGaussian {
+  m:DelayAffineGaussianGaussian(x, a, μ_0, c, σ2);
+  return m;
+}

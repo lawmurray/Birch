@@ -12,28 +12,12 @@ class InverseGamma(α:Expression<Real>, β:Expression<Real>) < Random<Real> {
    */
   β:Expression<Real> <- β;
 
-  function isInverseGamma() -> Boolean {
-    return isMissing();
+  function doGraft() -> Delay? {
+    return DelayInverseGamma(this, α.value(), β.value());
   }
 
-  function getInverseGamma() -> DelayInverseGamma {
-    if (!delay?) {
-      delay:DelayInverseGamma(this, α.value(), β.value());
-      this.delay <- delay;
-    }
-    return DelayInverseGamma?(delay)!;
-  }
-
-  function isScaledInverseGamma(σ2:Expression<Real>) -> Boolean {
-    return isMissing() && Object(this) == Object(σ2);
-  }
-
-  function getScaledInverseGamma(σ2:Expression<Real>) -> (Real, DelayInverseGamma) {
-    if (!delay?) {
-      delay:DelayInverseGamma(this, α.value(), β.value());
-      this.delay <- delay;
-    }
-    return (1.0, DelayInverseGamma?(delay)!);
+  function doGraftInverseGamma() -> DelayInverseGamma? {
+    return DelayInverseGamma(this, α.value(), β.value());
   }
 }
 
