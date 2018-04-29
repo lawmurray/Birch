@@ -7,12 +7,8 @@ class Student(ν:Expression<Real>) < Random<Real> {
    */
   ν:Expression<Real> <- ν;
 
-  function doSimulate() -> Real {
-    return simulate_student_t(ν.value());
-  }
-  
-  function doObserve(x:Real) -> Real {
-    return observe_student_t(x, ν.value());
+  function doGraft() -> Delay? {
+    return DelayStudent(this, ν);
   }
 }
 

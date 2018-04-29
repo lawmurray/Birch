@@ -8,16 +8,12 @@ class NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) < Random<Inte
   k:Expression<Integer> <- k;
 
   /**
-   * Probability of success.
+   * Success probability.
    */
   ρ:Expression<Real> <- ρ;
 
-  function doSimulate() -> Integer {
-    return simulate_negative_binomial(k.value(), ρ.value());
-  }
-  
-  function doObserve(x:Integer) -> Real {
-    return observe_negative_binomial(x, k.value(), ρ.value());
+  function doGraft() -> Delay? {
+    return DelayNegativeBinomial(this, k.value(), ρ.value());
   }
 }
 

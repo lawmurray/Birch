@@ -12,12 +12,8 @@ class Uniform(l:Expression<Real>, u:Expression<Real>) < Random<Real> {
    */
   u:Expression<Real> <- u;
 
-  function doSimulate() -> Real {
-    return simulate_uniform(l.value(), u.value());
-  }
-  
-  function doObserve(x:Real) -> Real {
-    return observe_uniform(x, l.value(), u.value());
+  function doGraft() -> Delay? {
+    return DelayUniform(this, l, u);
   }
 }
 

@@ -3,44 +3,21 @@
  */
 class Restaurant(α:Expression<Real>, θ:Expression<Real>) < Random<Real[_]> {
   /**
-   * Concentration parameter.
+   * Concentration.
    */
   α:Expression<Real> <- α;
   
   /**
-   * Strength parameter.
+   * Strength.
    */
   θ:Expression<Real> <- θ;
 
-  /**
-   * Number of samples drawn in each component.
-   */
-  n:Integer[_];
+  function doGraft() -> Delay? {
+    return DelayRestaurant(this, α, θ);
+  }
 
-  /**
-   * Number of components enumerated.
-   */
-  K:Integer <- 0;
-
-  /**
-   * Number of samples drawn.
-   */
-  N:Integer <- 0;
-  
-  function update(k:Integer) {
-    assert k <= K + 1;
-    if (k == K + 1) {
-      if (k > length(n)) {
-        n1:Integer[max(1, 2*length(n))];
-        n1[1..K] <- n;
-        n <- n1;
-      }
-      n[K + 1] <- 1;
-      K <- K + 1;
-    } else {
-      n[k] <- n[k] + 1;
-    }
-    N <- N + 1;
+  function doGraftRestaurant() -> DelayRestaurant? {
+    return DelayRestaurant(this, α, θ);
   }
 }
 

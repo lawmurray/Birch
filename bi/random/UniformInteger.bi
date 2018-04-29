@@ -12,12 +12,8 @@ class UniformInteger(l:Expression<Integer>, u:Expression<Integer>) < Random<Inte
    */
   u:Expression<Integer> <- u;
 
-  function doSimulate() -> Integer {
-    return simulate_int_uniform(l.value(), u.value());
-  }
-  
-  function doObserve(x:Integer) -> Real {
-    return observe_int_uniform(x, l.value(), u.value());
+  function doGraft() -> Delay? {
+    return DelayUniformInteger(this, l, u);
   }
 }
 
