@@ -71,6 +71,11 @@ bi::Expression* bi::Cloner::clone(const UnaryCall* o) {
   return new UnaryCall(o->single->accept(this), o->args->accept(this), o->loc);
 }
 
+bi::Expression* bi::Cloner::clone(const Assign* o) {
+  return new Assign(o->left->accept(this), o->name, o->right->accept(this),
+      o->loc);
+}
+
 bi::Expression* bi::Cloner::clone(const Slice* o) {
   return new Slice(o->single->accept(this), o->brackets->accept(this), o->loc);
 }

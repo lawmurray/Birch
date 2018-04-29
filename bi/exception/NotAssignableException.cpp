@@ -7,7 +7,7 @@
 
 #include <sstream>
 
-bi::NotAssignableException::NotAssignableException(const Assignment* o) {
+bi::NotAssignableException::NotAssignableException(const Assign* o) {
   std::stringstream base;
   bih_ostream buf(base);
   if (o->loc) {

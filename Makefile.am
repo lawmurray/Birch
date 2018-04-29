@@ -74,6 +74,7 @@ COMMON_SOURCES = \
   bi/exception/UnsupportedOptionTypeException.cpp \
   bi/exception/YieldException.cpp \
   bi/exception/YieldTypeException.cpp \
+  bi/expression/Assign.cpp \
   bi/expression/Binary.cpp \
   bi/expression/BinaryCall.cpp \
   bi/expression/Cast.cpp \
@@ -248,6 +249,7 @@ noinst_HEADERS = \
   bi/exception/YieldException.hpp \
   bi/exception/YieldTypeException.hpp \
   bi/expression/all.hpp \
+  bi/expression/Assign.hpp \
   bi/expression/Binary.hpp \
   bi/expression/BinaryCall.hpp \
   bi/expression/Cast.hpp \

@@ -90,6 +90,10 @@ void bi::bi_ostream::visit(const UnaryCall* o) {
   middle(o->single << o->args);
 }
 
+void bi::bi_ostream::visit(const Assign* o) {
+  middle(o->left << ' ' << o->name << ' ' << o->right);
+}
+
 void bi::bi_ostream::visit(const Slice* o) {
   middle(o->single << '[' << o->brackets << ']');
 }

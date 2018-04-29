@@ -108,6 +108,10 @@ void bi::CppBaseGenerator::visit(const UnaryCall* o) {
   }
 }
 
+void bi::CppBaseGenerator::visit(const Assign* o) {
+  middle(o->left << " = " << o->right);
+}
+
 void bi::CppBaseGenerator::visit(const Slice* o) {
   middle(o->single << "(bi::make_view(" << o->brackets << "))");
 }
@@ -579,14 +583,14 @@ void bi::CppBaseGenerator::visit(const DoWhile* o) {
   in();
   *this << o->braces->strip();
   out();
-  line("} while " << o->cond << ';');
+  line("} while (" << o->cond->strip() << ");");
 }
 
 void bi::CppBaseGenerator::visit(const Assert* o) {
   //if (o->loc) {
   //  line("#line " << o->loc->firstLine << " \"" << o->loc->file->path << '"');
   //}
-  line("assert(" << o->cond << ");");
+  line("assert(" << o->cond->strip() << ");");
 }
 
 void bi::CppBaseGenerator::visit(const Return* o) {

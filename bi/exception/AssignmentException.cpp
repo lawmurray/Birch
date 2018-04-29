@@ -8,7 +8,7 @@
 #include <sstream>
 
 bi::AssignmentException::AssignmentException(
-    const Assignment* o) {
+    const Assign* o) {
   std::stringstream base;
   bih_ostream buf(base);
   if (o->loc) {

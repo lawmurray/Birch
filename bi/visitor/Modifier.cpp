@@ -89,6 +89,12 @@ bi::Expression* bi::Modifier::modify(UnaryCall* o) {
   return o;
 }
 
+bi::Expression* bi::Modifier::modify(Assign* o) {
+  o->left = o->left->accept(this);
+  o->right = o->right->accept(this);
+  return o;
+}
+
 bi::Expression* bi::Modifier::modify(Slice* o) {
   o->single = o->single->accept(this);
   o->brackets = o->brackets->accept(this);

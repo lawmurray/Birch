@@ -79,6 +79,11 @@ void bi::Visitor::visit(const UnaryCall* o) {
   o->args->accept(this);
 }
 
+void bi::Visitor::visit(const Assign* o) {
+  o->left->accept(this);
+  o->right->accept(this);
+}
+
 void bi::Visitor::visit(const Slice* o) {
   o->single->accept(this);
   o->brackets->accept(this);

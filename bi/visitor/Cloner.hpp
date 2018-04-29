@@ -36,6 +36,7 @@ public:
   virtual Expression* clone(const Call* o);
   virtual Expression* clone(const BinaryCall* o);
   virtual Expression* clone(const UnaryCall* o);
+  virtual Expression* clone(const Assign* o);
   virtual Expression* clone(const Slice* o);
   virtual Expression* clone(const Query* o);
   virtual Expression* clone(const Get* o);

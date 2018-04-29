@@ -20,7 +20,8 @@ bi::Expression* bi::ResolverSource::modify(Cast* o) {
   if (o->single->type->isPointer()
       || (o->single->type->isOptional()
           && o->single->type->unwrap()->isPointer())) {
-    o->type = new OptionalType(new PointerType(false, o->returnType, o->loc), o->loc);
+    o->type = new OptionalType(new PointerType(false, o->returnType, o->loc),
+        o->loc);
     return o;
   } else {
     throw CastException(o);
@@ -52,6 +53,31 @@ bi::Expression* bi::ResolverSource::modify(UnaryCall* o) {
   o->callType = o->single->type->resolve(o);
   o->type = o->callType->returnType;
   return o;
+}
+
+bi::Expression* bi::ResolverSource::modify(Assign* o) {
+  if (*o->name == "<~") {
+    /* replace with equivalent (by definition) code */
+    auto left = o->left;
+    auto right = new Call(
+        new Member(o->right,
+            new Identifier<Unknown>(new Name("simulate"), o->loc), o->loc),
+        new EmptyExpression(o->loc), o->loc);
+    auto assign = new Assign(left, new Name("<-"), right, o->loc);
+    return assign->accept(this);
+  } else {
+    Modifier::modify(o);
+    if (!o->left->isAssignable()) {
+      throw NotAssignableException(o);
+    }
+    if (!o->right->type->definitely(*o->left->type)
+        && (!o->left->type->isClass()
+            || !o->left->type->getClass()->hasAssignment(o->right->type))) {
+      throw AssignmentException(o);
+    }
+    o->type = o->left->type;
+    return o;
+  }
 }
 
 bi::Expression* bi::ResolverSource::modify(Slice* o) {
@@ -278,17 +304,8 @@ bi::Expression* bi::ResolverSource::modify(
 }
 
 bi::Statement* bi::ResolverSource::modify(Assignment* o) {
-  if (*o->name == "<~") {
-    /* replace with equivalent (by definition) code */
-    auto left = o->left;
-    auto right = new Call(
-        new Member(o->right,
-            new Identifier<Unknown>(new Name("simulate"), o->loc), o->loc),
-        new EmptyExpression(o->loc), o->loc);
-    auto assign = new Assignment(left, new Name("<-"), right, o->loc);
-    return assign->accept(this);
-  } else if (*o->name == "~>") {
-    /* replace with equivalent (by definition) code */
+  /* replace with equivalent (by definition) code */
+  if (*o->name == "~>") {
     auto observe = new Call(
         new Member(o->right,
             new Identifier<Unknown>(new Name("observe"), o->loc), o->loc),
@@ -300,32 +317,20 @@ bi::Statement* bi::ResolverSource::modify(Assignment* o) {
       auto stmt = new ExpressionStatement(observe, o->loc);
       return stmt->accept(this);
     }
-  } else if (*o->name == "~") {
-    /* replace with equivalent (by definition) code */
+  } else {
+    assert(*o->name == "~");
     ///@todo Can left be evaluated only once?
-    auto cond = new Parentheses(
-        new Call(
-            new Member(o->left->accept(&cloner),
-                new Identifier<Unknown>(new Name("isMissing"), o->loc)),
-            new Parentheses(new EmptyExpression(o->loc), o->loc), o->loc),
-        o->loc);
-    auto trueBranch = new Assignment(o->left->accept(&cloner), new Name("<-"),
-        o->right->accept(&cloner), o->loc);
+    auto cond = new Call(
+        new Member(o->left->accept(&cloner),
+            new Identifier<Unknown>(new Name("isMissing"), o->loc)),
+        new Parentheses(new EmptyExpression(o->loc), o->loc), o->loc);
+    auto trueBranch = new ExpressionStatement(
+        new Assign(o->left->accept(&cloner), new Name("<-"),
+            o->right->accept(&cloner), o->loc), o->loc);
     auto falseBranch = new Assignment(o->left->accept(&cloner),
         new Name("~>"), o->right->accept(&cloner), o->loc);
     auto result = new If(cond, trueBranch, falseBranch, o->loc);
     return result->accept(this);
-  } else {
-    /* assignment operator */
-    Modifier::modify(o);
-    if (!o->left->isAssignable()) {
-      throw NotAssignableException(o);
-    }
-    if (!o->right->type->definitely(*o->left->type)
-        && (!o->left->type->isClass()
-            || !o->left->type->getClass()->hasAssignment(o->right->type))) {
-      throw AssignmentException(o);
-    }
   }
   return o;
 }
