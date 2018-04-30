@@ -109,7 +109,10 @@ void bi::CppBaseGenerator::visit(const UnaryCall* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Assign* o) {
-  middle(o->left << " = " << o->right);
+  ++inAssign;
+  middle(o->left);
+  --inAssign;
+  middle(" = " << o->right);
 }
 
 void bi::CppBaseGenerator::visit(const Slice* o) {
