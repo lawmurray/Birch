@@ -194,12 +194,12 @@ function min(x:Integer8, y:Integer8) -> Integer8 {
  * return zero.
  */
 function pow2(x:Integer8) -> Integer8 {
-  if (x < 0) {
+  if (x < Integer8(0)) {
     return Integer8(0);
   } else {
-    y:Integer8 <- x/2;
-    z:Integer8 <- 1;
-    while (y > 0) {
+    y:Integer8 <- x/Integer8(2);
+    z:Integer8 <- Integer8(1);
+    while (y > Integer8(0)) {
       y <- y/Integer8(2);
       z <- z*Integer8(2);
     }

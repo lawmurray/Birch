@@ -118,7 +118,7 @@ function diagonal(x:Real, length:Integer) -> Real[_,_] {
  * - length: Number of rows/columns.
  */
 function diagonal(x:Integer, length:Integer) -> Integer[_,_] {
-  Z:Integer[_,_] <- matrix(0.0, length, length);
+  Z:Integer[_,_] <- matrix(0, length, length);
   for (i:Integer in 1..length) {
     Z[i,i] <- x;
   }
@@ -132,7 +132,7 @@ function diagonal(x:Integer, length:Integer) -> Integer[_,_] {
  * - length: Number of rows/columns.
  */
 function diagonal(x:Boolean, length:Integer) -> Boolean[_,_] {
-  Z:Boolean[_,_] <- matrix(0.0, length, length);
+  Z:Boolean[_,_] <- matrix(false, length, length);
   for (i:Integer in 1..length) {
     Z[i,i] <- x;
   }
