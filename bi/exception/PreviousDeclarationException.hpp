@@ -39,7 +39,7 @@ bi::PreviousDeclarationException::PreviousDeclarationException(
     buf << param->loc;
   }
   buf << "error: already declared\n";
-  buf << param;
+  buf << param << "\n";
   if (prev->loc) {
     buf << prev->loc;
   }
