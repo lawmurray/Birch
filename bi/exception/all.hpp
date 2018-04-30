@@ -19,6 +19,7 @@
 #include "bi/exception/GenericException.hpp"
 #include "bi/exception/GetException.hpp"
 #include "bi/exception/IndexException.hpp"
+#include "bi/exception/InitialValueException.hpp"
 #include "bi/exception/MemberException.hpp"
 #include "bi/exception/NotAssignableException.hpp"
 #include "bi/exception/NotFunctionException.hpp"

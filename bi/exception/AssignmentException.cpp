@@ -1,20 +1,19 @@
 /**
  * @file
  */
-#include "AssignmentException.hpp"
+#include "bi/exception/AssignmentException.hpp"
 
 #include "bi/io/bih_ostream.hpp"
 
 #include <sstream>
 
-bi::AssignmentException::AssignmentException(
-    const Assign* o) {
+bi::AssignmentException::AssignmentException(const Assign* o) {
   std::stringstream base;
   bih_ostream buf(base);
   if (o->loc) {
     buf << o->loc;
   }
-  buf << "error: incompatible types in assignment\n";
+  buf << "error: incompatible type in assignment\n";
   if (o->loc) {
     buf << o->loc;
   }

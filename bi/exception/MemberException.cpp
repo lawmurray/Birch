@@ -2,6 +2,7 @@
  * @file
  */
 #include "bi/exception/MemberException.hpp"
+
 #include "bi/io/bih_ostream.hpp"
 
 #include <sstream>

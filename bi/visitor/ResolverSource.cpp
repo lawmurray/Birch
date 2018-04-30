@@ -204,6 +204,9 @@ bi::Expression* bi::ResolverSource::modify(Nil* o) {
 
 bi::Expression* bi::ResolverSource::modify(Parameter* o) {
   Modifier::modify(o);
+  if (!o->value->isEmpty() && !o->value->type->definitely(*o->type)) {
+    throw InitialValueException(o);
+  }
   scopes.back()->add(o);
   return o;
 }
@@ -219,6 +222,9 @@ bi::Expression* bi::ResolverSource::modify(LocalVariable* o) {
   }
   if (!o->brackets->isEmpty()) {
     o->type = new ArrayType(o->type, o->brackets->width(), o->brackets->loc);
+  }
+  if (!o->value->isEmpty() && !o->value->type->definitely(*o->type)) {
+    throw InitialValueException(o);
   }
   scopes.back()->add(o);
   return o;
@@ -342,6 +348,9 @@ bi::Statement* bi::ResolverSource::modify(GlobalVariable* o) {
   if (o->needsConstruction()) {
     o->type->resolveConstructor(o);
   }
+  if (!o->value->isEmpty() && !o->value->type->definitely(*o->type)) {
+    throw InitialValueException(o);
+  }
   return o;
 }
 
@@ -396,6 +405,9 @@ bi::Statement* bi::ResolverSource::modify(MemberVariable* o) {
   scopes.pop_back();
   if (o->needsConstruction()) {
     o->type->resolveConstructor(o);
+  }
+  if (!o->value->isEmpty() && !o->value->type->definitely(*o->type)) {
+    throw InitialValueException(o);
   }
   return o;
 }

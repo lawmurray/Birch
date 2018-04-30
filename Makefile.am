@@ -57,6 +57,7 @@ COMMON_SOURCES = \
   bi/exception/GenericException.cpp \
   bi/exception/GetException.cpp \
   bi/exception/IndexException.cpp \
+  bi/exception/InitialValueException.cpp \
   bi/exception/MemberException.cpp \
   bi/exception/NotAssignableException.cpp \
   bi/exception/NotFunctionException.cpp \

@@ -1,7 +1,7 @@
 /**
  * @file
  */
-#include "BaseException.hpp"
+#include "bi/exception/BaseException.hpp"
 
 #include "bi/io/bih_ostream.hpp"
 

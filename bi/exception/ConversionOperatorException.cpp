@@ -1,7 +1,7 @@
 /**
  * @file
  */
-#include "ConversionOperatorException.hpp"
+#include "bi/exception/ConversionOperatorException.hpp"
 
 #include "bi/io/bih_ostream.hpp"
 

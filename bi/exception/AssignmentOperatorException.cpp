@@ -1,7 +1,7 @@
 /**
  * @file
  */
-#include "AssignmentOperatorException.hpp"
+#include "bi/exception/AssignmentOperatorException.hpp"
 
 #include "bi/io/bih_ostream.hpp"
 
