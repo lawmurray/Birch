@@ -12,7 +12,7 @@ class Beta(α:Expression<Real>, β:Expression<Real>) < Random<Real> {
    */
   β:Expression<Real> <- β;
 
-  function doGraft() -> Delay? {
+  function doGraft() -> DelayValue<Real>? {
     return DelayBeta(this, α.value(), β.value());
   }
 

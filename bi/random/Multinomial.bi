@@ -12,7 +12,7 @@ class Multinomial(n:Expression<Integer>, ρ:Expression<Real[_]>) < Random<Intege
    */
   ρ:Expression<Real[_]>;
 
-  function doGraft() -> Delay? {
+  function doGraft() -> DelayValue<Integer[_]>? {
     m:DelayDirichlet?;
     if (m <- ρ.graftDirichlet())? {
       return DelayDirichletMultinomial(this, n, m!);

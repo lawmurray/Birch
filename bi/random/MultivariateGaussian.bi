@@ -13,25 +13,14 @@ class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) <
    */
   Σ:Expression<Real[_,_]> <- Σ;
   
-  function doGraft() -> Delay? {
-    σ2:DelayInverseGamma?;
-    m1:DelayMultivariateAffineNormalInverseGamma?;
-    m2:DelayMultivariateNormalInverseGamma?;
-    m3:TransformMultivariateAffineGaussian?;
-    m4:DelayMultivariateGaussian?;
-        
-    if (σ2 <- Σ.graftInverseGamma())? {
-      if (m1 <- μ.graftMultivariateAffineNormalInverseGamma(σ2))? {
-        return DelayMultivariateAffineNormalInverseGammaGaussian(this, m1!);
-      } else if (m2 <- μ.graftMultivariateNormalInverseGamma(σ2))? {
-        return DelayMultivariateNormalInverseGammaGaussian(this, m2!);
-      } else {
-        return DelayMultivariateInverseGammaGaussian(this, μ, σ2!);
-      }
-    } else if (m3 <- μ.graftMultivariateAffineGaussian())? {
-      return DelayMultivariateAffineGaussian(this, m3!, Σ);
-    } else if (m4 <- μ.graftMultivariateGaussian())? {
-      return DelayMultivariateGaussianGaussian(this, m4!, Σ);
+  function doGraft() -> DelayValue<Real[_]>? {
+    m1:TransformMultivariateAffineGaussian?;
+    m2:DelayMultivariateGaussian?;
+
+    if (m1 <- μ.graftMultivariateAffineGaussian())? {
+      return DelayMultivariateAffineGaussianGaussian(this, m1!.A, m1!.x, m1!.c, Σ);
+    } else if (m2 <- μ.graftMultivariateGaussian())? {
+      return DelayMultivariateGaussianGaussian(this, m2!, Σ);
     } else {
       return DelayMultivariateGaussian(this, μ, Σ);
     }
@@ -41,11 +30,11 @@ class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) <
     return DelayMultivariateGaussian(this, μ, Σ);
   }
 
-  function doGraftMultivariateNormalInverseGamma(σ2:DelayInverseGamma) ->
+  function doGraftMultivariateNormalInverseGamma(σ2:Expression<Real>) ->
       DelayMultivariateNormalInverseGamma? {
     S:TransformMultivariateScaledInverseGamma?;
     if (S <- Σ.graftMultivariateScaledInverseGamma(σ2))? {
-      return DelayMultivariateNormalInverseGamma(this, μ, S!);
+      return DelayMultivariateNormalInverseGamma(this, μ, S!.A, S!.σ2);
     } else {
       return nil;
     }

@@ -1,7 +1,8 @@
 /**
  * Negative binomial distribution.
  */
-class NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) < Random<Integer> {
+class NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) <
+    Random<Integer> {
   /**
    * Number of successes before the experiment is stopped.
    */
@@ -12,7 +13,7 @@ class NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) < Random<Inte
    */
   ρ:Expression<Real> <- ρ;
 
-  function doGraft() -> Delay? {
+  function doGraft() -> DelayValue<Integer>? {
     return DelayNegativeBinomial(this, k.value(), ρ.value());
   }
 }

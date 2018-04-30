@@ -1,7 +1,8 @@
 /**
  * Uniform distribution over integers.
  */
-class UniformInteger(l:Expression<Integer>, u:Expression<Integer>) < Random<Integer> {
+class UniformInteger(l:Expression<Integer>, u:Expression<Integer>) <
+    Random<Integer> {
   /**
    * Lower bound.
    */
@@ -12,7 +13,7 @@ class UniformInteger(l:Expression<Integer>, u:Expression<Integer>) < Random<Inte
    */
   u:Expression<Integer> <- u;
 
-  function doGraft() -> Delay? {
+  function doGraft() -> DelayValue<Integer>? {
     return DelayUniformInteger(this, l, u);
   }
 }

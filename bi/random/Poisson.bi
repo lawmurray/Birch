@@ -7,7 +7,7 @@ class Poisson(λ:Expression<Real>) < Random<Integer> {
    */
   λ:Expression<Real> <- λ;
 
-  function doGraft() -> Delay? {
+  function doGraft() -> DelayValue<Integer>? {
     m:DelayGamma?;
     if (m <- λ.graftGamma())? {
       return DelayGammaPoisson(this, m!);

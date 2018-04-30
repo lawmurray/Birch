@@ -34,11 +34,6 @@ class Delay {
     return doGraftGaussian();
   }
 
-  function graftAffineGaussianGaussian() -> DelayAffineGaussianGaussian? {
-    prune();
-    return doGraftAffineGaussianGaussian();
-  }
-
   function graftBeta() -> DelayBeta? {
     prune();
     return doGraftBeta();
@@ -65,15 +60,14 @@ class Delay {
     return doGraftDirichlet();
   }
 
+  function graftRestaurant() -> DelayRestaurant? {
+    prune();
+    return doGraftRestaurant();
+  }
+
   function graftMultivariateGaussian() -> DelayMultivariateGaussian? {
     prune();
     return doGraftMultivariateGaussian();
-  }
-
-  function graftMultivariateAffineGaussianGaussian() ->
-      DelayMultivariateAffineGaussianGaussian? {
-    prune();
-    return doGraftMultivariateAffineGaussianGaussian();
   }
 
   function graftMultivariateNormalInverseGamma(σ2:Expression<Real>) ->
@@ -82,24 +76,7 @@ class Delay {
     return doGraftMultivariateNormalInverseGamma(σ2);
   }
 
-  function graftMultivariateNormalInverseGammaGaussian(
-      σ2:Expression<Real>) -> DelayMultivariateNormalInverseGammaGaussian? {
-    prune();
-    return doGraftMultivariateNormalInverseGammaGaussian(σ2);
-  }
-
-  function graftMultivariateAffineNormalInverseGammaGaussian(
-      σ2:Expression<Real>) ->
-      DelayMultivariateAffineNormalInverseGammaGaussian? {
-    prune();
-    return doGraftMultivariateAffineNormalInverseGammaGaussian(σ2);
-  }
-
   function doGraftGaussian() -> DelayGaussian? {
-    return nil;
-  }
-
-  function doGraftAffineGaussianGaussian() -> DelayAffineGaussianGaussian? {
     return nil;
   }
 
@@ -124,28 +101,16 @@ class Delay {
     return nil;
   }
 
-  function doGraftMultivariateGaussian() -> DelayMultivariateGaussian? {
+  function doGraftRestaurant() -> DelayRestaurant? {
     return nil;
   }
 
-  function doGraftMultivariateAffineGaussianGaussian() ->
-      DelayMultivariateAffineGaussianGaussian? {
+  function doGraftMultivariateGaussian() -> DelayMultivariateGaussian? {
     return nil;
   }
 
   function doGraftMultivariateNormalInverseGamma(σ2:Expression<Real>) ->
       DelayMultivariateNormalInverseGamma? {
-    return nil;
-  }
-
-  function doGraftMultivariateNormalInverseGammaGaussian(
-      σ2:Expression<Real>) -> DelayMultivariateNormalInverseGammaGaussian? {
-    return nil;
-  }
-
-  function doGraftMultivariateAffineNormalInverseGammaGaussian(
-      σ2:Expression<Real>) ->
-      DelayMultivariateAffineNormalInverseGammaGaussian? {
     return nil;
   }
 }

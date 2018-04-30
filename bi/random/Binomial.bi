@@ -12,7 +12,7 @@ class Binomial(n:Expression<Integer>, ρ:Expression<Real>) < Random<Integer> {
    */
   ρ:Expression<Real> <- ρ;
 
-  function doGraft() -> Delay? {
+  function doGraft() -> DelayValue<Integer>? {
     m:DelayBeta?;
     if (m <- ρ.graftBeta())? {
       return DelayBetaBinomial(this, n, m!);

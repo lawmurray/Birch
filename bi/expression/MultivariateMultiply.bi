@@ -40,14 +40,14 @@ class MultivariateMultiply<Left,Right,Value>(left:Expression<Left>, right:Expres
     return y;
   }
   
-  function graftScaledInverseGamma(σ2:DelayInverseGamma) ->
+  function graftMultivariateScaledInverseGamma(σ2:Expression<Real>) ->
       TransformMultivariateScaledInverseGamma? {
     y:TransformMultivariateScaledInverseGamma?;
     z:DelayInverseGamma?;
     
     if (y <- right.graftMultivariateScaledInverseGamma(σ2))? {
       y!.leftMultiply(left.value());
-    } else if (z <- right.graftInverseGamma(σ2))? {
+    } else if Object(right) == σ2 && (z <- right.graftInverseGamma())? {
       y <- TransformMultivariateScaledInverseGamma(left.value(), z!);
     }
     return y;

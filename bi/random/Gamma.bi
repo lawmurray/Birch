@@ -12,7 +12,7 @@ class Gamma(k:Expression<Real>, θ:Expression<Real>) < Random<Real> {
    */
   θ:Expression<Real> <- θ;
 
-  function doGraft() -> Delay? {
+  function doGraft() -> DelayValue<Real>? {
     return DelayGamma(this, k.value(), θ.value());
   }
 

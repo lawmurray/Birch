@@ -45,7 +45,7 @@ class Multiply<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>)
     return y;
   }
   
-  function graftScaledInverseGamma(σ2:DelayInverseGamma) ->
+  function graftScaledInverseGamma(σ2:Expression<Real>) ->
       TransformScaledInverseGamma? {
     y:TransformScaledInverseGamma?;
     z:DelayInverseGamma?;
@@ -54,9 +54,9 @@ class Multiply<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>)
       y!.multiply(right.value());
     } else if (y <- right.graftScaledInverseGamma(σ2))? {
       y!.multiply(left.value());
-    } else if (z <- left.graftInverseGamma(σ2))? {
+    } else if Object(left) == σ2 && (z <- left.graftInverseGamma())? {
       y <- TransformScaledInverseGamma(right.value(), z!);        
-    } else if (z <- right.graftInverseGamma(σ2))? {
+    } else if Object(right) == σ2 && (z <- right.graftInverseGamma())? {
       y <- TransformScaledInverseGamma(left.value(), z!);
     }
     return y;

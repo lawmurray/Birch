@@ -7,7 +7,7 @@ class Bernoulli(ρ:Expression<Real>) < Random<Boolean> {
    */
   ρ:Expression<Real> <- ρ;
 
-  function doGraft() -> Delay? {
+  function doGraft() -> DelayValue<Boolean>? {
     m:DelayBeta?;
     if (m <- ρ.graftBeta())? {
       return DelayBetaBernoulli(this, m!);

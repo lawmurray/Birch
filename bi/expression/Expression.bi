@@ -42,15 +42,6 @@ class Expression<Value> {
   function graftAffineGaussian() -> TransformAffineGaussian? {
     return nil;
   }
-
-  /**
-   * Attempt to graft this expression onto the delayed sampling graph.
-   *
-   * Return: The node if successful, nil if not.
-   */
-  function graftAffineGaussianGaussian() -> DelayAffineGaussianGaussian? {
-    return nil;
-  }
   
   /**
    * Attempt to graft this expression onto the delayed sampling graph.
@@ -82,7 +73,8 @@ class Expression<Value> {
   /**
    * Attempt to graft this expression onto the delayed sampling graph.
    *
-   * - σ2: Inverse gamma expression that must appear.
+   * - σ2: Variance of the normal distribution for which a
+   *       compatible normal-inverse-gamma distribution is sought as prior.
    *
    * Return: The node if successful, nil if not.
    */
@@ -94,7 +86,8 @@ class Expression<Value> {
   /**
    * Attempt to graft this expression onto the delayed sampling graph.
    *
-   * - σ2: Inverse gamma expression that must appear.
+   * - σ2: Variance of the normal distribution for which a
+   *       compatible normal-inverse-gamma distribution is sought as prior.
    *
    * Return: The node if successful, nil if not.
    */
@@ -106,7 +99,8 @@ class Expression<Value> {
   /**
    * Attempt to graft this expression onto the delayed sampling graph.
    *
-   * - σ2: Inverse gamma expression that must appear.
+   * - σ2: Variance of the normal distribution for which a
+   *       compatible normal-inverse-gamma distribution is sought as prior.
    *
    * Return: The node if successful, nil if not.
    */
@@ -121,6 +115,15 @@ class Expression<Value> {
    * Return: The node if successful, nil if not.
    */
   function graftDirichlet() -> DelayDirichlet? {
+    return nil;
+  }
+
+  /**
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
+   * Return: The node if successful, nil if not.
+   */
+  function graftRestaurant() -> DelayRestaurant? {
     return nil;
   }
 
@@ -146,17 +149,8 @@ class Expression<Value> {
   /**
    * Attempt to graft this expression onto the delayed sampling graph.
    *
-   * Return: The node if successful, nil if not.
-   */
-  function graftMultivariateAffineGaussianGaussian() ->
-      DelayMultivariateAffineGaussianGaussian? {
-    return nil;
-  }
-
-  /**
-   * Attempt to graft this expression onto the delayed sampling graph.
-   *
-   * - σ2: Inverse gamma expression that must appear.
+   * - σ2: Variance of the normal distribution for which a
+   *       compatible normal-inverse-gamma distribution is sought as prior.
    *
    * Return: The node if successful, nil if not.
    */
@@ -168,7 +162,8 @@ class Expression<Value> {
   /**
    * Attempt to graft this expression onto the delayed sampling graph.
    *
-   * - σ2: Inverse gamma expression that must appear.
+   * - σ2: Variance of the normal distribution for which a
+   *       compatible normal-inverse-gamma distribution is sought as prior.
    *
    * Return: The node if successful, nil if not.
    */
@@ -180,36 +175,13 @@ class Expression<Value> {
   /**
    * Attempt to graft this expression onto the delayed sampling graph.
    *
-   * - σ2: Inverse gamma expression that must appear.
-   *
-   * Return: The node if successful, nil if not.
-   */
-  function graftMultivariateNormalInverseGammaGaussian(σ2:Expression<Real>) ->
-      DelayMultivariateNormalInverseGammaGaussian? {
-    return nil;
-  }
-
-  /**
-   * Attempt to graft this expression onto the delayed sampling graph.
-   *
-   * - σ2: Inverse gamma expression that must appear.
+   * - σ2: Variance of the normal distribution for which a
+   *       compatible normal-inverse-gamma distribution is sought as prior.
    *
    * Return: The node if successful, nil if not.
    */
   function graftMultivariateAffineNormalInverseGamma(σ2:Expression<Real>) ->
       TransformMultivariateAffineNormalInverseGamma? {
-    return nil;
-  }
-
-  /**
-   * Attempt to graft this expression onto the delayed sampling graph.
-   *
-   * - σ2: Inverse gamma expression that must appear.
-   *
-   * Return: The node if successful, nil if not.
-   */
-  function graftMultivariateAffineNormalInverseGammaGaussian(σ2:Expression<Real>) ->
-      DelayMultivariateAffineNormalInverseGammaGaussian? {
     return nil;
   }
 }
