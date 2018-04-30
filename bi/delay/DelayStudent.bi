@@ -5,7 +5,7 @@ class DelayStudent(x:Random<Real>, ν:Real) < DelayValue<Real>(x) {
   /**
    * Degrees of freedom.
    */
-  ν:Expression<Real> <- ν;
+  ν:Real <- ν;
   
   function doSimulate() -> Real {
     return simulate_student_t(ν);
