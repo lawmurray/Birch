@@ -77,19 +77,6 @@ function simulate_poisson(λ:Real) -> Integer {
 }
 
 /**
- * Simulate an integer uniform distribution.
- *
- * - l: Lower bound of interval.
- * - u: Upper bound of interval.
- */
-function simulate_int_uniform(l:Integer, u:Integer) -> Integer {
-  assert l <= u;
-  cpp {{
-  return std::uniform_int_distribution<bi::type::Integer_>(l_, u_)(rng);
-  }}
-}
-
-/**
  * Simulate a categorical distribution.
  *
  * - ρ: Category probabilities.
@@ -124,7 +111,7 @@ function simulate_categorical(ρ:Real[_]) -> Integer {
  */
 function simulate_multinomial(n:Integer, ρ:Real[_]) -> Integer[_] {
   D:Integer <- length(ρ);
-  R:Real[_] <- exclusive_prefix_sum(ρ);
+  R:Real[_] <- exclusive_scan_sum(ρ);
   W:Real <- R[D] + ρ[D];
 
   lnMax:Real <- 0.0;
@@ -201,6 +188,32 @@ function simulate_uniform(l:Real, u:Real) -> Real {
   cpp {{
   return std::uniform_real_distribution<bi::type::Real_>(l_, u_)(rng);
   }}
+}
+
+/**
+ * Simulate a uniform distribution on an integer range.
+ *
+ * - l: Lower bound of range.
+ * - u: Upper bound of range.
+ */
+function simulate_uniform_int(l:Integer, u:Integer) -> Integer {
+  assert l <= u;
+  cpp {{
+  return std::uniform_int_distribution<bi::type::Integer_>(l_, u_)(rng);
+  }}
+}
+
+/**
+ * Simulate a uniform distribution on unit vectors.
+ *
+ * - D: Number of dimensions.
+ */
+function simulate_uniform_unit_vector(D:Integer) -> Real[_] {
+  u:Real[D];
+  for d:Integer in 1..D {
+    u[d] <- simulate_gaussian(0.0, 1.0);
+  }
+  return u/dot(u);
 }
 
 /**

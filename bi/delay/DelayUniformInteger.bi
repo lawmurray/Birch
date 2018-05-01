@@ -14,11 +14,11 @@ class DelayUniformInteger(x:Random<Integer>, l:Integer, u:Integer) <
   u:Integer <- u;
 
   function doSimulate() -> Integer {
-    return simulate_int_uniform(l, u);
+    return simulate_uniform_int(l, u);
   }
   
   function doObserve(x:Integer) -> Real {
-    return observe_int_uniform(x, l, u);
+    return observe_uniform_int(x, l, u);
   }
 }
 

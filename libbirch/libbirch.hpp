@@ -32,6 +32,7 @@
 
 #include <random>
 #include <algorithm>
+#include <numeric>
 #include <utility>
 #include <functional>
 #include <string>

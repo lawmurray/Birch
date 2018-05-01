@@ -93,7 +93,7 @@ function pmf_poisson(x:Integer, λ:Real) -> Real {
  *
  * Returns: the probability mass.
  */
-function pmf_int_uniform(x:Integer, l:Integer, u:Integer) -> Real {
+function pmf_uniform_int(x:Integer, l:Integer, u:Integer) -> Real {
   if (x >= l && x <= u) {
     return 1.0/(u - l + 1);
   } else {

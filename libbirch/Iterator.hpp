@@ -23,10 +23,10 @@ public:
    * @param ptr Buffer.
    * @param frame F.
    */
-  Iterator(T* ptr, const F& frame) :
+  Iterator(T* ptr, const F& frame, int64_t serial = 0) :
       frame(frame),
       ptr(ptr),
-      serial(0) {
+      serial(serial) {
     //
   }
 
@@ -72,6 +72,10 @@ public:
 
   bool operator>(const Iterator<T,F>& o) const {
     return get() > o.get();
+  }
+
+  int64_t operator-(const Iterator<T,F>& o) const {
+    return serial - o.serial;
   }
 
   Iterator<T,F>& operator+=(const int64_t i) {

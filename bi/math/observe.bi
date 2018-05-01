@@ -106,7 +106,7 @@ function observe_poisson(x:Integer, λ:Real) -> Real {
  *
  * Returns: the log probability mass.
  */
-function observe_int_uniform(x:Integer, l:Integer, u:Integer) -> Real {
+function observe_uniform_int(x:Integer, l:Integer, u:Integer) -> Real {
   if (x >= l && x <= u) {
     return -log(u - l + 1);
   } else {
