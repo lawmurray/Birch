@@ -5,7 +5,7 @@
  *
  * Return: the return code of the execution.
  */
-function system(cmd:String) -> Integer32 {
+function system(cmd:String) -> Integer {
   cpp{{
   return std::system(cmd_.c_str());
   }}
