@@ -138,4 +138,22 @@ protected:
    */
   int64_t serial;
 };
+
+/**
+ * Is @p iter inside the range @p begin to @p end?
+ */
+template<class T, class F, class G>
+bool inside(const Iterator<T,F>& begin, const Iterator<T,F>& end,
+     const Iterator<T,G>& iter) {
+  return begin <= iter && iter <= end;
+}
+
+/**
+ * Is @p iter inside the range @p begin to @p end?
+ */
+template<class T, class F, class U, class G>
+bool inside(const Iterator<T,F>& begin, const Iterator<T,F>& end,
+     const Iterator<U,G>& iter) {
+  return false;
+}
 }

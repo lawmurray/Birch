@@ -528,7 +528,7 @@ private:
     auto end1 = o.end();
     auto begin2 = begin();
     auto end2 = end();
-    if (begin1 <= begin2 && begin2 <= end1) {
+    if (inside(begin1, end1, begin2)) {
       std::copy_backward(begin1, end1, end2);
     } else {
       std::copy(begin1, end1, begin2);
