@@ -5,7 +5,7 @@ class Dirichlet(α:Expression<Real[_]>) < Random<Real[_]> {
   /**
    * Concentration.
    */
-  α:Expression<Real[_]>;
+  α:Expression<Real[_]> <- α;
 
   function doGraft() -> DelayValue<Real[_]>? {
     return DelayDirichlet(this, α);

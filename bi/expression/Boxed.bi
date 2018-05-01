@@ -11,7 +11,7 @@ class Boxed<Value>(x:Value) < Expression<Value> {
     return x;
   }
 
-  function box() -> Boxed<Value> {
+  function boxed() -> Boxed<Value> {
     return this;
   }
 }

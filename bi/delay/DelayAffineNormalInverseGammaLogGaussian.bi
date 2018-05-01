@@ -7,7 +7,7 @@ class DelayAffineNormalInverseGammaLogGaussian(x:Random<Real>, a:Real,
   /**
    * Scale.
    */
-  a:Real;
+  a:Real <- a;
     
   /**
    * Mean.
