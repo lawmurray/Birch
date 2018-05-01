@@ -4,9 +4,9 @@
  * - X1: First empirical distribution.
  * - X2: Second empirical distribution.
  *
- * Return: The computed test distance and suggested pass threshold.
+ * Return: Did the test pass?
  */
-function compare(X1:Real[_,_], X2:Real[_,_]) -> (Real, Real) {
+function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
   assert rows(X1) == rows(X2);
   assert columns(X1) == columns(X2);
   
@@ -28,5 +28,7 @@ function compare(X1:Real[_,_], X2:Real[_,_]) -> (Real, Real) {
   δ:Real <- wasserstein(x1, x2);
   ε:Real <- sqrt(1.0/R);
   
-  return (δ, ε);
+  //stderr.print(δ + " vs " + ε + "\n");
+  
+  return δ < ε;
 }

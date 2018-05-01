@@ -23,8 +23,19 @@
       "bi/model/SIRModel.bi",
       "bi/model/SIRParameter.bi",
       "bi/model/SIRState.bi",
-      "bi/test/test_beta_bernoulli.bi",
-      "bi/test/test.bi"
+      "bi/test/TestBetaBernoulli.bi",
+      "bi/test/TestBetaBinomial.bi",
+      "bi/test/TestConjugate.bi",
+      "bi/test/TestDirichletCategorical.bi",
+      "bi/test/TestDirichletMultinomial.bi",
+      "bi/test/TestGammaPoisson.bi",
+      "bi/pass.bi",
+      "bi/test_beta_bernoulli.bi",
+      "bi/test_beta_binomial.bi",
+      "bi/test_dirichlet_categorical.bi",
+      "bi/test_dirichlet_multinomial.bi",
+      "bi/test_gamma_poisson.bi",
+      "bi/test.bi"
     ],
     "data": [
       "input/bike_share.json",
