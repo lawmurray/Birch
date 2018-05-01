@@ -5,12 +5,12 @@ class Multinomial(n:Expression<Integer>, ρ:Expression<Real[_]>) < Random<Intege
   /**
    * Number of trials.
    */
-  n:Expression<Integer>;
+  n:Expression<Integer> <- n;
 
   /**
    * Category probabilities.
    */
-  ρ:Expression<Real[_]>;
+  ρ:Expression<Real[_]> <- ρ;
 
   function doGraft() -> DelayValue<Integer[_]>? {
     m:DelayDirichlet?;
