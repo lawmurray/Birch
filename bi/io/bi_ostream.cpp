@@ -511,7 +511,6 @@ void bi::bi_ostream::visit(const FunctionType* o) {
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
-  middle(')');
 }
 
 void bi::bi_ostream::visit(const FiberType* o) {
