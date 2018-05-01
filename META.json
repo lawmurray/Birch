@@ -24,6 +24,8 @@
       "bi/model/SIRParameter.bi",
       "bi/model/SIRState.bi",
       "bi/test/pass.bi",
+      "bi/test/test_affine_gaussian_gaussian.bi",
+      "bi/test/test_affine_normal_inverse_gamma_gaussian.bi",
       "bi/test/test_beta_bernoulli.bi",
       "bi/test/test_beta_binomial.bi",
       "bi/test/test_dirichlet_categorical.bi",

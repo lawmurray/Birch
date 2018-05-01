@@ -8,8 +8,10 @@ program test() {
   run_test("dirichlet_multinomial");
   run_test("gamma_poisson");
   run_test("gaussian_gaussian");
+  run_test("affine_gaussian_gaussian");
   run_test("inverse_gamma_gaussian");
   run_test("normal_inverse_gamma_gaussian");
+  run_test("affine_normal_inverse_gamma_gaussian");
 }
 
 /**
