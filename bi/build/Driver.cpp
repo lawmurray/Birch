@@ -17,6 +17,7 @@
 #include <iostream>
 #include <regex>
 #include <unordered_set>
+#include <thread>
 
 bi::Driver::Driver(int argc, char** argv) :
     /* keep these paths relative, or at least call configure with a
@@ -802,9 +803,18 @@ void bi::Driver::target(const std::string& cmd) {
   /* command */
   std::stringstream buf;
   if (arch == "js" || arch == "wasm") {
-    buf << "emmake ";
+    buf << "emmake";
   }
-  buf << "make -j 4 " << cmd;
+  buf << "make";
+
+  /* concurrency */
+  unsigned ncores = std::thread::hardware_concurrency();
+  if (ncores > 1) {
+    buf << " -j " << ncores;
+  }
+
+  /* target */
+  buf << ' ' << cmd;
 
   /* handle output */
   std::string log = cmd + ".log";
