@@ -1,7 +1,7 @@
 /**
  * Test Gaussian-Gaussian conjugacy.
  */
-program test_gaussian_gaussian(N:Integer <- 1000) {
+program test_gaussian_gaussian(N:Integer <- 10000) {
   X1:Real[N,2];
   X2:Real[N,2];
   μ_0:Real <- simulate_uniform(-10.0, 10.0);

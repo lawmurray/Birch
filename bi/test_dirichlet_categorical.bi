@@ -1,7 +1,7 @@
 /**
  * Test Dirichlet-categorical conjugacy.
  */
-program test_dirichlet_categorical(N:Integer <- 1000) {
+program test_dirichlet_categorical(N:Integer <- 10000) {
   X1:Real[N,6];
   X2:Real[N,6];
   α:Real[5];

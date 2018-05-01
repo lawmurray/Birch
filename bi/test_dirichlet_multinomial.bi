@@ -1,7 +1,7 @@
 /**
  * Test Dirichlet-multinomial conjugacy.
  */
-program test_dirichlet_multinomial(N:Integer <- 1000) {
+program test_dirichlet_multinomial(N:Integer <- 10000) {
   X1:Real[N,10];
   X2:Real[N,10];
   n:Integer <- simulate_uniform_int(1, 100);

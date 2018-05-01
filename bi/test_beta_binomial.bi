@@ -1,7 +1,7 @@
 /**
  * Test beta-binomial conjugacy.
  */
-program test_beta_binomial(N:Integer <- 1000) {
+program test_beta_binomial(N:Integer <- 10000) {
   X1:Real[N,2];
   X2:Real[N,2];
   n:Integer <- simulate_uniform_int(1, 100);

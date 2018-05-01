@@ -1,7 +1,7 @@
 /**
  * Test gamma-Poisson conjugacy.
  */
-program test_gamma_poisson(N:Integer <- 1000) {
+program test_gamma_poisson(N:Integer <- 10000) {
   X1:Real[N,2];
   X2:Real[N,2];
   k:Real <- simulate_uniform_int(1, 10);

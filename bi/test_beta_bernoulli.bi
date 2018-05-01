@@ -1,7 +1,7 @@
 /**
  * Test beta-Bernoulli conjugacy.
  */
-program test_beta_bernoulli(N:Integer <- 1000) {
+program test_beta_bernoulli(N:Integer <- 10000) {
   X1:Real[N,2];
   X2:Real[N,2];
   α:Real <- simulate_uniform(0.0, 100.0);
