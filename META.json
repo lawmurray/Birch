@@ -29,12 +29,14 @@
       "bi/test/TestDirichletCategorical.bi",
       "bi/test/TestDirichletMultinomial.bi",
       "bi/test/TestGammaPoisson.bi",
+      "bi/test/TestGaussianGaussian.bi",
       "bi/pass.bi",
       "bi/test_beta_bernoulli.bi",
       "bi/test_beta_binomial.bi",
       "bi/test_dirichlet_categorical.bi",
       "bi/test_dirichlet_multinomial.bi",
       "bi/test_gamma_poisson.bi",
+      "bi/test_gaussian_gaussian.bi",
       "bi/test.bi"
     ],
     "data": [
