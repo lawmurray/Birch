@@ -30,6 +30,8 @@
       "bi/test/TestDirichletMultinomial.bi",
       "bi/test/TestGammaPoisson.bi",
       "bi/test/TestGaussianGaussian.bi",
+      "bi/test/TestInverseGammaGaussian.bi",
+      "bi/test/TestNormalInverseGammaGaussian.bi",
       "bi/pass.bi",
       "bi/test_beta_bernoulli.bi",
       "bi/test_beta_binomial.bi",
@@ -37,6 +39,8 @@
       "bi/test_dirichlet_multinomial.bi",
       "bi/test_gamma_poisson.bi",
       "bi/test_gaussian_gaussian.bi",
+      "bi/test_inverse_gamma_gaussian.bi",
+      "bi/test_normal_inverse_gamma_gaussian.bi",
       "bi/test.bi"
     ],
     "data": [
