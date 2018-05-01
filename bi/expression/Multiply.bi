@@ -12,6 +12,10 @@ class Multiply<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>)
    */
   right:Expression<Right> <- right;
   
+  function value() -> Value {
+    return left.value()*right.value();
+  }
+
   function graftAffineGaussian() -> TransformAffineGaussian? {
     y:TransformAffineGaussian?;
     z:DelayGaussian?;
@@ -60,10 +64,6 @@ class Multiply<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>)
       y <- TransformScaledInverseGamma(left.value(), z!);
     }
     return y;
-  }
-
-  function doValue() -> Value {
-    return left.value()*right.value();
   }
 }
 

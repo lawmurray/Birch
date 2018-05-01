@@ -12,6 +12,10 @@ class MultivariateMultiply<Left,Right,Value>(left:Expression<Left>, right:Expres
    */
   right:Expression<Right> <- right;
   
+  function value() -> Value {
+    return left.value()*right.value();
+  }
+
   function graftAffineMultivariateGaussian() ->
       TransformMultivariateAffineGaussian? {
     y:TransformMultivariateAffineGaussian?;
@@ -51,10 +55,6 @@ class MultivariateMultiply<Left,Right,Value>(left:Expression<Left>, right:Expres
       y <- TransformMultivariateScaledInverseGamma(left.value(), z!);
     }
     return y;
-  }
-
-  function doValue() -> Value {
-    return left.value()*right.value();
   }
 }
 

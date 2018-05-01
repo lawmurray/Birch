@@ -7,7 +7,7 @@ class Log<Value>(x:Expression<Value>) < Expression<Value> {
    */
   x:Expression<Value> <- x;
 
-  function doValue() -> Value {
+  function value() -> Value {
     return log(x.value());
   }
 }

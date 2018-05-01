@@ -12,7 +12,11 @@ class Add<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>) <
    * Right operand.
    */
   right:Expression<Right> <- right;
-    
+
+  function value() -> Value {
+    return left.value() + right.value();
+  }
+
   function graftAffineGaussian() -> TransformAffineGaussian? {
     y:TransformAffineGaussian?;
     z:DelayGaussian?;
@@ -44,10 +48,6 @@ class Add<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>) <
       y <- TransformAffineNormalInverseGamma(1.0, z!, left.value());
     }
     return y;
-  }
-
-  function doValue() -> Value {
-    return left.value() + right.value();
   }
 }
 

@@ -12,7 +12,11 @@ class MultivariateAdd<Left,Right,Value>(left:Expression<Left>,
    * Right operand.
    */
   right:Expression<Right> <- right;
-    
+
+  function value() -> Value {
+    return left.value() + right.value();
+  }
+
   function graftMultivariateAffineGaussian() ->
       TransformMultivariateAffineGaussian? {
     y:TransformMultivariateAffineGaussian?;
@@ -49,10 +53,6 @@ class MultivariateAdd<Left,Right,Value>(left:Expression<Left>,
           z!, left.value());
     }
     return y;
-  }
-
-  function doValue() -> Value {
-    return left.value() + right.value();
   }
 }
 
