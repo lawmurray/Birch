@@ -131,7 +131,8 @@ void bi::Resolver::resolve(ObjectType* o, const ScopeCategory outer) {
     memberScopes.pop_back();
   } else {
     /* use current stack of scopes */
-    for (auto iter = scopes.rbegin(); iter != scopes.rend(); ++iter) {
+    for (auto iter = scopes.rbegin(); !o->target && iter != scopes.rend();
+        ++iter) {
       auto scope = *iter;
       if (iter == scopes.rbegin() || scope->category <= outer) {
         scope->resolve(o);
