@@ -9,7 +9,16 @@ class Delta(μ:Expression<Integer>) < Random<Integer> {
   μ:Expression<Integer> <- μ;
 
   function doGraft() -> DelayValue<Integer>? {
-    return DelayDelta(this, μ.value());
+    m1:DelayBinomial?;
+    m2:TransformOffsetBinomial?;
+    
+    if (m1 <- μ.graftBinomial())? {
+      return DelayBinomialDelta(this, m1!);
+    } else if (m2 <- μ.graftOffsetBinomial())? {
+      return DelayOffsetBinomialDelta(this, m2!.x, m2!.c);
+    } else {
+      return DelayDelta(this, μ.value());
+    }
   }
 }
 

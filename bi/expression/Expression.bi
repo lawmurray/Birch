@@ -69,7 +69,7 @@ class Expression<Value> {
   function graftInverseGamma() -> DelayInverseGamma? {
     return nil;
   } 
-
+  
   /**
    * Attempt to graft this expression onto the delayed sampling graph.
    *
@@ -182,6 +182,24 @@ class Expression<Value> {
    */
   function graftMultivariateAffineNormalInverseGamma(σ2:Expression<Real>) ->
       TransformMultivariateAffineNormalInverseGamma? {
+    return nil;
+  }
+
+  /**
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
+   * Return: The node if successful, nil if not.
+   */
+  function graftBinomial() -> DelayBinomial? {
+    return nil;
+  }
+
+  /**
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
+   * Return: The node if successful, nil if not.
+   */
+  function graftOffsetBinomial() -> TransformOffsetBinomial? {
     return nil;
   }
 }

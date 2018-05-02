@@ -171,6 +171,14 @@ class Random<Value> < Expression<Value> {
     }
   }
 
+  function graftBinomial() -> DelayBinomial? {
+    if (delay?) {
+      return delay!.graftBinomial();
+    } else {
+      return doGraftBinomial();
+    }
+  }
+
   function doGraft() -> DelayValue<Value>? {
     return nil;
   }
@@ -210,6 +218,10 @@ class Random<Value> < Expression<Value> {
 
   function doGraftMultivariateNormalInverseGamma(σ2:Expression<Real>) ->
       DelayMultivariateNormalInverseGamma? {
+    return nil;
+  }
+
+  function doGraftBinomial() -> DelayBinomial? {
     return nil;
   }
 }

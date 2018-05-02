@@ -49,6 +49,22 @@ class Add<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>) <
     }
     return y;
   }
+
+  function graftOffsetBinomial() -> TransformOffsetBinomial? {
+    y:TransformOffsetBinomial?;
+    z:DelayBinomial?;
+    
+    if (y <- left.graftOffsetBinomial())? {
+      y!.add(Integer(right.value()));
+    } else if (y <- right.graftOffsetBinomial())? {
+      y!.add(Integer(left.value()));
+    } else if (z <- left.graftBinomial())? {
+      y <- TransformOffsetBinomial(z!, Integer(right.value()));
+    } else if (z <- right.graftBinomial())? {
+      y <- TransformOffsetBinomial(z!, Integer(left.value()));
+    }
+    return y;
+  }
 }
 
 operator (left:Expression<Real> + right:Expression<Real>) ->
@@ -62,5 +78,21 @@ operator (left:Real + right:Expression<Real>) -> Add<Real,Real,Real> {
 }
 
 operator (left:Expression<Real> + right:Real) -> Add<Real,Real,Real> {
+  return left + Boxed(right);
+}
+
+operator (left:Expression<Integer> + right:Expression<Integer>) ->
+    Add<Integer,Integer,Integer> {
+  m:Add<Integer,Integer,Integer>(left, right);
+  return m;
+}
+
+operator (left:Integer + right:Expression<Integer>) ->
+    Add<Integer,Integer,Integer> {
+  return Boxed(left) + right;
+}
+
+operator (left:Expression<Integer> + right:Integer) ->
+    Add<Integer,Integer,Integer> {
   return left + Boxed(right);
 }

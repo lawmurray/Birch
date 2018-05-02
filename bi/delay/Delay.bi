@@ -76,6 +76,16 @@ class Delay {
     return doGraftMultivariateNormalInverseGamma(σ2);
   }
 
+  function graftBinomial() -> DelayBinomial? {
+    prune();
+    return doGraftBinomial();
+  }
+
+  function graftOffsetBinomial() -> TransformOffsetBinomial? {
+    prune();
+    return doGraftOffsetBinomial();
+  }
+    
   function doGraftGaussian() -> DelayGaussian? {
     return nil;
   }
@@ -111,6 +121,14 @@ class Delay {
 
   function doGraftMultivariateNormalInverseGamma(σ2:Expression<Real>) ->
       DelayMultivariateNormalInverseGamma? {
+    return nil;
+  }
+
+  function doGraftBinomial() -> DelayBinomial? {
+    return nil;
+  }
+
+  function doGraftOffsetBinomial() -> TransformOffsetBinomial? {
     return nil;
   }
 }

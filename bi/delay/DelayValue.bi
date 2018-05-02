@@ -11,6 +11,28 @@ class DelayValue<Value>(x:Random<Value>) < Delay {
    */
   x:Random<Value>& <- x;
   
+  /**
+   * Simulate the random variable.
+   */
+  function simulate() -> Value {
+    y:Random<Value>? <- x;
+    assert y?;
+    return y!.simulate();
+  }
+
+  /**
+   * Observe the random variable.
+   *
+   * - x: The observed value.
+   *
+   * Return: the log likelihood.
+   */
+  function observe(x:Value) -> Real {
+    y:Random<Value>? <- this.x;
+    assert y?;
+    return y!.observe(x);
+  }
+  
   function realize() {
     if (parent?) {
       parent!.child <- nil;
