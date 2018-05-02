@@ -38,6 +38,11 @@
       "bi/test/test_normal_inverse_gamma_gaussian.bi",
       "bi/test/test_gaussian_log_gaussian.bi",
       "bi/test/test_inverse_gamma_log_gaussian.bi",
+      "bi/test/test_multivariate_affine_gaussian_gaussian.bi",
+      "bi/test/test_multivariate_affine_normal_inverse_gamma_gaussian.bi",
+      "bi/test/test_multivariate_gaussian_gaussian.bi",
+      "bi/test/test_multivariate_inverse_gamma_gaussian.bi",
+      "bi/test/test_multivariate_normal_inverse_gamma_gaussian.bi",
       "bi/test/test_normal_inverse_gamma_log_gaussian.bi",
       "bi/test/test.bi"
     ],

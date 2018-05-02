@@ -17,6 +17,11 @@ program test() {
   run_test("inverse_gamma_log_gaussian");
   run_test("normal_inverse_gamma_log_gaussian");
   run_test("affine_normal_inverse_gamma_log_gaussian");
+  run_test("multivariate_gaussian_gaussian");
+  run_test("multivariate_affine_gaussian_gaussian");
+  run_test("multivariate_inverse_gamma_gaussian");
+  run_test("multivariate_normal_inverse_gamma_gaussian");
+  run_test("multivariate_affine_normal_inverse_gamma_gaussian");
 }
 
 /**

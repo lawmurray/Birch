@@ -1,5 +1,5 @@
 /**
- * Test inverse-gamma-Gaussian conjugacy.
+ * Test normal-inverse-gamma-Gaussian conjugacy.
  */
 program test_normal_inverse_gamma_gaussian(N:Integer <- 10000) {
   X1:Real[N,3];
