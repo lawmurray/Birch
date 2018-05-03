@@ -3,7 +3,7 @@
 bi/PACKAGE_TARNAME.hpp.pch: bi/PACKAGE_TARNAME.hpp
 	rm -f $@
 	mkdir -p bi/$(DEPDIR) && \
-	$(CXXCOMPILE) -M -MF bi/$(DEPDIR)/PACKAGE_TARNAME.Plo -MT $@ $< && \
+	$(CXXCOMPILE) -M -MF bi/$(DEPDIR)/PACKAGE_TARNAME.pch.Plo -MT $@ $< && \
 	$(CXXCOMPILE) -o $@ $<
 
 # placeholder source file for Emscripten program wrapper
@@ -26,6 +26,6 @@ ACLOCAL_AMFLAGS = -I m4
 AM_CXXFLAGS = -include bi/PACKAGE_TARNAME.hpp
 
 BUILT_SOURCES = bi/PACKAGE_TARNAME.hpp.pch main.cpp
-CLEANFILES = bi/PACKAGE_TARNAME.hpp.pch
+CLEANFILES = bi/PACKAGE_TARNAME.hpp.pch main.cpp
 
-include bi/$(DEPDIR)/PACKAGE_TARNAME.Plo
+include bi/$(DEPDIR)/PACKAGE_TARNAME.pch.Plo
