@@ -67,7 +67,7 @@ typedef union {
   ParseTOKENTYPE yy0;
 } YYMINORTYPE;
 #ifndef YYSTACKDEPTH
-#define YYSTACKDEPTH 100
+#define YYSTACKDEPTH 0
 #endif
 #define ParseARG_SDECL  ParserState* state ;
 #define ParseARG_PDECL , ParserState* state 
@@ -697,24 +697,24 @@ static void yy_reduce(
   **     break;
   */
       case 2: /* left_brace ::= LEFT_BRACE */
-#line 11 "libubjpp/common/Parser.y"
+#line 13 "libubjpp/common/Parser.y"
 { object(state); }
 #line 703 "libubjpp/common/Parser.c"
         break;
       case 5: /* members ::= key COLON value */
       case 6: /* members ::= members COMMA key COLON value */ yytestcase(yyruleno==6);
-#line 16 "libubjpp/common/Parser.y"
+#line 18 "libubjpp/common/Parser.y"
 { member(state); }
 #line 709 "libubjpp/common/Parser.c"
         break;
       case 7: /* left_bracket ::= LEFT_BRACKET */
-#line 19 "libubjpp/common/Parser.y"
+#line 21 "libubjpp/common/Parser.y"
 { array(state); }
 #line 714 "libubjpp/common/Parser.c"
         break;
       case 10: /* elements ::= value */
       case 11: /* elements ::= elements COMMA value */ yytestcase(yyruleno==11);
-#line 24 "libubjpp/common/Parser.y"
+#line 26 "libubjpp/common/Parser.y"
 { element(state); }
 #line 720 "libubjpp/common/Parser.c"
         break;
@@ -730,7 +730,7 @@ static void yy_reduce(
       case 23: /* value ::= BOOL */ yytestcase(yyruleno==23);
       case 24: /* value ::= NIL */ yytestcase(yyruleno==24);
       case 25: /* value ::= NO_OP */ yytestcase(yyruleno==25);
-#line 27 "libubjpp/common/Parser.y"
+#line 29 "libubjpp/common/Parser.y"
 { push(state); }
 #line 736 "libubjpp/common/Parser.c"
         break;
@@ -802,7 +802,7 @@ static void yy_syntax_error(
 ){
   ParseARG_FETCH;
 #define TOKEN (yyminor.yy0)
-#line 6 "libubjpp/common/Parser.y"
+#line 8 "libubjpp/common/Parser.y"
  error(state); 
 #line 808 "libubjpp/common/Parser.c"
   ParseARG_STORE; /* Suppress warning about unused %extra_argument variable */

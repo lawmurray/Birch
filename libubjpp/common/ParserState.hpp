@@ -35,6 +35,11 @@ struct ParserState {
   bool failed;
 
   /**
+   * Line number.
+   */
+  int line;
+
+  /**
    * Last token value.
    */
   libubjpp::value value;

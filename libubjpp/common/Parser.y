@@ -2,6 +2,8 @@
   #include <libubjpp/common/ParserState.h>
   #include <assert.h>
 }
+
+%stack_size 0
 %extra_argument { ParserState* state }
 %syntax_error   { error(state); }
 

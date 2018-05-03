@@ -143,8 +143,16 @@ int libubjpp::JSONTokenizer::next(ParserState* state) {
         token = COLON;
         break;
       case ' ':
+        token = 0;
+        break;
       case '\t':
+        token = 0;
+        break;
+      case '\r':
+        token = 0;
+        break;
       case '\n':
+        ++state->line;
         token = 0;
         break;
       default:

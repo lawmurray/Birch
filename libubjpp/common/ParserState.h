@@ -5,6 +5,10 @@
  */
 #pragma once
 
+#include <stdlib.h>
+// ^ removes warning about implicit declaration of realloc() and free() when
+//   %stack_size 0 used in Parser.y
+
 typedef struct ParserState ParserState;
 
 void push(ParserState* s);
