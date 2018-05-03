@@ -29,6 +29,7 @@
       "bi/test/test_gamma_poisson.bi",
       "bi/test/test_gaussian_gaussian.bi",
       "bi/test/test_inverse_gamma_gaussian.bi",
+      "bi/test/test_linear_discrete_delta.bi",
       "bi/test/test_linear_gaussian_gaussian.bi",
       "bi/test/test_linear_gaussian_log_gaussian.bi",
       "bi/test/test_linear_normal_inverse_gamma_gaussian.bi",

@@ -7,6 +7,7 @@ program test() {
   run_test("dirichlet_categorical");
   run_test("dirichlet_multinomial");
   run_test("gamma_poisson");
+  run_test("linear_discrete_delta");
   run_test("gaussian_gaussian");
   run_test("linear_gaussian_gaussian");
   run_test("inverse_gamma_gaussian");
