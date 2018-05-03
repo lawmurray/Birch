@@ -18,7 +18,7 @@ bi::AssignmentException::AssignmentException(const Assign* o) {
     buf << o->loc;
   }
   buf << "note: in\n";
-  buf << o;
+  buf << o << '\n';
 
   if (o->left->loc) {
     buf << o->left->loc;
