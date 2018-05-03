@@ -30,13 +30,15 @@ program test() {
  * - test: Name of the test.
  */
 function run_test(test:String) {
+  tic();
   ret:Integer <- system("birch test_" + test);
+  s:Real <- toc();
   if (ret == 0) {
     stdout.print("PASS");
   } else {
     stdout.print("FAIL");
   }
-  stdout.print("    ");
+  stdout.print("\t" + s + "s\t");
   stdout.print(test);
   stdout.print("\n");
 }
