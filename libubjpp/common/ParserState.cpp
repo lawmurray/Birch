@@ -3,7 +3,7 @@
  */
 #include "libubjpp/common/ParserState.hpp"
 
-ParserState::ParserState() : failed(false) {
+ParserState::ParserState() : failed(false), line(1) {
   //
 }
 
@@ -57,6 +57,7 @@ void ParserState::element() {
 }
 
 void ParserState::error() {
+  std::cerr << "warning: syntax error in JSON file line " << line << std::endl;
   failed = true;
 }
 
