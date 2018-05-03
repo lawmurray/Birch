@@ -8,20 +8,20 @@ program test() {
   run_test("dirichlet_multinomial");
   run_test("gamma_poisson");
   run_test("gaussian_gaussian");
-  run_test("affine_gaussian_gaussian");
+  run_test("linear_gaussian_gaussian");
   run_test("inverse_gamma_gaussian");
   run_test("normal_inverse_gamma_gaussian");
-  run_test("affine_normal_inverse_gamma_gaussian");
+  run_test("linear_normal_inverse_gamma_gaussian");
   run_test("gaussian_log_gaussian");
-  run_test("affine_gaussian_log_gaussian");
+  run_test("linear_gaussian_log_gaussian");
   run_test("inverse_gamma_log_gaussian");
   run_test("normal_inverse_gamma_log_gaussian");
-  run_test("affine_normal_inverse_gamma_log_gaussian");
+  run_test("linear_normal_inverse_gamma_log_gaussian");
   run_test("multivariate_gaussian_gaussian");
-  run_test("multivariate_affine_gaussian_gaussian");
+  run_test("multivariate_linear_gaussian_gaussian");
   run_test("multivariate_inverse_gamma_gaussian");
   run_test("multivariate_normal_inverse_gamma_gaussian");
-  run_test("multivariate_affine_normal_inverse_gamma_gaussian");
+  run_test("multivariate_linear_normal_inverse_gamma_gaussian");
 }
 
 /**

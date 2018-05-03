@@ -1,7 +1,7 @@
 /**
- * Test multivariate affine normal-inverse-gamma-Gaussian conjugacy.
+ * Test multivariate linear normal-inverse-gamma-Gaussian conjugacy.
  */
-program test_multivariate_affine_normal_inverse_gamma_gaussian(N:Integer <- 10000) {
+program test_multivariate_linear_normal_inverse_gamma_gaussian(N:Integer <- 10000) {
   X1:Real[N,11];
   X2:Real[N,11];
   
@@ -24,14 +24,14 @@ program test_multivariate_affine_normal_inverse_gamma_gaussian(N:Integer <- 1000
  
   /* simulate forward */
   for i:Integer in 1..N {
-    m:TestMultiariateAffineNormalInverseGammaGaussian(A, μ, Σ, c, α, β);
+    m:TestMultiariateLinearNormalInverseGammaGaussian(A, μ, Σ, c, α, β);
     m.initialize();
     X1[i,1..11] <- m.forward();
   }
 
   /* simulate backward */
   for i:Integer in 1..N {
-    m:TestMultiariateAffineNormalInverseGammaGaussian(A, μ, Σ, c, α, β);
+    m:TestMultiariateLinearNormalInverseGammaGaussian(A, μ, Σ, c, α, β);
     m.initialize();
     X2[i,1..11] <- m.backward();
   }
@@ -42,7 +42,7 @@ program test_multivariate_affine_normal_inverse_gamma_gaussian(N:Integer <- 1000
   }
 }
 
-class TestMultiariateAffineNormalInverseGammaGaussian(A:Real[_,_],
+class TestMultiariateLinearNormalInverseGammaGaussian(A:Real[_,_],
     μ_0:Real[_], Σ:Real[_,_], c:Real[_], α:Real, β:Real) {
   A:Real[_,_] <- A;
   μ_0:Real[_] <- μ_0;

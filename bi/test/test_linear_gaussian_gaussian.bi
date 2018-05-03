@@ -1,7 +1,7 @@
 /**
- * Test affine Gaussian-Gaussian conjugacy.
+ * Test linear Gaussian-Gaussian conjugacy.
  */
-program test_affine_gaussian_log_gaussian(N:Integer <- 10000) {
+program test_linear_gaussian_gaussian(N:Integer <- 10000) {
   X1:Real[N,2];
   X2:Real[N,2];
   a:Real <- simulate_uniform(-10.0, 10.0);
@@ -12,14 +12,14 @@ program test_affine_gaussian_log_gaussian(N:Integer <- 10000) {
  
   /* simulate forward */
   for i:Integer in 1..N {
-    m:TestAffineGaussianLogGaussian(a, μ_0, σ2_0, c, σ2_1);
+    m:TestLinearGaussianGaussian(a, μ_0, σ2_0, c, σ2_1);
     m.initialize();
     X1[i,1..2] <- m.forward();
   }
 
   /* simulate backward */
   for i:Integer in 1..N {
-    m:TestAffineGaussianLogGaussian(a, μ_0, σ2_0, c, σ2_1);
+    m:TestLinearGaussianGaussian(a, μ_0, σ2_0, c, σ2_1);
     m.initialize();
     X2[i,1..2] <- m.backward();
   }
@@ -30,7 +30,7 @@ program test_affine_gaussian_log_gaussian(N:Integer <- 10000) {
   }
 }
 
-class TestAffineGaussianLogGaussian(a:Real, μ_0:Real, σ2_0:Real, c:Real, σ2_1:Real) {
+class TestLinearGaussianGaussian(a:Real, μ_0:Real, σ2_0:Real, c:Real, σ2_1:Real) {
   a:Real <- a;
   μ_0:Real <- μ_0;
   σ2_0:Real <- σ2_0;
@@ -42,7 +42,7 @@ class TestAffineGaussianLogGaussian(a:Real, μ_0:Real, σ2_0:Real, c:Real, σ2_1
   
   function initialize() {
     μ_1 ~ Gaussian(μ_0, σ2_0);
-    x ~ LogGaussian(a*μ_1 + c, σ2_1);
+    x ~ Gaussian(a*μ_1 + c, σ2_1);
   }
   
   function forward() -> Real[_] {

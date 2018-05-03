@@ -1,7 +1,7 @@
 /**
- * Test affine inverse-gamma-Gaussian conjugacy.
+ * Test linear inverse-gamma-Gaussian conjugacy.
  */
-program test_affine_normal_inverse_gamma_log_gaussian(N:Integer <- 10000) {
+program test_linear_normal_inverse_gamma_log_gaussian(N:Integer <- 10000) {
   X1:Real[N,3];
   X2:Real[N,3];
   
@@ -14,14 +14,14 @@ program test_affine_normal_inverse_gamma_log_gaussian(N:Integer <- 10000) {
  
   /* simulate forward */
   for i:Integer in 1..N {
-    m:TestAffineNormalInverseGammaLogGaussian(a, μ, a2, c, α, β);
+    m:TestLinearNormalInverseGammaLogGaussian(a, μ, a2, c, α, β);
     m.initialize();
     X1[i,1..3] <- m.forward();
   }
 
   /* simulate backward */
   for i:Integer in 1..N {
-    m:TestAffineNormalInverseGammaLogGaussian(a, μ, a2, c, α, β);
+    m:TestLinearNormalInverseGammaLogGaussian(a, μ, a2, c, α, β);
     m.initialize();
     X2[i,1..3] <- m.backward();
   }
@@ -32,7 +32,7 @@ program test_affine_normal_inverse_gamma_log_gaussian(N:Integer <- 10000) {
   }
 }
 
-class TestAffineNormalInverseGammaLogGaussian(a:Real, μ_0:Real, a2:Real, c:Real,
+class TestLinearNormalInverseGammaLogGaussian(a:Real, μ_0:Real, a2:Real, c:Real,
     α:Real, β:Real) {
   a:Real <- a;
   μ_0:Real <- μ_0;

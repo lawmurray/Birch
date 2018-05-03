@@ -1,7 +1,7 @@
 /**
- * Test multivariate affine Gaussian-Gaussian conjugacy.
+ * Test multivariate linear Gaussian-Gaussian conjugacy.
  */
-program test_multivariate_affine_gaussian_gaussian(N:Integer <- 10000) {
+program test_multivariate_linear_gaussian_gaussian(N:Integer <- 10000) {
   X1:Real[N,10];
   X2:Real[N,10];
   
@@ -25,14 +25,14 @@ program test_multivariate_affine_gaussian_gaussian(N:Integer <- 10000) {
  
   /* simulate forward */
   for i:Integer in 1..N {
-    m:TestMultivariateAffineGaussianGaussian(A, μ_0, Σ_0, c, Σ_1);
+    m:TestMultivariateLinearGaussianGaussian(A, μ_0, Σ_0, c, Σ_1);
     m.initialize();
     X1[i,1..10] <- m.forward();
   }
 
   /* simulate backward */
   for i:Integer in 1..N {
-    m:TestMultivariateAffineGaussianGaussian(A, μ_0, Σ_0, c, Σ_1);
+    m:TestMultivariateLinearGaussianGaussian(A, μ_0, Σ_0, c, Σ_1);
     m.initialize();
     X2[i,1..10] <- m.backward();
   }
@@ -43,7 +43,7 @@ program test_multivariate_affine_gaussian_gaussian(N:Integer <- 10000) {
   }
 }
 
-class TestMultivariateAffineGaussianGaussian(A:Real[_,_], μ_0:Real[_],
+class TestMultivariateLinearGaussianGaussian(A:Real[_,_], μ_0:Real[_],
     Σ_0:Real[_,_], c:Real[_], Σ_1:Real[_,_]) {
   A:Real[_,_] <- A;
   μ_0:Real[_] <- μ_0;
