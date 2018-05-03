@@ -12,12 +12,20 @@ class InverseGamma(α:Expression<Real>, β:Expression<Real>) < Random<Real> {
    */
   β:Expression<Real> <- β;
 
-  function doGraft() -> DelayValue<Real>? {
-    return DelayInverseGamma(this, α.value(), β.value());
+  function graft() -> Delay? {
+    if (delay?) {
+      return delay;
+    } else {
+      return DelayInverseGamma(this, α, β);
+    }
   }
 
-  function doGraftInverseGamma() -> DelayInverseGamma? {
-    return DelayInverseGamma(this, α.value(), β.value());
+  function graftInverseGamma() -> DelayInverseGamma? {
+    if (delay?) {
+      return DelayInverseGamma?(delay);
+    } else {
+      return DelayInverseGamma(this, α, β);
+    }
   }
 }
 

@@ -7,12 +7,20 @@ class Dirichlet(α:Expression<Real[_]>) < Random<Real[_]> {
    */
   α:Expression<Real[_]> <- α;
 
-  function doGraft() -> DelayValue<Real[_]>? {
-    return DelayDirichlet(this, α);
+  function graft() -> Delay? {
+    if (delay?) {
+      return delay;
+    } else {
+      return DelayDirichlet(this, α);
+    }
   }
 
-  function doGraftDirichlet() -> DelayDirichlet? {
-    return DelayDirichlet(this, α);
+  function graftDirichlet() -> DelayDirichlet? {
+    if (delay?) {
+      return DelayDirichlet?(delay);
+    } else {
+      return DelayDirichlet(this, α);
+    }
   }
 }
 

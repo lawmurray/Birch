@@ -12,12 +12,16 @@ class Multinomial(n:Expression<Integer>, ρ:Expression<Real[_]>) < Random<Intege
    */
   ρ:Expression<Real[_]> <- ρ;
 
-  function doGraft() -> DelayValue<Integer[_]>? {
-    m:DelayDirichlet?;
-    if (m <- ρ.graftDirichlet())? {
-      return DelayDirichletMultinomial(this, n, m!);
+  function graft() -> Delay? {
+    if (delay?) {
+      return delay;
     } else {
-      return DelayMultinomial(this, n, ρ.value());
+      m:DelayDirichlet?;
+      if (m <- ρ.graftDirichlet())? {
+        return DelayDirichletMultinomial(this, n, m!);
+      } else {
+        return DelayMultinomial(this, n, ρ);
+      }
     }
   }
 }

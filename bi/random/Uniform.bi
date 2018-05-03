@@ -12,8 +12,12 @@ class Uniform(l:Expression<Real>, u:Expression<Real>) < Random<Real> {
    */
   u:Expression<Real> <- u;
 
-  function doGraft() -> DelayValue<Real>? {
-    return DelayUniform(this, l, u);
+  function graft() -> Delay? {
+    if (delay?) {
+      return delay;
+    } else {
+      return DelayUniform(this, l, u);
+    }
   }
 }
 

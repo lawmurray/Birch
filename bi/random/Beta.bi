@@ -12,12 +12,20 @@ class Beta(α:Expression<Real>, β:Expression<Real>) < Random<Real> {
    */
   β:Expression<Real> <- β;
 
-  function doGraft() -> DelayValue<Real>? {
-    return DelayBeta(this, α.value(), β.value());
+  function graft() -> Delay? {
+    if (delay?) {
+      return delay;
+    } else {
+      return DelayBeta(this, α, β);
+    }
   }
 
-  function doGraftBeta() -> DelayBeta? {
-    return DelayBeta(this, α.value(), β.value());
+  function graftBeta() -> DelayBeta? {
+    if (delay?) {
+      return DelayBeta?(delay);
+    } else {
+      return DelayBeta(this, α, β);
+    }
   }
 }
 

@@ -7,15 +7,19 @@ class Categorical(ρ:Expression<Real[_]>) < Random<Integer> {
    */
   ρ:Expression<Real[_]> <- ρ;
 
-  function doGraft() -> DelayValue<Integer>? {
-    m1:DelayDirichlet?;
-    m2:DelayRestaurant?;
-    if (m1 <- ρ.graftDirichlet())? {
-      return DelayDirichletCategorical(this, m1!);
-    } else if (m2 <- ρ.graftRestaurant())? {
-      return DelayRestaurantCategorical(this, m2!);
+  function graft() -> Delay? {
+    if (delay?) {
+      return delay;
     } else {
-      return DelayCategorical(this, ρ.value());
+      m1:DelayDirichlet?;
+      m2:DelayRestaurant?;
+      if (m1 <- ρ.graftDirichlet())? {
+        return DelayDirichletCategorical(this, m1!);
+      } else if (m2 <- ρ.graftRestaurant())? {
+        return DelayRestaurantCategorical(this, m2!);
+      } else {
+        return DelayCategorical(this, ρ);
+      }
     }
   }
 }

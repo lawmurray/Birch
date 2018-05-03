@@ -7,12 +7,16 @@ class Bernoulli(ρ:Expression<Real>) < Random<Boolean> {
    */
   ρ:Expression<Real> <- ρ;
 
-  function doGraft() -> DelayValue<Boolean>? {
-    m:DelayBeta?;
-    if (m <- ρ.graftBeta())? {
-      return DelayBetaBernoulli(this, m!);
+  function graft() -> Delay? {
+    if (delay?) {
+      return delay;
     } else {
-      return DelayBernoulli(this, ρ.value());
+      m:DelayBeta?;
+      if (m <- ρ.graftBeta())? {
+        return DelayBetaBernoulli(this, m!);
+      } else {
+        return DelayBernoulli(this, ρ);
+      }
     }
   }
 }

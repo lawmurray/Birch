@@ -18,7 +18,7 @@ class Random<Value> < Expression<Value> {
   /**
    * Associated node in delayed sampling $M$-path.
    */
-  delay:DelayValue<Value>?;
+  delay:Delay?;
 
   /**
    * Value assignment.
@@ -81,147 +81,17 @@ class Random<Value> < Expression<Value> {
    * Realize a value for this random variable.
    */
   function realize() {
-    graft();
+    delay <- graft();
     if (delay?) {
       delay!.realize();
       delay <- nil;
     }
   }
-
+  
   /**
-   * Graft this random variate onto the delayed sampling graph.
+   * Graft this random variable onto the delayed sampling $M$-path.
+   *
+   * Return: Parent on the $M$-path.
    */
-  function graft() {
-    if (!delay?) {
-      delay <- doGraft();
-    }
-  }
-
-  function graftGaussian() -> DelayGaussian? {
-    if (delay?) {
-      return delay!.graftGaussian();
-    } else {
-      return doGraftGaussian();
-    }
-  }
-
-  function graftBeta() -> DelayBeta? {
-    if (delay?) {
-      return delay!.graftBeta();
-    } else {
-      return doGraftBeta();
-    }
-  }
-
-  function graftGamma() -> DelayGamma? {
-    if (delay?) {
-      return delay!.graftGamma();
-    } else {
-      return doGraftGamma();
-    }
-  }
-
-  function graftInverseGamma() -> DelayInverseGamma? {
-    if (delay?) {
-      return delay!.graftInverseGamma();
-    } else {
-      return doGraftInverseGamma();
-    }
-  } 
-
-  function graftNormalInverseGamma(σ2:Expression<Real>) ->
-      DelayNormalInverseGamma? {
-    if (delay?) {
-      return delay!.graftNormalInverseGamma(σ2);
-    } else {
-      return doGraftNormalInverseGamma(σ2);
-    }
-  }
-
-  function graftDirichlet() -> DelayDirichlet? {
-    if (delay?) {
-      return delay!.graftDirichlet();
-    } else {
-      return doGraftDirichlet();
-    }
-  }
-
-  function graftRestaurant() -> DelayRestaurant? {
-    if (delay?) {
-      return delay!.graftRestaurant();
-    } else {
-      return doGraftRestaurant();
-    }
-  }
-
-  function graftMultivariateGaussian() -> DelayMultivariateGaussian? {
-    if (delay?) {
-      return delay!.graftMultivariateGaussian();
-    } else {
-      return doGraftMultivariateGaussian();
-    }
-  }
-
-  function graftMultivariateNormalInverseGamma(σ2:Expression<Real>) ->
-      DelayMultivariateNormalInverseGamma? {
-    if (delay?) {
-      return delay!.graftMultivariateNormalInverseGamma(σ2);
-    } else {
-      return doGraftMultivariateNormalInverseGamma(σ2);
-    }
-  }
-
-  function graftBinomial() -> DelayBinomial? {
-    if (delay?) {
-      return delay!.graftBinomial();
-    } else {
-      return doGraftBinomial();
-    }
-  }
-
-  function doGraft() -> DelayValue<Value>? {
-    return nil;
-  }
-
-  function doGraftGaussian() -> DelayGaussian? {
-    return nil;
-  }
-
-  function doGraftBeta() -> DelayBeta? {
-    return nil;
-  }
-
-  function doGraftGamma() -> DelayGamma? {
-    return nil;
-  }
-
-  function doGraftInverseGamma() -> DelayInverseGamma? {
-    return nil;
-  } 
-
-  function doGraftNormalInverseGamma(σ2:Expression<Real>) ->
-      DelayNormalInverseGamma? {
-    return nil;
-  }
-
-  function doGraftDirichlet() -> DelayDirichlet? {
-    return nil;
-  }
-
-  function doGraftRestaurant() -> DelayRestaurant? {
-    return nil;
-  }
-
-  function doGraftMultivariateGaussian() -> DelayMultivariateGaussian? {
-    return nil;
-  }
-
-  function doGraftMultivariateNormalInverseGamma(σ2:Expression<Real>) ->
-      DelayMultivariateNormalInverseGamma? {
-    return nil;
-  }
-
-  function doGraftBinomial() -> DelayBinomial? {
-    return nil;
-  }
+  function graft() -> Delay?;
 }

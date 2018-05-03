@@ -13,8 +13,12 @@ class UniformInteger(l:Expression<Integer>, u:Expression<Integer>) <
    */
   u:Expression<Integer> <- u;
 
-  function doGraft() -> DelayValue<Integer>? {
-    return DelayUniformInteger(this, l, u);
+  function graft() -> Delay? {
+    if (delay?) {
+      return delay;
+    } else {
+      return DelayUniformInteger(this, l, u);
+    }
   }
 }
 

@@ -12,12 +12,20 @@ class Restaurant(α:Expression<Real>, θ:Expression<Real>) < Random<Real[_]> {
    */
   θ:Expression<Real> <- θ;
 
-  function doGraft() -> DelayValue<Real[_]>? {
-    return DelayRestaurant(this, α, θ);
+  function graft() -> Delay? {
+    if (delay?) {
+      return delay;
+    } else {
+      return DelayRestaurant(this, α, θ);
+    }
   }
 
-  function doGraftRestaurant() -> DelayRestaurant? {
-    return DelayRestaurant(this, α, θ);
+  function graftRestaurant() -> DelayRestaurant? {
+    if (delay?) {
+      return DelayRestaurant?(graftRestaurant());
+    } else {
+      return DelayRestaurant(this, α, θ);
+    }
   }
 }
 
