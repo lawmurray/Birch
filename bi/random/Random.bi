@@ -93,5 +93,7 @@ class Random<Value> < Expression<Value> {
    *
    * Return: Parent on the $M$-path.
    */
-  function graft() -> Delay?;
+  function graft() -> Delay? {
+    return nil;
+  }
 }
