@@ -199,7 +199,7 @@ class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftLinearBinomial() -> TransformLinearBinomial? {
+  function graftLinearDiscrete() -> TransformLinearDiscrete? {
     return nil;
   }
 }

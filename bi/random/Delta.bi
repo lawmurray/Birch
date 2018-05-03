@@ -13,12 +13,12 @@ class Delta(μ:Expression<Integer>) < Random<Integer> {
       return delay;
     } else {
       m1:DelayBinomial?;
-      m2:TransformLinearBinomial?;
+      m2:TransformLinearDiscrete?;
     
       if (m1 <- μ.graftBinomial())? {
         return DelayBinomialDelta(this, m1!);
-      } else if (m2 <- μ.graftLinearBinomial())? {
-        return DelayLinearBinomialDelta(this, m2!.a, m2!.x, m2!.c);
+      } else if (m2 <- μ.graftLinearDiscrete())? {
+        return DelayLinearDiscreteDelta(this, m2!.a, m2!.x, m2!.c);
       } else {
         return DelayDelta(this, μ);
       }

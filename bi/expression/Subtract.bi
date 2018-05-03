@@ -50,18 +50,18 @@ class Subtract<Left,Right,Value>(left:Expression<Left>,
     return y;
   }
 
-  function graftLinearBinomial() -> TransformLinearBinomial? {
-    y:TransformLinearBinomial?;
+  function graftLinearDiscrete() -> TransformLinearDiscrete? {
+    y:TransformLinearDiscrete?;
     z:DelayBinomial?;
     
-    if (y <- left.graftLinearBinomial())? {
+    if (y <- left.graftLinearDiscrete())? {
       y!.subtract(Integer(right.value()));
-    } else if (y <- right.graftLinearBinomial())? {
+    } else if (y <- right.graftLinearDiscrete())? {
       y!.negateAndAdd(Integer(left.value()));
     } else if (z <- left.graftBinomial())? {
-      y <- TransformLinearBinomial(1, z!, -Integer(right.value()));
+      y <- TransformLinearDiscrete(1, z!, -Integer(right.value()));
     } else if (z <- right.graftBinomial())? {
-      y <- TransformLinearBinomial(-1, z!, Integer(left.value()));
+      y <- TransformLinearDiscrete(-1, z!, Integer(left.value()));
     }
     return y;
   }
