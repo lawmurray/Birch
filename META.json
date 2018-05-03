@@ -150,6 +150,7 @@
       "bi/random/UniformInteger.bi",
       "bi/system/filesystem.bi",
       "bi/system/system.bi",
+      "bi/chrono.bi",
       "bi/main.bi",
       "bi/sample.bi"
     ],
