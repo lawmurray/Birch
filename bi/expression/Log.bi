@@ -1,5 +1,5 @@
 /**
- * Delayed logarithm.
+ * Lazy `log`.
  */
 class Log<Value>(x:Expression<Value>) < Expression<Value> {  
   /**

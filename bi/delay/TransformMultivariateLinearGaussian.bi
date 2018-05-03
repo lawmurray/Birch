@@ -3,7 +3,7 @@
  */
 class TransformMultivariateLinearGaussian(A:Real[_,_],
     x:DelayMultivariateGaussian, c:Real[_]) <
-    TransformMultivariateLinear(A, c) {
+    TransformMultivariateLinear<Real>(A, c) {
   /**
    * Random variate.
    */

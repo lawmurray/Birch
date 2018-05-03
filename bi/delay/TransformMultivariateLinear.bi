@@ -1,24 +1,36 @@
-class TransformMultivariateLinear(A:Real[_,_], c:Real[_]) {
+/*
+ * Linear transformation of a variate.
+ */
+class TransformMultivariateLinear<Value>(A:Value[_,_], c:Value[_]) {
   /**
    * Scale.
    */
-  A:Real[_,_] <- A;
+  A:Value[_,_] <- A;
 
   /**
    * Offset.
    */
-  c:Real[_] <- c;
+  c:Value[_] <- c;
   
   function size() -> Integer {
     return length(c);
   }
   
-  function leftMultiply(X:Real[_,_]) {
+  function leftMultiply(X:Value[_,_]) {
     A <- X*A;
     c <- X*c;
   }
 
-  function add(x:Real[_]) {
+  function add(x:Value[_]) {
     c <- c + x;
+  }
+
+  function subtract(x:Value[_]) {
+    c <- c - x;
+  }
+  
+  function negateAndAdd(x:Value[_]) {
+    A <- -A;
+    c <- x - c;
   }
 }

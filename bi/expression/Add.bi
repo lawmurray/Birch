@@ -1,5 +1,5 @@
 /**
- * Delayed addition.
+ * Lazy addition.
  */
 class Add<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>) <
     Expression<Value> {  
@@ -50,18 +50,18 @@ class Add<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>) <
     return y;
   }
 
-  function graftOffsetBinomial() -> TransformOffsetBinomial? {
-    y:TransformOffsetBinomial?;
+  function graftLinearBinomial() -> TransformLinearBinomial? {
+    y:TransformLinearBinomial?;
     z:DelayBinomial?;
     
-    if (y <- left.graftOffsetBinomial())? {
+    if (y <- left.graftLinearBinomial())? {
       y!.add(Integer(right.value()));
-    } else if (y <- right.graftOffsetBinomial())? {
+    } else if (y <- right.graftLinearBinomial())? {
       y!.add(Integer(left.value()));
     } else if (z <- left.graftBinomial())? {
-      y <- TransformOffsetBinomial(z!, Integer(right.value()));
+      y <- TransformLinearBinomial(1, z!, Integer(right.value()));
     } else if (z <- right.graftBinomial())? {
-      y <- TransformOffsetBinomial(z!, Integer(left.value()));
+      y <- TransformLinearBinomial(1, z!, Integer(left.value()));
     }
     return y;
   }

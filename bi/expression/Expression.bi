@@ -1,5 +1,5 @@
 /**
- * Lazily-evaluated expression.
+ * Lazy expression.
  *
  * - Value: Value type.
  */
@@ -199,7 +199,7 @@ class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftOffsetBinomial() -> TransformOffsetBinomial? {
+  function graftLinearBinomial() -> TransformLinearBinomial? {
     return nil;
   }
 }

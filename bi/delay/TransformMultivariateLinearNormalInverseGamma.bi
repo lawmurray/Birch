@@ -3,7 +3,7 @@
  */
 class TransformMultivariateLinearNormalInverseGamma(A:Real[_,_],
     x:DelayMultivariateNormalInverseGamma, c:Real[_]) <
-    TransformMultivariateLinear(A, c) {
+    TransformMultivariateLinear<Real>(A, c) {
   /**
    * Random variate.
    */

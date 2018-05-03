@@ -2,7 +2,7 @@
  * Linear transformation of a normal-inverse-gamma variate.
  */
 class TransformLinearNormalInverseGamma(a:Real, x:DelayNormalInverseGamma,
-    c:Real) < TransformLinear(a, c) {
+    c:Real) < TransformLinear<Real>(a, c) {
   /**
    * Random variate.
    */

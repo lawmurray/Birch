@@ -1,5 +1,5 @@
 /*
- *
+ * Scaling of an inverse-gamma variate.
  */
 class TransformScaledInverseGamma(a2:Real, σ2:DelayInverseGamma) {
   /**
