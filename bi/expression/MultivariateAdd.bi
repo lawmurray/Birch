@@ -17,39 +17,39 @@ class MultivariateAdd<Left,Right,Value>(left:Expression<Left>,
     return left.value() + right.value();
   }
 
-  function graftMultivariateAffineGaussian() ->
-      TransformMultivariateAffineGaussian? {
-    y:TransformMultivariateAffineGaussian?;
+  function graftMultivariateLinearGaussian() ->
+      TransformMultivariateLinearGaussian? {
+    y:TransformMultivariateLinearGaussian?;
     z:DelayMultivariateGaussian?;
 
-    if (y <- left.graftMultivariateAffineGaussian())? {
+    if (y <- left.graftMultivariateLinearGaussian())? {
       y!.add(right.value());
-    } else if (y <- right.graftMultivariateAffineGaussian())? {
+    } else if (y <- right.graftMultivariateLinearGaussian())? {
       y!.add(left.value());
     } else if (z <- left.graftMultivariateGaussian())? {
-      y <- TransformMultivariateAffineGaussian(identity(z!.size()), z!,
+      y <- TransformMultivariateLinearGaussian(identity(z!.size()), z!,
           right.value());
     } else if (z <- right.graftMultivariateGaussian())? {
-      y <- TransformMultivariateAffineGaussian(identity(z!.size()), z!,
+      y <- TransformMultivariateLinearGaussian(identity(z!.size()), z!,
           left.value());
     }
     return y;
   }
   
-  function getMultivariateAffineNormalInverseGamma(σ2:Expression<Real>) ->
-      TransformMultivariateAffineNormalInverseGamma? {
-    y:TransformMultivariateAffineNormalInverseGamma?;
+  function getMultivariateLinearNormalInverseGamma(σ2:Expression<Real>) ->
+      TransformMultivariateLinearNormalInverseGamma? {
+    y:TransformMultivariateLinearNormalInverseGamma?;
     z:DelayMultivariateNormalInverseGamma?;
 
-    if (y <- left.graftMultivariateAffineNormalInverseGamma(σ2))? {
+    if (y <- left.graftMultivariateLinearNormalInverseGamma(σ2))? {
       y!.add(right.value());
-    } else if (y <- right.graftMultivariateAffineNormalInverseGamma(σ2))? {
+    } else if (y <- right.graftMultivariateLinearNormalInverseGamma(σ2))? {
       y!.add(left.value());
     } else if (z <- left.graftMultivariateNormalInverseGamma(σ2))? {
-      y <- TransformMultivariateAffineNormalInverseGamma(identity(z!.size()),
+      y <- TransformMultivariateLinearNormalInverseGamma(identity(z!.size()),
           z!, right.value());
     } else if (z <- right.graftMultivariateNormalInverseGamma(σ2))? {
-      y <- TransformMultivariateAffineNormalInverseGamma(identity(z!.size()),
+      y <- TransformMultivariateLinearNormalInverseGamma(identity(z!.size()),
           z!, left.value());
     }
     return y;

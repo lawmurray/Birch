@@ -16,29 +16,29 @@ class MultivariateMultiply<Left,Right,Value>(left:Expression<Left>, right:Expres
     return left.value()*right.value();
   }
 
-  function graftAffineMultivariateGaussian() ->
-      TransformMultivariateAffineGaussian? {
-    y:TransformMultivariateAffineGaussian?;
+  function graftLinearMultivariateGaussian() ->
+      TransformMultivariateLinearGaussian? {
+    y:TransformMultivariateLinearGaussian?;
     z:DelayMultivariateGaussian?;
     
-    if (y <- right.graftMultivariateAffineGaussian())? {
+    if (y <- right.graftMultivariateLinearGaussian())? {
       y!.leftMultiply(left.value());
     } else if (z <- right.graftMultivariateGaussian())? {
-      y <- TransformMultivariateAffineGaussian(left.value(), z!,
+      y <- TransformMultivariateLinearGaussian(left.value(), z!,
           vector(0.0, z!.size()));
     }
     return y;
   }
   
-  function getMultivariateAffineNormalInverseGamma(σ2:Expression<Real>) ->
-      TransformMultivariateAffineNormalInverseGamma? {
-    y:TransformMultivariateAffineNormalInverseGamma?;
+  function getMultivariateLinearNormalInverseGamma(σ2:Expression<Real>) ->
+      TransformMultivariateLinearNormalInverseGamma? {
+    y:TransformMultivariateLinearNormalInverseGamma?;
     z:DelayMultivariateNormalInverseGamma?;
     
-    if (y <- right.graftMultivariateAffineNormalInverseGamma(σ2))? {
+    if (y <- right.graftMultivariateLinearNormalInverseGamma(σ2))? {
       y!.leftMultiply(left.value());
     } else if (z <- right.graftMultivariateNormalInverseGamma(σ2))? {
-      y <- TransformMultivariateAffineNormalInverseGamma(left.value(), z!,
+      y <- TransformMultivariateLinearNormalInverseGamma(left.value(), z!,
           vector(0.0, z!.size()));
     }
     return y;

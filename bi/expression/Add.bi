@@ -17,35 +17,35 @@ class Add<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>) <
     return left.value() + right.value();
   }
 
-  function graftAffineGaussian() -> TransformAffineGaussian? {
-    y:TransformAffineGaussian?;
+  function graftLinearGaussian() -> TransformLinearGaussian? {
+    y:TransformLinearGaussian?;
     z:DelayGaussian?;
     
-    if (y <- left.graftAffineGaussian())? {
+    if (y <- left.graftLinearGaussian())? {
       y!.add(right.value());
-    } else if (y <- right.graftAffineGaussian())? {
+    } else if (y <- right.graftLinearGaussian())? {
       y!.add(left.value());
     } else if (z <- left.graftGaussian())? {
-      y <- TransformAffineGaussian(1.0, z!, right.value());
+      y <- TransformLinearGaussian(1.0, z!, right.value());
     } else if (z <- right.graftGaussian())? {
-      y <- TransformAffineGaussian(1.0, z!, left.value());
+      y <- TransformLinearGaussian(1.0, z!, left.value());
     }
     return y;
   }
   
-  function graftAffineNormalInverseGamma(σ2:Expression<Real>) ->
-      TransformAffineNormalInverseGamma? {
-    y:TransformAffineNormalInverseGamma?;
+  function graftLinearNormalInverseGamma(σ2:Expression<Real>) ->
+      TransformLinearNormalInverseGamma? {
+    y:TransformLinearNormalInverseGamma?;
     z:DelayNormalInverseGamma?;
 
-    if (y <- left.graftAffineNormalInverseGamma(σ2))? {
+    if (y <- left.graftLinearNormalInverseGamma(σ2))? {
       y!.add(right.value());
-    } else if (y <- right.graftAffineNormalInverseGamma(σ2))? {
+    } else if (y <- right.graftLinearNormalInverseGamma(σ2))? {
       y!.add(left.value());
     } else if (z <- left.graftNormalInverseGamma(σ2))? {
-      y <- TransformAffineNormalInverseGamma(1.0, z!, right.value());
+      y <- TransformLinearNormalInverseGamma(1.0, z!, right.value());
     } else if (z <- right.graftNormalInverseGamma(σ2))? {
-      y <- TransformAffineNormalInverseGamma(1.0, z!, left.value());
+      y <- TransformLinearNormalInverseGamma(1.0, z!, left.value());
     }
     return y;
   }

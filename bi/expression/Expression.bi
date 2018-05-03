@@ -39,7 +39,7 @@ class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftAffineGaussian() -> TransformAffineGaussian? {
+  function graftLinearGaussian() -> TransformLinearGaussian? {
     return nil;
   }
   
@@ -104,8 +104,8 @@ class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftAffineNormalInverseGamma(σ2:Expression<Real>) ->
-      TransformAffineNormalInverseGamma? {
+  function graftLinearNormalInverseGamma(σ2:Expression<Real>) ->
+      TransformLinearNormalInverseGamma? {
     return nil;
   }
   
@@ -141,8 +141,8 @@ class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftMultivariateAffineGaussian() ->
-      TransformMultivariateAffineGaussian? {
+  function graftMultivariateLinearGaussian() ->
+      TransformMultivariateLinearGaussian? {
     return nil;
   }
 
@@ -180,8 +180,8 @@ class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftMultivariateAffineNormalInverseGamma(σ2:Expression<Real>) ->
-      TransformMultivariateAffineNormalInverseGamma? {
+  function graftMultivariateLinearNormalInverseGamma(σ2:Expression<Real>) ->
+      TransformMultivariateLinearNormalInverseGamma? {
     return nil;
   }
 

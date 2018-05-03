@@ -416,7 +416,7 @@ function pdf_normal_inverse_gamma_gaussian(x:Real, μ:Real, a2:Real,
 }
 
 /**
- * PDF of a Gaussian variate with a normal inverse-gamma prior with affine
+ * PDF of a Gaussian variate with a normal inverse-gamma prior with linear
  * transformation.
  *
  * - x: The variate.
@@ -429,7 +429,7 @@ function pdf_normal_inverse_gamma_gaussian(x:Real, μ:Real, a2:Real,
  *
  * Returns: the probability density.
  */
-function pdf_affine_normal_inverse_gamma_gaussian(x:Real, a:Real,
+function pdf_linear_normal_inverse_gamma_gaussian(x:Real, a:Real,
     μ:Real, c:Real, a2:Real, α:Real, β:Real) -> Real {
   return pdf_student_t(x, 2.0*α, a*μ + c, (β/α)*(1.0 + a*a*a2));
 }
@@ -544,7 +544,7 @@ function pdf_multivariate_normal_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
 
 /**
  * PDF of a multivariate Gaussian variate with a multivariate normal
- * inverse-gamma prior with affine transformation.
+ * inverse-gamma prior with linear transformation.
  *
  * - x: The variate.
  * - A: Scale.
@@ -556,8 +556,8 @@ function pdf_multivariate_normal_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
  *
  * Returns: the probability density.
  */
-function pdf_multivariate_affine_normal_inverse_gamma_gaussian(x:Real[_],
+function pdf_multivariate_linear_normal_inverse_gamma_gaussian(x:Real[_],
     A:Real[_,_], μ:Real[_], c:Real[_], Λ:Real[_,_], α:Real, β:Real) -> Real {
-  return exp(observe_multivariate_affine_normal_inverse_gamma_gaussian(x, A,
+  return exp(observe_multivariate_linear_normal_inverse_gamma_gaussian(x, A,
       μ, c, Λ, α, β));
 }

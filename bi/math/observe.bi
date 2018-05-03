@@ -521,7 +521,7 @@ function observe_normal_inverse_gamma_gaussian(x:Real, μ:Real, a2:Real,
 }
 
 /**
- * Observe a Gaussian variate with a normal inverse-gamma prior with affine
+ * Observe a Gaussian variate with a normal inverse-gamma prior with linear
  * transformation.
  *
  * - x: The variate.
@@ -534,7 +534,7 @@ function observe_normal_inverse_gamma_gaussian(x:Real, μ:Real, a2:Real,
  *
  * Returns: the log probability density.
  */
-function observe_affine_normal_inverse_gamma_gaussian(x:Real, a:Real,
+function observe_linear_normal_inverse_gamma_gaussian(x:Real, a:Real,
     μ:Real, c:Real, a2:Real, α:Real, β:Real) -> Real {
   return observe_student_t(x, 2.0*α, a*μ + c, (β/α)*(1.0 + a*a*a2));
 }
@@ -656,7 +656,7 @@ function observe_multivariate_normal_inverse_gamma_gaussian(x:Real[_],
 
 /**
  * Observe a multivariate Gaussian variate with a multivariate normal
- * inverse-gamma prior with affine transformation.
+ * inverse-gamma prior with linear transformation.
  *
  * - x: The variate.
  * - A: Scale.
@@ -668,7 +668,7 @@ function observe_multivariate_normal_inverse_gamma_gaussian(x:Real[_],
  *
  * Returns: the log probability density.
  */
-function observe_multivariate_affine_normal_inverse_gamma_gaussian(x:Real[_],
+function observe_multivariate_linear_normal_inverse_gamma_gaussian(x:Real[_],
     A:Real[_,_], μ:Real[_], c:Real[_], Λ:Real[_,_], α:Real, β:Real) -> Real {
   return observe_multivariate_student_t(x, 2.0*α, A*μ + c,
       (α/β)*inv(identity(rows(A)) + A*solve(Λ, trans(A))));

@@ -103,7 +103,7 @@ function update_gaussian_gaussian(x:Real, μ:Real, σ2:Real,
  *
  * Returns: the updated parameters `μ` and `σ2`.
  */
-function update_affine_gaussian_gaussian(x:Real, a:Real, μ:Real,
+function update_linear_gaussian_gaussian(x:Real, a:Real, μ:Real,
     σ2:Real, μ_m:Real, σ2_m:Real) -> (Real, Real) {
   k:Real <- σ2*a/σ2_m;
   return (μ + k*(x - μ_m), σ2 - k*a*σ2);
@@ -179,7 +179,7 @@ function update_normal_inverse_gamma_gaussian(x:Real, μ:Real, a2:Real,
  *
  * Returns: the updated parameters `μ`, `a2`, `α` and `β`.
  */
-function update_affine_normal_inverse_gamma_gaussian(a:Real, x:Real,
+function update_linear_normal_inverse_gamma_gaussian(a:Real, x:Real,
     c:Real, μ:Real, a2:Real, α:Real, β:Real) -> (Real, Real, Real, Real) {
   y:Real <- x - c;
   λ:Real <- 1.0/a2;
@@ -221,7 +221,7 @@ function update_multivariate_gaussian_gaussian(x:Real[_], μ:Real[_],
  *
  * Returns: the updated parameters `μ` and `Σ`.
  */
-function update_multivariate_affine_gaussian_gaussian(x:Real[_], A:Real[_,_],
+function update_multivariate_linear_gaussian_gaussian(x:Real[_], A:Real[_,_],
     μ:Real[_], Σ:Real[_,_], μ_m:Real[_], Σ_m:Real[_,_]) -> (Real[_], Real[_,_]) {
   K:Real[_,_] <- Σ*trans(A)*inv(Σ_m);
   return (μ + K*(x - μ_m), Σ - K*A*Σ);
@@ -301,7 +301,7 @@ function update_multivariate_normal_inverse_gamma_gaussian(x:Real[_],
  *
  * Returns: the updated parameters `μ`, `Σ`, `α` and `β`.
  */
-function update_multivariate_affine_normal_inverse_gamma_gaussian(
+function update_multivariate_linear_normal_inverse_gamma_gaussian(
     x:Real[_], A:Real[_,_], μ:Real[_], c:Real[_], Λ:Real[_,_], α:Real,
     β:Real) -> (Real[_], Real[_,_], Real, Real) {
   D:Integer <- length(μ);

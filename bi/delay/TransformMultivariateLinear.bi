@@ -1,4 +1,4 @@
-class TransformMultivariateAffine(A:Real[_,_], c:Real[_]) {
+class TransformMultivariateLinear(A:Real[_,_], c:Real[_]) {
   /**
    * Scale.
    */

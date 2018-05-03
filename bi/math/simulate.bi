@@ -473,7 +473,7 @@ function simulate_normal_inverse_gamma_gaussian(μ:Real, a2:Real,
  * - α: Shape of the inverse-gamma.
  * - β: Scale of the inverse-gamma.
  */
-function simulate_affine_normal_inverse_gamma_gaussian(a:Real, μ:Real,
+function simulate_linear_normal_inverse_gamma_gaussian(a:Real, μ:Real,
     c:Real, a2:Real, α:Real, β:Real) -> Real {
   return simulate_student_t(2.0*α, a*μ + c, (β/α)*(1.0 + a*a*a2));
 }
@@ -604,7 +604,7 @@ function simulate_multivariate_normal_inverse_gamma_gaussian(μ:Real[_],
  * - α: Shape of the inverse-gamma.
  * - β: Scale of the inverse-gamma.
  */
-function simulate_multivariate_affine_normal_inverse_gamma_gaussian(
+function simulate_multivariate_linear_normal_inverse_gamma_gaussian(
     A:Real[_,_], μ:Real[_], c:Real[_], Λ:Real[_,_], α:Real, β:Real) -> Real[_] {
   D:Integer <- length(μ);
   return simulate_multivariate_student_t(2.0*α, A*μ + c,

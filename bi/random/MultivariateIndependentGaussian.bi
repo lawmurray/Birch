@@ -19,22 +19,22 @@ class MultivariateIndependentGaussian(μ:Expression<Real[_]>,
       return delay;
     } else {
       s2:DelayInverseGamma?;
-      m1:TransformMultivariateAffineNormalInverseGamma?;
+      m1:TransformMultivariateLinearNormalInverseGamma?;
       m2:DelayMultivariateNormalInverseGamma?;
-      m3:TransformMultivariateAffineGaussian?;
+      m3:TransformMultivariateLinearGaussian?;
       m4:DelayMultivariateGaussian?;
 
       if (s2 <- σ2.graftInverseGamma())? {
-        if (m1 <- μ.graftMultivariateAffineNormalInverseGamma(σ2))? {
-          return DelayMultivariateAffineNormalInverseGammaGaussian(this,
+        if (m1 <- μ.graftMultivariateLinearNormalInverseGamma(σ2))? {
+          return DelayMultivariateLinearNormalInverseGammaGaussian(this,
               m1!.A, m1!.x, m1!.c);
         } else if (m2 <- μ.graftMultivariateNormalInverseGamma(σ2))? {
           return DelayMultivariateNormalInverseGammaGaussian(this, m2!);
         } else {
           return DelayMultivariateInverseGammaGaussian(this, μ, s2!);
         }
-      } else if (m3 <- μ.graftMultivariateAffineGaussian())? {
-        return DelayMultivariateAffineGaussianGaussian(this, m3!.A, m3!.x,
+      } else if (m3 <- μ.graftMultivariateLinearGaussian())? {
+        return DelayMultivariateLinearGaussianGaussian(this, m3!.A, m3!.x,
             m3!.c, diagonal(σ2.value(), m3!.size()));
       } else if (m4 <- μ.graftMultivariateGaussian())? {
         return DelayMultivariateGaussianGaussian(this, m4!, diagonal(σ2,

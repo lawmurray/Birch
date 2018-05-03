@@ -17,11 +17,11 @@ class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) <
     if (delay?) {
       return delay;
     } else {
-      m1:TransformMultivariateAffineGaussian?;
+      m1:TransformMultivariateLinearGaussian?;
       m2:DelayMultivariateGaussian?;
 
-      if (m1 <- μ.graftMultivariateAffineGaussian())? {
-        return DelayMultivariateAffineGaussianGaussian(this, m1!.A, m1!.x, m1!.c, Σ);
+      if (m1 <- μ.graftMultivariateLinearGaussian())? {
+        return DelayMultivariateLinearGaussianGaussian(this, m1!.A, m1!.x, m1!.c, Σ);
       } else if (m2 <- μ.graftMultivariateGaussian())? {
         return DelayMultivariateGaussianGaussian(this, m2!, Σ);
       } else {

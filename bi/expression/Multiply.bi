@@ -16,35 +16,35 @@ class Multiply<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>)
     return left.value()*right.value();
   }
 
-  function graftAffineGaussian() -> TransformAffineGaussian? {
-    y:TransformAffineGaussian?;
+  function graftLinearGaussian() -> TransformLinearGaussian? {
+    y:TransformLinearGaussian?;
     z:DelayGaussian?;
     
-    if (y <- left.graftAffineGaussian())? {
+    if (y <- left.graftLinearGaussian())? {
       y!.multiply(right.value());
-    } else if (y <- right.graftAffineGaussian())? {
+    } else if (y <- right.graftLinearGaussian())? {
       y!.multiply(left.value());
     } else if (z <- left.graftGaussian())? {
-      y <- TransformAffineGaussian(right.value(), z!, 0.0);
+      y <- TransformLinearGaussian(right.value(), z!, 0.0);
     } else if (z <- right.graftGaussian())? {
-      y <- TransformAffineGaussian(left.value(), z!, 0.0);
+      y <- TransformLinearGaussian(left.value(), z!, 0.0);
     }
     return y;
   }
   
-  function getAffineNormalInverseGamma(σ2:Expression<Real>) ->
-      TransformAffineNormalInverseGamma? {
-    y:TransformAffineNormalInverseGamma?;
+  function getLinearNormalInverseGamma(σ2:Expression<Real>) ->
+      TransformLinearNormalInverseGamma? {
+    y:TransformLinearNormalInverseGamma?;
     z:DelayNormalInverseGamma?;
     
-    if (y <- left.graftAffineNormalInverseGamma(σ2))? {
+    if (y <- left.graftLinearNormalInverseGamma(σ2))? {
       y!.multiply(right.value());
-    } else if (y <- right.graftAffineNormalInverseGamma(σ2))? {
+    } else if (y <- right.graftLinearNormalInverseGamma(σ2))? {
       y!.multiply(left.value());
     } else if (z <- left.graftNormalInverseGamma(σ2))? {
-      y <- TransformAffineNormalInverseGamma(right.value(), z!, 0.0);
+      y <- TransformLinearNormalInverseGamma(right.value(), z!, 0.0);
     } else if (z <- right.graftNormalInverseGamma(σ2))? {
-      y <- TransformAffineNormalInverseGamma(left.value(), z!, 0.0);
+      y <- TransformLinearNormalInverseGamma(left.value(), z!, 0.0);
     }
     return y;
   }

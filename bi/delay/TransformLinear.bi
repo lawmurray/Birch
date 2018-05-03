@@ -1,4 +1,4 @@
-class TransformAffine(a:Real, c:Real) {
+class TransformLinear(a:Real, c:Real) {
   /**
    * Scale.
    */

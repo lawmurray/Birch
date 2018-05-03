@@ -17,21 +17,21 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Random<Real> {
       return delay;
     } else {
       s2:DelayInverseGamma?;
-      m1:TransformAffineNormalInverseGamma?;
+      m1:TransformLinearNormalInverseGamma?;
       m2:DelayNormalInverseGamma?;
-      m3:TransformAffineGaussian?;
+      m3:TransformLinearGaussian?;
       m4:DelayGaussian?;
 
       if (s2 <- σ2.graftInverseGamma())? {
-        if (m1 <- μ.graftAffineNormalInverseGamma(σ2))? {
-          return DelayAffineNormalInverseGammaGaussian(this, m1!.a, m1!.x, m1!.c);
+        if (m1 <- μ.graftLinearNormalInverseGamma(σ2))? {
+          return DelayLinearNormalInverseGammaGaussian(this, m1!.a, m1!.x, m1!.c);
         } else if (m2 <- μ.graftNormalInverseGamma(σ2))? {
           return DelayNormalInverseGammaGaussian(this, m2!);
         } else {
           return DelayInverseGammaGaussian(this, μ, s2!);
         }
-      } else if (m3 <- μ.graftAffineGaussian())? {
-        return DelayAffineGaussianGaussian(this, m3!.a, m3!.x, m3!.c, σ2);
+      } else if (m3 <- μ.graftLinearGaussian())? {
+        return DelayLinearGaussianGaussian(this, m3!.a, m3!.x, m3!.c, σ2);
       } else if (m4 <- μ.graftGaussian())? {
         return DelayGaussianGaussian(this, m4!, σ2);
       } else {
