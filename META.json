@@ -112,6 +112,7 @@
       "bi/model/SpokeModel.bi",
       "bi/model/State.bi",
       "bi/array.bi",
+      "bi/chrono.bi",
       "bi/filesystem.bi",
       "bi/main.bi",
       "bi/primitive.bi",
