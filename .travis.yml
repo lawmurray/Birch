@@ -28,24 +28,20 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       export CC=gcc-7;
       export CXX=g++-7;
+      export CXXFLAGS="-DBOOST_NO_CXX11_SCOPED_ENUMS";
     fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-      brew upgrade autoconf automake libtool flex bison boost eigen;
+      brew install flex bison eigen
     fi
   - git clone https://github.com/lawmurray/Birch.git
   - cd Birch
-  - ./autogen.sh
-  - ./configure
-  - make -j 2
-  - sudo make install
+  - ./autogen.sh && ./configure && make -j 2 && sudo make install
   - cd ..
   - git clone https://github.com/lawmurray/Birch.Standard.git
   - cd Birch.Standard
-  - birch build --disable-debug
-  - sudo birch install
+  - birch build --disable-debug && sudo birch install
   - cd ..
 install:
-  - birch build --disable-debug
-  - sudo birch install
+  - birch build --disable-debug && sudo birch install
 script:
   - birch test
