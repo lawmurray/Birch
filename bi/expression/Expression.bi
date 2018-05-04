@@ -190,7 +190,7 @@ class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftBinomial() -> DelayBinomial? {
+  function graftDiscrete() -> DelayValue<Integer>? {
     return nil;
   }
 

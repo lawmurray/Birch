@@ -17,6 +17,11 @@ class TransformLinear<Value>(a:Value, c:Value) {
     c <- x*c;
   }
 
+  function divide(x:Value) {
+    a <- a/x;
+    c <- c/x;
+  }
+
   function add(x:Value) {
     c <- c + x;
   }

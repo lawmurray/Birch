@@ -52,15 +52,15 @@ class Add<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>) <
 
   function graftLinearDiscrete() -> TransformLinearDiscrete? {
     y:TransformLinearDiscrete?;
-    z:DelayBinomial?;
+    z:DelayValue<Integer>?;
     
     if (y <- left.graftLinearDiscrete())? {
       y!.add(Integer(right.value()));
     } else if (y <- right.graftLinearDiscrete())? {
       y!.add(Integer(left.value()));
-    } else if (z <- left.graftBinomial())? {
+    } else if (z <- left.graftDiscrete())? {
       y <- TransformLinearDiscrete(1, z!, Integer(right.value()));
-    } else if (z <- right.graftBinomial())? {
+    } else if (z <- right.graftDiscrete())? {
       y <- TransformLinearDiscrete(1, z!, Integer(left.value()));
     }
     return y;

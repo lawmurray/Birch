@@ -15,6 +15,10 @@ class TransformScaledInverseGamma(a2:Real, σ2:DelayInverseGamma) {
   function multiply(x2:Real) {
     a2 <- a2*x2;
   }
+
+  function divide(x2:Real) {
+    a2 <- a2/x2;
+  }
 }
 
 /*

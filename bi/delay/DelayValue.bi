@@ -51,7 +51,9 @@ class DelayValue<Value>(x:Random<Value>) < Delay {
     }
 
     if (parent?) {
-      doCondition(y!.x!);
+      if (y!.w! != -inf) {
+        doCondition(y!.x!);
+      }
       parent <- nil;
     }
   }

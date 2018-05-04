@@ -20,6 +20,14 @@ class UniformInteger(l:Expression<Integer>, u:Expression<Integer>) <
       return DelayUniformInteger(this, l, u);
     }
   }
+
+  function graftDiscrete() -> DelayValue<Integer>? {
+    if (delay?) {
+      return DelayValue<Integer>?(delay);
+    } else {
+      return DelayUniformInteger(this, l, u);
+    }
+  }
 }
 
 /**

@@ -19,6 +19,14 @@ class Poisson(λ:Expression<Real>) < Random<Integer> {
       }
     }
   }
+
+  function graftDiscrete() -> DelayValue<Integer>? {
+    if (delay?) {
+      return DelayValue<Integer>?(delay);
+    } else {
+      return DelayPoisson(this, λ);
+    }
+  }
 }
 
 /**

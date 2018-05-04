@@ -6,6 +6,11 @@
  */
 class Random<Value> < Expression<Value> {
   /**
+   * Associated node in delayed sampling $M$-path.
+   */
+  delay:Delay?;
+
+  /**
    * Value.
    */
   x:Value?;
@@ -16,14 +21,10 @@ class Random<Value> < Expression<Value> {
   w:Real?;
 
   /**
-   * Associated node in delayed sampling $M$-path.
-   */
-  delay:Delay?;
-
-  /**
    * Value assignment.
    */
   operator <- x:Value {
+    assert isMissing();
     this.x <- x;
     realize();
   }
@@ -32,6 +33,7 @@ class Random<Value> < Expression<Value> {
    * Optional value assignment.
    */
   operator <- x:Value? {
+    assert isMissing();
     if (x?) {
       this.x <- x!;
       realize();
@@ -49,8 +51,10 @@ class Random<Value> < Expression<Value> {
    * Get the value of the random variable, forcing realization if necessary.
    */
   function value() -> Value {
-    realize();
-    assert x?;
+    if isMissing() {
+      realize();
+      assert x?;
+    }
     return x!;
   }
 

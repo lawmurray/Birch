@@ -25,9 +25,9 @@ class Binomial(n:Expression<Integer>, ρ:Expression<Real>) < Random<Integer> {
     }
   }
   
-  function graftBinomial() -> DelayBinomial? {
+  function graftDiscrete() -> DelayValue<Integer>? {
     if (delay?) {
-      return DelayBinomial?(delay);
+      return DelayValue<Integer>?(delay);
     } else {
       return DelayBinomial(this, n, ρ);
     }

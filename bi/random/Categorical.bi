@@ -22,6 +22,14 @@ class Categorical(ρ:Expression<Real[_]>) < Random<Integer> {
       }
     }
   }
+
+  function graftDiscrete() -> DelayValue<Integer>? {
+    if (delay?) {
+      return DelayValue<Integer>?(delay);
+    } else {
+      return DelayCategorical(this, ρ);
+    }
+  }
 }
 
 /**
