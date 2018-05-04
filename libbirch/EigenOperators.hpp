@@ -15,13 +15,13 @@
   }
 
 #define BINARY_OPERATOR(op) \
-  template<class OtherType1, class Type2, class Frame2> \
-  auto operator op(const OtherType1& x, const bi::Array<Type2,Frame2>& y) { \
+  template<class Type1, class Type2, class Frame2> \
+  auto operator op(const Eigen::MatrixBase<Type1>& x, const bi::Array<Type2,Frame2>& y) { \
     return x op y.toEigen(); \
   } \
   \
-  template<class Type1, class Frame1, class OtherType2> \
-  auto operator op(const bi::Array<Type1,Frame1>& x, const OtherType2& y) { \
+  template<class Type1, class Frame1, class Type2> \
+  auto operator op(const bi::Array<Type1,Frame1>& x, const Eigen::MatrixBase<Type2>& y) { \
     return x.toEigen() op y; \
   } \
   template<class Type1, class Frame1, class Type2, class Frame2> \
@@ -29,8 +29,8 @@
       const bi::Array<Type2,Frame2>& y) { \
     return x.toEigen() op y.toEigen(); \
   } \
-  template<class Type2, class Frame2> \
-  auto operator op(const Type2& x, const bi::Array<Type2,Frame2>& y) { \
+  template<class Type1, class Frame1> \
+  auto operator op(const Type1& x, const bi::Array<Type1,Frame1>& y) { \
     return (x op y.toEigen().array()).matrix(); \
   } \
   \
