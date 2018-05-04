@@ -12,7 +12,6 @@ matrix:
     - os: linux
       dist: trusty
       compiler: gcc
-      sudo: required
       addons:
         apt:
           sources:
@@ -26,16 +25,17 @@ matrix:
             - bison
             - libboost-all-dev
             - libeigen3-dev
-          env:
-            - CC=gcc-7
-            - CXX=g++-7
 before_install:
   - eval "${MATRIX_EVAL}"
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      export CC=gcc-7;
+      export CXX=g++-7;
+    fi
   - git clone https://github.com/lawmurray/Birch.git
   - cd Birch
   - ./autogen.sh
   - ./configure
-  - make
+  - make -j 2
   - sudo make install
   - cd ..
   - git clone https://github.com/lawmurray/Birch.Standard.git
