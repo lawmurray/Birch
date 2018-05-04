@@ -40,9 +40,9 @@ int main(int argc, char** argv) {
     } else {
       driver.run(prog + "_");  // underscore suffix for user-specified names
     }
+    return 0;
   } catch (Exception& e) {
     std::cerr << e.msg << std::endl;
+    return 1;
   }
-
-  return 0;
 }
