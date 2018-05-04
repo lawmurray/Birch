@@ -81,6 +81,14 @@
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>
 			</target>
+			<target name="am--depfiles" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildArguments>-j 4</buildArguments>
+				<buildTarget>am--depfiles</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
 			<target name="am--refresh" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>make</buildCommand>
 				<buildArguments>-j 4</buildArguments>
@@ -601,6 +609,38 @@
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>
 			</target>
+			<target name="bi/exception/birch-AssignmentOperatorException.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildArguments>-j 4</buildArguments>
+				<buildTarget>bi/exception/birch-AssignmentOperatorException.o</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
+			<target name="bi/exception/birch-AssignmentOperatorException.obj" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildArguments>-j 4</buildArguments>
+				<buildTarget>bi/exception/birch-AssignmentOperatorException.obj</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
+			<target name="bi/exception/birch-BaseException.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildArguments>-j 4</buildArguments>
+				<buildTarget>bi/exception/birch-BaseException.o</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
+			<target name="bi/exception/birch-BaseException.obj" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildArguments>-j 4</buildArguments>
+				<buildTarget>bi/exception/birch-BaseException.obj</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
 			<target name="bi/exception/birch-CallException.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>make</buildCommand>
 				<buildArguments>-j 4</buildArguments>
@@ -677,6 +717,22 @@
 				<buildCommand>make</buildCommand>
 				<buildArguments>-j 4</buildArguments>
 				<buildTarget>bi/exception/birch-ConstructorException.obj</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
+			<target name="bi/exception/birch-ConversionOperatorException.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildArguments>-j 4</buildArguments>
+				<buildTarget>bi/exception/birch-ConversionOperatorException.o</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
+			<target name="bi/exception/birch-ConversionOperatorException.obj" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildArguments>-j 4</buildArguments>
+				<buildTarget>bi/exception/birch-ConversionOperatorException.obj</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>
@@ -793,6 +849,22 @@
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>
 			</target>
+			<target name="bi/exception/birch-InitialValueException.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildArguments>-j 4</buildArguments>
+				<buildTarget>bi/exception/birch-InitialValueException.o</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
+			<target name="bi/exception/birch-InitialValueException.obj" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildArguments>-j 4</buildArguments>
+				<buildTarget>bi/exception/birch-InitialValueException.obj</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
 			<target name="bi/exception/birch-MemberException.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>make</buildCommand>
 				<buildArguments>-j 4</buildArguments>
@@ -869,6 +941,22 @@
 				<buildCommand>make</buildCommand>
 				<buildArguments>-j 4</buildArguments>
 				<buildTarget>bi/exception/birch-QueryException.obj</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
+			<target name="bi/exception/birch-ReadOnlyException.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildArguments>-j 4</buildArguments>
+				<buildTarget>bi/exception/birch-ReadOnlyException.o</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
+			<target name="bi/exception/birch-ReadOnlyException.obj" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildArguments>-j 4</buildArguments>
+				<buildTarget>bi/exception/birch-ReadOnlyException.obj</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>
@@ -1049,6 +1137,22 @@
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>
 			</target>
+			<target name="bi/expression/birch-Assign.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildArguments>-j 4</buildArguments>
+				<buildTarget>bi/expression/birch-Assign.o</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
+			<target name="bi/expression/birch-Assign.obj" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildArguments>-j 4</buildArguments>
+				<buildTarget>bi/expression/birch-Assign.obj</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
 			<target name="bi/expression/birch-Binary.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>make</buildCommand>
 				<buildArguments>-j 4</buildArguments>
@@ -1209,6 +1313,22 @@
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>
 			</target>
+			<target name="bi/expression/birch-Global.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildArguments>-j 4</buildArguments>
+				<buildTarget>bi/expression/birch-Global.o</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
+			<target name="bi/expression/birch-Global.obj" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildArguments>-j 4</buildArguments>
+				<buildTarget>bi/expression/birch-Global.obj</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
 			<target name="bi/expression/birch-Identifier.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>make</buildCommand>
 				<buildArguments>-j 4</buildArguments>
@@ -1301,22 +1421,6 @@
 				<buildCommand>make</buildCommand>
 				<buildArguments>-j 4</buildArguments>
 				<buildTarget>bi/expression/birch-Member.obj</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="bi/expression/birch-MemberParameter.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>bi/expression/birch-MemberParameter.o</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="bi/expression/birch-MemberParameter.obj" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>bi/expression/birch-MemberParameter.obj</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>
@@ -1641,22 +1745,6 @@
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>
 			</target>
-			<target name="bi/io/cpp/birch-CppHeaderGenerator.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>bi/io/cpp/birch-CppHeaderGenerator.o</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="bi/io/cpp/birch-CppHeaderGenerator.obj" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>bi/io/cpp/birch-CppHeaderGenerator.obj</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
 			<target name="bi/io/cpp/birch-CppMemberFiberGenerator.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>make</buildCommand>
 				<buildArguments>-j 4</buildArguments>
@@ -1669,6 +1757,22 @@
 				<buildCommand>make</buildCommand>
 				<buildArguments>-j 4</buildArguments>
 				<buildTarget>bi/io/cpp/birch-CppMemberFiberGenerator.obj</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
+			<target name="bi/io/cpp/birch-CppPackageGenerator.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildArguments>-j 4</buildArguments>
+				<buildTarget>bi/io/cpp/birch-CppPackageGenerator.o</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
+			<target name="bi/io/cpp/birch-CppPackageGenerator.obj" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildArguments>-j 4</buildArguments>
+				<buildTarget>bi/io/cpp/birch-CppPackageGenerator.obj</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>
@@ -1725,22 +1829,6 @@
 				<buildCommand>make</buildCommand>
 				<buildArguments>-j 4</buildArguments>
 				<buildTarget>bi/primitive/birch-poset.obj</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="bi/statement/birch-Alias.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>bi/statement/birch-Alias.o</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="bi/statement/birch-Alias.obj" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>bi/statement/birch-Alias.obj</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>
@@ -1901,6 +1989,22 @@
 				<buildCommand>make</buildCommand>
 				<buildArguments>-j 4</buildArguments>
 				<buildTarget>bi/statement/birch-EmptyStatement.obj</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
+			<target name="bi/statement/birch-Explicit.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildArguments>-j 4</buildArguments>
+				<buildTarget>bi/statement/birch-Explicit.o</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
+			<target name="bi/statement/birch-Explicit.obj" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildArguments>-j 4</buildArguments>
+				<buildTarget>bi/statement/birch-Explicit.obj</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>
@@ -2225,22 +2329,6 @@
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>
 			</target>
-			<target name="bi/type/birch-AliasType.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>bi/type/birch-AliasType.o</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="bi/type/birch-AliasType.obj" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>bi/type/birch-AliasType.obj</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
 			<target name="bi/type/birch-AnyType.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>make</buildCommand>
 				<buildArguments>-j 4</buildArguments>
@@ -2433,6 +2521,22 @@
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>
 			</target>
+			<target name="bi/type/birch-PointerType.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildArguments>-j 4</buildArguments>
+				<buildTarget>bi/type/birch-PointerType.o</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
+			<target name="bi/type/birch-PointerType.obj" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildArguments>-j 4</buildArguments>
+				<buildTarget>bi/type/birch-PointerType.obj</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
 			<target name="bi/type/birch-SequenceType.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>make</buildCommand>
 				<buildArguments>-j 4</buildArguments>
@@ -2497,22 +2601,6 @@
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>
 			</target>
-			<target name="bi/type/birch-TypeIdentifier.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>bi/type/birch-TypeIdentifier.o</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="bi/type/birch-TypeIdentifier.obj" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>bi/type/birch-TypeIdentifier.obj</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
 			<target name="bi/type/birch-TypeIterator.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>make</buildCommand>
 				<buildArguments>-j 4</buildArguments>
@@ -2541,6 +2629,22 @@
 				<buildCommand>make</buildCommand>
 				<buildArguments>-j 4</buildArguments>
 				<buildTarget>bi/type/birch-TypeList.obj</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
+			<target name="bi/type/birch-UnknownType.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildArguments>-j 4</buildArguments>
+				<buildTarget>bi/type/birch-UnknownType.o</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
+			<target name="bi/type/birch-UnknownType.obj" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildArguments>-j 4</buildArguments>
+				<buildTarget>bi/type/birch-UnknownType.obj</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>
@@ -2589,22 +2693,6 @@
 				<buildCommand>make</buildCommand>
 				<buildArguments>-j 4</buildArguments>
 				<buildTarget>bi/visitor/birch-Instantiater.obj</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="bi/visitor/birch-IsValue.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>bi/visitor/birch-IsValue.o</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="bi/visitor/birch-IsValue.obj" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>bi/visitor/birch-IsValue.obj</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>
@@ -2745,22 +2833,6 @@
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>
 			</target>
-			<target name="clean-libLTLIBRARIES" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>clean-libLTLIBRARIES</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="clean-libtool" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>clean-libtool</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
 			<target name="cscope" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>make</buildCommand>
 				<buildArguments>-j 4</buildArguments>
@@ -2889,14 +2961,6 @@
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>
 			</target>
-			<target name="distclean-libtool" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>distclean-libtool</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
 			<target name="distclean-tags" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>make</buildCommand>
 				<buildArguments>-j 4</buildArguments>
@@ -3009,26 +3073,10 @@
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>
 			</target>
-			<target name="install-libLTLIBRARIES" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>install-libLTLIBRARIES</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
 			<target name="install-man" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>make</buildCommand>
 				<buildArguments>-j 4</buildArguments>
 				<buildTarget>install-man</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="install-nobase_includeHEADERS" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>install-nobase_includeHEADERS</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>
@@ -3073,182 +3121,6 @@
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>
 			</target>
-			<target name="libbirch.la" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>libbirch.la</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="libbirch/libbirch_la-Any.lo" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>libbirch/libbirch_la-Any.lo</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="libbirch/libbirch_la-global.lo" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>libbirch/libbirch_la-global.lo</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="libbirch/libbirch_la-libbirch.lo" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>libbirch/libbirch_la-libbirch.lo</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="libbirch/libbirch_la-SharedPointer.lo" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>libbirch/libbirch_la-SharedPointer.lo</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="libbirch/libbirch_la-WeakPointer.lo" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>libbirch/libbirch_la-WeakPointer.lo</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="libbirch/libbirch_la-World.lo" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>libbirch/libbirch_la-World.lo</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="libubjpp.la" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>libubjpp.la</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="libubjpp/common/libubjpp_la-ParserState.lo" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>libubjpp/common/libubjpp_la-ParserState.lo</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="libubjpp/common/Parser.c" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>libubjpp/common/Parser.c</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="libubjpp/common/Parser.h" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>libubjpp/common/Parser.h</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="libubjpp/common/Parser.lo" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>libubjpp/common/Parser.lo</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="libubjpp/json/libubjpp_la-JSONDriver.lo" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>libubjpp/json/libubjpp_la-JSONDriver.lo</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="libubjpp/json/libubjpp_la-JSONGenerator.lo" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>libubjpp/json/libubjpp_la-JSONGenerator.lo</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="libubjpp/json/libubjpp_la-JSONTokenizer.lo" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>libubjpp/json/libubjpp_la-JSONTokenizer.lo</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="libubjpp/json2ubj-json2ubj.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>libubjpp/json2ubj-json2ubj.o</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="libubjpp/json2ubj-json2ubj.obj" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>libubjpp/json2ubj-json2ubj.obj</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="libubjpp/libubjpp_la-value.lo" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>libubjpp/libubjpp_la-value.lo</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="libubjpp/ubj/libubjpp_la-UBJDriver.lo" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>libubjpp/ubj/libubjpp_la-UBJDriver.lo</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="libubjpp/ubj/libubjpp_la-UBJGenerator.lo" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>libubjpp/ubj/libubjpp_la-UBJGenerator.lo</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="libubjpp/ubj2json-ubj2json.o" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>libubjpp/ubj2json-ubj2json.o</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="libubjpp/ubj2json-ubj2json.obj" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>libubjpp/ubj2json-ubj2json.obj</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
 			<target name="maintainer-clean" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>make</buildCommand>
 				<buildArguments>-j 4</buildArguments>
@@ -3277,14 +3149,6 @@
 				<buildCommand>make</buildCommand>
 				<buildArguments>-j 4</buildArguments>
 				<buildTarget>mostlyclean-compile</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="mostlyclean-libtool" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>mostlyclean-libtool</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>
@@ -3325,22 +3189,6 @@
 				<buildCommand>make</buildCommand>
 				<buildArguments>-j 4</buildArguments>
 				<buildTarget>uninstall-dist_pkgdataDATA</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="uninstall-libLTLIBRARIES" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>uninstall-libLTLIBRARIES</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>false</runAllBuilders>
-			</target>
-			<target name="uninstall-nobase_includeHEADERS" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments>-j 4</buildArguments>
-				<buildTarget>uninstall-nobase_includeHEADERS</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>

@@ -288,11 +288,21 @@ void bi::Driver::init() {
   contents = read_all(find(share_dirs, "META.json"));
   boost::replace_all(contents, "PACKAGE_NAME", packageName);
   fs::ofstream metaStream(work_dir / "META.json");
+  if (metaStream.fail()) {
+    std::stringstream buf;
+    buf << "Could not open " << (work_dir / "META.json").string() << " for writing.";
+    throw DriverException(buf.str());
+  }
   metaStream << contents;
 
   contents = read_all(find(share_dirs, "README.md"));
   boost::replace_all(contents, "PACKAGE_NAME", packageName);
   fs::ofstream readmeStream(work_dir / "README.md");
+  if (readmeStream.fail()) {
+    std::stringstream buf;
+    buf << "Could not open " << (work_dir / "README.md").string() << " for writing.";
+    throw DriverException(buf.str());
+  }
   readmeStream << contents;
 }
 
@@ -364,23 +374,33 @@ void bi::Driver::docs() {
   compiler.resolve();
 
   /* output everything into single file */
-  fs::ofstream stream("DOCS.md");
-  md_ostream output(stream);
+  fs::ofstream docsStream(work_dir / "DOCS.md");
+  if (docsStream.fail()) {
+    std::stringstream buf;
+    buf << "Could not open " << (work_dir / "DOCS.md").string() << " for writing.";
+    throw DriverException(buf.str());
+  }
+  md_ostream output(docsStream);
   output << package;
-  stream.close();
+  docsStream.close();
 
   /* split that file into multiple files for mkdocs */
-  fs::ofstream mkdocs("mkdocs.yml");
-  mkdocs << "site_name: '" << packageName << "'\n";
-  mkdocs << "theme:\n";
-  mkdocs << "  name: 'readthedocs'\n";
-  mkdocs << "markdown_extensions:\n";
-  mkdocs << "  - admonition\n";
-  mkdocs << "  - mdx_math:\n";
-  mkdocs << "      enable_dollar_delimiter: True\n";
-  mkdocs << "extra_javascript:\n";
-  mkdocs << "  - 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'\n";
-  mkdocs << "pages:\n";
+  fs::ofstream mkdocsStream(work_dir / "mkdocs.yml");
+  if (mkdocsStream.fail()) {
+    std::stringstream buf;
+    buf << "Could not open " << (work_dir / "mkdocs.yml").string() << " for writing.";
+    throw DriverException(buf.str());
+  }
+  mkdocsStream << "site_name: '" << packageName << "'\n";
+  mkdocsStream << "theme:\n";
+  mkdocsStream << "  name: 'readthedocs'\n";
+  mkdocsStream << "markdown_extensions:\n";
+  mkdocsStream << "  - admonition\n";
+  mkdocsStream << "  - mdx_math:\n";
+  mkdocsStream << "      enable_dollar_delimiter: True\n";
+  mkdocsStream << "extra_javascript:\n";
+  mkdocsStream << "  - 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'\n";
+  mkdocsStream << "pages:\n";
 
   fs::path docs("docs"), file;
   fs::create_directories(docs);
@@ -393,23 +413,23 @@ void bi::Driver::docs() {
   fs::create_directories(docs / "binary_operators");
   fs::create_directories(docs / "classes");
 
-  stream.open(docs / "index.md");
-  stream << packageDesc << '\n';
-  stream.close();
-  mkdocs << "  - index.md\n";
+  docsStream.open(docs / "index.md");
+  docsStream << packageDesc << '\n';
+  docsStream.close();
+  mkdocsStream << "  - index.md\n";
 
   std::string str = read_all("DOCS.md");
   std::regex reg("(?:^|\r?\n)(##?) (.*?)(?=\r?\n|$)", std::regex_constants::ECMAScript);
   std::smatch match;
   std::string str1 = str, h1, h2;
   while (std::regex_search(str1, match, reg)) {
-    if (stream.is_open()) {
-      stream << match.prefix();
+    if (docsStream.is_open()) {
+      docsStream << match.prefix();
     }
     if (match.str(1) == "#") {
       /* first level header */
       h1 = match.str(2);
-      mkdocs << "  - '" << h1 << "': ";
+      mkdocsStream << "  - '" << h1 << "': ";
 
       /* among first-level headers, only variables and types have their own
        * page, rather than being further split into a page per item */
@@ -417,32 +437,32 @@ void bi::Driver::docs() {
         std::string dir = h1;
         boost::to_lower(dir);
         file = fs::path(dir) / "index.md";
-        mkdocs << file.string();
-        if (stream.is_open()) {
-          stream.close();
+        mkdocsStream << file.string();
+        if (docsStream.is_open()) {
+          docsStream.close();
         }
-        stream.open(docs / file);
-        stream << "# " << h1 << "\n\n";
+        docsStream.open(docs / file);
+        docsStream << "# " << h1 << "\n\n";
       }
-      mkdocs << '\n';
+      mkdocsStream << '\n';
       boost::to_lower(h1);
       boost::replace_all(h1, " ", "_");
     } else {
       /* second level header */
       h2 = match.str(2);
-      mkdocs << "    - '" << h2 << "': ";
+      mkdocsStream << "    - '" << h2 << "': ";
       file = fs::path(nice(h1)) / (nice(h2) + ".md");
-      mkdocs << file.string() << "\n";
-      if (stream.is_open()) {
-        stream.close();
+      mkdocsStream << file.string() << "\n";
+      if (docsStream.is_open()) {
+        docsStream.close();
       }
-      stream.open(docs / file);
+      docsStream.open(docs / file);
     }
     str1 = match.suffix();
   }
-  if (stream.is_open()) {
-    stream << str1;
-    stream.close();
+  if (docsStream.is_open()) {
+    docsStream << str1;
+    docsStream.close();
   }
   delete package;
 }
@@ -519,7 +539,7 @@ void bi::Driver::setup() {
   if (!fs::exists(m4_dir)) {
     if (!fs::create_directory(m4_dir)) {
       std::stringstream buf;
-      buf << "could not create m4 directory " << m4_dir << '.';
+      buf << "Could not create m4 directory " << m4_dir << '.';
       throw DriverException(buf.str());
     }
   }
@@ -534,6 +554,11 @@ void bi::Driver::setup() {
     boost::replace_all(contents, "PACKAGE_NAME", packageName);
     boost::replace_all(contents, "PACKAGE_TARNAME", internalName);
     fs::ofstream configureStream(work_dir / "configure.ac");
+    if (configureStream.fail()) {
+      std::stringstream buf;
+      buf << "Could not open " << (work_dir / "configure.ac").string() << " for writing.";
+      throw DriverException(buf.str());
+    }
     configureStream << contents << "\n\n";
 
     /* required headers */
@@ -580,6 +605,11 @@ void bi::Driver::setup() {
     boost::replace_all(contents, "PACKAGE_TARNAME", internalName);
 
     fs::ofstream makeStream(work_dir / "Makefile.am");
+    if (makeStream.fail()) {
+      std::stringstream buf;
+      buf << "Could not open " << (work_dir / "Makefile.am").string() << " for writing.";
+      throw DriverException(buf.str());
+    }
     makeStream << contents << "\n\n";
     makeStream << "lib_LTLIBRARIES = lib" << internalName << ".la\n\n";
 

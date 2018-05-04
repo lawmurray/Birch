@@ -32,11 +32,11 @@ bool bi::copy_if_newer(fs::path src, fs::path dst) {
    * workaround... */
   bool result = false;
   if (!exists(dst)) {
-    copy(src, dst);
+    copy_file(src, dst);
     result = true;
   } else if (last_write_time(src) > last_write_time(dst)) {
     remove(dst);
-    copy(src, dst);
+    copy_file(src, dst);
     result = true;
   }
   return result;
@@ -53,11 +53,11 @@ bool bi::copy_with_prompt(fs::path src, fs::path dst) {
     std::getline(std::cin, ans);
     if (ans.length() > 0 && (ans[0] == 'y' || ans[0] == 'Y')) {
       remove(dst);
-      copy(src, dst);
+      copy_file(src, dst);
       result = true;
     }
   } else {
-    copy(src, dst);
+    copy_file(src, dst);
     result = true;
   }
   return result;
@@ -68,9 +68,9 @@ void bi::copy_with_force(fs::path src, fs::path dst) {
 
   if (exists(dst)) {
     remove(dst);
-    copy(src, dst);
+    copy_file(src, dst);
   } else {
-    copy(src, dst);
+    copy_file(src, dst);
   }
 }
 
