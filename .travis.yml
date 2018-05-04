@@ -22,13 +22,13 @@ matrix:
             - flex
             - bison
             - libboost-all-dev
-            - libeigen3-dev
 before_install:
   - eval "${MATRIX_EVAL}"
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       export CC=gcc-7;
       export CXX=g++-7;
       export CXXFLAGS="-DBOOST_NO_CXX11_SCOPED_ENUMS";
+      wget http://bitbucket.org/eigen/eigen/get/3.3.4.tar.gz && tar xzf 3.3.4.tar.gz && sudo cp -R eigen* /usr/local/include/eigen3;
     fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       brew install flex bison eigen;
@@ -37,7 +37,7 @@ before_install:
   - cd Birch
   - ./autogen.sh && ./configure && make -j 2 && sudo make install
   - cd ..
-  - git clone https://github.com/lawmurray/Birch.Standard.git
+  - git clone https://github.com/lawmurray/Birch.Standard.git -b expression
   - cd Birch.Standard
   - birch build --disable-debug && sudo birch install
   - cd ..
