@@ -43,14 +43,11 @@ class SIRState < State {
 
   fiber transition(x:SIRState, θ:SIRParameter) -> Real {
     τ ~ Binomial(x.s, 1.0 - exp(-θ.λ*x.i/(x.s + x.i + x.r)));
-    Δi ~ Binomial(τ, θ.δ.value());
+    Δi ~ Binomial(τ, θ.δ);
     Δr ~ Binomial(x.i, θ.γ);
 
-    i ~ Delta(Δi + (x.i.value() - Δr.value()));
-    // ^ not binomial, is beta-binomial.. add support for any finite integer
-    //   distro? These inherit from DelayFinite<Value>?
-    
     s ~ Delta(x.s - Δi);
+    i ~ Delta(x.i + Δi - Δr);
     r ~ Delta(x.r + Δr);
   }
 
