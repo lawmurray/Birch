@@ -16,3 +16,10 @@ function TransformMultivariateLinearNormalInverseGamma(A:Real[_,_],
   m:TransformMultivariateLinearNormalInverseGamma(A, x, c);
   return m;    
 }
+
+function TransformMultivariateLinearNormalInverseGamma(A:Real[_,_],
+    x:DelayMultivariateNormalInverseGamma) ->
+    TransformMultivariateLinearNormalInverseGamma {
+  return TransformMultivariateLinearNormalInverseGamma(A, x,
+      vector(0.0, rows(A)));
+}

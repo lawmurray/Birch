@@ -16,3 +16,8 @@ function TransformMultivariateLinearGaussian(A:Real[_,_],
   m:TransformMultivariateLinearGaussian(A, x, c);
   return m;    
 }
+
+function TransformMultivariateLinearGaussian(A:Real[_,_],
+    x:DelayMultivariateGaussian) -> TransformMultivariateLinearGaussian {
+  return TransformMultivariateLinearGaussian(A, x, vector(0.0, rows(A)));
+}
