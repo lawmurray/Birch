@@ -1,0 +1,48 @@
+language: cpp
+matrix:
+  include:
+    # macOS environment
+    - os: osx
+      compiler: clang
+      osx_image: xcode9.3
+      env:
+        - MATRIX_EVAL="brew install autoconf automake libtool flex bison boost eigen"
+
+   # Ubuntu 14.04 environment
+    - os: linux
+      dist: trusty
+      compiler: gcc
+      sudo: required
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - gcc-6
+            - g++-6
+            - autoconf
+            - libtool
+            - flex
+            - bison
+            - libboost-all-dev
+            - libeigen3-dev
+          env:
+            - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
+before_install:
+  - eval "${MATRIX_EVAL}"
+  - git clone https://github.com/lawmurray/Birch.git
+  - cd Birch
+  - ./autogen.sh
+  - ./configure
+  - make
+  - sudo make install
+  - cd ..
+  - git clone https://github.com/lawmurray/Birch.Standard.git
+  - cd Birch.Standard
+  - birch build --disable-debug
+  - sudo birch install
+  - cd ..
+install:
+  - birch build --disable-debug
+script:
+  - birch test
