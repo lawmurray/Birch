@@ -17,7 +17,7 @@ class MultivariateMultiply<Left,Right,Value>(left:Expression<Left>,
     return left.value()*right.value();
   }
 
-  function graftLinearMultivariateGaussian() ->
+  function graftMultivariateLinearGaussian() ->
       TransformMultivariateLinearGaussian? {
     y:TransformMultivariateLinearGaussian?;
     z:DelayMultivariateGaussian?;

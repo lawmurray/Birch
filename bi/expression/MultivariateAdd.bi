@@ -36,7 +36,7 @@ class MultivariateAdd<Left,Right,Value>(left:Expression<Left>,
     return y;
   }
   
-  function getMultivariateLinearNormalInverseGamma(σ2:Expression<Real>) ->
+  function graftMultivariateLinearNormalInverseGamma(σ2:Expression<Real>) ->
       TransformMultivariateLinearNormalInverseGamma? {
     y:TransformMultivariateLinearNormalInverseGamma?;
     z:DelayMultivariateNormalInverseGamma?;

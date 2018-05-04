@@ -29,7 +29,7 @@ class Divide<Left,Right,Value>(left:Expression<Left>,
     return y;
   }
   
-  function getLinearNormalInverseGamma(σ2:Expression<Real>) ->
+  function graftLinearNormalInverseGamma(σ2:Expression<Real>) ->
       TransformLinearNormalInverseGamma? {
     y:TransformLinearNormalInverseGamma?;
     z:DelayNormalInverseGamma?;

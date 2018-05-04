@@ -32,7 +32,7 @@ class Multiply<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>)
     return y;
   }
   
-  function getLinearNormalInverseGamma(σ2:Expression<Real>) ->
+  function graftLinearNormalInverseGamma(σ2:Expression<Real>) ->
       TransformLinearNormalInverseGamma? {
     y:TransformLinearNormalInverseGamma?;
     z:DelayNormalInverseGamma?;
@@ -77,5 +77,21 @@ operator (left:Real*right:Expression<Real>) -> Multiply<Real,Real,Real> {
 }
 
 operator (left:Expression<Real>*right:Real) -> Multiply<Real,Real,Real> {
+  return left*Boxed(right);
+}
+
+operator (left:Expression<Integer>*right:Expression<Integer>) ->
+    Multiply<Integer,Integer,Integer> {
+  m:Multiply<Integer,Integer,Integer>(left, right);
+  return m;
+}
+
+operator (left:Integer*right:Expression<Integer>) ->
+    Multiply<Integer,Integer,Integer> {
+  return Boxed(left)*right;
+}
+
+operator (left:Expression<Integer>*right:Integer) ->
+    Multiply<Integer,Integer,Integer> {
   return left*Boxed(right);
 }
