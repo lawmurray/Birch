@@ -6,7 +6,7 @@ matrix:
       compiler: clang
       osx_image: xcode9.3
       env:
-        - MATRIX_EVAL="brew install autoconf automake libtool flex bison boost eigen"
+        - MATRIX_EVAL="brew upgrade autoconf automake libtool flex bison boost eigen"
 
    # Ubuntu 14.04 environment
     - os: linux
@@ -18,8 +18,8 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - gcc-6
-            - g++-6
+            - gcc-7
+            - g++-7
             - autoconf
             - libtool
             - flex
@@ -27,7 +27,7 @@ matrix:
             - libboost-all-dev
             - libeigen3-dev
           env:
-            - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
+            - MATRIX_EVAL="export CC=gcc-7 && export CXX=g++-7"
 before_install:
   - eval "${MATRIX_EVAL}"
   - git clone https://github.com/lawmurray/Birch.git
