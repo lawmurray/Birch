@@ -44,6 +44,7 @@ class TestInverseGammaGaussian(μ:Real, α:Real, β:Real) {
   function forward() -> Real[_] {
     y:Real[2];
     y[1] <- σ2.value();
+    assert x.isMissing();
     y[2] <- x.value();
     return y;
   }
@@ -51,6 +52,7 @@ class TestInverseGammaGaussian(μ:Real, α:Real, β:Real) {
   function backward() -> Real[_] {
     y:Real[2];
     y[2] <- x.value();
+    assert σ2.isMissing();
     y[1] <- σ2.value();
     return y;
   }

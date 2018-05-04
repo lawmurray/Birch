@@ -42,6 +42,7 @@ class TestBetaBernoulli(α:Real, β:Real) {
     y:Real[2];
     
     y[1] <- ρ.value();
+    assert x.isMissing();
     if (x.value()) {
       y[2] <- 1.0;
     } else {
@@ -59,6 +60,7 @@ class TestBetaBernoulli(α:Real, β:Real) {
     } else {
       y[2] <- 0.0;
     }
+    assert ρ.isMissing();
     y[1] <- ρ.value();
     
     return y;

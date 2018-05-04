@@ -62,6 +62,7 @@ class TestMultivariateLinearGaussianGaussian(A:Real[_,_], μ_0:Real[_],
   function forward() -> Real[_] {
     y:Real[10];
     y[1..5] <- μ_1.value();
+    assert x.isMissing();
     y[6..10] <- x.value();
     return y;
   }
@@ -69,6 +70,7 @@ class TestMultivariateLinearGaussianGaussian(A:Real[_,_], μ_0:Real[_],
   function backward() -> Real[_] {
     y:Real[10];
     y[6..10] <- x.value();
+    assert μ_1.isMissing();
     y[1..5] <- μ_1.value();
     return y;
   }

@@ -43,6 +43,7 @@ class TestDirichletCategorical(α:Real[_]) {
     D:Integer <- length(α);
     y:Real[D + 1];
     y[1..D] <- ρ.value();
+     assert x.isMissing();
     y[D + 1] <- x.value();
     return y;
   }
@@ -51,6 +52,7 @@ class TestDirichletCategorical(α:Real[_]) {
     D:Integer <- length(α);
     y:Real[D + 1];
     y[D + 1] <- x.value();
+     assert ρ.isMissing();
     y[1..D] <- ρ.value();
     return y;
   }

@@ -52,6 +52,7 @@ class TestLinearDiscreteDelta(a:Integer, n:Integer, α:Real, β:Real,
   function forward() -> Real[_] {
     z:Real[3];    
     z[1] <- ρ.value();
+    assert x.isMissing() && y.isMissing();
     z[2] <- x.value();
     z[3] <- y.value();
     return z;
@@ -61,6 +62,7 @@ class TestLinearDiscreteDelta(a:Integer, n:Integer, α:Real, β:Real,
     z:Real[3];    
     z[3] <- y.value();
     z[2] <- x.value();
+    assert ρ.isMissing();
     z[1] <- ρ.value();
     return z;
   }

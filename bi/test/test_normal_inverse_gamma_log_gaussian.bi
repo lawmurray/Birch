@@ -49,7 +49,9 @@ class TestNormalInverseGammaLogGaussian(μ_0:Real, a2:Real, α:Real, β:Real) {
   function forward() -> Real[_] {
     y:Real[3];
     y[1] <- σ2.value();
+    assert μ.isMissing();
     y[2] <- μ.value();
+    assert x.isMissing();
     y[3] <- x.value();
     return y;
   }
@@ -57,8 +59,10 @@ class TestNormalInverseGammaLogGaussian(μ_0:Real, a2:Real, α:Real, β:Real) {
   function backward() -> Real[_] {
     y:Real[3];
     y[3] <- x.value();
-    y[2] <- μ.value();
+    assert σ2.isMissing();
     y[1] <- σ2.value();
+    assert μ.isMissing();
+    y[2] <- μ.value();
     return y;
   }
 }

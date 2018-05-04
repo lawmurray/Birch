@@ -45,6 +45,7 @@ class TestDirichletMultinomial(n:Integer, α:Real[_]) {
     D:Integer <- length(α);
     y:Real[2*D];
     y[1..D] <- ρ.value();
+    assert x.isMissing();
     y[D+1..2*D] <- x.value();
     return y;
   }
@@ -53,6 +54,7 @@ class TestDirichletMultinomial(n:Integer, α:Real[_]) {
     D:Integer <- length(α);
     y:Real[2*D];
     y[D+1..2*D] <- x.value();
+    assert ρ.isMissing();
     y[1..D] <- ρ.value();
     return y;
   }

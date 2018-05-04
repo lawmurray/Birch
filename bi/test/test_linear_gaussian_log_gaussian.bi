@@ -48,6 +48,7 @@ class TestLinearGaussianLogGaussian(a:Real, μ_0:Real, σ2_0:Real, c:Real, σ2_1
   function forward() -> Real[_] {
     y:Real[2];
     y[1] <- μ_1.value();
+    assert x.isMissing();
     y[2] <- x.value();
     return y;
   }
@@ -55,6 +56,7 @@ class TestLinearGaussianLogGaussian(a:Real, μ_0:Real, σ2_0:Real, c:Real, σ2_1
   function backward() -> Real[_] {
     y:Real[2];
     y[2] <- x.value();
+    assert μ_1.isMissing();
     y[1] <- μ_1.value();
     return y;
   }
