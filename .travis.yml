@@ -5,8 +5,6 @@ matrix:
     - os: osx
       compiler: clang
       osx_image: xcode9.3
-      env:
-        - MATRIX_EVAL="brew upgrade autoconf automake libtool flex bison boost eigen"
 
    # Ubuntu 14.04 environment
     - os: linux
@@ -31,6 +29,9 @@ before_install:
       export CC=gcc-7;
       export CXX=g++-7;
     fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+      brew upgrade autoconf automake libtool flex bison boost eigen;
+    fi
   - git clone https://github.com/lawmurray/Birch.git
   - cd Birch
   - ./autogen.sh
@@ -45,5 +46,6 @@ before_install:
   - cd ..
 install:
   - birch build --disable-debug
+  - sudo birch install
 script:
   - birch test
