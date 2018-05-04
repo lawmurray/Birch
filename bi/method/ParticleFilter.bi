@@ -82,10 +82,7 @@ class ParticleFilter {
         }
         step(t);
       }
-      stderr.print(Z);
-      if (T > 1) {
-        stderr.print("\n");
-      }
+      stderr.print(Z + "\n");
       finish();
             
       /* output results and diagnostics */
