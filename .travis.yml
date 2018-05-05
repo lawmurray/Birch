@@ -35,28 +35,28 @@ before_install:
     fi
 
   # Checkout Birch, which may be cached, and (re)build
-  - export BIRCH_REPO="https://github.com/lawmurray/Birch.git"
-  - if [ -d "Birch" ]; then
+  - BIRCH_REPO="https://github.com/lawmurray/Birch.git";
+    if [[ -d "Birch" ]]; then
       cd Birch;
       git pull origin ${TRAVIS_BRANCH} || git pull origin master;
     else
       git clone --depth 1 "${BIRCH_REPO}" -b ${TRAVIS_BRANCH} || git clone --depth 1 "${BIRCH_REPO}";
       cd Birch;
-    fi
-  - ./autogen.sh && ./configure && make -j 2 && sudo make install
-  - cd ..
+    fi;
+    ./autogen.sh && ./configure && make -j 2 && sudo make install;
+   cd ..
 
   # Checkout Birch.Standard, which may be cached, and (re)build
-  - export BIRCH_STANDARD_REPO="https://github.com/lawmurray/Birch.Standard.git"
-  - if [ -d "Birch.Standard" ]; then
+  - BIRCH_STANDARD_REPO="https://github.com/lawmurray/Birch.Standard.git";
+    if [[ -d "Birch.Standard" ]]; then
       cd Birch.Standard;
       git pull origin ${TRAVIS_BRANCH} || git pull origin master;
     else
       git clone --depth 1 "${BIRCH_STANDARD_REPO}" -b ${TRAVIS_BRANCH} || git clone --depth 1 "${BIRCH_STANDARD_REPO}";
       cd Birch.Standard;
-    fi
-  - birch build && sudo birch install
-  - cd ..
+    fi;
+    birch build && sudo birch install;
+    cd ..
 install:
   - birch build && sudo birch install
 script:
