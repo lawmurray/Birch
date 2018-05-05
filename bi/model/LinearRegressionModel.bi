@@ -24,7 +24,7 @@
  * is from the Capital Bikeshare system in Washington D.C. for the years 2011
  * to 2012. The aim is to use weather and holiday information to predict the
  * total number of bike hires on any given day
- * [(Fanaee-T and Gama, 2014)](../index.md#references).
+ * [(Fanaee-T and Gama, 2014)](../#references).
  */
 class LinearRegressionModel < Model {
   /**
