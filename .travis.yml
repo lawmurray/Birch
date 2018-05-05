@@ -32,7 +32,7 @@ before_install:
     elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       brew install flex bison eigen;
     fi
-install:
+script:
   - ./autogen.sh && ./configure && make && sudo make install
 notifications:
   email: false
