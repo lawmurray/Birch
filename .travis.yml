@@ -38,7 +38,7 @@ before_install:
   - cd Birch && ./autogen.sh && ./configure && make -j 2 && sudo make install && cd ..
 
   # Checkout Birch.Standard, which may be cached, and (re)build
-  - git clone --depth 1 "https://github.com/lawmurray/Birch.git" || (cd Birch.Standard && git pull && cd ..)
+  - git clone --depth 1 "https://github.com/lawmurray/Birch.Standard.git" || (cd Birch.Standard && git pull && cd ..)
   - cd Birch.Standard && birch build && sudo birch install && cd ..
 install:
   - birch build && sudo birch install
