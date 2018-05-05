@@ -35,7 +35,7 @@ before_install:
     fi
 
   # Checkout Birch, which may be cached, and (re)build
-  - BIRCH_REPO="https://github.com/lawmurray/Birch.git"
+  - export BIRCH_REPO="https://github.com/lawmurray/Birch.git"
   - if [ -d "Birch" ]; then
       cd Birch;
       git pull origin ${TRAVIS_BRANCH} || git pull origin master;
@@ -47,7 +47,7 @@ before_install:
   - cd ..
 
   # Checkout Birch.Standard, which may be cached, and (re)build
-  - BIRCH_STANDARD_REPO="https://github.com/lawmurray/Birch.Standard.git"
+  - export BIRCH_STANDARD_REPO="https://github.com/lawmurray/Birch.Standard.git"
   - if [ -d "Birch.Standard" ]; then
       cd Birch.Standard;
       git pull origin ${TRAVIS_BRANCH} || git pull origin master;
