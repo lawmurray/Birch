@@ -521,7 +521,7 @@ void bi::Driver::setup() {
      * went wrong bootstrapping makefile fragments for automatic dependency
      * tracking..." */
     fs::create_directories(build_dir / "bi" / ".deps");
-    fs::ofstream(build_dir / "bi" / ".deps" / (internalName + ".pch.Plo"));
+    fs::ofstream(build_dir / "bi" / ".deps" / (internalName + ".gch.Plo"));
   }
 
   /* copy build files into build directory */

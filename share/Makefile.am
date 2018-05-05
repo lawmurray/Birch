@@ -1,9 +1,9 @@
 # precompiled header; note $(CXXCOMPILE) has a -include flag for the header,
 # ensure that this won't use the old precompiled header by removing it first
-bi/PACKAGE_TARNAME.hpp.pch: bi/PACKAGE_TARNAME.hpp
+bi/PACKAGE_TARNAME.hpp.gch: bi/PACKAGE_TARNAME.hpp
 	rm -f $@
 	mkdir -p bi/$(DEPDIR) && \
-	$(CXXCOMPILE) -M -MF bi/$(DEPDIR)/PACKAGE_TARNAME.pch.Plo -MT $@ $< && \
+	$(CXXCOMPILE) -M -MF bi/$(DEPDIR)/PACKAGE_TARNAME.gch.Plo -MT $@ $< && \
 	$(CXXCOMPILE) -o $@ $<
 
 # placeholder source file for Emscripten program wrapper
@@ -25,7 +25,7 @@ birch_html_LDFLAGS = -s MAIN_MODULE=1 --emrun
 ACLOCAL_AMFLAGS = -I m4
 AM_CXXFLAGS = -include bi/PACKAGE_TARNAME.hpp
 
-BUILT_SOURCES = bi/PACKAGE_TARNAME.hpp.pch main.cpp
-CLEANFILES = bi/PACKAGE_TARNAME.hpp.pch main.cpp
+BUILT_SOURCES = bi/PACKAGE_TARNAME.hpp.gch main.cpp
+CLEANFILES = bi/PACKAGE_TARNAME.hpp.gch main.cpp
 
-include bi/$(DEPDIR)/PACKAGE_TARNAME.pch.Plo
+include bi/$(DEPDIR)/PACKAGE_TARNAME.gch.Plo
