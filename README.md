@@ -16,6 +16,10 @@ To build and install, use:
 
     birch build
     birch install
+    
+To test, use:
+
+    birch test
 
 Documentation for the standard library is readily accessible at <http://www.birch-lang.org>.
 
