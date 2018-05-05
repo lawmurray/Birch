@@ -24,7 +24,6 @@ matrix:
             - libboost-all-dev
 before_install:
   # OS-specific things
-  - eval "${MATRIX_EVAL}"
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       export CC=gcc-7;
       export CXX=g++-7;
@@ -35,28 +34,20 @@ before_install:
     fi
 
   # Checkout Birch, which may be cached, and (re)build
-  - BIRCH_REPO="https://github.com/lawmurray/Birch.git";
-    if [[ -d "Birch" ]]; then
-      cd Birch;
-      git pull origin ${TRAVIS_BRANCH} || git pull origin master;
+  - if [[ -d "Birch" ]]; then
+      cd Birch && git pull origin master && cd ..;
     else
-      git clone --depth 1 "${BIRCH_REPO}" -b ${TRAVIS_BRANCH} || git clone --depth 1 "${BIRCH_REPO}";
-      cd Birch;
+      git clone --depth 1 "https://github.com/lawmurray/Birch.git";
     fi;
-    ./autogen.sh && ./configure && make -j 2 && sudo make install;
-   cd ..
+    cd Birch && ./autogen.sh && ./configure && make -j 2 && sudo make install && cd ..
 
   # Checkout Birch.Standard, which may be cached, and (re)build
-  - BIRCH_STANDARD_REPO="https://github.com/lawmurray/Birch.Standard.git";
-    if [[ -d "Birch.Standard" ]]; then
-      cd Birch.Standard;
-      git pull origin ${TRAVIS_BRANCH} || git pull origin master;
+  - if [[ -d "Birch.Standard" ]]; then
+      cd Birch.Standard && git pull origin master && cd ..;
     else
-      git clone --depth 1 "${BIRCH_STANDARD_REPO}" -b ${TRAVIS_BRANCH} || git clone --depth 1 "${BIRCH_STANDARD_REPO}";
-      cd Birch.Standard;
+      git clone --depth 1 "https://github.com/lawmurray/Birch.Standard.git";
     fi;
-    birch build && sudo birch install;
-    cd ..
+    cd Birch.Standard && birch build && sudo birch install && cd ..
 install:
   - birch build && sudo birch install
 script:
