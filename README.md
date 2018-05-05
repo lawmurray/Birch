@@ -1,6 +1,6 @@
-# The Birch Example Programs
+# Birch Examples
 
-Demonstration and test programs for the Birch probabilistic programming language.
+Example models for the Birch probabilistic programming language.
 
 
 ## License
@@ -17,34 +17,11 @@ To build and install, use:
     birch build
     birch install
 
-Then, to run an example, use `birch` followed by the name of the program.
+Most of the examples will output to the `output/` directory, which you will need to create:
 
-There are several different programs that can be found in the `bi/` subdirectory. Many of these are meant to be read, but do little interesting when run. Some more interesting programs to run demonstrate the delayed sampling mechanism of Birch:
+    mkdir output
 
-    birch delay_triplet
-    birch delay_canonical
-    birch delay_iid
-    birch delay_spike_and_slab
-    birch delay_kalman
-
-Two more interesting examples are models on which the generic `sample` program from the Birch standard library can be run. The first is a linear-Gaussian state-space model, for which Birch will run a Kalman filter (make sure to create the `output/` folder if it does not exist):
-
-    birch sample \
-        --model LinearGaussianSSM \
-        --input-file input/LinearGaussianSSM.json \
-        --output-file output/LinearGaussianSSM.json \
-        --ncheckpoints 10
-
-and a mixed linear-nonlinear Gaussian state-space model, for which Birch will run a particle filter:
-
-    birch sample \
-        --model LinearNonlinearSSM \
-        --input-file input/LinearNonlinearSSM.json \
-        --output-file output/LinearNonlinearSSM.json \
-        --nparticles 256 \
-        --ncheckpoints 50
-
-You can find these models in the `bi/model` subdirectory. Each is implemented as a separate class. The (simulated) data sets used with them are in the `input/` subdirectory. After running, a single posterior sample is output to the `output/` subdirectory.
+See the documentation for the individual model classes in the `bi/model` directory, or use the [online documentation](https://birch-lang.org/documentation/examples/) for suggested commands to run.
 
 
 ## Version history
