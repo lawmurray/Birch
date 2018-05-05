@@ -1,4 +1,4 @@
-/**
+/*
  * Delayed delta random variate.
  */
 class DelayDelta(x:Random<Integer>, μ:Integer) < DelayValue<Integer>(x) {

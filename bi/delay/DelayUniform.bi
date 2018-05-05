@@ -1,4 +1,4 @@
-/**
+/*
  * Delayed uniform random variable.
  */
 class DelayUniform(x:Random<Real>, l:Real, u:Real) < DelayValue<Real>(x) {

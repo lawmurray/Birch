@@ -1,4 +1,4 @@
-/**
+/*
  * Delayed multivariate linear-Gaussian-Gaussian random variate.
  */
 class DelayMultivariateLinearGaussianGaussian(x:Random<Real[_]>,

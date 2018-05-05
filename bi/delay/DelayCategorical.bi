@@ -1,4 +1,4 @@
-/**
+/*
  * Delayed Categorical random variate.
  */
 class DelayCategorical(x:Random<Integer>, ρ:Real[_]) <

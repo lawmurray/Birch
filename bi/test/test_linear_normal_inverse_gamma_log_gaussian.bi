@@ -1,4 +1,4 @@
-/**
+/*
  * Test linear inverse-gamma-Gaussian conjugacy.
  */
 program test_linear_normal_inverse_gamma_log_gaussian(N:Integer <- 10000) {

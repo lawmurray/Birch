@@ -1,4 +1,4 @@
-/**
+/*
  * Interface for delayed sampling $M$-path nodes.
  */
 class Delay {

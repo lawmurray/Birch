@@ -1,4 +1,4 @@
-/**
+/*
  * Test a chain of conjugate multivariate Gaussians.
  */
 program test_multivariate_chain_gaussian(N:Integer <- 10000) {

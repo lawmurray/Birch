@@ -1,4 +1,4 @@
-/**
+/*
  * Linear transformation of a multivariate normal-inverse-gamma random
  * variate.
  */

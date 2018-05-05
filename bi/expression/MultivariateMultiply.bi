@@ -1,4 +1,4 @@
-/**
+/*
  * Lazy multivariate multiplication.
  */
 class MultivariateMultiply<Left,Right,Value>(left:Expression<Left>,

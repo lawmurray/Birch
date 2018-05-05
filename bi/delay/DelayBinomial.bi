@@ -1,4 +1,4 @@
-/**
+/*
  * Delayed Binomial random variate.
  */
 class DelayBinomial(x:Random<Integer>, n:Integer, ρ:Real) < DelayValue<Integer>(x) {

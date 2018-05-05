@@ -1,4 +1,4 @@
-/**
+/*
  * Test gamma-Poisson conjugacy.
  */
 program test_gamma_poisson(N:Integer <- 10000) {

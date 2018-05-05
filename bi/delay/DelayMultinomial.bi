@@ -1,4 +1,4 @@
-/**
+/*
  * Delayed multinomial random variate.
  */
 class DelayMultinomial(x:Random<Integer[_]>, n:Integer, ρ:Real[_]) <

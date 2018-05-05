@@ -1,4 +1,4 @@
-/**
+/*
  * Lazy addition.
  */
 class Add<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>) <

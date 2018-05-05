@@ -1,4 +1,4 @@
-/**
+/*
  * Delayed delta function on a linear transformation of a discrete random
  * variate.
  */

@@ -1,4 +1,4 @@
-/**
+/*
  * Delayed Chinese restaurant process (CRP) random variate. Such a variate
  * cannot be instantiated, but the associated random variable may be
  * marginalized out.

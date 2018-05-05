@@ -1,4 +1,4 @@
-/**
+/*
  * Lazy division.
  */
 class Divide<Left,Right,Value>(left:Expression<Left>,

@@ -1,4 +1,4 @@
-/**
+/*
  * Test beta-Bernoulli conjugacy.
  */
 program test_beta_bernoulli(N:Integer <- 10000) {

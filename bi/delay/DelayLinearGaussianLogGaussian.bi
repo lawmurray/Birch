@@ -1,4 +1,4 @@
-/**
+/*
  * Delayed linear-Gaussian-log-Gaussian random variate.
  */
 class DelayLinearGaussianLogGaussian(x:Random<Real>, a:Real, μ_0:DelayGaussian,

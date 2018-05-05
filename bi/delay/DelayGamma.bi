@@ -1,4 +1,4 @@
-/**
+/*
  * Delayed gamma random variate.
  */
 class DelayGamma(x:Random<Real>, k:Real, θ:Real) < DelayValue<Real>(x) {

@@ -1,4 +1,4 @@
-/**
+/*
  * Delayed Dirichlet-multinomial random variate.
  */
 class DelayDirichletMultinomial(x:Random<Integer[_]>, n:Integer,

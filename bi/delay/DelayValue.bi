@@ -1,4 +1,4 @@
-/**
+/*
  * Type-specific interface for delayed sampling $M$-path nodes.
  *
  * - Value: Value type.

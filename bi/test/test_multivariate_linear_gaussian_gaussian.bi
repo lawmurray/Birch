@@ -1,4 +1,4 @@
-/**
+/*
  * Test multivariate linear Gaussian-Gaussian conjugacy.
  */
 program test_multivariate_linear_gaussian_gaussian(N:Integer <- 10000) {

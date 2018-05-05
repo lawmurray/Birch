@@ -1,4 +1,4 @@
-/**
+/*
  * Delayed gamma-Poisson random variate.
  */
 class DelayGammaPoisson(x:Random<Integer>, λ:DelayGamma) < DelayValue<Integer>(x) {

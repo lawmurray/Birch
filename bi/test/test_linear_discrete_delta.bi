@@ -1,4 +1,4 @@
-/**
+/*
  * Test linear-discrete-delta conjugacy.
  */
 program test_linear_discrete_delta(N:Integer <- 10000) {

@@ -1,4 +1,4 @@
-/**
+/*
  * Delayed normal-inverse-gamma-Gaussian random variate.
  */
 class DelayNormalInverseGammaGaussian(x:Random<Real>,

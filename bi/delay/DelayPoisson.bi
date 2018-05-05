@@ -1,4 +1,4 @@
-/**
+/*
  * Delayed Poisson random variate.
  */
 class DelayPoisson(x:Random<Integer>, λ:Real) < DelayValue<Integer>(x) {

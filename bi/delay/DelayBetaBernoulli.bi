@@ -1,4 +1,4 @@
-/**
+/*
  * Delayed Beta-bernoulli random variate.
  */
 class DelayBetaBernoulli(x:Random<Boolean>, ρ:DelayBeta) <

@@ -1,4 +1,4 @@
-/**
+/*
  * Test Dirichlet-categorical conjugacy.
  */
 program test_dirichlet_categorical(N:Integer <- 10000) {

@@ -1,4 +1,4 @@
-/**
+/*
  * Delayed normal-inverse-gamma random variate.
  */
 class DelayNormalInverseGamma(x:Random<Real>, μ:Real, a2:Real,

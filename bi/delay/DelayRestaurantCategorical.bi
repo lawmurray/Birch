@@ -1,4 +1,4 @@
-/**
+/*
  * Delayed restaurant-categorical random variate.
  */
 class DelayRestaurantCategorical(x:Random<Integer>, ρ:DelayRestaurant) <

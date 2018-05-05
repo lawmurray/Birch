@@ -1,4 +1,4 @@
-/**
+/*
  * Lazy multivariate addition.
  */
 class MultivariateAdd<Left,Right,Value>(left:Expression<Left>,

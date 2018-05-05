@@ -1,5 +1,5 @@
 /**
- * Program to run all tests.
+ * Run all tests.
  */
 program test() {
   code:Integer <- 0;

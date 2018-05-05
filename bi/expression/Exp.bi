@@ -1,4 +1,4 @@
-/**
+/*
  * Lazy `exp`.
  */
 class Exp<Value>(x:Expression<Value>) < Expression<Value> {  

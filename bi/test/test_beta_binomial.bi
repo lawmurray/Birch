@@ -1,4 +1,4 @@
-/**
+/*
  * Test beta-binomial conjugacy.
  */
 program test_beta_binomial(N:Integer <- 10000) {

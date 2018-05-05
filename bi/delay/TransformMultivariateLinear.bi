@@ -1,4 +1,4 @@
-/**
+/*
  * Multivariate linear transformation.
  */
 class TransformMultivariateLinear<Value>(A:Value[_,_], c:Value[_]) {

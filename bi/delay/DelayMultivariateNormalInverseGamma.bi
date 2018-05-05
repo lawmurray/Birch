@@ -1,4 +1,4 @@
-/**
+/*
  * Delayed multivariate normal-inverse-gamma random variate.
  *
  * This represents the joint distribution:

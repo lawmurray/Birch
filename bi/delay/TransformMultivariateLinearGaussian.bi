@@ -1,4 +1,4 @@
-/**
+/*
  * Linear transformation of a multivariate Gaussian random variate.
  */
 class TransformMultivariateLinearGaussian(A:Real[_,_],

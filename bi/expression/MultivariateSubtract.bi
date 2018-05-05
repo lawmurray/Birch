@@ -1,4 +1,4 @@
-/**
+/*
  * Lazy multivariate subtraction.
  */
 class MultivariateSubtract<Left,Right,Value>(left:Expression<Left>,

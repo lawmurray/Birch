@@ -1,4 +1,4 @@
-/**
+/*
  * Test Gaussian-Gaussian conjugacy.
  */
 program test_gaussian_log_gaussian(N:Integer <- 10000) {

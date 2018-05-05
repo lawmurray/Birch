@@ -1,4 +1,4 @@
-/**
+/*
  * Lazy subtraction.
  */
 class Subtract<Left,Right,Value>(left:Expression<Left>,

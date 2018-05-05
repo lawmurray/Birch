@@ -1,4 +1,4 @@
-/**
+/*
  * Multivariate scaling of an inverse-gamma random variate.
  */
 class TransformMultivariateScaledInverseGamma(A:Real[_,_],

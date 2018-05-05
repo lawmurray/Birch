@@ -1,4 +1,4 @@
-/**
+/*
  * Delayed Student's $t$ random variate.
  */
 class DelayStudent(x:Random<Real>, ν:Real) < DelayValue<Real>(x) {

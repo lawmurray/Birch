@@ -1,4 +1,4 @@
-/**
+/*
  * Linear transformation of a normal-inverse-gamma random variate.
  */
 class TransformLinearNormalInverseGamma(a:Real, x:DelayNormalInverseGamma,

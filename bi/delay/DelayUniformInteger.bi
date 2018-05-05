@@ -1,4 +1,4 @@
-/**
+/*
  * Delayed uniform integer random variate.
  */
 class DelayUniformInteger(x:Random<Integer>, l:Integer, u:Integer) <

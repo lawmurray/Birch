@@ -1,4 +1,4 @@
-/**
+/*
  * Delayed Gaussian-Gaussian random variate.
  */
 class DelayGaussianGaussian(x:Random<Real>, μ_0:DelayGaussian, σ2:Real) <

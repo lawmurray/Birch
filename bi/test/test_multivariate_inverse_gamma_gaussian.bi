@@ -1,4 +1,4 @@
-/**
+/*
  * Test multivariate inverse-gamma-Gaussian conjugacy.
  */
 program test_multivariate_inverse_gamma_gaussian(N:Integer <- 10000) {

@@ -1,4 +1,4 @@
-/**
+/*
  * Delayed Dirichlet-categorical random variate.
  */
 class DelayDirichletCategorical(x:Random<Integer>, ρ:DelayDirichlet) <
