@@ -20,16 +20,11 @@
  *         --output-file output/bike_share.json \
  *         --nsamples 5
  *
- * The data[^1] is from the Capital Bikeshare system in Washington D.C.
- * for the years 2011 to 2012. The aim is to use weather and holiday
- * information to predict the total number of bike hires on any given
- * day[^2].
- *
- * [^1]: https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset
- *
- * [^2]: H. Fanaee-T & J. Gama (2014). [Event labeling combining ensemble
- * detectors and background knowledge](http://dx.doi.org/10.1007/s13748-013-0040-3).
- * *Progress in Artificial Intelligence*. **2**:113-127.
+ * The [data](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset)
+ * is from the Capital Bikeshare system in Washington D.C. for the years 2011
+ * to 2012. The aim is to use weather and holiday information to predict the
+ * total number of bike hires on any given day
+ * [(Fanaee-T and Gama, 2014)](/index.md#references).
  */
 class LinearRegressionModel < Model {
   /**

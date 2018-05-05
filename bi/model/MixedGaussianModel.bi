@@ -11,6 +11,8 @@
  *       --output-file output/mixed_gaussian.json \
  *       --nparticles 256 \
  *       --ncheckpoints 50
+ *
+ * The model is detailed in [Lindsten and Schön (2010)](/index.md#references).
  */
 class MixedGaussianModel = MarkovModel<MixedGaussianState,
     MixedGaussianParameter>;

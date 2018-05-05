@@ -24,6 +24,26 @@ Most of the examples will output to the `output/` directory, which you will need
 See the documentation for the individual model classes in the `bi/model` directory, or use the [online documentation](https://birch-lang.org/documentation/examples/) for suggested commands to run.
 
 
+## Acknowledgements
+
+This package contains data sets that have been prepared into JSON format for Birch. They are:
+
+  * A [bike sharing data set](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset) from the Capital Bikeshare system in Washington D.C., studied in [Fanaee-T and Gama (2014)](/index.md#references).
+  
+  * A russian influenza data set from [Anonymous (1978)](/index.md#references).
+
+
+## References
+
+  1. Anonymous (1978). Influenza in a boarding school. *British Medical Journal*. **1**:587.
+
+  2. H. Fanaee-T and J. Gama (2014). [Event labeling combining ensemble detectors and background knowledge](http://dx.doi.org/10.1007/s13748-013-0040-3). *Progress in Artificial Intelligence*. **2**:113-127.
+
+  3. F. Lindsten and T. B. Schön (2010). Identification of mixed linear/nonlinear state-space models. In *49th IEEE Conference on Decision and Control (CDC)*. 6377–6382.
+
+  4. L.M. Murray, D. Lundén, J. Kudlicka, D. Broman and T.B. Schön (2018). [Delayed Sampling and Automatic Rao&ndash;Blackwellization of Probabilistic Programs](https://arxiv.org/abs/1708.07787). In *Proceedings of the 21st International Conference on Artificial Intelligence and Statistics (AISTATS) 2018*, Lanzarote, Spain.
+
+
 ## Version history
 
 ### v0.0.0
