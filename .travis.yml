@@ -6,7 +6,7 @@ matrix:
       compiler: clang
       osx_image: xcode9.3
 
-   # Ubuntu 14.04 environment
+    # Ubuntu 14.04 environment
     - os: linux
       dist: trusty
       compiler: gcc
@@ -23,29 +23,49 @@ matrix:
             - bison
             - libboost-all-dev
 before_install:
+  # OS-specific things
   - eval "${MATRIX_EVAL}"
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       export CC=gcc-7;
       export CXX=g++-7;
       export CXXFLAGS="-DBOOST_NO_CXX11_SCOPED_ENUMS";
       wget http://bitbucket.org/eigen/eigen/get/3.3.4.tar.gz && tar xzf 3.3.4.tar.gz && sudo cp -R eigen* /usr/local/include/eigen3;
-    fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+    elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       brew install flex bison eigen;
     fi
-  - git clone https://github.com/lawmurray/Birch.git
-  - cd Birch
+
+  # Checkout Birch, which may be cached, and (re)build
+  - BIRCH_REPO="https://github.com/lawmurray/Birch.git"
+  - if [ -d "Birch" ]; then
+      cd Birch;
+      git pull origin ${TRAVIS_BRANCH} || git pull origin master;
+    else
+      git clone --depth 1 "${BIRCH_REPO}" -b ${TRAVIS_BRANCH} || git clone --depth 1 "${BIRCH_REPO}";
+      cd Birch;
+    fi
   - ./autogen.sh && ./configure && make -j 2 && sudo make install
   - cd ..
-  - git clone https://github.com/lawmurray/Birch.Standard.git -b expression
-  - cd Birch.Standard
-  - birch build --disable-debug && sudo birch install
+
+  # Checkout Birch.Standard, which may be cached, and (re)build
+  - BIRCH_STANDARD_REPO="https://github.com/lawmurray/Birch.Standard.git"
+  - if [ -d "Birch.Standard" ]; then
+      cd Birch.Standard;
+      git pull origin ${TRAVIS_BRANCH} || git pull origin master;
+    else
+      git clone --depth 1 "${BIRCH_STANDARD_REPO}" -b ${TRAVIS_BRANCH} || git clone --depth 1 "${BIRCH_STANDARD_REPO}";
+      cd Birch.Standard;
+    fi
+  - birch build && sudo birch install
   - cd ..
 install:
-  - birch build --disable-debug && sudo birch install
+  - birch build && sudo birch install
 script:
   - birch test
 notifications:
   slack:
     rooms:
       secure: NiqT8OJQeT6vOG3PtRr0Yat6yyw+3J15wL/JObT983eckny8pNfuEoNdN1vTGxvI1Vzh3o0gfmiEtE1TicehAuqh8FXX/N51bdDOBxcVfNgDmSyk8VFR0CUMwXrJHKODyFknowuGDJanwwpD67+j58D+09DwjFibClShTrwW/u5Y6f+DGPo3lyypV8URp9Pa0UjQU68ItbzMSvUZle3YQsDV5YMTqz3Drui7CPhfHYV6z7V0zPWqFhUJG95C7goOxfIETwHjl4c08IjVvC+dCg3U+RgozhcSkZNPLSMZCNnLc4s5qdP/DToaRGf9s4IeKz7dARSeVAAVargx+05ztEJmbwrvnmiuV5S3RpeGb6NGG6V+712hHr12hXykL7rMEladwRoRUyN9ZKfRkqrvIhURCEQAAa5WEbQP2R2kTyt5Av1hww1rOZeSLPftn1KyD9hOsrP7TP4LNXwAafx/kzWVoOodcjy+Y08kOLlGOLaXotjMlxwpbdy9sD2YBmlOH7s36cn6dupSVaCzyvbTUhLxYzWekN77ovn64illf9DHbFDR5jlkmbT1o78NpSSp+ZV7+699mlIDOQQz4y12MjY02eAyp36Z+8w1dxK+rF3Big415NqBfBkvovx8z4QZFlBptYLb+yFXJPR2woROcRtSxMKfs7l6IVImWf+qqBM=
+cache:
+    directories:
+     - Birch
+     - Birch.Standard
