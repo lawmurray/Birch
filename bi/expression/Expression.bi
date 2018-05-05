@@ -18,14 +18,14 @@ class Expression<Value> {
     assert false;
   }
   
-  /**
+  /*
    * Boxed value evaluation.
    */
   function boxed() -> Boxed<Value> {
     return Boxed(value());
   }
   
-  /**
+  /*
    * Attempt to graft this expression onto the delayed sampling graph.
    *
    * Return: The node if successful, nil if not.
@@ -34,7 +34,7 @@ class Expression<Value> {
     return nil;
   }
   
-  /**
+  /*
    * Attempt to graft this expression onto the delayed sampling graph.
    *
    * Return: The node if successful, nil if not.
@@ -43,7 +43,7 @@ class Expression<Value> {
     return nil;
   }
   
-  /**
+  /*
    * Attempt to graft this expression onto the delayed sampling graph.
    *
    * Return: The node if successful, nil if not.
@@ -52,7 +52,7 @@ class Expression<Value> {
     return nil;
   }
   
-  /**
+  /*
    * Attempt to graft this expression onto the delayed sampling graph.
    *
    * Return: The node if successful, nil if not.
@@ -61,7 +61,7 @@ class Expression<Value> {
     return nil;
   }
   
-  /**
+  /*
    * Attempt to graft this expression onto the delayed sampling graph.
    *
    * Return: The node if successful, nil if not.
@@ -70,7 +70,7 @@ class Expression<Value> {
     return nil;
   } 
   
-  /**
+  /*
    * Attempt to graft this expression onto the delayed sampling graph.
    *
    * - σ2: Variance of the normal distribution for which a
@@ -83,7 +83,7 @@ class Expression<Value> {
     return nil;
   }
   
-  /**
+  /*
    * Attempt to graft this expression onto the delayed sampling graph.
    *
    * - σ2: Variance of the normal distribution for which a
@@ -96,7 +96,7 @@ class Expression<Value> {
     return nil;
   }
 
-  /**
+  /*
    * Attempt to graft this expression onto the delayed sampling graph.
    *
    * - σ2: Variance of the normal distribution for which a
@@ -109,7 +109,7 @@ class Expression<Value> {
     return nil;
   }
   
-  /**
+  /*
    * Attempt to graft this expression onto the delayed sampling graph.
    *
    * Return: The node if successful, nil if not.
@@ -118,7 +118,7 @@ class Expression<Value> {
     return nil;
   }
 
-  /**
+  /*
    * Attempt to graft this expression onto the delayed sampling graph.
    *
    * Return: The node if successful, nil if not.
@@ -127,7 +127,7 @@ class Expression<Value> {
     return nil;
   }
 
-  /**
+  /*
    * Attempt to graft this expression onto the delayed sampling graph.
    *
    * Return: The node if successful, nil if not.
@@ -136,7 +136,7 @@ class Expression<Value> {
     return nil;
   }
 
-  /**
+  /*
    * Attempt to graft this expression onto the delayed sampling graph.
    *
    * Return: The node if successful, nil if not.
@@ -146,7 +146,7 @@ class Expression<Value> {
     return nil;
   }
 
-  /**
+  /*
    * Attempt to graft this expression onto the delayed sampling graph.
    *
    * - σ2: Variance of the normal distribution for which a
@@ -159,7 +159,7 @@ class Expression<Value> {
     return nil;
   }
 
-  /**
+  /*
    * Attempt to graft this expression onto the delayed sampling graph.
    *
    * - σ2: Variance of the normal distribution for which a
@@ -172,7 +172,7 @@ class Expression<Value> {
     return nil;
   }
 
-  /**
+  /*
    * Attempt to graft this expression onto the delayed sampling graph.
    *
    * - σ2: Variance of the normal distribution for which a
@@ -185,7 +185,7 @@ class Expression<Value> {
     return nil;
   }
 
-  /**
+  /*
    * Attempt to graft this expression onto the delayed sampling graph.
    *
    * Return: The node if successful, nil if not.
@@ -194,7 +194,7 @@ class Expression<Value> {
     return nil;
   }
 
-  /**
+  /*
    * Attempt to graft this expression onto the delayed sampling graph.
    *
    * Return: The node if successful, nil if not.

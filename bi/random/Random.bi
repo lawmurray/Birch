@@ -5,7 +5,7 @@
  * - Value: Value type.
  */
 class Random<Value> < Expression<Value> {
-  /**
+  /*
    * Associated node in delayed sampling $M$-path.
    */
   delay:Delay?;
@@ -81,7 +81,7 @@ class Random<Value> < Expression<Value> {
     return w!;
   }
 
-  /**
+  /*
    * Realize a value for this random variable.
    */
   function realize() {
@@ -92,7 +92,7 @@ class Random<Value> < Expression<Value> {
     }
   }
   
-  /**
+  /*
    * Graft this random variable onto the delayed sampling $M$-path.
    *
    * Return: Parent on the $M$-path.
