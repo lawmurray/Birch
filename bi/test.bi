@@ -12,6 +12,7 @@ program test() {
   code <- code + run_test("linear_discrete_delta");
   code <- code + run_test("gaussian_gaussian");
   code <- code + run_test("linear_gaussian_gaussian");
+  code <- code + run_test("chain_gaussian");
   code <- code + run_test("inverse_gamma_gaussian");
   code <- code + run_test("normal_inverse_gamma_gaussian");
   code <- code + run_test("linear_normal_inverse_gamma_gaussian");
@@ -22,6 +23,7 @@ program test() {
   code <- code + run_test("linear_normal_inverse_gamma_log_gaussian");
   code <- code + run_test("multivariate_gaussian_gaussian");
   code <- code + run_test("multivariate_linear_gaussian_gaussian");
+  code <- code + run_test("multivariate_chain_gaussian");
   code <- code + run_test("multivariate_inverse_gamma_gaussian");
   code <- code + run_test("multivariate_normal_inverse_gamma_gaussian");
   code <- code + run_test("multivariate_linear_normal_inverse_gamma_gaussian");

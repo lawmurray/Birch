@@ -44,7 +44,15 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Random<Real> {
     if (delay?) {
       return DelayGaussian?(delay);
     } else {
-      return DelayGaussian(this, μ, σ2);
+      m1:TransformLinearGaussian?;
+      m2:DelayGaussian?;
+      if (m1 <- μ.graftLinearGaussian())? {
+        return DelayLinearGaussianGaussian(this, m1!.a, m1!.x, m1!.c, σ2);
+      } else if (m2 <- μ.graftGaussian())? {
+        return DelayGaussianGaussian(this, m2!, σ2);
+      } else {
+        return DelayGaussian(this, μ, σ2);
+      }
     }
   }
 

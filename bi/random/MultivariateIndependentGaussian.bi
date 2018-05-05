@@ -51,8 +51,19 @@ class MultivariateIndependentGaussian(μ:Expression<Real[_]>,
     if (delay?) {
       return DelayMultivariateGaussian?(graftMultivariateGaussian());
     } else {
-      μ1:Real[_] <- μ.value();
-      return DelayMultivariateGaussian(this, μ1, diagonal(σ2, length(μ1)));
+      m1:TransformMultivariateLinearGaussian?;
+      m2:DelayMultivariateGaussian?;
+
+      if (m1 <- μ.graftMultivariateLinearGaussian())? {
+        return DelayMultivariateLinearGaussianGaussian(this, m1!.A, m1!.x,
+            m1!.c, diagonal(σ2, length(m1!.c)));
+      } else if (m2 <- μ.graftMultivariateGaussian())? {
+        return DelayMultivariateGaussianGaussian(this, m2!,
+            diagonal(σ2, length(m2!.μ)));
+      } else {
+        μ1:Real[_] <- μ.value();
+        return DelayMultivariateGaussian(this, μ1, diagonal(σ2, length(μ1)));
+      }
     }
   }
 
