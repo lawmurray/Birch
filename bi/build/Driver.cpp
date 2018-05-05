@@ -413,9 +413,14 @@ void bi::Driver::docs() {
   fs::create_directories(docs / "binary_operators");
   fs::create_directories(docs / "classes");
 
-  docsStream.open(docs / "index.md");
-  docsStream << packageDesc << '\n';
-  docsStream.close();
+  /* index file */
+  if (exists(work_dir / "README.md")) {
+    copy_with_force(work_dir / "README.md", docs / "index.md");
+  } else {
+    docsStream.open(docs / "index.md");
+    docsStream << packageDesc << '\n';
+    docsStream.close();
+  }
   mkdocsStream << "  - index.md\n";
 
   std::string str = read_all("DOCS.md");
