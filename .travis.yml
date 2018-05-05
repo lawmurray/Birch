@@ -34,29 +34,22 @@ before_install:
     fi
 
   # Checkout Birch, which may be cached, and (re)build
-  - if [[ -d "Birch" ]]; then
-      cd Birch && git pull origin master && cd ..;
-    else
-      git clone --depth 1 "https://github.com/lawmurray/Birch.git";
-    fi;
-    cd Birch && ./autogen.sh && ./configure && make -j 2 && sudo make install && cd ..
+  - git clone --depth 1 "https://github.com/lawmurray/Birch.git" || (cd Birch && git pull && cd ..)
+  - cd Birch && ./autogen.sh && ./configure && make -j 2 && sudo make install && cd ..
 
   # Checkout Birch.Standard, which may be cached, and (re)build
-  - if [[ -d "Birch.Standard" ]]; then
-      cd Birch.Standard && git pull origin master && cd ..;
-    else
-      git clone --depth 1 "https://github.com/lawmurray/Birch.Standard.git";
-    fi;
-    cd Birch.Standard && birch build && sudo birch install && cd ..
+  - git clone --depth 1 "https://github.com/lawmurray/Birch.git" || (cd Birch.Standard && git pull && cd ..)
+  - cd Birch.Standard && birch build && sudo birch install && cd ..
 install:
   - birch build && sudo birch install
 script:
   - birch test
-notifications:
-  slack:
-    rooms:
-      secure: NiqT8OJQeT6vOG3PtRr0Yat6yyw+3J15wL/JObT983eckny8pNfuEoNdN1vTGxvI1Vzh3o0gfmiEtE1TicehAuqh8FXX/N51bdDOBxcVfNgDmSyk8VFR0CUMwXrJHKODyFknowuGDJanwwpD67+j58D+09DwjFibClShTrwW/u5Y6f+DGPo3lyypV8URp9Pa0UjQU68ItbzMSvUZle3YQsDV5YMTqz3Drui7CPhfHYV6z7V0zPWqFhUJG95C7goOxfIETwHjl4c08IjVvC+dCg3U+RgozhcSkZNPLSMZCNnLc4s5qdP/DToaRGf9s4IeKz7dARSeVAAVargx+05ztEJmbwrvnmiuV5S3RpeGb6NGG6V+712hHr12hXykL7rMEladwRoRUyN9ZKfRkqrvIhURCEQAAa5WEbQP2R2kTyt5Av1hww1rOZeSLPftn1KyD9hOsrP7TP4LNXwAafx/kzWVoOodcjy+Y08kOLlGOLaXotjMlxwpbdy9sD2YBmlOH7s36cn6dupSVaCzyvbTUhLxYzWekN77ovn64illf9DHbFDR5jlkmbT1o78NpSSp+ZV7+699mlIDOQQz4y12MjY02eAyp36Z+8w1dxK+rF3Big415NqBfBkvovx8z4QZFlBptYLb+yFXJPR2woROcRtSxMKfs7l6IVImWf+qqBM=
 cache:
     directories:
      - Birch
      - Birch.Standard
+notifications:
+  email: false
+  slack:
+    rooms:
+      secure: NiqT8OJQeT6vOG3PtRr0Yat6yyw+3J15wL/JObT983eckny8pNfuEoNdN1vTGxvI1Vzh3o0gfmiEtE1TicehAuqh8FXX/N51bdDOBxcVfNgDmSyk8VFR0CUMwXrJHKODyFknowuGDJanwwpD67+j58D+09DwjFibClShTrwW/u5Y6f+DGPo3lyypV8URp9Pa0UjQU68ItbzMSvUZle3YQsDV5YMTqz3Drui7CPhfHYV6z7V0zPWqFhUJG95C7goOxfIETwHjl4c08IjVvC+dCg3U+RgozhcSkZNPLSMZCNnLc4s5qdP/DToaRGf9s4IeKz7dARSeVAAVargx+05ztEJmbwrvnmiuV5S3RpeGb6NGG6V+712hHr12hXykL7rMEladwRoRUyN9ZKfRkqrvIhURCEQAAa5WEbQP2R2kTyt5Av1hww1rOZeSLPftn1KyD9hOsrP7TP4LNXwAafx/kzWVoOodcjy+Y08kOLlGOLaXotjMlxwpbdy9sD2YBmlOH7s36cn6dupSVaCzyvbTUhLxYzWekN77ovn64illf9DHbFDR5jlkmbT1o78NpSSp+ZV7+699mlIDOQQz4y12MjY02eAyp36Z+8w1dxK+rF3Big415NqBfBkvovx8z4QZFlBptYLb+yFXJPR2woROcRtSxMKfs7l6IVImWf+qqBM=
