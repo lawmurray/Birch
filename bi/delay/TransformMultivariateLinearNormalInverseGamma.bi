@@ -1,5 +1,6 @@
-/*
- * Linear transformation of a multivariate normal-inverse-gamma variate.
+/**
+ * Linear transformation of a multivariate normal-inverse-gamma random
+ * variate.
  */
 class TransformMultivariateLinearNormalInverseGamma(A:Real[_,_],
     x:DelayMultivariateNormalInverseGamma, c:Real[_]) <

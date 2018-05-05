@@ -1,5 +1,6 @@
 /**
- * Delta function on a linear transformation of a discrete random variable.
+ * Delayed delta function on a linear transformation of a discrete random
+ * variate.
  */
 class DelayLinearDiscreteDelta(x:Random<Integer>, a:Integer,
     μ:DelayValue<Integer>, c:Integer) < DelayValue<Integer>(x) {

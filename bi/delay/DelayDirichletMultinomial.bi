@@ -1,5 +1,5 @@
 /**
- * Dirichlet-multinomial random variable for delayed sampling.
+ * Delayed Dirichlet-multinomial random variate.
  */
 class DelayDirichletMultinomial(x:Random<Integer[_]>, n:Integer,
     ρ:DelayDirichlet) < DelayValue<Integer[_]>(x) {

@@ -1,6 +1,5 @@
 /**
- * Normal-inverse-gamma random variable with delayed sampling.
- *
+ * Delayed normal-inverse-gamma random variate.
  */
 class DelayNormalInverseGamma(x:Random<Real>, μ:Real, a2:Real,
     σ2:DelayInverseGamma) < DelayValue<Real>(x) {

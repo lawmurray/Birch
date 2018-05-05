@@ -1,5 +1,5 @@
 /**
- * Multinomial random variable for delayed sampling.
+ * Delayed multinomial random variate.
  */
 class DelayMultinomial(x:Random<Integer[_]>, n:Integer, ρ:Real[_]) <
     DelayValue<Integer[_]>(x) {

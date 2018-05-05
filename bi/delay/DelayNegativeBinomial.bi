@@ -1,5 +1,5 @@
 /**
- * Negative binomial random variable with delayed sampling.
+ * Delayed negative binomial random variate.
  */
 class DelayNegativeBinomial(x:Random<Integer>, n:Integer, ρ:Real) <
     DelayValue<Integer>(x) {

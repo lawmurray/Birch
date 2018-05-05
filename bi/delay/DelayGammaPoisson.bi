@@ -1,5 +1,5 @@
 /**
- * Gamma-Poisson random variable for delayed sampling.
+ * Delayed gamma-Poisson random variate.
  */
 class DelayGammaPoisson(x:Random<Integer>, λ:DelayGamma) < DelayValue<Integer>(x) {
   /**

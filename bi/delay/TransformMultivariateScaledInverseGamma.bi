@@ -1,5 +1,5 @@
-/*
- * Multivariate scaling of an inverse-gamma variate.
+/**
+ * Multivariate scaling of an inverse-gamma random variate.
  */
 class TransformMultivariateScaledInverseGamma(A:Real[_,_],
     σ2:DelayInverseGamma) {

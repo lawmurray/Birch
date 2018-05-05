@@ -1,5 +1,5 @@
 /**
- * Interface for delayed sampling of random variables.
+ * Interface for delayed sampling $M$-path nodes.
  */
 class Delay {
   /**

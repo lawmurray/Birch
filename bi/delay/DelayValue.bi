@@ -1,5 +1,5 @@
 /**
- * Type-specific interface for delayed sampling of random variables.
+ * Type-specific interface for delayed sampling $M$-path nodes.
  *
  * - Value: Value type.
  *

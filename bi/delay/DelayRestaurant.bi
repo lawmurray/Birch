@@ -1,5 +1,7 @@
 /**
- * Chinese restaurant process random variable for delayed sampling.
+ * Delayed Chinese restaurant process (CRP) random variate. Such a variate
+ * cannot be instantiated, but the associated random variable may be
+ * marginalized out.
  */
 class DelayRestaurant(x:Random<Real[_]>, α:Real, θ:Real) <
     DelayValue<Real[_]>(x) {

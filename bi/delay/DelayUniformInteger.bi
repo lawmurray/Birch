@@ -1,5 +1,5 @@
 /**
- * Uniform integer random variable with delayed sampling.
+ * Delayed uniform integer random variate.
  */
 class DelayUniformInteger(x:Random<Integer>, l:Integer, u:Integer) <
     DelayValue<Integer>(x) {

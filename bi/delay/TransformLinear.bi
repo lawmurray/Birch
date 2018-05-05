@@ -1,5 +1,5 @@
 /*
- * Linear transformation of a variate.
+ * Linear transformation.
  */
 class TransformLinear<Value>(a:Value, c:Value) {
   /**

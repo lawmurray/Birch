@@ -1,5 +1,5 @@
 /**
- * Multivariate normal-inverse-gamma random variable with delayed sampling.
+ * Delayed multivariate normal-inverse-gamma random variate.
  *
  * This represents the joint distribution:
  *
@@ -19,10 +19,10 @@
  *     x ~ Gaussian(μ, Σ*σ2);
  *     y ~ Gaussian(x, σ2);
  *
- * where the last argument in the distribution of `y` appears in the
- * last argument of the distribution of `x`. The operation of `\Sigma` on
- * `σ2` may be multiplication on left (as above) or right, or division
- * on right.
+ * where the last argument in the distribution of `y` must appear in the
+ * last argument of the distribution of `x`. The operation of `Σ` on `σ2` may
+ * be multiplication on the left (as above) or the right, or division on the
+ * right.
  */
 class DelayMultivariateNormalInverseGamma(x:Random<Real[_]>, μ:Real[_],
     A:Real[_,_], σ2:DelayInverseGamma) < DelayValue<Real[_]>(x) {

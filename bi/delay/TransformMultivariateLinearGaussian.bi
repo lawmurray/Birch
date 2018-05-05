@@ -1,5 +1,5 @@
-/*
- * Linear transformation of a multivariate Gaussian variate.
+/**
+ * Linear transformation of a multivariate Gaussian random variate.
  */
 class TransformMultivariateLinearGaussian(A:Real[_,_],
     x:DelayMultivariateGaussian, c:Real[_]) <

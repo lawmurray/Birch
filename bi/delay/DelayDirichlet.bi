@@ -1,5 +1,5 @@
 /**
- * Dirichlet random variable for delayed sampling.
+ * Delayed Dirichlet random variate.
  */
 class DelayDirichlet(x:Random<Real[_]>, α:Real[_]) < DelayValue<Real[_]>(x) {
   /**

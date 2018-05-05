@@ -1,6 +1,5 @@
 /**
- * Linear-normal-inverse-gamma-log-Gaussian random variable with delayed
- * sampling.
+ * Delayed linear-normal-inverse-gamma-log-Gaussian random variate.
  */
 class DelayLinearNormalInverseGammaLogGaussian(x:Random<Real>, a:Real,
     μ:DelayNormalInverseGamma, c:Real) < DelayValue<Real>(x) {

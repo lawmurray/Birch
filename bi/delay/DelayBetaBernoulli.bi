@@ -1,5 +1,5 @@
 /**
- * Beta-bernoulli random variable for delayed sampling.
+ * Delayed Beta-bernoulli random variate.
  */
 class DelayBetaBernoulli(x:Random<Boolean>, ρ:DelayBeta) <
     DelayValue<Boolean>(x) {

@@ -1,5 +1,5 @@
 /**
- * CRP-categorical random variable for delayed sampling.
+ * Delayed restaurant-categorical random variate.
  */
 class DelayRestaurantCategorical(x:Random<Integer>, ρ:DelayRestaurant) <
     DelayValue<Integer>(x) {

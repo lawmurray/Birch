@@ -1,5 +1,5 @@
 /**
- * Categorical random variable for delayed sampling.
+ * Delayed Categorical random variate.
  */
 class DelayCategorical(x:Random<Integer>, ρ:Real[_]) <
     DelayValue<Integer>(x) {

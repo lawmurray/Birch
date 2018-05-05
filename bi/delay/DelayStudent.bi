@@ -1,5 +1,5 @@
 /**
- * Student's $t$ random variable with delayed sampling.
+ * Delayed Student's $t$ random variate.
  */
 class DelayStudent(x:Random<Real>, ν:Real) < DelayValue<Real>(x) {
   /**

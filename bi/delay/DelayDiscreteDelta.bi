@@ -1,5 +1,5 @@
 /**
- * Delta function on a discrete random variable.
+ * Delayed delta function on a discrete random variate.
  */
 class DelayDiscreteDelta(x:Random<Integer>, μ:DelayValue<Integer>) <
     DelayValue<Integer>(x) {

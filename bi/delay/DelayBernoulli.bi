@@ -1,5 +1,5 @@
 /**
- * Bernoulli random variable with delayed sampling.
+ * Delayed Bernoulli random variate.
  */
 class DelayBernoulli(x:Random<Boolean>, ρ:Real) < DelayValue<Boolean>(x) {
   /**

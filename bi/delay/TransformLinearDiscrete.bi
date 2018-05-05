@@ -1,4 +1,4 @@
-/*
+/**
  * Linear transformation of a discrete random variate.
  */
 class TransformLinearDiscrete(a:Integer, x:DelayValue<Integer>, c:Integer) <

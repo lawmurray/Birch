@@ -1,5 +1,5 @@
 /**
- * Linear-Gaussian-log-Gaussian random variable with delayed sampling.
+ * Delayed linear-Gaussian-log-Gaussian random variate.
  */
 class DelayLinearGaussianLogGaussian(x:Random<Real>, a:Real, μ_0:DelayGaussian,
     c:Real, σ2:Real) < DelayLogGaussian(x, a*μ_0.μ + c, a*a*μ_0.σ2 + σ2) {

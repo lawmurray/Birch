@@ -1,5 +1,5 @@
 /**
- * Beta random variable with delayed sampling.
+ * Delayed Beta random variate.
  */
 class DelayBeta(x:Random<Real>, α:Real, β:Real) < DelayValue<Real>(x) {
   /**

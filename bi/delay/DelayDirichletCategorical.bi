@@ -1,5 +1,5 @@
 /**
- * Dirichlet-categorical random variable for delayed sampling.
+ * Delayed Dirichlet-categorical random variate.
  */
 class DelayDirichletCategorical(x:Random<Integer>, ρ:DelayDirichlet) <
     DelayValue<Integer>(x) {
