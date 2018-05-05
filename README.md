@@ -28,9 +28,9 @@ See the documentation for the individual model classes in the `bi/model` directo
 
 This package contains data sets that have been prepared into JSON format for Birch. They are:
 
-  * A [bike sharing data set](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset) from the Capital Bikeshare system in Washington D.C., studied in [Fanaee-T and Gama (2014)](/index.md#references).
+  * A [bike sharing data set](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset) from the Capital Bikeshare system in Washington D.C., studied in [Fanaee-T and Gama (2014)](#references).
   
-  * A russian influenza data set from [Anonymous (1978)](/index.md#references).
+  * A russian influenza data set from [Anonymous (1978)](#references).
 
 
 ## References

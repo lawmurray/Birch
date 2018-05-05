@@ -12,8 +12,8 @@
  *       --nsamples 10
  *
  * The data set is of an outbreak of Russian influenza at a boy's boarding
- * school in northern England [(Anonymous, 1978)](/index.md#references). The
+ * school in northern England [(Anonymous, 1978)](../index.md#references). The
  * model on which this is based is described in
- * [Murray et. al. (2018)](/index.md#references).
+ * [Murray et. al. (2018)](../index.md#references).
  */
 class SIRModel = MarkovModel<SIRState,SIRParameter>;
