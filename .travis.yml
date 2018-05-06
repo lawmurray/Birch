@@ -28,7 +28,9 @@ before_install:
       export CC=gcc-7;
       export CXX=g++-7;
       export CXXFLAGS="-DBOOST_NO_CXX11_SCOPED_ENUMS";
-      wget http://bitbucket.org/eigen/eigen/get/3.3.4.tar.gz && tar xzf 3.3.4.tar.gz && sudo cp -R eigen* /usr/local/include/eigen3;
+      if [[ ! -d /usr/local/include/eigen3 ]]; then
+        wget http://bitbucket.org/eigen/eigen/get/3.3.4.tar.gz && tar xzf 3.3.4.tar.gz && sudo cp -R eigen* /usr/local/include/eigen3;
+      fi
     elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       brew install flex bison eigen;
     fi
@@ -52,6 +54,7 @@ cache:
   directories:
     - Birch
     - Birch.Standard
+    - /usr/local/include/eigen3
 notifications:
   email: false
   slack:
