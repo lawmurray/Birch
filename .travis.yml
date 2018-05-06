@@ -30,7 +30,7 @@ before_install:
       export CXXFLAGS="-DBOOST_NO_CXX11_SCOPED_ENUMS";
       if [[ ! -d eigen3 ]]; then
         wget http://bitbucket.org/eigen/eigen/get/3.3.4.tar.gz && tar xzf 3.3.4.tar.gz && mv eigen* eigen3;
-      fi
+      fi;
       sudo cp -Rp eigen3 /usr/local/include/.;
     elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       brew install flex bison eigen;
