@@ -20,6 +20,14 @@ class DelayNegativeBinomial(x:Random<Integer>, n:Integer, ρ:Real) <
   function doObserve(x:Integer) -> Real {
     return observe_negative_binomial(x, n, ρ);
   }
+
+  function pmf(x:Integer) -> Real {
+    return pmf_negative_binomial(x, n, ρ);
+  }
+
+  function cdf(x:Integer) -> Real {
+    return cdf_negative_binomial(x, n, ρ);
+  }
 }
 
 function DelayNegativeBinomial(x:Random<Integer>, n:Integer, ρ:Real) ->

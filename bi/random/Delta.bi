@@ -8,7 +8,7 @@ class Delta(μ:Expression<Integer>) < Random<Integer> {
    */
   μ:Expression<Integer> <- μ;
 
-  function graft() -> Delay? {
+  function graft() -> DelayValue<Integer>? {
     if (delay?) {
       return delay;
     } else {

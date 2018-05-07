@@ -20,6 +20,10 @@ class DelayMultinomial(x:Random<Integer[_]>, n:Integer, ρ:Real[_]) <
   function doObserve(x:Integer[_]) -> Real {
     return observe_multinomial(x, n, ρ);
   }
+
+  function pmf(x:Integer[_]) -> Real {
+    return pmf_multinomial(x, n, ρ);
+  }
 }
 
 function DelayMultinomial(x:Random<Integer[_]>, n:Integer, ρ:Real[_]) ->

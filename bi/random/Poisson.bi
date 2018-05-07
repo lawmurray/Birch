@@ -7,7 +7,7 @@ class Poisson(λ:Expression<Real>) < Random<Integer> {
    */
   λ:Expression<Real> <- λ;
 
-  function graft() -> Delay? {
+  function graft() -> DelayValue<Integer>? {
     if (delay?) {
       return delay;
     } else {

@@ -12,7 +12,7 @@ class Beta(α:Expression<Real>, β:Expression<Real>) < Random<Real> {
    */
   β:Expression<Real> <- β;
 
-  function graft() -> Delay? {
+  function graft() -> DelayValue<Real>? {
     if (delay?) {
       return delay;
     } else {

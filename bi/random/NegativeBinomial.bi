@@ -13,7 +13,7 @@ class NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) <
    */
   ρ:Expression<Real> <- ρ;
 
-  function graft() -> Delay? {
+  function graft() -> DelayValue<Integer>? {
     if (delay?) {
       return delay;
     } else {

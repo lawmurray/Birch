@@ -19,6 +19,14 @@ class DelayGamma(x:Random<Real>, k:Real, θ:Real) < DelayValue<Real>(x) {
   function doObserve(x:Real) -> Real {
     return observe_gamma(x, k, θ);
   }
+
+  function pdf(x:Real) -> Real {
+    return pdf_gamma(x, k, θ);
+  }
+
+  function cdf(x:Real) -> Real {
+    return cdf_gamma(x, k, θ);
+  }
 }
 
 function DelayGamma(x:Random<Real>, k:Real, θ:Real) -> DelayGamma {

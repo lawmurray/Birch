@@ -19,6 +19,10 @@ class DelayBetaBernoulli(x:Random<Boolean>, ρ:DelayBeta) <
   function doCondition(x:Boolean) {
     (ρ.α, ρ.β) <- update_beta_bernoulli(x, ρ.α, ρ.β);
   }
+
+  function pmf(x:Boolean) -> Real {
+    return pmf_beta_bernoulli(x, ρ.α, ρ.β);
+  }
 }
 
 function DelayBetaBernoulli(x:Random<Boolean>, ρ:DelayBeta) ->

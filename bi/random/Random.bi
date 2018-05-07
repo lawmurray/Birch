@@ -6,9 +6,9 @@
  */
 class Random<Value> < Expression<Value> {
   /*
-   * Associated node in delayed sampling $M$-path.
+   * Associated node on delayed sampling $M$-path.
    */
-  delay:Delay?;
+  delay:DelayValue<Value>?;
 
   /**
    * Value.
@@ -81,6 +81,45 @@ class Random<Value> < Expression<Value> {
     return w!;
   }
 
+  /**
+   * Evaluate the probability mass function (if it exists) at a value.
+   *
+   * - x: The value.
+   *
+   * Return: the probability mass.
+   */
+  function pmf(x:Value) -> Real {
+    delay <- graft();
+    assert delay?;
+    return delay!.pmf(x);
+  }
+
+  /**
+   * Evaluate the probability density function (if it exists) at a value.
+   *
+   * - x: The value.
+   *
+   * Return: the probability density.
+   */
+  function pdf(x:Value) -> Real {
+    delay <- graft();
+    assert delay?;
+    return delay!.pdf(x);
+  }
+
+  /**
+   * Evaluate the cumulative distribution function at a value.
+   *
+   * - x: The value.
+   *
+   * Return: the cumulative probability
+   */
+  function cdf(x:Value) -> Real {
+    delay <- graft();
+    assert delay?;
+    return delay!.cdf(x);
+  }
+
   /*
    * Realize a value for this random variable.
    */
@@ -95,9 +134,9 @@ class Random<Value> < Expression<Value> {
   /*
    * Graft this random variable onto the delayed sampling $M$-path.
    *
-   * Return: Parent on the $M$-path.
+   * Return: Associated node on delayed sampling $M$-path.
    */
-  function graft() -> Delay? {
+  function graft() -> DelayValue<Value>? {
     return nil;
   }
 }

@@ -20,6 +20,14 @@ class DelayUniformInteger(x:Random<Integer>, l:Integer, u:Integer) <
   function doObserve(x:Integer) -> Real {
     return observe_uniform_int(x, l, u);
   }
+
+  function pmf(x:Integer) -> Real {
+    return pmf_uniform_int(x, l, u);
+  }
+
+  function cdf(x:Integer) -> Real {
+    return cdf_uniform_int(x, l, u);
+  }
 }
 
 function DelayUniformInteger(x:Random<Integer>, l:Integer, u:Integer) ->

@@ -18,6 +18,14 @@ class DelayGammaPoisson(x:Random<Integer>, λ:DelayGamma) < DelayValue<Integer>(
   function doCondition(x:Integer) {
     (λ.k, λ.θ) <- update_gamma_poisson(x, λ.k, λ.θ);
   }
+
+  function pmf(x:Integer) -> Real {
+    return pmf_gamma_poisson(x, λ.k, λ.θ);
+  }
+
+  function cdf(x:Integer) -> Real {
+    return cdf_gamma_poisson(x, λ.k, λ.θ);
+  }
 }
 
 function DelayGammaPoisson(x:Random<Integer>, λ:DelayGamma) -> 

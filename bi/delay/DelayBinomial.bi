@@ -19,6 +19,14 @@ class DelayBinomial(x:Random<Integer>, n:Integer, ρ:Real) < DelayValue<Integer>
   function doObserve(x:Integer) -> Real {
     return observe_binomial(x, n, ρ);
   }
+
+  function pmf(x:Integer) -> Real {
+    return pmf_binomial(x, n, ρ);
+  }
+
+  function cdf(x:Integer) -> Real {
+    return cdf_binomial(x, n, ρ);
+  }
 }
 
 function DelayBinomial(x:Random<Integer>, n:Integer, ρ:Real) ->

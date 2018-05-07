@@ -19,6 +19,14 @@ class DelayInverseGamma(x:Random<Real>, α:Real, β:Real) < DelayValue<Real>(x) 
   function doObserve(x:Real) -> Real {
     return observe_inverse_gamma(x, α, β);
   }
+
+  function pdf(x:Real) -> Real {
+    return pdf_inverse_gamma(x, α, β);
+  }
+
+  function cdf(x:Real) -> Real {
+    return cdf_inverse_gamma(x, α, β);
+  }
 }
 
 function DelayInverseGamma(x:Random<Real>, α:Real, β:Real) ->

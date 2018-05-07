@@ -29,6 +29,10 @@ class DelayRestaurantCategorical(x:Random<Integer>, ρ:DelayRestaurant) <
     }
     ρ.N <- ρ.N + 1;
   }
+
+  function pmf(x:Integer) -> Real {
+    return pmf_restaurant_categorical(x, ρ.α, ρ.θ, ρ.n, ρ.N);
+  }
 }
 
 function DelayRestaurantCategorical(x:Random<Integer>, ρ:DelayRestaurant) ->

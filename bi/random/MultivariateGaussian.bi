@@ -13,7 +13,7 @@ class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) <
    */
   Σ:Expression<Real[_,_]> <- Σ;
   
-  function graft() -> Delay? {
+  function graft() -> DelayValue<Real[_]>? {
     if (delay?) {
       return delay;
     } else {

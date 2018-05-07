@@ -21,6 +21,14 @@ class DelayNormalInverseGammaGaussian(x:Random<Real>,
     (μ.μ, μ.a2, μ.σ2.α, μ.σ2.β) <- update_normal_inverse_gamma_gaussian(x,
         μ.μ, μ.a2, μ.σ2.α, μ.σ2.β);
   }
+
+  function pdf(x:Integer) -> Real {
+    return pdf_normal_inverse_gamma_gaussian(x, μ.μ, μ.a2, μ.σ2.α, μ.σ2.β);
+  }
+
+  function cdf(x:Integer) -> Real {
+    return cdf_normal_inverse_gamma_gaussian(x, μ.μ, μ.a2, μ.σ2.α, μ.σ2.β);
+  }
 }
 
 function DelayNormalInverseGammaGaussian(x:Random<Real>,

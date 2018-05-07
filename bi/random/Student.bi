@@ -7,7 +7,7 @@ class Student(ν:Expression<Real>) < Random<Real> {
    */
   ν:Expression<Real> <- ν;
 
-  function graft() -> Delay? {
+  function graft() -> DelayValue<Real>? {
     if (delay?) {
       return delay;
     } else {

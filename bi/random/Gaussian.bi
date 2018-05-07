@@ -12,7 +12,7 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Random<Real> {
    */
   σ2:Expression<Real> <- σ2;
 
-  function graft() -> Delay? {
+  function graft() -> DelayValue<Real>? {
     if (delay?) {
       return delay;
     } else {

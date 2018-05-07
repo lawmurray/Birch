@@ -7,7 +7,7 @@ class Categorical(ρ:Expression<Real[_]>) < Random<Integer> {
    */
   ρ:Expression<Real[_]> <- ρ;
 
-  function graft() -> Delay? {
+  function graft() -> DelayValue<Integer>? {
     if (delay?) {
       return delay;
     } else {

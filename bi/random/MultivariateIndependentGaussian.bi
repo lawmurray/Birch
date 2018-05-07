@@ -14,7 +14,7 @@ class MultivariateIndependentGaussian(μ:Expression<Real[_]>,
    */
   σ2:Expression<Real> <- σ2;
   
-  function graft() -> Delay? {
+  function graft() -> DelayValue<Real[_]>? {
     if (delay?) {
       return delay;
     } else {

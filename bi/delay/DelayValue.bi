@@ -57,7 +57,40 @@ class DelayValue<Value>(x:Random<Value>) < Delay {
       parent <- nil;
     }
   }
-  
+
+  /**
+   * Evaluate the probability mass function (if it exists) at a value.
+   *
+   * - x: The value.
+   *
+   * Return: the probability mass.
+   */
+  function pmf(x:Value) -> Real {
+    assert false;
+  }
+
+  /**
+   * Evaluate the probability density function (if it exists) at a value.
+   *
+   * - x: The value.
+   *
+   * Return: the probability density.
+   */
+  function pdf(x:Value) -> Real {
+    assert false;
+  }
+
+  /**
+   * Evaluate the cumulative distribution function at a value.
+   *
+   * - x: The value.
+   *
+   * Return: the cumulative probability
+   */
+  function cdf(x:Value) -> Real {
+    assert false;
+  }
+
   /**
    * Node-specific simulate.
    */

@@ -14,6 +14,14 @@ class DelayStudent(x:Random<Real>, ν:Real) < DelayValue<Real>(x) {
   function doObserve(x:Real) -> Real {
     return observe_student_t(x, ν);
   }
+
+  function pdf(x:Real) -> Real {
+    return pdf_student_t(x, ν);
+  }
+
+  function cdf(x:Real) -> Real {
+    return cdf_student_t(x, ν);
+  }
 }
 
 function DelayStudent(x:Random<Real>, ν:Real) -> DelayStudent {

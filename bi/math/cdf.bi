@@ -9,7 +9,7 @@ cpp{{
  * - n: Number of trials.
  * - ρ: Probability of a true result.
  *
- * Returns: the cumulative probability.
+ * Return: the cumulative probability.
  */
 function cdf_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
   assert 0 <= n;
@@ -26,7 +26,7 @@ function cdf_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
  * - k: Number of successes before the experiment is stopped.
  * - ρ: Probability of success.
  *
- * Returns: the cumulative probability.
+ * Return: the cumulative probability.
  */
 function cdf_negative_binomial(x:Integer, k:Integer, ρ:Real) -> Real {
   assert 0 < k;
@@ -42,7 +42,7 @@ function cdf_negative_binomial(x:Integer, k:Integer, ρ:Real) -> Real {
  * - x: The variate.
  * - λ: Rate.
  *
- * Returns: the cumulative probability.
+ * Return: the cumulative probability.
  */
 function cdf_poisson(x:Integer, λ:Real) -> Real {
   assert 0.0 <= λ;
@@ -52,13 +52,48 @@ function cdf_poisson(x:Integer, λ:Real) -> Real {
 }
 
 /**
+ * CDF of a uniform integer variate.
+ *
+ * - x: The variate.
+ * - l: Lower bound of interval.
+ * - u: Upper bound of interval.
+ *
+ * Return: the cumulative probability.
+ */
+function cdf_uniform_int(x:Integer, l:Integer, u:Integer) -> Real {
+  if (x < l) {
+    return 0.0;
+  } else if (x > u) {
+    return 1.0;
+  } else {
+    return (x - l + 1)/Real(u - l + 1);
+  }
+}
+
+/**
+ * CDF of a categorical variate.
+ *
+ * - x: The variate.
+ * - ρ: Category probabilities.
+ *
+ * Return: the cumulative probability.
+ */
+function cdf_categorical(x:Integer, ρ:Real[_]) -> Real {
+  if (1 <= x && x <= length(ρ)) {
+    return sum(ρ[1..x]);
+  } else {
+    return 0.0;
+  }
+}
+
+/**
  * CDF of a uniform variate.
  *
  * - x: The variate.
  * - l: Lower bound of interval.
  * - u: Upper bound of interval.
  *
- * Returns: the cumulative probability.
+ * Return: the cumulative probability.
  */
 function cdf_uniform(x:Real, l:Real, u:Real) -> Real {
   assert l <= u;
@@ -71,7 +106,7 @@ function cdf_uniform(x:Real, l:Real, u:Real) -> Real {
  * - x: The variate.
  * - λ: Rate.
  *
- * Returns: the cumulative probability.
+ * Return: the cumulative probability.
  */
 function cdf_exponential(x:Real, λ:Real) -> Real {
   assert 0.0 < λ;
@@ -87,7 +122,7 @@ function cdf_exponential(x:Real, λ:Real) -> Real {
  * - μ: Mean.
  * - σ2: Variance.
  *
- * Returns: the cumulative probability.
+ * Return: the cumulative probability.
  */
 function cdf_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
   assert 0.0 < σ2;
@@ -103,7 +138,7 @@ function cdf_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
  * - μ: Mean.
  * - σ2: Variance.
  *
- * Returns: the cumulative probability.
+ * Return: the cumulative probability.
  */
 function cdf_log_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
   assert 0.0 < σ2;
@@ -118,7 +153,7 @@ function cdf_log_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
  * - x: The variate.
  * - ν: Degrees of freedom.
  *
- * Returns: the cumulative probability.
+ * Return: the cumulative probability.
  */
 function cdf_student_t(x:Real, ν:Real) -> Real {
   assert 0.0 < ν;
@@ -135,7 +170,7 @@ function cdf_student_t(x:Real, ν:Real) -> Real {
  * - μ: Location.
  * - σ2: Squared scale.
  *
- * Returns: the cumulative probability.
+ * Return: the cumulative probability.
  */
 function cdf_student_t(x:Real, ν:Real, μ:Real, σ2:Real) -> Real {
   assert 0.0 < σ2;
@@ -149,7 +184,7 @@ function cdf_student_t(x:Real, ν:Real, μ:Real, σ2:Real) -> Real {
  * - α: Shape.
  * - β: Shape.
  *
- * Returns: the cumulative probability.
+ * Return: the cumulative probability.
  */
 function cdf_beta(x:Real, α:Real, β:Real) -> Real {
   assert 0.0 < α;
@@ -166,7 +201,7 @@ function cdf_beta(x:Real, α:Real, β:Real) -> Real {
  * - k: Shape.
  * - θ: Scale.
  *
- * Returns: the cumulative probability.
+ * Return: the cumulative probability.
  */
 function cdf_gamma(x:Real, k:Real, θ:Real) -> Real {
   assert 0.0 < k;
@@ -183,7 +218,7 @@ function cdf_gamma(x:Real, k:Real, θ:Real) -> Real {
  * - α: Shape.
  * - β: Scale.
  *
- * Returns: the cumulative probability.
+ * Return: the cumulative probability.
  */
 function cdf_inverse_gamma(x:Real, α:Real, β:Real) -> Real {
   assert 0.0 < α;
@@ -202,7 +237,7 @@ function cdf_inverse_gamma(x:Real, α:Real, β:Real) -> Real {
  * - α: Shape of inverse-gamma on scale.
  * - β: Scale of inverse-gamma on scale.
  *
- * Returns: the cumulative probability.
+ * Return: the cumulative probability.
  */
 function cdf_normal_inverse_gamma(x:Real, μ:Real, a2:Real, α:Real,
     β:Real) -> Real {
@@ -217,7 +252,7 @@ function cdf_normal_inverse_gamma(x:Real, μ:Real, a2:Real, α:Real,
  * - α: Shape.
  * - β: Shape.
  *
- * Returns: the cumulative probability.
+ * Return: the cumulative probability.
  */
 function cdf_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) -> Real {
   P:Real <- 0.0;
@@ -234,12 +269,51 @@ function cdf_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) -> Real {
  * - k: Shape.
  * - θ: Scale.
  *
- * Returns: the cumulative probability.
+ * Return: the cumulative probability.
  */
-function cdf_gamma_poisson(x:Integer, k:Integer, θ:Real) -> Real {
+function cdf_gamma_poisson(x:Integer, k:Real, θ:Real) -> Real {
   assert 0.0 < k;
   assert 0.0 < θ;
-  return cdf_negative_binomial(x, k, 1.0/(θ + 1.0));
+  assert k == floor(k);
+
+  return cdf_negative_binomial(x, Integer(k), 1.0/(θ + 1.0));
+}
+
+/**
+ * CDF of a Dirichlet-categorical variate.
+ *
+ * - x: The variate.
+ * - α: Concentrations.
+ *
+ * Return: the cumulative probability.
+ */
+function cdf_dirichlet_categorical(x:Integer, α:Real[_]) -> Real {
+  D:Integer <- length(α);
+  P:Real <- 0.0;
+  S:Real <- 0.0;
+  for k:Integer in 1..min(x, D) {
+    P <- P + gamma((1.0 + α[x])/α[x]);
+    S <- S + α[x];
+  }
+  for k:Integer in x+1..D {
+    S <- S + α[x];
+  }
+  return P*gamma(S/(1.0 + S));
+}
+
+/**
+ * CDF of a Gaussian variate with an inverse-gamma distribution over
+ * the variance.
+ *
+ * - x: The variate.
+ * - μ: Mean.
+ * - α: Shape of the inverse-gamma.
+ * - β: Scale of the inverse-gamma.
+ *
+ * Return: the cumulative probability.
+ */
+function cdf_inverse_gamma_gaussian(x:Real, μ:Real, α:Real, β:Real) -> Real {
+  return cdf_student_t(x, 2.0*α, μ, β/α);
 }
 
 /**
@@ -251,9 +325,28 @@ function cdf_gamma_poisson(x:Integer, k:Integer, θ:Real) -> Real {
  * - α: Shape of the inverse-gamma.
  * - β: Scale of the inverse-gamma.
  *
- * Returns: the cumulative probability.
+ * Return: the cumulative probability.
  */
 function cdf_normal_inverse_gamma_gaussian(x:Real, μ:Real, a2:Real,
     α:Real, β:Real) -> Real {
   return cdf_student_t(x, 2.0*α, μ, (β/α)*(1.0 + a2));
+}
+
+/**
+ * CDF of a Gaussian variate with a normal inverse-gamma prior with linear
+ * transformation.
+ *
+ * - x: The variate.
+ * - a: Scale.
+ * - μ: Mean.
+ * - c: Offset.
+ * - a2: Variance.
+ * - α: Shape of the inverse-gamma.
+ * - β: Scale of the inverse-gamma.
+ *
+ * Return: the cumulative probability.
+ */
+function cdf_linear_normal_inverse_gamma_gaussian(x:Real, a:Real,
+    μ:Real, c:Real, a2:Real, α:Real, β:Real) -> Real {
+  return cdf_student_t(x, 2.0*α, a*μ + c, (β/α)*(1.0 + a*a*a2));
 }

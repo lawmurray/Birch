@@ -14,6 +14,10 @@ class DelayDelta(x:Random<Integer>, μ:Integer) < DelayValue<Integer>(x) {
   function doObserve(x:Integer) -> Real {
     return observe_delta(x, μ);
   }
+
+  function pmf(x:Integer) -> Real {
+    return pmf_delta(x, μ);
+  }
 }
 
 function DelayDelta(x:Random<Integer>, μ:Integer) -> DelayDelta {

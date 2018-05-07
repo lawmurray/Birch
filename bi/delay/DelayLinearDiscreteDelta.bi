@@ -26,6 +26,14 @@ class DelayLinearDiscreteDelta(x:Random<Integer>, a:Integer,
   function doObserve(x:Integer) -> Real {
     return μ.observe((x - c)/a);
   }
+
+  function pmf(x:Integer) -> Real {
+    return μ.pmf((x - c)/a);
+  }
+
+  function cdf(x:Integer) -> Real {
+    return μ.cdf((x - c)/a);
+  }
 }
 
 function DelayLinearDiscreteDelta(x:Random<Integer>, a:Integer,

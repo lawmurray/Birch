@@ -20,6 +20,14 @@ class DelayLogGaussian(x:Random<Real>, μ:Real, σ2:Real) <
   function doObserve(x:Real) -> Real {
     return observe_log_gaussian(x, μ, σ2);
   }
+
+  function pdf(x:Real) -> Real {
+    return pdf_log_gaussian(x, μ, σ2);
+  }
+
+  function cdf(x:Real) -> Real {
+    return cdf_log_gaussian(x, μ, σ2);
+  }
 }
 
 function DelayLogGaussian(x:Random<Real>, μ:Real, σ2:Real) ->

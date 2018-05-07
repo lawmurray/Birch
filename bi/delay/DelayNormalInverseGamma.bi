@@ -25,6 +25,14 @@ class DelayNormalInverseGamma(x:Random<Real>, μ:Real, a2:Real,
   function doObserve(x:Real) -> Real {
     return observe_normal_inverse_gamma(x, μ, a2, σ2.α, σ2.β);
   }
+
+  function pdf(x:Integer) -> Real {
+    return pdf_normal_inverse_gamma(x, μ, a2, σ2.α, σ2.β);
+  }
+
+  function cdf(x:Integer) -> Real {
+    return cdf_normal_inverse_gamma(x, μ, a2, σ2.α, σ2.β);
+  }
 }
 
 function DelayNormalInverseGamma(x:Random<Real>, μ:Real, a2:Real,

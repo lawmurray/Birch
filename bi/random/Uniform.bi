@@ -12,7 +12,7 @@ class Uniform(l:Expression<Real>, u:Expression<Real>) < Random<Real> {
    */
   u:Expression<Real> <- u;
 
-  function graft() -> Delay? {
+  function graft() -> DelayValue<Real>? {
     if (delay?) {
       return delay;
     } else {

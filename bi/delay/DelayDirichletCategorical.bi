@@ -19,6 +19,14 @@ class DelayDirichletCategorical(x:Random<Integer>, ρ:DelayDirichlet) <
   function doCondition(x:Integer) {
     ρ.α <- update_dirichlet_categorical(x, ρ.α);
   }
+
+  function pmf(x:Integer) -> Real {
+    return pmf_dirichlet_categorical(x, ρ.α);
+  }
+
+  function cdf(x:Integer) -> Real {
+    return cdf_dirichlet_categorical(x, ρ.α);
+  }
 }
 
 function DelayDirichletCategorical(x:Random<Integer>, ρ:DelayDirichlet) ->

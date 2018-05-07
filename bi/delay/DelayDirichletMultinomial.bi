@@ -24,6 +24,10 @@ class DelayDirichletMultinomial(x:Random<Integer[_]>, n:Integer,
   function doCondition(x:Integer[_]) {
     ρ.α <- update_dirichlet_multinomial(x, n, ρ.α);
   }
+
+  function pmf(x:Integer[_]) -> Real {
+    return pmf_dirichlet_multinomial(x, n, ρ.α);
+  }
 }
 
 function DelayDirichletMultinomial(x:Random<Integer[_]>, n:Integer,

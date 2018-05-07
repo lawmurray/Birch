@@ -24,6 +24,10 @@ class DelayMultivariateGaussian(x:Random<Real[_]>, μ:Real[_], Σ:Real[_,_]) <
   function doObserve(x:Real[_]) -> Real {
     return observe_multivariate_gaussian(x, μ, Σ);
   }
+
+  function pdf(x:Real[_]) -> Real {
+    return pdf_multivariate_gaussian(x, μ, Σ);
+  }
 }
 
 function DelayMultivariateGaussian(x:Random<Real[_]>, μ:Real[_],

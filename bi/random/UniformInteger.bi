@@ -13,7 +13,7 @@ class UniformInteger(l:Expression<Integer>, u:Expression<Integer>) <
    */
   u:Expression<Integer> <- u;
 
-  function graft() -> Delay? {
+  function graft() -> DelayValue<Integer>? {
     if (delay?) {
       return delay;
     } else {

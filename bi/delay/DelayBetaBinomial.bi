@@ -24,6 +24,14 @@ class DelayBetaBinomial(x:Random<Integer>, n:Integer, ρ:DelayBeta) <
   function doCondition(x:Integer) {
     (ρ.α, ρ.β) <- update_beta_binomial(x, n, ρ.α, ρ.β);
   }
+
+  function pmf(x:Integer) -> Real {
+    return pmf_beta_binomial(x, n, ρ.α, ρ.β);
+  }
+
+  function cdf(x:Integer) -> Real {
+    return cdf_beta_binomial(x, n, ρ.α, ρ.β);
+  }
 }
 
 function DelayBetaBinomial(x:Random<Integer>, n:Integer, ρ:DelayBeta) ->

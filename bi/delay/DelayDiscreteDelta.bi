@@ -15,6 +15,14 @@ class DelayDiscreteDelta(x:Random<Integer>, μ:DelayValue<Integer>) <
   function doObserve(x:Integer) -> Real {
     return μ.observe(x);
   }
+
+  function pmf(x:Integer) -> Real {
+    return μ.pmf(x);
+  }
+
+  function cdf(x:Integer) -> Real {
+    return μ.cdf(x);
+  }
 }
 
 function DelayDiscreteDelta(x:Random<Integer>, μ:DelayValue<Integer>) ->

@@ -12,7 +12,7 @@ class Multinomial(n:Expression<Integer>, ρ:Expression<Real[_]>) < Random<Intege
    */
   ρ:Expression<Real[_]> <- ρ;
 
-  function graft() -> Delay? {
+  function graft() -> DelayValue<Integer[_]>? {
     if (delay?) {
       return delay;
     } else {

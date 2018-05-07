@@ -7,7 +7,7 @@ class Dirichlet(α:Expression<Real[_]>) < Random<Real[_]> {
    */
   α:Expression<Real[_]> <- α;
 
-  function graft() -> Delay? {
+  function graft() -> DelayValue<Real[_]>? {
     if (delay?) {
       return delay;
     } else {

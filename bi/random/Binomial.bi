@@ -12,7 +12,7 @@ class Binomial(n:Expression<Integer>, ρ:Expression<Real>) < Random<Integer> {
    */
   ρ:Expression<Real> <- ρ;
 
-  function graft() -> Delay? {
+  function graft() -> DelayValue<Integer>? {
     if (delay?) {
       return delay;
     } else {

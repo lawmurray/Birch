@@ -15,6 +15,14 @@ class DelayCategorical(x:Random<Integer>, ρ:Real[_]) <
   function doObserve(x:Integer) -> Real {
     return observe_categorical(x, ρ);
   }
+
+  function pmf(x:Integer) -> Real {
+    return pmf_categorical(x, ρ);
+  }
+
+  function cdf(x:Integer) -> Real {
+    return cdf_categorical(x, ρ);
+  }
 }
 
 function DelayCategorical(x:Random<Integer>, ρ:Real[_]) -> DelayCategorical {

@@ -8,7 +8,7 @@ cpp{{
  * - x: The variate.
  * - ρ: Probability of a true result.
  *
- * Returns: the probability mass.
+ * Return: the probability mass.
  */
 function pmf_bernoulli(x:Boolean, ρ:Real) -> Real {
   assert 0.0 <= ρ && ρ <= 1.0;
@@ -25,7 +25,7 @@ function pmf_bernoulli(x:Boolean, ρ:Real) -> Real {
  * - x: The variate.
  * - μ: Location.
  *
- * Returns: the probability mass.
+ * Return: the probability mass.
  */
 function pmf_delta(x:Integer, μ:Integer) -> Real {
   if (x == μ) {
@@ -42,7 +42,7 @@ function pmf_delta(x:Integer, μ:Integer) -> Real {
  * - n: Number of trials.
  * - ρ: Probability of a true result.
  *
- * Returns: the probability mass.
+ * Return: the probability mass.
  */
 function pmf_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
   assert 0 <= n;
@@ -59,7 +59,7 @@ function pmf_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
  * - k: Number of successes before the experiment is stopped.
  * - ρ: Probability of success.
  *
- * Returns: the probability mass.
+ * Return: the probability mass.
  */
 function pmf_negative_binomial(x:Integer, k:Integer, ρ:Real) -> Real {
   assert 0 < k;
@@ -75,7 +75,7 @@ function pmf_negative_binomial(x:Integer, k:Integer, ρ:Real) -> Real {
  * - x: The variate.
  * - λ: Rate.
  *
- * Returns: the probability mass.
+ * Return: the probability mass.
  */
 function pmf_poisson(x:Integer, λ:Real) -> Real {
   assert 0.0 <= λ;
@@ -91,7 +91,7 @@ function pmf_poisson(x:Integer, λ:Real) -> Real {
  * - l: Lower bound of interval.
  * - u: Upper bound of interval.
  *
- * Returns: the probability mass.
+ * Return: the probability mass.
  */
 function pmf_uniform_int(x:Integer, l:Integer, u:Integer) -> Real {
   if (x >= l && x <= u) {
@@ -107,7 +107,7 @@ function pmf_uniform_int(x:Integer, l:Integer, u:Integer) -> Real {
  * - x: The variate.
  * - ρ: Category probabilities.
  *
- * Returns: the probability mass.
+ * Return: the probability mass.
  */
 function pmf_categorical(x:Integer, ρ:Real[_]) -> Real {
   if (1 <= x && x <= length(ρ)) {
@@ -125,21 +125,21 @@ function pmf_categorical(x:Integer, ρ:Real[_]) -> Real {
  * - n: Number of trials.
  * - ρ: Category probabilities.
  *
- * Returns: the probability mass.
+ * Return: the probability mass.
  */
 function pmf_multinomial(x:Integer[_], n:Integer, ρ:Real[_]) -> Real {
   return exp(observe_multinomial(x, n, ρ));
 }
 
 /**
- * PMF of a Dirichlet variate.
+ * PDF of a Dirichlet variate.
  *
  * - x: The variate.
  * - α: Concentrations.
  *
- * Returns: the probability density.
+ * Return: the probability density.
  */
-function pmf_dirichlet(x:Real[_], α:Real[_]) -> Real {
+function pdf_dirichlet(x:Real[_], α:Real[_]) -> Real {
   return exp(observe_dirichlet(x, α));
 }
 
@@ -150,7 +150,7 @@ function pmf_dirichlet(x:Real[_], α:Real[_]) -> Real {
  * - l: Lower bound of interval.
  * - u: Upper bound of interval.
  *
- * Returns: the probability density.
+ * Return: the probability density.
  */
 function pdf_uniform(x:Real, l:Real, u:Real) -> Real {
   assert l <= u;
@@ -168,7 +168,7 @@ function pdf_uniform(x:Real, l:Real, u:Real) -> Real {
  * - x: The variate.
  * - λ: Rate.
  *
- * Returns: the probability density.
+ * Return: the probability density.
  */
 function pdf_exponential(x:Real, λ:Real) -> Real {
   assert 0.0 < λ;
@@ -184,7 +184,7 @@ function pdf_exponential(x:Real, λ:Real) -> Real {
  * - μ: Mean.
  * - σ2: Variance.
  *
- * Returns: the probability density.
+ * Return: the probability density.
  */
 function pdf_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
   assert 0.0 < σ2;
@@ -200,7 +200,7 @@ function pdf_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
  * - μ: Mean.
  * - σ2: Variance.
  *
- * Returns: the probability density.
+ * Return: the probability density.
  */
 function pdf_log_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
   assert 0.0 < σ2;
@@ -215,7 +215,7 @@ function pdf_log_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
  * - x: The variate.
  * - ν: Degrees of freedom.
  *
- * Returns: the probability density.
+ * Return: the probability density.
  */
 function pdf_student_t(x:Real, ν:Real) -> Real {
   assert 0.0 < ν;
@@ -232,7 +232,7 @@ function pdf_student_t(x:Real, ν:Real) -> Real {
  * - μ: Location.
  * - σ2: Squared scale.
  *
- * Returns: the probability density.
+ * Return: the probability density.
  */
 function pdf_student_t(x:Real, ν:Real, μ:Real, σ2:Real) -> Real {
   assert 0.0 < ν;
@@ -248,7 +248,7 @@ function pdf_student_t(x:Real, ν:Real, μ:Real, σ2:Real) -> Real {
  * - α: Shape.
  * - β: Shape.
  *
- * Returns: the probability density.
+ * Return: the probability density.
  */
 function pdf_beta(x:Real, α:Real, β:Real) -> Real {
   assert 0.0 < α;
@@ -265,7 +265,7 @@ function pdf_beta(x:Real, α:Real, β:Real) -> Real {
  * - k: Shape.
  * - θ: Scale.
  *
- * Returns: the probability density.
+ * Return: the probability density.
  */
 function pdf_gamma(x:Real, k:Real, θ:Real) -> Real {
   assert 0.0 < k;
@@ -282,7 +282,7 @@ function pdf_gamma(x:Real, k:Real, θ:Real) -> Real {
  * - α: Shape.
  * - β: Scale.
  *
- * Returns: the probability density.
+ * Return: the probability density.
  */
 function pdf_inverse_gamma(x:Real, α:Real, β:Real) -> Real {
   assert 0.0 < α;
@@ -301,11 +301,24 @@ function pdf_inverse_gamma(x:Real, α:Real, β:Real) -> Real {
  * - α: Shape of inverse-gamma on scale.
  * - β: Scale of inverse-gamma on scale.
  *
- * Returns: the probability density.
+ * Return: the probability density.
  */
 function pdf_normal_inverse_gamma(x:Real, μ:Real, a2:Real, α:Real,
     β:Real) -> Real {
   return pdf_student_t(x, 2.0*α, μ, a2*β/α);
+}
+
+/**
+ * PMF of a beta-bernoulli variate.
+ *
+ * - x: The variate.
+ * - α: Shape.
+ * - β: Shape.
+ *
+ * Return: the probability mass.
+ */
+function pmf_beta_bernoulli(x:Boolean, α:Real, β:Real) -> Real {
+  return exp(observe_beta_bernoulli(x, α, β));
 }
 
 /**
@@ -316,7 +329,7 @@ function pdf_normal_inverse_gamma(x:Real, μ:Real, a2:Real, α:Real,
  * - α: Shape.
  * - β: Shape.
  *
- * Returns: the probability mass.
+ * Return: the probability mass.
  */
 function pmf_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) -> Real {
   return exp(observe_beta_binomial(x, n, α, β));
@@ -329,12 +342,14 @@ function pmf_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) -> Real {
  * - k: Shape.
  * - θ: Scale.
  *
- * Returns: the probability mass.
+ * Return: the probability mass.
  */
-function pmf_gamma_poisson(x:Integer, k:Integer, θ:Real) -> Real {
+function pmf_gamma_poisson(x:Integer, k:Real, θ:Real) -> Real {
   assert 0.0 < k;
   assert 0.0 < θ;
-  return pmf_negative_binomial(x, k, 1.0/(θ + 1.0));
+  assert k == floor(k);
+
+  return pmf_negative_binomial(x, Integer(k), 1.0/(θ + 1.0));
 }
 
 /**
@@ -343,7 +358,7 @@ function pmf_gamma_poisson(x:Integer, k:Integer, θ:Real) -> Real {
  * - x: The variate.
  * - α: Concentrations.
  *
- * Returns: the probability mass.
+ * Return: the probability mass.
  */
 function pmf_dirichlet_categorical(x:Integer, α:Real[_]) -> Real {
   return exp(observe_dirichlet_categorical(x, α));
@@ -356,7 +371,7 @@ function pmf_dirichlet_categorical(x:Integer, α:Real[_]) -> Real {
  * - n: Number of trials.
  * - α: Concentrations.
  *
- * Returns: the probability mass.
+ * Return: the probability mass.
  */
 function pmf_dirichlet_multinomial(x:Integer[_], n:Integer, α:Real[_]) -> Real {
   return exp(observe_dirichlet_multinomial(x, n, α));
@@ -370,8 +385,10 @@ function pmf_dirichlet_multinomial(x:Integer[_], n:Integer, α:Real[_]) -> Real 
  * - θ: Discount.
  * - n: Enumerated items.
  * - N: Total number of items.
+ *
+ * Return: the probability mass.
  */
-function pmf_crp_categorical(k:Integer, α:Real, θ:Real,
+function pmf_restaurant_categorical(k:Integer, α:Real, θ:Real,
     n:Integer[_], N:Integer) -> Real {
   K:Integer <- length(n);
   if (k > K + 1) {
@@ -392,7 +409,7 @@ function pmf_crp_categorical(k:Integer, α:Real, θ:Real,
  * - α: Shape of the inverse-gamma.
  * - β: Scale of the inverse-gamma.
  *
- * Returns: the probability density.
+ * Return: the probability density.
  */
 function pdf_inverse_gamma_gaussian(x:Real, μ:Real, α:Real,
     β:Real) -> Real {
@@ -408,7 +425,7 @@ function pdf_inverse_gamma_gaussian(x:Real, μ:Real, α:Real,
  * - α: Shape of the inverse-gamma.
  * - β: Scale of the inverse-gamma.
  *
- * Returns: the probability density.
+ * Return: the probability density.
  */
 function pdf_normal_inverse_gamma_gaussian(x:Real, μ:Real, a2:Real,
     α:Real, β:Real) -> Real {
@@ -427,7 +444,7 @@ function pdf_normal_inverse_gamma_gaussian(x:Real, μ:Real, a2:Real,
  * - α: Shape of the inverse-gamma.
  * - β: Scale of the inverse-gamma.
  *
- * Returns: the probability density.
+ * Return: the probability density.
  */
 function pdf_linear_normal_inverse_gamma_gaussian(x:Real, a:Real,
     μ:Real, c:Real, a2:Real, α:Real, β:Real) -> Real {
@@ -441,7 +458,7 @@ function pdf_linear_normal_inverse_gamma_gaussian(x:Real, a:Real,
  * - μ: Mean.
  * - Σ: Covariance.
  *
- * Returns: the probability density.
+ * Return: the probability density.
  */
 function pdf_multivariate_gaussian(x:Real[_], μ:Real[_], Σ:Real[_,_]) ->
     Real {
@@ -455,7 +472,7 @@ function pdf_multivariate_gaussian(x:Real[_], μ:Real[_], Σ:Real[_,_]) ->
  * - μ: Mean.
  * - σ2: Variance.
  *
- * Returns: the probability density.
+ * Return: the probability density.
  */
 function pdf_multivariate_gaussian(x:Real[_], μ:Real[_], σ2:Real) -> Real {
   return exp(observe_multivariate_gaussian(x, μ, σ2));
@@ -470,7 +487,7 @@ function pdf_multivariate_gaussian(x:Real[_], μ:Real[_], σ2:Real) -> Real {
  * - μ: Location.
  * - Λ: Precision.
  *
- * Returns: the probability density.
+ * Return: the probability density.
  */
 function pdf_multivariate_student_t(x:Real[_], ν:Real, μ:Real[_],
     Λ:Real[_,_]) -> Real {
@@ -486,7 +503,7 @@ function pdf_multivariate_student_t(x:Real[_], ν:Real, μ:Real[_],
  * - μ: Location.
  * - λ: Precision.
  *
- * Returns: the probability density.
+ * Return: the probability density.
  */
 function pdf_multivariate_student_t(x:Real[_], ν:Real, μ:Real[_],
     λ:Real) -> Real {
@@ -502,7 +519,7 @@ function pdf_multivariate_student_t(x:Real[_], ν:Real, μ:Real[_],
  * - α: Shape of inverse-gamma on scale.
  * - β: Scale of inverse-gamma on scale.
  *
- * Returns: the probability density.
+ * Return: the probability density.
  */
 function pdf_multivariate_normal_inverse_gamma(x:Real[_], μ:Real[_],
     Λ:Real[_,_], α:Real, β:Real) -> Real {
@@ -518,7 +535,7 @@ function pdf_multivariate_normal_inverse_gamma(x:Real[_], μ:Real[_],
  * - α: Shape of the inverse-gamma.
  * - β: Scale of the inverse-gamma.
  *
- * Returns: the probability density.
+ * Return: the probability density.
  */
 function pdf_multivariate_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
     α:Real, β:Real) -> Real {
@@ -535,7 +552,7 @@ function pdf_multivariate_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
  * - α: Shape of the inverse-gamma.
  * - β: Scale of the inverse-gamma.
  *
- * Returns: the probability density.
+ * Return: the probability density.
  */
 function pdf_multivariate_normal_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
     Λ:Real[_,_], α:Real, β:Real) -> Real {
@@ -554,7 +571,7 @@ function pdf_multivariate_normal_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
  * - α: Shape of the inverse-gamma.
  * - β: Scale of the inverse-gamma.
  *
- * Returns: the probability density.
+ * Return: the probability density.
  */
 function pdf_multivariate_linear_normal_inverse_gamma_gaussian(x:Real[_],
     A:Real[_,_], μ:Real[_], c:Real[_], Λ:Real[_,_], α:Real, β:Real) -> Real {
