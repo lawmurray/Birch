@@ -331,8 +331,10 @@ bi::Statement* bi::ResolverSource::modify(Assignment* o) {
             new Identifier<Unknown>(new Name("isMissing"), o->loc)),
         new Parentheses(new EmptyExpression(o->loc), o->loc), o->loc);
     auto trueBranch = new ExpressionStatement(
-        new Assign(o->left->accept(&cloner), new Name("<-"),
-            o->right->accept(&cloner), o->loc), o->loc);
+        new Call(
+            new Member(o->left,
+                new Identifier<Unknown>(new Name("assume"), o->loc), o->loc),
+            o->right, o->loc), o->loc);
     auto falseBranch = new Assignment(o->left->accept(&cloner),
         new Name("~>"), o->right->accept(&cloner), o->loc);
     auto result = new If(cond, trueBranch, falseBranch, o->loc);
