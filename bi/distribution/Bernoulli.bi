@@ -1,22 +1,18 @@
 /**
  * Bernoulli distribution.
  */
-class Bernoulli(ρ:Expression<Real>) < Random<Boolean> {
+class Bernoulli(ρ:Expression<Real>) < Distribution<Boolean> {
   /**
    * Success probability.
    */
   ρ:Expression<Real> <- ρ;
 
-  function graft() -> DelayValue<Boolean>? {
-    if (delay?) {
-      return delay;
+  function graft() -> DelayValue<Boolean> {
+    m:DelayBeta?;
+    if (m <- ρ.graftBeta())? {
+      return DelayBetaBernoulli(m!);
     } else {
-      m:DelayBeta?;
-      if (m <- ρ.graftBeta())? {
-        return DelayBetaBernoulli(this, m!);
-      } else {
-        return DelayBernoulli(this, ρ);
-      }
+      return DelayBernoulli(ρ);
     }
   }
 }

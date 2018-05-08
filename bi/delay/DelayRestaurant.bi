@@ -3,8 +3,7 @@
  * cannot be instantiated, but the associated random variable may be
  * marginalized out.
  */
-class DelayRestaurant(x:Random<Real[_]>, α:Real, θ:Real) <
-    DelayValue<Real[_]>(x) {
+class DelayRestaurant(α:Real, θ:Real) < DelayValue<Real[_]> {
   /**
    * Concentration.
    */
@@ -31,8 +30,7 @@ class DelayRestaurant(x:Random<Real[_]>, α:Real, θ:Real) <
   N:Integer <- 0;
 }
 
-function DelayRestaurant(x:Random<Real[_]>, α:Real, θ:Real) ->
-    DelayRestaurant {
-  m:DelayRestaurant(x, α, θ);
+function DelayRestaurant(α:Real, θ:Real) -> DelayRestaurant {
+  m:DelayRestaurant(α, θ);
   return m;
 }

@@ -1,17 +1,17 @@
 /*
  * Delayed Dirichlet random variate.
  */
-class DelayDirichlet(x:Random<Real[_]>, α:Real[_]) < DelayValue<Real[_]>(x) {
+class DelayDirichlet(α:Real[_]) < DelayValue<Real[_]> {
   /**
    * Concentrations.
    */
   α:Real[_] <- α;
 
-  function doSimulate() -> Real[_] {
+  function simulate() -> Real[_] {
     return simulate_dirichlet(α);
   }
   
-  function doObserve(x:Real[_]) -> Real {
+  function observe(x:Real[_]) -> Real {
     return observe_dirichlet(x, α);
   }
 
@@ -20,7 +20,7 @@ class DelayDirichlet(x:Random<Real[_]>, α:Real[_]) < DelayValue<Real[_]>(x) {
   }
 }
 
-function DelayDirichlet(x:Random<Real[_]>, α:Real[_]) -> DelayDirichlet {
-  m:DelayDirichlet(x, α);
+function DelayDirichlet(α:Real[_]) -> DelayDirichlet {
+  m:DelayDirichlet(α);
   return m;
 }

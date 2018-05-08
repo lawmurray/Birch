@@ -1,7 +1,7 @@
 /**
  * Beta distribution.
  */
-class Beta(α:Expression<Real>, β:Expression<Real>) < Random<Real> {
+class Beta(α:Expression<Real>, β:Expression<Real>) < Distribution<Real> {
   /**
    * First shape.
    */
@@ -12,20 +12,12 @@ class Beta(α:Expression<Real>, β:Expression<Real>) < Random<Real> {
    */
   β:Expression<Real> <- β;
 
-  function graft() -> DelayValue<Real>? {
-    if (delay?) {
-      return delay;
-    } else {
-      return DelayBeta(this, α, β);
-    }
+  function graft() -> DelayValue<Real> {
+    return DelayBeta(α, β);
   }
 
   function graftBeta() -> DelayBeta? {
-    if (delay?) {
-      return DelayBeta?(delay);
-    } else {
-      return DelayBeta(this, α, β);
-    }
+    return DelayBeta(α, β);
   }
 }
 

@@ -1,8 +1,7 @@
 /*
  * Delayed multinomial random variate.
  */
-class DelayMultinomial(x:Random<Integer[_]>, n:Integer, ρ:Real[_]) <
-    DelayValue<Integer[_]>(x) {
+class DelayMultinomial(n:Integer, ρ:Real[_]) < DelayValue<Integer[_]> {
   /**
    * Number of trials.
    */
@@ -13,11 +12,11 @@ class DelayMultinomial(x:Random<Integer[_]>, n:Integer, ρ:Real[_]) <
    */
   ρ:Real[_] <- ρ;
 
-  function doSimulate() -> Integer[_] {
+  function simulate() -> Integer[_] {
     return simulate_multinomial(n, ρ);
   }
   
-  function doObserve(x:Integer[_]) -> Real {
+  function observe(x:Integer[_]) -> Real {
     return observe_multinomial(x, n, ρ);
   }
 
@@ -26,8 +25,7 @@ class DelayMultinomial(x:Random<Integer[_]>, n:Integer, ρ:Real[_]) <
   }
 }
 
-function DelayMultinomial(x:Random<Integer[_]>, n:Integer, ρ:Real[_]) ->
-    DelayMultinomial {
-  m:DelayMultinomial(x, n, ρ);
+function DelayMultinomial(n:Integer, ρ:Real[_]) -> DelayMultinomial {
+  m:DelayMultinomial(n, ρ);
   return m;
 }

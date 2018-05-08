@@ -1,9 +1,9 @@
 /*
  * Delayed multivariate linear-Gaussian-Gaussian random variate.
  */
-class DelayMultivariateLinearGaussianGaussian(x:Random<Real[_]>,
-    A:Real[_,_], μ_0:DelayMultivariateGaussian, c:Real[_], Σ:Real[_,_]) <
-    DelayMultivariateGaussian(x, A*μ_0.μ + c, A*μ_0.Σ*trans(A) + Σ) {
+class DelayMultivariateLinearGaussianGaussian(A:Real[_,_],
+    μ_0:DelayMultivariateGaussian, c:Real[_], Σ:Real[_,_]) <
+    DelayMultivariateGaussian(A*μ_0.μ + c, A*μ_0.Σ*trans(A) + Σ) {
   /**
    * Scale.
    */
@@ -29,15 +29,15 @@ class DelayMultivariateLinearGaussianGaussian(x:Random<Real[_]>,
    */
   Σ_m:Real[_,_] <- Σ;
 
-  function doCondition(x:Real[_]) {
+  function condition(x:Real[_]) {
     (μ_0.μ, μ_0.Σ) <- update_multivariate_linear_gaussian_gaussian(x, A,
         μ_0.μ, μ_0.Σ, μ_m, Σ_m);
   }
 }
 
-function DelayMultivariateLinearGaussianGaussian(x:Random<Real[_]>,
-    A:Real[_,_], μ_0:DelayMultivariateGaussian, c:Real[_], Σ:Real[_,_]) ->
+function DelayMultivariateLinearGaussianGaussian(A:Real[_,_],
+    μ_0:DelayMultivariateGaussian, c:Real[_], Σ:Real[_,_]) ->
     DelayMultivariateLinearGaussianGaussian {
-  m:DelayMultivariateLinearGaussianGaussian(x, A, μ_0, c, Σ);
+  m:DelayMultivariateLinearGaussianGaussian(A, μ_0, c, Σ);
   return m;
 }

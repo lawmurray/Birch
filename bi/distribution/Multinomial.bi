@@ -1,7 +1,7 @@
 /**
  * Multinomial distribution.
  */
-class Multinomial(n:Expression<Integer>, ρ:Expression<Real[_]>) < Random<Integer[_]> {
+class Multinomial(n:Expression<Integer>, ρ:Expression<Real[_]>) < Distribution<Integer[_]> {
   /**
    * Number of trials.
    */
@@ -12,16 +12,12 @@ class Multinomial(n:Expression<Integer>, ρ:Expression<Real[_]>) < Random<Intege
    */
   ρ:Expression<Real[_]> <- ρ;
 
-  function graft() -> DelayValue<Integer[_]>? {
-    if (delay?) {
-      return delay;
+  function graft() -> DelayValue<Integer[_]> {
+    m:DelayDirichlet?;
+    if (m <- ρ.graftDirichlet())? {
+      return DelayDirichletMultinomial(n, m!);
     } else {
-      m:DelayDirichlet?;
-      if (m <- ρ.graftDirichlet())? {
-        return DelayDirichletMultinomial(this, n, m!);
-      } else {
-        return DelayMultinomial(this, n, ρ);
-      }
+      return DelayMultinomial(n, ρ);
     }
   }
 }

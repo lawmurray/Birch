@@ -1,24 +1,24 @@
 /*
  * Delayed multivariate normal-inverse-gamma-Gaussian random variate.
  */
-class DelayMultivariateNormalInverseGammaGaussian(x:Random<Real[_]>,
-    μ:DelayMultivariateNormalInverseGamma) < DelayValue<Real[_]>(x) {
+class DelayMultivariateNormalInverseGammaGaussian(
+    μ:DelayMultivariateNormalInverseGamma) < DelayValue<Real[_]> {
   /**
    * Mean.
    */
   μ:DelayMultivariateNormalInverseGamma <- μ;
 
-  function doSimulate() -> Real[_] {
+  function simulate() -> Real[_] {
     return simulate_multivariate_normal_inverse_gamma_gaussian(μ.μ, μ.Λ,
         μ.σ2.α, μ.σ2.β);
   }
   
-  function doObserve(x:Real[_]) -> Real {
+  function observe(x:Real[_]) -> Real {
     return observe_multivariate_normal_inverse_gamma_gaussian(x, μ.μ, μ.Λ,
         μ.σ2.α, μ.σ2.β);
   }
 
-  function doCondition(x:Real[_]) {
+  function condition(x:Real[_]) {
     (μ.μ, μ.Λ, μ.σ2.α, μ.σ2.β) <- update_multivariate_normal_inverse_gamma_gaussian(
         x, μ.μ, μ.Λ, μ.σ2.α, μ.σ2.β);
   }
@@ -29,9 +29,9 @@ class DelayMultivariateNormalInverseGammaGaussian(x:Random<Real[_]>,
   }
 }
 
-function DelayMultivariateNormalInverseGammaGaussian(x:Random<Real[_]>,
+function DelayMultivariateNormalInverseGammaGaussian(
     μ:DelayMultivariateNormalInverseGamma) ->
     DelayMultivariateNormalInverseGammaGaussian {
-  m:DelayMultivariateNormalInverseGammaGaussian(x, μ);
+  m:DelayMultivariateNormalInverseGammaGaussian(μ);
   return m;
 }

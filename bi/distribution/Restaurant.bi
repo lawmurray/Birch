@@ -1,7 +1,7 @@
 /**
  * Chinese restaurant process.
  */
-class Restaurant(α:Expression<Real>, θ:Expression<Real>) < Random<Real[_]> {
+class Restaurant(α:Expression<Real>, θ:Expression<Real>) < Distribution<Real[_]> {
   /**
    * Concentration.
    */
@@ -12,20 +12,12 @@ class Restaurant(α:Expression<Real>, θ:Expression<Real>) < Random<Real[_]> {
    */
   θ:Expression<Real> <- θ;
 
-  function graft() -> DelayValue<Real[_]>? {
-    if (delay?) {
-      return delay;
-    } else {
-      return DelayRestaurant(this, α, θ);
-    }
+  function graft() -> DelayValue<Real[_]> {
+    return DelayRestaurant(α, θ);
   }
 
   function graftRestaurant() -> DelayRestaurant? {
-    if (delay?) {
-      return DelayRestaurant?(graftRestaurant());
-    } else {
-      return DelayRestaurant(this, α, θ);
-    }
+    return DelayRestaurant(α, θ);
   }
 }
 

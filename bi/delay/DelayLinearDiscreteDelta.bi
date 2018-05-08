@@ -2,8 +2,8 @@
  * Delayed delta function on a linear transformation of a discrete random
  * variate.
  */
-class DelayLinearDiscreteDelta(x:Random<Integer>, a:Integer,
-    μ:DelayValue<Integer>, c:Integer) < DelayValue<Integer>(x) {
+class DelayLinearDiscreteDelta(a:Integer, μ:DelayValue<Integer>, c:Integer) <
+    DelayValue<Integer> {
   /**
    * Scale. Should be 1 or -1 to ensure integer-invertible.
    */
@@ -19,11 +19,11 @@ class DelayLinearDiscreteDelta(x:Random<Integer>, a:Integer,
    */
   c:Integer <- c;
 
-  function doSimulate() -> Integer {
+  function simulate() -> Integer {
     return simulate_delta(a*μ.simulate() + c);
   }
   
-  function doObserve(x:Integer) -> Real {
+  function observe(x:Integer) -> Real {
     return μ.observe((x - c)/a);
   }
 
@@ -36,9 +36,9 @@ class DelayLinearDiscreteDelta(x:Random<Integer>, a:Integer,
   }
 }
 
-function DelayLinearDiscreteDelta(x:Random<Integer>, a:Integer,
-    μ:DelayValue<Integer>, c:Integer) -> DelayLinearDiscreteDelta {
+function DelayLinearDiscreteDelta(a:Integer, μ:DelayValue<Integer>,
+    c:Integer) -> DelayLinearDiscreteDelta {
   assert abs(a) == 1;
-  m:DelayLinearDiscreteDelta(x, a, μ, c);
+  m:DelayLinearDiscreteDelta(a, μ, c);
   return m;
 }

@@ -1,22 +1,21 @@
 /*
  * Delayed restaurant-categorical random variate.
  */
-class DelayRestaurantCategorical(x:Random<Integer>, ρ:DelayRestaurant) <
-    DelayValue<Integer>(x) {
+class DelayRestaurantCategorical(ρ:DelayRestaurant) < DelayValue<Integer> {
   /**
    * Category probabilities.
    */
   ρ:DelayRestaurant <- ρ;
 
-  function doSimulate() -> Integer {
+  function simulate() -> Integer {
     return simulate_crp_categorical(ρ.α, ρ.θ, ρ.n, ρ.N);
   }
   
-  function doObserve(x:Integer) -> Real {
+  function observe(x:Integer) -> Real {
     return observe_crp_categorical(x, ρ.α, ρ.θ, ρ.n, ρ.N);
   }
 
-  function doCondition(x:Integer) {
+  function condition(x:Integer) {
     assert x <= ρ.K + 1;
     if (x == ρ.K + 1) {
       n1:Integer[ρ.K + 1];
@@ -35,8 +34,8 @@ class DelayRestaurantCategorical(x:Random<Integer>, ρ:DelayRestaurant) <
   }
 }
 
-function DelayRestaurantCategorical(x:Random<Integer>, ρ:DelayRestaurant) ->
+function DelayRestaurantCategorical(ρ:DelayRestaurant) ->
     DelayRestaurantCategorical {
-  m:DelayRestaurantCategorical(x, ρ);
+  m:DelayRestaurantCategorical(ρ);
   return m;
 }

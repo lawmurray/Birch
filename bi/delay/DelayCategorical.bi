@@ -1,18 +1,17 @@
 /*
  * Delayed Categorical random variate.
  */
-class DelayCategorical(x:Random<Integer>, ρ:Real[_]) <
-    DelayValue<Integer>(x) {
+class DelayCategorical(ρ:Real[_]) < DelayValue<Integer> {
   /**
    * Category probabilities.
    */
   ρ:Real[_] <- ρ;
 
-  function doSimulate() -> Integer {
+  function simulate() -> Integer {
     return simulate_categorical(ρ);
   }
   
-  function doObserve(x:Integer) -> Real {
+  function observe(x:Integer) -> Real {
     return observe_categorical(x, ρ);
   }
 
@@ -25,7 +24,7 @@ class DelayCategorical(x:Random<Integer>, ρ:Real[_]) <
   }
 }
 
-function DelayCategorical(x:Random<Integer>, ρ:Real[_]) -> DelayCategorical {
-  m:DelayCategorical(x, ρ);
+function DelayCategorical(ρ:Real[_]) -> DelayCategorical {
+  m:DelayCategorical(ρ);
   return m;
 }

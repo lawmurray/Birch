@@ -2,7 +2,7 @@
  * Uniform distribution over integers.
  */
 class UniformInteger(l:Expression<Integer>, u:Expression<Integer>) <
-    Random<Integer> {
+    Distribution<Integer> {
   /**
    * Lower bound.
    */
@@ -13,20 +13,12 @@ class UniformInteger(l:Expression<Integer>, u:Expression<Integer>) <
    */
   u:Expression<Integer> <- u;
 
-  function graft() -> DelayValue<Integer>? {
-    if (delay?) {
-      return delay;
-    } else {
-      return DelayUniformInteger(this, l, u);
-    }
+  function graft() -> DelayValue<Integer> {
+    return DelayUniformInteger(l, u);
   }
 
   function graftDiscrete() -> DelayValue<Integer>? {
-    if (delay?) {
-      return DelayValue<Integer>?(delay);
-    } else {
-      return DelayUniformInteger(this, l, u);
-    }
+    return DelayUniformInteger(l, u);
   }
 }
 

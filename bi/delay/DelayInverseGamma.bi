@@ -1,7 +1,7 @@
 /*
  * Delayed inverse-gamma random variate.
  */
-class DelayInverseGamma(x:Random<Real>, α:Real, β:Real) < DelayValue<Real>(x) {
+class DelayInverseGamma(α:Real, β:Real) < DelayValue<Real> {
   /**
    * Shape.
    */
@@ -12,11 +12,11 @@ class DelayInverseGamma(x:Random<Real>, α:Real, β:Real) < DelayValue<Real>(x) 
    */
   β:Real <- β;
 
-  function doSimulate() -> Real {
+  function simulate() -> Real {
     return simulate_inverse_gamma(α, β);
   }
   
-  function doObserve(x:Real) -> Real {
+  function observe(x:Real) -> Real {
     return observe_inverse_gamma(x, α, β);
   }
 
@@ -29,8 +29,7 @@ class DelayInverseGamma(x:Random<Real>, α:Real, β:Real) < DelayValue<Real>(x) 
   }
 }
 
-function DelayInverseGamma(x:Random<Real>, α:Real, β:Real) ->
-    DelayInverseGamma {
-  m:DelayInverseGamma(x, α, β);
+function DelayInverseGamma(α:Real, β:Real) -> DelayInverseGamma {
+  m:DelayInverseGamma(α, β);
   return m;
 }

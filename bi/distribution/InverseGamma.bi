@@ -1,7 +1,7 @@
 /**
  * Inverse-gamma distribution.
  */
-class InverseGamma(α:Expression<Real>, β:Expression<Real>) < Random<Real> {
+class InverseGamma(α:Expression<Real>, β:Expression<Real>) < Distribution<Real> {
   /**
    * Shape.
    */
@@ -12,20 +12,12 @@ class InverseGamma(α:Expression<Real>, β:Expression<Real>) < Random<Real> {
    */
   β:Expression<Real> <- β;
 
-  function graft() -> DelayValue<Real>? {
-    if (delay?) {
-      return delay;
-    } else {
-      return DelayInverseGamma(this, α, β);
-    }
+  function graft() -> DelayValue<Real> {
+    return DelayInverseGamma(α, β);
   }
 
   function graftInverseGamma() -> DelayInverseGamma? {
-    if (delay?) {
-      return DelayInverseGamma?(delay);
-    } else {
-      return DelayInverseGamma(this, α, β);
-    }
+    return DelayInverseGamma(α, β);
   }
 }
 

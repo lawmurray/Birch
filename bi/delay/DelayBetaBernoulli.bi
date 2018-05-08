@@ -1,22 +1,21 @@
 /*
  * Delayed Beta-bernoulli random variate.
  */
-class DelayBetaBernoulli(x:Random<Boolean>, ρ:DelayBeta) <
-    DelayValue<Boolean>(x) {
+class DelayBetaBernoulli(ρ:DelayBeta) < DelayValue<Boolean> {
   /**
    * Success probability.
    */
   ρ:DelayBeta <- ρ;
 
-  function doSimulate() -> Boolean {
+  function simulate() -> Boolean {
     return simulate_beta_bernoulli(ρ.α, ρ.β);
   }
   
-  function doObserve(x:Boolean) -> Real {
+  function observe(x:Boolean) -> Real {
     return observe_beta_bernoulli(x, ρ.α, ρ.β);
   }
 
-  function doCondition(x:Boolean) {
+  function condition(x:Boolean) {
     (ρ.α, ρ.β) <- update_beta_bernoulli(x, ρ.α, ρ.β);
   }
 
@@ -25,8 +24,8 @@ class DelayBetaBernoulli(x:Random<Boolean>, ρ:DelayBeta) <
   }
 }
 
-function DelayBetaBernoulli(x:Random<Boolean>, ρ:DelayBeta) ->
+function DelayBetaBernoulli(ρ:DelayBeta) ->
     DelayBetaBernoulli {
-  m:DelayBetaBernoulli(x, ρ);
+  m:DelayBetaBernoulli(ρ);
   return m;
 }

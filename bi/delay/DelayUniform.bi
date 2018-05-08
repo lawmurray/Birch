@@ -1,7 +1,7 @@
 /*
  * Delayed uniform random variable.
  */
-class DelayUniform(x:Random<Real>, l:Real, u:Real) < DelayValue<Real>(x) {
+class DelayUniform(l:Real, u:Real) < DelayValue<Real> {
   /**
    * Lower bound.
    */
@@ -12,11 +12,11 @@ class DelayUniform(x:Random<Real>, l:Real, u:Real) < DelayValue<Real>(x) {
    */
   u:Real <- u;
 
-  function doSimulate() -> Real {
+  function simulate() -> Real {
     return simulate_uniform(l, u);
   }
   
-  function doObserve(x:Real) -> Real {
+  function observe(x:Real) -> Real {
     return observe_uniform(x, l, u);
   }
 
@@ -29,7 +29,7 @@ class DelayUniform(x:Random<Real>, l:Real, u:Real) < DelayValue<Real>(x) {
   }
 }
 
-function DelayUniform(x:Random<Real>, l:Real, u:Real) -> DelayUniform {
-  m:DelayUniform(x, l, u);
+function DelayUniform(l:Real, u:Real) -> DelayUniform {
+  m:DelayUniform(l, u);
   return m;
 }

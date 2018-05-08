@@ -1,7 +1,7 @@
 /**
  * Gamma distribution.
  */
-class Gamma(k:Expression<Real>, θ:Expression<Real>) < Random<Real> {
+class Gamma(k:Expression<Real>, θ:Expression<Real>) < Distribution<Real> {
   /**
    * Shape.
    */
@@ -12,20 +12,12 @@ class Gamma(k:Expression<Real>, θ:Expression<Real>) < Random<Real> {
    */
   θ:Expression<Real> <- θ;
 
-  function graft() -> DelayValue<Real>? {
-    if (delay?) {
-      return delay;
-    } else {
-      return DelayGamma(this, k, θ);
-    }
+  function graft() -> DelayValue<Real> {
+    return DelayGamma(k, θ);
   }
 
   function graftGamma() -> DelayGamma? {
-    if (delay?) {
-      return DelayGamma?(delay);
-    } else {
-      return DelayGamma(this, k, θ);
-    }
+    return DelayGamma(k, θ);
   }
 }
 

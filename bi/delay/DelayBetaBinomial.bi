@@ -1,8 +1,7 @@
 /*
  * Delayed Beta-binomial random variate.
  */
-class DelayBetaBinomial(x:Random<Integer>, n:Integer, ρ:DelayBeta) <
-    DelayValue<Integer>(x) {
+class DelayBetaBinomial(n:Integer, ρ:DelayBeta) < DelayValue<Integer> {
   /**
    * Number of trials.
    */
@@ -13,15 +12,15 @@ class DelayBetaBinomial(x:Random<Integer>, n:Integer, ρ:DelayBeta) <
    */
   ρ:DelayBeta <- ρ;
 
-  function doSimulate() -> Integer {
+  function simulate() -> Integer {
     return simulate_beta_binomial(n, ρ.α, ρ.β);
   }
   
-  function doObserve(x:Integer) -> Real {
+  function observe(x:Integer) -> Real {
     return observe_beta_binomial(x, n, ρ.α, ρ.β);
   }
 
-  function doCondition(x:Integer) {
+  function condition(x:Integer) {
     (ρ.α, ρ.β) <- update_beta_binomial(x, n, ρ.α, ρ.β);
   }
 
@@ -34,8 +33,7 @@ class DelayBetaBinomial(x:Random<Integer>, n:Integer, ρ:DelayBeta) <
   }
 }
 
-function DelayBetaBinomial(x:Random<Integer>, n:Integer, ρ:DelayBeta) ->
-    DelayBetaBinomial {
-  m:DelayBetaBinomial(x, n, ρ);
+function DelayBetaBinomial(n:Integer, ρ:DelayBeta) -> DelayBetaBinomial {
+  m:DelayBetaBinomial(n, ρ);
   return m;
 }

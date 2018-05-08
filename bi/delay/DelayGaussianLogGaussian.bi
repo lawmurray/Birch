@@ -1,8 +1,8 @@
 /*
  * Delayed Gaussian-log-Gaussian random variate.
  */
-class DelayGaussianLogGaussian(x:Random<Real>, μ_0:DelayGaussian, σ2:Real) <
-    DelayGaussian(x, μ_0.μ, μ_0.σ2 + σ2) {
+class DelayGaussianLogGaussian(μ_0:DelayGaussian, σ2:Real) <
+    DelayGaussian(μ_0.μ, μ_0.σ2 + σ2) {
   /**
    * Prior mean.
    */
@@ -18,7 +18,7 @@ class DelayGaussianLogGaussian(x:Random<Real>, μ_0:DelayGaussian, σ2:Real) <
    */
   σ2_m:Real <- σ2;
 
-  function doCondition(x:Real) {
+  function condition(x:Real) {
     (μ_0.μ, μ_0.σ2) <- update_gaussian_gaussian(log(x), μ_0.μ, μ_0.σ2, μ_m,
         σ2_m);
   }
@@ -32,8 +32,8 @@ class DelayGaussianLogGaussian(x:Random<Real>, μ_0:DelayGaussian, σ2:Real) <
   }
 }
 
-function DelayGaussianLogGaussian(x:Random<Real>, μ_0:DelayGaussian,
-    σ2:Real) -> DelayGaussianLogGaussian {
-  m:DelayGaussianLogGaussian(x, μ_0, σ2);
+function DelayGaussianLogGaussian(μ_0:DelayGaussian, σ2:Real) ->
+    DelayGaussianLogGaussian {
+  m:DelayGaussianLogGaussian(μ_0, σ2);
   return m;
 }

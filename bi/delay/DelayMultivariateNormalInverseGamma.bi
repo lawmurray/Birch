@@ -24,8 +24,8 @@
  * be multiplication on the left (as above) or the right, or division on the
  * right.
  */
-class DelayMultivariateNormalInverseGamma(x:Random<Real[_]>, μ:Real[_],
-    A:Real[_,_], σ2:DelayInverseGamma) < DelayValue<Real[_]>(x) {
+class DelayMultivariateNormalInverseGamma(μ:Real[_], A:Real[_,_],
+    σ2:DelayInverseGamma) < DelayValue<Real[_]> {
   /**
    * Mean.
    */
@@ -45,11 +45,11 @@ class DelayMultivariateNormalInverseGamma(x:Random<Real[_]>, μ:Real[_],
     return length(μ);
   }
 
-  function doSimulate() -> Real[_] {
+  function simulate() -> Real[_] {
     return simulate_multivariate_normal_inverse_gamma(μ, Λ, σ2.α, σ2.β);
   }
   
-  function doObserve(x:Real[_]) -> Real {
+  function observe(x:Real[_]) -> Real {
     return observe_multivariate_normal_inverse_gamma(x, μ, Λ, σ2.α, σ2.β);
   }
 
@@ -58,9 +58,8 @@ class DelayMultivariateNormalInverseGamma(x:Random<Real[_]>, μ:Real[_],
   }
 }
 
-function DelayMultivariateNormalInverseGamma(x:Random<Real[_]>, μ:Real[_],
-    A:Real[_,_], σ2:DelayInverseGamma) ->
-    DelayMultivariateNormalInverseGamma {
-  m:DelayMultivariateNormalInverseGamma(x, μ, A, σ2);
+function DelayMultivariateNormalInverseGamma(μ:Real[_], A:Real[_,_],
+    σ2:DelayInverseGamma) -> DelayMultivariateNormalInverseGamma {
+  m:DelayMultivariateNormalInverseGamma(μ, A, σ2);
   return m;
 }

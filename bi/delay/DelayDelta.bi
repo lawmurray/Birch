@@ -1,17 +1,17 @@
 /*
  * Delayed delta random variate.
  */
-class DelayDelta(x:Random<Integer>, μ:Integer) < DelayValue<Integer>(x) {
+class DelayDelta(μ:Integer) < DelayValue<Integer> {
   /**
    * Location.
    */
   μ:Integer <- μ;
 
-  function doSimulate() -> Integer {
+  function simulate() -> Integer {
     return simulate_delta(μ);
   }
   
-  function doObserve(x:Integer) -> Real {
+  function observe(x:Integer) -> Real {
     return observe_delta(x, μ);
   }
 
@@ -20,7 +20,7 @@ class DelayDelta(x:Random<Integer>, μ:Integer) < DelayValue<Integer>(x) {
   }
 }
 
-function DelayDelta(x:Random<Integer>, μ:Integer) -> DelayDelta {
-  m:DelayDelta(x, μ);
+function DelayDelta(μ:Integer) -> DelayDelta {
+  m:DelayDelta(μ);
   return m;
 }

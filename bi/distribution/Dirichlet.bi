@@ -1,26 +1,18 @@
 /**
  * Dirichlet distribution.
  */
-class Dirichlet(α:Expression<Real[_]>) < Random<Real[_]> {
+class Dirichlet(α:Expression<Real[_]>) < Distribution<Real[_]> {
   /**
    * Concentration.
    */
   α:Expression<Real[_]> <- α;
 
-  function graft() -> DelayValue<Real[_]>? {
-    if (delay?) {
-      return delay;
-    } else {
-      return DelayDirichlet(this, α);
-    }
+  function graft() -> DelayValue<Real[_]> {
+    return DelayDirichlet(α);
   }
 
   function graftDirichlet() -> DelayDirichlet? {
-    if (delay?) {
-      return DelayDirichlet?(delay);
-    } else {
-      return DelayDirichlet(this, α);
-    }
+    return DelayDirichlet(α);
   }
 }
 

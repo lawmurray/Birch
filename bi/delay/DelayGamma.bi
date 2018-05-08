@@ -1,7 +1,7 @@
 /*
  * Delayed gamma random variate.
  */
-class DelayGamma(x:Random<Real>, k:Real, θ:Real) < DelayValue<Real>(x) {
+class DelayGamma(k:Real, θ:Real) < DelayValue<Real> {
   /**
    * Shape.
    */
@@ -12,11 +12,11 @@ class DelayGamma(x:Random<Real>, k:Real, θ:Real) < DelayValue<Real>(x) {
    */
   θ:Real <- θ;
 
-  function doSimulate() -> Real {
+  function simulate() -> Real {
     return simulate_gamma(k, θ);
   }
   
-  function doObserve(x:Real) -> Real {
+  function observe(x:Real) -> Real {
     return observe_gamma(x, k, θ);
   }
 
@@ -29,7 +29,7 @@ class DelayGamma(x:Random<Real>, k:Real, θ:Real) < DelayValue<Real>(x) {
   }
 }
 
-function DelayGamma(x:Random<Real>, k:Real, θ:Real) -> DelayGamma {
-  m:DelayGamma(x, k, θ);
+function DelayGamma(k:Real, θ:Real) -> DelayGamma {
+  m:DelayGamma(k, θ);
   return m;
 }

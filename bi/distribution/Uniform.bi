@@ -1,7 +1,7 @@
 /**
  * Uniform distribution.
  */
-class Uniform(l:Expression<Real>, u:Expression<Real>) < Random<Real> {
+class Uniform(l:Expression<Real>, u:Expression<Real>) < Distribution<Real> {
   /**
    * Lower bound.
    */
@@ -12,12 +12,8 @@ class Uniform(l:Expression<Real>, u:Expression<Real>) < Random<Real> {
    */
   u:Expression<Real> <- u;
 
-  function graft() -> DelayValue<Real>? {
-    if (delay?) {
-      return delay;
-    } else {
-      return DelayUniform(this, l, u);
-    }
+  function graft() -> DelayValue<Real> {
+    return DelayUniform(l, u);
   }
 }
 

@@ -1,18 +1,14 @@
 /**
  * Student's $t$-distribution.
  */
-class Student(ν:Expression<Real>) < Random<Real> {
+class Student(ν:Expression<Real>) < Distribution<Real> {
   /**
    * Degrees of freedom.
    */
   ν:Expression<Real> <- ν;
 
-  function graft() -> DelayValue<Real>? {
-    if (delay?) {
-      return delay;
-    } else {
-      return DelayStudent(this, ν);
-    }
+  function graft() -> DelayValue<Real> {
+    return DelayStudent(ν);
   }
 }
 

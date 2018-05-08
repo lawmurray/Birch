@@ -13,7 +13,7 @@ class Delay {
   child:Delay&;
   
   /**
-   * Realize (simulate or observe).
+   * Realize a value for the associated random variate.
    */
   function realize();
   

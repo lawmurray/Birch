@@ -1,22 +1,21 @@
 /*
  * Delayed Dirichlet-categorical random variate.
  */
-class DelayDirichletCategorical(x:Random<Integer>, ρ:DelayDirichlet) <
-    DelayValue<Integer>(x) {
+class DelayDirichletCategorical(ρ:DelayDirichlet) < DelayValue<Integer> {
   /**
    * Category probabilities.
    */
   ρ:DelayDirichlet <- ρ;
 
-  function doSimulate() -> Integer {
+  function simulate() -> Integer {
     return simulate_dirichlet_categorical(ρ.α);
   }
   
-  function doObserve(x:Integer) -> Real {
+  function observe(x:Integer) -> Real {
     return observe_dirichlet_categorical(x, ρ.α);
   }
 
-  function doCondition(x:Integer) {
+  function condition(x:Integer) {
     ρ.α <- update_dirichlet_categorical(x, ρ.α);
   }
 
@@ -29,8 +28,8 @@ class DelayDirichletCategorical(x:Random<Integer>, ρ:DelayDirichlet) <
   }
 }
 
-function DelayDirichletCategorical(x:Random<Integer>, ρ:DelayDirichlet) ->
+function DelayDirichletCategorical(ρ:DelayDirichlet) ->
     DelayDirichletCategorical {
-  m:DelayDirichletCategorical(x, ρ);
+  m:DelayDirichletCategorical(ρ);
   return m;
 }

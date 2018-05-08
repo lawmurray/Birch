@@ -1,7 +1,7 @@
 /**
  * Binomial distribution.
  */
-class Binomial(n:Expression<Integer>, ρ:Expression<Real>) < Random<Integer> {
+class Binomial(n:Expression<Integer>, ρ:Expression<Real>) < Distribution<Integer> {
   /**
    * Number of trials.
    */
@@ -12,25 +12,17 @@ class Binomial(n:Expression<Integer>, ρ:Expression<Real>) < Random<Integer> {
    */
   ρ:Expression<Real> <- ρ;
 
-  function graft() -> DelayValue<Integer>? {
-    if (delay?) {
-      return delay;
+  function graft() -> DelayValue<Integer> {
+    m:DelayBeta?;
+    if (m <- ρ.graftBeta())? {
+      return DelayBetaBinomial(n, m!);
     } else {
-      m:DelayBeta?;
-      if (m <- ρ.graftBeta())? {
-        return DelayBetaBinomial(this, n, m!);
-      } else {
-        return DelayBinomial(this, n, ρ);
-      }
+      return DelayBinomial(n, ρ);
     }
   }
   
   function graftDiscrete() -> DelayValue<Integer>? {
-    if (delay?) {
-      return DelayValue<Integer>?(delay);
-    } else {
-      return DelayBinomial(this, n, ρ);
-    }
+    return DelayBinomial(n, ρ);
   }
 }
 
