@@ -7,10 +7,10 @@ program test_linear_normal_inverse_gamma_gaussian(N:Integer <- 10000) {
   
   a:Real <- simulate_uniform(-10.0, 10.0);
   μ:Real <- simulate_uniform(-10.0, 10.0);
-  a2:Real <- simulate_uniform(0.0, 10.0);
+  a2:Real <- simulate_uniform(0.0, 2.0);
   c:Real <- simulate_uniform(-10.0, 10.0);
-  α:Real <- simulate_uniform(0.0, 10.0);
-  β:Real <- simulate_uniform(0.0, 10.0);
+  α:Real <- simulate_uniform(0.0, 2.0);
+  β:Real <- simulate_uniform(0.0, 2.0);
  
   /* simulate forward */
   for i:Integer in 1..N {
