@@ -154,3 +154,57 @@ class Random<Value> < Expression<Value> {
     }
   }
 }
+
+/**
+ * Create random variate with attached distribution.
+ */
+function Random(dist:Distribution<Boolean>) -> Random<Boolean> {
+  m:Random<Boolean>;
+  m.assume(dist);
+  return m;
+}
+
+/**
+ * Create random variate with attached distribution.
+ */
+function Random(dist:Distribution<Integer>) -> Random<Integer> {
+  m:Random<Integer>;
+  m.assume(dist);
+  return m;
+}
+
+/**
+ * Create random variate with attached distribution.
+ */
+function Random(dist:Distribution<Real>) -> Random<Real> {
+  m:Random<Real>;
+  m.assume(dist);
+  return m;
+}
+
+/**
+ * Create random variate with attached distribution.
+ */
+function Random(dist:Distribution<Boolean[_]>) -> Random<Boolean[_]> {
+  m:Random<Boolean[_]>;
+  m.assume(dist);
+  return m;
+}
+
+/**
+ * Create random variate with attached distribution.
+ */
+function Random(dist:Distribution<Integer[_]>) -> Random<Integer[_]> {
+  m:Random<Integer[_]>;
+  m.assume(dist);
+  return m;
+}
+
+/**
+ * Create random variate with attached distribution.
+ */
+function Random(dist:Distribution<Real[_]>) -> Random<Real[_]> {
+  m:Random<Real[_]>;
+  m.assume(dist);
+  return m;
+}
