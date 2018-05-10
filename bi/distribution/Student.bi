@@ -7,8 +7,12 @@ class Student(ν:Expression<Real>) < Distribution<Real> {
    */
   ν:Expression<Real> <- ν;
 
-  function graft() -> DelayValue<Real> {
-    return DelayStudent(ν);
+  function graft() {
+    if delay? {
+      delay!.prune();
+    } else {
+      delay <- DelayStudent(x, ν);
+    }
   }
 }
 

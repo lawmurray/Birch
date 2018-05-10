@@ -13,12 +13,21 @@ class UniformInteger(l:Expression<Integer>, u:Expression<Integer>) <
    */
   u:Expression<Integer> <- u;
 
-  function graft() -> DelayValue<Integer> {
-    return DelayUniformInteger(l, u);
+  function graft() {
+    if delay? {
+      delay!.prune();
+    } else {
+      delay <- DelayUniformInteger(x, l, u);
+    }
   }
 
   function graftDiscrete() -> DelayValue<Integer>? {
-    return DelayUniformInteger(l, u);
+    if delay? {
+      delay!.prune();
+    } else {
+      delay <- DelayUniformInteger(x, l, u);
+    }
+    return DelayValue<Integer>?(delay);
   }
 }
 

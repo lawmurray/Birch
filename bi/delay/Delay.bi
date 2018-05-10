@@ -3,7 +3,7 @@
  */
 class Delay {
   /**
-   * Parent.
+   * Parent, if one exists.
    */
   parent:Delay?;
   
@@ -13,9 +13,17 @@ class Delay {
   child:Delay&;
   
   /**
-   * Realize a value for the associated random variate.
+   * Realize (simulate or observe).
    */
-  function realize();
+  function value();
+  
+  /**
+   * Set the child of this node, on the $M$-path.
+   */
+  function setChild(child:Delay) {
+    child.parent <- this;
+    this.child <- child;
+  }
   
   /**
    * Prune the $M$-path from below this node.
@@ -24,8 +32,7 @@ class Delay {
     child:Delay? <- this.child;
     if (child?) {
       child!.prune();
-      child!.realize();
-      child <- nil;
+      child!.value();
     }
   }
 }

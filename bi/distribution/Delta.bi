@@ -8,16 +8,19 @@ class Delta(μ:Expression<Integer>) < Distribution<Integer> {
    */
   μ:Expression<Integer> <- μ;
 
-  function graft() -> DelayValue<Integer> {
-    m1:DelayValue<Integer>?;
-    m2:TransformLinearDiscrete?;
-    
-    if (m1 <- μ.graftDiscrete())? {
-      return DelayDiscreteDelta(m1!);
-    } else if (m2 <- μ.graftLinearDiscrete())? {
-      return DelayLinearDiscreteDelta(m2!.a, m2!.x, m2!.c);
+  function graft() {
+    if delay? {
+      delay!.prune();
     } else {
-      return DelayDelta(μ);
+      m1:DelayValue<Integer>?;
+      m2:TransformLinearDiscrete?;
+      if (m1 <- μ.graftDiscrete())? {
+        delay <- DelayDiscreteDelta(x, m1!);
+      } else if (m2 <- μ.graftLinearDiscrete())? {
+        delay <- DelayLinearDiscreteDelta(x, m2!.a, m2!.x, m2!.c);
+      } else {
+        delay <- DelayDelta(x, μ);
+      }
     }
   }
 }

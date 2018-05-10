@@ -12,12 +12,21 @@ class Restaurant(α:Expression<Real>, θ:Expression<Real>) < Distribution<Real[_
    */
   θ:Expression<Real> <- θ;
 
-  function graft() -> DelayValue<Real[_]> {
-    return DelayRestaurant(α, θ);
+  function graft() {
+    if delay? {
+      delay!.prune();
+    } else {
+      delay <- DelayRestaurant(x, α, θ);
+    }
   }
 
   function graftRestaurant() -> DelayRestaurant? {
-    return DelayRestaurant(α, θ);
+    if delay? {
+      delay!.prune();
+    } else {
+      delay <- DelayRestaurant(x, α, θ);
+    }
+    return DelayRestaurant?(delay);
   }
 }
 

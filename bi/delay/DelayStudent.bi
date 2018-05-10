@@ -1,7 +1,7 @@
 /*
  * Delayed Student's $t$ random variate.
  */
-class DelayStudent(ν:Real) < DelayValue<Real> {
+class DelayStudent(x:Random<Real>&, ν:Real) < DelayValue<Real>(x) {
   /**
    * Degrees of freedom.
    */
@@ -24,7 +24,7 @@ class DelayStudent(ν:Real) < DelayValue<Real> {
   }
 }
 
-function DelayStudent(ν:Real) -> DelayStudent {
-  m:DelayStudent(ν);
+function DelayStudent(x:Random<Real>&, ν:Real) -> DelayStudent {
+  m:DelayStudent(x, ν);
   return m;
 }

@@ -1,7 +1,7 @@
 /*
  * Delayed delta random variate.
  */
-class DelayDelta(μ:Integer) < DelayValue<Integer> {
+class DelayDelta(x:Random<Integer>&, μ:Integer) < DelayValue<Integer>(x) {
   /**
    * Location.
    */
@@ -20,7 +20,7 @@ class DelayDelta(μ:Integer) < DelayValue<Integer> {
   }
 }
 
-function DelayDelta(μ:Integer) -> DelayDelta {
-  m:DelayDelta(μ);
+function DelayDelta(x:Random<Integer>&, μ:Integer) -> DelayDelta {
+  m:DelayDelta(x, μ);
   return m;
 }

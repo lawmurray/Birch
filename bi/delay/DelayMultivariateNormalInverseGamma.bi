@@ -24,8 +24,8 @@
  * be multiplication on the left (as above) or the right, or division on the
  * right.
  */
-class DelayMultivariateNormalInverseGamma(μ:Real[_], A:Real[_,_],
-    σ2:DelayInverseGamma) < DelayValue<Real[_]> {
+class DelayMultivariateNormalInverseGamma(x:Random<Real[_]>&, μ:Real[_],
+    A:Real[_,_], σ2:DelayInverseGamma) < DelayValue<Real[_]>(x) {
   /**
    * Mean.
    */
@@ -58,8 +58,9 @@ class DelayMultivariateNormalInverseGamma(μ:Real[_], A:Real[_,_],
   }
 }
 
-function DelayMultivariateNormalInverseGamma(μ:Real[_], A:Real[_,_],
-    σ2:DelayInverseGamma) -> DelayMultivariateNormalInverseGamma {
-  m:DelayMultivariateNormalInverseGamma(μ, A, σ2);
+function DelayMultivariateNormalInverseGamma(x:Random<Real[_]>&, μ:Real[_],
+    A:Real[_,_], σ2:DelayInverseGamma) ->
+    DelayMultivariateNormalInverseGamma {
+  m:DelayMultivariateNormalInverseGamma(x, μ, A, σ2);
   return m;
 }

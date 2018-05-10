@@ -1,7 +1,8 @@
 /*
  * Delayed gamma-Poisson random variate.
  */
-class DelayGammaPoisson(λ:DelayGamma) < DelayValue<Integer> {
+class DelayGammaPoisson(x:Random<Integer>&, λ:DelayGamma) <
+    DelayValue<Integer>(x) {
   /**
    * Rate.
    */
@@ -28,7 +29,9 @@ class DelayGammaPoisson(λ:DelayGamma) < DelayValue<Integer> {
   }
 }
 
-function DelayGammaPoisson(λ:DelayGamma) ->  DelayGammaPoisson {
-  m:DelayGammaPoisson(λ);
+function DelayGammaPoisson(x:Random<Integer>&, λ:DelayGamma) -> 
+    DelayGammaPoisson {
+  m:DelayGammaPoisson(x, λ);
+  λ.setChild(m);
   return m;
 }

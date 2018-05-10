@@ -5,26 +5,54 @@
  */
 class Distribution<Value> {
   /**
-   * Simulate the random variable.
+   * Associated node on delayed sampling $M$-path.
+   */
+  delay:DelayValue<Value>?;
+
+  /**
+   * Associated random variate.
+   */
+  x:Random<Value>&;
+
+  /**
+   * Associate a random variate with this distribution.
+   */
+  function associate(x:Random<Value>) {
+    this.x <- x;
+  }
+
+  /**
+   * Instantiate the associated delayed random variate.
+   */
+  function value() {
+    graft();
+    delay!.value();
+    delay <- nil;
+  }
+
+  /**
+   * Simulate a random variate.
+   *
+   * Return: the value.
    */
   function simulate() -> Value {
-    delay:DelayValue<Value> <- graft();
-    x:Value <- delay.simulate();
-    delay.condition(x);
+    graft();
+    x:Value <- delay!.simulate();
+    delay!.condition(x);
     return x;
   }
 
   /**
-   * Observe the random variable.
+   * Observe a random variate.
    *
-   * - x: The observed value.
+   * - x: The value.
    *
-   * Return: the log likelihood.
+   * Return: The log likelihood.
    */
   function observe(x:Value) -> Real {
-    delay:DelayValue<Value> <- graft();
-    w:Real <- delay.observe(x);
-    delay.condition(x);
+    graft();
+    w:Real <- delay!.observe(x);
+    delay!.condition(x);
     return w;
   }
 
@@ -36,7 +64,8 @@ class Distribution<Value> {
    * Return: the probability mass.
    */
   function pmf(x:Value) -> Real {
-    return graft().pmf(x);
+    graft();
+    return delay!.pmf(x);
   }
 
   /**
@@ -47,7 +76,8 @@ class Distribution<Value> {
    * Return: the probability density.
    */
   function pdf(x:Value) -> Real {
-    return graft().pdf(x);
+    graft();
+    return delay!.pdf(x);
   }
 
   /**
@@ -58,15 +88,14 @@ class Distribution<Value> {
    * Return: the cumulative probability
    */
   function cdf(x:Value) -> Real {
-    return graft().cdf(x);
+    graft();
+    return delay!.cdf(x);
   }
   
   /**
-   * Graft this random variable onto the delayed sampling $M$-path.
-   *
-   * Return: Associated node on delayed sampling $M$-path.
+   * Graft this onto the delayed sampling $M$-path.
    */
-  function graft() -> DelayValue<Value>;
+  function graft();
 
   function graftGaussian() -> DelayGaussian? {
     return nil;

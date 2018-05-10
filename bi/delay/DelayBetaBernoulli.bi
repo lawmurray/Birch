@@ -1,7 +1,8 @@
 /*
  * Delayed Beta-bernoulli random variate.
  */
-class DelayBetaBernoulli(ρ:DelayBeta) < DelayValue<Boolean> {
+class DelayBetaBernoulli(x:Random<Boolean>&, ρ:DelayBeta) <
+    DelayValue<Boolean>(x) {
   /**
    * Success probability.
    */
@@ -24,8 +25,9 @@ class DelayBetaBernoulli(ρ:DelayBeta) < DelayValue<Boolean> {
   }
 }
 
-function DelayBetaBernoulli(ρ:DelayBeta) ->
+function DelayBetaBernoulli(x:Random<Boolean>&, ρ:DelayBeta) ->
     DelayBetaBernoulli {
-  m:DelayBetaBernoulli(ρ);
+  m:DelayBetaBernoulli(x, ρ);
+  ρ.setChild(m);
   return m;
 }

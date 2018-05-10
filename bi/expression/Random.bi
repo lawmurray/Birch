@@ -16,11 +16,6 @@ class Random<Value> < Expression<Value> {
   dist:Distribution<Value>?;
 
   /**
-   * Associated node on delayed sampling $M$-path.
-   */
-  delay:DelayValue<Value>?;
-
-  /**
    * Value assignment.
    */
   operator <- x:Value {
@@ -44,6 +39,8 @@ class Random<Value> < Expression<Value> {
   function assume(dist:Distribution<Value>) {
     assert !x?;
     assert !this.dist?;
+    
+    dist.associate(this);
     this.dist <- dist;
   }
 
@@ -52,13 +49,8 @@ class Random<Value> < Expression<Value> {
    */
   function value() -> Value {
     if !x? {
-      if !delay? {
-        assert dist?;
-        delay <- dist!.graft();
-        delay!.x <- this;
-      }
-      x <- delay!.simulate();
-      delay <- nil;
+      assert dist?;
+      dist!.value();
     }
     return x!;
   }
@@ -71,9 +63,8 @@ class Random<Value> < Expression<Value> {
   }
 
   function graftGaussian() -> DelayGaussian? {
-    if (delay?) {
-      return DelayGaussian?(delay);
-    } else if (dist?) {
+    if (!x?) {
+      assert dist?;
       return dist!.graftGaussian();
     } else {
       return nil;
@@ -81,9 +72,8 @@ class Random<Value> < Expression<Value> {
   }
     
   function graftBeta() -> DelayBeta? {
-    if (delay?) {
-      return DelayBeta?(delay);
-    } else if (dist?) {
+    if (!x?) {
+      assert dist?;
       return dist!.graftBeta();
     } else {
       return nil;
@@ -91,9 +81,8 @@ class Random<Value> < Expression<Value> {
   }
   
   function graftGamma() -> DelayGamma? {
-    if (delay?) {
-      return DelayGamma?(delay);
-    } else if (dist?) {
+    if (!x?) {
+      assert dist?;
       return dist!.graftGamma();
     } else {
       return nil;
@@ -101,9 +90,8 @@ class Random<Value> < Expression<Value> {
   }
   
   function graftInverseGamma() -> DelayInverseGamma? {
-    if (delay?) {
-      return DelayInverseGamma?(delay);
-    } else if (dist?) {
+    if (!x?) {
+      assert dist?;
       return dist!.graftInverseGamma();
     } else {
       return nil;
@@ -112,16 +100,8 @@ class Random<Value> < Expression<Value> {
   
   function graftNormalInverseGamma(σ2:Expression<Real>) ->
       DelayNormalInverseGamma? {
-    if (delay?) {
-      m:DelayNormalInverseGamma?;
-      s2:DelayInverseGamma?;
-      if (m <- DelayNormalInverseGamma?(delay))? &&
-          (s2 <- σ2.graftInverseGamma())? && m!.σ2 == s2! {
-        return m;
-      } else {
-        return nil;
-      }
-    } else if (dist?) {
+    if (!x?) {
+      assert dist?;
       return dist!.graftNormalInverseGamma(σ2);
     } else {
       return nil;
@@ -129,9 +109,8 @@ class Random<Value> < Expression<Value> {
   }
   
   function graftDirichlet() -> DelayDirichlet? {
-    if (delay?) {
-      return DelayDirichlet?(delay);
-    } else if (dist?) {
+    if (!x?) {
+      assert dist?;
       return dist!.graftDirichlet();
     } else {
       return nil;
@@ -139,9 +118,8 @@ class Random<Value> < Expression<Value> {
   }
 
   function graftRestaurant() -> DelayRestaurant? {
-    if (delay?) {
-      return DelayRestaurant?(delay);
-    } else if (dist?) {
+    if (!x?) {
+      assert dist?;
       return dist!.graftRestaurant();
     } else {
       return nil;
@@ -149,9 +127,8 @@ class Random<Value> < Expression<Value> {
   }
 
   function graftMultivariateGaussian() -> DelayMultivariateGaussian? {
-    if (delay?) {
-      return DelayMultivariateGaussian?(delay);
-    } else if (dist?) {
+    if (!x?) {
+      assert dist?;
       return dist!.graftMultivariateGaussian();
     } else {
       return nil;
@@ -160,16 +137,8 @@ class Random<Value> < Expression<Value> {
 
   function graftMultivariateNormalInverseGamma(σ2:Expression<Real>) ->
       DelayMultivariateNormalInverseGamma? {
-    if (delay?) {
-      m:DelayMultivariateNormalInverseGamma?;
-      s2:DelayInverseGamma?;
-      if (m <- DelayMultivariateNormalInverseGamma?(delay))? &&
-         (s2 <- σ2.graftInverseGamma())? && m!.σ2 == s2! {
-        return m;
-      } else {
-        return nil;
-      }
-    } else if (dist?) {
+    if (!x?) {
+      assert dist?;
       return dist!.graftMultivariateNormalInverseGamma(σ2);
     } else {
       return nil;
@@ -177,9 +146,8 @@ class Random<Value> < Expression<Value> {
   }
 
   function graftDiscrete() -> DelayValue<Integer>? {
-    if (delay?) {
-      return DelayValue<Integer>?(delay);
-    } else if (dist?) {
+    if (!x?) {
+      assert dist?;
       return dist!.graftDiscrete();
     } else {
       return nil;

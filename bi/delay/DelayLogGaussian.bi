@@ -1,7 +1,8 @@
 /*
  * Delayed log-Gaussian random variate.
  */
-class DelayLogGaussian(μ:Real, σ2:Real) < DelayValue<Real> {
+class DelayLogGaussian(x:Random<Real>&, μ:Real, σ2:Real) <
+    DelayValue<Real>(x) {
   /**
    * Mean.
    */
@@ -29,7 +30,8 @@ class DelayLogGaussian(μ:Real, σ2:Real) < DelayValue<Real> {
   }
 }
 
-function DelayLogGaussian(μ:Real, σ2:Real) -> DelayLogGaussian {
-  m:DelayLogGaussian(μ, σ2);
+function DelayLogGaussian(x:Random<Real>&, μ:Real, σ2:Real) ->
+    DelayLogGaussian {
+  m:DelayLogGaussian(x, μ, σ2);
   return m;
 }

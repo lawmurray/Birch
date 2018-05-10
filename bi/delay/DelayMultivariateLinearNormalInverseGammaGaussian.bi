@@ -1,9 +1,9 @@
 /*
  * Delayed multivariate linear-normal-inverse-gamma-Gaussian random variate.
  */
-class DelayMultivariateLinearNormalInverseGammaGaussian(A:Real[_,_],
-    μ:DelayMultivariateNormalInverseGamma, c:Real[_]) <
-    DelayValue<Real[_]> {
+class DelayMultivariateLinearNormalInverseGammaGaussian(x:Random<Real[_]>&,
+    A:Real[_,_], μ:DelayMultivariateNormalInverseGamma, c:Real[_]) <
+    DelayValue<Real[_]>(x) {
   /**
    * Scale.
    */
@@ -40,9 +40,10 @@ class DelayMultivariateLinearNormalInverseGammaGaussian(A:Real[_,_],
   }
 }
 
-function DelayMultivariateLinearNormalInverseGammaGaussian(A:Real[_,_],
-    μ:DelayMultivariateNormalInverseGamma, c:Real[_]) ->
-    DelayMultivariateLinearNormalInverseGammaGaussian {
-  m:DelayMultivariateLinearNormalInverseGammaGaussian(A, μ, c);
+function DelayMultivariateLinearNormalInverseGammaGaussian(
+    x:Random<Real[_]>&, A:Real[_,_], μ:DelayMultivariateNormalInverseGamma,
+    c:Real[_]) -> DelayMultivariateLinearNormalInverseGammaGaussian {
+  m:DelayMultivariateLinearNormalInverseGammaGaussian(x, A, μ, c);
+  μ.setChild(m);
   return m;
 }

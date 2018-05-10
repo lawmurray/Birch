@@ -1,7 +1,8 @@
 /*
  * Delayed restaurant-categorical random variate.
  */
-class DelayRestaurantCategorical(ρ:DelayRestaurant) < DelayValue<Integer> {
+class DelayRestaurantCategorical(x:Random<Integer>&, ρ:DelayRestaurant) <
+    DelayValue<Integer>(x) {
   /**
    * Category probabilities.
    */
@@ -34,8 +35,9 @@ class DelayRestaurantCategorical(ρ:DelayRestaurant) < DelayValue<Integer> {
   }
 }
 
-function DelayRestaurantCategorical(ρ:DelayRestaurant) ->
+function DelayRestaurantCategorical(x:Random<Integer>&, ρ:DelayRestaurant) ->
     DelayRestaurantCategorical {
-  m:DelayRestaurantCategorical(ρ);
+  m:DelayRestaurantCategorical(x, ρ);
+  ρ.setChild(m);
   return m;
 }

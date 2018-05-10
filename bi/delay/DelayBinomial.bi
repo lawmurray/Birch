@@ -1,7 +1,8 @@
 /*
  * Delayed Binomial random variate.
  */
-class DelayBinomial(n:Integer, ρ:Real) < DelayValue<Integer> {
+class DelayBinomial(x:Random<Integer>&, n:Integer, ρ:Real) <
+    DelayValue<Integer>(x) {
   /**
    * Number of trials.
    */
@@ -29,7 +30,8 @@ class DelayBinomial(n:Integer, ρ:Real) < DelayValue<Integer> {
   }
 }
 
-function DelayBinomial(n:Integer, ρ:Real) -> DelayBinomial {
-  m:DelayBinomial(n, ρ);
+function DelayBinomial(x:Random<Integer>&, n:Integer, ρ:Real) ->
+    DelayBinomial {
+  m:DelayBinomial(x, n, ρ);
   return m;
 }

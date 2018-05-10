@@ -7,20 +7,29 @@ class Categorical(ρ:Expression<Real[_]>) < Distribution<Integer> {
    */
   ρ:Expression<Real[_]> <- ρ;
 
-  function graft() -> DelayValue<Integer> {
-    m1:DelayDirichlet?;
-    m2:DelayRestaurant?;
-    if (m1 <- ρ.graftDirichlet())? {
-      return DelayDirichletCategorical(m1!);
-    } else if (m2 <- ρ.graftRestaurant())? {
-      return DelayRestaurantCategorical(m2!);
+  function graft() {
+    if delay? {
+      delay!.prune();
     } else {
-      return DelayCategorical(ρ);
+      m1:DelayDirichlet?;
+      m2:DelayRestaurant?;
+      if (m1 <- ρ.graftDirichlet())? {
+        delay <- DelayDirichletCategorical(x, m1!);
+      } else if (m2 <- ρ.graftRestaurant())? {
+        delay <- DelayRestaurantCategorical(x, m2!);
+      } else {
+        delay <- DelayCategorical(x, ρ);
+      }
     }
   }
 
   function graftDiscrete() -> DelayValue<Integer>? {
-    return DelayCategorical(ρ);
+    if delay? {
+      delay!.prune();
+    } else {
+      delay <- DelayCategorical(x, ρ);
+    }
+    return DelayValue<Integer>?(delay);
   }
 }
 

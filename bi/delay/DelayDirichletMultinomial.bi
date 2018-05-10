@@ -1,8 +1,8 @@
 /*
  * Delayed Dirichlet-multinomial random variate.
  */
-class DelayDirichletMultinomial(n:Integer, ρ:DelayDirichlet) <
-    DelayValue<Integer[_]> {
+class DelayDirichletMultinomial(x:Random<Integer[_]>&, n:Integer,
+    ρ:DelayDirichlet) < DelayValue<Integer[_]>(x) {
   /**
    * Number of trials.
    */
@@ -30,8 +30,9 @@ class DelayDirichletMultinomial(n:Integer, ρ:DelayDirichlet) <
   }
 }
 
-function DelayDirichletMultinomial(n:Integer, ρ:DelayDirichlet) ->
-    DelayDirichletMultinomial {
-  m:DelayDirichletMultinomial(n, ρ);
+function DelayDirichletMultinomial(x:Random<Integer[_]>&, n:Integer,
+    ρ:DelayDirichlet) -> DelayDirichletMultinomial {
+  m:DelayDirichletMultinomial(x, n, ρ);
+  ρ.setChild(m);
   return m;
 }

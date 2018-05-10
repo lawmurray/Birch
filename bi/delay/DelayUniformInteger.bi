@@ -1,7 +1,8 @@
 /*
  * Delayed uniform integer random variate.
  */
-class DelayUniformInteger(l:Integer, u:Integer) < DelayValue<Integer> {
+class DelayUniformInteger(x:Random<Integer>&, l:Integer, u:Integer) <
+    DelayValue<Integer>(x) {
   /**
    * Lower bound.
    */
@@ -29,8 +30,8 @@ class DelayUniformInteger(l:Integer, u:Integer) < DelayValue<Integer> {
   }
 }
 
-function DelayUniformInteger(l:Integer, u:Integer) ->
+function DelayUniformInteger(x:Random<Integer>&, l:Integer, u:Integer) ->
     DelayUniformInteger {
-  m:DelayUniformInteger(l, u);
+  m:DelayUniformInteger(x, l, u);
   return m;
 }

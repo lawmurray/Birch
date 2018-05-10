@@ -12,8 +12,12 @@ class Uniform(l:Expression<Real>, u:Expression<Real>) < Distribution<Real> {
    */
   u:Expression<Real> <- u;
 
-  function graft() -> DelayValue<Real> {
-    return DelayUniform(l, u);
+  function graft() {
+    if delay? {
+      delay!.prune();
+    } else {
+      delay <- DelayUniform(x, l, u);
+    }
   }
 }
 

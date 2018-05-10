@@ -12,12 +12,21 @@ class Gamma(k:Expression<Real>, θ:Expression<Real>) < Distribution<Real> {
    */
   θ:Expression<Real> <- θ;
 
-  function graft() -> DelayValue<Real> {
-    return DelayGamma(k, θ);
+  function graft() {
+    if delay? {
+      delay!.prune();
+    } else {
+      delay <- DelayGamma(x, k, θ);
+    }
   }
 
   function graftGamma() -> DelayGamma? {
-    return DelayGamma(k, θ);
+    if delay? {
+      delay!.prune();
+    } else {
+      delay <- DelayGamma(x, k, θ);
+    }
+    return DelayGamma?(delay);
   }
 }
 

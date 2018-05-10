@@ -12,12 +12,21 @@ class InverseGamma(α:Expression<Real>, β:Expression<Real>) < Distribution<Real
    */
   β:Expression<Real> <- β;
 
-  function graft() -> DelayValue<Real> {
-    return DelayInverseGamma(α, β);
+  function graft() {
+    if delay? {
+      delay!.prune();
+    } else {
+      delay <- DelayInverseGamma(x, α, β);
+    }
   }
 
   function graftInverseGamma() -> DelayInverseGamma? {
-    return DelayInverseGamma(α, β);
+    if delay? {
+      delay!.prune();
+    } else {
+      delay <- DelayInverseGamma(x, α, β);
+    }
+    return DelayInverseGamma?(delay);
   }
 }
 

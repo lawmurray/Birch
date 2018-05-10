@@ -7,17 +7,26 @@ class Poisson(λ:Expression<Real>) < Distribution<Integer> {
    */
   λ:Expression<Real> <- λ;
 
-  function graft() -> DelayValue<Integer> {
-    m:DelayGamma?;
-    if (m <- λ.graftGamma())? {
-      return DelayGammaPoisson(m!);
+  function graft() {
+    if delay? {
+      delay!.prune();
     } else {
-      return DelayPoisson(λ);
+      m:DelayGamma?;
+      if (m <- λ.graftGamma())? {
+        delay <- DelayGammaPoisson(x, m!);
+      } else {
+        delay <- DelayPoisson(x, λ);
+      }
     }
   }
 
   function graftDiscrete() -> DelayValue<Integer>? {
-    return DelayPoisson(λ);
+    if delay? {
+      delay!.prune();
+    } else {
+      delay <- DelayPoisson(x, λ);
+    }
+    return DelayValue<Integer>?(delay);
   }
 }
 

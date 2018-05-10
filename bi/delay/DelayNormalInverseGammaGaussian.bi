@@ -1,8 +1,8 @@
 /*
  * Delayed normal-inverse-gamma-Gaussian random variate.
  */
-class DelayNormalInverseGammaGaussian(μ:DelayNormalInverseGamma) <
-    DelayValue<Real> {
+class DelayNormalInverseGammaGaussian(x:Random<Real>&,
+    μ:DelayNormalInverseGamma) < DelayValue<Real>(x) {
   /**
    * Mean.
    */
@@ -31,8 +31,9 @@ class DelayNormalInverseGammaGaussian(μ:DelayNormalInverseGamma) <
   }
 }
 
-function DelayNormalInverseGammaGaussian(μ:DelayNormalInverseGamma) -> 
-    DelayNormalInverseGammaGaussian {
-  m:DelayNormalInverseGammaGaussian(μ);
+function DelayNormalInverseGammaGaussian(x:Random<Real>&,
+    μ:DelayNormalInverseGamma) -> DelayNormalInverseGammaGaussian {
+  m:DelayNormalInverseGammaGaussian(x, μ);
+  μ.setChild(m);
   return m;
 }

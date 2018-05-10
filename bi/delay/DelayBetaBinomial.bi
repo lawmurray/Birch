@@ -1,7 +1,8 @@
 /*
  * Delayed Beta-binomial random variate.
  */
-class DelayBetaBinomial(n:Integer, ρ:DelayBeta) < DelayValue<Integer> {
+class DelayBetaBinomial(x:Random<Integer>&, n:Integer, ρ:DelayBeta) <
+    DelayValue<Integer>(x) {
   /**
    * Number of trials.
    */
@@ -33,7 +34,9 @@ class DelayBetaBinomial(n:Integer, ρ:DelayBeta) < DelayValue<Integer> {
   }
 }
 
-function DelayBetaBinomial(n:Integer, ρ:DelayBeta) -> DelayBetaBinomial {
-  m:DelayBetaBinomial(n, ρ);
+function DelayBetaBinomial(x:Random<Integer>&, n:Integer, ρ:DelayBeta) ->
+    DelayBetaBinomial {
+  m:DelayBetaBinomial(x, n, ρ);
+  ρ.setChild(m);
   return m;
 }

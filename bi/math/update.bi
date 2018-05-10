@@ -197,15 +197,16 @@ function update_linear_normal_inverse_gamma_gaussian(a:Real, x:Real,
  *
  * - x: The variate.
  * - μ: Prior mean.
- * - Q: Prior variance.
- * - R: Likelihood variance.
+ * - Σ: Prior variance.
+ * - μ_m: Marginal mean.
+ * - Σ_m: Marginal variance.
  *
  * Returns: the updated parameters `μ` and `Σ`.
  */
 function update_multivariate_gaussian_gaussian(x:Real[_], μ:Real[_],
-    Q:Real[_,_], R:Real[_,_]) -> (Real[_], Real[_,_]) {
-  K:Real[_,_] <- Q*inv(Q + R);
-  return (μ + K*(x - μ), Q - K*Q);
+    Σ:Real[_,_], μ_m:Real[_], Σ_m:Real[_,_]) -> (Real[_], Real[_,_]) {
+  K:Real[_,_] <- Σ*inv(Σ_m);
+  return (μ + K*(x - μ_m), Σ - K*Σ);
 }
 
 /**

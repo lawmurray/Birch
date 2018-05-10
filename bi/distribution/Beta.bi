@@ -12,12 +12,21 @@ class Beta(α:Expression<Real>, β:Expression<Real>) < Distribution<Real> {
    */
   β:Expression<Real> <- β;
 
-  function graft() -> DelayValue<Real> {
-    return DelayBeta(α, β);
+  function graft() {
+    if delay? {
+      delay!.prune();
+    } else {
+      delay <- DelayBeta(x, α, β);
+    }
   }
 
   function graftBeta() -> DelayBeta? {
-    return DelayBeta(α, β);
+    if delay? {
+      delay!.prune();
+    } else {
+      delay <- DelayBeta(x, α, β);
+    }
+    return DelayBeta?(delay);
   }
 }
 

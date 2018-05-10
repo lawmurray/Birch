@@ -2,56 +2,57 @@
  * Type-specific interface for delayed sampling $M$-path nodes.
  *
  * - Value: Value type.
+ *
+ * - x: Associated random variable.
  */
-class DelayValue<Value> < Delay {
+class DelayValue<Value>(x:Random<Value>&) < Delay {
   /**
-   * Associated random variable.
+   * Associated delayed random variate, if any.
    */
-  x:Random<Value>?;
-    
-  function realize() {
+  x:Random<Value>& <- x;
+
+  /**
+   * Instantiate the associated delayed random variate.
+   */
+  function value() {
+    /* detach from $M$-path; doing this first makes the parent a terminal
+     * node, so that within simulate() or observe(), realization of the
+     * parent can be forced also; this is useful for deterministic
+     * relationships (e.g. see DelayDelta) */
     if (parent?) {
       parent!.child <- nil;
-      // ^ doing this now makes the parent a terminal node, so that within
-      //   simulate() or observe(), realization of the parent can be
-      //   forced also; this is useful for deterministic relationships (e.g.
-      //   see DelayDelta)
+      parent <- nil;
     }
-    if (x?) {
-      x!.value();
-    }
-    parent <- nil;
-  }
 
+    y:Random<Value>? <- x;
+    assert y?;
+    y!.x <- simulate();
+    condition(y!.x!);
+  }
+  
   /**
    * Simulate a random variate.
    *
-   * Return: The value.
+   * Return: the value.
    */
-  function simulate() -> Value {
-    assert false;
-  }
+  function simulate() -> Value;
 
   /**
    * Observe a random variate.
    *
    * - x: The value.
    *
-   * Return: the log likelihood.
+   * Return: The log likelihood.
    */
-  function observe(x:Value) -> Real {
-    assert false;
-  }
+  function observe(x:Value) -> Real;
 
   /**
-   * Update the parent given the random variate.
+   * Update the parent node on th $M$-path given the value of this node.
    *
    * - x: The value.
    */
-  function condition(x:Value) {
-    //
-  }
-
+  function condition(x:Value);
+  
   /**
    * Evaluate the probability mass function (if it exists) at a value.
    *

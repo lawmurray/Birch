@@ -90,7 +90,15 @@ public:
   /**
    * Get the value.
    */
-  T get() const {
+  T& get() {
+    assert(hasValue);
+    return value;
+  }
+
+  /**
+   * Get the value.
+   */
+  const T& get() const {
     assert(hasValue);
     return value;
   }
@@ -189,7 +197,15 @@ public:
   /**
    * Get the value.
    */
-  SharedPointer<T> get() const {
+  SharedPointer<T>& get() {
+    assert(query());
+    return value;
+  }
+
+  /**
+   * Get the value.
+   */
+  const SharedPointer<T>& get() const {
     assert(query());
     return value;
   }
