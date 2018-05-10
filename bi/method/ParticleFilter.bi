@@ -29,9 +29,10 @@ class ParticleFilter {
   r:Boolean[_];
   
   /**
-   * Normalizing constant estimate.
+   * For each checkpoint, the normalizing constant estimate up to that
+   * checkpoint.
    */
-  Z:Real;
+  Z:Real[_];
   
   /**
    * Number of checkpoints.
@@ -82,7 +83,7 @@ class ParticleFilter {
         }
         step(t);
       }
-      stderr.print(Z + "\n");
+      stderr.print(Z[T] + "\n");
       finish();
             
       /* output results and diagnostics */
@@ -137,7 +138,7 @@ class ParticleFilter {
     this.w <- vector(0.0, N);
     this.e <- vector(0.0, T);
     this.r <- vector(false, T);
-    this.Z <- 0.0;
+    this.Z <- vector(0.0, T);
   }
   
   /**
@@ -174,7 +175,11 @@ class ParticleFilter {
     /* update normalizing constant estimate */
     W:Real <- log_sum_exp(w);
     w <- w - (W - log(N));
-    Z <- Z + (W - log(N));
+    if (t > 1) {
+      Z[t] <- Z[t - 1] + (W - log(N));
+    } else {
+      Z[t] <- W - log(N);
+    }
   }
   
   /**
@@ -194,7 +199,7 @@ class ParticleFilter {
       b:Integer <- ancestor(w);
       if (b > 0) {
         f[b]!.output(writer!.setObject("sample"));
-        writer!.setReal("weight", Z);
+        writer!.setReal("weight", Z[T]);
       } else {
         stderr.print("error: filter degenerated.\n");
         exit(1);
@@ -211,6 +216,7 @@ class ParticleFilter {
     if (writer?) {
       writer!.setRealVector("ess", e);
       writer!.setBooleanVector("resample", r);
+      writer!.setRealVector("evidence", Z);
     }
   }
 }

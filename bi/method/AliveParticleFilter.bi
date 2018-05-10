@@ -70,8 +70,12 @@ class AliveParticleFilter < ParticleFilter {
     
     /* update normalizing constant estimate */
     W:Real <- log_sum_exp(w);
-    w <- w - (W - log(P - 1));
-    Z <- Z + (W - log(P - 1));
+    w <- w - (W - log(N));
+    if (t > 1) {
+      Z[t] <- Z[t - 1] + (W - log(N));
+    } else {
+      Z[t] <- W - log(N);
+    }
     
     /* diagnostics */
     propagations[t] <- P;
