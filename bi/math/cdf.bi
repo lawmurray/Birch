@@ -14,9 +14,16 @@ cpp{{
 function cdf_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
   assert 0 <= n;
   assert 0.0 <= ρ && ρ <= 1.0;
-  cpp{{
-  return boost::math::cdf(boost::math::binomial_distribution<>(n_, ρ_), x_);
-  }}
+  
+  if x < 0 {
+    return 0.0;
+  } else if x > n {
+    return 1.0;
+  } else {
+    cpp{{
+    return boost::math::cdf(boost::math::binomial_distribution<>(n_, ρ_), x_);
+    }}
+  } 
 }
 
 /**
@@ -31,9 +38,14 @@ function cdf_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
 function cdf_negative_binomial(x:Integer, k:Integer, ρ:Real) -> Real {
   assert 0 < k;
   assert 0.0 <= ρ && ρ <= 1.0;
-  cpp{{
-  return boost::math::cdf(boost::math::negative_binomial_distribution<>(k_, ρ_), x_);
-  }}
+  
+  if x < 0 {
+    return 0.0;
+  } else {
+    cpp{{
+    return boost::math::cdf(boost::math::negative_binomial_distribution<>(k_, ρ_), x_);
+    }}
+  }
 }
 
 /**
@@ -46,9 +58,14 @@ function cdf_negative_binomial(x:Integer, k:Integer, ρ:Real) -> Real {
  */
 function cdf_poisson(x:Integer, λ:Real) -> Real {
   assert 0.0 <= λ;
-  cpp{{
-  return boost::math::cdf(boost::math::poisson_distribution<>(λ_), x_);
-  }}
+  
+  if x < 0 {
+    return 0.0;
+  } else {
+    cpp{{
+    return boost::math::cdf(boost::math::poisson_distribution<>(λ_), x_);
+    }}
+  }
 }
 
 /**
@@ -79,10 +96,12 @@ function cdf_uniform_int(x:Integer, l:Integer, u:Integer) -> Real {
  * Return: the cumulative probability.
  */
 function cdf_categorical(x:Integer, ρ:Real[_]) -> Real {
-  if (1 <= x && x <= length(ρ)) {
-    return sum(ρ[1..x]);
-  } else {
+  if x < 1 {
     return 0.0;
+  } else if x > length(ρ) {
+    return 1.0;
+  } else {
+    return sum(ρ[1..x]);
   }
 }
 
@@ -97,7 +116,14 @@ function cdf_categorical(x:Integer, ρ:Real[_]) -> Real {
  */
 function cdf_uniform(x:Real, l:Real, u:Real) -> Real {
   assert l <= u;
-  return (x - l)/(u - l);
+  
+  if x < l {
+    return 0.0;
+  } else if x > u {
+    return 1.0;
+  } else {
+    return (x - l)/(u - l);
+  }
 }
 
 /**
@@ -110,9 +136,14 @@ function cdf_uniform(x:Real, l:Real, u:Real) -> Real {
  */
 function cdf_exponential(x:Real, λ:Real) -> Real {
   assert 0.0 < λ;
-  cpp{{
-  return boost::math::cdf(boost::math::exponential_distribution<>(λ_), x_);
-  }}
+  
+  if x <= 0.0 {
+    return 0.0;
+  } else {
+    cpp{{
+    return boost::math::cdf(boost::math::exponential_distribution<>(λ_), x_);
+    }}
+  }
 }
 
 /**
@@ -142,9 +173,14 @@ function cdf_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
  */
 function cdf_log_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
   assert 0.0 < σ2;
-  cpp{{
-  return boost::math::cdf(boost::math::lognormal_distribution<>(μ_, ::sqrt(σ2_)), x_);
-  }}
+  
+  if x <= 0.0 {
+    return 0.0;
+  } else {
+    cpp{{
+    return boost::math::cdf(boost::math::lognormal_distribution<>(μ_, ::sqrt(σ2_)), x_);
+    }}
+  }
 }
 
 /**
@@ -189,9 +225,16 @@ function cdf_student_t(x:Real, ν:Real, μ:Real, σ2:Real) -> Real {
 function cdf_beta(x:Real, α:Real, β:Real) -> Real {
   assert 0.0 < α;
   assert 0.0 < β;
-  cpp{{
-  return boost::math::cdf(boost::math::beta_distribution<>(α_, β_), x_);
-  }}
+  
+  if x < 0.0 {
+    return 0.0;
+  } else if x > 1.0 {
+    return 1.0;
+  } else {
+    cpp{{
+    return boost::math::cdf(boost::math::beta_distribution<>(α_, β_), x_);
+    }}
+  }
 }
 
 /**
@@ -206,9 +249,14 @@ function cdf_beta(x:Real, α:Real, β:Real) -> Real {
 function cdf_gamma(x:Real, k:Real, θ:Real) -> Real {
   assert 0.0 < k;
   assert 0.0 < θ;
-  cpp{{
-  return boost::math::cdf(boost::math::gamma_distribution<>(k_, θ_), x_);
-  }}
+  
+  if x <= 0.0 {
+    return 0.0;
+  } else {
+    cpp{{
+    return boost::math::cdf(boost::math::gamma_distribution<>(k_, θ_), x_);
+    }}
+  }
 }
 
 /**
@@ -223,9 +271,14 @@ function cdf_gamma(x:Real, k:Real, θ:Real) -> Real {
 function cdf_inverse_gamma(x:Real, α:Real, β:Real) -> Real {
   assert 0.0 < α;
   assert 0.0 < β;
-  cpp{{
-  return boost::math::cdf(boost::math::inverse_gamma_distribution<>(α_, β_), x_);
-  }}
+  
+  if x <= 0.0 {
+    return 0.0;
+  } else {
+    cpp{{
+    return boost::math::cdf(boost::math::inverse_gamma_distribution<>(α_, β_), x_);
+    }}
+  }
 }
 
 /**
@@ -256,7 +309,7 @@ function cdf_normal_inverse_gamma(x:Real, μ:Real, a2:Real, α:Real,
  */
 function cdf_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) -> Real {
   P:Real <- 0.0;
-  for (i:Integer in 0..x) {
+  for (i:Integer in 0..min(n, x)) {
     P <- P + exp(observe_beta_binomial(x, n, α, β));
   }
   return P;
