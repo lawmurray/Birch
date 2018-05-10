@@ -4,11 +4,11 @@
 program test_linear_gaussian_log_gaussian(N:Integer <- 10000) {
   X1:Real[N,2];
   X2:Real[N,2];
-  a:Real <- simulate_uniform(-10.0, 10.0);
+  a:Real <- simulate_uniform(-2.0, 2.0);
   c:Real <- simulate_uniform(-10.0, 10.0);
   μ_0:Real <- simulate_uniform(-10.0, 10.0);
-  σ2_0:Real <- simulate_uniform(0.0, 10.0);
-  σ2_1:Real <- simulate_uniform(0.0, 10.0);
+  σ2_0:Real <- simulate_uniform(0.0, 2.0);
+  σ2_1:Real <- simulate_uniform(0.0, 2.0);
  
   /* simulate forward */
   for i:Integer in 1..N {

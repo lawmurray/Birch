@@ -5,13 +5,13 @@ program test_linear_normal_inverse_gamma_log_gaussian(N:Integer <- 10000) {
   X1:Real[N,3];
   X2:Real[N,3];
   
-  a:Real <- simulate_uniform(-10.0, 10.0);
+  a:Real <- simulate_uniform(-2.0, 2.0);
   μ:Real <- simulate_uniform(-10.0, 10.0);
   a2:Real <- simulate_uniform(0.0, 2.0);
   c:Real <- simulate_uniform(-10.0, 10.0);
-  α:Real <- simulate_uniform(0.0, 2.0);
+  α:Real <- simulate_uniform(1.0, 2.0);
   β:Real <- simulate_uniform(0.0, 2.0);
- 
+
   /* simulate forward */
   for i:Integer in 1..N {
     m:TestLinearNormalInverseGammaLogGaussian(a, μ, a2, c, α, β);

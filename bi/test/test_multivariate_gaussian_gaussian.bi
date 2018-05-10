@@ -12,8 +12,8 @@ program test_multivariate_gaussian_gaussian(N:Integer <- 10000) {
   for i:Integer in 1..5 {
     μ_0[i] <- simulate_uniform(-10.0, 10.0);
     for j:Integer in 1..5 {
-      Σ_0[i,j] <- simulate_uniform(-10.0, 10.0);
-      Σ_1[i,j] <- simulate_uniform(-10.0, 10.0);
+      Σ_0[i,j] <- simulate_uniform(-2.0, 2.0);
+      Σ_1[i,j] <- simulate_uniform(-2.0, 2.0);
     }
   }
   Σ_0 <- Σ_0*trans(Σ_0);

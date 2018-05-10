@@ -11,7 +11,7 @@ program test_multivariate_chain_gaussian(N:Integer <- 10000) {
   for i:Integer in 1..3 {
     μ[i] <- simulate_uniform(-10.0, 10.0);
     for j:Integer in 1..3 {
-      Σ[i,j] <- simulate_uniform(-10.0, 10.0);
+      Σ[i,j] <- simulate_uniform(-2.0, 2.0);
     }
   }
   Σ <- Σ*trans(Σ);

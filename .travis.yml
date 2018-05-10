@@ -39,7 +39,7 @@ before_install:
 install:
   - birch build && sudo birch install
 script:
-  - birch test
+  - birch test -N 100000
 cache:
     directories:
      - Birch
