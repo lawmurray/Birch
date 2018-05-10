@@ -27,6 +27,8 @@ public:
    */
   virtual ~Get();
 
+  virtual bool isAssignable() const;
+
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;

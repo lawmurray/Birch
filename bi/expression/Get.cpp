@@ -15,6 +15,10 @@ bi::Get::~Get() {
   //
 }
 
+bool bi::Get::isAssignable() const {
+  return single->isAssignable();
+}
+
 bi::Expression* bi::Get::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
