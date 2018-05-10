@@ -1,32 +1,32 @@
 /**
  * Run all tests.
  */
-program test() {
+program test(N:Integer <- 10000) {
   code:Integer <- 0;
   
-  code <- code + run_test("beta_bernoulli");
-  code <- code + run_test("beta_binomial");
-  code <- code + run_test("dirichlet_categorical");
-  code <- code + run_test("dirichlet_multinomial");
-  code <- code + run_test("gamma_poisson");
-  code <- code + run_test("linear_discrete_delta");
-  code <- code + run_test("gaussian_gaussian");
-  code <- code + run_test("linear_gaussian_gaussian");
-  code <- code + run_test("chain_gaussian");
-  code <- code + run_test("inverse_gamma_gaussian");
-  code <- code + run_test("normal_inverse_gamma_gaussian");
-  code <- code + run_test("linear_normal_inverse_gamma_gaussian");
-  code <- code + run_test("gaussian_log_gaussian");
-  code <- code + run_test("linear_gaussian_log_gaussian");
-  code <- code + run_test("inverse_gamma_log_gaussian");
-  code <- code + run_test("normal_inverse_gamma_log_gaussian");
-  code <- code + run_test("linear_normal_inverse_gamma_log_gaussian");
-  code <- code + run_test("multivariate_gaussian_gaussian");
-  code <- code + run_test("multivariate_linear_gaussian_gaussian");
-  code <- code + run_test("multivariate_chain_gaussian");
-  code <- code + run_test("multivariate_inverse_gamma_gaussian");
-  code <- code + run_test("multivariate_normal_inverse_gamma_gaussian");
-  code <- code + run_test("multivariate_linear_normal_inverse_gamma_gaussian");
+  code <- code + run_test("beta_bernoulli", N);
+  code <- code + run_test("beta_binomial", N);
+  code <- code + run_test("dirichlet_categorical", N);
+  code <- code + run_test("dirichlet_multinomial", N);
+  code <- code + run_test("gamma_poisson", N);
+  code <- code + run_test("linear_discrete_delta", N);
+  code <- code + run_test("gaussian_gaussian", N);
+  code <- code + run_test("linear_gaussian_gaussian", N);
+  code <- code + run_test("chain_gaussian", N);
+  code <- code + run_test("inverse_gamma_gaussian", N);
+  code <- code + run_test("normal_inverse_gamma_gaussian", N);
+  code <- code + run_test("linear_normal_inverse_gamma_gaussian", N);
+  code <- code + run_test("gaussian_log_gaussian", N);
+  code <- code + run_test("linear_gaussian_log_gaussian", N);
+  code <- code + run_test("inverse_gamma_log_gaussian", N);
+  code <- code + run_test("normal_inverse_gamma_log_gaussian", N);
+  code <- code + run_test("linear_normal_inverse_gamma_log_gaussian", N);
+  code <- code + run_test("multivariate_gaussian_gaussian", N);
+  code <- code + run_test("multivariate_linear_gaussian_gaussian", N);
+  code <- code + run_test("multivariate_chain_gaussian", N);
+  code <- code + run_test("multivariate_inverse_gamma_gaussian", N);
+  code <- code + run_test("multivariate_normal_inverse_gamma_gaussian", N);
+  code <- code + run_test("multivariate_linear_normal_inverse_gamma_gaussian", N);
   
   exit(code);
 }
@@ -35,12 +35,13 @@ program test() {
  * Run a specific test.
  *
  * - test: Name of the test.
+ * - N: Number of samples.
  *
  * Return: Exit code of the test.
  */
-function run_test(test:String) -> Integer {
+function run_test(test:String, N:Integer) -> Integer {
   tic();
-  code:Integer <- system("birch test_" + test);
+  code:Integer <- system("birch test_" + test + " -N " + N);
   s:Real <- toc();
   if (code == 0) {
     stdout.print("PASS");
@@ -74,7 +75,7 @@ function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
   x1:Real[_] <- X1*u;
   x2:Real[_] <- X2*u;
   
-  /* normalise onto the interva [0,1] */
+  /* normalise onto the interval [0,1] */
   mn:Real <- min(min(x1), min(x2));
   mx:Real <- max(max(x1), max(x2));
   x1 <- (x1 - mn)/(mx - mn);
