@@ -95,11 +95,7 @@ public:
    * Get the raw pointer.
    */
   T* get() const {
-#ifndef NDEBUG
-    return dynamic_cast<T*>(root_type::get());
-#else
     return static_cast<T*>(root_type::get());
-#endif
   }
 
   /**
@@ -108,11 +104,14 @@ public:
    * used as an optimization.
    */
   const T* getNoCopy() const {
-#ifndef NDEBUG
-    return dynamic_cast<const T*>(root_type::getNoCopy());
-#else
     return static_cast<const T*>(root_type::getNoCopy());
-#endif
+  }
+
+  /**
+   * Pull through generations.
+   */
+  std::shared_ptr<T> pull() const {
+    return std::static_pointer_cast<T>(root_type::pull());
   }
 
   /**
@@ -165,28 +164,28 @@ public:
   }
 
   SharedPointer(const SharedPointer<Any>& o) :
-      object(o.object),
+      object(o.pull()),
       world(fiberClone ? fiberWorld : o.world) {
     //
   }
 
   template<class U>
   SharedPointer(const SharedPointer<U>& o) :
-      object(o.object),
+      object(o.pull()),
       world(o.world) {
     //
   }
 
   template<class U>
   SharedPointer(const WeakPointer<U>& o) :
-      object(o.object.lock()),
+      object(o.pull()),
       world(o.world) {
     //
   }
 
   SharedPointer<Any>& operator=(const SharedPointer<Any>& o) {
     assert(world->hasLaunchAncestor(o.world));
-    object = o.object;
+    object = o.pull();
     return *this;
   }
 
@@ -199,18 +198,35 @@ public:
 
   Any* get() const {
     /* despite the pointer being accessed in a const context, we do want to
-     * update it through the copy-on-write mechanism for performance reasons*/
-    auto self = const_cast<SharedPointer<Any>*>(this);
-    self->object = self->world->get(object);
+     * update it through the copy-on-write mechanism for performance
+     * reasons */
+    if (object) {
+      auto self = const_cast<SharedPointer<Any>*>(this);
+      self->object = self->world->get(object);
+    }
     return object.get();
   }
 
   const Any* getNoCopy() const {
     /* despite the pointer being accessed in a const context, we do want to
-     * update it through the copy-on-write mechanism for performance reasons*/
-    auto self = const_cast<SharedPointer<Any>*>(this);
-    self->object = self->world->getNoCopy(object);
+     * update it through the copy-on-write mechanism for performance
+     * reasons */
+    if (object) {
+      auto self = const_cast<SharedPointer<Any>*>(this);
+      self->object = self->world->getNoCopy(object);
+    }
     return object.get();
+  }
+
+  std::shared_ptr<Any> pull() const {
+    /* despite the pointer being accessed in a const context, we do want to
+     * update it through the copy-on-write mechanism for performance
+     * reasons */
+    if (object) {
+      auto self = const_cast<SharedPointer<Any>*>(this);
+      self->object = self->world->getNoCopy(object);
+    }
+    return object;
   }
 
   World* getWorld() const {

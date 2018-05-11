@@ -66,6 +66,13 @@ public:
       super_type(o) {
     //
   }
+
+  /**
+   * Pull through generations.
+   */
+  std::shared_ptr<T> pull() const {
+    return std::static_pointer_cast<T>(root_type::pull());
+  }
 };
 
 template<>
@@ -88,21 +95,21 @@ public:
   }
 
   WeakPointer(const WeakPointer<Any>& o) :
-      object(o.object),
+      object(o.pull()),
       world(fiberClone ? fiberWorld : o.world) {
     //
   }
 
   template<class U>
   WeakPointer(const WeakPointer<U>& o) :
-      object(o.object),
+      object(o.pull()),
       world(fiberWorld) {
     //
   }
 
   template<class U>
   WeakPointer(const SharedPointer<U>& o) :
-      object(o.object),
+      object(o.pull()),
       world(fiberWorld) {
     //
   }
@@ -115,8 +122,18 @@ public:
 
   WeakPointer<Any>& operator=(const WeakPointer<Any>& o) {
     assert(world->hasLaunchAncestor(o.world));
-    object = o.object;
+    object = o.pull();
     return *this;
+  }
+
+  std::shared_ptr<Any> pull() const {
+    auto shared = object.lock();
+    if (shared) {
+      shared = world->getNoCopy(shared);
+    }
+    auto self = const_cast<WeakPointer<Any>*>(this);
+    self->object = shared;
+    return shared;
   }
 
 protected:
