@@ -161,7 +161,7 @@ void bi::CppBaseGenerator::visit(const Member* o) {
     middle("this->self()->super_type::");
   } else if (leftGlobal) {
     middle("bi::");
-  } else if (!inAssign && o->right->type->isBasic() &&
+  } else if (!inAssign && o->right->type->isValue() &&
       dynamic_cast<const Identifier<MemberVariable>*>(o->right)) {
     /* optimization: just reading a value, so no need to copy-on-write the
      * owning object */
