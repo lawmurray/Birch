@@ -54,7 +54,7 @@ public:
    *
    * @return The mapped object.
    */
-  const std::shared_ptr<Any>& get(const std::shared_ptr<Any>& o);
+  std::shared_ptr<Any> get(const std::shared_ptr<Any>& o);
 
   /**
    * Get an object.
@@ -63,7 +63,7 @@ public:
    *
    * @return The mapped object.
    */
-  const std::shared_ptr<Any>& getNoCopy(const std::shared_ptr<Any>& o);
+  std::shared_ptr<Any> getNoCopy(const std::shared_ptr<Any>& o);
 
 private:
   /**
@@ -74,7 +74,7 @@ private:
    *
    * @return The mapped and copied object.
    */
-  const std::shared_ptr<Any>& pull(const std::shared_ptr<Any>& o);
+  std::shared_ptr<Any> pull(const std::shared_ptr<Any>& o);
 
   /**
    * Pull an object from a clone ancestor into this world.
@@ -83,18 +83,7 @@ private:
    *
    * @return The mapped object.
    */
-  const std::shared_ptr<Any>& pullNoCopy(const std::shared_ptr<Any>& o) const;
-
-  /**
-   * Insert a mapping.
-   *
-   * @param src The source object.
-   * @param dst The destination object.
-   *
-   * @return Reference to the newly inserted destination object.
-   */
-  const std::shared_ptr<Any>& insert(const std::shared_ptr<Any>& src,
-      const std::shared_ptr<Any>& dst);
+  std::shared_ptr<Any> pullNoCopy(const std::shared_ptr<Any>& o);
 
   /**
    * The world from which this world was cloned.
@@ -110,6 +99,11 @@ private:
    * Mapped allocations.
    */
   std::map<Any*,std::shared_ptr<Any>> map;
+
+  /**
+   * Cached mappings of clone ancestors.
+   */
+  std::map<Any*,std::shared_ptr<Any>> cache;
 
   /**
    * Launch depth.
@@ -156,7 +150,7 @@ inline int bi::World::depth() const {
   return launchDepth;
 }
 
-inline const std::shared_ptr<bi::Any>& bi::World::get(
+inline std::shared_ptr<bi::Any> bi::World::get(
     const std::shared_ptr<Any>& o) {
   assert(o);
   int d = depth() - o->getWorld()->depth();
@@ -170,7 +164,7 @@ inline const std::shared_ptr<bi::Any>& bi::World::get(
   return dst->pull(o);
 }
 
-inline const std::shared_ptr<bi::Any>& bi::World::getNoCopy(
+inline std::shared_ptr<bi::Any> bi::World::getNoCopy(
     const std::shared_ptr<Any>& o) {
   assert(o);
   int d = depth() - o->getWorld()->depth();
@@ -184,7 +178,7 @@ inline const std::shared_ptr<bi::Any>& bi::World::getNoCopy(
   return dst->pullNoCopy(o);
 }
 
-inline const std::shared_ptr<bi::Any>& bi::World::pull(
+inline std::shared_ptr<bi::Any> bi::World::pull(
     const std::shared_ptr<Any>& o) {
   assert(o && hasCloneAncestor(o->getWorld()));
 
@@ -192,41 +186,62 @@ inline const std::shared_ptr<bi::Any>& bi::World::pull(
   if (this == src) {
     return o;
   } else {
-    assert(cloneSource);
-    auto& result = cloneSource->pullNoCopy(o);
-    auto iter = map.find(result.get());
+    std::shared_ptr<bi::Any> result;
+
+    /* through cache */
+    auto iter = cache.find(o.get());
+    if (iter != cache.end()) {
+      result = iter->second;
+    } else {
+      assert(cloneSource);
+      result = cloneSource->pullNoCopy(o);
+      auto ret = cache.insert(std::make_pair(o.get(), result));
+      assert(ret.second);
+    }
+
+    /* through map */
+    iter = map.find(result.get());
     if (iter != map.end()) {
       return iter->second;
     } else {
       Enter enter(this);
       Clone clone;
-      return insert(result, result->clone());
+      auto src = result.get();
+      result = result->clone();
+      auto ret = map.insert(std::make_pair(src, result));
+      assert(ret.second);
+      return result;
     }
   }
 }
 
-inline const std::shared_ptr<bi::Any>& bi::World::pullNoCopy(
-    const std::shared_ptr<Any>& o) const {
+inline std::shared_ptr<bi::Any> bi::World::pullNoCopy(
+    const std::shared_ptr<Any>& o) {
   assert(o && hasCloneAncestor(o->getWorld()));
 
   auto src = o->getWorld();
   if (this == src) {
     return o;
   } else {
-    assert(cloneSource);
-    auto& result = cloneSource->pullNoCopy(o);
-    auto iter = map.find(result.get());
+    std::shared_ptr<bi::Any> result;
+
+    /* check cache */
+    auto iter = cache.find(o.get());
+    if (iter != cache.end()) {
+      result = iter->second;
+    } else {
+      assert(cloneSource);
+      result = cloneSource->pullNoCopy(o);
+      auto ret = cache.insert(std::make_pair(o.get(), result));
+      assert(ret.second);
+    }
+
+    /* map through copies */
+    iter = map.find(result.get());
     if (iter != map.end()) {
       return iter->second;
     } else {
       return result;
     }
   }
-}
-
-inline const std::shared_ptr<bi::Any>& bi::World::insert(const std::shared_ptr<Any>& src,
-    const std::shared_ptr<Any>& dst) {
-  auto result = map.insert(std::make_pair(src.get(), dst));
-  assert(result.second);
-  return result.first->second;
 }
