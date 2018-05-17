@@ -17,10 +17,6 @@ To build and install, use:
     birch build
     birch install
 
-Most of the examples will output to the `output/` directory, which you will need to create:
-
-    mkdir output
-
 See the documentation for the individual model classes in the `bi/model` directory, or use the [online documentation](https://birch-lang.org/documentation/examples/) for suggested commands to run.
 
 
