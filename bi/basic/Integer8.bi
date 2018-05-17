@@ -163,6 +163,15 @@ function abs(x:Integer8) -> Integer8 {
 }
 
 /**
+ * Power.
+ */
+function pow(x:Integer8, y:Integer8) -> Integer8 {
+  cpp {{
+  return std::pow(x_, y_);
+  }}
+}
+
+/**
  * Modulus.
  */
 function mod(x:Integer8, y:Integer8) -> Integer8 {

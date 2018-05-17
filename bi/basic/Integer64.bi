@@ -163,6 +163,15 @@ function abs(x:Integer64) -> Integer64 {
 }
 
 /**
+ * Power.
+ */
+function pow(x:Integer64, y:Integer64) -> Integer64 {
+  cpp {{
+  return std::pow(x_, y_);
+  }}
+}
+
+/**
  * Modulus.
  */
 function mod(x:Integer64, y:Integer64) -> Integer64 {

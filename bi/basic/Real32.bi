@@ -163,6 +163,15 @@ function abs(x:Real32) -> Real32 {
 }
 
 /**
+ * Power.
+ */
+function pow(x:Real32, y:Real32) -> Real32 {
+  cpp {{
+  return ::powf(x_, y_);
+  }}
+}
+
+/**
  * Modulus.
  */
 function mod(x:Real32, y:Real32) -> Real32 {

@@ -163,6 +163,15 @@ function abs(x:Integer32) -> Integer32 {
 }
 
 /**
+ * Power.
+ */
+function pow(x:Integer32, y:Integer32) -> Integer32 {
+  cpp {{
+  return std::pow(x_, y_);
+  }}
+}
+
+/**
  * Modulus.
  */
 function mod(x:Integer32, y:Integer32) -> Integer32 {

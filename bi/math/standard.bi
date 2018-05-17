@@ -99,24 +99,6 @@ function sqrt(x:Real32) -> Real32 {
 }
 
 /**
- * Power.
- */
-function pow(x:Real64, y:Real64) -> Real64 {
-  cpp {{
-  return ::pow(x_, y_);
-  }}
-}
-
-/**
- * Power.
- */
-function pow(x:Real32, y:Real32) -> Real32 {
-  cpp {{
-  return ::powf(x_, y_);
-  }}
-}
-
-/**
  * Round to smallest integer value not less than x.
  */
 function ceil(x:Real64) -> Real64 {

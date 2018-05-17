@@ -1,3 +1,7 @@
+cpp{{
+#include "boost/filesystem.hpp"
+}}
+
 /**
  * JSON file writer.
  */
@@ -27,6 +31,8 @@ class JSONWriter < MemoryWriter {
   function save() {
     success:Boolean <- false;
     cpp{{
+    boost::filesystem::path path = path_;
+    boost::filesystem::create_directories(path.parent_path());
     std::ofstream stream(path_);
     if (stream.is_open()) {
       libubjpp::JSONGenerator generator(stream);
