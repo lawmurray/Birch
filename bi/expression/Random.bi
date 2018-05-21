@@ -20,8 +20,10 @@ class Random<Value> < Expression<Value> {
    */
   operator <- x:Value {
     assert !this.x?;
-    assert !dist?;
     this.x <- x;
+    if (dist?) {
+      dist!.observe(x);
+    }
   }
 
   /**
@@ -29,8 +31,10 @@ class Random<Value> < Expression<Value> {
    */
   operator <- x:Value? {
     assert !this.x?;
-    assert !dist?;
     this.x <- x;
+    if (x? && dist?) {
+      dist!.observe(x!);
+    }
   }
 
   /**

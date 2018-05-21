@@ -25,7 +25,7 @@ class DelayValue<Value>(x:Random<Value>&) < Delay {
     }
 
     y:Random<Value>? <- x;
-    if y? {
+    if y? && !(y!.x?) {
       y!.x <- simulate();
       condition(y!.x!);
     }
