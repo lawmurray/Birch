@@ -174,7 +174,7 @@ class Writer {
    * - name: Name of the entry.
    * - value: Value of the entry.
    */
-  function setIntegerVector(name:String, value:Integer[_,_]);
+  function setIntegerMatrix(name:String, value:Integer[_,_]);
 
   /**
    * Set a matrix of reals.
@@ -182,7 +182,7 @@ class Writer {
    * - name: Name of the entry.
    * - value: Value of the entry.
    */
-  function setRealVector(name:String, value:Real[_,_]);
+  function setRealMatrix(name:String, value:Real[_,_]);
   
   /**
    * Set an object.
