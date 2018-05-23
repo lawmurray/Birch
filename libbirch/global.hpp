@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <cstddef>
 #include <list>
+#include <cassert>
 
 /**
  * @def bi_assert
