@@ -116,8 +116,6 @@ private:
 #include "libbirch/Enter.hpp"
 #include "libbirch/Clone.hpp"
 
-#include <cassert>
-
 inline bi::World::World() :
     launchSource(fiberWorld),
     launchDepth(fiberWorld->launchDepth + 1) {

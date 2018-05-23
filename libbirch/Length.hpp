@@ -5,8 +5,6 @@
 
 #include "libbirch/global.hpp"
 
-#include <cassert>
-
 namespace bi {
 /**
  * Length. The number of active elements along a dimension.

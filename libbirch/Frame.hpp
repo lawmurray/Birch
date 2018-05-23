@@ -213,8 +213,9 @@ struct NonemptyFrame {
   auto operator()(
       const NonemptyView<Range<offset_value1,length_value1>,Tail1>& o) const {
     /* pre-conditions */
-    assert(o.head.offset >= 0);
-    assert(o.head.offset + o.head.length <= head.length);
+    bi_assert_msg(
+        o.head.offset >= 0 && o.head.offset + o.head.length <= head.length,
+        "range is " << (o.head.offset + 1) << ".." << (o.head.offset + o.head.length) << ", which falls outside the valid range 1.." << head.length);
 
     return NonemptyFrame<decltype(head(o.head)),decltype(tail(o.tail))>(
         head(o.head), tail(o.tail));
@@ -226,7 +227,8 @@ struct NonemptyFrame {
   template<int64_t offset_value1, class Tail1>
   auto operator()(const NonemptyView<Index<offset_value1>,Tail1>& o) const {
     /* pre-condition */
-    assert(o.head.offset >= 0 && o.head.offset < head.length);
+    bi_assert_msg(o.head.offset >= 0 && o.head.offset < head.length,
+        "index is " << (o.head.offset + 1) << ", which falls outside the valid range 1.." << head.length);
 
     return tail(o.tail);
   }
@@ -243,8 +245,9 @@ struct NonemptyFrame {
     return head.conforms(o.head) && tail.conforms(o.tail);
   }
   bool conforms(const Eigen::Index rows, const Eigen::Index cols) {
-    return head.conforms(rows) && (tail.conforms(cols) ||
-        (std::is_same<Tail,EmptyFrame>::value && cols == 1));
+    return head.conforms(rows)
+        && (tail.conforms(cols)
+            || (std::is_same<Tail,EmptyFrame>::value && cols == 1));
   }
   bool conforms(const Eigen::Index rows) {
     return head.conforms(rows);
@@ -365,14 +368,14 @@ struct NonemptyFrame {
    * Product of all lengths.
    */
   int64_t size() const {
-    return head.length*tail.size();
+    return head.length * tail.size();
   }
 
   /**
    * Product of all strides.
    */
   int64_t volume() const {
-    return head.length*head.stride;
+    return head.length * head.stride;
   }
 
   /**
@@ -380,7 +383,7 @@ struct NonemptyFrame {
    */
   int64_t block() const {
     int64_t block = tail.block();
-    return head.stride == block ? head.length*head.stride : block;
+    return head.stride == block ? head.length * head.stride : block;
   }
 
   /**
@@ -388,7 +391,8 @@ struct NonemptyFrame {
    */
   template<class View>
   int64_t serial(const View& o) const {
-    assert(o.head.offset >= 0);
+    bi_assert_msg(o.head.offset >= 0 && o.head.offset < head.length,
+        "index is " << (o.head.offset + 1) << ", which falls outside the valid range 1.." << head.length);
     return o.head.offset * head.stride + tail.serial(o.tail);
   }
 

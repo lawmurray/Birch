@@ -122,7 +122,7 @@ bool bi::Fiber<YieldType>::query() {
 
 template<class YieldType>
 YieldType& bi::Fiber<YieldType>::get() {
-  assert(state);
+  bi_assert_msg(state, "fiber handle undefined");
   return state->get();
 }
 

@@ -43,7 +43,6 @@
 #include <cstdint>
 #include <cstddef>
 #include <cmath>
-#include <cassert>
 
 #include <getopt.h>
 #include <dlfcn.h>

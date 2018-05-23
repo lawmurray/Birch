@@ -506,13 +506,13 @@ private:
    */
   template<class U, class G>
   void copy(const Array<U,G>& o) {
-    assert(o.frame.conforms(frame));
+    bi_assert_msg(o.frame.conforms(frame), "array sizes are different");
 
     std::uninitialized_copy(o.begin(), o.end(), begin());
   }
 
   void copy(const typename sequence_type<T,F::count()>::type& o) {
-    assert(frame.conforms(sequence_frame(o)));
+    bi_assert_msg(frame.conforms(sequence_frame(o)), "array size and sequence size are different");
     auto iter = begin();
     sequence_copy(iter, o);
   }
@@ -522,7 +522,7 @@ private:
    */
   template<class U, class G>
   void assign(const Array<U,G>& o) {
-    assert(o.frame.conforms(frame));
+    bi_assert_msg(o.frame.conforms(frame), "array sizes are different");
     
     auto begin1 = o.begin();
     auto end1 = o.end();
@@ -546,12 +546,12 @@ private:
       //  std::memmove(&(*iter1), &(*iter2), block * sizeof(T));
       //  // ^ memory regions may overlap, so avoid memcpy
       //}
-      //assert(iter2 == o.end());
+      //bi_assert(iter2 == o.end());
     //}
   }
 
   void assign(const typename sequence_type<T,F::count()>::type& o) {
-    assert(frame.conforms(sequence_frame(o)));
+    bi_assert_msg(frame.conforms(sequence_frame(o)), "array size and sequence size are different");
     auto iter = begin();
     sequence_assign(iter, o);
   }

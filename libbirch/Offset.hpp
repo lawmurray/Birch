@@ -5,8 +5,6 @@
 
 #include "libbirch/global.hpp"
 
-#include <cassert>
-
 namespace bi {
 /**
  * Offset. Number of elements until the first active element along a

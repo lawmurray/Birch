@@ -5,8 +5,6 @@
 
 #include "libbirch/global.hpp"
 
-#include <cassert>
-
 namespace bi {
 /**
  * Stride. The number of elements, including both active and inactive elements,

@@ -8,12 +8,80 @@
 #include <memory>
 #include <cstdint>
 #include <cstddef>
+#include <list>
+
+/**
+ * @def bi_assert
+ *
+ * If debugging is enabled, check an assertion and abort on fail.
+ */
+#ifndef NDEBUG
+#define bi_assert(cond) if (!(cond)) bi::abort()
+#else
+#define bi_assert(cond)
+#endif
+
+/**
+ * @def bi_assert_msg
+ *
+ * If debugging is enabled, check an assertion and abort with a message on
+ * fail.
+ */
+#ifndef NDEBUG
+#define bi_assert_msg(cond, msg) \
+  if (!(cond)) { \
+    std::stringstream buf; \
+    buf << msg; \
+    bi::abort(buf.str()); \
+  }
+#else
+#define bi_assert_msg(cond, msg)
+#endif
+
+/**
+ * @def bi_function
+ *
+ * Push a new frame onto the stack trace.
+ */
+#ifndef NDEBUG
+#define bi_function(func, file, n) StackFunction function(func, file, n)
+#else
+#define bi_function(func, file, n)
+#endif
+
+/**
+ * @def bi_line
+ *
+ * Update the line number of the top frame on the stack trace.
+ */
+#ifndef NDEBUG
+#define bi_line(n) stacktrace.front().line = n
+#else
+#define bi_line(n)
+#endif
 
 namespace bi {
 class World;
 class Any;
 template<class T> class SharedPointer;
 template<class T> class WeakPointer;
+
+/**
+ * Stack frame.
+ */
+struct StackFrame {
+  const char* func;
+  const char* file;
+  int line;
+};
+
+/**
+ * Temporary type for pushing functions onto the stack trace.
+ */
+struct StackFunction {
+  StackFunction(const char* func, const char* file, const int line);
+  ~StackFunction();
+};
 
 /**
  * The world of the currently running fiber.
@@ -39,6 +107,30 @@ extern std::mt19937_64 rng;
 static constexpr int64_t mutable_value = 0;
 
 /**
+ * Stack trace.
+ */
+extern std::list<StackFrame> stacktrace;
+
+/**
+ * Print stack trace and abort.
+ */
+void abort();
+
+/**
+ * Print stack trace and abort with message.
+ */
+void abort(const std::string& msg);
+
+inline bi::StackFunction::StackFunction(const char* func, const char* file,
+    const int line) {
+  stacktrace.push_front( { func, file, line });
+}
+
+inline bi::StackFunction::~StackFunction() {
+  stacktrace.pop_front();
+}
+
+/**
  * The super type of type @p T. Specialised in forward declarations of
  * classes.
  */
@@ -57,7 +149,8 @@ struct super_type<const T> {
  */
 template<class T, class U>
 struct has_assignment {
-  static const bool value = has_assignment<typename super_type<T>::type,U>::value;
+  static const bool value =
+      has_assignment<typename super_type<T>::type,U>::value;
 };
 template<class U>
 struct has_assignment<Any,U> {
@@ -69,7 +162,8 @@ struct has_assignment<Any,U> {
  */
 template<class T, class U>
 struct has_conversion {
-  static const bool value = has_conversion<typename super_type<T>::type,U>::value;
+  static const bool value =
+      has_conversion<typename super_type<T>::type,U>::value;
 };
 template<class U>
 struct has_conversion<Any,U> {

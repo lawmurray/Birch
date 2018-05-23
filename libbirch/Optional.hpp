@@ -7,8 +7,6 @@
 
 #include "boost/optional.hpp"
 
-#include <cassert>
-
 namespace bi {
 /**
  * Optional.
@@ -91,7 +89,7 @@ public:
    * Get the value.
    */
   T& get() {
-    assert(hasValue);
+    bi_assert_msg(hasValue, "optional has no value");
     return value;
   }
 
@@ -99,7 +97,7 @@ public:
    * Get the value.
    */
   const T& get() const {
-    assert(hasValue);
+    bi_assert_msg(hasValue, "optional has no value");
     return value;
   }
 
@@ -198,7 +196,7 @@ public:
    * Get the value.
    */
   SharedPointer<T>& get() {
-    assert(query());
+    bi_assert_msg(query(), "optional has no value");
     return value;
   }
 
@@ -206,7 +204,7 @@ public:
    * Get the value.
    */
   const SharedPointer<T>& get() const {
-    assert(query());
+    bi_assert_msg(query(), "optional has no value");
     return value;
   }
 
