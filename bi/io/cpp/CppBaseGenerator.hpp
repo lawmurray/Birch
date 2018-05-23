@@ -121,6 +121,16 @@ protected:
   template<class T>
   void genInit(const T* o);
 
+  /**
+   * Generate macro to put function call on stack trace.
+   */
+  void genTraceFunction(const std::string& name, const Location* loc);
+
+  /**
+   * Generate macro to update line on stack trace.
+   */
+  void genTraceLine(const int line);
+
   /*
    * Generate arguments for function calls with appropriate casts where
    * necessary.

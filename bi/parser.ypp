@@ -557,7 +557,7 @@ assignment_operator
     ;
 
 assignment_operator_declaration
-    : OPERATOR LEFT_OP parameter { push_raw(); } optional_braces  { $$ = new bi::AssignmentOperator(new bi::Name("<-"), $3, $5, make_doc_loc(@$)); }
+    : OPERATOR LEFT_OP parameter { push_raw(); } optional_braces  { $$ = new bi::AssignmentOperator($3, $5, make_doc_loc(@$)); }
     ;
 
 conversion_operator_declaration

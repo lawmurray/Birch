@@ -133,6 +133,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   } else {
     finish(" {");
     in();
+    genTraceFunction(o->name->str(), o->loc);
     genSwitch();
     *this << o->braces->strip();
     genEnd();
@@ -168,10 +169,12 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
 }
 
 void bi::CppFiberGenerator::visit(const Return* o) {
+  genTraceLine(o->loc->firstLine);
   line("goto END;");
 }
 
 void bi::CppFiberGenerator::visit(const Yield* o) {
+  genTraceLine(o->loc->firstLine);
   line("this->value = " << o->single << ';');
   line("this->label = " << label << ';');
   line("return true;");

@@ -148,6 +148,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   } else {
     finish(" {");
     in();
+    genTraceFunction(o->name->str(), o->loc);
     genSwitch();
     *this << o->braces->strip();
     genEnd();

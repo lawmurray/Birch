@@ -5,10 +5,9 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::AssignmentOperator::AssignmentOperator(Name* name,
-    Expression* single, Statement* braces, Location* loc) :
+bi::AssignmentOperator::AssignmentOperator(Expression* single,
+    Statement* braces, Location* loc) :
     Statement(loc),
-    Named(name),
     Single(single),
     Scoped(LOCAL_SCOPE),
     Braced(braces) {

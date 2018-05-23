@@ -254,7 +254,7 @@ bi::Statement* bi::Cloner::clone(const UnaryOperator* o) {
 }
 
 bi::Statement* bi::Cloner::clone(const AssignmentOperator* o) {
-  return new AssignmentOperator(o->name, o->single->accept(this),
+  return new AssignmentOperator(o->single->accept(this),
       o->braces->accept(this), o->loc);
 }
 

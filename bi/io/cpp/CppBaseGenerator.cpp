@@ -161,8 +161,8 @@ void bi::CppBaseGenerator::visit(const Member* o) {
     middle("this->self()->super_type::");
   } else if (leftGlobal) {
     middle("bi::");
-  } else if (!inAssign && o->right->type->isValue() &&
-      dynamic_cast<const Identifier<MemberVariable>*>(o->right)) {
+  } else if (!inAssign && o->right->type->isValue()
+      && dynamic_cast<const Identifier<MemberVariable>*>(o->right)) {
     /* optimization: just reading a value, so no need to copy-on-write the
      * owning object */
     middle(o->left << ".getNoCopy()->");
@@ -309,6 +309,7 @@ void bi::CppBaseGenerator::visit(const Function* o) {
     } else {
       finish(" {");
       in();
+      genTraceFunction(o->name->str(), o->loc);
 
       /* body */
       CppBaseGenerator aux(base, level, false);
@@ -339,6 +340,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
   } else {
     line("void bi::" << o->name << "(int argc, char** argv) {");
     in();
+    genTraceFunction(o->name->str(), o->loc);
 
     /* handle program options */
     if (o->params->width() > 0) {
@@ -453,6 +455,7 @@ void bi::CppBaseGenerator::visit(const BinaryOperator* o) {
     } else {
       finish(" {");
       in();
+      genTraceFunction(o->name->str(), o->loc);
       CppBaseGenerator aux(base, level, false);
       aux << o->braces->strip();
       out();
@@ -478,6 +481,7 @@ void bi::CppBaseGenerator::visit(const UnaryOperator* o) {
     } else {
       finish(" {");
       in();
+      genTraceFunction(o->name->str(), o->loc);
       CppBaseGenerator aux(base, level, false);
       aux << o->braces->strip();
       out();
@@ -510,6 +514,7 @@ void bi::CppBaseGenerator::visit(const Generic* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Assignment* o) {
+  genTraceLine(o->loc->firstLine);
   ++inAssign;
   start(o->left);
   --inAssign;
@@ -517,10 +522,12 @@ void bi::CppBaseGenerator::visit(const Assignment* o) {
 }
 
 void bi::CppBaseGenerator::visit(const ExpressionStatement* o) {
+  genTraceLine(o->loc->firstLine);
   line(o->single << ';');
 }
 
 void bi::CppBaseGenerator::visit(const If* o) {
+  genTraceLine(o->loc->firstLine);
   start("if (");
   auto cond = o->cond->strip();
   if (cond->type->isClass()) {
@@ -544,6 +551,8 @@ void bi::CppBaseGenerator::visit(const If* o) {
 }
 
 void bi::CppBaseGenerator::visit(const For* o) {
+  genTraceLine(o->loc->firstLine);
+
   // o->index may be an identifier or a local variable, in the latter case
   // need to ensure that it is only declared once in the first element of the
   // for loop
@@ -565,6 +574,7 @@ void bi::CppBaseGenerator::visit(const For* o) {
 }
 
 void bi::CppBaseGenerator::visit(const While* o) {
+  genTraceLine(o->loc->firstLine);
   start("while (");
   auto cond = o->cond->strip();
   if (cond->type->isClass()) {
@@ -586,17 +596,17 @@ void bi::CppBaseGenerator::visit(const DoWhile* o) {
   in();
   *this << o->braces->strip();
   out();
+  genTraceLine(o->loc->lastLine);
   line("} while (" << o->cond->strip() << ");");
 }
 
 void bi::CppBaseGenerator::visit(const Assert* o) {
-  //if (o->loc) {
-  //  line("#line " << o->loc->firstLine << " \"" << o->loc->file->path << '"');
-  //}
-  line("assert(" << o->cond->strip() << ");");
+  genTraceLine(o->loc->firstLine);
+  line("bi_assert(" << o->cond->strip() << ");");
 }
 
 void bi::CppBaseGenerator::visit(const Return* o) {
+  genTraceLine(o->loc->firstLine);
   line("return " << o->single << ';');
 }
 
@@ -712,6 +722,16 @@ void bi::CppBaseGenerator::genTemplateSpec(const Class* o) {
     }
     middle('>');
   }
+}
+
+void bi::CppBaseGenerator::genTraceFunction(const std::string& name,
+    const Location* loc) {
+  start("bi_function(\"" << name << "\", \"");
+  finish(loc->file->path << "\", " << loc->firstLine << ");");
+}
+
+void bi::CppBaseGenerator::genTraceLine(const int line) {
+  line("bi_line(" << line << ");");
 }
 
 void bi::CppBaseGenerator::genArgs(const Call* o) {

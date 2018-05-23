@@ -363,7 +363,7 @@ void bi::bi_ostream::visit(const UnaryOperator* o) {
 }
 
 void bi::bi_ostream::visit(const AssignmentOperator* o) {
-  start("operator " << o->name << ' ' << o->single);
+  start("operator <- " << o->single);
   if (!o->braces->isEmpty() && (!header || (type && type->isGeneric()))) {
     finish(o->braces << "\n");
   } else {

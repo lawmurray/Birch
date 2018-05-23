@@ -165,6 +165,7 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
   } else {
     finish(" {");
     in();
+    genTraceFunction(o->name->str(), o->loc);
     line("Enter enter(getWorld());");
 
     /* body */
@@ -202,6 +203,7 @@ void bi::CppClassGenerator::visit(const AssignmentOperator* o) {
     } else {
       finish(" {");
       in();
+      genTraceFunction("(assignment)", o->loc);
       line("Enter enter(getWorld());");
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces->strip();
@@ -227,6 +229,7 @@ void bi::CppClassGenerator::visit(const ConversionOperator* o) {
     } else {
       finish(" {");
       in();
+      genTraceFunction("(conversion)", o->loc);
       line("Enter enter(getWorld());");
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces->strip();
