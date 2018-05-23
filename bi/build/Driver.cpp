@@ -752,9 +752,8 @@ void bi::Driver::configure() {
               + "'; valid values are 'native', 'js' and 'wasm'");
     }
     if (debug) {
-      cppflags << " -D_GLIBCXX_DEBUG";
-      cxxflags << " -O0 -g -fno-inline";
-      ldflags << " -O0 -g -fno-inline";
+      cxxflags << " -Og -g";
+      ldflags << " -Og -g";
     } else {
       cppflags << " -DNDEBUG";
 
@@ -764,8 +763,8 @@ void bi::Driver::configure() {
        * recommends passing the same optimisation options to the linker as
        * to the compiler when using this.
        */
-      cxxflags << " -O3 -g -funroll-loops -flto";
-      ldflags << " -O3 -g -funroll-loops -flto";
+      cxxflags << " -O3 -funroll-loops -flto";
+      ldflags << " -O3 -funroll-loops -flto";
     }
     if (warnings) {
       cxxflags << " -Wall";
