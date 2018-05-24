@@ -78,8 +78,10 @@ void write_all(const fs::path& path, const std::string& contents);
 /**
  * Write the entirety of a file from a string, but only if the new contents
  * differs from the old contents.
+ *
+ * @return True if the contents differs, and so the file was written.
  */
-void write_all_if_different(const fs::path& path,
+bool write_all_if_different(const fs::path& path,
     const std::string& contents);
 
 /**

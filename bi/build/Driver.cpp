@@ -30,13 +30,13 @@ bi::Driver::Driver(int argc, char** argv) :
     arch("native"),
     prefix(""),
     packageName("Untitled"),
+    unity(false),
     warnings(true),
     debug(true),
     verbose(true),
     newAutogen(false),
     newConfigure(false),
-    newMake(false),
-    newMeta(false) {
+    newMake(false) {
   enum {
     SHARE_DIR_ARG = 256,
     INCLUDE_DIR_ARG,
@@ -44,6 +44,8 @@ bi::Driver::Driver(int argc, char** argv) :
     ARCH_ARG,
     PREFIX_ARG,
     NAME_ARG,
+    ENABLE_UNITY_ARG,
+    DISABLE_UNITY_ARG,
     ENABLE_WARNINGS_ARG,
     DISABLE_WARNINGS_ARG,
     ENABLE_DEBUG_ARG,
@@ -60,6 +62,8 @@ bi::Driver::Driver(int argc, char** argv) :
       { "arch", required_argument, 0, ARCH_ARG },
       { "prefix", required_argument, 0, PREFIX_ARG },
       { "name", required_argument, 0, NAME_ARG },
+      { "enable-unity", no_argument, 0, ENABLE_UNITY_ARG },
+      { "disable-unity", no_argument, 0, DISABLE_UNITY_ARG },
       { "enable-warnings", no_argument, 0, ENABLE_WARNINGS_ARG },
       { "disable-warnings", no_argument, 0, DISABLE_WARNINGS_ARG },
       { "enable-debug", no_argument, 0, ENABLE_DEBUG_ARG },
@@ -98,6 +102,12 @@ bi::Driver::Driver(int argc, char** argv) :
       break;
     case NAME_ARG:
       packageName = optarg;
+      break;
+    case ENABLE_UNITY_ARG:
+      unity = true;
+      break;
+    case DISABLE_UNITY_ARG:
+      unity = false;
       break;
     case ENABLE_WARNINGS_ARG:
       warnings = true;
@@ -287,20 +297,20 @@ void bi::Driver::init() {
 
   contents = read_all(find(share_dirs, "META.json"));
   boost::replace_all(contents, "PACKAGE_NAME", packageName);
-  fs::ofstream metaStream(work_dir / "META.json");
+  fs::ofstream metaStream("META.json");
   if (metaStream.fail()) {
     std::stringstream buf;
-    buf << "Could not open " << (work_dir / "META.json").string() << " for writing.";
+    buf << "Could not open META.json for writing.";
     throw DriverException(buf.str());
   }
   metaStream << contents;
 
   contents = read_all(find(share_dirs, "README.md"));
   boost::replace_all(contents, "PACKAGE_NAME", packageName);
-  fs::ofstream readmeStream(work_dir / "README.md");
+  fs::ofstream readmeStream("README.md");
   if (readmeStream.fail()) {
     std::stringstream buf;
-    buf << "Could not open " << (work_dir / "README.md").string() << " for writing.";
+    buf << "Could not open README.md for writing.";
     throw DriverException(buf.str());
   }
   readmeStream << contents;
@@ -369,15 +379,15 @@ void bi::Driver::docs() {
   Package* package = createPackage();
 
   /* parse all files */
-  Compiler compiler(package, build_dir);
+  Compiler compiler(package, build_dir, unity);
   compiler.parse();
   compiler.resolve();
 
   /* output everything into single file */
-  fs::ofstream docsStream(work_dir / "DOCS.md");
+  fs::ofstream docsStream("DOCS.md");
   if (docsStream.fail()) {
     std::stringstream buf;
-    buf << "Could not open " << (work_dir / "DOCS.md").string() << " for writing.";
+    buf << "Could not open DOCS.md for writing.";
     throw DriverException(buf.str());
   }
   md_ostream output(docsStream);
@@ -385,10 +395,10 @@ void bi::Driver::docs() {
   docsStream.close();
 
   /* split that file into multiple files for mkdocs */
-  fs::ofstream mkdocsStream(work_dir / "mkdocs.yml");
+  fs::ofstream mkdocsStream("mkdocs.yml");
   if (mkdocsStream.fail()) {
     std::stringstream buf;
-    buf << "Could not open " << (work_dir / "mkdocs.yml").string() << " for writing.";
+    buf << "Could not open mkdocs.yml for writing.";
     throw DriverException(buf.str());
   }
   mkdocsStream << "site_name: '" << packageName << "'\n";
@@ -414,8 +424,8 @@ void bi::Driver::docs() {
   fs::create_directories(docs / "classes");
 
   /* index file */
-  if (exists(work_dir / "README.md")) {
-    copy_with_force(work_dir / "README.md", docs / "index.md");
+  if (fs::exists("README.md")) {
+    copy_with_force("README.md", docs / "index.md");
   } else {
     docsStream.open(docs / "index.md");
     docsStream << packageDesc << '\n';
@@ -530,17 +540,10 @@ void bi::Driver::setup() {
   }
 
   /* copy build files into build directory */
-  newAutogen = copy_if_newer(find(share_dirs, "autogen.sh"),
-      work_dir / "autogen.sh");
-  fs::permissions(work_dir / "autogen.sh", fs::add_perms | fs::owner_exe);
-  newConfigure = copy_if_newer(find(share_dirs, "configure.ac"),
-      work_dir / "configure.ac");
-  newMake = copy_if_newer(find(share_dirs, "Makefile.am"),
-      work_dir / "Makefile.am");
-  newMeta = fs::last_write_time("META.json")
-      > last_write_time(work_dir / "Makefile.am");
+  newAutogen = copy_if_newer(find(share_dirs, "autogen.sh"), "autogen.sh");
+  fs::permissions("autogen.sh", fs::add_perms | fs::owner_exe);
 
-  fs::path m4_dir = work_dir / "m4";
+  fs::path m4_dir("m4");
   if (!fs::exists(m4_dir)) {
     if (!fs::create_directory(m4_dir)) {
       std::stringstream buf;
@@ -554,83 +557,71 @@ void bi::Driver::setup() {
       m4_dir / "ax_check_define.m4");
 
   /* update configure.ac */
-  if (newConfigure || newMeta) {
-    std::string contents = read_all(find(share_dirs, "configure.ac"));
-    boost::replace_all(contents, "PACKAGE_NAME", packageName);
-    boost::replace_all(contents, "PACKAGE_TARNAME", internalName);
-    fs::ofstream configureStream(work_dir / "configure.ac");
-    if (configureStream.fail()) {
-      std::stringstream buf;
-      buf << "Could not open " << (work_dir / "configure.ac").string() << " for writing.";
-      throw DriverException(buf.str());
-    }
-    configureStream << contents << "\n\n";
+  std::string contents = read_all(find(share_dirs, "configure.ac"));
+  boost::replace_all(contents, "PACKAGE_NAME", packageName);
+  boost::replace_all(contents, "PACKAGE_TARNAME", internalName);
+  std::stringstream configureStream;
+  configureStream << contents << "\n\n";
 
-    /* required headers */
-    if (!metaFiles["require.header"].empty()) {
-      configureStream << "if test x$emscripten = xfalse; then\n";
-    }
-    for (auto file : metaFiles["require.header"]) {
-      configureStream << "  AC_CHECK_HEADERS([" << file.string() << "], [], "
-          << "[AC_MSG_ERROR([header required by " << packageName
-          << " package not found.])], [-])\n";
-    }
-    if (!metaFiles["require.header"].empty()) {
-      configureStream << "fi\n";
-    }
-
-    /* required libraries */
-    for (auto file : metaFiles["require.library"]) {
-      configureStream << "  AC_CHECK_LIB([" << file.string() << "], [main], "
-          << "[], [AC_MSG_ERROR([library required by " << packageName
-          << " package not found.])])\n";
-    }
-
-    /* required programs */
-    for (auto file : metaFiles["require.program"]) {
-      configureStream << "  AC_PATH_PROG([PROG], [" << file.string()
-          << "], [])\n";
-      configureStream << "  if test \"$PROG\" = \"\"; then\n";
-      configureStream << "    AC_MSG_ERROR([" << file.string() << " program "
-          << "required by " << packageName << " package not found.])\n";
-      configureStream << "  fi\n";
-    }
-
-    /* footer */
-    configureStream << "AC_CONFIG_FILES([Makefile])\n";
-    configureStream << "AC_OUTPUT\n";
-
-    configureStream.close();
+  /* required headers */
+  if (!metaFiles["require.header"].empty()) {
+    configureStream << "if test x$emscripten = xfalse; then\n";
+  }
+  for (auto file : metaFiles["require.header"]) {
+    configureStream << "  AC_CHECK_HEADERS([" << file.string() << "], [], "
+        << "[AC_MSG_ERROR([header required by " << packageName
+        << " package not found.])], [-])\n";
+  }
+  if (!metaFiles["require.header"].empty()) {
+    configureStream << "fi\n";
   }
 
+  /* required libraries */
+  for (auto file : metaFiles["require.library"]) {
+    configureStream << "  AC_CHECK_LIB([" << file.string() << "], [main], "
+        << "[], [AC_MSG_ERROR([library required by " << packageName
+        << " package not found.])])\n";
+  }
+
+  /* required programs */
+  for (auto file : metaFiles["require.program"]) {
+    configureStream << "  AC_PATH_PROG([PROG], [" << file.string()
+                  << "], [])\n";
+    configureStream << "  if test \"$PROG\" = \"\"; then\n";
+    configureStream << "    AC_MSG_ERROR([" << file.string() << " program "
+        << "required by " << packageName << " package not found.])\n";
+    configureStream << "  fi\n";
+  }
+
+  /* footer */
+  configureStream << "AC_CONFIG_FILES([Makefile])\n";
+  configureStream << "AC_OUTPUT\n";
+
+  newConfigure = write_all_if_different("configure.ac", configureStream.str());
+
   /* update Makefile.am */
-  if (newMake || newMeta) {
-    std::string contents = read_all(find(share_dirs, "Makefile.am"));
-    boost::replace_all(contents, "PACKAGE_NAME", packageName);
-    boost::replace_all(contents, "PACKAGE_TARNAME", internalName);
+  contents = read_all(find(share_dirs, "Makefile.am"));
+  boost::replace_all(contents, "PACKAGE_NAME", packageName);
+  boost::replace_all(contents, "PACKAGE_TARNAME", internalName);
 
-    fs::ofstream makeStream(work_dir / "Makefile.am");
-    if (makeStream.fail()) {
-      std::stringstream buf;
-      buf << "Could not open " << (work_dir / "Makefile.am").string() << " for writing.";
-      throw DriverException(buf.str());
+  std::stringstream makeStream;
+  makeStream << contents << "\n\n";
+  makeStream << "lib_LTLIBRARIES = lib" << internalName << ".la\n\n";
+
+  /* *.cpp files */
+  makeStream << "lib" << internalName << "_la_SOURCES = ";
+  for (auto file : metaFiles["manifest.source"]) {
+    if (file.extension().compare(".cpp") == 0
+        || file.extension().compare(".c") == 0) {
+      makeStream << " \\\n  " << file.string();
     }
-    makeStream << contents << "\n\n";
-    makeStream << "lib_LTLIBRARIES = lib" << internalName << ".la\n\n";
+  }
+  makeStream << '\n';
 
-    /* *.cpp files */
-    makeStream << "lib" << internalName << "_la_SOURCES = ";
-    for (auto file : metaFiles["manifest.source"]) {
-      if (file.extension().compare(".cpp") == 0
-          || file.extension().compare(".c") == 0) {
-        makeStream << " \\\n  " << file.string();
-      }
-    }
-    makeStream << '\n';
-
-    /* sources derived from *.bi files */
-    makeStream << "nodist_lib" << internalName << "_la_SOURCES =";
-    makeStream << " \\\n  bi/" << internalName << ".cpp";
+  /* sources derived from *.bi files */
+  makeStream << "nodist_lib" << internalName << "_la_SOURCES =";
+  makeStream << " \\\n  bi/" << internalName << ".cpp";
+  if (!unity) {
     for (auto file : metaFiles["manifest.source"]) {
       if (file.extension().compare(".bi") == 0) {
         fs::path cppFile = file;
@@ -638,36 +629,36 @@ void bi::Driver::setup() {
         makeStream << " \\\n  " << cppFile.string();
       }
     }
-    makeStream << '\n';
-
-    /* headers to install and distribute */
-    makeStream << "nobase_include_HEADERS =";
-    makeStream << " \\\n  bi/" << internalName << ".hpp";
-    makeStream << " \\\n  bi/" << internalName << ".bih";
-    for (auto file : metaFiles["manifest.header"]) {
-      if (file.extension().compare(".hpp") == 0
-          || file.extension().compare(".h") == 0) {
-        makeStream << " \\\n  " << file.string();
-      }
-    }
-    makeStream << '\n';
-
-    /* data files to distribute */
-    makeStream << "dist_pkgdata_DATA = ";
-    for (auto file : metaFiles["manifest.data"]) {
-      makeStream << " \\\n  " << file.string();
-    }
-    makeStream << '\n';
-
-    /* other files to not distribute */
-    makeStream << "noinst_DATA = ";
-    for (auto file : metaFiles["manifest.other"]) {
-      makeStream << " \\\n  " << file.string();
-    }
-    makeStream << '\n';
-
-    makeStream.close();
   }
+  makeStream << '\n';
+
+  /* headers to install and distribute */
+  makeStream << "nobase_include_HEADERS =";
+  makeStream << " \\\n  bi/" << internalName << ".hpp";
+  makeStream << " \\\n  bi/" << internalName << ".bih";
+  for (auto file : metaFiles["manifest.header"]) {
+    if (file.extension().compare(".hpp") == 0
+        || file.extension().compare(".h") == 0) {
+      makeStream << " \\\n  " << file.string();
+    }
+  }
+  makeStream << '\n';
+
+  /* data files to distribute */
+  makeStream << "dist_pkgdata_DATA = ";
+  for (auto file : metaFiles["manifest.data"]) {
+    makeStream << " \\\n  " << file.string();
+  }
+  makeStream << '\n';
+
+  /* other files to not distribute */
+  makeStream << "noinst_DATA = ";
+  for (auto file : metaFiles["manifest.other"]) {
+    makeStream << " \\\n  " << file.string();
+  }
+  makeStream << '\n';
+
+  newMake = write_all_if_different("Makefile.am", makeStream.str());
 }
 
 bi::Package* bi::Driver::createPackage() {
@@ -698,7 +689,7 @@ bi::Package* bi::Driver::createPackage() {
 
 void bi::Driver::compile() {
   Package* package = createPackage();
-  Compiler compiler(package, build_dir);
+  Compiler compiler(package, build_dir, unity);
   compiler.parse();
   compiler.resolve();
   compiler.gen();
@@ -707,8 +698,8 @@ void bi::Driver::compile() {
 
 void bi::Driver::autogen() {
   if (newAutogen || newConfigure || newMake
-      || !exists(work_dir / "configure")
-      || !exists(work_dir / "install-sh")) {
+      || !fs::exists("configure")
+      || !fs::exists("install-sh")) {
     std::stringstream cmd;
     cmd << (fs::path(".") / "autogen.sh");
     if (verbose) {
@@ -771,6 +762,8 @@ void bi::Driver::configure() {
       ldflags << " -Wall";
     }
     cxxflags << " -Wno-overloaded-virtual";
+    cxxflags << " -Wno-return-type";
+    // ^ false warnings for abstract functions at the moment
     cppflags << " -DEIGEN_NO_STATIC_ASSERT";
     cppflags << " -Deigen_assert=bi_assert";
 

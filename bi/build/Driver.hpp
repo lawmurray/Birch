@@ -174,17 +174,22 @@ private:
   std::string packageDesc;
 
   /**
-   * Enable compiler warnings.
+   * Use unity build?
+   */
+  bool unity;
+
+  /**
+   * Are compiler warnings enabled?
    */
   bool warnings;
 
   /**
-   * Enable debugging mode.
+   * Is debugging mode enabled?
    */
   bool debug;
 
   /**
-   * Verbose reporting.
+   * Is verbose reporting enabled?
    */
   bool verbose;
   //@}
@@ -203,11 +208,6 @@ private:
    * Is the Makefile.am file new?
    */
   bool newMake;
-
-  /**
-   * Is META.json new?
-   */
-  bool newMeta;
 
   /**
    * Lists of files from meta.

@@ -20,10 +20,12 @@
 bi::Compiler* compiler = nullptr;
 std::stringstream raw;
 
-bi::Compiler::Compiler(Package* package, const fs::path& build_dir) :
+bi::Compiler::Compiler(Package* package, const fs::path& build_dir,
+    const bool unity) :
     scope(new Scope(GLOBAL_SCOPE)),
     package(package),
-    build_dir(build_dir) {
+    build_dir(build_dir),
+    unity(unity) {
   //
 }
 
@@ -102,17 +104,28 @@ void bi::Compiler::gen() {
   /* *.cpp source for generic class specialization definitions */
   stream.str("");
   cppPackageOutput << package;
+  if (unity) {
+    /* for a unity build, C++ for all files goes into the one package
+     * file */
+    for (auto file : package->sources) {
+      cppOutput << file;
+    }
+  }
   path = build_dir / "bi" / tarname(package->name);
   path.replace_extension(".cpp");
   write_all_if_different(path, stream.str());
 
-  /* separate *.cpp source for each file */
-  for (auto file : package->sources) {
-    stream.str("");
-    cppOutput << file;
-    path = build_dir / file->path;
-    path.replace_extension(".cpp");
-    write_all_if_different(path, stream.str());
+  /* if unity mode is enabled, then C++ for each each *.bi file is
+   * generated into the same package *.cpp file, otherwise one *.cpp file for
+   * each *.bi file */
+  if (!unity) {
+    for (auto file : package->sources) {
+      stream.str("");
+      cppOutput << file;
+      path = build_dir / file->path;
+      path.replace_extension(".cpp");
+      write_all_if_different(path, stream.str());
+    }
   }
 }
 

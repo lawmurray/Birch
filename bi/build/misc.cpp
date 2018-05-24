@@ -90,22 +90,27 @@ std::string bi::read_all(const fs::path& path) {
 }
 
 void bi::write_all(const fs::path& path, const std::string& contents) {
-  fs::create_directories(path.parent_path());
+  if (!path.parent_path().empty()) {
+    fs::create_directories(path.parent_path());
+  }
   fs::ofstream out(path);
   std::stringstream buf(contents);
   out << buf.rdbuf();
 }
 
-void bi::write_all_if_different(const fs::path& path,
+bool bi::write_all_if_different(const fs::path& path,
     const std::string& contents) {
   if (fs::exists(path)) {
     std::string old = read_all(path);
     if (contents != old) {
       write_all(path, contents);
+      return true;
     }
   } else {
     write_all(path, contents);
+    return true;
   }
+  return false;
 }
 
 std::string bi::tarname(const std::string& name) {

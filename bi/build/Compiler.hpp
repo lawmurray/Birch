@@ -23,8 +23,10 @@ public:
    *
    * @param package The package.
    * @param build_dir Build directory.
+   * @param unity Use unity build?
    */
-  Compiler(Package* package, const fs::path& build_dir);
+  Compiler(Package* package, const fs::path& build_dir,
+      const bool unity = false);
 
   /**
    * Parse all input files.
@@ -66,6 +68,11 @@ private:
    * Build directory.
    */
   fs::path build_dir;
+
+  /**
+   * Use unity build?
+   */
+  bool unity;
 };
 }
 
