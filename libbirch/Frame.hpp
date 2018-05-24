@@ -215,7 +215,7 @@ struct NonemptyFrame {
     /* pre-conditions */
     bi_assert_msg(
         o.head.offset >= 0 && o.head.offset + o.head.length <= head.length,
-        "range is " << (o.head.offset + 1) << ".." << (o.head.offset + o.head.length) << ", which falls outside the valid range 1.." << head.length);
+        "range is " << (o.head.offset + 1) << ".." << (o.head.offset + o.head.length) << " for dimension of length " << head.length);
 
     return NonemptyFrame<decltype(head(o.head)),decltype(tail(o.tail))>(
         head(o.head), tail(o.tail));
@@ -228,7 +228,7 @@ struct NonemptyFrame {
   auto operator()(const NonemptyView<Index<offset_value1>,Tail1>& o) const {
     /* pre-condition */
     bi_assert_msg(o.head.offset >= 0 && o.head.offset < head.length,
-        "index is " << (o.head.offset + 1) << ", which falls outside the valid range 1.." << head.length);
+        "index is " << (o.head.offset + 1) << " for dimension of length " << head.length);
 
     return tail(o.tail);
   }
@@ -392,7 +392,7 @@ struct NonemptyFrame {
   template<class View>
   int64_t serial(const View& o) const {
     bi_assert_msg(o.head.offset >= 0 && o.head.offset < head.length,
-        "index is " << (o.head.offset + 1) << ", which falls outside the valid range 1.." << head.length);
+        "index is " << (o.head.offset + 1) << " for dimension of length " << head.length);
     return o.head.offset * head.stride + tail.serial(o.tail);
   }
 

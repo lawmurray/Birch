@@ -99,8 +99,8 @@ class Vector<Type> {
     enlarge(nelements + 1, x);
     if (i < nelements) {
       values[(i + 1)..nelements] <- values[i..(nelements - 1)];
-      values[i] <- x;
     }
+    values[i] <- x;
   }
 
   /**
@@ -110,7 +110,9 @@ class Vector<Type> {
    */
   function erase(i:Integer) {
     assert 1 <= i && i <= nelements;
-    values[i..(nelements - 1)] <- values[(i + 1)..nelements];
+    if i < nelements {
+      values[i..(nelements - 1)] <- values[(i + 1)..nelements];
+    }
     shrink(nelements - 1);
   }
 
