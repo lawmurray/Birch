@@ -52,7 +52,9 @@ function fopen(path:String, mode:Integer) -> File {
     s <- "w";
     cpp{{
     boost::filesystem::path path = path_;
-    boost::filesystem::create_directories(path.parent_path());
+    if (!path.parent_path().empty()) {
+      boost::filesystem::create_directories(path.parent_path());
+    }
     }}
   } else if (mode == APPEND) {
     s <- "a";
