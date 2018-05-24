@@ -40,9 +40,9 @@ before_install:
 
   # Checkout Birch.Standard, which may be cached, and (re)build
   - git clone --depth 1 "https://github.com/lawmurray/Birch.Standard.git" || (cd Birch.Standard && git pull && cd ..)
-  - cd Birch.Standard && birch build && sudo birch install && cd ..
+  - cd Birch.Standard && birch build --enable-unity && sudo birch install --enable-unity && cd ..
 script:
-  - birch build && sudo birch install
+  - birch build --enable-unity && sudo birch install --enable-unity
 cache:
   directories:
     - Birch
