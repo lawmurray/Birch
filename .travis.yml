@@ -37,7 +37,7 @@ before_install:
   - git clone --depth 1 "https://github.com/lawmurray/Birch.git" || (cd Birch && git pull && cd ..)
   - cd Birch && ./autogen.sh && ./configure && make -j 2 && sudo make install && cd ..
 install:
-  - birch build && sudo birch install
+  - birch build --enable-unity && sudo birch install --enable-unity
 script:
   - birch test -N 10000
 cache:
