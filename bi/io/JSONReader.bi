@@ -2,6 +2,8 @@ cpp{{
 #include "libubjpp/libubjpp.hpp"
 #include "libubjpp/json/JSONDriver.hpp"
 #include "boost/filesystem.hpp"
+
+#include <fstream>
 }}
 
 /**
