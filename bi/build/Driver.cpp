@@ -771,6 +771,8 @@ void bi::Driver::configure() {
       ldflags << " -Wall";
     }
     cxxflags << " -Wno-overloaded-virtual";
+    cppflags << " -DEIGEN_NO_STATIC_ASSERT";
+    cppflags << " -Deigen_assert=bi_assert";
 
     for (auto iter = include_dirs.begin(); iter != include_dirs.end();
         ++iter) {

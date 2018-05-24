@@ -459,9 +459,11 @@ void bi::bi_ostream::visit(const Yield* o) {
 }
 
 void bi::bi_ostream::visit(const Raw* o) {
-  line(o->name << " {{");
-  line(o->raw);
-  line("}}");
+  if (*o->name == "hpp" || !header) {
+    line(o->name << " {{");
+    line(o->raw);
+    line("}}");
+  }
 }
 
 void bi::bi_ostream::visit(const StatementList* o) {
