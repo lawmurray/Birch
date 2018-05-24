@@ -7,11 +7,8 @@
 
 #include <cstdio>
 
-static std::random_device rd;
-
 bi::World* bi::fiberWorld = new bi::World(0);
 bool bi::fiberClone = false;
-std::mt19937_64 bi::rng(rd());
 std::list<bi::StackFrame> bi::stacktrace;
 
 void bi::abort() {

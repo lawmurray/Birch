@@ -239,9 +239,7 @@
   },
   "require": {
     "header": [
-      "eigen3/Eigen/Core",
       "eigen3/Eigen/Dense",
-      "eigen3/Eigen/Cholesky",
       "boost/filesystem.hpp",
       "boost/math/special_functions.hpp",
       "boost/math/distributions.hpp"

@@ -28,15 +28,11 @@
 #include "libbirch/EigenOperators.hpp"
 #include "libbirch/global.hpp"
 
-#include "libubjpp/libubjpp.hpp"
-
-#include <random>
 #include <algorithm>
 #include <numeric>
 #include <utility>
 #include <functional>
 #include <string>
-#include <fstream>
 
 #include <cstdio>
 #include <cstdlib>

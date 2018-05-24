@@ -95,11 +95,6 @@ extern World* fiberWorld;
 extern bool fiberClone;
 
 /**
- * Random number generator.
- */
-extern std::mt19937_64 rng;
-
-/**
  * Constant to indicate a mutable value. Zero is convenient here, as it
  * enables multiplication to convolve multiple values.
  *

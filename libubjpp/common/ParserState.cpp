@@ -3,6 +3,8 @@
  */
 #include "libubjpp/common/ParserState.hpp"
 
+#include <iostream>
+
 ParserState::ParserState() : failed(false), line(1) {
   //
 }

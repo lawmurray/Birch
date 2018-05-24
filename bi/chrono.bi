@@ -1,7 +1,7 @@
 cpp {{
 #include <chrono>
 
-std::chrono::time_point<std::chrono::system_clock> savedTimePoint = std::chrono::system_clock::now();
+static std::chrono::time_point<std::chrono::system_clock> savedTimePoint = std::chrono::system_clock::now();
 }}
 
 /**

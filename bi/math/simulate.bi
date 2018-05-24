@@ -1,3 +1,10 @@
+cpp{{
+#include <random>
+
+static std::random_device rd;
+static std::mt19937_64 rng(rd());
+}}
+
 /**
  * Seed the pseudorandom number generator.
  *
