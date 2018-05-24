@@ -7,8 +7,6 @@
 #include "bi/common/Argumented.hpp"
 #include "bi/common/Parameterised.hpp"
 
-#include <set>
-
 namespace bi {
 /**
  * Ambiguous overloaded function call.

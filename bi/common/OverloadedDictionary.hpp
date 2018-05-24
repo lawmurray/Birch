@@ -5,9 +5,6 @@
 
 #include "bi/common/Overloaded.hpp"
 
-#include <unordered_map>
-#include <string>
-
 namespace bi {
 /**
  * Dictionary for overloaded functions, operators etc.

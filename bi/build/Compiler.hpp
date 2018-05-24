@@ -7,9 +7,6 @@
 #include "bi/statement/all.hpp"
 #include "bi/exception/all.hpp"
 
-#include <list>
-#include <string>
-
 namespace bi {
 /**
  * Compiler.

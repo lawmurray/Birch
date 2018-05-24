@@ -5,8 +5,6 @@
 
 #include "bi/io/bih_ostream.hpp"
 
-#include <sstream>
-
 bi::ConversionOperatorException::ConversionOperatorException(
     const ConversionOperator* o) {
   std::stringstream base;

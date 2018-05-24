@@ -5,8 +5,6 @@
 
 #include "bi/visitor/Resolver.hpp"
 
-#include <stack>
-
 namespace bi {
 /**
  * This is the fourth pass of the abstract syntax tree after parsing, handling

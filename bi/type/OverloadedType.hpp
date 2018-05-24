@@ -8,8 +8,6 @@
 #include "bi/primitive/poset.hpp"
 #include "bi/primitive/definitely.hpp"
 
-#include <map>
-
 namespace bi {
 /**
  * Overloaded type. Typically used for the type of first-class functions.

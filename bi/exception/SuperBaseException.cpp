@@ -5,8 +5,6 @@
 
 #include "bi/io/bih_ostream.hpp"
 
-#include <sstream>
-
 bi::SuperBaseException::SuperBaseException(const Expression* expr) {
   std::stringstream base;
   bih_ostream buf(base);

@@ -6,13 +6,6 @@
 #include "bi/build/misc.hpp"
 #include "bi/statement/Package.hpp"
 
-#undef line // line() macro in indentable_iostream clashes with property_tree
-#include "boost/property_tree/ptree.hpp"
-#include "boost/property_tree/json_parser.hpp"
-
-#include <map>
-#include <set>
-
 namespace bi {
 /**
  * Driver.

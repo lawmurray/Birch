@@ -3,8 +3,6 @@
  */
 #pragma once
 
-#include <list>
-
 namespace bi {
 /**
  * Expression with a target (e.g. a reference).

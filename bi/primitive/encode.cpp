@@ -5,14 +5,9 @@
 
 #include "boost/algorithm/string.hpp"
 
-#include <regex>
-#include <sstream>
 #include <iomanip>
-#include <cassert>
 #include <locale>
 #include <codecvt>
-#include <unordered_map>
-#include <unordered_set>
 
 std::string bi::encode32(const std::string& in) {
   std::string out;

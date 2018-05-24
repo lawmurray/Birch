@@ -6,9 +6,6 @@
 #include "bi/visitor/Modifier.hpp"
 #include "bi/visitor/Cloner.hpp"
 
-#include <stack>
-#include <list>
-
 namespace bi {
 /**
  * Abstract class for resolvers, with common functionality.

@@ -8,8 +8,6 @@
 #include "bi/common/Numbered.hpp"
 #include "bi/common/Based.hpp"
 
-#include <set>
-
 namespace bi {
 /**
  * Basic type.

@@ -6,8 +6,6 @@
 #include "bi/common/Typed.hpp"
 #include "bi/common/Located.hpp"
 
-#include <cassert>
-
 namespace bi {
 class Cloner;
 class Modifier;

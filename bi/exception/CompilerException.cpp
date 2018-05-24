@@ -3,8 +3,6 @@
  */
 #include "bi/exception/CompilerException.hpp"
 
-#include <sstream>
-
 bi::CompilerException::CompilerException() {
   //
 }

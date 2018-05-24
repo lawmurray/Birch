@@ -15,7 +15,6 @@
 
 #include <getopt.h>
 #include <dlfcn.h>
-#include <cstdlib>
 
 bi::Compiler* compiler = nullptr;
 std::stringstream raw;

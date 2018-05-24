@@ -5,8 +5,6 @@
 
 #include "bi/io/bih_ostream.hpp"
 
-#include <sstream>
-
 bi::ReadOnlyException::ReadOnlyException(const Type* o) {
   std::stringstream base;
   bih_ostream buf(base);

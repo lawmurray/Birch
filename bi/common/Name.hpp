@@ -5,9 +5,6 @@
 
 #include "bi/common/Located.hpp"
 
-#include <string>
-#include <cstring>
-
 namespace bi {
 class Visitor;
 

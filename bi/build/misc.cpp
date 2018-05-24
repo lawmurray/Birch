@@ -6,9 +6,6 @@
 #include "boost/filesystem/fstream.hpp"
 #include "boost/algorithm/string.hpp"
 
-#include <iostream>
-#include <sstream>
-
 void bi::warn(const std::string& msg) {
   std::cerr << "warning: " << msg << std::endl;
 }

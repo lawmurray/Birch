@@ -5,8 +5,6 @@
 
 #include "bi/io/bih_ostream.hpp"
 
-#include <sstream>
-
 bi::SequenceException::SequenceException(const Sequence* o) {
   std::stringstream base;
   bih_ostream buf(base);

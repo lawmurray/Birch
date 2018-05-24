@@ -7,8 +7,6 @@
 #include "bi/common/Argumented.hpp"
 #include "bi/common/Parameterised.hpp"
 
-#include <list>
-
 namespace bi {
 /**
  * Invalid function call.

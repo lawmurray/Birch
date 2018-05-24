@@ -3,8 +3,6 @@
  */
 #include "bi/common/Couple.hpp"
 
-#include <cassert>
-
 template<class T>
 bi::Couple<T>::Couple(T* left, T* right) :
     left(left), right(right) {

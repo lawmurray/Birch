@@ -3,8 +3,6 @@
  */
 #pragma once
 
-#include <string>
-
 namespace bi {
 /**
  * Encode a string of ASCII 0-127 in base 32.

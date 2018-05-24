@@ -7,8 +7,6 @@
 #include "bi/io/bih_ostream.hpp"
 #include "bi/primitive/encode.hpp"
 
-#include <sstream>
-
 bi::CppMemberFiberGenerator::CppMemberFiberGenerator(const Class* type,
     std::ostream& base, const int level, const bool header) :
     CppFiberGenerator(base, level, header),

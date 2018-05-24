@@ -22,8 +22,6 @@ struct UnresolvedException: public Exception {
 
 #include "bi/io/bih_ostream.hpp"
 
-#include <sstream>
-
 template<class ObjectType>
 bi::UnresolvedException::UnresolvedException(const ObjectType* o) {
   std::stringstream base;

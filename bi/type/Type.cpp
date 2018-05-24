@@ -8,8 +8,6 @@
 #include "bi/exception/all.hpp"
 #include "bi/visitor/all.hpp"
 
-#include <cassert>
-
 bi::Type::Type(Location* loc) :
     Located(loc) {
   //

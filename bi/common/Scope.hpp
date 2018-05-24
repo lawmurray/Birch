@@ -7,8 +7,6 @@
 #include "bi/common/OverloadedDictionary.hpp"
 #include "bi/common/Named.hpp"
 
-#include <set>
-
 namespace bi {
 class Parameter;
 class GlobalVariable;

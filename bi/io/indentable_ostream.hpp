@@ -5,8 +5,6 @@
 
 #include "bi/visitor/Visitor.hpp"
 
-#include <iostream>
-
 #define line(x) *this << indent << x << '\n'
 #define start(x) *this << indent << x
 #define middle(x) *this << x

@@ -5,8 +5,6 @@
 
 #include "bi/io/bih_ostream.hpp"
 
-#include <sstream>
-
 bi::AssignmentException::AssignmentException(const Assign* o) {
   std::stringstream base;
   bih_ostream buf(base);

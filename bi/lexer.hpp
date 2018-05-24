@@ -5,9 +5,6 @@
  */
 #pragma once
 
-#include <cstdio>
-#include <sstream>
-
 extern FILE* yyin;
 extern char *yytext;
 extern std::stringstream raw;

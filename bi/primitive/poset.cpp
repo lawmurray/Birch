@@ -7,10 +7,6 @@
 #include "bi/common/Parameterised.hpp"
 #include "bi/io/bih_ostream.hpp"
 
-#include <iostream>
-#include <cassert>
-#include <set>
-
 template<class T, class Compare>
 bi::poset<T,Compare>::poset() :
     colour(0) {

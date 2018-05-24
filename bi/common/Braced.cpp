@@ -3,8 +3,6 @@
  */
 #include "bi/common/Braced.hpp"
 
-#include <cassert>
-
 bi::Braced::Braced(Statement* braces) :
     braces(braces) {
   /* pre-condition */

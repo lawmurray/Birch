@@ -3,18 +3,7 @@
  */
 #pragma once
 
-#if __cplusplus > 201402L
-#include <filesystem>
-namespace fs = std::filesystem;
-#else
-#include "boost/filesystem.hpp"
-#include "boost/filesystem/fstream.hpp"
-namespace fs = boost::filesystem;
-#endif
-
 #include "bi/exception/FileNotFoundException.hpp"
-
-#include <list>
 
 #define STRINGIFY_IMPL(arg) #arg
 #define STRINGIFY(arg) STRINGIFY_IMPL(arg)

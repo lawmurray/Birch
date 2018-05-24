@@ -14,11 +14,6 @@
 #include <getopt.h>
 #include <dlfcn.h>
 
-#include <iostream>
-#include <regex>
-#include <unordered_set>
-#include <thread>
-
 bi::Driver::Driver(int argc, char** argv) :
     /* keep these paths relative, or at least call configure with a
      * relative path from the build directory to the work directory,

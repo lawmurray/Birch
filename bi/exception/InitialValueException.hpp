@@ -26,8 +26,6 @@ struct InitialValueException: public CompilerException {
 
 #include "bi/io/bih_ostream.hpp"
 
-#include <sstream>
-
 template<class ParameterType>
 bi::InitialValueException::InitialValueException(const ParameterType* o) {
   std::stringstream base;

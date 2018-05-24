@@ -3,8 +3,6 @@
  */
 #include "bi/common/Bracketed.hpp"
 
-#include <cassert>
-
 bi::Bracketed::Bracketed(Expression* brackets) :
     brackets(brackets) {
   /* pre-condition */

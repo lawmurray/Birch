@@ -5,8 +5,6 @@
 
 #include "bi/io/bih_ostream.hpp"
 
-#include <sstream>
-
 bi::ConstructorException::ConstructorException(const Argumented* o,
     const Class* type) {
   std::stringstream base;

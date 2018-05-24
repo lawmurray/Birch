@@ -5,8 +5,6 @@
 
 #include "bi/visitor/all.hpp"
 
-#include <sstream>
-
 int bi::Name::COUNTER = 0;
 
 bi::Name::Name() {

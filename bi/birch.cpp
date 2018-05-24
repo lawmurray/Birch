@@ -7,8 +7,6 @@
 #include "bi/exception/DriverException.hpp"
 #include "bi/build/misc.hpp"
 
-#include <iostream>
-
 int main(int argc, char** argv) {
   using namespace bi;
   try {

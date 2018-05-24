@@ -5,8 +5,6 @@
 
 #include "bi/io/bih_ostream.hpp"
 
-#include <sstream>
-
 bi::GenericException::GenericException(const ClassType* ref, const Class* param) {
   std::stringstream base;
   bih_ostream buf(base);

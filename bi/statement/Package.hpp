@@ -6,9 +6,6 @@
 #include "bi/common/Scoped.hpp"
 #include "bi/statement/File.hpp"
 
-#include <string>
-#include <list>
-
 namespace bi {
 /**
  * A package is a collection of files.

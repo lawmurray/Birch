@@ -3,8 +3,6 @@
  */
 #include "bi/exception/DriverException.hpp"
 
-#include <sstream>
-
 bi::DriverException::DriverException() {
   //
 }

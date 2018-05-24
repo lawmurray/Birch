@@ -5,8 +5,6 @@
 
 #include "bi/io/bih_ostream.hpp"
 
-#include <sstream>
-
 bi::AssignmentOperatorException::AssignmentOperatorException(
     const AssignmentOperator* o) {
   std::stringstream base;

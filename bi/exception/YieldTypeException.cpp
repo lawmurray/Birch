@@ -5,8 +5,6 @@
 
 #include "bi/io/bih_ostream.hpp"
 
-#include <sstream>
-
 bi::YieldTypeException::YieldTypeException(const Yield* o, const Type* type) {
   std::stringstream base;
   bih_ostream buf(base);

@@ -5,8 +5,6 @@
 
 #include "bi/io/bih_ostream.hpp"
 
-#include <sstream>
-
 bi::AmbiguousCallException::AmbiguousCallException(const Argumented* o,
     const std::set<Parameterised*>& matches) {
   std::stringstream base;

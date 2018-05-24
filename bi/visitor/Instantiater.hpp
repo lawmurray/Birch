@@ -6,8 +6,6 @@
 #include "bi/visitor/Cloner.hpp"
 #include "bi/type/TypeIterator.hpp"
 
-#include <unordered_map>
-
 namespace bi {
 /**
  * Instantiates a class with generic type parameters by cloning, replacing

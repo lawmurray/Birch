@@ -5,8 +5,6 @@
 
 #include "bi/io/bih_ostream.hpp"
 
-#include <sstream>
-
 bi::UnsupportedOptionTypeException::UnsupportedOptionTypeException(
     Type* type) {
   std::stringstream base;

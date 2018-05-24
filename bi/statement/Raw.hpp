@@ -6,8 +6,6 @@
 #include "bi/statement/Statement.hpp"
 #include "bi/common/Named.hpp"
 
-#include <string>
-
 namespace bi {
 /**
  * Raw C++ block.

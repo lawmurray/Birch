@@ -28,8 +28,6 @@ struct PreviousDeclarationException: public CompilerException {
 
 #include "bi/io/bih_ostream.hpp"
 
-#include <sstream>
-
 template<class ParameterType1, class ParameterType2>
 bi::PreviousDeclarationException::PreviousDeclarationException(
     ParameterType1* param, ParameterType2* prev) {

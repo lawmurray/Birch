@@ -3,8 +3,6 @@
  */
 #include "bi/common/Single.hpp"
 
-#include <cassert>
-
 template<class T>
 bi::Single<T>::Single(T* single) :
     single(single) {

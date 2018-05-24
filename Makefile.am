@@ -1,11 +1,22 @@
 AUTOMAKE_OPTIONS = subdir-objects
 
+# precompiled header; note $(CXXCOMPILE) has a -include flag for the header,
+# ensure that this won't use the old precompiled header by removing it first
+bi/birch.hpp.gch: bi/birch.hpp
+	rm -f $@
+	mkdir -p bi/$(DEPDIR) && \
+	$(CXXCOMPILE) -M -MF bi/$(DEPDIR)/birch.gch.Plo -MT $@ $< && \
+	$(CXXCOMPILE) -o $@ $<
+
+#include bi/$(DEPDIR)/birch.gch.Plo
+
 # Flex/Bison setup
 AM_YFLAGS = -d
 AM_FLAGS =
 
 # compiler setup
 AM_CPPFLAGS = -DDATADIR="$(datadir)" -DINCLUDEDIR="$(includedir)" -DLIBDIR="$(libdir)"
+AM_CXXFLAGS = -include bi/birch.hpp
 ACLOCAL_AMFLAGS = -I m4
 
 # driver program
@@ -358,6 +369,7 @@ noinst_HEADERS = \
   bi/visitor/ResolverSuper.hpp \
   bi/visitor/Typer.hpp \
   bi/visitor/Visitor.hpp \
+  bi/birch.hpp \
   bi/doxygen.hpp \
   bi/lexer.hpp \
   bi/parser.hpp
@@ -373,5 +385,5 @@ dist_pkgdata_DATA = \
   share/META.json \
   share/README.md
 
-BUILT_SOURCES = bi/parser.hpp
+BUILT_SOURCES = bi/birch.hpp.gch bi/parser.hpp
 CLEANFILES = $(BUILT_SOURCES)

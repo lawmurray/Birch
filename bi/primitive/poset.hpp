@@ -3,13 +3,6 @@
  */
 #pragma once
 
-#include <cstdlib>
-#include <cstddef>
-#include <algorithm>
-#include <map>
-#include <set>
-#include <list>
-
 namespace bi {
 /**
  * Partially ordered set.

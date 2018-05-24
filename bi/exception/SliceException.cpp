@@ -5,8 +5,6 @@
 
 #include "bi/io/bih_ostream.hpp"
 
-#include <sstream>
-
 bi::SliceException::SliceException(const Expression* o, const int typeSize,
     const int sliceSize) {
   std::stringstream base;

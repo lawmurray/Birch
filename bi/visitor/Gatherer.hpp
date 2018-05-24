@@ -5,9 +5,6 @@
 
 #include "bi/visitor/Visitor.hpp"
 
-#include <vector>
-#include <functional>
-
 namespace bi {
 /**
  * Gathers formal parameters and arguments for a function call.

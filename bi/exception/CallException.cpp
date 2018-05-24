@@ -5,8 +5,6 @@
 
 #include "bi/io/bih_ostream.hpp"
 
-#include <sstream>
-
 bi::CallException::CallException(Argumented* o,
     const std::list<Parameterised*>& available) {
   std::stringstream base;

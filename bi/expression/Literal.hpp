@@ -5,8 +5,6 @@
 
 #include "bi/expression/Expression.hpp"
 
-#include <string>
-
 namespace bi {
 /**
  * Literal.

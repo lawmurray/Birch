@@ -12,9 +12,6 @@
 #include "bi/common/Braced.hpp"
 #include "bi/common/Scoped.hpp"
 
-#include <set>
-#include <list>
-
 namespace bi {
 /**
  * Possible states of a class during parsing.

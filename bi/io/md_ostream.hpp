@@ -5,10 +5,6 @@
 
 #include "bi/io/bih_ostream.hpp"
 
-#include <list>
-#include <vector>
-#include <algorithm>
-
 namespace bi {
 /**
  * Output stream for Markdown files.

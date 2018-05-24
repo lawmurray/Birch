@@ -6,8 +6,6 @@
 #include "bi/visitor/Gatherer.hpp"
 #include "bi/primitive/encode.hpp"
 
-#include <unordered_set>
-
 bi::md_ostream::md_ostream(std::ostream& base) :
     bih_ostream(base),
     package(nullptr),

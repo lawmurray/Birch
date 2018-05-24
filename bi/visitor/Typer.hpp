@@ -5,8 +5,6 @@
 
 #include "bi/visitor/Modifier.hpp"
 
-#include <stack>
-
 namespace bi {
 /**
  * This is the first pass of the abstract syntax tree after parsing,

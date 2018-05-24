@@ -5,8 +5,6 @@
 
 #include "bi/io/bih_ostream.hpp"
 
-#include <sstream>
-
 bi::ReturnTypeException::ReturnTypeException(const Return* o, const Type* type) {
   std::stringstream base;
   bih_ostream buf(base);
