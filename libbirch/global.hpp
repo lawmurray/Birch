@@ -108,6 +108,11 @@ static constexpr int64_t mutable_value = 0;
 extern std::list<StackFrame> stacktrace;
 
 /**
+ * Report unknown program option and abort.
+ */
+void unknown_option(const std::string& name);
+
+/**
  * Print stack trace and abort.
  */
 void abort();
