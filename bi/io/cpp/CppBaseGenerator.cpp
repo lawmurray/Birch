@@ -392,7 +392,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
       line("const char* short_options = \"\";");
 
       /* read in options with getopt_long */
-      line("::opterr = 0;");  // handle error reporting ourselves
+      line("opterr = 0;");  // handle error reporting ourselves
       start("c = getopt_long_only(argc, argv, short_options, ");
       finish("long_options, &option_index);");
       line("while (c != -1) {");
@@ -417,6 +417,10 @@ void bi::CppBaseGenerator::visit(const Program* o) {
         line("break;");
         out();
       }
+      line("default:");
+      in();
+      line("bi::unknown_option(argv[optind - 1]);");
+      out();
       out();
       line('}');
       start("c = getopt_long_only(argc, argv, short_options, ");

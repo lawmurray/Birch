@@ -21,7 +21,6 @@ bi::Driver::Driver(int argc, char** argv) :
     work_dir("."),
     build_dir("build"),
     lib_dir(build_dir / ".libs"),
-
     arch("native"),
     prefix(""),
     packageName("Untitled"),
