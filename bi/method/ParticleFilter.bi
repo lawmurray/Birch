@@ -63,7 +63,7 @@ class ParticleFilter {
    */
   function sample(model:String, inputReader:Reader?, outputWriter:Writer?,
       diagnosticWriter:Writer?, M:Integer, T:Integer, N:Integer,
-      trigger:Real) {
+      trigger:Real, verbose:Boolean) {
     /* set up output */
     if (M > 1) {
       if (outputWriter?) {
@@ -78,12 +78,14 @@ class ParticleFilter {
     for (m:Integer in 1..M) {
       start();
       for (t:Integer in 1..T) {
-        if (T > 1) {
+        if (T > 1 && verbose) {
           stderr.print(t + " ");
         }
         step(t);
       }
-      stderr.print(Z[T] + "\n");
+      if (verbose) {
+        stderr.print(Z[T] + "\n");
+      }
       finish();
             
       /* output results and diagnostics */
@@ -150,7 +152,7 @@ class ParticleFilter {
     /* resample (if necessary) */
     e[t] <- ess(w);
     if (!(e[t] > 0.0)) {  // may be nan
-      stderr.print("error: filter degenerated.\n");
+      stderr.print("error: particle filter degenerated.\n");
       exit(1);
     }
     r[t] <- e[t] < trigger*N;
@@ -201,7 +203,7 @@ class ParticleFilter {
         f[b]!.output(writer!.setObject("sample"));
         writer!.setReal("weight", Z[T]);
       } else {
-        stderr.print("error: filter degenerated.\n");
+        stderr.print("error: particle filter degenerated.\n");
         exit(1);
       }
     }

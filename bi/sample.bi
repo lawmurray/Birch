@@ -26,6 +26,8 @@
  *   - `--ess-trigger`: Threshold for resampling. Resampling is performed
  *     whenever the effective sample size, as a proportion of `--nparticles`,
  *     drops below this threshold.
+ *
+ *   - `--verbose`: Enable verbose reporting?
  */
 program sample(
     model:String <- "Model",
@@ -36,7 +38,8 @@ program sample(
     nsamples:Integer <- 1,
     ncheckpoints:Integer <- 1,
     nparticles:Integer <- 1,
-    ess_trigger:Real <- 0.7) {
+    ess_trigger:Real <- 0.7,
+    verbose:Boolean <- true) {
   /* set up I/O */
   input:JSONReader?;
   output:JSONWriter?;
@@ -62,7 +65,7 @@ program sample(
 
   /* sample */
   sampler!.sample(model, input, output, diagnostic, nsamples, ncheckpoints,
-      nparticles, ess_trigger);
+      nparticles, ess_trigger, verbose);
   
   /* finalize I/O */
   if (output?) {
