@@ -18,6 +18,14 @@ class DelayDelta(x:Random<Integer>&, μ:Integer) < DelayValue<Integer>(x) {
   function pmf(x:Integer) -> Real {
     return pmf_delta(x, μ);
   }
+
+  function lower() -> Integer? {
+    return μ;
+  }
+  
+  function upper() -> Integer? {
+    return μ;
+  }
 }
 
 function DelayDelta(x:Random<Integer>&, μ:Integer) -> DelayDelta {

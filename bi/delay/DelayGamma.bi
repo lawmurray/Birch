@@ -27,6 +27,10 @@ class DelayGamma(x:Random<Real>&, k:Real, θ:Real) < DelayValue<Real>(x) {
   function cdf(x:Real) -> Real {
     return cdf_gamma(x, k, θ);
   }
+
+  function lower() -> Real? {
+    return 0.0;
+  }
 }
 
 function DelayGamma(x:Random<Real>&, k:Real, θ:Real) -> DelayGamma {

@@ -27,6 +27,14 @@ class DelayUniform(x:Random<Real>&, l:Real, u:Real) < DelayValue<Real>(x) {
   function cdf(x:Real) -> Real {
     return cdf_uniform(x, l, u);
   }
+
+  function lower() -> Real? {
+    return l;
+  }
+  
+  function upper() -> Real? {
+    return u;
+  }
 }
 
 function DelayUniform(x:Random<Real>&, l:Real, u:Real) -> DelayUniform {

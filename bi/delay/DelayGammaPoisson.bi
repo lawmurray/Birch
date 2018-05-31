@@ -27,6 +27,10 @@ class DelayGammaPoisson(x:Random<Integer>&, λ:DelayGamma) <
   function cdf(x:Integer) -> Real {
     return cdf_gamma_poisson(x, λ.k, λ.θ);
   }
+
+  function lower() -> Integer? {
+    return 0;
+  }
 }
 
 function DelayGammaPoisson(x:Random<Integer>&, λ:DelayGamma) -> 

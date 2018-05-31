@@ -28,6 +28,14 @@ class DelayBinomial(x:Random<Integer>&, n:Integer, ρ:Real) <
   function cdf(x:Integer) -> Real {
     return cdf_binomial(x, n, ρ);
   }
+
+  function lower() -> Integer? {
+    return 0;
+  }
+  
+  function upper() -> Integer? {
+    return n;
+  }
 }
 
 function DelayBinomial(x:Random<Integer>&, n:Integer, ρ:Real) ->

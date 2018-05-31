@@ -23,6 +23,14 @@ class DelayDiscreteDelta(x:Random<Integer>&, μ:DelayValue<Integer>) <
   function cdf(x:Integer) -> Real {
     return μ.cdf(x);
   }
+
+  function lower() -> Integer? {
+    return μ.lower();
+  }
+  
+  function upper() -> Integer? {
+    return μ.upper();
+  }
 }
 
 function DelayDiscreteDelta(x:Random<Integer>&, μ:DelayValue<Integer>) ->

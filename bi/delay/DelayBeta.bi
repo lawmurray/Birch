@@ -27,6 +27,14 @@ class DelayBeta(x:Random<Real>&, α:Real, β:Real) < DelayValue<Real>(x) {
   function cdf(x:Real) -> Real {
     return cdf_beta(x, α, β);
   }
+
+  function lower() -> Real? {
+    return 0.0;
+  }
+  
+  function upper() -> Real? {
+    return 1.0;
+  }
 }
 
 function DelayBeta(x:Random<Real>&, α:Real, β:Real) -> DelayBeta {

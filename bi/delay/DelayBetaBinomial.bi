@@ -32,6 +32,14 @@ class DelayBetaBinomial(x:Random<Integer>&, n:Integer, ρ:DelayBeta) <
   function cdf(x:Integer) -> Real {
     return cdf_beta_binomial(x, n, ρ.α, ρ.β);
   }
+  
+  function lower() -> Integer? {
+    return 0;
+  }
+  
+  function upper() -> Integer? {
+    return n;
+  }
 }
 
 function DelayBetaBinomial(x:Random<Integer>&, n:Integer, ρ:DelayBeta) ->

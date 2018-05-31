@@ -28,6 +28,10 @@ class DelayLogGaussian(x:Random<Real>&, μ:Real, σ2:Real) <
   function cdf(x:Real) -> Real {
     return cdf_log_gaussian(x, μ, σ2);
   }
+
+  function lower() -> Real? {
+    return 0.0;
+  }
 }
 
 function DelayLogGaussian(x:Random<Real>&, μ:Real, σ2:Real) ->

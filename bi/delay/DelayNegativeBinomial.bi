@@ -28,6 +28,10 @@ class DelayNegativeBinomial(x:Random<Integer>&, n:Integer, ρ:Real) <
   function cdf(x:Integer) -> Real {
     return cdf_negative_binomial(x, n, ρ);
   }
+
+  function lower() -> Integer? {
+    return 0;
+  }
 }
 
 function DelayNegativeBinomial(x:Random<Integer>&, n:Integer, ρ:Real) ->

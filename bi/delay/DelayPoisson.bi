@@ -22,6 +22,10 @@ class DelayPoisson(x:Random<Integer>&, λ:Real) < DelayValue<Integer>(x) {
   function cdf(x:Integer) -> Real {
     return cdf_poisson(x, λ);
   }
+
+  function lower() -> Integer? {
+    return 0;
+  }
 }
 
 function DelayPoisson(x:Random<Integer>&, λ:Real) -> DelayPoisson {

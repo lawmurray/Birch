@@ -34,6 +34,20 @@ class DelayLinearDiscreteDelta(x:Random<Integer>&, a:Integer,
   function cdf(x:Integer) -> Real {
     return μ.cdf((x - c)/a);
   }
+
+  function lower() -> Integer? {
+    l:Integer? <- μ.lower();
+    if (l?) {
+      return a*l! + c;
+    }
+  }
+  
+  function upper() -> Integer? {
+    u:Integer? <- μ.upper();
+    if (u?) {
+      return a*u! + c;
+    }
+  }
 }
 
 function DelayLinearDiscreteDelta(x:Random<Integer>&, a:Integer,

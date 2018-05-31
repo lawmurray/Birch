@@ -93,6 +93,22 @@ class Distribution<Value> {
   }
   
   /**
+   * Finite lower bound of the support of this node, if any.
+   */
+  function lower() -> Value? {
+    graft();
+    return delay!.lower();
+  }
+  
+  /**
+   * Finite upper bound of the support of this node, if any.
+   */
+  function upper() -> Value? {
+    graft();
+    return delay!.upper();
+  }
+  
+  /**
    * Graft this onto the delayed sampling $M$-path.
    */
   function graft();

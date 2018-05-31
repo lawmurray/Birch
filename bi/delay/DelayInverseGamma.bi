@@ -28,6 +28,10 @@ class DelayInverseGamma(x:Random<Real>&, α:Real, β:Real) <
   function cdf(x:Real) -> Real {
     return cdf_inverse_gamma(x, α, β);
   }
+
+  function lower() -> Real? {
+    return 0.0;
+  }
 }
 
 function DelayInverseGamma(x:Random<Real>&, α:Real, β:Real) ->

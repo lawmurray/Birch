@@ -32,6 +32,10 @@ class DelayInverseGammaLogGaussian(x:Random<Real>&, μ:Real,
   function cdf(x:Real) -> Real {
     return cdf_inverse_gamma_gaussian(log(x), μ, σ2.α, σ2.β);
   }
+
+  function lower() -> Real? {
+    return 0.0;
+  }
 }
 
 function DelayInverseGammaLogGaussian(x:Random<Real>&, μ:Real,

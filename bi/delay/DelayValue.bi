@@ -86,4 +86,18 @@ class DelayValue<Value>(x:Random<Value>&) < Delay {
   function cdf(x:Value) -> Real {
     assert false;
   }
+  
+  /**
+   * Finite lower bound of the support of this node, if any.
+   */
+  function lower() -> Value? {
+    return nil;
+  }
+  
+  /**
+   * Finite upper bound of the support of this node, if any.
+   */
+  function upper() -> Value? {
+    return nil;
+  }
 }
