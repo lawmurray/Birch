@@ -23,20 +23,21 @@ class DelaySubtractBoundedDiscrete(x:Random<Integer>&,
     l:Integer <- max(x1.l, x2.l + x);
     u:Integer <- min(x1.u, x2.u + x);
     
-    /* distribution over possible pairs that produce the observed sum */
-    z:Real[u - l + 1];
     Z:Real <- 0.0;
-    n:Integer;
-    for (n in l..u) {
-      z[n - l + 1] <- x1.pmf(n)*x2.pmf(n - x);
-      Z <- Z + z[n - l + 1];
+    if (l <= u) {
+      /* distribution over possible pairs that produce the observed sum */
+      z:Real[u - l + 1];
+      n:Integer;
+      for (n in l..u) {
+        z[n - l + 1] <- x1.pmf(n)*x2.pmf(n - x);
+        Z <- Z + z[n - l + 1];
+      }
+    
+      /* choose which pair and observe */
+      n <- simulate_categorical(z, Z) + l - 1;
+      x1.realize(n);
+      x2.realize(n - x);
     }
-    
-    /* choose which pair and observe */
-    n <- simulate_categorical(z, Z) + l - 1;
-    x1.realize(n);
-    x2.realize(n - x);
-    
     return log(Z);
   }
 

@@ -39,7 +39,8 @@ struct Span: public Length<length_value>, public Stride<stride_value> {
   Span(const int64_t length = 0, const int64_t stride = 0) :
       length_type(length),
       stride_type(stride) {
-    //
+    bi_assert_msg(length >= 0,
+        "dimension length is " << length << ", but must be non-negative");
   }
 
   /**

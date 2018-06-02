@@ -22,20 +22,21 @@ class DelayAddBoundedDiscrete(x:Random<Integer>&, x1:DelayBoundedDiscrete,
     l:Integer <- max(x1.l, x - x2.u);
     u:Integer <- min(x1.u, x - x2.l);
     
-    /* distribution over possible pairs that produce the observed sum */
-    z:Real[u - l + 1];
     Z:Real <- 0.0;
-    n:Integer;
-    for (n in l..u) {
-      z[n - l + 1] <- x1.pmf(n)*x2.pmf(x - n);
-      Z <- Z + z[n - l + 1];
+    if (l <= u) {
+      /* distribution over possible pairs that produce the observed sum */
+      z:Real[u - l + 1];
+      n:Integer;
+      for (n in l..u) {
+        z[n - l + 1] <- x1.pmf(n)*x2.pmf(x - n);
+        Z <- Z + z[n - l + 1];
+      }
+    
+      /* choose which pair and observe */
+      n <- simulate_categorical(z, Z) + l - 1;
+      x1.realize(n);
+      x2.realize(x - n);
     }
-    
-    /* choose which pair and observe */
-    n <- simulate_categorical(z, Z) + l - 1;
-    x1.realize(n);
-    x2.realize(x - n);
-    
     return log(Z);
   }
 
