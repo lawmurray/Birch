@@ -1,9 +1,10 @@
 /*
- * Delayed delta function on a sum of two bounded discrete random variates.
+ * Delayed delta function on a difference of two bounded discrete random
+ * variates.
  */
-class DelayAddBoundedDiscreteDelta(x:Random<Integer>&, x1:DelayBoundedDiscrete,
-    x2:DelayBoundedDiscrete) < DelayBoundedDiscrete(x, x1.l + x2.l,
-    x1.u + x2.u) {
+class DelaySubtractBoundedDiscreteDelta(x:Random<Integer>&,
+    x1:DelayBoundedDiscrete, x2:DelayBoundedDiscrete) < DelayBoundedDiscrete(
+    x, x1.l - x2.u, x1.u - x2.l) {
   /**
    * First discrete random variate.
    */
@@ -15,19 +16,19 @@ class DelayAddBoundedDiscreteDelta(x:Random<Integer>&, x1:DelayBoundedDiscrete,
   x2:DelayBoundedDiscrete <- x2;
 
   function simulate() -> Integer {
-    return simulate_delta(x1.simulate() + x2.simulate());
+    return simulate_delta(x1.simulate() - x2.simulate());
   }
   
   function observe(x:Integer) -> Real {
-    l:Integer <- max(x1.l, x - x2.u);
-    u:Integer <- min(x1.u, x - x2.l);
+    l:Integer <- max(x1.l, x2.l - x);
+    u:Integer <- min(x1.u, x2.u - x);
     
     /* distribution over possible pairs that produce the observed sum */
     z:Real[u - l + 1];
     Z:Real <- 0.0;
     n:Integer;
     for (n in l..u) {
-      z[n - l + 1] <- x1.pmf(n)*x2.pmf(x - n);
+      z[n - l + 1] <- x1.pmf(n)*x2.pmf(n - x);
       Z <- Z + z[n - l + 1];
     }
     
@@ -37,11 +38,11 @@ class DelayAddBoundedDiscreteDelta(x:Random<Integer>&, x1:DelayBoundedDiscrete,
   }
 
   function pmf(x:Integer) -> Real {
-    l:Integer <- max(x1.l, x - x2.u);
-    u:Integer <- min(x1.u, x - x2.l);
+    l:Integer <- max(x1.l, x2.l - x);
+    u:Integer <- min(x1.u, x2.u - x);
     P:Real <- 0.0;
     for (n:Integer in l..u) {
-      P <- P + x1.pmf(n)*x2.pmf(x - n);
+      P <- P + x1.pmf(n)*x2.pmf(n - x);
     }
     return P;
   }
@@ -54,10 +55,10 @@ class DelayAddBoundedDiscreteDelta(x:Random<Integer>&, x1:DelayBoundedDiscrete,
   }
 }
 
-function DelayAddBoundedDiscreteDelta(x:Random<Integer>&,
+function DelaySubtractBoundedDiscreteDelta(x:Random<Integer>&,
     x1:DelayBoundedDiscrete, x2:DelayBoundedDiscrete) ->
-    DelayAddBoundedDiscreteDelta {
-  m:DelayAddBoundedDiscreteDelta(x, x1, x2);
+    DelaySubtractBoundedDiscreteDelta {
+  m:DelaySubtractBoundedDiscreteDelta(x, x1, x2);
   x1.setChild(m);
   x2.setChild(m);
   return m;

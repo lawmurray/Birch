@@ -52,7 +52,7 @@ class Subtract<Left,Right,Value>(left:Expression<Left>,
 
   function graftLinearDiscrete() -> TransformLinearDiscrete? {
     y:TransformLinearDiscrete?;
-    z:DelayValue<Integer>?;
+    z:DelayDiscrete?;
     
     if (y <- left.graftLinearDiscrete())? {
       y!.subtract(Integer(right.value()));
@@ -65,6 +65,39 @@ class Subtract<Left,Right,Value>(left:Expression<Left>,
     }
     return y;
   }
+
+  function graftLinearBoundedDiscrete() -> TransformLinearBoundedDiscrete? {
+    y:TransformLinearBoundedDiscrete?;
+    z:DelayBoundedDiscrete?;
+    
+    if (y <- left.graftLinearBoundedDiscrete())? {
+      y!.subtract(Integer(right.value()));
+    } else if (y <- right.graftLinearBoundedDiscrete())? {
+      y!.negateAndAdd(Integer(left.value()));
+    } else if (z <- left.graftBoundedDiscrete())? {
+      y <- TransformLinearBoundedDiscrete(1, z!, -Integer(right.value()));
+    } else if (z <- right.graftBoundedDiscrete())? {
+      y <- TransformLinearBoundedDiscrete(-1, z!, Integer(left.value()));
+    }
+    return y;
+  }
+  
+  function graftSubtractBoundedDiscrete() -> TransformSubtractBoundedDiscrete? {
+    y:TransformSubtractBoundedDiscrete?;
+    x1:DelayBoundedDiscrete?;
+    x2:DelayBoundedDiscrete?;
+    
+    if (x1 <- left.graftBoundedDiscrete())? &&
+        (x2 <- right.graftBoundedDiscrete())? &&
+        (left.graftBoundedDiscrete())? {
+      // ^ third condition above ensures that x1 is still valid after x2 is
+      //   constructed, which will not be the case if left and right share a
+      //   common ancestor on the delayed sampling graph
+      y <- TransformSubtractBoundedDiscrete(x1!, x2!);
+    }
+    return y;
+  }
+  
 }
 
 operator (left:Expression<Real> - right:Expression<Real>) ->

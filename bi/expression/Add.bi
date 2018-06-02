@@ -66,6 +66,22 @@ class Add<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>) <
     return y;
   }
 
+  function graftLinearBoundedDiscrete() -> TransformLinearBoundedDiscrete? {
+    y:TransformLinearBoundedDiscrete?;
+    z:DelayBoundedDiscrete?;
+    
+    if (y <- left.graftLinearBoundedDiscrete())? {
+      y!.add(Integer(right.value()));
+    } else if (y <- right.graftLinearBoundedDiscrete())? {
+      y!.add(Integer(left.value()));
+    } else if (z <- left.graftBoundedDiscrete())? {
+      y <- TransformLinearBoundedDiscrete(1, z!, Integer(right.value()));
+    } else if (z <- right.graftBoundedDiscrete())? {
+      y <- TransformLinearBoundedDiscrete(1, z!, Integer(left.value()));
+    }
+    return y;
+  }
+
   function graftAddBoundedDiscrete() -> TransformAddBoundedDiscrete? {
     y:TransformAddBoundedDiscrete?;
     x1:DelayBoundedDiscrete?;

@@ -51,7 +51,7 @@ class DelayLinearDiscreteDelta(x:Random<Integer>&, a:Integer,
 }
 
 function DelayLinearDiscreteDelta(x:Random<Integer>&, a:Integer,
-    μ:DelayValue<Integer>, c:Integer) -> DelayLinearDiscreteDelta {
+    μ:DelayDiscrete, c:Integer) -> DelayLinearDiscreteDelta {
   assert abs(a) == 1;
   m:DelayLinearDiscreteDelta(x, a, μ, c);
   μ.setChild(m);

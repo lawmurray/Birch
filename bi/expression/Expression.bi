@@ -217,7 +217,25 @@ class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
+  function graftLinearBoundedDiscrete() -> TransformLinearBoundedDiscrete? {
+    return nil;
+  }
+
+  /*
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
+   * Return: The node if successful, nil if not.
+   */
   function graftAddBoundedDiscrete() -> TransformAddBoundedDiscrete? {
+    return nil;
+  }
+
+  /*
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
+   * Return: The node if successful, nil if not.
+   */
+  function graftSubtractBoundedDiscrete() -> TransformSubtractBoundedDiscrete? {
     return nil;
   }
 }
