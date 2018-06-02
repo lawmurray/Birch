@@ -46,12 +46,12 @@ class DelayValue<Value>(x:Random<Value>&) < Delay {
       parent <- nil;
     }
 
+    w:Real <- observe(x);
     y:Random<Value>? <- this.x;
     if y? {
       assert !(y!.x?);
       y!.x <- x;
     }
-    w:Real <- observe(x);
     condition(x);
     return w;
   }

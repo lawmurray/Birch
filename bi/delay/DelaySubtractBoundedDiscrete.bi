@@ -34,7 +34,10 @@ class DelaySubtractBoundedDiscrete(x:Random<Integer>&,
     
     /* choose which pair and observe */
     n <- simulate_categorical(z, Z) + l - 1;
-    return x1.realize(n) + x2.realize(n - x);
+    x1.realize(n);
+    x2.realize(n - x);
+    
+    return log(Z);
   }
 
   function pmf(x:Integer) -> Real {

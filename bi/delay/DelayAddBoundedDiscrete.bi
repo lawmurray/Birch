@@ -33,7 +33,10 @@ class DelayAddBoundedDiscrete(x:Random<Integer>&, x1:DelayBoundedDiscrete,
     
     /* choose which pair and observe */
     n <- simulate_categorical(z, Z) + l - 1;
-    return x1.realize(n) + x2.realize(x - n);
+    x1.realize(n);
+    x2.realize(x - n);
+    
+    return log(Z);
   }
 
   function pmf(x:Integer) -> Real {
