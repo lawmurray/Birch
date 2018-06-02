@@ -13,9 +13,9 @@ class Delay {
   child:Delay&;
   
   /**
-   * Realize (simulate or observe).
+   * Realize by simulation.
    */
-  function value();
+  function realize();
   
   /**
    * Set the child of this node, on the $M$-path.
@@ -32,7 +32,7 @@ class Delay {
     child:Delay? <- this.child;
     if (child?) {
       child!.prune();
-      child!.value();
+      child!.realize();
     }
   }
 }

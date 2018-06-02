@@ -50,50 +50,33 @@ class Add<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>) <
     return y;
   }
 
-  function graftLinearDiscrete() -> TransformLinearDiscrete? {
-    y:TransformLinearDiscrete?;
-    z:DelayDiscrete?;
-    
-    if (y <- left.graftLinearDiscrete())? {
-      y!.add(Integer(right.value()));
-    } else if (y <- right.graftLinearDiscrete())? {
-      y!.add(Integer(left.value()));
-    } else if (z <- left.graftDiscrete())? {
-      y <- TransformLinearDiscrete(1, z!, Integer(right.value()));
-    } else if (z <- right.graftDiscrete())? {
-      y <- TransformLinearDiscrete(1, z!, Integer(left.value()));
+  function graftDiscrete() -> DelayDiscrete? {
+    y:DelayDiscrete? <- graftBoundedDiscrete();
+    if (!y?) {
+      x:DelayDiscrete?;
+      if (x <- left.graftDiscrete())? {
+        y <- DelayLinearDiscrete(nil, 1, x!, Integer(right.value()));
+      } else if (x <- right.graftDiscrete())? {
+        y <- DelayLinearDiscrete(nil, 1, x!, Integer(left.value()));
+      }
     }
     return y;
   }
 
-  function graftLinearBoundedDiscrete() -> TransformLinearBoundedDiscrete? {
-    y:TransformLinearBoundedDiscrete?;
-    z:DelayBoundedDiscrete?;
-    
-    if (y <- left.graftLinearBoundedDiscrete())? {
-      y!.add(Integer(right.value()));
-    } else if (y <- right.graftLinearBoundedDiscrete())? {
-      y!.add(Integer(left.value()));
-    } else if (z <- left.graftBoundedDiscrete())? {
-      y <- TransformLinearBoundedDiscrete(1, z!, Integer(right.value()));
-    } else if (z <- right.graftBoundedDiscrete())? {
-      y <- TransformLinearBoundedDiscrete(1, z!, Integer(left.value()));
-    }
-    return y;
-  }
+  function graftBoundedDiscrete() -> DelayBoundedDiscrete? {
+    y:DelayBoundedDiscrete?;
+    x1:DelayBoundedDiscrete? <- left.graftBoundedDiscrete();
+    x2:DelayBoundedDiscrete? <- right.graftBoundedDiscrete();
 
-  function graftAddBoundedDiscrete() -> TransformAddBoundedDiscrete? {
-    y:TransformAddBoundedDiscrete?;
-    x1:DelayBoundedDiscrete?;
-    x2:DelayBoundedDiscrete?;
-    
-    if (x1 <- left.graftBoundedDiscrete())? &&
-        (x2 <- right.graftBoundedDiscrete())? &&
-        (left.graftBoundedDiscrete())? {
+    if x1? && x2? && left.graftBoundedDiscrete()? {
       // ^ third condition above ensures that x1 is still valid after x2 is
       //   constructed, which will not be the case if left and right share a
       //   common ancestor on the delayed sampling graph
-      y <- TransformAddBoundedDiscrete(x1!, x2!);
+      y <- DelayAddBoundedDiscrete(nil, x1!, x2!);
+    } else if (x1 <- left.graftBoundedDiscrete())? {
+      y <- DelayLinearBoundedDiscrete(nil, 1, x1!, Integer(right.value()));
+    } else if (x2 <- right.graftBoundedDiscrete())? {
+      y <- DelayLinearBoundedDiscrete(nil, 1, x2!, Integer(left.value()));
     }
     return y;
   }

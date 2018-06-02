@@ -12,9 +12,9 @@ class DelayValue<Value>(x:Random<Value>&) < Delay {
   x:Random<Value>& <- x;
 
   /**
-   * Instantiate the associated delayed random variate.
+   * Instantiate the associated delayed random variate by simulating.
    */
-  function value() {
+  function realize() {
     /* detach from $M$-path; doing this first makes the parent a terminal
      * node, so that within simulate() or observe(), realization of the
      * parent can be forced also; this is useful for deterministic
@@ -24,11 +24,36 @@ class DelayValue<Value>(x:Random<Value>&) < Delay {
       parent <- nil;
     }
 
-    y:Random<Value>? <- x;
-    if y? && !(y!.x?) {
-      y!.x <- simulate();
-      condition(y!.x!);
+    x:Value <- simulate();
+    y:Random<Value>? <- this.x;
+    if y? {
+      assert !(y!.x?);
+      y!.x <- x;
     }
+    condition(x);
+  }
+  
+  /**
+   * Instantiate the associated delayed random variate an observation.
+   *
+   * - x: The value.
+   *
+   * Return: The log likelihood.
+   */
+  function realize(x:Value) -> Real {
+    if (parent?) {
+      parent!.child <- nil;
+      parent <- nil;
+    }
+
+    y:Random<Value>? <- this.x;
+    if y? {
+      assert !(y!.x?);
+      y!.x <- x;
+    }
+    w:Real <- observe(x);
+    condition(x);
+    return w;
   }
   
   /**

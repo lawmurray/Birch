@@ -13,7 +13,7 @@ class DelayDiscreteDelta(x:Random<Integer>&, μ:DelayDiscrete) <
   }
   
   function observe(x:Integer) -> Real {
-    return μ.observe(x);
+    return μ.realize(x);
   }
 
   function pmf(x:Integer) -> Real {

@@ -2,7 +2,7 @@
  * Delayed delta function on a difference of two bounded discrete random
  * variates.
  */
-class DelaySubtractBoundedDiscreteDelta(x:Random<Integer>&,
+class DelaySubtractBoundedDiscrete(x:Random<Integer>&,
     x1:DelayBoundedDiscrete, x2:DelayBoundedDiscrete) < DelayBoundedDiscrete(
     x, x1.l - x2.u, x1.u - x2.l) {
   /**
@@ -20,8 +20,8 @@ class DelaySubtractBoundedDiscreteDelta(x:Random<Integer>&,
   }
   
   function observe(x:Integer) -> Real {
-    l:Integer <- max(x1.l, x2.l - x);
-    u:Integer <- min(x1.u, x2.u - x);
+    l:Integer <- max(x1.l, x2.l + x);
+    u:Integer <- min(x1.u, x2.u + x);
     
     /* distribution over possible pairs that produce the observed sum */
     z:Real[u - l + 1];
@@ -34,12 +34,12 @@ class DelaySubtractBoundedDiscreteDelta(x:Random<Integer>&,
     
     /* choose which pair and observe */
     n <- simulate_categorical(z, Z) + l - 1;
-    return x1.observe(n) + x2.observe(x - n);
+    return x1.realize(n) + x2.realize(n - x);
   }
 
   function pmf(x:Integer) -> Real {
-    l:Integer <- max(x1.l, x2.l - x);
-    u:Integer <- min(x1.u, x2.u - x);
+    l:Integer <- max(x1.l, x2.l + x);
+    u:Integer <- min(x1.u, x2.u + x);
     P:Real <- 0.0;
     for (n:Integer in l..u) {
       P <- P + x1.pmf(n)*x2.pmf(n - x);
@@ -55,10 +55,10 @@ class DelaySubtractBoundedDiscreteDelta(x:Random<Integer>&,
   }
 }
 
-function DelaySubtractBoundedDiscreteDelta(x:Random<Integer>&,
+function DelaySubtractBoundedDiscrete(x:Random<Integer>&,
     x1:DelayBoundedDiscrete, x2:DelayBoundedDiscrete) ->
-    DelaySubtractBoundedDiscreteDelta {
-  m:DelaySubtractBoundedDiscreteDelta(x, x1, x2);
+    DelaySubtractBoundedDiscrete {
+  m:DelaySubtractBoundedDiscrete(x, x1, x2);
   x1.setChild(m);
   x2.setChild(m);
   return m;

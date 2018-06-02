@@ -19,22 +19,18 @@ class Random<Value> < Expression<Value> {
    * Value assignment.
    */
   operator <- x:Value {
+    assert !this.dist?;
     assert !this.x?;
     this.x <- x;
-    if (dist?) {
-      dist!.observe(x);
-    }
   }
 
   /**
    * Optional value assignment.
    */
   operator <- x:Value? {
+    assert !this.dist?;
     assert !this.x?;
     this.x <- x;
-    if (x? && dist?) {
-      dist!.observe(x!);
-    }
   }
 
   /**
@@ -54,7 +50,8 @@ class Random<Value> < Expression<Value> {
   function value() -> Value {
     if !x? {
       assert dist?;
-      dist!.value();
+      dist!.realize();
+      assert x?;
     }
     return x!;
   }
@@ -149,10 +146,19 @@ class Random<Value> < Expression<Value> {
     }
   }
 
-  function graftDiscrete() -> DelayValue<Integer>? {
+  function graftDiscrete() -> DelayDiscrete? {
     if (!x?) {
       assert dist?;
       return dist!.graftDiscrete();
+    } else {
+      return nil;
+    }
+  }
+
+  function graftBoundedDiscrete() -> DelayBoundedDiscrete? {
+    if (!x?) {
+      assert dist?;
+      return dist!.graftBoundedDiscrete();
     } else {
       return nil;
     }

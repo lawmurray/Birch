@@ -33,13 +33,14 @@ class TestSubtractBoundedDiscreteDelta {
   
   function initialize(y:Integer?) {
     s <- y;
-    x1 ~ Binomial(100, 0.1);
-    x2 ~ Binomial(100, 0.9);
+    x1 ~ Binomial(100, 0.75);
+    x2 ~ Binomial(100, 0.25);
     s ~ Delta(x1 - x2);
   }
   
   function forward() -> Real[_] {
     y:Real[2];
+    assert x1.isMissing();
     y[1] <- x1.value();
     assert x2.isMissing();
     y[2] <- x2.value();
@@ -48,6 +49,7 @@ class TestSubtractBoundedDiscreteDelta {
 
   function backward() -> Real[_] {
     y:Real[2];
+    assert !x1.isMissing() && !x2.isMissing();
     y[2] <- x2.value();
     y[1] <- x1.value();
     return y;

@@ -24,9 +24,9 @@ class Distribution<Value> {
   /**
    * Instantiate the associated delayed random variate.
    */
-  function value() {
+  function realize() {
     graft();
-    delay!.value();
+    delay!.realize();
     delay <- nil;
   }
 

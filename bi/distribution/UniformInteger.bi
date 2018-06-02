@@ -22,12 +22,7 @@ class UniformInteger(l:Expression<Integer>, u:Expression<Integer>) <
   }
 
   function graftDiscrete() -> DelayDiscrete? {
-    if delay? {
-      delay!.prune();
-    } else {
-      delay <- DelayUniformInteger(x, l, u);
-    }
-    return DelayDiscrete?(delay);
+    return graftBoundedDiscrete();
   }
 
   function graftBoundedDiscrete() -> DelayBoundedDiscrete? {

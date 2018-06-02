@@ -2,7 +2,7 @@
  * Delayed delta function on a linear transformation of a discrete random
  * variate.
  */
-class DelayLinearDiscreteDelta(x:Random<Integer>&, a:Integer,
+class DelayLinearDiscrete(x:Random<Integer>&, a:Integer,
     μ:DelayDiscrete, c:Integer) < DelayDiscrete(x) {
   /**
    * Scale. Should be 1 or -1 to ensure integer-invertible.
@@ -24,7 +24,7 @@ class DelayLinearDiscreteDelta(x:Random<Integer>&, a:Integer,
   }
   
   function observe(x:Integer) -> Real {
-    return μ.observe((x - c)/a);
+    return μ.realize((x - c)/a);
   }
 
   function pmf(x:Integer) -> Real {
@@ -50,10 +50,10 @@ class DelayLinearDiscreteDelta(x:Random<Integer>&, a:Integer,
   }
 }
 
-function DelayLinearDiscreteDelta(x:Random<Integer>&, a:Integer,
-    μ:DelayDiscrete, c:Integer) -> DelayLinearDiscreteDelta {
+function DelayLinearDiscrete(x:Random<Integer>&, a:Integer,
+    μ:DelayDiscrete, c:Integer) -> DelayLinearDiscrete {
   assert abs(a) == 1;
-  m:DelayLinearDiscreteDelta(x, a, μ, c);
+  m:DelayLinearDiscrete(x, a, μ, c);
   μ.setChild(m);
   return m;
 }

@@ -1,7 +1,7 @@
 /*
  * Delayed delta function on a sum of two bounded discrete random variates.
  */
-class DelayAddBoundedDiscreteDelta(x:Random<Integer>&, x1:DelayBoundedDiscrete,
+class DelayAddBoundedDiscrete(x:Random<Integer>&, x1:DelayBoundedDiscrete,
     x2:DelayBoundedDiscrete) < DelayBoundedDiscrete(x, x1.l + x2.l,
     x1.u + x2.u) {
   /**
@@ -33,7 +33,7 @@ class DelayAddBoundedDiscreteDelta(x:Random<Integer>&, x1:DelayBoundedDiscrete,
     
     /* choose which pair and observe */
     n <- simulate_categorical(z, Z) + l - 1;
-    return x1.observe(n) + x2.observe(x - n);
+    return x1.realize(n) + x2.realize(x - n);
   }
 
   function pmf(x:Integer) -> Real {
@@ -54,10 +54,10 @@ class DelayAddBoundedDiscreteDelta(x:Random<Integer>&, x1:DelayBoundedDiscrete,
   }
 }
 
-function DelayAddBoundedDiscreteDelta(x:Random<Integer>&,
+function DelayAddBoundedDiscrete(x:Random<Integer>&,
     x1:DelayBoundedDiscrete, x2:DelayBoundedDiscrete) ->
-    DelayAddBoundedDiscreteDelta {
-  m:DelayAddBoundedDiscreteDelta(x, x1, x2);
+    DelayAddBoundedDiscrete {
+  m:DelayAddBoundedDiscrete(x, x1, x2);
   x1.setChild(m);
   x2.setChild(m);
   return m;

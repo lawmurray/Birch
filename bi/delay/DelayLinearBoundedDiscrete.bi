@@ -2,7 +2,7 @@
  * Delayed delta function on a linear transformation of a bounded discrete
  * random variate.
  */
-class DelayLinearBoundedDiscreteDelta(x:Random<Integer>&, a:Integer,
+class DelayLinearBoundedDiscrete(x:Random<Integer>&, a:Integer,
     μ:DelayBoundedDiscrete, c:Integer) < DelayBoundedDiscrete(x, a*μ.l + c,
     a*μ.u + c) {
   /**
@@ -25,7 +25,7 @@ class DelayLinearBoundedDiscreteDelta(x:Random<Integer>&, a:Integer,
   }
   
   function observe(x:Integer) -> Real {
-    return μ.observe((x - c)/a);
+    return μ.realize((x - c)/a);
   }
 
   function pmf(x:Integer) -> Real {
@@ -37,10 +37,10 @@ class DelayLinearBoundedDiscreteDelta(x:Random<Integer>&, a:Integer,
   }
 }
 
-function DelayLinearBoundedDiscreteDelta(x:Random<Integer>&, a:Integer,
-    μ:DelayBoundedDiscrete, c:Integer) -> DelayLinearBoundedDiscreteDelta {
+function DelayLinearBoundedDiscrete(x:Random<Integer>&, a:Integer,
+    μ:DelayBoundedDiscrete, c:Integer) -> DelayLinearBoundedDiscrete {
   assert abs(a) == 1;
-  m:DelayLinearBoundedDiscreteDelta(x, a, μ, c);
+  m:DelayLinearBoundedDiscrete(x, a, μ, c);
   μ.setChild(m);
   return m;
 }
