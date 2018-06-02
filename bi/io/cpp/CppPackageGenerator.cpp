@@ -98,11 +98,6 @@ void bi::CppPackageGenerator::visit(const Package* o) {
       }
     }
     line("");
-    for (auto o : classes) {
-      if (o->isAlias()) {
-        line("using " << o->name << " = " << o->base << ';');
-      }
-    }
 
     /* basic type aliases */
     for (auto o : basics) {
@@ -111,6 +106,14 @@ void bi::CppPackageGenerator::visit(const Package* o) {
       }
     }
     line("");
+
+    /* class type aliases */
+    for (auto o : classes) {
+      if (o->isAlias()) {
+        line("using " << o->name << " = " << o->base << ';');
+      }
+    }
+
     line("}\n");
     line("");
 
