@@ -2,17 +2,7 @@
  * Delayed uniform integer random variate.
  */
 class DelayUniformInteger(x:Random<Integer>&, l:Integer, u:Integer) <
-    DelayValue<Integer>(x) {
-  /**
-   * Lower bound.
-   */
-  l:Integer <- l;
-
-  /**
-   * Upper bound.
-   */
-  u:Integer <- u;
-
+    DelayBoundedDiscrete(x, l, u) {
   function simulate() -> Integer {
     return simulate_uniform_int(l, u);
   }
@@ -27,14 +17,6 @@ class DelayUniformInteger(x:Random<Integer>&, l:Integer, u:Integer) <
 
   function cdf(x:Integer) -> Real {
     return cdf_uniform_int(x, l, u);
-  }
-
-  function lower() -> Integer? {
-    return l;
-  }
-
-  function upper() -> Integer? {
-    return u;
   }
 }
 

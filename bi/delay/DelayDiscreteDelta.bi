@@ -1,12 +1,12 @@
 /*
  * Delayed delta function on a discrete random variate.
  */
-class DelayDiscreteDelta(x:Random<Integer>&, μ:DelayValue<Integer>) <
-    DelayValue<Integer>(x) {
+class DelayDiscreteDelta(x:Random<Integer>&, μ:DelayDiscrete) <
+    DelayDiscrete(x) {
   /**
    * Location.
    */
-  μ:DelayValue<Integer> <- μ;
+  μ:DelayDiscrete <- μ;
 
   function simulate() -> Integer {
     return simulate_delta(μ.simulate());
@@ -33,7 +33,7 @@ class DelayDiscreteDelta(x:Random<Integer>&, μ:DelayValue<Integer>) <
   }
 }
 
-function DelayDiscreteDelta(x:Random<Integer>&, μ:DelayValue<Integer>) ->
+function DelayDiscreteDelta(x:Random<Integer>&, μ:DelayDiscrete) ->
     DelayDiscreteDelta {
   m:DelayDiscreteDelta(x, μ);
   μ.setChild(m);

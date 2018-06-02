@@ -190,7 +190,7 @@ class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftDiscrete() -> DelayValue<Integer>? {
+  function graftDiscrete() -> DelayDiscrete? {
     return nil;
   }
 
@@ -200,6 +200,24 @@ class Expression<Value> {
    * Return: The node if successful, nil if not.
    */
   function graftLinearDiscrete() -> TransformLinearDiscrete? {
+    return nil;
+  }
+
+  /*
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
+   * Return: The node if successful, nil if not.
+   */
+  function graftBoundedDiscrete() -> DelayBoundedDiscrete? {
+    return nil;
+  }
+
+  /*
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
+   * Return: The node if successful, nil if not.
+   */
+  function graftAddBoundedDiscrete() -> TransformAddBoundedDiscrete? {
     return nil;
   }
 }

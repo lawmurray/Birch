@@ -151,7 +151,11 @@ class Distribution<Value> {
     return nil;
   }
 
-  function graftDiscrete() -> DelayValue<Integer>? {
+  function graftDiscrete() -> DelayDiscrete? {
+    return nil;
+  }
+
+  function graftBoundedDiscrete() -> DelayBoundedDiscrete? {
     return nil;
   }
 }

@@ -1,18 +1,18 @@
 /*
  * Linear transformation of a discrete random variate.
  */
-class TransformLinearDiscrete(a:Integer, x:DelayValue<Integer>, c:Integer) <
+class TransformLinearDiscrete(a:Integer, x:DelayDiscrete, c:Integer) <
     TransformLinear<Integer>(a, c) {  
   /**
-   * Binomial.
+   * Discrete random variable.
    */
-  x:DelayValue<Integer> <- x;
+  x:DelayDiscrete <- x;
 }
 
 /*
  * Constructor.
  */
-function TransformLinearDiscrete(a:Integer, x:DelayValue<Integer>, c:Integer) ->
+function TransformLinearDiscrete(a:Integer, x:DelayDiscrete, c:Integer) ->
   TransformLinearDiscrete {
   assert abs(a) == 1;
   m:TransformLinearDiscrete(a, x, c);

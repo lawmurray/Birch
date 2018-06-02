@@ -3,7 +3,7 @@
  * variate.
  */
 class DelayLinearDiscreteDelta(x:Random<Integer>&, a:Integer,
-    μ:DelayValue<Integer>, c:Integer) < DelayValue<Integer>(x) {
+    μ:DelayDiscrete, c:Integer) < DelayDiscrete(x) {
   /**
    * Scale. Should be 1 or -1 to ensure integer-invertible.
    */
@@ -12,7 +12,7 @@ class DelayLinearDiscreteDelta(x:Random<Integer>&, a:Integer,
   /**
    * Location.
    */
-  μ:DelayValue<Integer> <- μ;
+  μ:DelayDiscrete <- μ;
 
   /**
    * Offset.

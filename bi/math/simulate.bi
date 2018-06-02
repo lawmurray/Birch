@@ -86,12 +86,23 @@ function simulate_poisson(λ:Real) -> Integer {
 /**
  * Simulate a categorical distribution.
  *
- * - ρ: Category probabilities.
+ * - ρ: Category probabilities. These should sum to one.
  */
 function simulate_categorical(ρ:Real[_]) -> Integer {
-  assert length(ρ) > 0;
+  return simulate_categorical(ρ, 1.0);
+}
 
-  u:Real <- simulate_uniform(0.0, 1.0);
+/**
+ * Simulate a categorical distribution.
+ *
+ * - ρ: Unnormalized category probabilities.
+ * - Z: Sum of the unnormalized category probabilities.
+ */
+function simulate_categorical(ρ:Real[_], Z:Real) -> Integer {
+  assert length(ρ) > 0;
+  assert abs(sum(ρ) - Z) < 1.0e-6;
+
+  u:Real <- simulate_uniform(0.0, Z);
   x:Integer <- 1;
   P:Real <- ρ[1];
   while (P < u) {
@@ -99,7 +110,7 @@ function simulate_categorical(ρ:Real[_]) -> Integer {
     x <- x + 1;
     assert 0.0 <= ρ[x] && ρ[x] <= 1.0;
     P <- P + ρ[x];
-    assert 0.0 <= P && P < 1.0 + 1.0e-6;
+    assert P < Z + 1.0e-6;
   }
   return x;
 }
@@ -108,7 +119,7 @@ function simulate_categorical(ρ:Real[_]) -> Integer {
  * Simulate a multinomial distribution.
  *
  * - n: Number of trials.
- * - ρ: Category probabilities.
+ * - ρ: Category probabilities. These should sum to one.
  *
  * This uses an O(N) implementation based on:
  *
@@ -117,26 +128,48 @@ function simulate_categorical(ρ:Real[_]) -> Integer {
  * Science Department.
  */
 function simulate_multinomial(n:Integer, ρ:Real[_]) -> Integer[_] {
-  D:Integer <- length(ρ);
-  R:Real[_] <- exclusive_scan_sum(ρ);
-  W:Real <- R[D] + ρ[D];
+  return simulate_multinomial(n, ρ, 1.0);
+}
 
+/**
+ * Simulate a multinomial distribution.
+ *
+ * - n: Number of trials.
+ * - ρ: Unnormalized category probabilities.
+ * - Z: Sum of the unnormalized category probabilities.
+ *
+ * This uses an O(N) implementation based on:
+ *
+ * Bentley, J. L. and J. B. Saxe (1979). Generating sorted lists of random
+ * numbers. Technical Report 2450, Carnegie Mellon University, Computer
+ * Science Department.
+ */
+function simulate_multinomial(n:Integer, ρ:Real[_], Z:Real) -> Integer[_] {
+  assert length(ρ) > 0;
+  assert abs(sum(ρ) - Z) < 1.0e-6;
+
+  D:Integer <- length(ρ);
+  R:Real <- ρ[D];
   lnMax:Real <- 0.0;
   j:Integer <- D;
   i:Integer <- n;
   u:Real;
-
-  x:Integer[_] <- vector(0, D);
+  x:Integer[D];
     
   while (i > 0) {
     u <- simulate_uniform(0.0, 1.0);
     lnMax <- lnMax + log(u)/i;
-    u <- W*exp(lnMax);
-    while (u < R[j]) {
+    u <- Z*exp(lnMax);
+    while (u < Z - R) {
       j <- j - 1;
+      R <- R + ρ[j];
     }
     x[j] <- x[j] + 1;
     i <- i - 1;
+  }
+  while (j > 1) {
+    j <- j - 1;
+    x[j] <- 0;
   }
   return x;
 }
