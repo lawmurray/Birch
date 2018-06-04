@@ -12,7 +12,7 @@
  * ![Graphical model depiction of MarkovModel.](../figs/MarkovModel.svg)
  * </center>
  */
-class MarkovModel<StateType <= State, ParameterType <= Parameter> < Model {
+class MarkovModel<StateType,ParameterType> < Model {
   /**
    * Parameter.
    */

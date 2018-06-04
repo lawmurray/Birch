@@ -12,7 +12,7 @@
  * ![Graphical model depiction of SpokeModel.](../figs/SpokeModel.svg)
  * </center>
  */
-class SpokeModel<SpokeType <= Spoke, ParameterType <= Parameter> < Model {
+class SpokeModel<SpokeType,ParameterType> < Model {
   /**
    * Hub.
    */
