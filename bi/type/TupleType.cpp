@@ -44,10 +44,6 @@ bool bi::TupleType::definitely(const TupleType& o) const {
   return single->definitely(*o.single);
 }
 
-bool bi::TupleType::definitely(const AnyType& o) const {
-  return true;
-}
-
 bi::Type* bi::TupleType::dispatchCommon(const Type& o) const {
   return o.common(*this);
 }
@@ -73,8 +69,4 @@ bi::Type* bi::TupleType::common(const TupleType& o) const {
   } else {
     return nullptr;
   }
-}
-
-bi::Type* bi::TupleType::common(const AnyType& o) const {
-  return new AnyType();
 }

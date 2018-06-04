@@ -58,10 +58,6 @@ bool bi::FunctionType::definitely(const OptionalType& o) const {
   return definitely(*o.single);
 }
 
-bool bi::FunctionType::definitely(const AnyType& o) const {
-  return true;
-}
-
 bi::Type* bi::FunctionType::dispatchCommon(const Type& o) const {
   return o.common(*this);
 }
@@ -88,8 +84,4 @@ bi::Type* bi::FunctionType::common(const OptionalType& o) const {
   } else {
     return nullptr;
   }
-}
-
-bi::Type* bi::FunctionType::common(const AnyType& o) const {
-  return new AnyType();
 }

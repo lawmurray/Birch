@@ -200,10 +200,6 @@ bool bi::Type::definitely(const ClassType& o) const {
   return false;
 }
 
-bool bi::Type::definitely(const AnyType& o) const {
-  return false;
-}
-
 bool bi::Type::definitely(const EmptyType& o) const {
   return false;
 }
@@ -269,10 +265,6 @@ bi::Type* bi::Type::common(const BinaryType& o) const {
 }
 
 bi::Type* bi::Type::common(const ClassType& o) const {
-  return nullptr;
-}
-
-bi::Type* bi::Type::common(const AnyType& o) const {
   return nullptr;
 }
 

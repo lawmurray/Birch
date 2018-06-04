@@ -66,10 +66,6 @@ bool bi::ArrayType::definitely(const OptionalType& o) const {
   return definitely(*o.single);
 }
 
-bool bi::ArrayType::definitely(const AnyType& o) const {
-  return true;
-}
-
 bi::Type* bi::ArrayType::dispatchCommon(const Type& o) const {
   return o.common(*this);
 }
@@ -95,8 +91,4 @@ bi::Type* bi::ArrayType::common(const OptionalType& o) const {
   } else {
     return nullptr;
   }
-}
-
-bi::Type* bi::ArrayType::common(const AnyType& o) const {
-  return new AnyType();
 }

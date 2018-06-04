@@ -118,10 +118,6 @@ bool bi::ClassType::definitely(const TupleType& o) const {
   return target->hasConversion(&o) || target->base->definitely(o);
 }
 
-bool bi::ClassType::definitely(const AnyType& o) const {
-  return true;
-}
-
 bi::Type* bi::ClassType::dispatchCommon(const Type& o) const {
   return o.common(*this);
 }
@@ -201,8 +197,4 @@ bi::Type* bi::ClassType::common(const TupleType& o) const {
   } else {
     return nullptr;
   }
-}
-
-bi::Type* bi::ClassType::common(const AnyType& o) const {
-  return new AnyType();
 }

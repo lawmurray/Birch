@@ -65,10 +65,6 @@ bool bi::SequenceType::definitely(const SequenceType& o) const {
   return single->definitely(*o.single);
 }
 
-bool bi::SequenceType::definitely(const AnyType& o) const {
-  return true;
-}
-
 bi::Type* bi::SequenceType::dispatchCommon(const Type& o) const {
   return o.common(*this);
 }
@@ -103,8 +99,4 @@ bi::Type* bi::SequenceType::common(const SequenceType& o) const {
   } else {
     return nullptr;
   }
-}
-
-bi::Type* bi::SequenceType::common(const AnyType& o) const {
-  return new AnyType();
 }

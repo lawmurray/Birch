@@ -14,7 +14,6 @@ class Visitor;
 
 class Argumented;
 
-class AnyType;
 class ArrayType;
 class BasicType;
 class BinaryType;
@@ -251,7 +250,6 @@ public:
   virtual bool definitely(const BasicType& o) const;
   virtual bool definitely(const BinaryType& o) const;
   virtual bool definitely(const ClassType& o) const;
-  virtual bool definitely(const AnyType& o) const;
   virtual bool definitely(const EmptyType& o) const;
   virtual bool definitely(const FiberType& o) const;
   virtual bool definitely(const FunctionType& o) const;
@@ -274,7 +272,6 @@ public:
   virtual Type* common(const BasicType& o) const;
   virtual Type* common(const BinaryType& o) const;
   virtual Type* common(const ClassType& o) const;
-  virtual Type* common(const AnyType& o) const;
   virtual Type* common(const EmptyType& o) const;
   virtual Type* common(const FiberType& o) const;
   virtual Type* common(const FunctionType& o) const;

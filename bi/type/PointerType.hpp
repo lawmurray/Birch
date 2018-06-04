@@ -56,7 +56,6 @@ public:
   virtual bool definitely(const OptionalType& o) const;
   virtual bool definitely(const TupleType& o) const;
   virtual bool definitely(const PointerType& o) const;
-  virtual bool definitely(const AnyType& o) const;
 
   virtual Type* dispatchCommon(const Type& o) const;
   virtual Type* common(const GenericType& o) const;
@@ -68,7 +67,6 @@ public:
   virtual Type* common(const OptionalType& o) const;
   virtual Type* common(const TupleType& o) const;
   virtual Type* common(const PointerType& o) const;
-  virtual Type* common(const AnyType& o) const;
 
   /**
    * Is this a weak pointer type?

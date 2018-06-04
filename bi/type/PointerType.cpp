@@ -108,10 +108,6 @@ bool bi::PointerType::definitely(const PointerType& o) const {
   return (!weak || o.weak) && single->definitely(*o.single);
 }
 
-bool bi::PointerType::definitely(const AnyType& o) const {
-  return true;
-}
-
 bi::Type* bi::PointerType::dispatchCommon(const Type& o) const {
   return o.common(*this);
 }
@@ -161,8 +157,4 @@ bi::Type* bi::PointerType::common(const PointerType& o) const {
   } else {
     return nullptr;
   }
-}
-
-bi::Type* bi::PointerType::common(const AnyType& o) const {
-  return new AnyType();
 }

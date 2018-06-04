@@ -315,10 +315,6 @@ bi::Statement* bi::Cloner::clone(const Raw* o) {
   return new Raw(o->name, o->raw, o->loc);
 }
 
-bi::Type* bi::Cloner::clone(const AnyType* o) {
-  return new AnyType(o->loc);
-}
-
 bi::Type* bi::Cloner::clone(const EmptyType* o) {
   return new EmptyType(o->loc);
 }

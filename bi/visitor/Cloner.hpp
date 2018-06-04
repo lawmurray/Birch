@@ -92,7 +92,6 @@ public:
   virtual Statement* clone(const Yield* o);
   virtual Statement* clone(const Raw* o);
 
-  virtual Type* clone(const AnyType* o);
   virtual Type* clone(const EmptyType* o);
   virtual Type* clone(const TypeList* o);
   virtual Type* clone(const UnknownType* o);
