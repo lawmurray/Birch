@@ -26,6 +26,10 @@ function update_beta_bernoulli(x:Boolean, α:Real, β:Real) -> (Real, Real) {
  * Returns: the updated parameters `α` and `β`.
  */
 function update_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) -> (Real, Real) {
+  assert 0 <= x && x <= n;
+  assert 0 <= n;
+  assert 0.0 < α;
+  assert 0.0 < β;
   return (α + x, β + (n - x));
 }
 

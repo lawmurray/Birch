@@ -49,8 +49,9 @@ class TestSubtractBoundedDiscreteDelta {
 
   function backward() -> Real[_] {
     y:Real[2];
-    assert !x1.isMissing() && !x2.isMissing();
+    assert x2.isMissing();
     y[2] <- x2.value();
+    assert x1.isMissing();
     y[1] <- x1.value();
     return y;
   }

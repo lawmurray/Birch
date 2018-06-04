@@ -73,7 +73,7 @@ class DelaySubtractBoundedDiscrete(x:Random<Integer>&,
     enumerate(x);
     n:Integer <- simulate_categorical(z, Z) + x0 - 1;
     x1.clamp(n);
-    x2.clamp(x - n);
+    x2.clamp(n - x);
   }
 
   function pmf(x:Integer) -> Real {
