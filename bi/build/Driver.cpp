@@ -882,8 +882,15 @@ void bi::Driver::readFiles(const boost::property_tree::ptree& meta,
           if (checkExists && !exists(filePath)) {
             warn(fileStr + " in META.json does not exist.");
           }
-          if (std::regex_search(fileStr, std::regex("\\s", std::regex_constants::ECMAScript))) {
-            throw DriverException(std::string("file name ") + fileStr + " in META.json contains whitespace, which is not supported.");
+          if (std::regex_search(fileStr, std::regex("\\s",
+              std::regex_constants::ECMAScript))) {
+            throw DriverException(std::string("file name ") + fileStr +
+                " in META.json contains whitespace, which is not supported.");
+          }
+          if (filePath.parent_path().string() == "bi" &&
+              filePath.stem().string() == tarname(packageName)) {
+            throw DriverException(std::string("file name ") + fileStr +
+                " in META.json is the same as the package name, which is not supported.");
           }
           auto inserted = allFiles.insert(filePath);
           if (!inserted.second) {
