@@ -122,7 +122,7 @@ void bi::CppPackageGenerator::visit(const Package* o) {
       if (!o->base->isEmpty() && (!o->isGeneric() || o->isInstantiation)) {
         start("template<> ");
         middle("struct super_type<type::" << o->name);
-        genTemplateSpec(o);
+        genTemplateArgs(o);
         finish("> {");
         in();
         line("using type = " << o->base << ';');
@@ -137,7 +137,7 @@ void bi::CppPackageGenerator::visit(const Package* o) {
         for (auto o1 : o->assignments) {
           start("template<> ");
           middle("struct has_assignment<type::" << o->name);
-          genTemplateSpec(o);
+          genTemplateArgs(o);
           finish("," << o1 << "> {");
           in();
           line("static const bool value = true;");
@@ -153,7 +153,7 @@ void bi::CppPackageGenerator::visit(const Package* o) {
         for (auto o1 : o->conversions) {
           start("template<> ");
           middle("struct has_conversion<type::" << o->name);
-          genTemplateSpec(o);
+          genTemplateArgs(o);
           finish("," << o1 << "> {");
           in();
           line("static const bool value = true;");

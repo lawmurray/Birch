@@ -8,18 +8,18 @@
 bi::Class::Class(Name* name, Expression* typeParams, Expression* params,
     Type* base, const bool alias, Expression* args, Statement* braces,
     Location* loc) :
-    Statement(loc),
-    Named(name),
-    Parameterised(params),
-    Based(base, alias),
-    Argumented(args),
-    Scoped(CLASS_SCOPE),
-    Braced(braces),
-    typeParams(typeParams),
-    initScope(new Scope(LOCAL_SCOPE)),
-    state(CLONED),
-    isInstantiation(false),
-    isExplicit(false) {
+Statement(loc),
+Named(name),
+Parameterised(params),
+Based(base, alias),
+Argumented(args),
+Scoped(CLASS_SCOPE),
+Braced(braces),
+typeParams(typeParams),
+initScope(new Scope(LOCAL_SCOPE)),
+state(CLONED),
+isInstantiation(false),
+isExplicit(false) {
   //
 }
 
@@ -80,7 +80,7 @@ void bi::Class::addConversion(const Type* o) {
 bool bi::Class::hasConversion(const Type* o) const {
   return std::any_of(conversions.begin(), conversions.end(),
       [&](auto x) {return x->equals(*o);}) ||
-      std::any_of(supers.begin(), supers.end(),
+  std::any_of(supers.begin(), supers.end(),
       [&](auto x) {return x->hasConversion(o);});
 }
 
@@ -100,7 +100,7 @@ void bi::Class::addAssignment(const Type* o) {
 bool bi::Class::hasAssignment(const Type* o) const {
   return std::any_of(assignments.begin(), assignments.end(),
       [&](auto x) {return x->equals(*o);}) ||
-      std::any_of(supers.begin(), supers.end(),
+  std::any_of(supers.begin(), supers.end(),
       [&](auto x) {return x->hasAssignment(o);});
 }
 
@@ -117,8 +117,8 @@ bi::Class* bi::Class::getInstantiation(const Type* typeArgs) {
   } else {
     for (auto o : instantiations) {
       bool matches = typeArgs->width() == o->typeParams->width()
-          && std::equal(typeArgs->begin(), typeArgs->end(),
-              o->typeParams->begin(), compare);
+      && std::equal(typeArgs->begin(), typeArgs->end(),
+          o->typeParams->begin(), compare);
       if (matches) {
         return o;
       }

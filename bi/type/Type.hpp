@@ -151,6 +151,11 @@ public:
   virtual bool isOverloaded() const;
 
   /**
+   * Are all the generics of this class defined?
+   */
+  virtual bool isBound() const;
+
+  /**
    * Get the left operand of a binary, otherwise undefined.
    */
   virtual Type* getLeft() const;

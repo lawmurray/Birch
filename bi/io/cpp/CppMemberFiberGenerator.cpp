@@ -61,7 +61,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     in();
     start("public MemberFiberState<" << o->returnType->unwrap() << ',');
     middle(type->name);
-    genTemplateSpec(type);
+    genTemplateArgs(type);
     middle(',');
     middle(argName << ',');
     middle(localName << '>');
@@ -73,7 +73,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     start("using state_type = MemberFiberState<");
     middle(o->returnType->unwrap() << ',');
     middle(type->name);
-    genTemplateSpec(type);
+    genTemplateArgs(type);
     middle(',');
     middle(argName << ',');
     middle(localName << '>');
@@ -85,12 +85,12 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   start("");
   if (!header) {
     middle("bi::type::" << type->name);
-    genTemplateSpec(type);
+    genTemplateArgs(type);
     middle("::" << stateName << "::");
   }
   middle(stateName << "(const SharedPointer<");
   middle(type->name);
-  genTemplateSpec(type);
+  genTemplateArgs(type);
   middle(">& object, Args... args)");
   if (header) {
     finish(';');
@@ -114,7 +114,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   middle("std::shared_ptr<bi::FiberState<" << o->returnType->unwrap() <<">> ");
   if (!header) {
     middle("bi::type::" << type->name);
-    genTemplateSpec(type);
+    genTemplateArgs(type);
     middle("::" << stateName << "::");
   }
   middle("clone() const");
@@ -137,7 +137,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   middle("bool ");
   if (!header) {
     middle("bi::type::" << type->name);
-    genTemplateSpec(type);
+    genTemplateArgs(type);
     middle("::" << stateName << "::");
   }
   middle("query()");
@@ -166,7 +166,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   middle(o->returnType << ' ');
   if (!header) {
     middle("bi::type::" << type->name);
-    genTemplateSpec(type);
+    genTemplateArgs(type);
     middle("::");
   }
   middle(o->name << '(' << o->params << ')');

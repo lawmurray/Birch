@@ -75,6 +75,17 @@ bool bi::Type::isOverloaded() const {
   return false;
 }
 
+bool bi::Type::isBound() const {
+  Gatherer<GenericType> generics;
+  this->accept(&generics);
+  for (auto o : generics) {
+    if (o->target->type->isEmpty()) {
+      return false;
+    }
+  }
+  return true;
+}
+
 bi::Type* bi::Type::getLeft() const {
   assert(false);
   return nullptr;

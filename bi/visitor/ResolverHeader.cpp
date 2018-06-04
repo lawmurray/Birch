@@ -41,14 +41,6 @@ bi::Statement* bi::ResolverHeader::modify(Class* o) {
     o->accept(&resolver);
   }
   if (o->state < RESOLVED_HEADER) {
-      /* actual type check skipped for inheritance in ResolverSuper, so do
-       * that now */
-    auto base = dynamic_cast<ClassType*>(o->base);
-    if (base && base->original &&
-        !base->typeArgs->definitely(*base->original->typeParams->type)) {
-      throw GenericException(base, base->original);
-    }
-
     if (!o->base->isEmpty()) {
       o->scope->inherit(o->base->getClass()->scope);
     }
@@ -63,9 +55,7 @@ bi::Statement* bi::ResolverHeader::modify(Class* o) {
       o->params = o->params->accept(this);
     }
     scopes.pop_back();
-    if (o->isBound()) {
-      o->braces = o->braces->accept(this);
-    }
+    o->braces = o->braces->accept(this);
     o->state = RESOLVED_HEADER;
     classes.pop_back();
     scopes.pop_back();
@@ -98,7 +88,7 @@ bi::Statement* bi::ResolverHeader::modify(Function* o) {
 bi::Statement* bi::ResolverHeader::modify(Fiber* o) {
   scopes.push_back(o->scope);
   o->params = o->params->accept(this);
-  o->returnType = new FiberType(o->returnType->accept(this));
+  o->returnType = o->returnType->accept(this);
   o->type = new FunctionType(o->params->type, o->returnType, o->loc);
   scopes.pop_back();
   scopes.back()->add(o);
@@ -156,7 +146,7 @@ bi::Statement* bi::ResolverHeader::modify(MemberFunction* o) {
 bi::Statement* bi::ResolverHeader::modify(MemberFiber* o) {
   scopes.push_back(o->scope);
   o->params = o->params->accept(this);
-  o->returnType = new FiberType(o->returnType->accept(this));
+  o->returnType = o->returnType->accept(this);
   o->type = new FunctionType(o->params->type, o->returnType, o->loc);
   scopes.pop_back();
   scopes.back()->add(o);

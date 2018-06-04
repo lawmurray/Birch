@@ -66,7 +66,7 @@ void bi::CppBaseGenerator::visit(const Sequence* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Cast* o) {
-  middle("bi::dynamic_pointer_cast<" << o->returnType << '>');
+  middle("bi::dynamic_pointer_cast<" << o->returnType->unwrap() << '>');
   middle('(' << o->single << ')');
 }
 
@@ -514,7 +514,11 @@ void bi::CppBaseGenerator::visit(const Class* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Generic* o) {
-  middle(o->name);
+  if (o->type->isEmpty()) {
+    middle(o->name);
+  } else {
+    middle(o->type);
+  }
 }
 
 void bi::CppBaseGenerator::visit(const Assignment* o) {
@@ -681,7 +685,11 @@ void bi::CppBaseGenerator::visit(const BasicType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const GenericType* o) {
-  middle(o->name);
+  if (o->target->type->isEmpty()) {
+    middle(o->name);
+  } else {
+    middle(o->target->type);
+  }
 }
 
 void bi::CppBaseGenerator::visit(const UnknownType* o) {
@@ -711,20 +719,6 @@ void bi::CppBaseGenerator::genTemplateParams(const Class* o) {
 void bi::CppBaseGenerator::genTemplateArgs(const Class* o) {
   if (o->isGeneric()) {
     middle('<' << o->typeParams << '>');
-  }
-}
-
-void bi::CppBaseGenerator::genTemplateSpec(const Class* o) {
-  if (o->isGeneric()) {
-    middle('<');
-    for (auto iter = o->typeParams->begin(); iter != o->typeParams->end();
-        ++iter) {
-      if (iter != o->typeParams->begin()) {
-        middle(',');
-      }
-      middle((*iter)->type);
-    }
-    middle('>');
   }
 }
 
