@@ -93,6 +93,13 @@ class DelaySubtractBoundedDiscrete(x:Random<Integer>&,
     }
     return P;
   }
+
+  function detach() {
+    // override as have two parents
+    parent <- nil;
+    x1.child <- nil;
+    x2.child <- nil;
+  }  
 }
 
 function DelaySubtractBoundedDiscrete(x:Random<Integer>&,

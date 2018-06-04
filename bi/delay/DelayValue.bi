@@ -22,8 +22,8 @@ class DelayValue<Value>(x:Random<Value>&) < Delay {
       y!.x <- x;
     }
     condition(x);
-    detach();
     realized <- true;
+    detach();
   }
   
   /**
