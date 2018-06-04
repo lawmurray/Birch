@@ -1,14 +1,18 @@
 /*
  * Delayed Poisson random variate.
  */
-class DelayPoisson(x:Random<Integer>&, λ:Real) < DelayValue<Integer>(x) {
+class DelayPoisson(x:Random<Integer>&, λ:Real) < DelayDiscrete(x) {
   /**
    * Rate.
    */
   λ:Real <- λ;
 
   function simulate() -> Integer {
-    return simulate_poisson(λ);
+    if value? {
+      return value!;
+    } else {
+      return simulate_poisson(λ);
+    }
   }
   
   function observe(x:Integer) -> Real {

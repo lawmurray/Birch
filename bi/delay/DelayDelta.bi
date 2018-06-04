@@ -8,7 +8,11 @@ class DelayDelta(x:Random<Integer>&, μ:Integer) < DelayDiscrete(x) {
   μ:Integer <- μ;
 
   function simulate() -> Integer {
-    return simulate_delta(μ);
+    if value? {
+      return value!;
+    } else {
+      return simulate_delta(μ);
+    }
   }
   
   function observe(x:Integer) -> Real {

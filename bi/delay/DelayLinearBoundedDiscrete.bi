@@ -21,11 +21,20 @@ class DelayLinearBoundedDiscrete(x:Random<Integer>&, a:Integer,
   c:Integer <- c;
 
   function simulate() -> Integer {
-    return simulate_delta(a*μ.simulate() + c);
+    if value? {
+      return value!;
+    } else {
+      return simulate_delta(a*μ.simulate() + c);
+    }
   }
   
   function observe(x:Integer) -> Real {
-    return μ.realize((x - c)/a);
+    assert !value?;
+    return μ.observe((x - c)/a);
+  }
+
+  function condition(x:Integer) {
+    μ.clamp((x - c)/a);
   }
 
   function pmf(x:Integer) -> Real {

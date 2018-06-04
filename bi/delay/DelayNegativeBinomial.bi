@@ -2,7 +2,7 @@
  * Delayed negative binomial random variate.
  */
 class DelayNegativeBinomial(x:Random<Integer>&, n:Integer, ρ:Real) <
-    DelayValue<Integer>(x) {
+    DelayDiscrete(x) {
   /**
    * Number of successes before the experiment is stopped.
    */
@@ -14,7 +14,11 @@ class DelayNegativeBinomial(x:Random<Integer>&, n:Integer, ρ:Real) <
   ρ:Real <- ρ;
 
   function simulate() -> Integer {
-    return simulate_negative_binomial(n, ρ);
+    if value? {
+      return value!;
+    } else {
+      return simulate_negative_binomial(n, ρ);
+    }
   }
   
   function observe(x:Integer) -> Real {

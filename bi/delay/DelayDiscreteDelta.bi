@@ -9,11 +9,20 @@ class DelayDiscreteDelta(x:Random<Integer>&, μ:DelayDiscrete) <
   μ:DelayDiscrete <- μ;
 
   function simulate() -> Integer {
-    return simulate_delta(μ.simulate());
+    if value? {
+      return value!;
+    } else {
+      return simulate_delta(μ.simulate());
+    }
   }
   
   function observe(x:Integer) -> Real {
-    return μ.realize(x);
+    assert !value?;
+    return μ.observe(x);
+  }
+  
+  function condition(x:Integer) {
+    μ.clamp(x);
   }
 
   function pmf(x:Integer) -> Real {

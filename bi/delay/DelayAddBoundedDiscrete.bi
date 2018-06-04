@@ -13,31 +13,67 @@ class DelayAddBoundedDiscrete(x:Random<Integer>&, x1:DelayBoundedDiscrete,
    * Second discrete random variate.
    */
   x2:DelayBoundedDiscrete <- x2;
+  
+  /**
+   * Value for which conditional probabilities have been enumerated.
+   */
+  x:Integer?;
+  
+  /**
+   * If clamped, then the lower bound of `x1`.
+   */
+  x0:Integer;
+  
+  /**
+   * If clamped, then the probabilities of all possible values of `x1`,
+   * starting from `x0`.
+   */
+  z:Real[_];
+  
+  /**
+   * If clamped, then the sum of `z`.
+   */
+  Z:Real;
+
+  function enumerate(x:Integer) {
+    if (!this.x? || this.x! != x) {
+      l:Integer <- max(x1.l, x - x2.u);
+      u:Integer <- min(x1.u, x - x2.l);
+    
+      x0 <- l;
+      Z <- 0.0;
+      if (l <= u) {
+        /* distribution over possible pairs that produce the given sum */
+        z <- vector(0.0, u - l + 1);
+        for (n:Integer in l..u) {
+          z[n - l + 1] <- x1.pmf(n)*x2.pmf(x - n);
+          Z <- Z + z[n - l + 1];
+        }
+      }
+      this.x <- x;
+    }
+  }
 
   function simulate() -> Integer {
-    return simulate_delta(x1.simulate() + x2.simulate());
+    if value? {
+      return value!;
+    } else {
+      return simulate_delta(x1.simulate() + x2.simulate());
+    }
   }
   
   function observe(x:Integer) -> Real {
-    l:Integer <- max(x1.l, x - x2.u);
-    u:Integer <- min(x1.u, x - x2.l);
-    
-    Z:Real <- 0.0;
-    if (l <= u) {
-      /* distribution over possible pairs that produce the observed sum */
-      z:Real[u - l + 1];
-      n:Integer;
-      for (n in l..u) {
-        z[n - l + 1] <- x1.pmf(n)*x2.pmf(x - n);
-        Z <- Z + z[n - l + 1];
-      }
-    
-      /* choose which pair and observe */
-      n <- simulate_categorical(z, Z) + l - 1;
-      x1.realize(n);
-      x2.realize(x - n);
-    }
+    assert !value?;
+    enumerate(x);
     return log(Z);
+  }
+  
+  function condition(x:Integer) {
+    /* choose a pair with the given sum and clamp parents */
+    enumerate(x);
+    n:Integer <- simulate_categorical(z, Z) + x0 - 1;
+    x1.clamp(n);
+    x2.clamp(x - n);
   }
 
   function pmf(x:Integer) -> Real {
@@ -55,6 +91,7 @@ class DelayAddBoundedDiscrete(x:Random<Integer>&, x1:DelayBoundedDiscrete,
     for (n:Integer in l..x) {
       P <- P + pmf(n);
     }
+    return P;
   }
 }
 

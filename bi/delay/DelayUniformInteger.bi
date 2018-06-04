@@ -4,7 +4,11 @@
 class DelayUniformInteger(x:Random<Integer>&, l:Integer, u:Integer) <
     DelayBoundedDiscrete(x, l, u) {
   function simulate() -> Integer {
-    return simulate_uniform_int(l, u);
+    if value? {
+      return value!;
+    } else {
+      return simulate_uniform_int(l, u);
+    }
   }
 
   function observe(x:Integer) -> Real {

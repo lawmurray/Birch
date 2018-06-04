@@ -20,13 +20,13 @@ class Poisson(λ:Expression<Real>) < Distribution<Integer> {
     }
   }
 
-  function graftDiscrete() -> DelayValue<Integer>? {
+  function graftDiscrete() -> DelayDiscrete? {
     if delay? {
       delay!.prune();
     } else {
       delay <- DelayPoisson(x, λ);
     }
-    return DelayValue<Integer>?(delay);
+    return DelayDiscrete?(delay);
   }
 }
 

@@ -13,16 +13,7 @@ class Binomial(n:Expression<Integer>, ρ:Expression<Real>) < Distribution<Intege
   ρ:Expression<Real> <- ρ;
 
   function graft() {
-    if delay? {
-      delay!.prune();
-    } else {
-      m:DelayBeta?;
-      if (m <- ρ.graftBeta())? {
-        delay <- DelayBetaBinomial(x, n, m!);
-      } else {
-        delay <- DelayBinomial(x, n, ρ);
-      }
-    }
+    graftBoundedDiscrete();
   }
   
   function graftDiscrete() -> DelayDiscrete? {
@@ -33,7 +24,12 @@ class Binomial(n:Expression<Integer>, ρ:Expression<Real>) < Distribution<Intege
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayBinomial(x, n, ρ);
+      m:DelayBeta?;
+      if (m <- ρ.graftBeta())? {
+        delay <- DelayBetaBinomial(x, n, m!);
+      } else {
+        delay <- DelayBinomial(x, n, ρ);
+      }
     }
     return DelayBoundedDiscrete?(delay);
   }

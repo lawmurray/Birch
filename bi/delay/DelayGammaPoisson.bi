@@ -2,14 +2,18 @@
  * Delayed gamma-Poisson random variate.
  */
 class DelayGammaPoisson(x:Random<Integer>&, λ:DelayGamma) <
-    DelayValue<Integer>(x) {
+    DelayDiscrete(x) {
   /**
    * Rate.
    */
   λ:DelayGamma <- λ;
 
   function simulate() -> Integer {
-    return simulate_gamma_poisson(λ.k, λ.θ);
+    if value? {
+      return value!;
+    } else {
+      return simulate_gamma_poisson(λ.k, λ.θ);
+    }
   }
   
   function observe(x:Integer) -> Real {

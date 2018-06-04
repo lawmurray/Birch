@@ -14,7 +14,11 @@ class DelayBinomial(x:Random<Integer>&, n:Integer, ρ:Real) <
   ρ:Real <- ρ;
 
   function simulate() -> Integer {
-    return simulate_binomial(n, ρ);
+    if value? {
+      return value!;
+    } else {
+      return simulate_binomial(n, ρ);
+    }
   }
   
   function observe(x:Integer) -> Real {

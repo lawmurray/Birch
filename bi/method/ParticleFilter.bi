@@ -157,6 +157,7 @@ class ParticleFilter {
     }
     r[t] <- e[t] < trigger*N;
     if (r[t]) {
+    stderr.print("resample\n");
       a:Integer[_] <- permute_ancestors(ancestors(w));
       for (n:Integer in 1..N) {
         f[n] <- f[a[n]];

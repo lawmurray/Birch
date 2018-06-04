@@ -52,7 +52,9 @@ class Distribution<Value> {
   function observe(x:Value) -> Real {
     graft();
     w:Real <- delay!.observe(x);
-    delay!.condition(x);
+    if (w > -inf) {
+      delay!.condition(x);
+    }
     return w;
   }
 

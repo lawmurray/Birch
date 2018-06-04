@@ -14,7 +14,11 @@ class DelayBetaBinomial(x:Random<Integer>&, n:Integer, ρ:DelayBeta) <
   ρ:DelayBeta <- ρ;
 
   function simulate() -> Integer {
-    return simulate_beta_binomial(n, ρ.α, ρ.β);
+    if value? {
+      return value!;
+    } else {
+      return simulate_beta_binomial(n, ρ.α, ρ.β);
+    }
   }
   
   function observe(x:Integer) -> Real {
