@@ -4,16 +4,16 @@
   "description": "Example models.",
   "manifest": {
     "source": [
-      "bi/model/LinearGaussianModel.bi",
-      "bi/model/LinearGaussianParameter.bi",
-      "bi/model/LinearGaussianState.bi",
-      "bi/model/LinearRegressionModel.bi",
-      "bi/model/MixedGaussianModel.bi",
-      "bi/model/MixedGaussianParameter.bi",
-      "bi/model/MixedGaussianState.bi",
-      "bi/model/SIRModel.bi",
-      "bi/model/SIRParameter.bi",
-      "bi/model/SIRState.bi"
+      "bi/LinearGaussianModel.bi",
+      "bi/LinearGaussianParameter.bi",
+      "bi/LinearGaussianState.bi",
+      "bi/LinearRegressionModel.bi",
+      "bi/MixedGaussianModel.bi",
+      "bi/MixedGaussianParameter.bi",
+      "bi/MixedGaussianState.bi",
+      "bi/SIRModel.bi",
+      "bi/SIRParameter.bi",
+      "bi/SIRState.bi"
     ],
     "data": [
       "input/bike_share.json",
