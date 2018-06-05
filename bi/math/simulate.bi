@@ -629,8 +629,8 @@ function simulate_multivariate_inverse_gamma_gaussian(μ:Real[_], α:Real,
  */
 function simulate_multivariate_normal_inverse_gamma_gaussian(μ:Real[_],
     Λ:Real[_,_], α:Real, β:Real) -> Real[_] {
-  D:Integer <- length(μ);
-  return simulate_multivariate_student_t(2.0*α, μ, (α/β)*inv(identity(D) + inv(Λ)));
+  return simulate_multivariate_student_t(2.0*α, μ,
+      (α/β)*inv(identity(rows(Λ)) + inv(Λ)));
 }
 
 /**
@@ -646,7 +646,6 @@ function simulate_multivariate_normal_inverse_gamma_gaussian(μ:Real[_],
  */
 function simulate_multivariate_linear_normal_inverse_gamma_gaussian(
     A:Real[_,_], μ:Real[_], c:Real[_], Λ:Real[_,_], α:Real, β:Real) -> Real[_] {
-  D:Integer <- length(μ);
   return simulate_multivariate_student_t(2.0*α, A*μ + c,
-      (α/β)*inv(identity(D) + A*solve(Λ, trans(A))));
+      (α/β)*inv(identity(rows(A)) + A*solve(Λ, trans(A))));
 }
