@@ -3,6 +3,8 @@
  * results in a Rao--Blackwellized particle filter with locally-optimal
  * proposal being applied to this model.
  *
+ * ### Usage
+ *
  * Run with:
  *
  *     birch sample \
@@ -11,6 +13,8 @@
  *       --output-file output/mixed_gaussian.json \
  *       --nparticles 256 \
  *       --ncheckpoints 50
+ *
+ * ### Details
  *
  * The model is detailed in [Lindsten and Schön (2010)](../#references).
  */

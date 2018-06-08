@@ -1,5 +1,5 @@
 /**
- * Parameter model for mixed linear-nonlinear Gaussian state-space model.
+ * Parameter for MixedGaussianModel.
  */
 class MixedGaussianParameter < Parameter {
   /**

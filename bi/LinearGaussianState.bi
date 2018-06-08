@@ -1,5 +1,5 @@
 /**
- * State model for linear-Gaussian state-space model.
+ * State for LinearGaussianModel.
  */
 class LinearGaussianState < State {
   x:Random<Real>;

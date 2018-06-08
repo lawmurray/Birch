@@ -2,17 +2,9 @@
  * Bayesian linear regression model with conjugate normal-inverse-gamma
  * prior.
  *
- * The model is given by:
- *   $$\begin{align}
- *   \sigma^2 &\sim \mathrm{Inv\text{-}Gamma}(3, 4/10) \\
- *   \boldsymbol{\beta} &\sim \mathcal{N}(0, I\sigma^2) \\
- *   y_n &\sim \mathcal{N}(\mathbf{x}_n^{\top}\boldsymbol{\beta}, \sigma^2)
- *   \end{align}$$
- * The parameters are the noise variance $\sigma^2$ and vector of
- * coefficients $\boldsymbol{\beta}$. The data consists of observations $y_n$
- * and explanatory variables $\mathbf{x}_n$ for $n=1,\ldots,N$.
+ * ### Usage
  *
- * Run the example using:
+ * Run with:
  *
  *     birch sample \
  *         --model LinearRegressionModel \
@@ -25,6 +17,18 @@
  * to 2012. The aim is to use weather and holiday information to predict the
  * total number of bike hires on any given day
  * [(Fanaee-T and Gama, 2014)](../#references).
+ *
+ * ### Details
+ *
+ * The model is given by:
+ *   $$\begin{align}
+ *   \sigma^2 &\sim \mathrm{Inv\text{-}Gamma}(3, 4/10) \\
+ *   \boldsymbol{\beta} &\sim \mathcal{N}(0, I\sigma^2) \\
+ *   y_n &\sim \mathcal{N}(\mathbf{x}_n^{\top}\boldsymbol{\beta}, \sigma^2)
+ *   \end{align}$$
+ * The parameters are the noise variance $\sigma^2$ and vector of
+ * coefficients $\boldsymbol{\beta}$. The data consists of observations $y_n$
+ * and explanatory variables $\mathbf{x}_n$ for $n=1,\ldots,N$.
  */
 class LinearRegressionModel < Model {
   /**

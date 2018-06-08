@@ -1,15 +1,5 @@
 /**
- * SIR parameter model.
- *
- * The model is given by:
- *   $$\begin{align}
- *   \lambda &= 10 \\
- *   \delta &\sim \mathrm{Beta}(2,2) \\
- *   \gamma &\sim \mathrm{Beta}(2,2),
- *   \end{align}$$
- * where $\lambda$ is a rate of interaction in the population, $\delta$ the
- * probability of infection when a susceptible individual interacts with an
- * infectious individual, and $\gamma$ the daily recovery probability.
+ * Parameter for SIRModel.
  */
 class SIRParameter < Parameter {
   /**
@@ -28,7 +18,7 @@ class SIRParameter < Parameter {
   γ:Random<Real>;
 
   fiber parameter() -> Real {
-    λ <- 10.0;
+    λ ~ Gamma(2.0, 5.0);
     δ ~ Beta(2.0, 2.0);
     γ ~ Beta(2.0, 2.0);
   }

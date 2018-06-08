@@ -1,5 +1,5 @@
 /**
- * State model for mixed linear-nonlinear Gaussian state-space model.
+ * State for MixedGaussianState.
  */
 class MixedGaussianState < State {
   /**

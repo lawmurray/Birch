@@ -2,6 +2,8 @@
  * Linear-Gaussian state-space model. The delayed sampling feature of Birch
  * results in a Kalman filter being applied to this model.
  *
+ * ### Usage
+ *
  * Run with:
  *
  *     birch sample \

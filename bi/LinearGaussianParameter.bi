@@ -1,5 +1,5 @@
 /**
- * Parameter model for Linear-Gaussian state-space model.
+ * Parameter for LinearGaussianModel.
  */
 class LinearGaussianParameter < Parameter {
   a:Real <- 0.8;
