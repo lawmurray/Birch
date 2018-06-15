@@ -49,8 +49,8 @@ public:
   /**
    * Constructor.
    */
-  SharedPointer(const std::shared_ptr<T>& object) :
-      super_type(object) {
+  SharedPointer(const std::shared_ptr<T>& object, World* world = fiberWorld) :
+      super_type(object, world) {
     //
   }
 
@@ -157,9 +157,9 @@ public:
     //
   }
 
-  SharedPointer(const std::shared_ptr<Any>& object) :
+  SharedPointer(const std::shared_ptr<Any>& object, World* world = fiberWorld) :
       object(object),
-      world(fiberWorld) {
+      world(world) {
     //
   }
 
@@ -184,7 +184,8 @@ public:
   }
 
   SharedPointer<Any>& operator=(const SharedPointer<Any>& o) {
-    bi_assert_msg(world->hasLaunchAncestor(o.world), "when a fiber yields an object, that object cannot be kept by the caller");
+    bi_assert_msg(world->hasLaunchAncestor(o.world),
+        "when a fiber yields an object, that object cannot be kept by the caller");
     object = o.pull();
     return *this;
   }
@@ -250,11 +251,11 @@ public:
   }
 
   /**
-   * Dynamic cast. Returns `nullptr` if the cast if unsuccessful.
+   * Dynamic cast. Returns `nullptr` if unsuccessful.
    */
   template<class U>
   SharedPointer<U> dynamic_pointer_cast() const {
-    return SharedPointer<U>(std::dynamic_pointer_cast < U > (object));
+    return SharedPointer<U>(std::dynamic_pointer_cast < U > (object), world);
   }
 
   /**
@@ -262,7 +263,7 @@ public:
    */
   template<class U>
   SharedPointer<U> static_pointer_cast() const {
-    return SharedPointer<U>(std::static_pointer_cast < U > (object));
+    return SharedPointer<U>(std::static_pointer_cast < U > (object), world);
   }
 
 protected:
