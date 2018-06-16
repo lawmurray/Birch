@@ -16,7 +16,7 @@ public:
    * Constructor.
    */
   GlobalFiberWorld() :
-      world(std::make_shared<World>()) {
+      world(std::allocate_shared<World>(PowerPoolAllocator<World>())) {
     //
   }
 
@@ -24,7 +24,7 @@ public:
    * Constructor.
    */
   GlobalFiberWorld(const std::shared_ptr<World> cloneSource) :
-      world(std::make_shared<World>(cloneSource)) {
+      world(std::allocate_shared<World>(PowerPoolAllocator<World>(), cloneSource)) {
     //
   }
 

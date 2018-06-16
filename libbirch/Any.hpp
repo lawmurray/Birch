@@ -55,6 +55,7 @@ protected:
 };
 }
 
+#include "libbirch/PowerPoolAllocator.hpp"
 #include "libbirch/global.hpp"
 
 inline bi::Any::Any() : world(fiberWorld) {
@@ -70,7 +71,7 @@ inline bi::Any::~Any() {
 }
 
 inline std::shared_ptr<bi::Any> bi::Any::clone() const {
-  return std::make_shared<Any>(*this);
+  return std::allocate_shared<Any>(PowerPoolAllocator<Any>(), *this);
 }
 
 inline bi::World* bi::Any::getWorld() {

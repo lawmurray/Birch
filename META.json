@@ -5,7 +5,7 @@
   "manifest": {
     "source": [
       "libbirch/global.cpp",
-      
+
       "libubjpp/common/Parser.c",
       "libubjpp/common/ParserState.cpp",
       "libubjpp/json/JSONDriver.cpp",
@@ -213,6 +213,7 @@
       "libbirch/Offset.hpp",
       "libbirch/Object.hpp",
       "libbirch/Optional.hpp",
+      "libbirch/PowerPoolAllocator.hpp",
       "libbirch/Range.hpp",
       "libbirch/Sequence.hpp",
       "libbirch/SharedPointer.hpp",
@@ -221,6 +222,7 @@
       "libbirch/View.hpp",
       "libbirch/WeakPointer.hpp",
       "libbirch/World.hpp",
+      
       "libubjpp/value.hpp",
       "libubjpp/common/Parser.h",
       "libubjpp/common/ParserState.h",

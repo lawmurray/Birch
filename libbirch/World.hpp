@@ -4,6 +4,7 @@
 #pragma once
 
 #include "libbirch/global.hpp"
+#include "libbirch/PowerPoolAllocator.hpp"
 
 #include <map>
 
@@ -95,15 +96,24 @@ private:
    */
   World* launchSource;
 
+  /*
+   * Types for maps.
+   */
+  using key_type = Any*;
+  using value_type = std::shared_ptr<Any>;
+  using less_type = std::less<key_type>;
+  using alloc_type = PowerPoolAllocator<std::pair<const key_type,value_type>>;
+  using map_type = std::map<key_type,value_type,less_type,alloc_type>;
+
   /**
    * Mapped allocations.
    */
-  std::map<Any*,std::shared_ptr<Any>> map;
+  map_type map;
 
   /**
    * Cached mappings of clone ancestors.
    */
-  std::map<Any*,std::shared_ptr<Any>> cache;
+  map_type cache;
 
   /**
    * Launch depth.

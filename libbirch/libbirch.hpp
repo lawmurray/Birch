@@ -19,6 +19,7 @@
 #include "libbirch/Nil.hpp"
 #include "libbirch/SharedPointer.hpp"
 #include "libbirch/WeakPointer.hpp"
+#include "libbirch/PowerPoolAllocator.hpp"
 #include "libbirch/FiberState.hpp"
 #include "libbirch/GlobalFiberState.hpp"
 #include "libbirch/MemberFiberState.hpp"
@@ -213,7 +214,7 @@ auto make_array(const Frame& frame, Args ... args) {
 template<class PointerType, class ... Args>
 PointerType make_pointer(Args ... args) {
   using Type = typename PointerType::value_type;
-  return PointerType(std::make_shared<Type>(args...));
+  return PointerType(std::allocate_shared<Type>(PowerPoolAllocator<Type>(), args...));
 }
 
 /**
@@ -227,7 +228,7 @@ PointerType make_pointer(Args ... args) {
 template<class StateType, class ... Args>
 auto make_fiber(Args ... args) {
   using yield_type = typename StateType::yield_type;
-  return Fiber<yield_type>(std::make_shared<StateType>(args...));
+  return Fiber<yield_type>(std::allocate_shared<StateType>(PowerPoolAllocator<StateType>(), args...));
 }
 
 /**
