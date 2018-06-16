@@ -758,8 +758,8 @@ void bi::Driver::configure() {
     cxxflags << " -Wno-overloaded-virtual";
     cxxflags << " -Wno-return-type";
     // ^ false warnings for abstract functions at the moment
-    cppflags << " -DEIGEN_NO_STATIC_ASSERT";
-    cppflags << " -Deigen_assert=bi_assert";
+    //cppflags << " -DEIGEN_NO_STATIC_ASSERT";
+    //cppflags << " -Deigen_assert=bi_assert";
 
     for (auto iter = include_dirs.begin(); iter != include_dirs.end();
         ++iter) {

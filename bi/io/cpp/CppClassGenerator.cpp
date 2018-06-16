@@ -109,7 +109,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
       } else {
         finish(" {");
         in();
-        line("return std::make_shared<this_type>(*this);");
+        line("return std::allocate_shared<this_type>(PowerPoolAllocator<this_type>(), *this);");
         out();
         line("}\n");
       }

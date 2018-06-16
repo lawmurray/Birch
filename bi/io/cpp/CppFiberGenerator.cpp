@@ -111,7 +111,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   } else {
     finish(" {");
     in();
-    line("return std::make_shared<" << stateName << ">(*this);");
+    line("return std::allocate_shared<" << stateName << ">(PowerPoolAllocator<" << stateName << ">(), *this);");
     out();
     line("}\n");
   }
