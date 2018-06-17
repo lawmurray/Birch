@@ -10,6 +10,8 @@
 #include <cstddef>
 #include <list>
 #include <cassert>
+#include <vector>
+#include <stack>
 
 /**
  * @def bi_assert
@@ -103,6 +105,11 @@ extern bool fiberClone;
 static constexpr int64_t mutable_value = 0;
 
 /**
+ * Allocation pool.
+ */
+extern std::stack<void*> pool[];
+
+/**
  * Stack trace.
  */
 extern std::list<StackFrame> stacktrace;
@@ -170,4 +177,97 @@ template<class U>
 struct has_conversion<Any,U> {
   static const bool value = false;
 };
+
+/**
+ * Determine in which bin an allocation of size @p n belongs. Return the
+ * index of the bin and the size of allocations in that bin (which will
+ * be greater than or equal to @p n).
+ */
+inline int bin(const size_t n) {
+  /* minimum allocation size */
+  #if __cplusplus > 201703L
+  static const size_t minSize = std::hardware_destructive_interference_size;
+  #else
+  static const size_t minSize = 4u;
+  #endif
+
+  size_t m = std::max(n, minSize) - 1;
+  #if __has_builtin(__builtin_clzll)
+  return sizeof(unsigned long long)*8 - __builtin_clzll(m);
+  #else
+  int ret = 1;
+  while ((m >> ret) > 0) {
+    ++ret;
+  }
+  return ret;
+  #endif
+}
+
+inline void* allocate(const size_t n) {
+  void* ptr = nullptr;
+  if (n > 0) {
+    /* bin the allocation */
+    int i = bin(n);
+
+    /* reuse allocation in the pool, or create a new one */
+    if (pool[i].empty()) {
+      ptr = std::malloc(1 << i);
+    } else {
+      auto& p = pool[i];
+      ptr = p.top();
+      p.pop();
+    }
+    assert(ptr);
+  }
+  return ptr;
+}
+
+inline void* reallocate(void* ptr1, const size_t n1, const size_t n2) {
+  void* ptr2 = nullptr;
+
+  /* bin the current allocation */
+  int i1 = bin(n1);
+
+  /* bin the new allocation */
+  int i2 = bin(n2);
+
+  if (n1 > 0 && i1 == i2) {
+    /* current allocation is large enough, reuse */
+    ptr2 = ptr1;
+  } else {
+    /* return the current allocation to the pool */
+    if (n1 > 0) {
+      pool[i1].push(ptr1);
+    }
+
+    if (n2 > 0) {
+      /* reuse allocation in the pool, or create a new one */
+      if (pool[i2].empty()) {
+        ptr2 = std::malloc(1 << i2);
+      } else {
+        auto& p = pool[i2];
+        ptr2 = p.top();
+        p.pop();
+      }
+      assert(ptr2);
+
+      /* copy over contents */
+      std::memcpy(ptr2, ptr1, n1);
+    }
+  }
+  return ptr2;
+}
+
+inline void deallocate(void* ptr, const size_t n) {
+  if (n > 0) {
+    assert(ptr);
+
+    /* bin the allocation */
+    int i = bin(n);
+
+    /* return this allocation to the pool */
+    pool[i].push(ptr);
+  }
+}
+
 }
