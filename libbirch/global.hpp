@@ -107,7 +107,7 @@ static constexpr int64_t mutable_value = 0;
 /**
  * Allocation pool.
  */
-extern std::stack<void*> pool[];
+extern std::stack<void*,std::vector<void*>> pool[];
 
 /**
  * Stack trace.
@@ -184,19 +184,11 @@ struct has_conversion<Any,U> {
  * be greater than or equal to @p n).
  */
 inline int bin(const size_t n) {
-  /* minimum allocation size */
-  #if __cplusplus > 201703L
-  static const size_t minSize = std::hardware_destructive_interference_size;
-  #else
-  static const size_t minSize = 4u;
-  #endif
-
-  size_t m = std::max(n, minSize) - 1;
   #if __has_builtin(__builtin_clzll)
-  return sizeof(unsigned long long)*8 - __builtin_clzll(m);
+  return sizeof(unsigned long long)*8 - __builtin_clzll(n - 1);
   #else
   int ret = 1;
-  while ((m >> ret) > 0) {
+  while (((n - 1) >> ret) > 0) {
     ++ret;
   }
   return ret;

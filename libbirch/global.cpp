@@ -10,7 +10,7 @@
 
 bi::World* bi::fiberWorld = new bi::World(0);
 bool bi::fiberClone = false;
-std::stack<void*> bi::pool[64];
+std::stack<void*,std::vector<void*>> bi::pool[64];
 std::list<bi::StackFrame> bi::stacktrace;
 
 void bi::abort() {
