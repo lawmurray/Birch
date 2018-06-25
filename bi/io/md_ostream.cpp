@@ -262,7 +262,7 @@ void bi::md_ostream::visit(const Function* o) {
 void bi::md_ostream::visit(const Fiber* o) {
   start("!!! quote \"fiber " << o->name << '(' << o->params << ')');
   if (!o->returnType->isEmpty()) {
-    middle(" -> " << o->returnType);
+    middle(" -> " << o->returnType->unwrap());
   }
   finish("\"");
 }
@@ -284,7 +284,7 @@ void bi::md_ostream::visit(const MemberFiber* o) {
   start("!!! quote \"fiber");
   middle(' ' << o->name << '(' << o->params << ')');
   if (!o->returnType->isEmpty()) {
-    middle(" -> " << o->returnType);
+    middle(" -> " << o->returnType->unwrap());
   }
   finish("\"");
 }
