@@ -41,6 +41,22 @@ public:
   }
 
   /**
+   * Constructor.
+   */
+  WeakPointer(const std::weak_ptr<Any>& object) :
+      super_type(object) {
+    //
+  }
+
+  /**
+   * Constructor.
+   */
+  WeakPointer(const std::weak_ptr<Any>& object, World* world, World* current) :
+      super_type(object, world, current) {
+    //
+  }
+
+  /**
    * Generic copy constructor.
    */
   template<class U>
@@ -85,32 +101,51 @@ public:
   using root_type = this_type;
 
   WeakPointer(const std::nullptr_t& object = nullptr) :
-      world(fiberWorld) {
+      world(fiberWorld),
+      current(fiberWorld) {
     //
   }
 
   WeakPointer(const Nil& object) :
-      world(fiberWorld) {
+      world(fiberWorld),
+      current(fiberWorld) {
+    //
+  }
+
+  WeakPointer(const std::weak_ptr<Any>& object) :
+      object(object),
+      world(fiberWorld),
+      current(fiberWorld) {
+    //
+  }
+
+  WeakPointer(const std::weak_ptr<Any>& object, World* world, World* current) :
+      object(object),
+      world(world),
+      current(current) {
     //
   }
 
   WeakPointer(const WeakPointer<Any>& o) :
-      object(o.pull()),
-      world(fiberClone ? fiberWorld : o.world) {
+      object(o.object),
+      world(fiberClone ? fiberWorld : o.world),
+      current(o.current) {
     //
   }
 
   template<class U>
   WeakPointer(const WeakPointer<U>& o) :
-      object(o.pull()),
-      world(fiberWorld) {
+      object(o.object),
+      world(o.world),
+      current(o.current) {
     //
   }
 
   template<class U>
   WeakPointer(const SharedPointer<U>& o) :
-      object(o.pull()),
-      world(fiberWorld) {
+      object(o.object),
+      world(o.world),
+      current(o.current) {
     //
   }
 
@@ -121,18 +156,21 @@ public:
   }
 
   WeakPointer<Any>& operator=(const WeakPointer<Any>& o) {
-    bi_assert_msg(world->hasLaunchAncestor(o.world), "when a fiber yields an object, that object cannot be kept by the caller");
+    bi_assert_msg(world->hasLaunchAncestor(o.world),
+        "when a fiber yields an object, that object cannot be kept by the caller");
     object = o.pull();
+    current = o.current;
     return *this;
   }
 
   std::shared_ptr<Any> pull() const {
     auto shared = object.lock();
     if (shared) {
-      shared = world->getNoCopy(shared);
+      shared = world->getNoCopy(shared, current);
     }
     auto self = const_cast<WeakPointer<Any>*>(this);
     self->object = shared;
+    self->current = world;
     return shared;
   }
 
@@ -147,5 +185,10 @@ protected:
    * a clone ancestor of this world).
    */
   World* world;
+
+  /**
+   * Current world.
+   */
+  World* current;
 };
 }

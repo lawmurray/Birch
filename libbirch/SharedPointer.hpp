@@ -32,25 +32,33 @@ public:
   /**
    * Constructor.
    */
-  SharedPointer(const std::nullptr_t& object = nullptr, World* world =
-      fiberWorld) :
-      super_type(object, world) {
+  SharedPointer(const std::nullptr_t& object = nullptr) :
+      super_type(object) {
     //
   }
 
   /**
    * Constructor.
    */
-  SharedPointer(const Nil& object, World* world = fiberWorld) :
-      super_type(object, world) {
+  SharedPointer(const Nil& object) :
+      super_type(object) {
     //
   }
 
   /**
    * Constructor.
    */
-  SharedPointer(const std::shared_ptr<T>& object, World* world = fiberWorld) :
-      super_type(object, world) {
+  SharedPointer(const std::shared_ptr<T>& object) :
+      super_type(object) {
+    //
+  }
+
+  /**
+   * Constructor.
+   */
+  SharedPointer(const std::shared_ptr<T>& object, World* world,
+      World* current) :
+      super_type(object, world, current) {
     //
   }
 
@@ -146,40 +154,53 @@ public:
   using this_type = SharedPointer<value_type>;
   using root_type = this_type;
 
-  SharedPointer(const std::nullptr_t& object = nullptr, World* world =
-      fiberWorld) :
-      world(world) {
+  SharedPointer(const std::nullptr_t& object = nullptr) :
+      world(fiberWorld),
+      current(fiberWorld) {
     //
   }
 
-  SharedPointer(const Nil& object, World* world = fiberWorld) :
-      world(world) {
+  SharedPointer(const Nil& object) :
+      world(fiberWorld),
+      current(fiberWorld) {
     //
   }
 
-  SharedPointer(const std::shared_ptr<Any>& object, World* world = fiberWorld) :
+  SharedPointer(const std::shared_ptr<Any>& object) :
       object(object),
-      world(world) {
+      world(fiberWorld),
+      current(fiberWorld) {
+    //
+  }
+
+  SharedPointer(const std::shared_ptr<Any>& object, World* world,
+      World* current) :
+      object(object),
+      world(world),
+      current(current) {
     //
   }
 
   SharedPointer(const SharedPointer<Any>& o) :
-      object(o.pull()),
-      world(fiberClone ? fiberWorld : o.world) {
+      object(o.object),
+      world(fiberClone ? fiberWorld : o.world),
+      current(o.current) {
     //
   }
 
   template<class U>
   SharedPointer(const SharedPointer<U>& o) :
-      object(o.pull()),
-      world(o.world) {
+      object(o.object),
+      world(o.world),
+      current(o.current) {
     //
   }
 
   template<class U>
   SharedPointer(const WeakPointer<U>& o) :
-      object(o.pull()),
-      world(o.world) {
+      object(o.object.lock()),
+      world(o.world),
+      current(o.current) {
     //
   }
 
@@ -187,6 +208,7 @@ public:
     bi_assert_msg(world->hasLaunchAncestor(o.world),
         "when a fiber yields an object, that object cannot be kept by the caller");
     object = o.pull();
+    current = o.current;
     return *this;
   }
 
@@ -203,7 +225,8 @@ public:
      * reasons */
     if (object) {
       auto self = const_cast<SharedPointer<Any>*>(this);
-      self->object = self->world->get(object);
+      self->object = self->world->get(object, current);
+      self->current = self->world;
     }
     return object.get();
   }
@@ -214,7 +237,8 @@ public:
      * reasons */
     if (object) {
       auto self = const_cast<SharedPointer<Any>*>(this);
-      self->object = self->world->getNoCopy(object);
+      self->object = self->world->getNoCopy(object, current);
+      self->current = self->world;
     }
     return object.get();
   }
@@ -225,7 +249,8 @@ public:
      * reasons */
     if (object) {
       auto self = const_cast<SharedPointer<Any>*>(this);
-      self->object = self->world->getNoCopy(object);
+      self->object = self->world->getNoCopy(object, current);
+      self->current = self->world;
     }
     return object;
   }
@@ -255,7 +280,8 @@ public:
    */
   template<class U>
   SharedPointer<U> dynamic_pointer_cast() const {
-    return SharedPointer<U>(std::dynamic_pointer_cast < U > (object), world);
+    return SharedPointer<U>(std::dynamic_pointer_cast < U > (object), world,
+        current);
   }
 
   /**
@@ -263,7 +289,8 @@ public:
    */
   template<class U>
   SharedPointer<U> static_pointer_cast() const {
-    return SharedPointer<U>(std::static_pointer_cast < U > (object), world);
+    return SharedPointer<U>(std::static_pointer_cast < U > (object), world,
+        current);
   }
 
 protected:
@@ -277,5 +304,10 @@ protected:
    * a clone ancestor of this world).
    */
   World* world;
+
+  /**
+   * Current world.
+   */
+  World* current;
 };
 }
