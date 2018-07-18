@@ -388,7 +388,7 @@ public:
   }
 
   /**
-   * Iterator pointing to one beyond the last element.
+   * Iterator pointing to one past the last element.
    */
   Iterator<T,F> end() const {
     return begin() + frame.size();

@@ -90,7 +90,6 @@ inline bi::Counted::Counted(const Counted& o) :
 
 inline bi::Counted::~Counted() {
   assert(sharedCount == 0);
-  decWeak();
 }
 
 inline void bi::Counted::deallocate() {
@@ -114,6 +113,7 @@ inline void bi::Counted::decShared() {
   --sharedCount;
   if (sharedCount == 0) {
     this->~Counted();
+    decWeak();
   }
 }
 

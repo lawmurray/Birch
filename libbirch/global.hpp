@@ -226,14 +226,9 @@ inline void* reallocate(void* ptr1, const size_t n1, const size_t n2) {
   int i2 = bin(n2);
 
   if (n1 > 0 && i1 == i2) {
-    /* current allocation is large enough, reuse */
+    /* current allocation is correct size, reuse */
     ptr2 = ptr1;
   } else {
-    /* return the current allocation to the pool */
-    if (n1 > 0) {
-      pool[i1].push(ptr1);
-    }
-
     if (n2 > 0) {
       /* reuse allocation in the pool, or create a new one */
       if (pool[i2].empty()) {
@@ -247,6 +242,11 @@ inline void* reallocate(void* ptr1, const size_t n1, const size_t n2) {
 
       /* copy over contents */
       std::memcpy(ptr2, ptr1, n1);
+
+      /* return the previous allocation to the pool */
+      if (n1 > 0) {
+        pool[i1].push(ptr1);
+      }
     }
   }
   return ptr2;
@@ -264,8 +264,8 @@ inline void deallocate(void* ptr, const size_t n) {
   }
 }
 
-template<class T, class... Args>
-inline T* construct(Args... args) {
+template<class T, class ... Args>
+inline T* construct(Args ... args) {
   return new (bi::allocate(sizeof(T))) T(args...);
 }
 
