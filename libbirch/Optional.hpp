@@ -122,19 +122,19 @@ private:
  * @tparam T Type.
  */
 template<class T>
-class Optional<SharedPointer<T>> {
+class Optional<SharedCOW<T>> {
   template<class U> friend class Optional;
 public:
   /**
-   * Null constructor.
+   * Value constructor.
    */
-  Optional(const std::nullptr_t& value = nullptr) :
-      value() {
+  Optional(T* value = nullptr) :
+      value(value) {
     //
   }
 
   /**
-   * Null constructor.
+   * Value constructor.
    */
   Optional(const Nil&) :
       value() {
@@ -142,46 +142,36 @@ public:
   }
 
   /**
-   * Generic copy constructor.
+   * Value constructor.
    */
-  template<class U>
-  Optional(const Optional<SharedPointer<U>>& o) :
-      value(o.value) {
-    //
-  }
-
-  /**
-   * Generic copy constructor.
-   */
-  template<class U>
-  Optional(const Optional<WeakPointer<U>>& o) :
-      value(o.value) {
+  Optional(const SharedCOW<T>& value) :
+      value(value.pull()) {
     //
   }
 
   /**
    * Value constructor.
    */
-  Optional(const SharedPointer<T>& value) :
-      value(value) {
+  Optional(const WeakCOW<T>& value) :
+      value(value.pull()) {
     //
   }
 
   /**
-   * Generic value constructor.
+   * Copy constructor.
    */
   template<class U>
-  Optional(const SharedPointer<U>& value) :
-      value(value) {
+  Optional(const Optional<SharedCOW<U>>& o) :
+      value(o.value.pull()) {
     //
   }
 
   /**
-   * Generic value constructor.
+   * Copy constructor.
    */
   template<class U>
-  Optional(const WeakPointer<U>& value) :
-      value(value) {
+  Optional(const Optional<WeakCOW<U>>& o) :
+      value(o.value.pull()) {
     //
   }
 
@@ -195,7 +185,7 @@ public:
   /**
    * Get the value.
    */
-  SharedPointer<T>& get() {
+  SharedCOW<T>& get() {
     bi_assert_msg(query(), "optional has no value");
     return value;
   }
@@ -203,7 +193,7 @@ public:
   /**
    * Get the value.
    */
-  const SharedPointer<T>& get() const {
+  const SharedCOW<T>& get() const {
     bi_assert_msg(query(), "optional has no value");
     return value;
   }
@@ -212,6 +202,6 @@ private:
   /**
    * The contained value, if any.
    */
-  SharedPointer<T> value;
+  SharedCOW<T> value;
 };
 }

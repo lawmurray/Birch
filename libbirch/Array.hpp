@@ -5,7 +5,7 @@
 
 #include "libbirch/Frame.hpp"
 #include "libbirch/Iterator.hpp"
-#include "libbirch/SharedPointer.hpp"
+#include "libbirch/SharedCOW.hpp"
 #include "libbirch/PowerPoolAllocator.hpp"
 #include "libbirch/Sequence.hpp"
 #include "libbirch/Eigen.hpp"
@@ -570,14 +570,14 @@ private:
   }
 
   /**
-   * Construct element of smart pointer type in place.
+   * Construct element of shared pointer type in place.
    *
    * @param o Element.
    * @param args Constructor arguments.
    */
   template<class U, class ... Args>
-  static void emplace(SharedPointer<U>& o, Args ... args) {
-    new (&o) SharedPointer<U>(std::allocate_shared<U>(PowerPoolAllocator<U>(), args...));
+  static void emplace(SharedCOW<U>& o, Args ... args) {
+    new (&o) SharedCOW<U>(bi::construct<U>(args...));
   }
 
   /**

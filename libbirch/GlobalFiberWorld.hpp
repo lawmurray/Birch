@@ -16,15 +16,15 @@ public:
    * Constructor.
    */
   GlobalFiberWorld() :
-      world(std::allocate_shared<World>(PowerPoolAllocator<World>())) {
+      world(bi::construct<World>()) {
     //
   }
 
   /**
    * Constructor.
    */
-  GlobalFiberWorld(const std::shared_ptr<World> cloneSource) :
-      world(std::allocate_shared<World>(PowerPoolAllocator<World>(), cloneSource)) {
+  GlobalFiberWorld(const SharedPtr<World> cloneSource) :
+      world(bi::construct<World>(cloneSource)) {
     //
   }
 
@@ -39,6 +39,6 @@ protected:
   /**
    * Fiber world.
    */
-  std::shared_ptr<World> world;
+  SharedPtr<World> world;
 };
 }

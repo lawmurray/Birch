@@ -40,6 +40,8 @@ program sample(
     nparticles:Integer <- 1,
     ess_trigger:Real <- 0.7,
     verbose:Boolean <- true) {
+  seed(240);
+    
   /* set up I/O */
   input:JSONReader?;
   output:JSONWriter?;

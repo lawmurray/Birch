@@ -3,15 +3,17 @@
  */
 #pragma once
 
+#include "libbirch/Counted.hpp"
+
 namespace bi {
-template<class T> class SharedPointer;
+template<class T> class SharedCOW;
 
 /**
  * Base class for all class types.
  *
  * @ingroup libbirch
  */
-class Any: public std::enable_shared_from_this<Any> {
+class Any : public Counted {
 public:
   /**
    * Constructor.
@@ -31,21 +33,17 @@ public:
   /**
    * Clone the object.
    */
-  virtual std::shared_ptr<Any> clone() const;
+  virtual Any* clone() const;
+
+  /**
+   * Deallocate the memory for the object.
+   */
+  virtual void deallocate();
 
   /**
    * Get the object world.
    */
   World* getWorld();
-
-  /**
-   * Create a shared pointer from this object.
-   */
-  template<class T>
-  SharedPointer<T> shared_from_this() {
-    auto ptr = enable_shared_from_this<Any>::shared_from_this();
-    return SharedPointer<T>(std::static_pointer_cast<T>(ptr));
-  }
 
 protected:
   /**
@@ -58,11 +56,13 @@ protected:
 #include "libbirch/PowerPoolAllocator.hpp"
 #include "libbirch/global.hpp"
 
-inline bi::Any::Any() : world(fiberWorld) {
+inline bi::Any::Any() :
+    world(fiberWorld) {
   //
 }
 
-inline bi::Any::Any(const Any& o) : world(fiberWorld) {
+inline bi::Any::Any(const Any& o) :
+    world(fiberWorld) {
   //
 }
 
@@ -70,8 +70,12 @@ inline bi::Any::~Any() {
   //
 }
 
-inline std::shared_ptr<bi::Any> bi::Any::clone() const {
-  return std::allocate_shared<Any>(PowerPoolAllocator<Any>(), *this);
+inline bi::Any* bi::Any::clone() const {
+  return bi::construct<Any>(*this);
+}
+
+inline void bi::Any::deallocate() {
+  bi::deallocate(this, sizeof(this));
 }
 
 inline bi::World* bi::Any::getWorld() {

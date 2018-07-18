@@ -21,7 +21,7 @@ public:
   /**
    * Constructor.
    */
-  Fiber(const std::shared_ptr<FiberState<YieldType>>& state = nullptr);
+  Fiber(const SharedPtr<FiberState<YieldType>>& state = nullptr);
 
   /**
    * Copy constructor.
@@ -67,7 +67,7 @@ private:
   /**
    * Fiber state.
    */
-  std::shared_ptr<FiberState<YieldType>> state;
+  SharedPtr<FiberState<YieldType>> state;
 
   /**
    * Is the fiber dirty?
@@ -78,7 +78,7 @@ private:
 
 template<class YieldType>
 bi::Fiber<YieldType>::Fiber(
-    const std::shared_ptr<FiberState<YieldType>>& state) :
+    const SharedPtr<FiberState<YieldType>>& state) :
     state(state),
     isDirty(false) {
   //
@@ -114,7 +114,7 @@ bool bi::Fiber<YieldType>::query() {
     Enter enter(state->getWorld());
     result = state->query();
     if (!result) {
-      state.reset();  // fiber has finished, delete the state
+      state = nullptr;  // fiber has finished, delete the state
     }
   }
   return result;

@@ -4,13 +4,14 @@
 #pragma once
 
 #include "libbirch/global.hpp"
+#include "libbirch/SharedPtr.hpp"
 #include "libbirch/World.hpp"
 #include "libbirch/Any.hpp"
 #include "libbirch/Nil.hpp"
 
 namespace bi {
-template<class T> class SharedPointer;
-template<class T> class WeakPointer;
+template<class T> class SharedCOW;
+template<class T> class WeakCOW;
 
 /**
  * Shared pointer with copy-on-write semantics.
@@ -20,19 +21,19 @@ template<class T> class WeakPointer;
  * @tparam T Type.
  */
 template<class T>
-class SharedPointer: public SharedPointer<typename super_type<T>::type> {
-  template<class U> friend class SharedPointer;
-  template<class U> friend class WeakPointer;
+class SharedCOW: public SharedCOW<typename super_type<T>::type> {
+  template<class U> friend class SharedCOW;
+  template<class U> friend class WeakCOW;
 public:
   using value_type = T;
-  using this_type = SharedPointer<T>;
-  using super_type = SharedPointer<typename super_type<T>::type>;
+  using this_type = SharedCOW<T>;
+  using super_type = SharedCOW<typename super_type<T>::type>;
   using root_type = typename super_type::root_type;
 
   /**
    * Constructor.
    */
-  SharedPointer(const std::nullptr_t& object = nullptr) :
+  SharedCOW(T* object = nullptr) :
       super_type(object) {
     //
   }
@@ -40,7 +41,7 @@ public:
   /**
    * Constructor.
    */
-  SharedPointer(const Nil& object) :
+  SharedCOW(const Nil& object) :
       super_type(object) {
     //
   }
@@ -48,7 +49,7 @@ public:
   /**
    * Constructor.
    */
-  SharedPointer(const std::shared_ptr<T>& object) :
+  SharedCOW(const SharedPtr<T>& object) :
       super_type(object) {
     //
   }
@@ -56,27 +57,8 @@ public:
   /**
    * Constructor.
    */
-  SharedPointer(const std::shared_ptr<T>& object, World* world,
-      World* current) :
+  SharedCOW(T* object, World* world, World* current) :
       super_type(object, world, current) {
-    //
-  }
-
-  /**
-   * Generic constructor.
-   */
-  template<class U>
-  SharedPointer(const SharedPointer<U>& o) :
-      super_type(o) {
-    //
-  }
-
-  /**
-   * Generic constructor.
-   */
-  template<class U>
-  SharedPointer(const WeakPointer<U>& o) :
-      super_type(o) {
     //
   }
 
@@ -85,7 +67,7 @@ public:
    */
   template<class U,
       typename = std::enable_if_t<bi::has_assignment<T,U>::value>>
-  SharedPointer<T>& operator=(const U& o) {
+  SharedCOW<T>& operator=(const U& o) {
     *get() = o;
     return *this;
   }
@@ -118,8 +100,8 @@ public:
   /**
    * Pull through generations.
    */
-  std::shared_ptr<T> pull() const {
-    return std::static_pointer_cast<T>(root_type::pull());
+  T* pull() const {
+    return static_cast<T*>(root_type::pull());
   }
 
   /**
@@ -146,65 +128,50 @@ public:
 };
 
 template<>
-class SharedPointer<Any> {
-  template<class U> friend class SharedPointer;
-  template<class U> friend class WeakPointer;
+class SharedCOW<Any> {
+  template<class U> friend class SharedCOW;
+  template<class U> friend class WeakCOW;
 public:
   using value_type = Any;
-  using this_type = SharedPointer<value_type>;
+  using this_type = SharedCOW<value_type>;
   using root_type = this_type;
 
-  SharedPointer(const std::nullptr_t& object = nullptr) :
-      world(fiberWorld),
-      current(fiberWorld) {
-    //
-  }
-
-  SharedPointer(const Nil& object) :
-      world(fiberWorld),
-      current(fiberWorld) {
-    //
-  }
-
-  SharedPointer(const std::shared_ptr<Any>& object) :
+  SharedCOW(Any* object = nullptr) :
       object(object),
       world(fiberWorld),
       current(fiberWorld) {
     //
   }
 
-  SharedPointer(const std::shared_ptr<Any>& object, World* world,
-      World* current) :
+  SharedCOW(const Nil& object) :
+      object(nullptr),
+      world(fiberWorld),
+      current(fiberWorld) {
+    //
+  }
+
+  SharedCOW(const SharedPtr<Any>& object) :
+      object(object),
+      world(fiberWorld),
+      current(fiberWorld) {
+    //
+  }
+
+  SharedCOW(Any* object, World* world, World* current) :
       object(object),
       world(world),
       current(current) {
     //
   }
 
-  SharedPointer(const SharedPointer<Any>& o) :
+  SharedCOW(const SharedCOW<Any>& o) :
       object(o.object),
       world(fiberClone ? fiberWorld : o.world),
       current(o.current) {
     //
   }
 
-  template<class U>
-  SharedPointer(const SharedPointer<U>& o) :
-      object(o.object),
-      world(o.world),
-      current(o.current) {
-    //
-  }
-
-  template<class U>
-  SharedPointer(const WeakPointer<U>& o) :
-      object(o.object.lock()),
-      world(o.world),
-      current(o.current) {
-    //
-  }
-
-  SharedPointer<Any>& operator=(const SharedPointer<Any>& o) {
+  SharedCOW<Any>& operator=(const SharedCOW<Any>& o) {
     bi_assert_msg(world->hasLaunchAncestor(o.world),
         "when a fiber yields an object, that object cannot be kept by the caller");
     object = o.pull();
@@ -224,7 +191,7 @@ public:
      * update it through the copy-on-write mechanism for performance
      * reasons */
     if (object) {
-      auto self = const_cast<SharedPointer<Any>*>(this);
+      auto self = const_cast<SharedCOW<Any>*>(this);
       self->object = self->world->get(object, current);
       self->current = self->world;
     }
@@ -236,23 +203,23 @@ public:
      * update it through the copy-on-write mechanism for performance
      * reasons */
     if (object) {
-      auto self = const_cast<SharedPointer<Any>*>(this);
+      auto self = const_cast<SharedCOW<Any>*>(this);
       self->object = self->world->getNoCopy(object, current);
       self->current = self->world;
     }
     return object.get();
   }
 
-  std::shared_ptr<Any> pull() const {
+  Any* pull() const {
     /* despite the pointer being accessed in a const context, we do want to
      * update it through the copy-on-write mechanism for performance
      * reasons */
     if (object) {
-      auto self = const_cast<SharedPointer<Any>*>(this);
+      auto self = const_cast<SharedCOW<Any>*>(this);
       self->object = self->world->getNoCopy(object, current);
       self->current = self->world;
     }
-    return object;
+    return object.get();
   }
 
   World* getWorld() const {
@@ -267,11 +234,11 @@ public:
     return get();
   }
 
-  bool operator==(const SharedPointer<Any>& o) const {
+  bool operator==(const SharedCOW<Any>& o) const {
     return get() == o.get();
   }
 
-  bool operator!=(const SharedPointer<Any>& o) const {
+  bool operator!=(const SharedCOW<Any>& o) const {
     return get() != o.get();
   }
 
@@ -279,25 +246,23 @@ public:
    * Dynamic cast. Returns `nullptr` if unsuccessful.
    */
   template<class U>
-  SharedPointer<U> dynamic_pointer_cast() const {
-    return SharedPointer<U>(std::dynamic_pointer_cast < U > (object), world,
-        current);
+  SharedCOW<U> dynamic_pointer_cast() const {
+    return SharedCOW<U>(dynamic_cast<U*>(get()), world, current);
   }
 
   /**
    * Static cast. Undefined if unsuccessful.
    */
   template<class U>
-  SharedPointer<U> static_pointer_cast() const {
-    return SharedPointer<U>(std::static_pointer_cast < U > (object), world,
-        current);
+  SharedCOW<U> static_pointer_cast() const {
+    return SharedCOW<U>(static_cast<U*>(get()), world, current);
   }
 
 protected:
   /**
    * The object.
    */
-  std::shared_ptr<Any> object;
+  SharedPtr<Any> object;
 
   /**
    * The world to which the object should belong (although it may belong to

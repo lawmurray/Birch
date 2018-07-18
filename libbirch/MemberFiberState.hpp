@@ -40,7 +40,7 @@ public:
    */
   template<class ... Args>
   MemberFiberState(const int label, const int nlabels,
-      const SharedPointer<ObjectType>& object, Args ... args) :
+      const SharedCOW<ObjectType>& object, Args ... args) :
       ArgumentType { args... },
       MemberFiberWorld<ObjectType>(object),
       Enter(getWorld()),  // enters owning object's world
@@ -66,20 +66,8 @@ public:
     return this->object->getWorld();
   }
 
-  ObjectType* self() {
+  auto self() {
     return this->object->self();
-  }
-
-  typename ObjectType::super_type* super() {
-    return this->object->super();
-  }
-
-  SharedPointer<ObjectType> shared_self() {
-    return this->object->shared_self();
-  }
-
-  SharedPointer<typename ObjectType::super_type> shared_super() {
-    return this->object->shared_super();
   }
 };
 }

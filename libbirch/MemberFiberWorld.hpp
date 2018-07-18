@@ -18,7 +18,7 @@ public:
   /**
    * Constructor.
    */
-  MemberFiberWorld(const SharedPointer<ObjectType>& object) :
+  MemberFiberWorld(const SharedCOW<ObjectType>& object) :
       object(object) {
     //
   }
@@ -34,6 +34,6 @@ protected:
   /**
    * Owning object.
    */
-  SharedPointer<ObjectType> object;
+  SharedCOW<ObjectType> object;
 };
 }

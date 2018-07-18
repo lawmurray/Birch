@@ -25,7 +25,7 @@ function make(name:String) -> Object? {
   void* addr = dlsym(RTLD_DEFAULT, symbol_.c_str());
   if (addr) {
     auto raw = reinterpret_cast<make_t*>(addr)();
-    result_ = bi::SharedPointer<bi::type::Object_>(std::shared_ptr<bi::type::Object_>(raw));
+    result_ = bi::SharedCOW<bi::type::Object_>(raw);
   }
   }}
   return result;

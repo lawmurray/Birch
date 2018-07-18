@@ -4,6 +4,7 @@
 #pragma once
 
 #include "libbirch/global.hpp"
+#include "libbirch/Counted.hpp"
 #include "libbirch/PowerPoolAllocator.hpp"
 
 #include <map>
@@ -14,7 +15,7 @@ namespace bi {
  *
  * @ingroup libbirch
  */
-class World: public std::enable_shared_from_this<World> {
+class World: public Counted {
 public:
   /**
    * Default constructor.
@@ -31,7 +32,7 @@ public:
    *
    * @param cloneSource Clone parent.
    */
-  World(const std::shared_ptr<World>& cloneSource);
+  World(const SharedPtr<World>& cloneSource);
 
   /**
    * Does this world have the given world as a clone ancestor?
@@ -55,7 +56,7 @@ public:
    *
    * @return The mapped object.
    */
-  std::shared_ptr<Any> get(const std::shared_ptr<Any>& o, World* world);
+  SharedPtr<Any> get(const SharedPtr<Any>& o, World* world);
 
   /**
    * Get an object.
@@ -64,7 +65,7 @@ public:
    *
    * @return The mapped object.
    */
-  std::shared_ptr<Any> getNoCopy(const std::shared_ptr<Any>& o, World* world);
+  SharedPtr<Any> getNoCopy(const SharedPtr<Any>& o, World* world);
 
 private:
   /**
@@ -75,7 +76,7 @@ private:
    *
    * @return The mapped and copied object.
    */
-  std::shared_ptr<Any> pull(const std::shared_ptr<Any>& o, World* world);
+  SharedPtr<Any> pull(const SharedPtr<Any>& o, World* world);
 
   /**
    * Pull an object from a clone ancestor into this world.
@@ -84,13 +85,13 @@ private:
    *
    * @return The mapped object.
    */
-  std::shared_ptr<Any> pullNoCopy(const std::shared_ptr<Any>& o,
+  SharedPtr<Any> pullNoCopy(const SharedPtr<Any>& o,
       World* world);
 
   /**
    * The world from which this world was cloned.
    */
-  std::shared_ptr<World> cloneSource;
+  SharedPtr<World> cloneSource;
 
   /**
    * The world from which this world was launched.
@@ -101,7 +102,7 @@ private:
    * Types for maps.
    */
   using key_type = Any*;
-  using value_type = std::shared_ptr<Any>;
+  using value_type = SharedPtr<Any>;
   using less_type = std::less<key_type>;
   using alloc_type = PowerPoolAllocator<std::pair<const key_type,value_type>>;
   using map_type = std::map<key_type,value_type,less_type,alloc_type>;
@@ -138,7 +139,7 @@ inline bi::World::World(int) :
   //
 }
 
-inline bi::World::World(const std::shared_ptr<World>& cloneSource) :
+inline bi::World::World(const SharedPtr<World>& cloneSource) :
     cloneSource(cloneSource),
     launchSource(fiberWorld),
     launchDepth(cloneSource->launchDepth) {
@@ -159,7 +160,7 @@ inline int bi::World::depth() const {
   return launchDepth;
 }
 
-inline std::shared_ptr<bi::Any> bi::World::get(const std::shared_ptr<Any>& o,
+inline bi::SharedPtr<bi::Any> bi::World::get(const SharedPtr<Any>& o,
     World* world) {
   assert(o);
   int d = depth() - world->depth();
@@ -173,8 +174,8 @@ inline std::shared_ptr<bi::Any> bi::World::get(const std::shared_ptr<Any>& o,
   return dst->pull(o, world);
 }
 
-inline std::shared_ptr<bi::Any> bi::World::getNoCopy(
-    const std::shared_ptr<Any>& o, World* world) {
+inline bi::SharedPtr<bi::Any> bi::World::getNoCopy(
+    const SharedPtr<Any>& o, World* world) {
   assert(o);
   int d = depth() - world->depth();
   assert(d >= 0);
@@ -187,11 +188,11 @@ inline std::shared_ptr<bi::Any> bi::World::getNoCopy(
   return dst->pullNoCopy(o, world);
 }
 
-inline std::shared_ptr<bi::Any> bi::World::pull(const std::shared_ptr<Any>& o,
+inline bi::SharedPtr<bi::Any> bi::World::pull(const SharedPtr<Any>& o,
     World* world) {
   assert(o && hasCloneAncestor(world));
 
-  std::shared_ptr<bi::Any> result;
+  SharedPtr<bi::Any> result;
   auto src = world;
   if (this == src) {
     result = o;
@@ -227,15 +228,15 @@ inline std::shared_ptr<bi::Any> bi::World::pull(const std::shared_ptr<Any>& o,
   }
 }
 
-inline std::shared_ptr<bi::Any> bi::World::pullNoCopy(
-    const std::shared_ptr<Any>& o, World* world) {
+inline bi::SharedPtr<bi::Any> bi::World::pullNoCopy(
+    const SharedPtr<Any>& o, World* world) {
   assert(o && hasCloneAncestor(world));
 
   auto src = world;
   if (this == src) {
     return o;
   } else {
-    std::shared_ptr<bi::Any> result;
+    SharedPtr<bi::Any> result;
 
     /* check cache */
     auto iter = cache.find(o.get());

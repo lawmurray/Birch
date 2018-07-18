@@ -3,6 +3,8 @@
  */
 #pragma once
 
+#include "libbirch/Counted.hpp"
+
 namespace bi {
 /**
  * State of a fiber.
@@ -12,7 +14,7 @@ namespace bi {
  * @tparam YieldType Yield type.
  */
 template<class YieldType>
-class FiberState {
+class FiberState : public Counted {
 public:
   using yield_type = YieldType;
 
@@ -36,9 +38,9 @@ public:
   }
 
   /**
-   * Clone the object.
+   * Clone.
    */
-  virtual std::shared_ptr<FiberState<YieldType>> clone() const = 0;
+  virtual FiberState<YieldType>* clone() const = 0;
 
   /**
    * Get the world in which the fiber runs.

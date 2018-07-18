@@ -17,8 +17,8 @@
 #include "libbirch/Object.hpp"
 #include "libbirch/Optional.hpp"
 #include "libbirch/Nil.hpp"
-#include "libbirch/SharedPointer.hpp"
-#include "libbirch/WeakPointer.hpp"
+#include "libbirch/SharedCOW.hpp"
+#include "libbirch/WeakCOW.hpp"
 #include "libbirch/PowerPoolAllocator.hpp"
 #include "libbirch/FiberState.hpp"
 #include "libbirch/GlobalFiberState.hpp"
@@ -214,7 +214,7 @@ auto make_array(const Frame& frame, Args ... args) {
 template<class PointerType, class ... Args>
 PointerType make_pointer(Args ... args) {
   using Type = typename PointerType::value_type;
-  return PointerType(std::allocate_shared<Type>(PowerPoolAllocator<Type>(), args...));
+  return bi::construct<Type>(args...);
 }
 
 /**
@@ -228,15 +228,15 @@ PointerType make_pointer(Args ... args) {
 template<class StateType, class ... Args>
 auto make_fiber(Args ... args) {
   using yield_type = typename StateType::yield_type;
-  return Fiber<yield_type>(std::allocate_shared<StateType>(PowerPoolAllocator<StateType>(), args...));
+  return Fiber<yield_type>(bi::construct<StateType>(args...));
 }
 
 /**
  * Cast an object.
  */
 template<class To, class From>
-Optional<SharedPointer<To>> dynamic_pointer_cast(
-    const SharedPointer<From>& from) {
+Optional<SharedCOW<To>> dynamic_pointer_cast(
+    const SharedCOW<From>& from) {
   return from.template dynamic_pointer_cast<To>();
 }
 
@@ -244,8 +244,8 @@ Optional<SharedPointer<To>> dynamic_pointer_cast(
  * Cast an object optional.
  */
 template<class To, class From>
-Optional<SharedPointer<To>> dynamic_pointer_cast(
-    const Optional<SharedPointer<From>>& from) {
+Optional<SharedCOW<To>> dynamic_pointer_cast(
+    const Optional<SharedCOW<From>>& from) {
   if (from.query()) {
     return dynamic_pointer_cast<To>(from.get());
   } else {

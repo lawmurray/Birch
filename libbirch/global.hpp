@@ -66,8 +66,8 @@
 namespace bi {
 class World;
 class Any;
-template<class T> class SharedPointer;
-template<class T> class WeakPointer;
+template<class T> class SharedCOW;
+template<class T> class WeakCOW;
 
 /**
  * Stack frame.
@@ -184,15 +184,15 @@ struct has_conversion<Any,U> {
  * be greater than or equal to @p n).
  */
 inline int bin(const size_t n) {
-  #if __has_builtin(__builtin_clzll)
+#if __has_builtin(__builtin_clzll)
   return sizeof(unsigned long long)*8 - __builtin_clzll(n - 1);
-  #else
+#else
   int ret = 1;
   while (((n - 1) >> ret) > 0) {
     ++ret;
   }
   return ret;
-  #endif
+#endif
 }
 
 inline void* allocate(const size_t n) {
@@ -200,10 +200,12 @@ inline void* allocate(const size_t n) {
   if (n > 0) {
     /* bin the allocation */
     int i = bin(n);
+    size_t m = (1 << i);
+    assert(m >= n);
 
     /* reuse allocation in the pool, or create a new one */
     if (pool[i].empty()) {
-      ptr = std::malloc(1 << i);
+      ptr = std::malloc(m);
     } else {
       auto& p = pool[i];
       ptr = p.top();
@@ -260,6 +262,11 @@ inline void deallocate(void* ptr, const size_t n) {
     /* return this allocation to the pool */
     pool[i].push(ptr);
   }
+}
+
+template<class T, class... Args>
+inline T* construct(Args... args) {
+  return new (bi::allocate(sizeof(T))) T(args...);
 }
 
 }
