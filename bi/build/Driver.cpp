@@ -602,16 +602,6 @@ void bi::Driver::setup() {
   makeStream << contents << "\n\n";
   makeStream << "lib_LTLIBRARIES = lib" << internalName << ".la\n\n";
 
-  /* *.cpp files */
-  makeStream << "lib" << internalName << "_la_SOURCES = ";
-  for (auto file : metaFiles["manifest.source"]) {
-    if (file.extension().compare(".cpp") == 0
-        || file.extension().compare(".c") == 0) {
-      makeStream << " \\\n  " << file.string();
-    }
-  }
-  makeStream << '\n';
-
   /* sources derived from *.bi files */
   makeStream << "nodist_lib" << internalName << "_la_SOURCES =";
   makeStream << " \\\n  bi/" << internalName << ".cpp";
@@ -622,6 +612,16 @@ void bi::Driver::setup() {
         cppFile.replace_extension(".cpp");
         makeStream << " \\\n  " << cppFile.string();
       }
+    }
+  }
+  makeStream << '\n';
+
+  /* other *.cpp files */
+  makeStream << "lib" << internalName << "_la_SOURCES = ";
+  for (auto file : metaFiles["manifest.source"]) {
+    if (file.extension().compare(".cpp") == 0
+        || file.extension().compare(".c") == 0) {
+      makeStream << " \\\n  " << file.string();
     }
   }
   makeStream << '\n';

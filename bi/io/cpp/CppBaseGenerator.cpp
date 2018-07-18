@@ -176,7 +176,7 @@ void bi::CppBaseGenerator::visit(const Member* o) {
 
 void bi::CppBaseGenerator::visit(const This* o) {
   // only need to handle the case outside member expression
-  middle("this->shared_self()");
+  middle("this->self()");
 }
 
 void bi::CppBaseGenerator::visit(const Super* o) {
@@ -352,7 +352,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
         if (!param->value->isEmpty()) {
           middle(" = " << param->value);
         } else if (param->type->isPointer() && !param->type->isWeak()) {
-          middle(" = bi::make_pointer<" << param->type << ">()");
+          middle(" = bi::construct<" << param->type->unwrap() << ">()");
         }
         finish(';');
       }
@@ -665,9 +665,9 @@ void bi::CppBaseGenerator::visit(const OptionalType* o) {
 
 void bi::CppBaseGenerator::visit(const PointerType* o) {
   if (o->weak) {
-    middle("bi::WeakPointer<");
+    middle("bi::WeakCOW<");
   } else {
-    middle("bi::SharedPointer<");
+    middle("bi::SharedCOW<");
   }
   middle(o->single);
   middle('>');

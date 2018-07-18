@@ -64,29 +64,11 @@ void bi::CppClassGenerator::visit(const Class* o) {
         line("using super_type::operator=;\n");
       }
 
-      /* self-reference functions */
+      /* self-reference function */
       if (header) {
-        line("this_type* self() {");
+        line("auto self() {");
         in();
         line("return this;");
-        out();
-        line("}\n");
-
-        line("super_type* super() {");
-        in();
-        line("return this;");
-        out();
-        line("}\n");
-
-        line("SharedPointer<this_type> shared_self() {");
-        in();
-        line("return shared_from_this<this_type>();");
-        out();
-        line("}\n");
-
-        line("SharedPointer<super_type> shared_super() {");
-        in();
-        line("return shared_from_this<super_type>();");
         out();
         line("}\n");
       }
@@ -97,7 +79,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
       } else {
         start("virtual ");
       }
-      middle("std::shared_ptr<bi::Any> ");
+      middle("bi::Any* ");
       if (!header) {
         middle("bi::type::" << o->name);
         genTemplateArgs(o);
@@ -109,7 +91,30 @@ void bi::CppClassGenerator::visit(const Class* o) {
       } else {
         finish(" {");
         in();
-        line("return std::allocate_shared<this_type>(PowerPoolAllocator<this_type>(), *this);");
+        line("return bi::construct<this_type>(*this);");
+        out();
+        line("}\n");
+      }
+
+      /* deallocate function */
+      if (!header) {
+        start("");
+      } else {
+        start("virtual ");
+      }
+      middle("void ");
+      if (!header) {
+        middle("bi::type::" << o->name);
+        genTemplateArgs(o);
+        middle("::");
+      }
+      middle("deallocate() ");
+      if (header) {
+        finish(";\n");
+      } else {
+        finish(" {");
+        in();
+        line("bi::deallocate(this, sizeof(this));");
         out();
         line("}\n");
       }
