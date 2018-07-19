@@ -128,6 +128,30 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     line("}\n");
   }
 
+  /* destroy function */
+  start("");
+  if (header) {
+    middle("virtual ");
+  }
+  middle("void ");
+  if (!header) {
+    middle("bi::type::" << type->name);
+    genTemplateArgs(type);
+    middle("::" << stateName << "::");
+  }
+  middle("destroy()");
+  if (header) {
+    finish(";\n");
+  } else {
+    finish(" {");
+    in();
+    line("this->ptr = this;");
+    line("this->size = sizeof(*this);");
+    line("this->~" << stateName << "();");
+    out();
+    line("}\n");
+  }
+
   /* query function */
   if (header) {
     start("virtual ");

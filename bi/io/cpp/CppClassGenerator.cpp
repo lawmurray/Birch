@@ -96,7 +96,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
         line("}\n");
       }
 
-      /* deallocate function */
+      /* destroy function */
       if (!header) {
         start("");
       } else {
@@ -108,13 +108,15 @@ void bi::CppClassGenerator::visit(const Class* o) {
         genTemplateArgs(o);
         middle("::");
       }
-      middle("deallocate() ");
+      middle("destroy()");
       if (header) {
         finish(";\n");
       } else {
         finish(" {");
         in();
-        line("bi::deallocate(this, sizeof(this));");
+        line("this->ptr = this;");
+        line("this->size = sizeof(*this);");
+        line("this->~" << o->name << "();");
         out();
         line("}\n");
       }
