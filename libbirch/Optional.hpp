@@ -145,7 +145,7 @@ public:
    * Value constructor.
    */
   Optional(const SharedCOW<T>& value) :
-      value(value.pull()) {
+      value(value) {
     //
   }
 
@@ -162,7 +162,7 @@ public:
    */
   template<class U>
   Optional(const Optional<SharedCOW<U>>& o) :
-      value(o.value.pull()) {
+      value(o.value) {
     //
   }
 

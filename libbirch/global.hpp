@@ -19,7 +19,7 @@
  * Set to enable the pool allocator. Disable if checking for memory
  * leaks with valgrind.
  */
-#define BIRCH_POOL_ALLOCATOR 0
+#define BIRCH_POOL_ALLOCATOR 1
 
 /**
  * @def bi_assert

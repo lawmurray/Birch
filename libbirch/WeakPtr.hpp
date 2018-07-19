@@ -73,14 +73,13 @@ public:
    * Copy assignment.
    */
   WeakPtr<T>& operator=(const WeakPtr<T>& o) {
-    if (ptr != o.ptr) {
-      if (ptr) {
-        ptr->decWeak();
-      }
-      ptr = o.ptr;
-      if (ptr) {
-        ptr->incWeak();
-      }
+    auto old = ptr;
+    ptr = o.ptr;
+    if (ptr) {
+      ptr->incWeak();
+    }
+    if (old) {
+      old->decWeak();
     }
     return *this;
   }
@@ -89,13 +88,7 @@ public:
    * Move assignment.
    */
   WeakPtr<T>& operator=(WeakPtr<T> && o) {
-    if (ptr != o.ptr) {
-      if (ptr) {
-        ptr->decWeak();
-      }
-      ptr = o.ptr;
-      o.ptr = nullptr;
-    }
+    std::swap(ptr, o.ptr);
     return *this;
   }
 

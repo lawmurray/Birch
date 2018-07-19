@@ -61,14 +61,13 @@ public:
    * Copy assignment.
    */
   SharedPtr<T>& operator=(const SharedPtr<T>& o) {
-    if (ptr != o.ptr) {
-      if (ptr) {
-        ptr->decShared();
-      }
-      ptr = o.ptr;
-      if (ptr) {
-        ptr->incShared();
-      }
+    auto old = ptr;
+    ptr = o.ptr;
+    if (ptr) {
+      ptr->incShared();
+    }
+    if (old) {
+      old->decShared();
     }
     return *this;
   }
@@ -77,13 +76,7 @@ public:
    * Move assignment.
    */
   SharedPtr<T>& operator=(SharedPtr<T> && o) {
-    if (ptr != o.ptr) {
-      if (ptr) {
-        ptr->decShared();
-      }
-      ptr = o.ptr;
-      o.ptr = nullptr;
-    }
+    std::swap(ptr, o.ptr);
     return *this;
   }
 
