@@ -29,9 +29,16 @@ public:
   virtual ~Counted();
 
   /**
-   * Deallocate the memory for the object.
+   * Destroy the object. This is virtual in order that it is called on
+   * the object of the most-derived type. That will set ptr and size
+   * to the correct values for later use in deallocate().
    */
-  virtual void deallocate();
+  virtual void destroy();
+
+  /**
+   * Deallocate the object.
+   */
+  void deallocate();
 
   /**
    * Create a shared pointer from this. If this has been destroyed
@@ -62,6 +69,16 @@ public:
 
 protected:
   /**
+   * Pointer to allocation for this object.
+   */
+  void* ptr;
+
+  /**
+   * Size of the object.
+   */
+  size_t size;
+
+  /**
    * Shared count.
    */
   unsigned sharedCount;
@@ -76,12 +93,16 @@ protected:
 #include "libbirch/global.hpp"
 
 inline bi::Counted::Counted() :
+    ptr(nullptr),
+    size(0),
     sharedCount(0),
     weakCount(1) {
   //
 }
 
 inline bi::Counted::Counted(const Counted& o) :
+    ptr(nullptr),
+    size(0),
     sharedCount(0),
     weakCount(1) {
   //
@@ -91,8 +112,14 @@ inline bi::Counted::~Counted() {
   assert(sharedCount == 0);
 }
 
+inline void bi::Counted::destroy() {
+  this->ptr = this;
+  this->size = sizeof(*this);
+  this->~Counted();
+}
+
 inline void bi::Counted::deallocate() {
-  bi::deallocate(this, sizeof(this));
+  bi::deallocate(ptr, size);
 }
 
 template<class T>
@@ -112,7 +139,7 @@ inline void bi::Counted::decShared() {
   assert(sharedCount > 0);
   --sharedCount;
   if (sharedCount == 0) {
-    this->~Counted();
+    destroy();
     decWeak();
   }
 }

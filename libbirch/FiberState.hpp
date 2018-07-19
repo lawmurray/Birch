@@ -5,6 +5,8 @@
 
 #include "libbirch/Counted.hpp"
 
+#include <iostream>
+
 namespace bi {
 /**
  * State of a fiber.
@@ -37,11 +39,10 @@ public:
     //
   }
 
-  /**
-   * Deallocate.
-   */
-  virtual void deallocate() {
-    bi::deallocate(this, sizeof(this));
+  virtual void destroy() {
+    ptr = this;
+    size = sizeof(*this);
+    this->~FiberState();
   }
 
   /**

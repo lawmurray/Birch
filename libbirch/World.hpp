@@ -37,7 +37,7 @@ public:
   /**
    * Deallocate.
    */
-  virtual void deallocate();
+  virtual void destroy();
 
   /**
    * Does this world have the given world as a clone ancestor?
@@ -151,8 +151,10 @@ inline bi::World::World(const SharedPtr<World>& cloneSource) :
   //
 }
 
-inline void bi::World::deallocate() {
-  bi::deallocate(this, sizeof(this));
+inline void bi::World::destroy() {
+  ptr = this;
+  size = sizeof(*this);
+  this->~World();
 }
 
 inline bool bi::World::hasCloneAncestor(World* world) const {

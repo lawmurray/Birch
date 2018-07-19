@@ -62,11 +62,10 @@ public:
     exit();  // exits owning object's world
   }
 
-  /**
-   * Deallocate.
-   */
-  virtual void deallocate() {
-    bi::deallocate(this, sizeof(this));
+  virtual void destroy() {
+    this->ptr = this;
+    this->size = sizeof(*this);
+    this->~MemberFiberState();
   }
 
   /**

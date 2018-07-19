@@ -38,7 +38,7 @@ public:
   /**
    * Deallocate the memory for the object.
    */
-  virtual void deallocate();
+  virtual void destroy();
 
   /**
    * Get the object world.
@@ -73,8 +73,10 @@ inline bi::Any* bi::Any::clone() const {
   return bi::construct<Any>(*this);
 }
 
-inline void bi::Any::deallocate() {
-  bi::deallocate(this, sizeof(this));
+inline void bi::Any::destroy() {
+  this->ptr = this;
+  this->size = sizeof(*this);
+  this->~Any();
 }
 
 inline bi::World* bi::Any::getWorld() {
