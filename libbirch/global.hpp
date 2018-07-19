@@ -209,14 +209,12 @@ inline void* allocate(const size_t n) {
   if (n > 0) {
     /* bin the allocation */
     int i = bin(n);
-    size_t m = (1 << i);
-    assert(m >= n);
 
     /* reuse allocation in the pool, or create a new one */
-    if (pool[i].empty()) {
-      ptr = std::malloc(m);
+    auto& p = pool[i];
+    if (p.empty()) {
+      ptr = std::malloc(1 << i);
     } else {
-      auto& p = pool[i];
       ptr = p.top();
       p.pop();
     }
@@ -244,10 +242,10 @@ inline void* reallocate(void* ptr1, const size_t n1, const size_t n2) {
   } else {
     if (n2 > 0) {
       /* reuse allocation in the pool, or create a new one */
-      if (pool[i2].empty()) {
+      auto& p = pool[i2];
+      if (p.empty()) {
         ptr2 = std::malloc(1 << i2);
       } else {
-        auto& p = pool[i2];
         ptr2 = p.top();
         p.pop();
       }
@@ -256,7 +254,7 @@ inline void* reallocate(void* ptr1, const size_t n1, const size_t n2) {
       /* copy over contents */
       std::memcpy(ptr2, ptr1, n1);
 
-      /* return the previous allocation to the pool */
+      /* return the previous allocation to its pool */
       if (n1 > 0) {
         pool[i1].push(ptr1);
       }
@@ -276,7 +274,7 @@ inline void deallocate(void* ptr, const size_t n) {
     /* bin the allocation */
     int i = bin(n);
 
-    /* return this allocation to the pool */
+    /* return the allocation to its pool */
     pool[i].push(ptr);
   }
 #else
