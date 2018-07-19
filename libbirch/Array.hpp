@@ -6,7 +6,7 @@
 #include "libbirch/Frame.hpp"
 #include "libbirch/Iterator.hpp"
 #include "libbirch/SharedCOW.hpp"
-#include "libbirch/PowerPoolAllocator.hpp"
+#include "libbirch/Allocator.hpp"
 #include "libbirch/Sequence.hpp"
 #include "libbirch/Eigen.hpp"
 #include "libbirch/global.hpp"
@@ -615,6 +615,6 @@ private:
   /**
    * Allocator.
    */
-  PowerPoolAllocator<T> alloc;
+  Allocator<T> alloc;
 };
 }

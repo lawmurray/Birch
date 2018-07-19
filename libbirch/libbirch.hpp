@@ -19,7 +19,7 @@
 #include "libbirch/Nil.hpp"
 #include "libbirch/SharedCOW.hpp"
 #include "libbirch/WeakCOW.hpp"
-#include "libbirch/PowerPoolAllocator.hpp"
+#include "libbirch/Allocator.hpp"
 #include "libbirch/FiberState.hpp"
 #include "libbirch/GlobalFiberState.hpp"
 #include "libbirch/MemberFiberState.hpp"

@@ -73,7 +73,6 @@ protected:
 };
 }
 
-#include "libbirch/PowerPoolAllocator.hpp"
 #include "libbirch/global.hpp"
 
 inline bi::Counted::Counted() :
@@ -110,6 +109,7 @@ inline void bi::Counted::incShared() {
 }
 
 inline void bi::Counted::decShared() {
+  assert(sharedCount > 0);
   --sharedCount;
   if (sharedCount == 0) {
     this->~Counted();
@@ -122,6 +122,7 @@ inline void bi::Counted::incWeak() {
 }
 
 inline void bi::Counted::decWeak() {
+  assert(weakCount > 0);
   --weakCount;
   if (weakCount == 0) {
     assert(sharedCount == 0);

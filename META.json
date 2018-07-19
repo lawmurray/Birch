@@ -190,6 +190,7 @@
       "bi/test.bi"
     ],
     "header": [
+      "libbirch/Allocator.hpp",
       "libbirch/Any.hpp",
       "libbirch/Array.hpp",
       "libbirch/Clone.hpp",
@@ -214,7 +215,6 @@
       "libbirch/Offset.hpp",
       "libbirch/Object.hpp",
       "libbirch/Optional.hpp",
-      "libbirch/PowerPoolAllocator.hpp",
       "libbirch/Range.hpp",
       "libbirch/Sequence.hpp",
       "libbirch/SharedCOW.hpp",

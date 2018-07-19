@@ -14,6 +14,14 @@
 #include <stack>
 
 /**
+ * @def BIRCH_POOL_ALLOCATOR
+ *
+ * Set to enable the pool allocator. Disable if checking for memory
+ * leaks with valgrind.
+ */
+#define BIRCH_POOL_ALLOCATOR 1
+
+/**
  * @def bi_assert
  *
  * If debugging is enabled, check an assertion and abort on fail.
@@ -196,6 +204,7 @@ inline int bin(const size_t n) {
 }
 
 inline void* allocate(const size_t n) {
+#if BIRCH_POOL_ALLOCATOR
   void* ptr = nullptr;
   if (n > 0) {
     /* bin the allocation */
@@ -214,9 +223,13 @@ inline void* allocate(const size_t n) {
     assert(ptr);
   }
   return ptr;
+#else
+  return std::malloc(n);
+#endif
 }
 
 inline void* reallocate(void* ptr1, const size_t n1, const size_t n2) {
+#if BIRCH_POOL_ALLOCATOR
   void* ptr2 = nullptr;
 
   /* bin the current allocation */
@@ -250,9 +263,13 @@ inline void* reallocate(void* ptr1, const size_t n1, const size_t n2) {
     }
   }
   return ptr2;
+#else
+  return std::realloc(ptr1, n2);
+#endif
 }
 
 inline void deallocate(void* ptr, const size_t n) {
+#if BIRCH_POOL_ALLOCATOR
   if (n > 0) {
     assert(ptr);
 
@@ -262,6 +279,9 @@ inline void deallocate(void* ptr, const size_t n) {
     /* return this allocation to the pool */
     pool[i].push(ptr);
   }
+#else
+  std::free(ptr);
+#endif
 }
 
 template<class T, class ... Args>

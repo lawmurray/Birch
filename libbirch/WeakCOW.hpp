@@ -161,6 +161,8 @@ public:
     //
   }
 
+  WeakCOW(WeakCOW<Any> && o) = default;
+
   WeakCOW<Any>& operator=(const WeakCOW<Any>& o) {
     bi_assert_msg(world->hasLaunchAncestor(o.world),
         "when a fiber yields an object, that object cannot be kept by the caller");
@@ -168,6 +170,8 @@ public:
     current = o.current;
     return *this;
   }
+
+  WeakCOW<Any>& operator=(WeakCOW<Any> && o) = default;
 
   Any* pull() const {
     auto shared = object.lock();

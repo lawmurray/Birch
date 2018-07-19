@@ -62,6 +62,16 @@ public:
     exit();  // exits owning object's world
   }
 
+  /**
+   * Deallocate.
+   */
+  virtual void deallocate() {
+    bi::deallocate(this, sizeof(this));
+  }
+
+  /**
+   * Get the world to which the fiber state belongs.
+   */
   virtual World* getWorld() {
     return this->object->getWorld();
   }

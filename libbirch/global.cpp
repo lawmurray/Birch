@@ -4,7 +4,7 @@
 #include "libbirch/global.hpp"
 
 #include "libbirch/World.hpp"
-#include "libbirch/PowerPoolAllocator.hpp"
+#include "libbirch/Allocator.hpp"
 
 #include <cstdio>
 

@@ -53,6 +53,7 @@ public:
   ~SharedPtr() {
     if (ptr) {
       ptr->decShared();
+      ptr = nullptr;
     }
   }
 
@@ -77,6 +78,9 @@ public:
    */
   SharedPtr<T>& operator=(SharedPtr<T> && o) {
     if (ptr != o.ptr) {
+      if (ptr) {
+        ptr->decShared();
+      }
       ptr = o.ptr;
       o.ptr = nullptr;
     }

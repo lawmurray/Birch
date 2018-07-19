@@ -137,7 +137,7 @@ public:
    * Value constructor.
    */
   Optional(const Nil&) :
-      value() {
+      value(nullptr) {
     //
   }
 

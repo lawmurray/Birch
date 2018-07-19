@@ -65,6 +65,7 @@ public:
   ~WeakPtr() {
     if (ptr) {
       ptr->decWeak();
+      ptr = nullptr;
     }
   }
 
@@ -89,6 +90,9 @@ public:
    */
   WeakPtr<T>& operator=(WeakPtr<T> && o) {
     if (ptr != o.ptr) {
+      if (ptr) {
+        ptr->decWeak();
+      }
       ptr = o.ptr;
       o.ptr = nullptr;
     }

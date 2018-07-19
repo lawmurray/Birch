@@ -53,7 +53,6 @@ protected:
 };
 }
 
-#include "libbirch/PowerPoolAllocator.hpp"
 #include "libbirch/global.hpp"
 
 inline bi::Any::Any() :

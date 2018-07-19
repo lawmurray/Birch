@@ -38,6 +38,13 @@ public:
   }
 
   /**
+   * Deallocate.
+   */
+  virtual void deallocate() {
+    bi::deallocate(this, sizeof(this));
+  }
+
+  /**
    * Clone.
    */
   virtual FiberState<YieldType>* clone() const = 0;

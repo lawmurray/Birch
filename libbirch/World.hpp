@@ -5,7 +5,7 @@
 
 #include "libbirch/global.hpp"
 #include "libbirch/Counted.hpp"
-#include "libbirch/PowerPoolAllocator.hpp"
+#include "libbirch/Allocator.hpp"
 
 #include <map>
 
@@ -33,6 +33,11 @@ public:
    * @param cloneSource Clone parent.
    */
   World(const SharedPtr<World>& cloneSource);
+
+  /**
+   * Deallocate.
+   */
+  virtual void deallocate();
 
   /**
    * Does this world have the given world as a clone ancestor?
@@ -104,7 +109,7 @@ private:
   using key_type = Any*;
   using value_type = SharedPtr<Any>;
   using less_type = std::less<key_type>;
-  using alloc_type = PowerPoolAllocator<std::pair<const key_type,value_type>>;
+  using alloc_type = Allocator<std::pair<const key_type,value_type>>;
   using map_type = std::map<key_type,value_type,less_type,alloc_type>;
 
   /**
@@ -144,6 +149,10 @@ inline bi::World::World(const SharedPtr<World>& cloneSource) :
     launchSource(fiberWorld),
     launchDepth(cloneSource->launchDepth) {
   //
+}
+
+inline void bi::World::deallocate() {
+  bi::deallocate(this, sizeof(this));
 }
 
 inline bool bi::World::hasCloneAncestor(World* world) const {

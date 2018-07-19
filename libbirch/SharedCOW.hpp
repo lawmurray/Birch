@@ -171,6 +171,8 @@ public:
     //
   }
 
+  SharedCOW(SharedCOW<Any>&& o) = default;
+
   SharedCOW<Any>& operator=(const SharedCOW<Any>& o) {
     bi_assert_msg(world->hasLaunchAncestor(o.world),
         "when a fiber yields an object, that object cannot be kept by the caller");
@@ -178,6 +180,8 @@ public:
     current = o.current;
     return *this;
   }
+
+  SharedCOW<Any>& operator=(SharedCOW<Any>&& o) = default;
 
   /**
    * Is the pointer not null?
