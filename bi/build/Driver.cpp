@@ -723,22 +723,31 @@ void bi::Driver::configure() {
   if (newAutogen || newConfigure || newMake
       || !exists(build_dir / "Makefile")) {
     /* working directory */
-    std::stringstream cppflags, cxxflags, ldflags, options, cmd;
+    std::stringstream cppflags, cflags, cxxflags, ldflags, options, cmd;
 
     /* compile and link flags */
     if (arch == "js") {
       //
     } else if (arch == "wasm") {
+      cflags << " -s WASM=1";
       cxxflags << " -s WASM=1";
     } else if (arch == "native") {
+      cflags << " -march=native";
       cxxflags << " -march=native";
+      #ifdef __APPLE__
+      /* the system compiler on Apple requires different options for
+       * OpenMP; disable the configure check and customize these */
+      options << " --disable-openmp";
+      cppflags << " -Xpreprocessor -fopenmp";
+      ldflags << " -lomp";
+      #endif
     } else {
       throw DriverException("unknown architecture '" + arch
               + "'; valid values are 'native', 'js' and 'wasm'");
     }
     if (debug) {
+      cflags << " -Og -g";
       cxxflags << " -Og -g";
-      ldflags << " -Og -g";
     } else {
       cppflags << " -DNDEBUG";
 
@@ -748,12 +757,12 @@ void bi::Driver::configure() {
        * recommends passing the same optimisation options to the linker as
        * to the compiler when using this.
        */
+      cflags << " -O3 -funroll-loops -flto";
       cxxflags << " -O3 -funroll-loops -flto";
-      ldflags << " -O3 -funroll-loops -flto";
     }
     if (warnings) {
+      cflags << " -Wall";
       cxxflags << " -Wall";
-      ldflags << " -Wall";
     }
     cxxflags << " -Wno-overloaded-virtual";
     cxxflags << " -Wno-return-type";
@@ -765,10 +774,12 @@ void bi::Driver::configure() {
         ++iter) {
       cppflags << " -I'" << iter->string() << "'";
     }
-    for (auto iter = lib_dirs.begin(); iter != lib_dirs.end(); ++iter) {
+    for (auto iter = lib_dirs.begin(); iter != lib_dirs.end();
+        ++iter) {
       ldflags << " -L'" << iter->string() << "'";
     }
-    for (auto iter = lib_dirs.begin(); iter != lib_dirs.end(); ++iter) {
+    for (auto iter = lib_dirs.begin(); iter != lib_dirs.end();
+        ++iter) {
       ldflags << " -Wl,-rpath,'" << iter->string() << "'";
     }
 
@@ -776,8 +787,8 @@ void bi::Driver::configure() {
     if (!prefix.empty()) {
       options << " --prefix=" << absolute(prefix);
     }
-    options << " INSTALL=\"install -p\"";
     options << " --config-cache";
+    options << " INSTALL=\"install -p\"";
 
     /* command */
     if (arch == "js" || arch == "wasm") {
@@ -786,6 +797,9 @@ void bi::Driver::configure() {
     cmd << (fs::path("..") / "configure") << " " << options.str();
     if (!cppflags.str().empty()) {
       cmd << " CPPFLAGS=\"" << cppflags.str() << "\"";
+    }
+    if (!cflags.str().empty()) {
+      cmd << " CFLAGS=\"" << cflags.str() << "\"";
     }
     if (!cxxflags.str().empty()) {
       cmd << " CXXFLAGS=\"" << cxxflags.str() << "\"";

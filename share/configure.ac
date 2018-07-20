@@ -26,6 +26,7 @@ LT_INIT([dlopen])
 AC_HEADER_ASSERT
 AC_HEADER_STDBOOL
 AC_C_INLINE
+AC_OPENMP
 
 # Checks for things that will fail under Emscripten, but won't prevent
 # compilation
