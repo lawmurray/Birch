@@ -3,6 +3,7 @@ cpp{{
 
 extern std::random_device rd;
 #pragma omp threadprivate(rd)
+std::random_device rd;
 
 extern std::mt19937_64 rng;
 #pragma omp threadprivate(rng)
