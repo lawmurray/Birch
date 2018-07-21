@@ -45,3 +45,6 @@ fi
 if test xPACKAGE_TARNAME != xbirch_standard; then
   AC_CHECK_LIB([birch_standard], [main], [], [AC_MSG_ERROR([Birch standard library not found])])
 fi
+
+# Checks for functions
+AX_GCC_BUILTIN([__builtin_clzll])

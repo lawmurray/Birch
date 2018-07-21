@@ -549,6 +549,8 @@ void bi::Driver::setup() {
       m4_dir / "ax_cxx_compile_stdcxx.m4");
   copy_if_newer(find(share_dirs, "ax_check_define.m4"),
       m4_dir / "ax_check_define.m4");
+  copy_if_newer(find(share_dirs, "ax_gcc_builtin.m4"),
+      m4_dir / "ax_gcc_builtin.m4");
 
   /* update configure.ac */
   std::string contents = read_all(find(share_dirs, "configure.ac"));
