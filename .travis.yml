@@ -35,7 +35,7 @@ before_install:
 
   # Checkout Birch, which may be cached, and (re)build
   - git clone --depth 1 "https://github.com/lawmurray/Birch.git" || (cd Birch && git fetch origin allocator && cd ..)
-  - cd Birch && git checkout -b allocator origin/allocator && cd ..
+  - cd Birch && git checkout allocator && cd ..
   - cd Birch && ./autogen.sh && ./configure && make -j 2 && sudo make install && cd ..
 install:
   - birch build --enable-unity && sudo birch install --enable-unity
