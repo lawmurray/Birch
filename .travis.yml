@@ -4,7 +4,7 @@ matrix:
     # macOS environment
     - os: osx
       compiler: clang
-      osx_image: xcode9.3
+      osx_image: xcode9.4
 
     # Ubuntu 14.04 environment
     - os: linux

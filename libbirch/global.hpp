@@ -196,7 +196,7 @@ struct has_conversion<Any,U> {
  * be greater than or equal to @p n).
  */
 inline int bin(const size_t n) {
-#if __has_builtin(__builtin_clzll)
+#ifdef HAVE___BUILTIN_CLZLL
   return sizeof(unsigned long long)*8 - __builtin_clzll(n - 1);
 #else
   int ret = 1;
