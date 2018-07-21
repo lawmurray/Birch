@@ -22,7 +22,6 @@ matrix:
             - flex
             - bison
             - libboost-all-dev
-            - libomp
 before_install:
   # OS-specific things
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
@@ -31,7 +30,7 @@ before_install:
       export CXXFLAGS="-DBOOST_NO_CXX11_SCOPED_ENUMS";
       wget http://bitbucket.org/eigen/eigen/get/3.3.4.tar.gz && tar xzf 3.3.4.tar.gz && sudo cp -Rp eigen-eigen-5a0156e40feb /usr/local/include/eigen3;
     elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-      brew install flex bison eigen;
+      brew install flex bison eigen libomp;
     fi
 
   # Checkout Birch, which may be cached, and (re)build
