@@ -22,7 +22,7 @@ matrix:
             - flex
             - bison
             - libboost-all-dev
-	    - libomp
+            - libomp
 before_install:
   # OS-specific things
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
