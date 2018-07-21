@@ -31,8 +31,8 @@ void bi::abort(const std::string& msg) {
   printf("error: %s\n", msg.c_str());
   #ifndef NDEBUG
   printf("stack trace:\n");
-  int i = 0;
-  for (auto iter = stacktrace.begin(); i < 20 && iter !=  stacktrace.end(); ++iter) {
+  unsigned i = 0;
+  for (auto iter = stacktrace.begin(); i < 20u && iter !=  stacktrace.end(); ++iter) {
     printf("    %-24s @ %s:%d\n", iter->func, iter->file, iter->line);
     ++i;
   }
