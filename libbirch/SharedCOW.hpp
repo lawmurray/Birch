@@ -10,9 +10,6 @@
 #include "libbirch/Nil.hpp"
 
 namespace bi {
-template<class T> class SharedCOW;
-template<class T> class WeakCOW;
-
 /**
  * Shared pointer with copy-on-write semantics.
  *
@@ -22,7 +19,6 @@ template<class T> class WeakCOW;
  */
 template<class T>
 class SharedCOW: public SharedCOW<typename super_type<T>::type> {
-  template<class U> friend class SharedCOW;
   template<class U> friend class WeakCOW;
 public:
   using value_type = T;
@@ -57,10 +53,31 @@ public:
   /**
    * Constructor.
    */
+  SharedCOW(const WeakPtr<T>& object) :
+      super_type(object) {
+    //
+  }
+
+  /**
+   * Constructor.
+   */
   SharedCOW(T* object, World* world, World* current) :
       super_type(object, world, current) {
     //
   }
+
+  /**
+   * Copy constructor.
+   */
+  SharedCOW(const SharedCOW<T>& o) :
+      super_type(o) {
+    //
+  }
+
+  /**
+   * Copy constructor.
+   */
+  SharedCOW(const WeakCOW<T>& o);
 
   /**
    * Value assignment.
@@ -129,7 +146,6 @@ public:
 
 template<>
 class SharedCOW<Any> {
-  template<class U> friend class SharedCOW;
   template<class U> friend class WeakCOW;
 public:
   using value_type = Any;
@@ -157,6 +173,13 @@ public:
     //
   }
 
+  SharedCOW(const WeakPtr<Any>& object) :
+      object(object),
+      world(fiberWorld),
+      current(fiberWorld) {
+    //
+  }
+
   SharedCOW(Any* object, World* world, World* current) :
       object(object),
       world(world),
@@ -171,7 +194,9 @@ public:
     //
   }
 
-  SharedCOW(SharedCOW<Any>&& o) = default;
+  SharedCOW(const WeakCOW<Any>& o);
+
+  SharedCOW(SharedCOW<Any> && o) = default;
 
   SharedCOW<Any>& operator=(const SharedCOW<Any>& o) {
     bi_assert_msg(world->hasLaunchAncestor(o.world),
@@ -184,7 +209,7 @@ public:
     return *this;
   }
 
-  SharedCOW<Any>& operator=(SharedCOW<Any>&& o) = default;
+  SharedCOW<Any>& operator=(SharedCOW<Any> && o) = default;
 
   /**
    * Is the pointer not null?
@@ -282,4 +307,19 @@ protected:
    */
   World* current;
 };
+}
+
+#include "libbirch/WeakCOW.hpp"
+
+template<class T>
+bi::SharedCOW<T>::SharedCOW(const WeakCOW<T>& o) :
+    super_type(o) {
+  //
+}
+
+inline bi::SharedCOW<bi::Any>::SharedCOW(const WeakCOW<Any>& o) :
+    object(o.object),
+    world(o.world),
+    current(o.current) {
+  //
 }

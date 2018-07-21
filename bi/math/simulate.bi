@@ -2,7 +2,10 @@ cpp{{
 #include <random>
 
 static std::random_device rd;
+#pragma omp threadprivate(rd)
+
 static std::mt19937_64 rng(rd());
+#pragma omp threadprivate(rng)
 }}
 
 /**

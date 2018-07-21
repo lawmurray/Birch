@@ -32,9 +32,9 @@ public:
   }
 
   /**
-   * Constructor.
+   * Copy constructor.
    */
-  WeakPtr(const SharedPtr<T>& o) :
+  WeakPtr(const WeakPtr<T>& o) :
       ptr(o.ptr) {
     if (ptr) {
       ptr->incWeak();
@@ -44,7 +44,7 @@ public:
   /**
    * Copy constructor.
    */
-  WeakPtr(const WeakPtr<T>& o) :
+  WeakPtr(const SharedPtr<T>& o) :
       ptr(o.ptr) {
     if (ptr) {
       ptr->incWeak();
@@ -93,15 +93,10 @@ public:
   }
 
   /**
-   * Obtain a shared pointer if the object still exists, otherwise a
-   * null pointer.
+   * Get the raw pointer.
    */
-  SharedPtr<T> lock() const {
-    if (ptr) {
-      return ptr->template lock<T>();
-    } else {
-      return nullptr;
-    }
+  T* get() const {
+    return ptr;
   }
 
   /**

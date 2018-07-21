@@ -40,6 +40,14 @@ public:
   }
 
   /**
+   * Copy constructor.
+   */
+  SharedPtr(const WeakPtr<T>& o) :
+      ptr(o.ptr ? static_cast<T*>(o.ptr->lock()) : nullptr) {
+    //
+  }
+
+  /**
    * Move constructor.
    */
   SharedPtr(SharedPtr<T> && o) :

@@ -41,11 +41,11 @@ public:
   void deallocate();
 
   /**
-   * Create a shared pointer from this. If this has been destroyed
-   * (but still exists due to weak pointers), returns a null pointer.
+   * If the object has yet to be destroyed, increment the shared count
+   * and return a pointer to this. Otherwise return null. This is used
+   * to atomically convert a WeakPtr into a SharedPtr.
    */
-  template<class T>
-  SharedPtr<T> lock();
+  Counted* lock();
 
   /**
    * Increment the shared count.
@@ -122,36 +122,51 @@ inline void bi::Counted::deallocate() {
   bi::deallocate(ptr, size);
 }
 
-template<class T>
-inline bi::SharedPtr<T> bi::Counted::lock() {
-  if (sharedCount > 0) {
-    return SharedPtr<T>(static_cast<T*>(this));
-  } else {
-    return SharedPtr<T>();
+inline bi::Counted* bi::Counted::lock() {
+  unsigned count;
+  #pragma omp atomic capture
+  {
+    sharedCount += sharedCount > 0 ? 1 : 0;
+    count = sharedCount;
   }
+  return count > 0 ? this : nullptr;
 }
 
 inline void bi::Counted::incShared() {
+  #pragma omp atomic update
   ++sharedCount;
 }
 
 inline void bi::Counted::decShared() {
   assert(sharedCount > 0);
-  --sharedCount;
-  if (sharedCount == 0) {
+
+  unsigned count;
+  #pragma omp atomic capture
+  {
+    --sharedCount;
+    count = sharedCount;
+  }
+  if (count == 0) {
     destroy();
     decWeak();
   }
 }
 
 inline void bi::Counted::incWeak() {
+  #pragma omp atomic update
   ++weakCount;
 }
 
 inline void bi::Counted::decWeak() {
   assert(weakCount > 0);
-  --weakCount;
-  if (weakCount == 0) {
+
+  unsigned count;
+  #pragma omp atomic capture
+  {
+    --weakCount;
+    count = weakCount;
+  }
+  if (count == 0) {
     assert(sharedCount == 0);
     // ^ objects keep a weak pointer to themselves, so the weak count
     //   should not expire before the shared count

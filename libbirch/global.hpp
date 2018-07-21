@@ -19,7 +19,7 @@
  * Set to enable the pool allocator. Disable if checking for memory
  * leaks with valgrind.
  */
-#define BIRCH_POOL_ALLOCATOR 1
+#define BIRCH_POOL_ALLOCATOR 0
 
 /**
  * @def bi_assert
@@ -98,11 +98,13 @@ struct StackFunction {
  * The world of the currently running fiber.
  */
 extern World* fiberWorld;
+#pragma omp threadprivate(fiberWorld)
 
 /**
  * Flag set when an object is being cloned.
  */
 extern bool fiberClone;
+#pragma omp threadprivate(fiberClone)
 
 /**
  * Constant to indicate a mutable value. Zero is convenient here, as it
@@ -121,6 +123,8 @@ extern std::stack<void*,std::vector<void*>> pool[];
  * Stack trace.
  */
 extern std::list<StackFrame> stacktrace;
+#pragma omp threadprivate(stacktrace)
+
 
 /**
  * Report unknown program option and abort.

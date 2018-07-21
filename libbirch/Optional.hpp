@@ -153,7 +153,7 @@ public:
    * Value constructor.
    */
   Optional(const WeakCOW<T>& value) :
-      value(value.pull()) {
+      value(value) {
     //
   }
 
@@ -171,8 +171,15 @@ public:
    */
   template<class U>
   Optional(const Optional<WeakCOW<U>>& o) :
-      value(o.value.pull()) {
+      value(o.value) {
     //
+  }
+
+  /**
+   * Value conversion.
+   */
+  operator WeakCOW<T>() {
+    return value;
   }
 
   /**

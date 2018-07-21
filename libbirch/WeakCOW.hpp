@@ -18,7 +18,6 @@ namespace bi {
 template<class T>
 class WeakCOW: public WeakCOW<typename super_type<T>::type> {
   template<class U> friend class SharedCOW;
-  template<class U> friend class WeakCOW;
 public:
   using value_type = T;
   using this_type = WeakCOW<T>;
@@ -60,6 +59,14 @@ public:
   /**
    * Constructor.
    */
+  WeakCOW(const SharedCOW<T>& o) :
+      super_type(o) {
+    //
+  }
+
+  /**
+   * Constructor.
+   */
   WeakCOW(T* object, World* world, World* current) :
       super_type(object, world, current) {
     //
@@ -69,23 +76,6 @@ public:
    * Copy constructor.
    */
   WeakCOW(const WeakCOW<T>& o) :
-      super_type(o) {
-    //
-  }
-
-  /**
-   * Copy constructor.
-   */
-  WeakCOW(const SharedCOW<T>& o) :
-      super_type(o) {
-    //
-  }
-
-  /**
-   * Copy constructor.
-   */
-  template<class U>
-  WeakCOW(const Optional<SharedCOW<U>>& o) :
       super_type(o) {
     //
   }
@@ -101,7 +91,6 @@ public:
 template<>
 class WeakCOW<Any> {
   template<class U> friend class SharedCOW;
-  template<class U> friend class WeakCOW;
 public:
   using value_type = Any;
   using this_type = WeakCOW<value_type>;
@@ -134,6 +123,13 @@ public:
     //
   }
 
+  WeakCOW(const SharedCOW<Any>& o) :
+      object(o.object),
+      world(o.world),
+      current(o.current) {
+    //
+  }
+
   WeakCOW(Any* object, World* world, World* current) :
       object(object),
       world(world),
@@ -145,19 +141,6 @@ public:
       object(o.object),
       world(fiberClone ? fiberWorld : o.world),
       current(o.current) {
-    //
-  }
-
-  WeakCOW(const SharedCOW<Any>& o) :
-      object(o.object),
-      world(o.world),
-      current(o.current) {
-    //
-  }
-
-  template<class U>
-  WeakCOW(const Optional<SharedCOW<U>>& o) :
-      WeakCOW(o.query() ? o.get() : nullptr) {
     //
   }
 
@@ -177,14 +160,12 @@ public:
   WeakCOW<Any>& operator=(WeakCOW<Any> && o) = default;
 
   Any* pull() const {
-    auto shared = object.lock();
-    if (shared) {
-      shared = world->getNoCopy(shared, current);
+    if (object) {
+      auto self = const_cast<WeakCOW<Any>*>(this);
+      self->object = self->world->getNoCopy(object, current);
+      self->current = self->world;
     }
-    auto self = const_cast<WeakCOW<Any>*>(this);
-    self->object = shared;
-    self->current = world;
-    return shared.get();
+    return object.get();
   }
 
 protected:
