@@ -4,7 +4,7 @@ matrix:
     # macOS environment
     - os: osx
       compiler: clang
-      osx_image: xcode9.3
+      osx_image: xcode9.4
 
     # Ubuntu 14.04 environment
     - os: linux
@@ -30,11 +30,13 @@ before_install:
       export CXXFLAGS="-DBOOST_NO_CXX11_SCOPED_ENUMS";
       wget http://bitbucket.org/eigen/eigen/get/3.3.4.tar.gz && tar xzf 3.3.4.tar.gz && sudo cp -Rp eigen-eigen-5a0156e40feb /usr/local/include/eigen3;
     elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-      brew install flex bison eigen;
+      brew install flex bison eigen libomp;
+      brew link --force flex bison;
     fi
 
   # Checkout Birch, which may be cached, and (re)build
-  - git clone --depth 1 "https://github.com/lawmurray/Birch.git" || (cd Birch && git pull && cd ..)
+  - git clone "https://github.com/lawmurray/Birch.git" || cd .
+  - cd Birch && git checkout master && git pull && cd ..
   - cd Birch && ./autogen.sh && ./configure && make -j 2 && sudo make install && cd ..
 install:
   - birch build --enable-unity && sudo birch install --enable-unity
