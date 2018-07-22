@@ -75,7 +75,7 @@ void bi::abort(const std::string& msg) {
  * be greater than or equal to @p n).
  */
 inline unsigned bin(const size_t n) {
-#if __has_builtin(__builtin_clzll)
+#if HAVE___BUILTIN_CLZLL
   return (n <= 64ull) ? ((unsigned)n - 1u) >> 3u : 8u*sizeof(long long) - (unsigned)__builtin_clzll(n - 1ull) + 2u;
 #else
   if (n <= 64ull) {
