@@ -61,7 +61,6 @@ public:
   ~SharedPtr() {
     if (ptr) {
       ptr->decShared();
-      ptr = nullptr;
     }
   }
 

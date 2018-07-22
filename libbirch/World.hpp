@@ -153,7 +153,6 @@ inline bi::World::World(const SharedPtr<World>& cloneSource) :
 }
 
 inline void bi::World::destroy() {
-  ptr = this;
   size = sizeof(*this);
   this->~World();
 }

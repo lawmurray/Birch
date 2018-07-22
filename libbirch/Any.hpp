@@ -74,7 +74,6 @@ inline bi::Any* bi::Any::clone() const {
 }
 
 inline void bi::Any::destroy() {
-  this->ptr = this;
   this->size = sizeof(*this);
   this->~Any();
 }

@@ -4,6 +4,7 @@
   "description": "The Birch standard library.",
   "manifest": {
     "source": [
+      "libbirch/Counted.cpp",
       "libbirch/global.cpp",
 
       "libubjpp/common/Parser.c",

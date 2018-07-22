@@ -9,6 +9,10 @@ namespace bi {
 /**
  * Base class for reference counted objects.
  *
+ * @attention In order to work correctly, Counted must be the *first* base
+ * class in any inheritance hierarchy. This is particularly important when
+ * multiple inheritance is used.
+ *
  * @ingroup libbirch
  */
 class Counted {
@@ -69,14 +73,9 @@ public:
 
 protected:
   /**
-   * Pointer to allocation for this object.
-   */
-  void* ptr;
-
-  /**
    * Size of the object.
    */
-  size_t size;
+  unsigned size;
 
   /**
    * Shared count.
@@ -88,88 +87,4 @@ protected:
    */
   unsigned weakCount;
 };
-}
-
-#include "libbirch/global.hpp"
-
-inline bi::Counted::Counted() :
-    ptr(nullptr),
-    size(0),
-    sharedCount(0),
-    weakCount(1) {
-  //
-}
-
-inline bi::Counted::Counted(const Counted& o) :
-    ptr(nullptr),
-    size(0),
-    sharedCount(0),
-    weakCount(1) {
-  //
-}
-
-inline bi::Counted::~Counted() {
-  assert(sharedCount == 0);
-}
-
-inline void bi::Counted::destroy() {
-  this->ptr = this;
-  this->size = sizeof(*this);
-  this->~Counted();
-}
-
-inline void bi::Counted::deallocate() {
-  bi::deallocate(ptr, size);
-}
-
-inline bi::Counted* bi::Counted::lock() {
-  unsigned count;
-  #pragma omp atomic capture
-  {
-    sharedCount += sharedCount > 0 ? 1 : 0;
-    count = sharedCount;
-  }
-  return count > 0 ? this : nullptr;
-}
-
-inline void bi::Counted::incShared() {
-  #pragma omp atomic update
-  ++sharedCount;
-}
-
-inline void bi::Counted::decShared() {
-  assert(sharedCount > 0);
-
-  unsigned count;
-  #pragma omp atomic capture
-  {
-    --sharedCount;
-    count = sharedCount;
-  }
-  if (count == 0) {
-    destroy();
-    decWeak();
-  }
-}
-
-inline void bi::Counted::incWeak() {
-  #pragma omp atomic update
-  ++weakCount;
-}
-
-inline void bi::Counted::decWeak() {
-  assert(weakCount > 0);
-
-  unsigned count;
-  #pragma omp atomic capture
-  {
-    --weakCount;
-    count = weakCount;
-  }
-  if (count == 0) {
-    assert(sharedCount == 0);
-    // ^ objects keep a weak pointer to themselves, so the weak count
-    //   should not expire before the shared count
-    deallocate();
-  }
 }

@@ -40,7 +40,6 @@ public:
   }
 
   virtual void destroy() {
-    ptr = this;
     size = sizeof(*this);
     this->~FiberState();
   }
@@ -63,9 +62,7 @@ public:
   /**
    * Get the last yield value.
    */
-  YieldType& get() {
-    return value;
-  }
+  virtual YieldType& get() = 0;
 
 protected:
   /**
@@ -77,10 +74,5 @@ protected:
    * Number of labels.
    */
   int nlabels;
-
-  /**
-   * Yield value.
-   */
-  YieldType value;
 };
 }

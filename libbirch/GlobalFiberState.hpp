@@ -19,12 +19,11 @@ namespace bi {
  * @tparam LocalType Type of local variables of fiber.
  */
 template<class YieldType, class ArgumentType, class LocalType>
-class GlobalFiberState:
+class GlobalFiberState: public FiberState<YieldType>,
     protected ArgumentType,
     public GlobalFiberWorld,
     protected Enter,
-    protected LocalType,
-    public FiberState<YieldType> {
+    protected LocalType {
 public:
   /**
    * Constructor.
@@ -37,11 +36,11 @@ public:
    */
   template<class ... Args>
   GlobalFiberState(const int label, const int nlabels, Args ... args) :
-      ArgumentType{args...},
+      FiberState<YieldType>(label, nlabels),
+      ArgumentType { args... },
       GlobalFiberWorld(),  // creates fiber's world
       Enter(getWorld()),  // enters fiber's world
-      LocalType(),
-      FiberState<YieldType>(label, nlabels) {
+      LocalType() {
     exit();  // exits fiber's world
   }
 
@@ -50,16 +49,15 @@ public:
    */
   GlobalFiberState(
       const GlobalFiberState<YieldType,ArgumentType,LocalType>& o) :
+      FiberState<YieldType>(o),
       ArgumentType(o),
       GlobalFiberWorld(o.world),  // creates fiber's world
       Enter(getWorld()),  // enters fiber's world
-      LocalType(o),
-      FiberState<YieldType>(o) {
+      LocalType(o) {
     exit();  // exits fiber's world
   }
 
   virtual void destroy() {
-    this->ptr = this;
     this->size = sizeof(*this);
     this->~GlobalFiberState();
   }
@@ -70,5 +68,15 @@ public:
   virtual World* getWorld() {
     return world.get();
   }
+
+  virtual YieldType& get() {
+    return value;
+  }
+
+protected:
+  /**
+   * Yield value.
+   */
+  YieldType value;
 };
 }

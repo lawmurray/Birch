@@ -65,7 +65,6 @@ public:
   ~WeakPtr() {
     if (ptr) {
       ptr->decWeak();
-      ptr = nullptr;
     }
   }
 
