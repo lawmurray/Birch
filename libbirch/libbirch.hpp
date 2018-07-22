@@ -235,21 +235,19 @@ auto make_fiber(Args ... args) {
  * Cast an object.
  */
 template<class To, class From>
-Optional<SharedCOW<To>> dynamic_pointer_cast(
-    const SharedCOW<From>& from) {
-  return from.template dynamic_pointer_cast<To>();
+auto dynamic_pointer_cast(const SharedCOW<From>& from) {
+  return Optional<SharedCOW<To>>(std::move(from.template dynamic_pointer_cast<To>()));
 }
 
 /**
  * Cast an object optional.
  */
 template<class To, class From>
-Optional<SharedCOW<To>> dynamic_pointer_cast(
-    const Optional<SharedCOW<From>>& from) {
+auto dynamic_pointer_cast(const Optional<SharedCOW<From>>& from) {
   if (from.query()) {
     return dynamic_pointer_cast<To>(from.get());
   } else {
-    return nullptr;
+    return Optional<SharedCOW<To>>();
   }
 }
 

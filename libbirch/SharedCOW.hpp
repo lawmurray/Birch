@@ -8,6 +8,7 @@
 #include "libbirch/World.hpp"
 #include "libbirch/Any.hpp"
 #include "libbirch/Nil.hpp"
+#include <iostream>
 
 namespace bi {
 /**
@@ -61,6 +62,11 @@ public:
   /**
    * Constructor.
    */
+  SharedCOW(const WeakCOW<T>& o);
+
+  /**
+   * Constructor.
+   */
   SharedCOW(T* object, World* world, World* current) :
       super_type(object, world, current) {
     //
@@ -69,15 +75,40 @@ public:
   /**
    * Copy constructor.
    */
-  SharedCOW(const SharedCOW<T>& o) :
-      super_type(o) {
-    //
+  SharedCOW(const SharedCOW<T>& o) = default;
+
+  /**
+   * Move constructor.
+   */
+  SharedCOW(SharedCOW<T>&& o) = default;
+
+  /**
+   * Copy assignment.
+   */
+  SharedCOW<T>& operator=(const SharedCOW<T>& o) = default;
+
+  /**
+   * Move assignment.
+   */
+  SharedCOW<T>& operator=(SharedCOW<T>&& o) = default;
+
+  /**
+   * Generic copy assignment.
+   */
+  template<class U>
+  SharedCOW<T>& operator=(const SharedCOW<U>& o) {
+    root_type::operator=(o);
+    return *this;
   }
 
   /**
-   * Copy constructor.
+   * Generic move assignment.
    */
-  SharedCOW(const WeakCOW<T>& o);
+  template<class U>
+  SharedCOW<T>& operator=(SharedCOW<U>&& o) {
+    root_type::operator=(o);
+    return *this;
+  }
 
   /**
    * Value assignment.
@@ -209,7 +240,16 @@ public:
     return *this;
   }
 
-  SharedCOW<Any>& operator=(SharedCOW<Any> && o) = default;
+  SharedCOW<Any>& operator=(SharedCOW<Any>&& o) {
+    bi_assert_msg(world->hasLaunchAncestor(o.world),
+        "when a fiber yields an object, that object cannot be kept by the caller");
+    auto old = std::move(object);
+    // ^ ensures next assignment doesn't destroy o
+
+    object = o.pull();
+    current = o.current;
+    return *this;
+  }
 
   /**
    * Is the pointer not null?

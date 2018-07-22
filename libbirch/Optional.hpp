@@ -136,7 +136,7 @@ public:
   /**
    * Value constructor.
    */
-  Optional(const Nil&) :
+  Optional(const Nil& o) :
       value(nullptr) {
     //
   }
@@ -158,7 +158,65 @@ public:
   }
 
   /**
+   * Value move constructor.
+   */
+  Optional(SharedCOW<T>&& value) :
+      value(value) {
+    //
+  }
+
+  /**
+   * Value assignment.
+   */
+  Optional<SharedCOW<T>>& operator=(T* o) {
+    value = o;
+    return *this;
+  }
+
+  /**
+   * Value assignment.
+   */
+  Optional<SharedCOW<T>>& operator=(const Nil& o) {
+    value = o;
+    return *this;
+  }
+
+  /**
+   * Value assignment.
+   */
+  Optional<SharedCOW<T>>& operator=(const WeakCOW<T>& o) {
+    value = o;
+    return *this;
+  }
+
+  /**
+   * Value assignment.
+   */
+  Optional<SharedCOW<T>>& operator=(const SharedCOW<T>& o) {
+    value = o;
+    return *this;
+  }
+
+  /**
+   * Value move assignment.
+   */
+  Optional<SharedCOW<T>>& operator=(SharedCOW<T>&& o) {
+    value = std::move(o);
+    return *this;
+  }
+
+  /**
    * Copy constructor.
+   */
+  Optional(const Optional<SharedCOW<T>>& o) = default;
+
+  /**
+   * Move constructor.
+   */
+  Optional(Optional<SharedCOW<T>>&& o) = default;
+
+  /**
+   * Generic copy constructor.
    */
   template<class U>
   Optional(const Optional<SharedCOW<U>>& o) :
@@ -167,12 +225,40 @@ public:
   }
 
   /**
-   * Copy constructor.
+   * Generic move constructor.
    */
   template<class U>
   Optional(const Optional<WeakCOW<U>>& o) :
       value(o.value) {
     //
+  }
+
+  /**
+   * Copy assignment.
+   */
+  Optional<SharedCOW<T>>& operator=(const Optional<SharedCOW<T>>& o) = default;
+
+  /**
+   * Move assignment.
+   */
+  Optional<SharedCOW<T>>& operator=(Optional<SharedCOW<T>>&& o) = default;
+
+  /**
+   * Generic copy assignment.
+   */
+  template<class U>
+  Optional<SharedCOW<T>>& operator=(const Optional<SharedCOW<U>>& o) {
+    value = o.value;
+    return *this;
+  }
+
+  /**
+   * Generic move constructor.
+   */
+  template<class U>
+  Optional<SharedCOW<T>>& operator=(Optional<SharedCOW<U>>&& o) {
+    value = std::move(o.value);
+    return *this;
   }
 
   /**

@@ -75,9 +75,39 @@ public:
   /**
    * Copy constructor.
    */
-  WeakCOW(const WeakCOW<T>& o) :
-      super_type(o) {
-    //
+  WeakCOW(const WeakCOW<T>& o) = default;
+
+  /**
+   * Move constructor.
+   */
+  WeakCOW(WeakCOW<T>&& o) = default;
+
+  /**
+   * Copy assignment.
+   */
+  WeakCOW<T>& operator=(const WeakCOW<T>& o) = default;
+
+  /**
+   * Move assignment.
+   */
+  WeakCOW<T>& operator=(WeakCOW<T>&& o) = default;
+
+  /**
+   * Generic copy assignment.
+   */
+  template<class U>
+  WeakCOW<T>& operator=(const WeakCOW<U>& o) {
+    root_type::operator=(o);
+    return *this;
+  }
+
+  /**
+   * Generic move assignment.
+   */
+  template<class U>
+  WeakCOW<T>& operator=(WeakCOW<U>&& o) {
+    root_type::operator=(o);
+    return *this;
   }
 
   /**
@@ -157,7 +187,7 @@ public:
     return *this;
   }
 
-  WeakCOW<Any>& operator=(WeakCOW<Any> && o) = default;
+  WeakCOW<Any>& operator=(WeakCOW<Any>&& o) = default;
 
   Any* pull() const {
     if (object) {
