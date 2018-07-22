@@ -14,14 +14,6 @@
 #include <stack>
 
 /**
- * @def BIRCH_POOL_ALLOCATOR
- *
- * Set to enable the pool allocator. Disable if checking for memory
- * leaks with valgrind.
- */
-#define BIRCH_POOL_ALLOCATOR 0
-
-/**
  * @def bi_assert
  *
  * If debugging is enabled, check an assertion and abort on fail.
@@ -115,11 +107,6 @@ extern bool fiberClone;
 static constexpr int64_t mutable_value = 0;
 
 /**
- * Allocation pool.
- */
-extern std::stack<void*,std::vector<void*>> pool[];
-
-/**
  * Stack trace.
  */
 extern std::list<StackFrame> stacktrace;
@@ -190,105 +177,12 @@ struct has_conversion<Any,U> {
   static const bool value = false;
 };
 
-/**
- * Determine in which bin an allocation of size @p n belongs. Return the
- * index of the bin and the size of allocations in that bin (which will
- * be greater than or equal to @p n).
- */
-inline int bin(const size_t n) {
-#ifdef HAVE___BUILTIN_CLZLL
-  return sizeof(unsigned long long)*8 - __builtin_clzll(n - 1);
-#else
-  int ret = 1;
-  while (((n - 1) >> ret) > 0) {
-    ++ret;
-  }
-  return ret;
-#endif
-}
-
-inline void* allocate(const size_t n) {
-#if BIRCH_POOL_ALLOCATOR
-  void* ptr = nullptr;
-  if (n > 0) {
-    /* bin the allocation */
-    int i = bin(n);
-
-    /* reuse allocation in the pool, or create a new one */
-    auto& p = pool[i];
-    if (p.empty()) {
-      ptr = std::malloc(1 << i);
-    } else {
-      ptr = p.top();
-      p.pop();
-    }
-    assert(ptr);
-  }
-  return ptr;
-#else
-  return std::malloc(n);
-#endif
-}
-
-inline void* reallocate(void* ptr1, const size_t n1, const size_t n2) {
-#if BIRCH_POOL_ALLOCATOR
-  void* ptr2 = nullptr;
-
-  /* bin the current allocation */
-  int i1 = bin(n1);
-
-  /* bin the new allocation */
-  int i2 = bin(n2);
-
-  if (n1 > 0 && i1 == i2) {
-    /* current allocation is correct size, reuse */
-    ptr2 = ptr1;
-  } else {
-    if (n2 > 0) {
-      /* reuse allocation in the pool, or create a new one */
-      auto& p = pool[i2];
-      if (p.empty()) {
-        ptr2 = std::malloc(1 << i2);
-      } else {
-        ptr2 = p.top();
-        p.pop();
-      }
-      assert(ptr2);
-
-      /* copy over contents */
-      std::memcpy(ptr2, ptr1, n1);
-
-      /* return the previous allocation to its pool */
-      if (n1 > 0) {
-        pool[i1].push(ptr1);
-      }
-    }
-  }
-  return ptr2;
-#else
-  return std::realloc(ptr1, n2);
-#endif
-}
-
-inline void deallocate(void* ptr, const size_t n) {
-#if BIRCH_POOL_ALLOCATOR
-  if (n > 0) {
-    assert(ptr);
-
-    /* bin the allocation */
-    int i = bin(n);
-
-    /* return the allocation to its pool */
-    pool[i].push(ptr);
-  }
-#else
-  std::free(ptr);
-#endif
-}
+void* allocate(const size_t n);
+void* reallocate(void* ptr1, const size_t n1, const size_t n2);
+void deallocate(void* ptr, const size_t n);
 
 template<class T, class ... Args>
 inline T* construct(Args ... args) {
   return new (bi::allocate(sizeof(T))) T(args...);
 }
-
 }
