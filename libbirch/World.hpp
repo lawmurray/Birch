@@ -7,7 +7,7 @@
 #include "libbirch/Counted.hpp"
 #include "libbirch/Allocator.hpp"
 
-#include <map>
+#include <unordered_map>
 
 namespace bi {
 /**
@@ -108,9 +108,10 @@ private:
    */
   using key_type = Any*;
   using value_type = SharedPtr<Any>;
-  using less_type = std::less<key_type>;
+  using hash_type = std::hash<key_type>;
+  using equal_type = std::equal_to<key_type>;
   using alloc_type = Allocator<std::pair<const key_type,value_type>>;
-  using map_type = std::map<key_type,value_type,less_type,alloc_type>;
+  using map_type = std::unordered_map<key_type,value_type,hash_type,equal_type,alloc_type>;
 
   /**
    * Mapped allocations.
