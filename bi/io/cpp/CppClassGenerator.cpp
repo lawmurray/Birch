@@ -114,7 +114,6 @@ void bi::CppClassGenerator::visit(const Class* o) {
       } else {
         finish(" {");
         in();
-        line("this->ptr = this;");
         line("this->size = sizeof(*this);");
         line("this->~" << o->name << "();");
         out();

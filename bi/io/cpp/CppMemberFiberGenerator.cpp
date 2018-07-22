@@ -145,7 +145,6 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   } else {
     finish(" {");
     in();
-    line("this->ptr = this;");
     line("this->size = sizeof(*this);");
     line("this->~" << stateName << "();");
     out();

@@ -131,7 +131,6 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   } else {
     finish(" {");
     in();
-    line("this->ptr = this;");
     line("this->size = sizeof(*this);");
     line("this->~" << stateName << "();");
     out();
