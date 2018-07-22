@@ -20,7 +20,7 @@ else
   AC_ENABLE_SHARED
   AX_CXX_COMPILE_STDCXX(14, [noext], [mandatory])
 fi
-LT_INIT([dlopen])
+LT_INIT([dlopen,pic-only])
 
 # Checks for basic things
 AC_HEADER_ASSERT

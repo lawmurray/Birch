@@ -172,6 +172,16 @@ private:
   bool unity;
 
   /**
+   * Built static library?
+   */
+  bool staticLib;
+
+  /**
+   * Built shared library?
+   */
+  bool sharedLib;
+
+  /**
    * Are compiler warnings enabled?
    */
   bool warnings;

@@ -25,6 +25,8 @@ bi::Driver::Driver(int argc, char** argv) :
     prefix(""),
     packageName("Untitled"),
     unity(false),
+    staticLib(false),
+    sharedLib(true),
     warnings(true),
     debug(true),
     verbose(true),
@@ -40,6 +42,10 @@ bi::Driver::Driver(int argc, char** argv) :
     NAME_ARG,
     ENABLE_UNITY_ARG,
     DISABLE_UNITY_ARG,
+    ENABLE_STATIC_ARG,
+    DISABLE_STATIC_ARG,
+    ENABLE_SHARED_ARG,
+    DISABLE_SHARED_ARG,
     ENABLE_WARNINGS_ARG,
     DISABLE_WARNINGS_ARG,
     ENABLE_DEBUG_ARG,
@@ -58,6 +64,10 @@ bi::Driver::Driver(int argc, char** argv) :
       { "name", required_argument, 0, NAME_ARG },
       { "enable-unity", no_argument, 0, ENABLE_UNITY_ARG },
       { "disable-unity", no_argument, 0, DISABLE_UNITY_ARG },
+      { "enable-static", no_argument, 0, ENABLE_STATIC_ARG },
+      { "disable-static", no_argument, 0, DISABLE_STATIC_ARG },
+      { "enable-shared", no_argument, 0, ENABLE_SHARED_ARG },
+      { "disable-shared", no_argument, 0, DISABLE_SHARED_ARG },
       { "enable-warnings", no_argument, 0, ENABLE_WARNINGS_ARG },
       { "disable-warnings", no_argument, 0, DISABLE_WARNINGS_ARG },
       { "enable-debug", no_argument, 0, ENABLE_DEBUG_ARG },
@@ -102,6 +112,18 @@ bi::Driver::Driver(int argc, char** argv) :
       break;
     case DISABLE_UNITY_ARG:
       unity = false;
+      break;
+    case ENABLE_STATIC_ARG:
+      staticLib = true;
+      break;
+    case DISABLE_STATIC_ARG:
+      staticLib = false;
+      break;
+    case ENABLE_SHARED_ARG:
+      sharedLib = true;
+      break;
+    case DISABLE_SHARED_ARG:
+      sharedLib = false;
       break;
     case ENABLE_WARNINGS_ARG:
       warnings = true;
@@ -752,13 +774,6 @@ void bi::Driver::configure() {
       cxxflags << " -Og -g";
     } else {
       cppflags << " -DNDEBUG";
-
-      /*
-       * -flto enables link-time code generation, which is used in favour
-       * of explicitly inlining functions written in Birch. The gcc manpage
-       * recommends passing the same optimisation options to the linker as
-       * to the compiler when using this.
-       */
       cflags << " -O3 -funroll-loops -flto";
       cxxflags << " -O3 -funroll-loops -flto";
     }
@@ -786,6 +801,16 @@ void bi::Driver::configure() {
     }
 
     /* configure options */
+    if (staticLib) {
+      options << " --enable-static";
+    } else {
+      options << " --disable-static";
+    }
+    if (sharedLib) {
+      options << " --enable-shared";
+    } else {
+      options << " --disable-shared";
+    }
     if (!prefix.empty()) {
       options << " --prefix=" << absolute(prefix);
     }
