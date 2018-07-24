@@ -40,7 +40,7 @@ public:
   }
 
   virtual void destroy() {
-    size = sizeof(*this);
+    this->size = sizeof(*this);
     this->~FiberState();
   }
 

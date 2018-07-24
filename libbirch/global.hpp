@@ -177,12 +177,128 @@ struct has_conversion<Any,U> {
   static const bool value = false;
 };
 
+/**
+ * Small object allocation buffer. This is used for objects < 64 bytes in
+ * size, where allocations are not necessarily aligned to cache lines.
+ */
+extern char* smallBuffer;
+
+/**
+ * Large object allocation buffer. This is used for objects >= 64 bytes in
+ * size, in which case they are also a power of two, ensuring that all
+ * allocations are aligned to cache lines.
+ */
+extern char* largeBuffer;
+
+/**
+ * Allocation pool.
+ */
+extern std::stack<void*,std::vector<void*>> pool[];
+
+/**
+ * Determine in which bin an allocation of size @p n belongs. Return the
+ * index of the bin and the size of allocations in that bin (which will
+ * be greater than or equal to @p n).
+ */
+inline int bin(const size_t n) {
+#ifdef HAVE___BUILTIN_CLZLL
+  return (n <= 64ull) ? ((unsigned)n - 1u) >> 3u : 8*sizeof(long long) - __builtin_clzll(n - 1ull) + 2;
+#else
+  if (n <= 64ull) {
+    return ((unsigned)n - 1u) >> 3u;
+  } else {
+    unsigned ret = 1u;
+    while (((n - 1ull) >> ret) > 0ull) {
+      ++ret;
+    }
+    return (int)ret + 1;
+  }
+#endif
+}
+
+inline int bin(const unsigned n) {
+#ifdef HAVE___BUILTIN_CLZLL
+  return (n <= 64u) ? (n - 1u) >> 3u : 8*sizeof(long long) - __builtin_clz(n - 1u) + 2;
+#else
+  if (n <= 64u) {
+    return (n - 1u) >> 3u;
+  } else {
+    unsigned ret = 1u;
+    while (((n - 1u) >> ret) > 0u) {
+      ++ret;
+    }
+    return (int)ret + 1;
+  }
+#endif
+}
+
+template<unsigned n>
+inline int bin() {
+#ifdef HAVE___BUILTIN_CLZLL
+  return (n <= 64u) ? (n - 1u) >> 3u : 8*sizeof(unsigned) - __builtin_clz(n - 1u) + 2;
+#else
+  if (n <= 64u) {
+    return (n - 1u) >> 3u;
+  } else {
+    unsigned ret = 1u;
+    while (((n - 1u) >> ret) > 0u) {
+      ++ret;
+    }
+    return (int)ret + 1;
+  }
+#endif
+}
+
+/**
+ * Determine the size for a given bin.
+ */
+inline size_t unbin(const int i) {
+  return (i <= 7) ? (i + 1) << 3 : (1ull << (i - 2ull));
+}
+
+/**
+ * Allocate with static size.
+ */
+template<unsigned n>
+void* allocate() {
+  void* ptr = nullptr;
+  if (n > 0u) {
+    /* bin the allocation */
+    int i = bin<n>();
+
+    /* reuse allocation in the pool, or create a new one */
+    auto& p = pool[i];
+    if (p.empty()) {
+      size_t m = unbin(i);
+      if (i <= 7) {
+#pragma omp atomic capture
+        {
+          ptr = smallBuffer;
+          smallBuffer += m;
+        }
+      } else {
+#pragma omp atomic capture
+        {
+          ptr = largeBuffer;
+          largeBuffer += m;
+        }
+      }
+    } else {
+      ptr = p.top();
+      p.pop();
+    }
+    assert(ptr);
+  }
+  return ptr;
+}
+
 void* allocate(const size_t n);
 void* reallocate(void* ptr1, const size_t n1, const size_t n2);
 void deallocate(void* ptr, const size_t n);
+void deallocate(void* ptr, const unsigned n);
 
 template<class T, class ... Args>
 inline T* construct(Args ... args) {
-  return new (bi::allocate(sizeof(T))) T(args...);
+  return new (allocate<sizeof(T)>()) T(args...);
 }
 }
