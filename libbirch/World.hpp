@@ -103,12 +103,23 @@ private:
    */
   World* launchSource;
 
+  /**
+   * Custom hash function for maps.
+   */
+  template<class T>
+  struct world_hash {
+    std::size_t operator()(const T& o) const {
+      return reinterpret_cast<std::size_t>(o) >> 6;
+    }
+  };
+
+
   /*
    * Types for maps.
    */
   using key_type = Any*;
   using value_type = SharedPtr<Any>;
-  using hash_type = std::hash<key_type>;
+  using hash_type = world_hash<key_type>;
   using equal_type = std::equal_to<key_type>;
   using alloc_type = Allocator<std::pair<const key_type,value_type>>;
   using map_type = std::unordered_map<key_type,value_type,hash_type,equal_type,alloc_type>;
