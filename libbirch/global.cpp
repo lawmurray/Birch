@@ -16,12 +16,14 @@ void* aligned_alloc(const size_t n) {
   return ptr;
 }
 
-bi::World* bi::fiberWorld = new bi::World(0);
+static bi::World* rootWorld = new bi::World(0);
+bi::World* bi::fiberWorld = rootWorld;
 bool bi::fiberClone = false;
-std::list<bi::StackFrame> bi::stacktrace;
-char* bi::smallBuffer = (char*)aligned_alloc(1ull << 36ull);
-char* bi::largeBuffer = (char*)aligned_alloc(1ull << 36ull);
-std::stack<void*,std::vector<void*>> bi::pool[128];
+std::vector<bi::StackFrame> bi::stacktrace(32);
+// ^ reserving a non-zero size seems necessary to avoid segfault here
+char* bi::smallBuffer = (char*)aligned_alloc(1ull << 34ull);
+char* bi::largeBuffer = (char*)aligned_alloc(1ull << 34ull);
+bi::Pool bi::pool[128];
 
 void bi::abort() {
   abort("assertion failed");
@@ -42,7 +44,7 @@ void bi::abort(const std::string& msg) {
 #ifndef NDEBUG
   printf("stack trace:\n");
   unsigned i = 0;
-  for (auto iter = stacktrace.begin(); i < 20u && iter != stacktrace.end();
+  for (auto iter = stacktrace.rbegin(); i < 20u && iter != stacktrace.rend();
       ++iter) {
     printf("    %-24s @ %s:%d\n", iter->func, iter->file, iter->line);
     ++i;
@@ -62,8 +64,8 @@ void* bi::allocate(const size_t n) {
     int i = bin(n);
 
     /* reuse allocation in the pool, or create a new one */
-    auto& p = pool[i];
-    if (p.empty()) {
+    ptr = pool[i].pop();
+    if (!ptr) {
       size_t m = unbin(i);
       if (i <= 7) {
 #pragma omp atomic capture
@@ -78,9 +80,6 @@ void* bi::allocate(const size_t n) {
           largeBuffer += m;
         }
       }
-    } else {
-      ptr = p.top();
-      p.pop();
     }
     assert(ptr);
   }

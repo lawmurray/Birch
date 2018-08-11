@@ -8,7 +8,6 @@
 #include "libbirch/World.hpp"
 #include "libbirch/Any.hpp"
 #include "libbirch/Nil.hpp"
-#include <iostream>
 
 namespace bi {
 /**

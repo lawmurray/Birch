@@ -6,6 +6,7 @@
     "source": [
       "libbirch/Counted.cpp",
       "libbirch/global.cpp",
+      "libbirch/World.cpp",
 
       "libubjpp/common/Parser.c",
       "libubjpp/common/ParserState.cpp",
@@ -209,6 +210,7 @@
       "libbirch/Index.hpp",
       "libbirch/Iterator.hpp",
       "libbirch/libbirch.hpp",
+      "libbirch/Lockable.hpp",
       "libbirch/MemberFiberState.hpp",
       "libbirch/MemberFiberWorld.hpp",
       "libbirch/Nil.hpp",
@@ -216,6 +218,7 @@
       "libbirch/Offset.hpp",
       "libbirch/Object.hpp",
       "libbirch/Optional.hpp",
+      "libbirch/Pool.hpp",
       "libbirch/Range.hpp",
       "libbirch/Sequence.hpp",
       "libbirch/SharedCOW.hpp",

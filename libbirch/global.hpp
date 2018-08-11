@@ -3,15 +3,15 @@
  */
 #pragma once
 
+#include "libbirch/Pool.hpp"
+
 #include <type_traits>
 #include <random>
 #include <memory>
 #include <cstdint>
 #include <cstddef>
-#include <list>
 #include <cassert>
 #include <vector>
-#include <stack>
 
 /**
  * @def bi_assert
@@ -58,7 +58,7 @@
  * Update the line number of the top frame on the stack trace.
  */
 #ifndef NDEBUG
-#define bi_line(n) stacktrace.front().line = n
+#define bi_line(n) stacktrace.back().line = n
 #else
 #define bi_line(n)
 #endif
@@ -109,9 +109,8 @@ static constexpr int64_t mutable_value = 0;
 /**
  * Stack trace.
  */
-extern std::list<StackFrame> stacktrace;
+extern std::vector<StackFrame> stacktrace;
 #pragma omp threadprivate(stacktrace)
-
 
 /**
  * Report unknown program option and abort.
@@ -130,11 +129,11 @@ void abort(const std::string& msg);
 
 inline bi::StackFunction::StackFunction(const char* func, const char* file,
     const int line) {
-  stacktrace.push_front( { func, file, line });
+  stacktrace.push_back({ func, file, line });
 }
 
 inline bi::StackFunction::~StackFunction() {
-  stacktrace.pop_front();
+  stacktrace.pop_back();
 }
 
 /**
@@ -191,9 +190,9 @@ extern char* smallBuffer;
 extern char* largeBuffer;
 
 /**
- * Allocation pool.
+ * Allocation pools.
  */
-extern std::stack<void*,std::vector<void*>> pool[];
+extern bi::Pool pool[];
 
 /**
  * Determine in which bin an allocation of size @p n belongs. Return the
@@ -267,8 +266,8 @@ void* allocate() {
     int i = bin<n>();
 
     /* reuse allocation in the pool, or create a new one */
-    auto& p = pool[i];
-    if (p.empty()) {
+    ptr = pool[i].pop();
+    if (!ptr) {
       size_t m = unbin(i);
       if (i <= 7) {
 #pragma omp atomic capture
@@ -283,9 +282,6 @@ void* allocate() {
           largeBuffer += m;
         }
       }
-    } else {
-      ptr = p.top();
-      p.pop();
     }
     assert(ptr);
   }
