@@ -39,6 +39,7 @@ if test x$emscripten = xfalse; then
   if test xPACKAGE_TARNAME != xbirch_standard; then
     AC_CHECK_HEADERS([bi/birch_standard.hpp], [], [AC_MSG_ERROR([Birch standard library header not found.])], [-])
   fi
+  AC_CHECK_HEADERS([omp.h], [], [], [-])
 fi
 
 # Checks for libraries
