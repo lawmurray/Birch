@@ -48,4 +48,5 @@ if test xPACKAGE_TARNAME != xbirch_standard; then
 fi
 
 # Checks for functions
+AX_GCC_BUILTIN([__builtin_clz])
 AX_GCC_BUILTIN([__builtin_clzll])
