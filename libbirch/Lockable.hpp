@@ -3,7 +3,7 @@
  */
 #pragma once
 
-#ifdef HAVE_OMP_H
+#ifdef _OPENMP
 #include <omp.h>
 #endif
 
@@ -19,7 +19,7 @@ public:
    * Constructor.
    */
   Lockable() {
-    #ifdef HAVE_OMP_H
+    #ifdef _OPENMP
     omp_init_lock(&mutex);
     #endif
   }
@@ -28,7 +28,7 @@ public:
    * Destructor.
    */
   ~Lockable() {
-    #ifdef HAVE_OMP_H
+    #ifdef _OPENMP
     omp_destroy_lock(&mutex);
     #endif
   }
@@ -37,7 +37,7 @@ public:
    * Set the lock.
    */
   void set() {
-    #ifdef HAVE_OMP_H
+    #ifdef _OPENMP
     omp_set_lock(&mutex);
     #endif
   }
@@ -46,13 +46,13 @@ public:
    * Unset the lock.
    */
   void unset() {
-    #ifdef HAVE_OMP_H
+    #ifdef _OPENMP
     omp_unset_lock(&mutex);
     #endif
   }
 
 private:
-  #ifdef HAVE_OMP_H
+  #ifdef _OPENMP
   /**
    * Lock.
    */
