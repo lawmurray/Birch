@@ -21,9 +21,12 @@ bi::World* bi::fiberWorld = rootWorld;
 bool bi::fiberClone = false;
 std::vector<bi::StackFrame> bi::stacktrace(32);
 // ^ reserving a non-zero size seems necessary to avoid segfault here
+
+#if !DISABLE_POOL
 char* bi::smallBuffer = (char*)aligned_alloc(1ull << 34ull);
 char* bi::largeBuffer = (char*)aligned_alloc(1ull << 34ull);
 bi::Pool bi::pool[128];
+#endif
 
 void bi::abort() {
   abort("assertion failed");
@@ -58,6 +61,9 @@ void bi::abort(const std::string& msg) {
 }
 
 void* bi::allocate(const size_t n) {
+#if DISABLE_POOL
+  return std::malloc(n);
+#else
   void* ptr = nullptr;
   if (n > 0ull) {
     /* bin the allocation */
@@ -84,9 +90,13 @@ void* bi::allocate(const size_t n) {
     assert(ptr);
   }
   return ptr;
+#endif
 }
 
 void* bi::reallocate(void* ptr1, const size_t n1, const size_t n2) {
+#if DISABLE_POOL
+  return std::realloc(ptr1, n2);
+#else
   int i1 = bin(n1);
   int i2 = bin(n2);
   void* ptr2 = ptr1;
@@ -97,20 +107,29 @@ void* bi::reallocate(void* ptr1, const size_t n1, const size_t n2) {
     deallocate(ptr1, n1);
   }
   return ptr2;
+#endif
 }
 
 void bi::deallocate(void* ptr, const size_t n) {
+#if DISABLE_POOL
+  std::free(ptr);
+#else
   if (n > 0ull) {
     assert(ptr);
     int i = bin(n);
     pool[i].push(ptr);
   }
+#endif
 }
 
 void bi::deallocate(void* ptr, const unsigned n) {
+#if DISABLE_POOL
+  std::free(ptr);
+#else
   if (n > 0u) {
     assert(ptr);
     int i = bin(n);
     pool[i].push(ptr);
   }
+#endif
 }

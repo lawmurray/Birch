@@ -3,6 +3,14 @@
  */
 #pragma once
 
+/**
+ * @def DISABLE_POOL
+ *
+ * Set to 1 to use standard malloc/realloc/free, and disable OpenMP,
+ * for memory leak checks with valgrind.
+ */
+#define DISABLE_POOL 0
+
 #include "libbirch/Pool.hpp"
 
 #include <type_traits>
@@ -176,6 +184,7 @@ struct has_conversion<Any,U> {
   static const bool value = false;
 };
 
+#if !DISABLE_POOL
 /**
  * Small object allocation buffer. This is used for objects < 64 bytes in
  * size, where allocations are not necessarily aligned to cache lines.
@@ -193,6 +202,7 @@ extern char* largeBuffer;
  * Allocation pools.
  */
 extern bi::Pool pool[];
+#endif
 
 /**
  * Determine in which bin an allocation of size @p n belongs. Return the
@@ -201,7 +211,7 @@ extern bi::Pool pool[];
  */
 inline int bin(const size_t n) {
 #ifdef HAVE___BUILTIN_CLZLL
-  return (n <= 64ull) ? ((unsigned)n - 1u) >> 3u : 8*sizeof(long long) - __builtin_clzll(n - 1ull) + 2;
+  return (n <= 64ull) ? ((unsigned)n - 1u) >> 3u : 65 - __builtin_clzll(n - 1ull);
 #else
   if (n <= 64ull) {
     return ((unsigned)n - 1u) >> 3u;
@@ -216,8 +226,8 @@ inline int bin(const size_t n) {
 }
 
 inline int bin(const unsigned n) {
-#ifdef HAVE___BUILTIN_CLZLL
-  return (n <= 64u) ? (n - 1u) >> 3u : 8*sizeof(long long) - __builtin_clz(n - 1u) + 2;
+#ifdef HAVE___BUILTIN_CLZ
+  return (n <= 64u) ? (n - 1u) >> 3u : 33 - __builtin_clz(n - 1u);
 #else
   if (n <= 64u) {
     return (n - 1u) >> 3u;
@@ -234,7 +244,7 @@ inline int bin(const unsigned n) {
 template<unsigned n>
 inline int bin() {
 #ifdef HAVE___BUILTIN_CLZLL
-  return (n <= 64u) ? (n - 1u) >> 3u : 8*sizeof(unsigned) - __builtin_clz(n - 1u) + 2;
+  return (n <= 64u) ? (n - 1u) >> 3u : 8*sizeof(unsigned) - __builtin_clz(n - 1u) + 1;
 #else
   if (n <= 64u) {
     return (n - 1u) >> 3u;
@@ -252,7 +262,7 @@ inline int bin() {
  * Determine the size for a given bin.
  */
 inline size_t unbin(const int i) {
-  return (i <= 7) ? (i + 1) << 3 : (1ull << (i - 2ull));
+  return (i <= 7) ? (i + 1) << 3 : (1ull << (i - 1ull));
 }
 
 /**
@@ -260,6 +270,9 @@ inline size_t unbin(const int i) {
  */
 template<unsigned n>
 void* allocate() {
+#if DISABLE_POOL
+  return std::malloc(n);
+#else
   void* ptr = nullptr;
   if (n > 0u) {
     /* bin the allocation */
@@ -286,6 +299,7 @@ void* allocate() {
     assert(ptr);
   }
   return ptr;
+#endif
 }
 
 void* allocate(const size_t n);

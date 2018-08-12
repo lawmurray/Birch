@@ -7,7 +7,7 @@
 
 #include <vector>
 #include <stack>
-#include <iostream>
+
 namespace bi {
 /**
  * Thread-safe stack of memory allocations.
