@@ -27,6 +27,7 @@ bi::Driver::Driver(int argc, char** argv) :
     unity(false),
     staticLib(false),
     sharedLib(true),
+    openmp(true),
     warnings(true),
     debug(true),
     verbose(true),
@@ -46,6 +47,8 @@ bi::Driver::Driver(int argc, char** argv) :
     DISABLE_STATIC_ARG,
     ENABLE_SHARED_ARG,
     DISABLE_SHARED_ARG,
+    ENABLE_OPENMP_ARG,
+    DISABLE_OPENMP_ARG,
     ENABLE_WARNINGS_ARG,
     DISABLE_WARNINGS_ARG,
     ENABLE_DEBUG_ARG,
@@ -68,6 +71,8 @@ bi::Driver::Driver(int argc, char** argv) :
       { "disable-static", no_argument, 0, DISABLE_STATIC_ARG },
       { "enable-shared", no_argument, 0, ENABLE_SHARED_ARG },
       { "disable-shared", no_argument, 0, DISABLE_SHARED_ARG },
+      { "enable-openmp", no_argument, 0, ENABLE_OPENMP_ARG },
+      { "disable-openmp", no_argument, 0, DISABLE_OPENMP_ARG },
       { "enable-warnings", no_argument, 0, ENABLE_WARNINGS_ARG },
       { "disable-warnings", no_argument, 0, DISABLE_WARNINGS_ARG },
       { "enable-debug", no_argument, 0, ENABLE_DEBUG_ARG },
@@ -124,6 +129,12 @@ bi::Driver::Driver(int argc, char** argv) :
       break;
     case DISABLE_SHARED_ARG:
       sharedLib = false;
+      break;
+    case ENABLE_OPENMP_ARG:
+      openmp = true;
+      break;
+    case DISABLE_OPENMP_ARG:
+      openmp = false;
       break;
     case ENABLE_WARNINGS_ARG:
       warnings = true;
@@ -758,16 +769,26 @@ void bi::Driver::configure() {
     } else if (arch == "native") {
       cflags << " -march=native";
       cxxflags << " -march=native";
-      #ifdef __APPLE__
-      /* the system compiler on Apple requires different options for
-       * OpenMP; disable the configure check and customize these */
-      options << " --disable-openmp";
-      cppflags << " -Xpreprocessor -fopenmp";
-      ldflags << " -lomp";
-      #endif
+      if (openmp) {
+        #ifdef __APPLE__
+        /* the system compiler on Apple requires different options for
+         * OpenMP; disable the configure check and customize these */
+        options << " --disable-openmp";
+        cppflags << " -D_OPENMP -Xpreprocessor -fopenmp";
+        ldflags << " -lomp";
+        #else
+        options << " --enable-openmp";
+        #endif
+      } else {
+        options << " --disable-openmp";
+      }
     } else {
       throw DriverException("unknown architecture '" + arch
               + "'; valid values are 'native', 'js' and 'wasm'");
+    }
+    if (warnings) {
+      cflags << " -Wall";
+      cxxflags << " -Wall";
     }
     if (debug) {
       cflags << " -Og -g";
@@ -776,10 +797,6 @@ void bi::Driver::configure() {
       cppflags << " -DNDEBUG";
       cflags << " -O3 -funroll-loops -flto";
       cxxflags << " -O3 -funroll-loops -flto";
-    }
-    if (warnings) {
-      cflags << " -Wall";
-      cxxflags << " -Wall";
     }
     cxxflags << " -Wno-overloaded-virtual";
     cxxflags << " -Wno-return-type";
