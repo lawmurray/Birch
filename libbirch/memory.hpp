@@ -150,11 +150,18 @@ void* allocate() {
     int i = bin<n>();     // determine which pool
     ptr = pool[i].pop();  // attempt to reuse from this pool
     if (!ptr) {           // otherwise allocate new
-      size_t m = unbin(i);
+      unsigned m = unbin(i);
+      unsigned r = (m < 64u) ? 64u : m;
+      // ^ minimum allocation 64 bytes to maintain alignment
       #pragma omp atomic capture
       {
         ptr = buffer;
-        buffer += m;
+        buffer += r;
+      }
+      if (m < 64u) {
+        /* add extra bytes as a separate allocation to the pool for
+         * reuse another time */
+        pool[bin(64u - m)].push((char*)ptr + m);
       }
     }
     assert(ptr);

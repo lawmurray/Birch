@@ -16,7 +16,7 @@ char* bi::heap() {
   size_t npages = sysconf(_SC_PHYS_PAGES);
   size_t n = 8u*npages*size;
 
-  /* attemp tto allocate this amount, successively halving until
+  /* attempt to allocate this amount, successively halving until
    * successful */
   void* ptr = nullptr;
   do {
@@ -33,15 +33,22 @@ void* bi::allocate(const size_t n) {
   return std::malloc(n);
 #else
   void* ptr = nullptr;
-  if (n > 0ull) {
+  if (n > 0u) {
     int i = bin(n);       // determine which pool
     ptr = pool[i].pop();  // attempt to reuse from this pool
     if (!ptr) {           // otherwise allocate new
       size_t m = unbin(i);
+      size_t r = (m < 64u) ? 64u : m;
+      // ^ minimum allocation 64 bytes to maintain alignment
       #pragma omp atomic capture
       {
         ptr = buffer;
-        buffer += m;
+        buffer += r;
+      }
+      if (m < 64u) {
+        /* add extra bytes as a separate allocation to the pool for
+         * reuse another time */
+        pool[bin(64u - m)].push((char*)ptr + m);
       }
     }
     assert(ptr);
