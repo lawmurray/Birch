@@ -8,12 +8,21 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <unistd.h>
 
-void* aligned_alloc(const size_t n) {
+/**
+ * Allocate a large buffer for the heap. This attempts to determine
+ * the amount of physical memory installed on the system and allocates a
+ * buffer of virtual memory twice the size of this.
+ */
+static char* heap() {
   void* ptr = nullptr;
+  size_t size = sysconf(_SC_PAGE_SIZE);
+  size_t npages = sysconf(_SC_PHYS_PAGES);
+  size_t n = 2u*npages*size;
   posix_memalign(&ptr, 64ull, n);
   assert(ptr);
-  return ptr;
+  return (char*)ptr;
 }
 
 static bi::World* rootWorld = new bi::World(0);
@@ -23,8 +32,7 @@ std::vector<bi::StackFrame> bi::stacktrace(32);
 // ^ reserving a non-zero size seems necessary to avoid segfault here
 
 #if !DISABLE_POOL
-char* bi::smallBuffer = (char*)aligned_alloc(1ull << 34ull);
-char* bi::largeBuffer = (char*)aligned_alloc(1ull << 34ull);
+char* bi::buffer = heap();
 bi::Pool bi::pool[128];
 #endif
 
@@ -66,25 +74,14 @@ void* bi::allocate(const size_t n) {
 #else
   void* ptr = nullptr;
   if (n > 0ull) {
-    /* bin the allocation */
-    int i = bin(n);
-
-    /* reuse allocation in the pool, or create a new one */
-    ptr = pool[i].pop();
-    if (!ptr) {
+    int i = bin(n);       // determine which pool
+    ptr = pool[i].pop();  // attempt to reuse from this pool
+    if (!ptr) {           // otherwise allocate new
       size_t m = unbin(i);
-      if (i <= 7) {
-#pragma omp atomic capture
-        {
-          ptr = smallBuffer;
-          smallBuffer += m;
-        }
-      } else {
-#pragma omp atomic capture
-        {
-          ptr = largeBuffer;
-          largeBuffer += m;
-        }
+      #pragma omp atomic capture
+      {
+        ptr = buffer;
+        buffer += m;
       }
     }
     assert(ptr);

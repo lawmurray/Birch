@@ -186,17 +186,9 @@ struct has_conversion<Any,U> {
 
 #if !DISABLE_POOL
 /**
- * Small object allocation buffer. This is used for objects < 64 bytes in
- * size, where allocations are not necessarily aligned to cache lines.
+ * Buffer for heap allocations.
  */
-extern char* smallBuffer;
-
-/**
- * Large object allocation buffer. This is used for objects >= 64 bytes in
- * size, in which case they are also a power of two, ensuring that all
- * allocations are aligned to cache lines.
- */
-extern char* largeBuffer;
+extern char* buffer;
 
 /**
  * Allocation pools.
@@ -205,9 +197,15 @@ extern bi::Pool pool[];
 #endif
 
 /**
- * Determine in which bin an allocation of size @p n belongs. Return the
- * index of the bin and the size of allocations in that bin (which will
- * be greater than or equal to @p n).
+ * For an allocation size, determine the index of the pool to which it
+ * belongs.
+ *
+ * @param n Number of bytes.
+ *
+ * @return Pool index.
+ *
+ * Pool sizes are multiples of 8 bytes up to 64 bytes, and powers of two
+ * thereafter.
  */
 inline int bin(const size_t n) {
 #ifdef HAVE___BUILTIN_CLZLL
@@ -225,6 +223,17 @@ inline int bin(const size_t n) {
 #endif
 }
 
+/**
+ * For an allocation size, determine the index of the pool to which it
+ * belongs.
+ *
+ * @param n Number of bytes.
+ *
+ * @return Pool index.
+ *
+ * Pool sizes are multiples of 8 bytes up to 64 bytes, and powers of two
+ * thereafter.
+ */
 inline int bin(const unsigned n) {
 #ifdef HAVE___BUILTIN_CLZ
   return (n <= 64u) ? (n - 1u) >> 3u : 33 - __builtin_clz(n - 1u);
@@ -241,6 +250,17 @@ inline int bin(const unsigned n) {
 #endif
 }
 
+/**
+ * For an allocation size, determine the index of the pool to which it
+ * belongs.
+ *
+ * @tparam n Number of bytes.
+ *
+ * @return Pool index.
+ *
+ * Pool sizes are multiples of 8 bytes up to 64 bytes, and powers of two
+ * thereafter.
+ */
 template<unsigned n>
 inline int bin() {
 #ifdef HAVE___BUILTIN_CLZLL
@@ -266,7 +286,24 @@ inline size_t unbin(const int i) {
 }
 
 /**
- * Allocate with static size.
+ * Allocate memory from heap.
+ *
+ * @param n Number of bytes.
+ *
+ * @return Pointer to the allocated memory.
+ */
+void* allocate(const size_t n);
+
+/**
+ * Allocate memory from heap.
+ *
+ * @tparam n Number of bytes.
+ *
+ * @return Pointer to the allocated memory.
+
+ * This implementation, where the size is given by a static 32-bit
+ * integer, is typically slightly faster than the 64-bit integer
+ * version.
  */
 template<unsigned n>
 void* allocate() {
@@ -275,25 +312,14 @@ void* allocate() {
 #else
   void* ptr = nullptr;
   if (n > 0u) {
-    /* bin the allocation */
-    int i = bin<n>();
-
-    /* reuse allocation in the pool, or create a new one */
-    ptr = pool[i].pop();
-    if (!ptr) {
+    int i = bin<n>();     // determine which pool
+    ptr = pool[i].pop();  // attempt to reuse from this pool
+    if (!ptr) {           // otherwise allocate new
       size_t m = unbin(i);
-      if (i <= 7) {
-#pragma omp atomic capture
-        {
-          ptr = smallBuffer;
-          smallBuffer += m;
-        }
-      } else {
-#pragma omp atomic capture
-        {
-          ptr = largeBuffer;
-          largeBuffer += m;
-        }
+      #pragma omp atomic capture
+      {
+        ptr = buffer;
+        buffer += m;
       }
     }
     assert(ptr);
@@ -302,11 +328,49 @@ void* allocate() {
 #endif
 }
 
-void* allocate(const size_t n);
-void* reallocate(void* ptr1, const size_t n1, const size_t n2);
+/**
+ * Deallocate memory from the heap, previously allocated with
+ * allocate() or reallocate().
+ *
+ * @param ptr Pointer to the allocated memory.
+ * @param n Number of bytes.
+ */
 void deallocate(void* ptr, const size_t n);
+
+/**
+ * Deallocate memory from the heap, previously allocated with
+ * allocate() or reallocate().
+ *
+ * @param ptr Pointer to the allocated memory.
+ * @param n Number of bytes.
+ *
+ * This implementation, where the size is given by a 32-bit integer,
+ * is typically slightly faster than the 64-bit integer version.
+ */
 void deallocate(void* ptr, const unsigned n);
 
+/**
+ * Reallocate memory from heap.
+ *
+ * @param ptr1 Pointer to the allocated memory.
+ * @param n1 Number of bytes in current allocated memory.
+ * @param n2 Number of bytes in newly allocated memory.
+ *
+ * @return Pointer to the newly allocated memory.
+ */
+void* reallocate(void* ptr1, const size_t n1, const size_t n2);
+
+/**
+ * Construct an object with placement new using memory obtained from
+ * allocate();
+ *
+ * @tparam T Class type.
+ * @param Args... Constructor argument types.
+ *
+ * @param args Construct arguments.
+ *
+ * @return Pointer to the object.
+ */
 template<class T, class ... Args>
 inline T* construct(Args ... args) {
   return new (allocate<sizeof(T)>()) T(args...);
