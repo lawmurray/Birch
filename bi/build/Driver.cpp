@@ -774,7 +774,7 @@ void bi::Driver::configure() {
         /* the system compiler on Apple requires different options for
          * OpenMP; disable the configure check and customize these */
         options << " --disable-openmp";
-        cppflags << " -D_OPENMP -Xpreprocessor -fopenmp";
+        cppflags << " -Xpreprocessor -fopenmp";
         ldflags << " -lomp";
         #else
         options << " --enable-openmp";
