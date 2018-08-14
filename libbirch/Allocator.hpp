@@ -3,16 +3,12 @@
  */
 #pragma once
 
-#include "libbirch/global.hpp"
-
-#if __cplusplus > 201703L
-#include <new>
-#endif
+#include "libbirch/memory.hpp"
 
 namespace bi {
 /**
- * Heap allocator for objects of class type. Maintains a pool of allocations,
- * rounding sizes up to the nearest power of two for efficient reuse.
+ * STL-compatible allocator that wraps procedural implementation of pooled
+ * allocator.
  *
  * @ingroup libbirch
  *

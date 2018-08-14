@@ -6,6 +6,7 @@
     "source": [
       "libbirch/Counted.cpp",
       "libbirch/global.cpp",
+      "libbirch/memory.cpp",
       "libbirch/World.cpp",
 
       "libubjpp/common/Parser.c",
@@ -213,6 +214,7 @@
       "libbirch/Lockable.hpp",
       "libbirch/MemberFiberState.hpp",
       "libbirch/MemberFiberWorld.hpp",
+      "libbirch/memory.hpp",
       "libbirch/Nil.hpp",
       "libbirch/Length.hpp",
       "libbirch/Offset.hpp",
