@@ -24,26 +24,6 @@ public:
   Fiber(const SharedPtr<FiberState<YieldType>>& state = nullptr);
 
   /**
-   * Copy constructor.
-   */
-  Fiber(const Fiber<YieldType>& o);
-
-  /**
-   * Move constructor.
-   */
-  Fiber(Fiber<YieldType> && o) = default;
-
-  /**
-   * Copy assignment.
-   */
-  Fiber<YieldType>& operator=(const Fiber<YieldType>& o);
-
-  /**
-   * Move assignment.
-   */
-  Fiber<YieldType>& operator=(Fiber<YieldType> && o) = default;
-
-  /**
    * Run to next yield point.
    *
    * @return Was a value yielded?
@@ -57,59 +37,27 @@ public:
 
 private:
   /**
-   * Mark a fiber as dirty, when it is copied.
-   *
-   * @internal This must be const as it is applied, via a const_cast, to the
-   * argumet of the copy constructor and assignment operator.
-   */
-  void dirty() const;
-
-  /**
    * Fiber state.
    */
   SharedPtr<FiberState<YieldType>> state;
-
-  /**
-   * Is the fiber dirty?
-   */
-  bool isDirty;
 };
 }
 
 template<class YieldType>
 bi::Fiber<YieldType>::Fiber(
     const SharedPtr<FiberState<YieldType>>& state) :
-    state(state),
-    isDirty(false) {
+    state(state) {
   //
-}
-
-template<class YieldType>
-bi::Fiber<YieldType>::Fiber(const Fiber<YieldType>& o) :
-    state(o.state) {
-  dirty();
-  o.dirty();
-}
-
-template<class YieldType>
-bi::Fiber<YieldType>& bi::Fiber<YieldType>::operator=(
-    const Fiber<YieldType>& o) {
-  if (this != &o) {  // for self-assignment, needn't dirty
-    state = o.state;
-    dirty();
-    o.dirty();
-  }
-  return *this;
 }
 
 template<class YieldType>
 bool bi::Fiber<YieldType>::query() {
   bool result = false;
   if (state) {
-    if (isDirty) {
+    if (state->isShared() || state->isDirty()) {
+      state->dirty();
       Clone clone;
       state = state->clone();
-      isDirty = false;
     }
     Enter enter(state->getWorld());
     result = state->query();
@@ -124,9 +72,4 @@ template<class YieldType>
 YieldType& bi::Fiber<YieldType>::get() {
   bi_assert_msg(state, "fiber handle undefined");
   return state->get();
-}
-
-template<class YieldType>
-void bi::Fiber<YieldType>::dirty() const {
-  const_cast<Fiber<YieldType>*>(this)->isDirty = true;
 }
