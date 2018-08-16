@@ -83,3 +83,7 @@ void bi::Counted::decWeak() {
     deallocate();
   }
 }
+
+bool bi::Counted::isShared() const {
+  return sharedCount > 1;
+}

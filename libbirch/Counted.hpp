@@ -71,6 +71,11 @@ public:
    */
   void decWeak();
 
+  /**
+   * Is this shared?
+   */
+  bool isShared() const;
+
 protected:
   /**
    * Size of the object.
