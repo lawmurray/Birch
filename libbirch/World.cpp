@@ -88,7 +88,7 @@ bi::SharedPtr<bi::Any> bi::World::pull(const SharedPtr<Any>& o,
     } else {
       assert(cloneSource);
       result = cloneSource->pullNoCopy(o, world);
-      auto ret = cache.insert(std::make_pair(o.get(), result));
+      auto ret = cache.insert(std::make_pair(o.get(), result.get()));
       assert(ret.second);
     }
     unset();
@@ -131,7 +131,7 @@ bi::SharedPtr<bi::Any> bi::World::pullNoCopy(const SharedPtr<Any>& o,
     } else {
       assert(cloneSource);
       result = cloneSource->pullNoCopy(o, world);
-      auto ret = cache.insert(std::make_pair(o.get(), result));
+      auto ret = cache.insert(std::make_pair(o.get(), result.get()));
       assert(ret.second);
     }
     unset();

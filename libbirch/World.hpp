@@ -116,24 +116,38 @@ private:
 
 
   /*
-   * Types for maps.
+   * Type of map.
    */
-  using key_type = Any*;
-  using value_type = SharedPtr<Any>;
-  using hash_type = world_hash<key_type>;
-  using equal_type = std::equal_to<key_type>;
-  using alloc_type = Allocator<std::pair<const key_type,value_type>>;
-  using map_type = std::unordered_map<key_type,value_type,hash_type,equal_type,alloc_type>;
+  using map_key_type = Any*;
+  using map_value_type = SharedPtr<Any>;
+  using map_hash_type = world_hash<map_key_type>;
+  using map_equal_type = std::equal_to<map_key_type>;
+  using map_alloc_type = Allocator<std::pair<const map_key_type,
+      map_value_type>>;
+  using map_type = std::unordered_map<map_key_type,map_value_type,
+      map_hash_type,map_equal_type,map_alloc_type>;
 
   /**
    * Mapped allocations.
    */
   map_type map;
 
+  /*
+   * Type of cache.
+   */
+  using cache_key_type = Any*;
+  using cache_value_type = Any*;
+  using cache_hash_type = world_hash<cache_key_type>;
+  using cache_equal_type = std::equal_to<cache_key_type>;
+  using cache_alloc_type = Allocator<std::pair<const cache_key_type,
+      cache_value_type>>;
+  using cache_type = std::unordered_map<cache_key_type,cache_value_type,
+      cache_hash_type,cache_equal_type,cache_alloc_type>;
+
   /**
    * Cached mappings of clone ancestors.
    */
-  map_type cache;
+  cache_type cache;
 
   /**
    * Launch depth.
