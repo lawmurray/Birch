@@ -60,6 +60,15 @@ class Expression<Value> {
   function graftGamma() -> DelayGamma? {
     return nil;
   }
+
+  /*
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
+   * Return: The node if successful, nil if not.
+   */
+  function graftScaledGamma() ->  TransformScaledGamma? {
+    return nil;
+  }
   
   /*
    * Attempt to graft this expression onto the delayed sampling graph.

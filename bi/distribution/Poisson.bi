@@ -11,9 +11,14 @@ class Poisson(λ:Expression<Real>) < Distribution<Integer> {
     if delay? {
       delay!.prune();
     } else {
-      m:DelayGamma?;
-      if (m <- λ.graftGamma())? {
-        delay <- DelayGammaPoisson(x, m!);
+      m1:TransformScaledGamma?;
+      m2:DelayGamma?;
+      
+      if (m1 <- λ.graftScaledGamma())? {
+        delay <- DelayScaledGammaPoisson(x, m1!.a, m1!.x);
+      }
+      else if (m2 <- λ.graftGamma())? {
+        delay <- DelayGammaPoisson(x, m2!);
       } else {
         delay <- DelayPoisson(x, λ);
       }

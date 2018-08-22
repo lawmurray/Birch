@@ -9,6 +9,7 @@ program test(N:Integer <- 10000) {
   code <- code + run_test("dirichlet_categorical", N);
   code <- code + run_test("dirichlet_multinomial", N);
   code <- code + run_test("gamma_poisson", N);
+  code <- code + run_test("scaled_gamma_poisson", N);
   code <- code + run_test("linear_discrete_delta", N);
   code <- code + run_test("add_bounded_discrete_delta", N);
   code <- code + run_test("subtract_bounded_discrete_delta", N);

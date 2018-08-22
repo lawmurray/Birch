@@ -31,7 +31,23 @@ class Multiply<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>)
     }
     return y;
   }
-  
+
+  function graftScaledGamma() -> TransformScaledGamma? {
+    y:TransformScaledGamma?;
+    z:DelayGamma?;
+    
+    if (y <- left.graftScaledGamma())? {
+      y!.multiply(right.value());
+    } else if (y <- right.graftScaledGamma())? {
+      y!.multiply(left.value());
+    } else if (z <- left.graftGamma())? {
+      y <- TransformScaledGamma(right.value(), z!);
+    } else if (z <- right.graftGamma())? {
+      y <- TransformScaledGamma(left.value(), z!);
+    }
+    return y;
+  }
+ 
   function graftLinearNormalInverseGamma(σ2:Expression<Real>) ->
       TransformLinearNormalInverseGamma? {
     y:TransformLinearNormalInverseGamma?;
