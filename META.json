@@ -213,7 +213,6 @@
       "libbirch/Index.hpp",
       "libbirch/Iterator.hpp",
       "libbirch/libbirch.hpp",
-      "libbirch/Lockable.hpp",
       "libbirch/Map.hpp",
       "libbirch/MemberFiberState.hpp",
       "libbirch/MemberFiberWorld.hpp",
