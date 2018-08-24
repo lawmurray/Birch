@@ -33,50 +33,34 @@ void bi::Counted::deallocate() {
 }
 
 bi::Counted* bi::Counted::lock() {
-  unsigned count;
-  #pragma omp atomic capture
-  {
-    sharedCount += sharedCount > 0 ? 1 : 0;
-    count = sharedCount;
+  unsigned count = sharedCount;
+  while (count > 0 && !sharedCount.compare_exchange_weak(count, count + 1)) {
+    //
   }
   return count > 0 ? this : nullptr;
 }
 
 void bi::Counted::incShared() {
-  #pragma omp atomic update
   ++sharedCount;
 }
 
 void bi::Counted::decShared() {
   assert(sharedCount > 0);
 
-  unsigned count;
-  #pragma omp atomic capture
-  {
-    --sharedCount;
-    count = sharedCount;
-  }
-  if (count == 0) {
+  if (--sharedCount == 0) {
     destroy();
     decWeak();
   }
 }
 
 void bi::Counted::incWeak() {
-  #pragma omp atomic update
   ++weakCount;
 }
 
 void bi::Counted::decWeak() {
   assert(weakCount > 0);
 
-  unsigned count;
-  #pragma omp atomic capture
-  {
-    --weakCount;
-    count = weakCount;
-  }
-  if (count == 0) {
+  if (--weakCount == 0) {
     assert(sharedCount == 0);
     // ^ objects keep a weak pointer to themselves, so the weak count
     //   should not expire before the shared count

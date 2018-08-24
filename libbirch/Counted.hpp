@@ -85,11 +85,11 @@ protected:
   /**
    * Shared count.
    */
-  unsigned sharedCount;
+  std::atomic<unsigned> sharedCount;
 
   /**
    * Weak count.
    */
-  unsigned weakCount;
+  std::atomic<unsigned> weakCount;
 };
 }

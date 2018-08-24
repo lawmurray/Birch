@@ -8,7 +8,7 @@
 #include <cstdio>
 #include <cstdlib>
 
-char* bi::buffer = heap();
+std::atomic<char*> bi::buffer(heap());
 bi::Pool bi::pool[64];
 bi::World* bi::fiberWorld = new bi::World(0);
 bool bi::fiberClone = false;

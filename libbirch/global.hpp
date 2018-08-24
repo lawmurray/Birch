@@ -10,6 +10,7 @@
 #include <cstddef>
 #include <cassert>
 #include <vector>
+#include <atomic>
 
 /**
  * @def bi_assert
@@ -88,7 +89,7 @@ struct StackFunction {
 /**
  * Buffer for heap allocations.
  */
-extern char* buffer;
+extern std::atomic<char*> buffer;
 
 /**
  * Allocation pools.

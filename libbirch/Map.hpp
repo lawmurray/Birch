@@ -49,7 +49,7 @@ public:
    *
    * @param nentries Size of the buffer. Must be a power of 2.
    */
-  Map(const size_t nentries = 1 << 16);
+  Map(const size_t nentries = 1 << 10);
 
   /**
    * Destructor.
