@@ -8,8 +8,9 @@
 #include <cstdio>
 #include <cstdlib>
 
-static bi::World* rootWorld = new bi::World(0);
-bi::World* bi::fiberWorld = rootWorld;
+char* bi::buffer = heap();
+bi::Pool bi::pool[64];
+bi::World* bi::fiberWorld = new bi::World(0);
 bool bi::fiberClone = false;
 std::vector<bi::StackFrame> bi::stacktrace(32);
 // ^ reserving a non-zero size seems necessary to avoid segfault here

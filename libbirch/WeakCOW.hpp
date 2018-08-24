@@ -192,7 +192,7 @@ public:
   Any* pull() const {
     if (object) {
       auto self = const_cast<WeakCOW<Any>*>(this);
-      self->object = self->world->getNoCopy(object, current);
+      self->object = self->world->getNoCopy(object.get(), current);
       self->current = self->world;
     }
     return object.get();

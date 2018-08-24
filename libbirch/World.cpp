@@ -25,6 +25,10 @@ bi::World::World(const SharedPtr<World>& cloneSource) :
   //
 }
 
+bi::World::~World() {
+  map.decShared();
+}
+
 void bi::World::destroy() {
   size = sizeof(*this);
   this->~World();
@@ -44,7 +48,7 @@ int bi::World::depth() const {
   return launchDepth;
 }
 
-bi::SharedPtr<bi::Any> bi::World::get(const SharedPtr<Any>& o, World* world) {
+bi::Any* bi::World::get(Any* o, World* world) {
   assert(o);
   int d = depth() - world->depth();
   assert(d >= 0);
@@ -57,8 +61,7 @@ bi::SharedPtr<bi::Any> bi::World::get(const SharedPtr<Any>& o, World* world) {
   return dst->pull(o, world);
 }
 
-bi::SharedPtr<bi::Any> bi::World::getNoCopy(const SharedPtr<Any>& o,
-    World* world) {
+bi::Any* bi::World::getNoCopy(Any* o, World* world) {
   assert(o);
   int d = depth() - world->depth();
   assert(d >= 0);
@@ -71,80 +74,71 @@ bi::SharedPtr<bi::Any> bi::World::getNoCopy(const SharedPtr<Any>& o,
   return dst->pullNoCopy(o, world);
 }
 
-bi::SharedPtr<bi::Any> bi::World::pull(const SharedPtr<Any>& o,
-    World* world) {
+bi::Any* bi::World::pull(Any* o, World* world) {
   assert(o && hasCloneAncestor(world));
 
-  SharedPtr<bi::Any> result;
+  Any* result = nullptr;
   auto src = world;
+  size_t i;
+  bool inserted;
   if (this == src) {
     result = o;
   } else {
     /* through cache */
-    set();
-    auto iter = cache.find(o.get());
-    if (iter != cache.end()) {
-      result = iter->second;
-    } else {
+    std::tie(i, inserted) = cache.claim(o);
+    if (inserted) {
       assert(cloneSource);
       result = cloneSource->pullNoCopy(o, world);
-      auto ret = cache.insert(std::make_pair(o.get(), result.get()));
-      assert(ret.second);
+      cache.write(i, result);
+    } else {
+      result = cache.read(i);
     }
-    unset();
   }
 
   /* through map */
   if (this != result->getWorld()) {
-    set();
-    auto iter = map.find(result.get());
-    if (iter != map.end()) {
-      result = iter->second;
-    } else {
+    std::tie(i, inserted) = map.claim(result);
+    if (inserted) {
       Enter enter(this);
       Clone clone;
-      auto src = result.get();
       result = result->clone();
-      auto ret = map.insert(std::make_pair(src, result));
-      assert(ret.second);
+      result->incShared();
+      map.write(i, result);
+    } else {
+      result = map.read(i);
     }
-    unset();
   }
 
   return result;
 }
 
-bi::SharedPtr<bi::Any> bi::World::pullNoCopy(const SharedPtr<Any>& o,
-    World* world) {
+bi::Any* bi::World::pullNoCopy(Any* o, World* world) {
   assert(o && hasCloneAncestor(world));
 
-  SharedPtr<bi::Any> result;
+  Any* result = nullptr;
   auto src = world;
   if (this == src) {
     result = o;
   } else {
     /* through cache */
-    set();
-    auto iter = cache.find(o.get());
-    if (iter != cache.end()) {
-      result = iter->second;
-    } else {
+    size_t i;
+    bool inserted;
+    std::tie(i, inserted) = cache.claim(o);
+    if (inserted) {
       assert(cloneSource);
       result = cloneSource->pullNoCopy(o, world);
-      auto ret = cache.insert(std::make_pair(o.get(), result.get()));
-      assert(ret.second);
+      cache.write(i, result);
+    } else {
+      result = cache.read(i);
     }
-    unset();
   }
 
   /* through map */
   if (this != result->getWorld()) {
-    set();
-    auto iter = map.find(result.get());
-    if (iter != map.end()) {
-      result = iter->second;
+    auto to = map.get(result);
+    if (to) {
+      result = to;
     }
-    unset();
   }
 
   return result;

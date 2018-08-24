@@ -5,11 +5,6 @@
 
 #include <unistd.h>
 
-#if !DISABLE_POOL
-char* bi::buffer = heap();
-bi::Pool bi::pool[64];
-#endif
-
 char* bi::heap() {
   /* determine a preferred size of the heap based on total physical memory */
   size_t size = sysconf(_SC_PAGE_SIZE);

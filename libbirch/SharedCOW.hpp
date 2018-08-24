@@ -263,7 +263,7 @@ public:
      * reasons */
     if (object) {
       auto self = const_cast<SharedCOW<Any>*>(this);
-      self->object = self->world->get(object, current);
+      self->object = self->world->get(object.get(), current);
       self->current = self->world;
     }
     return object.get();
@@ -275,7 +275,7 @@ public:
      * reasons */
     if (object) {
       auto self = const_cast<SharedCOW<Any>*>(this);
-      self->object = self->world->getNoCopy(object, current);
+      self->object = self->world->getNoCopy(object.get(), current);
       self->current = self->world;
     }
     return object.get();
@@ -287,7 +287,7 @@ public:
      * reasons */
     if (object) {
       auto self = const_cast<SharedCOW<Any>*>(this);
-      self->object = self->world->getNoCopy(object, current);
+      self->object = self->world->getNoCopy(object.get(), current);
       self->current = self->world;
     }
     return object.get();

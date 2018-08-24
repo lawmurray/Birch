@@ -14,18 +14,6 @@
 #include "libbirch/Pool.hpp"
 
 namespace bi {
-#if !DISABLE_POOL
-/**
- * Buffer for heap allocations.
- */
-extern char* buffer;
-
-/**
- * Allocation pools.
- */
-extern bi::Pool pool[];
-#endif
-
 /**
  * Allocate a large buffer for the heap.
  */

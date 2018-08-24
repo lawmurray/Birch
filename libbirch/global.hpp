@@ -62,6 +62,7 @@
 #endif
 
 namespace bi {
+class Pool;
 class World;
 class Any;
 template<class T> class SharedCOW;
@@ -83,6 +84,16 @@ struct StackFunction {
   StackFunction(const char* func, const char* file, const int line);
   ~StackFunction();
 };
+
+/**
+ * Buffer for heap allocations.
+ */
+extern char* buffer;
+
+/**
+ * Allocation pools.
+ */
+extern Pool pool[];
 
 /**
  * The world of the currently running fiber.
