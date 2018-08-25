@@ -15,8 +15,7 @@ namespace bi {
  * the stack, and returned to the pool by pushing the stack. As each
  * block is at least 8 bytes in size, when in the pool (and therefore
  * not in use), its first 8 bytes are used to store a pointer to the next
- * block on the stack. The stack is thread-safe via a lock-free
- * implementation.
+ * block on the stack. The implementation is lock-free.
  */
 class Pool {
 public:

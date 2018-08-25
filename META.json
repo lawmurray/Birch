@@ -6,6 +6,7 @@
     "source": [
       "libbirch/Counted.cpp",
       "libbirch/global.cpp",
+      "libbirch/Lock.cpp",
       "libbirch/Map.cpp",
       "libbirch/memory.cpp",
       "libbirch/Pool.cpp",
@@ -213,6 +214,7 @@
       "libbirch/Index.hpp",
       "libbirch/Iterator.hpp",
       "libbirch/libbirch.hpp",
+      "libbirch/Lock.hpp",
       "libbirch/Map.hpp",
       "libbirch/MemberFiberState.hpp",
       "libbirch/MemberFiberWorld.hpp",

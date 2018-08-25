@@ -79,34 +79,24 @@ bi::Any* bi::World::pull(Any* o, World* world) {
 
   Any* result = nullptr;
   auto src = world;
-  size_t i;
-  bool inserted;
   if (this == src) {
     result = o;
   } else {
     /* through cache */
-    std::tie(i, inserted) = cache.claim(o);
-    if (inserted) {
-      assert(cloneSource);
-      result = cloneSource->pullNoCopy(o, world);
-      cache.write(i, result);
-    } else {
-      result = cache.read(i);
-    }
+    result = cache.put(o, [=]() {
+      return cloneSource->pullNoCopy(o, world);
+    });
   }
 
   /* through map */
   if (this != result->getWorld()) {
-    std::tie(i, inserted) = map.claim(result);
-    if (inserted) {
+    result = map.put(result, [=]() {
       Enter enter(this);
       Clone clone;
-      result = result->clone();
-      result->incShared();
-      map.write(i, result);
-    } else {
-      result = map.read(i);
-    }
+      auto o = result->clone();
+      o->incShared();
+      return o;
+    });
   }
 
   return result;
@@ -121,24 +111,14 @@ bi::Any* bi::World::pullNoCopy(Any* o, World* world) {
     result = o;
   } else {
     /* through cache */
-    size_t i;
-    bool inserted;
-    std::tie(i, inserted) = cache.claim(o);
-    if (inserted) {
-      assert(cloneSource);
-      result = cloneSource->pullNoCopy(o, world);
-      cache.write(i, result);
-    } else {
-      result = cache.read(i);
-    }
+    result = cache.put(o, [=]() {
+      return cloneSource->pullNoCopy(o, world);
+    });
   }
 
   /* through map */
   if (this != result->getWorld()) {
-    auto to = map.get(result);
-    if (to) {
-      result = to;
-    }
+    result = map.get(result, result);
   }
 
   return result;

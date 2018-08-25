@@ -3,12 +3,16 @@
  */
 #pragma once
 
+#include "libbirch/Lock.hpp"
+
 namespace bi {
 class Any;
 /**
- * Thread-safe lock-free hash table of memory mappings.
+ * Thread-safe hash table of memory mappings.
  *
  * @ingroup libbirch
+ *
+ * The implementation is lock-free except when resizing is required.
  */
 class Map {
 public:
@@ -39,7 +43,9 @@ public:
     /**
      * Constructor.
      */
-    entry_type() : key(nullptr), value(nullptr) {
+    entry_type() :
+        key(nullptr),
+        value(nullptr) {
       //
     }
   };
@@ -57,42 +63,43 @@ public:
   ~Map();
 
   /**
-   * @name High-level interface.
-   */
-  //@{
-  /**
-   * Get the value for a given key.
+   * Get a value.
    *
-   * @param key The key,
+   * @param key The key.
+   * @param fail The value on fail.
    *
-   * @return The value.
+   * @return If the key exists, then its value, otherwise @p fail.
    */
-  value_type get(const key_type key) const;
+  value_type get(const key_type key, const value_type fail = nullptr);
 
   /**
-   * Set the value for a given index.
+   * Insert or update an entry.
    *
-   * @param key The key,
+   * @param key The key.
    * @param value The value.
-   *
-   * This will fail in an infinite loop if the hash table is full. To ensure
-   * that this does not occur, call reserve() before inserting each new key.
    */
   void set(const key_type key, const value_type value);
 
   /**
-   * Reserve an entry.
+   * Insert an entry if it does not exist.
    *
-   * @return True if there is space for at least one more insertion, false
-   * otherwise.
+   * @param key The key.
+   * @param f Functional to construct value if required.
+   *
+   * If the key exists, its associated value is returned, otherwise a new
+   * entry is inserted with a value as returned by the functional.
+   *
+   * @return The value.
    */
-  bool reserve();
-  //@}
+  template<class Functional>
+  value_type put(const key_type key, const Functional& f);
 
   /**
-   * @name Low-level interface.
+   * Decrement the shared pointer count of all values.
    */
-  //@{
+  void decShared();
+
+private:
   /**
    * Find the index of an entry.
    *
@@ -141,13 +148,6 @@ public:
   void copy(const Map& o);
 
   /**
-   * Decrement the shared pointer count of all values.
-   */
-  void decShared();
-  //@}
-
-private:
-  /**
    * Compute the hash for a key.
    */
   size_t hash(const key_type key) const;
@@ -166,5 +166,25 @@ private:
    * Total number of entries in the table.
    */
   const size_t nentries;
+
+  /**
+   * Resize lock.
+   */
+  Lock lock;
 };
+}
+
+template<class Functional>
+bi::Map::value_type bi::Map::put(const key_type key, const Functional& f) {
+  lock.share();
+  value_type result;
+  auto pair = claim(key);
+  if (pair.second) {
+    result = f();
+    write(pair.first, result);
+  } else {
+    result = read(pair.first);
+  }
+  lock.unshare();
+  return result;
 }

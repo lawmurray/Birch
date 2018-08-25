@@ -16,20 +16,32 @@ bi::Map::~Map() {
   bi::deallocate(entries, nentries * sizeof(entry_type));
 }
 
-bi::Map::value_type bi::Map::get(const key_type key) const {
+bi::Map::value_type bi::Map::get(const key_type key, const value_type fail) {
+  lock.share();
   size_t i = find(key);
-  return (i < nentries) ? read(i) : nullptr;
+  auto result = (i < nentries) ? read(i) : fail;
+  lock.unshare();
+  return result;
 }
 
 void bi::Map::set(const key_type key, const value_type value) {
+  lock.share();
   auto result = claim(key);
   write(result.first, value);
+  lock.unshare();
 }
 
-bool bi::Map::reserve() {
-  /* the table is considered full if more than three-quarters of its
-   * entries are occupied */
-  return ++noccupied <= (nentries >> 1) + (nentries >> 2);
+void bi::Map::decShared() {
+  key_type key, value;
+  for (size_t i = 0; i < nentries; ++i) {
+    key = entries[i].key.load();
+    if (key) {
+      value = entries[i].value.load();
+      if (value) {
+        value->decShared();
+      }
+    }
+  }
 }
 
 size_t bi::Map::find(const key_type key) const {
@@ -65,6 +77,9 @@ bi::Map::value_type bi::Map::read(const size_t i) const {
 }
 
 void bi::Map::write(const size_t i, const value_type value) {
+  /* the table is considered full if more than three-quarters of its
+   * entries are occupied */
+  //return ++noccupied <= (nentries >> 1) + (nentries >> 2);
   return entries[i].value.store(value);
 }
 
@@ -74,19 +89,6 @@ void bi::Map::copy(const Map& o) {
     key = o.entries[i].key.load();
     if (key) {
       set(key, o.entries[i].value.load());
-    }
-  }
-}
-
-void bi::Map::decShared() {
-  key_type key, value;
-  for (size_t i = 0; i < nentries; ++i) {
-    key = entries[i].key.load();
-    if (key) {
-      value = entries[i].value.load();
-      if (value) {
-        value->decShared();
-      }
     }
   }
 }
