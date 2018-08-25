@@ -3,17 +3,18 @@
  */
 #include "libbirch/Map.hpp"
 
+#include <algorithm>
 #include <atomic>
 
-bi::Map::Map(const size_t nentries) :
-    entries((entry_type*)bi::allocate(nentries * sizeof(entry_type))),
-    noccupied(0),
-    nentries(nentries) {
-  std::memset(entries, 0, nentries * sizeof(entry_type));
+bi::Map::Map() :
+    entries(nullptr),
+    nentries(0),
+    nreserved(0) {
+  //
 }
 
 bi::Map::~Map() {
-  bi::deallocate(entries, nentries * sizeof(entry_type));
+  deallocate(entries, nentries * sizeof(entry_type));
 }
 
 bi::Map::value_type bi::Map::get(const key_type key, const value_type fail) {
@@ -25,9 +26,13 @@ bi::Map::value_type bi::Map::get(const key_type key, const value_type fail) {
 }
 
 void bi::Map::set(const key_type key, const value_type value) {
+  reserve();
   lock.share();
   auto result = claim(key);
   write(result.first, value);
+  if (!result.second) {
+    unreserve();
+  }
   lock.unshare();
 }
 
@@ -45,13 +50,17 @@ void bi::Map::decShared() {
 }
 
 size_t bi::Map::find(const key_type key) const {
-  size_t i = hash(key);
-  key_type k = entries[i].key.load();
-  while (k && k != key) {
-    i = (i + 1) & (nentries - 1);
-    k = entries[i].key.load();
+  if (nentries > 0) {
+    size_t i = hash(key);
+    key_type k = entries[i].key.load();
+    while (k && k != key) {
+      i = (i + 1) & (nentries - 1);
+      k = entries[i].key.load();
+    }
+    return (k == key) ? i : nentries;
+  } else {
+    return 0ull;
   }
-  return (k == key) ? i : nentries;
 }
 
 std::pair<size_t,bool> bi::Map::claim(const key_type key) {
@@ -67,6 +76,7 @@ std::pair<size_t,bool> bi::Map::claim(const key_type key) {
 }
 
 bi::Map::value_type bi::Map::read(const size_t i) const {
+  assert(i < nentries);
   value_type value;
   do {
     /* must spin here as the entry may have been reserved, with the write of
@@ -77,22 +87,56 @@ bi::Map::value_type bi::Map::read(const size_t i) const {
 }
 
 void bi::Map::write(const size_t i, const value_type value) {
-  /* the table is considered full if more than three-quarters of its
-   * entries are occupied */
-  //return ++noccupied <= (nentries >> 1) + (nentries >> 2);
+  assert(i < nentries);
   return entries[i].value.store(value);
 }
 
-void bi::Map::copy(const Map& o) {
-  key_type key;
-  for (size_t i = 0; i < o.nentries; ++i) {
-    key = o.entries[i].key.load();
-    if (key) {
-      set(key, o.entries[i].value.load());
+size_t bi::Map::hash(const key_type key) const {
+  assert(nentries > 0);
+  return (reinterpret_cast<size_t>(key) >> 6ull) & (nentries - 1ull);
+}
+
+void bi::Map::reserve() {
+  /* the table is considered crowded if more than three-quarters of its
+   * entries are occupied */
+  if (++nreserved > (nentries >> 1ull) + (nentries >> 2ull)) {
+    /* obtain resize lock */
+    lock.keep();
+
+    /* check that no other thread has resized in the meantime */
+    if (nreserved > (nentries >> 1ull) + (nentries >> 2ull)) {
+      /* double size */
+      size_t nentries1 = std::max(2ull*nentries, 4ull);
+
+      /* keep doubling until no longer crowded (other threads may be
+       * reserving in the meantime */
+      while (nreserved > (nentries1 >> 1ull) + (nentries1 >> 2ull)) {
+        nentries1 <<= 1ull;
+      }
+
+      /* resize */
+      entry_type* entries1 = (entry_type*)allocate(nentries1*sizeof(entry_type));
+      std::memset(entries1, 0, nentries1*sizeof(entry_type));
+      std::swap(nentries1, nentries);
+      std::swap(entries1, entries);
+
+      /* copy over previous entries */
+      for (size_t i = 0; i < nentries1; ++i) {
+        key_type key = entries1[i].key.load();
+        if (key) {
+          set(key, entries1[i].value.load());
+        }
+      }
+
+      /* deallocate previous */
+      deallocate(entries1, nentries1*sizeof(entry_type));
     }
+
+    /* release resize lock */
+    lock.unkeep();
   }
 }
 
-size_t bi::Map::hash(const key_type key) const {
-  return (reinterpret_cast<size_t>(key) >> 6) & (nentries - 1);
+void bi::Map::unreserve() {
+  --nreserved;
 }

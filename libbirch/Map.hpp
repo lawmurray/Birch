@@ -52,10 +52,8 @@ public:
 
   /**
    * Constructor.
-   *
-   * @param nentries Size of the buffer. Must be a power of 2.
    */
-  Map(const size_t nentries = 1 << 10);
+  Map();
 
   /**
    * Destructor.
@@ -139,33 +137,35 @@ private:
   void write(const size_t i, const value_type value);
 
   /**
-   * Copy in the entries from another map.
-   *
-   * @param o The other map.
-   *
-   * This is not a thread-safe operation.
-   */
-  void copy(const Map& o);
-
-  /**
    * Compute the hash for a key.
    */
   size_t hash(const key_type key) const;
 
   /**
-   * The table.
+   * Reserve space for a (possible) new entry, resizing if necessary.
    */
-  entry_type* const entries;
+  void reserve();
 
   /**
-   * The number of occupied entries in the table.
+   * Release a reservation previously obtained with reserve(), which will
+   * not be needed.
    */
-  std::atomic<size_t> noccupied;
+  void unreserve();
+
+  /**
+   * The table.
+   */
+  entry_type* entries;
 
   /**
    * Total number of entries in the table.
    */
-  const size_t nentries;
+  size_t nentries;
+
+  /**
+   * Number of reserved entries in the table.
+   */
+  std::atomic<size_t> nreserved;
 
   /**
    * Resize lock.
@@ -176,6 +176,7 @@ private:
 
 template<class Functional>
 bi::Map::value_type bi::Map::put(const key_type key, const Functional& f) {
+  reserve();
   lock.share();
   value_type result;
   auto pair = claim(key);
@@ -183,6 +184,7 @@ bi::Map::value_type bi::Map::put(const key_type key, const Functional& f) {
     result = f();
     write(pair.first, result);
   } else {
+    unreserve();
     result = read(pair.first);
   }
   lock.unshare();
