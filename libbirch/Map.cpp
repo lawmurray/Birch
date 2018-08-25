@@ -106,7 +106,7 @@ void bi::Map::reserve() {
     /* check that no other thread has resized in the meantime */
     if (nreserved > (nentries >> 1ull) + (nentries >> 2ull)) {
       /* double size */
-      size_t nentries1 = std::max(2ull*nentries, 4ull);
+      size_t nentries1 = std::max(2ull*nentries, 256ull);
 
       /* keep doubling until no longer crowded (other threads may be
        * reserving in the meantime */
