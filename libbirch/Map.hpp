@@ -30,8 +30,10 @@ public:
 
   /**
    * Constructor.
+   *
+   * @param mn Minimum size of table.
    */
-  Map();
+  Map(const unsigned mn = 256u);
 
   /**
    * Destructor.
@@ -136,6 +138,11 @@ private:
    * Resize lock.
    */
   Lock lock;
+
+  /**
+   * Minimum size of table.
+   */
+  unsigned mn;
 };
 }
 
@@ -148,10 +155,10 @@ bi::Map::value_type bi::Map::getOrPut(const key_type key,
 
   /* try get */
   size_t i = hash(key);
-  entry_type entry = entries[i].load();
+  entry_type entry = entries[i].load(std::memory_order_relaxed);
   while (entry.key && entry.key != key) {
     i = (i + 1u) & (nentries - 1u);
-    entry = entries[i].load();
+    entry = entries[i].load(std::memory_order_relaxed);
   }
   if (entry.key == key) {
     /* get succeeded, cancel reservation */
@@ -160,7 +167,7 @@ bi::Map::value_type bi::Map::getOrPut(const key_type key,
     /* get failed, do put instead */
     entry = {key, f()};
     entry_type expected = {nullptr, nullptr};
-    while (!entries[i].compare_exchange_strong(expected, entry)) {
+    while (!entries[i].compare_exchange_strong(expected, entry, std::memory_order_relaxed)) {
       i = (i + 1u) & (nentries - 1u);
       expected = {nullptr, nullptr};
     }

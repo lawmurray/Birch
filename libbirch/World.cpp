@@ -9,6 +9,8 @@
 
 bi::World::World() :
     launchSource(fiberWorld),
+    map(4u),
+    cache(256u),
     launchDepth(fiberWorld->launchDepth + 1) {
   //
 }

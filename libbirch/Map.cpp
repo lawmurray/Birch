@@ -5,10 +5,11 @@
 
 #include <algorithm>
 
-bi::Map::Map() :
+bi::Map::Map(const unsigned mn) :
     entries(nullptr),
     nentries(0),
-    nreserved(0) {
+    nreserved(0),
+    mn(mn) {
   //
 }
 
@@ -22,10 +23,10 @@ bi::Map::value_type bi::Map::get(const key_type key, const value_type fail) {
   if (nentries > 0) {
     lock.share();
     size_t i = hash(key);
-    entry_type entry = entries[i].load();
+    entry_type entry = entries[i].load(std::memory_order_relaxed);
     while (entry.key && entry.key != key) {
       i = (i + 1) & (nentries - 1);
-      entry = entries[i].load();
+      entry = entries[i].load(std::memory_order_relaxed);
     }
     lock.unshare();
     if (entry.key == key) {
@@ -43,7 +44,7 @@ void bi::Map::put(const key_type key, const value_type value) {
   size_t i = hash(key);
   entry_type expected = { nullptr, nullptr };
   entry_type desired = { key, value };
-  while (!entries[i].compare_exchange_strong(expected, desired)) {
+  while (!entries[i].compare_exchange_strong(expected, desired, std::memory_order_relaxed)) {
     i = (i + 1) & (nentries - 1);
     expected = {nullptr, nullptr};
   }
@@ -51,8 +52,9 @@ void bi::Map::put(const key_type key, const value_type value) {
 }
 
 void bi::Map::decShared() {
+  entry_type* entries1 = (entry_type*)entries;
   for (size_t i = 0; i < nentries; ++i) {
-    entry_type entry = entries[i].load();
+    entry_type entry = entries1[i];
     if (entry.key) {
       entry.value->decShared();
     }
@@ -83,8 +85,8 @@ void bi::Map::reserve() {
       entry_type* entries1 = (entry_type*)entries;
 
       /* initialize new table */
-      auto nentries2 = std::max(2ull * nentries1, 256ull);
-      auto entries2 = (entry_type*)allocate(nentries2 * sizeof(entry_type));
+      size_t nentries2 = std::max(2ull * nentries1, (unsigned long long)mn);
+      entry_type* entries2 = (entry_type*)allocate(nentries2 * sizeof(entry_type));
       std::memset(entries2, 0, nentries2 * sizeof(entry_type));
 
       /* copy contents from previous table */
