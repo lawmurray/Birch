@@ -40,9 +40,9 @@ public:
 
 private:
   /**
-   * Lock type.
+   * Joint lock type.
    */
-  struct lock_type {
+  struct joint_lock_type {
     /**
      * Count of threads with shared access.
      */
@@ -55,8 +55,31 @@ private:
   };
 
   /**
+   * Split lock type.
+   */
+  struct split_lock_type {
+    /**
+     * Count of threads with shared access.
+     */
+    std::atomic<unsigned> shareCount;
+
+    /**
+     * Count of threads with exclusive access.
+     */
+    std::atomic<unsigned> keepCount;
+  };
+
+  /**
+   * Lock type.
+   */
+  union lock_type {
+    std::atomic<joint_lock_type> joint;
+    split_lock_type split;
+  };
+
+  /**
    * Lock.
    */
-  std::atomic<lock_type> lock;
+  lock_type lock;
 };
 }

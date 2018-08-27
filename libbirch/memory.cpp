@@ -6,6 +6,9 @@
 #include <unistd.h>
 
 char* bi::heap() {
+#if DISABLE_POOL
+  return nullptr;
+#else
   /* determine a preferred size of the heap based on total physical memory */
   size_t size = sysconf(_SC_PAGE_SIZE);
   size_t npages = sysconf(_SC_PHYS_PAGES);
@@ -21,6 +24,7 @@ char* bi::heap() {
   assert(ptr);
 
   return (char*)ptr;
+#endif
 }
 
 void* bi::allocate(const size_t n) {

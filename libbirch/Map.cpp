@@ -4,7 +4,6 @@
 #include "libbirch/Map.hpp"
 
 #include <algorithm>
-#include <atomic>
 
 bi::Map::Map() :
     entries(nullptr),
@@ -14,81 +13,50 @@ bi::Map::Map() :
 }
 
 bi::Map::~Map() {
-  deallocate(entries, nentries * sizeof(entry_type));
+  deallocate(entries, nentries * sizeof(std::atomic<entry_type>));
 }
 
 bi::Map::value_type bi::Map::get(const key_type key, const value_type fail) {
-  lock.share();
-  size_t i = find(key);
-  auto result = (i < nentries) ? read(i) : fail;
-  lock.unshare();
-  return result;
+  assert(key);
+  value_type value = fail;
+  if (nentries > 0) {
+    lock.share();
+    size_t i = hash(key);
+    entry_type entry = entries[i].load();
+    while (entry.key && entry.key != key) {
+      i = (i + 1) & (nentries - 1);
+      entry = entries[i].load();
+    }
+    lock.unshare();
+    if (entry.key == key) {
+      value = entry.value;
+    }
+  }
+  return value;
 }
 
-void bi::Map::set(const key_type key, const value_type value) {
+void bi::Map::put(const key_type key, const value_type value) {
+  assert(key);
+  assert(value);
   reserve();
   lock.share();
-  auto result = claim(key);
-  write(result.first, value);
-  if (!result.second) {
-    unreserve();
+  size_t i = hash(key);
+  entry_type expected = { nullptr, nullptr };
+  entry_type desired = { key, value };
+  while (!entries[i].compare_exchange_strong(expected, desired)) {
+    i = (i + 1) & (nentries - 1);
+    expected = {nullptr, nullptr};
   }
   lock.unshare();
 }
 
 void bi::Map::decShared() {
-  key_type key, value;
   for (size_t i = 0; i < nentries; ++i) {
-    key = entries[i].key.load();
-    if (key) {
-      value = entries[i].value.load();
-      if (value) {
-        value->decShared();
-      }
+    entry_type entry = entries[i].load();
+    if (entry.key) {
+      entry.value->decShared();
     }
   }
-}
-
-size_t bi::Map::find(const key_type key) const {
-  if (nentries > 0) {
-    size_t i = hash(key);
-    key_type k = entries[i].key.load();
-    while (k && k != key) {
-      i = (i + 1) & (nentries - 1);
-      k = entries[i].key.load();
-    }
-    return (k == key) ? i : nentries;
-  } else {
-    return 0ull;
-  }
-}
-
-std::pair<size_t,bool> bi::Map::claim(const key_type key) {
-  size_t i = hash(key);
-  key_type k = nullptr;
-  entries[i].key.compare_exchange_strong(k, key);
-  while (k && k != key) {
-    k = nullptr;
-    i = (i + 1) & (nentries - 1);
-    entries[i].key.compare_exchange_strong(k, key);
-  }
-  return std::make_pair(i, k == nullptr);
-}
-
-bi::Map::value_type bi::Map::read(const size_t i) const {
-  assert(i < nentries);
-  value_type value;
-  do {
-    /* must spin here as the entry may have been reserved, with the write of
-     * the value pending */
-    value = entries[i].value.load();
-  } while (!value);
-  return value;
-}
-
-void bi::Map::write(const size_t i, const value_type value) {
-  assert(i < nentries);
-  return entries[i].value.store(value);
 }
 
 size_t bi::Map::hash(const key_type key) const {
@@ -96,40 +64,45 @@ size_t bi::Map::hash(const key_type key) const {
   return (reinterpret_cast<size_t>(key) >> 6ull) & (nentries - 1ull);
 }
 
-void bi::Map::reserve() {
+size_t bi::Map::crowd() const {
   /* the table is considered crowded if more than three-quarters of its
    * entries are occupied */
-  if (++nreserved > (nentries >> 1ull) + (nentries >> 2ull)) {
+  return (nentries >> 1ull) + (nentries >> 2ull);
+}
+
+void bi::Map::reserve() {
+  size_t nreserved1 = ++nreserved;
+  if (nreserved1 > crowd()) {
     /* obtain resize lock */
     lock.keep();
 
     /* check that no other thread has resized in the meantime */
-    if (nreserved > (nentries >> 1ull) + (nentries >> 2ull)) {
-      /* double size */
-      size_t nentries1 = std::max(2ull*nentries, 256ull);
+    if (nreserved1 > crowd()) {
+      /* save previous table */
+      size_t nentries1 = nentries;
+      entry_type* entries1 = (entry_type*)entries;
 
-      /* keep doubling until no longer crowded (other threads may be
-       * reserving in the meantime */
-      while (nreserved > (nentries1 >> 1ull) + (nentries1 >> 2ull)) {
-        nentries1 <<= 1ull;
-      }
+      /* initialize new table */
+      auto nentries2 = std::max(2ull * nentries1, 256ull);
+      auto entries2 = (entry_type*)allocate(nentries2 * sizeof(entry_type));
+      std::memset(entries2, 0, nentries2 * sizeof(entry_type));
 
-      /* resize */
-      entry_type* entries1 = (entry_type*)allocate(nentries1*sizeof(entry_type));
-      std::memset(entries1, 0, nentries1*sizeof(entry_type));
-      std::swap(nentries1, nentries);
-      std::swap(entries1, entries);
-
-      /* copy over previous entries */
-      for (size_t i = 0; i < nentries1; ++i) {
-        key_type key = entries1[i].key.load();
-        if (key) {
-          set(key, entries1[i].value.load());
+      /* copy contents from previous table */
+      nentries = nentries2;
+      for (size_t i = 0u; i < nentries1; ++i) {
+        entry_type entry = entries1[i];
+        if (entry.key) {
+          size_t j = hash(entry.key);
+          while (entries2[j].key) {
+            j = (j + 1u) & (nentries2 - 1u);
+          }
+          entries2[j] = entry;
         }
       }
+      entries = (std::atomic<entry_type>*)entries2;
 
-      /* deallocate previous */
-      deallocate(entries1, nentries1*sizeof(entry_type));
+      /* deallocate previous table */
+      deallocate(entries1, nentries1 * sizeof(entry_type));
     }
 
     /* release resize lock */

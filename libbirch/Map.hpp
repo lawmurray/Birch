@@ -5,6 +5,8 @@
 
 #include "libbirch/Lock.hpp"
 
+#include <omp.h>
+
 namespace bi {
 class Any;
 /**
@@ -27,30 +29,6 @@ public:
   using value_type = Any*;
 
   /**
-   * Entry type.
-   */
-  struct entry_type {
-    /**
-     * Key (source address).
-     */
-    std::atomic<key_type> key;
-
-    /**
-     * Value (destination address).
-     */
-    std::atomic<value_type> value;
-
-    /**
-     * Constructor.
-     */
-    entry_type() :
-        key(nullptr),
-        value(nullptr) {
-      //
-    }
-  };
-
-  /**
    * Constructor.
    */
   Map();
@@ -61,7 +39,7 @@ public:
   ~Map();
 
   /**
-   * Get a value.
+   * Get a value by key.
    *
    * @param key The key.
    * @param fail The value on fail.
@@ -71,26 +49,31 @@ public:
   value_type get(const key_type key, const value_type fail = nullptr);
 
   /**
-   * Insert or update an entry.
+   * Insert a value by key, assuming that the key does not already exist.
    *
    * @param key The key.
    * @param value The value.
-   */
-  void set(const key_type key, const value_type value);
-
-  /**
-   * Insert an entry if it does not exist.
-   *
-   * @param key The key.
-   * @param f Functional to construct value if required.
    *
    * If the key exists, its associated value is returned, otherwise a new
    * entry is inserted with a value as returned by the functional.
    *
    * @return The value.
    */
+  void put(const key_type key, const value_type value);
+
+  /**
+   * Get a value by key, or insert it if it doesn't exist.
+   *
+   * @param key The key.
+   * @param f Functional to produce the value if insertion is required.
+   *
+   * If the key exists, its associated value is returned, otherwise a value
+   * is generated from the functional and inserted.
+   *
+   * @return The value.
+   */
   template<class Functional>
-  value_type put(const key_type key, const Functional& f);
+  value_type getOrPut(const key_type key, const Functional& f);
 
   /**
    * Decrement the shared pointer count of all values.
@@ -99,47 +82,29 @@ public:
 
 private:
   /**
-   * Find the index of an entry.
-   *
-   * @param key The key.
-   *
-   * @return If the given key exists then its index, otherwise an
-   * out-of-range index.
+   * Entry type.
    */
-  size_t find(const key_type key) const;
+  struct entry_type {
+    /**
+     * Key (source address).
+     */
+    key_type key;
 
-  /**
-   * Claim an index for an entry.
-   *
-   * @param key The key.
-   *
-   * @return If the given key exists then its index and false, otherwise an
-   * empty entry is claimed and the key written, returning its index and
-   * true.
-   */
-  std::pair<size_t,bool> claim(const key_type key);
-
-  /**
-   * Read the value at a given index.
-   *
-   * @param i The index.
-   *
-   * @return The value.
-   */
-  value_type read(const size_t i) const;
-
-  /**
-   * Write the value at a given index.
-   *
-   * @param i The index.
-   * @param value The value.
-   */
-  void write(const size_t i, const value_type value);
+    /**
+     * Value (destination address).
+     */
+    value_type value;
+  };
 
   /**
    * Compute the hash for a key.
    */
   size_t hash(const key_type key) const;
+
+  /**
+   * Compute the lower bound on reserved entries to be considered crowded.
+   */
+  size_t crowd() const;
 
   /**
    * Reserve space for a (possible) new entry, resizing if necessary.
@@ -155,7 +120,7 @@ private:
   /**
    * The table.
    */
-  entry_type* entries;
+  std::atomic<entry_type>* entries;
 
   /**
    * Total number of entries in the table.
@@ -175,18 +140,32 @@ private:
 }
 
 template<class Functional>
-bi::Map::value_type bi::Map::put(const key_type key, const Functional& f) {
+bi::Map::value_type bi::Map::getOrPut(const key_type key,
+    const Functional& f) {
+  assert(key);
   reserve();
   lock.share();
-  value_type result;
-  auto pair = claim(key);
-  if (pair.second) {
-    result = f();
-    write(pair.first, result);
-  } else {
-    unreserve();
-    result = read(pair.first);
+
+  /* try get */
+  size_t i = hash(key);
+  entry_type entry = entries[i].load();
+  while (entry.key && entry.key != key) {
+    i = (i + 1u) & (nentries - 1u);
+    entry = entries[i].load();
   }
+  if (entry.key == key) {
+    /* get succeeded, cancel reservation */
+    unreserve();
+  } else {
+    /* get failed, do put instead */
+    entry = {key, f()};
+    entry_type expected = {nullptr, nullptr};
+    while (!entries[i].compare_exchange_strong(expected, entry)) {
+      i = (i + 1u) & (nentries - 1u);
+      expected = {nullptr, nullptr};
+    }
+  }
+
   lock.unshare();
-  return result;
+  return entry.value;
 }

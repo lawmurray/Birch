@@ -83,14 +83,14 @@ bi::Any* bi::World::pull(Any* o, World* world) {
     result = o;
   } else {
     /* through cache */
-    result = cache.put(o, [=]() {
+    result = cache.getOrPut(o, [=]() {
       return cloneSource->pullNoCopy(o, world);
     });
   }
 
   /* through map */
   if (this != result->getWorld()) {
-    result = map.put(result, [=]() {
+    result = map.getOrPut(result, [=]() {
       Enter enter(this);
       Clone clone;
       auto o = result->clone();
@@ -111,7 +111,7 @@ bi::Any* bi::World::pullNoCopy(Any* o, World* world) {
     result = o;
   } else {
     /* through cache */
-    result = cache.put(o, [=]() {
+    result = cache.getOrPut(o, [=]() {
       return cloneSource->pullNoCopy(o, world);
     });
   }

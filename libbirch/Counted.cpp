@@ -41,26 +41,24 @@ bi::Counted* bi::Counted::lock() {
 }
 
 void bi::Counted::incShared() {
-  ++sharedCount;
+  sharedCount.fetch_add(1u, std::memory_order_relaxed);
 }
 
 void bi::Counted::decShared() {
   assert(sharedCount > 0);
-
-  if (--sharedCount == 0) {
+  if (sharedCount.fetch_sub(1u, std::memory_order_relaxed) == 1) {
     destroy();
     decWeak();
   }
 }
 
 void bi::Counted::incWeak() {
-  ++weakCount;
+  weakCount.fetch_add(1u, std::memory_order_relaxed);
 }
 
 void bi::Counted::decWeak() {
   assert(weakCount > 0);
-
-  if (--weakCount == 0) {
+  if (weakCount.fetch_sub(1u, std::memory_order_relaxed) == 1) {
     assert(sharedCount == 0);
     // ^ objects keep a weak pointer to themselves, so the weak count
     //   should not expire before the shared count
