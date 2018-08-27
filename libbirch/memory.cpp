@@ -86,7 +86,9 @@ void* bi::reallocate(void* ptr1, const size_t n1, const size_t n2) {
   if (i1 != i2) {
     /* can't continue using current allocation */
     ptr2 = allocate(n2);
-    std::memcpy(ptr2, ptr1, n1);
+    if (ptr1 && ptr2) {
+      std::memcpy(ptr2, ptr1, std::min(n1, n2));
+    }
     deallocate(ptr1, n1);
   }
   return ptr2;
