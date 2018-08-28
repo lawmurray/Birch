@@ -11,7 +11,12 @@ class Exponential(λ:Expression<Real>) < Distribution<Real> {
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayExponential(x, λ);
+      m:DelayGamma?;
+      if (m <- λ.graftGamma())? {
+        delay <- DelayGammaExponential(x, m!);
+      } else {
+        delay <- DelayExponential(x, λ);
+      }
     }
   }
 }

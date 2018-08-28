@@ -353,6 +353,24 @@ function pmf_gamma_poisson(x:Integer, k:Real, θ:Real) -> Real {
 }
 
 /**
+ * PDF of a Lomax variate.
+ *
+ * - x: The variate.
+ * - λ: Scale.
+ * - α: Shape.
+ *
+ * Return: the probability density.
+ */
+function pdf_lomax(x:Real, λ:Real, α:Real) -> Real {
+  assert 0.0 < λ;
+  assert 0.0 < α;
+
+  cpp{{
+  return boost::math::pdf(boost::math::pareto_distribution<>(λ_, α_), x_+λ_);
+  }}
+}
+
+/**
  * PMF of a Dirichlet-categorical variate.
  *
  * - x: The variate.

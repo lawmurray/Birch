@@ -333,6 +333,28 @@ function cdf_gamma_poisson(x:Integer, k:Real, θ:Real) -> Real {
 }
 
 /**
+ * CDF of a Lomax variate.
+ *
+ * - x: The variate.
+ * - λ: Scale.
+ * - α: Shape.
+ *
+ * Return: the cumulative probability.
+ */
+function cdf_lomax(x:Real, λ:Real, α:Real) -> Real {
+  assert 0.0 < λ;
+  assert 0.0 < α;
+
+  if x <= 0.0 {
+    return 0.0;
+  } else {
+    cpp{{
+    return boost::math::cdf(boost::math::pareto_distribution<>(λ_, α_), x_+λ_);
+    }}
+  }
+}
+
+/**
  * CDF of a Dirichlet-categorical variate.
  *
  * - x: The variate.

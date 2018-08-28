@@ -423,6 +423,19 @@ function simulate_gamma_poisson(k:Real, θ:Real) -> Integer {
 }
 
 /**
+ * Simulate a Lomax distribution.
+ *
+ * - λ: Scale.
+ * - α: Shape.
+ */
+function simulate_lomax(λ:Real, α:Real) -> Real {
+  assert 0.0 < λ;
+  assert 0.0 < α;
+
+  return simulate_exponential(simulate_gamma(α, 1.0/λ));
+}
+
+/**
  * Simulate a Dirichlet-categorical distribution.
  *
  * - α: Concentrations.

@@ -423,6 +423,25 @@ function observe_gamma_poisson(x:Integer, k:Real, θ:Real) -> Real {
 }
 
 /**
+ * Observe of a Lomax variate.
+ *
+ * - x: The variate.
+ * - λ: Scale.
+ * - α: Shape.
+ *
+ * Return: the log probability density.
+ */
+function observe_lomax(x:Real, λ:Real, α:Real) -> Real {
+  assert 0.0 < λ;
+  assert 0.0 < α;
+  if x >= 0.0 {
+    return log(α) - log(λ) - (α+1.0)*log(1.0+x/λ);
+  } else {
+    return -inf;
+  }
+}
+
+/**
  * Observe a Dirichlet-categorical variate.
  *
  * - x: The variate.
