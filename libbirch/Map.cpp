@@ -44,7 +44,8 @@ void bi::Map::put(const key_type key, const value_type value) {
   size_t i = hash(key);
   entry_type expected = { nullptr, nullptr };
   entry_type desired = { key, value };
-  while (!entries[i].compare_exchange_strong(expected, desired, std::memory_order_relaxed)) {
+  while (!entries[i].compare_exchange_strong(expected, desired,
+      std::memory_order_relaxed)) {
     i = (i + 1) & (nentries - 1);
     expected = {nullptr, nullptr};
   }
@@ -73,7 +74,7 @@ size_t bi::Map::crowd() const {
 }
 
 void bi::Map::reserve() {
-  size_t nreserved1 = ++nreserved;
+  size_t nreserved1 = nreserved.fetch_add(1u) + 1u;
   if (nreserved1 > crowd()) {
     /* obtain resize lock */
     lock.keep();
@@ -86,7 +87,8 @@ void bi::Map::reserve() {
 
       /* initialize new table */
       size_t nentries2 = std::max(2ull * nentries1, (unsigned long long)mn);
-      entry_type* entries2 = (entry_type*)allocate(nentries2 * sizeof(entry_type));
+      entry_type* entries2 = (entry_type*)allocate(
+          nentries2 * sizeof(entry_type));
       std::memset(entries2, 0, nentries2 * sizeof(entry_type));
 
       /* copy contents from previous table */
@@ -113,5 +115,5 @@ void bi::Map::reserve() {
 }
 
 void bi::Map::unreserve() {
-  --nreserved;
+  nreserved.fetch_sub(1u, std::memory_order_relaxed);
 }

@@ -10,14 +10,11 @@ namespace bi {
  * Lock with shared and exclusive use semantics.
  *
  * @ingroup libbirch
+ *
+ * @todo Could replace with std::shared_mutex in C++17.
  */
 class Lock {
 public:
-  /**
-   * Constructor.
-   */
-  Lock();
-
   /**
    * Obtain shared use.
    */
@@ -75,6 +72,11 @@ private:
   union lock_type {
     std::atomic<joint_lock_type> joint;
     split_lock_type split;
+
+    lock_type() :
+        joint( { 0u, 0u }) {
+      //
+    }
   };
 
   /**
