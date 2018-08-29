@@ -63,7 +63,7 @@ void bi::Map::decShared() {
 
 size_t bi::Map::hash(const key_type key) const {
   assert(nentries > 0);
-  return (reinterpret_cast<size_t>(key) >> 6ull) & (nentries - 1ull);
+  return (reinterpret_cast<size_t>(key) >> 5ull) & (nentries - 1ull);
 }
 
 size_t bi::Map::crowd() const {

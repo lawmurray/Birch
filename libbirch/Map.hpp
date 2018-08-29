@@ -5,8 +5,6 @@
 
 #include "libbirch/Lock.hpp"
 
-#include <omp.h>
-
 namespace bi {
 class Any;
 /**
