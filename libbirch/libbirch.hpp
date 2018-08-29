@@ -43,6 +43,9 @@
 
 #include <getopt.h>
 #include <dlfcn.h>
+#if _OPENMP
+#include <omp.h>
+#endif
 
 namespace bi {
 

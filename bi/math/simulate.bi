@@ -17,7 +17,14 @@ std::mt19937_64 rng(rd());
  */
 function seed(s:Integer) {
   cpp {{
+  #ifdef _OPENMP
+  #pragma omp parallel
+  {
+    rng.seed(s_ + omp_get_thread_num());
+  }
+  #else
   rng.seed(s_);
+  #endif
   }}
 }
 
