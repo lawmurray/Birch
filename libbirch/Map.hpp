@@ -49,42 +49,48 @@ public:
   value_type get(const key_type key, const value_type fail = nullptr);
 
   /**
-   * Insert a value by key, assuming that the key does not already exist.
+   * Set a value by key, assuming that the key already exists.
    *
    * @param key The key.
    * @param value The value.
+   */
+  void set(const key_type key, const value_type value);
+
+  /**
+   * Set a value by key, assuming that the key does not already exist.
    *
-   * If the key exists, its associated value is returned, otherwise a new
-   * entry is inserted with a value as returned by the functional.
-   *
-   * @return The value.
+   * @param key The key.
+   * @param value The value.
    */
   void put(const key_type key, const value_type value);
 
   /**
-   * Get a value by key, or insert it if it doesn't exist.
+   * Get a value by key, or set it if it doesn't exist.
    *
    * @param key The key.
-   * @param f Functional to produce the value if insertion is required.
+   * @param f Function to produce the value if insertion is required.
    *
    * If the key exists, its associated value is returned, otherwise a value
    * is generated from the functional and inserted.
    *
    * @return The value.
    */
-  template<class Functional>
-  value_type getOrPut(const key_type key, const Functional& f);
+  value_type getOrPut(const key_type key,
+      const std::function<value_type()>& f);
 
   /**
-   * Decrement the shared pointer count of all values.
+   * Set a value by key, or put it if it doesn't exist.
+   *
+   * @param key The key.
+   * @param value The value.
    */
-  void decShared();
+  void setOrPut(const key_type key, const value_type value);
 
 private:
   /**
-   * Entry type.
+   * Joint entry type.
    */
-  struct entry_type {
+  struct joint_entry_type {
     /**
      * Key (source address).
      */
@@ -95,6 +101,49 @@ private:
      */
     value_type value;
   };
+
+  /**
+   * Split entry type.
+   */
+  struct split_entry_type {
+    /**
+     * Key (source address).
+     */
+    std::atomic<key_type> key;
+
+    /**
+     * Value (destination address).
+     */
+    std::atomic<value_type> value;
+  };
+
+  /**
+   * Entry type.
+   */
+  union entry_type {
+    std::atomic<joint_entry_type> joint;
+    split_entry_type split;
+  };
+
+  /**
+   * Find by key.
+   *
+   * @param key The key.
+   * @param start Starting index for the search.
+   *
+   * @return If the key exists, then its index and true, otherwise the index
+   * of the first empty entry where the key could be inserted and false.
+   */
+  std::pair<size_t,bool> find(const key_type key, const size_t start);
+
+  /**
+   * Insert by key.
+   *
+   * @param key The key.
+   * @param value The value.
+   * @param start Starting index for the search.
+   */
+  void insert(const key_type key, const value_type value, const size_t start);
 
   /**
    * Compute the hash for a key.
@@ -120,7 +169,7 @@ private:
   /**
    * The table.
    */
-  std::atomic<entry_type>* entries;
+  entry_type* entries;
 
   /**
    * Total number of entries in the table.
@@ -142,35 +191,4 @@ private:
    */
   unsigned mn;
 };
-}
-
-template<class Functional>
-bi::Map::value_type bi::Map::getOrPut(const key_type key,
-    const Functional& f) {
-  assert(key);
-  reserve();
-  lock.share();
-
-  /* try get */
-  size_t i = hash(key);
-  entry_type entry = entries[i].load(std::memory_order_relaxed);
-  while (entry.key && entry.key != key) {
-    i = (i + 1u) & (nentries - 1u);
-    entry = entries[i].load(std::memory_order_relaxed);
-  }
-  if (entry.key == key) {
-    /* get succeeded, cancel reservation */
-    unreserve();
-  } else {
-    /* get failed, do put instead */
-    entry = {key, f()};
-    entry_type expected = {nullptr, nullptr};
-    while (!entries[i].compare_exchange_strong(expected, entry, std::memory_order_relaxed)) {
-      i = (i + 1u) & (nentries - 1u);
-      expected = {nullptr, nullptr};
-    }
-  }
-
-  lock.unshare();
-  return entry.value;
 }

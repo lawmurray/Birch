@@ -112,11 +112,6 @@ private:
   Map map;
 
   /**
-   * Cached mappings of clone ancestors.
-   */
-  Map cache;
-
-  /**
    * Launch depth.
    */
   int launchDepth;

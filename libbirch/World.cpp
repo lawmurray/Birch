@@ -9,8 +9,7 @@
 
 bi::World::World() :
     launchSource(fiberWorld),
-    map(4u),
-    cache(256u),
+    map(256u),
     launchDepth(fiberWorld->launchDepth + 1) {
   //
 }
@@ -28,7 +27,7 @@ bi::World::World(const SharedPtr<World>& cloneSource) :
 }
 
 bi::World::~World() {
-  map.decShared();
+  //
 }
 
 void bi::World::destroy() {
@@ -79,49 +78,31 @@ bi::Any* bi::World::getNoCopy(Any* o, World* world) {
 bi::Any* bi::World::pull(Any* o, World* world) {
   assert(o && hasCloneAncestor(world));
 
-  Any* result = nullptr;
-  auto src = world;
-  if (this == src) {
-    result = o;
+  /* map */
+  auto mapped = (this == world) ? o : map.getOrPut(o, [=]() {
+    return cloneSource->pullNoCopy(o, world);
+  });
+
+  /* copy */
+  if (this != mapped->getWorld()) {
+    Enter enter(this);
+    Clone clone;
+    auto copied = mapped->clone();
+    map.setOrPut(mapped, copied);
+    return copied;
   } else {
-    /* through cache */
-    result = cache.getOrPut(o, [=]() {
-      return cloneSource->pullNoCopy(o, world);
-    });
+    return mapped;
   }
-
-  /* through map */
-  if (this != result->getWorld()) {
-    result = map.getOrPut(result, [=]() {
-      Enter enter(this);
-      Clone clone;
-      auto o = result->clone();
-      o->incShared();
-      return o;
-    });
-  }
-
-  return result;
 }
 
 bi::Any* bi::World::pullNoCopy(Any* o, World* world) {
   assert(o && hasCloneAncestor(world));
 
-  Any* result = nullptr;
-  auto src = world;
-  if (this == src) {
-    result = o;
-  } else {
-    /* through cache */
-    result = cache.getOrPut(o, [=]() {
-      return cloneSource->pullNoCopy(o, world);
-    });
+  auto mapped = (this == world) ? o : map.getOrPut(o, [=]() {
+    return cloneSource->pullNoCopy(o, world);
+  });
+  if (this != mapped->getWorld() && o != mapped) {
+    mapped = map.get(mapped, mapped);
   }
-
-  /* through map */
-  if (this != result->getWorld()) {
-    result = map.get(result, result);
-  }
-
-  return result;
+  return mapped;
 }
