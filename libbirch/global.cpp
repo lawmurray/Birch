@@ -12,7 +12,7 @@ std::atomic<char*> bi::buffer(heap());
 bi::Pool bi::pool[64];
 bi::World* bi::fiberWorld = new bi::World(0);
 bool bi::fiberClone = false;
-std::vector<bi::StackFrame> bi::stacktrace(32);
+std::vector<bi::StackFrame> bi::stacktrace;
 // ^ reserving a non-zero size seems necessary to avoid segfault here
 
 void bi::abort() {
@@ -45,4 +45,13 @@ void bi::abort(const std::string& msg) {
   }
 #endif
   std::exit(1);
+}
+
+bi::StackFunction::StackFunction(const char* func, const char* file,
+    const int line) {
+  stacktrace.push_back( { func, file, line });
+}
+
+bi::StackFunction::~StackFunction() {
+  stacktrace.pop_back();
 }

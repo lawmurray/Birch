@@ -43,7 +43,7 @@
 
 #include <getopt.h>
 #include <dlfcn.h>
-#if _OPENMP
+#ifdef _OPENMP
 #include <omp.h>
 #endif
 

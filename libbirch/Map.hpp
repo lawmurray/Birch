@@ -28,10 +28,8 @@ public:
 
   /**
    * Constructor.
-   *
-   * @param mn Minimum size of table.
    */
-  Map(const unsigned mn = 256u);
+  Map();
 
   /**
    * Destructor.
@@ -39,52 +37,82 @@ public:
   ~Map();
 
   /**
-   * Get a value by key.
-   *
-   * @param key The key.
-   * @param fail The value on fail.
-   *
-   * @return If the key exists, then its value, otherwise @p fail.
+   * Is this empty?
    */
-  value_type get(const key_type key, const value_type fail = nullptr);
+  bool empty() const;
 
   /**
-   * Set a value by key, assuming that the key already exists.
+   * Start a read-only transaction.
+   */
+  void startRead();
+
+  /**
+   * Start a read-write transaction.
+   */
+  void startWrite();
+
+  /**
+   * Compute the hash code for a key.
+   */
+  size_t hash(const key_type key) const;
+
+  /**
+   * Get a value.
+   *
+   * @param key Key.
+   * @param[in,out] i Index.
+   *
+   * @return If @p key exists, then its associated value, otherwise
+   * `nullptr`.
+   *
+   * @p i Should be set to <tt>hash(key)</tt> or some later index where it is
+   * known that @p key does not occur in the interval
+   * <tt>[hash(key), i)</tt>. On exit, if @p key is found, @p i is updated to
+   * its index, if @p key is not found, @p i is updated to the index of the
+   * first empty entry after <tt>hash(key)</tt>.
+   */
+  value_type get(const key_type key, size_t& i);
+
+  /**
+   * Put a value.
+   *
+   * @param key Key.
+   * @param value Value.
+   * @param[in,out] i Index.
+   *
+   * @return If @p key exists, then its associated value, otherwise @p value.
+   *
+   * If @p key is found, works as per get(). If @p key is not found, a new
+   * entry is made and associated with @p value, and @p i updated to the
+   * index of this new entry.
+   */
+  value_type put(const key_type key, const value_type value, size_t& i);
+
+  /**
+   * Set a value.
    *
    * @param key The key.
    * @param value The value.
+   * @param[in,out] i Index.
+   *
+   * @return @p value.
+   *
+   * If @p key is found, its associated value is updated to @p value and
+   * @p i updated to the index of this entry. If @p key is not found a new
+   * entry is made and associated with @p value and @p i updated to the index
+   * of this entry.
    */
-  void set(const key_type key, const value_type value);
+  value_type set(const key_type key, const value_type value, size_t& i);
 
   /**
-   * Set a value by key, assuming that the key does not already exist.
-   *
-   * @param key The key.
-   * @param value The value.
+   * Finish a read-only transaction.
    */
-  void put(const key_type key, const value_type value);
+  void finishRead();
 
   /**
-   * Get a value by key, or set it if it doesn't exist.
-   *
-   * @param key The key.
-   * @param f Function to produce the value if insertion is required.
-   *
-   * If the key exists, its associated value is returned, otherwise a value
-   * is generated from the functional and inserted.
-   *
-   * @return The value.
+   * Finish a read-write transaction.
    */
-  value_type getOrPut(const key_type key,
-      const std::function<value_type()>& f);
-
-  /**
-   * Set a value by key, or put it if it doesn't exist.
-   *
-   * @param key The key.
-   * @param value The value.
-   */
-  void setOrPut(const key_type key, const value_type value);
+  void finishWrite();
 
 private:
   /**
@@ -126,31 +154,6 @@ private:
   };
 
   /**
-   * Find by key.
-   *
-   * @param key The key.
-   * @param start Starting index for the search.
-   *
-   * @return If the key exists, then its index and true, otherwise the index
-   * of the first empty entry where the key could be inserted and false.
-   */
-  std::pair<size_t,bool> find(const key_type key, const size_t start);
-
-  /**
-   * Insert by key.
-   *
-   * @param key The key.
-   * @param value The value.
-   * @param start Starting index for the search.
-   */
-  void insert(const key_type key, const value_type value, const size_t start);
-
-  /**
-   * Compute the hash for a key.
-   */
-  size_t hash(const key_type key) const;
-
-  /**
    * Compute the lower bound on reserved entries to be considered crowded.
    */
   size_t crowd() const;
@@ -185,10 +188,5 @@ private:
    * Resize lock.
    */
   Lock lock;
-
-  /**
-   * Minimum size of table.
-   */
-  unsigned mn;
 };
 }

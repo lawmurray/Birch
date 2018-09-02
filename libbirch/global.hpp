@@ -137,15 +137,6 @@ void abort();
  */
 void abort(const std::string& msg);
 
-inline bi::StackFunction::StackFunction(const char* func, const char* file,
-    const int line) {
-  stacktrace.push_back({ func, file, line });
-}
-
-inline bi::StackFunction::~StackFunction() {
-  stacktrace.pop_back();
-}
-
 /**
  * The super type of type @p T. Specialised in forward declarations of
  * classes.
