@@ -48,41 +48,42 @@ int bi::World::depth() const {
   return launchDepth;
 }
 
-bi::Any* bi::World::get(Any* o, World* world) {
+bi::Any* bi::World::get(Any* o, World* current) {
   assert(o);
-  int d = depth() - world->depth();
+  int d = depth() - current->depth();
   assert(d >= 0);
   auto dst = this;
   for (int i = 0; i < d; ++i) {
     dst = dst->launchSource;
     assert(dst);
   }
-  assert(dst->hasCloneAncestor(world));
-  return dst->pull(o, world);
+  assert(dst->hasCloneAncestor(current));
+  return pull(o, current, dst);
 }
 
-bi::Any* bi::World::getNoCopy(Any* o, World* world) {
+bi::Any* bi::World::getNoCopy(Any* o, World* current) {
   assert(o);
-  int d = depth() - world->depth();
+  int d = depth() - current->depth();
   assert(d >= 0);
   auto dst = this;
   for (int i = 0; i < d; ++i) {
     dst = dst->launchSource;
     assert(dst);
   }
-  assert(dst->hasCloneAncestor(world));
-  return dst->pullNoCopy(o, world);
+  assert(dst->hasCloneAncestor(current));
+  return pullNoCopy(o, current, dst);
 }
 
-bi::Any* bi::World::pull(Any* o, World* world) {
-  assert(o && hasCloneAncestor(world));
+bi::Any* bi::pull(Any* o, World* current, World* world) {
+  assert(o && hasCloneAncestor(current));
 
   /* map */
   Any* mapped;
-  if (this != world) {
-    mapped = map.get(o);
+  if (world != current) {
+    mapped = world->map.get(o);
     if (!mapped) {
-      mapped = map.put(o, cloneSource->pullNoCopy(o, world));
+      mapped = pullNoCopy(o, current, world->cloneSource.get());
+      mapped = world->map.put(o, mapped);
     }
   } else {
     mapped = o;
@@ -90,26 +91,27 @@ bi::Any* bi::World::pull(Any* o, World* world) {
 
   /* copy */
   Any* result;
-  if (this != mapped->getWorld()) {
-    Enter enter(this);
+  if (world != mapped->getWorld()) {
+    Enter enter(world);
     Clone clone;
     SharedPtr<Any> copied = mapped->clone();
-    result = map.set(mapped, copied.get());
+    result = world->map.set(mapped, copied.get());
   } else {
     result = mapped;
   }
   return result;
 }
 
-bi::Any* bi::World::pullNoCopy(Any* o, World* world) {
-  assert(o && hasCloneAncestor(world));
+bi::Any* bi::pullNoCopy(Any* o, World* current, World* world) {
+  assert(o && hasCloneAncestor(current));
 
   /* map */
   Any* mapped;
-  if (this != world) {
-    mapped = map.get(o);
+  if (world != current) {
+    mapped = world->map.get(o);
     if (!mapped) {
-      mapped = map.put(o, cloneSource->pullNoCopy(o, world));
+      mapped = pullNoCopy(o, current, world->cloneSource.get());
+      mapped = world->map.put(o, mapped);
     }
   } else {
     mapped = o;
@@ -117,8 +119,8 @@ bi::Any* bi::World::pullNoCopy(Any* o, World* world) {
 
   /* previous copy */
   Any* result;
-  if (this != mapped->getWorld() && o != mapped && !map.empty()) {
-    result = map.get(mapped);
+  if (world != mapped->getWorld() && o != mapped) {
+    result = world->map.get(mapped);
     if (!result) {
       result = mapped;
     }

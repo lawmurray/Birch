@@ -62,39 +62,21 @@ public:
    * Get an object, copying it if necessary.
    *
    * @param o The object.
+   * @param current The current world to which the object is mapped.
    *
    * @return The mapped object.
    */
-  Any* get(Any* o, World* world);
+  Any* get(Any* o, World* current);
 
   /**
    * Get an object.
    *
    * @param o The object.
+   * @param current The current world to which the object is mapped.
    *
    * @return The mapped object.
    */
-  Any* getNoCopy(Any* o, World* world);
-
-private:
-  /**
-   * Pull and copy (if necessary) an object from a clone ancestor into this
-   * world.
-   *
-   * @param o The object.
-   *
-   * @return The mapped and copied object.
-   */
-  Any* pull(Any* o, World* world);
-
-  /**
-   * Pull an object from a clone ancestor into this world.
-   *
-   * @param src The source object.
-   *
-   * @return The mapped object.
-   */
-  Any* pullNoCopy(Any* o, World* world);
+  Any* getNoCopy(Any* o, World* current);
 
   /**
    * The world from which this world was cloned.
@@ -111,9 +93,33 @@ private:
    */
   Map map;
 
+private:
   /**
    * Launch depth.
    */
   int launchDepth;
 };
+
+/**
+ * Pull and copy (if necessary) an object.
+ *
+ * @param o The object.
+ * @param current The current world to which the object is mapped.
+ * @param world The world to which to map.
+ *
+ * @return The mapped object.
+ */
+Any* pull(Any* o, World* current, World* world);
+
+/**
+ * Pull an object.
+ *
+ * @param o The object.
+ * @param current The current world to which the object is mapped.
+ * @param world The world to which to map.
+ *
+ * @return The mapped object.
+ */
+Any* pullNoCopy(Any* o, World* current, World* world);
+
 }
