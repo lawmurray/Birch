@@ -40,7 +40,6 @@ bi::Map::value_type bi::Map::get(const key_type key, const value_type failed) {
       i = (i + 1) & (nentries - 1);
       k = entries[i].split.key.load(std::memory_order_relaxed);
     }
-
     if (k == key) {
       result = entries[i].split.value.load(std::memory_order_relaxed);
     }
@@ -72,7 +71,7 @@ bi::Map::value_type bi::Map::put(const key_type key, const value_type value) {
   value_type result;
   if (expected.key == key) {
     unreserve();  // key exists, cancel reservation for insert
-    result = entries[i].split.value.load(std::memory_order_relaxed);
+    result = expected.value;
     //key->decWeak();
     value->decShared();
   } else {
@@ -104,10 +103,11 @@ bi::Map::value_type bi::Map::set(const key_type key, const value_type value) {
 
   if (expected.key == key) {
     unreserve();  // key exists, cancel reservation for insert
-    while (!entries[i].joint.compare_exchange_weak(expected, desired,
+    value_type old = expected.value;
+    while (!entries[i].split.value.compare_exchange_weak(old, value,
         std::memory_order_relaxed));
-    //expected.key->decWeak();
-    expected.value->decShared();
+    //key->decWeak();
+    old->decShared();
   }
   lock.unshare();
   return value;
