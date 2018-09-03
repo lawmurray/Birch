@@ -75,7 +75,7 @@ bi::Any* bi::World::getNoCopy(Any* o, World* current) {
 }
 
 bi::Any* bi::pull(Any* o, World* current, World* world) {
-  assert(o && hasCloneAncestor(current));
+  assert(o && world->hasCloneAncestor(current));
 
   /* map */
   Any* mapped;
@@ -103,7 +103,7 @@ bi::Any* bi::pull(Any* o, World* current, World* world) {
 }
 
 bi::Any* bi::pullNoCopy(Any* o, World* current, World* world) {
-  assert(o && hasCloneAncestor(current));
+  assert(o && world->hasCloneAncestor(current));
 
   /* map */
   Any* mapped;
