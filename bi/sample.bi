@@ -19,6 +19,10 @@
  *     interpretation of this is model-dependent, e.g. for a Markov model
  *     it is the number of states.
  *
+ *   - `--seed`: Random number seed. If not provided, random entropy is used.
+ *
+ *   - `--verbose`: Enable verbose reporting?
+ *
  * Particle filter-specific options:
  *
  *   - `--nparticles`: Number of particles to use.
@@ -26,8 +30,6 @@
  *   - `--ess-trigger`: Threshold for resampling. Resampling is performed
  *     whenever the effective sample size, as a proportion of `--nparticles`,
  *     drops below this threshold.
- *
- *   - `--verbose`: Enable verbose reporting?
  */
 program sample(
     model:String <- "Model",
@@ -37,16 +39,16 @@ program sample(
     diagnostic_file:String?,
     nsamples:Integer <- 1,
     ncheckpoints:Integer <- 1,
+    seed:Integer?,
+    verbose:Boolean <- true,
     nparticles:Integer <- 1,
-    ess_trigger:Real <- 0.7,
-    verbose:Boolean <- true) {
-  seed(240);
-    
+    ess_trigger:Real <- 0.7) {
   /* set up I/O */
   input:JSONReader?;
   output:JSONWriter?;
   diagnostic:JSONWriter?;
   
+  /* input and output */  
   if (input_file?) {
     input <- JSONReader(input_file!);
     input!.load();
@@ -56,6 +58,11 @@ program sample(
   }
   if (diagnostic_file?) {
     diagnostic <- JSONWriter(diagnostic_file!);
+  }
+  
+  /* seed random number generator */
+  if (seed?) {
+    global.seed(seed!);
   }
   
   /* set up method */
