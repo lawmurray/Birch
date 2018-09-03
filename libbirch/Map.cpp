@@ -15,6 +15,7 @@ bi::Map::~Map() {
   for (size_t i = 0; i < nentries; ++i) {
     joint_entry_type entry = entries1[i];
     if (entry.key) {
+      //entry.key->decWeak();
       entry.value->decShared();
     }
   }
@@ -53,6 +54,7 @@ bi::Map::value_type bi::Map::put(const key_type key, const value_type value) {
   assert(key);
   assert(value);
 
+  //key->incWeak();
   value->incShared();
   reserve();
   lock.share();
@@ -71,6 +73,7 @@ bi::Map::value_type bi::Map::put(const key_type key, const value_type value) {
   if (expected.key == key) {
     unreserve();  // key exists, cancel reservation for insert
     result = entries[i].split.value.load(std::memory_order_relaxed);
+    //key->decWeak();
     value->decShared();
   } else {
     result = value;
@@ -84,6 +87,7 @@ bi::Map::value_type bi::Map::set(const key_type key, const value_type value) {
   assert(key);
   assert(value);
 
+  //key->incWeak();
   value->incShared();
   reserve();
   lock.share();
@@ -102,6 +106,7 @@ bi::Map::value_type bi::Map::set(const key_type key, const value_type value) {
     unreserve();  // key exists, cancel reservation for insert
     while (!entries[i].joint.compare_exchange_weak(expected, desired,
         std::memory_order_relaxed));
+    //expected.key->decWeak();
     expected.value->decShared();
   }
   lock.unshare();
@@ -132,7 +137,7 @@ void bi::Map::reserve() {
       joint_entry_type* entries1 = (joint_entry_type*)entries;
 
       /* initialize new table */
-      size_t nentries2 = std::max(2ull * nentries1, 256ull);
+      size_t nentries2 = std::max(2ull * nentries1, 64ull);
       joint_entry_type* entries2 = (joint_entry_type*)allocate(
           nentries2 * sizeof(entry_type));
       std::memset(entries2, 0, nentries2 * sizeof(entry_type));
