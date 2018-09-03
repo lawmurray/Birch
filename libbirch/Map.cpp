@@ -35,13 +35,13 @@ bi::Map::value_type bi::Map::get(const key_type key, const value_type failed) {
     lock.share();
     size_t i = hash(key);
 
-    key_type k = entries[i].split.key.load(std::memory_order_relaxed);
+    key_type k = entries[i].split.key.load();
     while (k && k != key) {
       i = (i + 1) & (nentries - 1);
-      k = entries[i].split.key.load(std::memory_order_relaxed);
+      k = entries[i].split.key.load();
     }
     if (k == key) {
-      result = entries[i].split.value.load(std::memory_order_relaxed);
+      result = entries[i].split.value.load();
     }
     lock.unshare();
   }
@@ -62,8 +62,7 @@ bi::Map::value_type bi::Map::put(const key_type key, const value_type value) {
   joint_entry_type desired = { key, value };
 
   size_t i = hash(key);
-  while (!entries[i].joint.compare_exchange_strong(expected, desired,
-      std::memory_order_relaxed) && expected.key != key) {
+  while (!entries[i].joint.compare_exchange_strong(expected, desired) && expected.key != key) {
     i = (i + 1) & (nentries - 1);
     expected = {nullptr, nullptr};
   }
@@ -95,8 +94,7 @@ bi::Map::value_type bi::Map::set(const key_type key, const value_type value) {
   joint_entry_type desired = { key, value };
 
   size_t i = hash(key);
-  while (!entries[i].joint.compare_exchange_strong(expected, desired,
-      std::memory_order_relaxed) && expected.key != key) {
+  while (!entries[i].joint.compare_exchange_strong(expected, desired) && expected.key != key) {
     i = (i + 1) & (nentries - 1);
     expected = {nullptr, nullptr};
   }
@@ -104,8 +102,7 @@ bi::Map::value_type bi::Map::set(const key_type key, const value_type value) {
   if (expected.key == key) {
     unreserve();  // key exists, cancel reservation for insert
     value_type old = expected.value;
-    while (!entries[i].split.value.compare_exchange_weak(old, value,
-        std::memory_order_relaxed));
+    while (!entries[i].split.value.compare_exchange_weak(old, value));
     //key->decWeak();
     old->decShared();
   }
@@ -166,5 +163,5 @@ void bi::Map::reserve() {
 }
 
 void bi::Map::unreserve() {
-  nreserved.fetch_sub(1u, std::memory_order_relaxed);
+  nreserved.fetch_sub(1u);
 }
