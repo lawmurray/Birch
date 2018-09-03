@@ -157,21 +157,22 @@ class ParticleFilter {
     }
     r[t] <- e[t] < trigger*N;
     if (r[t]) {
-      a:Integer[_] <- permute_ancestors(ancestors(w));
+      a:Integer[_] <- ancestors(w);
+      g:Model![_] <- f;
       for (n:Integer in 1..N) {
-        f[n] <- f[a[n]];
+        f[n] <- g[a[n]];
         w[n] <- 0.0;
       }
     }
 
     /* propagate and weight */
-    for (n:Integer in 1..N) {
+    parallel for (n:Integer in 1..N) {
       if (f[n]?) {
         w[n] <- w[n] + f[n]!.w;
       } else {
         stderr.print("error: particles terminated prematurely.\n");
         exit(1);
-      } 
+      }
     }
     
     /* update normalizing constant estimate */
