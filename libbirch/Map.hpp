@@ -47,9 +47,9 @@ public:
    * @param key Key.
    *
    * @return If @p key exists, then its associated value, otherwise
-   * `nullptr`.
+   * @p failed.
    */
-  value_type get(const key_type key);
+  value_type get(const key_type key, const value_type failed = nullptr);
 
   /**
    * Put a value.

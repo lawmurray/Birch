@@ -25,13 +25,12 @@ bool bi::Map::empty() const {
   return nentries == 0;
 }
 
-bi::Map::value_type bi::Map::get(const key_type key) {
+bi::Map::value_type bi::Map::get(const key_type key, const value_type failed) {
   /* pre-condition */
   assert(key);
 
-  if (empty()) {
-    return nullptr;
-  } else {
+  value_type result = failed;
+  if (!empty()) {
     lock.share();
     size_t i = hash(key);
 
@@ -41,15 +40,12 @@ bi::Map::value_type bi::Map::get(const key_type key) {
       k = entries[i].split.key.load(std::memory_order_relaxed);
     }
 
-    value_type result;
     if (k == key) {
       result = entries[i].split.value.load(std::memory_order_relaxed);
-    } else {
-      result = nullptr;
     }
     lock.unshare();
-    return result;
   }
+  return result;
 }
 
 bi::Map::value_type bi::Map::put(const key_type key, const value_type value) {
