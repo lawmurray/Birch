@@ -78,28 +78,25 @@ bi::Any* bi::World::pull(Any* o, World* world) {
   assert(o && hasCloneAncestor(world));
 
   /* map */
-  Any* mapped = o;
-  size_t i;
+  Any* mapped;
   if (this != world) {
-    map.startWrite();
-    i = map.hash(o);
-    mapped = map.get(o, i);
+    mapped = map.get(o);
     if (!mapped) {
-      mapped = map.put(o, cloneSource->pullNoCopy(o, world), i);
+      mapped = map.put(o, cloneSource->pullNoCopy(o, world));
     }
-    map.finishWrite();
+  } else {
+    mapped = o;
   }
 
   /* copy */
-  Any* result = mapped;
+  Any* result;
   if (this != mapped->getWorld()) {
-    map.startWrite();
     Enter enter(this);
     Clone clone;
     SharedPtr<Any> copied = mapped->clone();
-    i = map.hash(mapped);
-    result = map.set(mapped, copied.get(), i);
-    map.finishWrite();
+    result = map.set(mapped, copied.get());
+  } else {
+    result = mapped;
   }
   return result;
 }
@@ -108,28 +105,25 @@ bi::Any* bi::World::pullNoCopy(Any* o, World* world) {
   assert(o && hasCloneAncestor(world));
 
   /* map */
-  Any* mapped = o;
-  size_t i;
+  Any* mapped;
   if (this != world) {
-    map.startWrite();
-    i = map.hash(o);
-    mapped = map.get(o, i);
+    mapped = map.get(o);
     if (!mapped) {
-      mapped = map.put(o, cloneSource->pullNoCopy(o, world), i);
+      mapped = map.put(o, cloneSource->pullNoCopy(o, world));
     }
-    map.finishWrite();
+  } else {
+    mapped = o;
   }
 
-  /* check for previous copy */
-  Any* result = mapped;
+  /* previous copy */
+  Any* result;
   if (this != mapped->getWorld() && o != mapped && !map.empty()) {
-    map.startRead();
-    i = map.hash(mapped);
-    mapped = map.get(mapped, i);
-    map.finishRead();
-    if (mapped) {
+    result = map.get(mapped);
+    if (!result) {
       result = mapped;
     }
+  } else {
+    result = mapped;
   }
   return result;
 }

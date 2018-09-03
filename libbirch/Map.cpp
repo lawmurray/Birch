@@ -3,8 +3,6 @@
  */
 #include "libbirch/Map.hpp"
 
-#include <algorithm>
-
 bi::Map::Map() :
     entries(nullptr),
     nentries(0),
@@ -27,50 +25,46 @@ bool bi::Map::empty() const {
   return nentries == 0;
 }
 
-void bi::Map::startRead() {
-  lock.share();
-}
-
-void bi::Map::startWrite() {
-  reserve();
-  lock.share();
-}
-
-size_t bi::Map::hash(const key_type key) const {
-  assert(nentries > 0);
-  return (reinterpret_cast<size_t>(key) >> 5ull) & (nentries - 1ull);
-}
-
-bi::Map::value_type bi::Map::get(const key_type key, size_t& i) {
+bi::Map::value_type bi::Map::get(const key_type key) {
   /* pre-condition */
   assert(key);
-  assert(0 <= i && i < nentries);
 
-  key_type k = entries[i].split.key.load(std::memory_order_relaxed);
-  while (k && k != key) {
-    i = (i + 1) & (nentries - 1);
-    k = entries[i].split.key.load(std::memory_order_relaxed);
-  }
-
-  value_type result;
-  if (k == key) {
-    result = entries[i].split.value.load(std::memory_order_relaxed);
+  if (empty()) {
+    return nullptr;
   } else {
-    result = nullptr;
+    lock.share();
+    size_t i = hash(key);
+
+    key_type k = entries[i].split.key.load(std::memory_order_relaxed);
+    while (k && k != key) {
+      i = (i + 1) & (nentries - 1);
+      k = entries[i].split.key.load(std::memory_order_relaxed);
+    }
+
+    value_type result;
+    if (k == key) {
+      result = entries[i].split.value.load(std::memory_order_relaxed);
+    } else {
+      result = nullptr;
+    }
+    lock.unshare();
+    return result;
   }
-  return result;
 }
 
-bi::Map::value_type bi::Map::put(const key_type key, const value_type value,
-    size_t& i) {
+bi::Map::value_type bi::Map::put(const key_type key, const value_type value) {
   /* pre-condition */
   assert(key);
   assert(value);
-  assert(0 <= i && i < nentries);
 
   value->incShared();
+  reserve();
+  lock.share();
+
   joint_entry_type expected = { nullptr, nullptr };
   joint_entry_type desired = { key, value };
+
+  size_t i = hash(key);
   while (!entries[i].joint.compare_exchange_strong(expected, desired,
       std::memory_order_relaxed) && expected.key != key) {
     i = (i + 1) & (nentries - 1);
@@ -85,19 +79,23 @@ bi::Map::value_type bi::Map::put(const key_type key, const value_type value,
   } else {
     result = value;
   }
+  lock.unshare();
   return result;
 }
 
-bi::Map::value_type bi::Map::set(const key_type key, const value_type value,
-    size_t& i) {
+bi::Map::value_type bi::Map::set(const key_type key, const value_type value) {
   /* pre-condition */
   assert(key);
   assert(value);
-  assert(0 <= i && i < nentries);
 
   value->incShared();
+  reserve();
+  lock.share();
+
   joint_entry_type expected = { nullptr, nullptr };
   joint_entry_type desired = { key, value };
+
+  size_t i = hash(key);
   while (!entries[i].joint.compare_exchange_strong(expected, desired,
       std::memory_order_relaxed) && expected.key != key) {
     i = (i + 1) & (nentries - 1);
@@ -110,15 +108,13 @@ bi::Map::value_type bi::Map::set(const key_type key, const value_type value,
         std::memory_order_relaxed));
     expected.value->decShared();
   }
+  lock.unshare();
   return value;
 }
 
-void bi::Map::finishRead() {
-  lock.unshare();
-}
-
-void bi::Map::finishWrite() {
-  lock.unshare();
+size_t bi::Map::hash(const key_type key) const {
+  assert(nentries > 0);
+  return (reinterpret_cast<size_t>(key) >> 5ull) & (nentries - 1ull);
 }
 
 size_t bi::Map::crowd() const {

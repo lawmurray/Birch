@@ -42,51 +42,26 @@ public:
   bool empty() const;
 
   /**
-   * Start a read-only transaction.
-   */
-  void startRead();
-
-  /**
-   * Start a read-write transaction.
-   */
-  void startWrite();
-
-  /**
-   * Compute the hash code for a key.
-   */
-  size_t hash(const key_type key) const;
-
-  /**
    * Get a value.
    *
    * @param key Key.
-   * @param[in,out] i Index.
    *
    * @return If @p key exists, then its associated value, otherwise
    * `nullptr`.
-   *
-   * @p i Should be set to <tt>hash(key)</tt> or some later index where it is
-   * known that @p key does not occur in the interval
-   * <tt>[hash(key), i)</tt>. On exit, if @p key is found, @p i is updated to
-   * its index, if @p key is not found, @p i is updated to the index of the
-   * first empty entry after <tt>hash(key)</tt>.
    */
-  value_type get(const key_type key, size_t& i);
+  value_type get(const key_type key);
 
   /**
    * Put a value.
    *
    * @param key Key.
    * @param value Value.
-   * @param[in,out] i Index.
    *
    * @return If @p key exists, then its associated value, otherwise @p value.
    *
-   * If @p key is found, works as per get(). If @p key is not found, a new
-   * entry is made and associated with @p value, and @p i updated to the
-   * index of this new entry.
+   * Use put() to not overwrite any existing value, set() to overwrite it.
    */
-  value_type put(const key_type key, const value_type value, size_t& i);
+  value_type put(const key_type key, const value_type value);
 
   /**
    * Set a value.
@@ -97,22 +72,9 @@ public:
    *
    * @return @p value.
    *
-   * If @p key is found, its associated value is updated to @p value and
-   * @p i updated to the index of this entry. If @p key is not found a new
-   * entry is made and associated with @p value and @p i updated to the index
-   * of this entry.
+   * Use set() to overwrite any existing value, put() to not overwrite it.
    */
-  value_type set(const key_type key, const value_type value, size_t& i);
-
-  /**
-   * Finish a read-only transaction.
-   */
-  void finishRead();
-
-  /**
-   * Finish a read-write transaction.
-   */
-  void finishWrite();
+  value_type set(const key_type key, const value_type value);
 
 private:
   /**
@@ -152,6 +114,11 @@ private:
     std::atomic<joint_entry_type> joint;
     split_entry_type split;
   };
+
+  /**
+   * Compute the hash code for a key.
+   */
+  size_t hash(const key_type key) const;
 
   /**
    * Compute the lower bound on reserved entries to be considered crowded.
