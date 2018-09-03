@@ -116,6 +116,7 @@ E                                  [Ee][+-]?{D}+
 "this"                              { return THIS; }
 "super"                             { return SUPER; }
 "global"                            { return GLOBAL; }
+"parallel"                          { return PARALLEL; }
 "nil"                               { return NIL; }
 
 "true"                              { yylval.valBool = true; return BOOL_LITERAL; }

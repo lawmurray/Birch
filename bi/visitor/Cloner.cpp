@@ -287,7 +287,7 @@ bi::Statement* bi::Cloner::clone(const If* o) {
 }
 
 bi::Statement* bi::Cloner::clone(const For* o) {
-  return new For(o->index->accept(this), o->from->accept(this),
+  return new For(o->annotation, o->index->accept(this), o->from->accept(this),
       o->to->accept(this), o->braces->accept(this), o->loc);
 }
 

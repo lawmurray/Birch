@@ -73,25 +73,26 @@ extern int yydebug;
     THIS = 276,
     SUPER = 277,
     GLOBAL = 278,
-    NIL = 279,
-    DOUBLE_BRACE_OPEN = 280,
-    DOUBLE_BRACE_CLOSE = 281,
-    NAME = 282,
-    BOOL_LITERAL = 283,
-    INT_LITERAL = 284,
-    REAL_LITERAL = 285,
-    STRING_LITERAL = 286,
-    LEFT_OP = 287,
-    RIGHT_OP = 288,
-    LEFT_TILDE_OP = 289,
-    RIGHT_TILDE_OP = 290,
-    AND_OP = 291,
-    OR_OP = 292,
-    LE_OP = 293,
-    GE_OP = 294,
-    EQ_OP = 295,
-    NE_OP = 296,
-    RANGE_OP = 297
+    PARALLEL = 279,
+    NIL = 280,
+    DOUBLE_BRACE_OPEN = 281,
+    DOUBLE_BRACE_CLOSE = 282,
+    NAME = 283,
+    BOOL_LITERAL = 284,
+    INT_LITERAL = 285,
+    REAL_LITERAL = 286,
+    STRING_LITERAL = 287,
+    LEFT_OP = 288,
+    RIGHT_OP = 289,
+    LEFT_TILDE_OP = 290,
+    RIGHT_TILDE_OP = 291,
+    AND_OP = 292,
+    OR_OP = 293,
+    LE_OP = 294,
+    GE_OP = 295,
+    EQ_OP = 296,
+    NE_OP = 297,
+    RANGE_OP = 298
   };
 #endif
 
@@ -113,7 +114,7 @@ union YYSTYPE
   bi::Type* valType;
   bi::Statement* valStatement;
 
-#line 117 "bi/parser.hpp" /* glr.c:207  */
+#line 118 "bi/parser.hpp" /* glr.c:207  */
 };
 
 typedef union YYSTYPE YYSTYPE;
