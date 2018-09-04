@@ -1,0 +1,48 @@
+language: cpp
+matrix:
+  include:
+  - os: osx
+    compiler: clang
+    osx_image: xcode9.3
+  - os: linux
+    dist: trusty
+    compiler: gcc
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        packages:
+        - gcc-7
+        - g++-7
+        - autoconf
+        - libtool
+        - flex
+        - bison
+        - libboost-all-dev
+before_install:
+- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export CC=gcc-7; export CXX=g++-7; export
+  CXXFLAGS="-DBOOST_NO_CXX11_SCOPED_ENUMS"; wget http://bitbucket.org/eigen/eigen/get/3.3.4.tar.gz
+  && tar xzf 3.3.4.tar.gz && sudo cp -Rp eigen-eigen-5a0156e40feb /usr/local/include/eigen3;
+  elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install flex bison eigen libomp;
+  brew link --force flex bison; fi
+- git clone "https://github.com/lawmurray/Birch.git" || cd .
+- cd Birch && git checkout master && git pull && cd ..
+- cd Birch && ./autogen.sh && ./configure && make -j 2 && sudo make install && cd
+  ..
+- git clone "https://github.com/lawmurray/Birch.Standard.git" || cd .
+- cd Birch.Standard && git checkout master && git pull && cd ..
+- cd Birch.Standard && birch build --enable-unity && sudo birch install --enable-unity
+  && cd ..
+install:
+- birch build --enable-unity && sudo birch install --enable-unity
+script:
+- birch sample --model YapModel --ncheckpoints 197 --nparticles 1024 --input-file
+  input/yap_dengue.json --output-file output/yap_dengue.json
+cache:
+  directories:
+  - Birch
+  - Birch.Standard
+notifications:
+  email: false
+  slack:
+    secure: HpeaqGojQr14hrYZ91i5WmDcaSpeQGgu5Tq0nDEShfeHCw32259ed7NXu/jRsrJ2haoLdxv/gFnZIqn1yOCfHApaCcZ0mazj1bIzlBuKpkwbq4nFT7KceQY8lid6f5HPxFrMyrquuSM3QKMJ1qM1Ti8lfE63wL6vcdCI+cq4yhQs+J0nsHJq8LrS+geDyQT7EHnwsyEryjX6zCkJihZy3o9Bdf8MWDIIRnHgLaT3CRTR0lJe6JYrx8ZsLIjpWdsiuJHWjVRqhMHi4wNB68b0MSRfwv8+PD2mXpudc9s+4cRGRqf4mmivnVSbAv1hzc0nVtkNjG4r3zu+IwR/kWlqlCJEK/c2Aaazfee1lPuSwwNwdYmP8VJp8xiE5oGpxFhgB3aop723Fbi9lTY189vEy8OWTyj0TdbFtmCSOucFGggJ9LhSoKvZzqTrb/usJ1GL1ykltwbWGiKA/8aSiI1essR+SGrZzjJ58UTLTHDwTcGhz4ATBheSQbSMQtU0rUWfaC8SqJMMQjQYKnQAMlMW7UkP+15geryEAC13MvXQH2DHdvbreVpCQ4Nz2qh9YHVb3vL+s4AT4ZmteCWvOo5UWLGKmLSJ5Thh9PALdnhehun5uUNqmYAaOlcoozYqe3T41Pbfa6wEdJqULqZxAdQIIxb3JC12jIagzLT1za/Fkug=
