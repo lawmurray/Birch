@@ -160,7 +160,7 @@ void bi::CppBaseGenerator::visit(const Member* o) {
   } else if (leftSuper) {
     middle("this->self()->super_type::");
   } else if (leftGlobal) {
-    middle("bi::");
+    middle("::");
   } else if (!inAssign && o->right->type->isValue()
       && dynamic_cast<const Identifier<MemberVariable>*>(o->right)) {
     /* optimization: just reading a value, so no need to copy-on-write the
@@ -176,7 +176,7 @@ void bi::CppBaseGenerator::visit(const Member* o) {
 
 void bi::CppBaseGenerator::visit(const This* o) {
   // only need to handle the case outside member expression
-  middle("this->shared_self()");
+  middle("this->self()");
 }
 
 void bi::CppBaseGenerator::visit(const Super* o) {
@@ -207,7 +207,7 @@ void bi::CppBaseGenerator::visit(const Identifier<Parameter>* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Identifier<GlobalVariable>* o) {
-  middle(o->name << "()");
+  middle("bi::" << o->name << "()");
 }
 
 void bi::CppBaseGenerator::visit(const Identifier<LocalVariable>* o) {
@@ -352,7 +352,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
         if (!param->value->isEmpty()) {
           middle(" = " << param->value);
         } else if (param->type->isPointer() && !param->type->isWeak()) {
-          middle(" = bi::make_pointer<" << param->type << ">()");
+          middle(" = bi::construct<" << param->type->unwrap() << ">()");
         }
         finish(';');
       }
@@ -561,9 +561,18 @@ void bi::CppBaseGenerator::visit(const If* o) {
 void bi::CppBaseGenerator::visit(const For* o) {
   genTraceLine(o->loc->firstLine);
 
-  // o->index may be an identifier or a local variable, in the latter case
-  // need to ensure that it is only declared once in the first element of the
-  // for loop
+  /* handle parallel for loop */
+  if (o->has(PARALLEL)) {
+    line("#pragma omp parallel");
+    line("{");
+    in();
+    genTraceFunction("<thread start>", o->loc);
+    line("#pragma omp for schedule(static)");
+  }
+
+  /* o->index may be an identifier or a local variable, in the latter case
+   * need to ensure that it is only declared once in the first element of the
+   * for loop */
   auto param = dynamic_cast<LocalVariable*>(o->index);
   if (param) {
     Identifier<LocalVariable> ref(param->name, param->loc, param);
@@ -579,6 +588,11 @@ void bi::CppBaseGenerator::visit(const For* o) {
   *this << o->braces->strip();
   out();
   line("}");
+
+  if (o->has(PARALLEL)) {
+    out();
+    line("}");
+  }
 }
 
 void bi::CppBaseGenerator::visit(const While* o) {
@@ -665,9 +679,9 @@ void bi::CppBaseGenerator::visit(const OptionalType* o) {
 
 void bi::CppBaseGenerator::visit(const PointerType* o) {
   if (o->weak) {
-    middle("bi::WeakPointer<");
+    middle("bi::WeakCOW<");
   } else {
-    middle("bi::SharedPointer<");
+    middle("bi::SharedCOW<");
   }
   middle(o->single);
   middle('>');

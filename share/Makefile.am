@@ -23,7 +23,8 @@ birch_html_LDFLAGS = -s MAIN_MODULE=1 --emrun
 
 # compile and link flags
 ACLOCAL_AMFLAGS = -I m4
-AM_CXXFLAGS = -include bi/PACKAGE_TARNAME.hpp
+AM_CXXFLAGS = -include bi/PACKAGE_TARNAME.hpp $(OPENMP_CXXFLAGS)
+AM_CFLAGS = $(OPENMP_CFLAGS)
 
 BUILT_SOURCES = bi/PACKAGE_TARNAME.hpp.gch main.cpp
 CLEANFILES = bi/PACKAGE_TARNAME.hpp.gch main.cpp

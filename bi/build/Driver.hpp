@@ -172,6 +172,21 @@ private:
   bool unity;
 
   /**
+   * Build static library?
+   */
+  bool staticLib;
+
+  /**
+   * Build shared library?
+   */
+  bool sharedLib;
+
+  /**
+   * Is OpenMP enabled?
+   */
+  bool openmp;
+
+  /**
    * Are compiler warnings enabled?
    */
   bool warnings;

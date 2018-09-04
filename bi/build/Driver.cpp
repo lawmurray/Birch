@@ -25,6 +25,9 @@ bi::Driver::Driver(int argc, char** argv) :
     prefix(""),
     packageName("Untitled"),
     unity(false),
+    staticLib(false),
+    sharedLib(true),
+    openmp(true),
     warnings(true),
     debug(true),
     verbose(true),
@@ -40,6 +43,12 @@ bi::Driver::Driver(int argc, char** argv) :
     NAME_ARG,
     ENABLE_UNITY_ARG,
     DISABLE_UNITY_ARG,
+    ENABLE_STATIC_ARG,
+    DISABLE_STATIC_ARG,
+    ENABLE_SHARED_ARG,
+    DISABLE_SHARED_ARG,
+    ENABLE_OPENMP_ARG,
+    DISABLE_OPENMP_ARG,
     ENABLE_WARNINGS_ARG,
     DISABLE_WARNINGS_ARG,
     ENABLE_DEBUG_ARG,
@@ -58,6 +67,12 @@ bi::Driver::Driver(int argc, char** argv) :
       { "name", required_argument, 0, NAME_ARG },
       { "enable-unity", no_argument, 0, ENABLE_UNITY_ARG },
       { "disable-unity", no_argument, 0, DISABLE_UNITY_ARG },
+      { "enable-static", no_argument, 0, ENABLE_STATIC_ARG },
+      { "disable-static", no_argument, 0, DISABLE_STATIC_ARG },
+      { "enable-shared", no_argument, 0, ENABLE_SHARED_ARG },
+      { "disable-shared", no_argument, 0, DISABLE_SHARED_ARG },
+      { "enable-openmp", no_argument, 0, ENABLE_OPENMP_ARG },
+      { "disable-openmp", no_argument, 0, DISABLE_OPENMP_ARG },
       { "enable-warnings", no_argument, 0, ENABLE_WARNINGS_ARG },
       { "disable-warnings", no_argument, 0, DISABLE_WARNINGS_ARG },
       { "enable-debug", no_argument, 0, ENABLE_DEBUG_ARG },
@@ -102,6 +117,24 @@ bi::Driver::Driver(int argc, char** argv) :
       break;
     case DISABLE_UNITY_ARG:
       unity = false;
+      break;
+    case ENABLE_STATIC_ARG:
+      staticLib = true;
+      break;
+    case DISABLE_STATIC_ARG:
+      staticLib = false;
+      break;
+    case ENABLE_SHARED_ARG:
+      sharedLib = true;
+      break;
+    case DISABLE_SHARED_ARG:
+      sharedLib = false;
+      break;
+    case ENABLE_OPENMP_ARG:
+      openmp = true;
+      break;
+    case DISABLE_OPENMP_ARG:
+      openmp = false;
       break;
     case ENABLE_WARNINGS_ARG:
       warnings = true;
@@ -549,6 +582,8 @@ void bi::Driver::setup() {
       m4_dir / "ax_cxx_compile_stdcxx.m4");
   copy_if_newer(find(share_dirs, "ax_check_define.m4"),
       m4_dir / "ax_check_define.m4");
+  copy_if_newer(find(share_dirs, "ax_gcc_builtin.m4"),
+      m4_dir / "ax_gcc_builtin.m4");
 
   /* update configure.ac */
   std::string contents = read_all(find(share_dirs, "configure.ac"));
@@ -602,16 +637,6 @@ void bi::Driver::setup() {
   makeStream << contents << "\n\n";
   makeStream << "lib_LTLIBRARIES = lib" << internalName << ".la\n\n";
 
-  /* *.cpp files */
-  makeStream << "lib" << internalName << "_la_SOURCES = ";
-  for (auto file : metaFiles["manifest.source"]) {
-    if (file.extension().compare(".cpp") == 0
-        || file.extension().compare(".c") == 0) {
-      makeStream << " \\\n  " << file.string();
-    }
-  }
-  makeStream << '\n';
-
   /* sources derived from *.bi files */
   makeStream << "nodist_lib" << internalName << "_la_SOURCES =";
   makeStream << " \\\n  bi/" << internalName << ".cpp";
@@ -622,6 +647,16 @@ void bi::Driver::setup() {
         cppFile.replace_extension(".cpp");
         makeStream << " \\\n  " << cppFile.string();
       }
+    }
+  }
+  makeStream << '\n';
+
+  /* other *.cpp files */
+  makeStream << "lib" << internalName << "_la_SOURCES = ";
+  for (auto file : metaFiles["manifest.source"]) {
+    if (file.extension().compare(".cpp") == 0
+        || file.extension().compare(".c") == 0) {
+      makeStream << " \\\n  " << file.string();
     }
   }
   makeStream << '\n';
@@ -723,61 +758,81 @@ void bi::Driver::configure() {
   if (newAutogen || newConfigure || newMake
       || !exists(build_dir / "Makefile")) {
     /* working directory */
-    std::stringstream cppflags, cxxflags, ldflags, options, cmd;
+    std::stringstream cppflags, cflags, cxxflags, ldflags, options, cmd;
 
     /* compile and link flags */
     if (arch == "js") {
       //
     } else if (arch == "wasm") {
+      cflags << " -s WASM=1";
       cxxflags << " -s WASM=1";
     } else if (arch == "native") {
+      cflags << " -march=native";
       cxxflags << " -march=native";
+      if (openmp) {
+        #ifdef __APPLE__
+        /* the system compiler on Apple requires different options for
+         * OpenMP; disable the configure check and customize these */
+        options << " --disable-openmp";
+        cppflags << " -Xpreprocessor -fopenmp";
+        ldflags << " -lomp";
+        #else
+        options << " --enable-openmp";
+        #endif
+      } else {
+        options << " --disable-openmp";
+      }
     } else {
       throw DriverException("unknown architecture '" + arch
               + "'; valid values are 'native', 'js' and 'wasm'");
     }
+    if (warnings) {
+      cflags << " -Wall";
+      cxxflags << " -Wall";
+    }
     if (debug) {
+      cflags << " -Og -g";
       cxxflags << " -Og -g";
-      ldflags << " -Og -g";
     } else {
       cppflags << " -DNDEBUG";
-
-      /*
-       * -flto enables link-time code generation, which is used in favour
-       * of explicitly inlining functions written in Birch. The gcc manpage
-       * recommends passing the same optimisation options to the linker as
-       * to the compiler when using this.
-       */
+      cflags << " -O3 -funroll-loops -flto";
       cxxflags << " -O3 -funroll-loops -flto";
-      ldflags << " -O3 -funroll-loops -flto";
-    }
-    if (warnings) {
-      cxxflags << " -Wall";
-      ldflags << " -Wall";
     }
     cxxflags << " -Wno-overloaded-virtual";
     cxxflags << " -Wno-return-type";
     // ^ false warnings for abstract functions at the moment
-    cppflags << " -DEIGEN_NO_STATIC_ASSERT";
-    cppflags << " -Deigen_assert=bi_assert";
+    //cppflags << " -DEIGEN_NO_STATIC_ASSERT";
+    //cppflags << " -Deigen_assert=bi_assert";
 
     for (auto iter = include_dirs.begin(); iter != include_dirs.end();
         ++iter) {
       cppflags << " -I'" << iter->string() << "'";
     }
-    for (auto iter = lib_dirs.begin(); iter != lib_dirs.end(); ++iter) {
+    for (auto iter = lib_dirs.begin(); iter != lib_dirs.end();
+        ++iter) {
       ldflags << " -L'" << iter->string() << "'";
     }
-    for (auto iter = lib_dirs.begin(); iter != lib_dirs.end(); ++iter) {
+    for (auto iter = lib_dirs.begin(); iter != lib_dirs.end();
+        ++iter) {
       ldflags << " -Wl,-rpath,'" << iter->string() << "'";
     }
 
     /* configure options */
+    if (staticLib) {
+      options << " --enable-static";
+    } else {
+      options << " --disable-static";
+    }
+    if (sharedLib) {
+      options << " --enable-shared";
+    } else {
+      options << " --disable-shared";
+    }
     if (!prefix.empty()) {
       options << " --prefix=" << absolute(prefix);
     }
-    options << " INSTALL=\"install -p\"";
     options << " --config-cache";
+    options << " INSTALL=\"install -p\"";
 
     /* command */
     if (arch == "js" || arch == "wasm") {
@@ -786,6 +841,9 @@ void bi::Driver::configure() {
     cmd << (fs::path("..") / "configure") << " " << options.str();
     if (!cppflags.str().empty()) {
       cmd << " CPPFLAGS=\"" << cppflags.str() << "\"";
+    }
+    if (!cflags.str().empty()) {
+      cmd << " CFLAGS=\"" << cflags.str() << "\"";
     }
     if (!cxxflags.str().empty()) {
       cmd << " CXXFLAGS=\"" << cxxflags.str() << "\"";

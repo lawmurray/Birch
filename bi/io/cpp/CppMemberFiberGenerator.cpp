@@ -88,7 +88,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     genTemplateArgs(type);
     middle("::" << stateName << "::");
   }
-  middle(stateName << "(const SharedPointer<");
+  middle(stateName << "(const SharedCOW<");
   middle(type->name);
   genTemplateArgs(type);
   middle(">& object, Args... args)");
@@ -111,7 +111,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   } else {
     start("");
   }
-  middle("std::shared_ptr<bi::FiberState<" << o->returnType->unwrap() <<">> ");
+  middle("bi::FiberState<" << o->returnType->unwrap() <<">* ");
   if (!header) {
     middle("bi::type::" << type->name);
     genTemplateArgs(type);
@@ -123,7 +123,30 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   } else {
     finish(" {");
     in();
-    line("return std::make_shared<" << stateName << ">(*this);");
+    line("return bi::construct<" << stateName << ">(*this);");
+    out();
+    line("}\n");
+  }
+
+  /* destroy function */
+  start("");
+  if (header) {
+    middle("virtual ");
+  }
+  middle("void ");
+  if (!header) {
+    middle("bi::type::" << type->name);
+    genTemplateArgs(type);
+    middle("::" << stateName << "::");
+  }
+  middle("destroy()");
+  if (header) {
+    finish(";\n");
+  } else {
+    finish(" {");
+    in();
+    line("this->size = sizeof(*this);");
+    line("this->~" << stateName << "();");
     out();
     line("}\n");
   }
@@ -176,7 +199,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     finish(" {");
     in();
     start("return make_fiber<" << stateName << ">(");
-    middle("this->shared_self()");
+    middle("this->self()");
     for (auto param: params) {
       middle(", ");
       middle(param->name);

@@ -100,8 +100,8 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   if (header) {
     middle("virtual ");
   }
-  middle("std::shared_ptr<bi::FiberState<");
-  middle(o->returnType->unwrap() << ">> ");
+  middle("bi::FiberState<");
+  middle(o->returnType->unwrap() << ">* ");
   if (!header) {
     middle("bi::" << stateName << "::");
   }
@@ -111,7 +111,28 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   } else {
     finish(" {");
     in();
-    line("return std::make_shared<" << stateName << ">(*this);");
+    line("return bi::construct<" << stateName << ">(*this);");
+    out();
+    line("}\n");
+  }
+
+  /* destroy function */
+  start("");
+  if (header) {
+    middle("virtual ");
+  }
+  middle("void ");
+  if (!header) {
+    middle("bi::" << stateName << "::");
+  }
+  middle("destroy()");
+  if (header) {
+    finish(";\n");
+  } else {
+    finish(" {");
+    in();
+    line("this->size = sizeof(*this);");
+    line("this->~" << stateName << "();");
     out();
     line("}\n");
   }
@@ -206,7 +227,7 @@ void bi::CppFiberGenerator::visit(const LocalVariable* o) {
   } else if (o->type->isPointer() && !o->type->isWeak()) {
     /* make sure objects are initialized, not just null pointers */
     auto name = getName(o->name->str(), o->number);
-    middle("this->" << name << " = bi::make_pointer<" << o->type << ">()");
+    middle("this->" << name << " = bi::construct<" << o->type->unwrap() << ">()");
   }
 }
 

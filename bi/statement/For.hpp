@@ -5,6 +5,7 @@
 
 #include "bi/statement/Statement.hpp"
 #include "bi/expression/Expression.hpp"
+#include "bi/common/Annotated.hpp"
 #include "bi/common/Braced.hpp"
 #include "bi/common/Scoped.hpp"
 
@@ -14,19 +15,20 @@ namespace bi {
  *
  * @ingroup statement
  */
-class For: public Statement, public Scoped, public Braced {
+class For: public Statement, public Annotated, public Scoped, public Braced {
 public:
   /**
    * Constructor.
    *
+   * @param annotation Annotation.
    * @param index Index.
    * @param from From expression.
    * @param to To expression.
    * @param braces Body of loop.
    * @param loc Location.
    */
-  For(Expression* index, Expression* from, Expression* to, Statement* braces,
-      Location* loc = nullptr);
+  For(const Annotation annotation, Expression* index, Expression* from,
+      Expression* to, Statement* braces, Location* loc = nullptr);
 
   /**
    * Destructor.

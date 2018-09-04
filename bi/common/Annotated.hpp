@@ -8,7 +8,8 @@ namespace bi {
  * Annotations for declarations.
  */
 enum Annotation {
-  NONE = 0
+  NONE = 0,
+  PARALLEL = 1
 };
 
 /**
@@ -29,6 +30,11 @@ public:
    * Destructor.
    */
   virtual ~Annotated() = 0;
+
+  /**
+   * Does this object have a particular annotation?
+   */
+  bool has(const Annotation a) const;
 
   /**
    * Annotation.
