@@ -12,7 +12,7 @@ namespace bi {
  * @ingroup libbirch
  *
  * @tparam T Value type.
- * @tparam F F type.
+ * @tparam F Frame type.
  */
 template<class T, class F = EmptyFrame>
 class Iterator : public std::iterator<std::bidirectional_iterator_tag,T> {

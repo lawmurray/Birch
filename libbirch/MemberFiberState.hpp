@@ -21,12 +21,11 @@ namespace bi {
  */
 template<class YieldType, class ObjectType, class ArgumentType,
     class LocalType>
-class MemberFiberState:
+class MemberFiberState: public FiberState<YieldType>,
     protected ArgumentType,
     public MemberFiberWorld<ObjectType>,
     protected Enter,
-    protected LocalType,
-    public FiberState<YieldType> {
+    protected LocalType {
 public:
   /**
    * Constructor.
@@ -40,12 +39,12 @@ public:
    */
   template<class ... Args>
   MemberFiberState(const int label, const int nlabels,
-      const SharedPointer<ObjectType>& object, Args ... args) :
+      const SharedCOW<ObjectType>& object, Args ... args) :
+      FiberState<YieldType>(label, nlabels),
       ArgumentType { args... },
       MemberFiberWorld<ObjectType>(object),
       Enter(getWorld()),  // enters owning object's world
-      LocalType(),
-      FiberState<YieldType>(label, nlabels) {
+      LocalType() {
     exit();  // exits owning object's world
   }
 
@@ -54,32 +53,38 @@ public:
    */
   MemberFiberState(
       const MemberFiberState<YieldType,ObjectType,ArgumentType,LocalType>& o) :
+      FiberState<YieldType>(o),
       ArgumentType(o),
       MemberFiberWorld<ObjectType>(o),
       Enter(getWorld()),  // enters owning object's world
-      LocalType(o),
-      FiberState<YieldType>(o) {
+      LocalType(o) {
     exit();  // exits owning object's world
   }
 
+  virtual void destroy() {
+    this->size = sizeof(*this);
+    this->~MemberFiberState();
+  }
+
+  /**
+   * Get the world to which the fiber state belongs.
+   */
   virtual World* getWorld() {
     return this->object->getWorld();
   }
 
-  ObjectType* self() {
+  virtual YieldType& get() {
+    return value;
+  }
+
+  auto self() {
     return this->object->self();
   }
 
-  typename ObjectType::super_type* super() {
-    return this->object->super();
-  }
-
-  SharedPointer<ObjectType> shared_self() {
-    return this->object->shared_self();
-  }
-
-  SharedPointer<typename ObjectType::super_type> shared_super() {
-    return this->object->shared_super();
-  }
+protected:
+  /**
+   * Yield value.
+   */
+  YieldType value;
 };
 }

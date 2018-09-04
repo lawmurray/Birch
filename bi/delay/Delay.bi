@@ -36,8 +36,8 @@ class Delay {
   function detach() {
     parent:Delay? <- this.parent;
     if (parent?) {
+      this.parent <- nil;
       parent!.child <- nil;
-      parent <- nil;
     }
   }
   

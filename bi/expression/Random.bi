@@ -51,6 +51,7 @@ class Random<Value> < Expression<Value> {
     if !x? {
       assert dist?;
       dist!.realize();
+      dist <- nil;
       assert x?;
     }
     return x!;

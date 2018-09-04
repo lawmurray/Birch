@@ -1,8 +1,13 @@
 cpp{{
 #include <random>
 
-static std::random_device rd;
-static std::mt19937_64 rng(rd());
+extern std::random_device rd;
+#pragma omp threadprivate(rd)
+std::random_device rd;
+
+extern std::mt19937_64 rng;
+#pragma omp threadprivate(rng)
+std::mt19937_64 rng(rd());
 }}
 
 /**
@@ -12,7 +17,14 @@ static std::mt19937_64 rng(rd());
  */
 function seed(s:Integer) {
   cpp {{
+  #ifdef _OPENMP
+  #pragma omp parallel
+  {
+    rng.seed(s_ + omp_get_thread_num());
+  }
+  #else
   rng.seed(s_);
+  #endif
   }}
 }
 

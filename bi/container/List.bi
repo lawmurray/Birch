@@ -123,7 +123,7 @@ class List<Type> {
     this.tail <- tail!.popBack();
     count <- count - 1;
     if (count <= 1) {
-      head <- tail;
+      head <- this.tail;
     }
   }
   
