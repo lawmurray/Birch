@@ -9,6 +9,8 @@
 #include <cstdlib>
 
 std::atomic<char*> bi::buffer(heap());
+char* bi::bufferStart;
+size_t bi::bufferSize;
 bi::Pool bi::pool[64];
 bi::World* bi::fiberWorld = new bi::World(0);
 bool bi::fiberClone = false;

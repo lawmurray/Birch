@@ -23,6 +23,9 @@ char* bi::heap() {
   } while (!ptr && n > 0u);
   assert(ptr);
 
+  bufferStart = (char*)ptr;
+  bufferSize = n;
+
   return (char*)ptr;
 #endif
 }

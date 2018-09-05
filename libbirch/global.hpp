@@ -92,6 +92,16 @@ struct StackFunction {
 extern std::atomic<char*> buffer;
 
 /**
+ * Start of heap (for debugging purposes).
+ */
+extern char* bufferStart;
+
+/**
+ * Size of heap (for debugging purposes).
+ */
+extern size_t bufferSize;
+
+/**
  * Allocation pools.
  */
 extern Pool pool[];
