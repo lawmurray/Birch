@@ -51,10 +51,9 @@ private:
     void* top;
 
     /**
-     * Next-from-top element of the stack. This is used to avoid ABA
-     * problems.
+     * Operation count to avoid ABA problems.
      */
-    void* next;
+    size_t count;
   };
 
   /**
