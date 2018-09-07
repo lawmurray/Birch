@@ -432,7 +432,8 @@ function simulate_lomax(λ:Real, α:Real) -> Real {
   assert 0.0 < λ;
   assert 0.0 < α;
 
-  return simulate_exponential(simulate_gamma(α, 1.0/λ));
+  u:Real <- simulate_uniform(0.0, 1.0);
+  return λ*(pow(u, -1.0/α)-1.0);
 }
 
 /**
