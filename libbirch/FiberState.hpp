@@ -3,6 +3,8 @@
  */
 #pragma once
 
+#include "libbirch/Counted.hpp"
+
 namespace bi {
 /**
  * State of a fiber.
@@ -12,7 +14,7 @@ namespace bi {
  * @tparam YieldType Yield type.
  */
 template<class YieldType>
-class FiberState {
+class FiberState: public Counted {
 public:
   using yield_type = YieldType;
 
@@ -24,8 +26,29 @@ public:
    */
   FiberState(const int label = 0, const int nlabels = 0) :
       label(label),
-      nlabels(nlabels) {
+      nlabels(nlabels),
+      flagDirty(false) {
     //
+  }
+
+  /**
+   * Copy constructor.
+   */
+  FiberState(const FiberState<YieldType>& o) :
+      label(o.label),
+      nlabels(o.nlabels),
+      flagDirty(false) {
+    //
+  }
+
+  /**
+   * Copy assignment.
+   */
+  FiberState<YieldType>& operator=(const FiberState<YieldType>& o) {
+    label = o.label;
+    nlabels = o.nlabels;
+    flagDirty = false;
+    return *this;
   }
 
   /**
@@ -35,10 +58,15 @@ public:
     //
   }
 
+  virtual void destroy() {
+    this->size = sizeof(*this);
+    this->~FiberState();
+  }
+
   /**
-   * Clone the object.
+   * Clone.
    */
-  virtual std::shared_ptr<FiberState<YieldType>> clone() const = 0;
+  virtual FiberState<YieldType>* clone() const = 0;
 
   /**
    * Get the world in which the fiber runs.
@@ -53,8 +81,22 @@ public:
   /**
    * Get the last yield value.
    */
-  YieldType& get() {
-    return value;
+  virtual YieldType& get() = 0;
+
+  /**
+   * Mark as dirty. When a fiber is copied, the original and the copy share
+   * a state. When either is run, the state becomes dirty, and both must
+   * clone the state before they run.
+   */
+  void dirty() {
+    flagDirty = true;
+  }
+
+  /**
+   * Is this dirty?
+   */
+  bool isDirty() const {
+    return flagDirty;
   }
 
 protected:
@@ -69,8 +111,8 @@ protected:
   int nlabels;
 
   /**
-   * Yield value.
+   * Is this state dirty?
    */
-  YieldType value;
+  bool flagDirty;
 };
 }

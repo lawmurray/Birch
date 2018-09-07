@@ -122,67 +122,150 @@ private:
  * @tparam T Type.
  */
 template<class T>
-class Optional<SharedPointer<T>> {
+class Optional<SharedCOW<T>> {
   template<class U> friend class Optional;
 public:
   /**
-   * Null constructor.
+   * Value constructor.
    */
-  Optional(const std::nullptr_t& value = nullptr) :
-      value() {
-    //
-  }
-
-  /**
-   * Null constructor.
-   */
-  Optional(const Nil&) :
-      value() {
-    //
-  }
-
-  /**
-   * Generic copy constructor.
-   */
-  template<class U>
-  Optional(const Optional<SharedPointer<U>>& o) :
-      value(o.value) {
-    //
-  }
-
-  /**
-   * Generic copy constructor.
-   */
-  template<class U>
-  Optional(const Optional<WeakPointer<U>>& o) :
-      value(o.value) {
+  Optional(T* value = nullptr) :
+      value(value) {
     //
   }
 
   /**
    * Value constructor.
    */
-  Optional(const SharedPointer<T>& value) :
+  Optional(const Nil& o) :
+      value(nullptr) {
+    //
+  }
+
+  /**
+   * Value constructor.
+   */
+  Optional(const SharedCOW<T>& value) :
       value(value) {
     //
   }
 
   /**
-   * Generic value constructor.
+   * Value constructor.
    */
-  template<class U>
-  Optional(const SharedPointer<U>& value) :
+  Optional(const WeakCOW<T>& value) :
       value(value) {
     //
   }
 
   /**
-   * Generic value constructor.
+   * Value move constructor.
    */
-  template<class U>
-  Optional(const WeakPointer<U>& value) :
+  Optional(SharedCOW<T>&& value) :
       value(value) {
     //
+  }
+
+  /**
+   * Value assignment.
+   */
+  Optional<SharedCOW<T>>& operator=(T* o) {
+    value = o;
+    return *this;
+  }
+
+  /**
+   * Value assignment.
+   */
+  Optional<SharedCOW<T>>& operator=(const Nil& o) {
+    value = o;
+    return *this;
+  }
+
+  /**
+   * Value assignment.
+   */
+  Optional<SharedCOW<T>>& operator=(const WeakCOW<T>& o) {
+    value = o;
+    return *this;
+  }
+
+  /**
+   * Value assignment.
+   */
+  Optional<SharedCOW<T>>& operator=(const SharedCOW<T>& o) {
+    value = o;
+    return *this;
+  }
+
+  /**
+   * Value move assignment.
+   */
+  Optional<SharedCOW<T>>& operator=(SharedCOW<T>&& o) {
+    value = std::move(o);
+    return *this;
+  }
+
+  /**
+   * Copy constructor.
+   */
+  Optional(const Optional<SharedCOW<T>>& o) = default;
+
+  /**
+   * Move constructor.
+   */
+  Optional(Optional<SharedCOW<T>>&& o) = default;
+
+  /**
+   * Generic copy constructor.
+   */
+  template<class U>
+  Optional(const Optional<SharedCOW<U>>& o) :
+      value(o.value) {
+    //
+  }
+
+  /**
+   * Generic move constructor.
+   */
+  template<class U>
+  Optional(const Optional<WeakCOW<U>>& o) :
+      value(o.value) {
+    //
+  }
+
+  /**
+   * Copy assignment.
+   */
+  Optional<SharedCOW<T>>& operator=(const Optional<SharedCOW<T>>& o) = default;
+
+  /**
+   * Move assignment.
+   */
+  Optional<SharedCOW<T>>& operator=(Optional<SharedCOW<T>>&& o) = default;
+
+  /**
+   * Generic copy assignment.
+   */
+  template<class U>
+  Optional<SharedCOW<T>>& operator=(const Optional<SharedCOW<U>>& o) {
+    value = o.value;
+    return *this;
+  }
+
+  /**
+   * Generic move constructor.
+   */
+  template<class U>
+  Optional<SharedCOW<T>>& operator=(Optional<SharedCOW<U>>&& o) {
+    value = std::move(o.value);
+    return *this;
+  }
+
+  /**
+   * Value conversion.
+   */
+  operator WeakCOW<T>() {
+    return value;
   }
 
   /**
@@ -195,7 +278,7 @@ public:
   /**
    * Get the value.
    */
-  SharedPointer<T>& get() {
+  SharedCOW<T>& get() {
     bi_assert_msg(query(), "optional has no value");
     return value;
   }
@@ -203,7 +286,7 @@ public:
   /**
    * Get the value.
    */
-  const SharedPointer<T>& get() const {
+  const SharedCOW<T>& get() const {
     bi_assert_msg(query(), "optional has no value");
     return value;
   }
@@ -212,6 +295,6 @@ private:
   /**
    * The contained value, if any.
    */
-  SharedPointer<T> value;
+  SharedCOW<T> value;
 };
 }

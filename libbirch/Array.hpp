@@ -5,7 +5,8 @@
 
 #include "libbirch/Frame.hpp"
 #include "libbirch/Iterator.hpp"
-#include "libbirch/SharedPointer.hpp"
+#include "libbirch/SharedCOW.hpp"
+#include "libbirch/Allocator.hpp"
 #include "libbirch/Sequence.hpp"
 #include "libbirch/Eigen.hpp"
 #include "libbirch/global.hpp"
@@ -387,7 +388,7 @@ public:
   }
 
   /**
-   * Iterator pointing to one beyond the last element.
+   * Iterator pointing to one past the last element.
    */
   Iterator<T,F> end() const {
     return begin() + frame.size();
@@ -426,9 +427,10 @@ public:
       iter->~T();
     }
 
+    int64_t oldVol = this->frame.volume();
     this->frame.resize(frame);
-    ptr = (T*)std::realloc(ptr, sizeof(T)*this->frame.volume());
-    assert(ptr);
+    int64_t newVol = this->frame.volume();
+    ptr = alloc.reallocate(ptr, oldVol, newVol);
   }
 
   /**
@@ -447,9 +449,10 @@ public:
     assert(frame.size() > this->frame.size());
 
     int64_t oldSize = this->frame.size();  // old size
+    int64_t oldVol = this->frame.volume();
     this->frame.resize(frame);
-    ptr = (T*)std::realloc(ptr, sizeof(T)*this->frame.volume());
-    assert(ptr);
+    int64_t newVol = this->frame.volume();
+    ptr = alloc.reallocate(ptr, oldVol, newVol);
     std::uninitialized_fill(begin() + oldSize, end(), x);
   }
 
@@ -473,8 +476,7 @@ private:
    * Allocate memory for array.
    */
   void allocate() {
-    ptr = (T*)std::malloc(sizeof(T)*frame.volume());
-    assert(ptr);
+    ptr = alloc.allocate(frame.volume());
   }
 
   /**
@@ -485,7 +487,7 @@ private:
       for (auto iter = begin(); iter != end(); ++iter) {
         iter->~T();
       }
-      std::free(ptr);
+      alloc.deallocate(ptr, frame.volume());
     }
   }
 
@@ -568,14 +570,14 @@ private:
   }
 
   /**
-   * Construct element of smart pointer type in place.
+   * Construct element of shared pointer type in place.
    *
    * @param o Element.
    * @param args Constructor arguments.
    */
   template<class U, class ... Args>
-  static void emplace(SharedPointer<U>& o, Args ... args) {
-    new (&o) SharedPointer<U>(std::make_shared<U>(args...));
+  static void emplace(SharedCOW<U>& o, Args ... args) {
+    new (&o) SharedCOW<U>(bi::construct<U>(args...));
   }
 
   /**
@@ -609,5 +611,10 @@ private:
    * semantics, as it cannot be resized or moved.
    */
   bool isView;
+
+  /**
+   * Allocator.
+   */
+  Allocator<T> alloc;
 };
 }

@@ -53,6 +53,22 @@ class Vector<Type> {
   }
 
   /**
+   * Get the first element.
+   */
+  function front() -> Type {
+    assert nelements > 0;
+    return values[1];
+  }
+
+  /**
+   * Get the last element.
+   */
+  function back() -> Type {
+    assert nelements > 0;
+    return values[nelements];
+  }
+
+  /**
    * Insert a new element at the start.
    *
    * - x: Value.

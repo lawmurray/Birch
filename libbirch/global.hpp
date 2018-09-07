@@ -8,8 +8,9 @@
 #include <memory>
 #include <cstdint>
 #include <cstddef>
-#include <list>
 #include <cassert>
+#include <vector>
+#include <atomic>
 
 /**
  * @def bi_assert
@@ -56,16 +57,17 @@
  * Update the line number of the top frame on the stack trace.
  */
 #ifndef NDEBUG
-#define bi_line(n) stacktrace.front().line = n
+#define bi_line(n) stacktrace.back().line = n
 #else
 #define bi_line(n)
 #endif
 
 namespace bi {
+class Pool;
 class World;
 class Any;
-template<class T> class SharedPointer;
-template<class T> class WeakPointer;
+template<class T> class SharedCOW;
+template<class T> class WeakCOW;
 
 /**
  * Stack frame.
@@ -85,14 +87,36 @@ struct StackFunction {
 };
 
 /**
+ * Buffer for heap allocations.
+ */
+extern std::atomic<char*> buffer;
+
+/**
+ * Start of heap (for debugging purposes).
+ */
+extern char* bufferStart;
+
+/**
+ * Size of heap (for debugging purposes).
+ */
+extern size_t bufferSize;
+
+/**
+ * Allocation pools.
+ */
+extern Pool pool[];
+
+/**
  * The world of the currently running fiber.
  */
 extern World* fiberWorld;
+#pragma omp threadprivate(fiberWorld)
 
 /**
  * Flag set when an object is being cloned.
  */
 extern bool fiberClone;
+#pragma omp threadprivate(fiberClone)
 
 /**
  * Constant to indicate a mutable value. Zero is convenient here, as it
@@ -105,7 +129,8 @@ static constexpr int64_t mutable_value = 0;
 /**
  * Stack trace.
  */
-extern std::list<StackFrame> stacktrace;
+extern std::vector<StackFrame> stacktrace;
+#pragma omp threadprivate(stacktrace)
 
 /**
  * Report unknown program option and abort.
@@ -121,15 +146,6 @@ void abort();
  * Print stack trace and abort with message.
  */
 void abort(const std::string& msg);
-
-inline bi::StackFunction::StackFunction(const char* func, const char* file,
-    const int line) {
-  stacktrace.push_front( { func, file, line });
-}
-
-inline bi::StackFunction::~StackFunction() {
-  stacktrace.pop_front();
-}
 
 /**
  * The super type of type @p T. Specialised in forward declarations of
