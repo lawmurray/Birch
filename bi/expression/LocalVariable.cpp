@@ -5,8 +5,10 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::LocalVariable::LocalVariable(Name* name, Type* type, Expression* brackets,
-    Expression* args, Expression* value, Location* loc) :
+bi::LocalVariable::LocalVariable(const Annotation annotation, Name* name,
+    Type* type, Expression* brackets, Expression* args, Expression* value,
+    Location* loc) :
+    Annotated(annotation),
     Expression(type, loc),
     Named(name),
     Bracketed(brackets),

@@ -216,14 +216,19 @@ bi::Expression* bi::ResolverSource::modify(Generic* o) {
 
 bi::Expression* bi::ResolverSource::modify(LocalVariable* o) {
   Modifier::modify(o);
-  if (o->needsConstruction()) {
-    o->type->resolveConstructor(o);
-  }
-  if (!o->brackets->isEmpty()) {
-    o->type = new ArrayType(o->type, o->brackets->width(), o->brackets->loc);
-  }
-  if (!o->value->isEmpty() && !o->value->type->definitely(*o->type)) {
-    throw InitialValueException(o);
+  if (o->has(AUTO)) {
+    assert(!o->value->isEmpty());
+    o->type = o->value->type;
+  } else {
+    if (o->needsConstruction()) {
+      o->type->resolveConstructor(o);
+    }
+    if (!o->brackets->isEmpty()) {
+      o->type = new ArrayType(o->type, o->brackets->width(), o->brackets->loc);
+    }
+    if (!o->value->isEmpty() && !o->value->type->definitely(*o->type)) {
+      throw InitialValueException(o);
+    }
   }
   scopes.back()->add(o);
   return o;
@@ -494,7 +499,7 @@ bi::Statement* bi::ResolverSource::modify(ExpressionStatement* o) {
   auto call = dynamic_cast<Call*>(o->single);
   if (call && call->type->isFiber()) {
     auto name = new Name();
-    auto var = new LocalVariable(name, o->single->type->accept(&cloner),
+    auto var = new LocalVariable(NONE, name, o->single->type->accept(&cloner),
         new EmptyExpression(o->loc), new EmptyExpression(o->loc),
         o->single->accept(&cloner), o->loc);
     auto decl = new ExpressionStatement(var, o->loc);

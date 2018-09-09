@@ -9,7 +9,8 @@ namespace bi {
  */
 enum Annotation {
   NONE = 0,
-  PARALLEL = 1
+  PARALLEL = 1,
+  AUTO = 2
 };
 
 /**

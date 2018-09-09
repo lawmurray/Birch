@@ -126,7 +126,7 @@ bi::Expression* bi::Cloner::clone(const Nil* o) {
 }
 
 bi::Expression* bi::Cloner::clone(const LocalVariable* o) {
-  return new LocalVariable(o->name, o->type->accept(this),
+  return new LocalVariable(o->annotation, o->name, o->type->accept(this),
       o->brackets->accept(this), o->args->accept(this),
       o->value->accept(this), o->loc);
 }

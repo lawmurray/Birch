@@ -85,7 +85,7 @@
 %expect-rr 2  // `Type?(...)` vs `x?`
 %expect 4     // for generics, '<' ambiguous, but closing '>' disambiguates
 
-%token <valString> PROGRAM CLASS TYPE FUNCTION FIBER OPERATOR EXPLICIT
+%token <valString> PROGRAM CLASS TYPE FUNCTION FIBER OPERATOR AUTO EXPLICIT
 %token <valString> IF ELSE FOR IN WHILE DO ASSERT RETURN YIELD CPP HPP
 %token <valString> THIS SUPER GLOBAL PARALLEL NIL
 %token <valString> DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE NAME
@@ -361,11 +361,12 @@ expression_list
     ;
 
 local_variable
-    : name ':' type                             { $$ = new bi::LocalVariable($1, $3, empty_expr(@$), empty_expr(@$), empty_expr(@$), make_loc(@$)); }
-    | name ':' type arguments                   { $$ = new bi::LocalVariable($1, $3, empty_expr(@$), $4, empty_expr(@$), make_loc(@$)); }
-    | name ':' type value                       { $$ = new bi::LocalVariable($1, $3, empty_expr(@$), empty_expr(@$), $4, make_loc(@$)); }
-    | name ':' postfix_type brackets            { $$ = new bi::LocalVariable($1, $3, $4, empty_expr(@$), empty_expr(@$), make_loc(@$)); }
-    | name ':' postfix_type brackets arguments  { $$ = new bi::LocalVariable($1, $3, $4, $5, empty_expr(@$), make_loc(@$)); }
+    : name ':' type                             { $$ = new bi::LocalVariable(bi::NONE, $1, $3, empty_expr(@$), empty_expr(@$), empty_expr(@$), make_loc(@$)); }
+    | name ':' type arguments                   { $$ = new bi::LocalVariable(bi::NONE, $1, $3, empty_expr(@$), $4, empty_expr(@$), make_loc(@$)); }
+    | name ':' type value                       { $$ = new bi::LocalVariable(bi::NONE, $1, $3, empty_expr(@$), empty_expr(@$), $4, make_loc(@$)); }
+    | AUTO name value                           { $$ = new bi::LocalVariable(bi::AUTO, $2, empty_type(@$), empty_expr(@$), empty_expr(@$), $3, make_loc(@$)); }
+    | name ':' postfix_type brackets            { $$ = new bi::LocalVariable(bi::NONE, $1, $3, $4, empty_expr(@$), empty_expr(@$), make_loc(@$)); }
+    | name ':' postfix_type brackets arguments  { $$ = new bi::LocalVariable(bi::NONE, $1, $3, $4, $5, empty_expr(@$), make_loc(@$)); }
     ;
 
 span_expression
@@ -596,15 +597,10 @@ for_annotation
     :           { $$ = bi::NONE; }
     | PARALLEL  { $$ = bi::PARALLEL; }
     ;
-    
-//for_annotations
-//    : for_annotation
-//    | for_annotation for_annotations  { $$ = bi::Annotation($1|$2); }
-//    ;
 
 for_index
     : identifier
-    | name ':' type  { $$ = new bi::LocalVariable($1, $3, empty_expr(@$), empty_expr(@$), empty_expr(@$), make_loc(@$)); }
+    | name ':' type  { $$ = new bi::LocalVariable(bi::NONE, $1, $3, empty_expr(@$), empty_expr(@$), empty_expr(@$), make_loc(@$)); }
     ;
 
 for

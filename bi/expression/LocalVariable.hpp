@@ -4,6 +4,7 @@
 #pragma once
 
 #include "bi/expression/Expression.hpp"
+#include "bi/common/Annotated.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Numbered.hpp"
 #include "bi/common/Bracketed.hpp"
@@ -17,6 +18,7 @@ namespace bi {
  * @ingroup expression
  */
 class LocalVariable: public Expression,
+    public Annotated,
     public Named,
     public Numbered,
     public Bracketed,
@@ -26,6 +28,7 @@ public:
   /**
    * Constructor.
    *
+   * @param annotation Annotation.
    * @param name Name.
    * @param type Type.
    * @param brackets Array size.
@@ -33,8 +36,9 @@ public:
    * @param value Initial value.
    * @param loc Location.
    */
-  LocalVariable(Name* name, Type* type, Expression* brackets,
-      Expression* args, Expression* value, Location* loc = nullptr);
+  LocalVariable(const Annotation annotation, Name* name, Type* type,
+      Expression* brackets, Expression* args, Expression* value,
+      Location* loc = nullptr);
 
   /**
    * Destructor.
