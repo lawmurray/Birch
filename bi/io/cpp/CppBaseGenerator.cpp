@@ -192,9 +192,13 @@ void bi::CppBaseGenerator::visit(const Nil* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Parameter* o) {
-  middle("const " << o->type);
-  if (!o->type->isBasic()) {
-    middle('&');
+  if (o->type->isArray() || o->type->isClass()) {
+    /* optimization to avoid array copying and reference count increments */
+    ///@todo Review this, is dangerous for the edge case that the function
+    /// itself causes the referenced array or object to be destroyed
+    middle("const " << o->type << '&');
+  } else {
+    middle(o->type);
   }
   middle(' ' << o->name);
   if (!o->value->isEmpty()) {
