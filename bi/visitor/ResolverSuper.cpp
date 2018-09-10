@@ -3,8 +3,6 @@
  */
 #include "bi/visitor/ResolverSuper.hpp"
 
-#include "bi/visitor/Instantiater.hpp"
-
 bi::ResolverSuper::ResolverSuper(Scope* rootScope) :
     Resolver(rootScope, false) {
   //

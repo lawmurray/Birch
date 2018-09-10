@@ -3,8 +3,6 @@
  */
 #include "bi/visitor/Resolver.hpp"
 
-#include "bi/visitor/Instantiater.hpp"
-
 bi::Resolver::Resolver(Scope* rootScope, const bool pointers) :
     pointers(pointers) {
   scopes.push_back(rootScope);
@@ -165,10 +163,9 @@ void bi::Resolver::instantiate(ClassType* o) {
     }
     Class* instantiation = o->target->getInstantiation(o->typeArgs);
     if (!instantiation) {
-      Instantiater instantiater(o->typeArgs);
-      instantiation = dynamic_cast<Class*>(o->target->accept(&instantiater));
+      instantiation = dynamic_cast<Class*>(o->target->accept(&cloner));
       assert(instantiation);
-      instantiation->isInstantiation = true;
+      instantiation->bind(o->typeArgs);
       o->target->addInstantiation(instantiation);
       instantiation->accept(this);
     }

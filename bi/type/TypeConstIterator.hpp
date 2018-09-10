@@ -6,9 +6,9 @@
 namespace bi {
 class Type;
 /**
- * Iterator over type list.
+ * Iterator over constant type list.
  *
- * @ingroup common
+ * @ingroup type
  */
 class TypeConstIterator {
 public:

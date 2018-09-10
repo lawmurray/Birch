@@ -93,6 +93,7 @@ COMMON_SOURCES = \
   bi/expression/Call.cpp \
   bi/expression/EmptyExpression.cpp \
   bi/expression/Expression.cpp \
+  bi/expression/ExpressionConstIterator.cpp \
   bi/expression/ExpressionIterator.cpp \
   bi/expression/ExpressionList.cpp \
   bi/expression/Generic.cpp \
@@ -182,13 +183,12 @@ COMMON_SOURCES = \
   bi/type/TypeList.cpp \
   bi/visitor/Cloner.cpp \
   bi/visitor/Gatherer.cpp \
-  bi/visitor/Instantiater.cpp \
   bi/visitor/Modifier.cpp \
   bi/visitor/Resolver.cpp \
   bi/visitor/ResolverHeader.cpp \
   bi/visitor/ResolverSource.cpp \
   bi/visitor/ResolverSuper.cpp \
-  bi/visitor/Typer.cpp \
+  bi/visitor/ResolverTyper.cpp \
   bi/visitor/Visitor.cpp \
   bi/lexer.lpp \
   bi/parser.ypp
@@ -268,6 +268,7 @@ noinst_HEADERS = \
   bi/expression/Call.hpp \
   bi/expression/EmptyExpression.hpp \
   bi/expression/Expression.hpp \
+  bi/expression/ExpressionConstIterator.hpp \
   bi/expression/ExpressionIterator.hpp \
   bi/expression/ExpressionList.hpp \
   bi/expression/Generic.hpp \
@@ -361,13 +362,12 @@ noinst_HEADERS = \
   bi/visitor/all.hpp \
   bi/visitor/Cloner.hpp \
   bi/visitor/Gatherer.hpp \
-  bi/visitor/Instantiater.hpp \
   bi/visitor/Modifier.hpp \
   bi/visitor/Resolver.hpp \
   bi/visitor/ResolverHeader.hpp \
   bi/visitor/ResolverSource.hpp \
   bi/visitor/ResolverSuper.hpp \
-  bi/visitor/Typer.hpp \
+  bi/visitor/ResolverTyper.hpp \
   bi/visitor/Visitor.hpp \
   bi/birch.hpp \
   bi/doxygen.hpp \

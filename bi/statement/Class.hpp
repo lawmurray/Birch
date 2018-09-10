@@ -61,10 +61,14 @@ public:
   bool isGeneric() const;
 
   /**
-   * Are all the generic type parameters of this class bound? (i.e. they all
-   * have a base type defined).
+   * Have type arguments been bound to all type parameters?
    */
   bool isBound() const;
+
+  /**
+   * Bind type arguments to the type parameters.
+   */
+  void bind(Type* typeArgs);
 
   /**
    * Add a super type.
@@ -150,12 +154,7 @@ public:
   std::list<Class*> instantiations;
 
   /**
-   * Is this an instantiation of some other (generic) class?
-   */
-  bool isInstantiation;
-
-  /**
-   * Is this, additionally, an explicit instantiation?
+   * Is this an explicit instantiation of a generic class?
    */
   bool isExplicit;
 };

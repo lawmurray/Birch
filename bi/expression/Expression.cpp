@@ -4,6 +4,7 @@
 #include "bi/expression/Expression.hpp"
 
 #include "bi/expression/ExpressionIterator.hpp"
+#include "bi/expression/ExpressionConstIterator.hpp"
 #include "bi/type/EmptyType.hpp"
 #include "bi/expression/Range.hpp"
 
@@ -63,7 +64,7 @@ int bi::Expression::depth() const {
   return result;
 }
 
-bi::ExpressionIterator bi::Expression::begin() const {
+bi::ExpressionIterator bi::Expression::begin() {
   if (isEmpty()) {
     return end();
   } else {
@@ -71,6 +72,18 @@ bi::ExpressionIterator bi::Expression::begin() const {
   }
 }
 
-bi::ExpressionIterator bi::Expression::end() const {
+bi::ExpressionIterator bi::Expression::end() {
   return ExpressionIterator(nullptr);
+}
+
+bi::ExpressionConstIterator bi::Expression::begin() const {
+  if (isEmpty()) {
+    return end();
+  } else {
+    return ExpressionConstIterator(this);
+  }
+}
+
+bi::ExpressionConstIterator bi::Expression::end() const {
+  return ExpressionConstIterator(nullptr);
 }

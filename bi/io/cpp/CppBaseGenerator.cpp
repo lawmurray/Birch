@@ -728,7 +728,7 @@ void bi::CppBaseGenerator::visit(const TypeList* o) {
 void bi::CppBaseGenerator::genTemplateParams(const Class* o) {
   if (o->isGeneric()) {
     start("template<");
-    if (!o->isInstantiation) {
+    if (!o->isBound()) {
       for (auto iter = o->typeParams->begin(); iter != o->typeParams->end();
           ++iter) {
         if (iter != o->typeParams->begin()) {

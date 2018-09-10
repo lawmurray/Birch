@@ -3,7 +3,7 @@
  */
 #include "Compiler.hpp"
 
-#include "bi/visitor/Typer.hpp"
+#include "bi/visitor/ResolverTyper.hpp"
 #include "bi/visitor/ResolverSuper.hpp"
 #include "bi/visitor/ResolverHeader.hpp"
 #include "bi/visitor/ResolverSource.hpp"
@@ -53,7 +53,7 @@ void bi::Compiler::parse() {
 void bi::Compiler::resolve() {
   /* first pass: populate available types */
   for (auto file : package->files) {
-    Typer pass1(file->scope);
+    ResolverTyper pass1(file->scope);
     file->accept(&pass1);
   }
 

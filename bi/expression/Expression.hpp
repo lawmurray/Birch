@@ -11,6 +11,7 @@ class Cloner;
 class Modifier;
 class Visitor;
 class ExpressionIterator;
+class ExpressionConstIterator;
 
 /**
  * Expression.
@@ -103,11 +104,22 @@ public:
    * Iterator to first element if this is a list, to one-past-the-last if
    * this is empty, otherwise to this.
    */
-  ExpressionIterator begin() const;
+  ExpressionIterator begin();
 
   /**
    * Iterator to one-past-the-last.
    */
-  ExpressionIterator end() const;
+  ExpressionIterator end();
+
+  /**
+   * Iterator to first element if this is a list, to one-past-the-last if
+   * this is empty, otherwise to this.
+   */
+  ExpressionConstIterator begin() const;
+
+  /**
+   * Iterator to one-past-the-last.
+   */
+  ExpressionConstIterator end() const;
 };
 }

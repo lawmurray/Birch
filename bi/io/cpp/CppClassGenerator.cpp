@@ -23,8 +23,8 @@ void bi::CppClassGenerator::visit(const Class* o) {
       if (!o->isAlias()) {
         genTemplateParams(o);
         start("class " << o->name);
-        if (o->isInstantiation) {
-          genTemplateArgs(o);
+        if (o->isGeneric() && o->isBound()) {
+       	 genTemplateArgs(o);
         }
         if (o->isBound() && !o->base->isEmpty()) {
           middle(" : public ");

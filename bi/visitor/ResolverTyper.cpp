@@ -1,26 +1,26 @@
 /**
  * @file
  */
-#include "bi/visitor/Typer.hpp"
+#include "bi/visitor/ResolverTyper.hpp"
 
-bi::Typer::Typer(Scope* rootScope) : rootScope(rootScope) {
+bi::ResolverTyper::ResolverTyper(Scope* rootScope) : rootScope(rootScope) {
   //
 }
 
-bi::Typer::~Typer() {
+bi::ResolverTyper::~ResolverTyper() {
   //
 }
 
-bi::Statement* bi::Typer::modify(Basic* o) {
+bi::Statement* bi::ResolverTyper::modify(Basic* o) {
   rootScope->add(o);
   return o;
 }
 
-bi::Statement* bi::Typer::modify(Explicit* o) {
+bi::Statement* bi::ResolverTyper::modify(Explicit* o) {
   return o;
 }
 
-bi::Statement* bi::Typer::modify(Class* o) {
+bi::Statement* bi::ResolverTyper::modify(Class* o) {
   if (o->base->isEmpty() && o->name->str() != "Object") {
     /* if the class derives from nothing else, then derive from Object,
      * unless this is itself the declaration of the Object class */

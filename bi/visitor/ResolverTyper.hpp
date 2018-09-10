@@ -13,19 +13,19 @@ namespace bi {
  *
  * @ingroup visitor
  */
-class Typer: public Modifier {
+class ResolverTyper: public Modifier {
 public:
   /**
    * Constructor.
    *
    * @param rootScope The root scope.
    */
-  Typer(Scope* rootScope);
+  ResolverTyper(Scope* rootScope);
 
   /**
    * Destructor.
    */
-  virtual ~Typer();
+  virtual ~ResolverTyper();
 
   using Modifier::modify;
 

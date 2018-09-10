@@ -119,7 +119,7 @@ void bi::CppPackageGenerator::visit(const Package* o) {
 
     /* forward super type declarations */
     for (auto o : sortedClasses) {
-      if (!o->base->isEmpty() && (!o->isGeneric() || o->isInstantiation)) {
+      if (!o->base->isEmpty() && o->isBound()) {
         start("template<> ");
         middle("struct super_type<type::" << o->name);
         genTemplateArgs(o);
@@ -133,7 +133,7 @@ void bi::CppPackageGenerator::visit(const Package* o) {
 
     /* forward assignment operator declarations */
     for (auto o : sortedClasses) {
-      if (!o->isGeneric() || o->isInstantiation) {
+      if (o->isBound()) {
         for (auto o1 : o->assignments) {
           start("template<> ");
           middle("struct has_assignment<type::" << o->name);
@@ -149,7 +149,7 @@ void bi::CppPackageGenerator::visit(const Package* o) {
 
     /* forward conversion operator declarations */
     for (auto o : sortedClasses) {
-      if (!o->isGeneric() || o->isInstantiation) {
+      if (o->isBound()) {
         for (auto o1 : o->conversions) {
           start("template<> ");
           middle("struct has_conversion<type::" << o->name);
@@ -208,7 +208,7 @@ void bi::CppPackageGenerator::visit(const Package* o) {
   } else {
     /* instantiations of generic classes go in the package source file */
     for (auto o : sortedClasses) {
-      if (o->isInstantiation && !o->isExplicit) {
+      if (o->isGeneric() && o->isBound() && !o->isExplicit) {
         *this << o;
       }
     }

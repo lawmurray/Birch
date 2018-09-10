@@ -8,7 +8,7 @@ class Type;
 /**
  * Iterator over type list.
  *
- * @ingroup common
+ * @ingroup type
  */
 class TypeIterator {
 public:

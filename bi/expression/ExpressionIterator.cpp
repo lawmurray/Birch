@@ -5,13 +5,13 @@
 
 #include "bi/expression/ExpressionList.hpp"
 
-bi::ExpressionIterator::ExpressionIterator(const Expression* o) :
+bi::ExpressionIterator::ExpressionIterator(Expression* o) :
     o(o) {
   //
 }
 
 bi::ExpressionIterator& bi::ExpressionIterator::operator++() {
-  auto list = dynamic_cast<const ExpressionList*>(o);
+  auto list = dynamic_cast<ExpressionList*>(o);
   if (list) {
     o = list->tail;
   } else {
@@ -26,8 +26,8 @@ bi::ExpressionIterator bi::ExpressionIterator::operator++(int) {
   return result;
 }
 
-const bi::Expression* bi::ExpressionIterator::operator*() {
-  auto list = dynamic_cast<const ExpressionList*>(o);
+bi::Expression* bi::ExpressionIterator::operator*() {
+  auto list = dynamic_cast<ExpressionList*>(o);
   if (list) {
     return list->head;
   } else {

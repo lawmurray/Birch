@@ -8,18 +8,17 @@
 bi::Class::Class(Name* name, Expression* typeParams, Expression* params,
     Type* base, const bool alias, Expression* args, Statement* braces,
     Location* loc) :
-Statement(loc),
-Named(name),
-Parameterised(params),
-Based(base, alias),
-Argumented(args),
-Scoped(CLASS_SCOPE),
-Braced(braces),
-typeParams(typeParams),
-initScope(new Scope(LOCAL_SCOPE)),
-state(CLONED),
-isInstantiation(false),
-isExplicit(false) {
+    Statement(loc),
+    Named(name),
+    Parameterised(params),
+    Based(base, alias),
+    Argumented(args),
+    Scoped(CLASS_SCOPE),
+    Braced(braces),
+    typeParams(typeParams),
+    initScope(new Scope(LOCAL_SCOPE)),
+    state(CLONED),
+    isExplicit(false) {
   //
 }
 
@@ -50,6 +49,19 @@ bool bi::Class::isBound() const {
     }
   }
   return true;
+}
+
+void bi::Class::bind(Type* typeArgs) {
+  assert(typeArgs->width() == typeParams->width());
+
+  Cloner cloner;
+  auto arg = typeArgs->begin();
+  auto param = typeParams->begin();
+  while (arg != typeArgs->end() && param != typeParams->end()) {
+    (*param)->type = (*arg)->canonical()->accept(&cloner);
+    ++arg;
+    ++param;
+  }
 }
 
 void bi::Class::addSuper(const Type* o) {
