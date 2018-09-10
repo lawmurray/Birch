@@ -26,14 +26,14 @@ void bi::CppClassGenerator::visit(const Class* o) {
         if (o->isInstantiation) {
           genTemplateArgs(o);
         }
-        if (!o->base->isEmpty()) {
+        if (o->isBound() && !o->base->isEmpty()) {
           middle(" : public ");
           middle(o->base);
         }
         finish(" {");
         line("public:");
         in();
-        if (!o->isGeneric() || o->isInstantiation) {
+        if (o->isBound()) {
           start("using this_type = " << o->name);
           genTemplateArgs(o);
           finish(';');
@@ -45,7 +45,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
       }
     }
 
-    if (!o->isAlias() && (!o->isGeneric() || o->isInstantiation)) {
+    if (!o->isAlias() && o->isBound()) {
       /* constructor */
       CppConstructorGenerator auxConstructor(base, level, header);
       auxConstructor << o;

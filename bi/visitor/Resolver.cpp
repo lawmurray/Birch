@@ -79,7 +79,7 @@ bi::Type* bi::Resolver::modify(BasicType* o) {
 bi::Type* bi::Resolver::modify(GenericType* o) {
   assert(!o->target);
   Modifier::modify(o);
-  resolve(o, GLOBAL_SCOPE);
+  resolve(o, CLASS_SCOPE);
   return o;
 }
 
@@ -159,8 +159,10 @@ bi::Type* bi::Resolver::lookup(UnknownType* ref) {
 }
 
 void bi::Resolver::instantiate(ClassType* o) {
-  if ((!o->typeArgs->isEmpty() || o->target->isGeneric()) &&
-      o->typeArgs->isBound()) {
+  if (o->target->isGeneric()) {
+    if (o->typeArgs->width() != o->target->typeParams->width()) {
+      throw GenericException(o, o->target);
+    }
     Class* instantiation = o->target->getInstantiation(o->typeArgs);
     if (!instantiation) {
       Instantiater instantiater(o->typeArgs);

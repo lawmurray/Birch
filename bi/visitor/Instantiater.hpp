@@ -25,18 +25,11 @@ public:
 
   using Cloner::clone;
   virtual Expression* clone(const Generic* o);
-  virtual Type* clone(const GenericType* o);
-  virtual Type* clone(const UnknownType* o);
 
 protected:
   /**
    * Iterator over generic type arguments.
    */
   TypeIterator iter;
-
-  /**
-   * Map of names to generic type arguments.
-   */
-  std::unordered_map<std::string,Type*> map;
 };
 }
