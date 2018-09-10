@@ -244,3 +244,48 @@ function sort(x:Boolean[_]) -> Boolean[_] {
   }}
   return y;
 }
+
+/**
+ * Iterator reduction.
+ *
+ * - x: Iterator.
+ * - init: Initial value.
+ * - op: Operator.
+ */
+function reduce(x:Real!, init:Real, op:@(Real, Real) -> Real) -> Real {
+  result:Real <- init;
+  while (x?) {
+    result <- op(result, x!);
+  }
+  return result;
+}
+
+/**
+ * Iterator reduction.
+ *
+ * - x: Iterator.
+ * - init: Initial value.
+ * - op: Operator.
+ */
+function reduce(x:Integer!, init:Integer, op:@(Integer, Integer) -> Integer) -> Integer {
+  result:Integer <- init;
+  while (x?) {
+    result <- op(result, x!);
+  }
+  return result;
+}
+
+/**
+ * Iterator reduction.
+ *
+ * - x: Iterator.
+ * - init: Initial value.
+ * - op: Operator.
+ */
+function reduce(x:Boolean!, init:Boolean, op:@(Boolean, Boolean) -> Boolean) -> Boolean {
+  result:Boolean <- init;
+  while (x?) {
+    result <- op(result, x!);
+  }
+  return result;
+}

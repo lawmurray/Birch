@@ -1,30 +1,27 @@
 /**
- * Abstract model.
+ * Model.
  */
-class Model {
+class Model<Variate> < AbstractModel {   
   /**
    * Simulate.
+   *
+   * - v: The variate.
    */
-  fiber simulate() -> Real {
+  fiber simulate(v:Variate) -> Real {
     //
   }
-  
-  /**
-   * Read inputs.
-   */
-  function input(reader:Reader) {
-    //
+
+  function variate() -> AbstractVariate {
+    v:Variate;
+    return v;
   }
-  
-  /**
-   * Write outputs.
-   */
-  function output(writer:Writer) {
-    //
+
+  fiber simulate(v:AbstractVariate) -> Real {
+    auto w <- Variate?(v);
+    if (w?) {
+      simulate(w!);
+    } else {
+      
+    }
   }
-  
-  /**
-   * Weight.
-   */
-  w:Real <- 0.0;
 }

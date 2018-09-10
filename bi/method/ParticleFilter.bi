@@ -6,12 +6,12 @@ class ParticleFilter {
    * Canonical particle from which others are initialized. Ensures that
    * input is only consumed once.
    */
-  f0:Model!;
+  f0:AbstractVariate!;
 
   /**
    * Particles.
    */
-  f:Model![_];
+  f:AbstractVariate![_];
   
   /**
    * Log-weights.
@@ -120,7 +120,7 @@ class ParticleFilter {
       exit(1);
     }
 
-    f1:Model![N];
+    f1:AbstractVariate![N];
     this.f <- f1;
     this.T <- T;
     this.N <- N;
@@ -157,8 +157,8 @@ class ParticleFilter {
     }
     r[t] <- e[t] < trigger*N;
     if (r[t]) {
-      a:Integer[_] <- ancestors(w);
-      g:Model![_] <- f;
+      auto a <- ancestors(w);
+      auto g <- f;
       for (n:Integer in 1..N) {
         f[n] <- g[a[n]];
         w[n] <- 0.0;
@@ -176,7 +176,7 @@ class ParticleFilter {
     }
     
     /* update normalizing constant estimate */
-    W:Real <- log_sum_exp(w);
+    auto W <- log_sum_exp(w);
     w <- w - (W - log(N));
     if (t > 1) {
       Z[t] <- Z[t - 1] + (W - log(N));
@@ -199,9 +199,9 @@ class ParticleFilter {
    */
   function output(writer:Writer?) {
     if (writer?) {
-      b:Integer <- ancestor(w);
+      auto b <- ancestor(w);
       if (b > 0) {
-        f[b]!.output(writer!.setObject("sample"));
+        f[b]!.write(writer!.setObject("sample"));
         writer!.setReal("weight", Z[T]);
       } else {
         stderr.print("error: particle filter degenerated.\n");
@@ -227,28 +227,32 @@ class ParticleFilter {
 /*
  * Particle.
  */
-fiber particle(model:String, reader:Reader?) -> Model {
+fiber particle(model:String, reader:Reader?) -> AbstractVariate {
   /* create model */
-  x:Model? <- Model?(make(model));
-  if (!x?) {
+  auto o <- AbstractModel?(make(model));
+  if (!o?) {
     stderr.print("error: " + model + " must be a subtype of Model with no initialization parameters.\n");
     exit(1);
   }
+  auto m <- o!;
+  
+  /* create variate */
+  auto v <- m.variate();
   
   /* input */
   if (reader?) {
-    x!.input(reader!);
+    v.read(reader!);
   }
-  yield x!;
+  yield v;
   
   /* simulate */
-  f:Real! <- x!.simulate();
+  auto f <- m.simulate(v);
   while (f?) {
-    x!.w <- f!;
-    yield x!;
+    v.w <- f!;
+    yield v;
   }
   
   /* final yield, ensuring that even with no observations, the particle
    * yields at least once after initialization */
-  yield x!;
+  yield v;
 }

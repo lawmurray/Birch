@@ -1,6 +1,4 @@
 cpp{{
-#include "libubjpp/libubjpp.hpp"
-#include "libubjpp/json/JSONGenerator.hpp"
 #include "boost/filesystem.hpp"
 
 #include <fstream>

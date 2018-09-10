@@ -20,10 +20,10 @@ class AliveParticleFilter < ParticleFilter {
     e[t] <- ess(w);
     r[t] <- true;
     
-    f0:Model![_] <- f;
-    w0:Real[_] <- w;
-    a:Integer[_] <- permute_ancestors(ancestors(w0));
-    P:Integer <- 0;  // number of proposals
+    auto f0 <- f;
+    auto w0 <- w;
+    auto a <- permute_ancestors(ancestors(w0));
+    auto P <- 0;  // number of proposals
 
     /* propagate and weight until N acceptances; the first N proposals are
      * drawn using the standard (stratified) resampler, then each is
@@ -37,6 +37,7 @@ class AliveParticleFilter < ParticleFilter {
         stderr.print("error: particles terminated prematurely.\n");
         exit(1);
       }
+      
       while (f[n]!.w == -inf) {
         f[n] <- f0[ancestor(w0)];
         if (f[n]?) {
@@ -51,7 +52,7 @@ class AliveParticleFilter < ParticleFilter {
     
     /* propagate and weight until one further acceptance, that is discarded
      * for unbiasedness in the normalizing constant estimate */
-    f1:Model! <- f0[ancestor(w0)];
+    auto f1 <- f0[ancestor(w0)];
     if (f1?) {
       P <- P + 1;
     } else {
@@ -69,7 +70,7 @@ class AliveParticleFilter < ParticleFilter {
     }
     
     /* update normalizing constant estimate */
-    W:Real <- log_sum_exp(w);
+    auto W <- log_sum_exp(w);
     w <- w - (W - log(N));
     if (t > 1) {
       Z[t] <- Z[t - 1] + (W - log(N));
