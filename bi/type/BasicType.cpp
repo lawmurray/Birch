@@ -69,6 +69,10 @@ bool bi::BasicType::definitely(const GenericType& o) const {
   return definitely(*o.target->type);
 }
 
+bool bi::BasicType::definitely(const MemberType& o) const {
+  return definitely(*o.right);
+}
+
 bool bi::BasicType::definitely(const BasicType& o) const {
   assert(target);
   auto o1 = o.canonical();
@@ -86,6 +90,10 @@ bi::Type* bi::BasicType::dispatchCommon(const Type& o) const {
 bi::Type* bi::BasicType::common(const GenericType& o) const {
   assert(o.target);
   return common(*o.target->type);
+}
+
+bi::Type* bi::BasicType::common(const MemberType& o) const {
+  return common(*o.right);
 }
 
 bi::Type* bi::BasicType::common(const BasicType& o) const {

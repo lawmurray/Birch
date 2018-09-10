@@ -38,6 +38,7 @@ public:
   virtual Type* modify(ClassType* o);
   virtual Type* modify(BasicType* o);
   virtual Type* modify(GenericType* o);
+  virtual Type* modify(MemberType* o);
 
 protected:
   /**

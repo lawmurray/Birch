@@ -81,6 +81,10 @@ bool bi::ClassType::definitely(const GenericType& o) const {
   return definitely(*o.target->type);
 }
 
+bool bi::ClassType::definitely(const MemberType& o) const {
+  return definitely(*o.right);
+}
+
 bool bi::ClassType::definitely(const ArrayType& o) const {
   assert(target);
   return target->hasConversion(&o) || target->base->definitely(o);
@@ -125,6 +129,10 @@ bi::Type* bi::ClassType::dispatchCommon(const Type& o) const {
 bi::Type* bi::ClassType::common(const GenericType& o) const {
   assert(o.target);
   return common(*o.target->type);
+}
+
+bi::Type* bi::ClassType::common(const MemberType& o) const {
+  return common(*o.right);
 }
 
 bi::Type* bi::ClassType::common(const ArrayType& o) const {

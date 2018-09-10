@@ -22,6 +22,7 @@ class FiberType;
 class EmptyType;
 class FunctionType;
 class GenericType;
+class MemberType;
 class NilType;
 class OptionalType;
 class OverloadedType;
@@ -123,6 +124,11 @@ public:
    * Is this a fiber type?
    */
   virtual bool isFiber() const;
+
+  /**
+   * Is this a member type?
+   */
+  virtual bool isMember() const;
 
   /**
    * Is this an optional type?
@@ -254,6 +260,7 @@ public:
   virtual bool definitely(const FiberType& o) const;
   virtual bool definitely(const FunctionType& o) const;
   virtual bool definitely(const GenericType& o) const;
+  virtual bool definitely(const MemberType& o) const;
   virtual bool definitely(const NilType& o) const;
   virtual bool definitely(const OptionalType& o) const;
   virtual bool definitely(const OverloadedType& o) const;
@@ -276,6 +283,7 @@ public:
   virtual Type* common(const FiberType& o) const;
   virtual Type* common(const FunctionType& o) const;
   virtual Type* common(const GenericType& o) const;
+  virtual Type* common(const MemberType& o) const;
   virtual Type* common(const NilType& o) const;
   virtual Type* common(const OptionalType& o) const;
   virtual Type* common(const OverloadedType& o) const;

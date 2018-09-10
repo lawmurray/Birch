@@ -4,82 +4,84 @@
 #pragma once
 
 #include "bi/type/Type.hpp"
-#include "bi/common/Named.hpp"
-#include "bi/common/Reference.hpp"
-#include "bi/statement/Class.hpp"
+#include "bi/common/Couple.hpp"
 
 namespace bi {
 /**
- * Class type.
+ * Membership operator type expression.
  *
- * @ingroup type
+ * @ingroup expression
  */
-class ClassType: public Type, public Named, public Reference<Class> {
+class MemberType: public Type, public Couple<Type> {
 public:
   /**
    * Constructor.
    *
-   * @param name Name.
-   * @param typeArgs Generic type arguments.
-   * @param loc Location.
-   * @param target Target.
-   */
-  ClassType(Name* name, Type* typeArgs, Location* loc = nullptr,
-      Class* target = nullptr);
-
-  /**
-   * Constructor.
-   *
-   * @param target Target.
+   * @param left Left operand.
+   * @param right Right operand.
    * @param loc Location.
    */
-  ClassType(Class* target, Location* loc = nullptr);
+  MemberType(Type* left, Type* right, Location* loc = nullptr);
 
   /**
    * Destructor.
    */
-  virtual ~ClassType();
+  virtual ~MemberType();
 
+  virtual bool isBasic() const;
   virtual bool isClass() const;
+  virtual bool isPointer() const;
+  virtual bool isArray() const;
+  virtual bool isFunction() const;
+  virtual bool isFiber() const;
+  virtual bool isMember() const;
+
+  virtual int depth() const;
+
+  virtual Basic* getBasic() const;
   virtual Class* getClass() const;
 
   virtual Type* canonical();
   virtual const Type* canonical() const;
 
-  virtual void resolveConstructor(Argumented* args);
-
   virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
+
+  virtual FunctionType* resolve(Argumented* o);
+  virtual void resolveConstructor(Argumented* o);
 
   using Type::definitely;
   using Type::common;
 
   virtual bool dispatchDefinitely(const Type& o) const;
-  virtual bool definitely(const GenericType& o) const;
-  virtual bool definitely(const MemberType& o) const;
   virtual bool definitely(const ArrayType& o) const;
   virtual bool definitely(const BasicType& o) const;
   virtual bool definitely(const ClassType& o) const;
+  virtual bool definitely(const EmptyType& o) const;
   virtual bool definitely(const FiberType& o) const;
   virtual bool definitely(const FunctionType& o) const;
+  virtual bool definitely(const GenericType& o) const;
+  virtual bool definitely(const MemberType& o) const;
   virtual bool definitely(const OptionalType& o) const;
+  virtual bool definitely(const PointerType& o) const;
+  virtual bool definitely(const SequenceType& o) const;
   virtual bool definitely(const TupleType& o) const;
+  virtual bool definitely(const TypeList& o) const;
 
   virtual Type* dispatchCommon(const Type& o) const;
-  virtual Type* common(const GenericType& o) const;
-  virtual Type* common(const MemberType& o) const;
   virtual Type* common(const ArrayType& o) const;
   virtual Type* common(const BasicType& o) const;
   virtual Type* common(const ClassType& o) const;
+  virtual Type* common(const EmptyType& o) const;
   virtual Type* common(const FiberType& o) const;
   virtual Type* common(const FunctionType& o) const;
+  virtual Type* common(const GenericType& o) const;
+  virtual Type* common(const MemberType& o) const;
   virtual Type* common(const OptionalType& o) const;
+  virtual Type* common(const PointerType& o) const;
+  virtual Type* common(const SequenceType& o) const;
   virtual Type* common(const TupleType& o) const;
-
-  /**
-   * Generic type arguments.
-   */
-  Type* typeArgs;
+  virtual Type* common(const TypeList& o) const;
 };
 }

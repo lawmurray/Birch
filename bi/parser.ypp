@@ -138,7 +138,7 @@
 %type <valStatement> braces optional_braces
 %type <valStatement> class_braces optional_class_braces
 
-%type <valType> basic_type class_type unknown_type tuple_type
+%type <valType> basic_type class_type unknown_type member_type tuple_type
 %type <valType> sequence_type postfix_type function_type type
 %type <valType> type_list parameter_type_list parameter_types
 %type <valType> result optional_result
@@ -761,6 +761,11 @@ unknown_type
     : name optional_generic_arguments weak_modifier  { $$ = new bi::UnknownType($3, $1, $2, make_loc(@$)); }
     ;
 
+member_type
+    : unknown_type
+    | member_type '.' unknown_type  { $$ = new bi::MemberType($1, $3, make_loc(@$)); }
+    ;
+
 tuple_type
     : '(' type_list ')'  { $$ = new bi::TupleType($2, make_loc(@$)); }
     ;
@@ -770,7 +775,7 @@ sequence_type
     ;
 
 postfix_type
-    : unknown_type
+    : member_type
     | tuple_type
     | sequence_type
     | postfix_type '!'           { $$ = new bi::FiberType($1, make_loc(@$)); }

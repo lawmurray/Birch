@@ -48,6 +48,7 @@ public:
 
   virtual bool dispatchDefinitely(const Type& o) const;
   virtual bool definitely(const GenericType& o) const;
+  virtual bool definitely(const MemberType& o) const;
   virtual bool definitely(const ArrayType& o) const;
   virtual bool definitely(const BasicType& o) const;
   virtual bool definitely(const ClassType& o) const;
@@ -59,6 +60,7 @@ public:
 
   virtual Type* dispatchCommon(const Type& o) const;
   virtual Type* common(const GenericType& o) const;
+  virtual Type* common(const MemberType& o) const;
   virtual Type* common(const ArrayType& o) const;
   virtual Type* common(const BasicType& o) const;
   virtual Type* common(const ClassType& o) const;

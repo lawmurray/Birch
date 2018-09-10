@@ -414,6 +414,12 @@ bi::Type* bi::Modifier::modify(GenericType* o) {
   return o;
 }
 
+bi::Type* bi::Modifier::modify(MemberType* o) {
+  o->left = o->left->accept(this);
+  o->right = o->right->accept(this);
+  return o;
+}
+
 bi::Type* bi::Modifier::modify(ArrayType* o) {
   o->single = o->single->accept(this);
   return o;

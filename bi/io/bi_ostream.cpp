@@ -483,6 +483,10 @@ void bi::bi_ostream::visit(const GenericType* o) {
   middle(o->name);
 }
 
+void bi::bi_ostream::visit(const MemberType* o) {
+  middle(o->left << '.' << o->right);
+}
+
 void bi::bi_ostream::visit(const BinaryType* o) {
   middle('(' << o->left << ", " << o->right << ')');
 }

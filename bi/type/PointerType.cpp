@@ -70,6 +70,10 @@ bool bi::PointerType::definitely(const GenericType& o) const {
   return definitely(*o.target->type);
 }
 
+bool bi::PointerType::definitely(const MemberType& o) const {
+  return definitely(*o.right);
+}
+
 bool bi::PointerType::definitely(const ArrayType& o) const {
   return !weak && single->definitely(o);
 }
@@ -115,6 +119,10 @@ bi::Type* bi::PointerType::dispatchCommon(const Type& o) const {
 bi::Type* bi::PointerType::common(const GenericType& o) const {
   assert(o.target);
   return common(*o.target->type);
+}
+
+bi::Type* bi::PointerType::common(const MemberType& o) const {
+  return common(*o.right);
 }
 
 bi::Type* bi::PointerType::common(const ArrayType& o) const {

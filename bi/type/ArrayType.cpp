@@ -58,6 +58,10 @@ bool bi::ArrayType::definitely(const GenericType& o) const {
   return definitely(*o.target->type);
 }
 
+bool bi::ArrayType::definitely(const MemberType& o) const {
+  return definitely(*o.right);
+}
+
 bool bi::ArrayType::definitely(const ArrayType& o) const {
   return single->definitely(*o.single) && depth() == o.depth();
 }
@@ -73,6 +77,10 @@ bi::Type* bi::ArrayType::dispatchCommon(const Type& o) const {
 bi::Type* bi::ArrayType::common(const GenericType& o) const {
   assert(o.target);
   return common(*o.target->type);
+}
+
+bi::Type* bi::ArrayType::common(const MemberType& o) const {
+  return common(*o.right);
 }
 
 bi::Type* bi::ArrayType::common(const ArrayType& o) const {

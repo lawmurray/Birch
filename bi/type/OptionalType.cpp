@@ -48,6 +48,10 @@ bool bi::OptionalType::definitely(const GenericType& o) const {
   return definitely(*o.target->type);
 }
 
+bool bi::OptionalType::definitely(const MemberType& o) const {
+  return definitely(*o.right);
+}
+
 bool bi::OptionalType::definitely(const OptionalType& o) const {
   return single->definitely(*o.single);
 }
@@ -117,6 +121,10 @@ bi::Type* bi::OptionalType::common(const FunctionType& o) const {
 bi::Type* bi::OptionalType::common(const GenericType& o) const {
   assert(o.target);
   return common(*o.target->type);
+}
+
+bi::Type* bi::OptionalType::common(const MemberType& o) const {
+  return common(*o.right);
 }
 
 bi::Type* bi::OptionalType::common(const NilType& o) const {

@@ -339,6 +339,10 @@ bi::Type* bi::Cloner::clone(const GenericType* o) {
   return new GenericType(o->name, o->loc);
 }
 
+bi::Type* bi::Cloner::clone(const MemberType* o) {
+  return new MemberType(o->left->accept(this), o->right->accept(this), o->loc);
+}
+
 bi::Type* bi::Cloner::clone(const ArrayType* o) {
   return new ArrayType(o->single->accept(this), o->ndims, o->loc);
 }

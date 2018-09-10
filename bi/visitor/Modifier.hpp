@@ -98,6 +98,7 @@ public:
   virtual Type* modify(ClassType* o);
   virtual Type* modify(BasicType* o);
   virtual Type* modify(GenericType* o);
+  virtual Type* modify(MemberType* o);
   virtual Type* modify(ArrayType* o);
   virtual Type* modify(TupleType* o);
   virtual Type* modify(SequenceType* o);

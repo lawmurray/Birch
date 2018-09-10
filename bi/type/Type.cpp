@@ -59,6 +59,10 @@ bool bi::Type::isBinary() const {
   return false;
 }
 
+bool bi::Type::isMember() const {
+  return false;
+}
+
 bool bi::Type::isOptional() const {
   return false;
 }
@@ -216,6 +220,10 @@ bool bi::Type::definitely(const GenericType& o) const {
   return false;
 }
 
+bool bi::Type::definitely(const MemberType& o) const {
+  return false;
+}
+
 bool bi::Type::definitely(const NilType& o) const {
   return false;
 }
@@ -281,6 +289,10 @@ bi::Type* bi::Type::common(const FunctionType& o) const {
 }
 
 bi::Type* bi::Type::common(const GenericType& o) const {
+  return nullptr;
+}
+
+bi::Type* bi::Type::common(const MemberType& o) const {
   return nullptr;
 }
 

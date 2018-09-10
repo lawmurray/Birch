@@ -462,20 +462,20 @@ bi::Statement* bi::ResolverSource::modify(Class* o) {
     o->accept(&resolver);
   }
   if (o->state < RESOLVED_SOURCE) {
-    classes.push_back(o);
-    scopes.push_back(o->scope);
-    scopes.push_back(o->initScope);
-    o->args = o->args->accept(this);
-    if (!o->alias) {
-      o->base->resolveConstructor(o);
-    }
-    scopes.pop_back();
     if (o->isBound()) {
+      classes.push_back(o);
+      scopes.push_back(o->scope);
+      scopes.push_back(o->initScope);
+      o->args = o->args->accept(this);
+      if (!o->alias) {
+        o->base->resolveConstructor(o);
+      }
+      scopes.pop_back();
       o->braces = o->braces->accept(this);
+      classes.pop_back();
+      scopes.pop_back();
     }
     o->state = RESOLVED_SOURCE;
-    classes.pop_back();
-    scopes.pop_back();
   }
   for (auto instantiation : o->instantiations) {
     instantiation->accept(this);

@@ -168,6 +168,7 @@ COMMON_SOURCES = \
   bi/type/FiberType.cpp \
   bi/type/FunctionType.cpp \
   bi/type/GenericType.cpp \
+  bi/type/MemberType.cpp \
   bi/type/NilType.cpp \
   bi/type/OptionalType.cpp \
   bi/type/OverloadedType.cpp \
@@ -345,6 +346,7 @@ noinst_HEADERS = \
   bi/type/FiberType.hpp \
   bi/type/FunctionType.hpp \
   bi/type/GenericType.hpp \
+  bi/type/MemberType.hpp \
   bi/type/NilType.hpp \
   bi/type/OptionalType.hpp \
   bi/type/OverloadedType.hpp \

@@ -11,6 +11,7 @@
 #include "bi/type/FiberType.hpp"
 #include "bi/type/FunctionType.hpp"
 #include "bi/type/GenericType.hpp"
+#include "bi/type/MemberType.hpp"
 #include "bi/type/NilType.hpp"
 #include "bi/type/OptionalType.hpp"
 #include "bi/type/OverloadedType.hpp"

@@ -365,6 +365,11 @@ void bi::Visitor::visit(const GenericType* o) {
   //
 }
 
+void bi::Visitor::visit(const MemberType* o) {
+  o->left->accept(this);
+  o->right->accept(this);
+}
+
 void bi::Visitor::visit(const ArrayType* o) {
   o->single->accept(this);
 }

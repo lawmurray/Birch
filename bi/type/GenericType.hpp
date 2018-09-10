@@ -70,6 +70,7 @@ public:
   virtual bool definitely(const FiberType& o) const;
   virtual bool definitely(const FunctionType& o) const;
   virtual bool definitely(const GenericType& o) const;
+  virtual bool definitely(const MemberType& o) const;
   virtual bool definitely(const OptionalType& o) const;
   virtual bool definitely(const PointerType& o) const;
   virtual bool definitely(const SequenceType& o) const;
@@ -84,6 +85,7 @@ public:
   virtual Type* common(const FiberType& o) const;
   virtual Type* common(const FunctionType& o) const;
   virtual Type* common(const GenericType& o) const;
+  virtual Type* common(const MemberType& o) const;
   virtual Type* common(const OptionalType& o) const;
   virtual Type* common(const PointerType& o) const;
   virtual Type* common(const SequenceType& o) const;

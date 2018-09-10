@@ -98,6 +98,7 @@ public:
   virtual Type* clone(const ClassType* o);
   virtual Type* clone(const BasicType* o);
   virtual Type* clone(const GenericType* o);
+  virtual Type* clone(const MemberType* o);
   virtual Type* clone(const ArrayType* o);
   virtual Type* clone(const TupleType* o);
   virtual Type* clone(const SequenceType* o);

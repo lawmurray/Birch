@@ -138,6 +138,11 @@ bool bi::GenericType::definitely(const GenericType& o) const {
   return target->type->definitely(o);
 }
 
+bool bi::GenericType::definitely(const MemberType& o) const {
+  assert(target);
+  return target->type->definitely(o);
+}
+
 bool bi::GenericType::definitely(const OptionalType& o) const {
   assert(target);
   return target->type->definitely(o);
@@ -198,6 +203,11 @@ bi::Type* bi::GenericType::common(const FunctionType& o) const {
 }
 
 bi::Type* bi::GenericType::common(const GenericType& o) const {
+  assert(target);
+  return target->type->common(o);
+}
+
+bi::Type* bi::GenericType::common(const MemberType& o) const {
   assert(target);
   return target->type->common(o);
 }

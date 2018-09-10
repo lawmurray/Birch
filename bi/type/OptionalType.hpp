@@ -40,6 +40,7 @@ public:
 
   virtual bool dispatchDefinitely(const Type& o) const;
   virtual bool definitely(const GenericType& o) const;
+  virtual bool definitely(const MemberType& o) const;
   virtual bool definitely(const OptionalType& o) const;
   virtual bool definitely(const PointerType& o) const;
 
@@ -51,6 +52,7 @@ public:
   virtual Type* common(const FiberType& o) const;
   virtual Type* common(const FunctionType& o) const;
   virtual Type* common(const GenericType& o) const;
+  virtual Type* common(const MemberType& o) const;
   virtual Type* common(const NilType& o) const;
   virtual Type* common(const OptionalType& o) const;
   virtual Type* common(const OverloadedType& o) const;

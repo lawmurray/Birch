@@ -83,6 +83,18 @@ bi::Type* bi::Resolver::modify(GenericType* o) {
   return o;
 }
 
+bi::Type* bi::Resolver::modify(MemberType* o) {
+  o->left = o->left->accept(this);
+  if (o->left->isClass()) {
+    memberScopes.push_back(o->left->getClass()->scope);
+  } else {
+    throw MemberException(o);
+  }
+  o->right = o->right->accept(this);
+
+  return o;
+}
+
 bi::Expression* bi::Resolver::lookup(Identifier<Unknown>* ref) {
   LookupResult category = UNRESOLVED;
   if (!memberScopes.empty()) {

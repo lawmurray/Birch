@@ -42,12 +42,14 @@ public:
   virtual bool dispatchDefinitely(const Type& o) const;
   virtual bool definitely(const ArrayType& o) const;
   virtual bool definitely(const GenericType& o) const;
+  virtual bool definitely(const MemberType& o) const;
   virtual bool definitely(const OptionalType& o) const;
   virtual bool definitely(const SequenceType& o) const;
 
   virtual Type* dispatchCommon(const Type& o) const;
   virtual Type* common(const ArrayType& o) const;
   virtual Type* common(const GenericType& o) const;
+  virtual Type* common(const MemberType& o) const;
   virtual Type* common(const OptionalType& o) const;
   virtual Type* common(const SequenceType& o) const;
 };

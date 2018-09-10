@@ -57,6 +57,10 @@ bool bi::SequenceType::definitely(const GenericType& o) const {
   return definitely(*o.target->type);
 }
 
+bool bi::SequenceType::definitely(const MemberType& o) const {
+  return definitely(*o.right);
+}
+
 bool bi::SequenceType::definitely(const OptionalType& o) const {
   return definitely(*o.single);
 }
@@ -81,6 +85,10 @@ bi::Type* bi::SequenceType::common(const ArrayType& o) const {
 bi::Type* bi::SequenceType::common(const GenericType& o) const {
   assert(o.target);
   return common(*o.target->type);
+}
+
+bi::Type* bi::SequenceType::common(const MemberType& o) const {
+  return common(*o.right);
 }
 
 bi::Type* bi::SequenceType::common(const OptionalType& o) const {

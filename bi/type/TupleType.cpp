@@ -36,6 +36,10 @@ bool bi::TupleType::definitely(const GenericType& o) const {
   return definitely(*o.target->type);
 }
 
+bool bi::TupleType::definitely(const MemberType& o) const {
+  return definitely(*o.right);
+}
+
 bool bi::TupleType::definitely(const OptionalType& o) const {
   return definitely(*o.single);
 }
@@ -51,6 +55,10 @@ bi::Type* bi::TupleType::dispatchCommon(const Type& o) const {
 bi::Type* bi::TupleType::common(const GenericType& o) const {
   assert(o.target);
   return common(*o.target->type);
+}
+
+bi::Type* bi::TupleType::common(const MemberType& o) const {
+  return common(*o.right);
 }
 
 bi::Type* bi::TupleType::common(const OptionalType& o) const {
