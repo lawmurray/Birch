@@ -150,17 +150,21 @@ void bi::bi_ostream::visit(const Nil* o) {
 }
 
 void bi::bi_ostream::visit(const LocalVariable* o) {
-  middle(o->name << ':');
-  if (o->type->isArray() && !o->brackets->isEmpty()) {
-    middle(dynamic_cast<const ArrayType*>(o->type)->single);
+  if (o->type->isEmpty()) {
+    middle("auto " << o->name);
   } else {
-    middle(o->type);
-  }
-  if (!o->brackets->isEmpty()) {
-    middle('[' << o->brackets << ']');
-  }
-  if (!o->args->isEmpty()) {
-    middle('(' << o->args << ')');
+    middle(o->name << ':');
+    if (o->type->isArray() && !o->brackets->isEmpty()) {
+      middle(dynamic_cast<const ArrayType*>(o->type)->single);
+    } else {
+      middle(o->type);
+    }
+    if (!o->brackets->isEmpty()) {
+      middle('[' << o->brackets << ']');
+    }
+    if (!o->args->isEmpty()) {
+      middle('(' << o->args << ')');
+    }
   }
   if (!o->value->isEmpty()) {
     middle(" <- " << o->value);
