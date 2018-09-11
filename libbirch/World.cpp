@@ -80,57 +80,33 @@ bi::Any* bi::World::getNoCopy(Any* o, World* current) {
 bi::Any* bi::pull(Any* o, World* current, World* world) {
   assert(o && world->hasCloneAncestor(current));
 
-  Any *mapped, *copied, *result, *cached = nullptr;
-  if (world == current) {
-    cached = o;
-    mapped = o;
-  } else {
-    cached = world->map.get(o);
-    mapped =
-        cached ? cached : pullNoCopy(o, current, world->cloneSource.get());
+  Any* result = pullNoCopy(o, current, world);
+  if (world != result->getWorld()) {
+    result = clone(result, world);
   }
-
-  if (world == mapped->getWorld()) {
-    result = mapped;
-  } else {
-    copied = world->map.get(mapped);
-    if (copied) {
-      if (world == copied->getWorld()) {
-        result = copied;
-      } else {
-        result = clone(copied, world);
-      }
-    } else {
-      result = clone(mapped, world);
-    }
-    if (result != cached) {
-      result = world->map.set(o, result);
-    }
-  }
-
   return result;
 }
 
 bi::Any* bi::pullNoCopy(Any* o, World* current, World* world) {
   assert(o && world->hasCloneAncestor(current));
 
-  Any *mapped, *copied, *result, *cached = nullptr;
+  Any *mapped, *result;
   if (world == current) {
-    cached = o;
     mapped = o;
   } else {
-    cached = world->map.get(o);
-    mapped =
-        cached ? cached : pullNoCopy(o, current, world->cloneSource.get());
+    mapped = world->map.get(o);
+    if (!mapped) {
+      mapped = pullNoCopy(o, current, world->cloneSource.get());
+      world->map.set(o, mapped);
+    }
   }
 
   if (world == mapped->getWorld()) {
     result = mapped;
   } else {
-    copied = world->map.get(mapped);
-    result = copied ? copied : mapped;
-    if (result != cached) {
-      result = world->map.set(o, result);
+    result = world->map.get(mapped);
+    if (!result) {
+      result = mapped;
     }
   }
 
