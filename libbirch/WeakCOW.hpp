@@ -67,8 +67,8 @@ public:
   /**
    * Constructor.
    */
-  WeakCOW(T* object, World* world) :
-      super_type(object, world) {
+  WeakCOW(T* object, World* world, World* current) :
+      super_type(object, world, current) {
     //
   }
 
@@ -128,42 +128,49 @@ public:
 
   WeakCOW(Any* object = nullptr) :
       object(object),
-      world(fiberWorld) {
+      world(fiberWorld),
+      current(fiberWorld) {
     //
   }
 
   WeakCOW(const Nil& object) :
-      world(fiberWorld) {
+      world(fiberWorld),
+      current(fiberWorld) {
     //
   }
 
   WeakCOW(const SharedPtr<Any>& object) :
       object(object),
-      world(fiberWorld) {
+      world(fiberWorld),
+      current(fiberWorld) {
     //
   }
 
   WeakCOW(const WeakPtr<Any>& object) :
       object(object),
-      world(fiberWorld) {
+      world(fiberWorld),
+      current(fiberWorld) {
     //
   }
 
   WeakCOW(const SharedCOW<Any>& o) :
       object(o.object),
-      world(o.world) {
+      world(o.world),
+      current(o.current) {
     //
   }
 
-  WeakCOW(Any* object, World* world) :
+  WeakCOW(Any* object, World* world, World* current) :
       object(object),
-      world(world) {
+      world(world),
+      current(current) {
     //
   }
 
   WeakCOW(const WeakCOW<Any>& o) :
       object(o.object),
-      world(fiberClone ? fiberWorld : o.world) {
+      world(fiberClone ? fiberWorld : o.world),
+      current(o.current) {
     //
   }
 
@@ -176,6 +183,7 @@ public:
     // ^ ensures next assignment doesn't destroy o
 
     object = o.pull();
+    current = o.current;
     return *this;
   }
 
@@ -184,7 +192,8 @@ public:
   Any* pull() const {
     if (object) {
       auto self = const_cast<WeakCOW<Any>*>(this);
-      self->object = self->world->getNoCopy(object.get());
+      self->object = self->world->getNoCopy(object.get(), current);
+      self->current = self->world;
     }
     return object.get();
   }
@@ -200,5 +209,10 @@ protected:
    * a clone ancestor of this world).
    */
   World* world;
+
+  /**
+   * Current world.
+   */
+  World* current;
 };
 }

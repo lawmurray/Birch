@@ -66,8 +66,8 @@ public:
   /**
    * Constructor.
    */
-  SharedCOW(T* object, World* world) :
-      super_type(object, world) {
+  SharedCOW(T* object, World* world, World* current) :
+      super_type(object, world, current) {
     //
   }
 
@@ -136,7 +136,7 @@ public:
   }
 
   /**
-   * Get the raw pointer while mapping, but not copying, into the desired
+   * Get the raw pointer while mapping, but not copying, into the current
    * world. The caller assumes responsibility for the validity of this; it is
    * used as an optimization.
    */
@@ -184,37 +184,43 @@ public:
 
   SharedCOW(Any* object = nullptr) :
       object(object),
-      world(fiberWorld) {
+      world(fiberWorld),
+      current(fiberWorld) {
     //
   }
 
   SharedCOW(const Nil& object) :
       object(nullptr),
-      world(fiberWorld) {
+      world(fiberWorld),
+      current(fiberWorld) {
     //
   }
 
   SharedCOW(const SharedPtr<Any>& object) :
       object(object),
-      world(fiberWorld) {
+      world(fiberWorld),
+      current(fiberWorld) {
     //
   }
 
   SharedCOW(const WeakPtr<Any>& object) :
       object(object),
-      world(fiberWorld) {
+      world(fiberWorld),
+      current(fiberWorld) {
     //
   }
 
-  SharedCOW(Any* object, World* world) :
+  SharedCOW(Any* object, World* world, World* current) :
       object(object),
-      world(world) {
+      world(world),
+      current(current) {
     //
   }
 
   SharedCOW(const SharedCOW<Any>& o) :
       object(o.object),
-      world(fiberClone ? fiberWorld : o.world) {
+      world(fiberClone ? fiberWorld : o.world),
+      current(o.current) {
     //
   }
 
@@ -229,6 +235,7 @@ public:
     // ^ ensures next assignment doesn't destroy o
 
     object = o.pull();
+    current = o.current;
     return *this;
   }
 
@@ -239,6 +246,7 @@ public:
     // ^ ensures next assignment doesn't destroy o
 
     object = o.pull();
+    current = o.current;
     return *this;
   }
 
@@ -255,7 +263,8 @@ public:
      * reasons */
     if (object) {
       auto self = const_cast<SharedCOW<Any>*>(this);
-      self->object = self->world->get(object.get());
+      self->object = self->world->get(object.get(), current);
+      self->current = self->world;
     }
     return object.get();
   }
@@ -266,7 +275,8 @@ public:
      * reasons */
     if (object) {
       auto self = const_cast<SharedCOW<Any>*>(this);
-      self->object = self->world->getNoCopy(object.get());
+      self->object = self->world->getNoCopy(object.get(), current);
+      self->current = self->world;
     }
     return object.get();
   }
@@ -277,7 +287,8 @@ public:
      * reasons */
     if (object) {
       auto self = const_cast<SharedCOW<Any>*>(this);
-      self->object = self->world->getNoCopy(object.get());
+      self->object = self->world->getNoCopy(object.get(), current);
+      self->current = self->world;
     }
     return object.get();
   }
@@ -309,7 +320,7 @@ public:
    */
   template<class U>
   SharedCOW<U> dynamic_pointer_cast() const {
-    return SharedCOW<U>(dynamic_cast<U*>(get()), world);
+    return SharedCOW<U>(dynamic_cast<U*>(get()), world, current);
   }
 
   /**
@@ -317,7 +328,7 @@ public:
    */
   template<class U>
   SharedCOW<U> static_pointer_cast() const {
-    return SharedCOW<U>(static_cast<U*>(get()), world);
+    return SharedCOW<U>(static_cast<U*>(get()), world, current);
   }
 
 protected:
@@ -331,6 +342,11 @@ protected:
    * a clone ancestor of this world).
    */
   World* world;
+
+  /**
+   * Current world.
+   */
+  World* current;
 };
 }
 
@@ -344,6 +360,7 @@ bi::SharedCOW<T>::SharedCOW(const WeakCOW<T>& o) :
 
 inline bi::SharedCOW<bi::Any>::SharedCOW(const WeakCOW<Any>& o) :
     object(o.object),
-    world(o.world) {
+    world(o.world),
+    current(o.current) {
   //
 }

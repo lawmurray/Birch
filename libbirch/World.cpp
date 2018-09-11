@@ -51,79 +51,97 @@ int bi::World::depth() const {
   return launchDepth;
 }
 
-bi::Any* bi::World::get(Any* o) {
+bi::Any* bi::World::get(Any* o, World* current) {
   assert(o);
-  int d = depth() - o->getWorld()->depth();
+  int d = depth() - current->depth();
   assert(d >= 0);
   auto dst = this;
   for (int i = 0; i < d; ++i) {
     dst = dst->launchSource;
     assert(dst);
   }
-  assert(dst->hasCloneAncestor(o->getWorld()));
-  return pull(o, dst);
+  assert(dst->hasCloneAncestor(current));
+  return pull(o, current, dst);
 }
 
-bi::Any* bi::World::getNoCopy(Any* o) {
+bi::Any* bi::World::getNoCopy(Any* o, World* current) {
   assert(o);
-  int d = depth() - o->getWorld()->depth();
+  int d = depth() - current->depth();
   assert(d >= 0);
   auto dst = this;
   for (int i = 0; i < d; ++i) {
     dst = dst->launchSource;
     assert(dst);
   }
-  assert(dst->hasCloneAncestor(o->getWorld()));
-  return pullNoCopy(o, dst);
+  assert(dst->hasCloneAncestor(current));
+  return pullNoCopy(o, current, dst);
 }
 
-bi::Any* bi::pull(Any* o, World* world) {
-  assert(o && world->hasCloneAncestor(o->getWorld()));
+bi::Any* bi::pull(Any* o, World* current, World* world) {
+  assert(o && world->hasCloneAncestor(current));
 
-
-  /* map */
-  Any* mapped = pullNoCopy(o, world);
-
-  /* copy */
-  Any* result;
-  if (world != mapped->getWorld()) {
-    Enter enter(world);
-    Clone clone;
-    SharedPtr<Any> copied = mapped->clone();
-    result = world->map.set(mapped, copied.get());
-    ///@todo Race condition here if multiple threads running same fiber, may
-    ///end up with multiple copies of the one object
-  } else {
-    result = mapped;
-  }
-  return result;
-}
-
-bi::Any* bi::pullNoCopy(Any* o, World* world) {
-  assert(o && world->hasCloneAncestor(o->getWorld()));
-
-  /* map */
-  Any* mapped;
-  if (world != o->getWorld()) {
-    mapped = world->map.get(o);
-    if (!mapped) {
-      mapped = pullNoCopy(o, world->cloneSource.get());
-      mapped = world->map.put(o, mapped);
-    }
-  } else {
+  Any *mapped, *copied, *result, *cached = nullptr;
+  if (world == current) {
+    cached = o;
     mapped = o;
+  } else {
+    cached = world->map.get(o);
+    mapped =
+        cached ? cached : pullNoCopy(o, current, world->cloneSource.get());
   }
 
-  /* previous copy */
-  Any* result;
-  if (world != mapped->getWorld()) {
-    result = world->map.get(mapped);
-    if (!result) {
-      result = mapped;
-    }
-  } else {
+  if (world == mapped->getWorld()) {
     result = mapped;
+  } else {
+    copied = world->map.get(mapped);
+    if (copied) {
+      if (world == copied->getWorld()) {
+        result = copied;
+      } else {
+        result = clone(copied, world);
+      }
+    } else {
+      result = clone(mapped, world);
+    }
+    if (result != cached) {
+      result = world->map.set(o, result);
+    }
   }
 
   return result;
+}
+
+bi::Any* bi::pullNoCopy(Any* o, World* current, World* world) {
+  assert(o && world->hasCloneAncestor(current));
+
+  Any *mapped, *copied, *result, *cached = nullptr;
+  if (world == current) {
+    cached = o;
+    mapped = o;
+  } else {
+    cached = world->map.get(o);
+    mapped =
+        cached ? cached : pullNoCopy(o, current, world->cloneSource.get());
+  }
+
+  if (world == mapped->getWorld()) {
+    result = mapped;
+  } else {
+    copied = world->map.get(mapped);
+    result = copied ? copied : mapped;
+    if (result != cached) {
+      result = world->map.set(o, result);
+    }
+  }
+
+  return result;
+}
+
+bi::Any* bi::clone(Any* o, World* world) {
+  Enter enter(world);
+  Clone clone;
+  SharedPtr<Any> result = o->clone();
+  return world->map.set(o, result.get());
+  ///@todo Race condition here if multiple threads running same fiber, may
+  ///end up with multiple copies of the one object
 }
