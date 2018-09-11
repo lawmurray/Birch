@@ -55,6 +55,14 @@ bool bi::MemberType::isMember() const {
   return true;
 }
 
+const bi::Type* bi::MemberType::unwrap() const {
+  return right->unwrap();
+}
+
+bi::Type* bi::MemberType::unwrap() {
+  return right->unwrap();
+}
+
 int bi::MemberType::depth() const {
   return right->depth();
 }

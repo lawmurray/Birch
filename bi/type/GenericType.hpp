@@ -44,6 +44,9 @@ public:
   virtual bool isFunction() const;
   virtual bool isFiber() const;
 
+  virtual Type* unwrap();
+  virtual const Type* unwrap() const;
+
   virtual int depth() const;
 
   virtual Basic* getBasic() const;

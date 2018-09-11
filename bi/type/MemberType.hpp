@@ -36,6 +36,9 @@ public:
   virtual bool isFiber() const;
   virtual bool isMember() const;
 
+  virtual Type* unwrap();
+  virtual const Type* unwrap() const;
+
   virtual int depth() const;
 
   virtual Basic* getBasic() const;
