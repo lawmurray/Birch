@@ -122,14 +122,4 @@ Any* pull(Any* o, World* current, World* world);
  */
 Any* pullNoCopy(Any* o, World* current, World* world);
 
-/**
- * Clone an object.
- *
- * @param o The object.
- * @param world The world to which to clone.
- *
- * @return The cloned object.
- */
-Any* clone(Any* o, World* world);
-
 }
