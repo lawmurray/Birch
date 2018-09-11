@@ -8,12 +8,15 @@
 #include "libbirch/Clone.hpp"
 
 bi::World::World() :
+    cloneSource(nullptr),
     launchSource(fiberWorld),
     launchDepth(fiberWorld->launchDepth + 1) {
   //
 }
 
 bi::World::World(int) :
+    cloneSource(nullptr),
+    launchSource(nullptr),
     launchDepth(0) {
   //
 }
@@ -40,7 +43,7 @@ bool bi::World::hasCloneAncestor(World* world) const {
 }
 
 bool bi::World::hasLaunchAncestor(World* world) const {
-  return this == world
+  return hasCloneAncestor(world)
       || (launchSource && launchSource->hasLaunchAncestor(world));
 }
 
@@ -48,46 +51,38 @@ int bi::World::depth() const {
   return launchDepth;
 }
 
-bi::Any* bi::World::get(Any* o, World* current) {
+bi::Any* bi::World::get(Any* o) {
   assert(o);
-  int d = depth() - current->depth();
+  int d = depth() - o->getWorld()->depth();
   assert(d >= 0);
   auto dst = this;
   for (int i = 0; i < d; ++i) {
     dst = dst->launchSource;
     assert(dst);
   }
-  assert(dst->hasCloneAncestor(current));
-  return pull(o, current, dst);
+  assert(dst->hasCloneAncestor(o->getWorld()));
+  return pull(o, dst);
 }
 
-bi::Any* bi::World::getNoCopy(Any* o, World* current) {
+bi::Any* bi::World::getNoCopy(Any* o) {
   assert(o);
-  int d = depth() - current->depth();
+  int d = depth() - o->getWorld()->depth();
   assert(d >= 0);
   auto dst = this;
   for (int i = 0; i < d; ++i) {
     dst = dst->launchSource;
     assert(dst);
   }
-  assert(dst->hasCloneAncestor(current));
-  return pullNoCopy(o, current, dst);
+  assert(dst->hasCloneAncestor(o->getWorld()));
+  return pullNoCopy(o, dst);
 }
 
-bi::Any* bi::pull(Any* o, World* current, World* world) {
-  assert(o && world->hasCloneAncestor(current));
+bi::Any* bi::pull(Any* o, World* world) {
+  assert(o && world->hasCloneAncestor(o->getWorld()));
+
 
   /* map */
-  Any* mapped;
-  if (world != current) {
-    mapped = world->map.get(o);
-    if (!mapped) {
-      mapped = pullNoCopy(o, current, world->cloneSource.get());
-      mapped = world->map.put(o, mapped);
-    }
-  } else {
-    mapped = o;
-  }
+  Any* mapped = pullNoCopy(o, world);
 
   /* copy */
   Any* result;
@@ -96,21 +91,23 @@ bi::Any* bi::pull(Any* o, World* current, World* world) {
     Clone clone;
     SharedPtr<Any> copied = mapped->clone();
     result = world->map.set(mapped, copied.get());
+    ///@todo Race condition here if multiple threads running same fiber, may
+    ///end up with multiple copies of the one object
   } else {
     result = mapped;
   }
   return result;
 }
 
-bi::Any* bi::pullNoCopy(Any* o, World* current, World* world) {
-  assert(o && world->hasCloneAncestor(current));
+bi::Any* bi::pullNoCopy(Any* o, World* world) {
+  assert(o && world->hasCloneAncestor(o->getWorld()));
 
   /* map */
   Any* mapped;
-  if (world != current) {
+  if (world != o->getWorld()) {
     mapped = world->map.get(o);
     if (!mapped) {
-      mapped = pullNoCopy(o, current, world->cloneSource.get());
+      mapped = pullNoCopy(o, world->cloneSource.get());
       mapped = world->map.put(o, mapped);
     }
   } else {
@@ -119,7 +116,7 @@ bi::Any* bi::pullNoCopy(Any* o, World* current, World* world) {
 
   /* previous copy */
   Any* result;
-  if (world != mapped->getWorld() && o != mapped) {
+  if (world != mapped->getWorld()) {
     result = world->map.get(mapped);
     if (!result) {
       result = mapped;
@@ -127,5 +124,6 @@ bi::Any* bi::pullNoCopy(Any* o, World* current, World* world) {
   } else {
     result = mapped;
   }
+
   return result;
 }

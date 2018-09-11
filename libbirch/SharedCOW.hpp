@@ -66,8 +66,8 @@ public:
   /**
    * Constructor.
    */
-  SharedCOW(T* object, World* world, World* current) :
-      super_type(object, world, current) {
+  SharedCOW(T* object, World* world) :
+      super_type(object, world) {
     //
   }
 
@@ -136,7 +136,7 @@ public:
   }
 
   /**
-   * Get the raw pointer while mapping, but not copying, into the current
+   * Get the raw pointer while mapping, but not copying, into the desired
    * world. The caller assumes responsibility for the validity of this; it is
    * used as an optimization.
    */
@@ -184,43 +184,37 @@ public:
 
   SharedCOW(Any* object = nullptr) :
       object(object),
-      world(fiberWorld),
-      current(fiberWorld) {
+      world(fiberWorld) {
     //
   }
 
   SharedCOW(const Nil& object) :
       object(nullptr),
-      world(fiberWorld),
-      current(fiberWorld) {
+      world(fiberWorld) {
     //
   }
 
   SharedCOW(const SharedPtr<Any>& object) :
       object(object),
-      world(fiberWorld),
-      current(fiberWorld) {
+      world(fiberWorld) {
     //
   }
 
   SharedCOW(const WeakPtr<Any>& object) :
       object(object),
-      world(fiberWorld),
-      current(fiberWorld) {
+      world(fiberWorld) {
     //
   }
 
-  SharedCOW(Any* object, World* world, World* current) :
+  SharedCOW(Any* object, World* world) :
       object(object),
-      world(world),
-      current(current) {
+      world(world) {
     //
   }
 
   SharedCOW(const SharedCOW<Any>& o) :
       object(o.object),
-      world(fiberClone ? fiberWorld : o.world),
-      current(o.current) {
+      world(fiberClone ? fiberWorld : o.world) {
     //
   }
 
@@ -235,7 +229,6 @@ public:
     // ^ ensures next assignment doesn't destroy o
 
     object = o.pull();
-    current = o.current;
     return *this;
   }
 
@@ -246,7 +239,6 @@ public:
     // ^ ensures next assignment doesn't destroy o
 
     object = o.pull();
-    current = o.current;
     return *this;
   }
 
@@ -263,8 +255,7 @@ public:
      * reasons */
     if (object) {
       auto self = const_cast<SharedCOW<Any>*>(this);
-      self->object = self->world->get(object.get(), current);
-      self->current = self->world;
+      self->object = self->world->get(object.get());
     }
     return object.get();
   }
@@ -275,8 +266,7 @@ public:
      * reasons */
     if (object) {
       auto self = const_cast<SharedCOW<Any>*>(this);
-      self->object = self->world->getNoCopy(object.get(), current);
-      self->current = self->world;
+      self->object = self->world->getNoCopy(object.get());
     }
     return object.get();
   }
@@ -287,8 +277,7 @@ public:
      * reasons */
     if (object) {
       auto self = const_cast<SharedCOW<Any>*>(this);
-      self->object = self->world->getNoCopy(object.get(), current);
-      self->current = self->world;
+      self->object = self->world->getNoCopy(object.get());
     }
     return object.get();
   }
@@ -305,11 +294,13 @@ public:
     return get();
   }
 
-  bool operator==(const SharedCOW<Any>& o) const {
+  template<class U>
+  bool operator==(const SharedCOW<U>& o) const {
     return get() == o.get();
   }
 
-  bool operator!=(const SharedCOW<Any>& o) const {
+  template<class U>
+  bool operator!=(const SharedCOW<U>& o) const {
     return get() != o.get();
   }
 
@@ -318,7 +309,7 @@ public:
    */
   template<class U>
   SharedCOW<U> dynamic_pointer_cast() const {
-    return SharedCOW<U>(dynamic_cast<U*>(get()), world, current);
+    return SharedCOW<U>(dynamic_cast<U*>(get()), world);
   }
 
   /**
@@ -326,7 +317,7 @@ public:
    */
   template<class U>
   SharedCOW<U> static_pointer_cast() const {
-    return SharedCOW<U>(static_cast<U*>(get()), world, current);
+    return SharedCOW<U>(static_cast<U*>(get()), world);
   }
 
 protected:
@@ -340,11 +331,6 @@ protected:
    * a clone ancestor of this world).
    */
   World* world;
-
-  /**
-   * Current world.
-   */
-  World* current;
 };
 }
 
@@ -358,7 +344,6 @@ bi::SharedCOW<T>::SharedCOW(const WeakCOW<T>& o) :
 
 inline bi::SharedCOW<bi::Any>::SharedCOW(const WeakCOW<Any>& o) :
     object(o.object),
-    world(o.world),
-    current(o.current) {
+    world(o.world) {
   //
 }

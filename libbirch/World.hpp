@@ -62,21 +62,19 @@ public:
    * Get an object, copying it if necessary.
    *
    * @param o The object.
-   * @param current The current world to which the object is mapped.
    *
    * @return The mapped object.
    */
-  Any* get(Any* o, World* current);
+  Any* get(Any* o);
 
   /**
    * Get an object.
    *
    * @param o The object.
-   * @param current The current world to which the object is mapped.
    *
    * @return The mapped object.
    */
-  Any* getNoCopy(Any* o, World* current);
+  Any* getNoCopy(Any* o);
 
   /**
    * The world from which this world was cloned.
@@ -104,22 +102,20 @@ private:
  * Pull and copy (if necessary) an object.
  *
  * @param o The object.
- * @param current The current world to which the object is mapped.
  * @param world The world to which to map.
  *
  * @return The mapped object.
  */
-Any* pull(Any* o, World* current, World* world);
+Any* pull(Any* o, World* world);
 
 /**
  * Pull an object.
  *
  * @param o The object.
- * @param current The current world to which the object is mapped.
  * @param world The world to which to map.
  *
  * @return The mapped object.
  */
-Any* pullNoCopy(Any* o, World* current, World* world);
+Any* pullNoCopy(Any* o, World* world);
 
 }

@@ -17,10 +17,6 @@ bool bi::fiberClone = false;
 std::vector<bi::StackFrame> bi::stacktrace;
 // ^ reserving a non-zero size seems necessary to avoid segfault here
 
-void bi::abort() {
-  abort("assertion failed");
-}
-
 void bi::unknown_option(const std::string& name) {
   printf("error: unknown option '%s'\n", name.c_str());
   std::string possible = name;
@@ -29,6 +25,10 @@ void bi::unknown_option(const std::string& name) {
     printf("note: perhaps try '%s' instead?\n", possible.c_str());
   }
   std::exit(1);
+}
+
+void bi::abort() {
+  abort("assertion failed");
 }
 
 void bi::abort(const std::string& msg) {
@@ -45,8 +45,10 @@ void bi::abort(const std::string& msg) {
     int rem = stacktrace.size() - i;
     printf("  + %d more\n", rem);
   }
-#endif
+  assert(false);
+#else
   std::exit(1);
+#endif
 }
 
 bi::StackFunction::StackFunction(const char* func, const char* file,
