@@ -791,8 +791,8 @@ void bi::Driver::configure() {
       cxxflags << " -Wall";
     }
     if (debug) {
-      cflags << " -O0 -g";
-      cxxflags << " -O0 -g";
+      cflags << " -Og -g";
+      cxxflags << " -Og -g";
     } else {
       cppflags << " -DNDEBUG";
       cflags << " -O3 -funroll-loops -flto";
