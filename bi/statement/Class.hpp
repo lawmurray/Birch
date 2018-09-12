@@ -17,7 +17,11 @@ namespace bi {
  * Possible states of a class during parsing.
  */
 enum ClassState {
-  CLONED = 0, RESOLVED_SUPER = 1, RESOLVED_HEADER = 2, RESOLVED_SOURCE = 3
+  CLONED = 0,
+  RESOLVED_TYPER = 1,
+  RESOLVED_SUPER = 2,
+  RESOLVED_HEADER = 3,
+  RESOLVED_SOURCE = 4
 };
 
 /**
@@ -64,6 +68,12 @@ public:
    * Have type arguments been bound to all type parameters?
    */
   bool isBound() const;
+
+  /**
+   * Is this an instantiation of a generic class? Equivalent to
+   * `isGeneric() && isBound()`.
+   */
+  bool isInstantiation() const;
 
   /**
    * Bind type arguments to the type parameters.

@@ -3,6 +3,7 @@
  */
 #include "bi/visitor/ResolverSource.hpp"
 
+#include "bi/visitor/ResolverTyper.hpp"
 #include "bi/visitor/ResolverSuper.hpp"
 #include "bi/visitor/ResolverHeader.hpp"
 
@@ -453,6 +454,10 @@ bi::Statement* bi::ResolverSource::modify(ConversionOperator* o) {
 }
 
 bi::Statement* bi::ResolverSource::modify(Class* o) {
+  if (o->state < RESOLVED_TYPER) {
+    ResolverTyper resolver(scopes.front());
+    o->accept(&resolver);
+  }
   if (o->state < RESOLVED_SUPER) {
     ResolverSuper resolver(scopes.front());
     o->accept(&resolver);

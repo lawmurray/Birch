@@ -259,6 +259,7 @@ void bi::Scope::resolve(GenericType* ref) {
 }
 
 void bi::Scope::inherit(Scope* scope) {
+  assert(scope);
   assert(!base);
   base = scope;
 }

@@ -29,7 +29,6 @@ public:
 
   using Resolver::modify;
 
-  virtual Expression* modify(Generic* o);
   virtual Statement* modify(Basic* o);
   virtual Statement* modify(Explicit* o);
   virtual Statement* modify(Class* o);

@@ -711,10 +711,7 @@ void bi::CppBaseGenerator::visit(const GenericType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const MemberType* o) {
-  if (!o->left->isMember()) {
-    middle("typename ");
-  }
-  middle(o->left << "::" << o->right);
+  middle(o->right);
 }
 
 void bi::CppBaseGenerator::visit(const UnknownType* o) {

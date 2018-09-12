@@ -51,6 +51,10 @@ bool bi::Class::isBound() const {
   return true;
 }
 
+bool bi::Class::isInstantiation() const {
+  return isGeneric() && isBound();
+}
+
 void bi::Class::bind(Type* typeArgs) {
   assert(typeArgs->width() == typeParams->width());
 

@@ -29,14 +29,15 @@ public:
 
   using Modifier::modify;
 
+  virtual Expression* modify(Generic* o);
   virtual Statement* modify(Basic* o);
   virtual Statement* modify(Explicit* o);
   virtual Statement* modify(Class* o);
 
 protected:
   /**
-   * The root scope.
+   * List of scopes, innermost at the back.
    */
-  Scope* rootScope;
+  std::list<Scope*> scopes;
 };
 }

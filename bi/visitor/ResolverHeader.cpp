@@ -3,6 +3,7 @@
  */
 #include "bi/visitor/ResolverHeader.hpp"
 
+#include "bi/visitor/ResolverTyper.hpp"
 #include "bi/visitor/ResolverSuper.hpp"
 
 bi::ResolverHeader::ResolverHeader(Scope* rootScope) :
@@ -36,15 +37,16 @@ bi::Statement* bi::ResolverHeader::modify(Explicit* o) {
 }
 
 bi::Statement* bi::ResolverHeader::modify(Class* o) {
+  if (o->state < RESOLVED_TYPER) {
+    ResolverTyper resolver(scopes.front());
+    o->accept(&resolver);
+  }
   if (o->state < RESOLVED_SUPER) {
     ResolverSuper resolver(scopes.front());
     o->accept(&resolver);
   }
   if (o->state < RESOLVED_HEADER) {
     if (o->isBound()) {
-      if (!o->base->isEmpty()) {
-        o->scope->inherit(o->base->getClass()->scope);
-      }
       classes.push_back(o);
       scopes.push_back(o->scope);
       scopes.push_back(o->initScope);

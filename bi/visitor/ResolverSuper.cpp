@@ -3,6 +3,8 @@
  */
 #include "bi/visitor/ResolverSuper.hpp"
 
+#include "bi/visitor/ResolverTyper.hpp"
+
 bi::ResolverSuper::ResolverSuper(Scope* rootScope) :
     Resolver(rootScope, false) {
   //
@@ -10,12 +12,6 @@ bi::ResolverSuper::ResolverSuper(Scope* rootScope) :
 
 bi::ResolverSuper::~ResolverSuper() {
   //
-}
-
-bi::Expression* bi::ResolverSuper::modify(Generic* o) {
-  o->type = o->type->accept(this);
-  scopes.back()->add(o);
-  return o;
 }
 
 bi::Statement* bi::ResolverSuper::modify(Basic* o) {
@@ -34,23 +30,28 @@ bi::Statement* bi::ResolverSuper::modify(Explicit* o) {
 }
 
 bi::Statement* bi::ResolverSuper::modify(Class* o) {
-    if (o->state < RESOLVED_SUPER) {
-      scopes.push_back(o->scope);
-      classes.push_back(o);
-      o->typeParams = o->typeParams->accept(this);
-      if (o->isBound()) {
-        o->base = o->base->accept(this);
-        if (!o->base->isEmpty()) {
-          if (!o->base->isClass()) {
-            throw BaseException(o);
-          }
-          o->addSuper(o->base);
+  if (o->state < RESOLVED_TYPER) {
+    ResolverTyper resolver(scopes.front());
+    o->accept(&resolver);
+  }
+  if (o->state < RESOLVED_SUPER) {
+    scopes.push_back(o->scope);
+    classes.push_back(o);
+    o->typeParams = o->typeParams->accept(this);
+    if (o->isBound()) {
+      o->base = o->base->accept(this);
+      if (!o->base->isEmpty()) {
+        if (!o->base->isClass()) {
+          throw BaseException(o);
         }
-        o->braces = o->braces->accept(this);
+        o->scope->inherit(o->base->getClass()->scope);
+        o->addSuper(o->base);
       }
-      o->state = RESOLVED_SUPER;
-      classes.pop_back();
-      scopes.pop_back();
+      o->braces = o->braces->accept(this);
+    }
+    o->state = RESOLVED_SUPER;
+    classes.pop_back();
+    scopes.pop_back();
   }
   for (auto instantiation : o->instantiations) {
     instantiation->accept(this);
