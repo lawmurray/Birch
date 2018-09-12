@@ -30,6 +30,9 @@ void bi::CppClassGenerator::visit(const Class* o) {
           middle(" : public ");
           middle(o->base);
         }
+        if (o->base->isEmpty()) {
+          middle(" : public Any");
+        }
         finish(" {");
         line("public:");
         in();
@@ -60,7 +63,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
       }
 
       /* ensure super type assignments are visible */
-      if (header) {
+      if (header && !o->base->isEmpty()) {
         line("using super_type::operator=;\n");
       }
 

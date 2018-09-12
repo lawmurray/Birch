@@ -26,7 +26,11 @@ void bi::CppConstructorGenerator::visit(const Class* o) {
     finish(" :");
     in();
     in();
-    start("super_type(");
+    if (o->base->isEmpty()) {
+      middle("Any(");
+    } else {
+      start("super_type(");
+    }
     if (!o->args->isEmpty()) {
       middle(o->args);
     }
