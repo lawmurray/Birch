@@ -113,13 +113,24 @@ class ParticleFilter {
    * - N: Number of particles.
    * - trigger: Relative ESS below which resampling should be triggered.
    */
-  function initialize(model:String, inputReader:Reader?, T:Integer, N:Integer, trigger:Real) {
-    f0 <- particle(model, inputReader);
-    if (!(f0?)) {
-      stderr.print("error: particles terminated prematurely.\n");
+  function initialize(model:String, reader:Reader?, T:Integer, N:Integer, trigger:Real) {
+    /* model */
+    auto o <- AbstractModel?(make(model));
+    if (!o?) {
+      stderr.print("error: " + model + " must be a subtype of AbstractModel with no initialization parameters.\n");
       exit(1);
     }
-
+    auto m <- o!;
+  
+    /* variate */
+    v:WeightedVariate<Object>(m.variate(), 0.0);
+  
+    /* input */
+    if (reader?) {
+      v.x.read(reader!);
+    }
+  
+    f0 <- particle(m, v);
     f1:WeightedVariate<Object>![N];
     this.f <- f1;
     this.T <- T;
@@ -227,32 +238,10 @@ class ParticleFilter {
 /*
  * Particle.
  */
-fiber particle(model:String, reader:Reader?) -> WeightedVariate<Object> {
-  /* create model */
-  auto o <- AbstractModel?(make(model));
-  if (!o?) {
-    stderr.print("error: " + model + " must be a subtype of AbstractModel with no initialization parameters.\n");
-    exit(1);
-  }
-  auto m <- o!;
-  
-  /* create variate */
-  v:WeightedVariate<Object>(m.variate(), 0.0);
-  
-  /* input */
-  if (reader?) {
-    v.x.read(reader!);
-  }
-  yield v;
-  
-  /* simulate */
+fiber particle(m:AbstractModel, v:WeightedVariate<Object>) -> WeightedVariate<Object> {
   auto f <- m.simulate(v.x);
   while (f?) {
     v.w <- f!;
     yield v;
   }
-  
-  /* final yield, ensuring that even with no observations, the particle
-   * yields at least once after initialization */
-  yield v;
 }
