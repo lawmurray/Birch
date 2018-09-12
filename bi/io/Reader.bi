@@ -360,4 +360,13 @@ class Reader {
    * are themselves arrays of the same length and compatible type.
    */
   function getRealMatrix(path:[String]) -> Real[_,_]?;
+  
+  /**
+   * Read a serializable object.
+   *
+   * - o: The object.
+   */
+  function read(o:Serializable) {
+    o.read(this);
+  }
 }

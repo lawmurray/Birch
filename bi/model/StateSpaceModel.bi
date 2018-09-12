@@ -13,41 +13,45 @@
  */
 class StateSpaceModel<Parameter,Initial,Transition,Observation> <
     Model<StateSpaceVariate<Parameter.Variate,Initial.Variate,Observation.Variate>> {
+  p:Parameter;
+  m:Initial;
+  f:Transition;
+  g:Observation;
 
   fiber simulate(v:Variate) -> Real {
-    auto f <- v.x.walk();
-    auto g <- v.y.walk();
+    auto xs <- v.x.walk();
+    auto ys <- v.y.walk();
     
     /* parameter */
-    yield sum(p.p(v.θ));
+    yield sum(p.simulate(v.θ));
     
     /* initial state and initial observation */
-    x:State;
-    y:Observation;
-    if (f?) {
-      x <- f!;
+    x:Initial.Variate;
+    y:Observation.Variate;
+    if (xs?) {
+      x <- xs!;
     }
-    if (g?) {
-      y <- g!;
+    if (ys?) {
+      y <- ys!;
     }
-    yield sum(m.p(x, v.θ)) + sum(g.p(y, x, v.θ));
+    yield sum(m.simulate(x, v.θ)) + sum(g.simulate(y, x, v.θ));
     
     /* transition and observation */
     while (true) {
-      x0:State <- x;
-      if (f?) {
-        x <- f!;
+      x0:Initial.Variate <- x;
+      if (xs?) {
+        x <- xs!;
       } else {
-        o:State;
+        o:Initial.Variate;
         x <- o;
       }
-      if (g?) {
-        y <- g!;
+      if (ys?) {
+        y <- ys!;
       } else {
-        o:Observation;
+        o:Observation.Variate;
         y <- o;
       }
-      yield sum(f.p(x, x0, v.θ)) + sum(g.p(y, x, v.θ));
+      yield sum(f.simulate(x, x0, v.θ)) + sum(g.simulate(y, x, v.θ));
     }
   }
 }

@@ -34,7 +34,7 @@ class StateSpaceVariate<Parameter,State,Observation> <
   function write(writer:Writer) {
     super.write(writer);
     
-    writer.setArray("x").write(x.walk());
-    writer.setArray("y").write(y.walk());
+    //writer.setArray("x").write(x.walk());
+    //writer.setArray("y").write(y.walk());
   }
 }

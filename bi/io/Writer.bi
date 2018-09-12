@@ -288,7 +288,16 @@ class Writer {
    * Returns: a writer for modifying the new element.
    */
   function push() -> Writer;
-  
+
+  /**
+   * Read a serializable object.
+   *
+   * - o: The object.
+   */
+  function write(o:Serializable) {
+    o.write(this);
+  }
+
   /**
    * Flush in-memory buffers.
    */
