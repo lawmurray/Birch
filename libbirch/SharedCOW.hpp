@@ -305,11 +305,13 @@ public:
     return get();
   }
 
-  bool operator==(const SharedCOW<Any>& o) const {
+  template<class U>
+  bool operator==(const SharedCOW<U>& o) const {
     return get() == o.get();
   }
 
-  bool operator!=(const SharedCOW<Any>& o) const {
+  template<class U>
+  bool operator!=(const SharedCOW<U>& o) const {
     return get() != o.get();
   }
 

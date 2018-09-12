@@ -8,12 +8,15 @@
 #include "libbirch/Clone.hpp"
 
 bi::World::World() :
+    cloneSource(nullptr),
     launchSource(fiberWorld),
     launchDepth(fiberWorld->launchDepth + 1) {
   //
 }
 
 bi::World::World(int) :
+    cloneSource(nullptr),
+    launchSource(nullptr),
     launchDepth(0) {
   //
 }
@@ -40,7 +43,7 @@ bool bi::World::hasCloneAncestor(World* world) const {
 }
 
 bool bi::World::hasLaunchAncestor(World* world) const {
-  return this == world
+  return hasCloneAncestor(world)
       || (launchSource && launchSource->hasLaunchAncestor(world));
 }
 
@@ -77,27 +80,14 @@ bi::Any* bi::World::getNoCopy(Any* o, World* current) {
 bi::Any* bi::pull(Any* o, World* current, World* world) {
   assert(o && world->hasCloneAncestor(current));
 
-  /* map */
-  Any* mapped;
-  if (world != current) {
-    mapped = world->map.get(o);
-    if (!mapped) {
-      mapped = pullNoCopy(o, current, world->cloneSource.get());
-      mapped = world->map.put(o, mapped);
-    }
-  } else {
-    mapped = o;
-  }
-
-  /* copy */
-  Any* result;
-  if (world != mapped->getWorld()) {
+  Any* result = pullNoCopy(o, current, world);
+  if (world != result->getWorld()) {
     Enter enter(world);
     Clone clone;
-    SharedPtr<Any> copied = mapped->clone();
-    result = world->map.set(mapped, copied.get());
-  } else {
-    result = mapped;
+    SharedPtr<Any> copied = result->clone();
+    result = world->map.set(result, copied.get());
+    ///@todo Race condition here if multiple threads running same fiber, may
+    ///end up with multiple copies of the one object
   }
   return result;
 }
@@ -105,27 +95,30 @@ bi::Any* bi::pull(Any* o, World* current, World* world) {
 bi::Any* bi::pullNoCopy(Any* o, World* current, World* world) {
   assert(o && world->hasCloneAncestor(current));
 
-  /* map */
-  Any* mapped;
-  if (world != current) {
+  Any *mapped, *result;
+  bool fromCache;
+  if (world == current) {
+    mapped = o;
+    fromCache = false;
+  } else {
     mapped = world->map.get(o);
     if (!mapped) {
       mapped = pullNoCopy(o, current, world->cloneSource.get());
-      mapped = world->map.put(o, mapped);
+      world->map.set(o, mapped);
     }
-  } else {
-    mapped = o;
+    fromCache = true;
   }
 
-  /* previous copy */
-  Any* result;
-  if (world != mapped->getWorld() && o != mapped) {
+  if (world == mapped->getWorld() || (fromCache && o == mapped)) {
+    // ^ second condition is to save a second unnecessary lookup of the same
+    //   key in the cache
+    result = mapped;
+  } else {
     result = world->map.get(mapped);
     if (!result) {
       result = mapped;
     }
-  } else {
-    result = mapped;
   }
+
   return result;
 }
