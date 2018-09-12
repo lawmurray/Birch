@@ -46,22 +46,17 @@ bi::Statement* bi::ResolverHeader::modify(Class* o) {
     o->accept(&resolver);
   }
   if (o->state < RESOLVED_HEADER) {
-    if (o->isBound()) {
-      classes.push_back(o);
-      scopes.push_back(o->scope);
-      scopes.push_back(o->initScope);
-      if (o->isAlias()) {
-        o->params =
-            o->base->canonical()->getClass()->params->accept(&cloner)->accept(
-                this);
-      } else {
-        o->params = o->params->accept(this);
-      }
-      scopes.pop_back();
-      o->braces = o->braces->accept(this);
-      classes.pop_back();
-      scopes.pop_back();
+    classes.push_back(o);
+    scopes.push_back(o->scope);
+    scopes.push_back(o->initScope);
+    if (o->isAlias()) {
+      o->params = o->base->canonical()->getClass()->params->accept(&cloner);
     }
+    o->params = o->params->accept(this);
+    scopes.pop_back();
+    o->braces = o->braces->accept(this);
+    classes.pop_back();
+    scopes.pop_back();
     o->state = RESOLVED_HEADER;
   }
   for (auto instantiation : o->instantiations) {

@@ -85,11 +85,10 @@ bi::Type* bi::Resolver::modify(MemberType* o) {
   o->left = o->left->accept(this);
   if (o->left->isClass()) {
     memberScopes.push_back(o->left->getClass()->scope);
-  } else {
+    o->right = o->right->accept(this);
+  } else if (o->left->isBound()) {
     throw MemberException(o);
   }
-  o->right = o->right->accept(this);
-
   return o;
 }
 
@@ -157,7 +156,7 @@ bi::Type* bi::Resolver::lookup(UnknownType* ref) {
 }
 
 void bi::Resolver::instantiate(ClassType* o) {
-  if (o->target->isGeneric()) {
+  if (o->target->isGeneric() && o->typeArgs->isBound()) {
     if (o->typeArgs->width() != o->target->typeParams->width()) {
       throw GenericException(o, o->target);
     }

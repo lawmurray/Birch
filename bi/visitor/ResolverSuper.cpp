@@ -38,17 +38,15 @@ bi::Statement* bi::ResolverSuper::modify(Class* o) {
     scopes.push_back(o->scope);
     classes.push_back(o);
     o->typeParams = o->typeParams->accept(this);
-    if (o->isBound()) {
-      o->base = o->base->accept(this);
-      if (!o->base->isEmpty()) {
-        if (!o->base->isClass()) {
-          throw BaseException(o);
-        }
-        o->scope->inherit(o->base->getClass()->scope);
-        o->addSuper(o->base);
+    o->base = o->base->accept(this);
+    if (!o->base->isEmpty()) {
+      if (!o->base->isClass()) {
+        throw BaseException(o);
       }
-      o->braces = o->braces->accept(this);
+      o->scope->inherit(o->base->getClass()->scope);
+      o->addSuper(o->base);
     }
+    o->braces = o->braces->accept(this);
     o->state = RESOLVED_SUPER;
     classes.pop_back();
     scopes.pop_back();
