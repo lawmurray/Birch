@@ -1,31 +1,38 @@
 /**
  * Variate for StateSpaceModel.
  */
-class StateSpaceVariate<Parameter,State,Observation> <
-    ParameterVariate<Parameter> {  
+class StateSpaceVariate<ParameterVariate,StateVariate,ObservationVariate> {  
+  /**
+   * Parameter.
+   */
+  θ:ParameterVariate;
+
   /**
    * States.
    */
-  x:List<State>;
+  x:List<StateVariate>;
   
   /**
    * Observations.
    */
-  y:List<Observation>;
+  y:List<ObservationVariate>;
 
   function read(reader:Reader) {
-    super.read(reader);
+    auto r <- reader.getObject("θ");
+    if (r?) {
+      θ.read(r!);
+    }
   
     auto f <- reader.getArray("x");
     while (f?) {
-      x1:State;
+      x1:StateVariate;
       x1.read(f!);
       x.pushBack(x1);
     }
       
     f <- reader.getArray("y");
     while (f?) {
-      y1:Observation;
+      y1:ObservationVariate;
       f!.read(y1);
       y.pushBack(y1);
     }

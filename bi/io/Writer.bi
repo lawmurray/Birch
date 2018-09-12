@@ -294,7 +294,7 @@ class Writer {
    *
    * - o: The object.
    */
-  function write(o:Serializable) {
+  function write(o:Object) {
     o.write(this);
   }
 

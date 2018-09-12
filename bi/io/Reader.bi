@@ -366,7 +366,7 @@ class Reader {
    *
    * - o: The object.
    */
-  function read(o:Serializable) {
+  function read(o:Object) {
     o.read(this);
   }
 }

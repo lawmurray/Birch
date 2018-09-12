@@ -1,7 +1,21 @@
 /**
  * Root class of all other classes.
  */
-class Object;
+class Object {
+  /**
+   * Read.
+   */
+  function read(reader:Reader) {
+    //
+  }
+  
+  /**
+   * Write.
+   */
+  function write(writer:Writer) {
+    //
+  }
+}
 
 /**
  * Make an object.

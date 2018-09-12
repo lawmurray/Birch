@@ -2,10 +2,6 @@
  * Variate for ParameterizedModel.
  */
 class ParameterVariate<Parameter> < AbstractVariate {  
-  /**
-   * Parameter.
-   */
-  θ:Parameter;
 
   function read(reader:Reader) {
     auto r <- reader.getObject("θ");

@@ -11,12 +11,12 @@ class Model<Variate> < AbstractModel {
     //
   }
 
-  function variate() -> AbstractVariate {
+  function variate() -> Object {
     v:Variate;
     return v;
   }
 
-  fiber simulate(v:AbstractVariate) -> Real {
+  fiber simulate(v:Object) -> Real {
     auto w <- Variate?(v);
     if (w?) {
       simulate(w!);

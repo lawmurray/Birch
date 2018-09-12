@@ -6,12 +6,12 @@ class ParticleFilter {
    * Canonical particle from which others are initialized. Ensures that
    * input is only consumed once.
    */
-  f0:AbstractVariate!;
+  f0:WeightedVariate<Object>!;
 
   /**
    * Particles.
    */
-  f:AbstractVariate![_];
+  f:WeightedVariate<Object>![_];
   
   /**
    * Log-weights.
@@ -120,7 +120,7 @@ class ParticleFilter {
       exit(1);
     }
 
-    f1:AbstractVariate![N];
+    f1:WeightedVariate<Object>![N];
     this.f <- f1;
     this.T <- T;
     this.N <- N;
@@ -227,17 +227,17 @@ class ParticleFilter {
 /*
  * Particle.
  */
-fiber particle(model:String, reader:Reader?) -> AbstractVariate {
+fiber particle(model:String, reader:Reader?) -> WeightedVariate<Object> {
   /* create model */
   auto o <- AbstractModel?(make(model));
   if (!o?) {
-    stderr.print("error: " + model + " must be a subtype of Model with no initialization parameters.\n");
+    stderr.print("error: " + model + " must be a subtype of AbstractModel with no initialization parameters.\n");
     exit(1);
   }
   auto m <- o!;
   
   /* create variate */
-  auto v <- m.variate();
+  v:WeightedVariate<Object>(m.variate());
   
   /* input */
   if (reader?) {

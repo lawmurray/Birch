@@ -14,7 +14,6 @@
 #include "libbirch/Array.hpp"
 #include "libbirch/Sequence.hpp"
 #include "libbirch/Any.hpp"
-#include "libbirch/Object.hpp"
 #include "libbirch/Optional.hpp"
 #include "libbirch/Nil.hpp"
 #include "libbirch/SharedCOW.hpp"

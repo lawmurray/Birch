@@ -5,14 +5,14 @@ class AbstractModel {
   /**
    * Make a variate for use with this model.
    */
-  function variate() -> AbstractVariate {
+  function variate() -> Object {
     //
   }
 
   /**
    * Simulate.
    */
-  fiber simulate(v:AbstractVariate) -> Real {
+  fiber simulate(v:Object) -> Real {
     //
   }
 }
