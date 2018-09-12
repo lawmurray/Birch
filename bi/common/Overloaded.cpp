@@ -23,3 +23,7 @@ void bi::Overloaded::add(Parameterised* o) {
 
   overloads.insert(o);
 }
+
+int bi::Overloaded::size() const {
+  return overloads.size();
+}

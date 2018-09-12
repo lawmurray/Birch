@@ -39,6 +39,14 @@ bi::FunctionType* bi::OverloadedType::resolve(Argumented* o) {
   }
 }
 
+bi::FunctionType* bi::OverloadedType::resolve() const {
+  assert(overloaded->size() == 1);
+  auto target = overloaded->front();
+  Type* paramsType = target->params->type;
+  Type* returnType = dynamic_cast<ReturnTyped*>(target)->returnType;
+  return new FunctionType(paramsType, returnType);
+}
+
 bi::Type* bi::OverloadedType::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
@@ -59,11 +67,26 @@ bool bi::OverloadedType::definitely(const OverloadedType& o) const {
   return false;
 }
 
+bool bi::OverloadedType::definitely(const FunctionType& o) const {
+  if (overloaded->size() == 1) {
+    return resolve()->definitely(o);
+  } else {
+    return false;
+  }
+}
+
 bi::Type* bi::OverloadedType::dispatchCommon(const Type& o) const {
   return o.common(*this);
 }
 
 bi::Type* bi::OverloadedType::common(const OverloadedType& o) const {
-  assert(false);
   return nullptr;
+}
+
+bi::Type* bi::OverloadedType::common(const FunctionType& o) const {
+  if (overloaded->size() == 1) {
+    return resolve()->common(o);
+  } else {
+    return nullptr;
+  }
 }

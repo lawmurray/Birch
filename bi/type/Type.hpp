@@ -223,6 +223,14 @@ public:
   virtual FunctionType* resolve(Argumented* o);
 
   /**
+   * Resolve a call without arguments.
+   *
+   * @return If this is an overloaded type, but there is only one overload,
+   * return the type of that overload. In all other cases undefined.
+   */
+  virtual FunctionType* resolve() const;
+
+  /**
    * Resolve a constructor call.
    *
    * @param args Argument types.

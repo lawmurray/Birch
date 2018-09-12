@@ -150,6 +150,10 @@ bi::FunctionType* bi::Type::resolve(Argumented* o) {
   throw CallException(o);
 }
 
+bi::FunctionType* bi::Type::resolve() const {
+  assert(false);
+}
+
 void bi::Type::resolveConstructor(Argumented* o) {
   if (!o->args->isEmpty()) {
     throw ConstructorException(o);

@@ -44,6 +44,11 @@ public:
   void add(Parameterised* o);
 
   /**
+   * Number of overloads.
+   */
+  int size() const;
+
+  /**
    * Iterators.
    */
   auto begin() const {
@@ -51,6 +56,13 @@ public:
   }
   auto end() const {
     return overloads.end();
+  }
+
+  /**
+   * First overload.
+   */
+  auto front() const {
+    return *begin();
   }
 
   /**

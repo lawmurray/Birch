@@ -104,6 +104,11 @@ bi::FunctionType* bi::GenericType::resolve(Argumented* o) {
   return target->type->resolve(o);
 }
 
+bi::FunctionType* bi::GenericType::resolve() const {
+  assert(target);
+  return target->type->resolve();
+}
+
 void bi::GenericType::resolveConstructor(Argumented* o) {
   assert(target);
   target->type->resolveConstructor(o);

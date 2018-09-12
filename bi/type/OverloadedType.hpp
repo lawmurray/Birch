@@ -35,15 +35,18 @@ public:
 
   virtual bool isOverloaded() const;
   virtual FunctionType* resolve(Argumented* args);
+  virtual FunctionType* resolve() const;
 
   using Type::definitely;
   using Type::common;
 
   virtual bool dispatchDefinitely(const Type& o) const;
   virtual bool definitely(const OverloadedType& o) const;
+  virtual bool definitely(const FunctionType& o) const;
 
   virtual Type* dispatchCommon(const Type& o) const;
   virtual Type* common(const OverloadedType& o) const;
+  virtual Type* common(const FunctionType& o) const;
 
   /**
    * Overloaded object.
