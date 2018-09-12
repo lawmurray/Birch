@@ -21,7 +21,8 @@ class Model<Variate> < AbstractModel {
     if (w?) {
       simulate(w!);
     } else {
-      
+      stderr.print("error: incorrect variate type.\n");
+      exit(1);
     }
   }
 }

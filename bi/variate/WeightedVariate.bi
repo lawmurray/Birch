@@ -1,7 +1,7 @@
 /**
  * Variate with a weight.
  */
-class WeightedVariate<Variate>(x:Variate) {
+class WeightedVariate<Variate>(x:Variate, w:Real) {
   /**
    * The variate.
    */
@@ -10,5 +10,15 @@ class WeightedVariate<Variate>(x:Variate) {
   /**
    * Log-weight of the variate.
    */
-  w:Real <- 0.0;
+  w:Real <- w;
+
+  function read(reader:Reader) {
+    reader.getObject("x")!.read(x);
+    w <- reader.getReal("w")!;
+  }
+  
+  function write(writer:Writer) {
+    writer.setObject("x").write(x);
+    writer.setReal("w", w);
+  }
 }

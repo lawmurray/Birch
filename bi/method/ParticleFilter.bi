@@ -201,8 +201,8 @@ class ParticleFilter {
     if (writer?) {
       auto b <- ancestor(w);
       if (b > 0) {
-        f[b]!.write(writer!.setObject("sample"));
-        writer!.setReal("weight", Z[T]);
+        sample:WeightedVariate<Object>(f[b]!.x, Z[T]);
+        writer!.write(sample);
       } else {
         stderr.print("error: particle filter degenerated.\n");
         exit(1);
@@ -237,16 +237,16 @@ fiber particle(model:String, reader:Reader?) -> WeightedVariate<Object> {
   auto m <- o!;
   
   /* create variate */
-  v:WeightedVariate<Object>(m.variate());
+  v:WeightedVariate<Object>(m.variate(), 0.0);
   
   /* input */
   if (reader?) {
-    v.read(reader!);
+    v.x.read(reader!);
   }
   yield v;
   
   /* simulate */
-  auto f <- m.simulate(v);
+  auto f <- m.simulate(v.x);
   while (f?) {
     v.w <- f!;
     yield v;
