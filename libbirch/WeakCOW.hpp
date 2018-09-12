@@ -177,11 +177,7 @@ public:
   WeakCOW(WeakCOW<Any> && o) = default;
 
   WeakCOW<Any>& operator=(const WeakCOW<Any>& o) {
-    bi_assert_msg(world->hasLaunchAncestor(o.world),
-        "when a fiber yields an object, that object cannot be kept by the caller");
-    auto old = std::move(object);
-    // ^ ensures next assignment doesn't destroy o
-
+    auto old = std::move(object);  // ^ ensures next assign won't destroy o
     object = o.pull();
     current = o.current;
     return *this;

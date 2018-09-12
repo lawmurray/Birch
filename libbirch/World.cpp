@@ -8,23 +8,17 @@
 #include "libbirch/Clone.hpp"
 
 bi::World::World() :
-    cloneSource(nullptr),
-    launchSource(fiberWorld),
-    launchDepth(fiberWorld->launchDepth + 1) {
+    cloneSource(nullptr) {
   //
 }
 
 bi::World::World(int) :
-    cloneSource(nullptr),
-    launchSource(nullptr),
-    launchDepth(0) {
-  //
+    cloneSource(nullptr) {
+  incShared();
 }
 
 bi::World::World(const SharedPtr<World>& cloneSource) :
-    cloneSource(cloneSource),
-    launchSource(fiberWorld),
-    launchDepth(cloneSource->launchDepth) {
+    cloneSource(cloneSource) {
   //
 }
 
@@ -42,39 +36,14 @@ bool bi::World::hasCloneAncestor(World* world) const {
       || (cloneSource && cloneSource->hasCloneAncestor(world));
 }
 
-bool bi::World::hasLaunchAncestor(World* world) const {
-  return hasCloneAncestor(world)
-      || (launchSource && launchSource->hasLaunchAncestor(world));
-}
-
-int bi::World::depth() const {
-  return launchDepth;
-}
-
 bi::Any* bi::World::get(Any* o, World* current) {
   assert(o);
-  int d = depth() - current->depth();
-  assert(d >= 0);
-  auto dst = this;
-  for (int i = 0; i < d; ++i) {
-    dst = dst->launchSource;
-    assert(dst);
-  }
-  assert(dst->hasCloneAncestor(current));
-  return pull(o, current, dst);
+  return pull(o, current, this);
 }
 
 bi::Any* bi::World::getNoCopy(Any* o, World* current) {
   assert(o);
-  int d = depth() - current->depth();
-  assert(d >= 0);
-  auto dst = this;
-  for (int i = 0; i < d; ++i) {
-    dst = dst->launchSource;
-    assert(dst);
-  }
-  assert(dst->hasCloneAncestor(current));
-  return pullNoCopy(o, current, dst);
+  return pullNoCopy(o, current, this);
 }
 
 bi::Any* bi::pull(Any* o, World* current, World* world) {

@@ -16,7 +16,7 @@ public:
    * Constructor.
    */
   GlobalFiberWorld() :
-      world(bi::construct<World>()) {
+      world(fiberWorld) {
     //
   }
 

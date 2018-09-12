@@ -49,16 +49,6 @@ public:
   bool hasCloneAncestor(World* world) const;
 
   /**
-   * Does this world have the given world as a launch ancestor?
-   */
-  bool hasLaunchAncestor(World* world) const;
-
-  /**
-   * Get launch depth.
-   */
-  int depth() const;
-
-  /**
    * Get an object, copying it if necessary.
    *
    * @param o The object.
@@ -84,20 +74,9 @@ public:
   SharedPtr<World> cloneSource;
 
   /**
-   * The world from which this world was launched.
-   */
-  World* launchSource;
-
-  /**
    * Mapped allocations.
    */
   Map map;
-
-private:
-  /**
-   * Launch depth.
-   */
-  int launchDepth;
 };
 
 /**
