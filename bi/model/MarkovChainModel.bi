@@ -1,31 +1,42 @@
 /**
  * Markov chain.
  */
-class MarkovChainModel<StateVariate,InitialModel,TransitionModel> <
-    Model<MarkovChainVariate<StateVariate>> {
-  m:InitialModel;
-  f:TransitionModel;
+class MarkovChainModel<State> < Model {
+  /**
+   * Variate.
+   */
+  v:MarkovChainVariate<State>;
 
-  fiber simulate(v:Variate) -> Real {
-    auto xs <- v.θ.walk();
+  /**
+   * Initial model.
+   */
+  m:@(State) -> Real! <- m;
+  
+  /**
+   * Transition model.
+   */
+  f:@(State, State) -> Real! <- f;
+
+  fiber simulate() -> Real {
+    auto xs <- v.x.walk();
         
     /* initial state */
-    x:StateVariate;
+    x':State;
     if (xs?) {
-      x <- xs!;
+      x' <- xs!;
     }
-    yield sum(m.simulate(x));
+    yield sum(m(x'));
     
     /* transition */
     while (true) {
-      x0:StateVariate <- x;
+      x:State <- x';
       if (xs?) {
-        x <- xs!;
+        x' <- xs!;
       } else {
-        o:StateVariate;
-        x <- o;
+        o:State;
+        x' <- o;
       }
-      yield sum(f.simulate(x, x0));
+      yield sum(f(x', x));
     }
   }
 }

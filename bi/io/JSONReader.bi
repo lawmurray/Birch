@@ -22,17 +22,10 @@ class JSONReader < MemoryReader {
    */
   function make(path:String) {
     this.path <- path;
+    success:Boolean <- false;
+
     cpp{{
     group = &top;
-    }}
-  }
-  
-  /**
-   * Load data from file.
-   */
-  function load() {
-    success:Boolean <- false;
-    cpp{{
     std::ifstream stream(path_);
     if (stream.is_open()) {
       libubjpp::JSONDriver driver;

@@ -25,62 +25,68 @@
  *
  * Particle filter-specific options:
  *
- *   - `--nparticles`: Number of particles to use.
- *
- *   - `--ess-trigger`: Threshold for resampling. Resampling is performed
- *     whenever the effective sample size, as a proportion of `--nparticles`,
- *     drops below this threshold.
  */
 program sample(
-    model:String <- "Model",
+    model:String,
     method:String <- "ParticleFilter",
     input_file:String?,
     output_file:String?,
+    config_file:String?,
     diagnostic_file:String?,
     nsamples:Integer <- 1,
     ncheckpoints:Integer <- 1,
     seed:Integer?,
-    verbose:Boolean <- true,
-    nparticles:Integer <- 1,
-    ess_trigger:Real <- 0.7) {
-  /* set up I/O */
+    verbose:Boolean <- true) {
+  /* random number generator */
+  if (seed?) {
+    global.seed(seed!);
+  }
+
+  /* model */
+  auto m <- Model?(make(model));
+  if (!m?) {
+    stderr.print("error: " + model + " must be a subtype of Model with no initialization parameters.\n");
+    exit(1);
+  }
+
+  /* method */
+  auto s <- Method?(make(method));
+  if (!s?) {
+    stderr.print("error: " + method + " must be a subtype of Method with no initialization parameters.\n");
+    exit(1);
+  }
+
+  /* I/O */
   input:JSONReader?;
   output:JSONWriter?;
+  config:JSONReader?;
   diagnostic:JSONWriter?;
   
-  /* input and output */  
   if (input_file?) {
     input <- JSONReader(input_file!);
-    input!.load();
+    input!.read(m!);
   }
   if (output_file?) {
     output <- JSONWriter(output_file!);
   }
+  if (config_file?) {
+    config <- JSONReader(config_file!);
+    config!.read(s!);
+  }
   if (diagnostic_file?) {
     diagnostic <- JSONWriter(diagnostic_file!);
   }
-  
-  /* seed random number generator */
-  if (seed?) {
-    global.seed(seed!);
-  }
-  
-  /* set up method */
-  sampler:ParticleFilter? <- ParticleFilter?(make(method));
-  if (!sampler?) {
-    stderr.print("error: " + method + " must be a subtype of ParticleFilter with no initialization parameters.\n");
-    exit(1);
-  }
 
   /* sample */
-  sampler!.sample(model, input, output, diagnostic, nsamples, ncheckpoints,
-      nparticles, ess_trigger, verbose);
+  s!.sample(m!, ncheckpoints, verbose);
   
   /* finalize I/O */
   if (output?) {
+    output!.push().write(m!);
     output!.save();
   }
   if (diagnostic?) {
+    diagnostic!.push().write(s!);
     diagnostic!.save();
   }
 }

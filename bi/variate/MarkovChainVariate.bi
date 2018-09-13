@@ -8,11 +8,11 @@ class MarkovChainVariate<StateVariate> {
   x:List<StateVariate>;
 
   function read(reader:Reader) {
-    auto f <- reader.getArray("θ");
+    auto f <- reader.getArray("x");
     while (f?) {
-      x1:StateVariate;
-      x1.read(f!);
-      x.pushBack(x1);
+      x':StateVariate;
+      x'.read(f!);
+      x.pushBack(x');
     }
   }
   

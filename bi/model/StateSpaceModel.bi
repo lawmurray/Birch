@@ -8,34 +8,37 @@
  *   \mid x_0, \theta) \prod_{t=1}^T p(\mathrm{d}x_t \mid x_{t-1},
  *   \theta) p(\mathrm{d}y_t \mid x_t, \theta)$$
  */
-class StateSpaceModel<ParameterVariate,StateVariate,ObservationVariate>(
-    p:@(ParameterVariate) -> Real!,
-    m:@(StateVariate, ParameterVariate) -> Real!,
-    f:@(StateVariate, StateVariate, ParameterVariate) -> Real!,
-    g:@(ObservationVariate, StateVariate, ParameterVariate) -> Real!) <
-    Model<StateSpaceVariate<ParameterVariate,StateVariate,
-    ObservationVariate>> {
+class StateSpaceModel<Parameter,State,Observation>(
+    p:@(Parameter) -> Real!,
+    m:@(State, Parameter) -> Real!,
+    f:@(State, State, Parameter) -> Real!,
+    g:@(Observation, State, Parameter) -> Real!) < Model {
+  /**
+   * Variate.
+   */
+  v:StateSpaceVariate<Parameter,State,Observation>;
+    
   /**
    * Parameter model.
    */
-  p:@(ParameterVariate) -> Real! <- p;
+  p:@(Parameter) -> Real! <- p;
   
   /**
    * Initial model.
    */
-  m:@(StateVariate, ParameterVariate) -> Real! <- m;
+  m:@(State, Parameter) -> Real! <- m;
   
   /**
    * Transition model.
    */
-  f:@(StateVariate, StateVariate, ParameterVariate) -> Real! <- f;
+  f:@(State, State, Parameter) -> Real! <- f;
   
   /**
    * Observation model.
    */
-  g:@(ObservationVariate, StateVariate, ParameterVariate) -> Real! <- g;
+  g:@(Observation, State, Parameter) -> Real! <- g;
 
-  fiber simulate(v:Variate) -> Real {
+  fiber simulate() -> Real {
     auto xs <- v.x.walk();
     auto ys <- v.y.walk();
     
@@ -44,8 +47,8 @@ class StateSpaceModel<ParameterVariate,StateVariate,ObservationVariate>(
     yield sum(p(θ));
     
     /* initial state and initial observation */
-    x:StateVariate;
-    y:ObservationVariate;
+    x:State;
+    y:Observation;
     if (xs?) {
       x <- xs!;
     }
@@ -56,17 +59,17 @@ class StateSpaceModel<ParameterVariate,StateVariate,ObservationVariate>(
     
     /* transition and observation */
     while (true) {
-      x0:StateVariate <- x;
+      x0:State <- x;
       if (xs?) {
         x <- xs!;
       } else {
-        o:StateVariate;
+        o:State;
         x <- o;
       }
       if (ys?) {
         y <- ys!;
       } else {
-        o:ObservationVariate;
+        o:Observation;
         y <- o;
       }
       yield sum(f(x, x0, θ)) + sum(g(y, x, θ));

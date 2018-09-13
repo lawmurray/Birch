@@ -1,17 +1,17 @@
 /**
  * Particle filter.
+ *
+ *  - `nparticles`: Number of particles to use.
+ *
+ *  - `trigger`: Threshold for resampling. Resampling is performed
+ *     whenever the effective sample size, as a proportion of `--nparticles`,
+ *     drops below this threshold.
  */
-class ParticleFilter {
-  /**
-   * Canonical particle from which others are initialized. Ensures that
-   * input is only consumed once.
-   */
-  f0:WeightedVariate<Object>!;
-
+class ParticleFilter < Method {
   /**
    * Particles.
    */
-  f:WeightedVariate<Object>![_];
+  f:(Model, Real)![_];
   
   /**
    * Log-weights.
@@ -35,123 +35,58 @@ class ParticleFilter {
   Z:Real[_];
   
   /**
-   * Number of checkpoints.
-   */
-  T:Integer;
-  
-  /**
    * Number of particles.
    */
-  N:Integer;
+  N:Integer <- 1;
   
   /**
    * Relative ESS below which resampling should be triggered.
    */
-  trigger:Real;
+  trigger:Real <- 0.7;
 
-  /**
-   * Run the filter.
-   *
-   * - model: Name of the model class.
-   * - inputReader: Reader for input.
-   * - outputWriter: Writer for output.
-   * - diagnosticWriter: Writer for diagnostics.
-   * - M: Number of samples.
-   * - T: Number of checkpoints.
-   * - N: Number of particles.
-   * - trigger: Relative ESS below which resampling should be triggered.
-   */
-  function sample(model:String, inputReader:Reader?, outputWriter:Writer?,
-      diagnosticWriter:Writer?, M:Integer, T:Integer, N:Integer,
-      trigger:Real, verbose:Boolean) {
-    /* set up output */
-    if (M > 1) {
-      if (outputWriter?) {
-        outputWriter!.setArray();
+  function sample(m:Model, ncheckpoints:Integer, verbose:Boolean) ->
+      (Model, Real) {
+    start(m, ncheckpoints);
+    for (t:Integer in 1..ncheckpoints) {
+      if (ncheckpoints > 1 && verbose) {
+        stderr.print(t + " ");
       }
-      if (diagnosticWriter?) {
-        diagnosticWriter!.setArray();
-      }
+      step(t);
     }
-
-    initialize(model, inputReader, T, N, trigger);    
-    for (m:Integer in 1..M) {
-      start();
-      for (t:Integer in 1..T) {
-        if (T > 1 && verbose) {
-          stderr.print(t + " ");
-        }
-        step(t);
-      }
-      if (verbose) {
-        stderr.print(Z[T] + "\n");
-      }
-      finish();
-            
-      /* output results and diagnostics */
-      if (outputWriter?) {
-        if (M > 1) {
-          output(outputWriter!.push());
-        } else {
-          output(outputWriter!);
-        }
-      }
-      if (diagnosticWriter?) {
-        if (M > 1) {
-          diagnose(diagnosticWriter!.push());
-        } else {
-          diagnose(diagnosticWriter!);
-        }
-      }
+    if (verbose) {
+      stderr.print(Z[ncheckpoints] + "\n");
     }
-  }
-
-  /**
-   * Initialize the method.
-   *
-   * - T: Number of checkpoints.
-   * - N: Number of particles.
-   * - trigger: Relative ESS below which resampling should be triggered.
-   */
-  function initialize(model:String, reader:Reader?, T:Integer, N:Integer, trigger:Real) {
-    /* model */
-    auto o <- AbstractModel?(make(model));
-    if (!o?) {
-      stderr.print("error: " + model + " must be a subtype of AbstractModel with no initialization parameters.\n");
+    finish();
+    
+    /* choose sample */
+    auto b <- ancestor(w);
+    if (b > 0) {
+      x:Model?;
+      w:Real;
+      (x, w) <- f[b]!;
+      return (x!, Z[ncheckpoints]);
+    } else {
+      stderr.print("error: particle filter degenerated.\n");
       exit(1);
     }
-    auto m <- o!;
-  
-    /* variate */
-    v:WeightedVariate<Object>(m.variate(), 0.0);
-  
-    /* input */
-    if (reader?) {
-      v.x.read(reader!);
-    }
-  
-    f0 <- particle(m, v);
-    f1:WeightedVariate<Object>![N];
-    this.f <- f1;
-    this.T <- T;
-    this.N <- N;
-    this.trigger <- trigger;
   }
 
   /**
    * Start the filter.
    *
-   * - model: Name of the model class.
-   * - inputReader: Reader for input.
+   * - m: Model.
    */  
-  function start() {
-    for (n:Integer in 1..N) {
-      f[n] <- f0;
+  function start(m:Model, ncheckpoints:Integer) {
+    f1:(Model, Real)![N];
+    for n:Integer in 1..N {
+      f1[n] <- particle(m);
     }
+    
+    this.f <- f1;
     this.w <- vector(0.0, N);
-    this.e <- vector(0.0, T);
-    this.r <- vector(false, T);
-    this.Z <- vector(0.0, T);
+    this.e <- vector(0.0, ncheckpoints);
+    this.r <- vector(false, ncheckpoints);
+    this.Z <- vector(0.0, ncheckpoints);
   }
   
   /**
@@ -179,7 +114,10 @@ class ParticleFilter {
     /* propagate and weight */
     parallel for (n:Integer in 1..N) {
       if (f[n]?) {
-        w[n] <- w[n] + f[n]!.w;
+        x:Model?;
+        v:Real;
+        (x, v) <- f[n]!;
+        w[n] <- w[n] + v;
       } else {
         stderr.print("error: particles terminated prematurely.\n");
         exit(1);
@@ -203,31 +141,23 @@ class ParticleFilter {
     //
   }
   
-  /**
-   * Write output.
-   *
-   * - outputWriter: Writer for output.
-   */
-  function output(writer:Writer?) {
-    if (writer?) {
-      auto b <- ancestor(w);
-      if (b > 0) {
-        sample:WeightedVariate<Object>(f[b]!.x, Z[T]);
-        writer!.write(sample);
-      } else {
-        stderr.print("error: particle filter degenerated.\n");
-        exit(1);
+  function read(reader:Reader?) {
+    if (reader?) {
+      auto a <- reader!.getInteger("nparticles");
+      if (a?) {
+        N <- a!;
+      }
+      auto b <- reader!.getInteger("trigger");
+      if (b?) {
+        trigger <- b!;
       }
     }
   }
-  
-  /**
-   * Write diagnostics.
-   *
-   * - diagnosticWriter: Writer for diagnostics.
-   */
-  function diagnose(writer:Writer?) {
+
+  function write(writer:Writer?) {
     if (writer?) {
+      writer!.setInteger("nparticles", N);
+      writer!.setReal("trigger", trigger);
       writer!.setRealVector("ess", e);
       writer!.setBooleanVector("resample", r);
       writer!.setRealVector("evidence", Z);
@@ -238,10 +168,9 @@ class ParticleFilter {
 /*
  * Particle.
  */
-fiber particle(m:AbstractModel, v:WeightedVariate<Object>) -> WeightedVariate<Object> {
-  auto f <- m.simulate(v.x);
+fiber particle(m:Model) -> (Model, Real) {
+  auto f <- m.simulate();
   while (f?) {
-    v.w <- f!;
-    yield v;
+    yield (m, f!);
   }
 }

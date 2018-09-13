@@ -1,28 +1,11 @@
 /**
- * Model.
+ * Base class for all models, enabling runtime loading of model classes.
  */
-class Model<Variate> < AbstractModel {   
+class Model {
   /**
    * Simulate.
-   *
-   * - v: The variate.
    */
-  fiber simulate(v:Variate) -> Real {
-    //
-  }
-
-  function variate() -> Object {
-    v:Variate;
-    return v;
-  }
-
-  fiber simulate(v:Object) -> Real {
-    auto w <- Variate?(v);
-    if (w?) {
-      simulate(w!);
-    } else {
-      stderr.print("error: incorrect variate type.\n");
-      exit(1);
-    }
+  fiber simulate() -> Real {
+    assert false;
   }
 }
