@@ -365,7 +365,7 @@ bi::Type* bi::Cloner::clone(const FunctionType* o) {
 }
 
 bi::Type* bi::Cloner::clone(const OverloadedType* o) {
-  return new OverloadedType(o->overloaded, o->loc);
+  return new OverloadedType(o->overloaded, o->others, o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const FiberType* o) {

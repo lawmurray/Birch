@@ -42,9 +42,33 @@ void bi::CppClassGenerator::visit(const Class* o) {
           finish(';');
           if (!o->base->isEmpty()) {
             line("using super_type = " << o->base << ';');
+            line("");
+            line("using super_type::operator=;");
           }
+          line("");
+
+          /* using declarations for member functions and fibers in base classes
+           * that are overriden */
+          Gatherer<MemberFunction> memberFunctions;
+          Gatherer<MemberFiber> memberFibers;
+          o->accept(&memberFunctions);
+          o->accept(&memberFibers);
+          std::set<std::string> names;
+          for (auto f : memberFunctions) {
+            if (type->scope->override(f)) {
+              names.insert(f->name->str());
+            }
+          }
+          for (auto f : memberFibers) {
+            if (type->scope->override(f)) {
+              names.insert(f->name->str());
+            }
+          }
+          for (auto name : names) {
+            line("using super_type::" << internalise(name) << ';');
+          }
+          line("");
         }
-        line("");
       }
     }
 
@@ -60,11 +84,6 @@ void bi::CppClassGenerator::visit(const Class* o) {
         line("//");
         out();
         line("}\n");
-      }
-
-      /* ensure super type assignments are visible */
-      if (header && !o->base->isEmpty()) {
-        line("using super_type::operator=;\n");
       }
 
       /* self-reference function */
@@ -212,7 +231,7 @@ void bi::CppClassGenerator::visit(const AssignmentOperator* o) {
     } else {
       finish(" {");
       in();
-      genTraceFunction("(assignment)", o->loc);
+      genTraceFunction("<assignment>", o->loc);
       line("Enter enter(getWorld());");
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces->strip();
@@ -238,7 +257,7 @@ void bi::CppClassGenerator::visit(const ConversionOperator* o) {
     } else {
       finish(" {");
       in();
-      genTraceFunction("(conversion)", o->loc);
+      genTraceFunction("<conversion>", o->loc);
       line("Enter enter(getWorld());");
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces->strip();

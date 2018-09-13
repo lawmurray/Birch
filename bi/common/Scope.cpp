@@ -223,14 +223,16 @@ void bi::Scope::resolve(OverloadedIdentifier<Fiber>* ref) {
 
 void bi::Scope::resolve(OverloadedIdentifier<MemberFunction>* ref) {
   memberFunctions.resolve(ref);
-  if (!ref->target && base) {
+  if (base) {
+    /* gather alternatives from base classes */
     base->resolve(ref);
   }
 }
 
 void bi::Scope::resolve(OverloadedIdentifier<MemberFiber>* ref) {
   memberFibers.resolve(ref);
-  if (!ref->target && base) {
+  if (base) {
+    /* gather alternatives from base classes */
     base->resolve(ref);
   }
 }
@@ -262,6 +264,14 @@ void bi::Scope::inherit(Scope* scope) {
   assert(scope);
   assert(!base);
   base = scope;
+}
+
+bool bi::Scope::override(const MemberFunction* o) const {
+  return base && (base->memberFunctions.contains(o->name->str()) || base->override(o));
+}
+
+bool bi::Scope::override(const MemberFiber* o) const {
+  return base && (base->memberFibers.contains(o->name->str()) || base->override(o));
 }
 
 template<class ParameterType>

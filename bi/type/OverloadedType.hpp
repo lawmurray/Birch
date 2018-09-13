@@ -22,7 +22,7 @@ public:
    * @param overloaded Overloaded object.
    * @param loc Location.
    */
-  OverloadedType(Overloaded* overloaded, Location* loc = nullptr);
+  OverloadedType(Overloaded* overloaded, const std::list<Overloaded*>& others, Location* loc = nullptr);
 
   /**
    * Destructor.
@@ -52,5 +52,15 @@ public:
    * Overloaded object.
    */
   Overloaded* overloaded;
+
+  /**
+   * Alternative overloaded objects.
+   */
+  std::list<Overloaded*> others;
+
+  /**
+   * Overloads.
+   */
+  poset<Parameterised*,bi::definitely> overloads;
 };
 }

@@ -133,6 +133,13 @@ public:
   void inherit(Scope* scope);
 
   /**
+   * Check if an object overrides another in a base class (by having the same
+   * name, not necessarily the same signature).
+   */
+  bool override(const MemberFunction* o) const;
+  bool override(const MemberFiber* o) const;
+
+  /**
    * Base scope.
    */
   Scope* base;

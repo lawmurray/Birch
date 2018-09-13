@@ -83,6 +83,10 @@ template<class ReferenceType>
 void bi::OverloadedDictionary<ObjectType>::resolve(ReferenceType* ref) {
   auto iter = objects.find(ref->name->str());
   if (iter != objects.end()) {
-    ref->target = iter->second;
+    if (!ref->target) {
+      ref->target = iter->second;
+    } else {
+      ref->others.push_back(iter->second);
+    }
   }
 }

@@ -271,14 +271,14 @@ bi::Expression* bi::ResolverSource::modify(
     OverloadedIdentifier<Function>* o) {
   Modifier::modify(o);
   resolve(o, GLOBAL_SCOPE);
-  o->type = new OverloadedType(o->target, o->loc);
+  o->type = new OverloadedType(o->target, o->others, o->loc);
   return o;
 }
 
 bi::Expression* bi::ResolverSource::modify(OverloadedIdentifier<Fiber>* o) {
   Modifier::modify(o);
   resolve(o, GLOBAL_SCOPE);
-  o->type = new OverloadedType(o->target, o->loc);
+  o->type = new OverloadedType(o->target, o->others, o->loc);
   return o;
 }
 
@@ -286,7 +286,7 @@ bi::Expression* bi::ResolverSource::modify(
     OverloadedIdentifier<MemberFunction>* o) {
   Modifier::modify(o);
   resolve(o, CLASS_SCOPE);
-  o->type = new OverloadedType(o->target, o->loc);
+  o->type = new OverloadedType(o->target, o->others, o->loc);
   return o;
 }
 
@@ -294,7 +294,7 @@ bi::Expression* bi::ResolverSource::modify(
     OverloadedIdentifier<MemberFiber>* o) {
   Modifier::modify(o);
   resolve(o, CLASS_SCOPE);
-  o->type = new OverloadedType(o->target, o->loc);
+  o->type = new OverloadedType(o->target, o->others, o->loc);
   return o;
 }
 
@@ -302,7 +302,7 @@ bi::Expression* bi::ResolverSource::modify(
     OverloadedIdentifier<BinaryOperator>* o) {
   Modifier::modify(o);
   resolve(o, GLOBAL_SCOPE);
-  o->type = new OverloadedType(o->target, o->loc);
+  o->type = new OverloadedType(o->target, o->others, o->loc);
   return o;
 }
 
@@ -310,7 +310,7 @@ bi::Expression* bi::ResolverSource::modify(
     OverloadedIdentifier<UnaryOperator>* o) {
   Modifier::modify(o);
   resolve(o, GLOBAL_SCOPE);
-  o->type = new OverloadedType(o->target, o->loc);
+  o->type = new OverloadedType(o->target, o->others, o->loc);
   return o;
 }
 

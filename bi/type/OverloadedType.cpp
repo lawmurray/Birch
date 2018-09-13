@@ -6,10 +6,18 @@
 #include "bi/visitor/all.hpp"
 #include "bi/exception/all.hpp"
 
-bi::OverloadedType::OverloadedType(Overloaded* overloaded, Location* loc) :
+bi::OverloadedType::OverloadedType(Overloaded* overloaded, const std::list<Overloaded*>& others, Location* loc) :
     Type(loc),
-    overloaded(overloaded) {
-  //
+    overloaded(overloaded),
+    others(others),
+    overloads(overloaded->overloads) {
+  for (auto other : others) {
+    for (auto overload : other->overloads) {
+      if (!overloads.contains(overload)) {
+        overloads.insert(overload);
+      }
+    }
+  }
 }
 
 bi::OverloadedType::~OverloadedType() {
@@ -22,7 +30,7 @@ bool bi::OverloadedType::isOverloaded() const {
 
 bi::FunctionType* bi::OverloadedType::resolve(Argumented* o) {
   std::set<Parameterised*> matches;
-  overloaded->overloads.match(o, matches);
+  overloads.match(o, matches);
   if (matches.size() == 1) {
     /* construct the appropriate function type */
     auto target = *matches.begin();
@@ -31,8 +39,7 @@ bi::FunctionType* bi::OverloadedType::resolve(Argumented* o) {
     return new FunctionType(paramsType, returnType);
   } else if (matches.size() == 0) {
     std::list<Parameterised*> available;
-    std::copy(overloaded->overloads.begin(), overloaded->overloads.end(),
-        std::back_inserter(available));
+    std::copy(overloads.begin(), overloads.end(), std::back_inserter(available));
     throw CallException(o, available);
   } else {
     throw AmbiguousCallException(o, matches);
@@ -40,8 +47,8 @@ bi::FunctionType* bi::OverloadedType::resolve(Argumented* o) {
 }
 
 bi::FunctionType* bi::OverloadedType::resolve() const {
-  assert(overloaded->size() == 1);
-  auto target = overloaded->front();
+  assert(overloads.size() == 1);
+  auto target = *overloads.begin();
   Type* paramsType = target->params->type;
   Type* returnType = dynamic_cast<ReturnTyped*>(target)->returnType;
   return new FunctionType(paramsType, returnType);
@@ -68,7 +75,7 @@ bool bi::OverloadedType::definitely(const OverloadedType& o) const {
 }
 
 bool bi::OverloadedType::definitely(const FunctionType& o) const {
-  if (overloaded->size() == 1) {
+  if (overloads.size() == 1) {
     return resolve()->definitely(o);
   } else {
     return false;
@@ -84,7 +91,7 @@ bi::Type* bi::OverloadedType::common(const OverloadedType& o) const {
 }
 
 bi::Type* bi::OverloadedType::common(const FunctionType& o) const {
-  if (overloaded->size() == 1) {
+  if (overloads.size() == 1) {
     return resolve()->common(o);
   } else {
     return nullptr;
