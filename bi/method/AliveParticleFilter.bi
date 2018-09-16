@@ -29,8 +29,6 @@ class AliveParticleFilter < ParticleFilter {
      * drawn using the standard (stratified) resampler, then each is
      * is propagated until it has non-zero weight, proposal alternatives with
      * a categorical draw */  
-    x:Model;
-    v:Real;
     for (n:Integer in 1..N) {
       f[n] <- f0[a[n]];
       if (f[n]?) {
@@ -40,8 +38,7 @@ class AliveParticleFilter < ParticleFilter {
         exit(1);
       }
       
-      (x, v) <- f[n]!;
-      while (v == -inf) {
+      while (f[n]!.w == -inf) {
         f[n] <- f0[ancestor(w0)];
         if (f[n]?) {
           P <- P + 1;
@@ -49,9 +46,8 @@ class AliveParticleFilter < ParticleFilter {
           stderr.print("error: particles terminated prematurely.\n");
           exit(1);
         }
-        (x, v) <- f[n]!;
       }
-      w[n] <- v;
+      w[n] <- f[n]!.w;
     }
     
     /* propagate and weight until one further acceptance, that is discarded
@@ -63,8 +59,7 @@ class AliveParticleFilter < ParticleFilter {
       stderr.print("error: particles terminated prematurely.\n");
       exit(1);
     }
-    (x, v) <- f1!;
-    while (v == -inf) {
+    while (f1!.w == -inf) {
       f1 <- f0[ancestor(w0)];
       if (f1?) {
         P <- P + 1;
@@ -72,7 +67,6 @@ class AliveParticleFilter < ParticleFilter {
         stderr.print("error: particles terminated prematurely.\n");
         exit(1);
       }
-      (x, v) <- f1!;
     }
     
     /* update normalizing constant estimate */
@@ -88,10 +82,8 @@ class AliveParticleFilter < ParticleFilter {
     propagations[t] <- P;
   }
 
-  function write(writer:Writer?) {
+  function write(writer:Writer) {
     super.write(writer);
-    if (writer?) {
-      writer!.setIntegerVector("propagations", propagations);
-    }
+    writer.setIntegerVector("propagations", propagations);
   }
 }

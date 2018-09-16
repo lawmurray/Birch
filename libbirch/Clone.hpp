@@ -16,8 +16,6 @@ class Clone {
 public:
   /**
    * Constructor.
-   *
-   * @param world The world to enter.
    */
   Clone() :
       prevClone(fiberClone) {

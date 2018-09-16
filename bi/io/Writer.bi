@@ -290,15 +290,6 @@ class Writer {
   function push() -> Writer;
 
   /**
-   * Read a serializable object.
-   *
-   * - o: The object.
-   */
-  function write(o:Object) {
-    o.write(this);
-  }
-
-  /**
    * Flush in-memory buffers.
    */
   function flush() {

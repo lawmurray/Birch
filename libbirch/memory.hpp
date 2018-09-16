@@ -193,13 +193,12 @@ void* reallocate(void* ptr1, const size_t n1, const size_t n2);
  * @tparam T Class type.
  * @param Args... Constructor argument types.
  *
- * @param args Construct arguments.
+ * @param args Constructor arguments.
  *
- * @return Pointer to the object.
+ * @return The new object.
  */
 template<class T, class ... Args>
 inline T* construct(Args ... args) {
   return new (allocate<sizeof(T)>()) T(args...);
 }
-
 }

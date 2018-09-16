@@ -39,22 +39,29 @@ class StateSpaceModel<Parameter,State,Observation>(
   g:@(Observation, State, Parameter) -> Real! <- g;
 
   fiber simulate() -> Real {
-    auto xs <- v.x.walk();
-    auto ys <- v.y.walk();
     
     /* parameter */
     auto θ <- v.θ;
     yield sum(p(θ));
+
+    auto xs <- v.x.walk();
+    auto ys <- v.y.walk();    
     
     /* initial state and initial observation */
     x:State;
     y:Observation;
+    
     if (xs?) {
       x <- xs!;
     }
     if (ys?) {
       y <- ys!;
     }
+    
+                cpp{{
+    std::cerr << "y = " << y_.get() << std::endl;
+    }}
+    
     yield sum(m(x, θ)) + sum(g(y, x, θ));
     
     /* transition and observation */
@@ -63,16 +70,28 @@ class StateSpaceModel<Parameter,State,Observation>(
       if (xs?) {
         x <- xs!;
       } else {
-        o:State;
-        x <- o;
+        x':State;
+        x <- x';
       }
       if (ys?) {
         y <- ys!;
       } else {
-        o:Observation;
-        y <- o;
+        y':Observation;
+        y <- y';
       }
+    cpp{{
+    std::cerr << "y = " << y_.get() << std::endl;
+    }}
+
       yield sum(f(x, x0, θ)) + sum(g(y, x, θ));
     }
+  }
+
+  function read(reader:Reader) {
+    v.read(reader);
+  }
+  
+  function write(writer:Writer) {
+    v.write(writer);
   }
 }

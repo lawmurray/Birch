@@ -11,7 +11,7 @@ class ParticleFilter < Method {
   /**
    * Particles.
    */
-  f:(Model, Real)![_];
+  f:Model![_];
   
   /**
    * Log-weights.
@@ -44,12 +44,11 @@ class ParticleFilter < Method {
    */
   trigger:Real <- 0.7;
 
-  function sample(m:Model, ncheckpoints:Integer, verbose:Boolean) ->
-      (Model, Real) {
+  function sample(m:Model, ncheckpoints:Integer, verbose:Boolean) -> Model {
     start(m, ncheckpoints);
     for (t:Integer in 1..ncheckpoints) {
       if (ncheckpoints > 1 && verbose) {
-        stderr.print(t + " ");
+        stderr.print("t = " + t + "\n");
       }
       step(t);
     }
@@ -61,10 +60,8 @@ class ParticleFilter < Method {
     /* choose sample */
     auto b <- ancestor(w);
     if (b > 0) {
-      x:Model?;
-      w:Real;
-      (x, w) <- f[b]!;
-      return (x!, Z[ncheckpoints]);
+      f[b]!.w <- Z[ncheckpoints];
+      return f[b]!;
     } else {
       stderr.print("error: particle filter degenerated.\n");
       exit(1);
@@ -77,9 +74,10 @@ class ParticleFilter < Method {
    * - m: Model.
    */  
   function start(m:Model, ncheckpoints:Integer) {
-    f1:(Model, Real)![N];
+    f0:Model! <- particle(m);
+    f1:Model![N];
     for n:Integer in 1..N {
-      f1[n] <- particle(m);
+      f1[n] <- clone(f0);
     }
     
     this.f <- f1;
@@ -106,18 +104,16 @@ class ParticleFilter < Method {
       auto a <- ancestors(w);
       auto g <- f;
       for (n:Integer in 1..N) {
-        f[n] <- g[a[n]];
+        f[n] <- clone(g[a[n]]);
         w[n] <- 0.0;
       }
     }
 
     /* propagate and weight */
     parallel for (n:Integer in 1..N) {
+        stderr.print("n = " + n + "\n");
       if (f[n]?) {
-        x:Model?;
-        v:Real;
-        (x, v) <- f[n]!;
-        w[n] <- w[n] + v;
+        w[n] <- w[n] + f[n]!.w;
       } else {
         stderr.print("error: particles terminated prematurely.\n");
         exit(1);
@@ -141,36 +137,33 @@ class ParticleFilter < Method {
     //
   }
   
-  function read(reader:Reader?) {
-    if (reader?) {
-      auto a <- reader!.getInteger("nparticles");
-      if (a?) {
-        N <- a!;
-      }
-      auto b <- reader!.getInteger("trigger");
-      if (b?) {
-        trigger <- b!;
-      }
+  function read(reader:Reader) {
+    auto a <- reader.getInteger("nparticles");
+    if (a?) {
+      N <- a!;
+    }
+    auto b <- reader.getReal("trigger");
+    if (b?) {
+      trigger <- b!;
     }
   }
 
-  function write(writer:Writer?) {
-    if (writer?) {
-      writer!.setInteger("nparticles", N);
-      writer!.setReal("trigger", trigger);
-      writer!.setRealVector("ess", e);
-      writer!.setBooleanVector("resample", r);
-      writer!.setRealVector("evidence", Z);
-    }
+  function write(writer:Writer) {
+    writer.setInteger("nparticles", N);
+    writer.setReal("trigger", trigger);
+    writer.setRealVector("ess", e);
+    writer.setBooleanVector("resample", r);
+    writer.setRealVector("evidence", Z);
   }
 }
 
 /*
  * Particle.
  */
-fiber particle(m:Model) -> (Model, Real) {
+fiber particle(m:Model) -> Model {
   auto f <- m.simulate();
   while (f?) {
-    yield (m, f!);
+    m.w <- f!;
+    yield m;
   }
 }

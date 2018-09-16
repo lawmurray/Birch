@@ -18,28 +18,14 @@ class StateSpaceVariate<ParameterVariate,StateVariate,ObservationVariate> {
   y:List<ObservationVariate>;
 
   function read(reader:Reader) {
-    auto r <- reader.getObject("θ");
-    if (r?) {
-      θ.read(r!);
-    }
-  
-    auto f <- reader.getArray("x");
-    while (f?) {
-      x1:StateVariate;
-      x1.read(f!);
-      x.pushBack(x1);
-    }
-      
-    f <- reader.getArray("y");
-    while (f?) {
-      y1:ObservationVariate;
-      f!.read(y1);
-      y.pushBack(y1);
-    }
+    θ.read(reader.getObject("θ"));
+    x.read(reader.getObject("x"));
+    y.read(reader.getObject("y"));
   }
   
   function write(writer:Writer) {
-    //writer.setArray("x").write(x.walk());
-    //writer.setArray("y").write(y.walk());
+    θ.write(writer.setObject("θ"));
+    x.write(writer.setObject("x"));
+    y.write(writer.setObject("y"));
   }
 }

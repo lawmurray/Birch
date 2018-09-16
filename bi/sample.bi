@@ -64,29 +64,29 @@ program sample(
   
   if (input_file?) {
     input <- JSONReader(input_file!);
-    input!.read(m!);
+    m!.read(input);
   }
   if (output_file?) {
     output <- JSONWriter(output_file!);
   }
   if (config_file?) {
     config <- JSONReader(config_file!);
-    config!.read(s!);
+    s!.read(config);
   }
   if (diagnostic_file?) {
     diagnostic <- JSONWriter(diagnostic_file!);
   }
 
   /* sample */
-  s!.sample(m!, ncheckpoints, verbose);
+  m <- s!.sample(m!, ncheckpoints, verbose);
   
   /* finalize I/O */
   if (output?) {
-    output!.push().write(m!);
+    m!.write(output!.push());
     output!.save();
   }
   if (diagnostic?) {
-    diagnostic!.push().write(s!);
+    s!.write(diagnostic!.push());
     diagnostic!.save();
   }
 }

@@ -9,11 +9,11 @@ namespace bi {
 template<class T> class SharedCOW;
 
 /**
- * Base class for all class types.
+ * Base for all class types.
  *
  * @ingroup libbirch
  */
-class Any : public Counted {
+class Any: public Counted {
 public:
   /**
    * Constructor.
@@ -41,43 +41,14 @@ public:
   virtual void destroy();
 
   /**
-   * Get the object world.
+   * Get the memo associated with the clone or construction of this object.
    */
-  World* getWorld();
+  Memo* getMemo();
 
 protected:
   /**
-   * The world to which this object belongs.
+   * Memo associated with the clone or construction of this object.
    */
-  World* world;
+  Memo* memo;
 };
-}
-
-#include "libbirch/global.hpp"
-
-inline bi::Any::Any() :
-    world(fiberWorld) {
-  //
-}
-
-inline bi::Any::Any(const Any& o) :
-    world(fiberWorld) {
-  //
-}
-
-inline bi::Any::~Any() {
-  //
-}
-
-inline bi::Any* bi::Any::clone() const {
-  return bi::construct<Any>(*this);
-}
-
-inline void bi::Any::destroy() {
-  this->size = sizeof(*this);
-  this->~Any();
-}
-
-inline bi::World* bi::Any::getWorld() {
-  return world;
 }

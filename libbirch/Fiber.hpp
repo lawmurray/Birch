@@ -4,8 +4,6 @@
 #pragma once
 
 #include "libbirch/FiberState.hpp"
-#include "libbirch/Enter.hpp"
-#include "libbirch/Clone.hpp"
 
 namespace bi {
 /**
@@ -21,7 +19,12 @@ public:
   /**
    * Constructor.
    */
-  Fiber(const SharedPtr<FiberState<YieldType>>& state = nullptr);
+  Fiber(const SharedCOW<FiberState<YieldType>>& state = nullptr);
+
+  /**
+   * Clone the fiber.
+   */
+  Fiber<YieldType> clone() const;
 
   /**
    * Run to next yield point.
@@ -39,27 +42,26 @@ private:
   /**
    * Fiber state.
    */
-  SharedPtr<FiberState<YieldType>> state;
+  SharedCOW<FiberState<YieldType>> state;
 };
 }
 
 template<class YieldType>
 bi::Fiber<YieldType>::Fiber(
-    const SharedPtr<FiberState<YieldType>>& state) :
+    const SharedCOW<FiberState<YieldType>>& state) :
     state(state) {
   //
 }
 
 template<class YieldType>
+bi::Fiber<YieldType> bi::Fiber<YieldType>::clone() const {
+  return Fiber<YieldType>(state.clone());
+}
+
+template<class YieldType>
 bool bi::Fiber<YieldType>::query() {
   bool result = false;
-  if (state) {
-    if (state->isShared() || state->isDirty()) {
-      state->dirty();
-      Clone clone;
-      state = state->clone();
-    }
-    Enter enter(state->getWorld());
+  if (state.query()) {
     result = state->query();
     if (!result) {
       state = nullptr;  // fiber has finished, delete the state
@@ -70,6 +72,6 @@ bool bi::Fiber<YieldType>::query() {
 
 template<class YieldType>
 YieldType& bi::Fiber<YieldType>::get() {
-  bi_assert_msg(state, "fiber handle undefined");
+  bi_assert_msg(state.query(), "fiber handle undefined");
   return state->get();
 }

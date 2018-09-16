@@ -4,13 +4,10 @@
 class ParameterVariate<Parameter> < AbstractVariate {  
 
   function read(reader:Reader) {
-    auto r <- reader.getObject("θ");
-    if (r?) {
-      r!.read(θ);
-    }
+    θ.read(reader.getObject("θ"));
   }
   
-  function write(writer:Writer) {
-    writer.setObject("θ").write(θ);
+  function write(writer:Writer?) {
+    θ.write(writer.setObject("θ"));
   }
 }

@@ -16,7 +16,7 @@ class MarkovChainVariate<StateVariate> {
     }
   }
   
-  function write(writer:Writer) {    
+  function write(writer:Writer?) {    
     //writer.setArray("x", x.walk());
   }
 }

@@ -9,10 +9,9 @@ class Method {
    * - ncheckpoints: Number of checkpoints.
    * - trigger: Relative ESS below which resampling should be triggered.
    *
-   * Returns a new sample and associated log-weight.
+   * Returns a new sample.
    */
-  function sample(m:Model, ncheckpoints:Integer, verbose:Boolean) ->
-      (Model, Real) {
+  function sample(m:Model, ncheckpoints:Integer, verbose:Boolean) -> Model {
     //
   }
 
@@ -24,9 +23,9 @@ class Method {
    * This is typically used to read in method-specific options from a
    * configuration file.
    */
-  function read(reader:Reader?) {
-    //
-  }
+  //function read(reader:Reader) {
+  //  //
+  //}
   
   /**
    * Write output.
@@ -36,7 +35,7 @@ class Method {
    * This is typically used to write method-specific diagnostic information
    * to an output file.
    */
-  function write(writer:Writer?) {
-    //
-  }
+  //function write(writer:Writer) {
+  //  //
+  //}
 }

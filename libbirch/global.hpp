@@ -64,7 +64,7 @@
 
 namespace bi {
 class Pool;
-class World;
+class Memo;
 class Any;
 template<class T> class SharedCOW;
 template<class T> class WeakCOW;
@@ -107,10 +107,10 @@ extern size_t bufferSize;
 extern Pool pool[];
 
 /**
- * The world of the currently running fiber.
+ * The memo of the currently running fiber.
  */
-extern World* fiberWorld;
-#pragma omp threadprivate(fiberWorld)
+extern Memo* fiberMemo;
+#pragma omp threadprivate(fiberMemo)
 
 /**
  * Flag set when an object is being cloned.

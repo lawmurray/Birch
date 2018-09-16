@@ -7,16 +7,16 @@
 
 namespace bi {
 /**
- * Auxiliary class for switching the current world. This may be used either
- * on the stack to switch the world for the lifetime of a temporary variable:
+ * Auxiliary class for switching the current memo. This may be used either
+ * on the stack to switch the memo for the lifetime of a temporary variable:
  *
- *     Enter enter(world);
+ *     Enter enter(memo);
  *
- * or inherited from a class to switch the world during initialization,
- * explicitly calling exit() to restore the previous world.
+ * or inherited from a class to switch the memo during initialization,
+ * explicitly calling exit() to restore the previous memo.
  *
  *     class A : public Enter {
- *       A() : ..., Enter(world), ... {
+ *       A() : ..., Enter(memo), ... {
  *         exit();
  *       }
  *     }
@@ -26,11 +26,11 @@ public:
   /**
    * Constructor.
    *
-   * @param world The world to enter.
+   * @param memo The memo to enter.
    */
-  Enter(World* world) :
-      prevWorld(world) {
-    std::swap(prevWorld, fiberWorld);
+  Enter(Memo* memo) :
+      prevMemo(memo) {
+    std::swap(prevMemo, fiberMemo);
   }
 
   /**
@@ -44,16 +44,16 @@ public:
    * Exit.
    */
   void exit() {
-    if (prevWorld) {
-      std::swap(prevWorld, fiberWorld);
-      prevWorld = nullptr;
+    if (prevMemo) {
+      std::swap(prevMemo, fiberMemo);
+      prevMemo = nullptr;
     }
   }
 
 private:
   /**
-   * The previous world.
+   * The previous memo.
    */
-  World* prevWorld;
+  Memo* prevMemo;
 };
 }

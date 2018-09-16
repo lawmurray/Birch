@@ -4,8 +4,9 @@
 #pragma once
 
 #include "libbirch/global.hpp"
+#include "libbirch/memory.hpp"
 #include "libbirch/SharedPtr.hpp"
-#include "libbirch/World.hpp"
+#include "libbirch/Memo.hpp"
 #include "libbirch/Any.hpp"
 #include "libbirch/Nil.hpp"
 
@@ -66,8 +67,8 @@ public:
   /**
    * Constructor.
    */
-  SharedCOW(T* object, World* world, World* current) :
-      super_type(object, world, current) {
+  SharedCOW(T* object, Memo* memo) :
+      super_type(object, memo) {
     //
   }
 
@@ -136,19 +137,20 @@ public:
   }
 
   /**
-   * Get the raw pointer while mapping, but not copying, into the current
-   * world. The caller assumes responsibility for the validity of this; it is
-   * used as an optimization.
-   */
-  const T* getNoCopy() const {
-    return static_cast<const T*>(root_type::getNoCopy());
-  }
-
-  /**
-   * Pull through generations.
+   * Get the raw pointer while mapping, but not cloning. This is used as an
+   * optimization for read-only access..
    */
   T* pull() const {
     return static_cast<T*>(root_type::pull());
+  }
+
+  /**
+   * Lazy deep clone.
+   */
+  SharedCOW<T> clone() const {
+    T* o = this->pull();
+    Memo* m = construct<Memo>(this->memo);
+    return SharedCOW<T>(o, m);
   }
 
   /**
@@ -184,63 +186,47 @@ public:
 
   SharedCOW(Any* object = nullptr) :
       object(object),
-      world(fiberWorld),
-      current(fiberWorld) {
+      memo(fiberMemo) {
     //
   }
 
   SharedCOW(const Nil& object) :
       object(nullptr),
-      world(fiberWorld),
-      current(fiberWorld) {
+      memo(fiberMemo) {
     //
   }
 
   SharedCOW(const SharedPtr<Any>& object) :
       object(object),
-      world(fiberWorld),
-      current(fiberWorld) {
+      memo(fiberMemo) {
     //
   }
 
   SharedCOW(const WeakPtr<Any>& object) :
       object(object),
-      world(fiberWorld),
-      current(fiberWorld) {
+      memo(fiberMemo) {
     //
   }
 
-  SharedCOW(Any* object, World* world, World* current) :
+  SharedCOW(Any* object, Memo* memo) :
       object(object),
-      world(world),
-      current(current) {
-    //
-  }
-
-  SharedCOW(const SharedCOW<Any>& o) :
-      object(o.object),
-      world(fiberClone ? fiberWorld : o.world),
-      current(o.current) {
+      memo(memo) {
     //
   }
 
   SharedCOW(const WeakCOW<Any>& o);
 
+  SharedCOW(const SharedCOW<Any>& o) :
+      object(fiberClone ? o.pull() : o.object),
+      memo(fiberClone ? fiberMemo : o.memo) {
+    //
+  }
+
   SharedCOW(SharedCOW<Any> && o) = default;
 
-  SharedCOW<Any>& operator=(const SharedCOW<Any>& o) {
-    auto old = std::move(object);  // ^ ensures next assign won't destroy o
-    object = o.pull();
-    current = o.current;
-    return *this;
-  }
+  SharedCOW<Any>& operator=(const SharedCOW<Any>& o) = default;
 
-  SharedCOW<Any>& operator=(SharedCOW<Any>&& o) {
-    auto old = std::move(object);  // ^ ensures next assign won't destroy o
-    object = o.pull();
-    current = o.current;
-    return *this;
-  }
+  SharedCOW<Any>& operator=(SharedCOW<Any>&& o) = default;
 
   /**
    * Is the pointer not null?
@@ -255,20 +241,7 @@ public:
      * reasons */
     if (object) {
       auto self = const_cast<SharedCOW<Any>*>(this);
-      self->object = self->world->get(object.get(), current);
-      self->current = self->world;
-    }
-    return object.get();
-  }
-
-  const Any* getNoCopy() const {
-    /* despite the pointer being accessed in a const context, we do want to
-     * update it through the copy-on-write mechanism for performance
-     * reasons */
-    if (object) {
-      auto self = const_cast<SharedCOW<Any>*>(this);
-      self->object = self->world->getNoCopy(object.get(), current);
-      self->current = self->world;
+      self->object = self->memo->get(object.get());
     }
     return object.get();
   }
@@ -279,14 +252,19 @@ public:
      * reasons */
     if (object) {
       auto self = const_cast<SharedCOW<Any>*>(this);
-      self->object = self->world->getNoCopy(object.get(), current);
-      self->current = self->world;
+      self->object = self->memo->pull(object.get());
     }
     return object.get();
   }
 
-  World* getWorld() const {
-    return world;
+  SharedCOW<Any> clone() const {
+    Any* o = pull();
+    Memo* m = bi::construct<Memo>(memo);
+    return SharedCOW<Any>(o, m);
+  }
+
+  Memo* getMemo() const {
+    return memo.get();
   }
 
   Any& operator*() const {
@@ -312,7 +290,7 @@ public:
    */
   template<class U>
   SharedCOW<U> dynamic_pointer_cast() const {
-    return SharedCOW<U>(dynamic_cast<U*>(get()), world, current);
+    return SharedCOW<U>(dynamic_cast<U*>(object.get()), memo.get());
   }
 
   /**
@@ -320,7 +298,7 @@ public:
    */
   template<class U>
   SharedCOW<U> static_pointer_cast() const {
-    return SharedCOW<U>(static_cast<U*>(get()), world, current);
+    return SharedCOW<U>(static_cast<U*>(object.get()), memo.get());
   }
 
 protected:
@@ -330,15 +308,9 @@ protected:
   SharedPtr<Any> object;
 
   /**
-   * The world to which the object should belong (although it may belong to
-   * a clone ancestor of this world).
+   * The memo.
    */
-  World* world;
-
-  /**
-   * Current world.
-   */
-  World* current;
+  SharedPtr<Memo> memo;
 };
 }
 
@@ -352,7 +324,6 @@ bi::SharedCOW<T>::SharedCOW(const WeakCOW<T>& o) :
 
 inline bi::SharedCOW<bi::Any>::SharedCOW(const WeakCOW<Any>& o) :
     object(o.object),
-    world(o.world),
-    current(o.current) {
+    memo(o.memo) {
   //
 }

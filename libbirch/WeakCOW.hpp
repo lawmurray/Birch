@@ -67,8 +67,8 @@ public:
   /**
    * Constructor.
    */
-  WeakCOW(T* object, World* world, World* current) :
-      super_type(object, world, current) {
+  WeakCOW(T* object, Memo* memo) :
+      super_type(object, memo) {
     //
   }
 
@@ -128,68 +128,55 @@ public:
 
   WeakCOW(Any* object = nullptr) :
       object(object),
-      world(fiberWorld),
-      current(fiberWorld) {
+      memo(fiberMemo) {
     //
   }
 
   WeakCOW(const Nil& object) :
-      world(fiberWorld),
-      current(fiberWorld) {
+      memo(fiberMemo) {
     //
   }
 
   WeakCOW(const SharedPtr<Any>& object) :
       object(object),
-      world(fiberWorld),
-      current(fiberWorld) {
+      memo(fiberMemo) {
     //
   }
 
   WeakCOW(const WeakPtr<Any>& object) :
       object(object),
-      world(fiberWorld),
-      current(fiberWorld) {
+      memo(fiberMemo) {
     //
   }
 
   WeakCOW(const SharedCOW<Any>& o) :
       object(o.object),
-      world(o.world),
-      current(o.current) {
+      memo(o.memo) {
     //
   }
 
-  WeakCOW(Any* object, World* world, World* current) :
+  WeakCOW(Any* object, Memo* memo) :
       object(object),
-      world(world),
-      current(current) {
+      memo(memo) {
     //
   }
 
   WeakCOW(const WeakCOW<Any>& o) :
-      object(o.object),
-      world(fiberClone ? fiberWorld : o.world),
-      current(o.current) {
+      object(fiberClone ? o.pull() : o.object),
+      memo(fiberClone ? fiberMemo : o.memo) {
     //
   }
 
   WeakCOW(WeakCOW<Any> && o) = default;
 
-  WeakCOW<Any>& operator=(const WeakCOW<Any>& o) {
-    auto old = std::move(object);  // ^ ensures next assign won't destroy o
-    object = o.pull();
-    current = o.current;
-    return *this;
-  }
+  WeakCOW<Any>& operator=(const WeakCOW<Any>& o) = default;
 
   WeakCOW<Any>& operator=(WeakCOW<Any>&& o) = default;
 
   Any* pull() const {
     if (object) {
       auto self = const_cast<WeakCOW<Any>*>(this);
-      self->object = self->world->getNoCopy(object.get(), current);
-      self->current = self->world;
+      self->object = self->memo->pull(object.get());
     }
     return object.get();
   }
@@ -201,14 +188,8 @@ protected:
   WeakPtr<Any> object;
 
   /**
-   * The world to which the object should belong (although it may belong to
-   * a clone ancestor of this world).
+   * The memo.
    */
-  World* world;
-
-  /**
-   * Current world.
-   */
-  World* current;
+  SharedPtr<Memo> memo;
 };
 }
