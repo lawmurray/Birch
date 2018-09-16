@@ -21,67 +21,32 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   buf << o->params;
   std::string baseName = internalise(o->name->str()) + encode32(base.str());
   std::string stateName = baseName + "_FiberState";
-  std::string localName = baseName + "_FiberLocal";
-  std::string argName = baseName + "_FiberArg";
 
   /* gather important objects */
   o->params->accept(&params);
   o->braces->accept(&locals);
   o->braces->accept(&yields);
 
-  /* supporting class for arguments */
+  /* supporting class for state */
   if (header) {
-    line("class " << argName << " {");
-    in();
+    line("class " << stateName << " : ");
+    finish("public FiberState<" << o->returnType->unwrap() << "> {");
     line("public:");
+    in();
+    line("using super_type = FiberState<" << o->returnType->unwrap() << ">;\n");
+    start("SharedCOW<" << type->name);
+    genTemplateArgs(type);
+    finish("> object;");
     for (auto param : params) {
       line(param->type << ' ' << param->name << ';');
     }
-    out();
-    line("};\n");
-  }
-
-  /* supporting class for local variables */
-  if (header) {
-    line("class " << localName << " {");
-    in();
-    line("public:");
     for (auto local : locals) {
       start(local->type << ' ');
       finish(getName(local->name->str(), local->number) << ';');
     }
-    out();
-    line("};\n");
-  }
-
-  /* supporting class for state */
-  if (header) {
-    line("class " << stateName << " : ");
-    in();
-    in();
-    start("public MemberFiberState<" << o->returnType->unwrap() << ',');
-    middle(type->name);
-    genTemplateArgs(type);
-    middle(',');
-    middle(argName << ',');
-    middle(localName << '>');
-    finish(" {");
-    out();
-    out();
-    line("public:");
-    in();
-    start("using state_type = MemberFiberState<");
-    middle(o->returnType->unwrap() << ',');
-    middle(type->name);
-    genTemplateArgs(type);
-    middle(',');
-    middle(argName << ',');
-    middle(localName << '>');
-    finish(';');
   }
 
   /* constructor */
-  line("template<class... Args>");
   start("");
   if (!header) {
     middle("bi::type::" << type->name);
@@ -91,18 +56,38 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   middle(stateName << "(const SharedCOW<");
   middle(type->name);
   genTemplateArgs(type);
-  middle(">& object, Args... args)");
+  middle(">& object");
+  if (!o->params->isEmpty()) {
+    middle(", " << o->params);
+  }
+  middle(')');
   if (header) {
     finish(';');
   } else {
     finish(" :");
     in();
     in();
-    line("state_type(0, " << (yields.size() + 1) << ", object, args...) {");
+    start("super_type(0, " << (yields.size() + 1) << ')');
+    finish(',');
+    start("object(object)");
+    for (auto param : params) {
+      finish(',');
+      start(param->name << '(' << param->name << ')');
+    }
+    finish(" {");
     out();
     line("//");
     out();
     line("}\n");
+  }
+
+  /* self function */
+  if (header) {
+    line("auto self() {");
+    in();
+    line("return object;");
+    out();
+    line("}");
   }
 
   /* clone function */
@@ -170,6 +155,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     finish(" {");
     in();
     genTraceFunction(o->name->str(), o->loc);
+    line("Enter enter(getMemo());");
     genSwitch();
     *this << o->braces->strip();
     genEnd();
