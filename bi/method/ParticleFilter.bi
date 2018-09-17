@@ -48,7 +48,7 @@ class ParticleFilter < Method {
     start(m, ncheckpoints);
     for (t:Integer in 1..ncheckpoints) {
       if (ncheckpoints > 1 && verbose) {
-        stderr.print("t = " + t + "\n");
+        stderr.print(t + " ");
       }
       step(t);
     }
@@ -111,7 +111,6 @@ class ParticleFilter < Method {
 
     /* propagate and weight */
     parallel for (n:Integer in 1..N) {
-        stderr.print("n = " + n + "\n");
       if (f[n]?) {
         w[n] <- w[n] + f[n]!.w;
       } else {

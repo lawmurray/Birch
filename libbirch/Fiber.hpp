@@ -38,7 +38,7 @@ public:
    */
   YieldType& get();
 
-private:
+//private:
   /**
    * Fiber state.
    */

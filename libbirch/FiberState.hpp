@@ -35,7 +35,8 @@ public:
    */
   FiberState(const FiberState<YieldType>& o) :
       label(o.label),
-      nlabels(o.nlabels) {
+      nlabels(o.nlabels),
+      value(o.value) {
     //
   }
 
@@ -45,6 +46,7 @@ public:
   FiberState<YieldType>& operator=(const FiberState<YieldType>& o) {
     label = o.label;
     nlabels = o.nlabels;
+    value = o.value;
     return *this;
   }
 

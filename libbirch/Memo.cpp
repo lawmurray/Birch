@@ -57,17 +57,11 @@ bi::Any* bi::Memo::pull(Any* o) {
   if (this == o->getMemo()) {
     return o;
   } else {
-    auto result = cache.get(o);
-    if (!result) {
-      result = parent->pull(o);
-      cache.put(o, result);
-    }
-
     auto cloned = clones.get(o);
     if (cloned) {
-      result = cloned;
+      return cloned;
+    } else {
+      return o;
     }
-
-    return result;
   }
 }

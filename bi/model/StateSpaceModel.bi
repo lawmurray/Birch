@@ -57,11 +57,6 @@ class StateSpaceModel<Parameter,State,Observation>(
     if (ys?) {
       y <- ys!;
     }
-    
-                cpp{{
-    std::cerr << "y = " << y_.get() << std::endl;
-    }}
-    
     yield sum(m(x, θ)) + sum(g(y, x, θ));
     
     /* transition and observation */
@@ -79,10 +74,6 @@ class StateSpaceModel<Parameter,State,Observation>(
         y':Observation;
         y <- y';
       }
-    cpp{{
-    std::cerr << "y = " << y_.get() << std::endl;
-    }}
-
       yield sum(f(x, x0, θ)) + sum(g(y, x, θ));
     }
   }
