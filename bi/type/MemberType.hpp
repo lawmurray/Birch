@@ -28,6 +28,7 @@ public:
    */
   virtual ~MemberType();
 
+  virtual bool isValue() const;
   virtual bool isBasic() const;
   virtual bool isClass() const;
   virtual bool isPointer() const;

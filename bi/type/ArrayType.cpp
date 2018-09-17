@@ -21,6 +21,10 @@ int bi::ArrayType::depth() const {
   return ndims;
 }
 
+bool bi::ArrayType::isValue() const {
+  return single->isValue();
+}
+
 bool bi::ArrayType::isArray() const {
   return true;
 }

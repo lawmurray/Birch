@@ -38,6 +38,10 @@ void bi::ClassType::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
+bool bi::ClassType::isValue() const {
+  return false;
+}
+
 bool bi::ClassType::isClass() const {
   return true;
 }

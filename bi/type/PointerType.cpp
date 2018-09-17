@@ -29,6 +29,10 @@ void bi::PointerType::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }
 
+bool bi::PointerType::isValue() const {
+  return single->isValue();
+}
+
 bool bi::PointerType::isClass() const {
   return single->isClass();
 }

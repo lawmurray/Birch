@@ -31,6 +31,7 @@ public:
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
+  virtual bool isValue() const;
   virtual bool isOptional() const;
   virtual Type* unwrap();
   virtual const Type* unwrap() const;

@@ -27,6 +27,10 @@ void bi::FiberType::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }
 
+bool bi::FiberType::isValue() const {
+  return false;
+}
+
 bool bi::FiberType::isFiber() const {
   return true;
 }

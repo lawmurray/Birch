@@ -15,6 +15,10 @@ bi::TupleType::~TupleType() {
   //
 }
 
+bool bi::TupleType::isValue() const {
+  return single->isValue();
+}
+
 bi::Type* bi::TupleType::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

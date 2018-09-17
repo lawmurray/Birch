@@ -27,6 +27,10 @@ void bi::MemberType::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }
 
+bool bi::MemberType::isValue() const {
+  return right->isValue();
+}
+
 bool bi::MemberType::isBasic() const {
   return right->isBasic();
 }
