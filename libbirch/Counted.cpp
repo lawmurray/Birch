@@ -52,6 +52,10 @@ void bi::Counted::decShared() {
   }
 }
 
+unsigned bi::Counted::numShared() const {
+  return sharedCount.load();
+}
+
 void bi::Counted::incWeak() {
   weakCount.fetch_add(1u);
 }
@@ -64,6 +68,10 @@ void bi::Counted::decWeak() {
     //   should not expire before the shared count
     deallocate();
   }
+}
+
+unsigned bi::Counted::numWeak() const {
+  return weakCount.load();
 }
 
 bool bi::Counted::isShared() const {

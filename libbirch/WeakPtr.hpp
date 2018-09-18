@@ -37,6 +37,7 @@ public:
   WeakPtr(const WeakPtr<T>& o) :
       ptr(o.ptr) {
     if (ptr) {
+      assert(ptr->numWeak() > 0);
       ptr->incWeak();
     }
   }
@@ -47,6 +48,7 @@ public:
   WeakPtr(const SharedPtr<T>& o) :
       ptr(o.ptr) {
     if (ptr) {
+      assert(ptr->numWeak() > 0);
       ptr->incWeak();
     }
   }

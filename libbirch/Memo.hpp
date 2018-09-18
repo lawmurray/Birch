@@ -29,7 +29,7 @@ public:
    *
    * @param parent Parent.
    */
-  Memo(const SharedPtr<Memo>& parent);
+  Memo(SharedPtr<Memo> parent);
 
   /**
    * Destructor.
@@ -47,23 +47,36 @@ public:
   bool hasAncestor(Memo* memo) const;
 
   /**
-   * Get an object, cloning it if has not been already.
+   * Shallow retrieval of an object that may not yet have been cloned,
+   * cloning it if necessary.
    *
-   * @param o The object.
+   * @param o Source object.
    *
    * @return The cloned object.
    */
   Any* get(Any* o);
 
   /**
-   * Get an object, without cloning it if it has not been already. This is
-   * used as an optimization for read-only access.
+   * Shallow retrieval of an object that may not yet have been cloned,
+   * without cloning it. This can be used as an optimization for read-only
+   * access to value types.
    *
-   * @param o The object.
+   * @param o Source object.
    *
    * @return The mapped object.
    */
   Any* pull(Any* o);
+
+  /**
+   * Deep retrieval of an object that may not yet have been cloned,
+   * without cloning it. This can be used as an optimization for read-only
+   * access to value types.
+   *
+   * @param o Source object.
+   *
+   * @return The mapped object.
+   */
+  Any* deepPull(Any* o);
 
 private:
   /**
@@ -72,13 +85,14 @@ private:
   SharedPtr<Memo> parent;
 
   /**
+   * Is this an internal memo? An internal memo is one with one or more
+   * children.
+   */
+  bool internal;
+
+  /**
    * Cloned objects.
    */
   Map clones;
-
-  /**
-   * Cache of objects pulled through parent.
-   */
-  Map cache;
 };
 }

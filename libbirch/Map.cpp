@@ -15,7 +15,7 @@ bi::Map::~Map() {
   for (size_t i = 0; i < nentries; ++i) {
     joint_entry_type entry = entries1[i];
     if (entry.key) {
-      //entry.key->decWeak();
+      entry.key->decShared();
       entry.value->decShared();
     }
   }
@@ -53,7 +53,7 @@ bi::Map::value_type bi::Map::put(const key_type key, const value_type value) {
   assert(key);
   assert(value);
 
-  //key->incWeak();
+  key->incShared();
   value->incShared();
 
   reserve();
@@ -72,7 +72,7 @@ bi::Map::value_type bi::Map::put(const key_type key, const value_type value) {
   if (expected.key == key) {
     unreserve();  // key exists, cancel reservation for insert
     result = expected.value;
-    //key->decWeak();
+    key->decShared();
     value->decShared();
   } else {
     result = value;
@@ -86,7 +86,7 @@ bi::Map::value_type bi::Map::set(const key_type key, const value_type value) {
   assert(key);
   assert(value);
 
-  //key->incWeak();
+  key->incShared();
   value->incShared();
 
   reserve();
@@ -105,7 +105,7 @@ bi::Map::value_type bi::Map::set(const key_type key, const value_type value) {
     unreserve();  // key exists, cancel reservation for insert
     value_type old = expected.value;
     while (!entries[i].split.value.compare_exchange_weak(old, value));
-    //key->decWeak();
+    key->decShared();
     old->decShared();
   }
   lock.unshare();

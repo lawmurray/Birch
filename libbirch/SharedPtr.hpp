@@ -35,6 +35,7 @@ public:
   SharedPtr(const SharedPtr<T>& o) :
       ptr(o.ptr) {
     if (ptr) {
+      assert(ptr->numShared() > 0);
       ptr->incShared();
     }
   }
@@ -44,7 +45,7 @@ public:
    */
   SharedPtr(const WeakPtr<T>& o) :
       ptr(o.ptr ? static_cast<T*>(o.ptr->lock()) : nullptr) {
-    //
+    assert(!ptr || ptr->numShared() > 1);
   }
 
   /**

@@ -193,7 +193,7 @@ class MemoryReader < Reader {
     if (array) {
       return array.get().size();
     } else {
-      return nullptr;
+      return bi::nil;
     }
     }}
   }

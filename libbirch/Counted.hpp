@@ -62,6 +62,11 @@ public:
   void decShared();
 
   /**
+   * Shared count.
+   */
+  unsigned numShared() const;
+
+  /**
    * Increment the weak count.
    */
   void incWeak();
@@ -70,6 +75,11 @@ public:
    * Decrement the weak count.
    */
   void decWeak();
+
+  /**
+   * Weak count.
+   */
+  unsigned numWeak() const;
 
   /**
    * Is this shared?

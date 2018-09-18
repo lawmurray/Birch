@@ -30,15 +30,15 @@ public:
   /**
    * Constructor.
    */
-  SharedCOW(T* object = nullptr) :
-      super_type(object) {
+  SharedCOW(const Nil& = nil) :
+      super_type() {
     //
   }
 
   /**
    * Constructor.
    */
-  SharedCOW(const Nil& object) :
+  SharedCOW(T* object) :
       super_type(object) {
     //
   }
@@ -184,42 +184,42 @@ public:
   using this_type = SharedCOW<value_type>;
   using root_type = this_type;
 
-  SharedCOW(Any* object = nullptr) :
-      object(object),
+  SharedCOW(const Nil& = nil) :
+      object(),
       memo(fiberMemo) {
-    //
+    assert(invariant());
   }
 
-  SharedCOW(const Nil& object) :
-      object(nullptr),
+  SharedCOW(Any* object) :
+      object(object),
       memo(fiberMemo) {
-    //
+    assert(invariant());
   }
 
   SharedCOW(const SharedPtr<Any>& object) :
       object(object),
       memo(fiberMemo) {
-    //
+    assert(invariant());
   }
 
   SharedCOW(const WeakPtr<Any>& object) :
       object(object),
       memo(fiberMemo) {
-    //
+    assert(invariant());
   }
 
   SharedCOW(Any* object, Memo* memo) :
       object(object),
       memo(memo) {
-    //
+    assert(invariant());
   }
 
   SharedCOW(const WeakCOW<Any>& o);
 
   SharedCOW(const SharedCOW<Any>& o) :
-      object(fiberClone ? o.pull() : o.object),
+      object(fiberClone ? fiberMemo->deepPull(o.pull()) : o.object),
       memo(fiberClone ? fiberMemo : o.memo) {
-    //
+    assert(invariant());
   }
 
   SharedCOW(SharedCOW<Any> && o) = default;
@@ -239,10 +239,8 @@ public:
     /* despite the pointer being accessed in a const context, we do want to
      * update it through the copy-on-write mechanism for performance
      * reasons */
-    if (object) {
-      auto self = const_cast<SharedCOW<Any>*>(this);
-      self->object = self->memo->get(object.get());
-    }
+    auto self = const_cast<SharedCOW<Any>*>(this);
+    self->object = self->memo->get(object.get());
     return object.get();
   }
 
@@ -250,10 +248,8 @@ public:
     /* despite the pointer being accessed in a const context, we do want to
      * update it through the copy-on-write mechanism for performance
      * reasons */
-    if (object) {
-      auto self = const_cast<SharedCOW<Any>*>(this);
-      self->object = self->memo->pull(object.get());
-    }
+    auto self = const_cast<SharedCOW<Any>*>(this);
+    self->object = self->memo->pull(object.get());
     return object.get();
   }
 
@@ -311,6 +307,14 @@ protected:
    * The memo.
    */
   SharedPtr<Memo> memo;
+
+private:
+  /**
+   * Construction post-condition for copy-on-write implementation.
+   */
+  bool invariant() const {
+    return !object || memo->deepPull(object.get()) == memo->pull(object.get());
+  }
 };
 }
 
@@ -325,5 +329,5 @@ bi::SharedCOW<T>::SharedCOW(const WeakCOW<T>& o) :
 inline bi::SharedCOW<bi::Any>::SharedCOW(const WeakCOW<Any>& o) :
     object(o.object),
     memo(o.memo) {
-  //
+  assert(invariant());
 }

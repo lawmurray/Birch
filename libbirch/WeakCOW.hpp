@@ -27,15 +27,15 @@ public:
   /**
    * Constructor.
    */
-  WeakCOW(T* object = nullptr) :
-      super_type(object) {
+  WeakCOW(const Nil& = nil) :
+      super_type() {
     //
   }
 
   /**
    * Constructor.
    */
-  WeakCOW(const Nil& object) :
+  WeakCOW(T* object) :
       super_type(object) {
     //
   }
@@ -111,6 +111,24 @@ public:
   }
 
   /**
+   * Generic copy assignment.
+   */
+  template<class U>
+  WeakCOW<T>& operator=(const SharedCOW<U>& o) {
+    root_type::operator=(o);
+    return *this;
+  }
+
+  /**
+   * Generic move assignment.
+   */
+  template<class U>
+  WeakCOW<T>& operator=(SharedCOW<U>&& o) {
+    root_type::operator=(o);
+    return *this;
+  }
+
+  /**
    * Pull through generations.
    */
   T* pull() const {
@@ -126,45 +144,46 @@ public:
   using this_type = WeakCOW<value_type>;
   using root_type = this_type;
 
-  WeakCOW(Any* object = nullptr) :
-      object(object),
+  WeakCOW(const Nil& = nil) :
+      object(),
       memo(fiberMemo) {
-    //
+    assert(invariant());
   }
 
-  WeakCOW(const Nil& object) :
+  WeakCOW(Any* object) :
+      object(object),
       memo(fiberMemo) {
-    //
+    assert(invariant());
   }
 
   WeakCOW(const SharedPtr<Any>& object) :
       object(object),
       memo(fiberMemo) {
-    //
+    assert(invariant());
   }
 
   WeakCOW(const WeakPtr<Any>& object) :
       object(object),
       memo(fiberMemo) {
-    //
+    assert(invariant());
   }
 
   WeakCOW(const SharedCOW<Any>& o) :
       object(o.object),
       memo(o.memo) {
-    //
+    assert(invariant());
   }
 
   WeakCOW(Any* object, Memo* memo) :
       object(object),
       memo(memo) {
-    //
+    assert(invariant());
   }
 
   WeakCOW(const WeakCOW<Any>& o) :
-      object(fiberClone ? o.pull() : o.object),
+      object(fiberClone ? fiberMemo->deepPull(o.pull()) : o.object),
       memo(fiberClone ? fiberMemo : o.memo) {
-    //
+    assert(invariant());
   }
 
   WeakCOW(WeakCOW<Any> && o) = default;
@@ -174,10 +193,8 @@ public:
   WeakCOW<Any>& operator=(WeakCOW<Any>&& o) = default;
 
   Any* pull() const {
-    if (object) {
-      auto self = const_cast<WeakCOW<Any>*>(this);
-      self->object = self->memo->pull(object.get());
-    }
+    auto self = const_cast<WeakCOW<Any>*>(this);
+    self->object = self->memo->pull(object.get());
     return object.get();
   }
 
@@ -191,5 +208,13 @@ protected:
    * The memo.
    */
   SharedPtr<Memo> memo;
+
+private:
+  /**
+   * Construction post-condition for copy-on-write implementation.
+   */
+  bool invariant() const {
+    return !object || memo->deepPull(object.get()) == memo->pull(object.get());
+  }
 };
 }

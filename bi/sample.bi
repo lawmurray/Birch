@@ -68,6 +68,7 @@ program sample(
   }
   if (output_file?) {
     output <- JSONWriter(output_file!);
+    output!.setArray();
   }
   if (config_file?) {
     config <- JSONReader(config_file!);
@@ -75,18 +76,20 @@ program sample(
   }
   if (diagnostic_file?) {
     diagnostic <- JSONWriter(diagnostic_file!);
+    diagnostic!.setArray();
   }
 
   /* sample */
-  m <- s!.sample(m!, ncheckpoints, verbose);
-  
-  /* finalize I/O */
-  if (output?) {
-    m!.write(output!.push());
-    output!.save();
-  }
-  if (diagnostic?) {
-    s!.write(diagnostic!.push());
-    diagnostic!.save();
+  for i:Integer in 1..nsamples {
+    m <- s!.sample(m!, ncheckpoints, verbose);
+      
+    if (output?) {
+      m!.write(output!.push());
+      output!.save();
+    }
+    if (diagnostic?) {
+      s!.write(diagnostic!.push());
+      diagnostic!.save();
+    }
   }
 }

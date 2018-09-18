@@ -39,7 +39,6 @@ class StateSpaceModel<Parameter,State,Observation>(
   g:@(Observation, State, Parameter) -> Real! <- g;
 
   fiber simulate() -> Real {
-    
     /* parameter */
     auto θ <- v.θ;
     yield sum(p(θ));
@@ -67,12 +66,14 @@ class StateSpaceModel<Parameter,State,Observation>(
       } else {
         x':State;
         x <- x';
+        v.x.pushBack(x);
       }
       if (ys?) {
         y <- ys!;
       } else {
         y':Observation;
         y <- y';
+        v.y.pushBack(y);
       }
       yield sum(f(x, x0, θ)) + sum(g(y, x, θ));
     }

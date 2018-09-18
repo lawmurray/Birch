@@ -1,6 +1,11 @@
 /**
  * Particle filter.
  *
+ * Configuration file
+ * ------------------
+ *
+ * The following options are supported in the method configuration file.
+ *
  *  - `nparticles`: Number of particles to use.
  *
  *  - `trigger`: Threshold for resampling. Resampling is performed
