@@ -85,7 +85,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   if (header) {
     line("auto self() {");
     in();
-    line("return object;");
+    line("return object.get();");
     out();
     line("}");
   }
