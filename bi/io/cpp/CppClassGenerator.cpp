@@ -90,7 +90,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
       if (header) {
         line("auto self() {");
         in();
-        line("return this;");
+        line("return SharedCOW<this_type>(this, memo);");
         out();
         line("}\n");
       }
