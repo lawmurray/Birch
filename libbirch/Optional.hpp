@@ -128,6 +128,14 @@ public:
   /**
    * Constructor for value.
    */
+  Optional(T* value) :
+      value(value) {
+    //
+  }
+
+  /**
+   * Constructor for value.
+   */
   template<class U>
   Optional(const SharedCOW<U>& value) :
       value(value) {

@@ -147,43 +147,43 @@ public:
   WeakCOW(const Nil& = nil) :
       object(),
       memo(fiberMemo) {
-    assert(invariant());
+    assert(pullOnConstruct());
   }
 
   WeakCOW(Any* object) :
       object(object),
       memo(fiberMemo) {
-    assert(invariant());
+    assert(pullOnConstruct());
   }
 
   WeakCOW(const SharedPtr<Any>& object) :
       object(object),
       memo(fiberMemo) {
-    assert(invariant());
+    assert(pullOnConstruct());
   }
 
   WeakCOW(const WeakPtr<Any>& object) :
       object(object),
       memo(fiberMemo) {
-    assert(invariant());
+    assert(pullOnConstruct());
   }
 
   WeakCOW(const SharedCOW<Any>& o) :
       object(o.object),
       memo(o.memo) {
-    assert(invariant());
+    assert(pullOnConstruct());
   }
 
   WeakCOW(Any* object, Memo* memo) :
       object(object),
       memo(memo) {
-    assert(invariant());
+    assert(pullOnConstruct());
   }
 
   WeakCOW(const WeakCOW<Any>& o) :
       object(fiberClone ? fiberMemo->deepPull(o.pull()) : o.object),
       memo(fiberClone ? fiberMemo : o.memo) {
-    assert(invariant());
+    assert(pullOnConstruct());
   }
 
   WeakCOW(WeakCOW<Any> && o) = default;
@@ -211,9 +211,10 @@ protected:
 
 private:
   /**
-   * Construction post-condition for copy-on-write implementation.
+   * On construction, all pointers should be correctly pulled forward to the
+   * world on the pointer.
    */
-  bool invariant() const {
+  bool pullOnConstruct() const {
     return !object || memo->deepPull(object.get()) == memo->pull(object.get());
   }
 };

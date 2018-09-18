@@ -187,31 +187,33 @@ public:
   SharedCOW(const Nil& = nil) :
       object(),
       memo(fiberMemo) {
-    assert(invariant());
+    assert(pullOnConstruct());
   }
 
   SharedCOW(Any* object) :
       object(object),
       memo(fiberMemo) {
-    assert(invariant());
+    assert(currentOnRawConstruct());
+    assert(pullOnConstruct());
   }
 
   SharedCOW(const SharedPtr<Any>& object) :
       object(object),
       memo(fiberMemo) {
-    assert(invariant());
+    assert(currentOnRawConstruct());
+    assert(pullOnConstruct());
   }
 
   SharedCOW(const WeakPtr<Any>& object) :
       object(object),
       memo(fiberMemo) {
-    assert(invariant());
+    assert(pullOnConstruct());
   }
 
   SharedCOW(Any* object, Memo* memo) :
       object(object),
       memo(memo) {
-    assert(invariant());
+    assert(pullOnConstruct());
   }
 
   SharedCOW(const WeakCOW<Any>& o);
@@ -219,7 +221,7 @@ public:
   SharedCOW(const SharedCOW<Any>& o) :
       object(fiberClone ? fiberMemo->deepPull(o.pull()) : o.object),
       memo(fiberClone ? fiberMemo : o.memo) {
-    assert(invariant());
+    assert(pullOnConstruct());
   }
 
   SharedCOW(SharedCOW<Any> && o) = default;
@@ -310,10 +312,19 @@ protected:
 
 private:
   /**
-   * Construction post-condition for copy-on-write implementation.
+   * On construction, all pointers should be correctly pulled forward to the
+   * world on the pointer.
    */
-  bool invariant() const {
+  bool pullOnConstruct() const {
     return !object || memo->deepPull(object.get()) == memo->pull(object.get());
+  }
+
+  /**
+   * When constructed from a raw pointer to an object, that object should
+   * belong to the current fiber's memo.
+   */
+  bool currentOnRawConstruct() const {
+    return !object || object->getMemo() == fiberMemo;
   }
 };
 }
@@ -329,5 +340,5 @@ bi::SharedCOW<T>::SharedCOW(const WeakCOW<T>& o) :
 inline bi::SharedCOW<bi::Any>::SharedCOW(const WeakCOW<Any>& o) :
     object(o.object),
     memo(o.memo) {
-  assert(invariant());
+  assert(pullOnConstruct());
 }
