@@ -5,9 +5,10 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::GlobalVariable::GlobalVariable(Name* name, Type* type,
+bi::GlobalVariable::GlobalVariable(const Annotation annotation, Name* name, Type* type,
     Expression* brackets, Expression* args, Expression* value, Location* loc) :
     Statement(loc),
+    Annotated(annotation),
     Named(name),
     Typed(type),
     Bracketed(brackets),

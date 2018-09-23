@@ -207,7 +207,7 @@ bi::Statement* bi::Cloner::clone(const Assignment* o) {
 }
 
 bi::Statement* bi::Cloner::clone(const GlobalVariable* o) {
-  return new GlobalVariable(o->name, o->type->accept(this),
+  return new GlobalVariable(o->annotation, o->name, o->type->accept(this),
       o->brackets->accept(this), o->args->accept(this),
       o->value->accept(this), o->loc);
 }

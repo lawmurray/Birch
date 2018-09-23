@@ -150,7 +150,7 @@ void bi::bi_ostream::visit(const Nil* o) {
 }
 
 void bi::bi_ostream::visit(const LocalVariable* o) {
-  if (o->type->isEmpty()) {
+  if (o->has(AUTO)) {
     middle("auto " << o->name);
   } else {
     middle(o->name << ':');
@@ -180,23 +180,24 @@ void bi::bi_ostream::visit(const Parameter* o) {
 
 void bi::bi_ostream::visit(const Generic* o) {
   middle(o->name);
-  if (!o->type->isEmpty()) {
-    middle(" <= " << o->type);
-  }
 }
 
 void bi::bi_ostream::visit(const GlobalVariable* o) {
-  start(o->name << ':');
-  if (o->type->isArray() && !o->brackets->isEmpty()) {
-    middle(dynamic_cast<const ArrayType*>(o->type)->single);
+  if (o->has(AUTO)) {
+    start("auto " << o->name);
   } else {
-    middle(o->type);
-  }
-  if (!o->brackets->isEmpty()) {
-    middle('[' << o->brackets << ']');
-  }
-  if (!o->args->isEmpty()) {
-    middle('(' << o->args << ')');
+    start(o->name << ':');
+    if (o->type->isArray() && !o->brackets->isEmpty()) {
+      middle(dynamic_cast<const ArrayType*>(o->type)->single);
+    } else {
+      middle(o->type);
+    }
+    if (!o->brackets->isEmpty()) {
+      middle('[' << o->brackets << ']');
+    }
+    if (!o->args->isEmpty()) {
+      middle('(' << o->args << ')');
+    }
   }
   if (!o->value->isEmpty()) {
     middle(" <- " << o->value);
@@ -205,17 +206,21 @@ void bi::bi_ostream::visit(const GlobalVariable* o) {
 }
 
 void bi::bi_ostream::visit(const MemberVariable* o) {
-  start(o->name << ':');
-  if (o->type->isArray() && !o->brackets->isEmpty()) {
-    middle(dynamic_cast<const ArrayType*>(o->type)->single);
+  if (o->has(AUTO)) {
+    start("auto " << o->name);
   } else {
-    middle(o->type);
-  }
-  if (!o->brackets->isEmpty()) {
-    middle('[' << o->brackets << ']');
-  }
-  if (!o->args->isEmpty()) {
-    middle('(' << o->args << ')');
+    start(o->name << ':');
+    if (o->type->isArray() && !o->brackets->isEmpty()) {
+      middle(dynamic_cast<const ArrayType*>(o->type)->single);
+    } else {
+      middle(o->type);
+    }
+    if (!o->brackets->isEmpty()) {
+      middle('[' << o->brackets << ']');
+    }
+    if (!o->args->isEmpty()) {
+      middle('(' << o->args << ')');
+    }
   }
   if (!o->value->isEmpty()) {
     middle(" <- " << o->value);

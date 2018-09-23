@@ -220,16 +220,15 @@ bi::Expression* bi::ResolverSource::modify(LocalVariable* o) {
   if (o->has(AUTO)) {
     assert(!o->value->isEmpty());
     o->type = o->value->type;
-  } else {
-    if (o->needsConstruction()) {
-      o->type->resolveConstructor(o);
-    }
-    if (!o->brackets->isEmpty()) {
-      o->type = new ArrayType(o->type, o->brackets->width(), o->brackets->loc);
-    }
-    if (!o->value->isEmpty() && !o->value->type->definitely(*o->type)) {
-      throw InitialValueException(o);
-    }
+  }
+  if (o->needsConstruction()) {
+    o->type->resolveConstructor(o);
+  }
+  if (!o->brackets->isEmpty()) {
+    o->type = new ArrayType(o->type, o->brackets->width(), o->brackets->loc);
+  }
+  if (!o->value->isEmpty() && !o->value->type->definitely(*o->type)) {
+    throw InitialValueException(o);
   }
   scopes.back()->add(o);
   return o;
@@ -352,6 +351,10 @@ bi::Statement* bi::ResolverSource::modify(GlobalVariable* o) {
   o->brackets = o->brackets->accept(this);
   o->args = o->args->accept(this);
   o->value = o->value->accept(this);
+  if (o->has(AUTO)) {
+    assert(!o->value->isEmpty());
+    o->type = o->value->type;
+  }
   if (o->needsConstruction()) {
     o->type->resolveConstructor(o);
   }
@@ -409,6 +412,10 @@ bi::Statement* bi::ResolverSource::modify(MemberVariable* o) {
   o->brackets = o->brackets->accept(this);
   o->args = o->args->accept(this);
   o->value = o->value->accept(this);
+  if (o->has(AUTO)) {
+    assert(!o->value->isEmpty());
+    o->type = o->value->type;
+  }
   scopes.pop_back();
   if (o->needsConstruction()) {
     o->type->resolveConstructor(o);
