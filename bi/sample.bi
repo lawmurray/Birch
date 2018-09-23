@@ -3,9 +3,11 @@
  *
  * General options.
  *
- *   - `--model`: Name of the model class to use.
+ *   - `--variate`: Name of the variate class.
  *
- *   - `--method`: Name of the method class to use.
+ *   - `--model`: Name of the model class.
+ *
+ *   - `--method`: Name of the method class.
  *
  *   - `--input-file`: Name of the input file, if any.
  *
@@ -22,11 +24,9 @@
  *   - `--seed`: Random number seed. If not provided, random entropy is used.
  *
  *   - `--verbose`: Enable verbose reporting?
- *
- * Particle filter-specific options:
- *
  */
 program sample(
+    variate:String,
     model:String,
     method:String <- "ParticleFilter",
     input_file:String?,
@@ -40,6 +40,13 @@ program sample(
   /* random number generator */
   if (seed?) {
     global.seed(seed!);
+  }
+
+  /* variate */
+  auto v <- Variate?(make(variate));
+  if (!v?) {
+    stderr.print("error: " + variate + " must be a subtype of Variate with no initialization parameters.\n");
+    exit(1);
   }
 
   /* model */
@@ -64,7 +71,7 @@ program sample(
   
   if (input_file?) {
     input <- JSONReader(input_file!);
-    m!.read(input);
+    v!.read(input);
   }
   if (output_file?) {
     output <- JSONWriter(output_file!);
@@ -81,10 +88,10 @@ program sample(
 
   /* sample */
   for i:Integer in 1..nsamples {
-    m <- s!.sample(m!, ncheckpoints, verbose);
+    v <- s!.sample(v!, m!, ncheckpoints, verbose);
       
     if (output?) {
-      m!.write(output!.push());
+      v!.write(output!.push());
       output!.save();
     }
     if (diagnostic?) {

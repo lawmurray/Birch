@@ -1,21 +1,21 @@
 /**
- * Variate for StateSpaceModel.
+ * Variate used by StateSpaceModel.
  */
-class StateSpaceVariate<ParameterVariate,StateVariate,ObservationVariate> {  
+class StateSpaceVariate<Parameter,State,Observation> < Variate {  
   /**
    * Parameter.
    */
-  θ:ParameterVariate;
+  θ:Parameter;
 
   /**
    * States.
    */
-  x:List<StateVariate>;
+  x:List<State>;
   
   /**
    * Observations.
    */
-  y:List<ObservationVariate>;
+  y:List<Observation>;
 
   function read(reader:Reader) {
     θ.read(reader.getObject("θ"));

@@ -10,8 +10,8 @@ class AliveParticleFilter < ParticleFilter {
    */
   propagations:Integer[_];
 
-  function start(m:Model, ncheckpoints:Integer) {
-    super.start(m, ncheckpoints);
+  function start(v:Variate, m:Model, ncheckpoints:Integer) {
+    super.start(v, m, ncheckpoints);
     propagations <- vector(0, ncheckpoints);
   }
 

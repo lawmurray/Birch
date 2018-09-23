@@ -1,23 +1,23 @@
 /**
  * Markov chain.
+ *
+ * - SpecificVariate: Specialization of MarkovChainVariate.
  */
-class MarkovChainModel<State> < Model {
-  /**
-   * Variate.
-   */
-  v:MarkovChainVariate<State>;
-
+class MarkovChainModel<SpecificVariate>(
+    m:@(SpecificVariate.State) -> Real!,
+    f:@(SpecificVariate.State, SpecificVariate.State) -> Real!) <
+    ModelFor<SpecificVariate> {
   /**
    * Initial model.
    */
-  m:@(State) -> Real! <- m;
+  auto m <- m;
   
   /**
    * Transition model.
    */
-  f:@(State, State) -> Real! <- f;
+  auto f <- f;
 
-  fiber simulate() -> Real {
+  fiber simulate(v:SpecificVariate) -> Real {
     auto xs <- v.x.walk();
         
     /* initial state */

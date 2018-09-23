@@ -1,6 +1,10 @@
 /**
  * State-space model.
  *
+ * - SpecificVariate: Specialization of StateSpaceVariate.
+ *
+ * - p: Parameter model.
+ *
  * The joint distribution is:
  *
  * $$p(\mathrm{d}\theta, \mathrm{d}x_{0:T}, \mathrm{d}y_{0:T}) =
@@ -8,37 +12,33 @@
  *   \mid x_0, \theta) \prod_{t=1}^T p(\mathrm{d}x_t \mid x_{t-1},
  *   \theta) p(\mathrm{d}y_t \mid x_t, \theta)$$
  */
-class StateSpaceModel<Parameter,State,Observation>(
-    p:@(Parameter) -> Real!,
-    m:@(State, Parameter) -> Real!,
-    f:@(State, State, Parameter) -> Real!,
-    g:@(Observation, State, Parameter) -> Real!) < Model {
-  /**
-   * Variate.
-   */
-  v:StateSpaceVariate<Parameter,State,Observation>;
-    
+class StateSpaceModel<SpecificVariate>(
+    p:@(SpecificVariate.Parameter) -> Real!,
+    m:@(SpecificVariate.State, SpecificVariate.Parameter) -> Real!,
+    f:@(SpecificVariate.State, SpecificVariate.State, SpecificVariate.Parameter) -> Real!,
+    g:@(SpecificVariate.Observation, SpecificVariate.State, SpecificVariate.Parameter) -> Real!) <
+    ModelFor<SpecificVariate> {
   /**
    * Parameter model.
    */
-  p:@(Parameter) -> Real! <- p;
+  auto p <- p;
   
   /**
    * Initial model.
    */
-  m:@(State, Parameter) -> Real! <- m;
+  auto m <- m;
   
   /**
    * Transition model.
    */
-  f:@(State, State, Parameter) -> Real! <- f;
+  auto f <- f;
   
   /**
    * Observation model.
    */
-  g:@(Observation, State, Parameter) -> Real! <- g;
+  auto g <- g;
 
-  fiber simulate() -> Real {
+  fiber simulate(v:SpecificVariate) -> Real {
     /* parameter */
     auto θ <- v.θ;
     yield sum(p(θ));
@@ -47,8 +47,8 @@ class StateSpaceModel<Parameter,State,Observation>(
     auto ys <- v.y.walk();    
     
     /* initial state and initial observation */
-    x:State;
-    y:Observation;
+    x:SpecificVariate.State;
+    y:SpecificVariate.Observation;
     
     if (xs?) {
       x <- xs!;
@@ -60,30 +60,22 @@ class StateSpaceModel<Parameter,State,Observation>(
     
     /* transition and observation */
     while (true) {
-      x0:State <- x;
+      x0:SpecificVariate.State <- x;
       if (xs?) {
         x <- xs!;
       } else {
-        x':State;
+        x':SpecificVariate.State;
         x <- x';
         v.x.pushBack(x);
       }
       if (ys?) {
         y <- ys!;
       } else {
-        y':Observation;
+        y':SpecificVariate.Observation;
         y <- y';
         v.y.pushBack(y);
       }
       yield sum(f(x, x0, θ)) + sum(g(y, x, θ));
     }
-  }
-
-  function read(reader:Reader) {
-    v.read(reader);
-  }
-  
-  function write(writer:Writer) {
-    v.write(writer);
   }
 }

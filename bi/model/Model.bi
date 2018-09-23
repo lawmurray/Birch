@@ -1,16 +1,11 @@
 /**
- * Base class for all models, enabling runtime loading of model classes.
+ * Base class for all models.
  */
 class Model {
   /**
    * Simulate.
    */
-  fiber simulate() -> Real {
+  fiber simulate(v:Variate) -> Real {
     assert false;
   }
-  
-  /**
-   * Log-weight.
-   */
-  w:Real <- 0.0;
 }
