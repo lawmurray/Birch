@@ -22,14 +22,14 @@ class AliveParticleFilter < ParticleFilter {
     
     f0:Model![_] <- f;
     w0:Real[_] <- w;
-    a:Integer[_] <- permute_ancestors(ancestors(w0));
+    a:Integer[_] <- ancestors(w0);
     P:Integer <- 0;  // number of proposals
 
     /* propagate and weight until N acceptances; the first N proposals are
      * drawn using the standard (stratified) resampler, then each is
      * is propagated until it has non-zero weight, proposal alternatives with
      * a categorical draw */  
-    for (n:Integer in 1..N) {
+    parallel for (n:Integer in 1..N) {
       f[n] <- f0[a[n]];
       if (f[n]?) {
         P <- P + 1;
@@ -70,11 +70,11 @@ class AliveParticleFilter < ParticleFilter {
     
     /* update normalizing constant estimate */
     W:Real <- log_sum_exp(w);
-    w <- w - (W - log(N));
+    w <- w - (W - log(P - 1));
     if (t > 1) {
-      Z[t] <- Z[t - 1] + (W - log(N));
+      Z[t] <- Z[t - 1] + (W - log(P - 1));
     } else {
-      Z[t] <- W - log(N);
+      Z[t] <- W - log(P - 1);
     }
     
     /* diagnostics */
