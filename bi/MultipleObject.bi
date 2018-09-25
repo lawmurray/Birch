@@ -1,10 +1,5 @@
 class MultiObjectParameter {
   /**
-   * Birth rate.
-   */
-  λ:Real;
-
-  /**
    * Probability of death.
    */
   μ:Real;
@@ -15,14 +10,19 @@ class MultiObjectParameter {
   ρ:Real;
 
   /**
-   * Initial state mean.
+   * Birth rate.
    */
-  μ_0:Real[_];
+  λ_0:Real;
 
   /**
-   * Initial state covariance.
+   * Birch position lower bound.
    */
-  Σ_0:Real[_,_];
+  l_0:Real[_];
+
+  /**
+   * Birth position upper bound.
+   */
+  u_0:Real[_];
   
   /**
    * Transition matrix.
@@ -50,43 +50,43 @@ class MultiObjectParameter {
   λ_c:Real;
 
   /**
-   * Clutter mean.
+   * Clutter position lower bound.
    */
-  μ_c:Real[_];
+  l_c:Real[_];
 
   /**
-   * Clutter covariance.
+   * Clutter position upper bound.
    */
-  Σ_c:Real[_,_];
+  u_c:Real[_];
   
   function read(reader:Reader) {
-    λ <- reader.getReal("λ")!;
     μ <- reader.getReal("μ")!;
     ρ <- reader.getReal("ρ")!;
-    μ_0 <- reader.getRealVector("μ_0")!;
-    Σ_0 <- reader.getRealMatrix("Σ_0")!;
+    λ_0 <- reader.getReal("λ_0")!;
+    l_0 <- reader.getRealVector("l_0")!;
+    u_0 <- reader.getRealVector("u_0")!;
     A <- reader.getRealMatrix("A")!;
     Q <- reader.getRealMatrix("Q")!;
     B <- reader.getRealMatrix("B")!;
     R <- reader.getRealMatrix("R")!;
     λ_c <- reader.getReal("λ_c")!;
-    μ_c <- reader.getRealVector("μ_c")!;
-    Σ_c <- reader.getRealMatrix("Σ_c")!;
+    l_c <- reader.getRealVector("l_c")!;
+    u_c <- reader.getRealVector("u_c")!;
   }
   
   function write(writer:Writer) {
-    writer.setReal("λ", λ);
     writer.setReal("μ", μ);
     writer.setReal("ρ", ρ);
-    writer.setRealVector("μ_0", μ_0);
-    writer.setRealMatrix("Σ_0", Σ_0);
+    writer.setReal("λ_0", λ_0);
+    writer.setRealVector("l_0", l_0);
+    writer.setRealVector("u_0", u_0);
     writer.setRealMatrix("A", A);
     writer.setRealMatrix("Q", Q);
     writer.setRealMatrix("B", B);
     writer.setRealMatrix("R", R);
     writer.setReal("λ_c", λ_c);
-    writer.setRealVector("μ_c", μ_c);
-    writer.setRealMatrix("Σ_c", Σ_c);
+    writer.setRealVector("l_c", l_c);
+    writer.setRealVector("u_c", u_c);
   }
 }
 
@@ -139,10 +139,10 @@ class MultiObjectModel < StateSpaceModel<MultiObjectVariate> {
     
     /* birth new objects */
     N:Integer;
-    N <~ Poisson(θ.λ);
+    N <~ Poisson(θ.λ_0);
     for n:Integer in 1..N {
       o':Random<Real[_]>;
-      o' ~ Gaussian(θ.μ_0, θ.Σ_0);
+      o' ~ Uniform(θ.l_0, θ.u_0);
       x'.o.pushBack(o');
     }
   }
@@ -165,7 +165,7 @@ class MultiObjectModel < StateSpaceModel<MultiObjectVariate> {
     N <~ Poisson(θ.λ_c);
     for n:Integer in 1..N {
       o':Random<Real[_]>;
-      o' ~ Gaussian(θ.μ_c, θ.Σ_c);
+      o' ~ Uniform(θ.l_c, θ.u_c);
       y'.o.pushBack(o');
     }
   }
