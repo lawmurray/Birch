@@ -152,6 +152,17 @@ private:
   void reduce(T u);
 
   /**
+   * Sort vertices in topological order into vertices.
+   */
+  void sort();
+  void sort(T u);
+
+  /**
+   * Root vertices.
+   */
+  std::set<T> roots;
+
+  /**
    * Vertices in topological order.
    */
   std::list<T> vertices;

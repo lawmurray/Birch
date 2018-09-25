@@ -51,6 +51,7 @@ void bi::poset<T,Compare>::insert(T v) {
   backward(v);
   reduce();
   add_vertex(v);
+  sort();
 }
 
 template<class T, class Compare>
@@ -60,29 +61,16 @@ void bi::poset<T,Compare>::add_colour(T v) {
 
 template<class T, class Compare>
 void bi::poset<T,Compare>::add_vertex(T v) {
-  /* determine location to insert so as to preserve topological order of
-   * vertices */
   std::list<T> parents1, children1;
   parents(v, parents1);
   children(v, children1);
-  std::ptrdiff_t l = 0, u = size();
 
-  for (auto iter = parents1.begin(); iter != parents1.end(); ++iter) {
-    auto find = std::find(begin(), end(), *iter);
-    assert(find != end());
-    u = std::min(u, std::distance(begin(), find));
+  if (parents1.empty()) {
+    roots.insert(v);
   }
-  for (auto iter = children1.begin(); iter != children1.end(); ++iter) {
-    auto find = std::find(begin(), end(), *iter);
-    assert(find != end());
-    l = std::max(l, std::distance(begin(), find));
+  for (auto child : children1) {
+    roots.erase(child);
   }
-  assert((l == 0 && u == 0) || l < u);
-
-  /* insert */
-  auto iter = begin();
-  std::advance(iter, u);
-  vertices.insert(iter, v);
 }
 
 template<class T, class Compare>
@@ -194,6 +182,29 @@ void bi::poset<T,Compare>::reduce(T u) {
   for (auto iter = forwards1.begin(); iter != forwards1.end(); ++iter) {
     if (colours[*iter] > colour1) {  // rediscovered
       remove_edge(u, *iter);
+    }
+  }
+}
+
+template<class T, class Compare>
+void bi::poset<T,Compare>::sort() {
+  ++colour;
+  vertices.clear();
+  for (auto u : roots) {
+    sort(u);
+  }
+}
+
+template<class T, class Compare>
+void bi::poset<T,Compare>::sort(T u) {
+  if (colours[u] < colour) {
+    colours[u] = colour;
+    vertices.push_front(u);
+
+    std::list<T> children1;
+    children(u, children1);
+    for (auto v : children1) {
+      sort(v);
     }
   }
 }
