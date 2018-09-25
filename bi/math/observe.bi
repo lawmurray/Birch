@@ -692,3 +692,45 @@ function observe_multivariate_linear_normal_inverse_gamma_gaussian(x:Real[_],
   return observe_multivariate_student_t(x, 2.0*α, A*μ + c,
       (α/β)*inv(identity(rows(A)) + A*solve(Λ, trans(A))));
 }
+
+/**
+ * Observe a multivariate uniform distribution.
+ *
+ * - l: Lower bound of hyperrectangle.
+ * - u: Upper bound of hyperrectangle.
+ *
+ * Returns: the log probability density.
+ */
+function observe_multivariate_uniform(x:Real[_], l:Real[_], u:Real[_]) -> Real {
+  assert length(x) > 0;
+  assert length(l) == length(x);
+  assert length(u) == length(x);
+
+  D:Integer <- length(l);
+  w:Real <- 0.0;
+  for (d:Integer in 1..D) {
+    w <- w + observe_uniform(x[d], l[d], u[d]);
+  }
+  return w;
+}
+
+/**
+ * Observe a multivariate uniform distribution over integers.
+ *
+ * - l: Lower bound of hyperrectangle.
+ * - u: Upper bound of hyperrectangle.
+ *
+ * Returns: the log probability mass.
+ */
+function observe_multivariate_uniform_int(x:Integer[_], l:Integer[_], u:Integer[_]) -> Real {
+  assert length(x) > 0;
+  assert length(l) == length(x);
+  assert length(u) == length(x);
+  
+  D:Integer <- length(x);
+  w:Real <- 0.0;
+  for (d:Integer in 1..D) {
+    w <- w + observe_uniform_int(x[d], l[d], u[d]);
+  }
+  return w;
+}

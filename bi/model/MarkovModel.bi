@@ -1,22 +1,9 @@
 /**
- * Markov chain.
+ * Markov model.
  *
- * - SpecificVariate: Specialization of MarkovChainVariate.
+ * - SpecificVariate: Specialization of MarkovVariate.
  */
-class MarkovChainModel<SpecificVariate>(
-    m:@(SpecificVariate.State) -> Real!,
-    f:@(SpecificVariate.State, SpecificVariate.State) -> Real!) <
-    ModelFor<SpecificVariate> {
-  /**
-   * Initial model.
-   */
-  auto m <- m;
-  
-  /**
-   * Transition model.
-   */
-  auto f <- f;
-
+class MarkovModel<SpecificVariate> < ModelFor<SpecificVariate> {
   fiber simulate(v:SpecificVariate) -> Real {
     auto xs <- v.x.walk();
         
@@ -38,5 +25,20 @@ class MarkovChainModel<SpecificVariate>(
       }
       yield sum(f(x', x));
     }
+  }
+
+  /**
+   * Initial model.
+   */
+  fiber m(x':SpecificVariate.State, θ:SpecificVariate.Parameter) -> Real {
+    //
+  }
+  
+  /**
+   * Transition model.
+   */
+  fiber f(x':SpecificVariate.State, x:SpecificVariate.State,
+      θ:SpecificVariate.Parameter) -> Real {
+    //
   }
 }

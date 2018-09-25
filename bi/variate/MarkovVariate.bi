@@ -1,22 +1,17 @@
 /**
- * Variate used by MarkovChainModel.
+ * Variate used by MarkovModel.
  */
-class MarkovChainVariate<State> < Variate {  
+class MarkovVariate<Parameter,State> < Variate {  
   /**
    * States.
    */
   x:List<State>;
 
   function read(reader:Reader) {
-    auto f <- reader.getArray("x");
-    while (f?) {
-      x':State;
-      x'.read(f!);
-      x.pushBack(x');
-    }
+    x.read(reader.getObject("x"));
   }
   
   function write(writer:Writer) {    
-    //writer.setArray("x", x.walk());
+    x.write(writer.setObject("x"));
   }
 }

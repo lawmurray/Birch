@@ -3,8 +3,6 @@
  *
  * - SpecificVariate: Specialization of StateSpaceVariate.
  *
- * - p: Parameter model.
- *
  * The joint distribution is:
  *
  * $$p(\mathrm{d}\theta, \mathrm{d}x_{0:T}, \mathrm{d}y_{0:T}) =
@@ -12,32 +10,7 @@
  *   \mid x_0, \theta) \prod_{t=1}^T p(\mathrm{d}x_t \mid x_{t-1},
  *   \theta) p(\mathrm{d}y_t \mid x_t, \theta)$$
  */
-class StateSpaceModel<SpecificVariate>(
-    p:@(SpecificVariate.Parameter) -> Real!,
-    m:@(SpecificVariate.State, SpecificVariate.Parameter) -> Real!,
-    f:@(SpecificVariate.State, SpecificVariate.State, SpecificVariate.Parameter) -> Real!,
-    g:@(SpecificVariate.Observation, SpecificVariate.State, SpecificVariate.Parameter) -> Real!) <
-    ModelFor<SpecificVariate> {
-  /**
-   * Parameter model.
-   */
-  auto p <- p;
-  
-  /**
-   * Initial model.
-   */
-  auto m <- m;
-  
-  /**
-   * Transition model.
-   */
-  auto f <- f;
-  
-  /**
-   * Observation model.
-   */
-  auto g <- g;
-
+class StateSpaceModel<SpecificVariate> < ModelFor<SpecificVariate> {
   fiber simulate(v:SpecificVariate) -> Real {
     /* parameter */
     auto θ <- v.θ;
@@ -77,5 +50,35 @@ class StateSpaceModel<SpecificVariate>(
       }
       yield sum(f(x, x0, θ)) + sum(g(y, x, θ));
     }
+  }
+  
+  /**
+   * Parameter model.
+   */
+  fiber p(θ':SpecificVariate.Parameter) -> Real {
+    //
+  }
+  
+  /**
+   * Initial model.
+   */
+  fiber m(x':SpecificVariate.State, θ:SpecificVariate.Parameter) -> Real {
+    //
+  }
+  
+  /**
+   * Transition model.
+   */
+  fiber f(x':SpecificVariate.State, x:SpecificVariate.State,
+      θ:SpecificVariate.Parameter) -> Real {
+    //
+  }
+  
+  /**
+   * Observation model.
+   */
+  fiber g(x':SpecificVariate.Observation, x:SpecificVariate.State,
+      θ:SpecificVariate.Parameter) -> Real {
+    //
   }
 }

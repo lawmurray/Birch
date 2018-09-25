@@ -675,3 +675,35 @@ function simulate_multivariate_linear_normal_inverse_gamma_gaussian(
   return simulate_multivariate_student_t(2.0*α, A*μ + c,
       (α/β)*inv(identity(rows(A)) + A*solve(Λ, trans(A))));
 }
+
+/**
+ * Simulate a multivariate uniform distribution.
+ *
+ * - l: Lower bound of hyperrectangle.
+ * - u: Upper bound of hyperrectangle.
+ */
+function simulate_multivariate_uniform(l:Real[_], u:Real[_]) -> Real[_] {
+  assert length(l) == length(u);
+  D:Integer <- length(l);
+  z:Real[D];
+  for (d:Integer in 1..D) {
+    z[d] <- simulate_uniform(l[d], u[d]);
+  }
+  return z;
+}
+
+/**
+ * Simulate a multivariate uniform distribution over integers.
+ *
+ * - l: Lower bound of hyperrectangle.
+ * - u: Upper bound of hyperrectangle.
+ */
+function simulate_multivariate_uniform_int(l:Integer[_], u:Integer[_]) -> Integer[_] {
+  assert length(l) == length(u);
+  D:Integer <- length(l);
+  z:Integer[D];
+  for (d:Integer in 1..D) {
+    z[d] <- simulate_uniform_int(l[d], u[d]);
+  }
+  return z;
+}

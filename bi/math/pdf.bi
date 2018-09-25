@@ -596,3 +596,48 @@ function pdf_multivariate_linear_normal_inverse_gamma_gaussian(x:Real[_],
   return exp(observe_multivariate_linear_normal_inverse_gamma_gaussian(x, A,
       μ, c, Λ, α, β));
 }
+
+/**
+ * PDF of a multivariate uniform variate.
+ *
+ * - x: The variate.
+ * - l: Lower bound of hyperrectangle.
+ * - u: Upper bound of hyperrectangle.
+ *
+ * Return: the probability density.
+ */
+function pdf_multivariate_uniform(x:Real[_], l:Real[_], u:Real[_]) -> Real {
+  assert length(x) > 0;
+  assert length(l) == length(x);
+  assert length(u) == length(x);
+  
+  D:Integer <- length(x);
+  w:Real <- 1.0;
+  for (d:Integer in 1..D) {
+    w <- w*pdf_uniform(x[d], l[d], u[d]);
+  }
+  return w;
+}
+
+/**
+ * PMF of a multivariate integer uniform variate.
+ *
+ * - x: The variate.
+ * - l: Lower bound of hyperrectangle.
+ * - u: Upper bound of hyperrectangle.
+ *
+ * Return: the probability density.
+ */
+function pmf_multivariate_uniform_int(x:Integer[_], l:Integer[_],
+    u:Integer[_]) -> Real {
+  assert length(x) > 0;
+  assert length(l) == length(x);
+  assert length(u) == length(x);
+  
+  D:Integer <- length(x);
+  w:Real <- 1.0;
+  for (d:Integer in 1..D) {
+    w <- w*pmf_uniform_int(x[d], l[d], u[d]);
+  }
+  return w;
+}
