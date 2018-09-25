@@ -20,6 +20,12 @@ class MemoryWriter < Writer {
     return this;
   }
 
+  function setNil() {
+    cpp{{
+    group->set(libubjpp::nil_type());
+    }}
+  }
+
   function setBoolean(value:Boolean) {
     cpp{{
     group->set(value_);
@@ -84,6 +90,12 @@ class MemoryWriter < Writer {
     return result;
   }
 
+  function setNil(name:String) {
+    cpp{{
+    group->set(name_, libubjpp::nil_type());
+    }}
+  }
+
   function setBoolean(name:String, value:Boolean) {
     cpp{{
     group->set(name_, value_);
@@ -146,6 +158,12 @@ class MemoryWriter < Writer {
     result_->group = &group->set(path_, libubjpp::array_type());
     }}
     return result;
+  }
+  
+  function setNil(path:[String]) {
+    cpp{{
+    group->set(path_, libubjpp::nil_type());
+    }}
   }
   
   function setBoolean(path:[String], value:Boolean) {

@@ -140,6 +140,48 @@ function diagonal(x:Boolean, length:Integer) -> Boolean[_,_] {
 }
 
 /**
+ * Create diagonal matrix, filling the diagonal with a given vector.
+ *
+ * - x: The vector.
+ */
+function diagonal(x:Real[_]) -> Real[_,_] {
+  auto n <- length(x);
+  auto Z <- matrix(0.0, n, n);
+  for (i:Integer in 1..n) {
+    Z[i,i] <- x[i];
+  }
+  return Z;
+}
+
+/**
+ * Create diagonal matrix, filling the diagonal with a given vector.
+ *
+ * - x: The vector.
+ */
+function diagonal(x:Integer[_]) -> Integer[_,_] {
+  auto n <- length(x);
+  auto Z <- matrix(0, n, n);
+  for (i:Integer in 1..n) {
+    Z[i,i] <- x[i];
+  }
+  return Z;
+}
+
+/**
+ * Create diagonal matrix, filling the diagonal with a given vector.
+ *
+ * - x: The vector.
+ */
+function diagonal(x:Boolean[_]) -> Boolean[_,_] {
+  auto n <- length(x);
+  auto Z <- matrix(false, n, n);
+  for (i:Integer in 1..n) {
+    Z[i,i] <- x[i];
+  }
+  return Z;
+}
+
+/**
  * Create identity matrix.
  *
  * - length: Number of rows/columns.

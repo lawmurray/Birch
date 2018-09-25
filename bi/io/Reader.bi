@@ -360,4 +360,380 @@ class Reader {
    * are themselves arrays of the same length and compatible type.
    */
   function getRealMatrix(path:[String]) -> Real[_,_]?;
+
+  /**
+   * Get this as a Boolean.
+   *
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if this is of a compatible type.
+   */
+  function get(value:Boolean?) -> Boolean? {
+    return getBoolean();
+  }
+
+  /**
+   * Get this as an integer.
+   *
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if this is of a compatible type.
+   */
+  function get(value:Integer?) -> Integer? {
+    return getInteger();
+  }
+  
+  /**
+   * Get this as a real.
+   *
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if this is of a compatible type.
+   */
+  function get(value:Real?) -> Real? {
+    return getReal();
+  }
+
+  /**
+   * Get this as a string.
+   *
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if this is of a compatible type.
+   */
+  function get(value:String?) -> String? {
+    return getString();
+  }
+
+  /**
+   * Get this as a vector of Booleans.
+   *
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if this is an array with all elements
+   * of a compatible type.
+   */
+  function get(value:Boolean[_]?) -> Boolean[_]? {
+    return getBooleanVector();
+  }
+
+  /**
+   * Get this as a vector of integers.
+   *
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if this is an array with all elements
+   * of a compatible type.
+   */
+  function get(value:Integer[_]?) -> Integer[_]? {
+    return getIntegerVector();
+  }
+
+  /**
+   * Get this as a vector of reals.
+   *
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if this is an array with all elements
+   * of a compatible type.
+   */
+  function get(value:Real[_]?) -> Real[_]? {
+    return getRealVector();
+  }
+
+  /**
+   * Get this as a matrix of Booleans.
+   *
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if this is an array where all elements
+   * are themselves arrays of the same length and compatible type.
+   */
+  function get(value:Boolean[_,_]?) -> Boolean[_,_]? {
+    return getBooleanMatrix();
+  }
+
+  /**
+   * Get this as a matrix of integers.
+   *
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if this is an array where all elements
+   * are themselves arrays of the same length and compatible type.
+   */
+  function get(value:Integer[_,_]?) -> Integer[_,_]? {
+    return getIntegerMatrix();
+  }
+
+  /**
+   * Get this as a matrix of reals.
+   *
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if this is an array where all elements
+   * are themselves arrays of the same length and compatible type.
+   */
+  function get(value:Real[_,_]?) -> Real[_,_]? {
+    return getRealMatrix();
+  }
+
+  /**
+   * Get a Boolean.
+   *
+   * - name: Name of the entry.
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if the given entry exists and is of a
+   * compatible type.
+   */
+  function get(name:String, value:Boolean?) -> Boolean? {
+    return getBoolean(name);
+  }
+
+  /**
+   * Get an integer.
+   *
+   * - name: Name of the entry.
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if the given entry exists and is of a
+   * compatible type.
+   */
+  function get(name:String, value:Integer?) -> Integer? {
+    return getInteger(name);
+  }
+
+  /**
+   * Get a real.
+   *
+   * - name: Name of the entry.
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if the given entry exists and is of a
+   * compatible type.
+   */
+  function get(name:String, value:Real?) -> Real? {
+    return getReal(name);
+  }
+
+  /**
+   * Get a string.
+   *
+   * - name: Name of the entry.
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if the given entry exists and is of a
+   * compatible type.
+   */
+  function get(name:String, value:String?) -> String? {
+    return getString(name);
+  }
+
+  /**
+   * Get a vector of Booleans.
+   *
+   * - name: Name of the entry.
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if this is an array with all elements
+   * of a compatible type.
+   */
+  function get(name:String, value:Boolean[_]?) -> Boolean[_]? {
+    return getBooleanVector(name);
+  }
+
+  /**
+   * Get a vector of integers.
+   *
+   * - name: Name of the entry.
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if this is an array with all elements
+   * of a compatible type.
+   */
+  function get(name:String, value:Integer[_]?) -> Integer[_]? {
+    return getIntegerVector(name);
+  }
+
+  /**
+   * Get a vector of reals.
+   *
+   * - name: Name of the entry.
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if this is an array with all elements
+   * of a compatible type.
+   */
+  function get(name:String, value:Real[_]?) -> Real[_]? {
+    return getRealVector(name);
+  }
+
+  /**
+   * Get a matrix of Booleans.
+   *
+   * - name: Name of the entry.
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if this is an array where all elements
+   * are themselves arrays of the same length and compatible type.
+   */
+  function get(name:String, value:Boolean[_,_]?) -> Boolean[_,_]? {
+    return getBooleanMatrix(name);
+  }
+
+  /**
+   * Get a matrix of integers.
+   *
+   * - name: Name of the entry.
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if this is an array where all elements
+   * are themselves arrays of the same length and compatible type.
+   */
+  function get(name:String, value:Integer[_,_]?) -> Integer[_,_]? {
+    return getIntegerMatrix(name);
+  }
+
+  /**
+   * Get a matrix of reals.
+   *
+   * - name: Name of the entry.
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if this is an array where all elements
+   * are themselves arrays of the same length and compatible type.
+   */
+  function get(name:String, value:Real[_,_]?) -> Real[_,_]? {
+    return getRealMatrix(name);
+  }
+
+  /**
+   * Get a Boolean.
+   *
+   * - path: Path of the entry.
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if the given entry exists and is of a
+   * compatible type.
+   */
+  function get(path:[String], value:Boolean?) -> Boolean? {
+    return getBoolean(path);
+  }
+
+  /**
+   * Get an integer.
+   *
+   * - path: Path of the entry.
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if the given entry exists and is of a
+   * compatible type.
+   */
+  function get(path:[String], value:Integer?) -> Integer? {
+    return getInteger(path);
+  }
+
+  /**
+   * Get a real.
+   *
+   * - path: Path of the entry.
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if the given entry exists and is of a
+   * compatible type.
+   */
+  function get(path:[String], value:Real?) -> Real? {
+    return getReal(path);
+  }
+
+  /**
+   * Get a string.
+   *
+   * - path: Path of the entry.
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if the given entry exists and is of a
+   * compatible type.
+   */
+  function get(path:[String], value:String?) -> String? {
+    return getString(path);
+  }
+
+  /**
+   * Get a vector of Booleans.
+   *
+   * - path: Path of the entry.
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if this is an array with all elements
+   * of a compatible type.
+   */
+  function get(path:[String], value:Boolean[_]?) -> Boolean[_]? {
+    return getBooleanVector(path);
+  }
+
+  /**
+   * Get a vector of integers.
+   *
+   * - path: Path of the entry.
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if this is an array with all elements
+   * of a compatible type.
+   */
+  function get(path:[String], value:Integer[_]?) -> Integer[_]? {
+    return getIntegerVector(path);
+  }
+
+  /**
+   * Get a vector of reals.
+   *
+   * - path: Path of the entry.
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if this is an array with all elements
+   * of a compatible type.
+   */
+  function get(path:[String], value:Real[_]?) -> Real[_]? {
+    return getRealVector(path);
+  }
+
+  /**
+   * Get a matrix of Booleans.
+   *
+   * - path: Path of the entry.
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if this is an array where all elements
+   * are themselves arrays of the same length and compatible type.
+   */
+  function get(path:[String], value:Boolean[_,_]?) -> Boolean[_,_]? {
+    return getBooleanMatrix(path);
+  }
+
+  /**
+   * Get a matrix of integers.
+   *
+   * - path: Path of the entry.
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if this is an array where all elements
+   * are themselves arrays of the same length and compatible type.
+   */
+  function get(path:[String], value:Integer[_,_]?) -> Integer[_,_]? {
+    return getIntegerMatrix(path);
+  }
+
+  /**
+   * Get a matrix of reals.
+   *
+   * - path: Path of the entry.
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if this is an array where all elements
+   * are themselves arrays of the same length and compatible type.
+   */
+  function get(path:[String], value:Real[_,_]?) -> Real[_,_]? {
+    return getRealMatrix(path);
+  }
 }

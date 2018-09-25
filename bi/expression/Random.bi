@@ -63,6 +63,20 @@ class Random<Value> < Expression<Value> {
   function isMissing() -> Boolean {
     return !x?;
   }
+  
+  function read(reader:Reader) {
+    assert !this.dist?;
+    assert !this.x?;
+    x <- reader.get(x);
+  }
+
+  function write(writer:Writer) {
+    if (x? || dist?) {
+      writer.set(value());
+    } else {
+      writer.setNil();
+    }
+  }
 
   function graftGaussian() -> DelayGaussian? {
     if (!x?) {
