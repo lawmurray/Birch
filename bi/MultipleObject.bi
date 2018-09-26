@@ -1,28 +1,28 @@
 class MultiObjectParameter {
   /**
-   * Probability of death.
+   * Lower corner of domain of interest.
    */
-  μ:Real;
+  l:Real[_];
+
+  /**
+   * Upper corner of domain of interest.
+   */
+  u:Real[_];
+
+  /**
+   * Probability of survival.
+   */
+  s:Real;
 
   /**
    * Probability of detection.
    */
-  ρ:Real;
+  d:Real;
 
   /**
-   * Birth rate.
+   * Initial value covariance.
    */
-  λ_0:Real;
-
-  /**
-   * Birch position lower bound.
-   */
-  l_0:Real[_];
-
-  /**
-   * Birth position upper bound.
-   */
-  u_0:Real[_];
+  M:Real[_,_];
   
   /**
    * Transition matrix.
@@ -45,48 +45,41 @@ class MultiObjectParameter {
   R:Real[_,_];
 
   /**
+   * Birth rate.
+   */
+  λ:Real;
+
+  /**
    * Clutter rate.
    */
-  λ_c:Real;
-
-  /**
-   * Clutter position lower bound.
-   */
-  l_c:Real[_];
-
-  /**
-   * Clutter position upper bound.
-   */
-  u_c:Real[_];
+  μ:Real;
   
   function read(reader:Reader) {
-    μ <- reader.getReal("μ")!;
-    ρ <- reader.getReal("ρ")!;
-    λ_0 <- reader.getReal("λ_0")!;
-    l_0 <- reader.getRealVector("l_0")!;
-    u_0 <- reader.getRealVector("u_0")!;
-    A <- reader.getRealMatrix("A")!;
-    Q <- reader.getRealMatrix("Q")!;
-    B <- reader.getRealMatrix("B")!;
-    R <- reader.getRealMatrix("R")!;
-    λ_c <- reader.getReal("λ_c")!;
-    l_c <- reader.getRealVector("l_c")!;
-    u_c <- reader.getRealVector("u_c")!;
+    l <- reader.get("l", l)!;
+    u <- reader.get("u", u)!;
+    s <- reader.get("s", s)!;
+    d <- reader.get("d", d)!;
+    M <- reader.get("M", M)!;
+    A <- reader.get("A", A)!;
+    Q <- reader.get("Q", Q)!;
+    B <- reader.get("B", B)!;
+    R <- reader.get("R", R)!;
+    λ <- reader.get("λ", λ)!;
+    μ <- reader.get("μ", μ)!;
   }
   
   function write(writer:Writer) {
-    writer.setReal("μ", μ);
-    writer.setReal("ρ", ρ);
-    writer.setReal("λ_0", λ_0);
-    writer.setRealVector("l_0", l_0);
-    writer.setRealVector("u_0", u_0);
-    writer.setRealMatrix("A", A);
-    writer.setRealMatrix("Q", Q);
-    writer.setRealMatrix("B", B);
-    writer.setRealMatrix("R", R);
-    writer.setReal("λ_c", λ_c);
-    writer.setRealVector("l_c", l_c);
-    writer.setRealVector("u_c", u_c);
+    writer.set("l", l);
+    writer.set("u", u);
+    writer.set("s", s);
+    writer.set("d", d);
+    writer.set("M", M);
+    writer.set("A", A);
+    writer.set("Q", Q);
+    writer.set("B", B);
+    writer.set("R", R);
+    writer.set("λ", λ);
+    writer.set("μ", μ);
   }
 }
 
@@ -103,14 +96,16 @@ class MultiObjectState {
 }
 
 class MultiObjectObservation {
-  o:List<Random<Real[_]>>;
+  o:List<Random<Real[_]>>?;
 
   function read(reader:Reader) {
+    o:List<Random<Real[_]>>;
     o.read(reader);
+    this.o <- o;
   }
 
   function write(writer:Writer) {
-    o.write(writer);
+    o!.write(writer);
   }
 }
 
@@ -120,17 +115,13 @@ class MultiObjectVariate = StateSpaceVariate<MultiObjectParameter,MultiObjectSta
  * Model for Multi objects.
  */
 class MultiObjectModel < StateSpaceModel<MultiObjectVariate> {
-  fiber m(x':MultiObjectState, θ:MultiObjectParameter) -> Real {
-    
-  }
-  
   fiber f(x':MultiObjectState, x:MultiObjectState, θ:MultiObjectParameter) -> Real {
     /* move current objects */
     auto o <- x.o.walk();
     while o? {
-      d:Boolean;
-      d <~ Bernoulli(θ.μ);  // does this object die?
-      if (!d) {
+      s:Boolean;
+      s <~ Bernoulli(θ.s);
+      if (s) {
         o':Random<Real[_]>;
         o' ~ Gaussian(θ.A*o!, θ.Q);
         x'.o.pushBack(o');
@@ -139,34 +130,74 @@ class MultiObjectModel < StateSpaceModel<MultiObjectVariate> {
     
     /* birth new objects */
     N:Integer;
-    N <~ Poisson(θ.λ_0);
+    N <~ Poisson(θ.λ);
     for n:Integer in 1..N {
+      auto μ <- vector(0.0, 3*length(θ.l));
+      μ[1..2] <~ Uniform(θ.l, θ.u);
       o':Random<Real[_]>;
-      o' ~ Uniform(θ.l_0, θ.u_0);
+      o' ~ Gaussian(μ, θ.M);
       x'.o.pushBack(o');
     }
   }
 
   fiber g(y':MultiObjectObservation, x:MultiObjectState, θ:MultiObjectParameter) -> Real {
-    /* observe current objects */
-    auto o <- x.o.walk();
-    while o? {
-      d:Boolean;
-      d <~ Bernoulli(θ.ρ);  // is this object detected?
-      if (d) {
-        o':Random<Real[_]>;
-        o' ~ Gaussian(θ.B*o!, θ.R);
-        y'.o.pushBack(o');
+    if y'.o? {
+      /* current objects */
+      auto r <- y'.o!.copy();
+      auto o <- x.o.walk();
+      while o? {
+        d:Boolean;
+        d <~ Bernoulli(θ.d);  // is this object detected?
+        if (d) {
+          p:Real[r.size()];
+          i:Integer <- 1;
+          auto f <- r.walk();
+          while f? {
+            p[i] <- Gaussian(θ.B*o!, θ.R).pdf(f!);
+            i <- i + 1;
+          }
+          P:Real <- sum(p);
+          if P > 0.0 {
+            p <- p/P;
+            i <~ Categorical(p);            // propose an association
+            r.get(i) ~> Gaussian(θ.B*o!, θ.R);  // associate
+            r.erase(i);                     // observation is now associated
+            i ~> Categorical(p);            // proposal correction
+          }
+        }
       }
-    }
+      
+      /* unassociated observations are just clutter */
+      r.size() ~> Poisson(θ.μ);
+      auto f <- r.walk();
+      while f? {
+        f! ~> Uniform(θ.l, θ.u);
+      }
+    } else {
+      /* initialise with empty list */
+      l:List<Random<Real[_]>>;
+      y'.o <- l;
+    
+      /* current objects */
+      auto o <- x.o.walk();
+      while o? {
+        d:Boolean;
+        d <~ Bernoulli(θ.d);  // is this object detected?
+        if (d) {
+          o':Random<Real[_]>;
+          o' ~ Gaussian(θ.B*o!, θ.R);
+          y'.o!.pushBack(o');
+        }
+      }
 
-    /* clutter */
-    N:Integer;
-    N <~ Poisson(θ.λ_c);
-    for n:Integer in 1..N {
-      o':Random<Real[_]>;
-      o' ~ Uniform(θ.l_c, θ.u_c);
-      y'.o.pushBack(o');
+      /* clutter */
+      N:Integer;
+      N <~ Poisson(θ.μ);
+      for n:Integer in 1..N {
+        o':Random<Real[_]>;
+        o' ~ Uniform(θ.l, θ.u);
+        y'.o!.pushBack(o');
+      }
     }
   }
 }
