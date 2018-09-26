@@ -162,7 +162,7 @@ class MultiObjectModel < StateSpaceModel<MultiObjectVariate> {
             i <~ Categorical(p);            // propose an association
             r.get(i) ~> Gaussian(θ.B*o!, θ.R);  // associate
             r.erase(i);                     // observation is now associated
-            i ~> Categorical(p);            // proposal correction
+            yield -log(p[i]);            // proposal correction
           }
         }
       }
