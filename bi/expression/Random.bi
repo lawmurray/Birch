@@ -64,18 +64,56 @@ class Random<Value> < Expression<Value> {
     return !x?;
   }
   
-  function read(reader:Reader) {
-    assert !this.dist?;
-    assert !this.x?;
-    x <- reader.get(x);
+  /**
+   * Evaluate the probability mass function (if it exists) at a value.
+   *
+   * - x: The value.
+   *
+   * Return: the probability mass.
+   */
+  function pmf(x:Value) -> Real {
+    assert dist?;
+    return dist!.pmf(x);
   }
 
-  function write(writer:Writer) {
-    if (x? || dist?) {
-      writer.set(value());
-    } else {
-      writer.setNil();
-    }
+  /**
+   * Evaluate the probability density function (if it exists) at a value.
+   *
+   * - x: The value.
+   *
+   * Return: the probability density.
+   */
+  function pdf(x:Value) -> Real {
+    assert dist?;
+    return dist!.pdf(x);
+  }
+
+  /**
+   * Evaluate the cumulative distribution function at a value.
+   *
+   * - x: The value.
+   *
+   * Return: the cumulative probability
+   */
+  function cdf(x:Value) -> Real {
+    assert dist?;
+    return dist!.cdf(x);
+  }
+  
+  /**
+   * Finite lower bound of the support of this node, if any.
+   */
+  function lower() -> Value? {
+    assert dist?;
+    return dist!.lower();
+  }
+  
+  /**
+   * Finite upper bound of the support of this node, if any.
+   */
+  function upper() -> Value? {
+    assert dist?;
+    return dist!.upper();
   }
 
   function graftGaussian() -> DelayGaussian? {
@@ -176,6 +214,20 @@ class Random<Value> < Expression<Value> {
       return dist!.graftBoundedDiscrete();
     } else {
       return nil;
+    }
+  }
+
+  function read(reader:Reader) {
+    assert !this.dist?;
+    assert !this.x?;
+    x <- reader.get(x);
+  }
+
+  function write(writer:Writer) {
+    if (x? || dist?) {
+      writer.set(value());
+    } else {
+      writer.setNil();
     }
   }
 }

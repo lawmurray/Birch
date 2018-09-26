@@ -3,26 +3,25 @@
  *
  * - Value: Value type.
  *
- * - x: Associated random variable.
+ * - x: Associated random variate.
  */
 class DelayValue<Value>(x:Random<Value>&) < Delay {
   /**
-   * Associated delayed random variate, if any.
+   * Associated random variate, if any.
    */
   x:Random<Value>& <- x;
 
   /**
-   * Instantiate the associated delayed random variate by simulating.
+   * Instantiate the associated random variate, if it exists, by simulation.
    */
   function realize() {
-    x:Value <- simulate();
-    y:Random<Value>? <- this.x;
+    y:Random<Value>? <- x;
     if y? {
       assert !(y!.x?);
-      y!.x <- x;
+      y!.x <- simulate();
+      condition(y!.x!);
+      realized <- true;
     }
-    condition(x);
-    realized <- true;
     detach();
   }
   
