@@ -250,5 +250,6 @@ fiber particle(model:String, reader:Reader?) -> Model {
   
   /* final yield, ensuring that even with no observations, the particle
    * yields at least once after initialization */
+  x!.w <- 0.0;
   yield x!;
 }

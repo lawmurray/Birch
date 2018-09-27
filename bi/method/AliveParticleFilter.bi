@@ -23,7 +23,11 @@ class AliveParticleFilter < ParticleFilter {
     f0:Model![_] <- f;
     w0:Real[_] <- w;
     a:Integer[_] <- ancestors(w0);
-    P:Integer <- 0;  // number of proposals
+    P:Integer;  // number of proposals
+    cpp {{
+    std::atomic<int> P;
+    P = 0;
+    }}
 
     /* propagate and weight until N acceptances; the first N proposals are
      * drawn using the standard (stratified) resampler, then each is
@@ -32,7 +36,9 @@ class AliveParticleFilter < ParticleFilter {
     parallel for (n:Integer in 1..N) {
       f[n] <- f0[a[n]];
       if (f[n]?) {
-        P <- P + 1;
+        cpp {{
+        ++P;
+        }}
       } else {
         stderr.print("error: particles terminated prematurely.\n");
         exit(1);
@@ -40,7 +46,9 @@ class AliveParticleFilter < ParticleFilter {
       while (f[n]!.w == -inf) {
         f[n] <- f0[ancestor(w0)];
         if (f[n]?) {
-          P <- P + 1;
+          cpp {{
+          ++P;
+          }}
         } else {
           stderr.print("error: particles terminated prematurely.\n");
           exit(1);
@@ -48,7 +56,11 @@ class AliveParticleFilter < ParticleFilter {
       }
       w[n] <- f[n]!.w;
     }
-    
+
+    cpp {{
+    P_ = P;
+    }}
+
     /* propagate and weight until one further acceptance, that is discarded
      * for unbiasedness in the normalizing constant estimate */
     f1:Model! <- f0[ancestor(w0)];
