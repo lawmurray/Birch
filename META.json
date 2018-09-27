@@ -11,6 +11,7 @@
   
   "manifest": {
     "source": [
+      "bi/data.bi",
       "bi/Detection.bi",
       "bi/draw.bi",
       "bi/Global.bi",
