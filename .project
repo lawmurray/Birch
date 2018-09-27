@@ -3,6 +3,7 @@
 	<name>MultiObjectTracking</name>
 	<comment></comment>
 	<projects>
+		<project>Birch.Cairo</project>
 		<project>Birch.Standard</project>
 	</projects>
 	<buildSpec>

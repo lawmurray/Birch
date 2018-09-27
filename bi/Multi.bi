@@ -1,26 +1,13 @@
-class Track = StateSpaceVariate<Global,Random<Real[_]>,Random<Real[_]>>;
-class Detection = Random<Real[_]>;
-
-class TrackModel < StateSpaceModel<Track> {
-  fiber initial(x':Random<Real[_]>, θ:Global) -> Real {
-    auto μ <- vector(0.0, 3*length(θ.l));
-    μ[1..2] <~ Uniform(θ.l, θ.u);
-    x' ~ Gaussian(μ, θ.M);
-  }
+class Multi < StateSpaceModel<Global,List<Track>,List<Detection>> {
+  /**
+   * All tracks.
+   */
+  z:List<Track>;
   
-  fiber transition(x':Random<Real[_]>, x:Random<Real[_]>, θ:Global) -> Real {
-    x' ~ Gaussian(θ.A*x, θ.Q);
-  }
-
-  fiber observation(y':Random<Real[_]>, x:Random<Real[_]>, θ:Global) -> Real {
-    y' ~ Gaussian(θ.B*x, θ.R);
-  }
-}
-
-class Multi = StateSpaceVariate<Global,List<Track>,List<Detection>>;
-
-class MultiModel < StateSpaceModel<Multi> {
-  m:TrackModel;
+  /**
+   * Time.
+   */
+  t:Integer <- 1;
 
   fiber transition(x':List<Track>, x:List<Track>, θ:Global) -> Real {
     /* move current objects */
@@ -29,7 +16,7 @@ class MultiModel < StateSpaceModel<Multi> {
       s:Boolean;
       s <~ Bernoulli(θ.s);
       if (s) {
-        m.step(track!);
+        track!.step();
         x'.pushBack(track!);
       }
     }
@@ -39,10 +26,14 @@ class MultiModel < StateSpaceModel<Multi> {
     N <~ Poisson(θ.λ);
     for n:Integer in 1..N {
       track:Track;
+      track.t <- t;
       track.θ <- θ;
-      m.start(track);
+      track.start();
       x'.pushBack(track);
+      z.pushBack(track);
     }
+    
+    t <- t + 1;
   }
 
   fiber observation(y':List<Detection>, x:List<Track>, θ:Global) -> Real {
@@ -98,5 +89,16 @@ class MultiModel < StateSpaceModel<Multi> {
         y'.pushBack(detection);
       }
     }
+  }
+  
+  function read(reader:Reader) {
+    θ.read(reader.getObject("θ"));
+    y.read(reader.getObject("y"));
+  }
+  
+  function write(writer:Writer) {
+    θ.write(writer.setObject("θ"));
+    z.write(writer.setObject("z"));
+    y.write(writer.setObject("y"));
   }
 }
