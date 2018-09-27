@@ -16,7 +16,7 @@ class ParticleFilter < Method {
   /**
    * Particles.
    */
-  f:Variate![_];
+  f:Model![_];
   
   /**
    * Log-weights.
@@ -49,8 +49,8 @@ class ParticleFilter < Method {
    */
   trigger:Real <- 0.7;
 
-  function sample(v:Variate, m:Model, ncheckpoints:Integer, verbose:Boolean) -> Variate {
-    start(v, m, ncheckpoints);
+  function sample(m:Model, ncheckpoints:Integer, verbose:Boolean) -> Model {
+    start(m, ncheckpoints);
     for (t:Integer in 1..ncheckpoints) {
       if (ncheckpoints > 1 && verbose) {
         stderr.print(t + " ");
@@ -76,9 +76,9 @@ class ParticleFilter < Method {
   /**
    * Start the filter.
    */  
-  function start(v:Variate, m:Model, ncheckpoints:Integer) {
-    f0:Variate! <- particle(v, m);
-    f1:Variate![N];
+  function start(m:Model, ncheckpoints:Integer) {
+    f0:Model! <- particle(m);
+    f1:Model![N];
     for n:Integer in 1..N {
       f1[n] <- clone(f0);
     }
@@ -162,10 +162,10 @@ class ParticleFilter < Method {
 /*
  * Particle.
  */
-fiber particle(v:Variate, m:Model) -> Variate {
-  auto f <- m.simulate(v);
+fiber particle(m:Model) -> Model {
+  auto f <- m.simulate();
   while (f?) {
-    v.w <- f!;
-    yield v;
+    m.w <- f!;
+    yield m;
   }
 }

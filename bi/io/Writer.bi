@@ -336,6 +336,17 @@ class Writer {
   function set(value:String) {
     setString(value);
   }
+  
+  /**
+   * Write as an object.
+   *
+   * - o: The object.
+   *
+   * Calls `o.write(this)`.
+   */
+  function set(o:Object) {
+    o.write(this);
+  }
 
   /**
    * Set this as a vector of Booleans.

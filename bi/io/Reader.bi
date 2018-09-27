@@ -404,6 +404,20 @@ class Reader {
   function get(value:String?) -> String? {
     return getString();
   }
+  
+  /**
+   * Read into an object.
+   *
+   * - o: The object.
+   *
+   * Return: The object.
+   *
+   * Calls `o.read(this)` and returns.
+   */
+  function get(o:Object) -> Object {
+    o.read(this);
+    return o;
+  }
 
   /**
    * Get this as a vector of Booleans.

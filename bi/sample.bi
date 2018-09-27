@@ -3,8 +3,6 @@
  *
  * General options.
  *
- *   - `--variate`: Name of the variate class.
- *
  *   - `--model`: Name of the model class.
  *
  *   - `--method`: Name of the method class.
@@ -26,7 +24,6 @@
  *   - `--verbose`: Enable verbose reporting?
  */
 program sample(
-    variate:String,
     model:String,
     method:String <- "ParticleFilter",
     input_file:String?,
@@ -40,13 +37,6 @@ program sample(
   /* random number generator */
   if (seed?) {
     global.seed(seed!);
-  }
-
-  /* variate */
-  auto v <- Variate?(make(variate));
-  if (!v?) {
-    stderr.print("error: " + variate + " must be a subtype of Variate with no initialization parameters.\n");
-    exit(1);
   }
 
   /* model */
@@ -71,11 +61,13 @@ program sample(
   
   if (input_file?) {
     input <- JSONReader(input_file!);
-    v!.read(input);
+    m!.read(input);
   }
   if (output_file?) {
     output <- JSONWriter(output_file!);
-    output!.setArray();
+    if (nsamples > 1) {
+      output!.setArray();
+    }
   }
   if (config_file?) {
     config <- JSONReader(config_file!);
@@ -83,20 +75,34 @@ program sample(
   }
   if (diagnostic_file?) {
     diagnostic <- JSONWriter(diagnostic_file!);
-    diagnostic!.setArray();
+    if (nsamples > 1) {
+      diagnostic!.setArray();
+    }
   }
 
   /* sample */
   for i:Integer in 1..nsamples {
-    v <- s!.sample(v!, m!, ncheckpoints, verbose);
+    m <- s!.sample(m!, ncheckpoints, verbose);
       
     if (output?) {
-      v!.write(output!.push());
-      output!.save();
+      if (nsamples > 1) {
+        m!.write(output!.push());
+      } else {
+        m!.write(output!);
+      }
     }
     if (diagnostic?) {
-      s!.write(diagnostic!.push());
-      diagnostic!.save();
+      if (nsamples > 1) {
+        s!.write(diagnostic!.push());
+      } else {
+        s!.write(diagnostic!);
+      }
     }
+  }
+  if (output?) {
+    output!.save();
+  }
+  if (diagnostic?) {
+    diagnostic!.save();
   }
 }

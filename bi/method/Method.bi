@@ -5,14 +5,13 @@ class Method {
   /**
    * Draw a weighted sample from the target distribution
    *
-   * - v: Variate.
    * - m: Model.
    * - ncheckpoints: Number of checkpoints.
    * - trigger: Relative ESS below which resampling should be triggered.
    *
    * Returns a new sample.
    */
-  function sample(v:Variate, m:Model, ncheckpoints:Integer, verbose:Boolean) -> Variate {
+  function sample(m:Model, ncheckpoints:Integer, verbose:Boolean) -> Model {
     //
   }
 

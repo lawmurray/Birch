@@ -1,7 +1,7 @@
 /**
  * Deep clone a fiber.
  */
-function clone(f:Variate!) -> Variate! {
+function clone(f:Model!) -> Model! {
   cpp{{
   return f_.clone();
   }}
