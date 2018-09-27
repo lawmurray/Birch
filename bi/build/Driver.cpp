@@ -545,6 +545,15 @@ void bi::Driver::meta() {
   readFiles(meta, "require.header", false);
   readFiles(meta, "require.library", false);
   readFiles(meta, "require.program", false);
+
+  /* convert package requirements to header and library requirements */
+  for (auto name : metaFiles["require.package"]) {
+    auto internalName = tarname(name.string());
+    fs::path header = fs::path("bi") / internalName;
+    header.replace_extension(".hpp");
+    metaFiles["require.header"].insert(header.string());
+    metaFiles["require.library"].insert(internalName);
+  }
 }
 
 void bi::Driver::setup() {
@@ -700,13 +709,9 @@ bi::Package* bi::Driver::createPackage() {
   }
   for (auto name : metaFiles["require.package"]) {
     /* add *.bih and *.hpp header and library dependencies */
-    auto internalName = tarname(name.string());
-    fs::path header = fs::path("bi") / internalName;
+    fs::path header = fs::path("bi") / tarname(name.string());
     header.replace_extension(".bih");
     package->addHeader(find(include_dirs, header).string());
-    header.replace_extension(".hpp");
-    metaFiles["require.header"].insert(header.string());
-    metaFiles["require.library"].insert(internalName);
   }
   for (auto file : metaFiles["manifest.source"]) {
     if (file.extension().compare(".bi") == 0) {
