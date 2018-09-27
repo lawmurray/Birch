@@ -4,7 +4,9 @@
   "description": "",
   "manifest": {
     "source": [
-      "bi/MultipleObject.bi"
+      "bi/Global.bi",
+      "bi/Multi.bi",
+      "bi/Track.bi"
     ],
     "data": [
     
