@@ -59,23 +59,22 @@ class Multi < StateSpaceModel<Global,List<Track>,List<Detection>> {
             p[n] <- track!.y.back().pdf(detection!);
             n <- n + 1;
           }
-          P:Real <- sum(p);          
-          if P > 0.0 {  // check
+          P:Real <- sum(p);
+          if P > 0.0 {
             p <- p/P;
             n <~ Categorical(p);
-            yield track!.y.back().pdf(y'.get(n)) - log(p[n]);
+            yield track!.y.back().realize(y'.get(n)) - log(p[n]);
             y'.erase(n);
+          } else {
+            yield -inf;
           }
-        } else {
-          /* simulate an observation for this object */
-          y'.pushBack(track!.y.back());
         }
       }
     }
 
     /* clutter */
     if associate {
-      y'.size() ~> Poisson(θ.μ);
+      y'.size() - 1 ~> Poisson(θ.μ);
       auto detection <- y'.walk();
       while detection? {
         detection! ~> Uniform(θ.l, θ.u);
@@ -83,7 +82,7 @@ class Multi < StateSpaceModel<Global,List<Track>,List<Detection>> {
     } else {
       N:Integer;
       N <~ Poisson(θ.μ);
-      for n:Integer in 1..N {
+      for n:Integer in 1..(N + 1) {
         detection:Detection;
         detection <~ Uniform(θ.l, θ.u);
         y'.pushBack(detection);
@@ -93,7 +92,7 @@ class Multi < StateSpaceModel<Global,List<Track>,List<Detection>> {
   
   function read(reader:Reader) {
     θ.read(reader.getObject("θ"));
-    y.read(reader.getObject("y"));
+    y1.read(reader.getObject("y"));
   }
   
   function write(writer:Writer) {
