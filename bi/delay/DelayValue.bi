@@ -24,6 +24,22 @@ class DelayValue<Value>(x:Random<Value>&) < Delay {
     }
     detach();
   }
+
+  /**
+   * Instantiate the associated random variate, if it exists, by observation.
+   */
+  function realize(x:Value) -> Real {
+    w:Real <- observe(x);
+    y:Random<Value>? <- this.x;
+    if y? {
+      assert !(y!.x?);
+      y!.x <- x;
+      condition(y!.x!);
+      realized <- true;
+    }
+    detach();
+    return w;
+  }
   
   /**
    * Simulate a random variate.

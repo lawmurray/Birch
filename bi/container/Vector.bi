@@ -171,4 +171,21 @@ class Vector<Type> {
     }}
     nelements <- n;
   }
+
+  function read(reader:Reader) {
+    auto f <- reader.getArray();
+    while (f?) {
+      x:Type;
+      x.read(f!);
+      pushBack(x);
+    }
+  }
+
+  function write(writer:Writer) {
+    writer.setArray();
+    auto f <- walk();
+    while (f?) {
+      f!.write(writer.push());
+    }
+  }
 }

@@ -58,6 +58,21 @@ class Random<Value> < Expression<Value> {
   }
 
   /**
+   * Set the value of the random variable.
+   *
+   * - x: The value.
+   *
+   * Return: The log likelihood.
+   */
+  function realize(x:Value) -> Real {
+    assert dist?;
+    w:Real <- dist!.realize(x);
+    dist <- nil;
+    assert this.x?;
+    return w;
+  }
+
+  /**
    * Are the values of any random variables within this expression missing?
    */
   function isMissing() -> Boolean {
