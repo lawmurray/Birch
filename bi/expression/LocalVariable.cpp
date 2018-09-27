@@ -8,8 +8,8 @@
 bi::LocalVariable::LocalVariable(const Annotation annotation, Name* name,
     Type* type, Expression* brackets, Expression* args, Expression* value,
     Location* loc) :
-    Annotated(annotation),
     Expression(type, loc),
+    Annotated(annotation),
     Named(name),
     Bracketed(brackets),
     Argumented(args),
