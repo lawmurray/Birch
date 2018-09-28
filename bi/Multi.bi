@@ -13,8 +13,10 @@ class Multi < StateSpaceModel<Global,List<Track>,List<Detection>> {
     /* move current objects */
     auto track <- x.walk();
     while track? {
+      ρ:Real <- pmf_poisson(t - track!.t - 1, θ.τ);
+      R:Real <- 1.0 - cdf_poisson(t - track!.t - 1, θ.τ) + ρ;
       s:Boolean;
-      s <~ Bernoulli(θ.s);
+      s <~ Bernoulli(1.0 - ρ/R);
       if (s) {
         track!.step();
         x'.pushBack(track!);
@@ -44,32 +46,36 @@ class Multi < StateSpaceModel<Global,List<Track>,List<Detection>> {
     n:Integer <- 0;
   
     /* current objects */
-    auto track <- x.walk();
-    while track? {
-      d:Boolean;
-      d <~ Bernoulli(θ.d);
-      if d {
-        /* object is detected */
-        if associate {
-          /* associate this object with an observation */
-          p:Real[y'.size()];
-          auto detection <- y'.walk();
+    if associate {
+      auto track <- x.walk();
+      D:Integer <- 0;  // total number of detections
+      while track? {
+        d:Boolean;
+        d <~ Bernoulli(θ.d);
+        if d {
+          /* object is detected, associate it with an observation */
+          D <- D + 1;
+          q:Real[y'.size()];
           n <- 1;
+          auto detection <- y'.walk();
           while detection? {
-            p[n] <- track!.y.back().pdf(detection!);
+            q[n] <- track!.y.back().pdf(detection!);
             n <- n + 1;
           }
-          P:Real <- sum(p);
-          if P > 0.0 {
-            p <- p/P;
-            n <~ Categorical(p);
-            yield track!.y.back().realize(y'.get(n)) - log(p[n]);
+          Q:Real <- sum(q);
+          if Q > 0.0 {
+            q <- q/Q;
+            n <~ Categorical(q);
+            yield track!.y.back().realize(y'.get(n)) - log(q[n]);
             y'.erase(n);
           } else {
             yield -inf;
           }
         }
       }
+      
+      /* multiple in prior probability of hypothesis */
+      yield -lchoose(y'.size() + D, D);
     }
 
     /* clutter */

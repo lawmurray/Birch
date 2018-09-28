@@ -10,11 +10,6 @@ class Global {
   u:Real[_];
 
   /**
-   * Probability of survival.
-   */
-  s:Real;
-
-  /**
    * Probability of detection.
    */
   d:Real;
@@ -53,11 +48,15 @@ class Global {
    * Clutter rate.
    */
   μ:Real;
+
+  /**
+   * Track length rate.
+   */
+  τ:Real;
   
   function read(reader:Reader) {
     l <- reader.get("l", l)!;
     u <- reader.get("u", u)!;
-    s <- reader.get("s", s)!;
     d <- reader.get("d", d)!;
     M <- reader.get("M", M)!;
     A <- reader.get("A", A)!;
@@ -66,12 +65,12 @@ class Global {
     R <- reader.get("R", R)!;
     λ <- reader.get("λ", λ)!;
     μ <- reader.get("μ", μ)!;
+    τ <- reader.get("τ", τ)!;
   }
   
   function write(writer:Writer) {
     writer.set("l", l);
     writer.set("u", u);
-    writer.set("s", s);
     writer.set("d", d);
     writer.set("M", M);
     writer.set("A", A);
@@ -80,5 +79,6 @@ class Global {
     writer.set("R", R);
     writer.set("λ", λ);
     writer.set("μ", μ);
+    writer.set("τ", τ);
   }
 }
