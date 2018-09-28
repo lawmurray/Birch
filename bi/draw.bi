@@ -12,6 +12,14 @@ program draw(
   cr.rectangle(0, 0, width, height);
   cr.fill();
   
+  palette:Real[_,_] <- [[0.3373, 0.7059, 0.9137],
+                        [0.8353, 0.3686, 0.0000],
+                        [0.0000, 0.6196, 0.4510],
+                        [0.9020, 0.6235, 0.0000],
+                        [0.8000, 0.4745, 0.6549],
+                        [0.9412, 0.8941, 0.2588],
+                        [0.0000, 0.4471, 0.6980]];
+  
   auto l <- input.getRealVector(["θ", "l"])!;
   auto u <- input.getRealVector(["θ", "u"])!;
 
@@ -21,14 +29,14 @@ program draw(
   
   cr.scale(scaleX, scaleY);
   cr.translate(-l[1], -l[2]);
-  cr.setLineWidth(2.0/scale);
 
   /* clutter */
   auto y <- input.getArray("y");
   while y? {
     auto Y <- y!.getRealMatrix();
     if Y? {
-      cr.setSourceRGB(0.8, 0.8, 0.8);
+      cr.setSourceRGB(0.9, 0.9, 0.9);
+      cr.setLineWidth(2.0/scale);
       for i:Integer in 1..rows(Y!) {
         cr.arc(Y![i,1], Y![i,2], 4.0/scale, 0.0, 2.0*π);
         cr.fill();
@@ -38,27 +46,34 @@ program draw(
 
   /* tracks */
   auto z <- input.getArray("z");
+  auto col <- 1;
   while z? {
     auto X <- z!.getRealMatrix("x");
     if (X? && rows(X!) > 0) {
-      cr.setSourceRGB(0.0, 0.0, 0.0);
-      cr.arc(X![1,1], X![1,2], 8.0/scale, 0.0, 2.0*π);
-      cr.stroke();
+      cr.setLineWidth(4.0/scale);
+      cr.setSourceRGB(palette[col,1], palette[col,2], palette[col,3]);
       cr.moveTo(X![1,1], X![1,2]);
       for i:Integer in 2..rows(X!) {
         cr.lineTo(X![i,1], X![i,2]);
       }
       cr.stroke();
+
+      for i:Integer in 1..rows(X!) {
+        cr.arc(X![i,1], X![i,2], 6.0/scale, 0.0, 2.0*π);
+        cr.fill();
+      }
     }
 
     auto Y <- z!.getRealMatrix("y");
     if (Y? && rows(Y!) > 0) {
-      cr.setSourceRGB(0.0, 0.0, 0.0);
+      cr.setLineWidth(2.0/scale);
       for i:Integer in 1..rows(Y!) {
-        cr.arc(Y![i,1], Y![i,2], 4.0/scale, 0.0, 2.0*π);
-        cr.fill();
+        cr.arc(Y![i,1], Y![i,2], 6.0/scale, 0.0, 2.0*π);
+        cr.stroke();
       }
     }
+    
+    col <- mod(col, rows(palette)) + 1;
   }
   
   cr.destroy();
