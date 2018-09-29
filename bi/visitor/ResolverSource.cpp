@@ -87,12 +87,11 @@ bi::Expression* bi::ResolverSource::modify(Slice* o) {
   const int sliceWidth = o->brackets->width();
   const int rangeDepth = o->brackets->depth();
 
-  if (typeDepth != sliceWidth) {
+  ArrayType* type = dynamic_cast<ArrayType*>(o->single->type->canonical());
+  if (!type || typeDepth != sliceWidth) {
     throw SliceException(o, typeDepth, sliceWidth);
   }
 
-  ArrayType* type = dynamic_cast<ArrayType*>(o->single->type->canonical());
-  assert(type);
   if (rangeDepth > 0) {
     o->type = new ArrayType(type->single, rangeDepth, o->loc);
   } else {
