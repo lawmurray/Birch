@@ -43,7 +43,7 @@ class TestScaledGammaPoisson(a:Real, k:Real, θ:Real) {
   function forward() -> Real[_] {
     y:Real[2];
     y[1] <- λ.value();
-    assert x.isMissing();
+    assert !x.hasValue();
     y[2] <- x.value();
     return y;
   }
@@ -51,7 +51,7 @@ class TestScaledGammaPoisson(a:Real, k:Real, θ:Real) {
   function backward() -> Real[_] {
     y:Real[2];
     y[2] <- x.value();
-    assert λ.isMissing();
+    assert !λ.hasValue();
     y[1] <- λ.value();
     return y;
   }

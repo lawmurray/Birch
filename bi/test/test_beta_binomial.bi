@@ -43,7 +43,7 @@ class TestBetaBinomial(n:Integer, α:Real, β:Real) {
   function forward() -> Real[_] {
     y:Real[2];    
     y[1] <- ρ.value();
-    assert x.isMissing();
+    assert !x.hasValue();
     y[2] <- x.value();
     return y;
   }
@@ -51,7 +51,7 @@ class TestBetaBinomial(n:Integer, α:Real, β:Real) {
   function backward() -> Real[_] {
     y:Real[2];    
     y[2] <- x.value();
-    assert ρ.isMissing();
+    assert !ρ.hasValue();
     y[1] <- ρ.value();
     return y;
   }

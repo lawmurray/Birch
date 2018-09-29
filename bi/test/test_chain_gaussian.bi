@@ -49,7 +49,7 @@ class TestChainGaussian(μ:Real, σ2:Real[_]) {
   function forward() -> Real[_] {
     y:Real[5];
     for i:Integer in 1..5 {
-      assert x[i].isMissing();
+      assert !x[i].hasValue();
       y[i] <- x[i].value();
     }
     return y;
@@ -58,7 +58,7 @@ class TestChainGaussian(μ:Real, σ2:Real[_]) {
   function backward() -> Real[_] {
     y:Real[5];
     for i:Integer in 0..4 {
-      assert x[5 - i].isMissing();
+      assert !x[5 - i].hasValue();
       y[5 - i] <- x[5 - i].value();
     }
     return y;

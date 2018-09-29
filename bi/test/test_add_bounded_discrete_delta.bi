@@ -40,7 +40,7 @@ class TestAddBoundedDiscreteDelta {
   function forward() -> Real[_] {
     y:Real[2];
     y[1] <- x1.value();
-    assert x2.isMissing();
+    assert !x2.hasValue();
     y[2] <- x2.value();
     return y;
   }

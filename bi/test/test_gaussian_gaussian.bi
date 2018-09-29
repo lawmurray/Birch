@@ -44,7 +44,7 @@ class TestGaussianGaussian(μ_0:Real, σ2_0:Real, σ2_1:Real) {
   function forward() -> Real[_] {
     y:Real[2];
     y[1] <- μ_1.value();
-    assert x.isMissing();
+    assert !x.hasValue();
     y[2] <- x.value();
     return y;
   }
@@ -52,7 +52,7 @@ class TestGaussianGaussian(μ_0:Real, σ2_0:Real, σ2_1:Real) {
   function backward() -> Real[_] {
     y:Real[2];
     y[2] <- x.value();
-    assert μ_1.isMissing();
+    assert !μ_1.hasValue();
     y[1] <- μ_1.value();
     return y;
   }

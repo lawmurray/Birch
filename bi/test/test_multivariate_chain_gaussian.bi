@@ -52,7 +52,7 @@ class TestMultivariateChainGaussian(μ:Real[_], Σ:Real[_,_]) {
   function forward() -> Real[_] {
     y:Real[15];
     for i:Integer in 1..5 {
-      assert x[i].isMissing();
+      assert !x[i].hasValue();
       y[(i-1)*3+1..i*3] <- x[i].value();
     }
     return y;
@@ -61,7 +61,7 @@ class TestMultivariateChainGaussian(μ:Real[_], Σ:Real[_,_]) {
   function backward() -> Real[_] {
     y:Real[15];
     for i:Integer in 0..4 {
-      assert x[5-i].isMissing();
+      assert !x[5-i].hasValue();
       y[(4-i)*3+1..(5-i)*3] <- x[5-i].value();
     }
     return y;

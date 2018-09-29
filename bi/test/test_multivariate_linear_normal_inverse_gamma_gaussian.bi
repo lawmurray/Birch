@@ -64,9 +64,9 @@ class TestMultiariateLinearNormalInverseGammaGaussian(A:Real[_,_],
   function forward() -> Real[_] {
     y:Real[11];
     y[1] <- σ2.value();
-    assert μ.isMissing();
+    assert !μ.hasValue();
     y[2..6] <- μ.value();
-    assert x.isMissing();
+    assert !x.hasValue();
     y[7..11] <- x.value();
     return y;
   }
@@ -74,9 +74,9 @@ class TestMultiariateLinearNormalInverseGammaGaussian(A:Real[_,_],
   function backward() -> Real[_] {
     y:Real[11];
     y[7..11] <- x.value();
-    assert σ2.isMissing();
+    assert !σ2.hasValue();
     y[1] <- σ2.value();
-    assert μ.isMissing();
+    assert !μ.hasValue();
     y[2..6] <- μ.value();
     return y;
   }

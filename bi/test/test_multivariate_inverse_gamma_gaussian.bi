@@ -48,7 +48,7 @@ class TestMultivariateInverseGammaGaussian(μ:Real[_], α:Real, β:Real) {
   function forward() -> Real[_] {
     y:Real[6];
     y[1] <- σ2.value();
-    assert x.isMissing();
+    assert !x.hasValue();
     y[2..6] <- x.value();
     return y;
   }
@@ -56,7 +56,7 @@ class TestMultivariateInverseGammaGaussian(μ:Real[_], α:Real, β:Real) {
   function backward() -> Real[_] {
     y:Real[6];
     y[2..6] <- x.value();
-    assert σ2.isMissing();
+    assert !σ2.hasValue();
     y[1] <- σ2.value();
     return y;
   }

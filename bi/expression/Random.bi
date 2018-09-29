@@ -73,12 +73,19 @@ class Random<Value> < Expression<Value> {
   }
 
   /**
-   * Are the values of any random variables within this expression missing?
+   * Does this have a value?
    */
-  function isMissing() -> Boolean {
+  function hasValue() -> Boolean {
     return !x?;
   }
-  
+
+  /**
+   * Does this have a distribution?
+   */
+  function hasDistribution() -> Boolean {
+    return dist?;
+  }
+
   /**
    * Evaluate the probability mass function (if it exists) at a value.
    *
