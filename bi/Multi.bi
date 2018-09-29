@@ -48,8 +48,8 @@ class Multi < StateSpaceModel<Global,List<Track>,List<Detection>> {
     /* current objects */
     auto track <- x.walk();
     D:Integer <- 0;  // total number of detections
-    while track? {
-      if associate {
+    if associate {
+      while track? {
         if track!.y.back().hasDistribution() {
           /* object is detected, associate it with an observation */
           D <- D + 1;
@@ -70,10 +70,10 @@ class Multi < StateSpaceModel<Global,List<Track>,List<Detection>> {
             yield -inf;
           }
         }
-        
-        /* multiply in prior probability of hypothesis */
-        yield -lchoose(y'.size() + D, D);
       }
+
+      /* factor in prior probability of hypothesis */
+      yield -lrising(y'.size() + 1, D);
     }
 
     /* clutter */
