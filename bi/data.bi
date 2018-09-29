@@ -12,12 +12,15 @@ program data(
   auto z <- reader.getArray("z");
   while z? {
     auto t <- z!.getInteger("t")!;
-    auto u <- z!.getRealMatrix("y")!;
-    
-    for i:Integer in 1..rows(u) {
-      v:Random<Real[_]>;
-      v <- u[i,1..2];
-      y.get(t + i - 1).pushBack(v);
+    auto u <- z!.getArray("y");
+    while u? {
+      auto v <- u!.getRealVector();
+      if v? {
+        w:Random<Real[_]>;
+        w <- v![1..2];
+        y.get(t).pushBack(w);
+      }
+      t <- t + 1;
     }
   }
   

@@ -15,7 +15,11 @@ class Track < StateSpaceModel<Global,Random<Real[_]>,Random<Real[_]>> {
   }
 
   fiber observation(y':Random<Real[_]>, x:Random<Real[_]>, θ:Global) -> Real {
-    y' ~ Gaussian(θ.B*x, θ.R);
+    d:Boolean;
+    d <~ Bernoulli(θ.d);
+    if d {
+      y' ~ Gaussian(θ.B*x, θ.R);
+    }
   }
 
   function read(reader:Reader) {
