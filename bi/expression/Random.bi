@@ -76,7 +76,7 @@ class Random<Value> < Expression<Value> {
    * Does this have a value?
    */
   function hasValue() -> Boolean {
-    return !x?;
+    return x?;
   }
 
   /**
