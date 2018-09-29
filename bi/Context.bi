@@ -174,6 +174,22 @@ class Context {
     cairo_set_line_width(cr, width_);
     }}
   }
+
+  /*
+   * Text
+   * ----
+   */
+  function showText(utf8:String) {
+    cpp{{
+    cairo_show_text(cr, utf8_.c_str());
+    }}
+  }
+
+  function setFontSize(size:Real) {
+    cpp{{
+    cairo_set_font_size(cr, size_);
+    }}
+  }
   
   /*
    * Groups
