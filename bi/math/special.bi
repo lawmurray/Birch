@@ -133,3 +133,35 @@ function lchoose(x:Real32, y:Real32) -> Real32 {
     return -log(y) - lbeta(y, x - y + Real32(1.0));
   }
 }
+
+/**
+ * Rising factorial.
+ */
+function rising(x:Real64, i:Integer32) -> Real64 {
+  cpp{{
+  return boost::math::rising_factorial(x_, i_);
+  }}
+}
+
+/**
+ * Rising factorial.
+ */
+function rising(x:Real32, i:Integer32) -> Real32 {
+  cpp{{
+  return boost::math::rising_factorial(x_, i_);
+  }}
+}
+
+/**
+ * Logarithm of the rising factorial.
+ */
+function lrising(x:Real64, i:Real64) -> Real64 {
+  return lgamma(x + i) - lgamma(x);
+}
+
+/**
+ * Logarithm of the rising factorial.
+ */
+function lrising(x:Real32, i:Real32) -> Real32 {
+  return lgamma(x + i) - lgamma(x);
+}
