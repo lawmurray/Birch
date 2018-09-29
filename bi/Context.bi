@@ -174,6 +174,22 @@ class Context {
     cairo_set_line_width(cr, width_);
     }}
   }
+  
+  /*
+   * Groups
+   * ------
+   */
+  function pushGroup() {
+    cpp{{
+    cairo_push_group(cr);
+    }}
+  }
+  
+  function popGroupToSource() {
+    cpp{{
+    cairo_pop_group_to_source(cr);
+    }}
+  }
 }
 
 function create(surface:Surface) -> Context {
