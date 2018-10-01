@@ -262,7 +262,7 @@ public:
   }
 
   Memo* getMemo() const {
-    return memo.get();
+    return memo;
   }
 
   Any& operator*() const {
@@ -288,7 +288,7 @@ public:
    */
   template<class U>
   SharedCOW<U> dynamic_pointer_cast() const {
-    return SharedCOW<U>(dynamic_cast<U*>(object.get()), memo.get());
+    return SharedCOW<U>(dynamic_cast<U*>(object.get()), memo);
   }
 
   /**
@@ -296,7 +296,7 @@ public:
    */
   template<class U>
   SharedCOW<U> static_pointer_cast() const {
-    return SharedCOW<U>(static_cast<U*>(object.get()), memo.get());
+    return SharedCOW<U>(static_cast<U*>(object.get()), memo);
   }
 
 protected:
@@ -308,7 +308,7 @@ protected:
   /**
    * The memo.
    */
-  SharedPtr<Memo> memo;
+  Memo* memo;
 
 private:
   /**

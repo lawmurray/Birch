@@ -43,13 +43,19 @@ public:
    * Fiber state.
    */
   SharedCOW<FiberState<YieldType>> state;
+
+  /**
+   * Fiber memo, if any.
+   */
+  SharedPtr<Memo> memo;
 };
 }
 
 template<class YieldType>
 bi::Fiber<YieldType>::Fiber(
     const SharedCOW<FiberState<YieldType>>& state) :
-    state(state) {
+    state(state),
+    memo(state.getMemo()) {
   //
 }
 

@@ -207,7 +207,7 @@ protected:
   /**
    * The memo.
    */
-  SharedPtr<Memo> memo;
+  Memo* memo;
 
 private:
   /**
