@@ -66,6 +66,7 @@ void bi::Visitor::visit(const Cast* o) {
 
 void bi::Visitor::visit(const Call* o) {
   o->single->accept(this);
+  o->typeArgs->accept(this);
   o->args->accept(this);
 }
 
@@ -227,12 +228,14 @@ void bi::Visitor::visit(const MemberVariable* o) {
 }
 
 void bi::Visitor::visit(const Function* o) {
+  o->typeParams->accept(this);
   o->params->accept(this);
   o->returnType->accept(this);
   o->braces->accept(this);
 }
 
 void bi::Visitor::visit(const Fiber* o) {
+  o->typeParams->accept(this);
   o->params->accept(this);
   o->returnType->accept(this);
   o->braces->accept(this);

@@ -59,7 +59,8 @@ bi::Expression* bi::Cloner::clone(const Cast* o) {
 }
 
 bi::Expression* bi::Cloner::clone(const Call* o) {
-  return new Call(o->single->accept(this), o->args->accept(this), o->loc);
+  return new Call(o->single->accept(this), o->typeArgs->accept(this),
+      o->args->accept(this), o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const BinaryCall* o) {
@@ -219,13 +220,15 @@ bi::Statement* bi::Cloner::clone(const MemberVariable* o) {
 }
 
 bi::Statement* bi::Cloner::clone(const Function* o) {
-  return new Function(o->annotation, o->name, o->params->accept(this),
-      o->returnType->accept(this), o->braces->accept(this), o->loc);
+  return new Function(o->annotation, o->name, o->typeParams->accept(this),
+      o->params->accept(this), o->returnType->accept(this),
+      o->braces->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const Fiber* o) {
-  return new Fiber(o->annotation, o->name, o->params->accept(this),
-      o->returnType->accept(this), o->braces->accept(this), o->loc);
+  return new Fiber(o->annotation, o->name, o->typeParams->accept(this),
+      o->params->accept(this), o->returnType->accept(this),
+      o->braces->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const Program* o) {

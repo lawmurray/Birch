@@ -5,9 +5,11 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::Call::Call(Expression* single, Expression* args, Location* loc) :
+bi::Call::Call(Expression* single, Type* typeArgs, Expression* args,
+    Location* loc) :
     Expression(loc),
     Single<Expression>(single),
+    TypeArgumented(typeArgs),
     Argumented(args) {
   //
 }

@@ -73,6 +73,7 @@ bi::Expression* bi::Modifier::modify(Cast* o) {
 
 bi::Expression* bi::Modifier::modify(Call* o) {
   o->single = o->single->accept(this);
+  o->typeArgs = o->typeArgs->accept(this);
   o->args = o->args->accept(this);
   return o;
 }
@@ -257,6 +258,7 @@ bi::Statement* bi::Modifier::modify(MemberVariable* o) {
 }
 
 bi::Statement* bi::Modifier::modify(Function* o) {
+  o->typeParams = o->typeParams->accept(this);
   o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
   o->braces = o->braces->accept(this);
@@ -264,6 +266,7 @@ bi::Statement* bi::Modifier::modify(Function* o) {
 }
 
 bi::Statement* bi::Modifier::modify(Fiber* o) {
+  o->typeParams = o->typeParams->accept(this);
   o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
   o->braces = o->braces->accept(this);

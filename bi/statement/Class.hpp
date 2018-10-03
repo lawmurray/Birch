@@ -6,6 +6,7 @@
 #include "bi/statement/Statement.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Numbered.hpp"
+#include "bi/common/TypeParameterised.hpp"
 #include "bi/common/Parameterised.hpp"
 #include "bi/common/Based.hpp"
 #include "bi/common/Argumented.hpp"
@@ -32,6 +33,7 @@ enum ClassState {
 class Class: public Statement,
     public Named,
     public Numbered,
+    public TypeParameterised<Class>,
     public Parameterised,
     public Based,
     public Argumented,
@@ -58,27 +60,6 @@ public:
    * Destructor.
    */
   virtual ~Class();
-
-  /**
-   * Does this class have generic type parameters?
-   */
-  bool isGeneric() const;
-
-  /**
-   * Have type arguments been bound to all type parameters?
-   */
-  bool isBound() const;
-
-  /**
-   * Is this an instantiation of a generic class? Equivalent to
-   * `isGeneric() && isBound()`.
-   */
-  bool isInstantiation() const;
-
-  /**
-   * Bind type arguments to the type parameters.
-   */
-  void bind(Type* typeArgs);
 
   /**
    * Add a super type.
@@ -110,25 +91,9 @@ public:
    */
   bool hasAssignment(const Type* o) const;
 
-  /**
-   * Add an instantiation.
-   */
-  void addInstantiation(Class* o);
-
-  /**
-   * Get the instantiation, if any, that exactly matches the given generic
-   * type arguments. Returns `nullptr` if not such instantiation exists.
-   */
-  Class* getInstantiation(const Type* typeArgs);
-
   virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
-
-  /**
-   * Generic type parameters.
-   */
-  Expression* typeParams;
 
   /**
    * Scope for initialization parameters.
@@ -157,15 +122,5 @@ public:
    * Types that can be assigned to this class.
    */
   std::list<const Type*> assignments;
-
-  /**
-   * Instantiations of this class.
-   */
-  std::list<Class*> instantiations;
-
-  /**
-   * Is this an explicit instantiation of a generic class?
-   */
-  bool isExplicit;
 };
 }

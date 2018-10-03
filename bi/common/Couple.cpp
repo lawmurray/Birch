@@ -19,7 +19,7 @@ bi::Couple<T>::~Couple() {
 }
 
 /*
- * Explicit template instantiations.
+ * Explicit instantiations.
  */
 template class bi::Couple<bi::Expression>;
 template class bi::Couple<bi::Type>;

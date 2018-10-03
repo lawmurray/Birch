@@ -50,6 +50,8 @@ COMMON_SOURCES = \
   bi/common/Scoped.cpp \
   bi/common/Single.cpp \
   bi/common/Typed.cpp \
+  bi/common/TypeArgumented.cpp \
+  bi/common/TypeParameterised.cpp \
   bi/common/Valued.cpp \
   bi/exception/AmbiguousCallException.cpp \
   bi/exception/AssignmentOperatorException.cpp \
@@ -226,6 +228,8 @@ noinst_HEADERS = \
   bi/common/Scoped.hpp \
   bi/common/Single.hpp \
   bi/common/Typed.hpp \
+  bi/common/TypeArgumented.hpp \
+  bi/common/TypeParameterised.hpp \
   bi/common/Valued.hpp \
   bi/exception/all.hpp \
   bi/exception/AmbiguousCallException.hpp \

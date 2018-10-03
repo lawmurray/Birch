@@ -62,7 +62,7 @@ bi::Expression* bi::ResolverSource::modify(Assign* o) {
     auto right = new Call(
         new Member(o->right,
             new Identifier<Unknown>(new Name("simulate"), o->loc), o->loc),
-        new EmptyExpression(o->loc), o->loc);
+        new EmptyType(o->loc), new EmptyExpression(o->loc), o->loc);
     auto assign = new Assign(left, new Name("<-"), right, o->loc);
     return assign->accept(this);
   } else {
@@ -318,7 +318,7 @@ bi::Statement* bi::ResolverSource::modify(Assignment* o) {
     auto observe = new Call(
         new Member(o->right,
             new Identifier<Unknown>(new Name("observe"), o->loc), o->loc),
-        o->left, o->loc);
+        new EmptyType(o->loc), o->left, o->loc);
     if (!yieldTypes.empty()) {
       auto yield = new Yield(observe, o->loc);
       return yield->accept(this);
@@ -332,14 +332,14 @@ bi::Statement* bi::ResolverSource::modify(Assignment* o) {
     auto cond = new Call(
         new Member(o->left->accept(&cloner),
             new Identifier<Unknown>(new Name("hasValue"), o->loc)),
-        new Parentheses(new EmptyExpression(o->loc), o->loc), o->loc);
+        new EmptyType(o->loc), new Parentheses(new EmptyExpression(o->loc), o->loc), o->loc);
     auto trueBranch = new Assignment(o->left->accept(&cloner),
         new Name("~>"), o->right->accept(&cloner), o->loc);
     auto falseBranch = new ExpressionStatement(
         new Call(
             new Member(o->left,
                 new Identifier<Unknown>(new Name("assume"), o->loc), o->loc),
-            o->right, o->loc), o->loc);
+            new EmptyType(o->loc), o->right, o->loc), o->loc);
     auto result = new If(cond, trueBranch, falseBranch, o->loc);
     return result->accept(this);
   }

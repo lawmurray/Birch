@@ -9,16 +9,16 @@ bi::ClassType::ClassType(Name* name, Type* typeArgs, Location* loc,
     Class* target) :
     Type(loc),
     Named(name),
-    Reference<Class>(target),
-    typeArgs(typeArgs) {
+    TypeArgumented(typeArgs),
+    Reference<Class>(target) {
   //
 }
 
 bi::ClassType::ClassType(Class* target, Location* loc) :
     Type(loc),
     Named(target->name),
-    Reference<Class>(target),
-    typeArgs(new EmptyType(loc)) {
+    TypeArgumented(new EmptyType(loc)),
+    Reference<Class>(target) {
   //
 }
 

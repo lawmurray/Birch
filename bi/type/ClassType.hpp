@@ -5,6 +5,7 @@
 
 #include "bi/type/Type.hpp"
 #include "bi/common/Named.hpp"
+#include "bi/common/TypeArgumented.hpp"
 #include "bi/common/Reference.hpp"
 #include "bi/statement/Class.hpp"
 
@@ -14,7 +15,10 @@ namespace bi {
  *
  * @ingroup type
  */
-class ClassType: public Type, public Named, public Reference<Class> {
+class ClassType: public Type,
+    public Named,
+    public TypeArgumented,
+    public Reference<Class> {
 public:
   /**
    * Constructor.
@@ -77,10 +81,5 @@ public:
   virtual Type* common(const FunctionType& o) const;
   virtual Type* common(const OptionalType& o) const;
   virtual Type* common(const TupleType& o) const;
-
-  /**
-   * Generic type arguments.
-   */
-  Type* typeArgs;
 };
 }
