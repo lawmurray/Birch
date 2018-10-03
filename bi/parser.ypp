@@ -87,8 +87,8 @@
 %expect 5
 // ^ for generic class declaration, opening '<' ambiguous with inheritance,
 //   but closing '>' disambiguates
-// ^ for generic function calls, f<Type>(expr) ambiguous (but favoured) over
-//   f < x > (expr) 
+// ^ for generic function calls, f<Type>(expr) ambiguous with f < x > (expr),
+//   the former is favoured by %dprec directives 
 
 %token <valString> PROGRAM CLASS TYPE FUNCTION FIBER OPERATOR AUTO EXPLICIT
 %token <valString> IF ELSE FOR IN WHILE DO ASSERT RETURN YIELD CPP HPP
@@ -261,7 +261,7 @@ postfix_expression
     | global_expression '.' identifier                         { $$ = new bi::Member($1, $3, make_loc(@$)); }
     | postfix_expression '.' identifier                        { $$ = new bi::Member($1, $3, make_loc(@$)); }
     | postfix_expression slice                                 { $$ = new bi::Slice($1, $2, make_loc(@$)); }
-    | postfix_expression optional_generic_arguments arguments  { $$ = new bi::Call($1, $2, $3, make_loc(@$)); }
+    | postfix_expression arguments  { $$ = new bi::Call($1, empty_type(@$), $2, make_loc(@$)); }
     | postfix_expression '!'                                   { $$ = new bi::Get($1, make_loc(@$)); }
     ;
 
@@ -307,10 +307,15 @@ relational_operator
     | LE_OP  { $$ = new bi::OverloadedIdentifier<bi::BinaryOperator>(new bi::Name("<="), make_loc(@$)); }
     | GE_OP  { $$ = new bi::OverloadedIdentifier<bi::BinaryOperator>(new bi::Name(">="), make_loc(@$)); }
     ;
-    
+
+/* here we resolve the ambiguity between a function call with generic
+ * arguments, <Type>(expr), and an expression with relational operators
+ * such as f < x > (expr), favouring the former, as the latter is both
+ * unusual and can be expressed with parentheses */
 relational_expression
     : additive_expression
-    | relational_expression relational_operator additive_expression  { $$ = new bi::BinaryCall($2, new bi::Binary($1, $3, make_loc(@$)), make_loc(@$)); }
+    | relational_expression relational_operator additive_expression  %dprec 1 { $$ = new bi::BinaryCall($2, new bi::Binary($1, $3, make_loc(@$)), make_loc(@$)); }
+    | postfix_expression generic_arguments arguments                 %dprec 2 { $$ = new bi::Call($1, $2, $3, make_loc(@$)); }
     ;
 
 equality_operator
