@@ -40,3 +40,17 @@ bi::Statement* bi::ResolverTyper::modify(Class* o) {
   }
   return o;
 }
+
+bi::Statement* bi::ResolverTyper::modify(Function* o) {
+  scopes.push_back(o->scope);
+  o->typeParams = o->typeParams->accept(this);
+  scopes.pop_back();
+  return o;
+}
+
+bi::Statement* bi::ResolverTyper::modify(Fiber* o) {
+  scopes.push_back(o->scope);
+  o->typeParams = o->typeParams->accept(this);
+  scopes.pop_back();
+  return o;
+}

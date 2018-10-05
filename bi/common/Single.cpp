@@ -17,9 +17,6 @@ bi::Single<T>::~Single() {
   //
 }
 
-/*
- * Explicit instantiations.
- */
 template class bi::Single<bi::Expression>;
 template class bi::Single<bi::Statement>;
 template class bi::Single<bi::Type>;

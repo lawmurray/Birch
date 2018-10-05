@@ -76,7 +76,6 @@ bi::Statement* bi::ResolverHeader::modify(GlobalVariable* o) {
 
 bi::Statement* bi::ResolverHeader::modify(Function* o) {
   scopes.push_back(o->scope);
-  o->typeParams = o->typeParams->accept(this);
   o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
   o->type = new FunctionType(o->params->type, o->returnType, o->loc);
@@ -87,7 +86,6 @@ bi::Statement* bi::ResolverHeader::modify(Function* o) {
 
 bi::Statement* bi::ResolverHeader::modify(Fiber* o) {
   scopes.push_back(o->scope);
-  o->typeParams = o->typeParams->accept(this);
   o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
   o->type = new FunctionType(o->params->type, o->returnType, o->loc);

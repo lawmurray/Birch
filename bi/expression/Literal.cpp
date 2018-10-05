@@ -32,9 +32,6 @@ void bi::Literal<T1>::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-/*
- * Explicit instantiations.
- */
 template class bi::Literal<bool>;
 template class bi::Literal<int64_t>;
 template class bi::Literal<double>;

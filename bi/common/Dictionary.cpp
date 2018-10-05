@@ -37,9 +37,6 @@ void bi::Dictionary<ObjectType>::add(ObjectType* o) {
   assert(result.second);
 }
 
-/*
- * Explicit instantiations.
- */
 template class bi::Dictionary<bi::Parameter>;
 template class bi::Dictionary<bi::GlobalVariable>;
 template class bi::Dictionary<bi::LocalVariable>;
