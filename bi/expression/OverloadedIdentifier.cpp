@@ -7,9 +7,10 @@
 
 template<class ObjectType>
 bi::OverloadedIdentifier<ObjectType>::OverloadedIdentifier(Name* name,
-    Location* loc, Overloaded* target) :
+    Type* typeArgs, Location* loc, Overloaded* target) :
     Expression(loc),
     Named(name),
+    TypeArgumented(typeArgs),
     Reference<Overloaded>(target) {
   //
 }
@@ -41,6 +42,7 @@ void bi::OverloadedIdentifier<ObjectType>::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
+template class bi::OverloadedIdentifier<bi::Unknown>;
 template class bi::OverloadedIdentifier<bi::Function>;
 template class bi::OverloadedIdentifier<bi::Fiber>;
 template class bi::OverloadedIdentifier<bi::MemberFunction>;

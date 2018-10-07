@@ -54,29 +54,41 @@ protected:
   void resolve(ObjectType* o, const ScopeCategory outer);
 
   /**
-   * Look up a reference that is syntactically ambiguous in an expression
-   * context.
+   * Instantiate a generic class or function.
    *
-   * @param ref The reference.
+   * @tparam ObjectType Object type.
    *
-   * @return A new, unambiguous, reference.
+   * @param o The identifier.
    */
-  Expression* lookup(Identifier<Unknown>* ref);
+  template<class ObjectType>
+  void instantiate(ObjectType* o);
 
   /**
-   * Look up a reference that is syntactically ambiguous in a type
-   * context.
+   * Look up an identifier that is syntactically ambiguous.
    *
-   * @param ref The reference.
+   * @param o The identifier.
    *
-   * @return A new, unambiguous, reference.
+   * @return A new, unambiguous, identifier.
    */
-  Type* lookup(UnknownType* ref);
+  Expression* lookup(Identifier<Unknown>* o);
 
   /**
-   * Instantiate a class type with generic arguments.
+   * Look up an identifier that is syntactically ambiguous.
+   *
+   * @param o The identifier.
+   *
+   * @return A new, unambiguous, identifier.
    */
-  virtual void instantiate(ClassType* o);
+  Expression* lookup(OverloadedIdentifier<Unknown>* o);
+
+  /**
+   * Look up a type identifier that is syntactically ambiguous.
+   *
+   * @param o The identifier.
+   *
+   * @return A new, unambiguous, type identifier.
+   */
+  Type* lookup(UnknownType* o);
 
   /**
    * Check that an expression is of boolean type.
@@ -139,5 +151,23 @@ void bi::Resolver::resolve(ObjectType* o, const ScopeCategory outer) {
   }
   if (!o->target) {
     throw UnresolvedException(o);
+  }
+}
+
+template<class ObjectType>
+void bi::Resolver::instantiate(ObjectType* o) {
+  if (o->target->isGeneric() && o->typeArgs->isBound()) {
+    if (o->typeArgs->width() != o->target->typeParams->width()) {
+      throw GenericException(o, o->target);
+    }
+    auto instantiation = o->target->getInstantiation(o->typeArgs);
+    if (!instantiation) {
+      instantiation = dynamic_cast<decltype(instantiation)>(o->target->accept(&cloner));
+      assert(instantiation);
+      instantiation->bind(o->typeArgs);
+      o->target->addInstantiation(instantiation);
+      instantiation->accept(this);
+    }
+    o->target = instantiation;
   }
 }

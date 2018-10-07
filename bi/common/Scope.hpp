@@ -75,12 +75,17 @@ public:
   /**
    * Look up the category for an unknown identifier.
    */
-  LookupResult lookup(const Identifier<Unknown>* ref) const;
+  LookupResult lookup(const Identifier<Unknown>* o) const;
+
+  /**
+   * Look up the category for an unknown identifier.
+   */
+  LookupResult lookup(const OverloadedIdentifier<Unknown>* o) const;
 
   /**
    * Look up the category for an unknown type.
    */
-  LookupResult lookup(const UnknownType* ref) const;
+  LookupResult lookup(const UnknownType* o) const;
 
   /**
    * Add declaration to scope.
@@ -171,12 +176,17 @@ private:
   /**
    * Defer lookup to inherited scopes.
    */
-  LookupResult lookupInherit(const Identifier<Unknown>* ref) const;
+  LookupResult lookupInherit(const Identifier<Unknown>* o) const;
 
   /**
    * Defer lookup to inherited scopes.
    */
-  LookupResult lookupInherit(const UnknownType* ref) const;
+  LookupResult lookupInherit(const OverloadedIdentifier<Unknown>* o) const;
+
+  /**
+   * Defer lookup to inherited scopes.
+   */
+  LookupResult lookupInherit(const UnknownType* o) const;
 
   /**
    * Check for previous declarations of the same name, at global scope.

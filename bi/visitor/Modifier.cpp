@@ -73,7 +73,6 @@ bi::Expression* bi::Modifier::modify(Cast* o) {
 
 bi::Expression* bi::Modifier::modify(Call* o) {
   o->single = o->single->accept(this);
-  o->typeArgs = o->typeArgs->accept(this);
   o->args = o->args->accept(this);
   return o;
 }
@@ -157,10 +156,6 @@ bi::Expression* bi::Modifier::modify(Nil* o) {
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(Identifier<Unknown>* o) {
-  return o;
-}
-
 bi::Expression* bi::Modifier::modify(LocalVariable* o) {
   o->type = o->type->accept(this);
   o->brackets = o->brackets->accept(this);
@@ -180,6 +175,10 @@ bi::Expression* bi::Modifier::modify(Generic* o) {
   return o;
 }
 
+bi::Expression* bi::Modifier::modify(Identifier<Unknown>* o) {
+  return o;
+}
+
 bi::Expression* bi::Modifier::modify(Identifier<Parameter>* o) {
   return o;
 }
@@ -196,27 +195,38 @@ bi::Expression* bi::Modifier::modify(Identifier<MemberVariable>* o) {
   return o;
 }
 
+bi::Expression* bi::Modifier::modify(OverloadedIdentifier<Unknown>* o) {
+  o->typeArgs = o->typeArgs->accept(this);
+  return o;
+}
+
 bi::Expression* bi::Modifier::modify(OverloadedIdentifier<Function>* o) {
+  o->typeArgs = o->typeArgs->accept(this);
   return o;
 }
 
 bi::Expression* bi::Modifier::modify(OverloadedIdentifier<Fiber>* o) {
+  o->typeArgs = o->typeArgs->accept(this);
   return o;
 }
 
 bi::Expression* bi::Modifier::modify(OverloadedIdentifier<MemberFiber>* o) {
+  o->typeArgs = o->typeArgs->accept(this);
   return o;
 }
 
 bi::Expression* bi::Modifier::modify(OverloadedIdentifier<MemberFunction>* o) {
+  o->typeArgs = o->typeArgs->accept(this);
   return o;
 }
 
 bi::Expression* bi::Modifier::modify(OverloadedIdentifier<BinaryOperator>* o) {
+  o->typeArgs = o->typeArgs->accept(this);
   return o;
 }
 
 bi::Expression* bi::Modifier::modify(OverloadedIdentifier<UnaryOperator>* o) {
+  o->typeArgs = o->typeArgs->accept(this);
   return o;
 }
 

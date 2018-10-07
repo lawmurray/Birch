@@ -6,6 +6,7 @@
 #include "bi/expression/Identifier.hpp"
 #include "bi/common/Overloaded.hpp"
 #include "bi/common/Named.hpp"
+#include "bi/common/TypeArgumented.hpp"
 #include "bi/common/Reference.hpp"
 
 namespace bi {
@@ -18,17 +19,20 @@ namespace bi {
  * identifier.
  */
 template<class ObjectType>
-class OverloadedIdentifier: public Expression, public Named, public Reference<
-    Overloaded> {
+class OverloadedIdentifier: public Expression,
+    public Named,
+    public TypeArgumented,
+    public Reference<Overloaded> {
 public:
   /**
    * Constructor.
    *
    * @param name Name.
+   * @param typeArgs Generic type arguments.
    * @param loc Location.
    * @param target Target.
    */
-  OverloadedIdentifier(Name* name, Location* loc = nullptr,
+  OverloadedIdentifier(Name* name, Type* typeArgs, Location* loc = nullptr,
       Overloaded* target = nullptr);
 
   /**

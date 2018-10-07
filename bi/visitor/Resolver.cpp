@@ -92,83 +92,91 @@ bi::Type* bi::Resolver::modify(MemberType* o) {
   return o;
 }
 
-bi::Expression* bi::Resolver::lookup(Identifier<Unknown>* ref) {
+bi::Expression* bi::Resolver::lookup(Identifier<Unknown>* o) {
   LookupResult category = UNRESOLVED;
   if (!memberScopes.empty()) {
     /* use membership scope */
-    category = memberScopes.back()->lookup(ref);
+    category = memberScopes.back()->lookup(o);
   } else {
     /* use current stack of scopes */
     for (auto iter = scopes.rbegin();
         category == UNRESOLVED && iter != scopes.rend(); ++iter) {
-      category = (*iter)->lookup(ref);
+      category = (*iter)->lookup(o);
     }
   }
 
-  /* replace the reference of unknown object type with that of a known one */
   switch (category) {
   case PARAMETER:
-    return new Identifier<Parameter>(ref->name, ref->loc);
+    return new Identifier<Parameter>(o->name, o->loc);
   case GLOBAL_VARIABLE:
-    return new Identifier<GlobalVariable>(ref->name, ref->loc);
+    return new Identifier<GlobalVariable>(o->name, o->loc);
   case LOCAL_VARIABLE:
-    return new Identifier<LocalVariable>(ref->name, ref->loc);
+    return new Identifier<LocalVariable>(o->name, o->loc);
   case MEMBER_VARIABLE:
-    return new Identifier<MemberVariable>(ref->name, ref->loc);
+    return new Identifier<MemberVariable>(o->name, o->loc);
   case FUNCTION:
-    return new OverloadedIdentifier<Function>(ref->name, ref->loc);
+    return new OverloadedIdentifier<Function>(o->name, new EmptyType(o->loc), o->loc);
   case FIBER:
-    return new OverloadedIdentifier<Fiber>(ref->name, ref->loc);
+    return new OverloadedIdentifier<Fiber>(o->name, new EmptyType(o->loc), o->loc);
   case MEMBER_FUNCTION:
-    return new OverloadedIdentifier<MemberFunction>(ref->name, ref->loc);
+    return new OverloadedIdentifier<MemberFunction>(o->name, new EmptyType(o->loc), o->loc);
   case MEMBER_FIBER:
-    return new OverloadedIdentifier<MemberFiber>(ref->name, ref->loc);
+    return new OverloadedIdentifier<MemberFiber>(o->name, new EmptyType(o->loc), o->loc);
   default:
-    throw UnresolvedException(ref);
+    throw UnresolvedException(o);
   }
 }
 
-bi::Type* bi::Resolver::lookup(UnknownType* ref) {
+bi::Expression* bi::Resolver::lookup(OverloadedIdentifier<Unknown>* o) {
   LookupResult category = UNRESOLVED;
   if (!memberScopes.empty()) {
     /* use membership scope */
-    category = memberScopes.back()->lookup(ref);
+    category = memberScopes.back()->lookup(o);
   } else {
     /* use current stack of scopes */
     for (auto iter = scopes.rbegin();
         category == UNRESOLVED && iter != scopes.rend(); ++iter) {
-      category = (*iter)->lookup(ref);
+      category = (*iter)->lookup(o);
     }
   }
 
-  /* replace the reference of unknown object type with that of a known one */
   switch (category) {
-  case BASIC:
-    return new BasicType(ref->name, ref->loc);
-  case CLASS:
-    return new PointerType(ref->weak,
-        new ClassType(ref->name, ref->typeArgs, ref->loc), ref->loc);
-  case GENERIC:
-    return new GenericType(ref->name, ref->loc);
+  case FUNCTION:
+    return new OverloadedIdentifier<Function>(o->name, o->typeArgs, o->loc);
+  case FIBER:
+    return new OverloadedIdentifier<Fiber>(o->name, o->typeArgs, o->loc);
+  case MEMBER_FUNCTION:
+    return new OverloadedIdentifier<MemberFunction>(o->name, o->typeArgs, o->loc);
+  case MEMBER_FIBER:
+    return new OverloadedIdentifier<MemberFiber>(o->name, o->typeArgs, o->loc);
   default:
-    throw UnresolvedException(ref);
+    throw UnresolvedException(o);
   }
 }
 
-void bi::Resolver::instantiate(ClassType* o) {
-  if (o->target->isGeneric() && o->typeArgs->isBound()) {
-    if (o->typeArgs->width() != o->target->typeParams->width()) {
-      throw GenericException(o, o->target);
+bi::Type* bi::Resolver::lookup(UnknownType* o) {
+  LookupResult category = UNRESOLVED;
+  if (!memberScopes.empty()) {
+    /* use membership scope */
+    category = memberScopes.back()->lookup(o);
+  } else {
+    /* use current stack of scopes */
+    for (auto iter = scopes.rbegin();
+        category == UNRESOLVED && iter != scopes.rend(); ++iter) {
+      category = (*iter)->lookup(o);
     }
-    Class* instantiation = o->target->getInstantiation(o->typeArgs);
-    if (!instantiation) {
-      instantiation = dynamic_cast<Class*>(o->target->accept(&cloner));
-      assert(instantiation);
-      instantiation->bind(o->typeArgs);
-      o->target->addInstantiation(instantiation);
-      instantiation->accept(this);
-    }
-    o->target = instantiation;
+  }
+
+  switch (category) {
+  case BASIC:
+    return new BasicType(o->name, o->loc);
+  case CLASS:
+    return new PointerType(o->weak,
+        new ClassType(o->name, o->typeArgs, o->loc), o->loc);
+  case GENERIC:
+    return new GenericType(o->name, o->loc);
+  default:
+    throw UnresolvedException(o);
   }
 }
 

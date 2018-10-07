@@ -52,6 +52,7 @@ public:
   virtual Expression* modify(Identifier<GlobalVariable>* o);
   virtual Expression* modify(Identifier<LocalVariable>* o);
   virtual Expression* modify(Identifier<MemberVariable>* o);
+  virtual Expression* modify(OverloadedIdentifier<Unknown>* o);
   virtual Expression* modify(OverloadedIdentifier<Function>* o);
   virtual Expression* modify(OverloadedIdentifier<Fiber>* o);
   virtual Expression* modify(OverloadedIdentifier<MemberFunction>* o);

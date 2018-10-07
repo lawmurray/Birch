@@ -61,6 +61,7 @@ public:
   virtual void visit(const OverloadedIdentifier<MemberFiber>* o);
   virtual void visit(const OverloadedIdentifier<BinaryOperator>* o);
   virtual void visit(const OverloadedIdentifier<UnaryOperator>* o);
+  virtual void visit(const OverloadedIdentifier<Unknown>* o);
 
   virtual void visit(const Braces* o);
   virtual void visit(const Assignment* o);

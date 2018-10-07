@@ -57,6 +57,7 @@ public:
   virtual Expression* clone(const Identifier<GlobalVariable>* o);
   virtual Expression* clone(const Identifier<LocalVariable>* o);
   virtual Expression* clone(const Identifier<MemberVariable>* o);
+  virtual Expression* clone(const OverloadedIdentifier<Unknown>* o);
   virtual Expression* clone(const OverloadedIdentifier<Function>* o);
   virtual Expression* clone(const OverloadedIdentifier<Fiber>* o);
   virtual Expression* clone(const OverloadedIdentifier<MemberFunction>* o);

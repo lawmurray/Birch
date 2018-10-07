@@ -244,32 +244,57 @@ void bi::bi_ostream::visit(const Identifier<MemberVariable>* o) {
   middle(o->name);
 }
 
+void bi::bi_ostream::visit(const Identifier<Unknown>* o) {
+  middle(o->name);
+}
+
 void bi::bi_ostream::visit(const OverloadedIdentifier<Function>* o) {
   middle(o->name);
+  if (!o->typeArgs->isEmpty()) {
+    middle('<' << o->typeArgs << '>');
+  }
 }
 
 void bi::bi_ostream::visit(const OverloadedIdentifier<Fiber>* o) {
   middle(o->name);
+  if (!o->typeArgs->isEmpty()) {
+    middle('<' << o->typeArgs << '>');
+  }
 }
 
 void bi::bi_ostream::visit(const OverloadedIdentifier<MemberFunction>* o) {
   middle(o->name);
+  if (!o->typeArgs->isEmpty()) {
+    middle('<' << o->typeArgs << '>');
+  }
 }
 
 void bi::bi_ostream::visit(const OverloadedIdentifier<MemberFiber>* o) {
   middle(o->name);
+  if (!o->typeArgs->isEmpty()) {
+    middle('<' << o->typeArgs << '>');
+  }
 }
 
 void bi::bi_ostream::visit(const OverloadedIdentifier<BinaryOperator>* o) {
   middle(o->name);
+  if (!o->typeArgs->isEmpty()) {
+    middle('<' << o->typeArgs << '>');
+  }
 }
 
 void bi::bi_ostream::visit(const OverloadedIdentifier<UnaryOperator>* o) {
   middle(o->name);
+  if (!o->typeArgs->isEmpty()) {
+    middle('<' << o->typeArgs << '>');
+  }
 }
 
-void bi::bi_ostream::visit(const Identifier<Unknown>* o) {
+void bi::bi_ostream::visit(const OverloadedIdentifier<Unknown>* o) {
   middle(o->name);
+  if (!o->typeArgs->isEmpty()) {
+    middle('<' << o->typeArgs << '>');
+  }
 }
 
 void bi::bi_ostream::visit(const Braces* o) {

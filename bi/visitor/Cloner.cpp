@@ -59,8 +59,7 @@ bi::Expression* bi::Cloner::clone(const Cast* o) {
 }
 
 bi::Expression* bi::Cloner::clone(const Call* o) {
-  return new Call(o->single->accept(this), o->typeArgs->accept(this),
-      o->args->accept(this), o->loc);
+  return new Call(o->single->accept(this), o->args->accept(this), o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const BinaryCall* o) {
@@ -161,32 +160,36 @@ bi::Expression* bi::Cloner::clone(const Identifier<MemberVariable>* o) {
   return new Identifier<MemberVariable>(o->name, o->loc);
 }
 
+bi::Expression* bi::Cloner::clone(const OverloadedIdentifier<Unknown>* o) {
+  return new OverloadedIdentifier<Unknown>(o->name, o->typeArgs->accept(this), o->loc);
+}
+
 bi::Expression* bi::Cloner::clone(const OverloadedIdentifier<Function>* o) {
-  return new OverloadedIdentifier<Function>(o->name, o->loc);
+  return new OverloadedIdentifier<Function>(o->name, o->typeArgs->accept(this), o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const OverloadedIdentifier<Fiber>* o) {
-  return new OverloadedIdentifier<Fiber>(o->name, o->loc);
+  return new OverloadedIdentifier<Fiber>(o->name, o->typeArgs->accept(this), o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(
     const OverloadedIdentifier<MemberFunction>* o) {
-  return new OverloadedIdentifier<MemberFunction>(o->name, o->loc);
+  return new OverloadedIdentifier<MemberFunction>(o->name, o->typeArgs->accept(this), o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(
     const OverloadedIdentifier<MemberFiber>* o) {
-  return new OverloadedIdentifier<MemberFiber>(o->name, o->loc);
+  return new OverloadedIdentifier<MemberFiber>(o->name, o->typeArgs->accept(this), o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(
     const OverloadedIdentifier<BinaryOperator>* o) {
-  return new OverloadedIdentifier<BinaryOperator>(o->name, o->loc);
+  return new OverloadedIdentifier<BinaryOperator>(o->name, o->typeArgs->accept(this), o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(
     const OverloadedIdentifier<UnaryOperator>* o) {
-  return new OverloadedIdentifier<UnaryOperator>(o->name, o->loc);
+  return new OverloadedIdentifier<UnaryOperator>(o->name, o->typeArgs->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const EmptyStatement* o) {

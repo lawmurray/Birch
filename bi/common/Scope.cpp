@@ -30,8 +30,8 @@ bi::Scope::Scope(const ScopeCategory category) :
   //
 }
 
-bi::LookupResult bi::Scope::lookup(const Identifier<Unknown>* ref) const {
-  auto name = ref->name->str();
+bi::LookupResult bi::Scope::lookup(const Identifier<Unknown>* o) const {
+  auto name = o->name->str();
   if (localVariables.contains(name)) {
     return LOCAL_VARIABLE;
   } else if (parameters.contains(name)) {
@@ -49,14 +49,31 @@ bi::LookupResult bi::Scope::lookup(const Identifier<Unknown>* ref) const {
   } else if (fibers.contains(name)) {
     return FIBER;
   } else if (base) {
-    return base->lookupInherit(ref);
+    return base->lookupInherit(o);
   } else {
     return UNRESOLVED;
   }
 }
 
-bi::LookupResult bi::Scope::lookup(const UnknownType* ref) const {
-  auto name = ref->name->str();
+bi::LookupResult bi::Scope::lookup(const OverloadedIdentifier<Unknown>* o) const {
+  auto name = o->name->str();
+  if (memberFunctions.contains(name)) {
+    return MEMBER_FUNCTION;
+  } else if (memberFibers.contains(name)) {
+    return MEMBER_FIBER;
+  } else if (functions.contains(name)) {
+    return FUNCTION;
+  } else if (fibers.contains(name)) {
+    return FIBER;
+  } else if (base) {
+    return base->lookupInherit(o);
+  } else {
+    return UNRESOLVED;
+  }
+}
+
+bi::LookupResult bi::Scope::lookup(const UnknownType* o) const {
+  auto name = o->name->str();
   if (basics.contains(name)) {
     return BASIC;
   } else if (classes.contains(name)) {
@@ -64,15 +81,15 @@ bi::LookupResult bi::Scope::lookup(const UnknownType* ref) const {
   } else if (generics.contains(name)) {
     return GENERIC;
   } else if (base) {
-    return base->lookupInherit(ref);
+    return base->lookupInherit(o);
   } else {
     return UNRESOLVED;
   }
 }
 
 bi::LookupResult bi::Scope::lookupInherit(
-    const Identifier<Unknown>* ref) const {
-  auto name = ref->name->str();
+    const Identifier<Unknown>* o) const {
+  auto name = o->name->str();
   if (memberVariables.contains(name)) {
     return MEMBER_VARIABLE;
   } else if (memberFunctions.contains(name)) {
@@ -80,14 +97,28 @@ bi::LookupResult bi::Scope::lookupInherit(
   } else if (memberFibers.contains(name)) {
     return MEMBER_FIBER;
   } else if (base) {
-    return base->lookupInherit(ref);
+    return base->lookupInherit(o);
   } else {
     return UNRESOLVED;
   }
 }
 
-bi::LookupResult bi::Scope::lookupInherit(const UnknownType* ref) const {
-  auto name = ref->name->str();
+bi::LookupResult bi::Scope::lookupInherit(
+    const OverloadedIdentifier<Unknown>* o) const {
+  auto name = o->name->str();
+  if (memberFunctions.contains(name)) {
+    return MEMBER_FUNCTION;
+  } else if (memberFibers.contains(name)) {
+    return MEMBER_FIBER;
+  } else if (base) {
+    return base->lookupInherit(o);
+  } else {
+    return UNRESOLVED;
+  }
+}
+
+bi::LookupResult bi::Scope::lookupInherit(const UnknownType* o) const {
+  auto name = o->name->str();
   if (basics.contains(name)) {
     return BASIC;
   } else if (classes.contains(name)) {
@@ -95,7 +126,7 @@ bi::LookupResult bi::Scope::lookupInherit(const UnknownType* ref) const {
   } else if (generics.contains(name)) {
     return GENERIC;
   } else if (base) {
-    return base->lookupInherit(ref);
+    return base->lookupInherit(o);
   } else {
     return UNRESOLVED;
   }
@@ -194,69 +225,69 @@ void bi::Scope::add(Generic* param) {
   generics.add(param);
 }
 
-void bi::Scope::resolve(Identifier<Parameter>* ref) {
-  parameters.resolve(ref);
+void bi::Scope::resolve(Identifier<Parameter>* o) {
+  parameters.resolve(o);
 }
 
-void bi::Scope::resolve(Identifier<GlobalVariable>* ref) {
-  globalVariables.resolve(ref);
+void bi::Scope::resolve(Identifier<GlobalVariable>* o) {
+  globalVariables.resolve(o);
 }
 
-void bi::Scope::resolve(Identifier<LocalVariable>* ref) {
-  localVariables.resolve(ref);
+void bi::Scope::resolve(Identifier<LocalVariable>* o) {
+  localVariables.resolve(o);
 }
 
-void bi::Scope::resolve(Identifier<MemberVariable>* ref) {
-  memberVariables.resolve(ref);
-  if (!ref->target && base) {
-    base->resolve(ref);
+void bi::Scope::resolve(Identifier<MemberVariable>* o) {
+  memberVariables.resolve(o);
+  if (!o->target && base) {
+    base->resolve(o);
   }
 }
 
-void bi::Scope::resolve(OverloadedIdentifier<Function>* ref) {
-  functions.resolve(ref);
+void bi::Scope::resolve(OverloadedIdentifier<Function>* o) {
+  functions.resolve(o);
 }
 
-void bi::Scope::resolve(OverloadedIdentifier<Fiber>* ref) {
-  fibers.resolve(ref);
+void bi::Scope::resolve(OverloadedIdentifier<Fiber>* o) {
+  fibers.resolve(o);
 }
 
-void bi::Scope::resolve(OverloadedIdentifier<MemberFunction>* ref) {
-  memberFunctions.resolve(ref);
+void bi::Scope::resolve(OverloadedIdentifier<MemberFunction>* o) {
+  memberFunctions.resolve(o);
   if (base) {
     /* gather alternatives from base classes */
-    base->resolve(ref);
+    base->resolve(o);
   }
 }
 
-void bi::Scope::resolve(OverloadedIdentifier<MemberFiber>* ref) {
-  memberFibers.resolve(ref);
+void bi::Scope::resolve(OverloadedIdentifier<MemberFiber>* o) {
+  memberFibers.resolve(o);
   if (base) {
     /* gather alternatives from base classes */
-    base->resolve(ref);
+    base->resolve(o);
   }
 }
 
-void bi::Scope::resolve(OverloadedIdentifier<BinaryOperator>* ref) {
-  binaryOperators.resolve(ref);
+void bi::Scope::resolve(OverloadedIdentifier<BinaryOperator>* o) {
+  binaryOperators.resolve(o);
 }
 
-void bi::Scope::resolve(OverloadedIdentifier<UnaryOperator>* ref) {
-  unaryOperators.resolve(ref);
+void bi::Scope::resolve(OverloadedIdentifier<UnaryOperator>* o) {
+  unaryOperators.resolve(o);
 }
 
-void bi::Scope::resolve(BasicType* ref) {
-  basics.resolve(ref);
+void bi::Scope::resolve(BasicType* o) {
+  basics.resolve(o);
 }
 
-void bi::Scope::resolve(ClassType* ref) {
-  classes.resolve(ref);
+void bi::Scope::resolve(ClassType* o) {
+  classes.resolve(o);
 }
 
-void bi::Scope::resolve(GenericType* ref) {
-  generics.resolve(ref);
-  if (!ref->target && base) {
-    base->resolve(ref);
+void bi::Scope::resolve(GenericType* o) {
+  generics.resolve(o);
+  if (!o->target && base) {
+    base->resolve(o);
   }
 }
 

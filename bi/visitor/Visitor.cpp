@@ -66,7 +66,6 @@ void bi::Visitor::visit(const Cast* o) {
 
 void bi::Visitor::visit(const Call* o) {
   o->single->accept(this);
-  o->typeArgs->accept(this);
   o->args->accept(this);
 }
 
@@ -150,7 +149,6 @@ void bi::Visitor::visit(const Parameter* o) {
   o->value->accept(this);
 }
 
-
 void bi::Visitor::visit(const Identifier<Unknown>* o) {
   //
 }
@@ -171,28 +169,32 @@ void bi::Visitor::visit(const Identifier<MemberVariable>* o) {
   //
 }
 
+void bi::Visitor::visit(const OverloadedIdentifier<Unknown>* o) {
+  o->typeArgs->accept(this);
+}
+
 void bi::Visitor::visit(const OverloadedIdentifier<Function>* o) {
-  //
+  o->typeArgs->accept(this);
 }
 
 void bi::Visitor::visit(const OverloadedIdentifier<Fiber>* o) {
-  //
+  o->typeArgs->accept(this);
 }
 
 void bi::Visitor::visit(const OverloadedIdentifier<MemberFunction>* o) {
-  //
+  o->typeArgs->accept(this);
 }
 
 void bi::Visitor::visit(const OverloadedIdentifier<MemberFiber>* o) {
-  //
+  o->typeArgs->accept(this);
 }
 
 void bi::Visitor::visit(const OverloadedIdentifier<BinaryOperator>* o) {
-  //
+  o->typeArgs->accept(this);
 }
 
 void bi::Visitor::visit(const OverloadedIdentifier<UnaryOperator>* o) {
-  //
+  o->typeArgs->accept(this);
 }
 
 void bi::Visitor::visit(const EmptyStatement* o) {
