@@ -4,6 +4,7 @@
 #pragma once
 
 #include "bi/statement/Statement.hpp"
+#include "bi/common/Annotated.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Numbered.hpp"
 #include "bi/common/TypeParameterised.hpp"
@@ -20,6 +21,7 @@ namespace bi {
  * @ingroup statement
  */
 class Class: public Statement,
+    public Annotated,
     public Named,
     public Numbered,
     public TypeParameterised<Class>,
@@ -32,6 +34,7 @@ public:
   /**
    * Constructor.
    *
+   * @param annotation Annotation.
    * @param name Name.
    * @param typeParams Generic type parameters.
    * @param params Constructor parameters.
@@ -41,9 +44,9 @@ public:
    * @param braces Braces.
    * @param loc Location.
    */
-  Class(Name* name, Expression* typeParams, Expression* params, Type* base,
-      const bool alias, Expression* args, Statement* braces, Location* loc =
-          nullptr);
+  Class(const Annotation annotation, Name* name, Expression* typeParams,
+      Expression* params, Type* base, const bool alias, Expression* args,
+      Statement* braces, Location* loc = nullptr);
 
   /**
    * Destructor.

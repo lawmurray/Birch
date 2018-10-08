@@ -23,10 +23,6 @@ bi::Statement* bi::ResolverTyper::modify(Basic* o) {
   return o;
 }
 
-bi::Statement* bi::ResolverTyper::modify(Explicit* o) {
-  return o;
-}
-
 bi::Statement* bi::ResolverTyper::modify(Class* o) {
   scopes.push_back(o->scope);
   o->typeParams = o->typeParams->accept(this);

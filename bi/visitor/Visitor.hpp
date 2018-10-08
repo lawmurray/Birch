@@ -82,7 +82,6 @@ public:
   virtual void visit(const ConversionOperator* o);
   virtual void visit(const Class* o);
   virtual void visit(const Basic* o);
-  virtual void visit(const Explicit* o);
   virtual void visit(const Generic* o);
   virtual void visit(const ExpressionStatement* o);
   virtual void visit(const If* o);

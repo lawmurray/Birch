@@ -26,7 +26,7 @@ void bi::bi_ostream::visit(const Package* o) {
   o->accept(&classes);
   for (auto o : classes) {
     for (auto instantiation : o->instantiations) {
-      if (!instantiation->isExplicit) {
+      if (!instantiation->has(EXPLICIT)) {
         start("explicit " << instantiation->name << '<');
         for (auto iter = instantiation->typeParams->begin();
             iter != instantiation->typeParams->end(); ++iter) {

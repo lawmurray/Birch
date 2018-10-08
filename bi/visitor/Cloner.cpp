@@ -274,17 +274,13 @@ bi::Statement* bi::Cloner::clone(const ConversionOperator* o) {
 }
 
 bi::Statement* bi::Cloner::clone(const Class* o) {
-  return new Class(o->name, o->typeParams->accept(this),
+  return new Class(o->annotation, o->name, o->typeParams->accept(this),
       o->params->accept(this), o->base->accept(this), o->alias,
       o->args->accept(this), o->braces->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const Basic* o) {
   return new Basic(o->name, o->base->accept(this), o->alias, o->loc);
-}
-
-bi::Statement* bi::Cloner::clone(const Explicit* o) {
-  return new Explicit(o->base->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const ExpressionStatement* o) {

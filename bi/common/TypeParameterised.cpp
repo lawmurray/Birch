@@ -8,7 +8,6 @@
 template<class Target>
 bi::TypeParameterised<Target>::TypeParameterised(Expression* typeParams) :
     typeParams(typeParams),
-    isExplicit(false),
     state(CLONED) {
   //
 }

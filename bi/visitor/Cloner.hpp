@@ -82,7 +82,6 @@ public:
   virtual Statement* clone(const ConversionOperator* o);
   virtual Statement* clone(const Class* o);
   virtual Statement* clone(const Basic* o);
-  virtual Statement* clone(const Explicit* o);
   virtual Statement* clone(const ExpressionStatement* o);
   virtual Statement* clone(const If* o);
   virtual Statement* clone(const For* o);

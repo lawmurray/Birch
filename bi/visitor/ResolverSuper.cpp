@@ -25,10 +25,6 @@ bi::Statement* bi::ResolverSuper::modify(Basic* o) {
   return o;
 }
 
-bi::Statement* bi::ResolverSuper::modify(Explicit* o) {
-  return o;
-}
-
 bi::Statement* bi::ResolverSuper::modify(Class* o) {
   if (o->state < RESOLVED_TYPER) {
     ResolverTyper resolver(scopes.front());

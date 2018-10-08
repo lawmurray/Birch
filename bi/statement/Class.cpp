@@ -5,10 +5,12 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::Class::Class(Name* name, Expression* typeParams, Expression* params,
-    Type* base, const bool alias, Expression* args, Statement* braces,
+bi::Class::Class(const Annotation annotation, Name* name,
+    Expression* typeParams, Expression* params, Type* base, const bool alias,
+    Expression* args, Statement* braces,
     Location* loc) :
     Statement(loc),
+    Annotated(annotation),
     Named(name),
     TypeParameterised(typeParams),
     Parameterised(params),

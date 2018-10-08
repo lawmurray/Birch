@@ -48,14 +48,14 @@ void bi::CppPackageGenerator::visit(const Package* o) {
       sorted.insert(new ClassType(o));
     }
     for (auto instantiation : o->instantiations) {
-      if (!instantiation->isExplicit) {
+      if (!instantiation->has(EXPLICIT)) {
         sorted.insert(new ClassType(instantiation));
       }
     }
   }
   for (auto o : headerClasses) {
     for (auto instantiation : o->instantiations) {
-      if (!instantiation->isExplicit) {
+      if (!instantiation->has(EXPLICIT)) {
         sorted.insert(new ClassType(instantiation));
       }
     }
@@ -209,7 +209,7 @@ void bi::CppPackageGenerator::visit(const Package* o) {
   } else {
     /* instantiations of generic classes go in the package source file */
     for (auto o : sortedClasses) {
-      if (o->isGeneric() && o->isBound() && !o->isExplicit) {
+      if (o->isGeneric() && o->isBound() && !o->has(EXPLICIT)) {
         *this << o;
       }
     }

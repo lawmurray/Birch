@@ -80,11 +80,6 @@ public:
   std::list<Target*> instantiations;
 
   /**
-   * Is this an explicit instantiation of a generic object?
-   */
-  bool isExplicit;
-
-  /**
    * State of the object during resolution. Objects with generic type
    * parameters are instantiated on use, which is why this is necessary; as
    * instantiated they need to catch up on previous resolution passes.

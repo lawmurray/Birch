@@ -104,7 +104,7 @@
 %type <valName> name binary_operator unary_operator assignment_operator
 
 %type <valInt> size
-%type <valAnnotation> for_annotation
+%type <valAnnotation> for_annotation class_annotation function_annotation
 
 %type <valName> assign_operator
 
@@ -134,7 +134,7 @@
 %type <valStatement> member_fiber_declaration
 %type <valStatement> binary_operator_declaration unary_operator_declaration
 %type <valStatement> conversion_operator_declaration assignment_operator_declaration
-%type <valStatement> class_declaration basic_declaration explicit_declaration
+%type <valStatement> class_declaration basic_declaration
 %type <valStatement> cpp hpp assignment expression_statement if for
 %type <valStatement> while do_while assertion return yield
 %type <valStatement> statement statements optional_statements
@@ -510,12 +510,17 @@ member_variable_declaration
     | name ':' postfix_type brackets arguments ';'  { push_raw(); $$ = new bi::MemberVariable(bi::NONE, $1, $3, $4, $5, empty_expr(@$), make_doc_loc(@$)); }
     ;
 
+function_annotation
+    :           { $$ = bi::NONE; }
+    | EXPLICIT  { $$ = bi::EXPLICIT; }
+    ;
+
 function_declaration
-    : FUNCTION name optional_generics parameters optional_result { push_raw(); } optional_braces  { $$ = new bi::Function(bi::NONE, $2, $3, $4, $5, $7, make_doc_loc(@$)); }
+    : function_annotation FUNCTION name optional_generics parameters optional_result { push_raw(); } optional_braces  { $$ = new bi::Function($1, $3, $4, $5, $6, $8, make_doc_loc(@$)); }
     ;
 
 fiber_declaration
-    : FIBER name optional_generics parameters optional_result { push_raw(); } optional_braces  { $$ = new bi::Fiber(bi::NONE, $2, $3, $4, new bi::FiberType($5, make_loc(@$)), $7, make_doc_loc(@$)); }
+    : function_annotation FIBER name optional_generics parameters optional_result { push_raw(); } optional_braces  { $$ = new bi::Fiber($1, $3, $4, $5, new bi::FiberType($6, make_loc(@$)), $8, make_doc_loc(@$)); }
     ;
 
 program_declaration
@@ -572,20 +577,21 @@ conversion_operator_declaration
     : OPERATOR result { push_raw(); } optional_braces  { $$ = new bi::ConversionOperator($2, $4, make_doc_loc(@$)); }
     ;
 
-class_declaration
-    : CLASS name optional_generics optional_parameters '<' class_type optional_arguments { push_raw(); } optional_class_braces  { $$ = new bi::Class($2, $3, $4, $6, false, $7, $9, make_doc_loc(@$)); }
-    | CLASS name optional_generics optional_parameters { push_raw(); } optional_class_braces                                    { $$ = new bi::Class($2, $3, $4, empty_type(@$), false, empty_expr(@$), $6, make_doc_loc(@$)); }
-    | CLASS name optional_generics '=' class_type { push_raw(); } ';'                                                           { $$ = new bi::Class($2, $3, empty_expr(@$), $5, true, empty_expr(@$), empty_stmt(@$), make_doc_loc(@$)); }
+class_annotation
+    :           { $$ = bi::NONE; }
+    | EXPLICIT  { $$ = bi::EXPLICIT; }
     ;
-    
+
+class_declaration
+    : class_annotation CLASS name optional_generics optional_parameters '<' class_type optional_arguments { push_raw(); } optional_class_braces  { $$ = new bi::Class($1, $3, $4, $5, $7, false, $8, $10, make_doc_loc(@$)); }
+    | class_annotation CLASS name optional_generics optional_parameters { push_raw(); } optional_class_braces                                    { $$ = new bi::Class($1, $3, $4, $5, empty_type(@$), false, empty_expr(@$), $7, make_doc_loc(@$)); }
+    | class_annotation CLASS name optional_generics '=' class_type { push_raw(); } ';'                                                           { $$ = new bi::Class($1, $3, $4, empty_expr(@$), $6, true, empty_expr(@$), empty_stmt(@$), make_doc_loc(@$)); }
+    ;
+
 basic_declaration
     : TYPE name '<' basic_type ';'  { push_raw(); $$ = new bi::Basic($2, $4, false, make_doc_loc(@$)); }
     | TYPE name '=' basic_type ';'  { push_raw(); $$ = new bi::Basic($2, $4, true, make_doc_loc(@$)); }
     | TYPE name ';'                 { push_raw(); $$ = new bi::Basic($2, empty_type(@$), false, make_doc_loc(@$)); }
-    ;
-
-explicit_declaration
-    : EXPLICIT name generic_arguments ';'   { push_raw(); $$ = new bi::Explicit(new bi::ClassType($2, $3, make_loc(@$)), make_doc_loc(@$)); }
     ;
 
 cpp
@@ -697,7 +703,6 @@ file_statement
     | unary_operator_declaration
     | class_declaration
     | basic_declaration
-    | explicit_declaration
     | cpp
     | hpp
     ;

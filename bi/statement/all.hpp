@@ -13,7 +13,6 @@
 #include "bi/statement/ConversionOperator.hpp"
 #include "bi/statement/DoWhile.hpp"
 #include "bi/statement/EmptyStatement.hpp"
-#include "bi/statement/Explicit.hpp"
 #include "bi/statement/ExpressionStatement.hpp"
 #include "bi/statement/For.hpp"
 #include "bi/statement/Fiber.hpp"
