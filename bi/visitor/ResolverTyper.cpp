@@ -38,3 +38,11 @@ bi::Statement* bi::ResolverTyper::modify(Class* o) {
   }
   return o;
 }
+
+bi::Statement* bi::ResolverTyper::modify(Function* o) {
+  return o;
+}
+
+bi::Statement* bi::ResolverTyper::modify(Fiber* o) {
+  return o;
+}
