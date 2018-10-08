@@ -557,11 +557,11 @@ unary_operator
     ;    
 
 binary_operator_declaration
-    : OPERATOR '(' parameter binary_operator parameter ')' optional_result { push_raw(); } optional_braces  { $$ = new bi::BinaryOperator($4, empty_expr(@$), new bi::Binary($3, $5, make_loc(@$)), $7, $9, make_doc_loc(@$)); }
+    : OPERATOR '(' parameter binary_operator parameter ')' optional_result { push_raw(); } optional_braces  { $$ = new bi::BinaryOperator(bi::NONE, $4, empty_expr(@$), new bi::Binary($3, $5, make_loc(@$)), $7, $9, make_doc_loc(@$)); }
     ;
     
 unary_operator_declaration
-    : OPERATOR '(' unary_operator parameter ')' optional_result { push_raw(); } optional_braces  { $$ = new bi::UnaryOperator($3, empty_expr(@$), $4, $6, $8, make_doc_loc(@$)); }
+    : OPERATOR '(' unary_operator parameter ')' optional_result { push_raw(); } optional_braces  { $$ = new bi::UnaryOperator(bi::NONE, $3, empty_expr(@$), $4, $6, $8, make_doc_loc(@$)); }
     ;
     
 assignment_operator

@@ -252,15 +252,15 @@ bi::Statement* bi::Cloner::clone(const MemberFiber* o) {
 }
 
 bi::Statement* bi::Cloner::clone(const BinaryOperator* o) {
-  return new BinaryOperator(o->name, o->typeParams->accept(this),
-      o->params->accept(this), o->returnType->accept(this),
-      o->braces->accept(this), o->loc);
+  return new BinaryOperator(o->annotation, o->name,
+      o->typeParams->accept(this), o->params->accept(this),
+      o->returnType->accept(this), o->braces->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const UnaryOperator* o) {
-  return new UnaryOperator(o->name, o->typeParams->accept(this),
-      o->params->accept(this), o->returnType->accept(this),
-      o->braces->accept(this), o->loc);
+  return new UnaryOperator(o->annotation, o->name,
+      o->typeParams->accept(this), o->params->accept(this),
+      o->returnType->accept(this), o->braces->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const AssignmentOperator* o) {

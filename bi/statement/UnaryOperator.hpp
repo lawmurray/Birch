@@ -5,6 +5,7 @@
 
 #include "bi/statement/Statement.hpp"
 #include "bi/expression/Expression.hpp"
+#include "bi/common/Annotated.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Numbered.hpp"
 #include "bi/common/TypeParameterised.hpp"
@@ -20,6 +21,7 @@ namespace bi {
  * @ingroup statement
  */
 class UnaryOperator: public Statement,
+    public Annotated,
     public Named,
     public Numbered,
     public TypeParameterised<UnaryOperator>,
@@ -32,6 +34,7 @@ public:
   /**
    * Constructor.
    *
+   * @param annotation Annotation.
    * @param name Name.
    * @param typeParams Generic type parameters.
    * @param params Parameters.
@@ -39,8 +42,9 @@ public:
    * @param braces Body.
    * @param loc Location.
    */
-  UnaryOperator(Name* name, Expression* typeParams, Expression* params,
-      Type* returnType, Statement* braces, Location* loc = nullptr);
+  UnaryOperator(const Annotation annotation, Name* name,
+      Expression* typeParams, Expression* params, Type* returnType,
+      Statement* braces, Location* loc = nullptr);
 
   /**
    * Destructor.

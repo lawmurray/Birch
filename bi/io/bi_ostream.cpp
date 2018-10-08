@@ -18,27 +18,6 @@ void bi::bi_ostream::visit(const Package* o) {
   for (auto source : o->sources) {
     source->accept(this);
   }
-
-  /* explicitly declare the existence of any generic class instantiations
-   * that will be compiled by this package and so needn't be by dependent
-   * packages */
-  Gatherer<Class> classes;
-  o->accept(&classes);
-  for (auto o : classes) {
-    for (auto instantiation : o->instantiations) {
-      if (!instantiation->has(EXPLICIT)) {
-        start("explicit " << instantiation->name << '<');
-        for (auto iter = instantiation->typeParams->begin();
-            iter != instantiation->typeParams->end(); ++iter) {
-          if (iter != instantiation->typeParams->begin()) {
-            middle(',');
-          }
-          middle((*iter)->type);
-        }
-        finish(">;");
-      }
-    }
-  }
 }
 
 void bi::bi_ostream::visit(const Name* o) {
@@ -179,7 +158,11 @@ void bi::bi_ostream::visit(const Parameter* o) {
 }
 
 void bi::bi_ostream::visit(const Generic* o) {
-  middle(o->name);
+  if (o->type->isEmpty()) {
+    middle(o->name);
+  } else {
+    middle(o->type);
+  }
 }
 
 void bi::bi_ostream::visit(const GlobalVariable* o) {
@@ -310,11 +293,16 @@ void bi::bi_ostream::visit(const Assignment* o) {
 }
 
 void bi::bi_ostream::visit(const Function* o) {
-  start("function " << o->name << '(' << o->params << ')');
+  if (o->isInstantiation() && !o->has(EXPLICIT)) {
+    start("explicit ");
+  } else {
+    start("");
+  }
+  middle("function " << o->name << '(' << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
-  if (!header && !o->braces->isEmpty()) {
+  if (!header && !o->isInstantiation() && !o->braces->isEmpty()) {
     finish(o->braces << "\n");
   } else {
     finish(';');
@@ -322,11 +310,16 @@ void bi::bi_ostream::visit(const Function* o) {
 }
 
 void bi::bi_ostream::visit(const Fiber* o) {
-  start("fiber " << o->name << '(' << o->params << ')');
+  if (o->isInstantiation() && !o->has(EXPLICIT)) {
+    start("explicit ");
+  } else {
+    start("");
+  }
+  middle("fiber " << o->name << '(' << o->params << ')');
   if (!o->returnType->unwrap()->isEmpty()) {
     middle(" -> " << o->returnType->unwrap());
   }
-  if (!header && !o->braces->isEmpty()) {
+  if (!header && !o->isInstantiation() && !o->braces->isEmpty()) {
     finish(o->braces << "\n");
   } else {
     finish(';');
@@ -343,12 +336,16 @@ void bi::bi_ostream::visit(const Program* o) {
 }
 
 void bi::bi_ostream::visit(const MemberFunction* o) {
-  start("function");
-  middle(' ' << o->name << '(' << o->params << ')');
+  if (o->isInstantiation() && !o->has(EXPLICIT)) {
+    start("explicit ");
+  } else {
+    start("");
+  }
+  middle("function " << o->name << '(' << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
-  if (!o->braces->isEmpty() && (!header || (type && type->isGeneric()))) {
+  if (!o->braces->isEmpty() && !o->isInstantiation() && (!header || type->isGeneric())) {
     finish(o->braces << "\n");
   } else {
     finish(';');
@@ -356,12 +353,16 @@ void bi::bi_ostream::visit(const MemberFunction* o) {
 }
 
 void bi::bi_ostream::visit(const MemberFiber* o) {
-  start("fiber");
-  middle(' ' << o->name << '(' << o->params << ')');
+  if (o->isInstantiation() && !o->has(EXPLICIT)) {
+    start("explicit ");
+  } else {
+    start("");
+  }
+  start("fiber " << o->name << '(' << o->params << ')');
   if (!o->returnType->unwrap()->isEmpty()) {
     middle(" -> " << o->returnType->unwrap());
   }
-  if (!o->braces->isEmpty() && (!header || (type && type->isGeneric()))) {
+  if (!o->braces->isEmpty() && !o->isInstantiation() && (!header || type->isGeneric())) {
     finish(o->braces << "\n");
   } else {
     finish(';');
@@ -369,7 +370,12 @@ void bi::bi_ostream::visit(const MemberFiber* o) {
 }
 
 void bi::bi_ostream::visit(const BinaryOperator* o) {
-  start("operator (");
+  if (o->isInstantiation() && !o->has(EXPLICIT)) {
+    start("explicit ");
+  } else {
+    start("");
+  }
+  middle("operator (");
   middle(o->params->getLeft());
   middle(' ' << o->name << ' ');
   middle(o->params->getRight());
@@ -377,7 +383,7 @@ void bi::bi_ostream::visit(const BinaryOperator* o) {
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
-  if (!header && !o->braces->isEmpty()) {
+  if (!header && !o->isInstantiation() && !o->braces->isEmpty()) {
     finish(o->braces << "\n");
   } else {
     finish(';');
@@ -385,11 +391,16 @@ void bi::bi_ostream::visit(const BinaryOperator* o) {
 }
 
 void bi::bi_ostream::visit(const UnaryOperator* o) {
-  start("operator (" << o->name << o->params << ')');
+  if (o->isInstantiation() && !o->has(EXPLICIT)) {
+    start("explicit ");
+  } else {
+    start("");
+  }
+  middle("operator (" << o->name << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
-  if (!header && !o->braces->isEmpty()) {
+  if (!header && !o->isInstantiation() && !o->braces->isEmpty()) {
     finish(o->braces << "\n");
   } else {
     finish(';');
@@ -416,7 +427,12 @@ void bi::bi_ostream::visit(const ConversionOperator* o) {
 
 void bi::bi_ostream::visit(const Class* o) {
   type = o;
-  start("class " << o->name);
+  if (o->isInstantiation() && !o->has(EXPLICIT)) {
+    start("explicit ");
+  } else {
+    start("");
+  }
+  middle("class " << o->name);
   if (o->isGeneric()) {
     middle('<' << o->typeParams << '>');
   }
@@ -434,12 +450,19 @@ void bi::bi_ostream::visit(const Class* o) {
       middle('(' << o->args << ')');
     }
   }
-  if (!o->braces->isEmpty()) {
+  if (!o->isInstantiation() && !o->braces->isEmpty()) {
     finish(o->braces << "\n");
   } else {
     finish(';');
   }
   type = nullptr;
+
+  /* explicitly declare the existence of any generic class instantiations
+   * that will be compiled by this package and so needn't be by dependent
+   * packages */
+  for (auto instantiation : o->instantiations) {
+    instantiation->accept(this);
+  }
 }
 
 void bi::bi_ostream::visit(const Basic* o) {
