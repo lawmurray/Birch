@@ -43,7 +43,7 @@ public:
   /**
    * Accept cloning visitor.
    *
-   * @param v The visitor.
+   * @param visitor The visitor.
    *
    * @return Cloned (and potentially modified) expression.
    */
@@ -52,7 +52,7 @@ public:
   /**
    * Accept modifying visitor.
    *
-   * @param v The visitor.
+   * @param visitor The visitor.
    *
    * @return Modified expression.
    */
@@ -61,7 +61,7 @@ public:
   /**
    * Accept read-only visitor.
    *
-   * @param v The visitor.
+   * @param visitor The visitor.
    */
   virtual void accept(Visitor* visitor) const = 0;
 
@@ -121,5 +121,14 @@ public:
    * Iterator to one-past-the-last.
    */
   ExpressionConstIterator end() const;
+
+  /**
+   * Resolve a call.
+   *
+   * @param args Arguments.
+   *
+   * @return The type of the function called.
+   */
+  virtual FunctionType* resolve(Argumented* o);
 };
 }

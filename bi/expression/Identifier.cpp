@@ -26,6 +26,17 @@ bool bi::Identifier<ObjectType>::isAssignable() const {
 }
 
 template<class ObjectType>
+bi::FunctionType* bi::Identifier<ObjectType>::resolve(Argumented* o) {
+  if (type->isFunction()) {
+    auto result = dynamic_cast<FunctionType*>(type);
+    assert(result);
+    return result;
+  } else {
+    throw NotFunctionException(this);
+  }
+}
+
+template<class ObjectType>
 bi::Expression* bi::Identifier<ObjectType>::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

@@ -23,7 +23,7 @@ public:
   /**
    * Constructor.
    *
-   * @param args Arguments.
+   * @param annotation Annotations.
    */
   Annotated(const Annotation annotation);
 

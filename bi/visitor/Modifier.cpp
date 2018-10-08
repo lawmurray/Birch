@@ -460,10 +460,6 @@ bi::Type* bi::Modifier::modify(FunctionType* o) {
   return o;
 }
 
-bi::Type* bi::Modifier::modify(OverloadedType* o) {
-  return o;
-}
-
 bi::Type* bi::Modifier::modify(FiberType* o) {
   o->single = o->single->accept(this);
   return o;

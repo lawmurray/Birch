@@ -370,10 +370,6 @@ bi::Type* bi::Cloner::clone(const FunctionType* o) {
       o->returnType->accept(this), o->loc);
 }
 
-bi::Type* bi::Cloner::clone(const OverloadedType* o) {
-  return new OverloadedType(o->overloaded, o->others, o->loc);
-}
-
 bi::Type* bi::Cloner::clone(const FiberType* o) {
   return new FiberType(o->single->accept(this), o->loc);
 }

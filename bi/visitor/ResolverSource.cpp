@@ -30,27 +30,21 @@ bi::Expression* bi::ResolverSource::modify(Cast* o) {
 
 bi::Expression* bi::ResolverSource::modify(Call* o) {
   Modifier::modify(o);
-  if (o->single->type->isFunction() || o->single->type->isOverloaded()) {
-    o->callType = o->single->type->resolve(o);
-    o->type = o->callType->returnType;
-    return o;
-  } else {
-    throw NotFunctionException(o);
-  }
+  o->callType = o->single->resolve(o);
+  o->type = o->callType->returnType;
+  return o;
 }
 
 bi::Expression* bi::ResolverSource::modify(BinaryCall* o) {
-  auto op = dynamic_cast<OverloadedIdentifier<BinaryOperator>*>(o->single);
-  assert(op);
   Modifier::modify(o);
-  o->callType = o->single->type->resolve(o);
+  o->callType = o->single->resolve(o);
   o->type = o->callType->returnType;
   return o;
 }
 
 bi::Expression* bi::ResolverSource::modify(UnaryCall* o) {
   Modifier::modify(o);
-  o->callType = o->single->type->resolve(o);
+  o->callType = o->single->resolve(o);
   o->type = o->callType->returnType;
   return o;
 }
@@ -273,14 +267,22 @@ bi::Expression* bi::ResolverSource::modify(
     OverloadedIdentifier<Function>* o) {
   Modifier::modify(o);
   resolve(o, GLOBAL_SCOPE);
-  o->type = new OverloadedType(o->target, o->others, o->loc);
+  //instantiate(o);
+  if (o->target->size() == 1) {
+    auto only = o->target->front();
+    o->type = new FunctionType(only->params->type, only->returnType);
+  }
   return o;
 }
 
 bi::Expression* bi::ResolverSource::modify(OverloadedIdentifier<Fiber>* o) {
   Modifier::modify(o);
   resolve(o, GLOBAL_SCOPE);
-  o->type = new OverloadedType(o->target, o->others, o->loc);
+  //instantiate(o);
+  if (o->target->size() == 1) {
+    auto only = o->target->front();
+    o->type = new FunctionType(only->params->type, only->returnType);
+  }
   return o;
 }
 
@@ -288,7 +290,11 @@ bi::Expression* bi::ResolverSource::modify(
     OverloadedIdentifier<MemberFunction>* o) {
   Modifier::modify(o);
   resolve(o, CLASS_SCOPE);
-  o->type = new OverloadedType(o->target, o->others, o->loc);
+  //instantiate(o);
+  if (o->target->size() == 1) {
+    auto only = o->target->front();
+    o->type = new FunctionType(only->params->type, only->returnType);
+  }
   return o;
 }
 
@@ -296,7 +302,11 @@ bi::Expression* bi::ResolverSource::modify(
     OverloadedIdentifier<MemberFiber>* o) {
   Modifier::modify(o);
   resolve(o, CLASS_SCOPE);
-  o->type = new OverloadedType(o->target, o->others, o->loc);
+  //instantiate(o);
+  if (o->target->size() == 1) {
+    auto only = o->target->front();
+    o->type = new FunctionType(only->params->type, only->returnType);
+  }
   return o;
 }
 
@@ -304,7 +314,11 @@ bi::Expression* bi::ResolverSource::modify(
     OverloadedIdentifier<BinaryOperator>* o) {
   Modifier::modify(o);
   resolve(o, GLOBAL_SCOPE);
-  o->type = new OverloadedType(o->target, o->others, o->loc);
+  //instantiate(o);
+  if (o->target->size() == 1) {
+    auto only = o->target->front();
+    o->type = new FunctionType(only->params->type, only->returnType);
+  }
   return o;
 }
 
@@ -312,7 +326,11 @@ bi::Expression* bi::ResolverSource::modify(
     OverloadedIdentifier<UnaryOperator>* o) {
   Modifier::modify(o);
   resolve(o, GLOBAL_SCOPE);
-  o->type = new OverloadedType(o->target, o->others, o->loc);
+  //instantiate(o);
+  if (o->target->size() == 1) {
+    auto only = o->target->front();
+    o->type = new FunctionType(only->params->type, only->returnType);
+  }
   return o;
 }
 

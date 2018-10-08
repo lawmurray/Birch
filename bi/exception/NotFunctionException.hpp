@@ -4,7 +4,7 @@
 #pragma once
 
 #include "bi/exception/CompilerException.hpp"
-#include "bi/expression/Call.hpp"
+#include "bi/expression/Expression.hpp"
 
 namespace bi {
 /**
@@ -16,6 +16,6 @@ struct NotFunctionException: public CompilerException {
   /**
    * Constructor.
    */
-  NotFunctionException(Call* o);
+  NotFunctionException(Expression* o);
 };
 }

@@ -20,14 +20,6 @@ bool bi::FunctionType::isFunction() const {
   return true;
 }
 
-bi::FunctionType* bi::FunctionType::resolve(Argumented* o) {
-  if (o->args->type->definitely(*params)) {
-    return this;
-  } else {
-    throw CallException(o, this);
-  }
-}
-
 bi::Type* bi::FunctionType::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

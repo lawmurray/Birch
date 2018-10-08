@@ -37,7 +37,7 @@ ObjectType* bi::OverloadedDictionary<ObjectType>::get(ObjectType* o) {
 }
 
 template<class ObjectType>
-bi::Overloaded* bi::OverloadedDictionary<ObjectType>::get(
+bi::Overloaded<ObjectType>* bi::OverloadedDictionary<ObjectType>::get(
     const std::string& name) {
   /* pre-condition */
   assert(contains(name));
@@ -52,7 +52,7 @@ void bi::OverloadedDictionary<ObjectType>::add(ObjectType* o) {
   if (this->contains(name)) {
     this->get(name)->add(o);
   } else {
-    objects.insert(std::make_pair(name, new Overloaded(o)));
+    objects.insert(std::make_pair(name, new Overloaded<ObjectType>(o)));
   }
 }
 

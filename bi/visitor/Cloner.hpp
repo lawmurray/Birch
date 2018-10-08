@@ -105,7 +105,6 @@ public:
   virtual Type* clone(const SequenceType* o);
   virtual Type* clone(const BinaryType* o);
   virtual Type* clone(const FunctionType* o);
-  virtual Type* clone(const OverloadedType* o);
   virtual Type* clone(const FiberType* o);
   virtual Type* clone(const OptionalType* o);
   virtual Type* clone(const PointerType* o);

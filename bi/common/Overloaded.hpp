@@ -13,6 +13,7 @@ namespace bi {
  *
  * @ingroup common
  */
+template<class ObjectType>
 class Overloaded {
 public:
   /**
@@ -20,28 +21,28 @@ public:
    *
    * @param o First overload.
    */
-  Overloaded(Parameterised* o);
+  Overloaded(ObjectType* o);
 
   /**
    * Does this contain the given overload?
    *
    * @param o The overload.
    */
-  bool contains(Parameterised* o);
+  bool contains(ObjectType* o);
 
   /**
    * Get the given overload.
    *
    * @param o The overload.
    */
-  Parameterised* get(Parameterised* o);
+  ObjectType* get(ObjectType* o);
 
   /**
    * Add an overload.
    *
    * @param o The overload.
    */
-  void add(Parameterised* o);
+  void add(ObjectType* o);
 
   /**
    * Number of overloads.
@@ -68,6 +69,6 @@ public:
   /**
    * Overloads.
    */
-  poset<Parameterised*,definitely> overloads;
+  poset<ObjectType*,definitely> overloads;
 };
 }

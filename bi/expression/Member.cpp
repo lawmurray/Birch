@@ -20,6 +20,10 @@ bool bi::Member::isAssignable() const {
   return right->isAssignable();
 }
 
+bi::FunctionType* bi::Member::resolve(Argumented* o) {
+  return right->resolve(o);
+}
+
 bi::Expression* bi::Member::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

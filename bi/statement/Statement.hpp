@@ -33,7 +33,7 @@ public:
   /**
    * Accept cloning visitor.
    *
-   * @param v The visitor.
+   * @param visitor The visitor.
    *
    * @return Cloned (and potentially modified) statement.
    */
@@ -42,7 +42,7 @@ public:
   /**
    * Accept modifying visitor.
    *
-   * @param v The visitor.
+   * @param visitor The visitor.
    *
    * @return Modified statement.
    */
@@ -51,7 +51,7 @@ public:
   /**
    * Accept read-only visitor.
    *
-   * @param v The visitor.
+   * @param visitor The visitor.
    */
   virtual void accept(Visitor* visitor) const = 0;
 

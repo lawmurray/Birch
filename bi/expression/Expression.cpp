@@ -7,6 +7,7 @@
 #include "bi/expression/ExpressionConstIterator.hpp"
 #include "bi/type/EmptyType.hpp"
 #include "bi/expression/Range.hpp"
+#include "bi/exception/NotFunctionException.hpp"
 
 bi::Expression::Expression(Type* type, Location* loc) :
     Located(loc),
@@ -86,4 +87,8 @@ bi::ExpressionConstIterator bi::Expression::begin() const {
 
 bi::ExpressionConstIterator bi::Expression::end() const {
   return ExpressionConstIterator(nullptr);
+}
+
+bi::FunctionType* bi::Expression::resolve(Argumented* o) {
+  throw NotFunctionException(this);
 }

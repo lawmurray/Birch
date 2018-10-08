@@ -174,7 +174,6 @@ COMMON_SOURCES = \
   bi/type/MemberType.cpp \
   bi/type/NilType.cpp \
   bi/type/OptionalType.cpp \
-  bi/type/OverloadedType.cpp \
   bi/type/PointerType.cpp \
   bi/type/SequenceType.cpp \
   bi/type/TupleType.cpp \
@@ -230,6 +229,7 @@ noinst_HEADERS = \
   bi/common/Typed.hpp \
   bi/common/TypeArgumented.hpp \
   bi/common/TypeParameterised.hpp \
+  bi/common/Unknown.hpp \
   bi/common/Valued.hpp \
   bi/exception/all.hpp \
   bi/exception/AmbiguousCallException.hpp \
@@ -354,7 +354,6 @@ noinst_HEADERS = \
   bi/type/MemberType.hpp \
   bi/type/NilType.hpp \
   bi/type/OptionalType.hpp \
-  bi/type/OverloadedType.hpp \
   bi/type/PointerType.hpp \
   bi/type/SequenceType.hpp \
   bi/type/TupleType.hpp \

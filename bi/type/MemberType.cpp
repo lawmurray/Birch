@@ -87,14 +87,6 @@ const bi::Type* bi::MemberType::canonical() const {
   return right->canonical();
 }
 
-bi::FunctionType* bi::MemberType::resolve(Argumented* o) {
-  return right->resolve(o);
-}
-
-bi::FunctionType* bi::MemberType::resolve() const {
-  return right->resolve();
-}
-
 void bi::MemberType::resolveConstructor(Argumented* o) {
   right->resolveConstructor(o);
 }

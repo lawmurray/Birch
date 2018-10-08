@@ -105,7 +105,6 @@ public:
   virtual Type* modify(SequenceType* o);
   virtual Type* modify(BinaryType* o);
   virtual Type* modify(FunctionType* o);
-  virtual Type* modify(OverloadedType* o);
   virtual Type* modify(FiberType* o);
   virtual Type* modify(OptionalType* o);
   virtual Type* modify(PointerType* o);

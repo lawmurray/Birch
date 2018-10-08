@@ -7,11 +7,11 @@
 
 template<class ObjectType>
 bi::OverloadedIdentifier<ObjectType>::OverloadedIdentifier(Name* name,
-    Type* typeArgs, Location* loc, Overloaded* target) :
+    Type* typeArgs, Location* loc, Overloaded<ObjectType>* target) :
     Expression(loc),
     Named(name),
     TypeArgumented(typeArgs),
-    Reference<Overloaded>(target) {
+    Reference<Overloaded<ObjectType>>(target) {
   //
 }
 
@@ -23,6 +23,24 @@ bi::OverloadedIdentifier<ObjectType>::~OverloadedIdentifier() {
 template<class ObjectType>
 bool bi::OverloadedIdentifier<ObjectType>::isOverloaded() const {
   return true;
+}
+
+template<class ObjectType>
+bi::FunctionType* bi::OverloadedIdentifier<ObjectType>::resolve(Argumented* o) {
+  std::set<ObjectType*> matches;
+  this->target->overloads.match(o, matches);
+  if (matches.size() == 1) {
+    /* construct the appropriate function type */
+    auto only = *matches.begin();
+    return new FunctionType(only->params->type, only->returnType);
+  } else if (matches.size() == 0) {
+    std::list<ObjectType*> available;
+    std::copy(this->target->overloads.begin(), this->target->overloads.end(),
+        std::back_inserter(available));
+    throw CallException(o, available);
+  } else {
+    throw AmbiguousCallException(o, matches);
+  }
 }
 
 template<class ObjectType>

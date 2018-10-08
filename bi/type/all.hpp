@@ -14,7 +14,6 @@
 #include "bi/type/MemberType.hpp"
 #include "bi/type/NilType.hpp"
 #include "bi/type/OptionalType.hpp"
-#include "bi/type/OverloadedType.hpp"
 #include "bi/type/PointerType.hpp"
 #include "bi/type/SequenceType.hpp"
 #include "bi/type/TupleType.hpp"

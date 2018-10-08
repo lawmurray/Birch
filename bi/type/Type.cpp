@@ -73,10 +73,6 @@ bool bi::Type::isWeak() const {
   return false;
 }
 
-bool bi::Type::isOverloaded() const {
-  return false;
-}
-
 bool bi::Type::isBound() const {
   Gatherer<GenericType> generics;
   this->accept(&generics);
@@ -142,14 +138,6 @@ bi::Type* bi::Type::element() {
 
 const bi::Type* bi::Type::element() const {
   return this;
-}
-
-bi::FunctionType* bi::Type::resolve(Argumented* o) {
-  throw CallException(o);
-}
-
-bi::FunctionType* bi::Type::resolve() const {
-  assert(false);
 }
 
 void bi::Type::resolveConstructor(Argumented* o) {
@@ -234,10 +222,6 @@ bool bi::Type::definitely(const OptionalType& o) const {
   return false;
 }
 
-bool bi::Type::definitely(const OverloadedType& o) const {
-  return false;
-}
-
 bool bi::Type::definitely(const PointerType& o) const {
   return false;
 }
@@ -303,10 +287,6 @@ bi::Type* bi::Type::common(const NilType& o) const {
 }
 
 bi::Type* bi::Type::common(const OptionalType& o) const {
-  return nullptr;
-}
-
-bi::Type* bi::Type::common(const OverloadedType& o) const {
   return nullptr;
 }
 

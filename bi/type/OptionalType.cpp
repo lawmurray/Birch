@@ -144,15 +144,6 @@ bi::Type* bi::OptionalType::common(const OptionalType& o) const {
   }
 }
 
-bi::Type* bi::OptionalType::common(const OverloadedType& o) const {
-  auto single1 = single->common(o);
-  if (single1) {
-    return new OptionalType(single1);
-  } else {
-    return nullptr;
-  }
-}
-
 bi::Type* bi::OptionalType::common(const PointerType& o) const {
   auto single1 = single->common(o);
   if (single1) {

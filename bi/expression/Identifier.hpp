@@ -6,15 +6,9 @@
 #include "bi/expression/Expression.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Reference.hpp"
+#include "bi/common/Unknown.hpp"
 
 namespace bi {
-/**
- * Placeholder for identifier to unknown object.
- */
-class Unknown {
-  //
-};
-
 /**
  * Identifier.
  *
@@ -51,6 +45,8 @@ public:
   virtual ~Identifier();
 
   virtual bool isAssignable() const;
+
+  virtual FunctionType* resolve(Argumented* o);
 
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);

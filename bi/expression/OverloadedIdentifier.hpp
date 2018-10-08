@@ -22,7 +22,7 @@ template<class ObjectType>
 class OverloadedIdentifier: public Expression,
     public Named,
     public TypeArgumented,
-    public Reference<Overloaded> {
+    public Reference<Overloaded<ObjectType>> {
 public:
   /**
    * Constructor.
@@ -33,7 +33,7 @@ public:
    * @param target Target.
    */
   OverloadedIdentifier(Name* name, Type* typeArgs, Location* loc = nullptr,
-      Overloaded* target = nullptr);
+      Overloaded<ObjectType>* target = nullptr);
 
   /**
    * Destructor.
@@ -41,6 +41,8 @@ public:
   virtual ~OverloadedIdentifier();
 
   virtual bool isOverloaded() const;
+
+  virtual FunctionType* resolve(Argumented* o);
 
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);

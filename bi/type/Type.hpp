@@ -25,7 +25,6 @@ class GenericType;
 class MemberType;
 class NilType;
 class OptionalType;
-class OverloadedType;
 class PointerType;
 class SequenceType;
 class TupleType;
@@ -58,7 +57,7 @@ public:
   /**
    * Accept cloning visitor.
    *
-   * @param v The visitor.
+   * @param visitor The visitor.
    *
    * @return Cloned (and potentially modified) type.
    */
@@ -67,7 +66,7 @@ public:
   /**
    * Accept modifying visitor.
    *
-   * @param v The visitor.
+   * @param visitor The visitor.
    *
    * @return Modified type.
    */
@@ -76,7 +75,7 @@ public:
   /**
    * Accept read-only visitor.
    *
-   * @param v The visitor.
+   * @param visitor The visitor.
    */
   virtual void accept(Visitor* visitor) const = 0;
 
@@ -151,11 +150,6 @@ public:
   virtual bool isBinary() const;
 
   /**
-   * Is this an overloaded type?
-   */
-  virtual bool isOverloaded() const;
-
-  /**
    * Are all the generics of this class defined?
    */
   virtual bool isBound() const;
@@ -212,25 +206,6 @@ public:
   virtual const Type* element() const;
 
   /**
-   * Resolve a call.
-   *
-   * @param args Arguments.
-   *
-   * @return If this is an overloaded type, and the argument types match the
-   * parameter types of the function, the return type of the function. In all
-   * other cases throws an exception.
-   */
-  virtual FunctionType* resolve(Argumented* o);
-
-  /**
-   * Resolve a call without arguments.
-   *
-   * @return If this is an overloaded type, but there is only one overload,
-   * return the type of that overload. In all other cases undefined.
-   */
-  virtual FunctionType* resolve() const;
-
-  /**
    * Resolve a constructor call.
    *
    * @param args Argument types.
@@ -271,7 +246,6 @@ public:
   virtual bool definitely(const MemberType& o) const;
   virtual bool definitely(const NilType& o) const;
   virtual bool definitely(const OptionalType& o) const;
-  virtual bool definitely(const OverloadedType& o) const;
   virtual bool definitely(const PointerType& o) const;
   virtual bool definitely(const SequenceType& o) const;
   virtual bool definitely(const TupleType& o) const;
@@ -294,7 +268,6 @@ public:
   virtual Type* common(const MemberType& o) const;
   virtual Type* common(const NilType& o) const;
   virtual Type* common(const OptionalType& o) const;
-  virtual Type* common(const OverloadedType& o) const;
   virtual Type* common(const PointerType& o) const;
   virtual Type* common(const SequenceType& o) const;
   virtual Type* common(const TupleType& o) const;

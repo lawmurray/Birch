@@ -4,7 +4,6 @@
 #include "bi/primitive/poset.hpp"
 
 #include "bi/type/Type.hpp"
-#include "bi/common/Parameterised.hpp"
 #include "bi/io/bih_ostream.hpp"
 
 template<class T, class Compare>
@@ -214,18 +213,19 @@ void bi::poset<T,Compare>::dot() {
   bih_ostream buf(std::cerr);
   buf << "digraph {\n";
   for (auto iter = vertices.begin(); iter != vertices.end(); ++iter) {
-    auto param = dynamic_cast<Parameterised*>(*iter);
-    if (param) {
-      buf << "  \"" << param->params << "\"\n";
-    }
+    buf << "  \"" << *iter << "\"\n";
   }
   for (auto iter = forwards.begin(); iter != forwards.end(); ++iter) {
-    auto first = dynamic_cast<Parameterised*>(iter->first);
-    auto second = dynamic_cast<Parameterised*>(iter->second);
-    buf << "  \"" << first->params << "\" -> \"" << second->params << "\"\n";
+    buf << "  \"" << iter->first << "\" -> \"" << iter->second << "\"\n";
   }
   buf << "}\n";
 }
 
 template class bi::poset<bi::Type*,bi::definitely>;
-template class bi::poset<bi::Parameterised*,bi::definitely>;
+template class bi::poset<bi::Unknown*,bi::definitely>;
+template class bi::poset<bi::Function*,bi::definitely>;
+template class bi::poset<bi::Fiber*,bi::definitely>;
+template class bi::poset<bi::MemberFunction*,bi::definitely>;
+template class bi::poset<bi::MemberFiber*,bi::definitely>;
+template class bi::poset<bi::BinaryOperator*,bi::definitely>;
+template class bi::poset<bi::UnaryOperator*,bi::definitely>;

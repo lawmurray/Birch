@@ -96,7 +96,6 @@ public:
   virtual void visit(const TupleType* o);
   virtual void visit(const SequenceType* o);
   virtual void visit(const FunctionType* o);
-  virtual void visit(const OverloadedType* o);
   virtual void visit(const FiberType* o);
   virtual void visit(const OptionalType* o);
   virtual void visit(const PointerType* o);

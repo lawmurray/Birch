@@ -6,6 +6,7 @@
 #include "bi/type/Type.hpp"
 #include "bi/common/Parameterised.hpp"
 #include "bi/common/Argumented.hpp"
+#include "bi/common/Unknown.hpp"
 
 namespace bi {
 /**
@@ -14,6 +15,10 @@ namespace bi {
 struct definitely {
   bool operator()(Type* o1, Type* o2) {
     return o1->definitely(*o2);
+  }
+
+  bool operator()(Unknown* o1, Unknown* o2) {
+    return false;
   }
 
   bool operator()(Parameterised* o1, Parameterised* o2) {
