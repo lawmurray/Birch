@@ -86,7 +86,7 @@ void bi::OverloadedDictionary<ObjectType>::resolve(ReferenceType* ref) {
     if (!ref->target) {
       ref->target = iter->second;
     } else {
-      ref->others.push_back(iter->second);
+      ref->inherited.push_back(iter->second);
     }
   }
 }

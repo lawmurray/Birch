@@ -22,6 +22,8 @@ bi::Expression* bi::ResolverHeader::modify(Parameter* o) {
 }
 
 bi::Expression* bi::ResolverHeader::modify(Generic* o) {
+  Modifier::modify(o);
+  scopes.back()->add(o);
   return o;
 }
 
@@ -75,22 +77,40 @@ bi::Statement* bi::ResolverHeader::modify(GlobalVariable* o) {
 }
 
 bi::Statement* bi::ResolverHeader::modify(Function* o) {
-  scopes.push_back(o->scope);
-  o->params = o->params->accept(this);
-  o->returnType = o->returnType->accept(this);
-  o->type = new FunctionType(o->params->type, o->returnType, o->loc);
-  scopes.pop_back();
-  scopes.back()->add(o);
+  if (o->state < RESOLVED_HEADER) {
+    scopes.push_back(o->scope);
+    o->typeParams = o->typeParams->accept(this);
+    o->params = o->params->accept(this);
+    o->returnType = o->returnType->accept(this);
+    o->type = new FunctionType(o->params->type, o->returnType, o->loc);
+    scopes.pop_back();
+    if (!o->isInstantiation()) {
+      scopes.back()->add(o);
+    }
+    o->state = RESOLVED_HEADER;
+  }
+  for (auto instantiation : o->instantiations) {
+    instantiation->accept(this);
+  }
   return o;
 }
 
 bi::Statement* bi::ResolverHeader::modify(Fiber* o) {
-  scopes.push_back(o->scope);
-  o->params = o->params->accept(this);
-  o->returnType = o->returnType->accept(this);
-  o->type = new FunctionType(o->params->type, o->returnType, o->loc);
-  scopes.pop_back();
-  scopes.back()->add(o);
+  if (o->state < RESOLVED_HEADER) {
+    scopes.push_back(o->scope);
+    o->typeParams = o->typeParams->accept(this);
+    o->params = o->params->accept(this);
+    o->returnType = o->returnType->accept(this);
+    o->type = new FunctionType(o->params->type, o->returnType, o->loc);
+    scopes.pop_back();
+    if (!o->isInstantiation()) {
+      scopes.back()->add(o);
+    }
+    o->state = RESOLVED_HEADER;
+  }
+  for (auto instantiation : o->instantiations) {
+    instantiation->accept(this);
+  }
   return o;
 }
 
@@ -104,22 +124,40 @@ bi::Statement* bi::ResolverHeader::modify(Program* o) {
 }
 
 bi::Statement* bi::ResolverHeader::modify(BinaryOperator* o) {
-  scopes.push_back(o->scope);
-  o->params = o->params->accept(this);
-  o->returnType = o->returnType->accept(this);
-  o->type = new FunctionType(o->params->type, o->returnType, o->loc);
-  scopes.pop_back();
-  scopes.back()->add(o);
+  if (o->state < RESOLVED_HEADER) {
+    scopes.push_back(o->scope);
+    o->typeParams = o->typeParams->accept(this);
+    o->params = o->params->accept(this);
+    o->returnType = o->returnType->accept(this);
+    o->type = new FunctionType(o->params->type, o->returnType, o->loc);
+    scopes.pop_back();
+    if (!o->isInstantiation()) {
+      scopes.back()->add(o);
+    }
+    o->state = RESOLVED_HEADER;
+  }
+  for (auto instantiation : o->instantiations) {
+    instantiation->accept(this);
+  }
   return o;
 }
 
 bi::Statement* bi::ResolverHeader::modify(UnaryOperator* o) {
-  scopes.push_back(o->scope);
-  o->params = o->params->accept(this);
-  o->returnType = o->returnType->accept(this);
-  o->type = new FunctionType(o->params->type, o->returnType, o->loc);
-  scopes.pop_back();
-  scopes.back()->add(o);
+  if (o->state < RESOLVED_HEADER) {
+    scopes.push_back(o->scope);
+    o->typeParams = o->typeParams->accept(this);
+    o->params = o->params->accept(this);
+    o->returnType = o->returnType->accept(this);
+    o->type = new FunctionType(o->params->type, o->returnType, o->loc);
+    scopes.pop_back();
+    if (!o->isInstantiation()) {
+      scopes.back()->add(o);
+    }
+    o->state = RESOLVED_HEADER;
+  }
+  for (auto instantiation : o->instantiations) {
+    instantiation->accept(this);
+  }
   return o;
 }
 
@@ -133,22 +171,40 @@ bi::Statement* bi::ResolverHeader::modify(MemberVariable* o) {
 }
 
 bi::Statement* bi::ResolverHeader::modify(MemberFunction* o) {
-  scopes.push_back(o->scope);
-  o->params = o->params->accept(this);
-  o->returnType = o->returnType->accept(this);
-  o->type = new FunctionType(o->params->type, o->returnType, o->loc);
-  scopes.pop_back();
-  scopes.back()->add(o);
+  if (o->state < RESOLVED_HEADER) {
+    scopes.push_back(o->scope);
+    o->typeParams = o->typeParams->accept(this);
+    o->params = o->params->accept(this);
+    o->returnType = o->returnType->accept(this);
+    o->type = new FunctionType(o->params->type, o->returnType, o->loc);
+    scopes.pop_back();
+    if (!o->isInstantiation()) {
+      scopes.back()->add(o);
+    }
+    o->state = RESOLVED_HEADER;
+  }
+  for (auto instantiation : o->instantiations) {
+    instantiation->accept(this);
+  }
   return o;
 }
 
 bi::Statement* bi::ResolverHeader::modify(MemberFiber* o) {
-  scopes.push_back(o->scope);
-  o->params = o->params->accept(this);
-  o->returnType = o->returnType->accept(this);
-  o->type = new FunctionType(o->params->type, o->returnType, o->loc);
-  scopes.pop_back();
-  scopes.back()->add(o);
+  if (o->state < RESOLVED_HEADER) {
+    scopes.push_back(o->scope);
+    o->typeParams = o->typeParams->accept(this);
+    o->params = o->params->accept(this);
+    o->returnType = o->returnType->accept(this);
+    o->type = new FunctionType(o->params->type, o->returnType, o->loc);
+    scopes.pop_back();
+    if (!o->isInstantiation()) {
+      scopes.back()->add(o);
+    }
+    o->state = RESOLVED_HEADER;
+  }
+  for (auto instantiation : o->instantiations) {
+    instantiation->accept(this);
+  }
   return o;
 }
 
@@ -166,4 +222,3 @@ bi::Statement* bi::ResolverHeader::modify(AssignmentOperator* o) {
 bi::Statement* bi::ResolverHeader::modify(ConversionOperator* o) {
   return o;
 }
-

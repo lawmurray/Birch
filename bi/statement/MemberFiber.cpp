@@ -6,10 +6,12 @@
 #include "bi/visitor/all.hpp"
 
 bi::MemberFiber::MemberFiber(const Annotation annotation, Name* name,
-    Expression* params, Type* returnType, Statement* braces, Location* loc) :
+    Expression* typeParams, Expression* params, Type* returnType,
+    Statement* braces, Location* loc) :
     Statement(loc),
     Annotated(annotation),
     Named(name),
+    TypeParameterised(typeParams),
     Parameterised(params),
     ReturnTyped(returnType),
     Typed(new EmptyType(loc)),

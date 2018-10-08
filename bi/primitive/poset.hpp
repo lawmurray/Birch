@@ -26,6 +26,11 @@ public:
   }
 
   /**
+   * Clear the container.
+   */
+  void clear();
+
+  /**
    * Does the set contain this value?
    */
   bool contains(T v);

@@ -47,5 +47,10 @@ public:
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
+
+  /**
+   * Inherited objects that may be an alternative to target.
+   */
+  std::list<Overloaded<ObjectType>*> inherited;
 };
 }

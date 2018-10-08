@@ -7,6 +7,17 @@
 
 namespace bi {
 /**
+ * Possible states of objects during parsing.
+ */
+enum ResolvedState {
+  CLONED = 0,
+  RESOLVED_TYPER = 1,
+  RESOLVED_SUPER = 2,
+  RESOLVED_HEADER = 3,
+  RESOLVED_SOURCE = 4
+};
+
+/**
  * Object with generic type parameters.
  *
  * @ingroup common
@@ -72,5 +83,12 @@ public:
    * Is this an explicit instantiation of a generic object?
    */
   bool isExplicit;
+
+  /**
+   * State of the object during resolution. Objects with generic type
+   * parameters are instantiated on use, which is why this is necessary; as
+   * instantiated they need to catch up on previous resolution passes.
+   */
+  ResolvedState state;
 };
 }

@@ -60,11 +60,14 @@ public:
   }
 
   /**
-   * First overload.
+   * Get first overload.
    */
-  auto front() const {
-    return *begin();
-  }
+  ObjectType* front() const;
+
+  /**
+   * Set first overload.
+   */
+  void setFront(ObjectType* o);
 
   /**
    * Overloads.

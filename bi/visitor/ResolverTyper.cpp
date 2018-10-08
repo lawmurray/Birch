@@ -12,11 +12,13 @@ bi::ResolverTyper::~ResolverTyper() {
 }
 
 bi::Expression* bi::ResolverTyper::modify(Generic* o) {
+  Modifier::modify(o);
   scopes.back()->add(o);
   return o;
 }
 
 bi::Statement* bi::ResolverTyper::modify(Basic* o) {
+  Modifier::modify(o);
   scopes.back()->add(o);
   return o;
 }
@@ -38,19 +40,5 @@ bi::Statement* bi::ResolverTyper::modify(Class* o) {
   if (!o->isInstantiation()) {
     scopes.back()->add(o);
   }
-  return o;
-}
-
-bi::Statement* bi::ResolverTyper::modify(Function* o) {
-  scopes.push_back(o->scope);
-  o->typeParams = o->typeParams->accept(this);
-  scopes.pop_back();
-  return o;
-}
-
-bi::Statement* bi::ResolverTyper::modify(Fiber* o) {
-  scopes.push_back(o->scope);
-  o->typeParams = o->typeParams->accept(this);
-  scopes.pop_back();
   return o;
 }

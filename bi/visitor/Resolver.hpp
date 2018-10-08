@@ -60,8 +60,8 @@ protected:
    *
    * @param o The identifier.
    */
-  template<class ObjectType>
-  void instantiate(ObjectType* o);
+  template<class IdentifierType, class ObjectType>
+  ObjectType* instantiate(IdentifierType* o, ObjectType* target);
 
   /**
    * Look up an identifier that is syntactically ambiguous.
@@ -154,20 +154,22 @@ void bi::Resolver::resolve(ObjectType* o, const ScopeCategory outer) {
   }
 }
 
-template<class ObjectType>
-void bi::Resolver::instantiate(ObjectType* o) {
-  if (o->target->isGeneric() && o->typeArgs->isBound()) {
-    if (o->typeArgs->width() != o->target->typeParams->width()) {
-      throw GenericException(o, o->target);
+template<class IdentifierType, class ObjectType>
+ObjectType* bi::Resolver::instantiate(IdentifierType* o, ObjectType* target) {
+  if (target->isGeneric() && o->typeArgs->isBound()) {
+    if (o->typeArgs->width() != target->typeParams->width()) {
+      throw GenericException(o, target);
     }
-    auto instantiation = o->target->getInstantiation(o->typeArgs);
+    auto instantiation = target->getInstantiation(o->typeArgs);
     if (!instantiation) {
-      instantiation = dynamic_cast<decltype(instantiation)>(o->target->accept(&cloner));
+      instantiation = dynamic_cast<decltype(instantiation)>(target->accept(&cloner));
       assert(instantiation);
       instantiation->bind(o->typeArgs);
-      o->target->addInstantiation(instantiation);
+      target->addInstantiation(instantiation);
       instantiation->accept(this);
     }
-    o->target = instantiation;
+    return instantiation;
+  } else {
+    return target;
   }
 }

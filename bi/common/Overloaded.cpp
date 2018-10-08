@@ -33,6 +33,19 @@ int bi::Overloaded<ObjectType>::size() const {
   return overloads.size();
 }
 
+template<class ObjectType>
+ObjectType* bi::Overloaded<ObjectType>::front() const {
+  assert(overloads.size() == 1);
+  return *overloads.begin();
+}
+
+template<class ObjectType>
+void bi::Overloaded<ObjectType>::setFront(ObjectType* o) {
+  assert(overloads.size() == 1);
+  overloads.clear();
+  overloads.insert(o);
+}
+
 template class bi::Overloaded<bi::Unknown>;
 template class bi::Overloaded<bi::Function>;
 template class bi::Overloaded<bi::Fiber>;

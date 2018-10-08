@@ -16,8 +16,7 @@ bi::Class::Class(Name* name, Expression* typeParams, Expression* params,
     Argumented(args),
     Scoped(CLASS_SCOPE),
     Braced(braces),
-    initScope(new Scope(LOCAL_SCOPE)),
-    state(CLONED) {
+    initScope(new Scope(LOCAL_SCOPE)) {
   //
 }
 

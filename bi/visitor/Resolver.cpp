@@ -63,7 +63,7 @@ bi::Type* bi::Resolver::modify(ClassType* o) {
   assert(!o->target);
   Modifier::modify(o);
   resolve(o, GLOBAL_SCOPE);
-  instantiate(o);
+  o->target = instantiate(o, o->target);
   return o;
 }
 

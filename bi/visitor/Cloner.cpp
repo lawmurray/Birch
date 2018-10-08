@@ -240,23 +240,27 @@ bi::Statement* bi::Cloner::clone(const Program* o) {
 }
 
 bi::Statement* bi::Cloner::clone(const MemberFunction* o) {
-  return new MemberFunction(o->annotation, o->name, o->params->accept(this),
+  return new MemberFunction(o->annotation, o->name,
+      o->typeParams->accept(this), o->params->accept(this),
       o->returnType->accept(this), o->braces->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const MemberFiber* o) {
-  return new MemberFiber(o->annotation, o->name, o->params->accept(this),
+  return new MemberFiber(o->annotation, o->name,
+      o->typeParams->accept(this), o->params->accept(this),
       o->returnType->accept(this), o->braces->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const BinaryOperator* o) {
-  return new BinaryOperator(o->name, o->params->accept(this),
-      o->returnType->accept(this), o->braces->accept(this), o->loc);
+  return new BinaryOperator(o->name, o->typeParams->accept(this),
+      o->params->accept(this), o->returnType->accept(this),
+      o->braces->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const UnaryOperator* o) {
-  return new UnaryOperator(o->name, o->params->accept(this),
-      o->returnType->accept(this), o->braces->accept(this), o->loc);
+  return new UnaryOperator(o->name, o->typeParams->accept(this),
+      o->params->accept(this), o->returnType->accept(this),
+      o->braces->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const AssignmentOperator* o) {

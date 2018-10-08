@@ -13,6 +13,16 @@ bi::poset<T,Compare>::poset() :
 }
 
 template<class T, class Compare>
+void bi::poset<T,Compare>::clear() {
+  colour = 0;
+  roots.clear();
+  vertices.clear();
+  forwards.clear();
+  backwards.clear();
+  colours.clear();
+}
+
+template<class T, class Compare>
 bool bi::poset<T,Compare>::contains(T v) {
   std::set<T> matches;
   match(v, matches);

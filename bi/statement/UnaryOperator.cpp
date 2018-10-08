@@ -5,10 +5,11 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::UnaryOperator::UnaryOperator(Name* name, Expression* params,
-    Type* returnType, Statement* braces, Location* loc) :
+bi::UnaryOperator::UnaryOperator(Name* name, Expression* typeParams,
+    Expression* params, Type* returnType, Statement* braces, Location* loc) :
     Statement(loc),
     Named(name),
+    TypeParameterised(typeParams),
     Parameterised(params),
     ReturnTyped(returnType),
     Typed(new EmptyType(loc)),

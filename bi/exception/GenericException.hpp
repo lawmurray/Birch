@@ -17,9 +17,35 @@ struct GenericException: public CompilerException {
   /**
    * Constructor.
    *
-   * @param ref Class type.
-   * @param param Class.
+   * @param o Identifier.
+   * @param target Target.
    */
-  GenericException(const ClassType* ref, const Class* param);
+  template<class IdentifierType, class ObjectType>
+  GenericException(const IdentifierType* o, const ObjectType* target);
 };
+}
+
+#include "bi/io/bih_ostream.hpp"
+
+template<class IdentifierType, class ObjectType>
+bi::GenericException::GenericException(const IdentifierType* o, const ObjectType* target) {
+  std::stringstream base;
+  bih_ostream buf(base);
+  if (o->loc) {
+    buf << o->loc;
+  }
+  buf << "error: invalid generic type arguments\n";
+
+  if (o->loc) {
+    buf << o->loc;
+  }
+  buf << "note: in\n";
+  buf << o << '\n';
+
+  if (target->loc) {
+    buf << target->loc;
+  }
+  buf << "note: target is\n";
+  buf << target->name << '<' << target->typeParams << ">\n";
+  msg = base.str();
 }

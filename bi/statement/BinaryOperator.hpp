@@ -7,6 +7,7 @@
 #include "bi/expression/Expression.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Numbered.hpp"
+#include "bi/common/TypeParameterised.hpp"
 #include "bi/common/Parameterised.hpp"
 #include "bi/common/ReturnTyped.hpp"
 #include "bi/common/Scoped.hpp"
@@ -21,6 +22,7 @@ namespace bi {
 class BinaryOperator: public Statement,
     public Named,
     public Numbered,
+    public TypeParameterised<BinaryOperator>,
     public Parameterised,
     public ReturnTyped,
     public Typed,
@@ -31,13 +33,14 @@ public:
    * Constructor.
    *
    * @param name Name.
+   * @param typeParams Generic type parameters.
    * @param params Parameters.
    * @param returnType Return type.
    * @param braces Body.
    * @param loc Location.
    */
-  BinaryOperator(Name* name, Expression* params, Type* returnType,
-      Statement* braces, Location* loc = nullptr);
+  BinaryOperator(Name* name, Expression* typeParams, Expression* params,
+      Type* returnType, Statement* braces, Location* loc = nullptr);
 
   /**
    * Destructor.

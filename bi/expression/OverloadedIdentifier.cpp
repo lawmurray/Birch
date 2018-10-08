@@ -29,17 +29,31 @@ template<class ObjectType>
 bi::FunctionType* bi::OverloadedIdentifier<ObjectType>::resolve(Argumented* o) {
   std::set<ObjectType*> matches;
   this->target->overloads.match(o, matches);
-  if (matches.size() == 1) {
-    /* construct the appropriate function type */
+  if (matches.size() > 1) {
+    throw AmbiguousCallException(o, matches);
+  } else if (matches.size() == 1) {
     auto only = *matches.begin();
     return new FunctionType(only->params->type, only->returnType);
-  } else if (matches.size() == 0) {
+  } else {
+    /* check inherited */
+    auto iter = this->inherited.begin();
+    auto end = this->inherited.end();
+    while (iter != end) {
+      (*iter)->overloads.match(o, matches);
+      if (matches.size() > 1) {
+        throw AmbiguousCallException(o, matches);
+      } else if (matches.size() == 1) {
+        auto only = *matches.begin();
+        return new FunctionType(only->params->type, only->returnType);
+      }
+      ++iter;
+    }
+
+    /* error */
     std::list<ObjectType*> available;
     std::copy(this->target->overloads.begin(), this->target->overloads.end(),
         std::back_inserter(available));
     throw CallException(o, available);
-  } else {
-    throw AmbiguousCallException(o, matches);
   }
 }
 

@@ -15,17 +15,6 @@
 
 namespace bi {
 /**
- * Possible states of a class during parsing.
- */
-enum ClassState {
-  CLONED = 0,
-  RESOLVED_TYPER = 1,
-  RESOLVED_SUPER = 2,
-  RESOLVED_HEADER = 3,
-  RESOLVED_SOURCE = 4
-};
-
-/**
  * Class.
  *
  * @ingroup statement
@@ -99,14 +88,6 @@ public:
    * Scope for initialization parameters.
    */
   Scope* initScope;
-
-  /**
-   * State of the class during parsing. Classes with generic type parameters
-   * are instantiated on use, which is why this is necessary: a new class
-   * may be instantiated during a later parsing phase and we must keep track
-   * of where we are for each class.
-   */
-  ClassState state;
 
   /**
    * Super classes.

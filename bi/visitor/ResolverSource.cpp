@@ -267,9 +267,9 @@ bi::Expression* bi::ResolverSource::modify(
     OverloadedIdentifier<Function>* o) {
   Modifier::modify(o);
   resolve(o, GLOBAL_SCOPE);
-  //instantiate(o);
   if (o->target->size() == 1) {
-    auto only = o->target->front();
+    auto only = instantiate(o, o->target->front());
+    o->target->setFront(only);
     o->type = new FunctionType(only->params->type, only->returnType);
   }
   return o;
@@ -278,9 +278,9 @@ bi::Expression* bi::ResolverSource::modify(
 bi::Expression* bi::ResolverSource::modify(OverloadedIdentifier<Fiber>* o) {
   Modifier::modify(o);
   resolve(o, GLOBAL_SCOPE);
-  //instantiate(o);
   if (o->target->size() == 1) {
-    auto only = o->target->front();
+    auto only = instantiate(o, o->target->front());
+    o->target->setFront(only);
     o->type = new FunctionType(only->params->type, only->returnType);
   }
   return o;
@@ -290,9 +290,9 @@ bi::Expression* bi::ResolverSource::modify(
     OverloadedIdentifier<MemberFunction>* o) {
   Modifier::modify(o);
   resolve(o, CLASS_SCOPE);
-  //instantiate(o);
   if (o->target->size() == 1) {
-    auto only = o->target->front();
+    auto only = instantiate(o, o->target->front());
+    o->target->setFront(only);
     o->type = new FunctionType(only->params->type, only->returnType);
   }
   return o;
@@ -302,9 +302,9 @@ bi::Expression* bi::ResolverSource::modify(
     OverloadedIdentifier<MemberFiber>* o) {
   Modifier::modify(o);
   resolve(o, CLASS_SCOPE);
-  //instantiate(o);
   if (o->target->size() == 1) {
-    auto only = o->target->front();
+    auto only = instantiate(o, o->target->front());
+    o->target->setFront(only);
     o->type = new FunctionType(only->params->type, only->returnType);
   }
   return o;
@@ -314,9 +314,9 @@ bi::Expression* bi::ResolverSource::modify(
     OverloadedIdentifier<BinaryOperator>* o) {
   Modifier::modify(o);
   resolve(o, GLOBAL_SCOPE);
-  //instantiate(o);
   if (o->target->size() == 1) {
-    auto only = o->target->front();
+    auto only = instantiate(o, o->target->front());
+    o->target->setFront(only);
     o->type = new FunctionType(only->params->type, only->returnType);
   }
   return o;
@@ -326,9 +326,9 @@ bi::Expression* bi::ResolverSource::modify(
     OverloadedIdentifier<UnaryOperator>* o) {
   Modifier::modify(o);
   resolve(o, GLOBAL_SCOPE);
-  //instantiate(o);
   if (o->target->size() == 1) {
-    auto only = o->target->front();
+    auto only = instantiate(o, o->target->front());
+    o->target->setFront(only);
     o->type = new FunctionType(only->params->type, only->returnType);
   }
   return o;
@@ -386,20 +386,40 @@ bi::Statement* bi::ResolverSource::modify(GlobalVariable* o) {
 }
 
 bi::Statement* bi::ResolverSource::modify(Function* o) {
-  scopes.push_back(o->scope);
-  returnTypes.push_back(o->returnType);
-  o->braces = o->braces->accept(this);
-  returnTypes.pop_back();
-  scopes.pop_back();
+  if (o->state < RESOLVED_HEADER) {
+    ResolverHeader resolver(scopes.front());
+    o->accept(&resolver);
+  }
+  if (o->state < RESOLVED_SOURCE) {
+    scopes.push_back(o->scope);
+    returnTypes.push_back(o->returnType);
+    o->braces = o->braces->accept(this);
+    returnTypes.pop_back();
+    scopes.pop_back();
+    o->state = RESOLVED_SOURCE;
+  }
+  for (auto instantiation : o->instantiations) {
+    instantiation->accept(this);
+  }
   return o;
 }
 
 bi::Statement* bi::ResolverSource::modify(Fiber* o) {
-  scopes.push_back(o->scope);
-  yieldTypes.push_back(o->returnType->unwrap());
-  o->braces = o->braces->accept(this);
-  yieldTypes.pop_back();
-  scopes.pop_back();
+  if (o->state < RESOLVED_HEADER) {
+    ResolverHeader resolver(scopes.front());
+    o->accept(&resolver);
+  }
+  if (o->state < RESOLVED_SOURCE) {
+    scopes.push_back(o->scope);
+    yieldTypes.push_back(o->returnType->unwrap());
+    o->braces = o->braces->accept(this);
+    yieldTypes.pop_back();
+    scopes.pop_back();
+    o->state = RESOLVED_SOURCE;
+  }
+  for (auto instantiation : o->instantiations) {
+    instantiation->accept(this);
+  }
   return o;
 }
 
@@ -411,20 +431,40 @@ bi::Statement* bi::ResolverSource::modify(Program* o) {
 }
 
 bi::Statement* bi::ResolverSource::modify(BinaryOperator* o) {
-  scopes.push_back(o->scope);
-  returnTypes.push_back(o->returnType);
-  o->braces = o->braces->accept(this);
-  returnTypes.pop_back();
-  scopes.pop_back();
+  if (o->state < RESOLVED_HEADER) {
+    ResolverHeader resolver(scopes.front());
+    o->accept(&resolver);
+  }
+  if (o->state < RESOLVED_SOURCE) {
+    scopes.push_back(o->scope);
+    returnTypes.push_back(o->returnType);
+    o->braces = o->braces->accept(this);
+    returnTypes.pop_back();
+    scopes.pop_back();
+    o->state = RESOLVED_SOURCE;
+  }
+  for (auto instantiation : o->instantiations) {
+    instantiation->accept(this);
+  }
   return o;
 }
 
 bi::Statement* bi::ResolverSource::modify(UnaryOperator* o) {
-  scopes.push_back(o->scope);
-  returnTypes.push_back(o->returnType);
-  o->braces = o->braces->accept(this);
-  returnTypes.pop_back();
-  scopes.pop_back();
+  if (o->state < RESOLVED_HEADER) {
+    ResolverHeader resolver(scopes.front());
+    o->accept(&resolver);
+  }
+  if (o->state < RESOLVED_SOURCE) {
+    scopes.push_back(o->scope);
+    returnTypes.push_back(o->returnType);
+    o->braces = o->braces->accept(this);
+    returnTypes.pop_back();
+    scopes.pop_back();
+    o->state = RESOLVED_SOURCE;
+  }
+  for (auto instantiation : o->instantiations) {
+    instantiation->accept(this);
+  }
   return o;
 }
 
@@ -448,20 +488,38 @@ bi::Statement* bi::ResolverSource::modify(MemberVariable* o) {
 }
 
 bi::Statement* bi::ResolverSource::modify(MemberFunction* o) {
-  scopes.push_back(o->scope);
-  returnTypes.push_back(o->returnType);
-  o->braces = o->braces->accept(this);
-  returnTypes.pop_back();
-  scopes.pop_back();
+  if (o->state < RESOLVED_HEADER) {
+    ResolverHeader resolver(scopes.front());
+    o->accept(&resolver);
+  }
+  if (o->state < RESOLVED_SOURCE) {
+    scopes.push_back(o->scope);
+    returnTypes.push_back(o->returnType);
+    o->braces = o->braces->accept(this);
+    returnTypes.pop_back();
+    scopes.pop_back();
+  }
+  for (auto instantiation : o->instantiations) {
+    instantiation->accept(this);
+  }
   return o;
 }
 
 bi::Statement* bi::ResolverSource::modify(MemberFiber* o) {
-  scopes.push_back(o->scope);
-  yieldTypes.push_back(o->returnType->unwrap());
-  o->braces = o->braces->accept(this);
-  yieldTypes.pop_back();
-  scopes.pop_back();
+  if (o->state < RESOLVED_HEADER) {
+    ResolverHeader resolver(scopes.front());
+    o->accept(&resolver);
+  }
+  if (o->state < RESOLVED_SOURCE) {
+    scopes.push_back(o->scope);
+    yieldTypes.push_back(o->returnType->unwrap());
+    o->braces = o->braces->accept(this);
+    yieldTypes.pop_back();
+    scopes.pop_back();
+  }
+  for (auto instantiation : o->instantiations) {
+    instantiation->accept(this);
+  }
   return o;
 }
 
