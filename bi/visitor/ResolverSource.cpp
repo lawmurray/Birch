@@ -269,7 +269,7 @@ bi::Expression* bi::ResolverSource::modify(
   resolve(o, GLOBAL_SCOPE);
   if (o->target->size() == 1) {
     auto only = instantiate(o, o->target->front());
-    o->target->setFront(only);
+    o->target = new Overloaded<Function>(only);
     o->type = new FunctionType(only->params->type, only->returnType);
   }
   return o;
@@ -280,7 +280,7 @@ bi::Expression* bi::ResolverSource::modify(OverloadedIdentifier<Fiber>* o) {
   resolve(o, GLOBAL_SCOPE);
   if (o->target->size() == 1) {
     auto only = instantiate(o, o->target->front());
-    o->target->setFront(only);
+    o->target = new Overloaded<Fiber>(only);
     o->type = new FunctionType(only->params->type, only->returnType);
   }
   return o;
@@ -292,7 +292,7 @@ bi::Expression* bi::ResolverSource::modify(
   resolve(o, CLASS_SCOPE);
   if (o->target->size() == 1) {
     auto only = instantiate(o, o->target->front());
-    o->target->setFront(only);
+    o->target = new Overloaded<MemberFunction>(only);
     o->type = new FunctionType(only->params->type, only->returnType);
   }
   return o;
@@ -304,7 +304,7 @@ bi::Expression* bi::ResolverSource::modify(
   resolve(o, CLASS_SCOPE);
   if (o->target->size() == 1) {
     auto only = instantiate(o, o->target->front());
-    o->target->setFront(only);
+    o->target = new Overloaded<MemberFiber>(only);
     o->type = new FunctionType(only->params->type, only->returnType);
   }
   return o;
@@ -316,7 +316,7 @@ bi::Expression* bi::ResolverSource::modify(
   resolve(o, GLOBAL_SCOPE);
   if (o->target->size() == 1) {
     auto only = instantiate(o, o->target->front());
-    o->target->setFront(only);
+    o->target = new Overloaded<BinaryOperator>(only);
     o->type = new FunctionType(only->params->type, only->returnType);
   }
   return o;
@@ -328,7 +328,7 @@ bi::Expression* bi::ResolverSource::modify(
   resolve(o, GLOBAL_SCOPE);
   if (o->target->size() == 1) {
     auto only = instantiate(o, o->target->front());
-    o->target->setFront(only);
+    o->target = new Overloaded<UnaryOperator>(only);
     o->type = new FunctionType(only->params->type, only->returnType);
   }
   return o;

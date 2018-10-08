@@ -156,6 +156,8 @@ void bi::Resolver::resolve(ObjectType* o, const ScopeCategory outer) {
 
 template<class IdentifierType, class ObjectType>
 ObjectType* bi::Resolver::instantiate(IdentifierType* o, ObjectType* target) {
+  assert(!target->isInstantiation());
+
   if (target->isGeneric() && o->typeArgs->isBound()) {
     if (o->typeArgs->width() != target->typeParams->width()) {
       throw GenericException(o, target);

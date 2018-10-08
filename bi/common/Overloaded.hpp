@@ -65,11 +65,6 @@ public:
   ObjectType* front() const;
 
   /**
-   * Set first overload.
-   */
-  void setFront(ObjectType* o);
-
-  /**
    * Overloads.
    */
   poset<ObjectType*,definitely> overloads;

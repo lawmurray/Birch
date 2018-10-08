@@ -30,8 +30,12 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
 
   /* supporting class for state */
   if (header) {
-    start("class " << stateName << " : ");
-    finish("public FiberState<" << o->returnType->unwrap() << "> {");
+    genTemplateParams(o);
+    start("class " << stateName);
+    if (o->isBound()) {
+      genTemplateArgs(o);
+    }
+    finish(" : public FiberState<" << o->returnType->unwrap() << "> {");
     line("public:");
     in();
     line("using super_type = FiberState<" << o->returnType->unwrap() << ">;\n");
@@ -45,9 +49,15 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   }
 
   /* constructor */
-  start("");
+  if (!header && !o->isBound()) {
+    genTemplateParams(o);
+  }
   if (!header) {
-    middle("bi::" << stateName << "::");
+    start("bi::" << stateName);
+    genTemplateArgs(o);
+    middle("::");
+  } else {
+    start("");
   }
   middle(stateName << '(' << o->params << ')');
   if (header) {
@@ -69,14 +79,20 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   }
 
   /* clone function */
-  start("");
+  if (!header && !o->isBound()) {
+    genTemplateParams(o);
+  } else {
+    start("");
+  }
   if (header) {
     middle("virtual ");
   }
   middle("bi::FiberState<");
   middle(o->returnType->unwrap() << ">* ");
   if (!header) {
-    middle("bi::" << stateName << "::");
+    middle("bi::" << stateName);
+    genTemplateArgs(o);
+    middle("::");
   }
   middle("clone() const");
   if (header) {
@@ -90,13 +106,19 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   }
 
   /* destroy function */
-  start("");
+  if (!header && !o->isBound()) {
+    genTemplateParams(o);
+  } else {
+    start("");
+  }
   if (header) {
     middle("virtual ");
   }
   middle("void ");
   if (!header) {
-    middle("bi::" << stateName << "::");
+    middle("bi::" << stateName);
+    genTemplateArgs(o);
+    middle("::");
   }
   middle("destroy()");
   if (header) {
@@ -111,13 +133,19 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   }
 
   /* query function */
-  start("");
+  if (!header && !o->isBound()) {
+    genTemplateParams(o);
+  } else {
+    start("");
+  }
   if (header) {
     middle("virtual ");
   }
   middle("bool ");
   if (!header) {
-    middle("bi::" << stateName << "::");
+    middle("bi::" << stateName);
+    genTemplateArgs(o);
+    middle("::");
   }
   middle("query()");
   if (header) {
@@ -138,17 +166,24 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   }
 
   /* initialisation function */
+  genTemplateParams(o);
   start(o->returnType << ' ');
   if (!header) {
     middle("bi::");
   }
-  middle(o->name << '(' << o->params << ')');
+  middle(o->name);
+  if (!header && o->isBound()) {
+    genTemplateArgs(o);
+  }
+  middle('(' << o->params << ')');
   if (header) {
     finish(';');
   } else {
     finish(" {");
     in();
-    start("return make_fiber<" << stateName << ">(");
+    start("return make_fiber<" << stateName);
+    genTemplateArgs(o);
+    middle(">(");
     for (auto iter = params.begin(); iter != params.end(); ++iter) {
       if (iter != params.begin()) {
         middle(", ");

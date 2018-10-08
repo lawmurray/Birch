@@ -3,6 +3,7 @@
  */
 #pragma once
 
+#include "bi/common/TypeParameterised.hpp"
 #include "bi/io/indentable_ostream.hpp"
 
 namespace bi {
@@ -103,12 +104,14 @@ protected:
   /**
    * Generate code for template parameters (`template<...>`).
    */
-  void genTemplateParams(const Class* o);
+  template<class ObjectType>
+  void genTemplateParams(const ObjectType* o);
 
   /**
    * Generate code for template arguments (`<...>`).
    */
-  void genTemplateArgs(const Class* o);
+  template<class ObjectType>
+  void genTemplateArgs(const ObjectType* o);
 
   /**
    * Generate the initialization of a variable, including the call to the
@@ -178,5 +181,29 @@ void bi::CppBaseGenerator::genInit(const T* o) {
     }
   } else if (!o->value->isEmpty()) {
     middle(" = " << o->value);
+  }
+}
+
+template<class ObjectType>
+void bi::CppBaseGenerator::genTemplateParams(const ObjectType* o) {
+  if (o->isGeneric()) {
+    start("template<");
+    if (!o->isBound()) {
+      for (auto iter = o->typeParams->begin(); iter != o->typeParams->end();
+          ++iter) {
+        if (iter != o->typeParams->begin()) {
+          middle(", ");
+        }
+        middle("class " << *iter);
+      }
+    }
+    finish('>');
+  }
+}
+
+template<class ObjectType>
+void bi::CppBaseGenerator::genTemplateArgs(const ObjectType* o) {
+  if (o->isGeneric()) {
+    middle('<' << o->typeParams << '>');
   }
 }
