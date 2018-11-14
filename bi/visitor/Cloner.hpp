@@ -91,6 +91,8 @@ public:
   virtual Statement* clone(const Return* o);
   virtual Statement* clone(const Yield* o);
   virtual Statement* clone(const Raw* o);
+  virtual Statement* clone(const Instantiated<Type>* o);
+  virtual Statement* clone(const Instantiated<Expression>* o);
 
   virtual Type* clone(const EmptyType* o);
   virtual Type* clone(const TypeList* o);

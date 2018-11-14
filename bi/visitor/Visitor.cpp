@@ -345,6 +345,14 @@ void bi::Visitor::visit(const Raw* o) {
   //
 }
 
+void bi::Visitor::visit(const Instantiated<Type>* o) {
+  o->single->accept(this);
+}
+
+void bi::Visitor::visit(const Instantiated<Expression>* o) {
+  o->single->accept(this);
+}
+
 void bi::Visitor::visit(const EmptyType* o) {
   //
 }

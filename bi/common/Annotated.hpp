@@ -11,7 +11,7 @@ enum Annotation {
   NONE = 0,
   PARALLEL = 1,
   AUTO = 2,
-  EXPLICIT = 4
+  PRIOR_INSTANTIATION = 4
 };
 
 /**
@@ -37,6 +37,11 @@ public:
    * Does this object have a particular annotation?
    */
   bool has(const Annotation a) const;
+
+  /**
+   * Set a particular annotation.
+   */
+  void set(const Annotation a);
 
   /**
    * Annotation.

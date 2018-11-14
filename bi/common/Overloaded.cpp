@@ -39,6 +39,13 @@ ObjectType* bi::Overloaded<ObjectType>::front() const {
   return *overloads.begin();
 }
 
+template<class ObjectType>
+void bi::Overloaded<ObjectType>::set(const Annotation a) {
+  for (auto o : overloads) {
+    o->set(a);
+  }
+}
+
 template class bi::Overloaded<bi::Unknown>;
 template class bi::Overloaded<bi::Function>;
 template class bi::Overloaded<bi::Fiber>;

@@ -5,11 +5,12 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::Parameter::Parameter(Name* name, Type* type, Expression* value,
-    Location* loc) :
-    Expression(type, loc),
-    Named(name),
-    Valued(value) {
+bi::Parameter::Parameter(const Annotation annotation, Name* name, Type* type,
+    Expression* value, Location* loc) :
+Expression(type, loc),
+Annotated(annotation),
+Named(name),
+Valued(value) {
   //
 }
 

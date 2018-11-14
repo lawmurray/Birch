@@ -90,9 +90,9 @@
 // ^ for generic class declaration, opening '<' ambiguous with inheritance,
 //   but closing '>' disambiguates
 
-%token <valString> PROGRAM CLASS TYPE FUNCTION FIBER OPERATOR AUTO EXPLICIT
-%token <valString> IF ELSE FOR IN WHILE DO ASSERT RETURN YIELD CPP HPP
-%token <valString> THIS SUPER GLOBAL PARALLEL NIL
+%token <valString> PROGRAM CLASS TYPE FUNCTION FIBER OPERATOR AUTO
+%token <valString> IF ELSE FOR IN WHILE DO ASSERT RETURN YIELD INSTANTIATED
+%token <valString> CPP HPP THIS SUPER GLOBAL PARALLEL NIL
 %token <valString> DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE NAME
 %token <valBool> BOOL_LITERAL
 %token <valInt> INT_LITERAL
@@ -136,7 +136,7 @@
 %type <valStatement> conversion_operator_declaration assignment_operator_declaration
 %type <valStatement> class_declaration basic_declaration
 %type <valStatement> cpp hpp assignment expression_statement if for
-%type <valStatement> while do_while assertion return yield
+%type <valStatement> while do_while assertion return yield instantiated
 %type <valStatement> statement statements optional_statements
 %type <valStatement> class_statement class_statements optional_class_statements
 %type <valStatement> file_statement file_statements optional_file_statements
@@ -413,7 +413,7 @@ parameter_list
     ;
 
 parameter
-    : name ':' type  { $$ = new bi::Parameter($1, $3, empty_expr(@$), make_loc(@$)); }
+    : name ':' type  { $$ = new bi::Parameter(bi::NONE, $1, $3, empty_expr(@$), make_loc(@$)); }
     ;
 
 options
@@ -427,7 +427,7 @@ option_list
     ;
 
 option
-    : name ':' type optional_value  { $$ = new bi::Parameter($1, $3, $4, make_loc(@$)); }
+    : name ':' type optional_value  { $$ = new bi::Parameter(bi::NONE, $1, $3, $4, make_loc(@$)); }
     ;
 
 arguments
@@ -456,7 +456,7 @@ generic_list
     ;
 
 generic
-    : name  { $$ = new bi::Generic($1, empty_type(@$), make_loc(@$)); }
+    : name           { $$ = new bi::Generic(bi::NONE, $1, empty_type(@$), make_loc(@$)); }
     ;
 
 optional_generics
@@ -512,7 +512,6 @@ member_variable_declaration
 
 function_annotation
     :           { $$ = bi::NONE; }
-    | EXPLICIT  { $$ = bi::EXPLICIT; }
     ;
 
 function_declaration
@@ -579,7 +578,6 @@ conversion_operator_declaration
 
 class_annotation
     :           { $$ = bi::NONE; }
-    | EXPLICIT  { $$ = bi::EXPLICIT; }
     ;
 
 class_declaration
@@ -589,9 +587,9 @@ class_declaration
     ;
 
 basic_declaration
-    : TYPE name '<' basic_type ';'  { push_raw(); $$ = new bi::Basic($2, $4, false, make_doc_loc(@$)); }
-    | TYPE name '=' basic_type ';'  { push_raw(); $$ = new bi::Basic($2, $4, true, make_doc_loc(@$)); }
-    | TYPE name ';'                 { push_raw(); $$ = new bi::Basic($2, empty_type(@$), false, make_doc_loc(@$)); }
+    : TYPE name '<' basic_type ';'  { push_raw(); $$ = new bi::Basic(bi::NONE, $2, $4, false, make_doc_loc(@$)); }
+    | TYPE name '=' basic_type ';'  { push_raw(); $$ = new bi::Basic(bi::NONE, $2, $4, true, make_doc_loc(@$)); }
+    | TYPE name ';'                 { push_raw(); $$ = new bi::Basic(bi::NONE, $2, empty_type(@$), false, make_doc_loc(@$)); }
     ;
 
 cpp
@@ -650,6 +648,12 @@ return
 yield
     : YIELD expression ';'  { $$ = new bi::Yield($2, make_loc(@$)); }
     ;
+    
+instantiated
+    : INSTANTIATED CLASS type ';'           { $$ = new bi::Instantiated<bi::Type>($3, make_loc(@$)); }
+    | INSTANTIATED FUNCTION expression ';'  { $$ = new bi::Instantiated<bi::Expression>($3, make_loc(@$)); }
+    | INSTANTIATED FIBER expression ';'     { $$ = new bi::Instantiated<bi::Expression>($3, make_loc(@$)); }
+    ;
 
 statement
     : local_variable_declaration
@@ -705,6 +709,7 @@ file_statement
     | basic_declaration
     | cpp
     | hpp
+    | instantiated
     ;
 
 file_statements

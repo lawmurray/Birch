@@ -132,12 +132,12 @@ bi::Expression* bi::Cloner::clone(const LocalVariable* o) {
 }
 
 bi::Expression* bi::Cloner::clone(const Parameter* o) {
-  return new Parameter(o->name, o->type->accept(this), o->value->accept(this),
-      o->loc);
+  return new Parameter(o->annotation, o->name, o->type->accept(this),
+      o->value->accept(this), o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const Generic* o) {
-  return new Generic(o->name, o->type->accept(this), o->loc);
+  return new Generic(o->annotation, o->name, o->type->accept(this), o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const Identifier<Unknown>* o) {
@@ -280,7 +280,7 @@ bi::Statement* bi::Cloner::clone(const Class* o) {
 }
 
 bi::Statement* bi::Cloner::clone(const Basic* o) {
-  return new Basic(o->name, o->base->accept(this), o->alias, o->loc);
+  return new Basic(o->annotation, o->name, o->base->accept(this), o->alias, o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const ExpressionStatement* o) {
@@ -319,6 +319,14 @@ bi::Statement* bi::Cloner::clone(const Yield* o) {
 
 bi::Statement* bi::Cloner::clone(const Raw* o) {
   return new Raw(o->name, o->raw, o->loc);
+}
+
+bi::Statement* bi::Cloner::clone(const Instantiated<Type>* o) {
+  return new Instantiated<Type>(o->single->accept(this), o->loc);
+}
+
+bi::Statement* bi::Cloner::clone(const Instantiated<Expression>* o) {
+  return new Instantiated<Expression>(o->single->accept(this), o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const EmptyType* o) {

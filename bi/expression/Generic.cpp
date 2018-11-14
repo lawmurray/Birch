@@ -5,8 +5,10 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::Generic::Generic(Name* name, Type* type, Location* loc) :
+bi::Generic::Generic(const Annotation annotation, Name* name, Type* type,
+    Location* loc) :
     Expression(type, loc),
+    Annotated(annotation),
     Named(name) {
   //
 }

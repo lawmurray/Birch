@@ -398,6 +398,16 @@ bi::Statement* bi::Modifier::modify(Raw* o) {
   return o;
 }
 
+bi::Statement* bi::Modifier::modify(Instantiated<Type>* o) {
+  o->single = o->single->accept(this);
+  return o;
+}
+
+bi::Statement* bi::Modifier::modify(Instantiated<Expression>* o) {
+  o->single = o->single->accept(this);
+  return o;
+}
+
 bi::Type* bi::Modifier::modify(EmptyType* o) {
   return o;
 }

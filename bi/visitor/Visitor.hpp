@@ -92,6 +92,8 @@ public:
   virtual void visit(const Return* o);
   virtual void visit(const Yield* o);
   virtual void visit(const Raw* o);
+  virtual void visit(const Instantiated<Type>* o);
+  virtual void visit(const Instantiated<Expression>* o);
 
   virtual void visit(const EmptyType* o);
   virtual void visit(const TypeList* o);

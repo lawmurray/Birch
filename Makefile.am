@@ -149,6 +149,7 @@ COMMON_SOURCES = \
   bi/statement/Function.cpp \
   bi/statement/GlobalVariable.cpp \
   bi/statement/If.cpp \
+  bi/statement/Instantiated.cpp \
   bi/statement/MemberFiber.cpp \
   bi/statement/MemberFunction.cpp \
   bi/statement/MemberVariable.cpp \
@@ -181,6 +182,7 @@ COMMON_SOURCES = \
   bi/type/UnknownType.cpp \
   bi/type/TypeIterator.cpp \
   bi/type/TypeList.cpp \
+  bi/visitor/Annotator.cpp \
   bi/visitor/Cloner.cpp \
   bi/visitor/Gatherer.cpp \
   bi/visitor/Modifier.cpp \
@@ -327,6 +329,7 @@ noinst_HEADERS = \
   bi/statement/Function.hpp \
   bi/statement/GlobalVariable.hpp \
   bi/statement/If.hpp \
+  bi/statement/Instantiated.hpp \
   bi/statement/MemberFiber.hpp \
   bi/statement/MemberFunction.hpp \
   bi/statement/MemberVariable.hpp \
@@ -361,6 +364,7 @@ noinst_HEADERS = \
   bi/type/TypeIterator.hpp \
   bi/type/TypeList.hpp \
   bi/visitor/all.hpp \
+  bi/visitor/Annotator.hpp \
   bi/visitor/Cloner.hpp \
   bi/visitor/Gatherer.hpp \
   bi/visitor/Modifier.hpp \

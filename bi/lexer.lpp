@@ -102,7 +102,7 @@ E                                  [Ee][+-]?{D}+
 "type"                              { return TYPE; }
 "operator"                          { return OPERATOR; }
 "auto"                              { return AUTO; }
-"explicit"                          { return EXPLICIT; }
+"instantiated"                      { return INSTANTIATED; }
 "if"                                { return IF; }
 "else"                              { return ELSE; }
 "for"                               { return FOR; }

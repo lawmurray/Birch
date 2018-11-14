@@ -13,5 +13,9 @@ bi::Annotated::~Annotated() {
 }
 
 bool bi::Annotated::has(const Annotation a) const {
-  return (annotation & a) > 0;
+  return annotation & a;
+}
+
+void bi::Annotated::set(const Annotation a) {
+  annotation = (Annotation)(annotation | a);
 }

@@ -158,10 +158,10 @@ void bi::bi_ostream::visit(const Parameter* o) {
 }
 
 void bi::bi_ostream::visit(const Generic* o) {
-  if (o->type->isEmpty()) {
-    middle(o->name);
-  } else {
+  if (!o->type->isEmpty()) {
     middle(o->type);
+  } else {
+    middle(o->name);
   }
 }
 
@@ -293,36 +293,48 @@ void bi::bi_ostream::visit(const Assignment* o) {
 }
 
 void bi::bi_ostream::visit(const Function* o) {
-  if (o->isInstantiation() && !o->has(EXPLICIT)) {
-    start("explicit ");
+  if (o->isInstantiation() && !o->has(PRIOR_INSTANTIATION)) {
+    line("instantiated function " << o->name << '<' << o->typeParams << ">;");
   } else {
-    start("");
+    start("function " << o->name);
+    if (!o->typeParams->isEmpty()) {
+      middle('<' << o->typeParams << '>');
+    }
+    middle('(' << o->params << ')');
+    if (!o->returnType->isEmpty()) {
+      middle(" -> " << o->returnType);
+    }
+    if (!header && !o->braces->isEmpty()) {
+      finish(o->braces << "\n");
+    } else {
+      finish(';');
+    }
   }
-  middle("function " << o->name << '(' << o->params << ')');
-  if (!o->returnType->isEmpty()) {
-    middle(" -> " << o->returnType);
-  }
-  if (!header && !o->isInstantiation() && !o->braces->isEmpty()) {
-    finish(o->braces << "\n");
-  } else {
-    finish(';');
+  for (auto instantiation : o->instantiations) {
+    instantiation->accept(this);
   }
 }
 
 void bi::bi_ostream::visit(const Fiber* o) {
-  if (o->isInstantiation() && !o->has(EXPLICIT)) {
-    start("explicit ");
+  if (o->isInstantiation() && !o->has(PRIOR_INSTANTIATION)) {
+    line("instantiated fiber " << o->name << '<' << o->typeParams << ">;");
   } else {
-    start("");
+    start("fiber " << o->name);
+    if (!o->typeParams->isEmpty()) {
+      middle('<' << o->typeParams << '>');
+    }
+    middle('(' << o->params << ')');
+    if (!o->returnType->unwrap()->isEmpty()) {
+      middle(" -> " << o->returnType->unwrap());
+    }
+    if (!header && !o->braces->isEmpty()) {
+      finish(o->braces << "\n");
+    } else {
+      finish(';');
+    }
   }
-  middle("fiber " << o->name << '(' << o->params << ')');
-  if (!o->returnType->unwrap()->isEmpty()) {
-    middle(" -> " << o->returnType->unwrap());
-  }
-  if (!header && !o->isInstantiation() && !o->braces->isEmpty()) {
-    finish(o->braces << "\n");
-  } else {
-    finish(';');
+  for (auto instantiation : o->instantiations) {
+    instantiation->accept(this);
   }
 }
 
@@ -336,12 +348,7 @@ void bi::bi_ostream::visit(const Program* o) {
 }
 
 void bi::bi_ostream::visit(const MemberFunction* o) {
-  if (o->isInstantiation() && !o->has(EXPLICIT)) {
-    start("explicit ");
-  } else {
-    start("");
-  }
-  middle("function " << o->name << '(' << o->params << ')');
+  start("function " << o->name << '(' << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
@@ -353,11 +360,6 @@ void bi::bi_ostream::visit(const MemberFunction* o) {
 }
 
 void bi::bi_ostream::visit(const MemberFiber* o) {
-  if (o->isInstantiation() && !o->has(EXPLICIT)) {
-    start("explicit ");
-  } else {
-    start("");
-  }
   start("fiber " << o->name << '(' << o->params << ')');
   if (!o->returnType->unwrap()->isEmpty()) {
     middle(" -> " << o->returnType->unwrap());
@@ -370,12 +372,7 @@ void bi::bi_ostream::visit(const MemberFiber* o) {
 }
 
 void bi::bi_ostream::visit(const BinaryOperator* o) {
-  if (o->isInstantiation() && !o->has(EXPLICIT)) {
-    start("explicit ");
-  } else {
-    start("");
-  }
-  middle("operator (");
+  start("operator (");
   middle(o->params->getLeft());
   middle(' ' << o->name << ' ');
   middle(o->params->getRight());
@@ -383,7 +380,7 @@ void bi::bi_ostream::visit(const BinaryOperator* o) {
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
-  if (!header && !o->isInstantiation() && !o->braces->isEmpty()) {
+  if (!header && !o->braces->isEmpty()) {
     finish(o->braces << "\n");
   } else {
     finish(';');
@@ -391,16 +388,11 @@ void bi::bi_ostream::visit(const BinaryOperator* o) {
 }
 
 void bi::bi_ostream::visit(const UnaryOperator* o) {
-  if (o->isInstantiation() && !o->has(EXPLICIT)) {
-    start("explicit ");
-  } else {
-    start("");
-  }
-  middle("operator (" << o->name << o->params << ')');
+  start("operator (" << o->name << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
-  if (!header && !o->isInstantiation() && !o->braces->isEmpty()) {
+  if (!header && !o->braces->isEmpty()) {
     finish(o->braces << "\n");
   } else {
     finish(';');
@@ -409,7 +401,7 @@ void bi::bi_ostream::visit(const UnaryOperator* o) {
 
 void bi::bi_ostream::visit(const AssignmentOperator* o) {
   start("operator <- " << o->single);
-  if (!o->braces->isEmpty() && (!header || (type && type->isGeneric()))) {
+  if (!o->braces->isEmpty() && (!header || type->isGeneric())) {
     finish(o->braces << "\n");
   } else {
     finish(';');
@@ -418,7 +410,7 @@ void bi::bi_ostream::visit(const AssignmentOperator* o) {
 
 void bi::bi_ostream::visit(const ConversionOperator* o) {
   start("operator -> " << o->returnType);
-  if (!o->braces->isEmpty() && (!header || (type && type->isGeneric()))) {
+  if (!o->braces->isEmpty() && (!header || type->isGeneric())) {
     finish(o->braces << "\n");
   } else {
     finish(';');
@@ -426,40 +418,36 @@ void bi::bi_ostream::visit(const ConversionOperator* o) {
 }
 
 void bi::bi_ostream::visit(const Class* o) {
-  type = o;
-  if (o->isInstantiation() && !o->has(EXPLICIT)) {
-    start("explicit ");
+  if (o->isInstantiation() && !o->has(PRIOR_INSTANTIATION)) {
+    line("instantiated class " << o->name << '<' << o->typeParams << ">;");
   } else {
-    start("");
-  }
-  middle("class " << o->name);
-  if (o->isGeneric()) {
-    middle('<' << o->typeParams << '>');
-  }
-  if (!o->isAlias() && !o->params->isEmpty()) {
-    middle('(' << o->params << ')');
-  }
-  if (!o->base->isEmpty()) {
-    if (o->isAlias()) {
-      middle(" = ");
+    type = o;
+    start("class " << o->name);
+    if (o->isGeneric()) {
+      middle('<' << o->typeParams << '>');
+    }
+    if (!o->isAlias() && !o->params->isEmpty()) {
+      middle('(' << o->params << ')');
+    }
+    if (!o->base->isEmpty()) {
+      if (o->isAlias()) {
+        middle(" = ");
+      } else {
+        middle(" < ");
+      }
+      middle(o->base);
+      if (!o->args->isEmpty()) {
+        middle('(' << o->args << ')');
+      }
+    }
+    if (!o->braces->isEmpty()) {
+      finish(o->braces << "\n");
     } else {
-      middle(" < ");
+      finish(';');
     }
-    middle(o->base);
-    if (!o->args->isEmpty()) {
-      middle('(' << o->args << ')');
-    }
+    type = nullptr;
   }
-  if (!o->isInstantiation() && !o->braces->isEmpty()) {
-    finish(o->braces << "\n");
-  } else {
-    finish(';');
-  }
-  type = nullptr;
 
-  /* explicitly declare the existence of any generic class instantiations
-   * that will be compiled by this package and so needn't be by dependent
-   * packages */
   for (auto instantiation : o->instantiations) {
     instantiation->accept(this);
   }

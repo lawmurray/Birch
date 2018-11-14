@@ -215,3 +215,11 @@ bi::Statement* bi::ResolverHeader::modify(AssignmentOperator* o) {
 bi::Statement* bi::ResolverHeader::modify(ConversionOperator* o) {
   return o;
 }
+
+bi::Statement* bi::ResolverHeader::modify(Instantiated<Type>* o) {
+  return o;
+}
+
+bi::Statement* bi::ResolverHeader::modify(Instantiated<Expression>* o) {
+  return o;
+}

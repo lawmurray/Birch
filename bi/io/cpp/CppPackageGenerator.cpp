@@ -48,16 +48,12 @@ void bi::CppPackageGenerator::visit(const Package* o) {
       sorted.insert(new ClassType(o));
     }
     for (auto instantiation : o->instantiations) {
-      if (!instantiation->has(EXPLICIT)) {
-        sorted.insert(new ClassType(instantiation));
-      }
+      sorted.insert(new ClassType(instantiation));
     }
   }
   for (auto o : headerClasses) {
     for (auto instantiation : o->instantiations) {
-      if (!instantiation->has(EXPLICIT)) {
-        sorted.insert(new ClassType(instantiation));
-      }
+      sorted.insert(new ClassType(instantiation));
     }
   }
   std::list<Class*> sortedClasses;
@@ -120,7 +116,7 @@ void bi::CppPackageGenerator::visit(const Package* o) {
 
     /* forward super type declarations */
     for (auto o : sortedClasses) {
-      if (!o->base->isEmpty() && o->isBound()) {
+      if (!o->base->isEmpty() && o->isBound() && !o->has(PRIOR_INSTANTIATION)) {
         start("template<> ");
         middle("struct super_type<type::" << o->name);
         genTemplateArgs(o);
@@ -134,7 +130,7 @@ void bi::CppPackageGenerator::visit(const Package* o) {
 
     /* forward assignment operator declarations */
     for (auto o : sortedClasses) {
-      if (o->isBound()) {
+      if (o->isBound() && !o->has(PRIOR_INSTANTIATION)) {
         for (auto o1 : o->assignments) {
           start("template<> ");
           middle("struct has_assignment<type::" << o->name);
@@ -150,7 +146,7 @@ void bi::CppPackageGenerator::visit(const Package* o) {
 
     /* forward conversion operator declarations */
     for (auto o : sortedClasses) {
-      if (o->isBound()) {
+      if (o->isBound() && !o->has(PRIOR_INSTANTIATION)) {
         for (auto o1 : o->conversions) {
           start("template<> ");
           middle("struct has_conversion<type::" << o->name);
@@ -167,7 +163,9 @@ void bi::CppPackageGenerator::visit(const Package* o) {
     /* class definitions */
     line("namespace type {");
     for (auto o : sortedClasses) {
-      *this << o;
+      if (!o->has(PRIOR_INSTANTIATION)) {
+        *this << o;
+      }
     }
     for (auto o : classes) {
       if (o->isAlias()) {
@@ -209,7 +207,7 @@ void bi::CppPackageGenerator::visit(const Package* o) {
   } else {
     /* instantiations of generic classes go in the package source file */
     for (auto o : sortedClasses) {
-      if (o->isGeneric() && o->isBound() && !o->has(EXPLICIT)) {
+      if (o->isGeneric() && o->isBound() && !o->has(PRIOR_INSTANTIATION)) {
         *this << o;
       }
     }

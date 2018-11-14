@@ -4,6 +4,7 @@
 #pragma once
 
 #include "bi/expression/Expression.hpp"
+#include "bi/common/Annotated.hpp"
 #include "bi/primitive/poset.hpp"
 #include "bi/primitive/definitely.hpp"
 
@@ -63,6 +64,11 @@ public:
    * Get first overload.
    */
   ObjectType* front() const;
+
+  /**
+   * Set a particular annotation on all overloads.
+   */
+  void set(const Annotation a);
 
   /**
    * Overloads.

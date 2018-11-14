@@ -52,24 +52,20 @@ void bi::TypeParameterised<Target>::bind(Type* typeArgs) {
 }
 
 template<class Target>
-void bi::TypeParameterised<Target>::addInstantiation(Target* o) {
-  instantiations.push_back(o);
+void bi::TypeParameterised<Target>::addInstantiation(Target* instantiation) {
+  instantiations.push_back(instantiation);
 }
 
 template<class Target>
 Target* bi::TypeParameterised<Target>::getInstantiation(const Type* typeArgs) {
-  auto compare = [](const Type* arg, const Expression* param) {
-    return arg->equals(*param->type);
-  };
+  Target* result = nullptr;
   for (auto o : instantiations) {
-    bool matches = typeArgs->width() == o->typeParams->width()
-    && std::equal(typeArgs->begin(), typeArgs->end(),
-        o->typeParams->begin(), compare);
-    if (matches) {
-      return o;
+    if (o->typeParams->type->equals(*typeArgs)) {
+      assert(!result);
+      result = o;
     }
   }
-  return nullptr;
+  return result;
 }
 
 template class bi::TypeParameterised<bi::Class>;

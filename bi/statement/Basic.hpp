@@ -4,6 +4,7 @@
 #pragma once
 
 #include "bi/statement/Statement.hpp"
+#include "bi/common/Annotated.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Numbered.hpp"
 #include "bi/common/Based.hpp"
@@ -14,17 +15,23 @@ namespace bi {
  *
  * @ingroup statement
  */
-class Basic: public Statement, public Named, public Numbered, public Based {
+class Basic: public Statement,
+    public Annotated,
+    public Named,
+    public Numbered,
+    public Based {
 public:
   /**
    * Constructor.
    *
+   * @param annotation Annotation.
    * @param name Name.
    * @param base Base type.
    * @param alias Is this an alias relationship?
    * @param loc Location.
    */
-  Basic(Name* name, Type* base, const bool alias, Location* loc = nullptr);
+  Basic(const Annotation annotation, Name* name, Type* base, const bool alias,
+      Location* loc = nullptr);
 
   /**
    * Destructor.

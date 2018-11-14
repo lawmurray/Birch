@@ -42,5 +42,7 @@ public:
   virtual Statement* modify(MemberFiber* o);
   virtual Statement* modify(ConversionOperator* o);
   virtual Statement* modify(AssignmentOperator* o);
+  virtual Statement* modify(Instantiated<Type>* o);
+  virtual Statement* modify(Instantiated<Expression>* o);
 };
 }

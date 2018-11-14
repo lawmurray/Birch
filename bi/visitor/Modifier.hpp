@@ -91,6 +91,8 @@ public:
   virtual Statement* modify(Return* o);
   virtual Statement* modify(Yield* o);
   virtual Statement* modify(Raw* o);
+  virtual Statement* modify(Instantiated<Type>* o);
+  virtual Statement* modify(Instantiated<Expression>* o);
 
   virtual Type* modify(EmptyType* o);
   virtual Type* modify(TypeList* o);

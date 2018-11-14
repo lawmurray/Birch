@@ -4,6 +4,7 @@
 #pragma once
 
 #include "bi/expression/Expression.hpp"
+#include "bi/common/Annotated.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Numbered.hpp"
 
@@ -13,16 +14,21 @@ namespace bi {
  *
  * @ingroup expression
  */
-class Generic: public Expression, public Named, public Numbered {
+class Generic: public Expression,
+    public Annotated,
+    public Named,
+    public Numbered {
 public:
   /**
    * Constructor.
    *
+   * @param annotation Annotation.
    * @param name Name.
    * @param type Type.
    * @param loc Location.
    */
-  Generic(Name* name, Type* type, Location* loc = nullptr);
+  Generic(const Annotation annotation, Name* name, Type* type, Location* loc =
+      nullptr);
 
   /**
    * Destructor.

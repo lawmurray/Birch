@@ -5,6 +5,7 @@
  */
 #pragma once
 
+#include "bi/visitor/Annotator.hpp"
 #include "bi/visitor/Cloner.hpp"
 #include "bi/visitor/Gatherer.hpp"
 #include "bi/visitor/Modifier.hpp"

@@ -3,9 +3,7 @@
  */
 #include "bi/visitor/ResolverSource.hpp"
 
-#include "bi/visitor/ResolverTyper.hpp"
-#include "bi/visitor/ResolverSuper.hpp"
-#include "bi/visitor/ResolverHeader.hpp"
+#include "bi/visitor/all.hpp"
 
 bi::ResolverSource::ResolverSource(Scope* rootScope) :
     Resolver(rootScope, true) {
@@ -668,5 +666,19 @@ bi::Statement* bi::ResolverSource::modify(Yield* o) {
   } else if (!o->single->type->definitely(*yieldTypes.back())) {
     throw YieldTypeException(o, yieldTypes.back());
   }
+  return o;
+}
+
+bi::Statement* bi::ResolverSource::modify(Instantiated<Type>* o) {
+  Modifier::modify(o);
+  Annotator annotator(PRIOR_INSTANTIATION);
+  o->single->accept(&annotator);
+  return o;
+}
+
+bi::Statement* bi::ResolverSource::modify(Instantiated<Expression>* o) {
+  Modifier::modify(o);
+  Annotator annotator(PRIOR_INSTANTIATION);
+  o->single->accept(&annotator);
   return o;
 }

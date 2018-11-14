@@ -101,3 +101,11 @@ bi::Statement* bi::ResolverSuper::modify(ConversionOperator* o) {
   classes.back()->addConversion(o->returnType);
   return o;
 }
+
+bi::Statement* bi::ResolverSuper::modify(Instantiated<Type>* o) {
+  return o;
+}
+
+bi::Statement* bi::ResolverSuper::modify(Instantiated<Expression>* o) {
+  return o;
+}
