@@ -147,43 +147,43 @@ public:
   WeakCOW(const Nil& = nil) :
       object(),
       memo(fiberMemo) {
-    assert(pullOnConstruct());
+    //
   }
 
   WeakCOW(Any* object) :
       object(object),
       memo(fiberMemo) {
-    assert(pullOnConstruct());
+    //
   }
 
   WeakCOW(const SharedPtr<Any>& object) :
       object(object),
       memo(fiberMemo) {
-    assert(pullOnConstruct());
+    //
   }
 
   WeakCOW(const WeakPtr<Any>& object) :
       object(object),
       memo(fiberMemo) {
-    assert(pullOnConstruct());
+    //
   }
 
   WeakCOW(const SharedCOW<Any>& o) :
       object(o.object),
       memo(o.memo) {
-    assert(pullOnConstruct());
+    //
   }
 
   WeakCOW(Any* object, Memo* memo) :
       object(object),
       memo(memo) {
-    assert(pullOnConstruct());
+    //
   }
 
   WeakCOW(const WeakCOW<Any>& o) :
-      object(fiberClone ? fiberMemo->deepPull(o.pull()) : o.object),
+      object((fiberClone && o.object) ? o.pull()->deepPull(fiberMemo) : o.object),
       memo(fiberClone ? fiberMemo : o.memo) {
-    assert(pullOnConstruct());
+    //
   }
 
   WeakCOW(WeakCOW<Any> && o) = default;
@@ -193,8 +193,10 @@ public:
   WeakCOW<Any>& operator=(WeakCOW<Any>&& o) = default;
 
   Any* pull() const {
-    auto self = const_cast<WeakCOW<Any>*>(this);
-    self->object = self->memo->pull(object.get());
+    if (object) {
+      auto self = const_cast<WeakCOW<Any>*>(this);
+      self->object = object.get()->pull(self->memo);
+    }
     return object.get();
   }
 
@@ -208,14 +210,5 @@ protected:
    * The memo.
    */
   Memo* memo;
-
-private:
-  /**
-   * On construction, all pointers should be correctly pulled forward to the
-   * world on the pointer.
-   */
-  bool pullOnConstruct() const {
-    return !object || memo->deepPull(object.get()) == memo->pull(object.get());
-  }
 };
 }

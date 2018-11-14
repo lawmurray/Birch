@@ -577,7 +577,7 @@ private:
    */
   template<class U, class ... Args>
   static void emplace(SharedCOW<U>& o, Args ... args) {
-    new (&o) SharedCOW<U>(bi::construct<U>(args...));
+    new (&o) SharedCOW<U>(make_object<U>(args...));
   }
 
   /**

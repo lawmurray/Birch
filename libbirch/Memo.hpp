@@ -4,7 +4,6 @@
 #pragma once
 
 #include "libbirch/Counted.hpp"
-#include "libbirch/Map.hpp"
 
 namespace bi {
 /**
@@ -29,12 +28,17 @@ public:
    *
    * @param parent Parent.
    */
-  Memo(SharedPtr<Memo> parent);
+  Memo(Memo* parent);
 
   /**
    * Destructor.
    */
   virtual ~Memo();
+
+  /**
+   * Clone.
+   */
+  Memo* clone() const;
 
   /**
    * Deallocate.
@@ -47,52 +51,14 @@ public:
   bool hasAncestor(Memo* memo) const;
 
   /**
-   * Shallow retrieval of an object that may not yet have been cloned,
-   * cloning it if necessary.
-   *
-   * @param o Source object.
-   *
-   * @return The cloned object.
+   * Get the parent of this memo.
    */
-  Any* get(Any* o);
-
-  /**
-   * Shallow retrieval of an object that may not yet have been cloned,
-   * without cloning it. This can be used as an optimization for read-only
-   * access to value types.
-   *
-   * @param o Source object.
-   *
-   * @return The mapped object.
-   */
-  Any* pull(Any* o);
-
-  /**
-   * Deep retrieval of an object that may not yet have been cloned,
-   * without cloning it. This can be used as an optimization for read-only
-   * access to value types.
-   *
-   * @param o Source object.
-   *
-   * @return The mapped object.
-   */
-  Any* deepPull(Any* o);
+  Memo* getParent();
 
 private:
   /**
    * Parent memo.
    */
-  SharedPtr<Memo> parent;
-
-  /**
-   * Is this an internal memo? An internal memo is one with one or more
-   * children.
-   */
-  bool internal;
-
-  /**
-   * Cloned objects.
-   */
-  Map clones;
+  Memo* parent;
 };
 }

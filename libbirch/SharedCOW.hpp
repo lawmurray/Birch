@@ -145,12 +145,10 @@ public:
   }
 
   /**
-   * Lazy deep clone.
+   * Deep clone.
    */
   SharedCOW<T> clone() const {
-    T* o = this->pull();
-    Memo* m = construct<Memo>(this->memo);
-    return SharedCOW<T>(o, m);
+    return root_type::clone().template static_pointer_cast<T>();
   }
 
   /**
@@ -187,41 +185,39 @@ public:
   SharedCOW(const Nil& = nil) :
       object(),
       memo(fiberMemo) {
-    assert(pullOnConstruct());
+    //
   }
 
   SharedCOW(Any* object) :
       object(object),
       memo(fiberMemo) {
-    assert(currentOnRawConstruct());
-    assert(pullOnConstruct());
+    //
   }
 
   SharedCOW(const SharedPtr<Any>& object) :
       object(object),
       memo(fiberMemo) {
-    assert(currentOnRawConstruct());
-    assert(pullOnConstruct());
+    //
   }
 
   SharedCOW(const WeakPtr<Any>& object) :
       object(object),
       memo(fiberMemo) {
-    assert(pullOnConstruct());
+    //
   }
 
   SharedCOW(Any* object, Memo* memo) :
       object(object),
       memo(memo) {
-    assert(pullOnConstruct());
+    //
   }
 
   SharedCOW(const WeakCOW<Any>& o);
 
   SharedCOW(const SharedCOW<Any>& o) :
-      object(fiberClone ? fiberMemo->deepPull(o.pull()) : o.object),
+      object((fiberClone && o.object) ? o.pull()->deepPull(fiberMemo) : o.object),
       memo(fiberClone ? fiberMemo : o.memo) {
-    assert(pullOnConstruct());
+    //
   }
 
   SharedCOW(SharedCOW<Any> && o) = default;
@@ -241,8 +237,10 @@ public:
     /* despite the pointer being accessed in a const context, we do want to
      * update it through the copy-on-write mechanism for performance
      * reasons */
-    auto self = const_cast<SharedCOW<Any>*>(this);
-    self->object = self->memo->get(object.get());
+    if (object) {
+      auto self = const_cast<SharedCOW<Any>*>(this);
+      self->object = object->get(self->memo);
+    }
     return object.get();
   }
 
@@ -250,15 +248,15 @@ public:
     /* despite the pointer being accessed in a const context, we do want to
      * update it through the copy-on-write mechanism for performance
      * reasons */
-    auto self = const_cast<SharedCOW<Any>*>(this);
-    self->object = self->memo->pull(object.get());
+    if (object) {
+      auto self = const_cast<SharedCOW<Any>*>(this);
+      self->object = object->pull(self->memo);
+    }
     return object.get();
   }
 
   SharedCOW<Any> clone() const {
-    Any* o = pull();
-    Memo* m = bi::construct<Memo>(memo);
-    return SharedCOW<Any>(o, m);
+    return SharedCOW<Any>(get()->clone(), memo->clone());
   }
 
   Memo* getMemo() const {
@@ -309,23 +307,6 @@ protected:
    * The memo.
    */
   Memo* memo;
-
-private:
-  /**
-   * On construction, all pointers should be correctly pulled forward to the
-   * world on the pointer.
-   */
-  bool pullOnConstruct() const {
-    return !object || memo->deepPull(object.get()) == memo->pull(object.get());
-  }
-
-  /**
-   * When constructed from a raw pointer to an object, that object should
-   * belong to the current fiber's memo.
-   */
-  bool currentOnRawConstruct() const {
-    return !object || object->getMemo() == fiberMemo;
-  }
 };
 }
 
@@ -340,5 +321,5 @@ bi::SharedCOW<T>::SharedCOW(const WeakCOW<T>& o) :
 inline bi::SharedCOW<bi::Any>::SharedCOW(const WeakCOW<Any>& o) :
     object(o.object),
     memo(o.memo) {
-  assert(pullOnConstruct());
+  //
 }

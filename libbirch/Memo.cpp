@@ -3,30 +3,29 @@
  */
 #include "libbirch/Memo.hpp"
 
-#include "libbirch/Any.hpp"
-#include "libbirch/Enter.hpp"
-#include "libbirch/Clone.hpp"
+#include "libbirch/memory.hpp"
 
 bi::Memo::Memo() :
-    parent(nullptr),
-    internal(false) {
+    parent(nullptr) {
   //
 }
 
 bi::Memo::Memo(int) :
-    parent(nullptr),
-    internal(false) {
+    parent(nullptr) {
   incShared();
 }
 
-bi::Memo::Memo(SharedPtr<Memo> parent) :
-    parent(parent),
-    internal(false) {
-  parent->internal = true;
+bi::Memo::Memo(Memo* parent) :
+    parent(parent) {
+  //
 }
 
 bi::Memo::~Memo() {
   //
+}
+
+bi::Memo* bi::Memo::clone() const {
+  return make_object<Memo>(*this);
 }
 
 void bi::Memo::destroy() {
@@ -38,42 +37,6 @@ bool bi::Memo::hasAncestor(Memo* memo) const {
   return this == memo || (parent && parent->hasAncestor(memo));
 }
 
-
-bi::Any* bi::Memo::get(Any* o) {
-  if (!o || this == o->getMemo()) {
-    return o;
-  } else {
-    auto cloned = clones.get(o);
-    if (cloned) {
-      return cloned;
-    } else {
-      /* shouldn't be in a position to be cloning objects in interior
-       * memos */
-      assert(!internal);
-
-      Enter enter(this);
-      Clone clone;
-      SharedPtr<Any> cloned(o->clone());
-      // ^ shared pointer used so as to destroy object if another thread
-      //   clones in the meantime
-      return clones.put(o, cloned.get());
-    }
-  }
-}
-
-bi::Any* bi::Memo::pull(Any* o) {
-  if (!o || this == o->getMemo()) {
-    return o;
-  } else {
-    return clones.get(o, o);
-  }
-}
-
-bi::Any* bi::Memo::deepPull(Any* o) {
-  if (!o || this == o->getMemo()) {
-    return o;
-  } else {
-    auto pulled = parent->deepPull(o);
-    return clones.get(pulled, pulled);
-  }
+bi::Memo* bi::Memo::getParent() {
+  return parent;
 }

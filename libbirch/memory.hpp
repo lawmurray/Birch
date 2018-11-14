@@ -187,18 +187,18 @@ void deallocate(void* ptr, const unsigned n);
 void* reallocate(void* ptr1, const size_t n1, const size_t n2);
 
 /**
- * Construct an object with placement new using memory obtained from
- * allocate();
+ * Make an object.
  *
- * @tparam T Class type.
+ * @tparam Type Type.
  * @param Args... Constructor argument types.
  *
  * @param args Constructor arguments.
  *
  * @return The new object.
  */
-template<class T, class ... Args>
-inline T* construct(Args ... args) {
-  return new (allocate<sizeof(T)>()) T(args...);
+template<class Type, class ... Args>
+inline Type* make_object(Args ... args) {
+  return new (allocate<sizeof(Type)>()) Type(args...);
 }
+
 }

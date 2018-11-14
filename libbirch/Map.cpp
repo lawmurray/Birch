@@ -15,7 +15,7 @@ bi::Map::~Map() {
   for (size_t i = 0; i < nentries; ++i) {
     joint_entry_type entry = entries1[i];
     if (entry.key) {
-      entry.key->decWeak();
+      //entry.key->decWeak();
       entry.value->decShared();
     }
   }
@@ -26,7 +26,8 @@ bool bi::Map::empty() const {
   return nentries == 0;
 }
 
-bi::Map::value_type bi::Map::get(const key_type key, const value_type failed) {
+bi::Map::value_type bi::Map::get(const key_type key,
+    const value_type failed) {
   /* pre-condition */
   assert(key);
 
@@ -53,7 +54,7 @@ bi::Map::value_type bi::Map::put(const key_type key, const value_type value) {
   assert(key);
   assert(value);
 
-  key->incWeak();
+  //key->incWeak();
   value->incShared();
 
   reserve();
@@ -63,7 +64,8 @@ bi::Map::value_type bi::Map::put(const key_type key, const value_type value) {
   joint_entry_type desired = { key, value };
 
   size_t i = hash(key);
-  while (!entries[i].joint.compare_exchange_strong(expected, desired) && expected.key != key) {
+  while (!entries[i].joint.compare_exchange_strong(expected, desired)
+      && expected.key != key) {
     i = (i + 1) & (nentries - 1);
     expected = {nullptr, nullptr};
   }
@@ -72,7 +74,7 @@ bi::Map::value_type bi::Map::put(const key_type key, const value_type value) {
   if (expected.key == key) {
     unreserve();  // key exists, cancel reservation for insert
     result = expected.value;
-    key->decWeak();
+    //key->decWeak();
     value->decShared();
   } else {
     result = value;
@@ -86,7 +88,7 @@ bi::Map::value_type bi::Map::set(const key_type key, const value_type value) {
   assert(key);
   assert(value);
 
-  key->incWeak();
+  //key->incWeak();
   value->incShared();
 
   reserve();
@@ -96,7 +98,8 @@ bi::Map::value_type bi::Map::set(const key_type key, const value_type value) {
   joint_entry_type desired = { key, value };
 
   size_t i = hash(key);
-  while (!entries[i].joint.compare_exchange_strong(expected, desired) && expected.key != key) {
+  while (!entries[i].joint.compare_exchange_strong(expected, desired)
+      && expected.key != key) {
     i = (i + 1) & (nentries - 1);
     expected = {nullptr, nullptr};
   }
@@ -105,7 +108,7 @@ bi::Map::value_type bi::Map::set(const key_type key, const value_type value) {
     unreserve();  // key exists, cancel reservation for insert
     value_type old = expected.value;
     while (!entries[i].split.value.compare_exchange_weak(old, value));
-    key->decWeak();
+    //key->decWeak();
     old->decShared();
   }
   lock.unshare();

@@ -215,8 +215,7 @@ auto make_array(const Frame& frame, Args ... args) {
  */
 template<class PointerType, class ... Args>
 PointerType make_pointer(Args ... args) {
-  using Type = typename PointerType::value_type;
-  return bi::construct<Type>(args...);
+  return make_object<typename PointerType::value_type>(args...);
 }
 
 /**
@@ -230,7 +229,7 @@ PointerType make_pointer(Args ... args) {
 template<class StateType, class ... Args>
 auto make_fiber(Args ... args) {
   using yield_type = typename StateType::yield_type;
-  return Fiber<yield_type>(bi::construct<StateType>(args...));
+  return Fiber<yield_type>(make_object<StateType>(args...));
 }
 
 /**
