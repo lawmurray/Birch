@@ -6,8 +6,10 @@
 #include "libbirch/global.hpp"
 #include "libbirch/memory.hpp"
 #include "libbirch/SharedPtr.hpp"
+#include "libbirch/InitPtr.hpp"
 #include "libbirch/Memo.hpp"
 #include "libbirch/Any.hpp"
+#include "libbirch/Enter.hpp"
 #include "libbirch/Nil.hpp"
 
 namespace bi {
@@ -80,7 +82,7 @@ public:
   /**
    * Move constructor.
    */
-  SharedCOW(SharedCOW<T>&& o) = default;
+  SharedCOW(SharedCOW<T> && o) = default;
 
   /**
    * Copy assignment.
@@ -90,7 +92,7 @@ public:
   /**
    * Move assignment.
    */
-  SharedCOW<T>& operator=(SharedCOW<T>&& o) = default;
+  SharedCOW<T>& operator=(SharedCOW<T> && o) = default;
 
   /**
    * Generic copy assignment.
@@ -105,7 +107,7 @@ public:
    * Generic move assignment.
    */
   template<class U>
-  SharedCOW<T>& operator=(SharedCOW<U>&& o) {
+  SharedCOW<T>& operator=(SharedCOW<U> && o) {
     root_type::operator=(o);
     return *this;
   }
@@ -130,18 +132,31 @@ public:
   }
 
   /**
-   * Get the raw pointer.
+   * Get the raw pointer, lazy cloning if necessary.
+   */
+  T* get() {
+    return static_cast<T*>(root_type::get());
+  }
+
+  /**
+   * Get the raw pointer, lazy cloning if necessary.
    */
   T* get() const {
     return static_cast<T*>(root_type::get());
   }
 
   /**
-   * Get the raw pointer while mapping, but not cloning. This is used as an
-   * optimization for read-only access..
+   * Map the raw pointer, without lazy cloning.
    */
-  T* pull() const {
-    return static_cast<T*>(root_type::pull());
+  T* map() {
+    return static_cast<T*>(root_type::map());
+  }
+
+  /**
+   * Map the raw pointer, without lazy cloning.
+   */
+  T* map() const {
+    return static_cast<T*>(root_type::map());
   }
 
   /**
@@ -182,27 +197,22 @@ public:
   using this_type = SharedCOW<value_type>;
   using root_type = this_type;
 
-  SharedCOW(const Nil& = nil) :
-      object(),
-      memo(fiberMemo) {
+  SharedCOW(const Nil& = nil) {
     //
   }
 
   SharedCOW(Any* object) :
-      object(object),
-      memo(fiberMemo) {
+      object(object) {
     //
   }
 
   SharedCOW(const SharedPtr<Any>& object) :
-      object(object),
-      memo(fiberMemo) {
+      object(object) {
     //
   }
 
   SharedCOW(const WeakPtr<Any>& object) :
-      object(object),
-      memo(fiberMemo) {
+      object(object) {
     //
   }
 
@@ -215,16 +225,19 @@ public:
   SharedCOW(const WeakCOW<Any>& o);
 
   SharedCOW(const SharedCOW<Any>& o) :
-      object((fiberClone && o.object) ? o.pull()->deepPull(fiberMemo) : o.object),
-      memo(fiberClone ? fiberMemo : o.memo) {
-    //
+      object(o.object),
+      memo(o.memo) {
+    if (cloneMemo && object) {
+      object = object->deepPull(memo);
+      memo = cloneMemo;
+    }
   }
 
   SharedCOW(SharedCOW<Any> && o) = default;
 
   SharedCOW<Any>& operator=(const SharedCOW<Any>& o) = default;
 
-  SharedCOW<Any>& operator=(SharedCOW<Any>&& o) = default;
+  SharedCOW<Any>& operator=(SharedCOW<Any> && o) = default;
 
   /**
    * Is the pointer not null?
@@ -233,30 +246,43 @@ public:
     return static_cast<bool>(object);
   }
 
-  Any* get() const {
-    /* despite the pointer being accessed in a const context, we do want to
-     * update it through the copy-on-write mechanism for performance
-     * reasons */
+  Any* get() {
     if (object) {
-      auto self = const_cast<SharedCOW<Any>*>(this);
-      self->object = object->get(self->memo);
+      object = object->get(memo);
+      memo = nullptr;
     }
     return object.get();
   }
 
-  Any* pull() const {
-    /* despite the pointer being accessed in a const context, we do want to
-     * update it through the copy-on-write mechanism for performance
-     * reasons */
+  Any* get() const {
     if (object) {
-      auto self = const_cast<SharedCOW<Any>*>(this);
-      self->object = object->pull(self->memo);
+      return object->get(memo);
+    } else {
+      return object.get();
+    }
+  }
+
+  Any* map() {
+    if (object) {
+      object = object->map(memo);
     }
     return object.get();
+  }
+
+  Any* map() const {
+    if (object) {
+      return object->map(memo);
+    } else {
+      return object.get();
+    }
   }
 
   SharedCOW<Any> clone() const {
-    return SharedCOW<Any>(get()->clone(), memo->clone());
+    auto memo1 = make_object<Memo>(memo);
+    Enter enter(memo1);
+    auto object1 = get()->clone();
+    object1->setMemo(memo1);
+    return SharedCOW<Any>(object1, memo1);
   }
 
   Memo* getMemo() const {
@@ -306,7 +332,7 @@ protected:
   /**
    * The memo.
    */
-  Memo* memo;
+  InitPtr<Memo> memo;
 };
 }
 

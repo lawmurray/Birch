@@ -80,7 +80,7 @@ class ParticleFilter < Method {
     f0:Model! <- particle(m);
     f1:Model![N];
     for n:Integer in 1..N {
-      f1[n] <- clone(f0);
+      f1[n] <- clone<Model!>(f0);
     }
     
     this.f <- f1;
@@ -107,7 +107,7 @@ class ParticleFilter < Method {
       auto a <- ancestors(w);
       auto g <- f;
       for (n:Integer in 1..N) {
-        f[n] <- clone(g[a[n]]);
+        f[n] <- clone<Model!>(g[a[n]]);
         w[n] <- 0.0;
       }
     }

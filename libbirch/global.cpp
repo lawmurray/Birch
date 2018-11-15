@@ -12,8 +12,7 @@ std::atomic<char*> bi::buffer(heap());
 char* bi::bufferStart;
 size_t bi::bufferSize;
 bi::Pool bi::pool[64];
-bi::Memo* bi::fiberMemo = bi::make_object<bi::Memo>(0);
-bool bi::fiberClone = false;
+bi::Memo* bi::cloneMemo = nullptr;
 std::vector<bi::StackFrame> bi::stacktrace;
 // ^ reserving a non-zero size seems necessary to avoid segfault here
 

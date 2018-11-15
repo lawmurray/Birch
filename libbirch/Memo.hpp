@@ -14,31 +14,16 @@ namespace bi {
 class Memo: public Counted {
 public:
   /**
-   * Default constructor.
-   */
-  Memo();
-
-  /**
-   * Constructor for root.
-   */
-  Memo(int);
-
-  /**
-   * Constructor for clone.
+   * Constructor.
    *
    * @param parent Parent.
    */
-  Memo(Memo* parent);
+  Memo(Memo* parent = nullptr);
 
   /**
    * Destructor.
    */
   virtual ~Memo();
-
-  /**
-   * Clone.
-   */
-  Memo* clone() const;
 
   /**
    * Deallocate.

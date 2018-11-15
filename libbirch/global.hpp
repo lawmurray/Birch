@@ -107,16 +107,11 @@ extern size_t bufferSize;
 extern Pool pool[];
 
 /**
- * The memo of the currently running fiber.
+ * If the thread is performing a clone operation, then the memo object
+ * associated with that clone, otherwise nullptr.
  */
-extern Memo* fiberMemo;
-#pragma omp threadprivate(fiberMemo)
-
-/**
- * Flag set when an object is being cloned.
- */
-extern bool fiberClone;
-#pragma omp threadprivate(fiberClone)
+extern Memo* cloneMemo;
+#pragma omp threadprivate(cloneMemo)
 
 /**
  * Constant to indicate a mutable value. Zero is convenient here, as it

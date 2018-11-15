@@ -28,9 +28,8 @@ public:
    *
    * @param memo The memo to enter.
    */
-  Enter(Memo* memo) :
-      prevMemo(memo) {
-    std::swap(prevMemo, fiberMemo);
+  Enter(Memo* memo) : prevMemo(memo) {
+    std::swap(prevMemo, cloneMemo);
   }
 
   /**
@@ -44,10 +43,7 @@ public:
    * Exit.
    */
   void exit() {
-    if (prevMemo) {
-      std::swap(prevMemo, fiberMemo);
-      prevMemo = nullptr;
-    }
+    std::swap(prevMemo, cloneMemo);
   }
 
 private:

@@ -42,9 +42,14 @@ public:
   virtual void destroy();
 
   /**
-   * Get the memo associated with the clone or construction of this object.
+   * Get the memo associated with the clone of this object.
    */
   Memo* getMemo();
+
+  /**
+   * Set the memo associated with the clone of this object.
+   */
+  void setMemo(Memo* memo);
 
   /**
    * Shallow retrieval of an object that may not yet have been cloned,
@@ -65,7 +70,7 @@ public:
    *
    * @return The mapped object.
    */
-  Any* pull(Memo* memo);
+  Any* map(Memo* memo);
 
   /**
    * Deep retrieval of an object that may not yet have been cloned,

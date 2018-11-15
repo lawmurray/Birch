@@ -5,6 +5,7 @@
 
 #include "libbirch/SharedCOW.hpp"
 #include "libbirch/WeakPtr.hpp"
+#include "libbirch/InitPtr.hpp"
 #include "libbirch/Optional.hpp"
 
 namespace bi {
@@ -131,8 +132,15 @@ public:
   /**
    * Pull through generations.
    */
-  T* pull() const {
-    return static_cast<T*>(root_type::pull());
+  T* map() {
+    return static_cast<T*>(root_type::map());
+  }
+
+  /**
+   * Pull through generations.
+   */
+  T* map() const {
+    return static_cast<T*>(root_type::map());
   }
 };
 
@@ -144,27 +152,22 @@ public:
   using this_type = WeakCOW<value_type>;
   using root_type = this_type;
 
-  WeakCOW(const Nil& = nil) :
-      object(),
-      memo(fiberMemo) {
+  WeakCOW(const Nil& = nil) {
     //
   }
 
   WeakCOW(Any* object) :
-      object(object),
-      memo(fiberMemo) {
+      object(object) {
     //
   }
 
   WeakCOW(const SharedPtr<Any>& object) :
-      object(object),
-      memo(fiberMemo) {
+      object(object) {
     //
   }
 
   WeakCOW(const WeakPtr<Any>& object) :
-      object(object),
-      memo(fiberMemo) {
+      object(object) {
     //
   }
 
@@ -181,9 +184,12 @@ public:
   }
 
   WeakCOW(const WeakCOW<Any>& o) :
-      object((fiberClone && o.object) ? o.pull()->deepPull(fiberMemo) : o.object),
-      memo(fiberClone ? fiberMemo : o.memo) {
-    //
+      object(o.object),
+      memo(o.memo) {
+    if (cloneMemo && object) {
+      object = object.get()->deepPull(memo);
+      memo = cloneMemo;
+    }
   }
 
   WeakCOW(WeakCOW<Any> && o) = default;
@@ -191,14 +197,6 @@ public:
   WeakCOW<Any>& operator=(const WeakCOW<Any>& o) = default;
 
   WeakCOW<Any>& operator=(WeakCOW<Any>&& o) = default;
-
-  Any* pull() const {
-    if (object) {
-      auto self = const_cast<WeakCOW<Any>*>(this);
-      self->object = object.get()->pull(self->memo);
-    }
-    return object.get();
-  }
 
 protected:
   /**
@@ -209,6 +207,6 @@ protected:
   /**
    * The memo.
    */
-  Memo* memo;
+  InitPtr<Memo> memo;
 };
 }
