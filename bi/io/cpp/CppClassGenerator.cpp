@@ -113,7 +113,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
       } else {
         finish(" {");
         in();
-        line("return bi::construct<this_type>(*this);");
+        line("return bi::make_object<this_type>(*this);");
         out();
         line("}\n");
       }
@@ -160,7 +160,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
         line(
             "bi::type::" << o->name << "* bi::type::make_" << o->name << "() {");
         in();
-        line("return bi::construct<bi::type::" << o->name << ">();");
+        line("return bi::make_object<bi::type::" << o->name << ">();");
         out();
         line("}");
       }
@@ -194,7 +194,6 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
     finish(" {");
     in();
     genTraceFunction(o->name->str(), o->loc);
-    line("Enter enter(getMemo());");
 
     /* body */
     CppBaseGenerator auxBase(base, level, header);
@@ -232,7 +231,6 @@ void bi::CppClassGenerator::visit(const AssignmentOperator* o) {
       finish(" {");
       in();
       genTraceFunction("<assignment>", o->loc);
-      line("Enter enter(getMemo());");
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces->strip();
       line("return *this;");
@@ -258,7 +256,6 @@ void bi::CppClassGenerator::visit(const ConversionOperator* o) {
       finish(" {");
       in();
       genTraceFunction("<conversion>", o->loc);
-      line("Enter enter(getMemo());");
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces->strip();
       out();

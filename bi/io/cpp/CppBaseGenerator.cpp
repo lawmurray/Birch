@@ -165,7 +165,7 @@ void bi::CppBaseGenerator::visit(const Member* o) {
       && dynamic_cast<const Identifier<MemberVariable>*>(o->right)) {
     /* optimization: just reading a value, so no need to copy-on-write the
      * owning object */
-    middle(o->left << ".pull()->");
+    middle(o->left << ".map()->");
   } else {
     middle(o->left << "->");
   }
@@ -361,7 +361,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
         if (!param->value->isEmpty()) {
           middle(" = " << param->value);
         } else if (param->type->isPointer() && !param->type->isWeak()) {
-          middle(" = bi::construct<" << param->type->unwrap() << ">()");
+          middle(" = bi::make_object<" << param->type->unwrap() << ">()");
         }
         finish(';');
       }

@@ -100,7 +100,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   } else {
     finish(" {");
     in();
-    line("return bi::construct<" << stateName << ">(*this);");
+    line("return bi::make_object<" << stateName << ">(*this);");
     out();
     line("}\n");
   }
@@ -154,7 +154,6 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     finish(" {");
     in();
     genTraceFunction(o->name->str(), o->loc);
-    line("Enter enter(getMemo());");
     genSwitch();
     *this << o->braces->strip();
     genEnd();
@@ -236,7 +235,7 @@ void bi::CppFiberGenerator::visit(const LocalVariable* o) {
   } else if (o->type->isPointer() && !o->type->isWeak()) {
     /* make sure objects are initialized, not just null pointers */
     auto name = getName(o->name->str(), o->number);
-    middle("this->" << name << " = bi::construct<" << o->type->unwrap() << ">()");
+    middle("this->" << name << " = bi::make_object<" << o->type->unwrap() << ">()");
   }
 }
 

@@ -108,7 +108,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   } else {
     finish(" {");
     in();
-    line("return bi::construct<" << stateName << ">(*this);");
+    line("return bi::make_object<" << stateName << ">(*this);");
     out();
     line("}\n");
   }
@@ -155,7 +155,6 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     finish(" {");
     in();
     genTraceFunction(o->name->str(), o->loc);
-    line("Enter enter(getMemo());");
     genSwitch();
     *this << o->braces->strip();
     genEnd();
