@@ -1,4 +1,7 @@
 eclipse.preferences.version=1
+environment/project/org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1733544896/PATH/delimiter=\:
+environment/project/org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1733544896/PATH/operation=replace
+environment/project/org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1733544896/PATH/value=/usr/local/opt/flex/bin\:/usr/local/opt/bison/bin\:/usr/local/bin\:/usr/bin\:/bin
 environment/project/org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1733544896/append=true
 environment/project/org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1733544896/appendContributed=true
 org.eclipse.cdt.core.formatter.alignment_for_arguments_in_method_invocation=16

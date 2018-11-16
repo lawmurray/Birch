@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 3.1.  */
+/* A Bison parser, made by GNU Bison 3.2.1.  */
 
 /* Skeleton interface for Bison GLR parsers in C
 
@@ -40,12 +40,12 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 1 "bi/parser.ypp" /* glr.c:207  */
+#line 1 "bi/parser.ypp" /* glr.c:206  */
 
   #include "bi/lexer.hpp"
   #include "bi/build/Compiler.hpp"
 
-#line 49 "bi/parser.hpp" /* glr.c:207  */
+#line 49 "bi/parser.hpp" /* glr.c:206  */
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
@@ -102,7 +102,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 71 "bi/parser.ypp" /* glr.c:207  */
+#line 71 "bi/parser.ypp" /* glr.c:206  */
 
   bool valBool;
   int32_t valInt;
@@ -115,7 +115,7 @@ union YYSTYPE
   bi::Type* valType;
   bi::Statement* valStatement;
 
-#line 119 "bi/parser.hpp" /* glr.c:207  */
+#line 119 "bi/parser.hpp" /* glr.c:206  */
 };
 
 typedef union YYSTYPE YYSTYPE;
