@@ -3,6 +3,7 @@
  */
 #pragma once
 
+#include "libbirch/config.hpp"
 #include "libbirch/Offset.hpp"
 #include "libbirch/Length.hpp"
 

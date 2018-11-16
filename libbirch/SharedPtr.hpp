@@ -3,6 +3,8 @@
  */
 #pragma once
 
+#include "libbirch/config.hpp"
+
 namespace bi {
 template<class T> class SharedPtr;
 template<class T> class WeakPtr;

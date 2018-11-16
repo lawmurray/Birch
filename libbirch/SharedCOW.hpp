@@ -4,6 +4,7 @@
 #pragma once
 
 #include "libbirch/global.hpp"
+#include "libbirch/class.hpp"
 #include "libbirch/memory.hpp"
 #include "libbirch/SharedPtr.hpp"
 #include "libbirch/InitPtr.hpp"
@@ -13,6 +14,8 @@
 #include "libbirch/Nil.hpp"
 
 namespace bi {
+template<class U> class WeakCOW;
+
 /**
  * Shared pointer with copy-on-write semantics.
  *

@@ -3,14 +3,12 @@
  */
 #pragma once
 
-#include "libbirch/global.hpp"
+#include "libbirch/config.hpp"
 #include "libbirch/Span.hpp"
 #include "libbirch/Index.hpp"
 #include "libbirch/Range.hpp"
 #include "libbirch/View.hpp"
 #include "libbirch/Eigen.hpp"
-
-#include <cstddef>
 
 namespace bi {
 /**

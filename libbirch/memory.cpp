@@ -5,6 +5,11 @@
 
 #include <unistd.h>
 
+std::atomic<char*> bi::buffer(heap());
+char* bi::bufferStart;
+size_t bi::bufferSize;
+bi::Pool bi::pool[64];
+
 char* bi::heap() {
 #if DISABLE_POOL
   return nullptr;

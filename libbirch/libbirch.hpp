@@ -6,6 +6,14 @@
  */
 #pragma once
 
+#include "libbirch/config.hpp"
+#include "libbirch/assert.hpp"
+#include "libbirch/basic.hpp"
+#include "libbirch/class.hpp"
+#include "libbirch/global.hpp"
+#include "libbirch/memory.hpp"
+#include "libbirch/stacktrace.hpp"
+
 #include "libbirch/Span.hpp"
 #include "libbirch/Index.hpp"
 #include "libbirch/Range.hpp"
@@ -25,43 +33,8 @@
 #include "libbirch/Eigen.hpp"
 #include "libbirch/EigenFunctions.hpp"
 #include "libbirch/EigenOperators.hpp"
-#include "libbirch/global.hpp"
-
-#include <algorithm>
-#include <numeric>
-#include <utility>
-#include <functional>
-#include <string>
-
-#include <cstdio>
-#include <cstdlib>
-#include <cstdint>
-#include <cstddef>
-#include <cmath>
-
-#include <getopt.h>
-#include <dlfcn.h>
-#ifdef _OPENMP
-#include <omp.h>
-#endif
 
 namespace bi {
-
-namespace type {
-/*
- * Basic types.
- */
-using Boolean_ = bool;
-using Real64_ = double;
-using Real32_ = float;
-using Integer64_ = int64_t;
-using Integer32_ = int32_t;
-using Integer16_ = int16_t;
-using Integer8_ = int8_t;
-using String_ = std::string;
-using File_ = FILE*;
-}
-
 /**
  * Default array for `D` dimensions.
  */
@@ -250,5 +223,10 @@ auto dynamic_pointer_cast(const Optional<SharedCOW<From>>& from) {
     return Optional<SharedCOW<To>>();
   }
 }
+
+/**
+ * Report unknown program option and abort.
+ */
+void unknown_option(const std::string& name);
 
 }

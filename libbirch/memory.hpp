@@ -3,17 +3,30 @@
  */
 #pragma once
 
-/**
- * @def DISABLE_POOL
- *
- * Set to 1 to use standard malloc/realloc/free for memory leak checks with
- * valgrind. (Incidentally, may also need to disable OpenMP.)
- */
-#define DISABLE_POOL 0
-
+#include "libbirch/config.hpp"
 #include "libbirch/Pool.hpp"
 
 namespace bi {
+/**
+ * Buffer for heap allocations.
+ */
+extern std::atomic<char*> buffer;
+
+/**
+ * Start of heap (for debugging purposes).
+ */
+extern char* bufferStart;
+
+/**
+ * Size of heap (for debugging purposes).
+ */
+extern size_t bufferSize;
+
+/**
+ * Allocation pools.
+ */
+extern Pool pool[];
+
 /**
  * Allocate a large buffer for the heap.
  */

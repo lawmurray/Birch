@@ -3,6 +3,7 @@
  */
 #pragma once
 
+#include "libbirch/config.hpp"
 #include "libbirch/Nil.hpp"
 
 #include "boost/optional.hpp"

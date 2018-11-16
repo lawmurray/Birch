@@ -3,7 +3,7 @@
  */
 #pragma once
 
-#include "libbirch/SharedPtr.hpp"
+#include "libbirch/config.hpp"
 
 namespace bi {
 template<class T> class SharedPtr;

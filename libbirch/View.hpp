@@ -3,11 +3,9 @@
  */
 #pragma once
 
-#include "libbirch/global.hpp"
+#include "libbirch/config.hpp"
 #include "libbirch/Index.hpp"
 #include "libbirch/Range.hpp"
-
-#include <cstddef>
 
 namespace bi {
 /**

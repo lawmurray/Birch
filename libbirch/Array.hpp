@@ -3,16 +3,14 @@
  */
 #pragma once
 
+#include "libbirch/config.hpp"
+#include "libbirch/memory.hpp"
 #include "libbirch/Frame.hpp"
 #include "libbirch/Iterator.hpp"
 #include "libbirch/SharedCOW.hpp"
 #include "libbirch/Allocator.hpp"
 #include "libbirch/Sequence.hpp"
 #include "libbirch/Eigen.hpp"
-#include "libbirch/global.hpp"
-
-#include <cstring>
-#include <algorithm>
 
 namespace bi {
 /**
