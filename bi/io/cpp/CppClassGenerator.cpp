@@ -107,13 +107,13 @@ void bi::CppClassGenerator::visit(const Class* o) {
         genTemplateArgs(o);
         middle("::");
       }
-      middle("clone() const");
+      middle("clone(Memo* memo) const");
       if (header) {
         finish(";\n");
       } else {
         finish(" {");
         in();
-        line("return bi::make_object<this_type>(*this);");
+        line("return bi::clone_object(this, memo);");
         out();
         line("}\n");
       }

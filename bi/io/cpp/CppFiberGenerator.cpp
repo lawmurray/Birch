@@ -94,13 +94,13 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     genTemplateArgs(o);
     middle("::");
   }
-  middle("clone() const");
+  middle("clone(Memo* memo) const");
   if (header) {
     finish(";\n");
   } else {
     finish(" {");
     in();
-    line("return bi::make_object<" << stateName << ">(*this);");
+    line("return bi::clone_object(this, memo);");
     out();
     line("}\n");
   }

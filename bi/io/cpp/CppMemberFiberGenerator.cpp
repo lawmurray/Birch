@@ -102,13 +102,13 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     genTemplateArgs(type);
     middle("::" << stateName << "::");
   }
-  middle("clone() const");
+  middle("clone(Memo* memo) const");
   if (header) {
     finish(";\n");
   } else {
     finish(" {");
     in();
-    line("return bi::make_object<" << stateName << ">(*this);");
+    line("return bi::clone_object(this, memo);");
     out();
     line("}\n");
   }
