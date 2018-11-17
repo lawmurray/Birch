@@ -40,7 +40,7 @@ public:
   /**
    * Deallocate the memory for the object.
    */
-  virtual void destroy();
+  virtual void destroy() override;
 
   /**
    * Get the memo associated with the clone of this object.
