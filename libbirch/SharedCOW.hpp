@@ -3,6 +3,7 @@
  */
 #pragma once
 
+#include "libbirch/config.hpp"
 #include "libbirch/global.hpp"
 #include "libbirch/class.hpp"
 #include "libbirch/memory.hpp"
@@ -10,7 +11,6 @@
 #include "libbirch/InitPtr.hpp"
 #include "libbirch/Memo.hpp"
 #include "libbirch/Any.hpp"
-#include "libbirch/Enter.hpp"
 #include "libbirch/Nil.hpp"
 
 namespace bi {
@@ -151,15 +151,15 @@ public:
   /**
    * Map the raw pointer, without lazy cloning.
    */
-  T* map() {
-    return static_cast<T*>(root_type::map());
+  T* pull() {
+    return static_cast<T*>(root_type::pull());
   }
 
   /**
    * Map the raw pointer, without lazy cloning.
    */
-  T* map() const {
-    return static_cast<T*>(root_type::map());
+  T* pull() const {
+    return static_cast<T*>(root_type::pull());
   }
 
   /**
@@ -231,8 +231,18 @@ public:
       object(o.object),
       memo(o.memo) {
     if (cloneMemo && object) {
+      #if DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
       object = object->deepPull(memo);
       memo = cloneMemo;
+      #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
+      if (!cloneMemo->hasAncestor(memo)) {
+        object = object->deepPull(memo);
+      }
+      memo = cloneMemo;
+      #else
+      object = object->get(cloneMemo);
+      memo = nullptr;
+      #endif
     }
   }
 
@@ -250,41 +260,54 @@ public:
   }
 
   Any* get() {
+    #if DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
     if (object) {
       object = object->get(memo);
       memo = nullptr;
     }
+    #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
+    if (object) {
+      object = object->deepGet(memo);
+      memo = nullptr;
+    }
+    #endif
     return object.get();
   }
 
   Any* get() const {
-    if (object) {
-      return object->get(memo);
-    } else {
-      return object.get();
-    }
+    /* even in a const context, do want to update the pointer through lazy
+     * deep clone mechanisms */
+   return const_cast<SharedCOW<Any>*>(this)->get();
   }
 
-  Any* map() {
+  Any* pull() {
+    #if DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
     if (object) {
-      object = object->map(memo);
+      object = object->pull(memo);
+      if (object->getMemo() == memo) {
+        memo = nullptr;
+      }
     }
+    #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
+    if (object) {
+      object = object->deepPull(memo);
+      if (object->getMemo() == memo) {
+        memo = nullptr;
+      }
+    }
+    #endif
     return object.get();
   }
 
-  Any* map() const {
-    if (object) {
-      return object->map(memo);
-    } else {
-      return object.get();
-    }
+  Any* pull() const {
+    /* even in a const context, do want to update the pointer through lazy
+     * deep clone mechanisms */
+   return const_cast<SharedCOW<Any>*>(this)->pull();
   }
 
   SharedCOW<Any> clone() const {
     auto memo1 = make_object<Memo>(memo);
-    Enter enter(memo1);
-    auto object1 = get()->clone();
-    object1->setMemo(memo1);
+    auto object1 = get()->clone(memo1);
     return SharedCOW<Any>(object1, memo1);
   }
 

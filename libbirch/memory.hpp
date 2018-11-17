@@ -214,4 +214,24 @@ inline Type* make_object(Args ... args) {
   return new (allocate<sizeof(Type)>()) Type(args...);
 }
 
+/**
+ * Clone an object.
+ *
+ * @tparam Type Type.
+ *
+ * @param memo Memo handling the clone.
+ *
+ * @return The new object.
+ */
+template<class Type>
+inline Type* clone_object(const Type* o, Memo* memo) {
+  assert(memo);
+  auto prevMemo = cloneMemo;
+  cloneMemo = memo;
+  auto cloned = new (allocate<sizeof(Type)>()) Type(*o);
+  cloneMemo = prevMemo;
+  cloned->setMemo(memo);
+  return cloned;
+}
+
 }

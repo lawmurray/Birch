@@ -133,15 +133,15 @@ public:
   /**
    * Pull through generations.
    */
-  T* map() {
-    return static_cast<T*>(root_type::map());
+  T* pull() {
+    return static_cast<T*>(root_type::pull());
   }
 
   /**
    * Pull through generations.
    */
-  T* map() const {
-    return static_cast<T*>(root_type::map());
+  T* pull() const {
+    return static_cast<T*>(root_type::pull());
   }
 };
 
@@ -188,8 +188,18 @@ public:
       object(o.object),
       memo(o.memo) {
     if (cloneMemo && object) {
+      #if DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
       object = object.get()->deepPull(memo);
       memo = cloneMemo;
+      #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
+      if (!cloneMemo->hasAncestor(memo)) {
+        object = object.get()->deepPull(memo);
+      }
+      memo = cloneMemo;
+      #else
+      object = object.get()->get(cloneMemo);
+      memo = nullptr;
+      #endif
     }
   }
 

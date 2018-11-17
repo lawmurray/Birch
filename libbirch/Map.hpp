@@ -145,14 +145,14 @@ private:
   entry_type* entries;
 
   /**
-   * Total number of entries in the table.
+   * Number of entries in the table.
    */
   size_t nentries;
 
   /**
-   * Number of reserved entries in the table.
+   * Number of occupied entries in the table.
    */
-  std::atomic<size_t> nreserved;
+  std::atomic<size_t> noccupied;
 
   /**
    * Resize lock.

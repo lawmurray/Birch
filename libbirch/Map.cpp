@@ -6,7 +6,7 @@
 bi::Map::Map() :
     entries(nullptr),
     nentries(0),
-    nreserved(0) {
+    noccupied(0) {
   //
 }
 
@@ -127,13 +127,13 @@ size_t bi::Map::crowd() const {
 }
 
 void bi::Map::reserve() {
-  size_t nreserved1 = nreserved.fetch_add(1u) + 1u;
-  if (nreserved1 > crowd()) {
+  size_t noccupied1 = noccupied.fetch_add(1u) + 1u;
+  if (noccupied1 > crowd()) {
     /* obtain resize lock */
     lock.keep();
 
     /* check that no other thread has resized in the meantime */
-    if (nreserved1 > crowd()) {
+    if (noccupied1 > crowd()) {
       /* save previous table */
       size_t nentries1 = nentries;
       joint_entry_type* entries1 = (joint_entry_type*)entries;
@@ -168,5 +168,5 @@ void bi::Map::reserve() {
 }
 
 void bi::Map::unreserve() {
-  nreserved.fetch_sub(1u);
+  noccupied.fetch_sub(1u);
 }

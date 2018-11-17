@@ -35,7 +35,7 @@ public:
   /**
    * Clone the object.
    */
-  virtual Any* clone() const;
+  virtual Any* clone(Memo* memo) const;
 
   /**
    * Deallocate the memory for the object.
@@ -58,25 +58,35 @@ public:
    *
    * @param memo Memo associated with the clone.
    *
-   * @return The cloned object.
+   * @return The mapped object.
    */
   Any* get(Memo* memo);
 
   /**
    * Shallow retrieval of an object that may not yet have been cloned,
    * without cloning it. This can be used as an optimization for read-only
-   * access to value types.
+   * access.
    *
    * @param memo Memo associated with the clone.
    *
    * @return The mapped object.
    */
-  Any* map(Memo* memo);
+  Any* pull(Memo* memo);
+
+  /**
+   * Deep retrieval of an object that may not yet have been cloned,
+   * cloning it if necessary.
+   *
+   * @param memo Memo associated with the clone.
+   *
+   * @return The mapped object.
+   */
+  Any* deepGet(Memo* memo);
 
   /**
    * Deep retrieval of an object that may not yet have been cloned,
    * without cloning it. This can be used as an optimization for read-only
-   * access to value types.
+   * access.
    *
    * @param memo Memo associated with the clone.
    *

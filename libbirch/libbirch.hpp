@@ -29,7 +29,6 @@
 #include "libbirch/Allocator.hpp"
 #include "libbirch/FiberState.hpp"
 #include "libbirch/Fiber.hpp"
-#include "libbirch/Enter.hpp"
 #include "libbirch/Eigen.hpp"
 #include "libbirch/EigenFunctions.hpp"
 #include "libbirch/EigenOperators.hpp"

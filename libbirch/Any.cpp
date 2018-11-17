@@ -5,7 +5,6 @@
 
 #include "libbirch/global.hpp"
 #include "libbirch/memory.hpp"
-#include "libbirch/Enter.hpp"
 
 bi::Any::Any() {
   //
@@ -19,8 +18,8 @@ bi::Any::~Any() {
   //
 }
 
-bi::Any* bi::Any::clone() const {
-  return make_object<Any>(*this);
+bi::Any* bi::Any::clone(Memo* memo) const {
+  return clone_object(this, memo);
 }
 
 void bi::Any::destroy() {
@@ -44,9 +43,7 @@ bi::Any* bi::Any::get(Memo* memo) {
     if (cloned) {
       return cloned;
     } else {
-      assert(memo);
-      Enter enter(memo);
-      SharedPtr<Any> cloned(this->clone());
+      SharedPtr<Any> cloned(this->clone(memo));
       cloned->setMemo(memo);
       // ^ shared pointer used so as to destroy object if another thread
       //   clones in the meantime
@@ -55,7 +52,7 @@ bi::Any* bi::Any::get(Memo* memo) {
   }
 }
 
-bi::Any* bi::Any::map(Memo* memo) {
+bi::Any* bi::Any::pull(Memo* memo) {
   if (!memo || getMemo() == memo) {
     return this;
   } else {
@@ -63,11 +60,14 @@ bi::Any* bi::Any::map(Memo* memo) {
   }
 }
 
+bi::Any* bi::Any::deepGet(Memo* memo) {
+  return deepPull(memo)->get(memo);
+}
+
 bi::Any* bi::Any::deepPull(Memo* memo) {
   if (!memo || getMemo() == memo) {
     return this;
   } else {
-    auto pulled = deepPull(memo->getParent());
-    return clones.get(memo, pulled);
+    return deepPull(memo->getParent())->pull(memo);
   }
 }

@@ -33,15 +33,23 @@
  * For memory leak checks with valgrind, set this to 1, and may also need to
  * disable OpenMP when compiling.
  */
+#ifndef DISABLE_POOL
 #define DISABLE_POOL 0
+#endif
 
 /**
  * @def DEEP_CLONE
  *
  * Set to:
  *
- * @li 0 to use an eager deep clone,
- * @li 1 to use a lazy deep clone with eager map,
- * @li 2 to use a lazy deep clone with eager map only when necessary.
+ * @li 1 to use an eager deep clone,
+ * @li 2 to use a lazy deep clone with eager map,
+ * @li 3 to use a lazy deep clone with eager map only when necessary.
  */
-#define DEEP_CLONE 1
+#define DEEP_CLONE_EAGER 1
+#define DEEP_CLONE_LAZY 2
+#define DEEP_CLONE_LAZIER 3
+
+#ifndef DEEP_CLONE_STRATEGY
+#define DEEP_CLONE_STRATEGY DEEP_CLONE_LAZIER
+#endif
