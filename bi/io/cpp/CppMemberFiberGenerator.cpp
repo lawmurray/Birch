@@ -104,7 +104,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   }
   middle("clone(Memo* memo) const");
   if (header) {
-    finish(";\n");
+    finish(" override;\n");
   } else {
     finish(" {");
     in();
@@ -126,7 +126,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   }
   middle("destroy()");
   if (header) {
-    finish(";\n");
+    finish(" override;\n");
   } else {
     finish(" {");
     in();

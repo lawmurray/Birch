@@ -804,6 +804,7 @@ void bi::Driver::configure() {
       cxxflags << " -O3 -funroll-loops -flto";
     }
     cxxflags << " -Wno-overloaded-virtual";
+    cxxflags << " -Wno-inconsistent-missing-override";
     cxxflags << " -Wno-return-type";
     // ^ false warnings for abstract functions at the moment
     //cppflags << " -DEIGEN_NO_STATIC_ASSERT";

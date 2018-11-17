@@ -109,7 +109,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
       }
       middle("clone(Memo* memo) const");
       if (header) {
-        finish(";\n");
+        finish(" override;\n");
       } else {
         finish(" {");
         in();
@@ -132,7 +132,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
       }
       middle("destroy()");
       if (header) {
-        finish(";\n");
+        finish(" override;\n");
       } else {
         finish(" {");
         in();
