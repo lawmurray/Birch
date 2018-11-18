@@ -14,11 +14,6 @@ bi::Memo::~Memo() {
   //
 }
 
-void bi::Memo::destroy() {
-  size = sizeof(*this);
-  this->~Memo();
-}
-
 bool bi::Memo::hasAncestor(Memo* memo) const {
   return parent == memo || (parent && parent->hasAncestor(memo));
 }

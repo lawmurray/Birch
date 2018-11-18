@@ -3,14 +3,16 @@
  */
 #include "libbirch/Any.hpp"
 
-#include "libbirch/global.hpp"
+#include "libbirch/clone.hpp"
 #include "libbirch/memory.hpp"
 
-bi::Any::Any() {
+bi::Any::Any() :
+    memo(cloneMemo) {
   //
 }
 
-bi::Any::Any(const Any& o) {
+bi::Any::Any(const Any& o) :
+    memo(cloneMemo) {
   //
 }
 
@@ -18,21 +20,8 @@ bi::Any::~Any() {
   //
 }
 
-bi::Any* bi::Any::clone(Memo* memo) const {
-  return clone_object(this, memo);
-}
-
-void bi::Any::destroy() {
-  this->size = sizeof(*this);
-  this->~Any();
-}
-
 bi::Memo* bi::Any::getMemo() {
   return memo.get();
-}
-
-void bi::Any::setMemo(Memo* memo) {
-  this->memo = memo;
 }
 
 bi::Any* bi::Any::get(Memo* memo) {
@@ -43,10 +32,11 @@ bi::Any* bi::Any::get(Memo* memo) {
     if (cloned) {
       return cloned;
     } else {
-      SharedPtr<Any> cloned(this->clone(memo));
-      cloned->setMemo(memo);
+      cloneMemo = memo;
+      SharedPtr<Any> cloned = this->clone();
       // ^ shared pointer used so as to destroy object if another thread
       //   clones in the meantime
+      cloneMemo = nullptr;
       return clones.put(memo, cloned.get());
     }
   }

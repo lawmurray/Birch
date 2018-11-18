@@ -4,7 +4,7 @@
 #pragma once
 
 #include "libbirch/config.hpp"
-#include "libbirch/global.hpp"
+#include "libbirch/clone.hpp"
 #include "libbirch/class.hpp"
 #include "libbirch/memory.hpp"
 #include "libbirch/SharedPtr.hpp"
@@ -235,8 +235,8 @@ public:
       object = object->deepPull(memo);
       memo = cloneMemo;
       #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
-      if (!cloneMemo->hasAncestor(memo)) {
-        object = object->deepPull(memo);
+      if (!cloneMemo->hasAncestor(memo.get())) {
+        object = object->deepPull(memo.get());
       }
       memo = cloneMemo;
       #else
@@ -267,7 +267,7 @@ public:
     }
     #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
     if (object) {
-      object = object->deepGet(memo);
+      object = object->deepGet(memo.get());
       memo = nullptr;
     }
     #endif
@@ -290,8 +290,8 @@ public:
     }
     #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
     if (object) {
-      object = object->deepPull(memo);
-      if (object->getMemo() == memo) {
+      object = object->deepPull(memo.get());
+      if (object->getMemo() == memo.get()) {
         memo = nullptr;
       }
     }
@@ -306,13 +306,19 @@ public:
   }
 
   SharedCOW<Any> clone() const {
-    auto memo1 = make_object<Memo>(memo);
-    auto object1 = get()->clone(memo1);
-    return SharedCOW<Any>(object1, memo1);
-  }
-
-  Memo* getMemo() const {
-    return memo;
+    auto o = object.get();
+    auto m = Memo::create(memo.get());
+    #if DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
+    o = o->deepPull(memo);
+    #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
+    if (!m->hasAncestor(memo.get())) {
+      o = o->deepPull(memo.get());
+    }
+    #else
+    o = o->get(m);
+    m = nullptr;
+    #endif
+    return SharedCOW<Any>(o, m);
   }
 
   Any& operator*() const {
@@ -338,7 +344,7 @@ public:
    */
   template<class U>
   SharedCOW<U> dynamic_pointer_cast() const {
-    return SharedCOW<U>(dynamic_cast<U*>(object.get()), memo);
+    return SharedCOW<U>(dynamic_cast<U*>(object.get()), memo.get());
   }
 
   /**
@@ -346,7 +352,7 @@ public:
    */
   template<class U>
   SharedCOW<U> static_pointer_cast() const {
-    return SharedCOW<U>(static_cast<U*>(object.get()), memo);
+    return SharedCOW<U>(static_cast<U*>(object.get()), memo.get());
   }
 
 protected:
@@ -358,7 +364,7 @@ protected:
   /**
    * The memo.
    */
-  InitPtr<Memo> memo;
+  SharedPtr<Memo> memo;
 };
 }
 

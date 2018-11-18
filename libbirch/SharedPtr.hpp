@@ -101,6 +101,7 @@ public:
    * Dereference.
    */
   T& operator*() const {
+    assert(ptr);
     return *get();
   }
 
@@ -108,6 +109,7 @@ public:
    * Member access.
    */
   T* operator->() const {
+    assert(ptr);
     return get();
   }
 

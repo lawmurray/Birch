@@ -5,8 +5,8 @@
   "manifest": {
     "source": [
       "libbirch/Any.cpp",
+      "libbirch/clone.cpp",
       "libbirch/Counted.cpp",
-      "libbirch/global.cpp",
       "libbirch/libbirch.cpp",
       "libbirch/Lock.cpp",
       "libbirch/Map.cpp",
@@ -215,6 +215,7 @@
       "libbirch/assert.hpp",
       "libbirch/basic.hpp",
       "libbirch/class.hpp",
+      "libbirch/clone.hpp",
       "libbirch/config.hpp",
       "libbirch/Counted.hpp",
       "libbirch/Eigen.hpp",
@@ -223,7 +224,6 @@
       "libbirch/Fiber.hpp",
       "libbirch/FiberState.hpp",
       "libbirch/Frame.hpp",
-      "libbirch/global.hpp",
       "libbirch/Index.hpp",
       "libbirch/InitPtr.hpp",
       "libbirch/Iterator.hpp",

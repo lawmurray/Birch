@@ -3,8 +3,6 @@
  */
 #include "libbirch/Counted.hpp"
 
-#include "libbirch/global.hpp"
-
 bi::Counted::Counted() :
     size(0),
     sharedCount(0),
@@ -21,11 +19,6 @@ bi::Counted::Counted(const Counted& o) :
 
 bi::Counted::~Counted() {
   assert(sharedCount == 0);
-}
-
-void bi::Counted::destroy() {
-  this->size = sizeof(*this);
-  this->~Counted();
 }
 
 void bi::Counted::deallocate() {

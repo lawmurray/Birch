@@ -17,6 +17,10 @@ template<class T> class SharedCOW;
  */
 class Any: public Counted {
 public:
+  using class_type = Any;
+  using this_type = Any;
+
+protected:
   /**
    * Constructor.
    */
@@ -33,24 +37,20 @@ public:
   virtual ~Any();
 
   /**
-   * Clone the object.
+   * Copy assignment operator.
    */
-  virtual Any* clone(Memo* memo) const;
+  Any& operator=(const Any&) = delete;
 
-  /**
-   * Deallocate the memory for the object.
-   */
-  virtual void destroy() override;
+public:
+  STANDARD_CREATE_FUNCTION
+  STANDARD_EMPLACE_FUNCTION
+  STANDARD_CLONE_FUNCTION
+  STANDARD_DESTROY_FUNCTION
 
   /**
    * Get the memo associated with the clone of this object.
    */
   Memo* getMemo();
-
-  /**
-   * Set the memo associated with the clone of this object.
-   */
-  void setMemo(Memo* memo);
 
   /**
    * Shallow retrieval of an object that may not yet have been cloned,
@@ -98,7 +98,7 @@ protected:
   /**
    * Memo associated with the clone or construction of this object.
    */
-  SharedPtr<Memo> memo;
+  InitPtr<Memo> memo;
 
   /**
    * Clones produced from this object.

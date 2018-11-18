@@ -16,7 +16,7 @@ namespace bi {
  * @ingroup libbirch
  */
 class Counted {
-public:
+protected:
   /**
    * Constructor.
    */
@@ -33,11 +33,42 @@ public:
   virtual ~Counted();
 
   /**
-   * Destroy the object. This is virtual in order that it is called on
-   * the object of the most-derived type. That will set ptr and size
-   * to the correct values for later use in deallocate().
+   * Assignment operator.
    */
-  virtual void destroy();
+  Counted& operator=(const Counted&) = delete;
+
+public:
+  /**
+   * Create an object,
+   */
+  template<class... Args>
+  static Counted* create(Args... args) {
+    return emplace(allocate<sizeof(Counted)>(), args...);
+  }
+
+  /**
+   * Create an object in previously-allocated memory.
+   */
+  template<class... Args>
+  static Counted* emplace(void* ptr, Args... args) {
+    auto o = new (ptr) Counted();
+    o->size = sizeof(Counted);
+    return o;
+  }
+
+  /**
+   * Clone the object.
+   */
+  virtual Counted* clone() const {
+    return emplace(allocate<sizeof(Counted)>(), *this);
+  }
+
+  /**
+   * Destroy the object.
+   */
+  virtual void destroy() {
+    this->~Counted();
+  }
 
   /**
    * Deallocate the object.

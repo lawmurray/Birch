@@ -199,39 +199,4 @@ void deallocate(void* ptr, const unsigned n);
  */
 void* reallocate(void* ptr1, const size_t n1, const size_t n2);
 
-/**
- * Make an object.
- *
- * @tparam Type Type.
- * @param Args... Constructor argument types.
- *
- * @param args Constructor arguments.
- *
- * @return The new object.
- */
-template<class Type, class ... Args>
-inline Type* make_object(Args ... args) {
-  return new (allocate<sizeof(Type)>()) Type(args...);
-}
-
-/**
- * Clone an object.
- *
- * @tparam Type Type.
- *
- * @param memo Memo handling the clone.
- *
- * @return The new object.
- */
-template<class Type>
-inline Type* clone_object(const Type* o, Memo* memo) {
-  assert(memo);
-  auto prevMemo = cloneMemo;
-  cloneMemo = memo;
-  auto cloned = new (allocate<sizeof(Type)>()) Type(*o);
-  cloneMemo = prevMemo;
-  cloned->setMemo(memo);
-  return cloned;
-}
-
 }

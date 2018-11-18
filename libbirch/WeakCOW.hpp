@@ -192,8 +192,8 @@ public:
       object = object.get()->deepPull(memo);
       memo = cloneMemo;
       #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
-      if (!cloneMemo->hasAncestor(memo)) {
-        object = object.get()->deepPull(memo);
+      if (!cloneMemo->hasAncestor(memo.get())) {
+        object = object.get()->deepPull(memo.get());
       }
       memo = cloneMemo;
       #else
@@ -204,9 +204,7 @@ public:
   }
 
   WeakCOW(WeakCOW<Any> && o) = default;
-
   WeakCOW<Any>& operator=(const WeakCOW<Any>& o) = default;
-
   WeakCOW<Any>& operator=(WeakCOW<Any>&& o) = default;
 
 protected:
@@ -218,6 +216,6 @@ protected:
   /**
    * The memo.
    */
-  InitPtr<Memo> memo;
+  SharedPtr<Memo> memo;
 };
 }

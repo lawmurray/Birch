@@ -10,7 +10,7 @@
 #include "libbirch/assert.hpp"
 #include "libbirch/basic.hpp"
 #include "libbirch/class.hpp"
-#include "libbirch/global.hpp"
+#include "libbirch/clone.hpp"
 #include "libbirch/memory.hpp"
 #include "libbirch/stacktrace.hpp"
 
@@ -186,7 +186,7 @@ auto make_array(const Frame& frame, Args ... args) {
  */
 template<class PointerType, class ... Args>
 PointerType make_pointer(Args ... args) {
-  return make_object<typename PointerType::value_type>(args...);
+  return PointerType::value_type::create(args...);
 }
 
 /**
@@ -200,7 +200,7 @@ PointerType make_pointer(Args ... args) {
 template<class StateType, class ... Args>
 auto make_fiber(Args ... args) {
   using yield_type = typename StateType::yield_type;
-  return Fiber<yield_type>(make_object<StateType>(args...));
+  return Fiber<yield_type>(StateType::create(args...));
 }
 
 /**
