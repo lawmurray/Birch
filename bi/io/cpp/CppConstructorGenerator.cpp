@@ -53,8 +53,7 @@ void bi::CppConstructorGenerator::visit(const MemberVariable* o) {
   } else if (o->type->isPointer() && !o->type->isWeak()) {
     finish(',');
     start(o->name << '(');
-    middle("bi::make_object<" << o->type->unwrap() << '>');
-    middle('(' << o->args << ')');
+    middle(o->type->unwrap() << "::create(" << o->args << ')');
     middle(')');
   } else if (o->type->isArray() && !o->brackets->isEmpty()) {
     finish(',');

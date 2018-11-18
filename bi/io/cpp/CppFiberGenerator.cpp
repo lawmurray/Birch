@@ -38,6 +38,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     finish(" : public FiberState<" << o->returnType->unwrap() << "> {");
     line("public:");
     in();
+    line("using class_type = " << stateName << ';');
     line("using super_type = FiberState<" << o->returnType->unwrap() << ">;\n");
     for (auto param : params) {
       line(param->type << ' ' << param->name << ';');
@@ -46,6 +47,12 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       start(local->type << ' ');
       finish(getName(local->name->str(), local->number) << ';');
     }
+  }
+
+  if (header) {
+    out();
+    line("protected:");
+    in();
   }
 
   /* constructor */
@@ -78,58 +85,25 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     line("}\n");
   }
 
-  /* clone function */
-  if (!header && !o->isBound()) {
-    genTemplateParams(o);
-  } else {
-    start("");
-  }
+  /* copy constructor, destructor, assignment operator */
   if (header) {
-    middle("virtual ");
-  }
-  middle("bi::FiberState<");
-  middle(o->returnType->unwrap() << ">* ");
-  if (!header) {
-    middle("bi::" << stateName);
-    genTemplateArgs(o);
-    middle("::");
-  }
-  middle("clone(Memo* memo) const");
-  if (header) {
-    finish(" override;\n");
-  } else {
-    finish(" {");
-    in();
-    line("return bi::clone_object(this, memo);");
-    out();
-    line("}\n");
+    line(stateName << "(const " << stateName << "&) = default;");
+    line("virtual ~" << stateName << "() = default;");
+    line(stateName << "& operator=(const " << stateName << "&) = default;");
   }
 
-  /* destroy function */
-  if (!header && !o->isBound()) {
-    genTemplateParams(o);
-  } else {
-    start("");
-  }
   if (header) {
-    middle("virtual ");
-  }
-  middle("void ");
-  if (!header) {
-    middle("bi::" << stateName);
-    genTemplateArgs(o);
-    middle("::");
-  }
-  middle("destroy()");
-  if (header) {
-    finish(" override;\n");
-  } else {
-    finish(" {");
-    in();
-    line("this->size = sizeof(*this);");
-    line("this->~" << stateName << "();");
     out();
-    line("}\n");
+    line("public:");
+    in();
+  }
+
+  /* standard functions */
+  if (header) {
+    line("STANDARD_CREATE_FUNCTION");
+    line("STANDARD_EMPLACE_FUNCTION");
+    line("STANDARD_CLONE_FUNCTION");
+    line("STANDARD_DESTROY_FUNCTION");
   }
 
   /* query function */
@@ -235,7 +209,7 @@ void bi::CppFiberGenerator::visit(const LocalVariable* o) {
   } else if (o->type->isPointer() && !o->type->isWeak()) {
     /* make sure objects are initialized, not just null pointers */
     auto name = getName(o->name->str(), o->number);
-    middle("this->" << name << " = bi::make_object<" << o->type->unwrap() << ">()");
+    middle("this->" << name << " = " << o->type->unwrap() << "::create()");
   }
 }
 

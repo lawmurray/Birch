@@ -37,9 +37,10 @@ void bi::CppClassGenerator::visit(const Class* o) {
         line("public:");
         in();
         if (o->isBound()) {
-          start("using this_type = " << o->name);
+          start("using class_type = " << o->name);
           genTemplateArgs(o);
           finish(';');
+          start("using this_type = class_type;");
           if (!o->base->isEmpty()) {
             line("using super_type = " << o->base << ';');
             line("");
@@ -73,21 +74,11 @@ void bi::CppClassGenerator::visit(const Class* o) {
     }
 
     if (!o->isAlias() && o->isBound()) {
-      /* constructor */
-      CppConstructorGenerator auxConstructor(base, level, header);
-      auxConstructor << o;
-
-      /* destructor */
+      /* self function */
       if (header) {
-        line("virtual ~" << o->name << "() {");
-        in();
-        line("//");
         out();
-        line("}\n");
-      }
-
-      /* self-reference function */
-      if (header) {
+        line("private:");
+        in();
         line("auto self() {");
         in();
         line("return this;");
@@ -95,51 +86,35 @@ void bi::CppClassGenerator::visit(const Class* o) {
         line("}\n");
       }
 
-      /* clone function */
-      if (!header) {
-        start("");
-      } else {
-        start("virtual ");
-      }
-      middle("bi::Any* ");
-      if (!header) {
-        middle("bi::type::" << o->name);
-        genTemplateArgs(o);
-        middle("::");
-      }
-      middle("clone(Memo* memo) const");
       if (header) {
-        finish(" override;\n");
-      } else {
-        finish(" {");
-        in();
-        line("return bi::clone_object(this, memo);");
         out();
-        line("}\n");
+        line("protected:");
+        in();
       }
 
-      /* destroy function */
-      if (!header) {
-        start("");
-      } else {
-        start("virtual ");
-      }
-      middle("void ");
-      if (!header) {
-        middle("bi::type::" << o->name);
-        genTemplateArgs(o);
-        middle("::");
-      }
-      middle("destroy()");
+      /* constructor */
+      CppConstructorGenerator auxConstructor(base, level, header);
+      auxConstructor << o;
+
+      /* copy constructor, destructor, assignment operator */
       if (header) {
-        finish(" override;\n");
-      } else {
-        finish(" {");
-        in();
-        line("this->size = sizeof(*this);");
-        line("this->~" << o->name << "();");
+        line(o->name << "(const " << o->name << "&) = default;");
+        line("virtual ~" << o->name << "() = default;");
+        line(o->name << "& operator=(const " << o->name << "&) = default;");
+      }
+
+      if (header) {
         out();
-        line("}\n");
+        line("public:");
+        in();
+      }
+
+      /* standard functions */
+      if (header) {
+        line("STANDARD_CREATE_FUNCTION");
+        line("STANDARD_EMPLACE_FUNCTION");
+        line("STANDARD_CLONE_FUNCTION");
+        line("STANDARD_DESTROY_FUNCTION");
       }
 
       /* member variables and functions */
@@ -160,7 +135,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
         line(
             "bi::type::" << o->name << "* bi::type::make_" << o->name << "() {");
         in();
-        line("return bi::make_object<bi::type::" << o->name << ">();");
+        line("return bi::type::" << o->name << "::create();");
         out();
         line("}");
       }

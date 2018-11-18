@@ -33,6 +33,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     finish("public FiberState<" << o->returnType->unwrap() << "> {");
     line("public:");
     in();
+    line("using class_type = " << stateName << ';');
     line("using super_type = FiberState<" << o->returnType->unwrap() << ">;\n");
     start("SharedCOW<" << type->name);
     genTemplateArgs(type);
@@ -44,6 +45,24 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
       start(local->type << ' ');
       finish(getName(local->name->str(), local->number) << ';');
     }
+  }
+
+  /* self function */
+  if (header) {
+    out();
+    line("private:");
+    in();
+    line("auto self() {");
+    in();
+    line("return object.get();");
+    out();
+    line("}");
+  }
+
+  if (header) {
+    out();
+    line("protected:");
+    in();
   }
 
   /* constructor */
@@ -81,59 +100,25 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     line("}\n");
   }
 
-  /* self function */
+  /* copy constructor, destructor, assignment operator */
   if (header) {
-    line("auto self() {");
-    in();
-    line("return object.get();");
-    out();
-    line("}");
+    line(stateName << "(const " << stateName << "&) = default;");
+    line("virtual ~" << stateName << "() = default;");
+    line(stateName << "& operator=(const " << stateName << "&) = default;");
   }
 
-  /* clone function */
   if (header) {
-    start("virtual ");
-  } else {
-    start("");
-  }
-  middle("bi::FiberState<" << o->returnType->unwrap() <<">* ");
-  if (!header) {
-    middle("bi::type::" << type->name);
-    genTemplateArgs(type);
-    middle("::" << stateName << "::");
-  }
-  middle("clone(Memo* memo) const");
-  if (header) {
-    finish(" override;\n");
-  } else {
-    finish(" {");
-    in();
-    line("return bi::clone_object(this, memo);");
     out();
-    line("}\n");
+    line("public:");
+    in();
   }
 
-  /* destroy function */
-  start("");
+  /* standard functions */
   if (header) {
-    middle("virtual ");
-  }
-  middle("void ");
-  if (!header) {
-    middle("bi::type::" << type->name);
-    genTemplateArgs(type);
-    middle("::" << stateName << "::");
-  }
-  middle("destroy()");
-  if (header) {
-    finish(" override;\n");
-  } else {
-    finish(" {");
-    in();
-    line("this->size = sizeof(*this);");
-    line("this->~" << stateName << "();");
-    out();
-    line("}\n");
+    line("STANDARD_CREATE_FUNCTION");
+    line("STANDARD_EMPLACE_FUNCTION");
+    line("STANDARD_CLONE_FUNCTION");
+    line("STANDARD_DESTROY_FUNCTION");
   }
 
   /* query function */
