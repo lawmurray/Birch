@@ -3,7 +3,6 @@
  */
 #include "bi/io/cpp/CppClassGenerator.hpp"
 
-#include "bi/io/cpp/CppConstructorGenerator.hpp"
 #include "bi/io/cpp/CppMemberFiberGenerator.hpp"
 #include "bi/primitive/encode.hpp"
 
@@ -17,6 +16,13 @@ bi::CppClassGenerator::CppClassGenerator(std::ostream& base, const int level,
 void bi::CppClassGenerator::visit(const Class* o) {
   if (o->isAlias() || !o->braces->isEmpty()) {
     type = o;
+
+    Gatherer<MemberFunction> memberFunctions;
+    Gatherer<MemberFiber> memberFibers;
+    Gatherer<MemberVariable> memberVariables;
+    o->accept(&memberFunctions);
+    o->accept(&memberFibers);
+    o->accept(&memberVariables);
 
     /* start boilerplate */
     if (header) {
@@ -50,18 +56,14 @@ void bi::CppClassGenerator::visit(const Class* o) {
 
           /* using declarations for member functions and fibers in base classes
            * that are overriden */
-          Gatherer<MemberFunction> memberFunctions;
-          Gatherer<MemberFiber> memberFibers;
-          o->accept(&memberFunctions);
-          o->accept(&memberFibers);
           std::set<std::string> names;
           for (auto f : memberFunctions) {
-            if (type->scope->override(f)) {
+            if (o->scope->override(f)) {
               names.insert(f->name->str());
             }
           }
           for (auto f : memberFibers) {
-            if (type->scope->override(f)) {
+            if (o->scope->override(f)) {
               names.insert(f->name->str());
             }
           }
@@ -93,8 +95,57 @@ void bi::CppClassGenerator::visit(const Class* o) {
       }
 
       /* constructor */
-      CppConstructorGenerator auxConstructor(base, level, header);
-      auxConstructor << o;
+      if (!header) {
+        start("bi::type::" << o->name);
+        genTemplateArgs(o);
+        middle("::");
+      } else {
+        start("");
+      }
+      middle(o->name);
+      CppBaseGenerator aux(base, level, header);
+      aux << '(' << o->params << ')';
+      if (header) {
+        finish(";\n");
+      } else {
+        finish(" :");
+        in();
+        in();
+        if (o->base->isEmpty()) {
+          middle("Any(");
+        } else {
+          start("super_type(");
+        }
+        if (!o->args->isEmpty()) {
+          middle(o->args);
+        }
+        middle(')');
+        for (auto o : memberVariables) {
+          if (!o->value->isEmpty()) {
+            finish(',');
+            start(o->name << '(' << o->value << ')');
+          } else if (o->type->isPointer() && !o->type->isWeak()) {
+            finish(',');
+            start(o->name << '(');
+            middle(o->type->unwrap() << "::create(" << o->args << ')');
+            middle(')');
+          } else if (o->type->isArray() && !o->brackets->isEmpty()) {
+            finish(',');
+            start(o->name << "(bi::make_frame(" << o->brackets << ')');
+            if (!o->args->isEmpty()) {
+              middle(", " << o->args);
+            }
+            middle(')');
+          }
+        }
+        out();
+        out();
+        finish(" {");
+        in();
+        line("//");
+        out();
+        line("}\n");
+      }
 
       /* copy constructor, destructor, assignment operator */
       if (header) {

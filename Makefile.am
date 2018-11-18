@@ -122,7 +122,6 @@ COMMON_SOURCES = \
   bi/expression/This.cpp \
   bi/expression/UnaryCall.cpp \
   bi/io/cpp/CppBaseGenerator.cpp \
-  bi/io/cpp/CppConstructorGenerator.cpp \
   bi/io/cpp/CppClassGenerator.cpp \
   bi/io/cpp/CppFiberGenerator.cpp \
   bi/io/cpp/CppMemberFiberGenerator.cpp \
@@ -300,7 +299,6 @@ noinst_HEADERS = \
   bi/expression/This.hpp \
   bi/expression/UnaryCall.hpp \
   bi/io/cpp/CppBaseGenerator.hpp \
-  bi/io/cpp/CppConstructorGenerator.hpp \
   bi/io/cpp/CppClassGenerator.hpp \
   bi/io/cpp/CppFiberGenerator.hpp \
   bi/io/cpp/CppMemberFiberGenerator.hpp \
