@@ -231,25 +231,23 @@ public:
       object(o.object),
       memo(o.memo) {
     if (cloneMemo && object) {
-      #if DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
-      object = object->deepPull(memo);
-      memo = cloneMemo;
+      /* this is triggered during the clone of an object, for member
+       * variables of that object that include pointers */
+      #if DEEP_CLONE_STRATEGY == DEEP_CLONE_EAGER
+      object = o.pull()->get(cloneMemo);
+      #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
+      object = o.pull()->deepPull(cloneMemo);
       #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
       if (!cloneMemo->hasAncestor(memo.get())) {
-        object = object->deepPull(memo.get());
+        object = o.pull();
       }
-      memo = cloneMemo;
-      #else
-      object = object->get(cloneMemo);
-      memo = nullptr;
       #endif
+      memo = (object->getMemo() == cloneMemo) ? nullptr : cloneMemo;
     }
   }
 
   SharedCOW(SharedCOW<Any> && o) = default;
-
   SharedCOW<Any>& operator=(const SharedCOW<Any>& o) = default;
-
   SharedCOW<Any>& operator=(SharedCOW<Any> && o) = default;
 
   /**
@@ -260,15 +258,16 @@ public:
   }
 
   Any* get() {
-    #if DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
+    #if DEEP_CLONE_STRATEGY != DEEP_CLONE_EAGER
     if (object) {
-      object = object->get(memo);
-      memo = nullptr;
-    }
-    #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
-    if (object) {
+      #if DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
+      object = object->get(memo.get());
+      #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
       object = object->deepGet(memo.get());
-      memo = nullptr;
+      #endif
+      if (object->getMemo() == memo.get()) {
+        memo = nullptr;
+      }
     }
     #endif
     return object.get();
@@ -281,16 +280,13 @@ public:
   }
 
   Any* pull() {
-    #if DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
+    #if DEEP_CLONE_STRATEGY != DEEP_CLONE_EAGER
     if (object) {
-      object = object->pull(memo);
-      if (object->getMemo() == memo) {
-        memo = nullptr;
-      }
-    }
-    #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
-    if (object) {
+      #if DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
+      object = object->pull(memo.get());
+      #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
       object = object->deepPull(memo.get());
+      #endif
       if (object->getMemo() == memo.get()) {
         memo = nullptr;
       }
@@ -306,17 +302,14 @@ public:
   }
 
   SharedCOW<Any> clone() const {
-    auto o = object.get();
     auto m = Memo::create(memo.get());
-    #if DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
-    o = o->deepPull(memo);
-    #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
-    if (!m->hasAncestor(memo.get())) {
-      o = o->deepPull(memo.get());
-    }
-    #else
-    o = o->get(m);
+    #if DEEP_CLONE_STRATEGY == DEEP_CLONE_EAGER
+    auto o = pull()->get(m);
     m = nullptr;
+    #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
+    auto o = pull();
+    #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
+    auto o = object.get();
     #endif
     return SharedCOW<Any>(o, m);
   }

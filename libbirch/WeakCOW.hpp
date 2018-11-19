@@ -131,14 +131,14 @@ public:
   }
 
   /**
-   * Pull through generations.
+   * Map the raw pointer, without lazy cloning.
    */
   T* pull() {
     return static_cast<T*>(root_type::pull());
   }
 
   /**
-   * Pull through generations.
+   * Map the raw pointer, without lazy cloning.
    */
   T* pull() const {
     return static_cast<T*>(root_type::pull());
@@ -188,24 +188,44 @@ public:
       object(o.object),
       memo(o.memo) {
     if (cloneMemo && object) {
-      #if DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
-      object = object.get()->deepPull(memo);
-      memo = cloneMemo;
+      #if DEEP_CLONE_STRATEGY == DEEP_CLONE_EAGER
+      object = o.pull()->deepGet(cloneMemo);
+      #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
+      object = o.pull()->deepPull(cloneMemo);
       #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
       if (!cloneMemo->hasAncestor(memo.get())) {
-        object = object.get()->deepPull(memo.get());
+        object = o.pull();
       }
-      memo = cloneMemo;
-      #else
-      object = object.get()->get(cloneMemo);
-      memo = nullptr;
       #endif
+      memo = (object.get()->getMemo() == cloneMemo) ? nullptr : cloneMemo;
     }
   }
 
   WeakCOW(WeakCOW<Any> && o) = default;
   WeakCOW<Any>& operator=(const WeakCOW<Any>& o) = default;
   WeakCOW<Any>& operator=(WeakCOW<Any>&& o) = default;
+
+  Any* pull() {
+    #if DEEP_CLONE_STRATEGY != DEEP_CLONE_EAGER
+    if (object) {
+      #if DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
+      object = object.get()->pull(memo.get());
+      #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
+      object = object.get()->deepPull(memo.get());
+      #endif
+      if (object.get()->getMemo() == memo.get()) {
+        memo = nullptr;
+      }
+    }
+    #endif
+    return object.get();
+  }
+
+  Any* pull() const {
+    /* even in a const context, do want to update the pointer through lazy
+     * deep clone mechanisms */
+   return const_cast<WeakCOW<Any>*>(this)->pull();
+  }
 
 protected:
   /**
