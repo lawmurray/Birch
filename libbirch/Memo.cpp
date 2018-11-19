@@ -55,7 +55,7 @@ bi::Any* bi::Memo::get(Any* o) {
        * inserting an object into the map; a shared pointer is used to
        * destroy any additional objects */
       auto prevMemo = cloneMemo;
-      cloneMemo = memo;
+      cloneMemo = this;
       SharedPtr<Any> cloned = o->clone();
       cloneMemo = prevMemo;
       return clones.put(o, cloned.get());
@@ -73,16 +73,14 @@ bi::Any* bi::Memo::pull(Any* o) {
 }
 
 bi::Any* bi::Memo::deepGet(Any* o) {
-  if (o->getMemo() == this) {
-    return o;
-  } else {
-    return get(getParent()->deepPull(o));
-  }
+  return get(deepPull(o));
 }
 
 bi::Any* bi::Memo::deepPull(Any* o) {
   if (o->getMemo() == this) {
     return o;
+  } else if (!getParent()) {
+    return pull(o);
   } else {
     return pull(getParent()->deepPull(o));
   }
