@@ -83,6 +83,11 @@ public:
   void deallocate();
 
   /**
+   * Get the size, in bytes, of the object.
+   */
+  unsigned getSize() const;
+
+  /**
    * If the object has yet to be destroyed, increment the shared count
    * and return a pointer to this. Otherwise return null. This is used
    * to atomically convert a WeakPtr into a SharedPtr.

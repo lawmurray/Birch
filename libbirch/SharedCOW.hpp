@@ -232,9 +232,9 @@ public:
       /* this is triggered during the clone of an object, for member
        * variables of that object that include pointers */
       #if DEEP_CLONE_STRATEGY == DEEP_CLONE_EAGER
-      object = o.pull()->get(cloneMemo);
+      object = cloneMemo->get(o.pull());
       #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
-      object = o.pull()->deepPull(cloneMemo);
+      object = cloneMemo->deepPull(o.pull());
       #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
       if (!cloneMemo->hasAncestor(memo.get())) {
         object = o.pull();
@@ -257,11 +257,11 @@ public:
 
   Any* get() {
     #if DEEP_CLONE_STRATEGY != DEEP_CLONE_EAGER
-    if (object) {
+    if (object && memo) {
       #if DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
-      object = object->get(memo.get());
+      object = memo->get(object.get());
       #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
-      object = object->deepGet(memo.get());
+      object = memo->deepGet(object.get());
       #endif
       if (object->getMemo() == memo.get()) {
         memo = nullptr;
@@ -279,11 +279,11 @@ public:
 
   Any* pull() {
     #if DEEP_CLONE_STRATEGY != DEEP_CLONE_EAGER
-    if (object) {
+    if (object && memo) {
       #if DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
-      object = object->pull(memo.get());
+      object = memo->pull(object.get());
       #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
-      object = object->deepPull(memo.get());
+      object = memo->deepPull(object.get());
       #endif
       if (object->getMemo() == memo.get()) {
         memo = nullptr;
@@ -300,16 +300,18 @@ public:
   }
 
   SharedCOW<Any> clone() const {
-    auto m = Memo::create(memo.get());
     #if DEEP_CLONE_STRATEGY == DEEP_CLONE_EAGER
-    auto o = pull()->get(m);
-    m = nullptr;
+    SharedPtr<Memo> m(Memo::create(memo.get()));
+    return SharedCOW<Any>(m->get(pull()));
     #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
     auto o = pull();
+    auto m = Memo::create(memo.get());
+    return SharedCOW<Any>(o, m);
     #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
     auto o = object.get();
-    #endif
+    auto m = Memo::create(memo.get());
     return SharedCOW<Any>(o, m);
+    #endif
   }
 
   Any& operator*() const {

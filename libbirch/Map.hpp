@@ -8,7 +8,6 @@
 
 namespace bi {
 class Memo;
-class Any;
 
 /**
  * Thread-safe hash table of memory mappings.
@@ -22,7 +21,7 @@ public:
   /**
    * Key type.
    */
-  using key_type = Memo*;
+  using key_type = Any*;
 
   /**
    * Value type.

@@ -25,6 +25,10 @@ void bi::Counted::deallocate() {
   bi::deallocate(this, size);
 }
 
+unsigned bi::Counted::getSize() const {
+  return size;
+}
+
 bi::Counted* bi::Counted::lock() {
   unsigned count = sharedCount;
   while (count > 0 && !sharedCount.compare_exchange_weak(count, count + 1)) {

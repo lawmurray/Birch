@@ -5,6 +5,7 @@
 
 #include "libbirch/config.hpp"
 #include "libbirch/Counted.hpp"
+#include "libbirch/Map.hpp"
 
 namespace bi {
 /**
@@ -32,7 +33,7 @@ protected:
 public:
   STANDARD_CREATE_FUNCTION
   STANDARD_EMPLACE_FUNCTION
-  STANDARD_CLONE_FUNCTION
+  //STANDARD_CLONE_FUNCTION
   STANDARD_DESTROY_FUNCTION
 
   /**
@@ -45,10 +46,57 @@ public:
    */
   Memo* getParent();
 
+  /**
+   * Shallow mapping of an object that may not yet have been cloned,
+   * cloning it if necessary.
+   *
+   * @param o The source object.
+   *
+   * @return The mapped object.
+   */
+  Any* get(Any* o);
+
+  /**
+   * Shallow mapping of an object that may not yet have been cloned,
+   * without cloning it. This can be used as an optimization for read-only
+   * access.
+   *
+   * @param o The source object.
+   *
+   * @return The mapped object.
+   */
+  Any* pull(Any* o);
+
+  /**
+   * Deep mapping of an object that may not yet have been cloned,
+   * cloning it if necessary.
+   *
+   * @param o The source object.
+   *
+   * @return The mapped object.
+   */
+  Any* deepGet(Any* o);
+
+  /**
+   * Deep mapping of an object that may not yet have been cloned,
+   * without cloning it. This can be used as an optimization for read-only
+   * access.
+   *
+   * @param o The source object.
+   *
+   * @return The mapped object.
+   */
+  Any* deepPull(Any* o);
+
 private:
   /**
    * Parent memo.
    */
   Memo* parent;
+
+  /**
+   * Map of original objects to clones.
+   */
+  Map clones;
 };
 }
