@@ -28,7 +28,6 @@ class SharedCOW: public SharedCOW<typename super_type<T>::type> {
   template<class U> friend class WeakCOW;
 public:
   using value_type = T;
-  using this_type = SharedCOW<T>;
   using super_type = SharedCOW<typename super_type<T>::type>;
   using root_type = typename super_type::root_type;
 
@@ -197,8 +196,7 @@ class SharedCOW<Any> {
   template<class U> friend class WeakCOW;
 public:
   using value_type = Any;
-  using this_type = SharedCOW<value_type>;
-  using root_type = this_type;
+  using root_type = SharedCOW<value_type>;
 
   SharedCOW(const Nil& = nil) {
     //

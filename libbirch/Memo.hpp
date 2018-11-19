@@ -14,6 +14,9 @@ namespace bi {
  */
 class Memo: public Counted {
 public:
+  using class_type = Memo;
+
+protected:
   /**
    * Constructor.
    *
@@ -26,30 +29,11 @@ public:
    */
   virtual ~Memo();
 
-  /**
-   * Create an object,
-   */
-  template<class... Args>
-  static Memo* create(Args... args) {
-    return emplace(allocate<sizeof(Memo)>(), args...);
-  }
-
-  /**
-   * Create an object in previously-allocated memory.
-   */
-  template<class... Args>
-  static Memo* emplace(void* ptr, Args... args) {
-    auto o = new (ptr) Memo();
-    o->size = sizeof(Memo);
-    return o;
-  }
-
-  /**
-   * Deallocate.
-   */
-  virtual void destroy() {
-    this->~Memo();
-  }
+public:
+  STANDARD_CREATE_FUNCTION
+  STANDARD_EMPLACE_FUNCTION
+  STANDARD_CLONE_FUNCTION
+  STANDARD_DESTROY_FUNCTION
 
   /**
    * Is the given memo an ancestor of this?

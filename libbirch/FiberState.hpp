@@ -17,8 +17,10 @@ namespace bi {
 template<class YieldType>
 class FiberState: public Any {
 public:
+  using class_type = FiberState<YieldType>;
   using yield_type = YieldType;
 
+protected:
   /**
    * Constructor.
    *
@@ -58,11 +60,7 @@ public:
     //
   }
 
-  virtual void destroy() {
-    this->size = sizeof(*this);
-    this->~FiberState();
-  }
-
+public:
   /**
    * Run to next yield point.
    */

@@ -64,6 +64,13 @@ public:
   }
 
   /**
+   * Clone the object into previous allocation.
+   */
+  virtual Counted* clone(void* ptr) const {
+    return emplace(ptr, *this);
+  }
+
+  /**
    * Destroy the object.
    */
   virtual void destroy() {

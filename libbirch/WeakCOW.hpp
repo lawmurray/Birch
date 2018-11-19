@@ -22,7 +22,6 @@ class WeakCOW: public WeakCOW<typename super_type<T>::type> {
   template<class U> friend class SharedCOW;
 public:
   using value_type = T;
-  using this_type = WeakCOW<T>;
   using super_type = WeakCOW<typename super_type<T>::type>;
   using root_type = typename super_type::root_type;
 
@@ -150,8 +149,7 @@ class WeakCOW<Any> {
   template<class U> friend class SharedCOW;
 public:
   using value_type = Any;
-  using this_type = WeakCOW<value_type>;
-  using root_type = this_type;
+  using root_type = WeakCOW<value_type>;
 
   WeakCOW(const Nil& = nil) {
     //
@@ -189,7 +187,7 @@ public:
       memo(o.memo) {
     if (cloneMemo && object) {
       #if DEEP_CLONE_STRATEGY == DEEP_CLONE_EAGER
-      object = o.pull()->deepGet(cloneMemo);
+      object = o.pull()->get(cloneMemo);
       #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
       object = o.pull()->deepPull(cloneMemo);
       #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER

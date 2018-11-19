@@ -38,7 +38,7 @@
 #endif
 
 /**
- * @def DEEP_CLONE
+ * @def DEEP_CLONE_STRATEGY
  *
  * Set to:
  *
@@ -51,8 +51,15 @@
 #define DEEP_CLONE_LAZIER 3
 
 #ifndef DEEP_CLONE_STRATEGY
-#define DEEP_CLONE_STRATEGY DEEP_CLONE_LAZY
+#define DEEP_CLONE_STRATEGY DEEP_CLONE_EAGER
 #endif
+
+/**
+ * @def
+ *
+ * Initial number of entries in each new map used for deep clones.
+ */
+#define DEEP_CLONE_MAP_SIZE 16ull
 
 /**
  * @def STANDARD_CREATE_FUNCTION
@@ -61,7 +68,7 @@
  */
 #define STANDARD_CREATE_FUNCTION \
   template<class... Args> \
-  static class_type* create(Args... args) { \
+  static class_type* create(Args&&... args) { \
     return emplace(allocate<sizeof(class_type)>(), args...); \
   }
 
@@ -72,7 +79,7 @@
  */
 #define STANDARD_EMPLACE_FUNCTION \
   template<class... Args> \
-  static class_type* emplace(void* ptr, Args... args) { \
+  static class_type* emplace(void* ptr, Args&&... args) { \
     auto o = new (ptr) class_type(args...); \
     o->size = sizeof(class_type); \
     return o; \
@@ -86,6 +93,9 @@
 #define STANDARD_CLONE_FUNCTION \
   virtual class_type* clone() const { \
     return emplace(allocate<sizeof(class_type)>(), *this); \
+  } \
+  virtual class_type* clone(void* ptr) const { \
+    return emplace(ptr, *this); \
   }
 
 /**

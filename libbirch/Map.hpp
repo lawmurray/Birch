@@ -67,6 +67,13 @@ public:
   value_type put(const key_type key, const value_type value);
 
   /**
+   * Put an uninitialized value. As put(), but it is the caller's
+   * responsibility to update the shared reference count on the value object
+   * once it has been initialized.
+   */
+  value_type uninitialized_put(const key_type key, const value_type value);
+
+  /**
    * Set a value.
    *
    * @param key The key.

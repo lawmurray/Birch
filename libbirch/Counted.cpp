@@ -11,7 +11,7 @@ bi::Counted::Counted() :
 }
 
 bi::Counted::Counted(const Counted& o) :
-    size(0),
+    size(o.size),
     sharedCount(0),
     weakCount(1) {
   //

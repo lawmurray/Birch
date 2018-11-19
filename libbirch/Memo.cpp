@@ -3,8 +3,6 @@
  */
 #include "libbirch/Memo.hpp"
 
-#include "libbirch/memory.hpp"
-
 bi::Memo::Memo(Memo* parent) :
     parent(parent) {
   //
