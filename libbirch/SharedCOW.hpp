@@ -233,14 +233,16 @@ public:
        * variables of that object that include pointers */
       #if DEEP_CLONE_STRATEGY == DEEP_CLONE_EAGER
       object = cloneMemo->get(o.pull());
+      memo = nullptr;
       #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
-      object = cloneMemo->deepPull(o.pull());
+      object = cloneMemo->deep(o.pull());
+      memo = cloneMemo;
       #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
       if (!cloneMemo->hasAncestor(memo.get())) {
         object = o.pull();
       }
+      memo = cloneMemo;
       #endif
-      memo = (object->getMemo() == cloneMemo) ? nullptr : cloneMemo;
     }
   }
 
@@ -261,7 +263,7 @@ public:
       #if DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
       object = memo->get(object.get());
       #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
-      object = memo->deepGet(object.get());
+      object = memo->get(memo->deep(object.get()));
       #endif
       if (object->getMemo() == memo.get()) {
         memo = nullptr;
@@ -283,7 +285,7 @@ public:
       #if DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
       object = memo->pull(object.get());
       #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
-      object = memo->deepPull(object.get());
+      object = memo->pull(memo->deep(object.get()));
       #endif
       if (object->getMemo() == memo.get()) {
         memo = nullptr;

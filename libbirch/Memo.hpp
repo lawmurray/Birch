@@ -42,11 +42,6 @@ public:
   bool hasAncestor(Memo* memo) const;
 
   /**
-   * Get the parent of this memo.
-   */
-  Memo* getParent();
-
-  /**
    * Shallow mapping of an object that may not yet have been cloned,
    * cloning it if necessary.
    *
@@ -68,25 +63,15 @@ public:
   Any* pull(Any* o);
 
   /**
-   * Deep mapping of an object that may not yet have been cloned,
-   * cloning it if necessary.
+   * Deep mapping of an object through ancestor memos up to the current memo,
+   * witout any cloning; get() or pull() should be called on the result to
+   * map through this memo.
    *
    * @param o The source object.
    *
    * @return The mapped object.
    */
-  Any* deepGet(Any* o);
-
-  /**
-   * Deep mapping of an object that may not yet have been cloned,
-   * without cloning it. This can be used as an optimization for read-only
-   * access.
-   *
-   * @param o The source object.
-   *
-   * @return The mapped object.
-   */
-  Any* deepPull(Any* o);
+  Any* deep(Any* o);
 
 private:
   /**

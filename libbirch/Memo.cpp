@@ -16,10 +16,6 @@ bool bi::Memo::hasAncestor(Memo* memo) const {
   return parent == memo || (parent && parent->hasAncestor(memo));
 }
 
-bi::Memo* bi::Memo::getParent() {
-  return parent;
-}
-
 bi::Any* bi::Memo::get(Any* o) {
   if (o->getMemo() == this) {
     return o;
@@ -72,16 +68,10 @@ bi::Any* bi::Memo::pull(Any* o) {
   }
 }
 
-bi::Any* bi::Memo::deepGet(Any* o) {
-  return get(deepPull(o));
-}
-
-bi::Any* bi::Memo::deepPull(Any* o) {
-  if (o->getMemo() == this) {
+bi::Any* bi::Memo::deep(Any* o) {
+  if (o->getMemo() == this || !parent) {
     return o;
-  } else if (!getParent()) {
-    return pull(o);
   } else {
-    return pull(getParent()->deepPull(o));
+    return parent->deep(o);
   }
 }
