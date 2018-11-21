@@ -1,23 +1,26 @@
-class Multi < StateSpaceModel<Global,List<Track>,List<Detection>> {
+class Multi < StateSpaceModel<Global,List<Track>,List<Random<Real[_]>>> {
   /**
-   * All tracks.
+   * Current time.
+   */
+  t:Integer <- 0;
+
+  /**
+   * All tracks up to current time.
    */
   z:List<Track>;
-  
-  /**
-   * Time.
-   */
-  t:Integer <- 1;
 
   fiber transition(x':List<Track>, x:List<Track>, θ:Global) -> Real {
+    /* update time */
+    t <- t + 1;
+
     /* move current objects */
     auto track <- x.walk();
     while track? {
       ρ:Real <- pmf_poisson(t - track!.t - 1, θ.τ);
       R:Real <- 1.0 - cdf_poisson(t - track!.t - 1, θ.τ) + ρ;
       s:Boolean;
-      s <~ Bernoulli(1.0 - ρ/R);
-      if (s) {
+      s <~ Bernoulli(1.0 - ρ/R);  // does the object survive?
+      if s {
         track!.step();
         x'.pushBack(track!);
       }
@@ -34,63 +37,60 @@ class Multi < StateSpaceModel<Global,List<Track>,List<Detection>> {
       x'.pushBack(track);
       z.pushBack(track);
     }
-    
-    t <- t + 1;
   }
 
-  fiber observation(y':List<Detection>, x:List<Track>, θ:Global) -> Real {
-    /* an empty list of observations is interpreted as missing observations,
-     * and so they will be generated, otherwise data association to tracks is
-     * used */
-    associate:Boolean <- !y'.empty();
-    n:Integer <- 0;
-  
-    /* current objects */
+  fiber observation(y:List<Random<Real[_]>>, x:List<Track>, θ:Global) -> Real {
+    if !y.empty() {
+      association(y, x, θ);
+    } else {
+      /* clutter */
+      N:Integer;
+      N <~ Poisson(θ.μ);
+      for n:Integer in 1..(N + 1) {
+        clutter:Random<Real[_]>;
+        clutter <~ Uniform(θ.l, θ.u);
+        y.pushBack(clutter);
+      }
+    }
+  }
+
+  fiber association(y:List<Random<Real[_]>>, x:List<Track>, θ:Global) -> Real {
+    K:Integer <- 0;  // number of detections
     auto track <- x.walk();
-    D:Integer <- 0;  // total number of detections
-    if associate {
-      while track? {
-        if track!.y.back().hasDistribution() {
-          /* object is detected, associate it with an observation */
-          D <- D + 1;
-          q:Real[y'.size()];
-          n <- 1;
-          auto detection <- y'.walk();
-          while detection? {
-            q[n] <- track!.y.back().pdf(detection!);
-            n <- n + 1;
-          }
-          Q:Real <- sum(q);
-          if Q > 0.0 {
-            q <- q/Q;
-            n <~ Categorical(q);
-            yield track!.y.back().realize(y'.get(n)) - log(q[n]);
-            y'.erase(n);
-          } else {
-            yield -inf;
-          }
+    while track? {
+      if track!.y.back().hasDistribution() {
+        /* object is detected, compute proposal */
+        K <- K + 1;
+        q:Real[y.size()];
+        n:Integer <- 1;
+        auto detection <- y.walk();
+        while detection? {
+          q[n] <- track!.y.back().pdf(detection!);
+          n <- n + 1;
+        }
+        Q:Real <- sum(q);
+          
+        /* propose an association */
+        if Q > 0.0 {
+          q <- q/Q;
+          n <~ Categorical(q);  // choose an observation
+          yield track!.y.back().realize(y.get(n));  // likelihood
+          yield -log(q[n]);  // proposal correction
+          y.erase(n);  // remove the observation for future associations
+        } else {
+          yield -inf;  // detected, but all likelihoods (numerically) zero
         }
       }
 
       /* factor in prior probability of hypothesis */
-      yield -lrising(y'.size() + 1, D);
+      yield -lrising(y.size() + 1, K);  // prior correction
     }
-
+    
     /* clutter */
-    if associate {
-      y'.size() - 1 ~> Poisson(θ.μ);
-      auto detection <- y'.walk();
-      while detection? {
-        detection! ~> Uniform(θ.l, θ.u);
-      }
-    } else {
-      N:Integer;
-      N <~ Poisson(θ.μ);
-      for n:Integer in 1..(N + 1) {
-        detection:Detection;
-        detection <~ Uniform(θ.l, θ.u);
-        y'.pushBack(detection);
-      }
+    y.size() - 1 ~> Poisson(θ.μ);
+    auto clutter <- y.walk();
+    while clutter? {
+      clutter! ~> Uniform(θ.l, θ.u);
     }
   }
   
