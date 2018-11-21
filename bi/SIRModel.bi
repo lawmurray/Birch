@@ -1,4 +1,87 @@
 /**
+ * Parameter for SIRModel.
+ */
+class SIRParameter {
+  /**
+   * Interaction rate.
+   */
+  λ:Random<Real>;
+
+  /**
+   * Infection probability.
+   */
+  δ:Random<Real>;
+
+  /**
+   * Recovery probability.
+   */
+  γ:Random<Real>;
+
+  function read(reader:Reader) {
+    λ <- reader.getReal("λ");
+    δ <- reader.getReal("δ");
+    γ <- reader.getReal("γ");
+  }
+
+  function write(writer:Writer) {
+    writer.set("λ", λ);
+    writer.set("δ", δ);
+    writer.set("γ", γ);
+  }
+}
+
+/**
+ * State for SIRModel.
+ */
+class SIRState {
+  /**
+   * Number of susceptible-infectious interactions.
+   */
+  τ:Random<Integer>;
+
+  /**
+   * Newly infected population.
+   */
+  Δi:Random<Integer>;
+
+  /**
+   * Newly recovered population.
+   */
+  Δr:Random<Integer>;
+
+  /**
+   * Susceptible population.
+   */
+  s:Random<Integer>;
+
+  /**
+   * Infectious population.
+   */
+  i:Random<Integer>;
+
+  /**
+   * Recovered population.
+   */
+  r:Random<Integer>;
+
+  function read(reader:Reader) {
+    Δi <- reader.getInteger("Δi");
+    Δr <- reader.getInteger("Δr");
+    s <- reader.getInteger("s");
+    i <- reader.getInteger("i");
+    r <- reader.getInteger("r");
+  }
+
+  function write(writer:Writer) {
+    writer.set("Δi", Δi);
+    writer.set("Δr", Δr);
+    writer.set("s", s);
+    writer.set("i", i);
+    writer.set("r", r);
+  }
+}
+
+/**
  * SIR (susceptible-infectious-recovered) model for infectious disease
  * outbreaks in epidemiology.
  *
@@ -59,4 +142,20 @@
  * r_t &= r_{t-1} + \Delta r_t.
  * \end{align}$$
  */
-class SIRModel = MarkovModel<SIRState,SIRParameter>;
+class SIRModel < MarkovModel<SIRParameter,SIRState> {
+  fiber parameter(θ':SIRParameter) -> Real {
+    θ'.λ ~ Gamma(2.0, 5.0);
+    θ'.δ ~ Beta(2.0, 2.0);
+    θ'.γ ~ Beta(2.0, 2.0);
+  }
+
+  fiber transition(x':SIRState, x:SIRState, θ:SIRParameter) -> Real {
+    x'.τ ~ Binomial(x.s, 1.0 - exp(-θ.λ*x.i/(x.s + x.i + x.r)));
+    x'.Δi ~ Binomial(x'.τ, θ.δ);
+    x'.Δr ~ Binomial(x.i, θ.γ);
+
+    x'.s ~ Delta(x.s - x'.Δi);
+    x'.i ~ Delta(x.i + x'.Δi - x'.Δr);
+    x'.r ~ Delta(x.r + x'.Δr);
+  }
+}

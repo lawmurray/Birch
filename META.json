@@ -5,15 +5,9 @@
   "manifest": {
     "source": [
       "bi/LinearGaussianModel.bi",
-      "bi/LinearGaussianParameter.bi",
-      "bi/LinearGaussianState.bi",
       "bi/LinearRegressionModel.bi",
       "bi/MixedGaussianModel.bi",
-      "bi/MixedGaussianParameter.bi",
-      "bi/MixedGaussianState.bi",
-      "bi/SIRModel.bi",
-      "bi/SIRParameter.bi",
-      "bi/SIRState.bi"
+      "bi/SIRModel.bi"
     ],
     "data": [
       "input/bike_share.json",

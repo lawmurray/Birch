@@ -36,12 +36,12 @@ before_install:
 
   # Checkout Birch, which may be cached, and (re)build
   - git clone "https://github.com/lawmurray/Birch.git" || cd .
-  - cd Birch && git checkout master && git pull && cd ..
+  - cd Birch && git checkout model && git pull && cd ..
   - cd Birch && ./autogen.sh && ./configure && make -j 2 && sudo make install && cd ..
 
   # Checkout Birch.Standard, which may be cached, and (re)build
   - git clone "https://github.com/lawmurray/Birch.Standard.git" || cd .
-  - cd Birch.Standard && git checkout master && git pull && cd ..
+  - cd Birch.Standard && git checkout model && git pull && cd ..
   - cd Birch.Standard && birch build --enable-unity && sudo birch install --enable-unity && cd ..
 
 install:

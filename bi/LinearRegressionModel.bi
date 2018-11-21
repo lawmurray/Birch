@@ -61,13 +61,13 @@ class LinearRegressionModel < Model {
     }
   }
   
-  function input(reader:Reader) {
+  function read(reader:Reader) {
     X <- reader.getRealMatrix("X")!;
     y <- reader.getRealVector("y")!;
   }
   
-  function output(writer:Writer) {
-    writer.setRealVector("β", β);
-    writer.setReal("σ2", σ2);
+  function write(writer:Writer) {
+    writer.set("β", β);
+    writer.set("σ2", σ2);
   }
 }
