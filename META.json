@@ -173,6 +173,7 @@
       "bi/method/Method.bi",
       "bi/method/ParticleFilter.bi",
       "bi/model/Model.bi",
+      "bi/model/MarkovModel.bi",
       "bi/model/StateSpaceModel.bi",
       "bi/system/filesystem.bi",
       "bi/system/system.bi",

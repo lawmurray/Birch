@@ -8,22 +8,8 @@
  *   \mid x_0, \theta) \prod_{t=1}^T p(\mathrm{d}x_t \mid x_{t-1},
  *   \theta) p(\mathrm{d}y_t \mid x_t, \theta)$$
  */
-class StateSpaceModel<Parameter,State,Observation> < Model {
-  /**
-   * Parameter.
-   */
-  θ:Parameter;
-
-  /**
-   * State history.
-   */
-  x:List<State>;
-  
-  /**
-   * State future.
-   */
-  x1:List<State>;
-  
+class StateSpaceModel<Parameter,State,Observation> <
+    MarkovModel<Parameter,State> {
   /**
    * Observation history.
    */
@@ -34,29 +20,8 @@ class StateSpaceModel<Parameter,State,Observation> < Model {
    */
   y1:List<Observation>;
 
-  fiber simulate() -> Real {
-    yield start();
-    while (true) {
-      yield step();
-    }
-  }
-
   function start() -> Real {
-    /* parameter */
-    auto θ <- θ;
-    auto w <- sum(parameter(θ));
-
-    /* initial state */
-    if (!x1.empty()) {
-      x':State <- x1.front();
-      x1.popFront();
-      w <- w + sum(initial(x', θ));
-      x.pushBack(x');
-    } else {
-      x':State;
-      w <- w + sum(initial(x', θ));
-      x.pushBack(x');
-    }
+    super.start();
 
     /* initial observation */
     if (!y1.empty()) {
@@ -74,20 +39,7 @@ class StateSpaceModel<Parameter,State,Observation> < Model {
   }
 
   function step() -> Real {
-    auto θ <- θ;
-    auto w <- 0.0;
-
-    /* transition */
-    if (!x1.empty()) {
-      x':State <- x1.front();
-      x1.popFront();
-      w <- w + sum(transition(x', x.back(), θ));
-      x.pushBack(x');
-    } else {
-      x':State;
-      w <- w + sum(transition(x', x.back(), θ));
-      x.pushBack(x');
-    }
+    super.step();
 
     /* observation */
     if (!y1.empty()) {
@@ -105,37 +57,13 @@ class StateSpaceModel<Parameter,State,Observation> < Model {
   }
 
   function read(reader:Reader) {
-    θ.read(reader.getObject("θ"));
-    x1.read(reader.getObject("x"));
+    super.read(reader);
     y1.read(reader.getObject("y"));
   }
   
   function write(writer:Writer) {
-    θ.write(writer.setObject("θ"));
-    x.write(writer.setObject("x"));
+    super.write(writer);
     y.write(writer.setObject("y"));
-  }
-  
-  /**
-   * Parameter model.
-   */
-  fiber parameter(θ':Parameter) -> Real {
-    //
-  }
-  
-  /**
-   * Initial model.
-   */
-  fiber initial(x':State, θ:Parameter) ->
-      Real {
-    //
-  }
-  
-  /**
-   * Transition model.
-   */
-  fiber transition(x':State, x:State, θ:Parameter) -> Real {
-    //
   }
   
   /**
