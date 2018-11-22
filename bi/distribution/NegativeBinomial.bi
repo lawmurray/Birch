@@ -17,7 +17,14 @@ class NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) <
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayNegativeBinomial(x, k, ρ);
+      ρ1:DelayBeta?; // Node for the prior on the probability
+
+      if (ρ1 <- ρ.graftBeta())? {
+        // If the probability is Beta, graft a Beta-Negative-Binomial
+        delay <- DelayBetaNegativeBinomial(x, k, ρ1!);
+      } else {
+        delay <- DelayNegativeBinomial(x, k, ρ);
+      }
     }
   }
 }

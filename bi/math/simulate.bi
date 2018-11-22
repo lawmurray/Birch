@@ -421,6 +421,22 @@ function simulate_beta_binomial(n:Integer, α:Real, β:Real) -> Integer {
 }
 
 /**
+ * Simulate a beta-negative-binomial distribution.
+ *
+ * - k: Number of successes.
+ * - α: Shape.
+ * - β: Shape.
+ */
+function simulate_beta_negative_binomial(k:Integer, α:Real, β:Real) -> Integer {
+  assert 0.0 < α;
+  assert 0.0 < β;
+  assert 0 < k;
+
+  return simulate_negative_binomial(k, simulate_beta(α, β));
+}
+
+
+/**
  * Simulate a gamma-Poisson distribution.
  *
  * - k: Shape.

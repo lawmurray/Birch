@@ -34,6 +34,20 @@ function update_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) -> (Real, 
 }
 
 /**
+ * Update the parameters of a Beta distribution with a Negative Binomial likelihood.
+ *
+ * - x: The variate.
+ * - k: Number of successes.
+ * - α: Prior first shape.
+ * - β: Prior second shape.
+ *
+ * Returns: the updated parameters `α` and `β`.
+ */
+function update_beta_negative_binomial(x:Integer, k:Integer, α:Real, β:Real) -> (Real, Real) {
+  return (α+k, β+x);
+}
+
+/**
  * Update the parameters of a Gamma distribution with a Poisson likelihood.
  *
  * - x: The variate.
