@@ -3,10 +3,7 @@
  */
 #include "Compiler.hpp"
 
-#include "bi/visitor/ResolverTyper.hpp"
-#include "bi/visitor/ResolverSuper.hpp"
-#include "bi/visitor/ResolverHeader.hpp"
-#include "bi/visitor/ResolverSource.hpp"
+#include "bi/visitor/Resolver.hpp"
 #include "bi/io/cpp/CppPackageGenerator.hpp"
 #include "bi/io/bi_ostream.hpp"
 #include "bi/io/cpp_ostream.hpp"
@@ -51,29 +48,8 @@ void bi::Compiler::parse() {
 }
 
 void bi::Compiler::resolve() {
-  /* first pass: populate available types */
-  for (auto file : package->files) {
-    ResolverTyper pass1(file->scope);
-    file->accept(&pass1);
-  }
-
-  /* second pass: resolve super type relationships */
-  for (auto file : package->files) {
-    ResolverSuper pass2(file->scope);
-    file->accept(&pass2);
-  }
-
-  /* third pass: populate available functions */
-  for (auto file : package->files) {
-    ResolverHeader pass3(file->scope);
-    file->accept(&pass3);
-  }
-
-  /* fourth pass: resolve the bodies of functions */
-  for (auto file : package->files) {
-    ResolverSource pass4(file->scope);
-    file->accept(&pass4);
-  }
+  Resolver resolver;
+  package->accept(&resolver);
 }
 
 void bi::Compiler::gen() {

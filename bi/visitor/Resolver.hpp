@@ -5,34 +5,91 @@
 
 #include "bi/visitor/Modifier.hpp"
 #include "bi/visitor/Cloner.hpp"
+#include "bi/visitor/Annotator.hpp"
+#include "bi/expression/all.hpp"
+#include "bi/statement/all.hpp"
+#include "bi/type/all.hpp"
 
 namespace bi {
 /**
- * Abstract class for resolvers, with common functionality.
+ * Resolve identifiers, infer types, apply code transformations.
  *
  * @ingroup visitor
  */
-class Resolver: public Modifier {
+class Resolver : public Modifier {
 public:
   /**
    * Constructor.
-   *
-   * @param rootScope The root scope.
-   * @param pointers Wrap class types in pointers?
    */
-  Resolver(Scope* rootScope, const bool pointers);
+  Resolver();
 
   /**
    * Destructor.
    */
-  virtual ~Resolver() = 0;
+  virtual ~Resolver();
 
-  using Modifier::modify;
+  virtual Package* modify(Package* o);
 
   virtual Expression* modify(ExpressionList* o);
   virtual Expression* modify(Parentheses* o);
   virtual Expression* modify(Sequence* o);
   virtual Expression* modify(Binary* o);
+  virtual Expression* modify(Cast* o);
+  virtual Expression* modify(Call* o);
+  virtual Expression* modify(BinaryCall* o);
+  virtual Expression* modify(UnaryCall* o);
+  virtual Expression* modify(Assign* o);
+  virtual Expression* modify(Slice* o);
+  virtual Expression* modify(Query* o);
+  virtual Expression* modify(Get* o);
+  virtual Expression* modify(LambdaFunction* o);
+  virtual Expression* modify(Span* o);
+  virtual Expression* modify(Index* o);
+  virtual Expression* modify(Range* o);
+  virtual Expression* modify(Member* o);
+  virtual Expression* modify(Super* o);
+  virtual Expression* modify(This* o);
+  virtual Expression* modify(Nil* o);
+  virtual Expression* modify(LocalVariable* o);
+  virtual Expression* modify(Parameter* o);
+  virtual Expression* modify(Generic* o);
+  virtual Expression* modify(Identifier<Unknown>* o);
+  virtual Expression* modify(Identifier<Parameter>* o);
+  virtual Expression* modify(Identifier<GlobalVariable>* o);
+  virtual Expression* modify(Identifier<LocalVariable>* o);
+  virtual Expression* modify(Identifier<MemberVariable>* o);
+  virtual Expression* modify(OverloadedIdentifier<Unknown>* o);
+  virtual Expression* modify(OverloadedIdentifier<Function>* o);
+  virtual Expression* modify(OverloadedIdentifier<Fiber>* o);
+  virtual Expression* modify(OverloadedIdentifier<MemberFunction>* o);
+  virtual Expression* modify(OverloadedIdentifier<MemberFiber>* o);
+  virtual Expression* modify(OverloadedIdentifier<BinaryOperator>* o);
+  virtual Expression* modify(OverloadedIdentifier<UnaryOperator>* o);
+
+  virtual Statement* modify(Assignment* o);
+  virtual Statement* modify(GlobalVariable* o);
+  virtual Statement* modify(MemberVariable* o);
+  virtual Statement* modify(Function* o);
+  virtual Statement* modify(Fiber* o);
+  virtual Statement* modify(Program* o);
+  virtual Statement* modify(MemberFunction* o);
+  virtual Statement* modify(MemberFiber* o);
+  virtual Statement* modify(BinaryOperator* o);
+  virtual Statement* modify(UnaryOperator* o);
+  virtual Statement* modify(AssignmentOperator* o);
+  virtual Statement* modify(ConversionOperator* o);
+  virtual Statement* modify(Class* o);
+  virtual Statement* modify(Basic* o);
+  virtual Statement* modify(ExpressionStatement* o);
+  virtual Statement* modify(If* o);
+  virtual Statement* modify(For* o);
+  virtual Statement* modify(While* o);
+  virtual Statement* modify(DoWhile* o);
+  virtual Statement* modify(Assert* o);
+  virtual Statement* modify(Return* o);
+  virtual Statement* modify(Yield* o);
+  virtual Statement* modify(Instantiated<Type>* o);
+  virtual Statement* modify(Instantiated<Expression>* o);
 
   virtual Type* modify(UnknownType* o);
   virtual Type* modify(ClassType* o);
@@ -40,7 +97,7 @@ public:
   virtual Type* modify(GenericType* o);
   virtual Type* modify(MemberType* o);
 
-protected:
+private:
   /**
    * Resolve an identifier.
    *
@@ -120,14 +177,26 @@ protected:
   std::list<Class*> classes;
 
   /**
-   * Wrap class types in pointers?
+   * Return type of current function. Stack as functions may contain lambda
+   * functions may contain lambda functions...
    */
-  bool pointers;
+  std::list<Type*> returnTypes;
+
+  /**
+   * Yield type of current fiber.
+   */
+  std::list<Type*> yieldTypes;
+
+  /**
+   * State to which the program has been resolved.
+   */
+  ResolvedState state;
 
   /*
    * Auxiliary visitors.
    */
   Cloner cloner;
+  Annotator annotator;
 };
 }
 

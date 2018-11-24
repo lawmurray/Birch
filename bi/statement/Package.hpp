@@ -9,6 +9,8 @@
 namespace bi {
 /**
  * A package is a collection of files.
+ *
+ * @ingroup statement
  */
 class Package: public Scoped {
 public:

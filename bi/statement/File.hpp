@@ -3,7 +3,6 @@
  */
 #pragma once
 
-#include "bi/common/Scoped.hpp"
 #include "bi/statement/EmptyStatement.hpp"
 
 namespace bi {
@@ -12,17 +11,15 @@ namespace bi {
  *
  * @ingroup statement
  */
-class File: public Scoped {
+class File {
 public:
   /**
    * Constructor.
    *
    * @param path File path.
-   * @param path Root scope.
    * @param root Root statement of file.
    */
-  File(const std::string& path, Scope* scope, Statement* root =
-      new EmptyStatement());
+  File(const std::string& path, Statement* root = new EmptyStatement());
 
   /**
    * Destructor.

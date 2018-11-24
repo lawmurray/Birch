@@ -20,12 +20,12 @@ bi::Package::~Package() {
 }
 
 void bi::Package::addHeader(const std::string& path) {
-  headers.push_back(new File(path, scope));
+  headers.push_back(new File(path));
   files.push_back(headers.back());
 }
 
 void bi::Package::addSource(const std::string& path) {
-  sources.push_back(new File(path, scope));
+  sources.push_back(new File(path));
   files.push_back(sources.back());
 }
 

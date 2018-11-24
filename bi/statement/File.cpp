@@ -5,11 +5,10 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::File::File(const std::string& path, Scope* scope, Statement* root) :
-    Scoped(scope),
+bi::File::File(const std::string& path, Statement* root) :
     path(path),
     root(root) {
-  assert(scope->category == GLOBAL_SCOPE);
+  //
 }
 
 bi::File::~File() {

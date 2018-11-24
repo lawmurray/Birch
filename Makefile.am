@@ -188,10 +188,6 @@ COMMON_SOURCES = \
   bi/visitor/Gatherer.cpp \
   bi/visitor/Modifier.cpp \
   bi/visitor/Resolver.cpp \
-  bi/visitor/ResolverHeader.cpp \
-  bi/visitor/ResolverSource.cpp \
-  bi/visitor/ResolverSuper.cpp \
-  bi/visitor/ResolverTyper.cpp \
   bi/visitor/Visitor.cpp \
   bi/lexer.lpp \
   bi/parser.ypp
@@ -369,10 +365,6 @@ noinst_HEADERS = \
   bi/visitor/Gatherer.hpp \
   bi/visitor/Modifier.hpp \
   bi/visitor/Resolver.hpp \
-  bi/visitor/ResolverHeader.hpp \
-  bi/visitor/ResolverSource.hpp \
-  bi/visitor/ResolverSuper.hpp \
-  bi/visitor/ResolverTyper.hpp \
   bi/visitor/Visitor.hpp \
   bi/birch.hpp \
   bi/doxygen.hpp \

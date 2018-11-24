@@ -12,7 +12,7 @@ bi::Package* bi::Cloner::clone(const Package* o) {
 }
 
 bi::File* bi::Cloner::clone(const File* o) {
-  return new File(o->path, o->scope, o->root->accept(this));
+  return new File(o->path, o->root->accept(this));
 }
 
 bi::Expression* bi::Cloner::clone(const EmptyExpression* o) {
