@@ -337,7 +337,7 @@ bi::Expression* bi::Resolver::modify(Parameter* o) {
 }
 
 bi::Expression* bi::Resolver::modify(Generic* o) {
-  if (state == CLONED || state == RESOLVED_SUPER) {
+  if (state == RESOLVED_SUPER) {
     Modifier::modify(o);
     scopes.back()->add(o);
   }
@@ -761,7 +761,7 @@ bi::Statement* bi::Resolver::modify(ConversionOperator* o) {
 bi::Statement* bi::Resolver::modify(Class* o) {
   if (o->state < RESOLVED_TYPER && CLONED <= state) {
     scopes.push_back(o->scope);
-    o->typeParams = o->typeParams->accept(this);
+    //o->typeParams = o->typeParams->accept(this);
     if (o->base->isEmpty() && o->name->str() != "Object") {
       /* if the class derives from nothing else, then derive from Object,
        * unless this is itself the declaration of the Object class */
@@ -851,7 +851,7 @@ bi::Statement* bi::Resolver::modify(ExpressionStatement* o) {
     auto call = dynamic_cast<Call*>(o->single);
     if (call && call->type->isFiber()) {
       auto name = new Name();
-      auto var = new LocalVariable(NONE, name, o->single->type->accept(&cloner),
+      auto var = new LocalVariable(NONE, name, o->single->type,
           new EmptyExpression(o->loc), new EmptyExpression(o->loc),
           o->single->accept(&cloner), o->loc);
       auto decl = new ExpressionStatement(var, o->loc);

@@ -3,7 +3,7 @@
  */
 #include "bi/common/TypeParameterised.hpp"
 
-#include "bi/visitor/all.hpp"
+#include "bi/statement/all.hpp"
 
 template<class Target>
 bi::TypeParameterised<Target>::TypeParameterised(Expression* typeParams) :
@@ -41,11 +41,10 @@ template<class Target>
 void bi::TypeParameterised<Target>::bind(Type* typeArgs) {
   assert(typeArgs->width() == typeParams->width());
 
-  Cloner cloner;
   auto arg = typeArgs->begin();
   auto param = typeParams->begin();
   while (arg != typeArgs->end() && param != typeParams->end()) {
-    (*param)->type = (*arg)->canonical()->accept(&cloner);
+    (*param)->type = (*arg)->canonical();
     ++arg;
     ++param;
   }
