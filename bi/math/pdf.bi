@@ -336,6 +336,24 @@ function pmf_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) -> Real {
 }
 
 /**
+ * PMF of a beta-negative-binomial variate.
+ *
+ * - x: The variate.
+ * - n: Number of successes.
+ * - α: Shape.
+ * - β: Shape.
+ *
+ * Return: the probability mass.
+ */
+function pmf_beta_negative_binomial(x:Integer, k:Integer, α:Real, β:Real) -> Real {
+  assert 0.0 < α;
+  assert 0.0 < β;
+  assert 0 < x;
+
+  return exp(observe_beta_negative_binomial(x, k, α, β));
+}
+
+/**
  * PMF of a gamma-Poisson variate.
  *
  * - x: The variate.

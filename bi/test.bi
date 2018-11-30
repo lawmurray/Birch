@@ -6,6 +6,8 @@ program test(N:Integer <- 10000) {
   
   code <- code + run_test("beta_bernoulli", N);
   code <- code + run_test("beta_binomial", N);
+  code <- code + run_test("beta_geometric", N);
+  code <- code + run_test("beta_negative_binomial", N);
   code <- code + run_test("dirichlet_categorical", N);
   code <- code + run_test("dirichlet_multinomial", N);
   code <- code + run_test("gamma_poisson", N);
