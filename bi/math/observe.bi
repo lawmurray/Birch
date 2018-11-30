@@ -419,8 +419,8 @@ function observe_beta_negative_binomial(x:Integer, k:Integer, α:Real, β:Real) 
   assert 0.0 < α;
   assert 0.0 < β;
 
-  if (x>=0 ) {
-    return lbeta(α+k, β+x) - lbeta(α, β) + lchoose(x+k-1, x);
+  if (x >= 0) {
+    return lbeta(α + k, β + x) - lbeta(α, β) + lchoose(x + k - 1, x);
   } else {
     return -inf;
   }
