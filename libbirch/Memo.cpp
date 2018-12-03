@@ -16,6 +16,17 @@ bool bi::Memo::hasAncestor(Memo* memo) const {
   return parent == memo || (parent && parent->hasAncestor(memo));
 }
 
+bi::Memo* bi::Memo::forward() {
+  return (child) ? child->forward() : this;
+}
+
+bi::Memo* bi::Memo::fork() {
+  //assert(!child);
+  //child = create(this);
+  auto c = create(this);
+  return c;
+}
+
 bi::Any* bi::Memo::get(Any* o) {
   if (o->getMemo() == this) {
     return o;

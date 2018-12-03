@@ -309,15 +309,15 @@ public:
 
   SharedCOW<Any> clone() const {
     #if DEEP_CLONE_STRATEGY == DEEP_CLONE_EAGER
-    SharedPtr<Memo> m(Memo::create(memo.get()));
+    SharedPtr<Memo> m(memo->fork());
     return SharedCOW<Any>(m->get(pull()));
     #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
     auto o = pull();
-    auto m = Memo::create(memo.get());
+    auto m = memo->fork();
     return SharedCOW<Any>(o, m);
     #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
     auto o = object.get();
-    auto m = Memo::create(memo.get());
+    auto m = memo->fork();
     return SharedCOW<Any>(o, m);
     #endif
   }
