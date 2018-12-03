@@ -27,6 +27,29 @@ extern size_t bufferSize;
  */
 extern Pool pool[];
 
+class Memo;
+
+/**
+ * The memo object associated with new objects.
+ */
+extern Memo* globalMemo;
+#pragma omp threadprivate(globalMemo)
+
+/**
+ * The memo object associated with the current clone; @c nullptr if no clone
+ * is underway.
+ *
+ * Ideally, clone operations would pass around the memo as an argument to
+ * copy functions. This, however, means that copy constructors cannot be
+ * used, which is especially problematic for types defined elsewhere (e.g.
+ * std::tuple, boost::optional) where it is not possible to define a custom
+ * constructor taking a memo as argument.
+ *
+ * Instead, this global variable is used.
+ */
+extern Memo* cloneMemo;
+#pragma omp threadprivate(cloneMemo)
+
 /**
  * Allocate a large buffer for the heap.
  */

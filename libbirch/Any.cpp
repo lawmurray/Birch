@@ -7,12 +7,12 @@
 #include "libbirch/memory.hpp"
 
 bi::Any::Any() :
-    memo(cloneMemo) {
+    memo(globalMemo) {
   //
 }
 
 bi::Any::Any(const Any& o) :
-    memo(cloneMemo) {
+    memo(globalMemo) {
   //
 }
 

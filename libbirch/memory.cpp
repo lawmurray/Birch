@@ -3,12 +3,18 @@
  */
 #include "libbirch/memory.hpp"
 
+#include "libbirch/Memo.hpp"
+
 #include <unistd.h>
 
 std::atomic<char*> bi::buffer(heap());
 char* bi::bufferStart;
 size_t bi::bufferSize;
 bi::Pool bi::pool[64];
+
+static bi::Memo* rootMemo = bi::Memo::create();
+bi::Memo* bi::globalMemo = rootMemo;
+bi::Memo* bi::cloneMemo = nullptr;
 
 char* bi::heap() {
 #if DISABLE_POOL

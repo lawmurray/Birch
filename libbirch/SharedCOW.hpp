@@ -198,22 +198,26 @@ public:
   using value_type = Any;
   using root_type = SharedCOW<value_type>;
 
-  SharedCOW(const Nil& = nil) {
+  SharedCOW(const Nil& = nil) :
+      memo(globalMemo) {
     //
   }
 
   SharedCOW(Any* object) :
-      object(object) {
+      object(object),
+      memo(globalMemo) {
     //
   }
 
   SharedCOW(const SharedPtr<Any>& object) :
-      object(object) {
+      object(object),
+      memo(globalMemo) {
     //
   }
 
   SharedCOW(const WeakPtr<Any>& object) :
-      object(object) {
+      object(object),
+      memo(globalMemo) {
     //
   }
 
@@ -259,14 +263,15 @@ public:
 
   Any* get() {
     #if DEEP_CLONE_STRATEGY != DEEP_CLONE_EAGER
-    if (object && memo) {
+    if (object) {
+      assert(memo);
       #if DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
       object = memo->get(object.get());
       #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
       object = memo->get(memo->deep(object.get()));
       #endif
-      if (object->getMemo() == memo.get()) {
-        memo = nullptr;
+      if (object.get()->getMemo() == globalMemo) {
+        memo = globalMemo;
       }
     }
     #endif
@@ -281,14 +286,15 @@ public:
 
   Any* pull() {
     #if DEEP_CLONE_STRATEGY != DEEP_CLONE_EAGER
-    if (object && memo) {
+    if (object) {
+      assert(memo);
       #if DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
       object = memo->pull(object.get());
       #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
       object = memo->pull(memo->deep(object.get()));
       #endif
-      if (object->getMemo() == memo.get()) {
-        memo = nullptr;
+      if (object.get()->getMemo() == globalMemo) {
+        memo = globalMemo;
       }
     }
     #endif

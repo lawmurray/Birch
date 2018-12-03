@@ -156,17 +156,20 @@ public:
   }
 
   WeakCOW(Any* object) :
-      object(object) {
+      object(object),
+      memo(globalMemo) {
     //
   }
 
   WeakCOW(const SharedPtr<Any>& object) :
-      object(object) {
+      object(object),
+      memo(globalMemo) {
     //
   }
 
   WeakCOW(const WeakPtr<Any>& object) :
-      object(object) {
+      object(object),
+      memo(globalMemo) {
     //
   }
 
@@ -207,14 +210,15 @@ public:
 
   Any* pull() {
     #if DEEP_CLONE_STRATEGY != DEEP_CLONE_EAGER
-    if (object && memo) {
+    if (object) {
+      assert(memo);
       #if DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
       object = memo->pull(object.get());
       #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
       object = memo->pull(memo->deep(object.get()));
       #endif
-      if (object.get()->getMemo() == memo.get()) {
-        memo = nullptr;
+      if (object.get()->getMemo() == globalMemo) {
+        memo = globalMemo;
       }
     }
     #endif
