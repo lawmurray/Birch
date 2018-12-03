@@ -12,6 +12,39 @@
 
 namespace bi {
 /**
+ * Type of resolver stages.
+ *
+ * @internal An enum is not used here, as we wish to use e.g. increment
+ * operators on the stages.
+ */
+using ResolverStage = unsigned;
+
+/**
+ * First stage.
+ */
+static const ResolverStage RESOLVER_TYPER = 1;
+
+/**
+ * Second stage.
+ */
+static const ResolverStage RESOLVER_SUPER = 2;
+
+/**
+ * Third stage.
+ */
+static const ResolverStage RESOLVER_HEADER = 3;
+
+/**
+ * Fourth stage.
+ */
+static const ResolverStage RESOLVER_SOURCE = 4;
+
+/**
+ * Resolution complete.
+ */
+static const ResolverStage RESOLVER_FINISHED = 5;
+
+/**
  * Resolve identifiers, infer types, apply code transformations.
  *
  * @ingroup visitor
@@ -20,20 +53,32 @@ class Resolver: public Modifier {
 public:
   /**
    * Constructor.
-   *
-   * @param globalScope Global scope. This is optional, if an entire package
-   * is being resolved, this can be determined.
-   * @param finalStage Final stage to which to resolve.
    */
-  Resolver(Scope* globalScope = nullptr, const ResolverStage finalStage =
-      RESOLVER_SOURCE);
+  Resolver();
 
   /**
    * Destructor.
    */
   virtual ~Resolver();
 
-  virtual Package* modify(Package* o);
+  /**
+   * Apply to a package.
+   */
+  void apply(Package* o);
+
+  /**
+   * Apply to anything else.
+   *
+   * @tparam ObjectType Object type.
+   *
+   * @param o The object.
+   * @param globalScope The global scope.
+   * @param from First stage to perform.
+   * @param to Final stage to perform.
+   */
+  template<class ObjectType>
+  void apply(ObjectType* o, Scope* globalScope, const ResolverStage from,
+      const ResolverStage to);
 
   virtual Expression* modify(ExpressionList* o);
   virtual Expression* modify(Parentheses* o);
@@ -197,11 +242,6 @@ private:
    */
   ResolverStage stage;
 
-  /**
-   * Final stage to which the program should be resolved.
-   */
-  ResolverStage finalStage;
-
   /*
    * Auxiliary visitors.
    */
@@ -211,6 +251,16 @@ private:
 }
 
 #include "bi/exception/all.hpp"
+
+template<class ObjectType>
+void bi::Resolver::apply(ObjectType* o, Scope* globalScope,
+    const ResolverStage from, const ResolverStage to) {
+  scopes.push_back(globalScope);
+  for (stage = from; stage <= to; ++stage) {
+    o->accept(this);
+  }
+  scopes.pop_back();
+}
 
 template<class ObjectType>
 void bi::Resolver::resolve(ObjectType* o, const ScopeCategory outer) {
@@ -241,14 +291,17 @@ ObjectType* bi::Resolver::instantiate(IdentifierType* o, ObjectType* target) {
     if (o->typeArgs->width() != target->typeParams->width()) {
       throw GenericException(o, target);
     }
-    auto instantiation = target->getInstantiation(o->typeArgs);
+    ObjectType* instantiation = target->getInstantiation(o->typeArgs);
     if (!instantiation) {
-      instantiation = dynamic_cast<decltype(instantiation)>(target->accept(
-          &cloner));
+      instantiation = dynamic_cast<ObjectType*>(target->accept(&cloner));
       assert(instantiation);
+      instantiation->stage = stage;
       instantiation->bind(o->typeArgs);
       target->addInstantiation(instantiation);
-      instantiation->accept(this);
+
+      /* catch up on resolution for this instantiation */
+      Resolver resolver;
+      resolver.apply(instantiation, scopes.front(), RESOLVER_TYPER, stage);
     }
     return instantiation;
   } else {

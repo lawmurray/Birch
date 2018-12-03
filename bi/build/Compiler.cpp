@@ -49,7 +49,7 @@ void bi::Compiler::parse() {
 
 void bi::Compiler::resolve() {
   Resolver resolver;
-  package->accept(&resolver);
+  resolver.apply(package);
 }
 
 void bi::Compiler::gen() {

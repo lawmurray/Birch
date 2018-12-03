@@ -341,7 +341,6 @@ void bi::Scope::checkPreviousType(ParameterType* param) {
   } else if (classes.contains(name)) {
     throw PreviousDeclarationException(param, classes.get(name));
   } else if (generics.contains(name)) {
-    assert(false);
     throw PreviousDeclarationException(param, generics.get(name));
   }
 }

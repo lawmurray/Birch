@@ -8,17 +8,6 @@ class Expression;
 class Type;
 
 /**
- * Stages of the resolver.
- */
-enum ResolverStage {
-  RESOLVER_TYPER,
-  RESOLVER_SUPER,
-  RESOLVER_HEADER,
-  RESOLVER_SOURCE,
-  RESOLVER_FINISHED
-};
-
-/**
  * Object with generic type parameters.
  *
  * @ingroup common
@@ -81,10 +70,10 @@ public:
   std::list<Target*> instantiations;
 
   /**
-   * Stage to which the object has been resolved. Objects with generic type
-   * parameters are instantiated on use, which is why this is necessary; as
-   * instantiated they need to catch up on previous resolution passes.
+   * Flag used by Resolver to keep track of resolution, as generic objects
+   * are instantiated and resolved on-demand. This is the stage of the
+   * resolution at which the object was first instantiated.
    */
-  ResolverStage stage;
+  unsigned stage;
 };
 }

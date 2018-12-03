@@ -8,7 +8,7 @@
 template<class Target>
 bi::TypeParameterised<Target>::TypeParameterised(Expression* typeParams) :
     typeParams(typeParams),
-    stage(RESOLVER_TYPER) {
+    stage(0) {
   //
 }
 
