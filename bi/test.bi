@@ -4,6 +4,8 @@
 program test(N:Integer <- 10000) {
   code:Integer <- 0;
   
+  code <- code + run_test("deep_clone_modify_dst");
+  code <- code + run_test("deep_clone_modify_src");
   code <- code + run_test("beta_bernoulli", N);
   code <- code + run_test("beta_binomial", N);
   code <- code + run_test("dirichlet_categorical", N);
@@ -37,6 +39,29 @@ program test(N:Integer <- 10000) {
 
 /**
  * Run a specific test.
+ *
+ * - test: Name of the test.
+ *
+ * Return: Exit code of the test.
+ */
+function run_test(test:String) -> Integer {
+  tic();
+  code:Integer <- system("birch test_" + test);
+  s:Real <- toc();
+  if (code == 0) {
+    stdout.print("PASS");
+  } else {
+    stdout.print("FAIL");
+  }
+  stdout.print("\t" + s + "s\t");
+  stdout.print(test);
+  stdout.print("\n");
+  
+  return code;
+}
+
+/**
+ * Run a specific test, where a number of samples is required.
  *
  * - test: Name of the test.
  * - N: Number of samples.

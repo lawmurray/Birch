@@ -223,8 +223,11 @@ class List<Type> {
     auto f <- reader.getArray();
     while (f?) {
       x:Type;
-      x.read(f!);
-      pushBack(x);
+      y:Type?;
+      y <- f!.get(x);
+      if (y?) {
+        pushBack(y!);
+      }
     }
   }
 
@@ -232,7 +235,7 @@ class List<Type> {
     writer.setArray();
     auto f <- walk();
     while (f?) {
-      f!.write(writer.push());
+      writer.push().set(f!);
     }
   }
 }
