@@ -3,8 +3,9 @@
  */
 #include "bi/visitor/Resolver.hpp"
 
-bi::Resolver::Resolver() :
+bi::Resolver::Resolver(const ResolverStage globalStage) :
     stage(RESOLVER_TYPER),
+    globalStage(globalStage),
     annotator(PRIOR_INSTANTIATION) {
   //
 }
@@ -16,8 +17,10 @@ bi::Resolver::~Resolver() {
 void bi::Resolver::apply(Package* o) {
   scopes.push_back(o->scope);
   for (stage = RESOLVER_TYPER; stage <= RESOLVER_SOURCE; ++stage) {
+    globalStage = stage;
     o->accept(this);
   }
+  globalStage = stage;
   scopes.pop_back();
 }
 
@@ -649,8 +652,7 @@ bi::Statement* bi::Resolver::modify(Class* o) {
     if (!o->isInstantiation()) {
       scopes.back()->add(o);
     }
-  }
-  if (stage == RESOLVER_SUPER) {
+  } else if (stage == RESOLVER_SUPER) {
     scopes.push_back(o->scope);
     classes.push_back(o);
     o->typeParams = o->typeParams->accept(this);
@@ -665,8 +667,7 @@ bi::Statement* bi::Resolver::modify(Class* o) {
     o->braces = o->braces->accept(this);  // to visit conversions
     classes.pop_back();
     scopes.pop_back();
-  }
-  if (stage == RESOLVER_HEADER) {
+  } else if (stage == RESOLVER_HEADER) {
     classes.push_back(o);
     scopes.push_back(o->scope);
     scopes.push_back(o->initScope);
@@ -678,21 +679,18 @@ bi::Statement* bi::Resolver::modify(Class* o) {
     o->braces = o->braces->accept(this);
     classes.pop_back();
     scopes.pop_back();
-  }
-  if (stage == RESOLVER_SOURCE) {
-    if (o->isBound()) {
-      classes.push_back(o);
-      scopes.push_back(o->scope);
-      scopes.push_back(o->initScope);
-      o->args = o->args->accept(this);
-      if (!o->alias) {
-        o->base->resolveConstructor(o);
-      }
-      scopes.pop_back();
-      o->braces = o->braces->accept(this);
-      classes.pop_back();
-      scopes.pop_back();
+  } else if (stage == RESOLVER_SOURCE && o->isBound()) {
+    classes.push_back(o);
+    scopes.push_back(o->scope);
+    scopes.push_back(o->initScope);
+    o->args = o->args->accept(this);
+    if (!o->alias) {
+      o->base->resolveConstructor(o);
     }
+    scopes.pop_back();
+    o->braces = o->braces->accept(this);
+    classes.pop_back();
+    scopes.pop_back();
   }
   for (auto instantiation : o->instantiations) {
     if (instantiation->stage < stage) {

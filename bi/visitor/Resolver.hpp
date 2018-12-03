@@ -53,8 +53,11 @@ class Resolver: public Modifier {
 public:
   /**
    * Constructor.
+   *
+   * @param globalStage The global stage to which resolution is to be
+   * performed for now.
    */
-  Resolver();
+  Resolver(const ResolverStage globalStage = RESOLVER_TYPER);
 
   /**
    * Destructor.
@@ -73,12 +76,9 @@ public:
    *
    * @param o The object.
    * @param globalScope The global scope.
-   * @param from First stage to perform.
-   * @param to Final stage to perform.
    */
   template<class ObjectType>
-  void apply(ObjectType* o, Scope* globalScope, const ResolverStage from,
-      const ResolverStage to);
+  void apply(ObjectType* o, Scope* globalScope);
 
   virtual Expression* modify(ExpressionList* o);
   virtual Expression* modify(Parentheses* o);
@@ -242,6 +242,11 @@ private:
    */
   ResolverStage stage;
 
+  /**
+   * Stage to which the program should be resolved.
+   */
+  ResolverStage globalStage;
+
   /*
    * Auxiliary visitors.
    */
@@ -253,10 +258,9 @@ private:
 #include "bi/exception/all.hpp"
 
 template<class ObjectType>
-void bi::Resolver::apply(ObjectType* o, Scope* globalScope,
-    const ResolverStage from, const ResolverStage to) {
+void bi::Resolver::apply(ObjectType* o, Scope* globalScope) {
   scopes.push_back(globalScope);
-  for (stage = from; stage <= to; ++stage) {
+  for (stage = RESOLVER_TYPER; stage <= globalStage; ++stage) {
     o->accept(this);
   }
   scopes.pop_back();
@@ -295,13 +299,13 @@ ObjectType* bi::Resolver::instantiate(IdentifierType* o, ObjectType* target) {
     if (!instantiation) {
       instantiation = dynamic_cast<ObjectType*>(target->accept(&cloner));
       assert(instantiation);
-      instantiation->stage = stage;
       instantiation->bind(o->typeArgs);
+      instantiation->stage = globalStage;
       target->addInstantiation(instantiation);
 
       /* catch up on resolution for this instantiation */
-      Resolver resolver;
-      resolver.apply(instantiation, scopes.front(), RESOLVER_TYPER, stage);
+      Resolver resolver(globalStage);
+      resolver.apply(instantiation, scopes.front());
     }
     return instantiation;
   } else {
