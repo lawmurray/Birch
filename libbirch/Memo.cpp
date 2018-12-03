@@ -17,17 +17,24 @@ bool bi::Memo::hasAncestor(Memo* memo) const {
 }
 
 bi::Memo* bi::Memo::forward() {
-  return (child) ? child->forward() : this;
+  if (child) {
+    return child->forward();
+  } else {
+    return this;
+  }
 }
 
 bi::Memo* bi::Memo::fork() {
-  //assert(!child);
-  //child = create(this);
-  auto c = create(this);
-  return c;
+  assert(!child);
+  child = create(this);
+  if (globalMemo.get() == this) {
+    globalMemo = child;
+  }
+  return create(this);
 }
 
 bi::Any* bi::Memo::get(Any* o) {
+  assert(!child);
   if (o->getMemo() == this) {
     return o;
   } else {
@@ -83,6 +90,7 @@ bi::Any* bi::Memo::deep(Any* o) {
   if (o->getMemo() == this || !parent) {
     return o;
   } else {
-    return parent->deep(o);
+    auto pulled = parent->deep(o);
+    return clones.get(pulled, pulled);
   }
 }

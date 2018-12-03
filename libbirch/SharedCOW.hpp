@@ -235,14 +235,14 @@ public:
       /* this is triggered during the clone of an object, for member
        * variables of that object that include pointers */
       #if DEEP_CLONE_STRATEGY == DEEP_CLONE_EAGER
-      object = cloneMemo->get(o.pull());
+      object = cloneMemo->get(o.pullNoForward());
       memo = nullptr;
       #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
-      object = cloneMemo->deep(o.pull());
+      object = cloneMemo->deep(o.pullNoForward());
       memo = cloneMemo;
       #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
       if (!cloneMemo->hasAncestor(memo.get())) {
-        object = o.pull();
+        object = o.pullNoForward();
       }
       memo = cloneMemo;
       #endif
@@ -264,6 +264,7 @@ public:
     #if DEEP_CLONE_STRATEGY != DEEP_CLONE_EAGER
     if (object) {
       assert(memo);
+      memo = memo->forward();
       #if DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
       object = memo->get(object.get());
       #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
@@ -287,6 +288,7 @@ public:
     #if DEEP_CLONE_STRATEGY != DEEP_CLONE_EAGER
     if (object) {
       assert(memo);
+      memo = memo->forward();
       #if DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
       object = memo->pull(object.get());
       #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
@@ -304,6 +306,29 @@ public:
     /* even in a const context, do want to update the pointer through lazy
      * deep clone mechanisms */
    return const_cast<SharedCOW<Any>*>(this)->pull();
+  }
+
+  Any* pullNoForward() {
+    #if DEEP_CLONE_STRATEGY != DEEP_CLONE_EAGER
+    if (object) {
+      assert(memo);
+      #if DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
+      object = memo->pull(object.get());
+      #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
+      object = memo->pull(memo->deep(object.get()));
+      #endif
+      if (object.get()->getMemo() == globalMemo.get()) {
+        memo = globalMemo;
+      }
+    }
+    #endif
+    return object.get();
+  }
+
+  Any* pullNoForward() const {
+    /* even in a const context, do want to update the pointer through lazy
+     * deep clone mechanisms */
+   return const_cast<SharedCOW<Any>*>(this)->pullNoForward();
   }
 
   SharedCOW<Any> clone() const {

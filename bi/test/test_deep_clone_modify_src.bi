@@ -13,7 +13,7 @@ program test_deep_clone_modify_src() {
   
   /* modify the original */
   x.set(1, 3);
-  y.set(2, 4);
+  x.set(2, 4);
   
   /* check that the clone is unchanged */
   if (y.get(1) != 1 || y.get(2) != 2) {

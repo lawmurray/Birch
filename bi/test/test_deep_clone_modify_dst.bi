@@ -10,7 +10,7 @@ program test_deep_clone_modify_dst() {
   
   /* clone the list */
   auto y <- clone<List<Integer>>(x);
-  
+
   /* modify the clone */
   y.set(1, 3);
   y.set(2, 4);
