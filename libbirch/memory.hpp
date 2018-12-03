@@ -5,8 +5,11 @@
 
 #include "libbirch/config.hpp"
 #include "libbirch/Pool.hpp"
+#include "libbirch/SharedPtr.hpp"
 
 namespace bi {
+class Memo;
+
 /**
  * Buffer for heap allocations.
  */
@@ -27,12 +30,10 @@ extern size_t bufferSize;
  */
 extern Pool pool[];
 
-class Memo;
-
 /**
  * The memo object associated with new objects.
  */
-extern Memo* globalMemo;
+extern SharedPtr<Memo> globalMemo;
 #pragma omp threadprivate(globalMemo)
 
 /**

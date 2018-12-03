@@ -4,7 +4,6 @@
 #pragma once
 
 #include "libbirch/config.hpp"
-#include "libbirch/clone.hpp"
 #include "libbirch/class.hpp"
 #include "libbirch/memory.hpp"
 #include "libbirch/SharedPtr.hpp"
@@ -270,7 +269,7 @@ public:
       #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
       object = memo->get(memo->deep(object.get()));
       #endif
-      if (object.get()->getMemo() == globalMemo) {
+      if (object.get()->getMemo() == globalMemo.get()) {
         memo = globalMemo;
       }
     }
@@ -293,7 +292,7 @@ public:
       #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
       object = memo->pull(memo->deep(object.get()));
       #endif
-      if (object.get()->getMemo() == globalMemo) {
+      if (object.get()->getMemo() == globalMemo.get()) {
         memo = globalMemo;
       }
     }

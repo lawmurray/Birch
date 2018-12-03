@@ -217,7 +217,7 @@ public:
       #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
       object = memo->pull(memo->deep(object.get()));
       #endif
-      if (object.get()->getMemo() == globalMemo) {
+      if (object.get()->getMemo() == globalMemo.get()) {
         memo = globalMemo;
       }
     }

@@ -55,6 +55,6 @@ protected:
   /**
    * Memo associated with the clone or construction of this object.
    */
-  InitPtr<Memo> memo;
+  Memo* memo;
 };
 }
