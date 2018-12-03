@@ -16,12 +16,17 @@ namespace bi {
  *
  * @ingroup visitor
  */
-class Resolver : public Modifier {
+class Resolver: public Modifier {
 public:
   /**
    * Constructor.
+   *
+   * @param globalScope Global scope. This is optional, if an entire package
+   * is being resolved, this can be determined.
+   * @param finalStage Final stage to which to resolve.
    */
-  Resolver();
+  Resolver(Scope* globalScope = nullptr, const ResolverStage finalStage =
+      RESOLVER_SOURCE);
 
   /**
    * Destructor.
@@ -188,9 +193,14 @@ private:
   std::list<Type*> yieldTypes;
 
   /**
-   * State to which the program has been resolved.
+   * Stage to which the program has been resolved.
    */
-  ResolvedState state;
+  ResolverStage stage;
+
+  /**
+   * Final stage to which the program should be resolved.
+   */
+  ResolverStage finalStage;
 
   /*
    * Auxiliary visitors.
@@ -233,7 +243,8 @@ ObjectType* bi::Resolver::instantiate(IdentifierType* o, ObjectType* target) {
     }
     auto instantiation = target->getInstantiation(o->typeArgs);
     if (!instantiation) {
-      instantiation = dynamic_cast<decltype(instantiation)>(target->accept(&cloner));
+      instantiation = dynamic_cast<decltype(instantiation)>(target->accept(
+          &cloner));
       assert(instantiation);
       instantiation->bind(o->typeArgs);
       target->addInstantiation(instantiation);

@@ -527,11 +527,11 @@ program_declaration
     ;
 
 member_function_declaration
-    : FUNCTION name parameters optional_result { push_raw(); } optional_braces  { $$ = new bi::MemberFunction(bi::NONE, $2, empty_expr(@$), $3, $4, $6, make_doc_loc(@$)); }
+    : FUNCTION name parameters optional_result { push_raw(); } optional_braces  { $$ = new bi::MemberFunction(bi::NONE, $2, $3, $4, $6, make_doc_loc(@$)); }
     ;
 
 member_fiber_declaration
-    : FIBER name parameters optional_result { push_raw(); } optional_braces  { $$ = new bi::MemberFiber(bi::NONE, $2, empty_expr(@$), $3, new bi::FiberType($4, make_loc(@$)), $6, make_doc_loc(@$)); }
+    : FIBER name parameters optional_result { push_raw(); } optional_braces  { $$ = new bi::MemberFiber(bi::NONE, $2, $3, new bi::FiberType($4, make_loc(@$)), $6, make_doc_loc(@$)); }
     ;
     
 binary_operator
@@ -556,11 +556,11 @@ unary_operator
     ;    
 
 binary_operator_declaration
-    : OPERATOR '(' parameter binary_operator parameter ')' optional_result { push_raw(); } optional_braces  { $$ = new bi::BinaryOperator(bi::NONE, $4, empty_expr(@$), new bi::Binary($3, $5, make_loc(@$)), $7, $9, make_doc_loc(@$)); }
+    : OPERATOR '(' parameter binary_operator parameter ')' optional_result { push_raw(); } optional_braces  { $$ = new bi::BinaryOperator(bi::NONE, $4, new bi::Binary($3, $5, make_loc(@$)), $7, $9, make_doc_loc(@$)); }
     ;
     
 unary_operator_declaration
-    : OPERATOR '(' unary_operator parameter ')' optional_result { push_raw(); } optional_braces  { $$ = new bi::UnaryOperator(bi::NONE, $3, empty_expr(@$), $4, $6, $8, make_doc_loc(@$)); }
+    : OPERATOR '(' unary_operator parameter ')' optional_result { push_raw(); } optional_braces  { $$ = new bi::UnaryOperator(bi::NONE, $3, $4, $6, $8, make_doc_loc(@$)); }
     ;
     
 assignment_operator

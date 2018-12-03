@@ -6,12 +6,11 @@
 #include "bi/visitor/all.hpp"
 
 bi::MemberFunction::MemberFunction(const Annotation annotation, Name* name,
-    Expression* typeParams, Expression* params, Type* returnType,
+    Expression* params, Type* returnType,
     Statement* braces, Location* loc) :
     Statement(loc),
     Annotated(annotation),
     Named(name),
-    TypeParameterised(typeParams),
     Parameterised(params),
     ReturnTyped(returnType),
     Typed(new EmptyType(loc)),

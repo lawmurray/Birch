@@ -3,10 +3,13 @@
  */
 #include "bi/visitor/Resolver.hpp"
 
-bi::Resolver::Resolver() :
-    state(CLONED),
+bi::Resolver::Resolver(Scope* globalScope, const ResolverStage finalStage) :
+    stage(RESOLVER_TYPER),
+    finalStage(finalStage),
     annotator(PRIOR_INSTANTIATION) {
-  //
+  if (globalScope) {
+    scopes.push_back(globalScope);
+  }
 }
 
 bi::Resolver::~Resolver() {
@@ -15,25 +18,25 @@ bi::Resolver::~Resolver() {
 
 bi::Package* bi::Resolver::modify(Package* o) {
   scopes.push_back(o->scope);
-  state = CLONED;
 
   /* populate available types */
+  stage = RESOLVER_TYPER;
   Modifier::modify(o);
-  state = RESOLVED_TYPER;
 
   /* establish type relationships (e.g. inheritance, conversion) */
+  stage = RESOLVER_SUPER;
   Modifier::modify(o);
-  state = RESOLVED_SUPER;
 
   /* populate available variables, functions, fibers, etc */
+  stage = RESOLVER_HEADER;
   Modifier::modify(o);
-  state = RESOLVED_HEADER;
 
   /* resolve function and fiber bodies */
+  stage = RESOLVER_SOURCE;
   Modifier::modify(o);
-  state = RESOLVED_SOURCE;
 
   scopes.pop_back();
+  stage = RESOLVER_FINISHED;
   return o;
 }
 
@@ -353,7 +356,7 @@ bi::Expression* bi::Resolver::modify(OverloadedIdentifier<MemberFiber>* o) {
   Modifier::modify(o);
   resolve(o, CLASS_SCOPE);
   if (o->target->size() == 1) {
-    auto only = instantiate(o, o->target->front());
+    auto only = o->target->front();
     o->target = new Overloaded<MemberFiber>(only);
     o->type = new FunctionType(only->params->type, only->returnType);
   }
@@ -364,7 +367,7 @@ bi::Expression* bi::Resolver::modify(OverloadedIdentifier<MemberFunction>* o) {
   Modifier::modify(o);
   resolve(o, CLASS_SCOPE);
   if (o->target->size() == 1) {
-    auto only = instantiate(o, o->target->front());
+    auto only = o->target->front();
     o->target = new Overloaded<MemberFunction>(only);
     o->type = new FunctionType(only->params->type, only->returnType);
   }
@@ -375,7 +378,7 @@ bi::Expression* bi::Resolver::modify(OverloadedIdentifier<BinaryOperator>* o) {
   Modifier::modify(o);
   resolve(o, GLOBAL_SCOPE);
   if (o->target->size() == 1) {
-    auto only = instantiate(o, o->target->front());
+    auto only = o->target->front();
     o->target = new Overloaded<BinaryOperator>(only);
     o->type = new FunctionType(only->params->type, only->returnType);
   }
@@ -386,7 +389,7 @@ bi::Expression* bi::Resolver::modify(OverloadedIdentifier<UnaryOperator>* o) {
   Modifier::modify(o);
   resolve(o, GLOBAL_SCOPE);
   if (o->target->size() == 1) {
-    auto only = instantiate(o, o->target->front());
+    auto only = o->target->front();
     o->target = new Overloaded<UnaryOperator>(only);
     o->type = new FunctionType(only->params->type, only->returnType);
   }
@@ -427,14 +430,14 @@ bi::Statement* bi::Resolver::modify(Assignment* o) {
 }
 
 bi::Statement* bi::Resolver::modify(GlobalVariable* o) {
-  if (state == RESOLVED_SUPER) {
+  if (stage == RESOLVER_HEADER) {
     o->type = o->type->accept(this);
     ///@todo When auto keyword used, type not known here
     if (!o->brackets->isEmpty()) {
       o->type = new ArrayType(o->type, o->brackets->width(), o->brackets->loc);
     }
     scopes.back()->add(o);
-  } else if (state == RESOLVED_HEADER) {
+  } else if (stage == RESOLVER_SOURCE) {
     o->brackets = o->brackets->accept(this);
     o->args = o->args->accept(this);
     o->value = o->value->accept(this);
@@ -453,14 +456,14 @@ bi::Statement* bi::Resolver::modify(GlobalVariable* o) {
 }
 
 bi::Statement* bi::Resolver::modify(MemberVariable* o) {
-  if (state == RESOLVED_SUPER) {
+  if (stage == RESOLVER_HEADER) {
     o->type = o->type->accept(this);
     ///@todo When auto keyword used, type not known here
     if (!o->brackets->isEmpty()) {
       o->type = new ArrayType(o->type, o->brackets->width(), o->brackets->loc);
     }
     scopes.back()->add(o);
-  } else if (state == RESOLVED_HEADER) {
+  } else if (stage == RESOLVER_SOURCE) {
     scopes.push_back(classes.back()->initScope);
     o->brackets = o->brackets->accept(this);
     o->args = o->args->accept(this);
@@ -481,7 +484,7 @@ bi::Statement* bi::Resolver::modify(MemberVariable* o) {
 }
 
 bi::Statement* bi::Resolver::modify(Function* o) {
-  if (o->state < RESOLVED_HEADER && RESOLVED_SUPER <= state) {
+  if (o->stage == RESOLVER_HEADER && RESOLVER_HEADER <= stage) {
     scopes.push_back(o->scope);
     o->typeParams = o->typeParams->accept(this);
     o->params = o->params->accept(this);
@@ -491,15 +494,15 @@ bi::Statement* bi::Resolver::modify(Function* o) {
     if (!o->isInstantiation()) {
       scopes.back()->add(o);
     }
-    o->state = RESOLVED_HEADER;
+    o->stage = RESOLVER_SOURCE;
   }
-  if (o->state < RESOLVED_SOURCE && RESOLVED_HEADER <= state) {
+  if (o->stage == RESOLVER_SOURCE && RESOLVER_SOURCE <= stage) {
     scopes.push_back(o->scope);
     returnTypes.push_back(o->returnType);
     o->braces = o->braces->accept(this);
     returnTypes.pop_back();
     scopes.pop_back();
-    o->state = RESOLVED_SOURCE;
+    o->stage = RESOLVER_FINISHED;
   }
   for (auto instantiation : o->instantiations) {
     instantiation->accept(this);
@@ -508,7 +511,7 @@ bi::Statement* bi::Resolver::modify(Function* o) {
 }
 
 bi::Statement* bi::Resolver::modify(Fiber* o) {
-  if (o->state < RESOLVED_HEADER && RESOLVED_SUPER <= state) {
+  if (o->stage == RESOLVER_HEADER && RESOLVER_HEADER <= stage) {
     scopes.push_back(o->scope);
     o->typeParams = o->typeParams->accept(this);
     o->params = o->params->accept(this);
@@ -518,15 +521,15 @@ bi::Statement* bi::Resolver::modify(Fiber* o) {
     if (!o->isInstantiation()) {
       scopes.back()->add(o);
     }
-    o->state = RESOLVED_HEADER;
+    o->stage = RESOLVER_SOURCE;
   }
-  if (o->state < RESOLVED_SOURCE && RESOLVED_HEADER <= state) {
+  if (o->stage == RESOLVER_SOURCE && RESOLVER_SOURCE <= stage) {
     scopes.push_back(o->scope);
     yieldTypes.push_back(o->returnType->unwrap());
     o->braces = o->braces->accept(this);
     yieldTypes.pop_back();
     scopes.pop_back();
-    o->state = RESOLVED_SOURCE;
+    o->stage = RESOLVER_FINISHED;
   }
   for (auto instantiation : o->instantiations) {
     instantiation->accept(this);
@@ -535,13 +538,13 @@ bi::Statement* bi::Resolver::modify(Fiber* o) {
 }
 
 bi::Statement* bi::Resolver::modify(Program* o) {
-  if (state == RESOLVED_SUPER) {
+  if (stage == RESOLVER_HEADER) {
     scopes.push_back(o->scope);
     o->params = o->params->accept(this);
     scopes.pop_back();
     scopes.back()->add(o);
     ///@todo Check that can assign String to all option types
-  } else if (state == RESOLVED_HEADER) {
+  } else if (stage == RESOLVER_SOURCE) {
     scopes.push_back(o->scope);
     o->braces = o->braces->accept(this);
     scopes.pop_back();
@@ -550,19 +553,14 @@ bi::Statement* bi::Resolver::modify(Program* o) {
 }
 
 bi::Statement* bi::Resolver::modify(MemberFunction* o) {
-  if (o->state < RESOLVED_HEADER && RESOLVED_SUPER <= state) {
+  if (stage == RESOLVER_HEADER) {
     scopes.push_back(o->scope);
-    o->typeParams = o->typeParams->accept(this);
     o->params = o->params->accept(this);
     o->returnType = o->returnType->accept(this);
     o->type = new FunctionType(o->params->type, o->returnType, o->loc);
     scopes.pop_back();
-    if (!o->isInstantiation()) {
-      scopes.back()->add(o);
-    }
-    o->state = RESOLVED_HEADER;
-  }
-  if (o->state < RESOLVED_SOURCE && RESOLVED_HEADER <= state) {
+    scopes.back()->add(o);
+  } else if (stage == RESOLVER_SOURCE) {
     scopes.push_back(o->scope);
     returnTypes.push_back(o->returnType);
     o->braces = o->braces->accept(this);
@@ -573,19 +571,14 @@ bi::Statement* bi::Resolver::modify(MemberFunction* o) {
 }
 
 bi::Statement* bi::Resolver::modify(MemberFiber* o) {
-  if (o->state < RESOLVED_HEADER && RESOLVED_SUPER <= state) {
+  if (stage == RESOLVER_HEADER) {
     scopes.push_back(o->scope);
-    o->typeParams = o->typeParams->accept(this);
     o->params = o->params->accept(this);
     o->returnType = o->returnType->accept(this);
     o->type = new FunctionType(o->params->type, o->returnType, o->loc);
     scopes.pop_back();
-    if (!o->isInstantiation()) {
-      scopes.back()->add(o);
-    }
-    o->state = RESOLVED_HEADER;
-  }
-  if (o->state < RESOLVED_SOURCE && RESOLVED_HEADER <= state) {
+    scopes.back()->add(o);
+  } else if (stage == RESOLVER_SOURCE) {
     scopes.push_back(o->scope);
     yieldTypes.push_back(o->returnType->unwrap());
     o->braces = o->braces->accept(this);
@@ -596,55 +589,43 @@ bi::Statement* bi::Resolver::modify(MemberFiber* o) {
 }
 
 bi::Statement* bi::Resolver::modify(BinaryOperator* o) {
-  if (o->state < RESOLVED_HEADER && RESOLVED_SUPER <= state) {
+  if (stage == RESOLVER_HEADER) {
     scopes.push_back(o->scope);
-    o->typeParams = o->typeParams->accept(this);
     o->params = o->params->accept(this);
     o->returnType = o->returnType->accept(this);
     o->type = new FunctionType(o->params->type, o->returnType, o->loc);
     scopes.pop_back();
-    if (!o->isInstantiation()) {
-      scopes.back()->add(o);
-    }
-    o->state = RESOLVED_HEADER;
-  }
-  if (o->state < RESOLVED_SOURCE && RESOLVED_HEADER <= state) {
+    scopes.back()->add(o);
+  } else if (stage == RESOLVER_SOURCE) {
     scopes.push_back(o->scope);
     returnTypes.push_back(o->returnType);
     o->braces = o->braces->accept(this);
     returnTypes.pop_back();
     scopes.pop_back();
-    o->state = RESOLVED_SOURCE;
   }
   return o;
 }
 
 bi::Statement* bi::Resolver::modify(UnaryOperator* o) {
-  if (o->state < RESOLVED_HEADER && RESOLVED_SUPER <= state) {
+  if (stage == RESOLVER_HEADER) {
     scopes.push_back(o->scope);
-    o->typeParams = o->typeParams->accept(this);
     o->params = o->params->accept(this);
     o->returnType = o->returnType->accept(this);
     o->type = new FunctionType(o->params->type, o->returnType, o->loc);
     scopes.pop_back();
-    if (!o->isInstantiation()) {
-      scopes.back()->add(o);
-    }
-    o->state = RESOLVED_HEADER;
-  }
-  if (o->state < RESOLVED_SOURCE && RESOLVED_HEADER <= state) {
+    scopes.back()->add(o);
+  } else if (stage == RESOLVER_SOURCE) {
     scopes.push_back(o->scope);
     returnTypes.push_back(o->returnType);
     o->braces = o->braces->accept(this);
     returnTypes.pop_back();
     scopes.pop_back();
-    o->state = RESOLVED_SOURCE;
   }
   return o;
 }
 
 bi::Statement* bi::Resolver::modify(AssignmentOperator* o) {
-  if (state == RESOLVED_SUPER) {
+  if (stage == RESOLVER_HEADER) {
     scopes.push_back(o->scope);
     o->single = o->single->accept(this);
     scopes.pop_back();
@@ -652,7 +633,7 @@ bi::Statement* bi::Resolver::modify(AssignmentOperator* o) {
       throw AssignmentOperatorException(o);
     }
     classes.back()->addAssignment(o->single->type);
-  } else if (state == RESOLVED_HEADER) {
+  } else if (stage == RESOLVER_SOURCE) {
     scopes.push_back(o->scope);
     o->braces = o->braces->accept(this);
     scopes.pop_back();
@@ -661,38 +642,37 @@ bi::Statement* bi::Resolver::modify(AssignmentOperator* o) {
 }
 
 bi::Statement* bi::Resolver::modify(ConversionOperator* o) {
-  if (state == RESOLVED_TYPER) {
+  if (stage == RESOLVER_SUPER) {
     o->returnType = o->returnType->accept(this);
     if (!o->returnType->isValue()) {
       throw ConversionOperatorException(o);
     }
     classes.back()->addConversion(o->returnType);
-  } else if (state == RESOLVED_HEADER) {
+  } else if (stage == RESOLVER_SOURCE) {
     scopes.push_back(o->scope);
     returnTypes.push_back(o->returnType);
     o->braces = o->braces->accept(this);
     returnTypes.pop_back();
     scopes.pop_back();
-    return o;
   }
   return o;
 }
 
 bi::Statement* bi::Resolver::modify(Class* o) {
-  if (o->state < RESOLVED_TYPER && CLONED <= state) {
+  if (o->stage == RESOLVER_TYPER && RESOLVER_TYPER <= stage) {
     scopes.push_back(o->scope);
     if (o->base->isEmpty() && o->name->str() != "Object") {
       /* if the class derives from nothing else, then derive from Object,
        * unless this is itself the declaration of the Object class */
       o->base = new ClassType(new Name("Object"), new EmptyType(), o->loc);
     }
-    o->state = RESOLVED_TYPER;
+    o->stage = RESOLVER_SUPER;
     scopes.pop_back();
     if (!o->isInstantiation()) {
       scopes.back()->add(o);
     }
   }
-  if (o->state < RESOLVED_SUPER && RESOLVED_TYPER <= state) {
+  if (o->stage == RESOLVER_SUPER && RESOLVER_SUPER <= stage) {
     scopes.push_back(o->scope);
     classes.push_back(o);
     o->typeParams = o->typeParams->accept(this);
@@ -705,11 +685,11 @@ bi::Statement* bi::Resolver::modify(Class* o) {
       o->addSuper(o->base);
     }
     o->braces = o->braces->accept(this);  // to visit conversions
-    o->state = RESOLVED_SUPER;
+    o->stage = RESOLVER_HEADER;
     classes.pop_back();
     scopes.pop_back();
   }
-  if (o->state < RESOLVED_HEADER && RESOLVED_SUPER <= state) {
+  if (o->stage == RESOLVER_HEADER && RESOLVER_HEADER <= stage) {
     classes.push_back(o);
     scopes.push_back(o->scope);
     scopes.push_back(o->initScope);
@@ -721,9 +701,9 @@ bi::Statement* bi::Resolver::modify(Class* o) {
     o->braces = o->braces->accept(this);
     classes.pop_back();
     scopes.pop_back();
-    o->state = RESOLVED_HEADER;
+    o->stage = RESOLVER_SOURCE;
   }
-  if (o->state < RESOLVED_SOURCE && RESOLVED_HEADER <= state) {
+  if (o->stage == RESOLVER_SOURCE && RESOLVER_SOURCE <= stage) {
     if (o->isBound()) {
       classes.push_back(o);
       scopes.push_back(o->scope);
@@ -737,7 +717,7 @@ bi::Statement* bi::Resolver::modify(Class* o) {
       classes.pop_back();
       scopes.pop_back();
     }
-    o->state = RESOLVED_SOURCE;
+    o->stage = RESOLVER_FINISHED;
   }
   for (auto instantiation : o->instantiations) {
     instantiation->accept(this);
@@ -746,9 +726,9 @@ bi::Statement* bi::Resolver::modify(Class* o) {
 }
 
 bi::Statement* bi::Resolver::modify(Basic* o) {
-  if (state == CLONED) {
+  if (stage == RESOLVER_TYPER) {
     scopes.back()->add(o);
-  } else if (state == RESOLVED_TYPER) {
+  } else if (stage == RESOLVER_SUPER) {
     o->base = o->base->accept(this);
     if (!o->base->isEmpty()) {
       if (!o->base->isBasic()) {

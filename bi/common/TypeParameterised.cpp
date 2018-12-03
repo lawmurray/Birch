@@ -8,7 +8,7 @@
 template<class Target>
 bi::TypeParameterised<Target>::TypeParameterised(Expression* typeParams) :
     typeParams(typeParams),
-    state(CLONED) {
+    stage(RESOLVER_TYPER) {
   //
 }
 
@@ -70,7 +70,3 @@ Target* bi::TypeParameterised<Target>::getInstantiation(const Type* typeArgs) {
 template class bi::TypeParameterised<bi::Class>;
 template class bi::TypeParameterised<bi::Function>;
 template class bi::TypeParameterised<bi::Fiber>;
-template class bi::TypeParameterised<bi::MemberFunction>;
-template class bi::TypeParameterised<bi::MemberFiber>;
-template class bi::TypeParameterised<bi::BinaryOperator>;
-template class bi::TypeParameterised<bi::UnaryOperator>;
