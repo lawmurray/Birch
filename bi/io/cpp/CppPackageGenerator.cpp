@@ -21,8 +21,8 @@ void bi::CppPackageGenerator::visit(const Package* o) {
   Gatherer<Basic> basics;
   Gatherer<Class> classes, headerClasses;
   Gatherer<GlobalVariable> globals;
-  Gatherer<Function> functions;
-  Gatherer<Fiber> fibers;
+  Gatherer<Function> functions, headerFunctions;
+  Gatherer<Fiber> fibers, headerFibers;
   Gatherer<Program> programs;
   Gatherer<BinaryOperator> binaries;
   Gatherer<UnaryOperator> unaries;
@@ -38,6 +38,8 @@ void bi::CppPackageGenerator::visit(const Package* o) {
   }
   for (auto file : o->headers) {
     file->accept(&headerClasses);
+    file->accept(&headerFunctions);
+    file->accept(&headerFibers);
   }
 
   /* base classes must be defined before their derived classes, so these are
@@ -187,6 +189,20 @@ void bi::CppPackageGenerator::visit(const Package* o) {
     for (auto o : fibers) {
       *this << o;
     }
+    for (auto o : headerFunctions) {
+      for (auto instantiation : o->instantiations) {
+        if (!instantiation->has(PRIOR_INSTANTIATION)) {
+          *this << instantiation;
+        }
+      }
+    }
+    for (auto o : headerFibers) {
+      for (auto instantiation : o->instantiations) {
+        if (!instantiation->has(PRIOR_INSTANTIATION)) {
+          *this << instantiation;
+        }
+      }
+    }
 
     /* programs */
     for (auto o : programs) {
@@ -205,10 +221,24 @@ void bi::CppPackageGenerator::visit(const Package* o) {
     line("");
     line("#endif");
   } else {
-    /* instantiations of generic classes go in the package source file */
+    /* instantiations of generics from dependencies */
     for (auto o : sortedClasses) {
       if (o->isGeneric() && o->isBound() && !o->has(PRIOR_INSTANTIATION)) {
         *this << o;
+      }
+    }
+    for (auto o : headerFunctions) {
+      for (auto instantiation : o->instantiations) {
+        if (!instantiation->has(PRIOR_INSTANTIATION)) {
+          *this << instantiation;
+        }
+      }
+    }
+    for (auto o : headerFibers) {
+      for (auto instantiation : o->instantiations) {
+        if (!instantiation->has(PRIOR_INSTANTIATION)) {
+          *this << instantiation;
+        }
       }
     }
   }

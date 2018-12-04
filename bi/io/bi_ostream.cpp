@@ -18,6 +18,39 @@ void bi::bi_ostream::visit(const Package* o) {
   for (auto source : o->sources) {
     source->accept(this);
   }
+  line("");
+
+  /* generic function and fiber instantiations from dependencies */
+  Gatherer<Class> headerClasses;
+  Gatherer<Function> headerFunctions;
+  Gatherer<Fiber> headerFibers;
+
+  for (auto file : o->headers) {
+    file->accept(&headerClasses);
+    file->accept(&headerFunctions);
+    file->accept(&headerFibers);
+  }
+  for (auto o : headerClasses) {
+    for (auto instantiation : o->instantiations) {
+      if (!instantiation->has(PRIOR_INSTANTIATION)) {
+        *this << instantiation;
+      }
+    }
+  }
+  for (auto o : headerFunctions) {
+    for (auto instantiation : o->instantiations) {
+      if (!instantiation->has(PRIOR_INSTANTIATION)) {
+        *this << instantiation;
+      }
+    }
+  }
+  for (auto o : headerFibers) {
+    for (auto instantiation : o->instantiations) {
+      if (!instantiation->has(PRIOR_INSTANTIATION)) {
+        *this << instantiation;
+      }
+    }
+  }
 }
 
 void bi::bi_ostream::visit(const Name* o) {
