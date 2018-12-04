@@ -222,11 +222,9 @@ class List<Type> {
   function read(reader:Reader) {
     auto f <- reader.getArray();
     while (f?) {
-      x:Type;
-      y:Type?;
-      y <- f!.get(x);
-      if (y?) {
-        pushBack(y!);
+      x:Type? <- global.get<Type>(f!);
+      if (x?) {
+        pushBack(x!);
       }
     }
   }

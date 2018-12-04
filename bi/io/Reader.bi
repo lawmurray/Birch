@@ -406,17 +406,19 @@ class Reader {
   }
   
   /**
-   * Read into an object.
+   * Get this as an object.
    *
-   * - o: The object.
+   * - value: The object.
    *
    * Return: The object.
    *
-   * Calls `o.read(this)` and returns.
+   * If `value?`, calls `value!.read(this)`. Returns `value`.
    */
-  function get(o:Object) -> Object {
-    o.read(this);
-    return o;
+  function get(value:Object?) -> Object? {
+    if value? {
+      value!.read(this);
+    }
+    return value;
   }
 
   /**
@@ -541,6 +543,23 @@ class Reader {
    */
   function get(name:String, value:String?) -> String? {
     return getString(name);
+  }
+
+  /**
+   * Get an object.
+   *
+   * - name: Name of the entry.
+   * - value: The object.
+   *
+   * Return: The object.
+   *
+   * If `value?`, calls `value!.read(getObject(name))`. Returns `value`.
+   */
+  function get(name:String, value:Object?) -> Object? {
+    if value? {
+      value!.read(getObject(name));
+    }
+    return value;
   }
 
   /**
@@ -673,6 +692,23 @@ class Reader {
     return getString(path);
   }
 
+ /**
+   * Get an object.
+   *
+   * - path: Path of the entry.
+   * - value: The object.
+   *
+   * Return: The object.
+   *
+   * If `value?`, calls `value!.read(getObject(path))`. Returns `value`.
+   */
+  function get(path:[String], value:Object?) -> Object? {
+    if value? {
+      value!.read(getObject(path));
+    }
+    return value;
+  }
+
   /**
    * Get a vector of Booleans.
    *
@@ -751,3 +787,44 @@ class Reader {
     return getRealMatrix(path);
   }
 }
+
+/**
+ * Get a value or object of a prescribed type from a Reader.
+ *
+ * - reader: The reader.
+ *
+ * Return: An optional with a value if the read is successful.
+ */
+function get<Type>(reader:Reader) -> Type? {
+  x:Type?;
+  x <- Type?(reader.get(x));
+  return x;
+}
+
+/**
+ * Get a value or object of a prescribed type from a Reader.
+ *
+ * - reader: The reader.
+ * - name: Name of the entry.
+ *
+ * Return: An optional with a value if the read is successful.
+ */
+//function get<Type>(reader:Reader, name:String) -> Type? {
+//  x:Type?;
+//  x <- Type?(reader.get(name, x));
+//  return x;
+//}
+
+/**
+ * Get a value or object of a prescribed type from a Reader.
+ *
+ * - reader: The reader.
+ * - path: Path of the entry.
+ *
+ * Return: An optional with a value if the read is successful.
+ */
+//function get<Type>(reader:Reader, path:[String]) -> Type? {
+//  x:Type?;
+//  x <- Type?(reader.get(path, x));
+//  return x;
+//}

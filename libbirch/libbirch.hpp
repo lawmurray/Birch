@@ -223,6 +223,30 @@ auto dynamic_pointer_cast(const Optional<SharedCOW<From>>& from) {
 }
 
 /**
+ * Cast anything else.
+ *
+ * @return An optional, with a value only if @p from is of type To.
+ */
+template<class To, class From>
+auto check_cast(const From& from) {
+  return std::is_same<To,From>::value ? Optional<To>(from) : Optional<To>();
+}
+
+/**
+ * Cast an optional of anything else.
+ *
+ * @return An optional, with a value only if @p from has a value of type To.
+ */
+template<class To, class From>
+auto check_cast(const Optional<From>& from) {
+  if (from.query()) {
+    return check_cast<To>(from.get());
+  } else {
+    return Optional<To>();
+  }
+}
+
+/**
  * Report unknown program option and abort.
  */
 void unknown_option(const std::string& name);
