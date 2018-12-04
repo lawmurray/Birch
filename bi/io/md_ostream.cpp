@@ -252,7 +252,11 @@ void bi::md_ostream::visit(const MemberVariable* o) {
 }
 
 void bi::md_ostream::visit(const Function* o) {
-  start("!!! quote \"function " << o->name << '(' << o->params << ')');
+  start("!!! quote \"function " << o->name);
+  if (o->isGeneric()) {
+    middle("&lt;" << o->typeParams << "&gt;");
+  }
+  middle('(' << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
@@ -260,7 +264,11 @@ void bi::md_ostream::visit(const Function* o) {
 }
 
 void bi::md_ostream::visit(const Fiber* o) {
-  start("!!! quote \"fiber " << o->name << '(' << o->params << ')');
+  start("!!! quote \"fiber " << o->name);
+  if (o->isGeneric()) {
+    middle("&lt;" << o->typeParams << "&gt;");
+  }
+  middle('(' << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType->unwrap());
   }
