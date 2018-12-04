@@ -437,7 +437,7 @@ void bi::Driver::docs() {
   mkdocsStream << "      enable_dollar_delimiter: True\n";
   mkdocsStream << "extra_javascript:\n";
   mkdocsStream << "  - 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'\n";
-  mkdocsStream << "pages:\n";
+  mkdocsStream << "nav:\n";
 
   fs::path docs("docs"), file;
   fs::create_directories(docs);
