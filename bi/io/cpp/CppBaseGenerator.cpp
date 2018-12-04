@@ -231,10 +231,16 @@ void bi::CppBaseGenerator::visit(const Identifier<MemberVariable>* o) {
 
 void bi::CppBaseGenerator::visit(const OverloadedIdentifier<Function>* o) {
   middle("bi::" << o->name);
+  if (!o->typeArgs->isEmpty()) {
+    middle('<' << o->typeArgs << '>');
+  }
 }
 
 void bi::CppBaseGenerator::visit(const OverloadedIdentifier<Fiber>* o) {
   middle("bi::" << o->name);
+  if (!o->typeArgs->isEmpty()) {
+    middle('<' << o->typeArgs << '>');
+  }
 }
 
 void bi::CppBaseGenerator::visit(
@@ -299,30 +305,32 @@ void bi::CppBaseGenerator::visit(const MemberVariable* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Function* o) {
-  if (!o->braces->isEmpty()) {
-    genTemplateParams(o);
-    start(o->returnType << ' ');
-    if (!header) {
-      middle("bi::");
-    }
-    middle(o->name);
-    if (o->isBound()) {
-      genTemplateArgs(o);
-    }
-    middle('(' << o->params << ')');
-    if (header) {
-      finish(';');
-    } else {
-      finish(" {");
-      in();
-      genTraceFunction(o->name->str(), o->loc);
+  if (header || o->isBound()) {
+    if (!o->braces->isEmpty()) {
+      genTemplateParams(o);
+      start(o->returnType << ' ');
+      if (!header) {
+        middle("bi::");
+      }
+      middle(o->name);
+      if (o->isBound()) {
+        genTemplateArgs(o);
+      }
+      middle('(' << o->params << ')');
+      if (header) {
+        finish(';');
+      } else {
+        finish(" {");
+        in();
+        genTraceFunction(o->name->str(), o->loc);
 
-      /* body */
-      CppBaseGenerator aux(base, level, false);
-      aux << o->braces->strip();
+        /* body */
+        CppBaseGenerator aux(base, level, false);
+        aux << o->braces->strip();
 
-      out();
-      finish("}\n");
+        out();
+        finish("}\n");
+      }
     }
   }
   for (auto instantiation : o->instantiations) {
@@ -331,8 +339,10 @@ void bi::CppBaseGenerator::visit(const Function* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Fiber* o) {
-  CppFiberGenerator auxFiber(base, level, header);
-  auxFiber << o;
+  if (header || o->isBound()) {
+    CppFiberGenerator auxFiber(base, level, header);
+    auxFiber << o;
+  }
 
   for (auto instantiation : o->instantiations) {
     *this << instantiation;

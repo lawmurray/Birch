@@ -315,8 +315,8 @@ bi::Expression* bi::Resolver::modify(OverloadedIdentifier<Unknown>* o) {
 }
 
 bi::Expression* bi::Resolver::modify(OverloadedIdentifier<Function>* o) {
-  Modifier::modify(o);
   resolve(o, GLOBAL_SCOPE);
+  Modifier::modify(o);
   if (o->target->size() == 1) {
     auto only = instantiate(o, o->target->front());
     o->target = new Overloaded<Function>(only);
@@ -326,8 +326,8 @@ bi::Expression* bi::Resolver::modify(OverloadedIdentifier<Function>* o) {
 }
 
 bi::Expression* bi::Resolver::modify(OverloadedIdentifier<Fiber>* o) {
-  Modifier::modify(o);
   resolve(o, GLOBAL_SCOPE);
+  Modifier::modify(o);
   if (o->target->size() == 1) {
     auto only = instantiate(o, o->target->front());
     o->target = new Overloaded<Fiber>(only);
@@ -337,8 +337,8 @@ bi::Expression* bi::Resolver::modify(OverloadedIdentifier<Fiber>* o) {
 }
 
 bi::Expression* bi::Resolver::modify(OverloadedIdentifier<MemberFiber>* o) {
-  Modifier::modify(o);
   resolve(o, CLASS_SCOPE);
+  Modifier::modify(o);
   if (o->target->size() == 1) {
     auto only = o->target->front();
     o->target = new Overloaded<MemberFiber>(only);
@@ -348,8 +348,8 @@ bi::Expression* bi::Resolver::modify(OverloadedIdentifier<MemberFiber>* o) {
 }
 
 bi::Expression* bi::Resolver::modify(OverloadedIdentifier<MemberFunction>* o) {
-  Modifier::modify(o);
   resolve(o, CLASS_SCOPE);
+  Modifier::modify(o);
   if (o->target->size() == 1) {
     auto only = o->target->front();
     o->target = new Overloaded<MemberFunction>(only);
@@ -359,8 +359,8 @@ bi::Expression* bi::Resolver::modify(OverloadedIdentifier<MemberFunction>* o) {
 }
 
 bi::Expression* bi::Resolver::modify(OverloadedIdentifier<BinaryOperator>* o) {
-  Modifier::modify(o);
   resolve(o, GLOBAL_SCOPE);
+  Modifier::modify(o);
   if (o->target->size() == 1) {
     auto only = o->target->front();
     o->target = new Overloaded<BinaryOperator>(only);
