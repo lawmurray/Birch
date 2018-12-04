@@ -809,14 +809,18 @@ bi::Statement* bi::Resolver::modify(Yield* o) {
 }
 
 bi::Statement* bi::Resolver::modify(Instantiated<Type>* o) {
-  Modifier::modify(o);
-  o->single->accept(&annotator);
+  if (stage == RESOLVER_SOURCE) {
+    Modifier::modify(o);
+    o->single->accept(&annotator);
+  }
   return o;
 }
 
 bi::Statement* bi::Resolver::modify(Instantiated<Expression>* o) {
-  Modifier::modify(o);
-  o->single->accept(&annotator);
+  if (stage == RESOLVER_SOURCE) {
+    Modifier::modify(o);
+    o->single->accept(&annotator);
+  }
   return o;
 }
 
