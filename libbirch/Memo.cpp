@@ -33,15 +33,15 @@ bi::Memo* bi::Memo::fork() {
   return create(this);
 }
 
-bi::Any* bi::Memo::get(Any* o) {
-  assert(!child);
-  if (o->getMemo() == this) {
-    return o;
+std::tuple<bi::Any*,bi::Memo*> bi::Memo::get(Any* o) {
+  #if DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
+  o = deep(o);
+  #endif
+  if (!o || o->getMemo() == this) {
+    return std::make_tuple(o, this);
   } else {
-    auto cloned = clones.get(o);
-    if (cloned) {
-      return cloned;
-    } else {
+    SharedPtr<Any> cloned = clones.get(o);
+    if (!cloned) {
       #if DEEP_CLONE_STRATEGY == DEEP_CLONE_EAGER
       /* for an eager deep clone we must be cautious to avoid infinite
        * recursion; memory for the new object is allocated first and put
@@ -60,7 +60,6 @@ bi::Any* bi::Memo::get(Any* o) {
       cloneMemo = prevMemo;
       assert(cloned == uninit);  // clone should be in the allocation
       cloned->incShared();
-      return cloned;
       #else
       /* for a lazy deep clone there is no risk of infinite recursion, but
        * there may be thread contention if two threads access the same object
@@ -70,20 +69,29 @@ bi::Any* bi::Memo::get(Any* o) {
        * destroy any additional objects */
       auto prevMemo = cloneMemo;
       cloneMemo = this;
-      SharedPtr<Any> cloned = o->clone();
+      cloned = o->clone();
       cloneMemo = prevMemo;
-      return clones.put(o, cloned.get());
+      cloned = clones.put(o, cloned.get());
       #endif
     }
+    return std::make_tuple(cloned.get(), cloned->getMemo());
   }
 }
 
-bi::Any* bi::Memo::pull(Any* o) {
-  if (o->getMemo() == this) {
-    return o;
-  } else {
-    return clones.get(o, o);
+std::tuple<bi::Any*,bi::Memo*> bi::Memo::pull(Any* o) {
+  #if DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
+  o = deep(o);
+  #endif
+  Any* object = o;
+  Memo* memo = this;
+
+  if (o && o->getMemo() != this) {
+    object = clones.get(o, o);
+    if (object != o) {
+      memo = object->getMemo();
+    }
   }
+  return std::make_tuple(object, memo);
 }
 
 bi::Any* bi::Memo::deep(Any* o) {
@@ -91,6 +99,42 @@ bi::Any* bi::Memo::deep(Any* o) {
     return o;
   } else {
     auto pulled = parent->deep(o);
-    return clones.get(pulled, pulled);
+    return parent->clones.get(pulled, pulled);
   }
+}
+
+std::tuple<bi::Any*,bi::Memo*> bi::Memo::copy(Any* o) {
+  Any* object = o;
+  Memo* memo = this;
+  #if DEEP_CLONE_STRATEGY == DEEP_CLONE_EAGER
+  std::tie(object, memo) = memo->pull(object);
+  std::tie(object, memo) = cloneMemo->get(object);
+  #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
+  std::tie(object, memo) = memo->pull(object);
+  object = cloneMemo->deep(object);
+  #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
+  if (!cloneMemo->hasAncestor(memo)) {
+    std::tie(object, memo) = memo->pull(object);
+  }
+  memo = cloneMemo;
+  #endif
+  return std::make_tuple(object, memo);
+}
+
+std::tuple<bi::Any*,bi::Memo*> bi::Memo::clone(Any* o) {
+  Any* object;
+  Memo* memo;
+  #if DEEP_CLONE_STRATEGY == DEEP_CLONE_EAGER
+  std::tie(object, memo) = pull(o);
+  SharedPtr<Memo> child(memo->fork());  // so that destroyed on return
+  object = child->get(object);
+  memo = globalMemo;
+  #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
+  std::tie(object, memo) = pull(o);
+  memo = memo->fork();
+  #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
+  object = o;
+  memo = fork();
+  #endif
+  return std::make_tuple(object, memo);
 }

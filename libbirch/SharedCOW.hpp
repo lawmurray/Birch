@@ -231,21 +231,8 @@ public:
   SharedCOW(const SharedCOW<Any>& o) :
       object(o.object),
       memo(o.memo) {
-    if (cloneMemo && object) {
-      /* this is triggered during the clone of an object, for member
-       * variables of that object that include pointers */
-      #if DEEP_CLONE_STRATEGY == DEEP_CLONE_EAGER
-      object = cloneMemo->get(o.pullNoForward());
-      memo = nullptr;
-      #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
-      object = cloneMemo->deep(o.pullNoForward());
-      memo = cloneMemo;
-      #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
-      if (!cloneMemo->hasAncestor(memo.get())) {
-        object = o.pullNoForward();
-      }
-      memo = cloneMemo;
-      #endif
+    if (cloneMemo) {
+      std::tie(object, memo) = memo->copy(object.get());
     }
   }
 
@@ -261,20 +248,7 @@ public:
   }
 
   Any* get() {
-    #if DEEP_CLONE_STRATEGY != DEEP_CLONE_EAGER
-    if (object) {
-      assert(memo);
-      memo = memo->forward();
-      #if DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
-      object = memo->get(object.get());
-      #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
-      object = memo->get(memo->deep(object.get()));
-      #endif
-      if (object.get()->getMemo() == globalMemo.get()) {
-        memo = globalMemo;
-      }
-    }
-    #endif
+    std::tie(object, memo) = memo->forward()->get(object.get());
     return object.get();
   }
 
@@ -285,20 +259,7 @@ public:
   }
 
   Any* pull() {
-    #if DEEP_CLONE_STRATEGY != DEEP_CLONE_EAGER
-    if (object) {
-      assert(memo);
-      memo = memo->forward();
-      #if DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
-      object = memo->pull(object.get());
-      #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
-      object = memo->pull(memo->deep(object.get()));
-      #endif
-      if (object.get()->getMemo() == globalMemo.get()) {
-        memo = globalMemo;
-      }
-    }
-    #endif
+    std::tie(object, memo) = memo->forward()->pull(object.get());
     return object.get();
   }
 
@@ -308,42 +269,11 @@ public:
    return const_cast<SharedCOW<Any>*>(this)->pull();
   }
 
-  Any* pullNoForward() {
-    #if DEEP_CLONE_STRATEGY != DEEP_CLONE_EAGER
-    if (object) {
-      assert(memo);
-      #if DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
-      object = memo->pull(object.get());
-      #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
-      object = memo->pull(memo->deep(object.get()));
-      #endif
-      if (object.get()->getMemo() == globalMemo.get()) {
-        memo = globalMemo;
-      }
-    }
-    #endif
-    return object.get();
-  }
-
-  Any* pullNoForward() const {
-    /* even in a const context, do want to update the pointer through lazy
-     * deep clone mechanisms */
-   return const_cast<SharedCOW<Any>*>(this)->pullNoForward();
-  }
-
   SharedCOW<Any> clone() const {
-    #if DEEP_CLONE_STRATEGY == DEEP_CLONE_EAGER
-    SharedPtr<Memo> m(memo->fork());
-    return SharedCOW<Any>(m->get(pull()));
-    #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
-    auto o = pull();
-    auto m = memo->fork();
+    Any* o;
+    Memo* m;
+    std::tie(o, m) = memo->clone(object.get());
     return SharedCOW<Any>(o, m);
-    #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
-    auto o = object.get();
-    auto m = memo->fork();
-    return SharedCOW<Any>(o, m);
-    #endif
   }
 
   Any& operator*() const {

@@ -68,7 +68,7 @@ public:
    *
    * @return The mapped object.
    */
-  Any* get(Any* o);
+  std::tuple<Any*,Memo*> get(Any* o);
 
   /**
    * Shallow mapping of an object that may not yet have been cloned,
@@ -79,7 +79,7 @@ public:
    *
    * @return The mapped object.
    */
-  Any* pull(Any* o);
+  std::tuple<Any*,Memo*> pull(Any* o);
 
   /**
    * Deep mapping of an object through ancestor memos up to the current memo,
@@ -91,6 +91,16 @@ public:
    * @return The mapped object.
    */
   Any* deep(Any* o);
+
+  /**
+   * Copy of a pointer.
+   */
+  std::tuple<Any*,Memo*> copy(Any* o);
+
+  /**
+   * Initial clone of an object.
+   */
+  std::tuple<Any*,Memo*> clone(Any* o);
 
 private:
   /**
