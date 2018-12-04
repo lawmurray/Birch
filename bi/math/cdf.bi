@@ -106,6 +106,24 @@ function cdf_categorical(x:Integer, ρ:Real[_]) -> Real {
 }
 
 /**
+ * CDF of a compound-gamma variate.
+ *
+ * - x: The variate.
+ * - k: The shape.
+ * - α: The prior shape.
+ * - β: The prior scale.
+ *
+ * Return: the cumulative probability.
+ */
+function cdf_compound_gamma(x:Real, k:Real, α:Real, β:Real) -> Real {
+  if x < 0.0 {
+    return 0.0;
+  } else {
+    return ibeta(k, α, x/(β + x));
+  }
+}
+
+/**
  * CDF of a uniform variate.
  *
  * - x: The variate.
