@@ -796,9 +796,10 @@ class Reader {
  * Return: An optional with a value if the read is successful.
  */
 function get<Type>(reader:Reader) -> Type? {
-  x:Type?;
-  x <- Type?(reader.get(x));
-  return x;
+  x:Type;
+  y:Type?;
+  y <- Type?(reader.get(x));
+  return y;
 }
 
 /**
@@ -810,9 +811,7 @@ function get<Type>(reader:Reader) -> Type? {
  * Return: An optional with a value if the read is successful.
  */
 //function get<Type>(reader:Reader, name:String) -> Type? {
-//  x:Type?;
-//  x <- Type?(reader.get(name, x));
-//  return x;
+//  return get<Type>(reader.getObject(name));
 //}
 
 /**
@@ -824,7 +823,5 @@ function get<Type>(reader:Reader) -> Type? {
  * Return: An optional with a value if the read is successful.
  */
 //function get<Type>(reader:Reader, path:[String]) -> Type? {
-//  x:Type?;
-//  x <- Type?(reader.get(path, x));
-//  return x;
+//  return get<Type>(reader.getObject(path));
 //}
