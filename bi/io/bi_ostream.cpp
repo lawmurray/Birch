@@ -304,7 +304,7 @@ void bi::bi_ostream::visit(const Function* o) {
     if (!o->returnType->isEmpty()) {
       middle(" -> " << o->returnType);
     }
-    if (!header && !o->braces->isEmpty()) {
+    if (!o->braces->isEmpty() && (!header || o->isGeneric())) {
       finish(o->braces << "\n");
     } else {
       finish(';');
@@ -327,7 +327,7 @@ void bi::bi_ostream::visit(const Fiber* o) {
     if (!o->returnType->unwrap()->isEmpty()) {
       middle(" -> " << o->returnType->unwrap());
     }
-    if (!header && !o->braces->isEmpty()) {
+    if (!o->braces->isEmpty() && (!header || o->isGeneric())) {
       finish(o->braces << "\n");
     } else {
       finish(';');
