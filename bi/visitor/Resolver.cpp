@@ -478,7 +478,7 @@ bi::Statement* bi::Resolver::modify(Function* o) {
     if (!o->isInstantiation()) {
       scopes.back()->add(o);
     }
-  } else if (stage == RESOLVER_SOURCE) {
+  } else if (stage == RESOLVER_SOURCE && o->isBound()) {
     scopes.push_back(o->scope);
     returnTypes.push_back(o->returnType);
     o->braces = o->braces->accept(this);
@@ -504,7 +504,7 @@ bi::Statement* bi::Resolver::modify(Fiber* o) {
     if (!o->isInstantiation()) {
       scopes.back()->add(o);
     }
-  } else if (stage == RESOLVER_SOURCE) {
+  } else if (stage == RESOLVER_SOURCE && o->isBound()) {
     scopes.push_back(o->scope);
     yieldTypes.push_back(o->returnType->unwrap());
     o->braces = o->braces->accept(this);
