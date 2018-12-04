@@ -8,7 +8,6 @@
 #include "bi/exception/AssignmentOperatorException.hpp"
 #include "bi/exception/BaseException.hpp"
 #include "bi/exception/CallException.hpp"
-#include "bi/exception/CastException.hpp"
 #include "bi/exception/CompilerException.hpp"
 #include "bi/exception/ConditionException.hpp"
 #include "bi/exception/ConstructorException.hpp"

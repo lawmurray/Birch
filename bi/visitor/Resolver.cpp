@@ -69,14 +69,7 @@ bi::Expression* bi::Resolver::modify(Binary* o) {
 
 bi::Expression* bi::Resolver::modify(Cast* o) {
   Modifier::modify(o);
-  if (o->single->type->isPointer()
-      || (o->single->type->isOptional()
-          && o->single->type->unwrap()->isPointer())) {
-    o->type = new OptionalType(o->returnType, o->loc);
-    return o;
-  } else {
-    throw CastException(o);
-  }
+  o->type = new OptionalType(o->returnType, o->loc);
   return o;
 }
 

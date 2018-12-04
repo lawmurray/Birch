@@ -66,7 +66,11 @@ void bi::CppBaseGenerator::visit(const Sequence* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Cast* o) {
-  middle("bi::dynamic_pointer_cast<" << o->returnType->unwrap() << '>');
+  if (o->returnType->isPointer()) {
+    middle("bi::dynamic_pointer_cast<" << o->returnType->unwrap() << '>');
+  } else {
+    middle("bi::check_cast<" << o->returnType << '>');
+  }
   middle('(' << o->single << ')');
 }
 

@@ -60,7 +60,6 @@ COMMON_SOURCES = \
   bi/exception/AssignmentException.cpp \
   bi/exception/BaseException.cpp \
   bi/exception/CallException.cpp \
-  bi/exception/CastException.cpp \
   bi/exception/CompilerException.cpp \
   bi/exception/ConditionException.cpp \
   bi/exception/ConstructorException.cpp \
