@@ -11,6 +11,15 @@
 
 namespace bi {
 /**
+ * Should conversions be considered when comparing types?
+ *
+ * @internal This global variable is part of a hack used by Resolver to
+ * disambiguate overload resolution in some circumstances, favouring
+ * resolutions that do not require implicit type conversion.
+ */
+extern bool allowConversions;
+
+/**
  * Class type.
  *
  * @ingroup type

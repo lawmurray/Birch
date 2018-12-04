@@ -5,6 +5,8 @@
 
 #include "bi/visitor/all.hpp"
 
+bool bi::allowConversions = true;
+
 bi::ClassType::ClassType(Name* name, Type* typeArgs, Location* loc,
     Class* target) :
     Type(loc),
@@ -91,39 +93,39 @@ bool bi::ClassType::definitely(const MemberType& o) const {
 
 bool bi::ClassType::definitely(const ArrayType& o) const {
   assert(target);
-  return target->hasConversion(&o) || target->base->definitely(o);
+  return (allowConversions && target->hasConversion(&o)) || target->base->definitely(o);
 }
 
 bool bi::ClassType::definitely(const BasicType& o) const {
   assert(target);
-  return target->hasConversion(&o) || target->base->definitely(o);
+  return (allowConversions && target->hasConversion(&o)) || target->base->definitely(o);
 }
 
 bool bi::ClassType::definitely(const ClassType& o) const {
   assert(target);
   auto o1 = o.canonical();
   return target == o1->getClass() || target->hasSuper(o1)
-      || target->hasConversion(o1);
+      || (allowConversions && target->hasConversion(&o));
 }
 
 bool bi::ClassType::definitely(const FiberType& o) const {
   assert(target);
-  return target->hasConversion(&o) || target->base->definitely(o);
+  return (allowConversions && target->hasConversion(&o)) || target->base->definitely(o);
 }
 
 bool bi::ClassType::definitely(const FunctionType& o) const {
   assert(target);
-  return target->hasConversion(&o) || target->base->definitely(o);
+  return (allowConversions && target->hasConversion(&o))|| target->base->definitely(o);
 }
 
 bool bi::ClassType::definitely(const OptionalType& o) const {
-  return definitely(*o.single) || target->hasConversion(&o)
+  return definitely(*o.single) || (allowConversions && target->hasConversion(&o))
       || target->base->definitely(o);
 }
 
 bool bi::ClassType::definitely(const TupleType& o) const {
   assert(target);
-  return target->hasConversion(&o) || target->base->definitely(o);
+  return (allowConversions && target->hasConversion(&o)) || target->base->definitely(o);
 }
 
 bi::Type* bi::ClassType::dispatchCommon(const Type& o) const {

@@ -716,7 +716,7 @@ bi::Statement* bi::Resolver::modify(ExpressionStatement* o) {
   auto call = dynamic_cast<Call*>(o->single);
   if (call && call->type->isFiber()) {
     auto name = new Name();
-    auto var = new LocalVariable(NONE, name, o->single->type,
+    auto var = new LocalVariable(AUTO, name, new EmptyType(o->loc),
         new EmptyExpression(o->loc), new EmptyExpression(o->loc),
         o->single->accept(&cloner), o->loc);
     auto decl = new ExpressionStatement(var, o->loc);

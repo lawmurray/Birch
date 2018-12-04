@@ -29,6 +29,24 @@ template<class ObjectType>
 bi::FunctionType* bi::OverloadedIdentifier<ObjectType>::resolve(Argumented* o) {
   std::set<ObjectType*> matches;
   this->target->overloads.match(o, matches);
+
+  if (matches.size() > 1) {
+    /* try to disambiguate by favouring matches that do not require implicit
+     * type conversion; the use of a global variable is a hack */
+    allowConversions = false;
+    std::set<ObjectType*> preferredMatches;
+    definitely compare;
+    for (auto match : matches) {
+      if (compare(o, match)) {
+        preferredMatches.insert(match);
+      }
+    }
+    if (preferredMatches.size() == 1) {
+      matches = preferredMatches;
+    }
+    allowConversions = true;
+  }
+
   if (matches.size() > 1) {
     throw AmbiguousCallException(o, matches);
   } else if (matches.size() == 1) {
