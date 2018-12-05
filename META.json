@@ -5,6 +5,7 @@
   "manifest": {
     "source": [
       "libbirch/Any.cpp",
+      "libbirch/clone.cpp",
       "libbirch/Counted.cpp",
       "libbirch/libbirch.cpp",
       "libbirch/Lock.cpp",
@@ -217,6 +218,7 @@
       "libbirch/assert.hpp",
       "libbirch/basic.hpp",
       "libbirch/class.hpp",
+      "libbirch/clone.hpp",
       "libbirch/config.hpp",
       "libbirch/Counted.hpp",
       "libbirch/Eigen.hpp",

@@ -5,6 +5,8 @@
 
 #include "libbirch/config.hpp"
 #include "libbirch/Counted.hpp"
+#include "libbirch/SharedPtr.hpp"
+#include "libbirch/WeakPtr.hpp"
 #include "libbirch/Map.hpp"
 
 namespace bi {
@@ -60,53 +62,11 @@ public:
    */
   Memo* fork();
 
-  /**
-   * Shallow mapping of an object that may not yet have been cloned,
-   * cloning it if necessary.
-   *
-   * @param o The source object.
-   *
-   * @return The mapped object.
-   */
-  std::tuple<Any*,Memo*> get(Any* o);
-
-  /**
-   * Shallow mapping of an object that may not yet have been cloned,
-   * without cloning it. This can be used as an optimization for read-only
-   * access.
-   *
-   * @param o The source object.
-   *
-   * @return The mapped object.
-   */
-  std::tuple<Any*,Memo*> pull(Any* o);
-
-  /**
-   * Deep mapping of an object through ancestor memos up to the current memo,
-   * witout any cloning; get() or pull() should be called on the result to
-   * map through this memo.
-   *
-   * @param o The source object.
-   *
-   * @return The mapped object.
-   */
-  Any* deep(Any* o);
-
-  /**
-   * Copy of a pointer.
-   */
-  std::tuple<Any*,Memo*> copy(Any* o);
-
-  /**
-   * Initial clone of an object.
-   */
-  std::tuple<Any*,Memo*> clone(Any* o);
-
-private:
+public:
   /**
    * Parent memo.
    */
-  Memo* parent;
+  WeakPtr<Memo> parent;
 
   /**
    * Child memo to which to forward.

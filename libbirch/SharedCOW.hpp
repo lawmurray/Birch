@@ -5,6 +5,7 @@
 
 #include "libbirch/config.hpp"
 #include "libbirch/class.hpp"
+#include "libbirch/clone.hpp"
 #include "libbirch/memory.hpp"
 #include "libbirch/SharedPtr.hpp"
 #include "libbirch/InitPtr.hpp"
@@ -66,6 +67,14 @@ public:
    * Constructor.
    */
   SharedCOW(const WeakCOW<T>& o);
+
+  /**
+   * Constructor.
+   */
+  SharedCOW(const SharedPtr<T>& object, const SharedPtr<Memo>& memo) :
+      super_type(object, memo) {
+    //
+  }
 
   /**
    * Constructor.
@@ -220,6 +229,12 @@ public:
     //
   }
 
+  SharedCOW(const SharedPtr<Any>& object, const SharedPtr<Memo>& memo) :
+      object(object),
+      memo(memo) {
+    //
+  }
+
   SharedCOW(Any* object, Memo* memo) :
       object(object),
       memo(memo) {
@@ -232,7 +247,7 @@ public:
       object(o.object),
       memo(o.memo) {
     if (cloneMemo) {
-      std::tie(object, memo) = memo->copy(object.get());
+      clone_continue(object, memo);
     }
   }
 
@@ -248,7 +263,10 @@ public:
   }
 
   Any* get() {
-    std::tie(object, memo) = memo->forward()->get(object.get());
+    #if DEEP_CLONE_STRATEGY != DEEP_CLONE_EAGER
+    memo = memo->forward();
+    clone_get(object, memo);
+    #endif
     return object.get();
   }
 
@@ -259,7 +277,10 @@ public:
   }
 
   Any* pull() {
-    std::tie(object, memo) = memo->forward()->pull(object.get());
+    #if DEEP_CLONE_STRATEGY != DEEP_CLONE_EAGER
+    memo = memo->forward();
+    clone_pull(object, memo);
+    #endif
     return object.get();
   }
 
@@ -270,9 +291,9 @@ public:
   }
 
   SharedCOW<Any> clone() const {
-    Any* o;
-    Memo* m;
-    std::tie(o, m) = memo->clone(object.get());
+    SharedPtr<Any> o = object;
+    SharedPtr<Memo> m = memo->forward();
+    clone_start(o, m);
     return SharedCOW<Any>(o, m);
   }
 

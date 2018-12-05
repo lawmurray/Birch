@@ -48,7 +48,7 @@ extern SharedPtr<Memo> globalMemo;
  *
  * Instead, this global variable is used.
  */
-extern Memo* cloneMemo;
+extern SharedPtr<Memo> cloneMemo;
 #pragma omp threadprivate(cloneMemo)
 
 /**

@@ -14,7 +14,7 @@ bi::Pool bi::pool[64];
 
 static bi::Memo* rootMemo = bi::Memo::create();
 bi::SharedPtr<bi::Memo> bi::globalMemo = rootMemo;
-bi::Memo* bi::cloneMemo = nullptr;
+bi::SharedPtr<bi::Memo> bi::cloneMemo = nullptr;
 
 char* bi::heap() {
 #if DISABLE_POOL

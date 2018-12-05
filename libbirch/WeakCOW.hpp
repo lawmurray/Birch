@@ -4,6 +4,7 @@
 #pragma once
 
 #include "libbirch/config.hpp"
+#include "libbirch/clone.hpp"
 #include "libbirch/SharedCOW.hpp"
 #include "libbirch/WeakPtr.hpp"
 #include "libbirch/InitPtr.hpp"
@@ -190,7 +191,7 @@ public:
       object(o.object),
       memo(o.memo) {
     if (cloneMemo) {
-      std::tie(object, memo) = memo->copy(object.get());
+      clone_continue(object, memo);
     }
   }
 
@@ -199,7 +200,10 @@ public:
   WeakCOW<Any>& operator=(WeakCOW<Any>&& o) = default;
 
   Any* pull() {
-    std::tie(object, memo) = memo->forward()->pull(object.get());
+    #if DEEP_CLONE_STRATEGY != DEEP_CLONE_EAGER
+    memo = memo->forward();
+    clone_pull(object, memo);
+    #endif
     return object.get();
   }
 

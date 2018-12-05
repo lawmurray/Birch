@@ -48,6 +48,10 @@ public:
   SharedPtr(const WeakPtr<T>& o) :
       ptr(o.ptr ? static_cast<T*>(o.ptr->lock()) : nullptr) {
     assert(!ptr || ptr->numShared() > 1);
+    if (!ptr) {
+      /* release the weak pointer to free up memory */
+      const_cast<WeakPtr<T>&>(o) = nullptr;
+    }
   }
 
   /**
@@ -94,6 +98,7 @@ public:
    * Get the raw pointer.
    */
   T* get() const {
+    assert(!ptr || ptr->numShared() > 0);
     return ptr;
   }
 
@@ -102,6 +107,7 @@ public:
    */
   T& operator*() const {
     assert(ptr);
+    assert(ptr->numShared() > 0);
     return *get();
   }
 
@@ -110,6 +116,7 @@ public:
    */
   T* operator->() const {
     assert(ptr);
+    assert(ptr->numShared() > 0);
     return get();
   }
 

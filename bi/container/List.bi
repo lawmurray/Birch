@@ -106,7 +106,7 @@ class List<Type> {
     
     if (tail?) {
       tail!.next <- node;
-      node.prev <- this.tail;
+      node.prev <- tail!;
     } else {
       head <- node;
     }
