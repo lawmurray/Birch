@@ -18,7 +18,7 @@ bool bi::Memo::hasAncestor(Memo* memo) const {
 }
 
 bi::Memo* bi::Memo::forward() {
-  return child ? child.get() : this;
+  return child ? child->forward() : this;
 }
 
 bi::Memo* bi::Memo::fork() {
