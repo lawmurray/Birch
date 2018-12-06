@@ -46,7 +46,7 @@ bi::Map::value_type bi::Map::put(const key_type key, const value_type value) {
   assert(key);
   assert(value);
 
-  //key->incWeak();
+  key->incWeak();
   value->incShared();
 
   reserve();
@@ -66,7 +66,7 @@ bi::Map::value_type bi::Map::put(const key_type key, const value_type value) {
   if (expected.key == key) {
     unreserve();  // key exists, cancel reservation for insert
     result = expected.value;
-    //key->decWeak();
+    key->decWeak();
     value->decShared();
   } else {
     result = value;
@@ -110,7 +110,7 @@ bi::Map::value_type bi::Map::set(const key_type key, const value_type value) {
   assert(key);
   assert(value);
 
-  //key->incWeak();
+  key->incWeak();
   value->incShared();
 
   reserve();
@@ -131,7 +131,7 @@ bi::Map::value_type bi::Map::set(const key_type key, const value_type value) {
     value_type old = expected.value;
     while (!entries[i].split.value.compare_exchange_weak(old, value))
       ;
-    //key->decWeak();
+    key->decWeak();
     old->decShared();
   }
   lock.unshare();
@@ -154,7 +154,7 @@ void bi::Map::destroy() {
   for (size_t i = 0; i < nentries; ++i) {
     joint_entry_type entry = entries1[i];
     if (entry.key) {
-      //entry.key->decWeak();
+      entry.key->decWeak();
       entry.value->decWeak();
     }
   }
@@ -195,11 +195,19 @@ void bi::Map::reserve() {
       for (size_t i = 0u; i < nentries1; ++i) {
         joint_entry_type entry = entries1[i];
         if (entry.key) {
-          size_t j = hash(entry.key);
-          while (entries2[j].key) {
-            j = (j + 1u) & (nentries2 - 1u);
+          if (entry.key->numShared() == 0) {
+            /* key is useless, release */
+            --noccupied;
+            entry.key->decWeak();
+            entry.value->decShared();
+          } else {
+            /* rehash and insert */
+            size_t j = hash(entry.key);
+            while (entries2[j].key) {
+              j = (j + 1u) & (nentries2 - 1u);
+            }
+            entries2[j] = entry;
           }
-          entries2[j] = entry;
         }
       }
       entries = (entry_type*)entries2;
