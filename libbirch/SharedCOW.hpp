@@ -207,25 +207,25 @@ public:
   using root_type = SharedCOW<value_type>;
 
   SharedCOW(const Nil& = nil) :
-      memo(globalMemo) {
+      memo(globalMemo->forwardGet()) {
     //
   }
 
   SharedCOW(Any* object) :
       object(object),
-      memo(globalMemo) {
+      memo(globalMemo->forwardGet()) {
     //
   }
 
   SharedCOW(const SharedPtr<Any>& object) :
       object(object),
-      memo(globalMemo) {
+      memo(globalMemo->forwardGet()) {
     //
   }
 
   SharedCOW(const WeakPtr<Any>& object) :
       object(object),
-      memo(globalMemo) {
+      memo(globalMemo->forwardGet()) {
     //
   }
 
@@ -264,7 +264,7 @@ public:
 
   Any* get() {
     #if DEEP_CLONE_STRATEGY != DEEP_CLONE_EAGER
-    memo = memo->forward();
+    memo = memo->forwardGet();
     clone_get(object, memo);
     #endif
     return object.get();
@@ -278,7 +278,7 @@ public:
 
   Any* pull() {
     #if DEEP_CLONE_STRATEGY != DEEP_CLONE_EAGER
-    memo = memo->forward();
+    memo = memo->forwardPull();
     clone_pull(object, memo);
     #endif
     return object.get();
@@ -292,7 +292,7 @@ public:
 
   SharedCOW<Any> clone() const {
     SharedPtr<Any> o = object;
-    SharedPtr<Memo> m = memo->forward();
+    SharedPtr<Memo> m = memo->forwardPull();
     clone_start(o, m);
     return SharedCOW<Any>(o, m);
   }

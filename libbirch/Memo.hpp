@@ -48,7 +48,18 @@ public:
    * @return If the memo has previously been forked, returns the child to
    * which requests should be forwarded, otherwise returns this.
    */
-  Memo* forward();
+  Memo* forwardGet();
+
+  /**
+   * Forward.
+   *
+   * @return If the memo has previously been forked, returns the child to
+   * which requests should be forwarded, otherwise returns this.
+   *
+   * This version permits an optimization over forwardGet(): if no objects
+   * have yet been copied forward, returns this instead.
+   */
+  Memo* forwardPull();
 
   /**
    * Fork.
@@ -71,5 +82,10 @@ public:
    * Child memo to which to forward.
    */
   SharedPtr<Memo> child;
+
+  /**
+   * Has this memo been forked?
+   */
+  bool forked;
 };
 }

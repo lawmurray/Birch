@@ -153,25 +153,25 @@ public:
   using root_type = WeakCOW<value_type>;
 
   WeakCOW(const Nil& = nil) :
-      memo(globalMemo) {
+      memo(globalMemo->forwardGet()) {
     //
   }
 
   WeakCOW(Any* object) :
       object(object),
-      memo(globalMemo) {
+      memo(globalMemo->forwardGet()) {
     //
   }
 
   WeakCOW(const SharedPtr<Any>& object) :
       object(object),
-      memo(globalMemo) {
+      memo(globalMemo->forwardGet()) {
     //
   }
 
   WeakCOW(const WeakPtr<Any>& object) :
       object(object),
-      memo(globalMemo) {
+      memo(globalMemo->forwardGet()) {
     //
   }
 
@@ -201,7 +201,7 @@ public:
 
   Any* pull() {
     #if DEEP_CLONE_STRATEGY != DEEP_CLONE_EAGER
-    memo = memo->forward();
+    memo = memo->forwardPull();
     clone_pull(object, memo);
     #endif
     return object.get();

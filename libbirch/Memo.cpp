@@ -4,7 +4,8 @@
 #include "libbirch/Memo.hpp"
 
 bi::Memo::Memo(Memo* parent) :
-    parent(parent) {
+    parent(parent),
+    forked(false) {
   //
 }
 
@@ -17,27 +18,36 @@ bool bi::Memo::hasAncestor(Memo* memo) const {
   return parent && (parent == memo || parent->hasAncestor(memo));
 }
 
-bi::Memo* bi::Memo::forward() {
+bi::Memo* bi::Memo::forwardGet() {
+  #if DEEP_CLONE_STRATEGY != DEEP_CLONE_EAGER
+  ///@todo make this thread safe
   if (child) {
-    return child->forward();
+    return child->forwardGet();
+  } else if (forked) {
+    child = create(this);
+    if (globalMemo.get() == this) {
+      globalMemo = child;
+    }
+    return child.get();
   } else {
     return this;
   }
-  //return child ? child->forward() : this;
+  #else
+  return this;
+  #endif
+}
+
+bi::Memo* bi::Memo::forwardPull() {
+  #if DEEP_CLONE_STRATEGY != DEEP_CLONE_EAGER
+  return child ? child->forwardPull() : this;
+  #else
+  return this;
+  #endif
 }
 
 bi::Memo* bi::Memo::fork() {
   #if DEEP_CLONE_STRATEGY != DEEP_CLONE_EAGER
-  if (!child) {
-    /* create the forward memo */
-    ///@todo make this thread safe
-    child = create(this);
-    if (globalMemo == this) {
-      globalMemo = child;
-    }
-  }
+  forked = true;
   #endif
-
-  /* create and return the clone memo */
   return create(this);
 }
