@@ -18,10 +18,12 @@ bi::Counted::Counted(const Counted& o) :
 }
 
 bi::Counted::~Counted() {
+  clones.weaken();
   assert(sharedCount == 0);
 }
 
 void bi::Counted::deallocate() {
+  clones.destroy();
   bi::deallocate(this, size);
 }
 

@@ -74,11 +74,11 @@ public:
    * Copy assignment.
    */
   WeakPtr<T>& operator=(const WeakPtr<T>& o) {
+    if (o.ptr) {
+      o.ptr->incWeak();
+    }
     auto old = ptr;
     ptr = o.ptr;
-    if (ptr) {
-      ptr->incWeak();
-    }
     if (old) {
       old->decWeak();
     }

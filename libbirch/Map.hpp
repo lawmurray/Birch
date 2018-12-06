@@ -21,7 +21,7 @@ public:
   /**
    * Key type.
    */
-  using key_type = Any*;
+  using key_type = Memo*;
 
   /**
    * Value type.
@@ -84,6 +84,16 @@ public:
    * Use set() to overwrite any existing value, put() to not overwrite it.
    */
   value_type set(const key_type key, const value_type value);
+
+  /**
+   * Convert shared references to values to weak references.
+   */
+  void weaken();
+
+  /**
+   * Destroy the map and release weak references.
+   */
+  void destroy();
 
 private:
   /**

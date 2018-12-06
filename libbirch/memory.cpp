@@ -12,8 +12,7 @@ char* bi::bufferStart;
 size_t bi::bufferSize;
 bi::Pool bi::pool[64];
 
-static bi::Memo* rootMemo = bi::Memo::create();
-bi::SharedPtr<bi::Memo> bi::globalMemo = rootMemo;
+bi::SharedPtr<bi::Memo> bi::globalMemo = bi::Memo::create();
 bi::SharedPtr<bi::Memo> bi::cloneMemo = nullptr;
 
 char* bi::heap() {

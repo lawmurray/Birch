@@ -7,7 +7,6 @@
 #include "libbirch/Counted.hpp"
 #include "libbirch/SharedPtr.hpp"
 #include "libbirch/WeakPtr.hpp"
-#include "libbirch/Map.hpp"
 
 namespace bi {
 /**
@@ -72,10 +71,5 @@ public:
    * Child memo to which to forward.
    */
   SharedPtr<Memo> child;
-
-  /**
-   * Map of original objects to clones.
-   */
-  Map clones;
 };
 }

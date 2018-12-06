@@ -75,11 +75,11 @@ public:
    * Copy assignment.
    */
   SharedPtr<T>& operator=(const SharedPtr<T>& o) {
+    if (o.ptr) {
+      o.ptr->incShared();
+    }
     auto old = ptr;
     ptr = o.ptr;
-    if (ptr) {
-      ptr->incShared();
-    }
     if (old) {
       old->decShared();
     }

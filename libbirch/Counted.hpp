@@ -4,6 +4,7 @@
 #pragma once
 
 #include "libbirch/config.hpp"
+#include "libbirch/Map.hpp"
 
 namespace bi {
 /**
@@ -144,5 +145,11 @@ protected:
    * Weak count.
    */
   std::atomic<unsigned> weakCount;
+
+public:
+  /**
+   * Map of original objects to clones.
+   */
+  Map clones;
 };
 }

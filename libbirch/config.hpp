@@ -59,7 +59,7 @@
  *
  * Initial number of entries in each new map used for deep clones.
  */
-#define DEEP_CLONE_MAP_SIZE 64ull
+#define DEEP_CLONE_MAP_SIZE 8ull
 
 /**
  * @def STANDARD_CREATE_FUNCTION

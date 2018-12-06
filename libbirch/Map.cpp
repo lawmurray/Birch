@@ -11,15 +11,7 @@ bi::Map::Map() :
 }
 
 bi::Map::~Map() {
-  joint_entry_type* entries1 = (joint_entry_type*)entries;
-  for (size_t i = 0; i < nentries; ++i) {
-    joint_entry_type entry = entries1[i];
-    if (entry.key) {
-      //entry.key->decWeak();
-      entry.value->decShared();
-    }
-  }
-  deallocate(entries, nentries * sizeof(entry_type));
+  //
 }
 
 bool bi::Map::empty() const {
@@ -144,6 +136,29 @@ bi::Map::value_type bi::Map::set(const key_type key, const value_type value) {
   }
   lock.unshare();
   return value;
+}
+
+void bi::Map::weaken() {
+  joint_entry_type* entries1 = (joint_entry_type*)entries;
+  for (size_t i = 0; i < nentries; ++i) {
+    joint_entry_type entry = entries1[i];
+    if (entry.key) {
+      entry.value->incWeak();
+      entry.value->decShared();
+    }
+  }
+}
+
+void bi::Map::destroy() {
+  joint_entry_type* entries1 = (joint_entry_type*)entries;
+  for (size_t i = 0; i < nentries; ++i) {
+    joint_entry_type entry = entries1[i];
+    if (entry.key) {
+      //entry.key->decWeak();
+      entry.value->decWeak();
+    }
+  }
+  deallocate(entries, nentries * sizeof(entry_type));
 }
 
 size_t bi::Map::hash(const key_type key) const {

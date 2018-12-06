@@ -34,7 +34,6 @@ extern Pool pool[];
  * The memo object associated with new objects.
  */
 extern SharedPtr<Memo> globalMemo;
-#pragma omp threadprivate(globalMemo)
 
 /**
  * The memo object associated with the current clone; @c nullptr if no clone

@@ -40,7 +40,7 @@ void bi::clone_get(PointerType& o, SharedPtr<Memo>& m) {
   #endif
 
   if (o.get() && o.get()->getMemo() != m.get()) {
-    auto cloned = m->clones.get(o.get());
+    auto cloned = o.get()->clones.get(m.get());
     if (!cloned) {
       /* promote weak pointer to shared pointer for further null check */
       SharedPtr<Any> s = o;
@@ -56,7 +56,7 @@ void bi::clone_get(PointerType& o, SharedPtr<Memo>& m) {
          * reference counts before any recursive clones occur */
         Any* alloc = static_cast<Any*>(allocate(s->getSize()));
         assert(alloc);
-        Any* uninit = m->clones.uninitialized_put(s.get(), alloc);
+        Any* uninit = s->clones.uninitialized_put(m.get(), alloc);
         assert(uninit == alloc);  // should be no thread contention here
         auto prevMemo = cloneMemo;
         cloneMemo = m;
@@ -73,9 +73,9 @@ void bi::clone_get(PointerType& o, SharedPtr<Memo>& m) {
          * destroy any additional objects */
         auto prevMemo = cloneMemo;
         cloneMemo = m;
-        SharedPtr<Any> object = s->clone();
+        s = s->clone();
         cloneMemo = prevMemo;
-        cloned = m->clones.put(s.get(), object.get());
+        cloned = o.get()->clones.put(m.get(), s.get());
         #endif
       }
     }
@@ -90,7 +90,7 @@ void bi::clone_pull(PointerType& o, SharedPtr<Memo>& m) {
   clone_deep(o, m);
   #endif
   if (o && o.get()->getMemo() != m.get()) {
-    auto object = m->clones.get(o.get(), o.get());
+    auto object = o.get()->clones.get(m.get(), o.get());
     if (object != o.get()) {
       o = object;
       m = object->getMemo();
@@ -103,7 +103,7 @@ void bi::clone_deep(PointerType& o, SharedPtr<Memo>& m) {
   SharedPtr<Memo> parent = m->parent;
   if (o && o.get()->getMemo() != m.get() && parent) {
     clone_deep(o, parent);
-    o = parent->clones.get(o.get(), o.get());
+    o = o.get()->clones.get(parent.get(), o.get());
   }
 }
 

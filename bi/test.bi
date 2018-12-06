@@ -4,6 +4,7 @@
 program test(N:Integer <- 10000) {
   code:Integer <- 0;
   
+  code <- code + run_test("deep_clone_leak");
   code <- code + run_test("deep_clone_modify_dst");
   code <- code + run_test("deep_clone_modify_src");
   code <- code + run_test("beta_bernoulli", N);
