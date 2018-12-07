@@ -21,7 +21,7 @@ class StateSpaceModel<Parameter,State,Observation> <
   y1:List<Observation>;
 
   function start() -> Real {
-    super.start();
+    auto w <- super.start();
 
     /* initial observation */
     if (!y1.empty()) {
@@ -39,7 +39,7 @@ class StateSpaceModel<Parameter,State,Observation> <
   }
 
   function step() -> Real {
-    super.step();
+    auto w <- super.step();
 
     /* observation */
     if (!y1.empty()) {
