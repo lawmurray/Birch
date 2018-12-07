@@ -35,11 +35,13 @@ void bi::clone_continue(PointerType& o, SharedPtr<Memo>& m) {
 
 template<class PointerType>
 void bi::clone_get(PointerType& o, SharedPtr<Memo>& m) {
+  assert(o);
+
   #if DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
   clone_deep(o, m);
   #endif
 
-  if (o.get() && o.get()->getMemo() != m.get()) {
+  if (o.get()->getMemo() != m.get()) {
     auto cloned = o.get()->clones.get(m.get());
     if (!cloned) {
       /* promote weak pointer to shared pointer for further null check */
@@ -92,18 +94,22 @@ void bi::clone_get(PointerType& o, SharedPtr<Memo>& m) {
 
 template<class PointerType>
 void bi::clone_pull(PointerType& o, SharedPtr<Memo>& m) {
+  assert(o);
+
   #if DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
   clone_deep(o, m);
   #endif
-  if (o && o.get()->getMemo() != m.get()) {
+  if (o.get()->getMemo() != m.get()) {
     o = o.get()->clones.get(m.get(), o.get());
   }
 }
 
 template<class PointerType>
 void bi::clone_deep(PointerType& o, SharedPtr<Memo>& m) {
+  assert(o);
+
   SharedPtr<Memo> parent = m->parent;
-  if (o && o.get()->getMemo() != m.get() && parent) {
+  if (o.get()->getMemo() != m.get() && parent) {
     clone_deep(o, parent);
     o = o.get()->clones.get(parent.get(), o.get());
   }

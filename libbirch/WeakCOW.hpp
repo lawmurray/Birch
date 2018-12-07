@@ -37,61 +37,14 @@ public:
   /**
    * Constructor.
    */
-  WeakCOW(T* object) :
-      super_type(object) {
-    //
-  }
-
-  /**
-   * Constructor.
-   */
-  WeakCOW(const SharedPtr<T>& object) :
-      super_type(object) {
-    //
-  }
-
-  /**
-   * Constructor.
-   */
-  WeakCOW(const WeakPtr<T>& object) :
-      super_type(object) {
-    //
-  }
-
-  /**
-   * Constructor.
-   */
   WeakCOW(const SharedCOW<T>& o) :
       super_type(o) {
     //
   }
 
-  /**
-   * Constructor.
-   */
-  WeakCOW(T* object, Memo* memo) :
-      super_type(object, memo) {
-    //
-  }
-
-  /**
-   * Copy constructor.
-   */
   WeakCOW(const WeakCOW<T>& o) = default;
-
-  /**
-   * Move constructor.
-   */
   WeakCOW(WeakCOW<T>&& o) = default;
-
-  /**
-   * Copy assignment.
-   */
   WeakCOW<T>& operator=(const WeakCOW<T>& o) = default;
-
-  /**
-   * Move assignment.
-   */
   WeakCOW<T>& operator=(WeakCOW<T>&& o) = default;
 
   /**
@@ -152,26 +105,7 @@ public:
   using value_type = Any;
   using root_type = WeakCOW<value_type>;
 
-  WeakCOW(const Nil& = nil) :
-      memo(cloneMemo->forwardGet()) {
-    //
-  }
-
-  WeakCOW(Any* object) :
-      object(object),
-      memo(cloneMemo->forwardGet()) {
-    //
-  }
-
-  WeakCOW(const SharedPtr<Any>& object) :
-      object(object),
-      memo(cloneMemo->forwardGet()) {
-    //
-  }
-
-  WeakCOW(const WeakPtr<Any>& object) :
-      object(object),
-      memo(cloneMemo->forwardGet()) {
+  WeakCOW(const Nil& = nil) {
     //
   }
 
@@ -181,16 +115,10 @@ public:
     //
   }
 
-  WeakCOW(Any* object, Memo* memo) :
-      object(object),
-      memo(memo) {
-    //
-  }
-
   WeakCOW(const WeakCOW<Any>& o) :
       object(o.object),
       memo(o.memo) {
-    if (cloneUnderway) {
+    if (cloneUnderway && object) {
       clone_continue(object, memo);
     }
   }
@@ -201,8 +129,10 @@ public:
 
   Any* pull() {
     #if DEEP_CLONE_STRATEGY != DEEP_CLONE_EAGER
-    memo = memo->forwardPull();
-    clone_pull(object, memo);
+    if (object) {
+      memo = memo->forwardPull();
+      clone_pull(object, memo);
+    }
     #endif
     return object.get();
   }

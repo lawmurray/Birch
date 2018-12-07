@@ -58,14 +58,6 @@ public:
   /**
    * Constructor.
    */
-  SharedCOW(const WeakPtr<T>& object) :
-      super_type(object) {
-    //
-  }
-
-  /**
-   * Constructor.
-   */
   SharedCOW(const WeakCOW<T>& o);
 
   /**
@@ -206,26 +198,19 @@ public:
   using value_type = Any;
   using root_type = SharedCOW<value_type>;
 
-  SharedCOW(const Nil& = nil) :
-      memo(cloneMemo->forwardGet()) {
+  SharedCOW(const Nil& = nil) {
     //
   }
 
   SharedCOW(Any* object) :
       object(object),
-      memo(cloneMemo->forwardGet()) {
+      memo(object ? object->getMemo() : nullptr) {
     //
   }
 
   SharedCOW(const SharedPtr<Any>& object) :
       object(object),
-      memo(cloneMemo->forwardGet()) {
-    //
-  }
-
-  SharedCOW(const WeakPtr<Any>& object) :
-      object(object),
-      memo(cloneMemo->forwardGet()) {
+      memo(object ? object->getMemo() : nullptr) {
     //
   }
 
@@ -246,7 +231,7 @@ public:
   SharedCOW(const SharedCOW<Any>& o) :
       object(o.object),
       memo(o.memo) {
-    if (cloneUnderway) {
+    if (cloneUnderway && object) {
       clone_continue(object, memo);
     }
   }
@@ -264,8 +249,10 @@ public:
 
   Any* get() {
     #if DEEP_CLONE_STRATEGY != DEEP_CLONE_EAGER
-    memo = memo->forwardGet();
-    clone_get(object, memo);
+    if (object) {
+      memo = memo->forwardGet();
+      clone_get(object, memo);
+    }
     #endif
     return object.get();
   }
@@ -278,8 +265,10 @@ public:
 
   Any* pull() {
     #if DEEP_CLONE_STRATEGY != DEEP_CLONE_EAGER
-    memo = memo->forwardPull();
-    clone_pull(object, memo);
+    if (object) {
+      memo = memo->forwardPull();
+      clone_pull(object, memo);
+    }
     #endif
     return object.get();
   }
@@ -291,9 +280,13 @@ public:
   }
 
   SharedCOW<Any> clone() const {
-    SharedPtr<Any> o = object;
-    SharedPtr<Memo> m = memo->forwardPull();
-    clone_start(o, m);
+    SharedPtr<Any> o;
+    SharedPtr<Memo> m;
+    if (object) {
+      o = object;
+      m = memo->forwardPull();
+      clone_start(o, m);
+    }
     return SharedCOW<Any>(o, m);
   }
 
