@@ -11,7 +11,7 @@ bi::Any::Any() :
 }
 
 bi::Any::Any(const Any& o) :
-    memo(cloneMemo->forwardGet()) {
+    memo(cloneMemo) {
   //
 }
 

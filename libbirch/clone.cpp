@@ -65,7 +65,7 @@ void bi::clone_get(PointerType& o, SharedPtr<Memo>& m) {
         cloneMemo = m;
         cloneUnderway = true;
         cloned = s->clone(uninit);
-        cloneMemo = prevMemo;
+        cloneMemo = prevMemo->forwardPull();
         cloneUnderway = prevUnderway;
         assert(cloned == uninit);  // clone should be in the allocation
         m->incWeak();  // uninitialized_put(), so responsible for ref counts
@@ -82,7 +82,7 @@ void bi::clone_get(PointerType& o, SharedPtr<Memo>& m) {
         cloneMemo = m;
         cloneUnderway = true;
         s = s->clone();
-        cloneMemo = prevMemo;
+        cloneMemo = prevMemo->forwardPull();
         cloneUnderway = prevUnderway;
         cloned = o.get()->clones.put(m.get(), s.get());
         #endif
