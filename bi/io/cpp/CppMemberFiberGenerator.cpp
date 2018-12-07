@@ -52,11 +52,18 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     out();
     line("private:");
     in();
+
     line("auto self() {");
     in();
     line("return object.get();");
     out();
     line("}");
+
+    line("auto shared_from_self() {");
+    in();
+    line("return SharedCOW<this_type>(self());");
+    out();
+    line("}\n");
   }
 
   if (header) {

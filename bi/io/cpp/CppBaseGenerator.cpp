@@ -180,7 +180,7 @@ void bi::CppBaseGenerator::visit(const Member* o) {
 
 void bi::CppBaseGenerator::visit(const This* o) {
   // only need to handle the case outside member expression
-  middle("this->self()");
+  middle("this->shared_from_self()");
 }
 
 void bi::CppBaseGenerator::visit(const Super* o) {
