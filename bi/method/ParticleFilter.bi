@@ -1,7 +1,7 @@
 /**
  * Particle filter.
  */
-class ParticleFilter {
+class ParticleFilter < Sampler {
   /**
    * Canonical particle from which others are initialized. Ensures that
    * input is only consumed once.

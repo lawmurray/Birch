@@ -163,6 +163,7 @@
       "bi/math/vector.bi",
       "bi/method/AliveParticleFilter.bi",
       "bi/method/ParticleFilter.bi",
+      "bi/method/Sampler.bi",
       "bi/method/resample.bi",
       "bi/model/MarkovModel.bi",
       "bi/model/Model.bi",

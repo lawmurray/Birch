@@ -66,9 +66,9 @@ program sample(
   }
   
   /* set up method */
-  sampler:ParticleFilter? <- ParticleFilter?(make(method));
+  sampler:Sampler? <- Sampler?(make(method));
   if (!sampler?) {
-    stderr.print("error: " + method + " must be a subtype of ParticleFilter with no initialization parameters.\n");
+    stderr.print("error: " + method + " must be a subtype of Sampler with no initialization parameters.\n");
     exit(1);
   }
 
