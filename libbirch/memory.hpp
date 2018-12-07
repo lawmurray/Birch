@@ -31,12 +31,7 @@ extern size_t bufferSize;
 extern Pool pool[];
 
 /**
- * The memo object associated with new objects.
- */
-extern SharedPtr<Memo> globalMemo;
-
-/**
- * The memo object associated with the current clone; @c nullptr if no clone
+ * The memo object associated with new objects; @c nullptr if no clone
  * is underway.
  *
  * Ideally, clone operations would pass around the memo as an argument to
@@ -49,6 +44,12 @@ extern SharedPtr<Memo> globalMemo;
  */
 extern SharedPtr<Memo> cloneMemo;
 #pragma omp threadprivate(cloneMemo)
+
+/**
+ * Is a clone currently underway?
+ */
+extern bool cloneUnderway;
+#pragma omp threadprivate(cloneUnderway)
 
 /**
  * Allocate a large buffer for the heap.

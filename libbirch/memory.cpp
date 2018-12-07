@@ -12,8 +12,9 @@ char* bi::bufferStart;
 size_t bi::bufferSize;
 bi::Pool bi::pool[64];
 
-bi::SharedPtr<bi::Memo> bi::globalMemo = bi::Memo::create();
-bi::SharedPtr<bi::Memo> bi::cloneMemo = nullptr;
+static bi::Memo* rootMemo = bi::Memo::create();
+bi::SharedPtr<bi::Memo> bi::cloneMemo = rootMemo;
+bool bi::cloneUnderway = false;
 
 char* bi::heap() {
 #if DISABLE_POOL

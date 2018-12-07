@@ -153,25 +153,25 @@ public:
   using root_type = WeakCOW<value_type>;
 
   WeakCOW(const Nil& = nil) :
-      memo(globalMemo->forwardGet()) {
+      memo(cloneMemo->forwardGet()) {
     //
   }
 
   WeakCOW(Any* object) :
       object(object),
-      memo(globalMemo->forwardGet()) {
+      memo(cloneMemo->forwardGet()) {
     //
   }
 
   WeakCOW(const SharedPtr<Any>& object) :
       object(object),
-      memo(globalMemo->forwardGet()) {
+      memo(cloneMemo->forwardGet()) {
     //
   }
 
   WeakCOW(const WeakPtr<Any>& object) :
       object(object),
-      memo(globalMemo->forwardGet()) {
+      memo(cloneMemo->forwardGet()) {
     //
   }
 
@@ -190,7 +190,7 @@ public:
   WeakCOW(const WeakCOW<Any>& o) :
       object(o.object),
       memo(o.memo) {
-    if (cloneMemo) {
+    if (cloneUnderway) {
       clone_continue(object, memo);
     }
   }

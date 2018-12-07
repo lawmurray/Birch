@@ -7,6 +7,14 @@ class Boxed<Value>(x:Value) < Expression<Value> {
    */
   x:Value <- x;
 
+  operator <- x:Value {
+    this.x <- x;
+  }
+  
+  operator -> Value {
+    return x;
+  }
+
   function value() -> Value {
     return x;
   }

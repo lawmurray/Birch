@@ -6,12 +6,12 @@
 #include "libbirch/memory.hpp"
 
 bi::Any::Any() :
-    memo(globalMemo->forwardGet()) {
+    memo(cloneMemo->forwardGet()) {
   //
 }
 
 bi::Any::Any(const Any& o) :
-    memo(globalMemo->forwardGet()) {
+    memo(cloneMemo->forwardGet()) {
   //
 }
 
@@ -20,5 +20,5 @@ bi::Any::~Any() {
 }
 
 bi::Memo* bi::Any::getMemo() {
-  return memo;
+  return memo.get();
 }

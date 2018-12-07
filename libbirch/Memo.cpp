@@ -25,9 +25,6 @@ bi::Memo* bi::Memo::forwardGet() {
     return child->forwardGet();
   } else if (forked) {
     child = create(this);
-    if (globalMemo.get() == this) {
-      globalMemo = child;
-    }
     return child.get();
   } else {
     return this;

@@ -181,6 +181,8 @@
       "bi/test/test_beta_bernoulli.bi",
       "bi/test/test_beta_binomial.bi",
       "bi/test/test_chain_gaussian.bi",
+      "bi/test/test_deep_clone_alias.bi",
+      "bi/test/test_deep_clone_chain.bi",
       "bi/test/test_deep_clone_leak.bi",
       "bi/test/test_deep_clone_modify_dst.bi",
       "bi/test/test_deep_clone_modify_src.bi",

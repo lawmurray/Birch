@@ -5,7 +5,7 @@ program test_deep_clone_leak() {
   test_deep_clone_leak_aux();
   refCount:Integer;
   cpp{{
-  refCount_ = bi::globalMemo->numShared();
+  refCount_ = bi::cloneMemo->numShared();
   }}
   if (refCount != 1) {
     exit(1);

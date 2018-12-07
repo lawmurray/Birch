@@ -59,9 +59,12 @@ void bi::clone_get(PointerType& o, SharedPtr<Memo>& m) {
         Any* uninit = s->clones.uninitialized_put(m.get(), alloc);
         assert(uninit == alloc);  // should be no thread contention here
         auto prevMemo = cloneMemo;
+        auto prevUnderway = cloneUnderway;
         cloneMemo = m;
+        cloneUnderway = true;
         cloned = s->clone(uninit);
         cloneMemo = prevMemo;
+        cloneUnderway = prevUnderway;
         assert(cloned == uninit);  // clone should be in the allocation
         m->incWeak();  // uninitialized_put(), so responsible for ref counts
         cloned->incShared();
@@ -73,15 +76,17 @@ void bi::clone_get(PointerType& o, SharedPtr<Memo>& m) {
          * inserting an object into the map; a shared pointer is used to
          * destroy any additional objects */
         auto prevMemo = cloneMemo;
+        auto prevUnderway = cloneUnderway;
         cloneMemo = m;
+        cloneUnderway = true;
         s = s->clone();
         cloneMemo = prevMemo;
+        cloneUnderway = prevUnderway;
         cloned = o.get()->clones.put(m.get(), s.get());
         #endif
       }
     }
     o = cloned;
-    m = cloned->getMemo();
   }
 }
 
@@ -91,11 +96,7 @@ void bi::clone_pull(PointerType& o, SharedPtr<Memo>& m) {
   clone_deep(o, m);
   #endif
   if (o && o.get()->getMemo() != m.get()) {
-    auto object = o.get()->clones.get(m.get(), o.get());
-    if (object != o.get()) {
-      o = object;
-      m = object->getMemo();
-    }
+    o = o.get()->clones.get(m.get(), o.get());
   }
 }
 
