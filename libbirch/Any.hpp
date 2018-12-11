@@ -55,6 +55,6 @@ protected:
   /**
    * Memo associated with the clone or construction of this object.
    */
-  SharedPtr<Memo> memo;
+  WeakPtr<Memo> memo;
 };
 }

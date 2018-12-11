@@ -10,7 +10,8 @@ bi::Memo::Memo(Memo* parent) :
 }
 
 bi::Memo::~Memo() {
-  //
+  clones.weaken();
+  clones.destroy();
 }
 
 bool bi::Memo::hasAncestor(Memo* memo) const {

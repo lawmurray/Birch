@@ -7,8 +7,6 @@
 #include "libbirch/Lock.hpp"
 
 namespace bi {
-class Memo;
-
 /**
  * Thread-safe hash table of memory mappings.
  *
@@ -21,7 +19,7 @@ public:
   /**
    * Key type.
    */
-  using key_type = Memo*;
+  using key_type = Any*;
 
   /**
    * Value type.

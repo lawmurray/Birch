@@ -195,7 +195,7 @@ void bi::Map::reserve() {
       for (size_t i = 0u; i < nentries1; ++i) {
         joint_entry_type entry = entries1[i];
         if (entry.key) {
-          if (entry.key->numShared() == 0) {
+          if (entry.key->numShared() == 0 && entry.key->numWeak() <= 2) {
             /* key is useless, release */
             --noccupied;
             entry.key->decWeak();
