@@ -69,6 +69,9 @@ public:
     if (ptr) {
       ptr->decShared();
     }
+    #ifndef NDEBUG
+    ptr = nullptr;
+    #endif
   }
 
   /**

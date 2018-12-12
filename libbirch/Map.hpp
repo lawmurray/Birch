@@ -71,27 +71,9 @@ public:
   value_type uninitialized_put(const key_type key, const value_type value);
 
   /**
-   * Set a value.
-   *
-   * @param key The key.
-   * @param value The value.
-   * @param[in,out] i Index.
-   *
-   * @return @p value.
-   *
-   * Use set() to overwrite any existing value, put() to not overwrite it.
+   * Run garbage collection.
    */
-  value_type set(const key_type key, const value_type value);
-
-  /**
-   * Convert shared references to values to weak references.
-   */
-  void weaken();
-
-  /**
-   * Destroy the map and release weak references.
-   */
-  void destroy();
+  void collect();
 
 private:
   /**

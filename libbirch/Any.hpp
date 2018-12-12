@@ -53,8 +53,8 @@ public:
 
 protected:
   /**
-   * Memo associated with the clone or construction of this object.
+   * Memo associated with the construction of this object.
    */
-  WeakPtr<Memo> memo;
+  SharedPtr<Memo> memo;
 };
 }

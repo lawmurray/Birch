@@ -4,24 +4,32 @@
 #include "libbirch/Counted.hpp"
 
 bi::Counted::Counted() :
-    size(0),
     sharedCount(0),
-    weakCount(1) {
+    weakCount(1),
+    memoCount(0),
+    size(0),
+    key(nullptr) {
   //
 }
 
 bi::Counted::Counted(const Counted& o) :
-    size(o.size),
     sharedCount(0),
-    weakCount(1) {
+    weakCount(1),
+    memoCount(0),
+    size(o.size),
+    key(&o) {
   //
 }
 
 bi::Counted::~Counted() {
   assert(sharedCount == 0);
+  assert(memoCount == 0);
 }
 
 void bi::Counted::deallocate() {
+  assert(sharedCount == 0);
+  assert(weakCount == 0);
+  assert(memoCount == 0);
   bi::deallocate(this, size);
 }
 
@@ -30,47 +38,84 @@ unsigned bi::Counted::getSize() const {
 }
 
 bi::Counted* bi::Counted::lock() {
-  unsigned count = sharedCount;
-  while (count > 0 && !sharedCount.compare_exchange_weak(count, count + 1)) {
-    //
+  if (memoCount > 0) {
+    ++sharedCount;
+    return this;
+  } else {
+    unsigned count = sharedCount;
+    while (count > 0 && !sharedCount.compare_exchange_weak(count, count + 1)) {
+      //
+    }
+    return count > 0 ? this : nullptr;
   }
-  return count > 0 ? this : nullptr;
 }
 
 void bi::Counted::incShared() {
-  sharedCount.fetch_add(1u);
+  ++sharedCount;
 }
 
 void bi::Counted::decShared() {
   assert(sharedCount > 0);
-  if (sharedCount.fetch_sub(1u) == 1) {
-    destroy();
-    decWeak();
+  if (--sharedCount == 0) {
+    if (memoCount) {
+      if (!key->isReachable()) {
+        releaseMemo();
+      }
+    } else {
+      destroy();
+      decWeak();  // release weak self-reference
+    }
   }
 }
 
 unsigned bi::Counted::numShared() const {
-  return sharedCount.load();
+  return sharedCount;
 }
 
 void bi::Counted::incWeak() {
-  weakCount.fetch_add(1u);
+  ++weakCount;
 }
 
 void bi::Counted::decWeak() {
   assert(weakCount > 0);
-  if (weakCount.fetch_sub(1u) == 1) {
+  if (--weakCount == 0) {
     assert(sharedCount == 0);
-    // ^ objects keep a weak pointer to themselves, so the weak count
-    //   should not expire before the shared count
+    assert(memoCount == 0);
+    // ^ because of weak self-reference, the weak count should not expire
+    //   before the other counts
     deallocate();
   }
 }
 
 unsigned bi::Counted::numWeak() const {
-  return weakCount.load();
+  return weakCount;
 }
 
-bool bi::Counted::isShared() const {
-  return sharedCount > 1;
+void bi::Counted::setMemo() {
+  assert(memoCount == 0);
+  assert(key);
+  memoCount = 1;
+}
+
+void bi::Counted::releaseMemo() {
+  unsigned value = 1u;
+  if (memoCount.compare_exchange_strong(value, 0u)) {
+    ///@todo Race-condition with decShared()?
+    if (sharedCount == 0) {
+      destroy();
+      decWeak();  // release weak self-reference
+    }
+  }
+}
+
+bool bi::Counted::hasMemo() const {
+  return memoCount == 1;
+}
+
+bool bi::Counted::isReachable() const {
+  return sharedCount > 0 ||
+      (memoCount == 0 && weakCount > 1) ||
+      // ^ not in memo, more than self reference
+      (memoCount > 0 && weakCount > 2);
+      // ^ in memo, more than self reference and key reference
 }

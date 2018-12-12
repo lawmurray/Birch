@@ -68,6 +68,9 @@ public:
     if (ptr) {
       ptr->decWeak();
     }
+    #ifndef NDEBUG
+    ptr = nullptr;
+    #endif
   }
 
   /**

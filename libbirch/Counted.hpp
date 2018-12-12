@@ -125,16 +125,26 @@ public:
   unsigned numWeak() const;
 
   /**
-   * Is this shared?
+   * Set the memo flag. The flag should not already be set.
    */
-  bool isShared() const;
+  void setMemo();
+
+  /**
+   * Unset the memo flag. The flag may already be unset.
+   */
+  void releaseMemo();
+
+  /**
+   * Is the memo flag set?
+   */
+  bool hasMemo() const;
+
+  /**
+   * Is this reachable?
+   */
+  bool isReachable() const;
 
 protected:
-  /**
-   * Size of the object.
-   */
-  unsigned size;
-
   /**
    * Shared count.
    */
@@ -144,5 +154,20 @@ protected:
    * Weak count.
    */
   std::atomic<unsigned> weakCount;
+
+  /**
+   * Memo count.
+   */
+  std::atomic<unsigned> memoCount;
+
+  /**
+   * Size of the object.
+   */
+  unsigned size;
+
+  /**
+   * Object from which this was cloned, `nullptr` if none.
+   */
+  const Counted* key;
 };
 }

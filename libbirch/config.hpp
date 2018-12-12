@@ -34,7 +34,7 @@
  * disable OpenMP when compiling.
  */
 #ifndef DISABLE_POOL
-#define DISABLE_POOL 0
+#define DISABLE_POOL 1
 #endif
 
 /**
@@ -59,7 +59,7 @@
  *
  * Initial number of entries in each new map used for deep clones.
  */
-#define DEEP_CLONE_MAP_SIZE 8ull
+#define DEEP_CLONE_MAP_SIZE 64ull
 
 /**
  * @def STANDARD_CREATE_FUNCTION

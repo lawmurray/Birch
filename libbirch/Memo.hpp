@@ -7,7 +7,10 @@
 #include "libbirch/Counted.hpp"
 #include "libbirch/SharedPtr.hpp"
 #include "libbirch/WeakPtr.hpp"
+#include "libbirch/Allocator.hpp"
 #include "libbirch/Map.hpp"
+
+#include <list>
 
 namespace bi {
 /**
@@ -73,6 +76,11 @@ public:
    */
   Memo* fork();
 
+  /**
+   * Run garbage collection on clones.
+   */
+  void collect();
+
 public:
   /**
    * Parent memo.
@@ -83,6 +91,11 @@ public:
    * Child memo to which to forward.
    */
   SharedPtr<Memo> child;
+
+  /**
+   * All child memos.
+   */
+  std::list<WeakPtr<Memo>,Allocator<WeakPtr<Memo>>> children;
 
   /**
    * Map of original objects to clones.

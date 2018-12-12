@@ -7,7 +7,6 @@
 #include "libbirch/clone.hpp"
 #include "libbirch/SharedCOW.hpp"
 #include "libbirch/WeakPtr.hpp"
-#include "libbirch/InitPtr.hpp"
 #include "libbirch/Optional.hpp"
 
 namespace bi {

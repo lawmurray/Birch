@@ -11,6 +11,7 @@ bi::Any::Any() :
 }
 
 bi::Any::Any(const Any& o) :
+    Counted(o),
     memo(cloneMemo) {
   //
 }

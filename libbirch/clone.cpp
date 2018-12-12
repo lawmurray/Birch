@@ -69,7 +69,8 @@ void bi::clone_get(PointerType& o, SharedPtr<Memo>& m) {
         cloneUnderway = prevUnderway;
         assert(cloned == uninit);  // clone should be in the allocation
         m->incWeak();  // uninitialized_put(), so responsible for ref counts
-        cloned->incShared();
+        cloned->incWeak();
+        cloned->setMemo();
         #else
         /* for a lazy deep clone there is no risk of infinite recursion, but
          * there may be thread contention if two threads access the same object

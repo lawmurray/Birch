@@ -6,12 +6,18 @@
 bi::Memo::Memo(Memo* parent) :
     parent(parent),
     forked(false) {
-  //
+  if (parent) {
+    parent->children.push_back(this);
+  }
 }
 
 bi::Memo::~Memo() {
-  clones.weaken();
-  clones.destroy();
+  for (auto child: children) {
+    SharedPtr<Memo> child1 = child;
+    if (child1) {
+      child1->collect();
+    }
+  }
 }
 
 bool bi::Memo::hasAncestor(Memo* memo) const {
@@ -48,4 +54,8 @@ bi::Memo* bi::Memo::fork() {
   forked = true;
   #endif
   return create(this);
+}
+
+void bi::Memo::collect() {
+  clones.collect();
 }

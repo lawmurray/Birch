@@ -8,7 +8,6 @@
 #include "libbirch/clone.hpp"
 #include "libbirch/memory.hpp"
 #include "libbirch/SharedPtr.hpp"
-#include "libbirch/InitPtr.hpp"
 #include "libbirch/Memo.hpp"
 #include "libbirch/Any.hpp"
 #include "libbirch/Nil.hpp"

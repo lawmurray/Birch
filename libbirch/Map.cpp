@@ -11,7 +11,18 @@ bi::Map::Map() :
 }
 
 bi::Map::~Map() {
-  //
+  joint_entry_type* entries1 = (joint_entry_type*)entries;
+  for (size_t i = 0; i < nentries; ++i) {
+    joint_entry_type entry = entries1[i];
+    if (entry.key) {
+      entry.key->decWeak();
+      entry.value->releaseMemo();
+      // ^ do this before decWeak(), as if the memo flag is already unset,
+      //   the decWeak() may cause the object to be deallocated
+      entry.value->decWeak();
+    }
+  }
+  deallocate(entries, nentries * sizeof(entry_type));
 }
 
 bool bi::Map::empty() const {
@@ -47,7 +58,8 @@ bi::Map::value_type bi::Map::put(const key_type key, const value_type value) {
   assert(value);
 
   key->incWeak();
-  value->incShared();
+  value->incWeak();
+  value->setMemo();
 
   reserve();
   lock.share();
@@ -67,7 +79,10 @@ bi::Map::value_type bi::Map::put(const key_type key, const value_type value) {
     unreserve();  // key exists, cancel reservation for insert
     result = expected.value;
     key->decWeak();
-    value->decShared();
+    value->releaseMemo();
+    // ^ do this before decWeak(), as if the memo flag is already unset,
+    //   the decWeak() may cause the object to be deallocated
+    value->decWeak();
   } else {
     result = value;
   }
@@ -105,60 +120,13 @@ bi::Map::value_type bi::Map::uninitialized_put(const key_type key,
   return result;
 }
 
-bi::Map::value_type bi::Map::set(const key_type key, const value_type value) {
-  /* pre-condition */
-  assert(key);
-  assert(value);
-
-  key->incWeak();
-  value->incShared();
-
-  reserve();
-  lock.share();
-
-  joint_entry_type expected = { nullptr, nullptr };
-  joint_entry_type desired = { key, value };
-
-  size_t i = hash(key);
-  while (!entries[i].joint.compare_exchange_strong(expected, desired)
-      && expected.key != key) {
-    i = (i + 1) & (nentries - 1);
-    expected = {nullptr, nullptr};
-  }
-
-  if (expected.key == key) {
-    unreserve();  // key exists, cancel reservation for insert
-    value_type old = expected.value;
-    while (!entries[i].split.value.compare_exchange_weak(old, value))
-      ;
-    key->decWeak();
-    old->decShared();
-  }
-  lock.unshare();
-  return value;
-}
-
-void bi::Map::weaken() {
-  joint_entry_type* entries1 = (joint_entry_type*)entries;
-  for (size_t i = 0; i < nentries; ++i) {
-    joint_entry_type entry = entries1[i];
-    if (entry.key) {
-      entry.value->incWeak();
-      entry.value->decShared();
+void bi::Map::collect() {
+  for (size_t i = 0u; i < nentries; ++i) {
+    auto entry = entries[i].joint.load();
+    if (entry.key && !entry.key->isReachable()) {
+      entry.value->releaseMemo();
     }
   }
-}
-
-void bi::Map::destroy() {
-  joint_entry_type* entries1 = (joint_entry_type*)entries;
-  for (size_t i = 0; i < nentries; ++i) {
-    joint_entry_type entry = entries1[i];
-    if (entry.key) {
-      entry.key->decWeak();
-      entry.value->decWeak();
-    }
-  }
-  deallocate(entries, nentries * sizeof(entry_type));
 }
 
 size_t bi::Map::hash(const key_type key) const {
@@ -195,18 +163,21 @@ void bi::Map::reserve() {
       for (size_t i = 0u; i < nentries1; ++i) {
         joint_entry_type entry = entries1[i];
         if (entry.key) {
-          if (entry.key->numShared() == 0 && entry.key->numWeak() <= 2) {
-            /* key is useless, release */
-            --noccupied;
-            entry.key->decWeak();
-            entry.value->decShared();
-          } else {
+          if (entry.key->isReachable()) {
             /* rehash and insert */
             size_t j = hash(entry.key);
             while (entries2[j].key) {
               j = (j + 1u) & (nentries2 - 1u);
             }
             entries2[j] = entry;
+          } else {
+            /* key is useless, release */
+            --noccupied;
+            entry.key->decWeak();
+            entry.value->releaseMemo();
+            // ^ do this before decWeak(), as if the memo flag is already unset,
+            //   the decWeak() may cause the object to be deallocated
+            entry.value->decWeak();
           }
         }
       }

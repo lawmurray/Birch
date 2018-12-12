@@ -29,6 +29,15 @@ public:
   }
 
   /**
+   * Destructor.
+   */
+  ~InitPtr() {
+    #ifndef NDEBUG
+    ptr = nullptr;
+    #endif
+  }
+
+  /**
    * Get the raw pointer.
    */
   T* get() const {
