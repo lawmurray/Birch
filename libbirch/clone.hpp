@@ -3,25 +3,27 @@
  */
 #pragma once
 
+#include "libbirch/ContextPtr.hpp"
+
 namespace bi {
 /**
  * Start a deep clone.
  */
 template<class PointerType>
-void clone_start(PointerType& o, SharedPtr<Memo>& m);
+void clone_start(PointerType& o, ContextPtr& m);
 
 /**
  * Continue a deep clone.
  */
 template<class PointerType>
-void clone_continue(PointerType& o, SharedPtr<Memo>& m);
+void clone_continue(PointerType& o, ContextPtr& m);
 
 /**
  * Shallow mapping of an object that may not yet have been cloned,
  * cloning it if necessary.
  */
 template<class PointerType>
-void clone_get(PointerType& o, SharedPtr<Memo>& m);
+void clone_get(PointerType& o, ContextPtr& m);
 
 /**
  * Shallow mapping of an object that may not yet have been cloned,
@@ -29,7 +31,7 @@ void clone_get(PointerType& o, SharedPtr<Memo>& m);
  * access.
  */
 template<class PointerType>
-void clone_pull(PointerType& o, SharedPtr<Memo>& m);
+void clone_pull(PointerType& o, ContextPtr& m);
 
 /**
  * Deep mapping of an object through ancestor memos up to the current memo,
@@ -41,6 +43,6 @@ void clone_pull(PointerType& o, SharedPtr<Memo>& m);
  * @return The mapped object.
  */
 template<class PointerType>
-void clone_deep(PointerType& o, SharedPtr<Memo>& m);
+void clone_deep(PointerType& o, const SharedPtr<Memo>& m);
 
 }

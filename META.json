@@ -223,6 +223,7 @@
       "libbirch/clone.hpp",
       "libbirch/config.hpp",
       "libbirch/Counted.hpp",
+      "libbirch/ContextPtr.hpp",
       "libbirch/Eigen.hpp",
       "libbirch/EigenFunctions.hpp",
       "libbirch/EigenOperators.hpp",

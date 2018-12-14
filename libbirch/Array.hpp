@@ -22,6 +22,8 @@ namespace bi {
  *
  * @tparam Type Value type.
  * @tparam Frame Frame type.
+ *
+ * @todo Review in light of new context attribute of pointers.
  */
 template<class T, class F = EmptyFrame>
 class Array {

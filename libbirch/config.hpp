@@ -34,7 +34,7 @@
  * disable OpenMP when compiling.
  */
 #ifndef DISABLE_POOL
-#define DISABLE_POOL 0
+#define DISABLE_POOL 1
 #endif
 
 /**

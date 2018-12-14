@@ -10,8 +10,6 @@
 #include "libbirch/Allocator.hpp"
 #include "libbirch/Map.hpp"
 
-#include <list>
-
 namespace bi {
 /**
  * Memo for lazy deep cloning of objects.
@@ -24,11 +22,17 @@ public:
 
 protected:
   /**
+   * Constructor. Creates the root memo.
+   */
+  Memo();
+
+  /**
    * Constructor.
    *
    * @param parent Parent.
+   * @param isForwarding Is this the forwarding child of the parent?
    */
-  Memo(Memo* parent = nullptr);
+  Memo(Memo* parent, const bool isForwarding);
 
   /**
    * Destructor.
@@ -47,64 +51,69 @@ public:
   bool hasAncestor(Memo* memo) const;
 
   /**
+   * Fork.
+   *
+   * @return The clone memo.
+   *
+   * Forks the memo, creating two children, one for cloning, one for
+   * forwarding. Returns the former. The latter may be retrieved with
+   * forwardGet().
+   */
+  Memo* fork();
+
+  /**
    * Forward.
    *
-   * @return If the memo has previously been forked, returns the child to
-   * which requests should be forwarded, otherwise returns this.
+   * @return If the memo has previously been forked, returns the forwarding
+   * child, otherwise returns this.
    */
   Memo* forwardGet();
 
   /**
    * Forward.
    *
-   * @return If the memo has previously been forked, returns the child to
-   * which requests should be forwarded, otherwise returns this.
-   *
-   * This version permits an optimization over forwardGet(): if no objects
-   * have yet been copied forward, returns this instead.
+   * @return If the memo has previously been forked, returns the child for
+   * forwarding, otherwise returns this, subject to optimization. In the
+   * special case where the memo has previously been forked, but it has not
+   * yet been necessary to clone any objects to the forwarding child, returns
+   * this instead, as an optimization to reduce the depth of the memo tree
+   * (by increasing its breadth).
    */
   Memo* forwardPull();
 
   /**
-   * Fork.
-   *
-   * @return The clone memo.
-   *
-   * Forks the memo, creating two children, one for cloning objects, one for
-   * forwarding pointers from this. Returns the former. The latter may be
-   * retrieved with forward().
+   * Get the parent memo.
    */
-  Memo* fork();
-
-  /**
-   * Run garbage collection on clones.
-   */
-  void collect();
+  SharedPtr<Memo> getParent() const;
 
 public:
-  /**
-   * Parent memo.
-   */
-  WeakPtr<Memo> parent;
-
-  /**
-   * Child memo to which to forward.
-   */
-  SharedPtr<Memo> child;
-
-  /**
-   * All child memos.
-   */
-  std::list<WeakPtr<Memo>,Allocator<WeakPtr<Memo>>> children;
-
   /**
    * Map of original objects to clones.
    */
   Map clones;
 
+private:
   /**
-   * Has this memo been forked?
+   * Parent memo if this is a cloning memo. This is a shared pointer, and the
+   * parent will have no pointer to this.
    */
-  bool forked;
+  SharedPtr<Memo> cloneParent;
+
+  /**
+   * Parent memo if this is a forwarding memo. This is a weak pointer, and
+   * the parent will have a shared pointer to this.
+   */
+  WeakPtr<Memo> forwardParent;
+
+  /**
+   * Child for forwarding, if any. This is a shared pointer, and the child
+   * will have a weak pointer to this.
+   */
+  SharedPtr<Memo> forwardChild;
+
+  /**
+   * Has this been forked?
+   */
+  bool isForked;
 };
 }

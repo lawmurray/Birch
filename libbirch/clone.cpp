@@ -4,7 +4,7 @@
 #include "libbirch/clone.hpp"
 
 template<class PointerType>
-void bi::clone_start(PointerType& o, SharedPtr<Memo>& m) {
+void bi::clone_start(PointerType& o, ContextPtr& m) {
   #if DEEP_CLONE_STRATEGY == DEEP_CLONE_EAGER
   m = m->fork();
   clone_get(o, m);
@@ -17,31 +17,31 @@ void bi::clone_start(PointerType& o, SharedPtr<Memo>& m) {
 }
 
 template<class PointerType>
-void bi::clone_continue(PointerType& o, SharedPtr<Memo>& m) {
+void bi::clone_continue(PointerType& o, ContextPtr& m) {
   #if DEEP_CLONE_STRATEGY == DEEP_CLONE_EAGER
   m = cloneMemo;
   clone_get(o, m);
   #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZY
   clone_pull(o, m);
-  m = cloneMemo;
-  clone_deep(o, m);
+  m = cloneMemo.get();
+  clone_deep(o, m->getParent());
   #elif DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
   if (!cloneMemo->hasAncestor(m.get())) {
     clone_pull(o, m);
   }
-  m = cloneMemo;
+  m = cloneMemo.get();
   #endif
 }
 
 template<class PointerType>
-void bi::clone_get(PointerType& o, SharedPtr<Memo>& m) {
+void bi::clone_get(PointerType& o, ContextPtr& m) {
   assert(o);
 
   #if DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
-  clone_deep(o, m);
+  clone_deep(o, m->getParent());
   #endif
 
-  if (o.get()->getMemo() != m.get()) {
+  if (o.get()->getContext() != m.get()) {
     auto cloned = m->clones.get(o.get());
     if (!cloned) {
       /* promote weak pointer to shared pointer for further null check */
@@ -80,7 +80,7 @@ void bi::clone_get(PointerType& o, SharedPtr<Memo>& m) {
          * destroy any additional objects */
         auto prevMemo = cloneMemo;
         auto prevUnderway = cloneUnderway;
-        cloneMemo = m;
+        cloneMemo = m.get();
         cloneUnderway = true;
         s = s->clone();
         cloneMemo = prevMemo->forwardPull();
@@ -94,36 +94,34 @@ void bi::clone_get(PointerType& o, SharedPtr<Memo>& m) {
 }
 
 template<class PointerType>
-void bi::clone_pull(PointerType& o, SharedPtr<Memo>& m) {
+void bi::clone_pull(PointerType& o, ContextPtr& m) {
   assert(o);
 
   #if DEEP_CLONE_STRATEGY == DEEP_CLONE_LAZIER
-  clone_deep(o, m);
+  clone_deep(o, m->getParent());
   #endif
-  if (o.get()->getMemo() != m.get()) {
+  if (o.get()->getContext() != m.get()) {
     o = m->clones.get(o.get(), o.get());
   }
 }
 
 template<class PointerType>
-void bi::clone_deep(PointerType& o, SharedPtr<Memo>& m) {
+void bi::clone_deep(PointerType& o, const SharedPtr<Memo>& m) {
   assert(o);
-
-  SharedPtr<Memo> parent = m->parent;
-  if (o.get()->getMemo() != m.get() && parent) {
-    clone_deep(o, parent);
-    o = parent->clones.get(o.get(), o.get());
+  if (m && o.get()->getContext() != m.get()) {
+    clone_deep(o, m->getParent());
+    o = m->clones.get(o.get(), o.get());
   }
 }
 
-template void bi::clone_start<bi::SharedPtr<bi::Any>>(SharedPtr<Any>& o, SharedPtr<Memo>& m);
-template void bi::clone_continue<bi::SharedPtr<bi::Any>>(SharedPtr<Any>& o, SharedPtr<Memo>& m);
-template void bi::clone_get<bi::SharedPtr<bi::Any>>(SharedPtr<Any>& o, SharedPtr<Memo>& m);
-template void bi::clone_pull<bi::SharedPtr<bi::Any>>(SharedPtr<Any>& o, SharedPtr<Memo>& m);
-template void bi::clone_deep<bi::SharedPtr<bi::Any>>(SharedPtr<Any>& o, SharedPtr<Memo>& m);
+template void bi::clone_start<bi::SharedPtr<bi::Any>>(SharedPtr<Any>& o, ContextPtr& m);
+template void bi::clone_continue<bi::SharedPtr<bi::Any>>(SharedPtr<Any>& o, ContextPtr& m);
+template void bi::clone_get<bi::SharedPtr<bi::Any>>(SharedPtr<Any>& o, ContextPtr& m);
+template void bi::clone_pull<bi::SharedPtr<bi::Any>>(SharedPtr<Any>& o, ContextPtr& m);
+template void bi::clone_deep<bi::SharedPtr<bi::Any>>(SharedPtr<Any>& o, const SharedPtr<Memo>& m);
 
-template void bi::clone_start<bi::WeakPtr<bi::Any>>(WeakPtr<Any>& o, SharedPtr<Memo>& m);
-template void bi::clone_continue<bi::WeakPtr<bi::Any>>(WeakPtr<Any>& o, SharedPtr<Memo>& m);
-template void bi::clone_get<bi::WeakPtr<bi::Any>>(WeakPtr<Any>& o, SharedPtr<Memo>& m);
-template void bi::clone_pull<bi::WeakPtr<bi::Any>>(WeakPtr<Any>& o, SharedPtr<Memo>& m);
-template void bi::clone_deep<bi::WeakPtr<bi::Any>>(WeakPtr<Any>& o, SharedPtr<Memo>& m);
+template void bi::clone_start<bi::WeakPtr<bi::Any>>(WeakPtr<Any>& o, ContextPtr& m);
+template void bi::clone_continue<bi::WeakPtr<bi::Any>>(WeakPtr<Any>& o, ContextPtr& m);
+template void bi::clone_get<bi::WeakPtr<bi::Any>>(WeakPtr<Any>& o, ContextPtr& m);
+template void bi::clone_pull<bi::WeakPtr<bi::Any>>(WeakPtr<Any>& o, ContextPtr& m);
+template void bi::clone_deep<bi::WeakPtr<bi::Any>>(WeakPtr<Any>& o, const SharedPtr<Memo>& m);

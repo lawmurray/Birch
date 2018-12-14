@@ -8,6 +8,7 @@
 #include "libbirch/clone.hpp"
 #include "libbirch/memory.hpp"
 #include "libbirch/SharedPtr.hpp"
+#include "libbirch/ContextPtr.hpp"
 #include "libbirch/Memo.hpp"
 #include "libbirch/Any.hpp"
 #include "libbirch/Nil.hpp"
@@ -58,14 +59,6 @@ public:
    * Constructor.
    */
   SharedCOW(const WeakCOW<T>& o);
-
-  /**
-   * Constructor.
-   */
-  SharedCOW(const SharedPtr<T>& object, const SharedPtr<Memo>& memo) :
-      super_type(object, memo) {
-    //
-  }
 
   /**
    * Constructor.
@@ -203,17 +196,17 @@ public:
 
   SharedCOW(Any* object) :
       object(object),
-      memo(object ? object->getMemo() : nullptr) {
+      memo(object ? object->getContext() : nullptr) {
     //
   }
 
   SharedCOW(const SharedPtr<Any>& object) :
       object(object),
-      memo(object ? object->getMemo() : nullptr) {
+      memo(object ? object->getContext() : nullptr) {
     //
   }
 
-  SharedCOW(const SharedPtr<Any>& object, const SharedPtr<Memo>& memo) :
+  SharedCOW(const SharedPtr<Any>& object, const ContextPtr& memo) :
       object(object),
       memo(memo) {
     //
@@ -280,7 +273,7 @@ public:
 
   SharedCOW<Any> clone() const {
     SharedPtr<Any> o;
-    SharedPtr<Memo> m;
+    ContextPtr m;
     if (object) {
       o = object;
       m = memo->forwardPull();
@@ -332,7 +325,7 @@ protected:
   /**
    * The memo.
    */
-  SharedPtr<Memo> memo;
+  ContextPtr memo;
 };
 }
 

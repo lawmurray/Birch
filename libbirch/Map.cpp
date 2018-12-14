@@ -11,9 +11,8 @@ bi::Map::Map() :
 }
 
 bi::Map::~Map() {
-  joint_entry_type* entries1 = (joint_entry_type*)entries;
   for (size_t i = 0; i < nentries; ++i) {
-    joint_entry_type entry = entries1[i];
+    joint_entry_type entry = entries[i].joint.load();
     if (entry.key) {
       entry.key->decWeak();
       entry.value->releaseMemo();
@@ -120,13 +119,8 @@ bi::Map::value_type bi::Map::uninitialized_put(const key_type key,
   return result;
 }
 
-void bi::Map::collect() {
-  for (size_t i = 0u; i < nentries; ++i) {
-    auto entry = entries[i].joint.load();
-    if (entry.key && !entry.key->isReachable()) {
-      entry.value->releaseMemo();
-    }
-  }
+void bi::Map::release(const key_type key) {
+  get(key)->releaseMemo();
 }
 
 size_t bi::Map::hash(const key_type key) const {
@@ -171,7 +165,7 @@ void bi::Map::reserve() {
             }
             entries2[j] = entry;
           } else {
-            /* key is useless, release */
+            /* key is useless, omit */
             --noccupied;
             entry.key->decWeak();
             entry.value->releaseMemo();

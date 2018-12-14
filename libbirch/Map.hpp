@@ -71,9 +71,11 @@ public:
   value_type uninitialized_put(const key_type key, const value_type value);
 
   /**
-   * Run garbage collection.
+   * Release the value associated with the key. This does not remove the key
+   * from the map, that is only done on resize, but it does release the
+   * shared reference to break reference cycles.
    */
-  void collect();
+  void release(const key_type key);
 
 private:
   /**

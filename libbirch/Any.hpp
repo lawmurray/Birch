@@ -47,14 +47,14 @@ public:
   STANDARD_DESTROY_FUNCTION
 
   /**
-   * Get the memo associated with the clone of this object.
+   * Get the memo responsible for the creation of this object.
    */
-  Memo* getMemo();
+  Memo* getContext();
 
 protected:
   /**
-   * Memo associated with the construction of this object.
+   * Memo responsible for the creation of this object.
    */
-  SharedPtr<Memo> memo;
+  WeakPtr<Memo> context;
 };
 }

@@ -7,6 +7,7 @@
 #include "libbirch/clone.hpp"
 #include "libbirch/SharedCOW.hpp"
 #include "libbirch/WeakPtr.hpp"
+#include "libbirch/ContextPtr.hpp"
 #include "libbirch/Optional.hpp"
 
 namespace bi {
@@ -151,6 +152,6 @@ protected:
   /**
    * The memo.
    */
-  SharedPtr<Memo> memo;
+  ContextPtr memo;
 };
 }
