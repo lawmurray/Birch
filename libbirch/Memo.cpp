@@ -25,14 +25,14 @@ bool bi::Memo::hasAncestor(Memo* memo) const {
 }
 
 bi::Memo* bi::Memo::fork() {
-  #if DEEP_CLONE_STRATEGY != DEEP_CLONE_EAGER
+  #if USE_LAZY_DEEP_CLONE
   isForked = true;
   #endif
   return create(this, false);
 }
 
 bi::Memo* bi::Memo::forwardGet() {
-  #if DEEP_CLONE_STRATEGY != DEEP_CLONE_EAGER
+  #if USE_LAZY_DEEP_CLONE
   ///@todo make this thread safe
   if (forwardChild) {
     return forwardChild->forwardGet();
@@ -48,7 +48,7 @@ bi::Memo* bi::Memo::forwardGet() {
 }
 
 bi::Memo* bi::Memo::forwardPull() {
-  #if DEEP_CLONE_STRATEGY != DEEP_CLONE_EAGER
+  #if USE_LAZY_DEEP_CLONE
   return forwardChild ? forwardChild->forwardPull() : this;
   #else
   return this;

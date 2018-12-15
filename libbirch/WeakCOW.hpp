@@ -128,7 +128,7 @@ public:
   WeakCOW<Any>& operator=(WeakCOW<Any>&& o) = default;
 
   Any* pull() {
-    #if DEEP_CLONE_STRATEGY != DEEP_CLONE_EAGER
+    #if USE_LAZY_DEEP_CLONE
     if (object) {
       memo = memo->forwardPull();
       clone_pull(object, memo);

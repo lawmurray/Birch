@@ -26,32 +26,26 @@
 #endif
 
 /**
- * @def DISABLE_POOL
+ * @def USE_MEMORY_POOL
  *
- * Set to 1 to use standard malloc/realloc/free instead of pooled allocator.
+ * Set to 1 to use the built-in pooled allocator, or 0 to use standard
+ * `malloc`/`realloc`/`free`.
  *
- * For memory leak checks with valgrind, set this to 1, and may also need to
- * disable OpenMP when compiling.
+ * When performing memory leak checks with `valgrind`, set this to 0.
+ * (Incidentally, may also need to disable OpenMP, at least on macOS.)
  */
-#ifndef DISABLE_POOL
-#define DISABLE_POOL 1
+#ifndef USE_MEMORY_POOL
+#define USE_MEMORY_POOL 1
 #endif
 
 /**
- * @def DEEP_CLONE_STRATEGY
+ * @def USE_LAZY_DEEP_CLONE
  *
- * Set to:
- *
- * @li 1 to use an eager deep clone,
- * @li 2 to use a lazy deep clone with eager map,
- * @li 3 to use a lazy deep clone with eager map only when necessary.
+ * Set to 1 to use the lazy deep clone strategy, or 0 to use an eager deep
+ * clone.
  */
-#define DEEP_CLONE_EAGER 1
-#define DEEP_CLONE_LAZY 2
-#define DEEP_CLONE_LAZIER 3
-
-#ifndef DEEP_CLONE_STRATEGY
-#define DEEP_CLONE_STRATEGY DEEP_CLONE_LAZIER
+#ifndef USE_LAZY_DEEP_CLONE
+#define USE_LAZY_DEEP_CLONE 1
 #endif
 
 /**

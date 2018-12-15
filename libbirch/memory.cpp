@@ -17,7 +17,7 @@ bi::SharedPtr<bi::Memo> bi::cloneMemo = rootMemo;
 bool bi::cloneUnderway = false;
 
 char* bi::heap() {
-#if DISABLE_POOL
+#if !USE_MEMORY_POOL
   return nullptr;
 #else
   /* determine a preferred size of the heap based on total physical memory */
@@ -42,7 +42,7 @@ char* bi::heap() {
 }
 
 void* bi::allocate(const size_t n) {
-#if DISABLE_POOL
+#if !USE_MEMORY_POOL
   return std::malloc(n);
 #else
   void* ptr = nullptr;
@@ -67,7 +67,7 @@ void* bi::allocate(const size_t n) {
 }
 
 void bi::deallocate(void* ptr, const size_t n) {
-#if DISABLE_POOL
+#if !USE_MEMORY_POOL
   std::free(ptr);
 #else
   if (n > 0ull) {
@@ -79,7 +79,7 @@ void bi::deallocate(void* ptr, const size_t n) {
 }
 
 void bi::deallocate(void* ptr, const unsigned n) {
-#if DISABLE_POOL
+#if !USE_MEMORY_POOL
   std::free(ptr);
 #else
   if (n > 0u) {
@@ -91,7 +91,7 @@ void bi::deallocate(void* ptr, const unsigned n) {
 }
 
 void* bi::reallocate(void* ptr1, const size_t n1, const size_t n2) {
-#if DISABLE_POOL
+#if !USE_MEMORY_POOL
   return std::realloc(ptr1, n2);
 #else
   int i1 = bin(n1);

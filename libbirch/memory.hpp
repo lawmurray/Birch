@@ -167,7 +167,7 @@ void* allocate(const size_t n);
  */
 template<unsigned n>
 void* allocate() {
-#if DISABLE_POOL
+#if !USE_MEMORY_POOL
   return std::malloc(n);
 #else
   void* ptr = nullptr;
