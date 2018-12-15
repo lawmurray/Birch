@@ -23,7 +23,8 @@ public:
    * Constructor.
    */
   ContextPtr(Memo* ptr = nullptr) :
-      memo(ptr) {
+      memo((ptr == cloneMemo.get()) ? nullptr : ptr),
+      context(cloneMemo) {
     //
   }
 
@@ -31,8 +32,8 @@ public:
    * Copy constructor.
    */
   ContextPtr(const ContextPtr& o) :
-      memo(o.get()),
-      context(cloneUnderway ? cloneMemo : nullptr) {
+      memo((o.get() == cloneMemo.get()) ? nullptr : o.get()),
+      context(cloneMemo) {
     //
   }
 

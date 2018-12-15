@@ -77,7 +77,7 @@ public:
    */
   void release(const key_type key);
 
-private:
+public:
   /**
    * Joint entry type.
    */

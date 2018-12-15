@@ -31,6 +31,7 @@
 #include "libbirch/Eigen.hpp"
 #include "libbirch/EigenFunctions.hpp"
 #include "libbirch/EigenOperators.hpp"
+#include "libbirch/Enter.hpp"
 
 namespace bi {
 /**
