@@ -147,7 +147,7 @@ void bi::Map::reserve() {
       joint_entry_type* entries1 = (joint_entry_type*)entries;
 
       /* initialize new table */
-      size_t nentries2 = std::max(2ull * nentries1, DEEP_CLONE_MAP_SIZE);
+      size_t nentries2 = std::max(2ull * nentries1, INITIAL_MAP_SIZE);
       joint_entry_type* entries2 = (joint_entry_type*)allocate(
           nentries2 * sizeof(entry_type));
       std::memset(entries2, 0, nentries2 * sizeof(entry_type));

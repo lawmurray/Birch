@@ -49,11 +49,34 @@
 #endif
 
 /**
- * @def
+ * @def USE_LAZY_DEEP_CLONE_FORWARD_CLEAN
+ *
+ * Set to 1 to keep forward references from each object to its clones, or 0
+ * to ignore. This enables more aggressive garbage collection, at the expense
+ * of performance.
+ */
+#ifndef USE_LAZY_DEEP_CLONE_FORWARD_CLEAN
+#define USE_LAZY_DEEP_CLONE_FORWARD_CLEAN 0
+#endif
+
+/**
+ * @def INITIAL_MAP_SIZE
  *
  * Initial number of entries in each new map used for deep clones.
  */
-#define DEEP_CLONE_MAP_SIZE 64ull
+#ifndef INITIAL_MAP_SIZE
+#define INITIAL_MAP_SIZE 64ull
+#endif
+
+/**
+ * @def INITIAL_LIST_SIZE
+ *
+ * Initial number of entries in each new list used for forward cleaning when
+ * USE_LAZY_DEEP_CLONE_FORWARD_CLEAN is enabled.
+ */
+#ifndef INITIAL_LIST_SIZE
+#define INITIAL_LIST_SIZE 16ull
+#endif
 
 /**
  * @def STANDARD_CREATE_FUNCTION

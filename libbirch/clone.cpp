@@ -50,6 +50,12 @@ void bi::clone_get(PointerType& o, ContextPtr& m) {
         cloneMemo = prevMemo->forwardPull();
         cloneUnderway = prevUnderway;
         cloned = m->clones.put(o.get(), s.get());
+        #if USE_LAZY_DEEP_CLONE_FORWARD_CLEAN
+        if (cloned == s.get()) {  // weren't beaten by another thread
+          o.get()->recordClone(cloned);
+        }
+        #endif
+
         #else
         /* for an eager deep clone we must be cautious to avoid infinite
          * recursion; memory for the new object is allocated first and put

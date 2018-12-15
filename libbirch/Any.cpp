@@ -23,3 +23,9 @@ bi::Any::~Any() {
 bi::Memo* bi::Any::getContext() {
   return context.get();
 }
+
+void bi::Any::recordClone(Any* o) {
+  #if USE_LAZY_DEEP_CLONE_FORWARD_CLEAN
+  clones.put(o);
+  #endif
+}

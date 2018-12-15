@@ -91,6 +91,7 @@ void bi::deallocate(void* ptr, const unsigned n) {
 }
 
 void* bi::reallocate(void* ptr1, const size_t n1, const size_t n2) {
+  assert(ptr1);
 #if !USE_MEMORY_POOL
   return std::realloc(ptr1, n2);
 #else

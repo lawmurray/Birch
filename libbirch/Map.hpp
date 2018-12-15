@@ -7,6 +7,8 @@
 #include "libbirch/Lock.hpp"
 
 namespace bi {
+class Any;
+
 /**
  * Thread-safe hash table of memory mappings.
  *
@@ -58,8 +60,6 @@ public:
    * @param value Value.
    *
    * @return If @p key exists, then its associated value, otherwise @p value.
-   *
-   * Use put() to not overwrite any existing value, set() to overwrite it.
    */
   value_type put(const key_type key, const value_type value);
 

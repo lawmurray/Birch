@@ -5,6 +5,7 @@
 
 #include "libbirch/config.hpp"
 #include "libbirch/Counted.hpp"
+#include "libbirch/List.hpp"
 
 namespace bi {
 template<class T> class SharedCOW;
@@ -51,10 +52,22 @@ public:
    */
   Memo* getContext();
 
+  /**
+   * Record a clone for later cleanup purposes.
+   */
+  void recordClone(Any* o);
+
 protected:
   /**
    * Memo responsible for the creation of this object.
    */
   WeakPtr<Memo> context;
+
+  #if USE_LAZY_DEEP_CLONE_FORWARD_CLEAN
+  /**
+   * Clones of this, kept for later cleanup.
+   */
+  List clones;
+  #endif
 };
 }
