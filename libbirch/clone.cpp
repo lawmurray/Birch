@@ -99,8 +99,15 @@ template<class PointerType>
 void bi::clone_deep(PointerType& o, const SharedPtr<Memo>& m) {
   assert(o);
   if (m && o.get()->getContext() != m.get()) {
-    clone_deep(o, m->getParent());
-    o = m->clones.get(o.get(), o.get());
+    Any* from = o.get();
+    Any* to = m->clones.get(from);
+    if (to) {
+      o = to;
+    } else {
+      clone_deep(o, m->getParent());
+      o = m->clones.get(o.get(), o.get());
+      to = m->clones.put(from, o.get());
+    }
   }
 }
 

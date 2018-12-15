@@ -164,10 +164,5 @@ protected:
    * Size of the object.
    */
   unsigned size;
-
-  /**
-   * Object from which this was cloned, `nullptr` if none.
-   */
-  const Counted* key;
 };
 }

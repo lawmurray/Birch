@@ -7,8 +7,7 @@ bi::Counted::Counted() :
     sharedCount(0),
     weakCount(1),
     memoCount(0),
-    size(0),
-    key(nullptr) {
+    size(0) {
   //
 }
 
@@ -16,8 +15,7 @@ bi::Counted::Counted(const Counted& o) :
     sharedCount(0),
     weakCount(1),
     memoCount(0),
-    size(o.size),
-    key(&o) {
+    size(o.size) {
   //
 }
 
@@ -57,11 +55,7 @@ void bi::Counted::incShared() {
 void bi::Counted::decShared() {
   assert(sharedCount > 0);
   if (--sharedCount == 0) {
-    if (memoCount) {
-      if (!key->isReachable()) {
-        releaseMemo();
-      }
-    } else {
+    if (!memoCount) {
       destroy();
       decWeak();  // release weak self-reference
     }
@@ -92,9 +86,7 @@ unsigned bi::Counted::numWeak() const {
 }
 
 void bi::Counted::setMemo() {
-  assert(memoCount == 0);
-  assert(key);
-  memoCount = 1;
+  memoCount = 1u;
 }
 
 void bi::Counted::releaseMemo() {

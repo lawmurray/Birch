@@ -3,7 +3,7 @@
  */
 #include "libbirch/stacktrace.hpp"
 
-std::vector<bi::StackFrame> bi::stacktrace;
+std::vector<bi::StackFrame,bi::Allocator<bi::StackFrame>> bi::stacktrace;
 
 bi::StackFunction::StackFunction(const char* func, const char* file,
     const int line) {

@@ -4,6 +4,7 @@
 #pragma once
 
 #include "libbirch/config.hpp"
+#include "libbirch/Allocator.hpp"
 
 /**
  * @def bi_function
@@ -48,7 +49,7 @@ struct StackFunction {
 /**
  * Stack trace.
  */
-extern std::vector<StackFrame> stacktrace;
+extern std::vector<StackFrame,Allocator<StackFrame>> stacktrace;
 #pragma omp threadprivate(stacktrace)
 
 /**
