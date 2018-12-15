@@ -24,8 +24,6 @@ AC_HEADER_STDBOOL
 
 # Checks for headers
 AC_CHECK_HEADERS([ \
-    boost/optional.hpp \
-    boost/variant.hpp \
     boost/filesystem.hpp \
     boost/filesystem/fstream.hpp \
     boost/property_tree/ptree.hpp \

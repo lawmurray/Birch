@@ -227,6 +227,7 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
     finish(" {");
     in();
     genTraceFunction(o->name->str(), o->loc);
+    line("Enter enter(getContext());");
 
     /* body */
     CppBaseGenerator auxBase(base, level, header);
@@ -264,6 +265,7 @@ void bi::CppClassGenerator::visit(const AssignmentOperator* o) {
       finish(" {");
       in();
       genTraceFunction("<assignment>", o->loc);
+      line("Enter enter(getContext());");
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces->strip();
       line("return *this;");
@@ -289,6 +291,7 @@ void bi::CppClassGenerator::visit(const ConversionOperator* o) {
       finish(" {");
       in();
       genTraceFunction("<conversion>", o->loc);
+      line("Enter enter(getContext());");
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces->strip();
       out();

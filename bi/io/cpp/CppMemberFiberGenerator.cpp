@@ -147,6 +147,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     finish(" {");
     in();
     genTraceFunction(o->name->str(), o->loc);
+    line("Enter enter(getContext());");
     genSwitch();
     *this << o->braces->strip();
     genEnd();
