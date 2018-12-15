@@ -12,6 +12,7 @@
 #include "libbirch/Memo.hpp"
 #include "libbirch/Any.hpp"
 #include "libbirch/Nil.hpp"
+#include "libbirch/Enter.hpp"
 
 namespace bi {
 template<class U> class WeakCOW;
@@ -128,29 +129,29 @@ public:
   /**
    * Get the raw pointer, lazy cloning if necessary.
    */
-  T* get() {
-    return static_cast<T*>(root_type::get());
+  Enter<T> get() {
+    return root_type::get();
   }
 
   /**
    * Get the raw pointer, lazy cloning if necessary.
    */
-  T* get() const {
-    return static_cast<T*>(root_type::get());
+  Enter<T> get() const {
+    return root_type::get();
   }
 
   /**
    * Map the raw pointer, without lazy cloning.
    */
-  T* pull() {
-    return static_cast<T*>(root_type::pull());
+  Enter<T> pull() {
+    return root_type::pull();
   }
 
   /**
    * Map the raw pointer, without lazy cloning.
    */
-  T* pull() const {
-    return static_cast<T*>(root_type::pull());
+  Enter<T> pull() const {
+    return root_type::pull();
   }
 
   /**
@@ -170,7 +171,7 @@ public:
   /**
    * Member access.
    */
-  T* operator->() const {
+  Enter<T> operator->() const {
     return get();
   }
 
@@ -239,7 +240,7 @@ public:
     return static_cast<bool>(object);
   }
 
-  Any* get() {
+  Enter<Any> get() {
     #if USE_LAZY_DEEP_CLONE
     if (object) {
       memo = memo->forwardGet();
@@ -249,13 +250,13 @@ public:
     return object.get();
   }
 
-  Any* get() const {
+  Enter<Any> get() const {
     /* even in a const context, do want to update the pointer through lazy
      * deep clone mechanisms */
    return const_cast<SharedCOW<Any>*>(this)->get();
   }
 
-  Any* pull() {
+  Enter<Any> pull() {
     #if USE_LAZY_DEEP_CLONE
     if (object) {
       memo = memo->forwardPull();
@@ -265,7 +266,7 @@ public:
     return object.get();
   }
 
-  Any* pull() const {
+  Enter<Any> pull() const {
     /* even in a const context, do want to update the pointer through lazy
      * deep clone mechanisms */
    return const_cast<SharedCOW<Any>*>(this)->pull();
@@ -286,7 +287,7 @@ public:
     return *get();
   }
 
-  Any* operator->() const {
+  Enter<Any> operator->() const {
     return get();
   }
 

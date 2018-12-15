@@ -9,6 +9,7 @@
 #include "libbirch/WeakPtr.hpp"
 #include "libbirch/ContextPtr.hpp"
 #include "libbirch/Optional.hpp"
+#include "libbirch/Enter.hpp"
 
 namespace bi {
 /**
@@ -86,15 +87,15 @@ public:
   /**
    * Map the raw pointer, without lazy cloning.
    */
-  T* pull() {
-    return static_cast<T*>(root_type::pull());
+  Enter<T> pull() {
+    return root_type::pull();
   }
 
   /**
    * Map the raw pointer, without lazy cloning.
    */
-  T* pull() const {
-    return static_cast<T*>(root_type::pull());
+  Enter<T> pull() const {
+    return root_type::pull();
   }
 };
 
@@ -127,7 +128,7 @@ public:
   WeakCOW<Any>& operator=(const WeakCOW<Any>& o) = default;
   WeakCOW<Any>& operator=(WeakCOW<Any>&& o) = default;
 
-  Any* pull() {
+  Enter<Any> pull() {
     #if USE_LAZY_DEEP_CLONE
     if (object) {
       memo = memo->forwardPull();
@@ -137,7 +138,7 @@ public:
     return object.get();
   }
 
-  Any* pull() const {
+  Enter<Any> pull() const {
     /* even in a const context, do want to update the pointer through lazy
      * deep clone mechanisms */
    return const_cast<WeakCOW<Any>*>(this)->pull();
