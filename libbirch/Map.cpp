@@ -15,10 +15,7 @@ bi::Map::~Map() {
     joint_entry_type entry = entries[i].joint.load();
     if (entry.key) {
       entry.key->decWeak();
-      entry.value->releaseMemo();
-      // ^ do this before decWeak(), as if the memo flag is already unset,
-      //   the decWeak() may cause the object to be deallocated
-      entry.value->decWeak();
+      entry.value->decShared();
     }
   }
   deallocate(entries, nentries * sizeof(entry_type));
@@ -57,8 +54,7 @@ bi::Map::value_type bi::Map::put(const key_type key, const value_type value) {
   assert(value);
 
   key->incWeak();
-  value->incWeak();
-  value->setMemo();
+  value->incShared();
 
   reserve();
   lock.share();
@@ -78,10 +74,7 @@ bi::Map::value_type bi::Map::put(const key_type key, const value_type value) {
     unreserve();  // key exists, cancel reservation for insert
     result = expected.value;
     key->decWeak();
-    value->releaseMemo();
-    // ^ do this before decWeak(), as if the memo flag is already unset,
-    //   the decWeak() may cause the object to be deallocated
-    value->decWeak();
+    value->decShared();
   } else {
     result = value;
   }
@@ -120,7 +113,7 @@ bi::Map::value_type bi::Map::uninitialized_put(const key_type key,
 }
 
 void bi::Map::release(const key_type key) {
-  get(key)->releaseMemo();
+  get(key)->decShared();
 }
 
 size_t bi::Map::hash(const key_type key) const {
@@ -168,10 +161,7 @@ void bi::Map::reserve() {
             /* key is useless, omit */
             --noccupied;
             entry.key->decWeak();
-            entry.value->releaseMemo();
-            // ^ do this before decWeak(), as if the memo flag is already unset,
-            //   the decWeak() may cause the object to be deallocated
-            entry.value->decWeak();
+            entry.value->decShared();
           }
         }
       }
