@@ -228,7 +228,6 @@
       "libbirch/Eigen.hpp",
       "libbirch/EigenFunctions.hpp",
       "libbirch/EigenOperators.hpp",
-      "libbirch/Enter.hpp",
       "libbirch/Fiber.hpp",
       "libbirch/FiberState.hpp",
       "libbirch/Frame.hpp",

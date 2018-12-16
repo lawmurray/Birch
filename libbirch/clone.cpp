@@ -18,10 +18,10 @@ template<class PointerType>
 void bi::clone_continue(PointerType& o, ContextPtr& m) {
   #if USE_LAZY_DEEP_CLONE
   clone_pull(o, m);
-  m = cloneMemo.get();
+  m = contexts.back().get();
   clone_deep(o, m->getParent());
   #else
-  m = cloneMemo;
+  m = contexts.back();
   clone_get(o, m);
   #endif
 }
@@ -42,14 +42,14 @@ void bi::clone_get(PointerType& o, ContextPtr& m) {
          * new objects may be made but only one thread can be successful in
          * inserting an object into the map; a shared pointer is used to
          * destroy any additional objects */
-        auto prevMemo = cloneMemo;
         auto prevUnderway = cloneUnderway;
-        cloneMemo = m.get();
+        contexts.push_back(m.get());
         cloneUnderway = true;
         s = s->clone();
-        cloneMemo = prevMemo->forwardPull();
-        cloneUnderway = prevUnderway;
         cloned = m->clones.put(o.get(), s.get());
+        contexts.pop_back();
+        contexts.back() = contexts.back()->forwardPull();
+        cloneUnderway = prevUnderway;
         #if USE_LAZY_DEEP_CLONE_FORWARD_CLEAN
         if (cloned == s.get()) {  // weren't beaten by another thread
           o.get()->recordClone(cloned);
@@ -69,17 +69,15 @@ void bi::clone_get(PointerType& o, ContextPtr& m) {
         assert(alloc);
         Any* uninit = m->clones.uninitialized_put(s.get(), alloc);
         assert(uninit == alloc);  // should be no thread contention here
-        auto prevMemo = cloneMemo;
         auto prevUnderway = cloneUnderway;
-        cloneMemo = m;
+        contexts.push_back(m);
         cloneUnderway = true;
         cloned = s->clone(uninit);
-        cloneMemo = prevMemo->forwardPull();
+        contexts.pop_back();
         cloneUnderway = prevUnderway;
         assert(cloned == uninit);  // clone should be in the allocation
         m->incWeak();  // uninitialized_put(), so responsible for ref counts
-        cloned->incWeak();
-        cloned->setMemo();
+        cloned->incShared();
         #endif
       }
     }

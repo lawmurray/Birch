@@ -12,7 +12,6 @@
 #include "libbirch/Memo.hpp"
 #include "libbirch/Any.hpp"
 #include "libbirch/Nil.hpp"
-#include "libbirch/Enter.hpp"
 
 namespace bi {
 template<class U> class WeakCOW;
@@ -129,29 +128,29 @@ public:
   /**
    * Get the raw pointer, lazy cloning if necessary.
    */
-  Enter<T> get() {
-    return root_type::get();
+  T* get() {
+    return static_cast<T*>(root_type::get());
   }
 
   /**
    * Get the raw pointer, lazy cloning if necessary.
    */
-  Enter<T> get() const {
-    return root_type::get();
+  T* get() const {
+    return static_cast<T*>(root_type::get());
   }
 
   /**
    * Map the raw pointer, without lazy cloning.
    */
-  Enter<T> pull() {
-    return root_type::pull();
+  T* pull() {
+    return static_cast<T*>(root_type::pull());
   }
 
   /**
    * Map the raw pointer, without lazy cloning.
    */
-  Enter<T> pull() const {
-    return root_type::pull();
+  T* pull() const {
+    return static_cast<T*>(root_type::pull());
   }
 
   /**
@@ -171,16 +170,8 @@ public:
   /**
    * Member access.
    */
-  Enter<T> operator->() const {
+  T* operator->() const {
     return get();
-  }
-
-  /**
-   * Call operator.
-   */
-  template<class ... Args>
-  auto operator()(Args ... args) const {
-    return (*get())(args...);
   }
 };
 
@@ -240,7 +231,7 @@ public:
     return static_cast<bool>(object);
   }
 
-  Enter<Any> get() {
+  Any* get() {
     #if USE_LAZY_DEEP_CLONE
     if (object) {
       memo = memo->forwardGet();
@@ -250,13 +241,13 @@ public:
     return object.get();
   }
 
-  Enter<Any> get() const {
+  Any* get() const {
     /* even in a const context, do want to update the pointer through lazy
      * deep clone mechanisms */
    return const_cast<SharedCOW<Any>*>(this)->get();
   }
 
-  Enter<Any> pull() {
+  Any* pull() {
     #if USE_LAZY_DEEP_CLONE
     if (object) {
       memo = memo->forwardPull();
@@ -266,7 +257,7 @@ public:
     return object.get();
   }
 
-  Enter<Any> pull() const {
+  Any* pull() const {
     /* even in a const context, do want to update the pointer through lazy
      * deep clone mechanisms */
    return const_cast<SharedCOW<Any>*>(this)->pull();
@@ -287,7 +278,7 @@ public:
     return *get();
   }
 
-  Enter<Any> operator->() const {
+  Any* operator->() const {
     return get();
   }
 

@@ -23,8 +23,8 @@ public:
    * Constructor.
    */
   ContextPtr(Memo* ptr = nullptr) :
-      memo((ptr == cloneMemo.get()) ? nullptr : ptr),
-      context(cloneMemo) {
+      memo((ptr == contexts.back().get()) ? nullptr : ptr),
+      context(contexts.back()) {
     //
   }
 
@@ -32,8 +32,8 @@ public:
    * Copy constructor.
    */
   ContextPtr(const ContextPtr& o) :
-      memo((o.get() == cloneMemo.get()) ? nullptr : o.get()),
-      context(cloneMemo) {
+      memo((cloneUnderway || o.get() == contexts.back().get()) ? nullptr : o.get()),
+      context(contexts.back()) {
     //
   }
 
@@ -48,6 +48,7 @@ public:
    * Copy assignment.
    */
   ContextPtr& operator=(Memo* o) {
+    //assert(context.get() == contexts.back().get());
     memo = (o != context.get()) ? o : nullptr;
     return *this;
   }
@@ -56,6 +57,7 @@ public:
    * Get the raw pointer.
    */
   Memo* get() const {
+    //assert(memo || context.get()->forwardPull() == contexts.back().get());
     return memo ? memo.get() : context.get();
   }
 

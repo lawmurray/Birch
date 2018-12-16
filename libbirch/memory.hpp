@@ -31,27 +31,6 @@ extern size_t bufferSize;
 extern Pool pool[];
 
 /**
- * The memo object associated with new objects; @c nullptr if no clone
- * is underway.
- *
- * Ideally, clone operations would pass around the memo as an argument to
- * copy functions. This, however, means that copy constructors cannot be
- * used, which is especially problematic for types defined elsewhere (e.g.
- * std::tuple, boost::optional) where it is not possible to define a custom
- * constructor taking a memo as argument.
- *
- * Instead, this global variable is used.
- */
-extern SharedPtr<Memo> cloneMemo;
-#pragma omp threadprivate(cloneMemo)
-
-/**
- * Is a clone currently underway?
- */
-extern bool cloneUnderway;
-#pragma omp threadprivate(cloneUnderway)
-
-/**
  * Allocate a large buffer for the heap.
  */
 char* heap();
@@ -222,5 +201,57 @@ void deallocate(void* ptr, const unsigned n);
  * @return Pointer to the newly allocated memory.
  */
 void* reallocate(void* ptr1, const size_t n1, const size_t n2);
+}
+
+#include "libbirch/Allocator.hpp"
+
+namespace bi {
+/**
+ * Is a clone currently underway?
+ */
+extern bool cloneUnderway;
+#pragma omp threadprivate(cloneUnderway)
+
+/**
+ * The memo object associated with new objects; @c nullptr if no clone
+ * is underway.
+ *
+ * Ideally, clone operations would pass around the memo as an argument to
+ * copy functions. This, however, means that copy constructors cannot be
+ * used, which is especially problematic for types defined elsewhere (e.g.
+ * std::tuple, boost::optional) where it is not possible to define a custom
+ * constructor taking a memo as argument.
+ *
+ * Instead, this global variable is used.
+ */
+extern std::vector<SharedPtr<Memo>,Allocator<SharedPtr<Memo>>> contexts;
+#pragma omp threadprivate(contexts)
+
+/**
+ * Push the context for a given object.
+ */
+template<class T>
+T push_context(T&& o) {
+  contexts.push_back(o->getContext());
+  return o;
+}
+
+/**
+ * Pop the context stack.
+ */
+inline void pop_context() {
+  assert(contexts.size() > 1);  // root should never be popped
+  contexts.pop_back();
+}
+
+/**
+ * Pop the context stack and forward the result of an expression.
+ */
+template<class T>
+T pop_context(T&& expr) {
+  assert(contexts.size() > 1);  // root should never be popped
+  contexts.pop_back();
+  return expr;
+}
 
 }

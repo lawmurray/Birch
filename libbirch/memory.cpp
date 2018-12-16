@@ -13,7 +13,7 @@ size_t bi::bufferSize;
 bi::Pool bi::pool[64];
 
 static bi::Memo* rootMemo = bi::Memo::create();
-bi::SharedPtr<bi::Memo> bi::cloneMemo = rootMemo;
+std::vector<bi::SharedPtr<bi::Memo>,bi::Allocator<bi::SharedPtr<bi::Memo>>> bi::contexts(1, rootMemo);
 bool bi::cloneUnderway = false;
 
 char* bi::heap() {
