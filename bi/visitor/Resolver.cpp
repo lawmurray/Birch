@@ -194,15 +194,20 @@ bi::Expression* bi::Resolver::modify(Range* o) {
 
 bi::Expression* bi::Resolver::modify(Member* o) {
   o->left = o->left->accept(this);
-  if (dynamic_cast<Global*>(o->left)) {
-    memberScopes.push_back(scopes.front());
-  } else if (o->left->type->isClass() && !o->left->type->isWeak()) {
+  if (o->left->type->isClass() && !o->left->type->isWeak()) {
     memberScopes.push_back(o->left->type->getClass()->scope);
   } else {
     throw MemberException(o);
   }
   o->right = o->right->accept(this);
   o->type = o->right->type;
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(Global* o) {
+  memberScopes.push_back(scopes.front());
+  o->single = o->single->accept(this);
+  o->type = o->single->type;
   return o;
 }
 

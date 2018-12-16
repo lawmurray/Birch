@@ -796,12 +796,12 @@ void bi::Driver::configure() {
       cxxflags << " -Wall";
     }
     if (debug) {
-      cflags << " -Og -g";
-      cxxflags << " -Og -g";
+      cflags << " -O0 -fno-inline -g";
+      cxxflags << " -O0 -fno-inline -g";
     } else {
       cppflags << " -DNDEBUG";
-      cflags << " -O3 -funroll-loops -flto";
-      cxxflags << " -O3 -funroll-loops -flto";
+      cflags << " -O3 -funroll-loops -flto -g";
+      cxxflags << " -O3 -funroll-loops -flto -g";
     }
     cxxflags << " -Wno-overloaded-virtual";
     cxxflags << " -Wno-inconsistent-missing-override";
@@ -809,6 +809,8 @@ void bi::Driver::configure() {
     // ^ false warnings for abstract functions at the moment
     //cppflags << " -DEIGEN_NO_STATIC_ASSERT";
     //cppflags << " -Deigen_assert=bi_assert";
+    cppflags << " -DEIGEN_NO_AUTOMATIC_RESIZING=1";
+    cppflags << " -DEIGEN_DONT_PARALLELIZE=1";
 
     for (auto iter = include_dirs.begin(); iter != include_dirs.end();
         ++iter) {

@@ -146,7 +146,7 @@ void bi::bi_ostream::visit(const Member* o) {
 }
 
 void bi::bi_ostream::visit(const Global* o) {
-  middle("global");
+  middle("global." << o->single);
 }
 
 void bi::bi_ostream::visit(const Super* o) {

@@ -75,8 +75,15 @@ void bi::CppBaseGenerator::visit(const Cast* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Call* o) {
+  auto memberSingle = dynamic_cast<const Member*>(o->single);
+  if (memberSingle && !o->type->isEmpty()) {
+    middle("pop_context(");
+  }
   middle(o->single);
   genArgs(o);
+  if (memberSingle && !o->type->isEmpty()) {
+    middle(')');
+  }
 }
 
 void bi::CppBaseGenerator::visit(const BinaryCall* o) {
@@ -113,10 +120,17 @@ void bi::CppBaseGenerator::visit(const UnaryCall* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Assign* o) {
+  auto memberLeft = dynamic_cast<const Member*>(o->left);
+  if (memberLeft) {
+    middle("pop_context(");
+  }
   ++inAssign;
   middle(o->left);
   --inAssign;
   middle(" = " << o->right);
+  if (memberLeft) {
+    middle(')');
+  }
 }
 
 void bi::CppBaseGenerator::visit(const Slice* o) {
@@ -156,22 +170,23 @@ void bi::CppBaseGenerator::visit(const Range* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Member* o) {
-  const This* leftThis = dynamic_cast<const This*>(o->left);
-  const Super* leftSuper = dynamic_cast<const Super*>(o->left);
-  const Global* leftGlobal = dynamic_cast<const Global*>(o->left);
-  if (leftThis) {
-    middle("this->self()->");
-  } else if (leftSuper) {
-    middle("this->self()->super_type::");
-  } else if (leftGlobal) {
-    middle("::");
+  auto leftThis = dynamic_cast<const This*>(o->left);
+  auto leftSuper = dynamic_cast<const Super*>(o->left);
+  middle("push_context(");
+  if (leftThis || leftSuper) {
+  middle("this->self()");
   } else if (!inAssign && o->right->type->isValue()
       && dynamic_cast<const Identifier<MemberVariable>*>(o->right)) {
     /* optimization: just reading a value, so no need to copy-on-write the
      * owning object */
-    middle(o->left << ".pull()->");
+    middle(o->left << ".pull()");
   } else {
-    middle(o->left << "->");
+    middle(o->left);
+  }
+  middle(')');
+  middle("->");
+  if (leftSuper) {
+    middle("super_type::");
   }
   ++inMember;
   middle(o->right);
@@ -188,7 +203,7 @@ void bi::CppBaseGenerator::visit(const Super* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Global* o) {
-  assert(false);  // syntax should not allow outside member expression
+  middle("::" << o->single);
 }
 
 void bi::CppBaseGenerator::visit(const Nil* o) {
@@ -549,16 +564,22 @@ void bi::CppBaseGenerator::visit(const Generic* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Assignment* o) {
-  genTraceLine(o->loc->firstLine);
-  ++inAssign;
-  start(o->left);
-  --inAssign;
-  finish(" = " << o->right << ';');
+  assert(false);  // should have been replaced by Resolver
 }
 
 void bi::CppBaseGenerator::visit(const ExpressionStatement* o) {
   genTraceLine(o->loc->firstLine);
   line(o->single << ';');
+
+  /* determine if there is an extra context to pop */
+  auto call = dynamic_cast<const Call*>(o->single);
+  if (call && call->type->isEmpty()) {
+    auto member = dynamic_cast<const Member*>(call->single);
+    if (member) {
+      line("pop_context();");
+    }
+  }
+
 }
 
 void bi::CppBaseGenerator::visit(const If* o) {

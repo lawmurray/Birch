@@ -141,6 +141,7 @@ bi::Expression* bi::Modifier::modify(Member* o) {
 }
 
 bi::Expression* bi::Modifier::modify(Global* o) {
+  o->single = o->single->accept(this);
   return o;
 }
 

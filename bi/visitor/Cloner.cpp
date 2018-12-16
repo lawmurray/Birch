@@ -118,7 +118,7 @@ bi::Expression* bi::Cloner::clone(const Super* o) {
 }
 
 bi::Expression* bi::Cloner::clone(const Global* o) {
-  return new Global(o->loc);
+  return new Global(o->single->accept(this), o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const Nil* o) {

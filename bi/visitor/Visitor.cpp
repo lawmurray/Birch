@@ -117,7 +117,7 @@ void bi::Visitor::visit(const Range* o) {
 }
 
 void bi::Visitor::visit(const Global* o) {
-  //
+  o->single->accept(this);
 }
 
 void bi::Visitor::visit(const Super* o) {
