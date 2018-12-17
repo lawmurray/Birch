@@ -204,6 +204,7 @@ void* reallocate(void* ptr1, const size_t n1, const size_t n2);
 }
 
 #include "libbirch/Allocator.hpp"
+#include "libbirch/Memo.hpp"
 
 namespace bi {
 /**
@@ -228,12 +229,27 @@ extern std::vector<SharedPtr<Memo>,Allocator<SharedPtr<Memo>>> contexts;
 #pragma omp threadprivate(contexts)
 
 /**
+ * Get the top context.
+ */
+inline bi::Memo* top_context() {
+  return contexts.back().get();
+}
+
+/**
+ * Push a context.
+ */
+inline void push_memo(Memo* memo) {
+  assert(memo == memo->forwardPull());
+  contexts.push_back(memo);
+}
+
+/**
  * Push the context for a given object.
  */
 template<class T>
-T push_context(T&& o) {
-  contexts.push_back(o->getContext());
-  return o;
+T&& push_context(T&& ptr) {
+  push_memo(ptr.getContext()->forwardPull());
+  return std::forward<T>(ptr);
 }
 
 /**
@@ -242,16 +258,17 @@ T push_context(T&& o) {
 inline void pop_context() {
   assert(contexts.size() > 1);  // root should never be popped
   contexts.pop_back();
+  contexts.back() = contexts.back()->forwardPull();
 }
 
 /**
  * Pop the context stack and forward the result of an expression.
  */
 template<class T>
-T pop_context(T&& expr) {
+T&& pop_context(T&& expr) {
   assert(contexts.size() > 1);  // root should never be popped
   contexts.pop_back();
-  return expr;
+  return std::forward<T>(expr);
 }
 
 }

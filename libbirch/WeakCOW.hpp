@@ -4,10 +4,9 @@
 #pragma once
 
 #include "libbirch/config.hpp"
-#include "libbirch/clone.hpp"
 #include "libbirch/SharedCOW.hpp"
 #include "libbirch/WeakPtr.hpp"
-#include "libbirch/ContextPtr.hpp"
+#include "libbirch/SharedPtr.hpp"
 #include "libbirch/Optional.hpp"
 
 namespace bi {
@@ -29,8 +28,8 @@ public:
   /**
    * Constructor.
    */
-  WeakCOW(const Nil& = nil) :
-      super_type() {
+  WeakCOW(const Nil& ptr = nil, Memo* memo = top_context()) :
+      super_type(ptr, memo) {
     //
   }
 
@@ -43,9 +42,9 @@ public:
   }
 
   WeakCOW(const WeakCOW<T>& o) = default;
-  WeakCOW(WeakCOW<T>&& o) = default;
+  WeakCOW(WeakCOW<T> && o) = default;
   WeakCOW<T>& operator=(const WeakCOW<T>& o) = default;
-  WeakCOW<T>& operator=(WeakCOW<T>&& o) = default;
+  WeakCOW<T>& operator=(WeakCOW<T> && o) = default;
 
   /**
    * Generic copy assignment.
@@ -60,7 +59,7 @@ public:
    * Generic move assignment.
    */
   template<class U>
-  WeakCOW<T>& operator=(WeakCOW<U>&& o) {
+  WeakCOW<T>& operator=(WeakCOW<U> && o) {
     root_type::operator=(o);
     return *this;
   }
@@ -78,7 +77,7 @@ public:
    * Generic move assignment.
    */
   template<class U>
-  WeakCOW<T>& operator=(SharedCOW<U>&& o) {
+  WeakCOW<T>& operator=(SharedCOW<U> && o) {
     root_type::operator=(o);
     return *this;
   }
@@ -105,7 +104,8 @@ public:
   using value_type = Any;
   using root_type = WeakCOW<value_type>;
 
-  WeakCOW(const Nil& = nil) {
+  WeakCOW(const Nil& o = nil, Memo* memo = top_context()) :
+      memo(memo) {
     //
   }
 
@@ -119,28 +119,33 @@ public:
       object(o.object),
       memo(o.memo) {
     if (cloneUnderway && object) {
-      clone_continue(object, memo);
+      object = memo->pull(object.get());
+      memo = top_context();
+      auto parent = memo->getParent();
+      if (parent) {
+        object = parent->deep(object.get());
+      }
+      #if !USE_LAZY_DEEP_CLONE
+      get();
+      #endif
     }
   }
 
   WeakCOW(WeakCOW<Any> && o) = default;
   WeakCOW<Any>& operator=(const WeakCOW<Any>& o) = default;
-  WeakCOW<Any>& operator=(WeakCOW<Any>&& o) = default;
+  WeakCOW<Any>& operator=(WeakCOW<Any> && o) = default;
 
   Any* pull() {
-    #if USE_LAZY_DEEP_CLONE
-    if (object) {
-      memo = memo->forwardPull();
-      clone_pull(object, memo);
-    }
-    #endif
+#if USE_LAZY_DEEP_CLONE
+    object = memo->forwardPull()->pull(object.get());
+#endif
     return object.get();
   }
 
   Any* pull() const {
     /* even in a const context, do want to update the pointer through lazy
      * deep clone mechanisms */
-   return const_cast<WeakCOW<Any>*>(this)->pull();
+    return const_cast<WeakCOW<Any>*>(this)->pull();
   }
 
 protected:
@@ -152,6 +157,6 @@ protected:
   /**
    * The memo.
    */
-  ContextPtr memo;
+  SharedPtr<Memo> memo;
 };
 }

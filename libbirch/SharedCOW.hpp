@@ -5,10 +5,8 @@
 
 #include "libbirch/config.hpp"
 #include "libbirch/class.hpp"
-#include "libbirch/clone.hpp"
 #include "libbirch/memory.hpp"
 #include "libbirch/SharedPtr.hpp"
-#include "libbirch/ContextPtr.hpp"
 #include "libbirch/Memo.hpp"
 #include "libbirch/Any.hpp"
 #include "libbirch/Nil.hpp"
@@ -34,24 +32,24 @@ public:
   /**
    * Constructor.
    */
-  SharedCOW(const Nil& = nil) :
-      super_type() {
+  SharedCOW(const Nil& ptr = nil, Memo* memo = top_context()) :
+      super_type(ptr, memo) {
     //
   }
 
   /**
    * Constructor.
    */
-  SharedCOW(T* object) :
-      super_type(object) {
+  SharedCOW(T* object, Memo* memo = top_context()) :
+      super_type(object, memo) {
     //
   }
 
   /**
    * Constructor.
    */
-  SharedCOW(const SharedPtr<T>& object) :
-      super_type(object) {
+  SharedCOW(const SharedPtr<T>& object, Memo* memo = top_context()) :
+      super_type(object, memo) {
     //
   }
 
@@ -59,14 +57,6 @@ public:
    * Constructor.
    */
   SharedCOW(const WeakCOW<T>& o);
-
-  /**
-   * Constructor.
-   */
-  SharedCOW(T* object, Memo* memo) :
-      super_type(object, memo) {
-    //
-  }
 
   /**
    * Copy constructor.
@@ -182,29 +172,18 @@ public:
   using value_type = Any;
   using root_type = SharedCOW<value_type>;
 
-  SharedCOW(const Nil& = nil) {
+  SharedCOW(const Nil& = nil, Memo* memo = top_context()) :
+      memo(memo) {
     //
   }
 
-  SharedCOW(Any* object) :
-      object(object),
-      memo(object ? object->getContext() : nullptr) {
-    //
-  }
-
-  SharedCOW(const SharedPtr<Any>& object) :
-      object(object),
-      memo(object ? object->getContext() : nullptr) {
-    //
-  }
-
-  SharedCOW(const SharedPtr<Any>& object, const ContextPtr& memo) :
+  SharedCOW(Any* object, Memo* memo = top_context()) :
       object(object),
       memo(memo) {
     //
   }
 
-  SharedCOW(Any* object, Memo* memo) :
+  SharedCOW(const SharedPtr<Any>& object, Memo* memo = top_context()) :
       object(object),
       memo(memo) {
     //
@@ -216,7 +195,15 @@ public:
       object(o.object),
       memo(o.memo) {
     if (cloneUnderway && object) {
-      clone_continue(object, memo);
+      object = memo->pull(object.get());
+      memo = top_context();
+      auto parent = memo->getParent();
+      if (parent) {
+        object = parent->deep(object.get());
+      }
+      #if !USE_LAZY_DEEP_CLONE
+      get();
+      #endif
     }
   }
 
@@ -233,10 +220,7 @@ public:
 
   Any* get() {
     #if USE_LAZY_DEEP_CLONE
-    if (object) {
-      memo = memo->forwardGet();
-      clone_get(object, memo);
-    }
+    object = memo->forwardGet()->get(object.get());
     #endif
     return object.get();
   }
@@ -244,15 +228,12 @@ public:
   Any* get() const {
     /* even in a const context, do want to update the pointer through lazy
      * deep clone mechanisms */
-   return const_cast<SharedCOW<Any>*>(this)->get();
+    return const_cast<SharedCOW<Any>*>(this)->get();
   }
 
   Any* pull() {
     #if USE_LAZY_DEEP_CLONE
-    if (object) {
-      memo = memo->forwardPull();
-      clone_pull(object, memo);
-    }
+    object = memo->forwardPull()->pull(object.get());
     #endif
     return object.get();
   }
@@ -260,18 +241,21 @@ public:
   Any* pull() const {
     /* even in a const context, do want to update the pointer through lazy
      * deep clone mechanisms */
-   return const_cast<SharedCOW<Any>*>(this)->pull();
+    return const_cast<SharedCOW<Any>*>(this)->pull();
   }
 
   SharedCOW<Any> clone() const {
-    SharedPtr<Any> o;
-    ContextPtr m;
-    if (object) {
-      o = object;
-      m = memo->forwardPull();
-      clone_start(o, m);
-    }
-    return SharedCOW<Any>(o, m);
+    push_memo(memo->forwardPull()->fork());
+    SharedCOW<Any> result(pull());
+    #if !USE_LAZY_DEEP_CLONE
+    result.get();
+    #endif
+    pop_context();
+    return result;
+  }
+
+  Memo* getContext() {
+    return memo.get();
   }
 
   Any& operator*() const {
@@ -317,7 +301,7 @@ protected:
   /**
    * The memo.
    */
-  ContextPtr memo;
+  SharedPtr<Memo> memo;
 };
 }
 

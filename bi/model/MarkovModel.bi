@@ -32,7 +32,7 @@ class MarkovModel<Parameter,State> < Model {
 
   function start() -> Real {
     /* parameter */
-    auto θ <- θ;
+    auto θ <- this.θ;
     auto w <- sum(parameter(θ));
 
     /* initial state */
@@ -51,7 +51,7 @@ class MarkovModel<Parameter,State> < Model {
   }
 
   function step() -> Real {
-    auto θ <- θ;
+    auto θ <- this.θ;
     auto w <- 0.0;
 
     /* transition */

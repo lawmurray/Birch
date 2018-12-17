@@ -161,7 +161,11 @@ protected:
   std::atomic<unsigned> memoCount;
 
   /**
-   * Size of the object.
+   * Size of the object. This is set immediately after construction. A value
+   * of zero is also indicative that the object is still being constructed.
+   * Consequently, if the shared count reaches zero while the size is zero,
+   * the object is not destroyed. This can happen when constructors create
+   * shared pointers to `this`.
    */
   unsigned size;
 };

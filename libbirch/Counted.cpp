@@ -55,7 +55,8 @@ void bi::Counted::incShared() {
 void bi::Counted::decShared() {
   assert(sharedCount > 0);
   if (--sharedCount == 0) {
-    if (!memoCount) {
+    if (size > 0 && !memoCount) {
+      // ^ size == 0 during construction, never destroy in that case
       destroy();
       decWeak();  // release weak self-reference
     }

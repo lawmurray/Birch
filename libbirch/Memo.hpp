@@ -42,7 +42,7 @@ protected:
 public:
   STANDARD_CREATE_FUNCTION
   STANDARD_EMPLACE_FUNCTION
-  //STANDARD_CLONE_FUNCTION
+  //STANDARD_FUNCTION
   STANDARD_DESTROY_FUNCTION
 
   /**
@@ -85,6 +85,30 @@ public:
    * Get the parent memo.
    */
   SharedPtr<Memo> getParent() const;
+
+  /**
+   * Shallow mapping of an object that may not yet have been cloned,
+   * cloning it if necessary.
+   */
+  Any* get(Any* o);
+
+  /**
+   * Shallow mapping of an object that may not yet have been cloned,
+   * without cloning it. This can be used as an optimization for read-only
+   * access.
+   */
+  Any* pull(Any* o);
+
+  /**
+   * Deep mapping of an object through ancestor memos up to the current memo,
+   * witout any cloning; get() or pull() should be called on the result to
+   * map through this memo.
+   *
+   * @param o The source object.
+   *
+   * @return The mapped object.
+   */
+  Any* deep(Any* o);
 
 public:
   /**

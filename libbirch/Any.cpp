@@ -6,13 +6,13 @@
 #include "libbirch/memory.hpp"
 
 bi::Any::Any() :
-    context(contexts.back()->forwardGet()) {
+    context(top_context()->forwardGet()) {
   //
 }
 
 bi::Any::Any(const Any& o) :
     Counted(o),
-    context(contexts.back()) {
+    context(top_context()) {
   //
 }
 
