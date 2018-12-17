@@ -170,21 +170,17 @@ void bi::CppBaseGenerator::visit(const Range* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Member* o) {
-  auto leftThis = dynamic_cast<const This*>(o->left);
-  auto leftSuper = dynamic_cast<const Super*>(o->left);
-  middle("push_context(");
-  if (leftThis || leftSuper) {
-  middle("this->self()");
-  } else if (!inAssign && o->right->type->isValue()
+  middle("push_context(" << o->left << ')');
+  if (!inAssign && o->right->type->isValue()
       && dynamic_cast<const Identifier<MemberVariable>*>(o->right)) {
     /* optimization: just reading a value, so no need to copy-on-write the
      * owning object */
-    middle(o->left << ".pull()");
-  } else {
-    middle(o->left);
+    middle(".pull()");
   }
-  middle(')');
   middle("->");
+
+  /* explicitly refer to the super class if necessary */
+  auto leftSuper = dynamic_cast<const Super*>(o->left);
   if (leftSuper) {
     middle("super_type::");
   }
@@ -194,12 +190,11 @@ void bi::CppBaseGenerator::visit(const Member* o) {
 }
 
 void bi::CppBaseGenerator::visit(const This* o) {
-  // only need to handle the case outside member expression
-  middle("this->shared_from_self()");
+  middle("self()");
 }
 
 void bi::CppBaseGenerator::visit(const Super* o) {
-  assert(false);  // syntax should not allow outside member expression
+  middle("self()");
 }
 
 void bi::CppBaseGenerator::visit(const Global* o) {
@@ -243,7 +238,11 @@ void bi::CppBaseGenerator::visit(const Identifier<LocalVariable>* o) {
 
 void bi::CppBaseGenerator::visit(const Identifier<MemberVariable>* o) {
   if (!inMember) {
-    middle("this->self()->");
+    /* self()-> is essential for the query function of member fibers, but
+     * also for the situation where a member function causes itself to be
+     * cloned, as self()-> will ensure that forwarding clone is modified
+     * rather than the original object */
+    middle("self()->");
   }
   middle(o->name);
 }
@@ -265,14 +264,16 @@ void bi::CppBaseGenerator::visit(const OverloadedIdentifier<Fiber>* o) {
 void bi::CppBaseGenerator::visit(
     const OverloadedIdentifier<MemberFunction>* o) {
   if (!inMember) {
-    middle("this->self()->");
+    /* see notes on visit(const Identifier<MemberVariable>*) */
+    middle("self()->");
   }
   middle(o->name);
 }
 
 void bi::CppBaseGenerator::visit(const OverloadedIdentifier<MemberFiber>* o) {
   if (!inMember) {
-    middle("this->self()->");
+    /* see notes on visit(const Identifier<MemberVariable>*) */
+    middle("self()->");
   }
   middle(o->name);
 }
@@ -579,7 +580,6 @@ void bi::CppBaseGenerator::visit(const ExpressionStatement* o) {
       line("pop_context();");
     }
   }
-
 }
 
 void bi::CppBaseGenerator::visit(const If* o) {

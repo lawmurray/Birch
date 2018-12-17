@@ -81,16 +81,9 @@ void bi::CppClassGenerator::visit(const Class* o) {
         out();
         line("private:");
         in();
-
         line("auto self() {");
         in();
-        line("return this;");
-        out();
-        line("}\n");
-
-        line("auto shared_from_self() {");
-        in();
-        line("return SharedCOW<this_type>(self());");
+        line("return SharedCOW<this_type>(this);");
         out();
         line("}\n");
       }
