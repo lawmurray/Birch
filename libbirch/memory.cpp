@@ -109,3 +109,18 @@ void* bi::reallocate(void* ptr1, const size_t n1, const size_t n2) {
   return ptr2;
 #endif
 }
+
+bi::Memo* bi::top_context() {
+  return contexts.back().get();
+}
+
+void bi::push_memo(Memo* memo) {
+  assert(memo == memo->forwardPull());
+  contexts.push_back(memo);
+}
+
+void bi::pop_context() {
+  assert(contexts.size() > 1);  // root should never be popped
+  contexts.pop_back();
+  contexts.back() = contexts.back()->forwardPull();
+}

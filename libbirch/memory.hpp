@@ -231,44 +231,34 @@ extern std::vector<SharedPtr<Memo>,Allocator<SharedPtr<Memo>>> contexts;
 /**
  * Get the top context.
  */
-inline bi::Memo* top_context() {
-  return contexts.back().get();
-}
+Memo* top_context();
 
 /**
  * Push a context.
  */
-inline void push_memo(Memo* memo) {
-  assert(memo == memo->forwardPull());
-  contexts.push_back(memo);
-}
+void push_memo(Memo* memo);
+
+/**
+ * Pop the context stack.
+ */
+void pop_context();
 
 /**
  * Push the context for a given object.
  */
 template<class T>
-T&& push_context(T&& ptr) {
+T push_context(T&& ptr) {
   push_memo(ptr.getContext()->forwardPull());
   return std::forward<T>(ptr);
-}
-
-/**
- * Pop the context stack.
- */
-inline void pop_context() {
-  assert(contexts.size() > 1);  // root should never be popped
-  contexts.pop_back();
-  contexts.back() = contexts.back()->forwardPull();
 }
 
 /**
  * Pop the context stack and forward the result of an expression.
  */
 template<class T>
-T&& pop_context(T&& expr) {
-  assert(contexts.size() > 1);  // root should never be popped
-  contexts.pop_back();
-  return std::forward<T>(expr);
+T pop_context(T&& o) {
+  pop_context();
+  return std::forward<T>(o);
 }
 
 }

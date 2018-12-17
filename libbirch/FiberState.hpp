@@ -34,27 +34,6 @@ protected:
   }
 
   /**
-   * Copy constructor.
-   */
-  FiberState(const FiberState<YieldType>& o) :
-      Any(o),
-      label(o.label),
-      nlabels(o.nlabels),
-      value(o.value) {
-    //
-  }
-
-  /**
-   * Copy assignment.
-   */
-  FiberState<YieldType>& operator=(const FiberState<YieldType>& o) {
-    label = o.label;
-    nlabels = o.nlabels;
-    value = o.value;
-    return *this;
-  }
-
-  /**
    * Destructor.
    */
   virtual ~FiberState() {
