@@ -302,10 +302,14 @@ bi::Expression* bi::Resolver::modify(Identifier<LocalVariable>* o) {
 }
 
 bi::Expression* bi::Resolver::modify(Identifier<MemberVariable>* o) {
-  Modifier::modify(o);
-  resolve(o, CLASS_SCOPE);
-  o->type = o->target->type;
-  return o;
+  if (memberScopes.empty()) {
+    return (new Member(new This(o->loc), o, o->loc))->accept(this);
+  } else {
+    Modifier::modify(o);
+    resolve(o, CLASS_SCOPE);
+    o->type = o->target->type;
+    return o;
+  }
 }
 
 bi::Expression* bi::Resolver::modify(OverloadedIdentifier<Unknown>* o) {
@@ -335,25 +339,33 @@ bi::Expression* bi::Resolver::modify(OverloadedIdentifier<Fiber>* o) {
 }
 
 bi::Expression* bi::Resolver::modify(OverloadedIdentifier<MemberFiber>* o) {
-  resolve(o, CLASS_SCOPE);
-  Modifier::modify(o);
-  if (o->target->size() == 1) {
-    auto only = o->target->front();
-    o->target = new Overloaded<MemberFiber>(only);
-    o->type = new FunctionType(only->params->type, only->returnType);
+  if (memberScopes.empty()) {
+    return (new Member(new This(o->loc), o, o->loc))->accept(this);
+  } else {
+    resolve(o, CLASS_SCOPE);
+    Modifier::modify(o);
+    if (o->target->size() == 1) {
+      auto only = o->target->front();
+      o->target = new Overloaded<MemberFiber>(only);
+      o->type = new FunctionType(only->params->type, only->returnType);
+    }
+    return o;
   }
-  return o;
 }
 
 bi::Expression* bi::Resolver::modify(OverloadedIdentifier<MemberFunction>* o) {
-  resolve(o, CLASS_SCOPE);
-  Modifier::modify(o);
-  if (o->target->size() == 1) {
-    auto only = o->target->front();
-    o->target = new Overloaded<MemberFunction>(only);
-    o->type = new FunctionType(only->params->type, only->returnType);
+  if (memberScopes.empty()) {
+    return (new Member(new This(o->loc), o, o->loc))->accept(this);
+  } else {
+    resolve(o, CLASS_SCOPE);
+    Modifier::modify(o);
+    if (o->target->size() == 1) {
+      auto only = o->target->front();
+      o->target = new Overloaded<MemberFunction>(only);
+      o->type = new FunctionType(only->params->type, only->returnType);
+    }
+    return o;
   }
-  return o;
 }
 
 bi::Expression* bi::Resolver::modify(OverloadedIdentifier<BinaryOperator>* o) {

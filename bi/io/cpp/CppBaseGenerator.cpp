@@ -13,7 +13,6 @@ bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
     const bool header) :
     indentable_ostream(base, level),
     header(header),
-    inMember(0),
     inAssign(0) {
   //
 }
@@ -177,11 +176,11 @@ void bi::CppBaseGenerator::visit(const Member* o) {
     middle("pop_context(");
   }
   middle("push_context(" << o->left << ')');
-  //if (!inAssign && rightVar && rightVar->type->isValue()) {
-  //  /* optimization: just reading a value, so no need to copy-on-write the
-  //   * owning object */
-  //  middle(".pull()");
-  //}
+  if (!inAssign && rightVar && rightVar->type->isValue()) {
+    /* optimization: just reading a value, so no need to copy-on-write the
+     * owning object */
+    middle(".pull()");
+  }
   middle("->");
 
   /* explicitly refer to the super class if necessary */
@@ -189,9 +188,7 @@ void bi::CppBaseGenerator::visit(const Member* o) {
   if (leftSuper) {
     middle("super_type::");
   }
-  ++inMember;
   middle(o->right);
-  --inMember;
   if (rightVar && !inAssign) {
     middle(")");
   }
@@ -245,13 +242,6 @@ void bi::CppBaseGenerator::visit(const Identifier<LocalVariable>* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Identifier<MemberVariable>* o) {
-  if (!inMember) {
-    /* self()-> is essential for the query function of member fibers, but
-     * also for the situation where a member function causes itself to be
-     * cloned, as self()-> will ensure that forwarding clone is modified
-     * rather than the original object */
-    middle("self()->");
-  }
   middle(o->name);
 }
 
@@ -271,18 +261,10 @@ void bi::CppBaseGenerator::visit(const OverloadedIdentifier<Fiber>* o) {
 
 void bi::CppBaseGenerator::visit(
     const OverloadedIdentifier<MemberFunction>* o) {
-  if (!inMember) {
-    /* see notes on visit(const Identifier<MemberVariable>*) */
-    middle("self()->");
-  }
   middle(o->name);
 }
 
 void bi::CppBaseGenerator::visit(const OverloadedIdentifier<MemberFiber>* o) {
-  if (!inMember) {
-    /* see notes on visit(const Identifier<MemberVariable>*) */
-    middle("self()->");
-  }
   middle(o->name);
 }
 
