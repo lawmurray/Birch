@@ -6,7 +6,7 @@
 #include "libbirch/config.hpp"
 #include "libbirch/SharedCOW.hpp"
 #include "libbirch/WeakPtr.hpp"
-#include "libbirch/SharedPtr.hpp"
+#include "libbirch/ContextPtr.hpp"
 #include "libbirch/Optional.hpp"
 
 namespace bi {
@@ -111,13 +111,13 @@ public:
 
   WeakCOW(const SharedCOW<Any>& o) :
       object(o.object),
-      memo(o.getContext()) {
+      memo(o.memo) {
     //
   }
 
   WeakCOW(const WeakCOW<Any>& o) :
       object(o.object),
-      memo(o.getContext()) {
+      memo(o.memo) {
     if (cloneUnderway && object) {
       object = memo->pull(object.get());
       memo = top_context();
@@ -131,28 +131,14 @@ public:
     }
   }
 
-  WeakCOW(WeakCOW<Any> && o) :
-      object(std::move(o.object)),
-      memo(o.getContext()) {
-    //
-  }
-
-  WeakCOW<Any>& operator=(const WeakCOW<Any>& o) {
-    object = o.object;
-    memo = o.getContext();
-    return *this;
-  }
-
-  WeakCOW<Any>& operator=(WeakCOW<Any> && o) {
-    object = std::move(o.object);
-    memo = o.getContext();
-    return *this;
-  }
+  WeakCOW(WeakCOW<Any> && o) = default;
+  WeakCOW<Any>& operator=(const WeakCOW<Any>& o) = default;
+  WeakCOW<Any>& operator=(WeakCOW<Any> && o) = default;
 
   Any* pull() {
     #if USE_LAZY_DEEP_CLONE
-    assert(getContext()->forwardPull() == top_context());
-    object = getContext()->forwardPull()->pull(object.get());
+    assert(memo->forwardPull() == top_context());
+    object = memo->forwardPull()->pull(object.get());
     #endif
     return object.get();
   }
@@ -164,7 +150,7 @@ public:
   }
 
   Memo* getContext() const {
-    return memo ? memo.get() : top_context();
+    return memo.get();
   }
 
 protected:
@@ -176,6 +162,6 @@ protected:
   /**
    * The memo.
    */
-  SharedPtr<Memo> memo;
+  ContextPtr memo;
 };
 }

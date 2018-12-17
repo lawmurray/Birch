@@ -221,6 +221,7 @@
       "libbirch/basic.hpp",
       "libbirch/class.hpp",
       "libbirch/config.hpp",
+      "libbirch/ContextPtr.hpp",
       "libbirch/Counted.hpp",
       "libbirch/Eigen.hpp",
       "libbirch/EigenFunctions.hpp",
