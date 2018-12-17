@@ -112,7 +112,12 @@ public:
   template<class U,
       typename = std::enable_if_t<bi::has_conversion<T,U>::value>>
   operator U() const {
-    return static_cast<U>(*get());
+    /* the code generator does not yet handle the push and pop of context in
+     * this case */
+    push_context(this->getContext());
+    auto result = static_cast<U>(*get());
+    pop_context();
+    return result;
   }
 
   /**
@@ -256,7 +261,7 @@ public:
     return result;
   }
 
-  Memo* getContext() {
+  Memo* getContext() const {
     return memo.get();
   }
 

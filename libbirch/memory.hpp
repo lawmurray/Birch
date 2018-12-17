@@ -236,7 +236,7 @@ Memo* top_context();
 /**
  * Push a context.
  */
-void push_memo(Memo* memo);
+void push_context(Memo* memo);
 
 /**
  * Pop the context stack.
@@ -248,7 +248,7 @@ void pop_context();
  */
 template<class T>
 T push_context(T&& ptr) {
-  push_memo(ptr.getContext()->forwardPull());
+  push_context(ptr.getContext()->forwardPull());
   return std::forward<T>(ptr);
 }
 

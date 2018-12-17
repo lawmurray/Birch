@@ -74,7 +74,7 @@ bi::Any* bi::Memo::get(Any* o) {
        * inserting an object into the map; a shared pointer is used to
        * destroy any additional objects */
       auto prevUnderway = cloneUnderway;
-      push_memo(this);
+      push_context(this);
       cloneUnderway = true;
       SharedPtr<Any> cloned = o->clone();
       // ^ use shared to clean up if beaten by another thread
@@ -100,7 +100,7 @@ bi::Any* bi::Memo::get(Any* o) {
       Any* uninit = m->clones.uninitialized_put(o, alloc);
       assert(uninit == alloc);  // should be no thread contention here
       auto prevUnderway = cloneUnderway;
-      push_memo(this);
+      push_context(this);
       cloneUnderway = true;
       result = o->clone(uninit);
       pop_context();

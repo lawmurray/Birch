@@ -114,7 +114,7 @@ bi::Memo* bi::top_context() {
   return contexts.back().get();
 }
 
-void bi::push_memo(Memo* memo) {
+void bi::push_context(Memo* memo) {
   assert(memo == memo->forwardPull());
   contexts.push_back(memo);
 }
