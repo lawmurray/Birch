@@ -25,7 +25,6 @@
       "libubjpp/value.cpp",
       
       "bi/basic/Boolean.bi",
-      "bi/basic/Fiber.bi",
       "bi/basic/File.bi",
       "bi/basic/Integer.bi",
       "bi/basic/Integer8.bi",
@@ -209,6 +208,7 @@
       "bi/test/test_scaled_gamma_poisson.bi",
       "bi/test/test_subtract_bounded_discrete_delta.bi",
       "bi/chrono.bi",
+      "bi/clone.bi",
       "bi/main.bi",
       "bi/sample.bi",
       "bi/test.bi"

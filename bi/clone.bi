@@ -3,6 +3,6 @@
  */
 function clone<Type>(f:Type) -> Type {
   cpp{{
-  return f_.clone();
+  return pop_context(push_context(f_).clone());
   }}
 }

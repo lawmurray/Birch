@@ -136,9 +136,10 @@ public:
   WeakCOW<Any>& operator=(WeakCOW<Any> && o) = default;
 
   Any* pull() {
-#if USE_LAZY_DEEP_CLONE
+    #if USE_LAZY_DEEP_CLONE
+    assert(memo->forwardPull() == top_context()->forwardPull());
     object = memo->forwardPull()->pull(object.get());
-#endif
+    #endif
     return object.get();
   }
 

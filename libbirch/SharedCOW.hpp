@@ -220,6 +220,7 @@ public:
 
   Any* get() {
     #if USE_LAZY_DEEP_CLONE
+    assert(memo->forwardPull() == top_context()->forwardPull());
     object = memo->forwardGet()->get(object.get());
     #endif
     return object.get();
@@ -233,6 +234,7 @@ public:
 
   Any* pull() {
     #if USE_LAZY_DEEP_CLONE
+    assert(memo->forwardPull() == top_context()->forwardPull());
     object = memo->forwardPull()->pull(object.get());
     #endif
     return object.get();
@@ -245,12 +247,12 @@ public:
   }
 
   SharedCOW<Any> clone() const {
-    push_memo(memo->forwardPull()->fork());
-    SharedCOW<Any> result(pull());
+    auto o = pull();
+    auto m = memo->forwardPull()->fork();
+    SharedCOW<Any> result(o, m);
     #if !USE_LAZY_DEEP_CLONE
     result.get();
     #endif
-    pop_context();
     return result;
   }
 

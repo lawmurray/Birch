@@ -28,6 +28,11 @@ public:
   Fiber<YieldType> clone() const;
 
   /**
+   * Get the context of the fiber state.
+   */
+  Memo* getContext();
+
+  /**
    * Run to next yield point.
    *
    * @return Was a value yielded?
@@ -60,10 +65,15 @@ bi::Fiber<YieldType> bi::Fiber<YieldType>::clone() const {
 }
 
 template<class YieldType>
+bi::Memo* bi::Fiber<YieldType>::getContext() {
+  return state.getContext();
+}
+
+template<class YieldType>
 bool bi::Fiber<YieldType>::query() {
   bool result = false;
   if (state.query()) {
-    result = state->query();
+    result = pop_context(push_context(state)->query());
     if (!result) {
       state = nullptr;  // fiber has finished, delete the state
     }
@@ -74,5 +84,5 @@ bool bi::Fiber<YieldType>::query() {
 template<class YieldType>
 YieldType& bi::Fiber<YieldType>::get() {
   bi_assert_msg(state.query(), "fiber handle undefined");
-  return state->get();
+  return pop_context(push_context(state)->get());
 }
