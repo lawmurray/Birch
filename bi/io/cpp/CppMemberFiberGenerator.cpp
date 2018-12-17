@@ -47,7 +47,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     }
   }
 
-  /* self function */
+  /* self-reference function */
   if (header) {
     out();
     line("private:");
@@ -55,6 +55,11 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     line("auto self() {");
     in();
     line("return object;");
+    out();
+    line("}\n");
+    line("auto fiber() {");
+    in();
+    line("return SharedCOW<class_type>(this, context.get());");
     out();
     line("}\n");
   }

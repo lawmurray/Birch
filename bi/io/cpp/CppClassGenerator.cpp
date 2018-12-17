@@ -83,7 +83,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
         in();
         line("auto self() {");
         in();
-        line("return SharedCOW<this_type>(this);");
+        line("return SharedCOW<this_type>(this, context.get());");
         out();
         line("}\n");
       }

@@ -170,13 +170,18 @@ void bi::CppBaseGenerator::visit(const Range* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Member* o) {
-  middle("push_context(" << o->left << ')');
-  if (!inAssign && o->right->type->isValue()
-      && dynamic_cast<const Identifier<MemberVariable>*>(o->right)) {
-    /* optimization: just reading a value, so no need to copy-on-write the
-     * owning object */
-    middle(".pull()");
+  auto rightVar = dynamic_cast<const Identifier<MemberVariable>*>(o->right);
+  if (rightVar && !inAssign) {
+    /* for a function or fiber on the right, pop_context() must wrap the
+     * arguments as well, this is handled in visit(const Call*) */
+    middle("pop_context(");
   }
+  middle("push_context(" << o->left << ')');
+  //if (!inAssign && rightVar && rightVar->type->isValue()) {
+  //  /* optimization: just reading a value, so no need to copy-on-write the
+  //   * owning object */
+  //  middle(".pull()");
+  //}
   middle("->");
 
   /* explicitly refer to the super class if necessary */
@@ -187,6 +192,9 @@ void bi::CppBaseGenerator::visit(const Member* o) {
   ++inMember;
   middle(o->right);
   --inMember;
+  if (rightVar && !inAssign) {
+    middle(")");
+  }
 }
 
 void bi::CppBaseGenerator::visit(const This* o) {
