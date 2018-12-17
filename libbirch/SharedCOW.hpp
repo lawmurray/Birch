@@ -198,7 +198,7 @@ public:
 
   SharedCOW(const SharedCOW<Any>& o) :
       object(o.object),
-      memo(o.memo) {
+      memo(o.getContext()) {
     if (cloneUnderway && object) {
       object = memo->pull(object.get());
       memo = top_context();
@@ -206,15 +206,29 @@ public:
       if (parent) {
         object = parent->deep(object.get());
       }
-      #if !USE_LAZY_DEEP_CLONE
+#if !USE_LAZY_DEEP_CLONE
       get();
-      #endif
+#endif
     }
   }
 
-  SharedCOW(SharedCOW<Any> && o) = default;
-  SharedCOW<Any>& operator=(const SharedCOW<Any>& o) = default;
-  SharedCOW<Any>& operator=(SharedCOW<Any> && o) = default;
+  SharedCOW(SharedCOW<Any> && o) :
+      object(std::move(o.object)),
+      memo(o.getContext()) {
+    //
+  }
+
+  SharedCOW<Any>& operator=(const SharedCOW<Any>& o) {
+    object = o.object;
+    memo = o.getContext();
+    return *this;
+  }
+
+  SharedCOW<Any>& operator=(SharedCOW<Any> && o) {
+    object = std::move(o.object);
+    memo = o.getContext();
+    return *this;
+  }
 
   /**
    * Is the pointer not null?
@@ -224,10 +238,10 @@ public:
   }
 
   Any* get() {
-    #if USE_LAZY_DEEP_CLONE
-    assert(memo->forwardPull() == top_context()->forwardPull());
-    object = memo->forwardGet()->get(object.get());
-    #endif
+#if USE_LAZY_DEEP_CLONE
+    assert(getContext()->forwardPull() == top_context());
+    object = getContext()->forwardGet()->get(object.get());
+#endif
     return object.get();
   }
 
@@ -238,10 +252,10 @@ public:
   }
 
   Any* pull() {
-    #if USE_LAZY_DEEP_CLONE
-    assert(memo->forwardPull() == top_context()->forwardPull());
-    object = memo->forwardPull()->pull(object.get());
-    #endif
+#if USE_LAZY_DEEP_CLONE
+    assert(getContext()->forwardPull() == top_context());
+    object = getContext()->forwardPull()->pull(object.get());
+#endif
     return object.get();
   }
 
@@ -253,16 +267,16 @@ public:
 
   SharedCOW<Any> clone() const {
     auto o = pull();
-    auto m = memo->forwardPull()->fork();
+    auto m = getContext()->forwardPull()->fork();
     SharedCOW<Any> result(o, m);
-    #if !USE_LAZY_DEEP_CLONE
+#if !USE_LAZY_DEEP_CLONE
     result.get();
-    #endif
+#endif
     return result;
   }
 
   Memo* getContext() const {
-    return memo.get();
+    return memo ? memo.get() : top_context();
   }
 
   Any& operator*() const {
@@ -322,6 +336,6 @@ bi::SharedCOW<T>::SharedCOW(const WeakCOW<T>& o) :
 
 inline bi::SharedCOW<bi::Any>::SharedCOW(const WeakCOW<Any>& o) :
     object(o.object),
-    memo(o.memo) {
+    memo(o.getContext()) {
   //
 }

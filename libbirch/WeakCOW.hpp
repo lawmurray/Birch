@@ -111,13 +111,13 @@ public:
 
   WeakCOW(const SharedCOW<Any>& o) :
       object(o.object),
-      memo(o.memo) {
+      memo(o.getContext()) {
     //
   }
 
   WeakCOW(const WeakCOW<Any>& o) :
       object(o.object),
-      memo(o.memo) {
+      memo(o.getContext()) {
     if (cloneUnderway && object) {
       object = memo->pull(object.get());
       memo = top_context();
@@ -131,14 +131,28 @@ public:
     }
   }
 
-  WeakCOW(WeakCOW<Any> && o) = default;
-  WeakCOW<Any>& operator=(const WeakCOW<Any>& o) = default;
-  WeakCOW<Any>& operator=(WeakCOW<Any> && o) = default;
+  WeakCOW(WeakCOW<Any> && o) :
+      object(std::move(o.object)),
+      memo(o.getContext()) {
+    //
+  }
+
+  WeakCOW<Any>& operator=(const WeakCOW<Any>& o) {
+    object = o.object;
+    memo = o.getContext();
+    return *this;
+  }
+
+  WeakCOW<Any>& operator=(WeakCOW<Any> && o) {
+    object = std::move(o.object);
+    memo = o.getContext();
+    return *this;
+  }
 
   Any* pull() {
     #if USE_LAZY_DEEP_CLONE
-    assert(memo->forwardPull() == top_context()->forwardPull());
-    object = memo->forwardPull()->pull(object.get());
+    assert(getContext()->forwardPull() == top_context());
+    object = getContext()->forwardPull()->pull(object.get());
     #endif
     return object.get();
   }
@@ -147,6 +161,10 @@ public:
     /* even in a const context, do want to update the pointer through lazy
      * deep clone mechanisms */
     return const_cast<WeakCOW<Any>*>(this)->pull();
+  }
+
+  Memo* getContext() const {
+    return memo ? memo.get() : top_context();
   }
 
 protected:
