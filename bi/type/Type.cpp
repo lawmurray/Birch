@@ -73,6 +73,10 @@ bool bi::Type::isWeak() const {
   return false;
 }
 
+bool bi::Type::isGeneric() const {
+  return false;
+}
+
 bool bi::Type::isBound() const {
   Gatherer<GenericType> generics;
   this->accept(&generics);

@@ -145,6 +145,11 @@ public:
   virtual bool isWeak() const;
 
   /**
+   * Is this a generic type?
+   */
+  virtual bool isGeneric() const;
+
+  /**
    * Is this a binary operator type?
    */
   virtual bool isBinary() const;

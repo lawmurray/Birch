@@ -69,6 +69,10 @@ bool bi::GenericType::isFiber() const {
   return target->type->isFiber();
 }
 
+bool bi::GenericType::isGeneric() const {
+  return true;
+}
+
 const bi::Type* bi::GenericType::unwrap() const {
   assert(target);
   return target->type->unwrap();

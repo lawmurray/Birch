@@ -44,6 +44,7 @@ public:
   virtual bool isArray() const;
   virtual bool isFunction() const;
   virtual bool isFiber() const;
+  virtual bool isGeneric() const;
 
   virtual Type* unwrap();
   virtual const Type* unwrap() const;
