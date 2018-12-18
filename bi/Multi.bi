@@ -55,17 +55,16 @@ class Multi < StateSpaceModel<Global,List<Track>,List<Random<Real[_]>>> {
   }
 
   fiber association(y:List<Random<Real[_]>>, x:List<Track>, θ:Global) -> Real {
-    K:Integer <- 0;  // number of detections
     auto track <- x.walk();
     while track? {
-      if track!.y.back().hasDistribution() {
+      auto o <- track!.y.back();  // observed random variable
+      if o.hasDistribution() {
         /* object is detected, compute proposal */
-        K <- K + 1;
         q:Real[y.size()];
         n:Integer <- 1;
         auto detection <- y.walk();
         while detection? {
-          q[n] <- track!.y.back().pdf(detection!);
+          q[n] <- o.pdf(detection!);
           n <- n + 1;
         }
         Q:Real <- sum(q);
@@ -74,16 +73,14 @@ class Multi < StateSpaceModel<Global,List<Track>,List<Random<Real[_]>>> {
         if Q > 0.0 {
           q <- q/Q;
           n <~ Categorical(q);  // choose an observation
-          yield track!.y.back().realize(y.get(n));  // likelihood
+          yield o.realize(y.get(n));  // likelihood
+          yield -log(y.size());  // prior
           yield -log(q[n]);  // proposal correction
           y.erase(n);  // remove the observation for future associations
         } else {
           yield -inf;  // detected, but all likelihoods (numerically) zero
         }
       }
-
-      /* factor in prior probability of hypothesis */
-      yield -lrising(y.size() + 1, K);  // prior correction
     }
     
     /* clutter */
