@@ -32,18 +32,30 @@ public:
    * Copy constructor.
    */
   ContextPtr(const ContextPtr& o) :
-      memo(o.get() == top_context() ? nullptr : o.get()),
+      memo(nullptr),
       context(top_context()) {
-    //
+    if (o.memo) {
+      if (o.memo != context) {
+        memo = o.memo;
+      }
+    } else if (o.context != context) {
+      memo = o.context;
+    }
   }
 
   /**
    * Move constructor.
    */
   ContextPtr(ContextPtr&& o) :
-      memo(o.get() == top_context() ? nullptr : o.get()),
+      memo(nullptr),
       context(top_context()) {
-    //
+    if (o.memo) {
+      if (o.memo != context) {
+        memo = std::move(o.memo);
+      }
+    } else if (o.context != context) {
+      memo = std::move(o.context);
+    }
   }
 
   /**
@@ -58,7 +70,15 @@ public:
    * Copy assignment.
    */
   ContextPtr& operator=(const ContextPtr& o) {
-    this->memo = (o.get() == context.get()) ? nullptr : o.get();
+    if (o.memo) {
+      if (o.memo != context) {
+        memo = o.memo;
+      }
+    } else if (o.context != context) {
+      memo = o.context;
+    } else {
+      memo = nullptr;
+    }
     return *this;
   }
 
@@ -66,7 +86,15 @@ public:
    * Move assignment.
    */
   ContextPtr& operator=(ContextPtr&& o) {
-    this->memo = (o.get() == context.get()) ? nullptr : o.get();
+    if (o.memo) {
+      if (o.memo != context) {
+        memo = std::move(o.memo);
+      }
+    } else if (o.context != context) {
+      memo = std::move(o.context);
+    } else {
+      memo = nullptr;
+    }
     return *this;
   }
 

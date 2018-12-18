@@ -8,6 +8,7 @@
 namespace bi {
 template<class T> class SharedPtr;
 template<class T> class WeakPtr;
+template<class T> class InitPtr;
 
 /**
  * Weak pointer with intrusive implementation.
@@ -20,6 +21,7 @@ template<class T>
 class WeakPtr {
   template<class U> friend class SharedPtr;
   template<class U> friend class WeakPtr;
+  template<class U> friend class InitPtr;
 public:
   /**
    * Constructor.
@@ -27,6 +29,17 @@ public:
   WeakPtr(T* ptr = nullptr) :
       ptr(ptr) {
     if (ptr) {
+      ptr->incWeak();
+    }
+  }
+
+  /**
+   * Copy constructor.
+   */
+  WeakPtr(const SharedPtr<T>& o) :
+      ptr(o.ptr) {
+    if (ptr) {
+      assert(ptr->numWeak() > 0);
       ptr->incWeak();
     }
   }
@@ -45,7 +58,7 @@ public:
   /**
    * Copy constructor.
    */
-  WeakPtr(const SharedPtr<T>& o) :
+  WeakPtr(const InitPtr<T>& o) :
       ptr(o.ptr) {
     if (ptr) {
       assert(ptr->numWeak() > 0);
@@ -106,15 +119,33 @@ public:
   /**
    * Equal comparison.
    */
+  bool operator==(const SharedPtr<T>& o) const {
+    return ptr == o.ptr;
+  }
   bool operator==(const WeakPtr<T>& o) const {
     return ptr == o.ptr;
+  }
+  bool operator==(const InitPtr<T>& o) const {
+    return ptr == o.ptr;
+  }
+  bool operator==(const T* o) const {
+    return ptr == o;
   }
 
   /**
    * Not equal comparison.
    */
+  bool operator!=(const SharedPtr<T>& o) const {
+    return ptr != o.ptr;
+  }
   bool operator!=(const WeakPtr<T>& o) const {
     return ptr != o.ptr;
+  }
+  bool operator!=(const InitPtr<T>& o) const {
+    return ptr != o.ptr;
+  }
+  bool operator!=(const T* o) const {
+    return ptr != o;
   }
 
   /**

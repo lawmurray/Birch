@@ -8,6 +8,7 @@
 namespace bi {
 template<class T> class SharedPtr;
 template<class T> class WeakPtr;
+template<class T> class InitPtr;
 
 /**
  * Smart pointer that does not update reference counts, but that does
@@ -19,6 +20,9 @@ template<class T> class WeakPtr;
  */
 template<class T>
 class InitPtr {
+  template<class U> friend class SharedPtr;
+  template<class U> friend class WeakPtr;
+  template<class U> friend class InitPtr;
 public:
   /**
    * Constructor.
@@ -61,15 +65,33 @@ public:
   /**
    * Equal comparison.
    */
+  bool operator==(const SharedPtr<T>& o) const {
+    return ptr == o.ptr;
+  }
+  bool operator==(const WeakPtr<T>& o) const {
+    return ptr == o.ptr;
+  }
   bool operator==(const InitPtr<T>& o) const {
     return ptr == o.ptr;
+  }
+  bool operator==(const T* o) const {
+    return ptr == o;
   }
 
   /**
    * Not equal comparison.
    */
+  bool operator!=(const SharedPtr<T>& o) const {
+    return ptr != o.ptr;
+  }
+  bool operator!=(const WeakPtr<T>& o) const {
+    return ptr != o.ptr;
+  }
   bool operator!=(const InitPtr<T>& o) const {
     return ptr != o.ptr;
+  }
+  bool operator!=(const T* o) const {
+    return ptr != o;
   }
 
   /**
