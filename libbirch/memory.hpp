@@ -247,7 +247,7 @@ void pop_context();
  * Push the context for a given object.
  */
 template<class T>
-T push_context(T&& ptr) {
+T&& push_context(T&& ptr) {
   push_context(ptr.getContext()->forwardPull());
   return std::forward<T>(ptr);
 }
@@ -256,7 +256,7 @@ T push_context(T&& ptr) {
  * Pop the context stack and forward the result of an expression.
  */
 template<class T>
-T pop_context(T&& o) {
+T&& pop_context(T&& o) {
   pop_context();
   return std::forward<T>(o);
 }
