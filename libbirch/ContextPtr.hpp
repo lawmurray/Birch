@@ -74,7 +74,7 @@ public:
    * Get the raw pointer.
    */
   Memo* get() const {
-    return memo ? memo.get() : context.get();
+    return memo.get() ? memo.get() : context.get();
   }
 
   /**
