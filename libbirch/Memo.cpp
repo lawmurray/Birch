@@ -81,11 +81,6 @@ bi::Any* bi::Memo::get(Any* o) {
       result = clones.put(o, cloned.get());
       pop_context();
       cloneUnderway = prevUnderway;
-      #if USE_LAZY_DEEP_CLONE_FORWARD_CLEAN
-      if (result == cloned.get()) {  // weren't beaten by another thread
-        o->recordClone(result);
-      }
-      #endif
       #else
       /* for an eager deep clone we must be cautious to avoid infinite
        * recursion; memory for the new object is allocated first and put

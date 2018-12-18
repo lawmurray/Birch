@@ -139,11 +139,6 @@ public:
    */
   bool hasMemo() const;
 
-  /**
-   * Is this reachable?
-   */
-  bool isReachable() const;
-
 protected:
   /**
    * Shared count.

@@ -62,12 +62,5 @@ protected:
    * Memo responsible for the creation of this object.
    */
   WeakPtr<Memo> context;
-
-  #if USE_LAZY_DEEP_CLONE_FORWARD_CLEAN
-  /**
-   * Clones of this, kept for later cleanup.
-   */
-  List clones;
-  #endif
 };
 }

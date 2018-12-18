@@ -5,7 +5,7 @@
 
 #include "libbirch/config.hpp"
 #include "libbirch/SharedPtr.hpp"
-#include "libbirch/WeakPtr.hpp"
+#include "libbirch/InitPtr.hpp"
 #include "libbirch/Memo.hpp"
 
 namespace bi {
@@ -114,17 +114,18 @@ public:
 
 private:
   /**
-   * The memo. For a member variable of an object created by a clone, this is
-   * `nullptr` if it would otherwise equal context, in order to break
-   * reference cycles.
+   * The memo, if it is difference to context, otherwise `nullptr`.
    */
   SharedPtr<Memo> memo;
 
   /**
-   * The context. For a member variable of an object created by a clone, this
-   * is the context of the object to which it belongs. For anything else,
-   * this is `nullptr`. It does not change over the lifetime of this.
+   * The owning context. This is the context in which the pointer itself was
+   * created. For a member variable, it is the same as the context of the
+   * containing object.
+   *
+   * It is sufficient to use InitPtr instead of WeakPtr, as a WeakPtr to the
+   * context should exist elsewhere.
    */
-  WeakPtr<Memo> context;
+  InitPtr<Memo> context;
 };
 }

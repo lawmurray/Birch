@@ -150,19 +150,12 @@ void bi::Map::reserve() {
       for (size_t i = 0u; i < nentries1; ++i) {
         joint_entry_type entry = entries1[i];
         if (entry.key) {
-          if (entry.key->isReachable()) {
-            /* rehash and insert */
-            size_t j = hash(entry.key);
-            while (entries2[j].key) {
-              j = (j + 1u) & (nentries2 - 1u);
-            }
-            entries2[j] = entry;
-          } else {
-            /* key is useless, omit */
-            --noccupied;
-            entry.key->decWeak();
-            entry.value->decShared();
+          /* rehash and insert */
+          size_t j = hash(entry.key);
+          while (entries2[j].key) {
+            j = (j + 1u) & (nentries2 - 1u);
           }
+          entries2[j] = entry;
         }
       }
       entries = (entry_type*)entries2;
