@@ -30,7 +30,7 @@ public:
   /**
    * Get the context of the fiber state.
    */
-  Memo* getContext();
+  Memo* getContext() const;
 
   /**
    * Run to next yield point.
@@ -65,7 +65,7 @@ bi::Fiber<YieldType> bi::Fiber<YieldType>::clone() const {
 }
 
 template<class YieldType>
-bi::Memo* bi::Fiber<YieldType>::getContext() {
+bi::Memo* bi::Fiber<YieldType>::getContext() const {
   return state.getContext();
 }
 

@@ -20,7 +20,7 @@ namespace bi {
 class ContextPtr {
 public:
   /**
-   * Constructor.
+   * Value constructor.
    */
   ContextPtr(Memo* memo = nullptr) :
       memo(memo == top_context() ? nullptr : memo),
@@ -32,7 +32,7 @@ public:
    * Copy constructor.
    */
   ContextPtr(const ContextPtr& o) :
-      memo(o.memo == top_context() ? nullptr : o.memo),
+      memo(o.get() == top_context() ? nullptr : o.get()),
       context(top_context()) {
     //
   }
@@ -41,16 +41,24 @@ public:
    * Move constructor.
    */
   ContextPtr(ContextPtr&& o) :
-      memo(o.memo == top_context() ? nullptr : std::move(o.memo)),
+      memo(o.get() == top_context() ? nullptr : o.get()),
       context(top_context()) {
     //
+  }
+
+  /**
+   * Value assignment.
+   */
+  ContextPtr& operator=(Memo* memo) {
+    this->memo = (memo == context.get()) ? nullptr : memo;
+    return *this;
   }
 
   /**
    * Copy assignment.
    */
   ContextPtr& operator=(const ContextPtr& o) {
-    memo = (o.memo == context) ? nullptr : o.memo;
+    this->memo = (o.get() == context.get()) ? nullptr : o.get();
     return *this;
   }
 
@@ -58,15 +66,7 @@ public:
    * Move assignment.
    */
   ContextPtr& operator=(ContextPtr&& o) {
-    memo = (o.memo == context) ? nullptr : std::move(o.memo);
-    return *this;
-  }
-
-  /**
-   * Value assignment.
-   */
-  ContextPtr& operator=(Memo* memo) {
-    memo = (memo == context.get()) ? nullptr : memo;
+    this->memo = (o.get() == context.get()) ? nullptr : o.get();
     return *this;
   }
 
@@ -125,6 +125,6 @@ private:
    * is the context of the object to which it belongs. For anything else,
    * this is `nullptr`. It does not change over the lifetime of this.
    */
-  const WeakPtr<Memo> context;
+  WeakPtr<Memo> context;
 };
 }
