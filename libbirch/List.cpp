@@ -12,8 +12,7 @@ bi::List::List() :
 
 bi::List::~List() {
   for (size_t i = 0; i < noccupied; ++i) {
-    entries[i]->releaseMemo();
-    entries[i]->decWeak();
+    entries[i]->decShared();
   }
   deallocate(entries, nentries * sizeof(value_type));
 }

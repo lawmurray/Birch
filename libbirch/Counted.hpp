@@ -124,21 +124,6 @@ public:
    */
   unsigned numWeak() const;
 
-  /**
-   * Set the memo flag. The flag should not already be set.
-   */
-  void setMemo();
-
-  /**
-   * Unset the memo flag. The flag may already be unset.
-   */
-  void releaseMemo();
-
-  /**
-   * Is the memo flag set?
-   */
-  bool hasMemo() const;
-
 protected:
   /**
    * Shared count.
@@ -149,11 +134,6 @@ protected:
    * Weak count.
    */
   std::atomic<unsigned> weakCount;
-
-  /**
-   * Memo count.
-   */
-  std::atomic<unsigned> memoCount;
 
   /**
    * Size of the object. This is set immediately after construction. A value
