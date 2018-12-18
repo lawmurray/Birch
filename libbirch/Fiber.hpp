@@ -37,12 +37,12 @@ public:
    *
    * @return Was a value yielded?
    */
-  bool query();
+  bool query() const;
 
   /**
    * Get the last yield value.
    */
-  YieldType& get();
+  YieldType get() const;
 
 public:
   /**
@@ -70,19 +70,19 @@ bi::Memo* bi::Fiber<YieldType>::getContext() const {
 }
 
 template<class YieldType>
-bool bi::Fiber<YieldType>::query() {
+bool bi::Fiber<YieldType>::query() const {
   bool result = false;
   if (state.query()) {
     result = pop_context(push_context(state)->query());
     if (!result) {
-      state = nullptr;  // fiber has finished, delete the state
+      const_cast<Fiber<YieldType>*>(this)->state = nullptr;  // fiber has finished, delete the state
     }
   }
   return result;
 }
 
 template<class YieldType>
-YieldType& bi::Fiber<YieldType>::get() {
+YieldType bi::Fiber<YieldType>::get() const {
   bi_assert_msg(state.query(), "fiber handle undefined");
   return pop_context(push_context(state)->get());
 }
