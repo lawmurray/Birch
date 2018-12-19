@@ -259,7 +259,7 @@ void bi::CppBaseGenerator::visit(const OverloadedIdentifier<Function>* o) {
 void bi::CppBaseGenerator::visit(const OverloadedIdentifier<Fiber>* o) {
   middle("bi::" << o->name);
   if (!o->typeArgs->isEmpty()) {
-    middle('<' << o->typeArgs << '>');
+    middle('<' << o->typeArgs << ">::f");
   }
 }
 

@@ -28,148 +28,168 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   o->braces->accept(&locals);
   o->braces->accept(&yields);
 
-  /* supporting class for state */
-  if (header) {
-    genTemplateParams(o);
-    start("class " << stateName);
-    if (o->isBound()) {
-      genTemplateArgs(o);
+  if (o->isBound()) {
+    /* supporting class for state */
+    if (header) {
+      start("class " << stateName);
+      finish(" : public FiberState<" << o->returnType->unwrap() << "> {");
+      line("public:");
+      in();
+      line("using class_type = " << stateName << ';');
+      line("using super_type = FiberState<" << o->returnType->unwrap() << ">;\n");
+      for (auto param : params) {
+        line(param->type << ' ' << param->name << ';');
+      }
+      for (auto local : locals) {
+        start(local->type << ' ');
+        finish(getName(local->name->str(), local->number) << ';');
+      }
     }
-    finish(" : public FiberState<" << o->returnType->unwrap() << "> {");
-    line("public:");
-    in();
-    line("using class_type = " << stateName << ';');
-    line("using super_type = FiberState<" << o->returnType->unwrap() << ">;\n");
-    for (auto param : params) {
-      line(param->type << ' ' << param->name << ';');
+
+    /* self-reference function */
+    if (header) {
+      out();
+      line("private:");
+      in();
+      line("auto fiber() {");
+      in();
+      line("return SharedCOW<class_type>(this, context.get());");
+      out();
+      line("}\n");
     }
-    for (auto local : locals) {
-      start(local->type << ' ');
-      finish(getName(local->name->str(), local->number) << ';');
+
+    if (header) {
+      out();
+      line("protected:");
+      in();
     }
-  }
 
-  /* self-reference function */
-  if (header) {
-    out();
-    line("private:");
-    in();
-    line("auto fiber() {");
-    in();
-    line("return SharedCOW<class_type>(this, context.get());");
-    out();
-    line("}\n");
-  }
-
-
-  if (header) {
-    out();
-    line("protected:");
-    in();
-  }
-
-  /* constructor */
-  if (!header && !o->isBound()) {
-    genTemplateParams(o);
-  }
-  if (!header) {
-    start("bi::" << stateName);
-    genTemplateArgs(o);
-    middle("::");
-  } else {
-    start("");
-  }
-  middle(stateName << '(' << o->params << ')');
-  if (header) {
-    finish(';');
-  } else {
-    finish(" :");
-    in();
-    in();
-    start("super_type(0, " << (yields.size() + 1) << ')');
-    for (auto param : params) {
-      finish(',');
-      start(param->name << '(' << param->name << ')');
+    /* constructor */
+    if (!header) {
+      start("bi::" << stateName << "::");
+    } else {
+      start("");
     }
-    finish(" {");
-    out();
-    line("//");
-    out();
-    line("}\n");
-  }
+    middle(stateName << '(' << o->params << ')');
+    if (header) {
+      finish(';');
+    } else {
+      finish(" :");
+      in();
+      in();
+      start("super_type(0, " << (yields.size() + 1) << ')');
+      for (auto param : params) {
+        finish(',');
+        start(param->name << '(' << param->name << ')');
+      }
+      finish(" {");
+      out();
+      line("//");
+      out();
+      line("}\n");
+    }
 
-  /* copy constructor, destructor, assignment operator */
-  if (header) {
-    line(stateName << "(const " << stateName << "&) = default;");
-    line("virtual ~" << stateName << "() = default;");
-    line(stateName << "& operator=(const " << stateName << "&) = default;");
-  }
+    /* copy constructor, destructor, assignment operator */
+    if (header) {
+      line(stateName << "(const " << stateName << "&) = default;");
+      line("virtual ~" << stateName << "() = default;");
+      line(stateName << "& operator=(const " << stateName << "&) = default;");
+    }
 
-  if (header) {
-    out();
-    line("public:");
-    in();
-  }
+    if (header) {
+      out();
+      line("public:");
+      in();
+    }
 
-  /* standard functions */
-  if (header) {
-    line("STANDARD_CREATE_FUNCTION");
-    line("STANDARD_EMPLACE_FUNCTION");
-    line("STANDARD_CLONE_FUNCTION");
-    line("STANDARD_DESTROY_FUNCTION");
-  }
+    /* standard functions */
+    if (header) {
+      line("STANDARD_CREATE_FUNCTION");
+      line("STANDARD_EMPLACE_FUNCTION");
+      line("STANDARD_CLONE_FUNCTION");
+      line("STANDARD_DESTROY_FUNCTION");
+    }
 
-  /* query function */
-  if (!header && !o->isBound()) {
-    genTemplateParams(o);
-  } else {
-    start("");
-  }
-  if (header) {
-    middle("virtual ");
-  }
-  middle("bool ");
-  if (!header) {
-    middle("bi::" << stateName);
-    genTemplateArgs(o);
-    middle("::");
-  }
-  middle("query()");
-  if (header) {
-    finish(';');
-  } else {
-    finish(" {");
-    in();
-    genTraceFunction(o->name->str(), o->loc);
-    genSwitch();
-    *this << o->braces->strip();
-    genEnd();
-    out();
-    finish("}\n");
-  }
-  if (header) {
-    line("};\n");
+    /* query function */
+    if (header) {
+      start("virtual ");
+    } else {
+      start("");
+    }
+    middle("bool ");
+    if (!header) {
+      middle("bi::" << stateName << "::");
+    }
+    middle("query()");
+    if (header) {
+      finish(';');
+    } else {
+      finish(" {");
+      in();
+      genTraceFunction(o->name->str(), o->loc);
+      genSwitch();
+      *this << o->braces->strip();
+      genEnd();
+      out();
+      finish("}\n");
+    }
+    if (header) {
+      out();
+      line("};\n");
+    }
   }
 
   /* initialisation function */
-  genTemplateParams(o);
-  start(o->returnType << ' ');
-  if (!header) {
-    middle("bi::");
-  }
-  middle(o->name);
-  if (!header && o->isBound()) {
-    genTemplateArgs(o);
-  }
-  middle('(' << o->params << ')');
-  if (header) {
-    finish(';');
+  if (o->isGeneric()) {
+    /* generic functions are generated as a struct with a static member
+     * function, where the type parameters are part of the struct; this means
+     * we don't have to generate even a signature for the unbound function */
+    if (header) {
+      genTemplateParams(o);
+      start("struct " << o->name);
+      if (o->isBound()) {
+        genTemplateArgs(o);
+      }
+      finish(" {");
+      in();
+      if (o->isBound()) {
+        start("static ");
+      } else {
+        line("//");
+      }
+    }
+    if (o->isBound()) {
+      middle(o->returnType << ' ');
+      if (!header) {
+        start("bi::" << o->name);
+        genTemplateArgs(o);
+        middle("::");
+      }
+      middle("f(" << o->params << ')');
+      if (header) {
+        finish(';');
+      }
+    }
+    if (header) {
+      out();
+      line("};\n");
+    }
   } else {
+    start(o->returnType << ' ');
+    if (!header) {
+      middle("bi::");
+    }
+    middle(o->name << '(' << o->params << ')');
+    if (header) {
+      finish(';');
+    }
+  }
+
+  /* body */
+  if (!header && o->isBound()) {
     finish(" {");
     in();
-    start("return make_fiber<" << stateName);
-    genTemplateArgs(o);
-    middle(">(");
+    start("return make_fiber<" << stateName << ">(");
     for (auto iter = params.begin(); iter != params.end(); ++iter) {
       if (iter != params.begin()) {
         middle(", ");
@@ -178,7 +198,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     }
     finish(");");
     out();
-    finish("}\n");
+    line("}\n");
   }
 }
 
