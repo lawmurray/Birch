@@ -15,11 +15,6 @@ class DelayLinearGaussianLogGaussian(x:Random<Real>&, a:Real,
   μ_0:DelayGaussian& <- μ_0;
 
   /**
-   * Offset.
-   */
-  c:Real <- c;
-
-  /**
    * Marginal mean.
    */
   μ_m:Real <- this.μ;

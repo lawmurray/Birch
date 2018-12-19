@@ -15,11 +15,6 @@ class DelayMultivariateLinearGaussianGaussian(x:Random<Real[_]>&,
   μ_0:DelayMultivariateGaussian& <- μ_0;
 
   /**
-   * Offset.
-   */
-  c:Real[_] <- c;
-
-  /**
    * Marginal mean.
    */
   μ_m:Real[_] <- this.μ;
