@@ -35,6 +35,22 @@ public:
   /**
    * Constructor.
    */
+  WeakCOW(T* object, Memo* memo = top_context()) :
+      super_type(object, memo) {
+    //
+  }
+
+  /**
+   * Constructor.
+   */
+  WeakCOW(const WeakPtr<T>& object, Memo* memo = top_context()) :
+      super_type(object, memo) {
+    //
+  }
+
+  /**
+   * Constructor.
+   */
   WeakCOW(const SharedCOW<T>& o) :
       super_type(o) {
     //
@@ -82,17 +98,77 @@ public:
   }
 
   /**
+   * Value assignment.
+   */
+  template<class U,
+      typename = std::enable_if_t<bi::has_assignment<T,U>::value>>
+  WeakCOW<T>& operator=(const U& o) {
+    *get() = o;
+    return *this;
+  }
+
+  /**
+   * Value conversion.
+   */
+  template<class U,
+      typename = std::enable_if_t<bi::has_conversion<T,U>::value>>
+  operator U() const {
+    /* the code generator does not yet handle the push and pop of context in
+     * this case */
+    push_context(this->memo.get());
+    auto result = static_cast<U>(*get());
+    pop_context();
+    return result;
+  }
+
+  /**
+   * Get the raw pointer, lazy cloning if necessary.
+   *
+   * @warning This is inherently unsafe. The safe way to access the pointer
+   * is to promote it to SharedCOW first. This is provided for convenience in
+   * situations where a separate shared pointer is known to exist.
+   */
+  T* get() {
+    return static_cast<T*>(root_type::get());
+  }
+
+  /**
+   * Get the raw pointer, lazy cloning if necessary.
+   *
+   * @warning This is inherently unsafe. The safe way to access the pointer
+   * is to promote it to SharedCOW first. This is provided for convenience in
+   * situations where a separate shared pointer is known to exist.
+   */
+  T* get() const {
+    return static_cast<T*>(root_type::get());
+  }
+
+  /**
    * Map the raw pointer, without lazy cloning.
    */
   T* pull() {
-    return root_type::pull();
+    return static_cast<T*>(root_type::pull());
   }
 
   /**
    * Map the raw pointer, without lazy cloning.
    */
   T* pull() const {
-    return root_type::pull();
+    return static_cast<T*>(root_type::pull());
+  }
+
+  /**
+   * Dereference.
+   */
+  T& operator*() const {
+    return *get();
+  }
+
+  /**
+   * Member access.
+   */
+  T* operator->() const {
+    return get();
   }
 };
 
@@ -104,6 +180,18 @@ public:
   using root_type = WeakCOW<value_type>;
 
   WeakCOW(const Nil& = nil) {
+    //
+  }
+
+  WeakCOW(Any* object, Memo* memo = top_context()) :
+      object(object),
+      memo(memo) {
+    //
+  }
+
+  WeakCOW(const WeakPtr<Any>& object, Memo* memo = top_context()) :
+      object(object),
+      memo(memo) {
     //
   }
 
@@ -133,6 +221,19 @@ public:
   WeakCOW<Any>& operator=(const WeakCOW<Any>& o) = default;
   WeakCOW<Any>& operator=(WeakCOW<Any> && o) = default;
 
+  Any* get() {
+    #if USE_LAZY_DEEP_CLONE
+    assert(memo->forwardPull() == top_context());
+    object = memo->forwardGet()->get(object.get());
+    #endif
+    return object.get();
+  }
+
+  Any* get() const {
+    /* even in a const context, do want to update the pointer through lazy
+     * deep clone mechanisms */
+    return const_cast<WeakCOW<Any>*>(this)->get();
+  }
   Any* pull() {
     #if USE_LAZY_DEEP_CLONE
     assert(memo->forwardPull() == top_context());
@@ -149,6 +250,40 @@ public:
 
   Memo* getContext() const {
     return memo.get();
+  }
+
+  Any& operator*() const {
+    return *get();
+  }
+
+  Any* operator->() const {
+    return get();
+  }
+
+  template<class U>
+  bool operator==(const WeakCOW<U>& o) const {
+    return get() == o.get();
+  }
+
+  template<class U>
+  bool operator!=(const WeakCOW<U>& o) const {
+    return get() != o.get();
+  }
+
+  /**
+   * Dynamic cast. Returns `nullptr` if unsuccessful.
+   */
+  template<class U>
+  WeakCOW<U> dynamic_pointer_cast() const {
+    return WeakCOW<U>(dynamic_cast<U*>(object.get()), memo.get());
+  }
+
+  /**
+   * Static cast. Undefined if unsuccessful.
+   */
+  template<class U>
+  WeakCOW<U> static_pointer_cast() const {
+    return WeakCOW<U>(static_cast<U*>(object.get()), memo.get());
   }
 
 protected:

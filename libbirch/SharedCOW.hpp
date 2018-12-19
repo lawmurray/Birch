@@ -57,24 +57,9 @@ public:
    */
   SharedCOW(const WeakCOW<T>& o);
 
-  /**
-   * Copy constructor.
-   */
   SharedCOW(const SharedCOW<T>& o) = default;
-
-  /**
-   * Move constructor.
-   */
   SharedCOW(SharedCOW<T> && o) = default;
-
-  /**
-   * Copy assignment.
-   */
   SharedCOW<T>& operator=(const SharedCOW<T>& o) = default;
-
-  /**
-   * Move assignment.
-   */
   SharedCOW<T>& operator=(SharedCOW<T> && o) = default;
 
   /**

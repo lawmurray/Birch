@@ -48,10 +48,7 @@ public:
    */
   SharedPtr(const WeakPtr<T>& o) :
       ptr(o.ptr ? static_cast<T*>(o.ptr->lock()) : nullptr) {
-    if (!ptr) {
-      /* release the weak pointer to free up memory */
-      const_cast<WeakPtr<T>&>(o) = nullptr;
-    }
+    //
   }
 
   /**
