@@ -65,10 +65,6 @@ bool bi::Type::isOptional() const {
   return false;
 }
 
-bool bi::Type::isPointer() const {
-  return false;
-}
-
 bool bi::Type::isWeak() const {
   return false;
 }
@@ -226,7 +222,7 @@ bool bi::Type::definitely(const OptionalType& o) const {
   return false;
 }
 
-bool bi::Type::definitely(const PointerType& o) const {
+bool bi::Type::definitely(const WeakType& o) const {
   return false;
 }
 
@@ -294,7 +290,7 @@ bi::Type* bi::Type::common(const OptionalType& o) const {
   return nullptr;
 }
 
-bi::Type* bi::Type::common(const PointerType& o) const {
+bi::Type* bi::Type::common(const WeakType& o) const {
   return nullptr;
 }
 

@@ -34,6 +34,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
         }
         if (o->isBound() && !o->base->isEmpty()) {
           middle(" : public ");
+          ++inPointer;
           middle(o->base);
         }
         if (o->base->isEmpty()) {
@@ -46,8 +47,9 @@ void bi::CppClassGenerator::visit(const Class* o) {
           start("using class_type = " << o->name);
           genTemplateArgs(o);
           finish(';');
-          start("using this_type = class_type;");
+          line("using this_type = class_type;");
           if (!o->base->isEmpty()) {
+            ++inPointer;
             line("using super_type = " << o->base << ';');
             line("");
             line("using super_type::operator=;");
@@ -124,10 +126,11 @@ void bi::CppClassGenerator::visit(const Class* o) {
           if (!o->value->isEmpty()) {
             finish(',');
             start(o->name << '(' << o->value << ')');
-          } else if (o->type->isPointer() && !o->type->isWeak()) {
+          } else if (o->type->isClass()) {
             finish(',');
             start(o->name << '(');
-            middle(o->type->unwrap() << "::create(" << o->args << ')');
+            ++inPointer;
+            middle(o->type << "::create(" << o->args << ')');
             middle(')');
           } else if (o->type->isArray() && !o->brackets->isEmpty()) {
             finish(',');

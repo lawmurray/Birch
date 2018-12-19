@@ -35,13 +35,13 @@ public:
   virtual bool dispatchDefinitely(const Type& o) const;
   virtual bool definitely(const NilType& o) const;
   virtual bool definitely(const OptionalType& o) const;
-  virtual bool definitely(const PointerType& o) const;
+  virtual bool definitely(const WeakType& o) const;
   virtual bool definitely(const SequenceType& o) const;
 
   virtual Type* dispatchCommon(const Type& o) const;
   virtual Type* common(const NilType& o) const;
   virtual Type* common(const OptionalType& o) const;
-  virtual Type* common(const PointerType& o) const;
+  virtual Type* common(const WeakType& o) const;
   virtual Type* common(const SequenceType& o) const;
 };
 }

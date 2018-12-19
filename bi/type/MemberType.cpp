@@ -39,8 +39,8 @@ bool bi::MemberType::isClass() const {
   return right->isClass();
 }
 
-bool bi::MemberType::isPointer() const {
-  return right->isPointer();
+bool bi::MemberType::isWeak() const {
+  return right->isWeak();
 }
 
 bool bi::MemberType::isArray() const {
@@ -131,7 +131,7 @@ bool bi::MemberType::definitely(const OptionalType& o) const {
   return right->definitely(o);
 }
 
-bool bi::MemberType::definitely(const PointerType& o) const {
+bool bi::MemberType::definitely(const WeakType& o) const {
   return right->definitely(o);
 }
 
@@ -187,7 +187,7 @@ bi::Type* bi::MemberType::common(const OptionalType& o) const {
   return right->common(o);
 }
 
-bi::Type* bi::MemberType::common(const PointerType& o) const {
+bi::Type* bi::MemberType::common(const WeakType& o) const {
   return right->common(o);
 }
 

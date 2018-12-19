@@ -93,7 +93,7 @@ public:
   virtual void visit(const FunctionType* o);
   virtual void visit(const FiberType* o);
   virtual void visit(const OptionalType* o);
-  virtual void visit(const PointerType* o);
+  virtual void visit(const WeakType* o);
   virtual void visit(const ClassType* o);
   virtual void visit(const BasicType* o);
   virtual void visit(const GenericType* o);
@@ -150,6 +150,11 @@ protected:
    * Are we on the left side of an assignment statement?
    */
   int inAssign;
+
+  /**
+   * Are we inside custom pointer code?
+   */
+  int inPointer;
 };
 }
 
@@ -168,11 +173,12 @@ void bi::CppBaseGenerator::genInit(const T* o) {
       }
       middle(')');
     }
-  } else if (o->type->isPointer()) {
+  } else if (o->type->isClass() || o->type->isWeak()) {
     if (!o->value->isEmpty()) {
       middle(" = " << o->value);
     } else if (!o->type->isWeak()) {
-      middle(" = " << o->type->unwrap() << "::create");
+      ++inPointer;
+      middle(" = " << o->type << "::create");
       middle('(' << o->args << ')');
     }
   } else if (!o->value->isEmpty()) {

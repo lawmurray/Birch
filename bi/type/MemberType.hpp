@@ -31,7 +31,7 @@ public:
   virtual bool isValue() const;
   virtual bool isBasic() const;
   virtual bool isClass() const;
-  virtual bool isPointer() const;
+  virtual bool isWeak() const;
   virtual bool isArray() const;
   virtual bool isFunction() const;
   virtual bool isFiber() const;
@@ -67,7 +67,7 @@ public:
   virtual bool definitely(const GenericType& o) const;
   virtual bool definitely(const MemberType& o) const;
   virtual bool definitely(const OptionalType& o) const;
-  virtual bool definitely(const PointerType& o) const;
+  virtual bool definitely(const WeakType& o) const;
   virtual bool definitely(const SequenceType& o) const;
   virtual bool definitely(const TupleType& o) const;
   virtual bool definitely(const TypeList& o) const;
@@ -82,7 +82,7 @@ public:
   virtual Type* common(const GenericType& o) const;
   virtual Type* common(const MemberType& o) const;
   virtual Type* common(const OptionalType& o) const;
-  virtual Type* common(const PointerType& o) const;
+  virtual Type* common(const WeakType& o) const;
   virtual Type* common(const SequenceType& o) const;
   virtual Type* common(const TupleType& o) const;
   virtual Type* common(const TypeList& o) const;

@@ -13,7 +13,8 @@ bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
     const bool header) :
     indentable_ostream(base, level),
     header(header),
-    inAssign(0) {
+    inAssign(0),
+    inPointer(0) {
   //
 }
 
@@ -65,8 +66,9 @@ void bi::CppBaseGenerator::visit(const Sequence* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Cast* o) {
-  if (o->returnType->isPointer()) {
-    middle("bi::dynamic_pointer_cast<" << o->returnType->unwrap() << '>');
+  if (o->returnType->isClass()) {
+    ++inPointer;
+    middle("bi::dynamic_pointer_cast<" << o->returnType << '>');
   } else {
     middle("bi::check_cast<" << o->returnType << '>');
   }
@@ -250,7 +252,7 @@ void bi::CppBaseGenerator::visit(const Identifier<MemberVariable>* o) {
 void bi::CppBaseGenerator::visit(const OverloadedIdentifier<Function>* o) {
   middle("bi::" << o->name);
   if (!o->typeArgs->isEmpty()) {
-    middle('<' << o->typeArgs << '>');
+    middle('<' << o->typeArgs << ">::f");
   }
 }
 
@@ -317,32 +319,61 @@ void bi::CppBaseGenerator::visit(const MemberVariable* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Function* o) {
-  if (header || o->isBound()) {
-    if (!o->braces->isEmpty()) {
-      genTemplateParams(o);
+  if (!o->braces->isEmpty()) {
+    if (o->isGeneric()) {
+      /* generic functions are generated as a struct with a static member
+       * function, where the type parameters are part of the struct; this means
+       * we don't have to generate even a signature for the unbound function */
+      if (header) {
+        genTemplateParams(o);
+        start("struct " << o->name);
+        if (o->isBound()) {
+          genTemplateArgs(o);
+        }
+        finish(" {");
+        in();
+        if (o->isBound()) {
+          start("static ");
+        } else {
+          line("//");
+        }
+      }
+      if (o->isBound()) {
+        middle(o->returnType << ' ');
+        if (!header) {
+          start("bi::" << o->name);
+          genTemplateArgs(o);
+          middle("::");
+        }
+        middle("f(" << o->params << ')');
+        if (header) {
+          finish(';');
+        }
+      }
+      if (header) {
+        out();
+        finish("};\n");
+      }
+    } else {
       start(o->returnType << ' ');
       if (!header) {
         middle("bi::");
       }
-      middle(o->name);
-      if (o->isBound()) {
-        genTemplateArgs(o);
-      }
-      middle('(' << o->params << ')');
+      middle(o->name << '(' << o->params << ')');
       if (header) {
         finish(';');
-      } else {
-        finish(" {");
-        in();
-        genTraceFunction(o->name->str(), o->loc);
-
-        /* body */
-        CppBaseGenerator aux(base, level, false);
-        aux << o->braces->strip();
-
-        out();
-        finish("}\n");
       }
+    }
+
+    /* body */
+    if (!header && o->isBound()) {
+      finish(" {");
+      in();
+      genTraceFunction(o->name->str(), o->loc);
+      CppBaseGenerator aux(base, level, false);
+      *this << o->braces->strip();
+      out();
+      line("}\n");
     }
   }
   for (auto instantiation : o->instantiations) {
@@ -386,8 +417,9 @@ void bi::CppBaseGenerator::visit(const Program* o) {
         start(param->type << ' ' << param->name);
         if (!param->value->isEmpty()) {
           middle(" = " << param->value);
-        } else if (param->type->isPointer() && !param->type->isWeak()) {
-          middle(" = " << param->type->unwrap() << "::create()");
+        } else if (param->type->isClass()) {
+          ++inPointer;
+          middle(" = " << param->type << "::create()");
         }
         finish(';');
       }
@@ -717,20 +749,28 @@ void bi::CppBaseGenerator::visit(const OptionalType* o) {
   middle("bi::Optional<" << o->single << '>');
 }
 
-void bi::CppBaseGenerator::visit(const PointerType* o) {
-  if (o->weak) {
-    middle("bi::WeakCOW<");
-  } else {
-    middle("bi::SharedCOW<");
+void bi::CppBaseGenerator::visit(const WeakType* o) {
+  middle("bi::WeakCOW<");
+  if (o->single->isClass()) {
+    ++inPointer;
   }
   middle(o->single);
   middle('>');
 }
 
 void bi::CppBaseGenerator::visit(const ClassType* o) {
+  int inPointer1 = inPointer;
+  if (!inPointer1) {
+    middle("bi::SharedCOW<");
+  } else {
+    --inPointer;
+  }
   middle("bi::type::" << o->name);
   if (!o->typeArgs->isEmpty()) {
     middle('<' << o->typeArgs << '>');
+  }
+  if (!inPointer1) {
+    middle('>');
   }
 }
 

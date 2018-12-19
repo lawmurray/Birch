@@ -25,7 +25,7 @@ class GenericType;
 class MemberType;
 class NilType;
 class OptionalType;
-class PointerType;
+class WeakType;
 class SequenceType;
 class TupleType;
 class TypeConstIterator;
@@ -133,11 +133,6 @@ public:
    * Is this an optional type?
    */
   virtual bool isOptional() const;
-
-  /**
-   * Is this a pointer type?
-   */
-  virtual bool isPointer() const;
 
   /**
    * Is this a weak pointer type?
@@ -251,7 +246,7 @@ public:
   virtual bool definitely(const MemberType& o) const;
   virtual bool definitely(const NilType& o) const;
   virtual bool definitely(const OptionalType& o) const;
-  virtual bool definitely(const PointerType& o) const;
+  virtual bool definitely(const WeakType& o) const;
   virtual bool definitely(const SequenceType& o) const;
   virtual bool definitely(const TupleType& o) const;
   virtual bool definitely(const UnknownType& o) const;
@@ -273,7 +268,7 @@ public:
   virtual Type* common(const MemberType& o) const;
   virtual Type* common(const NilType& o) const;
   virtual Type* common(const OptionalType& o) const;
-  virtual Type* common(const PointerType& o) const;
+  virtual Type* common(const WeakType& o) const;
   virtual Type* common(const SequenceType& o) const;
   virtual Type* common(const TupleType& o) const;
   virtual Type* common(const UnknownType& o) const;

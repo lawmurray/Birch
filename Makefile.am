@@ -87,6 +87,7 @@ COMMON_SOURCES = \
   bi/exception/ThisException.cpp \
   bi/exception/UnresolvedException.cpp \
   bi/exception/UnsupportedOptionTypeException.cpp \
+  bi/exception/WeakException.cpp \
   bi/exception/YieldException.cpp \
   bi/exception/YieldTypeException.cpp \
   bi/expression/Assign.cpp \
@@ -174,7 +175,6 @@ COMMON_SOURCES = \
   bi/type/MemberType.cpp \
   bi/type/NilType.cpp \
   bi/type/OptionalType.cpp \
-  bi/type/PointerType.cpp \
   bi/type/SequenceType.cpp \
   bi/type/TupleType.cpp \
   bi/type/Type.cpp \
@@ -182,6 +182,7 @@ COMMON_SOURCES = \
   bi/type/UnknownType.cpp \
   bi/type/TypeIterator.cpp \
   bi/type/TypeList.cpp \
+  bi/type/WeakType.cpp \
   bi/visitor/Annotator.cpp \
   bi/visitor/Cloner.cpp \
   bi/visitor/Gatherer.cpp \
@@ -259,6 +260,7 @@ noinst_HEADERS = \
   bi/exception/ThisException.hpp \
   bi/exception/UnresolvedException.hpp \
   bi/exception/UnsupportedOptionTypeException.hpp \
+  bi/exception/WeakException.hpp \
   bi/exception/YieldException.hpp \
   bi/exception/YieldTypeException.hpp \
   bi/expression/all.hpp \
@@ -350,7 +352,6 @@ noinst_HEADERS = \
   bi/type/MemberType.hpp \
   bi/type/NilType.hpp \
   bi/type/OptionalType.hpp \
-  bi/type/PointerType.hpp \
   bi/type/SequenceType.hpp \
   bi/type/TupleType.hpp \
   bi/type/Type.hpp \
@@ -358,6 +359,7 @@ noinst_HEADERS = \
   bi/type/UnknownType.hpp \
   bi/type/TypeIterator.hpp \
   bi/type/TypeList.hpp \
+  bi/type/WeakType.hpp \
   bi/visitor/all.hpp \
   bi/visitor/Annotator.hpp \
   bi/visitor/Cloner.hpp \

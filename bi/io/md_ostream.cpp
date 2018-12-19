@@ -594,11 +594,8 @@ void bi::md_ostream::visit(const OptionalType* o) {
   middle(o->single << '?');
 }
 
-void bi::md_ostream::visit(const PointerType* o) {
-  middle(o->single);
-  if (o->weak) {
-    middle('&');
-  }
+void bi::md_ostream::visit(const WeakType* o) {
+  middle(o->single << '&');
 }
 
 void bi::md_ostream::genHead(const std::string& name) {

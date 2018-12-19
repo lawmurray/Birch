@@ -217,7 +217,7 @@ bi::Expression* bi::Resolver::modify(Super* o) {
       throw SuperBaseException(o);
     } else {
       Modifier::modify(o);
-      o->type = new PointerType(false, classes.back()->base, o->loc);
+      o->type = classes.back()->base;
     }
   } else {
     throw SuperException(o);
@@ -228,8 +228,7 @@ bi::Expression* bi::Resolver::modify(Super* o) {
 bi::Expression* bi::Resolver::modify(This* o) {
   if (!classes.empty()) {
     Modifier::modify(o);
-    o->type = new PointerType(false, new ClassType(classes.back(), o->loc),
-        o->loc);
+    o->type = new ClassType(classes.back(), o->loc);
   } else {
     throw ThisException(o);
   }
@@ -946,15 +945,25 @@ bi::Type* bi::Resolver::lookup(UnknownType* o) {
     }
   }
 
-  switch (category) {
-  case BASIC:
-    return new BasicType(o->name, o->loc);
-  case CLASS:
-    return new PointerType(o->weak,
-        new ClassType(o->name, o->typeArgs, o->loc), o->loc);
-  case GENERIC:
-    return new GenericType(o->name, o->loc);
-  default:
+  if (category == BASIC) {
+    Type* type = new BasicType(o->name, o->loc);
+    if (o->weak) {
+      throw WeakException(o);
+    }
+    return type;
+  } else if (category == CLASS) {
+    Type* type = new ClassType(o->name, o->typeArgs, o->loc);
+    if (o->weak) {
+      type = new WeakType(type, o->loc);
+    }
+    return type;
+  } else if (category == GENERIC) {
+    Type* type = new GenericType(o->name, o->loc);
+    if (o->weak) {
+      type = new WeakType(type, o->loc);
+    }
+    return type;
+  } else {
     throw UnresolvedException(o);
   }
 }

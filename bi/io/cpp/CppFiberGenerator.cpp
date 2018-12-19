@@ -213,10 +213,11 @@ void bi::CppFiberGenerator::visit(const LocalVariable* o) {
     inFor = false;
     middle("fiber()->" << getName(o->name->str(), o->number));
     genInit(o);
-  } else if (o->type->isPointer() && !o->type->isWeak()) {
+  } else if (o->type->isClass()) {
     /* make sure objects are initialized, not just null pointers */
     auto name = getName(o->name->str(), o->number);
-    middle("fiber()->" << name << " = " << o->type->unwrap() << "::create()");
+    ++inPointer;
+    middle("fiber()->" << name << " = " << o->type << "::create()");
   }
 }
 

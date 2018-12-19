@@ -476,7 +476,7 @@ bi::Type* bi::Modifier::modify(OptionalType* o) {
   return o;
 }
 
-bi::Type* bi::Modifier::modify(PointerType* o) {
+bi::Type* bi::Modifier::modify(WeakType* o) {
   o->single = o->single->accept(this);
   return o;
 }

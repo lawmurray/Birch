@@ -38,8 +38,8 @@ bool bi::NilType::definitely(const OptionalType& o) const {
   return true;
 }
 
-bool bi::NilType::definitely(const PointerType& o) const {
-  return o.weak;
+bool bi::NilType::definitely(const WeakType& o) const {
+  return true;
 }
 
 bool bi::NilType::definitely(const SequenceType& o) const {
@@ -58,12 +58,8 @@ bi::Type* bi::NilType::common(const OptionalType& o) const {
   return o.common(o);
 }
 
-bi::Type* bi::NilType::common(const PointerType& o) const {
-  if (o.weak) {
-    return o.common(o);
-  } else {
-    return nullptr;
-  }
+bi::Type* bi::NilType::common(const WeakType& o) const {
+  return o.common(o);
 }
 
 bi::Type* bi::NilType::common(const SequenceType& o) const {

@@ -110,22 +110,32 @@ bool bi::ClassType::definitely(const ClassType& o) const {
 
 bool bi::ClassType::definitely(const FiberType& o) const {
   assert(target);
-  return (allowConversions && target->hasConversion(&o)) || target->base->definitely(o);
+  return (allowConversions && target->hasConversion(&o)) ||
+      target->base->definitely(o);
 }
 
 bool bi::ClassType::definitely(const FunctionType& o) const {
   assert(target);
-  return (allowConversions && target->hasConversion(&o))|| target->base->definitely(o);
+  return (allowConversions && target->hasConversion(&o)) ||
+      target->base->definitely(o);
 }
 
 bool bi::ClassType::definitely(const OptionalType& o) const {
-  return definitely(*o.single) || (allowConversions && target->hasConversion(&o))
-      || target->base->definitely(o);
+  assert(target);
+  return definitely(*o.single) || (allowConversions && target->hasConversion(&o)) ||
+      target->base->definitely(o);
 }
 
 bool bi::ClassType::definitely(const TupleType& o) const {
   assert(target);
-  return (allowConversions && target->hasConversion(&o)) || target->base->definitely(o);
+  return (allowConversions && target->hasConversion(&o)) ||
+      target->base->definitely(o);
+}
+
+bool bi::ClassType::definitely(const WeakType& o) const {
+  assert(target);
+  return definitely(*o.single) || (allowConversions && target->hasConversion(&o)) ||
+      target->base->definitely(o);
 }
 
 bi::Type* bi::ClassType::dispatchCommon(const Type& o) const {
@@ -207,6 +217,17 @@ bi::Type* bi::ClassType::common(const OptionalType& o) const {
 bi::Type* bi::ClassType::common(const TupleType& o) const {
   assert(target);
   if (definitely(o)) {
+    return o.common(o);
+  } else {
+    return nullptr;
+  }
+}
+
+bi::Type* bi::ClassType::common(const WeakType& o) const {
+  auto single1 = common(*o.single);
+  if (single1) {
+    return new WeakType(single1);
+  } else if (definitely(o)) {
     return o.common(o);
   } else {
     return nullptr;

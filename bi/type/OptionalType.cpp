@@ -60,8 +60,8 @@ bool bi::OptionalType::definitely(const OptionalType& o) const {
   return single->definitely(*o.single);
 }
 
-bool bi::OptionalType::definitely(const PointerType& o) const {
-  return o.weak && single->definitely(*o.single);
+bool bi::OptionalType::definitely(const WeakType& o) const {
+  return single->definitely(*o.single);
 }
 
 bi::Type* bi::OptionalType::dispatchCommon(const Type& o) const {
@@ -144,7 +144,7 @@ bi::Type* bi::OptionalType::common(const OptionalType& o) const {
   }
 }
 
-bi::Type* bi::OptionalType::common(const PointerType& o) const {
+bi::Type* bi::OptionalType::common(const WeakType& o) const {
   auto single1 = single->common(o);
   if (single1) {
     return new OptionalType(single1);

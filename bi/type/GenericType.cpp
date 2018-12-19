@@ -49,9 +49,9 @@ bool bi::GenericType::isClass() const {
   return target->type->isClass();
 }
 
-bool bi::GenericType::isPointer() const {
+bool bi::GenericType::isWeak() const {
   assert(target);
-  return target->type->isPointer();
+  return target->type->isWeak();
 }
 
 bool bi::GenericType::isArray() const {
@@ -162,7 +162,7 @@ bool bi::GenericType::definitely(const OptionalType& o) const {
   return target->type->definitely(o);
 }
 
-bool bi::GenericType::definitely(const PointerType& o) const {
+bool bi::GenericType::definitely(const WeakType& o) const {
   assert(target);
   return target->type->definitely(o);
 }
@@ -231,7 +231,7 @@ bi::Type* bi::GenericType::common(const OptionalType& o) const {
   return target->type->common(o);
 }
 
-bi::Type* bi::GenericType::common(const PointerType& o) const {
+bi::Type* bi::GenericType::common(const WeakType& o) const {
   assert(target);
   return target->type->common(o);
 }

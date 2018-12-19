@@ -34,5 +34,6 @@
 #include "bi/exception/ThisException.hpp"
 #include "bi/exception/UnresolvedException.hpp"
 #include "bi/exception/UnsupportedOptionTypeException.hpp"
+#include "bi/exception/WeakException.hpp"
 #include "bi/exception/YieldException.hpp"
 #include "bi/exception/YieldTypeException.hpp"
