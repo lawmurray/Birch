@@ -12,7 +12,7 @@ class DelayLinearDiscrete(x:Random<Integer>&, a:Integer,
   /**
    * Location.
    */
-  μ:DelayDiscrete <- μ;
+  μ:DelayDiscrete& <- μ;
 
   /**
    * Offset.
@@ -23,36 +23,36 @@ class DelayLinearDiscrete(x:Random<Integer>&, a:Integer,
     if value? {
       return value!;
     } else {
-      return simulate_delta(a*μ.simulate() + c);
+      return simulate_delta(a*μ!.simulate() + c);
     }
   }
   
   function observe(x:Integer) -> Real {
     assert !value?;
-    return μ.observe((x - c)/a);
+    return μ!.observe((x - c)/a);
   }
   
   function condition(x:Integer) {
-    μ.clamp((x - c)/a);
+    μ!.clamp((x - c)/a);
   }
 
   function pmf(x:Integer) -> Real {
-    return μ.pmf((x - c)/a);
+    return μ!.pmf((x - c)/a);
   }
 
   function cdf(x:Integer) -> Real {
-    return μ.cdf((x - c)/a);
+    return μ!.cdf((x - c)/a);
   }
 
   function lower() -> Integer? {
-    l:Integer? <- μ.lower();
+    l:Integer? <- μ!.lower();
     if (l?) {
       return a*l! + c;
     }
   }
   
   function upper() -> Integer? {
-    u:Integer? <- μ.upper();
+    u:Integer? <- μ!.upper();
     if (u?) {
       return a*u! + c;
     }

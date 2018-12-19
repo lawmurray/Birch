@@ -7,12 +7,12 @@ class DelayAddBoundedDiscrete(x:Random<Integer>&, x1:DelayBoundedDiscrete,
   /**
    * First discrete random variate.
    */
-  x1:DelayBoundedDiscrete <- x1;
+  x1:DelayBoundedDiscrete& <- x1;
 
   /**
    * Second discrete random variate.
    */
-  x2:DelayBoundedDiscrete <- x2;
+  x2:DelayBoundedDiscrete& <- x2;
   
   /**
    * Value for which conditional probabilities have been enumerated.
@@ -37,8 +37,8 @@ class DelayAddBoundedDiscrete(x:Random<Integer>&, x1:DelayBoundedDiscrete,
 
   function enumerate(x:Integer) {
     if (!this.x? || this.x! != x) {
-      l:Integer <- max(x1.l, x - x2.u);
-      u:Integer <- min(x1.u, x - x2.l);
+      l:Integer <- max(x1!.l, x - x2!.u);
+      u:Integer <- min(x1!.u, x - x2!.l);
     
       x0 <- l;
       Z <- 0.0;
@@ -46,7 +46,7 @@ class DelayAddBoundedDiscrete(x:Random<Integer>&, x1:DelayBoundedDiscrete,
         /* distribution over possible pairs that produce the given sum */
         z <- vector(0.0, u - l + 1);
         for (n:Integer in l..u) {
-          z[n - l + 1] <- x1.pmf(n)*x2.pmf(x - n);
+          z[n - l + 1] <- x1!.pmf(n)*x2!.pmf(x - n);
           Z <- Z + z[n - l + 1];
         }
       }
@@ -58,7 +58,7 @@ class DelayAddBoundedDiscrete(x:Random<Integer>&, x1:DelayBoundedDiscrete,
     if value? {
       return value!;
     } else {
-      return simulate_delta(x1.simulate() + x2.simulate());
+      return simulate_delta(x1!.simulate() + x2!.simulate());
     }
   }
   
@@ -72,16 +72,16 @@ class DelayAddBoundedDiscrete(x:Random<Integer>&, x1:DelayBoundedDiscrete,
     /* choose a pair with the given sum and clamp parents */
     enumerate(x);
     n:Integer <- simulate_categorical(z, Z) + x0 - 1;
-    x1.clamp(n);
-    x2.clamp(x - n);
+    x1!.clamp(n);
+    x2!.clamp(x - n);
   }
 
   function pmf(x:Integer) -> Real {
-    l:Integer <- max(x1.l, x - x2.u);
-    u:Integer <- min(x1.u, x - x2.l);
+    l:Integer <- max(x1!.l, x - x2!.u);
+    u:Integer <- min(x1!.u, x - x2!.l);
     P:Real <- 0.0;
     for (n:Integer in l..u) {
-      P <- P + x1.pmf(n)*x2.pmf(x - n);
+      P <- P + x1!.pmf(n)*x2!.pmf(x - n);
     }
     return P;
   }
@@ -97,8 +97,8 @@ class DelayAddBoundedDiscrete(x:Random<Integer>&, x1:DelayBoundedDiscrete,
   function detach() {
     // override as have two parents
     parent <- nil;
-    x1.child <- nil;
-    x2.child <- nil;
+    x1!.child <- nil;
+    x2!.child <- nil;
   }  
 }
 

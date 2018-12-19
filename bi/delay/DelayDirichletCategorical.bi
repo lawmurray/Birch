@@ -6,26 +6,26 @@ class DelayDirichletCategorical(x:Random<Integer>&, ρ:DelayDirichlet) <
   /**
    * Category probabilities.
    */
-  ρ:DelayDirichlet <- ρ;
+  ρ:DelayDirichlet& <- ρ;
 
   function simulate() -> Integer {
-    return simulate_dirichlet_categorical(ρ.α);
+    return simulate_dirichlet_categorical(ρ!.α);
   }
   
   function observe(x:Integer) -> Real {
-    return observe_dirichlet_categorical(x, ρ.α);
+    return observe_dirichlet_categorical(x, ρ!.α);
   }
 
   function condition(x:Integer) {
-    ρ.α <- update_dirichlet_categorical(x, ρ.α);
+    ρ!.α <- update_dirichlet_categorical(x, ρ!.α);
   }
 
   function pmf(x:Integer) -> Real {
-    return pmf_dirichlet_categorical(x, ρ.α);
+    return pmf_dirichlet_categorical(x, ρ!.α);
   }
 
   function cdf(x:Integer) -> Real {
-    return cdf_dirichlet_categorical(x, ρ.α);
+    return cdf_dirichlet_categorical(x, ρ!.α);
   }
 }
 

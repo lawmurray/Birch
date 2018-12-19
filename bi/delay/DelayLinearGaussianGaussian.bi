@@ -11,7 +11,7 @@ class DelayLinearGaussianGaussian(x:Random<Real>&, a:Real, μ_0:DelayGaussian,
   /**
    * Prior mean.
    */
-  μ_0:DelayGaussian <- μ_0;
+  μ_0:DelayGaussian& <- μ_0;
 
   /**
    * Offset.
@@ -29,7 +29,7 @@ class DelayLinearGaussianGaussian(x:Random<Real>&, a:Real, μ_0:DelayGaussian,
   σ2_m:Real <- this.σ2;
 
   function condition(x:Real) {
-    (μ_0.μ, μ_0.σ2) <- update_linear_gaussian_gaussian(x, a, μ_0.μ, μ_0.σ2, μ_m, σ2_m);
+    (μ_0!.μ, μ_0!.σ2) <- update_linear_gaussian_gaussian(x, a, μ_0!.μ, μ_0!.σ2, μ_m, σ2_m);
   }
 }
 

@@ -7,7 +7,7 @@ class DelayMultivariateGaussianGaussian(x:Random<Real[_]>&,
   /**
    * Prior mean.
    */
-  μ_0:DelayMultivariateGaussian <- μ_0;
+  μ_0:DelayMultivariateGaussian& <- μ_0;
 
   /**
    * Marginal mean.
@@ -20,7 +20,7 @@ class DelayMultivariateGaussianGaussian(x:Random<Real[_]>&,
   Σ_m:Real[_,_] <- this.Σ;
 
   function condition(x:Real[_]) {
-    (μ_0.μ, μ_0.Σ) <- update_multivariate_gaussian_gaussian(x, μ_0.μ, μ_0.Σ, 
+    (μ_0!.μ, μ_0!.Σ) <- update_multivariate_gaussian_gaussian(x, μ_0!.μ, μ_0!.Σ, 
         μ_m, Σ_m);
   }
 }

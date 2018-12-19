@@ -11,30 +11,30 @@ class DelayBetaBinomial(x:Random<Integer>&, n:Integer, ρ:DelayBeta) <
   /**
    * Success probability.
    */
-  ρ:DelayBeta <- ρ;
+  ρ:DelayBeta& <- ρ;
 
   function simulate() -> Integer {
     if value? {
       return value!;
     } else {
-      return simulate_beta_binomial(n, ρ.α, ρ.β);
+      return simulate_beta_binomial(n, ρ!.α, ρ!.β);
     }
   }
   
   function observe(x:Integer) -> Real {
-    return observe_beta_binomial(x, n, ρ.α, ρ.β);
+    return observe_beta_binomial(x, n, ρ!.α, ρ!.β);
   }
 
   function condition(x:Integer) {
-    (ρ.α, ρ.β) <- update_beta_binomial(x, n, ρ.α, ρ.β);
+    (ρ!.α, ρ!.β) <- update_beta_binomial(x, n, ρ!.α, ρ!.β);
   }
 
   function pmf(x:Integer) -> Real {
-    return pmf_beta_binomial(x, n, ρ.α, ρ.β);
+    return pmf_beta_binomial(x, n, ρ!.α, ρ!.β);
   }
 
   function cdf(x:Integer) -> Real {
-    return cdf_beta_binomial(x, n, ρ.α, ρ.β);
+    return cdf_beta_binomial(x, n, ρ!.α, ρ!.β);
   }
   
   function lower() -> Integer? {

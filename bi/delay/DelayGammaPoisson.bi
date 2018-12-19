@@ -6,30 +6,30 @@ class DelayGammaPoisson(x:Random<Integer>&, λ:DelayGamma) <
   /**
    * Rate.
    */
-  λ:DelayGamma <- λ;
+  λ:DelayGamma& <- λ;
 
   function simulate() -> Integer {
     if value? {
       return value!;
     } else {
-      return simulate_gamma_poisson(λ.k, λ.θ);
+      return simulate_gamma_poisson(λ!.k, λ!.θ);
     }
   }
   
   function observe(x:Integer) -> Real {
-    return observe_gamma_poisson(x, λ.k, λ.θ);
+    return observe_gamma_poisson(x, λ!.k, λ!.θ);
   }
 
   function condition(x:Integer) {
-    (λ.k, λ.θ) <- update_gamma_poisson(x, λ.k, λ.θ);
+    (λ!.k, λ!.θ) <- update_gamma_poisson(x, λ!.k, λ!.θ);
   }
 
   function pmf(x:Integer) -> Real {
-    return pmf_gamma_poisson(x, λ.k, λ.θ);
+    return pmf_gamma_poisson(x, λ!.k, λ!.θ);
   }
 
   function cdf(x:Integer) -> Real {
-    return cdf_gamma_poisson(x, λ.k, λ.θ);
+    return cdf_gamma_poisson(x, λ!.k, λ!.θ);
   }
 
   function lower() -> Integer? {

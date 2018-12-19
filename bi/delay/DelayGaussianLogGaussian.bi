@@ -6,7 +6,7 @@ class DelayGaussianLogGaussian(x:Random<Real>&, μ_0:DelayGaussian, σ2:Real) <
   /**
    * Prior mean.
    */
-  μ_0:DelayGaussian <- μ_0;
+  μ_0:DelayGaussian& <- μ_0;
 
   /**
    * Marginal mean.
@@ -19,7 +19,7 @@ class DelayGaussianLogGaussian(x:Random<Real>&, μ_0:DelayGaussian, σ2:Real) <
   σ2_m:Real <- this.σ2;
 
   function condition(x:Real) {
-    (μ_0.μ, μ_0.σ2) <- update_gaussian_gaussian(log(x), μ_0.μ, μ_0.σ2, μ_m,
+    (μ_0!.μ, μ_0!.σ2) <- update_gaussian_gaussian(log(x), μ_0!.μ, μ_0!.σ2, μ_m,
         σ2_m);
   }
 

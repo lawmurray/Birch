@@ -6,27 +6,27 @@ class DelayGammaExponential(x:Random<Real>&, λ:DelayGamma) <
   /**
    * Rate.
    */
-  λ:DelayGamma <- λ;
+  λ:DelayGamma& <- λ;
 
   function simulate() -> Real {
-    return simulate_lomax(1.0/λ.θ, λ.k);
+    return simulate_lomax(1.0/λ!.θ, λ!.k);
   }
 
   function observe(x:Real) -> Real {
-    return observe_lomax(x, 1.0/λ.θ, λ.k);
+    return observe_lomax(x, 1.0/λ!.θ, λ!.k);
   }
 
   function condition(x:Real) {
-    λ.k <- λ.k + 1.0;
-    λ.θ <- λ.θ / (1.0 + x*λ.θ);
+    λ!.k <- λ!.k + 1.0;
+    λ!.θ <- λ!.θ / (1.0 + x*λ!.θ);
   }
 
   function pdf(x:Real) -> Real {
-    return pdf_lomax(x, 1.0/λ.θ, λ.k);
+    return pdf_lomax(x, 1.0/λ!.θ, λ!.k);
   }
 
   function cdf(x:Real) -> Real {
-    return cdf_lomax(x, 1.0/λ.θ, λ.k);
+    return cdf_lomax(x, 1.0/λ!.θ, λ!.k);
   }
 
   function lower() -> Real? {

@@ -12,7 +12,7 @@ class DelayMultivariateLinearNormalInverseGammaGaussian(x:Random<Real[_]>&,
   /**
    * Mean.
    */
-  μ:DelayMultivariateNormalInverseGamma <- μ;
+  μ:DelayMultivariateNormalInverseGamma& <- μ;
 
   /**
    * Offset.
@@ -20,23 +20,23 @@ class DelayMultivariateLinearNormalInverseGammaGaussian(x:Random<Real[_]>&,
   c:Real[_] <- c;
 
   function simulate() -> Real[_] {
-    return simulate_multivariate_linear_normal_inverse_gamma_gaussian(A, μ.μ,
-        c, μ.Λ, μ.σ2.α, μ.σ2.β);
+    return simulate_multivariate_linear_normal_inverse_gamma_gaussian(A, μ!.μ,
+        c, μ!.Λ, μ!.σ2!.α, μ!.σ2!.β);
   }
   
   function observe(x:Real[_]) -> Real {
     return observe_multivariate_linear_normal_inverse_gamma_gaussian(x, A,
-        μ.μ, c, μ.Λ, μ.σ2.α, μ.σ2.β);
+        μ!.μ, c, μ!.Λ, μ!.σ2!.α, μ!.σ2!.β);
   }
 
   function condition(x:Real[_]) {
-    (μ.μ, μ.Λ, μ.σ2.α, μ.σ2.β) <- update_multivariate_linear_normal_inverse_gamma_gaussian(
-        x, A, μ.μ, c, μ.Λ, μ.σ2.α, μ.σ2.β);
+    (μ!.μ, μ!.Λ, μ!.σ2!.α, μ!.σ2!.β) <- update_multivariate_linear_normal_inverse_gamma_gaussian(
+        x, A, μ!.μ, c, μ!.Λ, μ!.σ2!.α, μ!.σ2!.β);
   }
 
   function pdf(x:Real[_]) -> Real {
     return pdf_multivariate_linear_normal_inverse_gamma_gaussian(
-        x, A, μ.μ, c, μ.Λ, μ.σ2.α, μ.σ2.β);
+        x, A, μ!.μ, c, μ!.Λ, μ!.σ2!.α, μ!.σ2!.β);
   }
 }
 

@@ -39,22 +39,22 @@ class DelayMultivariateNormalInverseGamma(x:Random<Real[_]>&, μ:Real[_],
   /**
    * Scale.
    */
-  σ2:DelayInverseGamma <- σ2;
+  σ2:DelayInverseGamma& <- σ2;
 
   function size() -> Integer {
     return length(μ);
   }
 
   function simulate() -> Real[_] {
-    return simulate_multivariate_normal_inverse_gamma(μ, Λ, σ2.α, σ2.β);
+    return simulate_multivariate_normal_inverse_gamma(μ, Λ, σ2!.α, σ2!.β);
   }
   
   function observe(x:Real[_]) -> Real {
-    return observe_multivariate_normal_inverse_gamma(x, μ, Λ, σ2.α, σ2.β);
+    return observe_multivariate_normal_inverse_gamma(x, μ, Λ, σ2!.α, σ2!.β);
   }
 
   function pdf(x:Real[_]) -> Real {
-    return pdf_multivariate_normal_inverse_gamma(x, μ, Λ, σ2.α, σ2.β);
+    return pdf_multivariate_normal_inverse_gamma(x, μ, Λ, σ2!.α, σ2!.β);
   }
 }
 

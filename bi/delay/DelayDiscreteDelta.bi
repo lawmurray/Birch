@@ -6,39 +6,39 @@ class DelayDiscreteDelta(x:Random<Integer>&, μ:DelayDiscrete) <
   /**
    * Location.
    */
-  μ:DelayDiscrete <- μ;
+  μ:DelayDiscrete& <- μ;
 
   function simulate() -> Integer {
     if value? {
       return value!;
     } else {
-      return simulate_delta(μ.simulate());
+      return simulate_delta(μ!.simulate());
     }
   }
   
   function observe(x:Integer) -> Real {
     assert !value?;
-    return μ.observe(x);
+    return μ!.observe(x);
   }
   
   function condition(x:Integer) {
-    μ.clamp(x);
+    μ!.clamp(x);
   }
 
   function pmf(x:Integer) -> Real {
-    return μ.pmf(x);
+    return μ!.pmf(x);
   }
 
   function cdf(x:Integer) -> Real {
-    return μ.cdf(x);
+    return μ!.cdf(x);
   }
 
   function lower() -> Integer? {
-    return μ.lower();
+    return μ!.lower();
   }
   
   function upper() -> Integer? {
-    return μ.upper();
+    return μ!.upper();
   }
 }
 

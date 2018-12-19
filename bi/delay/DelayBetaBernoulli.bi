@@ -6,22 +6,22 @@ class DelayBetaBernoulli(x:Random<Boolean>&, ρ:DelayBeta) <
   /**
    * Success probability.
    */
-  ρ:DelayBeta <- ρ;
+  ρ:DelayBeta& <- ρ;
 
   function simulate() -> Boolean {
-    return simulate_beta_bernoulli(ρ.α, ρ.β);
+    return simulate_beta_bernoulli(ρ!.α, ρ!.β);
   }
   
   function observe(x:Boolean) -> Real {
-    return observe_beta_bernoulli(x, ρ.α, ρ.β);
+    return observe_beta_bernoulli(x, ρ!.α, ρ!.β);
   }
 
   function condition(x:Boolean) {
-    (ρ.α, ρ.β) <- update_beta_bernoulli(x, ρ.α, ρ.β);
+    (ρ!.α, ρ!.β) <- update_beta_bernoulli(x, ρ!.α, ρ!.β);
   }
 
   function pmf(x:Boolean) -> Real {
-    return pmf_beta_bernoulli(x, ρ.α, ρ.β);
+    return pmf_beta_bernoulli(x, ρ!.α, ρ!.β);
   }
 }
 

@@ -11,22 +11,22 @@ class DelayDirichletMultinomial(x:Random<Integer[_]>&, n:Integer,
   /**
    * Category probabilities.
    */
-  ρ:DelayDirichlet <- ρ;
+  ρ:DelayDirichlet& <- ρ;
 
   function simulate() -> Integer[_] {
-    return simulate_dirichlet_multinomial(n, ρ.α);
+    return simulate_dirichlet_multinomial(n, ρ!.α);
   }
   
   function observe(x:Integer[_]) -> Real {
-    return observe_dirichlet_multinomial(x, n, ρ.α);
+    return observe_dirichlet_multinomial(x, n, ρ!.α);
   }
 
   function condition(x:Integer[_]) {
-    ρ.α <- update_dirichlet_multinomial(x, n, ρ.α);
+    ρ!.α <- update_dirichlet_multinomial(x, n, ρ!.α);
   }
 
   function pmf(x:Integer[_]) -> Real {
-    return pmf_dirichlet_multinomial(x, n, ρ.α);
+    return pmf_dirichlet_multinomial(x, n, ρ!.α);
   }
 }
 
