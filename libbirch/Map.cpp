@@ -3,6 +3,9 @@
  */
 #include "libbirch/Map.hpp"
 
+static bi::Any* const EMPTY = nullptr;
+static bi::Any* const ERASED = reinterpret_cast<bi::Any*>(0xFFFFFFFFFFFFFFFF);
+
 bi::Map::Map() :
     entries(nullptr),
     nentries(0),
@@ -13,7 +16,7 @@ bi::Map::Map() :
 bi::Map::~Map() {
   for (size_t i = 0; i < nentries; ++i) {
     joint_entry_type entry = entries[i].joint.load();
-    if (entry.key) {
+    if (entry.key != EMPTY && entry.key != ERASED) {
       entry.key->decWeak();
       entry.value->decShared();
     }
@@ -59,14 +62,14 @@ bi::Map::value_type bi::Map::put(const key_type key, const value_type value) {
   reserve();
   lock.share();
 
-  joint_entry_type expected = { nullptr, nullptr };
+  joint_entry_type expected = { EMPTY, EMPTY };
   joint_entry_type desired = { key, value };
 
   size_t i = hash(key);
   while (!entries[i].joint.compare_exchange_strong(expected, desired)
       && expected.key != key) {
     i = (i + 1) & (nentries - 1);
-    expected = {nullptr, nullptr};
+    expected = {EMPTY, EMPTY};
   }
 
   value_type result;
@@ -91,14 +94,14 @@ bi::Map::value_type bi::Map::uninitialized_put(const key_type key,
   reserve();
   lock.share();
 
-  joint_entry_type expected = { nullptr, nullptr };
+  joint_entry_type expected = { EMPTY, EMPTY };
   joint_entry_type desired = { key, value };
 
   size_t i = hash(key);
   while (!entries[i].joint.compare_exchange_strong(expected, desired)
       && expected.key != key) {
     i = (i + 1) & (nentries - 1);
-    expected = {nullptr, nullptr};
+    expected = {EMPTY, EMPTY};
   }
 
   value_type result;
@@ -112,8 +115,31 @@ bi::Map::value_type bi::Map::uninitialized_put(const key_type key,
   return result;
 }
 
-void bi::Map::release(const key_type key) {
-  get(key)->decShared();
+void bi::Map::remove(const key_type key) {
+  /* pre-condition */
+  assert(key);
+
+  if (!empty()) {
+    lock.share();
+
+    key_type expected = key;
+    key_type desired = ERASED;
+
+    size_t i = hash(key);
+    while (!entries[i].split.key.compare_exchange_strong(expected, desired)
+        && expected != EMPTY) {
+      i = (i + 1) & (nentries - 1);
+      expected = key;
+    }
+    if (expected == key) {
+      value_type value = entries[i].split.value.load();
+      lock.unshare();  // release first, as dec may cause lengthy cleanup
+      key->decWeak();
+      value->decShared();
+    } else {
+      lock.unshare();
+    }
+  }
 }
 
 size_t bi::Map::hash(const key_type key) const {
@@ -146,10 +172,13 @@ void bi::Map::reserve() {
       std::memset(entries2, 0, nentries2 * sizeof(entry_type));
 
       /* copy contents from previous table */
-      nentries = nentries2;
+      size_t nerased = 0;
+      nentries = nentries2;  // set this here as needed by hash()
       for (size_t i = 0u; i < nentries1; ++i) {
         joint_entry_type entry = entries1[i];
-        if (entry.key) {
+        if (entry.key == ERASED) {
+          ++nerased;
+        } else if (entry.key != EMPTY) {
           /* rehash and insert */
           size_t j = hash(entry.key);
           while (entries2[j].key) {
@@ -158,7 +187,10 @@ void bi::Map::reserve() {
           entries2[j] = entry;
         }
       }
+
+      /* update object */
       entries = (entry_type*)entries2;
+      noccupied -= nerased;
 
       /* deallocate previous table */
       deallocate(entries1, nentries1 * sizeof(joint_entry_type));

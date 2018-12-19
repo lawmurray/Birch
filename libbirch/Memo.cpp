@@ -79,6 +79,9 @@ bi::Any* bi::Memo::get(Any* o) {
       SharedPtr<Any> cloned = o->clone();
       // ^ use shared to clean up if beaten by another thread
       result = clones.put(o, cloned.get());
+      #if USE_LAZY_DEEP_CLONE_FORWARD_CLEAN
+      o->recordMemo(this);
+      #endif
       pop_context();
       cloneUnderway = prevUnderway;
       #else
@@ -133,6 +136,9 @@ bi::Any* bi::Memo::deep(Any* o) {
         result = o;
       }
       result = clones.put(o, result);
+      #if USE_LAZY_DEEP_CLONE && USE_LAZY_DEEP_CLONE_FORWARD_CLEAN
+      o->recordMemo(this);
+      #endif
     }
     return result;
   }

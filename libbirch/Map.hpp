@@ -54,7 +54,7 @@ public:
   value_type get(const key_type key, const value_type failed = nullptr);
 
   /**
-   * Put a value.
+   * Put an entry.
    *
    * @param key Key.
    * @param value Value.
@@ -65,17 +65,27 @@ public:
 
   /**
    * Put an uninitialized value. As put(), but it is the caller's
-   * responsibility to update the shared reference count on the value object
-   * once it has been initialized.
+   * responsibility to update reference counts on the key (weak) and value
+   * (shared).
+   *
+   * @param key Key.
+   * @param value Value.
+   *
+   * @return If @p key exists, then its associated value, otherwise @p value.
    */
   value_type uninitialized_put(const key_type key, const value_type value);
 
   /**
-   * Release the value associated with the key. This does not remove the key
-   * from the map, that is only done on resize, but it does release the
-   * shared reference to break reference cycles.
+   * Remove an entry.
+   *
+   * @param key Key.
+   * @param value Value.
+   *
+   * An entry is removed by overwriting its key with a bit pattern that
+   * indicates erased. Consequently, the entry still occupies a slot. If the
+   * map is later resized, these erased entries will be removed.
    */
-  void release(const key_type key);
+  void remove(const key_type key);
 
 public:
   /**

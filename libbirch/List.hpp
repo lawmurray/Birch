@@ -7,10 +7,10 @@
 #include "libbirch/Lock.hpp"
 
 namespace bi {
-class Any;
+class Memo;
 
 /**
- * Thread-safe list of pointers.
+ * Thread-safe list of memos.
  *
  * @ingroup libbirch
  *
@@ -21,7 +21,7 @@ public:
   /**
    * Value type.
    */
-  using value_type = Any*;
+  using value_type = Memo*;
 
   /**
    * Constructor.
@@ -44,6 +44,13 @@ public:
    * @param value Value.
    */
   void put(const value_type value);
+
+  /**
+   * Remove an entry from each memo in the list, and destroy the list.
+   *
+   * @param key Key of the entry to remove from each memo.
+   */
+  void destroy(Any* key);
 
 public:
   /**

@@ -11,10 +11,7 @@ bi::List::List() :
 }
 
 bi::List::~List() {
-  for (size_t i = 0; i < noccupied; ++i) {
-    entries[i]->decShared();
-  }
-  deallocate(entries, nentries * sizeof(value_type));
+  //
 }
 
 bool bi::List::empty() const {
@@ -44,4 +41,22 @@ size_t bi::List::reserve() {
     lock.unkeep();
   }
   return noccupied1;
+}
+
+void bi::List::destroy(Any* key) {
+  for (size_t i = 0; i < noccupied; ++i) {
+    Memo* value = entries[i];
+    Counted* shared = value->lock();
+    if (shared) {
+      value->clones.remove(key);
+      shared->decShared();
+    }
+    value->decWeak();
+  }
+  deallocate(entries, nentries * sizeof(value_type));
+  #ifndef NDEBUG
+  entries = nullptr;
+  noccupied = 0;
+  nentries = 0;
+  #endif
 }
