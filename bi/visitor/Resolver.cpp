@@ -141,7 +141,8 @@ bi::Expression* bi::Resolver::modify(Slice* o) {
 
 bi::Expression* bi::Resolver::modify(Query* o) {
   Modifier::modify(o);
-  if (o->single->type->isFiber() || o->single->type->isOptional()) {
+  if (o->single->type->isFiber() || o->single->type->isOptional() ||
+      o->single->type->isWeak()) {
     o->type = new BasicType(new Name("Boolean"), o->loc);
     o->type = o->type->accept(this);
   } else {
@@ -152,7 +153,8 @@ bi::Expression* bi::Resolver::modify(Query* o) {
 
 bi::Expression* bi::Resolver::modify(Get* o) {
   Modifier::modify(o);
-  if (o->single->type->isFiber() || o->single->type->isOptional()) {
+  if (o->single->type->isFiber() || o->single->type->isOptional() ||
+      o->single->type->isWeak()) {
     o->type = o->single->type->unwrap();
   } else {
     throw GetException(o);

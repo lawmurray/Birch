@@ -143,7 +143,11 @@ void bi::CppBaseGenerator::visit(const Query* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Get* o) {
-  middle(o->single << ".get()");
+  middle(o->single);
+  if (!o->single->type->isWeak()) {
+    // ^ for a weak pointer, the ordinary dereference suffices
+    middle(".get()");
+  }
 }
 
 void bi::CppBaseGenerator::visit(const LambdaFunction* o) {
