@@ -20,9 +20,17 @@ namespace bi {
 class ContextPtr {
 public:
   /**
+   * Default constructor.
+   */
+  ContextPtr() :
+      context(top_context()) {
+    //
+  }
+
+  /**
    * Value constructor.
    */
-  ContextPtr(Memo* memo = nullptr) :
+  ContextPtr(Memo* memo) :
       memo(memo == top_context() ? nullptr : memo),
       context(top_context()) {
     //

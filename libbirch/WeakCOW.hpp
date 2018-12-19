@@ -11,7 +11,7 @@
 
 namespace bi {
 /**
- * Shared pointer with copy-on-write semantics.
+ * Weak pointer with copy-on-write semantics.
  *
  * @ingroup libbirch
  *
@@ -28,8 +28,7 @@ public:
   /**
    * Constructor.
    */
-  WeakCOW(const Nil& ptr = nil, Memo* memo = top_context()) :
-      super_type(ptr, memo) {
+  WeakCOW(const Nil& = nil) {
     //
   }
 
@@ -104,8 +103,7 @@ public:
   using value_type = Any;
   using root_type = WeakCOW<value_type>;
 
-  WeakCOW(const Nil& o = nil, Memo* memo = top_context()) :
-      memo(memo) {
+  WeakCOW(const Nil& = nil) {
     //
   }
 

@@ -32,8 +32,7 @@ public:
   /**
    * Constructor.
    */
-  SharedCOW(const Nil& ptr = nil, Memo* memo = top_context()) :
-      super_type(ptr, memo) {
+  SharedCOW(const Nil& = nil) {
     //
   }
 
@@ -177,8 +176,7 @@ public:
   using value_type = Any;
   using root_type = SharedCOW<value_type>;
 
-  SharedCOW(const Nil& = nil, Memo* memo = top_context()) :
-      memo(memo) {
+  SharedCOW(const Nil& = nil) {
     //
   }
 
