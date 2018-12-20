@@ -17,16 +17,16 @@ class SIRParameter {
    */
   γ:Random<Real>;
 
-  function read(reader:Reader) {
-    λ <- reader.getReal("λ");
-    δ <- reader.getReal("δ");
-    γ <- reader.getReal("γ");
+  function read(buffer:Buffer) {
+    buffer.get("λ", λ);
+    buffer.get("δ", δ);
+    buffer.get("γ", γ);
   }
 
-  function write(writer:Writer) {
-    writer.set("λ", λ);
-    writer.set("δ", δ);
-    writer.set("γ", γ);
+  function write(buffer:Buffer) {
+    buffer.set("λ", λ);
+    buffer.set("δ", δ);
+    buffer.set("γ", γ);
   }
 }
 
@@ -64,20 +64,20 @@ class SIRState {
    */
   r:Random<Integer>;
 
-  function read(reader:Reader) {
-    Δi <- reader.getInteger("Δi");
-    Δr <- reader.getInteger("Δr");
-    s <- reader.getInteger("s");
-    i <- reader.getInteger("i");
-    r <- reader.getInteger("r");
+  function read(buffer:Buffer) {
+    buffer.get("Δi", Δi);
+    buffer.get("Δr", Δr);
+    buffer.get("s", s);
+    buffer.get("i", i);
+    buffer.get("r", r);
   }
 
-  function write(writer:Writer) {
-    writer.set("Δi", Δi);
-    writer.set("Δr", Δr);
-    writer.set("s", s);
-    writer.set("i", i);
-    writer.set("r", r);
+  function write(buffer:Buffer) {
+    buffer.set("Δi", Δi);
+    buffer.set("Δr", Δr);
+    buffer.set("s", s);
+    buffer.set("i", i);
+    buffer.set("r", r);
   }
 }
 

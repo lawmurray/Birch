@@ -36,6 +36,16 @@ class MixedGaussianParameter {
    * Nonlinear observation noise covariance.
    */
   Σ_y_n:Real[_,_] <- [[0.1]];
+
+  function write(buffer:Buffer) {
+    buffer.set("A", A);
+    buffer.set("B", B);
+    buffer.set("C", C);
+    buffer.set("Σ_x_l", Σ_x_l);
+    buffer.set("Σ_x_n", Σ_x_n);
+    buffer.set("Σ_y_l", Σ_y_l);
+    buffer.set("Σ_y_n", Σ_y_n);
+  }
 }
 
 /**
@@ -52,14 +62,14 @@ class MixedGaussianState {
    */
   l:Random<Real[_]>;
 
-  function read(reader:Reader) {
-    l <- reader.getRealVector("l");
-    n <- reader.getRealVector("n");
+  function read(buffer:Buffer) {
+    l <- buffer.getRealVector("l");
+    n <- buffer.getRealVector("n");
   }
 
-  function write(writer:Writer) {
-    writer.set("l", l);
-    writer.set("n", n);
+  function write(buffer:Buffer) {
+    buffer.set("l", l);
+    buffer.set("n", n);
   }
 }
 
@@ -77,14 +87,14 @@ class MixedGaussianObservation {
    */
   l:Random<Real[_]>;
 
-  function read(reader:Reader) {
-    l <- reader.getRealVector("l");
-    n <- reader.getRealVector("n");
+  function read(buffer:Buffer) {
+    buffer.get("l", l);
+    buffer.get("n", n);
   }
 
-  function write(writer:Writer) {
-    writer.set("l", l);
-    writer.set("n", n);
+  function write(buffer:Buffer) {
+    buffer.set("l", l);
+    buffer.set("n", n);
   }
 }
 
