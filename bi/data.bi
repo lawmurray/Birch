@@ -1,15 +1,16 @@
 program data(
     input_file:String <- "output/simulation.json",
     output_file:String <- "input/filter.json") {
-  auto reader <- JSONReader(input_file);
+  input:JSONBuffer;
+  input.load(input_file);
   
   θ:Global;
-  θ.read(reader.getObject("θ"));
-  
   y:Vector<List<Random<Real[_]>>>;
-  y.read(reader.getObject("y"));
   
-  auto z <- reader.getArray("z");
+  input.get("θ", θ);  
+  input.get("y", y);
+  
+  auto z <- input.getArray("z");
   while z? {
     auto t <- z!.getInteger("t")!;
     auto u <- z!.getArray("y");
@@ -24,8 +25,8 @@ program data(
     }
   }
   
-  auto writer <- JSONWriter(output_file);
-  y.write(writer.setObject("y"));
-  θ.write(writer.setObject("θ"));
-  writer.save();
+  output:JSONBuffer;
+  output.set("y", y);
+  output.set("θ", θ);
+  output.save(output_file);
 }

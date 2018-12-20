@@ -91,14 +91,14 @@ class Multi < StateSpaceModel<Global,List<Track>,List<Random<Real[_]>>> {
     }
   }
   
-  function read(reader:Reader) {
-    θ.read(reader.getObject("θ"));
-    y1.read(reader.getObject("y"));
+  function read(buffer:Buffer) {
+    buffer.getObject("θ", θ);
+    buffer.getObject("y", y1);
   }
   
-  function write(writer:Writer) {
-    θ.write(writer.setObject("θ"));
-    z.write(writer.setObject("z"));
-    y.write(writer.setObject("y"));
+  function write(buffer:Buffer) {
+    buffer.set("θ", θ);
+    buffer.set("z", z);
+    buffer.set("y", y);
   }
 }

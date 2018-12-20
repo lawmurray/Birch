@@ -22,13 +22,13 @@ class Track < StateSpaceModel<Global,Random<Real[_]>,Random<Real[_]>> {
     }
   }
 
-  function read(reader:Reader) {
+  function read(buffer:Buffer) {
     //
   }
   
-  function write(writer:Writer) {
-    writer.set("t", t);
-    x.write(writer.setObject("x"));
-    y.write(writer.setObject("y"));
+  function write(buffer:Buffer) {
+    buffer.set("t", t);
+    buffer.set("x", x);
+    buffer.set("y", y);
   }
 }

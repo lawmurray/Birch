@@ -54,31 +54,31 @@ class Global {
    */
   τ:Real;
   
-  function read(reader:Reader) {
-    l <- reader.get("l", l)!;
-    u <- reader.get("u", u)!;
-    d <- reader.get("d", d)!;
-    M <- reader.get("M", M)!;
-    A <- reader.get("A", A)!;
-    Q <- reader.get("Q", Q)!;
-    B <- reader.get("B", B)!;
-    R <- reader.get("R", R)!;
-    λ <- reader.get("λ", λ)!;
-    μ <- reader.get("μ", μ)!;
-    τ <- reader.get("τ", τ)!;
+  function read(buffer:Buffer) {
+    l <- buffer.get("l", l)!;
+    u <- buffer.get("u", u)!;
+    d <- buffer.get("d", d)!;
+    M <- buffer.get("M", M)!;
+    A <- buffer.get("A", A)!;
+    Q <- buffer.get("Q", Q)!;
+    B <- buffer.get("B", B)!;
+    R <- buffer.get("R", R)!;
+    λ <- buffer.get("λ", λ)!;
+    μ <- buffer.get("μ", μ)!;
+    τ <- buffer.get("τ", τ)!;
   }
   
-  function write(writer:Writer) {
-    writer.set("l", l);
-    writer.set("u", u);
-    writer.set("d", d);
-    writer.set("M", M);
-    writer.set("A", A);
-    writer.set("Q", Q);
-    writer.set("B", B);
-    writer.set("R", R);
-    writer.set("λ", λ);
-    writer.set("μ", μ);
-    writer.set("τ", τ);
+  function write(buffer:Buffer) {
+    buffer.set("l", l);
+    buffer.set("u", u);
+    buffer.set("d", d);
+    buffer.set("M", M);
+    buffer.set("A", A);
+    buffer.set("Q", Q);
+    buffer.set("B", B);
+    buffer.set("R", R);
+    buffer.set("λ", λ);
+    buffer.set("μ", μ);
+    buffer.set("τ", τ);
   }
 }

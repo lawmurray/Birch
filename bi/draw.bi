@@ -3,7 +3,8 @@ program draw(
     output_file:String <- "figs/simulation.pdf",
     width:Integer <- 1024,
     height:Integer <- 1024) {
-  input:JSONReader <- JSONReader(input_file);
+  input:JSONBuffer;
+  input.load(input_file);
   surface:Surface <- createPDF(output_file, width, height);
   cr:Context <- create(surface);
 
@@ -17,12 +18,12 @@ program draw(
   cr.rectangle(0, 0, width - 1, height - 1);
   cr.stroke();
 
-  
   //col:Real[_] <- [0.3373, 0.7059, 0.9137];
   col:Real[_] <- [0.8353, 0.3686, 0.0000];
 
-  auto l <- input.getRealVector(["θ", "l"])!;
-  auto u <- input.getRealVector(["θ", "u"])!;
+  auto θ <- input.getChild("θ");
+  auto l <- θ!.getRealVector("l")!;
+  auto u <- θ!.getRealVector("u")!;
 
   auto scaleX <- width/(u[1] - l[1]);
   auto scaleY <- height/(u[2] - l[2]);
