@@ -4,8 +4,10 @@
   "description": "Vector-borne disease models.",
   "manifest": {
     "source": [
+      "bi/common/SEIRModel.bi",
       "bi/common/SEIRParameter.bi",
       "bi/common/SEIRState.bi",
+      "bi/common/VBDModel.bi",
       "bi/common/VBDParameter.bi",
       "bi/common/VBDState.bi",
       "bi/study/YapModel.bi",
