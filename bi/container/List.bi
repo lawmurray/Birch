@@ -219,21 +219,24 @@ class List<Type> {
     return node!;
   }
   
-  function read(reader:Reader) {
-    auto f <- reader.getArray();
+  function read(buffer:Buffer) {
+    auto f <- buffer.getArray();
     while (f?) {
-      x:Type? <- global.get<Type>(f!);
-      if (x?) {
-        pushBack(x!);
+      /* tricky, but works for both basic and class types */
+      x:Type;
+      auto y <- f!.get(x);
+      if (y?) {
+        x <- Type?(y)!;  // cast needed for y:Object?
       }
+      pushBack(x);
     }
   }
 
-  function write(writer:Writer) {
-    writer.setArray();
+  function write(buffer:Buffer) {
+    buffer.setArray();
     auto f <- walk();
     while (f?) {
-      writer.push().set(f!);
+      buffer.push().set(f!);
     }
   }
 }

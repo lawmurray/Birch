@@ -239,17 +239,17 @@ class Random<Value> < Expression<Value> {
     }
   }
 
-  function read(reader:Reader) {
+  function read(buffer:Buffer) {
     assert !this.dist?;
     assert !this.x?;
-    x <- reader.get(x);
+    x <- buffer.get(x);
   }
 
-  function write(writer:Writer) {
+  function write(buffer:Buffer) {
     if (x? || dist?) {
-      writer.set(value());
+      buffer.set(value());
     } else {
-      writer.setNil();
+      buffer.setNil();
     }
   }
 }

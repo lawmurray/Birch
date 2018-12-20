@@ -82,8 +82,8 @@ class AliveParticleFilter < ParticleFilter {
     propagations[t] <- P;
   }
 
-  function write(writer:Writer) {
-    super.write(writer);
-    writer.setIntegerVector("propagations", propagations);
+  function write(buffer:Buffer) {
+    super.write(buffer);
+    buffer.setIntegerVector("propagations", propagations);
   }
 }

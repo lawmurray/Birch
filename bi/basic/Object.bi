@@ -5,32 +5,32 @@ class Object {
   /**
    * Read.
    */
-  function read(reader:Reader?) {
-    if (reader?) {
-      read(reader!);
+  function read(buffer:Buffer?) {
+    if (buffer?) {
+      read(buffer!);
     }
   }
 
   /**
    * Read.
    */
-  function read(reader:Reader) {
+  function read(buffer:Buffer) {
     //
   }
   
   /**
    * Write.
    */
-  function write(writer:Writer?) {
-    if (writer?) {
-      write(writer!);
+  function write(buffer:Buffer?) {
+    if (buffer?) {
+      write(buffer!);
     }
   }
 
   /**
    * Write.
    */
-  function write(writer:Writer) {
+  function write(buffer:Buffer) {
     //
   }
 }

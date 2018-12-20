@@ -54,54 +54,46 @@ program sample(
   }
 
   /* I/O */
-  input:JSONReader?;
-  config:JSONReader?;
+  input:JSONBuffer;
+  config:JSONBuffer;
   
   if (input_file?) {
-    input <- JSONReader(input_file!);
+    input.load(input_file!);
     m!.read(input);
   }
   if (config_file?) {
-    config <- JSONReader(config_file!);
+    config.load(config_file!);
     s!.read(config);
   }
 
   /* sample */
   m <- s!.sample(m!, ncheckpoints, verbose);
  
-  output:JSONWriter?;
-  diagnostic:JSONWriter?;
+  output:JSONBuffer;
+  diagnostic:JSONBuffer;
+  if (nsamples > 1) {
+    output.setArray();
+    diagnostic.setArray();
+  }
+
   if (output_file?) {
-    output <- JSONWriter(output_file!);
     if (nsamples > 1) {
-      output!.setArray();
+      m!.write(output.push());
+    } else {
+      m!.write(output);
     }
   }
   if (diagnostic_file?) {
-    diagnostic <- JSONWriter(diagnostic_file!);
     if (nsamples > 1) {
-      diagnostic!.setArray();
-    }
-  }
-
-  if (output?) {
-    if (nsamples > 1) {
-      m!.write(output!.push());
+      s!.write(diagnostic.push());
     } else {
-      m!.write(output!);
+      s!.write(diagnostic);
     }
   }
-  if (diagnostic?) {
-    if (nsamples > 1) {
-      s!.write(diagnostic!.push());
-    } else {
-      s!.write(diagnostic!);
-    }
+  if (output_file?) {
+    output.save(output_file!);
   }
-  if (output?) {
-    output!.save();
-  }
-  if (diagnostic?) {
-    diagnostic!.save();
+  if (diagnostic_file?) {
+    diagnostic.save(diagnostic_file!);
   }
 }

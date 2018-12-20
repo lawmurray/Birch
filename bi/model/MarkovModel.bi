@@ -69,14 +69,14 @@ class MarkovModel<Parameter,State> < Model {
     return w;
   }
 
-  function read(reader:Reader) {
-    θ.read(reader.getObject("θ"));
-    x1.read(reader.getObject("x"));
+  function read(buffer:Buffer) {
+    buffer.get("θ", θ);
+    buffer.get("x", x1);
   }
   
-  function write(writer:Writer) {
-    θ.write(writer.setObject("θ"));
-    x.write(writer.setObject("x"));
+  function write(buffer:Buffer) {
+    buffer.set("θ", θ);
+    buffer.set("x", x);
   }
   
   /**

@@ -296,3 +296,22 @@ function length(x:String) -> Integer {
   return x_.length();
   }}
 }
+
+/**
+ * Length of an array of strings.
+ */
+function length(x:String[_]) -> Integer {
+  cpp{{
+  return x_.length(0);
+  }}
+}
+
+/**
+ * Append two lists of strings.
+ */
+function append(head:String[_], tail:String[_]) -> String[_] {
+  result:String[length(head) + length(tail)];
+  result[1..length(head)] <- head;
+  result[length(head) + 1 .. length(result)] <- tail;
+  return result;
+}

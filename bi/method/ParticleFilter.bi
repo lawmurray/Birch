@@ -139,23 +139,23 @@ class ParticleFilter < Method {
     //
   }
   
-  function read(reader:Reader) {
-    auto a <- reader.getInteger("nparticles");
+  function read(buffer:Buffer) {
+    auto a <- buffer.getInteger("nparticles");
     if (a?) {
       N <- a!;
     }
-    auto b <- reader.getReal("trigger");
+    auto b <- buffer.getReal("trigger");
     if (b?) {
       trigger <- b!;
     }
   }
 
-  function write(writer:Writer) {
-    writer.setInteger("nparticles", N);
-    writer.setReal("trigger", trigger);
-    writer.setRealVector("ess", e);
-    writer.setBooleanVector("resample", r);
-    writer.setRealVector("evidence", Z);
+  function write(buffer:Buffer) {
+    buffer.setInteger("nparticles", N);
+    buffer.setReal("trigger", trigger);
+    buffer.setRealVector("ess", e);
+    buffer.setBooleanVector("resample", r);
+    buffer.setRealVector("evidence", Z);
   }
 }
 

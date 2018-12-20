@@ -99,65 +99,6 @@ public:
    *
    * @tparam T value type.
    *
-   * @param path List of strings giving names of the items.
-   *
-   * @return An optional that will be empty if the value does not exist or
-   * is not of type @p T, otherwise it will contain the x.
-   */
-  template<class T>
-  boost::optional<T&> get(const std::initializer_list<std::string>& path) {
-    auto node = this;
-    for (auto name : path) {
-      if (node->x.type() == typeid(object_type)) {
-        auto& o = boost::get<object_type>(node->x);
-        auto iter = o.find(name);
-        if (iter != o.end()) {
-          node = &iter->second;
-        } else {
-          return boost::none;
-        }
-      } else {
-        return boost::none;
-      }
-    }
-    return node->get<T>();
-  }
-
-  /**
-   * Get.
-   *
-   * @tparam T value type.
-   *
-   * @param path List of strings giving names of the items.
-   *
-   * @return An optional that will be empty if the value does not exist or
-   * is not of type @p T, otherwise it will contain the x.
-   */
-  template<class T>
-  boost::optional<const T&> get(
-      const std::initializer_list<std::string>& path) const {
-    auto node = this;
-    for (auto name : path) {
-      if (node->x.type() == typeid(object_type)) {
-        auto& o = boost::get<object_type>(node->x);
-        auto iter = o.find(name);
-        if (iter != o.end()) {
-          node = &iter->second;
-        } else {
-          return boost::none;
-        }
-      } else {
-        return boost::none;
-      }
-    }
-    return node->get<T>();
-  }
-
-  /**
-   * Get.
-   *
-   * @tparam T value type.
-   *
    * @param name Name of the item.
    *
    * @return An optional that will be empty if the value does not exist or
@@ -234,28 +175,6 @@ public:
   /**
    * Get.
    *
-   * @param path List of strings giving names of the items.
-   *
-   * @return An optional that will be empty if the value does not exist,
-   * otherwise it will contain the value of variant type.
-   */
-  boost::optional<value&> get(
-      const std::initializer_list<std::string>& path);
-
-  /**
-   * Get.
-   *
-   * @param path List of strings giving names of the items.
-   *
-   * @return An optional that will be empty if the value does not exist,
-   * otherwise it will contain the value of variant type.
-   */
-  boost::optional<const value&> get(
-      const std::initializer_list<std::string>& path) const;
-
-  /**
-   * Get.
-   *
    * @param name Name of the item.
    *
    * @return An optional that will be empty if the value does not exist,
@@ -294,23 +213,12 @@ public:
   /**
    * Set.
    *
-   * @param path List of strings giving names of the items.
-   * @param x The value.
-   *
-   * @return The new item.
-   */
-  value& set(const std::initializer_list<std::string>& path,
-      const value_type& x);
-
-  /**
-   * Set.
-   *
    * @param name Name of the item.
    * @param x The value.
    *
    * @param The new item.
    */
-  value& set(const std::string& name, const value_type& x);
+  value& set(const std::string& name, const value_type& x = nil_type());
 
   /**
    * Set.
@@ -319,7 +227,7 @@ public:
    *
    * @param The new item.
    */
-  value& set(const value_type& x);
+  value& set(const value_type& x = nil_type());
 
   /**
    * Unwrap.

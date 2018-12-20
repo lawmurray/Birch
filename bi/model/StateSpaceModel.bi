@@ -56,14 +56,14 @@ class StateSpaceModel<Parameter,State,Observation> <
     return w;
   }
 
-  function read(reader:Reader) {
-    super.read(reader);
-    y1.read(reader.getObject("y"));
+  function read(buffer:Buffer) {
+    super.read(buffer);
+    buffer.get("y", y1);
   }
   
-  function write(writer:Writer) {
-    super.write(writer);
-    y.write(writer.setObject("y"));
+  function write(buffer:Buffer) {
+    super.write(buffer);
+    buffer.set("y", y);
   }
   
   /**

@@ -172,20 +172,24 @@ class Vector<Type> {
     nelements <- n;
   }
 
-  function read(reader:Reader) {
-    auto f <- reader.getArray();
+  function read(buffer:Buffer) {
+    auto f <- buffer.getArray();
     while (f?) {
+      /* tricky, but works for both basic and class types */
       x:Type;
-      x.read(f!);
+      auto y <- f!.get(x);
+      if (y?) {
+        x <- Type?(y)!;  // cast needed for y:Object?
+      }
       pushBack(x);
     }
   }
 
-  function write(writer:Writer) {
-    writer.setArray();
+  function write(buffer:Buffer) {
+    buffer.setArray();
     auto f <- walk();
     while (f?) {
-      f!.write(writer.push());
+      buffer.push().set(f!);
     }
   }
 }
