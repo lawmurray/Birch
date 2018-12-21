@@ -10,14 +10,19 @@
       "bi/common/VBDModel.bi",
       "bi/common/VBDParameter.bi",
       "bi/common/VBDState.bi",
-      "bi/study/YapModel.bi",
-      "bi/study/YapParameter.bi",
-      "bi/study/YapState.bi"
+      "bi/study/YapDengueModel.bi",
+      "bi/study/YapDengueParameter.bi",
+      "bi/study/YapDengueState.bi",
+      "bi/run.bi"
     ],
     "other": [
       "LICENSE",
       "META.json",
-      "README.md"
+      "README.md",
+      "config/yap_dengue.json",
+      "input/fais_dengue.json",
+      "input/yap_dengue.json",
+      "input/yap_zika.json"
     ]
   }
 }

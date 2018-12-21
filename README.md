@@ -7,22 +7,17 @@ The implementation is based on the [original implementation](https://github.com/
 
 ## Installation
 
-To build, use:
+To build:
 
     birch build
     
-To install system wide, use:
+To install:
 
     birch install
 
-To run, use, e.g.:
+To run:
 
-    birch sample \
-        --model YapModel \
-        --ncheckpoints 197 \
-        --nparticles 1024 \
-        --input-file input/yap_dengue.json \
-        --output-file output/yap_dengue.json
+    birch run
 
 
 ## References

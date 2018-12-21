@@ -1,8 +1,8 @@
 /**
  * Model for Yap case study.
  */
-class YapModel < MarkovModel<YapParameter,YapState> {
-  fiber parameter(θ:YapParameter) -> Real {
+class YapDengueModel < MarkovModel<YapDengueParameter,YapDengueState> {
+  fiber parameter(θ:YapDengueParameter) -> Real {
     θ.h.ν <- 0.0;
     θ.h.μ <- 1.0;
     θ.h.λ ~ Beta(1.0, 1.0);
@@ -18,7 +18,7 @@ class YapModel < MarkovModel<YapParameter,YapState> {
     θ.ρ ~ Beta(1.0, 1.0);
   }
 
-  fiber initial(x:YapState, θ:YapParameter) -> Real {
+  fiber initial(x:YapDengueState, θ:YapDengueParameter) -> Real {
     x.h.n <- 7370;
     x.h.i <- 1 + simulate_poisson(5.0);
     x.h.e <- simulate_poisson(5.0);
@@ -48,7 +48,7 @@ class YapModel < MarkovModel<YapParameter,YapState> {
     }
   }
   
-  fiber transition(x':YapState, x:YapState, θ:YapParameter) -> Real {
+  fiber transition(x':YapDengueState, x:YapDengueState, θ:YapDengueParameter) -> Real {
     super.transition(x', x, θ);
     x'.z <- x.z + x'.h.Δi;
     if (x'.y?) {
