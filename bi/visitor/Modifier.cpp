@@ -145,6 +145,10 @@ bi::Expression* bi::Modifier::modify(Global* o) {
   return o;
 }
 
+bi::Expression* bi::Modifier::modify(Local* o) {
+  return o;
+}
+
 bi::Expression* bi::Modifier::modify(Super* o) {
   return o;
 }

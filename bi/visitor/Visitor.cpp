@@ -120,6 +120,10 @@ void bi::Visitor::visit(const Global* o) {
   o->single->accept(this);
 }
 
+void bi::Visitor::visit(const Local* o) {
+  //
+}
+
 void bi::Visitor::visit(const Super* o) {
   //
 }

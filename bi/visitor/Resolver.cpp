@@ -6,7 +6,9 @@
 bi::Resolver::Resolver(const ResolverStage globalStage) :
     stage(RESOLVER_TYPER),
     globalStage(globalStage),
-    annotator(PRIOR_INSTANTIATION) {
+    annotator(PRIOR_INSTANTIATION),
+    inFiber(0),
+    inMember(0) {
   //
 }
 
@@ -198,10 +200,12 @@ bi::Expression* bi::Resolver::modify(Member* o) {
   o->left = o->left->accept(this);
   if (o->left->type->isClass() && !o->left->type->isWeak()) {
     memberScopes.push_back(o->left->type->getClass()->scope);
-  } else {
+  } else if (!inFiber) {
     throw MemberException(o);
   }
+  ++inMember;
   o->right = o->right->accept(this);
+  --inMember;
   o->type = o->right->type;
   return o;
 }
@@ -285,7 +289,13 @@ bi::Expression* bi::Resolver::modify(Identifier<Parameter>* o) {
   Modifier::modify(o);
   resolve(o, LOCAL_SCOPE);
   o->type = o->target->type;
-  return o;
+  if (inFiber && !inMember) {
+    auto result = new Member(new Local(o->loc), o, o->loc);
+    result->type = o->type;
+    return result;
+  } else {
+    return o;
+  }
 }
 
 bi::Expression* bi::Resolver::modify(Identifier<GlobalVariable>* o) {
@@ -299,11 +309,17 @@ bi::Expression* bi::Resolver::modify(Identifier<LocalVariable>* o) {
   Modifier::modify(o);
   resolve(o, LOCAL_SCOPE);
   o->type = o->target->type;
-  return o;
+  if (inFiber && !inMember) {
+    auto result = new Member(new Local(o->loc), o, o->loc);
+    result->type = o->type;
+    return result;
+  } else {
+    return o;
+  }
 }
 
 bi::Expression* bi::Resolver::modify(Identifier<MemberVariable>* o) {
-  if (memberScopes.empty()) {
+  if (!inMember) {
     return (new Member(new This(o->loc), o, o->loc))->accept(this);
   } else {
     Modifier::modify(o);
@@ -340,7 +356,7 @@ bi::Expression* bi::Resolver::modify(OverloadedIdentifier<Fiber>* o) {
 }
 
 bi::Expression* bi::Resolver::modify(OverloadedIdentifier<MemberFiber>* o) {
-  if (memberScopes.empty()) {
+  if (!inMember) {
     return (new Member(new This(o->loc), o, o->loc))->accept(this);
   } else {
     resolve(o, CLASS_SCOPE);
@@ -355,7 +371,7 @@ bi::Expression* bi::Resolver::modify(OverloadedIdentifier<MemberFiber>* o) {
 }
 
 bi::Expression* bi::Resolver::modify(OverloadedIdentifier<MemberFunction>* o) {
-  if (memberScopes.empty()) {
+  if (!inMember) {
     return (new Member(new This(o->loc), o, o->loc))->accept(this);
   } else {
     resolve(o, CLASS_SCOPE);
@@ -518,7 +534,9 @@ bi::Statement* bi::Resolver::modify(Fiber* o) {
   } else if (stage == RESOLVER_SOURCE && o->isBound()) {
     scopes.push_back(o->scope);
     yieldTypes.push_back(o->returnType->unwrap());
+    ++inFiber;
     o->braces = o->braces->accept(this);
+    --inFiber;
     yieldTypes.pop_back();
     scopes.pop_back();
   }
@@ -574,7 +592,9 @@ bi::Statement* bi::Resolver::modify(MemberFiber* o) {
   } else if (stage == RESOLVER_SOURCE) {
     scopes.push_back(o->scope);
     yieldTypes.push_back(o->returnType->unwrap());
+    ++inFiber;
     o->braces = o->braces->accept(this);
+    --inFiber;
     yieldTypes.pop_back();
     scopes.pop_back();
   }

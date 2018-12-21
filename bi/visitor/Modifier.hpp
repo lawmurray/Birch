@@ -46,6 +46,7 @@ public:
   virtual Expression* modify(Range* o);
   virtual Expression* modify(Member* o);
   virtual Expression* modify(Global* o);
+  virtual Expression* modify(Local* o);
   virtual Expression* modify(Super* o);
   virtual Expression* modify(This* o);
   virtual Expression* modify(Nil* o);

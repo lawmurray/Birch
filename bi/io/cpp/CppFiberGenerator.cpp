@@ -51,7 +51,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       out();
       line("private:");
       in();
-      line("auto fiber() {");
+      line("auto local() {");
       in();
       line("return SharedCOW<class_type>(this, context.get());");
       out();
@@ -209,19 +209,19 @@ void bi::CppFiberGenerator::visit(const Return* o) {
 
 void bi::CppFiberGenerator::visit(const Yield* o) {
   genTraceLine(o->loc->firstLine);
-  line("fiber()->value = " << o->single << ';');
-  line("fiber()->label = " << label << ';');
+  line("local()->value = " << o->single << ';');
+  line("local()->label = " << label << ';');
   line("return true;");
   line("LABEL" << label << ": ;");
   ++label;
 }
 
 void bi::CppFiberGenerator::visit(const Identifier<Parameter>* o) {
-  middle("fiber()->" << o->name);
+  middle(o->name);
 }
 
 void bi::CppFiberGenerator::visit(const Identifier<LocalVariable>* o) {
-  middle("fiber()->" << getName(o->name->str(), o->target->number));
+  middle(getName(o->name->str(), o->target->number));
 }
 
 void bi::CppFiberGenerator::visit(const LocalVariable* o) {
@@ -231,13 +231,13 @@ void bi::CppFiberGenerator::visit(const LocalVariable* o) {
      * do anything here unless there is some initialization associated with
      * it */
     inFor = false;
-    middle("fiber()->" << getName(o->name->str(), o->number));
+    middle("local()->" << getName(o->name->str(), o->number));
     genInit(o);
   } else if (o->type->isClass()) {
     /* make sure objects are initialized, not just null pointers */
     auto name = getName(o->name->str(), o->number);
     ++inPointer;
-    middle("fiber()->" << name << " = " << o->type << "::create()");
+    middle("local()->" << name << " = " << o->type << "::create()");
   }
 }
 
@@ -251,7 +251,7 @@ void bi::CppFiberGenerator::visit(const For* o) {
 }
 
 void bi::CppFiberGenerator::genSwitch() {
-  line("switch (fiber()->label) {");
+  line("switch (local()->label) {");
   in();
   for (int s = 0; s <= yields.size(); ++s) {
     line("case " << s << ": goto LABEL" << s << ';');
@@ -265,7 +265,7 @@ void bi::CppFiberGenerator::genSwitch() {
 
 void bi::CppFiberGenerator::genEnd() {
   line("END:");
-  line("fiber()->label = " << (yields.size() + 1) << ';');
+  line("local()->label = " << (yields.size() + 1) << ';');
   line("return false;");
 }
 

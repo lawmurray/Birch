@@ -57,7 +57,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     line("return object;");
     out();
     line("}\n");
-    line("auto fiber() {");
+    line("auto local() {");
     in();
     line("return SharedCOW<class_type>(this, context.get());");
     out();

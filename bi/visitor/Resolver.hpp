@@ -253,6 +253,16 @@ private:
    */
   Cloner cloner;
   Annotator annotator;
+
+  /**
+   * Are we currently in a fiber?
+   */
+  int inFiber;
+
+  /**
+   * Are we currently in a member expression?
+   */
+  int inMember;
 };
 }
 

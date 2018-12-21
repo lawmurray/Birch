@@ -12,6 +12,6 @@ bi::GetException::GetException(const Get* o) {
     buf << o->loc;
   }
   buf << "error: postfix '!' can only be used with an optional, fiber, or weak type\n";
-  buf << "note: operand has type '" << o->single->type << "'\n;";
+  buf << "note: operand has type '" << o->single->type << "'\n";
   msg = base.str();
 }

@@ -175,7 +175,13 @@ void bi::CppBaseGenerator::visit(const Range* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Member* o) {
-  auto rightVar = dynamic_cast<const Identifier<MemberVariable>*>(o->right);
+  const Expression* rightVar = dynamic_cast<const Identifier<MemberVariable>*>(o->right);
+  if (!rightVar) {
+    rightVar = dynamic_cast<const Identifier<LocalVariable>*>(o->right);
+    if (!rightVar) {
+      rightVar = dynamic_cast<const Identifier<Parameter>*>(o->right);
+    }
+  }
   if (rightVar && !inAssign) {
     /* for a function or fiber on the right, pop_context() must wrap the
      * arguments as well, this is handled in visit(const Call*) */
@@ -206,6 +212,10 @@ void bi::CppBaseGenerator::visit(const This* o) {
 
 void bi::CppBaseGenerator::visit(const Super* o) {
   middle("self()");
+}
+
+void bi::CppBaseGenerator::visit(const Local* o) {
+  middle("local()");
 }
 
 void bi::CppBaseGenerator::visit(const Global* o) {
