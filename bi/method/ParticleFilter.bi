@@ -48,7 +48,7 @@ class ParticleFilter < Sampler {
       if (verbose) {
         stderr.print("checkpoints:");
       }
-      auto t <- 0;
+      auto t <- 0;      
       while ((!ncheckpoints? || t < ncheckpoints!) && step()) {
         t <- t + 1;
         if (verbose) {
@@ -155,6 +155,7 @@ class ParticleFilter < Sampler {
   }
 
   function write(buffer:Buffer) {
+    super.write(buffer);
     buffer.set("nparticles", nparticles);
     buffer.set("trigger", trigger);
     buffer.set("ess", ess);

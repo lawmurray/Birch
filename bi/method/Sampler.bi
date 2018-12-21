@@ -18,7 +18,7 @@ class Sampler {
   /**
    * Enable verbose reporting on the terminal?
    */
-  verbose:Boolean <- false;
+  verbose:Boolean <- true;
 
   /**
    * Sample the model.
@@ -34,7 +34,7 @@ class Sampler {
     if nsamples1? {
       nsamples <- nsamples1!;
     }
-    ncheckpoints <- buffer.get("ncheckpoints", ncheckpoints);
+    ncheckpoints <- buffer.getInteger("ncheckpoints");
     auto verbose1 <- buffer.get("verbose", verbose);
     if verbose1? {
       verbose <- verbose1!;
