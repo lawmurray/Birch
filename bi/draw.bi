@@ -1,11 +1,17 @@
-program draw(
-    input_file:String <- "output/simulation.json",
-    output_file:String <- "figs/simulation.pdf",
+/**
+ * Draw a figure of simulate or filter results.
+ *
+ */
+program draw(input:String <- "output/simulate.json",
+    output:String <- "figs/simulate.pdf",
     width:Integer <- 1024,
     height:Integer <- 1024) {
-  input:JSONBuffer;
-  input.load(input_file);
-  surface:Surface <- createPDF(output_file, width, height);
+  /* input file */
+  inputBuffer:JSONBuffer;
+  inputBuffer.load(input);
+  
+  /* output file and drawing surface */
+  surface:Surface <- createPDF(output, width, height);
   cr:Context <- create(surface);
 
   /* background */
@@ -13,15 +19,11 @@ program draw(
   cr.rectangle(0, 0, width, height);
   cr.fill();
 
-  /* border */
-  cr.setSourceRGB(0.8, 0.8, 0.8);
-  cr.rectangle(0, 0, width - 1, height - 1);
-  cr.stroke();
+  /* config */
+  //col:Real[_] <- [0.3373, 0.7059, 0.9137]; // blue
+  col:Real[_] <- [0.8353, 0.3686, 0.0000];  // red
 
-  //col:Real[_] <- [0.3373, 0.7059, 0.9137];
-  col:Real[_] <- [0.8353, 0.3686, 0.0000];
-
-  auto θ <- input.getChild("θ");
+  auto θ <- inputBuffer.getChild("θ");
   auto l <- θ!.getRealVector("l")!;
   auto u <- θ!.getRealVector("u")!;
 
@@ -30,11 +32,17 @@ program draw(
   auto scale <- max(scaleX, scaleY);
   auto fat <- 2.0;
   
+  /* border */
+  cr.setSourceRGB(0.8, 0.8, 0.8);
+  cr.rectangle(0, 0, width - 1, height - 1);
+  cr.stroke();
+
+  /* set scale for tracking domain */
   cr.scale(scaleX, scaleY);
   cr.translate(-l[1], -l[2]);
 
-  /* clutter */
-  auto y <- input.getArray("y");
+  /* solid points indicating clutter */
+  auto y <- inputBuffer.getArray("y");
   while y? {
     auto Y <- y!.getRealMatrix();
     if Y? {
@@ -46,8 +54,8 @@ program draw(
     }
   }
 
-  /* track observations */
-  auto z <- input.getArray("z");
+  /* circle those points indicating associated observations */
+  auto z <- inputBuffer.getArray("z");
   while z? {
     cr.setLineWidth(2.0*fat/scale);
     auto ys <- z!.getArray("y");
@@ -65,8 +73,8 @@ program draw(
     }
   }
     
-  /* track paths */
-  z <- input.getArray("z");
+  /* lines and points marking latent tracks */
+  z <- inputBuffer.getArray("z");
   while z? {
     auto X <- z!.getRealMatrix("x");
     if X? {
@@ -84,8 +92,8 @@ program draw(
     }
   }
     
-  /* track labels */
-  z <- input.getArray("z");
+  /* start time labels for latent tracks */
+  z <- inputBuffer.getArray("z");
   while z? {
     auto t <- z!.getInteger("t")!;
     auto X <- z!.getRealMatrix("x");
@@ -101,6 +109,7 @@ program draw(
     cr.showText(String(t));
   }
   
+  /* destroy the surface (triggers save) */
   cr.destroy();
   surface.destroy();
 }
