@@ -1,4 +1,4 @@
-# MultiObjectTracking package
+# Multiple object tracking
 
 A simple multiple object tracking demonstration in the Birch probabilistic programming language. Data is simulated from the model and then filtered using a particle filter, within which the delayed sampling features of Birch automatically yield a Kalman filter for the tracking of each object. It is used as an example in Murray & Schön (2018), in which further details are available.
 
@@ -12,19 +12,19 @@ This package is licensed under the Apache License, Version 2.0 (the "License"); 
 
 This package requires the `Birch.Cairo` package, which should be installed first.
 
-To build, use:
+To build:
 
     birch build
     
-To install system wide, use:
+To install:
 
     birch install
 
-To run, use:
+To run:
 
     birch run
-    
-Inspect this `run` program for an example of the functionality available.
+
+Inspect the `run` program for an example of the functionality available.
 
 
 ## References
