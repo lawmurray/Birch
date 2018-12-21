@@ -119,6 +119,20 @@ function pmf_categorical(x:Integer, ρ:Real[_]) -> Real {
 }
 
 /**
+ * PDF of a compound-gamma variate.
+ *
+ * - x: The variate.
+ * - k: Shape.
+ * - α: Prior shape.
+ * - β: Prior scale.
+ *
+ * Return: the probability density.
+ */
+function pdf_compound_gamma(x:Real, k:Real, α:Real, β:Real) -> Real {
+  return exp(observe_compound_gamma(x, k, α, β));
+}
+
+/**
  * PMF of a multinomial variate.
  *
  * - x: The variate.

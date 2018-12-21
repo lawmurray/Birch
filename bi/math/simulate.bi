@@ -144,6 +144,18 @@ function simulate_multinomial(n:Integer, ρ:Real[_]) -> Integer[_] {
 }
 
 /**
+ * Simulate a compound-gamma distribution.
+ *
+ * - k: Shape.
+ * - α: Prior shape.
+ * - β: Prior scale.
+ *
+ */
+ function simulate_compound_gamma(k:Real, α:Real, β:Real) -> Real {
+    return simulate_gamma(k, simulate_inverse_gamma(α, β));
+ }
+
+/**
  * Simulate a multinomial distribution.
  *
  * - n: Number of trials.
