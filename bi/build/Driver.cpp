@@ -796,8 +796,11 @@ void bi::Driver::configure() {
       cxxflags << " -Wall";
     }
     if (debug) {
-      cflags << " -O0 -fno-inline -g";
-      cxxflags << " -O0 -fno-inline -g";
+      //@todo Consider a development build with these settings
+      //cflags << " -O0 -fno-inline -g";
+      //cxxflags << " -O0 -fno-inline -g";
+      cflags << " -Og -g";
+      cxxflags << " -Og -g";
     } else {
       cppflags << " -DNDEBUG";
       cflags << " -O3 -funroll-loops -flto -g";
