@@ -687,7 +687,7 @@ class Buffer {
    *
    * - value: Value.
    */
-  function setBoolean(value:Boolean) {
+  function setBoolean(value:Boolean?) {
     set().setBoolean(value);
   }
 
@@ -696,7 +696,7 @@ class Buffer {
    *
    * - value: Value.
    */
-  function setInteger(value:Integer) {
+  function setInteger(value:Integer?) {
     set().setInteger(value);
   }
 
@@ -705,7 +705,7 @@ class Buffer {
    *
    * - value: Value.
    */
-  function setReal(value:Real) {
+  function setReal(value:Real?) {
     set().setReal(value);
   }
 
@@ -714,7 +714,7 @@ class Buffer {
    *
    * - value: Value.
    */
-  function setString(value:String) {
+  function setString(value:String?) {
     set().setString(value);
   }
 
@@ -723,7 +723,7 @@ class Buffer {
    *
    * - value: Value.
    */
-  function setObject(value:Object) {
+  function setObject(value:Object?) {
     set().setObject(value);
   }
 
@@ -732,7 +732,7 @@ class Buffer {
    *
    * - value: Value.
    */
-  function setBooleanVector(value:Boolean[_]) {
+  function setBooleanVector(value:Boolean[_]?) {
     set().setBooleanVector(value);
   }
 
@@ -741,7 +741,7 @@ class Buffer {
    *
    * - value: Value.
    */
-  function setIntegerVector(value:Integer[_]) {
+  function setIntegerVector(value:Integer[_]?) {
     set().setIntegerVector(value);
   }
 
@@ -750,7 +750,7 @@ class Buffer {
    *
    * - value: Value.
    */
-  function setRealVector(value:Real[_]) {
+  function setRealVector(value:Real[_]?) {
     set().setRealVector(value);
   }
 
@@ -759,7 +759,7 @@ class Buffer {
    *
    * - value: Value.
    */
-  function setBooleanMatrix(value:Boolean[_,_]) {
+  function setBooleanMatrix(value:Boolean[_,_]?) {
     set().setBooleanMatrix(value);
   }
 
@@ -768,7 +768,7 @@ class Buffer {
    *
    * - value: Value.
    */
-  function setIntegerMatrix(value:Integer[_,_]) {
+  function setIntegerMatrix(value:Integer[_,_]?) {
     set().setIntegerMatrix(value);
   }
 
@@ -777,7 +777,7 @@ class Buffer {
    *
    * - value: Value.
    */
-  function setRealMatrix(value:Real[_,_]) {
+  function setRealMatrix(value:Real[_,_]?) {
     set().setRealMatrix(value);
   }
 
@@ -819,7 +819,7 @@ class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function setBoolean(name:String, value:Boolean) {
+  function setBoolean(name:String, value:Boolean?) {
     setChild(name).setBoolean(value);
   }
 
@@ -829,7 +829,7 @@ class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function setInteger(name:String, value:Integer) {
+  function setInteger(name:String, value:Integer?) {
     setChild(name).setInteger(value);
   }
 
@@ -839,7 +839,7 @@ class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function setReal(name:String, value:Real) {
+  function setReal(name:String, value:Real?) {
     setChild(name).setReal(value);
   }
 
@@ -849,7 +849,7 @@ class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function setString(name:String, value:String) {
+  function setString(name:String, value:String?) {
     setChild(name).setString(value);
   }
 
@@ -859,7 +859,7 @@ class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function setObject(name:String, value:Object) {
+  function setObject(name:String, value:Object?) {
     setChild(name).setObject(value);
   }
 
@@ -869,7 +869,7 @@ class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function setBooleanVector(name:String, value:Boolean[_]) {
+  function setBooleanVector(name:String, value:Boolean[_]?) {
     setChild(name).setBooleanVector(value);
   }
 
@@ -879,7 +879,7 @@ class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function setIntegerVector(name:String, value:Integer[_]) {
+  function setIntegerVector(name:String, value:Integer[_]?) {
     setChild(name).setIntegerVector(value);
   }
 
@@ -889,7 +889,7 @@ class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function setRealVector(name:String, value:Real[_]) {
+  function setRealVector(name:String, value:Real[_]?) {
     setChild(name).setRealVector(value);  
   }
 
@@ -899,7 +899,7 @@ class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function setBooleanMatrix(name:String, value:Boolean[_,_]) {
+  function setBooleanMatrix(name:String, value:Boolean[_,_]?) {
     setChild(name).setBooleanMatrix(value);  
   }
 
@@ -909,7 +909,7 @@ class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function setIntegerMatrix(name:String, value:Integer[_,_]) {
+  function setIntegerMatrix(name:String, value:Integer[_,_]?) {
     setChild(name).setIntegerMatrix(value);  
   }
 
@@ -919,7 +919,7 @@ class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function setRealMatrix(name:String, value:Real[_,_]) {
+  function setRealMatrix(name:String, value:Real[_,_]?) {
     setChild(name).setRealMatrix(value);  
   }
   
@@ -928,7 +928,7 @@ class Buffer {
    *
    * - value: Value.
    */
-  function set(value:Boolean) {
+  function set(value:Boolean?) {
     setBoolean(value);
   }
 
@@ -937,7 +937,7 @@ class Buffer {
    *
    * - value: Value.
    */
-  function set(value:Integer) {
+  function set(value:Integer?) {
     setInteger(value);
   }
 
@@ -946,7 +946,7 @@ class Buffer {
    *
    * - value: Value.
    */
-  function set(value:Real) {
+  function set(value:Real?) {
     setReal(value);
   }
 
@@ -955,7 +955,7 @@ class Buffer {
    *
    * - value: Value.
    */
-  function set(value:String) {
+  function set(value:String?) {
     setString(value);
   }
   
@@ -964,7 +964,7 @@ class Buffer {
    *
    * - o: The object.
    */
-  function set(value:Object) {
+  function set(value:Object?) {
     setObject(value);
   }
 
@@ -973,7 +973,7 @@ class Buffer {
    *
    * - value: Value.
    */
-  function set(value:Boolean[_]) {
+  function set(value:Boolean[_]?) {
     setBooleanVector(value);
   }
 
@@ -982,7 +982,7 @@ class Buffer {
    *
    * - value: Value.
    */
-  function set(value:Integer[_]) {
+  function set(value:Integer[_]?) {
     setIntegerVector(value);
   }
 
@@ -991,7 +991,7 @@ class Buffer {
    *
    * - value: Value.
    */
-  function set(value:Real[_]) {
+  function set(value:Real[_]?) {
     setRealVector(value);
   }
 
@@ -1000,7 +1000,7 @@ class Buffer {
    *
    * - value: Value.
    */
-  function set(value:Boolean[_,_]) {
+  function set(value:Boolean[_,_]?) {
     setBooleanMatrix(value);
   }
 
@@ -1009,7 +1009,7 @@ class Buffer {
    *
    * - value: Value.
    */
-  function set(value:Integer[_,_]) {
+  function set(value:Integer[_,_]?) {
     setIntegerMatrix(value);
   }
 
@@ -1018,7 +1018,7 @@ class Buffer {
    *
    * - value: Value.
    */
-  function set(value:Real[_,_]) {
+  function set(value:Real[_,_]?) {
     setRealMatrix(value);
   }
 
@@ -1028,7 +1028,7 @@ class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function set(name:String, value:Boolean) {
+  function set(name:String, value:Boolean?) {
     setBoolean(name, value);
   }
 
@@ -1038,7 +1038,7 @@ class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function set(name:String, value:Integer) {
+  function set(name:String, value:Integer?) {
     setInteger(name, value);
   }
 
@@ -1048,7 +1048,7 @@ class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function set(name:String, value:Real) {
+  function set(name:String, value:Real?) {
     setReal(name, value);
   }
 
@@ -1058,7 +1058,7 @@ class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function set(name:String, value:String) {
+  function set(name:String, value:String?) {
     setString(name, value);
   }
 
@@ -1068,7 +1068,7 @@ class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function set(name:String, value:Object) {
+  function set(name:String, value:Object?) {
     setObject(name, value);
   }
   
@@ -1078,7 +1078,7 @@ class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function set(name:String, value:Boolean[_]) {
+  function set(name:String, value:Boolean[_]?) {
     setBooleanVector(name, value);
   }
 
@@ -1088,7 +1088,7 @@ class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function set(name:String, value:Integer[_]) {
+  function set(name:String, value:Integer[_]?) {
     setIntegerVector(name, value);
   }
 
@@ -1098,7 +1098,7 @@ class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function set(name:String, value:Real[_]) {
+  function set(name:String, value:Real[_]?) {
     setRealVector(name, value);
   }
 
@@ -1108,7 +1108,7 @@ class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function set(name:String, value:Boolean[_,_]) {
+  function set(name:String, value:Boolean[_,_]?) {
     setBooleanMatrix(name, value);
   }
 
@@ -1118,7 +1118,7 @@ class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function set(name:String, value:Integer[_,_]) {
+  function set(name:String, value:Integer[_,_]?) {
     setIntegerMatrix(name, value);
   }
 
@@ -1128,7 +1128,7 @@ class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function set(name:String, value:Real[_,_]) {
+  function set(name:String, value:Real[_,_]?) {
     setRealMatrix(name, value);
   }
   

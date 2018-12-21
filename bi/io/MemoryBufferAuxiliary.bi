@@ -354,85 +354,129 @@ class MemoryBufferAuxiliary < Buffer {
     }}
   }
   
-  function setBoolean(value:Boolean) {
-    cpp{{
-    group->set(value_);
-    }}
-  }
-  
-  function setInteger(value:Integer) {
-    cpp{{
-    group->set(value_);
-    }}
-  }
-  
-  function setReal(value:Real) {
-    cpp{{
-    group->set(value_);
-    }}
-  }
-
-  function setString(value:String) {
-    cpp{{
-    group->set(value_);
-    }}
-  }
-
-  function setObject(value:Object) {
-    cpp{{
-    group->set(libubjpp::object_type());
-    }}
-    value.write(this);
-  }
-
-  function setBooleanVector(value:Boolean[_]) {
-    cpp{{
-    libubjpp::array_type array(value_.length(0));
-    std::copy(value_.begin(), value_.end(), array.begin());
-    group->set(std::move(array));
-    }}
-  }
-  
-  function setIntegerVector(value:Integer[_]) {
-    cpp{{
-    libubjpp::array_type array(value_.length(0));
-    std::copy(value_.begin(), value_.end(), array.begin());
-    group->set(std::move(array));
-    }}
-  }
-  
-  function setRealVector(value:Real[_]) {
-    cpp{{
-    libubjpp::array_type array(value_.length(0));
-    std::copy(value_.begin(), value_.end(), array.begin());
-    group->set(std::move(array));
-    }}
-  }
-
-  function setBooleanMatrix(value:Boolean[_,_]) {
-    setArray();
-    auto nrows <- rows(value);
-    auto ncols <- columns(value);
-    for (i:Integer in 1..nrows) {
-      push().setBooleanVector(value[i,1..ncols]);
+  function setBoolean(value:Boolean?) {
+    if value? {
+      cpp{{
+      group->set(value_.get());
+      }}
+    } else {
+      setNil();
     }
   }
   
-  function setIntegerMatrix(value:Integer[_,_]) {
-    setArray();
-    auto nrows <- rows(value);
-    auto ncols <- columns(value);
-    for (i:Integer in 1..nrows) {
-      push().setIntegerVector(value[i,1..ncols]);
+  function setInteger(value:Integer?) {
+    if value? {
+      cpp{{
+      group->set(value_.get());
+      }}
+    } else {
+      setNil();
     }
   }
   
-  function setRealMatrix(value:Real[_,_]) {
-    setArray();
-    auto nrows <- rows(value);
-    auto ncols <- columns(value);
-    for (i:Integer in 1..nrows) {
-      push().setRealVector(value[i,1..ncols]);
+  function setReal(value:Real?) {
+    if value? {
+      cpp{{
+      group->set(value_.get());
+      }}
+    } else {
+      setNil();
+    }
+  }
+
+  function setString(value:String?) {
+    if value? {
+      cpp{{
+      group->set(value_.get());
+      }}
+    } else {
+      setNil();
+    }
+  }
+
+  function setObject(value:Object?) {
+    if value? {
+      cpp{{
+      group->set(libubjpp::object_type());
+      }}
+      value!.write(this);
+    } else {
+      setNil();
+    }
+  }
+
+  function setBooleanVector(value:Boolean[_]?) {
+    if value? {
+      cpp{{
+      libubjpp::array_type array(value_.get().length(0));
+      std::copy(value_.get().begin(), value_.get().end(), array.begin());
+      group->set(std::move(array));
+      }}
+    } else {
+      setNil();
+    }
+  }
+  
+  function setIntegerVector(value:Integer[_]?) {
+    if value? {
+      cpp{{
+      libubjpp::array_type array(value_.get().length(0));
+      std::copy(value_.get().begin(), value_.get().end(), array.begin());
+      group->set(std::move(array));
+      }}
+    } else {
+      setNil();
+    }
+  }
+  
+  function setRealVector(value:Real[_]?) {
+    if value? {
+      cpp{{
+      libubjpp::array_type array(value_.get().length(0));
+      std::copy(value_.get().begin(), value_.get().end(), array.begin());
+      group->set(std::move(array));
+      }}
+    } else {
+      setNil();
+    }
+  }
+
+  function setBooleanMatrix(value:Boolean[_,_]?) {
+    if value? {
+      setArray();
+      auto nrows <- rows(value!);
+      auto ncols <- columns(value!);
+      for (i:Integer in 1..nrows) {
+        push().setBooleanVector(value![i,1..ncols]);
+      }
+    } else {
+      setNil();
+    }
+  }
+  
+  function setIntegerMatrix(value:Integer[_,_]?) {
+    if value? {
+      setArray();
+      auto nrows <- rows(value!);
+      auto ncols <- columns(value!);
+      for (i:Integer in 1..nrows) {
+        push().setIntegerVector(value![i,1..ncols]);
+      }
+    } else {
+      setNil();
+    }
+  }
+  
+  function setRealMatrix(value:Real[_,_]?) {
+    if value? {
+      setArray();
+      auto nrows <- rows(value!);
+      auto ncols <- columns(value!);
+      for (i:Integer in 1..nrows) {
+        push().setRealVector(value![i,1..ncols]);
+      }
+    } else {
+      setNil();
     }
   }
 
