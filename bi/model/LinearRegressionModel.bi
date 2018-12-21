@@ -2,24 +2,6 @@
  * Bayesian linear regression model with conjugate normal-inverse-gamma
  * prior.
  *
- * ### Usage
- *
- * Run with:
- *
- *     birch sample \
- *         --model LinearRegressionModel \
- *         --input-file input/bike_share.json \
- *         --output-file output/bike_share.json \
- *         --nsamples 5
- *
- * The [data](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset)
- * is from the Capital Bikeshare system in Washington D.C. for the years 2011
- * to 2012. The aim is to use weather and holiday information to predict the
- * total number of bike hires on any given day
- * [(Fanaee-T and Gama, 2014)](../#references).
- *
- * ### Details
- *
  * The model is given by:
  *   $$\begin{align}
  *   \sigma^2 &\sim \mathrm{Inv\text{-}Gamma}(3, 4/10) \\

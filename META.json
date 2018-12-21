@@ -4,21 +4,22 @@
   "description": "Example models.",
   "manifest": {
     "source": [
-      "bi/LinearGaussianModel.bi",
-      "bi/LinearRegressionModel.bi",
-      "bi/MixedGaussianModel.bi",
-      "bi/SIRModel.bi"
-    ],
-    "data": [
-      "input/bike_share.json",
-      "input/linear_gaussian.json",
-      "input/mixed_gaussian.json",
-      "input/russian_influenza.json"
+      "bi/model/LinearGaussianModel.bi",
+      "bi/model/LinearRegressionModel.bi",
+      "bi/model/MixedGaussianModel.bi",
+      "bi/model/SIRModel.bi",
+      "bi/run.bi"
     ],
     "other": [
       "LICENSE",
       "META.json",
-      "README.md"
+      "README.md",
+      "config/mixed_gaussian.json",
+      "config/sir_model.json",
+      "input/bike_share.json",
+      "input/linear_gaussian.json",
+      "input/mixed_gaussian.json",
+      "input/russian_influenza.json"
     ]
   }
 }

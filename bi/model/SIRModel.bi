@@ -85,27 +85,8 @@ class SIRState {
  * SIR (susceptible-infectious-recovered) model for infectious disease
  * outbreaks in epidemiology.
  *
- * ### Usage
- *
- * Run with:
- *
- *     birch sample \
- *       --model SIRModel \
- *       --input-file input/russian_influenza.json \
- *       --output-file output/russian_influenza.json \
- *       --ncheckpoints 14 \
- *       --nparticles 100 \
- *       --nsamples 10
- *
- * The data set is of an outbreak of Russian influenza at a boy's boarding
- * school in northern England [(Anonymous, 1978)](../#references). The
- * model on which this is based is described in
+ * The model on which this is based is described in
  * [Murray et. al. (2018)](../#references).
- *
- * Any of the parameters and the initial conditions can be clamped by
- * modifying the input file, `input/russian_influenza.json`.
- *
- * ### Details 
  *
  * The parameter model is given by:
  *   $$\begin{align}
