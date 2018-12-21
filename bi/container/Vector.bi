@@ -180,8 +180,8 @@ class Vector<Type> {
       auto y <- f!.get(x);
       if (y?) {
         x <- Type?(y)!;  // cast needed for y:Object?
+        pushBack(x);
       }
-      pushBack(x);
     }
   }
 

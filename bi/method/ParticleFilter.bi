@@ -1,18 +1,21 @@
 /**
- * Particle filter.
- *
- * Configuration file
- * ------------------
- *
- * The following options are supported in the method configuration file.
- *
- *  - `nparticles`: Number of particles to use.
- *
- *  - `trigger`: Threshold for resampling. Resampling is performed
- *     whenever the effective sample size, as a proportion of `--nparticles`,
- *     drops below this threshold.
+ * Particle filter. Performs a bootstrap particle filter in the most basic
+ * case, or where conjugacy relationships are used by the model, an auxiliary
+ * or Rao--Blackwellized particle filter.
  */
-class ParticleFilter < Method {
+class ParticleFilter < Sampler {
+  /**
+   * Number of particles.
+   */
+  nparticles:Integer <- 1;
+  
+  /**
+   * Threshold for resampling. Resampling is performed whenever the
+   * effective sample size, as a proportion of `nparticles`, drops below this
+   * threshold.
+   */
+  trigger:Real <- 0.7;
+
   /**
    * Particles.
    */
@@ -26,110 +29,110 @@ class ParticleFilter < Method {
   /**
    * For each checkpoint, the effective sample size (ESS).
    */
-  e:Real[_];
+  ess:List<Real>;
   
   /**
    * For each checkpoint, was resampling performed?
    */
-  r:Boolean[_];
+  resample:List<Boolean>;
   
   /**
-   * For each checkpoint, the normalizing constant estimate up to that
-   * checkpoint.
+   * For each checkpoint, the logarithm of the normalizing constant estimate
+   * up to that checkpoint.
    */
-  Z:Real[_];
+  evidence:List<Real>;
   
-  /**
-   * Number of particles.
-   */
-  N:Integer <- 1;
-  
-  /**
-   * Relative ESS below which resampling should be triggered.
-   */
-  trigger:Real <- 0.7;
-
-  function sample(m:Model, ncheckpoints:Integer, verbose:Boolean) -> Model {
-    start(m, ncheckpoints);
-    for (t:Integer in 1..ncheckpoints) {
-      if (ncheckpoints > 1 && verbose) {
-        stderr.print(t + " ");
+  fiber sample(m:Model) -> Model {
+    for (s:Integer in 1..nsamples) {
+      start(m);
+      if (verbose) {
+        stderr.print("checkpoints:");
       }
-      step(t);
-    }
-    if (verbose) {
-      stderr.print(Z[ncheckpoints] + "\n");
-    }
-    finish();
+      auto t <- 0;
+      while ((!ncheckpoints? || t < ncheckpoints!) && step()) {
+        t <- t + 1;
+        if (verbose) {
+          stderr.print(" " + t);
+        }
+      }
+      if (ncheckpoints? && t != ncheckpoints!) {
+        error("particles terminated after " + t + " checkpoints, at least " + ncheckpoints! + " expected.");
+      }
+      if (verbose) {
+        stderr.print(", log evidence: " + evidence.back() + "\n");
+      }
+      finish();
     
-    /* choose sample */
-    auto b <- ancestor(w);
-    if (b > 0) {
-      f[b]!.w <- Z[ncheckpoints];
-      return f[b]!;
-    } else {
-      stderr.print("error: particle filter degenerated.\n");
-      exit(1);
+      /* choose single sample to yield */
+      auto b <- ancestor(w);
+      if (b > 0) {
+        f[b]!.w <- evidence.back();
+        yield f[b]!;
+      } else {
+        error("particle filter degenerated.");
+      }
     }
   }
 
   /**
    * Start the filter.
    */  
-  function start(m:Model, ncheckpoints:Integer) {
+  function start(m:Model) {
     f0:Model! <- particle(m);
-    f1:Model![N];
-    for n:Integer in 1..N {
+    f1:Model![nparticles];
+    for n:Integer in 1..nparticles {
       f1[n] <- clone<Model!>(f0);
     }
     
     this.f <- f1;
-    this.w <- vector(0.0, N);
-    this.e <- vector(0.0, ncheckpoints);
-    this.r <- vector(false, ncheckpoints);
-    this.Z <- vector(0.0, ncheckpoints);
+    this.w <- vector(0.0, nparticles);
+    
+    ess.clear();
+    resample.clear();
+    evidence.clear();
   }
   
   /**
    * Step to the next checkpoint.
-   *
-   * - t: Checkpoint number.
    */
-  function step(t:Integer) {
-    /* resample (if necessary) */
-    e[t] <- ess(w);
-    if (!(e[t] > 0.0)) {  // may be nan
-      stderr.print("error: particle filter degenerated.\n");
-      exit(1);
+  function step() -> Boolean {
+    /* resample (if triggered) */
+    ess.pushBack(global.ess(w));
+    if (!(ess.back() > 0.0)) {  // may be nan
+      error("particle filter degenerated.");
     }
-    r[t] <- e[t] < trigger*N;
-    if (r[t]) {
+    resample.pushBack(ess.back() < trigger*nparticles);
+    if (resample.back()) {
       auto a <- ancestors(w);
       auto g <- f;
-      for (n:Integer in 1..N) {
+      for (n:Integer in 1..nparticles) {
         f[n] <- clone<Model!>(g[a[n]]);
         w[n] <- 0.0;
       }
     }
 
     /* propagate and weight */
-    parallel for (n:Integer in 1..N) {
+    auto continue <- true;
+    parallel for (n:Integer in 1..nparticles) {
       if (f[n]?) {
         w[n] <- w[n] + f[n]!.w;
       } else {
-        stderr.print("error: particles terminated prematurely.\n");
-        exit(1);
+        continue <- false;
       }
     }
     
-    /* update normalizing constant estimate */
-    auto W <- log_sum_exp(w);
-    w <- w - (W - log(N));
-    if (t > 1) {
-      Z[t] <- Z[t - 1] + (W - log(N));
-    } else {
-      Z[t] <- W - log(N);
+    if (continue) {
+      /* update normalizing constant estimate */
+      auto W <- log_sum_exp(w);
+      w <- w - (W - log(nparticles));
+      if (evidence.empty()) {
+        evidence.pushBack(W - log(nparticles));
+      } else {
+        evidence.pushBack(evidence.back() + W - log(nparticles));
+      }
     }
+    
+    return continue;
   }
   
   /**
@@ -140,22 +143,23 @@ class ParticleFilter < Method {
   }
   
   function read(buffer:Buffer) {
-    auto a <- buffer.getInteger("nparticles");
-    if (a?) {
-      N <- a!;
+    super.read(buffer);
+    auto nparticles1 <- buffer.getInteger("nparticles");
+    if nparticles1? {
+      nparticles <- nparticles1!;
     }
-    auto b <- buffer.getReal("trigger");
-    if (b?) {
-      trigger <- b!;
+    auto trigger1 <- buffer.getReal("trigger");
+    if trigger1? {
+      trigger <- trigger1!;
     }
   }
 
   function write(buffer:Buffer) {
-    buffer.setInteger("nparticles", N);
-    buffer.setReal("trigger", trigger);
-    buffer.setRealVector("ess", e);
-    buffer.setBooleanVector("resample", r);
-    buffer.setRealVector("evidence", Z);
+    buffer.set("nparticles", nparticles);
+    buffer.set("trigger", trigger);
+    buffer.set("ess", ess);
+    buffer.set("resample", resample);
+    buffer.set("evidence", evidence);
   }
 }
 

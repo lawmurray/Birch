@@ -1,99 +1,75 @@
 /**
  * Sample from a model.
  *
- * General options.
+ * - `--model`: Name of the model class. Should be a subtype of Model.
  *
- *   - `--model`: Name of the model class.
+ * - `--sampler`: Name of the sampler class. Should be a subtype of Sampler.
  *
- *   - `--method`: Name of the method class.
+ * - `--input`: Name of the input file, if any.
  *
- *   - `--input-file`: Name of the input file, if any.
+ * - `--output`: Name of the output file, if any.
  *
- *   - `--output-file`: Name of the output file, if any.
+ * - `--diagnostic`: Name of the diagnostic file, if any.
  *
- *   - `--diagnostic-file`: Name of the diagnostics file, if any.
- *
- *   - `--nsamples`: Number of samples to draw.
- *
- *   - `--ncheckpoints`: Number of checkpoints for which to run. The
- *     interpretation of this is model-dependent, e.g. for a Markov model
- *     it is the number of states.
- *
- *   - `--seed`: Random number seed. If not provided, random entropy is used.
- *
- *   - `--verbose`: Enable verbose reporting?
+ * - `--seed`: Random number seed. If not provided, random entropy is used.
  */
 program sample(
     model:String,
-    method:String <- "ParticleFilter",
-    input_file:String?,
-    output_file:String?,
-    config_file:String?,
-    diagnostic_file:String?,
-    nsamples:Integer <- 1,
-    ncheckpoints:Integer <- 1,
-    seed:Integer?,
-    verbose:Boolean <- true) {
-  /* random number generator */
+    sampler:String <- "ParticleFilter",
+    input:String?,
+    output:String?,
+    config:String?,
+    diagnostic:String?,
+    seed:Integer?) {
+  /* seed random number generator */
   if (seed?) {
     global.seed(seed!);
   }
-
+    
   /* model */
   auto m <- Model?(make(model));
   if (!m?) {
-    stderr.print("error: " + model + " must be a subtype of Model with no initialization parameters.\n");
-    exit(1);
+    error(model + " must be a subtype of Model with no initialization parameters.");
   }
 
   /* method */
-  auto s <- Method?(make(method));
+  auto s <- Sampler?(make(sampler));
   if (!s?) {
-    stderr.print("error: " + method + " must be a subtype of Method with no initialization parameters.\n");
-    exit(1);
+    error(sampler + " must be a subtype of Sampler with no initialization parameters.");
   }
 
-  /* I/O */
-  input:JSONBuffer;
-  config:JSONBuffer;
+  /* input */
+  inputBuffer:JSONBuffer;
+  if (input?) {
+    inputBuffer.load(input!);
+    inputBuffer.get(m!);
+  }
+
+  /* config */
+  configBuffer:JSONBuffer;
+  if (config?) {
+    configBuffer.load(config!);
+    configBuffer.get(s!);
+  }
   
-  if (input_file?) {
-    input.load(input_file!);
-    m!.read(input);
-  }
-  if (config_file?) {
-    config.load(config_file!);
-    s!.read(config);
-  }
+  /* output */
+  outputBuffer:JSONBuffer;
+  outputBuffer.setArray();
+
+  /* diagnostics */
+  diagnosticBuffer:JSONBuffer;
+  diagnosticBuffer.setArray();
 
   /* sample */
-  m <- s!.sample(m!, ncheckpoints, verbose);
- 
-  output:JSONBuffer;
-  diagnostic:JSONBuffer;
-  if (nsamples > 1) {
-    output.setArray();
-    diagnostic.setArray();
+  auto f <- s!.sample(m!);
+  while (f?) {
+    outputBuffer.push().set(f!);
+    diagnosticBuffer.push().set(s!);
   }
-
-  if (output_file?) {
-    if (nsamples > 1) {
-      m!.write(output.push());
-    } else {
-      m!.write(output);
-    }
+  if (output?) {
+    outputBuffer.save(output!);
   }
-  if (diagnostic_file?) {
-    if (nsamples > 1) {
-      s!.write(diagnostic.push());
-    } else {
-      s!.write(diagnostic);
-    }
-  }
-  if (output_file?) {
-    output.save(output_file!);
-  }
-  if (diagnostic_file?) {
-    diagnostic.save(diagnostic_file!);
+  if (diagnostic?) {
+    diagnosticBuffer.save(diagnostic!);
   }
 }

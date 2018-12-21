@@ -8,82 +8,82 @@ class AliveParticleFilter < ParticleFilter {
    * For each checkpoint, the number of propagations that were performed to
    * achieve $N$ acceptances.
    */
-  propagations:Integer[_];
+  propagations:List<Integer>;
 
-  function start(m:Model, ncheckpoints:Integer) {
-    super.start(m, ncheckpoints);
-    propagations <- vector(0, ncheckpoints);
+  function start(m:Model) {
+    super.start(m);
+    propagations.clear();
   }
 
-  function step(t:Integer) {  
+  function step() -> Boolean {  
     /* diagnostics */
-    e[t] <- ess(w);
-    r[t] <- true;
+    ess.pushBack(global.ess(w));
+    resample.pushBack(true);
     
     auto f0 <- f;
     auto w0 <- w;
     auto a <- permute_ancestors(ancestors(w0));
     auto P <- 0;  // number of proposals
 
-    /* propagate and weight until N acceptances; the first N proposals are
-     * drawn using the standard (stratified) resampler, then each is
+    /* propagate and weight until nparticles acceptances; the first
+     * nparticles proposals are drawn using the standard resampler, then each
      * is propagated until it has non-zero weight, proposal alternatives with
      * a categorical draw */  
-    for (n:Integer in 1..N) {
+    auto continue <- true;
+    parallel for (n:Integer in 1..nparticles) {
       f[n] <- f0[a[n]];
       if (f[n]?) {
         P <- P + 1;
       } else {
-        stderr.print("error: particles terminated prematurely.\n");
-        exit(1);
+        continue <- false;
       }
-      
-      while (f[n]!.w == -inf) {
+      while (continue && f[n]!.w == -inf) {
         f[n] <- f0[ancestor(w0)];
         if (f[n]?) {
           P <- P + 1;
         } else {
-          stderr.print("error: particles terminated prematurely.\n");
-          exit(1);
+          continue <- false;
         }
       }
       w[n] <- f[n]!.w;
     }
     
-    /* propagate and weight until one further acceptance, that is discarded
-     * for unbiasedness in the normalizing constant estimate */
-    auto f1 <- f0[ancestor(w0)];
-    if (f1?) {
-      P <- P + 1;
-    } else {
-      stderr.print("error: particles terminated prematurely.\n");
-      exit(1);
-    }
-    while (f1!.w == -inf) {
-      f1 <- f0[ancestor(w0)];
+    if (continue) {
+      /* propagate and weight until one further acceptance, that is discarded
+       * for unbiasedness in the normalizing constant estimate */
+      auto f1 <- f0[ancestor(w0)];
       if (f1?) {
         P <- P + 1;
       } else {
-        stderr.print("error: particles terminated prematurely.\n");
-        exit(1);
+        continue <- false;
+      }
+      while (continue && f1!.w == -inf) {
+        f1 <- f0[ancestor(w0)];
+        if (f1?) {
+          P <- P + 1;
+        } else {
+          continue <- false;
+        }
       }
     }
     
-    /* update normalizing constant estimate */
-    auto W <- log_sum_exp(w);
-    w <- w - (W - log(N));
-    if (t > 1) {
-      Z[t] <- Z[t - 1] + (W - log(N));
-    } else {
-      Z[t] <- W - log(N);
+    if (continue) {
+      /* update normalizing constant estimate */
+      auto W <- log_sum_exp(w);
+      w <- w - (W - log(nparticles));
+      if (evidence.empty()) {
+        evidence.pushBack(W - log(nparticles));
+      } else {
+        evidence.pushBack(evidence.back() + W - log(nparticles));
+      }
+      propagations.pushBack(P);
     }
     
-    /* diagnostics */
-    propagations[t] <- P;
+    return continue;
   }
 
   function write(buffer:Buffer) {
     super.write(buffer);
-    buffer.setIntegerVector("propagations", propagations);
+    buffer.set("propagations", propagations);
   }
 }
