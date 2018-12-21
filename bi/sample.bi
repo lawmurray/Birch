@@ -54,17 +54,26 @@ program sample(
   
   /* output */
   outputBuffer:JSONBuffer;
-  outputBuffer.setArray();
-
+  if (s!.nsamples > 1) {
+    outputBuffer.setArray();
+  }
+  
   /* diagnostics */
   diagnosticBuffer:JSONBuffer;
-  diagnosticBuffer.setArray();
-
+  if (s!.nsamples > 1) {
+    diagnosticBuffer.setArray();
+  }
+  
   /* sample */
   auto f <- s!.sample(m!);
   while (f?) {
-    outputBuffer.push().set(f!);
-    diagnosticBuffer.push().set(s!);
+    if (s!.nsamples > 1) {
+      outputBuffer.push().set(f!);
+      diagnosticBuffer.push().set(s!);
+    } else {
+      outputBuffer.set(f!);
+      diagnosticBuffer.set(s!);
+    }
   }
   if (output?) {
     outputBuffer.save(output!);

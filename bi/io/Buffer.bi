@@ -1137,5 +1137,7 @@ class Buffer {
    *
    * Returns: a buffer for modifying the new element.
    */
-  function push() -> Buffer;
+  function push() -> Buffer {
+    return get().push();
+  }
 }
