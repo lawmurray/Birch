@@ -65,37 +65,52 @@ class MemoryBufferAuxiliary < Buffer {
   }
 
   function getBoolean() -> Boolean? {
+    result:Boolean?;
     cpp{{
-    return group->get<libubjpp::bool_type>();
+    auto value = group->get<libubjpp::bool_type>();
+    if (value) {
+      result_ = value.get();
+    }
     }}
+    return result;
   }
   
   function getInteger() -> Integer? {
+    result:Integer?;
     cpp{{
-    return group->get<libubjpp::int64_type>();
+    auto value = group->get<libubjpp::int64_type>();
+    if (value) {
+      result_ = value.get();
+    }
     }}
+    return result;
   }
   
   function getReal() -> Real? {
-    value:Real?;
+    result:Real?;
     cpp{{
     auto value1 = group->get<libubjpp::double_type>();
     if (value1) {
-      value_ = value1.get();
+      result_ = value1.get();
     } else {
       auto value2 = group->get<libubjpp::int64_type>();
       if (value2) {
-        value_ = value2.get();
+        result_ = value2.get();
       }
     }
     }}
-    return value;
+    return result;
   }
 
   function getString() -> String? {
+    result:String?;
     cpp{{
-    return group->get<libubjpp::string_type>();
+    auto value = group->get<libubjpp::string_type>();
+    if (value) {
+      result_ = value.get();
+    }
     }}
+    return result;
   }
 
   function getObject(value:Object) -> Object? {
@@ -113,7 +128,10 @@ class MemoryBufferAuxiliary < Buffer {
       value:Boolean?;
       for (i:Integer in 1..length!) {
         cpp{{
-        value_ = array[i_ - 1].get<libubjpp::bool_type>();
+        auto value = array[i_ - 1].get<libubjpp::bool_type>();
+        if (value) {
+          value_ = value.get();
+        }
         }}
         if (value?) {
           result[i] <- value!;
@@ -137,7 +155,10 @@ class MemoryBufferAuxiliary < Buffer {
       value:Integer?;
       for (i:Integer in 1..length!) {
         cpp{{
-        value_ = array[i_ - 1].get<libubjpp::int64_type>();
+        auto value = array[i_ - 1].get<libubjpp::int64_type>();
+        if (value) {
+          value_ = value.get();
+        }
         }}
         if (value?) {
           result[i] <- value!;
@@ -158,17 +179,23 @@ class MemoryBufferAuxiliary < Buffer {
       auto array = group->get<libubjpp::array_type>().get();
       }}
       result:Real[length!];
-      value1:Real?;
-      value2:Integer?;
       for (i:Integer in 1..length!) {
+        value1:Real?;
         cpp{{
-        value1_ = array[i_ - 1].get<libubjpp::double_type>();
+        auto value1 = array[i_ - 1].get<libubjpp::double_type>();
+        if (value1) {
+          value1_ = value1.get();
+        }
         }}
         if (value1?) {
           result[i] <- value1!;
         } else {
+          value2:Integer?;
           cpp{{
-          value2_ = array[i_ - 1].get<libubjpp::int64_type>();
+          auto value2 = array[i_ - 1].get<libubjpp::int64_type>();
+          if (value2) {
+            value2_ = value2.get();
+          }
           }}
           if (value2?) {
             result[i] <- value2!;

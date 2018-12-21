@@ -6,8 +6,6 @@
 #include "libbirch/config.hpp"
 #include "libbirch/Nil.hpp"
 
-#include "boost/optional.hpp"
-
 namespace bi {
 /**
  * Optional.
@@ -15,11 +13,6 @@ namespace bi {
  * @ingroup libbirch
  *
  * @tparam T Type.
- *
- * @internal While boost::optional might be preferable, it is significantly
- * more complex and handles cases outside those encountered in Birch. It also
- * causes some compile problems when a Birch class uses optionals of its
- * own type in function signatures.
  */
 template<class T>
 class Optional {
@@ -50,22 +43,6 @@ public:
   template<class U>
   Optional(const Optional<U>& o) :
       hasValue(o.query()) {
-    if (hasValue) {
-      value = o.get();
-    }
-  }
-
-  /**
-   * Constructor from Boost optional.
-   */
-  Optional(const boost::optional<T>& o) :
-      hasValue(o) {
-    if (hasValue) {
-      value = o.get();
-    }
-  }
-  Optional(const boost::optional<T&>& o) :
-      hasValue(o) {
     if (hasValue) {
       value = o.get();
     }
