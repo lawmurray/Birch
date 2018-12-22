@@ -142,7 +142,11 @@ void bi::bi_ostream::visit(const Range* o) {
 }
 
 void bi::bi_ostream::visit(const Member* o) {
-  middle(o->left << '.' << o->right);
+  auto local = dynamic_cast<Local*>(o->left);
+  if (!local) {
+    middle(o->left << '.');
+  }
+  middle(o->right);
 }
 
 void bi::bi_ostream::visit(const Global* o) {
