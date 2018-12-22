@@ -25,9 +25,9 @@ class Sampler {
    *
    * - m: Model.
    *
-   * Yields: samples.
+   * Yields: weighted samples.
    */
-  fiber sample(m:Model) -> Model;
+  fiber sample(m:Model) -> (Model, Real);
 
   function read(buffer:Buffer) {
     auto nsamples1 <- buffer.get("nsamples", nsamples);

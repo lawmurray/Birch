@@ -10,9 +10,9 @@ class AliveParticleFilter < ParticleFilter {
    */
   propagations:List<Integer>;
 
-  function start(m:Model) {
-    super.start(m);
+  function start(m:Model) -> Boolean {
     propagations.clear();
+    return super.start(m);
   }
 
   function step() -> Boolean {  
@@ -23,8 +23,8 @@ class AliveParticleFilter < ParticleFilter {
     auto f0 <- f;
     auto w0 <- w;
     auto a <- permute_ancestors(ancestors(w0));
-    auto P <- 0;  // number of proposals
-
+    auto P <- 0;  // number of propagations
+    
     /* propagate and weight until nparticles acceptances; the first
      * nparticles proposals are drawn using the standard resampler, then each
      * is propagated until it has non-zero weight, proposal alternatives with
@@ -32,53 +32,43 @@ class AliveParticleFilter < ParticleFilter {
     auto continue <- true;
     parallel for (n:Integer in 1..nparticles) {
       f[n] <- f0[a[n]];
-      if (f[n]?) {
-        P <- P + 1;
-      } else {
-        continue <- false;
-      }
-      while (continue && f[n]!.w == -inf) {
-        f[n] <- f0[ancestor(w0)];
+      do {
         if (f[n]?) {
           P <- P + 1;
+          (s[n], w[n]) <- f[n]!;
         } else {
           continue <- false;
         }
-      }
-      w[n] <- f[n]!.w;
+        if (w[n] == -inf) {
+          a[n] <- ancestor(w0);
+        }
+      } while (continue && w[n] == -inf);
     }
     
     if (continue) {
       /* propagate and weight until one further acceptance, that is discarded
        * for unbiasedness in the normalizing constant estimate */
-      auto f1 <- f0[ancestor(w0)];
-      if (f1?) {
-        P <- P + 1;
-      } else {
-        continue <- false;
-      }
-      while (continue && f1!.w == -inf) {
+      f1:(Model, Real)!;
+      s1:Model?;
+      w1:Real;
+      do {
         f1 <- f0[ancestor(w0)];
         if (f1?) {
           P <- P + 1;
+          (s1, w1) <- f1!;
         } else {
           continue <- false;
         }
-      }
+      } while (continue && w1 == -inf);
     }
     
     if (continue) {
       /* update normalizing constant estimate */
       auto W <- log_sum_exp(w);
-      w <- w - (W - log(nparticles));
-      if (evidence.empty()) {
-        evidence.pushBack(W - log(nparticles));
-      } else {
-        evidence.pushBack(evidence.back() + W - log(nparticles));
-      }
-      propagations.pushBack(P);
-    }
-    
+      w <- w - (W - log(P));
+      Z <- Z + W - log(P);
+      evidence.pushBack(Z);
+    }    
     return continue;
   }
 

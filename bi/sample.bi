@@ -67,11 +67,15 @@ program sample(
   /* sample */
   auto f <- s!.sample(m!);
   while (f?) {
+    m1:Model?;
+    w1:Real;
+    (m1, w1) <- f!;
+    
     if (s!.nsamples > 1) {
-      outputBuffer.push().set(f!);
+      outputBuffer.push().set(m1!);
       diagnosticBuffer.push().set(s!);
     } else {
-      outputBuffer.set(f!);
+      outputBuffer.set(m1!);
       diagnosticBuffer.set(s!);
     }
   }

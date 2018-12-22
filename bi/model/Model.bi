@@ -10,7 +10,10 @@ class Model {
   }
   
   /**
-   * Log-weight.
+   * Get the natural number of checkpoints for this model as configured, if
+   * this can be known in advance.
    */
-  w:Real <- 0.0;
+  function checkpoints() -> Integer? {
+    return nil;
+  }
 }

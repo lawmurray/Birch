@@ -14,64 +14,51 @@ class MarkovModel<Parameter,State> < Model {
   θ:Parameter;
 
   /**
-   * State history.
+   * States.
    */
   x:List<State>;
-  
-  /**
-   * State future.
-   */
-  x1:List<State>;
-  
+
   fiber simulate() -> Real {
-    yield start();
-    while (true) {
-      yield step();
-    }
-  }
-
-  function start() -> Real {
-    /* parameter */
-    auto θ <- this.θ;
-    auto w <- sum(parameter(θ));
-
-    /* initial state */
-    if (!x1.empty()) {
-      x':State <- x1.front();
-      x1.popFront();
-      w <- w + sum(initial(x', θ));
-      x.pushBack(x');
-    } else {
-      x':State;
-      w <- w + sum(initial(x', θ));
-      x.pushBack(x');
+    /* parameters */
+    yield sum(parameter(θ));
+    
+    /* iterate through given times (those with clamped values)  */
+    x':State! <- this.x.walk();
+    x:State?;
+    while (x'?) {
+      if (x?) {
+        yield sum(transition(x'!, x!, θ));
+      } else {
+        yield sum(initial(x'!, θ));
+      }
+      x <- x'!;
     }
     
-    return w;
+    /* indefinitely generate future states */
+    while (true) {
+      x':State;
+      this.x.pushBack(x');
+      
+      if (x?) {
+        yield sum(transition(x', x!, θ));
+      } else {
+        yield sum(initial(x', θ));
+      }
+      x <- x';
+    }
   }
 
-  function step() -> Real {
-    auto θ <- this.θ;
-    auto w <- 0.0;
-
-    /* transition */
-    if (!x1.empty()) {
-      x':State <- x1.front();
-      x1.popFront();
-      w <- w + sum(transition(x', x.back(), θ));
-      x.pushBack(x');
+  function checkpoints() -> Integer? {
+    if (x.empty()) {
+      return nil;
     } else {
-      x':State;
-      w <- w + sum(transition(x', x.back(), θ));
-      x.pushBack(x');
+      return x.size();
     }
-
-    return w;
   }
 
   function read(buffer:Buffer) {
     buffer.get("θ", θ);
-    buffer.get("x", x1);
+    buffer.get("x", x);
   }
   
   function write(buffer:Buffer) {
@@ -82,14 +69,14 @@ class MarkovModel<Parameter,State> < Model {
   /**
    * Parameter model.
    */
-  fiber parameter(θ':Parameter) -> Real {
+  fiber parameter(θ:Parameter) -> Real {
     //
   }
   
   /**
    * Initial model.
    */
-  fiber initial(x':State, θ:Parameter) -> Real {
+  fiber initial(x:State, θ:Parameter) -> Real {
     //
   }
   

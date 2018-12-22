@@ -19,12 +19,22 @@ class ParticleFilter < Sampler {
   /**
    * Particles.
    */
-  f:Model![_];
+  f:(Model, Real)![_];
+  
+  /**
+   * Samples.
+   */
+  s:Model[_];
   
   /**
    * Log-weights.
    */
   w:Real[_];
+  
+  /**
+   * Log-evidence.
+   */
+  Z:Real <- 0.0;
   
   /**
    * For each checkpoint, the effective sample size (ESS).
@@ -42,13 +52,25 @@ class ParticleFilter < Sampler {
    */
   evidence:List<Real>;
   
-  fiber sample(m:Model) -> Model {
-    for (s:Integer in 1..nsamples) {
-      start(m);
+  fiber sample(m:Model) -> (Model, Real) {
+    /* if a number of checkpoints hasn't been explicitly provided, compute
+     * this from the model (may still be unknown by the model, too) */
+    if (!ncheckpoints?) {
+      ncheckpoints <- m.checkpoints();
+    }
+
+    /* sample */  
+    for (i:Integer in 1..nsamples) {
+      auto t <- 0;
       if (verbose) {
         stderr.print("checkpoints:");
       }
-      auto t <- 0;      
+      if ((!ncheckpoints? || t < ncheckpoints!) && start(m)) {
+        t <- t + 1;
+        if (verbose) {
+          stderr.print(" " + t);
+        }
+      }
       while ((!ncheckpoints? || t < ncheckpoints!) && step()) {
         t <- t + 1;
         if (verbose) {
@@ -59,15 +81,14 @@ class ParticleFilter < Sampler {
         error("particles terminated after " + t + " checkpoints, at least " + ncheckpoints! + " expected.");
       }
       if (verbose) {
-        stderr.print(", log evidence: " + evidence.back() + "\n");
+        stderr.print(", log evidence: " + Z + "\n");
       }
       finish();
     
       /* choose single sample to yield */
       auto b <- ancestor(w);
       if (b > 0) {
-        f[b]!.w <- evidence.back();
-        yield f[b]!;
+        yield (s[b], Z);
       } else {
         error("particle filter degenerated.");
       }
@@ -76,24 +97,52 @@ class ParticleFilter < Sampler {
 
   /**
    * Start the filter.
+   *
+   * Returns: Are particles yet to terminate?
    */  
-  function start(m:Model) {
-    f0:Model! <- particle(m);
-    f1:Model![nparticles];
-    for n:Integer in 1..nparticles {
-      f1[n] <- clone<Model!>(f0);
+  function start(m:Model) -> Boolean {
+    if (length(s) != nparticles) {
+      f1:(Model,Real)![nparticles];
+      f <- f1;
+      s1:Model[nparticles] <- m;
+      s <- s1;
+      w <- vector(0.0, nparticles);
     }
-    
-    this.f <- f1;
-    this.w <- vector(0.0, nparticles);
-    
+    Z <- 0.0;
     ess.clear();
     resample.clear();
     evidence.clear();
+
+    /* this is a workaround at present for problems with nested clones: clone
+     * into a local variable first, then copy into the member variable */
+    f0:(Model,Real)! <- particle(m);
+    f1:(Model,Real)![nparticles];
+    for n:Integer in 1..nparticles {
+      f1[n] <- clone<(Model,Real)!>(f0);
+    }
+    f <- f1;
+    
+    auto continue <- true;
+    for (n:Integer in 1..nparticles) {
+      if (f[n]?) {
+        (s[n], w[n]) <- f[n]!;
+      } else {
+        continue <- false;
+      }
+    }
+    if (continue) {
+      auto W <- log_sum_exp(w);
+      w <- w - (W - log(nparticles));
+      Z <- Z + (W - log(nparticles));
+    }
+    
+    return continue;
   }
   
   /**
    * Step to the next checkpoint.
+   *
+   * Returns: Are particles yet to terminate?
    */
   function step() -> Boolean {
     /* resample (if triggered) */
@@ -106,7 +155,7 @@ class ParticleFilter < Sampler {
       auto a <- ancestors(w);
       auto g <- f;
       for (n:Integer in 1..nparticles) {
-        f[n] <- clone<Model!>(g[a[n]]);
+        f[n] <- clone<(Model,Real)!>(g[a[n]]);
         w[n] <- 0.0;
       }
     }
@@ -115,7 +164,9 @@ class ParticleFilter < Sampler {
     auto continue <- true;
     parallel for (n:Integer in 1..nparticles) {
       if (f[n]?) {
-        w[n] <- w[n] + f[n]!.w;
+        v:Real;
+        (s[n], v) <- f[n]!;
+        w[n] <- w[n] + v;
       } else {
         continue <- false;
       }
@@ -125,11 +176,8 @@ class ParticleFilter < Sampler {
       /* update normalizing constant estimate */
       auto W <- log_sum_exp(w);
       w <- w - (W - log(nparticles));
-      if (evidence.empty()) {
-        evidence.pushBack(W - log(nparticles));
-      } else {
-        evidence.pushBack(evidence.back() + W - log(nparticles));
-      }
+      Z <- Z + (W - log(nparticles));
+      evidence.pushBack(Z);
     }
     
     return continue;
@@ -167,10 +215,9 @@ class ParticleFilter < Sampler {
 /*
  * Particle.
  */
-fiber particle(m:Model) -> Model {
+fiber particle(m:Model) -> (Model, Real) {
   auto f <- m.simulate();
   while (f?) {
-    m.w <- f!;
-    yield m;
+    yield (m, f!);
   }
 }

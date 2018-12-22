@@ -11,54 +11,81 @@
 class StateSpaceModel<Parameter,State,Observation> <
     MarkovModel<Parameter,State> {
   /**
-   * Observation history.
+   * Observations.
    */
   y:List<Observation>;
-  
-  /**
-   * Observation future.
-   */
-  y1:List<Observation>;
 
-  function start() -> Real {
-    auto w <- super.start();
-
-    /* initial observation */
-    if (!y1.empty()) {
-      y':Observation <- y1.front();
-      y1.popFront();
-      w <- w + sum(observation(y', x.back(), θ));
-      y.pushBack(y');
-    } else {
-      y':Observation;
-      w <- w + sum(observation(y', x.back(), θ));
-      y.pushBack(y');
+  fiber simulate() -> Real {
+    /* parameters */
+    yield sum(parameter(θ));
+    
+    /* iterate through given times (those with clamped values)  */
+    x':State! <- this.x.walk();
+    y:Observation! <- this.y.walk();
+    x:State?; // previous state
+    
+    while (x'? && y?) {
+      if (x?) {
+        yield sum(transition(x'!, x!, θ)) + sum(observation(y!, x'!, θ));
+      } else {
+        yield sum(initial(x'!, θ)) + sum(observation(y!, x'!, θ));
+      }
+      x <- x'!;
     }
-
-    return w;
+    
+    /* remaining times with state given but no observation given */
+    while (x'?) {
+      y:Observation;
+      this.y.pushBack(y);
+      
+      if (x?) {
+        yield sum(transition(x'!, x!, θ)) + sum(observation(y, x'!, θ));
+      } else {
+        yield sum(initial(x'!, θ)) + sum(observation(y, x'!, θ));
+      }
+      x <- x'!;
+    }
+    
+    /* remaining times with observation given but no state given */
+    while (y?) {
+      x':State;
+      this.x.pushBack(x');
+      
+      if (x?) {
+        yield sum(transition(x', x!, θ)) + sum(observation(y!, x', θ));
+      } else {
+        yield sum(initial(x', θ)) + sum(observation(y!, x', θ));
+      }
+      x <- x';
+    }
+    
+    /* indefinitely generate future states */
+    while (true) {
+      x':State;
+      y:Observation;
+      this.x.pushBack(x');
+      this.y.pushBack(y);
+      
+      if (x?) {
+        yield sum(initial(x', θ)) + sum(observation(y, x', θ));
+      } else {
+        yield sum(transition(x', x!, θ)) + sum(observation(y, x', θ));
+      }
+      x <- x';
+    }
   }
 
-  function step() -> Real {
-    auto w <- super.step();
-
-    /* observation */
-    if (!y1.empty()) {
-      y':Observation <- y1.front();
-      y1.popFront();
-      w <- w + sum(observation(y', x.back(), θ));
-      y.pushBack(y');
+  function checkpoints() -> Integer? {
+    if (x.empty() && y.empty()) {
+      return nil;
     } else {
-      y':Observation;
-      w <- w + sum(observation(y', x.back(), θ));
-      y.pushBack(y');
+      return max(x.size(), y.size());
     }
-
-    return w;
   }
 
   function read(buffer:Buffer) {
     super.read(buffer);
-    buffer.get("y", y1);
+    buffer.get("y", y);
   }
   
   function write(buffer:Buffer) {
@@ -69,7 +96,7 @@ class StateSpaceModel<Parameter,State,Observation> <
   /**
    * Observation model.
    */
-  fiber observation(x':Observation, x:State, θ:Parameter) -> Real {
+  fiber observation(y:Observation, x:State, θ:Parameter) -> Real {
     //
   }
 }
