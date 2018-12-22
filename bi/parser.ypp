@@ -94,10 +94,7 @@
 %token <valString> IF ELSE FOR IN WHILE DO ASSERT RETURN YIELD INSTANTIATED
 %token <valString> CPP HPP THIS SUPER GLOBAL PARALLEL NIL
 %token <valString> DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE NAME
-%token <valBool> BOOL_LITERAL
-%token <valInt> INT_LITERAL
-%token <valReal> REAL_LITERAL
-%token <valString> STRING_LITERAL
+%token <valString> BOOL_LITERAL INT_LITERAL REAL_LITERAL STRING_LITERAL
 %token <valString> LEFT_OP RIGHT_OP LEFT_TILDE_OP RIGHT_TILDE_OP
 %token <valString> AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP RANGE_OP
 
@@ -171,19 +168,19 @@ name
  ***************************************************************************/
 
 bool_literal
-    : BOOL_LITERAL  { $$ = new bi::Literal<bool>($1, yytext, new bi::BasicType(new bi::Name("Boolean")), make_loc(@$)); }
+    : BOOL_LITERAL  { $$ = new bi::Literal<bool>($1, new bi::BasicType(new bi::Name("Boolean")), make_loc(@$)); }
     ;
 
 int_literal
-    : INT_LITERAL  { $$ = new bi::Literal<int64_t>($1, yytext, new bi::BasicType(new bi::Name("Integer")), make_loc(@$)); }
+    : INT_LITERAL  { $$ = new bi::Literal<int64_t>($1, new bi::BasicType(new bi::Name("Integer")), make_loc(@$)); }
     ;
 
 real_literal
-    : REAL_LITERAL  { $$ = new bi::Literal<double>($1, yytext, new bi::BasicType(new bi::Name("Real")), make_loc(@$)); }
+    : REAL_LITERAL  { $$ = new bi::Literal<double>($1, new bi::BasicType(new bi::Name("Real")), make_loc(@$)); }
     ;
 
 string_literal
-    : STRING_LITERAL  { $$ = new bi::Literal<const char*>($1, yytext, new bi::BasicType(new bi::Name("String")), make_loc(@$)); }
+    : STRING_LITERAL  { $$ = new bi::Literal<const char*>($1, new bi::BasicType(new bi::Name("String")), make_loc(@$)); }
     ;
 
 literal
@@ -379,6 +376,7 @@ local_variable
     | AUTO name value                           { $$ = new bi::LocalVariable(bi::AUTO, $2, empty_type(@$), empty_expr(@$), empty_expr(@$), $3, make_loc(@$)); }
     | name ':' postfix_type brackets            { $$ = new bi::LocalVariable(bi::NONE, $1, $3, $4, empty_expr(@$), empty_expr(@$), make_loc(@$)); }
     | name ':' postfix_type brackets arguments  { $$ = new bi::LocalVariable(bi::NONE, $1, $3, $4, $5, empty_expr(@$), make_loc(@$)); }
+    | name ':' postfix_type brackets value      { $$ = new bi::LocalVariable(bi::NONE, $1, $3, $4, empty_expr(@$), $5, make_loc(@$)); }
     ;
 
 span_expression

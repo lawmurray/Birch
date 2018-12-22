@@ -1276,12 +1276,12 @@ YY_RULE_SETUP
 case 41:
 YY_RULE_SETUP
 #line 123 "bi/lexer.lpp"
-{ yylval.valBool = true; return BOOL_LITERAL; }
+{ yylval.valString = "true"; return BOOL_LITERAL; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
 #line 124 "bi/lexer.lpp"
-{ yylval.valBool = false; return BOOL_LITERAL; }
+{ yylval.valString = "false"; return BOOL_LITERAL; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
@@ -1291,27 +1291,27 @@ YY_RULE_SETUP
 case 44:
 YY_RULE_SETUP
 #line 128 "bi/lexer.lpp"
-{ yylval.valReal = atof(yytext); return REAL_LITERAL; }
+{ yylval.valString = strdup(yytext); return REAL_LITERAL; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
 #line 129 "bi/lexer.lpp"
-{ yylval.valReal = atof(yytext); return REAL_LITERAL; }
+{ yylval.valString = strdup(yytext); return REAL_LITERAL; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
 #line 130 "bi/lexer.lpp"
-{ yylval.valInt = atoi(yytext); return INT_LITERAL; }
+{ yylval.valString = strdup(yytext); return INT_LITERAL; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
 #line 131 "bi/lexer.lpp"
-{ yylval.valInt = atoi(yytext); return INT_LITERAL; }
+{ yylval.valString = strdup(yytext); return INT_LITERAL; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
 #line 132 "bi/lexer.lpp"
-{ yylval.valInt = atoi(yytext); return INT_LITERAL; }
+{ yylval.valString = strdup(yytext); return INT_LITERAL; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP

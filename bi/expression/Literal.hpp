@@ -17,13 +17,11 @@ public:
   /**
    * Constructor.
    *
-   * @param value Value.
-   * @param str Preferred string encoding of @p value.
+   * @param str String encoding of @p value.
    * @param type Type.
    * @param loc Location.
    */
-  Literal(const T1& value, const std::string& str, Type* type,
-      Location* loc = nullptr);
+  Literal(const std::string& str, Type* type, Location* loc = nullptr);
 
   /**
    * Destructor.
@@ -33,11 +31,6 @@ public:
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
-
-  /**
-   * Value.
-   */
-  T1 value;
 
   /**
    * Preferred string encoding of value.

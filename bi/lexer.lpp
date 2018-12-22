@@ -120,16 +120,16 @@ E                                  [Ee][+-]?{D}+
 "parallel"                          { return PARALLEL; }
 "nil"                               { return NIL; }
 
-"true"                              { yylval.valBool = true; return BOOL_LITERAL; }
-"false"                             { yylval.valBool = false; return BOOL_LITERAL; }
+"true"                              { yylval.valString = "true"; return BOOL_LITERAL; }
+"false"                             { yylval.valString = "false"; return BOOL_LITERAL; }
 
 ({L}|{G})({L}|{G}|{U}|{D})*'?       { yylval.valString = strdup(yytext); return NAME; }
 
-{D}+{E}                             { yylval.valReal = atof(yytext); return REAL_LITERAL; }
-{D}+\.{D}+({E})?                    { yylval.valReal = atof(yytext); return REAL_LITERAL; }
-0[xX]{H}+                           { yylval.valInt = atoi(yytext); return INT_LITERAL; }
-0{D}+                               { yylval.valInt = atoi(yytext); return INT_LITERAL; }
-{D}+                                { yylval.valInt = atoi(yytext); return INT_LITERAL; }
+{D}+{E}                             { yylval.valString = strdup(yytext); return REAL_LITERAL; }
+{D}+\.{D}+({E})?                    { yylval.valString = strdup(yytext); return REAL_LITERAL; }
+0[xX]{H}+                           { yylval.valString = strdup(yytext); return INT_LITERAL; }
+0{D}+                               { yylval.valString = strdup(yytext); return INT_LITERAL; }
+{D}+                                { yylval.valString = strdup(yytext); return INT_LITERAL; }
 \"(\\\"|[^\"\n\r\f])*\"             { yylval.valString = strdup(yytext); return STRING_LITERAL; }
 
 "<-"                                { return LEFT_OP; } 

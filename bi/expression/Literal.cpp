@@ -6,9 +6,8 @@
 #include "bi/visitor/all.hpp"
 
 template<class T1>
-bi::Literal<T1>::Literal(const T1& value, const std::string& str, Type* type,
-    Location* loc) :
-    Expression(type, loc), value(value), str(str) {
+bi::Literal<T1>::Literal(const std::string& str, Type* type,
+    Location* loc) : Expression(type, loc), str(str) {
   //
 }
 
