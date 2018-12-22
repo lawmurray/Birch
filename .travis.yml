@@ -30,14 +30,13 @@ before_install:
 - cd Birch && ./autogen.sh && ./configure && make -j 2 && sudo make install && cd
   ..
 - git clone "https://github.com/lawmurray/Birch.Standard.git" || cd .
-- cd Birch.Standard && git checkout master && git pull && cd ..
+- cd Birch.Standard && git checkout model && git pull && cd ..
 - cd Birch.Standard && birch build --enable-unity && sudo birch install --enable-unity
   && cd ..
 install:
 - birch build --enable-unity && sudo birch install --enable-unity
 script:
-- birch sample --model YapModel --ncheckpoints 197 --nparticles 1024 --input-file
-  input/yap_dengue.json --output-file output/yap_dengue.json
+- birch run
 cache:
   directories:
   - Birch
