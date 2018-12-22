@@ -21,10 +21,6 @@ class Track < StateSpaceModel<Global,Random<Real[_]>,Random<Real[_]>> {
       y ~ Gaussian(θ.B*x, θ.R);
     }
   }
-
-  function read(buffer:Buffer) {
-    //
-  }
   
   function write(buffer:Buffer) {
     buffer.set("t", t);

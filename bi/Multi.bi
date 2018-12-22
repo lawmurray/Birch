@@ -90,12 +90,7 @@ class Multi < StateSpaceModel<Global,List<Track>,List<Random<Real[_]>>> {
       clutter! ~> Uniform(θ.l, θ.u);
     }
   }
-  
-  function read(buffer:Buffer) {
-    buffer.getObject("θ", θ);
-    buffer.getObject("y", y1);
-  }
-  
+    
   function write(buffer:Buffer) {
     buffer.set("θ", θ);
     buffer.set("z", z);
