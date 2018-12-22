@@ -47,10 +47,7 @@ before_install:
 install:
   - birch build --enable-unity && sudo birch install --enable-unity
 script:
-  - birch sample --model LinearGaussianModel --input-file input/linear_gaussian.json --output-file output/linear_gaussian.json --ncheckpoints 10
-  - birch sample --model MixedGaussianModel --input-file input/mixed_gaussian.json --output-file output/mixed_gaussian.json --nparticles 256 --ncheckpoints 10
-  - birch sample --model LinearRegressionModel --input-file input/bike_share.json --output-file output/bike_share.json
-  - birch sample --model SIRModel --input-file input/russian_influenza.json --output-file output/russian_influenza.json --nparticles 100 --ncheckpoints 14
+  - birch run
 cache:
   directories:
     - Birch
