@@ -58,8 +58,8 @@ void bi::poset<T,Compare>::insert(T v) {
   add_colour(v);
   forward(v);
   backward(v);
-  reduce();
   add_vertex(v);
+  reduce();
   sort();
 }
 
@@ -166,8 +166,8 @@ void bi::poset<T,Compare>::backward(T u, T v) {
 
 template<class T, class Compare>
 void bi::poset<T,Compare>::reduce() {
-  for (auto iter = begin(); iter != end(); ++iter) {
-    reduce(*iter);
+  for (auto u: roots) {
+    reduce(u);
   }
 }
 
@@ -179,11 +179,15 @@ void bi::poset<T,Compare>::reduce(T u) {
   std::list<T> forwards1;
   children(u, forwards1);
 
-  /* depth first search discovery */
+  /* colour children */
   for (auto iter = forwards1.begin(); iter != forwards1.end(); ++iter) {
     if (colours[*iter] < colour1) {
       colours[*iter] = colour1;
     }
+  }
+
+  /* depth first search discovery */
+  for (auto iter = forwards1.begin(); iter != forwards1.end(); ++iter) {
     reduce(*iter);
   }
 
