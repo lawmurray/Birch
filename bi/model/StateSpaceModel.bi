@@ -16,9 +16,6 @@ class StateSpaceModel<Parameter,State,Observation> <
   y:List<Observation>;
 
   fiber simulate() -> Real {
-    /* parameters */
-    yield sum(parameter(θ));
-    
     /* iterate through given times (those with clamped values)  */
     x':State! <- this.x.walk();
     y:Observation! <- this.y.walk();
@@ -28,7 +25,7 @@ class StateSpaceModel<Parameter,State,Observation> <
       if (x?) {
         yield sum(transition(x'!, x!, θ)) + sum(observation(y!, x'!, θ));
       } else {
-        yield sum(initial(x'!, θ)) + sum(observation(y!, x'!, θ));
+        yield sum(parameter(θ)) + sum(initial(x'!, θ)) + sum(observation(y!, x'!, θ));
       }
       x <- x'!;
     }
@@ -41,7 +38,7 @@ class StateSpaceModel<Parameter,State,Observation> <
       if (x?) {
         yield sum(transition(x'!, x!, θ)) + sum(observation(y, x'!, θ));
       } else {
-        yield sum(initial(x'!, θ)) + sum(observation(y, x'!, θ));
+        yield sum(parameter(θ)) + sum(initial(x'!, θ)) + sum(observation(y, x'!, θ));
       }
       x <- x'!;
     }
@@ -54,7 +51,7 @@ class StateSpaceModel<Parameter,State,Observation> <
       if (x?) {
         yield sum(transition(x', x!, θ)) + sum(observation(y!, x', θ));
       } else {
-        yield sum(initial(x', θ)) + sum(observation(y!, x', θ));
+        yield sum(parameter(θ)) + sum(initial(x', θ)) + sum(observation(y!, x', θ));
       }
       x <- x';
     }
@@ -67,9 +64,9 @@ class StateSpaceModel<Parameter,State,Observation> <
       this.y.pushBack(y);
       
       if (x?) {
-        yield sum(initial(x', θ)) + sum(observation(y, x', θ));
-      } else {
         yield sum(transition(x', x!, θ)) + sum(observation(y, x', θ));
+      } else {
+        yield sum(parameter(θ)) + sum(initial(x', θ)) + sum(observation(y, x', θ));
       }
       x <- x';
     }

@@ -19,9 +19,6 @@ class MarkovModel<Parameter,State> < Model {
   x:List<State>;
 
   fiber simulate() -> Real {
-    /* parameters */
-    yield sum(parameter(θ));
-    
     /* iterate through given times (those with clamped values)  */
     x':State! <- this.x.walk();
     x:State?;
@@ -29,7 +26,7 @@ class MarkovModel<Parameter,State> < Model {
       if (x?) {
         yield sum(transition(x'!, x!, θ));
       } else {
-        yield sum(initial(x'!, θ));
+        yield sum(parameter(θ)) + sum(initial(x'!, θ));
       }
       x <- x'!;
     }
@@ -42,7 +39,7 @@ class MarkovModel<Parameter,State> < Model {
       if (x?) {
         yield sum(transition(x', x!, θ));
       } else {
-        yield sum(initial(x', θ));
+        yield sum(parameter(θ)) + sum(initial(x', θ));
       }
       x <- x';
     }
@@ -55,17 +52,7 @@ class MarkovModel<Parameter,State> < Model {
       return x.size();
     }
   }
-
-  function read(buffer:Buffer) {
-    buffer.get("θ", θ);
-    buffer.get("x", x);
-  }
-  
-  function write(buffer:Buffer) {
-    buffer.set("θ", θ);
-    buffer.set("x", x);
-  }
-  
+     
   /**
    * Parameter model.
    */
@@ -85,5 +72,15 @@ class MarkovModel<Parameter,State> < Model {
    */
   fiber transition(x':State, x:State, θ:Parameter) -> Real {
     //
+  }
+
+  function read(buffer:Buffer) {
+    buffer.get("θ", θ);
+    buffer.get("x", x);
+  }
+  
+  function write(buffer:Buffer) {
+    buffer.set("θ", θ);
+    buffer.set("x", x);
   }
 }
