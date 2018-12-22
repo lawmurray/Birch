@@ -45,7 +45,7 @@ class MemoryBufferAuxiliary < Buffer {
   fiber getArray() -> Buffer {
     /* in a fiber here, so have to be careful with the nested C++: variables
      * declared in raw C++ are not preserved between yields, and must use
-     * `self()` when referring to member variables */
+     * `self` when referring to member variables */
     length:Integer? <- getLength();
     if (length?) {
       for (i:Integer in 1..length!) {
@@ -54,7 +54,7 @@ class MemoryBufferAuxiliary < Buffer {
         {
           /* enclosed in local block so that these go out of scope before
            * yield, necessary for fiber implementation */
-          auto array = self()->group->get<libubjpp::array_type>();
+          auto array = self->group->get<libubjpp::array_type>();
           assert(array);
           buffer_->group = &array.get()[i_ - 1];
         }
