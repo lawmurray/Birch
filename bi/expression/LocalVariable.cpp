@@ -14,7 +14,7 @@ bi::LocalVariable::LocalVariable(const Annotation annotation, Name* name,
     Bracketed(brackets),
     Argumented(args),
     Valued(value) {
-  //
+  assert(value->isEmpty() || args->isEmpty());
 }
 
 bi::LocalVariable::~LocalVariable() {

@@ -165,14 +165,18 @@ void bi::CppBaseGenerator::genInit(const T* o) {
     ArrayType* type = dynamic_cast<ArrayType*>(o->type->canonical());
     assert(type);
     if (!o->brackets->isEmpty()) {
-      middle(" = bi::make_array<" << type->single << ">(");
-      middle("bi::make_frame(" << o->brackets << ')');
-      if (!o->args->isEmpty()) {
-        middle(", " << o->args);
-      } else if (!o->value->isEmpty()) {
-        middle(", " << o->value);
+      if (!o->value->isEmpty()) {
+        middle(" = bi::make_array_and_assign<" << type->single << ">(");
+        middle("bi::make_frame(" << o->brackets << ')');
+        middle(", " << o->value << ')');
+      } else {
+        middle(" = bi::make_array<" << type->single << ">(");
+        middle("bi::make_frame(" << o->brackets << ')');
+        if (!o->args->isEmpty()) {
+          middle(", " << o->args);
+        }
+        middle(')');
       }
-      middle(')');
     } else if (!o->value->isEmpty()) {
       middle(" = " << o->value);
     }

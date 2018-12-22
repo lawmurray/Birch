@@ -14,7 +14,7 @@ bi::GlobalVariable::GlobalVariable(const Annotation annotation, Name* name, Type
     Bracketed(brackets),
     Argumented(args),
     Valued(value) {
-  //
+  assert(value->isEmpty() || args->isEmpty());
 }
 
 bi::GlobalVariable::~GlobalVariable() {
