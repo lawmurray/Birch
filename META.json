@@ -172,6 +172,7 @@
       "bi/method/Sampler.bi",
       "bi/model/Model.bi",
       "bi/model/MarkovModel.bi",
+      "bi/model/StarModel.bi",
       "bi/model/StateSpaceModel.bi",
       "bi/system/filesystem.bi",
       "bi/system/system.bi",
