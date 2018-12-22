@@ -2,6 +2,8 @@
  * Model for Yap case study.
  */
 class YapDengueModel < MarkovModel<YapDengueParameter,YapDengueState> {
+  v:VBDModel;
+
   fiber parameter(θ:YapDengueParameter) -> Real {
     θ.h.ν <- 0.0;
     θ.h.μ <- 1.0;
@@ -49,7 +51,7 @@ class YapDengueModel < MarkovModel<YapDengueParameter,YapDengueState> {
   }
   
   fiber transition(x':YapDengueState, x:YapDengueState, θ:YapDengueParameter) -> Real {
-    super.transition(x', x, θ);
+    v.transition(x', x, θ);
     x'.z <- x.z + x'.h.Δi;
     if (x'.y?) {
       x'.y! ~> Binomial(x'.z, θ.ρ);
