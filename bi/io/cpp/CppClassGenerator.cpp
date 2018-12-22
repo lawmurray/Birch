@@ -78,18 +78,6 @@ void bi::CppClassGenerator::visit(const Class* o) {
     }
 
     if (!o->isAlias() && o->isBound()) {
-      /* self function */
-      if (header) {
-        out();
-        line("private:");
-        in();
-        line("auto self() {");
-        in();
-        line("return SharedCOW<this_type>(this, context.get());");
-        out();
-        line("}\n");
-      }
-
       if (header) {
         out();
         line("protected:");
@@ -122,6 +110,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
           middle(o->args);
         }
         middle(')');
+        ++inConstructor;
         for (auto o : memberVariables) {
           if (!o->value->isEmpty()) {
             finish(',');
@@ -141,6 +130,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
             middle(')');
           }
         }
+        --inConstructor;
         out();
         out();
         finish(" {");
@@ -223,6 +213,7 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
     finish(" {");
     in();
     genTraceFunction(o->name->str(), o->loc);
+    line("SharedCOW<this_type> self(this, context.get());");
 
     /* body */
     CppBaseGenerator auxBase(base, level, header);
@@ -260,6 +251,7 @@ void bi::CppClassGenerator::visit(const AssignmentOperator* o) {
       finish(" {");
       in();
       genTraceFunction("<assignment>", o->loc);
+      line("SharedCOW<this_type> self(this, context.get());");
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces->strip();
       line("return *this;");
@@ -285,6 +277,7 @@ void bi::CppClassGenerator::visit(const ConversionOperator* o) {
       finish(" {");
       in();
       genTraceFunction("<conversion>", o->loc);
+      line("SharedCOW<this_type> self(this, context.get());");
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces->strip();
       out();

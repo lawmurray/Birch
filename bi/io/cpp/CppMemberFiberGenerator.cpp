@@ -37,7 +37,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     line("using super_type = FiberState<" << o->returnType->unwrap() << ">;\n");
     start("SharedCOW<" << type->name);
     genTemplateArgs(type);
-    finish("> object;");
+    finish("> self;");
     for (auto param : params) {
       line(param->type << ' ' << param->name << ';');
     }
@@ -48,22 +48,6 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   }
 
   /* self-reference function */
-  if (header) {
-    out();
-    line("private:");
-    in();
-    line("auto self() {");
-    in();
-    line("return object;");
-    out();
-    line("}\n");
-    line("auto local() {");
-    in();
-    line("return SharedCOW<class_type>(this, context.get());");
-    out();
-    line("}\n");
-  }
-
   if (header) {
     out();
     line("protected:");
@@ -80,7 +64,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   middle(stateName << "(const SharedCOW<");
   middle(type->name);
   genTemplateArgs(type);
-  middle(">& object");
+  middle(">& self");
   if (!o->params->isEmpty()) {
     middle(", " << o->params);
   }
@@ -93,7 +77,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     in();
     start("super_type(0, " << (yields.size() + 1) << ')');
     finish(',');
-    start("object(object)");
+    start("self(self)");
     for (auto param : params) {
       finish(',');
       start(param->name << '(' << param->name << ')');
@@ -145,6 +129,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     finish(" {");
     in();
     genTraceFunction(o->name->str(), o->loc);
+    line("SharedCOW<class_type> local(this, context.get());");
     genSwitch();
     *this << o->braces->strip();
     genEnd();
@@ -173,8 +158,9 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   } else {
     finish(" {");
     in();
+    line("SharedCOW<this_type> self(this, context.get());");
     start("return make_fiber<" << stateName << ">(");
-    middle("self()");
+    middle("self");
     for (auto param: params) {
       middle(", ");
       middle(param->name);

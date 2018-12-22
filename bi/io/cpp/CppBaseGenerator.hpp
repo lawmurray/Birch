@@ -156,6 +156,11 @@ protected:
    * Are we inside custom pointer code?
    */
   int inPointer;
+
+  /**
+   * Are we inside a constructor?
+   */
+  int inConstructor;
 };
 }
 

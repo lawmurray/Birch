@@ -14,7 +14,8 @@ bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
     indentable_ostream(base, level),
     header(header),
     inAssign(0),
-    inPointer(0) {
+    inPointer(0),
+    inConstructor(0) {
   //
 }
 
@@ -175,47 +176,58 @@ void bi::CppBaseGenerator::visit(const Range* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Member* o) {
-  const Expression* rightVar = dynamic_cast<const Identifier<MemberVariable>*>(o->right);
-  if (!rightVar) {
-    rightVar = dynamic_cast<const Identifier<LocalVariable>*>(o->right);
-    if (!rightVar) {
-      rightVar = dynamic_cast<const Identifier<Parameter>*>(o->right);
-    }
-  }
-  if (rightVar && !inAssign) {
-    /* for a function or fiber on the right, pop_context() must wrap the
-     * arguments as well, this is handled in visit(const Call*) */
-    middle("pop_context(");
-  }
-  middle("push_context(" << o->left << ')');
-  if (!inAssign && rightVar && rightVar->type->isValue()) {
-    /* optimization: just reading a value, so no need to copy-on-write the
-     * owning object */
-    middle(".pull()");
-  }
-  middle("->");
-
-  /* explicitly refer to the super class if necessary */
+  auto leftThis = dynamic_cast<const This*>(o->left);
   auto leftSuper = dynamic_cast<const Super*>(o->left);
-  if (leftSuper) {
-    middle("super_type::");
-  }
-  middle(o->right);
-  if (rightVar && !inAssign) {
-    middle(")");
+  if (inConstructor && (leftThis || leftSuper)) {
+    if (leftThis) {
+      middle("this->");
+    } else if (leftSuper) {
+      middle("super_type::");
+    }
+    middle(o->right);
+  } else {
+    const Expression* rightVar = dynamic_cast<const Identifier<MemberVariable>*>(o->right);
+    if (!rightVar) {
+      rightVar = dynamic_cast<const Identifier<LocalVariable>*>(o->right);
+      if (!rightVar) {
+        rightVar = dynamic_cast<const Identifier<Parameter>*>(o->right);
+      }
+    }
+    if (rightVar && !inAssign) {
+      /* for a function or fiber on the right, pop_context() must wrap the
+       * arguments as well, this is handled in visit(const Call*) */
+      middle("pop_context(");
+    }
+    middle("push_context(" << o->left << ')');
+    if (!inAssign && rightVar && rightVar->type->isValue()) {
+      /* optimization: just reading a value, so no need to copy-on-write the
+       * owning object */
+      middle(".pull()");
+    }
+    middle("->");
+
+    /* explicitly refer to the super class if necessary */
+    auto leftSuper = dynamic_cast<const Super*>(o->left);
+    if (leftSuper) {
+      middle("super_type::");
+    }
+    middle(o->right);
+    if (rightVar && !inAssign) {
+      middle(")");
+    }
   }
 }
 
 void bi::CppBaseGenerator::visit(const This* o) {
-  middle("self()");
+  middle("self");
 }
 
 void bi::CppBaseGenerator::visit(const Super* o) {
-  middle("self()");
+  middle("self");
 }
 
 void bi::CppBaseGenerator::visit(const Local* o) {
-  middle("local()");
+  middle("local");
 }
 
 void bi::CppBaseGenerator::visit(const Global* o) {
