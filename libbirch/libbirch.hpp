@@ -172,6 +172,28 @@ auto make_array(const Frame& frame, Args ... args) {
 }
 
 /**
+ * Make an array and assign a value to it.
+ *
+ * @ingroup libbirch
+ *
+ * @tparam Type Value type.
+ * @tparam Frame Frame type.
+ * @tparam Value Initial value type.
+ *
+ * @param frame Frame.
+ * @param value Initial value.
+ *
+ * @return The array.
+ */
+template<class Type, class Frame, class Value>
+auto make_array_and_assign(const Frame& frame, const Value& value) {
+  Frame zero;
+  auto result = Array<Type,Frame>(zero);
+  result.enlarge(frame, value);
+  return result;
+}
+
+/**
  * Make a pointer to a new object.
  *
  * @ingroup libbirch
