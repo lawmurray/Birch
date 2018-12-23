@@ -9,6 +9,8 @@
  *
  * - `--output`: Name of the output file, if any.
  *
+ * - `--config`: Name of the configuration file, if any.
+ *
  * - `--diagnostic`: Name of the diagnostic file, if any.
  *
  * - `--seed`: Random number seed. If not provided, random entropy is used.
