@@ -348,6 +348,28 @@ function observe_inverse_gamma(x:Real, α:Real, β:Real) -> Real {
 }
 
 /**
+ * Observe a compound-gamma variate.
+ *
+ * - x: The variate.
+ * - k: Shape.
+ * - α: Prior shape.
+ * - β: Prior scale.
+ *
+ * Return: the log probability density.
+ */
+function observe_compound_gamma(x:Real, k:Real, α:Real, β:Real) -> Real {
+  assert 0.0 < k;
+  assert 0.0 < α;
+  assert 0.0 < β;
+
+  if x>0.0 {
+    return (k - 1)*log(x) + α*log(β) - (α + k)*log(β + x) - lbeta(α, k);
+  } else {
+    return -inf;
+  }
+}
+
+/**
  * Observe a normal inverse-gamma variate.
  *
  * - x: The variate.
@@ -400,6 +422,27 @@ function observe_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) -> Real {
 
   if (0 <= x && x <= n) {
     return lbeta(x + α, n - x + β) - lbeta(α, β) + lchoose(n, x);
+  } else {
+    return -inf;
+  }
+}
+
+/**
+ * Observe a beta-negative-binomial variate
+ *
+ * - x: The variate.
+ * - k: Number of successes.
+ * - α: Shape.
+ * - β: Shape.
+ *
+ * Returns: the log probability mass.
+ */
+function observe_beta_negative_binomial(x:Integer, k:Integer, α:Real, β:Real) -> Real {
+  assert 0.0 < α;
+  assert 0.0 < β;
+
+  if (x >= 0) {
+    return lbeta(α + k, β + x) - lbeta(α, β) + lchoose(x + k - 1, x);
   } else {
     return -inf;
   }

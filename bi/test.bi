@@ -10,6 +10,8 @@ program test(N:Integer <- 10000) {
   code <- code + run_test("deep_clone_modify_src");
   code <- code + run_test("beta_bernoulli", N);
   code <- code + run_test("beta_binomial", N);
+  code <- code + run_test("beta_geometric", N);
+  code <- code + run_test("beta_negative_binomial", N);
   code <- code + run_test("dirichlet_categorical", N);
   code <- code + run_test("dirichlet_multinomial", N);
   code <- code + run_test("gamma_poisson", N);
@@ -22,6 +24,7 @@ program test(N:Integer <- 10000) {
   code <- code + run_test("linear_gaussian_gaussian", N);
   code <- code + run_test("chain_gaussian", N);
   code <- code + run_test("inverse_gamma_gaussian", N);
+  code <- code + run_test("inverse_gamma_gamma", N);
   code <- code + run_test("normal_inverse_gamma_gaussian", N);
   code <- code + run_test("linear_normal_inverse_gamma_gaussian", N);
   code <- code + run_test("gaussian_log_gaussian", N);

@@ -217,7 +217,14 @@ class ParticleFilter < Sampler {
  */
 fiber particle(m:Model) -> (Model, Real) {
   auto f <- m.simulate();
-  while (f?) {
+  if (f?) {
     yield (m, f!);
+    while (f?) {
+      yield (m, f!);
+    }
+  } else {
+    /* ensure that even with no observations, the particle yields at least
+     * once */
+    yield (m, 0.0);
   }
 }

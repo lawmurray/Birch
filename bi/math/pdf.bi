@@ -119,6 +119,20 @@ function pmf_categorical(x:Integer, ρ:Real[_]) -> Real {
 }
 
 /**
+ * PDF of a compound-gamma variate.
+ *
+ * - x: The variate.
+ * - k: Shape.
+ * - α: Prior shape.
+ * - β: Prior scale.
+ *
+ * Return: the probability density.
+ */
+function pdf_compound_gamma(x:Real, k:Real, α:Real, β:Real) -> Real {
+  return exp(observe_compound_gamma(x, k, α, β));
+}
+
+/**
  * PMF of a multinomial variate.
  *
  * - x: The variate.
@@ -333,6 +347,24 @@ function pmf_beta_bernoulli(x:Boolean, α:Real, β:Real) -> Real {
  */
 function pmf_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) -> Real {
   return exp(observe_beta_binomial(x, n, α, β));
+}
+
+/**
+ * PMF of a beta-negative-binomial variate.
+ *
+ * - x: The variate.
+ * - n: Number of successes.
+ * - α: Shape.
+ * - β: Shape.
+ *
+ * Return: the probability mass.
+ */
+function pmf_beta_negative_binomial(x:Integer, k:Integer, α:Real, β:Real) -> Real {
+  assert 0.0 < α;
+  assert 0.0 < β;
+  assert 0 < x;
+
+  return exp(observe_beta_negative_binomial(x, k, α, β));
 }
 
 /**

@@ -144,6 +144,18 @@ function simulate_multinomial(n:Integer, ρ:Real[_]) -> Integer[_] {
 }
 
 /**
+ * Simulate a compound-gamma distribution.
+ *
+ * - k: Shape.
+ * - α: Prior shape.
+ * - β: Prior scale.
+ *
+ */
+ function simulate_compound_gamma(k:Real, α:Real, β:Real) -> Real {
+    return simulate_gamma(k, simulate_inverse_gamma(α, β));
+ }
+
+/**
  * Simulate a multinomial distribution.
  *
  * - n: Number of trials.
@@ -419,6 +431,22 @@ function simulate_beta_binomial(n:Integer, α:Real, β:Real) -> Integer {
   
   return simulate_binomial(n, simulate_beta(α, β));
 }
+
+/**
+ * Simulate a beta-negative-binomial distribution.
+ *
+ * - k: Number of successes.
+ * - α: Shape.
+ * - β: Shape.
+ */
+function simulate_beta_negative_binomial(k:Integer, α:Real, β:Real) -> Integer {
+  assert 0.0 < α;
+  assert 0.0 < β;
+  assert 0 < k;
+
+  return simulate_negative_binomial(k, simulate_beta(α, β));
+}
+
 
 /**
  * Simulate a gamma-Poisson distribution.

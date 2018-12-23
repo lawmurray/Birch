@@ -57,6 +57,24 @@ function beta(x:Real32, y:Real32) -> Real32 {
 }
 
 /**
+ * The incomplete beta function.
+ */
+function ibeta(a:Real64, b:Real64, x:Real64) -> Real64 {
+  cpp {{
+    return boost::math::ibeta(a_, b_, x_);
+  }}
+}
+
+/**
+ * The incomplete beta function.
+ */
+function ibeta(a:Real32, b:Real32, x:Real32) -> Real32 {
+  cpp {{
+    return boost::math::ibeta(a_, b_, x_);
+  }}
+}
+
+/**
  * Logarithm of the beta function.
  */
 function lbeta(x:Real64, y:Real64) -> Real64 {

@@ -16,7 +16,12 @@ class Gamma(k:Expression<Real>, θ:Expression<Real>) < Distribution<Real> {
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayGamma(x, k, θ);
+      θ1:DelayInverseGamma?;
+      if (θ1 <- θ.graftInverseGamma())? {
+        delay <- DelayInverseGammaGamma(x, k, θ1!);
+      } else {
+        delay <- DelayGamma(x, k, θ);
+      }
     }
   }
 

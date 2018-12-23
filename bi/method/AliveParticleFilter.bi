@@ -30,20 +30,32 @@ class AliveParticleFilter < ParticleFilter {
      * is propagated until it has non-zero weight, proposal alternatives with
      * a categorical draw */  
     auto continue <- true;
+    cpp {{
+    /* use an atomic to accumulate the number of propagations within the
+     * parallel loop */
+    std::atomic<int> P;
+    P = 0;
+    }}
     parallel for (n:Integer in 1..nparticles) {
-      f[n] <- f0[a[n]];
       do {
+        f[n] <- f0[a[n]];
         if (f[n]?) {
-          P <- P + 1;
+          cpp {{
+          ++P;
+          }}
           (s[n], w[n]) <- f[n]!;
+          if (w[n] == -inf) {
+            a[n] <- ancestor(w0);
+          }
         } else {
           continue <- false;
         }
-        if (w[n] == -inf) {
-          a[n] <- ancestor(w0);
-        }
       } while (continue && w[n] == -inf);
     }
+    cpp {{
+    P_ = P;
+    // can use the normal counter henceforth
+    }}
     
     if (continue) {
       /* propagate and weight until one further acceptance, that is discarded
@@ -61,14 +73,15 @@ class AliveParticleFilter < ParticleFilter {
         }
       } while (continue && w1 == -inf);
     }
-    
+        
     if (continue) {
       /* update normalizing constant estimate */
       auto W <- log_sum_exp(w);
-      w <- w - (W - log(P));
-      Z <- Z + W - log(P);
+      w <- w - (W - log(P - 1));
+      Z <- Z + W - log(P - 1);
       evidence.pushBack(Z);
-    }    
+      propagations.pushBack(P);
+    }
     return continue;
   }
 
