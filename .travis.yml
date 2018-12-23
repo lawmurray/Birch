@@ -34,6 +34,7 @@ before_install:
 - cd Birch.Standard && git checkout model && git pull && cd ..
 - cd Birch.Standard && birch build --enable-unity && sudo birch install --enable-unity
   && cd ..
+- git clone "https://github.com/lawmurray/Birch.Cairo.git" || cd .
 - cd Birch.Cairo && git checkout master && git pull && cd ..
 - cd Birch.Cairo && birch build --enable-unity && sudo birch install --enable-unity
   && cd ..
