@@ -49,7 +49,7 @@ class LinearRegressionModel < Model {
   }
   
   function write(buffer:Buffer) {
-    buffer.set("β", β);
-    buffer.set("σ2", σ2);
+    buffer.set("beta", β);
+    buffer.set("sigma2", σ2);
   }
 }

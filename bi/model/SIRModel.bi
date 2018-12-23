@@ -1,5 +1,5 @@
 /**
- * Parameter for SIRModel.
+ * SIR model parameters.
  */
 class SIRParameter {
   /**
@@ -31,7 +31,7 @@ class SIRParameter {
 }
 
 /**
- * State for SIRModel.
+ * SIR model state.
  */
 class SIRState {
   /**
@@ -128,6 +128,10 @@ class SIRModel < MarkovModel<SIRParameter,SIRState> {
     θ'.λ ~ Gamma(2.0, 5.0);
     θ'.δ ~ Beta(2.0, 2.0);
     θ'.γ ~ Beta(2.0, 2.0);
+  }
+
+  fiber initial(x:SIRState, θ:SIRParameter) -> Real {
+    //
   }
 
   fiber transition(x':SIRState, x:SIRState, θ:SIRParameter) -> Real {

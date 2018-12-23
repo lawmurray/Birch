@@ -8,6 +8,7 @@
       "bi/model/LinearRegressionModel.bi",
       "bi/model/MixedGaussianModel.bi",
       "bi/model/SIRModel.bi",
+      "bi/model/TestModel.bi",
       "bi/run.bi"
     ],
     "other": [

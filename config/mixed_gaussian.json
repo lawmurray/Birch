@@ -1,4 +1,5 @@
 {
+  "nsamples": 10,
   "ncheckpoints": 20,
   "nparticles": 128
 }
