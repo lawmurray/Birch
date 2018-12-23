@@ -7,6 +7,10 @@
  *   p(\mathrm{d}\theta) p(\mathrm{d}x_0 \mid \theta)  p(\mathrm{d}y_0
  *   \mid x_0, \theta) \prod_{t=1}^T p(\mathrm{d}x_t \mid x_{t-1},
  *   \theta) p(\mathrm{d}y_t \mid x_t, \theta)$$
+ *
+ * <center>
+ * ![Graphical model depicting StateSpaceModel.](../figs/StateSpaceModel.svg)
+ * </center>
  */
 class StateSpaceModel<Parameter,State,Observation> <
     MarkovModel<Parameter,State> {

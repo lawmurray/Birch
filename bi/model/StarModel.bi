@@ -5,6 +5,10 @@
  *
  * $$p(\mathrm{d}\theta, \mathrm{d}x_{1:N}) = p(\mathrm{d}\theta) 
  *   \prod_{n=1}^N p(\mathrm{d}x_n \mid \theta).$$
+ *
+ * <center>
+ * ![Graphical model depicting StarModel.](../figs/StarModel.svg)
+ * </center>
  */
 class StarModel<Parameter,Point> < Model {
   /**

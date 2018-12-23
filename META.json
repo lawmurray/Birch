@@ -23,7 +23,7 @@
       "libubjpp/ubj/UBJDriver.cpp",
       "libubjpp/ubj/UBJGenerator.cpp",
       "libubjpp/value.cpp",
-      
+
       "bi/basic/Boolean.bi",
       "bi/basic/File.bi",
       "bi/basic/Integer.bi",
@@ -259,7 +259,7 @@
       "libbirch/View.hpp",
       "libbirch/WeakCOW.hpp",
       "libbirch/WeakPtr.hpp",
-      
+
       "libubjpp/value.hpp",
       "libubjpp/common/Parser.h",
       "libubjpp/common/ParserState.h",
@@ -276,10 +276,13 @@
       "META.json",
       "README.md",
       "make_parsers.sh",
+      "docs/figs/make_figs.sh",
       "docs/figs/MarkovModel.dot",
       "docs/figs/MarkovModel.svg",
-      "docs/figs/SpokeModel.dot",
-      "docs/figs/SpokeModel.svg"
+      "docs/figs/StarModel.dot",
+      "docs/figs/StarModel.svg",
+      "docs/figs/StateSpaceModel.dot",
+      "docs/figs/StateSpaceModel.svg"
     ]
   },
   "require": {
