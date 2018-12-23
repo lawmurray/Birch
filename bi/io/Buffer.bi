@@ -19,13 +19,9 @@ class Buffer {
 
   /**
    * Get this as an array.
-   *
-   * Return: a fiber object that yields each of the elements of the array in
-   * turn, or which never yields if this is an empty array or not an array
-   * at all.
    */
-  fiber getArray() -> Buffer {
-    get().getArray();
+  function getArray() -> Buffer? {
+    return get().getArray();
   }
   
   /**
@@ -171,14 +167,15 @@ class Buffer {
    *
    * - name: Name of the child.
    *
-   * Return: a fiber object that yields each of the elements of the array in
-   * turn, or which never yields if this is an empty array or not an array
-   * at all.
+   * Return: An optional with a value if the given entry exists and is of a
+   * compatible type.
    */
-  fiber getArray(name:String) -> Buffer {
+  function getArray(name:String) -> Buffer? {
     buffer:Buffer? <- getChild(name);
     if (buffer?) {
-      buffer!.getArray();
+      return buffer!.getArray();
+    } else {
+      return nil;
     }
   }
 
@@ -1130,6 +1127,27 @@ class Buffer {
    */
   function set(name:String, value:Real[_,_]?) {
     setRealMatrix(name, value);
+  }
+
+  /**
+   * Iterate through the elements of an array.
+   *
+   * Yields: buffers for each element in turn.
+   */
+  fiber walk() -> Buffer {
+    get().walk();
+  }
+
+  /**
+   * Iterate through the elements of an array.
+   *
+   * Yields: buffers for each element in turn.
+   */
+  fiber walk(name:String) -> Buffer {
+    buffer:Buffer? <- getChild(name);
+    if (buffer?) {
+      buffer!.walk();
+    }
   }
   
   /**

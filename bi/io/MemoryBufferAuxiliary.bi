@@ -42,25 +42,16 @@ class MemoryBufferAuxiliary < Buffer {
     }
   }
 
-  fiber getArray() -> Buffer {
-    /* in a fiber here, so have to be careful with the nested C++: variables
-     * declared in raw C++ are not preserved between yields, and must use
-     * `self` when referring to member variables */
-    length:Integer? <- getLength();
-    if (length?) {
-      for (i:Integer in 1..length!) {
-        buffer:MemoryBufferAuxiliary;
-        cpp{{
-        {
-          /* enclosed in local block so that these go out of scope before
-           * yield, necessary for fiber implementation */
-          auto array = self->group->get<libubjpp::array_type>();
-          assert(array);
-          buffer_->group = &array.get()[i_ - 1];
-        }
-        }}
-        yield buffer;
-      }
+  function getArray() -> Buffer? {
+    exists:Boolean;
+    cpp{{
+    auto array = group->get<libubjpp::array_type>();
+    exists_ = static_cast<bool>(array);
+    }}
+    if (exists) {
+      return this;
+    } else {
+      return nil;
     }
   }
 
@@ -213,7 +204,7 @@ class MemoryBufferAuxiliary < Buffer {
   function getBooleanMatrix() -> Boolean[_,_]? {
     nrows:Integer? <- getLength();
     if (nrows?) {
-      row:Buffer! <- getArray();
+      row:Buffer! <- walk();
       if (row?) {
         /* determine number of columns from first row */
         ncols:Integer? <- row!.getLength();
@@ -256,7 +247,7 @@ class MemoryBufferAuxiliary < Buffer {
   function getIntegerMatrix() -> Integer[_,_]? {
     nrows:Integer? <- getLength();
     if (nrows?) {
-      row:Buffer! <- getArray();
+      row:Buffer! <- walk();
       if (row?) {
         /* determine number of columns from first row */
         ncols:Integer? <- row!.getLength();
@@ -299,7 +290,7 @@ class MemoryBufferAuxiliary < Buffer {
   function getRealMatrix() -> Real[_,_]? {
     nrows:Integer? <- getLength();
     if (nrows?) {
-      row:Buffer! <- getArray();
+      row:Buffer! <- walk();
       if (row?) {
         /* determine number of columns from first row */
         ncols:Integer? <- row!.getLength();
@@ -513,6 +504,28 @@ class MemoryBufferAuxiliary < Buffer {
     buffer_->group = &group->set(name_);
     }}
     return buffer;
+  }
+
+  fiber walk() -> Buffer {
+    /* in a fiber here, so have to be careful with the nested C++: variables
+     * declared in raw C++ are not preserved between yields, and must use
+     * `self` when referring to member variables */
+    length:Integer? <- getLength();
+    if (length?) {
+      for (i:Integer in 1..length!) {
+        buffer:MemoryBufferAuxiliary;
+        cpp{{
+        {
+          /* enclosed in local block so that these go out of scope before
+           * yield, necessary for fiber implementation */
+          auto array = self->group->get<libubjpp::array_type>();
+          assert(array);
+          buffer_->group = &array.get()[i_ - 1];
+        }
+        }}
+        yield buffer;
+      }
+    }
   }
 
   function push() -> Buffer {

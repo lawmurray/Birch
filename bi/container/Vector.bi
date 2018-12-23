@@ -173,7 +173,7 @@ class Vector<Type> {
   }
 
   function read(buffer:Buffer) {
-    auto f <- buffer.getArray();
+    auto f <- buffer.walk();
     while (f?) {
       /* tricky, but works for both basic and class types */
       x:Type;
