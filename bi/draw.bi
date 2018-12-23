@@ -42,7 +42,7 @@ program draw(input:String <- "output/simulate.json",
   cr.translate(-l[1], -l[2]);
 
   /* solid points indicating clutter */
-  auto y <- inputBuffer.getArray("y");
+  auto y <- inputBuffer.walk("y");
   while y? {
     auto Y <- y!.getRealMatrix();
     if Y? {
@@ -55,10 +55,10 @@ program draw(input:String <- "output/simulate.json",
   }
 
   /* circle those points indicating associated observations */
-  auto z <- inputBuffer.getArray("z");
+  auto z <- inputBuffer.walk("z");
   while z? {
     cr.setLineWidth(2.0*fat/scale);
-    auto ys <- z!.getArray("y");
+    auto ys <- z!.walk("y");
     while ys? {
       auto y <- ys!.getRealVector();
       if y? {
@@ -74,7 +74,7 @@ program draw(input:String <- "output/simulate.json",
   }
     
   /* lines and points marking latent tracks */
-  z <- inputBuffer.getArray("z");
+  z <- inputBuffer.walk("z");
   while z? {
     auto X <- z!.getRealMatrix("x");
     if X? {
@@ -93,7 +93,7 @@ program draw(input:String <- "output/simulate.json",
   }
     
   /* start time labels for latent tracks */
-  z <- inputBuffer.getArray("z");
+  z <- inputBuffer.walk("z");
   while z? {
     auto t <- z!.getInteger("t")!;
     auto X <- z!.getRealMatrix("x");

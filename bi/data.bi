@@ -19,10 +19,10 @@ program data(input:String <- "output/simulate.json",
   inputBuffer.get("θ", θ);  
   inputBuffer.get("y", y);
   
-  auto z <- inputBuffer.getArray("z");
+  auto z <- inputBuffer.walk("z");
   while z? {
     auto t <- z!.getInteger("t")!;
-    auto u <- z!.getArray("y");
+    auto u <- z!.walk("y");
     while u? {
       auto v <- u!.getRealVector();
       if v? {
