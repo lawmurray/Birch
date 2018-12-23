@@ -11,7 +11,7 @@ class Model {
    * Simulate.
    */
   fiber simulate() -> Real {
-    assert false;
+    //
   }
   
   /**
