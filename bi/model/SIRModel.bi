@@ -124,10 +124,10 @@ class SIRState {
  * \end{align}$$
  */
 class SIRModel < MarkovModel<SIRParameter,SIRState> {
-  fiber parameter(θ':SIRParameter) -> Real {
-    θ'.λ ~ Gamma(2.0, 5.0);
-    θ'.δ ~ Beta(2.0, 2.0);
-    θ'.γ ~ Beta(2.0, 2.0);
+  fiber parameter(θ:SIRParameter) -> Real {
+    θ.λ ~ Gamma(2.0, 5.0);
+    θ.δ ~ Beta(2.0, 2.0);
+    θ.γ ~ Beta(2.0, 2.0);
   }
 
   fiber initial(x:SIRState, θ:SIRParameter) -> Real {
