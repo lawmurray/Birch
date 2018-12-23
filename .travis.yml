@@ -27,11 +27,11 @@ before_install:
   elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install flex bison eigen libomp
   cairo; brew link --force flex bison; fi
 - git clone "https://github.com/lawmurray/Birch.git" || cd .
-- cd Birch && git checkout model && git pull && cd ..
+- cd Birch && git checkout master && git pull && cd ..
 - cd Birch && ./autogen.sh && ./configure && make -j 2 && sudo make install && cd
   ..
 - git clone "https://github.com/lawmurray/Birch.Standard.git" || cd .
-- cd Birch.Standard && git checkout model && git pull && cd ..
+- cd Birch.Standard && git checkout master && git pull && cd ..
 - cd Birch.Standard && birch build --enable-unity && sudo birch install --enable-unity
   && cd ..
 - git clone "https://github.com/lawmurray/Birch.Cairo.git" || cd .
