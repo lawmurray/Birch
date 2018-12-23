@@ -208,7 +208,7 @@ class ParticleFilter < Sampler {
     buffer.set("trigger", trigger);
     buffer.set("ess", ess);
     buffer.set("resample", resample);
-    buffer.set("evidence", evidence);
+    buffer.set("levidence", evidence);
   }
 }
 
