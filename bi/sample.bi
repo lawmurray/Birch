@@ -77,7 +77,8 @@ program sample(
       auto buffer <- outputBuffer.push();
       buffer.set(m1!);
       buffer.set("lweight", w1);
-      diagnosticBuffer.set(s!);
+      buffer <- diagnosticBuffer.push();
+      buffer.set(s!);
     } else {
       outputBuffer.set(m1!);
       outputBuffer.set("lweight", w1);

@@ -38,7 +38,7 @@ class AliveParticleFilter < ParticleFilter {
     }}
     parallel for (n:Integer in 1..nparticles) {
       do {
-        f[n] <- f0[a[n]];
+        f[n] <- clone<(Model,Real)!>(f0[a[n]]);
         if (f[n]?) {
           cpp {{
           ++P;
@@ -64,7 +64,7 @@ class AliveParticleFilter < ParticleFilter {
       s1:Model?;
       w1:Real;
       do {
-        f1 <- f0[ancestor(w0)];
+        f1 <- clone<(Model,Real)!>(f0[ancestor(w0)]);
         if (f1?) {
           P <- P + 1;
           (s1, w1) <- f1!;
