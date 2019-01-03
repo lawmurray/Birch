@@ -1158,4 +1158,19 @@ class Buffer {
   function push() -> Buffer {
     return get().push();
   }
+  
+  /*
+   * Hacks. These are overloads that must exist for specific types within
+   * the standard library that need to be used in List, Vector and other
+   * containers; the container classes require these overloads to compile.
+   * Longer term, they can be removed/replaced once improved generic type
+   * handling is available.
+   */
+  function get(value:(Model,Real)!?) -> (Model,Real)!? {
+    return nil;
+  }
+  function set(value:(Model,Real)!?) {
+    //
+  }
+  
 }

@@ -30,11 +30,21 @@ class ParticleFilter < Sampler {
    * Log-weights.
    */
   w:Real[_];
+
+  /**
+   * Ancestor indices.
+   */
+  a:Integer[_];
   
   /**
    * Log-evidence.
    */
   Z:Real <- 0.0;
+  
+  /**
+   * Index of chosen path at end of filter.
+   */
+  b:Integer <- 0;
   
   /**
    * For each checkpoint, the effective sample size (ESS).
@@ -44,7 +54,7 @@ class ParticleFilter < Sampler {
   /**
    * For each checkpoint, was resampling performed?
    */
-  resample:List<Boolean>;
+  r:List<Boolean>;
   
   /**
    * For each checkpoint, the logarithm of the normalizing constant estimate
@@ -61,11 +71,12 @@ class ParticleFilter < Sampler {
 
     /* sample */  
     for (i:Integer in 1..nsamples) {
+      initialize(m);
       auto t <- 0;
       if (verbose) {
         stderr.print("checkpoints:");
       }
-      if ((!ncheckpoints? || t < ncheckpoints!) && start(m)) {
+      if ((!ncheckpoints? || t < ncheckpoints!) && start()) {
         t <- t + 1;
         if (verbose) {
           stderr.print(" " + t);
@@ -84,33 +95,26 @@ class ParticleFilter < Sampler {
         stderr.print(", log evidence: " + Z + "\n");
       }
       finish();
-    
-      /* choose single sample to yield */
-      auto b <- ancestor(w);
-      if (b > 0) {
-        yield (s[b], Z);
-      } else {
-        error("particle filter degenerated.");
-      }
+      
+      yield (s[b], Z);
     }
   }
 
   /**
-   * Start the filter.
-   *
-   * Returns: Are particles yet to terminate?
+   * Initialize.
    */  
-  function start(m:Model) -> Boolean {
+  function initialize(m:Model) {
     if (length(s) != nparticles) {
       f1:(Model,Real)![nparticles];
       f <- f1;
       s1:Model[nparticles] <- m;
       s <- s1;
       w <- vector(0.0, nparticles);
+      a <- vector(0, nparticles);
     }
     Z <- 0.0;
     ess.clear();
-    resample.clear();
+    r.clear();
     evidence.clear();
 
     /* this is a workaround at present for problems with nested clones: clone
@@ -121,46 +125,67 @@ class ParticleFilter < Sampler {
       f1[n] <- clone<(Model,Real)!>(f0);
     }
     f <- f1;
-    
-    auto continue <- true;
-    for (n:Integer in 1..nparticles) {
-      if (f[n]?) {
-        (s[n], w[n]) <- f[n]!;
-      } else {
-        continue <- false;
-      }
-    }
+  }
+  
+  /**
+   * Advance to the first checkpoint.
+   *
+   * Returns: Are particles yet to terminate?
+   */
+  function start() -> Boolean {
+    auto continue <- propagate();
     if (continue) {
-      auto W <- log_sum_exp(w);
-      w <- w - (W - log(nparticles));
-      Z <- Z + (W - log(nparticles));
+      reduce();
     }
-    
     return continue;
   }
   
   /**
-   * Step to the next checkpoint.
+   * Advance to the next checkpoint.
    *
    * Returns: Are particles yet to terminate?
    */
   function step() -> Boolean {
-    /* resample (if triggered) */
-    ess.pushBack(global.ess(w));
-    if (!(ess.back() > 0.0)) {  // may be nan
-      error("particle filter degenerated.");
+    r.pushBack(ess.back() < trigger*nparticles);
+    if (r.back()) {
+      resample();
+      copy();
     }
-    resample.pushBack(ess.back() < trigger*nparticles);
-    if (resample.back()) {
-      auto a <- ancestors(w);
-      auto g <- f;
-      for (n:Integer in 1..nparticles) {
-        f[n] <- clone<(Model,Real)!>(g[a[n]]);
-        w[n] <- 0.0;
-      }
+    auto continue <- propagate();
+    if (continue) {
+      reduce();
     }
+    return continue;
+  }
+  
+  /**
+   * Resample particles.
+   */
+  function resample() {
+    a <- ancestors(w);
+  }
 
-    /* propagate and weight */
+  /**
+   * Copy particles after resampling.
+   */
+  function copy() {
+    /* this is a workaround at present for problems with nested clones: clone
+     * into local variables first, then update member variables */
+    auto f1 <- f;
+    auto f2 <- f;
+    for n:Integer in 1..nparticles {
+      f2[n] <- clone<(Model,Real)!>(f1[a[n]]);
+    }
+    f <- f2;
+    for n:Integer in 1..nparticles {
+      w[n] <- 0.0;
+    }
+  }
+  
+  /**
+   * Propagate particles.
+   */
+  function propagate() -> Boolean {
     auto continue <- true;
     parallel for (n:Integer in 1..nparticles) {
       if (f[n]?) {
@@ -171,25 +196,37 @@ class ParticleFilter < Sampler {
         continue <- false;
       }
     }
-    
-    if (continue) {
-      /* update normalizing constant estimate */
-      auto W <- log_sum_exp(w);
-      w <- w - (W - log(nparticles));
-      Z <- Z + (W - log(nparticles));
-      evidence.pushBack(Z);
-    }
-    
     return continue;
   }
   
   /**
+   * Compute any required summary statistics.
+   */
+  function reduce() {
+    /* effective sample size */
+    ess.pushBack(global.ess(w));
+    if (!(ess.back() > 0.0)) {  // may be nan
+      error("particle filter degenerated.");
+    }
+  
+    /* normalizing constant estimate */
+    auto W <- log_sum_exp(w);
+    w <- w - (W - log(nparticles));
+    Z <- Z + (W - log(nparticles));
+    evidence.pushBack(Z);
+  }  
+
+  /**
    * Finish the filter.
    */
   function finish() {
-    //
+    /* choose single sample to yield */
+    b <- ancestor(w);
+    if (b <= 0) {
+      error("particle filter degenerated.");
+    }
   }
-  
+
   function read(buffer:Buffer) {
     super.read(buffer);
     auto nparticles1 <- buffer.getInteger("nparticles");
@@ -207,7 +244,7 @@ class ParticleFilter < Sampler {
     buffer.set("nparticles", nparticles);
     buffer.set("trigger", trigger);
     buffer.set("ess", ess);
-    buffer.set("resample", resample);
+    buffer.set("resample", r);
     buffer.set("levidence", evidence);
   }
 }
@@ -217,14 +254,7 @@ class ParticleFilter < Sampler {
  */
 fiber particle(m:Model) -> (Model, Real) {
   auto f <- m.simulate();
-  if (f?) {
+  while (f?) {
     yield (m, f!);
-    while (f?) {
-      yield (m, f!);
-    }
-  } else {
-    /* ensure that even with no observations, the particle yields at least
-     * once */
-    yield (m, 0.0);
   }
 }

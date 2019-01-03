@@ -10,19 +10,15 @@ class AliveParticleFilter < ParticleFilter {
    */
   propagations:List<Integer>;
 
-  function start(m:Model) -> Boolean {
+  function initialize(m:Model) {
+    super.initialize(m);
     propagations.clear();
-    return super.start(m);
   }
 
-  function step() -> Boolean {  
-    /* diagnostics */
-    ess.pushBack(global.ess(w));
-    resample.pushBack(true);
-    
+  function propagate() -> Boolean {  
+    /* diagnostics */    
     auto f0 <- f;
     auto w0 <- w;
-    auto a <- permute_ancestors(ancestors(w0));
     auto P <- 0;  // number of propagations
     
     /* propagate and weight until nparticles acceptances; the first
@@ -73,16 +69,23 @@ class AliveParticleFilter < ParticleFilter {
         }
       } while (continue && w1 == -inf);
     }
-        
-    if (continue) {
-      /* update normalizing constant estimate */
-      auto W <- log_sum_exp(w);
-      w <- w - (W - log(P - 1));
-      Z <- Z + W - log(P - 1);
-      evidence.pushBack(Z);
-      propagations.pushBack(P);
-    }
+    propagations.pushBack(P);
     return continue;
+  }
+  
+  function reduce() {
+    /* effective sample size */
+    ess.pushBack(global.ess(w));
+    if (!(ess.back() > 0.0)) {  // may be nan
+      error("particle filter degenerated.");
+    }
+  
+    /* normalizing constant estimate */
+    auto W <- log_sum_exp(w);
+    auto P <- propagations.back();
+    w <- w - (W - log(P - 1));
+    Z <- Z + W - log(P - 1);
+    evidence.pushBack(Z);
   }
 
   function write(buffer:Buffer) {
