@@ -115,7 +115,6 @@ bi::Memo* bi::top_context() {
 }
 
 void bi::push_context(Memo* memo) {
-  assert(memo == memo->forwardPull());
   contexts.push_back(memo);
 }
 
