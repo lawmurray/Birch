@@ -183,15 +183,17 @@ public:
       object(o.object),
       memo(o.memo) {
     if (cloneUnderway && object) {
-      object = memo->pull(object.get());
+      if (!top_context()->hasAncestor(memo.get())) {
+        object = memo->get(object.get());
+      }
       memo = top_context();
       auto parent = memo->getParent();
       if (parent) {
         object = parent->deep(object.get());
       }
-#if !USE_LAZY_DEEP_CLONE
+      #if !USE_LAZY_DEEP_CLONE
       get();
-#endif
+      #endif
     }
   }
 
