@@ -33,6 +33,14 @@ class Object {
   function write(buffer:Buffer) {
     //
   }
+  
+  /**
+   * Touch the object. This is a null operation, but forces an update of the
+   * pointer, which can be useful for debugging lazy deep clone issues.
+   */
+  function touch() {
+    //
+  }
 }
 
 /**
