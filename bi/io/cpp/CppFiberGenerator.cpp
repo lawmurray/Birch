@@ -198,8 +198,8 @@ void bi::CppFiberGenerator::visit(const Return* o) {
 
 void bi::CppFiberGenerator::visit(const Yield* o) {
   genTraceLine(o->loc->firstLine);
-  line("pop_context(push_context(local)->value = " << o->single << ");");
-  line("pop_context(push_context(local)->label = " << label << ");");
+  line("local->value = " << o->single << ';');
+  line("local->label = " << label << ';');
   line("return true;");
   line("LABEL" << label << ": ;");
   ++label;
@@ -220,14 +220,13 @@ void bi::CppFiberGenerator::visit(const LocalVariable* o) {
      * do anything here unless there is some initialization associated with
      * it */
     inFor = false;
-    middle("pop_context(push_context(local)->" << getName(o->name->str(), o->number));
+    middle("local->" << getName(o->name->str(), o->number));
     genInit(o);
-    middle(')');
   } else if (o->type->isClass()) {
     /* make sure objects are initialized, not just null pointers */
     auto name = getName(o->name->str(), o->number);
     ++inPointer;
-    middle("pop_context(push_context(local)->" << name << " = " << o->type << "::create())");
+    middle("local->" << name << " = " << o->type << "::create()");
   }
 }
 
@@ -241,7 +240,7 @@ void bi::CppFiberGenerator::visit(const For* o) {
 }
 
 void bi::CppFiberGenerator::genSwitch() {
-  line("switch (pop_context(push_context(local)->label)) {");
+  line("switch (local->label) {");
   in();
   for (int s = 0; s <= yields.size(); ++s) {
     line("case " << s << ": goto LABEL" << s << ';');
@@ -255,7 +254,7 @@ void bi::CppFiberGenerator::genSwitch() {
 
 void bi::CppFiberGenerator::genEnd() {
   line("END:");
-  line("pop_context(push_context(local)->label = " << (yields.size() + 1) << ");");
+  line("local->label = " << (yields.size() + 1) << ';');
   line("return false;");
 }
 

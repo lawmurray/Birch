@@ -77,15 +77,8 @@ void bi::CppBaseGenerator::visit(const Cast* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Call* o) {
-  auto memberSingle = dynamic_cast<const Member*>(o->single);
-  if (memberSingle && !o->type->isEmpty()) {
-    middle("pop_context(");
-  }
   middle(o->single);
   genArgs(o);
-  if (memberSingle && !o->type->isEmpty()) {
-    middle(')');
-  }
 }
 
 void bi::CppBaseGenerator::visit(const BinaryCall* o) {
@@ -122,17 +115,10 @@ void bi::CppBaseGenerator::visit(const UnaryCall* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Assign* o) {
-  auto memberLeft = dynamic_cast<const Member*>(o->left);
-  if (memberLeft) {
-    middle("pop_context(");
-  }
   ++inAssign;
   middle(o->left);
   --inAssign;
   middle(" = " << o->right);
-  if (memberLeft) {
-    middle(')');
-  }
 }
 
 void bi::CppBaseGenerator::visit(const Slice* o) {
@@ -193,12 +179,7 @@ void bi::CppBaseGenerator::visit(const Member* o) {
         rightVar = dynamic_cast<const Identifier<Parameter>*>(o->right);
       }
     }
-    if (rightVar && !inAssign) {
-      /* for a function or fiber on the right, pop_context() must wrap the
-       * arguments as well, this is handled in visit(const Call*) */
-      middle("pop_context(");
-    }
-    middle("push_context(" << o->left << ')');
+    middle(o->left);
     if (!inAssign && rightVar && rightVar->type->isValue()) {
       /* optimization: just reading a value, so no need to copy-on-write the
        * owning object */
@@ -212,9 +193,6 @@ void bi::CppBaseGenerator::visit(const Member* o) {
       middle("super_type::");
     }
     middle(o->right);
-    if (rightVar && !inAssign) {
-      middle(")");
-    }
   }
 }
 
@@ -621,15 +599,6 @@ void bi::CppBaseGenerator::visit(const Assignment* o) {
 void bi::CppBaseGenerator::visit(const ExpressionStatement* o) {
   genTraceLine(o->loc->firstLine);
   line(o->single << ';');
-
-  /* determine if there is an extra context to pop */
-  auto call = dynamic_cast<const Call*>(o->single);
-  if (call && call->type->isEmpty()) {
-    auto member = dynamic_cast<const Member*>(call->single);
-    if (member) {
-      line("pop_context();");
-    }
-  }
 }
 
 void bi::CppBaseGenerator::visit(const If* o) {

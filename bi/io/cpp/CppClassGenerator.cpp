@@ -213,7 +213,8 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
     finish(" {");
     in();
     genTraceFunction(o->name->str(), o->loc);
-    line("SharedCOW<this_type> self(this, context.get());");
+    line("SwapContext swap(context.get());");
+    line("SharedCOW<this_type> self(this);");
 
     /* body */
     CppBaseGenerator auxBase(base, level, header);
@@ -251,7 +252,8 @@ void bi::CppClassGenerator::visit(const AssignmentOperator* o) {
       finish(" {");
       in();
       genTraceFunction("<assignment>", o->loc);
-      line("SharedCOW<this_type> self(this, context.get());");
+      line("SwapContext swap(context.get());");
+      line("SharedCOW<this_type> self(this);");
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces->strip();
       line("return *this;");
@@ -277,7 +279,8 @@ void bi::CppClassGenerator::visit(const ConversionOperator* o) {
       finish(" {");
       in();
       genTraceFunction("<conversion>", o->loc);
-      line("SharedCOW<this_type> self(this, context.get());");
+      line("SwapContext swap(context.get());");
+      line("SharedCOW<this_type> self(this);");
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces->strip();
       out();

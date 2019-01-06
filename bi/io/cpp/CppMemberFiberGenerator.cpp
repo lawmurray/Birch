@@ -129,7 +129,8 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     finish(" {");
     in();
     genTraceFunction(o->name->str(), o->loc);
-    line("SharedCOW<class_type> local(this, context.get());");
+    line("SwapContext swap(context.get());");
+    line("SharedCOW<class_type> local(this);");
     genSwitch();
     *this << o->braces->strip();
     genEnd();
@@ -158,7 +159,8 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   } else {
     finish(" {");
     in();
-    line("SharedCOW<this_type> self(this, context.get());");
+    line("SwapContext swap(context.get());");
+    line("SharedCOW<this_type> self(this);");
     start("return make_fiber<" << stateName << ">(");
     middle("self");
     for (auto param: params) {

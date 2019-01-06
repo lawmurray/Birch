@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 3.2.1.  */
+/* A Bison parser, made by GNU Bison 3.2.4.  */
 
 /* Skeleton implementation for Bison GLR parsers in C
 
@@ -39,7 +39,7 @@
 #define YYBISON 1
 
 /* Bison version.  */
-#define YYBISON_VERSION "3.2.1"
+#define YYBISON_VERSION "3.2.4"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "glr.c"
@@ -1405,7 +1405,7 @@ struct yyGLRStack {
 static void yyexpandGLRStack (yyGLRStack* yystackp);
 #endif
 
-static _Noreturn void
+_Noreturn static void
 yyFail (yyGLRStack* yystackp, const char* yymsg)
 {
   if (yymsg != YY_NULLPTR)
@@ -1413,7 +1413,7 @@ yyFail (yyGLRStack* yystackp, const char* yymsg)
   YYLONGJMP (yystackp->yyexception_buffer, 1);
 }
 
-static _Noreturn void
+_Noreturn static void
 yyMemoryExhausted (yyGLRStack* yystackp)
 {
   YYLONGJMP (yystackp->yyexception_buffer, 2);
