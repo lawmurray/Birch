@@ -52,11 +52,11 @@
  * @def USE_LAZY_DEEP_CLONE_FORWARD_CLEAN
  *
  * Set to 1 to keep forward references from each object to its clones, or 0
- * to ignore. This enables more aggressive garbage collection, which will
- * may improve, or may harm, performance.
+ * to ignore. This enables more precise garbage collection, which may
+ * improve, or may harm, performance.
  */
 #ifndef USE_LAZY_DEEP_CLONE_FORWARD_CLEAN
-#define USE_LAZY_DEEP_CLONE_FORWARD_CLEAN 1
+#define USE_LAZY_DEEP_CLONE_FORWARD_CLEAN 0
 #endif
 
 /**

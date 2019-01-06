@@ -13,6 +13,7 @@ class AliveParticleFilter < ParticleFilter {
   function initialize(m:Model) {
     super.initialize(m);
     propagations.clear();
+    trigger <- 1.0;  // always resample
   }
 
   function propagate() -> Boolean {  
@@ -39,7 +40,8 @@ class AliveParticleFilter < ParticleFilter {
           cpp {{
           ++P;
           }}
-          (s[n], w[n]) <- f[n]!;
+          result:Model?;
+          (result, w[n]) <- f[n]!;
           if (w[n] == -inf) {
             a[n] <- ancestor(w0);
           }
