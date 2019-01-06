@@ -172,3 +172,11 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     finish("}\n");
   }
 }
+
+void bi::CppMemberFiberGenerator::visit(const This* o) {
+  middle("local->self");
+}
+
+void bi::CppMemberFiberGenerator::visit(const Super* o) {
+  middle("local->self");
+}
