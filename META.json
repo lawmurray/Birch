@@ -256,6 +256,8 @@
       "libbirch/Span.hpp",
       "libbirch/stacktrace.hpp",
       "libbirch/Stride.hpp",
+      "libbirch/SwapClone.hpp",
+      "libbirch/SwapContext.hpp",
       "libbirch/View.hpp",
       "libbirch/WeakCOW.hpp",
       "libbirch/WeakPtr.hpp",

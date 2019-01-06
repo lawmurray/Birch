@@ -23,7 +23,7 @@ public:
    * Default constructor.
    */
   ContextPtr() :
-      context(top_context()) {
+      context(currentContext) {
     //
   }
 
@@ -31,8 +31,8 @@ public:
    * Value constructor.
    */
   ContextPtr(Memo* memo) :
-      memo(memo == top_context() ? nullptr : memo),
-      context(top_context()) {
+      memo(memo == currentContext ? nullptr : memo),
+      context(currentContext) {
     //
   }
 
@@ -41,7 +41,7 @@ public:
    */
   ContextPtr(const ContextPtr& o) :
       memo(nullptr),
-      context(top_context()) {
+      context(currentContext) {
     if (o.memo) {
       if (o.memo != context) {
         memo = o.memo;
@@ -56,7 +56,7 @@ public:
    */
   ContextPtr(ContextPtr&& o) :
       memo(nullptr),
-      context(top_context()) {
+      context(currentContext) {
     if (o.memo) {
       if (o.memo != context) {
         memo = std::move(o.memo);

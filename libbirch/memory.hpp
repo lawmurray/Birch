@@ -214,51 +214,9 @@ extern bool cloneUnderway;
 #pragma omp threadprivate(cloneUnderway)
 
 /**
- * The memo object associated with new objects; @c nullptr if no clone
- * is underway.
- *
- * Ideally, clone operations would pass around the memo as an argument to
- * copy functions. This, however, means that copy constructors cannot be
- * used, which is especially problematic for types defined elsewhere (e.g.
- * std::tuple, boost::optional) where it is not possible to define a custom
- * constructor taking a memo as argument.
- *
- * Instead, this global variable is used.
+ * The memo object associated with new objects.
  */
-extern std::vector<SharedPtr<Memo>,Allocator<SharedPtr<Memo>>> contexts;
-#pragma omp threadprivate(contexts)
-
-/**
- * Get the top context.
- */
-Memo* top_context();
-
-/**
- * Push a context.
- */
-void push_context(Memo* memo);
-
-/**
- * Pop the context stack.
- */
-void pop_context();
-
-/**
- * Push the context for a given object.
- */
-template<class T>
-T&& push_context(T&& ptr) {
-  push_context(ptr.getContext()->forwardPull());
-  return std::forward<T>(ptr);
-}
-
-/**
- * Pop the context stack and forward the result of an expression.
- */
-template<class T>
-T&& pop_context(T&& o) {
-  pop_context();
-  return std::forward<T>(o);
-}
+extern Memo* currentContext;
+#pragma omp threadprivate(currentContext)
 
 }

@@ -73,7 +73,7 @@ template<class YieldType>
 bool bi::Fiber<YieldType>::query() const {
   bool result = false;
   if (state.query()) {
-    result = pop_context(push_context(state)->query());
+    result = state->query();
     if (!result) {
       const_cast<Fiber<YieldType>*>(this)->state = nullptr;  // fiber has finished, delete the state
     }
@@ -84,5 +84,5 @@ bool bi::Fiber<YieldType>::query() const {
 template<class YieldType>
 YieldType bi::Fiber<YieldType>::get() const {
   bi_assert_msg(state.query(), "fiber handle undefined");
-  return pop_context(push_context(state)->get());
+  return state->get();
 }

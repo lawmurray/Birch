@@ -39,7 +39,7 @@ public:
   /**
    * Constructor.
    */
-  SharedCOW(T* object, Memo* memo = top_context()) :
+  SharedCOW(T* object, Memo* memo = currentContext) :
       super_type(object, memo) {
     //
   }
@@ -47,7 +47,7 @@ public:
   /**
    * Constructor.
    */
-  SharedCOW(const SharedPtr<T>& object, Memo* memo = top_context()) :
+  SharedCOW(const SharedPtr<T>& object, Memo* memo = currentContext) :
       super_type(object, memo) {
     //
   }
@@ -96,12 +96,7 @@ public:
   template<class U,
       typename = std::enable_if_t<bi::has_conversion<T,U>::value>>
   operator U() const {
-    /* the code generator does not yet handle the push and pop of context in
-     * this case */
-    push_context(this->memo.get());
-    auto result = static_cast<U>(*get());
-    pop_context();
-    return result;
+    return static_cast<U>(*get());
   }
 
   /**
@@ -165,13 +160,13 @@ public:
     //
   }
 
-  SharedCOW(Any* object, Memo* memo = top_context()) :
+  SharedCOW(Any* object, Memo* memo = currentContext) :
       object(object),
       memo(memo) {
     //
   }
 
-  SharedCOW(const SharedPtr<Any>& object, Memo* memo = top_context()) :
+  SharedCOW(const SharedPtr<Any>& object, Memo* memo = currentContext) :
       object(object),
       memo(memo) {
     //
@@ -183,10 +178,10 @@ public:
       object(o.object),
       memo(o.memo) {
     if (cloneUnderway && object) {
-      if (!top_context()->hasAncestor(memo.get())) {
+      if (!currentContext->hasAncestor(memo.get())) {
         object = memo->get(object.get());
       }
-      memo = top_context();
+      memo = currentContext;
       auto parent = memo->getParent();
       if (parent) {
         object = parent->deep(object.get());
@@ -209,15 +204,14 @@ public:
   }
 
   Any* get() {
-#if USE_LAZY_DEEP_CLONE
-    assert(memo->forwardPull() == top_context());
+    #if USE_LAZY_DEEP_CLONE
     auto forward = memo->forwardGet();
     if (forward != memo.get()) {
       object = forward->getParent()->deep(object.get());
       memo = forward;
     }
-    object = memo->get(object.get());
-#endif
+    object = forward->get(object.get());
+    #endif
     return object.get();
   }
 
@@ -228,15 +222,14 @@ public:
   }
 
   Any* pull() {
-#if USE_LAZY_DEEP_CLONE
-    assert(memo->forwardPull() == top_context());
+    #if USE_LAZY_DEEP_CLONE
     auto forward = memo->forwardPull();
     if (forward != memo.get()) {
       object = forward->getParent()->deep(object.get());
       memo = forward;
     }
-    object = memo->pull(object.get());
-#endif
+    object = forward->pull(object.get());
+    #endif
     return object.get();
   }
 
@@ -250,9 +243,9 @@ public:
     auto o = pull();
     auto m = memo->forwardPull()->fork();
     SharedCOW<Any> result(o, m);
-#if !USE_LAZY_DEEP_CLONE
+    #if !USE_LAZY_DEEP_CLONE
     result.get();
-#endif
+    #endif
     return result;
   }
 

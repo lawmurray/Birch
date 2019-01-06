@@ -3,6 +3,9 @@
  */
 #include "libbirch/Memo.hpp"
 
+#include "libbirch/SwapClone.hpp"
+#include "libbirch/SwapContext.hpp"
+
 bi::Memo::Memo() :
     isForked(false) {
   //
@@ -73,17 +76,14 @@ bi::Any* bi::Memo::get(Any* o) {
        * new objects may be made but only one thread can be successful in
        * inserting an object into the map; a shared pointer is used to
        * destroy any additional objects */
-      auto prevUnderway = cloneUnderway;
-      push_context(this);
-      cloneUnderway = true;
+      SwapClone swapClone(true);
+      SwapContext swapContext(this);
       SharedPtr<Any> cloned = o->clone();
       // ^ use shared to clean up if beaten by another thread
       result = clones.put(o, cloned.get());
       #if USE_LAZY_DEEP_CLONE_FORWARD_CLEAN
       o->recordMemo(this);
       #endif
-      pop_context();
-      cloneUnderway = prevUnderway;
       #else
       /* for an eager deep clone we must be cautious to avoid infinite
        * recursion; memory for the new object is allocated first and put
@@ -97,12 +97,9 @@ bi::Any* bi::Memo::get(Any* o) {
       assert(alloc);
       Any* uninit = m->clones.uninitialized_put(o, alloc);
       assert(uninit == alloc);  // should be no thread contention here
-      auto prevUnderway = cloneUnderway;
-      push_context(this);
-      cloneUnderway = true;
+      SwapClone swapClone(true);
+      SwapContext swapContext(this);
       result = o->clone(uninit);
-      pop_context();
-      cloneUnderway = prevUnderway;
       assert(result == uninit);  // clone should be in the allocation
       o->incWeak();  // uninitialized_put(), so responsible for ref counts
       result->incShared();

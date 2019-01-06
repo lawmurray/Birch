@@ -12,8 +12,8 @@ char* bi::bufferStart;
 size_t bi::bufferSize;
 bi::Pool bi::pool[64];
 
-static bi::Memo* rootMemo = bi::Memo::create();
-std::vector<bi::SharedPtr<bi::Memo>,bi::Allocator<bi::SharedPtr<bi::Memo>>> bi::contexts(1, rootMemo);
+static bi::SharedPtr<bi::Memo> rootMemo = bi::Memo::create();
+bi::Memo* bi::currentContext = rootMemo.get();
 bool bi::cloneUnderway = false;
 
 char* bi::heap() {
@@ -108,18 +108,4 @@ void* bi::reallocate(void* ptr1, const size_t n1, const size_t n2) {
   }
   return ptr2;
 #endif
-}
-
-bi::Memo* bi::top_context() {
-  return contexts.back().get();
-}
-
-void bi::push_context(Memo* memo) {
-  contexts.push_back(memo);
-}
-
-void bi::pop_context() {
-  assert(contexts.size() > 1);  // root should never be popped
-  contexts.pop_back();
-  contexts.back() = contexts.back()->forwardPull();
 }
