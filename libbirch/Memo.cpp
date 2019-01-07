@@ -35,10 +35,11 @@ bi::Memo* bi::Memo::fork() {
 }
 
 void bi::Memo::clean() {
-  auto parent = getParent();
-  if (parent) {
-    parent->clean();
-  }
+  /* for current use cases, just clean the current memo, not parents */
+  //auto parent = getParent();
+  //if (parent) {
+  //  parent->clean();
+  //}
   clones.clean();
 }
 
