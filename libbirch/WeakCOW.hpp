@@ -35,7 +35,7 @@ public:
   /**
    * Constructor.
    */
-  WeakCOW(T* object, Memo* memo = currentContext) :
+  WeakCOW(T* object, Memo* memo = currentContext.get()) :
       super_type(object, memo) {
     //
   }
@@ -43,7 +43,7 @@ public:
   /**
    * Constructor.
    */
-  WeakCOW(const WeakPtr<T>& object, Memo* memo = currentContext) :
+  WeakCOW(const WeakPtr<T>& object, Memo* memo = currentContext.get()) :
       super_type(object, memo) {
     //
   }
@@ -178,13 +178,13 @@ public:
     //
   }
 
-  WeakCOW(Any* object, Memo* memo = currentContext) :
+  WeakCOW(Any* object, Memo* memo = currentContext.get()) :
       object(object),
       memo(memo) {
     //
   }
 
-  WeakCOW(const WeakPtr<Any>& object, Memo* memo = currentContext) :
+  WeakCOW(const WeakPtr<Any>& object, Memo* memo = currentContext.get()) :
       object(object),
       memo(memo) {
     //
@@ -203,7 +203,7 @@ public:
       if (!currentContext->hasAncestor(memo.get())) {
         object = memo->get(object.get());
       }
-      memo = currentContext;
+      memo = currentContext.get();
       auto parent = memo->getParent();
       if (parent) {
         object = parent->deep(object.get());

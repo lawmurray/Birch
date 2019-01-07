@@ -73,3 +73,21 @@ void bi::Counted::decWeak() {
 unsigned bi::Counted::numWeak() const {
   return weakCount;
 }
+
+void bi::Counted::incMemo() {
+  /* the order of operations here is important, as the weak count should
+   * never be less than the memo count */
+  incWeak();
+  ++memoCount;
+}
+
+void bi::Counted::decMemo() {
+  /* the order of operations here is important, as the weak count should
+   * never be less than the memo count */
+  --memoCount;
+  decWeak();
+}
+
+bool bi::Counted::isReachable() const {
+  return sharedCount > 0 || weakCount > memoCount;
+}

@@ -39,7 +39,7 @@ public:
   /**
    * Constructor.
    */
-  SharedCOW(T* object, Memo* memo = currentContext) :
+  SharedCOW(T* object, Memo* memo = currentContext.get()) :
       super_type(object, memo) {
     //
   }
@@ -47,7 +47,7 @@ public:
   /**
    * Constructor.
    */
-  SharedCOW(const SharedPtr<T>& object, Memo* memo = currentContext) :
+  SharedCOW(const SharedPtr<T>& object, Memo* memo = currentContext.get()) :
       super_type(object, memo) {
     //
   }
@@ -160,13 +160,13 @@ public:
     //
   }
 
-  SharedCOW(Any* object, Memo* memo = currentContext) :
+  SharedCOW(Any* object, Memo* memo = currentContext.get()) :
       object(object),
       memo(memo) {
     //
   }
 
-  SharedCOW(const SharedPtr<Any>& object, Memo* memo = currentContext) :
+  SharedCOW(const SharedPtr<Any>& object, Memo* memo = currentContext.get()) :
       object(object),
       memo(memo) {
     //
@@ -181,7 +181,7 @@ public:
       if (!currentContext->hasAncestor(memo.get())) {
         object = memo->get(object.get());
       }
-      memo = currentContext;
+      memo = currentContext.get();
       auto parent = memo->getParent();
       if (parent) {
         object = parent->deep(object.get());

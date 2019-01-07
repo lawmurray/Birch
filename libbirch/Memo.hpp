@@ -62,6 +62,11 @@ public:
   Memo* fork();
 
   /**
+   * Run garbage collection sweep on this memo and all ancestors.
+   */
+  void clean();
+
+  /**
    * Forward.
    *
    * @return If the memo has previously been forked, returns the forwarding

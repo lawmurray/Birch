@@ -52,24 +52,10 @@ public:
    */
   Memo* getContext();
 
-  #if USE_LAZY_DEEP_CLONE && USE_LAZY_DEEP_CLONE_FORWARD_CLEAN
-  /**
-   * Record a memo where this object appears as a key for cleanup.
-   */
-  void recordMemo(Memo* o);
-  #endif
-
 protected:
   /**
    * Memo responsible for the creation of this object.
    */
   WeakPtr<Memo> context;
-
-  #if USE_LAZY_DEEP_CLONE && USE_LAZY_DEEP_CLONE_FORWARD_CLEAN
-  /**
-   * Memos where this object appears as a key, for cleanup.
-   */
-  List memos;
-  #endif
 };
 }

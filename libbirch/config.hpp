@@ -35,7 +35,7 @@
  * (Incidentally, may also need to disable OpenMP, at least on macOS.)
  */
 #ifndef USE_MEMORY_POOL
-#define USE_MEMORY_POOL 1
+#define USE_MEMORY_POOL 0
 #endif
 
 /**
@@ -46,17 +46,6 @@
  */
 #ifndef USE_LAZY_DEEP_CLONE
 #define USE_LAZY_DEEP_CLONE 1
-#endif
-
-/**
- * @def USE_LAZY_DEEP_CLONE_FORWARD_CLEAN
- *
- * Set to 1 to keep forward references from each object to its clones, or 0
- * to ignore. This enables more precise garbage collection, which may
- * improve, or may harm, performance.
- */
-#ifndef USE_LAZY_DEEP_CLONE_FORWARD_CLEAN
-#define USE_LAZY_DEEP_CLONE_FORWARD_CLEAN 0
 #endif
 
 /**
@@ -71,8 +60,7 @@
 /**
  * @def INITIAL_LIST_SIZE
  *
- * Initial number of entries in each new list used for forward cleaning when
- * USE_LAZY_DEEP_CLONE_FORWARD_CLEAN is enabled.
+ * Initial number of entries in each new list (not currently used).
  */
 #ifndef INITIAL_LIST_SIZE
 #define INITIAL_LIST_SIZE 16ull

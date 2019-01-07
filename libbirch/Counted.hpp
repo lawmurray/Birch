@@ -124,6 +124,25 @@ public:
    */
   unsigned numWeak() const;
 
+  /**
+   * Increment the memo count (implies an increment of the weak count also).
+   */
+  void incMemo();
+
+  /**
+   * Decrement the memo count (implies a decrement of the weak count also).
+   */
+  void decMemo();
+
+  /**
+   * Is the object reachable? An object is reachable if it contains a shared
+   * count of one or more, or a weak count greater than the memo count. When
+   * the weak count equals the memo count (it cannot be less), the object
+   * is only reachable via keys in memos, which will never be triggered, and
+   * so the object is not considered reachable.
+   */
+  bool isReachable() const;
+
 protected:
   /**
    * Shared count.
@@ -134,6 +153,13 @@ protected:
    * Weak count.
    */
   std::atomic<unsigned> weakCount;
+
+  /**
+   * Memo count. This is the number of times that the object occurs as a key
+   * in a memo. It is always less than or equal to the weak count, as each
+   * memo reference implies a weak reference also.
+   */
+  std::atomic<unsigned> memoCount;
 
   /**
    * Size of the object. This is set immediately after construction. A value

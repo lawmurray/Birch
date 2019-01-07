@@ -34,6 +34,14 @@ bi::Memo* bi::Memo::fork() {
   return create(this, false);
 }
 
+void bi::Memo::clean() {
+  auto parent = getParent();
+  if (parent) {
+    parent->clean();
+  }
+  clones.clean();
+}
+
 bi::Memo* bi::Memo::forwardGet() {
   #if USE_LAZY_DEEP_CLONE
   ///@todo make this thread safe
@@ -41,6 +49,7 @@ bi::Memo* bi::Memo::forwardGet() {
     return forwardChild->forwardGet();
   } else if (isForked) {
     forwardChild = create(this, true);
+    clean();
     return forwardChild.get();
   } else {
     return this;
@@ -68,7 +77,6 @@ bi::Any* bi::Memo::get(Any* o) {
   } else {
     Any* result = clones.get(o);
     if (!result) {
-      /* promote weak pointer to shared pointer for further null check */
       #if USE_LAZY_DEEP_CLONE
       /* for a lazy deep clone there is no risk of infinite recursion, but
        * there may be thread contention if two threads access the same object
@@ -81,9 +89,6 @@ bi::Any* bi::Memo::get(Any* o) {
       SharedPtr<Any> cloned = o->clone();
       // ^ use shared to clean up if beaten by another thread
       result = clones.put(o, cloned.get());
-      #if USE_LAZY_DEEP_CLONE_FORWARD_CLEAN
-      o->recordMemo(this);
-      #endif
       #else
       /* for an eager deep clone we must be cautious to avoid infinite
        * recursion; memory for the new object is allocated first and put
@@ -101,7 +106,7 @@ bi::Any* bi::Memo::get(Any* o) {
       SwapContext swapContext(this);
       result = o->clone(uninit);
       assert(result == uninit);  // clone should be in the allocation
-      o->incWeak();  // uninitialized_put(), so responsible for ref counts
+      o->incMemo();  // uninitialized_put(), so responsible for ref counts
       result->incShared();
       #endif
     }
@@ -133,9 +138,6 @@ bi::Any* bi::Memo::deep(Any* o) {
         result = o;
       }
       result = clones.put(o, result);
-      #if USE_LAZY_DEEP_CLONE && USE_LAZY_DEEP_CLONE_FORWARD_CLEAN
-      o->recordMemo(this);
-      #endif
     }
     return result;
   }

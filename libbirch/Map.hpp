@@ -87,7 +87,12 @@ public:
    */
   void remove(const key_type key);
 
-public:
+  /**
+   * Erase any entries in the table that are unreachable.
+   */
+  void clean();
+
+private:
   /**
    * Joint entry type.
    */

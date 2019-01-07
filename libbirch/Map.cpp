@@ -17,7 +17,7 @@ bi::Map::~Map() {
   for (size_t i = 0; i < nentries; ++i) {
     joint_entry_type entry = entries[i].joint.load();
     if (entry.key != EMPTY && entry.key != ERASED) {
-      entry.key->decWeak();
+      entry.key->decMemo();
       entry.value->decShared();
     }
   }
@@ -56,7 +56,7 @@ bi::Map::value_type bi::Map::put(const key_type key, const value_type value) {
   assert(key);
   assert(value);
 
-  key->incWeak();
+  key->incMemo();
   value->incShared();
 
   reserve();
@@ -76,7 +76,7 @@ bi::Map::value_type bi::Map::put(const key_type key, const value_type value) {
   if (expected.key == key) {
     unreserve();  // key exists, cancel reservation for insert
     result = expected.value;
-    key->decWeak();
+    key->decMemo();
     value->decShared();
   } else {
     result = value;
@@ -134,7 +134,7 @@ void bi::Map::remove(const key_type key) {
     if (expected == key) {
       value_type value = entries[i].split.value.load();
       lock.unshare();  // release first, as dec may cause lengthy cleanup
-      key->decWeak();
+      key->decMemo();
       value->decShared();
     } else {
       lock.unshare();
@@ -203,4 +203,21 @@ void bi::Map::reserve() {
 
 void bi::Map::unreserve() {
   noccupied.fetch_sub(1u);
+}
+
+void bi::Map::clean() {
+  lock.share();
+  key_type key;
+  value_type value;
+  for (size_t i = 0u; i < nentries; ++i) {
+    key = entries[i].split.key;
+    if (key != EMPTY && key != ERASED && !key->isReachable()) {
+      /* key is only reachable through this entry, so remove it */
+      value = entries[i].split.value;
+      entries[i].split.key = ERASED;
+      key->decMemo();
+      value->decShared();
+    }
+  }
+  lock.unshare();
 }
