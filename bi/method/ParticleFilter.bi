@@ -20,7 +20,12 @@ class ParticleFilter < Sampler {
    * Particles.
    */
   f:(Model, Real)![_];
-    
+  
+  /**
+   * Samples.
+   */
+  s:Model[_];
+  
   /**
    * Log-weights.
    */
@@ -91,10 +96,7 @@ class ParticleFilter < Sampler {
       }
       finish();
       
-      result:Model?;
-      v:Real;
-      (result, v) <- f[b]!;
-      yield (result!, Z);
+      yield (s[b], Z);
     }
   }
 
@@ -102,8 +104,8 @@ class ParticleFilter < Sampler {
    * Initialize.
    */  
   function initialize(m:Model) {
-    f1:(Model,Real)![nparticles];
-    f <- f1;
+    s1:Model[nparticles] <- m;
+    s <- s1;
     w <- vector(0.0, nparticles);
     a <- vector(0, nparticles);
     Z <- 0.0;
@@ -113,6 +115,7 @@ class ParticleFilter < Sampler {
 
     /* this is a workaround at present for problems with nested clones: clone
      * into a local variable first, then copy into the member variable */
+    f1:(Model,Real)![nparticles];
     auto f0 <- particle(m);
     for n:Integer in 1..nparticles {
       f1[n] <- clone<(Model,Real)!>(f0);
@@ -182,9 +185,8 @@ class ParticleFilter < Sampler {
     auto continue <- true;
     parallel for (n:Integer in 1..nparticles) {
       if (f[n]?) {
-        m:Model?;
         v:Real;
-        (m, v) <- f[n]!;
+        (s[n], v) <- f[n]!;
         w[n] <- w[n] + v;
       } else {
         continue <- false;
