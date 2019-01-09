@@ -18,7 +18,7 @@ class AliveParticleFilter < ParticleFilter {
 
   function propagate() -> Boolean {  
     /* diagnostics */    
-    auto f0 <- f;
+    auto x0 <- x;
     auto w0 <- w;
     auto P <- 0;  // number of propagations
     
@@ -34,21 +34,23 @@ class AliveParticleFilter < ParticleFilter {
     P = 0;
     }}
     parallel for (n:Integer in 1..nparticles) {
+      v:Real?;
       do {
-        f[n] <- clone<(Model,Real)!>(f0[a[n]]);
-        if (f[n]?) {
+        x[n] <- clone<Model>(x0[a[n]]);
+        v <- x[n].step();
+        if v? {
           cpp {{
           ++P;
           }}
-          result:Model?;
-          (result, w[n]) <- f[n]!;
-          if (w[n] == -inf) {
+          if (v! == -inf) {
             a[n] <- ancestor(w0);
+          } else {
+            w[n] <- v!;
           }
         } else {
           continue <- false;
         }
-      } while (continue && w[n] == -inf);
+      } while (continue && v! == -inf);
     }
     cpp {{
     P_ = P;
@@ -58,18 +60,16 @@ class AliveParticleFilter < ParticleFilter {
     if (continue) {
       /* propagate and weight until one further acceptance, that is discarded
        * for unbiasedness in the normalizing constant estimate */
-      f1:(Model, Real)!;
-      s1:Model?;
-      w1:Real;
+      v:Real?;
       do {
-        f1 <- clone<(Model,Real)!>(f0[ancestor(w0)]);
-        if (f1?) {
+        auto x1 <- clone<Model>(x0[ancestor(w0)]);
+        v <- x1.step();
+        if v? {
           P <- P + 1;
-          (s1, w1) <- f1!;
         } else {
           continue <- false;
         }
-      } while (continue && w1 == -inf);
+      } while (continue && v! == -inf);
     }
     propagations.pushBack(P);
     return continue;

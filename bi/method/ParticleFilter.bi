@@ -19,12 +19,7 @@ class ParticleFilter < Sampler {
   /**
    * Particles.
    */
-  f:(Model, Real)![_];
-  
-  /**
-   * Samples.
-   */
-  s:Model[_];
+  x:Model[_];
   
   /**
    * Log-weights.
@@ -72,16 +67,11 @@ class ParticleFilter < Sampler {
     /* sample */  
     for (i:Integer in 1..nsamples) {
       initialize(m);
-      auto t <- 0;
+      start();
       if (verbose) {
         stderr.print("checkpoints:");
       }
-      if ((!ncheckpoints? || t < ncheckpoints!) && start()) {
-        t <- t + 1;
-        if (verbose) {
-          stderr.print(" " + t);
-        }
-      }
+      auto t <- 0;
       while ((!ncheckpoints? || t < ncheckpoints!) && step()) {
         t <- t + 1;
         if (verbose) {
@@ -89,14 +79,13 @@ class ParticleFilter < Sampler {
         }
       }
       if (ncheckpoints? && t != ncheckpoints!) {
-        error("particles terminated after " + t + " checkpoints, at least " + ncheckpoints! + " expected.");
+        error("particles terminated after " + t + " checkpoints, but " + ncheckpoints! + " requested.");
       }
       if (verbose) {
         stderr.print(", log evidence: " + Z + "\n");
       }
       finish();
-      
-      yield (s[b], Z);
+      yield (x[b], Z);
     }
   }
 
@@ -104,10 +93,7 @@ class ParticleFilter < Sampler {
    * Initialize.
    */  
   function initialize(m:Model) {
-    s1:Model[nparticles] <- m;
-    s <- s1;
     w <- vector(0.0, nparticles);
-    a <- vector(0, nparticles);
     Z <- 0.0;
     ess.clear();
     r.clear();
@@ -115,37 +101,35 @@ class ParticleFilter < Sampler {
 
     /* this is a workaround at present for problems with nested clones: clone
      * into a local variable first, then copy into the member variable */
-    f1:(Model,Real)![nparticles];
-    auto f0 <- particle(m);
+    x1:Model[nparticles];
+    a1:Integer[nparticles];
     for n:Integer in 1..nparticles {
-      f1[n] <- clone<(Model,Real)!>(f0);
+      x1[n] <- clone<Model>(m);
+      a1[n] <- n;
     }
-    f <- f1;
+    x <- x1;
+    a <- a1;
   }
   
   /**
-   * Advance to the first checkpoint.
-   *
-   * Returns: Are particles yet to terminate?
+   * Start particles.
    */
-  function start() -> Boolean {
-    auto continue <- propagate();
-    if (continue) {
-      reduce();
+  function start() {
+    parallel for (n:Integer in 1..nparticles) {
+      x[n].start();
     }
-    return continue;
   }
   
   /**
-   * Advance to the next checkpoint.
-   *
-   * Returns: Are particles yet to terminate?
+   * Step particles to the next checkpoint.
    */
   function step() -> Boolean {
-    r.pushBack(ess.back() < trigger*nparticles);
-    if (r.back()) {
-      resample();
-      copy();
+    if (!r.empty()) {
+      r.pushBack(ess.back() < trigger*nparticles);
+      if (r.back()) {
+        resample();
+        copy();
+      }
     }
     auto continue <- propagate();
     if (continue) {
@@ -167,12 +151,11 @@ class ParticleFilter < Sampler {
   function copy() {
     /* this is a workaround at present for problems with nested clones: clone
      * into local variables first, then update member variables */
-    auto f1 <- f;
-    auto f2 <- f;
+    auto x1 <- x;
     for n:Integer in 1..nparticles {
-      f2[n] <- clone<(Model,Real)!>(f1[a[n]]);
+      x1[n] <- clone<Model>(x[a[n]]);
     }
-    f <- f2;
+    x <- x1;
     for n:Integer in 1..nparticles {
       w[n] <- 0.0;
     }
@@ -184,19 +167,18 @@ class ParticleFilter < Sampler {
   function propagate() -> Boolean {
     auto continue <- true;
     parallel for (n:Integer in 1..nparticles) {
-      if (f[n]?) {
-        v:Real;
-        (s[n], v) <- f[n]!;
-        w[n] <- w[n] + v;
+      auto v <- x[n].step();
+      if v? {
+        w[n] <- w[n] + v!;
       } else {
-        continue <- false;
+        continue <- false;      
       }
     }
     return continue;
   }
   
   /**
-   * Compute any required summary statistics.
+   * Compute summary statistics.
    */
   function reduce() {
     /* effective sample size */
@@ -242,15 +224,5 @@ class ParticleFilter < Sampler {
     buffer.set("ess", ess);
     buffer.set("resample", r);
     buffer.set("levidence", evidence);
-  }
-}
-
-/*
- * Particle.
- */
-fiber particle(m:Model) -> (Model, Real) {
-  auto f <- m.simulate();
-  while (f?) {
-    yield (m, f!);
   }
 }
