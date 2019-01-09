@@ -6,6 +6,7 @@ class SurfacePNG < Surface {
   
   function destroy() {
     /* write the file on destruction */
+    mkdir(filename);
     cpp{{
     cairo_surface_write_to_png(surface, filename_.c_str());
     }}    

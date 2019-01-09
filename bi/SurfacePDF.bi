@@ -11,6 +11,7 @@ class SurfacePDF < Surface {
 
 function createPDF(filename:String, widthInPoints:Real, heightInPoints:Real)
     -> Surface {
+  mkdir(filename);
   surface:SurfacePDF;
   cpp{{
   surface_->surface = cairo_pdf_surface_create(filename_.c_str(),
