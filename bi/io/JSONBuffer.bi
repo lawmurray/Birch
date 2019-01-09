@@ -36,12 +36,9 @@ class JSONBuffer < MemoryBuffer {
    * - path: Path of the file.
    */
   function save(path:String) {
+    mkdir(path);
     success:Boolean <- false;
     cpp{{
-    boost::filesystem::path path = path_;
-    if (!path.parent_path().empty()) {
-      boost::filesystem::create_directories(path.parent_path());
-    }
     std::ofstream stream(path_);
     if (stream.is_open()) {
       libubjpp::JSONGenerator generator(stream);

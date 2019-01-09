@@ -20,68 +20,46 @@ class StateSpaceModel<Parameter,State,Observation> <
   y:List<Observation>;
 
   fiber simulate() -> Real {
-    /* iterate through given times (those with clamped values)  */
-    x':State! <- this.x.walk();
-    y:Observation! <- this.y.walk();
-    x:State?; // previous state
+    f:State! <- this.x.walk();
+    g:Observation! <- this.y.walk();
     
-    while (x'? && y?) {
-      if (x?) {
-        yield sum(transition(x'!, x!, θ)) + sum(observation(y!, x'!, θ));
-      } else {
-        yield sum(parameter(θ)) + sum(initial(x'!, θ)) + sum(observation(y!, x'!, θ));
-      }
-      x <- x'!;
-    }
+    x:State?;  // previous state
+    x':State?;  // current state
+    y':Observation?;  // current observation
+
+    w:Real <- sum(parameter(θ));
+    yield w;
     
-    /* remaining times with state given but no observation given */
-    while (x'?) {
-      y:Observation;
-      this.y.pushBack(y);
-      
-      if (x?) {
-        yield sum(transition(x'!, x!, θ)) + sum(observation(y, x'!, θ));
-      } else {
-        yield sum(parameter(θ)) + sum(initial(x'!, θ)) + sum(observation(y, x'!, θ));
-      }
-      x <- x'!;
-    }
-    
-    /* remaining times with observation given but no state given */
-    while (y?) {
-      x':State;
-      this.x.pushBack(x');
-      
-      if (x?) {
-        yield sum(transition(x', x!, θ)) + sum(observation(y!, x', θ));
-      } else {
-        yield sum(parameter(θ)) + sum(initial(x', θ)) + sum(observation(y!, x', θ));
-      }
-      x <- x';
-    }
-    
-    /* indefinitely generate future states */
     while (true) {
-      x':State;
-      y:Observation;
-      this.x.pushBack(x');
-      this.y.pushBack(y);
-      
-      if (x?) {
-        yield sum(transition(x', x!, θ)) + sum(observation(y, x', θ));
+      if (f?) {  // is the next state given?
+        x' <- f!;
       } else {
-        yield sum(parameter(θ)) + sum(initial(x', θ)) + sum(observation(y, x', θ));
+        o:State;
+        this.x.pushBack(o);
+        x' <- o;
+      }
+      if (x?) {
+        w <- sum(transition(x'!, x!, θ));
+      } else {
+        w <- sum(initial(x'!, θ));
       }
       x <- x';
+      
+      if (g?) {  // is the next observation given?
+        y' <- g!;
+      } else {
+        o:Observation;
+        this.y.pushBack(o);
+        y' <- o;
+      }
+      w <- w + sum(observation(y'!, x'!, θ));
+      yield w;
     }
   }
 
   function checkpoints() -> Integer? {
-    if (x.empty() && y.empty()) {
-      return nil;
-    } else {
-      return max(x.size(), y.size());
-    }
+    /* one checkpoint for the parameters, then one for each time */
+    return 1 + max(x.size(), y.size());
   }
 
   function read(buffer:Buffer) {

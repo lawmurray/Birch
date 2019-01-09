@@ -23,38 +23,31 @@ class MarkovModel<Parameter,State> < Model {
   x:List<State>;
 
   fiber simulate() -> Real {
-    /* iterate through given times (those with clamped values)  */
-    x':State! <- this.x.walk();
-    x:State?;
-    while (x'?) {
+    f:State! <- this.x.walk();
+    x:State?;  // previous state
+    x':State?;  // current state
+
+    yield sum(parameter(θ));
+    while (true) {
+      if (f?) {  // is the next state given?
+        x' <- f!;
+      } else {
+        o:State;
+        this.x.pushBack(o);
+        x' <- o;
+      }
       if (x?) {
         yield sum(transition(x'!, x!, θ));
       } else {
-        yield sum(parameter(θ)) + sum(initial(x'!, θ));
-      }
-      x <- x'!;
-    }
-    
-    /* indefinitely generate future states */
-    while (true) {
-      x':State;
-      this.x.pushBack(x');
-      
-      if (x?) {
-        yield sum(transition(x', x!, θ));
-      } else {
-        yield sum(parameter(θ)) + sum(initial(x', θ));
+        yield sum(initial(x'!, θ));
       }
       x <- x';
     }
   }
-
+    
   function checkpoints() -> Integer? {
-    if (x.empty()) {
-      return nil;
-    } else {
-      return x.size();
-    }
+    /* one checkpoint for the parameters, then one for each time */
+    return 1 + x.size();
   }
      
   /**
@@ -78,6 +71,20 @@ class MarkovModel<Parameter,State> < Model {
     //
   }
 
+  /**
+   * Parameter proposal.
+   */
+  fiber parameterProposal(θ':Parameter, θ:Parameter) -> Real {
+    parameter(θ');
+  }
+  
+  /**
+   * Initial proposal.
+   */
+  fiber initialProposal(x':State, x:State, θ:Parameter) -> Real {
+    initial(x', θ);
+  }
+  
   function read(buffer:Buffer) {
     buffer.get("θ", θ);
     buffer.get("x", x);

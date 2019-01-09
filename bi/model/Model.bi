@@ -15,11 +15,10 @@ class Model {
   }
   
   /**
-   * Get the natural number of checkpoints for this model as configured, if
-   * this can be known in advance.
+   * Propose.
    */
-  function checkpoints() -> Integer? {
-    return nil;
+  fiber propose(m:Model) -> Real {
+    simulate();
   }
 
   /**
@@ -42,5 +41,13 @@ class Model {
     } else {
       return 0.0;
     }
+  }
+
+  /**
+   * Get the natural number of checkpoints for this model as configured, if
+   * this can be known in advance.
+   */
+  function checkpoints() -> Integer? {
+    return nil;
   }
 }

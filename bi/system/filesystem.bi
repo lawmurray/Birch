@@ -9,11 +9,15 @@ APPEND:Integer <- 3;
 /**
  * Create a directory.
  *
- * - path: Path of the directory.
+ * - path: Path of the directory, or path of a file in the directory.
  */
 function mkdir(path:String) {
   cpp{{
-  boost::filesystem::create_directories(path_);
+  boost::filesystem::path path = path_;
+  if (!boost::filesystem::is_directory(path)) {
+    path = path.parent_path();
+  }
+  boost::filesystem::create_directories(path);
   }}
 }
 
