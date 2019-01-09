@@ -76,17 +76,17 @@ program draw(input:String <- "output/simulate.json",
   /* lines and points marking latent tracks */
   z <- inputBuffer.walk("z");
   while z? {
-    auto X <- z!.getRealMatrix("x");
-    if X? {
+    auto x <- z!.getRealMatrix("x");
+    if x? {
       cr.setLineWidth(4.0*fat/scale);
-      cr.moveTo(X![1,1], X![1,2]);
-      for i:Integer in 2..rows(X!) {
-        cr.lineTo(X![i,1], X![i,2]);
+      cr.moveTo(x![1,1], x![1,2]);
+      for i:Integer in 2..rows(x!) {
+        cr.lineTo(x![i,1], x![i,2]);
       }
       cr.stroke();
 
-      for i:Integer in 2..rows(X!) {
-        cr.arc(X![i,1], X![i,2], 4.0*fat/scale, 0.0, 2.0*π);
+      for i:Integer in 2..rows(x!) {
+        cr.arc(x![i,1], x![i,2], 4.0*fat/scale, 0.0, 2.0*π);
         cr.fill();
       }
     }
@@ -95,18 +95,20 @@ program draw(input:String <- "output/simulate.json",
   /* start time labels for latent tracks */
   z <- inputBuffer.walk("z");
   while z? {
-    auto t <- z!.getInteger("t")!;
-    auto X <- z!.getRealMatrix("x");
+    auto t <- z!.getInteger("t");
+    auto x <- z!.getRealMatrix("x");
     
-    cr.setLineWidth(2.0*fat/scale);
-    cr.setSourceRGB(col[1], col[2], col[3]);
-    cr.arc(X![1,1], X![1,2], 10.0*fat/scale, 0.0, 2.0*π);
-    cr.fill();
+    if t? && x? {
+      cr.setLineWidth(2.0*fat/scale);
+      cr.setSourceRGB(col[1], col[2], col[3]);
+      cr.arc(x![1,1], x![1,2], 10.0*fat/scale, 0.0, 2.0*π);
+      cr.fill();
         
-    cr.setSourceRGB(1.0, 1.0, 1.0);
-    cr.setFontSize(0.5);
-    cr.moveTo(X![1,1] - 0.26, X![1,2] + 0.15);
-    cr.showText(String(t));
+      cr.setSourceRGB(1.0, 1.0, 1.0);
+      cr.setFontSize(0.5);
+      cr.moveTo(x![1,1] - 0.26, x![1,2] + 0.15);
+      cr.showText(String(t!));
+    }
   }
   
   /* destroy the surface (triggers save) */
