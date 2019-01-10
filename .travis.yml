@@ -29,7 +29,7 @@ before_install:
       export CXX=g++-7;
       export CXXFLAGS="-DBOOST_NO_CXX11_SCOPED_ENUMS";
     elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-      brew install flex bison;
+      HOMEBREW_NO_AUTO_UPDATE=1 brew install flex bison;
     fi
 script:
   - ./autogen.sh && ./configure && make && sudo make install
