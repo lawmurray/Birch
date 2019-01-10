@@ -34,7 +34,8 @@ class Multi < StateSpaceModel<Global,List<Track>,List<Random<Real[_]>>> {
       track.t <- t;
       track.θ <- θ;
       track.start();
-      track.step();  // advance to initial state
+      track.step();  // to parameters
+      track.step();  // to initial time
       x'.pushBack(track);
       z.pushBack(track);
     }
