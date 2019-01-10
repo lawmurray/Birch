@@ -6,6 +6,7 @@
 bi::Counted::Counted() :
     sharedCount(0),
     weakCount(1),
+    memoCount(0),
     size(0) {
   //
 }
@@ -13,6 +14,7 @@ bi::Counted::Counted() :
 bi::Counted::Counted(const Counted& o) :
     sharedCount(0),
     weakCount(1),
+    memoCount(0),
     size(o.size) {
   //
 }
@@ -84,6 +86,7 @@ void bi::Counted::incMemo() {
 void bi::Counted::decMemo() {
   /* the order of operations here is important, as the weak count should
    * never be less than the memo count */
+  assert(memoCount > 0);
   --memoCount;
   decWeak();
 }
