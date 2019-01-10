@@ -124,6 +124,8 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   } else {
     finish(" {");
     in();
+    line("if (!this->isFrozen()) {");
+    in();
     line("super_type::freeze();");
     line("bi::freeze(self);");
     line("bi::freeze(value);");
@@ -133,6 +135,8 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     for (auto local : locals) {
       line("bi::freeze(" << getName(local->name->str(), local->number) << ");");
     }
+    out();
+    line("}");
     out();
     line("}\n");
   }

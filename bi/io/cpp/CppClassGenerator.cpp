@@ -173,10 +173,14 @@ void bi::CppClassGenerator::visit(const Class* o) {
       } else {
         finish(" {");
         in();
+        line("if (!this->isFrozen()) {");
+        in();
         line("super_type::freeze();");
         for (auto o : memberVariables) {
           line("bi::freeze(" << o->name << ");");
         }
+        out();
+        line("}");
         out();
         line("}\n");
       }

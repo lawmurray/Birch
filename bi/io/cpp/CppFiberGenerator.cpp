@@ -110,6 +110,8 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     } else {
       finish(" {");
       in();
+      line("if (!this->isFrozen()) {");
+      in();
       line("super_type::freeze();");
       line("bi::freeze(value);");
       for (auto param : params) {
@@ -118,6 +120,8 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       for (auto local : locals) {
         line("bi::freeze(" << getName(local->name->str(), local->number) << ");");
       }
+      out();
+      line("}");
       out();
       line("}\n");
     }
