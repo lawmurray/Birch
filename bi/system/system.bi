@@ -7,7 +7,8 @@
  */
 function system(cmd:String) -> Integer {
   cpp{{
-  return std::system(cmd_.c_str());
+  int ret = std::system(cmd_.c_str());
+  return WEXITSTATUS(ret);
   }}
 }
 
