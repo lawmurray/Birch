@@ -29,6 +29,7 @@ public:
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
+  virtual bool isValue() const;
   virtual bool isEmpty() const;
 
   using Type::definitely;

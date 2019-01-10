@@ -22,7 +22,7 @@ bool bi::Type::isEmpty() const {
 }
 
 bool bi::Type::isValue() const {
-  return true;
+  return false;
 }
 
 bool bi::Type::isBasic() const {

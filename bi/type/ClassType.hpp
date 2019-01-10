@@ -53,7 +53,6 @@ public:
    */
   virtual ~ClassType();
 
-  virtual bool isValue() const;
   virtual bool isClass() const;
   virtual Class* getClass() const;
 

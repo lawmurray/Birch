@@ -34,6 +34,10 @@ void bi::BasicType::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
+bool bi::BasicType::isValue() const {
+  return true;
+}
+
 bool bi::BasicType::isBasic() const {
   return true;
 }

@@ -98,6 +98,30 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       line("STANDARD_DESTROY_FUNCTION");
     }
 
+    /* freeze function */
+    if (header) {
+      start("virtual void ");
+    } else {
+      start("void bi::type::" << stateName << "::");
+    }
+    middle("freeze()");
+    if (header) {
+      finish(';');
+    } else {
+      finish(" {");
+      in();
+      line("super_type::freeze();");
+      line("bi::freeze(value);");
+      for (auto param : params) {
+        line("bi::freeze(" << param->name << ");");
+      }
+      for (auto local : locals) {
+        line("bi::freeze(" << getName(local->name->str(), local->number) << ");");
+      }
+      out();
+      line("}\n");
+    }
+
     /* query function */
     if (header) {
       start("virtual ");

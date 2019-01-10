@@ -48,16 +48,18 @@ void bi::CppClassGenerator::visit(const Class* o) {
           genTemplateArgs(o);
           finish(';');
           line("using this_type = class_type;");
-          if (!o->base->isEmpty()) {
+          if (o->base->isEmpty()) {
+            line("using super_type = Any;");
+          } else {
             ++inPointer;
             line("using super_type = " << o->base << ';');
-            line("");
-            line("using super_type::operator=;");
           }
+          line("");
+          line("using super_type::operator=;");
           line("");
 
           /* using declarations for member functions and fibers in base classes
-           * that are overriden */
+           * that are overridden */
           std::set<std::string> names;
           for (auto f : memberFunctions) {
             if (o->scope->override(f)) {
@@ -101,11 +103,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
         finish(" :");
         in();
         in();
-        if (o->base->isEmpty()) {
-          middle("Any(");
-        } else {
-          start("super_type(");
-        }
+        start("super_type(");
         if (!o->args->isEmpty()) {
           middle(o->args);
         }
@@ -159,6 +157,28 @@ void bi::CppClassGenerator::visit(const Class* o) {
         line("STANDARD_EMPLACE_FUNCTION");
         line("STANDARD_CLONE_FUNCTION");
         line("STANDARD_DESTROY_FUNCTION");
+      }
+
+      /* freeze function */
+      if (header) {
+        start("virtual void ");
+      } else {
+        start("void bi::type::" << o->name);
+        genTemplateArgs(o);
+        middle("::");
+      }
+      middle("freeze()");
+      if (header) {
+        finish(';');
+      } else {
+        finish(" {");
+        in();
+        line("super_type::freeze();");
+        for (auto o : memberVariables) {
+          line("bi::freeze(" << o->name << ");");
+        }
+        out();
+        line("}\n");
       }
 
       /* member variables and functions */

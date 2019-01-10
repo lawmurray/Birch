@@ -37,6 +37,7 @@ public:
    */
   virtual ~BasicType();
 
+  virtual bool isValue() const;
   virtual bool isBasic() const;
   virtual Basic* getBasic() const;
 
