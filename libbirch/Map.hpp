@@ -88,9 +88,14 @@ public:
   void remove(const key_type key);
 
   /**
-   * Erase any entries in the table that are unreachable.
+   * Erase all entries in the map that are unreachable.
    */
   void clean();
+
+  /**
+   * Freeze all values in the map.
+   */
+  void freeze();
 
 private:
   /**

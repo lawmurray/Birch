@@ -12,6 +12,8 @@
 #include "libbirch/class.hpp"
 #include "libbirch/memory.hpp"
 #include "libbirch/stacktrace.hpp"
+#include "libbirch/clone.hpp"
+#include "libbirch/freeze.hpp"
 
 #include "libbirch/Span.hpp"
 #include "libbirch/Index.hpp"

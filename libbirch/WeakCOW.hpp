@@ -220,12 +220,7 @@ public:
 
   Any* get() {
     #if USE_LAZY_DEEP_CLONE
-    auto forward = memo->forwardGet();
-    if (forward != memo.get()) {
-      object = forward->getParent()->deep(object.get());
-      memo = forward;
-    }
-    object = forward->get(object.get());
+    object = memo->get(object.get())->getForward();
     #endif
     return object.get();
   }
@@ -238,12 +233,10 @@ public:
 
   Any* pull() {
     #if USE_LAZY_DEEP_CLONE
-    auto forward = memo->forwardPull();
-    if (forward != memo.get()) {
-      object = forward->getParent()->deep(object.get());
-      memo = forward;
+    object = memo->pull(object.get());
+    if (object.get()->getContext() == memo.get()) {
+      object = object.get()->getForward();
     }
-    object = forward->pull(object.get());
     #endif
     return object.get();
   }

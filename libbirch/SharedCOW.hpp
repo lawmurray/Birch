@@ -205,12 +205,7 @@ public:
 
   Any* get() {
     #if USE_LAZY_DEEP_CLONE
-    auto forward = memo->forwardGet();
-    if (forward != memo.get()) {
-      object = forward->getParent()->deep(object.get());
-      memo = forward;
-    }
-    object = forward->get(object.get());
+    object = memo->get(object.get())->getForward();
     #endif
     return object.get();
   }
@@ -223,12 +218,10 @@ public:
 
   Any* pull() {
     #if USE_LAZY_DEEP_CLONE
-    auto forward = memo->forwardPull();
-    if (forward != memo.get()) {
-      object = forward->getParent()->deep(object.get());
-      memo = forward;
+    object = memo->pull(object.get());
+    if (object->getContext() == memo.get()) {
+      object = object->getForward();
     }
-    object = forward->pull(object.get());
     #endif
     return object.get();
   }
@@ -240,13 +233,22 @@ public:
   }
 
   SharedCOW<Any> clone() const {
-    auto o = pull();
-    auto m = memo->forwardPull()->fork();
+    auto o = this->pull();
+    auto m = memo->fork();
+    if (!o->isFrozen()) {
+      o->freeze();
+    }
     SharedCOW<Any> result(o, m);
     #if !USE_LAZY_DEEP_CLONE
     result.get();
     #endif
     return result;
+  }
+
+  void freeze() {
+    if (!object->isFrozen()) {
+      object->freeze();
+    }
   }
 
   Memo* getContext() const {

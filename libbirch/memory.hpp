@@ -202,21 +202,3 @@ void deallocate(void* ptr, const unsigned n);
  */
 void* reallocate(void* ptr1, const size_t n1, const size_t n2);
 }
-
-#include "libbirch/Allocator.hpp"
-#include "libbirch/Memo.hpp"
-
-namespace bi {
-/**
- * Is a clone currently underway?
- */
-extern bool cloneUnderway;
-#pragma omp threadprivate(cloneUnderway)
-
-/**
- * The memo object associated with new objects.
- */
-extern SharedPtr<Memo> currentContext;
-#pragma omp threadprivate(currentContext)
-
-}

@@ -22,17 +22,11 @@ public:
 
 protected:
   /**
-   * Constructor. Creates the root memo.
-   */
-  Memo();
-
-  /**
    * Constructor.
    *
    * @param parent Parent.
-   * @param isForwarding Is this the forwarding child of the parent?
    */
-  Memo(Memo* parent, const bool isForwarding);
+  Memo(Memo* parent = nullptr);
 
   /**
    * Destructor.
@@ -51,13 +45,9 @@ public:
   bool hasAncestor(Memo* memo) const;
 
   /**
-   * Fork.
+   * Fork to create a new child memo for cloning.
    *
    * @return The clone memo.
-   *
-   * Forks the memo, creating two children, one for cloning, one for
-   * forwarding. Returns the former. The latter may be retrieved with
-   * forwardGet().
    */
   Memo* fork();
 
@@ -67,24 +57,9 @@ public:
   void clean();
 
   /**
-   * Forward.
-   *
-   * @return If the memo has previously been forked, returns the forwarding
-   * child, otherwise returns this.
+   * Freeze all values in the memo.
    */
-  Memo* forwardGet();
-
-  /**
-   * Forward.
-   *
-   * @return If the memo has previously been forked, returns the child for
-   * forwarding, otherwise returns this, subject to optimization. In the
-   * special case where the memo has previously been forked, but it has not
-   * yet been necessary to clone any objects to the forwarding child, returns
-   * this instead, as an optimization to reduce the depth of the memo tree
-   * (by increasing its breadth).
-   */
-  Memo* forwardPull();
+  void freeze();
 
   /**
    * Get the parent memo.
@@ -123,26 +98,8 @@ public:
 
 private:
   /**
-   * Parent memo if this is a cloning memo. This is a shared pointer, and the
-   * parent will have no pointer to this.
+   * Parent memo.
    */
-  SharedPtr<Memo> cloneParent;
-
-  /**
-   * Parent memo if this is a forwarding memo. This is a weak pointer, and
-   * the parent will have a shared pointer to this.
-   */
-  WeakPtr<Memo> forwardParent;
-
-  /**
-   * Child for forwarding, if any. This is a shared pointer, and the child
-   * will have a weak pointer to this.
-   */
-  SharedPtr<Memo> forwardChild;
-
-  /**
-   * Has this been forked?
-   */
-  bool isForked;
+  SharedPtr<Memo> parent;
 };
 }

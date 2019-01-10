@@ -28,6 +28,11 @@ public:
   Fiber<YieldType> clone() const;
 
   /**
+   * Freeze the fiber.
+   */
+  void freeze();
+
+  /**
    * Get the context of the fiber state.
    */
   Memo* getContext() const;
@@ -62,6 +67,11 @@ bi::Fiber<YieldType>::Fiber(
 template<class YieldType>
 bi::Fiber<YieldType> bi::Fiber<YieldType>::clone() const {
   return Fiber<YieldType>(state.clone());
+}
+
+template<class YieldType>
+void bi::Fiber<YieldType>::freeze() {
+  state.freeze();
 }
 
 template<class YieldType>

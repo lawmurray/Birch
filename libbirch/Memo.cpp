@@ -6,15 +6,7 @@
 #include "libbirch/SwapClone.hpp"
 #include "libbirch/SwapContext.hpp"
 
-bi::Memo::Memo() :
-    isForked(false) {
-  //
-}
-
-bi::Memo::Memo(Memo* parent, const bool isForwarding) :
-    cloneParent(isForwarding ? nullptr : parent),
-    forwardParent(isForwarding ? parent : nullptr),
-    isForked(false) {
+bi::Memo::Memo(Memo* parent) : parent(parent) {
   //
 }
 
@@ -28,48 +20,19 @@ bool bi::Memo::hasAncestor(Memo* memo) const {
 }
 
 bi::Memo* bi::Memo::fork() {
-  #if USE_LAZY_DEEP_CLONE
-  isForked = true;
-  #endif
-  return create(this, false);
+  return create(this);
 }
 
 void bi::Memo::clean() {
-  /* for current use cases, just clean the current memo, not parents */
-  //auto parent = getParent();
-  //if (parent) {
-  //  parent->clean();
-  //}
   clones.clean();
 }
 
-bi::Memo* bi::Memo::forwardGet() {
-  #if USE_LAZY_DEEP_CLONE
-  ///@todo make this thread safe
-  if (forwardChild) {
-    return forwardChild->forwardGet();
-  } else if (isForked) {
-    forwardChild = create(this, true);
-    clean();
-    return forwardChild.get();
-  } else {
-    return this;
-  }
-  #else
-  return this;
-  #endif
-}
-
-bi::Memo* bi::Memo::forwardPull() {
-  #if USE_LAZY_DEEP_CLONE
-  return forwardChild ? forwardChild->forwardPull() : this;
-  #else
-  return this;
-  #endif
+void bi::Memo::freeze() {
+  clones.freeze();
 }
 
 bi::SharedPtr<bi::Memo> bi::Memo::getParent() const {
-  return cloneParent ? cloneParent : SharedPtr<Memo>(forwardParent);
+  return parent;
 }
 
 bi::Any* bi::Memo::get(Any* o) {

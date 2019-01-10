@@ -8,6 +8,7 @@
 #include <utility>
 #include <functional>
 #include <initializer_list>
+#include <tuple>
 #include <memory>
 #include <atomic>
 #include <vector>
@@ -97,9 +98,11 @@
  */
 #define STANDARD_CLONE_FUNCTION \
   virtual class_type* clone() const { \
+    assert(frozen); \
     return emplace(allocate<sizeof(class_type)>(), *this); \
   } \
   virtual class_type* clone(void* ptr) const { \
+    assert(frozen); \
     return emplace(ptr, *this); \
   }
 

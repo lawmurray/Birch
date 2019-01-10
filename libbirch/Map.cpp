@@ -221,3 +221,24 @@ void bi::Map::clean() {
   }
   lock.unshare();
 }
+
+void bi::Map::freeze() {
+  lock.share();
+  key_type key;
+  value_type value;
+  for (size_t i = 0u; i < nentries; ++i) {
+    key = entries[i].split.key;
+    if (key != EMPTY && key != ERASED) {
+      value = entries[i].split.value;
+      if (!key->isReachable()) {
+        /* clean as we go */
+        entries[i].split.key = ERASED;
+        key->decMemo();
+        value->decShared();
+      } else if (!value->isFrozen()) {
+        value->freeze();
+      }
+    }
+  }
+  lock.unshare();
+}
