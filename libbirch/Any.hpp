@@ -81,9 +81,11 @@ protected:
   WeakPtr<Memo> context;
 
   /**
-   * If frozen, object to which to forward.
+   * If frozen, object to which to forward. This must be thread safe, and
+   * so an atomic raw pointer is used, with manual shared reference count
+   * maintenance.
    */
-  SharedPtr<Any> forward;
+  std::atomic<Any*> forward;
 
   /**
    * Is this object frozen (as a result of being lazily cloned)?

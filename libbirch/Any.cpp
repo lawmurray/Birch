@@ -7,6 +7,7 @@
 
 bi::Any::Any() :
     context(currentContext),
+    forward(nullptr),
 	  frozen(false) {
   //
 }
@@ -14,12 +15,16 @@ bi::Any::Any() :
 bi::Any::Any(const Any& o) :
     Counted(o),
     context(currentContext),
+    forward(nullptr),
 	  frozen(false) {
   //
 }
 
 bi::Any::~Any() {
-  //
+  Any* forward = this->forward;  // load from atomic just once
+  if (forward) {
+    forward->decShared();
+  }
 }
 
 bool bi::Any::isFrozen() const {
@@ -32,24 +37,33 @@ void bi::Any::freeze() {
 
 bi::Any* bi::Any::getForward() {
   if (frozen) {
+    Any* forward = this->forward;  // load from atomic just once
     if (!forward) {
-      ///@todo Race condition
       SwapClone swapClone(true);
       SwapContext swapContext(context.get());
-      forward = this->clone();
+      Any* cloned = this->clone();
+      cloned->incShared();
+      if (this->forward.compare_exchange_strong(forward, cloned)) {
+        return cloned;
+      } else {
+        /* beaten by another thread */
+        cloned->decShared();
+      }
     }
-    return forward.get();
+    return forward;
   } else {
     return this;
   }
 }
 
 bi::Any* bi::Any::pullForward() {
-  if (frozen && forward) {
-    return forward.get();
-  } else {
-    return this;
+  if (frozen) {
+    Any* forward = this->forward;  // load from atomic just once
+    if (forward) {
+      return forward;
+    }
   }
+  return this;
 }
 
 bi::Memo* bi::Any::getContext() {
