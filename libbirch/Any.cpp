@@ -44,6 +44,14 @@ bi::Any* bi::Any::getForward() {
   }
 }
 
+bi::Any* bi::Any::pullForward() {
+  if (frozen && forward) {
+    return forward.get();
+  } else {
+    return this;
+  }
+}
+
 bi::Memo* bi::Any::getContext() {
   return context.get();
 }

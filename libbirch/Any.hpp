@@ -58,10 +58,16 @@ public:
   virtual void freeze();
 
   /**
-   * Get the object to which to forward if this object is frozen, otherwise
-   * `this`.
+   * If this object is frozen, return the object to which it should forward,
+   * otherwise `this`.
    */
   Any* getForward();
+
+  /**
+   * If this object is frozen, and the object to which it should forward has
+   * already been created, return that object, otherwise `this`.
+   */
+  Any* pullForward();
 
   /**
    * Get the memo responsible for the creation of this object.

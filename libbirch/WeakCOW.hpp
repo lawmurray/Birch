@@ -235,7 +235,7 @@ public:
     #if USE_LAZY_DEEP_CLONE
     object = memo->pull(object.get());
     if (object.get()->getContext() == memo.get()) {
-      object = object.get()->getForward();
+      object = object.get()->pullForward();
     }
     #endif
     return object.get();

@@ -230,13 +230,13 @@ void bi::Map::freeze() {
     key = entries[i].split.key;
     if (key != EMPTY && key != ERASED) {
       value = entries[i].split.value;
-      if (!key->isReachable()) {
+      if (key->isReachable()) {
+        value->freeze();
+      } else {
         /* clean as we go */
         entries[i].split.key = ERASED;
         key->decMemo();
         value->decShared();
-      } else if (!value->isFrozen()) {
-        value->freeze();
       }
     }
   }

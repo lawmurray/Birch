@@ -220,7 +220,7 @@ public:
     #if USE_LAZY_DEEP_CLONE
     object = memo->pull(object.get());
     if (object->getContext() == memo.get()) {
-      object = object->getForward();
+      object = object->pullForward();
     }
     #endif
     return object.get();
@@ -235,10 +235,8 @@ public:
   SharedCOW<Any> clone() const {
     auto o = this->pull();
     auto m = memo->fork();
-    if (!o->isFrozen()) {
-      o->freeze();
-    }
     SharedCOW<Any> result(o, m);
+    o->freeze();
     #if !USE_LAZY_DEEP_CLONE
     result.get();
     #endif
@@ -246,8 +244,10 @@ public:
   }
 
   void freeze() {
-    if (!object->isFrozen()) {
+    if (object) {
+      object = memo->pull(object.get());
       object->freeze();
+      memo->freeze();
     }
   }
 
