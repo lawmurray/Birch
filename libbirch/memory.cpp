@@ -12,6 +12,12 @@ char* bi::bufferStart;
 size_t bi::bufferSize;
 bi::Pool bi::pool[64];
 
+/* from clone.hpp, put here rather than clone.cpp to ensure correct
+ * initialization order of global variables */
+static bi::SharedPtr<bi::Memo> rootMemo = bi::Memo::create();
+bi::SharedPtr<bi::Memo> bi::currentContext = rootMemo.get();
+bool bi::cloneUnderway = false;
+
 char* bi::heap() {
 #if !USE_MEMORY_POOL
   return nullptr;

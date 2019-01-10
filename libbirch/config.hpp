@@ -36,7 +36,7 @@
  * (Incidentally, may also need to disable OpenMP, at least on macOS.)
  */
 #ifndef USE_MEMORY_POOL
-#define USE_MEMORY_POOL 0
+#define USE_MEMORY_POOL 1
 #endif
 
 /**

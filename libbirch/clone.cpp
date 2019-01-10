@@ -3,6 +3,5 @@
  */
 #include "libbirch/clone.hpp"
 
-static bi::SharedPtr<bi::Memo> rootMemo = bi::Memo::create();
-bi::SharedPtr<bi::Memo> bi::currentContext = rootMemo.get();
-bool bi::cloneUnderway = false;
+/* see memory.cpp, where variables in clone.hpp are defined to ensure correct
+ * initialization order of global variables */
