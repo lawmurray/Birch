@@ -206,6 +206,7 @@ public:
   Any* get() {
     #if USE_LAZY_DEEP_CLONE
     object = memo->get(object.get())->getForward();
+    assert(!object->isFrozen());
     #endif
     return object.get();
   }
@@ -234,9 +235,9 @@ public:
 
   SharedCOW<Any> clone() const {
     auto o = this->pull();
+    o->freeze();
     auto m = memo->fork();
     SharedCOW<Any> result(o, m);
-    o->freeze();
     #if !USE_LAZY_DEEP_CLONE
     result.get();
     #endif

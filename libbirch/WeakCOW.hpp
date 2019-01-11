@@ -221,6 +221,7 @@ public:
   Any* get() {
     #if USE_LAZY_DEEP_CLONE
     object = memo->get(object.get())->getForward();
+    assert(!object.get()->isFrozen());
     #endif
     return object.get();
   }
@@ -245,6 +246,17 @@ public:
     /* even in a const context, do want to update the pointer through lazy
      * deep clone mechanisms */
     return const_cast<WeakCOW<Any>*>(this)->pull();
+  }
+
+  void freeze() {
+    if (object) {
+      object = memo->pull(object.get());
+      SharedPtr<Any> shared(object);
+      if (shared) {
+        shared->freeze();
+      }
+      memo->freeze();
+    }
   }
 
   Memo* getContext() const {

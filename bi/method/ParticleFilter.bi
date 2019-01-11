@@ -124,7 +124,7 @@ class ParticleFilter < Sampler {
    * Step particles to the next checkpoint.
    */
   function step() -> Boolean {
-    if (!r.empty()) {
+    if (!ess.empty()) {
       r.pushBack(ess.back() < trigger*nparticles);
       if (r.back()) {
         resample();

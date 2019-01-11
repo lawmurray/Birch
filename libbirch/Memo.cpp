@@ -50,6 +50,7 @@ bi::Any* bi::Memo::get(Any* o) {
        * destroy any additional objects */
       SwapClone swapClone(true);
       SwapContext swapContext(this);
+      assert(o->isFrozen());
       SharedPtr<Any> cloned = o->clone();
       // ^ use shared to clean up if beaten by another thread
       result = clones.put(o, cloned.get());

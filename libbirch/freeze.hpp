@@ -27,11 +27,20 @@ void freeze(SharedCOW<T>& o) {
 }
 
 template<class T>
-void freeze(std::function<T>& o) {
-  assert(false);
-  /// @todo Need to freeze any objects in the closure here, which may require
-  /// a custom implementation of lambda functions in a similar way to fibers,
-  /// rather than using std::function
+void freeze(WeakCOW<T>& o) {
+  o.freeze();
+}
+
+template<class T>
+void freeze(Fiber<T>& o) {
+  o.freeze();
+}
+
+template<class T, class F>
+void freeze(Array<T,F>& o) {
+  for (auto x : o) {
+    freeze(x);
+  }
 }
 
 template<class T>
@@ -49,15 +58,11 @@ void freeze(Optional<T>& o) {
 }
 
 template<class T>
-void freeze(Fiber<T>& o) {
-  o.freeze();
-}
-
-template<class T, class F>
-void freeze(Array<T,F>& o) {
-  for (auto x : o) {
-    freeze(x);
-  }
+void freeze(std::function<T>& o) {
+  assert(false);
+  /// @todo Need to freeze any objects in the closure here, which may require
+  /// a custom implementation of lambda functions in a similar way to fibers,
+  /// rather than using std::function
 }
 
 template<int i, class ... Args>
