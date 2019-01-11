@@ -32,6 +32,48 @@ function vector(x:Boolean, length:Integer) -> Boolean[_] {
 }
 
 /**
+ * Create vector filled with a sequentially incrementing values.
+ *
+ * - x: Initial value.
+ * - length: Length.
+ */
+function iota(x:Real, length:Integer) -> Real[_] {
+  z:Real[length];
+  cpp{{
+  std::iota(z_.begin(), z_.end(), x_);
+  }}
+  return z;
+}
+
+/**
+ * Create vector filled with a sequentially incrementing values.
+ *
+ * - x: Initial value.
+ * - length: Length.
+ */
+function iota(x:Integer, length:Integer) -> Integer[_] {
+  z:Integer[length];
+  cpp{{
+  std::iota(z_.begin(), z_.end(), x_);
+  }}
+  return z;
+}
+
+/**
+ * Create vector filled with a sequentially incrementing values.
+ *
+ * - x: Initial value.
+ * - length: Length.
+ */
+function iota(x:Boolean, length:Integer) -> Boolean[_] {
+  z:Boolean[length];
+  cpp{{
+  std::iota(z_.begin(), z_.end(), x_);
+  }}
+  return z;
+}
+
+/**
  * Convert single-element vector to scalar value.
  */
 function scalar(x:Real[_]) -> Real {

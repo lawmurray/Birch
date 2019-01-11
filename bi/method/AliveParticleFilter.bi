@@ -8,90 +8,96 @@ class AliveParticleFilter < ParticleFilter {
    * For each checkpoint, the number of propagations that were performed to
    * achieve $N$ acceptances.
    */
-  propagations:List<Integer>;
+  P:List<Integer>;
 
-  function initialize(m:Model) {
-    super.initialize(m);
-    propagations.clear();
+  function start(m:Model) {
+    super.start(m);
     trigger <- 1.0;  // always resample
+    P.clear();
   }
 
-  function propagate() -> Boolean {  
-    /* diagnostics */    
-    auto x0 <- x;
-    auto w0 <- w;
-    auto P <- 0;  // number of propagations
-    
-    /* propagate and weight until nparticles acceptances; the first
-     * nparticles proposals are drawn using the standard resampler, then each
-     * is propagated until it has non-zero weight, proposal alternatives with
-     * a categorical draw */  
-    auto continue <- true;
+  function propagate() -> Boolean {          
+    /* as `parallel for` is used below, an atomic is necessary to accumulate
+     * the total number of propagations; nested C++ is required for this at
+     * this stage */
     cpp {{
-    /* use an atomic to accumulate the number of propagations within the
-     * parallel loop */
     std::atomic<int> P;
     P = 0;
     }}
+
+    /* propagate and weight until `nparticles` have been accepted; the first
+     * `nparticles` proposals are drawn using the standard resampler; as each
+     * is rejected it is replaced with a categorical draw until acceptance */  
+    auto f0 <- f;
+    auto w0 <- w;
+    auto continue <- true;
     parallel for (n:Integer in 1..nparticles) {
-      v:Real?;
       do {
-        x[n] <- clone<Model>(x0[a[n]]);
-        v <- x[n].step();
-        if v? {
+        f[n] <- clone<(Model,Real)!>(f0[a[n]]);
+        if (f[n]?) {
+          (x[n], w[n]) <- f[n]!;
           cpp {{
           ++P;
           }}
-          if (v! == -inf) {
+          if (w[n] == -inf) {
+            /* replace with a categorical draw for next attempt */
             a[n] <- ancestor(w0);
-          } else {
-            w[n] <- v!;
           }
         } else {
           continue <- false;
         }
-      } while (continue && v! == -inf);
+      } while (continue && w[n] == -inf);
     }
-    cpp {{
-    P_ = P;
-    // can use the normal counter henceforth
-    }}
     
     if (continue) {
       /* propagate and weight until one further acceptance, that is discarded
        * for unbiasedness in the normalizing constant estimate */
-      v:Real?;
-      do {
-        auto x1 <- clone<Model>(x0[ancestor(w0)]);
-        v <- x1.step();
-        if v? {
-          P <- P + 1;
+     x1:Model?;
+     w1:Real;
+     do {
+        auto f1 <- clone<(Model,Real)!>(f0[ancestor(w0)]);
+        if (f1?) {
+          (x1, w1) <- f1!;
+          cpp {{
+          ++P;
+          }}
         } else {
           continue <- false;
         }
-      } while (continue && v! == -inf);
+      } while (continue && w1 == -inf);
     }
-    propagations.pushBack(P);
+    
+    /* update propagations */
+    P:Integer;
+    cpp {{
+    P_ = P;
+    }}
+    this.P.pushBack(P);
+    
     return continue;
   }
   
   function reduce() {
     /* effective sample size */
-    ess.pushBack(global.ess(w));
-    if (!(ess.back() > 0.0)) {  // may be nan
+    e.pushBack(ess(w));
+    if (!(e.back() > 0.0)) {  // > 0.0 as may be nan
       error("particle filter degenerated.");
     }
   
     /* normalizing constant estimate */
     auto W <- log_sum_exp(w);
-    auto P <- propagations.back();
-    w <- w - (W - log(P - 1));
-    Z <- Z + W - log(P - 1);
-    evidence.pushBack(Z);
+    auto P <- this.P.back();
+    auto Z <- W - log(P - 1);
+    w <- w - Z;
+    if (this.Z.empty()) {
+      this.Z.pushBack(Z);
+    } else {
+      this.Z.pushBack(this.Z.back() + Z);
+    }
   }
 
   function write(buffer:Buffer) {
     super.write(buffer);
-    buffer.set("propagations", propagations);
+    buffer.set("propagations", P);
   }
 }

@@ -44,7 +44,23 @@ class MarkovModel<Parameter,State> < Model {
       x <- x';
     }
   }
-    
+
+  function start() -> Real {
+    return sum(parameter(θ));
+  }
+
+  function step() -> Real {
+    w:Real <- 0.0;    
+    x':State;
+    if (x.empty()) {
+      w <- sum(initial(x', θ));
+    } else {
+      w <- sum(transition(x', x.back(), θ));
+    }
+    this.x.pushBack(x');
+    return w;
+  }
+
   function checkpoints() -> Integer? {
     /* one checkpoint for the parameters, then one for each time */
     return 1 + x.size();

@@ -5,17 +5,10 @@
  */
 class ParticleFilter < Sampler {
   /**
-   * Number of particles.
+   * Particle fibers.
    */
-  nparticles:Integer <- 1;
+  f:(Model,Real)![_];
   
-  /**
-   * Threshold for resampling. Resampling is performed whenever the
-   * effective sample size, as a proportion of `nparticles`, drops below this
-   * threshold.
-   */
-  trigger:Real <- 0.7;
-
   /**
    * Particles.
    */
@@ -32,31 +25,38 @@ class ParticleFilter < Sampler {
   a:Integer[_];
   
   /**
-   * Log-evidence.
-   */
-  Z:Real <- 0.0;
-  
-  /**
-   * Index of chosen path at end of filter.
+   * Index of the chosen path at the end of the filter.
    */
   b:Integer <- 0;
   
   /**
+   * For each checkpoint, the logarithm of the normalizing constant estimate
+   * so far.
+   */
+  Z:List<Real>;
+  
+  /**
    * For each checkpoint, the effective sample size (ESS).
    */
-  ess:List<Real>;
+  e:List<Real>;
   
   /**
    * For each checkpoint, was resampling performed?
    */
   r:List<Boolean>;
+    
+  /**
+   * Number of particles.
+   */
+  nparticles:Integer <- 1;
   
   /**
-   * For each checkpoint, the logarithm of the normalizing constant estimate
-   * up to that checkpoint.
+   * Threshold for resampling. Resampling is performed whenever the
+   * effective sample size, as a proportion of `nparticles`, drops below this
+   * threshold.
    */
-  evidence:List<Real>;
-  
+  trigger:Real <- 0.7;
+
   fiber sample(m:Model) -> (Model, Real) {
     /* if a number of checkpoints hasn't been explicitly provided, compute
      * this from the model (may still be unknown by the model, too) */
@@ -66,8 +66,7 @@ class ParticleFilter < Sampler {
 
     /* sample */  
     for (i:Integer in 1..nsamples) {
-      initialize(m);
-      start();
+      start(m);
       if (verbose) {
         stderr.print("checkpoints:");
       }
@@ -82,50 +81,44 @@ class ParticleFilter < Sampler {
         error("particles terminated after " + t + " checkpoints, but " + ncheckpoints! + " requested.");
       }
       if (verbose) {
-        stderr.print(", log evidence: " + Z + "\n");
+        stderr.print(", log evidence: " + Z.back() + "\n");
       }
       finish();
-      yield (x[b], Z);
+      
+      w:Real <- 0.0;
+      if (!Z.empty()) {
+        w <- Z.back();
+      }
+      yield (x[b], w);
     }
   }
 
   /**
    * Initialize.
    */  
-  function initialize(m:Model) {
-    w <- vector(0.0, nparticles);
-    Z <- 0.0;
-    ess.clear();
-    r.clear();
-    evidence.clear();
-
-    /* this is a workaround at present for problems with nested clones: clone
-     * into a local variable first, then copy into the member variable */
+  function start(m:Model) {
+    auto f0 <- particle(m);
+    f1:(Model,Real)![nparticles];
     x1:Model[nparticles];
-    a1:Integer[nparticles];
     for n:Integer in 1..nparticles {
-      x1[n] <- clone<Model>(m);
-      a1[n] <- n;
+      f1[n] <- clone<(Model,Real)!>(f0);
+      x1[n] <- m;
     }
+    f <- f1;
     x <- x1;
-    a <- a1;
-  }
-  
-  /**
-   * Start particles.
-   */
-  function start() {
-    parallel for (n:Integer in 1..nparticles) {
-      x[n].start();
-    }
+    w <- vector(0.0, nparticles);
+    a <- iota(1, nparticles);
+    Z.clear();
+    e.clear();
+    r.clear();
   }
   
   /**
    * Step particles to the next checkpoint.
    */
   function step() -> Boolean {
-    if (!ess.empty()) {
-      r.pushBack(ess.back() < trigger*nparticles);
+    if (!e.empty()) {
+      r.pushBack(e.back() < trigger*nparticles);
       if (r.back()) {
         resample();
         copy();
@@ -149,14 +142,13 @@ class ParticleFilter < Sampler {
    * Copy particles after resampling.
    */
   function copy() {
-    /* this is a workaround at present for problems with nested clones: clone
-     * into local variables first, then update member variables */
-    auto x1 <- x;
+    /* there are couple of different strategies here: permute_ancestors()
+     * would avoid the use of the temporary f0, but f0 ensures that particles
+     * with the same ancestor are contiguous in f after the copy, which is
+     * more cache efficient */
+    auto f0 <- f;
     for n:Integer in 1..nparticles {
-      x1[n] <- clone<Model>(x[a[n]]);
-    }
-    x <- x1;
-    for n:Integer in 1..nparticles {
+      f[n] <- clone<(Model,Real)!>(f0[a[n]]);
       w[n] <- 0.0;
     }
   }
@@ -167,9 +159,10 @@ class ParticleFilter < Sampler {
   function propagate() -> Boolean {
     auto continue <- true;
     parallel for (n:Integer in 1..nparticles) {
-      auto v <- x[n].step();
-      if v? {
-        w[n] <- w[n] + v!;
+      w1:Real;
+      if f[n]? {
+        (x[n], w1) <- f[n]!;
+        w[n] <- w[n] + w1;
       } else {
         continue <- false;      
       }
@@ -182,23 +175,26 @@ class ParticleFilter < Sampler {
    */
   function reduce() {
     /* effective sample size */
-    ess.pushBack(global.ess(w));
-    if (!(ess.back() > 0.0)) {  // may be nan
+    e.pushBack(ess(w));
+    if (!(e.back() > 0.0)) {  // > 0.0 as may be nan
       error("particle filter degenerated.");
     }
   
     /* normalizing constant estimate */
     auto W <- log_sum_exp(w);
-    w <- w - (W - log(nparticles));
-    Z <- Z + (W - log(nparticles));
-    evidence.pushBack(Z);
+    auto Z <- W - log(nparticles);
+    w <- w - Z;
+    if (this.Z.empty()) {
+      this.Z.pushBack(Z);
+    } else {
+      this.Z.pushBack(this.Z.back() + Z);
+    }
   }  
 
   /**
    * Finish the filter.
    */
   function finish() {
-    /* choose single sample to yield */
     b <- ancestor(w);
     if (b <= 0) {
       error("particle filter degenerated.");
@@ -221,8 +217,15 @@ class ParticleFilter < Sampler {
     super.write(buffer);
     buffer.set("nparticles", nparticles);
     buffer.set("trigger", trigger);
-    buffer.set("ess", ess);
+    buffer.set("levidence", Z);
+    buffer.set("ess", e);
     buffer.set("resample", r);
-    buffer.set("levidence", evidence);
+  }
+}
+
+fiber particle(x:Model) -> (Model, Real) {
+  auto f <- x.simulate();
+  while (f?) {
+    yield (x, f!);
   }
 }

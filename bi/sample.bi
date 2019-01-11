@@ -72,7 +72,7 @@ program sample(
     m1:Model?;
     w1:Real;
     (m1, w1) <- f!;
-    
+        
     if (s!.nsamples > 1) {
       auto buffer <- outputBuffer.push();
       buffer.set(m1!);

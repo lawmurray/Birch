@@ -27,10 +27,9 @@ class StateSpaceModel<Parameter,State,Observation> <
     x':State?;  // current state
     y':Observation?;  // current observation
 
-    w:Real <- sum(parameter(θ));
-    yield w;
-    
+    yield start();
     while (true) {
+      w:Real <- 0.0;
       if (f?) {  // is the next state given?
         x' <- f!;
       } else {
@@ -55,6 +54,25 @@ class StateSpaceModel<Parameter,State,Observation> <
       w <- w + sum(observation(y'!, x'!, θ));
       yield w;
     }
+  }
+
+  function step() -> Real {
+    assert x.size() == y.size();
+    w:Real <- 0.0;
+    
+    x':State;
+    if (x.empty()) {
+      w <- sum(initial(x', θ));
+    } else {
+      w <- sum(transition(x', x.back(), θ));
+    }
+    x.pushBack(x');
+    
+    y':Observation;
+    w <- w + sum(observation(y', x.back(), θ));
+    y.pushBack(y');
+    
+    return w;
   }
 
   function checkpoints() -> Integer? {
