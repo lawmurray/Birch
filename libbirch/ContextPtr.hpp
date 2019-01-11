@@ -46,8 +46,10 @@ public:
       if (o.memo != context) {
         memo = o.memo;
       }
-    } else if (o.context != context) {
-      memo = o.context;
+    } else {
+      if (o.context != context) {
+        memo = o.context;
+      }
     }
   }
 
@@ -61,8 +63,10 @@ public:
       if (o.memo != context) {
         memo = std::move(o.memo);
       }
-    } else if (o.context != context) {
-      memo = std::move(o.context);
+    } else {
+      if (o.context != context) {
+        memo = std::move(o.context);
+      }
     }
   }
 
@@ -81,11 +85,15 @@ public:
     if (o.memo) {
       if (o.memo != context) {
         memo = o.memo;
+      } else {
+        memo = nullptr;
       }
-    } else if (o.context != context) {
-      memo = o.context;
     } else {
-      memo = nullptr;
+      if (o.context != context) {
+        memo = o.context;
+      } else {
+        memo = nullptr;
+      }
     }
     return *this;
   }
@@ -97,11 +105,15 @@ public:
     if (o.memo) {
       if (o.memo != context) {
         memo = std::move(o.memo);
+      } else {
+        memo = nullptr;
       }
-    } else if (o.context != context) {
-      memo = std::move(o.context);
     } else {
-      memo = nullptr;
+      if (o.context != context) {
+        memo = std::move(o.context);
+      } else {
+        memo = nullptr;
+      }
     }
     return *this;
   }
