@@ -8,7 +8,7 @@ class Multi < StateSpaceModel<Global,List<Track>,List<Random<Real[_]>>> {
    * All tracks up to current time.
    */
   z:List<Track>;
-
+  
   fiber transition(x':List<Track>, x:List<Track>, θ:Global) -> Real {
     /* update time */
     t <- t + 1;
@@ -33,9 +33,8 @@ class Multi < StateSpaceModel<Global,List<Track>,List<Random<Real[_]>>> {
       track:Track;
       track.t <- t;
       track.θ <- θ;
-      track.start();
-      track.step();  // to parameters
-      track.step();  // to initial time
+      track.start();  // up to parameters
+      track.step();   // up to initial time
       x'.pushBack(track);
       z.pushBack(track);
     }
