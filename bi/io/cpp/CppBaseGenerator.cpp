@@ -48,7 +48,7 @@ void bi::CppBaseGenerator::visit(const Literal<const char*>* o) {
 
 void bi::CppBaseGenerator::visit(const Parentheses* o) {
   if (o->single->type->isList()) {
-    if (o->single->isAssignable()) {
+    if (inAssign) {
       middle("std::tie(" << o->single << ')');
     } else {
       middle("std::make_tuple(" << o->single << ')');

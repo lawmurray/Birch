@@ -102,7 +102,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     if (header) {
       start("virtual void ");
     } else {
-      start("void bi::type::" << stateName << "::");
+      start("void bi::" << stateName << "::");
     }
     middle("freeze()");
     if (header) {
