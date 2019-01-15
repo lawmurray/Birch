@@ -204,10 +204,6 @@ void bi::CppBaseGenerator::visit(const Super* o) {
   middle("self");
 }
 
-void bi::CppBaseGenerator::visit(const Local* o) {
-  middle("local");
-}
-
 void bi::CppBaseGenerator::visit(const Global* o) {
   middle("::" << o->single);
 }

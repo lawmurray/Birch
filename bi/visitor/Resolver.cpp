@@ -200,7 +200,7 @@ bi::Expression* bi::Resolver::modify(Member* o) {
   o->left = o->left->accept(this);
   if (o->left->type->isClass() && !o->left->type->isWeak()) {
     memberScopes.push_back(o->left->type->getClass()->scope);
-  } else if (!inFiber) {
+  } else {
     throw MemberException(o);
   }
   ++inMember;
@@ -291,13 +291,7 @@ bi::Expression* bi::Resolver::modify(Identifier<Parameter>* o) {
   Modifier::modify(o);
   resolve(o, LOCAL_SCOPE);
   o->type = o->target->type;
-  if (inFiber && !inMember) {
-    auto result = new Member(new Local(o->loc), o, o->loc);
-    result->type = o->type;
-    return result;
-  } else {
-    return o;
-  }
+  return o;
 }
 
 bi::Expression* bi::Resolver::modify(Identifier<GlobalVariable>* o) {
@@ -311,13 +305,7 @@ bi::Expression* bi::Resolver::modify(Identifier<LocalVariable>* o) {
   Modifier::modify(o);
   resolve(o, LOCAL_SCOPE);
   o->type = o->target->type;
-  if (inFiber && !inMember) {
-    auto result = new Member(new Local(o->loc), o, o->loc);
-    result->type = o->type;
-    return result;
-  } else {
-    return o;
-  }
+  return o;
 }
 
 bi::Expression* bi::Resolver::modify(Identifier<MemberVariable>* o) {
@@ -890,7 +878,7 @@ bi::Type* bi::Resolver::modify(MemberType* o) {
   if (o->left->isClass()) {
     memberScopes.push_back(o->left->getClass()->scope);
     o->right = o->right->accept(this);
-  } else if (o->left->isBound()) {
+  } else {
     throw MemberException(o);
   }
   return o;

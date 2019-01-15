@@ -107,7 +107,6 @@ COMMON_SOURCES = \
   bi/expression/Index.cpp \
   bi/expression/LambdaFunction.cpp \
   bi/expression/Literal.cpp \
-  bi/expression/Local.cpp \
   bi/expression/LocalVariable.cpp \
   bi/expression/Member.cpp \
   bi/expression/Nil.cpp \
@@ -282,7 +281,6 @@ noinst_HEADERS = \
   bi/expression/Index.hpp \
   bi/expression/LambdaFunction.hpp \
   bi/expression/Literal.hpp \
-  bi/expression/Local.hpp \
   bi/expression/LocalVariable.hpp \
   bi/expression/Member.hpp \
   bi/expression/Nil.hpp \

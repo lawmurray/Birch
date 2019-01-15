@@ -234,11 +234,11 @@ void bi::CppFiberGenerator::visit(const Yield* o) {
 }
 
 void bi::CppFiberGenerator::visit(const Identifier<Parameter>* o) {
-  middle(o->name);
+  middle("local->" << o->name);
 }
 
 void bi::CppFiberGenerator::visit(const Identifier<LocalVariable>* o) {
-  middle(getName(o->name->str(), o->target->number));
+  middle("local->" << getName(o->name->str(), o->target->number));
 }
 
 void bi::CppFiberGenerator::visit(const LocalVariable* o) {

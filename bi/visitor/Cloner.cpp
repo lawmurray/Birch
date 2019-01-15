@@ -120,10 +120,6 @@ bi::Expression* bi::Cloner::clone(const Global* o) {
   return new Global(o->single->accept(this), o->loc);
 }
 
-bi::Expression* bi::Cloner::clone(const Local* o) {
-  return new Local(o->loc);
-}
-
 bi::Expression* bi::Cloner::clone(const Nil* o) {
   return new Nil(o->loc);
 }

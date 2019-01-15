@@ -44,7 +44,6 @@ public:
   virtual void visit(const Global* o);
   virtual void visit(const This* o);
   virtual void visit(const Super* o);
-  virtual void visit(const Local* o);
   virtual void visit(const Nil* o);
   virtual void visit(const Parameter* o);
   virtual void visit(const Identifier<Unknown>* o);
