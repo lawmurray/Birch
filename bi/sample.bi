@@ -1,10 +1,6 @@
 /**
  * Sample from a model.
  *
- * - `--model`: Name of the model class. Should be a subtype of Model.
- *
- * - `--sampler`: Name of the sampler class. Should be a subtype of Sampler.
- *
  * - `--input`: Name of the input file, if any.
  *
  * - `--output`: Name of the output file, if any.
@@ -16,73 +12,85 @@
  * - `--seed`: Random number seed. If not provided, random entropy is used.
  */
 program sample(
-    model:String,
-    sampler:String <- "ParticleFilter",
     input:String?,
     output:String?,
     config:String?,
     diagnostic:String?,
     seed:Integer?) {
-  /* seed random number generator */
+  /* random number generator */
   if (seed?) {
     global.seed(seed!);
-  }
-    
-  /* model */
-  auto m <- Model?(make(model));
-  if (!m?) {
-    error(model + " must be a subtype of Model with no initialization parameters.");
-  }
-
-  /* method */
-  auto s <- Sampler?(make(sampler));
-  if (!s?) {
-    error(sampler + " must be a subtype of Sampler with no initialization parameters.");
   }
 
   /* input */
   inputBuffer:JSONBuffer;
+  configBuffer:JSONBuffer;
   if (input?) {
     inputBuffer.load(input!);
-    inputBuffer.get(m!);
   }
-
-  /* config */
-  configBuffer:JSONBuffer;
   if (config?) {
     configBuffer.load(config!);
-    configBuffer.get(s!);
   }
+    
+  /* sampler */
+  sampler:Sampler?;
+  className:String?;
+  buffer:Buffer? <- configBuffer.getObject("sampler");
+  if (buffer?) {
+    className <- buffer!.getString("class");
+  }
+  if (!className?) {
+    className <- "ParticleFilter";
+  }
+  sampler <- Sampler?(make(className!));
+  if (!sampler?) {
+    error(className! + " is not a subtype of Sampler.");
+  }
+  configBuffer.get("sampler", sampler!);
+
+  /* model */
+  model:Model?;
+  className <- nil;
+  buffer <- configBuffer.getObject("model");
+  if (buffer?) {
+    className <- buffer!.getString("class");
+  }
+  if (className?) {
+    model <- Model?(make(className!));
+    if (!model?) {
+      error(className! + " is not a subtype of Model.");
+    }
+  } else {
+    error("no model class specified, this should be given as model.class in the config file.");
+  }
+  //configBuffer.get("model", model!);
+  inputBuffer.get(model!);
   
   /* output */
   outputBuffer:JSONBuffer;
-  if (s!.nsamples > 1) {
-    outputBuffer.setArray();
-  }
-  
-  /* diagnostics */
   diagnosticBuffer:JSONBuffer;
-  if (s!.nsamples > 1) {
+  if (sampler!.nsamples > 1) {
+    outputBuffer.setArray();
     diagnosticBuffer.setArray();
   }
   
   /* sample */
-  auto f <- s!.sample(m!);
+  auto f <- sampler!.sample(model!);
   while (f?) {
     m1:Model?;
     w1:Real;
     (m1, w1) <- f!;
         
-    if (s!.nsamples > 1) {
+    if (sampler!.nsamples > 1) {
       auto buffer <- outputBuffer.push();
       buffer.set(m1!);
       buffer.set("lweight", w1);
       buffer <- diagnosticBuffer.push();
-      buffer.set(s!);
+      buffer.set(sampler!);
     } else {
       outputBuffer.set(m1!);
       outputBuffer.set("lweight", w1);
-      diagnosticBuffer.set(s!);
+      diagnosticBuffer.set(sampler!);
     }
   }
   if (output?) {

@@ -80,7 +80,7 @@ class ParticleFilter < Sampler {
       if (ncheckpoints? && t != ncheckpoints!) {
         error("particles terminated after " + t + " checkpoints, but " + ncheckpoints! + " requested.");
       }
-      if (verbose) {
+      if (verbose && !Z.empty()) {
         stderr.print(", log evidence: " + Z.back() + "\n");
       }
       finish();
@@ -94,7 +94,7 @@ class ParticleFilter < Sampler {
   }
 
   /**
-   * Initialize.
+   * Start.
    */  
   function start(m:Model) {
     auto f0 <- particle(m);

@@ -1144,7 +1144,7 @@ class Buffer {
    * Yields: buffers for each element in turn.
    */
   fiber walk(name:String) -> Buffer {
-    buffer:Buffer? <- getChild(name);
+    auto buffer <- getChild(name);
     if (buffer?) {
       buffer!.walk();
     }
