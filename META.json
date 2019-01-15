@@ -173,6 +173,7 @@
       "bi/math/vector.bi",
       "bi/method/AliveParticleFilter.bi",
       "bi/method/ParticleFilter.bi",
+      "bi/method/ParticleMarginalMetropolisHastings.bi",
       "bi/method/Sampler.bi",
       "bi/model/Model.bi",
       "bi/model/MarkovModel.bi",
