@@ -23,11 +23,11 @@ class Sampler {
   /**
    * Sample the model.
    *
-   * - m: Model.
+   * - m: Archetype.
    *
-   * Yields: weighted samples.
+   * Return: a weighted sample.
    */
-  fiber sample(m:Model) -> (Model, Real);
+  function sample(m:Model) -> (Model, Real);
 
   function read(buffer:Buffer) {
     auto nsamples1 <- buffer.get("nsamples", nsamples);

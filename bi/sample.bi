@@ -75,11 +75,10 @@ program sample(
   }
   
   /* sample */
-  auto f <- sampler!.sample(model!);
-  while (f?) {
+  for n:Integer in 1..sampler!.nsamples {  
     m1:Model?;
     w1:Real;
-    (m1, w1) <- f!;
+    (m1, w1) <- sampler!.sample(model!);
         
     if (sampler!.nsamples > 1) {
       auto buffer <- outputBuffer.push();

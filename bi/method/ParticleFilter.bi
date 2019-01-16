@@ -57,7 +57,7 @@ class ParticleFilter < Sampler {
    */
   trigger:Real <- 0.7;
 
-  fiber sample(m:Model) -> (Model, Real) {
+  function sample(m:Model) -> (Model, Real) {
     /* if a number of checkpoints hasn't been explicitly provided, compute
      * this from the model (may still be unknown by the model, too) */
     if (!ncheckpoints?) {
@@ -65,32 +65,30 @@ class ParticleFilter < Sampler {
     }
 
     /* sample */  
-    for (i:Integer in 1..nsamples) {
-      start(m);
-      if (verbose) {
-        stderr.print("checkpoints:");
-      }
-      auto t <- 0;
-      while ((!ncheckpoints? || t < ncheckpoints!) && step()) {
-        t <- t + 1;
-        if (verbose) {
-          stderr.print(" " + t);
-        }
-      }
-      if (ncheckpoints? && t != ncheckpoints!) {
-        error("particles terminated after " + t + " checkpoints, but " + ncheckpoints! + " requested.");
-      }
-      if (verbose && !Z.empty()) {
-        stderr.print(", log evidence: " + Z.back() + "\n");
-      }
-      finish();
-      
-      w:Real <- 0.0;
-      if (!Z.empty()) {
-        w <- Z.back();
-      }
-      yield (x[b], w);
+    start(m);
+    if (verbose) {
+      stderr.print("checkpoints:");
     }
+    auto t <- 0;
+    while ((!ncheckpoints? || t < ncheckpoints!) && step()) {
+      t <- t + 1;
+      if (verbose) {
+        stderr.print(" " + t);
+      }
+    }
+    if (ncheckpoints? && t != ncheckpoints!) {
+      error("particles terminated after " + t + " checkpoints, but " + ncheckpoints! + " requested.");
+    }
+    if (verbose && !Z.empty()) {
+      stderr.print(", log evidence: " + Z.back() + "\n");
+    }
+    finish();
+      
+    w:Real <- 0.0;
+    if (!Z.empty()) {
+      w <- Z.back();
+    }
+    return (x[b], w);
   }
 
   /**

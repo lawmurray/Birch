@@ -172,6 +172,7 @@
       "bi/math/update.bi",
       "bi/math/vector.bi",
       "bi/method/AliveParticleFilter.bi",
+      "bi/method/ConditionalParticleFilter.bi",
       "bi/method/ParticleFilter.bi",
       "bi/method/ParticleMarginalMetropolisHastings.bi",
       "bi/method/Sampler.bi",
