@@ -7,7 +7,8 @@ bi::Counted::Counted() :
     sharedCount(0),
     weakCount(1),
     memoCount(0),
-    size(0) {
+    size(0),
+    frozen(false) {
   //
 }
 
@@ -15,7 +16,8 @@ bi::Counted::Counted(const Counted& o) :
     sharedCount(0),
     weakCount(1),
     memoCount(0),
-    size(o.size) {
+    size(o.size),
+    frozen(false) {
   //
 }
 
@@ -93,4 +95,12 @@ void bi::Counted::decMemo() {
 
 bool bi::Counted::isReachable() const {
   return sharedCount > 0 || weakCount > memoCount;
+}
+
+bool bi::Counted::isFrozen() const {
+  return frozen;
+}
+
+void bi::Counted::freeze() {
+  frozen = true;
 }

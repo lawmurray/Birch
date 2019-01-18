@@ -29,8 +29,8 @@ class StateSpaceModel<Parameter,State,Observation> <
   y:List<Observation>;
 
   fiber simulate() -> Real {
-    f:State! <- this.x.walk();
-    g:Observation! <- this.y.walk();
+    auto f <- this.x.walk();
+    auto g <- this.y.walk();
     
     u:State?;        // previous state
     x:State?;        // current state
@@ -46,7 +46,7 @@ class StateSpaceModel<Parameter,State,Observation> <
         this.x.pushBack(o);
         x <- o;
       }
-      if x? {
+      if u? {
         w <- sum(transition(x!, u!, θ));
       } else {
         w <- sum(initial(x!, θ));
@@ -66,8 +66,8 @@ class StateSpaceModel<Parameter,State,Observation> <
   }
 
   fiber propose() -> Real {
-    f:State! <- this.x.walk();
-    g:Observation! <- this.y.walk();
+    auto f <- this.x.walk();
+    auto g <- this.y.walk();
     
     u:State?;        // previous state
     x:State?;        // current state
@@ -83,7 +83,7 @@ class StateSpaceModel<Parameter,State,Observation> <
         this.x.pushBack(o);
         x <- o;
       }
-      if x? {
+      if u? {
         w <- sum(proposeTransition(x!, u!, θ));
       } else {
         w <- sum(proposeInitial(x!, θ));

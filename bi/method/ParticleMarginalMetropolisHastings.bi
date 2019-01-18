@@ -33,20 +33,33 @@ class ParticleMarginalMetropolisHastings < Sampler {
     
     if !x? {
       /* initial state */
-      (x, π) <- sampler!.sample(x!);
+      (x, π) <- sampler!.sample(x');
     } else {
       /* subsequent states */
       x' <- clone<Model>(m);
-      //x'.propose(x!);
-      q' <- sum(x'.propose(x!));
-      q <- sum(x!.propose(x'));
       
+      /* simulate a proposed state, this may return a non-zero weight because
+       * of likelihood terms */
+      q' <- sum(limit(x'.propose(x!), ncheckpoints!));
+      
+      /* re-execute to now compute the proposal log-weight, subtracting out
+       * the previous log-weight as it represents log-likelihood terms that
+       * are in common */
+      q' <- sum(limit(x'.propose(x!), ncheckpoints!)) - q';
+      
+      /* execute the other way to compute the reverse proposal log-weight */
+      q <- sum(limit(x!.propose(x'), ncheckpoints!));
+      
+      /* compute the target density, π' will be the sum of the log-likelihood
+       * and log-prior */
       (x', π') <- sampler!.sample(x');
+      
+      /* accept with probability given by Metropolis--Hastings rule */
       if simulate_bernoulli(exp(π' - π! + q - q')) {
         (x, π) <- (x', π');  // accept
       }
     }
-    return (x!, 0.0);
+    return (x!, 0.0);  // return with zero log-weight as MCMC here
   }
 
   function read(buffer:Buffer) {

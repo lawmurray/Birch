@@ -7,16 +7,14 @@
 
 bi::Any::Any() :
     context(currentContext),
-    forward(nullptr),
-	  frozen(false) {
+    forward(nullptr) {
   //
 }
 
 bi::Any::Any(const Any& o) :
     Counted(o),
     context(currentContext),
-    forward(nullptr),
-	  frozen(false) {
+    forward(nullptr) {
   //
 }
 
@@ -25,14 +23,6 @@ bi::Any::~Any() {
   if (forward) {
     forward->decShared();
   }
-}
-
-bool bi::Any::isFrozen() const {
-  return frozen;
-}
-
-void bi::Any::freeze() {
-  frozen = true;
 }
 
 bi::Any* bi::Any::getForward() {

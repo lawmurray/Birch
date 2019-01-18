@@ -25,7 +25,7 @@ public:
   /**
    * Clone the fiber.
    */
-  Fiber<YieldType> clone() const;
+  Fiber<YieldType> clone();
 
   /**
    * Freeze the fiber.
@@ -65,7 +65,7 @@ bi::Fiber<YieldType>::Fiber(
 }
 
 template<class YieldType>
-bi::Fiber<YieldType> bi::Fiber<YieldType>::clone() const {
+bi::Fiber<YieldType> bi::Fiber<YieldType>::clone() {
   return Fiber<YieldType>(state.clone());
 }
 

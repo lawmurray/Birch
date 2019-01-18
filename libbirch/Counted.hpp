@@ -143,6 +143,16 @@ public:
    */
   bool isReachable() const;
 
+  /**
+   * Is the object frozen?
+   */
+  bool isFrozen() const;
+
+  /**
+   * Freeze this object (as a result of it being lazily cloned).
+   */
+  virtual void freeze();
+
 protected:
   /**
    * Shared count.
@@ -169,5 +179,10 @@ protected:
    * shared pointers to `this`.
    */
   unsigned size;
+
+  /**
+   * Is this object frozen (as a result of being lazily cloned)?
+   */
+  bool frozen;
 };
 }

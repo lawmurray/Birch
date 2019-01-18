@@ -59,7 +59,7 @@ public:
   /**
    * Freeze all values in the memo.
    */
-  void freeze();
+  virtual void freeze();
 
   /**
    * Get the parent memo.

@@ -48,16 +48,6 @@ public:
   STANDARD_DESTROY_FUNCTION
 
   /**
-   * Is the object frozen?
-   */
-  bool isFrozen() const;
-
-  /**
-   * Freeze this object (as a result of it being lazily cloned).
-   */
-  virtual void freeze();
-
-  /**
    * If this object is frozen, return the object to which it should forward,
    * otherwise `this`.
    */
@@ -86,10 +76,5 @@ protected:
    * maintenance.
    */
   std::atomic<Any*> forward;
-
-  /**
-   * Is this object frozen (as a result of being lazily cloned)?
-   */
-  bool frozen;
 };
 }

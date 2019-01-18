@@ -28,7 +28,10 @@ void bi::Memo::clean() {
 }
 
 void bi::Memo::freeze() {
-  clones.freeze();
+  if (!this->isFrozen()) {
+    Counted::freeze();
+    clones.freeze();
+  }
 }
 
 bi::SharedPtr<bi::Memo> bi::Memo::getParent() const {

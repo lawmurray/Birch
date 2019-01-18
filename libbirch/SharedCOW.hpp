@@ -130,7 +130,7 @@ public:
   /**
    * Deep clone.
    */
-  SharedCOW<T> clone() const {
+  SharedCOW<T> clone() {
     return root_type::clone().template static_pointer_cast<T>();
   }
 
@@ -233,11 +233,9 @@ public:
     return const_cast<SharedCOW<Any>*>(this)->pull();
   }
 
-  SharedCOW<Any> clone() const {
-    auto o = this->pull();
-    o->freeze();
-    auto m = memo->fork();
-    SharedCOW<Any> result(o, m);
+  SharedCOW<Any> clone() {
+    freeze();
+    SharedCOW<Any> result(object, memo->fork());
     #if !USE_LAZY_DEEP_CLONE
     result.get();
     #endif

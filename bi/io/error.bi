@@ -3,6 +3,7 @@
  */
 function error(msg:String) {
   stderr.print("error: " + msg + "\n");
+  assert false;  // prefer assertion error when debugging
   exit(1);
 }
 

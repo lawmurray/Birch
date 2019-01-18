@@ -1,4 +1,49 @@
 /**
+ * Iterator reduction.
+ *
+ * - x: Iterator.
+ * - init: Initial value.
+ * - op: Operator.
+ */
+function reduce(x:Real!, init:Real, op:@(Real, Real) -> Real) -> Real {
+  result:Real <- init;
+  while (x?) {
+    result <- op(result, x!);
+  }
+  return result;
+}
+
+/**
+ * Iterator reduction.
+ *
+ * - x: Iterator.
+ * - init: Initial value.
+ * - op: Operator.
+ */
+function reduce(x:Integer!, init:Integer, op:@(Integer, Integer) -> Integer) -> Integer {
+  result:Integer <- init;
+  while (x?) {
+    result <- op(result, x!);
+  }
+  return result;
+}
+
+/**
+ * Iterator reduction.
+ *
+ * - x: Iterator.
+ * - init: Initial value.
+ * - op: Operator.
+ */
+function reduce(x:Boolean!, init:Boolean, op:@(Boolean, Boolean) -> Boolean) -> Boolean {
+  result:Boolean <- init;
+  while (x?) {
+    result <- op(result, x!);
+  }
+  return result;
+}
+
+/**
  * Sum over range.
  */
 function sum(x:Real!) -> Real {
@@ -71,4 +116,52 @@ function min(x:Boolean!) -> Boolean {
   x?;
   init:Boolean <- x!;
   return reduce(x, init, @(x:Boolean, y:Boolean) -> Boolean { return min(x, y); });
+}
+
+/**
+ * Create a new iterator that wraps around another, but upper bounds its trip
+ * count.
+ *
+ * - x: Iterator.
+ * - l: Maximum trip count.
+ */
+fiber limit(x:Real!, l:Integer) -> Real {
+  assert l >= 0;
+  i:Integer <- 1;
+  while i <= l && x? {
+    yield x!;
+    i <- i + 1;
+  }
+}
+
+/**
+ * Create a new iterator that wraps around another, but upper bounds its trip
+ * count.
+ *
+ * - x: Iterator.
+ * - l: Maximum trip count.
+ */
+fiber limit(x:Integer!, l:Integer) -> Integer {
+  assert l >= 0;
+  i:Integer <- 1;
+  while i <= l && x? {
+    yield x!;
+    i <- i + 1;
+  }
+}
+
+/**
+ * Create a new iterator that wraps around another, but upper bounds its trip
+ * count.
+ *
+ * - x: Iterator.
+ * - l: Maximum trip count.
+ */
+fiber limit(x:Boolean!, l:Integer) -> Boolean {
+  assert l >= 0;
+  i:Integer <- 1;
+  while i <= l && x? {
+    yield x!;
+    i <- i + 1;
+  }
 }
