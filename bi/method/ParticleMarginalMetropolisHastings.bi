@@ -40,7 +40,7 @@ class ParticleMarginalMetropolisHastings < Sampler {
       
       /* simulate a proposed state, this may return a non-zero weight because
        * of likelihood terms */
-      q' <- sum(limit(x'.propose(x!), ncheckpoints!));
+      q' <- sum(limit(x'.propose(x!), ncheckpoints!));      
       
       /* re-execute to now compute the proposal log-weight, subtracting out
        * the previous log-weight as it represents log-likelihood terms that
@@ -55,7 +55,8 @@ class ParticleMarginalMetropolisHastings < Sampler {
       (x', π') <- sampler!.sample(x');
       
       /* accept with probability given by Metropolis--Hastings rule */
-      if simulate_bernoulli(exp(π' - π! + q - q')) {
+      auto α <- exp(min(π' - π! + q - q', 0.0));
+      if simulate_bernoulli(α) {
         (x, π) <- (x', π');  // accept
       }
     }
