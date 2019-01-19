@@ -17,7 +17,7 @@ bi::Counted::Counted(const Counted& o) :
     weakCount(1),
     memoCount(0),
     size(o.size),
-    frozen(false) {
+    frozen(currentContext->isFrozen()) {
   //
 }
 
