@@ -202,6 +202,7 @@ public:
     if (cloneUnderway && object) {
       if (!currentContext->hasAncestor(memo.get())) {
         object = memo->get(object.get());
+        freeze();
       }
       memo = currentContext.get();
       auto parent = memo->getParent();
