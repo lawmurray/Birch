@@ -213,10 +213,13 @@ void bi::Map::clean() {
     key = entries[i].split.key;
     if (key != EMPTY && key != ERASED && !key->isReachable()) {
       /* key is only reachable through this entry, so remove it */
-      value = entries[i].split.value;
-      entries[i].split.key = ERASED;
-      key->decMemo();
-      value->decShared();
+      key_type expected = key;
+      key_type desired = ERASED;
+      if (entries[i].split.key.compare_exchange_strong(expected, desired)) {
+        value = entries[i].split.value;
+        key->decMemo();
+        value->decShared();
+      }
     }
   }
   lock.unshare();
@@ -234,9 +237,12 @@ void bi::Map::freeze() {
         value->freeze();
       } else {
         /* clean as we go */
-        entries[i].split.key = ERASED;
-        key->decMemo();
-        value->decShared();
+        key_type expected = key;
+        key_type desired = ERASED;
+        if (entries[i].split.key.compare_exchange_strong(expected, desired)) {
+          key->decMemo();
+          value->decShared();
+        }
       }
     }
   }

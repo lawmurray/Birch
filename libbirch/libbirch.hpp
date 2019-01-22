@@ -13,6 +13,7 @@
 #include "libbirch/memory.hpp"
 #include "libbirch/stacktrace.hpp"
 #include "libbirch/clone.hpp"
+#include "libbirch/thread.hpp"
 #include "libbirch/freeze.hpp"
 
 #include "libbirch/Span.hpp"

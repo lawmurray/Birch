@@ -57,9 +57,9 @@ public:
   void clean();
 
   /**
-   * Freeze all values in the memo.
+   * Freeze all reachable values in the memo.
    */
-  virtual void freeze();
+  void freeze();
 
   /**
    * Get the parent memo.

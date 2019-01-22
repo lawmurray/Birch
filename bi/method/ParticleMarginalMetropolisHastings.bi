@@ -40,7 +40,6 @@ class ParticleMarginalMetropolisHastings < Sampler {
       
       /* simulate a proposed state */
       q' <- sum(limit(x'.propose(x!), ncheckpoints!));
-      assert q' == 0.0;
       
       /* re-execute to now compute the proposal log-weight, subtracting out
        * the previous log-weight as it represents log-likelihood terms that

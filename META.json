@@ -14,6 +14,7 @@
       "libbirch/Memo.cpp",
       "libbirch/memory.cpp",
       "libbirch/stacktrace.cpp",
+      "libbirch/thread.cpp",
       "libbirch/Pool.cpp",
 
       "libubjpp/common/Parser.c",
@@ -263,6 +264,7 @@
       "libbirch/Stride.hpp",
       "libbirch/SwapClone.hpp",
       "libbirch/SwapContext.hpp",
+      "libbirch/thread.hpp",
       "libbirch/View.hpp",
       "libbirch/WeakCOW.hpp",
       "libbirch/WeakPtr.hpp",

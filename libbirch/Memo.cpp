@@ -28,7 +28,6 @@ void bi::Memo::clean() {
 }
 
 void bi::Memo::freeze() {
-  Counted::freeze();
   clones.freeze();
 }
 

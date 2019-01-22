@@ -31,22 +31,22 @@ class AliveParticleFilter < ParticleFilter {
     auto f0 <- f;
     auto w0 <- w;
     auto continue <- true;
-    parallel for (n:Integer in 1..nparticles) {
+    parallel for n:Integer in 1..nparticles {
       do {
         f[n] <- clone<(Model,Real)!>(f0[a[n]]);
-        if (f[n]?) {
+        if f[n]? {
           (x[n], w[n]) <- f[n]!;
           cpp {{
           ++P;
           }}
-          if (w[n] == -inf) {
+          if w[n] == -inf {
             /* replace with a categorical draw for next attempt */
             a[n] <- ancestor(w0);
           }
         } else {
           continue <- false;
         }
-      } while (continue && w[n] == -inf);
+      } while continue && w[n] == -inf;
     }
     
     if (continue) {
@@ -56,7 +56,7 @@ class AliveParticleFilter < ParticleFilter {
      w1:Real;
      do {
         auto f1 <- clone<(Model,Real)!>(f0[ancestor(w0)]);
-        if (f1?) {
+        if f1? {
           (x1, w1) <- f1!;
           cpp {{
           ++P;

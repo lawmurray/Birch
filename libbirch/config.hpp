@@ -98,11 +98,9 @@
  */
 #define STANDARD_CLONE_FUNCTION \
   virtual class_type* clone() const { \
-    assert(frozen); \
     return emplace(allocate<sizeof(class_type)>(), *this); \
   } \
   virtual class_type* clone(void* ptr) const { \
-    assert(frozen); \
     return emplace(ptr, *this); \
   }
 
