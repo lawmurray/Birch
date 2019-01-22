@@ -37,7 +37,7 @@ before_install:
 
   # Checkout Birch, which may be cached, and (re)build
   - git clone "https://github.com/lawmurray/Birch.git" || cd .
-  - cd Birch && git checkout master && git pull && cd ..
+  - cd Birch && git checkout pmmh && git pull && cd ..
   - cd Birch && ./autogen.sh && ./configure && make -j 2 && sudo make install && cd ..
 
   # Checkout Birch.Standard, which may be cached, and (re)build
