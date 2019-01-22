@@ -167,20 +167,16 @@ void bi::CppClassGenerator::visit(const Class* o) {
         genTemplateArgs(o);
         middle("::");
       }
-      middle("freeze()");
+      middle("doFreeze()");
       if (header) {
         finish(';');
       } else {
         finish(" {");
         in();
-        line("if (!this->isFrozen()) {");
-        in();
-        line("super_type::freeze();");
+        line("super_type::doFreeze();");
         for (auto o : memberVariables) {
           line("bi::freeze(" << o->name << ");");
         }
-        out();
-        line("}");
         out();
         line("}\n");
       }
