@@ -42,7 +42,7 @@ bi::Any* bi::Any::getForward() {
         cloned->decShared();
       }
     }
-    return forward;
+    return forward->getForward();
   } else {
     return this;
   }
@@ -52,7 +52,7 @@ bi::Any* bi::Any::pullForward() {
   if (isFrozen()) {
     Any* forward = this->forward;  // load from atomic just once
     if (forward) {
-      return forward;
+      return forward->pullForward();
     }
   }
   return this;
