@@ -17,6 +17,6 @@ extern bool cloneUnderway;
 /**
  * The memo object associated with new objects.
  */
-extern SharedPtr<Memo> currentContext;
+extern Memo* currentContext;
 #pragma omp threadprivate(currentContext)
 }

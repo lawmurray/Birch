@@ -35,7 +35,7 @@ public:
   /**
    * Constructor.
    */
-  WeakCOW(T* object, Memo* memo = currentContext.get()) :
+  WeakCOW(T* object, Memo* memo = currentContext) :
       super_type(object, memo) {
     //
   }
@@ -43,7 +43,7 @@ public:
   /**
    * Constructor.
    */
-  WeakCOW(const WeakPtr<T>& object, Memo* memo = currentContext.get()) :
+  WeakCOW(const WeakPtr<T>& object, Memo* memo = currentContext) :
       super_type(object, memo) {
     //
   }
@@ -178,13 +178,13 @@ public:
     //
   }
 
-  WeakCOW(Any* object, Memo* memo = currentContext.get()) :
+  WeakCOW(Any* object, Memo* memo = currentContext) :
       object(object),
       memo(memo) {
     //
   }
 
-  WeakCOW(const WeakPtr<Any>& object, Memo* memo = currentContext.get()) :
+  WeakCOW(const WeakPtr<Any>& object, Memo* memo = currentContext) :
       object(object),
       memo(memo) {
     //
@@ -198,15 +198,12 @@ public:
 
   WeakCOW(const WeakCOW<Any>& o) :
       object(o.object),
-      memo(o.memo) {
+      memo(cloneUnderway ? currentContext : o.memo) {
     if (cloneUnderway && object) {
-      if (!currentContext->hasAncestor(memo.get())) {
-        object = memo->get(object.get());
+      auto m = o.memo.get();
+      if (!memo->hasAncestor(m)) {
+        object = m->get(object.get());
         freeze();
-      }
-      memo = currentContext.get();
-      if (memo->hasParent()) {
-        object = memo->getParent()->deep(object.get());
       }
       #if !USE_LAZY_DEEP_CLONE
       get();
@@ -220,8 +217,10 @@ public:
 
   Any* get() {
     #if USE_LAZY_DEEP_CLONE
-    object = memo->get(object.get())->getForward();
-    assert(!object.get()->isFrozen());
+    if (object) {
+      object = memo->get(object.get())->getForward();
+      assert(!object.get()->isFrozen());
+    }
     #endif
     return object.get();
   }
@@ -234,9 +233,11 @@ public:
 
   Any* pull() {
     #if USE_LAZY_DEEP_CLONE
-    object = memo->pull(object.get());
-    if (object.get()->getContext() == memo.get()) {
-      object = object.get()->pullForward();
+    if (object) {
+      object = memo->pull(object.get());
+      if (object.get()->getContext() == memo.get()) {
+        object = object.get()->pullForward();
+      }
     }
     #endif
     return object.get();

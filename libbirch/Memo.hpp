@@ -93,7 +93,12 @@ public:
    *
    * @return The mapped object.
    */
-  Any* deep(Any* o);
+  Any* source(Any* o);
+
+  /**
+   * Shallow copy of an object.
+   */
+  Any* copy(Any* o);
 
 public:
   /**

@@ -30,6 +30,6 @@ private:
   /**
    * Previous context.
    */
-  SharedPtr<Memo> prevContext;
+  Memo* prevContext;
 };
 }
