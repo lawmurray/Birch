@@ -190,9 +190,8 @@ public:
         freeze();
       }
       memo = currentContext.get();
-      auto parent = memo->getParent();
-      if (parent) {
-        object = parent->deep(object.get());
+      if (memo->hasParent()) {
+        object = memo->getParent()->deep(object.get());
       }
       #if !USE_LAZY_DEEP_CLONE
       get();

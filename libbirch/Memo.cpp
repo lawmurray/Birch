@@ -15,7 +15,6 @@ bi::Memo::~Memo() {
 }
 
 bool bi::Memo::hasAncestor(Memo* memo) const {
-  SharedPtr<Memo> parent = getParent();
   return parent && (parent == memo || parent->hasAncestor(memo));
 }
 
@@ -31,7 +30,11 @@ void bi::Memo::freeze() {
   clones.freeze();
 }
 
-bi::SharedPtr<bi::Memo> bi::Memo::getParent() const {
+bool bi::Memo::hasParent() const {
+  return parent;
+}
+
+const bi::SharedPtr<bi::Memo>& bi::Memo::getParent() const {
   return parent;
 }
 
@@ -93,7 +96,6 @@ bi::Any* bi::Memo::deep(Any* o) {
   } else {
     Any* result = clones.get(o);
     if (!result) {
-      auto parent = getParent();
       if (parent) {
         result = parent->deep(o);
         if (result != o) {

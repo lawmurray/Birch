@@ -62,9 +62,14 @@ public:
   void freeze();
 
   /**
+   * Is there a parent memo?
+   */
+  bool hasParent() const;
+
+  /**
    * Get the parent memo.
    */
-  SharedPtr<Memo> getParent() const;
+  const SharedPtr<Memo>& getParent() const;
 
   /**
    * Shallow mapping of an object that may not yet have been cloned,
