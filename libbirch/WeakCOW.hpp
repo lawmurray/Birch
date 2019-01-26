@@ -135,7 +135,7 @@ public:
    * situations where a separate shared pointer is known to exist.
    */
   T* get() const {
-    return static_cast<T*>(root_type::get());
+    return const_cast<WeakCOW<T>*>(this)->get();
   }
 
   /**
@@ -149,7 +149,7 @@ public:
    * Map the raw pointer, without lazy cloning.
    */
   T* pull() const {
-    return static_cast<T*>(root_type::pull());
+    return const_cast<WeakCOW<T>*>(this)->pull();
   }
 
   /**

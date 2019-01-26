@@ -110,8 +110,8 @@ public:
    * Get the raw pointer, lazy cloning if necessary.
    */
   T* get() const {
-    return static_cast<T*>(root_type::get());
-  }
+    return const_cast<SharedCOW<T>*>(this)->get();
+ }
 
   /**
    * Map the raw pointer, without lazy cloning.
@@ -124,7 +124,7 @@ public:
    * Map the raw pointer, without lazy cloning.
    */
   T* pull() const {
-    return static_cast<T*>(root_type::pull());
+    return const_cast<SharedCOW<T>*>(this)->pull();
   }
 
   /**
@@ -132,6 +132,13 @@ public:
    */
   SharedCOW<T> clone() {
     return root_type::clone().template static_pointer_cast<T>();
+  }
+
+  /**
+   * Deep clone.
+   */
+  SharedCOW<T> clone() const {
+    return const_cast<SharedCOW<T>*>(this)->clone();
   }
 
   /**
@@ -241,6 +248,10 @@ public:
     result.get();
     #endif
     return result;
+  }
+
+  SharedCOW<Any> clone() const {
+    return const_cast<SharedCOW<Any>*>(this)->clone();
   }
 
   void freeze() {

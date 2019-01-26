@@ -55,7 +55,7 @@
  * Initial number of entries in each new map used for deep clones.
  */
 #ifndef INITIAL_MAP_SIZE
-#define INITIAL_MAP_SIZE 64ull
+#define INITIAL_MAP_SIZE 16ull
 #endif
 
 /**
