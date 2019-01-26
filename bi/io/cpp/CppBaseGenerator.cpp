@@ -213,7 +213,7 @@ void bi::CppBaseGenerator::visit(const Nil* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Parameter* o) {
-  if (o->type->isArray()) {
+  if (o->type->isArray() || o->type->isClass()) {
     /* optimization to avoid copying arrays, can also be enabled for any
      * other types */
     /// @todo Review this or provide as an "unsafe" compiler optimization, is
