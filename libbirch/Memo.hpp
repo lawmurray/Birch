@@ -6,7 +6,6 @@
 #include "libbirch/config.hpp"
 #include "libbirch/Counted.hpp"
 #include "libbirch/SharedPtr.hpp"
-#include "libbirch/WeakPtr.hpp"
 #include "libbirch/Allocator.hpp"
 #include "libbirch/Map.hpp"
 #include "libbirch/Set.hpp"

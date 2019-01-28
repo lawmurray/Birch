@@ -85,7 +85,7 @@ protected:
   /**
    * Memo responsible for the creation of this object.
    */
-  WeakPtr<Memo> context;
+  InitPtr<Memo> context;
 
   /**
    * If frozen, object to which to forward. This must be thread safe, and
