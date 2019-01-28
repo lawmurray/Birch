@@ -48,7 +48,7 @@ void bi::List::destroy(Any* key) {
     Memo* value = entries[i];
     Counted* shared = value->lock();
     if (shared) {
-      value->clones.remove(key);
+      value->m.remove(key);
       shared->decShared();
     }
     value->decWeak();

@@ -15,8 +15,20 @@ bi::Memo::~Memo() {
   //
 }
 
-bool bi::Memo::hasAncestor(Memo* memo) const {
-  return parent && (parent == memo || parent->hasAncestor(memo));
+bool bi::Memo::hasAncestor(Memo* memo) {
+  if (!parent) {
+    return false;
+  } else if (parent == memo) {
+    return true;
+  } else if (a.contains(memo)) {
+    return true;
+  } else {
+    bool result = parent->hasAncestor(memo);
+    if (result) {
+      a.insert(memo);
+    }
+    return result;
+  }
 }
 
 bi::Memo* bi::Memo::fork() {
@@ -24,11 +36,11 @@ bi::Memo* bi::Memo::fork() {
 }
 
 void bi::Memo::clean() {
-  clones.clean();
+  m.clean();
 }
 
 void bi::Memo::freeze() {
-  clones.freeze();
+  m.freeze();
 }
 
 bool bi::Memo::hasParent() const {
@@ -44,7 +56,7 @@ bi::Any* bi::Memo::get(Any* o) {
   if (o->getContext() == this) {
     return o;
   } else {
-    auto result = clones.get(getParent()->source(o));
+    auto result = m.get(getParent()->source(o));
     if (!result) {
       result = copy(o);
     }
@@ -56,7 +68,7 @@ bi::Any* bi::Memo::pull(Any* o) {
   if (o->getContext() == this) {
     return o;
   } else {
-    auto result = clones.get(getParent()->source(o));
+    auto result = m.get(getParent()->source(o));
     if (!result) {
       result = o;
     }
@@ -68,13 +80,13 @@ bi::Any* bi::Memo::source(Any* o) {
   if (o->getContext() == this) {
     return o;
   } else {
-    auto result = clones.get(o);
+    auto result = m.get(o);
     if (!result) {
       result = parent->source(o);
       if (result != o) {
-        result = clones.get(result, result);
+        result = m.get(result, result);
       }
-      result = clones.put(o, result);
+      result = m.put(o, result);
     }
     return result;
   }
@@ -94,7 +106,7 @@ bi::Any* bi::Memo::copy(Any* o) {
   assert(o->isFrozen());
   SharedPtr<Any> cloned = o->clone();
   // ^ use shared to clean up if beaten by another thread
-  result = clones.put(o, cloned.get());
+  result = m.put(o, cloned.get());
   #else
   /* for an eager deep clone we must be cautious to avoid infinite
    * recursion; memory for the new object is allocated first and put
@@ -106,7 +118,7 @@ bi::Any* bi::Memo::copy(Any* o) {
    * reference counts before any recursive clones occur */
   Any* alloc = static_cast<Any*>(allocate(o->getSize()));
   assert(alloc);
-  Any* uninit = m->clones.uninitialized_put(o, alloc);
+  Any* uninit = m.uninitialized_put(o, alloc);
   assert(uninit == alloc);  // should be no thread contention here
   SwapClone swapClone(true);
   SwapContext swapContext(this);

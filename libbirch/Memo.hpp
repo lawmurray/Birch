@@ -9,6 +9,7 @@
 #include "libbirch/WeakPtr.hpp"
 #include "libbirch/Allocator.hpp"
 #include "libbirch/Map.hpp"
+#include "libbirch/Set.hpp"
 
 namespace bi {
 /**
@@ -17,6 +18,7 @@ namespace bi {
  * @ingroup libbirch
  */
 class Memo: public Counted {
+  friend class List;
 public:
   using class_type = Memo;
 
@@ -42,7 +44,7 @@ public:
   /**
    * Is the given memo an ancestor of this?
    */
-  bool hasAncestor(Memo* memo) const;
+  bool hasAncestor(Memo* memo);
 
   /**
    * Fork to create a new child memo for cloning.
@@ -100,16 +102,20 @@ public:
    */
   Any* copy(Any* o);
 
-public:
-  /**
-   * Map of original objects to clones.
-   */
-  Map clones;
-
 private:
   /**
    * Parent memo.
    */
   SharedPtr<Memo> parent;
+
+  /**
+   * Memoization of source objects to clones.
+   */
+  Map m;
+
+  /**
+   * Memoization of ancestry queries.
+   */
+  Set a;
 };
 }
