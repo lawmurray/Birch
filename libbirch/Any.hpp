@@ -6,10 +6,9 @@
 #include "libbirch/config.hpp"
 #include "libbirch/Counted.hpp"
 #include "libbirch/List.hpp"
+#include "libbirch/InitPtr.hpp"
 
 namespace bi {
-template<class T> class SharedCOW;
-
 /**
  * Base for all class types.
  *

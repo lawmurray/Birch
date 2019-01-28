@@ -42,7 +42,7 @@ bi::Counted* bi::Counted::lock() {
 }
 
 void bi::Counted::incShared() {
-  ++sharedCount;
+  sharedCount.fetch_add(1, std::memory_order_relaxed);
 }
 
 void bi::Counted::decShared() {
@@ -59,7 +59,7 @@ unsigned bi::Counted::numShared() const {
 }
 
 void bi::Counted::incWeak() {
-  ++weakCount;
+  weakCount.fetch_add(1, std::memory_order_relaxed);
 }
 
 void bi::Counted::decWeak() {
@@ -80,7 +80,7 @@ void bi::Counted::incMemo() {
   /* the order of operations here is important, as the weak count should
    * never be less than the memo count */
   incWeak();
-  ++memoCount;
+  memoCount.fetch_add(1, std::memory_order_relaxed);
 }
 
 void bi::Counted::decMemo() {
