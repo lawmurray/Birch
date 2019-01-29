@@ -90,13 +90,15 @@ public:
    * Copy assignment.
    */
   WeakPtr<T>& operator=(const WeakPtr<T>& o) {
-    if (o.ptr) {
-      o.ptr->incWeak();
-    }
-    auto old = ptr;
-    ptr = o.ptr;
-    if (old) {
-      old->decWeak();
+    if (ptr != o.ptr) {
+      if (o.ptr) {
+        o.ptr->incWeak();
+      }
+      auto old = ptr;
+      ptr = o.ptr;
+      if (old) {
+        old->decWeak();
+      }
     }
     return *this;
   }
