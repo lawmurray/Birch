@@ -51,19 +51,14 @@ public:
 
 private:
   /**
-   * Entry type.
-   */
-  using entry_type = std::atomic<value_type>;
-
-  /**
    * Compute the hash code for a value.
    */
-  size_t hash(const value_type value) const;
+  unsigned hash(const value_type value) const;
 
   /**
    * Compute the lower bound on reserved entries to be considered crowded.
    */
-  size_t crowd() const;
+  unsigned crowd() const;
 
   /**
    * Reserve space for a (possible) new entry, resizing if necessary.
@@ -77,19 +72,19 @@ private:
   void unreserve();
 
   /**
-   * Entries.
+   * The values.
    */
-  entry_type* entries;
+  std::atomic<value_type>* values;
 
   /**
    * Number of entries.
    */
-  size_t nentries;
+  unsigned nentries;
 
   /**
    * Number of occupied entries.
    */
-  std::atomic<size_t> noccupied;
+  std::atomic<unsigned> noccupied;
 
   /**
    * Resize lock.

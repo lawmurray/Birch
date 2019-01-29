@@ -55,7 +55,7 @@
  * Initial number of entries in each new map used for deep clone memoization.
  */
 #ifndef INITIAL_MAP_SIZE
-#define INITIAL_MAP_SIZE 16ull
+#define INITIAL_MAP_SIZE 16u
 #endif
 
 /**
@@ -64,16 +64,7 @@
  * Initial number of entries in each new set used for ancestry memoization.
  */
 #ifndef INITIAL_SET_SIZE
-#define INITIAL_SET_SIZE 16ull
-#endif
-
-/**
- * @def INITIAL_LIST_SIZE
- *
- * Initial number of entries in each new list (not currently used).
- */
-#ifndef INITIAL_LIST_SIZE
-#define INITIAL_LIST_SIZE 16ull
+#define INITIAL_SET_SIZE 16u
 #endif
 
 /**

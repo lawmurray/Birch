@@ -105,17 +105,17 @@ private:
    *
    * @return The value.
    */
-  value_type get(const size_t i);
+  value_type get(const unsigned i);
 
   /**
    * Compute the hash code for a key.
    */
-  size_t hash(const key_type key) const;
+  unsigned hash(const key_type key) const;
 
   /**
    * Compute the lower bound on reserved entries to be considered crowded.
    */
-  size_t crowd() const;
+  unsigned crowd() const;
 
   /**
    * Reserve space for a (possible) new entry, resizing if necessary.
@@ -141,12 +141,12 @@ private:
   /**
    * Number of entries in the table.
    */
-  size_t nentries;
+  unsigned nentries;
 
   /**
    * Number of occupied entries in the table.
    */
-  std::atomic<size_t> noccupied;
+  std::atomic<unsigned> noccupied;
 
   /**
    * Resize lock.

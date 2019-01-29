@@ -9,15 +9,15 @@ static bi::Any* const ERASED = reinterpret_cast<bi::Any*>(0xFFFFFFFFFFFFFFFF);
 bi::Map::Map() :
     keys(nullptr),
     values(nullptr),
-    nentries(0),
-    noccupied(0) {
+    nentries(0u),
+    noccupied(0u) {
   //
 }
 
 bi::Map::~Map() {
   key_type key;
   value_type value;
-  for (size_t i = 0; i < nentries; ++i) {
+  for (unsigned i = 0u; i < nentries; ++i) {
     key = keys[i].load(std::memory_order_relaxed);
     if (key != EMPTY && key != ERASED) {
       value = values[i].load(std::memory_order_relaxed);
@@ -30,7 +30,7 @@ bi::Map::~Map() {
 }
 
 bool bi::Map::empty() const {
-  return nentries == 0;
+  return nentries == 0u;
 }
 
 bi::Map::value_type bi::Map::get(const key_type key,
@@ -41,10 +41,10 @@ bi::Map::value_type bi::Map::get(const key_type key,
   value_type value = failed;
   if (!empty()) {
     lock.share();
-    size_t i = hash(key);
+    unsigned i = hash(key);
     key_type k = keys[i].load(std::memory_order_acquire);
     while (k && k != key) {
-      i = (i + 1ull) & (nentries - 1ull);
+      i = (i + 1u) & (nentries - 1u);
       k = keys[i].load(std::memory_order_acquire);
     }
     if (k == key) {
@@ -55,7 +55,7 @@ bi::Map::value_type bi::Map::get(const key_type key,
   return value;
 }
 
-bi::Map::value_type bi::Map::get(const size_t i) {
+bi::Map::value_type bi::Map::get(const unsigned i) {
   /* key is written before value on put, so loop for a valid value in
    * case that write has not concluded yet */
   value_type value;
@@ -79,10 +79,10 @@ bi::Map::value_type bi::Map::put(const key_type key, const value_type value) {
   key_type expected = EMPTY;
   key_type desired = key;
 
-  size_t i = hash(key);
+  unsigned i = hash(key);
   while (!keys[i].compare_exchange_strong(expected, desired,
       std::memory_order_release) && expected != key) {
-    i = (i + 1) & (nentries - 1);
+    i = (i + 1u) & (nentries - 1u);
     expected = EMPTY;
   }
 
@@ -113,10 +113,10 @@ bi::Map::value_type bi::Map::uninitialized_put(const key_type key,
   key_type expected = EMPTY;
   key_type desired = key;
 
-  size_t i = hash(key);
+  unsigned i = hash(key);
   while (!keys[i].compare_exchange_strong(expected, desired,
       std::memory_order_release) && expected != key) {
-    i = (i + 1) & (nentries - 1ull);
+    i = (i + 1u) & (nentries - 1u);
     expected = EMPTY;
   }
 
@@ -142,10 +142,10 @@ void bi::Map::remove(const key_type key) {
     key_type expected = key;
     key_type desired = ERASED;
 
-    size_t i = hash(key);
+    unsigned i = hash(key);
     while (!keys[i].compare_exchange_strong(expected, desired,
         std::memory_order_relaxed) && expected != EMPTY) {
-      i = (i + 1) & (nentries - 1);
+      i = (i + 1u) & (nentries - 1u);
       expected = key;
     }
     if (expected == key) {
@@ -159,19 +159,21 @@ void bi::Map::remove(const key_type key) {
   }
 }
 
-size_t bi::Map::hash(const key_type key) const {
-  assert(nentries > 0);
-  return (reinterpret_cast<size_t>(key) >> 5ull) & (nentries - 1ull);
+unsigned bi::Map::hash(const key_type key) const {
+  assert(nentries > 0u);
+  return static_cast<unsigned>(reinterpret_cast<size_t>(key) >> 5ull)
+      & (nentries - 1u);
 }
 
-size_t bi::Map::crowd() const {
+unsigned bi::Map::crowd() const {
   /* the table is considered crowded if more than three-quarters of its
    * entries are occupied */
-  return (nentries >> 1ull) + (nentries >> 2ull);
+  return (nentries >> 1u) + (nentries >> 2u);
 }
 
 void bi::Map::reserve() {
-  size_t noccupied1 = noccupied.fetch_add(1u, std::memory_order_relaxed) + 1u;
+  unsigned noccupied1 = noccupied.fetch_add(1u, std::memory_order_relaxed)
+      + 1u;
   if (noccupied1 > crowd()) {
     /* obtain resize lock */
     lock.keep();
@@ -179,12 +181,12 @@ void bi::Map::reserve() {
     /* check that no other thread has resized in the meantime */
     if (noccupied1 > crowd()) {
       /* save previous table */
-      size_t nentries1 = nentries;
+      unsigned nentries1 = nentries;
       key_type* keys1 = (key_type*)keys;
       value_type* values1 = (value_type*)values;
 
       /* initialize new table */
-      size_t nentries2 = std::max(2ull * nentries1, INITIAL_MAP_SIZE);
+      unsigned nentries2 = std::max(2u * nentries1, INITIAL_MAP_SIZE);
       key_type* keys2 = (key_type*)allocate(nentries2 * sizeof(key_type));
       value_type* values2 = (value_type*)allocate(
           nentries2 * sizeof(value_type));
@@ -192,15 +194,15 @@ void bi::Map::reserve() {
       std::memset(values2, 0, nentries2 * sizeof(value_type));
 
       /* copy contents from previous table */
-      size_t nerased = 0;
+      unsigned nerased = 0u;
       nentries = nentries2;  // set this here as needed by hash()
-      for (size_t i = 0u; i < nentries1; ++i) {
+      for (unsigned i = 0u; i < nentries1; ++i) {
         key_type key = keys1[i];
         if (key == ERASED) {
           ++nerased;
         } else if (key != EMPTY) {
           /* rehash and insert */
-          size_t j = hash(key);
+          unsigned j = hash(key);
           while (keys2[j]) {
             j = (j + 1u) & (nentries2 - 1u);
           }
@@ -232,7 +234,7 @@ void bi::Map::clean() {
   lock.share();
   key_type key;
   value_type value;
-  for (size_t i = 0u; i < nentries; ++i) {
+  for (unsigned i = 0u; i < nentries; ++i) {
     key = keys[i].load(std::memory_order_relaxed);
     if (key != EMPTY && key != ERASED && !key->isReachable()) {
       /* key is only reachable through this entry, so remove it */
@@ -253,7 +255,7 @@ void bi::Map::freeze() {
   lock.share();
   key_type key;
   value_type value;
-  for (size_t i = 0u; i < nentries; ++i) {
+  for (unsigned i = 0u; i < nentries; ++i) {
     key = keys[i].load(std::memory_order_relaxed);
     if (key != EMPTY && key != ERASED) {
       value = values[i].load(std::memory_order_relaxed);
