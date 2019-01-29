@@ -25,10 +25,10 @@ bool bi::Set::contains(const value_type value) {
   if (!empty()) {
     lock.share();
     size_t i = hash(value);
-    value_type v = entries[i].load();
+    value_type v = entries[i].load(std::memory_order_relaxed);
     while (v && v != value) {
       i = (i + 1) & (nentries - 1);
-      v = entries[i].load();
+      v = entries[i].load(std::memory_order_relaxed);
     }
     result = (v == value);
     lock.unshare();
