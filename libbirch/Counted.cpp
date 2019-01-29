@@ -36,10 +36,10 @@ unsigned bi::Counted::getSize() const {
 }
 
 bi::Counted* bi::Counted::lock() {
-  unsigned count = sharedCount;
+  unsigned count = sharedCount.load(std::memory_order_acquire);
   while (count > 0u
       && !sharedCount.compare_exchange_weak(count, count + 1u,
-          std::memory_order_relaxed)) {
+          std::memory_order_release)) {
     //
   }
   return count > 0u ? this : nullptr;
