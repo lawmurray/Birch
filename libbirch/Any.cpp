@@ -20,7 +20,7 @@ bi::Any::Any(const Any& o) :
 }
 
 bi::Any::~Any() {
-  Any* forward = this->forward;  // load from atomic just once
+  Any* forward = this->forward.load(std::memory_order_relaxed);
   if (forward) {
     forward->decShared();
   }
@@ -28,13 +28,14 @@ bi::Any::~Any() {
 
 bi::Any* bi::Any::getForward() {
   if (isFrozen()) {
-    Any* forward = this->forward;  // load from atomic just once
+    Any* forward = this->forward.load(std::memory_order_relaxed);
     if (!forward) {
       SwapClone swapClone(true);
       SwapContext swapContext(context.get());
       Any* cloned = this->clone();
       cloned->incShared();
-      if (this->forward.compare_exchange_strong(forward, cloned)) {
+      if (this->forward.compare_exchange_strong(forward, cloned,
+          std::memory_order_relaxed)) {
         return cloned;
       } else {
         /* beaten by another thread */
@@ -49,7 +50,7 @@ bi::Any* bi::Any::getForward() {
 
 bi::Any* bi::Any::pullForward() {
   if (isFrozen()) {
-    Any* forward = this->forward;  // load from atomic just once
+    Any* forward = this->forward.load(std::memory_order_relaxed);
     if (forward) {
       return forward->pullForward();
     }
