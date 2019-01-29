@@ -6,10 +6,16 @@
 #include "libbirch/SwapClone.hpp"
 #include "libbirch/SwapContext.hpp"
 
-bi::Memo::Memo(Memo* parent) :
-    Counted(),
-    parent(parent) {
+bi::Memo::Memo() :
+    parent(nullptr),
+    gen(0) {
   //
+}
+
+bi::Memo::Memo(Memo* parent) :
+    parent(parent),
+    gen(parent->gen + 1) {
+  assert(parent);
 }
 
 bi::Memo::~Memo() {
@@ -17,15 +23,15 @@ bi::Memo::~Memo() {
 }
 
 bool bi::Memo::hasAncestor(Memo* memo) {
-  if (!parent) {
+  if (gen <= memo->gen) {
     return false;
   } else if (parent == memo) {
     return true;
-  } else if (a.contains(memo)) {
+  } else if (gen % 2 == 0 && a.contains(memo)) {
     return true;
   } else {
     bool result = parent->hasAncestor(memo);
-    if (result) {
+    if (result && gen % 2 == 0) {
       a.insert(memo);
     }
     return result;
@@ -81,13 +87,18 @@ bi::Any* bi::Memo::source(Any* o, Memo* from) {
   if (this == from) {
     return o;
   } else {
-    auto result = m.get(o);
+    Any* result = nullptr;
+    if (gen % 2 == 0) {
+      result = m.get(o);
+    }
     if (!result) {
       result = getParent()->source(o, from);
       if (result != o) {
         result = m.get(result, result);
       }
-      result = m.put(o, result);
+      if (gen % 2 == 0) {
+        result = m.put(o, result);
+      }
     }
     return result;
   }

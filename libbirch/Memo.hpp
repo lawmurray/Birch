@@ -23,11 +23,16 @@ public:
 
 protected:
   /**
-   * Constructor.
+   * Constructor for root node.
+   */
+  Memo();
+
+  /**
+   * Constructor for non-root node.
    *
    * @param parent Parent.
    */
-  Memo(Memo* parent = nullptr);
+  Memo(Memo* parent);
 
   /**
    * Destructor.
@@ -114,5 +119,10 @@ private:
    * Memoization of ancestry queries.
    */
   Set a;
+
+  /**
+   * Generation number (zero is root).
+   */
+  int gen;
 };
 }
