@@ -4,30 +4,30 @@
 #include "libbirch/Counted.hpp"
 
 bi::Counted::Counted() :
-    sharedCount(0),
-    weakCount(1),
-    memoCount(0),
-    size(0),
+    sharedCount(0u),
+    weakCount(1u),
+    memoCount(0u),
+    size(0u),
     frozen(false) {
   //
 }
 
 bi::Counted::Counted(const Counted& o) :
-    sharedCount(0),
-    weakCount(1),
-    memoCount(0),
+    sharedCount(0u),
+    weakCount(1u),
+    memoCount(0u),
     size(o.size),
     frozen(false) {
   //
 }
 
 bi::Counted::~Counted() {
-  assert(sharedCount == 0);
+  assert(sharedCount == 0u);
 }
 
 void bi::Counted::deallocate() {
-  assert(sharedCount == 0);
-  assert(weakCount == 0);
+  assert(sharedCount == 0u);
+  assert(weakCount == 0u);
   bi::deallocate(this, size);
 }
 
@@ -37,23 +37,23 @@ unsigned bi::Counted::getSize() const {
 
 bi::Counted* bi::Counted::lock() {
   unsigned count = sharedCount;
-  while (count > 0
-      && !sharedCount.compare_exchange_weak(count, count + 1,
+  while (count > 0u
+      && !sharedCount.compare_exchange_weak(count, count + 1u,
           std::memory_order_relaxed)) {
     //
   }
-  return count > 0 ? this : nullptr;
+  return count > 0u ? this : nullptr;
 }
 
 void bi::Counted::incShared() {
-  sharedCount.fetch_add(1, std::memory_order_relaxed);
+  sharedCount.fetch_add(1u, std::memory_order_relaxed);
 }
 
 void bi::Counted::decShared() {
-  assert(sharedCount > 0);
-  if (sharedCount.fetch_sub(1u, std::memory_order_relaxed) - 1 == 0
-      && size > 0) {
-    // ^ size == 0 during construction, never destroy in that case
+  assert(sharedCount > 0u);
+  if (sharedCount.fetch_sub(1u, std::memory_order_relaxed) - 1u == 0u
+      && size > 0u) {
+    // ^ size == 0u during construction, never destroy in that case
     destroy();
     decWeak();  // release weak self-reference
   }
@@ -64,13 +64,13 @@ unsigned bi::Counted::numShared() const {
 }
 
 void bi::Counted::incWeak() {
-  weakCount.fetch_add(1, std::memory_order_relaxed);
+  weakCount.fetch_add(1u, std::memory_order_relaxed);
 }
 
 void bi::Counted::decWeak() {
-  assert(weakCount > 0);
-  if (weakCount, fetch_sub(1u, std::memory_order_relaxed) - 1 == 0) {
-    assert(sharedCount == 0);
+  assert(weakCount > 0u);
+  if (weakCount.fetch_sub(1u, std::memory_order_relaxed) - 1u == 0u) {
+    assert(sharedCount == 0u);
     // ^ because of weak self-reference, the weak count should not expire
     //   before the shared count
     deallocate();
@@ -85,19 +85,19 @@ void bi::Counted::incMemo() {
   /* the order of operations here is important, as the weak count should
    * never be less than the memo count */
   incWeak();
-  memoCount.fetch_add(1, std::memory_order_relaxed);
+  memoCount.fetch_add(1u, std::memory_order_relaxed);
 }
 
 void bi::Counted::decMemo() {
   /* the order of operations here is important, as the weak count should
    * never be less than the memo count */
-  assert(memoCount > 0);
+  assert(memoCount > 0u);
   memoCount.fetch_sub(1u, std::memory_order_relaxed);
   decWeak();
 }
 
 bool bi::Counted::isReachable() const {
-  return sharedCount.load(std::memory_order_relaxed) > 0
+  return sharedCount.load(std::memory_order_relaxed) > 0u
       || weakCount.load(std::memory_order_relaxed)
           > memoCount.load(std::memory_order_relaxed);
 }
