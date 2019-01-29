@@ -99,42 +99,13 @@ public:
 
 private:
   /**
-   * Joint entry type.
+   * Get a value.
+   *
+   * @param i Index.
+   *
+   * @return The value.
    */
-  struct joint_entry_type {
-    /**
-     * Key (source address).
-     */
-    key_type key;
-
-    /**
-     * Value (destination address).
-     */
-    value_type value;
-  };
-
-  /**
-   * Split entry type.
-   */
-  struct split_entry_type {
-    /**
-     * Key (source address).
-     */
-    std::atomic<key_type> key;
-
-    /**
-     * Value (destination address).
-     */
-    std::atomic<value_type> value;
-  };
-
-  /**
-   * Entry type.
-   */
-  union entry_type {
-    std::atomic<joint_entry_type> joint;
-    split_entry_type split;
-  };
+  value_type get(const size_t i);
 
   /**
    * Compute the hash code for a key.
@@ -158,9 +129,14 @@ private:
   void unreserve();
 
   /**
-   * The table.
+   * The keys.
    */
-  entry_type* entries;
+  std::atomic<key_type>* keys;
+
+  /**
+   * The values.
+   */
+  std::atomic<value_type>* values;
 
   /**
    * Number of entries in the table.

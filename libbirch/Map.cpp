@@ -7,21 +7,26 @@ static bi::Any* const EMPTY = nullptr;
 static bi::Any* const ERASED = reinterpret_cast<bi::Any*>(0xFFFFFFFFFFFFFFFF);
 
 bi::Map::Map() :
-    entries(nullptr),
+    keys(nullptr),
+    values(nullptr),
     nentries(0),
     noccupied(0) {
   //
 }
 
 bi::Map::~Map() {
+  key_type key;
+  value_type value;
   for (size_t i = 0; i < nentries; ++i) {
-    joint_entry_type entry = entries[i].joint.load(std::memory_order_relaxed);
-    if (entry.key != EMPTY && entry.key != ERASED) {
-      entry.key->decMemo();
-      entry.value->decShared();
+    key = keys[i].load(std::memory_order_relaxed);
+    if (key != EMPTY && key != ERASED) {
+      value = values[i].load(std::memory_order_relaxed);
+      key->decMemo();
+      value->decShared();
     }
   }
-  deallocate(entries, nentries * sizeof(entry_type));
+  deallocate(keys, nentries * sizeof(key_type));
+  deallocate(values, nentries * sizeof(value_type));
 }
 
 bool bi::Map::empty() const {
@@ -33,22 +38,31 @@ bi::Map::value_type bi::Map::get(const key_type key,
   /* pre-condition */
   assert(key);
 
-  value_type result = failed;
+  value_type value = failed;
   if (!empty()) {
     lock.share();
     size_t i = hash(key);
-
-    key_type k = entries[i].split.key.load(std::memory_order_relaxed);
+    key_type k = keys[i].load(std::memory_order_acquire);
     while (k && k != key) {
-      i = (i + 1) & (nentries - 1);
-      k = entries[i].split.key.load(std::memory_order_relaxed);
+      i = (i + 1ull) & (nentries - 1ull);
+      k = keys[i].load(std::memory_order_acquire);
     }
     if (k == key) {
-      result = entries[i].split.value.load(std::memory_order_relaxed);
+      value = get(i);
     }
     lock.unshare();
   }
-  return result;
+  return value;
+}
+
+bi::Map::value_type bi::Map::get(const size_t i) {
+  /* key is written before value on put, so loop for a valid value in
+   * case that write has not concluded yet */
+  value_type value;
+  do {
+    value = values[i].load(std::memory_order_acquire);
+  } while (value == EMPTY);
+  return value;
 }
 
 bi::Map::value_type bi::Map::put(const key_type key, const value_type value) {
@@ -62,23 +76,25 @@ bi::Map::value_type bi::Map::put(const key_type key, const value_type value) {
   reserve();
   lock.share();
 
-  joint_entry_type expected = { EMPTY, EMPTY };
-  joint_entry_type desired = { key, value };
+  key_type expected = EMPTY;
+  key_type desired = key;
 
   size_t i = hash(key);
-  while (!entries[i].joint.compare_exchange_strong(expected, desired,
-      std::memory_order_relaxed) && expected.key != key) {
+  while (!keys[i].compare_exchange_strong(expected, desired,
+      std::memory_order_release) && expected != key) {
     i = (i + 1) & (nentries - 1);
-    expected = {EMPTY, EMPTY};
+    expected = EMPTY;
   }
 
   value_type result;
-  if (expected.key == key) {
-    unreserve();  // key exists, cancel reservation for insert
-    result = expected.value;
+  if (expected == key) {
+    /* key exists, cancel put and return associated value */
+    unreserve();
     key->decMemo();
     value->decShared();
+    result = get(i);
   } else {
+    values[i].store(value, std::memory_order_release);
     result = value;
   }
   lock.unshare();
@@ -94,21 +110,22 @@ bi::Map::value_type bi::Map::uninitialized_put(const key_type key,
   reserve();
   lock.share();
 
-  joint_entry_type expected = { EMPTY, EMPTY };
-  joint_entry_type desired = { key, value };
+  key_type expected = EMPTY;
+  key_type desired = key;
 
   size_t i = hash(key);
-  while (!entries[i].joint.compare_exchange_strong(expected, desired,
-      std::memory_order_relaxed) && expected.key != key) {
-    i = (i + 1) & (nentries - 1);
-    expected = {EMPTY, EMPTY};
+  while (!keys[i].compare_exchange_strong(expected, desired,
+      std::memory_order_release) && expected != key) {
+    i = (i + 1) & (nentries - 1ull);
+    expected = EMPTY;
   }
 
   value_type result;
-  if (expected.key == key) {
+  if (expected == key) {
     unreserve();  // key exists, cancel reservation for insert
-    result = expected.value;
+    result = get(i);
   } else {
+    values[i].store(value, std::memory_order_release);
     result = value;
   }
   lock.unshare();
@@ -126,14 +143,13 @@ void bi::Map::remove(const key_type key) {
     key_type desired = ERASED;
 
     size_t i = hash(key);
-    while (!entries[i].split.key.compare_exchange_strong(expected, desired,
+    while (!keys[i].compare_exchange_strong(expected, desired,
         std::memory_order_relaxed) && expected != EMPTY) {
       i = (i + 1) & (nentries - 1);
       expected = key;
     }
     if (expected == key) {
-      value_type value = entries[i].split.value.load(
-          std::memory_order_relaxed);
+      value_type value = values[i].load(std::memory_order_relaxed);
       lock.unshare();  // release first, as dec may cause lengthy cleanup
       key->decMemo();
       value->decShared();
@@ -164,37 +180,43 @@ void bi::Map::reserve() {
     if (noccupied1 > crowd()) {
       /* save previous table */
       size_t nentries1 = nentries;
-      joint_entry_type* entries1 = (joint_entry_type*)entries;
+      key_type* keys1 = (key_type*)keys;
+      value_type* values1 = (value_type*)values;
 
       /* initialize new table */
       size_t nentries2 = std::max(2ull * nentries1, INITIAL_MAP_SIZE);
-      joint_entry_type* entries2 = (joint_entry_type*)allocate(
-          nentries2 * sizeof(entry_type));
-      std::memset(entries2, 0, nentries2 * sizeof(entry_type));
+      key_type* keys2 = (key_type*)allocate(nentries2 * sizeof(key_type));
+      value_type* values2 = (value_type*)allocate(
+          nentries2 * sizeof(value_type));
+      std::memset(keys2, 0, nentries2 * sizeof(key_type));
+      std::memset(values2, 0, nentries2 * sizeof(value_type));
 
       /* copy contents from previous table */
       size_t nerased = 0;
       nentries = nentries2;  // set this here as needed by hash()
       for (size_t i = 0u; i < nentries1; ++i) {
-        joint_entry_type entry = entries1[i];
-        if (entry.key == ERASED) {
+        key_type key = keys1[i];
+        if (key == ERASED) {
           ++nerased;
-        } else if (entry.key != EMPTY) {
+        } else if (key != EMPTY) {
           /* rehash and insert */
-          size_t j = hash(entry.key);
-          while (entries2[j].key) {
+          size_t j = hash(key);
+          while (keys2[j]) {
             j = (j + 1u) & (nentries2 - 1u);
           }
-          entries2[j] = entry;
+          keys2[j] = key;
+          values2[j] = values1[i];
         }
       }
 
       /* update object */
-      entries = (entry_type*)entries2;
+      keys = (std::atomic<key_type>*)keys2;
+      values = (std::atomic<value_type>*)values2;
       noccupied -= nerased;
 
       /* deallocate previous table */
-      deallocate(entries1, nentries1 * sizeof(joint_entry_type));
+      deallocate(keys1, nentries1 * sizeof(key_type));
+      deallocate(values1, nentries1 * sizeof(value_type));
     }
 
     /* release resize lock */
@@ -211,14 +233,14 @@ void bi::Map::clean() {
   key_type key;
   value_type value;
   for (size_t i = 0u; i < nentries; ++i) {
-    key = entries[i].split.key.load(std::memory_order_relaxed);
+    key = keys[i].load(std::memory_order_relaxed);
     if (key != EMPTY && key != ERASED && !key->isReachable()) {
       /* key is only reachable through this entry, so remove it */
       key_type expected = key;
       key_type desired = ERASED;
-      if (entries[i].split.key.compare_exchange_strong(expected, desired,
+      if (keys[i].compare_exchange_strong(expected, desired,
           std::memory_order_relaxed)) {
-        value = entries[i].split.value;
+        value = values[i].load(std::memory_order_relaxed);
         key->decMemo();
         value->decShared();
       }
@@ -232,16 +254,16 @@ void bi::Map::freeze() {
   key_type key;
   value_type value;
   for (size_t i = 0u; i < nentries; ++i) {
-    key = entries[i].split.key.load(std::memory_order_relaxed);
+    key = keys[i].load(std::memory_order_relaxed);
     if (key != EMPTY && key != ERASED) {
-      value = entries[i].split.value.load(std::memory_order_relaxed);
+      value = values[i].load(std::memory_order_relaxed);
       if (key->isReachable()) {
         value->freeze();
       } else {
         /* clean as we go */
         key_type expected = key;
         key_type desired = ERASED;
-        if (entries[i].split.key.compare_exchange_strong(expected, desired,
+        if (keys[i].compare_exchange_strong(expected, desired,
             std::memory_order_relaxed)) {
           key->decMemo();
           value->decShared();
