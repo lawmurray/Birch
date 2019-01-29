@@ -51,11 +51,12 @@ bi::Memo* bi::Memo::getParent() const {
 
 std::pair<bi::Any*,bi::Memo*> bi::Memo::get(Any* o, Memo* from) {
   if (this == from) {
-    return std::make_pair(o, this);
+    return std::make_pair(o->getForward(), this);
   } else {
-    auto result = m.get(getParent()->source(o, from));
+    o = getParent()->source(o, from);
+    auto result = m.get(o);
     if (result) {
-      return std::make_pair(result, this);
+      return std::make_pair(result->getForward(), this);
     } else {
       return std::make_pair(copy(o), this);
     }
@@ -64,11 +65,12 @@ std::pair<bi::Any*,bi::Memo*> bi::Memo::get(Any* o, Memo* from) {
 
 std::pair<bi::Any*,bi::Memo*> bi::Memo::pull(Any* o, Memo* from) {
   if (this == from) {
-    return std::make_pair(o, this);
+    return std::make_pair(o->pullForward(), this);
   } else {
-    auto result = m.get(getParent()->source(o, from));
+    o = getParent()->source(o, from);
+    auto result = m.get(o);
     if (result) {
-      return std::make_pair(result, this);
+      return std::make_pair(result->pullForward(), this);
     } else {
       return std::make_pair(o, getParent());
     }

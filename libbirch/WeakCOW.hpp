@@ -225,10 +225,6 @@ public:
     #if USE_LAZY_DEEP_CLONE
     if (object) {
       std::tie(object, from) = to->get(object.get(), from.get());
-      SharedPtr<Any> shared(object);
-      if (shared) {
-        object = shared->getForward();
-      }
       assert(!object.get()->isFrozen());
     }
     #endif
@@ -245,12 +241,6 @@ public:
     #if USE_LAZY_DEEP_CLONE
     if (object) {
       std::tie(object, from) = to->pull(object.get(), from.get());
-      if (from.get() == to.get()) {
-        SharedPtr<Any> shared(object);
-        if (shared) {
-          object = shared->pullForward();
-        }
-      }
     }
     #endif
     return object.get();
@@ -264,7 +254,7 @@ public:
 
   void freeze() {
     if (object) {
-      std::tie(object, from) = to->pull(object.get(), from.get());
+      pull();
       SharedPtr<Any> shared(object);
       if (shared) {
         shared->freeze();

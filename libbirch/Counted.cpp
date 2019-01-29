@@ -98,11 +98,12 @@ bool bi::Counted::isReachable() const {
 }
 
 bool bi::Counted::isFrozen() const {
+  ///@todo Is it really necessary to wait for ongoing freeze to conclude?
   unsigned n;
   do {
     n = freezeCount.load();
-  } while (n > 0u && n < nthreads + 1u);
-  return freezeCount > 0u;
+  } while (n > 0u && n != tid + 1 && n < nthreads + 1u);
+  return n > 0u;
 }
 
 void bi::Counted::freeze() {

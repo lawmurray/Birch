@@ -217,7 +217,6 @@ public:
     #if USE_LAZY_DEEP_CLONE
     if (object) {
       std::tie(object, from) = to->get(object.get(), from.get());
-      object = object->getForward();
       assert(!object->isFrozen());
     }
     #endif
@@ -234,9 +233,6 @@ public:
     #if USE_LAZY_DEEP_CLONE
     if (object) {
       std::tie(object, from) = to->pull(object.get(), from.get());
-      if (from.get() == to.get()) {
-        object = object->pullForward();
-      }
     }
     #endif
     return object.get();
@@ -263,8 +259,7 @@ public:
 
   void freeze() {
     if (object) {
-      std::tie(object, from) = to->pull(object.get(), from.get());
-      object->freeze();
+      pull()->freeze();
       to->freeze();
     }
   }
