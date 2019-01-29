@@ -58,11 +58,6 @@ public:
   void clean();
 
   /**
-   * Freeze all reachable values in the memo.
-   */
-  void freeze();
-
-  /**
    * Is there a parent memo?
    */
   bool hasParent() const;
@@ -70,20 +65,20 @@ public:
   /**
    * Get the parent memo.
    */
-  const SharedPtr<Memo>& getParent() const;
+  Memo* getParent() const;
 
   /**
    * Shallow mapping of an object that may not yet have been cloned,
    * cloning it if necessary.
    */
-  Any* get(Any* o);
+  std::pair<Any*,Memo*> get(Any* o, Memo* from);
 
   /**
    * Shallow mapping of an object that may not yet have been cloned,
    * without cloning it. This can be used as an optimization for read-only
    * access.
    */
-  Any* pull(Any* o);
+  std::pair<Any*,Memo*> pull(Any* o, Memo* from);
 
   /**
    * Deep mapping of an object through ancestor memos up to the current memo,
@@ -94,12 +89,15 @@ public:
    *
    * @return The mapped object.
    */
-  Any* source(Any* o);
+  Any* source(Any* o, Memo* from);
 
   /**
    * Shallow copy of an object.
    */
   Any* copy(Any* o);
+
+protected:
+  virtual void doFreeze();
 
 private:
   /**

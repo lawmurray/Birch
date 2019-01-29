@@ -35,16 +35,17 @@ public:
   /**
    * Constructor.
    */
-  WeakCOW(T* object, Memo* memo = currentContext) :
-      super_type(object, memo) {
+  WeakCOW(T* object, Memo* from = currentContext, Memo* to = currentContext) :
+      super_type(object, from, to) {
     //
   }
 
   /**
    * Constructor.
    */
-  WeakCOW(const WeakPtr<T>& object, Memo* memo = currentContext) :
-      super_type(object, memo) {
+  WeakCOW(const WeakPtr<T>& object, Memo* from = currentContext, Memo* to =
+      currentContext) :
+      super_type(object, from, to) {
     //
   }
 
@@ -178,31 +179,36 @@ public:
     //
   }
 
-  WeakCOW(Any* object, Memo* memo = currentContext) :
+  WeakCOW(Any* object, Memo* from = currentContext, Memo* to = currentContext) :
       object(object),
-      memo(memo) {
+      from(from),
+      to(to) {
     //
   }
 
-  WeakCOW(const WeakPtr<Any>& object, Memo* memo = currentContext) :
+  WeakCOW(const WeakPtr<Any>& object, Memo* from = currentContext, Memo* to =
+      currentContext) :
       object(object),
-      memo(memo) {
+      from(from),
+      to(to) {
     //
   }
 
   WeakCOW(const SharedCOW<Any>& o) :
       object(o.object),
-      memo(o.memo) {
+      from(o.from),
+      to(o.to) {
     //
   }
 
   WeakCOW(const WeakCOW<Any>& o) :
       object(o.object),
-      memo(cloneUnderway ? currentContext : o.memo) {
+      from(o.from),
+      to(cloneUnderway ? currentContext : o.to) {
     if (cloneUnderway && object) {
-      auto m = o.memo.get();
-      if (!memo->hasAncestor(m)) {
-        object = m->get(object.get());
+      auto m = o.to.get();
+      if (!to->hasAncestor(m)) {
+        std::tie(object, from) = m->get(object.get(), from.get());
         freeze();
       }
       #if !USE_LAZY_DEEP_CLONE
@@ -218,7 +224,11 @@ public:
   Any* get() {
     #if USE_LAZY_DEEP_CLONE
     if (object) {
-      object = memo->get(object.get())->getForward();
+      std::tie(object, from) = to->get(object.get(), from.get());
+      SharedPtr<Any> shared(object);
+      if (shared) {
+        object = shared->getForward();
+      }
       assert(!object.get()->isFrozen());
     }
     #endif
@@ -234,9 +244,12 @@ public:
   Any* pull() {
     #if USE_LAZY_DEEP_CLONE
     if (object) {
-      object = memo->pull(object.get());
-      if (object.get()->getContext() == memo.get()) {
-        object = object.get()->pullForward();
+      std::tie(object, from) = to->pull(object.get(), from.get());
+      if (from.get() == to.get()) {
+        SharedPtr<Any> shared(object);
+        if (shared) {
+          object = shared->pullForward();
+        }
       }
     }
     #endif
@@ -251,17 +264,17 @@ public:
 
   void freeze() {
     if (object) {
-      object = memo->pull(object.get());
+      std::tie(object, from) = to->pull(object.get(), from.get());
       SharedPtr<Any> shared(object);
       if (shared) {
         shared->freeze();
       }
-      memo->freeze();
+      to->freeze();
     }
   }
 
   Memo* getContext() const {
-    return memo.get();
+    return to.get();
   }
 
   Any& operator*() const {
@@ -287,7 +300,7 @@ public:
    */
   template<class U>
   WeakCOW<U> dynamic_pointer_cast() const {
-    return WeakCOW<U>(dynamic_cast<U*>(object.get()), memo.get());
+    return WeakCOW<U>(dynamic_cast<U*>(object.get()), from.get(), to.get());
   }
 
   /**
@@ -295,18 +308,23 @@ public:
    */
   template<class U>
   WeakCOW<U> static_pointer_cast() const {
-    return WeakCOW<U>(static_cast<U*>(object.get()), memo.get());
+    return WeakCOW<U>(static_cast<U*>(object.get()), from.get(), to.get());
   }
 
 protected:
   /**
-   * The object.
+   * Object.
    */
   WeakPtr<Any> object;
 
   /**
-   * The memo.
+   * First label in list.
    */
-  ContextPtr memo;
+  InitPtr<Memo> from;
+
+  /**
+   * Last label in list.
+   */
+  ContextPtr to;
 };
 }

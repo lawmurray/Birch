@@ -6,17 +6,16 @@
 #include "libbirch/memory.hpp"
 
 bi::Any::Any() :
+    Counted(),
     context(currentContext),
-    forward(nullptr),
-    freezeCount(0) {
+    forward(nullptr) {
   //
 }
 
 bi::Any::Any(const Any& o) :
     Counted(o),
     context(currentContext),
-    forward(nullptr),
-    freezeCount(0) {
+    forward(nullptr) {
   //
 }
 
@@ -60,36 +59,4 @@ bi::Any* bi::Any::pullForward() {
 
 bi::Memo* bi::Any::getContext() {
   return context.get();
-}
-
-bool bi::Any::isFrozen() const {
-  unsigned n;
-  do {
-    n = freezeCount.load();
-  } while (n > 0u && n < nthreads + 1u);
-  return freezeCount > 0u;
-}
-
-void bi::Any::freeze() {
-  unsigned expected = 0u;
-  unsigned desired = tid + 1;
-  if (freezeCount.compare_exchange_strong(expected, desired)) {
-    /* this thread freezes the object */
-    doFreeze();
-    freezeCount = nthreads + 1u;
-  } else if (expected < nthreads + 1u) {
-    /* this thread is currently freezing the object, nothing to do */
-  } else if (expected < nthreads + 1u) {
-    /* another thread is currently freezing the object, join it, if for no
-     * other reason than to avoid a potential deadlock situation */
-    doFreeze();
-    freezeCount = nthreads + 1u;
-  } else {
-    /* already frozen */
-    assert(expected == nthreads + 1u);
-  }
-}
-
-void bi::Any::doFreeze() {
-  //
 }

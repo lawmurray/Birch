@@ -39,16 +39,17 @@ public:
   /**
    * Constructor.
    */
-  SharedCOW(T* object, Memo* memo = currentContext) :
-      super_type(object, memo) {
+  SharedCOW(T* object, Memo* from = currentContext, Memo* to = currentContext) :
+      super_type(object, from, to) {
     //
   }
 
   /**
    * Constructor.
    */
-  SharedCOW(const SharedPtr<T>& object, Memo* memo = currentContext) :
-      super_type(object, memo) {
+  SharedCOW(const SharedPtr<T>& object, Memo* from = currentContext,
+      Memo* to = currentContext) :
+      super_type(object, from, to) {
     //
   }
 
@@ -111,7 +112,7 @@ public:
    */
   T* get() const {
     return const_cast<SharedCOW<T>*>(this)->get();
- }
+  }
 
   /**
    * Map the raw pointer, without lazy cloning.
@@ -167,15 +168,19 @@ public:
     //
   }
 
-  SharedCOW(Any* object, Memo* memo = currentContext) :
+  SharedCOW(Any* object, Memo* from = currentContext, Memo* to =
+      currentContext) :
       object(object),
-      memo(memo) {
+      from(from),
+      to(to) {
     //
   }
 
-  SharedCOW(const SharedPtr<Any>& object, Memo* memo = currentContext) :
+  SharedCOW(const SharedPtr<Any>& object, Memo* from = currentContext,
+      Memo* to = currentContext) :
       object(object),
-      memo(memo) {
+      from(from),
+      to(to) {
     //
   }
 
@@ -183,11 +188,12 @@ public:
 
   SharedCOW(const SharedCOW<Any>& o) :
       object(o.object),
-      memo(cloneUnderway ? currentContext : o.memo) {
+      from(o.from),
+      to(cloneUnderway ? currentContext : o.to) {
     if (cloneUnderway && object) {
-      auto m = o.memo.get();
-      if (!memo->hasAncestor(m)) {
-        object = m->get(object.get());
+      auto m = o.to.get();
+      if (!to->hasAncestor(m)) {
+        std::tie(object, from) = m->get(object.get(), from.get());
         freeze();
       }
       #if !USE_LAZY_DEEP_CLONE
@@ -210,7 +216,8 @@ public:
   Any* get() {
     #if USE_LAZY_DEEP_CLONE
     if (object) {
-      object = memo->get(object.get())->getForward();
+      std::tie(object, from) = to->get(object.get(), from.get());
+      object = object->getForward();
       assert(!object->isFrozen());
     }
     #endif
@@ -226,8 +233,8 @@ public:
   Any* pull() {
     #if USE_LAZY_DEEP_CLONE
     if (object) {
-      object = memo->pull(object.get());
-      if (object->getContext() == memo.get()) {
+      std::tie(object, from) = to->pull(object.get(), from.get());
+      if (from.get() == to.get()) {
         object = object->pullForward();
       }
     }
@@ -243,7 +250,7 @@ public:
 
   SharedCOW<Any> clone() {
     freeze();
-    SharedCOW<Any> result(object, memo->fork());
+    SharedCOW<Any> result(object, from.get(), to->fork());
     #if !USE_LAZY_DEEP_CLONE
     result.get();
     #endif
@@ -256,14 +263,14 @@ public:
 
   void freeze() {
     if (object) {
-      object = memo->pull(object.get());
+      std::tie(object, from) = to->pull(object.get(), from.get());
       object->freeze();
-      memo->freeze();
+      to->freeze();
     }
   }
 
   Memo* getContext() const {
-    return memo.get();
+    return to.get();
   }
 
   Any& operator*() const {
@@ -289,7 +296,7 @@ public:
    */
   template<class U>
   SharedCOW<U> dynamic_pointer_cast() const {
-    return SharedCOW<U>(dynamic_cast<U*>(object.get()), memo.get());
+    return SharedCOW<U>(dynamic_cast<U*>(object.get()), from.get(), to.get());
   }
 
   /**
@@ -297,19 +304,24 @@ public:
    */
   template<class U>
   SharedCOW<U> static_pointer_cast() const {
-    return SharedCOW<U>(static_cast<U*>(object.get()), memo.get());
+    return SharedCOW<U>(static_cast<U*>(object.get()), from.get(), to.get());
   }
 
 protected:
   /**
-   * The object.
+   * Object.
    */
   SharedPtr<Any> object;
 
   /**
-   * The memo.
+   * First label in list.
    */
-  ContextPtr memo;
+  InitPtr<Memo> from;
+
+  /**
+   * Last label in list.
+   */
+  ContextPtr to;
 };
 }
 
@@ -323,6 +335,7 @@ bi::SharedCOW<T>::SharedCOW(const WeakCOW<T>& o) :
 
 inline bi::SharedCOW<bi::Any>::SharedCOW(const WeakCOW<Any>& o) :
     object(o.object),
-    memo(o.memo) {
+    from(o.from),
+    to(o.to) {
   //
 }

@@ -7,6 +7,7 @@
 #include "libbirch/SwapContext.hpp"
 
 bi::Memo::Memo(Memo* parent) :
+    Counted(),
     parent(parent) {
   //
 }
@@ -39,50 +40,48 @@ void bi::Memo::clean() {
   m.clean();
 }
 
-void bi::Memo::freeze() {
-  m.freeze();
-}
-
 bool bi::Memo::hasParent() const {
   return parent;
 }
 
-const bi::SharedPtr<bi::Memo>& bi::Memo::getParent() const {
+bi::Memo* bi::Memo::getParent() const {
   assert(parent);
-  return parent;
+  return parent.get();
 }
 
-bi::Any* bi::Memo::get(Any* o) {
-  if (o->getContext() == this) {
-    return o;
+std::pair<bi::Any*,bi::Memo*> bi::Memo::get(Any* o, Memo* from) {
+  if (this == from) {
+    return std::make_pair(o, this);
   } else {
-    auto result = m.get(getParent()->source(o));
-    if (!result) {
-      result = copy(o);
+    auto result = m.get(getParent()->source(o, from));
+    if (result) {
+      return std::make_pair(result, this);
+    } else {
+      return std::make_pair(copy(o), this);
     }
-    return result;
   }
 }
 
-bi::Any* bi::Memo::pull(Any* o) {
-  if (o->getContext() == this) {
-    return o;
+std::pair<bi::Any*,bi::Memo*> bi::Memo::pull(Any* o, Memo* from) {
+  if (this == from) {
+    return std::make_pair(o, this);
   } else {
-    auto result = m.get(getParent()->source(o));
-    if (!result) {
-      result = o;
+    auto result = m.get(getParent()->source(o, from));
+    if (result) {
+      return std::make_pair(result, this);
+    } else {
+      return std::make_pair(o, getParent());
     }
-    return result;
   }
 }
 
-bi::Any* bi::Memo::source(Any* o) {
-  if (o->getContext() == this) {
+bi::Any* bi::Memo::source(Any* o, Memo* from) {
+  if (this == from) {
     return o;
   } else {
     auto result = m.get(o);
     if (!result) {
-      result = parent->source(o);
+      result = getParent()->source(o, from);
       if (result != o) {
         result = m.get(result, result);
       }
@@ -128,4 +127,8 @@ bi::Any* bi::Memo::copy(Any* o) {
   result->incShared();
   #endif
   return result;
+}
+
+void bi::Memo::doFreeze() {
+  m.freeze();
 }

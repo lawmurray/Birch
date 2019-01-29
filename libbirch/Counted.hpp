@@ -143,7 +143,24 @@ public:
    */
   bool isReachable() const;
 
+  /**
+   * Is the object frozen?
+   */
+  bool isFrozen() const;
+
+  /**
+   * Freeze this object.
+   */
+  void freeze();
+
 protected:
+  /**
+   * Perform the actual freeze of the object. This is overwritten by derived
+   * classes. The non-virtual freeze() handles thread safety so that this
+   * need not.
+   */
+  virtual void doFreeze();
+
   /**
    * Shared count.
    */
@@ -160,6 +177,14 @@ protected:
    * memo reference implies a weak reference also.
    */
   std::atomic<unsigned> memoCount;
+
+  /**
+   * Freeze count. This is 0 if the object is not frozen, a thread id plus
+   * on if the object is in the process of being frozen (with the id that of
+   * the thread doing so), and the number of threads plus one if the process
+   * of being frozen is complete.
+   */
+  std::atomic<unsigned> freezeCount;
 
   /**
    * Size of the object. This is set immediately after construction. A value
