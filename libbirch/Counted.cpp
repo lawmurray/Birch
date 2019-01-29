@@ -7,8 +7,8 @@ bi::Counted::Counted() :
     sharedCount(0),
     weakCount(1),
     memoCount(0),
-    freezeCount(0),
-    size(0) {
+    size(0),
+    frozen(false) {
   //
 }
 
@@ -16,8 +16,8 @@ bi::Counted::Counted(const Counted& o) :
     sharedCount(0),
     weakCount(1),
     memoCount(0),
-    freezeCount(0),
-    size(o.size) {
+    size(o.size),
+    frozen(false) {
   //
 }
 
@@ -98,31 +98,14 @@ bool bi::Counted::isReachable() const {
 }
 
 bool bi::Counted::isFrozen() const {
-  ///@todo Is it really necessary to wait for ongoing freeze to conclude?
-  unsigned n;
-  do {
-    n = freezeCount.load();
-  } while (n > 0u && n != tid + 1 && n < nthreads + 1u);
-  return n > 0u;
+  return frozen;
 }
 
 void bi::Counted::freeze() {
-  unsigned expected = 0u;
-  unsigned desired = tid + 1;
-  if (freezeCount.compare_exchange_strong(expected, desired)) {
-    /* this thread freezes the object */
+  bool expected = false;
+  bool desired = true;
+  if (frozen.compare_exchange_strong(expected, desired)) {
     doFreeze();
-    freezeCount = nthreads + 1u;
-  } else if (expected < nthreads + 1u) {
-    /* this thread is currently freezing the object, nothing to do */
-  } else if (expected < nthreads + 1u) {
-    /* another thread is currently freezing the object, join it, if for no
-     * other reason than to avoid a potential deadlock situation */
-    doFreeze();
-    freezeCount = nthreads + 1u;
-  } else {
-    /* already frozen */
-    assert(expected == nthreads + 1u);
   }
 }
 

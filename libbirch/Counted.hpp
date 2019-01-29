@@ -179,14 +179,6 @@ protected:
   std::atomic<unsigned> memoCount;
 
   /**
-   * Freeze count. This is 0 if the object is not frozen, a thread id plus
-   * on if the object is in the process of being frozen (with the id that of
-   * the thread doing so), and the number of threads plus one if the process
-   * of being frozen is complete.
-   */
-  std::atomic<unsigned> freezeCount;
-
-  /**
    * Size of the object. This is set immediately after construction. A value
    * of zero is also indicative that the object is still being constructed.
    * Consequently, if the shared count reaches zero while the size is zero,
@@ -194,5 +186,10 @@ protected:
    * shared pointers to `this`.
    */
   unsigned size;
+
+  /**
+   * Is the object read-only?
+   */
+  std::atomic<bool> frozen;
 };
 }
