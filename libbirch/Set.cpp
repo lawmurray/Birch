@@ -58,7 +58,7 @@ void bi::Set::insert(const value_type value) {
 
 size_t bi::Set::hash(const value_type value) const {
   assert(nentries > 0);
-  return (reinterpret_cast<size_t>(value) >> 6ull) & (nentries - 1ull);
+  return (reinterpret_cast<size_t>(value) >> 5ull) & (nentries - 1ull);
 }
 
 size_t bi::Set::crowd() const {
