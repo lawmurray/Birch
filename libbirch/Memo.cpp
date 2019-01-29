@@ -8,13 +8,13 @@
 
 bi::Memo::Memo() :
     parent(nullptr),
-    gen(0) {
+    gen(0u) {
   //
 }
 
 bi::Memo::Memo(Memo* parent) :
     parent(parent),
-    gen(parent->gen + 1) {
+    gen(parent->gen + 1u) {
   assert(parent);
 }
 
@@ -27,11 +27,11 @@ bool bi::Memo::hasAncestor(Memo* memo) {
     return false;
   } else if (parent == memo) {
     return true;
-  } else if (gen % 2 == 0 && a.contains(memo)) {
+  } else if (gen % 2u == 0u && a.contains(memo)) {
     return true;
   } else {
     bool result = parent->hasAncestor(memo);
-    if (result && gen % 2 == 0) {
+    if (result && gen % 2u == 0u) {
       a.insert(memo);
     }
     return result;
@@ -88,7 +88,7 @@ bi::Any* bi::Memo::source(Any* o, Memo* from) {
     return o;
   } else {
     Any* result = nullptr;
-    if (gen % 2 == 0) {
+    if (gen % 2u == 0u) {
       result = m.get(o);
     }
     if (!result) {
@@ -96,7 +96,7 @@ bi::Any* bi::Memo::source(Any* o, Memo* from) {
       if (result != o) {
         result = m.get(result, result);
       }
-      if (gen % 2 == 0) {
+      if (gen % 2u == 0u) {
         result = m.put(o, result);
       }
     }

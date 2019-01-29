@@ -123,6 +123,6 @@ private:
   /**
    * Generation number (zero is root).
    */
-  int gen;
+  unsigned gen;
 };
 }
