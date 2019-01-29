@@ -145,7 +145,7 @@ class ParticleFilter < Sampler {
      * with the same ancestor are contiguous in f after the copy, which is
      * more cache efficient */
     auto f0 <- f;
-    for n:Integer in 1..nparticles {
+    parallel for n:Integer in 1..nparticles {
       f[n] <- clone<(Model,Real)!>(f0[a[n]]);
       w[n] <- 0.0;
     }
