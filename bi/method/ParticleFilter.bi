@@ -172,15 +172,26 @@ class ParticleFilter < Sampler {
    * Compute summary statistics.
    */
   function reduce() {
+    W:Real <- 0.0;
+    W2:Real <- 0.0;
+    m:Real <- max(w);
+    v:Real;
+    
+    for (n:Integer in 1..length(w)) {
+      v <- exp(w[n] - m);
+      W <- W + v;
+      W2 <- W2 + v*v;
+    }
+    auto ess <- W*W/W2;
+    auto Z <- log(W) + m - log(nparticles);
+   
     /* effective sample size */
-    e.pushBack(ess(w));
+    e.pushBack(ess);
     if (!(e.back() > 0.0)) {  // > 0.0 as may be nan
       error("particle filter degenerated.");
     }
   
     /* normalizing constant estimate */
-    auto W <- log_sum_exp(w);
-    auto Z <- W - log(nparticles);
     w <- w - Z;
     if (this.Z.empty()) {
       this.Z.pushBack(Z);
