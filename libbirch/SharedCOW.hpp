@@ -186,19 +186,23 @@ public:
 
   SharedCOW(const WeakCOW<Any>& o);
 
-  SharedCOW(const SharedCOW<Any>& o) :
-      object(o.object),
-      from(o.from),
-      to(cloneUnderway ? currentContext : o.to) {
-    if (cloneUnderway && object) {
-      auto m = o.to.get();
-      if (!to->hasAncestor(m)) {
-        std::tie(object, from) = m->get(object.get(), from.get());
+  SharedCOW(const SharedCOW<Any>& o) {
+    if (cloneUnderway) {
+      to = currentContext;
+      if (o.object && !currentContext->hasAncestor(o.to.get())) {
+        std::tie(object, from) = currentContext->get(o.object.get(), o.from.get());
         freeze();
+      } else {
+        object = o.object;
+        from = o.from;
       }
       #if !USE_LAZY_DEEP_CLONE
       get();
       #endif
+    } else {
+      object = o.object;
+      from = o.from;
+      to = o.to;
     }
   }
 
