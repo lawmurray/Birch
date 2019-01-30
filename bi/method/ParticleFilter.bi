@@ -133,7 +133,8 @@ class ParticleFilter < Sampler {
    * Resample particles.
    */
   function resample() {
-    a <- ancestors(w);
+    a <- ancestors_permute(w);
+    w <- vector(0.0, nparticles);
   }
 
   /**
@@ -147,7 +148,6 @@ class ParticleFilter < Sampler {
     auto f0 <- f;
     parallel for n:Integer in 1..nparticles {
       f[n] <- clone<(Model,Real)!>(f0[a[n]]);
-      w[n] <- 0.0;
     }
   }
   
