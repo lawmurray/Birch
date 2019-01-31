@@ -167,10 +167,16 @@ bi::Driver::Driver(int argc, char** argv) :
   largv.insert(largv.end(), unknown.begin(), unknown.end());
 
   /* environment variables */
+  char* BIRCH_PREFIX = getenv("BIRCH_PREFIX");
   char* BIRCH_SHARE_PATH = getenv("BIRCH_SHARE_PATH");
   char* BIRCH_INCLUDE_PATH = getenv("BIRCH_INCLUDE_PATH");
   char* BIRCH_LIBRARY_PATH = getenv("BIRCH_LIBRARY_PATH");
   std::string input;
+
+  /* install prefix */
+  if (prefix.empty() && BIRCH_PREFIX) {
+    prefix = BIRCH_PREFIX;
+  }
 
   /* share dirs */
   if (BIRCH_SHARE_PATH) {
@@ -840,7 +846,7 @@ void bi::Driver::configure() {
       options << " --disable-shared";
     }
     if (!prefix.empty()) {
-      options << " --prefix=" << absolute(prefix);
+      options << " --prefix=" << prefix;
     }
     options << " --config-cache";
     options << " INSTALL=\"install -p\"";
