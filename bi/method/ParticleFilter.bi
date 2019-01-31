@@ -133,7 +133,7 @@ class ParticleFilter < Sampler {
    * Resample particles.
    */
   function resample() {
-    a <- ancestors_permute(w);
+    a <- permute_ancestors(ancestors(w));
     w <- vector(0.0, nparticles);
   }
 
