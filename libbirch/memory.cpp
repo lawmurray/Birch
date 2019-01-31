@@ -30,10 +30,11 @@ char* bi::heap() {
   /* attempt to allocate this amount, successively halving until
    * successful */
   void* ptr = nullptr;
+  int res = 0;
   do {
-    posix_memalign(&ptr, 64ull, n);
+    res = posix_memalign(&ptr, 64ull, n);
     n >>= 1;
-  } while (!ptr && n > 0u);
+  } while (res > 0 && n > 0u);
   assert(ptr);
 
   bufferStart = (char*)ptr;
