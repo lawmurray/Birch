@@ -18,9 +18,9 @@ std::mt19937_64 rng(rd());
 function seed(s:Integer) {
   cpp {{
   #ifdef _OPENMP
-  #pragma omp parallel
+  #pragma omp parallel num_threads(bi::nthreads)
   {
-    rng.seed(s_ + omp_get_thread_num());
+    rng.seed(s_ + bi::tid);
   }
   #else
   rng.seed(s_);
