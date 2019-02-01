@@ -832,15 +832,15 @@ void bi::Driver::configure() {
 
     for (auto iter = include_dirs.begin(); iter != include_dirs.end();
         ++iter) {
-      cppflags << " -I'" << iter->string() << "'";
+      cppflags << " -I" << iter->string();
     }
     for (auto iter = lib_dirs.begin(); iter != lib_dirs.end();
         ++iter) {
-      ldflags << " -L'" << iter->string() << "'";
+      ldflags << " -L" << iter->string();
     }
     for (auto iter = lib_dirs.begin(); iter != lib_dirs.end();
         ++iter) {
-      ldflags << " -Wl,-rpath,'" << iter->string() << "'";
+      ldflags << " -Wl,-rpath," << iter->string();
     }
 
     /* configure options */
