@@ -4,11 +4,14 @@ matrix:
     # macOS environment
     - os: osx
       compiler: clang
-      osx_image: xcode9.4
+      osx_image: xcode10.1
       addons:
         homebrew:
           packages:
-            - flex bison eigen libomp
+            - flex
+            - bison
+            - eigen
+            - libomp
 
     # Ubuntu 16.04 environment
     - os: linux
