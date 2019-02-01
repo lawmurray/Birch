@@ -26,3 +26,21 @@ void bi::Pool::push(void* block) {
     setNext(block, expected.top);
   }
 }
+
+void* bi::Pool::getNext(void* block) {
+  assert(
+      !block || (bufferStart <= block && block < bufferStart + bufferSize));
+
+  return (block) ? *reinterpret_cast<void**>(block) : nullptr;
+}
+
+void bi::Pool::setNext(void* block, void* value) {
+  assert(
+      !block || (bufferStart <= block && block < bufferStart + bufferSize));
+  assert(
+      !value || (bufferStart <= value && value < bufferStart + bufferSize));
+
+  if (block) {
+    *reinterpret_cast<void**>(block) = value;
+  }
+}

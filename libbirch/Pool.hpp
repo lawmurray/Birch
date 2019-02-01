@@ -73,8 +73,6 @@ private:
 };
 }
 
-#include "libbirch/memory.hpp"
-
 inline bi::Pool::Pool() :
     stack( { nullptr, 0u }) {
   //
@@ -82,22 +80,4 @@ inline bi::Pool::Pool() :
 
 inline bool bi::Pool::empty() const {
   return !stack.load().top;
-}
-
-inline void* bi::Pool::getNext(void* block) {
-  assert(
-      !block || (bufferStart <= block && block < bufferStart + bufferSize));
-
-  return (block) ? *reinterpret_cast<void**>(block) : nullptr;
-}
-
-inline void bi::Pool::setNext(void* block, void* value) {
-  assert(
-      !block || (bufferStart <= block && block < bufferStart + bufferSize));
-  assert(
-      !value || (bufferStart <= value && value < bufferStart + bufferSize));
-
-  if (block) {
-    *reinterpret_cast<void**>(block) = value;
-  }
 }
