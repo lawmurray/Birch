@@ -76,3 +76,7 @@ protected:
   std::atomic<Any*> forward;
 };
 }
+
+inline bi::Memo* bi::Any::getContext() {
+  return context.get();
+}

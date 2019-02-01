@@ -12,10 +12,6 @@ void bi::Lock::share() {
   } while (!lock.joint.compare_exchange_weak(expected, desired, std::memory_order_relaxed));
 }
 
-void bi::Lock::unshare() {
-  lock.split.shareCount.fetch_sub(1u, std::memory_order_relaxed);
-}
-
 void bi::Lock::keep() {
   /* spin until exclusive lock obtained */
   unsigned expected;
@@ -25,8 +21,4 @@ void bi::Lock::keep() {
 
   /* spin until all threads with shared locks release */
   while (lock.split.shareCount.load(std::memory_order_acquire) > 0u);
-}
-
-void bi::Lock::unkeep() {
-  lock.split.keepCount.store(0u, std::memory_order_relaxed);
 }

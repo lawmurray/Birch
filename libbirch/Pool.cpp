@@ -3,17 +3,6 @@
  */
 #include "libbirch/Pool.hpp"
 
-#include "libbirch/memory.hpp"
-
-bi::Pool::Pool() :
-    stack( { nullptr, 0u }) {
-  //
-}
-
-bool bi::Pool::empty() const {
-  return !stack.load().top;
-}
-
 void* bi::Pool::pop() {
   stack_t expected = stack.load();
   stack_t desired = { getNext(expected.top), expected.count + 1u };
@@ -35,23 +24,5 @@ void bi::Pool::push(void* block) {
       std::memory_order_relaxed)) {
     desired.count = expected.count + 1u;
     setNext(block, expected.top);
-  }
-}
-
-void* bi::Pool::getNext(void* block) {
-  assert(
-      !block || (bufferStart <= block && block < bufferStart + bufferSize));
-
-  return (block) ? *reinterpret_cast<void**>(block) : nullptr;
-}
-
-void bi::Pool::setNext(void* block, void* value) {
-  assert(
-      !block || (bufferStart <= block && block < bufferStart + bufferSize));
-  assert(
-      !value || (bufferStart <= value && value < bufferStart + bufferSize));
-
-  if (block) {
-    *reinterpret_cast<void**>(block) = value;
   }
 }

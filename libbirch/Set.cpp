@@ -12,14 +12,6 @@ bi::Set::Set() :
   //
 }
 
-bi::Set::~Set() {
-  deallocate(values, nentries * sizeof(value_type));
-}
-
-bool bi::Set::empty() const {
-  return nentries == 0u;
-}
-
 bool bi::Set::contains(const value_type value) {
   bool result = false;
   if (!empty()) {
@@ -54,17 +46,6 @@ void bi::Set::insert(const value_type value) {
     unreserve();  // value exists, cancel reservation for insert
   }
   lock.unshare();
-}
-
-unsigned bi::Set::hash(const value_type value) const {
-  assert(nentries > 0u);
-  return (reinterpret_cast<size_t>(value) >> 5ull) & (nentries - 1u);
-}
-
-unsigned bi::Set::crowd() const {
-  /* the set is considered crowded if more than three-quarters of its
-   * entries are occupied */
-  return (nentries >> 1u) + (nentries >> 2u);
 }
 
 void bi::Set::reserve() {
@@ -110,8 +91,4 @@ void bi::Set::reserve() {
     /* release resize lock */
     lock.unkeep();
   }
-}
-
-void bi::Set::unreserve() {
-  noccupied.fetch_sub(1u, std::memory_order_relaxed);
 }

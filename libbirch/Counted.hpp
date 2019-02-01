@@ -193,3 +193,56 @@ protected:
   std::atomic<bool> frozen;
 };
 }
+
+inline bi::Counted::~Counted() {
+  assert(sharedCount == 0u);
+}
+
+inline void bi::Counted::deallocate() {
+  assert(sharedCount == 0u);
+  assert(weakCount == 0u);
+  bi::deallocate(this, size);
+}
+
+inline unsigned bi::Counted::getSize() const {
+  return size;
+}
+
+inline void bi::Counted::incShared() {
+  sharedCount.fetch_add(1u, std::memory_order_relaxed);
+}
+
+inline unsigned bi::Counted::numShared() const {
+  return sharedCount;
+}
+
+inline void bi::Counted::incWeak() {
+  weakCount.fetch_add(1u, std::memory_order_relaxed);
+}
+
+inline unsigned bi::Counted::numWeak() const {
+  return weakCount;
+}
+
+inline void bi::Counted::incMemo() {
+  /* the order of operations here is important, as the weak count should
+   * never be less than the memo count */
+  incWeak();
+  memoCount.fetch_add(1u, std::memory_order_relaxed);
+}
+
+inline void bi::Counted::decMemo() {
+  /* the order of operations here is important, as the weak count should
+   * never be less than the memo count */
+  assert(memoCount > 0u);
+  memoCount.fetch_sub(1u, std::memory_order_relaxed);
+  decWeak();
+}
+
+inline bool bi::Counted::isFrozen() const {
+  return frozen.load(std::memory_order_relaxed);
+}
+
+inline void bi::Counted::doFreeze() {
+  //
+}

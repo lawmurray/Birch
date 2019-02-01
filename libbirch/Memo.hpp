@@ -132,3 +132,28 @@ private:
   unsigned gen;
 };
 }
+
+inline bi::Memo::~Memo() {
+  //
+}
+
+inline bi::Memo* bi::Memo::fork() {
+  return create(this);
+}
+
+inline void bi::Memo::clean() {
+  m.clean();
+}
+
+inline bool bi::Memo::hasParent() const {
+  return parent;
+}
+
+inline bi::Memo* bi::Memo::getParent() const {
+  assert(parent);
+  return parent.get();
+}
+
+inline void bi::Memo::doFreeze() {
+  m.freeze();
+}

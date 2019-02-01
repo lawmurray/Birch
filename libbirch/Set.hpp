@@ -92,3 +92,26 @@ private:
   Lock lock;
 };
 }
+
+inline bi::Set::~Set() {
+  deallocate(values, nentries * sizeof(value_type));
+}
+
+inline bool bi::Set::empty() const {
+  return nentries == 0u;
+}
+
+inline unsigned bi::Set::hash(const value_type value) const {
+  assert(nentries > 0u);
+  return (reinterpret_cast<size_t>(value) >> 5ull) & (nentries - 1u);
+}
+
+inline unsigned bi::Set::crowd() const {
+  /* the set is considered crowded if more than three-quarters of its
+   * entries are occupied */
+  return (nentries >> 1u) + (nentries >> 2u);
+}
+
+inline void bi::Set::unreserve() {
+  noccupied.fetch_sub(1u, std::memory_order_relaxed);
+}

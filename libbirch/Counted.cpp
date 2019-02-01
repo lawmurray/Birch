@@ -21,20 +21,6 @@ bi::Counted::Counted(const Counted& o) :
   //
 }
 
-bi::Counted::~Counted() {
-  assert(sharedCount == 0u);
-}
-
-void bi::Counted::deallocate() {
-  assert(sharedCount == 0u);
-  assert(weakCount == 0u);
-  bi::deallocate(this, size);
-}
-
-unsigned bi::Counted::getSize() const {
-  return size;
-}
-
 bi::Counted* bi::Counted::lock() {
   unsigned count = sharedCount.load(std::memory_order_acquire);
   while (count > 0u
@@ -43,10 +29,6 @@ bi::Counted* bi::Counted::lock() {
     //
   }
   return count > 0u ? this : nullptr;
-}
-
-void bi::Counted::incShared() {
-  sharedCount.fetch_add(1u, std::memory_order_relaxed);
 }
 
 void bi::Counted::decShared() {
@@ -59,14 +41,6 @@ void bi::Counted::decShared() {
   }
 }
 
-unsigned bi::Counted::numShared() const {
-  return sharedCount;
-}
-
-void bi::Counted::incWeak() {
-  weakCount.fetch_add(1u, std::memory_order_relaxed);
-}
-
 void bi::Counted::decWeak() {
   assert(weakCount > 0u);
   if (weakCount.fetch_sub(1u, std::memory_order_relaxed) - 1u == 0u) {
@@ -75,35 +49,6 @@ void bi::Counted::decWeak() {
     //   before the shared count
     deallocate();
   }
-}
-
-unsigned bi::Counted::numWeak() const {
-  return weakCount;
-}
-
-void bi::Counted::incMemo() {
-  /* the order of operations here is important, as the weak count should
-   * never be less than the memo count */
-  incWeak();
-  memoCount.fetch_add(1u, std::memory_order_relaxed);
-}
-
-void bi::Counted::decMemo() {
-  /* the order of operations here is important, as the weak count should
-   * never be less than the memo count */
-  assert(memoCount > 0u);
-  memoCount.fetch_sub(1u, std::memory_order_relaxed);
-  decWeak();
-}
-
-bool bi::Counted::isReachable() const {
-  return sharedCount.load(std::memory_order_relaxed) > 0u
-      || weakCount.load(std::memory_order_relaxed)
-          > memoCount.load(std::memory_order_relaxed);
-}
-
-bool bi::Counted::isFrozen() const {
-  return frozen.load(std::memory_order_relaxed);
 }
 
 void bi::Counted::freeze() {
@@ -115,6 +60,8 @@ void bi::Counted::freeze() {
   }
 }
 
-void bi::Counted::doFreeze() {
-  //
+bool bi::Counted::isReachable() const {
+  return sharedCount.load(std::memory_order_relaxed) > 0u
+      || weakCount.load(std::memory_order_relaxed)
+          > memoCount.load(std::memory_order_relaxed);
 }

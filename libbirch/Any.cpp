@@ -57,7 +57,3 @@ bi::Any* bi::Any::pullForward() {
   }
   return this;
 }
-
-bi::Memo* bi::Any::getContext() {
-  return context.get();
-}

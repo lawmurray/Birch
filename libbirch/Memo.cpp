@@ -18,9 +18,6 @@ bi::Memo::Memo(Memo* parent) :
   assert(parent);
 }
 
-bi::Memo::~Memo() {
-  //
-}
 
 bool bi::Memo::hasAncestor(Memo* memo) {
   if (gen <= memo->gen) {
@@ -36,23 +33,6 @@ bool bi::Memo::hasAncestor(Memo* memo) {
     }
     return result;
   }
-}
-
-bi::Memo* bi::Memo::fork() {
-  return create(this);
-}
-
-void bi::Memo::clean() {
-  m.clean();
-}
-
-bool bi::Memo::hasParent() const {
-  return parent;
-}
-
-bi::Memo* bi::Memo::getParent() const {
-  assert(parent);
-  return parent.get();
 }
 
 std::pair<bi::Any*,bi::Memo*> bi::Memo::get(Any* o, Memo* from) {
@@ -154,8 +134,4 @@ bi::Any* bi::Memo::copy(Any* o) {
   result->incShared();
   #endif
   return result;
-}
-
-void bi::Memo::doFreeze() {
-  m.freeze();
 }

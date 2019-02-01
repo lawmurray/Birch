@@ -29,10 +29,6 @@ bi::Map::~Map() {
   deallocate(values, nentries * sizeof(value_type));
 }
 
-bool bi::Map::empty() const {
-  return nentries == 0u;
-}
-
 bi::Map::value_type bi::Map::get(const key_type key,
     const value_type failed) {
   /* pre-condition */
@@ -159,18 +155,6 @@ void bi::Map::remove(const key_type key) {
   }
 }
 
-unsigned bi::Map::hash(const key_type key) const {
-  assert(nentries > 0u);
-  return static_cast<unsigned>(reinterpret_cast<size_t>(key) >> 5ull)
-      & (nentries - 1u);
-}
-
-unsigned bi::Map::crowd() const {
-  /* the table is considered crowded if more than three-quarters of its
-   * entries are occupied */
-  return (nentries >> 1u) + (nentries >> 2u);
-}
-
 void bi::Map::reserve() {
   unsigned noccupied1 = noccupied.fetch_add(1u, std::memory_order_relaxed)
       + 1u;
@@ -224,10 +208,6 @@ void bi::Map::reserve() {
     /* release resize lock */
     lock.unkeep();
   }
-}
-
-void bi::Map::unreserve() {
-  noccupied.fetch_sub(1u, std::memory_order_relaxed);
 }
 
 void bi::Map::clean() {
