@@ -74,9 +74,15 @@ public:
 
   /**
    * Shallow mapping of an object that may not yet have been cloned,
-   * cloning it if necessary.
+   * cloning and forwarding it if necessary.
    */
   std::pair<Any*,Memo*> get(Any* o, Memo* from);
+
+  /**
+   * Shallow mapping of an object that may not yet have been cloned,
+   * cloning it if necessary.
+   */
+  std::pair<Any*,Memo*> getNoForward(Any* o, Memo* from);
 
   /**
    * Shallow mapping of an object that may not yet have been cloned,

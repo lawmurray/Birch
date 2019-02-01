@@ -69,6 +69,20 @@ std::pair<bi::Any*,bi::Memo*> bi::Memo::get(Any* o, Memo* from) {
   }
 }
 
+std::pair<bi::Any*,bi::Memo*> bi::Memo::getNoForward(Any* o, Memo* from) {
+  if (this == from) {
+    return std::make_pair(o, this);
+  } else {
+    o = getParent()->source(o, from);
+    auto result = m.get(o);
+    if (result) {
+      return std::make_pair(result, this);
+    } else {
+      return std::make_pair(copy(o), this);
+    }
+  }
+}
+
 std::pair<bi::Any*,bi::Memo*> bi::Memo::pull(Any* o, Memo* from) {
   if (this == from) {
     return std::make_pair(o->pullForward(), this);
