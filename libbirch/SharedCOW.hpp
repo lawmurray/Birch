@@ -190,7 +190,7 @@ public:
     if (cloneUnderway) {
       to = currentContext;
       if (o.object && !currentContext->hasAncestor(o.to.get())) {
-        std::tie(object, from) = currentContext->get(o.object.get(), o.from.get());
+        std::tie(object, from) = currentContext->getNoForward(o.object.get(), o.from.get());
         freeze();
       } else {
         object = o.object;
