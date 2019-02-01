@@ -795,7 +795,6 @@ void bi::Driver::configure() {
          * OpenMP; disable the configure check and customize these */
         options << " --disable-openmp";
         cppflags << " -Xpreprocessor -fopenmp";
-        ldflags << " -lomp";
         #else
         options << " --enable-openmp";
         #endif
@@ -821,14 +820,6 @@ void bi::Driver::configure() {
       cflags << " -O3 -funroll-loops -flto -g";
       cxxflags << " -O3 -funroll-loops -flto -g";
     }
-    cxxflags << " -Wno-overloaded-virtual";
-    cxxflags << " -Wno-inconsistent-missing-override";
-    cxxflags << " -Wno-return-type";
-    // ^ false warnings for abstract functions at the moment
-    //cppflags << " -DEIGEN_NO_STATIC_ASSERT";
-    //cppflags << " -Deigen_assert=bi_assert";
-    cppflags << " -DEIGEN_NO_AUTOMATIC_RESIZING=1";
-    cppflags << " -DEIGEN_DONT_PARALLELIZE=1";
 
     for (auto iter = include_dirs.begin(); iter != include_dirs.end();
         ++iter) {
