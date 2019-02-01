@@ -4,48 +4,36 @@ matrix:
     # macOS environment
     - os: osx
       compiler: clang
-      osx_image: xcode9.4
+      osx_image: xcode10.1
+      addons:
+        homebrew:
+          packages:
+            - flex bison eigen libomp
 
-    # Ubuntu 14.04 environment
+    # Ubuntu 16.04 environment
     - os: linux
-      dist: trusty
+      dist: xenial
       compiler: gcc
       addons:
         apt:
-          sources:
-            - ubuntu-toolchain-r-test
           packages:
-            - gcc-7
-            - g++-7
             - autoconf
             - libtool
             - flex
             - bison
+            - libeigen3-dev
             - libboost-all-dev
 before_install:
-  # OS-specific things
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      export CC=gcc-7;
-      export CXX=g++-7;
-      export CXXFLAGS="-DBOOST_NO_CXX11_SCOPED_ENUMS";
-      wget http://bitbucket.org/eigen/eigen/get/3.3.4.tar.gz && tar xzf 3.3.4.tar.gz && sudo cp -Rp eigen-eigen-5a0156e40feb /usr/local/include/eigen3;
-    elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-      export HOMEBREW_NO_AUTO_UPDATE=1;
-      brew install flex bison eigen libomp;
-      brew link --force flex bison;
-    fi
-
   # Checkout Birch, which may be cached, and (re)build
   - git clone "https://github.com/lawmurray/Birch.git" || cd .
-  - cd Birch && git pull && git checkout pmmh && cd ..
-  - cd Birch && ./autogen.sh && ./configure && make -j 2 && sudo make install && cd ..
+  - cd Birch && git pull && git checkout pmmh && ./autogen.sh && ./configure && make -j 2 && sudo make install && cd ..
 install:
   - birch build --enable-unity && sudo birch install --enable-unity
 script:
   - birch test -N 10000
 cache:
-    directories:
-     - Birch
+  directories:
+    - Birch
 notifications:
   email: false
   slack:
