@@ -11,7 +11,7 @@
 
 extern "C" void *ParseAlloc(void *(*mallocProc)(size_t));
 extern "C" void ParseFree(void* p, void (*freeProc)(void*));
-extern "C" void Parse(void *parser, int token, int value, ParserState* state);
+extern "C" void Parse(void *parser, int token, void* value, ParserState* state);
 
 boost::optional<libubjpp::value> libubjpp::JSONDriver::parse(
     std::istream& stream) {
@@ -25,7 +25,8 @@ boost::optional<libubjpp::value> libubjpp::JSONDriver::parse(
 
 boost::optional<libubjpp::value> libubjpp::JSONDriver::parse(
     const std::string& data) {
-  int value = 0, token;
+  void* value = 0;
+  int token = 0;
   ParserState state;
   JSONTokenizer tokenizer(data);
   void* parser = ParseAlloc(malloc);
