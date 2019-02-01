@@ -167,10 +167,16 @@ bi::Driver::Driver(int argc, char** argv) :
   largv.insert(largv.end(), unknown.begin(), unknown.end());
 
   /* environment variables */
+  char* BIRCH_PREFIX = getenv("BIRCH_PREFIX");
   char* BIRCH_SHARE_PATH = getenv("BIRCH_SHARE_PATH");
   char* BIRCH_INCLUDE_PATH = getenv("BIRCH_INCLUDE_PATH");
   char* BIRCH_LIBRARY_PATH = getenv("BIRCH_LIBRARY_PATH");
   std::string input;
+
+  /* install prefix */
+  if (prefix.empty() && BIRCH_PREFIX) {
+    prefix = BIRCH_PREFIX;
+  }
 
   /* share dirs */
   if (BIRCH_SHARE_PATH) {
@@ -179,9 +185,12 @@ bi::Driver::Driver(int argc, char** argv) :
       share_dirs.push_back(input);
     }
   }
-#ifdef DATADIR
+  if (!prefix.empty()) {
+    share_dirs.push_back(fs::path(prefix) / "share");
+  }
+  #ifdef DATADIR
   share_dirs.push_back(fs::path(STRINGIFY(DATADIR)) / "birch");
-#endif
+  #endif
 
   /* include dirs */
   include_dirs.push_back(work_dir);
@@ -192,9 +201,12 @@ bi::Driver::Driver(int argc, char** argv) :
       include_dirs.push_back(input);
     }
   }
-#ifdef INCLUDEDIR
+  if (!prefix.empty()) {
+    include_dirs.push_back(fs::path(prefix) / "include");
+  }
+  #ifdef INCLUDEDIR
   include_dirs.push_back(STRINGIFY(INCLUDEDIR));
-#endif
+  #endif
 
   /* lib dirs */
   if (BIRCH_LIBRARY_PATH) {
@@ -203,9 +215,12 @@ bi::Driver::Driver(int argc, char** argv) :
       lib_dirs.push_back(input);
     }
   }
-#ifdef LIBDIR
+  if (!prefix.empty()) {
+    lib_dirs.push_back(fs::path(prefix) / "lib");
+  }
+  #ifdef LIBDIR
   lib_dirs.push_back(STRINGIFY(LIBDIR));
-#endif
+  #endif
 }
 
 void bi::Driver::run(const std::string& prog) {
@@ -817,15 +832,15 @@ void bi::Driver::configure() {
 
     for (auto iter = include_dirs.begin(); iter != include_dirs.end();
         ++iter) {
-      cppflags << " -I'" << iter->string() << "'";
+      cppflags << " -I" << iter->string();
     }
     for (auto iter = lib_dirs.begin(); iter != lib_dirs.end();
         ++iter) {
-      ldflags << " -L'" << iter->string() << "'";
+      ldflags << " -L" << iter->string();
     }
     for (auto iter = lib_dirs.begin(); iter != lib_dirs.end();
         ++iter) {
-      ldflags << " -Wl,-rpath,'" << iter->string() << "'";
+      ldflags << " -Wl,-rpath," << iter->string();
     }
 
     /* configure options */
@@ -840,7 +855,7 @@ void bi::Driver::configure() {
       options << " --disable-shared";
     }
     if (!prefix.empty()) {
-      options << " --prefix=" << absolute(prefix);
+      options << " --prefix=" << prefix;
     }
     options << " --config-cache";
     options << " INSTALL=\"install -p\"";

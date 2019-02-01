@@ -154,7 +154,7 @@ private:
   /**
    * Installation directory.
    */
-  fs::path prefix;
+  std::string prefix;
 
   /**
    * Name of the package.
