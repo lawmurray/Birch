@@ -185,9 +185,12 @@ bi::Driver::Driver(int argc, char** argv) :
       share_dirs.push_back(input);
     }
   }
-#ifdef DATADIR
+  if (!prefix.empty()) {
+    share_dirs.push_back(fs::path(prefix) / "share");
+  }
+  #ifdef DATADIR
   share_dirs.push_back(fs::path(STRINGIFY(DATADIR)) / "birch");
-#endif
+  #endif
 
   /* include dirs */
   include_dirs.push_back(work_dir);
@@ -198,9 +201,12 @@ bi::Driver::Driver(int argc, char** argv) :
       include_dirs.push_back(input);
     }
   }
-#ifdef INCLUDEDIR
+  if (!prefix.empty()) {
+    include_dirs.push_back(fs::path(prefix) / "include");
+  }
+  #ifdef INCLUDEDIR
   include_dirs.push_back(STRINGIFY(INCLUDEDIR));
-#endif
+  #endif
 
   /* lib dirs */
   if (BIRCH_LIBRARY_PATH) {
@@ -209,9 +215,12 @@ bi::Driver::Driver(int argc, char** argv) :
       lib_dirs.push_back(input);
     }
   }
-#ifdef LIBDIR
+  if (!prefix.empty()) {
+    lib_dirs.push_back(fs::path(prefix) / "lib");
+  }
+  #ifdef LIBDIR
   lib_dirs.push_back(STRINGIFY(LIBDIR));
-#endif
+  #endif
 }
 
 void bi::Driver::run(const std::string& prog) {
