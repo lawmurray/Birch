@@ -4,6 +4,7 @@
 #pragma once
 
 #include "libbirch/config.hpp"
+#include "libbirch/Lock.hpp"
 
 namespace bi {
 /**
@@ -42,24 +43,9 @@ public:
 
 private:
   /**
-   * Type of the stack.
-   */
-  struct stack_t {
-    /**
-     * Top element of the stack.
-     */
-    void* top;
-
-    /**
-     * Operation count to avoid ABA problems.
-     */
-    size_t count;
-  };
-
-  /**
    * Stack of allocations.
    */
-  std::atomic<stack_t> stack;
+  void* top;
 
   /**
    * Get the first 8 bytes of a block as a pointer.
@@ -70,14 +56,10 @@ private:
    * Set the first 8 bytes of a block as a pointer.
    */
   static void setNext(void* block, void* next);
+
+  /**
+   * Mutex.
+   */
+  Lock lock;
 };
-}
-
-inline bi::Pool::Pool() :
-    stack( { nullptr, 0u }) {
-  //
-}
-
-inline bool bi::Pool::empty() const {
-  return !stack.load().top;
 }

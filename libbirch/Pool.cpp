@@ -3,28 +3,29 @@
  */
 #include "libbirch/Pool.hpp"
 
+bi::Pool::Pool() :
+    top(nullptr) {
+  //
+}
+
+bool bi::Pool::empty() const {
+  return !top;
+}
+
 void* bi::Pool::pop() {
-  stack_t expected = stack.load();
-  stack_t desired = { getNext(expected.top), expected.count + 1u };
-  while (expected.top
-      && !stack.compare_exchange_weak(expected, desired,
-          std::memory_order_relaxed)) {
-    desired = {getNext(expected.top), expected.count + 1u};
-  }
-  return expected.top;
+  lock.keep();
+  auto result = top;
+  top = getNext(result);
+  lock.unkeep();
+  return result;
 }
 
 void bi::Pool::push(void* block) {
   assert(bufferStart <= block && block < bufferStart + bufferSize);
-
-  stack_t expected = stack.load();
-  stack_t desired = { block, expected.count + 1u };
-  setNext(block, expected.top);
-  while (!stack.compare_exchange_weak(expected, desired,
-      std::memory_order_relaxed)) {
-    desired.count = expected.count + 1u;
-    setNext(block, expected.top);
-  }
+  lock.keep();
+  setNext(block, top);
+  top = block;
+  lock.unkeep();
 }
 
 void* bi::Pool::getNext(void* block) {
