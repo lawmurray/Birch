@@ -4,7 +4,7 @@
 #pragma once
 
 #include "libbirch/config.hpp"
-#include "libbirch/Lock.hpp"
+#include "libbirch/ExclusiveLock.hpp"
 
 namespace bi {
 /**
@@ -60,6 +60,6 @@ private:
   /**
    * Mutex.
    */
-  Lock lock;
+  ExclusiveLock lock;
 };
 }
