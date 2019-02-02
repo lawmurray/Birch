@@ -10,7 +10,7 @@
 std::atomic<char*> bi::buffer(heap());
 char* bi::bufferStart;
 size_t bi::bufferSize;
-bi::Pool bi::pool[64];
+bi::Pool bi::pool[64*48];
 
 /* from clone.hpp, put here rather than clone.cpp to ensure correct
  * initialization order of global variables */
@@ -51,7 +51,7 @@ void* bi::allocate(const size_t n) {
   void* ptr = nullptr;
   if (n > 0u) {
     int i = bin(n);       // determine which pool
-    ptr = pool[i].pop();  // attempt to reuse from this pool
+    ptr = pool[64*tid + i].pop();  // attempt to reuse from this pool
     if (!ptr) {           // otherwise allocate new
       size_t m = unbin(i);
       size_t r = (m < 64u) ? 64u : m;
@@ -61,7 +61,7 @@ void* bi::allocate(const size_t n) {
       if (m < 64u) {
         /* add extra bytes as a separate allocation to the pool for
          * reuse another time */
-        pool[bin(64u - m)].push((char*)ptr + m);
+        pool[64*tid + bin(64u - m)].push((char*)ptr + m);
       }
     }
     assert(ptr);
@@ -77,7 +77,7 @@ void bi::deallocate(void* ptr, const size_t n) {
   assert((!ptr && n == 0) || (ptr && n > 0));
   if (n > 0ull) {
     int i = bin(n);
-    pool[i].push(ptr);
+    pool[64*tid + i].push(ptr);
   }
 #endif
 }
@@ -89,7 +89,7 @@ void bi::deallocate(void* ptr, const unsigned n) {
   assert((!ptr && n == 0) || (ptr && n > 0));
   if (n > 0u) {
     int i = bin(n);
-    pool[i].push(ptr);
+    pool[64*tid + i].push(ptr);
   }
 #endif
 }
