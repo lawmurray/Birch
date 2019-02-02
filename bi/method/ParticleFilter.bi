@@ -98,7 +98,7 @@ class ParticleFilter < Sampler {
     auto f0 <- particle(m);
     f1:(Model,Real)![nparticles];
     x1:Model[nparticles];
-    for n:Integer in 1..nparticles {
+    parallel for n:Integer in 1..nparticles {
       f1[n] <- clone<(Model,Real)!>(f0);
       x1[n] <- m;
     }
