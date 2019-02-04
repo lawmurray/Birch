@@ -6,11 +6,13 @@
 #include "libbirch/config.hpp"
 #include "libbirch/memory.hpp"
 #include "libbirch/Frame.hpp"
+#include "libbirch/Buffer.hpp"
+#include "libbirch/Allocator.hpp"
 #include "libbirch/Iterator.hpp"
 #include "libbirch/SharedCOW.hpp"
-#include "libbirch/Allocator.hpp"
 #include "libbirch/Sequence.hpp"
 #include "libbirch/Eigen.hpp"
+#include "libbirch/ExclusiveLock.hpp"
 
 namespace bi {
 /**
@@ -35,7 +37,8 @@ public:
    */
   Array() :
       frame(),
-      ptr(nullptr),
+      buffer(nullptr),
+      offset(0),
       isView(false) {
     assert(frame.volume() == 0);
   }
@@ -47,6 +50,8 @@ public:
    */
   Array(const F& frame) :
       frame(frame),
+      buffer(nullptr),
+      offset(0),
       isView(false) {
     allocate();
     initialize();
@@ -63,6 +68,8 @@ public:
   template<class ... Args>
   Array(const F& frame, Args ... args) :
       frame(frame),
+      buffer(nullptr),
+      offset(0),
       isView(false) {
     allocate();
     initialize(args...);
@@ -73,9 +80,12 @@ public:
    */
   Array(const Array<T,F>& o) :
       frame(o.frame),
-      isView(false) {
-    allocate();
-    copy(o);
+      buffer(o.buffer),
+      offset(o.offset),
+      isView(o.isView) {
+    if (!isView && buffer) {
+      buffer->incUsage();
+    }
   }
 
   /**
@@ -84,6 +94,8 @@ public:
   template<class U, class G>
   Array(const Array<U,G>& o) :
       frame(o.frame),
+      buffer(nullptr),
+      offset(0),
       isView(false) {
     allocate();
     copy(o);
@@ -94,9 +106,10 @@ public:
    */
   Array(Array<T,F> && o) :
       frame(o.frame),
-      ptr(o.ptr),
+      buffer(o.buffer),
+      offset(o.offset),
       isView(o.isView) {
-    o.isView = true;  // prevents deletion of ptr
+    o.isView = true;  // prevents decrement of buffer usage count
   }
 
   /**
@@ -106,6 +119,8 @@ public:
    */
   Array(const typename sequence_type<T,F::count()>::type& o) :
       frame(sequence_frame(o)),
+      buffer(nullptr),
+      offset(0),
       isView(false) {
     allocate();
     copy(o);
@@ -115,7 +130,7 @@ public:
    * Destructor.
    */
   ~Array() {
-    deallocate();
+    release();
   }
 
   /**
@@ -125,15 +140,14 @@ public:
   Array<T,F>& operator=(const Array<T,F>& o) {
     if (isView) {
       assign(o);
+    } else if (!frame.conforms(o.frame) || lockIfShared()) {
+      release();
+      frame.resize(o.frame);
+      allocate();
+      copy(o);
+      unlock();
     } else {
-      if (!frame.conforms(o.frame)) {
-        deallocate();
-        frame.resize(o.frame);
-        allocate();
-        copy(o);
-      } else {
-        assign(o);
-      }
+      assign(o);
     }
     return *this;
   }
@@ -146,15 +160,14 @@ public:
   Array<T,F>& operator=(const Array<U,G>& o) {
     if (isView) {
       assign(o);
+    } else if (!frame.conforms(o.frame) || lockIfShared()) {
+      release();
+      frame.resize(o.frame);
+      allocate();
+      copy(o);
+      unlock();
     } else {
-      if (!frame.conforms(o.frame)) {
-        deallocate();
-        frame.resize(o.frame);
-        allocate();
-        copy(o);
-      } else {
-        assign(o);
-      }
+      assign(o);
     }
     return *this;
   }
@@ -165,22 +178,22 @@ public:
   Array<T,F>& operator=(Array<T,F> && o) {
     if (isView) {
       assign(o);
-    } else {
-      if (o.isView) {
-        if (!frame.conforms(o.frame)) {
-          deallocate();
-          frame.resize(o.frame);
-          allocate();
-          copy(o);
-        } else {
-          assign(o);
-        }
+    } else if (o.isView) {
+      if (!frame.conforms(o.frame) || lockIfShared()) {
+        release();
+        frame.resize(o.frame);
+        allocate();
+        copy(o);
+        unlock();
       } else {
-        deallocate();
-        frame = std::move(o.frame);
-        ptr = std::move(o.ptr);
-        o.isView = true;  // prevents deletion of ptr
+        assign(o);
       }
+    } else {
+      release();
+      frame = o.frame;
+      buffer = o.buffer;
+      offset = o.offset;
+      o.isView = true;  // prevents decrement of buffer usage count
     }
     return *this;
   }
@@ -194,11 +207,12 @@ public:
       assign(o);
     } else {
       auto frame1 = sequence_frame(o);
-      if (!frame.conforms(frame1)) {
-        deallocate();
+      if (!frame.conforms(frame1) || lockIfShared()) {
+        release();
         frame = frame1;
         allocate();
         copy(o);
+        unlock();
       } else {
         assign(o);
       }
@@ -217,20 +231,24 @@ public:
    */
   template<class View1, typename = std::enable_if_t<View1::rangeCount() != 0>>
   auto operator()(const View1& view) {
-    return Array<T,decltype(frame(view))>(buf() + frame.serial(view),
+    duplicate();  // copy on write
+    return Array<T,decltype(frame(view))>(buffer, offset + frame.serial(view),
         frame(view));
   }
   template<class View1, typename = std::enable_if_t<View1::rangeCount() != 0>>
   auto operator()(const View1& view) const {
-    return Array<T,decltype(frame(view))>(buf() + frame.serial(view),
+    // read-only access, no need to duplicate()
+    return Array<T,decltype(frame(view))>(buffer, offset + frame.serial(view),
         frame(view));
   }
   template<class View1, typename = std::enable_if_t<View1::rangeCount() == 0>>
   auto& operator()(const View1& view) {
+    duplicate();  // copy on write
     return *(buf() + frame.serial(view));
   }
   template<class View1, typename = std::enable_if_t<View1::rangeCount() == 0>>
   const auto& operator()(const View1& view) const {
+    // read-only access, no need to duplicate()
     return *(buf() + frame.serial(view));
   }
 
@@ -239,6 +257,7 @@ public:
    */
   template<class G>
   bool operator==(const Array<T,G>& o) const {
+    ///@todo Could optimize for arrays sharing the same buffer
     return frame.conforms(o.frame) && std::equal(begin(), end(), o.begin());
   }
 
@@ -263,9 +282,10 @@ public:
   template<class DerivedType>
   struct is_eigen_compatible {
     static const bool value =
-        std::is_same<T,typename DerivedType::value_type>::value &&
-        ((F::count() == 1 && DerivedType::ColsAtCompileTime == 1) ||
-        (F::count() == 2 && DerivedType::ColsAtCompileTime == Eigen::Dynamic));
+        std::is_same<T,typename DerivedType::value_type>::value
+            && ((F::count() == 1 && DerivedType::ColsAtCompileTime == 1)
+                || (F::count() == 2
+                    && DerivedType::ColsAtCompileTime == Eigen::Dynamic));
   };
 
   /**
@@ -286,6 +306,13 @@ public:
   /**
    * Convert to Eigen Matrix type.
    */
+  EigenType toEigen() {
+    duplicate();
+    return EigenType(buf(), length(0), (F::count() == 1 ? 1 : length(1)),
+        (F::count() == 1 ?
+            EigenStrideType(stride(0), 1) :
+            EigenStrideType(stride(0), stride(1))));
+  }
   EigenType toEigen() const {
     return EigenType(buf(), length(0), (F::count() == 1 ? 1 : length(1)),
         (F::count() == 1 ?
@@ -303,36 +330,44 @@ public:
    * Memory is allocated for the array, and is freed on destruction. After
    * allocation, the contents of the existing array are copied in.
    */
-  template<class DerivedType, typename = std::enable_if_t<is_eigen_compatible<DerivedType>::value>>
+  template<class DerivedType, typename = std::enable_if_t<
+      is_eigen_compatible<DerivedType>::value>>
   Array(const Eigen::MatrixBase<DerivedType>& o, const F& frame) :
       frame(frame),
+      buffer(nullptr),
+      offset(0),
       isView(false) {
     allocate();
-    toEigen() = o;
+    toEigen() = o;  // buffer uninitialized, but okay as type is primitive
   }
 
   /**
    * Construct from Eigen Matrix expression.
    */
-  template<class DerivedType, typename = std::enable_if_t<is_eigen_compatible<DerivedType>::value>>
+  template<class DerivedType, typename = std::enable_if_t<
+      is_eigen_compatible<DerivedType>::value>>
   Array(const Eigen::MatrixBase<DerivedType>& o) :
       frame(o.rows(), o.cols()),
+      buffer(nullptr),
+      offset(0),
       isView(false) {
     allocate();
-    toEigen() = o;
+    toEigen() = o;  // buffer uninitialized, but okay as type is primitive
   }
 
   /**
    * Assign from Eigen Matrix expression.
    */
-  template<class DerivedType, typename = std::enable_if_t<is_eigen_compatible<DerivedType>::value>>
+  template<class DerivedType, typename = std::enable_if_t<
+      is_eigen_compatible<DerivedType>::value>>
   Array<T,F>& operator=(const Eigen::MatrixBase<DerivedType>& o) {
-    if (!isView && !frame.conforms(o.rows(), o.cols())) {
-      deallocate();
+    if (!isView && (!frame.conforms(o.rows(), o.cols()) || lockIfShared())) {
+      release();
       frame.resize(o.rows(), o.cols());
       allocate();
+      unlock();
     }
-    toEigen() = o;
+    toEigen() = o;  // buffer uninitialized, but okay as type is primitive
     return *this;
   }
   //@}
@@ -354,16 +389,6 @@ public:
   int64_t stride(const int i) const {
     return frame.stride(i);
   }
-
-  /**
-   * Get this. Used for compatibility with Shared<Array<...>>.
-   */
-  auto& get() {
-    return *this;
-  }
-  auto& get() const {
-    return *this;
-  }
   //@}
 
   /**
@@ -384,7 +409,7 @@ public:
    * Iterator pointing to the first element.
    */
   Iterator<T,F> begin() const {
-    return Iterator<T,F>(ptr, frame);
+    return Iterator<T,F>(buf(), frame);
   }
 
   /**
@@ -398,14 +423,14 @@ public:
    * Raw pointer to underlying buffer.
    */
   T* buf() {
-    return ptr;
+    return buffer ? buffer->get() + offset : nullptr;
   }
 
   /**
    * Raw pointer to underlying buffer.
    */
   T* const buf() const {
-    return ptr;
+    return buffer ? buffer->get() + offset : nullptr;
   }
 
   /**
@@ -422,15 +447,23 @@ public:
     assert(!isView);
     assert(frame.size() < this->frame.size());
 
-    /* destroy elements that will be removed */
-    for (auto iter = begin() + frame.size(); iter != end(); ++iter) {
-      iter->~T();
+    if (lockIfShared()) {
+      Array<T,F> o(std::move(*this));
+      this->frame.resize(frame);
+      allocate();
+      auto size = Buffer<T>::size(this->frame.volume());
+      std::uninitialized_copy(o.begin(), o.begin() + size, begin());
+      unlock();
+    } else {
+      /* destroy elements that will be removed */
+      for (auto iter = begin() + frame.size(); iter != end(); ++iter) {
+        iter->~T();
+      }
+      auto oldSize = Buffer<T>::size(this->frame.volume());
+      this->frame.resize(frame);
+      auto newSize = Buffer<T>::size(this->frame.volume());
+      buffer = (Buffer<T>*)bi::reallocate(buffer, oldSize, newSize);
     }
-
-    int64_t oldVol = this->frame.volume();
-    this->frame.resize(frame);
-    int64_t newVol = this->frame.volume();
-    ptr = alloc.reallocate(ptr, oldVol, newVol);
   }
 
   /**
@@ -448,12 +481,21 @@ public:
     assert(!isView);
     assert(frame.size() > this->frame.size());
 
-    int64_t oldSize = this->frame.size();  // old size
-    int64_t oldVol = this->frame.volume();
-    this->frame.resize(frame);
-    int64_t newVol = this->frame.volume();
-    ptr = alloc.reallocate(ptr, oldVol, newVol);
-    std::uninitialized_fill(begin() + oldSize, end(), x);
+    if (lockIfShared()) {
+      Array<T,F> o(std::move(*this));
+      this->frame.resize(frame);
+      allocate();
+      auto size = Buffer<T>::size(o.frame.volume());
+      std::uninitialized_copy(o.begin(), o.begin() + size, begin());
+      unlock();
+    } else {
+      auto nelements = this->frame.size();
+      auto oldSize = Buffer<T>::size(this->frame.volume());
+      this->frame.resize(frame);
+      auto newSize = Buffer<T>::size(this->frame.volume());
+      buffer = (Buffer<T>*)bi::reallocate(buffer, oldSize, newSize);
+      std::uninitialized_fill(begin() + nelements, end(), x);
+    }
   }
 
 private:
@@ -462,12 +504,14 @@ private:
    *
    * @tparam Frame Frame type.
    *
-   * @param ptr Existing allocation.
+   * @param buffer Buffer.
+   * @param offset Offset.
    * @param frame Frame.
    */
-  Array(T* ptr, const F& frame) :
+  Array(Buffer<T>* buffer, const ptrdiff_t offset, const F& frame) :
       frame(frame),
-      ptr(ptr),
+      buffer(buffer),
+      offset(offset),
       isView(true) {
     //
   }
@@ -476,18 +520,38 @@ private:
    * Allocate memory for array.
    */
   void allocate() {
-    ptr = alloc.allocate(frame.volume());
+    isView = false;
+    buffer = new (bi::allocate(Buffer<T>::size(frame.volume()))) Buffer<T>();
+    if (buffer) {
+      buffer->incUsage();
+    }
   }
 
   /**
    * Deallocate memory of array.
    */
-  void deallocate() {
-    if (!isView) {
+  void release() {
+    if (!isView && buffer && buffer->decUsage() == 0) {
       for (auto iter = begin(); iter != end(); ++iter) {
         iter->~T();
       }
-      alloc.deallocate(ptr, frame.volume());
+      size_t size = Buffer<T>::size(frame.volume());
+      bi::deallocate(buffer, size);
+      buffer = nullptr;
+      offset = 0;
+    }
+  }
+
+  /**
+   * Duplicate the array if shared.
+   */
+  void duplicate() {
+    if (lockIfShared()) {
+      assert(!isView);  // if view, should have duplicated when it was made
+      Array<T,F> o(std::move(*this));
+      allocate();
+      copy(o);
+      unlock();
     }
   }
 
@@ -508,13 +572,15 @@ private:
    */
   template<class U, class G>
   void copy(const Array<U,G>& o) {
+    assert(!buffer || buffer->numUsage() == 1);
     bi_assert_msg(o.frame.conforms(frame), "array sizes are different");
-
     std::uninitialized_copy(o.begin(), o.end(), begin());
   }
 
   void copy(const typename sequence_type<T,F::count()>::type& o) {
-    bi_assert_msg(frame.conforms(sequence_frame(o)), "array size and sequence size are different");
+    assert(!buffer || buffer->numUsage() == 1);
+    bi_assert_msg(frame.conforms(sequence_frame(o)),
+        "array size and sequence size are different");
     auto iter = begin();
     sequence_copy(iter, o);
   }
@@ -524,8 +590,9 @@ private:
    */
   template<class U, class G>
   void assign(const Array<U,G>& o) {
+    assert(!buffer || buffer->numUsage() == 1);
     bi_assert_msg(o.frame.conforms(frame), "array sizes are different");
-    
+
     auto begin1 = o.begin();
     auto end1 = o.end();
     auto begin2 = begin();
@@ -535,25 +602,12 @@ private:
     } else {
       std::copy(begin1, end1, begin2);
     }
-    //if (frame.size() > 0) {
-      //auto iter1 = begin();
-      //auto end1 = end();
-      //auto iter2 = o.begin();
-
-      //int64_t block1 = frame.block();
-      //int64_t block2 = o.frame.block();
-      //int64_t block = gcd(block1, block2);
-
-      //for (; iter1 != end1; iter1 += block, iter2 += block) {
-      //  std::memmove(&(*iter1), &(*iter2), block * sizeof(T));
-      //  // ^ memory regions may overlap, so avoid memcpy
-      //}
-      //bi_assert(iter2 == o.end());
-    //}
   }
 
   void assign(const typename sequence_type<T,F::count()>::type& o) {
-    bi_assert_msg(frame.conforms(sequence_frame(o)), "array size and sequence size are different");
+    assert(!buffer || buffer->numUsage() == 1);
+    bi_assert_msg(frame.conforms(sequence_frame(o)),
+        "array size and sequence size are different");
     auto iter = begin();
     sequence_assign(iter, o);
   }
@@ -581,19 +635,25 @@ private:
   }
 
   /**
-   * Greatest common divisor of two positive integers.
+   * Is the buffer shared? If the array is locked, first waits on the lock.
+   * Then, if shared, obtains the lock and returns true (the caller should
+   * release with unlock()), while if not shared returns false.
    */
-  static int64_t gcd(const int64_t a, const int64_t b) {
-    /* pre-condition */
-    assert(a > 0);
-    assert(b > 0);
-
-    int64_t a1 = a, b1 = b;
-    while (a1 != b1 && b1 != 0) {
-      a1 = a1 % b1;
-      std::swap(a1, b1);
+  bool lockIfShared() {
+    lock.keep();
+    if (buffer->numUsage() > 1u) {
+      return true;
+    } else {
+      lock.unkeep();
+      return false;
     }
-    return a1;
+  }
+
+  /**
+   * Release the lock previously obtained by lockIfShared().
+   */
+  void unlock() {
+    lock.unkeep();
   }
 
   /**
@@ -604,7 +664,12 @@ private:
   /**
    * Buffer.
    */
-  T* ptr;
+  Buffer<T>* buffer;
+
+  /**
+   * Offset into the buffer.
+   */
+  ptrdiff_t offset;
 
   /**
    * Is this a view of another array? A view has stricter assignment
@@ -613,8 +678,8 @@ private:
   bool isView;
 
   /**
-   * Allocator.
+   * Lock used for copy on write.
    */
-  Allocator<T> alloc;
+  ExclusiveLock lock;
 };
 }

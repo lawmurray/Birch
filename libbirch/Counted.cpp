@@ -22,10 +22,10 @@ bi::Counted::Counted(const Counted& o) :
 }
 
 bi::Counted* bi::Counted::lock() {
-  unsigned count = sharedCount.load(std::memory_order_acquire);
+  unsigned count = sharedCount.load(std::memory_order_seq_cst);
   while (count > 0u
       && !sharedCount.compare_exchange_weak(count, count + 1u,
-          std::memory_order_release)) {
+          std::memory_order_seq_cst)) {
     //
   }
   return count > 0u ? this : nullptr;
@@ -33,7 +33,7 @@ bi::Counted* bi::Counted::lock() {
 
 void bi::Counted::decShared() {
   assert(sharedCount > 0u);
-  if (sharedCount.fetch_sub(1u, std::memory_order_relaxed) - 1u == 0u
+  if (sharedCount.fetch_sub(1u, std::memory_order_seq_cst) - 1u == 0u
       && size > 0u) {
     // ^ size == 0u during construction, never destroy in that case
     destroy();
@@ -43,7 +43,7 @@ void bi::Counted::decShared() {
 
 void bi::Counted::decWeak() {
   assert(weakCount > 0u);
-  if (weakCount.fetch_sub(1u, std::memory_order_relaxed) - 1u == 0u) {
+  if (weakCount.fetch_sub(1u, std::memory_order_seq_cst) - 1u == 0u) {
     assert(sharedCount == 0u);
     // ^ because of weak self-reference, the weak count should not expire
     //   before the shared count
@@ -61,7 +61,7 @@ void bi::Counted::freeze() {
 }
 
 bool bi::Counted::isReachable() const {
-  return sharedCount.load(std::memory_order_relaxed) > 0u
-      || weakCount.load(std::memory_order_relaxed)
-          > memoCount.load(std::memory_order_relaxed);
+  return sharedCount.load(std::memory_order_seq_cst) > 0u
+      || weakCount.load(std::memory_order_seq_cst)
+          > memoCount.load(std::memory_order_seq_cst);
 }

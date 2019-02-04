@@ -14,6 +14,16 @@ namespace bi {
 class ExclusiveLock {
 public:
   /**
+   * Constructor.
+   */
+  ExclusiveLock();
+
+  /**
+   * Copy constructor.
+   */
+  ExclusiveLock(const ExclusiveLock& o);
+
+  /**
    * Obtain exclusive use.
    */
   void keep();
@@ -29,6 +39,16 @@ private:
    */
   std::atomic<bool> lock;
 };
+}
+
+inline bi::ExclusiveLock::ExclusiveLock() :
+    lock(false) {
+  //
+}
+
+inline bi::ExclusiveLock::ExclusiveLock(const ExclusiveLock& o) :
+    lock(false) {
+  //
 }
 
 inline void bi::ExclusiveLock::unkeep() {

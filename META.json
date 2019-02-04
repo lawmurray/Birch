@@ -230,6 +230,7 @@
       "libbirch/Array.hpp",
       "libbirch/assert.hpp",
       "libbirch/basic.hpp",
+      "libbirch/Buffer.hpp",
       "libbirch/class.hpp",
       "libbirch/clone.hpp",
       "libbirch/config.hpp",
