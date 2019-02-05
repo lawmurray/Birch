@@ -31,7 +31,7 @@ template<class T, class F = EmptyFrame>
 class Array {
   template<class U, class G>
   friend class Array;
-  public:
+public:
   /**
    * Default constructor.
    */
@@ -132,23 +132,25 @@ class Array {
    * otherwise a resize is permitted.
    */
   Array<T,F>& operator=(const Array<T,F>& o) {
-    ///@todo Optimize to just copy pointer to buffer where possible
     if (isView) {
       assign(o);
-    } else if (!frame.conforms(o.frame)) {
-      lock();
-      Array<T,F> o1(*this);
-      frame.resize(o.frame);
-      allocate();
-      copy(o);
-      unlock();
-    } else if (lockIfShared()) {
-      Array<T,F> o1(*this);
-      allocate();
-      copy(o);
-      unlock();
     } else {
-      assign(o);
+      lock();
+      if (!frame.conforms(o.frame) || isShared()) {
+	      release();
+        frame.resize(o.frame);
+        if (!o.isView) {
+          o.buffer->incUsage();
+          buffer = o.buffer;
+          offset = o.offset;
+        } else {
+          allocate();
+          copy(o);
+        }
+      } else {
+        assign(o);
+      }
+      unlock();
     }
     return *this;
   }
@@ -159,23 +161,19 @@ class Array {
    */
   template<class U, class G>
   Array<T,F>& operator=(const Array<U,G>& o) {
-    ///@todo Optimize to just copy pointer to buffer where possible
     if (isView) {
       assign(o);
-    } else if (!frame.conforms(o.frame)) {
-      lock();
-      Array<T,F> o1(*this);
-      frame.resize(o.frame);
-      allocate();
-      copy(o);
-      unlock();
-    } else if (lockIfShared()) {
-      Array<T,F> o1(*this);
-      allocate();
-      copy(o);
-      unlock();
     } else {
-      assign(o);
+      lock();
+      if (!frame.conforms(o.frame) || isShared()) {
+        release();
+        frame.resize(o.frame);
+        allocate();
+        copy(o);
+      } else {
+        assign(o);
+      }
+      unlock();
     }
     return *this;
   }
@@ -186,28 +184,23 @@ class Array {
   Array<T,F>& operator=(Array<T,F> && o) {
     if (isView) {
       assign(o);
-    } else if (o.isView) {
-      if (!frame.conforms(o.frame)) {
-        lock();
-        Array<T,F> o1(*this);
+    } else {
+      lock();
+      if (!frame.conforms(o.frame) || isShared()) {
+        release();
         frame.resize(o.frame);
-        allocate();
-        copy(o);
-        unlock();
-      } else if (lockIfShared()) {
-        Array<T,F> o1(*this);
-        allocate();
-        copy(o);
-        unlock();
+        if (o.isView) {
+          allocate();
+          copy(o);
+        } else {
+          buffer = o.buffer;
+          offset = o.offset;
+          o.buffer = nullptr;
+          o.offset = 0;
+        }
       } else {
         assign(o);
       }
-    } else {
-      lock();
-      std::swap(frame, o.frame);
-      std::swap(buffer, o.buffer);
-      std::swap(offset, o.offset);
-      std::swap(isView, o.isView);
       unlock();
     }
     return *this;
@@ -222,21 +215,16 @@ class Array {
       assign(o);
     } else {
       auto frame1 = sequence_frame(o);
-      if (!frame.conforms(frame1)) {
-        lock();
-        Array<T,F> o1(*this);
-        frame = frame1;
+      lock();
+      if (!frame.conforms(o.frame) || isShared()) {
+        release();
+        frame.resize(o.frame);
         allocate();
         copy(o);
-        unlock();
-      } else if (lockIfShared()) {
-        Array<T,F> o1(*this);
-        allocate();
-        copy(o);
-        unlock();
       } else {
         assign(o);
       }
+      unlock();
     }
     return *this;
   }
@@ -329,14 +317,14 @@ class Array {
     duplicate();  // copy on write
     return EigenType(buf(), length(0), (F::count() == 1 ? 1 : length(1)),
         (F::count() == 1 ?
-                           EigenStrideType(stride(0), 1) :
-                           EigenStrideType(stride(0), stride(1))));
+            EigenStrideType(stride(0), 1) :
+            EigenStrideType(stride(0), stride(1))));
   }
   EigenType toEigen() const {
     return EigenType(buf(), length(0), (F::count() == 1 ? 1 : length(1)),
         (F::count() == 1 ?
-                           EigenStrideType(stride(0), 1) :
-                           EigenStrideType(stride(0), stride(1))));
+            EigenStrideType(stride(0), 1) :
+            EigenStrideType(stride(0), stride(1))));
   }
 
   /**
@@ -381,17 +369,13 @@ class Array {
       is_eigen_compatible<DerivedType>::value>>
   Array<T,F>& operator=(const Eigen::MatrixBase<DerivedType>& o) {
     if (!isView) {
-      if (!frame.conforms(o.rows(), o.cols())) {
-        lock();
-        Array<T,F> o1(*this);
+      lock();
+      if (!frame.conforms(o.rows(), o.cols()) || isShared()) {
+        release();
         frame.resize(o.rows(), o.cols());
         allocate();
-        unlock();
-      } else if (lockIfShared()) {
-        Array<T,F> o1(*this);
-        allocate();
-        unlock();
       }
+      unlock();
     }
     toEigen() = o;  // buffer may be uninitialized, but okay for primitive type
     return *this;
@@ -474,14 +458,14 @@ class Array {
     assert(buffer);
     assert(frame.size() < this->frame.size());
 
-    if (lockIfShared()) {
+    lock();
+    if (isShared()) {
       Array<T,F> o(*this);
+      release();
       this->frame.resize(frame);
       allocate();
       std::uninitialized_copy(o.begin(), o.begin() + frame.size(), begin());
-      unlock();
     } else {
-      lock();
       for (auto iter = begin() + frame.size(); iter != end(); ++iter) {
         iter->~T();
       }
@@ -493,8 +477,8 @@ class Array {
             Buffer<T>::size(frame.volume()));
       }
       this->frame.resize(frame);
-      unlock();
     }
+    unlock();
   }
 
   /**
@@ -513,13 +497,14 @@ class Array {
     assert(frame.size() > this->frame.size());
 
     auto nelements = this->frame.size();
-    if (lockIfShared()) {
+    lock();
+    if (isShared()) {
       Array<T,F> o(*this);
+      release();
       this->frame.resize(frame);
       allocate();
       std::uninitialized_copy(o.begin(), o.end(), begin());
     } else {
-      lock();
       auto oldSize = Buffer<T>::size(this->frame.volume());
       auto newSize = Buffer<T>::size(frame.volume());
       this->frame.resize(frame);
@@ -555,9 +540,7 @@ private:
    * Allocate memory for array.
    */
   void allocate() {
-    if (buffer) {
-      release();
-    }
+    assert(!buffer);
     auto size = Buffer<T>::size(frame.volume());
     if (size > 0) {
       buffer = new (bi::allocate(size)) Buffer<T>();
@@ -577,22 +560,24 @@ private:
       }
       size_t size = Buffer<T>::size(frame.volume());
       bi::deallocate(buffer, size);
-      buffer = nullptr;
-      offset = 0;
     }
+    buffer = nullptr;
+    offset = 0;
   }
 
   /**
    * If the buffer is shared, copy it for writing.
    */
   void duplicate() {
-    if (lockIfShared()) {
+    lock();
+    if (isShared()) {
       assert(!isView);  // if view, should have duplicated when it was made
       Array<T,F> o(*this);
+      release();
       allocate();
       copy(o);
-      unlock();
     }
+    unlock();
   }
 
   /**
@@ -612,13 +597,13 @@ private:
    */
   template<class U, class G>
   void copy(const Array<U,G>& o) {
-    assert(!buffer || buffer->numUsage() == 1);
+    assert(!isShared());
     bi_assert_msg(o.frame.conforms(frame), "array sizes are different");
     std::uninitialized_copy(o.begin(), o.end(), begin());
   }
 
   void copy(const typename sequence_type<T,F::count()>::type& o) {
-    assert(!buffer || buffer->numUsage() == 1);
+    assert(!isShared());
     bi_assert_msg(frame.conforms(sequence_frame(o)),
         "array size and sequence size are different");
     auto iter = begin();
@@ -630,7 +615,7 @@ private:
    */
   template<class U, class G>
   void assign(const Array<U,G>& o) {
-    assert(!buffer || buffer->numUsage() == 1);
+    assert(!isShared());
     bi_assert_msg(o.frame.conforms(frame), "array sizes are different");
 
     auto begin1 = o.begin();
@@ -645,7 +630,7 @@ private:
   }
 
   void assign(const typename sequence_type<T,F::count()>::type& o) {
-    assert(!buffer || buffer->numUsage() == 1);
+    assert(!isShared());
     bi_assert_msg(frame.conforms(sequence_frame(o)),
         "array size and sequence size are different");
     auto iter = begin();
@@ -675,29 +660,17 @@ private:
   }
 
   /**
+   * Is the buffer shared with one or more other arrays?
+   */
+  bool isShared() const {
+    return buffer && buffer->numUsage() > 1u;
+  }
+
+  /**
    * Obtain the lock.
    */
   void lock() {
     mutex.keep();
-  }
-
-  /**
-   * Is the buffer shared? If the array is locked, first waits on the lock.
-   * Then, if shared, obtains the lock and returns true (the caller should
-   * release with unlock()), while if not shared returns false.
-   */
-  bool lockIfShared() {
-    //if (buffer && buffer->numUsage() > 1u) {
-    mutex.keep();
-    if (buffer && buffer->numUsage() > 1u) {
-      return true;
-    } else {
-      mutex.unkeep();
-      return false;
-    }
-    //} else {
-    //  return false;
-    //}
   }
 
   /**
@@ -743,13 +716,14 @@ bi::Array<T,F>::Array(const Array<T,F>& o) :
     buffer(o.buffer),
     offset(o.offset),
     isView(o.isView) {
-  if (!isView && buffer) {
-    buffer->incUsage();
-  }
   if (cloneUnderway && !is_value<T>::value) {
     /* arrays other than those with purely value types must be copied here
      * for correct bookkeeping with lazy deep clone */
+    buffer = nullptr;  // hadn't increment count yet anyway
+    offset = 0u;
     allocate();
     copy(o);
+  } else if (!isView && buffer) {
+    buffer->incUsage();
   }
 }
