@@ -86,6 +86,10 @@ class Array {
     if (!isView && buffer) {
       buffer->incUsage();
     }
+    if (cloneUnderway) {
+      allocate();
+      copy(o);
+    }
   }
 
   /**
