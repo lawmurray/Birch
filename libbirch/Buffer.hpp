@@ -112,6 +112,6 @@ const T* bi::Buffer<T>::get() const {
 
 template<class T>
 int64_t bi::Buffer<T>::size(const int64_t n) {
-  return sizeof(T)*n + sizeof(Buffer<T>) - 1u;
+  return n > 0 ? sizeof(T)*n + sizeof(Buffer<T>) - 1 : 0;
   // ^ -1 because `first` field is actually the first byte of the contents
 }

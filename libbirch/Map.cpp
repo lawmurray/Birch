@@ -15,18 +15,20 @@ bi::Map::Map() :
 }
 
 bi::Map::~Map() {
-  key_type key;
-  value_type value;
-  for (unsigned i = 0u; i < nentries; ++i) {
-    key = keys[i].load(std::memory_order_relaxed);
-    if (key != EMPTY && key != ERASED) {
-      value = values[i].load(std::memory_order_relaxed);
-      key->decMemo();
-      value->decShared();
+  if (nentries > 0) {
+    key_type key;
+    value_type value;
+    for (unsigned i = 0u; i < nentries; ++i) {
+      key = keys[i].load(std::memory_order_relaxed);
+      if (key != EMPTY && key != ERASED) {
+        value = values[i].load(std::memory_order_relaxed);
+        key->decMemo();
+        value->decShared();
+      }
     }
+    deallocate(keys, nentries * sizeof(key_type));
+    deallocate(values, nentries * sizeof(value_type));
   }
-  deallocate(keys, nentries * sizeof(key_type));
-  deallocate(values, nentries * sizeof(value_type));
 }
 
 bi::Map::value_type bi::Map::get(const key_type key,
@@ -201,8 +203,10 @@ void bi::Map::reserve() {
       noccupied -= nerased;
 
       /* deallocate previous table */
-      deallocate(keys1, nentries1 * sizeof(key_type));
-      deallocate(values1, nentries1 * sizeof(value_type));
+      if (nentries1 > 0) {
+        deallocate(keys1, nentries1 * sizeof(key_type));
+        deallocate(values1, nentries1 * sizeof(value_type));
+      }
     }
 
     /* release resize lock */

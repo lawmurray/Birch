@@ -94,7 +94,9 @@ private:
 }
 
 inline bi::Set::~Set() {
-  deallocate(values, nentries * sizeof(value_type));
+  if (nentries > 0) {
+    deallocate(values, nentries * sizeof(value_type));
+  }
 }
 
 inline bool bi::Set::empty() const {

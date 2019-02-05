@@ -87,9 +87,9 @@ private:
 }
 
 inline void bi::Lock::unshare() {
-  lock.split.shareCount.fetch_sub(1u, std::memory_order_relaxed);
+  lock.split.shareCount.fetch_sub(1u, std::memory_order_seq_cst);
 }
 
 inline void bi::Lock::unkeep() {
-  lock.split.keepCount.store(0u, std::memory_order_relaxed);
+  lock.split.keepCount.store(0u, std::memory_order_seq_cst);
 }

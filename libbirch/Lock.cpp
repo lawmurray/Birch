@@ -9,7 +9,7 @@ void bi::Lock::share() {
   do {
     expected.keepCount = 0u;
     desired = {expected.shareCount + 1u, 0u};
-  } while (!lock.joint.compare_exchange_weak(expected, desired, std::memory_order_relaxed));
+  } while (!lock.joint.compare_exchange_weak(expected, desired, std::memory_order_seq_cst));
 }
 
 void bi::Lock::keep() {
@@ -17,8 +17,8 @@ void bi::Lock::keep() {
   unsigned expected;
   do {
     expected = 0u;
-  } while (!lock.split.keepCount.compare_exchange_weak(expected, 1u, std::memory_order_release));
+  } while (!lock.split.keepCount.compare_exchange_weak(expected, 1u, std::memory_order_seq_cst));
 
   /* spin until all threads with shared locks release */
-  while (lock.split.shareCount.load(std::memory_order_acquire) > 0u);
+  while (lock.split.shareCount.load(std::memory_order_seq_cst) > 0u);
 }

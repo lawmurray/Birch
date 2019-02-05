@@ -85,7 +85,9 @@ void bi::Set::reserve() {
       values = (std::atomic<value_type>*)values2;
 
       /* deallocate previous table */
-      deallocate(values1, nentries1 * sizeof(value_type));
+      if (nentries1 > 0) {
+        deallocate(values1, nentries1 * sizeof(value_type));
+      }
     }
 
     /* release resize lock */

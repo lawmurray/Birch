@@ -52,5 +52,5 @@ inline bi::ExclusiveLock::ExclusiveLock(const ExclusiveLock& o) :
 }
 
 inline void bi::ExclusiveLock::unkeep() {
-  lock.store(false, std::memory_order_relaxed);
+  lock.store(false, std::memory_order_seq_cst);
 }

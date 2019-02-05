@@ -8,5 +8,5 @@ void bi::ExclusiveLock::keep() {
   bool expected;
   do {
     expected = false;
-  } while (!lock.compare_exchange_weak(expected, true, std::memory_order_relaxed));
+  } while (!lock.compare_exchange_weak(expected, true, std::memory_order_seq_cst));
 }

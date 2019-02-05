@@ -71,10 +71,10 @@ void* bi::allocate(const size_t n) {
 }
 
 void bi::deallocate(void* ptr, const size_t n) {
+  assert(ptr && n > 0);
 #if !USE_MEMORY_POOL
   std::free(ptr);
 #else
-  assert((!ptr && n == 0) || (ptr && n > 0));
   if (n > 0ull) {
     int i = bin(n);
     pool[64*tid + i].push(ptr);
@@ -83,10 +83,10 @@ void bi::deallocate(void* ptr, const size_t n) {
 }
 
 void bi::deallocate(void* ptr, const unsigned n) {
+  assert(ptr && n > 0);
 #if !USE_MEMORY_POOL
   std::free(ptr);
 #else
-  assert((!ptr && n == 0) || (ptr && n > 0));
   if (n > 0u) {
     int i = bin(n);
     pool[64*tid + i].push(ptr);
@@ -95,10 +95,10 @@ void bi::deallocate(void* ptr, const unsigned n) {
 }
 
 void* bi::reallocate(void* ptr1, const size_t n1, const size_t n2) {
+  assert(ptr1 && n1 > 0);
 #if !USE_MEMORY_POOL
   return std::realloc(ptr1, n2);
 #else
-  assert((!ptr1 && n1 == 0) || (ptr1 && n1 > 0));
   int i1 = bin(n1);
   int i2 = bin(n2);
   void* ptr2 = ptr1;
