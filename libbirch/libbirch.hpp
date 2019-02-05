@@ -8,13 +8,14 @@
 
 #include "libbirch/config.hpp"
 #include "libbirch/assert.hpp"
-#include "libbirch/basic.hpp"
-#include "libbirch/class.hpp"
 #include "libbirch/memory.hpp"
 #include "libbirch/stacktrace.hpp"
+#include "libbirch/class.hpp"
+#include "libbirch/basic.hpp"
 #include "libbirch/clone.hpp"
 #include "libbirch/thread.hpp"
 #include "libbirch/freeze.hpp"
+#include "libbirch/value.hpp"
 
 #include "libbirch/Span.hpp"
 #include "libbirch/Index.hpp"

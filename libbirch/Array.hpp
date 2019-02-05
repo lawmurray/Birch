@@ -78,19 +78,7 @@ class Array {
   /**
    * Copy constructor.
    */
-  Array(const Array<T,F>& o) :
-      frame(o.frame),
-      buffer(o.buffer),
-      offset(o.offset),
-      isView(o.isView) {
-    if (!isView && buffer) {
-      buffer->incUsage();
-    }
-    if (cloneUnderway) {
-      allocate();
-      copy(o);
-    }
-  }
+  Array(const Array<T,F>& o);
 
   /**
    * Generic copy constructor.
@@ -745,4 +733,23 @@ private:
    */
   ExclusiveLock mutex;
 };
+}
+
+#include "libbirch/value.hpp"
+
+template<class T, class F>
+bi::Array<T,F>::Array(const Array<T,F>& o) :
+    frame(o.frame),
+    buffer(o.buffer),
+    offset(o.offset),
+    isView(o.isView) {
+  if (!isView && buffer) {
+    buffer->incUsage();
+  }
+  if (cloneUnderway && !is_value<T>::value) {
+    /* arrays other than those with purely value types must be copied here
+     * for correct bookkeeping with lazy deep clone */
+    allocate();
+    copy(o);
+  }
 }
