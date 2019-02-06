@@ -101,7 +101,7 @@ public:
    */
   Array(Array<T,F> && o) :
       frame(o.frame),
-      buffer(o.buffer),
+      buffer(o.buffer.load()),
       offset(o.offset),
       isView(o.isView) {
     o.buffer = nullptr;
@@ -375,6 +375,10 @@ public:
   /**
    * Iterator pointing to the first element.
    */
+  Iterator<T,F> begin() {
+    duplicate();
+    return Iterator<T,F>(buf(), frame);
+  }
   Iterator<T,F> begin() const {
     return Iterator<T,F>(buf(), frame);
   }
@@ -382,6 +386,10 @@ public:
   /**
    * Iterator pointing to one past the last element.
    */
+  Iterator<T,F> end() {
+    duplicate();
+    return begin() + frame.size();
+  }
   Iterator<T,F> end() const {
     return begin() + frame.size();
   }
@@ -390,6 +398,7 @@ public:
    * Raw pointer to underlying buffer.
    */
   T* buf() {
+    auto buffer = this->buffer.load();
     return buffer ? buffer->get() + offset : nullptr;
   }
 
@@ -397,6 +406,7 @@ public:
    * Raw pointer to underlying buffer.
    */
   T* const buf() const {
+    auto buffer = this->buffer.load();
     return buffer ? buffer->get() + offset : nullptr;
   }
 
@@ -498,8 +508,9 @@ private:
     assert(!buffer);
     auto size = Buffer<T>::size(frame.volume());
     if (size > 0) {
-      buffer = new (bi::allocate(size)) Buffer<T>();
+      auto buffer = new (bi::allocate(size)) Buffer<T>();
       buffer->incUsage();
+      this->buffer = buffer;
     } else {
       buffer = nullptr;
     }
@@ -509,8 +520,8 @@ private:
    * Duplicate underlying buffer by copy.
    */
   void duplicate() {
-    assert(!isView);
     if (lockIfShared()) {
+      assert(!isView);
       rebase(std::move(Array<T,F>(*this, false)));
       unlock();
     }
@@ -532,14 +543,20 @@ private:
   void rebase(Array<T,F>&& o) {
     assert(!isView && offset == 0);
     assert(!o.isView && o.offset == 0);
+
     std::swap(frame, o.frame);
-    std::swap(buffer, o.buffer);
+
+    /* can't use std::swap on atomics */
+    auto buffer = this->buffer.load();
+    this->buffer = o.buffer.load();
+    o.buffer = buffer;
   }
 
   /**
    * Deallocate memory of array.
    */
   void release() {
+    auto buffer = this->buffer.load();
     if (!isView && buffer && buffer->decUsage() == 0) {
       for (auto iter = begin(); iter != end(); ++iter) {
         iter->~T();
@@ -547,7 +564,7 @@ private:
       size_t size = Buffer<T>::size(frame.volume());
       bi::deallocate(buffer, size);
     }
-    buffer = nullptr;
+    this->buffer = nullptr;
     offset = 0;
   }
 
@@ -634,6 +651,7 @@ private:
    * Is the buffer shared with one or more other arrays?
    */
   bool isShared() const {
+    auto buffer = this->buffer.load();
     return buffer && buffer->numUsage() > 1u;
   }
 
@@ -641,11 +659,15 @@ private:
    * Obtain the lock.
    */
   bool lockIfShared() {
-    mutex.keep();
     if (isShared()) {
-      return true;
+      mutex.keep();
+      if (isShared()) {
+        return true;
+      } else {
+        mutex.unkeep();
+        return false;
+      }
     } else {
-      mutex.unkeep();
       return false;
     }
   }
@@ -665,7 +687,7 @@ private:
   /**
    * Buffer.
    */
-  Buffer<T>* buffer;
+  std::atomic<Buffer<T>*> buffer;
 
   /**
    * Offset into the buffer. This should be zero when isView is false.
@@ -690,7 +712,7 @@ private:
 template<class T, class F>
 bi::Array<T,F>::Array(const Array<T,F>& o, const bool canShare) :
     frame(o.frame),
-    buffer(o.buffer),
+    buffer(o.buffer.load()),
     offset(o.offset),
     isView(o.isView) {
   if (!canShare || (cloneUnderway && !is_value<T>::value)) {
@@ -705,6 +727,6 @@ bi::Array<T,F>::Array(const Array<T,F>& o, const bool canShare) :
   } else if (!isView && buffer) {
     /* views do not increment the buffer use count, as they are meant to be
      * temporary and should not outlive the buffer itself */
-    buffer->incUsage();
+    buffer.load()->incUsage();
   }
 }
