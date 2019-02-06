@@ -169,11 +169,12 @@ public:
     if (!isView || !frame.conforms(o.frame)) {
       rebase(o);
     } else if (lockIfShared()) {
-      rebase(o);
+      rebase(std::forwardo);
       unlock();
     } else {
       assign(o);
     }
+    return *this;
   }
 
   /**
