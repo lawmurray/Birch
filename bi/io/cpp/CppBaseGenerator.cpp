@@ -832,5 +832,9 @@ void bi::CppBaseGenerator::genArg(const Expression* arg, const Type* type) {
   /* Birch and C++ resolve overloads differently, explicit casting avoids
    * situations where Birch considers a call unambiguous, whereas C++ does
    * not */
-  middle(type->canonical() << '(' << arg << ')');
+  if (!arg->type->equals(*type)) {
+    middle(type->canonical() << '(' << arg << ')');
+  } else {
+    middle(arg);
+  }
 }
