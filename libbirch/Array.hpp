@@ -167,9 +167,9 @@ public:
    */
   Array<T,F>& operator=(Array<T,F> && o) {
     if (!isView || !frame.conforms(o.frame)) {
-      rebase(o);
+      rebase(std::move(o));
     } else if (lockIfShared()) {
-      rebase(std::forwardo);
+      rebase(std::move(o));
       unlock();
     } else {
       assign(o);
