@@ -426,8 +426,11 @@ class MemoryBufferAuxiliary < Buffer {
   function setBooleanVector(value:Boolean[_]?) {
     if value? {
       cpp{{
-      libubjpp::array_type array(value_.get().length(0));
-      std::copy(value_.get().begin(), value_.get().end(), array.begin());
+      auto value = value_.get();
+      libubjpp::array_type array(value.length(0));
+      auto first = value.begin();
+      auto last = first + value.size();
+      std::copy(first, last, array.begin());
       group->set(std::move(array));
       }}
     } else {
@@ -438,8 +441,11 @@ class MemoryBufferAuxiliary < Buffer {
   function setIntegerVector(value:Integer[_]?) {
     if value? {
       cpp{{
-      libubjpp::array_type array(value_.get().length(0));
-      std::copy(value_.get().begin(), value_.get().end(), array.begin());
+      auto value = value_.get();
+      libubjpp::array_type array(value.length(0));
+      auto first = value.begin();
+      auto last = first + value.size();
+      std::copy(first, last, array.begin());
       group->set(std::move(array));
       }}
     } else {
@@ -450,8 +456,11 @@ class MemoryBufferAuxiliary < Buffer {
   function setRealVector(value:Real[_]?) {
     if value? {
       cpp{{
-      libubjpp::array_type array(value_.get().length(0));
-      std::copy(value_.get().begin(), value_.get().end(), array.begin());
+      auto value = value_.get();
+      libubjpp::array_type array(value.length(0));
+      auto first = value.begin();
+      auto last = first + value.size();
+      std::copy(first, last, array.begin());
       group->set(std::move(array));
       }}
     } else {

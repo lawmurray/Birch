@@ -172,5 +172,5 @@ inline unsigned bi::Map::crowd() const {
 }
 
 inline void bi::Map::unreserve() {
-  noccupied.fetch_sub(1u, std::memory_order_relaxed);
+  noccupied.fetch_sub(1u, std::memory_order_seq_cst);
 }

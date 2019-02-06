@@ -134,9 +134,8 @@ public:
    * otherwise a resize is permitted.
    */
   Array<T,F>& operator=(const Array<T,F>& o) {
-    if (!isView || !frame.conforms(o.frame)) {
-      rebase(o);
-    } else if (lockIfShared()) {
+    if (!isView || !frame.conforms(o.frame) || isShared()) {
+      lock();
       rebase(o);
       unlock();
     } else {
@@ -151,9 +150,8 @@ public:
    */
   template<class U, class G>
   Array<T,F>& operator=(const Array<U,G>& o) {
-    if (!isView || !frame.conforms(o.frame)) {
-      rebase(o);
-    } else if (lockIfShared()) {
+    if (!isView || !frame.conforms(o.frame) || isShared()) {
+      lock();
       rebase(o);
       unlock();
     } else {
@@ -166,9 +164,8 @@ public:
    * Move assignment.
    */
   Array<T,F>& operator=(Array<T,F> && o) {
-    if (!isView || !frame.conforms(o.frame)) {
-      rebase(std::move(o));
-    } else if (lockIfShared()) {
+    if (!isView || !frame.conforms(o.frame) || isShared()) {
+      lock();
       rebase(std::move(o));
       unlock();
     } else {
@@ -182,9 +179,8 @@ public:
    * conform to that of the sequence, otherwise a resize is permitted.
    */
   Array<T,F>& operator=(const typename sequence_type<T,F::count()>::type& o) {
-    if (!isView || !frame.conforms(o.frame)) {
-      rebase(o);
-    } else if (lockIfShared()) {
+    if (!isView || !frame.conforms(o.frame) || isShared()) {
+      lock();
       rebase(o);
       unlock();
     } else {
@@ -228,7 +224,9 @@ public:
   template<class G>
   bool operator==(const Array<T,G>& o) const {
     ///@todo Could optimize for arrays sharing the same buffer
-    return frame.conforms(o.frame) && std::equal(begin(), end(), o.begin());
+    auto first = begin();
+    auto last = first + size();
+    return frame.conforms(o.frame) && std::equal(first, last, o.begin());
   }
 
   /**
@@ -332,7 +330,9 @@ public:
       is_eigen_compatible<DerivedType>::value>>
   Array<T,F>& operator=(const Eigen::MatrixBase<DerivedType>& o) {
     if (!isView || !frame.conforms(o.rows(), o.cols()) || isShared()) {
+      lock();
       rebase(o);
+      unlock();
     } else {
       toEigen() = o;
     }
@@ -344,6 +344,20 @@ public:
    * @name Queries
    */
   //@{
+  /**
+   * Size (product of lengths).
+   */
+  int64_t size() const {
+    return frame.size();
+  }
+
+  /**
+   * Volume (number of elements allocated in buffer).
+   */
+  int64_t volume() const {
+    return frame.volume();
+  }
+
   /**
    * Get the length of the @p i th dimension.
    */
@@ -371,7 +385,12 @@ public:
    * the rightmost dimension is the fastest moving (for a matrix, this is
    * "row major" order).
    *
-   * The idiom of iterator usage is as for the STL.
+   * There is no `end()` function to retrieve an iterator to
+   * one-past-the-last element. This is because a first/last pair must be
+   * created atomically. Instead use something like:
+   *
+   *     auto first = begin();
+   *     auto last = first + size();
    */
   /**
    * Iterator pointing to the first element.
@@ -385,30 +404,17 @@ public:
   }
 
   /**
-   * Iterator pointing to one past the last element.
-   */
-  Iterator<T,F> end() {
-    duplicate();
-    return begin() + frame.size();
-  }
-  Iterator<T,F> end() const {
-    return begin() + frame.size();
-  }
-
-  /**
    * Raw pointer to underlying buffer.
    */
   T* buf() {
-    auto buffer = this->buffer.load();
-    return buffer ? buffer->get() + offset : nullptr;
+    return buffer.load()->get() + offset;
   }
 
   /**
    * Raw pointer to underlying buffer.
    */
   T* const buf() const {
-    auto buffer = this->buffer.load();
-    return buffer ? buffer->get() + offset : nullptr;
+    return buffer.load()->get() + offset;
   }
 
   /**
@@ -424,28 +430,34 @@ public:
     static_assert(G::count() == 1, "can only shrink one-dimensional arrays");
     assert(!isView);
     assert(buffer);
-    assert(frame.size() < this->frame.size());
+    assert(frame.size() < size());
 
-    if (lockIfShared()) {
-      Array<T,F> o(*this);
+    lock();
+    if (isShared()) {
+      const Array<T,F> o(*this);
       release();
       this->frame.resize(frame);
       allocate();
-      std::uninitialized_copy(o.begin(), o.begin() + frame.size(), begin());
-      unlock();
+      auto first = o.begin();
+      auto last = first + frame.size();
+      std::uninitialized_copy(first, last, begin());
     } else {
-      for (auto iter = begin() + frame.size(); iter != end(); ++iter) {
+      Iterator<T,F> iter(buf(), frame);
+      // ^ don't use begin() as we have obtained the lock already
+      auto last = iter + size();
+      for (iter += frame.size(); iter != last; ++iter) {
         iter->~T();
       }
       if (frame.size() == 0) {
         release();
       } else {
         buffer = (Buffer<T>*)bi::reallocate(buffer,
-            Buffer<T>::size(this->frame.volume()),
+            Buffer<T>::size(volume()),
             Buffer<T>::size(frame.volume()));
       }
       this->frame.resize(frame);
     }
+    unlock();
   }
 
   /**
@@ -461,16 +473,18 @@ public:
     static_assert(F::count() == 1, "can only enlarge one-dimensional arrays");
     static_assert(G::count() == 1, "can only enlarge one-dimensional arrays");
     assert(!isView);
-    assert(frame.size() > this->frame.size());
+    assert(frame.size() > size());
 
-    auto nelements = this->frame.size();
-    if (lockIfShared()) {
-      Array<T,F> o(*this);
+    lock();
+    auto nelements = size();
+    if (isShared()) {
+      const Array<T,F> o(*this);
       release();
       this->frame.resize(frame);
       allocate();
-      std::uninitialized_copy(o.begin(), o.end(), begin());
-      unlock();
+      auto first = o.begin();
+      auto last = first + o.frame.size();
+      std::uninitialized_copy(first, last, begin());
     } else {
       auto oldSize = Buffer<T>::size(this->frame.volume());
       auto newSize = Buffer<T>::size(frame.volume());
@@ -481,7 +495,11 @@ public:
         allocate();
       }
     }
-    std::uninitialized_fill(begin() + nelements, end(), x);
+    Iterator<T,F> iter(buf(), frame);
+    // ^ don't use begin() as we have obtained the lock already
+    auto last = iter + frame.size();
+    std::uninitialized_fill(iter + nelements, last, x);
+    unlock();
   }
 
 private:
@@ -509,9 +527,9 @@ private:
     assert(!buffer);
     auto size = Buffer<T>::size(frame.volume());
     if (size > 0) {
-      auto buffer = new (bi::allocate(size)) Buffer<T>();
-      buffer->incUsage();
-      this->buffer = buffer;
+      auto tmp = new (bi::allocate(size)) Buffer<T>();
+      tmp->incUsage();
+      buffer = tmp;
     } else {
       buffer = nullptr;
     }
@@ -521,11 +539,13 @@ private:
    * Duplicate underlying buffer by copy.
    */
   void duplicate() {
-    if (lockIfShared()) {
+    lock();
+    if (isShared()) {
       assert(!isView);
-      rebase(std::move(Array<T,F>(*this, false)));
-      unlock();
+      Array<T,F> o1(*this, false);
+      rebase(std::move(o1));
     }
+    unlock();
   }
 
   /**
@@ -534,7 +554,10 @@ private:
    */
   void rebase(const Array<T,F>& o) {
     assert(!isView);
-    rebase(std::move(Array<T,F>(o)));
+    Array<T,F> o1(o);
+    // ^ the copy must be named like this, not a temporary, to avoid copy
+    //   elision, i.e. rebase(std::move(Array<T,F>(o))) elides
+    rebase(std::move(o1));
   }
 
   /**
@@ -545,28 +568,27 @@ private:
     assert(!isView && offset == 0);
     assert(!o.isView && o.offset == 0);
 
+    o.buffer = buffer.exchange(o.buffer.load());  // can't std::swap atomics
     std::swap(frame, o.frame);
-
-    /* can't use std::swap on atomics */
-    auto buffer = this->buffer.load();
-    this->buffer = o.buffer.load();
-    o.buffer = buffer;
-  }
+}
 
   /**
    * Deallocate memory of array.
    */
   void release() {
-    auto buffer = this->buffer.load();
-    if (!isView && buffer && buffer->decUsage() == 0) {
-      for (auto iter = begin(); iter != end(); ++iter) {
-        iter->~T();
+    if (!isView) {
+      auto tmp = buffer.exchange(nullptr);
+      if (tmp && tmp->decUsage() == 0) {
+        Iterator<T,F> iter(tmp->get(), frame);
+        // ^ just erased buffer, so can't use begin()
+        auto last = iter + size();
+        for (; iter != last; ++iter) {
+          iter->~T();
+        }
+        size_t size = Buffer<T>::size(frame.volume());
+        bi::deallocate(tmp, size);
       }
-      size_t size = Buffer<T>::size(frame.volume());
-      bi::deallocate(buffer, size);
     }
-    this->buffer = nullptr;
-    offset = 0;
   }
 
   /**
@@ -576,7 +598,9 @@ private:
    */
   template<class ... Args>
   void initialize(Args ... args) {
-    for (auto iter = begin(); iter != end(); ++iter) {
+    auto iter = begin();
+    auto last = iter + size();
+    for (; iter != last; ++iter) {
       emplace(*iter, args...);
     }
   }
@@ -588,7 +612,9 @@ private:
   void copy(const Array<U,G>& o) {
     assert(!isShared());
     bi_assert_msg(o.frame.conforms(frame), "array sizes are different");
-    std::uninitialized_copy(o.begin(), o.end(), begin());
+    auto first = o.begin();
+    auto last = first + o.size();
+    std::uninitialized_copy(first, last, begin());
   }
 
   void copy(const typename sequence_type<T,F::count()>::type& o) {
@@ -608,9 +634,9 @@ private:
     bi_assert_msg(o.frame.conforms(frame), "array sizes are different");
 
     auto begin1 = o.begin();
-    auto end1 = o.end();
+    auto end1 = begin1 + o.size();
     auto begin2 = begin();
-    auto end2 = end();
+    auto end2 = begin2 + size();
     if (inside(begin1, end1, begin2)) {
       std::copy_backward(begin1, end1, end2);
     } else {
@@ -657,20 +683,10 @@ private:
   }
 
   /**
-   * Obtain the lock.
+   * Release the lock.
    */
-  bool lockIfShared() {
-    if (isShared()) {
-      mutex.keep();
-      if (isShared()) {
-        return true;
-      } else {
-        mutex.unkeep();
-        return false;
-      }
-    } else {
-      return false;
-    }
+  void lock() {
+    mutex.keep();
   }
 
   /**

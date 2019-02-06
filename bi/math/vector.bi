@@ -4,7 +4,9 @@
 function vector(x:Real, length:Integer) -> Real[_] {
   z:Real[length];
   cpp{{
-  std::fill(z_.begin(), z_.end(), x_);
+  auto first = z_.begin();
+  auto last = first + z_.size();
+  std::fill(first, last, x_);
   }}
   return z;
 }
@@ -15,7 +17,9 @@ function vector(x:Real, length:Integer) -> Real[_] {
 function vector(x:Integer, length:Integer) -> Integer[_] {
   z:Integer[length];
   cpp{{
-  std::fill(z_.begin(), z_.end(), x_);
+  auto first = z_.begin();
+  auto last = first + z_.size();
+  std::fill(first, last, x_);
   }}
   return z;
 }
@@ -26,7 +30,9 @@ function vector(x:Integer, length:Integer) -> Integer[_] {
 function vector(x:Boolean, length:Integer) -> Boolean[_] {
   z:Boolean[length];
   cpp{{
-  std::fill(z_.begin(), z_.end(), x_);
+  auto first = z_.begin();
+  auto last = first + z_.size();
+  std::fill(first, last, x_);
   }}
   return z;
 }
@@ -40,7 +46,9 @@ function vector(x:Boolean, length:Integer) -> Boolean[_] {
 function iota(x:Real, length:Integer) -> Real[_] {
   z:Real[length];
   cpp{{
-  std::iota(z_.begin(), z_.end(), x_);
+  auto first = z_.begin();
+  auto last = first + z_.size();
+  std::iota(first, last, x_);
   }}
   return z;
 }
@@ -54,7 +62,9 @@ function iota(x:Real, length:Integer) -> Real[_] {
 function iota(x:Integer, length:Integer) -> Integer[_] {
   z:Integer[length];
   cpp{{
-  std::iota(z_.begin(), z_.end(), x_);
+  auto first = z_.begin();
+  auto last = first + z_.size();
+  std::iota(first, last, x_);
   }}
   return z;
 }
@@ -68,7 +78,9 @@ function iota(x:Integer, length:Integer) -> Integer[_] {
 function iota(x:Boolean, length:Integer) -> Boolean[_] {
   z:Boolean[length];
   cpp{{
-  std::iota(z_.begin(), z_.end(), x_);
+  auto first = z_.begin();
+  auto last = first + z_.size();
+  std::iota(first, last, x_);
   }}
   return z;
 }
@@ -102,7 +114,7 @@ function scalar(x:Boolean[_]) -> Boolean {
  */
 function length(x:Real[_]) -> Integer {
   cpp{{
-  return x_.length(0);
+  return x_.size();
   }}
 }
 
@@ -111,7 +123,7 @@ function length(x:Real[_]) -> Integer {
  */
 function length(x:Integer[_]) -> Integer {
   cpp{{
-  return x_.length(0);
+  return x_.size();
   }}
 }
 
@@ -120,7 +132,7 @@ function length(x:Integer[_]) -> Integer {
  */
 function length(x:Boolean[_]) -> Integer {
   cpp{{
-  return x_.length(0);
+  return x_.size();
   }}
 }
 
@@ -129,7 +141,7 @@ function length(x:Boolean[_]) -> Integer {
  */
 function length(x:Object[_]) -> Integer {
   cpp{{
-  return x_.length(0);
+  return x_.size();
   }}
 }
 
@@ -138,7 +150,7 @@ function length(x:Object[_]) -> Integer {
  */
 function length(x:Real?[_]) -> Integer {
   cpp{{
-  return x_.length(0);
+  return x_.size();
   }}
 }
 
@@ -147,7 +159,7 @@ function length(x:Real?[_]) -> Integer {
  */
 function length(x:Integer?[_]) -> Integer {
   cpp{{
-  return x_.length(0);
+  return x_.size();
   }}
 }
 
@@ -156,7 +168,7 @@ function length(x:Integer?[_]) -> Integer {
  */
 function length(x:Boolean?[_]) -> Integer {
   cpp{{
-  return x_.length(0);
+  return x_.size();
   }}
 }
 
@@ -165,7 +177,7 @@ function length(x:Boolean?[_]) -> Integer {
  */
 function length(x:Object?[_]) -> Integer {
   cpp{{
-  return x_.length(0);
+  return x_.size();
   }}
 }
 

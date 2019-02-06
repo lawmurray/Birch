@@ -158,7 +158,7 @@ void* allocate() {
       unsigned m = unbin(i);
       unsigned r = (m < 64u) ? 64u : m;
       // ^ minimum allocation 64 bytes to maintain alignment
-      ptr = buffer.fetch_add(r, std::memory_order_relaxed);
+      ptr = buffer.fetch_add(r, std::memory_order_seq_cst);
       if (m < 64u) {
         /* add extra bytes as a separate allocation to the pool for
          * reuse another time */

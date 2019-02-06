@@ -62,7 +62,9 @@ function columns(X:Boolean[_,_]) -> Integer64 {
 function matrix(x:Real, rows:Integer, columns:Integer) -> Real[_,_] {
   Z:Real[rows,columns];
   cpp{{
-  std::fill(Z_.begin(), Z_.end(), x_);
+  auto first = Z_.begin();
+  auto last = first + Z_.size();
+  std::fill(first, last, x_);
   }}
   return Z;
 }
@@ -77,7 +79,9 @@ function matrix(x:Real, rows:Integer, columns:Integer) -> Real[_,_] {
 function matrix(x:Integer, rows:Integer, columns:Integer) -> Integer[_,_] {
   Z:Integer[rows,columns];
   cpp{{
-  std::fill(Z_.begin(), Z_.end(), x_);
+  auto first = Z_.begin();
+  auto last = first + Z_.size();
+  std::fill(first, last, x_);
   }}
   return Z;
 }
@@ -92,7 +96,9 @@ function matrix(x:Integer, rows:Integer, columns:Integer) -> Integer[_,_] {
 function matrix(x:Boolean, rows:Integer, columns:Integer) -> Boolean[_,_] {
   Z:Boolean[rows,columns];
   cpp{{
-  std::fill(Z_.begin(), Z_.end(), x_);
+  auto first = Z_.begin();
+  auto last = first + Z_.size();
+  std::fill(first, last, x_);
   }}
   return Z;
 }

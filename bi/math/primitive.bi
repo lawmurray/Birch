@@ -7,9 +7,11 @@
  */
 function reduce(x:Real[_], init:Real, op:@(Real, Real) -> Real) -> Real {
   cpp{{
-  // return std::reduce(x_.begin(), x_.end(), init_, op_);
+  auto first = x_.begin();
+  auto last = first + x_.size();
+  // return std::reduce(first, last, init_, op_);
   // ^ C++17
-  return std::accumulate(x_.begin(), x_.end(), init_, op_);
+  return std::accumulate(first, last, init_, op_);
   }}
 }
 
@@ -23,9 +25,11 @@ function reduce(x:Real[_], init:Real, op:@(Real, Real) -> Real) -> Real {
 function reduce(x:Integer[_], init:Integer,
     op:@(Integer, Integer) -> Integer) -> Integer {
   cpp{{
-  // return std::reduce(x_.begin(), x_.end(), init_, op_);
+  auto first = x_.begin();
+  auto last = first + x_.size();
+  // return std::reduce(first, last, init_, op_);
   // ^ C++17
-  return std::accumulate(x_.begin(), x_.end(), init_, op_);
+  return std::accumulate(first, last, init_, op_);
   }}
 }
 
@@ -39,9 +43,11 @@ function reduce(x:Integer[_], init:Integer,
 function reduce(x:Boolean[_], init:Boolean,
     op:@(Boolean, Boolean) -> Boolean) -> Boolean {
   cpp{{
-  // return std::reduce(x_.begin(), x_.end(), init_, op_);
+  auto first = x_.begin();
+  auto last = first + x_.size();
+  // return std::reduce(first, last, init_, op_);
   // ^ C++17
-  return std::accumulate(x_.begin(), x_.end(), init_, op_);
+  return std::accumulate(first, last, init_, op_);
   }}
 }
 
@@ -54,9 +60,11 @@ function reduce(x:Boolean[_], init:Boolean,
 function inclusive_scan(x:Real[_], op:@(Real, Real) -> Real) -> Real[_] {
   y:Real[length(x)];
   cpp{{
-  // std::inclusive_scan(x_.begin(), x_.end(), y_.begin(), op_);
+  auto first = x_.begin();
+  auto last = first + x_.size();
+  // std::inclusive_scan(first, last, y_.begin(), op_);
   // ^ C++17
-  std::partial_sum(x_.begin(), x_.end(), y_.begin(), op_);
+  std::partial_sum(first, last, y_.begin(), op_);
   }}
   return y;
 }
@@ -71,9 +79,11 @@ function inclusive_scan(x:Integer[_], op:@(Integer, Integer) -> Integer) ->
     Integer[_] {
   y:Integer[length(x)];
   cpp{{
-  // std::inclusive_scan(x_.begin(), x_.end(), y_.begin(), op_);
+  auto first = x_.begin();
+  auto last = first + x_.size();
+  // std::inclusive_scan(first, last, y_.begin(), op_);
   // ^ C++17
-  std::partial_sum(x_.begin(), x_.end(), y_.begin(), op_);
+  std::partial_sum(first, last, y_.begin(), op_);
   }}
   return y;
 }
@@ -88,9 +98,11 @@ function inclusive_scan(x:Boolean[_], op:@(Boolean, Boolean) -> Boolean) ->
     Boolean[_] {
   y:Boolean[length(x)];
   cpp{{
-  // std::inclusive_scan(x_.begin(), x_.end(), y_.begin(), op_);
+  auto first = x_.begin();
+  auto last = first + x_.size();
+  // std::inclusive_scan(first, last, y_.begin(), op_);
   // ^ C++17
-  std::partial_sum(x_.begin(), x_.end(), y_.begin(), op_);
+  std::partial_sum(first, last, y_.begin(), op_);
   }}
   return y;
 }
@@ -107,7 +119,9 @@ function exclusive_scan(x:Real[_], init:Real,
   assert length(x) > 0;
   y:Real[length(x)];
   //cpp{{
-  // std::exclusive_scan(x_.begin(), x_.end(), y_.begin(), init_, op_);
+  // auto first = x_.begin();
+  // auto last = first + x_.size();
+  // std::exclusive_scan(first, last, y_.begin(), init_, op_);
   // ^ C++17
   //}}
   y[1] <- init;
@@ -129,7 +143,9 @@ function exclusive_scan(x:Integer[_], init:Integer,
   assert length(x) > 0;
   y:Integer[length(x)];
   //cpp{{
-  // std::exclusive_scan(x_.begin(), x_.end(), y_.begin(), init_, op_);
+  // auto first = x_.begin();
+  // auto last = first + x_.size();
+  // std::exclusive_scan(first, last, y_.begin(), init_, op_);
   // ^ C++17
   //}}
   y[1] <- init;
@@ -151,7 +167,9 @@ function exclusive_scan(x:Boolean[_], init:Boolean,
   assert length(x) > 0;
   y:Boolean[length(x)];
   //cpp{{
-  // std::exclusive_scan(x_.begin(), x_.end(), y_.begin(), init_, op_);
+  // auto first = x_.begin();
+  // auto last = first + x_.size();
+  // std::exclusive_scan(first, last, y_.begin(), init_, op_);
   // ^ C++17
   //}}
   y[1] <- init;
@@ -171,7 +189,9 @@ function adjacent_difference(x:Real[_],
     op:@(Real, Real) -> Real) -> Real[_] {
   y:Real[length(x)];
   cpp{{
-  std::adjacent_difference(x_.begin(), x_.end(), y_.begin(), op_);
+  auto first = x_.begin();
+  auto last = first + x_.size();
+  std::adjacent_difference(first, last, y_.begin(), op_);
   }}
   return y;
 }
@@ -186,7 +206,9 @@ function adjacent_difference(x:Integer[_],
     op:@(Integer, Integer) -> Integer) -> Integer[_] {
   y:Integer[length(x)];
   cpp{{
-  std::adjacent_difference(x_.begin(), x_.end(), y_.begin(), op_);
+  auto first = x_.begin();
+  auto last = first + x_.size();
+  std::adjacent_difference(first, last, y_.begin(), op_);
   }}
   return y;
 }
@@ -201,7 +223,9 @@ function adjacent_difference(x:Boolean[_],
     op:@(Boolean, Boolean) -> Boolean) -> Boolean[_] {
   y:Boolean[length(x)];
   cpp{{
-  std::adjacent_difference(x_.begin(), x_.end(), y_.begin(), op_);
+  auto first = x_.begin();
+  auto last = first + x_.size();
+  std::adjacent_difference(first, last, y_.begin(), op_);
   }}
   return y;
 }
@@ -214,7 +238,9 @@ function adjacent_difference(x:Boolean[_],
 function sort(x:Real[_]) -> Real[_] {
   y:Real[_] <- x;
   cpp{{
-  std::sort(y_.begin(), y_.end());
+  auto first = y_.begin();
+  auto last = first + y_.size();
+  std::sort(first, last);
   }}
   return y;
 }
@@ -227,7 +253,9 @@ function sort(x:Real[_]) -> Real[_] {
 function sort(x:Integer[_]) -> Integer[_] {
   y:Integer[_] <- x;
   cpp{{
-  std::sort(y_.begin(), y_.end());
+  auto first = y_.begin();
+  auto last = first + y_.size();
+  std::sort(first, last);
   }}
   return y;
 }
@@ -240,7 +268,9 @@ function sort(x:Integer[_]) -> Integer[_] {
 function sort(x:Boolean[_]) -> Boolean[_] {
   y:Boolean[_] <- x;
   cpp{{
-  std::sort(y_.begin(), y_.end());
+  auto first = y_.begin();
+  auto last = first + y_.size();
+  std::sort(first, last);
   }}
   return y;
 }

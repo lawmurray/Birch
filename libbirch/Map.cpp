@@ -22,7 +22,7 @@ bi::Map::~Map() {
       ///@todo As with resize, could cast to non-atomic here
       key = keys[i].load(std::memory_order_seq_cst);
       if (key != EMPTY && key != ERASED) {
-        value = values[i].load(std::memory_order_relaxed);
+        value = values[i].load(std::memory_order_seq_cst);
         key->decMemo();
         value->decShared();
       }
@@ -59,7 +59,7 @@ bi::Map::value_type bi::Map::get(const unsigned i) {
    * case that write has not concluded yet */
   value_type value;
   do {
-    value = values[i].load(std::memory_order_relaxed);
+    value = values[i].load(std::memory_order_seq_cst);
   } while (value == EMPTY);
   return value;
 }
@@ -148,7 +148,7 @@ void bi::Map::remove(const key_type key) {
       expected = key;
     }
     if (expected == key) {
-      value_type value = values[i].load(std::memory_order_relaxed);
+      value_type value = values[i].load(std::memory_order_seq_cst);
       lock.unshare();  // release first, as dec may cause lengthy cleanup
       key->decMemo();
       value->decShared();
@@ -227,7 +227,7 @@ void bi::Map::clean() {
       key_type desired = ERASED;
       if (keys[i].compare_exchange_strong(expected, desired,
           std::memory_order_seq_cst)) {
-        value = values[i].load(std::memory_order_relaxed);
+        value = values[i].load(std::memory_order_seq_cst);
         key->decMemo();
         value->decShared();
       }
@@ -243,7 +243,7 @@ void bi::Map::freeze() {
   for (unsigned i = 0u; i < nentries; ++i) {
     key = keys[i].load(std::memory_order_seq_cst);
     if (key != EMPTY && key != ERASED) {
-      value = values[i].load(std::memory_order_relaxed);
+      value = values[i].load(std::memory_order_seq_cst);
       if (key->isReachable()) {
         value->freeze();
       } else {

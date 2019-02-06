@@ -17,10 +17,10 @@ bool bi::Set::contains(const value_type value) {
   if (!empty()) {
     lock.share();
     unsigned i = hash(value);
-    value_type v = values[i].load(std::memory_order_relaxed);
+    value_type v = values[i].load(std::memory_order_seq_cst);
     while (v && v != value) {
       i = (i + 1u) & (nentries - 1u);
-      v = values[i].load(std::memory_order_relaxed);
+      v = values[i].load(std::memory_order_seq_cst);
     }
     result = (v == value);
     lock.unshare();
@@ -49,7 +49,7 @@ void bi::Set::insert(const value_type value) {
 }
 
 void bi::Set::reserve() {
-  unsigned noccupied1 = noccupied.fetch_add(1u, std::memory_order_relaxed)
+  unsigned noccupied1 = noccupied.fetch_add(1u, std::memory_order_seq_cst)
       + 1u;
   if (noccupied1 > crowd()) {
     /* obtain resize lock */

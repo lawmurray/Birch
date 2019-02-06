@@ -38,8 +38,10 @@ void freeze(Fiber<T>& o) {
 
 template<class T, class F>
 void freeze(Array<T,F>& o) {
-  for (auto x : o) {
-    freeze(x);
+  auto iter = o.begin();
+  auto last = iter + o.size();
+  for (; iter != last; ++iter) {
+    freeze(*iter);
   }
 }
 

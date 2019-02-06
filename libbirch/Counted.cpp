@@ -55,7 +55,7 @@ void bi::Counted::freeze() {
   bool expected = false;
   bool desired = true;
   if (frozen.compare_exchange_strong(expected, desired,
-      std::memory_order_relaxed)) {
+      std::memory_order_seq_cst)) {
     doFreeze();
   }
 }
