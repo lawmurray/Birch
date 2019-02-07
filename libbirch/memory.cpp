@@ -45,27 +45,25 @@ char* bi::heap() {
 }
 
 void* bi::allocate(const size_t n) {
+  assert(n > 0);
 #if !USE_MEMORY_POOL
   return std::malloc(n);
 #else
-  void* ptr = nullptr;
-  if (n > 0u) {
-    int i = bin(n);       // determine which pool
-    ptr = pool[64*tid + i].pop();  // attempt to reuse from this pool
-    if (!ptr) {           // otherwise allocate new
-      size_t m = unbin(i);
-      size_t r = (m < 64u) ? 64u : m;
-      // ^ minimum allocation 64 bytes to maintain alignment
-      ptr = buffer.fetch_add(r, std::memory_order_seq_cst);
-      assert((char*)ptr + r <= bufferStart + bufferSize); // otherwise out of memory
-      if (m < 64u) {
-        /* add extra bytes as a separate allocation to the pool for
-         * reuse another time */
-        pool[64*tid + bin(64u - m)].push((char*)ptr + m);
-      }
+  int i = bin(n);       // determine which pool
+  ptr = pool[64*tid + i].pop();  // attempt to reuse from this pool
+  if (!ptr) {           // otherwise allocate new
+    size_t m = unbin(i);
+    size_t r = (m < 64u) ? 64u : m;
+    // ^ minimum allocation 64 bytes to maintain alignment
+    ptr = buffer.fetch_add(r, std::memory_order_seq_cst);
+    assert((char*)ptr + r <= bufferStart + bufferSize); // otherwise out of memory
+    if (m < 64u) {
+      /* add extra bytes as a separate allocation to the pool for
+       * reuse another time */
+      pool[64*tid + bin(64u - m)].push((char*)ptr + m);
     }
-    assert(ptr);
   }
+  assert(ptr);
   return ptr;
 #endif
 }
@@ -96,6 +94,7 @@ void bi::deallocate(void* ptr, const unsigned n) {
 
 void* bi::reallocate(void* ptr1, const size_t n1, const size_t n2) {
   assert(ptr1 && n1 > 0);
+  assert(n2 > 0);
 #if !USE_MEMORY_POOL
   return std::realloc(ptr1, n2);
 #else

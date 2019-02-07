@@ -51,12 +51,12 @@ public:
   /**
    * Get the start of the buffer.
    */
-  T* get();
+  T* buf();
 
   /**
    * Get the start of the buffer.
    */
-  const T* get() const;
+  const T* buf() const;
 
   /**
    * Compute the number of bytes that should be allocated for a buffer of
@@ -86,32 +86,32 @@ bi::Buffer<T>::Buffer() :
 
 template<class T>
 void bi::Buffer<T>::incUsage() {
-  useCount.fetch_add(1u, std::memory_order_seq_cst);
+  ++useCount;
 }
 
 template<class T>
 unsigned bi::Buffer<T>::decUsage() {
   assert(useCount > 0);
-  return useCount.fetch_sub(1u, std::memory_order_seq_cst) - 1u;
+  return --useCount;
 }
 
 template<class T>
 unsigned bi::Buffer<T>::numUsage() const {
-  return useCount.load(std::memory_order_seq_cst);
+  return useCount.load();
 }
 
 template<class T>
-T* bi::Buffer<T>::get() {
+T* bi::Buffer<T>::buf() {
   return (T*)&first;
 }
 
 template<class T>
-const T* bi::Buffer<T>::get() const {
+const T* bi::Buffer<T>::buf() const {
   return (const T*)&first;
 }
 
 template<class T>
 int64_t bi::Buffer<T>::size(const int64_t n) {
-  return n > 0 ? sizeof(T)*n + sizeof(Buffer<T>) - 1 : 0;
+  return n > 0 ? sizeof(T)*n + sizeof(Buffer<T>) : 0;
   // ^ -1 because `first` field is actually the first byte of the contents
 }

@@ -199,8 +199,7 @@ public:
    */
   template<class View1, typename = std::enable_if_t<View1::rangeCount() != 0>>
   auto operator()(const View1& view) {
-    duplicate();  // copy on write
-    return Array<T,decltype(frame(view))>(buffer, offset + frame.serial(view),
+    return Array<T,decltype(frame(view))>(duplicate(), offset + frame.serial(view),
         frame(view));
   }
   template<class View1, typename = std::enable_if_t<View1::rangeCount() != 0>>
@@ -210,8 +209,7 @@ public:
   }
   template<class View1, typename = std::enable_if_t<View1::rangeCount() == 0>>
   auto& operator()(const View1& view) {
-    duplicate();  // copy on write
-    return *(buf() + frame.serial(view));
+    return *(duplicate()->buf() + frame.serial(view));
   }
   template<class View1, typename = std::enable_if_t<View1::rangeCount() == 0>>
   const auto& operator()(const View1& view) const {
@@ -275,8 +273,7 @@ public:
    * Convert to Eigen Matrix type.
    */
   EigenType toEigen() {
-    duplicate();  // copy on write
-    return EigenType(buf(), length(0), (F::count() == 1 ? 1 : length(1)),
+    return EigenType(duplicate()->buf(), length(0), (F::count() == 1 ? 1 : length(1)),
         (F::count() == 1 ?
             EigenStrideType(stride(0), 1) :
             EigenStrideType(stride(0), stride(1))));
@@ -396,8 +393,7 @@ public:
    * Iterator pointing to the first element.
    */
   Iterator<T,F> begin() {
-    duplicate();
-    return Iterator<T,F>(buf(), frame);
+    return Iterator<T,F>(duplicate()->buf(), frame);
   }
   Iterator<T,F> begin() const {
     return Iterator<T,F>(buf(), frame);
@@ -407,14 +403,14 @@ public:
    * Raw pointer to underlying buffer.
    */
   T* buf() {
-    return buffer.load()->get() + offset;
+    return buffer.load()->buf() + offset;
   }
 
   /**
    * Raw pointer to underlying buffer.
    */
   T* const buf() const {
-    return buffer.load()->get() + offset;
+    return buffer.load()->buf() + offset;
   }
 
   /**
@@ -440,7 +436,9 @@ public:
       allocate();
       auto first = o.begin();
       auto last = first + frame.size();
-      std::uninitialized_copy(first, last, begin());
+      Iterator<T,F> iter(buf(), frame);
+      // ^ don't use begin() as we have obtained the lock already
+      std::uninitialized_copy(first, last, iter);
     } else {
       Iterator<T,F> iter(buf(), frame);
       // ^ don't use begin() as we have obtained the lock already
@@ -476,29 +474,26 @@ public:
     assert(frame.size() > size());
 
     lock();
-    auto nelements = size();
-    if (isShared()) {
+    if (isShared() || !buffer) {
       const Array<T,F> o(*this);
       release();
       this->frame.resize(frame);
       allocate();
       auto first = o.begin();
-      auto last = first + o.frame.size();
-      std::uninitialized_copy(first, last, begin());
+      Iterator<T,F> iter(buf(), frame);
+      // ^ don't use begin() as we have obtained the lock already
+      std::uninitialized_copy(first, first + o.frame.size(), iter);
+      std::uninitialized_fill(iter + o.frame.size(), iter + frame.size(), x);
     } else {
-      auto oldSize = Buffer<T>::size(this->frame.volume());
-      auto newSize = Buffer<T>::size(frame.volume());
+      const Array<T,F> o(*this);
       this->frame.resize(frame);
-      if (buffer) {
-        buffer = (Buffer<T>*)bi::reallocate(buffer, oldSize, newSize);
-      } else {
-        allocate();
-      }
+      auto oldSize = Buffer<T>::size(o.frame.volume());
+      auto newSize = Buffer<T>::size(frame.volume());
+      buffer = (Buffer<T>*)bi::reallocate(buffer, oldSize, newSize);
+      Iterator<T,F> iter(buf(), frame);
+      // ^ don't use begin() as we have obtained the lock already
+      std::uninitialized_fill(iter + o.frame.size(), iter + frame.size(), x);
     }
-    Iterator<T,F> iter(buf(), frame);
-    // ^ don't use begin() as we have obtained the lock already
-    auto last = iter + frame.size();
-    std::uninitialized_fill(iter + nelements, last, x);
     unlock();
   }
 
@@ -530,22 +525,22 @@ private:
       auto tmp = new (bi::allocate(size)) Buffer<T>();
       tmp->incUsage();
       buffer = tmp;
-    } else {
-      buffer = nullptr;
     }
   }
 
   /**
    * Duplicate underlying buffer by copy.
    */
-  void duplicate() {
+  Buffer<T>* duplicate() {
     lock();
     if (isShared()) {
       assert(!isView);
       Array<T,F> o1(*this, false);
       rebase(std::move(o1));
     }
+    auto ptr = buffer.load();
     unlock();
+    return ptr;
   }
 
   /**
@@ -570,7 +565,7 @@ private:
 
     o.buffer = buffer.exchange(o.buffer.load());  // can't std::swap atomics
     std::swap(frame, o.frame);
-}
+  }
 
   /**
    * Deallocate memory of array.
@@ -579,7 +574,7 @@ private:
     if (!isView) {
       auto tmp = buffer.exchange(nullptr);
       if (tmp && tmp->decUsage() == 0) {
-        Iterator<T,F> iter(tmp->get(), frame);
+        Iterator<T,F> iter(tmp->buf(), frame);
         // ^ just erased buffer, so can't use begin()
         auto last = iter + size();
         for (; iter != last; ++iter) {
@@ -678,8 +673,8 @@ private:
    * Is the buffer shared with one or more other arrays?
    */
   bool isShared() const {
-    auto buffer = this->buffer.load();
-    return buffer && buffer->numUsage() > 1u;
+    auto tmp = buffer.load();
+    return tmp && tmp->numUsage() > 1u;
   }
 
   /**
@@ -729,7 +724,7 @@ private:
 template<class T, class F>
 bi::Array<T,F>::Array(const Array<T,F>& o, const bool canShare) :
     frame(o.frame),
-    buffer(o.buffer.load()),
+    buffer(nullptr),
     offset(o.offset),
     isView(o.isView) {
   if (!canShare || (cloneUnderway && !is_value<T>::value)) {
@@ -737,13 +732,15 @@ bi::Array<T,F>::Array(const Array<T,F>& o, const bool canShare) :
      * are cloning an array that is not of purely value type, in which case
      * we must copy for correct bookkeeping under the lazy deep clone
      * rules */
-    buffer = nullptr;  // hadn't increment count yet anyway
-    offset = 0u;
     allocate();
     copy(o);
-  } else if (!isView && buffer) {
-    /* views do not increment the buffer use count, as they are meant to be
-     * temporary and should not outlive the buffer itself */
-    buffer.load()->incUsage();
+  } else {
+    auto tmp = o.buffer.load();
+    if (tmp && !isView) {
+      /* views do not increment the buffer use count, as they are meant to be
+       * temporary and should not outlive the buffer itself */
+      tmp->incUsage();
+    }
+    buffer = tmp;
   }
 }

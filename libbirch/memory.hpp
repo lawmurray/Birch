@@ -147,26 +147,24 @@ void* allocate(const size_t n);
  */
 template<unsigned n>
 void* allocate() {
+  static_assert(n > 0, "cannot make zero length allocation");
 #if !USE_MEMORY_POOL
   return std::malloc(n);
 #else
-  void* ptr = nullptr;
-  if (n > 0u) {
-    int i = bin<n>();     // determine which pool
-    ptr = pool[64*tid + i].pop();  // attempt to reuse from this pool
-    if (!ptr) {           // otherwise allocate new
-      unsigned m = unbin(i);
-      unsigned r = (m < 64u) ? 64u : m;
-      // ^ minimum allocation 64 bytes to maintain alignment
-      ptr = buffer.fetch_add(r, std::memory_order_seq_cst);
-      if (m < 64u) {
-        /* add extra bytes as a separate allocation to the pool for
-         * reuse another time */
-        pool[64*tid + bin(64u - m)].push((char*)ptr + m);
-      }
+  int i = bin<n>();     // determine which pool
+  ptr = pool[64*tid + i].pop();  // attempt to reuse from this pool
+  if (!ptr) {           // otherwise allocate new
+    unsigned m = unbin(i);
+    unsigned r = (m < 64u) ? 64u : m;
+    // ^ minimum allocation 64 bytes to maintain alignment
+    ptr = buffer.fetch_add(r, std::memory_order_seq_cst);
+    if (m < 64u) {
+      /* add extra bytes as a separate allocation to the pool for
+       * reuse another time */
+      pool[64*tid + bin(64u - m)].push((char*)ptr + m);
     }
-    assert(ptr);
   }
+  assert(ptr);
   return ptr;
 #endif
 }
