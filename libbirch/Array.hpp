@@ -133,7 +133,7 @@ class Array {
    * otherwise a resize is permitted.
    */
   Array<T,F>& operator=(const Array<T,F>& o) {
-    if (!isView || !frame.conforms(o.frame) || isShared()) {
+    if (!frame.conforms(o.frame) || isShared()) {
       lock();
       rebase(o);
       unlock();
@@ -149,7 +149,7 @@ class Array {
    */
   template<class U, class G>
   Array<T,F>& operator=(const Array<U,G>& o) {
-    if (!isView || !frame.conforms(o.frame) || isShared()) {
+    if (!frame.conforms(o.frame) || isShared()) {
       lock();
       rebase(o);
       unlock();
@@ -163,7 +163,7 @@ class Array {
    * Move assignment.
    */
   Array<T,F>& operator=(Array<T,F> && o) {
-    if (!isView || !frame.conforms(o.frame) || isShared()) {
+    if (!frame.conforms(o.frame) || isShared()) {
       lock();
       rebase(std::move(o));
       unlock();
@@ -178,7 +178,7 @@ class Array {
    * conform to that of the sequence, otherwise a resize is permitted.
    */
   Array<T,F>& operator=(const typename sequence_type<T,F::count()>::type& o) {
-    if (!isView || !frame.conforms(o.frame) || isShared()) {
+    if (!frame.conforms(o.frame) || isShared()) {
       lock();
       rebase(o);
       unlock();
@@ -327,7 +327,7 @@ class Array {
   template<class DerivedType, typename = std::enable_if_t<
       is_eigen_compatible<DerivedType>::value>>
   Array<T,F>& operator=(const Eigen::MatrixBase<DerivedType>& o) {
-    if (!isView || !frame.conforms(o.rows(), o.cols()) || isShared()) {
+    if (!frame.conforms(o.rows(), o.cols()) || isShared()) {
       lock();
       rebase(o);
       unlock();
@@ -429,12 +429,10 @@ class Array {
     assert(buffer);
     assert(frame.size() < size());
 
+    lock();
     if (isShared()) {
-      lock();
       rebase(Array<T,F>(*this, frame));
-      unlock();
     } else {
-      lock();
       Iterator<T,F> iter(buf(), frame);
       // ^ don't use begin() as we have obtained the lock already
       auto last = iter + size();
@@ -449,8 +447,8 @@ class Array {
             Buffer<T>::size(frame.volume()));
       }
       this->frame.resize(frame);
-      unlock();
     }
+    unlock();
   }
 
   /**
@@ -468,12 +466,10 @@ class Array {
     assert(!isView);
     assert(frame.size() > size());
 
+    lock();
     if (isShared() || !buffer) {
-      lock();
       rebase(Array<T,F>(*this, frame, x));
-      unlock();
     } else {
-      lock();
       auto oldVolume = this->frame.volume();
       this->frame.resize(frame);
       auto oldSize = Buffer<T>::size(oldVolume);
@@ -482,8 +478,8 @@ class Array {
       Iterator<T,F> iter(buf(), frame);
       // ^ don't use begin() as we have obtained the lock already
       std::uninitialized_fill(iter + oldVolume, iter + frame.size(), x);
-      unlock();
     }
+    unlock();
   }
 
 private:
@@ -565,10 +561,10 @@ private:
     if (!isView) {
       lock();
       if (isShared()) {
-        assert(!isView);
         Array<T,F> o1(*this, false);
         rebase(std::move(o1));
       }
+      assert(!isShared());
       auto ptr = buffer.load();
       unlock();
       return ptr;
@@ -585,7 +581,7 @@ private:
     assert(!isView);
     Array<T,F> o1(o);
     // ^ the copy must be named like this, not a temporary, to avoid copy
-    //   elision, i.e. rebase(std::move(Array<T,F>(o))) elides
+    //   elision, i.e. rebase(std::move(Array<T,F>(o))) may elide
     rebase(std::move(o1));
   }
 
@@ -593,7 +589,7 @@ private:
    * Rebase to match the contents of an existing array (possibly sharing a
    * buffer with it, using copy on write).
    */
-  void rebase(Array<T,F> && o) {
+  void rebase(Array<T,F>&& o) {
     assert(!isView && offset == 0);
     std::swap(frame, o.frame);
     o.buffer = buffer.exchange(o.buffer.load());  // can't std::swap atomics
@@ -605,8 +601,8 @@ private:
    * Deallocate memory of array.
    */
   void release() {
+    auto tmp = buffer.exchange(nullptr);
     if (!isView) {
-      auto tmp = buffer.exchange(nullptr);
       if (tmp && tmp->decUsage() == 0) {
         Iterator<T,F> iter(tmp->buf() + offset, frame);
         // ^ just erased buffer, so can't use begin()
@@ -708,7 +704,8 @@ private:
    */
   bool isShared() const {
     auto tmp = buffer.load();
-    return tmp && tmp->numUsage() > 1u;
+    auto result = tmp && tmp->numUsage() > 1u;
+    return result;
   }
 
   /**
