@@ -427,7 +427,7 @@ class MemoryBufferAuxiliary < Buffer {
     if value? {
       cpp{{
       auto value = value_.get();
-      libubjpp::array_type array(value.length(0));
+      libubjpp::array_type array(value.size());
       auto first = value.begin();
       auto last = first + value.size();
       std::copy(first, last, array.begin());
@@ -442,7 +442,7 @@ class MemoryBufferAuxiliary < Buffer {
     if value? {
       cpp{{
       auto value = value_.get();
-      libubjpp::array_type array(value.length(0));
+      libubjpp::array_type array(value.size());
       auto first = value.begin();
       auto last = first + value.size();
       std::copy(first, last, array.begin());
@@ -457,7 +457,7 @@ class MemoryBufferAuxiliary < Buffer {
     if value? {
       cpp{{
       auto value = value_.get();
-      libubjpp::array_type array(value.length(0));
+      libubjpp::array_type array(value.size());
       auto first = value.begin();
       auto last = first + value.size();
       std::copy(first, last, array.begin());
@@ -510,7 +510,7 @@ class MemoryBufferAuxiliary < Buffer {
   function setChild(name:String) -> Buffer {
     buffer:MemoryBufferAuxiliary;
     cpp{{
-    buffer_->group = &group->set(name_);
+    buffer_->group = &self->group->set(name_);
     }}
     return buffer;
   }

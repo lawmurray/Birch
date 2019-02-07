@@ -208,7 +208,7 @@ public:
   }
   template<class View1, typename = std::enable_if_t<View1::rangeCount() == 0>>
   auto& operator()(const View1& view) {
-    return *(duplicate()->buf() + frame.serial(view));
+    return *(duplicate()->buf() + offset + frame.serial(view));
   }
   template<class View1, typename = std::enable_if_t<View1::rangeCount() == 0>>
   const auto& operator()(const View1& view) const {
@@ -272,7 +272,7 @@ public:
    * Convert to Eigen Matrix type.
    */
   EigenType toEigen() {
-    return EigenType(duplicate()->buf(), length(0), (F::count() == 1 ? 1 : length(1)),
+    return EigenType(duplicate()->buf() + offset, length(0), (F::count() == 1 ? 1 : length(1)),
         (F::count() == 1 ?
             EigenStrideType(stride(0), 1) :
             EigenStrideType(stride(0), stride(1))));
@@ -392,7 +392,7 @@ public:
    * Iterator pointing to the first element.
    */
   Iterator<T,F> begin() {
-    return Iterator<T,F>(duplicate()->buf(), frame);
+    return Iterator<T,F>(duplicate()->buf() + offset, frame);
   }
   Iterator<T,F> begin() const {
     return Iterator<T,F>(buf(), frame);
@@ -508,7 +508,7 @@ private:
    * @param offset Offset.
    * @param frame Frame.
    */
-  Array(Buffer<T>* buffer, const ptrdiff_t offset, const F& frame) :
+  Array(Buffer<T>* buffer, const int64_t offset, const F& frame) :
       frame(frame),
       buffer(buffer),
       offset(offset),
@@ -575,7 +575,7 @@ private:
     if (!isView) {
       auto tmp = buffer.exchange(nullptr);
       if (tmp && tmp->decUsage() == 0) {
-        Iterator<T,F> iter(tmp->buf(), frame);
+        Iterator<T,F> iter(tmp->buf() + offset, frame);
         // ^ just erased buffer, so can't use begin()
         auto last = iter + size();
         for (; iter != last; ++iter) {
@@ -705,7 +705,7 @@ private:
   /**
    * Offset into the buffer. This should be zero when isView is false.
    */
-  ptrdiff_t offset;
+  int64_t offset;
 
   /**
    * Is this a view of another array? A view has stricter assignment
