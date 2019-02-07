@@ -152,7 +152,7 @@ class Vector<Type> {
    */
   function shrink(n:Integer) {
     cpp{{
-    values_.shrink(bi::make_frame(n_));
+    self->values_.shrink(bi::make_frame(n_));
     }}
     nelements <- n;
   }
@@ -167,7 +167,7 @@ class Vector<Type> {
    */
   function enlarge(n:Integer, x:Type) {
     cpp{{
-    values_.enlarge(bi::make_frame(n_), x_);
+    self->values_.enlarge(bi::make_frame(n_), x_);
     }}
     nelements <- n;
   }

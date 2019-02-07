@@ -42,7 +42,7 @@ class InputStream {
   function eof() -> Boolean {
     assert file?;
     cpp{{
-    return ::feof(file_.get());
+    return ::feof(self->file_.get());
     }}
   }
 
@@ -53,7 +53,7 @@ class InputStream {
     assert file?;
     cpp{{
     long long int x;  // ensure fscanf gets exactly the type it expects
-    ::fscanf(file_.get(), "%lld", &x);
+    ::fscanf(self->file_.get(), "%lld", &x);
     return x;
     }}
   }
@@ -65,7 +65,7 @@ class InputStream {
     assert file?;
     cpp{{
     double x;  // ensure fscanf gets exactly the type it expects
-    ::fscanf(file_.get(), "%lf", &x);
+    ::fscanf(self->file_.get(), "%lf", &x);
     return x;
     }}
   }

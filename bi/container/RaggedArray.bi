@@ -155,8 +155,8 @@ class RaggedArray<Type> {
     assert n < nrows;
 
     cpp{{
-    offsets_.shrink(bi::make_frame(n_));
-    ncols_.shrink(bi::make_frame(n_));
+    self->offsets_.shrink(bi::make_frame(n_));
+    self->ncols_.shrink(bi::make_frame(n_));
     }}
     if (n == 0) {
       nelements <- 0;
@@ -183,7 +183,7 @@ class RaggedArray<Type> {
     values[(offsets[i] + n)..(nelements - d)] <- values[(offsets[i] + n + d)..nelements];
     nelements <- nelements - d;
     cpp{{
-    values_.shrink(bi::make_frame(nelements_));
+    self->values_.shrink(bi::make_frame(self->nelements_));
     }}
   }
 
@@ -198,8 +198,8 @@ class RaggedArray<Type> {
     assert n > nrows;
 
     cpp{{    
-    offsets_.enlarge(bi::make_frame(n_), nelements_ + 1);
-    ncols_.enlarge(bi::make_frame(n_), 0);
+    self->offsets_.enlarge(bi::make_frame(n_), self->nelements_ + 1);
+    self->ncols_.enlarge(bi::make_frame(n_), 0);
     }}
     nrows <- n;
 
@@ -220,7 +220,7 @@ class RaggedArray<Type> {
   
     d:Integer <- n - ncols[i];
     cpp{{
-    values_.enlarge(bi::make_frame(nelements_ + d_), x_);
+    self->values_.enlarge(bi::make_frame(self->nelements_ + d_), x_);
     }}
     values[(offsets[i] + n)..(nelements + d)] <- values[(offsets[i] + n - d)..nelements];
     for (j:Integer in (offsets[i] + n - d)..(offsets[i] + n - 1)) {

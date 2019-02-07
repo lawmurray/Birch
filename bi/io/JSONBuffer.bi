@@ -20,7 +20,7 @@ class JSONBuffer < MemoryBuffer {
     if (stream.is_open()) {
       libubjpp::JSONDriver driver;
       if (auto result = driver.parse(stream)) {
-        this->root = result.get();
+        self->root = result.get();
         success_ = true;
       }
     }
@@ -42,7 +42,7 @@ class JSONBuffer < MemoryBuffer {
     std::ofstream stream(path_);
     if (stream.is_open()) {
       libubjpp::JSONGenerator generator(stream);
-      generator.apply(root);
+      generator.apply(self->root);
       success_ = true;
     }
     }}

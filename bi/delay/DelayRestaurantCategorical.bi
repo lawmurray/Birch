@@ -17,6 +17,7 @@ class DelayRestaurantCategorical(x:Random<Integer>&, ρ:DelayRestaurant) <
   }
 
   function condition(x:Integer) {
+    //@todo use Vector with its in-place enlarge support?
     assert x <= ρ!.K + 1;
     if (x == ρ!.K + 1) {
       n1:Integer[ρ!.K + 1];
