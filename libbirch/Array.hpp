@@ -31,7 +31,7 @@ template<class T, class F = EmptyFrame>
 class Array {
   template<class U, class G>
   friend class Array;
-public:
+  public:
   /**
    * Default constructor.
    */
@@ -198,7 +198,8 @@ public:
    */
   template<class View1, typename = std::enable_if_t<View1::rangeCount() != 0>>
   auto operator()(const View1& view) {
-    return Array<T,decltype(frame(view))>(duplicate(), offset + frame.serial(view),
+    return Array<T,decltype(frame(view))>(duplicate(),
+        offset + frame.serial(view),
         frame(view));
   }
   template<class View1, typename = std::enable_if_t<View1::rangeCount() != 0>>
@@ -272,16 +273,17 @@ public:
    * Convert to Eigen Matrix type.
    */
   EigenType toEigen() {
-    return EigenType(duplicate()->buf() + offset, length(0), (F::count() == 1 ? 1 : length(1)),
+    return EigenType(duplicate()->buf() + offset, length(0),
+        (F::count() == 1 ? 1 : length(1)),
         (F::count() == 1 ?
-            EigenStrideType(stride(0), 1) :
-            EigenStrideType(stride(0), stride(1))));
+                           EigenStrideType(stride(0), 1) :
+                           EigenStrideType(stride(0), stride(1))));
   }
   EigenType toEigen() const {
     return EigenType(buf(), length(0), (F::count() == 1 ? 1 : length(1)),
         (F::count() == 1 ?
-            EigenStrideType(stride(0), 1) :
-            EigenStrideType(stride(0), stride(1))));
+                           EigenStrideType(stride(0), 1) :
+                           EigenStrideType(stride(0), stride(1))));
   }
 
   /**
@@ -427,18 +429,12 @@ public:
     assert(buffer);
     assert(frame.size() < size());
 
-    lock();
     if (isShared()) {
-      const Array<T,F> o(*this);
-      release();
-      this->frame.resize(frame);
-      allocate();
-      auto first = o.begin();
-      auto last = first + frame.size();
-      Iterator<T,F> iter(buf(), frame);
-      // ^ don't use begin() as we have obtained the lock already
-      std::uninitialized_copy(first, last, iter);
+      lock();
+      rebase(Array<T,F>(*this, frame));
+      unlock();
     } else {
+      lock();
       Iterator<T,F> iter(buf(), frame);
       // ^ don't use begin() as we have obtained the lock already
       auto last = iter + size();
@@ -453,9 +449,8 @@ public:
             Buffer<T>::size(frame.volume()));
       }
       this->frame.resize(frame);
+      unlock();
     }
-    assert(!isShared());
-    unlock();
   }
 
   /**
@@ -473,18 +468,12 @@ public:
     assert(!isView);
     assert(frame.size() > size());
 
-    lock();
     if (isShared() || !buffer) {
-      const Array<T,F> o(*this);
-      release();
-      this->frame.resize(frame);
-      allocate();
-      auto first = o.begin();
-      Iterator<T,F> iter(buf(), frame);
-      // ^ don't use begin() as we have obtained the lock already
-      std::uninitialized_copy(first, first + o.frame.size(), iter);
-      std::uninitialized_fill(iter + o.frame.size(), iter + frame.size(), x);
+      lock();
+      rebase(Array<T,F>(*this, frame, x));
+      unlock();
     } else {
+      lock();
       auto oldVolume = this->frame.volume();
       this->frame.resize(frame);
       auto oldSize = Buffer<T>::size(oldVolume);
@@ -493,16 +482,13 @@ public:
       Iterator<T,F> iter(buf(), frame);
       // ^ don't use begin() as we have obtained the lock already
       std::uninitialized_fill(iter + oldVolume, iter + frame.size(), x);
+      unlock();
     }
-    assert(!isShared());
-    unlock();
   }
 
 private:
   /**
    * Constructor for view.
-   *
-   * @tparam Frame Frame type.
    *
    * @param buffer Buffer.
    * @param offset Offset.
@@ -514,6 +500,49 @@ private:
       offset(offset),
       isView(true) {
     //
+  }
+
+  /**
+   * Constructor for enlarging a one dimensional array.
+   *
+   * @tparam G Frame type.
+   *
+   * @param o Original array.
+   * @param frame Frame.
+   * @param x Value to assign to new elements.
+   */
+  template<class G>
+  Array(const Array<T,F>& o, const G& frame, const T& x) :
+      frame(frame),
+      buffer(nullptr),
+      offset(0),
+      isView(false) {
+    allocate();
+    auto first = o.begin();
+    auto iter = begin();
+    std::uninitialized_copy(first, first + o.frame.size(), iter);
+    std::uninitialized_fill(iter + o.frame.size(), iter + frame.size(), x);
+  }
+
+  /**
+   * Constructor for shrinking a one dimensional array.
+   *
+   * @tparam G Frame type.
+   *
+   * @param o Original array.
+   * @param frame Frame.
+   */
+  template<class G>
+  Array(const Array<T,F>& o, const G& frame) :
+      frame(frame),
+      buffer(nullptr),
+      offset(0),
+      isView(false) {
+    allocate();
+    auto first = o.begin();
+    auto last = first + frame.size();
+    auto iter = begin();
+    std::uninitialized_copy(first, last, iter);
   }
 
   /**
@@ -564,7 +593,7 @@ private:
    * Rebase to match the contents of an existing array (possibly sharing a
    * buffer with it, using copy on write).
    */
-  void rebase(Array<T,F>&& o) {
+  void rebase(Array<T,F> && o) {
     assert(!isView && offset == 0);
     std::swap(frame, o.frame);
     o.buffer = buffer.exchange(o.buffer.load());  // can't std::swap atomics
