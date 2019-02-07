@@ -105,7 +105,6 @@ public:
       offset(o.offset),
       isView(o.isView) {
     o.buffer = nullptr;
-    o.offset = 0;
   }
 
   /**
@@ -455,6 +454,7 @@ public:
       }
       this->frame.resize(frame);
     }
+    assert(!isShared());
     unlock();
   }
 
@@ -485,15 +485,16 @@ public:
       std::uninitialized_copy(first, first + o.frame.size(), iter);
       std::uninitialized_fill(iter + o.frame.size(), iter + frame.size(), x);
     } else {
-      const Array<T,F> o(*this);
+      auto oldVolume = this->frame.volume();
       this->frame.resize(frame);
-      auto oldSize = Buffer<T>::size(o.frame.volume());
+      auto oldSize = Buffer<T>::size(oldVolume);
       auto newSize = Buffer<T>::size(frame.volume());
       buffer = (Buffer<T>*)bi::reallocate(buffer, oldSize, newSize);
       Iterator<T,F> iter(buf(), frame);
       // ^ don't use begin() as we have obtained the lock already
-      std::uninitialized_fill(iter + o.frame.size(), iter + frame.size(), x);
+      std::uninitialized_fill(iter + oldVolume, iter + frame.size(), x);
     }
+    assert(!isShared());
     unlock();
   }
 

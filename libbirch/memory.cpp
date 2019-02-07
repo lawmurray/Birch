@@ -50,7 +50,7 @@ void* bi::allocate(const size_t n) {
   return std::malloc(n);
 #else
   int i = bin(n);       // determine which pool
-  ptr = pool[64*tid + i].pop();  // attempt to reuse from this pool
+  auto ptr = pool[64*tid + i].pop();  // attempt to reuse from this pool
   if (!ptr) {           // otherwise allocate new
     size_t m = unbin(i);
     size_t r = (m < 64u) ? 64u : m;
