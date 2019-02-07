@@ -533,15 +533,19 @@ private:
    * Duplicate underlying buffer by copy.
    */
   Buffer<T>* duplicate() {
-    lock();
-    if (isShared()) {
-      assert(!isView);
-      Array<T,F> o1(*this, false);
-      rebase(std::move(o1));
+    if (!isView) {
+      lock();
+      if (isShared()) {
+        assert(!isView);
+        Array<T,F> o1(*this, false);
+        rebase(std::move(o1));
+      }
+      auto ptr = buffer.load();
+      unlock();
+      return ptr;
+    } else {
+      return buffer.load();
     }
-    auto ptr = buffer.load();
-    unlock();
-    return ptr;
   }
 
   /**
@@ -562,10 +566,10 @@ private:
    */
   void rebase(Array<T,F>&& o) {
     assert(!isView && offset == 0);
-    assert(!o.isView && o.offset == 0);
-
-    o.buffer = buffer.exchange(o.buffer.load());  // can't std::swap atomics
     std::swap(frame, o.frame);
+    o.buffer = buffer.exchange(o.buffer.load());  // can't std::swap atomics
+    std::swap(offset, o.offset);
+    std::swap(isView, o.isView);
   }
 
   /**
