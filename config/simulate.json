@@ -1,3 +1,8 @@
 {
-  "ncheckpoints": 100
+  "model": {
+    "class": "Multi"
+  },
+  "sampler": {
+    "ncheckpoints": 100
+  }
 }
