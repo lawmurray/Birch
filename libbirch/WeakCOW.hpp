@@ -142,14 +142,14 @@ public:
   /**
    * Map the raw pointer, without lazy cloning.
    */
-  T* pull() {
-    return static_cast<T*>(root_type::pull());
+  const T* pull() {
+    return static_cast<const T*>(root_type::pull());
   }
 
   /**
    * Map the raw pointer, without lazy cloning.
    */
-  T* pull() const {
+  const T* pull() const {
     return const_cast<WeakCOW<T>*>(this)->pull();
   }
 
@@ -241,7 +241,7 @@ public:
     return const_cast<WeakCOW<Any>*>(this)->get();
   }
 
-  Any* pull() {
+  const Any* pull() {
     #if USE_LAZY_DEEP_CLONE
     if (object) {
       std::tie(object, from) = to->pull(object.get(), from.get());
@@ -250,7 +250,7 @@ public:
     return object.get();
   }
 
-  Any* pull() const {
+  const Any* pull() const {
     /* even in a const context, do want to update the pointer through lazy
      * deep clone mechanisms */
     return const_cast<WeakCOW<Any>*>(this)->pull();
