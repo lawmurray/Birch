@@ -7,8 +7,14 @@
  */
 function system(cmd:String) -> Integer {
   cpp{{
-  int ret = std::system(cmd_.c_str());
-  return WEXITSTATUS(ret);
+  int status = std::system(cmd_.c_str());
+  if (WIFEXITED(status)) {
+    return WEXITSTATUS(status);
+  } else if (WIFSIGNALED(status)) {
+    return WTERMSIG(status);
+  } else if (WIFSTOPPED(status)) {
+    return WSTOPSIG(status);
+  }
   }}
 }
 
