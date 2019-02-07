@@ -45,7 +45,7 @@ char* bi::heap() {
 }
 
 void* bi::allocate(const size_t n) {
-  assert(n > 0);
+  assert(n > 0u);
 #if !USE_MEMORY_POOL
   return std::malloc(n);
 #else
@@ -69,32 +69,28 @@ void* bi::allocate(const size_t n) {
 }
 
 void bi::deallocate(void* ptr, const size_t n) {
-  assert(ptr && n > 0);
+  assert(ptr && n > 0u);
 #if !USE_MEMORY_POOL
   std::free(ptr);
 #else
-  if (n > 0ull) {
-    int i = bin(n);
-    pool[64*tid + i].push(ptr);
-  }
+  int i = bin(n);
+  pool[64*tid + i].push(ptr);
 #endif
 }
 
 void bi::deallocate(void* ptr, const unsigned n) {
-  assert(ptr && n > 0);
+  assert(ptr && n > 0u);
 #if !USE_MEMORY_POOL
   std::free(ptr);
 #else
-  if (n > 0u) {
-    int i = bin(n);
-    pool[64*tid + i].push(ptr);
-  }
+  int i = bin(n);
+  pool[64*tid + i].push(ptr);
 #endif
 }
 
 void* bi::reallocate(void* ptr1, const size_t n1, const size_t n2) {
-  assert(ptr1 && n1 > 0);
-  assert(n2 > 0);
+  assert(ptr1 && n1 > 0u);
+  assert(n2 > 0u);
 #if !USE_MEMORY_POOL
   return std::realloc(ptr1, n2);
 #else
