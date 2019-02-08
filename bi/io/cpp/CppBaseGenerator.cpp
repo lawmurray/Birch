@@ -741,7 +741,7 @@ void bi::CppBaseGenerator::visit(const OptionalType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const WeakType* o) {
-  middle("bi::WeakCOW<");
+  middle("bi::Weak<");
   if (o->single->isClass()) {
     ++inPointer;
   }
@@ -752,7 +752,7 @@ void bi::CppBaseGenerator::visit(const WeakType* o) {
 void bi::CppBaseGenerator::visit(const ClassType* o) {
   int inPointer1 = inPointer;
   if (!inPointer1) {
-    middle("bi::SharedCOW<");
+    middle("bi::Shared<");
   } else {
     --inPointer;
   }
