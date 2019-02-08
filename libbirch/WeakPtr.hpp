@@ -119,6 +119,14 @@ public:
   }
 
   /**
+   * Get the raw pointer as const.
+   */
+  const T* pull() const {
+    assert(!ptr || ptr->numShared() > 0);
+    return ptr;
+  }
+
+  /**
    * Equal comparison.
    */
   bool operator==(const SharedPtr<T>& o) const {
