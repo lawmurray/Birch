@@ -4,6 +4,7 @@
 #pragma once
 
 #include "libbirch/config.hpp"
+#include "libbirch/Nil.hpp"
 
 namespace bi {
 template<class T> class SharedPtr;
@@ -26,7 +27,15 @@ public:
   /**
    * Constructor.
    */
-  WeakPtr(T* ptr = nullptr) :
+  WeakPtr(const Nil& = nil) :
+      ptr(nullptr) {
+    //
+  }
+
+  /**
+   * Constructor.
+   */
+  WeakPtr(T* ptr) :
       ptr(ptr) {
     if (ptr) {
       ptr->incWeak();
@@ -81,9 +90,6 @@ public:
     if (ptr) {
       ptr->decWeak();
     }
-    #ifndef NDEBUG
-    ptr = nullptr;
-    #endif
   }
 
   /**

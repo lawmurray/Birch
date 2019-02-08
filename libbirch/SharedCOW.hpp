@@ -9,7 +9,6 @@
 #include "libbirch/SharedPtr.hpp"
 #include "libbirch/ContextPtr.hpp"
 #include "libbirch/Any.hpp"
-#include "libbirch/Nil.hpp"
 
 #include <tuple>
 

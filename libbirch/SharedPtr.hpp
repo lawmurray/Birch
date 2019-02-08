@@ -4,6 +4,7 @@
 #pragma once
 
 #include "libbirch/config.hpp"
+#include "libbirch/Nil.hpp"
 
 namespace bi {
 template<class T> class SharedPtr;
@@ -26,7 +27,15 @@ public:
   /**
    * Constructor.
    */
-  SharedPtr(T* ptr = nullptr) :
+  SharedPtr(const Nil& = nil) :
+      ptr(nullptr) {
+    //
+  }
+
+  /**
+   * Constructor.
+   */
+  SharedPtr(T* ptr) :
       ptr(ptr) {
     if (ptr) {
       ptr->incShared();
@@ -76,9 +85,6 @@ public:
     if (ptr) {
       ptr->decShared();
     }
-    #ifndef NDEBUG
-    ptr = nullptr;
-    #endif
   }
 
   /**
