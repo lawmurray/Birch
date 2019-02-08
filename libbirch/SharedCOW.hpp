@@ -11,6 +11,8 @@
 #include "libbirch/Any.hpp"
 #include "libbirch/Nil.hpp"
 
+#include <tuple>
+
 namespace bi {
 template<class U> class WeakCOW;
 

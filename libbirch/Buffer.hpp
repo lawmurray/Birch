@@ -3,6 +3,8 @@
  */
 #pragma once
 
+#include <atomic>
+
 namespace bi {
 /**
  * Buffer for storing the contents of an array. Buffer objects are shared

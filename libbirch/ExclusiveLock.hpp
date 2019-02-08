@@ -5,6 +5,8 @@
 
 #include "libbirch/config.hpp"
 
+#include <atomic>
+
 namespace bi {
 /**
  * Lock with only exclusive use semantics.

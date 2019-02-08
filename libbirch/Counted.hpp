@@ -5,6 +5,8 @@
 
 #include "libbirch/config.hpp"
 
+#include <atomic>
+
 namespace bi {
 /**
  * Base class for reference counted objects.

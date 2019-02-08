@@ -3,9 +3,8 @@
  */
 #pragma once
 
-#ifndef NDEBUG
+#include <cassert>
 #include <sstream>
-#endif
 
 /**
  * @def bi_assert

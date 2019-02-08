@@ -6,6 +6,8 @@
 #include "libbirch/config.hpp"
 #include "libbirch/Lock.hpp"
 
+#include <atomic>
+
 namespace bi {
 class Any;
 

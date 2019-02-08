@@ -6,6 +6,8 @@
 #include "libbirch/config.hpp"
 #include "libbirch/Allocator.hpp"
 
+#include <vector>
+
 /**
  * @def bi_function
  *

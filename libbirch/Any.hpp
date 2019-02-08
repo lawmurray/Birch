@@ -7,6 +7,8 @@
 #include "libbirch/Counted.hpp"
 #include "libbirch/InitPtr.hpp"
 
+#include <atomic>
+
 namespace bi {
 /**
  * Base for all class types.

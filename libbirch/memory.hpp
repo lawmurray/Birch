@@ -8,6 +8,8 @@
 #include "libbirch/Pool.hpp"
 #include "libbirch/SharedPtr.hpp"
 
+#include <atomic>
+
 namespace bi {
 class Memo;
 

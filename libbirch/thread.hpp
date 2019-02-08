@@ -5,6 +5,10 @@
 
 #include "libbirch/config.hpp"
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 namespace bi {
 /**
  * Number of threads.

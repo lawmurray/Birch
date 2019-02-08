@@ -252,6 +252,7 @@
       "libbirch/Lock.hpp",
       "libbirch/Map.hpp",
       "libbirch/memory.hpp",
+      "libbirch/mutable.hpp",
       "libbirch/Memo.hpp",
       "libbirch/Nil.hpp",
       "libbirch/Offset.hpp",

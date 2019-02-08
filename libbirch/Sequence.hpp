@@ -5,6 +5,8 @@
 
 #include "libbirch/config.hpp"
 
+#include <initializer_list>
+
 namespace bi {
 /**
  * Sequence type.

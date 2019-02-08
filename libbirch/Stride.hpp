@@ -4,6 +4,7 @@
 #pragma once
 
 #include "libbirch/config.hpp"
+#include "libbirch/mutable.hpp"
 
 namespace bi {
 /**

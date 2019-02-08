@@ -38,6 +38,21 @@
 #include "libbirch/EigenFunctions.hpp"
 #include "libbirch/EigenOperators.hpp"
 
+#include <algorithm>
+#include <numeric>
+#include <utility>
+#include <functional>
+#include <tuple>
+#include <memory>
+#include <string>
+#include <cstdio>
+#include <cstdlib>
+#include <cstdint>
+#include <cstddef>
+#include <cmath>
+#include <getopt.h>
+#include <dlfcn.h>
+
 namespace bi {
 /**
  * Default array for `D` dimensions.

@@ -7,6 +7,8 @@
 #include "libbirch/SharedCOW.hpp"
 #include "libbirch/WeakPtr.hpp"
 
+#include <tuple>
+
 namespace bi {
 /**
  * Weak pointer with copy-on-write semantics.

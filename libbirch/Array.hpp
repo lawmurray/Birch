@@ -14,6 +14,8 @@
 #include "libbirch/Eigen.hpp"
 #include "libbirch/ExclusiveLock.hpp"
 
+#include <atomic>
+
 namespace bi {
 /**
  * Array. Combines underlying data and a frame describing the shape of that
