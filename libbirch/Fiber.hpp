@@ -20,7 +20,7 @@ public:
   /**
    * Constructor.
    */
-  Fiber(const SharedCOW<FiberState<YieldType>>& state = nullptr);
+  Fiber(const Shared<FiberState<YieldType>>& state = nullptr);
 
   /**
    * Clone the fiber.
@@ -53,13 +53,13 @@ public:
   /**
    * Fiber state.
    */
-  SharedCOW<FiberState<YieldType>> state;
+  Shared<FiberState<YieldType>> state;
 };
 }
 
 template<class YieldType>
 bi::Fiber<YieldType>::Fiber(
-    const SharedCOW<FiberState<YieldType>>& state) :
+    const Shared<FiberState<YieldType>>& state) :
     state(state) {
   //
 }

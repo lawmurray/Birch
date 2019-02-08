@@ -27,8 +27,8 @@
 #include "libbirch/Any.hpp"
 #include "libbirch/Optional.hpp"
 #include "libbirch/Nil.hpp"
-#include "libbirch/SharedCOW.hpp"
-#include "libbirch/WeakCOW.hpp"
+#include "libbirch/Shared.hpp"
+#include "libbirch/Weak.hpp"
 #include "libbirch/Allocator.hpp"
 #include "libbirch/FiberState.hpp"
 #include "libbirch/Fiber.hpp"
@@ -234,19 +234,19 @@ auto make_fiber(Args ... args) {
  * Cast an object.
  */
 template<class To, class From>
-auto dynamic_pointer_cast(const SharedCOW<From>& from) {
-  return Optional<SharedCOW<To>>(std::move(from.template dynamic_pointer_cast<To>()));
+auto dynamic_pointer_cast(const Shared<From>& from) {
+  return Optional<Shared<To>>(std::move(from.template dynamic_pointer_cast<To>()));
 }
 
 /**
  * Cast an object optional.
  */
 template<class To, class From>
-auto dynamic_pointer_cast(const Optional<SharedCOW<From>>& from) {
+auto dynamic_pointer_cast(const Optional<Shared<From>>& from) {
   if (from.query()) {
     return dynamic_pointer_cast<To>(from.get());
   } else {
-    return Optional<SharedCOW<To>>();
+    return Optional<Shared<To>>();
   }
 }
 

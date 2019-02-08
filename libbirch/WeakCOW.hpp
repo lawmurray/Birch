@@ -6,8 +6,6 @@
 #include "libbirch/config.hpp"
 #include "libbirch/SharedCOW.hpp"
 #include "libbirch/WeakPtr.hpp"
-#include "libbirch/ContextPtr.hpp"
-#include "libbirch/Optional.hpp"
 
 namespace bi {
 /**

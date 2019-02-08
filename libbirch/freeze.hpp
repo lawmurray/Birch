@@ -4,8 +4,8 @@
 #pragma once
 
 #include "libbirch/config.hpp"
-#include "libbirch/SharedCOW.hpp"
-#include "libbirch/WeakCOW.hpp"
+#include "libbirch/Shared.hpp"
+#include "libbirch/Weak.hpp"
 #include "libbirch/Optional.hpp"
 #include "libbirch/Fiber.hpp"
 #include "libbirch/Array.hpp"
@@ -22,12 +22,12 @@ void freeze(T& o) {
 }
 
 template<class T>
-void freeze(SharedCOW<T>& o) {
+void freeze(Shared<T>& o) {
   o.freeze();
 }
 
 template<class T>
-void freeze(WeakCOW<T>& o) {
+void freeze(Weak<T>& o) {
   o.freeze();
 }
 

@@ -5,6 +5,8 @@
 
 #include "libbirch/config.hpp"
 #include "libbirch/Nil.hpp"
+#include "libbirch/Shared.hpp"
+#include "libbirch/Weak.hpp"
 
 namespace bi {
 /**
@@ -92,7 +94,7 @@ private:
  * @tparam T Type.
  */
 template<class T>
-class Optional<SharedCOW<T>> {
+class Optional<Shared<T>> {
   template<class U> friend class Optional;
 public:
   /**
@@ -115,7 +117,7 @@ public:
    * Constructor for value.
    */
   template<class U>
-  Optional(const SharedCOW<U>& value) :
+  Optional(const Shared<U>& value) :
       value(value) {
     //
   }
@@ -124,7 +126,7 @@ public:
    * Constructor for value.
    */
   template<class U>
-  Optional(const WeakCOW<U>& value) :
+  Optional(const Weak<U>& value) :
       value(value) {
     //
   }
@@ -133,7 +135,7 @@ public:
    * Generic copy constructor.
    */
   template<class U>
-  Optional(const Optional<SharedCOW<U>>& o) :
+  Optional(const Optional<Shared<U>>& o) :
       value(o.value) {
     //
   }
@@ -142,7 +144,7 @@ public:
    * Generic move constructor.
    */
   template<class U>
-  Optional(Optional<SharedCOW<U>> && o) :
+  Optional(Optional<Shared<U>> && o) :
       value(std::move(o.value)) {
     //
   }
@@ -150,27 +152,27 @@ public:
   /**
    * Copy constructor.
    */
-  Optional(const Optional<SharedCOW<T>>& o) = default;
+  Optional(const Optional<Shared<T>>& o) = default;
 
   /**
    * Move constructor.
    */
-  Optional(Optional<SharedCOW<T>> && o) = default;
+  Optional(Optional<Shared<T>> && o) = default;
 
   /**
    * Copy assignment.
    */
-  Optional<SharedCOW<T>>& operator=(const Optional<SharedCOW<T>>& o) = default;
+  Optional<Shared<T>>& operator=(const Optional<Shared<T>>& o) = default;
 
   /**
    * Move assignment.
    */
-  Optional<SharedCOW<T>>& operator=(Optional<SharedCOW<T>> && o) = default;
+  Optional<Shared<T>>& operator=(Optional<Shared<T>> && o) = default;
 
   /**
    * Value conversion.
    */
-  operator WeakCOW<T>() {
+  operator Weak<T>() {
     return value;
   }
 
@@ -184,7 +186,7 @@ public:
   /**
    * Get the value.
    */
-  SharedCOW<T>& get() {
+  Shared<T>& get() {
     bi_assert_msg(query(), "optional has no value");
     return value;
   }
@@ -192,7 +194,7 @@ public:
   /**
    * Get the value.
    */
-  const SharedCOW<T>& get() const {
+  const Shared<T>& get() const {
     bi_assert_msg(query(), "optional has no value");
     return value;
   }
@@ -201,6 +203,6 @@ private:
   /**
    * The value, if any.
    */
-  SharedCOW<T> value;
+  Shared<T> value;
 };
 }

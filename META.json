@@ -260,6 +260,7 @@
       "libbirch/Range.hpp",
       "libbirch/Sequence.hpp",
       "libbirch/Set.hpp",
+      "libbirch/Shared.hpp",
       "libbirch/SharedCOW.hpp",
       "libbirch/SharedPtr.hpp",
       "libbirch/Span.hpp",
@@ -270,6 +271,7 @@
       "libbirch/thread.hpp",
       "libbirch/value.hpp",
       "libbirch/View.hpp",
+      "libbirch/Weak.hpp",
       "libbirch/WeakCOW.hpp",
       "libbirch/WeakPtr.hpp",
 

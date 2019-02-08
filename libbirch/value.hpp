@@ -4,8 +4,8 @@
 #pragma once
 
 #include "libbirch/config.hpp"
-#include "libbirch/SharedCOW.hpp"
-#include "libbirch/WeakCOW.hpp"
+#include "libbirch/Shared.hpp"
+#include "libbirch/Weak.hpp"
 #include "libbirch/Optional.hpp"
 #include "libbirch/Fiber.hpp"
 #include "libbirch/Array.hpp"
@@ -20,12 +20,12 @@ struct is_value {
 };
 
 template<class T>
-struct is_value<SharedCOW<T>> {
+struct is_value<Shared<T>> {
   static const bool value = false;
 };
 
 template<class T>
-struct is_value<WeakCOW<T>> {
+struct is_value<Weak<T>> {
   static const bool value = false;
 };
 
