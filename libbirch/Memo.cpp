@@ -99,8 +99,6 @@ bi::Any* bi::Memo::source(Any* o, Memo* from) {
 }
 
 bi::Any* bi::Memo::copy(Any* o) {
-  Any* result = nullptr;
-  #if USE_LAZY_DEEP_CLONE
   /* for a lazy deep clone there is no risk of infinite recursion, but
    * there may be thread contention if two threads access the same object
    * and both trigger a lazy clone simultaneously; in this case multiple
@@ -112,8 +110,10 @@ bi::Any* bi::Memo::copy(Any* o) {
   assert(o->isFrozen());
   SharedPtr<Any> cloned = o->clone();
   // ^ use shared to clean up if beaten by another thread
-  result = m.put(o, cloned.get());
-  #else
+  return m.put(o, cloned.get());
+}
+
+bi::Any* bi::Memo::deepCopy(Any* o) {
   /* for an eager deep clone we must be cautious to avoid infinite
    * recursion; memory for the new object is allocated first and put
    * in the map in case of deeper pointers back to the same object; then
@@ -128,10 +128,9 @@ bi::Any* bi::Memo::copy(Any* o) {
   assert(uninit == alloc);  // should be no thread contention here
   SwapClone swapClone(true);
   SwapContext swapContext(this);
-  result = o->clone(uninit);
+  Any* result = o->clone(uninit);
   assert(result == uninit);// clone should be in the allocation
   o->incMemo();// uninitialized_put(), so responsible for ref counts
   result->incShared();
-  #endif
   return result;
 }

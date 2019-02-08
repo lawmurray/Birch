@@ -211,9 +211,6 @@ public:
         object = o.object;
         from = o.from;
       }
-      #if !USE_LAZY_DEEP_CLONE
-      get();
-      #endif
     } else {
       object = o.object;
       from = o.from;
@@ -226,12 +223,10 @@ public:
   WeakCOW<Any>& operator=(WeakCOW<Any> && o) = default;
 
   Any* get() {
-    #if USE_LAZY_DEEP_CLONE
     if (object) {
       std::tie(object, from) = to->get(object.get(), from.get());
       assert(!object.get()->isFrozen());
     }
-    #endif
     return object.get();
   }
 
@@ -242,11 +237,9 @@ public:
   }
 
   const Any* pull() {
-    #if USE_LAZY_DEEP_CLONE
     if (object) {
       std::tie(object, from) = to->pull(object.get(), from.get());
     }
-    #endif
     return object.get();
   }
 

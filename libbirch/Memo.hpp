@@ -103,9 +103,14 @@ public:
   Any* source(Any* o, Memo* from);
 
   /**
-   * Shallow copy of an object.
+   * Shallow copy.
    */
   Any* copy(Any* o);
+
+  /**
+   * Deep copy.
+   */
+  Any* deepCopy(Any* o);
 
 protected:
   virtual void doFreeze();

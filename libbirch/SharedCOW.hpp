@@ -198,9 +198,6 @@ public:
         object = o.object;
         from = o.from;
       }
-      #if !USE_LAZY_DEEP_CLONE
-      get();
-      #endif
     } else {
       object = o.object;
       from = o.from;
@@ -220,12 +217,10 @@ public:
   }
 
   Any* get() {
-    #if USE_LAZY_DEEP_CLONE
     if (object) {
       std::tie(object, from) = to->get(object.get(), from.get());
       assert(!object->isFrozen());
     }
-    #endif
     return object.get();
   }
 
@@ -236,11 +231,9 @@ public:
   }
 
   const Any* pull() {
-    #if USE_LAZY_DEEP_CLONE
     if (object) {
       std::tie(object, from) = to->pull(object.get(), from.get());
     }
-    #endif
     return object.get();
   }
 
@@ -252,11 +245,7 @@ public:
 
   SharedCOW<Any> clone() {
     freeze();
-    SharedCOW<Any> result(object, from.get(), to->fork());
-    #if !USE_LAZY_DEEP_CLONE
-    result.get();
-    #endif
-    return result;
+    return SharedCOW<Any>(object, from.get(), to->fork());
   }
 
   SharedCOW<Any> clone() const {
