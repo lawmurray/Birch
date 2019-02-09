@@ -14,13 +14,6 @@ namespace bi {
 class Nil {
 public:
   /**
-   * Default constructor.
-   */
-  Nil() {
-    //
-  }
-
-  /**
    * Convert to null pointer.
    */
   operator std::nullptr_t() const {

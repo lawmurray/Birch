@@ -4,8 +4,8 @@
 #pragma once
 
 #include "libbirch/config.hpp"
-#include "libbirch/class.hpp"
 #include "libbirch/memory.hpp"
+#include "libbirch/Nil.hpp"
 #include "libbirch/SharedPtr.hpp"
 #include "libbirch/ContextPtr.hpp"
 #include "libbirch/Any.hpp"
@@ -191,7 +191,8 @@ public:
     if (cloneUnderway) {
       to = currentContext;
       if (o.object && !currentContext->hasAncestor(o.to.get())) {
-        std::tie(object, from) = currentContext->getNoForward(o.object.get(), o.from.get());
+        std::tie(object, from) = currentContext->getNoForward(o.object.get(),
+            o.from.get());
         freeze();
       } else {
         object = o.object;

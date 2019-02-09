@@ -4,7 +4,7 @@
 #pragma once
 
 #include "libbirch/config.hpp"
-#include "libbirch/Nil.hpp"
+#include "libbirch/class.hpp"
 
 namespace bi {
 template<class T> class SharedPtr;
@@ -27,15 +27,7 @@ public:
   /**
    * Constructor.
    */
-  SharedPtr(const Nil& = nil) :
-      ptr(nullptr) {
-    //
-  }
-
-  /**
-   * Constructor.
-   */
-  SharedPtr(T* ptr) :
+  SharedPtr(T* ptr = nullptr) :
       ptr(ptr) {
     if (ptr) {
       ptr->incShared();
@@ -43,9 +35,30 @@ public:
   }
 
   /**
-   * Copy constructor.
+   * Generic shared constructor.
    */
-  SharedPtr(const SharedPtr<T>& o) :
+  template<class U>
+  SharedPtr(const SharedPtr<U>& o) :
+      ptr(o.ptr) {
+    if (ptr) {
+      ptr->incShared();
+    }
+  }
+
+  /**
+   * Generic weak constructor.
+   */
+  template<class U>
+  SharedPtr(const WeakPtr<U>& o) :
+      ptr(o.ptr ? static_cast<T*>(o.ptr->lock()) : nullptr) {
+    //
+  }
+
+  /**
+   * Generic init constructor.
+   */
+  template<class U>
+  SharedPtr(const InitPtr<U>& o) :
       ptr(o.ptr) {
     if (ptr) {
       ptr->incShared();
@@ -55,15 +68,7 @@ public:
   /**
    * Copy constructor.
    */
-  SharedPtr(const WeakPtr<T>& o) :
-      ptr(o.ptr ? static_cast<T*>(o.ptr->lock()) : nullptr) {
-    //
-  }
-
-  /**
-   * Copy constructor.
-   */
-  SharedPtr(const InitPtr<T>& o) :
+  SharedPtr(const SharedPtr<T>& o) :
       ptr(o.ptr) {
     if (ptr) {
       ptr->incShared();
@@ -113,6 +118,32 @@ public:
   }
 
   /**
+   * Value assignment.
+   */
+  template<class U,
+      typename = std::enable_if_t<bi::has_assignment<T,U>::value>>
+  SharedPtr<T>& operator=(const U& o) {
+    *ptr = o;
+    return *this;
+  }
+
+  /**
+   * Value conversion.
+   */
+  template<class U,
+      typename = std::enable_if_t<bi::has_conversion<T,U>::value>>
+  operator U() const {
+    return static_cast<U>(*ptr);
+  }
+
+  /**
+   * Is the pointer not null?
+   */
+  bool query() const {
+    return ptr != nullptr;
+  }
+
+  /**
    * Get the raw pointer.
    */
   T* get() const {
@@ -134,7 +165,7 @@ public:
   T& operator*() const {
     assert(ptr);
     assert(ptr->numShared() > 0);
-    return *get();
+    return *ptr;
   }
 
   /**
@@ -143,7 +174,7 @@ public:
   T* operator->() const {
     assert(ptr);
     assert(ptr->numShared() > 0);
-    return get();
+    return ptr;
   }
 
   /**
@@ -183,6 +214,22 @@ public:
    */
   operator bool() const {
     return ptr != nullptr;
+  }
+
+  /**
+   * Dynamic cast. Returns `nullptr` if unsuccessful.
+   */
+  template<class U>
+  WeakPtr<U> dynamic_pointer_cast() const {
+    return WeakPtr<U>(dynamic_cast<U*>(ptr));
+  }
+
+  /**
+   * Static cast. Undefined if unsuccessful.
+   */
+  template<class U>
+  WeakPtr<U> static_pointer_cast() const {
+    return WeakPtr<U>(static_cast<U*>(ptr));
   }
 
 private:

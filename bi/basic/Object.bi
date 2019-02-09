@@ -64,8 +64,7 @@ function make(name:String) -> Object? {
   using make_t = bi::type::Object_*();
   void* addr = dlsym(RTLD_DEFAULT, symbol_.c_str());
   if (addr) {
-    auto raw = reinterpret_cast<make_t*>(addr)();
-    result_ = bi::SharedCOW<bi::type::Object_>(raw);
+    result_ = reinterpret_cast<make_t*>(addr)();
   }
   }}
   return result;
