@@ -11,7 +11,7 @@
 namespace bi {
 /**
  * Shared or weak pointer to a Memo, according to context. This is used by
- * SharedCOW and WeakCOW for the memo field. It records the context of the
+ * LazyPtr for its memo field. It records the context of the
  * pointer: whether it is part of a member variable or not, and keeps a
  * weak or shared pointer to the Memo according to that context.
  *

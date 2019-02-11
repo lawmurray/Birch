@@ -24,6 +24,9 @@ class WeakPtr {
   template<class U> friend class WeakPtr;
   template<class U> friend class InitPtr;
 public:
+  using value_type = T;
+  template<class U> using cast_type = WeakPtr<U>;
+
   /**
    * Constructor.
    */

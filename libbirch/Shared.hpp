@@ -4,7 +4,8 @@
 #pragma once
 
 #include "libbirch/config.hpp"
-#include "libbirch/SharedCOW.hpp"
+#include "libbirch/SharedPtr.hpp"
+#include "libbirch/LazyPtr.hpp"
 
 namespace bi {
 /**
@@ -12,7 +13,7 @@ namespace bi {
  */
 #if USE_LAZY_DEEP_CLONE
 template<class T>
-using Shared = SharedCOW<T>;
+using Shared = LazyPtr<SharedPtr<T>>;
 #else
 template<class T>
 using Shared = SharedPtr<T>;

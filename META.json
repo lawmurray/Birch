@@ -247,6 +247,7 @@
       "libbirch/Index.hpp",
       "libbirch/InitPtr.hpp",
       "libbirch/Iterator.hpp",
+      "libbirch/LazyPtr.hpp",
       "libbirch/libbirch.hpp",
       "libbirch/Length.hpp",
       "libbirch/Lock.hpp",
@@ -262,7 +263,6 @@
       "libbirch/Sequence.hpp",
       "libbirch/Set.hpp",
       "libbirch/Shared.hpp",
-      "libbirch/SharedCOW.hpp",
       "libbirch/SharedPtr.hpp",
       "libbirch/Span.hpp",
       "libbirch/stacktrace.hpp",
@@ -273,7 +273,6 @@
       "libbirch/value.hpp",
       "libbirch/View.hpp",
       "libbirch/Weak.hpp",
-      "libbirch/WeakCOW.hpp",
       "libbirch/WeakPtr.hpp",
 
       "libubjpp/value.hpp",

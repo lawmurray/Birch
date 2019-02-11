@@ -9,7 +9,7 @@
 #include "libbirch/Buffer.hpp"
 #include "libbirch/Allocator.hpp"
 #include "libbirch/Iterator.hpp"
-#include "libbirch/SharedCOW.hpp"
+#include "libbirch/Shared.hpp"
 #include "libbirch/Sequence.hpp"
 #include "libbirch/Eigen.hpp"
 #include "libbirch/ExclusiveLock.hpp"
@@ -697,8 +697,8 @@ private:
    * @param args Constructor arguments.
    */
   template<class U, class ... Args>
-  static void emplace(SharedCOW<U>& o, Args ... args) {
-    new (&o) SharedCOW<U>(U::create(args...));
+  static void emplace(Shared<U>& o, Args ... args) {
+    new (&o) Shared<U>(U::create(args...));
   }
 
   /**
