@@ -239,6 +239,7 @@
       "libbirch/Eigen.hpp",
       "libbirch/EigenFunctions.hpp",
       "libbirch/EigenOperators.hpp",
+      "libbirch/EagerPtr.hpp",
       "libbirch/ExclusiveLock.hpp",
       "libbirch/Fiber.hpp",
       "libbirch/FiberState.hpp",

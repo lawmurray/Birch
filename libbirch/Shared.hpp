@@ -6,6 +6,7 @@
 #include "libbirch/config.hpp"
 #include "libbirch/SharedPtr.hpp"
 #include "libbirch/LazyPtr.hpp"
+#include "libbirch/EagerPtr.hpp"
 
 namespace bi {
 /**
@@ -16,6 +17,6 @@ template<class T>
 using Shared = LazyPtr<SharedPtr<T>>;
 #else
 template<class T>
-using Shared = SharedPtr<T>;
+using Shared = EagerPtr<SharedPtr<T>>;
 #endif
 }

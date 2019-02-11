@@ -6,6 +6,7 @@
 #include "libbirch/config.hpp"
 #include "libbirch/WeakPtr.hpp"
 #include "libbirch/LazyPtr.hpp"
+#include "libbirch/EagerPtr.hpp"
 
 namespace bi {
 /**
@@ -16,6 +17,6 @@ template<class T>
 using Weak = LazyPtr<WeakPtr<T>>;
 #else
 template<class T>
-using Weak = WeakPtr<T>;
+using Weak = EagerPtr<WeakPtr<T>>;
 #endif
 }

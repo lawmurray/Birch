@@ -121,32 +121,6 @@ public:
   }
 
   /**
-   * Value assignment.
-   */
-  template<class U,
-      typename = std::enable_if_t<bi::has_assignment<T,U>::value>>
-  SharedPtr<T>& operator=(const U& o) {
-    *ptr = o;
-    return *this;
-  }
-
-  /**
-   * Value conversion.
-   */
-  template<class U,
-      typename = std::enable_if_t<bi::has_conversion<T,U>::value>>
-  operator U() const {
-    return static_cast<U>(*ptr);
-  }
-
-  /**
-   * Is the pointer not null?
-   */
-  bool query() const {
-    return ptr != nullptr;
-  }
-
-  /**
    * Get the raw pointer.
    */
   T* get() const {
@@ -217,22 +191,6 @@ public:
    */
   operator bool() const {
     return ptr != nullptr;
-  }
-
-  /**
-   * Dynamic cast. Returns `nullptr` if unsuccessful.
-   */
-  template<class U>
-  WeakPtr<U> dynamic_pointer_cast() const {
-    return WeakPtr<U>(dynamic_cast<U*>(ptr));
-  }
-
-  /**
-   * Static cast. Undefined if unsuccessful.
-   */
-  template<class U>
-  WeakPtr<U> static_pointer_cast() const {
-    return WeakPtr<U>(static_cast<U*>(ptr));
   }
 
 private:
