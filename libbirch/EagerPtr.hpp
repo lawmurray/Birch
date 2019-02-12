@@ -24,7 +24,7 @@ namespace bi {
 template<class P>
 class EagerPtr {
   template<class U> friend class EagerPtr;
-public:
+  public:
   using T = typename P::value_type;
   template<class U> using cast_type = EagerPtr<typename P::template cast_type<U>>;
 
@@ -54,9 +54,12 @@ public:
   /**
    * Copy constructor.
    */
-  EagerPtr(const EagerPtr<P>& o) :
-      object(cloneUnderway ? static_cast<T*>(currentContext->get(o.get())) : o.object) {
-    //
+  EagerPtr(const EagerPtr<P>& o) {
+    if (cloneUnderway && o.object) {
+      object = static_cast<T*>(currentContext->get(o.get()));
+    } else {
+      object = o.object;
+    }
   }
 
   /**
@@ -148,9 +151,13 @@ public:
    * Deep clone.
    */
   EagerPtr<P> clone() const {
-    SwapClone swapClone(true);
-    SwapContext swapContext(EagerMemo::create());
-    return EagerPtr<P>(static_cast<T*>(currentContext->copy(object.get())));
+    if (object) {
+      SwapClone swapClone(true);
+      SwapContext swapContext(EagerMemo::create());
+      return EagerPtr<P>(static_cast<T*>(currentContext->copy(object.get())));
+    } else {
+      return EagerPtr<P>();
+    }
   }
 
   /**
