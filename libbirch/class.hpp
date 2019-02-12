@@ -4,17 +4,16 @@
 #pragma once
 
 #include "libbirch/config.hpp"
+#include "libbirch/SwapContext.hpp"
 
 namespace bi {
-class Any;
-
 /**
  * The super type of type @p T. Specialised in forward declarations of
  * classes.
  */
 template<class T>
 struct super_type {
-  using type = Any;
+  using type = void;
 };
 template<class T>
 struct super_type<const T> {
@@ -30,7 +29,7 @@ struct has_assignment {
       has_assignment<typename super_type<T>::type,U>::value;
 };
 template<class U>
-struct has_assignment<Any,U> {
+struct has_assignment<void,U> {
   static const bool value = false;
 };
 
@@ -43,7 +42,7 @@ struct has_conversion {
       has_conversion<typename super_type<T>::type,U>::value;
 };
 template<class U>
-struct has_conversion<Any,U> {
+struct has_conversion<void,U> {
   static const bool value = false;
 };
 }
@@ -94,3 +93,28 @@ struct has_conversion<Any,U> {
   virtual void destroy() override { \
     this->~class_type(); \
   }
+
+/**
+ * @def STANDARD_SWAP_CONTEXT
+ *
+ * When lazy deep clone is in use, swaps into the context of this object.
+ */
+#if USE_LAZY_DEEP_CLONE
+#define STANDARD_SWAP_CONTEXT SwapContext swap(context.get());
+#else
+#define STANDARD_SWAP_CONTEXT
+#endif
+
+/**
+ * @def STANDARD_DECLARE_SELF
+ *
+ * Declare `self` within a member function.
+ */
+#define STANDARD_DECLARE_SELF Shared<this_type> self(this);
+
+/**
+ * @def STANDARD_DECLARE_LOCAL
+ *
+ * Declare `local` within a member fiber.
+ */
+#define STANDARD_DECLARE_LOCAL Shared<class_type> local(this);

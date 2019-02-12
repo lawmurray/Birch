@@ -4,7 +4,7 @@
 #pragma once
 
 #include "libbirch/config.hpp"
-#include "libbirch/memory.hpp"
+#include "libbirch/clone.hpp"
 
 namespace bi {
 /**

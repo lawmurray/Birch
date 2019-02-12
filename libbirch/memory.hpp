@@ -6,13 +6,10 @@
 #include "libbirch/config.hpp"
 #include "libbirch/thread.hpp"
 #include "libbirch/Pool.hpp"
-#include "libbirch/SharedPtr.hpp"
 
 #include <atomic>
 
 namespace bi {
-class Memo;
-
 /**
  * Buffer for heap allocations.
  */

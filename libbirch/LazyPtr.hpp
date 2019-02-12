@@ -2,10 +2,12 @@
  * @file
  */
 #pragma once
+#if USE_LAZY_DEEP_CLONE
 
 #include "libbirch/config.hpp"
-#include "libbirch/memory.hpp"
-#include "libbirch/Any.hpp"
+#include "libbirch/clone.hpp"
+#include "libbirch/LazyAny.hpp"
+#include "libbirch/LazyMemo.hpp"
 #include "libbirch/Nil.hpp"
 #include "libbirch/InitPtr.hpp"
 #include "libbirch/ContextPtr.hpp"
@@ -37,7 +39,7 @@ public:
   /**
    * Constructor.
    */
-  LazyPtr(T* object, Memo* from = currentContext, Memo* to = currentContext) :
+  LazyPtr(T* object, LazyMemo* from = currentContext, LazyMemo* to = currentContext) :
       object(object),
       from(from),
       to(to) {
@@ -47,7 +49,7 @@ public:
   /**
    * Constructor.
    */
-  LazyPtr(const P& object, Memo* from = currentContext, Memo* to =
+  LazyPtr(const P& object, LazyMemo* from = currentContext, LazyMemo* to =
       currentContext) :
       object(object),
       from(from),
@@ -60,16 +62,12 @@ public:
    */
   LazyPtr(const LazyPtr<P>& o) {
     if (cloneUnderway) {
-      to = currentContext;
       if (o.object && !currentContext->hasAncestor(o.to.get())) {
-        Any* tmp;
-        std::tie(tmp, from) = currentContext->getNoForward(o.object.get(),
-            o.from.get());
-        object = static_cast<T*>(tmp);
-        freeze();
+        *this = o.clone();
       } else {
         object = o.object;
         from = o.from;
+        to = currentContext;
       }
     } else {
       object = o.object;
@@ -146,9 +144,8 @@ public:
    */
   T* get() {
     if (object) {
-      Any* tmp;
-      std::tie(tmp, from) = to->get(object.get(), from.get());
-      object = static_cast<T*>(tmp);
+      object = static_cast<T*>(to->get(object.get(), from.get())->getForward());
+      from = to.get();
       assert(!object->isFrozen());
     }
     return object.get();
@@ -168,9 +165,15 @@ public:
    */
   const T* pull() {
     if (object) {
-      Any* tmp;
-      std::tie(tmp, from) = to->pull(object.get(), from.get());
-      object = static_cast<T*>(tmp);
+      object = static_cast<T*>(to->pull(object.get(), from.get())->pullForward());
+      if (object->getContext() == to.get()) {
+        from = to.get();
+      } else {
+        /* copy has been omitted for this access as it is read only, but on
+         * the next access we will need to check whether a copy has happened
+         * elsewhere in the meantime */
+        from = to->getParent();
+      }
     }
     return object.get();
   }
@@ -204,9 +207,7 @@ public:
    */
   void freeze() {
     if (object) {
-      Any* tmp;
-      std::tie(tmp, from) = to->pull(object.get(), from.get());
-      object = static_cast<T*>(tmp);
+      pull();
       object->freeze();
       to->freeze();
     }
@@ -215,7 +216,7 @@ public:
   /**
    * Get the context of the object.
    */
-  Memo* getContext() const {
+  LazyMemo* getContext() const {
     return to.get();
   }
 
@@ -272,9 +273,11 @@ protected:
   P object;
 
   /**
-   * First label in list.
+   * First label in list. This is potentially different from LazyAny::context
+   * as read-only accesses via pull() may partially propagate objects through
+   * the memo list.
    */
-  InitPtr<Memo> from;
+  InitPtr<LazyMemo> from;
 
   /**
    * Last label in list.
@@ -282,3 +285,5 @@ protected:
   ContextPtr to;
 };
 }
+
+#endif

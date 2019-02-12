@@ -4,6 +4,8 @@
 #pragma once
 
 #include "libbirch/config.hpp"
+#include "libbirch/memory.hpp"
+#include "libbirch/class.hpp"
 
 #include <atomic>
 

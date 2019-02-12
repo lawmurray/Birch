@@ -2,10 +2,11 @@
  * @file
  */
 #pragma once
+#if !USE_LAZY_DEEP_CLONE
 
 #include "libbirch/config.hpp"
-#include "libbirch/memory.hpp"
-#include "libbirch/Any.hpp"
+#include "libbirch/clone.hpp"
+#include "libbirch/EagerMemo.hpp"
 #include "libbirch/Nil.hpp"
 #include "libbirch/SwapClone.hpp"
 #include "libbirch/SwapContext.hpp"
@@ -54,7 +55,7 @@ public:
    * Copy constructor.
    */
   EagerPtr(const EagerPtr<P>& o) :
-      object(cloneUnderway ? static_cast<T*>(currentContext->deepCopy(o.get())) : o.object) {
+      object(cloneUnderway ? static_cast<T*>(currentContext->get(o.get())) : o.object) {
     //
   }
 
@@ -148,8 +149,8 @@ public:
    */
   EagerPtr<P> clone() const {
     SwapClone swapClone(true);
-    SwapContext swapContext(Memo::create());
-    return EagerPtr<P>(static_cast<T*>(currentContext->deepCopy(object.get())));
+    SwapContext swapContext(EagerMemo::create());
+    return EagerPtr<P>(static_cast<T*>(currentContext->copy(object.get())));
   }
 
   /**
@@ -215,3 +216,5 @@ protected:
   P object;
 };
 }
+
+#endif

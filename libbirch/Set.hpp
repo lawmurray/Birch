@@ -4,13 +4,12 @@
 #pragma once
 
 #include "libbirch/config.hpp"
+#include "libbirch/Memo.hpp"
 #include "libbirch/Lock.hpp"
 
 #include <atomic>
 
 namespace bi {
-class Memo;
-
 /**
  * Thread-safe set of memos.
  *

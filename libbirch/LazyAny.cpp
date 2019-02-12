@@ -1,38 +1,40 @@
 /**
  * @file
  */
-#include "libbirch/Any.hpp"
+#if USE_LAZY_DEEP_CLONE
+#include "libbirch/LazyAny.hpp"
 
-#include "libbirch/memory.hpp"
+#include "libbirch/SwapClone.hpp"
+#include "libbirch/SwapContext.hpp"
 
-bi::Any::Any() :
+bi::LazyAny::LazyAny() :
     Counted(),
     context(currentContext),
     forward(nullptr) {
   //
 }
 
-bi::Any::Any(const Any& o) :
+bi::LazyAny::LazyAny(const LazyAny& o) :
     Counted(o),
     context(currentContext),
     forward(nullptr) {
   //
 }
 
-bi::Any::~Any() {
-  Any* forward = this->forward.load(std::memory_order_seq_cst);
+bi::LazyAny::~LazyAny() {
+  LazyAny* forward = this->forward.load(std::memory_order_seq_cst);
   if (forward) {
     forward->decShared();
   }
 }
 
-bi::Any* bi::Any::getForward() {
+bi::LazyAny* bi::LazyAny::getForward() {
   if (isFrozen()) {
-    Any* forward = this->forward.load(std::memory_order_seq_cst);
+    LazyAny* forward = this->forward.load(std::memory_order_seq_cst);
     if (!forward) {
       SwapClone swapClone(true);
       SwapContext swapContext(context.get());
-      Any* cloned = this->clone();
+      LazyAny* cloned = this->clone();
       cloned->incShared();
       if (this->forward.compare_exchange_strong(forward, cloned,
           std::memory_order_seq_cst)) {
@@ -48,12 +50,14 @@ bi::Any* bi::Any::getForward() {
   }
 }
 
-bi::Any* bi::Any::pullForward() {
+bi::LazyAny* bi::LazyAny::pullForward() {
   if (isFrozen()) {
-    Any* forward = this->forward.load(std::memory_order_seq_cst);
+    LazyAny* forward = this->forward.load(std::memory_order_seq_cst);
     if (forward) {
       return forward->pullForward();
     }
   }
   return this;
 }
+
+#endif

@@ -4,7 +4,6 @@
 #pragma once
 
 #include "libbirch/config.hpp"
-#include "libbirch/Allocator.hpp"
 #include "libbirch/Memo.hpp"
 
 namespace bi {
@@ -19,4 +18,5 @@ extern bool cloneUnderway;
  */
 extern Memo* currentContext;
 #pragma omp threadprivate(currentContext)
+
 }

@@ -3,7 +3,7 @@
  */
 #include "libbirch/memory.hpp"
 
-#include "libbirch/Memo.hpp"
+#include "libbirch/clone.hpp"
 
 #include <unistd.h>
 
@@ -14,8 +14,12 @@ bi::Pool bi::pool[64*48];
 
 /* from clone.hpp, put here rather than clone.cpp to ensure correct
  * initialization order of global variables */
+#if USE_LAZY_DEEP_CLONE
 static bi::SharedPtr<bi::Memo> rootMemo = bi::Memo::create();
 bi::Memo* bi::currentContext = rootMemo.get();
+#else
+bi::Memo* bi::currentContext = nullptr;
+#endif
 bool bi::cloneUnderway = false;
 
 char* bi::heap() {
