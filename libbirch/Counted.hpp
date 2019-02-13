@@ -220,15 +220,15 @@ inline unsigned bi::Counted::getSize() const {
 }
 
 inline void bi::Counted::incShared() {
-  sharedCount.fetch_add(1u, std::memory_order_seq_cst);
+  sharedCount.fetch_add(1u, std::memory_order_relaxed);
 }
 
 inline unsigned bi::Counted::numShared() const {
-  return sharedCount;
+  return sharedCount.load(std::memory_order_relaxed);
 }
 
 inline void bi::Counted::incWeak() {
-  weakCount.fetch_add(1u, std::memory_order_seq_cst);
+  weakCount.fetch_add(1u, std::memory_order_relaxed);
 }
 
 inline unsigned bi::Counted::numWeak() const {
@@ -239,19 +239,19 @@ inline void bi::Counted::incMemo() {
   /* the order of operations here is important, as the weak count should
    * never be less than the memo count */
   incWeak();
-  memoCount.fetch_add(1u, std::memory_order_seq_cst);
+  memoCount.fetch_add(1u, std::memory_order_relaxed);
 }
 
 inline void bi::Counted::decMemo() {
   /* the order of operations here is important, as the weak count should
    * never be less than the memo count */
   assert(memoCount > 0u);
-  memoCount.fetch_sub(1u, std::memory_order_seq_cst);
+  memoCount.fetch_sub(1u, std::memory_order_relaxed);
   decWeak();
 }
 
 inline bool bi::Counted::isFrozen() const {
-  return frozen.load(std::memory_order_seq_cst);
+  return frozen.load(std::memory_order_relaxed);
 }
 
 inline void bi::Counted::doFreeze() {

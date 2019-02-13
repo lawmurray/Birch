@@ -85,7 +85,7 @@ void* bi::allocate(const size_t n) {
     size_t m = unbin(i);
     size_t r = (m < 64u) ? 64u : m;
     // ^ minimum allocation 64 bytes to maintain alignment
-    ptr = buffer.fetch_add(r, std::memory_order_seq_cst);
+    ptr = buffer.fetch_add(r, std::memory_order_relaxed);
     assert((char*)ptr + r <= bufferStart + bufferSize); // otherwise out of memory
     if (m < 64u) {
       /* add extra bytes as a separate allocation to the pool for

@@ -97,13 +97,13 @@ bi::Buffer<T>::Buffer() :
 
 template<class T>
 void bi::Buffer<T>::incUsage() {
-  ++useCount;
+  useCount.fetch_add(1u, std::memory_order_relaxed);
 }
 
 template<class T>
 unsigned bi::Buffer<T>::decUsage() {
   assert(useCount > 0);
-  return --useCount;
+  return useCount.fetch_sub(1u, std::memory_order_relaxed) - 1u;
 }
 
 template<class T>

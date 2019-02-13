@@ -17,19 +17,21 @@ bi::Map::Map() :
 
 bi::Map::~Map() {
   if (nentries > 0) {
+    /* don't need thread safety here, so cast away the atomicity */
+    key_type* keys1 = (key_type*)keys;
+    value_type* values1 = (value_type*)values;
     key_type key;
     value_type value;
     for (unsigned i = 0u; i < nentries; ++i) {
-      ///@todo As with resize, could cast to non-atomic here
-      key = keys[i].load(std::memory_order_seq_cst);
+      key = keys1[i];
       if (key != EMPTY && key != ERASED) {
-        value = values[i].load(std::memory_order_seq_cst);
+        value = values1[i];
         key->decMemo();
         value->decShared();
       }
     }
-    deallocate(keys, nentries * sizeof(key_type), tentries);
-    deallocate(values, nentries * sizeof(value_type), tentries);
+    deallocate(keys1, nentries * sizeof(key_type), tentries);
+    deallocate(values1, nentries * sizeof(value_type), tentries);
   }
 }
 
@@ -42,10 +44,10 @@ bi::Map::value_type bi::Map::get(const key_type key,
   if (!empty()) {
     lock.share();
     unsigned i = hash(key);
-    key_type k = keys[i].load(std::memory_order_seq_cst);
+    key_type k = keys[i].load(std::memory_order_relaxed);
     while (k && k != key) {
       i = (i + 1u) & (nentries - 1u);
-      k = keys[i].load(std::memory_order_seq_cst);
+      k = keys[i].load(std::memory_order_relaxed);
     }
     if (k == key) {
       value = get(i);
@@ -60,7 +62,7 @@ bi::Map::value_type bi::Map::get(const unsigned i) {
    * case that write has not concluded yet */
   value_type value;
   do {
-    value = values[i].load(std::memory_order_seq_cst);
+    value = values[i].load(std::memory_order_relaxed);
   } while (value == EMPTY);
   return value;
 }
@@ -81,7 +83,7 @@ bi::Map::value_type bi::Map::put(const key_type key, const value_type value) {
 
   unsigned i = hash(key);
   while (!keys[i].compare_exchange_strong(expected, desired,
-      std::memory_order_seq_cst) && expected != key) {
+      std::memory_order_relaxed) && expected != key) {
     i = (i + 1u) & (nentries - 1u);
     expected = EMPTY;
   }
@@ -94,7 +96,7 @@ bi::Map::value_type bi::Map::put(const key_type key, const value_type value) {
     value->decShared();
     result = get(i);
   } else {
-    values[i].store(value, std::memory_order_seq_cst);
+    values[i].store(value, std::memory_order_relaxed);
     result = value;
   }
   lock.unshare();
@@ -115,7 +117,7 @@ bi::Map::value_type bi::Map::uninitialized_put(const key_type key,
 
   unsigned i = hash(key);
   while (!keys[i].compare_exchange_strong(expected, desired,
-      std::memory_order_seq_cst) && expected != key) {
+      std::memory_order_relaxed) && expected != key) {
     i = (i + 1u) & (nentries - 1u);
     expected = EMPTY;
   }
@@ -125,7 +127,7 @@ bi::Map::value_type bi::Map::uninitialized_put(const key_type key,
     unreserve();  // key exists, cancel reservation for insert
     result = get(i);
   } else {
-    values[i].store(value, std::memory_order_seq_cst);
+    values[i].store(value, std::memory_order_relaxed);
     result = value;
   }
   lock.unshare();
@@ -144,12 +146,12 @@ void bi::Map::remove(const key_type key) {
 
     unsigned i = hash(key);
     while (!keys[i].compare_exchange_strong(expected, desired,
-        std::memory_order_seq_cst) && expected != EMPTY) {
+        std::memory_order_relaxed) && expected != EMPTY) {
       i = (i + 1u) & (nentries - 1u);
       expected = key;
     }
     if (expected == key) {
-      value_type value = values[i].load(std::memory_order_seq_cst);
+      value_type value = values[i].load(std::memory_order_relaxed);
       lock.unshare();  // release first, as dec may cause lengthy cleanup
       key->decMemo();
       value->decShared();
@@ -160,7 +162,7 @@ void bi::Map::remove(const key_type key) {
 }
 
 void bi::Map::reserve() {
-  unsigned noccupied1 = noccupied.fetch_add(1u, std::memory_order_seq_cst)
+  unsigned noccupied1 = noccupied.fetch_add(1u, std::memory_order_relaxed)
       + 1u;
   if (noccupied1 > crowd()) {
     /* obtain resize lock */
@@ -222,14 +224,14 @@ void bi::Map::clean() {
   key_type key;
   value_type value;
   for (unsigned i = 0u; i < nentries; ++i) {
-    key = keys[i].load(std::memory_order_seq_cst);
+    key = keys[i].load(std::memory_order_relaxed);
     if (key != EMPTY && key != ERASED && !key->isReachable()) {
       /* key is only reachable through this entry, so remove it */
       key_type expected = key;
       key_type desired = ERASED;
       if (keys[i].compare_exchange_strong(expected, desired,
-          std::memory_order_seq_cst)) {
-        value = values[i].load(std::memory_order_seq_cst);
+          std::memory_order_relaxed)) {
+        value = values[i].load(std::memory_order_relaxed);
         key->decMemo();
         value->decShared();
       }
@@ -243,9 +245,9 @@ void bi::Map::freeze() {
   key_type key;
   value_type value;
   for (unsigned i = 0u; i < nentries; ++i) {
-    key = keys[i].load(std::memory_order_seq_cst);
+    key = keys[i].load(std::memory_order_relaxed);
     if (key != EMPTY && key != ERASED) {
-      value = values[i].load(std::memory_order_seq_cst);
+      value = values[i].load(std::memory_order_relaxed);
       if (key->isReachable()) {
         value->freeze();
       } else {
@@ -253,7 +255,7 @@ void bi::Map::freeze() {
         key_type expected = key;
         key_type desired = ERASED;
         if (keys[i].compare_exchange_strong(expected, desired,
-            std::memory_order_seq_cst)) {
+            std::memory_order_relaxed)) {
           key->decMemo();
           value->decShared();
         }

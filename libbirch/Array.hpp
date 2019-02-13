@@ -102,7 +102,7 @@ class Array {
    */
   Array(Array<T,F> && o) :
       frame(o.frame),
-      buffer(o.buffer.load()),
+      buffer(o.buffer.load(std::memory_order_relaxed)),
       offset(o.offset),
       isView(o.isView) {
     o.buffer = nullptr;
@@ -405,14 +405,14 @@ class Array {
    * Raw pointer to underlying buffer.
    */
   T* buf() {
-    return buffer.load()->buf() + offset;
+    return buffer.load(std::memory_order_relaxed)->buf() + offset;
   }
 
   /**
    * Raw pointer to underlying buffer.
    */
   T* const buf() const {
-    return buffer.load()->buf() + offset;
+    return buffer.load(std::memory_order_relaxed)->buf() + offset;
   }
 
   /**
@@ -443,7 +443,7 @@ class Array {
       if (frame.size() == 0) {
         release();
       } else {
-        auto oldBuffer = buffer.load();
+        auto oldBuffer = buffer.load(std::memory_order_relaxed);
         auto oldSize = Buffer<T>::size(volume());
         auto newSize = Buffer<T>::size(frame.volume());
         buffer = (Buffer<T>*)bi::reallocate(oldBuffer, oldSize,
@@ -475,7 +475,7 @@ class Array {
     } else {
       auto oldVolume = this->frame.volume();
       this->frame.resize(frame);
-      auto oldBuffer = buffer.load();
+      auto oldBuffer = buffer.load(std::memory_order_relaxed);
       auto oldSize = Buffer<T>::size(oldVolume);
       auto newSize = Buffer<T>::size(frame.volume());
       buffer = (Buffer<T>*)bi::reallocate(oldBuffer, oldSize, oldBuffer->tid,
@@ -570,11 +570,11 @@ private:
         rebase(std::move(o1));
       }
       assert(!isShared());
-      auto ptr = buffer.load();
+      auto ptr = buffer.load(std::memory_order_relaxed);
       unlock();
       return ptr;
     } else {
-      return buffer.load();
+      return buffer.load(std::memory_order_relaxed);
     }
   }
 
@@ -597,7 +597,7 @@ private:
   void rebase(Array<T,F> && o) {
     assert(!isView && offset == 0);
     std::swap(frame, o.frame);
-    o.buffer = buffer.exchange(o.buffer.load());  // can't std::swap atomics
+    o.buffer = buffer.exchange(o.buffer.load(std::memory_order_relaxed), std::memory_order_relaxed);  // can't std::swap atomics
     std::swap(offset, o.offset);
     std::swap(isView, o.isView);
   }
@@ -708,7 +708,7 @@ private:
    * Is the buffer shared with one or more other arrays?
    */
   bool isShared() const {
-    auto tmp = buffer.load();
+    auto tmp = buffer.load(std::memory_order_relaxed);
     auto result = tmp && tmp->numUsage() > 1u;
     return result;
   }
@@ -771,7 +771,7 @@ bi::Array<T,F>::Array(const Array<T,F>& o, const bool canShare) :
     allocate();
     copy(o);
   } else {
-    auto tmp = o.buffer.load();
+    auto tmp = o.buffer.load(std::memory_order_relaxed);
     if (tmp && !isView) {
       /* views do not increment the buffer use count, as they are meant to be
        * temporary and should not outlive the buffer itself */
