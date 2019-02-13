@@ -83,6 +83,11 @@ private:
   unsigned nentries;
 
   /**
+   * Id of the thread that allocated values.
+   */
+  unsigned tentries;
+
+  /**
    * Number of occupied entries.
    */
   std::atomic<unsigned> noccupied;
@@ -92,12 +97,6 @@ private:
    */
   Lock lock;
 };
-}
-
-inline bi::Set::~Set() {
-  if (nentries > 0) {
-    deallocate(values, nentries * sizeof(value_type));
-  }
 }
 
 inline bool bi::Set::empty() const {

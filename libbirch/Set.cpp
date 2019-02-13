@@ -8,8 +8,15 @@ static bi::Memo* const EMPTY = nullptr;
 bi::Set::Set() :
     values(nullptr),
     nentries(0u),
+    tentries(0u),
     noccupied(0u) {
   //
+}
+
+bi::Set::~Set() {
+  if (nentries > 0) {
+    deallocate(values, nentries * sizeof(value_type), tentries);
+  }
 }
 
 bool bi::Set::contains(const value_type value) {
@@ -86,8 +93,9 @@ void bi::Set::reserve() {
 
       /* deallocate previous table */
       if (nentries1 > 0) {
-        deallocate(values1, nentries1 * sizeof(value_type));
+        deallocate(values1, nentries1 * sizeof(value_type), tentries);
       }
+      tentries = bi::tid;
     }
 
     /* release resize lock */

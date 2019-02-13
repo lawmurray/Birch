@@ -7,7 +7,6 @@
 #include "libbirch/memory.hpp"
 #include "libbirch/Frame.hpp"
 #include "libbirch/Buffer.hpp"
-#include "libbirch/Allocator.hpp"
 #include "libbirch/Iterator.hpp"
 #include "libbirch/Shared.hpp"
 #include "libbirch/Sequence.hpp"
@@ -444,9 +443,11 @@ class Array {
       if (frame.size() == 0) {
         release();
       } else {
-        buffer = (Buffer<T>*)bi::reallocate(buffer,
-            Buffer<T>::size(volume()),
-            Buffer<T>::size(frame.volume()));
+        auto oldBuffer = buffer.load();
+        auto oldSize = Buffer<T>::size(volume());
+        auto newSize = Buffer<T>::size(frame.volume());
+        buffer = (Buffer<T>*)bi::reallocate(oldBuffer, oldSize,
+            oldBuffer->tid, newSize);
       }
       this->frame.resize(frame);
     }
@@ -474,9 +475,11 @@ class Array {
     } else {
       auto oldVolume = this->frame.volume();
       this->frame.resize(frame);
+      auto oldBuffer = buffer.load();
       auto oldSize = Buffer<T>::size(oldVolume);
       auto newSize = Buffer<T>::size(frame.volume());
-      buffer = (Buffer<T>*)bi::reallocate(buffer, oldSize, newSize);
+      buffer = (Buffer<T>*)bi::reallocate(oldBuffer, oldSize, oldBuffer->tid,
+          newSize);
       Iterator<T,F> iter(buf(), frame);
       // ^ don't use begin() as we have obtained the lock already
       std::uninitialized_fill(iter + oldVolume, iter + frame.size(), x);
@@ -591,7 +594,7 @@ private:
    * Rebase to match the contents of an existing array (possibly sharing a
    * buffer with it, using copy on write).
    */
-  void rebase(Array<T,F>&& o) {
+  void rebase(Array<T,F> && o) {
     assert(!isView && offset == 0);
     std::swap(frame, o.frame);
     o.buffer = buffer.exchange(o.buffer.load());  // can't std::swap atomics
@@ -613,7 +616,7 @@ private:
           iter->~T();
         }
         size_t size = Buffer<T>::size(frame.volume());
-        bi::deallocate(tmp, size);
+        bi::deallocate(tmp, size, tmp->tid);
       }
     }
   }

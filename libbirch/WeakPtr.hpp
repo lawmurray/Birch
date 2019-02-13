@@ -96,6 +96,7 @@ public:
     if (ptr) {
       ptr->decWeak();
     }
+    ptr = nullptr;
   }
 
   /**

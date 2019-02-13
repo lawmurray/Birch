@@ -29,7 +29,6 @@
 #include "libbirch/Nil.hpp"
 #include "libbirch/Shared.hpp"
 #include "libbirch/Weak.hpp"
-#include "libbirch/Allocator.hpp"
 #include "libbirch/FiberState.hpp"
 #include "libbirch/Fiber.hpp"
 #include "libbirch/Eigen.hpp"

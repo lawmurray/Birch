@@ -13,19 +13,19 @@ bool bi::Pool::empty() const {
 }
 
 void* bi::Pool::pop() {
-  //lock.keep();
+  lock.keep();
   auto result = top;
   top = getNext(result);
-  //lock.unkeep();
+  lock.unkeep();
   return result;
 }
 
 void bi::Pool::push(void* block) {
   assert(bufferStart <= block && block < bufferStart + bufferSize);
-  //lock.keep();
+  lock.keep();
   setNext(block, top);
   top = block;
-  //lock.unkeep();
+  lock.unkeep();
 }
 
 void* bi::Pool::getNext(void* block) {

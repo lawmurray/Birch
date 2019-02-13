@@ -145,6 +145,11 @@ private:
   unsigned nentries;
 
   /**
+   * Id of the thread that allocated keys and values.
+   */
+  unsigned tentries;
+
+  /**
    * Number of occupied entries in the table.
    */
   std::atomic<unsigned> noccupied;

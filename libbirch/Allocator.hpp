@@ -4,6 +4,7 @@
 #pragma once
 
 #include "libbirch/config.hpp"
+#include "libbirch/thread.hpp"
 
 namespace bi {
 /**
@@ -53,10 +54,10 @@ T* bi::Allocator<T>::allocate(const size_t n) {
 
 template<class T>
 T* bi::Allocator<T>::reallocate(T* ptr1, const size_t n1, const size_t n2) {
-  return static_cast<T*>(bi::reallocate(ptr1, n1 * sizeof(T), n2 * sizeof(T)));
+  return static_cast<T*>(bi::reallocate(ptr1, n1 * sizeof(T), bi::tid, n2 * sizeof(T)));
 }
 
 template<class T>
 void bi::Allocator<T>::deallocate(T* ptr, const size_t n) {
-  bi::deallocate(ptr, n * sizeof(T));
+  bi::deallocate(ptr, n * sizeof(T), bi::tid);
 }

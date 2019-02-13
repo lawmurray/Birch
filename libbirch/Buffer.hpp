@@ -3,6 +3,9 @@
  */
 #pragma once
 
+#include "libbirch/config.hpp"
+#include "libbirch/thread.hpp"
+
 #include <atomic>
 
 namespace bi {
@@ -66,6 +69,11 @@ public:
    */
   static int64_t size(const int64_t n);
 
+  /**
+   * Id of the thread that allocated the buffer.
+   */
+  unsigned tid;
+
 private:
   /**
    * Use count (the number of arrays sharing this buffer).
@@ -82,6 +90,7 @@ private:
 
 template<class T>
 bi::Buffer<T>::Buffer() :
+    tid(bi::tid),
     useCount(0) {
   //
 }
@@ -114,6 +123,6 @@ const T* bi::Buffer<T>::buf() const {
 
 template<class T>
 int64_t bi::Buffer<T>::size(const int64_t n) {
-  return n > 0 ? sizeof(T)*n + sizeof(Buffer<T>) : 0;
+  return n > 0 ? sizeof(T)*n + sizeof(Buffer<T>) - 1u : 0;
   // ^ -1 because `first` field is actually the first byte of the contents
 }

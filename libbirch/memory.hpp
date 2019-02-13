@@ -28,12 +28,7 @@ extern size_t bufferSize;
 /**
  * Allocation pools.
  */
-extern Pool pool[];
-
-/**
- * Allocate a large buffer for the heap.
- */
-char* heap();
+extern Pool* pool;
 
 /**
  * For an allocation size, determine the index of the pool to which it
@@ -47,19 +42,22 @@ char* heap();
  * thereafter.
  */
 inline int bin(const size_t n) {
+  int result;
 #ifdef HAVE___BUILTIN_CLZLL
-  return (n <= 64ull) ? ((unsigned)n - 1u) >> 3u : 65 - __builtin_clzll(n - 1ull);
+  result = (n <= 64ull) ? ((unsigned)n - 1u) >> 3u : 65 - __builtin_clzll(n - 1ull);
 #else
   if (n <= 64ull) {
-    return ((unsigned)n - 1u) >> 3u;
+    result = ((unsigned)n - 1u) >> 3u;
   } else {
     unsigned ret = 1u;
     while (((n - 1ull) >> ret) > 0ull) {
       ++ret;
     }
-    return (int)ret + 1;
+    result = (int)ret + 1;
   }
 #endif
+  assert(0 <= result && result <= 63);
+  return result;
 }
 
 /**
@@ -74,19 +72,22 @@ inline int bin(const size_t n) {
  * thereafter.
  */
 inline int bin(const unsigned n) {
+  int result;
 #ifdef HAVE___BUILTIN_CLZ
-  return (n <= 64u) ? (n - 1u) >> 3u : 33 - __builtin_clz(n - 1u);
+  result = (n <= 64u) ? (n - 1u) >> 3u : 33 - __builtin_clz(n - 1u);
 #else
   if (n <= 64u) {
-    return (n - 1u) >> 3u;
+    result = (n - 1u) >> 3u;
   } else {
     unsigned ret = 1u;
     while (((n - 1u) >> ret) > 0u) {
       ++ret;
     }
-    return (int)ret + 1;
+    result = (int)ret + 1;
   }
 #endif
+  assert(0 <= result && result <= 63);
+  return result;
 }
 
 /**
@@ -102,19 +103,22 @@ inline int bin(const unsigned n) {
  */
 template<unsigned n>
 inline int bin() {
+  int result;
 #ifdef HAVE___BUILTIN_CLZLL
-  return (n <= 64u) ? (n - 1u) >> 3u : 8*sizeof(unsigned) - __builtin_clz(n - 1u) + 1;
+  result = (n <= 64u) ? (n - 1u) >> 3u : 8*sizeof(unsigned) - __builtin_clz(n - 1u) + 1;
 #else
   if (n <= 64u) {
-    return (n - 1u) >> 3u;
+    result = (n - 1u) >> 3u;
   } else {
     unsigned ret = 1u;
     while (((n - 1u) >> ret) > 0u) {
       ++ret;
     }
-    return (int)ret + 1;
+    result = (int)ret + 1;
   }
 #endif
+  assert(0 <= result && result <= 63);
+  return result;
 }
 
 /**
@@ -151,7 +155,7 @@ void* allocate() {
   return std::malloc(n);
 #else
   int i = bin<n>();     // determine which pool
-  auto ptr = pool[64*tid + i].pop();  // attempt to reuse from this pool
+  auto ptr = pool[64 * tid + i].pop();  // attempt to reuse from this pool
   if (!ptr) {           // otherwise allocate new
     unsigned m = unbin(i);
     unsigned r = (m < 64u) ? 64u : m;
@@ -160,7 +164,7 @@ void* allocate() {
     if (m < 64u) {
       /* add extra bytes as a separate allocation to the pool for
        * reuse another time */
-      pool[64*tid + bin(64u - m)].push((char*)ptr + m);
+      pool[64 * tid + bin(64u - m)].push((char*)ptr + m);
     }
   }
   assert(ptr);
@@ -174,8 +178,9 @@ void* allocate() {
  *
  * @param ptr Pointer to the allocated memory.
  * @param n Number of bytes.
+ * @param tid Id of thread that originally allocated.
  */
-void deallocate(void* ptr, const size_t n);
+void deallocate(void* ptr, const size_t n, const unsigned tid);
 
 /**
  * Deallocate memory from the heap, previously allocated with
@@ -183,20 +188,23 @@ void deallocate(void* ptr, const size_t n);
  *
  * @param ptr Pointer to the allocated memory.
  * @param n Number of bytes.
+ * @param tid Id of thread that originally allocated.
  *
  * This implementation, where the size is given by a 32-bit integer,
  * is typically slightly faster than the 64-bit integer version.
  */
-void deallocate(void* ptr, const unsigned n);
+void deallocate(void* ptr, const unsigned n, const unsigned tid);
 
 /**
  * Reallocate memory from heap.
  *
  * @param ptr1 Pointer to the allocated memory.
  * @param n1 Number of bytes in current allocated memory.
- * @param n2 Number of bytes in newly allocated memory.
+ * @param tid1 Id of thread that originally allocated.
+ * @param n2 Number of bytes for newly allocated memory.
  *
  * @return Pointer to the newly allocated memory.
  */
-void* reallocate(void* ptr1, const size_t n1, const size_t n2);
+void* reallocate(void* ptr1, const size_t n1, const unsigned tid1,
+    const size_t n2);
 }

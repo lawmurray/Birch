@@ -10,6 +10,7 @@ bi::Map::Map() :
     keys(nullptr),
     values(nullptr),
     nentries(0u),
+    tentries(0u),
     noccupied(0u) {
   //
 }
@@ -27,8 +28,8 @@ bi::Map::~Map() {
         value->decShared();
       }
     }
-    deallocate(keys, nentries * sizeof(key_type));
-    deallocate(values, nentries * sizeof(value_type));
+    deallocate(keys, nentries * sizeof(key_type), tentries);
+    deallocate(values, nentries * sizeof(value_type), tentries);
   }
 }
 
@@ -205,9 +206,10 @@ void bi::Map::reserve() {
 
       /* deallocate previous table */
       if (nentries1 > 0) {
-        deallocate(keys1, nentries1 * sizeof(key_type));
-        deallocate(values1, nentries1 * sizeof(value_type));
+        deallocate(keys1, nentries1 * sizeof(key_type), tentries);
+        deallocate(values1, nentries1 * sizeof(value_type), tentries);
       }
+      tentries = bi::tid;
     }
 
     /* release resize lock */

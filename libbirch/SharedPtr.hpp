@@ -93,6 +93,7 @@ public:
     if (ptr) {
       ptr->decShared();
     }
+    ptr = nullptr;
   }
 
   /**

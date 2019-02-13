@@ -4,25 +4,42 @@
 #include "libbirch/memory.hpp"
 
 #include "libbirch/clone.hpp"
+#include "libbirch/thread.hpp"
 
 #include <unistd.h>
 
+/**
+ * Allocate a large buffer for the heap.
+ */
+static char* heap();
+
+/**
+ * Create (once only) and return the root memo.
+ */
+static bi::Memo* root();
+
+/* declared in thread.hpp, here to ensure order of initialization for global
+ * variables */
+#ifdef _OPENMP
+unsigned bi::nthreads = omp_get_max_threads();
+unsigned bi::tid = omp_get_thread_num();
+#else
+unsigned bi::nthreads = 1u;
+unsigned bi::tid = 0u;
+#endif
+
+/* declared in memory.hpp */
 std::atomic<char*> bi::buffer(heap());
 char* bi::bufferStart;
 size_t bi::bufferSize;
-bi::Pool bi::pool[64*48];
+bi::Pool* bi::pool = new bi::Pool[64*nthreads];
 
-/* from clone.hpp, put here rather than clone.cpp to ensure correct
- * initialization order of global variables */
-#if USE_LAZY_DEEP_CLONE
-static bi::SharedPtr<bi::Memo> rootMemo = bi::Memo::create();
-bi::Memo* bi::currentContext = rootMemo.get();
-#else
-bi::Memo* bi::currentContext = nullptr;
-#endif
+/* declared in clone.hpp, here to ensure order of initialization for global
+ * variables */
+bi::Memo* bi::currentContext = root();
 bool bi::cloneUnderway = false;
 
-char* bi::heap() {
+char* heap() {
 #if !USE_MEMORY_POOL
   return nullptr;
 #else
@@ -41,11 +58,20 @@ char* bi::heap() {
   } while (res > 0 && n > 0u);
   assert(ptr);
 
-  bufferStart = (char*)ptr;
-  bufferSize = n;
+  bi::bufferStart = (char*)ptr;
+  bi::bufferSize = n;
 
   return (char*)ptr;
 #endif
+}
+
+bi::Memo* root() {
+  #if USE_LAZY_DEEP_CLONE
+  static auto memo = bi::Memo::create();
+  return memo;
+  #else
+  return nullptr;
+  #endif
 }
 
 void* bi::allocate(const size_t n) {
@@ -72,8 +98,10 @@ void* bi::allocate(const size_t n) {
 #endif
 }
 
-void bi::deallocate(void* ptr, const size_t n) {
-  assert(ptr && n > 0u);
+void bi::deallocate(void* ptr, const size_t n, const unsigned tid) {
+  assert(ptr);
+  assert(n > 0u);
+  assert(tid < nthreads);
 #if !USE_MEMORY_POOL
   std::free(ptr);
 #else
@@ -82,8 +110,10 @@ void bi::deallocate(void* ptr, const size_t n) {
 #endif
 }
 
-void bi::deallocate(void* ptr, const unsigned n) {
-  assert(ptr && n > 0u);
+void bi::deallocate(void* ptr, const unsigned n, const unsigned tid) {
+  assert(ptr);
+  assert(n > 0u);
+  assert(tid < nthreads);
 #if !USE_MEMORY_POOL
   std::free(ptr);
 #else
@@ -92,8 +122,10 @@ void bi::deallocate(void* ptr, const unsigned n) {
 #endif
 }
 
-void* bi::reallocate(void* ptr1, const size_t n1, const size_t n2) {
-  assert(ptr1 && n1 > 0u);
+void* bi::reallocate(void* ptr1, const size_t n1, const unsigned tid1, const size_t n2) {
+  assert(ptr1);
+  assert(n1 > 0u);
+  assert(tid < nthreads);
   assert(n2 > 0u);
 #if !USE_MEMORY_POOL
   return std::realloc(ptr1, n2);
@@ -107,7 +139,7 @@ void* bi::reallocate(void* ptr1, const size_t n1, const size_t n2) {
     if (ptr1 && ptr2) {
       std::memcpy(ptr2, ptr1, std::min(n1, n2));
     }
-    deallocate(ptr1, n1);
+    deallocate(ptr1, n1, tid1);
   }
   return ptr2;
 #endif

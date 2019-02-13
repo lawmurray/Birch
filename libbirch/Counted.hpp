@@ -192,6 +192,13 @@ protected:
   unsigned size;
 
   /**
+   * Id of the thread associated with the object. This is used to return the
+   * allocation to the correct pool after use, even when returned by a
+   * different thread.
+   */
+  unsigned tid;
+
+  /**
    * Is the object read-only?
    */
   std::atomic<bool> frozen;
@@ -205,7 +212,7 @@ inline bi::Counted::~Counted() {
 inline void bi::Counted::deallocate() {
   assert(sharedCount == 0u);
   assert(weakCount == 0u);
-  bi::deallocate(this, size);
+  bi::deallocate(this, size, tid);
 }
 
 inline unsigned bi::Counted::getSize() const {

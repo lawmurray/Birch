@@ -11,14 +11,14 @@ bi::LazyAny::LazyAny() :
     Counted(),
     context(currentContext),
     forward(nullptr) {
-  //
+  assert(context);
 }
 
 bi::LazyAny::LazyAny(const LazyAny& o) :
     Counted(o),
     context(currentContext),
     forward(nullptr) {
-  //
+  assert(context);
 }
 
 bi::LazyAny::~LazyAny() {

@@ -3,11 +3,14 @@
  */
 #include "libbirch/Counted.hpp"
 
+#include "libbirch/thread.hpp"
+
 bi::Counted::Counted() :
     sharedCount(0u),
     weakCount(1u),
     memoCount(0u),
     size(0u),
+    tid(bi::tid),
     frozen(false) {
   //
 }
@@ -17,6 +20,7 @@ bi::Counted::Counted(const Counted& o) :
     weakCount(1u),
     memoCount(0u),
     size(o.size),
+    tid(bi::tid),
     frozen(false) {
   //
 }

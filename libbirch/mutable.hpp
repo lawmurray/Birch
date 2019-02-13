@@ -3,6 +3,8 @@
  */
 #pragma once
 
+#include "libbirch/config.hpp"
+
 #include <cstdint>
 
 namespace bi {
