@@ -151,7 +151,7 @@ void* allocate(const size_t n);
 template<unsigned n>
 void* allocate() {
   static_assert(n > 0, "cannot make zero length allocation");
-#if !USE_MEMORY_POOL
+#if !ENABLE_MEMORY_POOL
   return std::malloc(n);
 #else
   int i = bin<n>();     // determine which pool

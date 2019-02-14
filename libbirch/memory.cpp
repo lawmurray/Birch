@@ -40,7 +40,7 @@ bi::Memo* bi::currentContext = root();
 bool bi::cloneUnderway = false;
 
 char* heap() {
-#if !USE_MEMORY_POOL
+#if !ENABLE_MEMORY_POOL
   return nullptr;
 #else
   /* determine a preferred size of the heap based on total physical memory */
@@ -66,7 +66,7 @@ char* heap() {
 }
 
 bi::Memo* root() {
-  #if USE_LAZY_DEEP_CLONE
+  #if ENABLE_LAZY_DEEP_CLONE
   static auto memo = bi::Memo::create();
   return memo;
   #else
@@ -76,7 +76,7 @@ bi::Memo* root() {
 
 void* bi::allocate(const size_t n) {
   assert(n > 0u);
-#if !USE_MEMORY_POOL
+#if !ENABLE_MEMORY_POOL
   return std::malloc(n);
 #else
   int i = bin(n);       // determine which pool
@@ -102,7 +102,7 @@ void bi::deallocate(void* ptr, const size_t n, const unsigned tid) {
   assert(ptr);
   assert(n > 0u);
   assert(tid < nthreads);
-#if !USE_MEMORY_POOL
+#if !ENABLE_MEMORY_POOL
   std::free(ptr);
 #else
   int i = bin(n);
@@ -114,7 +114,7 @@ void bi::deallocate(void* ptr, const unsigned n, const unsigned tid) {
   assert(ptr);
   assert(n > 0u);
   assert(tid < nthreads);
-#if !USE_MEMORY_POOL
+#if !ENABLE_MEMORY_POOL
   std::free(ptr);
 #else
   int i = bin(n);
@@ -127,7 +127,7 @@ void* bi::reallocate(void* ptr1, const size_t n1, const unsigned tid1, const siz
   assert(n1 > 0u);
   assert(tid < nthreads);
   assert(n2 > 0u);
-#if !USE_MEMORY_POOL
+#if !ENABLE_MEMORY_POOL
   return std::realloc(ptr1, n2);
 #else
   int i1 = bin(n1);

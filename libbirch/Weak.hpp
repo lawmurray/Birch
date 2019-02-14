@@ -12,7 +12,7 @@ namespace bi {
 /**
  * Weak pointer type
  */
-#if USE_LAZY_DEEP_CLONE
+#if ENABLE_LAZY_DEEP_CLONE
 template<class T>
 using Weak = LazyPtr<WeakPtr<T>>;
 #else

@@ -11,7 +11,7 @@ namespace bi {
 class LazyAny;
 class EagerAny;
 
-#if USE_LAZY_DEEP_CLONE
+#if ENABLE_LAZY_DEEP_CLONE
 using Any = LazyAny;
 #else
 using Any = EagerAny;

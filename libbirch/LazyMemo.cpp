@@ -1,7 +1,7 @@
 /**
  * @file
  */
-#if USE_LAZY_DEEP_CLONE
+#if ENABLE_LAZY_DEEP_CLONE
 #include "libbirch/LazyMemo.hpp"
 
 #include "libbirch/SwapClone.hpp"
@@ -25,13 +25,17 @@ bool bi::LazyMemo::hasAncestor(LazyMemo* memo) {
     return false;
   } else if (parent == memo) {
     return true;
-  } else if (gen % 2u == 0u && a.contains(memo)) {
+  #if ENABLE_ANCESTRY_MEMO
+  } else if (gen % (unsigned)ANCESTRY_MEMO_DELTA == 0u && a.contains(memo)) {
     return true;
+  #endif
   } else {
     bool result = parent->hasAncestor(memo);
-    if (result && gen % 2u == 0u) {
+    #if ENABLE_ANCESTRY_MEMO
+    if (result && gen % (unsigned)ANCESTRY_MEMO_DELTA == 0u) {
       a.insert(memo);
     }
+    #endif
     return result;
   }
 }
@@ -69,17 +73,21 @@ bi::LazyAny* bi::LazyMemo::source(LazyAny* o, LazyMemo* from) {
     return o;
   } else {
     LazyAny* result = nullptr;
-    if (gen % 2u == 0u) {
+    #if ENABLE_CLONE_MEMO
+    if (gen % (unsigned)CLONE_MEMO_DELTA == 0u) {
       result = m.get(o);
     }
+    #endif
     if (!result) {
       result = getParent()->source(o, from);
       if (result != o) {
         result = m.get(result, result);
       }
-      if (gen % 2u == 0u) {
+      #if ENABLE_CLONE_MEMO
+      if (gen % (unsigned)CLONE_MEMO_DELTA == 0u) {
         result = m.put(o, result);
       }
+      #endif
     }
     return result;
   }

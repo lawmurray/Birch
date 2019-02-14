@@ -99,7 +99,7 @@ struct has_conversion<void,U> {
  *
  * When lazy deep clone is in use, swaps into the context of this object.
  */
-#if USE_LAZY_DEEP_CLONE
+#if ENABLE_LAZY_DEEP_CLONE
 #define STANDARD_SWAP_CONTEXT SwapContext swap(context.get());
 #else
 #define STANDARD_SWAP_CONTEXT

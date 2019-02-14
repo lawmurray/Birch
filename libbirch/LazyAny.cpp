@@ -1,7 +1,7 @@
 /**
  * @file
  */
-#if USE_LAZY_DEEP_CLONE
+#if ENABLE_LAZY_DEEP_CLONE
 #include "libbirch/LazyAny.hpp"
 
 #include "libbirch/SwapClone.hpp"

@@ -12,7 +12,7 @@ namespace bi {
 /**
  * Shared pointer type.
  */
-#if USE_LAZY_DEEP_CLONE
+#if ENABLE_LAZY_DEEP_CLONE
 template<class T>
 using Shared = LazyPtr<SharedPtr<T>>;
 #else

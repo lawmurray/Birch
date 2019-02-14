@@ -1,7 +1,7 @@
 /**
  * @file
  */
-#if USE_LAZY_DEEP_CLONE
+#if ENABLE_LAZY_DEEP_CLONE
 #pragma once
 
 #include "libbirch/config.hpp"

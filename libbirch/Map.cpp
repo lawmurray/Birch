@@ -176,7 +176,7 @@ void bi::Map::reserve() {
       value_type* values1 = (value_type*)values;
 
       /* initialize new table */
-      unsigned nentries2 = std::max(2u * nentries1, INITIAL_MAP_SIZE);
+      unsigned nentries2 = std::max(2u * nentries1, (unsigned)CLONE_MEMO_INITIAL_SIZE);
       key_type* keys2 = (key_type*)allocate(nentries2 * sizeof(key_type));
       value_type* values2 = (value_type*)allocate(
           nentries2 * sizeof(value_type));
