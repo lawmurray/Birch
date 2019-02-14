@@ -35,7 +35,8 @@ bi::Driver::Driver(int argc, char** argv) :
     newConfigure(false),
     newMake(false) {
   enum {
-    SHARE_DIR_ARG = 256,
+    BUILD_DIR_ARG = 256,
+    SHARE_DIR_ARG,
     INCLUDE_DIR_ARG,
     LIB_DIR_ARG,
     ARCH_ARG,
@@ -59,6 +60,7 @@ bi::Driver::Driver(int argc, char** argv) :
 
   int c, option_index;
   option long_options[] = {
+      { "build-dir", required_argument, 0, BUILD_DIR_ARG },
       { "share-dir", required_argument, 0, SHARE_DIR_ARG },
       { "include-dir", required_argument, 0, INCLUDE_DIR_ARG },
       { "lib-dir", required_argument, 0, LIB_DIR_ARG },
@@ -94,6 +96,10 @@ bi::Driver::Driver(int argc, char** argv) :
       long_options, &option_index);
   while (c != -1) {
     switch (c) {
+    case BUILD_DIR_ARG:
+      build_dir = optarg;
+      lib_dir = build_dir / ".libs";
+      break;
     case SHARE_DIR_ARG:
       share_dirs.push_back(optarg);
       break;
@@ -402,7 +408,7 @@ void bi::Driver::check() {
     auto path = remove_first(iter->path());
     auto name = path.filename().string();
     auto ext = path.extension().string();
-    if (path.string() == "build" || path.string() == "output" ||
+    if (path == build_dir || path.string() == "output" ||
         path.string() == "site") {
       iter.no_push();
     } else if (interesting.find(ext) != interesting.end()
