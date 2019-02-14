@@ -3,8 +3,6 @@
  */
 #pragma once
 
-#include "libbirch/config.hpp"
-
 #include <atomic>
 
 namespace bi {

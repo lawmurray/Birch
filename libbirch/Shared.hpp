@@ -3,7 +3,6 @@
  */
 #pragma once
 
-#include "libbirch/config.hpp"
 #include "libbirch/SharedPtr.hpp"
 #include "libbirch/LazyPtr.hpp"
 #include "libbirch/EagerPtr.hpp"

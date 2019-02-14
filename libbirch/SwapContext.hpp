@@ -3,7 +3,6 @@
  */
 #pragma once
 
-#include "libbirch/config.hpp"
 #include "libbirch/clone.hpp"
 
 namespace bi {

@@ -3,8 +3,6 @@
  */
 #pragma once
 
-#include "libbirch/config.hpp"
-
 namespace bi {
 class LazyMemo;
 class EagerMemo;

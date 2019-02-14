@@ -3,8 +3,6 @@
  */
 #pragma once
 
-#include "libbirch/config.hpp"
-
 #ifdef _OPENMP
 #include <omp.h>
 #endif

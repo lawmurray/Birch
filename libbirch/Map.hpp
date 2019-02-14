@@ -3,7 +3,6 @@
  */
 #pragma once
 
-#include "libbirch/config.hpp"
 #include "libbirch/Any.hpp"
 #include "libbirch/Lock.hpp"
 

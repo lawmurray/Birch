@@ -4,7 +4,6 @@
 #pragma once
 #if ENABLE_LAZY_DEEP_CLONE
 
-#include "libbirch/config.hpp"
 #include "libbirch/clone.hpp"
 #include "libbirch/LazyAny.hpp"
 #include "libbirch/LazyMemo.hpp"

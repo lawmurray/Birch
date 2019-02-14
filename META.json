@@ -235,7 +235,6 @@
       "libbirch/Buffer.hpp",
       "libbirch/class.hpp",
       "libbirch/clone.hpp",
-      "libbirch/config.hpp",
       "libbirch/ContextPtr.hpp",
       "libbirch/Counted.hpp",
       "libbirch/EagerAny.hpp",

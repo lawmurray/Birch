@@ -5,7 +5,6 @@
  */
 #pragma once
 
-#include "libbirch/config.hpp"
 #include "libbirch/Eigen.hpp"
 #include "libbirch/Array.hpp"
 

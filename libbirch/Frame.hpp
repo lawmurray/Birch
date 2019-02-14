@@ -3,7 +3,6 @@
  */
 #pragma once
 
-#include "libbirch/config.hpp"
 #include "libbirch/Span.hpp"
 #include "libbirch/Index.hpp"
 #include "libbirch/Range.hpp"

@@ -4,7 +4,6 @@
 #if ENABLE_LAZY_DEEP_CLONE
 #pragma once
 
-#include "libbirch/config.hpp"
 #include "libbirch/Counted.hpp"
 #include "libbirch/InitPtr.hpp"
 

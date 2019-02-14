@@ -6,7 +6,6 @@
  */
 #pragma once
 
-#include "libbirch/config.hpp"
 #include "libbirch/assert.hpp"
 #include "libbirch/memory.hpp"
 #include "libbirch/stacktrace.hpp"

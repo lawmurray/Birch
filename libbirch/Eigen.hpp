@@ -5,8 +5,6 @@
  */
 #pragma once
 
-#include "libbirch/config.hpp"
-
 #include <eigen3/Eigen/Dense>
 
 namespace bi {
