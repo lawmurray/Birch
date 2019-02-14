@@ -117,3 +117,7 @@ std::string bi::tarname(const std::string& name) {
   boost::replace_all(result, "-", "_");
   return result;
 }
+
+bool bi::isPower2(const int x) {
+  return x > 0 && !(x & (x - 1));
+}

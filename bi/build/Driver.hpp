@@ -200,6 +200,43 @@ private:
    * Is verbose reporting enabled?
    */
   bool verbose;
+
+  /**
+   * Is lazy deep clone enabled?
+   */
+  bool lazyDeepClone;
+
+  /**
+   * Is clone memoization enabled?
+   */
+  bool cloneMemo;
+
+  /**
+   * Is ancestry memoization enabled?
+   */
+  bool ancestryMemo;
+
+  /**
+   * Initial allocation size (number of entries) in maps used for clone
+   * memoization.
+   */
+  int cloneMemoInitialSize;
+
+  /**
+   * Number of clone generations between deep clone memoizations.
+   */
+  int cloneMemoDelta;
+
+  /**
+   * Initial allocation size (number of entries) in sets used for ancestry
+   * memoization.
+   */
+  int ancestryMemoInitialSize;
+
+  /**
+   * Number of clone generations between ancestry memoizations.
+   */
+  int ancestryMemoDelta;
   //@}
 
   /**

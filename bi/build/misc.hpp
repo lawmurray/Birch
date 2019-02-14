@@ -78,4 +78,9 @@ bool write_all_if_different(const fs::path& path,
  */
 std::string tarname(const std::string& name);
 
+/**
+ * Is an integer a positive power of two?
+ */
+bool isPower2(const int x);
+
 }

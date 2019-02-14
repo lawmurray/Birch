@@ -31,6 +31,13 @@ bi::Driver::Driver(int argc, char** argv) :
     warnings(true),
     debug(true),
     verbose(true),
+    lazyDeepClone(true),
+    cloneMemo(true),
+    cloneMemoInitialSize(64),
+    cloneMemoDelta(2),
+    ancestryMemo(true),
+    ancestryMemoInitialSize(8),
+    ancestryMemoDelta(2),
     newAutogen(false),
     newConfigure(false),
     newMake(false) {
@@ -55,7 +62,17 @@ bi::Driver::Driver(int argc, char** argv) :
     ENABLE_DEBUG_ARG,
     DISABLE_DEBUG_ARG,
     ENABLE_VERBOSE_ARG,
-    DISABLE_VERBOSE_ARG
+    DISABLE_VERBOSE_ARG,
+    ENABLE_LAZY_DEEP_CLONE_ARG,
+    DISABLE_LAZY_DEEP_CLONE_ARG,
+    ENABLE_CLONE_MEMO_ARG,
+    DISABLE_CLONE_MEMO_ARG,
+    ENABLE_ANCESTRY_MEMO_ARG,
+    DISABLE_ANCESTRY_MEMO_ARG,
+    CLONE_MEMO_INITIAL_SIZE_ARG,
+    CLONE_MEMO_DELTA_ARG,
+    ANCESTRY_MEMO_INITIAL_SIZE_ARG,
+    ANCESTRY_MEMO_DELTA_ARG
   };
 
   int c, option_index;
@@ -81,6 +98,16 @@ bi::Driver::Driver(int argc, char** argv) :
       { "disable-debug", no_argument, 0, DISABLE_DEBUG_ARG },
       { "enable-verbose", no_argument, 0, ENABLE_VERBOSE_ARG },
       { "disable-verbose", no_argument, 0, DISABLE_VERBOSE_ARG },
+      { "enable-lazy-deep-clone", no_argument, 0, ENABLE_LAZY_DEEP_CLONE_ARG },
+      { "disable-lazy-deep-clone", no_argument, 0, DISABLE_LAZY_DEEP_CLONE_ARG },
+      { "enable-clone-memo", no_argument, 0, ENABLE_CLONE_MEMO_ARG },
+      { "disable-clone-memo", no_argument, 0, DISABLE_CLONE_MEMO_ARG },
+      { "enable-ancestry-memo", no_argument, 0, ENABLE_ANCESTRY_MEMO_ARG },
+      { "disable-ancestry-memo", no_argument, 0, DISABLE_ANCESTRY_MEMO_ARG },
+      { "clone-memo-initial-size", required_argument, 0, CLONE_MEMO_INITIAL_SIZE_ARG },
+      { "clone-memo-delta", required_argument, 0, CLONE_MEMO_DELTA_ARG },
+      { "ancestry-memo-initial-size", required_argument, 0, ANCESTRY_MEMO_INITIAL_SIZE_ARG },
+      { "ancestry-memo-delta", required_argument, 0, ANCESTRY_MEMO_DELTA_ARG },
       { 0, 0, 0, 0 }
   };
   const char* short_options = "-";  // treats non-options as short option 1
@@ -160,6 +187,36 @@ bi::Driver::Driver(int argc, char** argv) :
     case DISABLE_VERBOSE_ARG:
       verbose = false;
       break;
+    case ENABLE_LAZY_DEEP_CLONE_ARG:
+      lazyDeepClone = true;
+      break;
+    case DISABLE_LAZY_DEEP_CLONE_ARG:
+      lazyDeepClone = false;
+      break;
+    case ENABLE_CLONE_MEMO_ARG:
+      cloneMemo = true;
+      break;
+    case DISABLE_CLONE_MEMO_ARG:
+      cloneMemo = false;
+      break;
+    case ENABLE_ANCESTRY_MEMO_ARG:
+      ancestryMemo = true;
+      break;
+    case DISABLE_ANCESTRY_MEMO_ARG:
+      ancestryMemo = false;
+      break;
+    case CLONE_MEMO_INITIAL_SIZE_ARG:
+      cloneMemoInitialSize = atoi(optarg);
+      break;
+    case CLONE_MEMO_DELTA_ARG:
+      cloneMemoDelta = atoi(optarg);
+      break;
+    case ANCESTRY_MEMO_INITIAL_SIZE_ARG:
+      ancestryMemoInitialSize = atoi(optarg);
+      break;
+    case ANCESTRY_MEMO_DELTA_ARG:
+      ancestryMemoDelta = atoi(optarg);
+      break;
     case '?':  // unknown option
     case 1:  // not an option
       unknown.push_back(largv[optind - 1]);
@@ -171,6 +228,20 @@ bi::Driver::Driver(int argc, char** argv) :
         long_options, &option_index);
   }
   largv.insert(largv.end(), unknown.begin(), unknown.end());
+
+  /* some error checking */
+  if (!isPower2(cloneMemoInitialSize)) {
+    throw DriverException("--clone-memo-initial-size must be a positive power of 2.");
+  }
+  if (cloneMemoDelta <= 0) {
+    throw DriverException("--clone-memo-delta must be a positive integer.");
+  }
+  if (!isPower2(ancestryMemoInitialSize)) {
+    throw DriverException("--ancestry-memo-initial-size must be a positive power of 2.");
+  }
+  if (ancestryMemoDelta <= 0) {
+    throw DriverException("--ancestry-memo-delta must be a positive integer.");
+  }
 
   /* environment variables */
   char* BIRCH_PREFIX = getenv("BIRCH_PREFIX");
@@ -827,6 +898,28 @@ void bi::Driver::configure() {
       cxxflags << " -O3 -funroll-loops -flto -g";
     }
 
+    /* defines */
+    if (lazyDeepClone) {
+      cppflags << " -DENABLE_LAZY_DEEP_CLONE=1";
+    } else {
+      cppflags << " -DENABLE_LAZY_DEEP_CLONE=0";
+    }
+    if (cloneMemo) {
+      cppflags << " -DENABLE_CLONE_MEMO=1";
+    } else {
+      cppflags << " -DENABLE_CLONE_MEMO=0";
+    }
+    if (ancestryMemo) {
+      cppflags << " -DENABLE_ANCESTRY_MEMO=1";
+    } else {
+      cppflags << " -DENABLE_ANCESTRY_MEMO=0";
+    }
+    cppflags << " -DCLONE_MEMO_INITIAL_SIZE=" << cloneMemoInitialSize;
+    cppflags << " -DCLONE_MEMO_DELTA=" << cloneMemoDelta;
+    cppflags << " -DANCESTRY_MEMO_INITIAL_SIZE=" << ancestryMemoInitialSize;
+    cppflags << " -DANCESTRY_MEMO_DELTA=" << ancestryMemoDelta;
+
+    /* include path */
     for (auto iter = include_dirs.begin(); iter != include_dirs.end();
         ++iter) {
       cppflags << " -I" << iter->string();
@@ -835,6 +928,8 @@ void bi::Driver::configure() {
         ++iter) {
       ldflags << " -L" << iter->string();
     }
+
+    /* library path */
     for (auto iter = lib_dirs.begin(); iter != lib_dirs.end();
         ++iter) {
       ldflags << " -Wl,-rpath," << iter->string();
