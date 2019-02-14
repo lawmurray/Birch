@@ -29,7 +29,7 @@
 /**
  * @def ENABLE_CLONE_MEMO
  *
- * Enable memoization of object clones.
+ * Enable .
  */
 #ifndef ENABLE_CLONE_MEMO
 #define ENABLE_CLONE_MEMO 1
@@ -57,7 +57,7 @@
 /**
  * @def ENABLE_ANCESTRY_MEMO
  *
- * Enable memoization of clone generation ancestry queries.
+ * Enable ancestry memoization.
  */
 #ifndef ENABLE_ANCESTRY_MEMO
 #define ENABLE_ANCESTRY_MEMO 1
@@ -66,8 +66,8 @@
 /**
  * @def ANCESTRY_MEMO_INITIAL_SIZE
  *
- * Initial allocation size (number of entries) in sets used for ancestry
- * memoization.
+ * If ancestry memoization is enabled, the number of entries in the initial
+ * allocation of sets used for this purpose.
  */
 #ifndef ANCESTRY_MEMO_INITIAL_SIZE
 #define ANCESTRY_MEMO_INITIAL_SIZE 8
@@ -76,7 +76,8 @@
 /**
  * @def ANCESTRY_MEMO_DELTA
  *
- * Number of generations between ancestry memoizations.
+ * If ancestry memoization is enabled, number of clone generations between
+ * such memoizations.
  */
 #ifndef ANCESTRY_MEMO_DELTA
 #define ANCESTRY_MEMO_DELTA 2
