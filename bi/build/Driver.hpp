@@ -108,6 +108,12 @@ private:
   void target(const std::string& cmd = "");
 
   /**
+   * Produce a suffix to use on the build directory name, where this is
+   * unique to the particular configuration.
+   */
+  std::string suffix() const;
+
+  /**
    * Consume a list of files from the meta file.
    *
    * @param meta Property tree of the meta file.
@@ -252,7 +258,7 @@ private:
   /**
    * Lists of files from meta.
    */
-  std::map<std::string,std::set<fs::path>> metaFiles;
+  std::map<std::string,std::list<fs::path>> metaFiles;
   std::set<fs::path> allFiles;
 
   /**

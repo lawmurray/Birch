@@ -5,8 +5,8 @@
 
 #include "bi/build/Compiler.hpp"
 #include "bi/build/misc.hpp"
-#include "bi/primitive/encode.hpp"
 #include "bi/io/md_ostream.hpp"
+#include "bi/primitive/encode.hpp"
 #include "bi/exception/DriverException.hpp"
 
 #include "boost/algorithm/string.hpp"
@@ -31,9 +31,9 @@ bi::Driver::Driver(int argc, char** argv) :
     verbose(true),
     lazyDeepClone(true),
     cloneMemo(true),
+    ancestryMemo(true),
     cloneMemoInitialSize(64),
     cloneMemoDelta(2),
-    ancestryMemo(true),
     ancestryMemoInitialSize(8),
     ancestryMemoDelta(2),
     newAutogen(false),
@@ -112,9 +112,7 @@ bi::Driver::Driver(int argc, char** argv) :
 
   /* mutable copy of argv and argc */
   largv.insert(largv.begin(), argv, argv + argc);
-  std::vector<char*> fargv;
 
-  /* read options */
   std::vector<char*> unknown;
   opterr = 0;  // handle error reporting ourselves
   c = getopt_long_only(largv.size(), largv.data(), short_options,
@@ -268,7 +266,7 @@ bi::Driver::Driver(int argc, char** argv) :
 
   /* include dirs */
   include_dirs.push_back(work_dir);
-  include_dirs.push_back(work_dir / "build");
+  include_dirs.push_back(work_dir / "build" / suffix());
   if (BIRCH_INCLUDE_PATH) {
     std::stringstream birch_include_path(BIRCH_INCLUDE_PATH);
     while (std::getline(birch_include_path, input, ':')) {
@@ -317,8 +315,8 @@ void bi::Driver::run(const std::string& prog) {
 #endif
 
   /* look in built libs first */
-  if (exists(work_dir / "build" / ".libs" / so)) {
-    so = work_dir / "build" / ".libs" / so;
+  if (exists(work_dir / "build" / suffix() / ".libs" / so)) {
+    so = work_dir / "build" / suffix() / ".libs" / so;
   }
   handle = dlopen(so.c_str(), RTLD_NOW);
   msg = dlerror();
@@ -409,19 +407,21 @@ void bi::Driver::clean() {
 }
 
 void bi::Driver::tune() {
-  /* set up a separate driver for each dependent package */
-  std::list<Driver> drivers;
-  for (auto name : metaFiles["require.package"]) {
-    drivers.push_back(Driver(*this));
-    drivers.back().work_dir = fs::absolute(work_dir / ".." / name);
-    drivers.back().meta();
-  }
+  meta();
+  setup();
+
+  verbose = true;  // makes things tidier
+  unity = true;    // makes things faster
 
   /* step 1: eager clone */
-  for (auto driver : drivers) {
+  lazyDeepClone = false;
+  for (auto name : metaFiles["require.package"]) {
+    Driver driver(*this);
+    driver.work_dir = work_dir / ".." / name;
     driver.install();
   }
   install();
+  run("run");
 
   /* report results */
   std::cout << "suggested:";
@@ -542,7 +542,7 @@ void bi::Driver::docs() {
   Package* package = createPackage();
 
   /* parse all files */
-  Compiler compiler(package, work_dir / "build", unity);
+  Compiler compiler(package, fs::path("build") / suffix(), unity);
   compiler.parse();
   compiler.resolve();
 
@@ -686,7 +686,7 @@ void bi::Driver::meta() {
   if (packageName != "Birch.Standard") {
     /* implicitly include the standard library, if this package is not,
      * itself, the standard library */
-    metaFiles["require.package"].insert("Birch.Standard");
+    metaFiles["require.package"].push_back("Birch.Standard");
   }
   readFiles(meta, "require.package", false);
   readFiles(meta, "require.header", false);
@@ -698,8 +698,8 @@ void bi::Driver::meta() {
     auto internalName = tarname(name.string());
     auto header = fs::path("bi") / internalName;
     header.replace_extension(".hpp");
-    metaFiles["require.header"].insert(header.string());
-    metaFiles["require.library"].insert(internalName);
+    metaFiles["require.header"].push_back(header.string());
+    metaFiles["require.library"].push_back(internalName);
   }
 
   /* manifest */
@@ -713,24 +713,25 @@ void bi::Driver::meta() {
 
 void bi::Driver::setup() {
   auto previous_dir = fs::current_path();
+  auto build_dir = fs::path("build") / suffix();
   fs::current_path(work_dir);
 
   /* internal name of package */
   auto internalName = tarname(packageName);
 
   /* create build directory */
-  if (!fs::exists("build")) {
-    if (!fs::create_directory("build")) {
+  if (!fs::exists(build_dir)) {
+    if (!fs::create_directories(build_dir)) {
       std::stringstream buf;
-      buf << "could not create build directory " << "build" << '.';
+      buf << "could not create build directory " << build_dir << '.';
       throw DriverException(buf.str());
     }
 
     /* workaround for error given by some versions of autotools, "Something
      * went wrong bootstrapping makefile fragments for automatic dependency
      * tracking..." */
-    fs::create_directories(fs::path("build") / "bi" / ".deps");
-    fs::ofstream(fs::path("build") / "bi" / ".deps" / (internalName + ".gch.Plo"));
+    fs::create_directories(build_dir / "bi" / ".deps");
+    fs::ofstream(build_dir / "bi" / ".deps" / (internalName + ".gch.Plo"));
   }
 
   /* copy build files into build directory */
@@ -879,9 +880,10 @@ void bi::Driver::compile() {
   Package* package = createPackage();
 
   auto previous_dir = fs::current_path();
+  auto build_dir = fs::path("build") / suffix();
   fs::current_path(work_dir);
 
-  Compiler compiler(package, "build", unity);
+  Compiler compiler(package, build_dir, unity);
   compiler.parse();
   compiler.resolve();
   compiler.gen();
@@ -912,7 +914,7 @@ void bi::Driver::autogen() {
       buf << "autogen.sh died with signal " << ret
           << "; make sure autoconf, automake and libtool are installed";
       if (!verbose) {
-        buf << ", see " << (work_dir / "build" / "autogen.log").string()
+        buf << ", see " << (work_dir / "autogen.log").string()
             << " for details";
       }
       buf << '.';
@@ -923,10 +925,11 @@ void bi::Driver::autogen() {
 }
 
 void bi::Driver::configure() {
+  auto build_dir = work_dir / "build" / suffix();
   if (newAutogen || newConfigure || newMake
-      || !exists(work_dir / "build" / "Makefile")) {
+      || !exists(build_dir / "Makefile")) {
     auto previous_dir = fs::absolute(fs::current_path());
-    fs::current_path(work_dir / "build");
+    fs::current_path(build_dir);
 
     /* compile and link flags */
     std::stringstream cppflags, cflags, cxxflags, ldflags, options, cmd;
@@ -1028,7 +1031,8 @@ void bi::Driver::configure() {
     if (arch == "js" || arch == "wasm") {
       cmd << "emconfigure ";
     }
-    cmd << (fs::path("..") / "configure") << " " << options.str();
+    cmd << (fs::path("..") / ".." / "configure") << " " << options.str();
+    // ^ build dir is work_dir/build/suffix, so configure script two dirs up
     if (!cppflags.str().empty()) {
       cmd << " CPPFLAGS=\"" << cppflags.str() << "\"";
     }
@@ -1055,8 +1059,8 @@ void bi::Driver::configure() {
       buf << "configure died with signal " << ret
           << "; make sure all dependencies are installed";
       if (!verbose) {
-        buf << ", see " << (work_dir / "build" / "configure.log").string() << " and "
-            << (work_dir / "build" / "config.log").string() << " for details";
+        buf << ", see " << (build_dir / "configure.log").string() << " and "
+            << (build_dir / "config.log").string() << " for details";
       }
       buf << '.';
       throw DriverException(buf.str());
@@ -1069,7 +1073,8 @@ void bi::Driver::configure() {
 
 void bi::Driver::target(const std::string& cmd) {
   auto previous_dir = fs::absolute(fs::current_path());
-  fs::current_path(work_dir / "build");
+  auto build_dir = work_dir / "build" / suffix();
+  fs::current_path(build_dir);
 
   /* command */
   std::stringstream buf;
@@ -1105,7 +1110,7 @@ void bi::Driver::target(const std::string& cmd) {
       buf << " died with signal " << ret;
     }
     if (!verbose) {
-      buf << ", see " << (work_dir / "build" / log).string() << " for details.";
+      buf << ", see " << (build_dir / log).string() << " for details.";
     }
     buf << '.';
     throw DriverException(buf.str());
@@ -1113,6 +1118,26 @@ void bi::Driver::target(const std::string& cmd) {
 
   /* change back to original working dir */
   fs::current_path(previous_dir);
+}
+
+std::string bi::Driver::suffix() const {
+  /* the suffix is built by joining all build options, in a prescribed order,
+   * joined by spaces, then encoding in base 32 */
+  std::stringstream buf;
+  buf << arch << ' ';
+  buf << unity << ' ';
+  buf << staticLib << ' ';
+  buf << sharedLib << ' ';
+  buf << openmp << ' ';
+  buf << debug << ' ';
+  buf << lazyDeepClone << ' ';
+  buf << cloneMemo << ' ';
+  buf << ancestryMemo << ' ';
+  buf << cloneMemoInitialSize << ' ';
+  buf << cloneMemoDelta << ' ';
+  buf << ancestryMemoInitialSize << ' ';
+  buf << ancestryMemoDelta << ' ';
+  return encode32(buf.str());
 }
 
 void bi::Driver::readFiles(const boost::property_tree::ptree& meta,
@@ -1141,7 +1166,7 @@ void bi::Driver::readFiles(const boost::property_tree::ptree& meta,
           if (!inserted.second) {
             warn(fileStr + " repeated in META.json.");
           }
-          metaFiles[key].insert(filePath);
+          metaFiles[key].push_back(filePath);
         }
       }
     }
