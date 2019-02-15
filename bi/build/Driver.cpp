@@ -410,8 +410,9 @@ void bi::Driver::tune() {
   meta();
   setup();
 
-  verbose = true;  // makes things tidier
-  unity = true;    // makes things faster
+  verbose = false;  // makes things tidier
+  unity = true;     // makes compile faster
+  debug = false;    // makes run faster
 
   /* step 1: eager clone */
   lazyDeepClone = false;
@@ -421,7 +422,7 @@ void bi::Driver::tune() {
     driver.install();
   }
   install();
-  run("run");
+  run("run_");
 
   /* report results */
   std::cout << "suggested:";
