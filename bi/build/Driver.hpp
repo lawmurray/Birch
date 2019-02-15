@@ -50,6 +50,11 @@ public:
   void clean();
 
   /**
+   * Performance-tune the package.
+   */
+  void tune();
+
+  /**
    * Create a new package.
    */
   void init();
@@ -120,16 +125,6 @@ private:
    * Working directory.
    */
   fs::path work_dir;
-
-  /**
-   * Build directory.
-   */
-  fs::path build_dir;
-
-  /**
-   * Built libraries directory.
-   */
-  fs::path lib_dir;
 
   /**
    * Share directories.

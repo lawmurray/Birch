@@ -29,6 +29,8 @@ int main(int argc, char** argv) {
       driver.dist();
     } else if (prog.compare("clean") == 0) {
       driver.clean();
+    } else if (prog.compare("tune") == 0) {
+      driver.tune();
     } else if (prog.compare("init") == 0) {
       driver.init();
     } else if (prog.compare("check") == 0) {

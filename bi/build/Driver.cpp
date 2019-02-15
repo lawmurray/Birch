@@ -19,8 +19,6 @@ bi::Driver::Driver(int argc, char** argv) :
      * relative path from the build directory to the work directory,
      * otherwise a work directory containing spaces causes problems */
     work_dir("."),
-    build_dir("build"),
-    lib_dir(build_dir / ".libs"),
     arch("native"),
     prefix(""),
     packageName("Untitled"),
@@ -42,7 +40,7 @@ bi::Driver::Driver(int argc, char** argv) :
     newConfigure(false),
     newMake(false) {
   enum {
-    BUILD_DIR_ARG = 256,
+    WORK_DIR_ARG = 256,
     SHARE_DIR_ARG,
     INCLUDE_DIR_ARG,
     LIB_DIR_ARG,
@@ -77,7 +75,7 @@ bi::Driver::Driver(int argc, char** argv) :
 
   int c, option_index;
   option long_options[] = {
-      { "build-dir", required_argument, 0, BUILD_DIR_ARG },
+      { "work-dir", required_argument, 0, WORK_DIR_ARG },
       { "share-dir", required_argument, 0, SHARE_DIR_ARG },
       { "include-dir", required_argument, 0, INCLUDE_DIR_ARG },
       { "lib-dir", required_argument, 0, LIB_DIR_ARG },
@@ -123,9 +121,8 @@ bi::Driver::Driver(int argc, char** argv) :
       long_options, &option_index);
   while (c != -1) {
     switch (c) {
-    case BUILD_DIR_ARG:
-      build_dir = optarg;
-      lib_dir = build_dir / ".libs";
+    case WORK_DIR_ARG:
+      work_dir = optarg;
       break;
     case SHARE_DIR_ARG:
       share_dirs.push_back(optarg);
@@ -271,7 +268,7 @@ bi::Driver::Driver(int argc, char** argv) :
 
   /* include dirs */
   include_dirs.push_back(work_dir);
-  include_dirs.push_back(build_dir);
+  include_dirs.push_back(work_dir / "build");
   if (BIRCH_INCLUDE_PATH) {
     std::stringstream birch_include_path(BIRCH_INCLUDE_PATH);
     while (std::getline(birch_include_path, input, ':')) {
@@ -320,8 +317,8 @@ void bi::Driver::run(const std::string& prog) {
 #endif
 
   /* look in built libs first */
-  if (exists(lib_dir / so)) {
-    so = lib_dir / so;
+  if (exists(work_dir / "build" / ".libs" / so)) {
+    so = work_dir / "build" / ".libs" / so;
   }
   handle = dlopen(so.c_str(), RTLD_NOW);
   msg = dlerror();
@@ -386,6 +383,11 @@ void bi::Driver::dist() {
 void bi::Driver::clean() {
   meta();
   setup();
+
+  auto previous_dir = fs::current_path();
+  fs::current_path(work_dir);
+
+  fs::remove_all("build");
   fs::remove_all("autom4te.cache");
   fs::remove_all("m4");
   fs::remove("aclocal.m4");
@@ -402,10 +404,41 @@ void bi::Driver::clean() {
   fs::remove("Makefile.am");
   fs::remove("Makefile.in");
   fs::remove("missing");
-  fs::remove_all(build_dir);
+
+  fs::current_path(previous_dir);
+}
+
+void bi::Driver::tune() {
+  /* set up a separate driver for each dependent package */
+  std::list<Driver> drivers;
+  for (auto name : metaFiles["require.package"]) {
+    drivers.push_back(Driver(*this));
+    drivers.back().work_dir = fs::absolute(work_dir / ".." / name);
+    drivers.back().meta();
+  }
+
+  /* step 1: eager clone */
+  for (auto driver : drivers) {
+    driver.install();
+  }
+  install();
+
+  /* report results */
+  std::cout << "suggested:";
+  std::cout << (lazyDeepClone ? " --enable-lazy-deep-clone" : " --disable-lazy-deep-clone");
+  std::cout << (cloneMemo ? " --enable-clone-memo" : " --disable-clone-memo");
+  std::cout << (ancestryMemo ? " --enable-ancestry-memo" : " --disable-ancestry-memo");
+  std::cout << " --clone-memo-initial-size=" << cloneMemoInitialSize;
+  std::cout << " --clone-memo-delta=" << cloneMemoDelta;
+  std::cout << " --ancestry-memo-initial-size=" << ancestryMemoInitialSize;
+  std::cout << " --ancestry-memo-delta=" << ancestryMemoDelta;
+  std::cout << std::endl;
 }
 
 void bi::Driver::init() {
+  auto previous_dir = fs::current_path();
+  fs::current_path(work_dir);
+
   fs::create_directory("bi");
   fs::create_directory("input");
   fs::create_directory("output");
@@ -433,9 +466,14 @@ void bi::Driver::init() {
     throw DriverException(buf.str());
   }
   readmeStream << contents;
+
+  fs::current_path(work_dir);
 }
 
 void bi::Driver::check() {
+  auto previous_dir = fs::current_path();
+  fs::current_path(work_dir);
+
   /* read META.json */
   if (!fs::exists("META.json")) {
     warn("no META.json file.");
@@ -479,7 +517,7 @@ void bi::Driver::check() {
     auto path = remove_first(iter->path());
     auto name = path.filename().string();
     auto ext = path.extension().string();
-    if (path == build_dir || path.string() == "output" ||
+    if (path.string() == "build" || path.string() == "output" ||
         path.string() == "site") {
       iter.no_push();
     } else if (interesting.find(ext) != interesting.end()
@@ -491,14 +529,20 @@ void bi::Driver::check() {
     }
     ++iter;
   }
+
+  fs::current_path(previous_dir);
 }
 
 void bi::Driver::docs() {
   meta();
+
+  auto previous_dir = fs::current_path();
+  fs::current_path(work_dir);
+
   Package* package = createPackage();
 
   /* parse all files */
-  Compiler compiler(package, build_dir, unity);
+  Compiler compiler(package, work_dir / "build", unity);
   compiler.parse();
   compiler.resolve();
 
@@ -599,9 +643,20 @@ void bi::Driver::docs() {
     docsStream.close();
   }
   delete package;
+
+  fs::current_path(previous_dir);
 }
 
 void bi::Driver::meta() {
+  /* clear any previous read */
+  packageName = "Untitled";
+  packageDesc = "";
+  metaFiles.clear();
+  allFiles.clear();
+
+  auto previous_dir = fs::current_path();
+  fs::current_path(work_dir);
+
   /* check for META.json */
   if (!fs::exists("META.json")) {
     throw DriverException("META.json does not exist.");
@@ -610,7 +665,8 @@ void bi::Driver::meta() {
   /* parse META.json */
   boost::property_tree::ptree meta;
   try {
-    boost::property_tree::read_json("META.json", meta);
+    auto metaFile = "META.json";
+    boost::property_tree::read_json(metaFile, meta);
   } catch (boost::exception& e) {
     throw DriverException("syntax error in META.json.");
   }
@@ -627,6 +683,11 @@ void bi::Driver::meta() {
   }
 
   /* external requirements */
+  if (packageName != "Birch.Standard") {
+    /* implicitly include the standard library, if this package is not,
+     * itself, the standard library */
+    metaFiles["require.package"].insert("Birch.Standard");
+  }
   readFiles(meta, "require.package", false);
   readFiles(meta, "require.header", false);
   readFiles(meta, "require.library", false);
@@ -635,7 +696,7 @@ void bi::Driver::meta() {
   /* convert package requirements to header and library requirements */
   for (auto name : metaFiles["require.package"]) {
     auto internalName = tarname(name.string());
-    fs::path header = fs::path("bi") / internalName;
+    auto header = fs::path("bi") / internalName;
     header.replace_extension(".hpp");
     metaFiles["require.header"].insert(header.string());
     metaFiles["require.library"].insert(internalName);
@@ -646,25 +707,30 @@ void bi::Driver::meta() {
   readFiles(meta, "manifest.source", true);
   readFiles(meta, "manifest.data", true);
   readFiles(meta, "manifest.other", true);
+
+  fs::current_path(previous_dir);
 }
 
 void bi::Driver::setup() {
+  auto previous_dir = fs::current_path();
+  fs::current_path(work_dir);
+
   /* internal name of package */
   auto internalName = tarname(packageName);
 
   /* create build directory */
-  if (!fs::exists(build_dir)) {
-    if (!fs::create_directory(build_dir)) {
+  if (!fs::exists("build")) {
+    if (!fs::create_directory("build")) {
       std::stringstream buf;
-      buf << "could not create build directory " << build_dir << '.';
+      buf << "could not create build directory " << "build" << '.';
       throw DriverException(buf.str());
     }
 
     /* workaround for error given by some versions of autotools, "Something
      * went wrong bootstrapping makefile fragments for automatic dependency
      * tracking..." */
-    fs::create_directories(build_dir / "bi" / ".deps");
-    fs::ofstream(build_dir / "bi" / ".deps" / (internalName + ".gch.Plo"));
+    fs::create_directories(fs::path("build") / "bi" / ".deps");
+    fs::ofstream(fs::path("build") / "bi" / ".deps" / (internalName + ".gch.Plo"));
   }
 
   /* copy build files into build directory */
@@ -789,16 +855,12 @@ void bi::Driver::setup() {
   makeStream << '\n';
 
   newMake = write_all_if_different("Makefile.am", makeStream.str());
+
+  fs::current_path(previous_dir);
 }
 
 bi::Package* bi::Driver::createPackage() {
   Package* package = new Package(packageName);
-  if (packageName != "Birch.Standard") {
-    /* disable inclusion of the standard library when the project is, itself,
-     * the standard library (!) */
-    auto header = fs::path("bi") / "birch_standard.bih";
-    package->addHeader(find(include_dirs, header).string());
-  }
   for (auto name : metaFiles["require.package"]) {
     /* add *.bih dependency */
     fs::path header = fs::path("bi") / tarname(name.string());
@@ -815,17 +877,25 @@ bi::Package* bi::Driver::createPackage() {
 
 void bi::Driver::compile() {
   Package* package = createPackage();
-  Compiler compiler(package, build_dir, unity);
+
+  auto previous_dir = fs::current_path();
+  fs::current_path(work_dir);
+
+  Compiler compiler(package, "build", unity);
   compiler.parse();
   compiler.resolve();
   compiler.gen();
-  delete package;
+
+  fs::current_path(previous_dir);
 }
 
 void bi::Driver::autogen() {
   if (newAutogen || newConfigure || newMake
-      || !fs::exists("configure")
-      || !fs::exists("install-sh")) {
+      || !fs::exists(work_dir / "configure")
+      || !fs::exists(work_dir / "install-sh")) {
+    auto previous_dir = fs::current_path();
+    fs::current_path(work_dir);
+
     std::stringstream cmd;
     cmd << (fs::path(".") / "autogen.sh");
     if (verbose) {
@@ -842,22 +912,24 @@ void bi::Driver::autogen() {
       buf << "autogen.sh died with signal " << ret
           << "; make sure autoconf, automake and libtool are installed";
       if (!verbose) {
-        buf << ", see " << (build_dir / "autogen.log").string()
+        buf << ", see " << (work_dir / "build" / "autogen.log").string()
             << " for details";
       }
       buf << '.';
       throw DriverException(buf.str());
     }
+    fs::current_path(previous_dir);
   }
 }
 
 void bi::Driver::configure() {
   if (newAutogen || newConfigure || newMake
-      || !exists(build_dir / "Makefile")) {
-    /* working directory */
-    std::stringstream cppflags, cflags, cxxflags, ldflags, options, cmd;
+      || !exists(work_dir / "build" / "Makefile")) {
+    auto previous_dir = fs::absolute(fs::current_path());
+    fs::current_path(work_dir / "build");
 
     /* compile and link flags */
+    std::stringstream cppflags, cflags, cxxflags, ldflags, options, cmd;
     if (arch == "js") {
       //
     } else if (arch == "wasm") {
@@ -879,8 +951,8 @@ void bi::Driver::configure() {
         options << " --disable-openmp";
       }
     } else {
-      throw DriverException("unknown architecture '" + arch
-              + "'; valid values are 'native', 'js' and 'wasm'");
+      throw DriverException("unknown architecture '" + arch +
+          "'; valid values are 'native', 'js' and 'wasm'");
     }
     if (warnings) {
       cflags << " -Wall";
@@ -975,9 +1047,6 @@ void bi::Driver::configure() {
       cmd << " > configure.log 2>&1";
     }
 
-    /* change into build dir */
-    current_path(build_dir);
-
     int ret = system(cmd.str().c_str());
     if (ret == -1) {
       throw DriverException("configure failed to execute.");
@@ -986,19 +1055,22 @@ void bi::Driver::configure() {
       buf << "configure died with signal " << ret
           << "; make sure all dependencies are installed";
       if (!verbose) {
-        buf << ", see " << (build_dir / "configure.log").string() << " and "
-            << (build_dir / "config.log").string() << " for details";
+        buf << ", see " << (work_dir / "build" / "configure.log").string() << " and "
+            << (work_dir / "build" / "config.log").string() << " for details";
       }
       buf << '.';
       throw DriverException(buf.str());
     }
 
     /* change back to original working dir */
-    current_path(fs::path(".."));
+    fs::current_path(previous_dir);
   }
 }
 
 void bi::Driver::target(const std::string& cmd) {
+  auto previous_dir = fs::absolute(fs::current_path());
+  fs::current_path(work_dir / "build");
+
   /* command */
   std::stringstream buf;
   if (arch == "js" || arch == "wasm") {
@@ -1023,9 +1095,6 @@ void bi::Driver::target(const std::string& cmd) {
     buf << " > " << log << " 2>&1";
   }
 
-  /* change into build dir */
-  current_path(build_dir);
-
   int ret = system(buf.str().c_str());
   if (ret != 0) {
     buf.str("make ");
@@ -1036,14 +1105,14 @@ void bi::Driver::target(const std::string& cmd) {
       buf << " died with signal " << ret;
     }
     if (!verbose) {
-      buf << ", see " << (build_dir / log).string() << " for details.";
+      buf << ", see " << (work_dir / "build" / log).string() << " for details.";
     }
     buf << '.';
     throw DriverException(buf.str());
   }
 
   /* change back to original working dir */
-  current_path(fs::path(".."));
+  fs::current_path(previous_dir);
 }
 
 void bi::Driver::readFiles(const boost::property_tree::ptree& meta,
@@ -1053,9 +1122,9 @@ void bi::Driver::readFiles(const boost::property_tree::ptree& meta,
     for (auto file : files.get()) {
       if (auto str = file.second.get_value_optional<std::string>()) {
         if (str) {
-          fs::path filePath(str.get());
-          std::string fileStr = filePath.string();
-          if (checkExists && !exists(filePath)) {
+          auto filePath = fs::path(str.get());
+          auto fileStr = filePath.string();
+          if (checkExists && !exists(work_dir / filePath)) {
             warn(fileStr + " in META.json does not exist.");
           }
           if (std::regex_search(fileStr, std::regex("\\s",

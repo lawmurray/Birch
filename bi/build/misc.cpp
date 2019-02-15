@@ -72,10 +72,33 @@ void bi::copy_with_force(fs::path src, fs::path dst) {
 }
 
 fs::path bi::remove_first(const fs::path& path) {
-  if (path.parent_path().string().compare(".") == 0) {
+  auto parent = path.parent_path();
+  if (parent == path || parent.string().compare(".") == 0) {
     return fs::path() / path.filename();
   } else {
     return remove_first(path.parent_path()) / path.filename();
+  }
+}
+
+fs::path bi::remove_common_prefix(const fs::path& base, const fs::path& path) {
+  auto iter1 = base.begin();
+  auto end1 = base.end();
+  auto iter2 = path.begin();
+  auto end2 = path.end();
+  while (iter1 != end1 && iter2 != end2 && *iter1 == *iter2) {
+    ++iter1;
+    ++iter2;
+  }
+  if (iter2 != end2) {
+    auto result = *iter2;
+    ++iter2;
+    while (iter2 != end2) {
+      result /= *iter2;
+      ++iter2;
+    }
+    return result;
+  } else {
+    return fs::path();
   }
 }
 

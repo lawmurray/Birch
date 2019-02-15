@@ -55,6 +55,12 @@ void copy_with_force(fs::path src, fs::path dst);
 fs::path remove_first(const fs::path& path);
 
 /**
+ * Remove the common prefix of both base and path from path, and return the
+ * result.
+ */
+fs::path remove_common_prefix(const fs::path& base, const fs::path& path);
+
+/**
  * Read the entirety of a file to a string.
  */
 std::string read_all(const fs::path& path);

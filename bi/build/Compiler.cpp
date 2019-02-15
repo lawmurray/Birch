@@ -80,7 +80,7 @@ void bi::Compiler::gen() {
   stream.str("");
   cppPackageOutput << package;
   if (unity) {
-    /* for a unity build, C++ for all files goes into the one package
+    /* for a unity build, all generated source for the package goes into one
      * file */
     for (auto file : package->sources) {
       cppOutput << file;
