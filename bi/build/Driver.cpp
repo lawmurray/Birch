@@ -315,8 +315,9 @@ void bi::Driver::run(const std::string& prog) {
 #endif
 
   /* look in built libs first */
-  if (exists(work_dir / "build" / suffix() / ".libs" / so)) {
-    so = work_dir / "build" / suffix() / ".libs" / so;
+  auto build_dir = work_dir / "build" / suffix();
+  if (exists(build_dir / ".libs" / so)) {
+    so = build_dir / ".libs" / so;
   }
   handle = dlopen(so.c_str(), RTLD_NOW);
   msg = dlerror();
@@ -408,32 +409,102 @@ void bi::Driver::clean() {
 
 void bi::Driver::tune() {
   meta();
-  setup();
 
   verbose = false;  // makes things tidier
   unity = true;     // makes compile faster
   debug = false;    // makes run faster
 
-  /* step 1: eager clone */
+  /* best times */
+  double bestEager, bestLazy;
+
+  /* best options */
+  int bestEagerCloneMemoInitialSize;
+  bool bestLazyCloneMemo;
+  int bestLazyCloneMemoInitialSize;
+  int bestLazyCloneMemoDelta;
+  bool bestLazyAncestryMemo;
+  int bestLazyAncestryMemoInitialSize;
+  int bestLazyAncestryMemoDelta;
+
+  /* proposed initial sizes, to test */
+  auto initialSizes = { 4, 8, 16, 32, 64, 128, 256, 512, 1024 };
+
+  /* proposed deltas, to test */
+  auto deltas = { 1, 2, 4, 8, 16, 32 };
+
+  /* best eager configuration */
+  std::cerr << "setting --disable-lazy-deep-clone" << std::endl;
   lazyDeepClone = false;
+
+  std::cerr << "trying --clone-memo-initial-size" << std::endl;
+  std::tie(bestEagerCloneMemoInitialSize, bestEager) = choose(&cloneMemoInitialSize, initialSizes);
+
+  /* best lazy configuration */
+  std::cerr << "setting --enable-lazy-deep-clone" << std::endl;
+  lazyDeepClone = true;
+
+  std::cerr << "trying --clone-memo-initial-size" << std::endl;
+  std::tie(bestLazyCloneMemoInitialSize, bestLazy) = choose(&cloneMemoInitialSize, initialSizes);
+
+  std::cerr << "trying --enable-clone-memo" << std::endl;
+  std::tie(bestLazyCloneMemo, bestLazy) = choose(&cloneMemo, { true, false });
+  if (bestLazyCloneMemo) {
+    std::cerr << "trying --clone-memo-initial-size" << std::endl;
+    std::tie(bestLazyCloneMemoInitialSize, bestLazy) = choose(&cloneMemoInitialSize, initialSizes);
+    std::cerr << "trying --clone-memo-delta" << std::endl;
+    std::tie(bestLazyCloneMemoDelta, bestLazy) = choose(&cloneMemoDelta, deltas);
+  }
+
+  std::cerr << "trying --enable-ancestry-memo" << std::endl;
+  std::tie(bestLazyAncestryMemo, bestLazy) = choose(&ancestryMemo, { true, false });
+  if (bestLazyAncestryMemo) {
+    std::cerr << "trying --ancestry-memo-initial-size" << std::endl;
+    std::tie(bestLazyAncestryMemoInitialSize, bestLazy) = choose(&ancestryMemoInitialSize, initialSizes);
+    std::cerr << "trying --ancestry-memo-delta" << std::endl;
+    std::tie(bestLazyAncestryMemoDelta, bestLazy) = choose(&ancestryMemoDelta, deltas);
+  }
+
+  /* choose one or the other and report */
+  if (bestEager < bestLazy) {
+    std::cout << "suggested:";
+    std::cout << " --disable-lazy-deep-clone";
+    std::cout << " --clone-memo-initial-size=" << bestEagerCloneMemoInitialSize;
+  } else {
+    std::cout << "suggested:";
+    std::cout << " --enable-lazy-deep-clone";
+    if (bestLazyCloneMemo) {
+      std::cout << " --enable-clone-memo";
+      std::cout << " --clone-memo-initial-size=" << bestLazyCloneMemoInitialSize;
+      std::cout << " --clone-memo-delta=" << bestLazyCloneMemoDelta;
+    } else {
+      std::cout << " --clone-memo-initial-size=" << bestLazyCloneMemoInitialSize;
+      std::cout << " --disable-clone-memo";
+    }
+    if (bestLazyAncestryMemo) {
+      std::cout << " --enable-ancestry-memo";
+      std::cout << " --ancestry-memo-initial-size=" << bestLazyAncestryMemoInitialSize;
+      std::cout << " --ancestry-memo-delta=" << bestLazyAncestryMemoDelta;
+    } else {
+      std::cout << " --disable-ancestry-memo";
+    }
+  }
+  std::cout << std::endl;
+}
+
+double bi::Driver::time() {
   for (auto name : metaFiles["require.package"]) {
     Driver driver(*this);
     driver.work_dir = work_dir / ".." / name;
     driver.install();
   }
-  install();
-  run("run_");
+  Driver driver(*this);
+  driver.install();
 
-  /* report results */
-  std::cout << "suggested:";
-  std::cout << (lazyDeepClone ? " --enable-lazy-deep-clone" : " --disable-lazy-deep-clone");
-  std::cout << (cloneMemo ? " --enable-clone-memo" : " --disable-clone-memo");
-  std::cout << (ancestryMemo ? " --enable-ancestry-memo" : " --disable-ancestry-memo");
-  std::cout << " --clone-memo-initial-size=" << cloneMemoInitialSize;
-  std::cout << " --clone-memo-delta=" << cloneMemoDelta;
-  std::cout << " --ancestry-memo-initial-size=" << ancestryMemoInitialSize;
-  std::cout << " --ancestry-memo-delta=" << ancestryMemoDelta;
-  std::cout << std::endl;
+  std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
+  driver.run("run_");
+  std::chrono::time_point<std::chrono::system_clock> stop = std::chrono::system_clock::now();
+  std::chrono::duration<double> elapsed = stop - start;
+  return elapsed.count();
 }
 
 void bi::Driver::init() {
@@ -643,9 +714,9 @@ void bi::Driver::docs() {
     docsStream << str1;
     docsStream.close();
   }
-  delete package;
 
   fs::current_path(previous_dir);
+  delete package;
 }
 
 void bi::Driver::meta() {
@@ -666,8 +737,7 @@ void bi::Driver::meta() {
   /* parse META.json */
   boost::property_tree::ptree meta;
   try {
-    auto metaFile = "META.json";
-    boost::property_tree::read_json(metaFile, meta);
+    boost::property_tree::read_json("META.json", meta);
   } catch (boost::exception& e) {
     throw DriverException("syntax error in META.json.");
   }
@@ -687,7 +757,7 @@ void bi::Driver::meta() {
   if (packageName != "Birch.Standard") {
     /* implicitly include the standard library, if this package is not,
      * itself, the standard library */
-    metaFiles["require.package"].push_back("Birch.Standard");
+    metaFiles["require.package"].push_front("Birch.Standard");
   }
   readFiles(meta, "require.package", false);
   readFiles(meta, "require.header", false);
@@ -890,6 +960,7 @@ void bi::Driver::compile() {
   compiler.gen();
 
   fs::current_path(previous_dir);
+  delete package;
 }
 
 void bi::Driver::autogen() {

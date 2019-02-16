@@ -108,6 +108,13 @@ private:
   void target(const std::string& cmd = "");
 
   /**
+   * Compile the package and all dependencies with the current options, then
+   * execute the `run` program of the package and return its total execution
+   * time.
+   */
+  double time();
+
+  /**
    * Produce a suffix to use on the build directory name, where this is
    * unique to the particular configuration.
    */
@@ -265,5 +272,38 @@ private:
    * Leftover command-line arguments for program calls.
    */
   std::vector<char*> largv;
+
+  template<class T>
+  std::pair<T,double> choose(T* parameter,
+      const std::initializer_list<T>& values);
 };
+}
+
+template<class T>
+std::pair<T,double> bi::Driver::choose(T* parameter,
+    const std::initializer_list<T>& values) {
+  assert(values.size() > 0);
+
+  double t = std::numeric_limits<double>::infinity();
+  double best = t;
+  int strikes = 0;
+  T chosen = *values.begin();
+
+  for (auto value = values.begin(); value != values.end() && strikes < 3;
+      ++value) {
+    *parameter = *value;
+    std::cerr << '@' << *value << " = ";
+    t = time();
+    std::cerr << t << 's';
+    if (t < best) {
+      std::cerr << '*';
+      best = t;
+      chosen = *value;
+      strikes = 0;
+    } else {
+      ++strikes;
+    }
+    std::cerr << std::endl;
+  }
+  return std::make_pair(chosen, t);
 }

@@ -28,20 +28,21 @@ bi::Compiler::Compiler(Package* package, const fs::path& build_dir,
 void bi::Compiler::parse() {
   compiler = this;  // set global variable needed by parser for callbacks
   for (auto file : package->files) {
-    yyin = fopen(file->path.c_str(), "r");
-    if (!yyin) {
+    raw.str("");
+    auto fd = fopen(file->path.c_str(), "r");
+    if (!fd) {
       throw FileNotFoundException(file->path);
     }
     this->file = file;  // member variable needed by GNU Bison parser
+    yyrestart(fd);
     yyreset();
-    do {
-      try {
-        yyparse();
-      } catch (bi::Exception& e) {
-        yyerror(e.msg.c_str());
-      }
-    } while (!feof(yyin));
-    fclose(yyin);
+    try {
+      yyparse();
+    } catch (bi::Exception& e) {
+      yyerror(e.msg.c_str());
+    }
+    yylex_destroy();
+    fclose(fd);
     this->file = nullptr;
   }
   compiler = nullptr;

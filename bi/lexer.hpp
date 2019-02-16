@@ -11,8 +11,10 @@ extern std::stringstream raw;
 
 int yylex();
 int yyparse();
-void yyerror(const char *msg);
-void yywarn(const char *msg);
+void yyerror(const char *);
+void yywarn(const char *);
 void yylocation();
 void yycount();
 void yyreset();
+void yyrestart(FILE*);
+int yylex_destroy();
