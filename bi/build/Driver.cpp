@@ -315,10 +315,6 @@ void bi::Driver::run(const std::string& prog) {
 #endif
 
   /* look in built libs first */
-  auto build_dir = work_dir / "build" / suffix();
-  if (exists(build_dir / ".libs" / so)) {
-    so = build_dir / ".libs" / so;
-  }
   handle = dlopen(so.c_str(), RTLD_NOW);
   msg = dlerror();
   if (handle == NULL) {
