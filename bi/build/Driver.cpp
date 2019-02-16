@@ -299,6 +299,9 @@ void bi::Driver::run(const std::string& prog) {
   /* get package information */
   meta();
 
+  auto previous_dir = fs::current_path();
+  fs::current_path(work_dir);
+
   /* dynamically load possible programs */
   typedef void prog_t(int argc, char** argv);
 
@@ -334,6 +337,8 @@ void bi::Driver::run(const std::string& prog) {
     }
     dlclose(handle);
   }
+
+  fs::current_path(previous_dir);
 }
 
 void bi::Driver::build() {
@@ -500,6 +505,7 @@ double bi::Driver::time() {
   driver.run("run_");
   std::chrono::time_point<std::chrono::system_clock> stop = std::chrono::system_clock::now();
   std::chrono::duration<double> elapsed = stop - start;
+
   return elapsed.count();
 }
 
