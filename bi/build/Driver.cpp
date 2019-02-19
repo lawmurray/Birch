@@ -295,7 +295,7 @@ bi::Driver::Driver(int argc, char** argv) :
   #endif
 }
 
-void bi::Driver::run(const std::string& prog) {
+void bi::Driver::run(const std::string& prog, const std::vector<char*>& xargv) {
   /* get package information */
   meta();
 
@@ -325,15 +325,17 @@ void bi::Driver::run(const std::string& prog) {
     buf << "Could not load " << so.string() << ", " << msg << '.';
     throw DriverException(buf.str());
   } else {
-    addr = dlsym(handle, prog.c_str());
+    addr = dlsym(handle, (prog + "_").c_str());
     msg = dlerror();
     if (msg != NULL) {
       std::stringstream buf;
-      buf << "Could not find symbol " << prog << " in " << so.string() << '.';
+      buf << "Could not find program " << prog << " in " << so.string() << '.';
       throw DriverException(buf.str());
     } else {
+      auto argv = largv;
+      argv.insert(argv.end(), xargv.begin(), xargv.end());
       fcn = reinterpret_cast<prog_t*>(addr);
-      fcn(largv.size(), largv.data());
+      fcn(argv.size(), argv.data());
     }
     dlclose(handle);
   }
@@ -416,16 +418,7 @@ void bi::Driver::tune() {
   debug = false;    // makes run faster
 
   /* best times */
-  double bestEager, bestLazy;
-
-  /* best options */
-  int bestEagerCloneMemoInitialSize;
-  bool bestLazyCloneMemo;
-  int bestLazyCloneMemoInitialSize;
-  int bestLazyCloneMemoDelta;
-  bool bestLazyAncestryMemo;
-  int bestLazyAncestryMemoInitialSize;
-  int bestLazyAncestryMemoDelta;
+  double bestEager, bestLazy, bestLazyCloneMemo, bestLazyAncestryMemo;
 
   /* proposed initial sizes, to test */
   auto initialSizes = { 4, 8, 16, 32, 64, 128, 256, 512, 1024 };
@@ -434,57 +427,67 @@ void bi::Driver::tune() {
   auto deltas = { 1, 2, 4, 8, 16, 32 };
 
   /* best eager configuration */
+  Driver driverEager(*this);
   std::cerr << "setting --disable-lazy-deep-clone" << std::endl;
-  lazyDeepClone = false;
-
-  std::cerr << "trying --clone-memo-initial-size" << std::endl;
-  std::tie(bestEagerCloneMemoInitialSize, bestEager) = choose(&cloneMemoInitialSize, initialSizes);
+  driverEager.lazyDeepClone = false;
+  std::cerr << "choosing --clone-memo-initial-size" << std::endl;
+  bestEager = driverEager.choose(&driverEager.cloneMemoInitialSize, initialSizes);
 
   /* best lazy configuration */
+  Driver driverLazy(*this);
   std::cerr << "setting --enable-lazy-deep-clone" << std::endl;
-  lazyDeepClone = true;
+  driverLazy.lazyDeepClone = true;
+  std::cerr << "setting --disable-clone-memo" << std::endl;
+  driverLazy.cloneMemo = false;
+  std::cerr << "setting --disable-ancestry-memo" << std::endl;
+  driverLazy.ancestryMemo = false;
+  std::cerr << "choosing --clone-memo-initial-size" << std::endl;
+  bestLazy = driverLazy.choose(&driverLazy.cloneMemoInitialSize, initialSizes);
 
-  std::cerr << "trying --clone-memo-initial-size" << std::endl;
-  std::tie(bestLazyCloneMemoInitialSize, bestLazy) = choose(&cloneMemoInitialSize, initialSizes);
-
-  std::cerr << "trying --enable-clone-memo" << std::endl;
-  std::tie(bestLazyCloneMemo, bestLazy) = choose(&cloneMemo, { true, false });
-  if (bestLazyCloneMemo) {
-    std::cerr << "trying --clone-memo-initial-size" << std::endl;
-    std::tie(bestLazyCloneMemoInitialSize, bestLazy) = choose(&cloneMemoInitialSize, initialSizes);
-    std::cerr << "trying --clone-memo-delta" << std::endl;
-    std::tie(bestLazyCloneMemoDelta, bestLazy) = choose(&cloneMemoDelta, deltas);
+  /* best lazy configuration with clone memo enabled */
+  Driver driverLazyCloneMemo(driverLazy);
+  std::cerr << "setting --enable-clone-memo" << std::endl;
+  driverLazyCloneMemo.cloneMemo = true;
+  std::cerr << "choosing --clone-memo-initial-size" << std::endl;
+  bestLazyCloneMemo = driverLazyCloneMemo.choose(&driverLazyCloneMemo.cloneMemoInitialSize, initialSizes);
+  std::cerr << "choosing --clone-memo-delta" << std::endl;
+  bestLazyCloneMemo = driverLazyCloneMemo.choose(&driverLazyCloneMemo.cloneMemoDelta, deltas);
+  if (bestLazyCloneMemo < bestLazy) {
+    bestLazy = bestLazyCloneMemo;
+    driverLazy = driverLazyCloneMemo;
   }
 
-  std::cerr << "trying --enable-ancestry-memo" << std::endl;
-  std::tie(bestLazyAncestryMemo, bestLazy) = choose(&ancestryMemo, { true, false });
-  if (bestLazyAncestryMemo) {
-    std::cerr << "trying --ancestry-memo-initial-size" << std::endl;
-    std::tie(bestLazyAncestryMemoInitialSize, bestLazy) = choose(&ancestryMemoInitialSize, initialSizes);
-    std::cerr << "trying --ancestry-memo-delta" << std::endl;
-    std::tie(bestLazyAncestryMemoDelta, bestLazy) = choose(&ancestryMemoDelta, deltas);
+  /* best lazy configuration with ancestry memo enabled */
+  Driver driverLazyAncestryMemo(driverLazy);
+  std::cerr << "setting --enable-ancestry-memo" << std::endl;
+  driverLazyAncestryMemo.ancestryMemo = true;
+  std::cerr << "choosing --ancestry-memo-initial-size" << std::endl;
+  bestLazy = driverLazyAncestryMemo.choose(&driverLazyAncestryMemo.ancestryMemoInitialSize, initialSizes);
+  std::cerr << "choosing --ancestry-memo-delta" << std::endl;
+  bestLazy = driverLazyAncestryMemo.choose(&driverLazyAncestryMemo.ancestryMemoDelta, deltas);
+  if (bestLazyAncestryMemo < bestLazy) {
+    bestLazy = bestLazyAncestryMemo;
+    driverLazy = driverLazyAncestryMemo;
   }
 
   /* choose one or the other and report */
+  std::cout << "suggested:";
   if (bestEager < bestLazy) {
-    std::cout << "suggested:";
     std::cout << " --disable-lazy-deep-clone";
-    std::cout << " --clone-memo-initial-size=" << bestEagerCloneMemoInitialSize;
+    std::cout << " --clone-memo-initial-size=" << driverEager.cloneMemoInitialSize;
   } else {
-    std::cout << "suggested:";
     std::cout << " --enable-lazy-deep-clone";
-    if (bestLazyCloneMemo) {
+    std::cout << " --clone-memo-initial-size=" << driverLazy.cloneMemoInitialSize;
+    if (driverLazy.cloneMemo) {
       std::cout << " --enable-clone-memo";
-      std::cout << " --clone-memo-initial-size=" << bestLazyCloneMemoInitialSize;
-      std::cout << " --clone-memo-delta=" << bestLazyCloneMemoDelta;
+      std::cout << " --clone-memo-delta=" << driverLazy.cloneMemoDelta;
     } else {
-      std::cout << " --clone-memo-initial-size=" << bestLazyCloneMemoInitialSize;
       std::cout << " --disable-clone-memo";
     }
-    if (bestLazyAncestryMemo) {
+    if (driverLazy.ancestryMemo) {
       std::cout << " --enable-ancestry-memo";
-      std::cout << " --ancestry-memo-initial-size=" << bestLazyAncestryMemoInitialSize;
-      std::cout << " --ancestry-memo-delta=" << bestLazyAncestryMemoDelta;
+      std::cout << " --ancestry-memo-initial-size=" << driverLazy.ancestryMemoInitialSize;
+      std::cout << " --ancestry-memo-delta=" << driverLazy.ancestryMemoDelta;
     } else {
       std::cout << " --disable-ancestry-memo";
     }
@@ -501,8 +504,12 @@ double bi::Driver::time() {
   Driver driver(*this);
   driver.install();
 
+  std::string key("--id");
+  std::string value("_");
+  value += suffix();
+  std::vector<char*> xargv({ &key[0], &value[0] });
   std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
-  driver.run("run_");
+  driver.run("run", xargv);
   std::chrono::time_point<std::chrono::system_clock> stop = std::chrono::system_clock::now();
   std::chrono::duration<double> elapsed = stop - start;
 

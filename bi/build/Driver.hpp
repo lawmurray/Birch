@@ -21,8 +21,11 @@ public:
 
   /**
    * Run user program.
+   *
+   * @param prog Name of the program.
+   * @param xargs Extra arguments.
    */
-  void run(const std::string& prog);
+  void run(const std::string& prog, const std::vector<char*>& xargs = {});
 
   /**
    * Build package.
@@ -273,14 +276,25 @@ private:
    */
   std::vector<char*> largv;
 
+  /**
+   * Compile and run the package for each of a set of parameter values,
+   * set the parameter to the value corresponding to the fastest time, and
+   * return that time.
+   *
+   * @param parameter Pointer to the parameter to set (typically a member
+   * variable of the same object, e.g. cloneMemoInitialSize,
+   * ancestryMemoDelta.
+   * @param values List of values of the parameter to try.
+   *
+   * @return The fastest time.
+   */
   template<class T>
-  std::pair<T,double> choose(T* parameter,
-      const std::initializer_list<T>& values);
+  double choose(T* parameter, const std::initializer_list<T>& values);
 };
 }
 
 template<class T>
-std::pair<T,double> bi::Driver::choose(T* parameter,
+double bi::Driver::choose(T* parameter,
     const std::initializer_list<T>& values) {
   assert(values.size() > 0);
 
@@ -305,5 +319,6 @@ std::pair<T,double> bi::Driver::choose(T* parameter,
     }
     std::cerr << std::endl;
   }
-  return std::make_pair(chosen, t);
+  *parameter = chosen;
+  return t;
 }

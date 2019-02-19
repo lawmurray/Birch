@@ -38,7 +38,7 @@ int main(int argc, char** argv) {
     } else if (prog.compare("docs") == 0) {
       driver.docs();
     } else {
-      driver.run(prog + "_");  // underscore suffix for user-specified names
+      driver.run(prog);
     }
     return 0;
   } catch (Exception& e) {
