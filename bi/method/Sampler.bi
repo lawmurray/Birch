@@ -45,5 +45,6 @@ class Sampler {
     buffer.set("nsamples", nsamples);
     buffer.set("ncheckpoints", ncheckpoints);
     buffer.set("verbose", verbose);
+    configWrite(buffer);
   }
 }

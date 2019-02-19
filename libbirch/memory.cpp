@@ -33,6 +33,7 @@ std::atomic<char*> bi::buffer(heap());
 char* bi::bufferStart;
 size_t bi::bufferSize;
 bi::Pool* bi::pool = new bi::Pool[64*nthreads];
+std::atomic<size_t> bi::memoryUse(0);
 
 /* declared in clone.hpp, here to ensure order of initialization for global
  * variables */
@@ -76,6 +77,8 @@ bi::Memo* root() {
 
 void* bi::allocate(const size_t n) {
   assert(n > 0u);
+
+  memoryUse.fetch_add(n, std::memory_order_relaxed);
 #if !ENABLE_MEMORY_POOL
   return std::malloc(n);
 #else
@@ -102,6 +105,8 @@ void bi::deallocate(void* ptr, const size_t n, const unsigned tid) {
   assert(ptr);
   assert(n > 0u);
   assert(tid < nthreads);
+
+  memoryUse.fetch_sub(n, std::memory_order_relaxed);
 #if !ENABLE_MEMORY_POOL
   std::free(ptr);
 #else
@@ -114,6 +119,8 @@ void bi::deallocate(void* ptr, const unsigned n, const unsigned tid) {
   assert(ptr);
   assert(n > 0u);
   assert(tid < nthreads);
+
+  memoryUse.fetch_sub(n, std::memory_order_relaxed);
 #if !ENABLE_MEMORY_POOL
   std::free(ptr);
 #else
@@ -127,6 +134,8 @@ void* bi::reallocate(void* ptr1, const size_t n1, const unsigned tid1, const siz
   assert(n1 > 0u);
   assert(tid < nthreads);
   assert(n2 > 0u);
+
+  memoryUse.fetch_add(n2 > n1 ? n2 - n1 : n1 - n2, std::memory_order_relaxed);
 #if !ENABLE_MEMORY_POOL
   return std::realloc(ptr1, n2);
 #else

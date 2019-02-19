@@ -44,6 +44,16 @@ class ParticleFilter < Sampler {
    * For each checkpoint, was resampling performed?
    */
   r:List<Boolean>;
+  
+  /**
+   * At each checkpoint, how much memory is in use?
+   */
+  memory:List<Integer>;
+  
+  /**
+   * At each checkpoint, what is the elapsed wallclock time?
+   */
+  elapsed:List<Real>; 
     
   /**
    * Number of particles.
@@ -64,7 +74,7 @@ class ParticleFilter < Sampler {
       ncheckpoints <- m.checkpoints();
     }
 
-    /* sample */  
+    reset();
     start(m);
     if (verbose) {
       stderr.print("checkpoints:");
@@ -92,9 +102,21 @@ class ParticleFilter < Sampler {
   }
 
   /**
+   * Reset.
+   */
+  function reset() {
+    Z.clear();
+    e.clear();
+    r.clear();
+    memory.clear();
+    elapsed.clear();
+  }
+
+  /**
    * Start.
    */  
   function start(m:Model) {
+    tic();
     auto f0 <- particle(m);
     f1:(Model,Real)![nparticles];
     x1:Model[nparticles];
@@ -106,9 +128,6 @@ class ParticleFilter < Sampler {
     x <- x1;
     w <- vector(0.0, nparticles);
     a <- iota(1, nparticles);
-    Z.clear();
-    e.clear();
-    r.clear();
   }
   
   /**
@@ -198,7 +217,9 @@ class ParticleFilter < Sampler {
     } else {
       this.Z.pushBack(this.Z.back() + Z);
     }
-  }  
+    elapsed.pushBack(toc());
+    memory.pushBack(memoryUse());
+  }
 
   /**
    * Finish the filter.
@@ -229,6 +250,8 @@ class ParticleFilter < Sampler {
     buffer.set("levidence", Z);
     buffer.set("ess", e);
     buffer.set("resample", r);
+    buffer.set("elapsed", elapsed);
+    buffer.set("memory", memory);
   }
 }
 

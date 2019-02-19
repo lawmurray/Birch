@@ -30,6 +30,11 @@ extern size_t bufferSize;
 extern Pool* pool;
 
 /**
+ * Number of bytes of memory currently in use (excluding that in pools).
+ */
+extern std::atomic<size_t> memoryUse;
+
+/**
  * For an allocation size, determine the index of the pool to which it
  * belongs.
  *
@@ -150,6 +155,8 @@ void* allocate(const size_t n);
 template<unsigned n>
 void* allocate() {
   static_assert(n > 0, "cannot make zero length allocation");
+
+  memoryUse.fetch_add(n, std::memory_order_relaxed);
 #if !ENABLE_MEMORY_POOL
   return std::malloc(n);
 #else
