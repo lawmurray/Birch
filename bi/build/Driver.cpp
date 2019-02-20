@@ -378,6 +378,9 @@ void bi::Driver::install() {
   autogen();
   configure();
   target("install");
+  #ifndef __APPLE__
+  system("ldconfig");  // no problem if this fails
+  #endif
 }
 
 void bi::Driver::uninstall() {
@@ -387,6 +390,9 @@ void bi::Driver::uninstall() {
   autogen();
   configure();
   target("uninstall");
+  #ifndef __APPLE__
+  system("ldconfig");  // no problem if this fails
+  #endif
 }
 
 void bi::Driver::dist() {
