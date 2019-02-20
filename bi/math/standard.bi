@@ -27,6 +27,24 @@ function log(x:Real32) -> Real32 {
 }
 
 /**
+ * Natural logarithm of one plus argument.
+ */
+function log1p(x:Real64) -> Real64 {
+  cpp {{
+  return ::log1p(x_);
+  }}
+}
+
+/**
+ * Natural logarithm of one plus argument.
+ */
+function log1p(x:Real32) -> Real32 {
+  cpp {{
+  return ::log1pf(x_);
+  }}
+}
+
+/**
  * Base-2 logarithm.
  */
 function log2(x:Real64) -> Real64 {

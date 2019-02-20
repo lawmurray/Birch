@@ -11,7 +11,7 @@ function observe_bernoulli(x:Boolean, ρ:Real) -> Real {
   if (x) {
     return log(ρ);
   } else {
-    return log(1.0 - ρ);
+    return log1p(-ρ);
   }
 }
 
@@ -45,7 +45,7 @@ function observe_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
   assert 0.0 <= ρ && ρ <= 1.0;
 
   if (0 <= x && x <= n) {
-    return x*log(ρ) + (n - x)*log(1.0 - ρ) + lchoose(n, x);
+    return x*log(ρ) + (n - x)*log1p(-ρ) + lchoose(n, x);
   } else {
     return -inf;
   }
@@ -65,7 +65,7 @@ function observe_negative_binomial(x:Integer, k:Integer, ρ:Real) -> Real {
   assert 0.0 <= ρ && ρ <= 1.0;
 
   if (x >= 0) {
-    return k*log(ρ) + x*log(1.0 - ρ) + lchoose(x + k - 1, x);
+    return k*log(ρ) + x*log1p(-ρ) + lchoose(x + k - 1, x);
   } else {
     return -inf;
   }
@@ -268,7 +268,7 @@ function observe_student_t(x:Real, ν:Real) -> Real {
   assert 0.0 < ν;
   
   z:Real <- 0.5*(ν + 1.0);
-  return lgamma(z) - 0.5*lgamma(π*ν) - lgamma(0.5*ν) - z*log(1.0 + x*x/ν);
+  return lgamma(z) - 0.5*lgamma(π*ν) - lgamma(0.5*ν) - z*log1p(x*x/ν);
 }
 
 /**
@@ -301,7 +301,7 @@ function observe_beta(x:Real, α:Real, β:Real) -> Real {
   assert 0.0 < β;
 
   if (0.0 < x && x < 1.0) {
-    return (α - 1.0)*log(x) + (β - 1.0)*log(1.0 - x) - lbeta(α, β);
+    return (α - 1.0)*log(x) + (β - 1.0)*log1p(-x) - lbeta(α, β);
   } else {
     return -inf;
   }
@@ -478,7 +478,7 @@ function observe_lomax(x:Real, λ:Real, α:Real) -> Real {
   assert 0.0 < λ;
   assert 0.0 < α;
   if x >= 0.0 {
-    return log(α) - log(λ) - (α+1.0)*log(1.0+x/λ);
+    return log(α) - log(λ) - (α + 1.0)*log1p(x/λ);
   } else {
     return -inf;
   }
@@ -644,7 +644,7 @@ function observe_multivariate_gaussian(x:Real[_], μ:Real[_], σ2:Real) -> Real 
 function observe_multivariate_student_t(x:Real[_], ν:Real, μ:Real[_],
     Λ:Real[_,_]) -> Real {
   D:Integer <- length(μ);
-  return -0.5*(ν + D)*log(1.0 + dot(x - μ, Λ*(x - μ))/ν) +
+  return -0.5*(ν + D)*log1p(dot(x - μ, Λ*(x - μ))/ν) +
       lgamma(0.5*(ν + D)) - lgamma(0.5*ν) + 0.5*(lcholdet(Λ) - D*log(ν*π));
 }
 
@@ -662,7 +662,7 @@ function observe_multivariate_student_t(x:Real[_], ν:Real, μ:Real[_],
 function observe_multivariate_student_t(x:Real[_], ν:Real, μ:Real[_],
     λ:Real) -> Real {
   D:Integer <- length(μ);
-  return -0.5*(ν + D)*log(1.0 + dot(x - μ)*λ/ν) + lgamma(0.5*(ν + D)) -
+  return -0.5*(ν + D)*log1p(dot(x - μ)*λ/ν) + lgamma(0.5*(ν + D)) -
       lgamma(0.5*ν) + 0.5*D*(log(λ) - log(ν*π));
 }
 

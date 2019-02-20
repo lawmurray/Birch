@@ -129,7 +129,7 @@ function lchoose(x:Real64, y:Real64) -> Real64 {
   assert x >= y;
   
   if (y == 0.0) {
-    return log(1.0);
+    return 0.0;
   } else {
     // see Boost binomial_coefficient function for this implementation
     return -log(y) - lbeta(y, x - y + 1.0);
