@@ -431,7 +431,7 @@ void bi::Driver::clean() {
 void bi::Driver::tune() {
   meta();
 
-  verbose = false;  // makes things tidier
+  verbose = true;  // makes things tidier
   unity = true;     // makes compile faster
   debug = false;    // makes run faster
 
@@ -1206,7 +1206,9 @@ void bi::Driver::target(const std::string& cmd) {
   /* concurrency */
   unsigned ncores = std::thread::hardware_concurrency();
   if (ncores > 1) {
-    buf << " -j " << ncores;
+    buf << " -j " << ncores << " --output-sync=target";
+    // ^ --output-sync seems to get around occasional (spurious?)
+    //   "write error: stdout" errors from make with many concurrent jobs
   }
 
   /* target */
