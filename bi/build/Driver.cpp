@@ -523,7 +523,7 @@ double bi::Driver::time() {
   std::vector<char*> xargv( { &key[0], &value[0] });
   std::chrono::time_point < std::chrono::system_clock > start =
       std::chrono::system_clock::now();
-  driver.run("run", xargv);
+  driver.run("time", xargv);
   std::chrono::time_point < std::chrono::system_clock > stop =
       std::chrono::system_clock::now();
   std::chrono::duration<double> elapsed = stop - start;
