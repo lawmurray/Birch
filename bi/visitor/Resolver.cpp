@@ -108,12 +108,15 @@ bi::Expression* bi::Resolver::modify(Assign* o) {
     return assign->accept(this);
   } else {
     Modifier::modify(o);
-    if (!o->left->isAssignable()) {
-      throw NotAssignableException(o);
-    }
-    if (!o->right->type->definitely(*o->left->type)
-        && (!o->left->type->isClass()
-            || !o->left->type->getClass()->hasAssignment(o->right->type))) {
+    if (o->right->type->definitely(*o->left->type)) {
+      if (!o->left->isAssignable()) {
+        throw NotAssignableException(o);
+      }
+    } else if (o->left->type->isClass()) {
+      if (!o->left->type->getClass()->hasAssignment(o->right->type)) {
+        throw AssignmentException(o);
+      }
+    } else {
       throw AssignmentException(o);
     }
     o->type = o->left->type;
