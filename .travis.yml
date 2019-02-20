@@ -22,7 +22,7 @@ matrix:
             - libtool
             - flex
             - bison
-            - libboost-dev
+            - libboost-all-dev
 script:
   - ./autogen.sh && ./configure && make && sudo make install
 notifications:
