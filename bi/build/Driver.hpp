@@ -213,6 +213,11 @@ private:
   bool verbose;
 
   /**
+   * Is the memory pool enabled?
+   */
+  bool memoryPool;
+
+  /**
    * Is lazy deep clone enabled?
    */
   bool lazyDeepClone;

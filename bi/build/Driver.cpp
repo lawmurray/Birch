@@ -29,6 +29,7 @@ bi::Driver::Driver(int argc, char** argv) :
     warnings(true),
     debug(true),
     verbose(true),
+    memoryPool(true),
     lazyDeepClone(true),
     cloneMemo(true),
     ancestryMemo(true),
@@ -61,6 +62,8 @@ bi::Driver::Driver(int argc, char** argv) :
     DISABLE_DEBUG_ARG,
     ENABLE_VERBOSE_ARG,
     DISABLE_VERBOSE_ARG,
+    ENABLE_MEMORY_POOL_ARG,
+    DISABLE_MEMORY_POOL_ARG,
     ENABLE_LAZY_DEEP_CLONE_ARG,
     DISABLE_LAZY_DEEP_CLONE_ARG,
     ENABLE_CLONE_MEMO_ARG,
@@ -75,38 +78,41 @@ bi::Driver::Driver(int argc, char** argv) :
 
   int c, option_index;
   option long_options[] = {
-      { "work-dir", required_argument, 0, WORK_DIR_ARG }, { "share-dir",
-          required_argument, 0, SHARE_DIR_ARG }, { "include-dir",
-          required_argument, 0, INCLUDE_DIR_ARG }, { "lib-dir",
-          required_argument, 0, LIB_DIR_ARG }, { "arch", required_argument, 0,
-          ARCH_ARG }, { "prefix", required_argument, 0, PREFIX_ARG }, {
-          "name", required_argument, 0, NAME_ARG }, { "enable-unity",
-          no_argument, 0, ENABLE_UNITY_ARG }, { "disable-unity", no_argument,
-          0, DISABLE_UNITY_ARG }, { "enable-static", no_argument, 0,
-          ENABLE_STATIC_ARG }, { "disable-static", no_argument, 0,
-          DISABLE_STATIC_ARG }, { "enable-shared", no_argument, 0,
-          ENABLE_SHARED_ARG }, { "disable-shared", no_argument, 0,
-          DISABLE_SHARED_ARG }, { "enable-openmp", no_argument, 0,
-          ENABLE_OPENMP_ARG }, { "disable-openmp", no_argument, 0,
-          DISABLE_OPENMP_ARG }, { "enable-warnings", no_argument, 0,
-          ENABLE_WARNINGS_ARG }, { "disable-warnings", no_argument, 0,
-          DISABLE_WARNINGS_ARG }, { "enable-debug", no_argument, 0,
-          ENABLE_DEBUG_ARG }, { "disable-debug", no_argument, 0,
-          DISABLE_DEBUG_ARG }, { "enable-verbose", no_argument, 0,
-          ENABLE_VERBOSE_ARG }, { "disable-verbose", no_argument, 0,
-          DISABLE_VERBOSE_ARG }, { "enable-lazy-deep-clone", no_argument, 0,
-          ENABLE_LAZY_DEEP_CLONE_ARG }, { "disable-lazy-deep-clone",
-          no_argument, 0, DISABLE_LAZY_DEEP_CLONE_ARG }, {
-          "enable-clone-memo", no_argument, 0, ENABLE_CLONE_MEMO_ARG }, {
-          "disable-clone-memo", no_argument, 0, DISABLE_CLONE_MEMO_ARG }, {
-          "enable-ancestry-memo", no_argument, 0, ENABLE_ANCESTRY_MEMO_ARG },
+      { "work-dir", required_argument, 0, WORK_DIR_ARG },
+      { "share-dir", required_argument, 0, SHARE_DIR_ARG },
+      { "include-dir", required_argument, 0, INCLUDE_DIR_ARG },
+      { "lib-dir", required_argument, 0, LIB_DIR_ARG },
+      { "arch", required_argument, 0, ARCH_ARG },
+      { "prefix", required_argument, 0, PREFIX_ARG },
+      { "name", required_argument, 0, NAME_ARG },
+      { "enable-unity", no_argument, 0, ENABLE_UNITY_ARG },
+      { "disable-unity", no_argument, 0, DISABLE_UNITY_ARG },
+      { "enable-static", no_argument, 0, ENABLE_STATIC_ARG },
+      { "disable-static", no_argument, 0, DISABLE_STATIC_ARG },
+      { "enable-shared", no_argument, 0, ENABLE_SHARED_ARG },
+      { "disable-shared", no_argument, 0, DISABLE_SHARED_ARG },
+      { "enable-openmp", no_argument, 0, ENABLE_OPENMP_ARG },
+      { "disable-openmp", no_argument, 0, DISABLE_OPENMP_ARG },
+      { "enable-warnings", no_argument, 0, ENABLE_WARNINGS_ARG },
+      { "disable-warnings", no_argument, 0, DISABLE_WARNINGS_ARG },
+      { "enable-debug", no_argument, 0, ENABLE_DEBUG_ARG },
+      { "disable-debug", no_argument, 0, DISABLE_DEBUG_ARG },
+      { "enable-verbose", no_argument, 0, ENABLE_VERBOSE_ARG },
+      { "disable-verbose", no_argument, 0, DISABLE_VERBOSE_ARG },
+      { "enable-memory-pool", no_argument, 0, ENABLE_MEMORY_POOL_ARG },
+      { "disable-memory-pool", no_argument, 0, DISABLE_MEMORY_POOL_ARG },
+      { "enable-lazy-deep-clone", no_argument, 0, ENABLE_LAZY_DEEP_CLONE_ARG },
+      { "disable-lazy-deep-clone", no_argument, 0, DISABLE_LAZY_DEEP_CLONE_ARG },
+      { "enable-clone-memo", no_argument, 0, ENABLE_CLONE_MEMO_ARG },
+      { "disable-clone-memo", no_argument, 0, DISABLE_CLONE_MEMO_ARG },
+      { "enable-ancestry-memo", no_argument, 0, ENABLE_ANCESTRY_MEMO_ARG },
       { "disable-ancestry-memo", no_argument, 0, DISABLE_ANCESTRY_MEMO_ARG },
-      { "clone-memo-initial-size", required_argument, 0,
-          CLONE_MEMO_INITIAL_SIZE_ARG }, { "clone-memo-delta",
-          required_argument, 0, CLONE_MEMO_DELTA_ARG }, {
-          "ancestry-memo-initial-size", required_argument, 0,
-          ANCESTRY_MEMO_INITIAL_SIZE_ARG }, { "ancestry-memo-delta",
-          required_argument, 0, ANCESTRY_MEMO_DELTA_ARG }, { 0, 0, 0, 0 } };
+      { "clone-memo-initial-size", required_argument, 0, CLONE_MEMO_INITIAL_SIZE_ARG },
+      { "clone-memo-delta", required_argument, 0, CLONE_MEMO_DELTA_ARG },
+      { "ancestry-memo-initial-size", required_argument, 0, ANCESTRY_MEMO_INITIAL_SIZE_ARG },
+      { "ancestry-memo-delta", required_argument, 0, ANCESTRY_MEMO_DELTA_ARG },
+      { 0, 0, 0, 0 }
+  };
   const char* short_options = "-";  // treats non-options as short option 1
 
   /* mutable copy of argv and argc */
@@ -180,6 +186,12 @@ bi::Driver::Driver(int argc, char** argv) :
       break;
     case DISABLE_VERBOSE_ARG:
       verbose = false;
+      break;
+    case ENABLE_MEMORY_POOL_ARG:
+      memoryPool = true;
+      break;
+    case DISABLE_MEMORY_POOL_ARG:
+      memoryPool = false;
       break;
     case ENABLE_LAZY_DEEP_CLONE_ARG:
       lazyDeepClone = true;
@@ -1077,6 +1089,11 @@ void bi::Driver::configure() {
     }
 
     /* defines */
+    if (memoryPool) {
+      cppflags << " -DENABLE_MEMORY_POOL=1";
+    } else {
+      cppflags << " -DENABLE_MEMORY_POOL=0";
+    }
     if (lazyDeepClone) {
       cppflags << " -DENABLE_LAZY_DEEP_CLONE=1";
     } else {
@@ -1231,6 +1248,7 @@ std::string bi::Driver::suffix() const {
   buf << sharedLib << ' ';
   buf << openmp << ' ';
   buf << debug << ' ';
+  buf << memoryPool << ' ';
   buf << lazyDeepClone << ' ';
   buf << cloneMemo << ' ';
   buf << ancestryMemo << ' ';
