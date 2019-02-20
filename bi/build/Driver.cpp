@@ -378,9 +378,7 @@ void bi::Driver::install() {
   autogen();
   configure();
   target("install");
-  #ifndef __APPLE__
-  system("ldconfig");  // no problem if this fails
-  #endif
+  ldconfig();
 }
 
 void bi::Driver::uninstall() {
@@ -390,9 +388,7 @@ void bi::Driver::uninstall() {
   autogen();
   configure();
   target("uninstall");
-  #ifndef __APPLE__
-  system("ldconfig");  // no problem if this fails
-  #endif
+  ldconfig();
 }
 
 void bi::Driver::dist() {
@@ -1242,6 +1238,15 @@ void bi::Driver::target(const std::string& cmd) {
 
   /* change back to original working dir */
   fs::current_path(previous_dir);
+}
+
+void bi::Driver::ldconfig() {
+  #ifndef __APPLE__
+  auto euid = geteuid();
+  if (euid == 0) {
+    system("ldconfig");
+  }
+  #endif
 }
 
 std::string bi::Driver::suffix() const {

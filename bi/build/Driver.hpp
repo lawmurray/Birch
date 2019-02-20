@@ -111,6 +111,12 @@ private:
   void target(const std::string& cmd = "");
 
   /**
+   * Run `ldconfig`, if on a platform where this is necessary, and running
+   * under a user account where this is possible.
+   */
+  void ldconfig();
+
+  /**
    * Compile the package and all dependencies with the current options, then
    * execute the `run` program of the package and return its total execution
    * time.
