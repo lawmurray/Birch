@@ -75,39 +75,38 @@ bi::Driver::Driver(int argc, char** argv) :
 
   int c, option_index;
   option long_options[] = {
-      { "work-dir", required_argument, 0, WORK_DIR_ARG },
-      { "share-dir", required_argument, 0, SHARE_DIR_ARG },
-      { "include-dir", required_argument, 0, INCLUDE_DIR_ARG },
-      { "lib-dir", required_argument, 0, LIB_DIR_ARG },
-      { "arch", required_argument, 0, ARCH_ARG },
-      { "prefix", required_argument, 0, PREFIX_ARG },
-      { "name", required_argument, 0, NAME_ARG },
-      { "enable-unity", no_argument, 0, ENABLE_UNITY_ARG },
-      { "disable-unity", no_argument, 0, DISABLE_UNITY_ARG },
-      { "enable-static", no_argument, 0, ENABLE_STATIC_ARG },
-      { "disable-static", no_argument, 0, DISABLE_STATIC_ARG },
-      { "enable-shared", no_argument, 0, ENABLE_SHARED_ARG },
-      { "disable-shared", no_argument, 0, DISABLE_SHARED_ARG },
-      { "enable-openmp", no_argument, 0, ENABLE_OPENMP_ARG },
-      { "disable-openmp", no_argument, 0, DISABLE_OPENMP_ARG },
-      { "enable-warnings", no_argument, 0, ENABLE_WARNINGS_ARG },
-      { "disable-warnings", no_argument, 0, DISABLE_WARNINGS_ARG },
-      { "enable-debug", no_argument, 0, ENABLE_DEBUG_ARG },
-      { "disable-debug", no_argument, 0, DISABLE_DEBUG_ARG },
-      { "enable-verbose", no_argument, 0, ENABLE_VERBOSE_ARG },
-      { "disable-verbose", no_argument, 0, DISABLE_VERBOSE_ARG },
-      { "enable-lazy-deep-clone", no_argument, 0, ENABLE_LAZY_DEEP_CLONE_ARG },
-      { "disable-lazy-deep-clone", no_argument, 0, DISABLE_LAZY_DEEP_CLONE_ARG },
-      { "enable-clone-memo", no_argument, 0, ENABLE_CLONE_MEMO_ARG },
-      { "disable-clone-memo", no_argument, 0, DISABLE_CLONE_MEMO_ARG },
-      { "enable-ancestry-memo", no_argument, 0, ENABLE_ANCESTRY_MEMO_ARG },
+      { "work-dir", required_argument, 0, WORK_DIR_ARG }, { "share-dir",
+          required_argument, 0, SHARE_DIR_ARG }, { "include-dir",
+          required_argument, 0, INCLUDE_DIR_ARG }, { "lib-dir",
+          required_argument, 0, LIB_DIR_ARG }, { "arch", required_argument, 0,
+          ARCH_ARG }, { "prefix", required_argument, 0, PREFIX_ARG }, {
+          "name", required_argument, 0, NAME_ARG }, { "enable-unity",
+          no_argument, 0, ENABLE_UNITY_ARG }, { "disable-unity", no_argument,
+          0, DISABLE_UNITY_ARG }, { "enable-static", no_argument, 0,
+          ENABLE_STATIC_ARG }, { "disable-static", no_argument, 0,
+          DISABLE_STATIC_ARG }, { "enable-shared", no_argument, 0,
+          ENABLE_SHARED_ARG }, { "disable-shared", no_argument, 0,
+          DISABLE_SHARED_ARG }, { "enable-openmp", no_argument, 0,
+          ENABLE_OPENMP_ARG }, { "disable-openmp", no_argument, 0,
+          DISABLE_OPENMP_ARG }, { "enable-warnings", no_argument, 0,
+          ENABLE_WARNINGS_ARG }, { "disable-warnings", no_argument, 0,
+          DISABLE_WARNINGS_ARG }, { "enable-debug", no_argument, 0,
+          ENABLE_DEBUG_ARG }, { "disable-debug", no_argument, 0,
+          DISABLE_DEBUG_ARG }, { "enable-verbose", no_argument, 0,
+          ENABLE_VERBOSE_ARG }, { "disable-verbose", no_argument, 0,
+          DISABLE_VERBOSE_ARG }, { "enable-lazy-deep-clone", no_argument, 0,
+          ENABLE_LAZY_DEEP_CLONE_ARG }, { "disable-lazy-deep-clone",
+          no_argument, 0, DISABLE_LAZY_DEEP_CLONE_ARG }, {
+          "enable-clone-memo", no_argument, 0, ENABLE_CLONE_MEMO_ARG }, {
+          "disable-clone-memo", no_argument, 0, DISABLE_CLONE_MEMO_ARG }, {
+          "enable-ancestry-memo", no_argument, 0, ENABLE_ANCESTRY_MEMO_ARG },
       { "disable-ancestry-memo", no_argument, 0, DISABLE_ANCESTRY_MEMO_ARG },
-      { "clone-memo-initial-size", required_argument, 0, CLONE_MEMO_INITIAL_SIZE_ARG },
-      { "clone-memo-delta", required_argument, 0, CLONE_MEMO_DELTA_ARG },
-      { "ancestry-memo-initial-size", required_argument, 0, ANCESTRY_MEMO_INITIAL_SIZE_ARG },
-      { "ancestry-memo-delta", required_argument, 0, ANCESTRY_MEMO_DELTA_ARG },
-      { 0, 0, 0, 0 }
-  };
+      { "clone-memo-initial-size", required_argument, 0,
+          CLONE_MEMO_INITIAL_SIZE_ARG }, { "clone-memo-delta",
+          required_argument, 0, CLONE_MEMO_DELTA_ARG }, {
+          "ancestry-memo-initial-size", required_argument, 0,
+          ANCESTRY_MEMO_INITIAL_SIZE_ARG }, { "ancestry-memo-delta",
+          required_argument, 0, ANCESTRY_MEMO_DELTA_ARG }, { 0, 0, 0, 0 } };
   const char* short_options = "-";  // treats non-options as short option 1
 
   /* mutable copy of argv and argc */
@@ -226,16 +225,19 @@ bi::Driver::Driver(int argc, char** argv) :
 
   /* some error checking */
   if (!isPower2(cloneMemoInitialSize)) {
-    throw DriverException("--clone-memo-initial-size must be a positive power of 2.");
+    throw DriverException(
+        "--clone-memo-initial-size must be a positive power of 2.");
   }
   if (cloneMemoDelta <= 0) {
     throw DriverException("--clone-memo-delta must be a positive integer.");
   }
   if (!isPower2(ancestryMemoInitialSize)) {
-    throw DriverException("--ancestry-memo-initial-size must be a positive power of 2.");
+    throw DriverException(
+        "--ancestry-memo-initial-size must be a positive power of 2.");
   }
   if (ancestryMemoDelta <= 0) {
-    throw DriverException("--ancestry-memo-delta must be a positive integer.");
+    throw DriverException(
+        "--ancestry-memo-delta must be a positive integer.");
   }
 
   /* environment variables */
@@ -260,9 +262,9 @@ bi::Driver::Driver(int argc, char** argv) :
   if (!prefix.empty()) {
     share_dirs.push_back(fs::path(prefix) / "share");
   }
-  #ifdef DATADIR
+#ifdef DATADIR
   share_dirs.push_back(fs::path(STRINGIFY(DATADIR)) / "birch");
-  #endif
+#endif
 
   /* include dirs */
   include_dirs.push_back(work_dir);
@@ -276,9 +278,9 @@ bi::Driver::Driver(int argc, char** argv) :
   if (!prefix.empty()) {
     include_dirs.push_back(fs::path(prefix) / "include");
   }
-  #ifdef INCLUDEDIR
+#ifdef INCLUDEDIR
   include_dirs.push_back(STRINGIFY(INCLUDEDIR));
-  #endif
+#endif
 
   /* lib dirs */
   if (BIRCH_LIBRARY_PATH) {
@@ -290,12 +292,13 @@ bi::Driver::Driver(int argc, char** argv) :
   if (!prefix.empty()) {
     lib_dirs.push_back(fs::path(prefix) / "lib");
   }
-  #ifdef LIBDIR
+#ifdef LIBDIR
   lib_dirs.push_back(STRINGIFY(LIBDIR));
-  #endif
+#endif
 }
 
-void bi::Driver::run(const std::string& prog, const std::vector<char*>& xargv) {
+void bi::Driver::run(const std::string& prog,
+    const std::vector<char*>& xargv) {
   /* get package information */
   meta();
 
@@ -329,7 +332,8 @@ void bi::Driver::run(const std::string& prog, const std::vector<char*>& xargv) {
     msg = dlerror();
     if (msg != NULL) {
       std::stringstream buf;
-      buf << "Could not find program " << prog << " in " << so.string() << '.';
+      buf << "Could not find program " << prog << " in " << so.string()
+          << '.';
       throw DriverException(buf.str());
     } else {
       auto argv = largv;
@@ -431,7 +435,8 @@ void bi::Driver::tune() {
   std::cerr << "setting --disable-lazy-deep-clone" << std::endl;
   driverEager.lazyDeepClone = false;
   std::cerr << "choosing --clone-memo-initial-size" << std::endl;
-  bestEager = driverEager.choose(&driverEager.cloneMemoInitialSize, initialSizes);
+  bestEager = driverEager.choose(&driverEager.cloneMemoInitialSize,
+      initialSizes);
 
   /* best lazy configuration */
   Driver driverLazy(*this);
@@ -442,16 +447,19 @@ void bi::Driver::tune() {
   std::cerr << "setting --disable-ancestry-memo" << std::endl;
   driverLazy.ancestryMemo = false;
   std::cerr << "choosing --clone-memo-initial-size" << std::endl;
-  bestLazy = driverLazy.choose(&driverLazy.cloneMemoInitialSize, initialSizes);
+  bestLazy = driverLazy.choose(&driverLazy.cloneMemoInitialSize,
+      initialSizes);
 
   /* best lazy configuration with clone memo enabled */
   Driver driverLazyCloneMemo(driverLazy);
   std::cerr << "setting --enable-clone-memo" << std::endl;
   driverLazyCloneMemo.cloneMemo = true;
   std::cerr << "choosing --clone-memo-initial-size" << std::endl;
-  bestLazyCloneMemo = driverLazyCloneMemo.choose(&driverLazyCloneMemo.cloneMemoInitialSize, initialSizes);
+  bestLazyCloneMemo = driverLazyCloneMemo.choose(
+      &driverLazyCloneMemo.cloneMemoInitialSize, initialSizes);
   std::cerr << "choosing --clone-memo-delta" << std::endl;
-  bestLazyCloneMemo = driverLazyCloneMemo.choose(&driverLazyCloneMemo.cloneMemoDelta, deltas);
+  bestLazyCloneMemo = driverLazyCloneMemo.choose(
+      &driverLazyCloneMemo.cloneMemoDelta, deltas);
   if (bestLazyCloneMemo < bestLazy) {
     bestLazy = bestLazyCloneMemo;
     driverLazy = driverLazyCloneMemo;
@@ -462,9 +470,11 @@ void bi::Driver::tune() {
   std::cerr << "setting --enable-ancestry-memo" << std::endl;
   driverLazyAncestryMemo.ancestryMemo = true;
   std::cerr << "choosing --ancestry-memo-initial-size" << std::endl;
-  bestLazyAncestryMemo = driverLazyAncestryMemo.choose(&driverLazyAncestryMemo.ancestryMemoInitialSize, initialSizes);
+  bestLazyAncestryMemo = driverLazyAncestryMemo.choose(
+      &driverLazyAncestryMemo.ancestryMemoInitialSize, initialSizes);
   std::cerr << "choosing --ancestry-memo-delta" << std::endl;
-  bestLazyAncestryMemo = driverLazyAncestryMemo.choose(&driverLazyAncestryMemo.ancestryMemoDelta, deltas);
+  bestLazyAncestryMemo = driverLazyAncestryMemo.choose(
+      &driverLazyAncestryMemo.ancestryMemoDelta, deltas);
   if (bestLazyAncestryMemo < bestLazy) {
     bestLazy = bestLazyAncestryMemo;
     driverLazy = driverLazyAncestryMemo;
@@ -474,10 +484,12 @@ void bi::Driver::tune() {
   std::cout << "suggested:";
   if (bestEager < bestLazy) {
     std::cout << " --disable-lazy-deep-clone";
-    std::cout << " --clone-memo-initial-size=" << driverEager.cloneMemoInitialSize;
+    std::cout << " --clone-memo-initial-size="
+        << driverEager.cloneMemoInitialSize;
   } else {
     std::cout << " --enable-lazy-deep-clone";
-    std::cout << " --clone-memo-initial-size=" << driverLazy.cloneMemoInitialSize;
+    std::cout << " --clone-memo-initial-size="
+        << driverLazy.cloneMemoInitialSize;
     if (driverLazy.cloneMemo) {
       std::cout << " --enable-clone-memo";
       std::cout << " --clone-memo-delta=" << driverLazy.cloneMemoDelta;
@@ -486,7 +498,8 @@ void bi::Driver::tune() {
     }
     if (driverLazy.ancestryMemo) {
       std::cout << " --enable-ancestry-memo";
-      std::cout << " --ancestry-memo-initial-size=" << driverLazy.ancestryMemoInitialSize;
+      std::cout << " --ancestry-memo-initial-size="
+          << driverLazy.ancestryMemoInitialSize;
       std::cout << " --ancestry-memo-delta=" << driverLazy.ancestryMemoDelta;
     } else {
       std::cout << " --disable-ancestry-memo";
@@ -507,10 +520,12 @@ double bi::Driver::time() {
   std::string key("--id");
   std::string value("_");
   value += suffix();
-  std::vector<char*> xargv({ &key[0], &value[0] });
-  std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
+  std::vector<char*> xargv( { &key[0], &value[0] });
+  std::chrono::time_point < std::chrono::system_clock > start =
+      std::chrono::system_clock::now();
   driver.run("run", xargv);
-  std::chrono::time_point<std::chrono::system_clock> stop = std::chrono::system_clock::now();
+  std::chrono::time_point < std::chrono::system_clock > stop =
+      std::chrono::system_clock::now();
   std::chrono::duration<double> elapsed = stop - start;
 
   return elapsed.count();
@@ -523,6 +538,8 @@ void bi::Driver::init() {
   fs::create_directory("bi");
   fs::create_directory("input");
   fs::create_directory("output");
+  fs::create_directory("config");
+  fs::create_directory("diagnostic");
   copy_with_prompt(find(share_dirs, "gitignore"), ".gitignore");
   copy_with_prompt(find(share_dirs, "LICENSE"), "LICENSE");
 
@@ -598,13 +615,14 @@ void bi::Driver::check() {
     auto path = remove_first(iter->path());
     auto name = path.filename().string();
     auto ext = path.extension().string();
-    if (path.string() == "build" || path.string() == "output" ||
-        path.string() == "site") {
+    if (path.string() == "build" || path.string() == "output"
+        || path.string() == "diagnostic" || path.string() == "site") {
       iter.no_push();
     } else if (interesting.find(ext) != interesting.end()
         && exclude.find(name) == exclude.end()) {
       if (allFiles.find(path.string()) == allFiles.end()) {
-        warn(std::string("is ") + path.string()
+        warn(
+            std::string("is ") + path.string()
                 + " missing from META.json file?");
       }
     }
@@ -653,7 +671,8 @@ void bi::Driver::docs() {
   mkdocsStream << "  - mdx_math:\n";
   mkdocsStream << "      enable_dollar_delimiter: True\n";
   mkdocsStream << "extra_javascript:\n";
-  mkdocsStream << "  - 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'\n";
+  mkdocsStream
+      << "  - 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'\n";
   mkdocsStream << "nav:\n";
 
   fs::path docs("docs"), file;
@@ -678,7 +697,8 @@ void bi::Driver::docs() {
   mkdocsStream << "  - index.md\n";
 
   std::string str = read_all("DOCS.md");
-  std::regex reg("(?:^|\r?\n)(##?) (.*?)(?=\r?\n|$)", std::regex_constants::ECMAScript);
+  std::regex reg("(?:^|\r?\n)(##?) (.*?)(?=\r?\n|$)",
+      std::regex_constants::ECMAScript);
   std::smatch match;
   std::string str1 = str, h1, h2;
   while (std::regex_search(str1, match, reg)) {
@@ -863,7 +883,7 @@ void bi::Driver::setup() {
   /* required programs */
   for (auto file : metaFiles["require.program"]) {
     configureStream << "  AC_PATH_PROG([PROG], [" << file.string()
-                  << "], [])\n";
+        << "], [])\n";
     configureStream << "  if test \"$PROG\" = \"\"; then\n";
     configureStream << "    AC_MSG_ERROR([" << file.string() << " program "
         << "required by " << packageName << " package not found.])\n";
@@ -874,7 +894,8 @@ void bi::Driver::setup() {
   configureStream << "AC_CONFIG_FILES([Makefile])\n";
   configureStream << "AC_OUTPUT\n";
 
-  newConfigure = write_all_if_different("configure.ac", configureStream.str());
+  newConfigure = write_all_if_different("configure.ac",
+      configureStream.str());
 
   /* update Makefile.am */
   contents = read_all(find(share_dirs, "Makefile.am"));
@@ -1023,20 +1044,21 @@ void bi::Driver::configure() {
       cflags << " -march=native";
       cxxflags << " -march=native";
       if (openmp) {
-        #ifdef __APPLE__
+#ifdef __APPLE__
         /* the system compiler on Apple requires different options for
          * OpenMP; disable the configure check and customize these */
         options << " --disable-openmp";
         cppflags << " -Xpreprocessor -fopenmp";
-        #else
+#else
         options << " --enable-openmp";
-        #endif
+#endif
       } else {
         options << " --disable-openmp";
       }
     } else {
-      throw DriverException("unknown architecture '" + arch +
-          "'; valid values are 'native', 'js' and 'wasm'");
+      throw DriverException(
+          "unknown architecture '" + arch
+              + "'; valid values are 'native', 'js' and 'wasm'");
     }
     if (warnings) {
       cflags << " -Wall";
@@ -1080,14 +1102,12 @@ void bi::Driver::configure() {
         ++iter) {
       cppflags << " -I" << iter->string();
     }
-    for (auto iter = lib_dirs.begin(); iter != lib_dirs.end();
-        ++iter) {
+    for (auto iter = lib_dirs.begin(); iter != lib_dirs.end(); ++iter) {
       ldflags << " -L" << iter->string();
     }
 
     /* library path */
-    for (auto iter = lib_dirs.begin(); iter != lib_dirs.end();
-        ++iter) {
+    for (auto iter = lib_dirs.begin(); iter != lib_dirs.end(); ++iter) {
       ldflags << " -Wl,-rpath," << iter->string();
     }
 
@@ -1233,15 +1253,17 @@ void bi::Driver::readFiles(const boost::property_tree::ptree& meta,
           if (checkExists && !exists(work_dir / filePath)) {
             warn(fileStr + " in META.json does not exist.");
           }
-          if (std::regex_search(fileStr, std::regex("\\s",
-              std::regex_constants::ECMAScript))) {
-            throw DriverException(std::string("file name ") + fileStr +
-                " in META.json contains whitespace, which is not supported.");
+          if (std::regex_search(fileStr,
+              std::regex("\\s", std::regex_constants::ECMAScript))) {
+            throw DriverException(
+                std::string("file name ") + fileStr
+                    + " in META.json contains whitespace, which is not supported.");
           }
-          if (filePath.parent_path().string() == "bi" &&
-              filePath.stem().string() == tarname(packageName)) {
-            throw DriverException(std::string("file name ") + fileStr +
-                " in META.json is the same as the package name, which is not supported.");
+          if (filePath.parent_path().string() == "bi"
+              && filePath.stem().string() == tarname(packageName)) {
+            throw DriverException(
+                std::string("file name ") + fileStr
+                    + " in META.json is the same as the package name, which is not supported.");
           }
           auto inserted = allFiles.insert(filePath);
           if (!inserted.second) {
