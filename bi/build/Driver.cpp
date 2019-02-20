@@ -462,9 +462,9 @@ void bi::Driver::tune() {
   std::cerr << "setting --enable-ancestry-memo" << std::endl;
   driverLazyAncestryMemo.ancestryMemo = true;
   std::cerr << "choosing --ancestry-memo-initial-size" << std::endl;
-  bestLazy = driverLazyAncestryMemo.choose(&driverLazyAncestryMemo.ancestryMemoInitialSize, initialSizes);
+  bestLazyAncestryMemo = driverLazyAncestryMemo.choose(&driverLazyAncestryMemo.ancestryMemoInitialSize, initialSizes);
   std::cerr << "choosing --ancestry-memo-delta" << std::endl;
-  bestLazy = driverLazyAncestryMemo.choose(&driverLazyAncestryMemo.ancestryMemoDelta, deltas);
+  bestLazyAncestryMemo = driverLazyAncestryMemo.choose(&driverLazyAncestryMemo.ancestryMemoDelta, deltas);
   if (bestLazyAncestryMemo < bestLazy) {
     bestLazy = bestLazyAncestryMemo;
     driverLazy = driverLazyAncestryMemo;
