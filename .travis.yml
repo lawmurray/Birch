@@ -10,8 +10,6 @@ matrix:
           packages:
             - flex
             - bison
-            - eigen
-            - libomp
 
     # Ubuntu 16.04 environment
     - os: linux
@@ -24,8 +22,7 @@ matrix:
             - libtool
             - flex
             - bison
-            - libeigen3-dev
-            - libboost-all-dev
+            - libboost-dev
 script:
   - ./autogen.sh && ./configure && make && sudo make install
 notifications:
