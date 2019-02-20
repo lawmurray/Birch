@@ -16,7 +16,11 @@ function memoryUse() -> Integer {
  */
  function memoryPool() -> Integer {
    cpp{{
+   #if ENABLE_MEMORY_POOL
    return bi::buffer.load(std::memory_order_relaxed) - bi::bufferStart;
+   #else
+   return bi::memoryUse;
+   #endif
    }}
  }
  

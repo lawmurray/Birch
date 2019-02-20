@@ -1,6 +1,7 @@
 /**
  * @file
  */
+#if ENABLE_MEMORY_POOL
 #include "libbirch/Pool.hpp"
 
 bi::Pool::Pool() :
@@ -45,3 +46,5 @@ void bi::Pool::setNext(void* block, void* value) {
     *reinterpret_cast<void**>(block) = value;
   }
 }
+
+#endif

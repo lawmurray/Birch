@@ -9,6 +9,7 @@
 #include <atomic>
 
 namespace bi {
+#if ENABLE_MEMORY_POOL
 /**
  * Buffer for heap allocations.
  */
@@ -28,6 +29,7 @@ extern size_t bufferSize;
  * Allocation pools.
  */
 extern Pool* pool;
+#endif
 
 /**
  * Number of bytes of memory currently in use (excluding that in pools).

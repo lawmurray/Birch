@@ -1,4 +1,13 @@
 /**
+ * Was `--enable-memory-pool` used for this build?
+ */
+function configMemoryPool() -> Boolean {
+  cpp{{
+  return ENABLE_MEMORY_POOL;
+  }}
+}
+
+/**
  * Was `--enable-lazy-deep-clone` used for this build?
  */
 function configLazyDeepClone() -> Boolean {
@@ -65,6 +74,7 @@ function configAncestryMemoDelta() -> Integer {
  * Output all config options to a buffer.
  */
 function configWrite(buffer:Buffer) {
+  buffer.set("memory-pool", configMemoryPool());
   buffer.set("lazy-deep-clone", configLazyDeepClone());
   buffer.set("clone-memo", configCloneMemo());
   buffer.set("ancestry-memo", configAncestryMemo());

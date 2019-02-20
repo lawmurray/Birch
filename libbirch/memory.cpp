@@ -8,16 +8,6 @@
 
 #include <unistd.h>
 
-/**
- * Allocate a large buffer for the heap.
- */
-static char* heap();
-
-/**
- * Create (once only) and return the root memo.
- */
-static bi::Memo* root();
-
 /* declared in thread.hpp, here to ensure order of initialization for global
  * variables */
 #ifdef _OPENMP
@@ -29,21 +19,20 @@ unsigned bi::tid = 0u;
 #endif
 
 /* declared in memory.hpp */
+std::atomic<size_t> bi::memoryUse(0);
+
+#if ENABLE_MEMORY_POOL
+/**
+ * Allocate a large buffer for the heap.
+ */
+static char* heap();
+
 std::atomic<char*> bi::buffer(heap());
 char* bi::bufferStart;
 size_t bi::bufferSize;
 bi::Pool* bi::pool = new bi::Pool[64*nthreads];
-std::atomic<size_t> bi::memoryUse(0);
-
-/* declared in clone.hpp, here to ensure order of initialization for global
- * variables */
-bi::Memo* bi::currentContext = root();
-bool bi::cloneUnderway = false;
 
 char* heap() {
-#if !ENABLE_MEMORY_POOL
-  return nullptr;
-#else
   /* determine a preferred size of the heap based on total physical memory */
   size_t size = sysconf(_SC_PAGE_SIZE);
   size_t npages = sysconf(_SC_PHYS_PAGES);
@@ -63,8 +52,18 @@ char* heap() {
   bi::bufferSize = n;
 
   return (char*)ptr;
-#endif
 }
+#endif
+
+/**
+ * Create (once only) and return the root memo.
+ */
+static bi::Memo* root();
+
+/* declared in clone.hpp, here to ensure order of initialization for global
+ * variables */
+bi::Memo* bi::currentContext = root();
+bool bi::cloneUnderway = false;
 
 bi::Memo* root() {
   #if ENABLE_LAZY_DEEP_CLONE

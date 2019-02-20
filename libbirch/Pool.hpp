@@ -1,6 +1,7 @@
 /**
  * @file
  */
+#if ENABLE_MEMORY_POOL
 #pragma once
 
 #include "libbirch/ExclusiveLock.hpp"
@@ -62,3 +63,5 @@ private:
   ExclusiveLock lock;
 };
 }
+
+#endif
