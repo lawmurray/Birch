@@ -133,7 +133,7 @@ class Array {
    * otherwise a resize is permitted.
    */
   Array<T,F>& operator=(const Array<T,F>& o) {
-    if (!frame.conforms(o.frame) || isShared()) {
+    if (!isView && (!frame.conforms(o.frame) || isShared())) {
       lock();
       rebase(o);
       unlock();
@@ -149,7 +149,7 @@ class Array {
    */
   template<class U, class G>
   Array<T,F>& operator=(const Array<U,G>& o) {
-    if (!frame.conforms(o.frame) || isShared()) {
+    if (!isView && (!frame.conforms(o.frame) || isShared())) {
       lock();
       rebase(o);
       unlock();
@@ -163,9 +163,14 @@ class Array {
    * Move assignment.
    */
   Array<T,F>& operator=(Array<T,F> && o) {
-    if (!frame.conforms(o.frame) || isShared()) {
+    if (!isView && (!frame.conforms(o.frame) || isShared())) {
       lock();
-      rebase(std::move(o));
+      if (o.isView) {
+        Array<T,F> o1(o, false);
+        rebase(std::move(o1));
+      } else {
+        rebase(std::move(o));
+      }
       unlock();
     } else {
       assign(o);
@@ -178,7 +183,7 @@ class Array {
    * conform to that of the sequence, otherwise a resize is permitted.
    */
   Array<T,F>& operator=(const typename sequence_type<T,F::count()>::type& o) {
-    if (!frame.conforms(o.frame) || isShared()) {
+    if (!isView && (!frame.conforms(o.frame) || isShared())) {
       lock();
       rebase(o);
       unlock();
@@ -327,7 +332,7 @@ class Array {
   template<class DerivedType, typename = std::enable_if_t<
       is_eigen_compatible<DerivedType>::value>>
   Array<T,F>& operator=(const Eigen::MatrixBase<DerivedType>& o) {
-    if (!frame.conforms(o.rows(), o.cols()) || isShared()) {
+    if (!isView && (!frame.conforms(o.rows(), o.cols()) || isShared())) {
       lock();
       rebase(o);
       unlock();
@@ -594,11 +599,10 @@ private:
    * buffer with it, using copy on write).
    */
   void rebase(Array<T,F> && o) {
-    assert(!isView && offset == 0);
+    assert(!isView);
+    assert(!o.isView);
     std::swap(frame, o.frame);
     o.buffer = buffer.exchange(o.buffer.load(std::memory_order_relaxed), std::memory_order_relaxed);  // can't std::swap atomics
-    std::swap(offset, o.offset);
-    std::swap(isView, o.isView);
   }
 
   /**
@@ -760,8 +764,8 @@ template<class T, class F>
 bi::Array<T,F>::Array(const Array<T,F>& o, const bool canShare) :
     frame(o.frame),
     buffer(nullptr),
-    offset(o.offset),
-    isView(o.isView) {
+    offset(0),
+    isView(false) {
   if (!canShare || (cloneUnderway && !is_value<T>::value)) {
     /* either the caller has explicitly requested a copy (canShare), or we
      * are cloning an array that is not of purely value type, in which case
@@ -771,11 +775,13 @@ bi::Array<T,F>::Array(const Array<T,F>& o, const bool canShare) :
     copy(o);
   } else {
     auto tmp = o.buffer.load(std::memory_order_relaxed);
-    if (tmp && !isView) {
+    if (tmp && !o.isView) {
       /* views do not increment the buffer use count, as they are meant to be
        * temporary and should not outlive the buffer itself */
       tmp->incUsage();
     }
     buffer = tmp;
+    offset = o.offset;
+    isView = o.isView;
   }
 }
