@@ -33,27 +33,27 @@ class ParticleFilter < Sampler {
    * For each checkpoint, the logarithm of the normalizing constant estimate
    * so far.
    */
-  Z:List<Real>;
+  Z:Vector<Real>;
   
   /**
    * For each checkpoint, the effective sample size (ESS).
    */
-  e:List<Real>;
+  e:Vector<Real>;
   
   /**
    * For each checkpoint, was resampling performed?
    */
-  r:List<Boolean>;
+  r:Vector<Boolean>;
   
   /**
    * At each checkpoint, how much memory is in use?
    */
-  memory:List<Integer>;
+  memory:Vector<Integer>;
   
   /**
    * At each checkpoint, what is the elapsed wallclock time?
    */
-  elapsed:List<Real>; 
+  elapsed:Vector<Real>; 
     
   /**
    * Number of particles.

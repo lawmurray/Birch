@@ -6,27 +6,27 @@ class ConditionalParticleFilter < ParticleFilter {
   /**
    * Conditioned path, drawn from previous iteration.
    */
-  x0:List<Model>;
+  x0:Vector<Model>;
   
   /**
    * Conditioned path weights, drawn from previous iteration.
    */
-  w0:List<Real>;
+  w0:Vector<Real>;
   
   /**
    * All paths, in current iteration.
    */
-  X:List<Model>[_];
+  X:Vector<Model>[_];
 
   /**
    * All weights, in current iteration.
    */
-  W:List<Real>[_];
+  W:Vector<Real>[_];
    
   function start(m:Model) {
     super.start(m);
-    X1:List<Model>[nparticles];
-    W1:List<Real>[nparticles];
+    X1:Vector<Model>[nparticles];
+    W1:Vector<Real>[nparticles];
     X <- X1;
     W <- W1;
   }
@@ -44,8 +44,8 @@ class ConditionalParticleFilter < ParticleFilter {
     auto X0 <- X;
     auto W0 <- W;
     for n:Integer in 1..nparticles {
-      X[n] <- clone<List<Model>>(X0[a[n]]);
-      W[n] <- clone<List<Real>>(W0[a[n]]);
+      X[n] <- clone<Vector<Model>>(X0[a[n]]);
+      W[n] <- clone<Vector<Real>>(W0[a[n]]);
     }
   }
 

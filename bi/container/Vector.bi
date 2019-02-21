@@ -30,7 +30,9 @@ class Vector<Type> {
    * Clear all elements.
    */
   function clear() {
-    shrink(0);
+    if nelements > 0 {
+      shrink(0);
+    }
   }
   
   /**
