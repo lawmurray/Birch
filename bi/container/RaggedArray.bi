@@ -161,7 +161,7 @@ class RaggedArray<Type> {
     if (n == 0) {
       nelements <- 0;
     } else {
-      nelements <- offsets[n] + ncols[n] - 1;
+      nelements <- offsets[n] + ncols[n];
     }
     nrows <- n;
     
@@ -180,11 +180,15 @@ class RaggedArray<Type> {
     assert n < ncols[i];
   
     d:Integer <- ncols[i] - n;
-    values[(offsets[i] + n)..(nelements - d)] <- values[(offsets[i] + n + d)..nelements];
-    nelements <- nelements - d;
+    values[(offsets[i] + n + 1)..(nelements - d)] <- values[(offsets[i] + n + 1 + d)..nelements];
     cpp{{
     self->values_.shrink(bi::make_frame(self->nelements_));
     }}
+    ncols[i] <- n;
+    if i + 1 <= nrows {
+      offsets[(i + 1)..nrows] <- offsets[(i + 1)..nrows] - d;
+    }
+    nelements <- nelements - d;
   }
 
   /**
@@ -198,7 +202,7 @@ class RaggedArray<Type> {
     assert n > nrows;
 
     cpp{{    
-    self->offsets_.enlarge(bi::make_frame(n_), self->nelements_ + 1);
+    self->offsets_.enlarge(bi::make_frame(n_), self->nelements_);
     self->ncols_.enlarge(bi::make_frame(n_), 0);
     }}
     nrows <- n;
@@ -222,12 +226,16 @@ class RaggedArray<Type> {
     cpp{{
     self->values_.enlarge(bi::make_frame(self->nelements_ + d_), x_);
     }}
-    values[(offsets[i] + n)..(nelements + d)] <- values[(offsets[i] + n - d)..nelements];
-    for (j:Integer in (offsets[i] + n - d)..(offsets[i] + n - 1)) {
+    if offsets[i] + n + 1 <= nelements {
+      values[(offsets[i] + n + 1)..(nelements + d)] <- values[(offsets[i] + n + 1 - d)..nelements];
+    }
+    for j:Integer in (offsets[i] + n + 1 - d)..(offsets[i] + n) {
       values[j] <- x;
     }
     ncols[i] <- n;
-    offsets[(i + 1)..nrows] <- offsets[(i + 1)..nrows] + d;
+    if i + 1 <= nrows {
+      offsets[(i + 1)..nrows] <- offsets[(i + 1)..nrows] + d;
+    }
     nelements <- nelements + d;
   }
 
@@ -260,6 +268,6 @@ class RaggedArray<Type> {
   function serial(i:Integer, j:Integer) -> Integer {
     assert 0 < i && i <= nrows;
     assert 0 < j && j <= ncols[i];
-    return offsets[i] + j - 1;
+    return offsets[i] + j;
   }
 }
