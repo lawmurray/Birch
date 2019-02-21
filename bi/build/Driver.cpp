@@ -1197,9 +1197,13 @@ void bi::Driver::target(const std::string& cmd) {
   /* concurrency */
   unsigned ncores = std::thread::hardware_concurrency();
   if (ncores > 1) {
-    buf << " -j " << ncores << " --output-sync=target";
+    buf << " -j " << ncores;
+    #ifndef __APPLE__
+    buf << " --output-sync=target";
     // ^ --output-sync seems to get around occasional (spurious?)
-    //   "write error: stdout" errors from make with many concurrent jobs
+    //   "write error: stdout" errors from make with many concurrent jobs on
+    //   Ubuntu; not supported in the older version of make on macos
+    #endif
   }
 
   /* target */
