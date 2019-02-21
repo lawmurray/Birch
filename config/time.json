@@ -1,0 +1,10 @@
+{
+  "model": {
+    "class": "Multi"
+  },
+  "sampler": {
+    "verbose": true,
+    "nsamples": 1,
+    "nparticles": 4096
+  }
+}

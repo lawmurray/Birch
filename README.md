@@ -12,19 +12,14 @@ This package is licensed under the Apache License, Version 2.0 (the "License"); 
 
 This package requires the `Birch.Cairo` package, which should be installed first.
 
-To build:
+To build and install, use:
 
     birch build
-    
-To install:
-
     birch install
 
-To run:
+To run, use:
 
-    birch run
-
-Inspect the `run` program for an example of the functionality available.
+    ./run.sh
 
 
 ## References

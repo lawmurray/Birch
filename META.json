@@ -15,20 +15,22 @@
       "bi/draw.bi",
       "bi/Global.bi",
       "bi/Multi.bi",
-      "bi/run.bi",
       "bi/Track.bi"
     ],
     "data": [
     
     ],
     "other": [
+      "config/filter.json",
+      "config/simulate.json",
+      "config/time.json",
+      "input/filter.json",
+      "input/simulate.json",
       "LICENSE",
       "META.json",
       "README.md",
-      "config/filter.json",
-      "config/simulate.json",
-      "input/filter.json",
-      "input/simulate.json"
+      "run.sh",
+      "time.sh"
     ]
   }
 }
