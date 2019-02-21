@@ -431,7 +431,7 @@ void bi::Driver::clean() {
 void bi::Driver::tune() {
   meta();
 
-  verbose = true;  // makes things tidier
+  verbose = false;  // makes things tidier
   unity = true;     // makes compile faster
   debug = false;    // makes run faster
 
