@@ -21,13 +21,9 @@ program sample(
   if (seed?) {
     global.seed(seed!);
   }
-
-  /* input */
-  inputBuffer:JSONBuffer;
+  
+  /* config */
   configBuffer:JSONBuffer;
-  if (input?) {
-    inputBuffer.load(input!);
-  }
   if (config?) {
     configBuffer.load(config!);
   }
@@ -60,11 +56,17 @@ program sample(
     if (!model?) {
       error(className! + " is not a subtype of Model.");
     }
+    configBuffer.get("model", model!);
   } else {
     error("no model class specified, this should be given as model.class in the config file.");
   }
-  //configBuffer.get("model", model!);
-  inputBuffer.get(model!);
+  
+  /* input */
+  inputBuffer:JSONBuffer;
+  if (input?) {
+    inputBuffer.load(input!);
+    inputBuffer.get(model!);
+  }
   
   /* output */
   outputBuffer:JSONBuffer;
