@@ -117,6 +117,11 @@ private:
   void ldconfig();
 
   /**
+   * When a command fails to execute, get an explanation.
+   */
+  const char* explain(const std::string& cmd);
+
+  /**
    * Compile the package and all dependencies with the current options, then
    * execute the `run` program of the package and return its total execution
    * time.

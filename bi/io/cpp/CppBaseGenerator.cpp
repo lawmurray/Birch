@@ -402,9 +402,9 @@ void bi::CppBaseGenerator::visit(const MemberFiber* o) {
 
 void bi::CppBaseGenerator::visit(const Program* o) {
   if (header) {
-    line("extern \"C\" void " << o->name << "(int argc, char** argv);");
+    line("extern \"C\" int " << o->name << "(int argc, char** argv);");
   } else {
-    line("void bi::" << o->name << "(int argc, char** argv) {");
+    line("int bi::" << o->name << "(int argc, char** argv) {");
     in();
     genTraceFunction(o->name->str(), o->loc);
 
@@ -502,6 +502,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
       aux << o->braces->strip();
     }
 
+    line("return 0;");
     out();
     line("}\n");
   }

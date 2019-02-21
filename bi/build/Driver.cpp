@@ -13,6 +13,9 @@
 
 #include <getopt.h>
 #include <dlfcn.h>
+#ifdef HAVE_LIBEXPLAIN_SYSTEM_H
+#include <libexplain/system.h>
+#endif
 
 bi::Driver::Driver(int argc, char** argv) :
     /* keep these paths relative, or at least call configure with a
@@ -314,12 +317,10 @@ void bi::Driver::run(const std::string& prog,
   /* get package information */
   meta();
 
-  auto previous_dir = fs::current_path();
-  fs::current_path(work_dir);
+  CWD cwd(work_dir);
 
   /* dynamically load possible programs */
-  typedef void prog_t(int argc, char** argv);
-
+  typedef int prog_t(int argc, char** argv);
   void* handle;
   void* addr;
   char* msg;
@@ -351,12 +352,15 @@ void bi::Driver::run(const std::string& prog,
       auto argv = largv;
       argv.insert(argv.end(), xargv.begin(), xargv.end());
       fcn = reinterpret_cast<prog_t*>(addr);
-      fcn(argv.size(), argv.data());
+      int ret = fcn(argv.size(), argv.data());
+      if (ret != 0) {
+        std::stringstream buf;
+        buf << "Program " << prog << " exited with code " << ret << '.';
+        throw DriverException(buf.str());
+      }
     }
     dlclose(handle);
   }
-
-  fs::current_path(previous_dir);
 }
 
 void bi::Driver::build() {
@@ -404,9 +408,7 @@ void bi::Driver::clean() {
   meta();
   setup();
 
-  auto previous_dir = fs::current_path();
-  fs::current_path(work_dir);
-
+  CWD cwd(work_dir);
   fs::remove_all("build");
   fs::remove_all("autom4te.cache");
   fs::remove_all("m4");
@@ -424,8 +426,6 @@ void bi::Driver::clean() {
   fs::remove("Makefile.am");
   fs::remove("Makefile.in");
   fs::remove("missing");
-
-  fs::current_path(previous_dir);
 }
 
 void bi::Driver::tune() {
@@ -522,6 +522,14 @@ void bi::Driver::tune() {
   std::cout << std::endl;
 }
 
+const char* bi::Driver::explain(const std::string& cmd) {
+  #ifdef HAVE_LIBEXPLAIN_SYSTEM_H
+  return explain_system(cmd.c_str());
+  #else
+  return "";
+  #endif
+}
+
 double bi::Driver::time() {
   for (auto name : metaFiles["require.package"]) {
     Driver driver(*this);
@@ -531,23 +539,24 @@ double bi::Driver::time() {
   Driver driver(*this);
   driver.install();
 
-  std::string key("--id");
-  std::string value("_");
-  value += suffix();
-  std::vector<char*> xargv( { &key[0], &value[0] });
-  std::chrono::time_point < std::chrono::system_clock > start =
-      std::chrono::system_clock::now();
-  driver.run("time", xargv);
-  std::chrono::time_point < std::chrono::system_clock > stop =
-      std::chrono::system_clock::now();
-  std::chrono::duration<double> elapsed = stop - start;
+  std::stringstream cmd;
+  cmd << (fs::path(".") / "time.sh").string() << " " << suffix();
+  auto start = std::chrono::system_clock::now();
+  int ret = std::system(cmd.str().c_str());
+  auto end = std::chrono::system_clock::now();
+  std::chrono::duration<double> elapsed = end - start;
+  if (ret != 0) {
+    if (verbose) {
+      std::cerr << explain(cmd.str()) << std::endl;
+    }
+    throw DriverException("time.sh failed to execute.");
+  }
 
   return elapsed.count();
 }
 
 void bi::Driver::init() {
-  auto previous_dir = fs::current_path();
-  fs::current_path(work_dir);
+  CWD cwd(work_dir);
 
   fs::create_directory("bi");
   fs::create_directory("input");
@@ -578,13 +587,10 @@ void bi::Driver::init() {
     throw DriverException(buf.str());
   }
   readmeStream << contents;
-
-  fs::current_path(work_dir);
 }
 
 void bi::Driver::check() {
-  auto previous_dir = fs::current_path();
-  fs::current_path(work_dir);
+  CWD cwd(work_dir);
 
   /* read META.json */
   if (!fs::exists("META.json")) {
@@ -642,16 +648,12 @@ void bi::Driver::check() {
     }
     ++iter;
   }
-
-  fs::current_path(previous_dir);
 }
 
 void bi::Driver::docs() {
   meta();
 
-  auto previous_dir = fs::current_path();
-  fs::current_path(work_dir);
-
+  CWD cwd(work_dir);
   Package* package = createPackage();
 
   /* parse all files */
@@ -757,8 +759,6 @@ void bi::Driver::docs() {
     docsStream << str1;
     docsStream.close();
   }
-
-  fs::current_path(previous_dir);
   delete package;
 }
 
@@ -769,8 +769,7 @@ void bi::Driver::meta() {
   metaFiles.clear();
   allFiles.clear();
 
-  auto previous_dir = fs::current_path();
-  fs::current_path(work_dir);
+  CWD cwd(work_dir);
 
   /* check for META.json */
   if (!fs::exists("META.json")) {
@@ -821,14 +820,11 @@ void bi::Driver::meta() {
   readFiles(meta, "manifest.source", true);
   readFiles(meta, "manifest.data", true);
   readFiles(meta, "manifest.other", true);
-
-  fs::current_path(previous_dir);
 }
 
 void bi::Driver::setup() {
-  auto previous_dir = fs::current_path();
   auto build_dir = fs::path("build") / suffix();
-  fs::current_path(work_dir);
+  CWD cwd(work_dir);
 
   /* internal name of package */
   auto internalName = tarname(packageName);
@@ -971,8 +967,6 @@ void bi::Driver::setup() {
   makeStream << '\n';
 
   newMake = write_all_if_different("Makefile.am", makeStream.str());
-
-  fs::current_path(previous_dir);
 }
 
 bi::Package* bi::Driver::createPackage() {
@@ -994,16 +988,14 @@ bi::Package* bi::Driver::createPackage() {
 void bi::Driver::compile() {
   Package* package = createPackage();
 
-  auto previous_dir = fs::current_path();
   auto build_dir = fs::path("build") / suffix();
-  fs::current_path(work_dir);
+  CWD cwd(work_dir);
 
   Compiler compiler(package, build_dir, unity);
   compiler.parse();
   compiler.resolve();
   compiler.gen();
 
-  fs::current_path(previous_dir);
   delete package;
 }
 
@@ -1011,8 +1003,7 @@ void bi::Driver::autogen() {
   if (newAutogen || newConfigure || newMake
       || !fs::exists(work_dir / "configure")
       || !fs::exists(work_dir / "install-sh")) {
-    auto previous_dir = fs::current_path();
-    fs::current_path(work_dir);
+    CWD cwd(work_dir);
 
     std::stringstream cmd;
     cmd << (fs::path(".") / "autogen.sh");
@@ -1022,8 +1013,11 @@ void bi::Driver::autogen() {
       cmd << " > autogen.log 2>&1";
     }
 
-    int ret = system(cmd.str().c_str());
+    int ret = std::system(cmd.str().c_str());
     if (ret == -1) {
+      if (verbose) {
+        std::cerr << explain(cmd.str()) << std::endl;
+      }
       throw DriverException("autogen.sh failed to execute.");
     } else if (ret != 0) {
       std::stringstream buf;
@@ -1036,7 +1030,6 @@ void bi::Driver::autogen() {
       buf << '.';
       throw DriverException(buf.str());
     }
-    fs::current_path(previous_dir);
   }
 }
 
@@ -1044,8 +1037,7 @@ void bi::Driver::configure() {
   auto build_dir = work_dir / "build" / suffix();
   if (newAutogen || newConfigure || newMake
       || !exists(build_dir / "Makefile")) {
-    auto previous_dir = fs::absolute(fs::current_path());
-    fs::current_path(build_dir);
+    CWD cwd(build_dir);
 
     /* compile and link flags */
     std::stringstream cppflags, cflags, cxxflags, ldflags, options, cmd;
@@ -1058,14 +1050,14 @@ void bi::Driver::configure() {
       cflags << " -march=native";
       cxxflags << " -march=native";
       if (openmp) {
-#ifdef __APPLE__
+        #ifdef __APPLE__
         /* the system compiler on Apple requires different options for
          * OpenMP; disable the configure check and customize these */
         options << " --disable-openmp";
         cppflags << " -Xpreprocessor -fopenmp";
-#else
+        #else
         options << " --enable-openmp";
-#endif
+        #endif
       } else {
         options << " --disable-openmp";
       }
@@ -1151,7 +1143,7 @@ void bi::Driver::configure() {
     if (arch == "js" || arch == "wasm") {
       cmd << "emconfigure ";
     }
-    cmd << (fs::path("..") / ".." / "configure") << " " << options.str();
+    cmd << (fs::path("..") / ".." / "configure").string() << " " << options.str();
     // ^ build dir is work_dir/build/suffix, so configure script two dirs up
     if (!cppflags.str().empty()) {
       cmd << " CPPFLAGS=\"" << cppflags.str() << "\"";
@@ -1171,8 +1163,11 @@ void bi::Driver::configure() {
       cmd << " > configure.log 2>&1";
     }
 
-    int ret = system(cmd.str().c_str());
+    int ret = std::system(cmd.str().c_str());
     if (ret == -1) {
+      if (verbose) {
+        std::cerr << explain(cmd.str()) << std::endl;
+      }
       throw DriverException("configure failed to execute.");
     } else if (ret != 0) {
       std::stringstream buf;
@@ -1185,16 +1180,12 @@ void bi::Driver::configure() {
       buf << '.';
       throw DriverException(buf.str());
     }
-
-    /* change back to original working dir */
-    fs::current_path(previous_dir);
   }
 }
 
 void bi::Driver::target(const std::string& cmd) {
-  auto previous_dir = fs::absolute(fs::current_path());
   auto build_dir = work_dir / "build" / suffix();
-  fs::current_path(build_dir);
+  CWD cwd(build_dir);
 
   /* command */
   std::stringstream buf;
@@ -1222,8 +1213,11 @@ void bi::Driver::target(const std::string& cmd) {
     buf << " > " << log << " 2>&1";
   }
 
-  int ret = system(buf.str().c_str());
+  int ret = std::system(buf.str().c_str());
   if (ret != 0) {
+    if (verbose) {
+      std::cerr << explain(buf.str()) << std::endl;
+    }
     buf.str("make ");
     buf << cmd;
     if (ret == -1) {
@@ -1237,16 +1231,13 @@ void bi::Driver::target(const std::string& cmd) {
     buf << '.';
     throw DriverException(buf.str());
   }
-
-  /* change back to original working dir */
-  fs::current_path(previous_dir);
 }
 
 void bi::Driver::ldconfig() {
   #ifndef __APPLE__
   auto euid = geteuid();
   if (euid == 0) {
-    system("ldconfig");
+    std::system("ldconfig");
   }
   #endif
 }

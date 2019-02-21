@@ -89,4 +89,21 @@ std::string tarname(const std::string& name);
  */
 bool isPower2(const int x);
 
+/**
+ * Change the working directory and restore it on destruction.
+ */
+class CWD {
+public:
+  CWD(const fs::path& path) : previous(fs::absolute(fs::current_path())) {
+    fs::current_path(path);
+  }
+
+  ~CWD() {
+    fs::current_path(previous);
+  }
+
+private:
+  fs::path previous;
+};
+
 }
