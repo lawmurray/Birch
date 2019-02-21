@@ -1,5 +1,16 @@
 /**
- * List.
+ * Doubly-linked list. Beyond its typical uses, because List is a recursive
+ * data structure, it provides particularly good sharing under Birch's lazy
+ * deep clone mechanism.
+ *
+ * !!! caution
+ *     Long lists (length in the tens of thousands) can cause a segfault on
+ *     destruction due to stack overflow. Possible solutions are:
+ *
+ *     1. Use Vector instead.
+ *     2. Remove items one-by-one before the List object goes out of scope
+ *        (with e.g. `popBack()`).
+ *     3. Increase the stack size with `ulimit` or similar.
  */
 class List<Type> {
   head:ListNode<Type>?;

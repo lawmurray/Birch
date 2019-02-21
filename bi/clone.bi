@@ -1,12 +1,15 @@
 /**
  * Deep clone an object or fiber.
  *
- * !!! caution
- *     The intent of this function is to provide lazy deep clone
- *     functionality. The algorithm used is a work in progress, however, and
- *     produces incorrect results in some cases. It produces correct results
- *     for its use cases within the standard library itself, but mileage may
- *     vary outside of this context at this stage.
+ * If code is built with `--enable-lazy-deep-clone` (the default), this
+ * initializes a lazy deep clone of the object or fiber, such that any other
+ * objects or fibers reachable through it are only copied when necessary, and
+ * may never be copied at all. If code is built with
+ * `--disable-lazy-deep-clone` then all objects are copied immediately.
+ *
+ * For objects used with a lazy deep clone, consider using recursive data
+ * structures such as List and Stack to maximise sharing and memory
+ * efficiency.
  */
 function clone<Type>(o:Type) -> Type {
   cpp{{
