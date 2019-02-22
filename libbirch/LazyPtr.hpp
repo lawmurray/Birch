@@ -189,22 +189,15 @@ public:
   /**
    * Deep clone.
    */
-  LazyPtr<P> clone() {
+  LazyPtr<P> clone() const {
     freeze();
     return LazyPtr<P>(object, from.get(), to->fork());
   }
 
   /**
-   * Deep clone.
-   */
-  LazyPtr<P> clone() const {
-    return const_cast<LazyPtr<P>*>(this)->clone();
-  }
-
-  /**
    * Freeze.
    */
-  void freeze() {
+  void freeze() const {
     if (object) {
       pull();
       object->freeze();
