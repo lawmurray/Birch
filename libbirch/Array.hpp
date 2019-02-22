@@ -16,16 +16,15 @@
 
 namespace bi {
 /**
- * Array. Combines underlying data and a frame describing the shape of that
- * data. Allows the construction of views of the data, where a view indexes
- * either an individual element or some range of elements.
+ * A multidimensional array. Combines underlying data and a frame describing
+ * the shape of that data. Allows the construction of views of the data,
+ * where a view indexes either an individual element or some range of
+ * elements.
  *
  * @ingroup libbirch
  *
  * @tparam Type Value type.
  * @tparam Frame Frame type.
- *
- * @todo Review in light of new context attribute of pointers.
  */
 template<class T, class F = EmptyFrame>
 class Array {
@@ -252,6 +251,56 @@ public:
   }
 
   /**
+   * Iterator pointing to the first element.
+   *
+   * Iterators are used to access the elements of an array sequentially.
+   * Elements are visited in the order in which they are stored in memory;
+   * the rightmost dimension is the fastest moving (for a matrix, this is
+   * "row major" order).
+   *
+   * There is no `end()` function to retrieve an iterator to
+   * one-past-the-last element. This is because a first/last pair must be
+   * created atomically for thread safety. Instead use something like:
+   *
+   *     auto first = begin();
+   *     auto last = first + size();
+   */
+  Iterator<T,F> begin() {
+    return Iterator<T,F>(duplicate()->buf() + offset, frame);
+  }
+  Iterator<T,F> begin() const {
+    return Iterator<T,F>(buf(), frame);
+  }
+
+  /**
+   * Size (product of lengths).
+   */
+  int64_t size() const {
+    return frame.size();
+  }
+
+  /**
+   * Volume (number of elements allocated in buffer).
+   */
+  int64_t volume() const {
+    return frame.volume();
+  }
+
+  /**
+   * Get the length of the @p i th dimension.
+   */
+  int64_t length(const int i) const {
+    return frame.length(i);
+  }
+
+  /**
+   * Get the stride of the @p i th dimension.
+   */
+  int64_t stride(const int i) const {
+    return frame.stride(i);
+  }
+
+  /**
    * Raw pointer to underlying buffer.
    */
   T* buf() {
@@ -340,67 +389,12 @@ public:
   }
 
   /**
-   * Size (product of lengths).
-   */
-  int64_t size() const {
-    return frame.size();
-  }
-
-  /**
-   * Volume (number of elements allocated in buffer).
-   */
-  int64_t volume() const {
-    return frame.volume();
-  }
-
-  /**
-   * Get the length of the @p i th dimension.
-   */
-  int64_t length(const int i) const {
-    return frame.length(i);
-  }
-
-  /**
-   * Get the stride of the @p i th dimension.
-   */
-  int64_t stride(const int i) const {
-    return frame.stride(i);
-  }
-
-  /**
-   * @name Iteration
-   *
-   * Iterators are used to access the elements of an array sequentially.
-   * Elements are visited in the order in which they are stored in memory;
-   * the rightmost dimension is the fastest moving (for a matrix, this is
-   * "row major" order).
-   *
-   * There is no `end()` function to retrieve an iterator to
-   * one-past-the-last element. This is because a first/last pair must be
-   * created atomically. Instead use something like:
-   *
-   *     auto first = begin();
-   *     auto last = first + size();
-   */
-  //@{
-  /**
-   * Iterator pointing to the first element.
-   */
-  Iterator<T,F> begin() {
-    return Iterator<T,F>(duplicate()->buf() + offset, frame);
-  }
-  Iterator<T,F> begin() const {
-    return Iterator<T,F>(buf(), frame);
-  }
-  //@}
-
-  /**
    * @name Eigen integration
    *
    * These functions and operators permit the implicit conversion between
    * Birch Array types and Eigen Matrix types.
    */
-  //@{
+  ///@{
   /**
    * Compatibility check.
    */
@@ -495,7 +489,7 @@ public:
     }
     return *this;
   }
-  //@}
+  ///@}
 
 private:
   /**
