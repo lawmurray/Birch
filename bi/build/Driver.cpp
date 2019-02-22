@@ -540,7 +540,7 @@ double bi::Driver::time() {
   driver.install();
 
   std::stringstream cmd;
-  cmd << (fs::path(".") / "time.sh").string() << " " << suffix();
+  cmd << (fs::path(".") / "time.sh").string() << " _" << suffix();
   auto start = std::chrono::system_clock::now();
   int ret = std::system(cmd.str().c_str());
   auto end = std::chrono::system_clock::now();
