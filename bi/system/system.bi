@@ -14,6 +14,8 @@ function system(cmd:String) -> Integer {
     return WTERMSIG(status);
   } else if (WIFSTOPPED(status)) {
     return WSTOPSIG(status);
+  } else {
+    return status;
   }
   }}
 }
