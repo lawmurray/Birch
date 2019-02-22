@@ -122,7 +122,13 @@ void bi::CppBaseGenerator::visit(const Assign* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Slice* o) {
-  middle(o->single << "(bi::make_view(" << o->brackets << "))");
+  middle(o->single);
+  if (!inAssign && o->single->type->isValue()) {
+    /* optimization: just reading a value, so ensure that access is in a
+     * const context to avoid unnecessary copy */
+    middle(".as_const()");
+  }
+  middle("(bi::make_view(" << o->brackets << "))");
 }
 
 void bi::CppBaseGenerator::visit(const Query* o) {
