@@ -31,7 +31,7 @@ template<class T, class F = EmptyFrame>
 class Array {
   template<class U, class G>
   friend class Array;
-  public:
+public:
   /**
    * Default constructor.
    */
@@ -104,7 +104,7 @@ class Array {
       buffer(o.buffer.load(std::memory_order_relaxed)),
       offset(o.offset),
       isView(o.isView) {
-    o.buffer = nullptr;
+    o.buffer.store(nullptr, std::memory_order_relaxed);
   }
 
   /**
@@ -193,6 +193,18 @@ class Array {
   }
 
   /**
+   * Return const reference to the array. This can be used to ensure that the
+   * array is being accessed in a const context, to avoid unnecessary copying
+   * of shared buffers.
+   */
+  const Array<T,F>& as_const() {
+    return *this;
+  }
+  const Array<T,F>& as_const() const {
+    return *this;
+  }
+
+  /**
    * View operator.
    *
    * @tparam View1 View type.
@@ -204,8 +216,7 @@ class Array {
   template<class View1, typename = std::enable_if_t<View1::rangeCount() != 0>>
   auto operator()(const View1& view) {
     return Array<T,decltype(frame(view))>(duplicate(),
-        offset + frame.serial(view),
-        frame(view));
+        offset + frame.serial(view), frame(view));
   }
   template<class View1, typename = std::enable_if_t<View1::rangeCount() != 0>>
   auto operator()(const View1& view) const {
@@ -239,6 +250,149 @@ class Array {
   bool operator!=(const Array<T,G>& o) const {
     return !(*this == o);
   }
+
+  /**
+   * Raw pointer to underlying buffer.
+   */
+  T* buf() {
+    return buffer.load(std::memory_order_relaxed)->buf() + offset;
+  }
+
+  /**
+   * Raw pointer to underlying buffer.
+   */
+  T* const buf() const {
+    return buffer.load(std::memory_order_relaxed)->buf() + offset;
+  }
+
+  /**
+   * Shrink a one-dimensional array in-place.
+   *
+   * @tparam G Frame type.
+   *
+   * @param frame New frame.
+   */
+  template<class G>
+  void shrink(const G& frame) {
+    static_assert(F::count() == 1, "can only shrink one-dimensional arrays");
+    static_assert(G::count() == 1, "can only shrink one-dimensional arrays");
+    assert(!isView);
+    assert(buffer);
+    assert(frame.size() < size());
+
+    lock();
+    if (isShared()) {
+      rebase(Array<T,F>(*this, frame));
+    } else {
+      Iterator<T,F> iter(buf(), frame);
+      // ^ don't use begin() as we have obtained the lock already
+      auto last = iter + size();
+      for (iter += frame.size(); iter != last; ++iter) {
+        iter->~T();
+      }
+      if (frame.size() == 0) {
+        release();
+      } else {
+        auto oldBuffer = buffer.load(std::memory_order_relaxed);
+        auto oldSize = Buffer<T>::size(volume());
+        auto newSize = Buffer<T>::size(frame.volume());
+        buffer.store(
+            (Buffer<T>*)bi::reallocate(oldBuffer, oldSize, oldBuffer->tid,
+                newSize), std::memory_order_relaxed);
+      }
+      this->frame.resize(frame);
+    }
+    unlock();
+  }
+
+  /**
+   * Enlarge a one-dimensional array in-place.
+   *
+   * @tparam G Frame type.
+   *
+   * @param frame New frame.
+   * @param x Value to assign to new elements.
+   */
+  template<class G>
+  void enlarge(const G& frame, const T& x) {
+    static_assert(F::count() == 1, "can only enlarge one-dimensional arrays");
+    static_assert(G::count() == 1, "can only enlarge one-dimensional arrays");
+    assert(!isView);
+    assert(frame.size() > size());
+
+    lock();
+    if (isShared() || !buffer) {
+      rebase(Array<T,F>(*this, frame, x));
+    } else {
+      auto oldVolume = this->frame.volume();
+      this->frame.resize(frame);
+      auto oldBuffer = buffer.load(std::memory_order_relaxed);
+      auto oldSize = Buffer<T>::size(oldVolume);
+      auto newSize = Buffer<T>::size(frame.volume());
+      buffer.store(
+          (Buffer<T>*)bi::reallocate(oldBuffer, oldSize, oldBuffer->tid,
+              newSize), std::memory_order_relaxed);
+      Iterator<T,F> iter(buf(), frame);
+      // ^ don't use begin() as we have obtained the lock already
+      std::uninitialized_fill(iter + oldVolume, iter + frame.size(), x);
+    }
+    unlock();
+  }
+
+  /**
+   * Size (product of lengths).
+   */
+  int64_t size() const {
+    return frame.size();
+  }
+
+  /**
+   * Volume (number of elements allocated in buffer).
+   */
+  int64_t volume() const {
+    return frame.volume();
+  }
+
+  /**
+   * Get the length of the @p i th dimension.
+   */
+  int64_t length(const int i) const {
+    return frame.length(i);
+  }
+
+  /**
+   * Get the stride of the @p i th dimension.
+   */
+  int64_t stride(const int i) const {
+    return frame.stride(i);
+  }
+
+  /**
+   * @name Iteration
+   *
+   * Iterators are used to access the elements of an array sequentially.
+   * Elements are visited in the order in which they are stored in memory;
+   * the rightmost dimension is the fastest moving (for a matrix, this is
+   * "row major" order).
+   *
+   * There is no `end()` function to retrieve an iterator to
+   * one-past-the-last element. This is because a first/last pair must be
+   * created atomically. Instead use something like:
+   *
+   *     auto first = begin();
+   *     auto last = first + size();
+   */
+  //@{
+  /**
+   * Iterator pointing to the first element.
+   */
+  Iterator<T,F> begin() {
+    return Iterator<T,F>(duplicate()->buf() + offset, frame);
+  }
+  Iterator<T,F> begin() const {
+    return Iterator<T,F>(buf(), frame);
+  }
+  //@}
 
   /**
    * @name Eigen integration
@@ -281,14 +435,14 @@ class Array {
     return EigenType(duplicate()->buf() + offset, length(0),
         (F::count() == 1 ? 1 : length(1)),
         (F::count() == 1 ?
-                           EigenStrideType(stride(0), 1) :
-                           EigenStrideType(stride(0), stride(1))));
+            EigenStrideType(stride(0), 1) :
+            EigenStrideType(stride(0), stride(1))));
   }
   EigenType toEigen() const {
     return EigenType(buf(), length(0), (F::count() == 1 ? 1 : length(1)),
         (F::count() == 1 ?
-                           EigenStrideType(stride(0), 1) :
-                           EigenStrideType(stride(0), stride(1))));
+            EigenStrideType(stride(0), 1) :
+            EigenStrideType(stride(0), stride(1))));
   }
 
   /**
@@ -342,154 +496,6 @@ class Array {
     return *this;
   }
   //@}
-
-  /**
-   * @name Queries
-   */
-  //@{
-  /**
-   * Size (product of lengths).
-   */
-  int64_t size() const {
-    return frame.size();
-  }
-
-  /**
-   * Volume (number of elements allocated in buffer).
-   */
-  int64_t volume() const {
-    return frame.volume();
-  }
-
-  /**
-   * Get the length of the @p i th dimension.
-   */
-  int64_t length(const int i) const {
-    return frame.length(i);
-  }
-
-  /**
-   * Get the stride of the @p i th dimension.
-   */
-  int64_t stride(const int i) const {
-    return frame.stride(i);
-  }
-  //@}
-
-  /**
-   * @name Iteration
-   */
-  //@{
-  /**
-   * Iterator pointing to the first element.
-   *
-   * Iterators are used to access the elements of an array sequentially.
-   * Elements are visited in the order in which they are stored in memory;
-   * the rightmost dimension is the fastest moving (for a matrix, this is
-   * "row major" order).
-   *
-   * There is no `end()` function to retrieve an iterator to
-   * one-past-the-last element. This is because a first/last pair must be
-   * created atomically. Instead use something like:
-   *
-   *     auto first = begin();
-   *     auto last = first + size();
-   */
-  /**
-   * Iterator pointing to the first element.
-   */
-  Iterator<T,F> begin() {
-    return Iterator<T,F>(duplicate()->buf() + offset, frame);
-  }
-  Iterator<T,F> begin() const {
-    return Iterator<T,F>(buf(), frame);
-  }
-
-  /**
-   * Raw pointer to underlying buffer.
-   */
-  T* buf() {
-    return buffer.load(std::memory_order_relaxed)->buf() + offset;
-  }
-
-  /**
-   * Raw pointer to underlying buffer.
-   */
-  T* const buf() const {
-    return buffer.load(std::memory_order_relaxed)->buf() + offset;
-  }
-
-  /**
-   * Shrink a one-dimensional array in-place.
-   *
-   * @tparam G Frame type.
-   *
-   * @param frame New frame.
-   */
-  template<class G>
-  void shrink(const G& frame) {
-    static_assert(F::count() == 1, "can only shrink one-dimensional arrays");
-    static_assert(G::count() == 1, "can only shrink one-dimensional arrays");
-    assert(!isView);
-    assert(buffer);
-    assert(frame.size() < size());
-
-    lock();
-    if (isShared()) {
-      rebase(Array<T,F>(*this, frame));
-    } else {
-      Iterator<T,F> iter(buf(), frame);
-      // ^ don't use begin() as we have obtained the lock already
-      auto last = iter + size();
-      for (iter += frame.size(); iter != last; ++iter) {
-        iter->~T();
-      }
-      if (frame.size() == 0) {
-        release();
-      } else {
-        auto oldBuffer = buffer.load(std::memory_order_relaxed);
-        auto oldSize = Buffer<T>::size(volume());
-        auto newSize = Buffer<T>::size(frame.volume());
-        buffer = (Buffer<T>*)bi::reallocate(oldBuffer, oldSize,
-            oldBuffer->tid, newSize);
-      }
-      this->frame.resize(frame);
-    }
-    unlock();
-  }
-
-  /**
-   * Enlarge a one-dimensional array in-place.
-   *
-   * @tparam G Frame type.
-   *
-   * @param frame New frame.
-   * @param x Value to assign to new elements.
-   */
-  template<class G>
-  void enlarge(const G& frame, const T& x) {
-    static_assert(F::count() == 1, "can only enlarge one-dimensional arrays");
-    static_assert(G::count() == 1, "can only enlarge one-dimensional arrays");
-    assert(!isView);
-    assert(frame.size() > size());
-
-    lock();
-    if (isShared() || !buffer) {
-      rebase(Array<T,F>(*this, frame, x));
-    } else {
-      auto oldVolume = this->frame.volume();
-      this->frame.resize(frame);
-      auto oldBuffer = buffer.load(std::memory_order_relaxed);
-      auto oldSize = Buffer<T>::size(oldVolume);
-      auto newSize = Buffer<T>::size(frame.volume());
-      buffer = (Buffer<T>*)bi::reallocate(oldBuffer, oldSize, oldBuffer->tid,
-          newSize);
-      Iterator<T,F> iter(buf(), frame);
-      // ^ don't use begin() as we have obtained the lock already
-      std::uninitialized_fill(iter + oldVolume, iter + frame.size(), x);
-    }
-    unlock();
-  }
 
 private:
   /**
@@ -559,7 +565,7 @@ private:
     if (size > 0) {
       auto tmp = new (bi::allocate(size)) Buffer<T>();
       tmp->incUsage();
-      buffer = tmp;
+      buffer.store(tmp, std::memory_order_relaxed);
     }
   }
 
@@ -602,7 +608,9 @@ private:
     assert(!isView);
     assert(!o.isView);
     std::swap(frame, o.frame);
-    o.buffer = buffer.exchange(o.buffer.load(std::memory_order_relaxed), std::memory_order_relaxed);  // can't std::swap atomics
+    o.buffer.store(
+        buffer.exchange(o.buffer.load(std::memory_order_relaxed),
+            std::memory_order_relaxed), std::memory_order_relaxed);  // can't std::swap atomics
   }
 
   /**
@@ -780,7 +788,7 @@ bi::Array<T,F>::Array(const Array<T,F>& o, const bool canShare) :
        * temporary and should not outlive the buffer itself */
       tmp->incUsage();
     }
-    buffer = tmp;
+    buffer.store(tmp, std::memory_order_relaxed);
     offset = o.offset;
     isView = o.isView;
   }
