@@ -10,10 +10,6 @@ class Boxed<Value>(x:Value) < Expression<Value> {
   operator <- x:Value {
     this.x <- x;
   }
-  
-  operator -> Value {
-    return x;
-  }
 
   function value() -> Value {
     return x;

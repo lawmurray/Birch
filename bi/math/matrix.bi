@@ -222,3 +222,57 @@ function scalar(X:Boolean[_,_]) -> Boolean {
   assert columns(X) == 1;  
   return X[1,1];
 }
+
+/**
+ * Convert vector to matrix with single row.
+ */
+function row(x:Real[_]) -> Real[_,_] {
+  y:Real[1,length(x)];
+  y[1,1..rows(y)] <- x;
+  return y;
+}
+
+/**
+ * Convert vector to matrix with single row.
+ */
+function row(x:Integer[_]) -> Integer[_,_] {
+  y:Integer[1,length(x)];
+  y[1,1..rows(y)] <- x;
+  return y;
+}
+
+/**
+ * Convert vector to matrix with single row.
+ */
+function row(x:Boolean[_]) -> Boolean[_,_] {
+  y:Boolean[1,length(x)];
+  y[1,1..rows(y)] <- x;
+  return y;
+}
+
+/**
+ * Convert vector to matrix with single column.
+ */
+function column(x:Real[_]) -> Real[_,_] {
+  y:Real[length(x),1];
+  y[1..rows(y),1] <- x;
+  return y;
+}
+
+/**
+ * Convert vector to matrix with single column.
+ */
+function column(x:Integer[_]) -> Integer[_,_] {
+  y:Integer[length(x),1];
+  y[1..rows(y),1] <- x;
+  return y;
+}
+
+/**
+ * Convert vector to matrix with single column.
+ */
+function column(x:Boolean[_]) -> Boolean[_,_] {
+  y:Boolean[length(x),1];
+  y[1..rows(y),1] <- x;
+  return y;
+}

@@ -247,6 +247,25 @@ function update_multivariate_linear_gaussian_gaussian(x:Real[_], A:Real[_,_],
 }
 
 /**
+ * Update the parameters of a multivariate Gaussian distribution with a 
+ * univariate Gaussian likelihood and scaling.
+ *
+ * - x: The variate.
+ * - a: Scale.
+ * - μ: Prior mean.
+ * - Σ: Prior variance.
+ * - μ_m: Marginal mean.
+ * - σ2_m: Marginal variance.
+ *
+ * Returns: the updated parameters `μ` and `Σ`.
+ */
+function update_multivariate_dot_gaussian_gaussian(x:Real, a:Real[_],
+    μ:Real[_], Σ:Real[_,_], μ_m:Real, σ2_m:Real) -> (Real[_], Real[_,_]) {
+  K:Real[_] <- Σ*a*(1.0/σ2_m);
+  return (μ + K*(x - μ_m), Σ - K*trans(a)*Σ);
+}
+
+/**
  * Update the parameters of an inverse-gamma distribution that is part
  * of a multivariate normal inverse-gamma joint distribution.
  *
@@ -260,7 +279,7 @@ function update_multivariate_linear_gaussian_gaussian(x:Real[_], A:Real[_,_],
  */
 function update_multivariate_normal_inverse_gamma(x:Real[_], μ:Real[_],
     Λ:Real[_,_], α:Real, β:Real) -> (Real, Real) {
-  D:Integer <- length(μ);
+  D:Integer <- length(x);
   return (α + 0.5*D, β + 0.5*dot(x - μ, Λ*(x - μ)));
 }
 
@@ -277,7 +296,7 @@ function update_multivariate_normal_inverse_gamma(x:Real[_], μ:Real[_],
  */
 function update_multivariate_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
     α:Real, β:Real) -> (Real, Real) {
-  D:Integer <- length(μ);
+  D:Integer <- length(x);
   return (α + D*0.5, β + 0.5*dot(x - μ));
 }
 
@@ -295,9 +314,9 @@ function update_multivariate_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
  */
 function update_multivariate_normal_inverse_gamma_gaussian(x:Real[_],
     μ:Real[_], Λ:Real[_,_], α:Real, β:Real) -> (Real[_], Real[_,_], Real, Real) {
-  D:Integer <- length(μ);
+  D:Integer <- length(x);
   
-  Λ_1:Real[_,_] <- Λ + identity(D);
+  Λ_1:Real[_,_] <- Λ + identity(rows(Λ));
   μ_1:Real[_] <- solve(Λ_1, Λ*μ + x);
 
   α_1:Real <- α + D*0.5;
@@ -323,13 +342,41 @@ function update_multivariate_normal_inverse_gamma_gaussian(x:Real[_],
 function update_multivariate_linear_normal_inverse_gamma_gaussian(
     x:Real[_], A:Real[_,_], μ:Real[_], c:Real[_], Λ:Real[_,_], α:Real,
     β:Real) -> (Real[_], Real[_,_], Real, Real) {
-  D:Integer <- length(μ);
+  D:Integer <- length(x);
   
   Λ_1:Real[_,_] <- Λ + trans(A)*A;
   μ_1:Real[_] <- solve(Λ_1, Λ*μ + trans(A)*(x - c));
   
   α_1:Real <- α + D*0.5;
   β_1:Real <- β + 0.5*(dot(x - c) + dot(μ, Λ*μ) - dot(μ_1, Λ_1*μ_1));
+
+  return (μ_1, Λ_1, α_1, β_1);
+}
+
+/**
+ * Update the parameters of a normal inverse-gamma distribution with a
+ * univariate Gaussian likelihood and scaling.
+ *
+ * - x: The variate.
+ * - a: Scale.
+ * - μ: Mean.
+ * - c: Offset.
+ * - Λ: Precision.
+ * - α: Shape of the inverse-gamma.
+ * - β: Scale of the inverse-gamma.
+ *
+ * Returns: the updated parameters `μ`, `Σ`, `α` and `β`.
+ */
+function update_multivariate_dot_normal_inverse_gamma_gaussian(
+    x:Real, a:Real[_], μ:Real[_], c:Real, Λ:Real[_,_], α:Real,
+    β:Real) -> (Real[_], Real[_,_], Real, Real) {
+  D:Integer <- 1;
+  
+  Λ_1:Real[_,_] <- Λ + a*trans(a);
+  μ_1:Real[_] <- solve(Λ_1, Λ*μ + a*(x - c));
+  
+  α_1:Real <- α + D*0.5;
+  β_1:Real <- β + 0.5*(pow(x - c, 2.0) + dot(μ, Λ*μ) - dot(μ_1, Λ_1*μ_1));
 
   return (μ_1, Λ_1, α_1, β_1);
 }

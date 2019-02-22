@@ -34,10 +34,12 @@ program test(N:Integer <- 10000) {
   code <- code + run_test("linear_normal_inverse_gamma_log_gaussian", N);
   code <- code + run_test("multivariate_gaussian_gaussian", N);
   code <- code + run_test("multivariate_linear_gaussian_gaussian", N);
+  code <- code + run_test("multivariate_dot_gaussian_gaussian", N);
   code <- code + run_test("multivariate_chain_gaussian", N);
   code <- code + run_test("multivariate_inverse_gamma_gaussian", N);
   code <- code + run_test("multivariate_normal_inverse_gamma_gaussian", N);
   code <- code + run_test("multivariate_linear_normal_inverse_gamma_gaussian", N);
+  code <- code + run_test("multivariate_dot_normal_inverse_gamma_gaussian", N);
   
   exit(code);
 }

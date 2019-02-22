@@ -28,18 +28,6 @@ class Divide<Left,Right,Value>(left:Expression<Left>,
     }
     return y;
   }
-
-  function graftScaledGamma() -> TransformScaledGamma? {
-    y:TransformScaledGamma?;
-    z:DelayGamma?;
-    
-    if (y <- left.graftScaledGamma())? {
-      y!.divide(right.value());
-    } else if (z <- left.graftGamma())? {
-      y <- TransformScaledGamma(1.0/right.value(), z!);
-    }
-    return y;
-  }
   
   function graftLinearNormalInverseGamma(σ2:Expression<Real>) ->
       TransformLinearNormalInverseGamma? {
@@ -50,6 +38,37 @@ class Divide<Left,Right,Value>(left:Expression<Left>,
       y!.divide(right.value());
     } else if (z <- left.graftNormalInverseGamma(σ2))? {
       y <- TransformLinearNormalInverseGamma(1.0/right.value(), z!, 0.0);
+    }
+    return y;
+  }
+
+  function graftMultivariateDotGaussian() -> TransformMultivariateDotGaussian? {
+    y:TransformMultivariateDotGaussian?;
+    
+    if (y <- left.graftMultivariateDotGaussian())? {
+      y!.divide(right.value());
+    }
+    return y;
+  }
+
+  function graftMultivariateDotNormalInverseGamma(σ2:Expression<Real>) ->
+      TransformMultivariateDotNormalInverseGamma? {
+    y:TransformMultivariateDotNormalInverseGamma?;
+
+    if (y <- left.graftMultivariateDotNormalInverseGamma(σ2))? {
+      y!.divide(right.value());
+    }
+    return y;
+  }
+
+  function graftScaledGamma() -> TransformScaledGamma? {
+    y:TransformScaledGamma?;
+    z:DelayGamma?;
+    
+    if (y <- left.graftScaledGamma())? {
+      y!.divide(right.value());
+    } else if (z <- left.graftGamma())? {
+      y <- TransformScaledGamma(1.0/right.value(), z!);
     }
     return y;
   }

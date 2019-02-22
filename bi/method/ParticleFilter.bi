@@ -118,14 +118,25 @@ class ParticleFilter < Sampler {
   function start(m:Model) {
     tic();
     auto f0 <- particle(m);
-    f1:(Model,Real)![nparticles];
-    x1:Model[nparticles];
-    parallel for n:Integer in 1..nparticles {
-      f1[n] <- clone<(Model,Real)!>(f0);
-      x1[n] <- m;
+    if nparticles == 1 {
+      f1:(Model,Real)![nparticles];
+      x1:Model[nparticles];
+      parallel for n:Integer in 1..nparticles {
+        f1[n] <- f0;
+        x1[n] <- m;
+      }
+      f <- f1;
+      x <- x1;
+    } else {
+      f1:(Model,Real)![nparticles];
+      x1:Model[nparticles];
+      parallel for n:Integer in 1..nparticles {
+        f1[n] <- clone<(Model,Real)!>(f0);
+        x1[n] <- m;
+      }
+      f <- f1;
+      x <- x1;
     }
-    f <- f1;
-    x <- x1;
     w <- vector(0.0, nparticles);
     a <- iota(1, nparticles);
   }

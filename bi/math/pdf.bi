@@ -630,6 +630,26 @@ function pdf_multivariate_linear_normal_inverse_gamma_gaussian(x:Real[_],
 }
 
 /**
+ * PDF of a multivariate Gaussian variate with a multivariate normal
+ * inverse-gamma prior with dot transformation.
+ *
+ * - x: The variate.
+ * - a: Scale.
+ * - μ: Mean.
+ * - c: Offset.
+ * - Λ: Precision.
+ * - α: Shape of the inverse-gamma.
+ * - β: Scale of the inverse-gamma.
+ *
+ * Return: the probability density.
+ */
+function pdf_multivariate_dot_normal_inverse_gamma_gaussian(x:Real,
+    a:Real[_], μ:Real[_], c:Real, Λ:Real[_,_], α:Real, β:Real) -> Real {
+  return exp(observe_multivariate_dot_normal_inverse_gamma_gaussian(x, a, μ,
+      c, Λ, α, β));
+}
+
+/**
  * PDF of a multivariate uniform variate.
  *
  * - x: The variate.

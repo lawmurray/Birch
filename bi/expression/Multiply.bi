@@ -31,22 +31,6 @@ class Multiply<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>)
     }
     return y;
   }
-
-  function graftScaledGamma() -> TransformScaledGamma? {
-    y:TransformScaledGamma?;
-    z:DelayGamma?;
-    
-    if (y <- left.graftScaledGamma())? {
-      y!.multiply(right.value());
-    } else if (y <- right.graftScaledGamma())? {
-      y!.multiply(left.value());
-    } else if (z <- left.graftGamma())? {
-      y <- TransformScaledGamma(right.value(), z!);
-    } else if (z <- right.graftGamma())? {
-      y <- TransformScaledGamma(left.value(), z!);
-    }
-    return y;
-  }
  
   function graftLinearNormalInverseGamma(σ2:Expression<Real>) ->
       TransformLinearNormalInverseGamma? {
@@ -61,6 +45,45 @@ class Multiply<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>)
       y <- TransformLinearNormalInverseGamma(right.value(), z!, 0.0);
     } else if (z <- right.graftNormalInverseGamma(σ2))? {
       y <- TransformLinearNormalInverseGamma(left.value(), z!, 0.0);
+    }
+    return y;
+  }
+
+  function graftMultivariateDotGaussian() -> TransformMultivariateDotGaussian? {
+    y:TransformMultivariateDotGaussian?;
+    
+    if (y <- left.graftMultivariateDotGaussian())? {
+      y!.multiply(right.value());
+    } else if (y <- right.graftMultivariateDotGaussian())? {
+      y!.multiply(left.value());
+    }
+    return y;
+  }
+
+  function graftMultivariateDotNormalInverseGamma(σ2:Expression<Real>) ->
+      TransformMultivariateDotNormalInverseGamma? {
+    y:TransformMultivariateDotNormalInverseGamma?;
+
+    if (y <- left.graftMultivariateDotNormalInverseGamma(σ2))? {
+      y!.multiply(right.value());
+    } else if (y <- right.graftMultivariateDotNormalInverseGamma(σ2))? {
+      y!.multiply(left.value());
+    }
+    return y;
+  }
+
+  function graftScaledGamma() -> TransformScaledGamma? {
+    y:TransformScaledGamma?;
+    z:DelayGamma?;
+    
+    if (y <- left.graftScaledGamma())? {
+      y!.multiply(right.value());
+    } else if (y <- right.graftScaledGamma())? {
+      y!.multiply(left.value());
+    } else if (z <- left.graftGamma())? {
+      y <- TransformScaledGamma(right.value(), z!);
+    } else if (z <- right.graftGamma())? {
+      y <- TransformScaledGamma(left.value(), z!);
     }
     return y;
   }

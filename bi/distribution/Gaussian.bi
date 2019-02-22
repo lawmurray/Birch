@@ -18,23 +18,35 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distribution<Real> {
     } else {
       s2:DelayInverseGamma?;
       m1:TransformLinearNormalInverseGamma?;
-      m2:DelayNormalInverseGamma?;
-      m3:TransformLinearGaussian?;
-      m4:DelayGaussian?;
+      m2:TransformMultivariateDotNormalInverseGamma?;
+      m3:DelayNormalInverseGamma?;
+      m4:TransformLinearGaussian?;
+      m5:TransformMultivariateDotGaussian?;
+      m6:DelayGaussian?;
 
       if (s2 <- σ2.graftInverseGamma())? {
         if (m1 <- μ.graftLinearNormalInverseGamma(σ2))? {
-          delay <- DelayLinearNormalInverseGammaGaussian(x, m1!.a, m1!.x,
-              m1!.c);
-        } else if (m2 <- μ.graftNormalInverseGamma(σ2))? {
-          delay <- DelayNormalInverseGammaGaussian(x, m2!);
+          delay <- DelayLinearNormalInverseGammaGaussian(x, m1!.a, m1!.x, m1!.c);
+        } else if (m2 <- μ.graftMultivariateDotNormalInverseGamma(σ2))? {
+          delay <- DelayMultivariateDotNormalInverseGammaGaussian(x, m2!.a, m2!.x, m2!.c);
+        } else if (m3 <- μ.graftNormalInverseGamma(σ2))? {
+          delay <- DelayNormalInverseGammaGaussian(x, m3!);
         } else {
-          delay <- DelayInverseGammaGaussian(x, μ, s2!);
+          /* trigger a sample of μ, and double check that this doesn't cause
+           * a sample of σ2 before we try creating an inverse-gamma Gaussian */
+          μ.value();
+          if (s2 <- σ2.graftInverseGamma())? {
+            delay <- DelayInverseGammaGaussian(x, μ, s2!);
+          } else {
+            delay <- DelayGaussian(x, μ, σ2);
+          }
         }
-      } else if (m3 <- μ.graftLinearGaussian())? {
-        delay <- DelayLinearGaussianGaussian(x, m3!.a, m3!.x, m3!.c, σ2);
-      } else if (m4 <- μ.graftGaussian())? {
-        delay <- DelayGaussianGaussian(x, m4!, σ2);
+      } else if (m4 <- μ.graftLinearGaussian())? {
+        delay <- DelayLinearGaussianGaussian(x, m4!.a, m4!.x, m4!.c, σ2);
+      } else if (m5 <- μ.graftMultivariateDotGaussian())? {
+        delay <- DelayMultivariateDotGaussianGaussian(x, m5!.a, m5!.x, m5!.c, σ2);
+      } else if (m6 <- μ.graftGaussian())? {
+        delay <- DelayGaussianGaussian(x, m6!, σ2);
       } else {
         delay <- DelayGaussian(x, μ, σ2);
       }

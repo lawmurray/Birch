@@ -688,8 +688,8 @@ function simulate_multivariate_normal_inverse_gamma_gaussian(μ:Real[_],
 }
 
 /**
- * Simulate a Gaussian distribution with a multivariate normal inverse-gamma
- * prior.
+ * Simulate a Gaussian distribution with a multivariate linear normal
+ * inverse-gamma prior.
  *
  * - A: Scale.
  * - μ: Mean.
@@ -702,6 +702,23 @@ function simulate_multivariate_linear_normal_inverse_gamma_gaussian(
     A:Real[_,_], μ:Real[_], c:Real[_], Λ:Real[_,_], α:Real, β:Real) -> Real[_] {
   return simulate_multivariate_student_t(2.0*α, A*μ + c,
       (α/β)*inv(identity(rows(A)) + A*solve(Λ, trans(A))));
+}
+
+/**
+ * Simulate a Gaussian distribution with a multivariate dot normal inverse-gamma
+ * prior.
+ *
+ * - a: Scale.
+ * - μ: Mean.
+ * - c: Offset.
+ * - Λ: Precision.
+ * - α: Shape of the inverse-gamma.
+ * - β: Scale of the inverse-gamma.
+ */
+function simulate_multivariate_dot_normal_inverse_gamma_gaussian(
+    a:Real[_], μ:Real[_], c:Real, Λ:Real[_,_], α:Real, β:Real) -> Real {
+  return simulate_student_t(2.0*α, dot(a, μ) + c,
+      (α/β)/(1.0 + dot(a, solve(Λ, a))));
 }
 
 /**

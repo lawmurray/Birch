@@ -29,6 +29,16 @@ class TransformMultivariateLinear<Value>(A:Value[_,_], c:Value[_]) {
     c <- c - x;
   }
   
+  function multiply(x:Value) {
+    A <- A*x;
+    c <- c*x;
+  }
+
+  function divide(x:Value) {
+    A <- A/x;
+    c <- c/x;
+  }
+  
   function negateAndAdd(x:Value[_]) {
     A <- -A;
     c <- x - c;

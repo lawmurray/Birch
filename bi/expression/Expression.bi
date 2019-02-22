@@ -158,6 +158,16 @@ class Expression<Value> {
   /*
    * Attempt to graft this expression onto the delayed sampling graph.
    *
+   * Return: The node if successful, nil if not.
+   */
+  function graftMultivariateDotGaussian() ->
+      TransformMultivariateDotGaussian? {
+    return nil;
+  }
+
+  /*
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
    * - σ2: Variance of the normal distribution for which a
    *       compatible normal-inverse-gamma distribution is sought as prior.
    *
@@ -191,6 +201,19 @@ class Expression<Value> {
    */
   function graftMultivariateLinearNormalInverseGamma(σ2:Expression<Real>) ->
       TransformMultivariateLinearNormalInverseGamma? {
+    return nil;
+  }
+
+  /*
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
+   * - σ2: Variance of the normal distribution for which a
+   *       compatible normal-inverse-gamma distribution is sought as prior.
+   *
+   * Return: The node if successful, nil if not.
+   */
+  function graftMultivariateDotNormalInverseGamma(σ2:Expression<Real>) ->
+      TransformMultivariateDotNormalInverseGamma? {
     return nil;
   }
 
