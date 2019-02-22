@@ -175,8 +175,8 @@ function update_inverse_gamma_gaussian(x:Real, μ:Real, α:Real,
 function update_normal_inverse_gamma_gaussian(x:Real, μ:Real, a2:Real,
     α:Real, β:Real) -> (Real, Real, Real, Real) {
   λ:Real <- 1.0/a2;
-  μ_1:Real <- (λ*μ + x)/(λ + 1.0);
   λ_1:Real <- λ + 1.0;
+  μ_1:Real <- (λ*μ + x)/λ_1;
   α_1:Real <- α + 0.5;
   β_1:Real <- β + 0.5*(λ/λ_1)*pow(x - μ, 2.0);
   
@@ -201,8 +201,8 @@ function update_linear_normal_inverse_gamma_gaussian(a:Real, x:Real,
     c:Real, μ:Real, a2:Real, α:Real, β:Real) -> (Real, Real, Real, Real) {
   y:Real <- x - c;
   λ:Real <- 1.0/a2;
-  μ_1:Real <- (λ*μ + a*y)/(λ + a*a);
   λ_1:Real <- λ + a*a;
+  μ_1:Real <- (λ*μ + a*y)/λ_1;
   α_1:Real <- α + 0.5;
   β_1:Real <- β + 0.5*(y*y + μ*μ*λ - μ_1*μ_1*λ_1);
   
