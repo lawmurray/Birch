@@ -47,15 +47,17 @@ class DelayLinearDiscrete(x:Random<Integer>&, a:Integer,
   function lower() -> Integer? {
     l:Integer? <- μ!.lower();
     if (l?) {
-      return a*l! + c;
+      l <- a*l! + c;
     }
+    return l;
   }
   
   function upper() -> Integer? {
     u:Integer? <- μ!.upper();
     if (u?) {
-      return a*u! + c;
+      u <- a*u! + c;
     }
+    return u;
   }
 }
 
