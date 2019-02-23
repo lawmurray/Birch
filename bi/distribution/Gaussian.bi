@@ -78,7 +78,7 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distribution<Real> {
       m:DelayNormalInverseGamma?;
       s2:DelayInverseGamma?;
       if (m <- DelayNormalInverseGamma?(delay))? &&
-          (s2 <- σ2.graftInverseGamma())? && m!.σ2 == s2! {
+          (s2 <- σ2.graftInverseGamma())? && m!.σ2! == s2! {
         return m;
       } else {
         return nil;

@@ -20,27 +20,27 @@ class DelayLinearNormalInverseGammaLogGaussian(x:Random<Real>&, a:Real,
 
   function simulate() -> Real {
     return exp(simulate_linear_normal_inverse_gamma_gaussian(a, μ!.μ, c, μ!.a2,
-        μ!.σ2.α, μ!.σ2.β));
+        μ!.σ2!.α, μ!.σ2!.β));
   }
   
   function observe(x:Real) -> Real {
     return observe_linear_normal_inverse_gamma_gaussian(log(x), a, μ!.μ, c, 
-        μ!.a2, μ!.σ2.α, μ!.σ2.β) - log(x);
+        μ!.a2, μ!.σ2!.α, μ!.σ2!.β) - log(x);
   }
 
   function condition(x:Real) {
-    (μ!.μ, μ!.a2, μ!.σ2.α, μ!.σ2.β) <- update_linear_normal_inverse_gamma_gaussian(
-        log(x), a, μ!.μ, c, μ!.a2, μ!.σ2.α, μ!.σ2.β);
+    (μ!.μ, μ!.a2, μ!.σ2!.α, μ!.σ2!.β) <- update_linear_normal_inverse_gamma_gaussian(
+        log(x), a, μ!.μ, c, μ!.a2, μ!.σ2!.α, μ!.σ2!.β);
   }
 
   function pdf(x:Real) -> Real {
     return pdf_linear_normal_inverse_gamma_gaussian(log(x), a, μ!.μ, c, μ!.a2,
-        μ!.σ2.α, μ!.σ2.β)/x;
+        μ!.σ2!.α, μ!.σ2!.β)/x;
   }
 
   function cdf(x:Real) -> Real {
     return cdf_linear_normal_inverse_gamma_gaussian(log(x), a, μ!.μ, c, μ!.a2,
-        μ!.σ2.α, μ!.σ2.β);
+        μ!.σ2!.α, μ!.σ2!.β);
   }
 
   function lower() -> Real? {
