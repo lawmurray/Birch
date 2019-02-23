@@ -54,9 +54,8 @@ class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) <
       delay!.prune();
       
       m:DelayMultivariateNormalInverseGamma?;
-      s2:DelayInverseGamma?;
       if (m <- DelayMultivariateNormalInverseGamma?(delay))? &&
-         (s2 <- σ2.graftInverseGamma())? && m!.σ2! == s2! {
+          σ2.hasDelay() && σ2.getDelay()! == m!.σ2! {
         return m;
       } else {
         return nil;

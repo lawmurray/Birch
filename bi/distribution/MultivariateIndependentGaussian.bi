@@ -24,29 +24,24 @@ class MultivariateIndependentGaussian(μ:Expression<Real[_]>,
       m3:TransformMultivariateLinearGaussian?;
       m4:DelayMultivariateGaussian?;
 
-      if (s2 <- σ2.graftInverseGamma())? {
-        if (m1 <- μ.graftMultivariateLinearNormalInverseGamma(σ2))? {
-          delay <- DelayMultivariateLinearNormalInverseGammaGaussian(x, m1!.A,
-              m1!.x, m1!.c);
-        } else if (m2 <- μ.graftMultivariateNormalInverseGamma(σ2))? {
-          delay <- DelayMultivariateNormalInverseGammaGaussian(x, m2!);
-        } else {
-          /* trigger a sample of μ, and double check that this doesn't cause
-           * a sample of σ2 before we try creating an inverse-gamma Gaussian */
-          μ.value();
-          if (s2 <- σ2.graftInverseGamma())? {
-            delay <- DelayMultivariateInverseGammaGaussian(x, μ, s2!);
-          } else {
-            delay <- DelayMultivariateGaussian(x, μ.value(), diagonal(σ2, length(μ.value())));
-          }
-        }
+      if (m1 <- μ.graftMultivariateLinearNormalInverseGamma(σ2))? {
+        delay <- DelayMultivariateLinearNormalInverseGammaGaussian(x, m1!.A, m1!.x, m1!.c);
+      } else if (m2 <- μ.graftMultivariateNormalInverseGamma(σ2))? {
+        delay <- DelayMultivariateNormalInverseGammaGaussian(x, m2!);
       } else if (m3 <- μ.graftMultivariateLinearGaussian())? {
         delay <- DelayMultivariateLinearGaussianGaussian(x, m3!.A, m3!.x, m3!.c,
             diagonal(σ2.value(), m3!.size()));
       } else if (m4 <- μ.graftMultivariateGaussian())? {
         delay <- DelayMultivariateGaussianGaussian(x, m4!, diagonal(σ2, m4!.size()));
       } else {
-        delay <- DelayMultivariateGaussian(x, μ.value(), diagonal(σ2, length(μ.value())));
+        /* trigger a sample of μ, and double check that this doesn't cause
+         * a sample of σ2 before we try creating an inverse-gamma Gaussian */
+        μ.value();
+        if (s2 <- σ2.graftInverseGamma())? {
+          delay <- DelayMultivariateInverseGammaGaussian(x, μ, s2!);
+        } else {
+          delay <- DelayMultivariateGaussian(x, μ.value(), diagonal(σ2, length(μ.value())));
+        }
       }
     }
   }
@@ -77,9 +72,8 @@ class MultivariateIndependentGaussian(μ:Expression<Real[_]>,
       delay!.prune();
       
       m:DelayMultivariateNormalInverseGamma?;
-      s2:DelayInverseGamma?;
       if (m <- DelayMultivariateNormalInverseGamma?(delay))? &&
-         (s2 <- σ2.graftInverseGamma())? && m!.σ2! == s2! {
+          σ2.hasDelay() && σ2.getDelay()! == m!.σ2! {
         return m;
       } else {
         return nil;
@@ -90,9 +84,8 @@ class MultivariateIndependentGaussian(μ:Expression<Real[_]>,
       if (s1 <- this.σ2.graftScaledInverseGamma(σ2))? {
         μ1:Real[_] <- μ.value();
         D:Integer <- length(μ1);
-        delay <- DelayMultivariateNormalInverseGamma(x, μ1,
-            diagonal(s1!.a2, D), s1!.σ2);
-      } else if Object(this.σ2) == σ2 && (s2 <- this.σ2.graftInverseGamma())? {
+        delay <- DelayMultivariateNormalInverseGamma(x, μ1, diagonal(s1!.a2, D), s1!.σ2);
+      } else if this.σ2 == σ2 && (s2 <- this.σ2.graftInverseGamma())? {
         μ1:Real[_] <- μ.value();
         D:Integer <- length(μ1);
         delay <- DelayMultivariateNormalInverseGamma(x, μ1, identity(D), s2!);

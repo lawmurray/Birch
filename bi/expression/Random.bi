@@ -138,6 +138,24 @@ class Random<Value> < Expression<Value> {
     return dist!.upper();
   }
 
+  function hasDelay() -> Boolean {
+    if (!x?) {
+      assert dist?;
+      return dist!.delay?;
+    } else {
+      return false;
+    }
+  }
+
+  function getDelay() -> Delay? {
+    if (!x?) {
+      assert dist?;
+      return dist!.delay;
+    } else {
+      return nil;
+    }
+  }
+
   function graftGaussian() -> DelayGaussian? {
     if (!x?) {
       assert dist?;

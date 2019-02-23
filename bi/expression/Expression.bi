@@ -24,6 +24,21 @@ class Expression<Value> {
   function boxed() -> Boxed<Value> {
     return Boxed(value());
   }
+
+  /**
+   * Is this expression grafted onto the delayed sampling graph?
+   */
+  function hasDelay() -> Boolean {
+    return false;
+  }
+  
+  /**
+   * If this expression is grafted onto the delayed sampling graph, get the
+   * node with which it is associated on that graph.
+   */
+  function getDelay() -> Delay? {
+    return nil;
+  }
   
   /*
    * Attempt to graft this expression onto the delayed sampling graph.

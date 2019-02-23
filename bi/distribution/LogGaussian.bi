@@ -16,27 +16,29 @@ class LogGaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distribution<Real
     if delay? {
       delay!.prune();
     } else {
-      s2:DelayInverseGamma?;
       m1:TransformLinearNormalInverseGamma?;
       m2:DelayNormalInverseGamma?;
       m3:TransformLinearGaussian?;
       m4:DelayGaussian?;
+      s2:DelayInverseGamma?;
       
-      if (s2 <- σ2.graftInverseGamma())? {
-        if (m1 <- μ.graftLinearNormalInverseGamma(σ2))? {
-          delay <- DelayLinearNormalInverseGammaLogGaussian(x, m1!.a, m1!.x,
-              m1!.c);
-        } else if (m2 <- μ.graftNormalInverseGamma(σ2))? {
-          delay <- DelayNormalInverseGammaLogGaussian(x, m2!);
-        } else {
-          delay <- DelayInverseGammaLogGaussian(x, μ, s2!);
-        }
+      if (m1 <- μ.graftLinearNormalInverseGamma(σ2))? {
+        delay <- DelayLinearNormalInverseGammaLogGaussian(x, m1!.a, m1!.x, m1!.c);
+      } else if (m2 <- μ.graftNormalInverseGamma(σ2))? {
+        delay <- DelayNormalInverseGammaLogGaussian(x, m2!);
       } else if (m3 <- μ.graftLinearGaussian())? {
         delay <- DelayLinearGaussianLogGaussian(x, m3!.a, m3!.x, m3!.c, σ2);
       } else if (m4 <- μ.graftGaussian())? {
         delay <- DelayGaussianLogGaussian(x, m4!, σ2);
       } else {
-        delay <- DelayLogGaussian(x, μ, σ2);
+        /* trigger a sample of μ, and double check that this doesn't cause
+         * a sample of σ2 before we try creating an inverse-gamma Gaussian */
+        μ.value();
+        if (s2 <- σ2.graftInverseGamma())? {
+          delay <- DelayInverseGammaLogGaussian(x, μ, s2!);
+        } else {
+          delay <- DelayLogGaussian(x, μ, σ2);
+        }
       }
     }
   }
