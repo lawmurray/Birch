@@ -297,7 +297,7 @@ function update_multivariate_normal_inverse_gamma(x:Real[_], μ:Real[_],
 function update_multivariate_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
     α:Real, β:Real) -> (Real, Real) {
   D:Integer <- length(x);
-  return (α + D*0.5, β + 0.5*dot(x - μ));
+  return (α + 0.5*D, β + 0.5*dot(x - μ));
 }
 
 /**
@@ -370,12 +370,10 @@ function update_multivariate_linear_normal_inverse_gamma_gaussian(
 function update_multivariate_dot_normal_inverse_gamma_gaussian(
     x:Real, a:Real[_], μ:Real[_], c:Real, Λ:Real[_,_], α:Real,
     β:Real) -> (Real[_], Real[_,_], Real, Real) {
-  D:Integer <- 1;
-  
   Λ_1:Real[_,_] <- Λ + a*trans(a);
   μ_1:Real[_] <- solve(Λ_1, Λ*μ + a*(x - c));
   
-  α_1:Real <- α + D*0.5;
+  α_1:Real <- α + 0.5;
   β_1:Real <- β + 0.5*(pow(x - c, 2.0) + dot(μ, Λ*μ) - dot(μ_1, Λ_1*μ_1));
 
   return (μ_1, Λ_1, α_1, β_1);
