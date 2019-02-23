@@ -73,10 +73,10 @@ class TestMultivariateDotNormalInverseGammaGaussian(a:Real[_],
   function backward() -> Real[_] {
     y:Real[7];
     y[7] <- x.value();
-    assert !σ2.hasValue();
-    y[1] <- σ2.value();
     assert !μ.hasValue();
     y[2..6] <- μ.value();
+    assert !σ2.hasValue();
+    y[1] <- σ2.value();
     return y;
   }
 }

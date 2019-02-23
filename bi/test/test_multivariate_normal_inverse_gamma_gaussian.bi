@@ -68,10 +68,10 @@ class TestMultivariateNormalInverseGammaGaussian(μ_0:Real[_], A:Real[_,_],
   function backward() -> Real[_] {
     y:Real[11];
     y[7..11] <- x.value();
-    assert !σ2.hasValue();
-    y[1] <- σ2.value();
     assert !μ.hasValue();
     y[2..6] <- μ.value();
+    assert !σ2.hasValue();
+    y[1] <- σ2.value();
     return y;
   }
 }

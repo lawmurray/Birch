@@ -59,10 +59,10 @@ class TestNormalInverseGammaLogGaussian(μ_0:Real, a2:Real, α:Real, β:Real) {
   function backward() -> Real[_] {
     y:Real[3];
     y[3] <- x.value();
-    assert !σ2.hasValue();
-    y[1] <- σ2.value();
     assert !μ.hasValue();
     y[2] <- μ.value();
+    assert !σ2.hasValue();
+    y[1] <- σ2.value();
     return y;
   }
 }
