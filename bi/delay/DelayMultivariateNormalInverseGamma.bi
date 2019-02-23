@@ -54,7 +54,8 @@ class DelayMultivariateNormalInverseGamma(x:Random<Real[_]>&, μ:Real[_],
   }
 
   function condition(x:Real[_]) {
-    (σ2!.α, σ2!.β) <- update_multivariate_normal_inverse_gamma(x, μ, Λ, σ2!.α, σ2!.β);
+    (σ2!.α, σ2!.β) <- update_multivariate_normal_inverse_gamma(x, μ, Λ,
+        σ2!.α, σ2!.β);
   }
   
   function pdf(x:Real[_]) -> Real {

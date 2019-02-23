@@ -9,8 +9,8 @@ program test_multivariate_linear_normal_inverse_gamma_gaussian(N:Integer <- 1000
   μ:Real[10];
   Σ:Real[10,10];
   c:Real[5];
-  α:Real <- simulate_uniform(1.0, 2.0);
-  β:Real <- simulate_uniform(0.0, 2.0);
+  α:Real <- simulate_uniform(2.0, 10.0);
+  β:Real <- simulate_uniform(0.0, 10.0);
  
   for i:Integer in 1..10 {
     μ[i] <- simulate_uniform(-10.0, 10.0);

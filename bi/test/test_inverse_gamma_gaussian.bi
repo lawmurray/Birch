@@ -5,7 +5,7 @@ program test_inverse_gamma_gaussian(N:Integer <- 10000) {
   X1:Real[N,2];
   X2:Real[N,2];
   μ:Real <- simulate_uniform(-10.0, 10.0);
-  α:Real <- simulate_uniform(1.0, 10.0);
+  α:Real <- simulate_uniform(2.0, 10.0);
   β:Real <- simulate_uniform(0.0, 10.0);
  
   /* simulate forward */
