@@ -166,7 +166,7 @@ class EagerPtr {
    * @note Should never be called, but here for interface compatibility with
    * LazyPtr.
    */
-  void freeze() {
+  void freeze() const {
     assert(false);
   }
 
