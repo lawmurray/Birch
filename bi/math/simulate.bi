@@ -684,7 +684,7 @@ function simulate_multivariate_inverse_gamma_gaussian(μ:Real[_], α:Real,
 function simulate_multivariate_normal_inverse_gamma_gaussian(μ:Real[_],
     Λ:Real[_,_], α:Real, β:Real) -> Real[_] {
   return simulate_multivariate_student_t(2.0*α, μ,
-      (α/β)*inv(identity(rows(Λ)) + inv(Λ)));
+      (α/β)*cholinv(identity(rows(Λ)) + cholinv(Λ)));
 }
 
 /**
@@ -701,7 +701,7 @@ function simulate_multivariate_normal_inverse_gamma_gaussian(μ:Real[_],
 function simulate_multivariate_linear_normal_inverse_gamma_gaussian(
     A:Real[_,_], μ:Real[_], c:Real[_], Λ:Real[_,_], α:Real, β:Real) -> Real[_] {
   return simulate_multivariate_student_t(2.0*α, A*μ + c,
-      (α/β)*inv(identity(rows(A)) + A*solve(Λ, trans(A))));
+      (α/β)*cholinv(identity(rows(A)) + A*cholsolve(Λ, trans(A))));
 }
 
 /**
@@ -718,7 +718,7 @@ function simulate_multivariate_linear_normal_inverse_gamma_gaussian(
 function simulate_multivariate_dot_normal_inverse_gamma_gaussian(
     a:Real[_], μ:Real[_], c:Real, Λ:Real[_,_], α:Real, β:Real) -> Real {
   return simulate_student_t(2.0*α, dot(a, μ) + c,
-      (β/α)*(1.0 + dot(a, solve(Λ, a))));
+      (β/α)*(1.0 + dot(a, cholsolve(Λ, a))));
 }
 
 /**

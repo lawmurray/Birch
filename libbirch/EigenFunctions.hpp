@@ -17,7 +17,7 @@ auto norm_(const EigenType& o) {
 
 template<class Type, class Frame>
 auto norm_(const Array<Type,Frame>& o) {
-  return o.toEigen().norm();
+  return norm_(o.toEigen());
 }
 
 template<class EigenType>
@@ -27,27 +27,27 @@ auto dot_(const EigenType& o) {
 
 template<class Type, class Frame>
 auto dot_(const Array<Type,Frame>& o) {
-  return o.toEigen().squaredNorm();
-}
-
-template<class Type, class Frame1, class Frame2>
-Type dot_(const Array<Type,Frame1>& o1, const Array<Type,Frame2>& o2) {
-  return o1.toEigen().dot(o2.toEigen());
-}
-
-template<class Type, class EigenType1, class Frame2>
-Type dot_(const EigenType1& o1, const Array<Type,Frame2>& o2) {
-  return o1.dot(o2.toEigen());
-}
-
-template<class Type, class Frame1, class EigenType2>
-Type dot_(const Array<Type,Frame1>& o1, const EigenType2& o2) {
-  return o1.toEigen().dot(o2);
+  return dot_(o.toEigen());
 }
 
 template<class EigenType1, class EigenType2>
 typename EigenType1::value_type dot_(const EigenType1& o1, const EigenType2& o2) {
   return o1.dot(o2);
+}
+
+template<class Type, class EigenType1, class Frame2>
+Type dot_(const EigenType1& o1, const Array<Type,Frame2>& o2) {
+  return dot_(o1, o2.toEigen());
+}
+
+template<class Type, class Frame1, class EigenType2>
+Type dot_(const Array<Type,Frame1>& o1, const EigenType2& o2) {
+  return dot_(o1.toEigen(), o2);
+}
+
+template<class Type, class Frame1, class Frame2>
+Type dot_(const Array<Type,Frame1>& o1, const Array<Type,Frame2>& o2) {
+  return dot_(o1.toEigen(), o2.toEigen());
 }
 
 template<class EigenType>
@@ -57,7 +57,7 @@ auto det_(const EigenType& o) {
 
 template<class Type, class Frame>
 auto det_(const Array<Type,Frame>& o) {
-  return o.toEigen().determinant();
+  return det_(o.toEigen());
 }
 
 template<class EigenType>
@@ -67,7 +67,7 @@ auto trans_(const EigenType& o) {
 
 template<class Type, class Frame>
 auto trans_(const Array<Type,Frame>& o) {
-  return o.toEigen().transpose();
+  return trans_(o.toEigen());
 }
 
 template<class EigenType>
@@ -77,7 +77,7 @@ auto inv_(const EigenType& o) {
 
 template<class Type, class Frame>
 auto inv_(const Array<Type,Frame>& o) {
-  return o.toEigen().inverse();
+  return inv_(o.toEigen());
 }
 
 }

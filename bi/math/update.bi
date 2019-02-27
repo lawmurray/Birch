@@ -223,7 +223,7 @@ function update_linear_normal_inverse_gamma_gaussian(a:Real, x:Real,
  */
 function update_multivariate_gaussian_gaussian(x:Real[_], μ:Real[_],
     Σ:Real[_,_], μ_m:Real[_], Σ_m:Real[_,_]) -> (Real[_], Real[_,_]) {
-  K:Real[_,_] <- Σ*inv(Σ_m);
+  K:Real[_,_] <- Σ*cholinv(Σ_m);
   return (μ + K*(x - μ_m), Σ - K*Σ);
 }
 
@@ -242,7 +242,7 @@ function update_multivariate_gaussian_gaussian(x:Real[_], μ:Real[_],
  */
 function update_multivariate_linear_gaussian_gaussian(x:Real[_], A:Real[_,_],
     μ:Real[_], Σ:Real[_,_], μ_m:Real[_], Σ_m:Real[_,_]) -> (Real[_], Real[_,_]) {
-  K:Real[_,_] <- Σ*trans(A)*inv(Σ_m);
+  K:Real[_,_] <- Σ*trans(A)*cholinv(Σ_m);
   return (μ + K*(x - μ_m), Σ - K*A*Σ);
 }
 
@@ -317,7 +317,7 @@ function update_multivariate_normal_inverse_gamma_gaussian(x:Real[_],
   D:Integer <- length(x);
   
   Λ_1:Real[_,_] <- Λ + identity(rows(Λ));
-  μ_1:Real[_] <- solve(Λ_1, Λ*μ + x);
+  μ_1:Real[_] <- cholsolve(Λ_1, Λ*μ + x);
 
   α_1:Real <- α + D*0.5;
   β_1:Real <- β + 0.5*(dot(x) + dot(μ, Λ*μ) - dot(μ_1, Λ_1*μ_1));
@@ -345,7 +345,7 @@ function update_multivariate_linear_normal_inverse_gamma_gaussian(
   D:Integer <- length(x);
   
   Λ_1:Real[_,_] <- Λ + trans(A)*A;
-  μ_1:Real[_] <- solve(Λ_1, Λ*μ + trans(A)*(x - c));
+  μ_1:Real[_] <- cholsolve(Λ_1, Λ*μ + trans(A)*(x - c));
   
   α_1:Real <- α + D*0.5;
   β_1:Real <- β + 0.5*(dot(x - c) + dot(μ, Λ*μ) - dot(μ_1, Λ_1*μ_1));
@@ -371,7 +371,7 @@ function update_multivariate_dot_normal_inverse_gamma_gaussian(
     x:Real, a:Real[_], μ:Real[_], c:Real, Λ:Real[_,_], α:Real,
     β:Real) -> (Real[_], Real[_,_], Real, Real) {
   Λ_1:Real[_,_] <- Λ + a*trans(a);
-  μ_1:Real[_] <- solve(Λ_1, Λ*μ + a*(x - c));
+  μ_1:Real[_] <- cholsolve(Λ_1, Λ*μ + a*(x - c));
   
   α_1:Real <- α + 0.5;
   β_1:Real <- β + 0.5*(pow(x - c, 2.0) + dot(μ, Λ*μ) - dot(μ_1, Λ_1*μ_1));
