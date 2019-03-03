@@ -1,18 +1,13 @@
 # Birch.Cairo package
 
-Birch language wrapper for the [Cairo](https://www.cairographics.org/)
-2d graphics library. Currently provides a limited subset of the
-functionality of the library.
+Birch language wrapper for the [Cairo](https://www.cairographics.org/) 2d graphics library. Currently provides a limited subset of the functionality of the library.
 
 
 ## Installation
 
-To build, use:
+To build and install, use:
 
     birch build
-    
-To install system wide, use:
-
     birch install
 
 
@@ -39,10 +34,3 @@ Basic usage then looks something like this:
     surface.destroy();
 
 Usage idioms are mostly preserved from Cairo itself. See the Cairo documentation for more details, and the package documentation (or code) for the subset of functionality provided.
-
-
-## Version history
-
-### v0.0.0
-
-* First version.
