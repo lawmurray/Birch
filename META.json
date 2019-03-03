@@ -5,6 +5,8 @@
   
   "manifest": {
     "source": [
+      "bi/SQLite3.bi",
+      "bi/SQLite3Statement.bi"
     ],
     "other": [
       "LICENSE",
