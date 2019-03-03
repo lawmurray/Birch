@@ -12,6 +12,7 @@ matrix:
             - bison
             - eigen
             - libomp
+            - cairo
 
     # Ubuntu 16.04 environment
     - os: linux
