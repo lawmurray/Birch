@@ -613,7 +613,7 @@ function observe_linear_normal_inverse_gamma_gaussian(x:Real, a:Real,
 function observe_multivariate_gaussian(x:Real[_], μ:Real[_], Σ:Real[_,_]) ->
     Real {
   D:Integer <- length(μ);
-  return -0.5*(dot(x - μ, solve(Σ, x - μ)) + D*log(2.0*π) + lcholdet(Σ));
+  return -0.5*(dot(x - μ, cholsolve(Σ, x - μ)) + D*log(2.0*π) + lcholdet(Σ));
 }
 
 /**
@@ -713,7 +713,7 @@ function observe_multivariate_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
 function observe_multivariate_normal_inverse_gamma_gaussian(x:Real[_],
     μ:Real[_], Λ:Real[_,_], α:Real, β:Real) -> Real {
   D:Integer <- length(μ);
-  return observe_multivariate_student_t(x, 2.0*α, μ, (α/β)*inv(identity(D) + inv(Λ)));
+  return observe_multivariate_student_t(x, 2.0*α, μ, (α/β)*cholinv(identity(D) + cholinv(Λ)));
 }
 
 /**
@@ -733,7 +733,7 @@ function observe_multivariate_normal_inverse_gamma_gaussian(x:Real[_],
 function observe_multivariate_linear_normal_inverse_gamma_gaussian(x:Real[_],
     A:Real[_,_], μ:Real[_], c:Real[_], Λ:Real[_,_], α:Real, β:Real) -> Real {
   return observe_multivariate_student_t(x, 2.0*α, A*μ + c,
-      (α/β)*inv(identity(rows(A)) + A*solve(Λ, trans(A))));
+      (α/β)*cholinv(identity(rows(A)) + A*cholsolve(Λ, trans(A))));
 }
 
 /**
@@ -753,7 +753,7 @@ function observe_multivariate_linear_normal_inverse_gamma_gaussian(x:Real[_],
 function observe_multivariate_dot_normal_inverse_gamma_gaussian(x:Real,
     a:Real[_], μ:Real[_], c:Real, Λ:Real[_,_], α:Real, β:Real) -> Real {
   return observe_student_t(x, 2.0*α, dot(a, μ) + c,
-      (β/α)*(1.0 + dot(a, solve(Λ, a))));
+      (β/α)*(1.0 + dot(a, cholsolve(Λ, a))));
 }
 
 /**

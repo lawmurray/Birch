@@ -152,6 +152,52 @@ function norm(x:Real[_]) -> Real;
 function det(X:Real[_,_]) -> Real;
 
 /**
+ * Inverse of a matrix.
+ */
+function inv(X:Real[_,_]) -> Real[_,_];
+
+/**
+ * Solve a system of equations.
+ */
+function solve(X:Real[_,_], y:Real[_]) -> Real[_] {
+  assert columns(X) == length(y);
+  
+  z:Real[rows(X)];
+  cpp{{
+  z_.toEigen().noalias() = X_.toEigen().householderQr().solve(y_.toEigen());
+  }}
+  return z;
+}
+
+/**
+ * Solve a system of equations.
+ */
+function solve(X:Real[_,_], Y:Real[_,_]) -> Real[_,_] {
+  assert columns(X) == rows(Y);
+  
+  Z:Real[rows(Y),columns(Y)];
+  cpp{{
+  Z_.toEigen().noalias() = X_.toEigen().householderQr().solve(Y_.toEigen());
+  }}
+  return Z;
+}
+
+/**
+ * Cholesky decomposition of a matrix, $X = LL^{\top}$.
+ *
+ * Returns: the lower-triangular factor $L$.
+ */
+function chol(X:Real[_,_]) -> Real[_,_] {
+  assert rows(X) == columns(X);
+  
+  L:Real[rows(X),columns(X)];
+  cpp{{
+  L_.toEigen() = X_.toEigen().llt().matrixL();
+  }}
+  return L;
+}
+
+/**
  * Determinant of a symmetric positive-definite matrix, computed using the
  * Cholesky decomposition.
  */
@@ -178,48 +224,39 @@ function lcholdet(X:Real[_,_]) -> Real {
   }
   return 2.0*d;
 }
-/**
- * Inverse of a matrix.
- */
-function inv(X:Real[_,_]) -> Real[_,_];
 
 /**
- * Cholesky decomposition of a matrix, $X = LL^{\top}$.
- *
- * Returns: the lower-triangular factor $L$.
+ * Inverse of a symmetric positive definite matrix via the Cholesky
+ * decomposition.
  */
-function chol(X:Real[_,_]) -> Real[_,_] {
-  assert rows(X) == columns(X);
-  
-  L:Real[rows(X),columns(X)];
-  cpp{{
-  L_.toEigen() = X_.toEigen().llt().matrixL();
-  }}
-  return L;
+function cholinv(X:Real[_,_]) -> Real[_,_] {
+  return cholsolve(X, identity(rows(X)));
 }
 
 /**
- * Solve a system of equations.
+ * Solve a system of equations with a symmetric positive definite matrix via
+ * the Cholesky decomposition.
  */
-function solve(X:Real[_,_], y:Real[_]) -> Real[_] {
+function cholsolve(X:Real[_,_], y:Real[_]) -> Real[_] {
   assert columns(X) == length(y);
   
   z:Real[rows(X)];
   cpp{{
-  z_.toEigen() = X_.toEigen().colPivHouseholderQr().solve(y_.toEigen());
+  z_.toEigen().noalias() = X_.toEigen().llt().solve(y_.toEigen());
   }}
   return z;
 }
 
 /**
- * Solve a system of equations.
+ * Solve a system of equations with a symmetric positive definite matrix via
+ * the Cholesky decomposition.
  */
-function solve(X:Real[_,_], Y:Real[_,_]) -> Real[_,_] {
+function cholsolve(X:Real[_,_], Y:Real[_,_]) -> Real[_,_] {
   assert columns(X) == rows(Y);
   
   Z:Real[rows(Y),columns(Y)];
   cpp{{
-  Z_.toEigen() = X_.toEigen().colPivHouseholderQr().solve(Y_.toEigen());
+  Z_.toEigen().noalias() = X_.toEigen().llt().solve(Y_.toEigen());
   }}
   return Z;
 }

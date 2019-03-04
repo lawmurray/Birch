@@ -270,4 +270,32 @@ class RaggedArray<Type> {
     assert 0 < j && j <= ncols[i];
     return offsets[i] + j;
   }
+
+ function read(buffer:Buffer) {
+    auto row <- buffer.walk();
+    while row? {
+      pushBack();
+      auto col <- row!.walk();
+      while col? {
+        /* tricky, but works for both basic and class types */
+        x:Type;
+        auto y <- col!.get(x);
+        if (y?) {
+          x <- Type?(y)!;  // cast needed for y:Object?
+          pushBack(size(), x);
+        }
+      }
+    }
+  }
+
+  function write(buffer:Buffer) {
+    buffer.setArray();
+    for i:Integer in 1..size() {
+      auto row <- buffer.push();
+      row.setArray();
+      for j:Integer in 1..size(i) {
+        row.push().set(get(i, j));
+      }
+    }
+  }
 }

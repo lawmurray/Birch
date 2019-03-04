@@ -34,7 +34,7 @@ class DelayMultivariateNormalInverseGamma(x:Random<Real[_]>&, μ:Real[_],
   /**
    * Precision.
    */
-  Λ:Real[_,_] <- inv(A);
+  Λ:Real[_,_] <- cholinv(A);
 
   /**
    * Scale.
