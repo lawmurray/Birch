@@ -27,13 +27,13 @@ program sample(
     diagnostic:String?,
     seed:Integer?) {
   /* random number generator */
-  if (seed?) {
+  if seed? {
     global.seed(seed!);
   }
   
   /* config */
   configBuffer:JSONBuffer;
-  if (config?) {
+  if config? {
     configBuffer.load(config!);
   }
     
@@ -42,45 +42,49 @@ program sample(
   className:String?;
   if sampler? {
     className <- sampler!;
-  } else {
+  } else if config? {
     auto buffer <- configBuffer.getObject("sampler");
-    if (buffer?) {
+    if buffer? {
       className <- buffer!.getString("class");
     }
   }
-  if (!className?) {
+  if !className? {
     className <- "ParticleFilter";
   }
   s <- Sampler?(make(className!));
-  if (!s?) {
+  if !s? {
     error(className! + " is not a subtype of Sampler.");
   }
-  configBuffer.get("sampler", s!);
-
+  if config? {
+    configBuffer.get("sampler", s!);
+  }
+  
   /* model */
   m:Model?;
   className <- nil;
   if model? {
     className <- model!;
-  } else {
+  } else if config? {
     auto buffer <- configBuffer.getObject("model");
-    if (buffer?) {
+    if buffer? {
       className <- buffer!.getString("class");
     }
   }
-  if (className?) {
+  if className? {
     m <- Model?(make(className!));
-    if (!m?) {
+    if !m? {
       error(className! + " is not a subtype of Model.");
     }
-    configBuffer.get("model", m!);
+    if config? {
+      configBuffer.get("model", m!);
+    }
   } else {
     error("no model class specified, this should be given using the --model option, or as model.class in the config file.");
   }
   
   /* input */
   inputBuffer:JSONBuffer;
-  if (input?) {
+  if input? {
     inputBuffer.load(input!);
     inputBuffer.get(m!);
   }
@@ -88,7 +92,7 @@ program sample(
   /* output */
   outputBuffer:JSONBuffer;
   diagnosticBuffer:JSONBuffer;
-  if (s!.nsamples > 1) {
+  if s!.nsamples > 1 {
     outputBuffer.setArray();
     diagnosticBuffer.setArray();
   }
@@ -99,7 +103,7 @@ program sample(
     w1:Real;
     (m1, w1) <- s!.sample(m!);
         
-    if (s!.nsamples > 1) {
+    if s!.nsamples > 1 {
       auto buffer <- outputBuffer.push();
       buffer.set(m1!);
       buffer.set("lweight", w1);
@@ -111,10 +115,10 @@ program sample(
       diagnosticBuffer.set(s!);
     }
   }
-  if (output?) {
+  if output? {
     outputBuffer.save(output!);
   }
-  if (diagnostic?) {
+  if diagnostic? {
     diagnosticBuffer.save(diagnostic!);
   }
 }
