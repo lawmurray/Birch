@@ -44,8 +44,14 @@ class LinearRegressionModel < Model {
   }
   
   function read(buffer:Buffer) {
-    X <- buffer.getRealMatrix("X")!;
-    y <- buffer.getRealVector("y")!;
+    auto X <- buffer.getRealMatrix("X");
+    auto y <- buffer.getRealVector("y");
+    if X? {
+      this.X <- X!;
+    }
+    if y? {
+      this.y <- y!;
+    }
   }
   
   function write(buffer:Buffer) {
