@@ -35,7 +35,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     in();
     line("using class_type = " << stateName << ';');
     line("using super_type = FiberState<" << o->returnType->unwrap() << ">;\n");
-    start("SharedCOW<" << type->name);
+    start("Shared<" << type->name);
     genTemplateArgs(type);
     finish("> self;");
     for (auto param : params) {
@@ -61,7 +61,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     genTemplateArgs(type);
     middle("::" << stateName << "::");
   }
-  middle(stateName << "(const SharedCOW<");
+  middle(stateName << "(const Shared<");
   middle(type->name);
   genTemplateArgs(type);
   middle(">& self");
@@ -118,15 +118,13 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     genTemplateArgs(type);
     middle("::" << stateName << "::");
   }
-  middle("freeze()");
+  middle("doFreeze()");
   if (header) {
     finish(';');
   } else {
     finish(" {");
     in();
-    line("if (!this->isFrozen()) {");
-    in();
-    line("super_type::freeze();");
+    line("super_type::doFreeze();");
     line("bi::freeze(self);");
     line("bi::freeze(value);");
     for (auto param : params) {
@@ -135,8 +133,6 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     for (auto local : locals) {
       line("bi::freeze(" << getName(local->name->str(), local->number) << ");");
     }
-    out();
-    line("}");
     out();
     line("}\n");
   }
@@ -160,8 +156,8 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     finish(" {");
     in();
     genTraceFunction(o->name->str(), o->loc);
-    line("SwapContext swap(context.get());");
-    line("SharedCOW<class_type> local(this);");
+    line("STANDARD_SWAP_CONTEXT");
+    line("STANDARD_DECLARE_LOCAL");
     genSwitch();
     *this << o->braces->strip();
     genEnd();
@@ -190,8 +186,8 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   } else {
     finish(" {");
     in();
-    line("SwapContext swap(context.get());");
-    line("SharedCOW<this_type> self(this);");
+    line("STANDARD_SWAP_CONTEXT");
+    line("STANDARD_DECLARE_SELF");
     start("return make_fiber<" << stateName << ">(");
     middle("self");
     for (auto param: params) {

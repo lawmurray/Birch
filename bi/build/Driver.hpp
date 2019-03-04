@@ -21,8 +21,11 @@ public:
 
   /**
    * Run user program.
+   *
+   * @param prog Name of the program.
+   * @param xargs Extra arguments.
    */
-  void run(const std::string& prog);
+  void run(const std::string& prog, const std::vector<char*>& xargs = {});
 
   /**
    * Build package.
@@ -48,6 +51,11 @@ public:
    * Clean package.
    */
   void clean();
+
+  /**
+   * Performance-tune the package.
+   */
+  void tune();
 
   /**
    * Create a new package.
@@ -103,6 +111,30 @@ private:
   void target(const std::string& cmd = "");
 
   /**
+   * Run `ldconfig`, if on a platform where this is necessary, and running
+   * under a user account where this is possible.
+   */
+  void ldconfig();
+
+  /**
+   * When a command fails to execute, get an explanation.
+   */
+  const char* explain(const std::string& cmd);
+
+  /**
+   * Compile the package and all dependencies with the current options, then
+   * execute the `run` program of the package and return its total execution
+   * time.
+   */
+  double time();
+
+  /**
+   * Produce a suffix to use on the build directory name, where this is
+   * unique to the particular configuration.
+   */
+  std::string suffix() const;
+
+  /**
    * Consume a list of files from the meta file.
    *
    * @param meta Property tree of the meta file.
@@ -120,16 +152,6 @@ private:
    * Working directory.
    */
   fs::path work_dir;
-
-  /**
-   * Build directory.
-   */
-  fs::path build_dir;
-
-  /**
-   * Built libraries directory.
-   */
-  fs::path lib_dir;
 
   /**
    * Share directories.
@@ -154,7 +176,7 @@ private:
   /**
    * Installation directory.
    */
-  fs::path prefix;
+  std::string prefix;
 
   /**
    * Name of the package.
@@ -200,6 +222,48 @@ private:
    * Is verbose reporting enabled?
    */
   bool verbose;
+
+  /**
+   * Is the memory pool enabled?
+   */
+  bool memoryPool;
+
+  /**
+   * Is lazy deep clone enabled?
+   */
+  bool lazyDeepClone;
+
+  /**
+   * Is clone memoization enabled?
+   */
+  bool cloneMemo;
+
+  /**
+   * Is ancestry memoization enabled?
+   */
+  bool ancestryMemo;
+
+  /**
+   * Initial allocation size (number of entries) in maps used for clone
+   * memoization.
+   */
+  int cloneMemoInitialSize;
+
+  /**
+   * Number of clone generations between deep clone memoizations.
+   */
+  int cloneMemoDelta;
+
+  /**
+   * Initial allocation size (number of entries) in sets used for ancestry
+   * memoization.
+   */
+  int ancestryMemoInitialSize;
+
+  /**
+   * Number of clone generations between ancestry memoizations.
+   */
+  int ancestryMemoDelta;
   //@}
 
   /**
@@ -220,12 +284,57 @@ private:
   /**
    * Lists of files from meta.
    */
-  std::map<std::string,std::set<fs::path>> metaFiles;
+  std::map<std::string,std::list<fs::path>> metaFiles;
   std::set<fs::path> allFiles;
 
   /**
    * Leftover command-line arguments for program calls.
    */
   std::vector<char*> largv;
+
+  /**
+   * Compile and run the package for each of a set of parameter values,
+   * set the parameter to the value corresponding to the fastest time, and
+   * return that time.
+   *
+   * @param parameter Pointer to the parameter to set (typically a member
+   * variable of the same object, e.g. cloneMemoInitialSize,
+   * ancestryMemoDelta.
+   * @param values List of values of the parameter to try.
+   *
+   * @return The fastest time.
+   */
+  template<class T>
+  double choose(T* parameter, const std::initializer_list<T>& values);
 };
+}
+
+template<class T>
+double bi::Driver::choose(T* parameter,
+    const std::initializer_list<T>& values) {
+  assert(values.size() > 0);
+
+  double t = std::numeric_limits<double>::infinity();
+  double best = t;
+  int strikes = 0;
+  T chosen = *values.begin();
+
+  for (auto value = values.begin(); value != values.end() && strikes < 3;
+      ++value) {
+    *parameter = *value;
+    std::cerr << '@' << *value << " = ";
+    t = time();
+    std::cerr << t << 's';
+    if (t < best) {
+      std::cerr << '*';
+      best = t;
+      chosen = *value;
+      strikes = 0;
+    } else {
+      ++strikes;
+    }
+    std::cerr << std::endl;
+  }
+  *parameter = chosen;
+  return t;
 }

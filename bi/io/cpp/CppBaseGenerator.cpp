@@ -122,7 +122,13 @@ void bi::CppBaseGenerator::visit(const Assign* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Slice* o) {
-  middle(o->single << "(bi::make_view(" << o->brackets << "))");
+  middle(o->single);
+  if (!inAssign && o->single->type->isValue()) {
+    /* optimization: just reading a value, so ensure that access is in a
+     * const context to avoid unnecessary copy */
+    middle(".as_const()");
+  }
+  middle("(bi::make_view(" << o->brackets << "))");
 }
 
 void bi::CppBaseGenerator::visit(const Query* o) {
@@ -213,7 +219,7 @@ void bi::CppBaseGenerator::visit(const Nil* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Parameter* o) {
-  if (o->type->isArray()) {
+  if (o->type->isArray() || o->type->isClass()) {
     /* optimization to avoid copying arrays, can also be enabled for any
      * other types */
     /// @todo Review this or provide as an "unsafe" compiler optimization, is
@@ -402,9 +408,9 @@ void bi::CppBaseGenerator::visit(const MemberFiber* o) {
 
 void bi::CppBaseGenerator::visit(const Program* o) {
   if (header) {
-    line("extern \"C\" void " << o->name << "(int argc, char** argv);");
+    line("extern \"C\" int " << o->name << "(int argc, char** argv);");
   } else {
-    line("void bi::" << o->name << "(int argc, char** argv) {");
+    line("int bi::" << o->name << "(int argc, char** argv) {");
     in();
     genTraceFunction(o->name->str(), o->loc);
 
@@ -502,6 +508,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
       aux << o->braces->strip();
     }
 
+    line("return 0;");
     out();
     line("}\n");
   }
@@ -741,7 +748,7 @@ void bi::CppBaseGenerator::visit(const OptionalType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const WeakType* o) {
-  middle("bi::WeakCOW<");
+  middle("bi::Weak<");
   if (o->single->isClass()) {
     ++inPointer;
   }
@@ -752,7 +759,7 @@ void bi::CppBaseGenerator::visit(const WeakType* o) {
 void bi::CppBaseGenerator::visit(const ClassType* o) {
   int inPointer1 = inPointer;
   if (!inPointer1) {
-    middle("bi::SharedCOW<");
+    middle("bi::Shared<");
   } else {
     --inPointer;
   }
@@ -832,5 +839,9 @@ void bi::CppBaseGenerator::genArg(const Expression* arg, const Type* type) {
   /* Birch and C++ resolve overloads differently, explicit casting avoids
    * situations where Birch considers a call unambiguous, whereas C++ does
    * not */
-  middle(type->canonical() << '(' << arg << ')');
+  if (!arg->type->equals(*type)) {
+    middle(type->canonical() << '(' << arg << ')');
+  } else {
+    middle(arg);
+  }
 }

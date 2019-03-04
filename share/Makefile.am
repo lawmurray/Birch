@@ -1,11 +1,3 @@
-# precompiled header; note $(CXXCOMPILE) has a -include flag for the header,
-# ensure that this won't use the old precompiled header by removing it first
-bi/PACKAGE_TARNAME.hpp.gch: bi/PACKAGE_TARNAME.hpp
-	rm -f $@
-	mkdir -p bi/$(DEPDIR) && \
-	$(CXXCOMPILE) -M -MF bi/$(DEPDIR)/PACKAGE_TARNAME.gch.Plo -MT $@ $< && \
-	$(CXXCOMPILE) -o $@ $<
-
 # placeholder source file for Emscripten program wrapper
 main.cpp:
 	touch main.cpp
@@ -23,10 +15,10 @@ birch_html_LDFLAGS = -s MAIN_MODULE=1 --emrun
 
 # compile and link flags
 ACLOCAL_AMFLAGS = -I m4
-AM_CXXFLAGS = -include bi/PACKAGE_TARNAME.hpp $(OPENMP_CXXFLAGS)
-AM_CFLAGS = $(OPENMP_CFLAGS)
+AM_CPPFAGS = -DEIGEN_NO_STATIC_ASSERT -DEIGEN_NO_AUTOMATIC_RESIZING=1 -DEIGEN_DONT_PARALLELIZE=1 
+# -Deigen_assert=bi_assert
+AM_CXXFLAGS = -include bi/PACKAGE_TARNAME.hpp -fpic $(OPENMP_CXXFLAGS) -Wno-unknown-warning-option -Wno-overloaded-virtual -Wno-inconsistent-missing-override -Wno-return-type -Wno-defaulted-function-deleted
+AM_CFLAGS = -fpic $(OPENMP_CFLAGS)
 
-BUILT_SOURCES = bi/PACKAGE_TARNAME.hpp.gch main.cpp
-CLEANFILES = bi/PACKAGE_TARNAME.hpp.gch main.cpp
-
-include bi/$(DEPDIR)/PACKAGE_TARNAME.gch.Plo
+BUILT_SOURCES = main.cpp
+CLEANFILES = main.cpp

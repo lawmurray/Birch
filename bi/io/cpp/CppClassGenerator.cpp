@@ -167,20 +167,16 @@ void bi::CppClassGenerator::visit(const Class* o) {
         genTemplateArgs(o);
         middle("::");
       }
-      middle("freeze()");
+      middle("doFreeze()");
       if (header) {
         finish(';');
       } else {
         finish(" {");
         in();
-        line("if (!this->isFrozen()) {");
-        in();
-        line("super_type::freeze();");
+        line("super_type::doFreeze();");
         for (auto o : memberVariables) {
           line("bi::freeze(" << o->name << ");");
         }
-        out();
-        line("}");
         out();
         line("}\n");
       }
@@ -237,8 +233,8 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
     finish(" {");
     in();
     genTraceFunction(o->name->str(), o->loc);
-    line("SwapContext swap(context.get());");
-    line("SharedCOW<this_type> self(this);");
+    line("STANDARD_SWAP_CONTEXT");
+    line("STANDARD_DECLARE_SELF");
 
     /* body */
     CppBaseGenerator auxBase(base, level, header);
@@ -276,8 +272,8 @@ void bi::CppClassGenerator::visit(const AssignmentOperator* o) {
       finish(" {");
       in();
       genTraceFunction("<assignment>", o->loc);
-      line("SwapContext swap(context.get());");
-      line("SharedCOW<this_type> self(this);");
+      line("STANDARD_SWAP_CONTEXT");
+      line("STANDARD_DECLARE_SELF");
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces->strip();
       line("return *this;");
@@ -303,8 +299,8 @@ void bi::CppClassGenerator::visit(const ConversionOperator* o) {
       finish(" {");
       in();
       genTraceFunction("<conversion>", o->loc);
-      line("SwapContext swap(context.get());");
-      line("SharedCOW<this_type> self(this);");
+      line("STANDARD_SWAP_CONTEXT");
+      line("STANDARD_DECLARE_SELF");
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces->strip();
       out();

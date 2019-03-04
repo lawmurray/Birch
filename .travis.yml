@@ -4,35 +4,25 @@ matrix:
     # macOS environment
     - os: osx
       compiler: clang
-      osx_image: xcode9.3
+      osx_image: xcode10.1
+      addons:
+        homebrew:
+          packages:
+            - flex
+            - bison
 
-    # Ubuntu 14.04 environment
+    # Ubuntu 16.04 environment
     - os: linux
-      dist: trusty
+      dist: xenial
       compiler: gcc
       addons:
         apt:
-          sources:
-            - ubuntu-toolchain-r-test
           packages:
-            - gcc-7
-            - g++-7
             - autoconf
             - libtool
             - flex
             - bison
             - libboost-all-dev
-before_install:
-  # OS-specific things
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      export CC=gcc-7;
-      export CXX=g++-7;
-      export CXXFLAGS="-DBOOST_NO_CXX11_SCOPED_ENUMS";
-    elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-      export HOMEBREW_NO_AUTO_UPDATE=1;
-      brew install flex bison eigen libomp;
-      brew link --force flex bison;
-    fi
 script:
   - ./autogen.sh && ./configure && make && sudo make install
 notifications:

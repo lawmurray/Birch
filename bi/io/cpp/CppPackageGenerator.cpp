@@ -59,7 +59,7 @@ void bi::CppPackageGenerator::visit(const Package* o) {
       sorted.insert(new ClassType(instantiation));
     }
   }
-  allowConversions = false;
+  allowConversions = true;
   std::list<Class*> sortedClasses;
   for (auto iter = sorted.rbegin(); iter != sorted.rend(); ++iter) {
     if (!(*iter)->getClass()->has(PRIOR_INSTANTIATION)) {

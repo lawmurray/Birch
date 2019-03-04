@@ -104,15 +104,13 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     } else {
       start("void bi::" << stateName << "::");
     }
-    middle("freeze()");
+    middle("doFreeze()");
     if (header) {
       finish(';');
     } else {
       finish(" {");
       in();
-      line("if (!this->isFrozen()) {");
-      in();
-      line("super_type::freeze();");
+      line("super_type::doFreeze();");
       line("bi::freeze(value);");
       for (auto param : params) {
         line("bi::freeze(" << param->name << ");");
@@ -120,8 +118,6 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       for (auto local : locals) {
         line("bi::freeze(" << getName(local->name->str(), local->number) << ");");
       }
-      out();
-      line("}");
       out();
       line("}\n");
     }
@@ -143,7 +139,8 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       finish(" {");
       in();
       genTraceFunction(o->name->str(), o->loc);
-      line("SharedCOW<class_type> local(this, context.get());");
+      line("STANDARD_SWAP_CONTEXT");
+      line("Shared<class_type> local(this);");
       genSwitch();
       *this << o->braces->strip();
       genEnd();

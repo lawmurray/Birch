@@ -55,6 +55,12 @@ void copy_with_force(fs::path src, fs::path dst);
 fs::path remove_first(const fs::path& path);
 
 /**
+ * Remove the common prefix of both base and path from path, and return the
+ * result.
+ */
+fs::path remove_common_prefix(const fs::path& base, const fs::path& path);
+
+/**
  * Read the entirety of a file to a string.
  */
 std::string read_all(const fs::path& path);
@@ -77,5 +83,27 @@ bool write_all_if_different(const fs::path& path,
  * Internal name for a package.
  */
 std::string tarname(const std::string& name);
+
+/**
+ * Is an integer a positive power of two?
+ */
+bool isPower2(const int x);
+
+/**
+ * Change the working directory and restore it on destruction.
+ */
+class CWD {
+public:
+  CWD(const fs::path& path) : previous(fs::absolute(fs::current_path())) {
+    fs::current_path(path);
+  }
+
+  ~CWD() {
+    fs::current_path(previous);
+  }
+
+private:
+  fs::path previous;
+};
 
 }

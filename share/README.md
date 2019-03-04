@@ -2,13 +2,11 @@
 
 ## Installation
 
-To build, use:
+To build, install, and run, use:
 
     birch build
-    
-To install system wide, use:
-
     birch install
+    birch run
 
 
 ## Version history
