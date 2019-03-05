@@ -41,4 +41,14 @@ class SQLite3 {
     }}
     return stmt;
   }
+  
+  /**
+   *
+   */
+  function exec(sql:String) {
+    cpp{{
+    auto res = sqlite3_exec(self->db, sql_.c_str(), nullptr, nullptr, nullptr);
+    bi_error_msg(res == SQLITE_OK, "sqlite3_exec failed");
+    }}
+  }
 }

@@ -12,7 +12,7 @@ class SQLite3Statement {
    * - i: Parameter index, 1-based.
    * - x: Argument.
    */ 
-  function bind(i:Integer32, x:Integer) {
+  function bind(i:Integer, x:Integer) {
     cpp{{
     auto res = sqlite3_bind_int64(self->stmt, i_, x_);
     bi_error_msg(res == SQLITE_OK, "sqlite3_bind_int64 failed");
@@ -25,7 +25,7 @@ class SQLite3Statement {
    * - i: Parameter index, 1-based.
    * - x: Argument.
    */ 
-  function bind(i:Integer32, x:Real) {
+  function bind(i:Integer, x:Real) {
     cpp{{
     auto res = sqlite3_bind_double(self->stmt, i_, x_);
     bi_error_msg(res == SQLITE_OK, "sqlite3_bind_double failed");
@@ -38,7 +38,7 @@ class SQLite3Statement {
    * - i: Parameter index, 1-based.
    * - x: Argument.
    */ 
-  function bind(i:Integer32, x:String) {
+  function bind(i:Integer, x:String) {
     cpp{{
     auto res = sqlite3_bind_text(self->stmt, i_, x_.c_str(), x_.length(), SQLITE_TRANSIENT);
     bi_error_msg(res == SQLITE_OK, "sqlite3_bind_text failed");
@@ -50,7 +50,7 @@ class SQLite3Statement {
    *
    * - i: Parameter index, 1-based.
    */ 
-  function bindNull(i:Integer32) {
+  function bindNull(i:Integer) {
     cpp{{
     auto res = sqlite3_bind_null(self->stmt, i_);
     bi_error_msg(res == SQLITE_OK, "sqlite3_bind_null failed");
@@ -86,7 +86,7 @@ class SQLite3Statement {
    *
    * Return: Optional with a value if the column value is a non-null integer.
    */ 
-  function columnInteger(i:Integer32) -> Integer? {
+  function columnInteger(i:Integer) -> Integer? {
     cpp{{
     if (sqlite3_column_type(self->stmt, i_ - 1) == SQLITE_INTEGER) {
       return sqlite3_column_int64(self->stmt, i_ - 1);
@@ -102,7 +102,7 @@ class SQLite3Statement {
    *
    * Return: Optional with a value if the column value is a non-null real.
    */ 
-  function columnReal(i:Integer32) -> Real? {
+  function columnReal(i:Integer) -> Real? {
     cpp{{
     if (sqlite3_column_type(self->stmt, i_ - 1) == SQLITE_FLOAT) {
       return sqlite3_column_double(self->stmt, i_ - 1);
@@ -118,7 +118,7 @@ class SQLite3Statement {
    *
    * Return: Optional with a value if the column value is a non-null string.
    */ 
-  function columnString(i:Integer32) -> String? {
+  function columnString(i:Integer) -> String? {
     cpp{{
     if (sqlite3_column_type(self->stmt, i_ - 1) == SQLITE_TEXT) {
       return std::string(reinterpret_cast<const char*>(sqlite3_column_text(self->stmt, i_ - 1)));
@@ -132,12 +132,22 @@ class SQLite3Statement {
    *
    * - i: Column index, 1-based.
    */
-  function columnNull(i:Integer32) -> Boolean {
+  function columnNull(i:Integer) -> Boolean {
     cpp{{
     return sqlite3_column_type(self->stmt, i_ - 1) == SQLITE_NULL;
     }}
   }
 
+  /**
+   * Reset the statement for reuse.
+   */
+  function reset() {
+    cpp{{
+    auto res = sqlite3_reset(self->stmt);
+    bi_error_msg(res == SQLITE_OK, "sqlite3_reset failed");
+    }}
+  }
+   
   /**
    * Finalize the statement.
    */
