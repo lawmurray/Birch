@@ -49,25 +49,33 @@ class InputStream {
   /**
    * Read integer.
    */
-  function scanInteger() -> Integer {
+  function scanInteger() -> Integer? {
     assert file?;
+    x:Integer?;
     cpp{{
-    long long int x;  // ensure fscanf gets exactly the type it expects
-    ::fscanf(self->file_.get(), "%lld", &x);
-    return x;
+    long long int y;  // ensure fscanf gets exactly the type it expects
+    auto res = ::fscanf(self->file_.get(), "%lld", &y);
+    if (res == 1) {
+      x_ = y;
+    } 
     }}
+    return x;
   }
 
   /**
    * Read real.
    */
-  function scanReal() -> Real {
+  function scanReal() -> Real? {
     assert file?;
+    x:Real?;
     cpp{{
-    double x;  // ensure fscanf gets exactly the type it expects
-    ::fscanf(self->file_.get(), "%lf", &x);
-    return x;
+    double y;  // ensure fscanf gets exactly the type it expects
+    auto res = ::fscanf(self->file_.get(), "%lf", &y);
+    if (res == 1) {
+      x_ = y;
+    } 
     }}
+    return x;
   }
 }
 
