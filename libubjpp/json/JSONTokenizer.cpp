@@ -3,8 +3,6 @@
  */
 #include "libubjpp/json/JSONTokenizer.hpp"
 
-#include <iostream>
-
 libubjpp::JSONTokenizer::JSONTokenizer(const std::string& data) :
     data(data),
     begin(data.begin()),

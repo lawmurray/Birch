@@ -3,6 +3,8 @@
  */
 #include "libubjpp/json/JSONGenerator.hpp"
 
+#include <iomanip>
+
 libubjpp::JSONGenerator::JSONGenerator(std::ostream& stream) :
     stream(stream),
     level(0) {
@@ -73,11 +75,11 @@ void libubjpp::JSONGenerator::operator()(const string_type& value) {
 }
 
 void libubjpp::JSONGenerator::operator()(const float_type& value) {
-  stream << value;
+  stream << std::scientific << std::setprecision(9) << value;
 }
 
 void libubjpp::JSONGenerator::operator()(const double_type& value) {
-  stream << value;
+  stream << std::scientific << std::setprecision(17) << value;
 }
 
 void libubjpp::JSONGenerator::operator()(const int8_type& value) {
