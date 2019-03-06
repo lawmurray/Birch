@@ -630,7 +630,7 @@ function pdf_multivariate_linear_normal_inverse_gamma_gaussian(x:Real[_],
 }
 
 /**
- * PDF of a multivariate Gaussian variate with a multivariate normal
+ * PDF of a Gaussian variate with a multivariate normal
  * inverse-gamma prior with dot transformation.
  *
  * - x: The variate.

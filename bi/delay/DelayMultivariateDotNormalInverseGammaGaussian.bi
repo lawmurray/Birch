@@ -40,6 +40,11 @@ class DelayMultivariateDotNormalInverseGammaGaussian(x:Random<Real>&,
     return pdf_multivariate_dot_normal_inverse_gamma_gaussian(x, a, μ!.μ, c,
         μ!.Λ, μ!.σ2!.α, μ!.σ2!.β);
   }
+
+  function cdf(x:Real) -> Real {
+    return cdf_multivariate_dot_normal_inverse_gamma_gaussian(x, a, μ!.μ, c,
+        μ!.Λ, μ!.σ2!.α, μ!.σ2!.β);
+  }
 }
 
 function DelayMultivariateDotNormalInverseGammaGaussian(

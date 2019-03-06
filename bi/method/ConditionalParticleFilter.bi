@@ -34,7 +34,7 @@ class ConditionalParticleFilter < ParticleFilter {
   function resample() {
     super.resample();
     ///@todo Do this properly with conditional distribution for resampler
-    if (!x0.empty()) {
+    if !x0.empty() {
       a[nparticles] <- nparticles;
     }
   }
@@ -53,7 +53,7 @@ class ConditionalParticleFilter < ParticleFilter {
     auto continue <- true;
     auto N <- nparticles;
     
-    if (!x0.empty()) {
+    if !x0.empty() {
       /* condition on the given path */
       x[N] <- x0.front();
       w[N] <- w[N] + w0.front();
