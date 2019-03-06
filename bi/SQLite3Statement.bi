@@ -80,6 +80,15 @@ class SQLite3Statement {
   }
   
   /**
+   * Number of columns in the result.
+   */
+  function columnCount() -> Integer {
+    cpp{{
+    return sqlite3_column_count(self->stmt);
+    }}
+  }
+  
+  /**
    * Get column value as an integer.
    *
    * - i: Column index, 1-based.
@@ -108,7 +117,7 @@ class SQLite3Statement {
       return sqlite3_column_double(self->stmt, i_ - 1);
     }
     }}
-    return nil;
+    return columnInteger(i);
   }
 
   /**
