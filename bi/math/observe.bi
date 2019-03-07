@@ -266,9 +266,8 @@ function observe_log_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
  */
 function observe_student_t(x:Real, ν:Real) -> Real {
   assert 0.0 < ν;
-  
   z:Real <- 0.5*(ν + 1.0);
-  return lgamma(z) - lgamma(0.5*ν) - z*log1p(x*x/ν) - 0.5*lgamma(π*ν);
+  return lgamma(z) - lgamma(0.5*ν) - z*log1p(x*x/ν) - 0.5*log(π*ν);
 }
 
 /**
