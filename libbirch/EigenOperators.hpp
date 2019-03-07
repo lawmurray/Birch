@@ -37,6 +37,15 @@
   template<class Type1, class Frame1> \
   auto operator op(const bi::Array<Type1,Frame1>& x, const Type1& y) { \
     return (x.toEigen().array() op y).matrix(); \
+  } \
+  template<class Type1, class Type2, typename = std::enable_if_t<std::is_same<Type1,typename Type2::value_type>::value>> \
+  auto operator op(const Type1& x, const Eigen::MatrixBase<Type2>& y) { \
+    return (x op y.array()).matrix(); \
+  } \
+  \
+  template<class Type1, class Type2, typename = std::enable_if_t<std::is_same<Type2,typename Type1::value_type>::value>> \
+  auto operator op(const Eigen::MatrixBase<Type1>& x, const Type2& y) { \
+    return (x.array() op y).matrix(); \
   }
 
 namespace bi {
