@@ -268,7 +268,7 @@ function observe_student_t(x:Real, ν:Real) -> Real {
   assert 0.0 < ν;
   
   z:Real <- 0.5*(ν + 1.0);
-  return lgamma(z) - 0.5*lgamma(π*ν) - lgamma(0.5*ν) - z*log1p(x*x/ν);
+  return lgamma(z) - lgamma(0.5*ν) - z*log1p(x*x/ν) - 0.5*lgamma(π*ν);
 }
 
 /**
@@ -644,8 +644,8 @@ function observe_multivariate_gaussian(x:Real[_], μ:Real[_], σ2:Real) -> Real 
 function observe_multivariate_student_t(x:Real[_], ν:Real, μ:Real[_],
     Λ:Real[_,_]) -> Real {
   D:Integer <- length(μ);
-  return -0.5*(ν + D)*log1p(dot(x - μ, Λ*(x - μ))/ν) +
-      lgamma(0.5*(ν + D)) - lgamma(0.5*ν) + 0.5*(lcholdet(Λ) - D*log(ν*π));
+  z:Real <- 0.5*(ν + D);
+  return lgamma(z) - lgamma(0.5*ν) - z*log1p(dot(x - μ, Λ*(x - μ))/ν) - 0.5*D*log(π*ν) + 0.5*lcholdet(Λ);
 }
 
 /**
@@ -662,8 +662,8 @@ function observe_multivariate_student_t(x:Real[_], ν:Real, μ:Real[_],
 function observe_multivariate_student_t(x:Real[_], ν:Real, μ:Real[_],
     λ:Real) -> Real {
   D:Integer <- length(μ);
-  return -0.5*(ν + D)*log1p(dot(x - μ)*λ/ν) + lgamma(0.5*(ν + D)) -
-      lgamma(0.5*ν) + 0.5*D*(log(λ) - log(ν*π));
+  z:Real <- 0.5*(ν + D);
+  return lgamma(z) - lgamma(0.5*ν) - z*log1p(dot(x - μ)*λ/ν) - 0.5*D*log(π*ν) + 0.5*D*log(λ);
 }
 
 /**
