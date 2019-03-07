@@ -180,7 +180,7 @@ class ParticleFilter < Sampler {
       f[n] <- clone<(Model,Real)!>(f0[a[n]]);
     }
   }
-  
+    
   /**
    * Propagate particles.
    */
@@ -222,7 +222,6 @@ class ParticleFilter < Sampler {
     }
   
     /* normalizing constant estimate */
-    w <- w - Z;
     if (this.Z.empty()) {
       this.Z.pushBack(Z);
     } else {
@@ -230,6 +229,9 @@ class ParticleFilter < Sampler {
     }
     elapsed.pushBack(toc());
     memory.pushBack(memoryUse());
+
+	/* normalize weights */
+    w <- w - Z + log(nparticles);
   }
 
   /**
