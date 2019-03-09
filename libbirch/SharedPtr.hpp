@@ -63,6 +63,7 @@ public:
   SharedPtr(const InitPtr<U>& o) :
       ptr(o.ptr) {
     if (ptr) {
+      assert(ptr->numShared() > 0);
       ptr->incShared();
     }
   }
@@ -73,6 +74,7 @@ public:
   SharedPtr(const SharedPtr<T>& o) :
       ptr(o.ptr) {
     if (ptr) {
+      assert(ptr->numShared() > 0);
       ptr->incShared();
     }
   }

@@ -76,19 +76,21 @@ bi::LazyAny* bi::LazyMemo::source(LazyAny* o, LazyMemo* from) {
     #if ENABLE_CLONE_MEMO
     if (gen % (unsigned)CLONE_MEMO_DELTA == 0u) {
       result = m.get(o);
-    }
-    #endif
-    if (!result) {
-      result = getParent()->source(o, from);
-      if (result != o) {
-        result = m.get(result, result);
-      }
-      #if ENABLE_CLONE_MEMO
-      if (gen % (unsigned)CLONE_MEMO_DELTA == 0u) {
+      if (!result) {
+        result = getParent()->source(o, from);
+        if (result != o) {  // if result == o then we already tried above
+          result = m.get(result, result);
+        }
         result = m.put(o, result);
       }
-      #endif
+    } else {
+      result = getParent()->source(o, from);
+      result = m.get(result, result);
     }
+    #else
+    result = getParent()->source(o, from);
+    result = m.get(result, result);
+    #endif
     return result;
   }
 }

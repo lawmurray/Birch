@@ -65,6 +65,7 @@ public:
   WeakPtr(const WeakPtr<U>& o) :
       ptr(o.ptr) {
     if (ptr) {
+      assert(ptr->numWeak() > 0);
       ptr->incWeak();
     }
   }
@@ -76,6 +77,7 @@ public:
   WeakPtr(const InitPtr<U>& o) :
       ptr(o.ptr) {
     if (ptr) {
+      assert(ptr->numWeak() > 0);
       ptr->incWeak();
     }
   }

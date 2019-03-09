@@ -68,6 +68,7 @@ public:
         from = o.from;
         to = currentContext;
       }
+      assert(!o.object || object);
     } else {
       object = o.object;
       from = o.from;
@@ -145,6 +146,7 @@ public:
     if (object) {
       object = static_cast<T*>(to->get(object.get(), from.get())->getForward());
       from = to.get();
+      assert(object);
       assert(!object->isFrozen());
     }
     return object.get();
@@ -173,6 +175,7 @@ public:
          * elsewhere in the meantime */
         from = to->getParent();
       }
+      assert(object);
     }
     return object.get();
   }
