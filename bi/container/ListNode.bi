@@ -41,8 +41,8 @@ class ListNode<Type>(x:Type) {
    * Return: the new front node of the list.
    */
   function popFront() -> ListNode<Type>? {
-    node:ListNode<Type>? <- next;
-    if (node?) {
+    node:ListNode<Type>? <- this.next;
+    if node? {
       node!.prev <- nil;
     }
     this.next <- nil;
@@ -56,8 +56,8 @@ class ListNode<Type>(x:Type) {
    * Return: the new back node of the list.
    */
   function popBack() -> ListNode<Type>? {
-    node:ListNode<Type>? <- prev;
-    if (node?) {
+    node:ListNode<Type>? <- this.prev;
+    if node? {
       node!.next <- nil;
     }
     this.next <- nil;

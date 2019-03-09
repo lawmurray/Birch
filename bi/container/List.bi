@@ -95,15 +95,17 @@ class List<Type> {
    */
   function pushFront(x:Type) {
     node:ListNode<Type>(x);
-    
-    if (head?) {
+    if empty() {
+      tail <- node;
+    } else {
+      assert head?;
       head!.prev <- node;
       node.next <- head;
-    } else {
-      tail <- node;
     }
     head <- node;
     count <- count + 1;
+    
+    assert this.head? && this.tail?;
   }
 
   /**
@@ -112,42 +114,55 @@ class List<Type> {
    * - x: Value.
    */
   function pushBack(x:Type) {
-    tail:ListNode<Type>? <- this.tail;
     node:ListNode<Type>(x);
-    
-    if (tail?) {
+    if empty() {
+      head <- node;
+    } else {
+      tail:ListNode<Type>? <- this.tail;
+      assert tail?;
       tail!.next <- node;
       node.prev <- tail!;
-    } else {
-      head <- node;
     }
-    this.tail <- node;
+    tail <- node;
     count <- count + 1;
+    
+    assert this.head? && this.tail?;
   }
 
   /**
    * Remove the first element.
    */
   function popFront() {
+    assert !empty();
+    
+    head:ListNode<Type>? <- this.head;
     assert head?;
-    head <- head!.popFront();
+    this.head <- head!.popFront();
     count <- count - 1;
-    if (count <= 1) {
-      tail <- head;
+    if count <= 1 {
+      tail <- this.head;
     }
+    
+    assert this.count == 0 || (this.head? && this.tail?);
+    assert this.count > 0 || (!this.head? && !this.tail?);
   }
 
   /**
    * Remove the last element.
    */
   function popBack() {
+    assert !empty();
+
     tail:ListNode<Type>? <- this.tail;
     assert tail?;
     this.tail <- tail!.popBack();
     count <- count - 1;
-    if (count <= 1) {
+    if count <= 1 {
       head <- this.tail;
     }
+    
+    assert this.count == 0 || (this.head? && this.tail?);
+    assert this.count > 0 || (!this.head? && !this.tail?);
   }
   
   /**
@@ -162,6 +177,7 @@ class List<Type> {
    */
   function insert(i:Integer, x:Type) {
     assert 1 <= i && i <= count + 1;
+    
     if (i == 1) {
       pushFront(x);
     } else if (i == count + 1) {
@@ -171,6 +187,8 @@ class List<Type> {
       getNode(i).insert(node);
       count <- count + 1;
     }
+    
+    assert this.head? && this.tail?;
   }
 
   /**
@@ -180,6 +198,7 @@ class List<Type> {
    */
   function erase(i:Integer) {
     assert 1 <= i && i <= count;
+    
     if (i == 1) {
       popFront();
     } else if (i == count) {
@@ -188,6 +207,9 @@ class List<Type> {
       getNode(i).erase();
       count <- count - 1;
     }
+    
+    assert this.count == 0 || (this.head? && this.tail?);
+    assert this.count > 0 || (!this.head? && !this.tail?);
   }
 
   /**
@@ -210,6 +232,7 @@ class List<Type> {
    */
   function getNode(i:Integer) -> ListNode<Type> {
     assert 1 <= i && i <= count;
+    
     node:ListNode<Type>?;
     if (2*i <= count) {
       /* walk forward */
@@ -226,13 +249,14 @@ class List<Type> {
         node <- node!.prev;
       }
     }
+    
     assert node?;
     return node!;
   }
   
   function read(buffer:Buffer) {
     auto f <- buffer.walk();
-    while (f?) {
+    while f? {
       /* tricky, but works for both basic and class types */
       x:Type;
       auto y <- f!.get(x);
