@@ -94,7 +94,7 @@ void bi::CppPackageGenerator::visit(const Package* o) {
 
     /* forward class declarations */
     for (auto o : classes) {
-      if (!o->braces->isEmpty()) {
+      if (!o->isAlias()) {
         genTemplateParams(o);
         line("class " << o->name << ';');
       }
