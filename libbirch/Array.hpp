@@ -14,7 +14,7 @@
 
 #include <atomic>
 
-namespace bi {
+namespace libbirch {
 /**
  * A multidimensional array. Combines underlying data and a frame describing
  * the shape of that data. Allows the construction of views of the data,
@@ -346,7 +346,7 @@ public:
         auto oldSize = Buffer<T>::size(volume());
         auto newSize = Buffer<T>::size(frame.volume());
         buffer.store(
-            (Buffer<T>*)bi::reallocate(oldBuffer, oldSize, oldBuffer->tid,
+            (Buffer<T>*)libbirch::reallocate(oldBuffer, oldSize, oldBuffer->tid,
                 newSize), std::memory_order_relaxed);
       }
       this->frame.resize(frame);
@@ -379,7 +379,7 @@ public:
       auto oldSize = Buffer<T>::size(oldVolume);
       auto newSize = Buffer<T>::size(frame.volume());
       buffer.store(
-          (Buffer<T>*)bi::reallocate(oldBuffer, oldSize, oldBuffer->tid,
+          (Buffer<T>*)libbirch::reallocate(oldBuffer, oldSize, oldBuffer->tid,
               newSize), std::memory_order_relaxed);
       Iterator<T,F> iter(buf(), frame);
       // ^ don't use begin() as we have obtained the lock already
@@ -557,7 +557,7 @@ private:
     assert(!buffer);
     auto size = Buffer<T>::size(frame.volume());
     if (size > 0) {
-      auto tmp = new (bi::allocate(size)) Buffer<T>();
+      auto tmp = new (libbirch::allocate(size)) Buffer<T>();
       tmp->incUsage();
       buffer.store(tmp, std::memory_order_relaxed);
     }
@@ -621,7 +621,7 @@ private:
           iter->~T();
         }
         size_t size = Buffer<T>::size(frame.volume());
-        bi::deallocate(tmp, size, tmp->tid);
+        libbirch::deallocate(tmp, size, tmp->tid);
       }
     }
   }
@@ -646,7 +646,7 @@ private:
   template<class U, class G>
   void copy(const Array<U,G>& o) {
     assert(!isShared());
-    bi_assert_msg(o.frame.conforms(frame), "array sizes are different");
+    libbirch_assert_msg_(o.frame.conforms(frame), "array sizes are different");
     auto first = o.begin();
     auto last = first + o.size();
     std::uninitialized_copy(first, last, begin());
@@ -654,7 +654,7 @@ private:
 
   void copy(const typename sequence_type<T,F::count()>::type& o) {
     assert(!isShared());
-    bi_assert_msg(frame.conforms(sequence_frame(o)),
+    libbirch_assert_msg_(frame.conforms(sequence_frame(o)),
         "array size and sequence size are different");
     auto iter = begin();
     sequence_copy(iter, o);
@@ -666,7 +666,7 @@ private:
   template<class U, class G>
   void assign(const Array<U,G>& o) {
     assert(!isShared());
-    bi_assert_msg(o.frame.conforms(frame), "array sizes are different");
+    libbirch_assert_msg_(o.frame.conforms(frame), "array sizes are different");
 
     auto begin1 = o.begin();
     auto end1 = begin1 + o.size();
@@ -681,7 +681,7 @@ private:
 
   void assign(const typename sequence_type<T,F::count()>::type& o) {
     assert(!isShared());
-    bi_assert_msg(frame.conforms(sequence_frame(o)),
+    libbirch_assert_msg_(frame.conforms(sequence_frame(o)),
         "array size and sequence size are different");
     auto iter = begin();
     sequence_assign(iter, o);
@@ -706,7 +706,7 @@ private:
    */
   template<class U, class ... Args>
   static void emplace(Shared<U>& o, Args ... args) {
-    new (&o) Shared<U>(U::create(args...));
+    new (&o) Shared<U>(U::create_(args...));
   }
 
   /**
@@ -763,7 +763,7 @@ private:
 #include "libbirch/value.hpp"
 
 template<class T, class F>
-bi::Array<T,F>::Array(const Array<T,F>& o, const bool canShare) :
+libbirch::Array<T,F>::Array(const Array<T,F>& o, const bool canShare) :
     frame(o.frame),
     buffer(nullptr),
     offset(0),

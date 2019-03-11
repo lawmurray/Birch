@@ -7,7 +7,7 @@ cpp{{
  */
 function gamma(x:Real64) -> Real64 {
   cpp {{
-  return ::tgamma(x_);
+  return ::tgamma(x);
   }}
 }
 
@@ -16,7 +16,7 @@ function gamma(x:Real64) -> Real64 {
  */
 function gamma(x:Real32) -> Real32 {
   cpp {{
-  return ::tgammaf(x_);
+  return ::tgammaf(x);
   }}
 }
 
@@ -25,7 +25,7 @@ function gamma(x:Real32) -> Real32 {
  */
 function lgamma(x:Real64) -> Real64 {
   cpp {{
-  return ::lgamma(x_);
+  return ::lgamma(x);
   }}
 }
 
@@ -34,7 +34,7 @@ function lgamma(x:Real64) -> Real64 {
  */
 function lgamma(x:Real32) -> Real32 {
   cpp {{
-  return ::lgammaf(x_);
+  return ::lgammaf(x);
   }}
 }
 
@@ -43,7 +43,7 @@ function lgamma(x:Real32) -> Real32 {
  */
 function beta(x:Real64, y:Real64) -> Real64 {
   cpp {{
-  return boost::math::beta(x_, y_);
+  return boost::math::beta(x, y);
   }}
 }
 
@@ -52,7 +52,7 @@ function beta(x:Real64, y:Real64) -> Real64 {
  */
 function beta(x:Real32, y:Real32) -> Real32 {
   cpp {{
-  return boost::math::beta(x_, y_);
+  return boost::math::beta(x, y);
   }}
 }
 
@@ -61,7 +61,7 @@ function beta(x:Real32, y:Real32) -> Real32 {
  */
 function ibeta(a:Real64, b:Real64, x:Real64) -> Real64 {
   cpp {{
-    return boost::math::ibeta(a_, b_, x_);
+    return boost::math::ibeta(a, b, x);
   }}
 }
 
@@ -70,7 +70,7 @@ function ibeta(a:Real64, b:Real64, x:Real64) -> Real64 {
  */
 function ibeta(a:Real32, b:Real32, x:Real32) -> Real32 {
   cpp {{
-    return boost::math::ibeta(a_, b_, x_);
+    return boost::math::ibeta(a, b, x);
   }}
 }
 
@@ -157,7 +157,7 @@ function lchoose(x:Real32, y:Real32) -> Real32 {
  */
 function rising(x:Real64, i:Integer32) -> Real64 {
   cpp{{
-  return boost::math::rising_factorial(x_, i_);
+  return boost::math::rising_factorial(x, i);
   }}
 }
 
@@ -166,7 +166,7 @@ function rising(x:Real64, i:Integer32) -> Real64 {
  */
 function rising(x:Real32, i:Integer32) -> Real32 {
   cpp{{
-  return boost::math::rising_factorial(x_, i_);
+  return boost::math::rising_factorial(x, i);
   }}
 }
 

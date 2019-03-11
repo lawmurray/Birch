@@ -13,7 +13,7 @@
 
 #include <tuple>
 
-namespace bi {
+namespace libbirch {
 /**
  * Wraps another pointer type to apply lazy deep clone semantics.
  *
@@ -117,7 +117,7 @@ public:
    * Value assignment.
    */
   template<class U,
-      typename = std::enable_if_t<bi::has_assignment<T,U>::value>>
+      typename = std::enable_if_t<libbirch::has_assignment<T,U>::value>>
   LazyPtr<P>& operator=(const U& o) {
     *get() = o;
     return *this;
@@ -127,7 +127,7 @@ public:
    * Value conversion.
    */
   template<class U,
-      typename = std::enable_if_t<bi::has_conversion<T,U>::value>>
+      typename = std::enable_if_t<libbirch::has_conversion<T,U>::value>>
   operator U() const {
     return static_cast<U>(*get());
   }

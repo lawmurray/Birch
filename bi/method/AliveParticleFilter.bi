@@ -30,7 +30,7 @@ class AliveParticleFilter < ParticleFilter {
      * is rejected it is replaced with a categorical draw until acceptance */  
     auto f0 <- f;
     auto w0 <- w;
-    auto continue <- true;
+    auto cont <- true;
     parallel for n:Integer in 1..nparticles {
       do {
         f[n] <- clone<(Model,Real)!>(f0[a[n]]);
@@ -44,12 +44,12 @@ class AliveParticleFilter < ParticleFilter {
             a[n] <- ancestor(w0);
           }
         } else {
-          continue <- false;
+          cont <- false;
         }
-      } while continue && w[n] == -inf;
+      } while cont && w[n] == -inf;
     }
     
-    if (continue) {
+    if (cont) {
       /* propagate and weight until one further acceptance, that is discarded
        * for unbiasedness in the normalizing constant estimate */
      x1:Model?;
@@ -62,19 +62,19 @@ class AliveParticleFilter < ParticleFilter {
           ++P;
           }}
         } else {
-          continue <- false;
+          cont <- false;
         }
-      } while (continue && w1 == -inf);
+      } while (cont && w1 == -inf);
     }
     
     /* update propagations */
-    P:Integer;
+    P1:Integer;
     cpp {{
-    P_ = P;
+    P1 = P;
     }}
-    this.P.pushBack(P);
+    this.P.pushBack(P1);
     
-    return continue;
+    return cont;
   }
   
   function reduce() {

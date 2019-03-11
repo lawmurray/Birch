@@ -4,16 +4,16 @@
 #if ENABLE_MEMORY_POOL
 #include "libbirch/Pool.hpp"
 
-bi::Pool::Pool() :
+libbirch::Pool::Pool() :
     top(nullptr) {
   //
 }
 
-bool bi::Pool::empty() const {
+bool libbirch::Pool::empty() const {
   return !top;
 }
 
-void* bi::Pool::pop() {
+void* libbirch::Pool::pop() {
   lock.keep();
   auto result = top;
   top = getNext(result);
@@ -21,7 +21,7 @@ void* bi::Pool::pop() {
   return result;
 }
 
-void bi::Pool::push(void* block) {
+void libbirch::Pool::push(void* block) {
   assert(bufferStart <= block && block < bufferStart + bufferSize);
   lock.keep();
   setNext(block, top);
@@ -29,14 +29,14 @@ void bi::Pool::push(void* block) {
   lock.unkeep();
 }
 
-void* bi::Pool::getNext(void* block) {
+void* libbirch::Pool::getNext(void* block) {
   assert(
       !block || (bufferStart <= block && block < bufferStart + bufferSize));
 
   return (block) ? *reinterpret_cast<void**>(block) : nullptr;
 }
 
-void bi::Pool::setNext(void* block, void* value) {
+void libbirch::Pool::setNext(void* block, void* value) {
   assert(
       !block || (bufferStart <= block && block < bufferStart + bufferSize));
   assert(

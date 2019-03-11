@@ -3,22 +3,22 @@
  */
 #include "libbirch/stacktrace.hpp"
 
-std::vector<bi::StackFrame,bi::Allocator<bi::StackFrame>> bi::stacktrace;
+std::vector<libbirch::StackFrame,libbirch::Allocator<libbirch::StackFrame>> libbirch::stacktrace;
 
-bi::StackFunction::StackFunction(const char* func, const char* file,
+libbirch::StackFunction::StackFunction(const char* func, const char* file,
     const int line) {
   stacktrace.push_back( { func, file, line });
 }
 
-bi::StackFunction::~StackFunction() {
+libbirch::StackFunction::~StackFunction() {
   stacktrace.pop_back();
 }
 
-void bi::abort() {
+void libbirch::abort() {
   abort("assertion failed");
 }
 
-void bi::abort(const std::string& msg) {
+void libbirch::abort(const std::string& msg) {
   printf("error: %s\n", msg.c_str());
 #ifndef NDEBUG
   printf("stack trace:\n");

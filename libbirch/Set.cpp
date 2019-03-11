@@ -3,9 +3,9 @@
  */
 #include "libbirch/Set.hpp"
 
-static bi::Memo* const EMPTY = nullptr;
+static libbirch::Memo* const EMPTY = nullptr;
 
-bi::Set::Set() :
+libbirch::Set::Set() :
     values(nullptr),
     nentries(0u),
     tentries(0u),
@@ -13,13 +13,13 @@ bi::Set::Set() :
   //
 }
 
-bi::Set::~Set() {
+libbirch::Set::~Set() {
   if (nentries > 0) {
     deallocate(values, nentries * sizeof(value_type), tentries);
   }
 }
 
-bool bi::Set::contains(const value_type value) {
+bool libbirch::Set::contains(const value_type value) {
   bool result = false;
   if (!empty()) {
     lock.share();
@@ -35,7 +35,7 @@ bool bi::Set::contains(const value_type value) {
   return result;
 }
 
-void bi::Set::insert(const value_type value) {
+void libbirch::Set::insert(const value_type value) {
   /* pre-condition */
   assert(value);
 
@@ -55,7 +55,7 @@ void bi::Set::insert(const value_type value) {
   lock.unshare();
 }
 
-void bi::Set::reserve() {
+void libbirch::Set::reserve() {
   unsigned noccupied1 = noccupied.fetch_add(1u, std::memory_order_relaxed)
       + 1u;
   if (noccupied1 > crowd()) {
@@ -95,7 +95,7 @@ void bi::Set::reserve() {
       if (nentries1 > 0) {
         deallocate(values1, nentries1 * sizeof(value_type), tentries);
       }
-      tentries = bi::tid;
+      tentries = libbirch::tid;
     }
 
     /* release resize lock */

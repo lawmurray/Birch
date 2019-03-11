@@ -3,7 +3,7 @@
  */
 #include "libbirch/libbirch.hpp"
 
-void bi::unknown_option(const std::string& name) {
+void libbirch::unknown_option(const std::string& name) {
   printf("error: unknown option '%s'\n", name.c_str());
   std::string possible = name;
   std::replace(possible.begin(), possible.end(), '_', '-');

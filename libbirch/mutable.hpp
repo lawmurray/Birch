@@ -5,7 +5,7 @@
 
 #include <cstdint>
 
-namespace bi {
+namespace libbirch {
 /**
  * Constant to indicate a mutable value in Length, Offset, Stride, etc. Zero
  * is convenient as it allows values to be multiplied to arrive a non-zero

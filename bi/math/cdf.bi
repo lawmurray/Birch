@@ -21,7 +21,7 @@ function cdf_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
     return 1.0;
   } else {
     cpp{{
-    return boost::math::cdf(boost::math::binomial_distribution<>(n_, ρ_), x_);
+    return boost::math::cdf(boost::math::binomial_distribution<>(n, ρ), x);
     }}
   } 
 }
@@ -43,7 +43,7 @@ function cdf_negative_binomial(x:Integer, k:Integer, ρ:Real) -> Real {
     return 0.0;
   } else {
     cpp{{
-    return boost::math::cdf(boost::math::negative_binomial_distribution<>(k_, ρ_), x_);
+    return boost::math::cdf(boost::math::negative_binomial_distribution<>(k, ρ), x);
     }}
   }
 }
@@ -63,7 +63,7 @@ function cdf_poisson(x:Integer, λ:Real) -> Real {
     return 0.0;
   } else {
     cpp{{
-    return boost::math::cdf(boost::math::poisson_distribution<>(λ_), x_);
+    return boost::math::cdf(boost::math::poisson_distribution<>(λ), x);
     }}
   }
 }
@@ -159,7 +159,7 @@ function cdf_exponential(x:Real, λ:Real) -> Real {
     return 0.0;
   } else {
     cpp{{
-    return boost::math::cdf(boost::math::exponential_distribution<>(λ_), x_);
+    return boost::math::cdf(boost::math::exponential_distribution<>(λ), x);
     }}
   }
 }
@@ -176,7 +176,7 @@ function cdf_exponential(x:Real, λ:Real) -> Real {
 function cdf_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
   assert 0.0 < σ2;
   cpp{{
-  return boost::math::cdf(boost::math::normal_distribution<>(μ_, ::sqrt(σ2_)), x_);
+  return boost::math::cdf(boost::math::normal_distribution<>(μ, ::sqrt(σ2)), x);
   }}
 }
 
@@ -196,7 +196,7 @@ function cdf_log_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
     return 0.0;
   } else {
     cpp{{
-    return boost::math::cdf(boost::math::lognormal_distribution<>(μ_, ::sqrt(σ2_)), x_);
+    return boost::math::cdf(boost::math::lognormal_distribution<>(μ, ::sqrt(σ2)), x);
     }}
   }
 }
@@ -212,7 +212,7 @@ function cdf_log_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
 function cdf_student_t(x:Real, ν:Real) -> Real {
   assert 0.0 < ν;
   cpp{{
-  return boost::math::cdf(boost::math::students_t_distribution<>(ν_), x_);
+  return boost::math::cdf(boost::math::students_t_distribution<>(ν), x);
   }}
 }
 
@@ -250,7 +250,7 @@ function cdf_beta(x:Real, α:Real, β:Real) -> Real {
     return 1.0;
   } else {
     cpp{{
-    return boost::math::cdf(boost::math::beta_distribution<>(α_, β_), x_);
+    return boost::math::cdf(boost::math::beta_distribution<>(α, β), x);
     }}
   }
 }
@@ -272,7 +272,7 @@ function cdf_gamma(x:Real, k:Real, θ:Real) -> Real {
     return 0.0;
   } else {
     cpp{{
-    return boost::math::cdf(boost::math::gamma_distribution<>(k_, θ_), x_);
+    return boost::math::cdf(boost::math::gamma_distribution<>(k, θ), x);
     }}
   }
 }
@@ -294,7 +294,7 @@ function cdf_inverse_gamma(x:Real, α:Real, β:Real) -> Real {
     return 0.0;
   } else {
     cpp{{
-    return boost::math::cdf(boost::math::inverse_gamma_distribution<>(α_, β_), x_);
+    return boost::math::cdf(boost::math::inverse_gamma_distribution<>(α, β), x);
     }}
   }
 }
@@ -367,7 +367,7 @@ function cdf_lomax(x:Real, λ:Real, α:Real) -> Real {
     return 0.0;
   } else {
     cpp{{
-    return boost::math::cdf(boost::math::pareto_distribution<>(λ_, α_), x_+λ_);
+    return boost::math::cdf(boost::math::pareto_distribution<>(λ, α), x + λ);
     }}
   }
 }

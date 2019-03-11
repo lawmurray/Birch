@@ -6,7 +6,7 @@
 #include "libbirch/Index.hpp"
 #include "libbirch/Range.hpp"
 
-namespace bi {
+namespace libbirch {
 /**
  * Empty view.
  *

@@ -30,6 +30,8 @@
 #include "libbirch/Weak.hpp"
 #include "libbirch/FiberState.hpp"
 #include "libbirch/Fiber.hpp"
+#include "libbirch/SwapContext.hpp"
+#include "libbirch/SwapClone.hpp"
 #include "libbirch/Eigen.hpp"
 #include "libbirch/EigenFunctions.hpp"
 #include "libbirch/EigenOperators.hpp"
@@ -49,7 +51,7 @@
 #include <getopt.h>
 #include <dlfcn.h>
 
-namespace bi {
+namespace libbirch {
 /**
  * Default array for `D` dimensions.
  */
@@ -224,7 +226,7 @@ auto make_array_and_assign(const Frame& frame, const Value& value) {
  */
 template<class PointerType, class ... Args>
 PointerType make_pointer(Args ... args) {
-  return PointerType::value_type::create(args...);
+  return PointerType::value_type::create_(args...);
 }
 
 /**
@@ -237,8 +239,7 @@ PointerType make_pointer(Args ... args) {
  */
 template<class StateType, class ... Args>
 auto make_fiber(Args ... args) {
-  using yield_type = typename StateType::yield_type;
-  return Fiber<yield_type>(StateType::create(args...));
+  return Fiber<typename StateType::yield_type_>(StateType::create_(args...));
 }
 
 /**

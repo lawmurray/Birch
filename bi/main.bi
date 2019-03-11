@@ -13,7 +13,6 @@ int main(int argc, char** argv) {
     std::cerr << "No program given" << std::endl;
   } else {
     std::string prog = argv[1];
-    prog += '_';
     void* handle = dlopen(NULL, RTLD_NOW);
     void* addr = dlsym(handle, prog.c_str());
     if (addr) {

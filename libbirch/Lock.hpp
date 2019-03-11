@@ -5,7 +5,7 @@
 
 #include <atomic>
 
-namespace bi {
+namespace libbirch {
 /**
  * Lock with shared and exclusive use semantics.
  *
@@ -86,10 +86,10 @@ private:
 };
 }
 
-inline void bi::Lock::unshare() {
+inline void libbirch::Lock::unshare() {
   lock.split.shareCount.fetch_sub(1u, std::memory_order_seq_cst);
 }
 
-inline void bi::Lock::unkeep() {
+inline void libbirch::Lock::unkeep() {
   lock.split.keepCount.store(0u, std::memory_order_seq_cst);
 }

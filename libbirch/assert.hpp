@@ -7,48 +7,48 @@
 #include <sstream>
 
 /**
- * @def bi_assert
+ * @def libbirch_assert_
  *
  * If debugging is enabled, check an assertion and abort on fail.
  */
 #ifndef NDEBUG
-#define bi_assert(cond) if (!(cond)) bi::abort()
+#define libbirch_assert_(cond) if (!(cond)) libbirch::abort()
 #else
-#define bi_assert(cond)
+#define libbirch_assert_(cond)
 #endif
 
 /**
- * @def bi_assert_msg
+ * @def libbirch_assert_msg_
  *
  * If debugging is enabled, check an assertion and abort with a message on
  * fail.
  */
 #ifndef NDEBUG
-#define bi_assert_msg(cond, msg) \
+#define libbirch_assert_msg_(cond, msg) \
   if (!(cond)) { \
-    std::stringstream buf; \
-    buf << msg; \
-    bi::abort(buf.str()); \
+    std::stringstream buf_; \
+    buf_ << msg; \
+    libbirch::abort(buf_.str()); \
   }
 #else
-#define bi_assert_msg(cond, msg)
+#define libbirch_assert_msg_(cond, msg)
 #endif
 
 /**
- * @def bi_error
+ * @def libbirch_error_
  *
  * Check a condition and abort on fail.
  */
-#define bi_error(cond) if (!(cond)) bi::abort()
+#define libbirch_error_(cond) if (!(cond)) libbirch::abort()
 
 /**
- * @def bi_error_msg
+ * @def libbirch_error_msg_
  *
  * Check a condition and abort with a message on fail.
  */
-#define bi_error_msg(cond, msg) \
+#define libbirch_error_msg_(cond, msg) \
   if (!(cond)) { \
-    std::stringstream buf; \
+    std::stringstream buf_; \
     buf << msg; \
-    bi::abort(buf.str()); \
+    libbirch::abort(buf_.str()); \
   }

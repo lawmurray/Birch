@@ -8,28 +8,28 @@
 #include <vector>
 
 /**
- * @def bi_function
+ * @def libbirch_function_
  *
  * Push a new frame onto the stack trace.
  */
 #ifndef NDEBUG
-#define bi_function(func, file, n) StackFunction function(func, file, n)
+#define libbirch_function_(func, file, n) libbirch::StackFunction function_(func, file, n)
 #else
-#define bi_function(func, file, n)
+#define libbirch_function_(func, file, n)
 #endif
 
 /**
- * @def bi_line
+ * @def libbirch_line_
  *
  * Update the line number of the top frame on the stack trace.
  */
 #ifndef NDEBUG
-#define bi_line(n) stacktrace.back().line = n
+#define libbirch_line_(n) libbirch::stacktrace.back().line = n
 #else
-#define bi_line(n)
+#define libbirch_line_(n)
 #endif
 
-namespace bi {
+namespace libbirch {
 /**
  * Stack frame.
  */

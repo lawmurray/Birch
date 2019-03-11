@@ -5,7 +5,7 @@
 
 #include "libbirch/mutable.hpp"
 
-namespace bi {
+namespace libbirch {
 /**
  * Length. The number of active elements along a dimension.
  *

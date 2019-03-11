@@ -5,7 +5,7 @@
 
 #include "libbirch/mutable.hpp"
 
-namespace bi {
+namespace libbirch {
 /**
  * Stride. The number of elements, including both active and inactive elements,
  * along a dimension.

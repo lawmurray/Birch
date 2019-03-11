@@ -5,7 +5,7 @@
 
 #include "libbirch/thread.hpp"
 
-namespace bi {
+namespace libbirch {
 /**
  * STL-compatible allocator that wraps procedural implementation of pooled
  * allocator.
@@ -47,16 +47,16 @@ public:
 #include "libbirch/memory.hpp"
 
 template<class T>
-T* bi::Allocator<T>::allocate(const size_t n) {
-  return static_cast<T*>(bi::allocate(n * sizeof(T)));
+T* libbirch::Allocator<T>::allocate(const size_t n) {
+  return static_cast<T*>(libbirch::allocate(n * sizeof(T)));
 }
 
 template<class T>
-T* bi::Allocator<T>::reallocate(T* ptr1, const size_t n1, const size_t n2) {
-  return static_cast<T*>(bi::reallocate(ptr1, n1 * sizeof(T), bi::tid, n2 * sizeof(T)));
+T* libbirch::Allocator<T>::reallocate(T* ptr1, const size_t n1, const size_t n2) {
+  return static_cast<T*>(libbirch::reallocate(ptr1, n1 * sizeof(T), libbirch::tid, n2 * sizeof(T)));
 }
 
 template<class T>
-void bi::Allocator<T>::deallocate(T* ptr, const size_t n) {
-  bi::deallocate(ptr, n * sizeof(T), bi::tid);
+void libbirch::Allocator<T>::deallocate(T* ptr, const size_t n) {
+  libbirch::deallocate(ptr, n * sizeof(T), libbirch::tid);
 }

@@ -7,20 +7,20 @@
 #include "libbirch/SwapClone.hpp"
 #include "libbirch/SwapContext.hpp"
 
-bi::LazyMemo::LazyMemo() :
+libbirch::LazyMemo::LazyMemo() :
     parent(nullptr),
     gen(0u) {
   //
 }
 
-bi::LazyMemo::LazyMemo(LazyMemo* parent) :
+libbirch::LazyMemo::LazyMemo(LazyMemo* parent) :
     parent(parent),
     gen(parent->gen + 1u) {
   assert(parent);
 }
 
 
-bool bi::LazyMemo::hasAncestor(LazyMemo* memo) {
+bool libbirch::LazyMemo::hasAncestor(LazyMemo* memo) {
   if (gen <= memo->gen) {
     return false;
   } else if (parent == memo) {
@@ -40,7 +40,7 @@ bool bi::LazyMemo::hasAncestor(LazyMemo* memo) {
   }
 }
 
-bi::LazyAny* bi::LazyMemo::get(LazyAny* o, LazyMemo* from) {
+libbirch::LazyAny* libbirch::LazyMemo::get(LazyAny* o, LazyMemo* from) {
   if (this == from) {
     return o;
   } else {
@@ -54,7 +54,7 @@ bi::LazyAny* bi::LazyMemo::get(LazyAny* o, LazyMemo* from) {
   }
 }
 
-bi::LazyAny* bi::LazyMemo::pull(LazyAny* o, LazyMemo* from) {
+libbirch::LazyAny* libbirch::LazyMemo::pull(LazyAny* o, LazyMemo* from) {
   if (this == from) {
     return o;
   } else {
@@ -68,7 +68,7 @@ bi::LazyAny* bi::LazyMemo::pull(LazyAny* o, LazyMemo* from) {
   }
 }
 
-bi::LazyAny* bi::LazyMemo::source(LazyAny* o, LazyMemo* from) {
+libbirch::LazyAny* libbirch::LazyMemo::source(LazyAny* o, LazyMemo* from) {
   if (this == from) {
     return o;
   } else {
@@ -95,7 +95,7 @@ bi::LazyAny* bi::LazyMemo::source(LazyAny* o, LazyMemo* from) {
   }
 }
 
-bi::LazyAny* bi::LazyMemo::copy(LazyAny* o) {
+libbirch::LazyAny* libbirch::LazyMemo::copy(LazyAny* o) {
   /* for a lazy deep clone there is no risk of infinite recursion, but
    * there may be thread contention if two threads access the same object
    * and both trigger a lazy clone simultaneously; in this case multiple
@@ -105,7 +105,7 @@ bi::LazyAny* bi::LazyMemo::copy(LazyAny* o) {
   SwapClone swapClone(true);
   SwapContext swapContext(this);
   assert(o->isFrozen());
-  SharedPtr<LazyAny> cloned = o->clone();
+  SharedPtr<LazyAny> cloned = o->clone_();
   // ^ use shared to clean up if beaten by another thread
   return m.put(o, cloned.get());
 }

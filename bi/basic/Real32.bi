@@ -8,7 +8,7 @@ type Real32 < Real64;
  */
 function Real32(x:Real64) -> Real32 {
   cpp{{
-  return static_cast<bi::type::Real32_>(x_);
+  return static_cast<bi::type::Real32>(x);
   }}
 }
 
@@ -24,7 +24,7 @@ function Real32(x:Real32) -> Real32 {
  */
 function Real32(x:Integer64) -> Real32 {
   cpp{{
-  return static_cast<bi::type::Real32_>(x_);
+  return static_cast<bi::type::Real32>(x);
   }}
 }
 
@@ -33,7 +33,7 @@ function Real32(x:Integer64) -> Real32 {
  */
 function Real32(x:Integer32) -> Real32 {
   cpp{{
-  return static_cast<bi::type::Real32_>(x_);
+  return static_cast<bi::type::Real32>(x);
   }}
 }
 
@@ -42,7 +42,7 @@ function Real32(x:Integer32) -> Real32 {
  */
 function Real32(x:Integer16) -> Real32 {
   cpp{{
-  return static_cast<bi::type::Real32_>(x_);
+  return static_cast<bi::type::Real32>(x);
   }}
 }
 
@@ -51,7 +51,7 @@ function Real32(x:Integer16) -> Real32 {
  */
 function Real32(x:Integer8) -> Real32 {
   cpp{{
-  return static_cast<bi::type::Real32_>(x_);
+  return static_cast<bi::type::Real32>(x);
   }}
 }
 
@@ -60,7 +60,7 @@ function Real32(x:Integer8) -> Real32 {
  */
 function Real32(x:String) -> Real32 {
   cpp{{
-  return ::strtof(x_.c_str(), nullptr);
+  return ::strtof(x.c_str(), nullptr);
   }}
 }
 
@@ -158,7 +158,7 @@ operator (x:Real32 != y:Real32) -> Boolean;
  */
 function abs(x:Real32) -> Real32 {
   cpp {{
-  return std::abs(x_);
+  return std::abs(x);
   }}
 }
 
@@ -167,7 +167,7 @@ function abs(x:Real32) -> Real32 {
  */
 function pow(x:Real32, y:Real32) -> Real32 {
   cpp {{
-  return ::powf(x_, y_);
+  return ::powf(x, y);
   }}
 }
 
@@ -176,7 +176,7 @@ function pow(x:Real32, y:Real32) -> Real32 {
  */
 function mod(x:Real32, y:Real32) -> Real32 {
   cpp {{
-  return ::fmodf(x_, y_);
+  return ::fmodf(x, y);
   }}
 }
 
@@ -185,7 +185,7 @@ function mod(x:Real32, y:Real32) -> Real32 {
  */
 function max(x:Real32, y:Real32) -> Real32 {
   cpp {{
-  return std::max(x_, y_);
+  return std::max(x, y);
   }}
 }
 
@@ -194,7 +194,7 @@ function max(x:Real32, y:Real32) -> Real32 {
  */
 function min(x:Real32, y:Real32) -> Real32 {
   cpp {{
-  return std::min(x_, y_);
+  return std::min(x, y);
   }}
 }
 

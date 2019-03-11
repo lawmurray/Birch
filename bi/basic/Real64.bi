@@ -15,7 +15,7 @@ function Real64(x:Real64) -> Real64 {
  */
 function Real64(x:Real32) -> Real64 {
   cpp{{
-  return static_cast<bi::type::Real64_>(x_);
+  return static_cast<bi::type::Real64>(x);
   }}
 }
 
@@ -24,7 +24,7 @@ function Real64(x:Real32) -> Real64 {
  */
 function Real64(x:Integer64) -> Real64 {
   cpp{{
-  return static_cast<bi::type::Real64_>(x_);
+  return static_cast<bi::type::Real64>(x);
   }}
 }
 
@@ -33,7 +33,7 @@ function Real64(x:Integer64) -> Real64 {
  */
 function Real64(x:Integer32) -> Real64 {
   cpp{{
-  return static_cast<bi::type::Real64_>(x_);
+  return static_cast<bi::type::Real64>(x);
   }}
 }
 
@@ -42,7 +42,7 @@ function Real64(x:Integer32) -> Real64 {
  */
 function Real64(x:Integer16) -> Real64 {
   cpp{{
-  return static_cast<bi::type::Real64_>(x_);
+  return static_cast<bi::type::Real64>(x);
   }}
 }
 
@@ -51,7 +51,7 @@ function Real64(x:Integer16) -> Real64 {
  */
 function Real64(x:Integer8) -> Real64 {
   cpp{{
-  return static_cast<bi::type::Real64_>(x_);
+  return static_cast<bi::type::Real64>(x);
   }}
 }
 
@@ -60,7 +60,7 @@ function Real64(x:Integer8) -> Real64 {
  */
 function Real64(x:String) -> Real64 {
   cpp{{
-  return ::strtod(x_.c_str(), nullptr);
+  return ::strtod(x.c_str(), nullptr);
   }}
 }
 
@@ -158,7 +158,7 @@ operator (x:Real64 != y:Real64) -> Boolean;
  */
 function abs(x:Real64) -> Real64 {
   cpp {{
-  return std::abs(x_);
+  return std::abs(x);
   }}
 }
 
@@ -167,7 +167,7 @@ function abs(x:Real64) -> Real64 {
  */
 function pow(x:Real64, y:Real64) -> Real64 {
   cpp {{
-  return ::pow(x_, y_);
+  return ::pow(x, y);
   }}
 }
 
@@ -176,7 +176,7 @@ function pow(x:Real64, y:Real64) -> Real64 {
  */
 function mod(x:Real64, y:Real64) -> Real64 {
   cpp {{
-  return ::fmod(x_, y_);
+  return ::fmod(x, y);
   }}
 }
 
@@ -185,7 +185,7 @@ function mod(x:Real64, y:Real64) -> Real64 {
  */
 function max(x:Real64, y:Real64) -> Real64 {
   cpp {{
-  return std::max(x_, y_);
+  return std::max(x, y);
   }}
 }
 
@@ -194,7 +194,7 @@ function max(x:Real64, y:Real64) -> Real64 {
  */
 function min(x:Real64, y:Real64) -> Real64 {
   cpp {{
-  return std::min(x_, y_);
+  return std::min(x, y);
   }}
 }
 

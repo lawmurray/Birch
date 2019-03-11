@@ -152,11 +152,11 @@ class ParticleFilter < Sampler {
         copy();
       }
     }
-    auto continue <- propagate();
-    if (continue) {
+    auto cont <- propagate();
+    if (cont) {
       reduce();
     }
-    return continue;
+    return cont;
   }
   
   /**
@@ -185,17 +185,17 @@ class ParticleFilter < Sampler {
    * Propagate particles.
    */
   function propagate() -> Boolean {
-    auto continue <- true;
+    auto cont <- true;
     parallel for (n:Integer in 1..nparticles) {
       w1:Real;
       if f[n]? {
         (x[n], w1) <- f[n]!;
         w[n] <- w[n] + w1;
       } else {
-        continue <- false;      
+        cont <- false;      
       }
     }
-    return continue;
+    return cont;
   }
   
   /**

@@ -6,7 +6,7 @@
 #include "libbirch/Offset.hpp"
 #include "libbirch/Length.hpp"
 
-namespace bi {
+namespace libbirch {
 /**
  * Range.
  *

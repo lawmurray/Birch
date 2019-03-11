@@ -16,7 +16,7 @@ class MemoryBufferAuxiliary < Buffer {
     exists:Boolean;
     cpp{{
     auto object = self->group->get<libubjpp::object_type>();
-    exists_ = static_cast<bool>(object);
+    exists = static_cast<bool>(object);
     }}
     if (exists) {
       return this;
@@ -30,9 +30,9 @@ class MemoryBufferAuxiliary < Buffer {
     length:Integer <- 0;
     cpp{{
     auto array = self->group->get<libubjpp::array_type>();
-    exists_ = static_cast<bool>(array);
-    if (exists_) {
-      length_ = array.get().size();
+    exists = static_cast<bool>(array);
+    if (exists) {
+      length = array.get().size();
     }
     }}
     if (exists) {
@@ -46,7 +46,7 @@ class MemoryBufferAuxiliary < Buffer {
     exists:Boolean;
     cpp{{
     auto array = self->group->get<libubjpp::array_type>();
-    exists_ = static_cast<bool>(array);
+    exists = static_cast<bool>(array);
     }}
     if (exists) {
       return this;
@@ -60,7 +60,7 @@ class MemoryBufferAuxiliary < Buffer {
     cpp{{
     auto value = self->group->get<libubjpp::bool_type>();
     if (value) {
-      result_ = value.get();
+      result = value.get();
     }
     }}
     return result;
@@ -71,7 +71,7 @@ class MemoryBufferAuxiliary < Buffer {
     cpp{{
     auto value = self->group->get<libubjpp::int64_type>();
     if (value) {
-      result_ = value.get();
+      result = value.get();
     }
     }}
     return result;
@@ -82,11 +82,11 @@ class MemoryBufferAuxiliary < Buffer {
     cpp{{
     auto value1 = self->group->get<libubjpp::double_type>();
     if (value1) {
-      result_ = value1.get();
+      result = value1.get();
     } else {
       auto value2 = self->group->get<libubjpp::int64_type>();
       if (value2) {
-        result_ = value2.get();
+        result = value2.get();
       }
     }
     }}
@@ -98,7 +98,7 @@ class MemoryBufferAuxiliary < Buffer {
     cpp{{
     auto value = self->group->get<libubjpp::string_type>();
     if (value) {
-      result_ = value.get();
+      result = value.get();
     }
     }}
     return result;
@@ -119,9 +119,9 @@ class MemoryBufferAuxiliary < Buffer {
       value:Boolean?;
       for (i:Integer in 1..length!) {
         cpp{{
-        auto value = array[i_ - 1].get<libubjpp::bool_type>();
-        if (value) {
-          value_ = value.get();
+        auto x = array[i - 1].get<libubjpp::bool_type>();
+        if (x) {
+          value = x.get();
         }
         }}
         if (value?) {
@@ -146,9 +146,9 @@ class MemoryBufferAuxiliary < Buffer {
       value:Integer?;
       for (i:Integer in 1..length!) {
         cpp{{
-        auto value = array[i_ - 1].get<libubjpp::int64_type>();
-        if (value) {
-          value_ = value.get();
+        auto x = array[i - 1].get<libubjpp::int64_type>();
+        if (x) {
+          value = x.get();
         }
         }}
         if (value?) {
@@ -173,9 +173,9 @@ class MemoryBufferAuxiliary < Buffer {
       for (i:Integer in 1..length!) {
         value1:Real?;
         cpp{{
-        auto value1 = array[i_ - 1].get<libubjpp::double_type>();
-        if (value1) {
-          value1_ = value1.get();
+        auto x1 = array[i - 1].get<libubjpp::double_type>();
+        if (x1) {
+          value1 = x1.get();
         }
         }}
         if (value1?) {
@@ -183,9 +183,9 @@ class MemoryBufferAuxiliary < Buffer {
         } else {
           value2:Integer?;
           cpp{{
-          auto value2 = array[i_ - 1].get<libubjpp::int64_type>();
-          if (value2) {
-            value2_ = value2.get();
+          auto x2 = array[i - 1].get<libubjpp::int64_type>();
+          if (x2) {
+            value2 = x2.get();
           }
           }}
           if (value2?) {
@@ -333,13 +333,13 @@ class MemoryBufferAuxiliary < Buffer {
   function getChild(name:String) -> Buffer? {
     exists:Boolean <- false;
     cpp{{
-    auto child = self->group->get(name_);
-    exists_ = static_cast<bool>(child);
+    auto child = self->group->get(name);
+    exists = static_cast<bool>(child);
     }}
     if (exists) {
       buffer:MemoryBufferAuxiliary;
       cpp{{
-      buffer_->group = &child.get();
+      buffer->group = &child.get();
       }}
       return buffer;
     } else {
@@ -375,7 +375,7 @@ class MemoryBufferAuxiliary < Buffer {
   function setBoolean(value:Boolean?) {
     if value? {
       cpp{{
-      group->set(value_.get());
+      group->set(value.get());
       }}
     } else {
       setNil();
@@ -385,7 +385,7 @@ class MemoryBufferAuxiliary < Buffer {
   function setInteger(value:Integer?) {
     if value? {
       cpp{{
-      group->set(value_.get());
+      group->set(value.get());
       }}
     } else {
       setNil();
@@ -395,7 +395,7 @@ class MemoryBufferAuxiliary < Buffer {
   function setReal(value:Real?) {
     if value? {
       cpp{{
-      group->set(value_.get());
+      group->set(value.get());
       }}
     } else {
       setNil();
@@ -405,7 +405,7 @@ class MemoryBufferAuxiliary < Buffer {
   function setString(value:String?) {
     if value? {
       cpp{{
-      group->set(value_.get());
+      group->set(value.get());
       }}
     } else {
       setNil();
@@ -426,10 +426,10 @@ class MemoryBufferAuxiliary < Buffer {
   function setBooleanVector(value:Boolean[_]?) {
     if value? {
       cpp{{
-      auto value = value_.get();
-      libubjpp::array_type array(value.size());
-      auto first = value.begin();
-      auto last = first + value.size();
+      auto x = value.get();
+      libubjpp::array_type array(x.size());
+      auto first = x.begin();
+      auto last = first + x.size();
       std::copy(first, last, array.begin());
       group->set(std::move(array));
       }}
@@ -441,10 +441,10 @@ class MemoryBufferAuxiliary < Buffer {
   function setIntegerVector(value:Integer[_]?) {
     if value? {
       cpp{{
-      auto value = value_.get();
-      libubjpp::array_type array(value.size());
-      auto first = value.begin();
-      auto last = first + value.size();
+      auto x = value.get();
+      libubjpp::array_type array(x.size());
+      auto first = x.begin();
+      auto last = first + x.size();
       std::copy(first, last, array.begin());
       group->set(std::move(array));
       }}
@@ -456,10 +456,10 @@ class MemoryBufferAuxiliary < Buffer {
   function setRealVector(value:Real[_]?) {
     if value? {
       cpp{{
-      auto value = value_.get();
-      libubjpp::array_type array(value.size());
-      auto first = value.begin();
-      auto last = first + value.size();
+      auto x = value.get();
+      libubjpp::array_type array(x.size());
+      auto first = x.begin();
+      auto last = first + x.size();
       std::copy(first, last, array.begin());
       group->set(std::move(array));
       }}
@@ -510,7 +510,7 @@ class MemoryBufferAuxiliary < Buffer {
   function setChild(name:String) -> Buffer {
     buffer:MemoryBufferAuxiliary;
     cpp{{
-    buffer_->group = &self->group->set(name_);
+    buffer->group = &self->group->set(name);
     }}
     return buffer;
   }
@@ -529,7 +529,7 @@ class MemoryBufferAuxiliary < Buffer {
            * yield, necessary for fiber implementation */
           auto array = self->group->get<libubjpp::array_type>();
           assert(array);
-          buffer_->group = &array.get()[i_ - 1];
+          buffer->group = &array.get()[i - 1];
         }
         }}
         yield buffer;
@@ -543,7 +543,7 @@ class MemoryBufferAuxiliary < Buffer {
     auto array = self->group->get<libubjpp::array_type>();
     assert(array);
     array.get().push_back(libubjpp::nil_type());
-    buffer_->group = &array.get().back();
+    buffer->group = &array.get().back();
     }}
     ///@todo Buffer object will be invalid if array resized again
     return buffer;

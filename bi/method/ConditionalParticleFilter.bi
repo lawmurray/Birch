@@ -50,7 +50,7 @@ class ConditionalParticleFilter < ParticleFilter {
   }
 
   function propagate() -> Boolean {
-    auto continue <- true;
+    auto cont <- true;
     auto N <- nparticles;
     
     if !x0.empty() {
@@ -71,10 +71,10 @@ class ConditionalParticleFilter < ParticleFilter {
         X[n].pushBack(x[n]);
         W[n].pushBack(w1);
       } else {
-        continue <- false;      
+        cont <- false;      
       }
     }
-    return continue;
+    return cont;
   }
 
   function finish() {

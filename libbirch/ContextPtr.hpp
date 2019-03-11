@@ -7,7 +7,7 @@
 #include "libbirch/InitPtr.hpp"
 #include "libbirch/Memo.hpp"
 
-namespace bi {
+namespace libbirch {
 /**
  * Shared or weak pointer to a Memo, according to context. This is used by
  * LazyPtr for its memo field. It records the context of the

@@ -7,7 +7,7 @@
 #include "libbirch/Shared.hpp"
 #include "libbirch/Weak.hpp"
 
-namespace bi {
+namespace libbirch {
 /**
  * Optional.
  *
@@ -60,7 +60,7 @@ public:
    * Get the value.
    */
   T& get() {
-    bi_assert_msg(hasValue, "optional has no value");
+    libbirch_assert_msg_(hasValue, "optional has no value");
     return value;
   }
 
@@ -68,7 +68,7 @@ public:
    * Get the value.
    */
   const T& get() const {
-    bi_assert_msg(hasValue, "optional has no value");
+    libbirch_assert_msg_(hasValue, "optional has no value");
     return value;
   }
 
@@ -186,7 +186,7 @@ public:
    * Get the value.
    */
   Shared<T>& get() {
-    bi_assert_msg(query(), "optional has no value");
+    libbirch_assert_msg_(query(), "optional has no value");
     return value;
   }
 
@@ -194,7 +194,7 @@ public:
    * Get the value.
    */
   const Shared<T>& get() const {
-    bi_assert_msg(query(), "optional has no value");
+    libbirch_assert_msg_(query(), "optional has no value");
     return value;
   }
 

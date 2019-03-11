@@ -16,12 +16,12 @@ class JSONBuffer < MemoryBuffer {
   function load(path:String) {
     success:Boolean <- false;
     cpp{{
-    std::ifstream stream(path_);
+    std::ifstream stream(path);
     if (stream.is_open()) {
       libubjpp::JSONDriver driver;
       if (auto result = driver.parse(stream)) {
         self->root = result.get();
-        success_ = true;
+        success = true;
       }
     }
     }}
@@ -39,11 +39,11 @@ class JSONBuffer < MemoryBuffer {
     mkdir(path);
     success:Boolean <- false;
     cpp{{
-    std::ofstream stream(path_);
+    std::ofstream stream(path);
     if (stream.is_open()) {
       libubjpp::JSONGenerator generator(stream);
       generator.apply(self->root);
-      success_ = true;
+      success = true;
     }
     }}
     if (!success) {

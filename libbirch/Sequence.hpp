@@ -5,7 +5,7 @@
 
 #include <initializer_list>
 
-namespace bi {
+namespace libbirch {
 /**
  * Sequence type.
  *

@@ -15,7 +15,7 @@ function Integer64(x:Integer64) -> Integer64 {
  */
 function Integer64(x:Real64) -> Integer64 {
   cpp{{
-  return static_cast<bi::type::Integer64_>(x_);
+  return static_cast<bi::type::Integer64>(x);
   }}
 }
 
@@ -24,7 +24,7 @@ function Integer64(x:Real64) -> Integer64 {
  */
 function Integer64(x:Real32) -> Integer64 {
   cpp{{
-  return static_cast<bi::type::Integer64_>(x_);
+  return static_cast<bi::type::Integer64>(x);
   }}
 }
 
@@ -33,7 +33,7 @@ function Integer64(x:Real32) -> Integer64 {
  */
 function Integer64(x:Integer32) -> Integer64 {
   cpp{{
-  return static_cast<bi::type::Integer64_>(x_);
+  return static_cast<bi::type::Integer64>(x);
   }}
 }
 
@@ -42,7 +42,7 @@ function Integer64(x:Integer32) -> Integer64 {
  */
 function Integer64(x:Integer16) -> Integer64 {
   cpp{{
-  return static_cast<bi::type::Integer64_>(x_);
+  return static_cast<bi::type::Integer64>(x);
   }}
 }
 
@@ -51,7 +51,7 @@ function Integer64(x:Integer16) -> Integer64 {
  */
 function Integer64(x:Integer8) -> Integer64 {
   cpp{{
-  return static_cast<bi::type::Integer64_>(x_);
+  return static_cast<bi::type::Integer64>(x);
   }}
 }
 
@@ -60,7 +60,7 @@ function Integer64(x:Integer8) -> Integer64 {
  */
 function Integer64(x:String) -> Integer64 {
   cpp{{
-  return ::atol(x_.c_str());
+  return ::atol(x.c_str());
   }}
 }
 
@@ -158,7 +158,7 @@ operator (x:Integer64 != y:Integer64) -> Boolean;
  */
 function abs(x:Integer64) -> Integer64 {
   cpp {{
-  return std::abs(x_);
+  return std::abs(x);
   }}
 }
 
@@ -167,7 +167,7 @@ function abs(x:Integer64) -> Integer64 {
  */
 function pow(x:Integer64, y:Integer64) -> Integer64 {
   cpp {{
-  return std::pow(x_, y_);
+  return std::pow(x, y);
   }}
 }
 
@@ -176,7 +176,7 @@ function pow(x:Integer64, y:Integer64) -> Integer64 {
  */
 function mod(x:Integer64, y:Integer64) -> Integer64 {
   cpp {{
-  return x_ % y_;
+  return x % y;
   }}
 }
 
@@ -185,7 +185,7 @@ function mod(x:Integer64, y:Integer64) -> Integer64 {
  */
 function max(x:Integer64, y:Integer64) -> Integer64 {
   cpp {{
-  return std::max(x_, y_);
+  return std::max(x, y);
   }}
 }
 
@@ -194,7 +194,7 @@ function max(x:Integer64, y:Integer64) -> Integer64 {
  */
 function min(x:Integer64, y:Integer64) -> Integer64 {
   cpp {{
-  return std::min(x_, y_);
+  return std::min(x, y);
   }}
 }
 

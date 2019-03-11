@@ -9,7 +9,7 @@
 #include "libbirch/Fiber.hpp"
 #include "libbirch/Array.hpp"
 
-namespace bi {
+namespace libbirch {
 /**
  * Is this a value type?
  */

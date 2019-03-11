@@ -12,7 +12,7 @@
 
 #include <tuple>
 
-namespace bi {
+namespace libbirch {
 /**
  * Wraps another pointer type to apply lazy deep clone semantics.
  *
@@ -96,7 +96,7 @@ class EagerPtr {
    * Value assignment.
    */
   template<class U,
-      typename = std::enable_if_t<bi::has_assignment<T,U>::value>>
+      typename = std::enable_if_t<libbirch::has_assignment<T,U>::value>>
   EagerPtr<P>& operator=(const U& o) {
     *get() = o;
     return *this;
@@ -106,7 +106,7 @@ class EagerPtr {
    * Value conversion.
    */
   template<class U,
-      typename = std::enable_if_t<bi::has_conversion<T,U>::value>>
+      typename = std::enable_if_t<libbirch::has_conversion<T,U>::value>>
   operator U() const {
     return static_cast<U>(*get());
   }
@@ -151,7 +151,7 @@ class EagerPtr {
    */
   EagerPtr<P> clone() const {
     if (object) {
-      SharedPtr<EagerMemo> memo = EagerMemo::create();
+      SharedPtr<EagerMemo> memo = EagerMemo::create_();
       SwapClone swapClone(true);
       SwapContext swapContext(memo.get());
       return EagerPtr<P>(static_cast<T*>(currentContext->copy(object.get())));

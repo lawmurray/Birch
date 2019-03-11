@@ -6,7 +6,7 @@
 
 #include "libbirch/Counted.hpp"
 
-namespace bi {
+namespace libbirch {
 /**
  * Base for all class types when eager deep clone is used.
  *
@@ -14,8 +14,8 @@ namespace bi {
  */
 class EagerAny: public Counted {
 public:
-  using class_type = EagerAny;
-  using this_type = EagerAny;
+  using class_type_ = EagerAny;
+  using this_type_ = EagerAny;
 
 protected:
   /**
@@ -39,10 +39,10 @@ protected:
   EagerAny& operator=(const EagerAny&) = delete;
 
 public:
-  STANDARD_CREATE_FUNCTION
-  STANDARD_EMPLACE_FUNCTION
-  STANDARD_CLONE_FUNCTION
-  STANDARD_DESTROY_FUNCTION
+  libbirch_create_function_
+  libbirch_emplace_function_
+  libbirch_clone_function_
+  libbirch_destroy_function_
 };
 }
 

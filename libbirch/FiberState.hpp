@@ -5,7 +5,7 @@
 
 #include "libbirch/Any.hpp"
 
-namespace bi {
+namespace libbirch {
 /**
  * State of a fiber.
  *
@@ -16,8 +16,8 @@ namespace bi {
 template<class YieldType>
 class FiberState: public Any {
 public:
-  using class_type = FiberState<YieldType>;
-  using yield_type = YieldType;
+  using class_type_ = FiberState<YieldType>;
+  using yield_type_ = YieldType;
 
 protected:
   /**
@@ -27,8 +27,8 @@ protected:
    * @param nlabels Number of labels.
    */
   FiberState(const int label = 0, const int nlabels = 0) :
-      label(label),
-      nlabels(nlabels) {
+      label_(label),
+      nlabels_(nlabels) {
     //
   }
 
@@ -49,23 +49,23 @@ public:
    * Get the last yield value.
    */
   YieldType& get() {
-    return value;
+    return value_;
   }
 
 protected:
   /**
    * Current label.
    */
-  int label;
+  int label_;
 
   /**
    * Number of labels.
    */
-  int nlabels;
+  int nlabels_;
 
   /**
    * Yield value.
    */
-  YieldType value;
+  YieldType value_;
 };
 }

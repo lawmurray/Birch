@@ -7,7 +7,7 @@
  */
 function system(cmd:String) -> Integer {
   cpp{{
-  int status = std::system(cmd_.c_str());
+  int status = std::system(cmd.c_str());
   if (WIFEXITED(status)) {
     return WEXITSTATUS(status);
   } else if (WIFSIGNALED(status)) {
@@ -27,6 +27,6 @@ function system(cmd:String) -> Integer {
  */
 function exit(code:Integer) {
   cpp{{
-  std::exit(code_);
+  std::exit(code);
   }}
 }

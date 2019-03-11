@@ -155,8 +155,8 @@ class RaggedArray<Type> {
     assert n < nrows;
 
     cpp{{
-    self->offsets_.shrink(bi::make_frame(n_));
-    self->ncols_.shrink(bi::make_frame(n_));
+    self->offsets.shrink(libbirch::make_frame(n));
+    self->ncols.shrink(libbirch::make_frame(n));
     }}
     if (n == 0) {
       nelements <- 0;
@@ -182,7 +182,7 @@ class RaggedArray<Type> {
     d:Integer <- ncols[i] - n;
     values[(offsets[i] + n + 1)..(nelements - d)] <- values[(offsets[i] + n + 1 + d)..nelements];
     cpp{{
-    self->values_.shrink(bi::make_frame(self->nelements_));
+    self->values.shrink(libbirch::make_frame(self->nelements));
     }}
     ncols[i] <- n;
     if i + 1 <= nrows {
@@ -202,8 +202,8 @@ class RaggedArray<Type> {
     assert n > nrows;
 
     cpp{{    
-    self->offsets_.enlarge(bi::make_frame(n_), self->nelements_);
-    self->ncols_.enlarge(bi::make_frame(n_), 0);
+    self->offsets.enlarge(libbirch::make_frame(n), self->nelements);
+    self->ncols.enlarge(libbirch::make_frame(n), 0);
     }}
     nrows <- n;
 
@@ -224,7 +224,7 @@ class RaggedArray<Type> {
   
     d:Integer <- n - ncols[i];
     cpp{{
-    self->values_.enlarge(bi::make_frame(self->nelements_ + d_), x_);
+    self->values.enlarge(libbirch::make_frame(self->nelements + d), x);
     }}
     if offsets[i] + n + 1 <= nelements {
       values[(offsets[i] + n + 1)..(nelements + d)] <- values[(offsets[i] + n + 1 - d)..nelements];

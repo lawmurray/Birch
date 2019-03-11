@@ -5,7 +5,7 @@
 
 #include <atomic>
 
-namespace bi {
+namespace libbirch {
 /**
  * Lock with only exclusive use semantics.
  *
@@ -41,16 +41,16 @@ private:
 };
 }
 
-inline bi::ExclusiveLock::ExclusiveLock() :
+inline libbirch::ExclusiveLock::ExclusiveLock() :
     lock(false) {
   //
 }
 
-inline bi::ExclusiveLock::ExclusiveLock(const ExclusiveLock& o) :
+inline libbirch::ExclusiveLock::ExclusiveLock(const ExclusiveLock& o) :
     lock(false) {
   //
 }
 
-inline void bi::ExclusiveLock::unkeep() {
+inline void libbirch::ExclusiveLock::unkeep() {
   lock.store(false, std::memory_order_seq_cst);
 }

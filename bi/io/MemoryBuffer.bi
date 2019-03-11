@@ -9,7 +9,7 @@ class MemoryBuffer < Buffer {
   function get() -> Buffer {
     buffer:MemoryBufferAuxiliary;
     cpp{{
-    buffer_->group = &self->root;
+    buffer->group = &self->root;
     }}
     return buffer;
   }
@@ -17,13 +17,13 @@ class MemoryBuffer < Buffer {
   function getChild(name:String) -> Buffer? {
     exists:Boolean <- false;
     cpp{{
-    auto child = root.get(name_);
-    exists_ = static_cast<bool>(child);
+    auto child = root.get(name);
+    exists = static_cast<bool>(child);
     }}
     if (exists) {
       buffer:MemoryBufferAuxiliary;
       cpp{{
-      buffer_->group = &child.get();
+      buffer->group = &child.get();
       }}
       return buffer;
     } else {
@@ -34,7 +34,7 @@ class MemoryBuffer < Buffer {
   function set() -> Buffer {
     buffer:MemoryBufferAuxiliary;
     cpp{{
-    buffer_->group = &self->root.set();
+    buffer->group = &self->root.set();
     }}
     return buffer;
   }
@@ -42,7 +42,7 @@ class MemoryBuffer < Buffer {
   function setChild(name:String) -> Buffer {
     buffer:MemoryBufferAuxiliary;
     cpp{{
-    buffer_->group = &self->root.set(name_);
+    buffer->group = &self->root.set(name);
     }}
     return buffer;
   }

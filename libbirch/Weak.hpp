@@ -7,7 +7,7 @@
 #include "libbirch/LazyPtr.hpp"
 #include "libbirch/EagerPtr.hpp"
 
-namespace bi {
+namespace libbirch {
 /**
  * Weak pointer type
  */

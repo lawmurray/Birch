@@ -19,7 +19,7 @@ function String(x:Boolean) -> String {
  */
 function String(x:Real64) -> String {
   cpp{{
-  return std::to_string(x_);
+  return std::to_string(x);
   }}
 }
 
@@ -28,7 +28,7 @@ function String(x:Real64) -> String {
  */
 function String(x:Real32) -> String {
   cpp{{
-  return std::to_string(x_);
+  return std::to_string(x);
   }}
 }
 
@@ -37,7 +37,7 @@ function String(x:Real32) -> String {
  */
 function String(x:Integer64) -> String {
   cpp{{
-  return std::to_string(x_);
+  return std::to_string(x);
   }}
 }
 
@@ -46,7 +46,7 @@ function String(x:Integer64) -> String {
  */
 function String(x:Integer32) -> String {
   cpp{{
-  return std::to_string(x_);
+  return std::to_string(x);
   }}
 }
 
@@ -55,7 +55,7 @@ function String(x:Integer32) -> String {
  */
 function String(x:Integer16) -> String {
   cpp{{
-  return std::to_string(x_);
+  return std::to_string(x);
   }}
 }
 
@@ -64,7 +64,7 @@ function String(x:Integer16) -> String {
  */
 function String(x:Integer8) -> String {
   cpp{{
-  return std::to_string(x_);
+  return std::to_string(x);
   }}
 }
 
@@ -164,7 +164,7 @@ function String(x:String?) -> String? {
  */
 operator (x:String > y:String) -> Boolean {
   cpp{{
-  return x_.compare(y_) > 0;
+  return x.compare(y) > 0;
   }}
 }
 
@@ -173,7 +173,7 @@ operator (x:String > y:String) -> Boolean {
  */
 operator (x:String < y:String) -> Boolean {
   cpp{{
-  return x_.compare(y_) < 0;
+  return x.compare(y) < 0;
   }}
 }
 
@@ -182,7 +182,7 @@ operator (x:String < y:String) -> Boolean {
  */
 operator (x:String >= y:String) -> Boolean {
   cpp{{
-  return x_.compare(y_) >= 0;
+  return x.compare(y) >= 0;
   }}
 }
 
@@ -191,7 +191,7 @@ operator (x:String >= y:String) -> Boolean {
  */
 operator (x:String <= y:String) -> Boolean {
   cpp{{
-  return x_.compare(y_) <= 0;
+  return x.compare(y) <= 0;
   }}
 }
 
@@ -200,7 +200,7 @@ operator (x:String <= y:String) -> Boolean {
  */
 operator (x:String == y:String) -> Boolean {
   cpp{{
-  return x_.compare(y_) == 0;
+  return x.compare(y) == 0;
   }}
 }
 
@@ -209,7 +209,7 @@ operator (x:String == y:String) -> Boolean {
  */
 operator (x:String != y:String) -> Boolean {
   cpp{{
-  return x_.compare(y_) != 0;
+  return x.compare(y) != 0;
   }}
 }
 
@@ -293,7 +293,7 @@ operator (x:Integer32 + y:String) -> String {
  */
 function length(x:String) -> Integer {
   cpp{{
-  return x_.length();
+  return x.length();
   }}
 }
 
@@ -302,7 +302,7 @@ function length(x:String) -> Integer {
  */
 function length(x:String[_]) -> Integer {
   cpp{{
-  return x_.length(0);
+  return x.length(0);
   }}
 }
 

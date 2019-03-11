@@ -8,7 +8,7 @@
 
 #include <atomic>
 
-namespace bi {
+namespace libbirch {
 /**
  * Base class for reference counted objects.
  *
@@ -45,15 +45,15 @@ public:
    * Create an object,
    */
   template<class... Args>
-  static Counted* create(Args... args) {
-    return emplace(allocate<sizeof(Counted)>(), args...);
+  static Counted* create_(Args... args) {
+    return emplace_(allocate<sizeof(Counted)>(), args...);
   }
 
   /**
    * Create an object in previously-allocated memory.
    */
   template<class... Args>
-  static Counted* emplace(void* ptr, Args... args) {
+  static Counted* emplace_(void* ptr, Args... args) {
     auto o = new (ptr) Counted();
     o->size = sizeof(Counted);
     return o;
@@ -62,21 +62,21 @@ public:
   /**
    * Clone the object.
    */
-  virtual Counted* clone() const {
-    return emplace(allocate<sizeof(Counted)>(), *this);
+  virtual Counted* clone_() const {
+    return emplace_(allocate<sizeof(Counted)>(), *this);
   }
 
   /**
    * Clone the object into previous allocation.
    */
-  virtual Counted* clone(void* ptr) const {
-    return emplace(ptr, *this);
+  virtual Counted* clone_(void* ptr) const {
+    return emplace_(ptr, *this);
   }
 
   /**
    * Destroy the object.
    */
-  virtual void destroy() {
+  virtual void destroy_() {
     this->~Counted();
   }
 
@@ -162,7 +162,7 @@ protected:
    * classes. The non-virtual freeze() handles thread safety so that this
    * need not.
    */
-  virtual void doFreeze();
+  virtual void doFreeze_();
 
   /**
    * Shared count.
@@ -204,44 +204,44 @@ protected:
 };
 }
 
-inline bi::Counted::~Counted() {
+inline libbirch::Counted::~Counted() {
   assert(sharedCount == 0u);
 }
 
-inline void bi::Counted::deallocate() {
+inline void libbirch::Counted::deallocate() {
   assert(sharedCount == 0u);
   assert(weakCount == 0u);
-  bi::deallocate(this, size, tid);
+  libbirch::deallocate(this, size, tid);
 }
 
-inline unsigned bi::Counted::getSize() const {
+inline unsigned libbirch::Counted::getSize() const {
   return size;
 }
 
-inline void bi::Counted::incShared() {
+inline void libbirch::Counted::incShared() {
   sharedCount.fetch_add(1u, std::memory_order_relaxed);
 }
 
-inline unsigned bi::Counted::numShared() const {
+inline unsigned libbirch::Counted::numShared() const {
   return sharedCount.load(std::memory_order_relaxed);
 }
 
-inline void bi::Counted::incWeak() {
+inline void libbirch::Counted::incWeak() {
   weakCount.fetch_add(1u, std::memory_order_relaxed);
 }
 
-inline unsigned bi::Counted::numWeak() const {
+inline unsigned libbirch::Counted::numWeak() const {
   return weakCount;
 }
 
-inline void bi::Counted::incMemo() {
+inline void libbirch::Counted::incMemo() {
   /* the order of operations here is important, as the weak count should
    * never be less than the memo count */
   incWeak();
   memoCount.fetch_add(1u, std::memory_order_relaxed);
 }
 
-inline void bi::Counted::decMemo() {
+inline void libbirch::Counted::decMemo() {
   /* the order of operations here is important, as the weak count should
    * never be less than the memo count */
   assert(memoCount > 0u);
@@ -249,10 +249,10 @@ inline void bi::Counted::decMemo() {
   decWeak();
 }
 
-inline bool bi::Counted::isFrozen() const {
+inline bool libbirch::Counted::isFrozen() const {
   return frozen.load(std::memory_order_relaxed);
 }
 
-inline void bi::Counted::doFreeze() {
+inline void libbirch::Counted::doFreeze_() {
   //
 }
