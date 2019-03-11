@@ -47,6 +47,14 @@
       "bi/container/Stack.bi",
       "bi/container/StackNode.bi",
       "bi/container/Vector.bi",
+      "bi/data/ArrayValue.bi",
+      "bi/data/BooleanValue.bi",
+      "bi/data/IntegerValue.bi",
+      "bi/data/NilValue.bi",
+      "bi/data/ObjectValue.bi",
+      "bi/data/RealValue.bi",
+      "bi/data/StringValue.bi",
+      "bi/data/Value.bi",
       "bi/delay/Delay.bi",
       "bi/delay/DelayAddBoundedDiscrete.bi",
       "bi/delay/DelayBernoulli.bi",
@@ -190,6 +198,9 @@
       "bi/model/MarkovModel.bi",
       "bi/model/StarModel.bi",
       "bi/model/StateSpaceModel.bi",
+      "bi/parser/JSONParser.bi",
+      "bi/parser/JSONParser.cpp",
+      "bi/parser/Parser.bi",
       "bi/system/filesystem.bi",
       "bi/system/stdio.bi",
       "bi/system/system.bi",
@@ -305,7 +316,9 @@
       "libubjpp/json/JSONTokenizer.hpp",
       "libubjpp/ubj/UBJDriver.hpp",
       "libubjpp/ubj/UBJGenerator.hpp",
-      "libubjpp/libubjpp.hpp"
+      "libubjpp/libubjpp.hpp",
+      
+      "bi/parser/JSONParser.hpp"
     ],
     "other": [
       "LICENSE",

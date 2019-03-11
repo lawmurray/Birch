@@ -1,0 +1,6 @@
+/**
+ * Abstract value.
+ */
+class Value {
+
+}
