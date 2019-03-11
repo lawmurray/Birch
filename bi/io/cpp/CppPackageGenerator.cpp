@@ -74,8 +74,8 @@ void bi::CppPackageGenerator::visit(const Package* o) {
      * convenience/laziness) when precompiling the header itself; this seems
      * to cause a double inclusion with `#pragma once` but not with a `#define`
      * include guard */
-    line("#ifndef BI_" << tarname(o->name) << "_HPP");
-    line("#define BI_" << tarname(o->name) << "_HPP");
+    line("#ifndef BI_" << tarname(o->name) << "_HPP_");
+    line("#define BI_" << tarname(o->name) << "_HPP_");
     line("");
 
     for (auto header : o->headers) {
@@ -119,13 +119,17 @@ void bi::CppPackageGenerator::visit(const Package* o) {
     }
 
     line("}\n");
+    line("}\n");
     line("");
+
+    line("");
+    line("namespace libbirch {");
 
     /* forward super type declarations */
     for (auto o : sortedClasses) {
       if (!o->base->isEmpty() && o->isBound()) {
         start("template<> ");
-        middle("struct super_type<type::" << o->name);
+        middle("struct super_type<bi::type::" << o->name);
         genTemplateArgs(o);
         finish("> {");
         in();
@@ -141,7 +145,7 @@ void bi::CppPackageGenerator::visit(const Package* o) {
       if (o->isBound()) {
         for (auto o1 : o->assignments) {
           start("template<> ");
-          middle("struct has_assignment<type::" << o->name);
+          middle("struct has_assignment<bi::type::" << o->name);
           genTemplateArgs(o);
           finish("," << o1 << "> {");
           in();
@@ -157,7 +161,7 @@ void bi::CppPackageGenerator::visit(const Package* o) {
       if (o->isBound()) {
         for (auto o1 : o->conversions) {
           start("template<> ");
-          middle("struct has_conversion<type::" << o->name);
+          middle("struct has_conversion<bi::type::" << o->name);
           genTemplateArgs(o);
           finish("," << o1 << "> {");
           in();
@@ -167,9 +171,14 @@ void bi::CppPackageGenerator::visit(const Package* o) {
         }
       }
     }
+    line("");
+    line("}\n");
+
+    line("");
+    line("namespace bi {");
+    line("namespace type {");
 
     /* class definitions */
-    line("namespace type {");
     for (auto o : sortedClasses) {
       *this << o;
     }

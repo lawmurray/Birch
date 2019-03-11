@@ -341,7 +341,7 @@ void bi::Driver::run(const std::string& prog,
     buf << "Could not load " << so.string() << ", " << msg << '.';
     throw DriverException(buf.str());
   } else {
-    addr = dlsym(handle, (prog + "_").c_str());
+    addr = dlsym(handle, prog.c_str());
     msg = dlerror();
     if (msg != NULL) {
       std::stringstream buf;

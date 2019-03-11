@@ -35,7 +35,7 @@ void bi::CppBaseGenerator::visit(const Literal<bool>* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Literal<int64_t>* o) {
-  middle("int64_t(" << o->str << ')');
+  middle("std::int64_t(" << o->str << ')');
 }
 
 void bi::CppBaseGenerator::visit(const Literal<double>* o) {
@@ -60,7 +60,7 @@ void bi::CppBaseGenerator::visit(const Parentheses* o) {
 
 void bi::CppBaseGenerator::visit(const Sequence* o) {
   if (o->single->isEmpty()) {
-    middle("bi::nil");
+    middle("libbirch::nil");
   } else {
     middle("{ " << o->single << " }");
   }
@@ -69,9 +69,9 @@ void bi::CppBaseGenerator::visit(const Sequence* o) {
 void bi::CppBaseGenerator::visit(const Cast* o) {
   if (o->returnType->isClass()) {
     ++inPointer;
-    middle("bi::dynamic_pointer_cast<" << o->returnType << '>');
+    middle("libbirch::dynamic_pointer_cast<" << o->returnType << '>');
   } else {
-    middle("bi::check_cast<" << o->returnType << '>');
+    middle("libbirch::check_cast<" << o->returnType << '>');
   }
   middle('(' << o->single << ')');
 }
@@ -128,7 +128,7 @@ void bi::CppBaseGenerator::visit(const Slice* o) {
      * const context to avoid unnecessary copy */
     middle(".as_const()");
   }
-  middle("(bi::make_view(" << o->brackets << "))");
+  middle("(libbirch::make_view(" << o->brackets << "))");
 }
 
 void bi::CppBaseGenerator::visit(const Query* o) {
@@ -164,7 +164,7 @@ void bi::CppBaseGenerator::visit(const Index* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Range* o) {
-  middle("bi::make_range(" << o->left << " - 1, " << o->right << " - 1)");
+  middle("libbirch::make_range(" << o->left << " - 1, " << o->right << " - 1)");
 }
 
 void bi::CppBaseGenerator::visit(const Member* o) {
@@ -174,7 +174,7 @@ void bi::CppBaseGenerator::visit(const Member* o) {
     if (leftThis) {
       middle("this->");
     } else if (leftSuper) {
-      middle("super_type::");
+      middle("super_type_::");
     }
     middle(o->right);
   } else {
@@ -196,7 +196,7 @@ void bi::CppBaseGenerator::visit(const Member* o) {
     /* explicitly refer to the super class if necessary */
     auto leftSuper = dynamic_cast<const Super*>(o->left);
     if (leftSuper) {
-      middle("super_type::");
+      middle("super_type_::");
     }
     middle(o->right);
   }
@@ -215,7 +215,7 @@ void bi::CppBaseGenerator::visit(const Global* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Nil* o) {
-  middle("bi::nil");
+  middle("libbirch::nil");
 }
 
 void bi::CppBaseGenerator::visit(const Parameter* o) {
@@ -410,7 +410,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
   if (header) {
     line("extern \"C\" int " << o->name << "(int argc, char** argv);");
   } else {
-    line("int bi::" << o->name << "(int argc, char** argv) {");
+    line("int bi::" << o->name << "(int argc_, char** argv_) {");
     in();
     genTraceFunction(o->name->str(), o->loc);
 
@@ -425,7 +425,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
           middle(" = " << param->value);
         } else if (param->type->isClass()) {
           ++inPointer;
-          middle(" = " << param->type << "::create()");
+          middle(" = " << param->type << "::create_()");
         }
         finish(';');
       }
@@ -436,19 +436,19 @@ void bi::CppBaseGenerator::visit(const Program* o) {
       in();
       for (auto param : *o->params) {
         auto name = dynamic_cast<const Parameter*>(param)->name;
-        std::string flag = internalise(name->str()) + "FLAG";
+        std::string flag = internalise(name->str()) + "FLAG_";
         line(flag << ',');
       }
       out();
       line("};");
 
       /* long options */
-      line("int c, option_index;");
-      line("option long_options[] = {");
+      line("int c_, option_index_;");
+      line("option long_options_[] = {");
       in();
       for (auto param : *o->params) {
         auto name = dynamic_cast<const Parameter*>(param)->name;
-        std::string flag = internalise(name->str()) + "FLAG";
+        std::string flag = internalise(name->str()) + "FLAG_";
 
         std::string option = name->str();
         boost::replace_all(option, "_", "-");
@@ -462,20 +462,20 @@ void bi::CppBaseGenerator::visit(const Program* o) {
       line("};");
 
       /* short options */
-      line("const char* short_options = \"\";");
+      line("const char* short_options_ = \"\";");
 
       /* read in options with getopt_long */
-      line("opterr = 0;");  // handle error reporting ourselves
-      start("c = getopt_long_only(argc, argv, short_options, ");
-      finish("long_options, &option_index);");
-      line("while (c != -1) {");
+      line("::opterr = 0;");  // handle error reporting ourselves
+      start("c_ = ::getopt_long_only(argc_, argv_, short_options_, ");
+      finish("long_options_, &option_index_);");
+      line("while (c_ != -1) {");
       in();
-      line("switch (c) {");
+      line("switch (c_) {");
       in();
 
       for (auto param : *o->params) {
         auto name = dynamic_cast<const Parameter*>(param)->name;
-        std::string flag = internalise(name->str()) + "FLAG";
+        std::string flag = internalise(name->str()) + "FLAG_";
 
         line("case " << flag << ':');
         in();
@@ -483,21 +483,21 @@ void bi::CppBaseGenerator::visit(const Program* o) {
           auto type = dynamic_cast<Named*>(param->type->unwrap());
           assert(type);
           start(name << " = bi::" << type->name);
-          finish("(std::string(optarg));");
+          finish("(std::string(::optarg));");
         } else {
-          line(name << " = std::string(optarg);");
+          line(name << " = std::string(::optarg);");
         }
         line("break;");
         out();
       }
       line("default:");
       in();
-      line("bi::unknown_option(argv[optind - 1]);");
+      line("libbirch::unknown_option(argv_[::optind - 1]);");
       out();
       out();
       line('}');
-      start("c = getopt_long_only(argc, argv, short_options, ");
-      finish("long_options, &option_index);");
+      start("c_ = ::getopt_long_only(argc_, argv_, short_options_, ");
+      finish("long_options_, &option_index_);");
       out();
       line("}\n");
     }
@@ -694,7 +694,7 @@ void bi::CppBaseGenerator::visit(const DoWhile* o) {
 
 void bi::CppBaseGenerator::visit(const Assert* o) {
   genTraceLine(o->loc->firstLine);
-  line("bi_assert(" << o->cond->strip() << ");");
+  line("libbirch_assert_(" << o->cond->strip() << ");");
 }
 
 void bi::CppBaseGenerator::visit(const Return* o) {
@@ -724,7 +724,7 @@ void bi::CppBaseGenerator::visit(const EmptyType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const ArrayType* o) {
-  middle("bi::DefaultArray<" << o->single << ',' << o->depth() << '>');
+  middle("libbirch::DefaultArray<" << o->single << ',' << o->depth() << '>');
 }
 
 void bi::CppBaseGenerator::visit(const TupleType* o) {
@@ -740,15 +740,15 @@ void bi::CppBaseGenerator::visit(const FunctionType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const FiberType* o) {
-  middle("bi::Fiber<" << o->single << '>');
+  middle("libbirch::Fiber<" << o->single << '>');
 }
 
 void bi::CppBaseGenerator::visit(const OptionalType* o) {
-  middle("bi::Optional<" << o->single << '>');
+  middle("libbirch::Optional<" << o->single << '>');
 }
 
 void bi::CppBaseGenerator::visit(const WeakType* o) {
-  middle("bi::Weak<");
+  middle("libbirch::Weak<");
   if (o->single->isClass()) {
     ++inPointer;
   }
@@ -759,7 +759,7 @@ void bi::CppBaseGenerator::visit(const WeakType* o) {
 void bi::CppBaseGenerator::visit(const ClassType* o) {
   int inPointer1 = inPointer;
   if (!inPointer1) {
-    middle("bi::Shared<");
+    middle("libbirch::Shared<");
   } else {
     --inPointer;
   }
@@ -798,12 +798,12 @@ void bi::CppBaseGenerator::visit(const TypeList* o) {
 
 void bi::CppBaseGenerator::genTraceFunction(const std::string& name,
     const Location* loc) {
-  start("bi_function(\"" << name << "\", \"");
+  start("libbirch_function_(\"" << name << "\", \"");
   finish(loc->file->path << "\", " << loc->firstLine << ");");
 }
 
 void bi::CppBaseGenerator::genTraceLine(const int line) {
-  line("bi_line(" << line << ");");
+  line("libbirch_line_(" << line << ");");
 }
 
 void bi::CppBaseGenerator::genArgs(const Call* o) {

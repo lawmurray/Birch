@@ -139,8 +139,7 @@ std::string bi::nice(const std::string& name) {
 }
 
 std::string bi::internalise(const std::string& name) {
-  /* underscore on end to avoid conflicts with internal names */
-  return escape_unicode(nice(name)) + "_";
+  return escape_unicode(nice(name));
 }
 
 std::string bi::escape_unicode(const std::string& str) {

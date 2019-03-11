@@ -170,12 +170,13 @@ void bi::CppBaseGenerator::genInit(const T* o) {
     assert(type);
     if (!o->brackets->isEmpty()) {
       if (!o->value->isEmpty()) {
-        middle(" = bi::make_array_and_assign<" << type->single << ">(");
-        middle("bi::make_frame(" << o->brackets << ')');
+        middle(" = ");
+        middle("libbirch::make_array_and_assign<" << type->single << ">(");
+        middle("libbirch::make_frame(" << o->brackets << ')');
         middle(", " << o->value << ')');
       } else {
-        middle(" = bi::make_array<" << type->single << ">(");
-        middle("bi::make_frame(" << o->brackets << ')');
+        middle(" = libbirch::make_array<" << type->single << ">(");
+        middle("libbirch::make_frame(" << o->brackets << ')');
         if (!o->args->isEmpty()) {
           middle(", " << o->args);
         }
@@ -189,7 +190,7 @@ void bi::CppBaseGenerator::genInit(const T* o) {
       middle(" = " << o->value);
     } else if (!o->type->isWeak()) {
       ++inPointer;
-      middle(" = " << o->type << "::create");
+      middle(" = " << o->type << "::create_");
       middle('(' << o->args << ')');
     }
   } else if (!o->value->isEmpty()) {
