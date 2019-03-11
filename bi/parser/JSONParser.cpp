@@ -49,25 +49,25 @@ bi::type::Integer bi::type::JSONParser::next() {
       if (token == INT64) {
         auto intValue = std::strtol(data.c_str() + std::distance(begin, iter),
             &endptr, 10);
-        value = IntegerValue::create_(intValue);
+        stack->push(IntegerValue::create_(intValue));
       } else {
         assert(token == DOUBLE);
         auto doubleValue = std::strtod(
             data.c_str() + std::distance(begin, iter), &endptr);
-        value = RealValue::create_(doubleValue);
+        stack->push(RealValue::create_(doubleValue));
       }
     } else if (std::regex_search(iter, end, match, regexTrue, options)) {
       last = match[0].second;
       token = BOOL;
-      value = BooleanValue::create_(true);
+      stack->push(BooleanValue::create_(true));
     } else if (std::regex_search(iter, end, match, regexFalse, options)) {
       last = match[0].second;
       token = BOOL;
-      value = BooleanValue::create_(false);
+      stack->push(BooleanValue::create_(false));
     } else if (std::regex_search(iter, end, match, regexNull, options)) {
       last = match[0].second;
       token = NIL;
-      value = NilValue::create_();
+      stack->push(NilValue::create_());
     } else if (*iter == '"') {
       /* matched a string */
       token = STRING;
@@ -116,8 +116,7 @@ bi::type::Integer bi::type::JSONParser::next() {
       }
       assert(last != end);  // syntax error, unclosed string
       ++last;  // remove final quote
-      value = StringValue::create_(buf.str());
-      ;
+      stack->push(StringValue::create_(buf.str()));
     } else {
       /* check the next character */
       last = iter + 1;
