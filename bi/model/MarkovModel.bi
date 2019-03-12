@@ -20,24 +20,20 @@
  * provides an alternative function-based interface based on the `start` and
  * `stop` member functions.
  */
-class MarkovModel<Parameter,State> < Model {
-  /**
-   * Parameter.
-   */
-  θ:Parameter;
-
+class MarkovModel<Parameter,State> < ParameterModel<Parameter> {
   /**
    * States.
    */
   x:List<State>;
 
   fiber simulate() -> Real {
-    auto f <- this.x.walk();
+    /* parameters */
+    yield sum(parameter(θ));
     
+    /* states */
+    auto f <- this.x.walk();    
     u:State?;  // previous state
     x:State?;  // current state
-
-    yield sum(parameter(θ));
     while true {
       if f? {  // is the next state given?
         x <- f!;
@@ -154,15 +150,6 @@ class MarkovModel<Parameter,State> < Model {
     /* one checkpoint for the parameters, then one for each time */
     return 1 + x.size();
   }
-     
-  /**
-   * Parameter model.
-   *
-   * - θ: The parameters, to be set.
-   */
-  fiber parameter(θ:Parameter) -> Real {
-    //
-  }
   
   /**
    * Initial model.
@@ -183,17 +170,6 @@ class MarkovModel<Parameter,State> < Model {
    */
   fiber transition(x:State, u:State, θ:Parameter) -> Real {
     //
-  }
-
-  /**
-   * Parameter proposal.
-   *
-   * - θ: The parameters, to be set.
-   *
-   * By default calls `parameter(θ)`.
-   */
-  fiber proposeParameter(θ:Parameter) -> Real {
-    parameter(θ);
   }
   
   /**
@@ -219,18 +195,6 @@ class MarkovModel<Parameter,State> < Model {
    */
   fiber proposeTransition(x:State, u:State, θ:Parameter) -> Real {
     transition(x, u, θ);
-  }
-
-  /**
-   * Parameter proposal.
-   *
-   * - θ': The proposed parameters, to be set.
-   * - θ: The last parameters.
-   *
-   * By default calls `proposeParameter(θ')`.
-   */
-  fiber proposeParameter(θ':Parameter, θ:Parameter) -> Real {
-    proposeParameter(θ');
   }
   
   /**
@@ -265,12 +229,12 @@ class MarkovModel<Parameter,State> < Model {
   }
 
   function read(buffer:Buffer) {
-    buffer.get("θ", θ);
+    super.read(buffer);
     buffer.get("x", x);
   }
   
   function write(buffer:Buffer) {
-    buffer.set("θ", θ);
+    super.write(buffer);
     buffer.set("x", x);
   }
 }

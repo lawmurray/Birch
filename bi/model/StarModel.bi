@@ -3,42 +3,43 @@
  *
  * The joint distribution is:
  *
- * $$p(\mathrm{d}\theta, \mathrm{d}x_{1:N}) = p(\mathrm{d}\theta) 
- *   \prod_{n=1}^N p(\mathrm{d}x_n \mid \theta).$$
+ * $$p(\mathrm{d}\theta, \mathrm{d}x_{1:T}) = p(\mathrm{d}\theta) 
+ *   \prod_{t=1}^T p(\mathrm{d}x_t \mid \theta).$$
  *
  * <center>
  * ![Graphical model depicting StarModel.](../figs/StarModel.svg)
  * </center>
  */
-class StarModel<Parameter,Point> < Model {
-  /**
-   * Parameter.
-   */
-  θ:Parameter;
-
+class StarModel<Parameter,Point> < ParameterModel<Parameter> {
   /**
    * Points.
    */
-  x:List<Point>;
+  x:Vector<Point>;
   
   fiber simulate() -> Real {
-    /* parameter */
+    /* parameters */
     yield sum(parameter(θ));
-    
+
     /* points */
-    auto x <- this.x.walk();
-    while (x?) {
-      point(x!, θ);
+    auto f <- this.x.walk();    
+    x:Point?;  // current point
+    while true {
+      if f? {  // is the next point given?
+        x <- f!;
+      } else {
+        x':Point;
+        this.x.pushBack(x');
+        x <- x';
+      }
+      yield sum(point(x!, θ));
     }
   }
 
-  /**
-   * Parameter model.
-   */
-  fiber parameter(θ:Parameter) -> Real {
-    //
+  function checkpoints() -> Integer? {
+    /* one checkpoint for the parameters, then one for each point */
+    return 1 + x.size();
   }
-    
+
   /**
    * Point model.
    */
@@ -47,12 +48,12 @@ class StarModel<Parameter,Point> < Model {
   }
 
   function read(buffer:Buffer) {
-    buffer.get("θ", θ);
+    super.read(buffer);
     buffer.get("x", x);
   }
   
   function write(buffer:Buffer) {
-    buffer.set("θ", θ);
+    super.write(buffer);
     buffer.set("x", x);
   }
 }
