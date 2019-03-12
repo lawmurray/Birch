@@ -49,14 +49,16 @@ void bi::CppPackageGenerator::visit(const Package* o) {
   for (auto o : classes) {
     if (!o->isAlias()) {
       sorted.insert(new ClassType(o));
-    }
-    for (auto instantiation : o->instantiations) {
-      sorted.insert(new ClassType(instantiation));
+      for (auto instantiation : o->instantiations) {
+        sorted.insert(new ClassType(instantiation));
+      }
     }
   }
   for (auto o : headerClasses) {
     for (auto instantiation : o->instantiations) {
-      sorted.insert(new ClassType(instantiation));
+      if (!instantiation->isAlias()) {
+        sorted.insert(new ClassType(instantiation));
+      }
     }
   }
   allowConversions = true;
