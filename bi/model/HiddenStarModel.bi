@@ -13,12 +13,8 @@
  * ![Graphical model depicting HiddenStarModel.](../figs/HiddenStarModel.svg)
  * </center>
  */
-class HiddenStarModel<Parameter,Point,Observation> < StarModel<Parameter,Point> {
-  /**
-   * Observations.
-   */
-  y:Vector<Observation>;
-  
+class HiddenStarModel<Parameter,Point,Observation> <
+    ObservedModel<Parameter,Point,Observation> {
   fiber simulate() -> Real {
     /* parameters */
     yield sum(parameter(θ));
@@ -27,7 +23,7 @@ class HiddenStarModel<Parameter,Point,Observation> < StarModel<Parameter,Point> 
     auto f <- this.x.walk();
     auto g <- this.y.walk();
     
-    x:State?;        // current point
+    x:Point?;        // current point
     y:Observation?;  // current observation
     
     while true {
@@ -35,7 +31,7 @@ class HiddenStarModel<Parameter,Point,Observation> < StarModel<Parameter,Point> 
       if f? {  // is the next point given?
         x <- f!;
       } else {
-        x':State;
+        x':Point;
         this.x.pushBack(x');
         x <- x';
       }
@@ -57,21 +53,18 @@ class HiddenStarModel<Parameter,Point,Observation> < StarModel<Parameter,Point> 
     /* one checkpoint for the parameters, then one for each point */
     return 1 + max(x.size(), y.size());
   }
-    
+
+  /**
+   * Point model.
+   */
+  fiber point(x:Point, θ:Parameter) -> Real {
+    //
+  }
+
   /**
    * Observation model.
    */
   fiber observation(y:Observation, x:Point, θ:Parameter) -> Real {
     //
-  }
-
-  function read(buffer:Buffer) {
-    super.read(buffer);
-    buffer.get("y", y);
-  }
-  
-  function write(buffer:Buffer) {
-    super.write(buffer);
-    buffer.set("y", y);
   }
 }

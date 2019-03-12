@@ -24,12 +24,7 @@
  * function-based interface based on the `start` and `stop` member functions.
  */
 class HiddenMarkovModel<Parameter,State,Observation> <
-    MarkovModel<Parameter,State> {
-  /**
-   * Observations.
-   */
-  y:List<Observation>;
-
+    ObservedModel<Parameter,State,Observation> {
   fiber simulate() -> Real {
     /* parameters */
     yield sum(parameter(θ));
@@ -171,6 +166,21 @@ class HiddenMarkovModel<Parameter,State,Observation> <
     }
   }
 
+  /**
+   * Start simulation of the model, using the incremental interface.
+   *
+   * Returns: log-weight from the parameter model.
+   */
+  function start() -> Real {
+    return sum(parameter(θ));
+  }
+
+  /**
+   * Continue simulation of the model one step, using the incremental
+   * interface.
+   *
+   * Returns: log-weight of the initial or transition model.
+   */
   function step() -> Real {
     assert x.size() == y.size();
     w:Real <- 0.0;
@@ -196,6 +206,27 @@ class HiddenMarkovModel<Parameter,State,Observation> <
   }
 
   /**
+   * Initial model.
+   *
+   * - x: The initial state, to be set.
+   * - θ: The parameters.
+   */
+  fiber initial(x:State, θ:Parameter) -> Real {
+    //
+  }
+  
+  /**
+   * Transition model.
+   *
+   * - x: The current state, to be set.
+   * - u: The previous state.
+   * - θ: The parameters.
+   */
+  fiber transition(x:State, u:State, θ:Parameter) -> Real {
+    //
+  }
+
+  /**
    * Observation model.
    *
    * - y: The observations, to be set.
@@ -204,6 +235,62 @@ class HiddenMarkovModel<Parameter,State,Observation> <
    */
   fiber observation(y:Observation, x:State, θ:Parameter) -> Real {
     //
+  }
+  
+  /**
+   * Initial proposal.
+   *
+   * - x: The initial state, to be set.
+   * - θ: The parameters.
+   *
+   * By default calls `initial(x, θ)`.
+   */
+  fiber proposeInitial(x:State, θ:Parameter) -> Real {
+    initial(x, θ);
+  }
+  
+  /**
+   * Transition proposal.
+   *
+   * - x: The current state, to be set.
+   * - u: The previous state.
+   * - θ: The parameters.
+   *
+   * By default calls `transition(x, u, θ)`.
+   */
+  fiber proposeTransition(x:State, u:State, θ:Parameter) -> Real {
+    transition(x, u, θ);
+  }
+  
+  /**
+   * Initial proposal.
+   *
+   * - x': The initial state, to be set.
+   * - θ': The parameters.
+   * - x: The last initial state.
+   * - θ: The last parameters.
+   *
+   * By default calls `proposeInitial(x', θ')`.
+   */
+  fiber proposeInitial(x':State, θ':Parameter, x:State, θ:Parameter) -> Real {
+    proposeInitial(x', θ');
+  }
+  
+  /**
+   * Transition proposal.
+   *
+   * - x': The current state, to be set.
+   * - u': The previous state.
+   * - θ': The parameters.
+   * - x: The last current state.
+   * - u: The last previous state.
+   * - θ: The last parameters.
+   *
+   * By default calls `proposeTransition(x', u', θ')`.
+   */
+  fiber proposeTransition(x':State, u':State, θ':Parameter, x:State, u:State,
+      θ:Parameter) -> Real {
+    proposeTransition(x', u', θ');
   }
 
   /**
@@ -234,15 +321,5 @@ class HiddenMarkovModel<Parameter,State,Observation> <
   fiber proposeObservation(y':Observation, x':State, θ':Parameter,
       y:Observation, x:State, θ:Parameter) -> Real {
     proposeObservation(y', x', θ');
-  }
-
-  function read(buffer:Buffer) {
-    super.read(buffer);
-    buffer.get("y", y);
-  }
-  
-  function write(buffer:Buffer) {
-    super.write(buffer);
-    buffer.set("y", y);
   }
 }

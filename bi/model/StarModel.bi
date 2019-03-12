@@ -10,12 +10,7 @@
  * ![Graphical model depicting StarModel.](../figs/StarModel.svg)
  * </center>
  */
-class StarModel<Parameter,Point> < ParameterModel<Parameter> {
-  /**
-   * Points.
-   */
-  x:Vector<Point>;
-  
+class StarModel<Parameter,Point> < StateModel<Parameter,Point> {  
   fiber simulate() -> Real {
     /* parameters */
     yield sum(parameter(θ));
@@ -45,15 +40,5 @@ class StarModel<Parameter,Point> < ParameterModel<Parameter> {
    */
   fiber point(x:Point, θ:Parameter) -> Real {
     //
-  }
-
-  function read(buffer:Buffer) {
-    super.read(buffer);
-    buffer.get("x", x);
-  }
-  
-  function write(buffer:Buffer) {
-    super.write(buffer);
-    buffer.set("x", x);
   }
 }

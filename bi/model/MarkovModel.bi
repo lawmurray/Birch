@@ -20,12 +20,7 @@
  * provides an alternative function-based interface based on the `start` and
  * `stop` member functions.
  */
-class MarkovModel<Parameter,State> < ParameterModel<Parameter> {
-  /**
-   * States.
-   */
-  x:List<State>;
-
+class MarkovModel<Parameter,State> < StateModel<Parameter,State> {
   fiber simulate() -> Real {
     /* parameters */
     yield sum(parameter(θ));
@@ -226,15 +221,5 @@ class MarkovModel<Parameter,State> < ParameterModel<Parameter> {
   fiber proposeTransition(x':State, u':State, θ':Parameter, x:State, u:State,
       θ:Parameter) -> Real {
     proposeTransition(x', u', θ');
-  }
-
-  function read(buffer:Buffer) {
-    super.read(buffer);
-    buffer.get("x", x);
-  }
-  
-  function write(buffer:Buffer) {
-    super.write(buffer);
-    buffer.set("x", x);
   }
 }
