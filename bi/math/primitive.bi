@@ -1,4 +1,100 @@
 /**
+ * Transformation.
+ *
+ * - x: Vector.
+ * - f: Operator.
+ */
+function transform(x:Real[_], f:@(Real) -> Real) -> Real[_] {
+  // in C++17 can use std::transform
+  y:Real[length(x)];
+  for i:Integer in 1..length(x) {
+    y[i] <- f(x[i]);
+  }
+  return y;
+}
+
+/**
+ * Transformation.
+ *
+ * - x: Vector.
+ * - f: Operator.
+ */
+function transform(x:Integer[_], f:@(Integer) -> Integer) -> Integer[_] {
+  // in C++17 can use std::transform
+  y:Integer[length(x)];
+  for i:Integer in 1..length(x) {
+    y[i] <- f(x[i]);
+  }
+  return y;
+}
+
+/**
+ * Transformation.
+ *
+ * - x: Vector.
+ * - f: Operator.
+ */
+function transform(x:Boolean[_], f:@(Boolean) -> Boolean) -> Boolean[_] {
+  // in C++17 can use std::transform
+  y:Boolean[length(x)];
+  for i:Integer in 1..length(x) {
+    y[i] <- f(x[i]);
+  }
+  return y;
+}
+
+/**
+ * Transformation.
+ *
+ * - X: Matrix.
+ * - f: Operator.
+ */
+function transform(X:Real[_,_], f:@(Real) -> Real) -> Real[_,_] {
+  // in C++17 can use std::transform
+  Y:Real[_,_];
+  for i:Integer in 1..rows(X) {
+    for j:Integer in 1..columns(X) {
+      Y[i,j] <- f(X[i,j]);
+    }
+  }
+  return Y;
+}
+
+/**
+ * Transformation.
+ *
+ * - X: Matrix.
+ * - f: Operator.
+ */
+function transform(X:Integer[_,_], f:@(Integer) -> Integer) -> Integer[_,_] {
+  // in C++17 can use std::transform
+  Y:Integer[_,_];
+  for i:Integer in 1..rows(X) {
+    for j:Integer in 1..columns(X) {
+      Y[i,j] <- f(X[i,j]);
+    }
+  }
+  return Y;
+}
+
+/**
+ * Transformation.
+ *
+ * - X: Matrix.
+ * - f: Operator.
+ */
+function transform(X:Boolean[_,_], f:@(Boolean) -> Boolean) -> Boolean[_,_] {
+  // in C++17 can use std::transform
+  Y:Boolean[_,_];
+  for i:Integer in 1..rows(X) {
+    for j:Integer in 1..columns(X) {
+      Y[i,j] <- f(X[i,j]);
+    }
+  }
+  return Y;
+}
+
+/**
  * Reduction.
  *
  * - x: Vector.
