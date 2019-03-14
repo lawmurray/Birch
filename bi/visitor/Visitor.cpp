@@ -210,7 +210,7 @@ void bi::Visitor::visit(const StatementList* o) {
   o->tail->accept(this);
 }
 
-void bi::Visitor::visit(const Assignment* o) {
+void bi::Visitor::visit(const Assume* o) {
   o->left->accept(this);
   o->right->accept(this);
 }

@@ -106,6 +106,12 @@ bi::Expression* bi::Resolver::modify(Assign* o) {
             new EmptyExpression(o->loc), o->loc);
     auto assign = new Assign(left, new Name("<-"), right, o->loc);
     return assign->accept(this);
+  } else if (*o->name == "~>") {
+    auto observe = new Call(
+        new Member(o->right,
+            new Identifier<Unknown>(new Name("observe"), o->loc), o->loc),
+        o->left, o->loc);
+    return observe->accept(this);
   } else {
     Modifier::modify(o);
     if (o->right->type->definitely(*o->left->type)) {
@@ -400,37 +406,31 @@ bi::Expression* bi::Resolver::modify(OverloadedIdentifier<UnaryOperator>* o) {
   return o;
 }
 
-bi::Statement* bi::Resolver::modify(Assignment* o) {
+bi::Statement* bi::Resolver::modify(Assume* o) {
   /* replace with equivalent (by definition) code */
-  if (*o->name == "~>") {
-    auto observe = new Call(
-        new Member(o->right,
-            new Identifier<Unknown>(new Name("observe"), o->loc), o->loc),
-        o->left, o->loc);
-    if (!yieldTypes.empty()) {
-      auto yield = new Yield(observe, o->loc);
-      return yield->accept(this);
-    } else {
-      auto stmt = new ExpressionStatement(observe, o->loc);
-      return stmt->accept(this);
-    }
+  ///@todo Evaluate left only once
+  Expression* cond = new Call(
+      new Member(o->left->accept(&cloner),
+          new Identifier<Unknown>(new Name("hasValue"), o->loc)),
+      new Parentheses(new EmptyExpression(o->loc), o->loc), o->loc);
+
+  Statement* trueBranch = nullptr;
+  auto observe = new Assign(o->left->accept(&cloner),
+      new Name("~>"), o->right->accept(&cloner), o->loc);
+  if (!yieldTypes.empty()) {
+    trueBranch = new Yield(observe, o->loc);
   } else {
-    assert(*o->name == "~");
-    ///@todo Can left be evaluated only once?
-    auto cond = new Call(
-        new Member(o->left->accept(&cloner),
-            new Identifier<Unknown>(new Name("hasValue"), o->loc)),
-        new Parentheses(new EmptyExpression(o->loc), o->loc), o->loc);
-    auto trueBranch = new Assignment(o->left->accept(&cloner),
-        new Name("~>"), o->right->accept(&cloner), o->loc);
-    auto falseBranch = new ExpressionStatement(
-        new Call(
-            new Member(o->left,
-                new Identifier<Unknown>(new Name("assume"), o->loc), o->loc),
-            o->right, o->loc), o->loc);
-    auto result = new If(cond, trueBranch, falseBranch, o->loc);
-    return result->accept(this);
+    trueBranch = new ExpressionStatement(observe, o->loc);
   }
+
+  Statement* falseBranch = new ExpressionStatement(
+      new Call(
+          new Member(o->left,
+              new Identifier<Unknown>(new Name("assume"), o->loc), o->loc),
+          o->right, o->loc), o->loc);
+
+  auto result = new If(cond, trueBranch, falseBranch, o->loc);
+  return result->accept(this);
 }
 
 bi::Statement* bi::Resolver::modify(GlobalVariable* o) {

@@ -11,7 +11,7 @@ bi/birch.hpp.gch: bi/birch.hpp
 #include bi/$(DEPDIR)/birch.gch.Plo
 
 # Flex/Bison setup
-AM_YFLAGS = -d
+AM_YFLAGS = -d -Wno-yacc
 AM_FLAGS =
 
 # compiler setup
@@ -135,7 +135,7 @@ COMMON_SOURCES = \
   bi/primitive/poset.cpp \
   bi/statement/Assert.cpp \
   bi/statement/AssignmentOperator.cpp \
-  bi/statement/Assignment.cpp \
+  bi/statement/Assume.cpp \
   bi/statement/Basic.cpp \
   bi/statement/BinaryOperator.cpp \
   bi/statement/Braces.cpp \
@@ -311,7 +311,7 @@ noinst_HEADERS = \
   bi/primitive/poset.hpp \
   bi/statement/all.hpp \
   bi/statement/AssignmentOperator.hpp \
-  bi/statement/Assignment.hpp \
+  bi/statement/Assume.hpp \
   bi/statement/Basic.hpp \
   bi/statement/BinaryOperator.hpp \
   bi/statement/Braces.hpp \

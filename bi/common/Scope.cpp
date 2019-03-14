@@ -18,7 +18,6 @@
 #include "bi/statement/UnaryOperator.hpp"
 #include "bi/statement/AssignmentOperator.hpp"
 #include "bi/statement/ConversionOperator.hpp"
-#include "bi/statement/Assignment.hpp"
 #include "bi/statement/Basic.hpp"
 #include "bi/statement/Class.hpp"
 #include "bi/exception/all.hpp"

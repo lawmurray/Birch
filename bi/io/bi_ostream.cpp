@@ -321,8 +321,8 @@ void bi::bi_ostream::visit(const Braces* o) {
   start('}');
 }
 
-void bi::bi_ostream::visit(const Assignment* o) {
-  line(o->left << ' ' << o->name << ' ' << o->right << ';');
+void bi::bi_ostream::visit(const Assume* o) {
+  line(o->left << " ~ " << o->right << ';');
 }
 
 void bi::bi_ostream::visit(const Function* o) {
