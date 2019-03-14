@@ -626,6 +626,7 @@ for_annotation
 for_index
     : identifier
     | name ':' type  { $$ = new bi::LocalVariable(bi::NONE, $1, $3, empty_expr(@$), empty_expr(@$), empty_expr(@$), make_loc(@$)); }
+    | AUTO name      { $$ = new bi::LocalVariable(bi::NONE, $2, new bi::BasicType(new bi::Name("Integer")), empty_expr(@$), empty_expr(@$), empty_expr(@$), make_loc(@$)); }
     ;
 
 for
