@@ -5,9 +5,10 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::Assume::Assume(Expression* left, Expression* right,
+bi::Assume::Assume(Expression* left, Name* op, Expression* right,
     Location* loc) :
     Statement(loc),
+    Named(op),
     Couple<Expression>(left, right) {
   //
 }

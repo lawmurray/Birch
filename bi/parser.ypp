@@ -95,10 +95,10 @@
 %token <valString> CPP HPP THIS SUPER GLOBAL PARALLEL NIL
 %token <valString> DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE NAME
 %token <valString> BOOL_LITERAL INT_LITERAL REAL_LITERAL STRING_LITERAL
-%token <valString> LEFT_OP RIGHT_OP LEFT_TILDE_OP RIGHT_TILDE_OP
+%token <valString> LEFT_OP RIGHT_OP LEFT_TILDE_OP RIGHT_TILDE_OP LEFT_QUERY_OP
 %token <valString> AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP RANGE_OP
 
-%type <valName> name binary_operator unary_operator observe_operator
+%type <valName> name binary_operator unary_operator observe_operator assume_operator
 
 %type <valInt> size
 %type <valAnnotation> for_annotation class_annotation function_annotation
@@ -599,8 +599,13 @@ hpp
     : HPP double_braces  { push_raw(); $$ = new bi::Raw(new bi::Name("hpp"), pop_raw(), make_loc(@$)); }
     ;
 
+assume_operator
+    : '~'            { $$ = new bi::Name("~"); }
+    | LEFT_QUERY_OP  { $$ = new bi::Name("<-?"); }
+    ;
+
 assume_statement
-    : expression '~' expression ';'  { $$ = new bi::Assume($1, $3, make_loc(@$)); }
+    : expression assume_operator expression ';'  { $$ = new bi::Assume($1, $2, $3, make_loc(@$)); }
     ;
 
 expression_statement

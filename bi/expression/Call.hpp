@@ -25,6 +25,14 @@ public:
   Call(Expression* single, Expression* args, Location* loc = nullptr);
 
   /**
+   * Constructor for call with no arguments..
+   *
+   * @param single Expression indicating the function.
+   * @param loc Location.
+   */
+  Call(Expression* single, Location* loc = nullptr);
+
+  /**
    * Destructor.
    */
   virtual ~Call();

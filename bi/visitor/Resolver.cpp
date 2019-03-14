@@ -407,30 +407,47 @@ bi::Expression* bi::Resolver::modify(OverloadedIdentifier<UnaryOperator>* o) {
 }
 
 bi::Statement* bi::Resolver::modify(Assume* o) {
-  /* replace with equivalent (by definition) code */
-  ///@todo Evaluate left only once
-  Expression* cond = new Call(
-      new Member(o->left->accept(&cloner),
-          new Identifier<Unknown>(new Name("hasValue"), o->loc)),
-      new Parentheses(new EmptyExpression(o->loc), o->loc), o->loc);
-
-  Statement* trueBranch = nullptr;
-  auto observe = new Assign(o->left->accept(&cloner),
-      new Name("~>"), o->right->accept(&cloner), o->loc);
-  if (!yieldTypes.empty()) {
-    trueBranch = new Yield(observe, o->loc);
+  if (*o->name == "<-?") {
+    auto tmp = new LocalVariable(o->right, o->loc);
+    auto ref = new Identifier<Unknown>(tmp->name, o->loc);
+    auto cond = new Query(ref->accept(&cloner), o->loc);
+    auto trueBranch = new ExpressionStatement(
+        new Assign(o->left, new Name("<-"),
+            new Get(ref->accept(&cloner), o->loc), o->loc), o->loc);
+    auto falseBranch = new EmptyStatement(o->loc);
+    auto declare = new ExpressionStatement(tmp, o->loc);
+    auto conditional = new If(cond, trueBranch, falseBranch, o->loc);
+    auto result = new StatementList(declare, conditional, o->loc);
+    return result->accept(this);
   } else {
-    trueBranch = new ExpressionStatement(observe, o->loc);
+    auto tmp = new LocalVariable(o->left, o->loc);
+    auto ref = new Identifier<Unknown>(tmp->name, o->loc);
+    Expression* cond = new Call(
+        new Member(ref->accept(&cloner),
+            new Identifier<Unknown>(new Name("hasValue"), o->loc), o->loc), o->loc);
+
+    Statement* trueBranch = nullptr;
+    auto observe = new Assign(ref->accept(&cloner),
+        new Name("~>"), o->right->accept(&cloner), o->loc);
+    if (!yieldTypes.empty()) {
+      /* in a fiber */
+      trueBranch = new Yield(observe, o->loc);
+    } else {
+      /* not in a fiber */
+      trueBranch = new ExpressionStatement(observe, o->loc);
+    }
+
+    Statement* falseBranch = new ExpressionStatement(
+        new Call(
+            new Member(ref->accept(&cloner),
+                new Identifier<Unknown>(new Name("assume"), o->loc), o->loc),
+            o->right->accept(&cloner), o->loc), o->loc);
+
+    auto declare = new ExpressionStatement(tmp, o->loc);
+    auto conditional = new If(cond, trueBranch, falseBranch, o->loc);
+    auto result = new StatementList(declare, conditional, o->loc);
+    return result->accept(this);
   }
-
-  Statement* falseBranch = new ExpressionStatement(
-      new Call(
-          new Member(o->left,
-              new Identifier<Unknown>(new Name("assume"), o->loc), o->loc),
-          o->right, o->loc), o->loc);
-
-  auto result = new If(cond, trueBranch, falseBranch, o->loc);
-  return result->accept(this);
 }
 
 bi::Statement* bi::Resolver::modify(GlobalVariable* o) {

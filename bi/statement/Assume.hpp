@@ -4,25 +4,27 @@
 #pragma once
 
 #include "bi/statement/Statement.hpp"
+#include "bi/common/Named.hpp"
 #include "bi/common/Couple.hpp"
 
 namespace bi {
 /**
- * Reference to assignment operator.
+ * Statement using `~` or `<-?` operator.
  *
  * @ingroup statement
  */
-class Assume: public Statement, public Couple<Expression> {
+class Assume: public Statement, public Named, public Couple<Expression> {
 public:
   /**
    * Constructor.
    *
    * @param left Left operand.
+   * @param op Operator.
    * @param right Right operand.
    * @param loc Location.
    * @param target Target.
    */
-  Assume(Expression* left, Expression* right, Location* loc = nullptr);
+  Assume(Expression* left, Name* op, Expression* right, Location* loc = nullptr);
 
   /**
    * Destructor.

@@ -17,6 +17,16 @@ bi::LocalVariable::LocalVariable(const Annotation annotation, Name* name,
   assert(value->isEmpty() || args->isEmpty());
 }
 
+bi::LocalVariable::LocalVariable(Expression* value, Location* loc) :
+    Expression(new EmptyType(), loc),
+    Annotated(bi::AUTO),
+    Named(new Name()),
+    Bracketed(new EmptyExpression()),
+    Argumented(new EmptyExpression()),
+    Valued(value) {
+  //
+}
+
 bi::LocalVariable::~LocalVariable() {
   //
 }

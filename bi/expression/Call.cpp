@@ -13,6 +13,13 @@ bi::Call::Call(Expression* single, Expression* args,
   //
 }
 
+bi::Call::Call(Expression* single, Location* loc) :
+    Expression(loc),
+    Single<Expression>(single),
+    Argumented(new EmptyExpression()) {
+  //
+}
+
 bi::Call::~Call() {
   //
 }
