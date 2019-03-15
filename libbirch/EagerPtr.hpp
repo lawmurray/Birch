@@ -13,6 +13,8 @@
 #include <tuple>
 
 namespace bi {
+template<class T> class Optional;
+
 /**
  * Wraps another pointer type to apply lazy deep clone semantics.
  *
@@ -93,10 +95,46 @@ class EagerPtr {
   }
 
   /**
+   * Raw pointer assignment.
+   */
+  EagerPtr<P>& operator=(T* o) {
+    object = o;
+    return *this;
+  }
+
+  /**
+   * Nil assignment.
+   */
+  EagerPtr<P>& operator=(const Nil&) {
+    object = nullptr;
+    return *this;
+  }
+
+  /**
+   * Nullptr assignment.
+   */
+  EagerPtr<P>& operator=(const std::nullptr_t&) {
+    object = nullptr;
+    return *this;
+  }
+
+  /**
+   * Optional assignment.
+   */
+  template<class Q>
+  EagerPtr<P>& operator=(const Optional<EagerPtr<Q>>& o) {
+    if (o.query()) {
+      *this = o.get();
+    } else {
+      *this = nullptr;
+    }
+    return *this;
+  }
+
+  /**
    * Value assignment.
    */
-  template<class U,
-      typename = std::enable_if_t<bi::has_assignment<T,U>::value>>
+  template<class U>
   EagerPtr<P>& operator=(const U& o) {
     *get() = o;
     return *this;
@@ -105,9 +143,8 @@ class EagerPtr {
   /**
    * Value conversion.
    */
-  template<class U,
-      typename = std::enable_if_t<bi::has_conversion<T,U>::value>>
-  operator U() const {
+  template<class U>
+  explicit operator U() const {
     return static_cast<U>(*get());
   }
 
