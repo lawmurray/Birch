@@ -56,11 +56,6 @@ class ParticleFilter < Sampler {
   elapsed:List<Real>; 
   
   /**
-   * At each checkpoint, the ancestry vector.
-   */
-  ancestry:List<Integer[_]>;
-  
-  /**
    * Number of particles.
    */
   nparticles:Integer <- 1;
@@ -115,7 +110,6 @@ class ParticleFilter < Sampler {
     r.clear();
     memory.clear();
     elapsed.clear();
-    ancestry.clear();
   }
 
   /**
@@ -236,7 +230,6 @@ class ParticleFilter < Sampler {
     }
     elapsed.pushBack(toc());
     memory.pushBack(memoryUse());
-    ancestry.pushBack(a);
   }
 
   /**
@@ -270,7 +263,6 @@ class ParticleFilter < Sampler {
     buffer.set("resample", r);
     buffer.set("elapsed", elapsed);
     buffer.set("memory", memory);
-    buffer.set("ancestry", ancestry);
   }
 }
 
