@@ -33,28 +33,33 @@ class ParticleFilter < Sampler {
    * For each checkpoint, the logarithm of the normalizing constant estimate
    * so far.
    */
-  Z:Vector<Real>;
+  Z:List<Real>;
   
   /**
    * For each checkpoint, the effective sample size (ESS).
    */
-  e:Vector<Real>;
+  e:List<Real>;
   
   /**
    * For each checkpoint, was resampling performed?
    */
-  r:Vector<Boolean>;
+  r:List<Boolean>;
   
   /**
    * At each checkpoint, how much memory is in use?
    */
-  memory:Vector<Integer>;
+  memory:List<Integer>;
   
   /**
    * At each checkpoint, what is the elapsed wallclock time?
    */
-  elapsed:Vector<Real>; 
-    
+  elapsed:List<Real>; 
+  
+  /**
+   * At each checkpoint, the ancestry vector.
+   */
+  ancestry:List<Integer[_]>;
+  
   /**
    * Number of particles.
    */
@@ -110,6 +115,7 @@ class ParticleFilter < Sampler {
     r.clear();
     memory.clear();
     elapsed.clear();
+    ancestry.clear();
   }
 
   /**
@@ -121,7 +127,7 @@ class ParticleFilter < Sampler {
     if nparticles == 1 {
       f1:(Model,Real)![nparticles];
       x1:Model[nparticles];
-      parallel for n:Integer in 1..nparticles {
+      parallel for auto n in 1..nparticles {
         f1[n] <- f0;
         x1[n] <- m;
       }
@@ -130,7 +136,7 @@ class ParticleFilter < Sampler {
     } else {
       f1:(Model,Real)![nparticles];
       x1:Model[nparticles];
-      parallel for n:Integer in 1..nparticles {
+      parallel for auto n in 1..nparticles {
         f1[n] <- clone<(Model,Real)!>(f0);
         x1[n] <- m;
       }
@@ -163,7 +169,7 @@ class ParticleFilter < Sampler {
    * Resample particles.
    */
   function resample() {
-    a <- permute_ancestors(ancestors(w));
+    a <- ancestors(w);
     w <- vector(0.0, nparticles);
   }
 
@@ -176,7 +182,7 @@ class ParticleFilter < Sampler {
      * with the same ancestor are contiguous in f after the copy, which is
      * more cache efficient */
     auto f0 <- f;
-    parallel for n:Integer in 1..nparticles {
+    parallel for auto n in 1..nparticles {
       f[n] <- clone<(Model,Real)!>(f0[a[n]]);
     }
   }
@@ -230,6 +236,7 @@ class ParticleFilter < Sampler {
     }
     elapsed.pushBack(toc());
     memory.pushBack(memoryUse());
+    ancestry.pushBack(a);
   }
 
   /**
@@ -263,6 +270,7 @@ class ParticleFilter < Sampler {
     buffer.set("resample", r);
     buffer.set("elapsed", elapsed);
     buffer.set("memory", memory);
+    buffer.set("ancestry", ancestry);
   }
 }
 
