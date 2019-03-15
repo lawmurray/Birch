@@ -123,53 +123,6 @@ void bi::CppPackageGenerator::visit(const Package* o) {
     line("}\n");
     line("");
 
-    /* forward super type declarations */
-    for (auto o : sortedClasses) {
-      if (!o->base->isEmpty() && o->isBound()) {
-        start("template<> ");
-        middle("struct super_type<type::" << o->name);
-        genTemplateArgs(o);
-        finish("> {");
-        in();
-        ++inPointer;
-        line("using type = " << o->base << ';');
-        out();
-        line("};");
-      }
-    }
-
-    /* forward assignment operator declarations */
-    for (auto o : sortedClasses) {
-      if (o->isBound()) {
-        for (auto o1 : o->assignments) {
-          start("template<> ");
-          middle("struct has_assignment<type::" << o->name);
-          genTemplateArgs(o);
-          finish("," << o1 << "> {");
-          in();
-          line("static const bool value = true;");
-          out();
-          line("};");
-        }
-      }
-    }
-
-    /* forward conversion operator declarations */
-    for (auto o : sortedClasses) {
-      if (o->isBound()) {
-        for (auto o1 : o->conversions) {
-          start("template<> ");
-          middle("struct has_conversion<type::" << o->name);
-          genTemplateArgs(o);
-          finish("," << o1 << "> {");
-          in();
-          line("static const bool value = true;");
-          out();
-          line("};");
-        }
-      }
-    }
-
     /* class definitions */
     line("namespace type {");
     for (auto o : sortedClasses) {
