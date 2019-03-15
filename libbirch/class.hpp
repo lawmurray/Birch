@@ -5,47 +5,6 @@
 
 #include "libbirch/SwapContext.hpp"
 
-namespace bi {
-/**
- * The super type of type @p T. Specialised in forward declarations of
- * classes.
- */
-template<class T>
-struct super_type {
-  using type = void;
-};
-template<class T>
-struct super_type<const T> {
-  using type = const typename super_type<T>::type;
-};
-
-/**
- * Does type @p T hs an assignment operator for type @p U?
- */
-template<class T, class U>
-struct has_assignment {
-  static const bool value =
-      has_assignment<typename super_type<T>::type,U>::value;
-};
-template<class U>
-struct has_assignment<void,U> {
-  static const bool value = false;
-};
-
-/**
- * Does type @p T have a conversion operator for type @p U?
- */
-template<class T, class U>
-struct has_conversion {
-  static const bool value =
-      has_conversion<typename super_type<T>::type,U>::value;
-};
-template<class U>
-struct has_conversion<void,U> {
-  static const bool value = false;
-};
-}
-
 /**
  * @def STANDARD_CREATE_FUNCTION
  *

@@ -14,6 +14,8 @@
 #include <tuple>
 
 namespace bi {
+template<class T> class Optional;
+
 /**
  * Wraps another pointer type to apply lazy deep clone semantics.
  *
@@ -114,10 +116,52 @@ public:
   }
 
   /**
+   * Raw pointer assignment.
+   */
+  LazyPtr<P>& operator=(T* o) {
+    object = o;
+    from = currentContext;
+    to = currentContext;
+    return *this;
+  }
+
+  /**
+   * Nil assignment.
+   */
+  LazyPtr<P>& operator=(const Nil&) {
+    object = nullptr;
+    from = nullptr;
+    to = nullptr;
+    return *this;
+  }
+
+  /**
+   * Nullptr assignment.
+   */
+  LazyPtr<P>& operator=(const std::nullptr_t&) {
+    object = nullptr;
+    from = nullptr;
+    to = nullptr;
+    return *this;
+  }
+
+  /**
+   * Optional assignment.
+   */
+  template<class Q>
+  LazyPtr<P>& operator=(const Optional<LazyPtr<Q>>& o) {
+    if (o.query()) {
+      *this = o.get();
+    } else {
+      *this = nullptr;
+    }
+    return *this;
+  }
+
+  /**
    * Value assignment.
    */
-  template<class U,
-      typename = std::enable_if_t<bi::has_assignment<T,U>::value>>
+  template<class U>
   LazyPtr<P>& operator=(const U& o) {
     *get() = o;
     return *this;
@@ -126,9 +170,8 @@ public:
   /**
    * Value conversion.
    */
-  template<class U,
-      typename = std::enable_if_t<bi::has_conversion<T,U>::value>>
-  operator U() const {
+  template<class U>
+  explicit operator U() const {
     return static_cast<U>(*get());
   }
 
