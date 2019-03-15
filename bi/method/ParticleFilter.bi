@@ -244,14 +244,8 @@ class ParticleFilter < Sampler {
 
   function read(buffer:Buffer) {
     super.read(buffer);
-    auto nparticles1 <- buffer.getInteger("nparticles");
-    if nparticles1? {
-      nparticles <- nparticles1!;
-    }
-    auto trigger1 <- buffer.getReal("trigger");
-    if trigger1? {
-      trigger <- trigger1!;
-    }
+    nparticles <-? buffer.getInteger("nparticles");
+    trigger <-? buffer.getReal("trigger");
   }
 
   function write(buffer:Buffer) {

@@ -30,15 +30,9 @@ class Sampler {
   function sample(m:Model) -> (Model, Real);
 
   function read(buffer:Buffer) {
-    auto nsamples1 <- buffer.get("nsamples", nsamples);
-    if nsamples1? {
-      nsamples <- nsamples1!;
-    }
-    ncheckpoints <- buffer.getInteger("ncheckpoints");
-    auto verbose1 <- buffer.get("verbose", verbose);
-    if verbose1? {
-      verbose <- verbose1!;
-    }
+    nsamples <-? buffer.get("nsamples", nsamples);
+    ncheckpoints <-? buffer.get("ncheckpoints", ncheckpoints);
+    verbose <-? buffer.get("verbose", verbose);
   }
   
   function write(buffer:Buffer) {
