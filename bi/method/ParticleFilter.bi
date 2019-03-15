@@ -70,32 +70,32 @@ class ParticleFilter < Sampler {
   function sample(m:Model) -> (Model, Real) {
     /* if a number of checkpoints hasn't been explicitly provided, compute
      * this from the model (may still be unknown by the model, too) */
-    if (!ncheckpoints?) {
+    if !ncheckpoints? {
       ncheckpoints <- m.checkpoints();
     }
 
     reset();
     start(m);
-    if (verbose) {
+    if verbose {
       stderr.print("checkpoints:");
     }
     auto t <- 0;
-    while ((!ncheckpoints? || t < ncheckpoints!) && step()) {
+    while (!ncheckpoints? || t < ncheckpoints!) && step() {
       t <- t + 1;
-      if (verbose) {
+      if verbose {
         stderr.print(" " + t);
       }
     }
-    if (ncheckpoints? && t != ncheckpoints!) {
+    if ncheckpoints? && t != ncheckpoints! {
       error("particles terminated after " + t + " checkpoints, but " + ncheckpoints! + " requested.");
     }
-    if (verbose && !Z.empty()) {
+    if verbose && !Z.empty() {
       stderr.print(", log evidence: " + Z.back() + "\n");
     }
     finish();
       
     w:Real <- 0.0;
-    if (!Z.empty()) {
+    if !Z.empty() {
       w <- Z.back();
     }
     return (x[b], w);
@@ -145,15 +145,15 @@ class ParticleFilter < Sampler {
    * Step particles to the next checkpoint.
    */
   function step() -> Boolean {
-    if (!e.empty()) {
+    if !e.empty() {
       r.pushBack(e.back() < trigger*nparticles);
-      if (r.back()) {
+      if r.back() {
         resample();
         copy();
       }
     }
     auto continue <- propagate();
-    if (continue) {
+    if continue {
       reduce();
     }
     return continue;
@@ -186,7 +186,7 @@ class ParticleFilter < Sampler {
    */
   function propagate() -> Boolean {
     auto continue <- true;
-    parallel for (n:Integer in 1..nparticles) {
+    parallel for auto n in 1..nparticles {
       w1:Real;
       if f[n]? {
         (x[n], w1) <- f[n]!;
@@ -207,31 +207,29 @@ class ParticleFilter < Sampler {
     m:Real <- max(w);
     v:Real;
     
-    for (n:Integer in 1..length(w)) {
+    for auto n in 1..length(w) {
       v <- exp(w[n] - m);
       W <- W + v;
       W2 <- W2 + v*v;
     }
     auto ess <- W*W/W2;
     auto Z <- log(W) + m - log(nparticles);
+    w <- w - Z;  // normalize weights to sum to nparticles
    
     /* effective sample size */
     e.pushBack(ess);
-    if (!(e.back() > 0.0)) {  // > 0.0 as may be nan
+    if !(e.back() > 0.0) {  // > 0.0 as may be nan
       error("particle filter degenerated.");
     }
   
     /* normalizing constant estimate */
-    if (this.Z.empty()) {
+    if this.Z.empty() {
       this.Z.pushBack(Z);
     } else {
       this.Z.pushBack(this.Z.back() + Z);
     }
     elapsed.pushBack(toc());
     memory.pushBack(memoryUse());
-
-	/* normalize weights */
-    w <- w - Z + log(nparticles);
   }
 
   /**
@@ -239,7 +237,7 @@ class ParticleFilter < Sampler {
    */
   function finish() {
     b <- ancestor(w);
-    if (b <= 0) {
+    if b <= 0 {
       error("particle filter degenerated.");
     }
   }
@@ -270,7 +268,7 @@ class ParticleFilter < Sampler {
 
 fiber particle(x:Model) -> (Model, Real) {
   auto f <- x.simulate();
-  while (f?) {
+  while f? {
     yield (x, f!);
   }
 }
