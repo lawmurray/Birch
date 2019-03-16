@@ -844,6 +844,11 @@ void bi::Driver::setup() {
     fs::ofstream(build_dir / "bi" / ".deps" / (internalName + ".gch.Plo"));
   }
 
+  /* update "latest" symlink to point to this build directory */
+  auto symlink_dir = fs::path("build") / "latest";
+  fs::remove(symlink_dir);
+  fs::create_symlink(suffix(), symlink_dir);
+
   /* copy build files into build directory */
   newAutogen = copy_if_newer(find(share_dirs, "autogen.sh"), "autogen.sh");
   fs::permissions("autogen.sh", fs::add_perms | fs::owner_exe);
