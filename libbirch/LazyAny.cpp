@@ -30,11 +30,11 @@ bi::LazyAny::~LazyAny() {
 
 bi::LazyAny* bi::LazyAny::getForward() {
   if (isFrozen()) {
-    LazyAny* forward = this->forward.load(std::memory_order_relaxed);
+    auto forward = this->forward.load(std::memory_order_relaxed);
     if (!forward) {
       SwapClone swapClone(true);
       SwapContext swapContext(context.get());
-      LazyAny* cloned = this->clone();
+      auto cloned = this->clone();
       cloned->incShared();
       if (this->forward.compare_exchange_strong(forward, cloned,
           std::memory_order_relaxed)) {
