@@ -8,6 +8,15 @@ class ArrayValue < Value {
     return values.size();
   }
 
+  fiber walk() -> Buffer {
+    values.walk();
+  }
+
+  function push() -> Buffer {
+    buffer:MemoryBuffer;
+    return buffer;
+  }
+
   function getBooleanVector() -> Boolean[_]? {
     result:Boolean[values.size()];
     auto f <- values.walk();
