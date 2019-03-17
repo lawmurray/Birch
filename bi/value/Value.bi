@@ -1,36 +1,35 @@
 /**
- * Abstract buffer.
- *
- * When reading and writing objects, defers to the `read()` and `write()`
- * member functions, declared in `Object`.
+ * Abstract value.
  */
-class Buffer {
+class Value {
   /**
-   * Get this.
+   * Get a child.
    */
-  function get() -> Buffer;
+  function getChild(name:String) -> Value? {
+    return nil;
+  }
 
   /**
    * Get this as an object.
    */
-  function getObject() -> Buffer? {
-    return get().getObject();
+  function getObject() -> ObjectValue? {
+    return nil;
   }
 
   /**
    * Get this as an array.
    */
-  function getArray() -> Buffer? {
-    return get().getArray();
+  function getArray() -> ArrayValue? {
+    return nil;
   }
   
   /**
-   * If this is an array get its length.
+   * If this is an array, get its length.
    *
    * Return: An optional with a value giving the length if this is an array.
    */
   function getLength() -> Integer? {
-    return get().getLength();
+    return nil;
   }
 
   /**
@@ -39,7 +38,7 @@ class Buffer {
    * Return: An optional with a value if this is of a compatible type.
    */
   function getBoolean() -> Boolean? {
-    return get().getBoolean();
+    return nil;
   }
 
   /**
@@ -48,7 +47,7 @@ class Buffer {
    * Return: An optional with a value if this is of a compatible type.
    */
   function getInteger() -> Integer? {
-    return get().getInteger();
+    return nil;
   }
 
   /**
@@ -57,7 +56,7 @@ class Buffer {
    * Return: An optional with a value if this is of a compatible type.
    */
   function getReal() -> Real? {
-    return get().getReal();
+    return nil;
   }
 
   /**
@@ -66,18 +65,7 @@ class Buffer {
    * Return: An optional with a value if this is of a compatible type.
    */
   function getString() -> String? {
-    return get().getString();
-  }
-  
-  /**
-   * Get this as an object.
-   *
-   * - value: The object into which to read.
-   *
-   * Return: The object.
-   */
-  function getObject(value:Object) -> Object? {
-    return get().getObject(value);
+    return nil;
   }
 
   /**
@@ -87,7 +75,7 @@ class Buffer {
    * of a compatible type.
    */
   function getBooleanVector() -> Boolean[_]? {
-    return get().getBooleanVector();
+    return nil;
   }
 
   /**
@@ -97,7 +85,7 @@ class Buffer {
    * of a compatible type.
    */
   function getIntegerVector() -> Integer[_]? {
-    return get().getIntegerVector();
+    return nil;
   }
 
   /**
@@ -107,7 +95,7 @@ class Buffer {
    * of a compatible type.
    */
   function getRealVector() -> Real[_]? {
-    return get().getRealVector();
+    return nil;
   }
 
   /**
@@ -117,7 +105,7 @@ class Buffer {
    * are themselves arrays of the same length and compatible type.
    */
   function getBooleanMatrix() -> Boolean[_,_]? {
-    return get().getBooleanMatrix();
+    return nil;
   }
 
   /**
@@ -127,7 +115,7 @@ class Buffer {
    * are themselves arrays of the same length and compatible type.
    */
   function getIntegerMatrix() -> Integer[_,_]? {
-    return get().getIntegerMatrix();
+    return nil;
   }
 
   /**
@@ -137,14 +125,9 @@ class Buffer {
    * are themselves arrays of the same length and compatible type.
    */
   function getRealMatrix() -> Real[_,_]? {
-    return get().getRealMatrix();
+    return nil;
   }
-
-  /**
-   * Get a child.
-   */
-  function getChild(name:String) -> Buffer?;
-
+  
   /**
    * Get a child as an object.
    *
@@ -153,10 +136,10 @@ class Buffer {
    * Return: An optional with a value if the given entry exists and is of a
    * compatible type.
    */
-  function getObject(name:String) -> Buffer? {
-    buffer:Buffer? <- getChild(name);
-    if (buffer?) {
-      return buffer!.getObject();
+  function getObject(name:String) -> ObjectValue? {
+    auto child <- getChild(name);
+    if child? {
+      return child!.getObject();
     } else {
       return nil;
     }
@@ -170,10 +153,10 @@ class Buffer {
    * Return: An optional with a value if the given entry exists and is of a
    * compatible type.
    */
-  function getArray(name:String) -> Buffer? {
-    buffer:Buffer? <- getChild(name);
-    if (buffer?) {
-      return buffer!.getArray();
+  function getArray(name:String) -> ArrayValue? {
+        auto child <- getChild(name);
+    if child? {
+      return child!.getArray();
     } else {
       return nil;
     }
@@ -188,9 +171,9 @@ class Buffer {
    * is an array.
    */
   function getLength(name:String) -> Integer? {
-    buffer:Buffer? <- getChild(name);
-    if (buffer?) {
-      return buffer!.getLength();
+    auto child <- getChild(name);
+    if child? {
+      return child!.getLength();
     } else {
       return nil;
     }
@@ -205,9 +188,9 @@ class Buffer {
    * compatible type.
    */
   function getBoolean(name:String) -> Boolean? {
-    buffer:Buffer? <- getChild(name);
-    if (buffer?) {
-      return buffer!.getBoolean();
+    auto child <- getChild(name);
+    if child? {
+      return child!.getBoolean();
     } else {
       return nil;
     }
@@ -222,9 +205,9 @@ class Buffer {
    * compatible type.
    */
   function getInteger(name:String) -> Integer? {
-    buffer:Buffer? <- getChild(name);
-    if (buffer?) {
-      return buffer!.getInteger();
+    auto child <- getChild(name);
+    if child? {
+      return child!.getInteger();
     } else {
       return nil;
     }
@@ -239,9 +222,9 @@ class Buffer {
    * compatible type.
    */
   function getReal(name:String) -> Real? {
-    buffer:Buffer? <- getChild(name);
-    if (buffer?) {
-      return buffer!.getReal();
+    auto child <- getChild(name);
+    if child? {
+      return child!.getReal();
     } else {
       return nil;
     }
@@ -256,9 +239,9 @@ class Buffer {
    * compatible type.
    */
   function getString(name:String) -> String? {
-    buffer:Buffer? <- getChild(name);
-    if (buffer?) {
-      return buffer!.getString();
+    auto child <- getChild(name);
+    if child? {
+      return child!.getString();
     } else {
       return nil;
     }
@@ -273,9 +256,9 @@ class Buffer {
    * Return: An optional with a value if the given entry exists.
    */
   function getObject(name:String, value:Object) -> Object? {
-    buffer:Buffer? <- getChild(name);
-    if (buffer?) {
-      return buffer!.getObject(value);
+    auto child <- getChild(name);
+    if child? {
+      return child!.getObject(value);
     } else {
       return nil;
     }
@@ -291,9 +274,9 @@ class Buffer {
    * of a compatible type.
    */
   function getBooleanVector(name:String) -> Boolean[_]? {
-    buffer:Buffer? <- getChild(name);
-    if (buffer?) {
-      return buffer!.getBooleanVector();
+    auto child <- getChild(name);
+    if child? {
+      return child!.getBooleanVector();
     } else {
       return nil;
     }
@@ -308,9 +291,9 @@ class Buffer {
    * of a compatible type.
    */
   function getIntegerVector(name:String) -> Integer[_]? {
-    buffer:Buffer? <- getChild(name);
-    if (buffer?) {
-      return buffer!.getIntegerVector();
+    auto child <- getChild(name);
+    if child? {
+      return child!.getIntegerVector();
     } else {
       return nil;
     }
@@ -325,9 +308,9 @@ class Buffer {
    * of a compatible type.
    */
   function getRealVector(name:String) -> Real[_]? {
-    buffer:Buffer? <- getChild(name);
-    if (buffer?) {
-      return buffer!.getRealVector();
+    auto child <- getChild(name);
+    if child? {
+      return child!.getRealVector();
     } else {
       return nil;
     }
@@ -342,9 +325,9 @@ class Buffer {
    * are themselves arrays of the same length and compatible type.
    */
   function getBooleanMatrix(name:String) -> Boolean[_,_]? {
-    buffer:Buffer? <- getChild(name);
-    if (buffer?) {
-      return buffer!.getBooleanMatrix();
+    auto child <- getChild(name);
+    if child? {
+      return child!.getBooleanMatrix();
     } else {
       return nil;
     }
@@ -359,9 +342,9 @@ class Buffer {
    * are themselves arrays of the same length and compatible type.
    */
   function getIntegerMatrix(name:String) -> Integer[_,_]? {
-    buffer:Buffer? <- getChild(name);
-    if (buffer?) {
-      return buffer!.getIntegerMatrix();
+    auto child <- getChild(name);
+    if child? {
+      return child!.getIntegerMatrix();
     } else {
       return nil;
     }
@@ -376,14 +359,31 @@ class Buffer {
    * are themselves arrays of the same length and compatible type.
    */
   function getRealMatrix(name:String) -> Real[_,_]? {
-    buffer:Buffer? <- getChild(name);
-    if (buffer?) {
-      return buffer!.getRealMatrix();
+    auto child <- getChild(name);
+    if child? {
+      return child!.getRealMatrix();
     } else {
       return nil;
     }
   }
 
+  /**
+   * Get this as an object.
+   *
+   * - value: The object.
+   *
+   * Return: The object.
+   */
+  function get(value:Object?) -> Object? {
+    if value? {
+      auto o <- getObject();
+      if o? {
+        value!.read(o!);
+      }
+    }
+    return value;
+  }
+  
   /**
    * Get this as a Boolean.
    *
@@ -426,17 +426,6 @@ class Buffer {
    */
   function get(value:String?) -> String? {
     return getString();
-  }
-  
-  /**
-   * Get this as an object.
-   *
-   * - value: The object.
-   *
-   * Return: The object.
-   */
-  function get(value:Object) -> Object? {
-    return getObject(value);
   }
 
   /**
@@ -512,6 +501,23 @@ class Buffer {
   }
 
   /**
+   * Get an object.
+   *
+   * - name: Name of the child.
+   * - value: The object.
+   *
+   * Return: The object.
+   */
+  function get(name:String, value:Object?) -> Object? {
+    auto child <- getChild(name);
+    if child? {
+      return child.getObject(value);
+    } else {
+      return value;
+    }
+  }
+
+  /**
    * Get a Boolean.
    *
    * - name: Name of the child.
@@ -561,18 +567,6 @@ class Buffer {
    */
   function get(name:String, value:String?) -> String? {
     return getString(name);
-  }
-
-  /**
-   * Get an object.
-   *
-   * - name: Name of the child.
-   * - value: The object.
-   *
-   * Return: The object.
-   */
-  function get(name:String, value:Object) -> Object? {
-    return getObject(name, value);
   }
 
   /**
@@ -652,136 +646,6 @@ class Buffer {
   function get(name:String, value:Real[_,_]?) -> Real[_,_]? {
     return getRealMatrix(name);
   }
-  
-  /**
-   * Set this (to nil).
-   */
-  function set() -> Buffer;
-  
-  /**
-   * Set this as an object.
-   */
-  function setObject() {
-    set().setObject();
-  }
-  
-  /**
-   * Set this as an array.
-   */
-  function setArray() {
-    set().setArray();
-  }
-
-  /**
-   * Set this as nil.
-   */
-  function setNil() {
-    set().setNil();
-  }
-
-  /**
-   * Set this as a Boolean.
-   *
-   * - value: Value.
-   */
-  function setBoolean(value:Boolean?) {
-    set().setBoolean(value);
-  }
-
-  /**
-   * Set this as an integer.
-   *
-   * - value: Value.
-   */
-  function setInteger(value:Integer?) {
-    set().setInteger(value);
-  }
-
-  /**
-   * Set this as a real.
-   *
-   * - value: Value.
-   */
-  function setReal(value:Real?) {
-    set().setReal(value);
-  }
-
-  /**
-   * Set this as a string.
-   *
-   * - value: Value.
-   */
-  function setString(value:String?) {
-    set().setString(value);
-  }
-
-  /**
-   * Set this as an object.
-   *
-   * - value: Value.
-   */
-  function setObject(value:Object?) {
-    set().setObject(value);
-  }
-
-  /**
-   * Set this as a vector of Booleans.
-   *
-   * - value: Value.
-   */
-  function setBooleanVector(value:Boolean[_]?) {
-    set().setBooleanVector(value);
-  }
-
-  /**
-   * Set this as a vector of integers.
-   *
-   * - value: Value.
-   */
-  function setIntegerVector(value:Integer[_]?) {
-    set().setIntegerVector(value);
-  }
-
-  /**
-   * Set this as a vector of reals.
-   *
-   * - value: Value.
-   */
-  function setRealVector(value:Real[_]?) {
-    set().setRealVector(value);
-  }
-
-  /**
-   * Set this as matrix of Booleans.
-   *
-   * - value: Value.
-   */
-  function setBooleanMatrix(value:Boolean[_,_]?) {
-    set().setBooleanMatrix(value);
-  }
-
-  /**
-   * Set this as a matrix of integers.
-   *
-   * - value: Value.
-   */
-  function setIntegerMatrix(value:Integer[_,_]?) {
-    set().setIntegerMatrix(value);
-  }
-
-  /**
-   * Set this as a matrix of reals.
-   *
-   * - value: Value.
-   */
-  function setRealMatrix(value:Real[_,_]?) {
-    set().setRealMatrix(value);
-  }
-
-  /**
-   * Set child (to nil).
-   */
-  function setChild(name:String) -> Buffer;
 
   /**
    * Set child as an object.
@@ -789,7 +653,7 @@ class Buffer {
    * - name: Name of the child.
    */
   function setObject(name:String) {
-    setChild(name).setObject();
+    assert false;
   }
   
   /**
@@ -798,7 +662,7 @@ class Buffer {
    * - name: Name of the child.
    */
   function setArray(name:String) {
-    setChild(name).setArray();
+    assert false;
   }
 
   /**
@@ -807,7 +671,7 @@ class Buffer {
    * - name: Name of the child.
    */
   function setNil(name:String) {
-    setChild(name).setNil();
+    assert false;
   }
 
   /**
@@ -817,7 +681,7 @@ class Buffer {
    * - value: Value.
    */
   function setBoolean(name:String, value:Boolean?) {
-    setChild(name).setBoolean(value);
+    assert false;
   }
 
   /**
@@ -827,7 +691,7 @@ class Buffer {
    * - value: Value.
    */
   function setInteger(name:String, value:Integer?) {
-    setChild(name).setInteger(value);
+    assert false;
   }
 
   /**
@@ -837,7 +701,7 @@ class Buffer {
    * - value: Value.
    */
   function setReal(name:String, value:Real?) {
-    setChild(name).setReal(value);
+    assert false;
   }
 
   /**
@@ -847,7 +711,7 @@ class Buffer {
    * - value: Value.
    */
   function setString(name:String, value:String?) {
-    setChild(name).setString(value);
+    assert false;
   }
 
   /**
@@ -857,7 +721,7 @@ class Buffer {
    * - value: Value.
    */
   function setObject(name:String, value:Object?) {
-    setChild(name).setObject(value);
+    assert false;
   }
 
   /**
@@ -867,7 +731,7 @@ class Buffer {
    * - value: Value.
    */
   function setBooleanVector(name:String, value:Boolean[_]?) {
-    setChild(name).setBooleanVector(value);
+    assert false;
   }
 
   /**
@@ -877,7 +741,7 @@ class Buffer {
    * - value: Value.
    */
   function setIntegerVector(name:String, value:Integer[_]?) {
-    setChild(name).setIntegerVector(value);
+    assert false;
   }
 
   /**
@@ -887,7 +751,7 @@ class Buffer {
    * - value: Value.
    */
   function setRealVector(name:String, value:Real[_]?) {
-    setChild(name).setRealVector(value);  
+    assert false;
   }
 
   /**
@@ -897,7 +761,7 @@ class Buffer {
    * - value: Value.
    */
   function setBooleanMatrix(name:String, value:Boolean[_,_]?) {
-    setChild(name).setBooleanMatrix(value);  
+    assert false;
   }
 
   /**
@@ -907,7 +771,7 @@ class Buffer {
    * - value: Value.
    */
   function setIntegerMatrix(name:String, value:Integer[_,_]?) {
-    setChild(name).setIntegerMatrix(value);  
+    assert false;
   }
 
   /**
@@ -917,106 +781,7 @@ class Buffer {
    * - value: Value.
    */
   function setRealMatrix(name:String, value:Real[_,_]?) {
-    setChild(name).setRealMatrix(value);  
-  }
-  
-  /**
-   * Set this as a Boolean.
-   *
-   * - value: Value.
-   */
-  function set(value:Boolean?) {
-    setBoolean(value);
-  }
-
-  /**
-   * Set this as an integer.
-   *
-   * - value: Value.
-   */
-  function set(value:Integer?) {
-    setInteger(value);
-  }
-
-  /**
-   * Set this as a real.
-   *
-   * - value: Value.
-   */
-  function set(value:Real?) {
-    setReal(value);
-  }
-
-  /**
-   * Set this as a string.
-   *
-   * - value: Value.
-   */
-  function set(value:String?) {
-    setString(value);
-  }
-  
-  /**
-   * Write as an object.
-   *
-   * - o: The object.
-   */
-  function set(value:Object?) {
-    setObject(value);
-  }
-
-  /**
-   * Set this as a vector of Booleans.
-   *
-   * - value: Value.
-   */
-  function set(value:Boolean[_]?) {
-    setBooleanVector(value);
-  }
-
-  /**
-   * Set this as a vector of integers.
-   *
-   * - value: Value.
-   */
-  function set(value:Integer[_]?) {
-    setIntegerVector(value);
-  }
-
-  /**
-   * Set this as a vector of reals.
-   *
-   * - value: Value.
-   */
-  function set(value:Real[_]?) {
-    setRealVector(value);
-  }
-
-  /**
-   * Set this as matrix of Booleans.
-   *
-   * - value: Value.
-   */
-  function set(value:Boolean[_,_]?) {
-    setBooleanMatrix(value);
-  }
-
-  /**
-   * Set this as a matrix of integers.
-   *
-   * - value: Value.
-   */
-  function set(value:Integer[_,_]?) {
-    setIntegerMatrix(value);
-  }
-
-  /**
-   * Set this as a matrix of reals.
-   *
-   * - value: Value.
-   */
-  function set(value:Real[_,_]?) {
-    setRealMatrix(value);
+    assert false;
   }
 
   /**
@@ -1132,31 +897,31 @@ class Buffer {
   /**
    * Iterate through the elements of an array.
    *
-   * Yields: buffers for each element in turn.
+   * Yields: Values for each element in turn.
    */
-  fiber walk() -> Buffer {
-    get().walk();
+  fiber walk() -> Value {
+    assert false;
   }
 
   /**
    * Iterate through the elements of an array.
    *
-   * Yields: buffers for each element in turn.
+   * Yields: Values for each element in turn.
    */
-  fiber walk(name:String) -> Buffer {
-    auto buffer <- getChild(name);
-    if (buffer?) {
-      buffer!.walk();
+  fiber walk(name:String) -> Value {
+    auto child <- getChild(name);
+    if child? {
+      child!.walk();
     }
   }
   
   /**
    * Push a new element onto the end of an array.
    *
-   * Returns: a buffer for modifying the new element.
+   * Returns: a Value for modifying the new element.
    */
-  function push() -> Buffer {
-    return get().push();
+  function push() -> Value {
+    assert false;
   }
   
   /*
