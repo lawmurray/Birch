@@ -72,15 +72,14 @@ public:
   LazyMemo* getParent() const;
 
   /**
-   * Shallow mapping of an object that may not yet have been cloned,
-   * cloning and forwarding it if necessary.
+   * Map an object that may not yet have been cloned, cloning it if
+   * necessary.
    */
   LazyAny* get(LazyAny* o, LazyMemo* from);
 
   /**
-   * Shallow mapping of an object that may not yet have been cloned,
-   * without cloning it. This can be used as an optimization for read-only
-   * access.
+   * Map an object that may not yet have been cloned, without cloning it.
+   * This is used as an optimization for read-only access.
    */
   LazyAny* pull(LazyAny* o, LazyMemo* from);
 

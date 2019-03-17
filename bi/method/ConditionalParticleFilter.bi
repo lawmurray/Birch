@@ -6,46 +6,36 @@ class ConditionalParticleFilter < ParticleFilter {
   /**
    * Conditioned path, drawn from previous iteration.
    */
-  x0:List<Model>;
-  
-  /**
-   * Conditioned path weights, drawn from previous iteration.
-   */
-  w0:List<Real>;
-  
+  fN:List<(Model,Real)!>;
+   
   /**
    * All paths, in current iteration.
    */
-  X:List<Model>[_];
-
-  /**
-   * All weights, in current iteration.
-   */
-  W:List<Real>[_];
+  F:List<(Model,Real)!>[_];
    
   function start(m:Model) {
     super.start(m);
-    X1:List<Model>[nparticles];
-    W1:List<Real>[nparticles];
-    X <- X1;
-    W <- W1;
+    F1:List<(Model,Real)!>[nparticles];
+    F <- F1;
   }
 
+  /**
+   * Resample particles.
+   */
   function resample() {
-    super.resample();
-    ///@todo Do this properly with conditional distribution for resampler
-    if !x0.empty() {
-      a[nparticles] <- nparticles;
+    if fN.empty() {
+      a <- multinomial_ancestors(w);
+    } else {
+      a <- multinomial_conditional_ancestors(w);
     }
+    w <- vector(0.0, nparticles);
   }
   
   function copy() {
     super.copy();
-    auto X0 <- X;
-    auto W0 <- W;
-    for n:Integer in 1..nparticles {
-      X[n] <- clone<List<Model>>(X0[a[n]]);
-      W[n] <- clone<List<Real>>(W0[a[n]]);
+    auto F1 <- F;
+    parallel for auto n in 1..nparticles {
+      F[n] <- clone<List<(Model,Real)!>>(F1[a[n]]);
     }
   }
 
@@ -53,23 +43,21 @@ class ConditionalParticleFilter < ParticleFilter {
     auto cont <- true;
     auto N <- nparticles;
     
-    if !x0.empty() {
+    if !fN.empty() {
       /* condition on the given path */
-      x[N] <- x0.front();
-      w[N] <- w[N] + w0.front();
-      X[N].pushBack(x0.front());
-      W[N].pushBack(w0.front());
-      x0.popFront();
-      w0.popFront();
+      w1:Real;
+      (x[N], w1) <- fN.front()!;
+      F[N].pushBack(fN.front());
+      w[N] <- w[N] + w1;
       N <- N - 1;
+      fN.popFront();
     }
-    parallel for (n:Integer in 1..N) {
+    parallel for auto n in 1..N {
       w1:Real;
       if f[n]? {
         (x[n], w1) <- f[n]!;
+        F[n].pushBack(clone<(Model,Real)!>(f[n]));
         w[n] <- w[n] + w1;
-        X[n].pushBack(x[n]);
-        W[n].pushBack(w1);
       } else {
         cont <- false;      
       }
@@ -79,7 +67,6 @@ class ConditionalParticleFilter < ParticleFilter {
 
   function finish() {
     super.finish();
-    x0 <- X[b];
-    w0 <- W[b];
+    fN <- F[b];
   }
 }

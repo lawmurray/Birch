@@ -133,7 +133,7 @@ function simulate_categorical(ρ:Real[_], Z:Real) -> Integer {
  * - n: Number of trials.
  * - ρ: Category probabilities. These should sum to one.
  *
- * This uses an O(N) implementation based on:
+ * This uses an $\mathcal{O}(N)$ implementation based on:
  *
  * Bentley, J. L. and J. B. Saxe (1979). Generating sorted lists of random
  * numbers. Technical Report 2450, Carnegie Mellon University, Computer
@@ -162,7 +162,7 @@ function simulate_multinomial(n:Integer, ρ:Real[_]) -> Integer[_] {
  * - ρ: Unnormalized category probabilities.
  * - Z: Sum of the unnormalized category probabilities.
  *
- * This uses an O(N) implementation based on:
+ * This uses an $\mathcal{O}(N)$ implementation based on:
  *
  * Bentley, J. L. and J. B. Saxe (1979). Generating sorted lists of random
  * numbers. Technical Report 2450, Carnegie Mellon University, Computer
@@ -180,18 +180,18 @@ function simulate_multinomial(n:Integer, ρ:Real[_], Z:Real) -> Integer[_] {
   u:Real;
   x:Integer[D];
     
-  while (i > 0) {
+  while i > 0 {
     u <- simulate_uniform(0.0, 1.0);
     lnMax <- lnMax + log(u)/i;
     u <- Z*exp(lnMax);
-    while (u < Z - R) {
+    while u < Z - R {
       j <- j - 1;
       R <- R + ρ[j];
     }
     x[j] <- x[j] + 1;
     i <- i - 1;
   }
-  while (j > 1) {
+  while j > 1 {
     j <- j - 1;
     x[j] <- 0;
   }

@@ -194,9 +194,14 @@
       "bi/method/ParticleFilter.bi",
       "bi/method/ParticleMarginalMetropolisHastings.bi",
       "bi/method/Sampler.bi",
+      "bi/model/HiddenMarkovModel.bi",
+      "bi/model/HiddenStarModel.bi",
       "bi/model/Model.bi",
       "bi/model/MarkovModel.bi",
+      "bi/model/ObservedModel.bi",
+      "bi/model/ParameterModel.bi",
       "bi/model/StarModel.bi",
+      "bi/model/StateModel.bi",
       "bi/model/StateSpaceModel.bi",
       "bi/parser/JSONParser.bi",
       "bi/parser/JSONParser.cpp",
@@ -326,12 +331,14 @@
       "README.md",
       "make_parsers.sh",
       "docs/figs/make_figs.sh",
+      "docs/figs/HiddenMarkovModel.dot",
+      "docs/figs/HiddenMarkovModel.svg",
+      "docs/figs/HiddenStarModel.dot",
+      "docs/figs/HiddenStarModel.svg",
       "docs/figs/MarkovModel.dot",
       "docs/figs/MarkovModel.svg",
       "docs/figs/StarModel.dot",
-      "docs/figs/StarModel.svg",
-      "docs/figs/StateSpaceModel.dot",
-      "docs/figs/StateSpaceModel.svg"
+      "docs/figs/StarModel.svg"
     ]
   },
   "require": {

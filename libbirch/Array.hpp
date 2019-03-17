@@ -673,10 +673,22 @@ private:
     auto begin2 = begin();
     auto end2 = begin2 + size();
     if (inside(begin1, end1, begin2)) {
-      std::copy_backward(begin1, end1, end2);
+      /* copy backward */
+      while (begin1 != end1) {
+        --end1;
+        --end2;
+        *end2 = static_cast<T>(*end1);
+      }
     } else {
-      std::copy(begin1, end1, begin2);
+      /* copy forward */
+      while (begin1 != end1) {
+        *begin2 = static_cast<T>(*begin1);
+        ++begin1;
+        ++begin2;
+      }
     }
+    // ^ std::copy_backward and std::copy could be used here, but explicit
+    //   cast required when Shared<T> on left and some other U on right
   }
 
   void assign(const typename sequence_type<T,F::count()>::type& o) {

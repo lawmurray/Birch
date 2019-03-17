@@ -1,5 +1,6 @@
 #!/bin/sh
 
 dot -Tsvg:cairo MarkovModel.dot > MarkovModel.svg
-dot -Tsvg:cairo StateSpaceModel.dot > StateSpaceModel.svg
+dot -Tsvg:cairo HiddenMarkovModel.dot > HiddenMarkovModel.svg
 dot -Tsvg:cairo StarModel.dot > StarModel.svg
+dot -Tsvg:cairo HiddenStarModel.dot > HiddenStarModel.svg

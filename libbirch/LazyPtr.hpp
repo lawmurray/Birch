@@ -14,6 +14,8 @@
 #include <tuple>
 
 namespace libbirch {
+template<class T> class Optional;
+
 /**
  * Wraps another pointer type to apply lazy deep clone semantics.
  *
@@ -61,14 +63,17 @@ public:
    */
   LazyPtr(const LazyPtr<P>& o) {
     if (cloneUnderway) {
-      if (o.object && !currentContext->hasAncestor(o.to.get())) {
-        *this = o.clone();
+      auto context = o.to.get();
+      if (o.object && currentContext != context &&
+          !currentContext->hasAncestor(context)) {
+        object = static_cast<T*>(context->get(o.object.get(), o.from.get()));
+        from = currentContext;
       } else {
         object = o.object;
         from = o.from;
-        to = currentContext;
       }
-      assert(!o.object || object);
+      //to = currentContext;
+      // ^ default constructor of ContextPtr has set this already
     } else {
       object = o.object;
       from = o.from;
@@ -114,10 +119,52 @@ public:
   }
 
   /**
+   * Raw pointer assignment.
+   */
+  LazyPtr<P>& operator=(T* o) {
+    object = o;
+    from = currentContext;
+    to = currentContext;
+    return *this;
+  }
+
+  /**
+   * Nil assignment.
+   */
+  LazyPtr<P>& operator=(const Nil&) {
+    object = nullptr;
+    from = nullptr;
+    to = nullptr;
+    return *this;
+  }
+
+  /**
+   * Nullptr assignment.
+   */
+  LazyPtr<P>& operator=(const std::nullptr_t&) {
+    object = nullptr;
+    from = nullptr;
+    to = nullptr;
+    return *this;
+  }
+
+  /**
+   * Optional assignment.
+   */
+  template<class Q>
+  LazyPtr<P>& operator=(const Optional<LazyPtr<Q>>& o) {
+    if (o.query()) {
+      *this = o.get();
+    } else {
+      *this = nullptr;
+    }
+    return *this;
+  }
+
+  /**
    * Value assignment.
    */
-  template<class U,
-      typename = std::enable_if_t<libbirch::has_assignment<T,U>::value>>
+  template<class U>
   LazyPtr<P>& operator=(const U& o) {
     *get() = o;
     return *this;
@@ -126,9 +173,8 @@ public:
   /**
    * Value conversion.
    */
-  template<class U,
-      typename = std::enable_if_t<libbirch::has_conversion<T,U>::value>>
-  operator U() const {
+  template<class U>
+  explicit operator U() const {
     return static_cast<U>(*get());
   }
 
@@ -166,16 +212,17 @@ public:
    */
   const T* pull() {
     if (object) {
-      object = static_cast<T*>(to->pull(object.get(), from.get())->pullForward());
-      if (object->getContext() == to.get()) {
+      auto pulled = to->pull(object.get(), from.get());
+      if (pulled->getContext() == to.get()) {
+        object = static_cast<T*>(pulled->pullForward());
         from = to.get();
       } else {
         /* copy has been omitted for this access as it is read only, but on
          * the next access we will need to check whether a copy has happened
          * elsewhere in the meantime */
+        object = static_cast<T*>(pulled);
         from = to->getParent();
       }
-      assert(object);
     }
     return object.get();
   }

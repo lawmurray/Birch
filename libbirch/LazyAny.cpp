@@ -30,11 +30,11 @@ libbirch::LazyAny::~LazyAny() {
 
 libbirch::LazyAny* libbirch::LazyAny::getForward() {
   if (isFrozen()) {
-    LazyAny* forward = this->forward.load(std::memory_order_relaxed);
+    auto forward = this->forward.load(std::memory_order_relaxed);
     if (!forward) {
       SwapClone swapClone(true);
       SwapContext swapContext(context.get());
-      LazyAny* cloned = this->clone_();
+      auto cloned = this->clone_();
       cloned->incShared();
       if (this->forward.compare_exchange_strong(forward, cloned,
           std::memory_order_relaxed)) {

@@ -33,28 +33,28 @@ class ParticleFilter < Sampler {
    * For each checkpoint, the logarithm of the normalizing constant estimate
    * so far.
    */
-  Z:Vector<Real>;
+  Z:List<Real>;
   
   /**
    * For each checkpoint, the effective sample size (ESS).
    */
-  e:Vector<Real>;
+  e:List<Real>;
   
   /**
    * For each checkpoint, was resampling performed?
    */
-  r:Vector<Boolean>;
+  r:List<Boolean>;
   
   /**
    * At each checkpoint, how much memory is in use?
    */
-  memory:Vector<Integer>;
+  memory:List<Integer>;
   
   /**
    * At each checkpoint, what is the elapsed wallclock time?
    */
-  elapsed:Vector<Real>; 
-    
+  elapsed:List<Real>; 
+  
   /**
    * Number of particles.
    */
@@ -70,32 +70,32 @@ class ParticleFilter < Sampler {
   function sample(m:Model) -> (Model, Real) {
     /* if a number of checkpoints hasn't been explicitly provided, compute
      * this from the model (may still be unknown by the model, too) */
-    if (!ncheckpoints?) {
+    if !ncheckpoints? {
       ncheckpoints <- m.checkpoints();
     }
 
     reset();
     start(m);
-    if (verbose) {
+    if verbose {
       stderr.print("checkpoints:");
     }
     auto t <- 0;
-    while ((!ncheckpoints? || t < ncheckpoints!) && step()) {
+    while (!ncheckpoints? || t < ncheckpoints!) && step() {
       t <- t + 1;
-      if (verbose) {
+      if verbose {
         stderr.print(" " + t);
       }
     }
-    if (ncheckpoints? && t != ncheckpoints!) {
+    if ncheckpoints? && t != ncheckpoints! {
       error("particles terminated after " + t + " checkpoints, but " + ncheckpoints! + " requested.");
     }
-    if (verbose && !Z.empty()) {
+    if verbose && !Z.empty() {
       stderr.print(", log evidence: " + Z.back() + "\n");
     }
     finish();
       
     w:Real <- 0.0;
-    if (!Z.empty()) {
+    if !Z.empty() {
       w <- Z.back();
     }
     return (x[b], w);
@@ -121,7 +121,7 @@ class ParticleFilter < Sampler {
     if nparticles == 1 {
       f1:(Model,Real)![nparticles];
       x1:Model[nparticles];
-      parallel for n:Integer in 1..nparticles {
+      parallel for auto n in 1..nparticles {
         f1[n] <- f0;
         x1[n] <- m;
       }
@@ -130,7 +130,7 @@ class ParticleFilter < Sampler {
     } else {
       f1:(Model,Real)![nparticles];
       x1:Model[nparticles];
-      parallel for n:Integer in 1..nparticles {
+      parallel for auto n in 1..nparticles {
         f1[n] <- clone<(Model,Real)!>(f0);
         x1[n] <- m;
       }
@@ -145,9 +145,9 @@ class ParticleFilter < Sampler {
    * Step particles to the next checkpoint.
    */
   function step() -> Boolean {
-    if (!e.empty()) {
+    if !e.empty() {
       r.pushBack(e.back() < trigger*nparticles);
-      if (r.back()) {
+      if r.back() {
         resample();
         copy();
       }
@@ -163,7 +163,7 @@ class ParticleFilter < Sampler {
    * Resample particles.
    */
   function resample() {
-    a <- permute_ancestors(ancestors(w));
+    a <- ancestors(w);
     w <- vector(0.0, nparticles);
   }
 
@@ -176,7 +176,7 @@ class ParticleFilter < Sampler {
      * with the same ancestor are contiguous in f after the copy, which is
      * more cache efficient */
     auto f0 <- f;
-    parallel for n:Integer in 1..nparticles {
+    parallel for auto n in 1..nparticles {
       f[n] <- clone<(Model,Real)!>(f0[a[n]]);
     }
   }
@@ -186,7 +186,7 @@ class ParticleFilter < Sampler {
    */
   function propagate() -> Boolean {
     auto cont <- true;
-    parallel for (n:Integer in 1..nparticles) {
+    parallel for auto n in 1..nparticles {
       w1:Real;
       if f[n]? {
         (x[n], w1) <- f[n]!;
@@ -207,31 +207,29 @@ class ParticleFilter < Sampler {
     m:Real <- max(w);
     v:Real;
     
-    for (n:Integer in 1..length(w)) {
+    for auto n in 1..length(w) {
       v <- exp(w[n] - m);
       W <- W + v;
       W2 <- W2 + v*v;
     }
     auto ess <- W*W/W2;
     auto Z <- log(W) + m - log(nparticles);
+    w <- w - Z;  // normalize weights to sum to nparticles
    
     /* effective sample size */
     e.pushBack(ess);
-    if (!(e.back() > 0.0)) {  // > 0.0 as may be nan
+    if !(e.back() > 0.0) {  // > 0.0 as may be nan
       error("particle filter degenerated.");
     }
   
     /* normalizing constant estimate */
-    if (this.Z.empty()) {
+    if this.Z.empty() {
       this.Z.pushBack(Z);
     } else {
       this.Z.pushBack(this.Z.back() + Z);
     }
     elapsed.pushBack(toc());
     memory.pushBack(memoryUse());
-
-	/* normalize weights */
-    w <- w - Z + log(nparticles);
   }
 
   /**
@@ -239,21 +237,15 @@ class ParticleFilter < Sampler {
    */
   function finish() {
     b <- ancestor(w);
-    if (b <= 0) {
+    if b <= 0 {
       error("particle filter degenerated.");
     }
   }
 
   function read(buffer:Buffer) {
     super.read(buffer);
-    auto nparticles1 <- buffer.getInteger("nparticles");
-    if nparticles1? {
-      nparticles <- nparticles1!;
-    }
-    auto trigger1 <- buffer.getReal("trigger");
-    if trigger1? {
-      trigger <- trigger1!;
-    }
+    nparticles <-? buffer.getInteger("nparticles");
+    trigger <-? buffer.getReal("trigger");
   }
 
   function write(buffer:Buffer) {
@@ -270,7 +262,7 @@ class ParticleFilter < Sampler {
 
 fiber particle(x:Model) -> (Model, Real) {
   auto f <- x.simulate();
-  while (f?) {
+  while f? {
     yield (x, f!);
   }
 }
