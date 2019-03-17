@@ -117,7 +117,7 @@ public:
   virtual Expression* modify(OverloadedIdentifier<BinaryOperator>* o);
   virtual Expression* modify(OverloadedIdentifier<UnaryOperator>* o);
 
-  virtual Statement* modify(Assignment* o);
+  virtual Statement* modify(Assume* o);
   virtual Statement* modify(GlobalVariable* o);
   virtual Statement* modify(MemberVariable* o);
   virtual Statement* modify(Function* o);

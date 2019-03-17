@@ -49,14 +49,16 @@ void bi::CppPackageGenerator::visit(const Package* o) {
   for (auto o : classes) {
     if (!o->isAlias()) {
       sorted.insert(new ClassType(o));
-    }
-    for (auto instantiation : o->instantiations) {
-      sorted.insert(new ClassType(instantiation));
+      for (auto instantiation : o->instantiations) {
+        sorted.insert(new ClassType(instantiation));
+      }
     }
   }
   for (auto o : headerClasses) {
     for (auto instantiation : o->instantiations) {
-      sorted.insert(new ClassType(instantiation));
+      if (!instantiation->isAlias()) {
+        sorted.insert(new ClassType(instantiation));
+      }
     }
   }
   allowConversions = true;
@@ -117,66 +119,6 @@ void bi::CppPackageGenerator::visit(const Package* o) {
         line("using " << o->name << " = " << o->base << ';');
       }
     }
-
-    line("}\n");
-    line("}\n");
-    line("");
-
-    line("");
-    line("namespace libbirch {");
-
-    /* forward super type declarations */
-    for (auto o : sortedClasses) {
-      if (!o->base->isEmpty() && o->isBound()) {
-        start("template<> ");
-        middle("struct super_type<bi::type::" << o->name);
-        genTemplateArgs(o);
-        finish("> {");
-        in();
-        ++inPointer;
-        line("using type = " << o->base << ';');
-        out();
-        line("};");
-      }
-    }
-
-    /* forward assignment operator declarations */
-    for (auto o : sortedClasses) {
-      if (o->isBound()) {
-        for (auto o1 : o->assignments) {
-          start("template<> ");
-          middle("struct has_assignment<bi::type::" << o->name);
-          genTemplateArgs(o);
-          finish("," << o1 << "> {");
-          in();
-          line("static const bool value = true;");
-          out();
-          line("};");
-        }
-      }
-    }
-
-    /* forward conversion operator declarations */
-    for (auto o : sortedClasses) {
-      if (o->isBound()) {
-        for (auto o1 : o->conversions) {
-          start("template<> ");
-          middle("struct has_conversion<bi::type::" << o->name);
-          genTemplateArgs(o);
-          finish("," << o1 << "> {");
-          in();
-          line("static const bool value = true;");
-          out();
-          line("};");
-        }
-      }
-    }
-    line("");
-    line("}\n");
-
-    line("");
-    line("namespace bi {");
-    line("namespace type {");
 
     /* class definitions */
     for (auto o : sortedClasses) {

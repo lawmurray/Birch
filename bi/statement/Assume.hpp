@@ -4,21 +4,16 @@
 #pragma once
 
 #include "bi/statement/Statement.hpp"
-#include "bi/statement/AssignmentOperator.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Couple.hpp"
-#include "bi/common/Reference.hpp"
 
 namespace bi {
 /**
- * Reference to assignment operator.
+ * Statement using `~` or `<-?` operator.
  *
  * @ingroup statement
  */
-class Assignment: public Statement,
-    public Named,
-    public Couple<Expression>,
-    public Reference<AssignmentOperator> {
+class Assume: public Statement, public Named, public Couple<Expression> {
 public:
   /**
    * Constructor.
@@ -29,13 +24,12 @@ public:
    * @param loc Location.
    * @param target Target.
    */
-  Assignment(Expression* left, Name* op, Expression* right, Location* loc =
-      nullptr, AssignmentOperator* target = nullptr);
+  Assume(Expression* left, Name* op, Expression* right, Location* loc = nullptr);
 
   /**
    * Destructor.
    */
-  virtual ~Assignment();
+  virtual ~Assume();
 
   virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);

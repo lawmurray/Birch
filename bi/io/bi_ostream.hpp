@@ -64,7 +64,7 @@ public:
   virtual void visit(const OverloadedIdentifier<Unknown>* o);
 
   virtual void visit(const Braces* o);
-  virtual void visit(const Assignment* o);
+  virtual void visit(const Assume* o);
   virtual void visit(const Function* o);
   virtual void visit(const Fiber* o);
   virtual void visit(const Program* o);

@@ -89,12 +89,14 @@ bool bi::ClassType::definitely(const MemberType& o) const {
 
 bool bi::ClassType::definitely(const ArrayType& o) const {
   assert(target);
-  return (allowConversions && target->hasConversion(&o)) || target->base->definitely(o);
+  return (allowConversions && target->hasConversion(&o)) ||
+      target->base->definitely(o);
 }
 
 bool bi::ClassType::definitely(const BasicType& o) const {
   assert(target);
-  return (allowConversions && target->hasConversion(&o)) || target->base->definitely(o);
+  return (allowConversions && target->hasConversion(&o)) ||
+      target->base->definitely(o);
 }
 
 bool bi::ClassType::definitely(const ClassType& o) const {
@@ -118,8 +120,8 @@ bool bi::ClassType::definitely(const FunctionType& o) const {
 
 bool bi::ClassType::definitely(const OptionalType& o) const {
   assert(target);
-  return definitely(*o.single) || (allowConversions && target->hasConversion(&o)) ||
-      target->base->definitely(o);
+  return definitely(*o.single) || (allowConversions &&
+      target->hasConversion(&o)) || target->base->definitely(o);
 }
 
 bool bi::ClassType::definitely(const TupleType& o) const {
@@ -130,8 +132,8 @@ bool bi::ClassType::definitely(const TupleType& o) const {
 
 bool bi::ClassType::definitely(const WeakType& o) const {
   assert(target);
-  return definitely(*o.single) || (allowConversions && target->hasConversion(&o)) ||
-      target->base->definitely(o);
+  return definitely(*o.single) || (allowConversions &&
+      target->hasConversion(&o)) || target->base->definitely(o);
 }
 
 bi::Type* bi::ClassType::dispatchCommon(const Type& o) const {

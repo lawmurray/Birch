@@ -137,6 +137,7 @@ E                                  [Ee][+-]?{D}+
 "<~"                                { return LEFT_TILDE_OP; }
 "~>"                                { return RIGHT_TILDE_OP; }
 "~"                                 { return '~'; }
+"<-?"                               { return LEFT_QUERY_OP; }
 ".."                                { return RANGE_OP; }
 "?"                                 { return '?'; }
 "!"                                 { return '!'; }

@@ -44,7 +44,7 @@ void bi::TypeParameterised<Target>::bind(Type* typeArgs) {
   auto arg = typeArgs->begin();
   auto param = typeParams->begin();
   while (arg != typeArgs->end() && param != typeParams->end()) {
-    (*param)->type = (*arg)->canonical();
+    (*param)->type = *arg;
     ++arg;
     ++param;
   }

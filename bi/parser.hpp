@@ -87,13 +87,14 @@ extern int yydebug;
     RIGHT_OP = 290,
     LEFT_TILDE_OP = 291,
     RIGHT_TILDE_OP = 292,
-    AND_OP = 293,
-    OR_OP = 294,
-    LE_OP = 295,
-    GE_OP = 296,
-    EQ_OP = 297,
-    NE_OP = 298,
-    RANGE_OP = 299
+    LEFT_QUERY_OP = 293,
+    AND_OP = 294,
+    OR_OP = 295,
+    LE_OP = 296,
+    GE_OP = 297,
+    EQ_OP = 298,
+    NE_OP = 299,
+    RANGE_OP = 300
   };
 #endif
 
@@ -115,7 +116,7 @@ union YYSTYPE
   bi::Type* valType;
   bi::Statement* valStatement;
 
-#line 119 "bi/parser.hpp" /* glr.c:206  */
+#line 120 "bi/parser.hpp" /* glr.c:206  */
 };
 
 typedef union YYSTYPE YYSTYPE;

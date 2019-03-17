@@ -68,7 +68,7 @@ public:
   virtual Statement* clone(const EmptyStatement* o);
   virtual Statement* clone(const Braces* o);
   virtual Statement* clone(const StatementList* o);
-  virtual Statement* clone(const Assignment* o);
+  virtual Statement* clone(const Assume* o);
   virtual Statement* clone(const GlobalVariable* o);
   virtual Statement* clone(const MemberVariable* o);
   virtual Statement* clone(const Function* o);

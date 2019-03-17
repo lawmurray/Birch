@@ -41,6 +41,14 @@ public:
       Location* loc = nullptr);
 
   /**
+   * Constructor for temporary local variable.
+   *
+   * @param value Initial value.
+   * @param loc Location.
+   */
+  LocalVariable(Expression* value, Location* loc = nullptr);
+
+  /**
    * Destructor.
    */
   virtual ~LocalVariable();

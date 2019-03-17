@@ -95,10 +95,10 @@
 %token <valString> CPP HPP THIS SUPER GLOBAL PARALLEL NIL
 %token <valString> DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE NAME
 %token <valString> BOOL_LITERAL INT_LITERAL REAL_LITERAL STRING_LITERAL
-%token <valString> LEFT_OP RIGHT_OP LEFT_TILDE_OP RIGHT_TILDE_OP
+%token <valString> LEFT_OP RIGHT_OP LEFT_TILDE_OP RIGHT_TILDE_OP LEFT_QUERY_OP
 %token <valString> AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP RANGE_OP
 
-%type <valName> name binary_operator unary_operator assignment_operator
+%type <valName> name binary_operator unary_operator observe_operator assume_operator
 
 %type <valInt> size
 %type <valAnnotation> for_annotation class_annotation function_annotation
@@ -117,8 +117,8 @@
 %type <valExpression> postfix_expression postfix_query_expression prefix_expression
 %type <valExpression> multiplicative_expression additive_expression
 %type <valExpression> relational_expression equality_expression
-%type <valExpression> logical_and_expression logical_or_expression assign_expression
-%type <valExpression> expression_list expression optional_expression
+%type <valExpression> logical_and_expression logical_or_expression observe_expression
+%type <valExpression> assign_expression expression_list expression optional_expression
 %type <valExpression> local_variable parameter parameter_list parameters optional_parameters
 %type <valExpression> span_expression span_list brackets option option_list options
 %type <valExpression> arguments optional_arguments
@@ -132,7 +132,7 @@
 %type <valStatement> binary_operator_declaration unary_operator_declaration
 %type <valStatement> conversion_operator_declaration assignment_operator_declaration
 %type <valStatement> class_declaration basic_declaration
-%type <valStatement> cpp hpp assignment expression_statement if for
+%type <valStatement> cpp hpp expression_statement assume_statement if for
 %type <valStatement> while do_while assertion return yield instantiated
 %type <valStatement> statement statements optional_statements
 %type <valStatement> class_statement class_statements optional_class_statements
@@ -345,14 +345,23 @@ logical_or_expression
     | logical_or_expression logical_or_operator logical_and_expression  { $$ = new bi::BinaryCall($2, new bi::Binary($1, $3, make_loc(@$)), make_loc(@$)); }
     ;
 
+observe_operator
+    : RIGHT_TILDE_OP  { $$ = new bi::Name("~>"); }
+    ;
+
+observe_expression
+    : logical_or_expression
+    | observe_expression observe_operator logical_or_expression  { $$ = new bi::Assign($1, $2, $3, make_loc(@$)); }
+    ;
+
 assign_operator
     : LEFT_OP        { $$ = new bi::Name("<-"); }
     | LEFT_TILDE_OP  { $$ = new bi::Name("<~"); }
     ;
 
 assign_expression
-    : logical_or_expression
-    | logical_or_expression assign_operator assign_expression  { $$ = new bi::Assign($1, $2, $3, make_loc(@$)); }
+    : observe_expression
+    | observe_expression assign_operator assign_expression  { $$ = new bi::Assign($1, $2, $3, make_loc(@$)); }
     ;
 
 expression
@@ -557,11 +566,6 @@ binary_operator_declaration
 unary_operator_declaration
     : OPERATOR '(' unary_operator parameter ')' optional_result { push_raw(); } optional_braces  { $$ = new bi::UnaryOperator(bi::NONE, $3, $4, $6, $8, make_doc_loc(@$)); }
     ;
-    
-assignment_operator
-    : RIGHT_TILDE_OP  { $$ = new bi::Name("~>"); }
-    | '~'             { $$ = new bi::Name("~"); }
-    ;
 
 assignment_operator_declaration
     : OPERATOR LEFT_OP parameter { push_raw(); } optional_braces  { $$ = new bi::AssignmentOperator($3, $5, make_doc_loc(@$)); }
@@ -595,8 +599,13 @@ hpp
     : HPP double_braces  { push_raw(); $$ = new bi::Raw(new bi::Name("hpp"), pop_raw(), make_loc(@$)); }
     ;
 
-assignment
-    : expression assignment_operator expression ';'  { $$ = new bi::Assignment($1, $2, $3, make_loc(@$)); }
+assume_operator
+    : '~'            { $$ = new bi::Name("~"); }
+    | LEFT_QUERY_OP  { $$ = new bi::Name("<-?"); }
+    ;
+
+assume_statement
+    : expression assume_operator expression ';'  { $$ = new bi::Assume($1, $2, $3, make_loc(@$)); }
     ;
 
 expression_statement
@@ -617,6 +626,7 @@ for_annotation
 for_index
     : identifier
     | name ':' type  { $$ = new bi::LocalVariable(bi::NONE, $1, $3, empty_expr(@$), empty_expr(@$), empty_expr(@$), make_loc(@$)); }
+    | AUTO name      { $$ = new bi::LocalVariable(bi::NONE, $2, new bi::BasicType(new bi::Name("Integer")), empty_expr(@$), empty_expr(@$), empty_expr(@$), make_loc(@$)); }
     ;
 
 for
@@ -653,7 +663,7 @@ instantiated
 statement
     : local_variable_declaration
     | expression_statement
-    | assignment
+    | assume_statement
     | if
     | for
     | while

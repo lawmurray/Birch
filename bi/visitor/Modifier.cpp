@@ -231,7 +231,7 @@ bi::Expression* bi::Modifier::modify(OverloadedIdentifier<UnaryOperator>* o) {
   return o;
 }
 
-bi::Statement* bi::Modifier::modify(Assignment* o) {
+bi::Statement* bi::Modifier::modify(Assume* o) {
   o->left = o->left->accept(this);
   o->right = o->right->accept(this);
   return o;

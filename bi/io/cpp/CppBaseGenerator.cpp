@@ -595,7 +595,7 @@ void bi::CppBaseGenerator::visit(const Generic* o) {
   }
 }
 
-void bi::CppBaseGenerator::visit(const Assignment* o) {
+void bi::CppBaseGenerator::visit(const Assume* o) {
   assert(false);  // should have been replaced by Resolver
 }
 

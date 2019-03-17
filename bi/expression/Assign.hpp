@@ -11,7 +11,7 @@
 
 namespace bi {
 /**
- * Assignment expression.
+ * Expression using `<-`, `<~` or `~>` operator.
  *
  * @ingroup statement
  */
