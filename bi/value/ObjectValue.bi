@@ -1,6 +1,14 @@
 /**
  * Object value.
  */
-class ObjectValue < Value {
+class ObjectValue < ArrayValue {
+  keys:List<String>;
 
+  function accept(gen:Generator) {
+    gen.visit(this);
+  }
+
+  function isObject() -> Boolean {
+    return true;
+  }
 }

@@ -1,10 +1,9 @@
 /**
  * @file
  */
-#include "libubjpp/json/JSONTokenizer.hpp"
+#include "../json/JSONParser.hpp"
 
-libubjpp::JSONTokenizer::JSONTokenizer(const std::string& data) :
-    data(data),
+bi::type::JSONParser::JSONParser() :
     begin(data.begin()),
     iter(begin),
     end(data.end()) {
@@ -19,7 +18,7 @@ libubjpp::JSONTokenizer::JSONTokenizer(const std::string& data) :
   regexNull = std::regex("null", options);
 }
 
-int libubjpp::JSONTokenizer::next(ParserState* state) {
+bi::type::Integer bi::type::JSONParser::next() {
   auto options = std::regex_constants::match_continuous;
   std::string::const_iterator first, last;
   int token;
@@ -48,27 +47,27 @@ int libubjpp::JSONTokenizer::next(ParserState* state) {
 
       char* endptr;
       if (token == INT64) {
-        int64_type intValue = std::strtol(
-            data.c_str() + std::distance(begin, iter), &endptr, 10);
-        state->value = int64_type(intValue);
+        auto intValue = std::strtol(data.c_str() + std::distance(begin, iter),
+            &endptr, 10);
+        stack->push(IntegerValue::create_(intValue));
       } else {
         assert(token == DOUBLE);
-        double_type doubleValue = std::strtod(
+        auto doubleValue = std::strtod(
             data.c_str() + std::distance(begin, iter), &endptr);
-        state->value = double_type(doubleValue);
+        stack->push(RealValue::create_(doubleValue));
       }
     } else if (std::regex_search(iter, end, match, regexTrue, options)) {
       last = match[0].second;
       token = BOOL;
-      state->value = bool_type(true);
+      stack->push(BooleanValue::create_(true));
     } else if (std::regex_search(iter, end, match, regexFalse, options)) {
       last = match[0].second;
       token = BOOL;
-      state->value = bool_type(false);
+      stack->push(BooleanValue::create_(false));
     } else if (std::regex_search(iter, end, match, regexNull, options)) {
       last = match[0].second;
       token = NIL;
-      state->value = nil_type();
+      stack->push(NilValue::create_());
     } else if (*iter == '"') {
       /* matched a string */
       token = STRING;
@@ -117,7 +116,7 @@ int libubjpp::JSONTokenizer::next(ParserState* state) {
       }
       assert(last != end);  // syntax error, unclosed string
       ++last;  // remove final quote
-      state->value = string_type(buf.str());
+      stack->push(StringValue::create_(buf.str()));
     } else {
       /* check the next character */
       last = iter + 1;
@@ -150,11 +149,11 @@ int libubjpp::JSONTokenizer::next(ParserState* state) {
         token = 0;
         break;
       case '\n':
-        ++state->line;
+        ++line;
         token = 0;
         break;
       default:
-        error(state);
+        error();
         token = 0;
         break;
       }

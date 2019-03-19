@@ -11,10 +11,7 @@ class MemoryBuffer < Buffer {
    */
   function load(path:String) {
     parser:JSONParser;
-    value <- parser.parse(path);
-    if !root {
-      stderr.print("warning: could not load from \'" + path + "'\n");
-    }
+    value <-? parser.parse(path);
   }
 
   /**
@@ -24,27 +21,20 @@ class MemoryBuffer < Buffer {
    */
   function save(path:String) {
     mkdir(path);
-    generator:JSONGenerator;
-    auto success <- generator.generate(path, value);
-    if !success {
-      stderr.print("warning: could not save to \'" + path + "'\n");
-    }
+    gen:JSONGenerator;
+    gen.generate(path, value);
   }
 
   function getChild(name:String) -> Buffer? {
-    return value.getChild();
+    return value.getChild(name);
   }
 
-  function getObject() -> Buffer? {
-    return value.getObject();
+  function setChild(name:String) -> Buffer {
+    return value.setChild(name);
   }
 
   function getLength() -> Integer? {
     return value.getLength();
-  }
-
-  function getArray() -> Buffer? {
-    return value.getArray();
   }
 
   function getBoolean() -> Boolean? {
@@ -61,11 +51,6 @@ class MemoryBuffer < Buffer {
 
   function getString() -> String? {
     return value.getString();
-  }
-
-  function getObject(value:Object) -> Object? {
-    value.read(this);
-    return value;
   }
 
   function getBooleanVector() -> Boolean[_]? {
@@ -90,10 +75,6 @@ class MemoryBuffer < Buffer {
 
   function getRealMatrix() -> Real[_,_]? {
     return value.getRealMatrix();
-  }
-
-  function setChild(name:String) -> Buffer {
-    return value.setChild();
   }
 
   function setObject() {
@@ -142,15 +123,6 @@ class MemoryBuffer < Buffer {
     if value? {
       v:StringValue(value!);
       this.value <- v;
-    } else {
-      setNil();
-    }
-  }
-
-  function setObject(value:Object?) {
-    if value? {
-      v:ObjectValue(value!);
-      value!.write(this);
     } else {
       setNil();
     }

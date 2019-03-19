@@ -32,9 +32,9 @@ class Parser {
   /**
    * Parse a file.
    */
-  function parse() -> Value {
-  
+  function parse(path:String) -> Value? {
     auto root <- stack.top();
+    assert stack.empty();
     stack.pop();
     return root;
   }

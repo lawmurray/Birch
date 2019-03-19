@@ -1,13 +1,13 @@
 /**
- * String value.
+ * Boolean matrix value.
  */
-class StringValue(value:String) < Value {
+class BooleanMatrixValue(value:Boolean[_,_]) < Value {
   /**
    * The value.
    */
-  value:String <- value;
-
-  operator -> String {
+  value:Boolean[_,_] <- value;
+  
+  operator -> Boolean[_,_] {
     return value;
   }
 
@@ -18,8 +18,8 @@ class StringValue(value:String) < Value {
   function isValue() -> Boolean {
     return true;
   }
-
-  function getString() -> String? {
+  
+  function getBooleanMatrix() -> Boolean[_,_]? {
     return value;
   }
 }

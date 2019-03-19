@@ -3,11 +3,42 @@
  */
 class Value {
   /**
+   * Accept a generator.
+   */
+  function accept(gen:Generator);
+
+  /**
+   * Is this an object?
+   */
+  function isObject() -> Boolean {
+    return false;
+  }
+
+  /**
+   * Is this an array?
+   */
+  function isArray() -> Boolean {
+    return false;
+  }
+
+  /**
+   * Is this neither an object or an array?
+   */
+  function isValue() -> Boolean {
+    return false;
+  }
+
+  /**
    * Get a child.
    */
-  function getChild(name:String) -> Value? {
+  function getChild(name:String) -> Buffer? {
     return nil;
   }
+
+  /**
+   * Set a child.
+   */
+  function setChild(name:String) -> Buffer;
 
   /**
    * Get this as an object.
@@ -126,40 +157,6 @@ class Value {
    */
   function getRealMatrix() -> Real[_,_]? {
     return nil;
-  }
-  
-  /**
-   * Get a child as an object.
-   *
-   * - name: Name of the child.
-   *
-   * Return: An optional with a value if the given entry exists and is of a
-   * compatible type.
-   */
-  function getObject(name:String) -> ObjectValue? {
-    auto child <- getChild(name);
-    if child? {
-      return child!.getObject();
-    } else {
-      return nil;
-    }
-  }
-
-  /**
-   * Get a child as an array.
-   *
-   * - name: Name of the child.
-   *
-   * Return: An optional with a value if the given entry exists and is of a
-   * compatible type.
-   */
-  function getArray(name:String) -> ArrayValue? {
-        auto child <- getChild(name);
-    if child? {
-      return child!.getArray();
-    } else {
-      return nil;
-    }
   }
 
   /**
@@ -366,23 +363,6 @@ class Value {
       return nil;
     }
   }
-
-  /**
-   * Get this as an object.
-   *
-   * - value: The object.
-   *
-   * Return: The object.
-   */
-  function get(value:Object?) -> Object? {
-    if value? {
-      auto o <- getObject();
-      if o? {
-        value!.read(o!);
-      }
-    }
-    return value;
-  }
   
   /**
    * Get this as a Boolean.
@@ -498,23 +478,6 @@ class Value {
    */
   function get(value:Real[_,_]?) -> Real[_,_]? {
     return getRealMatrix();
-  }
-
-  /**
-   * Get an object.
-   *
-   * - name: Name of the child.
-   * - value: The object.
-   *
-   * Return: The object.
-   */
-  function get(name:String, value:Object?) -> Object? {
-    auto child <- getChild(name);
-    if child? {
-      return child.getObject(value);
-    } else {
-      return value;
-    }
   }
 
   /**
@@ -908,7 +871,7 @@ class Value {
    *
    * Yields: Values for each element in turn.
    */
-  fiber walk(name:String) -> Value {
+  fiber walk(name:String) -> Buffer {
     auto child <- getChild(name);
     if child? {
       child!.walk();

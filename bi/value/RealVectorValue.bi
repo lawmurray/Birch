@@ -1,13 +1,13 @@
 /**
- * String value.
+ * Real vector value.
  */
-class StringValue(value:String) < Value {
+class RealVectorValue(value:Real[_]) < Value {
   /**
    * The value.
    */
-  value:String <- value;
-
-  operator -> String {
+  value:Real[_] <- value;
+  
+  operator -> Real[_] {
     return value;
   }
 
@@ -18,8 +18,8 @@ class StringValue(value:String) < Value {
   function isValue() -> Boolean {
     return true;
   }
-
-  function getString() -> String? {
+  
+  function getRealVector() -> Real[_]? {
     return value;
   }
 }

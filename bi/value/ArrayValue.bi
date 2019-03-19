@@ -2,7 +2,15 @@
  * Array value.
  */
 class ArrayValue < Value {
-  values:List<Value>;
+  values:List<MemoryBuffer>;
+
+  function accept(gen:Generator) {
+    gen.visit(this);
+  }
+  
+  function isArray() -> Boolean {
+    return true;
+  }
 
   function getLength() -> Integer? {
     return values.size();
@@ -50,7 +58,7 @@ class ArrayValue < Value {
   }
 
   function getRealVector() -> Real[_]? {
-    result:Integer[values.size()];
+    result:Real[values.size()];
     auto f <- values.walk();
     auto i <- 1;
     while f? {
@@ -71,7 +79,7 @@ class ArrayValue < Value {
   function getBooleanMatrix() -> Boolean[_,_]? {
     nrows:Integer? <- getLength();
     if (nrows?) {
-      row:Buffer! <- walk();
+      auto row <- walk();
       if (row?) {
         /* determine number of columns from first row */
         ncols:Integer? <- row!.getLength();
@@ -114,7 +122,7 @@ class ArrayValue < Value {
   function getIntegerMatrix() -> Integer[_,_]? {
     nrows:Integer? <- getLength();
     if (nrows?) {
-      row:Buffer! <- walk();
+      auto row <- walk();
       if (row?) {
         /* determine number of columns from first row */
         ncols:Integer? <- row!.getLength();
@@ -157,7 +165,7 @@ class ArrayValue < Value {
   function getRealMatrix() -> Real[_,_]? {
     nrows:Integer? <- getLength();
     if (nrows?) {
-      row:Buffer! <- walk();
+      auto row <- walk();
       if (row?) {
         /* determine number of columns from first row */
         ncols:Integer? <- row!.getLength();

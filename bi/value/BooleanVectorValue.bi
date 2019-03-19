@@ -1,13 +1,13 @@
 /**
- * String value.
+ * Boolean vector value.
  */
-class StringValue(value:String) < Value {
+class BooleanVectorValue(value:Boolean[_]) < Value {
   /**
    * The value.
    */
-  value:String <- value;
-
-  operator -> String {
+  value:Boolean[_] <- value;
+  
+  operator -> Boolean[_] {
     return value;
   }
 
@@ -18,8 +18,8 @@ class StringValue(value:String) < Value {
   function isValue() -> Boolean {
     return true;
   }
-
-  function getString() -> String? {
+  
+  function getBooleanVector() -> Boolean[_]? {
     return value;
   }
 }

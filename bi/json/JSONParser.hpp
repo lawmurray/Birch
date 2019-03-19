@@ -4,7 +4,6 @@
 #pragma once
 
 #include <regex>
-#include <string>
 #include <sstream>
 
 namespace bi {
@@ -22,13 +21,9 @@ protected:
   /**
    * Next token.
    *
-   * @param[in,out] state Parser state. Updated to contain the value of the
-   * next token (e.g. the actual string value for a STRING token, the actual
-   * integer value for an INT64 token).
-   *
    * @return Next token.
    */
-  virtual Integer next();
+  Integer next();
 
 private:
   /**
