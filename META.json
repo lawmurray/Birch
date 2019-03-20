@@ -171,6 +171,7 @@
       "bi/io/std.bi",
       "bi/math/cdf.bi",
       "bi/math/distance.bi",
+      "bi/math/downdate.bi",
       "bi/math/eigen.bi",
       "bi/math/iterator.bi",
       "bi/math/matrix.bi",
