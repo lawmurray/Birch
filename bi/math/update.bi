@@ -122,7 +122,7 @@ function update_gaussian_gaussian(x:Real, μ:Real, λ:Real, l:Real) ->
  * - c: Offset.
  * - l: Likelihood precision.
  *
- * Returns: the posterior hyperparameters `μ'` and `σ2'`.
+ * Returns: the posterior hyperparameters `μ'` and `λ'`.
  */
 function update_linear_gaussian_gaussian(x:Real, a:Real, μ:Real, λ:Real,
     c:Real, l:Real) -> (Real, Real) {
@@ -323,12 +323,10 @@ function update_multivariate_normal_inverse_gamma_gaussian(x:Real[_],
     μ:Real[_], Λ:Real[_,_], α:Real, β:Real) -> (Real[_], Real[_,_], Real,
     Real) {
   D:Integer <- length(x);
-  
   Λ':Real[_,_] <- Λ + identity(rows(Λ));
   μ':Real[_] <- cholsolve(Λ', Λ*μ + x);
   α':Real <- α + D*0.5;
   β':Real <- β + 0.5*(dot(x) + dot(μ, Λ*μ) - dot(μ', Λ'*μ'));
-
   return (μ', Λ', α', β');
 }
 
@@ -350,12 +348,10 @@ function update_multivariate_linear_normal_inverse_gamma_gaussian(
     x:Real[_], A:Real[_,_], μ:Real[_], c:Real[_], Λ:Real[_,_], α:Real,
     β:Real) -> (Real[_], Real[_,_], Real, Real) {
   D:Integer <- length(x);
-  
   Λ':Real[_,_] <- Λ + trans(A)*A;
   μ':Real[_] <- cholsolve(Λ', Λ*μ + trans(A)*(x - c));
   α':Real <- α + D*0.5;
   β':Real <- β + 0.5*(dot(x - c) + dot(μ, Λ*μ) - dot(μ', Λ'*μ'));
-
   return (μ', Λ', α', β');
 }
 
@@ -380,6 +376,5 @@ function update_multivariate_dot_normal_inverse_gamma_gaussian(x:Real,
   μ':Real[_] <- cholsolve(Λ', Λ*μ + a*(x - c));
   α':Real <- α + 0.5;
   β':Real <- β + 0.5*(pow(x - c, 2.0) + dot(μ, Λ*μ) - dot(μ', Λ'*μ'));
-
   return (μ', Λ', α', β');
 }

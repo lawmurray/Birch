@@ -109,7 +109,9 @@ function downdate_dirichlet_multinomial(x:Integer[_], n:Integer,
  */
 function downdate_gaussian_gaussian(x:Real, μ':Real, λ':Real, l:Real) ->
     (Real, Real) {
-
+  λ:Real <- λ' - l;
+  μ:Real <- (λ'*μ' - l*x)/λ;
+  return (μ, λ);
 }
 
 /**
@@ -119,15 +121,17 @@ function downdate_gaussian_gaussian(x:Real, μ':Real, λ':Real, l:Real) ->
  * - x: The variate.
  * - a: Scale.
  * - μ': Posterior mean.
- * - σ2': Posterior variance.
- * - μ_m: Prior marginal mean.
- * - σ2_m: Prior marginal variance.
+ * - λ': Posterior variance.
+ * - c: Offset.
+ * - l: Likelihood precision.
  *
- * Returns: the prior hyperparameters `μ` and `σ2`.
+ * Returns: the prior hyperparameters `μ` and `λ`.
  */
-function downdate_linear_gaussian_gaussian(x:Real, a:Real, μ':Real, σ2':Real,
-    μ_m:Real, σ2_m:Real) -> (Real, Real) {
-
+function downdate_linear_gaussian_gaussian(x:Real, a:Real, μ':Real, λ':Real,
+    c:Real, l:Real) -> (Real, Real) {
+  λ:Real <- λ' - a*a*l;
+  μ:Real <- (λ'*μ' - a*l*(x - c))/λ;
+  return (μ, λ);
 }
 
 /**
@@ -178,8 +182,8 @@ function downdate_inverse_gamma_gaussian(x:Real, μ:Real, α':Real, β':Real) ->
 function downdate_normal_inverse_gamma_gaussian(x:Real, μ':Real, a2':Real,
     α':Real, β':Real) -> (Real, Real, Real, Real) {
   λ':Real <- 1.0/a2';
-  λ:Real <- λ' + 1.0;
-  μ:Real <- (μ'*λ' - x)/λ;
+  λ:Real <- λ' - 1.0;
+  μ:Real <- (λ'*μ' - x)/λ;
   α:Real <- α' - 0.5;
   β:Real <- β' - 0.5*(λ/λ')*pow(x - μ, 2.0);
   
@@ -205,9 +209,9 @@ function downdate_linear_normal_inverse_gamma_gaussian(a:Real, x:Real,
   y:Real <- x - c;
   λ':Real <- 1.0/a2';
   λ:Real <- λ' - a*a;
-  μ:Real <- (μ'*λ' - a*y)/λ;
+  μ:Real <- (λ'*μ' - a*y)/λ;
   α:Real <- α' - 0.5;
-  β:Real <- β' - 0.5*(y*y + μ*μ*λ - μ'*μ'*λ');
+  β:Real <- β' - 0.5*(y*y + λ*μ*μ - λ'*μ'*μ');
   
   return (μ, 1.0/λ, α, β);
 }
@@ -218,15 +222,16 @@ function downdate_linear_normal_inverse_gamma_gaussian(a:Real, x:Real,
  *
  * - x: The variate.
  * - μ': Posterior mean.
- * - Σ': Posterior variance.
- * - μ_m: Prior marginal mean.
- * - Σ_m: Prior marginal variance.
+ * - Λ': Posterior precision.
+ * - L: Likelihood precision.
  *
- * Returns: the prior hyperparameters `μ` and `Σ`.
+ * Returns: the prior hyperparameters `μ` and `Λ`.
  */
 function downdate_multivariate_gaussian_gaussian(x:Real[_], μ':Real[_],
-    Σ':Real[_,_], μ_m':Real[_], Σ_m':Real[_,_]) -> (Real[_], Real[_,_]) {
-
+    Λ':Real[_,_], L:Real[_,_]) -> (Real[_], Real[_,_]) {
+  Λ:Real[_,_] <- Λ' - L;
+  μ:Real[_] <- cholsolve(Λ, Λ'*μ' - L*x);
+  return (μ, Λ);
 }
 
 /**
@@ -236,16 +241,18 @@ function downdate_multivariate_gaussian_gaussian(x:Real[_], μ':Real[_],
  * - x: The variate.
  * - A: Scale.
  * - μ': Posterior mean.
- * - Σ': Posterior variance.
- * - μ_m: Prior marginal mean.
- * - Σ_m: Prior marginal variance.
+ * - Λ': Posterior precision.
+ * - c: Offset.
+ * - L: Likelihood precision.
  *
- * Returns: the prior hyperparameters `μ` and `Σ`.
+ * Returns: the prior hyperparameters `μ` and `Λ`.
  */
 function downdate_multivariate_linear_gaussian_gaussian(x:Real[_],
-    A:Real[_,_], μ':Real[_], Σ':Real[_,_], μ_m:Real[_], Σ_m:Real[_,_]) ->
+    A:Real[_,_], μ':Real[_], Λ':Real[_,_], c:Real[_], L:Real[_,_]) ->
     (Real[_], Real[_,_]) {
-
+  Λ:Real[_,_] <- Λ' - trans(A)*L*A;
+  μ:Real[_] <- cholsolve(Λ, Λ'*μ' - trans(A)*L*(x - c));
+  return (μ, Λ);
 }
 
 /**
@@ -255,15 +262,17 @@ function downdate_multivariate_linear_gaussian_gaussian(x:Real[_],
  * - x: The variate.
  * - a: Scale.
  * - μ': Posterior mean.
- * - Σ': Posterior variance.
- * - μ_m: Prior marginal mean.
- * - σ2_m: Prior marginal variance.
+ * - Λ': Posterior precision.
+ * - c: Offset.
+ * - l: Likelihood precision.
  *
- * Returns: the prior hyperparameters `μ` and `Σ`.
+ * Returns: the prior hyperparameters `μ` and `Λ`.
  */
 function downdate_multivariate_dot_gaussian_gaussian(x:Real, a:Real[_],
-    μ':Real[_], Σ':Real[_,_], μ_m:Real, σ2_m:Real) -> (Real[_], Real[_,_]) {
-
+    μ':Real[_], Λ':Real[_,_], c:Real, l:Real) -> (Real[_], Real[_,_]) {
+  Λ:Real[_,_] <- Λ' - a*l*trans(a);
+  μ:Real[_] <- cholsolve(Λ, Λ'*μ' - a*l*(x - c));
+  return (μ, Λ);
 }
 
 /**
@@ -271,16 +280,17 @@ function downdate_multivariate_dot_gaussian_gaussian(x:Real, a:Real[_],
  * of a multivariate normal inverse-gamma joint distribution.
  *
  * - x: The variate.
- * - μ': Mean.
- * - Λ': Precision.
+ * - μ: Mean.
+ * - Λ: Precision.
  * - α': Posterior shape of the inverse-gamma.
  * - β': Posterior scale of the inverse-gamma.
  *
  * Returns: the prior hyperparameters `α` and `β`.
  */
-function downdate_multivariate_normal_inverse_gamma(x:Real[_], μ':Real[_],
-    Λ':Real[_,_], α':Real, β':Real) -> (Real, Real) {
-
+function downdate_multivariate_normal_inverse_gamma(x:Real[_], μ:Real[_],
+    Λ:Real[_,_], α':Real, β':Real) -> (Real, Real) {
+  D:Integer <- length(x);
+  return (α' - 0.5*D, β' - 0.5*dot(x - μ, Λ*(x - μ)));
 }
 
 /**
@@ -296,7 +306,8 @@ function downdate_multivariate_normal_inverse_gamma(x:Real[_], μ':Real[_],
  */
 function downdate_multivariate_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
     α':Real, β':Real) -> (Real, Real) {
-
+  D:Integer <- length(x);
+  return (α' - 0.5*D, β' - 0.5*dot(x - μ));
 }
 
 /**
@@ -314,7 +325,12 @@ function downdate_multivariate_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
 function downdate_multivariate_normal_inverse_gamma_gaussian(x:Real[_],
     μ':Real[_], Λ':Real[_,_], α':Real, β':Real) -> (Real[_], Real[_,_], Real,
     Real) {
-
+  D:Integer <- length(x);
+  Λ:Real[_,_] <- Λ' - identity(rows(Λ'));
+  μ:Real[_] <- cholsolve(Λ, Λ'*μ' - x);
+  α:Real <- α' - D*0.5;
+  β:Real <- β' - 0.5*(dot(x) + dot(μ, Λ*μ) - dot(μ', Λ'*μ'));
+  return (μ, Λ, α, β);
 }
 
 /**
@@ -334,7 +350,12 @@ function downdate_multivariate_normal_inverse_gamma_gaussian(x:Real[_],
 function downdate_multivariate_linear_normal_inverse_gamma_gaussian(
     x:Real[_], A:Real[_,_], μ':Real[_], c:Real[_], Λ':Real[_,_], α':Real,
     β':Real) -> (Real[_], Real[_,_], Real, Real) {
-
+  D:Integer <- length(x);
+  Λ:Real[_,_] <- Λ' - trans(A)*A;
+  μ:Real[_] <- cholsolve(Λ, Λ'*μ' - trans(A)*(x - c));
+  α:Real <- α' - D*0.5;
+  β:Real <- β' - 0.5*(dot(x - c) + dot(μ, Λ*μ) - dot(μ', Λ'*μ'));
+  return (μ, Λ, α, β);
 }
 
 /**
@@ -354,5 +375,9 @@ function downdate_multivariate_linear_normal_inverse_gamma_gaussian(
 function downdate_multivariate_dot_normal_inverse_gamma_gaussian(
     x:Real, a:Real[_], μ':Real[_], c:Real, Λ':Real[_,_], α':Real, β':Real) ->
     (Real[_], Real[_,_], Real, Real) {
-
+  Λ:Real[_,_] <- Λ' - a*trans(a);
+  μ:Real[_] <- cholsolve(Λ, Λ'*μ' - a*(x - c));
+  α:Real <- α' - 0.5;
+  β:Real <- β' - 0.5*(pow(x - c, 2.0) + dot(μ, Λ*μ) - dot(μ', Λ'*μ'));
+  return (μ, Λ, α, β);
 }
