@@ -9,9 +9,9 @@ class DelayNormalInverseGamma(x:Random<Real>&, μ:Real, a2:Real,
   μ:Real <- μ;
   
   /**
-   * Scale.
+   * Precision.
    */
-  a2:Real <- a2;
+  λ:Real <- 1.0/a2;
   
   /**
    * Variance.
@@ -19,23 +19,23 @@ class DelayNormalInverseGamma(x:Random<Real>&, μ:Real, a2:Real,
   σ2:DelayInverseGamma& <- σ2;
 
   function simulate() -> Real {
-    return simulate_normal_inverse_gamma(μ, a2, σ2!.α, σ2!.β);
+    return simulate_normal_inverse_gamma(μ, 1.0/λ, σ2!.α, σ2!.β);
   }
   
   function observe(x:Real) -> Real {
-    return observe_normal_inverse_gamma(x, μ, a2, σ2!.α, σ2!.β);
+    return observe_normal_inverse_gamma(x, μ, 1.0/λ, σ2!.α, σ2!.β);
   }
 
   function condition(x:Real) {
-    (σ2!.α, σ2!.β) <- update_normal_inverse_gamma(x, μ, a2, σ2!.α, σ2!.β);
+    (σ2!.α, σ2!.β) <- update_normal_inverse_gamma(x, μ, λ, σ2!.α, σ2!.β);
   }
 
   function pdf(x:Integer) -> Real {
-    return pdf_normal_inverse_gamma(x, μ, a2, σ2!.α, σ2!.β);
+    return pdf_normal_inverse_gamma(x, μ, 1.0/λ, σ2!.α, σ2!.β);
   }
 
   function cdf(x:Integer) -> Real {
-    return cdf_normal_inverse_gamma(x, μ, a2, σ2!.α, σ2!.β);
+    return cdf_normal_inverse_gamma(x, μ, 1.0/λ, σ2!.α, σ2!.β);
   }
 }
 

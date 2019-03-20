@@ -140,15 +140,15 @@ function downdate_linear_gaussian_gaussian(x:Real, a:Real, μ':Real, λ':Real,
  *
  * - x: The variate.
  * - μ: Mean.
- * - a2: Variance.
+ * - λ: Precision.
  * - α': Posterior shape of the inverse-gamma.
  * - β': Posterior scale of the inverse-gamma.
  *
  * Returns: the prior hyperparameters `α` and `β`.
  */
-function downdate_normal_inverse_gamma(x:Real, μ:Real, a2:Real, α':Real,
+function downdate_normal_inverse_gamma(x:Real, μ:Real, λ:Real, α':Real,
     β':Real) -> (Real, Real) {
-  return (α' - 0.5, β' - 0.5*pow(x - μ, 2.0)/a2);
+  return (α' - 0.5, β' - 0.5*pow(x - μ, 2.0)*λ);
 }
 
 /**
@@ -173,21 +173,20 @@ function downdate_inverse_gamma_gaussian(x:Real, μ:Real, α':Real, β':Real) ->
  *
  * - x: The variate.
  * - μ': Posterior mean.
- * - a2': Posterior variance.
+ * - λ': Posterior precision.
  * - α': Posterior shape of the inverse-gamma.
  * - β': Posterior scale of the inverse-gamma.
  *
- * Returns: the prior hyperparameters `μ`, `a2`, `α` and `β`.
+ * Returns: the prior hyperparameters `μ`, `λ`, `α` and `β`.
  */
-function downdate_normal_inverse_gamma_gaussian(x:Real, μ':Real, a2':Real,
+function downdate_normal_inverse_gamma_gaussian(x:Real, μ':Real, λ':Real,
     α':Real, β':Real) -> (Real, Real, Real, Real) {
-  λ':Real <- 1.0/a2';
   λ:Real <- λ' - 1.0;
   μ:Real <- (λ'*μ' - x)/λ;
   α:Real <- α' - 0.5;
   β:Real <- β' - 0.5*(λ/λ')*pow(x - μ, 2.0);
   
-  return (μ, 1.0/λ, α, β);
+  return (μ, λ, α, β);
 }
 
 /**
@@ -198,22 +197,21 @@ function downdate_normal_inverse_gamma_gaussian(x:Real, μ':Real, a2':Real,
  * - x: The variate.
  * - c: Offset.
  * - μ': Posterior mean.
- * - a2': Posterior variance.
+ * - λ': Posterior precision.
  * - α': Posterior shape of the inverse-gamma.
  * - β': Posterior scale of the inverse-gamma.
  *
- * Returns: the prior hyperparameters `μ`, `a2`, `α` and `β`.
+ * Returns: the prior hyperparameters `μ`, `λ`, `α` and `β`.
  */
 function downdate_linear_normal_inverse_gamma_gaussian(a:Real, x:Real,
-    c:Real, μ':Real, a2':Real, α':Real, β':Real) -> (Real, Real, Real, Real) {
+    c:Real, μ':Real, λ':Real, α':Real, β':Real) -> (Real, Real, Real, Real) {
   y:Real <- x - c;
-  λ':Real <- 1.0/a2';
   λ:Real <- λ' - a*a;
   μ:Real <- (λ'*μ' - a*y)/λ;
   α:Real <- α' - 0.5;
   β:Real <- β' - 0.5*(y*y + λ*μ*μ - λ'*μ'*μ');
   
-  return (μ, 1.0/λ, α, β);
+  return (μ, λ, α, β);
 }
 
 /**
