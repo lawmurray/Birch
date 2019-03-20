@@ -53,7 +53,8 @@ bool bi::FiberType::definitely(const MemberType& o) const {
 }
 
 bool bi::FiberType::definitely(const FiberType& o) const {
-  return single->definitely(*o.single);
+  return single->equals(*o.single);
+  // ^ C++ code generation cannot handle the ->definitely case
 }
 
 bool bi::FiberType::definitely(const OptionalType& o) const {
