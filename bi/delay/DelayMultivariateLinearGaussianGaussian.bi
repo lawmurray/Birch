@@ -3,7 +3,7 @@
  */
 class DelayMultivariateLinearGaussianGaussian(x:Random<Real[_]>&,
     A:Real[_,_], m:DelayMultivariateGaussian, c:Real[_], S:Real[_,_]) <
-    DelayMultivariateGaussian(x, A*m.μ + c, A*m.Σ*trans(A) + S) {
+    DelayMultivariateGaussian(x, A*m.μ + c, A*cholinv(m.Λ)*trans(A) + S) {
   /**
    * Scale.
    */
@@ -22,11 +22,11 @@ class DelayMultivariateLinearGaussianGaussian(x:Random<Real[_]>&,
   /**
    * Likelihood covariance.
    */
-  S:Real[_,_] <- S;
+  L:Real[_,_] <- cholinv(S);
 
   function condition(x:Real[_]) {
-    (m!.μ, m!.Σ) <- update_multivariate_linear_gaussian_gaussian(x, A, m!.μ,
-        m!.Σ, c, S);
+    (m!.μ, m!.Λ) <- update_multivariate_linear_gaussian_gaussian(x, A, m!.μ,
+        m!.Λ, c, L);
   }
 }
 

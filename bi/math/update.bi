@@ -107,7 +107,7 @@ function update_dirichlet_multinomial(x:Integer[_], n:Integer, α:Real[_]) ->
 function update_gaussian_gaussian(x:Real, μ:Real, λ:Real, l:Real) ->
     (Real, Real) {
   λ':Real <- λ + l;
-  μ':Real <- (μ*λ + x*l)/λ';
+  μ':Real <- (λ*μ + l*x)/λ';
   return (μ', λ');
 }
 
@@ -127,7 +127,7 @@ function update_gaussian_gaussian(x:Real, μ:Real, λ:Real, l:Real) ->
 function update_linear_gaussian_gaussian(x:Real, a:Real, μ:Real, λ:Real,
     c:Real, l:Real) -> (Real, Real) {
   λ':Real <- λ + a*a*l;
-  μ':Real <- (μ*λ + a*(x - c)*l)/λ';
+  μ':Real <- (λ*μ + a*l*(x - c))/λ';
   return (μ', λ');
 }
 
@@ -219,15 +219,16 @@ function update_linear_normal_inverse_gamma_gaussian(a:Real, x:Real, c:Real,
  *
  * - x: The variate.
  * - μ: Prior mean.
- * - Σ: Prior covariance.
- * - S: Likelihood covariance.
+ * - Λ: Prior precision.
+ * - L: Likelihood precision.
  *
- * Returns: the posterior hyperparameters `μ'` and `Σ'`.
+ * Returns: the posterior hyperparameters `μ'` and `Λ'`.
  */
 function update_multivariate_gaussian_gaussian(x:Real[_], μ:Real[_],
-    Σ:Real[_,_], S:Real[_,_]) -> (Real[_], Real[_,_]) {
-  K:Real[_,_] <- Σ*cholinv(Σ + S);
-  return (μ + K*(x - μ), Σ - K*Σ);
+    Λ:Real[_,_], L:Real[_,_]) -> (Real[_], Real[_,_]) {
+  Λ':Real[_,_] <- Λ + L;
+  μ':Real[_] <- cholsolve(Λ', Λ*μ + L*x);
+  return (μ', Λ');
 }
 
 /**
@@ -237,17 +238,18 @@ function update_multivariate_gaussian_gaussian(x:Real[_], μ:Real[_],
  * - x: The variate.
  * - A: Scale.
  * - μ: Prior mean.
- * - Σ: Prior variance.
+ * - Λ: Prior precision.
  * - c: Offset.
- * - S: Likelihood covariance.
+ * - L: Likelihood precision.
  *
  * Returns: the posterior hyperparameters `μ'` and `Σ'`.
  */
 function update_multivariate_linear_gaussian_gaussian(x:Real[_], A:Real[_,_],
-    μ:Real[_], Σ:Real[_,_], c:Real[_], S:Real[_,_]) -> (Real[_],
+    μ:Real[_], Λ:Real[_,_], c:Real[_], L:Real[_,_]) -> (Real[_],
     Real[_,_]) {
-  K:Real[_,_] <- Σ*trans(A)*cholinv(A*Σ*trans(A) + S);
-  return (μ + K*(x - A*μ - c), Σ - K*A*Σ);
+  Λ':Real[_,_] <- Λ + trans(A)*L*A;
+  μ':Real[_] <- cholsolve(Λ', Λ*μ + trans(A)*L*(x - c));
+  return (μ', Λ');
 }
 
 /**
@@ -257,16 +259,17 @@ function update_multivariate_linear_gaussian_gaussian(x:Real[_], A:Real[_,_],
  * - x: The variate.
  * - a: Scale.
  * - μ: Prior mean.
- * - Σ: Prior variance.
+ * - Λ: Prior precision.
  * - c: Offset.
- * - s2: Likelihood variance.
+ * - l: Likelihood precision.
  *
  * Returns: the posterior hyperparameters `μ'` and `Σ'`.
  */
 function update_multivariate_dot_gaussian_gaussian(x:Real, a:Real[_],
-    μ:Real[_], Σ:Real[_,_], c:Real, s2:Real) -> (Real[_], Real[_,_]) {
-  K:Real[_] <- (Σ*a)/(scalar(trans(a)*Σ*a) + s2);
-  return (μ + K*(x - dot(a, μ) - c), Σ - K*trans(a)*Σ);
+    μ:Real[_], Λ:Real[_,_], c:Real, l:Real) -> (Real[_], Real[_,_]) {
+  Λ':Real[_,_] <- Λ + a*l*trans(a);
+  μ':Real[_] <- cholsolve(Λ', Λ*μ + a*l*(x - c));
+  return (μ', Λ');
 }
 
 /**

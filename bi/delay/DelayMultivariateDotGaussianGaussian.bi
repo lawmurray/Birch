@@ -5,14 +5,14 @@
  */
 class DelayMultivariateDotGaussianGaussian(x:Random<Real>&,
     a:Real[_], m:DelayMultivariateGaussian, c:Real, s2:Real) <
-    DelayGaussian(x, dot(a, m.μ) + c, scalar(trans(a)*m.Σ*a) + s2) {
+    DelayGaussian(x, dot(a, m.μ) + c, scalar(trans(a)*cholinv(m.Λ)*a) + s2) {
   /**
    * Scale.
    */
   a:Real[_] <- a;
     
   /**
-   * Prior mean.
+   * Mean.
    */
   m:DelayMultivariateGaussian& <- m;
 
@@ -22,13 +22,13 @@ class DelayMultivariateDotGaussianGaussian(x:Random<Real>&,
   c:Real <- c;
 
   /**
-   * Likelihood variance.
+   * Likelihood precision.
    */
-  s2:Real <- s2;
+  l:Real <- 1.0/s2;
 
   function condition(x:Real) {
-    (m!.μ, m!.Σ) <- update_multivariate_dot_gaussian_gaussian(x, a,
-        m!.μ, m!.Σ, c, s2);
+    (m!.μ, m!.Λ) <- update_multivariate_dot_gaussian_gaussian(x, a,
+        m!.μ, m!.Λ, c, l);
   }
 }
 

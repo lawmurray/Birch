@@ -102,16 +102,14 @@ function downdate_dirichlet_multinomial(x:Integer[_], n:Integer,
  *
  * - x: The variate.
  * - μ': Prior mean.
- * - σ2': Prior variance.
- * - s2: Likelihood variance.
+ * - λ': Prior precision.
+ * - l: Likelihood precision.
  *
  * Returns: the prior hyperparameters `μ` and `σ2`.
  */
-function downdate_gaussian_gaussian(x:Real, μ':Real, σ2':Real, s2:Real) ->
+function downdate_gaussian_gaussian(x:Real, μ':Real, λ':Real, l:Real) ->
     (Real, Real) {
-  λ:Real <- λ' - l;
-  μ:Real <- (λ'*μ' - ν*x)/λ;
-  return (μ, λ);
+
 }
 
 /**
