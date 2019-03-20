@@ -21,7 +21,7 @@ class DelayMultivariateInverseGammaGaussian(x:Random<Real[_]>&, μ:Real[_],
     return observe_multivariate_inverse_gamma_gaussian(x, μ, σ2!.α, σ2!.β);
   }
 
-  function condition(x:Real[_]) {
+  function update(x:Real[_]) {
     (σ2!.α, σ2!.β) <- update_multivariate_inverse_gamma_gaussian(x, μ, σ2!.α,
         σ2!.β);
   }

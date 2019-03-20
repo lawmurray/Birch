@@ -14,7 +14,7 @@ class DelayMultivariateGaussianGaussian(x:Random<Real[_]>&,
    */
   L:Real[_,_] <- cholinv(S);
 
-  function condition(x:Real[_]) {
+  function update(x:Real[_]) {
     (m!.μ, m!.Λ) <- update_multivariate_gaussian_gaussian(x, m!.μ, m!.Λ, L);
   }
 }

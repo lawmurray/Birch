@@ -16,7 +16,7 @@ class DelayRestaurantCategorical(x:Random<Integer>&, ρ:DelayRestaurant) <
     return observe_crp_categorical(x, ρ!.α, ρ!.θ, ρ!.n, ρ!.N);
   }
 
-  function condition(x:Integer) {
+  function update(x:Integer) {
     //@todo use Vector with its in-place enlarge support?
     assert x <= ρ!.K + 1;
     if (x == ρ!.K + 1) {

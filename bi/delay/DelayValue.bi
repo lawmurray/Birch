@@ -19,7 +19,7 @@ class DelayValue<Value>(x:Random<Value>&) < Delay {
     if y? {
       assert !(y!.x?);
       y!.x <- simulate();
-      condition(y!.x!);
+      update(y!.x!);
       realized <- true;
     }
     detach();
@@ -34,7 +34,7 @@ class DelayValue<Value>(x:Random<Value>&) < Delay {
     if y? {
       assert !(y!.x?);
       y!.x <- x;
-      condition(y!.x!);
+      update(y!.x!);
       realized <- true;
     }
     detach();
@@ -62,7 +62,7 @@ class DelayValue<Value>(x:Random<Value>&) < Delay {
    *
    * - x: The value.
    */
-  function condition(x:Value);
+  function update(x:Value);
   
   /**
    * Evaluate the probability mass function (if it exists) at a value.

@@ -28,7 +28,7 @@ class DelayLinearNormalInverseGammaLogGaussian(x:Random<Real>&, a:Real,
         1.0/μ!.λ, μ!.σ2!.α, μ!.σ2!.β) - log(x);
   }
 
-  function condition(x:Real) {
+  function update(x:Real) {
     (μ!.μ, μ!.λ, μ!.σ2!.α, μ!.σ2!.β) <- update_linear_normal_inverse_gamma_gaussian(
         log(x), a, μ!.μ, c, μ!.λ, μ!.σ2!.α, μ!.σ2!.β);
   }

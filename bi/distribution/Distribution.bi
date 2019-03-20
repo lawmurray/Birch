@@ -48,7 +48,7 @@ class Distribution<Value> {
   function simulate() -> Value {
     graft();
     x:Value <- delay!.simulate();
-    delay!.condition(x);
+    delay!.update(x);
     return x;
   }
 
@@ -63,7 +63,7 @@ class Distribution<Value> {
     graft();
     w:Real <- delay!.observe(x);
     if (w > -inf) {
-      delay!.condition(x);
+      delay!.update(x);
     }
     return w;
   }

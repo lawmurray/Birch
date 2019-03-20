@@ -21,7 +21,7 @@ class DelayDiscreteDelta(x:Random<Integer>&, μ:DelayDiscrete) <
     return μ!.observe(x);
   }
   
-  function condition(x:Integer) {
+  function update(x:Integer) {
     μ!.clamp(x);
   }
 

@@ -16,7 +16,7 @@ class DelayGammaExponential(x:Random<Real>&, λ:DelayGamma) <
     return observe_lomax(x, 1.0/λ!.θ, λ!.k);
   }
 
-  function condition(x:Real) {
+  function update(x:Real) {
     λ!.k <- λ!.k + 1.0;
     λ!.θ <- λ!.θ / (1.0 + x*λ!.θ);
   }

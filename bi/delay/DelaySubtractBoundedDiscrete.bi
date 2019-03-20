@@ -68,7 +68,7 @@ class DelaySubtractBoundedDiscrete(x:Random<Integer>&,
     return log(Z);
   }
 
-  function condition(x:Integer) {
+  function update(x:Integer) {
     /* choose a pair with the given difference and clamp parents */
     enumerate(x);
     n:Integer <- simulate_categorical(z, Z) + x0 - 1;

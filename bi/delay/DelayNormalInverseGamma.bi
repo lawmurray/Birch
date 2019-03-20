@@ -26,7 +26,7 @@ class DelayNormalInverseGamma(x:Random<Real>&, μ:Real, a2:Real,
     return observe_normal_inverse_gamma(x, μ, 1.0/λ, σ2!.α, σ2!.β);
   }
 
-  function condition(x:Real) {
+  function update(x:Real) {
     (σ2!.α, σ2!.β) <- update_normal_inverse_gamma(x, μ, λ, σ2!.α, σ2!.β);
   }
 

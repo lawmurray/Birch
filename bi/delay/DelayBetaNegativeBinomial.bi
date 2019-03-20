@@ -24,7 +24,7 @@ class DelayBetaNegativeBinomial(x:Random<Integer>&, k:Integer, ρ:DelayBeta) < D
     return observe_beta_negative_binomial(x, k, ρ!.α, ρ!.β);
   }
 
-  function condition(x:Integer) {
+  function update(x:Integer) {
     (ρ!.α, ρ!.β) <- update_beta_negative_binomial(x, k, ρ!.α, ρ!.β);
   }
 

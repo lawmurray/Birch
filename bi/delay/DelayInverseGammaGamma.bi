@@ -20,7 +20,7 @@ class DelayInverseGammaGamma(x:Random<Real>&, k:Real, θ:DelayInverseGamma) < De
     return observe_compound_gamma(x, k, θ!.α, θ!.β);
   }
 
-  function condition(x:Real) {
+  function update(x:Real) {
     θ!.α <- θ!.α + k;
     θ!.β <- θ!.β + x;
   }

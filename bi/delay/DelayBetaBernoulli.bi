@@ -16,7 +16,7 @@ class DelayBetaBernoulli(x:Random<Boolean>&, ρ:DelayBeta) <
     return observe_beta_bernoulli(x, ρ!.α, ρ!.β);
   }
 
-  function condition(x:Boolean) {
+  function update(x:Boolean) {
     (ρ!.α, ρ!.β) <- update_beta_bernoulli(x, ρ!.α, ρ!.β);
   }
 

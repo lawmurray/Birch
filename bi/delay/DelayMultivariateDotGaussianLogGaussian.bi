@@ -26,7 +26,7 @@ class DelayMultivariateDotGaussianLogGaussian(x:Random<Real>&, a:Real[_],
    */
   l:Real <- 1.0/s2;
 
-  function condition(x:Real) {
+  function update(x:Real) {
     (m!.μ, m!.Λ) <- update_multivariate_dot_gaussian_gaussian(log(x), a,
         m!.μ, m!.Λ, c, l);
   }

@@ -16,7 +16,7 @@ class DelayDirichletCategorical(x:Random<Integer>&, ρ:DelayDirichlet) <
     return observe_dirichlet_categorical(x, ρ!.α);
   }
 
-  function condition(x:Integer) {
+  function update(x:Integer) {
     ρ!.α <- update_dirichlet_categorical(x, ρ!.α);
   }
 

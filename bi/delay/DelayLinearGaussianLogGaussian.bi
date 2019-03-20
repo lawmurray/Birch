@@ -24,7 +24,7 @@ class DelayLinearGaussianLogGaussian(x:Random<Real>&, a:Real,
    */
   l:Real <- 1.0/s2;
 
-  function condition(x:Real) {
+  function update(x:Real) {
     (m!.μ, m!.λ) <- update_linear_gaussian_gaussian(log(x), a, m!.μ, m!.λ, c, l);
   }
 }

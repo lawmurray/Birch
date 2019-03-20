@@ -13,7 +13,7 @@ class DelayGaussianGaussian(x:Random<Real>&, m:DelayGaussian, s2:Real) <
    */
   l:Real <- 1.0/s2;
 
-  function condition(x:Real) {
+  function update(x:Real) {
     (m!.μ, m!.λ) <- update_gaussian_gaussian(x, m!.μ, m!.λ, l);
   }
 }

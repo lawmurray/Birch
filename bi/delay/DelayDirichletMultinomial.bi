@@ -21,7 +21,7 @@ class DelayDirichletMultinomial(x:Random<Integer[_]>&, n:Integer,
     return observe_dirichlet_multinomial(x, n, ρ!.α);
   }
 
-  function condition(x:Integer[_]) {
+  function update(x:Integer[_]) {
     ρ!.α <- update_dirichlet_multinomial(x, n, ρ!.α);
   }
 

@@ -33,7 +33,7 @@ class DelayLinearBoundedDiscrete(x:Random<Integer>&, a:Integer,
     return μ!.observe((x - c)/a);
   }
 
-  function condition(x:Integer) {
+  function update(x:Integer) {
     μ!.clamp((x - c)/a);
   }
 
