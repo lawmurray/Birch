@@ -3,7 +3,7 @@
  */
 class DelayLinearGaussianLogGaussian(x:Random<Real>&, a:Real,
     m:DelayGaussian, c:Real, s2:Real) < DelayLogGaussian(x, a*m.μ + c,
-    a*a*m.σ2 + s2) {
+    a*a/m.λ + s2) {
   /**
    * Scale.
    */
@@ -20,12 +20,12 @@ class DelayLinearGaussianLogGaussian(x:Random<Real>&, a:Real,
   c:Real <- c;
 
   /**
-   * Likelihood variance.
+   * Likelihood precision.
    */
-  s2:Real <- s2;
+  l:Real <- 1.0/s2;
 
   function condition(x:Real) {
-    (m!.μ, m!.σ2) <- update_linear_gaussian_gaussian(log(x), a, m!.μ, m!.σ2, c, s2);
+    (m!.μ, m!.λ) <- update_linear_gaussian_gaussian(log(x), a, m!.μ, m!.λ, c, l);
   }
 }
 

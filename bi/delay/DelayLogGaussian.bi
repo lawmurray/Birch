@@ -11,22 +11,22 @@ class DelayLogGaussian(x:Random<Real>&, μ:Real, σ2:Real) <
   /**
    * Variance.
    */
-  σ2:Real <- σ2;
+  λ:Real <- 1.0/σ2;
 
   function simulate() -> Real {
-    return simulate_log_gaussian(μ, σ2);
+    return simulate_log_gaussian(μ, 1.0/λ);
   }
   
   function observe(x:Real) -> Real {
-    return observe_log_gaussian(x, μ, σ2);
+    return observe_log_gaussian(x, μ, 1.0/λ);
   }
 
   function pdf(x:Real) -> Real {
-    return pdf_log_gaussian(x, μ, σ2);
+    return pdf_log_gaussian(x, μ, 1.0/λ);
   }
 
   function cdf(x:Real) -> Real {
-    return cdf_log_gaussian(x, μ, σ2);
+    return cdf_log_gaussian(x, μ, 1.0/λ);
   }
 
   function lower() -> Real? {

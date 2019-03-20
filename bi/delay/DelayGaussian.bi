@@ -8,24 +8,24 @@ class DelayGaussian(x:Random<Real>&, μ:Real, σ2:Real) < DelayValue<Real>(x) {
   μ:Real <- μ;
 
   /**
-   * Variance.
+   * Precision.
    */
-  σ2:Real <- σ2;
+  λ:Real <- 1.0/σ2;
 
   function simulate() -> Real {
-    return simulate_gaussian(μ, σ2);
+    return simulate_gaussian(μ, 1.0/λ);
   }
   
   function observe(x:Real) -> Real {
-    return observe_gaussian(x, μ, σ2);
+    return observe_gaussian(x, μ, 1.0/λ);
   }
 
   function pdf(x:Real) -> Real {
-    return pdf_gaussian(x, μ, σ2);
+    return pdf_gaussian(x, μ, 1.0/λ);
   }
 
   function cdf(x:Real) -> Real {
-    return cdf_gaussian(x, μ, σ2);
+    return cdf_gaussian(x, μ, 1.0/λ);
   }
 }
 

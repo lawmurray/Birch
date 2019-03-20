@@ -99,15 +99,16 @@ function update_dirichlet_multinomial(x:Integer[_], n:Integer, α:Real[_]) ->
  *
  * - x: The variate.
  * - μ: Prior mean.
- * - σ2: Prior variance.
- * - s2: Likelihood variance.
+ * - λ: Prior precision.
+ * - l: Likelihood precision.
  *
  * Returns: the posterior hyperparameters `μ'` and `λ'`.
  */
-function update_gaussian_gaussian(x:Real, μ:Real, σ2:Real, s2:Real) ->
+function update_gaussian_gaussian(x:Real, μ:Real, λ:Real, l:Real) ->
     (Real, Real) {
-  k:Real <- σ2/(σ2 + s2);
-  return (μ + k*(x - μ), (1.0 - k)*σ2);
+  λ':Real <- λ + l;
+  μ':Real <- (μ*λ + x*l)/λ';
+  return (μ', λ');
 }
 
 /**
@@ -117,16 +118,17 @@ function update_gaussian_gaussian(x:Real, μ:Real, σ2:Real, s2:Real) ->
  * - x: The variate.
  * - a: Scale.
  * - μ: Prior mean.
- * - σ2: Prior variance.
+ * - λ: Prior precision.
  * - c: Offset.
- * - s2: Likelihood variance.
+ * - l: Likelihood precision.
  *
  * Returns: the posterior hyperparameters `μ'` and `σ2'`.
  */
-function update_linear_gaussian_gaussian(x:Real, a:Real, μ:Real, σ2:Real,
-    c:Real, s2:Real) -> (Real, Real) {
-  k:Real <- σ2*a/(a*a*σ2 + s2);
-  return (μ + k*(x - a*μ - c), (1.0 - k*a)*σ2);
+function update_linear_gaussian_gaussian(x:Real, a:Real, μ:Real, λ:Real,
+    c:Real, l:Real) -> (Real, Real) {
+  λ':Real <- λ + a*a*l;
+  μ':Real <- (μ*λ + a*(x - c)*l)/λ';
+  return (μ', λ');
 }
 
 /**
