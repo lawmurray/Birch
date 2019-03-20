@@ -26,11 +26,11 @@ class DelayScaledGammaPoisson(x:Random<Integer>&, a:Real, λ:DelayGamma) <
   }
 
   function update(x:Integer) {
-    k:Real;
-    θ:Real;
-    (k, θ) <- update_gamma_poisson(x, λ!.k, a*λ!.θ);
-    λ!.k <- k;
-    λ!.θ <- θ/a;
+    (λ!.k, λ!.θ) <- update_scaled_gamma_poisson(x, a, λ!.k, λ!.θ);
+  }
+
+  function downdate(x:Integer) {
+    (λ!.k, λ!.θ) <- downdate_scaled_gamma_poisson(x, a, λ!.k, λ!.θ);
   }
 
   function pmf(x:Integer) -> Real {

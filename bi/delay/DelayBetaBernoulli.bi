@@ -20,6 +20,10 @@ class DelayBetaBernoulli(x:Random<Boolean>&, ρ:DelayBeta) <
     (ρ!.α, ρ!.β) <- update_beta_bernoulli(x, ρ!.α, ρ!.β);
   }
 
+  function downdate(x:Boolean) {
+    (ρ!.α, ρ!.β) <- downdate_beta_bernoulli(x, ρ!.α, ρ!.β);
+  }
+
   function pmf(x:Boolean) -> Real {
     return pmf_beta_bernoulli(x, ρ!.α, ρ!.β);
   }

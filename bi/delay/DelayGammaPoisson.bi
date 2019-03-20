@@ -24,6 +24,10 @@ class DelayGammaPoisson(x:Random<Integer>&, λ:DelayGamma) <
     (λ!.k, λ!.θ) <- update_gamma_poisson(x, λ!.k, λ!.θ);
   }
 
+  function downdate(x:Integer) {
+    (λ!.k, λ!.θ) <- downdate_gamma_poisson(x, λ!.k, λ!.θ);
+  }
+
   function pmf(x:Integer) -> Real {
     return pmf_gamma_poisson(x, λ!.k, λ!.θ);
   }

@@ -21,8 +21,11 @@ class DelayInverseGammaGamma(x:Random<Real>&, k:Real, θ:DelayInverseGamma) < De
   }
 
   function update(x:Real) {
-    θ!.α <- θ!.α + k;
-    θ!.β <- θ!.β + x;
+    (θ!.α, θ!.β) <- update_inverse_gamma_gamma(x, k, θ!.α, θ!.β);
+  }
+
+  function downdate(x:Real) {
+    (θ!.α, θ!.β) <- downdate_inverse_gamma_gamma(x, k, θ!.α, θ!.β);
   }
 
   function pdf(x:Real) -> Real {

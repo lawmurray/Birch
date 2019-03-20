@@ -28,6 +28,10 @@ class DelayBetaNegativeBinomial(x:Random<Integer>&, k:Integer, ρ:DelayBeta) < D
     (ρ!.α, ρ!.β) <- update_beta_negative_binomial(x, k, ρ!.α, ρ!.β);
   }
 
+  function downdate(x:Integer) {
+    (ρ!.α, ρ!.β) <- downdate_beta_negative_binomial(x, k, ρ!.α, ρ!.β);
+  }
+
   function pmf(x:Integer) -> Real {
     return pmf_beta_negative_binomial(x, k, ρ!.α, ρ!.β);
   }

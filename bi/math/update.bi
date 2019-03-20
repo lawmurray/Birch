@@ -63,6 +63,36 @@ function update_gamma_poisson(x:Integer, k:Real, θ:Real) -> (Real, Real) {
 }
 
 /**
+ * Update the parameters of a scaled Gamma distribution with a Poisson
+ * likelihood.
+ *
+ * - x: The variate.
+ * - a: Scale.
+ * - k: Prior shape.
+ * - θ: Prior scale.
+ *
+ * Returns: the posterior hyperparameters `k'` and `θ'`.
+ */
+function update_scaled_gamma_poisson(x:Integer, a:Real, k:Real, θ:Real) ->
+    (Real, Real) {
+  return (k + x, θ/(a*θ + 1.0));
+}
+
+/**
+ * Update the parameters of a Gamma distribution with an exponential
+ * likelihood.
+ *
+ * - x: The variate.
+ * - k: Prior shape.
+ * - θ: Prior scale.
+ *
+ * Returns: the posterior hyperparameters `k'` and `θ'`.
+ */
+function update_gamma_exponential(x:Real, k:Real, θ:Real) -> (Real, Real) {
+  return (k + 1.0, θ/(1.0 + x*θ));
+}
+
+/**
  * Update the parameters of a Dirichlet distribution with a categorical
  * likelihood.
  *
@@ -209,6 +239,22 @@ function update_linear_normal_inverse_gamma_gaussian(a:Real, x:Real, c:Real,
   β':Real <- β + 0.5*(y*y + μ*μ*λ - μ'*μ'*λ');
   
   return (μ', λ', α', β');
+}
+
+/**
+ * Update the parameters of an inverse-gamma distribution with a
+ * gamma likelihood.
+ *
+ * - x: The variate.
+ * - k: Shape of the gamma.
+ * - α: Prior shape of the inverse-gamma.
+ * - β: Prior scale of the inverse-gamma.
+ *
+ * Returns: the posterior hyperparameters `α'` and `β'`.
+ */
+function update_inverse_gamma_gamma(x:Real, k:Real, α:Real, β:Real) ->
+    (Real, Real) {
+  return (α + k, β + x);
 }
 
 /**

@@ -16,6 +16,10 @@ class DelayGaussianGaussian(x:Random<Real>&, m:DelayGaussian, s2:Real) <
   function update(x:Real) {
     (m!.μ, m!.λ) <- update_gaussian_gaussian(x, m!.μ, m!.λ, l);
   }
+
+  function downdate(x:Real) {
+    (m!.μ, m!.λ) <- downdate_gaussian_gaussian(x, m!.μ, m!.λ, l);
+  }
 }
 
 function DelayGaussianGaussian(x:Random<Real>&, μ:DelayGaussian,

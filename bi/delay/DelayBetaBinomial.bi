@@ -29,6 +29,10 @@ class DelayBetaBinomial(x:Random<Integer>&, n:Integer, ρ:DelayBeta) <
     (ρ!.α, ρ!.β) <- update_beta_binomial(x, n, ρ!.α, ρ!.β);
   }
 
+  function downdate(x:Integer) {
+    (ρ!.α, ρ!.β) <- downdate_beta_binomial(x, n, ρ!.α, ρ!.β);
+  }
+
   function pmf(x:Integer) -> Real {
     return pmf_beta_binomial(x, n, ρ!.α, ρ!.β);
   }

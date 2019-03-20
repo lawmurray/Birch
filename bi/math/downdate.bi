@@ -66,6 +66,37 @@ function downdate_gamma_poisson(x:Integer, k':Real, θ':Real) ->
 }
 
 /**
+ * Downdate the parameters of a scaled Gamma distribution with a Poisson
+ * likelihood.
+ *
+ * - x: The variate.
+ * - a: Scale.
+ * - k': Posterior shape.
+ * - θ': Posterior scale.
+ *
+ * Returns: the prior hyperparameters `k` and `θ`.
+ */
+function downdate_scaled_gamma_poisson(x:Integer, a:Real, k':Real, θ':Real) ->
+    (Real, Real) {
+  return (k' - x, θ'/(1.0 - a*θ'));
+}
+
+/**
+ * Downdate the parameters of a Gamma distribution with an exponential
+ * likelihood.
+ *
+ * - x: The variate.
+ * - k': Posterior shape.
+ * - θ': Posterior scale.
+ *
+ * Returns: the prior hyperparameters `k` and `θ`.
+ */
+function downdate_gamma_exponential(x:Real, k':Real, θ':Real) ->
+    (Real, Real) {
+  return (k' - 1.0, θ'/(1.0 - x*θ'));
+}
+
+/**
  * Downdate the parameters of a Dirichlet distribution with a categorical
  * likelihood.
  *
@@ -212,6 +243,22 @@ function downdate_linear_normal_inverse_gamma_gaussian(a:Real, x:Real,
   β:Real <- β' - 0.5*(y*y + λ*μ*μ - λ'*μ'*μ');
   
   return (μ, λ, α, β);
+}
+
+/**
+ * Downdate the parameters of an inverse-gamma distribution with a
+ * gamma likelihood.
+ *
+ * - x: The variate.
+ * - k: Shape of the gamma.
+ * - α': Posterior shape of the inverse-gamma.
+ * - β': Posterior scale of the inverse-gamma.
+ *
+ * Returns: the prior hyperparameters `α` and `β`.
+ */
+function downdate_inverse_gamma_gamma(x:Real, k:Real, α':Real, β':Real) ->
+    (Real, Real) {
+  return (α' - k, β' - x);
 }
 
 /**

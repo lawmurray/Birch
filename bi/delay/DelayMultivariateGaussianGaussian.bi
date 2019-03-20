@@ -17,6 +17,10 @@ class DelayMultivariateGaussianGaussian(x:Random<Real[_]>&,
   function update(x:Real[_]) {
     (m!.μ, m!.Λ) <- update_multivariate_gaussian_gaussian(x, m!.μ, m!.Λ, L);
   }
+
+  function downdate(x:Real[_]) {
+    (m!.μ, m!.Λ) <- downdate_multivariate_gaussian_gaussian(x, m!.μ, m!.Λ, L);
+  }
 }
 
 function DelayMultivariateGaussianGaussian(x:Random<Real[_]>&,

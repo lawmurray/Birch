@@ -30,6 +30,10 @@ class DelayNormalInverseGamma(x:Random<Real>&, μ:Real, a2:Real,
     (σ2!.α, σ2!.β) <- update_normal_inverse_gamma(x, μ, λ, σ2!.α, σ2!.β);
   }
 
+  function downdate(x:Real) {
+    (σ2!.α, σ2!.β) <- downdate_normal_inverse_gamma(x, μ, λ, σ2!.α, σ2!.β);
+  }
+
   function pdf(x:Integer) -> Real {
     return pdf_normal_inverse_gamma(x, μ, 1.0/λ, σ2!.α, σ2!.β);
   }

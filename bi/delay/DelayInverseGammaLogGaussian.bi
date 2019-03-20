@@ -25,6 +25,10 @@ class DelayInverseGammaLogGaussian(x:Random<Real>&, μ:Real,
     (σ2!.α, σ2!.β) <- update_inverse_gamma_gaussian(log(x), μ, σ2!.α, σ2!.β);
   }
 
+  function downdate(x:Real) {
+    (σ2!.α, σ2!.β) <- downdate_inverse_gamma_gaussian(log(x), μ, σ2!.α, σ2!.β);
+  }
+
   function pdf(x:Real) -> Real {
     return pdf_inverse_gamma_gaussian(log(x), μ, σ2!.α, σ2!.β)/x;
   }

@@ -20,6 +20,10 @@ class DelayDirichletCategorical(x:Random<Integer>&, ρ:DelayDirichlet) <
     ρ!.α <- update_dirichlet_categorical(x, ρ!.α);
   }
 
+  function downdate(x:Integer) {
+    ρ!.α <- downdate_dirichlet_categorical(x, ρ!.α);
+  }
+
   function pmf(x:Integer) -> Real {
     return pmf_dirichlet_categorical(x, ρ!.α);
   }

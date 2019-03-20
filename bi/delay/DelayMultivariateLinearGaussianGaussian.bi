@@ -28,6 +28,11 @@ class DelayMultivariateLinearGaussianGaussian(x:Random<Real[_]>&,
     (m!.μ, m!.Λ) <- update_multivariate_linear_gaussian_gaussian(x, A, m!.μ,
         m!.Λ, c, L);
   }
+
+  function downdate(x:Real[_]) {
+    (m!.μ, m!.Λ) <- downdate_multivariate_linear_gaussian_gaussian(x, A, m!.μ,
+        m!.Λ, c, L);
+  }
 }
 
 function DelayMultivariateLinearGaussianGaussian(x:Random<Real[_]>&,

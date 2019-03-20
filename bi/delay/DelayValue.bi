@@ -63,6 +63,15 @@ class DelayValue<Value>(x:Random<Value>&) < Delay {
    * - x: The value.
    */
   function update(x:Value);
+
+  /**
+   * Downdate the parent node on th $M$-path given the value of this node.
+   *
+   * - x: The value.
+   */
+  function downdate(x:Value) {
+    error("downdate unsupported here");
+  }
   
   /**
    * Evaluate the probability mass function (if it exists) at a value.

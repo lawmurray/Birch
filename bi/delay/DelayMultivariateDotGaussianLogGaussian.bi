@@ -31,6 +31,11 @@ class DelayMultivariateDotGaussianLogGaussian(x:Random<Real>&, a:Real[_],
         m!.μ, m!.Λ, c, l);
   }
 
+  function downdate(x:Real) {
+    (m!.μ, m!.Λ) <- downdate_multivariate_dot_gaussian_gaussian(log(x), a,
+        m!.μ, m!.Λ, c, l);
+  }
+
   function lower() -> Real? {
     return 0.0;
   }

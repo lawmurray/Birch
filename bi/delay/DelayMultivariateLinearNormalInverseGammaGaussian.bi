@@ -34,6 +34,11 @@ class DelayMultivariateLinearNormalInverseGammaGaussian(x:Random<Real[_]>&,
         x, A, μ!.μ, c, μ!.Λ, μ!.σ2!.α, μ!.σ2!.β);
   }
 
+  function downdate(x:Real[_]) {
+    (μ!.μ, μ!.Λ, μ!.σ2!.α, μ!.σ2!.β) <- downdate_multivariate_linear_normal_inverse_gamma_gaussian(
+        x, A, μ!.μ, c, μ!.Λ, μ!.σ2!.α, μ!.σ2!.β);
+  }
+
   function pdf(x:Real[_]) -> Real {
     return pdf_multivariate_linear_normal_inverse_gamma_gaussian(x, A, μ!.μ,
         c, μ!.Λ, μ!.σ2!.α, μ!.σ2!.β);

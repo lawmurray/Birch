@@ -22,8 +22,13 @@ class DelayMultivariateInverseGammaGaussian(x:Random<Real[_]>&, μ:Real[_],
   }
 
   function update(x:Real[_]) {
-    (σ2!.α, σ2!.β) <- update_multivariate_inverse_gamma_gaussian(x, μ, σ2!.α,
-        σ2!.β);
+    (σ2!.α, σ2!.β) <- update_multivariate_inverse_gamma_gaussian(x, μ,
+        σ2!.α, σ2!.β);
+  }
+
+  function downdate(x:Real[_]) {
+    (σ2!.α, σ2!.β) <- downdate_multivariate_inverse_gamma_gaussian(x, μ,
+        σ2!.α, σ2!.β);
   }
 
   function pdf(x:Real[_]) -> Real {

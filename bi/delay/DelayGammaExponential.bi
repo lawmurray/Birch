@@ -17,8 +17,11 @@ class DelayGammaExponential(x:Random<Real>&, λ:DelayGamma) <
   }
 
   function update(x:Real) {
-    λ!.k <- λ!.k + 1.0;
-    λ!.θ <- λ!.θ / (1.0 + x*λ!.θ);
+    (λ!.k, λ!.θ) <- update_gamma_exponential(x, λ!.k, λ!.θ);
+  }
+
+  function downdate(x:Real) {
+    (λ!.k, λ!.θ) <- downdate_gamma_exponential(x, λ!.k, λ!.θ);
   }
 
   function pdf(x:Real) -> Real {
