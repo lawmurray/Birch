@@ -37,6 +37,18 @@ public:
   }
 
   /**
+   * Generic value constructor.
+   *
+   * @tparam U Value type (convertible to @p T).
+   */
+  template<class U>
+  Optional(const U& value) :
+      value(value),
+      hasValue(true) {
+    //
+  }
+
+  /**
    * Generic copy constructor.
    *
    * @tparam U Value type (convertible to @p T).
