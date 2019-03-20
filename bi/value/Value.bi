@@ -862,7 +862,7 @@ class Value {
    *
    * Yields: Values for each element in turn.
    */
-  fiber walk() -> Value {
+  fiber walk() -> Buffer {
     assert false;
   }
 
@@ -883,7 +883,7 @@ class Value {
    *
    * Returns: a Value for modifying the new element.
    */
-  function push() -> Value {
+  function push() -> Buffer {
     assert false;
   }
   

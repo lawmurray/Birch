@@ -160,7 +160,6 @@
       "bi/io/Parser.bi",
       "bi/json/JSONGenerator.bi",
       "bi/json/JSONParser.bi",
-      "bi/json/JSONParser.cpp",
       "bi/math/cdf.bi",
       "bi/math/distance.bi",
       "bi/math/eigen.bi",
@@ -307,9 +306,7 @@
       "libbirch/value.hpp",
       "libbirch/View.hpp",
       "libbirch/Weak.hpp",
-      "libbirch/WeakPtr.hpp",
-
-      "bi/json/JSONParser.hpp"
+      "libbirch/WeakPtr.hpp"
     ],
     "other": [
       "LICENSE",
@@ -331,7 +328,11 @@
       "eigen3/Eigen/Dense",
       "boost/filesystem.hpp",
       "boost/math/special_functions.hpp",
-      "boost/math/distributions.hpp"
+      "boost/math/distributions.hpp",
+      "yaml.h"
+    ],
+    "library": [
+      "yaml"
     ]
   }
 }
