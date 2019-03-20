@@ -2,26 +2,20 @@
  * Delayed multivariate Gaussian-Gaussian random variate.
  */
 class DelayMultivariateGaussianGaussian(x:Random<Real[_]>&,
-    μ_0:DelayMultivariateGaussian, Σ:Real[_,_]) <
-    DelayMultivariateGaussian(x, μ_0.μ, μ_0.Σ + Σ) {
+    m:DelayMultivariateGaussian, S:Real[_,_]) <
+    DelayMultivariateGaussian(x, m.μ, m.Σ + S) {
   /**
-   * Prior mean.
+   * Mean.
    */
-  μ_0:DelayMultivariateGaussian& <- μ_0;
+  m:DelayMultivariateGaussian& <- m;
 
   /**
-   * Marginal mean.
+   * Likelihood covariance.
    */
-  μ_m:Real[_] <- this.μ;
-
-  /**
-   * Marginal covariance.
-   */
-  Σ_m:Real[_,_] <- this.Σ;
+  S:Real[_,_] <- S;
 
   function condition(x:Real[_]) {
-    (μ_0!.μ, μ_0!.Σ) <- update_multivariate_gaussian_gaussian(x, μ_0!.μ, μ_0!.Σ, 
-        μ_m, Σ_m);
+    (m!.μ, m!.Σ) <- update_multivariate_gaussian_gaussian(x, m!.μ, m!.Σ, S);
   }
 }
 

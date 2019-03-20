@@ -217,16 +217,15 @@ function update_linear_normal_inverse_gamma_gaussian(a:Real, x:Real, c:Real,
  *
  * - x: The variate.
  * - μ: Prior mean.
- * - Σ: Prior variance.
- * - μ_m: Prior marginal mean.
- * - Σ_m: Prior marginal variance.
+ * - Σ: Prior covariance.
+ * - S: Likelihood covariance.
  *
  * Returns: the posterior hyperparameters `μ'` and `Σ'`.
  */
 function update_multivariate_gaussian_gaussian(x:Real[_], μ:Real[_],
-    Σ:Real[_,_], μ_m:Real[_], Σ_m:Real[_,_]) -> (Real[_], Real[_,_]) {
-  K:Real[_,_] <- Σ*cholinv(Σ_m);
-  return (μ + K*(x - μ_m), Σ - K*Σ);
+    Σ:Real[_,_], S:Real[_,_]) -> (Real[_], Real[_,_]) {
+  K:Real[_,_] <- Σ*cholinv(Σ + S);
+  return (μ + K*(x - μ), Σ - K*Σ);
 }
 
 /**
@@ -237,16 +236,16 @@ function update_multivariate_gaussian_gaussian(x:Real[_], μ:Real[_],
  * - A: Scale.
  * - μ: Prior mean.
  * - Σ: Prior variance.
- * - μ_m: Prior marginal mean.
- * - Σ_m: Prior marginal variance.
+ * - c: Offset.
+ * - S: Likelihood covariance.
  *
  * Returns: the posterior hyperparameters `μ'` and `Σ'`.
  */
 function update_multivariate_linear_gaussian_gaussian(x:Real[_], A:Real[_,_],
-    μ:Real[_], Σ:Real[_,_], μ_m:Real[_], Σ_m:Real[_,_]) -> (Real[_],
+    μ:Real[_], Σ:Real[_,_], c:Real[_], S:Real[_,_]) -> (Real[_],
     Real[_,_]) {
-  K:Real[_,_] <- Σ*trans(A)*cholinv(Σ_m);
-  return (μ + K*(x - μ_m), Σ - K*A*Σ);
+  K:Real[_,_] <- Σ*trans(A)*cholinv(A*Σ*trans(A) + S);
+  return (μ + K*(x - A*μ - c), Σ - K*A*Σ);
 }
 
 /**
@@ -257,15 +256,15 @@ function update_multivariate_linear_gaussian_gaussian(x:Real[_], A:Real[_,_],
  * - a: Scale.
  * - μ: Prior mean.
  * - Σ: Prior variance.
- * - μ_m: Prior marginal mean.
- * - σ2_m: Prior marginal variance.
+ * - c: Offset.
+ * - s2: Likelihood variance.
  *
  * Returns: the posterior hyperparameters `μ'` and `Σ'`.
  */
 function update_multivariate_dot_gaussian_gaussian(x:Real, a:Real[_],
-    μ:Real[_], Σ:Real[_,_], μ_m:Real, σ2_m:Real) -> (Real[_], Real[_,_]) {
-  K:Real[_] <- Σ*a*(1.0/σ2_m);
-  return (μ + K*(x - μ_m), Σ - K*trans(a)*Σ);
+    μ:Real[_], Σ:Real[_,_], c:Real, s2:Real) -> (Real[_], Real[_,_]) {
+  K:Real[_] <- (Σ*a)/(scalar(trans(a)*Σ*a) + s2);
+  return (μ + K*(x - dot(a, μ) - c), Σ - K*trans(a)*Σ);
 }
 
 /**
