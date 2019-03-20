@@ -2,36 +2,36 @@
  * Delayed linear-Gaussian-log-Gaussian random variate.
  */
 class DelayLinearGaussianLogGaussian(x:Random<Real>&, a:Real,
-    μ_0:DelayGaussian, c:Real, σ2:Real) < DelayLogGaussian(x, a*μ_0.μ + c,
-    a*a*μ_0.σ2 + σ2) {
+    m:DelayGaussian, c:Real, s2:Real) < DelayLogGaussian(x, a*m.μ + c,
+    a*a*m.σ2 + s2) {
   /**
    * Scale.
    */
   a:Real <- a;
     
   /**
-   * Prior mean.
+   * Mean.
    */
-  μ_0:DelayGaussian& <- μ_0;
+  m:DelayGaussian& <- m;  
 
   /**
-   * Marginal mean.
+   * Offset.
    */
-  μ_m:Real <- this.μ;
+  c:Real <- c;
 
   /**
-   * Marginal variance.
+   * Likelihood variance.
    */
-  σ2_m:Real <- this.σ2;
+  s2:Real <- s2;
 
   function condition(x:Real) {
-    (μ_0!.μ, μ_0!.σ2) <- update_linear_gaussian_gaussian(log(x), a, μ_0!.μ, μ_0!.σ2, μ_m, σ2_m);
+    (m!.μ, m!.σ2) <- update_linear_gaussian_gaussian(log(x), a, m!.μ, m!.σ2, c, s2);
   }
 }
 
 function DelayLinearGaussianLogGaussian(x:Random<Real>&, a:Real,
-    μ_0:DelayGaussian, c:Real, σ2:Real) -> DelayLinearGaussianLogGaussian {
-  m:DelayLinearGaussianLogGaussian(x, a, μ_0, c, σ2);
-  μ_0.setChild(m);
+    μ:DelayGaussian, c:Real, σ2:Real) -> DelayLinearGaussianLogGaussian {
+  m:DelayLinearGaussianLogGaussian(x, a, μ, c, σ2);
+  μ.setChild(m);
   return m;
 }
