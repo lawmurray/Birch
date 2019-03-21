@@ -39,15 +39,15 @@ class ParticleMarginalMetropolisHastings < Sampler {
       x' <- clone<Model>(m);
       
       /* simulate a proposed state */
-      q' <- sum(limit(x'.propose(x!), ncheckpoints!));
+      //q' <- sum(limit(x'.propose(x!), ncheckpoints!));
       
       /* re-execute to now compute the proposal log-weight, subtracting out
        * the previous log-weight as it represents log-likelihood terms that
        * are in common */
-      q' <- sum(limit(x'.propose(x!), ncheckpoints!));
+      //q' <- sum(limit(x'.propose(x!), ncheckpoints!));
       
       /* execute the other way to compute the reverse proposal log-weight */
-      q <- sum(limit(x!.propose(x'), ncheckpoints!));
+      //q <- sum(limit(x!.propose(x'), ncheckpoints!));
       
       /* compute the target density, π' will be the sum of the log-likelihood
        * and log-prior */

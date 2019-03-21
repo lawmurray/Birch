@@ -14,7 +14,7 @@
  * A model inheriting from `MarkovModel` overrides the `parameter`,
  * `initial` and `transition` member fibers to specify the individual
  * components of the joint distribution, rather than the `simulate` member
- * fiber; likewise for the `propose` analogs.
+ * fiber..
  *
  * In addition to the usual fiber-based interface for models, `MarkovModel`
  * provides an alternative function-based interface based on the `start` and
@@ -43,74 +43,6 @@ class MarkovModel<Parameter,State> < StateModel<Parameter,State> {
         yield sum(initial(x!, θ));
       }
       u <- x;
-    }
-  }
-
-  fiber propose() -> Real {
-    auto f <- this.x.walk();
-    
-    u:State?;  // previous state
-    x:State?;  // current state
-
-    yield sum(proposeParameter(θ));
-    while true {
-      if f? {  // is the next state given?
-        x <- f!;
-      } else {
-        o:State;
-        this.x.pushBack(o);
-        x <- o;
-      }
-      if u? {
-        yield sum(proposeTransition(x!, u!, θ));
-      } else {
-        yield sum(proposeInitial(x!, θ));
-      }
-      u <- x;
-    }
-  }
-
-  fiber propose(m:Model) -> Real {
-    auto n <- MarkovModel<Parameter,State>?(m);
-    if n? {
-      propose(n!);
-    } else {
-      error("previous state has incorrect type");
-    }
-  }
-  
-  fiber propose(m:MarkovModel<Parameter,State>) -> Real {  
-    auto θ <- m.θ;
-    auto θ' <- this.θ;
-    auto f <- m.x.walk(); 
-    auto f' <- this.x.walk();
-    
-    u:State?;  // previous state of m
-    x:State?;  // current state of m
-    u':State?;  // previous state of this
-    x':State?;  // current state of this
-
-    yield sum(proposeParameter(θ', θ));
-    while true {
-      if f? {
-        x <- f!;
-      } else {
-        error("previous state has incorrect number of checkpoints");
-      }
-      if f'? {  // is the next state given?
-        x' <- f'!;
-      } else {
-        o:State;
-        this.x.pushBack(o);
-        x' <- o;
-      }
-      if u'? {
-        yield sum(proposeTransition(x'!, u'!, θ', x!, u!, θ));
-      } else {
-        yield sum(proposeInitial(x'!, θ', x!, θ));
-      }
-      u <- x;
-      u' <- x';
     }
   }
   
@@ -165,61 +97,5 @@ class MarkovModel<Parameter,State> < StateModel<Parameter,State> {
    */
   fiber transition(x:State, u:State, θ:Parameter) -> Real {
     //
-  }
-  
-  /**
-   * Initial proposal.
-   *
-   * - x: The initial state, to be set.
-   * - θ: The parameters.
-   *
-   * By default calls `initial(x, θ)`.
-   */
-  fiber proposeInitial(x:State, θ:Parameter) -> Real {
-    initial(x, θ);
-  }
-  
-  /**
-   * Transition proposal.
-   *
-   * - x: The current state, to be set.
-   * - u: The previous state.
-   * - θ: The parameters.
-   *
-   * By default calls `transition(x, u, θ)`.
-   */
-  fiber proposeTransition(x:State, u:State, θ:Parameter) -> Real {
-    transition(x, u, θ);
-  }
-  
-  /**
-   * Initial proposal.
-   *
-   * - x': The initial state, to be set.
-   * - θ': The parameters.
-   * - x: The last initial state.
-   * - θ: The last parameters.
-   *
-   * By default calls `proposeInitial(x', θ')`.
-   */
-  fiber proposeInitial(x':State, θ':Parameter, x:State, θ:Parameter) -> Real {
-    proposeInitial(x', θ');
-  }
-  
-  /**
-   * Transition proposal.
-   *
-   * - x': The current state, to be set.
-   * - u': The previous state.
-   * - θ': The parameters.
-   * - x: The last current state.
-   * - u: The last previous state.
-   * - θ: The last parameters.
-   *
-   * By default calls `proposeTransition(x', u', θ')`.
-   */
-  fiber proposeTransition(x':State, u':State, θ':Parameter, x:State, u:State,
-      θ:Parameter) -> Real {
-    proposeTransition(x', u', θ');
   }
 }

@@ -15,30 +15,6 @@ class Model {
   fiber simulate() -> Real {
     //
   }
-  
-  /**
-   * Propose a state of the model.
-   *
-   * Yields: a log-weight each time a checkpoint is encountered.
-   *
-   * By default calls `simulate()`.
-   */
-  fiber propose() -> Real {
-    simulate();
-  }
-
-  /**
-   * Propose a state of the model depending on a previous state.
-   *
-   * - m: The previous state.
-   *
-   * Yields: a log-weight each time a checkpoint is encountered.
-   *
-   * By default calls `propose()`.
-   */
-  fiber propose(m:Model) -> Real {
-    propose();
-  }
 
   /**
    * Get the natural number of checkpoints for this model as configured, if
