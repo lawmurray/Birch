@@ -13,69 +13,31 @@
  *
  * A model inheriting from `MarkovModel` overrides the `parameter`,
  * `initial` and `transition` member fibers to specify the individual
- * components of the joint distribution, rather than the `simulate` member
- * fiber..
- *
- * In addition to the usual fiber-based interface for models, `MarkovModel`
- * provides an alternative function-based interface based on the `start` and
- * `stop` member functions.
+ * components of the joint distribution.
  */
-class MarkovModel<Parameter,State> < StateModel<Parameter,State> {
-  fiber simulate() -> Real {
-    /* parameters */
-    yield sum(parameter(θ));
-    
-    /* states */
-    auto f <- this.x.walk();    
-    u:State?;  // previous state
-    x:State?;  // current state
-    while true {
-      if f? {  // is the next state given?
-        x <- f!;
-      } else {
-        o:State;
-        this.x.pushBack(o);
-        x <- o;
-      }
-      if u? {
-        yield sum(transition(x!, u!, θ));
-      } else {
-        yield sum(initial(x!, θ));
-      }
-      u <- x;
-    }
-  }
+class MarkovModel<Parameter,State> < BidirectionalModel {
+  /**
+   * Parameter.
+   */
+  θ:Parameter;
+
+  /**
+   * States.
+   */
+  x:List<State>;
   
   /**
-   * Start simulation of the model, using the incremental interface.
-   *
-   * Returns: log-weight from the parameter model.
+   * Current state during simulation.
    */
-  function start() -> Real {
-    return sum(parameter(θ));
-  }
+  f:ListNode<State>?;
 
   /**
-   * Continue simulation of the model one step, using the incremental
-   * interface.
+   * Parameter model.
    *
-   * Returns: log-weight of the initial or transition model.
+   * - θ: The parameters, to be set.
    */
-  function step() -> Real {
-    w:Real <- 0.0;    
-    x:State;
-    if this.x.empty() {
-      w <- sum(initial(x, θ));
-    } else {
-      w <- sum(transition(x, this.x.back(), θ));
-    }
-    this.x.pushBack(x);
-    return w;
-  }
-
-  function checkpoints() -> Integer? {
-    /* one checkpoint for the parameters, then one for each time */
-    return 1 + x.size();
+  fiber parameter(θ:Parameter) -> Event {
+    //
   }
   
   /**
@@ -84,7 +46,7 @@ class MarkovModel<Parameter,State> < StateModel<Parameter,State> {
    * - x: The initial state, to be set.
    * - θ: The parameters.
    */
-  fiber initial(x:State, θ:Parameter) -> Real {
+  fiber initial(x:State, θ:Parameter) -> Event {
     //
   }
   
@@ -95,7 +57,60 @@ class MarkovModel<Parameter,State> < StateModel<Parameter,State> {
    * - u: The previous state.
    * - θ: The parameters.
    */
-  fiber transition(x:State, u:State, θ:Parameter) -> Real {
+  fiber transition(x:State, u:State, θ:Parameter) -> Event {
     //
+  }
+  
+  function size() -> Integer? {
+    return x.size();
+  }
+
+  /**
+   * Start. Simulates through the parameter model.
+   */
+  fiber start() -> Event {
+    parameter(θ);
+  }
+
+  /**
+   * Play one step. Simulates through the next state.
+   */
+  fiber play() -> Event {
+    if f? {
+      /* move to next state */
+      f <- f!.getNext();
+    }
+    if !f? {
+      /* if there is no next state, insert one */
+      x:State;
+      this.x.pushBack(x);
+      f <- this.x.begin();
+    }
+    auto x <- f.getValue();
+    if x == f.begin() {
+      initial(x, θ);
+    } else {
+      auto u <- f.getPrev()!.getValue();
+      transition(x, u, θ);
+    }
+  }
+
+  fiber simulate() -> Event {
+    start();
+    while true {
+      play();
+    }
+  }
+
+  function read(buffer:Buffer) {
+    super.read(buffer);
+    buffer.get("θ", θ);
+    buffer.get("x", x);
+  }
+  
+  function write(buffer:Buffer) {
+    super.write(buffer);
+    buffer.set("θ", θ);
+    buffer.set("x", x);
   }
 }

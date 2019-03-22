@@ -16,114 +16,19 @@
  *
  * A model inheriting from `HiddenMarkovModel`/`StateSpaceModel` overrides
  * the `parameter`, `initial`, `transition` and `observation` member fibers
- * to specify the individual components of the joint distribution, rather
- * than the `simulate` member fiber.
- *
- * As `MarkovModel`, from which they inherit,
- * `HiddenMarkovModel`/`StateSpaceModel` provides an alternative
- * function-based interface based on the `start` and `stop` member functions.
+ * to specify the individual components of the joint distribution.
  */
 class HiddenMarkovModel<Parameter,State,Observation> <
-    ObservedModel<Parameter,State,Observation> {
-  fiber simulate() -> Real {
-    /* parameters */
-    yield sum(parameter(θ));
-    
-    /* states and observations */
-    auto f <- this.x.walk();
-    auto g <- this.y.walk();
-    
-    u:State?;        // previous state
-    x:State?;        // current state
-    y:Observation?;  // current observation
-    
-    while true {
-      w:Real <- 0.0;
-      if f? {  // is the next state given?
-        x <- f!;
-      } else {
-        o:State;
-        this.x.pushBack(o);
-        x <- o;
-      }
-      if u? {
-        w <- sum(transition(x!, u!, θ));
-      } else {
-        w <- sum(initial(x!, θ));
-      }
-      u <- x;
-      
-      if g? {  // is the next observation given?
-        y <- g!;
-      } else {
-        o:Observation;
-        this.y.pushBack(o);
-        y <- o;
-      }
-      w <- w + sum(observation(y!, x!, θ));
-      yield w;
-    }
-  }
+    MarkovModel<Parameter,State> {
+  /**
+   * Observations.
+   */
+  y:List<Observation>;
 
   /**
-   * Start simulation of the model, using the incremental interface.
-   *
-   * Returns: log-weight from the parameter model.
+   * Current observation during simulation.
    */
-  function start() -> Real {
-    return sum(parameter(θ));
-  }
-
-  /**
-   * Continue simulation of the model one step, using the incremental
-   * interface.
-   *
-   * Returns: log-weight of the initial or transition model.
-   */
-  function step() -> Real {
-    assert x.size() == y.size();
-    w:Real <- 0.0;
-    
-    x:State;
-    if this.x.empty() {
-      w <- sum(initial(x, θ));
-    } else {
-      w <- sum(transition(x, this.x.back(), θ));
-    }
-    this.x.pushBack(x);
-    
-    y:Observation;
-    w <- w + sum(observation(y, this.x.back(), θ));
-    this.y.pushBack(y);
-    
-    return w;
-  }
-
-  function checkpoints() -> Integer? {
-    /* one checkpoint for the parameters, then one for each time */
-    return 1 + max(x.size(), y.size());
-  }
-
-  /**
-   * Initial model.
-   *
-   * - x: The initial state, to be set.
-   * - θ: The parameters.
-   */
-  fiber initial(x:State, θ:Parameter) -> Real {
-    //
-  }
-  
-  /**
-   * Transition model.
-   *
-   * - x: The current state, to be set.
-   * - u: The previous state.
-   * - θ: The parameters.
-   */
-  fiber transition(x:State, u:State, θ:Parameter) -> Real {
-    //
-  }
+  g:ListNode<Observation>?;
 
   /**
    * Observation model.
@@ -132,7 +37,41 @@ class HiddenMarkovModel<Parameter,State,Observation> <
    * - x: The current state.
    * - θ: The parameters.
    */
-  fiber observation(y:Observation, x:State, θ:Parameter) -> Real {
+  fiber observation(y:Observation, x:State, θ:Parameter) -> Event {
     //
+  }
+
+  /**
+   * Play one step. Simulates through the next state and observation.
+   */
+  fiber play() -> Event {
+    super.play();
+    if g? {
+      /* move to next observation */
+      g <- g!.getNext();
+    }
+    if !g? {
+      /* if there is no next observation, insert one */
+      y:Observation;
+      this.y.pushBack(y);
+      g <- this.y.end();
+    }
+    auto x <- f.getValue();
+    auto y <- g.getValue();
+    observation(y, x, θ);
+  }
+
+  function checkpoints() -> Integer? {
+    return max(x.size(), y.size());
+  }
+
+  function read(buffer:Buffer) {
+    super.read(buffer);
+    buffer.get("y", y);
+  }
+  
+  function write(buffer:Buffer) {
+    super.write(buffer);
+    buffer.set("y", y);
   }
 }

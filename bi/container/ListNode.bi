@@ -7,6 +7,27 @@ class ListNode<Type>(x:Type) {
   next:ListNode<Type>?;
 
   /**
+   * Get value.
+   */
+  function getValue() -> Type {
+    return x;
+  }
+  
+  /**
+   * Get previous node.
+   */
+  function getPrevious() -> ListNode<Type>? {
+    return prev;
+  }
+  
+  /**
+   * Get next node.
+   */
+  function getNext() -> ListNode<Type>? {
+    return next;
+  }
+
+  /**
    * Insert a new node just before this one in the list.
    *
    * - node: the new node.

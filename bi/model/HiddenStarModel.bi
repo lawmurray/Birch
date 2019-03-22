@@ -12,59 +12,57 @@
  * <center>
  * ![Graphical model depicting HiddenStarModel.](../figs/HiddenStarModel.svg)
  * </center>
+ *
+ * A model inheriting from `HiddenStarModel` overrides the `parameter`,
+ * `point`, and `observation` member fibers to specify the individual
+ * components of the joint distribution.
  */
 class HiddenStarModel<Parameter,Point,Observation> <
-    ObservedModel<Parameter,Point,Observation> {
-  fiber simulate() -> Real {
-    /* parameters */
-    yield sum(parameter(θ));
-    
-    /* points and observations */
-    auto f <- this.x.walk();
-    auto g <- this.y.walk();
-    
-    x:Point?;        // current point
-    y:Observation?;  // current observation
-    
-    while true {
-      w:Real <- 0.0;
-      if f? {  // is the next point given?
-        x <- f!;
-      } else {
-        x':Point;
-        this.x.pushBack(x');
-        x <- x';
-      }
-	  w <- sum(point(x!, θ));
-      
-      if g? {  // is the next observation given?
-        y <- g!;
-      } else {
-        y':Observation;
-        this.y.pushBack(y');
-        y <- y';
-      }
-      w <- w + sum(observation(y!, x!, θ));
-      yield w;
-    }
-  }
-
-  function checkpoints() -> Integer? {
-    /* one checkpoint for the parameters, then one for each point */
-    return 1 + max(x.size(), y.size());
-  }
-
+    StarModel<Parameter,Point> {
   /**
-   * Point model.
+   * Observations.
    */
-  fiber point(x:Point, θ:Parameter) -> Real {
-    //
-  }
+  y:Vector<Observation>;
 
   /**
    * Observation model.
+   *
+   * - y: The observation, to be set.
+   * - x: The point.
+   * - θ: The parameters.
    */
-  fiber observation(y:Observation, x:Point, θ:Parameter) -> Real {
+  fiber observation(y:Observation, x:Point, θ:Parameter) -> Event {
     //
+  }
+
+  /**
+   * Play one step. Simulates through the next point and observation.
+   */
+  fiber play() -> Event {
+    t <- t + 1;
+    while x.size() < t {
+      x:Point;
+      this.x.pushBack(x);
+    }
+    while x.size() < t {
+      y:Observation;
+      this.y.pushBack(y);
+    }
+    point(x.get(t), θ);
+    observation(y.get(t), x.get(t), θ);
+  }
+
+  function checkpoints() -> Integer? {
+    return max(x.size(), y.size());
+  }
+
+  function read(buffer:Buffer) {
+    super.read(buffer);
+    buffer.get("y", y);
+  }
+  
+  function write(buffer:Buffer) {
+    super.write(buffer);
+    buffer.set("y", y);
   }
 }

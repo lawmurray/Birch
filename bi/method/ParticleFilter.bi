@@ -5,14 +5,9 @@
  */
 class ParticleFilter < Sampler {
   /**
-   * Particle fibers.
-   */
-  f:(Model,Real)![_];
-  
-  /**
    * Particles.
    */
-  x:Model[_];
+  x:Particle[_];
   
   /**
    * Log-weights.
@@ -74,7 +69,6 @@ class ParticleFilter < Sampler {
       ncheckpoints <- m.checkpoints();
     }
 
-    reset();
     start(m);
     if verbose {
       stderr.print("checkpoints:");
@@ -100,43 +94,23 @@ class ParticleFilter < Sampler {
     }
     return (x[b], w);
   }
-
+  
   /**
-   * Reset.
-   */
-  function reset() {
+   * Start.
+   */  
+  function start(m:Model) {
     Z.clear();
     e.clear();
     r.clear();
     memory.clear();
     elapsed.clear();
-  }
-
-  /**
-   * Start.
-   */  
-  function start(m:Model) {
     tic();
-    auto f0 <- particle(m);
-    if nparticles == 1 {
-      f1:(Model,Real)![nparticles];
-      x1:Model[nparticles];
-      parallel for n:Integer in 1..nparticles {
-        f1[n] <- f0;
-        x1[n] <- m;
-      }
-      f <- f1;
-      x <- x1;
-    } else {
-      f1:(Model,Real)![nparticles];
-      x1:Model[nparticles];
-      parallel for n:Integer in 1..nparticles {
-        f1[n] <- clone<(Model,Real)!>(f0);
-        x1[n] <- m;
-      }
-      f <- f1;
-      x <- x1;
+    x0:Particle(m);
+    x1:Vector<Particle>;
+    parallel for auto n in 1..nparticles {
+      x1.pushBack(clone<Particle>(x0));
     }
+    x <- x1;
     w <- vector(0.0, nparticles);
     a <- iota(1, nparticles);
   }
@@ -175,9 +149,9 @@ class ParticleFilter < Sampler {
      * would avoid the use of the temporary f0, but f0 ensures that particles
      * with the same ancestor are contiguous in f after the copy, which is
      * more cache efficient */
-    auto f0 <- f;
+    auto x0 <- x;
     parallel for n:Integer in 1..nparticles {
-      f[n] <- clone<(Model,Real)!>(f0[a[n]]);
+      x[n] <- clone<Particle>(x0[a[n]]);
     }
   }
     
@@ -187,10 +161,8 @@ class ParticleFilter < Sampler {
   function propagate() -> Boolean {
     auto continue <- true;
     parallel for auto n in 1..nparticles {
-      w1:Real;
-      if f[n]? {
-        (x[n], w1) <- f[n]!;
-        w[n] <- w[n] + w1;
+      if continue {
+        w[n] <- w[n] + x[n].step();
       } else {
         continue <- false;      
       }
@@ -244,14 +216,8 @@ class ParticleFilter < Sampler {
 
   function read(buffer:Buffer) {
     super.read(buffer);
-    auto nparticles1 <- buffer.getInteger("nparticles");
-    if nparticles1? {
-      nparticles <- nparticles1!;
-    }
-    auto trigger1 <- buffer.getReal("trigger");
-    if trigger1? {
-      trigger <- trigger1!;
-    }
+    nparticles <-? buffer.get("nparticles", nparticles);
+    trigger <-? buffer.get("trigger", trigger);
   }
 
   function write(buffer:Buffer) {
@@ -263,12 +229,5 @@ class ParticleFilter < Sampler {
     buffer.set("resample", r);
     buffer.set("elapsed", elapsed);
     buffer.set("memory", memory);
-  }
-}
-
-fiber particle(x:Model) -> (Model, Real) {
-  auto f <- x.simulate();
-  while f? {
-    yield (x, f!);
   }
 }

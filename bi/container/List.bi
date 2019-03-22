@@ -213,7 +213,7 @@ class List<Type> {
   }
 
   /**
-   * Iterate over the elements.
+   * Forward iteratation.
    *
    * Return: a fiber object that yields each element in forward order.
    */
@@ -223,6 +223,22 @@ class List<Type> {
       yield node!.x;
       node <- node!.next;
     }
+  }
+
+  /**
+   * First node, if any. This can be used to maintain a bidirectional
+   * iterator over the container.
+   */
+  function begin() -> ListNode<Type>? {
+    return head;
+  }
+  
+  /**
+   * Last node, if any. This can be used to maintain a bidirectional
+   * iterator over the container.
+   */
+  function end() -> ListNode<Type>? {
+    return tail;
   }
 
   /**

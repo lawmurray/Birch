@@ -13,6 +13,13 @@ class Vector<Type> {
   nelements:Integer <- 0;
 
   /**
+   * Convert to array.
+   */
+  operator -> Type[_] {
+    return values;
+  }
+
+  /**
    * Number of elements.
    */
   function size() -> Integer {
