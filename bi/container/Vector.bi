@@ -13,13 +13,6 @@ class Vector<Type> {
   nelements:Integer <- 0;
 
   /**
-   * Convert to array.
-   */
-  operator -> Type[_] {
-    return values;
-  }
-
-  /**
    * Number of elements.
    */
   function size() -> Integer {
@@ -179,6 +172,13 @@ class Vector<Type> {
     self->values_.enlarge(bi::make_frame(n_), x_);
     }}
     nelements <- n;
+  }
+
+  /**
+   * Convert to array.
+   */
+  function toArray() -> Type[_] {
+    return values;
   }
 
   function read(buffer:Buffer) {

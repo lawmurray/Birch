@@ -61,10 +61,6 @@ class MarkovModel<Parameter,State> < BidirectionalModel {
     //
   }
   
-  function size() -> Integer? {
-    return x.size();
-  }
-
   /**
    * Start. Simulates through the parameter model.
    */
@@ -75,7 +71,7 @@ class MarkovModel<Parameter,State> < BidirectionalModel {
   /**
    * Play one step. Simulates through the next state.
    */
-  fiber play() -> Event {
+  fiber step() -> Event {
     if f? {
       /* move to next state */
       f <- f!.getNext();
@@ -98,8 +94,12 @@ class MarkovModel<Parameter,State> < BidirectionalModel {
   fiber simulate() -> Event {
     start();
     while true {
-      play();
+      step();
     }
+  }
+
+  function size() -> Integer? {
+    return x.size();
   }
 
   function read(buffer:Buffer) {

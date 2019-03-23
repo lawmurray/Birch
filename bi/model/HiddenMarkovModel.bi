@@ -44,8 +44,8 @@ class HiddenMarkovModel<Parameter,State,Observation> <
   /**
    * Play one step. Simulates through the next state and observation.
    */
-  fiber play() -> Event {
-    super.play();
+  fiber step() -> Event {
+    super.step();
     if g? {
       /* move to next observation */
       g <- g!.getNext();
@@ -61,7 +61,7 @@ class HiddenMarkovModel<Parameter,State,Observation> <
     observation(y, x, θ);
   }
 
-  function checkpoints() -> Integer? {
+  function size() -> Integer? {
     return max(x.size(), y.size());
   }
 

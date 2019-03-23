@@ -1,6 +1,6 @@
 /**
  * Forward model. To simulate the model, first use `start()`, followed by
- * `play()` any number of times.
+ * `step()` any number of times.
  */
 class ForwardModel < Model {
   /**
@@ -9,9 +9,9 @@ class ForwardModel < Model {
   fiber start() -> Event;
 
   /**
-   * Play one step.
+   * Take one step.
    */
-  fiber play() -> Event;
+  fiber step() -> Event;
 
   /**
    * Skip one step. This does not necessarily preserve a consistent state

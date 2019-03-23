@@ -38,7 +38,7 @@ class HiddenStarModel<Parameter,Point,Observation> <
   /**
    * Play one step. Simulates through the next point and observation.
    */
-  fiber play() -> Event {
+  fiber step() -> Event {
     t <- t + 1;
     while x.size() < t {
       x:Point;
@@ -52,7 +52,7 @@ class HiddenStarModel<Parameter,Point,Observation> <
     observation(y.get(t), x.get(t), θ);
   }
 
-  function checkpoints() -> Integer? {
+  function size() -> Integer? {
     return max(x.size(), y.size());
   }
 

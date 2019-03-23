@@ -44,7 +44,7 @@ class StarModel<Parameter,Point> < RandomAccessModel {
     //
   }
 
-  function checkpoints() -> Integer? {
+  function size() -> Integer? {
     return x.size();
   }
 
@@ -58,7 +58,7 @@ class StarModel<Parameter,Point> < RandomAccessModel {
   /**
    * Play one step. Simulates through the next point.
    */
-  fiber play() -> Event {
+  fiber step() -> Event {
     t <- t + 1;
     while x.size() < t {
       x:Point;
@@ -70,7 +70,7 @@ class StarModel<Parameter,Point> < RandomAccessModel {
   fiber simulate() -> Event {
     parameter(θ);
     while true {
-      play();
+      step();
     }
   }
 

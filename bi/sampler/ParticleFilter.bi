@@ -3,7 +3,7 @@
  * case, or where conjugacy relationships are used by the model, an auxiliary
  * or Rao--Blackwellized particle filter.
  */
-class ParticleFilter < Sampler {
+class ParticleFilter < ForwardSampler {  
   /**
    * Particles.
    */
@@ -49,7 +49,7 @@ class ParticleFilter < Sampler {
    * At each checkpoint, what is the elapsed wallclock time?
    */
   elapsed:Vector<Real>; 
-    
+  
   /**
    * Number of particles.
    */
@@ -62,26 +62,19 @@ class ParticleFilter < Sampler {
    */
   trigger:Real <- 0.7;
 
-  function sample(m:Model) -> (Model, Real) {
-    /* if a number of checkpoints hasn't been explicitly provided, compute
-     * this from the model (may still be unknown by the model, too) */
-    if !ncheckpoints? {
-      ncheckpoints <- m.checkpoints();
-    }
-
-    start(m);
+  function sample() -> (Model, Real) {
+    assert archetype?;
+  
     if verbose {
-      stderr.print("checkpoints:");
+      stderr.print("steps:");
     }
+    start();
     auto t <- 0;
-    while (!ncheckpoints? || t < ncheckpoints!) && step() {
+    while step() {
       t <- t + 1;
       if verbose {
         stderr.print(" " + t);
       }
-    }
-    if ncheckpoints? && t != ncheckpoints! {
-      error("particles terminated after " + t + " checkpoints, but " + ncheckpoints! + " requested.");
     }
     if verbose && !Z.empty() {
       stderr.print(", log evidence: " + Z.back() + "\n");
@@ -92,23 +85,23 @@ class ParticleFilter < Sampler {
     if !Z.empty() {
       w <- Z.back();
     }
-    return (x[b], w);
+    return (x[b].m, w);
   }
   
   /**
    * Start.
    */  
-  function start(m:Model) {
+  function start() {
     Z.clear();
     e.clear();
     r.clear();
     memory.clear();
     elapsed.clear();
     tic();
-    x0:Particle(m);
-    x1:Vector<Particle>;
+    x0:Particle(archetype!);
+    x1:Particle[nparticles](archetype!);
     parallel for auto n in 1..nparticles {
-      x1.pushBack(clone<Particle>(x0));
+      x1[n] <- clone<Particle>(x0);
     }
     x <- x1;
     w <- vector(0.0, nparticles);

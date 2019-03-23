@@ -81,6 +81,7 @@ program sample(
   } else {
     error("no model class specified, this should be given using the --model option, or as model.class in the config file.");
   }
+  s!.setArchetype(m!);
   
   /* input */
   inputBuffer:JSONBuffer;
@@ -101,7 +102,7 @@ program sample(
   for n:Integer in 1..s!.nsamples {  
     m1:Model?;
     w1:Real;
-    (m1, w1) <- s!.sample(m!);
+    (m1, w1) <- s!.sample();
         
     if s!.nsamples > 1 {
       auto buffer <- outputBuffer.push();

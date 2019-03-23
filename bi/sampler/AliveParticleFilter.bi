@@ -28,13 +28,13 @@ class AliveParticleFilter < ParticleFilter {
     /* propagate and weight until `nparticles` have been accepted; the first
      * `nparticles` proposals are drawn using the standard resampler; as each
      * is rejected it is replaced with a categorical draw until acceptance */  
-    auto f0 <- f;
+    auto x0 <- x;
     auto w0 <- w;
     auto continue <- true;
-    parallel for n:Integer in 1..nparticles {
+    parallel for auto n in 1..nparticles {
       do {
-        f[n] <- clone<(Model,Real)!>(f0[a[n]]);
-        if f[n]? {
+        x[n] <- clone<Particle!>(x0[a[n]]);
+        if x[n]? {
           (x[n], w[n]) <- f[n]!;
           cpp {{
           ++P;
