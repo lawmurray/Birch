@@ -8,15 +8,15 @@ class AliveParticleFilter < ParticleFilter {
    * For each checkpoint, the number of propagations that were performed to
    * achieve $N$ acceptances.
    */
-  P:Vector<Integer>;
+  P:List<Integer>;
 
-  function start(m:Model) {
-    super.start(m);
+  function initialize() {
+    super.initialize();
     trigger <- 1.0;  // always resample
     P.clear();
   }
 
-  function propagate() -> Boolean {          
+  function step() {          
     /* as `parallel for` is used below, an atomic is necessary to accumulate
      * the total number of propagations; nested C++ is required for this at
      * this stage */
@@ -30,70 +30,61 @@ class AliveParticleFilter < ParticleFilter {
      * is rejected it is replaced with a categorical draw until acceptance */  
     auto x0 <- x;
     auto w0 <- w;
-    auto continue <- true;
-    parallel for auto n in 1..nparticles {
-      do {
-        x[n] <- clone<Particle!>(x0[a[n]]);
-        if x[n]? {
-          (x[n], w[n]) <- f[n]!;
-          cpp {{
-          ++P;
-          }}
-          if w[n] == -inf {
-            /* replace with a categorical draw for next attempt */
-            a[n] <- ancestor(w0);
-          }
-        } else {
-          continue <- false;
-        }
-      } while continue && w[n] == -inf;
+    parallel for auto n in 1..N {
+      auto a' <- a[n];
+      auto x' <- clone<ForwardModel>(x0[a']);
+      auto w' <- handle(x'.step());
+      cpp {{
+      ++P;
+      }}
+      while w' == -inf {
+        /* keep trying until positive weight */
+        a' <- ancestor(w0);
+        x' <- clone<ForwardModel>(x0[a']);
+        w' <- handle(x'.step());
+        cpp {{
+        ++P;
+        }}
+      }
+      x[n] <- x';
+      w[n] <- w[n] + w';
+      a[n] <- a';
     }
-    
-    if (continue) {
-      /* propagate and weight until one further acceptance, that is discarded
-       * for unbiasedness in the normalizing constant estimate */
-     x1:Model?;
-     w1:Real;
-     do {
-        auto f1 <- clone<(Model,Real)!>(f0[ancestor(w0)]);
-        if f1? {
-          (x1, w1) <- f1!;
-          cpp {{
-          ++P;
-          }}
-        } else {
-          continue <- false;
-        }
-      } while (continue && w1 == -inf);
+
+    /* propagate and weight until one further acceptance, which is discarded
+     * for unbiasedness in the normalizing constant estimate */
+    auto a' <- ancestor(w0);
+    auto x' <- clone<ForwardModel>(x0[a']);
+    auto w' <- handle(x'.step());
+    cpp {{
+    ++P;
+    }}
+    while w' == -inf {
+      /* keep trying until positive weight */
+      a' <- ancestor(w0);
+      x' <- clone<ForwardModel>(x0[a']);
+      w' <- handle(x'.step());
+      cpp {{
+      ++P;
+      }}
     }
     
     /* update propagations */
-    P:Integer;
-    cpp {{
-    P_ = P;
+    Q:Integer;
+    cpp{{
+    Q_ = P;
     }}
-    this.P.pushBack(P);
-    
-    return continue;
+    P.pushBack(Q);
   }
   
   function reduce() {
-    /* effective sample size */
-    e.pushBack(ess(w));
-    if (!(e.back() > 0.0)) {  // > 0.0 as may be nan
-      error("particle filter degenerated.");
-    }
-  
-    /* normalizing constant estimate */
-    auto W <- log_sum_exp(w);
+    super.reduce();
+    
+    /* correct normalizing constant estimate for rejections */
+    auto Z <- this.Z.back();
     auto P <- this.P.back();
-    auto Z <- W - log(P - 1);
-    w <- w - Z;
-    if (this.Z.empty()) {
-      this.Z.pushBack(Z);
-    } else {
-      this.Z.pushBack(this.Z.back() + Z);
-    }
+    this.Z.popBack();
+    this.Z.pushBack(Z + log(N) - log(P - 1));
   }
 
   function write(buffer:Buffer) {

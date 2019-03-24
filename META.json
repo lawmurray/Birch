@@ -196,6 +196,7 @@
       "bi/model/RandomAccessModel.bi",
       "bi/model/StarModel.bi",
       "bi/model/StateSpaceModel.bi",
+      "bi/sampler/AliveParticleFilter.bi",
       "bi/sampler/AuxiliaryParticleFilter.bi",
       "bi/sampler/BidirectionalSampler.bi",
       "bi/sampler/BootstrapParticleFilter.bi",

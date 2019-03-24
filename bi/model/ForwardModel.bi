@@ -19,4 +19,9 @@ class ForwardModel < Model {
    * a model in order to update its state.
    */
   function skip();
+
+  /**
+   * Number of steps.
+   */
+  function size() -> Integer;
 }

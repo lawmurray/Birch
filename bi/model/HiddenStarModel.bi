@@ -52,7 +52,7 @@ class HiddenStarModel<Parameter,Point,Observation> <
     observation(y.get(t), x.get(t), θ);
   }
 
-  function size() -> Integer? {
+  function size() -> Integer {
     return max(x.size(), y.size());
   }
 

@@ -61,7 +61,7 @@ class HiddenMarkovModel<Parameter,State,Observation> <
     observation(y, x, θ);
   }
 
-  function size() -> Integer? {
+  function size() -> Integer {
     return max(x.size(), y.size());
   }
 

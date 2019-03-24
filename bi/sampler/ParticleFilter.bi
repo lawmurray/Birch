@@ -25,189 +25,166 @@ class ParticleFilter < ForwardSampler {
   b:Integer <- 0;
   
   /**
+   * Number of particles.
+   */
+  N:Integer <- 1;
+  
+  /**
+   * Number of steps.
+   */
+  T:Integer <- 1;
+  
+  /**
+   * Threshold for resampling. Resampling is performed whenever the
+   * effective sample size, as a proportion of `N`, drops below this
+   * threshold.
+   */
+  trigger:Real <- 0.7;
+  
+  /**
    * For each checkpoint, the logarithm of the normalizing constant estimate
    * so far.
    */
-  Z:Vector<Real>;
+  Z:List<Real>;
   
   /**
    * For each checkpoint, the effective sample size (ESS).
    */
-  e:Vector<Real>;
-  
-  /**
-   * For each checkpoint, was resampling performed?
-   */
-  r:Vector<Boolean>;
+  ess:List<Real>;
   
   /**
    * At each checkpoint, how much memory is in use?
    */
-  memory:Vector<Integer>;
+  memory:List<Integer>;
   
   /**
    * At each checkpoint, what is the elapsed wallclock time?
    */
-  elapsed:Vector<Real>; 
-  
-  /**
-   * Number of particles.
-   */
-  nparticles:Integer <- 1;
-  
-  /**
-   * Threshold for resampling. Resampling is performed whenever the
-   * effective sample size, as a proportion of `nparticles`, drops below this
-   * threshold.
-   */
-  trigger:Real <- 0.7;
+  elapsed:List<Real>; 
 
   function sample() -> (Model, Real) {
-    assert archetype?;
-  
+    initialize();
     if verbose {
       stderr.print("steps:");
     }
     start();
-    auto t <- 0;
-    while step() {
-      t <- t + 1;
+    reduce();
+    for auto t in 1..T {
       if verbose {
         stderr.print(" " + t);
       }
+      if ess.back() < trigger*N {
+        resample();
+      }
+      step();
+      reduce();
     }
-    if verbose && !Z.empty() {
+    if verbose {
       stderr.print(", log evidence: " + Z.back() + "\n");
     }
     finish();
-      
-    w:Real <- 0.0;
-    if !Z.empty() {
-      w <- Z.back();
-    }
-    return (x[b], w);
-  }
-  
-  /**
-   * Start.
-   */  
-  function start() {
-    Z.clear();
-    e.clear();
-    r.clear();
-    memory.clear();
-    elapsed.clear();
-    tic();
-    x1:ForwardModel[nparticles] <- archetype!;
-    parallel for auto n in 1..nparticles {
-      x1[n] <- clone<ForwardModel>(archetype!);
-    }
-    x <- x1;
-    w <- vector(0.0, nparticles);
-    a <- iota(1, nparticles);
-  }
-  
-  /**
-   * Step particles to the next checkpoint.
-   */
-  function step() -> Boolean {
-    if !e.empty() {
-      r.pushBack(e.back() < trigger*nparticles);
-      if r.back() {
-        resample();
-        copy();
-      }
-    }
-    auto continue <- propagate();
-    if continue {
-      reduce();
-    }
-    return continue;
-  }
-  
-  /**
-   * Resample particles.
-   */
-  function resample() {
-    a <- permute_ancestors(ancestors(w));
-    w <- vector(0.0, nparticles);
+    finalize();
+    return (x[b], sum(Z.walk()));
   }
 
   /**
-   * Copy particles after resampling.
+   * Initialize.
    */
-  function copy() {
-    /* there are couple of different strategies here: permute_ancestors()
-     * would avoid the use of the temporary f0, but f0 ensures that particles
-     * with the same ancestor are contiguous in f after the copy, which is
-     * more cache efficient */
-    auto x0 <- x;
-    parallel for auto n in 1..nparticles {
-      x[n] <- clone<ForwardModel>(x0[a[n]]);
+  function initialize() {
+    Z.clear();
+    ess.clear();
+    memory.clear();
+    elapsed.clear();
+    x1:ForwardModel[N] <- archetype!;
+    parallel for auto n in 1..N {
+      x1[n] <- clone<ForwardModel>(archetype!);
+    }
+    x <- x1;
+    w <- vector(0.0, N);
+    a <- iota(1, N);
+    tic();
+  }
+   
+  /**
+   * Start particles.
+   */
+  function start() {
+    parallel for auto n in 1..N {
+      w[n] <- w[n] + handle(x[n].start());
     }
   }
     
   /**
-   * Propagate particles.
+   * Step particles.
    */
-  function propagate() -> Boolean {
-    auto continue <- true;
-    parallel for auto n in 1..nparticles {
-      auto f <- x[n].step();
-      auto v <- w[n];
-      while f? {
-        auto evt <- f!;
-        if evt.isFactor() {
-          v <- v + evt.observe();
-        } else if evt.isRandom() {
-          if evt.hasValue() {
-            v <- v + evt.observe();
-          } else {
-            evt.assume();
-          }
-        }
-      }
-      w[n] <- v;
+  function step() {
+    auto x0 <- x;
+    parallel for auto n in 1..N {
+      auto x' <- clone<ForwardModel>(x0[a[n]]);
+      auto w' <- handle(x'.step());
+      x[n] <- x';
+      w[n] <- w[n] + w';
     }
-    return continue;
   }
   
+  /**
+   * Handle events from a particle fiber and return the cumulative weight.
+   */
+  function handle(f:Event!) -> Real {
+    auto v <- 0.0;
+    while f? {
+      auto evt <- f!;
+      if evt.isFactor() {
+        v <- v + evt.observe();
+      } else if evt.isRandom() {
+        if evt.hasValue() {
+          v <- v + evt.observe();
+        } else {
+          evt.assume();
+        }
+      }
+    }
+    return v;
+  }
+
   /**
    * Compute summary statistics.
    */
   function reduce() {
+    m:Real <- max(w);
     W:Real <- 0.0;
     W2:Real <- 0.0;
-    m:Real <- max(w);
-    v:Real;
     
     for auto n in 1..length(w) {
-      v <- exp(w[n] - m);
+      auto v <- exp(w[n] - m);
       W <- W + v;
       W2 <- W2 + v*v;
     }
-    auto ess <- W*W/W2;
-    auto Z <- log(W) + m - log(nparticles);
-    w <- w - Z;  // normalize weights to sum to nparticles
+    auto V <- log(W) + m - log(N);
+    w <- w - V;  // normalize weights to sum to N
    
     /* effective sample size */
-    e.pushBack(ess);
-    if !(e.back() > 0.0) {  // > 0.0 as may be nan
+    ess.pushBack(W*W/W2);
+    if !(ess.back() > 0.0) {  // > 0.0 as may be nan
       error("particle filter degenerated.");
     }
   
     /* normalizing constant estimate */
-    if this.Z.empty() {
-      this.Z.pushBack(Z);
-    } else {
-      this.Z.pushBack(this.Z.back() + Z);
-    }
+    Z.pushBack(V);
     elapsed.pushBack(toc());
     memory.pushBack(memoryUse());
   }
 
   /**
-   * Finish the filter.
+   * Resample particles.
+   */
+  function resample() {
+    a <- permute_ancestors(ancestors(w));
+    w <- vector(0.0, N);
+  }
+
+  /**
+   * Finish.
    */
   function finish() {
     b <- ancestor(w);
@@ -215,20 +192,31 @@ class ParticleFilter < ForwardSampler {
       error("particle filter degenerated.");
     }
   }
+  
+  /**
+   * Finalize.
+   */
+  function finalize() {
+    //
+  }
+
+  function setArchetype(archetype:Model) {
+    super.setArchetype(archetype);
+    T <- this.archetype!.size();
+  }
 
   function read(buffer:Buffer) {
     super.read(buffer);
-    nparticles <-? buffer.get("nparticles", nparticles);
+    N <-? buffer.get("N", N);
     trigger <-? buffer.get("trigger", trigger);
   }
 
   function write(buffer:Buffer) {
     super.write(buffer);
-    buffer.set("nparticles", nparticles);
+    buffer.set("N", N);
     buffer.set("trigger", trigger);
     buffer.set("levidence", Z);
-    buffer.set("ess", e);
-    buffer.set("resample", r);
+    buffer.set("ess", ess);
     buffer.set("elapsed", elapsed);
     buffer.set("memory", memory);
   }

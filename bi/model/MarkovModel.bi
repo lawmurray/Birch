@@ -98,7 +98,7 @@ class MarkovModel<Parameter,State> < BidirectionalModel {
     }
   }
 
-  function size() -> Integer? {
+  function size() -> Integer {
     return x.size();
   }
 

@@ -44,10 +44,6 @@ class StarModel<Parameter,Point> < RandomAccessModel {
     //
   }
 
-  function size() -> Integer? {
-    return x.size();
-  }
-
   /**
    * Start. Simulates through the parameter model.
    */
@@ -72,6 +68,10 @@ class StarModel<Parameter,Point> < RandomAccessModel {
     while true {
       step();
     }
+  }
+
+  function size() -> Integer {
+    return x.size();
   }
 
   function read(buffer:Buffer) {
