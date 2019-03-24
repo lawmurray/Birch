@@ -25,6 +25,11 @@ class Event {
   }
 
   /**
+   * Enact assume, for a random variable event.
+   */
+  function assume();
+
+  /**
    * Enact simulate, for a random variable event.
    */
   function simulate();

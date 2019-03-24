@@ -1,7 +1,6 @@
 /**
  * Sample from a model.
  *
- *
  * - `--input`: Name of the input file, if any.
  *
  * - `--output`: Name of the output file, if any.
@@ -10,22 +9,24 @@
  *
  * - `--diagnostic`: Name of the diagnostic file, if any.
  *
- * - `--model`: Name of the model class. Alternatively, provide this as
- *   `model.class` in the configuration file.
- *
- * - `--sampler`: Name of the sampler class. Alternatively, provide this as
- *   `sampler.class` in the configuration file.
- *
  * - `--seed`: Random number seed. If not provided, random entropy is used.
+ *
+ * - `--model`: Name of the model class. Alternatively (preferably), provide
+ *   this as `model.class` in the configuration file.
+ *
+ * - `--sampler`: Name of the sampler class. Alternatively (preferably),
+ *   provide this as `sampler.class` in the configuration file. If the
+ *   sampler is not provided through either of these mechanisms, a default
+ *   is chosen according to the model class.
  */
 program sample(
-    model:String?,
-    sampler:String?,
     input:String?,
     output:String?,
     config:String?,
     diagnostic:String?,
-    seed:Integer?) {
+    seed:Integer?,
+    model:String?,
+    sampler:String?) {
   /* random number generator */
   if seed? {
     global.seed(seed!);
@@ -37,43 +38,21 @@ program sample(
     configBuffer.load(config!);
   }
     
-  /* sampler */
-  s:Sampler?;
-  className:String?;
-  if sampler? {
-    className <- sampler!;
-  } else if config? {
-    auto buffer <- configBuffer.getObject("sampler");
-    if buffer? {
-      className <- buffer!.getString("class");
-    }
-  }
-  if !className? {
-    className <- "ParticleFilter";
-  }
-  s <- Sampler?(make(className!));
-  if !s? {
-    error(className! + " is not a subtype of Sampler.");
-  }
-  if config? {
-    configBuffer.get("sampler", s!);
-  }
-  
   /* model */
   m:Model?;
-  className <- nil;
+  modelClass:String?;
   if model? {
-    className <- model!;
+    modelClass <- model!;
   } else if config? {
     auto buffer <- configBuffer.getObject("model");
     if buffer? {
-      className <- buffer!.getString("class");
+      modelClass <- buffer!.getString("class");
     }
   }
-  if className? {
-    m <- Model?(make(className!));
+  if modelClass? {
+    m <- Model?(make(modelClass!));
     if !m? {
-      error(className! + " is not a subtype of Model.");
+      error(modelClass! + " is not a subtype of Model.");
     }
     if config? {
       configBuffer.get("model", m!);
@@ -81,6 +60,36 @@ program sample(
   } else {
     error("no model class specified, this should be given using the --model option, or as model.class in the config file.");
   }
+  assert m?;
+
+  /* sampler */
+  s:Sampler?;
+  samplerClass:String?;
+  if sampler? {
+    samplerClass <- sampler!;
+  } else if config? {
+    auto buffer <- configBuffer.getObject("sampler");
+    if buffer? {
+      samplerClass <- buffer!.getString("class");
+    }
+  }
+  if !samplerClass? {
+    /* determine an appropriate default */
+    auto forwardModel <- ForwardModel?(m!);
+    if forwardModel? {
+      samplerClass <- "ParticleFilter";
+    } else {
+      samplerClass <- "ImportanceSampler";
+    }
+  }
+  s <- Sampler?(make(samplerClass!));
+  if !s? {
+    error(samplerClass! + " is not a subtype of Sampler.");
+  }
+  if config? {
+    configBuffer.get("sampler", s!);
+  }
+  assert s?;
   s!.setArchetype(m!);
   
   /* input */

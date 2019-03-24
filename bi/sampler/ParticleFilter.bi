@@ -157,8 +157,14 @@ class ParticleFilter < ForwardSampler {
       auto v <- w[n];
       while f? {
         auto evt <- f!;
-        if evt.isFactor() || (evt.isRandom() && evt.hasValue()) {
+        if evt.isFactor() {
           v <- v + evt.observe();
+        } else if evt.isRandom() {
+          if evt.hasValue() {
+            v <- v + evt.observe();
+          } else {
+            evt.assume();
+          }
         }
       }
       w[n] <- v;
