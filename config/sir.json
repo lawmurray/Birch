@@ -1,9 +1,9 @@
 {
   "model": {
-    "class": "MixedGaussianModel",
-    "nsteps": 20
+    "class": "SIRModel"
   },
   "sampler": {
+    "class": "AliveParticleFilter",
     "nsamples": 10,
     "nparticles": 128
   }
