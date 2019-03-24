@@ -80,7 +80,7 @@ class ParticleFilter < ForwardSampler {
       reduce();
     }
     if verbose {
-      stderr.print(", log evidence: " + Z.back() + "\n");
+      stderr.print(", log weight: " + sum(Z.walk()) + "\n");
     }
     finish();
     finalize();

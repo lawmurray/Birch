@@ -18,9 +18,18 @@ class ImportanceSampler < Sampler {
     auto w <- 0.0;
     while f? {
       auto evt <- f!;
-      if evt.isFactor() || (evt.isRandom() && evt.hasValue()) {
+      if evt.isFactor() {
         w <- w + evt.observe();
+      } else if evt.isRandom() {
+        if evt.hasValue() {
+          w <- w + evt.observe();
+        } else {
+          evt.assume();
+        }
       }
+    }
+    if verbose {
+      stderr.print("log weight: " + w + "\n");
     }
     return (x, w);
   }
