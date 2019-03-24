@@ -1,0 +1,28 @@
+digraph {
+  splines=ortho
+  concentrate=true
+  rankdir=BT
+  node [shape=box,fontname=Helvetica,fontsize=10,margin="0.1,0.01"]
+  edge [arrowhead=empty]
+
+  Sampler [href="../classes/Sampler/",target="_top"]
+  ForwardSampler [href="../classes/ForwardSampler/",target="_top"]
+  BidirectionalSampler [href="../classes/BidirectionalSampler/",target="_top"]
+  RandomAccessSampler [href="../classes/RandomAccessSampler/",target="_top"]
+
+  ImportanceSampler [href="../classes/ImportanceSampler/",target="_top"]
+  ParticleFilter [href="../classes/ParticleFilter/",target="_top"]
+  BootstrapParticleFilter [href="../classes/BootstrapParticleFilter/",target="_top"]
+  AliveParticleFilter [href="../classes/AliveParticleFilter/",target="_top"]
+  ConditionalParticleFilter [href="../classes/ConditionalParticleFilter/",target="_top"]
+
+  ForwardSampler -> Sampler
+  BidirectionalSampler -> ForwardSampler
+  RandomAccessSampler -> BidirectionalSampler
+
+  ImportanceSampler -> Sampler
+  ParticleFilter -> ForwardSampler
+  BootstrapParticleFilter -> ParticleFilter
+  AliveParticleFilter -> ParticleFilter
+  ConditionalParticleFilter -> ParticleFilter
+}

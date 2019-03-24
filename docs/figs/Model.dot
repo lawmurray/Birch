@@ -1,26 +1,26 @@
 digraph {
-  splines=ortho;
-  concentrate=true;
-  rankdir=BT;
-  node [shape=box,fontname=Helvetica,fontsize=10,margin="0.1,0.01"];
-  edge [arrowhead=empty,headport=s,tailport=n];
+  splines=ortho
+  concentrate=true
+  rankdir=BT
+  node [shape=box,fontname=Helvetica,fontsize=10,margin="0.1,0.01"]
+  edge [arrowhead=empty]
 
-  Model [href="../classes/Model/",target="_top"];
-  ForwardModel [href="../classes/ForwardModel/",target="_top"];
-  BidirectionalModel [href="../classes/BidirectionalModel/",target="_top"];
-  RandomAccessModel [href="../classes/RandomAccessModel/",target="_top"];
-  StarModel [href="../classes/StarModel/",target="_top"];
-  HiddenStarModel [href="../classes/HiddenStarModel/",target="_top"];
-  MarkovModel [href="../classes/MarkovModel/",target="_top"];
-  HiddenMarkovModel [href="../classes/HiddenMarkovModel/",target="_top"];
+  Model [href="../classes/Model/",target="_top"]
+  ForwardModel [href="../classes/ForwardModel/",target="_top"]
+  BidirectionalModel [href="../classes/BidirectionalModel/",target="_top"]
+  RandomAccessModel [href="../classes/RandomAccessModel/",target="_top"]
+  StarModel [href="../classes/StarModel/",target="_top"]
+  HiddenStarModel [href="../classes/HiddenStarModel/",target="_top"]
+  MarkovModel [href="../classes/MarkovModel/",target="_top"]
+  HiddenMarkovModel [href="../classes/HiddenMarkovModel/",target="_top"]
 
-  ForwardModel -> Model;
-  BidirectionalModel -> ForwardModel;
-  RandomAccessModel -> BidirectionalModel;
+  ForwardModel -> Model
+  BidirectionalModel -> ForwardModel
+  RandomAccessModel -> BidirectionalModel
 
-  StarModel -> RandomAccessModel;
-  HiddenStarModel -> StarModel;
+  StarModel -> RandomAccessModel
+  HiddenStarModel -> StarModel
 
-  MarkovModel -> BidirectionalModel;
-  HiddenMarkovModel -> MarkovModel;
+  MarkovModel -> BidirectionalModel
+  HiddenMarkovModel -> MarkovModel
 }

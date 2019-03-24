@@ -1,6 +1,7 @@
 /**
- * A model.
+ * Abstract model.
  *
+ * The Model class hierarchy is as follows:
  * <center>
  * <object type="image/svg+xml" data="../../figs/Model.svg"></object>
  * </center>

@@ -1,5 +1,10 @@
 /**
  * Abstract sampler.
+ *
+ * The Sampler class hierarchy is as follows:
+ * <center>
+ * <object type="image/svg+xml" data="../../figs/Sampler.svg"></object>
+ * </center>
  */
 class Sampler {  
   /**
