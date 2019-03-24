@@ -1,3 +1,7 @@
+hpp{{
+#include <yaml.h>
+}}
+
 /**
  * Generator for JSON files.
  */
@@ -11,30 +15,63 @@ class JSONGenerator < Generator {
    * Current indent level.
    */
   level:Integer <- 0;
+  
+  hpp{{
+  yaml_emitter_t emitter;
+  yaml_event_t event;
+  }}
 
   function generate(path:String, root:Value) {
-    root.accept(this);
+    file:File <- fopen(path, WRITE);
+    cpp{{
+    /* initialize */
+    yaml_emitter_initialize(&self->emitter);
+    yaml_emitter_set_output_file(&self->emitter, file);
+    
+    /* start stream */
+    yaml_stream_start_event_initialize(&event, YAML_UTF8_ENCODING);
+    if (!yaml_emitter_emit(&self->emitter, &event)) {
+      error("emission error");
+    }
+    
+    /* output data */
+    root->accept(self);
+    
+    /* end stream */
+    yaml_stream_end_event_initialize(&event);
+    if (!yaml_emitter_emit(&emitter, &event)) {
+      error("emission error");
+    }
+    
+    /* finalize */
+    yaml_emitter_delete(&emitter);
+    }}
   }
 
   function visit(value:ObjectValue) {
-    stream.print("{\n");
-    inward();
-    auto entry <- value.entries.walk();
-    auto first <- true;
-    while entry? {
-      if !first {
-        stream.print(",\n");
-        first <- false;
-      }
-      indent();
-      stream.print(entry!.key);
-      stream.print(": ");
-      entry!.value.value.accept(this);
-      stream.print("\n");
+    cpp{{
+    yaml_mapping_start_event_initialize(&event, NULL, NULL, 1,
+        YAML_FLOW_MAPPING_STYLE);
+    if (!yaml_emitter_emit(&emitter, &event)) {
+      error("emission error");
     }
-    outward();
-    indent();
-    stream.print("}");
+    }}    
+    auto entry <- value.entries.walk();
+    while entry? {
+      auto e <- entry!;
+      cpp{{
+      yaml_scalar_event_initialize(&event, NULL, NULL,
+          (yaml_char_t*)e->key.c_str(), e->key.length(), 1, 1,
+          YAML_DOUBLE_QUOTED_SCALAR_STYLE);
+      }}
+      e.value.value.accept(this);
+    }
+    cpp{{
+    yaml_mapping_end_event_initialize(&event);
+    if (!yaml_emitter_emit(&emitter, &event)) {
+      error("emission error");
+    }
+    }}    
   }
   
   function visit(value:ArrayValue) {

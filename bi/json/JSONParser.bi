@@ -10,24 +10,15 @@ cpp{{
  */
 class JSONParser < Parser {
   function parse(path:String) -> Value? {
+    file:File <- fopen(path, READ);
     stack:Stack<Value>;
+    key:String?;
+    value:Value;
     cpp{{
-    /* slurp in the whole file */
-    std::ifstream stream(path);
-    std::string input;
-    getline(stream, input,
-        std::string::traits_type::to_char_type(
-        std::string::traits_type::eof()));    
-    stream.close();
-    
-    libbirch::Optional<String> key;
-    libbirch::Shared<Value> value;
-    
     yaml_parser_t parser;
     yaml_event_t event;
     yaml_parser_initialize(&parser);
-    yaml_parser_set_input_string(&parser,
-        (const unsigned char*)input.c_str(), input.length());
+    yaml_parser_set_input_file(&parser, file);
     int done = 0;
     while (!done) {
       if (yaml_parser_parse(&parser, &event)) {
