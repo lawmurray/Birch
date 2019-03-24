@@ -98,7 +98,6 @@ bi::Expression* bi::Resolver::modify(UnaryCall* o) {
 
 bi::Expression* bi::Resolver::modify(Assign* o) {
   if (*o->name == "<~") {
-    /* replace with equivalent (by definition) code */
     auto left = o->left;
     auto right = new Call(
         new Member(o->right,
@@ -420,32 +419,27 @@ bi::Statement* bi::Resolver::modify(Assume* o) {
     auto result = new StatementList(declare, conditional, o->loc);
     return result->accept(this);
   } else {
-    auto tmp = new LocalVariable(o->left, o->loc);
-    auto ref = new Identifier<Unknown>(tmp->name, o->loc);
-    Expression* cond = new Call(
-        new Member(ref->accept(&cloner),
-            new Identifier<Unknown>(new Name("hasValue"), o->loc), o->loc), o->loc);
-
-    Statement* trueBranch = nullptr;
-    auto observe = new Assign(ref->accept(&cloner),
-        new Name("~>"), o->right->accept(&cloner), o->loc);
+    o->left = o->left->accept(this);
+    o->right = o->right->accept(this);
+    auto leftType = dynamic_cast<ClassType*>(o->left->type->canonical());
+    auto rightType = dynamic_cast<ClassType*>(o->right->type->canonical());
+    if (!leftType || !rightType) {
+      throw AssumeException(o);
+    }
+    auto valueType = leftType->typeArgs->accept(&cloner);
+    auto identifier = new OverloadedIdentifier<Unknown>(
+        new Name("RandomEvent"), valueType, o->loc);
+    auto args = new ExpressionList(o->left->accept(&cloner),
+        o->right->accept(&cloner), o->loc);
+    auto call = new Call(identifier, args, o->loc);
+    Statement* result;
     if (!yieldTypes.empty()) {
       /* in a fiber */
-      trueBranch = new Yield(observe, o->loc);
+      result = new Yield(call, o->loc);
     } else {
       /* not in a fiber */
-      trueBranch = new ExpressionStatement(observe, o->loc);
+      result = new ExpressionStatement(call, o->loc);
     }
-
-    Statement* falseBranch = new ExpressionStatement(
-        new Call(
-            new Member(ref->accept(&cloner),
-                new Identifier<Unknown>(new Name("assume"), o->loc), o->loc),
-            o->right->accept(&cloner), o->loc), o->loc);
-
-    auto declare = new ExpressionStatement(tmp, o->loc);
-    auto conditional = new If(cond, trueBranch, falseBranch, o->loc);
-    auto result = new StatementList(declare, conditional, o->loc);
     return result->accept(this);
   }
 }

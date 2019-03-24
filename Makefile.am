@@ -58,6 +58,7 @@ COMMON_SOURCES = \
   bi/exception/AmbiguousCallException.cpp \
   bi/exception/AssignmentOperatorException.cpp \
   bi/exception/AssignmentException.cpp \
+  bi/exception/AssumeException.cpp \
   bi/exception/BaseException.cpp \
   bi/exception/CallException.cpp \
   bi/exception/CompilerException.cpp \
@@ -232,6 +233,7 @@ noinst_HEADERS = \
   bi/exception/all.hpp \
   bi/exception/AmbiguousCallException.hpp \
   bi/exception/AssignmentException.hpp \
+  bi/exception/AssumeException.hpp \
   bi/exception/AssignmentOperatorException.hpp \
   bi/exception/BaseException.hpp \
   bi/exception/CallException.hpp \

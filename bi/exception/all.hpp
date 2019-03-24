@@ -5,6 +5,7 @@
 
 #include "bi/exception/AmbiguousCallException.hpp"
 #include "bi/exception/AssignmentException.hpp"
+#include "bi/exception/AssumeException.hpp"
 #include "bi/exception/AssignmentOperatorException.hpp"
 #include "bi/exception/BaseException.hpp"
 #include "bi/exception/CallException.hpp"
