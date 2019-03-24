@@ -82,11 +82,11 @@ class MarkovModel<Parameter,State> < BidirectionalModel {
       this.x.pushBack(x);
       f <- this.x.begin();
     }
-    auto x <- f.getValue();
-    if x == f.begin() {
+    auto x <- f!.getValue();
+    if f! == this.x.begin()! {
       initial(x, θ);
     } else {
-      auto u <- f.getPrev()!.getValue();
+      auto u <- f!.getPrevious()!.getValue();
       transition(x, u, θ);
     }
   }

@@ -56,8 +56,8 @@ class HiddenMarkovModel<Parameter,State,Observation> <
       this.y.pushBack(y);
       g <- this.y.end();
     }
-    auto x <- f.getValue();
-    auto y <- g.getValue();
+    auto x <- f!.getValue();
+    auto y <- g!.getValue();
     observation(y, x, θ);
   }
 
