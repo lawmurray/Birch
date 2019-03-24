@@ -15,6 +15,11 @@ class AliveParticleFilter < ParticleFilter {
     trigger <- 1.0;  // always resample
     P.clear();
   }
+  
+  function start() {
+    super.start();
+    P.pushBack(N);
+  }
 
   function step() {          
     /* as `parallel for` is used below, an atomic is necessary to accumulate
