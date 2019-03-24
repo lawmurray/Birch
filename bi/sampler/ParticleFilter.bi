@@ -7,7 +7,7 @@ class ParticleFilter < ForwardSampler {
   /**
    * Particles.
    */
-  x:Particle[_];
+  x:ForwardModel[_];
   
   /**
    * Log-weights.
@@ -85,7 +85,7 @@ class ParticleFilter < ForwardSampler {
     if !Z.empty() {
       w <- Z.back();
     }
-    return (x[b].m, w);
+    return (x[b], w);
   }
   
   /**
@@ -98,10 +98,9 @@ class ParticleFilter < ForwardSampler {
     memory.clear();
     elapsed.clear();
     tic();
-    x0:Particle(archetype!);
-    x1:Particle[nparticles](archetype!);
+    x1:ForwardModel[nparticles] <- archetype!;
     parallel for auto n in 1..nparticles {
-      x1[n] <- clone<Particle>(x0);
+      x1[n] <- clone<ForwardModel>(archetype!);
     }
     x <- x1;
     w <- vector(0.0, nparticles);
@@ -143,8 +142,8 @@ class ParticleFilter < ForwardSampler {
      * with the same ancestor are contiguous in f after the copy, which is
      * more cache efficient */
     auto x0 <- x;
-    parallel for n:Integer in 1..nparticles {
-      x[n] <- clone<Particle>(x0[a[n]]);
+    parallel for auto n in 1..nparticles {
+      x[n] <- clone<ForwardModel>(x0[a[n]]);
     }
   }
     
@@ -154,11 +153,15 @@ class ParticleFilter < ForwardSampler {
   function propagate() -> Boolean {
     auto continue <- true;
     parallel for auto n in 1..nparticles {
-      if continue {
-        w[n] <- w[n] + x[n].step();
-      } else {
-        continue <- false;      
+      auto f <- x[n].step();
+      auto v <- w[n];
+      while f? {
+        auto evt <- f!;
+        if evt.isFactor() || (evt.isRandom() && evt.hasValue()) {
+          v <- v + evt.observe();
+        }
       }
+      w[n] <- v;
     }
     return continue;
   }
