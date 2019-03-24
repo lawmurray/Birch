@@ -1,4 +1,4 @@
-hpp{{
+cpp{{
 #include <yaml.h>
 
 #include <iostream>
