@@ -1,5 +1,9 @@
 /**
  * A model.
+ *
+ * <center>
+ * <object type="image/svg+xml" data="../../figs/Model.svg"></object>
+ * </center>
  */
 class Model {  
   /**
