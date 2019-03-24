@@ -23,3 +23,8 @@ class BooleanVectorValue(value:Boolean[_]) < Value {
     return value;
   }
 }
+
+function BooleanVectorValue(value:Boolean[_]) -> BooleanVectorValue {
+  o:BooleanVectorValue(value);
+  return o;
+}

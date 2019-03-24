@@ -31,3 +31,8 @@ class IntegerVectorValue(value:Integer[_]) < Value {
     return value;
   }
 }
+
+function IntegerVectorValue(value:Integer[_]) -> IntegerVectorValue {
+  o:IntegerVectorValue(value);
+  return o;
+}

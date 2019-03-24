@@ -23,3 +23,8 @@ class RealMatrixValue(value:Real[_,_]) < Value {
     return true;
   }
 }
+
+function RealMatrixValue(value:Real[_,_]) -> RealMatrixValue {
+  o:RealMatrixValue(value);
+  return o;
+}

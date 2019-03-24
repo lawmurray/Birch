@@ -2,7 +2,7 @@
  * Buffer in memory.
  */
 class MemoryBuffer < Buffer {
-  value:Value;
+  value:Value <- NilValue();
 
   /**
    * Load from a file.
@@ -181,4 +181,10 @@ class MemoryBuffer < Buffer {
       setNil();
     }
   }
+}
+
+function MemoryBuffer(value:Value) -> MemoryBuffer {
+  o:MemoryBuffer;
+  o.value <- value;
+  return o;
 }

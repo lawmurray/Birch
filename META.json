@@ -233,6 +233,7 @@
       "bi/value/BooleanValue.bi",
       "bi/value/BooleanMatrixValue.bi",
       "bi/value/BooleanVectorValue.bi",
+      "bi/value/Entry.bi",
       "bi/value/IntegerValue.bi",
       "bi/value/IntegerMatrixValue.bi",
       "bi/value/IntegerVectorValue.bi",

@@ -27,3 +27,8 @@ class IntegerValue(value:Integer) < Value {
     return value;
   }
 }
+
+function IntegerValue(value:Integer) -> IntegerValue {
+  o:IntegerValue(value);
+  return o;
+}

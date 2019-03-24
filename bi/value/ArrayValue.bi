@@ -20,9 +20,10 @@ class ArrayValue < Value {
     values.walk();
   }
 
-  function push() -> Buffer {
+  function push(value:Value) {
     buffer:MemoryBuffer;
-    return buffer;
+    buffer.value <- value;
+    values.pushBack(buffer);
   }
 
   function getBooleanVector() -> Boolean[_]? {
@@ -204,4 +205,9 @@ class ArrayValue < Value {
     }
     return nil;
   }
+}
+
+function ArrayValue() -> ArrayValue {
+  o:ArrayValue;
+  return o;
 }

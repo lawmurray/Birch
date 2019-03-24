@@ -19,18 +19,17 @@ class JSONGenerator < Generator {
   function visit(value:ObjectValue) {
     stream.print("{\n");
     inward();
-    auto k <- value.keys.walk();
-    auto v <- value.values.walk();
+    auto entry <- value.entries.walk();
     auto first <- true;
-    while k? && v? {
+    while entry? {
       if !first {
         stream.print(",\n");
         first <- false;
       }
       indent();
-      stream.print(k!);
+      stream.print(entry!.key);
       stream.print(": ");
-      v!.value.accept(this);
+      entry!.value.value.accept(this);
       stream.print("\n");
     }
     outward();

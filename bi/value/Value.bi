@@ -877,28 +877,18 @@ class Value {
       child!.walk();
     }
   }
-  
+
   /**
-   * Push a new element onto the end of an array.
-   *
-   * Returns: a Value for modifying the new element.
+   * Push a value onto the end of an array.
    */
-  function push() -> Buffer {
+  function push(value:Value) {
     assert false;
   }
-  
-  /*
-   * Hacks. These are overloads that must exist for specific types within
-   * the standard library that need to be used in List, Vector and other
-   * containers; the container classes require these overloads to compile.
-   * Longer term, they can be removed/replaced once improved generic type
-   * handling is available.
+
+  /**
+   * Push an entry onto the end of an object.
    */
-  function get(value:(Model,Real)!?) -> (Model,Real)!? {
-    return nil;
+  function push(key:String, value:Value) {
+    assert false;
   }
-  function set(value:(Model,Real)!?) {
-    //
-  }
-  
 }

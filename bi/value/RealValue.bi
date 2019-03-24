@@ -23,3 +23,8 @@ class RealValue(value:Real) < Value {
     return value;
   }
 }
+
+function RealValue(value:Real) -> RealValue {
+  o:RealValue(value);
+  return o;
+}

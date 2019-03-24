@@ -23,3 +23,8 @@ class RealVectorValue(value:Real[_]) < Value {
     return value;
   }
 }
+
+function RealVectorValue(value:Real[_]) -> RealVectorValue {
+  o:RealVectorValue(value);
+  return o;
+}

@@ -23,3 +23,8 @@ class BooleanValue(value:Boolean) < Value {
     return value;
   }
 }
+
+function BooleanValue(value:Boolean) -> BooleanValue {
+  o:BooleanValue(value);
+  return o;
+}
