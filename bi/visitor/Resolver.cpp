@@ -809,8 +809,9 @@ bi::Statement* bi::Resolver::modify(While* o) {
 
 bi::Statement* bi::Resolver::modify(DoWhile* o) {
   scopes.push_back(o->scope);
-  Modifier::modify(o);
+  o->braces = o->braces->accept(this);
   scopes.pop_back();
+  o->cond = o->cond->accept(this);
   checkBoolean(o->cond->strip());
   return o;
 }
