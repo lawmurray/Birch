@@ -5,19 +5,19 @@
  */
 class BootstrapParticleFilter < ParticleFilter {
   function handle(f:Event!) -> Real {
-    auto v <- 0.0;
+    auto w <- 0.0;
     while f? {
       auto evt <- f!;
       if evt.isFactor() {
-        v <- v + evt.observe();
+        w <- w + evt.observe();
       } else if evt.isRandom() {
         if evt.hasValue() {
-          v <- v + evt.observe();
+          w <- w + evt.observe();
         } else {
           evt.simulate();
         }
       }
     }
-    return v;
+    return w;
   }
 }

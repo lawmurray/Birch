@@ -131,20 +131,20 @@ class ParticleFilter < ForwardSampler {
    * Handle events from a particle fiber and return the cumulative weight.
    */
   function handle(f:Event!) -> Real {
-    auto v <- 0.0;
+    auto w <- 0.0;
     while f? {
       auto evt <- f!;
       if evt.isFactor() {
-        v <- v + evt.observe();
+        w <- w + evt.observe();
       } else if evt.isRandom() {
         if evt.hasValue() {
-          v <- v + evt.observe();
+          w <- w + evt.observe();
         } else {
           evt.assume();
         }
       }
     }
-    return v;
+    return w;
   }
 
   /**
@@ -171,8 +171,8 @@ class ParticleFilter < ForwardSampler {
   
     /* normalizing constant estimate */
     Z.pushBack(V);
-    elapsed.pushBack(toc());
     memory.pushBack(memoryUse());
+    elapsed.pushBack(toc());
   }
 
   /**
@@ -207,13 +207,13 @@ class ParticleFilter < ForwardSampler {
 
   function read(buffer:Buffer) {
     super.read(buffer);
-    N <-? buffer.get("N", N);
+    N <-? buffer.get("nparticles", N);
     trigger <-? buffer.get("trigger", trigger);
   }
 
   function write(buffer:Buffer) {
     super.write(buffer);
-    buffer.set("N", N);
+    buffer.set("nparticles", N);
     buffer.set("trigger", trigger);
     buffer.set("levidence", Z);
     buffer.set("ess", ess);

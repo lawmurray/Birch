@@ -73,21 +73,22 @@ class MarkovModel<Parameter,State> < BidirectionalModel {
    */
   fiber step() -> Event {
     if f? {
-      /* move to next state */
       f <- f!.getNext();
-    }
-    if !f? {
-      /* if there is no next state, insert one */
-      x:State;
-      this.x.pushBack(x);
-      f <- this.x.begin();
-    }
-    auto x <- f!.getValue();
-    if f! == this.x.begin()! {
-      initial(x, θ);
     } else {
-      auto u <- f!.getPrevious()!.getValue();
-      transition(x, u, θ);
+      f <- x.begin();
+    }    
+    if !f? {
+      /* no next state, insert one */
+      x':State;
+      x.pushBack(x');
+      f <- x.end();
+    }
+    auto x' <- f!.getValue();
+    if f! == x.begin()! {
+      initial(x', θ);
+    } else {
+      auto x <- f!.getPrevious()!.getValue();
+      transition(x', x, θ);
     }
   }
 

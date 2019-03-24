@@ -47,14 +47,15 @@ class HiddenMarkovModel<Parameter,State,Observation> <
   fiber step() -> Event {
     super.step();
     if g? {
-      /* move to next observation */
       g <- g!.getNext();
-    }
+    } else {
+      g <- y.begin();
+    }    
     if !g? {
-      /* if there is no next observation, insert one */
-      y:Observation;
-      this.y.pushBack(y);
-      g <- this.y.end();
+      /* no next observation, insert one */
+      y':Observation;
+      y.pushBack(y');
+      g <- y.end();
     }
     auto x <- f!.getValue();
     auto y <- g!.getValue();

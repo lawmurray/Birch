@@ -90,7 +90,6 @@ program sample(
     configBuffer.get("sampler", s!);
   }
   assert s?;
-  s!.setArchetype(m!);
   
   /* input */
   inputBuffer:JSONBuffer;
@@ -108,7 +107,8 @@ program sample(
   }
   
   /* sample */
-  for n:Integer in 1..s!.nsamples {  
+  s!.setArchetype(m!);
+  for auto n in 1..s!.nsamples {  
     m1:Model?;
     w1:Real;
     (m1, w1) <- s!.sample();
