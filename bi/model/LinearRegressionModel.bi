@@ -33,7 +33,7 @@ class LinearRegressionModel < Model {
    */
   y:Random<Real[_]>;
   
-  fiber simulate() -> Real {
+  fiber simulate() -> Event {
     N:Integer <- rows(X);
     P:Integer <- columns(X);
     if (N > 0 && P > 0) {
@@ -44,8 +44,8 @@ class LinearRegressionModel < Model {
   }
   
   function read(buffer:Buffer) {
-    X <- buffer.getRealMatrix("X")!;
-    y <- buffer.getRealVector("y")!;
+    X <-? buffer.getRealMatrix("X");
+    y <-? buffer.getRealVector("y");
   }
   
   function write(buffer:Buffer) {

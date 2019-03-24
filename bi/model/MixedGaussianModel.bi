@@ -37,6 +37,16 @@ class MixedGaussianParameter {
    */
   Σ_y_n:Real[_,_] <- [[0.1]];
 
+  function read(buffer:Buffer) {
+    A <-? buffer.get("A", A);
+    B <-? buffer.get("B", B);
+    C <-? buffer.get("C", C);
+    Σ_x_l <-? buffer.get("Σ_x_l", Σ_x_l);
+    Σ_x_n <-? buffer.get("Σ_x_n", Σ_x_n);
+    Σ_y_l <-? buffer.get("Σ_y_l", Σ_y_l);
+    Σ_y_n <-? buffer.get("Σ_y_n", Σ_y_n);
+  }
+
   function write(buffer:Buffer) {
     buffer.set("A", A);
     buffer.set("B", B);
@@ -63,8 +73,8 @@ class MixedGaussianState {
   l:Random<Real[_]>;
 
   function read(buffer:Buffer) {
-    l <- buffer.getRealVector("l");
-    n <- buffer.getRealVector("n");
+    buffer.get("l", l);
+    buffer.get("n", n);
   }
 
   function write(buffer:Buffer) {
@@ -107,20 +117,21 @@ class MixedGaussianObservation {
  */
 class MixedGaussianModel < StateSpaceModel<MixedGaussianParameter,
     MixedGaussianState,MixedGaussianObservation> {
-  fiber initial(x':MixedGaussianState, θ:MixedGaussianParameter) -> Real {
-    x'.n ~ Gaussian(vector(0.0, 1), identity(1));
-    x'.l ~ Gaussian(vector(0.0, 3), identity(3));
+  fiber initial(x:MixedGaussianState, θ:MixedGaussianParameter) -> Event {
+    x.n ~ Gaussian(vector(0.0, 1), identity(1));
+    x.l ~ Gaussian(vector(0.0, 3), identity(3));
   }
 
   fiber transition(x':MixedGaussianState, x:MixedGaussianState,
-      θ:MixedGaussianParameter) -> Real {    
+      θ:MixedGaussianParameter) -> Event {
     x'.n ~ Gaussian([atan(scalar(x.n))] + θ.B*x.l, θ.Σ_x_n);
     x'.l ~ Gaussian(θ.A*x.l, θ.Σ_x_l);
   }
     
-  fiber observation(y':MixedGaussianObservation, x:MixedGaussianState,
-      θ:MixedGaussianParameter) -> Real {
-    y'.n ~ Gaussian(vector(0.1*copysign(pow(scalar(x.n), 2.0), scalar(x.n)), 1), θ.Σ_y_n);
-    y'.l ~ Gaussian(θ.C*x.l, θ.Σ_y_l);
+  fiber observation(y:MixedGaussianObservation, x:MixedGaussianState,
+      θ:MixedGaussianParameter) -> Event {
+    y.n ~ Gaussian(vector(0.1*copysign(pow(scalar(x.n), 2.0), scalar(x.n)),
+        1), θ.Σ_y_n);
+    y.l ~ Gaussian(θ.C*x.l, θ.Σ_y_l);
   }    
 }
