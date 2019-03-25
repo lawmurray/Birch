@@ -29,57 +29,42 @@ class AliveParticleFilter < ParticleFilter {
     std::atomic<int> P;
     P = 0;
     }}
-
-    /* propagate and weight until `nparticles` have been accepted; the first
-     * `nparticles` proposals are drawn using the standard resampler; as each
-     * is rejected it is replaced with a categorical draw until acceptance */  
     auto x0 <- x;
     auto w0 <- w;
     parallel for auto n in 1..N {
-      auto a' <- a[n];
-      auto x' <- clone<ForwardModel>(x0[a']);
-      auto w' <- handle(x'.step());
+      x[n] <- clone<ForwardModel>(x0[a[n]]);
+      w[n] <- handleStep(x[n].step());
       cpp {{
       ++P;
       }}
-      while w' == -inf {
-        /* keep trying until positive weight */
-        a' <- ancestor(w0);
-        x' <- clone<ForwardModel>(x0[a']);
-        w' <- handle(x'.step());
+      while w[n] == -inf {  // repeat until weight is positive
+        a[n] <- ancestor(w0);
+        x[n] <- clone<ForwardModel>(x0[a[n]]);
+        w[n] <- handleStep(x[n].step());
         cpp {{
         ++P;
         }}
       }
-      x[n] <- x';
-      w[n] <- w[n] + w';
-      a[n] <- a';
     }
 
     /* propagate and weight until one further acceptance, which is discarded
      * for unbiasedness in the normalizing constant estimate */
-    auto a' <- ancestor(w0);
-    auto x' <- clone<ForwardModel>(x0[a']);
-    auto w' <- handle(x'.step());
-    cpp {{
-    ++P;
-    }}
-    while w' == -inf {
-      /* keep trying until positive weight */
-      a' <- ancestor(w0);
-      x' <- clone<ForwardModel>(x0[a']);
-      w' <- handle(x'.step());
+    w':Real;
+    do {
+      auto a' <- ancestor(w0);
+      auto x' <- clone<ForwardModel>(x0[a']);
+      w' <- handleStep(x'.step());
       cpp {{
       ++P;
       }}
-    }
+    } while w' == -inf;  // repeat until weight is positive
     
     /* update propagations */
     Q:Integer;
     cpp{{
     Q_ = P;
     }}
-    P.pushBack(Q);
+    this.P.pushBack(Q);
   }
   
   function reduce() {

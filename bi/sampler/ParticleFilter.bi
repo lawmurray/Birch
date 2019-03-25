@@ -110,7 +110,7 @@ class ParticleFilter < ForwardSampler {
    */
   function start() {
     parallel for auto n in 1..N {
-      w[n] <- w[n] + handle(x[n].start());
+      w[n] <- w[n] + handleStart(x[n].start());
     }
   }
     
@@ -120,17 +120,22 @@ class ParticleFilter < ForwardSampler {
   function step() {
     auto x0 <- x;
     parallel for auto n in 1..N {
-      auto x' <- clone<ForwardModel>(x0[a[n]]);
-      auto w' <- handle(x'.step());
-      x[n] <- x';
-      w[n] <- w[n] + w';
+      x[n] <- clone<ForwardModel>(x0[a[n]]);
+      w[n] <- w[n] + handleStep(x[n].step());
     }
   }
   
   /**
-   * Handle events from a particle fiber and return the cumulative weight.
+   * Handle events when starting a particle.
    */
-  function handle(f:Event!) -> Real {
+  function handleStart(f:Event!) -> Real {
+    return handleStep(f);
+  }
+
+  /**
+   * Handle events when stepping a particle.
+   */
+  function handleStep(f:Event!) -> Real {
     auto w <- 0.0;
     while f? {
       auto evt <- f!;

@@ -4,7 +4,7 @@
  * optimizations are performed.
  */
 class BootstrapParticleFilter < ParticleFilter {
-  function handle(f:Event!) -> Real {
+  function handleStep(f:Event!) -> Real {
     auto w <- 0.0;
     while f? {
       auto evt <- f!;
