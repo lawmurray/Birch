@@ -36,6 +36,7 @@ class JSONParser < Parser {
   }
   
   function parseMapping(buffer:Buffer) {
+    buffer.setObject();
     cpp{{
     yaml_event_delete(&self->event);
     int done = 0;
@@ -74,6 +75,7 @@ class JSONParser < Parser {
   }
   
   function parseSequence(buffer:Buffer) {
+    buffer.setArray();
     cpp{{
     yaml_event_delete(&self->event);
     int done = 0;

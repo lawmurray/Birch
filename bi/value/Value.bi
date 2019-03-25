@@ -39,7 +39,7 @@ class Value {
    * Set a child in an object.
    */
   function setChild(name:String) -> Buffer {
-    assert false;
+    error("not an object");
   }
 
   /**
@@ -48,21 +48,21 @@ class Value {
    * Return: An optional with a value giving the length if this is an array.
    */
   function size() -> Integer {
-    assert false;
+    error("not an array");
   }
 
   /**
    * Iterate through elements of an array.
    */
   fiber walk() -> Buffer {
-    assert false;
+    error("not an array");
   }
 
   /**
    * Push a value onto the end of an array.
    */
   function push() -> Buffer {
-    assert false;
+    error("not an array");
   }
 
   /**

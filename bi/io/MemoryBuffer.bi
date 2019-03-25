@@ -5,7 +5,7 @@ class MemoryBuffer < Buffer {
   /**
    * The value of this buffer.
    */
-  value:Value <- NilValue();
+  value:Value <- ObjectValue();
 
   /**
    * Load from a file.
@@ -46,6 +46,22 @@ class MemoryBuffer < Buffer {
 
   function push() -> Buffer {
     return value.push();
+  }
+
+  function getObject() -> Buffer? {
+    if value.isObject() {
+      return this;
+    } else {
+      return nil;
+    }
+  }
+
+  function getArray() -> Buffer? {
+    if value.isArray() {
+      return this;
+    } else {
+      return nil;
+    }
   }
 
   function getBoolean() -> Boolean? {
