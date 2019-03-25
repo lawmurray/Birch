@@ -19,7 +19,7 @@ class IntegerVectorValue(value:Integer[_]) < Value {
     gen.visit(this);
   }
 
-  function isValue() -> Boolean {
+  function isArray() -> Boolean {
     return true;
   }
   

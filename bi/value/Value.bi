@@ -24,7 +24,7 @@ class Value {
   /**
    * Is this neither an object or an array?
    */
-  function isValue() -> Boolean {
+  function isScalar() -> Boolean {
     return false;
   }
 
@@ -881,14 +881,7 @@ class Value {
   /**
    * Push a value onto the end of an array.
    */
-  function push(value:Value) {
-    assert false;
-  }
-
-  /**
-   * Push an entry onto the end of an object.
-   */
-  function push(key:String, value:Value) {
+  function push() -> Buffer {
     assert false;
   }
 }

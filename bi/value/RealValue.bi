@@ -15,7 +15,7 @@ class RealValue(value:Real) < Value {
     gen.visit(this);
   }
 
-  function isValue() -> Boolean {
+  function isScalar() -> Boolean {
     return true;
   }
   

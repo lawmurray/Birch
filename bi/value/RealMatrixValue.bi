@@ -19,7 +19,7 @@ class RealMatrixValue(value:Real[_,_]) < Value {
     return value;
   }
 
-  function isValue() -> Boolean {
+  function isArray() -> Boolean {
     return true;
   }
 }

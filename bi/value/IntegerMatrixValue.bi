@@ -19,7 +19,7 @@ class IntegerMatrixValue(value:Integer[_,_]) < Value {
     gen.visit(this);
   }
   
-  function isValue() -> Boolean {
+  function isArray() -> Boolean {
     return true;
   }
   

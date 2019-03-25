@@ -15,7 +15,7 @@ class IntegerValue(value:Integer) < Value {
     gen.visit(this);
   }
 
-  function isValue() -> Boolean {
+  function isScalar() -> Boolean {
     return true;
   }
 

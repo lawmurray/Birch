@@ -11,7 +11,7 @@ class MemoryBuffer < Buffer {
    */
   function load(path:String) {
     parser:JSONParser;
-    value <-? parser.parse(path);
+    parser.parse(path, this);
   }
 
   /**
@@ -22,7 +22,7 @@ class MemoryBuffer < Buffer {
   function save(path:String) {
     mkdir(path);
     gen:JSONGenerator;
-    gen.generate(path, value);
+    gen.generate(path, this);
   }
 
   function getChild(name:String) -> Buffer? {

@@ -11,14 +11,24 @@ class ObjectValue < Value {
   function isObject() -> Boolean {
     return true;
   }
+
+  function getChild(name:String) -> Buffer? {
+    auto entry <- entries.walk();
+    while entry? {
+      if entry!.name == name {
+        return entry!.buffer;
+      }
+    }
+    return nil;
+  }
   
-  function push(key:String, value:Value) {
+  function setChild(name:String) -> Buffer {
     buffer:MemoryBuffer;
-    buffer.value <- value;
     entry:Entry;
-    entry.key <- key;
-    entry.value <- buffer;
+    entry.name <- name;
+    entry.buffer <- buffer;
     entries.pushBack(entry);
+    return buffer;    
   }
 }
 

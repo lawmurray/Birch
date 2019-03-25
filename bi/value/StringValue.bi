@@ -15,7 +15,7 @@ class StringValue(value:String) < Value {
     gen.visit(this);
   }
 
-  function isValue() -> Boolean {
+  function isScalar() -> Boolean {
     return true;
   }
 

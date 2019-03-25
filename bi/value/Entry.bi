@@ -3,12 +3,12 @@
  */
 class Entry {
   /**
-   * Key.
+   * Name.
    */
-  key:String;
+  name:String;
   
   /**
-   * Value.
+   * Buffer.
    */
-  value:MemoryBuffer;
+  buffer:MemoryBuffer;
 }

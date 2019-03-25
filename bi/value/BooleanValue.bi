@@ -15,7 +15,7 @@ class BooleanValue(value:Boolean) < Value {
     gen.visit(this);
   }
 
-  function isValue() -> Boolean {
+  function isScalar() -> Boolean {
     return true;
   }
   

@@ -2,7 +2,13 @@
  * Abstract generator.
  */
 class Generator {
-  function generate(path:String, root:Value);
+  /**
+   * Generate a file.
+   *
+   * - path: File path.
+   * - buffer: Buffer from which to load contents.
+   */
+  function generate(path:String, buffer:MemoryBuffer);
 
   function visit(value:ArrayValue);
   function visit(value:BooleanValue);

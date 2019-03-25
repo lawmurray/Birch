@@ -2,7 +2,7 @@
  * Array value.
  */
 class ArrayValue < Value {
-  values:List<MemoryBuffer>;
+  buffers:List<MemoryBuffer>;
 
   function accept(gen:Generator) {
     gen.visit(this);
@@ -13,22 +13,22 @@ class ArrayValue < Value {
   }
 
   function getLength() -> Integer? {
-    return values.size();
+    return buffers.size();
   }
 
   fiber walk() -> Buffer {
-    values.walk();
+    buffers.walk();
   }
 
-  function push(value:Value) {
+  function push() -> Buffer {
     buffer:MemoryBuffer;
-    buffer.value <- value;
-    values.pushBack(buffer);
+    buffers.pushBack(buffer);
+    return buffer;
   }
 
   function getBooleanVector() -> Boolean[_]? {
-    result:Boolean[values.size()];
-    auto f <- values.walk();
+    result:Boolean[buffers.size()];
+    auto f <- buffers.walk();
     auto i <- 1;
     while f? {
       auto value <- f!.getBoolean();
@@ -43,8 +43,8 @@ class ArrayValue < Value {
   }
 
   function getIntegerVector() -> Integer[_]? {
-    result:Integer[values.size()];
-    auto f <- values.walk();
+    result:Integer[buffers.size()];
+    auto f <- buffers.walk();
     auto i <- 1;
     while f? {
       auto value <- f!.getInteger();
@@ -59,8 +59,8 @@ class ArrayValue < Value {
   }
 
   function getRealVector() -> Real[_]? {
-    result:Real[values.size()];
-    auto f <- values.walk();
+    result:Real[buffers.size()];
+    auto f <- buffers.walk();
     auto i <- 1;
     while f? {
       auto value <- f!.getReal();

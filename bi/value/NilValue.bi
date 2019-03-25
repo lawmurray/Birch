@@ -6,7 +6,7 @@ class NilValue < Value {
     gen.visit(this);
   }
 
-  function isValue() -> Boolean {
+  function isScalar() -> Boolean {
     return true;
   }
 }
