@@ -6,6 +6,31 @@
  */
 class Buffer {
   /**
+   * Get a child.
+   */
+  function getChild(name:String) -> Buffer?;
+
+  /**
+   * Set child.
+   */
+  function setChild(name:String) -> Buffer;
+
+  /**
+   * Get the size of an array.
+   */
+  function size() -> Integer;
+
+  /**
+   * Iterate through the elements of an array.
+   */
+  fiber walk() -> Buffer;
+  
+  /**
+   * Push a new element onto the end of an array.
+   */
+  function push() -> Buffer;
+
+  /**
    * Get this as an object.
    */
   function getObject() -> Buffer?;
@@ -15,13 +40,6 @@ class Buffer {
    */
   function getArray() -> Buffer?;
   
-  /**
-   * If this is an array get its length.
-   *
-   * Return: An optional with a value giving the length if this is an array.
-   */
-  function getLength() -> Integer?;
-
   /**
    * Get this as a Boolean.
    *
@@ -108,11 +126,6 @@ class Buffer {
   function getRealMatrix() -> Real[_,_]?;
 
   /**
-   * Get a child.
-   */
-  function getChild(name:String) -> Buffer?;
-
-  /**
    * Get a child as an object.
    *
    * - name: Name of the child.
@@ -141,23 +154,6 @@ class Buffer {
     auto buffer <- getChild(name);
     if buffer? {
       return buffer!.getArray();
-    } else {
-      return nil;
-    }
-  }
-
-  /**
-   * Get the length of an array.
-   *
-   * - name: Name of the child.
-   *
-   * Return: An optional with a value giving the length if the given entry
-   * is an array.
-   */
-  function getLength(name:String) -> Integer? {
-    auto buffer <- getChild(name);
-    if buffer? {
-      return buffer!.getLength();
     } else {
       return nil;
     }
@@ -741,11 +737,6 @@ class Buffer {
   }
 
   /**
-   * Set child (to nil).
-   */
-  function setChild(name:String) -> Buffer;
-
-  /**
    * Set child as an object.
    *
    * - name: Name of the child.
@@ -1091,36 +1082,6 @@ class Buffer {
     setRealMatrix(name, value);
   }
 
-  /**
-   * Iterate through the elements of an array.
-   *
-   * Yields: buffers for each element in turn.
-   */
-  fiber walk() -> Buffer {
-    walk();
-  }
-
-  /**
-   * Iterate through the elements of an array.
-   *
-   * Yields: buffers for each element in turn.
-   */
-  fiber walk(name:String) -> Buffer {
-    auto buffer <- getChild(name);
-    if buffer? {
-      buffer!.walk();
-    }
-  }
-  
-  /**
-   * Push a new element onto the end of an array.
-   *
-   * Returns: a buffer for modifying the new element.
-   */
-  function push() -> Buffer {
-    return push();
-  }
-  
   /*
    * Hacks. These are overloads that must exist for specific types within
    * the standard library that need to be used in List, Vector and other
@@ -1134,5 +1095,4 @@ class Buffer {
   function set(value:(Model,Real)!?) {
     //
   }
-  
 }

@@ -2,6 +2,9 @@
  * Buffer in memory.
  */
 class MemoryBuffer < Buffer {
+  /**
+   * The value of this buffer.
+   */
   value:Value <- NilValue();
 
   /**
@@ -33,8 +36,16 @@ class MemoryBuffer < Buffer {
     return value.setChild(name);
   }
 
-  function getLength() -> Integer? {
-    return value.getLength();
+  function size() -> Integer {
+    return value.size();
+  }
+
+  fiber walk() -> Buffer {
+    value.walk();
+  }
+
+  function push() -> Buffer {
+    return value.push();
   }
 
   function getBoolean() -> Boolean? {

@@ -12,7 +12,7 @@ class ArrayValue < Value {
     return true;
   }
 
-  function getLength() -> Integer? {
+  function size() -> Integer {
     return buffers.size();
   }
 
@@ -78,12 +78,12 @@ class ArrayValue < Value {
   }
 
   function getBooleanMatrix() -> Boolean[_,_]? {
-    nrows:Integer? <- getLength();
+    nrows:Integer? <- size();
     if (nrows?) {
       auto row <- walk();
       if (row?) {
         /* determine number of columns from first row */
-        ncols:Integer? <- row!.getLength();
+        ncols:Integer? <- row!.size();
         X:Boolean[_,_];
         x:Boolean[_]?;
         if (ncols?) {
@@ -100,7 +100,7 @@ class ArrayValue < Value {
          * number of columns as the first */
         i:Integer <- 1;
         while (row?) {
-          ncols <- row!.getLength();
+          ncols <- row!.size();
           if (ncols? && ncols! == columns(X)) {
             x <- row!.getBooleanVector();
             if (x?) {
@@ -121,12 +121,12 @@ class ArrayValue < Value {
   }
 
   function getIntegerMatrix() -> Integer[_,_]? {
-    nrows:Integer? <- getLength();
+    nrows:Integer? <- size();
     if (nrows?) {
       auto row <- walk();
       if (row?) {
         /* determine number of columns from first row */
-        ncols:Integer? <- row!.getLength();
+        ncols:Integer? <- row!.size();
         X:Integer[_,_];
         x:Integer[_]?;
         if (ncols?) {
@@ -143,7 +143,7 @@ class ArrayValue < Value {
          * number of columns as the first */
         i:Integer <- 1;
         while (row?) {
-          ncols <- row!.getLength();
+          ncols <- row!.size();
           if (ncols? && ncols! == columns(X)) {
             x <- row!.getIntegerVector();
             if (x?) {
@@ -164,12 +164,12 @@ class ArrayValue < Value {
   }
 
   function getRealMatrix() -> Real[_,_]? {
-    nrows:Integer? <- getLength();
+    nrows:Integer? <- size();
     if (nrows?) {
       auto row <- walk();
       if (row?) {
         /* determine number of columns from first row */
-        ncols:Integer? <- row!.getLength();
+        ncols:Integer? <- row!.size();
         X:Real[_,_];
         x:Real[_]?;
         if (ncols?) {
@@ -186,7 +186,7 @@ class ArrayValue < Value {
          * number of columns as the first */
         i:Integer <- 1;
         while (row?) {
-          ncols <- row!.getLength();
+          ncols <- row!.size();
           if (ncols? && ncols! == columns(X)) {
             x <- row!.getRealVector();
             if (x?) {
