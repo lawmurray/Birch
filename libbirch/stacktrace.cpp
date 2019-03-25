@@ -18,22 +18,22 @@ void libbirch::abort() {
   abort("assertion failed");
 }
 
-void libbirch::abort(const std::string& msg) {
+void libbirch::abort(const std::string& msg, const unsigned skip) {
   printf("error: %s\n", msg.c_str());
-#ifndef NDEBUG
+  #ifndef NDEBUG
   printf("stack trace:\n");
   unsigned i = 0;
-  for (auto iter = stacktrace.rbegin(); i < 20u && iter != stacktrace.rend();
-      ++iter) {
+  for (auto iter = stacktrace.rbegin() + skip; (i < 20u + skip) &&
+      iter != stacktrace.rend(); ++iter) {
     printf("    %-24s @ %s:%d\n", iter->func, iter->file, iter->line);
     ++i;
   }
-  if (i < stacktrace.size()) {
-    int rem = stacktrace.size() - i;
+  if (i < stacktrace.size() - skip) {
+    int rem = stacktrace.size() - skip - i;
     printf("  + %d more\n", rem);
   }
   assert(false);
-#else
+  #else
   std::exit(1);
-#endif
+  #endif
 }

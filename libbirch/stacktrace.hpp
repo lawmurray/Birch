@@ -60,6 +60,10 @@ void abort();
 
 /**
  * Print stack trace and abort with message.
+ *
+ * @param msg Message.
+ * @param skip Number of frames on the top of the call stack to omit from the
+ * stack trace.
  */
-void abort(const std::string& msg);
+void abort(const std::string& msg, const unsigned skip = 0);
 }
