@@ -22,3 +22,8 @@ class TraceHandler < Handler {
     return h.handle(evt);
   }
 }
+
+function TraceHandler() -> TraceHandler {
+  o:TraceHandler;
+  return o;
+}

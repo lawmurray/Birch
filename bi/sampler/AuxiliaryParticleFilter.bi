@@ -1,4 +1,4 @@
 /**
  * Auxiliary particle filter.
  */
-class AuxiliaryParticleFilter = ParticleFilter<DelayHandler>;
+class AuxiliaryParticleFilter = ParticleFilter;

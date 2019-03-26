@@ -15,3 +15,8 @@ class ProposalHandler < Handler {
 
   }
 }
+
+function ProposalHandler() -> ProposalHandler {
+  o:ProposalHandler;
+  return o;
+}

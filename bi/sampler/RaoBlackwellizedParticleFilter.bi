@@ -1,4 +1,4 @@
 /**
  * Rao--Blackwellized particle filter.
  */
-class RaoBlackwellizedParticleFilter = ParticleFilter<DelayHandler>;
+class RaoBlackwellizedParticleFilter = ParticleFilter;

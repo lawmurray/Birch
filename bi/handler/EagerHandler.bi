@@ -1,7 +1,7 @@
 /**
  * Event handler that eagerly instantiates random variates.
  */
-class EagerHandler {
+class EagerHandler < Handler {
   function handle(evt:FactorEvent) -> Real {
     return evt.observe();
   }
@@ -14,4 +14,9 @@ class EagerHandler {
       return 0.0;
     }
   }
+}
+
+function EagerHandler() -> EagerHandler {
+  o:EagerHandler;
+  return o;
 }

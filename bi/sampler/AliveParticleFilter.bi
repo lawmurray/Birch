@@ -3,7 +3,7 @@
  * alive particle filter maintains $N$ particles with non-zero weight, rather
  * than $N$ particles in total as with the standard particle filter.
  */
-class AliveParticleFilter < ParticleFilter<DelayHandler> {
+class AliveParticleFilter < ParticleFilter {
   /**
    * For each checkpoint, the number of propagations that were performed to
    * achieve $N$ acceptances.
@@ -12,7 +12,6 @@ class AliveParticleFilter < ParticleFilter<DelayHandler> {
 
   function initialize() {
     super.initialize();
-    trigger <- 1.0;  // always resample
     P.clear();
   }
   

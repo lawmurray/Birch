@@ -15,3 +15,8 @@ class ReplayHandler < Handler {
 
   }
 }
+
+function ReplayHandler() -> ReplayHandler {
+  o:ReplayHandler;
+  return o;
+}

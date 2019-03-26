@@ -6,7 +6,7 @@ class ForwardModel < Model {
   /**
    * Event handler.
    */
-  h:Handler;
+  h:Handler <- DelayHandler();
  
   /**
    * Start.

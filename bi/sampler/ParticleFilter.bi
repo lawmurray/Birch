@@ -1,7 +1,7 @@
 /**
  * Particle filter.
  */
-class ParticleFilter<EventHandler> < ForwardSampler {  
+class ParticleFilter < ForwardSampler {  
   /**
    * Particles.
    */
@@ -176,9 +176,9 @@ class ParticleFilter<EventHandler> < ForwardSampler {
     //
   }
 
-  function setArchetype(archetype:Model) {
-    super.setArchetype(archetype);
-    T <- this.archetype!.size();
+  function setArchetype(a:Model) {
+    super.setArchetype(a);
+    T <- archetype!.size();
   }
 
   function read(buffer:Buffer) {

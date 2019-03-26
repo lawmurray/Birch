@@ -1,7 +1,7 @@
 /**
  * Event handler that delays instantiation of random variates.
  */
-class DelayHandler {
+class DelayHandler < Handler {
   function handle(evt:FactorEvent) -> Real {
     return evt.observe();
   }
@@ -14,4 +14,9 @@ class DelayHandler {
       return 0.0;
     }
   }
+}
+
+function DelayHandler() -> DelayHandler {
+  o:DelayHandler;
+  return o;
 }
