@@ -7,7 +7,7 @@
 #include <omp.h>
 #endif
 
-namespace bi {
+namespace libbirch {
 /**
  * Number of threads.
  */

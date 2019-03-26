@@ -3,7 +3,7 @@
  */
 #pragma once
 
-namespace bi {
+namespace libbirch {
 template<class T> class SharedPtr;
 template<class T> class WeakPtr;
 template<class T> class InitPtr;

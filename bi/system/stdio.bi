@@ -3,7 +3,7 @@
  */
 function getStdIn() -> File {
   cpp{{
-  return stdin;
+  return ::stdin;
   }}
 }
 
@@ -12,7 +12,7 @@ function getStdIn() -> File {
  */
 function getStdOut() -> File {
   cpp{{
-  return stdout;
+  return ::stdout;
   }}
 }
 
@@ -21,7 +21,7 @@ function getStdOut() -> File {
  */
 function getStdErr() -> File {
   cpp{{
-  return stderr;
+  return ::stderr;
   }}
 }
 

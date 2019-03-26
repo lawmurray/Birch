@@ -12,24 +12,54 @@ function log_sum_exp(x:Real[_]) -> Real {
 }
 
 /**
- * Sample an ancestry vector for a vector of log-weights.
+ * Exponentiate a vector and normalize to sum to one.
  */
-function ancestors(w:Real[_]) -> Integer[_] {
-  N:Integer <- length(w);
-  W:Real[N];
-  O:Integer[N];
-  a:Integer[N];
+function norm_exp(x:Real[_]) -> Real[_] {
+  assert length(x) > 0;
   
-  W <- cumulative_weights(w);
-  assert W[N] > 0.0;  // otherwise particle filter has degenerated
-  O <- systematic_cumulative_offspring(W);
-  a <- cumulative_offspring_to_ancestors(O);
-  
-  return a;
+  auto mx <- max(x);
+  auto r <- 0.0;
+  for auto n in 1..length(x) {
+    r <- r + exp(x[n] - mx);
+  }
+  auto W <- mx + log(r);
+  return transform(x, @(w:Real) -> Real { return exp(w - W); });
 }
 
 /**
- * Sample a single ancestor for a vector of log-weights. If the sum of
+ * Sample an ancestry vector for a log-weight vector using the default
+ * resampling algorithm.
+ */
+function ancestors(w:Real[_]) -> Integer[_] {
+  return systematic_ancestors(w);
+}
+
+/**
+ * Sample an ancestry vector for a log-weight vector using systematic
+ * resampling.
+ */
+function systematic_ancestors(w:Real[_]) -> Integer[_] {
+  return cumulative_offspring_to_ancestors(systematic_cumulative_offspring(cumulative_weights(w)));
+}
+
+/**
+ * Sample an ancestry vector for a log-weight vector using multinomial
+ * resampling.
+ */
+function multinomial_ancestors(w:Real[_]) -> Integer[_] {
+  return offspring_to_ancestors(simulate_multinomial(length(w), norm_exp(w)));
+}
+
+/**
+ * Sample a conditional ancestry vector for a log-weight vector using
+ * multinomial resampling.
+ */
+function multinomial_conditional_ancestors(w:Real[_]) -> Integer[_] {
+  return conditional_offspring_to_ancestors(simulate_multinomial(length(w) - 1, norm_exp(w)));
+}
+
+/**
+ * Sample a single ancestor for a log-weight vector. If the sum of
  * weights is zero, returns zero.
  */
 function ancestor(w:Real[_]) -> Integer {
@@ -66,6 +96,41 @@ function systematic_cumulative_offspring(W:Real[_]) -> Integer[_] {
     O[n] <- min(N, Integer(floor(r + u)));
   }
   return O;
+}
+
+/**
+ * Convert an offspring vector into an ancestry vector.
+ */
+function offspring_to_ancestors(o:Integer[_]) -> Integer[_] {
+  auto N <- length(o);
+  auto i <- 1;
+  a:Integer[N];
+  for auto n in 1..N {
+    for auto j in 1..o[n] {
+      a[i] <- n;
+      i <- i + 1;
+    }
+  }
+  assert i == N + 1;
+  return a;
+}
+
+/**
+ * Convert a conditional offspring vector into an ancestry vector.
+ */
+function conditional_offspring_to_ancestors(o:Integer[_]) -> Integer[_] {
+  auto N <- length(o);
+  auto i <- 1;
+  a:Integer[N];
+  for auto n in 1..N {
+    for auto j in 1..o[n] {
+      a[i] <- n;
+      i <- i + 1;
+    }
+  }
+  assert i == N;
+  a[N] <- N;
+  return a;
 }
 
 /**

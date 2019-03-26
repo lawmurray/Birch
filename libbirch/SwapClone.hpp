@@ -5,7 +5,7 @@
 
 #include "libbirch/memory.hpp"
 
-namespace bi {
+namespace libbirch {
 /**
  * Swap the clone flag on construction, swap it back on destruction.
  */

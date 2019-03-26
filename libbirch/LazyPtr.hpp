@@ -13,7 +13,7 @@
 
 #include <tuple>
 
-namespace bi {
+namespace libbirch {
 template<class T> class Optional;
 
 /**
@@ -63,14 +63,17 @@ public:
    */
   LazyPtr(const LazyPtr<P>& o) {
     if (cloneUnderway) {
-      if (o.object && !currentContext->hasAncestor(o.to.get())) {
-        *this = o.clone();
+      auto context = o.to.get();
+      if (o.object && currentContext != context &&
+          !currentContext->hasAncestor(context)) {
+        object = static_cast<T*>(context->get(o.object.get(), o.from.get()));
+        from = currentContext;
       } else {
         object = o.object;
         from = o.from;
-        to = currentContext;
       }
-      assert(!o.object || object);
+      //to = currentContext;
+      // ^ default constructor of ContextPtr has set this already
     } else {
       object = o.object;
       from = o.from;
@@ -209,16 +212,17 @@ public:
    */
   const T* pull() {
     if (object) {
-      object = static_cast<T*>(to->pull(object.get(), from.get())->pullForward());
-      if (object->getContext() == to.get()) {
+      auto pulled = to->pull(object.get(), from.get());
+      if (pulled->getContext() == to.get()) {
+        object = static_cast<T*>(pulled->pullForward());
         from = to.get();
       } else {
         /* copy has been omitted for this access as it is read only, but on
          * the next access we will need to check whether a copy has happened
          * elsewhere in the meantime */
+        object = static_cast<T*>(pulled);
         from = to->getParent();
       }
-      assert(object);
     }
     return object.get();
   }

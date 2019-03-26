@@ -9,7 +9,7 @@
 #include "libbirch/Fiber.hpp"
 #include "libbirch/Array.hpp"
 
-namespace bi {
+namespace libbirch {
 /**
  * Recursively freeze objects. This is used when an object is lazily cloned,
  * to ensure that that object, and all other objects reachable from it, are

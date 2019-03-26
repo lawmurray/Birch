@@ -3,7 +3,7 @@
  */
 #pragma once
 
-namespace bi {
+namespace libbirch {
 class LazyMemo;
 class EagerMemo;
 

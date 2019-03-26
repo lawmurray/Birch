@@ -12,7 +12,7 @@
 
 #include <tuple>
 
-namespace bi {
+namespace libbirch {
 template<class T> class Optional;
 
 /**
@@ -188,7 +188,7 @@ class EagerPtr {
    */
   EagerPtr<P> clone() const {
     if (object) {
-      SharedPtr<EagerMemo> memo = EagerMemo::create();
+      SharedPtr<EagerMemo> memo = EagerMemo::create_();
       SwapClone swapClone(true);
       SwapContext swapContext(memo.get());
       return EagerPtr<P>(static_cast<T*>(currentContext->copy(object.get())));

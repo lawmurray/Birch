@@ -7,7 +7,7 @@
 
 #include <atomic>
 
-namespace bi {
+namespace libbirch {
 /**
  * Buffer for storing the contents of an array. Buffer objects are shared
  * between arrays with copy-on-write semantics, and overallocated to contain
@@ -88,40 +88,40 @@ private:
 }
 
 template<class T>
-bi::Buffer<T>::Buffer() :
-    tid(bi::tid),
+libbirch::Buffer<T>::Buffer() :
+    tid(libbirch::tid),
     useCount(0) {
   //
 }
 
 template<class T>
-void bi::Buffer<T>::incUsage() {
+void libbirch::Buffer<T>::incUsage() {
   useCount.fetch_add(1u, std::memory_order_relaxed);
 }
 
 template<class T>
-unsigned bi::Buffer<T>::decUsage() {
+unsigned libbirch::Buffer<T>::decUsage() {
   assert(useCount > 0);
   return useCount.fetch_sub(1u, std::memory_order_relaxed) - 1u;
 }
 
 template<class T>
-unsigned bi::Buffer<T>::numUsage() const {
+unsigned libbirch::Buffer<T>::numUsage() const {
   return useCount.load();
 }
 
 template<class T>
-T* bi::Buffer<T>::buf() {
+T* libbirch::Buffer<T>::buf() {
   return (T*)&first;
 }
 
 template<class T>
-const T* bi::Buffer<T>::buf() const {
+const T* libbirch::Buffer<T>::buf() const {
   return (const T*)&first;
 }
 
 template<class T>
-int64_t bi::Buffer<T>::size(const int64_t n) {
+int64_t libbirch::Buffer<T>::size(const int64_t n) {
   return n > 0 ? sizeof(T)*n + sizeof(Buffer<T>) - 1u : 0;
   // ^ -1 because `first` field is actually the first byte of the contents
 }

@@ -4,8 +4,9 @@
 #pragma once
 
 #include "libbirch/clone.hpp"
+#include "libbirch/Any.hpp"
 
-namespace bi {
+namespace libbirch {
 /**
  * Swap the context on construction, swap it back on destruction.
  */
@@ -16,6 +17,13 @@ public:
    */
   SwapContext(Memo* context) : prevContext(currentContext) {
     currentContext = context;
+  }
+
+  /**
+   * Constructor.
+   */
+  SwapContext(Any* o) : SwapContext(o->getContext()) {
+    //
   }
 
   /**

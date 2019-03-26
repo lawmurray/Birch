@@ -11,15 +11,15 @@
 /* declared in thread.hpp, here to ensure order of initialization for global
  * variables */
 #ifdef _OPENMP
-unsigned bi::nthreads = omp_get_max_threads();
-unsigned bi::tid = omp_get_thread_num();
+unsigned libbirch::nthreads = omp_get_max_threads();
+unsigned libbirch::tid = omp_get_thread_num();
 #else
-unsigned bi::nthreads = 1u;
-unsigned bi::tid = 0u;
+unsigned libbirch::nthreads = 1u;
+unsigned libbirch::tid = 0u;
 #endif
 
 /* declared in memory.hpp */
-std::atomic<size_t> bi::memoryUse(0);
+std::atomic<size_t> libbirch::memoryUse(0);
 
 #if ENABLE_MEMORY_POOL
 /**
@@ -27,10 +27,10 @@ std::atomic<size_t> bi::memoryUse(0);
  */
 static char* heap();
 
-std::atomic<char*> bi::buffer(heap());
-char* bi::bufferStart;
-size_t bi::bufferSize;
-bi::Pool* bi::pool = new bi::Pool[64*nthreads];
+std::atomic<char*> libbirch::buffer(heap());
+char* libbirch::bufferStart;
+size_t libbirch::bufferSize;
+libbirch::Pool* libbirch::pool = new libbirch::Pool[64*nthreads];
 
 char* heap() {
   /* determine a preferred size of the heap based on total physical memory */
@@ -48,8 +48,8 @@ char* heap() {
   } while (res > 0 && n > 0u);
   assert(ptr);
 
-  bi::bufferStart = (char*)ptr;
-  bi::bufferSize = n;
+  libbirch::bufferStart = (char*)ptr;
+  libbirch::bufferSize = n;
 
   return (char*)ptr;
 }
@@ -58,23 +58,23 @@ char* heap() {
 /**
  * Create (once only) and return the root memo.
  */
-static bi::Memo* root();
+static libbirch::Memo* root();
 
 /* declared in clone.hpp, here to ensure order of initialization for global
  * variables */
-bi::Memo* bi::currentContext = root();
-bool bi::cloneUnderway = false;
+libbirch::Memo* libbirch::currentContext = root();
+bool libbirch::cloneUnderway = false;
 
-bi::Memo* root() {
+libbirch::Memo* root() {
   #if ENABLE_LAZY_DEEP_CLONE
-  static auto memo = bi::Memo::create();
+  static auto memo = libbirch::Memo::create_();
   return memo;
   #else
   return nullptr;
   #endif
 }
 
-void* bi::allocate(const size_t n) {
+void* libbirch::allocate(const size_t n) {
   assert(n > 0u);
 
   memoryUse.fetch_add(n, std::memory_order_relaxed);
@@ -100,7 +100,7 @@ void* bi::allocate(const size_t n) {
 #endif
 }
 
-void bi::deallocate(void* ptr, const size_t n, const unsigned tid) {
+void libbirch::deallocate(void* ptr, const size_t n, const unsigned tid) {
   assert(ptr);
   assert(n > 0u);
   assert(tid < nthreads);
@@ -114,7 +114,7 @@ void bi::deallocate(void* ptr, const size_t n, const unsigned tid) {
 #endif
 }
 
-void bi::deallocate(void* ptr, const unsigned n, const unsigned tid) {
+void libbirch::deallocate(void* ptr, const unsigned n, const unsigned tid) {
   assert(ptr);
   assert(n > 0u);
   assert(tid < nthreads);
@@ -128,7 +128,7 @@ void bi::deallocate(void* ptr, const unsigned n, const unsigned tid) {
 #endif
 }
 
-void* bi::reallocate(void* ptr1, const size_t n1, const unsigned tid1, const size_t n2) {
+void* libbirch::reallocate(void* ptr1, const size_t n1, const unsigned tid1, const size_t n2) {
   assert(ptr1);
   assert(n1 > 0u);
   assert(tid < nthreads);

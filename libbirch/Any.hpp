@@ -6,7 +6,7 @@
 #include "libbirch/LazyAny.hpp"
 #include "libbirch/EagerAny.hpp"
 
-namespace bi {
+namespace libbirch {
 class LazyAny;
 class EagerAny;
 

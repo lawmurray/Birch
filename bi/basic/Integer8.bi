@@ -8,7 +8,7 @@ type Integer8 < Integer16;
  */
 function Integer8(x:Real64) -> Integer8 {
   cpp{{
-  return static_cast<bi::type::Integer8_>(x_);
+  return static_cast<bi::type::Integer8>(x);
   }}
 }
 
@@ -17,7 +17,7 @@ function Integer8(x:Real64) -> Integer8 {
  */
 function Integer8(x:Real32) -> Integer8 {
   cpp{{
-  return static_cast<bi::type::Integer8_>(x_);
+  return static_cast<bi::type::Integer8>(x);
   }}
 }
 
@@ -26,7 +26,7 @@ function Integer8(x:Real32) -> Integer8 {
  */
 function Integer8(x:Integer64) -> Integer8 {
   cpp{{
-  return static_cast<bi::type::Integer8_>(x_);
+  return static_cast<bi::type::Integer8>(x);
   }}
 }
 
@@ -35,7 +35,7 @@ function Integer8(x:Integer64) -> Integer8 {
  */
 function Integer8(x:Integer32) -> Integer8 {
   cpp{{
-  return static_cast<bi::type::Integer8_>(x_);
+  return static_cast<bi::type::Integer8>(x);
   }}
 }
 
@@ -44,7 +44,7 @@ function Integer8(x:Integer32) -> Integer8 {
  */
 function Integer8(x:Integer16) -> Integer8 {
   cpp{{
-  return static_cast<bi::type::Integer8_>(x_);
+  return static_cast<bi::type::Integer8>(x);
   }}
 }
 
@@ -60,7 +60,7 @@ function Integer8(x:Integer8) -> Integer8 {
  */
 function Integer8(x:String) -> Integer8 {
   cpp{{
-  return ::atoi(x_.c_str());
+  return ::atoi(x.c_str());
   }}
 }
 
@@ -158,7 +158,7 @@ operator (x:Integer8 != y:Integer8) -> Boolean;
  */
 function abs(x:Integer8) -> Integer8 {
   cpp {{
-  return std::abs(x_);
+  return std::abs(x);
   }}
 }
 
@@ -167,7 +167,7 @@ function abs(x:Integer8) -> Integer8 {
  */
 function pow(x:Integer8, y:Integer8) -> Integer8 {
   cpp {{
-  return std::pow(x_, y_);
+  return std::pow(x, y);
   }}
 }
 
@@ -176,7 +176,7 @@ function pow(x:Integer8, y:Integer8) -> Integer8 {
  */
 function mod(x:Integer8, y:Integer8) -> Integer8 {
   cpp {{
-  return x_ % y_;
+  return x % y;
   }}
 }
 
@@ -185,7 +185,7 @@ function mod(x:Integer8, y:Integer8) -> Integer8 {
  */
 function max(x:Integer8, y:Integer8) -> Integer8 {
   cpp {{
-  return std::max(x_, y_);
+  return std::max(x, y);
   }}
 }
 
@@ -194,7 +194,7 @@ function max(x:Integer8, y:Integer8) -> Integer8 {
  */
 function min(x:Integer8, y:Integer8) -> Integer8 {
   cpp {{
-  return std::min(x_, y_);
+  return std::min(x, y);
   }}
 }
 

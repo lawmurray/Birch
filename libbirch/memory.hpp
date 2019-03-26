@@ -8,7 +8,7 @@
 
 #include <atomic>
 
-namespace bi {
+namespace libbirch {
 #if ENABLE_MEMORY_POOL
 /**
  * Buffer for heap allocations.

@@ -3,7 +3,7 @@
  */
 function rows(X:Real[_,_]) -> Integer64 {
   cpp{{
-  return X_.length(0);
+  return X.length(0);
   }}
 }
 
@@ -12,7 +12,7 @@ function rows(X:Real[_,_]) -> Integer64 {
  */
 function rows(X:Integer[_,_]) -> Integer64 {
   cpp{{
-  return X_.length(0);
+  return X.length(0);
   }}
 }
 
@@ -21,7 +21,7 @@ function rows(X:Integer[_,_]) -> Integer64 {
  */
 function rows(X:Boolean[_,_]) -> Integer64 {
   cpp{{
-  return X_.length(0);
+  return X.length(0);
   }}
 }
 
@@ -30,7 +30,7 @@ function rows(X:Boolean[_,_]) -> Integer64 {
  */
 function columns(X:Real[_,_]) -> Integer64 {
   cpp{{
-  return X_.length(1);
+  return X.length(1);
   }}
 }
 
@@ -39,7 +39,7 @@ function columns(X:Real[_,_]) -> Integer64 {
  */
 function columns(X:Integer[_,_]) -> Integer64 {
   cpp{{
-  return X_.length(1);
+  return X.length(1);
   }}
 }
 
@@ -48,7 +48,7 @@ function columns(X:Integer[_,_]) -> Integer64 {
  */
 function columns(X:Boolean[_,_]) -> Integer64 {
   cpp{{
-  return X_.length(1);
+  return X.length(1);
   }}
 }
 
@@ -62,9 +62,9 @@ function columns(X:Boolean[_,_]) -> Integer64 {
 function matrix(x:Real, rows:Integer, columns:Integer) -> Real[_,_] {
   Z:Real[rows,columns];
   cpp{{
-  auto first = Z_.begin();
-  auto last = first + Z_.size();
-  std::fill(first, last, x_);
+  auto first = Z.begin();
+  auto last = first + Z.size();
+  std::fill(first, last, x);
   }}
   return Z;
 }
@@ -79,9 +79,9 @@ function matrix(x:Real, rows:Integer, columns:Integer) -> Real[_,_] {
 function matrix(x:Integer, rows:Integer, columns:Integer) -> Integer[_,_] {
   Z:Integer[rows,columns];
   cpp{{
-  auto first = Z_.begin();
-  auto last = first + Z_.size();
-  std::fill(first, last, x_);
+  auto first = Z.begin();
+  auto last = first + Z.size();
+  std::fill(first, last, x);
   }}
   return Z;
 }
@@ -96,9 +96,9 @@ function matrix(x:Integer, rows:Integer, columns:Integer) -> Integer[_,_] {
 function matrix(x:Boolean, rows:Integer, columns:Integer) -> Boolean[_,_] {
   Z:Boolean[rows,columns];
   cpp{{
-  auto first = Z_.begin();
-  auto last = first + Z_.size();
-  std::fill(first, last, x_);
+  auto first = Z.begin();
+  auto last = first + Z.size();
+  std::fill(first, last, x);
   }}
   return Z;
 }

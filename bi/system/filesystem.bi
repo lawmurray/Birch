@@ -13,11 +13,11 @@ APPEND:Integer <- 3;
  */
 function mkdir(path:String) {
   cpp{{
-  boost::filesystem::path path = path_;
-  if (!boost::filesystem::is_directory(path)) {
-    path = path.parent_path();
+  boost::filesystem::path p = path;
+  if (!boost::filesystem::is_directory(p)) {
+    p = p.parent_path();
   }
-  boost::filesystem::create_directories(path);
+  boost::filesystem::create_directories(p);
   }}
 }
 
@@ -55,16 +55,16 @@ function fopen(path:String, mode:Integer) -> File {
   } else if (mode == WRITE) {
     s <- "w";
     cpp{{
-    boost::filesystem::path path = path_;
-    if (!path.parent_path().empty()) {
-      boost::filesystem::create_directories(path.parent_path());
+    boost::filesystem::path p = path;
+    if (!p.parent_path().empty()) {
+      boost::filesystem::create_directories(p.parent_path());
     }
     }}
   } else if (mode == APPEND) {
     s <- "a";
   }
   cpp{{
-  FILE* stream = ::fopen(path_.c_str(), s_.c_str());
+  FILE* stream = ::fopen(path.c_str(), s.c_str());
   lockf(fileno(stream), F_LOCK, 0);
   return stream;
   }}
@@ -75,6 +75,6 @@ function fopen(path:String, mode:Integer) -> File {
  */
 function fclose(file:File) {
   cpp{{
-  ::fclose(file_);
+  ::fclose(file);
   }}
 }

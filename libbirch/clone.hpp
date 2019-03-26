@@ -5,7 +5,7 @@
 
 #include "libbirch/Memo.hpp"
 
-namespace bi {
+namespace libbirch {
 /**
  * Is a clone currently underway?
  */

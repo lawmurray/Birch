@@ -8,14 +8,14 @@ namespace type {
 /*
  * Basic types.
  */
-using Boolean_ = bool;
-using Real64_ = double;
-using Real32_ = float;
-using Integer64_ = int64_t;
-using Integer32_ = int32_t;
-using Integer16_ = int16_t;
-using Integer8_ = int8_t;
-using String_ = std::string;
-using File_ = FILE*;
+using Boolean = bool;
+using Real64 = double;
+using Real32 = float;
+using Integer64 = std::int64_t;
+using Integer32 = std::int32_t;
+using Integer16 = std::int16_t;
+using Integer8 = std::int8_t;
+using String = std::string;
+using File = FILE*;
 }
 }

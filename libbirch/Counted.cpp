@@ -5,27 +5,27 @@
 
 #include "libbirch/thread.hpp"
 
-bi::Counted::Counted() :
+libbirch::Counted::Counted() :
     sharedCount(0u),
     weakCount(1u),
     memoCount(0u),
     size(0u),
-    tid(bi::tid),
+    tid(libbirch::tid),
     frozen(false) {
   //
 }
 
-bi::Counted::Counted(const Counted& o) :
+libbirch::Counted::Counted(const Counted& o) :
     sharedCount(0u),
     weakCount(1u),
     memoCount(0u),
     size(o.size),
-    tid(bi::tid),
+    tid(libbirch::tid),
     frozen(false) {
   //
 }
 
-bi::Counted* bi::Counted::lock() {
+libbirch::Counted* libbirch::Counted::lock() {
   unsigned count = sharedCount.load(std::memory_order_relaxed);
   while (count > 0u
       && !sharedCount.compare_exchange_weak(count, count + 1u,
@@ -35,17 +35,17 @@ bi::Counted* bi::Counted::lock() {
   return count > 0u ? this : nullptr;
 }
 
-void bi::Counted::decShared() {
+void libbirch::Counted::decShared() {
   assert(sharedCount > 0u);
   if (sharedCount.fetch_sub(1u, std::memory_order_relaxed) - 1u == 0u
       && size > 0u) {
     // ^ size == 0u during construction, never destroy in that case
-    destroy();
+    destroy_();
     decWeak();  // release weak self-reference
   }
 }
 
-void bi::Counted::decWeak() {
+void libbirch::Counted::decWeak() {
   assert(weakCount > 0u);
   if (weakCount.fetch_sub(1u, std::memory_order_relaxed) - 1u == 0u) {
     assert(sharedCount == 0u);
@@ -55,16 +55,16 @@ void bi::Counted::decWeak() {
   }
 }
 
-void bi::Counted::freeze() {
+void libbirch::Counted::freeze() {
   bool expected = false;
   bool desired = true;
   if (frozen.compare_exchange_strong(expected, desired,
       std::memory_order_relaxed)) {
-    doFreeze();
+    doFreeze_();
   }
 }
 
-bool bi::Counted::isReachable() const {
+bool libbirch::Counted::isReachable() const {
   return sharedCount.load(std::memory_order_relaxed) > 0u
       || weakCount.load(std::memory_order_relaxed)
           > memoCount.load(std::memory_order_relaxed);

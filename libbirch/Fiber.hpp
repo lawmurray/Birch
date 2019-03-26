@@ -5,7 +5,7 @@
 
 #include "libbirch/FiberState.hpp"
 
-namespace bi {
+namespace libbirch {
 /**
  * Fiber.
  *
@@ -57,29 +57,29 @@ public:
 }
 
 template<class YieldType>
-bi::Fiber<YieldType>::Fiber(
+libbirch::Fiber<YieldType>::Fiber(
     const Shared<FiberState<YieldType>>& state) :
     state(state) {
   //
 }
 
 template<class YieldType>
-bi::Fiber<YieldType> bi::Fiber<YieldType>::clone() const {
+libbirch::Fiber<YieldType> libbirch::Fiber<YieldType>::clone() const {
   return Fiber<YieldType>(state.clone());
 }
 
 template<class YieldType>
-void bi::Fiber<YieldType>::freeze() const {
+void libbirch::Fiber<YieldType>::freeze() const {
   state.freeze();
 }
 
 template<class YieldType>
-bi::Memo* bi::Fiber<YieldType>::getContext() const {
+libbirch::Memo* libbirch::Fiber<YieldType>::getContext() const {
   return state.getContext();
 }
 
 template<class YieldType>
-bool bi::Fiber<YieldType>::query() const {
+bool libbirch::Fiber<YieldType>::query() const {
   bool result = false;
   if (state.query()) {
     result = state->query();
@@ -91,7 +91,7 @@ bool bi::Fiber<YieldType>::query() const {
 }
 
 template<class YieldType>
-YieldType bi::Fiber<YieldType>::get() const {
-  bi_assert_msg(state.query(), "fiber handle undefined");
+YieldType libbirch::Fiber<YieldType>::get() const {
+  libbirch_assert_msg_(state.query(), "fiber handle undefined");
   return state->get();
 }

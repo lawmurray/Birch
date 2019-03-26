@@ -9,7 +9,7 @@
 
 #include <atomic>
 
-namespace bi {
+namespace libbirch {
 /**
  * Base for all class types when lazy deep clone is used.
  *
@@ -17,8 +17,8 @@ namespace bi {
  */
 class LazyAny: public Counted {
 public:
-  using class_type = LazyAny;
-  using this_type = LazyAny;
+  using class_type_ = LazyAny;
+  using this_type_ = LazyAny;
 
 protected:
   /**
@@ -42,10 +42,10 @@ protected:
   LazyAny& operator=(const LazyAny&) = delete;
 
 public:
-  STANDARD_CREATE_FUNCTION
-  STANDARD_EMPLACE_FUNCTION
-  STANDARD_CLONE_FUNCTION
-  STANDARD_DESTROY_FUNCTION
+  libbirch_create_function_
+  libbirch_emplace_function_
+  libbirch_clone_function_
+  libbirch_destroy_function_
 
   /**
    * If this object is frozen, return the object to which it should forward,
@@ -79,7 +79,7 @@ protected:
 };
 }
 
-inline bi::Memo* bi::LazyAny::getContext() {
+inline libbirch::Memo* libbirch::LazyAny::getContext() {
   return context.get();
 }
 

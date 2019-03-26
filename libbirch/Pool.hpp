@@ -6,7 +6,7 @@
 
 #include "libbirch/ExclusiveLock.hpp"
 
-namespace bi {
+namespace libbirch {
 /**
  * Thread-safe stack of memory allocations.
  *

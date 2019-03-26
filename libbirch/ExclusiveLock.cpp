@@ -3,7 +3,7 @@
  */
 #include "libbirch/ExclusiveLock.hpp"
 
-void bi::ExclusiveLock::keep() {
+void libbirch::ExclusiveLock::keep() {
   /* spin until exclusive lock obtained */
   bool expected;
   do {

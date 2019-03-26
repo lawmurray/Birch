@@ -8,7 +8,7 @@
 #include "libbirch/EagerAny.hpp"
 #include "libbirch/Map.hpp"
 
-namespace bi {
+namespace libbirch {
 /**
  * Memo for lazy deep cloning of objects.
  *
@@ -17,12 +17,11 @@ namespace bi {
 class EagerMemo: public Counted {
   friend class List;
 public:
-  using class_type = EagerMemo;
+  using class_type_ = EagerMemo;
 
-  STANDARD_CREATE_FUNCTION
-  STANDARD_EMPLACE_FUNCTION
-  //STANDARD_FUNCTION
-  STANDARD_DESTROY_FUNCTION
+  libbirch_create_function_
+  libbirch_emplace_function_
+  libbirch_destroy_function_
 
   /**
    * Shallow mapping of an object that may not yet have been cloned,

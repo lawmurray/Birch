@@ -7,12 +7,12 @@
 #include "libbirch/SwapClone.hpp"
 #include "libbirch/SwapContext.hpp"
 
-bi::EagerAny* bi::EagerMemo::get(EagerAny* o) {
+libbirch::EagerAny* libbirch::EagerMemo::get(EagerAny* o) {
     auto result = m.get(o);
     return result ? result : copy(o);
 }
 
-bi::EagerAny* bi::EagerMemo::copy(EagerAny* o) {
+libbirch::EagerAny* libbirch::EagerMemo::copy(EagerAny* o) {
   /* for an eager deep clone we must be cautious to avoid infinite
    * recursion; memory for the new object is allocated first and put
    * in the map in case of deeper pointers back to the same object; then

@@ -73,7 +73,7 @@ class HiddenMarkovModel<Parameter,State,Observation> <
   function back() {
     super.back();
     assert g?;
-    g <- g!.getPrev();
+    g <- g!.getPrevious();
   }
 
   function read(buffer:Buffer) {

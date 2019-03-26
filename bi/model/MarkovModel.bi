@@ -103,7 +103,7 @@ class MarkovModel<Parameter,State> < BidirectionalModel {
 
   function back() {
     assert f?;
-    f <- f!.getPrev();
+    f <- f!.getPrevious();
   }
 
   fiber simulate() -> Event {

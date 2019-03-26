@@ -3,76 +3,74 @@
  */
 #pragma once
 
-#include "libbirch/SwapContext.hpp"
-
 /**
- * @def STANDARD_CREATE_FUNCTION
+ * @def libbirch_create_function_
  *
- * Defines the standard @c create() member function required of objects.
+ * Defines the standard @c create_() member function required of objects.
  */
-#define STANDARD_CREATE_FUNCTION \
+#define libbirch_create_function_ \
   template<class... Args> \
-  static class_type* create(Args&&... args) { \
-    return emplace(allocate<sizeof(class_type)>(), args...); \
+  static class_type_* create_(Args&&... args) { \
+    return emplace_(libbirch::allocate<sizeof(class_type_)>(), args...); \
   }
 
 /**
- * @def STANDARD_EMPLACE_FUNCTION
+ * @def libbirch_emplace_function_
  *
- * Defines the standard @c emplace() member function required of objects.
+ * Defines the standard @c emplace_() member function required of objects.
  */
-#define STANDARD_EMPLACE_FUNCTION \
+#define libbirch_emplace_function_ \
   template<class... Args> \
-  static class_type* emplace(void* ptr, Args&&... args) { \
-    auto o = new (ptr) class_type(args...); \
-    o->size = sizeof(class_type); \
+  static class_type_* emplace_(void* ptr, Args&&... args) { \
+    auto o = new (ptr) class_type_(args...); \
+    o->Counted::size = sizeof(class_type_); \
     return o; \
   }
 
 /**
- * @def STANDARD_CLONE_FUNCTION
+ * @def libbirch_clone_function_
  *
- * Defines the standard @c clone() member function required of objects.
+ * Defines the standard @c clone_() member function required of objects.
  */
-#define STANDARD_CLONE_FUNCTION \
-  virtual class_type* clone() const { \
-    return emplace(allocate<sizeof(class_type)>(), *this); \
+#define libbirch_clone_function_ \
+  virtual class_type_* clone_() const { \
+    return emplace_(libbirch::allocate<sizeof(class_type_)>(), *this); \
   } \
-  virtual class_type* clone(void* ptr) const { \
-    return emplace(ptr, *this); \
+  virtual class_type_* clone_(void* ptr) const { \
+    return emplace_(ptr, *this); \
   }
 
 /**
- * @def STANDARD_DESTROY_FUNCTION
+ * @def libbirch_destroy_function_
  *
- * Defines the standard @c destroy() member function required of objects.
+ * Defines the standard @c destroy_() member function required of objects.
  */
-#define STANDARD_DESTROY_FUNCTION \
-  virtual void destroy() override { \
-    this->~class_type(); \
+#define libbirch_destroy_function_ \
+  virtual void destroy_() override { \
+    this->~class_type_(); \
   }
 
 /**
- * @def STANDARD_SWAP_CONTEXT
+ * @def libbirch_swap_context_
  *
  * When lazy deep clone is in use, swaps into the context of this object.
  */
 #if ENABLE_LAZY_DEEP_CLONE
-#define STANDARD_SWAP_CONTEXT SwapContext swap(context.get());
+#define libbirch_swap_context_ libbirch::SwapContext swap_(this);
 #else
-#define STANDARD_SWAP_CONTEXT
+#define libbirch_swap_context_
 #endif
 
 /**
- * @def STANDARD_DECLARE_SELF
+ * @def libbirch_declare_self_
  *
  * Declare `self` within a member function.
  */
-#define STANDARD_DECLARE_SELF Shared<this_type> self(this);
+#define libbirch_declare_self_ libbirch::Shared<this_type_> self(this);
 
 /**
- * @def STANDARD_DECLARE_LOCAL
+ * @def libbirch_declare_local_
  *
  * Declare `local` within a member fiber.
  */
-#define STANDARD_DECLARE_LOCAL Shared<class_type> local(this);
+#define libbirch_declare_local_ libbirch::Shared<class_type_> local(this);

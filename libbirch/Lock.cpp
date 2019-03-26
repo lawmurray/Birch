@@ -3,7 +3,7 @@
  */
 #include "libbirch/Lock.hpp"
 
-void bi::Lock::share() {
+void libbirch::Lock::share() {
   /* spin until exclusive lock is released and shared count updated */
   joint_lock_type expected = lock.joint.load(), desired;
   do {
@@ -12,7 +12,7 @@ void bi::Lock::share() {
   } while (!lock.joint.compare_exchange_weak(expected, desired, std::memory_order_seq_cst));
 }
 
-void bi::Lock::keep() {
+void libbirch::Lock::keep() {
   /* spin until exclusive lock obtained */
   unsigned expected;
   do {

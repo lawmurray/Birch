@@ -5,7 +5,7 @@
 
 #include "libbirch/Offset.hpp"
 
-namespace bi {
+namespace libbirch {
 /**
  * Index.
  *

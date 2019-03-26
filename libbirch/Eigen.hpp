@@ -7,7 +7,7 @@
 
 #include <eigen3/Eigen/Dense>
 
-namespace bi {
+namespace libbirch {
 
 using EigenVectorStride = Eigen::Stride<1,Eigen::Dynamic>;
 template<class Type>

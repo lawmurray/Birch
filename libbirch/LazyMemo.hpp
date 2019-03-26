@@ -10,7 +10,7 @@
 #include "libbirch/Map.hpp"
 #include "libbirch/Set.hpp"
 
-namespace bi {
+namespace libbirch {
 /**
  * Memo for lazy deep clones.
  *
@@ -19,7 +19,7 @@ namespace bi {
 class LazyMemo: public Counted {
   friend class List;
 public:
-  using class_type = LazyMemo;
+  using class_type_ = LazyMemo;
 
 protected:
   /**
@@ -40,9 +40,9 @@ protected:
   virtual ~LazyMemo();
 
 public:
-  STANDARD_CREATE_FUNCTION
-  STANDARD_EMPLACE_FUNCTION
-  STANDARD_DESTROY_FUNCTION
+  libbirch_create_function_
+  libbirch_emplace_function_
+  libbirch_destroy_function_
 
   /**
    * Is the given memo an ancestor of this?
@@ -72,15 +72,14 @@ public:
   LazyMemo* getParent() const;
 
   /**
-   * Shallow mapping of an object that may not yet have been cloned,
-   * cloning and forwarding it if necessary.
+   * Map an object that may not yet have been cloned, cloning it if
+   * necessary.
    */
   LazyAny* get(LazyAny* o, LazyMemo* from);
 
   /**
-   * Shallow mapping of an object that may not yet have been cloned,
-   * without cloning it. This can be used as an optimization for read-only
-   * access.
+   * Map an object that may not yet have been cloned, without cloning it.
+   * This is used as an optimization for read-only access.
    */
   LazyAny* pull(LazyAny* o, LazyMemo* from);
 
@@ -101,7 +100,7 @@ public:
   LazyAny* copy(LazyAny* o);
 
 protected:
-  virtual void doFreeze();
+  virtual void doFreeze_();
 
 private:
   /**
@@ -126,28 +125,28 @@ private:
 };
 }
 
-inline bi::LazyMemo::~LazyMemo() {
+inline libbirch::LazyMemo::~LazyMemo() {
   //
 }
 
-inline bi::LazyMemo* bi::LazyMemo::fork() {
-  return create(this);
+inline libbirch::LazyMemo* libbirch::LazyMemo::fork() {
+  return create_(this);
 }
 
-inline void bi::LazyMemo::clean() {
+inline void libbirch::LazyMemo::clean() {
   m.clean();
 }
 
-inline bool bi::LazyMemo::hasParent() const {
+inline bool libbirch::LazyMemo::hasParent() const {
   return parent;
 }
 
-inline bi::LazyMemo* bi::LazyMemo::getParent() const {
+inline libbirch::LazyMemo* libbirch::LazyMemo::getParent() const {
   assert(parent);
   return parent.get();
 }
 
-inline void bi::LazyMemo::doFreeze() {
+inline void libbirch::LazyMemo::doFreeze_() {
   m.freeze();
 }
 

@@ -5,7 +5,7 @@
 
 #include "libbirch/Frame.hpp"
 
-namespace bi {
+namespace libbirch {
 /**
  * Iterator over an array.
  *

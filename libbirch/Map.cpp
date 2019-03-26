@@ -3,10 +3,10 @@
  */
 #include "libbirch/Map.hpp"
 
-static bi::Any* const EMPTY = nullptr;
-static bi::Any* const ERASED = reinterpret_cast<bi::Any*>(0xFFFFFFFFFFFFFFFF);
+static libbirch::Any* const EMPTY = nullptr;
+static libbirch::Any* const ERASED = reinterpret_cast<libbirch::Any*>(0xFFFFFFFFFFFFFFFF);
 
-bi::Map::Map() :
+libbirch::Map::Map() :
     keys(nullptr),
     values(nullptr),
     nentries(0u),
@@ -15,7 +15,7 @@ bi::Map::Map() :
   //
 }
 
-bi::Map::~Map() {
+libbirch::Map::~Map() {
   if (nentries > 0) {
     /* don't need thread safety here, so cast away the atomicity */
     key_type* keys1 = (key_type*)keys;
@@ -35,7 +35,7 @@ bi::Map::~Map() {
   }
 }
 
-bi::Map::value_type bi::Map::get(const key_type key,
+libbirch::Map::value_type libbirch::Map::get(const key_type key,
     const value_type failed) {
   /* pre-condition */
   assert(key);
@@ -57,7 +57,7 @@ bi::Map::value_type bi::Map::get(const key_type key,
   return value;
 }
 
-bi::Map::value_type bi::Map::get(const unsigned i) {
+libbirch::Map::value_type libbirch::Map::get(const unsigned i) {
   /* key is written before value on put, so loop for a valid value in
    * case that write has not concluded yet */
   value_type value;
@@ -67,7 +67,7 @@ bi::Map::value_type bi::Map::get(const unsigned i) {
   return value;
 }
 
-bi::Map::value_type bi::Map::put(const key_type key, const value_type value) {
+libbirch::Map::value_type libbirch::Map::put(const key_type key, const value_type value) {
   /* pre-condition */
   assert(key);
   assert(value);
@@ -103,7 +103,7 @@ bi::Map::value_type bi::Map::put(const key_type key, const value_type value) {
   return result;
 }
 
-bi::Map::value_type bi::Map::uninitialized_put(const key_type key,
+libbirch::Map::value_type libbirch::Map::uninitialized_put(const key_type key,
     const value_type value) {
   /* pre-condition */
   assert(key);
@@ -134,7 +134,7 @@ bi::Map::value_type bi::Map::uninitialized_put(const key_type key,
   return result;
 }
 
-void bi::Map::remove(const key_type key) {
+void libbirch::Map::remove(const key_type key) {
   /* pre-condition */
   assert(key);
 
@@ -161,7 +161,7 @@ void bi::Map::remove(const key_type key) {
   }
 }
 
-void bi::Map::reserve() {
+void libbirch::Map::reserve() {
   unsigned noccupied1 = noccupied.fetch_add(1u, std::memory_order_relaxed)
       + 1u;
   if (noccupied1 > crowd()) {
@@ -211,7 +211,7 @@ void bi::Map::reserve() {
         deallocate(keys1, nentries1 * sizeof(key_type), tentries);
         deallocate(values1, nentries1 * sizeof(value_type), tentries);
       }
-      tentries = bi::tid;
+      tentries = libbirch::tid;
     }
 
     /* release resize lock */
@@ -219,7 +219,7 @@ void bi::Map::reserve() {
   }
 }
 
-void bi::Map::clean() {
+void libbirch::Map::clean() {
   lock.share();
   key_type key;
   value_type value;
@@ -240,7 +240,7 @@ void bi::Map::clean() {
   lock.unshare();
 }
 
-void bi::Map::freeze() {
+void libbirch::Map::freeze() {
   lock.share();
   key_type key;
   value_type value;

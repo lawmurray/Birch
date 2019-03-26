@@ -33,7 +33,7 @@ program sample(
   }
   
   /* config */
-  configBuffer:JSONBuffer;
+  configBuffer:MemoryBuffer;
   if config? {
     configBuffer.load(config!);
   }
@@ -92,15 +92,15 @@ program sample(
   assert s?;
   
   /* input */
-  inputBuffer:JSONBuffer;
+  inputBuffer:MemoryBuffer;
   if input? {
     inputBuffer.load(input!);
     inputBuffer.get(m!);
   }
   
   /* output */
-  outputBuffer:JSONBuffer;
-  diagnosticBuffer:JSONBuffer;
+  outputBuffer:MemoryBuffer;
+  diagnosticBuffer:MemoryBuffer;
   if s!.nsamples > 1 {
     outputBuffer.setArray();
     diagnosticBuffer.setArray();

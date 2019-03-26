@@ -8,7 +8,7 @@ type Integer32 < Integer64;
  */
 function Integer32(x:Real64) -> Integer32 {
   cpp{{
-  return static_cast<bi::type::Integer32_>(x_);
+  return static_cast<bi::type::Integer32>(x);
   }}
 }
 
@@ -17,7 +17,7 @@ function Integer32(x:Real64) -> Integer32 {
  */
 function Integer32(x:Real32) -> Integer32 {
   cpp{{
-  return static_cast<bi::type::Integer32_>(x_);
+  return static_cast<bi::type::Integer32>(x);
   }}
 }
 
@@ -26,7 +26,7 @@ function Integer32(x:Real32) -> Integer32 {
  */
 function Integer32(x:Integer64) -> Integer32 {
   cpp{{
-  return static_cast<bi::type::Integer32_>(x_);
+  return static_cast<bi::type::Integer32>(x);
   }}
 }
 
@@ -42,7 +42,7 @@ function Integer32(x:Integer32) -> Integer32 {
  */
 function Integer32(x:Integer16) -> Integer32 {
   cpp{{
-  return static_cast<bi::type::Integer32_>(x_);
+  return static_cast<bi::type::Integer32>(x);
   }}
 }
 
@@ -51,7 +51,7 @@ function Integer32(x:Integer16) -> Integer32 {
  */
 function Integer32(x:Integer8) -> Integer32 {
   cpp{{
-  return static_cast<bi::type::Integer32_>(x_);
+  return static_cast<bi::type::Integer32>(x);
   }}
 }
 
@@ -60,7 +60,7 @@ function Integer32(x:Integer8) -> Integer32 {
  */
 function Integer32(x:String) -> Integer32 {
   cpp{{
-  return ::atoi(x_.c_str());
+  return ::atoi(x.c_str());
   }}
 }
 
@@ -158,7 +158,7 @@ operator (x:Integer32 != y:Integer32) -> Boolean;
  */
 function abs(x:Integer32) -> Integer32 {
   cpp {{
-  return std::abs(x_);
+  return std::abs(x);
   }}
 }
 
@@ -167,7 +167,7 @@ function abs(x:Integer32) -> Integer32 {
  */
 function pow(x:Integer32, y:Integer32) -> Integer32 {
   cpp {{
-  return std::pow(x_, y_);
+  return std::pow(x, y);
   }}
 }
 
@@ -176,7 +176,7 @@ function pow(x:Integer32, y:Integer32) -> Integer32 {
  */
 function mod(x:Integer32, y:Integer32) -> Integer32 {
   cpp {{
-  return x_ % y_;
+  return x % y;
   }}
 }
 
@@ -185,7 +185,7 @@ function mod(x:Integer32, y:Integer32) -> Integer32 {
  */
 function max(x:Integer32, y:Integer32) -> Integer32 {
   cpp {{
-  return std::max(x_, y_);
+  return std::max(x, y);
   }}
 }
 
@@ -194,7 +194,7 @@ function max(x:Integer32, y:Integer32) -> Integer32 {
  */
 function min(x:Integer32, y:Integer32) -> Integer32 {
   cpp {{
-  return std::min(x_, y_);
+  return std::min(x, y);
   }}
 }
 

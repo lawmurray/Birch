@@ -5,7 +5,7 @@
 
 #include "libbirch/mutable.hpp"
 
-namespace bi {
+namespace libbirch {
 /**
  * Offset. Number of elements until the first active element along a
  * dimension.

@@ -61,10 +61,10 @@ function make(name:String) -> Object? {
   result:Object?;
   symbol:String <- "make_" + name + "_";
   cpp{{
-  using make_t = bi::type::Object_*();
-  void* addr = dlsym(RTLD_DEFAULT, symbol_.c_str());
+  using make_t = bi::type::Object*();
+  void* addr = dlsym(RTLD_DEFAULT, symbol.c_str());
   if (addr) {
-    result_ = reinterpret_cast<make_t*>(addr)();
+    result = reinterpret_cast<make_t*>(addr)();
   }
   }}
   return result;

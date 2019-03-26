@@ -61,7 +61,7 @@ class AliveParticleFilter < ParticleFilter {
     /* update propagations */
     Q:Integer;
     cpp{{
-    Q_ = P;
+    Q = P;
     }}
     this.P.pushBack(Q);
   }

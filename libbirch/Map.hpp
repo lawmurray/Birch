@@ -8,7 +8,7 @@
 
 #include <atomic>
 
-namespace bi {
+namespace libbirch {
 /**
  * Thread-safe hash table of memory mappings.
  *
@@ -160,22 +160,22 @@ private:
 };
 }
 
-inline bool bi::Map::empty() const {
+inline bool libbirch::Map::empty() const {
   return nentries == 0u;
 }
 
-inline unsigned bi::Map::hash(const key_type key) const {
+inline unsigned libbirch::Map::hash(const key_type key) const {
   assert(nentries > 0u);
   return static_cast<unsigned>(reinterpret_cast<size_t>(key) >> 5ull)
       & (nentries - 1u);
 }
 
-inline unsigned bi::Map::crowd() const {
+inline unsigned libbirch::Map::crowd() const {
   /* the table is considered crowded if more than three-quarters of its
    * entries are occupied */
   return (nentries >> 1u) + (nentries >> 2u);
 }
 
-inline void bi::Map::unreserve() {
+inline void libbirch::Map::unreserve() {
   noccupied.fetch_sub(1u, std::memory_order_relaxed);
 }

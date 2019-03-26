@@ -164,7 +164,7 @@ function solve(X:Real[_,_], y:Real[_]) -> Real[_] {
   
   z:Real[rows(X)];
   cpp{{
-  z_.toEigen().noalias() = X_.toEigen().householderQr().solve(y_.toEigen());
+  z.toEigen().noalias() = X.toEigen().householderQr().solve(y.toEigen());
   }}
   return z;
 }
@@ -177,7 +177,7 @@ function solve(X:Real[_,_], Y:Real[_,_]) -> Real[_,_] {
   
   Z:Real[rows(Y),columns(Y)];
   cpp{{
-  Z_.toEigen().noalias() = X_.toEigen().householderQr().solve(Y_.toEigen());
+  Z.toEigen().noalias() = X.toEigen().householderQr().solve(Y.toEigen());
   }}
   return Z;
 }
@@ -192,7 +192,7 @@ function chol(X:Real[_,_]) -> Real[_,_] {
   
   L:Real[rows(X),columns(X)];
   cpp{{
-  L_.toEigen() = X_.toEigen().llt().matrixL();
+  L.toEigen() = X.toEigen().llt().matrixL();
   }}
   return L;
 }
@@ -242,7 +242,7 @@ function cholsolve(X:Real[_,_], y:Real[_]) -> Real[_] {
   
   z:Real[rows(X)];
   cpp{{
-  z_.toEigen().noalias() = X_.toEigen().llt().solve(y_.toEigen());
+  z.toEigen().noalias() = X.toEigen().llt().solve(y.toEigen());
   }}
   return z;
 }
@@ -256,7 +256,7 @@ function cholsolve(X:Real[_,_], Y:Real[_,_]) -> Real[_,_] {
   
   Z:Real[rows(Y),columns(Y)];
   cpp{{
-  Z_.toEigen().noalias() = X_.toEigen().llt().solve(Y_.toEigen());
+  Z.toEigen().noalias() = X.toEigen().llt().solve(Y.toEigen());
   }}
   return Z;
 }
