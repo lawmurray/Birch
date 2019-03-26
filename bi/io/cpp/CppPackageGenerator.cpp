@@ -76,8 +76,8 @@ void bi::CppPackageGenerator::visit(const Package* o) {
      * convenience/laziness) when precompiling the header itself; this seems
      * to cause a double inclusion with `#pragma once` but not with a `#define`
      * include guard */
-    line("#ifndef BI_" << tarname(o->name) << "_HPP");
-    line("#define BI_" << tarname(o->name) << "_HPP");
+    line("#ifndef BI_" << tarname(o->name) << "_HPP_");
+    line("#define BI_" << tarname(o->name) << "_HPP_");
     line("");
 
     for (auto header : o->headers) {
@@ -96,7 +96,7 @@ void bi::CppPackageGenerator::visit(const Package* o) {
 
     /* forward class declarations */
     for (auto o : classes) {
-      if (!o->braces->isEmpty()) {
+      if (!o->isAlias()) {
         genTemplateParams(o);
         line("class " << o->name << ';');
       }
@@ -120,11 +120,7 @@ void bi::CppPackageGenerator::visit(const Package* o) {
       }
     }
 
-    line("}\n");
-    line("");
-
     /* class definitions */
-    line("namespace type {");
     for (auto o : sortedClasses) {
       *this << o;
     }
