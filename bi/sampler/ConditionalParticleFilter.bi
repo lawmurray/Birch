@@ -2,12 +2,13 @@
  * Conditional particle filter.
  */
 class ConditionalParticleFilter < ParticleFilter {
-  function start() {
+  function initialize() {
+    super.initialize();
     if x'? {
-      x'!.getHandler().replay();
-      x[N].setHandler(x'!.getHandler());
+      auto h <- x'!.getHandler();
+      h.replay();
+      x[N].setHandler(h);
     }
-    super.start();
   }
 
   function resample() {
@@ -20,14 +21,14 @@ class ConditionalParticleFilter < ParticleFilter {
   
   function copy() {
     if x'? {
-      /* move the replay event handler out of the reference particle so that
-       * it won't be copied to other offspring */
-      x[N].getHandler().rebase(DelayHandler());
-    }
-    super.copy();
-    if x'? {
-      /* move the replay event handler back in to the reference particle */
-      x[N].getHandler().rebase(x'!.getHandler());
+      /* temporarily move the replay event handler out of the reference
+       * particle so that be copied to other offspring */
+      auto h <- x[N].getHandler();
+      h.rebase(DelayHandler());
+      super.copy();
+      h.rebase(x'!.getHandler());
+    } else {
+      super.copy();
     }
   }
   
