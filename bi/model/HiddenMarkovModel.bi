@@ -44,8 +44,19 @@ class HiddenMarkovModel<Parameter,State,Observation> <
   /**
    * Play one step. Simulates through the next state and observation.
    */
-  fiber step() -> Event {
-    super.step();
+  function step() -> Real {
+    auto w <- super.step();
+    auto x <- f!.getValue();
+    auto y <- g!.getValue();
+    return w + h.handle(observation(y, x, θ));
+  }
+
+  function size() -> Integer {
+    return max(x.size(), y.size());
+  }
+
+  function next() {
+    super.next();
     if g? {
       g <- g!.getNext();
     } else {
@@ -57,13 +68,12 @@ class HiddenMarkovModel<Parameter,State,Observation> <
       y.pushBack(y');
       g <- y.end();
     }
-    auto x <- f!.getValue();
-    auto y <- g!.getValue();
-    observation(y, x, θ);
   }
 
-  function size() -> Integer {
-    return max(x.size(), y.size());
+  function back() {
+    super.back();
+    assert g?;
+    g <- g!.getPrev();
   }
 
   function read(buffer:Buffer) {

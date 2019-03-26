@@ -4,14 +4,24 @@
  */
 class ForwardModel < Model {
   /**
+   * Event handler.
+   */
+  h:Handler;
+ 
+  /**
    * Start.
    */
-  fiber start() -> Event;
+  function start() -> Real;
 
   /**
    * Take one step.
    */
-  fiber step() -> Event;
+  function step() -> Real;
+
+  /**
+   * Number of steps.
+   */
+  function size() -> Integer;
 
   /**
    * Skip one step. This does not necessarily preserve a consistent state
@@ -19,9 +29,4 @@ class ForwardModel < Model {
    * a model in order to update its state.
    */
   function skip();
-
-  /**
-   * Number of steps.
-   */
-  function size() -> Integer;
 }

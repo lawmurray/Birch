@@ -3,6 +3,11 @@
  */
 class Event {
   /**
+   * Accept an event handler.
+   */
+  function accept(h:Handler) -> Real;
+
+  /**
    * Is this a factor event?
    */
   function isFactor() -> Boolean {
@@ -17,10 +22,16 @@ class Event {
   }
   
   /**
-   * For a random variable event, is there a variate already assigned to the
-   * random variable.
+   * For a random variate event, is there a value already assigned?
    */
   function hasValue() -> Boolean {
+    assert isRandom();
+  }
+
+  /**
+   * For a random variate event, is there a distribution already assigned?
+   */
+  function hasDistribution() -> Boolean {
     assert isRandom();
   }
 
@@ -28,6 +39,11 @@ class Event {
    * Enact assume, for a random variable event.
    */
   function assume();
+
+  /**
+   * Enact value, for a random variable event.
+   */
+  function value();
 
   /**
    * Enact simulate, for a random variable event.

@@ -1,9 +1,7 @@
 /**
- * Particle filter. Performs a bootstrap particle filter in the most basic
- * case, or where conjugacy relationships are used by the model, an auxiliary
- * or Rao--Blackwellized particle filter.
+ * Particle filter.
  */
-class ParticleFilter < ForwardSampler {  
+class ParticleFilter<EventHandler> < ForwardSampler {  
   /**
    * Particles.
    */
@@ -110,7 +108,7 @@ class ParticleFilter < ForwardSampler {
    */
   function start() {
     parallel for auto n in 1..N {
-      w[n] <- w[n] + handleStart(x[n].start());
+      w[n] <- w[n] + x[n].start();
     }
   }
     
@@ -121,35 +119,8 @@ class ParticleFilter < ForwardSampler {
     auto x0 <- x;
     parallel for auto n in 1..N {
       x[n] <- clone<ForwardModel>(x0[a[n]]);
-      w[n] <- w[n] + handleStep(x[n].step());
+      w[n] <- w[n] + x[n].step();
     }
-  }
-  
-  /**
-   * Handle events when starting a particle.
-   */
-  function handleStart(f:Event!) -> Real {
-    return handleStep(f);
-  }
-
-  /**
-   * Handle events when stepping a particle.
-   */
-  function handleStep(f:Event!) -> Real {
-    auto w <- 0.0;
-    while f? {
-      auto evt <- f!;
-      if evt.isFactor() {
-        w <- w + evt.observe();
-      } else if evt.isRandom() {
-        if evt.hasValue() {
-          w <- w + evt.observe();
-        } else {
-          evt.assume();
-        }
-      }
-    }
-    return w;
   }
 
   /**

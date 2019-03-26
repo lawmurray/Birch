@@ -15,10 +15,10 @@ class RandomAccessModel < BidirectionalModel {
   }
   
   function skip() {
-    t <- t + 1;
+    seek(t + 1);
   }
   
   function back() {
-    t <- t - 1;
+    seek(t - 1);
   }
 }

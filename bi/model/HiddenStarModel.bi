@@ -38,18 +38,17 @@ class HiddenStarModel<Parameter,Point,Observation> <
   /**
    * Play one step. Simulates through the next point and observation.
    */
-  fiber step() -> Event {
-    t <- t + 1;
-    while x.size() < t {
-      x:Point;
-      this.x.pushBack(x);
-    }
+  function step() -> Real {
+    auto w <- super.step();
+    return w + h.handle(observation(y.get(t), x.get(t), θ));
+  }
+
+  function seek(t:Integer) {
+    super.seek(t);
     while x.size() < t {
       y:Observation;
       this.y.pushBack(y);
     }
-    point(x.get(t), θ);
-    observation(y.get(t), x.get(t), θ);
   }
 
   function size() -> Integer {

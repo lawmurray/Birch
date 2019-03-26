@@ -47,20 +47,28 @@ class StarModel<Parameter,Point> < RandomAccessModel {
   /**
    * Start. Simulates through the parameter model.
    */
-  fiber start() -> Event {
-    parameter(θ);
+  function start() -> Real {
+    return h.handle(parameter(θ));
   }
 
   /**
    * Play one step. Simulates through the next point.
    */
-  fiber step() -> Event {
-    t <- t + 1;
+  function step() -> Real {
+    next();
+    return h.handle(point(x.get(t), θ));
+  }
+
+  function seek(t:Integer) {
+    super.seek(t);
     while x.size() < t {
       x:Point;
       this.x.pushBack(x);
     }
-    point(x.get(t), θ);
+  }
+
+  function size() -> Integer {
+    return x.size();
   }
 
   fiber simulate() -> Event {
@@ -68,10 +76,6 @@ class StarModel<Parameter,Point> < RandomAccessModel {
     while true {
       step();
     }
-  }
-
-  function size() -> Integer {
-    return x.size();
   }
 
   function read(buffer:Buffer) {

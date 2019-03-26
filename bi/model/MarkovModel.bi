@@ -64,32 +64,46 @@ class MarkovModel<Parameter,State> < BidirectionalModel {
   /**
    * Start. Simulates through the parameter model.
    */
-  fiber start() -> Event {
-    parameter(θ);
+  function start() -> Real {
+    return h.handle(parameter(θ));
   }
 
   /**
    * Play one step. Simulates through the next state.
    */
-  fiber step() -> Event {
+  function step() -> Real {
+    next();
+    auto x' <- f!.getValue();
+    auto w' <- 0.0;
+    if f! == x.begin()! {
+      w' <- w' + h.handle(initial(x', θ));
+    } else {
+      auto x <- f!.getPrevious()!.getValue();
+      w' <- w' + h.handle(transition(x', x, θ));
+    }
+  }
+
+  function size() -> Integer {
+    return x.size();
+  }
+
+  function next() {
     if f? {
-      f <- f!.getNext();
+      f <- f!.getNext();  
     } else {
       f <- x.begin();
-    }    
+    }
     if !f? {
       /* no next state, insert one */
       x':State;
       x.pushBack(x');
       f <- x.end();
     }
-    auto x' <- f!.getValue();
-    if f! == x.begin()! {
-      initial(x', θ);
-    } else {
-      auto x <- f!.getPrevious()!.getValue();
-      transition(x', x, θ);
-    }
+  }
+
+  function back() {
+    assert f?;
+    f <- f!.getPrev();
   }
 
   fiber simulate() -> Event {
@@ -97,10 +111,6 @@ class MarkovModel<Parameter,State> < BidirectionalModel {
     while true {
       step();
     }
-  }
-
-  function size() -> Integer {
-    return x.size();
   }
 
   function read(buffer:Buffer) {

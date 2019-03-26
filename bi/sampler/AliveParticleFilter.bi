@@ -3,7 +3,7 @@
  * alive particle filter maintains $N$ particles with non-zero weight, rather
  * than $N$ particles in total as with the standard particle filter.
  */
-class AliveParticleFilter < ParticleFilter {
+class AliveParticleFilter < ParticleFilter<DelayHandler> {
   /**
    * For each checkpoint, the number of propagations that were performed to
    * achieve $N$ acceptances.
@@ -33,14 +33,14 @@ class AliveParticleFilter < ParticleFilter {
     auto w0 <- w;
     parallel for auto n in 1..N {
       x[n] <- clone<ForwardModel>(x0[a[n]]);
-      w[n] <- handleStep(x[n].step());
+      w[n] <- x[n].step();
       cpp {{
       ++P;
       }}
       while w[n] == -inf {  // repeat until weight is positive
         a[n] <- ancestor(w0);
         x[n] <- clone<ForwardModel>(x0[a[n]]);
-        w[n] <- handleStep(x[n].step());
+        w[n] <- x[n].step();
         cpp {{
         ++P;
         }}
@@ -53,7 +53,7 @@ class AliveParticleFilter < ParticleFilter {
     do {
       auto a' <- ancestor(w0);
       auto x' <- clone<ForwardModel>(x0[a']);
-      w' <- handleStep(x'.step());
+      w' <- x'.step();
       cpp {{
       ++P;
       }}

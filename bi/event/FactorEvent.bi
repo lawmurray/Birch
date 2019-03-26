@@ -9,6 +9,10 @@ class FactorEvent(w:Real) < Event {
    */
   w:Real <- w;
 
+  function accept(h:Handler) -> Real {
+    return h.handle(this);
+  }
+
   function isFactor() -> Boolean {
     return true;
   }

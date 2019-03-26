@@ -1,36 +1,7 @@
 /**
- * Conditional particle filter. Conditions on a previously known path
- * $x'_{1:T}$.
+ * Conditional particle filter.
  */
-class ConditionalParticleFilter < ParticleFilter {
-  /**
-   * Conditioned path, drawn from previous iteration.
-   */
-  x0:List<Model>;
-  
-  /**
-   * Conditioned path weights, drawn from previous iteration.
-   */
-  w0:List<Real>;
-  
-  /**
-   * All paths, in current iteration.
-   */
-  X:List<Model>[_];
-
-  /**
-   * All weights, in current iteration.
-   */
-  W:List<Real>[_];
-   
-  function start(m:Model) {
-    super.start(m);
-    X1:List<Model>[nparticles];
-    W1:List<Real>[nparticles];
-    X <- X1;
-    W <- W1;
-  }
-
+class ConditionalParticleFilter<Handler> < ParticleFilter<Handler> {   
   function resample() {
     super.resample();
     ///@todo Do this properly with conditional distribution for resampler
@@ -38,18 +9,8 @@ class ConditionalParticleFilter < ParticleFilter {
       a[nparticles] <- nparticles;
     }
   }
-  
-  function copy() {
-    super.copy();
-    auto X0 <- X;
-    auto W0 <- W;
-    for n:Integer in 1..nparticles {
-      X[n] <- clone<List<Model>>(X0[a[n]]);
-      W[n] <- clone<List<Real>>(W0[a[n]]);
-    }
-  }
 
-  function propagate() -> Boolean {
+  function step() -> Boolean {
     auto continue <- true;
     auto N <- nparticles;
     
@@ -75,11 +36,5 @@ class ConditionalParticleFilter < ParticleFilter {
       }
     }
     return continue;
-  }
-
-  function finish() {
-    super.finish();
-    x0 <- X[b];
-    w0 <- W[b];
   }
 }
