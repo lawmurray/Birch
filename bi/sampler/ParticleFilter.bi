@@ -18,9 +18,9 @@ class ParticleFilter < ForwardSampler {
   a:Integer[_];
   
   /**
-   * Index of the chosen path at the end of the filter.
+   * Chosen path at the end of the filter.
    */
-  b:Integer <- 0;
+  x':ForwardModel?;
   
   /**
    * Number of particles.
@@ -73,6 +73,7 @@ class ParticleFilter < ForwardSampler {
       }
       if ess.back() < trigger*N {
         resample();
+        copy();
       }
       step();
       reduce();
@@ -82,7 +83,7 @@ class ParticleFilter < ForwardSampler {
     }
     finish();
     finalize();
-    return (x[b], sum(Z.walk()));
+    return (x'!, sum(Z.walk()));
   }
 
   /**
@@ -156,15 +157,27 @@ class ParticleFilter < ForwardSampler {
    */
   function resample() {
     a <- permute_ancestors(ancestors(w));
-    w <- vector(0.0, N);
+  }
+  
+  /**
+   * Copy around particles after resampling.
+   */
+  function copy() {
+    auto x0 <- x;
+    parallel for auto n in 1..N {
+      x[n] <- clone<ForwardModel>(x0[a[n]]);
+      w[n] <- 0.0;
+    }
   }
 
   /**
    * Finish.
    */
   function finish() {
-    b <- ancestor(w);
-    if b <= 0 {
+    auto b <- ancestor(w);
+    if b > 0 {
+      x' <- x[b];
+    } else {
       error("particle filter degenerated.");
     }
   }

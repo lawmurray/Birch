@@ -198,6 +198,7 @@
       "bi/sampler/AuxiliaryParticleFilter.bi",
       "bi/sampler/BidirectionalSampler.bi",
       "bi/sampler/BootstrapParticleFilter.bi",
+      "bi/sampler/ConditionalParticleFilter.bi",
       "bi/sampler/ForwardSampler.bi",
       "bi/sampler/ImportanceSampler.bi",
       "bi/sampler/ParticleFilter.bi",
