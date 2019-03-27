@@ -1,22 +1,11 @@
 /**
- * Event handler that replays a trace of events.
+ * Abstract event handler that replays a trace of events.
+ *
+ * - replay: The trqce to replay.
  */
-class ReplayHandler(trace:List<Event>) < Handler {
+class ReplayHandler(replay:List<Event>) < Handler {
   /**
-   * The trace of events.
+   * Trace of events to replay.
    */
-  trace:List<Event> <- trace;
-
-  function handle(evt:FactorEvent) -> Real {
-    trace.popFront();
-  }
-  
-  function handle(evt:RandomEvent) -> Real {
-    trace.popFront();
-  }
-}
-
-function ReplayHandler(trace:List<Event>) -> ReplayHandler {
-  o:ReplayHandler(trace);
-  return o;
+  replay:List<Event> <- replay;
 }

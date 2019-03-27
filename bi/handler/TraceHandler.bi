@@ -1,16 +1,13 @@
 /**
- * Event handler that collects a trace of events.
+ * Event handler that records a trace of events from another handler.
+ *
+ * - BaseHandler: Type of the other handler.
  */
-class TraceHandler(h:Handler) < Handler {
+class TraceHandler<BaseHandler> < BaseHandler {
   /**
-   * The trace of events.
+   * Recorded trace of events.
    */
-  trace:List<Event>;
-
-  /**
-   * Base handler.
-   */
-  h:Handler <- h;
+  record:List<Event>;
   
   function handle(evt:FactorEvent) -> Real {
     trace.pushBack(evt);
@@ -21,19 +18,4 @@ class TraceHandler(h:Handler) < Handler {
     trace.pushBack(evt);
     return h.handle(evt);
   }
-  
-  function rebase(h:Handler) {
-    this.h <- h;
-  }
-  
-  function replay() {
-    h <- ReplayHandler(trace);
-    o:List<Event>;
-    trace <- o;
-  }
-}
-
-function TraceHandler(h:Handler) -> TraceHandler {
-  o:TraceHandler(h);
-  return o;
 }

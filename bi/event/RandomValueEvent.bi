@@ -32,17 +32,22 @@ class RandomValueEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
   function assume() {
     v.assume(p);
   }
-
-  function simulate() {
-    v <- p.simulate();
+  
+  function observe() -> Real {
+    assert hasValue();
+    return p.observe(v);
   }
 
   function value() {
     v.value();
   }
-  
-  function observe() -> Real {
-    assert hasValue();
-    return p.observe(v);
+
+  function value(evt:Event) {
+    auto r <- RandomValueEvent<Value>?(evt);
+    if r? {
+      v <- r!.v.value();
+    } else {
+      error("incompatible traces");
+    }
   }
 }

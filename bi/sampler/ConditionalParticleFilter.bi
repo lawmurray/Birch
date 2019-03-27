@@ -24,9 +24,9 @@ class ConditionalParticleFilter < ParticleFilter {
       /* temporarily move the replay event handler out of the reference
        * particle so that be copied to other offspring */
       auto h <- x[N].getHandler();
-      h.rebase(DelayHandler());
+      //h.rebase(DelayedHandler());
       super.copy();
-      h.rebase(x'!.getHandler());
+      //h.rebase(x'!.getHandler());
     } else {
       super.copy();
     }
@@ -34,6 +34,6 @@ class ConditionalParticleFilter < ParticleFilter {
   
   function setArchetype(a:Model) {
     super.setArchetype(a);
-    archetype!.setHandler(TraceHandler(archetype!.getHandler()));
+    //archetype!.setHandler(TraceHandler(archetype!.getHandler()));
   }
 }

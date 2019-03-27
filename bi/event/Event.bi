@@ -24,21 +24,24 @@ class Event {
   /**
    * For a random variate event, is there a value already assigned?
    */
-  function hasValue() -> Boolean {
-    assert isRandom();
-  }
+  function hasValue() -> Boolean;
 
   /**
    * For a random variate event, is there a distribution already assigned?
    */
-  function hasDistribution() -> Boolean {
-    assert isRandom();
-  }
+  function hasDistribution() -> Boolean;
 
   /**
    * Enact assume, for a random variable event.
    */
   function assume();
+  
+  /**
+   * Enact observe, for a factor or random variable event with a value.
+   *
+   * Returns: the log-weight associated with the event.
+   */
+  function observe() -> Real;
 
   /**
    * Enact value, for a random variable event.
@@ -46,26 +49,8 @@ class Event {
   function value();
 
   /**
-   * Enact simulate, for a random variable event.
+   * Enact value, for a random variable event, where the value is provided by
+   * another event.
    */
-  function simulate();
-  
-  /**
-   * Enact observe, for a factor or random variable event with a value.
-   *
-   * Returns: the log-weight associated with the event.
-   */
-  function observe() -> Real {
-    assert isFactor() || isRandom();
-  }
-
-  /**
-   * Enact update, for a random variable event with a value.
-   */
-  function update();
-
-  /**
-   * Enact downdate, for a random variable event with a value.
-   */
-  function downdate();
+  function value(evt:Event);
 }

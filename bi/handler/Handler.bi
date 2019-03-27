@@ -1,5 +1,10 @@
 /**
  * Abstract event handler.
+ *
+ * The Handler class hierarchy is as follows:
+ * <center>
+ * <object type="image/svg+xml" data="../../figs/Handler.svg"></object>
+ * </center>
  */
 class Handler {
   /**
