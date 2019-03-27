@@ -6,19 +6,19 @@ class ForwardModel < Model {
   /**
    * Event handler.
    */
-  h:Handler <- DelayedHandler();
+  h:EventHandler;
 
   /**
    * Get the event handler.
    */
-  function getHandler() -> Handler {
+  function getHandler() -> EventHandler {
     return h;
   }
  
   /**
    * Set the event handler.
    */
-  function setHandler(h:Handler) {
+  function setHandler(h:EventHandler) {
     this.h <- h;
   }
    

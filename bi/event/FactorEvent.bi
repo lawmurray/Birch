@@ -9,7 +9,7 @@ class FactorEvent(w:Real) < Event {
    */
   w:Real <- w;
 
-  function accept(h:Handler) -> Real {
+  function accept(h:EventHandler) -> Real {
     return h.handle(this);
   }
 

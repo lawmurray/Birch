@@ -5,7 +5,7 @@ class ConditionalParticleFilter < ParticleFilter {
   function initialize() {
     super.initialize();
     if x'? {
-      auto h <- clone<Handler>(x'!.getHandler());
+      auto h <- clone<EventHandler>(x'!.getHandler());
       x[N].setHandler(h);
       h.rewind();
     }
@@ -33,7 +33,7 @@ class ConditionalParticleFilter < ParticleFilter {
   
   function setArchetype(a:Model) {
     super.setArchetype(a);
-    h:TraceHandler<DelayedReplayHandler>;
+    h:TraceHandler;
     archetype!.setHandler(h);
   }
 }

@@ -5,7 +5,7 @@ class Event {
   /**
    * Accept an event handler.
    */
-  function accept(h:Handler) -> Real;
+  function accept(h:EventHandler) -> Real;
 
   /**
    * Is this a factor event?

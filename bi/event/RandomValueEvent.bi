@@ -17,7 +17,7 @@ class RandomValueEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
    */
   p:Distribution<Value> <- p;
 
-  function accept(h:Handler) -> Real {
+  function accept(h:EventHandler) -> Real {
     return h.handle(this);
   }
 

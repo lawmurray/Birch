@@ -1,9 +1,7 @@
 /**
- * Event handler that records a trace of events from another handler.
- *
- * - BaseHandler: Type of the other handler.
+ * Event handler that records a trace of events.
  */
-class TraceHandler<BaseHandler> < BaseHandler {
+class TraceHandler < ReplayHandler {
   /**
    * Recorded trace of events.
    */

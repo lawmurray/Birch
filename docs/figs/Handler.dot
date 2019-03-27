@@ -5,18 +5,10 @@ digraph {
   node [shape=box,fontname=Helvetica,fontsize=10,margin="0.1,0.01"]
   edge [arrowhead=empty]
 
-  Handler [href="../classes/Handler/",target="_top"]
-  ImmediateHandler [href="../classes/ImmediateHandler/",target="_top"]
-  DelayedHandler [href="../classes/DelayedHandler/",target="_top"]
+  EventHandler [href="../classes/EventHandler/",target="_top"]
   ReplayHandler [href="../classes/ReplayHandler/",target="_top"]
-  ImmediateReplayHandler [href="../classes/ImmediateReplayHandler/",target="_top"]
-  DelayedReplayHandler [href="../classes/DelayedReplayHandler/",target="_top"]
   TraceHandler [href="../classes/TraceHandler/",target="_top"]
 
-  ImmediateHandler -> Handler
-  DelayedHandler -> Handler
-  ReplayHandler -> Handler
-  ImmediateReplayHandler -> ReplayHandler
-  DelayedReplayHandler -> ReplayHandler
-  TraceHandler -> Handler
+  ReplayHandler -> EventHandler
+  TraceHandler -> ReplayHandler
 }

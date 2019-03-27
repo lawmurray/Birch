@@ -4,6 +4,6 @@
 class BootstrapParticleFilter < ParticleFilter {
   function setArchetype(a:Model) {
     super.setArchetype(a);
-    archetype!.setHandler(ImmediateHandler());
+    archetype!.getHandler().setDelay(false);
   }
 }
