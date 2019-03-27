@@ -24,8 +24,7 @@ public:
   libbirch_destroy_function_
 
   /**
-   * Shallow mapping of an object that may not yet have been cloned,
-   * cloning and forwarding it if necessary.
+   * Map an object that may not yet have been cloned.
    */
   EagerAny* get(EagerAny* o);
 

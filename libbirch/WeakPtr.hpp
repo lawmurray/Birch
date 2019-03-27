@@ -129,7 +129,7 @@ public:
    * Get the raw pointer.
    */
   T* get() const {
-    assert(!ptr || ptr->numShared() > 0);
+    assert(!ptr || ptr->numWeak() > 0);
     return ptr;
   }
 
@@ -137,7 +137,7 @@ public:
    * Get the raw pointer as const.
    */
   const T* pull() const {
-    assert(!ptr || ptr->numShared() > 0);
+    assert(!ptr || ptr->numWeak() > 0);
     return ptr;
   }
 

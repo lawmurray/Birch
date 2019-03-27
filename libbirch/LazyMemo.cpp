@@ -9,14 +9,23 @@
 
 libbirch::LazyMemo::LazyMemo() :
     parent(nullptr),
+    forward(nullptr),
     gen(0u) {
   //
 }
 
 libbirch::LazyMemo::LazyMemo(LazyMemo* parent) :
     parent(parent),
+    forward(nullptr),
     gen(parent->gen + 1u) {
   assert(parent);
+}
+
+libbirch::LazyMemo::~LazyMemo() {
+  LazyMemo* forward = this->forward.load(std::memory_order_relaxed);
+  if (forward) {
+    forward->decShared();
+  }
 }
 
 
@@ -44,12 +53,17 @@ libbirch::LazyAny* libbirch::LazyMemo::get(LazyAny* o, LazyMemo* from) {
   if (this == from) {
     return o;
   } else {
-    o = getParent()->source(o, from);
-    auto result = m.get(o);
-    if (result) {
-      return result;
+    auto to = getForward();
+    if (to != this) {
+      return to->get(o, from);
     } else {
-      return copy(o);
+      o = getParent()->source(o, from);
+      auto result = m.get(o);
+      if (result) {
+        return result;
+      } else {
+        return copy(o);
+      }
     }
   }
 }
@@ -58,12 +72,17 @@ libbirch::LazyAny* libbirch::LazyMemo::pull(LazyAny* o, LazyMemo* from) {
   if (this == from) {
     return o;
   } else {
-    o = getParent()->source(o, from);
-    auto result = m.get(o);
-    if (result) {
-      return result;
+    auto to = pullForward();
+    if (to != this) {
+      return to->pull(o, from);
     } else {
-      return o;
+      o = getParent()->source(o, from);
+      auto result = m.get(o);
+      if (result) {
+        return result;
+      } else {
+        return o;
+      }
     }
   }
 }
@@ -104,10 +123,41 @@ libbirch::LazyAny* libbirch::LazyMemo::copy(LazyAny* o) {
    * destroy any additional objects */
   SwapClone swapClone(true);
   SwapContext swapContext(this);
+  assert(!this->isFrozen());
   assert(o->isFrozen());
   SharedPtr<LazyAny> cloned = o->clone_();
   // ^ use shared to clean up if beaten by another thread
   return m.put(o, cloned.get());
+}
+
+libbirch::LazyMemo* libbirch::LazyMemo::getForward() {
+  if (isFrozen()) {
+    auto forward = this->forward.load(std::memory_order_relaxed);
+    if (!forward) {
+      auto forward1 = this->create_(this);
+      forward1->incShared();
+      if (this->forward.compare_exchange_strong(forward, forward1,
+          std::memory_order_relaxed)) {
+        return forward1;
+      } else {
+        /* beaten by another thread */
+        forward1->decShared();
+      }
+    }
+    return forward->getForward();
+  } else {
+    return this;
+  }
+}
+
+libbirch::LazyMemo* libbirch::LazyMemo::pullForward() {
+  if (isFrozen()) {
+    LazyMemo* forward = this->forward.load(std::memory_order_relaxed);
+    if (forward) {
+      return forward->pullForward();
+    }
+  }
+  return this;
 }
 
 #endif

@@ -13,6 +13,8 @@
 
 #include <tuple>
 
+#include <iostream>
+
 namespace libbirch {
 template<class T> class Optional;
 
@@ -190,9 +192,8 @@ public:
    */
   T* get() {
     if (object) {
-      object = static_cast<T*>(to->get(object.get(), from.get())->getForward());
+      object = static_cast<T*>(to->get(object.get(), from.get()));
       from = to.get();
-      assert(object);
       assert(!object->isFrozen());
     }
     return object.get();
@@ -212,15 +213,13 @@ public:
    */
   const T* pull() {
     if (object) {
-      auto pulled = to->pull(object.get(), from.get());
-      if (pulled->getContext() == to.get()) {
-        object = static_cast<T*>(pulled->pullForward());
+      object = static_cast<T*>(to->pull(object.get(), from.get()));
+      if (object->getContext() == to.get()) {
         from = to.get();
       } else {
         /* copy has been omitted for this access as it is read only, but on
          * the next access we will need to check whether a copy has happened
          * elsewhere in the meantime */
-        object = static_cast<T*>(pulled);
         from = to->getParent();
       }
     }

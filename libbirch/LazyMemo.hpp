@@ -99,6 +99,18 @@ public:
    */
   LazyAny* copy(LazyAny* o);
 
+  /**
+   * If this memo is frozen, return the memo to which it should forward,
+   * otherwise `this`.
+   */
+  LazyMemo* getForward();
+
+  /**
+   * If this memo is frozen, and the memo to which it should forward has
+   * already been created, return that memoo, otherwise `this`.
+   */
+  LazyMemo* pullForward();
+
 protected:
   virtual void doFreeze_();
 
@@ -107,6 +119,13 @@ private:
    * Parent memo.
    */
   SharedPtr<LazyMemo> parent;
+
+  /**
+   * If frozen, memo to which to forward. This must be thread safe, and
+   * so an atomic raw pointer is used, with manual shared reference count
+   * maintenance.
+   */
+  std::atomic<LazyMemo*> forward;
 
   /**
    * Memoization of mappings.
@@ -123,10 +142,6 @@ private:
    */
   unsigned gen;
 };
-}
-
-inline libbirch::LazyMemo::~LazyMemo() {
-  //
 }
 
 inline libbirch::LazyMemo* libbirch::LazyMemo::fork() {
