@@ -10,12 +10,29 @@ class TraceHandler<BaseHandler> < BaseHandler {
   record:List<Event>;
   
   function handle(evt:FactorEvent) -> Real {
-    trace.pushBack(evt);
-    return h.handle(evt);
+    record.pushBack(evt);
+    return super.handle(evt);
   }
   
   function handle(evt:RandomEvent) -> Real {
-    trace.pushBack(evt);
-    return h.handle(evt);
+    record.pushBack(evt);
+    return super.handle(evt);
+  }
+
+  /**
+   * Remove and return the recorded trace.
+   */
+  function takeRecord() -> List<Event> {
+    empty:List<Event>;
+    auto record <- this.record;
+    this.record <- empty;
+    return record;
+  }
+  
+  /**
+   * Set the recorded trace.
+   */
+  function setRecord(record:List<Event>) {
+    this.record <- record;
   }
 }

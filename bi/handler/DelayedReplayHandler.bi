@@ -5,17 +5,13 @@
  *   delayed trace. For the former, the outcome is the same as using
  *   ImmediateReplayHandler.
  */
-class DelayedReplayHandler(replay:List<Event>) < ReplayHandler(replay) {
+class DelayedReplayHandler < ReplayHandler {
   function handle(evt:FactorEvent) -> Real {
     return evt.observe();
   }
   
   function handle(evt:RandomEvent) -> Real {
-    replayEvt:Event?;
-    if !replay.empty() {
-      replayEvt <- replay.front();
-      replay.popFront();
-    }
+    auto replayEvt <- next();
     if evt.hasValue() {
       ///@todo Check that values match
       return evt.observe();

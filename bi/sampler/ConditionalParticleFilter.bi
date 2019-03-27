@@ -5,9 +5,8 @@ class ConditionalParticleFilter < ParticleFilter {
   function initialize() {
     super.initialize();
     if x'? {
-      auto h <- x'!.getHandler();
-      h.replay();
-      x[N].setHandler(h);
+      x[N] <- clone<ForwardModel>(x'!);
+      x[N].getHandler().replay();
     }
   }
 
@@ -21,12 +20,11 @@ class ConditionalParticleFilter < ParticleFilter {
   
   function copy() {
     if x'? {
-      /* temporarily move the replay event handler out of the reference
-       * particle so that be copied to other offspring */
-      auto h <- x[N].getHandler();
-      //h.rebase(DelayedHandler());
+      /* temporarily take the replay trace out of the reference particle so
+       * as not to copy it into offspring */
+      auto h <- x[N].getHandler().takeReplay();
       super.copy();
-      //h.rebase(x'!.getHandler());
+      x[N].getHandler().setReplay(h);
     } else {
       super.copy();
     }
@@ -34,6 +32,7 @@ class ConditionalParticleFilter < ParticleFilter {
   
   function setArchetype(a:Model) {
     super.setArchetype(a);
-    //archetype!.setHandler(TraceHandler(archetype!.getHandler()));
+    h:TraceHandler<DelayedReplayHandler>;
+    archetype!.setHandler(h);
   }
 }

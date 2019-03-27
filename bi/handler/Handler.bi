@@ -39,17 +39,37 @@ class Handler {
   function handle(evt:RandomEvent) -> Real;
 
   /**
-   * If this is a trace handler, change the base handler.
+   * If this is a replay event handler, clear and return the replay trace.
    */
-  function rebase(h:Handler) {
+  function takeReplay() -> List<Event>? {
     assert false;
   }
   
   /**
-   * If this is a trace handler, change the base handler so as to replay the
-   * current trace, while building a new trace.
+   * If this is a replay event handler, set the replay trace.
+   */
+  function setReplay(replay:List<Event>?) {
+    assert false;
+  }
+
+  /**
+   * If this is a trace event handler, clear and return the recorded trace.
+   */
+  function takeRecord() -> List<Event> {
+    assert false;
+  }
+  
+  /**
+   * If this is a trace event handler, set the recorded trace.
+   */
+  function setRecord(replay:List<Event>) {
+    assert false;
+  }
+
+  /**
+   * Convenience function equivalent to `this.setReplay(this.takeRecord())`.
    */
   function replay() {
-    assert false;
+    setReplay(takeRecord());
   }
 }

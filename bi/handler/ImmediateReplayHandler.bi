@@ -5,17 +5,13 @@
  *   delayed trace. For the latter, any eliminated variables will be
  *   simulated as needed.
  */
-class ImmediateReplayHandler(replay:List<Event>) < ReplayHandler(replay) {
+class ImmediateReplayHandler < ReplayHandler {
   function handle(evt:FactorEvent) -> Real {
     return evt.observe();
   }
   
   function handle(evt:RandomEvent) -> Real {
-    replayEvt:Event?;
-    if !replay.empty() {
-      replayEvt <- replay.front();
-      replay.popFront();
-    }    
+    auto replayEvt <- next();
     if evt.hasValue() {
       ///@todo Check that values match
       return evt.observe();
