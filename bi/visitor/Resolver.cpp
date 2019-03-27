@@ -694,7 +694,7 @@ bi::Statement* bi::Resolver::modify(Class* o) {
     classes.push_back(o);
     o->typeParams = o->typeParams->accept(this);
     o->base = o->base->accept(this);
-    if (!o->base->isEmpty()) {
+    if (o->isBound() && !o->base->isEmpty()) {
       if (!o->base->isClass()) {
         throw BaseException(o);
       }

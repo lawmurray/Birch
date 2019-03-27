@@ -17,6 +17,7 @@ bi::BaseException::BaseException(const Basic* o) {
   }
   buf << "note: in\n";
   buf << o;
+  msg = base.str();
 }
 
 bi::BaseException::BaseException(const Class* o) {
@@ -31,4 +32,5 @@ bi::BaseException::BaseException(const Class* o) {
   }
   buf << "note: in\n";
   buf << o;
+  msg = base.str();
 }

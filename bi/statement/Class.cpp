@@ -39,8 +39,7 @@ void bi::Class::accept(Visitor* visitor) const {
 }
 
 void bi::Class::addSuper(const Type* o) {
-  auto base = o->getClass();
-  supers.insert(base);
+  supers.insert(o->getClass());
 }
 
 bool bi::Class::hasSuper(const Type* o) const {

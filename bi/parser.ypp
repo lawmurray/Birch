@@ -140,8 +140,8 @@
 %type <valStatement> braces optional_braces
 %type <valStatement> class_braces optional_class_braces
 
-%type <valType> basic_type class_type unknown_type member_type tuple_type
-%type <valType> sequence_type postfix_type function_type type
+%type <valType> basic_type class_type base_type unknown_type member_type
+%type <valType> tuple_type sequence_type postfix_type function_type type
 %type <valType> type_list parameter_type_list parameter_types
 %type <valType> result optional_result
 %type <valType> generic_argument generic_argument_list generic_arguments optional_generic_arguments
@@ -580,7 +580,7 @@ class_annotation
     ;
 
 class_declaration
-    : class_annotation CLASS name optional_generics optional_parameters '<' class_type optional_arguments { push_raw(); } optional_class_braces  { $$ = new bi::Class($1, $3, $4, $5, $7, false, $8, $10, make_doc_loc(@$)); }
+    : class_annotation CLASS name optional_generics optional_parameters '<' base_type optional_arguments { push_raw(); } optional_class_braces  { $$ = new bi::Class($1, $3, $4, $5, $7, false, $8, $10, make_doc_loc(@$)); }
     | class_annotation CLASS name optional_generics optional_parameters { push_raw(); } optional_class_braces                                    { $$ = new bi::Class($1, $3, $4, $5, empty_type(@$), false, empty_expr(@$), $7, make_doc_loc(@$)); }
     | class_annotation CLASS name optional_generics '=' class_type { push_raw(); } ';'                                                           { $$ = new bi::Class($1, $3, $4, empty_expr(@$), $6, true, empty_expr(@$), empty_stmt(@$), make_doc_loc(@$)); }
     ;
@@ -791,6 +791,10 @@ class_type
 
 unknown_type
     : name optional_generic_arguments weak_modifier  { $$ = new bi::UnknownType($3, $1, $2, make_loc(@$)); }
+    ;
+
+base_type
+    : name optional_generic_arguments  { $$ = new bi::UnknownType(false, $1, $2, make_loc(@$)); }
     ;
 
 member_type
