@@ -15,14 +15,14 @@ program test_linear_normal_inverse_gamma_log_gaussian(N:Integer <- 10000) {
   /* simulate forward */
   for i:Integer in 1..N {
     m:TestLinearNormalInverseGammaLogGaussian(a, μ, a2, c, α, β);
-    m.initialize();
+    m.play();
     X1[i,1..3] <- m.forward();
   }
 
   /* simulate backward */
   for i:Integer in 1..N {
     m:TestLinearNormalInverseGammaLogGaussian(a, μ, a2, c, α, β);
-    m.initialize();
+    m.play();
     X2[i,1..3] <- m.backward();
   }
   
@@ -33,7 +33,7 @@ program test_linear_normal_inverse_gamma_log_gaussian(N:Integer <- 10000) {
 }
 
 class TestLinearNormalInverseGammaLogGaussian(a:Real, μ_0:Real, a2:Real, c:Real,
-    α:Real, β:Real) {
+    α:Real, β:Real) < Model {
   a:Real <- a;
   μ_0:Real <- μ_0;
   a2:Real <- a2;
@@ -45,7 +45,7 @@ class TestLinearNormalInverseGammaLogGaussian(a:Real, μ_0:Real, a2:Real, c:Real
   μ:Random<Real>;
   x:Random<Real>;
   
-  function initialize() {
+  fiber simulate() -> Event {
     σ2 ~ InverseGamma(α, β);
     μ ~ Gaussian(a*μ_0 + c, a2*σ2);
     x ~ LogGaussian(μ, σ2);

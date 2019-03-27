@@ -9,17 +9,17 @@ program test_beta_negative_binomial(N:Integer <- 10000) {
   β:Real <- simulate_uniform(0.0, 100.0);
  
   /* simulate forward */
-  for i:Integer in 1..N {
+  for auto n in 1..N {
     m:TestBetaNegativeBinomial(k, α, β);
-    m.initialize();
-    X1[i,1..2] <- m.forward();
+    m.play();
+    X1[n,1..2] <- m.forward();
   }
 
   /* simulate backward */
-  for i:Integer in 1..N {
+  for auto n in 1..N {
     m:TestBetaNegativeBinomial(k, α, β);
-    m.initialize();
-    X2[i,1..2] <- m.backward();
+    m.play();
+    X2[n,1..2] <- m.backward();
   }
   
   /* test result */
@@ -28,14 +28,14 @@ program test_beta_negative_binomial(N:Integer <- 10000) {
   }
 }
 
-class TestBetaNegativeBinomial(k:Integer, α:Real, β:Real) {
+class TestBetaNegativeBinomial(k:Integer, α:Real, β:Real) < Model {
   k:Integer <- k;
   α:Real <- α;
   β:Real <- β;
   ρ:Random<Real>;
   x:Random<Integer>;
   
-  function initialize() {
+  fiber simulate() -> Event {
     ρ ~ Beta(α, β);
     x ~ NegativeBinomial(k, ρ);
   }

@@ -25,8 +25,8 @@ class DelayValue<Value>(x:Random<Value>&) < Delay {
     y:Random<Value>? <- x;
     if y? {
       assert !y!.hasValue();
-      y! <- value;
-      update(y!.value());
+      y!.x <- value;
+      update(value);
       realized <- true;
     }
     detach();

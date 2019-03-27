@@ -10,14 +10,14 @@ program test_beta_geometric(N:Integer <- 10000) {
   /* simulate forward */
   for i:Integer in 1..N {
     m:TestBetaGeometric(α, β);
-    m.initialize();
+    m.play();
     X1[i,1..2] <- m.forward();
   }
 
   /* simulate backward */
   for i:Integer in 1..N {
     m:TestBetaGeometric(α, β);
-    m.initialize();
+    m.play();
     X2[i,1..2] <- m.backward();
   }
   
@@ -27,13 +27,13 @@ program test_beta_geometric(N:Integer <- 10000) {
   }
 }
 
-class TestBetaGeometric(α:Real, β:Real) {
+class TestBetaGeometric(α:Real, β:Real) < Model {
   α:Real <- α;
   β:Real <- β;
   ρ:Random<Real>;
   x:Random<Integer>;
   
-  function initialize() {
+  fiber simulate() -> Event {
     ρ ~ Beta(α, β);
     x ~ Geometric(ρ);
   }

@@ -11,14 +11,14 @@ program test_gaussian_gaussian(N:Integer <- 10000) {
   /* simulate forward */
   for i:Integer in 1..N {
     m:TestGaussianGaussian(μ_0, σ2_0, σ2_1);
-    m.initialize();
+    m.play();
     X1[i,1..2] <- m.forward();
   }
 
   /* simulate backward */
   for i:Integer in 1..N {
     m:TestGaussianGaussian(μ_0, σ2_0, σ2_1);
-    m.initialize();
+    m.play();
     X2[i,1..2] <- m.backward();
   }
   
@@ -28,7 +28,7 @@ program test_gaussian_gaussian(N:Integer <- 10000) {
   }
 }
 
-class TestGaussianGaussian(μ_0:Real, σ2_0:Real, σ2_1:Real) {
+class TestGaussianGaussian(μ_0:Real, σ2_0:Real, σ2_1:Real) < Model {
   μ_0:Real <- μ_0;
   σ2_0:Real <- σ2_0;
   σ2_1:Real <- σ2_1;
@@ -36,7 +36,7 @@ class TestGaussianGaussian(μ_0:Real, σ2_0:Real, σ2_1:Real) {
   μ_1:Random<Real>;
   x:Random<Real>;
   
-  function initialize() {
+  fiber simulate() -> Event {
     μ_1 ~ Gaussian(μ_0, σ2_0);
     x ~ Gaussian(μ_1, σ2_1);
   }

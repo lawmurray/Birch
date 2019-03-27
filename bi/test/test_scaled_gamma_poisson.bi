@@ -9,16 +9,16 @@ program test_scaled_gamma_poisson(N:Integer <- 10000) {
   θ:Real <- simulate_uniform(0.0, 10.0);
  
   /* simulate forward */
-  for n:Integer in 1..N {
+  for auto n in 1..N {
     m:TestScaledGammaPoisson(a, k, θ);
-    m.initialize();
+    m.play();
     X1[n,1..2] <- m.forward();
   }
 
   /* simulate backward */
-  for n:Integer in 1..N {
+  for auto n in 1..N {
     m:TestScaledGammaPoisson(a, k, θ);
-    m.initialize();
+    m.play();
     X2[n,1..2] <- m.backward();
   }
   
@@ -28,14 +28,14 @@ program test_scaled_gamma_poisson(N:Integer <- 10000) {
   }
 }
 
-class TestScaledGammaPoisson(a:Real, k:Real, θ:Real) {
+class TestScaledGammaPoisson(a:Real, k:Real, θ:Real) < Model {
   a:Real <- a;
   k:Real <- k;
   θ:Real <- θ;
   λ:Random<Real>;
   x:Random<Integer>;
   
-  function initialize() {
+  fiber simulate() -> Event {
     λ ~ Gamma(k, θ);
     x ~ Poisson(a*λ);
   }

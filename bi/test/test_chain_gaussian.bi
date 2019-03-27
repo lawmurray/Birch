@@ -16,14 +16,14 @@ program test_chain_gaussian(N:Integer <- 10000) {
   /* simulate forward */
   for i:Integer in 1..N {
     m:TestChainGaussian(μ, σ2);
-    m.initialize();
+    m.play();
     X1[i,1..5] <- m.forward();
   }
 
   /* simulate backward */
   for i:Integer in 1..N {
     m:TestChainGaussian(μ, σ2);
-    m.initialize();
+    m.play();
     X2[i,1..5] <- m.backward();
   }
   
@@ -33,12 +33,12 @@ program test_chain_gaussian(N:Integer <- 10000) {
   }
 }
 
-class TestChainGaussian(μ:Real, σ2:Real[_]) {
+class TestChainGaussian(μ:Real, σ2:Real[_]) < Model {
   μ:Real <- μ;
   σ2:Real[_] <- σ2;
   x:Random<Real>[5];
   
-  function initialize() {
+  fiber simulate() -> Event {
     x[1] ~ Gaussian(μ, σ2[1]);
     x[2] ~ Gaussian(x[1], σ2[2]);
     x[3] ~ Gaussian(x[2], σ2[3]);

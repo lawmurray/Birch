@@ -10,16 +10,16 @@ program test_dirichlet_categorical(N:Integer <- 10000) {
   }
  
   /* simulate forward */
-  for n:Integer in 1..N {
+  for auto n in 1..N {
     m:TestDirichletCategorical(α);
-    m.initialize();
+    m.play();
     X1[n,1..6] <- m.forward();
   }
 
   /* simulate backward */
-  for n:Integer in 1..N {
+  for auto n in 1..N {
     m:TestDirichletCategorical(α);
-    m.initialize();
+    m.play();
     X2[n,1..6] <- m.backward();
   }
   
@@ -29,12 +29,12 @@ program test_dirichlet_categorical(N:Integer <- 10000) {
   }
 }
 
-class TestDirichletCategorical(α:Real[_]) {
+class TestDirichletCategorical(α:Real[_]) < Model {
   α:Real[_] <- α; 
   ρ:Random<Real[_]>;
   x:Random<Integer>;
   
-  function initialize() {
+  fiber simulate() -> Event {
     ρ ~ Dirichlet(α);
     x ~ Categorical(ρ);
   }

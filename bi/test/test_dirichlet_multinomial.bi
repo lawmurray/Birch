@@ -6,21 +6,21 @@ program test_dirichlet_multinomial(N:Integer <- 10000) {
   X2:Real[N,10];
   n:Integer <- simulate_uniform_int(1, 100);
   α:Real[5];
-  for i:Integer in 1..5 {
+  for auto i in 1..5 {
     α[i] <- simulate_uniform(0.0, 10.0);
   }
  
   /* simulate forward */
-  for i:Integer in 1..N {
+  for auto i in 1..N {
     m:TestDirichletMultinomial(n, α);
-    m.initialize();
+    m.play();
     X1[i,1..10] <- m.forward();
   }
 
   /* simulate backward */
-  for i:Integer in 1..N {
+  for auto i in 1..N {
     m:TestDirichletMultinomial(n, α);
-    m.initialize();
+    m.play();
     X2[i,1..10] <- m.backward();
   }
   
@@ -30,13 +30,13 @@ program test_dirichlet_multinomial(N:Integer <- 10000) {
   }
 }
 
-class TestDirichletMultinomial(n:Integer, α:Real[_]) {
+class TestDirichletMultinomial(n:Integer, α:Real[_]) < Model {
   n:Integer <- n;
   α:Real[_] <- α; 
   ρ:Random<Real[_]>;
   x:Random<Integer[_]>;
   
-  function initialize() {
+  fiber simulate() -> Event {
     ρ ~ Dirichlet(α);
     x ~ Multinomial(n, ρ);
   }

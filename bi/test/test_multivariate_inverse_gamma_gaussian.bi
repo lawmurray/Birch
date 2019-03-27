@@ -15,14 +15,14 @@ program test_multivariate_inverse_gamma_gaussian(N:Integer <- 10000) {
   /* simulate forward */
   for i:Integer in 1..N {
     m:TestMultivariateInverseGammaGaussian(μ, α, β);
-    m.initialize();
+    m.play();
     X1[i,1..6] <- m.forward();
   }
 
   /* simulate backward */
   for i:Integer in 1..N {
     m:TestMultivariateInverseGammaGaussian(μ, α, β);
-    m.initialize();
+    m.play();
     X2[i,1..6] <- m.backward();
   }
   
@@ -32,7 +32,7 @@ program test_multivariate_inverse_gamma_gaussian(N:Integer <- 10000) {
   }
 }
 
-class TestMultivariateInverseGammaGaussian(μ:Real[_], α:Real, β:Real) {
+class TestMultivariateInverseGammaGaussian(μ:Real[_], α:Real, β:Real) < Model {
   μ:Real[_] <- μ;
   α:Real <- α;
   β:Real <- β;
@@ -40,7 +40,7 @@ class TestMultivariateInverseGammaGaussian(μ:Real[_], α:Real, β:Real) {
   σ2:Random<Real>;
   x:Random<Real[_]>;
   
-  function initialize() {
+  fiber simulate() -> Event {
     σ2 ~ InverseGamma(α, β);
     x ~ Gaussian(μ, σ2);
   }

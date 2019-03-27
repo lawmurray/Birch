@@ -24,14 +24,14 @@ program test_multivariate_dot_normal_inverse_gamma_log_gaussian(N:Integer <- 100
   /* simulate forward */
   for i:Integer in 1..N {
     m:TestMultivariateDotNormalInverseGammaLogGaussian(a, μ, Σ, c, α, β);
-    m.initialize();
+    m.play();
     X1[i,1..7] <- m.forward();
   }
 
   /* simulate backward */
   for i:Integer in 1..N {
     m:TestMultivariateDotNormalInverseGammaLogGaussian(a, μ, Σ, c, α, β);
-    m.initialize();
+    m.play();
     X2[i,1..7] <- m.backward();
   }
   
@@ -42,7 +42,7 @@ program test_multivariate_dot_normal_inverse_gamma_log_gaussian(N:Integer <- 100
 }
 
 class TestMultivariateDotNormalInverseGammaLogGaussian(a:Real[_],
-    μ_0:Real[_], Σ:Real[_,_], c:Real, α:Real, β:Real) {
+    μ_0:Real[_], Σ:Real[_,_], c:Real, α:Real, β:Real) < Model {
   a:Real[_] <- a;
   μ_0:Real[_] <- μ_0;
   Σ:Real[_,_] <- Σ;
@@ -54,7 +54,7 @@ class TestMultivariateDotNormalInverseGammaLogGaussian(a:Real[_],
   μ:Random<Real[_]>;
   x:Random<Real>;
   
-  function initialize() {
+  fiber simulate() -> Event {
     σ2 ~ InverseGamma(α, β);
     μ ~ Gaussian(μ_0, Σ*σ2);
     x ~ LogGaussian(dot(a, μ) + c, σ2);

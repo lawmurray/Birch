@@ -29,14 +29,14 @@ program test_multivariate_linear_normal_inverse_gamma_gaussian(N:Integer <- 1000
   /* simulate forward */
   for i:Integer in 1..N {
     m:TestMultiariateLinearNormalInverseGammaGaussian(A, μ, Σ, c, α, β);
-    m.initialize();
+    m.play();
     X1[i,1..16] <- m.forward();
   }
 
   /* simulate backward */
   for i:Integer in 1..N {
     m:TestMultiariateLinearNormalInverseGammaGaussian(A, μ, Σ, c, α, β);
-    m.initialize();
+    m.play();
     X2[i,1..16] <- m.backward();
   }
   
@@ -47,7 +47,7 @@ program test_multivariate_linear_normal_inverse_gamma_gaussian(N:Integer <- 1000
 }
 
 class TestMultiariateLinearNormalInverseGammaGaussian(A:Real[_,_],
-    μ_0:Real[_], Σ:Real[_,_], c:Real[_], α:Real, β:Real) {
+    μ_0:Real[_], Σ:Real[_,_], c:Real[_], α:Real, β:Real) < Model {
   A:Real[_,_] <- A;
   μ_0:Real[_] <- μ_0;
   Σ:Real[_,_] <- Σ;
@@ -59,7 +59,7 @@ class TestMultiariateLinearNormalInverseGammaGaussian(A:Real[_,_],
   μ:Random<Real[_]>;
   x:Random<Real[_]>;
   
-  function initialize() {
+  fiber simulate() -> Event {
     σ2 ~ InverseGamma(α, β);
     μ ~ Gaussian(μ_0, Σ*σ2);
     x ~ Gaussian(A*μ + c, σ2);

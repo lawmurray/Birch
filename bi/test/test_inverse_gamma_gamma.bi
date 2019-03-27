@@ -11,14 +11,14 @@ program test_inverse_gamma_gamma(N:Integer <- 10000) {
   /* simulate forward */
   for i:Integer in 1..N {
     m:TestInverseGammaGamma(k, α, β);
-    m.initialize();
+    m.play();
     X1[i,1..2] <- m.forward();
   }
 
   /* simulate backward */
   for i:Integer in 1..N {
     m:TestInverseGammaGamma(k, α, β);
-    m.initialize();
+    m.play();
     X2[i,1..2] <- m.backward();
   }
   
@@ -28,7 +28,7 @@ program test_inverse_gamma_gamma(N:Integer <- 10000) {
   }
 }
 
-class TestInverseGammaGamma(k:Real, α:Real, β:Real) {
+class TestInverseGammaGamma(k:Real, α:Real, β:Real) < Model {
   k:Real <- k;
   α:Real <- α;
   β:Real <- β;
@@ -36,7 +36,7 @@ class TestInverseGammaGamma(k:Real, α:Real, β:Real) {
   θ:Random<Real>;
   x:Random<Real>;
   
-  function initialize() {
+  fiber simulate() -> Event {
     θ ~ InverseGamma(α, β);
     x ~ Gamma(k, θ);
   }

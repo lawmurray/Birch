@@ -45,11 +45,10 @@ class Random<Value> < Expression<Value> {
   }
 
   /**
-   * Attach a distribution to this random variate, and a value for future
-   * use.
+   * Attach a distribution to this random variate, and a future value.
    *
    * - dist: The distribution.
-   * - value: The value.
+   * - value: The future value.
    *
    * The random variate is treated as though a value is yet to be assigned.
    * When a value must be realized, however, that given here will be used. No

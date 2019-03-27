@@ -14,20 +14,7 @@ class ImportanceSampler < Sampler {
   function sample() -> (Model, Real) {
     assert archetype?;
     auto x <- clone<Model>(archetype!);
-    auto f <- x.simulate();
-    auto w <- 0.0;
-    while f? {
-      auto evt <- f!;
-      if evt.isFactor() {
-        w <- w + evt.observe();
-      } else if evt.isRandom() {
-        if evt.hasValue() {
-          w <- w + evt.observe();
-        } else {
-          evt.assume();
-        }
-      }
-    }
+    auto w <- x.play();    
     if verbose {
       stderr.print("log weight: " + w + "\n");
     }

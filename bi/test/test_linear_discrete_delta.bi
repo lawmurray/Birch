@@ -12,16 +12,17 @@ program test_linear_discrete_delta(N:Integer <- 10000) {
   c:Integer <- simulate_uniform_int(0, 100);
  
   /* simulate forward */
-  for i:Integer in 1..N {
+  for auto i in 1..N {
     m:TestLinearDiscreteDelta(a, n, α, β, c);
-    m.initialize(nil);
+    m.play();
     X1[i,1..2] <- m.forward();
   }
 
   /* simulate backward */
-  for i:Integer in 1..N {
+  for auto i in 1..N {
     m:TestLinearDiscreteDelta(a, n, α, β, c);
-    m.initialize(Integer(a*X1[i,2]) + c);
+    m.y <- Integer(a*X1[i,2]) + c;
+    m.play();
     X2[i,1..2] <- m.backward();
   }
   
@@ -32,7 +33,7 @@ program test_linear_discrete_delta(N:Integer <- 10000) {
 }
 
 class TestLinearDiscreteDelta(a:Integer, n:Integer, α:Real, β:Real,
-    c:Integer) {
+    c:Integer) < Model {
   a:Integer <- a;
   n:Integer <- n;
   α:Real <- α;
@@ -43,8 +44,7 @@ class TestLinearDiscreteDelta(a:Integer, n:Integer, α:Real, β:Real,
   x:Random<Integer>;
   y:Random<Integer>;
   
-  function initialize(z:Integer?) {
-    y <- z;
+  fiber simulate() -> Event {
     ρ ~ Beta(α, β);
     x ~ Binomial(n, ρ);
     y ~ Delta(a*x + c);

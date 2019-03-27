@@ -9,16 +9,16 @@ program test_beta_binomial(N:Integer <- 10000) {
   β:Real <- simulate_uniform(0.0, 10.0);
  
   /* simulate forward */
-  for i:Integer in 1..N {
+  for auto i in 1..N {
     m:TestBetaBinomial(n, α, β);
-    m.initialize();
+    m.play();
     X1[i,1..2] <- m.forward();
   }
 
   /* simulate backward */
-  for i:Integer in 1..N {
+  for auto i in 1..N {
     m:TestBetaBinomial(n, α, β);
-    m.initialize();
+    m.play();
     X2[i,1..2] <- m.backward();
   }
   
@@ -28,14 +28,14 @@ program test_beta_binomial(N:Integer <- 10000) {
   }
 }
 
-class TestBetaBinomial(n:Integer, α:Real, β:Real) {
+class TestBetaBinomial(n:Integer, α:Real, β:Real) < Model {
   n:Integer <- n;
   α:Real <- α;
   β:Real <- β;
   ρ:Random<Real>;
   x:Random<Integer>;
   
-  function initialize() {
+  fiber simulate() -> Event {
     ρ ~ Beta(α, β);
     x ~ Binomial(n, ρ);
   }

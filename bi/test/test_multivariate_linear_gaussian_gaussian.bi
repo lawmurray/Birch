@@ -26,14 +26,14 @@ program test_multivariate_linear_gaussian_gaussian(N:Integer <- 10000) {
   /* simulate forward */
   for i:Integer in 1..N {
     m:TestMultivariateLinearGaussianGaussian(A, μ_0, Σ_0, c, Σ_1);
-    m.initialize();
+    m.play();
     X1[i,1..10] <- m.forward();
   }
 
   /* simulate backward */
   for i:Integer in 1..N {
     m:TestMultivariateLinearGaussianGaussian(A, μ_0, Σ_0, c, Σ_1);
-    m.initialize();
+    m.play();
     X2[i,1..10] <- m.backward();
   }
   
@@ -44,7 +44,7 @@ program test_multivariate_linear_gaussian_gaussian(N:Integer <- 10000) {
 }
 
 class TestMultivariateLinearGaussianGaussian(A:Real[_,_], μ_0:Real[_],
-    Σ_0:Real[_,_], c:Real[_], Σ_1:Real[_,_]) {
+    Σ_0:Real[_,_], c:Real[_], Σ_1:Real[_,_]) < Model {
   A:Real[_,_] <- A;
   μ_0:Real[_] <- μ_0;
   Σ_0:Real[_,_] <- Σ_0;
@@ -54,7 +54,7 @@ class TestMultivariateLinearGaussianGaussian(A:Real[_,_], μ_0:Real[_],
   μ_1:Random<Real[_]>;
   x:Random<Real[_]>;
   
-  function initialize() {
+  fiber simulate() -> Event {
     μ_1 ~ Gaussian(μ_0, Σ_0);
     x ~ Gaussian(A*μ_1 + c, Σ_1);
   }

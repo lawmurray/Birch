@@ -8,16 +8,16 @@ program test_gamma_exponential(N:Integer <- 10000) {
   θ:Real <- simulate_uniform(0.0, 10.0);
 
   /* simulate forward */
-  for n:Integer in 1..N {
+  for auto n in 1..N {
     m:TestGammaExponential(k, θ);
-    m.initialize();
+    m.play();
     X1[n,1..2] <- m.forward();
   }
 
   /* simulate backward */
-  for n:Integer in 1..N {
+  for auto n in 1..N {
     m:TestGammaExponential(k, θ);
-    m.initialize();
+    m.play();
     X2[n,1..2] <- m.backward();
   }
 
@@ -27,13 +27,13 @@ program test_gamma_exponential(N:Integer <- 10000) {
   }
 }
 
-class TestGammaExponential(k:Real, θ:Real) {
+class TestGammaExponential(k:Real, θ:Real) < Model {
   k:Real <- k;
   θ:Real <- θ;
   λ:Random<Real>;
   x:Random<Real>;
 
-  function initialize() {
+  fiber simulate() -> Event {
     λ ~ Gamma(k, θ);
     x ~ Exponential(λ);
   }
