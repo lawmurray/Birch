@@ -31,13 +31,12 @@ class Distribution<Value> {
   }
 
   /**
-   * Instantiate the associated delayed random variate by observation.
+   * Instantiate the associated delayed random variate by assignment.
    */
-  function realize(x:Value) -> Real {
+  function realize(x:Value) {
     graft();
-    w:Real <- delay!.realize(x);
+    delay!.realize(x);
     delay <- nil;
-    return w;
   }
 
   /**

@@ -23,19 +23,20 @@ class ReplayHandler < EventHandler {
     if evt.hasValue() {
       ///@todo Check that values match
       return evt.observe();
+    } else if replayEvt? && replayEvt!.hasValue() {
+      if delay {
+        evt.assume(replayEvt!);
+      } else {
+        evt.value(replayEvt!);
+      }
     } else {
       if delay {
         evt.assume();
-        if replayEvt? && replayEvt!.hasValue() {
-          /* still delay sampling, but register the required value for when the
-           * variate is ultimately simulated */
-          evt.value(replayEvt!);
-        }
       } else {
         evt.value();
       }
-      return 0.0;
     }
+    return 0.0;
   }
   
   /**

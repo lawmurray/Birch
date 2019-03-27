@@ -19,8 +19,8 @@ class Random<Value> < Expression<Value> {
    * Value assignment.
    */
   operator <- x:Value {
-    assert !this.dist?;
-    assert !this.x?;
+    assert !hasDistribution();
+    assert !hasValue();
     this.x <- x;
   }
 
@@ -28,55 +28,62 @@ class Random<Value> < Expression<Value> {
    * Optional value assignment.
    */
   operator <- x:Value? {
-    assert !this.dist?;
-    assert !this.x?;
+    assert !hasDistribution();
+    assert !hasValue();
     this.x <- x;
   }
 
   /**
-   * Attach a distribution to this random variable.
+   * Attach a distribution to this random variate.
    */
   function assume(dist:Distribution<Value>) {
-    assert !x?;
-    assert !this.dist?;
+    assert !hasDistribution();
+    assert !hasValue();
     
     dist.associate(this);
     this.dist <- dist;
   }
 
   /**
-   * Get the value of the random variable, forcing realization if necessary.
+   * Attach a distribution to this random variate, and a value for future
+   * use.
+   *
+   * - dist: The distribution.
+   * - value: The value.
+   *
+   * The random variate is treated as though a value is yet to be assigned.
+   * When a value must be realized, however, that given here will be used. No
+   * weight adjustment is made for this. This function is mostly provided for
+   * the purposes of replaying model executions, using e.g. ReplayHandler.
    */
-  function value() -> Value {
-    if !x? {
-      assert dist?;
-      dist!.realize();
-      dist <- nil;
-      assert x?;
-    }
-    return x!;
+  function assume(dist:Distribution<Value>, x:Value) {
+    assume(dist);
+    this.x <- x;
   }
 
   /**
-   * Set the value of the random variable.
-   *
-   * - x: The value.
-   *
-   * Return: The log likelihood.
+   * Get the value of the random variate, forcing realization if necessary.
    */
-  function realize(x:Value) -> Real {
-    assert dist?;
-    w:Real <- dist!.realize(x);
-    dist <- nil;
-    assert this.x?;
-    return w;
+  function value() -> Value {
+    if !hasValue() {
+      assert hasDistribution();
+      if x? {
+        /* future value was provided, use it */
+        dist!.realize(x!);
+      } else {
+        dist!.realize();
+      }
+      dist <- nil;
+      assert hasValue();
+    }
+    return x!;
   }
 
   /**
    * Does this have a value?
    */
   function hasValue() -> Boolean {
-    return x?;
+    return x? && !dist?;
   }
 
   /**
@@ -94,7 +101,7 @@ class Random<Value> < Expression<Value> {
    * Return: the probability mass.
    */
   function pmf(x:Value) -> Real {
-    assert dist?;
+    assert hasDistribution();
     return dist!.pmf(x);
   }
 
@@ -106,7 +113,7 @@ class Random<Value> < Expression<Value> {
    * Return: the probability density.
    */
   function pdf(x:Value) -> Real {
-    assert dist?;
+    assert hasDistribution();
     return dist!.pdf(x);
   }
 
@@ -118,7 +125,7 @@ class Random<Value> < Expression<Value> {
    * Return: the cumulative probability
    */
   function cdf(x:Value) -> Real {
-    assert dist?;
+    assert hasDistribution();
     return dist!.cdf(x);
   }
   
@@ -126,7 +133,7 @@ class Random<Value> < Expression<Value> {
    * Finite lower bound of the support of this node, if any.
    */
   function lower() -> Value? {
-    assert dist?;
+    assert hasDistribution();
     return dist!.lower();
   }
   
@@ -134,13 +141,13 @@ class Random<Value> < Expression<Value> {
    * Finite upper bound of the support of this node, if any.
    */
   function upper() -> Value? {
-    assert dist?;
+    assert hasDistribution();
     return dist!.upper();
   }
 
   function hasDelay() -> Boolean {
-    if (!x?) {
-      assert dist?;
+    if !hasValue() {
+      assert hasDistribution();
       return dist!.delay?;
     } else {
       return false;
@@ -148,8 +155,8 @@ class Random<Value> < Expression<Value> {
   }
 
   function getDelay() -> Delay? {
-    if (!x?) {
-      assert dist?;
+    if !hasValue() {
+      assert hasDistribution();
       return dist!.delay;
     } else {
       return nil;
@@ -157,8 +164,8 @@ class Random<Value> < Expression<Value> {
   }
 
   function graftGaussian() -> DelayGaussian? {
-    if (!x?) {
-      assert dist?;
+    if !hasValue() {
+      assert hasDistribution();
       return dist!.graftGaussian();
     } else {
       return nil;
@@ -166,8 +173,8 @@ class Random<Value> < Expression<Value> {
   }
     
   function graftBeta() -> DelayBeta? {
-    if (!x?) {
-      assert dist?;
+    if !hasValue() {
+      assert hasDistribution();
       return dist!.graftBeta();
     } else {
       return nil;
@@ -175,8 +182,8 @@ class Random<Value> < Expression<Value> {
   }
   
   function graftGamma() -> DelayGamma? {
-    if (!x?) {
-      assert dist?;
+    if !hasValue() {
+      assert hasDistribution();
       return dist!.graftGamma();
     } else {
       return nil;
@@ -184,8 +191,8 @@ class Random<Value> < Expression<Value> {
   }
   
   function graftInverseGamma() -> DelayInverseGamma? {
-    if (!x?) {
-      assert dist?;
+    if !hasValue() {
+      assert hasDistribution();
       return dist!.graftInverseGamma();
     } else {
       return nil;
@@ -194,8 +201,8 @@ class Random<Value> < Expression<Value> {
   
   function graftNormalInverseGamma(σ2:Expression<Real>) ->
       DelayNormalInverseGamma? {
-    if (!x?) {
-      assert dist?;
+    if !hasValue() {
+      assert hasDistribution();
       return dist!.graftNormalInverseGamma(σ2);
     } else {
       return nil;
@@ -203,8 +210,8 @@ class Random<Value> < Expression<Value> {
   }
   
   function graftDirichlet() -> DelayDirichlet? {
-    if (!x?) {
-      assert dist?;
+    if !hasValue() {
+      assert hasDistribution();
       return dist!.graftDirichlet();
     } else {
       return nil;
@@ -212,8 +219,8 @@ class Random<Value> < Expression<Value> {
   }
 
   function graftRestaurant() -> DelayRestaurant? {
-    if (!x?) {
-      assert dist?;
+    if !hasValue() {
+      assert hasDistribution();
       return dist!.graftRestaurant();
     } else {
       return nil;
@@ -221,8 +228,8 @@ class Random<Value> < Expression<Value> {
   }
 
   function graftMultivariateGaussian() -> DelayMultivariateGaussian? {
-    if (!x?) {
-      assert dist?;
+    if !hasValue() {
+      assert hasDistribution();
       return dist!.graftMultivariateGaussian();
     } else {
       return nil;
@@ -231,8 +238,8 @@ class Random<Value> < Expression<Value> {
 
   function graftMultivariateNormalInverseGamma(σ2:Expression<Real>) ->
       DelayMultivariateNormalInverseGamma? {
-    if (!x?) {
-      assert dist?;
+    if !hasValue() {
+      assert hasDistribution();
       return dist!.graftMultivariateNormalInverseGamma(σ2);
     } else {
       return nil;
@@ -240,8 +247,8 @@ class Random<Value> < Expression<Value> {
   }
 
   function graftDiscrete() -> DelayDiscrete? {
-    if (!x?) {
-      assert dist?;
+    if !hasValue() {
+      assert hasDistribution();
       return dist!.graftDiscrete();
     } else {
       return nil;
@@ -249,8 +256,8 @@ class Random<Value> < Expression<Value> {
   }
 
   function graftBoundedDiscrete() -> DelayBoundedDiscrete? {
-    if (!x?) {
-      assert dist?;
+    if !hasValue() {
+      assert hasDistribution();
       return dist!.graftBoundedDiscrete();
     } else {
       return nil;
@@ -258,13 +265,13 @@ class Random<Value> < Expression<Value> {
   }
 
   function read(buffer:Buffer) {
-    assert !this.dist?;
-    assert !this.x?;
+    assert !hasDistribution();
+    assert !hasValue();
     x <- buffer.get(x);
   }
 
   function write(buffer:Buffer) {
-    if (x? || dist?) {
+    if hasValue() || hasDistribution() {
       buffer.set(value());
     } else {
       buffer.setNil();

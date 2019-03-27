@@ -18,7 +18,7 @@ class Delay {
   realized:Boolean <- false;
   
   /**
-   * Realize.
+   * Realize by simulation.
    */
   function realize();
   

@@ -12,33 +12,24 @@ class DelayValue<Value>(x:Random<Value>&) < Delay {
   x:Random<Value>& <- x;
 
   /**
-   * Instantiate the associated random variate, if it exists, by simulation.
+   * Realize by simulation.
    */
   function realize() {
-    y:Random<Value>? <- x;
-    if y? {
-      assert !(y!.x?);
-      y!.x <- simulate();
-      update(y!.x!);
-      realized <- true;
-    }
-    detach();
+    realize(simulate());
   }
 
   /**
-   * Instantiate the associated random variate, if it exists, by observation.
+   * Realize by assignment.
    */
-  function realize(x:Value) -> Real {
-    w:Real <- observe(x);
-    y:Random<Value>? <- this.x;
+  function realize(value:Value) {
+    y:Random<Value>? <- x;
     if y? {
-      assert !(y!.x?);
-      y!.x <- x;
-      update(y!.x!);
+      assert !y!.hasValue();
+      y! <- value;
+      update(y!.value());
       realized <- true;
     }
     detach();
-    return w;
   }
   
   /**

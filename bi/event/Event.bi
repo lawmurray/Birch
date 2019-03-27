@@ -32,17 +32,23 @@ class Event {
   function hasDistribution() -> Boolean;
 
   /**
-   * Enact assume, for a random variable event.
-   */
-  function assume();
-  
-  /**
    * Enact observe, for a factor or random variable event with a value.
    *
    * Returns: the log-weight associated with the event.
    */
   function observe() -> Real;
 
+  /**
+   * Enact assume, for a random variable event.
+   */
+  function assume();
+
+  /**
+   * Enact assume, for a random variable event, where the value, when needed,
+   * is provided by another event.
+   */
+  function assume(evt:Event);
+  
   /**
    * Enact value, for a random variable event.
    */
