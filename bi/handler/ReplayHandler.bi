@@ -10,12 +10,20 @@ class ReplayHandler < Handler {
   replay:List<Event>?;
   
   /**
-   * Get the next event to replay, if any.
+   * Discard events rather than replay them?
+   */
+  discard:Boolean <- false;
+  
+  /**
+   * Get the next event to replay, if any. If the discard flag is set, this
+   * discards the next event and returns `nil`.
    */
   function next() -> Event? {
     evt:Event?;
     if replay? && !(replay!.empty()) {
-      evt <- replay!.front();
+      if !discard {
+        evt <- replay!.front();
+      }
       replay!.popFront();
     }
     return evt;
@@ -35,5 +43,13 @@ class ReplayHandler < Handler {
    */
   function setReplay(replay:List<Event>?) {
     this.replay <- replay;
+  }
+
+  /**
+   * Set the discard flag. When true, events from the trace are discarded
+   * rather than replayed.
+   */
+  function setDiscard(discard:Boolean) {
+    this.discard <- discard;
   }
 }

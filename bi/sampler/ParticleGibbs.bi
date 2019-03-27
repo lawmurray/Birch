@@ -3,26 +3,22 @@
  */
 class ParticleGibbs < ConditionalParticleFilter {  
   function start() {
-    /* Step 1: Gibbs update of the start (= parameters) of the reference
-     * path */
+    /* perform on Gibbs move on the start of the reference path */
+    auto x <- clone<ForwardModel>(archetype!);
+    auto h <- clone<Handler>(x'!.getHandler());
+    x.setHandler(h);
+    h.rewind();
     
-    /* advance through the start (= parameters) with delayed sampling, to
-     * compute the prior distribution */
-    x'.setSkipHandler();
-    x'.start();
+    /* replay the start, but discard the trace so as to re-establish the
+     * prior distribution over the start */
+    h.setDiscard(true);
+    x.start();
+    h.setDiscard(false);
     
-    /* replay the steps (= state) with delayed sampling, so as to compute the
-     * posterior distribution over the start (= parameters) given the steps
-     * (= state) and observations */
-    x.setHandler(clone<Handler>(x'.getHandler()));
+    /* replay the steps, so as to compute the conditional distribution over
+     * the start given the steps */
     for auto t in 1..T {
       x.step();
     }
-    x' <- x;
-    
-    /* Step 2 */
-    x <- clone<ForwardModel>(archetype);
-    x.setHandler(x'.getHandler());
-    x.start();
   }
 }

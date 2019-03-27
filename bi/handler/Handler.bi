@@ -69,7 +69,14 @@ class Handler {
   /**
    * Convenience function equivalent to `this.setReplay(this.takeRecord())`.
    */
-  function replay() {
+  function rewind() {
     setReplay(takeRecord());
+  }
+
+  /**
+   * If this is a replay event handler, set the discard flag.
+   */
+  function setDiscard(discard:Boolean) {
+    assert false;
   }
 }

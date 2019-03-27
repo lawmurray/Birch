@@ -5,8 +5,9 @@ class ConditionalParticleFilter < ParticleFilter {
   function initialize() {
     super.initialize();
     if x'? {
-      x[N] <- clone<ForwardModel>(x'!);
-      x[N].getHandler().replay();
+      auto h <- clone<Handler>(x'!.getHandler());
+      x[N].setHandler(h);
+      h.rewind();
     }
   }
 
