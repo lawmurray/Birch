@@ -2,12 +2,14 @@
  * Conditional particle filter.
  */
 class ConditionalParticleFilter < ParticleFilter {
-  function initialize() {
-    super.initialize();
+  function start() {
+    super.start();
+    
+    /* install a replay handler for the reference particle */
     if x'? {
       auto h <- clone<EventHandler>(x'!.getHandler());
-      x[N].setHandler(h);
       h.rewind();
+      x[N].setHandler(h);
     }
   }
 

@@ -9,6 +9,11 @@ class Random<Value> < Expression<Value> {
    * Value.
    */
   x:Value?;
+  
+  /**
+   * Future value.
+   */
+  future:Value?;
 
   /**
    * Associated distribution.
@@ -48,16 +53,16 @@ class Random<Value> < Expression<Value> {
    * Attach a distribution to this random variate, and a future value.
    *
    * - dist: The distribution.
-   * - value: The future value.
+   * - future: The future value.
    *
-   * The random variate is treated as though a value is yet to be assigned.
-   * When a value must be realized, however, that given here will be used. No
+   * The random variate is treated as though it has no value. When a value
+   * must be realized, however, that future value given here will be used. No
    * weight adjustment is made for this. This function is mostly provided for
    * the purposes of replaying model executions, using e.g. ReplayHandler.
    */
-  function assume(dist:Distribution<Value>, x:Value) {
+  function assume(dist:Distribution<Value>, future:Value) {
     assume(dist);
-    this.x <- x;
+    this.future <- future;
   }
 
   /**
@@ -66,9 +71,10 @@ class Random<Value> < Expression<Value> {
   function value() -> Value {
     if !hasValue() {
       assert hasDistribution();
-      if x? {
+      if future? {
         /* future value was provided, use it */
-        dist!.realize(x!);
+        dist!.realize(future!);
+        future <- nil;
       } else {
         dist!.realize();
       }
@@ -82,7 +88,7 @@ class Random<Value> < Expression<Value> {
    * Does this have a value?
    */
   function hasValue() -> Boolean {
-    return x? && !dist?;
+    return x?;
   }
 
   /**

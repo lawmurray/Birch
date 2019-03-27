@@ -78,10 +78,10 @@ class ParticleFilter < ForwardSampler {
       step();
       reduce();
     }
+    finish();
     if verbose {
       stderr.print(", log weight: " + sum(Z.walk()) + "\n");
     }
-    finish();
     finalize();
     return (x'!, sum(Z.walk()));
   }
@@ -94,13 +94,15 @@ class ParticleFilter < ForwardSampler {
     ess.clear();
     memory.clear();
     elapsed.clear();
-    x1:ForwardModel[N] <- archetype!;
-    parallel for auto n in 1..N {
-      x1[n] <- clone<ForwardModel>(archetype!);
-    }
-    x <- x1;
+
     w <- vector(0.0, N);
     a <- iota(1, N);
+    x1:Vector<ForwardModel>;
+    x1.enlarge(N, archetype!);
+    x <- x1.toArray();
+    parallel for auto n in 1..N {
+      x[n] <- clone<ForwardModel>(x[n]);
+    }
     tic();
   }
    
@@ -117,9 +119,7 @@ class ParticleFilter < ForwardSampler {
    * Step particles.
    */
   function step() {
-    auto x0 <- x;
     parallel for auto n in 1..N {
-      x[n] <- clone<ForwardModel>(x0[a[n]]);
       w[n] <- w[n] + x[n].step();
     }
   }
@@ -165,9 +165,9 @@ class ParticleFilter < ForwardSampler {
   function copy() {
     auto x0 <- x;
     parallel for auto n in 1..N {
-      if n != a[n] {
+      //if a[n] != n {
         x[n] <- clone<ForwardModel>(x0[a[n]]);
-      }
+      //}
       w[n] <- 0.0;
     }
   }

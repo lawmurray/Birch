@@ -81,6 +81,7 @@ class MarkovModel<Parameter,State> < BidirectionalModel {
       auto x <- f!.getPrevious()!.getValue();
       w' <- w' + h.handle(transition(x', x, θ));
     }
+    return w';
   }
 
   function size() -> Integer {
