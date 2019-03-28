@@ -191,7 +191,8 @@ public:
    * Get the raw pointer, lazy cloning if necessary.
    */
   T* get() {
-    if (object) {
+    if (object && object->isFrozen()) {
+      to = to->getForward();
       object = static_cast<T*>(to->get(object.get(), from.get()));
       from = to.get();
       assert(!object->isFrozen());
@@ -212,7 +213,8 @@ public:
    * Map the raw pointer, without lazy cloning.
    */
   const T* pull() {
-    if (object) {
+    if (object && object->isFrozen()) {
+      to = to->pullForward();
       object = static_cast<T*>(to->pull(object.get(), from.get()));
       if (object->getContext() == to.get()) {
         from = to.get();

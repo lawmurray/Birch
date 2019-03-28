@@ -53,17 +53,12 @@ libbirch::LazyAny* libbirch::LazyMemo::get(LazyAny* o, LazyMemo* from) {
   if (this == from) {
     return o;
   } else {
-    auto to = getForward();
-    if (to != this) {
-      return to->get(o, from);
+    o = getParent()->source(o, from);
+    auto result = m.get(o);
+    if (result) {
+      return result;
     } else {
-      o = getParent()->source(o, from);
-      auto result = m.get(o);
-      if (result) {
-        return result;
-      } else {
-        return copy(o);
-      }
+      return copy(o);
     }
   }
 }
@@ -72,17 +67,12 @@ libbirch::LazyAny* libbirch::LazyMemo::pull(LazyAny* o, LazyMemo* from) {
   if (this == from) {
     return o;
   } else {
-    auto to = pullForward();
-    if (to != this) {
-      return to->pull(o, from);
+    o = getParent()->source(o, from);
+    auto result = m.get(o);
+    if (result) {
+      return result;
     } else {
-      o = getParent()->source(o, from);
-      auto result = m.get(o);
-      if (result) {
-        return result;
-      } else {
-        return o;
-      }
+      return o;
     }
   }
 }
