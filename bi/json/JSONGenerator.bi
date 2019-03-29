@@ -17,193 +17,217 @@ class JSONGenerator < Generator {
     yaml_emitter_initialize(&self->emitter);
     yaml_emitter_set_output_file(&self->emitter, file);
     yaml_stream_start_event_initialize(&self->event, YAML_UTF8_ENCODING);
-    if (!yaml_emitter_emit(&self->emitter, &self->event)) {
-      error("generator error");
-    }
+    yaml_emitter_emit(&self->emitter, &self->event);
     yaml_document_start_event_initialize(&self->event, NULL, NULL, NULL, 1);
-    if (!yaml_emitter_emit(&self->emitter, &self->event)) {
-      error("generator error");
-    }
+    yaml_emitter_emit(&self->emitter, &self->event);
     }}
     buffer.value.accept(this);
     cpp{{
     yaml_document_end_event_initialize(&self->event, 1);
-    if (!yaml_emitter_emit(&self->emitter, &self->event)) {
-      error("generator error");
-    }
+    yaml_emitter_emit(&self->emitter, &self->event);
     yaml_stream_end_event_initialize(&self->event);
-    if (!yaml_emitter_emit(&self->emitter, &self->event)) {
-      error("generator error");
-    }
+    yaml_emitter_emit(&self->emitter, &self->event);
     yaml_emitter_delete(&self->emitter);
     }}
     fclose(file);
   }
 
   function visit(value:ObjectValue) {
-    cpp{{
-    if (!yaml_mapping_start_event_initialize(&self->event, NULL, NULL, 1,
-        YAML_FLOW_MAPPING_STYLE)) {
-      error("generator error");
-    }
-    if (!yaml_emitter_emit(&self->emitter, &self->event)) {
-      error("generator error");
-    }
-    }}
+    startMapping();
     auto entry <- value.entries.walk();
     while entry? {
       auto e <- entry!;
-      cpp{{
-      yaml_scalar_event_initialize(&self->event, NULL, NULL,
-          (yaml_char_t*)e->name.c_str(), e->name.length(), 1, 1,
-          YAML_DOUBLE_QUOTED_SCALAR_STYLE);
-      if (!yaml_emitter_emit(&self->emitter, &self->event)) {
-        error("generator error");
-      }
-      }}
+      scalar(e.name);
       e.buffer.value.accept(this);
     }
-    cpp{{
-    if (!yaml_mapping_end_event_initialize(&self->event)) {
-      error("generator error");
-    }
-    if (!yaml_emitter_emit(&self->emitter, &self->event)) {
-      error("generator error");
-    }
-    }}
+    endMapping();
   }
   
   function visit(value:ArrayValue) {
-    cpp{{
-    yaml_sequence_start_event_initialize(&self->event, NULL, NULL, 1,
-        YAML_FLOW_SEQUENCE_STYLE);
-    if (!yaml_emitter_emit(&self->emitter, &self->event)) {
-      error("generator error");
-    }
-    }}
+    startSequence();
     auto element <- value.buffers.walk();
     while element? {
       element!.value.accept(this);
     }
-    cpp{{
-    yaml_sequence_end_event_initialize(&self->event);
-    if (!yaml_emitter_emit(&self->emitter, &self->event)) {
-      error("generator error");
-    }
-    }}    
+    endSequence();
   }
 
   function visit(value:StringValue) {
-    auto v <- value.value;
-    cpp{{
-    yaml_scalar_event_initialize(&self->event, NULL, NULL, (yaml_char_t*)v.c_str(),
-        v.length(), 1, 1, YAML_DOUBLE_QUOTED_SCALAR_STYLE);
-    if (!yaml_emitter_emit(&self->emitter, &self->event)) {
-      error("generator error");
-    }
-    }}
+    scalar(value.value);
   }
 
   function visit(value:RealValue) {
-    auto v <- String(value.value);
-    cpp{{
-    yaml_scalar_event_initialize(&self->event, NULL, NULL, (yaml_char_t*)v.c_str(),
-        v.length(), 1, 1, YAML_PLAIN_SCALAR_STYLE);
-    if (!yaml_emitter_emit(&self->emitter, &self->event)) {
-      error("generator error");
-    }
-    }}
+    scalar(value.value);
   }
 
   function visit(value:IntegerValue) {
-    auto v <- String(value.value);
-    cpp{{
-    yaml_scalar_event_initialize(&self->event, NULL, NULL, (yaml_char_t*)v.c_str(),
-        v.length(), 1, 1, YAML_PLAIN_SCALAR_STYLE);
-    if (!yaml_emitter_emit(&self->emitter, &self->event)) {
-      error("generator error");
-    }
-    }}
+    scalar(value.value);
   }
 
   function visit(value:BooleanValue) {
-    auto v <- String(value.value);
-    cpp{{
-    yaml_scalar_event_initialize(&self->event, NULL, NULL, (yaml_char_t*)v.c_str(),
-        v.length(), 1, 1, YAML_PLAIN_SCALAR_STYLE);
-    if (!yaml_emitter_emit(&self->emitter, &self->event)) {
-      error("generator error");
-    }
-    }}
+    scalar(value.value);
   }
 
   function visit(value:NilValue) {
-    cpp{{
-    yaml_scalar_event_initialize(&self->event, NULL, NULL, (yaml_char_t*)"null",
-        4, 1, 1, YAML_PLAIN_SCALAR_STYLE);
-    if (!yaml_emitter_emit(&self->emitter, &self->event)) {
-      error("generator error");
-    }
-    }}
+    scalar("null");
   }
   
   function visit(value:BooleanVectorValue) {
-    cpp{{
-    yaml_scalar_event_initialize(&self->event, NULL, NULL, (yaml_char_t*)"null",
-        4, 1, 1, YAML_PLAIN_SCALAR_STYLE);
-    if (!yaml_emitter_emit(&self->emitter, &self->event)) {
-      error("generator error");
+    startSequence();
+    auto v <- value.value;
+    for auto i in 1..length(v) {
+      scalar(v[i]);
     }
-    }}
+    endSequence();
   }
 
   function visit(value:IntegerVectorValue) {
-    cpp{{
-    yaml_scalar_event_initialize(&self->event, NULL, NULL, (yaml_char_t*)"null",
-        4, 1, 1, YAML_PLAIN_SCALAR_STYLE);
-    if (!yaml_emitter_emit(&self->emitter, &self->event)) {
-      error("generator error");
+    startSequence();
+    auto v <- value.value;
+    for auto i in 1..length(v) {
+      scalar(v[i]);
     }
-    }}
+    endSequence();
   }
   
   function visit(value:RealVectorValue) {
-    cpp{{
-    yaml_scalar_event_initialize(&self->event, NULL, NULL, (yaml_char_t*)"null",
-        4, 1, 1, YAML_PLAIN_SCALAR_STYLE);
-    if (!yaml_emitter_emit(&self->emitter, &self->event)) {
-      error("generator error");
+    startSequence();
+    auto v <- value.value;
+    for auto i in 1..length(v) {
+      scalar(v[i]);
     }
-    }}
+    endSequence();
   }
   
   function visit(value:BooleanMatrixValue) {
-    cpp{{
-    yaml_scalar_event_initialize(&self->event, NULL, NULL, (yaml_char_t*)"null",
-        4, 1, 1, YAML_PLAIN_SCALAR_STYLE);
-    if (!yaml_emitter_emit(&self->emitter, &self->event)) {
-      error("generator error");
+    auto v <- value.value;
+    auto m <- rows(value);
+    auto n <- columns(value);
+    if m > 0 {
+      startSequence();
+      for auto i in 1..m {
+        if n > 0 {
+          startSequence();
+          for auto j in 1..n {
+            scalar(v[i,j]);
+          }
+          endSequence();
+        }
+      }
+      endSequence();
+    } else {
+      scalar("null");
     }
-    }}
   }
   
   function visit(value:IntegerMatrixValue) {
-    cpp{{
-    yaml_scalar_event_initialize(&self->event, NULL, NULL, (yaml_char_t*)"null",
-        4, 1, 1, YAML_PLAIN_SCALAR_STYLE);
-    if (!yaml_emitter_emit(&self->emitter, &self->event)) {
-      error("generator error");
+    auto v <- value.value;
+    auto m <- rows(value);
+    auto n <- columns(value);
+    if m > 0 {
+      startSequence();
+      for auto i in 1..m {
+        if n > 0 {
+          startSequence();
+          for auto j in 1..n {
+            scalar(v[i,j]);
+          }
+          endSequence();
+        }
+      }
+      endSequence();
+    } else {
+      scalar("null");
     }
-    }}
   }
   
   function visit(value:RealMatrixValue) {
-    cpp{{
-    yaml_scalar_event_initialize(&self->event, NULL, NULL, (yaml_char_t*)"null",
-        4, 1, 1, YAML_PLAIN_SCALAR_STYLE);
-    if (!yaml_emitter_emit(&self->emitter, &self->event)) {
-      error("generator error");
+    auto v <- value.value;
+    auto m <- rows(value);
+    auto n <- columns(value);
+    if m > 0 {
+      startSequence();
+      for auto i in 1..m {
+        if n > 0 {
+          startSequence();
+          for auto j in 1..n {
+            scalar(v[i,j]);
+          }
+          endSequence();
+        }
+      }
+      endSequence();
+    } else {
+      scalar("null");
     }
+  }
+  
+  function startMapping() {
+    cpp{{
+    yaml_mapping_start_event_initialize(&self->event, NULL, NULL, 1,
+        YAML_FLOW_MAPPING_STYLE);
+    yaml_emitter_emit(&self->emitter, &self->event);
+    }}
+  }
+  
+  function endMapping() {
+    cpp{{
+    yaml_mapping_end_event_initialize(&self->event);
+    yaml_emitter_emit(&self->emitter, &self->event);
+    }}
+  }
+  
+  function startSequence() {
+    cpp{{
+    yaml_sequence_start_event_initialize(&self->event, NULL, NULL, 1,
+        YAML_FLOW_SEQUENCE_STYLE);
+    yaml_emitter_emit(&self->emitter, &self->event);
+    }}
+  }
+  
+  function endSequence() {
+    cpp{{
+    yaml_sequence_end_event_initialize(&self->event);
+    yaml_emitter_emit(&self->emitter, &self->event);
+    }}    
+  }
+  
+  function scalar(x:Boolean) {
+    auto value <- String(x);
+    cpp{{
+    yaml_scalar_event_initialize(&self->event, NULL, NULL,
+        (yaml_char_t*)value.c_str(), value.length(), 1, 1,
+        YAML_PLAIN_SCALAR_STYLE);
+    yaml_emitter_emit(&self->emitter, &self->event);
+    }}
+  }
+
+  function scalar(x:Integer) {
+    auto value <- String(x);
+    cpp{{
+    yaml_scalar_event_initialize(&self->event, NULL, NULL,
+        (yaml_char_t*)value.c_str(), value.length(), 1, 1,
+        YAML_PLAIN_SCALAR_STYLE);
+    yaml_emitter_emit(&self->emitter, &self->event);
+    }}
+  }
+
+  function scalar(x:Real) {
+    auto value <- String(x);
+    cpp{{
+    yaml_scalar_event_initialize(&self->event, NULL, NULL,
+        (yaml_char_t*)value.c_str(), value.length(), 1, 1,
+        YAML_PLAIN_SCALAR_STYLE);
+    yaml_emitter_emit(&self->emitter, &self->event);
+    }}
+  }
+
+  function scalar(value:String) {
+    cpp{{
+    yaml_scalar_event_initialize(&self->event, NULL, NULL,
+        (yaml_char_t*)value.c_str(), value.length(), 1, 1,
+        YAML_DOUBLE_QUOTED_SCALAR_STYLE);
+    yaml_emitter_emit(&self->emitter, &self->event);
     }}
   }
 }
