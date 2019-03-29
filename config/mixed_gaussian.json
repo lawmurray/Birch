@@ -1,10 +1,10 @@
 {
   "model": {
-    "class": "MixedGaussianModel",
-    "nsteps": 20
+    "class": "MixedGaussianModel"
   },
   "sampler": {
     "nsamples": 10,
-    "nparticles": 128
+    "nparticles": 128,
+    "nsteps": 20
   }
 }
