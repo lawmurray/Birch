@@ -7,7 +7,7 @@ class ConditionalParticleFilter < ParticleFilter {
     
     /* install a replay handler for the reference particle */
     if x'? {
-      auto h <- clone<EventHandler>(x'!.getHandler());
+      auto h <- x'!.getHandler();
       h.rewind();
       x[N].setHandler(h);
     }

@@ -83,6 +83,13 @@ class EventHandler {
   }
 
   /**
+   * If this is a trace event handler, set the pause flag.
+   */
+  function setPause(pause:Boolean) {
+    assert false;
+  }
+
+  /**
    * If this is a replay event handler, clear and return the replay trace.
    */
   function takeReplay() -> List<Event>? {
