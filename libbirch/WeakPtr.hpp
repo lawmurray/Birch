@@ -155,7 +155,7 @@ public:
    */
   T* operator->() const {
     assert(ptr);
-    assert(ptr->numShared() > 0);
+    assert(ptr->numWeak() > 0);
     return ptr;
   }
 
