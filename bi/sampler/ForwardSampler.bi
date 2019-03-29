@@ -17,6 +17,7 @@ class ForwardSampler < Sampler {
     if !this.archetype? {
       error("model class must be a subtype of ForwardModel to use ForwardSampler.");
     }
+    T <- this.archetype!.size();
   }
 
   function read(buffer:Buffer) {

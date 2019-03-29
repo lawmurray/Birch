@@ -57,7 +57,7 @@ class ParticleFilter < ForwardSampler {
 
   function sample() -> (Model, Real) {
     initialize();
-    if verbose {
+    if verbose && T > 0 {
       stderr.print("steps:");
     }
     start();
@@ -75,7 +75,10 @@ class ParticleFilter < ForwardSampler {
     }
     finish();
     if verbose {
-      stderr.print(", log weight: " + sum(Z.walk()) + "\n");
+      if T > 0 {
+        stderr.print(", ");
+      }
+      stderr.print("log weight: " + sum(Z.walk()) + "\n");
     }
     finalize();
     return (x'!, sum(Z.walk()));
@@ -184,11 +187,6 @@ class ParticleFilter < ForwardSampler {
    */
   function finalize() {
     //
-  }
-
-  function setArchetype(a:Model) {
-    super.setArchetype(a);
-    T <- archetype!.size();
   }
 
   function read(buffer:Buffer) {

@@ -62,6 +62,13 @@ program sample(
   }
   assert m?;
 
+  /* input */
+  inputBuffer:MemoryBuffer;
+  if input? {
+    inputBuffer.load(input!);
+    inputBuffer.get(m!);
+  }
+
   /* sampler */
   s:Sampler?;
   samplerClass:String?;
@@ -91,13 +98,6 @@ program sample(
     configBuffer.get("sampler", s!);
   }
   assert s?;
-  
-  /* input */
-  inputBuffer:MemoryBuffer;
-  if input? {
-    inputBuffer.load(input!);
-    inputBuffer.get(m!);
-  }
   
   /* output */
   outputBuffer:MemoryBuffer;
