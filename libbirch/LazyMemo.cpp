@@ -57,6 +57,8 @@ libbirch::LazyAny* libbirch::LazyMemo::get(LazyAny* o, LazyMemo* from) {
     auto result = m.get(o);
     if (result) {
       return result;
+    } else if (!o->isFrozen()) {
+      return o;
     } else {
       return copy(o);
     }
