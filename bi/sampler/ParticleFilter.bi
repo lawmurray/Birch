@@ -26,12 +26,7 @@ class ParticleFilter < ForwardSampler {
    * Number of particles.
    */
   N:Integer <- 1;
-  
-  /**
-   * Number of steps.
-   */
-  T:Integer <- 1;
-  
+    
   /**
    * Threshold for resampling. Resampling is performed whenever the
    * effective sample size, as a proportion of `N`, drops below this

@@ -86,6 +86,7 @@ program sample(
   if !s? {
     error(samplerClass! + " is not a subtype of Sampler.");
   }
+  s!.setArchetype(m!);
   if config? {
     configBuffer.get("sampler", s!);
   }
@@ -107,7 +108,6 @@ program sample(
   }
   
   /* sample */
-  s!.setArchetype(m!);
   for auto n in 1..s!.nsamples {  
     m1:Model?;
     w1:Real;

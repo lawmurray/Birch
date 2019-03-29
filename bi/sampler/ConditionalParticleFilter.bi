@@ -25,9 +25,9 @@ class ConditionalParticleFilter < ParticleFilter {
     if x'? {
       /* temporarily take the replay trace out of the reference particle so
        * as not to copy it into offspring */
-      auto h <- x[N].getHandler().takeReplay();
+      auto replay <- x[N].getHandler().takeReplay();
       super.copy();
-      x[N].getHandler().setReplay(h);
+      x[N].getHandler().setReplay(replay);
     } else {
       super.copy();
     }

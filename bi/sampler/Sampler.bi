@@ -11,14 +11,6 @@ class Sampler {
    * Number of samples to draw.
    */
   nsamples:Integer <- 1;
-
-  /**
-   * Number of steps for which to run the model. The interpretation of
-   * this is model-dependent, e.g. for MarkovModel or HiddenSpaceModel it is
-   * the number of states, in other cases it may be the number of
-   * observations. If not given, the model to run to termination.
-   */
-  nsteps:Integer?;
   
   /**
    * Enable verbose reporting on the terminal?
@@ -42,20 +34,12 @@ class Sampler {
   function setArchetype(m:Model);
 
   function read(buffer:Buffer) {
-    auto nsamples1 <- buffer.get("nsamples", nsamples);
-    if nsamples1? {
-      nsamples <- nsamples1!;
-    }
-    nsteps <- buffer.getInteger("nsteps");
-    auto verbose1 <- buffer.get("verbose", verbose);
-    if verbose1? {
-      verbose <- verbose1!;
-    }
+    nsamples <-? buffer.get("nsamples", nsamples);
+    verbose <-? buffer.get("verbose", verbose);
   }
   
   function write(buffer:Buffer) {
     buffer.set("nsamples", nsamples);
-    buffer.set("nsteps", nsteps);
     buffer.set("verbose", verbose);
     configWrite(buffer);
   }

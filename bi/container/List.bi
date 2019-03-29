@@ -135,12 +135,11 @@ class List<Type> {
   function popFront() {
     assert !empty();
     
-    head:ListNode<Type>? <- this.head;
     assert head?;
-    this.head <- head!.popFront();
+    head <- head!.popFront();
     count <- count - 1;
     if count <= 1 {
-      tail <- this.head;
+      tail <- head;
     }
     
     assert this.count == 0 || (this.head? && this.tail?);
