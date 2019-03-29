@@ -27,7 +27,7 @@ libbirch::EagerAny* libbirch::EagerMemo::copy(EagerAny* o) {
   assert(uninit == alloc);  // should be no thread contention here
   SwapClone swapClone(true);
   SwapContext swapContext(this);
-  auto result = o->clone(uninit);
+  auto result = o->clone_(uninit);
   assert(result == uninit);// clone should be in the allocation
   o->incMemo();// uninitialized_put(), so responsible for ref counts
   result->incShared();

@@ -84,6 +84,12 @@ public:
   LazyAny* pull(LazyAny* o, LazyMemo* from);
 
   /**
+   * Map an object that may not yet have been cloned, cloning it and all
+   * children if necessary. This can be used to finish a lazy clone.
+   */
+  LazyAny* finish(LazyAny* o, LazyMemo* from);
+
+  /**
    * Deep mapping of an object through ancestor memos up to the current memo,
    * witout any cloning; get() or pull() should be called on the result to
    * map through this memo.

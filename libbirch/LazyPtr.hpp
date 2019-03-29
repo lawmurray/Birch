@@ -13,8 +13,6 @@
 
 #include <tuple>
 
-#include <iostream>
-
 namespace libbirch {
 template<class T> class Optional;
 
@@ -63,23 +61,19 @@ public:
   /**
    * Copy constructor.
    */
-  LazyPtr(const LazyPtr<P>& o) {
+  LazyPtr(const LazyPtr<P>& o) :
+      object(o.object),
+      from(o.from),
+      to(o.to) {
     if (cloneUnderway) {
-      auto context = o.to.get();
-      if (o.object && currentContext != context &&
-          !currentContext->hasAncestor(context)) {
-        object = static_cast<T*>(context->get(o.object.get(), o.from.get()));
-        from = currentContext;
-      } else {
-        object = o.object;
-        from = o.from;
+      to = currentContext;
+      if (o.object && !to->hasAncestor(o.to.get())) {
+        object = o.finish();
+        from = currentContext->getParent();
+        finish();
+      } else if (finishUnderway) {
+        finish();
       }
-      //to = currentContext;
-      // ^ default constructor of ContextPtr has set this already
-    } else {
-      object = o.object;
-      from = o.from;
-      to = o.to;
     }
   }
 
@@ -235,6 +229,28 @@ public:
     /* even in a const context, do want to update the pointer through lazy
      * deep clone mechanisms */
     return const_cast<LazyPtr<P>*>(this)->pull();
+  }
+
+  /**
+   * Finishing any incomplete lazy deep clones and return the raw pointer.
+   * This does not forward.
+   */
+  T* finish() {
+    if (object) {
+      object = static_cast<T*>(to->finish(object.get(), from.get()));
+      from = to.get();
+    }
+    return object.get();
+  }
+
+  /**
+   * Finishing any incomplete lazy deep clones and return the raw pointer.
+   * This does not forward.
+   */
+  T* finish() const {
+    /* even in a const context, do want to update the pointer through lazy
+     * deep clone mechanisms */
+    return const_cast<LazyPtr<P>*>(this)->finish();
   }
 
   /**
