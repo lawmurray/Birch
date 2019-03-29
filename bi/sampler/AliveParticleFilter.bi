@@ -31,7 +31,6 @@ class AliveParticleFilter < ParticleFilter {
     auto x0 <- x;
     auto w0 <- w;
     parallel for auto n in 1..N {
-      x[n] <- clone<ForwardModel>(x0[a[n]]);
       w[n] <- x[n].step();
       cpp {{
       ++P;
