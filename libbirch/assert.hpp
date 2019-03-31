@@ -49,6 +49,6 @@
 #define libbirch_error_msg_(cond, msg) \
   if (!(cond)) { \
     std::stringstream buf_; \
-    buf << msg; \
+    buf_ << msg; \
     libbirch::abort(buf_.str()); \
   }
