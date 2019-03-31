@@ -35,30 +35,16 @@ function Boolean(x:String?) -> Boolean? {
   }
 }
 
-/**
- * Logical *and*.
+/*
+ * Operators
  */
 operator (x:Boolean && y:Boolean) -> Boolean;
-
-/**
- * Logical *and*.
- */
 operator (x:Boolean * y:Boolean) -> Boolean;
-
-/**
- * Logical *or*.
- */
 operator (x:Boolean || y:Boolean) -> Boolean;
-
-/**
- * Logical *or*.
- */
 operator (x:Boolean + y:Boolean) -> Boolean;
-
-/**
- * Logical *not*.
- */
 operator (!x:Boolean) -> Boolean;
+operator (x:Boolean == y:Boolean) -> Boolean;
+operator (x:Boolean != y:Boolean) -> Boolean;
 
 /**
  * Maximum of two values (logical *or*).
