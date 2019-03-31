@@ -91,10 +91,7 @@ public:
    * Destructor.
    */
   ~SharedPtr() {
-    if (ptr) {
-      ptr->decShared();
-    }
-    ptr = nullptr;
+    release();
   }
 
   /**
@@ -108,6 +105,7 @@ public:
       auto old = ptr;
       ptr = o.ptr;
       if (old) {
+        old->onDecShared();
         old->decShared();
       }
     }
@@ -136,6 +134,17 @@ public:
   const T* pull() const {
     assert(!ptr || ptr->numShared() > 0);
     return ptr;
+  }
+
+  /**
+   * Release.
+   */
+  void release() {
+    if (ptr) {
+      ptr->onDecShared();
+      ptr->decShared();
+    }
+    ptr = nullptr;
   }
 
   /**

@@ -94,10 +94,7 @@ public:
    * Destructor.
    */
   ~WeakPtr() {
-    if (ptr) {
-      ptr->decWeak();
-    }
-    ptr = nullptr;
+    release();
   }
 
   /**
@@ -139,6 +136,16 @@ public:
   const T* pull() const {
     assert(!ptr || ptr->numWeak() > 0);
     return ptr;
+  }
+
+  /**
+   * Release.
+   */
+  void release() {
+    if (ptr) {
+      ptr->decShared();
+    }
+    ptr = nullptr;
   }
 
   /**

@@ -163,7 +163,7 @@ private:
   /**
    * The memo, if it is difference to context, otherwise `nullptr`.
    */
-  SharedPtr<Memo> memo;
+  SharedPtr<LazyMemo> memo;
 
   /**
    * The owning context. This is the context in which the pointer itself was
@@ -173,6 +173,6 @@ private:
    * It is sufficient to use InitPtr instead of WeakPtr, as a WeakPtr to the
    * context should exist elsewhere.
    */
-  InitPtr<Memo> context;
+  InitPtr<LazyMemo> context;
 };
 }

@@ -50,6 +50,16 @@ public:
   bool hasAncestor(LazyMemo* memo);
 
   /**
+   * Is there a parent memo?
+   */
+  bool hasParent() const;
+
+  /**
+   * Get the parent memo.
+   */
+  LazyMemo* getParent() const;
+
+  /**
    * Fork to create a new child memo for cloning.
    *
    * @return The clone memo.
@@ -60,16 +70,6 @@ public:
    * Run garbage collection sweep on this memo and all ancestors.
    */
   void clean();
-
-  /**
-   * Is there a parent memo?
-   */
-  bool hasParent() const;
-
-  /**
-   * Get the parent memo.
-   */
-  LazyMemo* getParent() const;
 
   /**
    * Map an object that may not yet have been cloned, cloning it if
@@ -117,6 +117,18 @@ public:
    */
   LazyMemo* pullForward();
 
+  /**
+   * Break cycles that occur in the memo ancestry tree. This should be called
+   * on the memo just before its shared reference count is decremented, and
+   * must be done manually. The issue is that memos keep a shared pointer
+   * to their parents, but also, when frozen, a shared pointer to one of
+   * their children (its forwarding memo). This checks if the only remaining
+   * shared pointer to this memo is that held by its forwarding memo, and if
+   * so deletes the shared reference to that forwarding memo to break the
+   * cycle, as it will no longer be required anyway.
+   */
+  void onDecShared();
+
 protected:
   virtual void doFreeze_();
 
@@ -150,14 +162,6 @@ private:
 };
 }
 
-inline libbirch::LazyMemo* libbirch::LazyMemo::fork() {
-  return create_(this);
-}
-
-inline void libbirch::LazyMemo::clean() {
-  m.clean();
-}
-
 inline bool libbirch::LazyMemo::hasParent() const {
   return parent;
 }
@@ -165,6 +169,14 @@ inline bool libbirch::LazyMemo::hasParent() const {
 inline libbirch::LazyMemo* libbirch::LazyMemo::getParent() const {
   assert(parent);
   return parent.get();
+}
+
+inline libbirch::LazyMemo* libbirch::LazyMemo::fork() {
+  return create_(this);
+}
+
+inline void libbirch::LazyMemo::clean() {
+  m.clean();
 }
 
 inline void libbirch::LazyMemo::doFreeze_() {

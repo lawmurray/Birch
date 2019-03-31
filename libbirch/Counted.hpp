@@ -156,6 +156,15 @@ public:
    */
   void freeze();
 
+  /**
+   * Do any pre-processing necessary before the shared count is decremented.
+   * This is used by e.g. LazyMemo to break a potential reference cycle that
+   * may prevent garbage collection.
+   */
+  void onDecShared() {
+    //
+  }
+
 protected:
   /**
    * Perform the actual freeze of the object. This is overwritten by derived

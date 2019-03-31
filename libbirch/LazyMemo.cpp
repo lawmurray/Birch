@@ -22,9 +22,9 @@ libbirch::LazyMemo::LazyMemo(LazyMemo* parent) :
 }
 
 libbirch::LazyMemo::~LazyMemo() {
-  LazyMemo* forward = this->forward.load(std::memory_order_relaxed);
-  if (forward) {
-    forward->decShared();
+  auto forward1 = this->forward.load(std::memory_order_relaxed);
+  if (forward1) {
+    forward1->decShared();
   }
 }
 
@@ -149,19 +149,19 @@ libbirch::LazyAny* libbirch::LazyMemo::copy(LazyAny* o) {
 
 libbirch::LazyMemo* libbirch::LazyMemo::getForward() {
   if (isFrozen()) {
-    auto forward = this->forward.load(std::memory_order_relaxed);
-    if (!forward) {
-      auto forward1 = this->create_(this);
-      forward1->incShared();
-      if (this->forward.compare_exchange_strong(forward, forward1,
+    auto forward1 = forward.load(std::memory_order_relaxed);
+    if (!forward1) {
+      auto forward2 = this->create_(this);
+      forward2->incShared();
+      if (this->forward.compare_exchange_strong(forward1, forward2,
           std::memory_order_relaxed)) {
-        return forward1;
+        return forward2;
       } else {
         /* beaten by another thread */
-        forward1->decShared();
+        forward2->decShared();
       }
     }
-    return forward->getForward();
+    return forward1->getForward();
   } else {
     return this;
   }
@@ -169,12 +169,24 @@ libbirch::LazyMemo* libbirch::LazyMemo::getForward() {
 
 libbirch::LazyMemo* libbirch::LazyMemo::pullForward() {
   if (isFrozen()) {
-    LazyMemo* forward = this->forward.load(std::memory_order_relaxed);
-    if (forward) {
-      return forward->pullForward();
+    auto forward1 = forward.load(std::memory_order_relaxed);
+    if (forward1) {
+      return forward1->pullForward();
     }
   }
   return this;
+}
+
+void libbirch::LazyMemo::onDecShared() {
+  auto forward1 = forward.load(std::memory_order_relaxed);
+  if (forward1 && numShared() == 2) {
+    /* the only shared pointers to this memo are that which is about to be
+     * released, and in the forwarding memo; break the reference cycle with
+     * the forwarding memo */
+    if (forward.compare_exchange_strong(forward1, nullptr)) {
+      forward1->decShared();
+    }
+  }
 }
 
 #endif
