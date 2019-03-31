@@ -104,14 +104,16 @@ class MemoryBuffer < Buffer {
     return value.getRealMatrix();
   }
 
-  function setObject() {
+  function setObject() -> Buffer {
     v:ObjectValue;
     this.value <- v;
+    return this;
   }
 
-  function setArray() {
+  function setArray() -> Buffer {
     v:ArrayValue;
     this.value <- v;
+    return this;
   }
   
   function setNil() {

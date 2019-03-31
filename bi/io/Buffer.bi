@@ -616,12 +616,12 @@ class Buffer {
   /**
    * Set this as an object.
    */
-  function setObject();
+  function setObject() -> Buffer;
   
   /**
    * Set this as an array.
    */
-  function setArray();
+  function setArray() -> Buffer;
 
   /**
    * Set this as nil.
@@ -703,8 +703,8 @@ class Buffer {
    *
    * - name: Name of the child.
    */
-  function setObject(name:String) {
-    setChild(name).setObject();
+  function setObject(name:String) -> Buffer {
+    return setChild(name).setObject();
   }
   
   /**
@@ -712,8 +712,8 @@ class Buffer {
    *
    * - name: Name of the child.
    */
-  function setArray(name:String) {
-    setChild(name).setArray();
+  function setArray(name:String) -> Buffer {
+    return setChild(name).setArray();
   }
 
   /**
