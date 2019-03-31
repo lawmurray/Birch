@@ -272,6 +272,9 @@ bi::Expression* bi::Resolver::modify(LocalVariable* o) {
   if (!o->brackets->isEmpty()) {
     o->type = new ArrayType(o->type, o->brackets->width(), o->brackets->loc);
   }
+  for (auto iter : *o->brackets) {
+    checkInteger(iter);
+  }
   if (!o->value->isEmpty() && !(o->value->type->definitely(*o->type) ||
       o->value->type->definitely(*o->type->element()))) {
     throw InitialValueException(o);
@@ -458,6 +461,9 @@ bi::Statement* bi::Resolver::modify(GlobalVariable* o) {
     scopes.back()->add(o);
   } else if (stage == RESOLVER_SOURCE) {
     o->brackets = o->brackets->accept(this);
+    for (auto iter : *o->brackets) {
+      checkInteger(iter);
+    }
     o->args = o->args->accept(this);
     o->value = o->value->accept(this);
     if (o->has(AUTO)) {
@@ -490,6 +496,9 @@ bi::Statement* bi::Resolver::modify(MemberVariable* o) {
   } else if (stage == RESOLVER_SOURCE) {
     scopes.push_back(classes.back()->initScope);
     o->brackets = o->brackets->accept(this);
+    for (auto iter : *o->brackets) {
+      checkInteger(iter);
+    }
     o->args = o->args->accept(this);
     o->value = o->value->accept(this);
     if (o->has(AUTO)) {
