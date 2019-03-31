@@ -75,10 +75,13 @@ void bi::poset<T,Compare>::add_vertex(T v) {
   children(v, children1);
 
   if (parents1.empty()) {
-    roots.insert(v);
+    roots.push_back(v);
   }
   for (auto child : children1) {
-    roots.erase(child);
+    auto iter = std::find(roots.begin(), roots.end(), child);
+    if (iter != roots.end()) {
+      roots.erase(iter);
+    }
   }
 }
 

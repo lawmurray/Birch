@@ -60,10 +60,6 @@ public:
    *
    * @param v The value.
    * @param[out] matches Container to hold matches.
-   *
-   * @p matches may contain duplicates if the container type permits. It is
-   * recommended that a container that does not permit duplicates, such as
-   * std::set.
    */
   template<class Comparable, class Container>
   void match(Comparable v, Container& matches);
@@ -164,8 +160,11 @@ private:
 
   /**
    * Root vertices.
+   *
+   * Use std::list, not std::set, to ensure that sort order is consistent
+   * across runs.
    */
-  std::set<T> roots;
+  std::list<T> roots;
 
   /**
    * Vertices in topological order.
