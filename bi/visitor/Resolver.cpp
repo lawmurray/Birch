@@ -260,7 +260,11 @@ bi::Expression* bi::Resolver::modify(LocalVariable* o) {
   Modifier::modify(o);
   if (o->has(AUTO)) {
     assert(!o->value->isEmpty());
-    o->type = o->value->type;
+    if (!o->value->type->isEmpty()) {
+      o->type = o->value->type;
+    } else {
+      throw InitialValueException(o);
+    }
   }
   if (o->needsConstruction()) {
     o->type->resolveConstructor(o);
@@ -458,7 +462,11 @@ bi::Statement* bi::Resolver::modify(GlobalVariable* o) {
     o->value = o->value->accept(this);
     if (o->has(AUTO)) {
       assert(!o->value->isEmpty());
-      o->type = o->value->type;
+      if (!o->value->type->isEmpty()) {
+        o->type = o->value->type;
+      } else {
+        throw InitialValueException(o);
+      }
     }
     if (o->needsConstruction()) {
       o->type->resolveConstructor(o);
@@ -486,7 +494,11 @@ bi::Statement* bi::Resolver::modify(MemberVariable* o) {
     o->value = o->value->accept(this);
     if (o->has(AUTO)) {
       assert(!o->value->isEmpty());
-      o->type = o->value->type;
+      if (!o->value->type->isEmpty()) {
+        o->type = o->value->type;
+      } else {
+        throw InitialValueException(o);
+      }
     }
     scopes.pop_back();
     if (o->needsConstruction()) {

@@ -43,7 +43,11 @@ bi::InitialValueException::InitialValueException(const ParameterType* o) {
   if (o->value->loc) {
     buf << o->value->loc;
   }
-  buf << "note: initial value type is\n";
-  buf << o->value->type << '\n';
+  if (o->value->type->isEmpty()) {
+    buf << "note: initial value type is empty\n";
+  } else {
+    buf << "note: initial value type is\n";
+    buf << o->value->type << '\n';
+  }
   msg = base.str();
 }
