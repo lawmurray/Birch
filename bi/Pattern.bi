@@ -8,21 +8,21 @@ class Pattern {
 
   function addColorStopRGB(offset:Real, red:Real, green:Real, blue:Real) {
     cpp{{
-    cairo_pattern_add_color_stop_rgb(pattern, offset, red, green, blue);
+    cairo_pattern_add_color_stop_rgb(self->pattern, offset, red, green, blue);
     }}
   }
 
   function addColorStopRGBA(offset:Real, red:Real, green:Real, blue:Real,
       alpha:Real) {
     cpp{{
-    cairo_pattern_add_color_stop_rgba(pattern, offset, red, green, blue,
+    cairo_pattern_add_color_stop_rgba(self->pattern, offset, red, green, blue,
         alpha);
     }}
   }
   
   function destroy() {
     cpp{{
-    cairo_pattern_destroy(pattern);
+    cairo_pattern_destroy(self->pattern);
     }}
   }
 }
