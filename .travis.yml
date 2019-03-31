@@ -10,6 +10,7 @@ matrix:
         - flex
         - bison
         - eigen
+        - libyaml
         - libomp
         - sqlite3
   - os: linux
@@ -22,15 +23,16 @@ matrix:
         - libtool
         - flex
         - bison
+        - libyaml-dev
         - libeigen3-dev
         - libboost-all-dev
         - libsqlite3-dev
 before_install:
 - git clone "https://github.com/lawmurray/Birch.git" || cd .
-- cd Birch && git pull && git checkout master && ./autogen.sh && ./configure INSTALL="install
+- cd Birch && git pull && git checkout pgibbs && ./autogen.sh && ./configure INSTALL="install
   -p" && make -j 2 && sudo make install && cd ..
 - git clone "https://github.com/lawmurray/Birch.Standard.git" || cd .
-- cd Birch.Standard && git pull && git checkout master && birch build --enable-unity
+- cd Birch.Standard && git pull && git checkout pgibbs && birch build --enable-unity
   && sudo birch install --enable-unity && cd ..
 script:
 - birch build --enable-unity && sudo birch install --enable-unity
