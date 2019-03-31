@@ -143,7 +143,7 @@ public:
    */
   void release() {
     if (ptr) {
-      ptr->decShared();
+      ptr->decWeak();
     }
     ptr = nullptr;
   }
