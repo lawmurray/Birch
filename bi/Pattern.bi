@@ -8,15 +8,15 @@ class Pattern {
 
   function addColorStopRGB(offset:Real, red:Real, green:Real, blue:Real) {
     cpp{{
-    cairo_pattern_add_color_stop_rgb(pattern, offset_, red_, green_, blue_);
+    cairo_pattern_add_color_stop_rgb(pattern, offset, red, green, blue);
     }}
   }
 
   function addColorStopRGBA(offset:Real, red:Real, green:Real, blue:Real,
       alpha:Real) {
     cpp{{
-    cairo_pattern_add_color_stop_rgba(pattern, offset_, red_, green_, blue_,
-        alpha_);
+    cairo_pattern_add_color_stop_rgba(pattern, offset, red, green, blue,
+        alpha);
     }}
   }
   
@@ -30,7 +30,7 @@ class Pattern {
 function createRGB(red:Real, green:Real, blue:Real) -> Pattern {
   result:Pattern;
   cpp{{
-  result_->pattern = cairo_pattern_create_rgb(red_, green_, blue_);
+  result->pattern = cairo_pattern_create_rgb(red, green, blue);
   }}
   return result;
 }
@@ -38,7 +38,7 @@ function createRGB(red:Real, green:Real, blue:Real) -> Pattern {
 function createRGBA(red:Real, green:Real, blue:Real, alpha:Real) -> Pattern {
   result:Pattern;
   cpp{{
-  result_->pattern = cairo_pattern_create_rgba(red_, green_, blue_, alpha_);
+  result->pattern = cairo_pattern_create_rgba(red, green, blue, alpha);
   }}
   return result;
 }
@@ -46,7 +46,7 @@ function createRGBA(red:Real, green:Real, blue:Real, alpha:Real) -> Pattern {
 function createLinear(x0:Real, y0:Real, x1:Real, y1:Real) -> Pattern {
   result:Pattern;
   cpp{{
-  result_->pattern = cairo_pattern_create_linear(x0_, y0_, x1_, y1_);
+  result->pattern = cairo_pattern_create_linear(x0, y0, x1, y1);
   }}
   return result;
 }
@@ -55,8 +55,8 @@ function createRadial(cx0:Real, cy0:Real, radius0:Real, cx1:Real, cy1:Real,
     radius1:Real) -> Pattern {
   result:Pattern;
   cpp{{
-  result_->pattern = cairo_pattern_create_radial(cx0_, cy0_, radius0_, cx1_,
-      cy1_, radius1_);
+  result->pattern = cairo_pattern_create_radial(cx0, cy0, radius0, cx1,
+      cy1, radius1);
   }}
   return result;
 }
