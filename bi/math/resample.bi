@@ -59,23 +59,33 @@ function multinomial_conditional_ancestors(w:Real[_]) -> Integer[_] {
 }
 
 /**
+ * Sample a single ancestor for a cumulative weight vector.
+ */
+function cumulative_ancestor(W:Real[_]) -> Integer {
+  N:Integer <- length(W);
+  u:Real;
+  n:Integer;
+
+  assert W[N] > 0.0;
+  u <- simulate_uniform(0.0, W[N]);
+  n <- 1;
+  while (W[n] < u) {
+    n <- n + 1;
+  }
+  return n;
+}
+
+/**
  * Sample a single ancestor for a log-weight vector. If the sum of
  * weights is zero, returns zero.
  */
 function ancestor(w:Real[_]) -> Integer {
   N:Integer <- length(w);
   W:Real[N];
-  u:Real;
-  n:Integer;
-  
+
   W <- cumulative_weights(w);
   if (W[N] > 0.0) {
-    u <- simulate_uniform(0.0, W[N]);
-    n <- 1;
-    while (W[n] < u) {
-      n <- n + 1;
-    }
-    return n;
+    return cumulative_ancestor(W);
   } else {
     return 0;
   }

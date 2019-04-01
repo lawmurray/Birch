@@ -16,7 +16,16 @@ class AliveParticleFilter < ParticleFilter {
     P.clear();
   }
 
-  function propagate() -> Boolean {          
+  function step() -> Boolean {
+    r.pushBack(true);
+    auto continue <- propagate();
+    if continue {
+      reduce();
+    }
+    return continue;
+  }
+
+  function propagate() -> Boolean {
     /* as `parallel for` is used below, an atomic is necessary to accumulate
      * the total number of propagations; nested C++ is required for this at
      * this stage */
@@ -29,7 +38,9 @@ class AliveParticleFilter < ParticleFilter {
      * `nparticles` proposals are drawn using the standard resampler; as each
      * is rejected it is replaced with a categorical draw until acceptance */  
     auto f0 <- f;
-    auto w0 <- w;
+    auto W0 <- cumulative_weights(w);
+    a <- cumulative_offspring_to_ancestors(systematic_cumulative_offspring(W0));
+    w <- vector(0.0, nparticles);
     auto continue <- true;
     parallel for n:Integer in 1..nparticles {
       do {
@@ -41,21 +52,21 @@ class AliveParticleFilter < ParticleFilter {
           }}
           if w[n] == -inf {
             /* replace with a categorical draw for next attempt */
-            a[n] <- ancestor(w0);
+            a[n] <- cumulative_ancestor(W0);
           }
         } else {
           continue <- false;
         }
       } while continue && w[n] == -inf;
     }
-    
+
     if (continue) {
       /* propagate and weight until one further acceptance, that is discarded
        * for unbiasedness in the normalizing constant estimate */
      x1:Model?;
      w1:Real;
      do {
-        auto f1 <- clone<(Model,Real)!>(f0[ancestor(w0)]);
+        auto f1 <- clone<(Model,Real)!>(f0[cumulative_ancestor(W0)]);
         if f1? {
           (x1, w1) <- f1!;
           cpp {{
@@ -66,24 +77,24 @@ class AliveParticleFilter < ParticleFilter {
         }
       } while (continue && w1 == -inf);
     }
-    
+
     /* update propagations */
     P:Integer;
     cpp {{
     P_ = P;
     }}
     this.P.pushBack(P);
-    
+
     return continue;
   }
-  
+
   function reduce() {
     /* effective sample size */
     e.pushBack(ess(w));
     if (!(e.back() > 0.0)) {  // > 0.0 as may be nan
       error("particle filter degenerated.");
     }
-  
+
     /* normalizing constant estimate */
     auto W <- log_sum_exp(w);
     auto P <- this.P.back();
