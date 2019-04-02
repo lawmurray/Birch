@@ -12,7 +12,6 @@
 #include "libbirch/ContextPtr.hpp"
 
 #include <tuple>
-
 namespace libbirch {
 template<class T> class Optional;
 
@@ -65,18 +64,21 @@ public:
       object(o.object),
       from(o.from),
       to(o.to) {
-    if (object && cloneUnderway) {
+    if (cloneUnderway) {
       to = currentContext;
-      if (o.isCross()) {
-        object = static_cast<T*>(o.to->finish(o.object.get(), o.from.get()));
-        object = static_cast<T*>(to->cross(object.get()));
-        from = currentContext;
-      } else if (crossUnderway) {
-        object = static_cast<T*>(to->cross(object.get()));
-        from = currentContext;
-      } else if (finishUnderway) {
-        object = static_cast<T*>(to->finish(object.get(), from.get()));
-        from = currentContext;
+      if (object) {
+        if (o.isCross()) {
+          o.finish();
+          o.freeze();
+          object = static_cast<T*>(to->cross(object.get()));
+          from = currentContext;
+        } else if (crossUnderway) {
+          object = static_cast<T*>(to->cross(object.get()));
+          from = currentContext;
+        } else if (finishUnderway) {
+          object = static_cast<T*>(to->finish(object.get(), from.get()));
+          from = currentContext;
+        }
       }
     }
     invariant();
@@ -242,23 +244,21 @@ public:
   }
 
   /**
-   * Get the raw pointer, eager cloning.
+   * Eagerly finish lazy clones.
    */
-  T* finish() {
-    if (object && object->isFrozen()) {
-      to = to->getForward();
+  void finish() {
+    if (object) {
       object = static_cast<T*>(to->finish(object.get(), from.get()));
       from = to.get();
-      assert(!object->isFrozen());
     }
     invariant();
   }
 
   /**
-   * Get the raw pointer, eager cloning.
+   * Eagerly finish lazy clones.
    */
-  T* finish() const {
-    return const_cast<LazyPtr<P>*>(this)->finish();
+  void finish() const {
+    const_cast<LazyPtr<P>*>(this)->finish();
   }
 
   /**
