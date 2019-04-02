@@ -275,7 +275,7 @@ bi::Driver::Driver(int argc, char** argv) :
     }
   }
   if (!prefix.empty()) {
-    share_dirs.push_back(fs::path(prefix) / "share");
+    share_dirs.push_back(fs::path(prefix) / "share" / "birch");
   }
 #ifdef DATADIR
   share_dirs.push_back(fs::path(STRINGIFY(DATADIR)) / "birch");
