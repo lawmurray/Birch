@@ -111,30 +111,6 @@ public:
    */
   LazyAny* copy(LazyAny* o);
 
-  /**
-   * If this memo is frozen, return the memo to which it should forward,
-   * otherwise `this`.
-   */
-  LazyMemo* getForward();
-
-  /**
-   * If this memo is frozen, and the memo to which it should forward has
-   * already been created, return that memoo, otherwise `this`.
-   */
-  LazyMemo* pullForward();
-
-  /**
-   * Break cycles that occur in the memo ancestry tree. This should be called
-   * on the memo just before its shared reference count is decremented, and
-   * must be done manually. The issue is that memos keep a shared pointer
-   * to their parents, but also, when frozen, a shared pointer to one of
-   * their children (its forwarding memo). This checks if the only remaining
-   * shared pointer to this memo is that held by its forwarding memo, and if
-   * so deletes the shared reference to that forwarding memo to break the
-   * cycle, as it will no longer be required anyway.
-   */
-  void onDecShared();
-
 protected:
   virtual void doFreeze_();
 
@@ -143,13 +119,6 @@ private:
    * Parent memo.
    */
   SharedPtr<LazyMemo> parent;
-
-  /**
-   * If frozen, memo to which to forward. This must be thread safe, and
-   * so an atomic raw pointer is used, with manual shared reference count
-   * maintenance.
-   */
-  std::atomic<LazyMemo*> forward;
 
   /**
    * Memoization of mappings.

@@ -105,7 +105,6 @@ public:
       auto old = ptr;
       ptr = o.ptr;
       if (old) {
-        old->onDecShared();
         old->decShared();
       }
     }
@@ -141,7 +140,6 @@ public:
    */
   void release() {
     if (ptr) {
-      ptr->onDecShared();
       ptr->decShared();
     }
     ptr = nullptr;

@@ -50,17 +50,36 @@ public:
   /**
    * Get the memo responsible for the creation of this object.
    */
-  Memo* getContext();
+  LazyMemo* getContext();
+
+  /**
+   * If this memo is frozen, return the memo to which it should forward,
+   * otherwise `this`.
+   */
+  LazyAny* getForward();
+
+  /**
+   * If this memo is frozen, and the memo to which it should forward has
+   * already been created, return that memoo, otherwise `this`.
+   */
+  LazyAny* pullForward();
 
 protected:
   /**
    * Memo responsible for the creation of this object.
    */
-  InitPtr<Memo> context;
+  InitPtr<LazyMemo> context;
+
+  /**
+   * If frozen, object to which to forward. This must be thread safe, and
+   * so an atomic raw pointer is used, with manual shared reference count
+   * maintenance.
+   */
+  std::atomic<LazyAny*> forward;
 };
 }
 
-inline libbirch::Memo* libbirch::LazyAny::getContext() {
+inline libbirch::LazyMemo* libbirch::LazyAny::getContext() {
   return context.get();
 }
 

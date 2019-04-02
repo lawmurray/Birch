@@ -200,8 +200,7 @@ public:
    */
   T* get() {
     if (object && object->isFrozen()) {
-      to = to->getForward();
-      object = static_cast<T*>(to->get(object.get(), from.get()));
+      object = static_cast<T*>(to->get(object.get(), from.get())->getForward());
       from = to.get();
       assert(!object->isFrozen());
     }
@@ -221,8 +220,7 @@ public:
    */
   const T* pull() {
     if (object && object->isFrozen()) {
-      to = to->pullForward();
-      object = static_cast<T*>(to->pull(object.get(), from.get()));
+      object = static_cast<T*>(to->pull(object.get(), from.get())->pullForward());
       if (object->getContext() == to.get()) {
         from = to.get();
       } else {
