@@ -65,6 +65,7 @@ static libbirch::Memo* root();
 libbirch::Memo* libbirch::currentContext = root();
 bool libbirch::cloneUnderway = false;
 bool libbirch::finishUnderway = false;
+bool libbirch::crossUnderway = false;
 
 libbirch::Memo* root() {
   #if ENABLE_LAZY_DEEP_CLONE

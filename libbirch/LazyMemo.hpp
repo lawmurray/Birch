@@ -85,13 +85,19 @@ public:
 
   /**
    * Map an object that may not yet have been cloned, cloning it and all
-   * children if necessary. This can be used to finish a lazy clone.
+   * children if necessary. This is an eager version of get(), it can be used
+   * to finish a lazy clone.
    */
   LazyAny* finish(LazyAny* o, LazyMemo* from);
 
   /**
+   * Perform a cross copy.
+   */
+  LazyAny* cross(LazyAny* o);
+
+  /**
    * Deep mapping of an object through ancestor memos up to the current memo,
-   * witout any cloning; get() or pull() should be called on the result to
+   * without any cloning; get() or pull() should be called on the result to
    * map through this memo.
    *
    * @param o The source object.

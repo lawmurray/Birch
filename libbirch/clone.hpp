@@ -19,6 +19,12 @@ extern bool finishUnderway;
 #pragma omp threadprivate(finishUnderway)
 
 /**
+ * Is a cross clone currently underway?
+ */
+extern bool crossUnderway;
+#pragma omp threadprivate(crossUnderway)
+
+/**
  * The memo object associated with new objects.
  */
 extern Memo* currentContext;

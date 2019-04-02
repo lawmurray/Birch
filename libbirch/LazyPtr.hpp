@@ -34,7 +34,7 @@ public:
    * Constructor.
    */
   LazyPtr(const Nil& = nil) {
-    //
+    invariant();
   }
 
   /**
@@ -44,7 +44,7 @@ public:
       object(object),
       from(from),
       to(to) {
-    //
+    invariant();
   }
 
   /**
@@ -55,7 +55,7 @@ public:
       object(object),
       from(from),
       to(to) {
-    //
+    invariant();
   }
 
   /**
@@ -65,16 +65,21 @@ public:
       object(o.object),
       from(o.from),
       to(o.to) {
-    if (cloneUnderway) {
+    if (object && cloneUnderway) {
       to = currentContext;
-      if (o.object && !to->hasAncestor(o.to.get())) {
-        object = o.finish();
-        from = currentContext->getParent();
-        finish();
+      if (o.isCross()) {
+        object = static_cast<T*>(o.to->finish(o.object.get(), o.from.get()));
+        object = static_cast<T*>(to->cross(object.get()));
+        from = currentContext;
+      } else if (crossUnderway) {
+        object = static_cast<T*>(to->cross(object.get()));
+        from = currentContext;
       } else if (finishUnderway) {
-        finish();
+        object = static_cast<T*>(to->finish(object.get(), from.get()));
+        from = currentContext;
       }
     }
+    invariant();
   }
 
   /**
@@ -85,7 +90,7 @@ public:
       object(o.object),
       from(o.from),
       to(o.to) {
-    //
+    invariant();
   }
 
   LazyPtr(LazyPtr<P> && o) = default;
@@ -100,6 +105,7 @@ public:
     object = o.object;
     from = o.from;
     to = o.to;
+    invariant();
     return *this;
   }
 
@@ -111,6 +117,7 @@ public:
     object = o.object;
     from = o.from;
     to = o.to;
+    invariant();
     return *this;
   }
 
@@ -121,6 +128,7 @@ public:
     object = o;
     from = currentContext;
     to = currentContext;
+    invariant();
     return *this;
   }
 
@@ -131,6 +139,7 @@ public:
     object = nullptr;
     from = nullptr;
     to = nullptr;
+    invariant();
     return *this;
   }
 
@@ -141,6 +150,7 @@ public:
     object = nullptr;
     from = nullptr;
     to = nullptr;
+    invariant();
     return *this;
   }
 
@@ -154,6 +164,7 @@ public:
     } else {
       *this = nullptr;
     }
+    invariant();
     return *this;
   }
 
@@ -163,6 +174,7 @@ public:
   template<class U>
   LazyPtr<P>& operator=(const U& o) {
     *get() = o;
+    invariant();
     return *this;
   }
 
@@ -182,7 +194,7 @@ public:
   }
 
   /**
-   * Get the raw pointer, lazy cloning if necessary.
+   * Get the raw pointer, with lazy cloning.
    */
   T* get() {
     if (object && object->isFrozen()) {
@@ -191,20 +203,19 @@ public:
       from = to.get();
       assert(!object->isFrozen());
     }
+    invariant();
     return object.get();
   }
 
   /**
-   * Get the raw pointer, lazy cloning if necessary.
+   * Get the raw pointer, with lazy cloning.
    */
   T* get() const {
-    /* even in a const context, do want to update the pointer through lazy
-     * deep clone mechanisms */
     return const_cast<LazyPtr<P>*>(this)->get();
   }
 
   /**
-   * Map the raw pointer, without lazy cloning.
+   * Get the raw pointer for read-only use, without cloning.
    */
   const T* pull() {
     if (object && object->isFrozen()) {
@@ -219,37 +230,34 @@ public:
         from = to->getParent();
       }
     }
+    invariant();
     return object.get();
   }
 
   /**
-   * Map the raw pointer, without lazy cloning.
+   * Get the raw pointer for read-only use, without cloning.
    */
   const T* pull() const {
-    /* even in a const context, do want to update the pointer through lazy
-     * deep clone mechanisms */
     return const_cast<LazyPtr<P>*>(this)->pull();
   }
 
   /**
-   * Finishing any incomplete lazy deep clones and return the raw pointer.
-   * This does not forward.
+   * Get the raw pointer, eager cloning.
    */
   T* finish() {
-    if (object) {
+    if (object && object->isFrozen()) {
+      to = to->getForward();
       object = static_cast<T*>(to->finish(object.get(), from.get()));
       from = to.get();
+      assert(!object->isFrozen());
     }
-    return object.get();
+    invariant();
   }
 
   /**
-   * Finishing any incomplete lazy deep clones and return the raw pointer.
-   * This does not forward.
+   * Get the raw pointer, eager cloning.
    */
   T* finish() const {
-    /* even in a const context, do want to update the pointer through lazy
-     * deep clone mechanisms */
     return const_cast<LazyPtr<P>*>(this)->finish();
   }
 
@@ -270,6 +278,14 @@ public:
       object->freeze();
       to->freeze();
     }
+    invariant();
+  }
+
+  /**
+   * Does this pointer result from a cross copy?
+   */
+  bool isCross() const {
+    return to.get() != to.getContext();
   }
 
   /**
@@ -342,6 +358,17 @@ protected:
    * Last label in list.
    */
   ContextPtr to;
+
+private:
+  /**
+   * Check the class invariate condition.
+   */
+  void invariant() const {
+    if (object) {
+      assert((to.get() == from.get() || to->hasAncestor(from.get())));
+      assert((to.get() == object->getContext() || to->hasAncestor(object->getContext())));
+    }
+  }
 };
 }
 

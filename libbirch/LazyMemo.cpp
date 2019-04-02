@@ -105,6 +105,25 @@ libbirch::LazyAny* libbirch::LazyMemo::finish(LazyAny* o, LazyMemo* from) {
   }
 }
 
+libbirch::LazyAny* libbirch::LazyMemo::cross(LazyAny* o) {
+  auto result = m.get(o);
+  if (!result) {
+    /* analogous to EagerMemo::copy(), see notes there */
+    auto alloc = static_cast<LazyAny*>(allocate(o->getSize()));
+    assert(alloc);
+    auto uninit = m.uninitialized_put(o, alloc);
+    assert(uninit == alloc);  // should be no thread contention here
+    SwapClone swapClone(true);
+    SwapCross swapCross(true);
+    SwapContext swapContext(this);
+    result = o->clone_(uninit);
+    assert(result == uninit); // clone should be in the allocation
+    o->incMemo(); // uninitialized_put(), so responsible for ref counts
+    result->incShared();
+  }
+  return result;
+}
+
 libbirch::LazyAny* libbirch::LazyMemo::source(LazyAny* o, LazyMemo* from) {
   if (this == from) {
     return o;
@@ -119,6 +138,7 @@ libbirch::LazyAny* libbirch::LazyMemo::source(LazyAny* o, LazyMemo* from) {
           result = m.get(result, result);
         }
         result = m.put(o, result);
+        ///@todo optimize put to start at index of previous search
       }
     } else {
       result = getParent()->source(o, from);

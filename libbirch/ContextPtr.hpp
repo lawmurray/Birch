@@ -125,6 +125,13 @@ public:
   }
 
   /**
+   * Get the context.
+   */
+  Memo* getContext() const {
+    return context.get();
+  }
+
+  /**
    * Dereference.
    */
   Memo& operator*() const {
