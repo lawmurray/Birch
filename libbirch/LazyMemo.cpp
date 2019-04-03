@@ -98,9 +98,6 @@ libbirch::LazyAny* libbirch::LazyMemo::finish(LazyAny* o, LazyMemo* from) {
       assert(result == uninit); // clone should be in the allocation
       o->incMemo(); // uninitialized_put(), so responsible for ref counts
       result->incShared();
-      if (this->isFrozen()) {
-        result->freeze();
-      }
       return result;
     }
   }
@@ -121,9 +118,6 @@ libbirch::LazyAny* libbirch::LazyMemo::cross(LazyAny* o) {
     assert(result == uninit); // clone should be in the allocation
     o->incMemo(); // uninitialized_put(), so responsible for ref counts
     result->incShared();
-    if (this->isFrozen()) {
-      result->freeze();
-    }
   }
   return result;
 }
