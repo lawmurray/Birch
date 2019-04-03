@@ -59,8 +59,6 @@ char* heap() {
  * variables */
 libbirch::Memo* libbirch::currentContext = nullptr;
 bool libbirch::cloneUnderway = false;
-bool libbirch::finishUnderway = false;
-bool libbirch::crossUnderway = false;
 
 void* libbirch::allocate(const size_t n) {
   assert(n > 0u);

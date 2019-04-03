@@ -59,5 +59,10 @@ libbirch::LazyAny* libbirch::LazyAny::pullForward() {
   return this;
 }
 
+void libbirch::LazyAny::finish() {
+  if (sharedCount > 0) {
+    doFinish_();
+  }
+}
 
 #endif

@@ -64,7 +64,19 @@ public:
    */
   LazyAny* pullForward();
 
+  /**
+   * Finish any remaining lazy deep clones in the member variables of this
+   * object.
+   */
+  void finish();
+
 protected:
+  /**
+   * Perform the actual finish of the object. This is overwritten by derived
+   * classes.
+   */
+  virtual void doFinish_();
+
   /**
    * Memo responsible for the creation of this object.
    */
@@ -81,6 +93,10 @@ protected:
 
 inline libbirch::LazyMemo* libbirch::LazyAny::getContext() {
   return context.get();
+}
+
+inline void libbirch::LazyAny::doFinish_() {
+  //
 }
 
 #endif

@@ -10,8 +10,6 @@
 #include "libbirch/SwapClone.hpp"
 #include "libbirch/SwapContext.hpp"
 
-#include <tuple>
-
 namespace libbirch {
 template<class T> class Optional;
 

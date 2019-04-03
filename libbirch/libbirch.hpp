@@ -14,6 +14,7 @@
 #include "libbirch/clone.hpp"
 #include "libbirch/thread.hpp"
 #include "libbirch/freeze.hpp"
+#include "libbirch/finish.hpp"
 #include "libbirch/value.hpp"
 
 #include "libbirch/Span.hpp"
@@ -32,8 +33,6 @@
 #include "libbirch/Fiber.hpp"
 #include "libbirch/SwapContext.hpp"
 #include "libbirch/SwapClone.hpp"
-#include "libbirch/SwapFinish.hpp"
-#include "libbirch/SwapCross.hpp"
 #include "libbirch/Eigen.hpp"
 #include "libbirch/EigenFunctions.hpp"
 #include "libbirch/EigenOperators.hpp"

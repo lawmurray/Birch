@@ -11,7 +11,7 @@
 #include "libbirch/InitPtr.hpp"
 #include "libbirch/ContextPtr.hpp"
 
-#include <tuple>
+#include <iostream>
 
 namespace libbirch {
 template<class T> class Optional;
@@ -34,7 +34,7 @@ public:
    * Constructor.
    */
   LazyPtr(const Nil& = nil) {
-    invariant();
+    //
   }
 
   /**
@@ -44,7 +44,7 @@ public:
       object(object),
       from(from),
       to(to) {
-    invariant();
+    //
   }
 
   /**
@@ -55,7 +55,7 @@ public:
       object(object),
       from(from),
       to(to) {
-    invariant();
+    //
   }
 
   /**
@@ -67,22 +67,12 @@ public:
       to(o.to) {
     if (cloneUnderway) {
       to = currentContext;
-      if (object) {
-        if (o.isCross()) {
-          o.finish();
-          o.freeze();
-          object = static_cast<T*>(to->cross(object.get()));
-          from = currentContext;
-        } else if (crossUnderway) {
-          object = static_cast<T*>(to->cross(object.get()));
-          from = currentContext;
-        } else if (finishUnderway) {
-          object = static_cast<T*>(to->finish(object.get(), from.get()));
-          from = currentContext;
-        }
+      if (o.object && o.isCross()) {
+        o.finish();
+        from = currentContext->getParent();
+        //finish();
       }
     }
-    invariant();
   }
 
   /**
@@ -93,7 +83,7 @@ public:
       object(o.object),
       from(o.from),
       to(o.to) {
-    invariant();
+    //
   }
 
   LazyPtr(LazyPtr<P> && o) = default;
@@ -108,7 +98,6 @@ public:
     object = o.object;
     from = o.from;
     to = o.to;
-    invariant();
     return *this;
   }
 
@@ -120,7 +109,6 @@ public:
     object = o.object;
     from = o.from;
     to = o.to;
-    invariant();
     return *this;
   }
 
@@ -131,7 +119,6 @@ public:
     object = o;
     from = currentContext;
     to = currentContext;
-    invariant();
     return *this;
   }
 
@@ -142,7 +129,6 @@ public:
     object = nullptr;
     from = nullptr;
     to = nullptr;
-    invariant();
     return *this;
   }
 
@@ -153,7 +139,6 @@ public:
     object = nullptr;
     from = nullptr;
     to = nullptr;
-    invariant();
     return *this;
   }
 
@@ -167,7 +152,6 @@ public:
     } else {
       *this = nullptr;
     }
-    invariant();
     return *this;
   }
 
@@ -177,7 +161,6 @@ public:
   template<class U>
   LazyPtr<P>& operator=(const U& o) {
     *get() = o;
-    invariant();
     return *this;
   }
 
@@ -208,7 +191,6 @@ public:
       object = static_cast<T*>(object->getForward());
       assert(!object->isFrozen());
     }
-    invariant();
     return object.get();
   }
 
@@ -239,7 +221,6 @@ public:
         object = static_cast<T*>(object->pullForward());
       }
     }
-    invariant();
     return object.get();
   }
 
@@ -248,24 +229,6 @@ public:
    */
   const T* pull() const {
     return const_cast<LazyPtr<P>*>(this)->pull();
-  }
-
-  /**
-   * Eagerly finish lazy clones.
-   */
-  void finish() {
-    if (to && object) {
-      object = static_cast<T*>(to->finish(object.get(), from.get()));
-      from = to.get();
-    }
-    invariant();
-  }
-
-  /**
-   * Eagerly finish lazy clones.
-   */
-  void finish() const {
-    const_cast<LazyPtr<P>*>(this)->finish();
   }
 
   /**
@@ -293,7 +256,24 @@ public:
         to->freeze();
       }
     }
-    invariant();
+  }
+
+  /**
+   * Finish.
+   */
+  void finish() {
+    if (to != from && object) {
+      object = static_cast<T*>(to->get(object.get(), from.get()));
+      from = to.get();
+      object->finish();
+    }
+  }
+
+  /**
+   * Finish.
+   */
+  void finish() const {
+    return const_cast<LazyPtr<P>*>(this)->finish();
   }
 
   /**
@@ -373,17 +353,6 @@ protected:
    * Last label in list.
    */
   ContextPtr to;
-
-private:
-  /**
-   * Check the class invariant condition.
-   */
-  void invariant() const {
-    if (object) {
-      assert((to.get() == from.get() || to->hasAncestor(from.get())));
-      assert((to.get() == object->getContext() || to->hasAncestor(object->getContext())));
-    }
-  }
 };
 }
 
