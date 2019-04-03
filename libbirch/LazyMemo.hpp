@@ -45,11 +45,6 @@ public:
   libbirch_destroy_function_
 
   /**
-   * Is the given memo an ancestor of this?
-   */
-  bool hasAncestor(LazyMemo* memo);
-
-  /**
    * Is there a parent memo?
    */
   bool hasParent() const;
@@ -65,11 +60,6 @@ public:
    * @return The clone memo.
    */
   LazyMemo* fork();
-
-  /**
-   * Run garbage collection sweep on this memo and all ancestors.
-   */
-  void clean();
 
   /**
    * Map an object that may not yet have been cloned, cloning it if
@@ -135,10 +125,6 @@ inline libbirch::LazyMemo* libbirch::LazyMemo::getParent() const {
 
 inline libbirch::LazyMemo* libbirch::LazyMemo::fork() {
   return create_(this);
-}
-
-inline void libbirch::LazyMemo::clean() {
-  m.clean();
 }
 
 inline void libbirch::LazyMemo::doFreeze_() {

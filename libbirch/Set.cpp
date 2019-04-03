@@ -4,6 +4,7 @@
 #include "libbirch/Set.hpp"
 
 static libbirch::Memo* const EMPTY = nullptr;
+static const unsigned SET_INITIAL_SIZE = 4;
 
 libbirch::Set::Set() :
     values(nullptr),
@@ -69,7 +70,7 @@ void libbirch::Set::reserve() {
       value_type* values1 = (value_type*)values;
 
       /* initialize new contents */
-      unsigned nentries2 = std::max(2u * nentries1, (unsigned)ANCESTRY_MEMO_INITIAL_SIZE);
+      unsigned nentries2 = std::max(2u * nentries1, SET_INITIAL_SIZE);
       value_type* values2 = (value_type*)allocate(
           nentries2 * sizeof(value_type));
       std::memset(values2, 0, nentries2 * sizeof(value_type));

@@ -7,7 +7,7 @@ class ParticleGibbs < ConditionalParticleFilter {
       /* compute the conditional distribution over the start, given the
        * steps */
       auto x <- clone<ForwardModel>(archetype!);
-      auto h <- clone<EventHandler>(x'!.getHandler());
+      auto h <- x'!.getHandler();
       
       h.rewind();
       h.setDiscard(true);
@@ -21,7 +21,7 @@ class ParticleGibbs < ConditionalParticleFilter {
       /* simulate the conditional distribution over the start, given the
        * steps */
       x <- clone<ForwardModel>(archetype!);
-      h <- x'!.getHandler();
+      h <- clone<EventHandler>(x'!.getHandler());
       
       h.rewind();
       h.setDelay(false);
@@ -29,13 +29,12 @@ class ParticleGibbs < ConditionalParticleFilter {
       x.start();
       h.setDelay(true);
 
-      /* clone to all particles, trimming the replay trace for all but the
-       * reference path */
-      for auto n in 1..N-1 {
+      /* clone to all particles */
+      auto replay <- x.getHandler().takeReplay();
+      for auto n in 1..N {
         this.x[n] <- clone<ForwardModel>(x);
-        this.x[n].getHandler().setReplay(nil);  // don't replay
       }
-      this.x[N] <- x;  // do replay
+      this.x[N].getHandler().setReplay(replay);
     } else {
       super.start();
     }

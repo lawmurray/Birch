@@ -23,26 +23,6 @@ libbirch::LazyMemo::~LazyMemo() {
   //
 }
 
-bool libbirch::LazyMemo::hasAncestor(LazyMemo* memo) {
-  if (!memo || parent == memo) {
-    return true;
-  } else if (gen <= memo->gen) {
-    return false;
-  #if ENABLE_ANCESTRY_MEMO
-  } else if (gen % (unsigned)ANCESTRY_MEMO_DELTA == 0u && a.contains(memo)) {
-    return true;
-  #endif
-  } else {
-    bool result = parent->hasAncestor(memo);
-    #if ENABLE_ANCESTRY_MEMO
-    if (result && gen % (unsigned)ANCESTRY_MEMO_DELTA == 0u) {
-      a.insert(memo);
-    }
-    #endif
-    return result;
-  }
-}
-
 libbirch::LazyAny* libbirch::LazyMemo::get(LazyAny* o, LazyMemo* from) {
   if (this == from) {
     return o;
