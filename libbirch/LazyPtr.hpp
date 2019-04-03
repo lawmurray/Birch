@@ -228,14 +228,16 @@ public:
         object = static_cast<T*>(to->pull(object.get(), from.get()));
         if (object->getContext() == to.get()) {
           from = to.get();
+          object = static_cast<T*>(object->pullForward());
         } else {
           /* copy has been omitted for this access as it is read only, but on
            * the next access we will need to check whether a copy has happened
            * elsewhere in the meantime */
           from = to->getParent();
         }
+      } else {
+        object = static_cast<T*>(object->pullForward());
       }
-      object = static_cast<T*>(object->pullForward());
     }
     invariant();
     return object.get();
