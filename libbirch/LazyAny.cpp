@@ -27,7 +27,6 @@ libbirch::LazyAny::~LazyAny() {
     forward1->decShared();
   }
 }
-
 libbirch::LazyAny* libbirch::LazyAny::getForward() {
   if (isFrozen()) {
     auto forward1 = forward.load(std::memory_order_relaxed);

@@ -12,6 +12,7 @@
 #include "libbirch/ContextPtr.hpp"
 
 #include <tuple>
+
 namespace libbirch {
 template<class T> class Optional;
 
@@ -199,9 +200,12 @@ public:
    * Get the raw pointer, with lazy cloning.
    */
   T* get() {
-    if (to && object && object->isFrozen()) {
-      object = static_cast<T*>(to->get(object.get(), from.get())->getForward());
-      from = to.get();
+    if (object && object->isFrozen()) {
+      if (to) {
+        object = static_cast<T*>(to->get(object.get(), from.get()));
+        from = to.get();
+      }
+      object = static_cast<T*>(object->getForward());
       assert(!object->isFrozen());
     }
     invariant();
@@ -219,16 +223,19 @@ public:
    * Get the raw pointer for read-only use, without cloning.
    */
   const T* pull() {
-    if (to && object && object->isFrozen()) {
-      object = static_cast<T*>(to->pull(object.get(), from.get())->pullForward());
-      if (object->getContext() == to.get()) {
-        from = to.get();
-      } else {
-        /* copy has been omitted for this access as it is read only, but on
-         * the next access we will need to check whether a copy has happened
-         * elsewhere in the meantime */
-        from = to->getParent();
+    if (object && object->isFrozen()) {
+      if (to) {
+        object = static_cast<T*>(to->pull(object.get(), from.get()));
+        if (object->getContext() == to.get()) {
+          from = to.get();
+        } else {
+          /* copy has been omitted for this access as it is read only, but on
+           * the next access we will need to check whether a copy has happened
+           * elsewhere in the meantime */
+          from = to->getParent();
+        }
       }
+      object = static_cast<T*>(object->pullForward());
     }
     invariant();
     return object.get();
@@ -371,8 +378,8 @@ private:
    */
   void invariant() const {
     if (object) {
-      //assert((to.get() == from.get() || to->hasAncestor(from.get())));
-      //assert((to.get() == object->getContext() || to->hasAncestor(object->getContext())));
+      assert((to.get() == from.get() || to->hasAncestor(from.get())));
+      assert((to.get() == object->getContext() || to->hasAncestor(object->getContext())));
     }
   }
 };
