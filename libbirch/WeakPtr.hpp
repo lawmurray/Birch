@@ -144,8 +144,8 @@ public:
   void release() {
     if (ptr) {
       ptr->decWeak();
+      ptr = nullptr;
     }
-    ptr = nullptr;
   }
 
   /**

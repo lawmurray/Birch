@@ -11,14 +11,14 @@ libbirch::LazyAny::LazyAny() :
     Counted(),
     context(currentContext),
     forward(nullptr) {
-  assert(context);
+  //
 }
 
 libbirch::LazyAny::LazyAny(const LazyAny& o) :
     Counted(o),
     context(currentContext),
     forward(nullptr) {
-  assert(context);
+  //
 }
 
 libbirch::LazyAny::~LazyAny() {

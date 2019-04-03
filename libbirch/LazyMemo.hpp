@@ -142,7 +142,6 @@ inline bool libbirch::LazyMemo::hasParent() const {
 }
 
 inline libbirch::LazyMemo* libbirch::LazyMemo::getParent() const {
-  assert(parent);
   return parent.get();
 }
 

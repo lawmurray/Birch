@@ -141,8 +141,8 @@ public:
   void release() {
     if (ptr) {
       ptr->decShared();
+      ptr = nullptr;
     }
-    ptr = nullptr;
   }
 
   /**

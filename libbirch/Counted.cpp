@@ -60,7 +60,9 @@ void libbirch::Counted::freeze() {
   bool desired = true;
   if (frozen.compare_exchange_strong(expected, desired,
       std::memory_order_relaxed)) {
-    doFreeze_();
+    if (sharedCount > 0) {
+      doFreeze_();
+    }
   }
 }
 

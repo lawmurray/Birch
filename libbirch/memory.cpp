@@ -55,26 +55,12 @@ char* heap() {
 }
 #endif
 
-/**
- * Create (once only) and return the root memo.
- */
-static libbirch::Memo* root();
-
 /* declared in clone.hpp, here to ensure order of initialization for global
  * variables */
-libbirch::Memo* libbirch::currentContext = root();
+libbirch::Memo* libbirch::currentContext = nullptr;
 bool libbirch::cloneUnderway = false;
 bool libbirch::finishUnderway = false;
 bool libbirch::crossUnderway = false;
-
-libbirch::Memo* root() {
-  #if ENABLE_LAZY_DEEP_CLONE
-  static auto memo = libbirch::Memo::create_();
-  return memo;
-  #else
-  return nullptr;
-  #endif
-}
 
 void* libbirch::allocate(const size_t n) {
   assert(n > 0u);

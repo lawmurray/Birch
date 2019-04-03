@@ -191,7 +191,7 @@ class EagerPtr {
       SharedPtr<EagerMemo> memo = EagerMemo::create_();
       SwapClone swapClone(true);
       SwapContext swapContext(memo.get());
-      return EagerPtr<P>(static_cast<T*>(currentContext->copy(object.get())));
+      return EagerPtr<P>(static_cast<T*>(memo->copy(object.get())));
     } else {
       return EagerPtr<P>();
     }

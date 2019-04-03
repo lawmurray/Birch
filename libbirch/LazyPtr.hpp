@@ -199,7 +199,7 @@ public:
    * Get the raw pointer, with lazy cloning.
    */
   T* get() {
-    if (object && object->isFrozen()) {
+    if (to && object && object->isFrozen()) {
       object = static_cast<T*>(to->get(object.get(), from.get())->getForward());
       from = to.get();
       assert(!object->isFrozen());
@@ -219,7 +219,7 @@ public:
    * Get the raw pointer for read-only use, without cloning.
    */
   const T* pull() {
-    if (object && object->isFrozen()) {
+    if (to && object && object->isFrozen()) {
       object = static_cast<T*>(to->pull(object.get(), from.get())->pullForward());
       if (object->getContext() == to.get()) {
         from = to.get();
@@ -245,7 +245,7 @@ public:
    * Eagerly finish lazy clones.
    */
   void finish() {
-    if (object) {
+    if (to && object) {
       object = static_cast<T*>(to->finish(object.get(), from.get()));
       from = to.get();
     }
@@ -264,7 +264,13 @@ public:
    */
   LazyPtr<P> clone() const {
     freeze();
-    return LazyPtr<P>(object, from.get(), to->fork());
+    LazyMemo* memo;
+    if (to) {
+      memo = to->fork();
+    } else {
+      memo = LazyMemo::create_();
+    }
+    return LazyPtr<P>(object, from.get(), memo);
   }
 
   /**
@@ -274,7 +280,9 @@ public:
     if (object) {
       pull();
       object->freeze();
-      to->freeze();
+      if (to) {
+        to->freeze();
+      }
     }
     invariant();
   }
@@ -359,12 +367,12 @@ protected:
 
 private:
   /**
-   * Check the class invariate condition.
+   * Check the class invariant condition.
    */
   void invariant() const {
     if (object) {
-      assert((to.get() == from.get() || to->hasAncestor(from.get())));
-      assert((to.get() == object->getContext() || to->hasAncestor(object->getContext())));
+      //assert((to.get() == from.get() || to->hasAncestor(from.get())));
+      //assert((to.get() == object->getContext() || to->hasAncestor(object->getContext())));
     }
   }
 };

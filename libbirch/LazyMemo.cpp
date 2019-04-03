@@ -24,10 +24,10 @@ libbirch::LazyMemo::~LazyMemo() {
 }
 
 bool libbirch::LazyMemo::hasAncestor(LazyMemo* memo) {
-  if (gen <= memo->gen) {
-    return false;
-  } else if (parent == memo) {
+  if (!memo || parent == memo) {
     return true;
+  } else if (gen <= memo->gen) {
+    return false;
   #if ENABLE_ANCESTRY_MEMO
   } else if (gen % (unsigned)ANCESTRY_MEMO_DELTA == 0u && a.contains(memo)) {
     return true;
@@ -47,7 +47,9 @@ libbirch::LazyAny* libbirch::LazyMemo::get(LazyAny* o, LazyMemo* from) {
   if (this == from) {
     return o;
   } else {
-    o = getParent()->source(o, from);
+    if (hasParent()) {
+      o = getParent()->source(o, from);
+    }
     auto result = m.get(o);
     if (result) {
       return result;
@@ -61,7 +63,9 @@ libbirch::LazyAny* libbirch::LazyMemo::pull(LazyAny* o, LazyMemo* from) {
   if (this == from) {
     return o;
   } else {
-    o = getParent()->source(o, from);
+    if (hasParent()) {
+      o = getParent()->source(o, from);
+    }
     auto result = m.get(o);
     if (result) {
       return result;
@@ -75,7 +79,9 @@ libbirch::LazyAny* libbirch::LazyMemo::finish(LazyAny* o, LazyMemo* from) {
   if (this == from) {
     return o;
   } else {
-    o = getParent()->source(o, from);
+    if (hasParent()) {
+      o = getParent()->source(o, from);
+    }
     auto result = m.get(o);
     if (result) {
       return result;
@@ -131,7 +137,12 @@ libbirch::LazyAny* libbirch::LazyMemo::source(LazyAny* o, LazyMemo* from) {
     if (gen % (unsigned)CLONE_MEMO_DELTA == 0u) {
       result = m.get(o);
       if (!result) {
-        result = getParent()->source(o, from);
+        if (hasParent()) {
+          result = getParent()->source(o, from);
+        } else {
+          assert(!from);
+          result = o;
+        }
         if (result != o) {  // if result == o then we already tried above
           result = m.get(result, result);
         }
@@ -139,10 +150,12 @@ libbirch::LazyAny* libbirch::LazyMemo::source(LazyAny* o, LazyMemo* from) {
         ///@todo optimize put to start at index of previous search
       }
     } else {
+      assert(hasParent());
       result = getParent()->source(o, from);
       result = m.get(result, result);
     }
     #else
+    assert(hasParent());
     result = getParent()->source(o, from);
     result = m.get(result, result);
     #endif
