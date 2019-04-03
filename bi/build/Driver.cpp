@@ -35,11 +35,8 @@ bi::Driver::Driver(int argc, char** argv) :
     memoryPool(true),
     lazyDeepClone(true),
     cloneMemo(true),
-    ancestryMemo(true),
     cloneMemoInitialSize(64),
     cloneMemoDelta(2),
-    ancestryMemoInitialSize(8),
-    ancestryMemoDelta(2),
     newAutogen(false),
     newConfigure(false),
     newMake(false) {
@@ -71,12 +68,8 @@ bi::Driver::Driver(int argc, char** argv) :
     DISABLE_LAZY_DEEP_CLONE_ARG,
     ENABLE_CLONE_MEMO_ARG,
     DISABLE_CLONE_MEMO_ARG,
-    ENABLE_ANCESTRY_MEMO_ARG,
-    DISABLE_ANCESTRY_MEMO_ARG,
     CLONE_MEMO_INITIAL_SIZE_ARG,
-    CLONE_MEMO_DELTA_ARG,
-    ANCESTRY_MEMO_INITIAL_SIZE_ARG,
-    ANCESTRY_MEMO_DELTA_ARG
+    CLONE_MEMO_DELTA_ARG
   };
 
   int c, option_index;
@@ -108,12 +101,8 @@ bi::Driver::Driver(int argc, char** argv) :
       { "disable-lazy-deep-clone", no_argument, 0, DISABLE_LAZY_DEEP_CLONE_ARG },
       { "enable-clone-memo", no_argument, 0, ENABLE_CLONE_MEMO_ARG },
       { "disable-clone-memo", no_argument, 0, DISABLE_CLONE_MEMO_ARG },
-      { "enable-ancestry-memo", no_argument, 0, ENABLE_ANCESTRY_MEMO_ARG },
-      { "disable-ancestry-memo", no_argument, 0, DISABLE_ANCESTRY_MEMO_ARG },
       { "clone-memo-initial-size", required_argument, 0, CLONE_MEMO_INITIAL_SIZE_ARG },
       { "clone-memo-delta", required_argument, 0, CLONE_MEMO_DELTA_ARG },
-      { "ancestry-memo-initial-size", required_argument, 0, ANCESTRY_MEMO_INITIAL_SIZE_ARG },
-      { "ancestry-memo-delta", required_argument, 0, ANCESTRY_MEMO_DELTA_ARG },
       { 0, 0, 0, 0 }
   };
   const char* short_options = "-";  // treats non-options as short option 1
@@ -208,23 +197,11 @@ bi::Driver::Driver(int argc, char** argv) :
     case DISABLE_CLONE_MEMO_ARG:
       cloneMemo = false;
       break;
-    case ENABLE_ANCESTRY_MEMO_ARG:
-      ancestryMemo = true;
-      break;
-    case DISABLE_ANCESTRY_MEMO_ARG:
-      ancestryMemo = false;
-      break;
     case CLONE_MEMO_INITIAL_SIZE_ARG:
       cloneMemoInitialSize = atoi(optarg);
       break;
     case CLONE_MEMO_DELTA_ARG:
       cloneMemoDelta = atoi(optarg);
-      break;
-    case ANCESTRY_MEMO_INITIAL_SIZE_ARG:
-      ancestryMemoInitialSize = atoi(optarg);
-      break;
-    case ANCESTRY_MEMO_DELTA_ARG:
-      ancestryMemoDelta = atoi(optarg);
       break;
     case '?':  // unknown option
     case 1:  // not an option
@@ -245,14 +222,6 @@ bi::Driver::Driver(int argc, char** argv) :
   }
   if (cloneMemoDelta <= 0) {
     throw DriverException("--clone-memo-delta must be a positive integer.");
-  }
-  if (!isPower2(ancestryMemoInitialSize)) {
-    throw DriverException(
-        "--ancestry-memo-initial-size must be a positive power of 2.");
-  }
-  if (ancestryMemoDelta <= 0) {
-    throw DriverException(
-        "--ancestry-memo-delta must be a positive integer.");
   }
 
   /* environment variables */
@@ -436,7 +405,7 @@ void bi::Driver::tune() {
   debug = false;    // makes run faster
 
   /* best times */
-  double bestEager, bestLazy, bestLazyCloneMemo, bestLazyAncestryMemo;
+  double bestEager, bestLazy, bestLazyCloneMemo;
 
   /* proposed initial sizes, to test */
   auto initialSizes = { 4, 8, 16, 32, 64, 128, 256, 512, 1024 };
@@ -458,8 +427,6 @@ void bi::Driver::tune() {
   driverLazy.lazyDeepClone = true;
   std::cerr << "setting --disable-clone-memo" << std::endl;
   driverLazy.cloneMemo = false;
-  std::cerr << "setting --disable-ancestry-memo" << std::endl;
-  driverLazy.ancestryMemo = false;
   std::cerr << "choosing --clone-memo-initial-size" << std::endl;
   bestLazy = driverLazy.choose(&driverLazy.cloneMemoInitialSize,
       initialSizes);
@@ -479,21 +446,6 @@ void bi::Driver::tune() {
     driverLazy = driverLazyCloneMemo;
   }
 
-  /* best lazy configuration with ancestry memo enabled */
-  Driver driverLazyAncestryMemo(driverLazy);
-  std::cerr << "setting --enable-ancestry-memo" << std::endl;
-  driverLazyAncestryMemo.ancestryMemo = true;
-  std::cerr << "choosing --ancestry-memo-initial-size" << std::endl;
-  bestLazyAncestryMemo = driverLazyAncestryMemo.choose(
-      &driverLazyAncestryMemo.ancestryMemoInitialSize, initialSizes);
-  std::cerr << "choosing --ancestry-memo-delta" << std::endl;
-  bestLazyAncestryMemo = driverLazyAncestryMemo.choose(
-      &driverLazyAncestryMemo.ancestryMemoDelta, deltas);
-  if (bestLazyAncestryMemo < bestLazy) {
-    bestLazy = bestLazyAncestryMemo;
-    driverLazy = driverLazyAncestryMemo;
-  }
-
   /* choose one or the other and report */
   std::cout << "suggested:";
   if (bestEager < bestLazy) {
@@ -509,14 +461,6 @@ void bi::Driver::tune() {
       std::cout << " --clone-memo-delta=" << driverLazy.cloneMemoDelta;
     } else {
       std::cout << " --disable-clone-memo";
-    }
-    if (driverLazy.ancestryMemo) {
-      std::cout << " --enable-ancestry-memo";
-      std::cout << " --ancestry-memo-initial-size="
-          << driverLazy.ancestryMemoInitialSize;
-      std::cout << " --ancestry-memo-delta=" << driverLazy.ancestryMemoDelta;
-    } else {
-      std::cout << " --disable-ancestry-memo";
     }
   }
   std::cout << std::endl;
@@ -1103,15 +1047,8 @@ void bi::Driver::configure() {
     } else {
       cppflags << " -DENABLE_CLONE_MEMO=0";
     }
-    if (ancestryMemo) {
-      cppflags << " -DENABLE_ANCESTRY_MEMO=1";
-    } else {
-      cppflags << " -DENABLE_ANCESTRY_MEMO=0";
-    }
     cppflags << " -DCLONE_MEMO_INITIAL_SIZE=" << cloneMemoInitialSize;
     cppflags << " -DCLONE_MEMO_DELTA=" << cloneMemoDelta;
-    cppflags << " -DANCESTRY_MEMO_INITIAL_SIZE=" << ancestryMemoInitialSize;
-    cppflags << " -DANCESTRY_MEMO_DELTA=" << ancestryMemoDelta;
 
     /* include path */
     for (auto iter = include_dirs.begin(); iter != include_dirs.end();
@@ -1264,11 +1201,8 @@ std::string bi::Driver::suffix() const {
   buf << memoryPool << ' ';
   buf << lazyDeepClone << ' ';
   buf << cloneMemo << ' ';
-  buf << ancestryMemo << ' ';
   buf << cloneMemoInitialSize << ' ';
   buf << cloneMemoDelta << ' ';
-  buf << ancestryMemoInitialSize << ' ';
-  buf << ancestryMemoDelta << ' ';
   return encode32(buf.str());
 }
 

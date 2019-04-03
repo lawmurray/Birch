@@ -239,11 +239,6 @@ private:
   bool cloneMemo;
 
   /**
-   * Is ancestry memoization enabled?
-   */
-  bool ancestryMemo;
-
-  /**
    * Initial allocation size (number of entries) in maps used for clone
    * memoization.
    */
@@ -253,17 +248,6 @@ private:
    * Number of clone generations between deep clone memoizations.
    */
   int cloneMemoDelta;
-
-  /**
-   * Initial allocation size (number of entries) in sets used for ancestry
-   * memoization.
-   */
-  int ancestryMemoInitialSize;
-
-  /**
-   * Number of clone generations between ancestry memoizations.
-   */
-  int ancestryMemoDelta;
   //@}
 
   /**
@@ -298,8 +282,7 @@ private:
    * return that time.
    *
    * @param parameter Pointer to the parameter to set (typically a member
-   * variable of the same object, e.g. cloneMemoInitialSize,
-   * ancestryMemoDelta.
+   * variable of the same object, e.g. cloneMemoInitialSize).
    * @param values List of values of the parameter to try.
    *
    * @return The fastest time.
