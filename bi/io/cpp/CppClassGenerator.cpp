@@ -181,6 +181,28 @@ void bi::CppClassGenerator::visit(const Class* o) {
         line("}\n");
       }
 
+      /* finish function */
+      if (header) {
+        start("virtual void ");
+      } else {
+        start("void bi::type::" << o->name);
+        genTemplateArgs(o);
+        middle("::");
+      }
+      middle("doFinish_()");
+      if (header) {
+        finish(';');
+      } else {
+        finish(" {");
+        in();
+        line("super_type_::doFinish_();");
+        for (auto o : memberVariables) {
+          line("libbirch::finish(" << o->name << ");");
+        }
+        out();
+        line("}\n");
+      }
+
       /* member variables and functions */
       *this << o->braces->strip();
     }
