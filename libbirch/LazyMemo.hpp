@@ -104,11 +104,6 @@ private:
   Map m;
 
   /**
-   * Memoization of ancestry queries.
-   */
-  Set a;
-
-  /**
    * Generation number (zero is root).
    */
   unsigned gen;

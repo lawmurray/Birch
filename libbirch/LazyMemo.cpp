@@ -9,7 +9,7 @@
 
 libbirch::LazyMemo::LazyMemo() :
     parent(nullptr),
-    gen(0u) {
+    gen(1u) {
   //
 }
 
@@ -77,13 +77,19 @@ libbirch::LazyAny* libbirch::LazyMemo::source(LazyAny* o, LazyMemo* from) {
         ///@todo optimize put to start at index of previous search
       }
     } else {
-      assert(hasParent());
-      result = getParent()->source(o, from);
+      if (hasParent()) {
+        result = getParent()->source(o, from);
+      } else {
+        result = o;
+      }
       result = m.get(result, result);
     }
     #else
-    assert(hasParent());
-    result = getParent()->source(o, from);
+    if (hasParent()) {
+      result = getParent()->source(o, from);
+    } else {
+      result = o;
+    }
     result = m.get(result, result);
     #endif
     return result;
