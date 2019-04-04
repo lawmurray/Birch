@@ -53,6 +53,48 @@ function columns(X:Boolean[_,_]) -> Integer64 {
 }
 
 /**
+ * Row of a matrix.
+ */
+function row(X:Real[_,_], i:Integer) -> Real[_] {
+  return X[i,1..columns(X)];
+}
+
+/**
+ * Row of a matrix.
+ */
+function row(X:Integer[_,_], i:Integer) -> Integer[_] {
+  return X[i,1..columns(X)];
+}
+
+/**
+ * Row of a matrix.
+ */
+function row(X:Boolean[_,_], i:Integer) -> Boolean[_] {
+  return X[i,1..columns(X)];
+}
+
+/**
+ * Column of a matrix.
+ */
+function column(X:Real[_,_], j:Integer) -> Real[_] {
+  return X[1..rows(X),j];
+}
+
+/**
+ * Column of a matrix.
+ */
+function column(X:Integer[_,_], j:Integer) -> Integer[_] {
+  return X[1..rows(X),j];
+}
+
+/**
+ * Column of a matrix.
+ */
+function column(X:Boolean[_,_], j:Integer) -> Boolean[_] {
+  return X[1..rows(X),j];
+}
+
+/**
  * Create matrix filled with a given scalar value.
  *
  * - x: The value.
