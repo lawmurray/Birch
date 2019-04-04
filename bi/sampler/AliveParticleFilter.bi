@@ -20,7 +20,7 @@ class AliveParticleFilter < ParticleFilter {
     P.pushBack(N);
   }
 
-  function step() {          
+  function play() {          
     /* as `parallel for` is used below, an atomic is necessary to accumulate
      * the total number of propagations; nested C++ is required for this at
      * this stage */
@@ -31,14 +31,16 @@ class AliveParticleFilter < ParticleFilter {
     auto x0 <- x;
     auto w0 <- w;
     parallel for auto n in 1..N {
-      w[n] <- x[n].step();
+      x[n].next();
+      w[n] <- x[n].play();
       cpp {{
       ++P;
       }}
       while w[n] == -inf {  // repeat until weight is positive
         a[n] <- ancestor(w0);
         x[n] <- clone<ForwardModel>(x0[a[n]]);
-        w[n] <- x[n].step();
+        x[n].next();
+        w[n] <- x[n].play();
         cpp {{
         ++P;
         }}
@@ -51,7 +53,7 @@ class AliveParticleFilter < ParticleFilter {
     do {
       auto a' <- ancestor(w0);
       auto x' <- clone<ForwardModel>(x0[a']);
-      w' <- x'.step();
+      w' <- x'.play();
       cpp {{
       ++P;
       }}

@@ -3,7 +3,7 @@
  */
 class BidirectionalModel < ForwardModel {  
   /**
-   * Back one step.
+   * Move back one step.
    */
   function back();
 }

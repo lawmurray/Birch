@@ -44,8 +44,8 @@ class HiddenMarkovModel<Parameter,State,Observation> <
   /**
    * Play one step. Simulates through the next state and observation.
    */
-  function step() -> Real {
-    auto w <- super.step();
+  function play() -> Real {
+    auto w <- super.play();
     auto x <- f!.getValue();
     auto y <- g!.getValue();
     return w + h.handle(observation(y, x, θ));

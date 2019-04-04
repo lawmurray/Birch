@@ -13,8 +13,8 @@ class RandomAccessModel < BidirectionalModel {
   function seek(t:Integer) {
     this.t <- t;
   }
-  
-  function skip() {
+    
+  function next() {
     seek(t + 1);
   }
   

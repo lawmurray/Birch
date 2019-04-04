@@ -38,8 +38,8 @@ class HiddenStarModel<Parameter,Point,Observation> <
   /**
    * Play one step. Simulates through the next point and observation.
    */
-  function step() -> Real {
-    auto w <- super.step();
+  function play() -> Real {
+    auto w <- super.play();
     return w + h.handle(observation(y.get(t), x.get(t), θ));
   }
 

@@ -118,7 +118,8 @@ class ParticleFilter < ForwardSampler {
    */
   function step() {
     parallel for auto n in 1..N {
-      w[n] <- w[n] + x[n].step();
+      x[n].next();
+      w[n] <- w[n] + x[n].play();
     }
   }
 
@@ -163,9 +164,9 @@ class ParticleFilter < ForwardSampler {
   function copy() {
     auto x0 <- x;
     parallel for auto n in 1..N {
-      if a[n] != n {
+      //if a[n] != n {
         x[n] <- clone<ForwardModel>(x0[a[n]]);
-      }
+      //}
       w[n] <- 0.0;
     }
   }

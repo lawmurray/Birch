@@ -71,8 +71,7 @@ class MarkovModel<Parameter,State> < BidirectionalModel {
   /**
    * Play one step. Simulates through the next state.
    */
-  function step() -> Real {
-    next();
+  function play() -> Real {
     auto x' <- f!.getValue();
     auto w' <- 0.0;
     if f! == x.begin()! {
@@ -110,7 +109,7 @@ class MarkovModel<Parameter,State> < BidirectionalModel {
   fiber simulate() -> Event {
     start();
     while true {
-      step();
+      play();
     }
   }
 
