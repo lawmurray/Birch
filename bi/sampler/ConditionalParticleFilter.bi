@@ -3,14 +3,13 @@
  */
 class ConditionalParticleFilter < ParticleFilter {
   function start() {
-    super.start();
-    
     /* install a replay handler for the reference particle */
     if x'? {
       auto h <- x'!.getHandler();
       h.rewind();
       x[N].setHandler(h);
     }
+    super.start();
   }
 
   function resample() {
