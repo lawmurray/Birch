@@ -42,6 +42,11 @@ class RandomValueEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     v.value();
   }
 
+  function downdate(evt:Event) {
+    assert hasValue();
+    return p.downdate(v);
+  }
+
   function assumeUpdate(evt:Event) {
     v.assumeUpdate(p, cast(evt).v.value());
   }

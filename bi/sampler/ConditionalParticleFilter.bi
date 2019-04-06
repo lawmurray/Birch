@@ -3,10 +3,16 @@
  */
 class ConditionalParticleFilter < ParticleFilter {
   function start() {
-    /* install a replay handler for the reference particle */
+    /* turn on recording for all particles */
+    parallel for auto n in 1..N {
+      x[n].getHandler().setRecord(true);
+    }
+  
+    /* turn on replay for the reference particle */
     if x'? {
       auto h <- x'!.getHandler();
       h.rewind();
+      h.setMode(REPLAY_UPDATE);
       x[N].setHandler(h);
     }
     super.start();
@@ -24,17 +30,13 @@ class ConditionalParticleFilter < ParticleFilter {
     if x'? {
       /* temporarily take the replay trace out of the reference particle so
        * as not to copy it into offspring */
+      x[N].getHandler().setMode(PLAY_DELAY);
       auto replay <- x[N].getHandler().takeReplay();
       super.copy();
+      x[N].getHandler().setMode(REPLAY_UPDATE);
       x[N].getHandler().setReplay(replay);
     } else {
       super.copy();
     }
-  }
-  
-  function setArchetype(a:Model) {
-    super.setArchetype(a);
-    h:TraceHandler;
-    archetype!.setHandler(h);
   }
 }

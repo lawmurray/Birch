@@ -10,10 +10,10 @@ class ParticleGibbs < ConditionalParticleFilter {
       auto h <- x'!.getHandler();
       
       h.rewind();
-      h.setDiscard(true);
+      h.setMode(REPLAY_DISCARD_DELAY);
       x.setHandler(h);
       x.start();
-      h.setDiscard(false);
+      h.setMode(REPLAY_UPDATE);
       for auto t in 1..T {
         x.next();
         x.play();
@@ -25,10 +25,10 @@ class ParticleGibbs < ConditionalParticleFilter {
       h <- clone<EventHandler>(x'!.getHandler());
       
       h.rewind();
-      h.setDelay(false);
+      h.setMode(REPLAY_DISCARD_IMMEDIATE);
       x.setHandler(h);
       x.start();
-      h.setDelay(true);
+      h.setMode(REPLAY_UPDATE);
 
       /* clone to all particles */
       auto replay <- x.getHandler().takeReplay();
