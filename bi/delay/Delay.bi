@@ -13,9 +13,12 @@ class Delay {
   child:Delay?;
   
   /**
-   * Is this node realized?
+   * Has the random variate associated with this node been assigned a value?
+   * If no random variate is associated with the node, always returns false.
    */
-  realized:Boolean <- false;
+  function hasValue() -> Boolean {
+    return false;
+  }
   
   /**
    * Realize by simulation.

@@ -39,28 +39,52 @@ class Random<Value> < Expression<Value> {
   }
 
   /**
-   * Attach a distribution to this random variate.
+   * Does this have a value?
+   */
+  function hasValue() -> Boolean {
+    return x?;
+  }
+
+  /**
+   * Does this have a distribution?
+   */
+  function hasDistribution() -> Boolean {
+    return dist?;
+  }
+
+  /**
+   * Assume a distribution for this random variate. When a value is required,
+   * it will be simuldated from this distribution.
    */
   function assume(dist:Distribution<Value>) {
     assert !hasDistribution();
     assert !hasValue();
-    
     dist.associate(this);
     this.dist <- dist;
   }
 
   /**
-   * Attach a distribution to this random variate, and a future value.
+   * Assume a distribution for this random variate. When a value is required,
+   * it will be assigned according to the `future` value given here, and
+   * trigger an update on the delayed sampling graph.
    *
    * - dist: The distribution.
    * - future: The future value.
-   *
-   * The random variate is treated as though it has no value. When a value
-   * must be realized, however, that future value given here will be used. No
-   * weight adjustment is made for this. This function is mostly provided for
-   * the purposes of replaying model executions, using e.g. ReplayHandler.
    */
-  function assume(dist:Distribution<Value>, future:Value) {
+  function assumeUpdate(dist:Distribution<Value>, future:Value) {
+    assume(dist);
+    this.future <- future;
+  }
+
+  /**
+   * Assume a distribution for this random variate. When a value is required,
+   * it will be assigned according to the `future` value given here, and
+   * trigger a downdate on the delayed sampling graph.
+   *
+   * - dist: The distribution.
+   * - future: The future value.
+   */
+  function assumeDowndate(dist:Distribution<Value>, future:Value) {
     assume(dist);
     this.future <- future;
   }
@@ -73,29 +97,17 @@ class Random<Value> < Expression<Value> {
       assert hasDistribution();
       if future? {
         /* future value was provided, use it */
-        dist!.realize(future!);
+        x <- future;
         future <- nil;
       } else {
-        dist!.realize();
+        x <- dist!.simulate();
       }
+      dist!.update(x!);
+      dist!.detach();
       dist <- nil;
       assert hasValue();
     }
     return x!;
-  }
-
-  /**
-   * Does this have a value?
-   */
-  function hasValue() -> Boolean {
-    return x?;
-  }
-
-  /**
-   * Does this have a distribution?
-   */
-  function hasDistribution() -> Boolean {
-    return dist?;
   }
 
   /**

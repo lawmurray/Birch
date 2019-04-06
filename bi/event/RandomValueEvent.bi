@@ -28,33 +28,39 @@ class RandomValueEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
   function hasDistribution() -> Boolean {
     return v.hasDistribution();
   }
+
+  function assume() {
+    v.assume(p);
+  }
   
   function observe() -> Real {
     assert hasValue();
     return p.observe(v);
   }
 
-  function assume() {
-    v.assume(p);
-  }
-
-  function assume(evt:Event) {
-    auto r <- RandomValueEvent<Value>?(evt);
-    if r? {
-      v.assume(p, r!.v.value());
-    } else {
-      error("incompatible traces");
-    }
-  }
-
   function value() {
     v.value();
   }
 
+  function assumeUpdate(evt:Event) {
+    v.assumeUpdate(p, cast(evt).v.value());
+  }
+
+  function assumeDowndate(evt:Event) {
+    v.assumeDowndate(p, cast(evt).v.value());
+  }
+
   function value(evt:Event) {
+    v <- cast(evt).v.value();
+  }
+  
+  /**
+   * Cast `evt` to this type, giving an error if not possible.
+   */
+  function cast(evt:Event) -> RandomValueEvent<Value> {
     auto r <- RandomValueEvent<Value>?(evt);
     if r? {
-      v <- r!.v.value();
+      return r!;
     } else {
       error("incompatible traces");
     }

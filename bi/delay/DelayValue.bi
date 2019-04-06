@@ -12,8 +12,18 @@ class DelayValue<Value>(x:Random<Value>&) < Delay {
   x:Random<Value>& <- x;
 
   /**
-   * Realize by simulation.
+   * Has the random variate associated with this node been assigned a value?
+   * If no random variate is associated with the node, always returns false.
    */
+  function hasValue() -> Boolean {
+    x:Random<Value>? <- this.x;
+    if x? {
+      return x!.hasValue();
+    } else {
+      return false;
+    }
+  }
+
   function realize() {
     realize(simulate());
   }
@@ -26,9 +36,8 @@ class DelayValue<Value>(x:Random<Value>&) < Delay {
     if y? {
       assert !y!.hasValue();
       y!.x <- value;
-      update(value);
-      realized <- true;
     }
+    update(value);
     detach();
   }
   

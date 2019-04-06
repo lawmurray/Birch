@@ -6,23 +6,14 @@ class TraceHandler < ReplayHandler {
    * Recorded trace of events.
    */
   record:List<Event>;
-  
-  /**
-   * Pause recording of events?
-   */
-  pause:Boolean <- false;
-  
+    
   function handle(evt:FactorEvent) -> Real {
-    if !pause {
-      record.pushBack(evt);
-    }
+    record.pushBack(evt);
     return super.handle(evt);
   }
   
   function handle(evt:RandomEvent) -> Real {
-    if !pause {
-      record.pushBack(evt);
-    }
+    record.pushBack(evt);
     return super.handle(evt);
   }
 
@@ -41,12 +32,5 @@ class TraceHandler < ReplayHandler {
    */
   function setRecord(record:List<Event>) {
     this.record <- record;
-  }
-
-  /**
-   * Set the pause flag. When true, events are not recorded.
-   */
-  function setPause(pause:Boolean) {
-    this.pause <- pause;
   }
 }

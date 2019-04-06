@@ -8,6 +8,21 @@
  */
 class Sampler {  
   /**
+   * Particles.
+   */
+  x:RandomAccessModel[_];
+  
+  /**
+   * Log-weights.
+   */
+  w:Real[_];
+
+  /**
+   * Ancestor indices.
+   */
+  a:Integer[_];
+
+  /**
    * Number of samples to draw.
    */
   nsamples:Integer <- 1;

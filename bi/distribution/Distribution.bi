@@ -20,50 +20,71 @@ class Distribution<Value> {
   function associate(x:Random<Value>) {
     this.x <- x;
   }
-
-  /**
-   * Instantiate the associated delayed random variate by simulation.
-   */
-  function realize() {
-    graft();
-    delay!.realize();
-    delay <- nil;
-  }
-
-  /**
-   * Instantiate the associated delayed random variate by assignment.
-   */
-  function realize(x:Value) {
-    graft();
-    delay!.realize(x);
-    delay <- nil;
-  }
-
+  
   /**
    * Simulate a random variate.
    *
-   * Return: the value.
+   * Return: The simulated value.
    */
   function simulate() -> Value {
     graft();
-    x:Value <- delay!.simulate();
-    delay!.update(x);
-    return x;
+    return delay!.simulate();
   }
 
   /**
    * Observe a random variate.
    *
-   * - x: The value.
+   * - x: The observed value.
    *
    * Return: The log likelihood.
    */
   function observe(x:Value) -> Real {
     graft();
-    w:Real <- delay!.observe(x);
-    if (w > -inf) {
-      delay!.update(x);
-    }
+    return delay!.observe(x);
+  }
+
+  /**
+   * Update the parameters of the distribution with a given value.
+   *
+   * Return: The value.
+   */
+  function update(x:Value) {
+    graft();
+    delay!.update(x);
+  }
+
+  /**
+   * Downdate the parameters of the distribution with a given value. This
+   * undoes the effects of an update().
+   *
+   * - x: The value.
+   */
+  function downdate(x:Value) {
+    graft();
+    delay!.downdate(x);
+  }
+
+  /**
+   * Simulate then update.
+   *
+   * Return: The simulated value.
+   */
+  function simulateAndUpdate() -> Value {
+    auto x <- simulate();
+    update(x);
+    return x;
+  }
+
+  /**
+   * Observe then update.
+   *
+   * - x: The observed value.
+   *
+   * Return: The log likelihood.
+   */
+  function observeAndUpdate(x:Value) -> Real {
+    auto w <- observe(x);
+    update(x);
     return w;
   }
 
@@ -123,6 +144,14 @@ class Distribution<Value> {
    * Graft this onto the delayed sampling $M$-path.
    */
   function graft();
+  
+  /**
+   * Detach this from the delayed sampling $M$-path.
+   */
+  function detach() {
+    delay!.detach();
+    delay <- nil;
+  }
 
   function graftGaussian() -> DelayGaussian? {
     return nil;

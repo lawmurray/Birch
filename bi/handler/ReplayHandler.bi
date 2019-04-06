@@ -21,11 +21,10 @@ class ReplayHandler < EventHandler {
   function handle(evt:RandomEvent) -> Real {
     auto replayEvt <- next();
     if evt.hasValue() {
-      ///@todo Check that values match
       return evt.observe();
     } else if replayEvt? && replayEvt!.hasValue() {
       if delay {
-        evt.assume(replayEvt!);
+        evt.assumeUpdate(replayEvt!);
       } else {
         evt.value(replayEvt!);
       }

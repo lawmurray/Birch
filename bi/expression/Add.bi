@@ -91,14 +91,14 @@ class Add<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>) <
     x1:DelayBoundedDiscrete? <- left.graftBoundedDiscrete();
     x2:DelayBoundedDiscrete? <- right.graftBoundedDiscrete();
 
-    if x1? && x2? && !(x1!.realized) {    
+    if x1? && x2? && !(x1!.hasValue()) {    
       // ^ third condition above ensures that x1 is still valid after x2 is
       //   constructed, which will not be the case if left and right share a
       //   common ancestor on the delayed sampling graph
       y <- DelayAddBoundedDiscrete(nil, x1!, x2!);
-    } else if x1? && !(x1!.realized) {
+    } else if x1? && !(x1!.hasValue()) {
       y <- DelayLinearBoundedDiscrete(nil, 1, x1!, Integer(right.value()));
-    } else if x2? && !(x2!.realized) {
+    } else if x2? && !(x2!.hasValue()) {
       y <- DelayLinearBoundedDiscrete(nil, 1, x2!, Integer(left.value()));
     }
     return y;
