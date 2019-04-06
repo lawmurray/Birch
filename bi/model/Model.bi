@@ -30,7 +30,7 @@ class Model {
    * Play the model with an event handler, yielding a log-weight.
    */
   function play() -> Real {
-    h.handle(simulate());
+    return h.handle(simulate());
   }
 
   /**
