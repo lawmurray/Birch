@@ -81,7 +81,7 @@ class ParticleFilter < ForwardSampler {
       stderr.print("log weight: " + sum(Z.walk()) + "\n");
     }
     finalize();
-    return (x'!, sum(Z.walk()));
+    return (clone<ForwardModel>(x'!), sum(Z.walk()));
   }
 
   /**

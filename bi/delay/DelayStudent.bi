@@ -15,6 +15,14 @@ class DelayStudent(x:Random<Real>&, ν:Real) < DelayValue<Real>(x) {
     return observe_student_t(x, ν);
   }
 
+  function update(x:Real) {
+    //
+  }
+
+  function downdate(x:Real) {
+    //
+  }
+
   function pdf(x:Real) -> Real {
     return pdf_student_t(x, ν);
   }

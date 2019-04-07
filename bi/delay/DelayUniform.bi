@@ -20,6 +20,14 @@ class DelayUniform(x:Random<Real>&, l:Real, u:Real) < DelayValue<Real>(x) {
     return observe_uniform(x, l, u);
   }
 
+  function update(x:Real) {
+    //
+  }
+
+  function downdate(x:Real) {
+    //
+  }
+
   function pdf(x:Real) -> Real {
     return pdf_uniform(x, l, u);
   }

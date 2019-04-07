@@ -15,9 +15,9 @@ class Distribution<Value> {
   x:Random<Value>&;
 
   /**
-   * Associate a random variate with this distribution.
+   * The the set random variate associated with this distribution.
    */
-  function associate(x:Random<Value>) {
+  function setRandom(x:Random<Value>) {
     this.x <- x;
   }
   

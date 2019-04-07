@@ -17,6 +17,11 @@ class ForwardModel < Model {
    * Move forward one step.
    */
   function next();
+  
+  /**
+   * Rewind to the first step.
+   */
+  function rewind();
 
   /**
    * Number of steps.

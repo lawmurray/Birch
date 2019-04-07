@@ -62,7 +62,9 @@ class DelayValue<Value>(x:Random<Value>&) < Delay {
    *
    * - x: The value.
    */
-  function update(x:Value);
+  function update(x:Value) {
+    error("update unsupported here");
+  }
 
   /**
    * Downdate the parent node on th $M$-path given the value of this node.

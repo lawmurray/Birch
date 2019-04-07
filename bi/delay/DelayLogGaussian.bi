@@ -21,6 +21,14 @@ class DelayLogGaussian(x:Random<Real>&, μ:Real, σ2:Real) <
     return observe_log_gaussian(x, μ, 1.0/λ);
   }
 
+  function update(x:Real) {
+    //
+  }
+
+  function downdate(x:Real) {
+    //
+  }
+
   function pdf(x:Real) -> Real {
     return pdf_log_gaussian(x, μ, 1.0/λ);
   }

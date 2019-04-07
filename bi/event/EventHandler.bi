@@ -17,7 +17,7 @@ class EventHandler {
   /**
    * Future events, if replaying is enabled.
    */
-  future:List<Event>;
+  replay:List<Event>;
 
   /**
    * Is recording enabled?
@@ -75,12 +75,13 @@ class EventHandler {
     if evt.hasValue() {
       if mode == PLAY_DELAY || mode == PLAY_IMMEDIATE {
         w <- evt.observe();
-      } else if mode == REPLAY_DISCARD_DELAY || mode == REPLAY_DISCARD_IMMEDIATE ||
+      } else if mode == REPLAY_DISCARD_DELAY ||
+          mode == REPLAY_DISCARD_IMMEDIATE ||
           mode == REPLAY_UPDATE {
         next();
         w <- evt.observe();
       } else if mode == REPLAY_DOWNDATE {
-        evt.downdate(evt);
+        evt.downdate(next());
       } else {
         assert false;
       }
@@ -117,6 +118,7 @@ class EventHandler {
    * Set the play/replay mode.
    */
   function setMode(mode:Integer8) {
+    assert PLAY_IMMEDIATE <= mode && mode <= REPLAY_DOWNDATE;
     this.mode <- mode;
   }
   
@@ -125,16 +127,16 @@ class EventHandler {
    */
   function takeReplay() -> List<Event> {
     empty:List<Event>;
-    auto future <- this.future;
-    this.future <- empty;
-    return future;
+    auto replay <- this.replay;
+    this.replay <- empty;
+    return replay;
   }
   
   /**
    * Set the replay trace.
    */
-  function setReplay(future:List<Event>) {
-    this.future <- future;
+  function setReplay(replay:List<Event>) {
+    this.replay <- replay;
   }
 
   /**
@@ -158,9 +160,9 @@ class EventHandler {
    * Remove and return the next event on the replay trace.
    */
   function next() -> Event {
-    assert !future.empty();
-    auto evt <- future.front();
-    future.popFront();
+    assert !replay.empty();
+    auto evt <- replay.front();
+    replay.popFront();
     return evt;
   }
 

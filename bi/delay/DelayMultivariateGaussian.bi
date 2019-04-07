@@ -25,6 +25,14 @@ class DelayMultivariateGaussian(x:Random<Real[_]>&, μ:Real[_], Σ:Real[_,_]) <
     return observe_multivariate_gaussian(x, μ, cholinv(Λ));
   }
 
+  function update(x:Real[_]) {
+    //
+  }
+
+  function downdate(x:Real[_]) {
+    //
+  }
+
   function pdf(x:Real[_]) -> Real {
     return pdf_multivariate_gaussian(x, μ, cholinv(Λ));
   }

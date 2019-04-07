@@ -21,4 +21,8 @@ class RandomAccessModel < BidirectionalModel {
   function back() {
     seek(t - 1);
   }
+  
+  function rewind() {
+    seek(0);
+  }
 }

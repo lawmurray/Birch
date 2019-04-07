@@ -39,6 +39,7 @@ class RandomValueEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
   }
 
   function value() {
+    v.assume(p);
     v.value();
   }
 
@@ -56,6 +57,7 @@ class RandomValueEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
   }
 
   function value(evt:Event) {
+    v.assume(p);
     v <- cast(evt).v.value();
   }
   

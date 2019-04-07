@@ -15,6 +15,14 @@ class DelayBernoulli(x:Random<Boolean>&, ρ:Real) < DelayValue<Boolean>(x) {
     return observe_bernoulli(x, ρ);
   }
 
+  function update(x:Boolean) {
+    //
+  }
+
+  function downdate(x:Boolean) {
+    //
+  }
+
   function pmf(x:Boolean) -> Real {
     return pmf_bernoulli(x, ρ);
   }

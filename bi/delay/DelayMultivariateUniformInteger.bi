@@ -21,6 +21,14 @@ class DelayMultivariateUniformInteger(x:Random<Integer[_]>&, l:Integer[_],
     return observe_multivariate_uniform_int(x, l, u);
   }
 
+  function update(x:Integer[_]) {
+    //
+  }
+
+  function downdate(x:Integer[_]) {
+    //
+  }
+
   function pmf(x:Integer[_]) -> Real {
     return pmf_multivariate_uniform_int(x, l, u);
   }

@@ -65,7 +65,7 @@ class Random<Value> < Expression<Value> {
   function assume(dist:Distribution<Value>) {
     assert !hasDistribution();
     assert !hasValue();
-    dist.associate(this);
+    dist.setRandom(this);
     this.dist <- dist;
   }
 
@@ -104,15 +104,17 @@ class Random<Value> < Expression<Value> {
     if !hasValue() {
       assert hasDistribution();
       if future? {
-        /* future value was provided, use it */
-        x <- future;
+        /* future value provided, use it */
+        x <- future!;
         future <- nil;
         if futureUpdate {
           dist!.update(x!);
         } else {
           dist!.downdate(x!);
+          futureUpdate <- true;
         }
       } else {
+        /* no future value provided, simulate a value */
         x <- dist!.simulate();
         dist!.update(x!);
       }

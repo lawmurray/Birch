@@ -15,6 +15,14 @@ class DelayUniformInteger(x:Random<Integer>&, l:Integer, u:Integer) <
     return observe_uniform_int(x, l, u);
   }
 
+  function update(x:Integer) {
+    //
+  }
+
+  function downdate(x:Integer) {
+    //
+  }
+
   function pmf(x:Integer) -> Real {
     return pmf_uniform_int(x, l, u);
   }

@@ -25,6 +25,14 @@ class DelayBinomial(x:Random<Integer>&, n:Integer, ρ:Real) <
     return observe_binomial(x, n, ρ);
   }
 
+  function update(x:Integer) {
+    //
+  }
+
+  function downdate(x:Integer) {
+    //
+  }
+
   function pmf(x:Integer) -> Real {
     return pmf_binomial(x, n, ρ);
   }

@@ -20,6 +20,14 @@ class DelayMultivariateUniform(x:Random<Real[_]>&, l:Real[_], u:Real[_]) < Delay
     return observe_multivariate_uniform(x, l, u);
   }
 
+  function update(x:Real[_]) {
+    //
+  }
+
+  function downdate(x:Real[_]) {
+    //
+  }
+
   function pdf(x:Real[_]) -> Real {
     return pdf_multivariate_uniform(x, l, u);
   }

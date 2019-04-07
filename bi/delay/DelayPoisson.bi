@@ -19,6 +19,14 @@ class DelayPoisson(x:Random<Integer>&, λ:Real) < DelayDiscrete(x) {
     return observe_poisson(x, λ);
   }
 
+  function update(x:Integer) {
+    //
+  }
+
+  function downdate(x:Integer) {
+    //
+  }
+
   function pmf(x:Integer) -> Real {
     return pmf_poisson(x, λ);
   }

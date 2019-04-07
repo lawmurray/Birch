@@ -20,6 +20,14 @@ class DelayGamma(x:Random<Real>&, k:Real, θ:Real) < DelayValue<Real>(x) {
     return observe_gamma(x, k, θ);
   }
 
+  function update(x:Real) {
+    //
+  }
+
+  function downdate(x:Real) {
+    //
+  }
+
   function pdf(x:Real) -> Real {
     return pdf_gamma(x, k, θ);
   }

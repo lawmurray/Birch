@@ -15,6 +15,14 @@ class DelayExponential(x:Random<Real>&, λ:Real) < DelayValue<Real>(x) {
     return observe_exponential(x, λ);
   }
 
+  function update(x:Real) {
+    //
+  }
+
+  function downdate(x:Real) {
+    //
+  }
+
   function pdf(x:Real) -> Real {
     return pdf_exponential(x, λ);
   }

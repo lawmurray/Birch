@@ -76,6 +76,11 @@ class HiddenMarkovModel<Parameter,State,Observation> <
     g <- g!.getPrevious();
   }
 
+  function rewind() {
+    super.rewind();
+    g <- nil;
+  }
+
   function read(buffer:Buffer) {
     super.read(buffer);
     buffer.get("y", y);
