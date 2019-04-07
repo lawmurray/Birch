@@ -148,6 +148,57 @@ function reduce(x:Boolean[_], init:Boolean,
 }
 
 /**
+ * Transform and reducte.
+ *
+ * - x: Vector.
+ * - init: Initial value.
+ * - op1: Binary operator.
+ * - op2: Unary operator.
+ */
+function transform_reduce(x:Real[_], init:Real, op1:@(Real, Real) -> Real,
+    op2:@(Real) -> Real) -> Real {
+  auto y <- init;
+  for auto n in 1..length(x) {
+    y <- op1(y, op2(x[n]));
+  }
+  return y;
+}
+
+/**
+ * Transform and reducte.
+ *
+ * - x: Vector.
+ * - init: Initial value.
+ * - op1: Binary operator.
+ * - op2: Unary operator.
+ */
+function transform_reduce(x:Integer[_], init:Integer, op1:@(Integer, Integer) -> Integer,
+    op2:@(Integer) -> Integer) -> Integer {
+  auto y <- init;
+  for auto n in 1..length(x) {
+    y <- op1(y, op2(x[n]));
+  }
+  return y;
+}
+
+/**
+ * Transform and reducte.
+ *
+ * - x: Vector.
+ * - init: Initial value.
+ * - op1: Binary operator.
+ * - op2: Unary operator.
+ */
+function transform_reduce(x:Boolean[_], init:Boolean, op1:@(Boolean, Boolean) -> Boolean,
+    op2:@(Boolean) -> Boolean) -> Boolean {
+  auto y <- init;
+  for auto n in 1..length(x) {
+    y <- op1(y, op2(x[n]));
+  }
+  return y;
+}
+
+/**
  * Inclusive scan.
  *
  * - x: Vector.
