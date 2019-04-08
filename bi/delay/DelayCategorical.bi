@@ -31,6 +31,12 @@ class DelayCategorical(x:Random<Integer>&, ρ:Real[_]) <
   function cdf(x:Integer) -> Real {
     return cdf_categorical(x, ρ);
   }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "Categorical");
+    buffer.set("ρ", ρ);
+  }
 }
 
 function DelayCategorical(x:Random<Integer>&, ρ:Real[_]) -> DelayCategorical {

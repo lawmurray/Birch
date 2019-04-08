@@ -44,6 +44,13 @@ class DelayNegativeBinomial(x:Random<Integer>&, n:Integer, ρ:Real) <
   function lower() -> Integer? {
     return 0;
   }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "NegativeBinomial");
+    buffer.set("n", n);
+    buffer.set("ρ", ρ);
+  }
 }
 
 function DelayNegativeBinomial(x:Random<Integer>&, n:Integer, ρ:Real) ->

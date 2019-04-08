@@ -38,6 +38,12 @@ class DelayDelta(x:Random<Integer>&, μ:Integer) < DelayDiscrete(x) {
   function upper() -> Integer? {
     return μ;
   }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "Delta");
+    buffer.set("μ", μ);
+  }
 }
 
 function DelayDelta(x:Random<Integer>&, μ:Integer) -> DelayDelta {

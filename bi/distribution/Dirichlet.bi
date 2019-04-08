@@ -23,6 +23,15 @@ class Dirichlet(α:Expression<Real[_]>) < Distribution<Real[_]> {
     }
     return DelayDirichlet?(delay);
   }
+
+  function write(buffer:Buffer) {
+    if delay? {
+      delay!.write(buffer);
+    } else {
+      buffer.set("class", "Dirichlet");
+      buffer.set("α", α.value());
+    }
+  }
 }
 
 /**

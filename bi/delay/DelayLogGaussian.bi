@@ -40,6 +40,13 @@ class DelayLogGaussian(x:Random<Real>&, μ:Real, σ2:Real) <
   function lower() -> Real? {
     return 0.0;
   }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "LogGaussian");
+    buffer.set("μ", μ);
+    buffer.set("σ2", 1.0/λ);
+  }
 }
 
 function DelayLogGaussian(x:Random<Real>&, μ:Real, σ2:Real) ->

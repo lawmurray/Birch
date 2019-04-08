@@ -1,6 +1,15 @@
 /**
  * Number of rows of a matrix.
  */
+function rows(X:Object[_,_]) -> Integer64 {
+  cpp{{
+  return X.length(0);
+  }}
+}
+
+/**
+ * Number of rows of a matrix.
+ */
 function rows(X:Real[_,_]) -> Integer64 {
   cpp{{
   return X.length(0);
@@ -22,6 +31,15 @@ function rows(X:Integer[_,_]) -> Integer64 {
 function rows(X:Boolean[_,_]) -> Integer64 {
   cpp{{
   return X.length(0);
+  }}
+}
+
+/**
+ * Number of columns of a matrix.
+ */
+function columns(X:Object[_,_]) -> Integer64 {
+  cpp{{
+  return X.length(1);
   }}
 }
 
@@ -50,48 +68,6 @@ function columns(X:Boolean[_,_]) -> Integer64 {
   cpp{{
   return X.length(1);
   }}
-}
-
-/**
- * Row of a matrix.
- */
-function row(X:Real[_,_], i:Integer) -> Real[_] {
-  return X[i,1..columns(X)];
-}
-
-/**
- * Row of a matrix.
- */
-function row(X:Integer[_,_], i:Integer) -> Integer[_] {
-  return X[i,1..columns(X)];
-}
-
-/**
- * Row of a matrix.
- */
-function row(X:Boolean[_,_], i:Integer) -> Boolean[_] {
-  return X[i,1..columns(X)];
-}
-
-/**
- * Column of a matrix.
- */
-function column(X:Real[_,_], j:Integer) -> Real[_] {
-  return X[1..rows(X),j];
-}
-
-/**
- * Column of a matrix.
- */
-function column(X:Integer[_,_], j:Integer) -> Integer[_] {
-  return X[1..rows(X),j];
-}
-
-/**
- * Column of a matrix.
- */
-function column(X:Boolean[_,_], j:Integer) -> Boolean[_] {
-  return X[1..rows(X),j];
 }
 
 /**

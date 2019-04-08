@@ -33,6 +33,15 @@ class Poisson(λ:Expression<Real>) < Distribution<Integer> {
     }
     return DelayDiscrete?(delay);
   }
+
+  function write(buffer:Buffer) {
+    if delay? {
+      delay!.write(buffer);
+    } else {
+      buffer.set("class", "Poisson");
+      buffer.set("λ", λ.value());
+    }
+  }
 }
 
 /**

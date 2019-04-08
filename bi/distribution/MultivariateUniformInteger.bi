@@ -19,6 +19,16 @@ class MultivariateUniformInteger(l:Expression<Integer[_]>, u:Expression<Integer[
       delay <- DelayMultivariateUniformInteger(x, l, u);
     }
   }
+
+  function write(buffer:Buffer) {
+    if delay? {
+      delay!.write(buffer);
+    } else {
+      buffer.set("class", "MultivariateUniformInteger");
+      buffer.set("l", l.value());
+      buffer.set("u", u.value());
+    }
+  }
 }
 
 /**

@@ -14,6 +14,15 @@ class Student(ν:Expression<Real>) < Distribution<Real> {
       delay <- DelayStudent(x, ν);
     }
   }
+
+  function write(buffer:Buffer) {
+    if delay? {
+      delay!.write(buffer);
+    } else {
+      buffer.set("class", "Student");
+      buffer.set("ν", ν.value());
+    }
+  }
 }
 
 /**

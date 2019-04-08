@@ -31,6 +31,13 @@ class DelayMultivariateUniform(x:Random<Real[_]>&, l:Real[_], u:Real[_]) < Delay
   function pdf(x:Real[_]) -> Real {
     return pdf_multivariate_uniform(x, l, u);
   }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "MultivariateUniform");
+    buffer.set("l", l);
+    buffer.set("u", u);
+  }
 }
 
 function DelayMultivariateUniform(x:Random<Real[_]>&, l:Real[_], u:Real[_]) -> DelayMultivariateUniform {

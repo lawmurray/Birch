@@ -41,6 +41,15 @@ class DelayNormalInverseGamma(x:Random<Real>&, μ:Real, a2:Real,
   function cdf(x:Integer) -> Real {
     return cdf_normal_inverse_gamma(x, μ, 1.0/λ, σ2!.α, σ2!.β);
   }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "NormalInverseGamma");
+    buffer.set("μ", μ);
+    buffer.set("λ", λ);
+    buffer.set("α", σ2!.α);
+    buffer.set("β", σ2!.β);
+  }
 }
 
 function DelayNormalInverseGamma(x:Random<Real>&, μ:Real, a2:Real,

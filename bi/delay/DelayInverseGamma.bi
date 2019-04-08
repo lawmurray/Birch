@@ -40,6 +40,13 @@ class DelayInverseGamma(x:Random<Real>&, α:Real, β:Real) <
   function lower() -> Real? {
     return 0.0;
   }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "InverseGamma");
+    buffer.set("α", α);
+    buffer.set("β", β);
+  }
 }
 
 function DelayInverseGamma(x:Random<Real>&, α:Real, β:Real) ->

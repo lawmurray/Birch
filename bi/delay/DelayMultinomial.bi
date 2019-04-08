@@ -32,6 +32,13 @@ class DelayMultinomial(x:Random<Integer[_]>&, n:Integer, ρ:Real[_]) <
   function pmf(x:Integer[_]) -> Real {
     return pmf_multinomial(x, n, ρ);
   }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "Multinomial");
+    buffer.set("n", n);
+    buffer.set("ρ", ρ);
+  }
 }
 
 function DelayMultinomial(x:Random<Integer[_]>&, n:Integer, ρ:Real[_]) ->

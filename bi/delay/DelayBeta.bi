@@ -43,6 +43,13 @@ class DelayBeta(x:Random<Real>&, α:Real, β:Real) < DelayValue<Real>(x) {
   function upper() -> Real? {
     return 1.0;
   }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "Beta");
+    buffer.set("α", α);
+    buffer.set("β", β);
+  }
 }
 
 function DelayBeta(x:Random<Real>&, α:Real, β:Real) -> DelayBeta {

@@ -48,6 +48,16 @@ class LogGaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distribution<Real
       }
     }
   }
+
+  function write(buffer:Buffer) {
+    if delay? {
+      delay!.write(buffer);
+    } else {
+      buffer.set("class", "LogGaussian");
+      buffer.set("μ", μ.value());
+      buffer.set("σ2", σ2.value());
+    }
+  }
 }
 
 /**

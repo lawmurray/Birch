@@ -112,6 +112,15 @@ function scalar(x:Boolean[_]) -> Boolean {
 /**
  * Length of a vector.
  */
+function length(x:Object[_]) -> Integer {
+  cpp{{
+  return x.size();
+  }}
+}
+
+/**
+ * Length of a vector.
+ */
 function length(x:Real[_]) -> Integer {
   cpp{{
   return x.size();
@@ -139,7 +148,7 @@ function length(x:Boolean[_]) -> Integer {
 /**
  * Length of a vector.
  */
-function length(x:Object[_]) -> Integer {
+function length(x:Object?[_]) -> Integer {
   cpp{{
   return x.size();
   }}
@@ -167,15 +176,6 @@ function length(x:Integer?[_]) -> Integer {
  * Length of a vector.
  */
 function length(x:Boolean?[_]) -> Integer {
-  cpp{{
-  return x.size();
-  }}
-}
-
-/**
- * Length of a vector.
- */
-function length(x:Object?[_]) -> Integer {
   cpp{{
   return x.size();
   }}

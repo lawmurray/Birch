@@ -30,6 +30,12 @@ class DelayStudent(x:Random<Real>&, ν:Real) < DelayValue<Real>(x) {
   function cdf(x:Real) -> Real {
     return cdf_student_t(x, ν);
   }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "Student");
+    buffer.set("ν", ν);
+  }
 }
 
 function DelayStudent(x:Random<Real>&, ν:Real) -> DelayStudent {

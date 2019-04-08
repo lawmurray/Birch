@@ -19,6 +19,15 @@ class Exponential(λ:Expression<Real>) < Distribution<Real> {
       }
     }
   }
+
+  function write(buffer:Buffer) {
+    if delay? {
+      delay!.write(buffer);
+    } else {
+      buffer.set("class", "Exponential");
+      buffer.set("λ", λ.value());
+    }
+  }
 }
 
 /**

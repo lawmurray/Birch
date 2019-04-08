@@ -34,6 +34,12 @@ class DelayExponential(x:Random<Real>&, λ:Real) < DelayValue<Real>(x) {
   function lower() -> Real? {
     return 0.0;
   }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "Exponential");
+    buffer.set("λ", λ);
+  }
 }
 
 function DelayExponential(x:Random<Real>&, λ:Real) -> DelayExponential {

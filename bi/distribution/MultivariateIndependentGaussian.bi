@@ -93,6 +93,16 @@ class MultivariateIndependentGaussian(μ:Expression<Real[_]>,
       return DelayMultivariateNormalInverseGamma?(delay);
     }
   }
+
+  function write(buffer:Buffer) {
+    if delay? {
+      delay!.write(buffer);
+    } else {
+      buffer.set("class", "MultivariateIndependentGaussian");
+      buffer.set("μ", μ.value());
+      buffer.set("σ2", σ2.value());
+    }
+  }
 }
 
 /**

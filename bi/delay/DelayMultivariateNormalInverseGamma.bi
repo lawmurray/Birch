@@ -66,6 +66,15 @@ class DelayMultivariateNormalInverseGamma(x:Random<Real[_]>&, μ:Real[_],
   function pdf(x:Real[_]) -> Real {
     return pdf_multivariate_normal_inverse_gamma(x, μ, Λ, σ2!.α, σ2!.β);
   }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "MultivariateNormalInverseGamma");
+    buffer.set("μ", μ);
+    buffer.set("Λ", Λ);
+    buffer.set("α", σ2!.α);
+    buffer.set("β", σ2!.β);
+  }
 }
 
 function DelayMultivariateNormalInverseGamma(x:Random<Real[_]>&, μ:Real[_],

@@ -29,6 +29,14 @@ class DelayRestaurant(x:Random<Real[_]>&, α:Real, θ:Real) <
    * Number of samples drawn.
    */
   N:Integer <- 0;
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "Restaurant");
+    buffer.set("α", α);
+    buffer.set("θ", θ);
+    buffer.set("n", n);
+  }
 }
 
 function DelayRestaurant(x:Random<Real[_]>&, α:Real, θ:Real) ->

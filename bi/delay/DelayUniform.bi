@@ -43,6 +43,13 @@ class DelayUniform(x:Random<Real>&, l:Real, u:Real) < DelayValue<Real>(x) {
   function upper() -> Real? {
     return u;
   }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "Uniform");
+    buffer.set("l", l);
+    buffer.set("u", u);
+  }
 }
 
 function DelayUniform(x:Random<Real>&, l:Real, u:Real) -> DelayUniform {

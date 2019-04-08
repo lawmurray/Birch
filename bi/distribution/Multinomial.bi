@@ -24,6 +24,16 @@ class Multinomial(n:Expression<Integer>, ρ:Expression<Real[_]>) < Distribution<
       }
     }
   }
+
+  function write(buffer:Buffer) {
+    if delay? {
+      delay!.write(buffer);
+    } else {
+      buffer.set("class", "Multinomial");
+      buffer.set("n", n.value());
+      buffer.set("ρ", ρ.value());
+    }
+  }
 }
 
 /**

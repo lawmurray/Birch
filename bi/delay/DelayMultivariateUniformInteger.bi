@@ -32,6 +32,13 @@ class DelayMultivariateUniformInteger(x:Random<Integer[_]>&, l:Integer[_],
   function pmf(x:Integer[_]) -> Real {
     return pmf_multivariate_uniform_int(x, l, u);
   }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "MultivariateUniformInteger");
+    buffer.set("l", l);
+    buffer.set("u", u);
+  }
 }
 
 function DelayMultivariateUniformInteger(x:Random<Integer[_]>&, l:Integer[_],

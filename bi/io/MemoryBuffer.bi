@@ -183,6 +183,18 @@ class MemoryBuffer < Buffer {
       setNil();
     }
   }
+  
+  function setObjectVector(value:Object[_]?) {
+    if value? {
+      auto v <- value!;
+      setArray();
+      for auto n in 1..length(v) {
+        push().set(v[n]);
+      }
+    } else {
+      setNil();
+    }
+  }
 
   function setBooleanMatrix(value:Boolean[_,_]?) {
     if value? {
@@ -206,6 +218,21 @@ class MemoryBuffer < Buffer {
     if value? {
       v:RealMatrixValue(value!);
       this.value <- v;
+    } else {
+      setNil();
+    }
+  }
+
+  function setObjectMatrix(value:Object[_,_]?) {
+    if value? {
+      auto v <- value!;
+      setArray();
+      for auto i in 1..rows(v) {
+        auto buffer <- push().setArray();
+        for auto j in 1..columns(v) {
+          buffer.push().set(v[i,j]);
+        }
+      }
     } else {
       setNil();
     }

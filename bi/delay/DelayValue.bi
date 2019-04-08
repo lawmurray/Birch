@@ -121,4 +121,16 @@ class DelayValue<Value>(x:Random<Value>&) < Delay {
   function upper() -> Value? {
     return nil;
   }
+
+  function write(buffer:Buffer) {
+    y:Random<Value>? <- x;
+    if y? {
+      /* by default, in order to output, we must realize the random variate
+       * and output it as a value; nodes that can exist at the root of the
+       * $M$-path (e.g. DelayBeta, DelayGamma, DelayGaussian) override this
+       * to prune and then output as a distribution instead */
+      realize();
+      buffer.set(y!.value());
+    }
+  }
 }

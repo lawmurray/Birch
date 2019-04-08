@@ -30,6 +30,13 @@ class DelayUniformInteger(x:Random<Integer>&, l:Integer, u:Integer) <
   function cdf(x:Integer) -> Real {
     return cdf_uniform_int(x, l, u);
   }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "UniformInteger");
+    buffer.set("l", l);
+    buffer.set("u", u);
+  }
 }
 
 function DelayUniformInteger(x:Random<Integer>&, l:Integer, u:Integer) ->

@@ -19,6 +19,16 @@ class MultivariateUniform(l:Expression<Real[_]>, u:Expression<Real[_]>) < Distri
       delay <- DelayMultivariateUniform(x, l, u);
     }
   }
+
+  function write(buffer:Buffer) {
+    if delay? {
+      delay!.write(buffer);
+    } else {
+      buffer.set("class", "MultivariateUniform");
+      buffer.set("l", l.value());
+      buffer.set("u", u.value());
+    }
+  }
 }
 
 /**

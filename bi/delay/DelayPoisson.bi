@@ -38,6 +38,12 @@ class DelayPoisson(x:Random<Integer>&, λ:Real) < DelayDiscrete(x) {
   function lower() -> Integer? {
     return 0;
   }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "Poisson");
+    buffer.set("λ", λ);
+  }
 }
 
 function DelayPoisson(x:Random<Integer>&, λ:Real) -> DelayPoisson {

@@ -90,6 +90,16 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distribution<Real> {
       return DelayNormalInverseGamma?(delay);
     }
   }
+
+  function write(buffer:Buffer) {
+    if delay? {
+      delay!.write(buffer);
+    } else {
+      buffer.set("class", "Gaussian");
+      buffer.set("μ", μ.value());
+      buffer.set("σ2", σ2.value());
+    }
+  }
 }
 
 /**

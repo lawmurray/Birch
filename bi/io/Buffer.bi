@@ -678,6 +678,13 @@ class Buffer {
   function setRealVector(value:Real[_]?);
 
   /**
+   * Set this as a vector of objects.
+   *
+   * - value: Value.
+   */
+  function setObjectVector(value:Object[_]?);
+  
+  /**
    * Set this as matrix of Booleans.
    *
    * - value: Value.
@@ -697,6 +704,13 @@ class Buffer {
    * - value: Value.
    */
   function setRealMatrix(value:Real[_,_]?);
+
+  /**
+   * Set this as a matrix of objects.
+   *
+   * - value: Value.
+   */
+  function setObjectMatrix(value:Object[_,_]?);
 
   /**
    * Set child as an object.
@@ -796,6 +810,16 @@ class Buffer {
   }
 
   /**
+   * Set child as a vector of objects.
+   *
+   * - name: Name of the child.
+   * - value: Value.
+   */
+  function setObjectVector(name:String, value:Object[_]?) {
+    setChild(name).setObjectVector(value);  
+  }
+
+  /**
    * Set child as a matrix of Booleans.
    *
    * - name: Name of the child.
@@ -823,6 +847,16 @@ class Buffer {
    */
   function setRealMatrix(name:String, value:Real[_,_]?) {
     setChild(name).setRealMatrix(value);  
+  }
+
+  /**
+   * Set child as a matrix of objects.
+   *
+   * - name: Name of the child.
+   * - value: Value.
+   */
+  function setObjectMatrix(name:String, value:Object[_,_]?) {
+    setChild(name).setObjectMatrix(value);  
   }
 
   /**
@@ -901,6 +935,15 @@ class Buffer {
   }
 
   /**
+   * Set this as a vector of objects.
+   *
+   * - value: Value.
+   */
+  function set(value:Object[_]?) {
+    setObjectVector(value);
+  }
+
+  /**
    * Set this as matrix of Booleans.
    *
    * - value: Value.
@@ -925,6 +968,15 @@ class Buffer {
    */
   function set(value:Real[_,_]?) {
     setRealMatrix(value);
+  }
+
+  /**
+   * Set this as a matrix of objects.
+   *
+   * - value: Value.
+   */
+  function set(value:Object[_,_]?) {
+    setObjectMatrix(value);
   }
 
   /**
@@ -1007,6 +1059,16 @@ class Buffer {
   }
 
   /**
+   * Set a vector of objects.
+   *
+   * - name: Name of the child.
+   * - value: Value.
+   */
+  function set(name:String, value:Object[_]?) {
+    setObjectVector(name, value);
+  }
+
+  /**
    * Set a matrix of Booleans.
    *
    * - name: Name of the child.
@@ -1045,18 +1107,14 @@ class Buffer {
   function set(name:String, value:Object) {
     setChild(name).set(value);
   }
-
-  /*
-   * Hacks. These are overloads that must exist for specific types within
-   * the standard library that need to be used in List, Vector and other
-   * containers; the container classes require these overloads to compile.
-   * Longer term, they can be removed/replaced once improved generic type
-   * handling is available.
+  
+  /**
+   * Set a matrix of objects.
+   *
+   * - name: Name of the child.
+   * - value: Value.
    */
-  function get(value:(Model,Real)!?) -> (Model,Real)!? {
-    return nil;
-  }
-  function set(value:(Model,Real)!?) {
-    //
+  function set(name:String, value:Object[_,_]?) {
+    setObjectMatrix(name, value);
   }
 }

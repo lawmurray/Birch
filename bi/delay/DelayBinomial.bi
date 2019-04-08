@@ -48,6 +48,13 @@ class DelayBinomial(x:Random<Integer>&, n:Integer, ρ:Real) <
   function upper() -> Integer? {
     return n;
   }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "Binomial");
+    buffer.set("n", n);
+    buffer.set("ρ", ρ);
+  }
 }
 
 function DelayBinomial(x:Random<Integer>&, n:Integer, ρ:Real) ->

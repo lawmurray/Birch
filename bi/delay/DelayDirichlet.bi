@@ -27,6 +27,12 @@ class DelayDirichlet(x:Random<Real[_]>&, α:Real[_]) <
   function pdf(x:Real[_]) -> Real {
     return pdf_dirichlet(x, α);
   }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "Dirichlet");
+    buffer.set("α", α);
+  }
 }
 
 function DelayDirichlet(x:Random<Real[_]>&, α:Real[_]) -> DelayDirichlet {

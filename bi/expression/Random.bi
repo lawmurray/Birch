@@ -303,8 +303,10 @@ class Random<Value> < Expression<Value> {
   }
 
   function write(buffer:Buffer) {
-    if hasValue() || hasDistribution() {
+    if hasValue() {
       buffer.set(value());
+    } else if hasDistribution() {
+      dist!.write(buffer);
     } else {
       buffer.setNil();
     }

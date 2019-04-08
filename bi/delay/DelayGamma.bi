@@ -39,6 +39,13 @@ class DelayGamma(x:Random<Real>&, k:Real, θ:Real) < DelayValue<Real>(x) {
   function lower() -> Real? {
     return 0.0;
   }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "Gamma");
+    buffer.set("k", k);
+    buffer.set("θ", θ);
+  }
 }
 
 function DelayGamma(x:Random<Real>&, k:Real, θ:Real) -> DelayGamma {

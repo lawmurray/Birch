@@ -35,6 +35,20 @@ class DelayGaussian(x:Random<Real>&, μ:Real, σ2:Real) < DelayValue<Real>(x) {
   function cdf(x:Real) -> Real {
     return cdf_gaussian(x, μ, 1.0/λ);
   }
+
+  function write(buffer:Buffer) {
+    parent:Delay? <- this.parent;
+    if parent? {
+      /* can only output as a distribution if this is a root node on the
+       * $M$-path */
+      super.write(buffer);
+    } else {
+      prune();
+      buffer.set("class", "Gaussian");
+      buffer.set("μ", μ);
+      buffer.set("σ2", 1.0/λ);
+    }
+  }
 }
 
 function DelayGaussian(x:Random<Real>&, μ:Real, σ2:Real) -> DelayGaussian {

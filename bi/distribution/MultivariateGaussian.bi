@@ -68,6 +68,16 @@ class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) <
       return DelayMultivariateNormalInverseGamma?(delay);
     }
   }
+
+  function write(buffer:Buffer) {
+    if delay? {
+      delay!.write(buffer);
+    } else {
+      buffer.set("class", "MultivariateGaussian");
+      buffer.set("μ", μ.value());
+      buffer.set("Σ", Σ.value());
+    }
+  }
 }
 
 /**

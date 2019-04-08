@@ -33,6 +33,16 @@ class Gamma(k:Expression<Real>, θ:Expression<Real>) < Distribution<Real> {
     }
     return DelayGamma?(delay);
   }
+
+  function write(buffer:Buffer) {
+    if delay? {
+      delay!.write(buffer);
+    } else {
+      buffer.set("class", "Gamma");
+      buffer.set("k", k.value());
+      buffer.set("θ", θ.value());
+    }
+  }
 }
 
 /**
