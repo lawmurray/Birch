@@ -1,28 +1,5 @@
 /*
  * Delayed multivariate normal-inverse-gamma random variate.
- *
- * This represents the joint distribution:
- *
- * $$x \mid \sigma^2 \sim \mathrm{N}(\mu, \Sigma, \sigma^2),$$
- * $$\sigma^2 \sim \Gamma^{-1}(\alpha, \beta).$$
- *
- * which may be denoted:
- *
- * $$(x, \sigma^2) \sim \mathrm{N-}\Gamma^{-1}(\mu, \Sigma, \alpha, \beta),$$
- *
- * and is the conjugate prior of a Gaussian distribution with both
- * unknown mean and unknown variance.
- *
- * It is established via code such as the following:
- *
- *     σ2 ~ InverseGamma(α, β);
- *     x ~ Gaussian(μ, Σ*σ2);
- *     y ~ Gaussian(x, σ2);
- *
- * where the last argument in the distribution of `y` must appear in the
- * last argument of the distribution of `x`. The operation of `Σ` on `σ2` may
- * be multiplication on the left (as above) or the right, or division on the
- * right.
  */
 class DelayMultivariateNormalInverseGamma(x:Random<Real[_]>&, μ:Real[_],
     A:Real[_,_], σ2:DelayInverseGamma) < DelayValue<Real[_]>(x) {
@@ -32,7 +9,7 @@ class DelayMultivariateNormalInverseGamma(x:Random<Real[_]>&, μ:Real[_],
   μ:Real[_] <- μ;
 
   /**
-   * Precision.
+   * Precision scale.
    */
   Λ:Real[_,_] <- cholinv(A);
 
@@ -71,7 +48,7 @@ class DelayMultivariateNormalInverseGamma(x:Random<Real[_]>&, μ:Real[_],
     prune();
     buffer.set("class", "MultivariateNormalInverseGamma");
     buffer.set("μ", μ);
-    buffer.set("Λ", Λ);
+    buffer.set("A", cholinv(Λ));
     buffer.set("α", σ2!.α);
     buffer.set("β", σ2!.β);
   }

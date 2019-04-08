@@ -9,7 +9,7 @@ class DelayNormalInverseGamma(x:Random<Real>&, μ:Real, a2:Real,
   μ:Real <- μ;
   
   /**
-   * Precision.
+   * Precision scale.
    */
   λ:Real <- 1.0/a2;
   
@@ -46,7 +46,7 @@ class DelayNormalInverseGamma(x:Random<Real>&, μ:Real, a2:Real,
     prune();
     buffer.set("class", "NormalInverseGamma");
     buffer.set("μ", μ);
-    buffer.set("λ", λ);
+    buffer.set("a2", 1.0/λ);
     buffer.set("α", σ2!.α);
     buffer.set("β", σ2!.β);
   }
