@@ -10,14 +10,16 @@
 libbirch::LazyAny::LazyAny() :
     Counted(),
     context(currentContext),
-    forward(nullptr) {
+    forward(nullptr),
+    finished(false) {
   //
 }
 
 libbirch::LazyAny::LazyAny(const LazyAny& o) :
     Counted(o),
     context(currentContext),
-    forward(nullptr) {
+    forward(nullptr),
+    finished(false) {
   //
 }
 
@@ -60,8 +62,13 @@ libbirch::LazyAny* libbirch::LazyAny::pullForward() {
 }
 
 void libbirch::LazyAny::finish() {
-  if (sharedCount > 0) {
-    doFinish_();
+  bool expected = false;
+  bool desired = true;
+  if (finished.compare_exchange_strong(expected, desired,
+        std::memory_order_relaxed)) {
+    if (sharedCount > 0) {
+      doFinish_();
+    }
   }
 }
 

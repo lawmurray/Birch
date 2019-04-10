@@ -40,22 +40,41 @@ public:
   /**
    * Constructor.
    */
-  LazyPtr(T* object, LazyMemo* from = currentContext, LazyMemo* to = currentContext) :
+  LazyPtr(T* object) :
       object(object),
-      from(from),
-      to(to) {
+      from(object ? currentContext : nullptr),
+      to(object ? currentContext : nullptr) {
     //
   }
 
   /**
    * Constructor.
    */
-  LazyPtr(const P& object, LazyMemo* from = currentContext, LazyMemo* to =
-      currentContext) :
+  LazyPtr(const P& object) :
+      object(object),
+      from(object ? currentContext : nullptr),
+      to(object ? currentContext : nullptr) {
+    //
+  }
+
+  /**
+   * Constructor.
+   */
+  LazyPtr(T* object, LazyMemo* from, LazyMemo* to) :
       object(object),
       from(from),
       to(to) {
-    //
+    assert(object || !from);
+  }
+
+  /**
+   * Constructor.
+   */
+  LazyPtr(const P& object, LazyMemo* from, LazyMemo* to) :
+      object(object),
+      from(from),
+      to(to) {
+    assert(object || !from);
   }
 
   /**
@@ -262,7 +281,7 @@ public:
    * Finish.
    */
   void finish() {
-    if (to != from && object) {
+    if (object) {
       object = static_cast<T*>(to->get(object.get(), from.get()));
       from = to.get();
       object->finish();

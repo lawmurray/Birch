@@ -88,6 +88,11 @@ protected:
    * maintenance.
    */
   std::atomic<LazyAny*> forward;
+
+  /**
+   * Have clones of all objects reachable from this object finished?
+   */
+  std::atomic<bool> finished;
 };
 }
 
