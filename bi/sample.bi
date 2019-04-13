@@ -112,17 +112,15 @@ program sample(
     m1:Model?;
     w1:Real;
     (m1, w1) <- s!.sample();
-        
-    if s!.nsamples > 1 {
+
+    if output? {
       auto buffer <- outputBuffer.push();
       buffer.set(m1!);
       buffer.set("lweight", w1);
-      buffer <- diagnosticBuffer.push();
+    }
+    if diagnostic? {
+      auto buffer <- diagnosticBuffer.push();
       buffer.set(s!);
-    } else {
-      outputBuffer.set(m1!);
-      outputBuffer.set("lweight", w1);
-      diagnosticBuffer.set(s!);
     }
   }
   if output? {
