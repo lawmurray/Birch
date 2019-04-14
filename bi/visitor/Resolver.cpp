@@ -101,14 +101,14 @@ bi::Expression* bi::Resolver::modify(Assign* o) {
     auto left = o->left;
     auto right = new Call(
         new Member(o->right,
-            new Identifier<Unknown>(new Name("simulate"), o->loc), o->loc),
+            new Identifier<Unknown>(new Name("simulateAndUpdate"), o->loc), o->loc),
             new EmptyExpression(o->loc), o->loc);
     auto assign = new Assign(left, new Name("<-"), right, o->loc);
     return assign->accept(this);
   } else if (*o->name == "~>") {
     auto observe = new Call(
         new Member(o->right,
-            new Identifier<Unknown>(new Name("observe"), o->loc), o->loc),
+            new Identifier<Unknown>(new Name("observeAndUpdate"), o->loc), o->loc),
         o->left, o->loc);
     return observe->accept(this);
   } else {
