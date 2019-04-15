@@ -1,7 +1,7 @@
 /*
  * Linear transformation of a Gaussian random variate.
  */
-class TransformLinearGaussian(a:Real, x:DelayGaussian, c:Real) <
+final class TransformLinearGaussian(a:Real, x:DelayGaussian, c:Real) <
     TransformLinear<Real>(a, c) {
   /**
    * Random variate.

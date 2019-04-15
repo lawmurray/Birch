@@ -1,7 +1,7 @@
 /*
  * Delayed scaled gamma-Poisson random variate.
  */
-class DelayScaledGammaPoisson(x:Random<Integer>&, a:Real, λ:DelayGamma) <
+final class DelayScaledGammaPoisson(x:Random<Integer>&, a:Real, λ:DelayGamma) <
     DelayDiscrete(x) {
   /**
    * Scale.

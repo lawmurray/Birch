@@ -8,7 +8,7 @@ REPLAY_DOWNDATE:Integer8 <- Integer8(6);
 /**
  * Event handler.
  */
-class EventHandler {
+final class EventHandler {
   /**
    * Past events, if recording is enabled.
    */

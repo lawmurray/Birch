@@ -1,7 +1,7 @@
 /*
  * Delayed Gaussian-Gaussian random variate.
  */
-class DelayGaussianGaussian(x:Random<Real>&, m:DelayGaussian, s2:Real) <
+final class DelayGaussianGaussian(x:Random<Real>&, m:DelayGaussian, s2:Real) <
     DelayGaussian(x, m.μ, 1.0/m.λ + s2) {
   /**
    * Mean.

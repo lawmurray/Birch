@@ -1,7 +1,7 @@
 /*
  * Scaling of an gamma random variate.
  */
-class TransformScaledGamma(a:Real, x:DelayGamma) {
+final class TransformScaledGamma(a:Real, x:DelayGamma) {
   /**
    * Scale.
    */

@@ -1,7 +1,7 @@
 /*
  * Delayed multivariate uniform random variable.
  */
-class DelayMultivariateUniform(x:Random<Real[_]>&, l:Real[_], u:Real[_]) < DelayValue<Real[_]>(x) {
+final class DelayMultivariateUniform(x:Random<Real[_]>&, l:Real[_], u:Real[_]) < DelayValue<Real[_]>(x) {
   /**
    * Lower bound.
    */

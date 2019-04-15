@@ -1,7 +1,7 @@
 /**
  * Inverse-gamma distribution.
  */
-class InverseGamma(α:Expression<Real>, β:Expression<Real>) < Distribution<Real> {
+final class InverseGamma(α:Expression<Real>, β:Expression<Real>) < Distribution<Real> {
   /**
    * Shape.
    */

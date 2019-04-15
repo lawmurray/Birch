@@ -1,7 +1,7 @@
 /**
  * Multivariate uniform distribution over integers.
  */
-class MultivariateUniformInteger(l:Expression<Integer[_]>, u:Expression<Integer[_]>) < Distribution<Integer[_]> {
+final class MultivariateUniformInteger(l:Expression<Integer[_]>, u:Expression<Integer[_]>) < Distribution<Integer[_]> {
   /**
    * Lower bound.
    */

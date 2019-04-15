@@ -3,7 +3,7 @@
  * the prior over the mean is given by a dot product with a multivariate
  * Gaussian random variable, plus scalar.
  */
-class DelayMultivariateDotGaussianGaussian(x:Random<Real>&,
+final class DelayMultivariateDotGaussianGaussian(x:Random<Real>&,
     a:Real[_], m:DelayMultivariateGaussian, c:Real, s2:Real) <
     DelayGaussian(x, dot(a, m.μ) + c, scalar(trans(a)*cholinv(m.Λ)*a) + s2) {
   /**

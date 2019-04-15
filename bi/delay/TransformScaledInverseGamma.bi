@@ -1,7 +1,7 @@
 /*
  * Scaling of an inverse-gamma random variate.
  */
-class TransformScaledInverseGamma(a2:Real, σ2:DelayInverseGamma) {
+final class TransformScaledInverseGamma(a2:Real, σ2:DelayInverseGamma) {
   /**
    * Scale.
    */

@@ -1,7 +1,7 @@
 /**
  * Dirichlet distribution.
  */
-class Dirichlet(α:Expression<Real[_]>) < Distribution<Real[_]> {
+final class Dirichlet(α:Expression<Real[_]>) < Distribution<Real[_]> {
   /**
    * Concentration.
    */

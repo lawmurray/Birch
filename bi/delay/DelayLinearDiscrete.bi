@@ -2,7 +2,7 @@
  * Delayed delta function on a linear transformation of a discrete random
  * variate.
  */
-class DelayLinearDiscrete(x:Random<Integer>&, a:Integer,
+final class DelayLinearDiscrete(x:Random<Integer>&, a:Integer,
     μ:DelayDiscrete, c:Integer) < DelayDiscrete(x) {
   /**
    * Scale. Should be 1 or -1 to ensure integer-invertible.

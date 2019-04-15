@@ -1,7 +1,7 @@
 /*
  * Delayed Dirichlet-multinomial random variate.
  */
-class DelayDirichletMultinomial(x:Random<Integer[_]>&, n:Integer,
+final class DelayDirichletMultinomial(x:Random<Integer[_]>&, n:Integer,
     ρ:DelayDirichlet) < DelayValue<Integer[_]>(x) {
   /**
    * Number of trials.

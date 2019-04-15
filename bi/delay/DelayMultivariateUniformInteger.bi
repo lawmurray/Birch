@@ -1,7 +1,7 @@
 /*
  * Delayed multivariate uniform random variable over integers.
  */
-class DelayMultivariateUniformInteger(x:Random<Integer[_]>&, l:Integer[_],
+final class DelayMultivariateUniformInteger(x:Random<Integer[_]>&, l:Integer[_],
     u:Integer[_]) < DelayValue<Integer[_]>(x) {
   /**
    * Lower bound.

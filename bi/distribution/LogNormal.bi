@@ -1,7 +1,7 @@
 /**
  * Synonym for LogGaussian.
  */
-class LogNormal = LogGaussian;
+final class LogNormal = LogGaussian;
 
 /**
  * Create log-Gaussian distribution.

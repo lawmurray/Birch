@@ -2,7 +2,7 @@
  * Delayed delta function on a difference of two bounded discrete random
  * variates.
  */
-class DelaySubtractBoundedDiscrete(x:Random<Integer>&,
+final class DelaySubtractBoundedDiscrete(x:Random<Integer>&,
     x1:DelayBoundedDiscrete, x2:DelayBoundedDiscrete) < DelayBoundedDiscrete(
     x, x1.l - x2.u, x1.u - x2.l) {
   /**

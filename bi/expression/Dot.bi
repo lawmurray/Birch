@@ -1,7 +1,7 @@
 /*
  * Lazy multivariate multiplication.
  */
-class Dot<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>) <
+final class Dot<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>) <
     Expression<Value> {  
   /**
    * Left operand.

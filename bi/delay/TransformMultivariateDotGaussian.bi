@@ -1,7 +1,7 @@
 /*
  * Dot transformation of a multivariate Gaussian random variate.
  */
-class TransformMultivariateDotGaussian(a:Real[_],
+final class TransformMultivariateDotGaussian(a:Real[_],
     x:DelayMultivariateGaussian, c:Real) <
     TransformMultivariateDot<Real>(a, c) {
   /**

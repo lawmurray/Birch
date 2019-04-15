@@ -1,7 +1,7 @@
 /*
  * Delayed Dirichlet-categorical random variate.
  */
-class DelayDirichletCategorical(x:Random<Integer>&, ρ:DelayDirichlet) <
+final class DelayDirichletCategorical(x:Random<Integer>&, ρ:DelayDirichlet) <
     DelayValue<Integer>(x) {
   /**
    * Category probabilities.

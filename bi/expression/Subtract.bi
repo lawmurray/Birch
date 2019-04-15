@@ -1,7 +1,7 @@
 /*
  * Lazy subtraction.
  */
-class Subtract<Left,Right,Value>(left:Expression<Left>,
+final class Subtract<Left,Right,Value>(left:Expression<Left>,
     right:Expression<Right>) < Expression<Value> {  
   /**
    * Left operand.

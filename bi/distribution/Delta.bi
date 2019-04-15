@@ -2,7 +2,7 @@
  * Delta distribution, representing a distribution on a discrete space with
  * all probability mass at one location.
  */
-class Delta(μ:Expression<Integer>) < Distribution<Integer> {
+final class Delta(μ:Expression<Integer>) < Distribution<Integer> {
   /**
    * Location.
    */

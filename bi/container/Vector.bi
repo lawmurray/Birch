@@ -1,7 +1,7 @@
 /**
  * Resizeable vector with $O(1)$ random access.
  */
-class Vector<Type> {
+final class Vector<Type> {
   /**
    * Elements.
    */
@@ -184,7 +184,7 @@ class Vector<Type> {
   function read(buffer:Buffer) {
     auto f <- buffer.walk();
     while (f?) {
-      /* tricky, but works for both basic and class types */
+      /* tricky, but works for both basic and final class types */
       x:Type;
       auto y <- f!.get(x);
       if (y?) {

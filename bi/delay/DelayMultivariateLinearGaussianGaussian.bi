@@ -1,7 +1,7 @@
 /*
  * Delayed multivariate linear-Gaussian-Gaussian random variate.
  */
-class DelayMultivariateLinearGaussianGaussian(x:Random<Real[_]>&,
+final class DelayMultivariateLinearGaussianGaussian(x:Random<Real[_]>&,
     A:Real[_,_], m:DelayMultivariateGaussian, c:Real[_], S:Real[_,_]) <
     DelayMultivariateGaussian(x, A*m.μ + c, A*cholinv(m.Λ)*trans(A) + S) {
   /**

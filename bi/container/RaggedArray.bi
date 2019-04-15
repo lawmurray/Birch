@@ -2,7 +2,7 @@
  * Two-dimensional array where each row has a varying length. Internally, this
  * is stored in one contiguous array for $O(1)$ random access.
  */
-class RaggedArray<Type> {
+final class RaggedArray<Type> {
   /**
    * Elements.
    */
@@ -277,7 +277,7 @@ class RaggedArray<Type> {
       pushBack();
       auto col <- row!.walk();
       while col? {
-        /* tricky, but works for both basic and class types */
+        /* tricky, but works for both basic and final class types */
         x:Type;
         auto y <- col!.get(x);
         if (y?) {

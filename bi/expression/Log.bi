@@ -1,7 +1,7 @@
 /*
  * Lazy `log`.
  */
-class Log<Value>(x:Expression<Value>) < Expression<Value> {  
+final class Log<Value>(x:Expression<Value>) < Expression<Value> {  
   /**
    * Argument.
    */

@@ -1,7 +1,7 @@
 /**
  * Chinese restaurant process.
  */
-class Restaurant(α:Expression<Real>, θ:Expression<Real>) < Distribution<Real[_]> {
+final class Restaurant(α:Expression<Real>, θ:Expression<Real>) < Distribution<Real[_]> {
   /**
    * Concentration.
    */

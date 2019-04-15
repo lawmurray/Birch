@@ -1,7 +1,7 @@
 /**
  * Log-Gaussian distribution.
  */
-class LogGaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distribution<Real> {
+final class LogGaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distribution<Real> {
   /**
    * Mean after log transformation.
    */

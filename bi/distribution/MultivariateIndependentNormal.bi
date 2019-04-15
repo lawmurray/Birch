@@ -1,7 +1,7 @@
 /**
  * Synonym for MultivariateIndependentGaussian.
  */
-class MultivariateIndependentNormal = MultivariateIndependentGaussian;
+final class MultivariateIndependentNormal = MultivariateIndependentGaussian;
 
 /**
  * Create multivariate Gaussian distribution.

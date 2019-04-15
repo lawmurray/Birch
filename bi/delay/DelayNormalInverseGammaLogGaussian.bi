@@ -1,7 +1,7 @@
 /*
  * Delayed normal-inverse-gamma-log-Gaussian random variate.
  */
-class DelayNormalInverseGammaLogGaussian(x:Random<Real>&,
+final class DelayNormalInverseGammaLogGaussian(x:Random<Real>&,
     μ:DelayNormalInverseGamma) < DelayValue<Real>(x) {
   /**
    * Mean.

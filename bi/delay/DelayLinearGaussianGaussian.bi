@@ -1,7 +1,7 @@
 /*
  * Delayed linear-Gaussian-Gaussian random variate.
  */
-class DelayLinearGaussianGaussian(x:Random<Real>&, a:Real, m:DelayGaussian,
+final class DelayLinearGaussianGaussian(x:Random<Real>&, a:Real, m:DelayGaussian,
     c:Real, s2:Real) < DelayGaussian(x, a*m.μ + c, a*a/m.λ + s2) {
   /**
    * Scale.

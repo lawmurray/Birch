@@ -1,7 +1,7 @@
 /*
  * Delayed negative binomial random variate.
  */
-class DelayNegativeBinomial(x:Random<Integer>&, n:Integer, ρ:Real) <
+final class DelayNegativeBinomial(x:Random<Integer>&, n:Integer, ρ:Real) <
     DelayDiscrete(x) {
   /**
    * Number of successes before the experiment is stopped.

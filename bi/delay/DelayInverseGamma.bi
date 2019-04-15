@@ -1,7 +1,7 @@
 /*
  * Delayed inverse-gamma random variate.
  */
-class DelayInverseGamma(x:Random<Real>&, α:Real, β:Real) <
+final class DelayInverseGamma(x:Random<Real>&, α:Real, β:Real) <
     DelayValue<Real>(x) {
   /**
    * Shape.

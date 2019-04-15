@@ -1,7 +1,7 @@
 /**
  * Synonym for Gaussian.
  */
-class Normal = Gaussian;
+final class Normal = Gaussian;
 
 /**
  * Create Gaussian distribution.

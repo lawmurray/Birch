@@ -1,7 +1,7 @@
 /**
  * Categorical distribution.
  */
-class Categorical(ρ:Expression<Real[_]>) < Distribution<Integer> {
+final class Categorical(ρ:Expression<Real[_]>) < Distribution<Integer> {
   /**
    * Category probabilities.
    */

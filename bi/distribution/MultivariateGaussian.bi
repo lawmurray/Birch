@@ -1,7 +1,7 @@
 /**
  * Multivariate Gaussian distribution.
  */
-class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) <
+final class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) <
     Distribution<Real[_]> {
   /**
    * Mean.

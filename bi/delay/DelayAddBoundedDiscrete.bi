@@ -1,7 +1,7 @@
 /*
  * Delayed delta function on a sum of two bounded discrete random variates.
  */
-class DelayAddBoundedDiscrete(x:Random<Integer>&, x1:DelayBoundedDiscrete,
+final class DelayAddBoundedDiscrete(x:Random<Integer>&, x1:DelayBoundedDiscrete,
     x2:DelayBoundedDiscrete) < DelayBoundedDiscrete(x, x1.l + x2.l,
     x1.u + x2.u) {
   /**

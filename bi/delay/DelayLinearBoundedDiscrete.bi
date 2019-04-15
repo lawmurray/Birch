@@ -2,7 +2,7 @@
  * Delayed delta function on a linear transformation of a bounded discrete
  * random variate.
  */
-class DelayLinearBoundedDiscrete(x:Random<Integer>&, a:Integer,
+final class DelayLinearBoundedDiscrete(x:Random<Integer>&, a:Integer,
     μ:DelayBoundedDiscrete, c:Integer) < DelayBoundedDiscrete(x, a*μ.l + c,
     a*μ.u + c) {
   /**

@@ -1,7 +1,7 @@
 /**
  * Poisson distribution.
  */
-class Poisson(λ:Expression<Real>) < Distribution<Integer> {
+final class Poisson(λ:Expression<Real>) < Distribution<Integer> {
   /**
    * Rate.
    */

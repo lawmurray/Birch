@@ -1,7 +1,7 @@
 /*
  * Delayed Poisson random variate.
  */
-class DelayPoisson(x:Random<Integer>&, λ:Real) < DelayDiscrete(x) {
+final class DelayPoisson(x:Random<Integer>&, λ:Real) < DelayDiscrete(x) {
   /**
    * Rate.
    */

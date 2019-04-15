@@ -7,7 +7,7 @@
  *     See note under List for possible segfault issues on the destruction
  *     of large stacks.
  */
-class Stack<Type> {
+final class Stack<Type> {
   head:StackNode<Type>?;
   count:Integer <- 0;
 

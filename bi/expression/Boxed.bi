@@ -1,7 +1,7 @@
 /**
  * Boxed value.
  */
-class Boxed<Value>(x:Value) < Expression<Value> {  
+final class Boxed<Value>(x:Value) < Expression<Value> {  
   /**
    * Value.
    */

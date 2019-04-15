@@ -2,7 +2,7 @@
  * Dot transformation of a multivariate normal-inverse-gamma random
  * variate.
  */
-class TransformMultivariateDotNormalInverseGamma(a:Real[_],
+final class TransformMultivariateDotNormalInverseGamma(a:Real[_],
     x:DelayMultivariateNormalInverseGamma, c:Real) <
     TransformMultivariateDot<Real>(a, c) {
   /**

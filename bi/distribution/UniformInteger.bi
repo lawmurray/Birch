@@ -1,7 +1,7 @@
 /**
  * Uniform distribution over integers.
  */
-class UniformInteger(l:Expression<Integer>, u:Expression<Integer>) <
+final class UniformInteger(l:Expression<Integer>, u:Expression<Integer>) <
     Distribution<Integer> {
   /**
    * Lower bound.

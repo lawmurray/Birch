@@ -1,7 +1,7 @@
 /*
  * Delayed delta function on a discrete random variate.
  */
-class DelayDiscreteDelta(x:Random<Integer>&, μ:DelayDiscrete) <
+final class DelayDiscreteDelta(x:Random<Integer>&, μ:DelayDiscrete) <
     DelayDiscrete(x) {
   /**
    * Location.

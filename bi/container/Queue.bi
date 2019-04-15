@@ -7,7 +7,7 @@
  *     See note under List for possible segfault issues on the destruction
  *     of large queues.
  */
-class Queue<Type> {
+final class Queue<Type> {
   forward:StackNode<Type>?;
   backward:StackNode<Type>?;
   count:Integer <- 0;
@@ -172,7 +172,7 @@ class Queue<Type> {
   function read(buffer:Buffer) {
     auto f <- buffer.walk();
     while f? {
-      /* tricky, but works for both basic and class types */
+      /* tricky, but works for both basic and final class types */
       x:Type;
       auto y <- f!.get(x);
       if (y?) {

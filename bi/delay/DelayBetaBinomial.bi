@@ -1,7 +1,7 @@
 /*
  * Delayed Beta-binomial random variate.
  */
-class DelayBetaBinomial(x:Random<Integer>&, n:Integer, ρ:DelayBeta) <
+final class DelayBetaBinomial(x:Random<Integer>&, n:Integer, ρ:DelayBeta) <
     DelayBoundedDiscrete(x, 0, n) {
   /**
    * Number of trials.

@@ -1,7 +1,7 @@
 /**
  * Student's $t$-distribution.
  */
-class Student(ν:Expression<Real>) < Distribution<Real> {
+final class Student(ν:Expression<Real>) < Distribution<Real> {
   /**
    * Degrees of freedom.
    */

@@ -1,7 +1,7 @@
 /**
  * Bernoulli distribution.
  */
-class Bernoulli(ρ:Expression<Real>) < Distribution<Boolean> {
+final class Bernoulli(ρ:Expression<Real>) < Distribution<Boolean> {
   /**
    * Success probability.
    */

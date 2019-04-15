@@ -5,7 +5,7 @@
  * - v: The random variate.
  * - p: The distribution.
  */
-class RandomValueEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
+final class RandomValueEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     RandomEvent {
   /**
    * Random variable associated with the event.

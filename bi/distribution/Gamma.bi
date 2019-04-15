@@ -1,7 +1,7 @@
 /**
  * Gamma distribution.
  */
-class Gamma(k:Expression<Real>, θ:Expression<Real>) < Distribution<Real> {
+final class Gamma(k:Expression<Real>, θ:Expression<Real>) < Distribution<Real> {
   /**
    * Shape.
    */

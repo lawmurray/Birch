@@ -1,7 +1,7 @@
 /*
  * Delayed gamma-Exponential random variate.
  */
-class DelayGammaExponential(x:Random<Real>&, λ:DelayGamma) <
+final class DelayGammaExponential(x:Random<Real>&, λ:DelayGamma) <
     DelayValue<Real>(x) {
   /**
    * Rate.

@@ -1,7 +1,7 @@
 /**
  * Beta distribution.
  */
-class Beta(α:Expression<Real>, β:Expression<Real>) < Distribution<Real> {
+final class Beta(α:Expression<Real>, β:Expression<Real>) < Distribution<Real> {
   /**
    * First shape.
    */

@@ -1,7 +1,7 @@
 /*
  * Delayed binomial random variate.
  */
-class DelayBinomial(x:Random<Integer>&, n:Integer, ρ:Real) <
+final class DelayBinomial(x:Random<Integer>&, n:Integer, ρ:Real) <
     DelayBoundedDiscrete(x, 0, n) {
   /**
    * Number of trials.

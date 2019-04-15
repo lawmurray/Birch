@@ -2,7 +2,7 @@
  * Multivariate Gaussian distribution with independent components of
  * identical variance.
  */
-class MultivariateIndependentGaussian(μ:Expression<Real[_]>,
+final class MultivariateIndependentGaussian(μ:Expression<Real[_]>,
     σ2:Expression<Real>) < Distribution<Real[_]> {
   /**
    * Mean.

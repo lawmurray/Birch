@@ -1,7 +1,7 @@
 /**
  * Binomial distribution.
  */
-class Binomial(n:Expression<Integer>, ρ:Expression<Real>) < Distribution<Integer> {
+final class Binomial(n:Expression<Integer>, ρ:Expression<Real>) < Distribution<Integer> {
   /**
    * Number of trials.
    */

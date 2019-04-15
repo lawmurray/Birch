@@ -2,7 +2,7 @@
  * Linear transformation of a multivariate normal-inverse-gamma random
  * variate.
  */
-class TransformMultivariateLinearNormalInverseGamma(A:Real[_,_],
+final class TransformMultivariateLinearNormalInverseGamma(A:Real[_,_],
     x:DelayMultivariateNormalInverseGamma, c:Real[_]) <
     TransformMultivariateLinear<Real>(A, c) {
   /**

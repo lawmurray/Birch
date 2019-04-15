@@ -1,7 +1,7 @@
 /*
  * Delayed uniform integer random variate.
  */
-class DelayUniformInteger(x:Random<Integer>&, l:Integer, u:Integer) <
+final class DelayUniformInteger(x:Random<Integer>&, l:Integer, u:Integer) <
     DelayBoundedDiscrete(x, l, u) {
   function simulate() -> Integer {
     if value? {

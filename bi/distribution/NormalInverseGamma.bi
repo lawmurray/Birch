@@ -13,7 +13,7 @@
  * and is the conjugate prior of a Gaussian distribution with both
  * unknown mean and unknown variance.
  *
- * In model code, it is not usual to use this class directly. Instead,
+ * In model code, it is not usual to use this final class directly. Instead,
  * establish the conjugate relationship via code such as the following:
  *
  *     σ2 ~ InverseGamma(α, β);
@@ -25,7 +25,7 @@
  * be multiplication on the left (as above) or the right, or division on the
  * right.
  */
-class NormalInverseGamma(μ:Expression<Real>, a2:Expression<Real>,
+final class NormalInverseGamma(μ:Expression<Real>, a2:Expression<Real>,
     α:Expression<Real>, β:Expression<Real>) < Distribution<Real> {
   /**
    * Mean.

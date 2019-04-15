@@ -3,7 +3,7 @@
  * cannot be instantiated, but the associated random variable may be
  * marginalized out.
  */
-class DelayRestaurant(x:Random<Real[_]>&, α:Real, θ:Real) <
+final class DelayRestaurant(x:Random<Real[_]>&, α:Real, θ:Real) <
     DelayValue<Real[_]>(x) {
   /**
    * Concentration.

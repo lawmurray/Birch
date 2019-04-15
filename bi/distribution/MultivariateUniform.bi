@@ -1,7 +1,7 @@
 /**
  * Multivariate uniform distribution.
  */
-class MultivariateUniform(l:Expression<Real[_]>, u:Expression<Real[_]>) < Distribution<Real[_]> {
+final class MultivariateUniform(l:Expression<Real[_]>, u:Expression<Real[_]>) < Distribution<Real[_]> {
   /**
    * Lower bound.
    */

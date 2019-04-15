@@ -1,7 +1,7 @@
 /**
  * Create a Geometric distribution
  */
-class Geometric(ρ:Expression<Real>) < NegativeBinomial(Boxed(1), ρ) {}
+final class Geometric(ρ:Expression<Real>) < NegativeBinomial(Boxed(1), ρ) {}
 
 /**
  * Create a Geometric distribution

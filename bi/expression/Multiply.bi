@@ -1,7 +1,7 @@
 /*
  * Lazy multiplication.
  */
-class Multiply<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>) < Expression<Value> {  
+final class Multiply<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>) < Expression<Value> {  
   /**
    * Left operand.
    */

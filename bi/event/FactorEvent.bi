@@ -3,7 +3,7 @@
  *
  * - w: Log-weight.
  */
-class FactorEvent(w:Real) < Event {
+final class FactorEvent(w:Real) < Event {
   /**
    * Log-weight associated with the event.
    */

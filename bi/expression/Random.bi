@@ -4,7 +4,7 @@
  *
  * - Value: Value type.
  */
-class Random<Value> < Expression<Value> {  
+final class Random<Value> < Expression<Value> {  
   /**
    * Value.
    */

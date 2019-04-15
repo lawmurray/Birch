@@ -1,7 +1,7 @@
 /**
  * Synonym for MultivariateGaussian.
  */
-class MultivariateNormal = MultivariateGaussian;
+final class MultivariateNormal = MultivariateGaussian;
 
 /**
  * Create multivariate Gaussian distribution.

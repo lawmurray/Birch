@@ -13,7 +13,7 @@
  *        (with e.g. `popBack()`).
  *     3. Increase the stack size with `ulimit` or similar.
  */
-class List<Type> {
+final class List<Type> {
   head:ListNode<Type>?;
   tail:ListNode<Type>&;
   count:Integer <- 0;
@@ -273,7 +273,7 @@ class List<Type> {
   function read(buffer:Buffer) {
     auto f <- buffer.walk();
     while f? {
-      /* tricky, but works for both basic and class types */
+      /* tricky, but works for both basic and final class types */
       x:Type;
       auto y <- f!.get(x);
       if (y?) {

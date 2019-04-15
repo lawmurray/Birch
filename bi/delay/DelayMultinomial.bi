@@ -1,7 +1,7 @@
 /*
  * Delayed multinomial random variate.
  */
-class DelayMultinomial(x:Random<Integer[_]>&, n:Integer, ρ:Real[_]) <
+final class DelayMultinomial(x:Random<Integer[_]>&, n:Integer, ρ:Real[_]) <
     DelayValue<Integer[_]>(x) {
   /**
    * Number of trials.
