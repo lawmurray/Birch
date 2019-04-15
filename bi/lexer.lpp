@@ -118,6 +118,7 @@ E                                  [Ee][+-]?{D}+
 "super"                             { return SUPER; }
 "global"                            { return GLOBAL; }
 "parallel"                          { return PARALLEL; }
+"final"                             { return FINAL; }
 "nil"                               { return NIL; }
 
 "true"                              { yylval.valString = "true"; return BOOL_LITERAL; }

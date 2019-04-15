@@ -718,6 +718,8 @@ bi::Statement* bi::Resolver::modify(Class* o) {
     if (o->isBound() && !o->base->isEmpty()) {
       if (!o->base->isClass()) {
         throw BaseException(o);
+      } else if (!o->isAlias() && o->base->getClass()->has(FINAL)) {
+        throw FinalException(o);
       }
       o->scope->inherit(o->base->getClass()->scope);
       o->addSuper(o->base);

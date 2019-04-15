@@ -29,7 +29,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
 
   /* supporting class for state */
   if (header) {
-    start("class " << stateName << " : ");
+    start("class " << stateName << " final : ");
     finish("public libbirch::FiberState<" << o->returnType->unwrap() << "> {");
     line("public:");
     in();

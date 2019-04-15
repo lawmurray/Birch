@@ -16,6 +16,7 @@
 #include "bi/exception/DriverException.hpp"
 #include "bi/exception/FiberTypeException.hpp"
 #include "bi/exception/FileNotFoundException.hpp"
+#include "bi/exception/FinalException.hpp"
 #include "bi/exception/GenericException.hpp"
 #include "bi/exception/GetException.hpp"
 #include "bi/exception/IndexException.hpp"

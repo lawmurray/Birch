@@ -11,6 +11,7 @@ enum Annotation {
   NONE = 0,
   PARALLEL = 1,
   AUTO = 2,
+  FINAL = 3,
   PRIOR_INSTANTIATION = 4
 };
 

@@ -31,8 +31,8 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   if (o->isBound()) {
     /* supporting class for state */
     if (header) {
-      start("class " << stateName);
-      finish(" : public libbirch::FiberState<" << o->returnType->unwrap() << "> {");
+      start("class " << stateName << " final : ");
+      finish("public libbirch::FiberState<" << o->returnType->unwrap() << "> {");
       line("public:");
       in();
       line("using class_type_ = " << stateName << ';');

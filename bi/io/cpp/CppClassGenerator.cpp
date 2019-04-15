@@ -32,6 +32,9 @@ void bi::CppClassGenerator::visit(const Class* o) {
         if (o->isGeneric() && o->isBound()) {
        	 genTemplateArgs(o);
         }
+        if (o->has(FINAL)) {
+          middle(" final");
+        }
         if (o->isBound() && !o->base->isEmpty()) {
           middle(" : public ");
           ++inPointer;
