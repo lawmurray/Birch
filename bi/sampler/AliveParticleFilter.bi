@@ -8,7 +8,7 @@ class AliveParticleFilter < ParticleFilter {
    * For each checkpoint, the number of propagations that were performed to
    * achieve $N$ acceptances.
    */
-  P:List<Integer>;
+  P:Queue<Integer>;
 
   function initialize() {
     super.initialize();

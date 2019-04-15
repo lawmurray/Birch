@@ -12,12 +12,12 @@ class EventHandler {
   /**
    * Past events, if recording is enabled.
    */
-  trace:List<Event>;
+  trace:Queue<Event>;
 
   /**
    * Future events, if replaying is enabled.
    */
-  replay:List<Event>;
+  replay:Queue<Event>;
 
   /**
    * Is recording enabled?
@@ -125,8 +125,8 @@ class EventHandler {
   /**
    * Remove and return the replay trace.
    */
-  function takeReplay() -> List<Event> {
-    empty:List<Event>;
+  function takeReplay() -> Queue<Event> {
+    empty:Queue<Event>;
     auto replay <- this.replay;
     this.replay <- empty;
     return replay;
@@ -135,15 +135,15 @@ class EventHandler {
   /**
    * Set the replay trace.
    */
-  function setReplay(replay:List<Event>) {
+  function setReplay(replay:Queue<Event>) {
     this.replay <- replay;
   }
 
   /**
    * Remove and return the recorded trace.
    */
-  function takeTrace() -> List<Event> {
-    empty:List<Event>;
+  function takeTrace() -> Queue<Event> {
+    empty:Queue<Event>;
     auto trace <- this.trace;
     this.trace <- empty;
     return trace;
@@ -152,7 +152,7 @@ class EventHandler {
   /**
    * Set the recorded trace.
    */
-  function setTrace(trace:List<Event>) {
+  function setTrace(trace:Queue<Event>) {
     this.trace <- trace;
   }
 

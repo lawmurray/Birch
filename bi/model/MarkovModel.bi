@@ -15,7 +15,7 @@
  * `initial` and `transition` member fibers to specify the individual
  * components of the joint distribution.
  */
-class MarkovModel<Parameter,State> < BidirectionalModel {
+class MarkovModel<Parameter,State> < ForwardModel {
   /**
    * Parameter.
    */
@@ -24,7 +24,7 @@ class MarkovModel<Parameter,State> < BidirectionalModel {
   /**
    * States.
    */
-  x:List<State>;
+  x:Queue<State>;
   
   /**
    * Current state during simulation.
@@ -99,11 +99,6 @@ class MarkovModel<Parameter,State> < BidirectionalModel {
       x.pushBack(x');
       f <- x.end();
     }
-  }
-
-  function back() {
-    assert f?;
-    f <- f!.getPrevious();
   }
   
   function rewind() {

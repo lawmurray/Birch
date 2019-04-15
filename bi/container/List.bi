@@ -1,7 +1,8 @@
 /**
  * Doubly-linked list. Beyond its typical uses, because List is a recursive
- * data structure, it provides particularly good sharing under Birch's lazy
- * deep clone mechanism.
+ * data structure, it provides reasonably good sharing under Birch's lazy
+ * deep clone mechanism, although not as good as Stack and Queue, as they are
+ * singly-linked.
  *
  * !!! caution
  *     Long lists (length in the tens of thousands) can cause a segfault on
@@ -43,8 +44,8 @@ class List<Type> {
   /**
    * Copy the list.
    */
-  function copy() -> List<Type> {
-    o:List<Type>;
+  function copy() -> Queue<Type> {
+    o:Queue<Type>;
     auto f <- walk();
     while (f?) {
       o.pushBack(f!);
@@ -212,7 +213,7 @@ class List<Type> {
   }
 
   /**
-   * Forward iteratation.
+   * Forward iteration.
    *
    * Return: a fiber object that yields each element in forward order.
    */

@@ -23,7 +23,7 @@ class HiddenMarkovModel<Parameter,State,Observation> <
   /**
    * Observations.
    */
-  y:List<Observation>;
+  y:Queue<Observation>;
 
   /**
    * Current observation during simulation.
@@ -68,12 +68,6 @@ class HiddenMarkovModel<Parameter,State,Observation> <
       y.pushBack(y');
       g <- y.end();
     }
-  }
-
-  function back() {
-    super.back();
-    assert g?;
-    g <- g!.getPrevious();
   }
 
   function rewind() {

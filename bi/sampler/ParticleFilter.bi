@@ -38,22 +38,22 @@ class ParticleFilter < ForwardSampler {
    * For each checkpoint, the logarithm of the normalizing constant estimate
    * so far.
    */
-  Z:List<Real>;
+  Z:Queue<Real>;
   
   /**
    * For each checkpoint, the effective sample size (ESS).
    */
-  ess:List<Real>;
+  ess:Queue<Real>;
   
   /**
    * At each checkpoint, how much memory is in use?
    */
-  memory:List<Integer>;
+  memory:Queue<Integer>;
   
   /**
    * At each checkpoint, what is the elapsed wallclock time?
    */
-  elapsed:List<Real>; 
+  elapsed:Queue<Real>; 
 
   function sample() -> (Model, Real) {
     initialize();
@@ -98,9 +98,10 @@ class ParticleFilter < ForwardSampler {
     x1:Vector<ForwardModel>;
     x1.enlarge(N, archetype!);
     x <- x1.toArray();
-    parallel for auto n in 1..N {
+    for auto n in 1..N {
       x[n] <- clone<ForwardModel>(x[n]);
     }
+    archetype <- nil;
     tic();
   }
    
@@ -163,7 +164,7 @@ class ParticleFilter < ForwardSampler {
    */
   function copy() {
     auto x0 <- x;
-    parallel for auto n in 1..N {
+    for auto n in 1..N {
       //if a[n] != n {
         x[n] <- clone<ForwardModel>(x0[a[n]]);
       //}
