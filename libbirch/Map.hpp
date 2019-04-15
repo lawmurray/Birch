@@ -97,13 +97,6 @@ private:
   value_type get(const unsigned i);
 
   /**
-   * Erase an entry.
-   *
-   * @param i Index.
-   */
-  void erase(const unsigned i);
-
-  /**
    * Compute the hash code for a key.
    */
   unsigned hash(const key_type key) const;
@@ -123,6 +116,11 @@ private:
    * not be needed.
    */
   void unreserve();
+
+  /**
+   * Resize an empty map.
+   */
+  void resize(const unsigned nentries);
 
   /**
    * The keys.

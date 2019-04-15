@@ -3,20 +3,6 @@
  */
 #include "libbirch/Map.hpp"
 
-/**
- * Within Map, this is the value assigned to the key of an empty entry; one
- * which has never been used.
- */
-static libbirch::Any* const EMPTY = nullptr;
-
-/**
- * Within Map, this is the value assigned to the key of an erased entry; one
- * which was at some point used, but has since been erased. Such entries are
- * skipped when reading, but may be overwritten when writing.
- */
-static libbirch::Any* const ERASED =
-    reinterpret_cast<libbirch::Any*>(0xFFFFFFFFFFFFFFFF);
-
 libbirch::Map::Map() :
     keys(nullptr),
     values(nullptr),
@@ -35,7 +21,7 @@ libbirch::Map::~Map() {
     value_type value;
     for (unsigned i = 0u; i < nentries; ++i) {
       key = keys1[i];
-      if (key != EMPTY && key != ERASED) {
+      if (key) {
         value = values1[i];
         key->decMemo();
         value->decShared();
@@ -54,17 +40,9 @@ libbirch::Map::value_type libbirch::Map::get(const key_type key,
   value_type value = failed;
   if (!empty()) {
     lock.share();
-    auto code = hash(key);
-    auto i = code;
+    auto i = hash(key);
     auto k = keys[i].load(std::memory_order_relaxed);
-    if (k && k != key) {
-      i = (i + 1u) & (nentries - 1u);
-      k = keys[i].load(std::memory_order_relaxed);
-    }
-    while (k && k != key && i != code) {
-      // ^ extra condition i != code ensures we loop over once at most,
-      //   happens when key not found, and all empty slots have keys of
-      //   ERASED not EMPTY
+    while (k && k != key) {
       i = (i + 1u) & (nentries - 1u);
       k = keys[i].load(std::memory_order_relaxed);
     }
@@ -88,18 +66,14 @@ libbirch::Map::value_type libbirch::Map::put(const key_type key,
   reserve();
   lock.share();
 
-  key_type expected = EMPTY;
+  key_type expected = nullptr;
   key_type desired = key;
 
   auto i = hash(key);
   while (!keys[i].compare_exchange_strong(expected, desired,
       std::memory_order_relaxed) && expected != key) {
-    if (expected == ERASED) {
-      // attempt to replace this entry on next attempt
-    } else {
-      i = (i + 1u) & (nentries - 1u);
-      expected = EMPTY;
-    }
+    i = (i + 1u) & (nentries - 1u);
+    expected = nullptr;
   }
 
   value_type result;
@@ -126,18 +100,14 @@ libbirch::Map::value_type libbirch::Map::uninitialized_put(const key_type key,
   reserve();
   lock.share();
 
-  key_type expected = EMPTY;
+  key_type expected = nullptr;
   key_type desired = key;
 
   auto i = hash(key);
   while (!keys[i].compare_exchange_strong(expected, desired,
       std::memory_order_relaxed) && expected != key) {
-    if (expected == ERASED) {
-      // attempt to replace this entry on next attempt
-    } else {
-      i = (i + 1u) & (nentries - 1u);
-      expected = EMPTY;
-    }
+    i = (i + 1u) & (nentries - 1u);
+    expected = nullptr;
   }
 
   value_type result;
@@ -156,49 +126,33 @@ void libbirch::Map::freeze() {
   lock.share();
   for (auto i = 0u; i < nentries; ++i) {
     auto key = keys[i].load(std::memory_order_relaxed);
-    if (key != EMPTY && key != ERASED) {
-      if (key->isReachable()) {
-        get(i)->freeze();
-      } else {
-        erase(i);
-      }
+    if (key && key->isReachable()) {
+      get(i)->freeze();
     }
   }
   lock.unshare();
 }
 
 void libbirch::Map::copy(Map& o) {
-  o.lock.keep();
-  lock.keep();
-  if (o.nentries > 0) {
-    auto nentries1 = o.nentries;
-    auto keys1 = (key_type*)allocate(nentries1 * sizeof(key_type));
-    auto values1 = (value_type*)allocate(nentries1 * sizeof(value_type));
-    for (auto i = 0u; i < nentries1; ++i) {
-      auto key = o.keys[i].load(std::memory_order_relaxed);
-      auto value = o.values[i].load(std::memory_order_relaxed);
-      if (key != EMPTY && key != ERASED) {
-        if (key->isReachable()) {
-          key->incMemo();
-          value->incShared();
-        } else {
-          o.erase(i);
-          key = ERASED;
-          value = EMPTY;
-        }
-      }
-      keys1[i] = key;
-      values1[i] = value;
-    }
+  o.lock.share();
 
-    keys = (std::atomic<key_type>*)keys1;
-    values = (std::atomic<value_type>*)values1;
-    nentries = nentries1;
-    tentries = libbirch::tid;
-    noccupied.store(o.noccupied.load(std::memory_order_relaxed), std::memory_order_relaxed);
+  /* allocate buffers */
+  auto nentries1 = o.nentries;
+  while ((nentries1 >> 1u) > o.crowd()) {
+    nentries1 >>= 1u;
   }
-  o.lock.unkeep();
-  lock.unkeep();
+  nentries1 = std::max(nentries1, (unsigned)CLONE_MEMO_INITIAL_SIZE);
+  resize(nentries1);
+
+  /* copy entries */
+  for (auto i = 0u; i < o.nentries; ++i) {
+    auto key = o.keys[i].load(std::memory_order_relaxed);
+    if (key && key->isReachable()) {
+      auto value = o.values[i].load(std::memory_order_relaxed);
+      put(key, value);
+    }
+  }
+  o.lock.unshare();
 }
 
 libbirch::Map::value_type libbirch::Map::get(const unsigned i) {
@@ -207,20 +161,8 @@ libbirch::Map::value_type libbirch::Map::get(const unsigned i) {
   value_type value;
   do {
     value = values[i].load(std::memory_order_relaxed);
-  } while (value == EMPTY);
+  } while (!value);
   return value;
-}
-
-void libbirch::Map::erase(const unsigned i) {
-  auto value = values[i].exchange(EMPTY, std::memory_order_relaxed);
-  auto key = keys[i].exchange(ERASED, std::memory_order_relaxed);
-  if (key != ERASED) {
-    unreserve();
-    key->decMemo();
-  }
-  if (value != EMPTY) {
-    value->decShared();
-  }
 }
 
 void libbirch::Map::reserve() {
@@ -252,7 +194,7 @@ void libbirch::Map::reserve() {
       for (auto i = 0u; i < nentries1; ++i) {
         auto key = keys1[i];
         auto value = values1[i];
-        if (key != EMPTY && key != ERASED) {
+        if (key) {
           if (key->isReachable()) {
             /* rehash and insert */
             auto j = hash(key);
@@ -283,6 +225,26 @@ void libbirch::Map::reserve() {
     }
 
     /* release resize lock */
+    lock.unkeep();
+  }
+}
+
+void libbirch::Map::resize(const unsigned nentries) {
+  assert(empty());
+
+  if (nentries > 0) {
+    lock.keep();
+
+    auto keys = (key_type*)allocate(nentries*sizeof(key_type));
+    auto values = (value_type*)allocate(nentries*sizeof(value_type));
+    std::memset(keys, 0, nentries * sizeof(key_type));
+    std::memset(values, 0, nentries * sizeof(value_type));
+
+    this->keys = (std::atomic<key_type>*)keys;
+    this->values = (std::atomic<value_type>*)values;
+    this->nentries = nentries;
+    tentries = libbirch::tid;
+
     lock.unkeep();
   }
 }

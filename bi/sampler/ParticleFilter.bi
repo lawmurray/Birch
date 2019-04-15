@@ -98,7 +98,7 @@ class ParticleFilter < ForwardSampler {
     x1:Vector<ForwardModel>;
     x1.enlarge(N, archetype!);
     x <- x1.toArray();
-    for auto n in 1..N {
+    parallel for auto n in 1..N {
       x[n] <- clone<ForwardModel>(x[n]);
     }
     archetype <- nil;
@@ -164,7 +164,7 @@ class ParticleFilter < ForwardSampler {
    */
   function copy() {
     auto x0 <- x;
-    for auto n in 1..N {
+    parallel for auto n in 1..N {
       //if a[n] != n {
         x[n] <- clone<ForwardModel>(x0[a[n]]);
       //}
