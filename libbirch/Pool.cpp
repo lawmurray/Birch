@@ -4,15 +4,6 @@
 #if ENABLE_MEMORY_POOL
 #include "libbirch/Pool.hpp"
 
-libbirch::Pool::Pool() :
-    top(nullptr) {
-  //
-}
-
-bool libbirch::Pool::empty() const {
-  return !top;
-}
-
 void* libbirch::Pool::pop() {
   lock.keep();
   auto result = top;

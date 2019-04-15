@@ -64,4 +64,13 @@ private:
 };
 }
 
+inline libbirch::Pool::Pool() :
+    top(nullptr) {
+  //
+}
+
+inline bool libbirch::Pool::empty() const {
+  return !top;
+}
+
 #endif

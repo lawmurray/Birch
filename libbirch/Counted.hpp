@@ -204,6 +204,28 @@ protected:
 };
 }
 
+#include "libbirch/thread.hpp"
+
+inline libbirch::Counted::Counted() :
+    sharedCount(0u),
+    weakCount(1u),
+    memoCount(0u),
+    size(0u),
+    tid(libbirch::tid),
+    frozen(false) {
+  //
+}
+
+inline libbirch::Counted::Counted(const Counted& o) :
+    sharedCount(0u),
+    weakCount(1u),
+    memoCount(0u),
+    size(o.size),
+    tid(libbirch::tid),
+    frozen(false) {
+  //
+}
+
 inline libbirch::Counted::~Counted() {
   assert(sharedCount == 0u);
 }
@@ -218,8 +240,28 @@ inline unsigned libbirch::Counted::getSize() const {
   return size;
 }
 
+inline libbirch::Counted* libbirch::Counted::lock() {
+  unsigned count = sharedCount.load(std::memory_order_relaxed);
+  while (count > 0u
+      && !sharedCount.compare_exchange_weak(count, count + 1u,
+          std::memory_order_relaxed)) {
+    //
+  }
+  return count > 0u ? this : nullptr;
+}
+
 inline void libbirch::Counted::incShared() {
   sharedCount.fetch_add(1u, std::memory_order_relaxed);
+}
+
+inline void libbirch::Counted::decShared() {
+  assert(sharedCount > 0u);
+  if (sharedCount.fetch_sub(1u, std::memory_order_relaxed) - 1u == 0u
+      && size > 0u) {
+    // ^ size == 0u during construction, never destroy in that case
+    destroy_();
+    decWeak();  // release weak self-reference
+  }
 }
 
 inline unsigned libbirch::Counted::numShared() const {
@@ -228,6 +270,16 @@ inline unsigned libbirch::Counted::numShared() const {
 
 inline void libbirch::Counted::incWeak() {
   weakCount.fetch_add(1u, std::memory_order_relaxed);
+}
+
+inline void libbirch::Counted::decWeak() {
+  assert(weakCount > 0u);
+  if (weakCount.fetch_sub(1u, std::memory_order_relaxed) - 1u == 0u) {
+    assert(sharedCount == 0u);
+    // ^ because of weak self-reference, the weak count should not expire
+    //   before the shared count
+    deallocate();
+  }
 }
 
 inline unsigned libbirch::Counted::numWeak() const {
@@ -249,8 +301,24 @@ inline void libbirch::Counted::decMemo() {
   decWeak();
 }
 
+inline bool libbirch::Counted::isReachable() const {
+  return weakCount.load(std::memory_order_relaxed) >
+      memoCount.load(std::memory_order_relaxed);
+}
+
 inline bool libbirch::Counted::isFrozen() const {
   return frozen.load(std::memory_order_relaxed);
+}
+
+inline void libbirch::Counted::freeze() {
+  bool expected = false;
+  bool desired = true;
+  if (frozen.compare_exchange_strong(expected, desired,
+      std::memory_order_relaxed)) {
+    if (sharedCount > 0) {
+      doFreeze_();
+    }
+  }
 }
 
 inline void libbirch::Counted::doFreeze_() {

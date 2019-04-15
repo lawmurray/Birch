@@ -96,8 +96,52 @@ protected:
 };
 }
 
+inline libbirch::LazyAny::LazyAny() :
+    Counted(),
+    context(currentContext),
+    forward(nullptr),
+    finished(false) {
+  //
+}
+
+inline libbirch::LazyAny::LazyAny(const LazyAny& o) :
+    Counted(o),
+    context(currentContext),
+    forward(nullptr),
+    finished(false) {
+  //
+}
+
+inline libbirch::LazyAny::~LazyAny() {
+  auto forward1 = this->forward.load(std::memory_order_relaxed);
+  if (forward1) {
+    forward1->decShared();
+  }
+}
+
 inline libbirch::LazyMemo* libbirch::LazyAny::getContext() {
   return context.get();
+}
+
+inline libbirch::LazyAny* libbirch::LazyAny::pullForward() {
+  if (isFrozen()) {
+    auto forward1 = forward.load(std::memory_order_relaxed);
+    if (forward1) {
+      return forward1->pullForward();
+    }
+  }
+  return this;
+}
+
+inline void libbirch::LazyAny::finish() {
+  bool expected = false;
+  bool desired = true;
+  if (finished.compare_exchange_strong(expected, desired,
+        std::memory_order_relaxed)) {
+    if (sharedCount > 0) {
+      doFinish_();
+    }
+  }
 }
 
 inline void libbirch::LazyAny::doFinish_() {
