@@ -11,8 +11,6 @@
 #include "libbirch/InitPtr.hpp"
 #include "libbirch/ContextPtr.hpp"
 
-#include <iostream>
-
 namespace libbirch {
 template<class T> class Optional;
 
@@ -42,7 +40,6 @@ public:
    */
   LazyPtr(T* object) :
       object(object),
-      from(object ? currentContext : nullptr),
       to(object ? currentContext : nullptr) {
     //
   }
@@ -52,7 +49,6 @@ public:
    */
   LazyPtr(const P& object) :
       object(object),
-      from(object ? currentContext : nullptr),
       to(object ? currentContext : nullptr) {
     //
   }
@@ -60,21 +56,19 @@ public:
   /**
    * Constructor.
    */
-  LazyPtr(T* object, LazyMemo* from, LazyMemo* to) :
+  LazyPtr(T* object, LazyMemo* to) :
       object(object),
-      from(from),
       to(to) {
-    assert(object || !from);
+    //
   }
 
   /**
    * Constructor.
    */
-  LazyPtr(const P& object, LazyMemo* from, LazyMemo* to) :
+  LazyPtr(const P& object, LazyMemo* to) :
       object(object),
-      from(from),
       to(to) {
-    assert(object || !from);
+    //
   }
 
   /**
@@ -82,15 +76,13 @@ public:
    */
   LazyPtr(const LazyPtr<P>& o) :
       object(o.object),
-      from(o.from),
-      to(o.to) {
+      to(currentContext) {
     if (cloneUnderway) {
-      to = currentContext;
       if (o.object && o.isCross()) {
         o.finish();
-        from = currentContext->getParent();
-        //finish();
       }
+    } else {
+      to = o.to;
     }
   }
 
@@ -100,7 +92,6 @@ public:
   template<class Q>
   LazyPtr(const LazyPtr<Q>& o) :
       object(o.object),
-      from(o.from),
       to(o.to) {
     //
   }
@@ -115,7 +106,6 @@ public:
   template<class Q>
   LazyPtr<P>& operator=(const LazyPtr<Q>& o) {
     object = o.object;
-    from = o.from;
     to = o.to;
     return *this;
   }
@@ -126,7 +116,6 @@ public:
   template<class Q>
   LazyPtr<P>& operator=(LazyPtr<Q> && o) {
     object = o.object;
-    from = o.from;
     to = o.to;
     return *this;
   }
@@ -136,7 +125,6 @@ public:
    */
   LazyPtr<P>& operator=(T* o) {
     object = o;
-    from = currentContext;
     to = currentContext;
     return *this;
   }
@@ -146,7 +134,6 @@ public:
    */
   LazyPtr<P>& operator=(const Nil&) {
     object = nullptr;
-    from = nullptr;
     to = nullptr;
     return *this;
   }
@@ -156,7 +143,6 @@ public:
    */
   LazyPtr<P>& operator=(const std::nullptr_t&) {
     object = nullptr;
-    from = nullptr;
     to = nullptr;
     return *this;
   }
@@ -204,8 +190,7 @@ public:
   T* get() {
     if (object && object->isFrozen()) {
       if (to) {
-        object = static_cast<T*>(to->get(object.get(), from.get()));
-        from = to.get();
+        object = static_cast<T*>(to->get(object.get()));
       }
       object = static_cast<T*>(object->getForward());
       assert(!object->isFrozen());
@@ -226,15 +211,9 @@ public:
   const T* pull() {
     if (object && object->isFrozen()) {
       if (to) {
-        object = static_cast<T*>(to->pull(object.get(), from.get()));
+        object = static_cast<T*>(to->pull(object.get()));
         if (object->getContext() == to.get()) {
-          from = to.get();
           object = static_cast<T*>(object->pullForward());
-        } else {
-          /* copy has been omitted for this access as it is read only, but on
-           * the next access we will need to check whether a copy has happened
-           * elsewhere in the meantime */
-          from = to->getParent();
         }
       } else {
         object = static_cast<T*>(object->pullForward());
@@ -261,7 +240,7 @@ public:
     } else {
       memo = LazyMemo::create_();
     }
-    return LazyPtr<P>(object, from.get(), memo);
+    return LazyPtr<P>(object, memo);
   }
 
   /**
@@ -282,8 +261,7 @@ public:
    */
   void finish() {
     if (object) {
-      object = static_cast<T*>(to->get(object.get(), from.get()));
-      from = to.get();
+      object = static_cast<T*>(to->get(object.get()));
       object->finish();
     }
   }
@@ -344,7 +322,7 @@ public:
    */
   template<class U>
   auto dynamic_pointer_cast() const {
-    return cast_type<U>(dynamic_cast<U*>(object.get()), from.get(), to.get());
+    return cast_type<U>(dynamic_cast<U*>(object.get()), to.get());
   }
 
   /**
@@ -352,7 +330,7 @@ public:
    */
   template<class U>
   auto static_pointer_cast() const {
-    return cast_type<U>(static_cast<U*>(object.get()), from.get(), to.get());
+    return cast_type<U>(static_cast<U*>(object.get()), to.get());
   }
 
 protected:
@@ -362,14 +340,7 @@ protected:
   P object;
 
   /**
-   * First label in list. This is potentially different from LazyAny::context
-   * as read-only accesses via pull() may partially propagate objects through
-   * the memo list.
-   */
-  InitPtr<LazyMemo> from;
-
-  /**
-   * Last label in list.
+   * Context to which to map the object.
    */
   ContextPtr to;
 };

@@ -76,26 +76,15 @@ public:
   value_type uninitialized_put(const key_type key, const value_type value);
 
   /**
-   * Remove an entry.
-   *
-   * @param key Key.
-   * @param value Value.
-   *
-   * An entry is removed by overwriting its key with a bit pattern that
-   * indicates erased. Consequently, the entry still occupies a slot. If the
-   * map is later resized, these erased entries will be removed.
-   */
-  void remove(const key_type key);
-
-  /**
-   * Erase all entries in the map that are unreachable.
-   */
-  void clean();
-
-  /**
    * Freeze all values in the map.
    */
   void freeze();
+
+  /**
+   * Copy entries from another map into this one, removing any that are
+   * obsolete.
+   */
+  void copy(Map& o);
 
 private:
   /**
@@ -106,6 +95,13 @@ private:
    * @return The value.
    */
   value_type get(const unsigned i);
+
+  /**
+   * Erase an entry.
+   *
+   * @param i Index.
+   */
+  void erase(const unsigned i);
 
   /**
    * Compute the hash code for a key.

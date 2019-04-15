@@ -45,16 +45,6 @@ public:
   libbirch_destroy_function_
 
   /**
-   * Is there a parent memo?
-   */
-  bool hasParent() const;
-
-  /**
-   * Get the parent memo.
-   */
-  LazyMemo* getParent() const;
-
-  /**
    * Fork to create a new child memo for cloning.
    *
    * @return The clone memo.
@@ -65,24 +55,13 @@ public:
    * Map an object that may not yet have been cloned, cloning it if
    * necessary.
    */
-  LazyAny* get(LazyAny* o, LazyMemo* from);
+  LazyAny* get(LazyAny* o);
 
   /**
    * Map an object that may not yet have been cloned, without cloning it.
    * This is used as an optimization for read-only access.
    */
-  LazyAny* pull(LazyAny* o, LazyMemo* from);
-
-  /**
-   * Deep mapping of an object through ancestor memos up to the current memo,
-   * without any cloning; get() or pull() should be called on the result to
-   * map through this memo.
-   *
-   * @param o The source object.
-   *
-   * @return The mapped object.
-   */
-  LazyAny* source(LazyAny* o, LazyMemo* from);
+  LazyAny* pull(LazyAny* o);
 
   /**
    * Shallow copy.
@@ -94,28 +73,10 @@ protected:
 
 private:
   /**
-   * Parent memo.
-   */
-  SharedPtr<LazyMemo> parent;
-
-  /**
-   * Memoization of mappings.
+   * Map.
    */
   Map m;
-
-  /**
-   * Generation number (zero is root).
-   */
-  unsigned gen;
 };
-}
-
-inline bool libbirch::LazyMemo::hasParent() const {
-  return parent;
-}
-
-inline libbirch::LazyMemo* libbirch::LazyMemo::getParent() const {
-  return parent.get();
 }
 
 inline libbirch::LazyMemo* libbirch::LazyMemo::fork() {
