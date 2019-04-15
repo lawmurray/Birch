@@ -243,11 +243,6 @@ private:
    * memoization.
    */
   int cloneMemoInitialSize;
-
-  /**
-   * Number of clone generations between deep clone memoizations.
-   */
-  int cloneMemoDelta;
   //@}
 
   /**

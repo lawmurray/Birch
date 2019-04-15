@@ -35,8 +35,7 @@ bi::Driver::Driver(int argc, char** argv) :
     memoryPool(true),
     lazyDeepClone(true),
     cloneMemo(true),
-    cloneMemoInitialSize(64),
-    cloneMemoDelta(2),
+    cloneMemoInitialSize(16),
     newAutogen(false),
     newConfigure(false),
     newMake(false) {
@@ -66,10 +65,7 @@ bi::Driver::Driver(int argc, char** argv) :
     DISABLE_MEMORY_POOL_ARG,
     ENABLE_LAZY_DEEP_CLONE_ARG,
     DISABLE_LAZY_DEEP_CLONE_ARG,
-    ENABLE_CLONE_MEMO_ARG,
-    DISABLE_CLONE_MEMO_ARG,
-    CLONE_MEMO_INITIAL_SIZE_ARG,
-    CLONE_MEMO_DELTA_ARG
+    CLONE_MEMO_INITIAL_SIZE_ARG
   };
 
   int c, option_index;
@@ -99,10 +95,7 @@ bi::Driver::Driver(int argc, char** argv) :
       { "disable-memory-pool", no_argument, 0, DISABLE_MEMORY_POOL_ARG },
       { "enable-lazy-deep-clone", no_argument, 0, ENABLE_LAZY_DEEP_CLONE_ARG },
       { "disable-lazy-deep-clone", no_argument, 0, DISABLE_LAZY_DEEP_CLONE_ARG },
-      { "enable-clone-memo", no_argument, 0, ENABLE_CLONE_MEMO_ARG },
-      { "disable-clone-memo", no_argument, 0, DISABLE_CLONE_MEMO_ARG },
       { "clone-memo-initial-size", required_argument, 0, CLONE_MEMO_INITIAL_SIZE_ARG },
-      { "clone-memo-delta", required_argument, 0, CLONE_MEMO_DELTA_ARG },
       { 0, 0, 0, 0 }
   };
   const char* short_options = "-";  // treats non-options as short option 1
@@ -191,17 +184,8 @@ bi::Driver::Driver(int argc, char** argv) :
     case DISABLE_LAZY_DEEP_CLONE_ARG:
       lazyDeepClone = false;
       break;
-    case ENABLE_CLONE_MEMO_ARG:
-      cloneMemo = true;
-      break;
-    case DISABLE_CLONE_MEMO_ARG:
-      cloneMemo = false;
-      break;
     case CLONE_MEMO_INITIAL_SIZE_ARG:
       cloneMemoInitialSize = atoi(optarg);
-      break;
-    case CLONE_MEMO_DELTA_ARG:
-      cloneMemoDelta = atoi(optarg);
       break;
     case '?':  // unknown option
     case 1:  // not an option
@@ -219,9 +203,6 @@ bi::Driver::Driver(int argc, char** argv) :
   if (!isPower2(cloneMemoInitialSize)) {
     throw DriverException(
         "--clone-memo-initial-size must be a positive power of 2.");
-  }
-  if (cloneMemoDelta <= 0) {
-    throw DriverException("--clone-memo-delta must be a positive integer.");
   }
 
   /* environment variables */
@@ -410,9 +391,6 @@ void bi::Driver::tune() {
   /* proposed initial sizes, to test */
   auto initialSizes = { 4, 8, 16, 32, 64, 128, 256, 512, 1024 };
 
-  /* proposed deltas, to test */
-  auto deltas = { 1, 2, 4, 8, 16, 32 };
-
   /* best eager configuration */
   Driver driverEager(*this);
   std::cerr << "setting --disable-lazy-deep-clone" << std::endl;
@@ -425,26 +403,9 @@ void bi::Driver::tune() {
   Driver driverLazy(*this);
   std::cerr << "setting --enable-lazy-deep-clone" << std::endl;
   driverLazy.lazyDeepClone = true;
-  std::cerr << "setting --disable-clone-memo" << std::endl;
-  driverLazy.cloneMemo = false;
   std::cerr << "choosing --clone-memo-initial-size" << std::endl;
   bestLazy = driverLazy.choose(&driverLazy.cloneMemoInitialSize,
       initialSizes);
-
-  /* best lazy configuration with clone memo enabled */
-  Driver driverLazyCloneMemo(driverLazy);
-  std::cerr << "setting --enable-clone-memo" << std::endl;
-  driverLazyCloneMemo.cloneMemo = true;
-  std::cerr << "choosing --clone-memo-initial-size" << std::endl;
-  bestLazyCloneMemo = driverLazyCloneMemo.choose(
-      &driverLazyCloneMemo.cloneMemoInitialSize, initialSizes);
-  std::cerr << "choosing --clone-memo-delta" << std::endl;
-  bestLazyCloneMemo = driverLazyCloneMemo.choose(
-      &driverLazyCloneMemo.cloneMemoDelta, deltas);
-  if (bestLazyCloneMemo < bestLazy) {
-    bestLazy = bestLazyCloneMemo;
-    driverLazy = driverLazyCloneMemo;
-  }
 
   /* choose one or the other and report */
   std::cout << "suggested:";
@@ -456,12 +417,6 @@ void bi::Driver::tune() {
     std::cout << " --enable-lazy-deep-clone";
     std::cout << " --clone-memo-initial-size="
         << driverLazy.cloneMemoInitialSize;
-    if (driverLazy.cloneMemo) {
-      std::cout << " --enable-clone-memo";
-      std::cout << " --clone-memo-delta=" << driverLazy.cloneMemoDelta;
-    } else {
-      std::cout << " --disable-clone-memo";
-    }
   }
   std::cout << std::endl;
 }
@@ -1048,7 +1003,6 @@ void bi::Driver::configure() {
       cppflags << " -DENABLE_CLONE_MEMO=0";
     }
     cppflags << " -DCLONE_MEMO_INITIAL_SIZE=" << cloneMemoInitialSize;
-    cppflags << " -DCLONE_MEMO_DELTA=" << cloneMemoDelta;
 
     /* include path */
     for (auto iter = include_dirs.begin(); iter != include_dirs.end();
@@ -1202,7 +1156,6 @@ std::string bi::Driver::suffix() const {
   buf << lazyDeepClone << ' ';
   buf << cloneMemo << ' ';
   buf << cloneMemoInitialSize << ' ';
-  buf << cloneMemoDelta << ' ';
   return encode32(buf.str());
 }
 
