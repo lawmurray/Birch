@@ -38,8 +38,8 @@ libbirch::Map::value_type libbirch::Map::get(const key_type key,
   assert(key);
 
   value_type value = failed;
+  lock.share();
   if (!empty()) {
-    lock.share();
     auto i = hash(key);
     auto k = keys[i].load(std::memory_order_relaxed);
     while (k && k != key) {
@@ -49,8 +49,8 @@ libbirch::Map::value_type libbirch::Map::get(const key_type key,
     if (k == key) {
       value = get(i);
     }
-    lock.unshare();
   }
+  lock.unshare();
   return value;
 }
 
@@ -63,11 +63,11 @@ libbirch::Map::value_type libbirch::Map::put(const key_type key,
   key->incMemo();
   value->incShared();
 
-  reserve();
-  lock.share();
-
   key_type expected = nullptr;
   key_type desired = key;
+
+  reserve();
+  lock.share();
 
   auto i = hash(key);
   while (!keys[i].compare_exchange_strong(expected, desired,
@@ -97,11 +97,11 @@ libbirch::Map::value_type libbirch::Map::uninitialized_put(const key_type key,
   assert(key);
   assert(value);
 
-  reserve();
-  lock.share();
-
   key_type expected = nullptr;
   key_type desired = key;
+
+  reserve();
+  lock.share();
 
   auto i = hash(key);
   while (!keys[i].compare_exchange_strong(expected, desired,
@@ -112,7 +112,8 @@ libbirch::Map::value_type libbirch::Map::uninitialized_put(const key_type key,
 
   value_type result;
   if (expected == key) {
-    unreserve();  // key exists, cancel reservation for insert
+    /* key exists, cancel put and return associated value */
+    unreserve();
     result = get(i);
   } else {
     values[i].store(value, std::memory_order_relaxed);
