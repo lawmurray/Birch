@@ -42,6 +42,8 @@ class Delay {
       this.parent <- nil;
       parent!.child <- nil;
     }
+    assert !this.parent?;
+    assert !this.child?;
   }
   
   /**
@@ -52,5 +54,6 @@ class Delay {
       child!.prune();
       child!.realize();
     }
+    assert !this.child?;
   }
 }

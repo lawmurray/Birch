@@ -150,6 +150,10 @@ void libbirch::Map::copy(Map& o) {
     auto key = o.keys[i].load(std::memory_order_relaxed);
     if (key && key->isReachable()) {
       auto value = o.values[i].load(std::memory_order_relaxed);
+      value = o.get(value, value);
+      // ^ applies the existing map to itself once, taking one step toward
+      //   its transitive closure, and eliminating long chains of mappings
+      //   that keep obsolete objects in scope
       put(key, value);
     }
   }

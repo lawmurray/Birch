@@ -66,7 +66,8 @@ class ParticleFilter < ForwardSampler {
       if verbose {
         stderr.print(" " + t);
       }
-      if ess.back() < trigger*N {
+      if ess.back() <= trigger*N {
+        // ^ <= so always resample when trigger == 1.0
         resample();
         copy();
       }
@@ -97,14 +98,14 @@ class ParticleFilter < ForwardSampler {
     a <- iota(1, N);
     x1:Vector<ForwardModel>;
     x1.enlarge(N, archetype!);
+    archetype <- nil;
     x <- x1.toArray();
     parallel for auto n in 1..N {
       x[n] <- clone<ForwardModel>(x[n]);
     }
-    archetype <- nil;
     tic();
   }
-   
+  
   /**
    * Start particles.
    */
@@ -113,7 +114,7 @@ class ParticleFilter < ForwardSampler {
       w[n] <- w[n] + x[n].start();
     }
   }
-    
+  
   /**
    * Step particles.
    */

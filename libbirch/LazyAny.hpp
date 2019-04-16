@@ -70,6 +70,13 @@ public:
    */
   void finish();
 
+  /**
+   * Name of the class.
+   */
+  virtual const char* name_() const {
+    return "Any";
+  }
+
 protected:
   /**
    * Perform the actual finish of the object. This is overwritten by derived
