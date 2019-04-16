@@ -162,6 +162,15 @@ void bi::CppClassGenerator::visit(const Class* o) {
         line("libbirch_destroy_function_");
       }
 
+      /* name function */
+      if (header) {
+        line("virtual const char* name_() const {");
+        in();
+        line("return \"" << o->name << "\";");
+        out();
+        line("}\n");
+      }
+
       /* freeze function */
       if (header) {
         start("virtual void ");
