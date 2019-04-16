@@ -138,12 +138,7 @@ void libbirch::Map::copy(Map& o) {
   o.lock.share();
 
   /* allocate buffers */
-  auto nentries1 = o.nentries;
-  while ((nentries1 >> 1u) > o.crowd()) {
-    nentries1 >>= 1u;
-  }
-  nentries1 = std::max(nentries1, (unsigned)CLONE_MEMO_INITIAL_SIZE);
-  resize(nentries1);
+  resize(o.nentries);
 
   /* copy entries */
   for (auto i = 0u; i < o.nentries; ++i) {

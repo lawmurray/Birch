@@ -98,7 +98,6 @@ class ParticleFilter < ForwardSampler {
     a <- iota(1, N);
     x1:Vector<ForwardModel>;
     x1.enlarge(N, archetype!);
-    archetype <- nil;
     x <- x1.toArray();
     parallel for auto n in 1..N {
       x[n] <- clone<ForwardModel>(x[n]);
