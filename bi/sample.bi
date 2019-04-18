@@ -94,6 +94,7 @@ program sample(
     error(samplerClass! + " is not a subtype of Sampler.");
   }
   s!.setArchetype(m!);
+  m <- nil;
   if config? {
     configBuffer.get("sampler", s!);
   }

@@ -12,9 +12,10 @@ class ConditionalParticleFilter < ParticleFilter {
     if x'? {
       auto h <- x'!.getHandler();
       h.rewind();
-      h.setMode(REPLAY_UPDATE);
+      h.setMode(REPLAY_DELAY);
       x[N].setHandler(h);
     }
+    
     super.start();
   }
 
@@ -30,11 +31,14 @@ class ConditionalParticleFilter < ParticleFilter {
     if x'? {
       /* temporarily take the replay trace out of the reference particle so
        * as not to copy it into offspring */
+      ///@todo Create an interface for this rather than playing with Queue
+      ///      internals
+      auto forward <- x[N].getHandler().trace.forward;
+      x[N].getHandler().trace.forward <- nil;
       x[N].getHandler().setMode(PLAY_DELAY);
-      auto replay <- x[N].getHandler().takeReplay();
       super.copy();
-      x[N].getHandler().setMode(REPLAY_UPDATE);
-      x[N].getHandler().setReplay(replay);
+      x[N].getHandler().setMode(REPLAY_DELAY);
+      x[N].getHandler().trace.forward <- forward;
     } else {
       super.copy();
     }

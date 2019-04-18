@@ -9,15 +9,19 @@ final class FactorEvent(w:Real) < Event {
    */
   w:Real <- w;
 
-  function accept(h:EventHandler) -> Real {
-    return h.handle(this);
-  }
-
   function isFactor() -> Boolean {
     return true;
   }
 
-  function observe() -> Real {
+  function playImmediate() -> Real {
+    return w;
+  }
+  
+  function replayImmediate(trace:Queue<Event>) -> Real {
+    return w;
+  }
+
+  function downdateImmediate(trace:Queue<Event>) -> Real {
     return w;
   }
 }

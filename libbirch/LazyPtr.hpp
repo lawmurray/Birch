@@ -8,7 +8,6 @@
 #include "libbirch/LazyAny.hpp"
 #include "libbirch/LazyMemo.hpp"
 #include "libbirch/Nil.hpp"
-#include "libbirch/InitPtr.hpp"
 #include "libbirch/ContextPtr.hpp"
 
 namespace libbirch {
@@ -76,13 +75,13 @@ public:
    */
   LazyPtr(const LazyPtr<P>& o) :
       object(o.object),
-      to(currentContext) {
+      to(o.to) {
     if (cloneUnderway) {
       if (o.object && o.isCross()) {
         o.finish();
+        object = o.object;
       }
-    } else {
-      to = o.to;
+      to = currentContext;
     }
   }
 
@@ -188,7 +187,7 @@ public:
    * Get the raw pointer, with lazy cloning.
    */
   T* get() {
-    if (object && object->isFrozen()) {
+    if (object) {
       if (to) {
         object = static_cast<T*>(to->get(object.get()));
       }
@@ -209,7 +208,7 @@ public:
    * Get the raw pointer for read-only use, without cloning.
    */
   const T* pull() {
-    if (object && object->isFrozen()) {
+    if (object) {
       if (to) {
         object = static_cast<T*>(to->pull(object.get()));
         if (object->getContext() == to.get()) {

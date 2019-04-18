@@ -5,7 +5,7 @@
 #pragma once
 
 #include "libbirch/Counted.hpp"
-#include "libbirch/InitPtr.hpp"
+#include "libbirch/WeakPtr.hpp"
 
 #include <atomic>
 
@@ -87,7 +87,7 @@ protected:
   /**
    * Memo responsible for the creation of this object.
    */
-  InitPtr<LazyMemo> context;
+  WeakPtr<LazyMemo> context;
 
   /**
    * If frozen, object to which to forward. This must be thread safe, and

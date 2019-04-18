@@ -3,90 +3,88 @@
  */
 class Event {
   /**
-   * Accept an event handler.
+   * Is this a *simulate* event?
    */
-  function accept(h:EventHandler) -> Real;
+  function isSimulate() -> Boolean {
+    return false;
+  }
 
   /**
-   * Is this a factor event?
+   * Is this an *observe* event?
+   */
+  function isObserve() -> Boolean {
+    return false;
+  }
+
+  /**
+   * Is this a *factor* event?
    */
   function isFactor() -> Boolean {
     return false;
   }
-  
+
   /**
-   * Is this a random variable event?
+   * Is this an *assume* event?
    */
-  function isRandom() -> Boolean {
+  function isAssume() -> Boolean {
     return false;
   }
+
+  /**
+   * Is this a *value* event?
+   */
+  function isValue() -> Boolean {
+    return false;
+  }
+
+  /**
+   * Act as appropriate for `PLAY_IMMEDIATE` mode.
+   */
+  function playImmediate() -> Real {
+    assert false;
+  }
+
+  /**
+   * Act as appropriate for `PLAY_DELAY` mode.
+   */
+  function playDelay() -> Real {
+    return playImmediate();
+  }
   
   /**
-   * For a random variate event, is there a value already assigned?
+   * Act as appropriate for `REPLAY_IMMEDIATE` mode.
    */
-  function hasValue() -> Boolean {
+  function replayImmediate(trace:Queue<Event>) -> Real {
     assert false;
   }
 
   /**
-   * For a random variate event, is there a distribution already assigned?
+   * Act as appropriate for `REPLAY_DELAY` mode.
    */
-  function hasDistribution() -> Boolean {
+  function replayDelay(trace:Queue<Event>) -> Real {
+    return replayImmediate(trace);
+  }
+
+  /**
+   * Act as appropriate for `DOWNDATE_IMMEDIATE` mode.
+   */
+  function downdateImmediate(trace:Queue<Event>) -> Real {
     assert false;
   }
 
   /**
-   * Enact assume, for a random event.
+   * Act as appropriate for `DOWNDATE_DELAY` mode.
    */
-  function assume() {
-    assert false;
+  function downdateDelay(trace:Queue<Event>) -> Real {
+    return downdateImmediate(trace);
   }
 
   /**
-   * Enact observe, for a factor or random event with a value.
-   *
-   * Returns: the log-weight associated with the event.
+   * Record the event in the given trace. The event is free to choose how
+   * to do so, including not recording itself, if no information will be
+   * required for replay.
    */
-  function observe() -> Real {
-    assert false;
-  }
-
-  /**
-   * Enact value, for a random event.
-   */
-  function value() {
-    assert false;
-  }
-
-  /**
-   * Enact downdate, for a random event, where the value is provided by
-   * another event.
-   */
-  function downdate(evt:Event) {
-    assert false;
-  }
-
-  /**
-   * Enact assumeUpdate, for a random event, where the value is provided by
-   * another event.
-   */
-  function assumeUpdate(evt:Event) {
-    assert false;
-  }
-
-  /**
-   * Enact assumeDowndate, for a random event, where the value is provided by
-   * another event.
-   */
-  function assumeDowndate(evt:Event) {
-    assert false;
-  }
-
-  /**
-   * Enact value, for a random event, where the value is provided by another
-   * event.
-   */
-  function value(evt:Event) {
-    assert false;
+  function record(trace:Queue<Event>) {
+    //
   }
 }

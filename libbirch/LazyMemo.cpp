@@ -21,34 +21,26 @@ libbirch::LazyMemo::~LazyMemo() {
 }
 
 libbirch::LazyAny* libbirch::LazyMemo::get(LazyAny* o) {
-  if (this == o->getContext()) {
-    return o;
-  } else {
-    LazyAny* prev = nullptr;
-    LazyAny* next = o;
-    do {
-      prev = next;
-      next = m.get(prev, prev);
-    } while (next != prev);
-    if (this != next->getContext()) {
-      next = copy(next);
-    }
-    return next;
+  LazyAny* prev = nullptr;
+  LazyAny* next = o;
+  while (this != next->getContext() && next != prev) {
+    prev = next;
+    next = m.get(prev, prev);
   }
+  if (this != next->getContext()) {
+    next = copy(next);
+  }
+  return next;
 }
 
 libbirch::LazyAny* libbirch::LazyMemo::pull(LazyAny* o) {
-  if (this == o->getContext()) {
-    return o;
-  } else {
-    LazyAny* prev = nullptr;
-    LazyAny* next = o;
-    do {
-      prev = next;
-      next = m.get(prev, prev);
-    } while (next != prev);
-    return next;
+  LazyAny* prev = nullptr;
+  LazyAny* next = o;
+  while (this != next->getContext() && next != prev) {
+    prev = next;
+    next = m.get(prev, prev);
   }
+  return next;
 }
 
 libbirch::LazyAny* libbirch::LazyMemo::copy(LazyAny* o) {
@@ -64,9 +56,6 @@ libbirch::LazyAny* libbirch::LazyMemo::copy(LazyAny* o) {
   SharedPtr<LazyAny> cloned = o->clone_();
   // ^ use shared to clean up if beaten by another thread
   auto result = m.put(o, cloned.get());
-  if (this->isFrozen()) {
-    result->freeze();
-  }
   return result;
 }
 

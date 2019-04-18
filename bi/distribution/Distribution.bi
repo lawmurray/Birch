@@ -65,30 +65,6 @@ class Distribution<Value> {
   }
 
   /**
-   * Simulate then update.
-   *
-   * Return: The simulated value.
-   */
-  function simulateAndUpdate() -> Value {
-    auto x <- simulate();
-    update(x);
-    return x;
-  }
-
-  /**
-   * Observe then update.
-   *
-   * - x: The observed value.
-   *
-   * Return: The log likelihood.
-   */
-  function observeAndUpdate(x:Value) -> Real {
-    auto w <- observe(x);
-    update(x);
-    return w;
-  }
-
-  /**
    * Evaluate the probability mass function (if it exists) at a value.
    *
    * - x: The value.

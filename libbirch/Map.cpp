@@ -135,12 +135,10 @@ void libbirch::Map::freeze() {
 }
 
 void libbirch::Map::copy(Map& o) {
+  assert(empty());
+
   o.lock.share();
-
-  /* allocate buffers */
   resize(o.nentries);
-
-  /* copy entries */
   for (auto i = 0u; i < o.nentries; ++i) {
     auto key = o.keys[i].load(std::memory_order_relaxed);
     if (key && key->isReachable()) {
