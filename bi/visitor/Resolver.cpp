@@ -435,7 +435,7 @@ bi::Statement* bi::Resolver::modify(Assume* o) {
     }
     auto valueType = leftType->typeArgs->accept(&cloner);
     auto identifier = new OverloadedIdentifier<Unknown>(
-        new Name("RandomEvent"), valueType, o->loc);
+        new Name("AssumeEvent"), valueType, o->loc);
     auto args = new ExpressionList(o->left->accept(&cloner),
         o->right->accept(&cloner), o->loc);
     auto call = new Call(identifier, args, o->loc);
