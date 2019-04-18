@@ -50,13 +50,12 @@ libbirch::LazyAny* libbirch::LazyMemo::copy(LazyAny* o) {
    * new objects may be made but only one thread can be successful in
    * inserting an object into the map; a shared pointer is used to
    * destroy any additional objects */
+  assert(o->isFrozen());
   SwapClone swapClone(true);
   SwapContext swapContext(this);
-  assert(o->isFrozen());
   SharedPtr<LazyAny> cloned = o->clone_();
   // ^ use shared to clean up if beaten by another thread
-  auto result = m.put(o, cloned.get());
-  return result;
+  return m.put(o, cloned.get());
 }
 
 #endif

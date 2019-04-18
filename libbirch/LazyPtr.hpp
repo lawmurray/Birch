@@ -73,15 +73,16 @@ public:
   /**
    * Copy constructor.
    */
-  LazyPtr(const LazyPtr<P>& o) :
-      object(o.object),
-      to(o.to) {
+  LazyPtr(const LazyPtr<P>& o) {
     if (cloneUnderway) {
       if (o.object && o.isCross()) {
         o.finish();
-        object = o.object;
       }
+      object = o.object;
       to = currentContext;
+    } else {
+      object = o.object;
+      to = o.to;
     }
   }
 
@@ -187,7 +188,7 @@ public:
    * Get the raw pointer, with lazy cloning.
    */
   T* get() {
-    if (object) {
+    if (object && object->isFrozen()) {
       if (to) {
         object = static_cast<T*>(to->get(object.get()));
       }
@@ -208,7 +209,7 @@ public:
    * Get the raw pointer for read-only use, without cloning.
    */
   const T* pull() {
-    if (object) {
+    if (object && object->isFrozen()) {
       if (to) {
         object = static_cast<T*>(to->pull(object.get()));
         if (object->getContext() == to.get()) {

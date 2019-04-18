@@ -138,7 +138,15 @@ void libbirch::Map::copy(Map& o) {
   assert(empty());
 
   o.lock.share();
-  resize(o.nentries);
+
+  /* resize */
+  auto nentries1 = o.nentries;
+  while (nentries1/2 > o.crowd()) {
+    nentries1 = nentries1/2;
+  }
+  resize(nentries1);
+
+  /* copy */
   for (auto i = 0u; i < o.nentries; ++i) {
     auto key = o.keys[i].load(std::memory_order_relaxed);
     if (key && key->isReachable()) {
