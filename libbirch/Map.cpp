@@ -141,8 +141,8 @@ void libbirch::Map::copy(Map& o) {
 
   /* resize */
   auto nentries1 = o.nentries;
-  while (nentries1/2 > o.crowd()) {
-    nentries1 = nentries1/2;
+  while (nentries1/2u > o.crowd()) {
+    nentries1 /= 2u;
   }
   resize(nentries1);
 
