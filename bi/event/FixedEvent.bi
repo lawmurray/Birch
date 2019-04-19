@@ -1,6 +1,5 @@
 /**
- * Dummy event to store a fixed value, used for efficiently recording and
- * replaying traces without holding onto extraneous objects.
+ * Event to store a fixed value.
  *
  * - v: The fixed value.
  */
@@ -16,6 +15,10 @@ final class FixedEvent<Value>(v:Value) < ValueEvent<Value> {
 
   function value() -> Value {
     return v;
+  }
+
+  function playImmediate() -> Real {
+    return 0.0;
   }
 }
 
