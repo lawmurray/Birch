@@ -147,7 +147,9 @@ public:
   bool isReachable() const;
 
   /**
-   * Is the object frozen?
+   * Is the object frozen? This returns true if either a freeze is in
+   * progress (i.e. another thread is in the process of freezing the object),
+   * or if the freeze is complete.
    */
   bool isFrozen() const;
 
@@ -198,9 +200,10 @@ protected:
   unsigned tid;
 
   /**
-   * Is the object read-only?
+   * Is the object read-only? This is -1 for false, thread id for in
+   * progress, max threads for true.
    */
-  std::atomic<bool> frozen;
+  std::atomic<int> frozen;
 };
 }
 
@@ -212,7 +215,7 @@ inline libbirch::Counted::Counted() :
     memoCount(0u),
     size(0u),
     tid(libbirch::tid),
-    frozen(false) {
+    frozen(-1) {
   //
 }
 
@@ -222,7 +225,7 @@ inline libbirch::Counted::Counted(const Counted& o) :
     memoCount(0u),
     size(o.size),
     tid(libbirch::tid),
-    frozen(false) {
+    frozen(-1) {
   //
 }
 
@@ -307,20 +310,7 @@ inline bool libbirch::Counted::isReachable() const {
 }
 
 inline bool libbirch::Counted::isFrozen() const {
-  return frozen.load(std::memory_order_relaxed);
-}
-
-inline void libbirch::Counted::freeze() {
-  bool expected = false;
-  bool desired = true;
-  if (frozen.compare_exchange_strong(expected, desired,
-      std::memory_order_relaxed)) {
-    auto ptr = lock();
-    if (ptr) {
-      doFreeze_();
-      ptr->decShared();
-    }
-  }
+  return frozen.load() != -1;
 }
 
 inline void libbirch::Counted::doFreeze_() {
