@@ -131,13 +131,14 @@ inline libbirch::LazyMemo* libbirch::LazyAny::getContext() {
 }
 
 inline libbirch::LazyAny* libbirch::LazyAny::pullForward() {
-  if (isFrozen()) {
-    auto forward1 = forward.load(std::memory_order_relaxed);
-    if (forward1) {
-      return forward1->pullForward();
-    }
+  assert(isFrozen());
+
+  auto forward1 = forward.load(std::memory_order_relaxed);
+  if (forward1) {
+    return forward1->pullForward();
+  } else {
+    return this;
   }
-  return this;
 }
 
 inline void libbirch::LazyAny::finish() {

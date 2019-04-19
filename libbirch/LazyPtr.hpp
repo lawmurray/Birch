@@ -189,11 +189,17 @@ public:
    */
   T* get() {
     if (object && object->isFrozen()) {
+      LazyAny* raw = object.get();
       if (to) {
-        object = static_cast<T*>(to->get(object.get()));
+        raw = to->get(raw);
+        if (raw->isFrozen()) {
+          raw = raw->getForward();
+        }
+      } else {
+        raw = raw->getForward();
       }
-      object = static_cast<T*>(object->getForward());
-      assert(!object->isFrozen());
+      assert(!raw->isFrozen());
+      object = static_cast<T*>(raw);
     }
     return object.get();
   }
@@ -210,14 +216,16 @@ public:
    */
   const T* pull() {
     if (object && object->isFrozen()) {
+      LazyAny* raw = object.get();
       if (to) {
-        object = static_cast<T*>(to->pull(object.get()));
-        if (object->getContext() == to.get()) {
-          object = static_cast<T*>(object->pullForward());
+        raw = to->pull(raw);
+        if (raw->getContext() == to.get() && raw->isFrozen()) {
+          raw = raw->pullForward();
         }
       } else {
-        object = static_cast<T*>(object->pullForward());
+        raw = raw->pullForward();
       }
+      object = static_cast<T*>(raw);
     }
     return object.get();
   }
