@@ -160,7 +160,7 @@ inline bool libbirch::Map::empty() const {
 
 inline unsigned libbirch::Map::hash(const key_type key) const {
   assert(nentries > 0u);
-  return static_cast<unsigned>(reinterpret_cast<size_t>(key) >> 5ull)
+  return static_cast<unsigned>(reinterpret_cast<size_t>(key) >> 6ull)
       & (nentries - 1u);
 }
 
