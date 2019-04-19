@@ -4,7 +4,7 @@
 #pragma once
 
 #include "libbirch/SharedPtr.hpp"
-#include "libbirch/WeakPtr.hpp"
+#include "libbirch/InitPtr.hpp"
 #include "libbirch/Memo.hpp"
 
 namespace libbirch {
@@ -175,8 +175,9 @@ private:
   /**
    * The owning context. This is the context in which the pointer itself was
    * created. For a member variable, it is the same as the context of the
-   * containing object.
+   * containing object. Because the containing object holds a WeakPtr to the
+   * same object, use of an InitPtr is sufficient here.
    */
-  WeakPtr<LazyMemo> context;
+  InitPtr<LazyMemo> context;
 };
 }
