@@ -150,10 +150,8 @@ final class Queue<Type> {
    */
   function allForward() {
     while backward? {
-      auto node <- backward!;
-      backward <- node.next;
-      node.next <- forward;
-      forward <- node;
+      pushFront(back());
+      popBack();
     }
   }
   
@@ -162,10 +160,8 @@ final class Queue<Type> {
    */
   function allBackward() {
     while forward? {
-      auto node <- forward!;
-      forward <- node.next;
-      node.next <- backward;
-      backward <- node;
+      pushBack(front());
+      popFront();
     }
   }
 

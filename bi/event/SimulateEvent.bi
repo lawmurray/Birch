@@ -31,6 +31,7 @@ final class SimulateEvent<Value>(p:Distribution<Value>) <
   function playImmediate() -> Real {
     v <- p.simulate();
     p.update(v!);
+    p.detach();
     return 0.0;
   }
   
@@ -39,6 +40,7 @@ final class SimulateEvent<Value>(p:Distribution<Value>) <
     if evt? {
       v <- evt!.value();
       p.update(v!);
+      p.detach();
     } else {
       error("incompatible trace");
     }
@@ -50,6 +52,7 @@ final class SimulateEvent<Value>(p:Distribution<Value>) <
     if evt? {
       v <- evt!.value();
       p.downdate(v!);
+      p.detach();
     } else {
       error("incompatible trace");
     }

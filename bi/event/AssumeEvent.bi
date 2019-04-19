@@ -37,6 +37,7 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
       v <- p.simulate();
     }
     p.update(v.value());
+    p.detach();
     return w;
   }
 
@@ -45,6 +46,7 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     if v.hasValue() {
       w <- p.observe(v.value());
       p.update(v.value());
+      p.detach();
     } else {
       v.assume(p);
     }
@@ -64,6 +66,7 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
       v <- evt!.value();
     }
     p.update(evt!.value());
+    p.detach();
     return w;
   }
 
@@ -77,6 +80,7 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
       assert v.value() == evt!.value();
       w <- p.observe(evt!.value());
       p.update(evt!.value());
+      p.detach();
     } else {
       if evt!.hasValue() {
         v.assumeUpdate(p, evt!.value());
@@ -100,6 +104,7 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
       v <- evt!.value();
     }
     p.downdate(evt!.value());
+    p.detach();
     return w;
   }
 
@@ -113,6 +118,7 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
       assert v.value() == evt!.value();
       w <- p.observe(evt!.value());
       p.downdate(evt!.value());
+      p.detach();
     } else {
       if evt!.hasValue() {
         v.assumeDowndate(p, evt!.value());

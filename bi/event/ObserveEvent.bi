@@ -31,18 +31,21 @@ final class ObserveEvent<Value>(v:Value, p:Distribution<Value>) <
   function playImmediate() -> Real {
     auto w <- p.observe(v);
     p.update(v);
+    p.detach();
     return w;
   }
   
   function replayImmediate(trace:Queue<Event>) -> Real {
     auto w <- p.observe(v);
     p.update(v);
+    p.detach();
     return w;
   }
 
   function downdateImmediate(trace:Queue<Event>) -> Real {
     auto w <- p.observe(v);
     p.downdate(v);
+    p.detach();
     return w;
   }
 }
