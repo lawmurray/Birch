@@ -16,6 +16,11 @@ class ParticleFilter < ForwardSampler {
    * Ancestor indices.
    */
   a:Integer[_];
+
+  /**
+   * Offspring counts.
+   */
+  o:Integer[_];
   
   /**
    * Chosen path at the end of the filter.
@@ -96,8 +101,10 @@ class ParticleFilter < ForwardSampler {
 
     w <- vector(0.0, N);
     a <- iota(1, N);
+    o <- vector(1, N);
     x1:Vector<ForwardModel>;
     x1.enlarge(N, archetype!);
+    archetype <- nil;
     x <- x1.toArray();
     parallel for auto n in 1..N {
       x[n] <- clone<ForwardModel>(x[n]);
@@ -156,7 +163,7 @@ class ParticleFilter < ForwardSampler {
    * Resample particles.
    */
   function resample() {
-    a <- permute_ancestors(ancestors(w));
+    (a, o) <- global.resample(w);
   }
   
   /**
@@ -165,7 +172,9 @@ class ParticleFilter < ForwardSampler {
   function copy() {
     auto x0 <- x;
     parallel for auto n in 1..N {
-      //if a[n] != n {
+      //if o[a[n]] == 1 {
+      //  x[n] <- x0[a[n]];  // avoid the clone overhead
+      //} else {
         x[n] <- clone<ForwardModel>(x0[a[n]]);
       //}
       w[n] <- 0.0;

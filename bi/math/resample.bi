@@ -27,6 +27,21 @@ function norm_exp(x:Real[_]) -> Real[_] {
 }
 
 /**
+ * Resample
+ *
+ * - w: Log weights.
+ *
+ * Return: a pair the vectors, the first is the vector of ancestor indices,
+ * the second the vector of offspring counts.
+ */
+function resample(w:Real[_]) -> (Integer[_], Integer[_]) {
+  auto O <- systematic_cumulative_offspring(cumulative_weights(w));
+  auto a <- cumulative_offspring_to_ancestors(O);
+  auto o <- cumulative_offspring_to_offspring(O);
+  return (a, o);
+}
+
+/**
  * Sample an ancestry vector for a log-weight vector using the default
  * resampling algorithm.
  */
@@ -153,6 +168,13 @@ function cumulative_offspring_to_ancestors(O:Integer[_]) -> Integer[_] {
     }
   }
   return a;
+}
+
+/**
+ * Convert a cumulative offspring vector into an offspring vector.
+ */
+function cumulative_offspring_to_offspring(O:Integer[_]) -> Integer[_] {
+  return adjacent_difference(O, @(x:Integer, y:Integer) -> Integer { return x - y; });
 }
 
 /**
