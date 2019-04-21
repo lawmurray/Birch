@@ -89,8 +89,7 @@ final class Queue<Type> {
     if !forward? {
       allForward();
     }
-    auto node <- forward!;
-    forward <- node.next;
+    forward <- forward!.next;
     count <- count - 1;
   }
 
@@ -102,8 +101,7 @@ final class Queue<Type> {
     if !backward? {
       allBackward();
     }
-    auto node <- backward!;
-    backward <- node.next;
+    backward <- backward!.next;
     count <- count - 1;
   }
 
@@ -171,7 +169,7 @@ final class Queue<Type> {
       /* tricky, but works for both basic and final class types */
       x:Type;
       auto y <- f!.get(x);
-      if (y?) {
+      if y? {
         x <- Type?(y)!;  // cast needed for y:Object?
         pushBack(x);
       }
@@ -182,7 +180,7 @@ final class Queue<Type> {
   function write(buffer:Buffer) {
     buffer.setArray();
     auto f <- walk();
-    while (f?) {
+    while f? {
       buffer.push().set(f!);
     }
   }
