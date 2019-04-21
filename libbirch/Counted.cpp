@@ -11,8 +11,15 @@ void libbirch::Counted::freeze() {
     auto ptr = lock();
     if (ptr) {
       doFreeze_();
-      frozen.store(libbirch::nthreads);  // release the lock and mark as frozen
       ptr->decShared();
+    }
+
+    /* release the lock and mark as frozen, and possibly uniquely
+     * reachable */
+    if (numShared() <= 1u && numWeak() - numMemo() == 1u) {
+      frozen.store(libbirch::nthreads + 1u);
+    } else {
+      frozen.store(libbirch::nthreads);
     }
   } else if (expected == libbirch::tid) {
     /* this thread already has the lock, but has rediscovered this object,
@@ -20,8 +27,16 @@ void libbirch::Counted::freeze() {
   } else {
     /* another thread is in the process of freezing this object, spin until
      * it has finished */
-    while (frozen.load() != libbirch::nthreads) {
+    while (frozen.load() < libbirch::nthreads) {
       //
     }
+  }
+}
+
+void libbirch::Counted::notUniquelyReachable() {
+  if (numShared() > 1u || numWeak() - numMemo() != 1u) {
+    int expected = libbirch::nthreads + 1u;
+    int desired = libbirch::nthreads;
+    frozen.compare_exchange_strong(expected, desired);
   }
 }

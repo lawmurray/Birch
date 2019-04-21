@@ -83,6 +83,9 @@ public:
     } else {
       object = o.object;
       to = o.to;
+      if (object) {
+        object->notUniquelyReachable();
+      }
     }
   }
 
@@ -93,11 +96,31 @@ public:
   LazyPtr(const LazyPtr<Q>& o) :
       object(o.object),
       to(o.to) {
-    //
+    if (object) {
+      object->notUniquelyReachable();
+    }
   }
 
+  /**
+   * Move constructor.
+   */
   LazyPtr(LazyPtr<P> && o) = default;
-  LazyPtr<P>& operator=(const LazyPtr<P>& o) = default;
+
+  /**
+   * Copy assignment operator.
+   */
+  LazyPtr<P>& operator=(const LazyPtr<P>& o) {
+    object = o.object;
+    to = o.to;
+    if (object) {
+      object->notUniquelyReachable();
+    }
+    return *this;
+  }
+
+  /**
+   * Move assignment operator.
+   */
   LazyPtr<P>& operator=(LazyPtr<P> && o) = default;
 
   /**

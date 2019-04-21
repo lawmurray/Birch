@@ -138,6 +138,16 @@ public:
   void decMemo();
 
   /**
+   * Memo count.
+   */
+  unsigned numMemo() const;
+
+  /**
+   * Freeze this object.
+   */
+  void freeze();
+
+  /**
    * Is the object reachable? An object is reachable if it contains a shared
    * count of one or more, or a weak count greater than the memo count. When
    * the weak count equals the memo count (it cannot be less), the object
@@ -154,9 +164,21 @@ public:
   bool isFrozen() const;
 
   /**
-   * Freeze this object.
+   * Is the object frozen, and reachable through only a single pointer?
    */
-  void freeze();
+  bool isUniquelyReachable() const;
+
+  /**
+   * If the object is uniquely reachable, mark that it is now not.
+   */
+  void notUniquelyReachable();
+
+  /**
+   * Name of the class.
+   */
+  virtual const char* name_() const {
+    return "Counted";
+  }
 
 protected:
   /**
@@ -201,7 +223,8 @@ protected:
 
   /**
    * Is the object read-only? This is -1 for false, thread id for in
-   * progress, max threads for true.
+   * progress, max threads for true, and greater than max threads for true
+   * and accessible through a single pointer only.
    */
   std::atomic<int> frozen;
 };
@@ -244,22 +267,21 @@ inline unsigned libbirch::Counted::getSize() const {
 }
 
 inline libbirch::Counted* libbirch::Counted::lock() {
-  unsigned count = sharedCount.load(std::memory_order_relaxed);
+  unsigned count = sharedCount.load();
   while (count > 0u
-      && !sharedCount.compare_exchange_weak(count, count + 1u,
-          std::memory_order_relaxed)) {
+      && !sharedCount.compare_exchange_weak(count, count + 1u)) {
     //
   }
   return count > 0u ? this : nullptr;
 }
 
 inline void libbirch::Counted::incShared() {
-  sharedCount.fetch_add(1u, std::memory_order_relaxed);
+  sharedCount.fetch_add(1u);
 }
 
 inline void libbirch::Counted::decShared() {
   assert(sharedCount > 0u);
-  if (sharedCount.fetch_sub(1u, std::memory_order_relaxed) - 1u == 0u
+  if (sharedCount.fetch_sub(1u) - 1u == 0u
       && size > 0u) {
     // ^ size == 0u during construction, never destroy in that case
     destroy_();
@@ -268,16 +290,16 @@ inline void libbirch::Counted::decShared() {
 }
 
 inline unsigned libbirch::Counted::numShared() const {
-  return sharedCount.load(std::memory_order_relaxed);
+  return sharedCount.load();
 }
 
 inline void libbirch::Counted::incWeak() {
-  weakCount.fetch_add(1u, std::memory_order_relaxed);
+  weakCount.fetch_add(1u);
 }
 
 inline void libbirch::Counted::decWeak() {
   assert(weakCount > 0u);
-  if (weakCount.fetch_sub(1u, std::memory_order_relaxed) - 1u == 0u) {
+  if (weakCount.fetch_sub(1u) - 1u == 0u) {
     assert(sharedCount == 0u);
     // ^ because of weak self-reference, the weak count should not expire
     //   before the shared count
@@ -286,31 +308,38 @@ inline void libbirch::Counted::decWeak() {
 }
 
 inline unsigned libbirch::Counted::numWeak() const {
-  return weakCount;
+  return weakCount.load();
 }
 
 inline void libbirch::Counted::incMemo() {
   /* the order of operations here is important, as the weak count should
    * never be less than the memo count */
   incWeak();
-  memoCount.fetch_add(1u, std::memory_order_relaxed);
+  memoCount.fetch_add(1u);
 }
 
 inline void libbirch::Counted::decMemo() {
   /* the order of operations here is important, as the weak count should
    * never be less than the memo count */
   assert(memoCount > 0u);
-  memoCount.fetch_sub(1u, std::memory_order_relaxed);
+  memoCount.fetch_sub(1u);
   decWeak();
 }
 
+inline unsigned libbirch::Counted::numMemo() const {
+  return memoCount.load();
+}
+
 inline bool libbirch::Counted::isReachable() const {
-  return weakCount.load(std::memory_order_relaxed) >
-      memoCount.load(std::memory_order_relaxed);
+  return numWeak() > numMemo();
 }
 
 inline bool libbirch::Counted::isFrozen() const {
-  return frozen.load() != -1;
+  return frozen.load() >= 0;
+}
+
+inline bool libbirch::Counted::isUniquelyReachable() const {
+  return frozen.load() > libbirch::nthreads;
 }
 
 inline void libbirch::Counted::doFreeze_() {
