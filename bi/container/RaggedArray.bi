@@ -126,7 +126,7 @@ final class RaggedArray<Type> {
    * Return: a fiber object that yields each row in forward order.
    */
   fiber walk() -> Type[_] {
-    for (i:Integer in 1..nrows) {
+    for auto i in 1..nrows {
       yield get(i);
     }
   }
@@ -139,7 +139,7 @@ final class RaggedArray<Type> {
    * Return: a fiber object that yields each row in forward order.
    */
   fiber walk(i:Integer) -> Type {
-    for (j:Integer in 1..ncols[i]) {
+    for auto j in 1..ncols[i] {
       yield get(i, j);
     }
   }
@@ -280,7 +280,7 @@ final class RaggedArray<Type> {
         /* tricky, but works for both basic and final class types */
         x:Type;
         auto y <- col!.get(x);
-        if (y?) {
+        if y? {
           x <- Type?(y)!;  // cast needed for y:Object?
           pushBack(size(), x);
         }
@@ -290,10 +290,10 @@ final class RaggedArray<Type> {
 
   function write(buffer:Buffer) {
     buffer.setArray();
-    for i:Integer in 1..size() {
+    for auto i in 1..size() {
       auto row <- buffer.push();
       row.setArray();
-      for j:Integer in 1..size(i) {
+      for auto j in 1..size(i) {
         row.push().set(get(i, j));
       }
     }
