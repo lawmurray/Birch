@@ -172,11 +172,11 @@ class ParticleFilter < ForwardSampler {
   function copy() {
     auto x0 <- x;
     parallel for auto n in 1..N {
-      //if o[a[n]] == 1 {
-      //  x[n] <- x0[a[n]];  // avoid the clone overhead
-      //} else {
+      if o[a[n]] == 1 {
+        x[n] <- x0[a[n]];  // avoid the clone overhead
+      } else {
         x[n] <- clone<ForwardModel>(x0[a[n]]);
-      //}
+      }
       w[n] <- 0.0;
     }
   }
