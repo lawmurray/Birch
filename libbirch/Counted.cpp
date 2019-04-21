@@ -34,7 +34,7 @@ void libbirch::Counted::freeze() {
 }
 
 void libbirch::Counted::notUniquelyReachable() {
-  if (numShared() > 1u || numWeak() - numMemo() != 1u) {
+  if (isFrozen() && (numShared() > 1u || numWeak() - numMemo() != 1u)) {
     int expected = libbirch::nthreads + 1u;
     int desired = libbirch::nthreads;
     frozen.compare_exchange_strong(expected, desired);
