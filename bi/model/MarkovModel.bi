@@ -29,7 +29,7 @@ class MarkovModel<Parameter,State> < ForwardModel {
   /**
    * Current state during simulation.
    */
-  f:ListNode<State>?;
+  f:QueueNode<State>?;
 
   /**
    * Parameter model.
@@ -72,33 +72,32 @@ class MarkovModel<Parameter,State> < ForwardModel {
    * Play one step. Simulates through the next state.
    */
   function play() -> Real {
+    x:State?;
+    if f? {
+      x <- f!.getValue();
+      f <- f!.getNext();  
+    } else {
+      f <- this.x.begin();
+    }
+    if !f? {
+      /* no next state, insert one */
+      x':State;
+      this.x.pushBack(x');
+      f <- this.x.end();
+    }
+
     auto x' <- f!.getValue();
     auto w' <- 0.0;
-    if f! == x.begin()! {
+    if !x? {
       w' <- w' + h.handle(initial(x', θ));
     } else {
-      auto x <- f!.getPrevious()!.getValue();
-      w' <- w' + h.handle(transition(x', x, θ));
+      w' <- w' + h.handle(transition(x', x!, θ));
     }
     return w';
   }
 
   function size() -> Integer {
     return x.size();
-  }
-
-  function next() {
-    if f? {
-      f <- f!.getNext();  
-    } else {
-      f <- x.begin();
-    }
-    if !f? {
-      /* no next state, insert one */
-      x':State;
-      x.pushBack(x');
-      f <- x.end();
-    }
   }
   
   function rewind() {

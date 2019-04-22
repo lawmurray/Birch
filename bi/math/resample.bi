@@ -42,35 +42,25 @@ function resample(w:Real[_]) -> (Integer[_], Integer[_]) {
 }
 
 /**
- * Sample an ancestry vector for a log-weight vector using the default
- * resampling algorithm.
- */
-function ancestors(w:Real[_]) -> Integer[_] {
-  return systematic_ancestors(w);
-}
-
-/**
- * Sample an ancestry vector for a log-weight vector using systematic
- * resampling.
- */
-function systematic_ancestors(w:Real[_]) -> Integer[_] {
-  return cumulative_offspring_to_ancestors(systematic_cumulative_offspring(cumulative_weights(w)));
-}
-
-/**
  * Sample an ancestry vector for a log-weight vector using multinomial
  * resampling.
  */
-function multinomial_ancestors(w:Real[_]) -> Integer[_] {
-  return offspring_to_ancestors(simulate_multinomial(length(w), norm_exp(w)));
+function multinomial_resample(w:Real[_]) -> (Integer[_], Integer[_]) {
+  auto o <- simulate_multinomial(length(w), norm_exp(w));
+  auto a <- offspring_to_ancestors(o);
+  return (a, o);
 }
 
 /**
  * Sample a conditional ancestry vector for a log-weight vector using
  * multinomial resampling.
  */
-function multinomial_conditional_ancestors(w:Real[_]) -> Integer[_] {
-  return conditional_offspring_to_ancestors(simulate_multinomial(length(w) - 1, norm_exp(w)));
+function multinomial_conditional_resample(w:Real[_]) -> (Integer[_], Integer[_]) {
+  auto N <- length(w);
+  auto o <- simulate_multinomial(N - 1, norm_exp(w));
+  o[N] <- o[N] + 1;
+  auto a <- offspring_to_ancestors(o);
+  return (a, o);
 }
 
 /**
@@ -127,24 +117,6 @@ function offspring_to_ancestors(o:Integer[_]) -> Integer[_] {
     }
   }
   assert i == N + 1;
-  return a;
-}
-
-/**
- * Convert a conditional offspring vector into an ancestry vector.
- */
-function conditional_offspring_to_ancestors(o:Integer[_]) -> Integer[_] {
-  auto N <- length(o);
-  auto i <- 1;
-  a:Integer[N];
-  for auto n in 1..N {
-    for auto j in 1..o[n] {
-      a[i] <- n;
-      i <- i + 1;
-    }
-  }
-  assert i == N;
-  a[N] <- N;
   return a;
 }
 

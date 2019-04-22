@@ -9,17 +9,12 @@ class ForwardModel < Model {
   function start() -> Real;
 
   /**
-   * Take one step.
+   * Play one step.
    */
   function play() -> Real;
-
-  /**
-   * Move forward one step.
-   */
-  function next();
   
   /**
-   * Rewind to the first step.
+   * Rewind to start.
    */
   function rewind();
 

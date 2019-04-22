@@ -28,7 +28,7 @@ class HiddenMarkovModel<Parameter,State,Observation> <
   /**
    * Current observation during simulation.
    */
-  g:ListNode<Observation>?;
+  g:QueueNode<Observation>?;
 
   /**
    * Observation model.
@@ -46,17 +46,7 @@ class HiddenMarkovModel<Parameter,State,Observation> <
    */
   function play() -> Real {
     auto w <- super.play();
-    auto x <- f!.getValue();
-    auto y <- g!.getValue();
-    return w + h.handle(observation(y, x, θ));
-  }
-
-  function size() -> Integer {
-    return max(x.size(), y.size());
-  }
-
-  function next() {
-    super.next();
+        
     if g? {
       g <- g!.getNext();
     } else {
@@ -68,6 +58,14 @@ class HiddenMarkovModel<Parameter,State,Observation> <
       y.pushBack(y');
       g <- y.end();
     }
+
+    auto x <- f!.getValue();
+    auto y <- g!.getValue();
+    return w + h.handle(observation(y, x, θ));
+  }
+
+  function size() -> Integer {
+    return max(x.size(), y.size());
   }
 
   function rewind() {

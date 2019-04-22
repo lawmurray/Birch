@@ -15,7 +15,6 @@ class ParticleGibbs < ConditionalParticleFilter {
       x.start();
       h.setMode(REPLAY_DELAY);
       for auto t in 1..T {
-        x.next();
         x.play();
       }
 

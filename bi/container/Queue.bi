@@ -8,8 +8,8 @@
  *     of large queues.
  */
 final class Queue<Type> {
-  forward:StackNode<Type>?;
-  backward:StackNode<Type>?;
+  forward:QueueNode<Type>?;
+  backward:QueueNode<Type>?;
   count:Integer <- 0;
 
   /**
@@ -63,7 +63,7 @@ final class Queue<Type> {
    * - x: Value.
    */
   function pushFront(x:Type) {
-    node:StackNode<Type>(x);
+    node:QueueNode<Type>(x);
     node.next <- forward;
     forward <- node;
     count <- count + 1;
@@ -75,7 +75,7 @@ final class Queue<Type> {
    * - x: Value.
    */
   function pushBack(x:Type) {
-    node:StackNode<Type>(x);
+    node:QueueNode<Type>(x);
     node.next <- backward;
     backward <- node;
     count <- count + 1;
@@ -123,7 +123,7 @@ final class Queue<Type> {
    * First node, if any. This can be used to maintain a bidirectional
    * iterator over the container.
    */
-  function begin() -> StackNode<Type>? {
+  function begin() -> QueueNode<Type>? {
     assert !empty();
     if !forward? {
       allForward();
@@ -135,7 +135,7 @@ final class Queue<Type> {
    * Last node, if any. This can be used to maintain a bidirectional
    * iterator over the container.
    */
-  function end() -> StackNode<Type>? {
+  function end() -> QueueNode<Type>? {
     assert !empty();
     if !backward? {
       allBackward();

@@ -71,11 +71,7 @@ class ParticleFilter < ForwardSampler {
       if verbose {
         stderr.print(" " + t);
       }
-      if ess.back() <= trigger*N {
-        // ^ <= so always resample when trigger == 1.0
-        resample();
-        copy();
-      }
+      resample();
       step();
       reduce();
     }
@@ -125,8 +121,13 @@ class ParticleFilter < ForwardSampler {
    * Step particles.
    */
   function step() {
+    auto x0 <- x;
     parallel for auto n in 1..N {
-      x[n].next();
+      if o[a[n]] == 1 {
+        x[n] <- x0[a[n]];  // avoid the clone overhead
+      } else {
+        x[n] <- clone<ForwardModel>(x0[a[n]]);
+      }
       w[n] <- w[n] + x[n].play();
     }
   }
@@ -163,21 +164,12 @@ class ParticleFilter < ForwardSampler {
    * Resample particles.
    */
   function resample() {
-    (a, o) <- global.resample(w);
-  }
-  
-  /**
-   * Copy around particles after resampling.
-   */
-  function copy() {
-    auto x0 <- x;
-    parallel for auto n in 1..N {
-      if o[a[n]] == 1 {
-        x[n] <- x0[a[n]];  // avoid the clone overhead
-      } else {
-        x[n] <- clone<ForwardModel>(x0[a[n]]);
-      }
-      w[n] <- 0.0;
+    if ess.back() <= trigger*N {
+      (a, o) <- global.resample(w);
+      w <- vector(0.0, N);
+    } else {
+      a <- iota(1, N);
+      o <- vector(1, N);
     }
   }
 

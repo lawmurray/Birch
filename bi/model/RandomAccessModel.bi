@@ -14,7 +14,7 @@ class RandomAccessModel < BidirectionalModel {
     this.t <- t;
   }
     
-  function next() {
+  function play() -> Real {
     seek(t + 1);
   }
   

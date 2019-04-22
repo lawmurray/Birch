@@ -35,6 +35,7 @@
       "bi/container/List.bi",
       "bi/container/ListNode.bi",
       "bi/container/Queue.bi",
+      "bi/container/QueueNode.bi",
       "bi/container/RaggedArray.bi",
       "bi/container/Stack.bi",
       "bi/container/StackNode.bi",
