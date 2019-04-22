@@ -42,10 +42,11 @@ class HiddenMarkovModel<Parameter,State,Observation> <
   }
 
   /**
-   * Play one step. Simulates through the next state and observation.
+   * Step. Simulates the initial state, or the transition to the next state,
+   * and an observation.
    */
-  function play() -> Real {
-    auto w <- super.play();
+  function step() -> Real {
+    auto w <- super.step();
         
     if g? {
       g <- g!.getNext();

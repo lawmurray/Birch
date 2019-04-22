@@ -27,7 +27,7 @@ class Model {
   }
 
   /**
-   * Play the model with an event handler, yielding a log-weight.
+   * Play the complete model with an event handler, returning a log-weight.
    */
   function play() -> Real {
     return h.handle(simulate());

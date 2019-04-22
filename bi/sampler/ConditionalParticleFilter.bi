@@ -50,7 +50,7 @@ class ConditionalParticleFilter < ParticleFilter {
         } else {
           x[n] <- clone<ForwardModel>(x0[a[n]]);
         }
-        w[n] <- w[n] + x[n].play();
+        w[n] <- w[n] + x[n].step();
       }
       
       /* step the reference particle */
@@ -61,7 +61,7 @@ class ConditionalParticleFilter < ParticleFilter {
       } else {
         x[N] <- clone<ForwardModel>(x0[N]);
       }
-      w[N] <- w[N] + x[N].play();
+      w[N] <- w[N] + x[N].step();
     } else {
       super.step();
     }

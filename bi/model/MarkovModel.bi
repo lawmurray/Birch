@@ -62,16 +62,16 @@ class MarkovModel<Parameter,State> < ForwardModel {
   }
   
   /**
-   * Start. Simulates through the parameter model.
+   * Start. Simulates the parameter model.
    */
   function start() -> Real {
     return h.handle(parameter(θ));
   }
 
   /**
-   * Play one step. Simulates through the next state.
+   * Step. Simulates the initial state, or the transition to the next state.
    */
-  function play() -> Real {
+  function step() -> Real {
     x:State?;
     if f? {
       x <- f!.getValue();
@@ -107,7 +107,7 @@ class MarkovModel<Parameter,State> < ForwardModel {
   fiber simulate() -> Event {
     start();
     while true {
-      play();
+      step();
     }
   }
 

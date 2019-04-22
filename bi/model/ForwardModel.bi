@@ -1,6 +1,6 @@
 /**
  * Forward model. To simulate the model, first use `start()`, followed by
- * `play()` any number of times.
+ * `step()` any number of times.
  */
 class ForwardModel < Model {   
   /**
@@ -9,9 +9,9 @@ class ForwardModel < Model {
   function start() -> Real;
 
   /**
-   * Play one step.
+   * Step.
    */
-  function play() -> Real;
+  function step() -> Real;
   
   /**
    * Rewind to start.

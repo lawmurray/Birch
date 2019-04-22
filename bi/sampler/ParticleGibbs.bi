@@ -15,7 +15,7 @@ class ParticleGibbs < ConditionalParticleFilter {
       x.start();
       h.setMode(REPLAY_DELAY);
       for auto t in 1..T {
-        x.play();
+        x.step();
       }
 
       /* simulate the conditional distribution over the start, given the

@@ -127,7 +127,7 @@ class ParticleFilter < ForwardSampler {
       } else {
         x[n] <- clone<ForwardModel>(x0[a[n]]);
       }
-      w[n] <- w[n] + x[n].play();
+      w[n] <- w[n] + x[n].step();
     }
   }
 

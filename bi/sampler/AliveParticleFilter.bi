@@ -31,14 +31,14 @@ class AliveParticleFilter < ParticleFilter {
     auto x0 <- x;
     auto w0 <- w;
     parallel for auto n in 1..N {
-      w[n] <- x[n].play();
+      w[n] <- x[n].step();
       cpp {{
       ++P;
       }}
       while w[n] == -inf {  // repeat until weight is positive
         a[n] <- ancestor(w0);
         x[n] <- clone<ForwardModel>(x0[a[n]]);
-        w[n] <- x[n].play();
+        w[n] <- x[n].step();
         cpp {{
         ++P;
         }}
@@ -51,7 +51,7 @@ class AliveParticleFilter < ParticleFilter {
     do {
       auto a' <- ancestor(w0);
       auto x' <- clone<ForwardModel>(x0[a']);
-      w' <- x'.play();
+      w' <- x'.step();
       cpp {{
       ++P;
       }}
