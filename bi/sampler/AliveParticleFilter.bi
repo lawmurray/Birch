@@ -20,7 +20,7 @@ class AliveParticleFilter < ParticleFilter {
     P.pushBack(N);
   }
 
-  function play() {          
+  function step() {          
     /* as `parallel for` is used below, an atomic is necessary to accumulate
      * the total number of propagations; nested C++ is required for this at
      * this stage */

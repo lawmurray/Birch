@@ -23,12 +23,12 @@ class HiddenMarkovModel<Parameter,State,Observation> <
   /**
    * Observations.
    */
-  y:Queue<Observation>;
+  y:List<Observation>;
 
   /**
    * Current observation during simulation.
    */
-  g:QueueNode<Observation>?;
+  g:ListNode<Observation>?;
 
   /**
    * Observation model.

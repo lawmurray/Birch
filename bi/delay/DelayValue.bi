@@ -129,6 +129,7 @@ class DelayValue<Value>(x:Random<Value>&) < Delay {
        * and output it as a value; nodes that can exist at the root of the
        * $M$-path (e.g. DelayBeta, DelayGamma, DelayGaussian) override this
        * to prune and then output as a distribution instead */
+      prune();
       realize();
       buffer.set(y!.value());
     }

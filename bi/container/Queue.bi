@@ -120,26 +120,20 @@ final class Queue<Type> {
   }
 
   /**
-   * First node, if any. This can be used to maintain a bidirectional
+   * First node, if any. This can be used to maintain a forward
    * iterator over the container.
    */
   function begin() -> QueueNode<Type>? {
-    assert !empty();
-    if !forward? {
-      allForward();
-    }
+    allForward();
     return forward;
   }
   
   /**
-   * Last node, if any. This can be used to maintain a bidirectional
+   * Last node, if any. This can be used to maintain a backward
    * iterator over the container.
    */
   function end() -> QueueNode<Type>? {
-    assert !empty();
-    if !backward? {
-      allBackward();
-    }
+    allBackward();
     return backward;
   }
   

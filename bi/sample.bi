@@ -103,10 +103,8 @@ program sample(
   /* output */
   outputBuffer:MemoryBuffer;
   diagnosticBuffer:MemoryBuffer;
-  if s!.nsamples > 1 {
-    outputBuffer.setArray();
-    diagnosticBuffer.setArray();
-  }
+  outputBuffer.setArray();
+  diagnosticBuffer.setArray();
   
   /* sample */
   for auto n in 1..s!.nsamples {  

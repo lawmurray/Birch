@@ -24,12 +24,12 @@ class MarkovModel<Parameter,State> < ForwardModel {
   /**
    * States.
    */
-  x:Queue<State>;
+  x:List<State>;
   
   /**
    * Current state during simulation.
    */
-  f:QueueNode<State>?;
+  f:ListNode<State>?;
 
   /**
    * Parameter model.

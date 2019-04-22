@@ -34,7 +34,7 @@ class Delay {
   }
   
   /**
-   * Remove the $M$-path child of this node.
+   * Remove this node from the $M$-path
    */
   function detach() {
     parent:Delay? <- this.parent;
