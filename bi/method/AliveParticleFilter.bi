@@ -42,6 +42,12 @@ class AliveParticleFilter < ParticleFilter {
     a <- cumulative_offspring_to_ancestors(systematic_cumulative_offspring(W0));
     w <- vector(0.0, nparticles);
     auto continue <- true;
+
+    /* Temporary workaround */
+    parallel for n:Integer in 1..nparticles {
+      f[n] <- clone<(Model,Real)!>(f0[n]);
+    }
+
     parallel for n:Integer in 1..nparticles {
       do {
         f[n] <- clone<(Model,Real)!>(f0[a[n]]);
