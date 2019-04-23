@@ -4,7 +4,7 @@
 class YapDengueModel < MarkovModel<YapDengueParameter,YapDengueState> {
   v:VBDModel;
 
-  fiber parameter(θ:YapDengueParameter) -> Real {
+  fiber parameter(θ:YapDengueParameter) -> Event {
     θ.h.ν <- 0.0;
     θ.h.μ <- 1.0;
     θ.h.λ ~ Beta(1.0, 1.0);
@@ -20,7 +20,7 @@ class YapDengueModel < MarkovModel<YapDengueParameter,YapDengueState> {
     θ.ρ ~ Beta(1.0, 1.0);
   }
 
-  fiber initial(x:YapDengueState, θ:YapDengueParameter) -> Real {
+  fiber initial(x:YapDengueState, θ:YapDengueParameter) -> Event {
     x.h.n <- 7370;
     x.h.i <- 1 + simulate_poisson(5.0);
     x.h.e <- simulate_poisson(5.0);
@@ -50,7 +50,7 @@ class YapDengueModel < MarkovModel<YapDengueParameter,YapDengueState> {
     }
   }
   
-  fiber transition(x':YapDengueState, x:YapDengueState, θ:YapDengueParameter) -> Real {
+  fiber transition(x':YapDengueState, x:YapDengueState, θ:YapDengueParameter) -> Event {
     v.transition(x', x, θ);
     x'.z <- x.z + x'.h.Δi;
     if (x'.y?) {
