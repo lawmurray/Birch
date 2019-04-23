@@ -1,8 +1,7 @@
 cpp{{
 #include <random>
 
-thread_local static std::random_device rd;
-thread_local static std::mt19937_64 rng(rd());
+thread_local static std::mt19937_64 rng;
 }}
 
 /**
@@ -19,6 +18,24 @@ function seed(s:Integer) {
   }
   #else
   rng.seed(s);
+  #endif
+  }}
+}
+
+/**
+ * Seed the pseudorandom number generator with entropy.
+ */
+function seed() {
+  cpp{{
+  std::random_device rd;
+  #ifdef _OPENMP
+  #pragma omp parallel num_threads(libbirch::nthreads)
+  {
+    #pragma omp critical
+    rng.seed(rd());
+  }
+  #else
+  rng.seed(rd());
   #endif
   }}
 }
