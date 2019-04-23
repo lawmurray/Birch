@@ -143,6 +143,10 @@ std::string bi::internalise(const std::string& name) {
 }
 
 std::string bi::escape_unicode(const std::string& str) {
+  /* ideally we would write the UTF-8 encoded character (works with clang at
+   * least), next best would be a \u0000 universal character name (works with
+   * gcc at least), but failing that (Intel compiler) we just write _u0000 as
+   * the name */
   std::wstring_convert<std::codecvt_utf8_utf16<char16_t>,char16_t> converter;
   std::u16string wstr = converter.from_bytes(str);
   std::stringstream buf;
@@ -150,7 +154,7 @@ std::string bi::escape_unicode(const std::string& str) {
     if (c < 127) {
       buf << (char)c;
     } else {
-      buf << "\\u" << std::setfill('0') << std::setw(4) << c;
+      buf << "_u" << std::setfill('0') << std::setw(4) << c;
     }
   }
   return buf.str();
