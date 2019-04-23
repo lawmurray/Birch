@@ -46,7 +46,7 @@ public:
     return get();
   }
 
-  T* const operator->() const {
+  T* operator->() const {
     return get();
   }
 

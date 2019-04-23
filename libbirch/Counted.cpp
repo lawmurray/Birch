@@ -21,13 +21,13 @@ void libbirch::Counted::freeze() {
     } else {
       frozen.store(libbirch::nthreads);
     }
-  } else if (expected == libbirch::tid) {
+  } else if (expected == (int)libbirch::tid) {
     /* this thread already has the lock, but has rediscovered this object,
      * proceed */
   } else {
     /* another thread is in the process of freezing this object, spin until
      * it has finished */
-    while (frozen.load() < libbirch::nthreads) {
+    while (frozen.load() < (int)libbirch::nthreads) {
       //
     }
   }

@@ -11,11 +11,11 @@
 /* declared in thread.hpp, here to ensure order of initialization for global
  * variables */
 #ifdef _OPENMP
-unsigned libbirch::nthreads = omp_get_max_threads();
-unsigned libbirch::tid = omp_get_thread_num();
+thread_local unsigned libbirch::nthreads = omp_get_max_threads();
+thread_local unsigned libbirch::tid = omp_get_thread_num();
 #else
-unsigned libbirch::nthreads = 1u;
-unsigned libbirch::tid = 0u;
+thread_local unsigned libbirch::nthreads = 1u;
+thread_local unsigned libbirch::tid = 0u;
 #endif
 
 /* declared in memory.hpp */
@@ -57,8 +57,8 @@ char* heap() {
 
 /* declared in clone.hpp, here to ensure order of initialization for global
  * variables */
-libbirch::Memo* libbirch::currentContext = nullptr;
-bool libbirch::cloneUnderway = false;
+thread_local libbirch::Memo* libbirch::currentContext = nullptr;
+thread_local bool libbirch::cloneUnderway = false;
 
 void* libbirch::allocate(const size_t n) {
   assert(n > 0u);

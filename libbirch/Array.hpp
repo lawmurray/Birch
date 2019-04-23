@@ -310,7 +310,7 @@ public:
   /**
    * Raw pointer to underlying buffer.
    */
-  T* const buf() const {
+  T* buf() const {
     return buffer.load(std::memory_order_relaxed)->buf() + offset;
   }
 

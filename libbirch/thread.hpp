@@ -11,11 +11,10 @@ namespace libbirch {
 /**
  * Number of threads.
  */
-extern unsigned nthreads;
+thread_local extern unsigned nthreads;
 
 /**
  * Thread id.
  */
-extern unsigned tid;
-#pragma omp threadprivate(tid)
+thread_local extern unsigned tid;
 }

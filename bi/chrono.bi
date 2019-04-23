@@ -1,9 +1,7 @@
 cpp{{
 #include <chrono>
 
-extern std::chrono::time_point<std::chrono::system_clock> savedTimePoint;
-#pragma omp threadprivate(savedTimePoint)
-std::chrono::time_point<std::chrono::system_clock> savedTimePoint = std::chrono::system_clock::now();
+thread_local static std::chrono::time_point<std::chrono::system_clock> savedTimePoint = std::chrono::system_clock::now();
 }}
 
 /**

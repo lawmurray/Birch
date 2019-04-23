@@ -3,7 +3,10 @@
  */
 #include "libbirch/stacktrace.hpp"
 
-std::vector<libbirch::StackFrame,libbirch::Allocator<libbirch::StackFrame>> libbirch::stacktrace;
+/**
+ * Stack trace.
+ */
+thread_local static std::vector<libbirch::StackFrame,libbirch::Allocator<libbirch::StackFrame>> stacktrace;
 
 libbirch::StackFunction::StackFunction(const char* func, const char* file,
     const int line) {
@@ -12,6 +15,10 @@ libbirch::StackFunction::StackFunction(const char* func, const char* file,
 
 libbirch::StackFunction::~StackFunction() {
   stacktrace.pop_back();
+}
+
+void libbirch::line(const unsigned n) {
+  stacktrace.back().line = n;
 }
 
 void libbirch::abort() {

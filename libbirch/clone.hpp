@@ -9,13 +9,11 @@ namespace libbirch {
 /**
  * Is a clone currently underway?
  */
-extern bool cloneUnderway;
-#pragma omp threadprivate(cloneUnderway)
+thread_local extern bool cloneUnderway;
 
 /**
  * The memo object associated with new objects.
  */
-extern Memo* currentContext;
-#pragma omp threadprivate(currentContext)
+thread_local extern Memo* currentContext;
 
 }

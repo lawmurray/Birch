@@ -1,13 +1,8 @@
 cpp{{
 #include <random>
 
-extern std::random_device rd;
-#pragma omp threadprivate(rd)
-std::random_device rd;
-
-extern std::mt19937_64 rng;
-#pragma omp threadprivate(rng)
-std::mt19937_64 rng(rd());
+thread_local static std::random_device rd;
+thread_local static std::mt19937_64 rng(rd());
 }}
 
 /**

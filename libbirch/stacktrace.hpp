@@ -21,10 +21,10 @@
 /**
  * @def libbirch_line_
  *
- * Update the line number of the top frame on the stack trace.
+ * Update the line number of the top frame of the stack trace.
  */
 #ifndef NDEBUG
-#define libbirch_line_(n) libbirch::stacktrace.back().line = n
+#define libbirch_line_(n) libbirch::line(n)
 #else
 #define libbirch_line_(n)
 #endif
@@ -48,10 +48,9 @@ struct StackFunction {
 };
 
 /**
- * Stack trace.
+ * Update the line number of the top frame of the stack trace.
  */
-extern std::vector<StackFrame,Allocator<StackFrame>> stacktrace;
-#pragma omp threadprivate(stacktrace)
+void line(const unsigned n);
 
 /**
  * Print stack trace and abort.
