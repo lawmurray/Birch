@@ -16,6 +16,11 @@ class Buffer {
   function setChild(name:String) -> Buffer;
 
   /**
+   * Push a new element onto the end of an array.
+   */
+  function push() -> Buffer;
+
+  /**
    * Get the size of an array.
    */
   function size() -> Integer;
@@ -24,11 +29,6 @@ class Buffer {
    * Iterate through the elements of an array.
    */
   fiber walk() -> Buffer;
-  
-  /**
-   * Push a new element onto the end of an array.
-   */
-  function push() -> Buffer;
 
   /**
    * Get this as an object.
@@ -115,6 +115,28 @@ class Buffer {
    * are themselves arrays of the same length and compatible type.
    */
   function getRealMatrix() -> Real[_,_]?;
+
+  /**
+   * Get the size of an array.
+   */
+  function size(name:String) -> Integer {
+    auto array <- getArray(name);
+    if array? {
+      return array!.size();
+    } else {
+      return 0;
+    }
+  }
+
+  /**
+   * Iterate through the elements of an array.
+   */
+  fiber walk(name:String) -> Buffer {
+    auto array <- getArray(name);
+    if array? {
+      array!.walk();
+    }
+  }
 
   /**
    * Get a child as an object.

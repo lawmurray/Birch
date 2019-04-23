@@ -59,6 +59,42 @@ final class Random<Value> < Expression<Value> {
   }
 
   /**
+   * Get the value of the random variate, forcing realization if necessary.
+   */
+  function value() -> Value {
+    if !hasValue() {
+      assert hasDistribution();
+      if future? {
+        /* future value provided, use it */
+        x <- future!;
+        future <- nil;
+        if futureUpdate {
+          dist!.update(x!);
+        } else {
+          dist!.downdate(x!);
+          futureUpdate <- true;
+        }
+      } else {
+        /* no future value provided, simulate a value */
+        x <- dist!.simulate();
+        dist!.update(x!);
+      }
+      dist!.detach();
+      dist <- nil;
+      assert hasValue();
+    }
+    return x!;
+  }
+
+  /**
+   * Get the distribution.
+   */
+  function distribution() -> Distribution<Value> {
+    assert hasDistribution();
+    return dist!;
+  }
+
+  /**
    * Assume a distribution for this random variate. When a value is required,
    * it will be simuldated from this distribution.
    */
@@ -95,34 +131,6 @@ final class Random<Value> < Expression<Value> {
     assume(dist);
     this.future <- future;
     this.futureUpdate <- false;
-  }
-
-  /**
-   * Get the value of the random variate, forcing realization if necessary.
-   */
-  function value() -> Value {
-    if !hasValue() {
-      assert hasDistribution();
-      if future? {
-        /* future value provided, use it */
-        x <- future!;
-        future <- nil;
-        if futureUpdate {
-          dist!.update(x!);
-        } else {
-          dist!.downdate(x!);
-          futureUpdate <- true;
-        }
-      } else {
-        /* no future value provided, simulate a value */
-        x <- dist!.simulate();
-        dist!.update(x!);
-      }
-      dist!.detach();
-      dist <- nil;
-      assert hasValue();
-    }
-    return x!;
   }
 
   /**
@@ -303,13 +311,13 @@ final class Random<Value> < Expression<Value> {
   }
 
   function write(buffer:Buffer) {
-    if hasValue() {
+    //if hasValue() {
       buffer.set(value());
-    } else if hasDistribution() {
-      dist!.write(buffer);
-    } else {
-      buffer.setNil();
-    }
+    //} else if hasDistribution() {
+    //  dist!.write(buffer);
+    //} else {
+    //  buffer.setNil();
+    //}
   }
 }
 
