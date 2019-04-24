@@ -1,5 +1,8 @@
 /**
  * Particle Gibbs sampler.
+ *
+ * !!! caution
+ *     Work in progress, contributions welcome.
  */
 class ParticleGibbs < ConditionalParticleFilter {  
   function start() {

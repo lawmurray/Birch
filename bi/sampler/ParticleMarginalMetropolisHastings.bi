@@ -1,5 +1,8 @@
 /**
  * Particle marginal Metropolis--Hastings sampler.
+ *
+ * !!! caution
+ *     Work in progress, contributions welcome.
  */
 class ParticleMarginalMetropolisHastings < Sampler {
   /**
@@ -18,13 +21,6 @@ class ParticleMarginalMetropolisHastings < Sampler {
   π:Real?;
     
   function sample(m:Model) -> (Model, Real) {
-    /* if a number of checkpoints hasn't been explicitly provided, assume
-     * Metropolis--Hastings for just the first, and the inner sampler for
-     * the rest */
-    if (!ncheckpoints?) {
-      ncheckpoints <- 1;
-    }
-
     /* Markov chain states and evaluations */
     x':Model <- m;
     π':Real;  // π(x')
@@ -33,25 +29,25 @@ class ParticleMarginalMetropolisHastings < Sampler {
     
     if !x? {
       /* initial state */
-      (x, π) <- sampler!.sample(x');
+      (x, π) <- sampler!.sample();
     } else {
       /* subsequent states */
       x' <- clone<Model>(m);
       
       /* simulate a proposed state */
-      //q' <- sum(limit(x'.propose(x!), ncheckpoints!));
+      //q' <- sum(limit(x'.propose(x!), 1));
       
       /* re-execute to now compute the proposal log-weight, subtracting out
        * the previous log-weight as it represents log-likelihood terms that
        * are in common */
-      //q' <- sum(limit(x'.propose(x!), ncheckpoints!));
+      //q' <- sum(limit(x'.propose(x!), 1));
       
       /* execute the other way to compute the reverse proposal log-weight */
-      //q <- sum(limit(x!.propose(x'), ncheckpoints!));
+      //q <- sum(limit(x!.propose(x'), 1));
       
       /* compute the target density, π' will be the sum of the log-likelihood
        * and log-prior */
-      (x', π') <- sampler!.sample(x');
+      (x', π') <- sampler!.sample();
       
       /* accept with probability given by Metropolis--Hastings rule */
       auto α <- exp(min(π' - π! + q - q', 0.0));
