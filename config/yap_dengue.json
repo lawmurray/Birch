@@ -1,3 +1,8 @@
 {
-  "nparticles": 1024
+  "model": {
+    "class": "YapDengueModel"
+  },
+  "sampler": {
+    "nparticles": 1024
+  }
 }
