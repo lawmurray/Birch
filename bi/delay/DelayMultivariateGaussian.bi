@@ -9,20 +9,20 @@ class DelayMultivariateGaussian(x:Random<Real[_]>&, μ:Real[_], Σ:Real[_,_]) <
   μ:Real[_] <- μ;
 
   /**
-   * Precision.
+   * Covariance.
    */
-  Λ:Real[_,_] <- cholinv(Σ);
+  Σ:Real[_,_] <- Σ;
 
   function size() -> Integer {
     return length(μ);
   }
 
   function simulate() -> Real[_] {
-    return simulate_multivariate_gaussian(μ, cholinv(Λ));
+    return simulate_multivariate_gaussian(μ, Σ);
   }
   
   function observe(x:Real[_]) -> Real {
-    return observe_multivariate_gaussian(x, μ, cholinv(Λ));
+    return observe_multivariate_gaussian(x, μ, Σ);
   }
 
   function update(x:Real[_]) {
@@ -34,14 +34,14 @@ class DelayMultivariateGaussian(x:Random<Real[_]>&, μ:Real[_], Σ:Real[_,_]) <
   }
 
   function pdf(x:Real[_]) -> Real {
-    return pdf_multivariate_gaussian(x, μ, cholinv(Λ));
+    return pdf_multivariate_gaussian(x, μ, Σ);
   }
 
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "MultivariateGaussian");
     buffer.set("μ", μ);
-    buffer.set("Σ", cholinv(Λ));
+    buffer.set("Σ", Σ);
   }
 }
 

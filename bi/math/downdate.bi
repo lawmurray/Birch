@@ -267,16 +267,17 @@ function downdate_inverse_gamma_gamma(x:Real, k:Real, α':Real, β':Real) ->
  *
  * - x: The variate.
  * - μ': Posterior mean.
- * - Λ': Posterior precision.
- * - L: Likelihood precision.
+ * - Σ': Posterior covariance.
+ * - S: Likelihood covariance.
  *
- * Returns: the prior hyperparameters `μ` and `Λ`.
+ * Returns: the prior hyperparameters `μ` and `Σ`.
  */
 function downdate_multivariate_gaussian_gaussian(x:Real[_], μ':Real[_],
-    Λ':Real[_,_], L:Real[_,_]) -> (Real[_], Real[_,_]) {
-  Λ:Real[_,_] <- Λ' - L;
-  μ:Real[_] <- cholsolve(Λ, Λ'*μ' - L*x);
-  return (μ, Λ);
+    Σ':Real[_,_], S:Real[_,_]) -> (Real[_], Real[_,_]) {
+  auto K <- Σ'*cholinv(Σ' - S);
+  auto μ <- μ' + K*(x - μ');
+  auto Σ <- Σ' - K*Σ';
+  return (μ, Σ);
 }
 
 /**
@@ -286,18 +287,19 @@ function downdate_multivariate_gaussian_gaussian(x:Real[_], μ':Real[_],
  * - x: The variate.
  * - A: Scale.
  * - μ': Posterior mean.
- * - Λ': Posterior precision.
+ * - Σ': Posterior covariance.
  * - c: Offset.
- * - L: Likelihood precision.
+ * - S: Likelihood covariance.
  *
- * Returns: the prior hyperparameters `μ` and `Λ`.
+ * Returns: the prior hyperparameters `μ` and `Σ`.
  */
 function downdate_multivariate_linear_gaussian_gaussian(x:Real[_],
-    A:Real[_,_], μ':Real[_], Λ':Real[_,_], c:Real[_], L:Real[_,_]) ->
+    A:Real[_,_], μ':Real[_], Σ':Real[_,_], c:Real[_], S:Real[_,_]) ->
     (Real[_], Real[_,_]) {
-  Λ:Real[_,_] <- Λ' - trans(A)*L*A;
-  μ:Real[_] <- cholsolve(Λ, Λ'*μ' - trans(A)*L*(x - c));
-  return (μ, Λ);
+  auto K <- Σ'*trans(A)*cholinv(A*Σ'*trans(A) - S);
+  auto μ <- μ' + K*(x - A*μ' - c);
+  auto Σ <- Σ' - K*A*Σ';
+  return (μ, Σ);
 }
 
 /**
@@ -307,17 +309,18 @@ function downdate_multivariate_linear_gaussian_gaussian(x:Real[_],
  * - x: The variate.
  * - a: Scale.
  * - μ': Posterior mean.
- * - Λ': Posterior precision.
+ * - Σ': Posterior covariance.
  * - c: Offset.
- * - l: Likelihood precision.
+ * - s2: Likelihood variance.
  *
- * Returns: the prior hyperparameters `μ` and `Λ`.
+ * Returns: the prior hyperparameters `μ` and `Σ`.
  */
 function downdate_multivariate_dot_gaussian_gaussian(x:Real, a:Real[_],
-    μ':Real[_], Λ':Real[_,_], c:Real, l:Real) -> (Real[_], Real[_,_]) {
-  Λ:Real[_,_] <- Λ' - a*l*trans(a);
-  μ:Real[_] <- cholsolve(Λ, Λ'*μ' - a*l*(x - c));
-  return (μ, Λ);
+    μ':Real[_], Σ':Real[_,_], c:Real, s2:Real) -> (Real[_], Real[_,_]) {
+  auto K <- Σ'*a/(dot(a, Σ'*a) - s2);
+  auto μ <- μ' + K*(x - dot(a, μ') - c);
+  auto Σ <- Σ' - K*trans(a)*Σ';
+  return (μ, Σ);
 }
 
 /**

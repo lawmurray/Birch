@@ -311,13 +311,13 @@ final class Random<Value> < Expression<Value> {
   }
 
   function write(buffer:Buffer) {
-    //if hasValue() {
+    if hasValue() {
       buffer.set(value());
-    //} else if hasDistribution() {
-    //  dist!.write(buffer);
-    //} else {
-    //  buffer.setNil();
-    //}
+    } else if hasDistribution() {
+      dist!.write(buffer);
+    } else {
+      buffer.setNil();
+    }
   }
 }
 

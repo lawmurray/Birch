@@ -5,12 +5,12 @@
  */
 final class DelayMultivariateDotGaussianLogGaussian(x:Random<Real>&, a:Real[_],
     m:DelayMultivariateGaussian, c:Real, s2:Real) <
-    DelayLogGaussian(x, dot(a, m.μ) + c, scalar(trans(a)*cholinv(m.Λ)*a) + s2) {
+    DelayLogGaussian(x, dot(a, m.μ) + c, dot(a, m.Σ*a) + s2) {
   /**
    * Scale.
    */
   a:Real[_] <- a;
-    
+  
   /**
    * Mean.
    */
@@ -22,18 +22,18 @@ final class DelayMultivariateDotGaussianLogGaussian(x:Random<Real>&, a:Real[_],
   c:Real <- c;
 
   /**
-   * Likelihood precision.
+   * Likelihood variance.
    */
-  l:Real <- 1.0/s2;
+  s2:Real <- s2;
 
   function update(x:Real) {
-    (m!.μ, m!.Λ) <- update_multivariate_dot_gaussian_gaussian(log(x), a,
-        m!.μ, m!.Λ, c, l);
+    (m!.μ, m!.Σ) <- update_multivariate_dot_gaussian_gaussian(log(x), a,
+        m!.μ, m!.Σ, c, s2);
   }
 
   function downdate(x:Real) {
-    (m!.μ, m!.Λ) <- downdate_multivariate_dot_gaussian_gaussian(log(x), a,
-        m!.μ, m!.Λ, c, l);
+    (m!.μ, m!.Σ) <- downdate_multivariate_dot_gaussian_gaussian(log(x), a,
+        m!.μ, m!.Σ, c, s2);
   }
 
   function lower() -> Real? {
