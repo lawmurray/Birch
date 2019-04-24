@@ -7,12 +7,9 @@ The implementation is based on the [original implementation](https://github.com/
 
 ## Installation
 
-To build:
+To build and install, use:
 
     birch build
-    
-To install:
-
     birch install
 
 To run:
