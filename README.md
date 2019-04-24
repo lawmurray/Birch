@@ -12,11 +12,14 @@ It is licensed under the Apache License, Version 2.0 (the "License"); you may no
 
 ## Getting started
 
-To build, install and run:
+To build and install, use:
 
     birch build
     birch install
-    birch run
+
+To run, use:
+
+    ./run.sh
 
 
 ## Acknowledgements

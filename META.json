@@ -8,13 +8,13 @@
       "bi/model/LinearRegressionModel.bi",
       "bi/model/MixedGaussianModel.bi",
       "bi/model/SIRModel.bi",
-      "bi/model/TestModel.bi",
-      "bi/run.bi"
+      "bi/model/TestModel.bi"
     ],
     "other": [
       "LICENSE",
       "META.json",
       "README.md",
+      "run.sh",
       "config/linear_gaussian.json",
       "config/linear_regression.json",
       "config/mixed_gaussian.json",
