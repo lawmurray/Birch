@@ -48,7 +48,7 @@ class Value {
    * Return: An optional with a value giving the length if this is an array.
    */
   function size() -> Integer {
-    error("not an array");
+    return 1;
   }
 
   /**
