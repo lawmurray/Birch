@@ -69,7 +69,7 @@ class JSONGenerator < Generator {
   }
 
   function visit(value:NilValue) {
-    scalar("null");
+    null();
   }
   
   function visit(value:BooleanVectorValue) {
@@ -116,7 +116,7 @@ class JSONGenerator < Generator {
       }
       endSequence();
     } else {
-      scalar("null");
+      null();
     }
   }
   
@@ -137,7 +137,7 @@ class JSONGenerator < Generator {
       }
       endSequence();
     } else {
-      scalar("null");
+      null();
     }
   }
   
@@ -158,7 +158,7 @@ class JSONGenerator < Generator {
       }
       endSequence();
     } else {
-      scalar("null");
+      null();
     }
   }
   
@@ -227,6 +227,15 @@ class JSONGenerator < Generator {
     yaml_scalar_event_initialize(&self->event, NULL, NULL,
         (yaml_char_t*)value.c_str(), value.length(), 1, 1,
         YAML_DOUBLE_QUOTED_SCALAR_STYLE);
+    yaml_emitter_emit(&self->emitter, &self->event);
+    }}
+  }
+
+  function null() {
+    cpp{{
+    yaml_scalar_event_initialize(&self->event, NULL, NULL,
+        (yaml_char_t*)"null", 4, 1, 1,
+        YAML_PLAIN_SCALAR_STYLE);
     yaml_emitter_emit(&self->emitter, &self->event);
     }}
   }
