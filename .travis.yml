@@ -35,11 +35,11 @@ before_install:
 
   # Checkout Birch.Standard, which may be cached, and (re)build
   - git clone "https://github.com/lawmurray/Birch.Standard.git" || cd .
-  - cd Birch.Standard && git pull && git checkout master && birch build --enable-unity && sudo birch install --enable-unity && cd ..
+  - cd Birch.Standard && git pull && git checkout pgibbs && birch build --enable-unity && sudo birch install --enable-unity && cd ..
 
   # Checkout Birch.Cairo, which may be cached, and (re)build
   - git clone "https://github.com/lawmurray/Birch.Cairo.git" || cd .
-  - cd Birch.Cairo && git pull && git checkout master && birch build --enable-unity && sudo birch install --enable-unity && cd ..
+  - cd Birch.Cairo && git pull && git checkout pgibbs && birch build --enable-unity && sudo birch install --enable-unity && cd ..
 install:
   - birch build --enable-unity && sudo birch install --enable-unity
 script:

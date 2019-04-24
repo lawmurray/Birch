@@ -3,6 +3,6 @@
     "class": "Multi"
   },
   "sampler": {
-    "ncheckpoints": 100
+    "nsteps": 100
   }
 }

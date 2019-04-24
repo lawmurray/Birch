@@ -9,33 +9,35 @@
 program data(input:String <- "output/simulate.json",
     output:String <- "input/filter.json") {
   /* input */
-  inputBuffer:JSONBuffer;
+  inputBuffer:MemoryBuffer;
   inputBuffer.load(input);
   
   /* read in the simulated observations from the track */
   θ:Global;
   y:Vector<List<Random<Real[_]>>>;
-  
-  inputBuffer.get("θ", θ);  
-  inputBuffer.get("y", y);
-  
-  auto z <- inputBuffer.walk("z");
-  while z? {
-    auto t <- z!.getInteger("t")!;
-    auto u <- z!.walk("y");
-    while u? {
-      auto v <- u!.getRealVector();
-      if v? {
-        w:Random<Real[_]>;
-        w <- v![1..2];
-        y.get(t).pushBack(w);
+
+  auto array <- inputBuffer.walk();
+  if array? {
+    array!.get("θ", θ);  
+    array!.get("y", y);
+    auto z <- array!.walk("z");
+    while z? {
+      auto t <- z!.getInteger("t")!;
+      auto u <- z!.walk("y");
+      while u? {
+        auto v <- u!.getRealVector();
+        if v? {
+          w:Random<Real[_]>;
+          w <- v![1..2];
+          y.get(t).pushBack(w);
+        }
+        t <- t + 1;
       }
-      t <- t + 1;
     }
   }
   
   /* save the observations to the output file */
-  outputBuffer:JSONBuffer;
+  outputBuffer:MemoryBuffer;
   outputBuffer.set("y", y);
   outputBuffer.set("θ", θ);
   outputBuffer.save(output);

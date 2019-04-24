@@ -7,7 +7,7 @@ program draw(input:String <- "output/simulate.json",
     width:Integer <- 1024,
     height:Integer <- 1024) {
   /* input file */
-  inputBuffer:JSONBuffer;
+  inputBuffer:MemoryBuffer;
   inputBuffer.load(input);
   
   /* output file and drawing surface */
@@ -23,91 +23,94 @@ program draw(input:String <- "output/simulate.json",
   //col:Real[_] <- [0.3373, 0.7059, 0.9137]; // blue
   col:Real[_] <- [0.8353, 0.3686, 0.0000];  // red
 
-  auto θ <- inputBuffer.getChild("θ");
-  auto l <- θ!.getRealVector("l")!;
-  auto u <- θ!.getRealVector("u")!;
+  auto array <- inputBuffer.walk();
+  if array? {
+    auto θ <- array!.getChild("θ");
+    auto l <- θ!.getRealVector("l")!;
+    auto u <- θ!.getRealVector("u")!;
 
-  auto scaleX <- width/(u[1] - l[1]);
-  auto scaleY <- height/(u[2] - l[2]);
-  auto scale <- max(scaleX, scaleY);
-  auto fat <- 2.0;
+    auto scaleX <- width/(u[1] - l[1]);
+    auto scaleY <- height/(u[2] - l[2]);
+    auto scale <- max(scaleX, scaleY);
+    auto fat <- 2.0;
   
-  /* border */
-  cr.setSourceRGB(0.8, 0.8, 0.8);
-  cr.rectangle(0, 0, width - 1, height - 1);
-  cr.stroke();
+    /* border */
+    cr.setSourceRGB(0.8, 0.8, 0.8);
+    cr.rectangle(0, 0, width - 1, height - 1);
+    cr.stroke();
 
-  /* set scale for tracking domain */
-  cr.scale(scaleX, scaleY);
-  cr.translate(-l[1], -l[2]);
+    /* set scale for tracking domain */
+    cr.scale(scaleX, scaleY);
+    cr.translate(-l[1], -l[2]);
 
-  /* solid points indicating clutter */
-  auto y <- inputBuffer.walk("y");
-  while y? {
-    auto Y <- y!.getRealMatrix();
-    if Y? {
-      cr.setSourceRGB(0.8, 0.8, 0.8);
-      for i:Integer in 1..rows(Y!) {
-        cr.arc(Y![i,1], Y![i,2], 4.0*fat/scale, 0.0, 2.0*π);
-        cr.fill();
-      }
-    }
-  }
-
-  /* circle those points indicating associated observations */
-  auto z <- inputBuffer.walk("z");
-  while z? {
-    cr.setLineWidth(2.0*fat/scale);
-    auto ys <- z!.walk("y");
-    while ys? {
-      auto y <- ys!.getRealVector();
-      if y? {
+    /* solid points indicating clutter */
+    auto y <- array!.walk("y");
+    while y? {
+      auto Y <- y!.getRealMatrix();
+      if Y? {
         cr.setSourceRGB(0.8, 0.8, 0.8);
-        cr.arc(y![1], y![2], 4.0*fat/scale, 0.0, 2.0*π);
-        cr.fill();
-
-        cr.setSourceRGB(col[1], col[2], col[3]);
-        cr.arc(y![1], y![2], 4.0*fat/scale, 0.0, 2.0*π);
-        cr.stroke();
+        for i:Integer in 1..rows(Y!) {
+          cr.arc(Y![i,1], Y![i,2], 4.0*fat/scale, 0.0, 2.0*π);
+          cr.fill();
+        }
       }
     }
-  }
-    
-  /* lines and points marking latent tracks */
-  z <- inputBuffer.walk("z");
-  while z? {
-    auto x <- z!.getRealMatrix("x");
-    if x? {
-      cr.setLineWidth(4.0*fat/scale);
-      cr.moveTo(x![1,1], x![1,2]);
-      for i:Integer in 2..rows(x!) {
-        cr.lineTo(x![i,1], x![i,2]);
-      }
-      cr.stroke();
 
-      for i:Integer in 2..rows(x!) {
-        cr.arc(x![i,1], x![i,2], 4.0*fat/scale, 0.0, 2.0*π);
-        cr.fill();
-      }
-    }
-  }
-    
-  /* start time labels for latent tracks */
-  z <- inputBuffer.walk("z");
-  while z? {
-    auto t <- z!.getInteger("t");
-    auto x <- z!.getRealMatrix("x");
-    
-    if t? && x? {
+    /* circle those points indicating associated observations */
+    auto z <- array!.walk("z");
+    while z? {
       cr.setLineWidth(2.0*fat/scale);
-      cr.setSourceRGB(col[1], col[2], col[3]);
-      cr.arc(x![1,1], x![1,2], 10.0*fat/scale, 0.0, 2.0*π);
-      cr.fill();
+      auto ys <- z!.walk("y");
+      while ys? {
+        auto y <- ys!.getRealVector();
+        if y? {
+          cr.setSourceRGB(0.8, 0.8, 0.8);
+          cr.arc(y![1], y![2], 4.0*fat/scale, 0.0, 2.0*π);
+          cr.fill();
+
+          cr.setSourceRGB(col[1], col[2], col[3]);
+          cr.arc(y![1], y![2], 4.0*fat/scale, 0.0, 2.0*π);
+          cr.stroke();
+        }
+      }
+    }
+    
+    /* lines and points marking latent tracks */
+    z <- array!.walk("z");
+    while z? {
+      auto x <- z!.getRealMatrix("x");
+      if x? {
+        cr.setLineWidth(4.0*fat/scale);
+        cr.moveTo(x![1,1], x![1,2]);
+        for i:Integer in 2..rows(x!) {
+          cr.lineTo(x![i,1], x![i,2]);
+        }
+        cr.stroke();
+
+        for i:Integer in 2..rows(x!) {
+          cr.arc(x![i,1], x![i,2], 4.0*fat/scale, 0.0, 2.0*π);
+          cr.fill();
+        }
+      }
+    }
+    
+    /* start time labels for latent tracks */
+    z <- array!.walk("z");
+    while z? {
+      auto t <- z!.getInteger("t");
+      auto x <- z!.getRealMatrix("x");
+    
+      if t? && x? {
+        cr.setLineWidth(2.0*fat/scale);
+        cr.setSourceRGB(col[1], col[2], col[3]);
+        cr.arc(x![1,1], x![1,2], 10.0*fat/scale, 0.0, 2.0*π);
+        cr.fill();
         
-      cr.setSourceRGB(1.0, 1.0, 1.0);
-      cr.setFontSize(0.5);
-      cr.moveTo(x![1,1] - 0.26, x![1,2] + 0.15);
-      cr.showText(String(t!));
+        cr.setSourceRGB(1.0, 1.0, 1.0);
+        cr.setFontSize(0.5);
+        cr.moveTo(x![1,1] - 0.26, x![1,2] + 0.15);
+        cr.showText(String(t!));
+      }
     }
   }
   

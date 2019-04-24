@@ -9,7 +9,7 @@ class Multi < StateSpaceModel<Global,List<Track>,List<Random<Real[_]>>> {
    */
   z:List<Track>;
   
-  fiber transition(x':List<Track>, x:List<Track>, θ:Global) -> Real {
+  fiber transition(x':List<Track>, x:List<Track>, θ:Global) -> Event {
     /* update time */
     t <- t + 1;
 
@@ -40,7 +40,7 @@ class Multi < StateSpaceModel<Global,List<Track>,List<Random<Real[_]>>> {
     }
   }
 
-  fiber observation(y:List<Random<Real[_]>>, x:List<Track>, θ:Global) -> Real {
+  fiber observation(y:List<Random<Real[_]>>, x:List<Track>, θ:Global) -> Event {
     if !y.empty() {
       association(y, x, θ);
     } else {
@@ -55,11 +55,13 @@ class Multi < StateSpaceModel<Global,List<Track>,List<Random<Real[_]>>> {
     }
   }
 
-  fiber association(y:List<Random<Real[_]>>, x:List<Track>, θ:Global) -> Real {
+  fiber association(y:List<Random<Real[_]>>, x:List<Track>, θ:Global) -> Event {
     auto track <- x.walk();
-    while track? {
+    while track? {    
       auto o <- track!.y.back();  // observed random variable
       if o.hasDistribution() {
+        assert y.size() > 0;
+      
         /* object is detected, compute proposal */
         q:Real[y.size()];
         n:Integer <- 1;
@@ -74,12 +76,14 @@ class Multi < StateSpaceModel<Global,List<Track>,List<Random<Real[_]>>> {
         if Q > 0.0 {
           q <- q/Q;
           n <~ Categorical(q);  // choose an observation
-          yield o.realize(y.get(n));  // likelihood
-          yield -log(y.size());  // prior
-          yield -log(q[n]);  // proposal correction
+          auto w <- o.distribution().observe(y.get(n));  // likelihood
+          o.distribution().update(y.get(n));
+          w <- w - log(y.size());  // prior correction
+          w <- w - log(q[n]);  // proposal correction
           y.erase(n);  // remove the observation for future associations
+          yield FactorEvent(w);
         } else {
-          yield -inf;  // detected, but all likelihoods (numerically) zero
+          yield FactorEvent(-inf);  // detected, but all likelihoods (numerically) zero
         }
       }
     }
