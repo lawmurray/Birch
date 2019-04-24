@@ -98,7 +98,7 @@
 %token <valString> LEFT_OP RIGHT_OP LEFT_TILDE_OP RIGHT_TILDE_OP LEFT_QUERY_OP
 %token <valString> AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP RANGE_OP
 
-%type <valName> name binary_operator unary_operator observe_operator assume_operator
+%type <valName> name binary_operator unary_operator assume_operator
 
 %type <valInt> size
 %type <valAnnotation> for_annotation class_annotation function_annotation
@@ -117,7 +117,7 @@
 %type <valExpression> postfix_expression postfix_query_expression prefix_expression
 %type <valExpression> multiplicative_expression additive_expression
 %type <valExpression> relational_expression equality_expression
-%type <valExpression> logical_and_expression logical_or_expression observe_expression
+%type <valExpression> logical_and_expression logical_or_expression
 %type <valExpression> assign_expression expression_list expression optional_expression
 %type <valExpression> local_variable parameter parameter_list parameters optional_parameters
 %type <valExpression> span_expression span_list brackets option option_list options
@@ -345,23 +345,13 @@ logical_or_expression
     | logical_or_expression logical_or_operator logical_and_expression  { $$ = new bi::BinaryCall($2, new bi::Binary($1, $3, make_loc(@$)), make_loc(@$)); }
     ;
 
-observe_operator
-    : RIGHT_TILDE_OP  { $$ = new bi::Name("~>"); }
-    ;
-
-observe_expression
-    : logical_or_expression
-    | observe_expression observe_operator logical_or_expression  { $$ = new bi::Assign($1, $2, $3, make_loc(@$)); }
-    ;
-
 assign_operator
     : LEFT_OP        { $$ = new bi::Name("<-"); }
-    | LEFT_TILDE_OP  { $$ = new bi::Name("<~"); }
     ;
 
 assign_expression
-    : observe_expression
-    | observe_expression assign_operator assign_expression  { $$ = new bi::Assign($1, $2, $3, make_loc(@$)); }
+    : logical_or_expression
+    | logical_or_expression assign_operator assign_expression  { $$ = new bi::Assign($1, $2, $3, make_loc(@$)); }
     ;
 
 expression
@@ -601,8 +591,10 @@ hpp
     ;
 
 assume_operator
-    : '~'            { $$ = new bi::Name("~"); }
-    | LEFT_QUERY_OP  { $$ = new bi::Name("<-?"); }
+    : '~'             { $$ = new bi::Name("~"); }
+    | LEFT_TILDE_OP   { $$ = new bi::Name("<~"); }
+    | RIGHT_TILDE_OP  { $$ = new bi::Name("~>"); }
+    | LEFT_QUERY_OP   { $$ = new bi::Name("<-?"); }
     ;
 
 assume_statement

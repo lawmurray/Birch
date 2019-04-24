@@ -213,6 +213,12 @@ private:
   void checkInteger(const Expression* o);
 
   /**
+   * For an expression of Distribution<Value> type, work out Value and return
+   * it.
+   */
+  static Type* getValueType(const Type* o);
+
+  /**
    * List of scopes, innermost at the back.
    */
   std::list<Scope*> scopes;

@@ -97,36 +97,20 @@ bi::Expression* bi::Resolver::modify(UnaryCall* o) {
 }
 
 bi::Expression* bi::Resolver::modify(Assign* o) {
-  if (*o->name == "<~") {
-    auto left = o->left;
-    auto right = new Call(
-        new Member(o->right,
-            new Identifier<Unknown>(new Name("simulateAndUpdate"), o->loc), o->loc),
-            new EmptyExpression(o->loc), o->loc);
-    auto assign = new Assign(left, new Name("<-"), right, o->loc);
-    return assign->accept(this);
-  } else if (*o->name == "~>") {
-    auto observe = new Call(
-        new Member(o->right,
-            new Identifier<Unknown>(new Name("observeAndUpdate"), o->loc), o->loc),
-        o->left, o->loc);
-    return observe->accept(this);
-  } else {
-    Modifier::modify(o);
-    if (o->right->type->definitely(*o->left->type)) {
-      if (!o->left->isAssignable()) {
-        throw NotAssignableException(o);
-      }
-    } else if (o->left->type->isClass()) {
-      if (!o->left->type->getClass()->hasAssignment(o->right->type)) {
-        throw AssignmentException(o);
-      }
-    } else {
+  Modifier::modify(o);
+  if (o->right->type->definitely(*o->left->type)) {
+    if (!o->left->isAssignable()) {
+      throw NotAssignableException(o);
+    }
+  } else if (o->left->type->isClass()) {
+    if (!o->left->type->getClass()->hasAssignment(o->right->type)) {
       throw AssignmentException(o);
     }
-    o->type = o->left->type;
-    return o;
+  } else {
+    throw AssignmentException(o);
   }
+  o->type = o->left->type;
+  return o;
 }
 
 bi::Expression* bi::Resolver::modify(Slice* o) {
@@ -413,6 +397,7 @@ bi::Expression* bi::Resolver::modify(OverloadedIdentifier<UnaryOperator>* o) {
 }
 
 bi::Statement* bi::Resolver::modify(Assume* o) {
+  Statement* result = nullptr;
   if (*o->name == "<-?") {
     auto tmp = new LocalVariable(o->right, o->loc);
     auto ref = new Identifier<Unknown>(tmp->name, o->loc);
@@ -423,32 +408,48 @@ bi::Statement* bi::Resolver::modify(Assume* o) {
     auto falseBranch = new EmptyStatement(o->loc);
     auto declare = new ExpressionStatement(tmp, o->loc);
     auto conditional = new If(cond, trueBranch, falseBranch, o->loc);
-    auto result = new StatementList(declare, conditional, o->loc);
-    return result->accept(this);
+    result = new StatementList(declare, conditional, o->loc);
   } else {
-    o->left = o->left->accept(this);
     o->right = o->right->accept(this);
-    auto leftType = dynamic_cast<ClassType*>(o->left->type->canonical());
-    auto rightType = dynamic_cast<ClassType*>(o->right->type->canonical());
-    if (!leftType || !rightType) {
+    auto valueType = getValueType(o->right->type);
+    if (!valueType) {
       throw AssumeException(o);
-    }
-    auto valueType = leftType->typeArgs->accept(&cloner);
-    auto identifier = new OverloadedIdentifier<Unknown>(
-        new Name("AssumeEvent"), valueType, o->loc);
-    auto args = new ExpressionList(o->left->accept(&cloner),
-        o->right->accept(&cloner), o->loc);
-    auto call = new Call(identifier, args, o->loc);
-    Statement* result;
-    if (!yieldTypes.empty()) {
-      /* in a fiber */
-      result = new Yield(call, o->loc);
     } else {
-      /* not in a fiber */
-      result = new ExpressionStatement(call, o->loc);
+      valueType = valueType->accept(&cloner);
     }
-    return result->accept(this);
+    if (*o->name == "<~") {
+      auto identifier = new OverloadedIdentifier<Unknown>(
+          new Name("SimulateEvent"), valueType, o->loc);
+      auto call = new Call(identifier, o->right->accept(&cloner));
+      auto tmp = new LocalVariable(call, o->loc);
+      auto decl = new ExpressionStatement(tmp, o->loc);
+      auto yield = new Yield(new Identifier<Unknown>(tmp->name, o->loc),
+          o->loc);
+      auto member = new Member(new Identifier<Unknown>(tmp->name, o->loc),
+          new OverloadedIdentifier<Unknown>(new Name("value"), new EmptyType(),
+              o->loc), o->loc);
+      auto value = new Call(member, new EmptyExpression(), o->loc);
+      auto assign = new ExpressionStatement(new Assign(o->left,
+          new Name("<-"), value, o->loc), o->loc);
+      result = new StatementList(decl, new StatementList(yield, assign,
+          o->loc), o->loc);
+    } else if (*o->name == "~>") {
+      auto identifier = new OverloadedIdentifier<Unknown>(
+          new Name("ObserveEvent"), valueType, o->loc);
+      auto args = new ExpressionList(o->left, o->right->accept(&cloner),
+          o->loc);
+      result = new Yield(new Call(identifier, args, o->loc), o->loc);
+    } else if (*o->name == "~") {
+      auto identifier = new OverloadedIdentifier<Unknown>(
+          new Name("AssumeEvent"), valueType, o->loc);
+      auto args = new ExpressionList(o->left, o->right->accept(&cloner),
+          o->loc);
+      result = new Yield(new Call(identifier, args, o->loc), o->loc);
+    } else {
+      assert(false);
+    }
   }
+  return result->accept(this);
 }
 
 bi::Statement* bi::Resolver::modify(GlobalVariable* o) {
@@ -1033,5 +1034,17 @@ void bi::Resolver::checkInteger(const Expression* o) {
   scopes.front()->resolve(&type);
   if (!o->type->definitely(type)) {
     throw IndexException(o);
+  }
+}
+
+bi::Type* bi::Resolver::getValueType(const Type* o) {
+  auto type = dynamic_cast<const ClassType*>(o->canonical());
+  while (type && type->name->str() != "Distribution") {
+    type = dynamic_cast<const ClassType*>(type->getClass()->base->canonical());
+  }
+  if (!type || type->isEmpty()) {
+    return nullptr;
+  } else {
+    return type->typeArgs;
   }
 }
