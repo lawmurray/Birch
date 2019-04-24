@@ -23,8 +23,8 @@ matrix:
         - libtool
         - flex
         - bison
-        - libyaml-dev
         - libeigen3-dev
+        - libyaml-dev
         - libboost-all-dev
         - libsqlite3-dev
 before_install:
