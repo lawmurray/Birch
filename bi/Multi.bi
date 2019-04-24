@@ -60,8 +60,6 @@ class Multi < StateSpaceModel<Global,List<Track>,List<Random<Real[_]>>> {
     while track? {    
       auto o <- track!.y.back();  // observed random variable
       if o.hasDistribution() {
-        assert y.size() > 0;
-      
         /* object is detected, compute proposal */
         q:Real[y.size()];
         n:Integer <- 1;
