@@ -11,6 +11,7 @@ matrix:
             - flex
             - bison
             - eigen
+            - libyaml
             - libomp
             - cairo
 
@@ -26,6 +27,7 @@ matrix:
             - flex
             - bison
             - libeigen3-dev
+            - libyaml-dev
             - libboost-all-dev
             - libcairo2-dev
 before_install:
