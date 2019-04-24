@@ -2,7 +2,7 @@
  *
  */
 class SEIRModel < MarkovModel<SEIRParameter,SEIRState> {
-  fiber parameter(θ:SEIRParameter) -> Real {
+  fiber parameter(θ:SEIRParameter) -> Event {
     θ.ν <- 0.0;
     θ.μ <- 1.0;
     θ.λ ~ Beta(1.0, 1.0);
@@ -10,7 +10,7 @@ class SEIRModel < MarkovModel<SEIRParameter,SEIRState> {
     θ.γ ~ Beta(1.0, 1.0);
   }
 
-  fiber initial(x:SEIRState, θ:SEIRParameter) -> Real {
+  fiber initial(x:SEIRState, θ:SEIRParameter) -> Event {
     x.Δs <- 0;
     x.Δe <- 0;
     x.Δi <- 1;
@@ -24,12 +24,12 @@ class SEIRModel < MarkovModel<SEIRParameter,SEIRState> {
     x.n <- 0;
   }
   
-  fiber transition(x':SEIRState, x:SEIRState, θ:SEIRParameter) -> Real {
+  fiber transition(x':SEIRState, x:SEIRState, θ:SEIRParameter) -> Event {
     transition(x', x, θ, (x.s*x.i + x.n - 1)/x.n, x.e, x.i);
   }
   
   fiber transition(x':SEIRState, x:SEIRState, θ:SEIRParameter, ns:Integer,
-      ne:Integer, ni:Integer) -> Real {
+      ne:Integer, ni:Integer) -> Event {
     /* transfers */
     x'.Δe <~ Binomial(ns, θ.λ);
     x'.Δi <~ Binomial(ne, θ.δ);

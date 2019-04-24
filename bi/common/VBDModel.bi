@@ -5,7 +5,7 @@ class VBDModel < MarkovModel<VBDParameter,VBDState> {
   h:SEIRModel;
   m:SEIRModel;
 
-  fiber parameter(θ:VBDParameter) -> Real {
+  fiber parameter(θ:VBDParameter) -> Event {
     θ.h.ν <- 0.0;
     θ.h.μ <- 1.0;
     θ.h.λ ~ Beta(1.0, 1.0);
@@ -19,12 +19,12 @@ class VBDModel < MarkovModel<VBDParameter,VBDState> {
     θ.m.γ <- 0.0;
   }
 
-  fiber initial(x:VBDState, θ:VBDParameter) -> Real {
+  fiber initial(x:VBDState, θ:VBDParameter) -> Event {
     h.initial(x.h, θ.h);
     m.initial(x.m, θ.m);
   }
   
-  fiber transition(x':VBDState, x:VBDState, θ:VBDParameter) -> Real {
+  fiber transition(x':VBDState, x:VBDState, θ:VBDParameter) -> Event {
     nhe:Integer;
     nme:Integer;
     
