@@ -95,6 +95,7 @@
       "bi/delay/DelayPoisson.bi",
       "bi/delay/DelayRestaurant.bi",
       "bi/delay/DelayRestaurantCategorical.bi",
+      "bi/delay/DelayScaledGammaExponential.bi",
       "bi/delay/DelayScaledGammaPoisson.bi",
       "bi/delay/DelayStudent.bi",
       "bi/delay/DelaySubtractBoundedDiscrete.bi",

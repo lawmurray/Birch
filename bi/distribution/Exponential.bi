@@ -11,9 +11,13 @@ final class Exponential(λ:Expression<Real>) < Distribution<Real> {
     if delay? {
       delay!.prune();
     } else {
-      m:DelayGamma?;
-      if (m <- λ.graftGamma())? {
-        delay <- DelayGammaExponential(x, m!);
+      m1:TransformScaledGamma?;
+      m2:DelayGamma?;
+
+      if (m1 <- λ.graftScaledGamma())? {
+        delay <- DelayScaledGammaExponential(x, m1!.a, m1!.x);
+      } else if (m2 <- λ.graftGamma())? {
+        delay <- DelayGammaExponential(x, m2!);
       } else {
         delay <- DelayExponential(x, λ);
       }
