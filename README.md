@@ -17,7 +17,7 @@ To install:
 
 To run:
 
-    birch run
+    ./run.sh
 
 
 ## References

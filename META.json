@@ -12,13 +12,13 @@
       "bi/common/VBDState.bi",
       "bi/study/YapDengueModel.bi",
       "bi/study/YapDengueParameter.bi",
-      "bi/study/YapDengueState.bi",
-      "bi/run.bi"
+      "bi/study/YapDengueState.bi"
     ],
     "other": [
       "LICENSE",
       "META.json",
       "README.md",
+      "run.sh",
       "config/yap_dengue.json",
       "input/fais_dengue.json",
       "input/yap_dengue.json",
