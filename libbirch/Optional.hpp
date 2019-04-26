@@ -143,6 +143,24 @@ public:
   }
 
   /**
+   * Constructor for value.
+   */
+  template<class U>
+  Optional(Shared<U>&& value) :
+      value(std::move(value)) {
+    //
+  }
+
+  /**
+   * Constructor for value.
+   */
+  template<class U>
+  Optional(Weak<U>&& value) :
+      value(std::move(value)) {
+    //
+  }
+
+  /**
    * Generic copy constructor.
    */
   template<class U>

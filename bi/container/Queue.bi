@@ -64,7 +64,12 @@ final class Queue<Type> {
    */
   function pushFront(x:Type) {
     node:QueueNode<Type>(x);
-    node.next <- forward;
+    //node.next <- forward;
+    if forward? {
+      cpp{{
+      node->next = std::move(forward.get());
+      }}
+    }
     forward <- node;
     count <- count + 1;
   }
@@ -76,7 +81,12 @@ final class Queue<Type> {
    */
   function pushBack(x:Type) {
     node:QueueNode<Type>(x);
-    node.next <- backward;
+    //node.next <- backward;
+    if backward? {
+      cpp{{
+      node->next = std::move(backward.get());
+      }}
+    }
     backward <- node;
     count <- count + 1;
   }
@@ -89,7 +99,12 @@ final class Queue<Type> {
     if !forward? {
       allForward();
     }
-    forward <- forward!.next;
+    //forward <- forward!.next;
+    if forward? {
+      cpp{{
+      forward = std::move(forward.get()->next);
+      }}
+    }
     count <- count - 1;
   }
 
@@ -101,7 +116,12 @@ final class Queue<Type> {
     if !backward? {
       allBackward();
     }
-    backward <- backward!.next;
+    //backward <- backward!.next;
+    if backward? {
+      cpp{{
+      backward = std::move(backward.get()->next);
+      }}
+    }
     count <- count - 1;
   }
 
@@ -142,8 +162,12 @@ final class Queue<Type> {
    */
   function allForward() {
     while backward? {
-      pushFront(back());
-      popBack();
+      cpp{{
+      auto node = std::move(backward.get());
+      backward = std::move(node->next);
+      node->next = std::move(forward);
+      forward = std::move(node);
+      }}
     }
   }
   
@@ -152,8 +176,12 @@ final class Queue<Type> {
    */
   function allBackward() {
     while forward? {
-      pushBack(front());
-      popFront();
+      cpp{{
+      auto node = std::move(forward.get());
+      forward = std::move(node->next);
+      node->next = std::move(backward);
+      backward = std::move(node);
+      }}
     }
   }
 
