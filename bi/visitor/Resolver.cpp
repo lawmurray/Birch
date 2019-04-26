@@ -1045,6 +1045,6 @@ bi::Type* bi::Resolver::getValueType(const Type* o) {
   if (!type || type->isEmpty()) {
     return nullptr;
   } else {
-    return type->typeArgs;
+    return type->typeArgs->canonical();
   }
 }
