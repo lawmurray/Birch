@@ -2,7 +2,7 @@
  * Array value.
  */
 class ArrayValue < Value {
-  buffers:Queue<MemoryBuffer>;
+  buffers:List<MemoryBuffer>;
 
   function accept(gen:Generator) {
     gen.visit(this);

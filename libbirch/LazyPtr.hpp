@@ -110,8 +110,10 @@ public:
    * Copy assignment operator.
    */
   LazyPtr<P>& operator=(const LazyPtr<P>& o) {
-    object = o.object;
+    /* it's possible that object = o.object actually destroys the referent
+     * of o, so do the to = o.to first */
     to = o.to;
+    object = o.object;
     if (object) {
       object->notUniquelyReachable();
     }
@@ -128,8 +130,10 @@ public:
    */
   template<class Q>
   LazyPtr<P>& operator=(const LazyPtr<Q>& o) {
-    object = o.object;
+    /* it's possible that object = o.object actually destroys the referent
+     * of o, so do the to = o.to first */
     to = o.to;
+    object = o.object;
     return *this;
   }
 

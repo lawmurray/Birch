@@ -2,7 +2,7 @@
  * Object value.
  */
 class ObjectValue < Value {
-  entries:Queue<Entry>;
+  entries:List<Entry>;
 
   function accept(gen:Generator) {
     gen.visit(this);
