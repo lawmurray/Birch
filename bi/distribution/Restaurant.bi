@@ -16,7 +16,7 @@ final class Restaurant(α:Expression<Real>, θ:Expression<Real>) < Distribution<
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayRestaurant(x, α, θ);
+      delay <- DelayRestaurant(future, futureUpdate, α, θ);
     }
   }
 
@@ -24,7 +24,7 @@ final class Restaurant(α:Expression<Real>, θ:Expression<Real>) < Distribution<
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayRestaurant(x, α, θ);
+      delay <- DelayRestaurant(future, futureUpdate, α, θ);
     }
     return DelayRestaurant?(delay);
   }

@@ -18,9 +18,9 @@ final class Gamma(k:Expression<Real>, θ:Expression<Real>) < Distribution<Real> 
     } else {
       θ1:DelayInverseGamma?;
       if (θ1 <- θ.graftInverseGamma())? {
-        delay <- DelayInverseGammaGamma(x, k, θ1!);
+        delay <- DelayInverseGammaGamma(future, futureUpdate, k, θ1!);
       } else {
-        delay <- DelayGamma(x, k, θ);
+        delay <- DelayGamma(future, futureUpdate, k, θ);
       }
     }
   }
@@ -29,7 +29,7 @@ final class Gamma(k:Expression<Real>, θ:Expression<Real>) < Distribution<Real> 
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayGamma(x, k, θ);
+      delay <- DelayGamma(future, futureUpdate, k, θ);
     }
     return DelayGamma?(delay);
   }

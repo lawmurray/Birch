@@ -1,8 +1,8 @@
 /*
  * Delayed scaled gamma-Exponential random variate.
  */
-class DelayScaledGammaExponential(x:Random<Real>&, a:Real, λ:DelayGamma) <
-    DelayValue<Real>(x) {
+class DelayScaledGammaExponential(future:Real?, futureUpdate:Boolean, a:Real,
+    λ:DelayGamma) < DelayValue<Real>(future, futureUpdate) {
   /**
    * Scale.
    */
@@ -39,10 +39,10 @@ class DelayScaledGammaExponential(x:Random<Real>&, a:Real, λ:DelayGamma) <
   }
 }
 
-function DelayScaledGammaExponential(x:Random<Real>&, a:Real, λ:DelayGamma) ->
-    DelayScaledGammaExponential {
+function DelayScaledGammaExponential(future:Real?, futureUpdate:Boolean,
+    a:Real, λ:DelayGamma) -> DelayScaledGammaExponential {
   assert a > 0;
-  m:DelayScaledGammaExponential(x, a, λ);
+  m:DelayScaledGammaExponential(future, futureUpdate, a, λ);
   λ.setChild(m);
   return m;
 }

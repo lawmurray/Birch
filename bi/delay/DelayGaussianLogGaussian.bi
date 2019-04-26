@@ -1,8 +1,9 @@
 /*
  * Delayed Gaussian-log-Gaussian random variate.
  */
-final class DelayGaussianLogGaussian(x:Random<Real>&, m:DelayGaussian, s2:Real) <
-    DelayLogGaussian(x, m.μ, 1.0/m.λ + s2) {
+final class DelayGaussianLogGaussian(future:Real?, futureUpdate:Boolean,
+    m:DelayGaussian, s2:Real) < DelayLogGaussian(future, futureUpdate, m.μ,
+    1.0/m.λ + s2) {
   /**
    * Mean.
    */
@@ -22,9 +23,9 @@ final class DelayGaussianLogGaussian(x:Random<Real>&, m:DelayGaussian, s2:Real) 
   }
 }
 
-function DelayGaussianLogGaussian(x:Random<Real>&, μ:DelayGaussian,
-    σ2:Real) -> DelayGaussianLogGaussian {
-  m:DelayGaussianLogGaussian(x, μ, σ2);
+function DelayGaussianLogGaussian(future:Real?, futureUpdate:Boolean,
+    μ:DelayGaussian, σ2:Real) -> DelayGaussianLogGaussian {
+  m:DelayGaussianLogGaussian(future, futureUpdate, μ, σ2);
   μ.setChild(m);
   return m;
 }

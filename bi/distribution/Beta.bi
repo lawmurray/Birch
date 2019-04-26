@@ -16,7 +16,7 @@ final class Beta(α:Expression<Real>, β:Expression<Real>) < Distribution<Real> 
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayBeta(x, α, β);
+      delay <- DelayBeta(future, futureUpdate, α, β);
     }
   }
 
@@ -24,7 +24,7 @@ final class Beta(α:Expression<Real>, β:Expression<Real>) < Distribution<Real> 
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayBeta(x, α, β);
+      delay <- DelayBeta(future, futureUpdate, α, β);
     }
     return DelayBeta?(delay);
   }

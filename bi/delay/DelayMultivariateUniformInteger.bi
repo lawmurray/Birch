@@ -1,8 +1,9 @@
 /*
  * Delayed multivariate uniform random variable over integers.
  */
-final class DelayMultivariateUniformInteger(x:Random<Integer[_]>&, l:Integer[_],
-    u:Integer[_]) < DelayValue<Integer[_]>(x) {
+final class DelayMultivariateUniformInteger(future:Integer[_]?,
+    futureUpdate:Boolean, l:Integer[_], u:Integer[_]) <
+    DelayValue<Integer[_]>(future, futureUpdate) {
   /**
    * Lower bound.
    */
@@ -41,8 +42,9 @@ final class DelayMultivariateUniformInteger(x:Random<Integer[_]>&, l:Integer[_],
   }
 }
 
-function DelayMultivariateUniformInteger(x:Random<Integer[_]>&, l:Integer[_],
-    u:Integer[_]) -> DelayMultivariateUniformInteger {
-  m:DelayMultivariateUniformInteger(x, l, u);
+function DelayMultivariateUniformInteger(future:Integer[_]?,
+    futureUpdate:Boolean, l:Integer[_], u:Integer[_]) ->
+    DelayMultivariateUniformInteger {
+  m:DelayMultivariateUniformInteger(future, futureUpdate, l, u);
   return m;
 }

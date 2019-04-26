@@ -1,7 +1,8 @@
 /*
  * Delayed Beta random variate.
  */
-final class DelayBeta(x:Random<Real>&, α:Real, β:Real) < DelayValue<Real>(x) {
+final class DelayBeta(future:Real?, futureUpdate:Boolean, α:Real, β:Real) <
+    DelayValue<Real>(future, futureUpdate) {
   /**
    * First shape.
    */
@@ -52,7 +53,7 @@ final class DelayBeta(x:Random<Real>&, α:Real, β:Real) < DelayValue<Real>(x) {
   }
 }
 
-function DelayBeta(x:Random<Real>&, α:Real, β:Real) -> DelayBeta {
-  m:DelayBeta(x, α, β);
+function DelayBeta(future:Real?, futureUpdate:Boolean, α:Real, β:Real) -> DelayBeta {
+  m:DelayBeta(future, futureUpdate, α, β);
   return m;
 }

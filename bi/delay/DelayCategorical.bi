@@ -1,8 +1,8 @@
 /*
  * Delayed Categorical random variate.
  */
-final class DelayCategorical(x:Random<Integer>&, ρ:Real[_]) <
-    DelayValue<Integer>(x) {
+final class DelayCategorical(future:Integer?, futureUpdate:Boolean, ρ:Real[_]) <
+    DelayValue<Integer>(future, futureUpdate) {
   /**
    * Category probabilities.
    */
@@ -39,7 +39,8 @@ final class DelayCategorical(x:Random<Integer>&, ρ:Real[_]) <
   }
 }
 
-function DelayCategorical(x:Random<Integer>&, ρ:Real[_]) -> DelayCategorical {
-  m:DelayCategorical(x, ρ);
+function DelayCategorical(future:Integer?, futureUpdate:Boolean,
+    ρ:Real[_]) -> DelayCategorical {
+  m:DelayCategorical(future, futureUpdate, ρ);
   return m;
 }

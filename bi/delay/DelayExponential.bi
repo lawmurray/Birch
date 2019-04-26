@@ -1,7 +1,8 @@
 /*
  * Delayed Exponential random variate.
  */
-final class DelayExponential(x:Random<Real>&, λ:Real) < DelayValue<Real>(x) {
+final class DelayExponential(future:Real?, futureUpdate:Boolean, λ:Real) <
+    DelayValue<Real>(future, futureUpdate) {
   /**
    * Rate.
    */
@@ -42,8 +43,9 @@ final class DelayExponential(x:Random<Real>&, λ:Real) < DelayValue<Real>(x) {
   }
 }
 
-function DelayExponential(x:Random<Real>&, λ:Real) -> DelayExponential {
+function DelayExponential(future:Real?, futureUpdate:Boolean, λ:Real) ->
+    DelayExponential {
   assert λ > 0;
-  m:DelayExponential(x, λ);
+  m:DelayExponential(future, futureUpdate, λ);
   return m;
 }

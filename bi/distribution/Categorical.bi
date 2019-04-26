@@ -14,11 +14,11 @@ final class Categorical(ρ:Expression<Real[_]>) < Distribution<Integer> {
       m1:DelayDirichlet?;
       m2:DelayRestaurant?;
       if (m1 <- ρ.graftDirichlet())? {
-        delay <- DelayDirichletCategorical(x, m1!);
+        delay <- DelayDirichletCategorical(future, futureUpdate, m1!);
       } else if (m2 <- ρ.graftRestaurant())? {
-        delay <- DelayRestaurantCategorical(x, m2!);
+        delay <- DelayRestaurantCategorical(future, futureUpdate, m2!);
       } else {
-        delay <- DelayCategorical(x, ρ);
+        delay <- DelayCategorical(future, futureUpdate, ρ);
       }
     }
   }

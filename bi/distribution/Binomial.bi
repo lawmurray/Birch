@@ -26,9 +26,9 @@ final class Binomial(n:Expression<Integer>, ρ:Expression<Real>) < Distribution<
     } else {
       m:DelayBeta?;
       if (m <- ρ.graftBeta())? {
-        delay <- DelayBetaBinomial(x, n, m!);
+        delay <- DelayBetaBinomial(future, futureUpdate, n, m!);
       } else {
-        delay <- DelayBinomial(x, n, ρ);
+        delay <- DelayBinomial(future, futureUpdate, n, ρ);
       }
     }
     return DelayBoundedDiscrete?(delay);

@@ -2,9 +2,9 @@
  * Delayed delta function on a difference of two bounded discrete random
  * variates.
  */
-final class DelaySubtractBoundedDiscrete(x:Random<Integer>&,
+final class DelaySubtractBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
     x1:DelayBoundedDiscrete, x2:DelayBoundedDiscrete) < DelayBoundedDiscrete(
-    x, x1.l - x2.u, x1.u - x2.l) {
+    future, futureUpdate, x1.l - x2.u, x1.u - x2.l) {
   /**
    * First discrete random variate.
    */
@@ -102,10 +102,10 @@ final class DelaySubtractBoundedDiscrete(x:Random<Integer>&,
   }  
 }
 
-function DelaySubtractBoundedDiscrete(x:Random<Integer>&,
+function DelaySubtractBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
     x1:DelayBoundedDiscrete, x2:DelayBoundedDiscrete) ->
     DelaySubtractBoundedDiscrete {
-  m:DelaySubtractBoundedDiscrete(x, x1, x2);
+  m:DelaySubtractBoundedDiscrete(future, futureUpdate, x1, x2);
   x1.setChild(m);
   x2.setChild(m);
   return m;

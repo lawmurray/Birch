@@ -11,7 +11,7 @@ final class Student(ν:Expression<Real>) < Distribution<Real> {
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayStudent(x, ν);
+      delay <- DelayStudent(future, futureUpdate, ν);
     }
   }
 

@@ -1,16 +1,16 @@
 /*
  * Delayed delta function on a sum of two bounded discrete random variates.
  */
-final class DelayAddBoundedDiscrete(x:Random<Integer>&, x1:DelayBoundedDiscrete,
-    x2:DelayBoundedDiscrete) < DelayBoundedDiscrete(x, x1.l + x2.l,
-    x1.u + x2.u) {
+final class DelayAddBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
+    x1:DelayBoundedDiscrete, x2:DelayBoundedDiscrete) < DelayBoundedDiscrete(
+    future, futureUpdate, x1.l + x2.l, x1.u + x2.u) {
   /**
-   * First discrete random variate.
+   * First node.
    */
   x1:DelayBoundedDiscrete& <- x1;
 
   /**
-   * Second discrete random variate.
+   * Second node.
    */
   x2:DelayBoundedDiscrete& <- x2;
   
@@ -102,10 +102,10 @@ final class DelayAddBoundedDiscrete(x:Random<Integer>&, x1:DelayBoundedDiscrete,
   }  
 }
 
-function DelayAddBoundedDiscrete(x:Random<Integer>&,
+function DelayAddBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
     x1:DelayBoundedDiscrete, x2:DelayBoundedDiscrete) ->
     DelayAddBoundedDiscrete {
-  m:DelayAddBoundedDiscrete(x, x1, x2);
+  m:DelayAddBoundedDiscrete(future, futureUpdate, x1, x2);
   x1.setChild(m);
   x2.setChild(m);
   return m;

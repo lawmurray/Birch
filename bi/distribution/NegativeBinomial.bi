@@ -19,9 +19,9 @@ class NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) <
     } else {
       ρ1:DelayBeta?;
       if (ρ1 <- ρ.graftBeta())? {
-        delay <- DelayBetaNegativeBinomial(x, k, ρ1!);
+        delay <- DelayBetaNegativeBinomial(future, futureUpdate, k, ρ1!);
       } else {
-        delay <- DelayNegativeBinomial(x, k, ρ);
+        delay <- DelayNegativeBinomial(future, futureUpdate, k, ρ);
       }
     }
   }

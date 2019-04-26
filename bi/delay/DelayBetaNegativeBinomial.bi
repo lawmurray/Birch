@@ -1,7 +1,8 @@
 /*
  * Delayed Beta-negative-binomial random variate
  */
-final class DelayBetaNegativeBinomial(x:Random<Integer>&, k:Integer, ρ:DelayBeta) < DelayDiscrete(x) {
+final class DelayBetaNegativeBinomial(future:Integer?, futureUpdate:Boolean,
+    k:Integer, ρ:DelayBeta) < DelayDiscrete(future, futureUpdate) {
   /**
    * Number of successes before the experiment is stopped.
    */
@@ -37,8 +38,8 @@ final class DelayBetaNegativeBinomial(x:Random<Integer>&, k:Integer, ρ:DelayBet
   }
 }
 
-function DelayBetaNegativeBinomial(x:Random<Integer>&, k:Integer, ρ:DelayBeta) -> DelayBetaNegativeBinomial {
-  m:DelayBetaNegativeBinomial(x, k, ρ);
+function DelayBetaNegativeBinomial(future:Integer?, futureUpdate:Boolean, k:Integer, ρ:DelayBeta) -> DelayBetaNegativeBinomial {
+  m:DelayBetaNegativeBinomial(future, futureUpdate, k, ρ);
   ρ.setChild(m);
   return m;
 }

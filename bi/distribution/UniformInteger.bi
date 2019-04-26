@@ -17,7 +17,7 @@ final class UniformInteger(l:Expression<Integer>, u:Expression<Integer>) <
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayUniformInteger(x, l, u);
+      delay <- DelayUniformInteger(future, futureUpdate, l, u);
     }
   }
 
@@ -29,7 +29,7 @@ final class UniformInteger(l:Expression<Integer>, u:Expression<Integer>) <
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayUniformInteger(x, l, u);
+      delay <- DelayUniformInteger(future, futureUpdate, l, u);
     }
     return DelayBoundedDiscrete?(delay);
   }

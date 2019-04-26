@@ -1,8 +1,8 @@
 /*
  * Delayed inverse-gamma random variate.
  */
-final class DelayInverseGamma(x:Random<Real>&, α:Real, β:Real) <
-    DelayValue<Real>(x) {
+final class DelayInverseGamma(future:Real?, futureUpdate:Boolean, α:Real,
+    β:Real) < DelayValue<Real>(future, futureUpdate) {
   /**
    * Shape.
    */
@@ -49,8 +49,8 @@ final class DelayInverseGamma(x:Random<Real>&, α:Real, β:Real) <
   }
 }
 
-function DelayInverseGamma(x:Random<Real>&, α:Real, β:Real) ->
-    DelayInverseGamma {
-  m:DelayInverseGamma(x, α, β);
+function DelayInverseGamma(future:Real?, futureUpdate:Boolean, α:Real,
+    β:Real) -> DelayInverseGamma {
+  m:DelayInverseGamma(future, futureUpdate, α, β);
   return m;
 }

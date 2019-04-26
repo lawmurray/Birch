@@ -1,7 +1,8 @@
 /*
  * Delayed discrete random variate.
  */
-class DelayDiscrete(x:Random<Integer>&) < DelayValue<Integer>(x) {
+class DelayDiscrete(future:Integer?, futureUpdate:Boolean) <
+    DelayValue<Integer>(future, futureUpdate) {
   /**
    * Clamped value.
    */

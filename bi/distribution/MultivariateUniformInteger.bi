@@ -16,7 +16,7 @@ final class MultivariateUniformInteger(l:Expression<Integer[_]>, u:Expression<In
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayMultivariateUniformInteger(x, l, u);
+      delay <- DelayMultivariateUniformInteger(future, futureUpdate, l, u);
     }
   }
 

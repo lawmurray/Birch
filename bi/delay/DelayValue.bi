@@ -3,41 +3,72 @@
  *
  * - Value: Value type.
  *
- * - x: Associated random variate.
+ * - future: Future value.
+ * - futureUpdate: When realized, should the future value trigger an
+ *   update? (Otherwise a downdate.)
  */
-class DelayValue<Value>(x:Random<Value>&) < Delay {
+class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
   /**
-   * Associated random variate, if any.
+   * Realized value.
    */
-  x:Random<Value>& <- x;
+  x:Value?;
 
   /**
-   * Has the random variate associated with this node been assigned a value?
-   * If no random variate is associated with the node, always returns false.
+   * Future value. This is set for situations where delayed sampling
+   * is used, but when ultimately realized, a particular value (this one)
+   * should be assigned, and updates or downdates applied accordingly. It
+   * is typically used when replaying traces.
+   */
+  future:Value? <- future;
+
+  /**
+   * When assigned, should the future value trigger an update? (Otherwise
+   * a downdate.)
+   */
+  futureUpdate:Boolean <- futureUpdate;
+
+  /**
+   * Does the node have a value?
    */
   function hasValue() -> Boolean {
-    x:Random<Value>? <- this.x;
-    if x? {
-      return x!.hasValue();
-    } else {
-      return false;
-    }
+    return x?;
+  }
+  
+  /**
+   * Get the value of the node, realizing it if necessary.
+   */
+  function value() -> Value {
+    realize();
+    return x!;
   }
 
   function realize() {
-    realize(simulate());
+    prune();
+    if future? {
+      x <- future!;
+    } else {
+      x <- simulate();
+    }
+    if futureUpdate {
+      update(x!);
+    } else {
+      downdate(x!);
+    }
+    detach();
   }
 
   /**
    * Realize by assignment.
    */
   function realize(value:Value) {
-    y:Random<Value>? <- x;
-    if y? {
-      assert !y!.hasValue();
-      y!.x <- value;
+    assert !future?;
+    prune();
+    x <- value;
+    if futureUpdate {
+      update(x!);
+    } else {
+      downdate(x!);
     }
-    update(value);
     detach();
   }
   
@@ -58,7 +89,7 @@ class DelayValue<Value>(x:Random<Value>&) < Delay {
   function observe(x:Value) -> Real;
 
   /**
-   * Update the parent node on th $M$-path given the value of this node.
+   * Update the parent node on the $M$-path given the value of this node.
    *
    * - x: The value.
    */
@@ -67,7 +98,7 @@ class DelayValue<Value>(x:Random<Value>&) < Delay {
   }
 
   /**
-   * Downdate the parent node on th $M$-path given the value of this node.
+   * Downdate the parent node on the $M$-path given the value of this node.
    *
    * - x: The value.
    */
@@ -123,15 +154,10 @@ class DelayValue<Value>(x:Random<Value>&) < Delay {
   }
 
   function write(buffer:Buffer) {
-    y:Random<Value>? <- x;
-    if y? {
-      /* by default, in order to output, we must realize the random variate
-       * and output it as a value; nodes that can exist at the root of the
-       * $M$-path (e.g. DelayBeta, DelayGamma, DelayGaussian) override this
-       * to prune and then output as a distribution instead */
-      prune();
-      realize();
-      buffer.set(y!.value());
-    }
+    /* by default, in order to output, we must realize the random variate
+     * and output it as a value; nodes that can exist at the root of the
+     * $M$-path (e.g. DelayBeta, DelayGamma, DelayGaussian) override this
+     * to output as a distribution instead */
+    buffer.set(value());
   }
 }

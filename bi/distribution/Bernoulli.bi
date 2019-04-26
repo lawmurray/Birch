@@ -13,9 +13,9 @@ final class Bernoulli(ρ:Expression<Real>) < Distribution<Boolean> {
     } else {
       m:DelayBeta?;
       if (m <- ρ.graftBeta())? {
-        delay <- DelayBetaBernoulli(x, m!);
+        delay <- DelayBetaBernoulli(future, futureUpdate, m!);
       } else {
-        delay <- DelayBernoulli(x, ρ);
+        delay <- DelayBernoulli(future, futureUpdate, ρ);
       }
     }
   }

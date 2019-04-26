@@ -1,8 +1,9 @@
 /*
  * Delayed normal-inverse-gamma random variate.
  */
-final class DelayNormalInverseGamma(x:Random<Real>&, μ:Real, a2:Real,
-    σ2:DelayInverseGamma) < DelayValue<Real>(x) {
+final class DelayNormalInverseGamma(future:Real?, futureUpdate:Boolean,
+    μ:Real, a2:Real, σ2:DelayInverseGamma) < DelayValue<Real>(future,
+    futureUpdate) {
   /**
    * Mean.
    */
@@ -52,9 +53,9 @@ final class DelayNormalInverseGamma(x:Random<Real>&, μ:Real, a2:Real,
   }
 }
 
-function DelayNormalInverseGamma(x:Random<Real>&, μ:Real, a2:Real,
-    σ2:DelayInverseGamma) -> DelayNormalInverseGamma {
-  m:DelayNormalInverseGamma(x, μ, a2, σ2);
+function DelayNormalInverseGamma(future:Real?, futureUpdate:Boolean, μ:Real,
+    a2:Real, σ2:DelayInverseGamma) -> DelayNormalInverseGamma {
+  m:DelayNormalInverseGamma(future, futureUpdate, μ, a2, σ2);
   σ2.setChild(m);
   return m;
 }

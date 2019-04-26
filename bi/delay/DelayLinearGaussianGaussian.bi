@@ -1,8 +1,9 @@
 /*
  * Delayed linear-Gaussian-Gaussian random variate.
  */
-final class DelayLinearGaussianGaussian(x:Random<Real>&, a:Real, m:DelayGaussian,
-    c:Real, s2:Real) < DelayGaussian(x, a*m.μ + c, a*a/m.λ + s2) {
+final class DelayLinearGaussianGaussian(future:Real?, futureUpdate:Boolean,
+    a:Real, m:DelayGaussian, c:Real, s2:Real) < DelayGaussian(future,
+    futureUpdate, a*m.μ + c, a*a/m.λ + s2) {
   /**
    * Scale.
    */
@@ -32,9 +33,9 @@ final class DelayLinearGaussianGaussian(x:Random<Real>&, a:Real, m:DelayGaussian
   }
 }
 
-function DelayLinearGaussianGaussian(x:Random<Real>&, a:Real,
-    μ:DelayGaussian, c:Real, σ2:Real) -> DelayLinearGaussianGaussian {
-  m:DelayLinearGaussianGaussian(x, a, μ, c, σ2);
+function DelayLinearGaussianGaussian(future:Real?, futureUpdate:Boolean,
+    a:Real, μ:DelayGaussian, c:Real, σ2:Real) -> DelayLinearGaussianGaussian {
+  m:DelayLinearGaussianGaussian(future, futureUpdate, a, μ, c, σ2);
   μ.setChild(m);
   return m;
 }

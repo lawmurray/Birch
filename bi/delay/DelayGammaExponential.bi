@@ -1,8 +1,8 @@
 /*
  * Delayed gamma-Exponential random variate.
  */
-final class DelayGammaExponential(x:Random<Real>&, λ:DelayGamma) <
-    DelayValue<Real>(x) {
+final class DelayGammaExponential(future:Real?, futureUpdate:Boolean,
+    λ:DelayGamma) < DelayValue<Real>(future, futureUpdate) {
   /**
    * Rate.
    */
@@ -37,9 +37,9 @@ final class DelayGammaExponential(x:Random<Real>&, λ:DelayGamma) <
   }
 }
 
-function DelayGammaExponential(x:Random<Real>&, λ:DelayGamma) ->
-    DelayGammaExponential {
-  m:DelayGammaExponential(x, λ);
+function DelayGammaExponential(future:Real?, futureUpdate:Boolean,
+    λ:DelayGamma) -> DelayGammaExponential {
+  m:DelayGammaExponential(future, futureUpdate, λ);
   λ.setChild(m);
   return m;
 }

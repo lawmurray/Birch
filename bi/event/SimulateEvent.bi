@@ -29,9 +29,7 @@ final class SimulateEvent<Value>(p:Distribution<Value>) <
   }
 
   function playImmediate() -> Real {
-    v <- p.simulate();
-    p.update(v!);
-    p.detach();
+    v <- p.value();
     return 0.0;
   }
   

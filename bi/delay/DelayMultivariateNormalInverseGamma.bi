@@ -1,8 +1,9 @@
 /*
  * Delayed multivariate normal-inverse-gamma random variate.
  */
-final class DelayMultivariateNormalInverseGamma(x:Random<Real[_]>&, μ:Real[_],
-    A:Real[_,_], σ2:DelayInverseGamma) < DelayValue<Real[_]>(x) {
+final class DelayMultivariateNormalInverseGamma(future:Real[_]?,
+    futureUpdate:Boolean, μ:Real[_], A:Real[_,_], σ2:DelayInverseGamma) <
+    DelayValue<Real[_]>(future, futureUpdate) {
   /**
    * Mean.
    */
@@ -54,10 +55,10 @@ final class DelayMultivariateNormalInverseGamma(x:Random<Real[_]>&, μ:Real[_],
   }
 }
 
-function DelayMultivariateNormalInverseGamma(x:Random<Real[_]>&, μ:Real[_],
-    A:Real[_,_], σ2:DelayInverseGamma) ->
+function DelayMultivariateNormalInverseGamma(future:Real[_]?,
+    futureUpdate:Boolean, μ:Real[_], A:Real[_,_], σ2:DelayInverseGamma) ->
     DelayMultivariateNormalInverseGamma {
-  m:DelayMultivariateNormalInverseGamma(x, μ, A, σ2);
+  m:DelayMultivariateNormalInverseGamma(future, futureUpdate, μ, A, σ2);
   σ2.setChild(m);
   return m;
 }

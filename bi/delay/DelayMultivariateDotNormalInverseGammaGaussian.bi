@@ -3,9 +3,9 @@
  * univariate, where the prior over the mean is given by a dot product with a
  * multivariate normal inverse gamma random variable, plus scalar.
  */
-final class DelayMultivariateDotNormalInverseGammaGaussian(x:Random<Real>&,
-    a:Real[_], μ:DelayMultivariateNormalInverseGamma, c:Real) <
-    DelayValue<Real>(x) {
+final class DelayMultivariateDotNormalInverseGammaGaussian(future:Real?,
+    futureUpdate:Boolean, a:Real[_], μ:DelayMultivariateNormalInverseGamma,
+    c:Real) < DelayValue<Real>(future, futureUpdate) {
   /**
    * Scale.
    */
@@ -52,10 +52,10 @@ final class DelayMultivariateDotNormalInverseGammaGaussian(x:Random<Real>&,
   }
 }
 
-function DelayMultivariateDotNormalInverseGammaGaussian(
-    x:Random<Real>&, a:Real[_], μ:DelayMultivariateNormalInverseGamma,
+function DelayMultivariateDotNormalInverseGammaGaussian(future:Real?,
+    futureUpdate:Boolean, a:Real[_], μ:DelayMultivariateNormalInverseGamma,
     c:Real) -> DelayMultivariateDotNormalInverseGammaGaussian {
-  m:DelayMultivariateDotNormalInverseGammaGaussian(x, a, μ, c);
+  m:DelayMultivariateDotNormalInverseGammaGaussian(future, futureUpdate, a, μ, c);
   μ.setChild(m);
   return m;
 }

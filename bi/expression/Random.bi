@@ -14,17 +14,6 @@ final class Random<Value> < Expression<Value> {
    * Associated distribution.
    */
   dist:Distribution<Value>?;
-  
-  /**
-   * Future value.
-   */
-  future:Value?;
-
-  /**
-   * When assigned, should the future value trigger an update? (Otherwise
-   * a downdate.)
-   */
-  futureUpdate:Boolean <- true;
 
   /**
    * Value assignment.
@@ -62,26 +51,10 @@ final class Random<Value> < Expression<Value> {
    * Get the value of the random variate, forcing realization if necessary.
    */
   function value() -> Value {
-    if !hasValue() {
-      assert hasDistribution();
-      if future? {
-        /* future value provided, use it */
-        x <- future!;
-        future <- nil;
-        if futureUpdate {
-          dist!.update(x!);
-        } else {
-          dist!.downdate(x!);
-          futureUpdate <- true;
-        }
-      } else {
-        /* no future value provided, simulate a value */
-        x <- dist!.simulate();
-        dist!.update(x!);
-      }
-      dist!.detach();
+    if !x? {
+      assert dist?;
+      x <- dist!.value();
       dist <- nil;
-      assert hasValue();
     }
     return x!;
   }
@@ -101,7 +74,6 @@ final class Random<Value> < Expression<Value> {
   function assume(dist:Distribution<Value>) {
     assert !hasDistribution();
     assert !hasValue();
-    dist.setRandom(this);
     this.dist <- dist;
   }
 
@@ -114,9 +86,8 @@ final class Random<Value> < Expression<Value> {
    * - future: The future value.
    */
   function assumeUpdate(dist:Distribution<Value>, future:Value) {
+    dist.setFuture(future, true);
     assume(dist);
-    this.future <- future;
-    this.futureUpdate <- true;
   }
 
   /**
@@ -128,9 +99,8 @@ final class Random<Value> < Expression<Value> {
    * - future: The future value.
    */
   function assumeDowndate(dist:Distribution<Value>, future:Value) {
+    dist.setFuture(future, false);
     assume(dist);
-    this.future <- future;
-    this.futureUpdate <- false;
   }
 
   /**

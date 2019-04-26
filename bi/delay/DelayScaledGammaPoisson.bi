@@ -1,8 +1,8 @@
 /*
  * Delayed scaled gamma-Poisson random variate.
  */
-final class DelayScaledGammaPoisson(x:Random<Integer>&, a:Real, λ:DelayGamma) <
-    DelayDiscrete(x) {
+final class DelayScaledGammaPoisson(future:Integer?, futureUpdate:Boolean,
+    a:Real, λ:DelayGamma) < DelayDiscrete(future, futureUpdate) {
   /**
    * Scale.
    */
@@ -46,10 +46,10 @@ final class DelayScaledGammaPoisson(x:Random<Integer>&, a:Real, λ:DelayGamma) <
   }
 }
 
-function DelayScaledGammaPoisson(x:Random<Integer>&, a:Real, λ:DelayGamma) -> 
-    DelayScaledGammaPoisson {
+function DelayScaledGammaPoisson(future:Integer?, futureUpdate:Boolean,
+    a:Real, λ:DelayGamma) -> DelayScaledGammaPoisson {
   assert a > 0;
-  m:DelayScaledGammaPoisson(x, a, λ);
+  m:DelayScaledGammaPoisson(future, futureUpdate, a, λ);
   λ.setChild(m);
   return m;
 }
