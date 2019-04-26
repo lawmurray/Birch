@@ -30,6 +30,12 @@ class Track < StateSpaceModel<Global,Random<Real[_]>,Random<Real[_]>> {
     while f? {
       f!.value();
     }
+    auto g <- y.walk();
+    while g? {
+      if g!.hasDistribution() {
+        g!.value();
+      }
+    }
     buffer.set("t", t);
     super.write(buffer);
   }

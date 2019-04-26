@@ -76,6 +76,7 @@ program draw(input:String <- "output/simulate.json",
     }
     
     /* lines and points marking latent tracks */
+    cr.setSourceRGB(col[1], col[2], col[3]);
     z <- array!.walk("z");
     while z? {
       auto x <- z!.getRealMatrix("x");

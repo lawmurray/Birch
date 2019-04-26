@@ -16,8 +16,8 @@ class Multi < StateSpaceModel<Global,List<Track>,List<Random<Real[_]>>> {
     /* move current objects */
     auto track <- x.walk();
     while track? {
-      ρ:Real <- pmf_poisson(t - track!.t - 1, θ.τ);
-      R:Real <- 1.0 - cdf_poisson(t - track!.t - 1, θ.τ) + ρ;
+      auto ρ <- pmf_poisson(t - track!.t - 1, θ.τ);
+      auto R <- 1.0 - cdf_poisson(t - track!.t - 1, θ.τ) + ρ;
       s:Boolean;
       s <~ Bernoulli(1.0 - ρ/R);  // does the object survive?
       if s {
@@ -29,7 +29,7 @@ class Multi < StateSpaceModel<Global,List<Track>,List<Random<Real[_]>>> {
     /* birth new objects */
     N:Integer;
     N <~ Poisson(θ.λ);
-    for n:Integer in 1..N {
+    for auto n in 1..N {
       track:Track;
       track.t <- t;
       track.θ <- θ;
@@ -47,7 +47,7 @@ class Multi < StateSpaceModel<Global,List<Track>,List<Random<Real[_]>>> {
       /* clutter */
       N:Integer;
       N <~ Poisson(θ.μ);
-      for n:Integer in 1..(N + 1) {
+      for auto n in 1..(N + 1) {
         clutter:Random<Real[_]>;
         clutter <~ Uniform(θ.l, θ.u);
         y.pushBack(clutter);
@@ -62,21 +62,20 @@ class Multi < StateSpaceModel<Global,List<Track>,List<Random<Real[_]>>> {
       if o.hasDistribution() {
         /* object is detected, compute proposal */
         q:Real[y.size()];
-        n:Integer <- 1;
+        auto n <- 1;
         auto detection <- y.walk();
         while detection? {
           q[n] <- o.pdf(detection!);
           n <- n + 1;
         }
-        Q:Real <- sum(q);
-          
+        auto Q <- sum(q);
+                  
         /* propose an association */
         if Q > 0.0 {
           q <- q/Q;
-          n <~ Categorical(q);  // choose an observation
-          auto w <- o.distribution().observe(y.get(n));  // likelihood
-          o.distribution().update(y.get(n));
-          w <- w - log(y.size());  // prior correction
+          n <~ Categorical(q);  // propose an observation to associate with
+          y.get(n) ~> o.distribution();  // likelihood
+          auto w <- -log(y.size());  // prior correction (uniform prior)
           w <- w - log(q[n]);  // proposal correction
           y.erase(n);  // remove the observation for future associations
           yield FactorEvent(w);
