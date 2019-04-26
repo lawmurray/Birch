@@ -16,7 +16,7 @@ final class InverseGamma(α:Expression<Real>, β:Expression<Real>) < Distributio
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayInverseGamma(x, α, β);
+      delay <- DelayInverseGamma(future, futureUpdate, α, β);
     }
   }
 
@@ -24,7 +24,7 @@ final class InverseGamma(α:Expression<Real>, β:Expression<Real>) < Distributio
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayInverseGamma(x, α, β);
+      delay <- DelayInverseGamma(future, futureUpdate, α, β);
     }
     return DelayInverseGamma?(delay);
   }

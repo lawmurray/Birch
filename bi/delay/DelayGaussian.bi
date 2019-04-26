@@ -1,7 +1,8 @@
 /*
  * Delayed Gaussian random variate.
  */
-class DelayGaussian(x:Random<Real>&, μ:Real, σ2:Real) < DelayValue<Real>(x) {
+class DelayGaussian(future:Real?, futureUpdate:Boolean, μ:Real, σ2:Real) <
+    DelayValue<Real>(future, futureUpdate) {
   /**
    * Mean.
    */
@@ -51,7 +52,8 @@ class DelayGaussian(x:Random<Real>&, μ:Real, σ2:Real) < DelayValue<Real>(x) {
   }
 }
 
-function DelayGaussian(x:Random<Real>&, μ:Real, σ2:Real) -> DelayGaussian {
-  m:DelayGaussian(x, μ, σ2);
+function DelayGaussian(future:Real?, futureUpdate:Boolean, μ:Real,
+    σ2:Real) -> DelayGaussian {
+  m:DelayGaussian(future, futureUpdate, μ, σ2);
   return m;
 }

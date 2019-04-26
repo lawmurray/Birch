@@ -18,9 +18,9 @@ final class Multinomial(n:Expression<Integer>, ρ:Expression<Real[_]>) < Distrib
     } else {
       m:DelayDirichlet?;
       if (m <- ρ.graftDirichlet())? {
-        delay <- DelayDirichletMultinomial(x, n, m!);
+        delay <- DelayDirichletMultinomial(future, futureUpdate, n, m!);
       } else {
-        delay <- DelayMultinomial(x, n, ρ);
+        delay <- DelayMultinomial(future, futureUpdate, n, ρ);
       }
     }
   }

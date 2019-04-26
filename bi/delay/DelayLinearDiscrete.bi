@@ -2,8 +2,9 @@
  * Delayed delta function on a linear transformation of a discrete random
  * variate.
  */
-final class DelayLinearDiscrete(x:Random<Integer>&, a:Integer,
-    μ:DelayDiscrete, c:Integer) < DelayDiscrete(x) {
+final class DelayLinearDiscrete(future:Integer?, futureUpdate:Boolean,
+    a:Integer, μ:DelayDiscrete, c:Integer) < DelayDiscrete(future,
+    futureUpdate) {
   /**
    * Scale. Should be 1 or -1 to ensure integer-invertible.
    */
@@ -61,10 +62,10 @@ final class DelayLinearDiscrete(x:Random<Integer>&, a:Integer,
   }
 }
 
-function DelayLinearDiscrete(x:Random<Integer>&, a:Integer,
+function DelayLinearDiscrete(future:Integer?, futureUpdate:Boolean, a:Integer,
     μ:DelayDiscrete, c:Integer) -> DelayLinearDiscrete {
   assert abs(a) == 1;
-  m:DelayLinearDiscrete(x, a, μ, c);
+  m:DelayLinearDiscrete(future, futureUpdate, a, μ, c);
   μ.setChild(m);
   return m;
 }

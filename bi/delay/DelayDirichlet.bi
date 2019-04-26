@@ -1,8 +1,8 @@
 /*
  * Delayed Dirichlet random variate.
  */
-final class DelayDirichlet(x:Random<Real[_]>&, α:Real[_]) <
-    DelayValue<Real[_]>(x) {
+final class DelayDirichlet(future:Real[_]?, futureUpdate:Boolean, α:Real[_])
+    < DelayValue<Real[_]>(future, futureUpdate) {
   /**
    * Concentrations.
    */
@@ -35,7 +35,8 @@ final class DelayDirichlet(x:Random<Real[_]>&, α:Real[_]) <
   }
 }
 
-function DelayDirichlet(x:Random<Real[_]>&, α:Real[_]) -> DelayDirichlet {
-  m:DelayDirichlet(x, α);
+function DelayDirichlet(future:Real[_]?, futureUpdate:Boolean, α:Real[_]) ->
+    DelayDirichlet {
+  m:DelayDirichlet(future, futureUpdate, α);
   return m;
 }

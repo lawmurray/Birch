@@ -1,7 +1,8 @@
 /*
  * Delayed Inverse-gamma gamma random variate.
  */
-final class DelayInverseGammaGamma(x:Random<Real>&, k:Real, θ:DelayInverseGamma) < DelayValue<Real>(x) {
+final class DelayInverseGammaGamma(future:Real?, futureUpdate:Boolean,
+    k:Real, θ:DelayInverseGamma) < DelayValue<Real>(future, futureUpdate) {
   /**
    * Shape.
    */
@@ -41,9 +42,9 @@ final class DelayInverseGammaGamma(x:Random<Real>&, k:Real, θ:DelayInverseGamma
   }
 }
 
-function DelayInverseGammaGamma(x:Random<Real>&, k:Real, θ:DelayInverseGamma) ->
-    DelayInverseGammaGamma {
-  m:DelayInverseGammaGamma(x, k, θ);
+function DelayInverseGammaGamma(future:Real?, futureUpdate:Boolean, k:Real,
+    θ:DelayInverseGamma) -> DelayInverseGammaGamma {
+  m:DelayInverseGammaGamma(future, futureUpdate, k, θ);
   θ.setChild(m);
   return m;
 }

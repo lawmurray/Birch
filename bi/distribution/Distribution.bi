@@ -5,20 +5,51 @@
  */
 class Distribution<Value> {
   /**
+   * Future value. This is set for situations where delayed sampling
+   * is used, but when ultimately realized, a particular value (this one)
+   * should be assigned, and updates or downdates applied accordingly. It
+   * is typically used when replaying traces.
+   */
+  future:Value?;
+
+  /**
+   * When assigned, should the future value trigger an update? (Otherwise
+   * a downdate.)
+   */
+  futureUpdate:Boolean <- true;
+
+  /**
    * Associated node on delayed sampling $M$-path.
    */
   delay:DelayValue<Value>?;
 
   /**
-   * Associated random variate.
+   * Set the future value to be produced from the distribution.
+   *
+   * - future: Future value.
+   * - futureUpdate: When realized, should the future value trigger an
+   *   update? (Otherwise a downdate.)
    */
-  x:Random<Value>&;
+  function setFuture(future:Value, futureUpdate:Boolean) {
+    this.future <- future;
+    this.futureUpdate <- futureUpdate;
+  }
 
   /**
-   * The the set random variate associated with this distribution.
+   * Does the distribution have a value?
    */
-  function setRandom(x:Random<Value>) {
-    this.x <- x;
+  function hasValue() -> Boolean {
+    return delay? && delay!.hasValue();
+  }
+  
+  /**
+   * Get the value of the node, realizing it if necessary.
+   */
+  function value() -> Value {
+    graft();
+    auto x <- delay!.value();
+    detach();
+    return x;
   }
   
   /**
@@ -125,6 +156,7 @@ class Distribution<Value> {
    * Detach this from the delayed sampling $M$-path.
    */
   function detach() {
+    assert delay?;
     delay!.detach();
     delay <- nil;
   }

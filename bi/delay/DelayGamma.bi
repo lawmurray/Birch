@@ -1,7 +1,8 @@
 /*
  * Delayed gamma random variate.
  */
-final class DelayGamma(x:Random<Real>&, k:Real, θ:Real) < DelayValue<Real>(x) {
+final class DelayGamma(future:Real?, futureUpdate:Boolean, k:Real, θ:Real) <
+    DelayValue<Real>(future, futureUpdate) {
   /**
    * Shape.
    */
@@ -48,7 +49,8 @@ final class DelayGamma(x:Random<Real>&, k:Real, θ:Real) < DelayValue<Real>(x) {
   }
 }
 
-function DelayGamma(x:Random<Real>&, k:Real, θ:Real) -> DelayGamma {
-  m:DelayGamma(x, k, θ);
+function DelayGamma(future:Real?, futureUpdate:Boolean, k:Real, θ:Real) ->
+    DelayGamma {
+  m:DelayGamma(future, futureUpdate, k, θ);
   return m;
 }

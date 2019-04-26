@@ -1,7 +1,8 @@
 /*
  * Delayed delta random variate.
  */
-final class DelayDelta(x:Random<Integer>&, μ:Integer) < DelayDiscrete(x) {
+final class DelayDelta(future:Integer?, futureUpdate:Boolean, μ:Integer) <
+    DelayDiscrete(future, futureUpdate) {
   /**
    * Location.
    */
@@ -46,7 +47,8 @@ final class DelayDelta(x:Random<Integer>&, μ:Integer) < DelayDiscrete(x) {
   }
 }
 
-function DelayDelta(x:Random<Integer>&, μ:Integer) -> DelayDelta {
-  m:DelayDelta(x, μ);
+function DelayDelta(future:Integer?, futureUpdate:Boolean, μ:Integer) ->
+    DelayDelta {
+  m:DelayDelta(future, futureUpdate, μ);
   return m;
 }

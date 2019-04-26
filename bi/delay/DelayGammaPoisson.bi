@@ -1,8 +1,8 @@
 /*
  * Delayed gamma-Poisson random variate.
  */
-final class DelayGammaPoisson(x:Random<Integer>&, λ:DelayGamma) <
-    DelayDiscrete(x) {
+final class DelayGammaPoisson(future:Integer?, futureUpdate:Boolean,
+    λ:DelayGamma) < DelayDiscrete(future, futureUpdate) {
   /**
    * Rate.
    */
@@ -41,9 +41,9 @@ final class DelayGammaPoisson(x:Random<Integer>&, λ:DelayGamma) <
   }
 }
 
-function DelayGammaPoisson(x:Random<Integer>&, λ:DelayGamma) -> 
-    DelayGammaPoisson {
-  m:DelayGammaPoisson(x, λ);
+function DelayGammaPoisson(future:Integer?, futureUpdate:Boolean,
+    λ:DelayGamma) ->  DelayGammaPoisson {
+  m:DelayGammaPoisson(future, futureUpdate, λ);
   λ.setChild(m);
   return m;
 }

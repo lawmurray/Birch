@@ -3,9 +3,10 @@
  * the prior over the mean is given by a dot product with a multivariate
  * Gaussian random variable, plus scalar.
  */
-final class DelayMultivariateDotGaussianLogGaussian(x:Random<Real>&, a:Real[_],
-    m:DelayMultivariateGaussian, c:Real, s2:Real) <
-    DelayLogGaussian(x, dot(a, m.μ) + c, dot(a, m.Σ*a) + s2) {
+final class DelayMultivariateDotGaussianLogGaussian(future:Real?,
+    futureUpdate:Boolean, a:Real[_], m:DelayMultivariateGaussian, c:Real,
+    s2:Real) < DelayLogGaussian(future, futureUpdate, dot(a, m.μ) + c,
+    dot(a, m.Σ*a) + s2) {
   /**
    * Scale.
    */
@@ -41,10 +42,10 @@ final class DelayMultivariateDotGaussianLogGaussian(x:Random<Real>&, a:Real[_],
   }
 }
 
-function DelayMultivariateDotGaussianLogGaussian(x:Random<Real>&,
-    a:Real[_], μ:DelayMultivariateGaussian, c:Real, σ2:Real) ->
-    DelayMultivariateDotGaussianLogGaussian {
-  m:DelayMultivariateDotGaussianLogGaussian(x, a, μ, c, σ2);
+function DelayMultivariateDotGaussianLogGaussian(future:Real?,
+    futureUpdate:Boolean, a:Real[_], μ:DelayMultivariateGaussian, c:Real,
+    σ2:Real) -> DelayMultivariateDotGaussianLogGaussian {
+  m:DelayMultivariateDotGaussianLogGaussian(future, futureUpdate, a, μ, c, σ2);
   μ.setChild(m);
   return m;
 }

@@ -1,7 +1,8 @@
 /*
  * Delayed Poisson random variate.
  */
-final class DelayPoisson(x:Random<Integer>&, λ:Real) < DelayDiscrete(x) {
+final class DelayPoisson(future:Integer?, futureUpdate:Boolean, λ:Real) <
+    DelayDiscrete(future, futureUpdate) {
   /**
    * Rate.
    */
@@ -46,7 +47,8 @@ final class DelayPoisson(x:Random<Integer>&, λ:Real) < DelayDiscrete(x) {
   }
 }
 
-function DelayPoisson(x:Random<Integer>&, λ:Real) -> DelayPoisson {
-  m:DelayPoisson(x, λ);
+function DelayPoisson(future:Integer?, futureUpdate:Boolean, λ:Real) ->
+    DelayPoisson {
+  m:DelayPoisson(future, futureUpdate, λ);
   return m;
 }

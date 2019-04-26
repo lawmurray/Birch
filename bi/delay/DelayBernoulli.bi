@@ -1,7 +1,8 @@
 /*
  * Delayed Bernoulli random variate.
  */
-final class DelayBernoulli(x:Random<Boolean>&, ρ:Real) < DelayValue<Boolean>(x) {
+final class DelayBernoulli(future:Boolean?, futureUpdate:Boolean, ρ:Real) <
+    DelayValue<Boolean>(future, futureUpdate) {
   /**
    * Success probability.
    */
@@ -34,7 +35,8 @@ final class DelayBernoulli(x:Random<Boolean>&, ρ:Real) < DelayValue<Boolean>(x)
   }
 }
 
-function DelayBernoulli(x:Random<Boolean>&, ρ:Real) -> DelayBernoulli {
-  m:DelayBernoulli(x, ρ);
+function DelayBernoulli(future:Boolean?, futureUpdate:Boolean, ρ:Real) ->
+    DelayBernoulli {
+  m:DelayBernoulli(future, futureUpdate, ρ);
   return m;
 }

@@ -46,7 +46,8 @@ final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>, A:Expression<
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayMultivariateNormalInverseGamma(x, μ, A, σ2.graftInverseGamma()!);
+      delay <- DelayMultivariateNormalInverseGamma(future, futureUpdate, μ,
+          A, σ2.graftInverseGamma()!);
     }
   }
 

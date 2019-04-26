@@ -16,7 +16,7 @@ final class MultivariateUniform(l:Expression<Real[_]>, u:Expression<Real[_]>) < 
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayMultivariateUniform(x, l, u);
+      delay <- DelayMultivariateUniform(future, futureUpdate, l, u);
     }
   }
 

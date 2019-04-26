@@ -14,9 +14,9 @@ final class Delta(μ:Expression<Integer>) < Distribution<Integer> {
     } else {
       m:DelayDiscrete?;
       if (m <- μ.graftDiscrete())? {
-        delay <- DelayDiscreteDelta(x, m!);
+        delay <- DelayDiscreteDelta(future, futureUpdate, m!);
       } else {
-        delay <- DelayDelta(x, μ);
+        delay <- DelayDelta(future, futureUpdate, μ);
       }
     }
   }

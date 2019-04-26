@@ -46,7 +46,8 @@ final class NormalInverseGamma(μ:Expression<Real>, a2:Expression<Real>,
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayNormalInverseGamma(x, μ, a2, σ2.graftInverseGamma()!);
+      delay <- DelayNormalInverseGamma(future, futureUpdate, μ, a2,
+          σ2.graftInverseGamma()!);
     }
   }
 

@@ -13,15 +13,15 @@ class Delay {
   child:Delay?;
   
   /**
-   * Has the random variate associated with this node been assigned a value?
-   * If no random variate is associated with the node, always returns false.
+   * Has the node realized a value?
    */
   function hasValue() -> Boolean {
     return false;
   }
   
   /**
-   * Realize by simulation.
+   * Realize. If a future value has been given, it is used, otherwise a value
+   * is simulated.
    */
   function realize();
   
@@ -38,11 +38,10 @@ class Delay {
    */
   function detach() {
     parent:Delay? <- this.parent;
-    if (parent?) {
-      this.parent <- nil;
+    if parent? {
       parent!.child <- nil;
     }
-    assert !this.parent?;
+    this.parent <- nil;
     assert !this.child?;
   }
   
@@ -50,8 +49,7 @@ class Delay {
    * Prune the $M$-path from below this node.
    */
   function prune() {
-    if (child?) {
-      child!.prune();
+    if child? {
       child!.realize();
     }
     assert !this.child?;

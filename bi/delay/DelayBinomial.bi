@@ -1,8 +1,8 @@
 /*
  * Delayed binomial random variate.
  */
-final class DelayBinomial(x:Random<Integer>&, n:Integer, ρ:Real) <
-    DelayBoundedDiscrete(x, 0, n) {
+final class DelayBinomial(future:Integer?, futureUpdate:Boolean, n:Integer,
+    ρ:Real) < DelayBoundedDiscrete(future, futureUpdate, 0, n) {
   /**
    * Number of trials.
    */
@@ -57,8 +57,8 @@ final class DelayBinomial(x:Random<Integer>&, n:Integer, ρ:Real) <
   }
 }
 
-function DelayBinomial(x:Random<Integer>&, n:Integer, ρ:Real) ->
+function DelayBinomial(future:Integer?, futureUpdate:Boolean, n:Integer, ρ:Real) ->
     DelayBinomial {
-  m:DelayBinomial(x, n, ρ);
+  m:DelayBinomial(future, futureUpdate, n, ρ);
   return m;
 }

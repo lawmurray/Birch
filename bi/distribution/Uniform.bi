@@ -16,7 +16,7 @@ final class Uniform(l:Expression<Real>, u:Expression<Real>) < Distribution<Real>
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayUniform(x, l, u);
+      delay <- DelayUniform(future, futureUpdate, l, u);
     }
   }
 

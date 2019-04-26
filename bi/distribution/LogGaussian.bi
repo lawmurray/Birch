@@ -25,25 +25,25 @@ final class LogGaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distributio
       s2:DelayInverseGamma?;
 
       if (m1 <- μ.graftLinearNormalInverseGamma(σ2))? {
-        delay <- DelayLinearNormalInverseGammaLogGaussian(x, m1!.a, m1!.x, m1!.c);
+        delay <- DelayLinearNormalInverseGammaLogGaussian(future, futureUpdate, m1!.a, m1!.x, m1!.c);
       } else if (m2 <- μ.graftMultivariateDotNormalInverseGamma(σ2))? {
-        delay <- DelayMultivariateDotNormalInverseGammaLogGaussian(x, m2!.a, m2!.x, m2!.c);
+        delay <- DelayMultivariateDotNormalInverseGammaLogGaussian(future, futureUpdate, m2!.a, m2!.x, m2!.c);
       } else if (m3 <- μ.graftNormalInverseGamma(σ2))? {
-        delay <- DelayNormalInverseGammaLogGaussian(x, m3!);
+        delay <- DelayNormalInverseGammaLogGaussian(future, futureUpdate, m3!);
       } else if (m4 <- μ.graftLinearGaussian())? {
-        delay <- DelayLinearGaussianLogGaussian(x, m4!.a, m4!.x, m4!.c, σ2);
+        delay <- DelayLinearGaussianLogGaussian(future, futureUpdate, m4!.a, m4!.x, m4!.c, σ2);
       } else if (m5 <- μ.graftMultivariateDotGaussian())? {
-        delay <- DelayMultivariateDotGaussianLogGaussian(x, m5!.a, m5!.x, m5!.c, σ2);
+        delay <- DelayMultivariateDotGaussianLogGaussian(future, futureUpdate, m5!.a, m5!.x, m5!.c, σ2);
       } else if (m6 <- μ.graftGaussian())? {
-        delay <- DelayGaussianLogGaussian(x, m6!, σ2);
+        delay <- DelayGaussianLogGaussian(future, futureUpdate, m6!, σ2);
       } else {
         /* trigger a sample of μ, and double check that this doesn't cause
          * a sample of σ2 before we try creating an inverse-gamma Gaussian */
         μ.value();
         if (s2 <- σ2.graftInverseGamma())? {
-          delay <- DelayInverseGammaLogGaussian(x, μ, s2!);
+          delay <- DelayInverseGammaLogGaussian(future, futureUpdate, μ, s2!);
         } else {
-          delay <- DelayLogGaussian(x, μ, σ2);
+          delay <- DelayLogGaussian(future, futureUpdate, μ, σ2);
         }
       }
     }

@@ -11,7 +11,7 @@ final class Dirichlet(α:Expression<Real[_]>) < Distribution<Real[_]> {
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayDirichlet(x, α);
+      delay <- DelayDirichlet(future, futureUpdate, α);
     }
   }
 
@@ -19,7 +19,7 @@ final class Dirichlet(α:Expression<Real[_]>) < Distribution<Real[_]> {
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayDirichlet(x, α);
+      delay <- DelayDirichlet(future, futureUpdate, α);
     }
     return DelayDirichlet?(delay);
   }
