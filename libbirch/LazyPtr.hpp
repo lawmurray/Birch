@@ -123,7 +123,13 @@ public:
   /**
    * Move assignment operator.
    */
-  LazyPtr<P>& operator=(LazyPtr<P> && o) = default;
+  LazyPtr<P>& operator=(LazyPtr<P> && o) {
+    /* it's possible that object = o.object actually destroys the referent
+     * of o, so do the to = o.to first */
+    to = std::move(o.to);
+    object = std::move(o.object);
+    return *this;
+  }
 
   /**
    * Generic copy assignment.
@@ -142,8 +148,8 @@ public:
    */
   template<class Q>
   LazyPtr<P>& operator=(LazyPtr<Q> && o) {
-    object = o.object;
-    to = o.to;
+    object = std::move(o.object);
+    to = std::move(o.to);
     return *this;
   }
 

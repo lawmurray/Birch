@@ -115,7 +115,14 @@ public:
    * Move assignment.
    */
   SharedPtr<T>& operator=(SharedPtr<T> && o) {
-    std::swap(ptr, o.ptr);
+    if (ptr != o.ptr) {
+      auto old = ptr;
+      ptr = o.ptr;
+      o.ptr = nullptr;
+      if (old) {
+        old->decShared();
+      }
+    }
     return *this;
   }
 

@@ -88,7 +88,7 @@ class EagerPtr {
    */
   template<class Q>
   EagerPtr<P>& operator=(EagerPtr<Q> && o) {
-    object = o.object;
+    object = std::move(o.object);
     return *this;
   }
 
