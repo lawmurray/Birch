@@ -56,16 +56,13 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
   function replayImmediate(trace:Queue<Event>) -> Real {
     auto w <- 0.0;
     auto evt <- coerce<Value>(trace);
-    if !evt? {
-      error("incompatible trace");
-    }
     if v.hasValue() {
-      assert v.value() == evt!.value();
-      w <- p.observe(evt!.value());
+      assert v.value() == evt.value();
+      w <- p.observe(evt.value());
     } else {
-      v <- evt!.value();
+      v <- evt.value();
     }
-    p.update(evt!.value());
+    p.update(evt.value());
     p.detach();
     return w;
   }
@@ -73,17 +70,14 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
   function replayDelay(trace:Queue<Event>) -> Real {
     auto w <- 0.0;
     auto evt <- coerce<Value>(trace);
-    if !evt? {
-      error("incompatible trace");
-    }
     if v.hasValue() {
-      assert v.value() == evt!.value();
-      w <- p.observe(evt!.value());
-      p.update(evt!.value());
+      assert v.value() == evt.value();
+      w <- p.observe(evt.value());
+      p.update(evt.value());
       p.detach();
     } else {
-      if evt!.hasValue() {
-        v.assumeUpdate(p, evt!.value());
+      if evt.hasValue() {
+        v.assumeUpdate(p, evt.value());
       } else {
         v.assume(p);
       }
@@ -94,16 +88,13 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
   function downdateImmediate(trace:Queue<Event>) -> Real {
     auto w <- 0.0;
     auto evt <- coerce<Value>(trace);
-    if !evt? {
-      error("incompatible trace");
-    }
     if v.hasValue() {
-      assert v.value() == evt!.value();
-      w <- p.observe(evt!.value());
+      assert v.value() == evt.value();
+      w <- p.observe(evt.value());
     } else {
-      v <- evt!.value();
+      v <- evt.value();
     }
-    p.downdate(evt!.value());
+    p.downdate(evt.value());
     p.detach();
     return w;
   }
@@ -111,17 +102,14 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
   function downdateDelay(trace:Queue<Event>) -> Real {
     auto w <- 0.0;
     auto evt <- coerce<Value>(trace);
-    if !evt? {
-      error("incompatible trace");
-    }
     if v.hasValue() {
-      assert v.value() == evt!.value();
-      w <- p.observe(evt!.value());
-      p.downdate(evt!.value());
+      assert v.value() == evt.value();
+      w <- p.observe(evt.value());
+      p.downdate(evt.value());
       p.detach();
     } else {
-      if evt!.hasValue() {
-        v.assumeDowndate(p, evt!.value());
+      if evt.hasValue() {
+        v.assumeDowndate(p, evt.value());
       } else {
         v.assume(p);
       }

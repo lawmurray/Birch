@@ -2,12 +2,11 @@
  * Coerce a value out of an event trace. This tries to cast the first event
  * in the trace to ValueEvent and return it.
  */
-function coerce<Value>(trace:Queue<Event>) -> ValueEvent<Value>? {
-  auto r <- ValueEvent<Value>?(trace.front());
+function coerce<Value>(trace:Queue<Event>) -> ValueEvent<Value> {
+  auto r <- ValueEvent<Value>?(trace.popFront());
   if r? {
-    trace.popFront();
-    return r;
+    return r!;
   } else {
-    return nil;
+    error("incompatible trace");
   }
 }

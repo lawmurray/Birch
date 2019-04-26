@@ -92,37 +92,37 @@ final class Queue<Type> {
   }
 
   /**
-   * Remove the first element.
+   * Remove the first element and return it.
    */
-  function popFront() {
+  function popFront() -> Type {
     assert !empty();
     if !forward? {
       allForward();
     }
-    //forward <- forward!.next;
-    if forward? {
-      cpp{{
-      forward = std::move(forward.get()->next);
-      }}
-    }
+    assert forward?;
     count <- count - 1;
+    cpp{{
+    auto x = std::move(forward.get()->x);
+    forward = std::move(forward.get()->next);
+    return x;
+    }}
   }
 
   /**
-   * Remove the last element.
+   * Remove the last element and return it.
    */
-  function popBack() {
+  function popBack() -> Type {
     assert !empty();
     if !backward? {
       allBackward();
     }
-    //backward <- backward!.next;
-    if backward? {
-      cpp{{
-      backward = std::move(backward.get()->next);
-      }}
-    }
+    assert backward?;
     count <- count - 1;
+    cpp{{
+    auto x = std::move(backward.get()->x);
+    backward = std::move(backward.get()->next);
+    return x;
+    }}
   }
 
   /**

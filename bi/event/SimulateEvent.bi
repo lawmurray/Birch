@@ -37,25 +37,17 @@ final class SimulateEvent<Value>(p:Distribution<Value>) <
   
   function replayImmediate(trace:Queue<Event>) -> Real {
     auto evt <- coerce<Value>(trace);
-    if evt? {
-      v <- evt!.value();
-      p.update(v!);
-      p.detach();
-    } else {
-      error("incompatible trace");
-    }
+    v <- evt.value();
+    p.update(v!);
+    p.detach();
     return 0.0;
   }
 
   function downdateImmediate(trace:Queue<Event>) -> Real {
     auto evt <- coerce<Value>(trace);
-    if evt? {
-      v <- evt!.value();
-      p.downdate(v!);
-      p.detach();
-    } else {
-      error("incompatible trace");
-    }
+    v <- evt.value();
+    p.downdate(v!);
+    p.detach();
     return 0.0;
   }
   
