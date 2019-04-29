@@ -42,6 +42,14 @@ bool bi::EmptyType::isConvertible(const EmptyType& o) const {
   return true;
 }
 
+bool bi::EmptyType::dispatchIsAssignable(const Type& o) const {
+  return o.isAssignable(*this);
+}
+
+bool bi::EmptyType::isAssignable(const EmptyType& o) const {
+  return true;
+}
+
 bi::Type* bi::EmptyType::dispatchCommon(const Type& o) const {
   return o.common(*this);
 }

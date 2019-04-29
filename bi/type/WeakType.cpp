@@ -71,6 +71,36 @@ bool bi::WeakType::isConvertible(const WeakType& o) const {
   return single->isConvertible(*o.single);
 }
 
+bool bi::WeakType::dispatchIsAssignable(const Type& o) const {
+  return o.isAssignable(*this);
+}
+
+bool bi::WeakType::isAssignable(const ClassType& o) const {
+  return o.getClass()->hasAssignment(this);
+}
+
+bool bi::WeakType::isAssignable(const GenericType& o) const {
+  assert(o.target);
+  return isAssignable(*o.target->type);
+}
+
+bool bi::WeakType::isAssignable(const MemberType& o) const {
+  return isAssignable(*o.right);
+}
+
+bool bi::WeakType::isAssignable(const OptionalType& o) const {
+  if (o.single->isWeak()) {
+    return isAssignable(*o.single);
+  } else {
+    /* a weak pointer can assign to an optional of a shared pointer */
+    return o.single->isAssignable(*o.single);
+  }
+}
+
+bool bi::WeakType::isAssignable(const WeakType& o) const {
+  return single->isAssignable(*o.single);
+}
+
 bi::Type* bi::WeakType::dispatchCommon(const Type& o) const {
   return o.common(*this);
 }

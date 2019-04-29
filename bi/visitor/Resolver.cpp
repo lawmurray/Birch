@@ -98,16 +98,15 @@ bi::Expression* bi::Resolver::modify(UnaryCall* o) {
 
 bi::Expression* bi::Resolver::modify(Assign* o) {
   Modifier::modify(o);
-  if (o->right->type->isConvertible(*o->left->type)) {
-    if (!o->left->isAssignable()) {
+  if (!o->right->type->isAssignable(*o->left->type)) {
+    throw AssignmentException(o);
+  }
+  if (!o->left->isAssignable()) {
+    /* use of an explicitly-declared assignment operator to assign a value of
+     * basic type to an object of class type is okay here, otherwise not */
+    if (!o->left->type->isClass() || o->right->type->isClass()) {
       throw NotAssignableException(o);
     }
-  } else if (o->left->type->isClass()) {
-    if (!o->left->type->getClass()->hasAssignment(o->right->type)) {
-      throw AssignmentException(o);
-    }
-  } else {
-    throw AssignmentException(o);
   }
   o->type = o->left->type;
   return o;

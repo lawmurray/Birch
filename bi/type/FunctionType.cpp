@@ -54,6 +54,32 @@ bool bi::FunctionType::isConvertible(const OptionalType& o) const {
   return isConvertible(*o.single);
 }
 
+bool bi::FunctionType::dispatchIsAssignable(const Type& o) const {
+  return o.isAssignable(*this);
+}
+
+bool bi::FunctionType::isAssignable(const ClassType& o) const {
+  return o.getClass()->hasAssignment(this);
+}
+
+bool bi::FunctionType::isAssignable(const GenericType& o) const {
+  assert(o.target);
+  return isAssignable(*o.target->type);
+}
+
+bool bi::FunctionType::isAssignable(const MemberType& o) const {
+  return isAssignable(*o.right);
+}
+
+bool bi::FunctionType::isAssignable(const FunctionType& o) const {
+  return params->isAssignable(*o.params)
+      && returnType->isAssignable(*o.returnType);
+}
+
+bool bi::FunctionType::isAssignable(const OptionalType& o) const {
+  return isAssignable(*o.single);
+}
+
 bi::Type* bi::FunctionType::dispatchCommon(const Type& o) const {
   return o.common(*this);
 }

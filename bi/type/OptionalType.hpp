@@ -37,6 +37,7 @@ public:
   virtual const Type* unwrap() const;
 
   using Type::isConvertible;
+  using Type::isAssignable;
   using Type::common;
 
   virtual bool dispatchIsConvertible(const Type& o) const;
@@ -44,6 +45,13 @@ public:
   virtual bool isConvertible(const MemberType& o) const;
   virtual bool isConvertible(const OptionalType& o) const;
   virtual bool isConvertible(const WeakType& o) const;
+
+  virtual bool dispatchIsAssignable(const Type& o) const;
+  virtual bool isAssignable(const ClassType& o) const;
+  virtual bool isAssignable(const GenericType& o) const;
+  virtual bool isAssignable(const MemberType& o) const;
+  virtual bool isAssignable(const OptionalType& o) const;
+  virtual bool isAssignable(const WeakType& o) const;
 
   virtual Type* dispatchCommon(const Type& o) const;
   virtual Type* common(const ArrayType& o) const;

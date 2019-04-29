@@ -64,6 +64,31 @@ bool bi::OptionalType::isConvertible(const WeakType& o) const {
   return single->isConvertible(*o.single);
 }
 
+bool bi::OptionalType::dispatchIsAssignable(const Type& o) const {
+  return o.isAssignable(*this);
+}
+
+bool bi::OptionalType::isAssignable(const ClassType& o) const {
+  return o.getClass()->hasAssignment(this);
+}
+
+bool bi::OptionalType::isAssignable(const GenericType& o) const {
+  assert(o.target);
+  return isAssignable(*o.target->type);
+}
+
+bool bi::OptionalType::isAssignable(const MemberType& o) const {
+  return isAssignable(*o.right);
+}
+
+bool bi::OptionalType::isAssignable(const OptionalType& o) const {
+  return single->isAssignable(*o.single);
+}
+
+bool bi::OptionalType::isAssignable(const WeakType& o) const {
+  return single->isAssignable(*o.single);
+}
+
 bi::Type* bi::OptionalType::dispatchCommon(const Type& o) const {
   return o.common(*this);
 }

@@ -46,6 +46,14 @@ bool bi::TypeList::isConvertible(const TypeList& o) const {
   return head->isConvertible(*o.head) && tail->isConvertible(*o.tail);
 }
 
+bool bi::TypeList::dispatchIsAssignable(const Type& o) const {
+  return o.isAssignable(*this);
+}
+
+bool bi::TypeList::isAssignable(const TypeList& o) const {
+  return head->isAssignable(*o.head) && tail->isAssignable(*o.tail);
+}
+
 bi::Type* bi::TypeList::dispatchCommon(const Type& o) const {
   return o.common(*this);
 }

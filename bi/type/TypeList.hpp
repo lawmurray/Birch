@@ -45,10 +45,14 @@ public:
   Type* tail;
 
   using Type::isConvertible;
+  using Type::isAssignable;
   using Type::common;
 
   virtual bool dispatchIsConvertible(const Type& o) const;
   virtual bool isConvertible(const TypeList& o) const;
+
+  virtual bool dispatchIsAssignable(const Type& o) const;
+  virtual bool isAssignable(const TypeList& o) const;
 
   virtual Type* dispatchCommon(const Type& o) const;
   virtual Type* common(const TypeList& o) const;

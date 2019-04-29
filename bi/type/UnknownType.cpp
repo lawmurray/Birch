@@ -34,6 +34,10 @@ bool bi::UnknownType::dispatchIsConvertible(const Type& o) const {
   return o.isConvertible(*this);
 }
 
+bool bi::UnknownType::dispatchIsAssignable(const Type& o) const {
+  return o.isAssignable(*this);
+}
+
 bi::Type* bi::UnknownType::dispatchCommon(const Type& o) const {
   return o.common(*this);
 }

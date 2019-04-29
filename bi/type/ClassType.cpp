@@ -136,6 +136,68 @@ bool bi::ClassType::isConvertible(const WeakType& o) const {
       target->hasConversion(&o)) || target->base->isConvertible(o);
 }
 
+bool bi::ClassType::dispatchIsAssignable(const Type& o) const {
+  return o.isAssignable(*this);
+}
+
+bool bi::ClassType::isAssignable(const GenericType& o) const {
+  assert(o.target);
+  return isAssignable(*o.target->type);
+}
+
+bool bi::ClassType::isAssignable(const MemberType& o) const {
+  return isAssignable(*o.right);
+}
+
+bool bi::ClassType::isAssignable(const ArrayType& o) const {
+  assert(target);
+  return (allowConversions && target->hasConversion(&o)) ||
+      target->base->isAssignable(o);
+}
+
+bool bi::ClassType::isAssignable(const BasicType& o) const {
+  assert(target);
+  return (allowConversions && target->hasConversion(&o)) ||
+      target->base->isAssignable(o);
+}
+
+bool bi::ClassType::isAssignable(const ClassType& o) const {
+  assert(target);
+  auto o1 = o.canonical();
+  return target == o1->getClass() || target->hasSuper(o1)
+      || (allowConversions && target->hasConversion(&o));
+}
+
+bool bi::ClassType::isAssignable(const FiberType& o) const {
+  assert(target);
+  return (allowConversions && target->hasConversion(&o)) ||
+      target->base->isAssignable(o);
+}
+
+bool bi::ClassType::isAssignable(const FunctionType& o) const {
+  assert(target);
+  return (allowConversions && target->hasConversion(&o)) ||
+      target->base->isAssignable(o);
+}
+
+bool bi::ClassType::isAssignable(const OptionalType& o) const {
+  assert(target);
+  return isAssignable(*o.single) || (allowConversions &&
+      target->hasConversion(&o)) || target->base->isAssignable(o);
+}
+
+bool bi::ClassType::isAssignable(const TupleType& o) const {
+  assert(target);
+  return (allowConversions && target->hasConversion(&o)) ||
+      target->base->isAssignable(o);
+}
+
+bool bi::ClassType::isAssignable(const WeakType& o) const {
+  assert(target);
+  return isAssignable(*o.single) || (allowConversions &&
+      target->hasConversion(&o)) || target->base->isAssignable(o);
+}
+
 bi::Type* bi::ClassType::dispatchCommon(const Type& o) const {
   return o.common(*this);
 }

@@ -147,6 +147,62 @@ bool bi::MemberType::isConvertible(const TypeList& o) const {
   return right->isConvertible(o);
 }
 
+bool bi::MemberType::dispatchIsAssignable(const Type& o) const {
+  return o.isAssignable(*this);
+}
+
+bool bi::MemberType::isAssignable(const ArrayType& o) const {
+  return right->isAssignable(o);
+}
+
+bool bi::MemberType::isAssignable(const BasicType& o) const {
+  return right->isAssignable(o);
+}
+
+bool bi::MemberType::isAssignable(const ClassType& o) const {
+  return right->isAssignable(o);
+}
+
+bool bi::MemberType::isAssignable(const EmptyType& o) const {
+  return right->isAssignable(o);
+}
+
+bool bi::MemberType::isAssignable(const FiberType& o) const {
+  return right->isAssignable(o);
+}
+
+bool bi::MemberType::isAssignable(const FunctionType& o) const {
+  return right->isAssignable(o);
+}
+
+bool bi::MemberType::isAssignable(const GenericType& o) const {
+  return right->isAssignable(o);
+}
+
+bool bi::MemberType::isAssignable(const MemberType& o) const {
+  return right->isAssignable(o);
+}
+
+bool bi::MemberType::isAssignable(const OptionalType& o) const {
+  return right->isAssignable(o);
+}
+
+bool bi::MemberType::isAssignable(const WeakType& o) const {
+  return right->isAssignable(o);
+}
+
+bool bi::MemberType::isAssignable(const SequenceType& o) const {
+  return right->isAssignable(o);
+}
+
+bool bi::MemberType::isAssignable(const TupleType& o) const {
+  return right->isAssignable(o);
+}
+
+bool bi::MemberType::isAssignable(const TypeList& o) const {
+  return right->isAssignable(o);
+}
+
 bi::Type* bi::MemberType::dispatchCommon(const Type& o) const {
   return o.common(*this);
 }

@@ -47,6 +47,14 @@ bool bi::BinaryType::isConvertible(const BinaryType& o) const {
   return left->isConvertible(*o.left) && right->isConvertible(*o.right);
 }
 
+bool bi::BinaryType::dispatchIsAssignable(const Type& o) const {
+  return o.isAssignable(*this);
+}
+
+bool bi::BinaryType::isAssignable(const BinaryType& o) const {
+  return left->isAssignable(*o.left) && right->isAssignable(*o.right);
+}
+
 bi::Type* bi::BinaryType::dispatchCommon(const Type& o) const {
   return o.common(*this);
 }

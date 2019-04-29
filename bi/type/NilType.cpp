@@ -46,6 +46,26 @@ bool bi::NilType::isConvertible(const SequenceType& o) const {
   return true;
 }
 
+bool bi::NilType::dispatchIsAssignable(const Type& o) const {
+  return o.isAssignable(*this);
+}
+
+bool bi::NilType::isAssignable(const NilType& o) const {
+  return true;
+}
+
+bool bi::NilType::isAssignable(const OptionalType& o) const {
+  return true;
+}
+
+bool bi::NilType::isAssignable(const WeakType& o) const {
+  return true;
+}
+
+bool bi::NilType::isAssignable(const SequenceType& o) const {
+  return true;
+}
+
 bi::Type* bi::NilType::dispatchCommon(const Type& o) const {
   return o.common(*this);
 }

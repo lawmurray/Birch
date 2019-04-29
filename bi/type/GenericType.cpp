@@ -182,6 +182,75 @@ bool bi::GenericType::isConvertible(const TypeList& o) const {
   return target->type->isConvertible(o);
 }
 
+bool bi::GenericType::dispatchIsAssignable(const Type& o) const {
+  return o.isAssignable(*this);
+}
+
+bool bi::GenericType::isAssignable(const ArrayType& o) const {
+  assert(target);
+  return target->type->isAssignable(o);
+}
+
+bool bi::GenericType::isAssignable(const BasicType& o) const {
+  assert(target);
+  return target->type->isAssignable(o);
+}
+
+bool bi::GenericType::isAssignable(const ClassType& o) const {
+  assert(target);
+  return target->type->isAssignable(o);
+}
+
+bool bi::GenericType::isAssignable(const EmptyType& o) const {
+  assert(target);
+  return target->type->isAssignable(o);
+}
+
+bool bi::GenericType::isAssignable(const FiberType& o) const {
+  assert(target);
+  return target->type->isAssignable(o);
+}
+
+bool bi::GenericType::isAssignable(const FunctionType& o) const {
+  assert(target);
+  return target->type->isAssignable(o);
+}
+
+bool bi::GenericType::isAssignable(const GenericType& o) const {
+  assert(target);
+  return target->type->isAssignable(o);
+}
+
+bool bi::GenericType::isAssignable(const MemberType& o) const {
+  assert(target);
+  return target->type->isAssignable(o);
+}
+
+bool bi::GenericType::isAssignable(const OptionalType& o) const {
+  assert(target);
+  return target->type->isAssignable(o);
+}
+
+bool bi::GenericType::isAssignable(const WeakType& o) const {
+  assert(target);
+  return target->type->isAssignable(o);
+}
+
+bool bi::GenericType::isAssignable(const SequenceType& o) const {
+  assert(target);
+  return target->type->isAssignable(o);
+}
+
+bool bi::GenericType::isAssignable(const TupleType& o) const {
+  assert(target);
+  return target->type->isAssignable(o);
+}
+
+bool bi::GenericType::isAssignable(const TypeList& o) const {
+  assert(target);
+  return target->type->isAssignable(o);
+}
+
 bi::Type* bi::GenericType::dispatchCommon(const Type& o) const {
   return o.common(*this);
 }

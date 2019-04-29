@@ -231,12 +231,7 @@ public:
   virtual bool equals(const Type& o) const;
 
   /**
-   * Is this type be assignable from another?
-   */
-  virtual bool isAssignable(const Type& o) const;
-
-  /*
-   * Double-dispatch partial order comparisons.
+   * Can this type be converted to another?
    */
   virtual bool isConvertible(const Type& o) const;
   virtual bool dispatchIsConvertible(const Type& o) const = 0;
@@ -256,6 +251,28 @@ public:
   virtual bool isConvertible(const TupleType& o) const;
   virtual bool isConvertible(const UnknownType& o) const;
   virtual bool isConvertible(const TypeList& o) const;
+
+  /**
+   * Can this type be assigned to another?
+   */
+  virtual bool isAssignable(const Type& o) const;
+  virtual bool dispatchIsAssignable(const Type& o) const = 0;
+  virtual bool isAssignable(const ArrayType& o) const;
+  virtual bool isAssignable(const BasicType& o) const;
+  virtual bool isAssignable(const BinaryType& o) const;
+  virtual bool isAssignable(const ClassType& o) const;
+  virtual bool isAssignable(const EmptyType& o) const;
+  virtual bool isAssignable(const FiberType& o) const;
+  virtual bool isAssignable(const FunctionType& o) const;
+  virtual bool isAssignable(const GenericType& o) const;
+  virtual bool isAssignable(const MemberType& o) const;
+  virtual bool isAssignable(const NilType& o) const;
+  virtual bool isAssignable(const OptionalType& o) const;
+  virtual bool isAssignable(const WeakType& o) const;
+  virtual bool isAssignable(const SequenceType& o) const;
+  virtual bool isAssignable(const TupleType& o) const;
+  virtual bool isAssignable(const UnknownType& o) const;
+  virtual bool isAssignable(const TypeList& o) const;
 
   /*
    * Double-dispatch common type reductions.

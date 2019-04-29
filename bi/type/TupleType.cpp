@@ -52,6 +52,31 @@ bool bi::TupleType::isConvertible(const TupleType& o) const {
   return single->isConvertible(*o.single);
 }
 
+bool bi::TupleType::dispatchIsAssignable(const Type& o) const {
+  return o.isAssignable(*this);
+}
+
+bool bi::TupleType::isAssignable(const ClassType& o) const {
+  return o.getClass()->hasAssignment(this);
+}
+
+bool bi::TupleType::isAssignable(const GenericType& o) const {
+  assert(o.target);
+  return isAssignable(*o.target->type);
+}
+
+bool bi::TupleType::isAssignable(const MemberType& o) const {
+  return isAssignable(*o.right);
+}
+
+bool bi::TupleType::isAssignable(const OptionalType& o) const {
+  return isAssignable(*o.single);
+}
+
+bool bi::TupleType::isAssignable(const TupleType& o) const {
+  return single->isAssignable(*o.single);
+}
+
 bi::Type* bi::TupleType::dispatchCommon(const Type& o) const {
   return o.common(*this);
 }

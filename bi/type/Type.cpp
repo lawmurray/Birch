@@ -174,10 +174,6 @@ bool bi::Type::equals(const Type& o) const {
   return isConvertible(o) && o.isConvertible(*this);
 }
 
-bool bi::Type::isAssignable(const Type& o) const {
-  return o.isConvertible(*this);
-}
-
 bool bi::Type::isConvertible(const Type& o) const {
   return o.dispatchIsConvertible(*this);
 }
@@ -243,6 +239,74 @@ bool bi::Type::isConvertible(const UnknownType& o) const {
 }
 
 bool bi::Type::isConvertible(const TypeList& o) const {
+  return false;
+}
+
+bool bi::Type::isAssignable(const Type& o) const {
+  return o.dispatchIsAssignable(*this);
+}
+
+bool bi::Type::isAssignable(const ArrayType& o) const {
+  return false;
+}
+
+bool bi::Type::isAssignable(const BasicType& o) const {
+  return false;
+}
+
+bool bi::Type::isAssignable(const BinaryType& o) const {
+  return false;
+}
+
+bool bi::Type::isAssignable(const ClassType& o) const {
+  return false;
+}
+
+bool bi::Type::isAssignable(const EmptyType& o) const {
+  return false;
+}
+
+bool bi::Type::isAssignable(const FiberType& o) const {
+  return false;
+}
+
+bool bi::Type::isAssignable(const FunctionType& o) const {
+  return false;
+}
+
+bool bi::Type::isAssignable(const GenericType& o) const {
+  return false;
+}
+
+bool bi::Type::isAssignable(const MemberType& o) const {
+  return false;
+}
+
+bool bi::Type::isAssignable(const NilType& o) const {
+  return false;
+}
+
+bool bi::Type::isAssignable(const OptionalType& o) const {
+  return false;
+}
+
+bool bi::Type::isAssignable(const WeakType& o) const {
+  return false;
+}
+
+bool bi::Type::isAssignable(const SequenceType& o) const {
+  return false;
+}
+
+bool bi::Type::isAssignable(const TupleType& o) const {
+  return false;
+}
+
+bool bi::Type::isAssignable(const UnknownType& o) const {
+  return false;
+}
+
+bool bi::Type::isAssignable(const TypeList& o) const {
   return false;
 }
 

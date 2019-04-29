@@ -61,6 +61,32 @@ bool bi::FiberType::isConvertible(const OptionalType& o) const {
   return isConvertible(*o.single);
 }
 
+bool bi::FiberType::dispatchIsAssignable(const Type& o) const {
+  return o.isAssignable(*this);
+}
+
+bool bi::FiberType::isAssignable(const ClassType& o) const {
+  return o.getClass()->hasAssignment(this);
+}
+
+bool bi::FiberType::isAssignable(const GenericType& o) const {
+  assert(o.target);
+  return isAssignable(*o.target->type);
+}
+
+bool bi::FiberType::isAssignable(const MemberType& o) const {
+  return isAssignable(*o.right);
+}
+
+bool bi::FiberType::isAssignable(const FiberType& o) const {
+  return single->equals(*o.single);
+  // ^ C++ code generation cannot handle the ->definitely case
+}
+
+bool bi::FiberType::isAssignable(const OptionalType& o) const {
+  return isAssignable(*o.single);
+}
+
 bi::Type* bi::FiberType::dispatchCommon(const Type& o) const {
   return o.common(*this);
 }

@@ -37,9 +37,11 @@ public:
   virtual void accept(Visitor* visitor) const;
 
   using Type::isConvertible;
+  using Type::isAssignable;
   using Type::common;
 
   virtual bool dispatchIsConvertible(const Type& o) const;
+  virtual bool dispatchIsAssignable(const Type& o) const;
   virtual Type* dispatchCommon(const Type& o) const;
 
   /**
