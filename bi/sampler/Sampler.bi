@@ -20,9 +20,9 @@ class Sampler {
   /**
    * Sample the model.
    *
-   * Return: a weighted sample.
+   * Yield: weighted samples.
    */
-  function sample() -> (Model, Real);
+  fiber sample() -> (Model, Real);
 
   /**
    * Set the archetype. This is an instance of the model of interest with

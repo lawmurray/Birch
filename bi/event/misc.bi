@@ -3,10 +3,11 @@
  * in the trace to ValueEvent and return it.
  */
 function coerce<Value>(trace:Queue<Event>) -> ValueEvent<Value> {
-  auto r <- ValueEvent<Value>?(trace.popFront());
-  if r? {
-    return r!;
-  } else {
-    error("incompatible trace");
+  if !trace.empty() {
+    auto r <- ValueEvent<Value>?(trace.popFront());
+    if r? {
+      return r!;
+    }
   }
+  error("incompatible trace");
 }

@@ -60,30 +60,32 @@ class ParticleFilter < ForwardSampler {
    */
   elapsed:Queue<Real>; 
 
-  function sample() -> (Model, Real) {
-    initialize();
-    if verbose && T > 0 {
-      stderr.print("steps:");
-    }
-    start();
-    reduce();
-    for auto t in 1..T {
-      if verbose {
-        stderr.print(" " + t);
+  fiber sample() -> (Model, Real) {
+    for auto n in 1..nsamples {
+      if verbose && T > 0 {
+        stderr.print("steps:");
       }
-      resample();
-      step();
+      initialize();
+      start();
       reduce();
-    }
-    finish();
-    if verbose {
-      if T > 0 {
-        stderr.print(", ");
+      for auto t in 1..T {
+        if verbose {
+          stderr.print(" " + t);
+        }
+        resample();
+        step();
+        reduce();
       }
-      stderr.print("log weight: " + sum(Z.walk()) + "\n");
+      finish();
+      if verbose {
+        if T > 0 {
+          stderr.print(", ");
+        }
+        stderr.print("log weight: " + sum(Z.walk()) + "\n");
+      }
+      finalize();
+      yield (clone<ForwardModel>(x'!), sum(Z.walk()));
     }
-    finalize();
-    return (clone<ForwardModel>(x'!), sum(Z.walk()));
   }
 
   /**
@@ -163,7 +165,7 @@ class ParticleFilter < ForwardSampler {
    * Resample particles.
    */
   function resample() {
-    if ess.back() <= trigger*N {
+    if isTriggered() {
       (a, o) <- global.resample(w);
       w <- vector(0.0, N);
     } else {
@@ -189,6 +191,13 @@ class ParticleFilter < ForwardSampler {
    */
   function finalize() {
     //
+  }
+  
+  /**
+   * Given the current state, should resampling be performed?
+   */
+  function isTriggered() -> Boolean {
+    return ess.back() <= trigger*N;
   }
 
   function read(buffer:Buffer) {

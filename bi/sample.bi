@@ -109,11 +109,11 @@ program sample(
   diagnosticBuffer.setArray();
   
   /* sample */
-  for auto n in 1..s!.nsamples {  
-    m1:Model?;
-    w1:Real;
-    (m1, w1) <- s!.sample();
-
+  m1:Model?;
+  w1:Real;
+  auto f <- s!.sample();
+  while f? {
+    (m1, w1) <- f!;
     if output? {
       auto buffer <- outputBuffer.push();
       buffer.set(m1!);

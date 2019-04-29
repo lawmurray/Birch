@@ -11,13 +11,12 @@ class ImportanceSampler < Sampler {
     this.archetype <- archetype;
   }
 
-  function sample() -> (Model, Real) {
+  fiber sample() -> (Model, Real) {
     assert archetype?;
-    auto x <- clone<Model>(archetype!);
-    auto w <- x.play();    
-    if verbose {
-      stderr.print("log weight: " + w + "\n");
+    for auto n in 1..nsamples {
+      auto x <- clone<Model>(archetype!);
+      auto w <- x.play();
+      yield (clone<Model>(x), w);
     }
-    return (x, w);
   }
 }
