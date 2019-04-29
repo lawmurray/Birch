@@ -31,25 +31,25 @@ void bi::TupleType::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::TupleType::dispatchDefinitely(const Type& o) const {
-  return o.definitely(*this);
+bool bi::TupleType::dispatchIsConvertible(const Type& o) const {
+  return o.isConvertible(*this);
 }
 
-bool bi::TupleType::definitely(const GenericType& o) const {
+bool bi::TupleType::isConvertible(const GenericType& o) const {
   assert(o.target);
-  return definitely(*o.target->type);
+  return isConvertible(*o.target->type);
 }
 
-bool bi::TupleType::definitely(const MemberType& o) const {
-  return definitely(*o.right);
+bool bi::TupleType::isConvertible(const MemberType& o) const {
+  return isConvertible(*o.right);
 }
 
-bool bi::TupleType::definitely(const OptionalType& o) const {
-  return definitely(*o.single);
+bool bi::TupleType::isConvertible(const OptionalType& o) const {
+  return isConvertible(*o.single);
 }
 
-bool bi::TupleType::definitely(const TupleType& o) const {
-  return single->definitely(*o.single);
+bool bi::TupleType::isConvertible(const TupleType& o) const {
+  return single->isConvertible(*o.single);
 }
 
 bi::Type* bi::TupleType::dispatchCommon(const Type& o) const {

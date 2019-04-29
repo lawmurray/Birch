@@ -39,26 +39,26 @@ const bi::Type* bi::FiberType::unwrap() const {
   return single;
 }
 
-bool bi::FiberType::dispatchDefinitely(const Type& o) const {
-  return o.definitely(*this);
+bool bi::FiberType::dispatchIsConvertible(const Type& o) const {
+  return o.isConvertible(*this);
 }
 
-bool bi::FiberType::definitely(const GenericType& o) const {
+bool bi::FiberType::isConvertible(const GenericType& o) const {
   assert(o.target);
-  return definitely(*o.target->type);
+  return isConvertible(*o.target->type);
 }
 
-bool bi::FiberType::definitely(const MemberType& o) const {
-  return definitely(*o.right);
+bool bi::FiberType::isConvertible(const MemberType& o) const {
+  return isConvertible(*o.right);
 }
 
-bool bi::FiberType::definitely(const FiberType& o) const {
+bool bi::FiberType::isConvertible(const FiberType& o) const {
   return single->equals(*o.single);
   // ^ C++ code generation cannot handle the ->definitely case
 }
 
-bool bi::FiberType::definitely(const OptionalType& o) const {
-  return definitely(*o.single);
+bool bi::FiberType::isConvertible(const OptionalType& o) const {
+  return isConvertible(*o.single);
 }
 
 bi::Type* bi::FiberType::dispatchCommon(const Type& o) const {

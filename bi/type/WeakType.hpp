@@ -38,14 +38,14 @@ public:
 
   virtual void resolveConstructor(Argumented* args);
 
-  using Type::definitely;
+  using Type::isConvertible;
   using Type::common;
 
-  virtual bool dispatchDefinitely(const Type& o) const;
-  virtual bool definitely(const GenericType& o) const;
-  virtual bool definitely(const MemberType& o) const;
-  virtual bool definitely(const OptionalType& o) const;
-  virtual bool definitely(const WeakType& o) const;
+  virtual bool dispatchIsConvertible(const Type& o) const;
+  virtual bool isConvertible(const GenericType& o) const;
+  virtual bool isConvertible(const MemberType& o) const;
+  virtual bool isConvertible(const OptionalType& o) const;
+  virtual bool isConvertible(const WeakType& o) const;
 
   virtual Type* dispatchCommon(const Type& o) const;
   virtual Type* common(const ClassType& o) const;

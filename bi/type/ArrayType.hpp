@@ -40,14 +40,14 @@ public:
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
-  using Type::definitely;
+  using Type::isConvertible;
   using Type::common;
 
-  virtual bool dispatchDefinitely(const Type& o) const;
-  virtual bool definitely(const ArrayType& o) const;
-  virtual bool definitely(const GenericType& o) const;
-  virtual bool definitely(const MemberType& o) const;
-  virtual bool definitely(const OptionalType& o) const;
+  virtual bool dispatchIsConvertible(const Type& o) const;
+  virtual bool isConvertible(const ArrayType& o) const;
+  virtual bool isConvertible(const GenericType& o) const;
+  virtual bool isConvertible(const MemberType& o) const;
+  virtual bool isConvertible(const OptionalType& o) const;
 
   virtual Type* dispatchCommon(const Type& o) const;
   virtual Type* common(const ArrayType& o) const;

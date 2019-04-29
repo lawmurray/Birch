@@ -10,11 +10,11 @@
 
 namespace bi {
 /**
- * Comparison of two objects using their definitely() function.
+ * Comparison of two objects using their isConvertible() function.
  */
-struct definitely {
+struct is_convertible {
   bool operator()(Type* o1, Type* o2) {
-    return o1->definitely(*o2);
+    return o1->isConvertible(*o2);
   }
 
   bool operator()(Unknown* o1, Unknown* o2) {
@@ -22,11 +22,11 @@ struct definitely {
   }
 
   bool operator()(Parameterised* o1, Parameterised* o2) {
-    return o1->params->type->definitely(*o2->params->type);
+    return o1->params->type->isConvertible(*o2->params->type);
   }
 
   bool operator()(Argumented* o1, Parameterised* o2) {
-    return o1->args->type->definitely(*o2->params->type);
+    return o1->args->type->isConvertible(*o2->params->type);
   }
 };
 }

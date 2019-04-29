@@ -30,8 +30,8 @@ void bi::UnknownType::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::UnknownType::dispatchDefinitely(const Type& o) const {
-  return o.definitely(*this);
+bool bi::UnknownType::dispatchIsConvertible(const Type& o) const {
+  return o.isConvertible(*this);
 }
 
 bi::Type* bi::UnknownType::dispatchCommon(const Type& o) const {

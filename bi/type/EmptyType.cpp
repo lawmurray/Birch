@@ -34,11 +34,11 @@ bool bi::EmptyType::isEmpty() const {
   return true;
 }
 
-bool bi::EmptyType::dispatchDefinitely(const Type& o) const {
-  return o.definitely(*this);
+bool bi::EmptyType::dispatchIsConvertible(const Type& o) const {
+  return o.isConvertible(*this);
 }
 
-bool bi::EmptyType::definitely(const EmptyType& o) const {
+bool bi::EmptyType::isConvertible(const EmptyType& o) const {
   return true;
 }
 

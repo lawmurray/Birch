@@ -32,26 +32,26 @@ void bi::FunctionType::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }
 
-bool bi::FunctionType::dispatchDefinitely(const Type& o) const {
-  return o.definitely(*this);
+bool bi::FunctionType::dispatchIsConvertible(const Type& o) const {
+  return o.isConvertible(*this);
 }
 
-bool bi::FunctionType::definitely(const GenericType& o) const {
+bool bi::FunctionType::isConvertible(const GenericType& o) const {
   assert(o.target);
-  return definitely(*o.target->type);
+  return isConvertible(*o.target->type);
 }
 
-bool bi::FunctionType::definitely(const MemberType& o) const {
-  return definitely(*o.right);
+bool bi::FunctionType::isConvertible(const MemberType& o) const {
+  return isConvertible(*o.right);
 }
 
-bool bi::FunctionType::definitely(const FunctionType& o) const {
-  return params->definitely(*o.params)
-      && returnType->definitely(*o.returnType);
+bool bi::FunctionType::isConvertible(const FunctionType& o) const {
+  return params->isConvertible(*o.params)
+      && returnType->isConvertible(*o.returnType);
 }
 
-bool bi::FunctionType::definitely(const OptionalType& o) const {
-  return definitely(*o.single);
+bool bi::FunctionType::isConvertible(const OptionalType& o) const {
+  return isConvertible(*o.single);
 }
 
 bi::Type* bi::FunctionType::dispatchCommon(const Type& o) const {

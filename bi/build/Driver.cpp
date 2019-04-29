@@ -976,10 +976,10 @@ void bi::Driver::configure() {
     }
     if (debug) {
       //@todo Consider a development build with these settings
-      //cflags << " -O0 -fno-inline -g";
-      //cxxflags << " -O0 -fno-inline -g";
-      cflags << " -Og -g";
-      cxxflags << " -Og -g";
+      cflags << " -O0 -fno-inline -g";
+      cxxflags << " -O0 -fno-inline -g";
+      //cflags << " -Og -g";
+      //cxxflags << " -Og -g";
     } else {
       cppflags << " -DNDEBUG";
       cflags << " -O3 -flto -g";

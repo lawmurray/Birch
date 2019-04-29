@@ -91,60 +91,60 @@ void bi::MemberType::resolveConstructor(Argumented* o) {
   right->resolveConstructor(o);
 }
 
-bool bi::MemberType::dispatchDefinitely(const Type& o) const {
-  return o.definitely(*this);
+bool bi::MemberType::dispatchIsConvertible(const Type& o) const {
+  return o.isConvertible(*this);
 }
 
-bool bi::MemberType::definitely(const ArrayType& o) const {
-  return right->definitely(o);
+bool bi::MemberType::isConvertible(const ArrayType& o) const {
+  return right->isConvertible(o);
 }
 
-bool bi::MemberType::definitely(const BasicType& o) const {
-  return right->definitely(o);
+bool bi::MemberType::isConvertible(const BasicType& o) const {
+  return right->isConvertible(o);
 }
 
-bool bi::MemberType::definitely(const ClassType& o) const {
-  return right->definitely(o);
+bool bi::MemberType::isConvertible(const ClassType& o) const {
+  return right->isConvertible(o);
 }
 
-bool bi::MemberType::definitely(const EmptyType& o) const {
-  return right->definitely(o);
+bool bi::MemberType::isConvertible(const EmptyType& o) const {
+  return right->isConvertible(o);
 }
 
-bool bi::MemberType::definitely(const FiberType& o) const {
-  return right->definitely(o);
+bool bi::MemberType::isConvertible(const FiberType& o) const {
+  return right->isConvertible(o);
 }
 
-bool bi::MemberType::definitely(const FunctionType& o) const {
-  return right->definitely(o);
+bool bi::MemberType::isConvertible(const FunctionType& o) const {
+  return right->isConvertible(o);
 }
 
-bool bi::MemberType::definitely(const GenericType& o) const {
-  return right->definitely(o);
+bool bi::MemberType::isConvertible(const GenericType& o) const {
+  return right->isConvertible(o);
 }
 
-bool bi::MemberType::definitely(const MemberType& o) const {
-  return right->definitely(o);
+bool bi::MemberType::isConvertible(const MemberType& o) const {
+  return right->isConvertible(o);
 }
 
-bool bi::MemberType::definitely(const OptionalType& o) const {
-  return right->definitely(o);
+bool bi::MemberType::isConvertible(const OptionalType& o) const {
+  return right->isConvertible(o);
 }
 
-bool bi::MemberType::definitely(const WeakType& o) const {
-  return right->definitely(o);
+bool bi::MemberType::isConvertible(const WeakType& o) const {
+  return right->isConvertible(o);
 }
 
-bool bi::MemberType::definitely(const SequenceType& o) const {
-  return right->definitely(o);
+bool bi::MemberType::isConvertible(const SequenceType& o) const {
+  return right->isConvertible(o);
 }
 
-bool bi::MemberType::definitely(const TupleType& o) const {
-  return right->definitely(o);
+bool bi::MemberType::isConvertible(const TupleType& o) const {
+  return right->isConvertible(o);
 }
 
-bool bi::MemberType::definitely(const TypeList& o) const {
-  return right->definitely(o);
+bool bi::MemberType::isConvertible(const TypeList& o) const {
+  return right->isConvertible(o);
 }
 
 bi::Type* bi::MemberType::dispatchCommon(const Type& o) const {

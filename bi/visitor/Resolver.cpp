@@ -98,7 +98,7 @@ bi::Expression* bi::Resolver::modify(UnaryCall* o) {
 
 bi::Expression* bi::Resolver::modify(Assign* o) {
   Modifier::modify(o);
-  if (o->right->type->definitely(*o->left->type)) {
+  if (o->right->type->isConvertible(*o->left->type)) {
     if (!o->left->isAssignable()) {
       throw NotAssignableException(o);
     }
@@ -259,8 +259,8 @@ bi::Expression* bi::Resolver::modify(LocalVariable* o) {
   for (auto iter : *o->brackets) {
     checkInteger(iter);
   }
-  if (!o->value->isEmpty() && !(o->value->type->definitely(*o->type) ||
-      o->value->type->definitely(*o->type->element()))) {
+  if (!o->value->isEmpty() && !(o->value->type->isConvertible(*o->type) ||
+      o->value->type->isConvertible(*o->type->element()))) {
     throw InitialValueException(o);
   }
   scopes.back()->add(o);
@@ -269,8 +269,8 @@ bi::Expression* bi::Resolver::modify(LocalVariable* o) {
 
 bi::Expression* bi::Resolver::modify(Parameter* o) {
   Modifier::modify(o);
-  if (!o->value->isEmpty() && !(o->value->type->definitely(*o->type) ||
-      o->value->type->definitely(*o->type->element()))) {
+  if (!o->value->isEmpty() && !(o->value->type->isConvertible(*o->type) ||
+      o->value->type->isConvertible(*o->type->element()))) {
     throw InitialValueException(o);
   }
   scopes.back()->add(o);
@@ -478,8 +478,8 @@ bi::Statement* bi::Resolver::modify(GlobalVariable* o) {
     if (o->needsConstruction()) {
       o->type->resolveConstructor(o);
     }
-    if (!o->value->isEmpty() && !(o->value->type->definitely(*o->type) ||
-        o->value->type->definitely(*o->type->element()))) {
+    if (!o->value->isEmpty() && !(o->value->type->isConvertible(*o->type) ||
+        o->value->type->isConvertible(*o->type->element()))) {
       throw InitialValueException(o);
     }
   }
@@ -514,8 +514,8 @@ bi::Statement* bi::Resolver::modify(MemberVariable* o) {
     if (o->needsConstruction()) {
       o->type->resolveConstructor(o);
     }
-    if (!o->value->isEmpty() && !(o->value->type->definitely(*o->type) ||
-        o->value->type->definitely(*o->type->element()))) {
+    if (!o->value->isEmpty() && !(o->value->type->isConvertible(*o->type) ||
+        o->value->type->isConvertible(*o->type->element()))) {
       throw InitialValueException(o);
     }
   }
@@ -852,7 +852,7 @@ bi::Statement* bi::Resolver::modify(Return* o) {
     if (!o->single->type->isEmpty()) {
       throw ReturnException(o);
     }
-  } else if (!o->single->type->definitely(*returnTypes.back())) {
+  } else if (!o->single->type->isConvertible(*returnTypes.back())) {
     throw ReturnTypeException(o, returnTypes.back());
   }
   return o;
@@ -864,7 +864,7 @@ bi::Statement* bi::Resolver::modify(Yield* o) {
     if (!o->single->type->isEmpty()) {
       throw YieldException(o);
     }
-  } else if (!o->single->type->definitely(*yieldTypes.back())) {
+  } else if (!o->single->type->isConvertible(*yieldTypes.back())) {
     throw YieldTypeException(o, yieldTypes.back());
   }
   return o;
@@ -1024,7 +1024,7 @@ bi::Type* bi::Resolver::lookup(UnknownType* o) {
 void bi::Resolver::checkBoolean(const Expression* o) {
   static BasicType type(new Name("Boolean"));
   scopes.front()->resolve(&type);
-  if (!o->type->definitely(type)) {
+  if (!o->type->isConvertible(type)) {
     throw ConditionException(o);
   }
 }
@@ -1032,7 +1032,7 @@ void bi::Resolver::checkBoolean(const Expression* o) {
 void bi::Resolver::checkInteger(const Expression* o) {
   static BasicType type(new Name("Integer"));
   scopes.front()->resolve(&type);
-  if (!o->type->definitely(type)) {
+  if (!o->type->isConvertible(type)) {
     throw IndexException(o);
   }
 }

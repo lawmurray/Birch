@@ -37,11 +37,11 @@ public:
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
-  using Type::definitely;
+  using Type::isConvertible;
   using Type::common;
 
-  virtual bool dispatchDefinitely(const Type& o) const;
-  virtual bool definitely(const BinaryType& o) const;
+  virtual bool dispatchIsConvertible(const Type& o) const;
+  virtual bool isConvertible(const BinaryType& o) const;
 
   virtual Type* dispatchCommon(const Type& o) const;
   virtual Type* common(const BinaryType& o) const;

@@ -64,27 +64,27 @@ const bi::Type* bi::BasicType::canonical() const {
   }
 }
 
-bool bi::BasicType::dispatchDefinitely(const Type& o) const {
-  return o.definitely(*this);
+bool bi::BasicType::dispatchIsConvertible(const Type& o) const {
+  return o.isConvertible(*this);
 }
 
-bool bi::BasicType::definitely(const GenericType& o) const {
+bool bi::BasicType::isConvertible(const GenericType& o) const {
   assert(o.target);
-  return definitely(*o.target->type);
+  return isConvertible(*o.target->type);
 }
 
-bool bi::BasicType::definitely(const MemberType& o) const {
-  return definitely(*o.right);
+bool bi::BasicType::isConvertible(const MemberType& o) const {
+  return isConvertible(*o.right);
 }
 
-bool bi::BasicType::definitely(const BasicType& o) const {
+bool bi::BasicType::isConvertible(const BasicType& o) const {
   assert(target);
   auto o1 = o.canonical();
   return target == o1->getBasic() || target->hasSuper(o1);
 }
 
-bool bi::BasicType::definitely(const OptionalType& o) const {
-  return definitely(*o.single);
+bool bi::BasicType::isConvertible(const OptionalType& o) const {
+  return isConvertible(*o.single);
 }
 
 bi::Type* bi::BasicType::dispatchCommon(const Type& o) const {

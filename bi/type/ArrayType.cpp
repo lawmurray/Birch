@@ -53,25 +53,25 @@ void bi::ArrayType::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }
 
-bool bi::ArrayType::dispatchDefinitely(const Type& o) const {
-  return o.definitely(*this);
+bool bi::ArrayType::dispatchIsConvertible(const Type& o) const {
+  return o.isConvertible(*this);
 }
 
-bool bi::ArrayType::definitely(const GenericType& o) const {
+bool bi::ArrayType::isConvertible(const GenericType& o) const {
   assert(o.target);
-  return definitely(*o.target->type);
+  return isConvertible(*o.target->type);
 }
 
-bool bi::ArrayType::definitely(const MemberType& o) const {
-  return definitely(*o.right);
+bool bi::ArrayType::isConvertible(const MemberType& o) const {
+  return isConvertible(*o.right);
 }
 
-bool bi::ArrayType::definitely(const ArrayType& o) const {
-  return single->definitely(*o.single) && depth() == o.depth();
+bool bi::ArrayType::isConvertible(const ArrayType& o) const {
+  return single->isConvertible(*o.single) && depth() == o.depth();
 }
 
-bool bi::ArrayType::definitely(const OptionalType& o) const {
-  return definitely(*o.single);
+bool bi::ArrayType::isConvertible(const OptionalType& o) const {
+  return isConvertible(*o.single);
 }
 
 bi::Type* bi::ArrayType::dispatchCommon(const Type& o) const {

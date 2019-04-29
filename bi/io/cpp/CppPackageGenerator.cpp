@@ -7,7 +7,7 @@
 #include "bi/io/cpp/CppClassGenerator.hpp"
 #include "bi/visitor/Gatherer.hpp"
 #include "bi/primitive/poset.hpp"
-#include "bi/primitive/definitely.hpp"
+#include "bi/primitive/is_convertible.hpp"
 #include "bi/build/misc.hpp"
 
 bi::CppPackageGenerator::CppPackageGenerator(std::ostream& base,
@@ -45,7 +45,7 @@ void bi::CppPackageGenerator::visit(const Package* o) {
   /* base classes must be defined before their derived classes, so these are
    * gathered and sorted first */
   allowConversions = false;  // sort by inheritance, forget conversions
-  poset<Type*,definitely> sorted;
+  poset<Type*,is_convertible> sorted;
   for (auto o : classes) {
     if (!o->isAlias()) {
       sorted.insert(new ClassType(o));

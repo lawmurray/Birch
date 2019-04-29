@@ -26,23 +26,23 @@ void bi::NilType::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::NilType::dispatchDefinitely(const Type& o) const {
-  return o.definitely(*this);
+bool bi::NilType::dispatchIsConvertible(const Type& o) const {
+  return o.isConvertible(*this);
 }
 
-bool bi::NilType::definitely(const NilType& o) const {
+bool bi::NilType::isConvertible(const NilType& o) const {
   return true;
 }
 
-bool bi::NilType::definitely(const OptionalType& o) const {
+bool bi::NilType::isConvertible(const OptionalType& o) const {
   return true;
 }
 
-bool bi::NilType::definitely(const WeakType& o) const {
+bool bi::NilType::isConvertible(const WeakType& o) const {
   return true;
 }
 
-bool bi::NilType::definitely(const SequenceType& o) const {
+bool bi::NilType::isConvertible(const SequenceType& o) const {
   return true;
 }
 

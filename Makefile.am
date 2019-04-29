@@ -307,8 +307,8 @@ noinst_HEADERS = \
   bi/io/hpp_ostream.hpp \
   bi/io/indentable_ostream.hpp \
   bi/io/md_ostream.hpp \
-  bi/primitive/definitely.hpp \
   bi/primitive/encode.hpp \
+  bi/primitive/is_convertible.hpp \
   bi/primitive/poset.hpp \
   bi/statement/all.hpp \
   bi/statement/AssignmentOperator.hpp \

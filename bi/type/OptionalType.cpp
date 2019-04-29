@@ -43,25 +43,25 @@ bi::Type* bi::OptionalType::unwrap() {
   return single;
 }
 
-bool bi::OptionalType::dispatchDefinitely(const Type& o) const {
-  return o.definitely(*this);
+bool bi::OptionalType::dispatchIsConvertible(const Type& o) const {
+  return o.isConvertible(*this);
 }
 
-bool bi::OptionalType::definitely(const GenericType& o) const {
+bool bi::OptionalType::isConvertible(const GenericType& o) const {
   assert(o.target);
-  return definitely(*o.target->type);
+  return isConvertible(*o.target->type);
 }
 
-bool bi::OptionalType::definitely(const MemberType& o) const {
-  return definitely(*o.right);
+bool bi::OptionalType::isConvertible(const MemberType& o) const {
+  return isConvertible(*o.right);
 }
 
-bool bi::OptionalType::definitely(const OptionalType& o) const {
-  return single->definitely(*o.single);
+bool bi::OptionalType::isConvertible(const OptionalType& o) const {
+  return single->isConvertible(*o.single);
 }
 
-bool bi::OptionalType::definitely(const WeakType& o) const {
-  return single->definitely(*o.single);
+bool bi::OptionalType::isConvertible(const WeakType& o) const {
+  return single->isConvertible(*o.single);
 }
 
 bi::Type* bi::OptionalType::dispatchCommon(const Type& o) const {

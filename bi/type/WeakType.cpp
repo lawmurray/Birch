@@ -45,30 +45,30 @@ void bi::WeakType::resolveConstructor(Argumented* o) {
   }
 }
 
-bool bi::WeakType::dispatchDefinitely(const Type& o) const {
-  return o.definitely(*this);
+bool bi::WeakType::dispatchIsConvertible(const Type& o) const {
+  return o.isConvertible(*this);
 }
 
-bool bi::WeakType::definitely(const GenericType& o) const {
+bool bi::WeakType::isConvertible(const GenericType& o) const {
   assert(o.target);
-  return definitely(*o.target->type);
+  return isConvertible(*o.target->type);
 }
 
-bool bi::WeakType::definitely(const MemberType& o) const {
-  return definitely(*o.right);
+bool bi::WeakType::isConvertible(const MemberType& o) const {
+  return isConvertible(*o.right);
 }
 
-bool bi::WeakType::definitely(const OptionalType& o) const {
+bool bi::WeakType::isConvertible(const OptionalType& o) const {
   if (o.single->isWeak()) {
-    return definitely(*o.single);
+    return isConvertible(*o.single);
   } else {
     /* a weak pointer can assign to an optional of a shared pointer */
-    return o.single->definitely(*o.single);
+    return o.single->isConvertible(*o.single);
   }
 }
 
-bool bi::WeakType::definitely(const WeakType& o) const {
-  return single->definitely(*o.single);
+bool bi::WeakType::isConvertible(const WeakType& o) const {
+  return single->isConvertible(*o.single);
 }
 
 bi::Type* bi::WeakType::dispatchCommon(const Type& o) const {

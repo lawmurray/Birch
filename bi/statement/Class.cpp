@@ -59,7 +59,7 @@ void bi::Class::addConversion(const Type* o) {
 
 bool bi::Class::hasConversion(const Type* o) const {
   return std::any_of(conversions.begin(), conversions.end(),
-      [&](auto x) {return x->definitely(*o);}) ||
+      [&](auto x) {return x->isConvertible(*o);}) ||
   std::any_of(supers.begin(), supers.end(),
       [&](auto x) {return x->hasConversion(o);});
 }
@@ -74,7 +74,7 @@ void bi::Class::addAssignment(const Type* o) {
 
 bool bi::Class::hasAssignment(const Type* o) const {
   return std::any_of(assignments.begin(), assignments.end(),
-      [&](auto x) {return o->definitely(*x);}) ||
+      [&](auto x) {return o->isConvertible(*x);}) ||
   std::any_of(supers.begin(), supers.end(),
       [&](auto x) {return x->hasAssignment(o);});
 }

@@ -171,74 +171,78 @@ bi::TypeConstIterator bi::Type::end() const {
 }
 
 bool bi::Type::equals(const Type& o) const {
-  return definitely(o) && o.definitely(*this);
+  return isConvertible(o) && o.isConvertible(*this);
 }
 
-bool bi::Type::definitely(const Type& o) const {
-  return o.dispatchDefinitely(*this);
+bool bi::Type::isAssignable(const Type& o) const {
+  return o.isConvertible(*this);
 }
 
-bool bi::Type::definitely(const ArrayType& o) const {
+bool bi::Type::isConvertible(const Type& o) const {
+  return o.dispatchIsConvertible(*this);
+}
+
+bool bi::Type::isConvertible(const ArrayType& o) const {
   return false;
 }
 
-bool bi::Type::definitely(const BasicType& o) const {
+bool bi::Type::isConvertible(const BasicType& o) const {
   return false;
 }
 
-bool bi::Type::definitely(const BinaryType& o) const {
+bool bi::Type::isConvertible(const BinaryType& o) const {
   return false;
 }
 
-bool bi::Type::definitely(const ClassType& o) const {
+bool bi::Type::isConvertible(const ClassType& o) const {
   return false;
 }
 
-bool bi::Type::definitely(const EmptyType& o) const {
+bool bi::Type::isConvertible(const EmptyType& o) const {
   return false;
 }
 
-bool bi::Type::definitely(const FiberType& o) const {
+bool bi::Type::isConvertible(const FiberType& o) const {
   return false;
 }
 
-bool bi::Type::definitely(const FunctionType& o) const {
+bool bi::Type::isConvertible(const FunctionType& o) const {
   return false;
 }
 
-bool bi::Type::definitely(const GenericType& o) const {
+bool bi::Type::isConvertible(const GenericType& o) const {
   return false;
 }
 
-bool bi::Type::definitely(const MemberType& o) const {
+bool bi::Type::isConvertible(const MemberType& o) const {
   return false;
 }
 
-bool bi::Type::definitely(const NilType& o) const {
+bool bi::Type::isConvertible(const NilType& o) const {
   return false;
 }
 
-bool bi::Type::definitely(const OptionalType& o) const {
+bool bi::Type::isConvertible(const OptionalType& o) const {
   return false;
 }
 
-bool bi::Type::definitely(const WeakType& o) const {
+bool bi::Type::isConvertible(const WeakType& o) const {
   return false;
 }
 
-bool bi::Type::definitely(const SequenceType& o) const {
+bool bi::Type::isConvertible(const SequenceType& o) const {
   return false;
 }
 
-bool bi::Type::definitely(const TupleType& o) const {
+bool bi::Type::isConvertible(const TupleType& o) const {
   return false;
 }
 
-bool bi::Type::definitely(const UnknownType& o) const {
+bool bi::Type::isConvertible(const UnknownType& o) const {
   return false;
 }
 
-bool bi::Type::definitely(const TypeList& o) const {
+bool bi::Type::isConvertible(const TypeList& o) const {
   return false;
 }
 

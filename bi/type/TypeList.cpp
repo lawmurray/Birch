@@ -38,12 +38,12 @@ void bi::TypeList::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::TypeList::dispatchDefinitely(const Type& o) const {
-  return o.definitely(*this);
+bool bi::TypeList::dispatchIsConvertible(const Type& o) const {
+  return o.isConvertible(*this);
 }
 
-bool bi::TypeList::definitely(const TypeList& o) const {
-  return head->definitely(*o.head) && tail->definitely(*o.tail);
+bool bi::TypeList::isConvertible(const TypeList& o) const {
+  return head->isConvertible(*o.head) && tail->isConvertible(*o.tail);
 }
 
 bi::Type* bi::TypeList::dispatchCommon(const Type& o) const {

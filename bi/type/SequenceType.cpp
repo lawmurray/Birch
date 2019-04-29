@@ -47,30 +47,30 @@ void bi::SequenceType::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::SequenceType::dispatchDefinitely(const Type& o) const {
-  return o.definitely(*this);
+bool bi::SequenceType::dispatchIsConvertible(const Type& o) const {
+  return o.isConvertible(*this);
 }
 
-bool bi::SequenceType::definitely(const ArrayType& o) const {
-  return single->element()->definitely(*o.single->element())
+bool bi::SequenceType::isConvertible(const ArrayType& o) const {
+  return single->element()->isConvertible(*o.single->element())
       && depth() == o.depth();
 }
 
-bool bi::SequenceType::definitely(const GenericType& o) const {
+bool bi::SequenceType::isConvertible(const GenericType& o) const {
   assert(o.target);
-  return definitely(*o.target->type);
+  return isConvertible(*o.target->type);
 }
 
-bool bi::SequenceType::definitely(const MemberType& o) const {
-  return definitely(*o.right);
+bool bi::SequenceType::isConvertible(const MemberType& o) const {
+  return isConvertible(*o.right);
 }
 
-bool bi::SequenceType::definitely(const OptionalType& o) const {
-  return definitely(*o.single);
+bool bi::SequenceType::isConvertible(const OptionalType& o) const {
+  return isConvertible(*o.single);
 }
 
-bool bi::SequenceType::definitely(const SequenceType& o) const {
-  return single->definitely(*o.single);
+bool bi::SequenceType::isConvertible(const SequenceType& o) const {
+  return single->isConvertible(*o.single);
 }
 
 bi::Type* bi::SequenceType::dispatchCommon(const Type& o) const {

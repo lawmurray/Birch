@@ -39,12 +39,12 @@ void bi::BinaryType::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::BinaryType::dispatchDefinitely(const Type& o) const {
-  return o.definitely(*this);
+bool bi::BinaryType::dispatchIsConvertible(const Type& o) const {
+  return o.isConvertible(*this);
 }
 
-bool bi::BinaryType::definitely(const BinaryType& o) const {
-  return left->definitely(*o.left) && right->definitely(*o.right);
+bool bi::BinaryType::isConvertible(const BinaryType& o) const {
+  return left->isConvertible(*o.left) && right->isConvertible(*o.right);
 }
 
 bi::Type* bi::BinaryType::dispatchCommon(const Type& o) const {

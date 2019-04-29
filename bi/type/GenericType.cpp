@@ -113,73 +113,73 @@ void bi::GenericType::resolveConstructor(Argumented* o) {
   target->type->resolveConstructor(o);
 }
 
-bool bi::GenericType::dispatchDefinitely(const Type& o) const {
-  return o.definitely(*this);
+bool bi::GenericType::dispatchIsConvertible(const Type& o) const {
+  return o.isConvertible(*this);
 }
 
-bool bi::GenericType::definitely(const ArrayType& o) const {
+bool bi::GenericType::isConvertible(const ArrayType& o) const {
   assert(target);
-  return target->type->definitely(o);
+  return target->type->isConvertible(o);
 }
 
-bool bi::GenericType::definitely(const BasicType& o) const {
+bool bi::GenericType::isConvertible(const BasicType& o) const {
   assert(target);
-  return target->type->definitely(o);
+  return target->type->isConvertible(o);
 }
 
-bool bi::GenericType::definitely(const ClassType& o) const {
+bool bi::GenericType::isConvertible(const ClassType& o) const {
   assert(target);
-  return target->type->definitely(o);
+  return target->type->isConvertible(o);
 }
 
-bool bi::GenericType::definitely(const EmptyType& o) const {
+bool bi::GenericType::isConvertible(const EmptyType& o) const {
   assert(target);
-  return target->type->definitely(o);
+  return target->type->isConvertible(o);
 }
 
-bool bi::GenericType::definitely(const FiberType& o) const {
+bool bi::GenericType::isConvertible(const FiberType& o) const {
   assert(target);
-  return target->type->definitely(o);
+  return target->type->isConvertible(o);
 }
 
-bool bi::GenericType::definitely(const FunctionType& o) const {
+bool bi::GenericType::isConvertible(const FunctionType& o) const {
   assert(target);
-  return target->type->definitely(o);
+  return target->type->isConvertible(o);
 }
 
-bool bi::GenericType::definitely(const GenericType& o) const {
+bool bi::GenericType::isConvertible(const GenericType& o) const {
   assert(target);
-  return target->type->definitely(o);
+  return target->type->isConvertible(o);
 }
 
-bool bi::GenericType::definitely(const MemberType& o) const {
+bool bi::GenericType::isConvertible(const MemberType& o) const {
   assert(target);
-  return target->type->definitely(o);
+  return target->type->isConvertible(o);
 }
 
-bool bi::GenericType::definitely(const OptionalType& o) const {
+bool bi::GenericType::isConvertible(const OptionalType& o) const {
   assert(target);
-  return target->type->definitely(o);
+  return target->type->isConvertible(o);
 }
 
-bool bi::GenericType::definitely(const WeakType& o) const {
+bool bi::GenericType::isConvertible(const WeakType& o) const {
   assert(target);
-  return target->type->definitely(o);
+  return target->type->isConvertible(o);
 }
 
-bool bi::GenericType::definitely(const SequenceType& o) const {
+bool bi::GenericType::isConvertible(const SequenceType& o) const {
   assert(target);
-  return target->type->definitely(o);
+  return target->type->isConvertible(o);
 }
 
-bool bi::GenericType::definitely(const TupleType& o) const {
+bool bi::GenericType::isConvertible(const TupleType& o) const {
   assert(target);
-  return target->type->definitely(o);
+  return target->type->isConvertible(o);
 }
 
-bool bi::GenericType::definitely(const TypeList& o) const {
+bool bi::GenericType::isConvertible(const TypeList& o) const {
   assert(target);
-  return target->type->definitely(o);
+  return target->type->isConvertible(o);
 }
 
 bi::Type* bi::GenericType::dispatchCommon(const Type& o) const {

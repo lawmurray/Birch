@@ -35,7 +35,7 @@ bi::FunctionType* bi::OverloadedIdentifier<ObjectType>::resolve(Argumented* o) {
      * type conversion; the use of a global variable is a hack */
     allowConversions = false;
     std::set<ObjectType*> preferredMatches;
-    definitely compare;
+    is_convertible compare;
     for (auto match : matches) {
       if (compare(o, match)) {
         preferredMatches.insert(match);

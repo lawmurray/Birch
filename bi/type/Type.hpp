@@ -230,27 +230,32 @@ public:
    */
   virtual bool equals(const Type& o) const;
 
+  /**
+   * Is this type be assignable from another?
+   */
+  virtual bool isAssignable(const Type& o) const;
+
   /*
    * Double-dispatch partial order comparisons.
    */
-  virtual bool definitely(const Type& o) const;
-  virtual bool dispatchDefinitely(const Type& o) const = 0;
-  virtual bool definitely(const ArrayType& o) const;
-  virtual bool definitely(const BasicType& o) const;
-  virtual bool definitely(const BinaryType& o) const;
-  virtual bool definitely(const ClassType& o) const;
-  virtual bool definitely(const EmptyType& o) const;
-  virtual bool definitely(const FiberType& o) const;
-  virtual bool definitely(const FunctionType& o) const;
-  virtual bool definitely(const GenericType& o) const;
-  virtual bool definitely(const MemberType& o) const;
-  virtual bool definitely(const NilType& o) const;
-  virtual bool definitely(const OptionalType& o) const;
-  virtual bool definitely(const WeakType& o) const;
-  virtual bool definitely(const SequenceType& o) const;
-  virtual bool definitely(const TupleType& o) const;
-  virtual bool definitely(const UnknownType& o) const;
-  virtual bool definitely(const TypeList& o) const;
+  virtual bool isConvertible(const Type& o) const;
+  virtual bool dispatchIsConvertible(const Type& o) const = 0;
+  virtual bool isConvertible(const ArrayType& o) const;
+  virtual bool isConvertible(const BasicType& o) const;
+  virtual bool isConvertible(const BinaryType& o) const;
+  virtual bool isConvertible(const ClassType& o) const;
+  virtual bool isConvertible(const EmptyType& o) const;
+  virtual bool isConvertible(const FiberType& o) const;
+  virtual bool isConvertible(const FunctionType& o) const;
+  virtual bool isConvertible(const GenericType& o) const;
+  virtual bool isConvertible(const MemberType& o) const;
+  virtual bool isConvertible(const NilType& o) const;
+  virtual bool isConvertible(const OptionalType& o) const;
+  virtual bool isConvertible(const WeakType& o) const;
+  virtual bool isConvertible(const SequenceType& o) const;
+  virtual bool isConvertible(const TupleType& o) const;
+  virtual bool isConvertible(const UnknownType& o) const;
+  virtual bool isConvertible(const TypeList& o) const;
 
   /*
    * Double-dispatch common type reductions.

@@ -32,11 +32,11 @@ public:
   virtual bool isValue() const;
   virtual bool isEmpty() const;
 
-  using Type::definitely;
+  using Type::isConvertible;
   using Type::common;
 
-  virtual bool dispatchDefinitely(const Type& o) const;
-  virtual bool definitely(const EmptyType& o) const;
+  virtual bool dispatchIsConvertible(const Type& o) const;
+  virtual bool isConvertible(const EmptyType& o) const;
 
   virtual Type* dispatchCommon(const Type& o) const;
   virtual Type* common(const EmptyType& o) const;

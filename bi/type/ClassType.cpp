@@ -68,72 +68,72 @@ const bi::Type* bi::ClassType::canonical() const {
 
 void bi::ClassType::resolveConstructor(Argumented* o) {
   assert(target);
-  bi::definitely compare;
+  bi::is_convertible compare;
   if (!compare(o, target)) {
     throw ConstructorException(o, target);
   }
 }
 
-bool bi::ClassType::dispatchDefinitely(const Type& o) const {
-  return o.definitely(*this);
+bool bi::ClassType::dispatchIsConvertible(const Type& o) const {
+  return o.isConvertible(*this);
 }
 
-bool bi::ClassType::definitely(const GenericType& o) const {
+bool bi::ClassType::isConvertible(const GenericType& o) const {
   assert(o.target);
-  return definitely(*o.target->type);
+  return isConvertible(*o.target->type);
 }
 
-bool bi::ClassType::definitely(const MemberType& o) const {
-  return definitely(*o.right);
+bool bi::ClassType::isConvertible(const MemberType& o) const {
+  return isConvertible(*o.right);
 }
 
-bool bi::ClassType::definitely(const ArrayType& o) const {
+bool bi::ClassType::isConvertible(const ArrayType& o) const {
   assert(target);
   return (allowConversions && target->hasConversion(&o)) ||
-      target->base->definitely(o);
+      target->base->isConvertible(o);
 }
 
-bool bi::ClassType::definitely(const BasicType& o) const {
+bool bi::ClassType::isConvertible(const BasicType& o) const {
   assert(target);
   return (allowConversions && target->hasConversion(&o)) ||
-      target->base->definitely(o);
+      target->base->isConvertible(o);
 }
 
-bool bi::ClassType::definitely(const ClassType& o) const {
+bool bi::ClassType::isConvertible(const ClassType& o) const {
   assert(target);
   auto o1 = o.canonical();
   return target == o1->getClass() || target->hasSuper(o1)
       || (allowConversions && target->hasConversion(&o));
 }
 
-bool bi::ClassType::definitely(const FiberType& o) const {
+bool bi::ClassType::isConvertible(const FiberType& o) const {
   assert(target);
   return (allowConversions && target->hasConversion(&o)) ||
-      target->base->definitely(o);
+      target->base->isConvertible(o);
 }
 
-bool bi::ClassType::definitely(const FunctionType& o) const {
+bool bi::ClassType::isConvertible(const FunctionType& o) const {
   assert(target);
   return (allowConversions && target->hasConversion(&o)) ||
-      target->base->definitely(o);
+      target->base->isConvertible(o);
 }
 
-bool bi::ClassType::definitely(const OptionalType& o) const {
+bool bi::ClassType::isConvertible(const OptionalType& o) const {
   assert(target);
-  return definitely(*o.single) || (allowConversions &&
-      target->hasConversion(&o)) || target->base->definitely(o);
+  return isConvertible(*o.single) || (allowConversions &&
+      target->hasConversion(&o)) || target->base->isConvertible(o);
 }
 
-bool bi::ClassType::definitely(const TupleType& o) const {
+bool bi::ClassType::isConvertible(const TupleType& o) const {
   assert(target);
   return (allowConversions && target->hasConversion(&o)) ||
-      target->base->definitely(o);
+      target->base->isConvertible(o);
 }
 
-bool bi::ClassType::definitely(const WeakType& o) const {
+bool bi::ClassType::isConvertible(const WeakType& o) const {
   assert(target);
-  return definitely(*o.single) || (allowConversions &&
-      target->hasConversion(&o)) || target->base->definitely(o);
+  return isConvertible(*o.single) || (allowConversions &&
+      target->hasConversion(&o)) || target->base->isConvertible(o);
 }
 
 bi::Type* bi::ClassType::dispatchCommon(const Type& o) const {
@@ -151,7 +151,7 @@ bi::Type* bi::ClassType::common(const MemberType& o) const {
 
 bi::Type* bi::ClassType::common(const ArrayType& o) const {
   assert(target);
-  if (definitely(o)) {
+  if (isConvertible(o)) {
     return o.common(o);
   } else {
     return nullptr;
@@ -160,7 +160,7 @@ bi::Type* bi::ClassType::common(const ArrayType& o) const {
 
 bi::Type* bi::ClassType::common(const BasicType& o) const {
   assert(target);
-  if (definitely(o)) {
+  if (isConvertible(o)) {
     return o.common(o);
   } else {
     return nullptr;
@@ -176,7 +176,7 @@ bi::Type* bi::ClassType::common(const ClassType& o) const {
     return new ClassType(o.target);
   } else if (o.target->hasSuper(this)) {
     return new ClassType(target);
-  } else if (definitely(o)) {
+  } else if (isConvertible(o)) {
     return o.common(o);
   } else {
     return nullptr;
@@ -185,7 +185,7 @@ bi::Type* bi::ClassType::common(const ClassType& o) const {
 
 bi::Type* bi::ClassType::common(const FiberType& o) const {
   assert(target);
-  if (definitely(o)) {
+  if (isConvertible(o)) {
     return o.common(o);
   } else {
     return nullptr;
@@ -194,7 +194,7 @@ bi::Type* bi::ClassType::common(const FiberType& o) const {
 
 bi::Type* bi::ClassType::common(const FunctionType& o) const {
   assert(target);
-  if (definitely(o)) {
+  if (isConvertible(o)) {
     return o.common(o);
   } else {
     return nullptr;
@@ -205,7 +205,7 @@ bi::Type* bi::ClassType::common(const OptionalType& o) const {
   auto single1 = common(*o.single);
   if (single1) {
     return new OptionalType(single1);
-  } else if (definitely(o)) {
+  } else if (isConvertible(o)) {
     return o.common(o);
   } else {
     return nullptr;
@@ -214,7 +214,7 @@ bi::Type* bi::ClassType::common(const OptionalType& o) const {
 
 bi::Type* bi::ClassType::common(const TupleType& o) const {
   assert(target);
-  if (definitely(o)) {
+  if (isConvertible(o)) {
     return o.common(o);
   } else {
     return nullptr;
@@ -225,7 +225,7 @@ bi::Type* bi::ClassType::common(const WeakType& o) const {
   auto single1 = common(*o.single);
   if (single1) {
     return new WeakType(single1);
-  } else if (definitely(o)) {
+  } else if (isConvertible(o)) {
     return o.common(o);
   } else {
     return nullptr;

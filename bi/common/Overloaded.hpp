@@ -6,7 +6,7 @@
 #include "bi/expression/Expression.hpp"
 #include "bi/common/Annotated.hpp"
 #include "bi/primitive/poset.hpp"
-#include "bi/primitive/definitely.hpp"
+#include "bi/primitive/is_convertible.hpp"
 
 namespace bi {
 /**
@@ -73,6 +73,6 @@ public:
   /**
    * Overloads.
    */
-  poset<ObjectType*,definitely> overloads;
+  poset<ObjectType*,is_convertible> overloads;
 };
 }
