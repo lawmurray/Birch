@@ -75,6 +75,17 @@ class AliveParticleFilter < ParticleFilter {
     this.Z.pushBack(Z + log(N) - log(P - 1));
   }
 
+  function resample() {
+    /* just compute ancestors and offspring, don't copy */
+    if isTriggered() {
+      (a, o) <- global.resample(w);
+      w <- vector(0.0, N);
+    } else {
+      a <- iota(1, N);
+      o <- vector(1, N);
+    }
+  }
+
   function write(buffer:Buffer) {
     super.write(buffer);
     buffer.set("propagations", P);

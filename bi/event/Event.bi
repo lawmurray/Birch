@@ -80,6 +80,13 @@ class Event {
   }
 
   /**
+   * Act as appropriate for `PROPOSE_IMMEDIATE` mode.
+   */
+  function proposeImmediate(trace:Queue<Event>) -> Real {
+    assert false;
+  }
+
+  /**
    * Act as appropriate for `DOWNDATE_IMMEDIATE` mode.
    */
   function downdateImmediate(trace:Queue<Event>) -> Real {

@@ -208,6 +208,7 @@
       "bi/sampler/ImportanceSampler.bi",
       "bi/sampler/ParticleFilter.bi",
       "bi/sampler/ParticleGibbs.bi",
+      "bi/sampler/ParticleGibbsWithAncestorSampling.bi",
       "bi/sampler/RandomAccessSampler.bi",
       "bi/sampler/RaoBlackwellizedParticleFilter.bi",
       "bi/sampler/Sampler.bi",

@@ -54,13 +54,21 @@ function multinomial_resample(w:Real[_]) -> (Integer[_], Integer[_]) {
 /**
  * Sample a conditional ancestry vector for a log-weight vector using
  * multinomial resampling.
+ *
+ * - w: Log-weight vector.
+ * - b: Index of the conditioned particle.
+ *
+ * Returns: a tuple giving the ancestor vector, offspring vector, and new
+ * index of the conditioned particle.
  */
-function multinomial_conditional_resample(w:Real[_]) -> (Integer[_], Integer[_]) {
+function multinomial_conditional_resample(w:Real[_], b:Integer) ->
+    (Integer[_], Integer[_], Integer) {
   auto N <- length(w);
   auto o <- simulate_multinomial(N - 1, norm_exp(w));
-  o[N] <- o[N] + 1;
+  o[b] <- o[b] + 1;
   auto a <- offspring_to_ancestors(o);
-  return (a, o);
+  auto O <- exclusive_scan_sum(o);
+  return (a, o, O[b] + 1);
 }
 
 /**

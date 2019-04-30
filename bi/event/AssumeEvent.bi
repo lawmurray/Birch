@@ -36,7 +36,9 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     } else {
       v <- p.simulate();
     }
-    p.update(v.value());
+    if w > -inf {
+      p.update(v.value());
+    }
     p.detach();
     return w;
   }
@@ -45,24 +47,16 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     auto w <- 0.0;
     if v.hasValue() {
       w <- p.observe(v.value());
-      p.update(v.value());
+      if w > -inf {
+        p.update(v.value());
+      }
       p.detach();
     } else {
       v.assume(p);
     }
     return w;
   }
-  
-  function skipImmediate(trace:Queue<Event>) -> Real {
-    coerce<Value>(trace);
-    return playImmediate();
-  }
-
-  function skipDelay(trace:Queue<Event>) -> Real {
-    coerce<Value>(trace);
-    return playDelay();
-  }
-  
+    
   function replayImmediate(trace:Queue<Event>) -> Real {
     auto w <- 0.0;
     auto evt <- coerce<Value>(trace);
@@ -72,7 +66,9 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     } else {
       v <- evt.value();
     }
-    p.update(evt.value());
+    if w > -inf {
+      p.update(evt.value());
+    }
     p.detach();
     return w;
   }
@@ -83,7 +79,9 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     if v.hasValue() {
       assert v.value() == evt.value();
       w <- p.observe(evt.value());
-      p.update(evt.value());
+      if w > -inf {
+        p.update(evt.value());
+      }
       p.detach();
     } else {
       if evt.hasValue() {
@@ -93,6 +91,43 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
       }
     }
     return w;
+  }
+  
+  function proposeImmediate(trace:Queue<Event>) -> Real {
+    auto w <- 0.0;
+    auto evt <- coerce<Value>(trace);
+    if v.hasValue() {
+      assert v.value() == evt.value();
+      w <- p.observe(v.value());
+      if w > -inf {
+        p.update(v.value());
+      }
+    } else {
+      v <- evt.value();
+      w <- p.observe(v.value());
+      if w > -inf {
+        p.update(v.value());
+      } else {
+        /* hack: in this case the proposal is outside of the support of the 
+         * distribution; this can cause later problems in the program (e.g.
+         * invalid parameters to subsequent distributions), so simulate
+         * something valid to replace this with, but the weight remains
+         * -inf */
+        v <- p.simulate();
+      }
+    }
+    p.detach();
+    return w;
+  }
+
+  function skipImmediate(trace:Queue<Event>) -> Real {
+    coerce<Value>(trace);
+    return playImmediate();
+  }
+
+  function skipDelay(trace:Queue<Event>) -> Real {
+    coerce<Value>(trace);
+    return playDelay();
   }
 
   function downdateImmediate(trace:Queue<Event>) -> Real {
@@ -104,7 +139,9 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     } else {
       v <- evt.value();
     }
-    p.downdate(evt.value());
+    if w > -inf {
+      p.downdate(evt.value());
+    }
     p.detach();
     return w;
   }
@@ -115,7 +152,9 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     if v.hasValue() {
       assert v.value() == evt.value();
       w <- p.observe(evt.value());
-      p.downdate(evt.value());
+      if w > -inf {
+        p.downdate(evt.value());
+      }
       p.detach();
     } else {
       if evt.hasValue() {

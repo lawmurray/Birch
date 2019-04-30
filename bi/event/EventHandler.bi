@@ -2,10 +2,11 @@ PLAY_IMMEDIATE:Integer8 <- Integer8(1);
 PLAY_DELAY:Integer8 <- Integer8(2);
 REPLAY_IMMEDIATE:Integer8 <- Integer8(3);
 REPLAY_DELAY:Integer8 <- Integer8(4);
-SKIP_IMMEDIATE:Integer8 <- Integer8(5);
-SKIP_DELAY:Integer8 <- Integer8(6);
-DOWNDATE_IMMEDIATE:Integer8 <- Integer8(7);
-DOWNDATE_DELAY:Integer8 <- Integer8(8);
+PROPOSE_IMMEDIATE:Integer8 <- Integer8(5);
+SKIP_IMMEDIATE:Integer8 <- Integer8(6);
+SKIP_DELAY:Integer8 <- Integer8(7);
+DOWNDATE_IMMEDIATE:Integer8 <- Integer8(8);
+DOWNDATE_DELAY:Integer8 <- Integer8(9);
 
 /**
  * Event handler.
@@ -74,6 +75,8 @@ final class EventHandler {
       w <- evt.replayImmediate(trace);
     } else if mode == REPLAY_DELAY {
       w <- evt.replayDelay(trace);
+    } else if mode == PROPOSE_IMMEDIATE {
+      w <- evt.proposeImmediate(trace);
     } else if mode == SKIP_IMMEDIATE {
       w <- evt.skipImmediate(trace);
     } else if mode == SKIP_DELAY {

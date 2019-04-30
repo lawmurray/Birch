@@ -32,18 +32,35 @@ final class SimulateEvent<Value>(p:Distribution<Value>) <
     v <- p.value();
     return 0.0;
   }
-  
-  function skipImmediate(trace:Queue<Event>) -> Real {
-    coerce<Value>(trace);
-    return playImmediate();
-  }
-  
+    
   function replayImmediate(trace:Queue<Event>) -> Real {
     auto evt <- coerce<Value>(trace);
     v <- evt.value();
     p.update(v!);
     p.detach();
     return 0.0;
+  }
+
+  function proposeImmediate(trace:Queue<Event>) -> Real {
+    auto evt <- coerce<Value>(trace);
+    v <- evt.value();
+    auto w <- p.observe(v!);
+    if w > -inf {
+      p.update(v!);
+    } else {
+      /* hack: in this case the proposal is outside of the support of the 
+       * distribution; this can cause later problems in the program (e.g.
+       * invalid parameters to subsequent distributions), so simulate
+       * something valid to replace this with, but the weight remains -inf */
+      v <- p.simulate();
+    }
+    p.detach();
+    return w;
+  }
+
+  function skipImmediate(trace:Queue<Event>) -> Real {
+    coerce<Value>(trace);
+    return playImmediate();
   }
 
   function downdateImmediate(trace:Queue<Event>) -> Real {

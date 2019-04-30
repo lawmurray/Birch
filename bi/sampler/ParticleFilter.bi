@@ -122,13 +122,7 @@ class ParticleFilter < ForwardSampler {
    * Step particles.
    */
   function step() {
-    auto x0 <- x;
     parallel for auto n in 1..N {
-      if o[a[n]] == 1 {
-        x[n] <- x0[a[n]];  // avoid the clone overhead
-      } else {
-        x[n] <- clone<ForwardModel>(x0[a[n]]);
-      }
       w[n] <- w[n] + x[n].step();
     }
   }
@@ -166,8 +160,19 @@ class ParticleFilter < ForwardSampler {
    */
   function resample() {
     if isTriggered() {
+      /* resample */
       (a, o) <- global.resample(w);
       w <- vector(0.0, N);
+      
+      /* copy particles */
+      auto x0 <- x;
+      parallel for auto n in 1..N {
+        if o[a[n]] == 1 {
+          x[n] <- x0[a[n]];  // avoid the clone overhead
+        } else {
+          x[n] <- clone<ForwardModel>(x0[a[n]]);
+        }
+      }
     } else {
       a <- iota(1, N);
       o <- vector(1, N);

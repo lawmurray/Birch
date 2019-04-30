@@ -16,12 +16,16 @@ final class FactorEvent(w:Real) < Event {
   function playImmediate() -> Real {
     return w;
   }
-  
-  function skipImmediate(trace:Queue<Event>) -> Real {
+    
+  function replayImmediate(trace:Queue<Event>) -> Real {
     return w;
   }
-  
-  function replayImmediate(trace:Queue<Event>) -> Real {
+
+  function proposeImmediate(trace:Queue<Event>) -> Real {
+    return w;
+  }
+
+  function skipImmediate(trace:Queue<Event>) -> Real {
     return w;
   }
 
