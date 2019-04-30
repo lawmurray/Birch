@@ -3,6 +3,8 @@
     "class": "YapDengueModel"
   },
   "sampler": {
+    "class": "ParticleGibbs",
+    "nsamples": 10,
     "nparticles": 1024
   }
 }

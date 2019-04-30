@@ -22,9 +22,10 @@ class YapDengueModel < MarkovModel<YapDengueParameter,YapDengueState> {
 
   fiber initial(x:YapDengueState, θ:YapDengueParameter) -> Event {
     x.h.n <- 7370;
-    x.h.i <- 1 + simulate_poisson(5.0);
-    x.h.e <- simulate_poisson(5.0);
-    x.h.r <- Integer(simulate_uniform(0.0, x.h.n - x.h.i - x.h.e));
+    x.h.i <~ Poisson(5.0);
+    x.h.i <- x.h.i + 1;
+    x.h.e <~ Poisson(5.0);
+    x.h.r <~ Uniform(0, x.h.n - x.h.i - x.h.e);
     x.h.s <- x.h.n - x.h.e - x.h.i - x.h.r;
 
     x.h.Δs <- 0;
@@ -32,7 +33,9 @@ class YapDengueModel < MarkovModel<YapDengueParameter,YapDengueState> {
     x.h.Δi <- x.h.i;
     x.h.Δr <- 0;
     
-    x.m.n <- Integer(x.h.n*pow(10.0, simulate_uniform(-1.0, 2.0)));
+    u:Real;
+    u <~ Uniform(-1.0, 2.0);
+    x.m.n <- Integer(x.h.n*pow(10.0, u));
     x.m.r <- 0;
     x.m.i <- 0;
     x.m.e <- 0;
@@ -44,7 +47,7 @@ class YapDengueModel < MarkovModel<YapDengueParameter,YapDengueState> {
     x.m.Δr <- 0;
 
     x.z <- x.h.Δi;
-    if (x.y?) {
+    if x.y? {
       x.y! ~> Binomial(x.z, θ.ρ);
       x.z <- 0;
     }
@@ -53,7 +56,7 @@ class YapDengueModel < MarkovModel<YapDengueParameter,YapDengueState> {
   fiber transition(x':YapDengueState, x:YapDengueState, θ:YapDengueParameter) -> Event {
     v.transition(x', x, θ);
     x'.z <- x.z + x'.h.Δi;
-    if (x'.y?) {
+    if x'.y? {
       x'.y! ~> Binomial(x'.z, θ.ρ);
       x'.z <- 0;
     }

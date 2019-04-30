@@ -40,11 +40,16 @@ class SEIRModel < MarkovModel<SEIRParameter,SEIRState> {
     x'.i <- x.i + x'.Δi - x'.Δr;
     x'.r <- x.r + x'.Δr;
     
-    /* deaths */
-    x'.s <~ Binomial(x'.s, θ.μ);
-    x'.e <~ Binomial(x'.e, θ.μ);
-    x'.i <~ Binomial(x'.i, θ.μ);
-    x'.r <~ Binomial(x'.r, θ.μ);
+    /* survival; we assume that if the survival rate is set to one, what is
+     * meant is "all survive" regardless of the population size, and so do
+     * not evaluate these, ensuring we don't get -inf weights for mismatching
+     * numbers of trials (population sizes) */
+    if !θ.μ.hasValue() || θ.μ.value() != 1.0 {
+      x'.s <~ Binomial(x'.s, θ.μ);
+      x'.e <~ Binomial(x'.e, θ.μ);
+      x'.i <~ Binomial(x'.i, θ.μ);
+      x'.r <~ Binomial(x'.r, θ.μ);
+    }
 
     /* births */
     x'.Δs <~ Binomial(x.n, θ.ν);
