@@ -44,7 +44,13 @@ function observe_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
   assert 0 <= n;
   assert 0.0 <= ρ && ρ <= 1.0;
 
-  if (0 <= x && x <= n) {
+  if ρ == 0.0 || ρ == 1.0 {
+    if x == n*ρ {
+      return 0.0;
+    } else {
+      return -inf;
+    }
+  } else if 0 <= x && x <= n {
     return x*log(ρ) + (n - x)*log1p(-ρ) + lchoose(n, x);
   } else {
     return -inf;
