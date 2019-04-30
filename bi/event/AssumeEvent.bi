@@ -53,6 +53,16 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     return w;
   }
   
+  function skipImmediate(trace:Queue<Event>) -> Real {
+    coerce<Value>(trace);
+    return playImmediate();
+  }
+
+  function skipDelay(trace:Queue<Event>) -> Real {
+    coerce<Value>(trace);
+    return playDelay();
+  }
+  
   function replayImmediate(trace:Queue<Event>) -> Real {
     auto w <- 0.0;
     auto evt <- coerce<Value>(trace);

@@ -33,6 +33,11 @@ final class SimulateEvent<Value>(p:Distribution<Value>) <
     return 0.0;
   }
   
+  function skipImmediate() -> Real {
+    coerce<Value>(trace);
+    return playImmediate();
+  }
+  
   function replayImmediate(trace:Queue<Event>) -> Real {
     auto evt <- coerce<Value>(trace);
     v <- evt.value();

@@ -50,6 +50,20 @@ class Event {
   function playDelay() -> Real {
     return playImmediate();
   }
+
+  /**
+   * Act as appropriate for `SKIP_IMMEDIATE` mode.
+   */
+  function skipImmediate(trace:Queue<Event>) -> Real {
+    assert false;
+  }
+
+  /**
+   * Act as appropriate for `SKIP_DELAY` mode.
+   */
+  function skipDelay(trace:Queue<Event>) -> Real {
+    return skipImmediate(trace);
+  }
   
   /**
    * Act as appropriate for `REPLAY_IMMEDIATE` mode.

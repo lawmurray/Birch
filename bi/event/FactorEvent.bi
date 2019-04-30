@@ -17,6 +17,10 @@ final class FactorEvent(w:Real) < Event {
     return w;
   }
   
+  function skipImmediate(trace:Queue<Event>) -> Real {
+    return w;
+  }
+  
   function replayImmediate(trace:Queue<Event>) -> Real {
     return w;
   }

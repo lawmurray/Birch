@@ -1,34 +1,37 @@
 /**
- * Particle Gibbs sampler.
- *
- * !!! caution
- *     Work in progress, contributions welcome.
+ * Particle Gibbs sampler. This behaves as per ParticleFilter for the
+ * first sample. For subsequent samples it conditions on a particle drawn
+ * from the previous iteration, while additionally performing a Gibbs update
+ * of parameters conditioned on the same particle.
  */
-class ParticleGibbs < ConditionalParticleFilter {  
+class ParticleGibbs < ConditionalParticleFilter {
   function start() {
-    if x'? {
-      /* compute the conditional distribution over the start, given the
-       * steps */
+    if !x'? {
+      /* no reference particle, so on the first iteration, do as normal */
+      super.start();
+    } else {
+      /* reference particle, so on a subsequent iteration; for the reference
+       * trajectory, first replay it with the start (parameters) marginalized
+       * out, so as to compute the distribution over them conditioned on the
+       * steps (states) */
       auto x <- clone<ForwardModel>(archetype!);
-      auto h <- x'!.getHandler();
-      
-      h.rewind();
-      h.setMode(PLAY_DELAY);
+      auto h <- clone<EventHandler>(x'!.getHandler());      
       x.setHandler(h);
+      h.rewind();
+      h.setMode(SKIP_DELAY);
       x.start();
       h.setMode(REPLAY_DELAY);
       for auto t in 1..T {
         x.step();
       }
 
-      /* simulate the conditional distribution over the start, given the
-       * steps */
+      /* now replay the start (parameters) of the reference trajectory, in
+       * immediate sampling mode, so sample new parameters from that
+       * conditional distribution */
       x <- clone<ForwardModel>(archetype!);
-      h <- clone<EventHandler>(x'!.getHandler());
-      
-      h.rewind();
-      h.setMode(PLAY_IMMEDIATE);
       x.setHandler(h);
+      h.rewind();
+      h.setMode(REPLAY_IMMEDIATE);
       x.start();
       h.setMode(REPLAY_DELAY);
 
@@ -39,8 +42,6 @@ class ParticleGibbs < ConditionalParticleFilter {
         this.x[n] <- clone<ForwardModel>(x);
       }
       this.x[N].getHandler().trace.forward <- forward;
-    } else {
-      super.start();
     }
   }
 }

@@ -1,22 +1,24 @@
 /**
- * Conditional particle filter.
+ * Conditional particle filter. This behaves as per ParticleFilter for the
+ * first sample. For subsequent samples it conditions on a particle drawn
+ * from the previous iteration.
  */
 class ConditionalParticleFilter < ParticleFilter {
-  function start() {
-    /* turn on recording for all particles */
+  function initialize() {
+    super.initialize();
+
+    /* switch on recording for all particles */
     parallel for auto n in 1..N {
       x[n].getHandler().setRecord(true);
     }
   
-    /* turn on replay for the reference particle */
     if x'? {
+      /* there is a reference particle, switch on replay for it */
       auto h <- x'!.getHandler();
       h.rewind();
       h.setMode(REPLAY_DELAY);
       x[N].setHandler(h);
     }
-    
-    super.start();
   }
 
   function resample() {
@@ -33,8 +35,12 @@ class ConditionalParticleFilter < ParticleFilter {
     }
   }
   
-  function step() {      
-    if x'? {
+  function step() {
+    if !x'? {
+      /* no reference particle, which means we're on the first iteration, do
+       * this as normal */
+      super.step();
+    } else {
       /* step all but the reference particle; temporarily take the replay
        * trace out of the reference particle so as not to copy it into
        * offspring */
@@ -62,8 +68,6 @@ class ConditionalParticleFilter < ParticleFilter {
         x[N] <- clone<ForwardModel>(x0[N]);
       }
       w[N] <- w[N] + x[N].step();
-    } else {
-      super.step();
     }
   }
 }

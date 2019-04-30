@@ -37,6 +37,10 @@ final class ObserveEvent<Value>(v:Value, p:Distribution<Value>) <
     return w;
   }
   
+  function skipImmediate(trace:Queue<Event>) -> Real {
+    return playImmediate();
+  }
+  
   function replayImmediate(trace:Queue<Event>) -> Real {
     auto w <- p.observe(v);
     if w > -inf {
