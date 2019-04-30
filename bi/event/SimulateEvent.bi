@@ -33,7 +33,7 @@ final class SimulateEvent<Value>(p:Distribution<Value>) <
     return 0.0;
   }
   
-  function skipImmediate() -> Real {
+  function skipImmediate(trace:Queue<Event>) -> Real {
     coerce<Value>(trace);
     return playImmediate();
   }
