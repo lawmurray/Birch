@@ -192,6 +192,23 @@ function pdf_exponential(x:Real, λ:Real) -> Real {
 }
 
 /**
+ * PDF of a Weibull variate.
+ *
+ * - x: The variate.
+ * - k: Shape.
+ * - λ: Scale.
+ *
+ * Return: the probability density.
+ */
+function pdf_weibull(x:Real, k:Real, λ:Real) -> Real {
+  assert 0.0 < k;
+  assert 0.0 < λ;
+  cpp{{
+  return boost::math::pdf(boost::math::weibull_distribution<>(k, λ), x);
+  }}
+}
+
+/**
  * PDF of a Gaussian variate.
  *
  * - x: The variate.

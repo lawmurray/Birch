@@ -305,6 +305,20 @@ function simulate_exponential(λ:Real) -> Real {
 }
 
 /**
+ * Simulate an Weibull distribution.
+ *
+ * - k: Shape.
+ * - λ: Scale.
+ */
+function simulate_weibull(k:Real, λ:Real) -> Real {
+  assert 0.0 < k;
+  assert 0.0 < λ;
+  cpp{{
+  return std::weibull_distribution<bi::type::Real>(k, λ)(rng);
+  }}
+}
+
+/**
  * Simulate a Gaussian distribution.
  *
  * - μ: Mean.

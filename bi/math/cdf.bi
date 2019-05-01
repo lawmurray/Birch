@@ -165,6 +165,23 @@ function cdf_exponential(x:Real, λ:Real) -> Real {
 }
 
 /**
+ * CDF of a Weibull variate.
+ *
+ * - x: The variate.
+ * - k: Shape.
+ * - λ: Scale.
+ *
+ * Return: the cumulative probability.
+ */
+function cdf_weibull(x:Real, k:Real, λ:Real) -> Real {
+  assert 0.0 < k;
+  assert 0.0 < λ;
+  cpp{{
+  return boost::math::cdf(boost::math::weibull_distribution<>(k, λ), x);
+  }}
+}
+
+/**
  * CDF of a Gaussian variate.
  *
  * - x: The variate.

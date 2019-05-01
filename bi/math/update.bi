@@ -93,6 +93,52 @@ function update_gamma_exponential(x:Real, k:Real, θ:Real) -> (Real, Real) {
 }
 
 /**
+ * Update the parameters of a scaled Gamma distribution with an exponential
+ * likelihood.
+ *
+ * - x: The variate.
+ * - a: Constant scale.
+ * - k: Prior shape.
+ * - θ: Prior scale.
+ *
+ * Returns: the posterior hyperparameters `k'` and `θ'`.
+ */
+function update_scaled_gamma_exponential(x:Real, a:Real, k:Real, θ:Real) -> (Real, Real) {
+  return (k + 1.0, θ/(1.0 + x*a*θ));
+}
+
+/**
+ * Update the parameters of an inverse-gamma distribution with a Weibull
+ * likelihood with known shape.
+ *
+ * - x: The variate.
+ * - k: Likelihood shape.
+ * - α: Prior shape.
+ * - β: Prior scale.
+ *
+ * Returns: the posterior hyperparameters `α'` and `β'`.
+ */
+function update_inverse_gamma_weibull(x:Real, k:Real, α:Real, β:Real) -> (Real, Real) {
+  return (α + 1.0, β + pow(x, k));
+}
+
+/**
+ * Update the parameters of a scaled inverse-gamma distribution with a
+ * Weibull likelihood with known shape.
+ *
+ * - x: The variate.
+ * - k: Likelihood shape.
+ * - a: Constant scale.
+ * - α: Prior shape.
+ * - β: Prior scale.
+ *
+ * Returns: the posterior hyperparameters `α'` and `β'`.
+ */
+function update_scaled_inverse_gamma_weibull(x:Real, k:Real, a:Real, α:Real, β:Real) -> (Real, Real) {
+  return (α + 1.0, β + pow(x, k)/a);
+}
+
+/**
  * Update the parameters of a Dirichlet distribution with a categorical
  * likelihood.
  *

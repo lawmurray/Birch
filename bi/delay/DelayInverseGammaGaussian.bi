@@ -1,5 +1,5 @@
 /*
- * Delayed normal-inverse-gamma-Gaussian random variate.
+ * Delayed inverse-gamma-Gaussian random variate.
  */
 final class DelayInverseGammaGaussian(future:Real?, futureUpdate:Boolean,
     μ:Real, σ2:DelayInverseGamma) < DelayValue<Real>(future, futureUpdate) {

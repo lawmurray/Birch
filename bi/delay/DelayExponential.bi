@@ -1,5 +1,5 @@
 /*
- * Delayed Exponential random variate.
+ * Delayed exponential random variate.
  */
 final class DelayExponential(future:Real?, futureUpdate:Boolean, λ:Real) <
     DelayValue<Real>(future, futureUpdate) {
