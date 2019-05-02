@@ -4,7 +4,7 @@
   },
   "sampler": {
     "class": "ParticleGibbs",
-    "nsamples": 10,
+    "nsamples": 5,
     "nparticles": 1024
   }
 }
