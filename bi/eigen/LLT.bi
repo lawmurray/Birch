@@ -1,0 +1,80 @@
+/**
+ * Cholesky decomposition of a symmetric positive definite matrix, $S = LL^T$.
+ *
+ * The object acts as the matrix $S$, defines conversion to and assignment
+ * from `Real[_,_]`, and is intended as more or less a drop-in replacement
+ * for that type, albeit sharing, as usual for objects (i.e. copy-by-reference
+ * rather than copy-by-value semantics). That sharing permits, for example,
+ * multiple multivariate Gaussian distributions to share the same covariance
+ * or precision matrix with common posterior updates performed only once.
+ *
+ * !!! important
+ *     To emphasize, the matrix represented is $S$, not $L$, which is to say,
+ *     code such as the following:
+ *
+ *         auto A <- LLT(S);
+ *         y <- solve(A, x);
+ *
+ *     computes the matrix-vector product $y = S^{^-1}x$, not $y = L^{-1}x$,
+ *     however the Cholesky decomposition will be used to solve this more
+ *     efficiently than a general matrix solve. The point of an `LLT` object
+ *     is to maintain the original matrix, but to keep it in a decomposed
+ *     form for more efficient computation. 
+ */
+final class LLT {    
+  /*
+   * Eigen internals. Eigen::LLT does not support in place matrix
+   * decompositions using Eigen::Map (as of version 3.3.7, which is how Birch
+   * wraps its own array buffers for use by Eigen. instead we use an
+   * Eigen::Matrix type and copy the matrix to decompose into it later.
+   */
+  hpp{{
+  Eigen::LLT<libbirch::EigenMatrix<Real>> llt;
+  }}
+
+  /**
+   * Value conversion.
+   */
+  operator -> Real[_,_] {
+    cpp{{
+    return llt.reconstructedMatrix();
+    }}
+  }
+  
+  /**
+   * Value assignment.
+   */
+  operator <- S:Real[_,_] {
+    compute(S);
+  }
+
+  /**
+   * Rank one update (or downdate) of the decomposition. If the original
+   * matrix $S$ was decomposed as $S = LL^T$, this updates the matrix $L$ so
+   * that $S + axx^\top = LL^T$.
+   */
+  function rankUpdate(x:Real[_], a:Real) {
+    cpp{{
+    llt.rankUpdate(x.toEigen(), a);
+    }}
+  }
+  
+  /**
+   * Decompose the matrix positive definite matrix `S` into this.
+   */
+  function compute(S:Real[_,_]) {
+    cpp{{
+    llt.compute(S.toEigen());
+    }}
+  }
+}
+
+/**
+ * Construct a Cholesky decomposition of a positive definite matrix
+ * $S = LL^T$.
+ */
+function LLT(S:Real[_,_]) -> LLT {
+  o:LLT;
+  o <- S;
+  return o;
+}
