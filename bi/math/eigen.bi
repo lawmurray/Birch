@@ -159,28 +159,12 @@ function inv(X:Real[_,_]) -> Real[_,_];
 /**
  * Solve a system of equations.
  */
-function solve(X:Real[_,_], y:Real[_]) -> Real[_] {
-  assert columns(X) == length(y);
-  
-  z:Real[rows(X)];
-  cpp{{
-  z.toEigen().noalias() = X.toEigen().householderQr().solve(y.toEigen());
-  }}
-  return z;
-}
+function solve(X:Real[_,_], y:Real[_]) -> Real[_];
 
 /**
  * Solve a system of equations.
  */
-function solve(X:Real[_,_], Y:Real[_,_]) -> Real[_,_] {
-  assert columns(X) == rows(Y);
-  
-  Z:Real[rows(Y),columns(Y)];
-  cpp{{
-  Z.toEigen().noalias() = X.toEigen().householderQr().solve(Y.toEigen());
-  }}
-  return Z;
-}
+function solve(X:Real[_,_], Y:Real[_,_]) -> Real[_,_];
 
 /**
  * Cholesky decomposition of a matrix, $X = LL^{\top}$.

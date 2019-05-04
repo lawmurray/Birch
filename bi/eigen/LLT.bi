@@ -15,7 +15,7 @@
  *     To emphasize, the matrix represented is $S$, not $L$, which is to say,
  *     code such as the following:
  *
- *         auto A <- LLT(S);
+ *         auto A <- llt(S);
  *         y <- solve(A, x);
  *
  *     computes the matrix-vector product $y = S^{^-1}x$, not $y = L^{-1}x$,
@@ -73,10 +73,17 @@ final class LLT {
 }
 
 /**
- * Construct a Cholesky decomposition of a positive definite matrix
- * $S = LL^T$.
+ * Cholesky decomposition of the symmetric positive definite matrix $S$.
+ *
+ * - S: The symmetric positive definite matrix $S$.
+ *
+ * Returns: an object representing the symmetric positive definite matrix $S$
+ * in its decomposed form.
+ *
+ * This differs from `chol` in that `chol` returns the lower-triangular
+ * Cholesky factor, while this returns the original matrix, but decomposed.
  */
-function LLT(S:Real[_,_]) -> LLT {
+function llt(S:Real[_,_]) -> LLT {
   o:LLT;
   o <- S;
   return o;

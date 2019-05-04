@@ -31,7 +31,8 @@ auto dot(const libbirch::Array<Type,Frame>& o) {
 }
 
 template<class EigenType1, class EigenType2>
-typename EigenType1::value_type dot(const EigenType1& o1, const EigenType2& o2) {
+typename EigenType1::value_type dot(const EigenType1& o1,
+    const EigenType2& o2) {
   return o1.dot(o2);
 }
 
@@ -46,7 +47,8 @@ Type dot(const libbirch::Array<Type,Frame1>& o1, const EigenType2& o2) {
 }
 
 template<class Type, class Frame1, class Frame2>
-Type dot(const libbirch::Array<Type,Frame1>& o1, const libbirch::Array<Type,Frame2>& o2) {
+Type dot(const libbirch::Array<Type,Frame1>& o1,
+    const libbirch::Array<Type,Frame2>& o2) {
   return dot(o1.toEigen(), o2.toEigen());
 }
 
@@ -78,6 +80,27 @@ auto inv(const EigenType& o) {
 template<class Type, class Frame>
 auto inv(const libbirch::Array<Type,Frame>& o) {
   return inv(o.toEigen());
+}
+
+template<class EigenType1, class EigenType2>
+auto solve(const EigenType1& o1, const EigenType2& o2) {
+  return o1.householderQr().solve(o2);
+}
+
+template<class Type, class EigenType1, class Frame2>
+auto solve(const EigenType1& o1, const libbirch::Array<Type,Frame2>& o2) {
+  return solve(o1, o2.toEigen());
+}
+
+template<class Type, class Frame1, class EigenType2>
+auto solve(const libbirch::Array<Type,Frame1>& o1, const EigenType2& o2) {
+  return solve(o1.toEigen(), o2);
+}
+
+template<class Type, class Frame1, class Frame2>
+auto solve(const libbirch::Array<Type,Frame1>& o1,
+    const libbirch::Array<Type,Frame2>& o2) {
+  return solve(o1.toEigen(), o2.toEigen());
 }
 
 }
