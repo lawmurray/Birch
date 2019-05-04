@@ -159,6 +159,7 @@
       "bi/expression/Expression.bi",
       "bi/expression/Add.bi",
       "bi/expression/Boxed.bi",
+      "bi/expression/Cholesky.bi",
       "bi/expression/Divide.bi",
       "bi/expression/Dot.bi",
       "bi/expression/Exp.bi",
