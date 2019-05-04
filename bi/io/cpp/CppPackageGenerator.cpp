@@ -79,6 +79,8 @@ void bi::CppPackageGenerator::visit(const Package* o) {
     line("#ifndef BI_" << tarname(o->name) << "_HPP_");
     line("#define BI_" << tarname(o->name) << "_HPP_");
     line("");
+    line("#include \"libbirch/libbirch.hpp\"");
+    line("");
 
     for (auto header : o->headers) {
       fs::path include = header->path;
