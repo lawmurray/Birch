@@ -1,7 +1,3 @@
-hpp{{
-#include "libbirch/libbirch.hpp"
-}}
-
 cpp{{
 #ifdef __EMSCRIPTEN__
 int main(int argc, char** argv) {
