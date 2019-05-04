@@ -8,6 +8,9 @@
  * multiple multivariate Gaussian distributions to share the same covariance
  * or precision matrix with common posterior updates performed only once.
  *
+ * Various functions, such as `solve`, have overloads that make use of `LLT`
+ * objects for more efficient computation.
+ *
  * !!! important
  *     To emphasize, the matrix represented is $S$, not $L$, which is to say,
  *     code such as the following:
@@ -18,8 +21,8 @@
  *     computes the matrix-vector product $y = S^{^-1}x$, not $y = L^{-1}x$,
  *     however the Cholesky decomposition will be used to solve this more
  *     efficiently than a general matrix solve. The point of an `LLT` object
- *     is to maintain the original matrix, but to keep it in a decomposed
- *     form for more efficient computation. 
+ *     is to maintain the original matrix in a decomposed form for more
+ *     efficient computation. 
  */
 final class LLT {    
   /*
@@ -49,9 +52,9 @@ final class LLT {
   }
 
   /**
-   * Rank one update (or downdate) of the decomposition. If the original
-   * matrix $S$ was decomposed as $S = LL^T$, this updates the matrix $L$ so
-   * that $S + axx^\top = LL^T$.
+   * Rank one update (or downdate) of the decomposition. This efficiently
+   * updates the decomposition from representing $S$ to representing
+   * $S + axx^\top$.
    */
   function rankUpdate(x:Real[_], a:Real) {
     cpp{{
