@@ -30,8 +30,6 @@ program sample(
   /* random number generator */
   if seed? {
     global.seed(seed!);
-  } else {
-    global.seed();
   }
   
   /* config */
