@@ -97,3 +97,31 @@ function rank_update(S:LLT, x:Real[_], a:Real) -> LLT {
   }}
   return A;
 }
+
+/**
+ * Inverse of a symmetric positive definite matrix.
+ */
+function inv(S:LLT) -> Real[_,_] {
+  cpp{{
+  return S->llt.solve(libbirch::EigenMatrix<bi::type::Real>::Identity(
+      S->llt.rows(), S->llt.cols()));
+  }}
+}
+
+/**
+ * Solve a system of equations with a symmetric positive definite matrix.
+ */
+function solve(S:LLT, y:Real[_]) -> Real[_] {
+  cpp{{
+  return S->llt.solve(y.toEigen());
+  }}
+}
+
+/**
+ * Solve a system of equations with a symmetric positive definite matrix.
+ */
+function solve(S:LLT, Y:Real[_,_]) -> Real[_,_] {
+  cpp{{
+  return S->llt.solve(Y.toEigen());
+  }}
+}

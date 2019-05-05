@@ -744,7 +744,7 @@ function simulate_multivariate_linear_normal_inverse_gamma_gaussian(
 function simulate_multivariate_dot_normal_inverse_gamma_gaussian(
     a:Real[_], μ:Real[_], c:Real, Λ:LLT, α:Real, β:Real) -> Real {
   return simulate_student_t(2.0*α, dot(a, μ) + c,
-      (β/α)*(1.0 + dot(a, cholsolve(Λ, a))));
+      (β/α)*(1.0 + dot(a, solve(Λ, a))));
 }
 
 /**
