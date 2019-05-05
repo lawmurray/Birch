@@ -184,6 +184,7 @@
       "bi/math/iterator.bi",
       "bi/math/matrix.bi",
       "bi/math/observe.bi",
+      "bi/math/partitionfunction.bi",
       "bi/math/pdf.bi",
       "bi/math/primitive.bi",
       "bi/math/resample.bi",
