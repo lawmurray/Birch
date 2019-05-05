@@ -775,7 +775,7 @@ function observe_multivariate_linear_normal_inverse_gamma_gaussian(x:Real[_],
  * Returns: the log probability density.
  */
 function observe_multivariate_dot_normal_inverse_gamma_gaussian(x:Real,
-    a:Real[_], μ:Real[_], c:Real, Λ:Real[_,_], α:Real, β:Real) -> Real {
+    a:Real[_], μ:Real[_], c:Real, Λ:LLT, α:Real, β:Real) -> Real {
   return observe_student_t(x, 2.0*α, dot(a, μ) + c,
       (β/α)*(1.0 + dot(a, cholsolve(Λ, a))));
 }

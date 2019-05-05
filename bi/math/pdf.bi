@@ -661,7 +661,7 @@ function pdf_multivariate_linear_normal_inverse_gamma_gaussian(x:Real[_],
  * Return: the probability density.
  */
 function pdf_multivariate_dot_normal_inverse_gamma_gaussian(x:Real,
-    a:Real[_], μ:Real[_], c:Real, Λ:Real[_,_], α:Real, β:Real) -> Real {
+    a:Real[_], μ:Real[_], c:Real, Λ:LLT, α:Real, β:Real) -> Real {
   return exp(observe_multivariate_dot_normal_inverse_gamma_gaussian(x, a, μ,
       c, Λ, α, β));
 }

@@ -50,17 +50,6 @@ final class LLT {
   operator <- S:Real[_,_] {
     compute(S);
   }
-
-  /**
-   * Rank one update (or downdate) of the decomposition. This efficiently
-   * updates the decomposition from representing $S$ to representing
-   * $S + axx^\top$.
-   */
-  function rankUpdate(x:Real[_], a:Real) {
-    cpp{{
-    llt.rankUpdate(x.toEigen(), a);
-    }}
-  }
   
   /**
    * Decompose the matrix positive definite matrix `S` into this.
@@ -84,7 +73,27 @@ final class LLT {
  * Cholesky factor, while this returns the original matrix, but decomposed.
  */
 function llt(S:Real[_,_]) -> LLT {
-  o:LLT;
-  o <- S;
-  return o;
+  A:LLT;
+  A.compute(S);
+  return A;
+}
+
+/**
+ * Rank one update (or downdate) of a Cholesky decomposition.
+ *
+ * - S: Existing Cholesky decomposition of the symmetric positive definite
+ *      matrix $S$.
+ * - x: Vector.
+ * - a: Scalar. Positive for an update, negative for a downdate.
+ *
+ * Returns: A new Cholesky decomposition of the symmetric positive definite
+ * matrix $S + axx^\top$.
+ */
+function rank_update(S:LLT, x:Real[_], a:Real) -> LLT {
+  A:LLT;
+  cpp{{
+  A->llt = S->llt;
+  A->llt.rankUpdate(x.toEigen(), a);
+  }}
+  return A;
 }

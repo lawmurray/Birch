@@ -10,9 +10,9 @@ final class DelayMultivariateNormalInverseGamma(future:Real[_]?,
   μ:Real[_] <- μ;
 
   /**
-   * Precision scale.
+   * Precision.
    */
-  Λ:Real[_,_] <- cholinv(A);
+  Λ:LLT <- llt(cholinv(A));
 
   /**
    * Scale.

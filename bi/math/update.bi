@@ -462,9 +462,9 @@ function update_multivariate_linear_normal_inverse_gamma_gaussian(
  * Returns: the posterior hyperparameters `μ'`, `Λ'`, `α'` and `β'`.
  */
 function update_multivariate_dot_normal_inverse_gamma_gaussian(x:Real,
-    a:Real[_], μ:Real[_], c:Real, Λ:Real[_,_], α:Real, β:Real) -> (Real[_],
-    Real[_,_], Real, Real) {
-  Λ':Real[_,_] <- Λ + a*trans(a);
+    a:Real[_], μ:Real[_], c:Real, Λ:LLT, α:Real, β:Real) -> (Real[_],
+    LLT, Real, Real) {
+  Λ':LLT <- rank_update(Λ, a, 1.0);
   μ':Real[_] <- cholsolve(Λ', Λ*μ + a*(x - c));
   α':Real <- α + 0.5;
   β':Real <- β + 0.5*(pow(x - c, 2.0) + dot(μ, Λ*μ) - dot(μ', Λ'*μ'));

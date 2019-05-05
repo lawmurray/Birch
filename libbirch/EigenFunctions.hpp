@@ -84,7 +84,7 @@ auto inv(const libbirch::Array<Type,Frame>& o) {
 
 template<class EigenType1, class EigenType2>
 auto solve(const EigenType1& o1, const EigenType2& o2) {
-  return o1.householderQr().solve(o2);
+  return o1.householderQr().solve(o2).eval();
 }
 
 template<class Type, class EigenType1, class Frame2>
