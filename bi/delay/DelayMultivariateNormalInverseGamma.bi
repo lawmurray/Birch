@@ -49,7 +49,7 @@ final class DelayMultivariateNormalInverseGamma(future:Real[_]?,
     prune();
     buffer.set("class", "MultivariateNormalInverseGamma");
     buffer.set("μ", μ);
-    buffer.set("A", cholinv(Λ));
+    buffer.set("A", inv(Λ));
     buffer.set("α", σ2!.α);
     buffer.set("β", σ2!.β);
   }

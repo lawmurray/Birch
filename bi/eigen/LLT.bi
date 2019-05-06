@@ -24,7 +24,7 @@
  *     is to maintain the original matrix in a decomposed form for more
  *     efficient computation. 
  */
-final class LLT {    
+final class LLT(n:Integer) {
   /*
    * Eigen internals. Eigen::LLT does not support in place matrix
    * decompositions using Eigen::Map (as of version 3.3.7, which is how Birch
@@ -59,6 +59,57 @@ final class LLT {
     llt.compute(S.toEigen());
     }}
   }
+
+  /**
+   * Rank one update (or downdate) of a Cholesky decomposition.
+   *
+   * - x: Vector.
+   * - a: Scalar. Positive for an update, negative for a downdate.
+   *
+   * Updates the symmetric positive definite matrix to $S + axx^\top$ with an
+   * efficient update of its decomposition.
+   */
+  function update(x:Real[_], a:Real) {
+    cpp{{
+    llt.rankUpdate(x.toEigen(), a);
+    }}
+  }
+}
+
+operator (X:LLT*y:Real[_]) -> Real[_] {
+  cpp{{
+  return X->llt.matrixL()*(X->llt.matrixU()*y.toEigen()).eval();
+  }}
+}
+
+operator (X:LLT*Y:Real[_,_]) -> Real[_,_] {
+  cpp{{
+  return X->llt.matrixL()*(X->llt.matrixU()*Y.toEigen()).eval();
+  }}
+}
+
+operator (X:Real[_,_]*Y:LLT) -> Real[_,_] {
+  cpp{{
+  return X.toEigen()*Y->llt.matrixL()*Y->llt.matrixU();
+  }}
+}
+
+/**
+ * Number of rows of a symmetric positive definite matrix.
+ */
+function rows(X:LLT) -> Integer64 {
+  cpp{{
+  return X->llt.rows();
+  }}
+}
+
+/**
+ * Number of columns of a symmetric positive definite matrix.
+ */
+function columns(X:LLT) -> Integer64 {
+  cpp{{
+  return X->llt.cols();
+  }}
 }
 
 /**
@@ -73,7 +124,8 @@ final class LLT {
  * Cholesky factor, while this returns the original matrix, but decomposed.
  */
 function llt(S:Real[_,_]) -> LLT {
-  A:LLT;
+  assert rows(S) == columns(S);
+  A:LLT(rows(S));
   A.compute(S);
   return A;
 }
@@ -83,18 +135,45 @@ function llt(S:Real[_,_]) -> LLT {
  *
  * - S: Existing Cholesky decomposition of the symmetric positive definite
  *      matrix $S$.
- * - x: Vector.
- * - a: Scalar. Positive for an update, negative for a downdate.
+ * - x: Vector $x$.
+ * - a: Scalar $a$. Positive for an update, negative for a downdate.
  *
  * Returns: A new Cholesky decomposition of the symmetric positive definite
  * matrix $S + axx^\top$.
  */
 function rank_update(S:LLT, x:Real[_], a:Real) -> LLT {
-  A:LLT;
+  A:LLT(rows(S));
   cpp{{
   A->llt = S->llt;
-  A->llt.rankUpdate(x.toEigen(), a);
   }}
+  A.update(x, a);
+  return A;
+}
+
+/**
+ * Rank $k$ update (or downdate) of a Cholesky decomposition.
+ *
+ * - S: Existing Cholesky decomposition of the symmetric positive definite
+ *      matrix $S$.
+ * - X: Matrix $X$.
+ * - a: Scalar $a$. Positive for an update, negative for a downdate.
+ *
+ * Returns: A new Cholesky decomposition of the symmetric positive definite
+ * matrix $S + aXX^\top$.
+ *
+ * The computation is performed as $k$ separate rank-1 updates using the
+ * columns of `X
+ */
+function rank_update(S:LLT, X:Real[_,_], a:Real) -> LLT {
+  A:LLT(rows(S));
+  cpp{{
+  A->llt = S->llt;
+  }}
+  auto R <- rows(X);
+  auto C <- columns(X);
+  for auto j in 1..C {
+    A.update(X[1..R,j], a);
+  }
   return A;
 }
 

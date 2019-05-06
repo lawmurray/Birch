@@ -702,7 +702,7 @@ function observe_multivariate_student_t(x:Real[_], ν:Real, μ:Real[_],
  * Returns: the log probability density.
  */
 function observe_multivariate_normal_inverse_gamma(x:Real[_], μ:Real[_],
-    Λ:Real[_,_], α:Real, β:Real) -> Real {
+    Λ:LLT, α:Real, β:Real) -> Real {
   return observe_multivariate_student_t(x, 2.0*α, μ, Λ*(α/β));
 }
 
@@ -735,9 +735,9 @@ function observe_multivariate_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
  * Returns: the log probability density.
  */
 function observe_multivariate_normal_inverse_gamma_gaussian(x:Real[_],
-    μ:Real[_], Λ:Real[_,_], α:Real, β:Real) -> Real {
+    μ:Real[_], Λ:LLT, α:Real, β:Real) -> Real {
   D:Integer <- length(μ);
-  return observe_multivariate_student_t(x, 2.0*α, μ, (α/β)*cholinv(identity(D) + cholinv(Λ)));
+  return observe_multivariate_student_t(x, 2.0*α, μ, (α/β)*inv(identity(D) + inv(Λ)));
 }
 
 /**
@@ -755,9 +755,9 @@ function observe_multivariate_normal_inverse_gamma_gaussian(x:Real[_],
  * Returns: the log probability density.
  */
 function observe_multivariate_linear_normal_inverse_gamma_gaussian(x:Real[_],
-    A:Real[_,_], μ:Real[_], c:Real[_], Λ:Real[_,_], α:Real, β:Real) -> Real {
+    A:Real[_,_], μ:Real[_], c:Real[_], Λ:LLT, α:Real, β:Real) -> Real {
   return observe_multivariate_student_t(x, 2.0*α, A*μ + c,
-      (α/β)*cholinv(identity(rows(A)) + A*cholsolve(Λ, trans(A))));
+      (α/β)*inv(identity(rows(A)) + A*solve(Λ, trans(A))));
 }
 
 /**

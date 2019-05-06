@@ -589,7 +589,7 @@ function pdf_multivariate_student_t(x:Real[_], ν:Real, μ:Real[_],
  * Return: the probability density.
  */
 function pdf_multivariate_normal_inverse_gamma(x:Real[_], μ:Real[_],
-    Λ:Real[_,_], α:Real, β:Real) -> Real {
+    Λ:LLT, α:Real, β:Real) -> Real {
   return pdf_multivariate_student_t(x, 2.0*α, μ, Λ*(α/β));
 }
 
@@ -622,7 +622,7 @@ function pdf_multivariate_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
  * Return: the probability density.
  */
 function pdf_multivariate_normal_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
-    Λ:Real[_,_], α:Real, β:Real) -> Real {
+    Λ:LLT, α:Real, β:Real) -> Real {
   return exp(observe_multivariate_normal_inverse_gamma_gaussian(x, μ, Λ, α, β));
 }
 
@@ -641,7 +641,7 @@ function pdf_multivariate_normal_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
  * Return: the probability density.
  */
 function pdf_multivariate_linear_normal_inverse_gamma_gaussian(x:Real[_],
-    A:Real[_,_], μ:Real[_], c:Real[_], Λ:Real[_,_], α:Real, β:Real) -> Real {
+    A:Real[_,_], μ:Real[_], c:Real[_], Λ:LLT, α:Real, β:Real) -> Real {
   return exp(observe_multivariate_linear_normal_inverse_gamma_gaussian(x, A,
       μ, c, Λ, α, β));
 }
