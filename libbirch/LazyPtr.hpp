@@ -92,7 +92,8 @@ public:
   /**
    * Generic copy constructor.
    */
-  template<class Q>
+  template<class Q, typename = std::enable_if_t<std::is_base_of<T,
+      typename Q::value_type>::value>>
   LazyPtr(const LazyPtr<Q>& o) :
       object(o.object),
       to(o.to) {
@@ -134,7 +135,8 @@ public:
   /**
    * Generic copy assignment.
    */
-  template<class Q>
+  template<class Q, typename = std::enable_if_t<std::is_base_of<T,
+      typename Q::value_type>::value>>
   LazyPtr<P>& operator=(const LazyPtr<Q>& o) {
     /* it's possible that object = o.object actually destroys the referent
      * of o, so do the to = o.to first */
@@ -146,7 +148,8 @@ public:
   /**
    * Generic move assignment.
    */
-  template<class Q>
+  template<class Q, typename = std::enable_if_t<std::is_base_of<T,
+      typename Q::value_type>::value>>
   LazyPtr<P>& operator=(LazyPtr<Q> && o) {
     object = std::move(o.object);
     to = std::move(o.to);
@@ -183,7 +186,20 @@ public:
   /**
    * Optional assignment.
    */
-  template<class Q>
+  LazyPtr<P>& operator=(const Optional<LazyPtr<P>>& o) {
+    if (o.query()) {
+      *this = o.get();
+    } else {
+      *this = nullptr;
+    }
+    return *this;
+  }
+
+  /**
+   * Generic optional assignment.
+   */
+  template<class Q, typename = std::enable_if_t<std::is_base_of<T,
+      typename Q::value_type>::value>>
   LazyPtr<P>& operator=(const Optional<LazyPtr<Q>>& o) {
     if (o.query()) {
       *this = o.get();
