@@ -9,7 +9,7 @@
 
 namespace libbirch {
 
-using EigenVectorStride = Eigen::Stride<1,Eigen::Dynamic>;
+using EigenVectorStride = Eigen::Stride<Eigen::Dynamic,Eigen::Dynamic>;
 template<class Type>
 using EigenVector = Eigen::Matrix<Type,Eigen::Dynamic,1,Eigen::ColMajor,Eigen::Dynamic,1>;
 template<class Type>

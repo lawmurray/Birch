@@ -423,20 +423,31 @@ public:
   void>::type>::type;
 
   /**
-   * Convert to Eigen Matrix type.
+   * Explicitly convert to Eigen matrix type.
    */
   EigenType toEigen() {
     return EigenType(duplicate()->buf() + offset, length(0),
         (F::count() == 1 ? 1 : length(1)),
         (F::count() == 1 ?
-            EigenStrideType(stride(0), 1) :
+            EigenStrideType(volume(), stride(0)) :
             EigenStrideType(stride(0), stride(1))));
   }
   EigenType toEigen() const {
-    return EigenType(buf(), length(0), (F::count() == 1 ? 1 : length(1)),
+    return EigenType(buf(), length(0),
+        (F::count() == 1 ? 1 : length(1)),
         (F::count() == 1 ?
-            EigenStrideType(stride(0), 1) :
+            EigenStrideType(volume(), stride(0)) :
             EigenStrideType(stride(0), stride(1))));
+  }
+
+  /**
+   * Implicitly convert to Eigen matrix type.
+   */
+  operator EigenType() {
+    return toEigen();
+  }
+  operator EigenType() const {
+    return toEigen();
   }
 
   /**
