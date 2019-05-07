@@ -404,21 +404,25 @@ function update_multivariate_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
  * multivariate Gaussian likelihood.
  *
  * - x: The variate.
- * - μ: Prior mean.
+ * - ν: Prior precision times mean.
  * - Λ: Prior precision.
+ * - γ: Prior scale accumulator.
  * - α: Prior shape of the inverse-gamma.
  * - β: Prior scale of the inverse-gamma.
  *
  * Returns: the posterior hyperparameters `μ'`, `Λ'`, `α'` and `β'`.
  */
 function update_multivariate_normal_inverse_gamma_gaussian(x:Real[_],
-    μ:Real[_], Λ:LLT, α:Real, β:Real) -> (Real[_], LLT, Real, Real) {
+    ν:Real[_], Λ:LLT, γ:Real, α:Real, β:Real) -> (Real[_], LLT, Real, Real,
+    Real) {
   D:Integer <- length(x);
   Λ':LLT <- rank_update(Λ, identity(rows(Λ)), 1.0);
-  μ':Real[_] <- solve(Λ', Λ*μ + x);
-  α':Real <- α + D*0.5;
-  β':Real <- β + 0.5*(dot(x) + dot(μ, Λ*μ) - dot(μ', Λ'*μ'));
-  return (μ', Λ', α', β');
+  ///@todo More efficient way to do update with identity matrix?
+  ν':Real[_] <- ν + x;
+  α':Real <- α + 0.5*D;
+  γ':Real <- γ + 0.5*dot(x);
+  β':Real <- γ' - 0.5*dot(solve(Λ', ν'), ν');
+  return (ν', Λ', γ', α', β');
 }
 
 /**
@@ -427,23 +431,25 @@ function update_multivariate_normal_inverse_gamma_gaussian(x:Real[_],
  *
  * - x: The variate.
  * - A: Scale.
- * - μ: Prior mean.
+ * - ν: Prior precision times mean.
  * - c: Offset.
  * - Λ: Prior precision.
+ * - γ: Prior scale accumulator.
  * - α: Prior shape of the inverse-gamma.
  * - β: Prior scale of the inverse-gamma.
  *
- * Returns: the posterior hyperparameters `μ'`, `Λ'`, `α'` and `β'`.
+ * Returns: the posterior hyperparameters `μ'`, `Λ'`, `γ'`, `α'` and `β'`.
  */
 function update_multivariate_linear_normal_inverse_gamma_gaussian(
-    x:Real[_], A:Real[_,_], μ:Real[_], c:Real[_], Λ:LLT, α:Real,
-    β:Real) -> (Real[_], LLT, Real, Real) {
+    x:Real[_], A:Real[_,_], ν:Real[_], c:Real[_], Λ:LLT, γ:Real, α:Real,
+    β:Real) -> (Real[_], LLT, Real, Real, Real) {
   D:Integer <- length(x);
-  Λ':LLT <- rank_update(Λ, A, 1.0);
-  μ':Real[_] <- solve(Λ', Λ*μ + trans(A)*(x - c));
-  α':Real <- α + D*0.5;
-  β':Real <- β + 0.5*(dot(x - c) + dot(μ, Λ*μ) - dot(μ', Λ'*μ'));
-  return (μ', Λ', α', β');
+  Λ':LLT <- rank_update(Λ, trans(A), 1.0);
+  ν':Real[_] <- ν + trans(A)*(x - c);
+  α':Real <- α + 0.5*D;
+  γ':Real <- γ + 0.5*dot(x - c);
+  β':Real <- γ' - 0.5*dot(solve(Λ', ν'), ν');
+  return (ν', Λ', γ', α', β');
 }
 
 /**
@@ -452,20 +458,22 @@ function update_multivariate_linear_normal_inverse_gamma_gaussian(
  *
  * - x: The variate.
  * - a: Scale.
- * - μ: Prior mean.
+ * - ν: Prior precision times mean.
  * - c: Offset.
  * - Λ: Prior precision.
+ * - γ: Prior scale accumulator.
  * - α: Prior shape of the inverse-gamma.
  * - β: Prior scale of the inverse-gamma.
  *
- * Returns: the posterior hyperparameters `μ'`, `Λ'`, `α'` and `β'`.
+ * Returns: the posterior hyperparameters `μ'`, `Λ'`, `γ'`, `α'` and `β'`.
  */
 function update_multivariate_dot_normal_inverse_gamma_gaussian(x:Real,
-    a:Real[_], μ:Real[_], c:Real, Λ:LLT, α:Real, β:Real) -> (Real[_],
-    LLT, Real, Real) {
+    a:Real[_], ν:Real[_], c:Real, Λ:LLT, γ:Real, α:Real, β:Real) -> (Real[_],
+    LLT, Real, Real, Real) {
   Λ':LLT <- rank_update(Λ, a, 1.0);
-  μ':Real[_] <- solve(Λ', Λ*μ + a*(x - c));
+  ν':Real[_] <- ν + a*(x - c);
   α':Real <- α + 0.5;
-  β':Real <- β + 0.5*(pow(x - c, 2.0) + dot(μ, Λ*μ) - dot(μ', Λ'*μ'));
-  return (μ', Λ', α', β');
+  γ':Real <- γ + 0.5*pow(x - c, 2.0);
+  β':Real <- γ' - 0.5*dot(solve(Λ', ν'), ν');
+  return (ν', Λ', γ', α', β');
 }
