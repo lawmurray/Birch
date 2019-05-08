@@ -259,6 +259,7 @@
       "bi/test/test_multivariate_linear_normal_inverse_gamma_gaussian.bi",
       "bi/test/test_multivariate_normal_inverse_gamma_gaussian.bi",
       "bi/test/test_normal_inverse_gamma_log_gaussian.bi",
+      "bi/test/test_ridge_regression.bi",
       "bi/test/test_scaled_gamma_exponential.bi",
       "bi/test/test_scaled_gamma_poisson.bi",
       "bi/test/test_subtract_bounded_discrete_delta.bi",

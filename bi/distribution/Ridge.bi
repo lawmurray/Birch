@@ -73,5 +73,5 @@ function Ridge(M:Expression<Real[_,_]>, Σ:Expression<Real[_,_]>,
  * Create ridge prior.
  */
 function Ridge(M:Real[_,_], Σ:Real[_,_], α:Real, β:Real[_]) -> Ridge {
-  m:Ridge(Boxed(M), Boxed(Σ), Boxed(α), Boxed(β));
+  return Ridge(Boxed(M), Boxed(Σ), Boxed(α), Boxed(β));
 }

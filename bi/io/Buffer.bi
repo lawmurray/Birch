@@ -1139,4 +1139,13 @@ class Buffer {
   function set(name:String, value:Object[_,_]?) {
     setObjectMatrix(name, value);
   }
+  
+  /// @todo Proper tuple handling; these are workarounds for e.g. Random
+  /// objects and containers that get() and set() with generic types
+  function get(value:(Real[_,_], Real[_])?) -> (Real[_,_], Real[_])? {
+    //
+  }
+  function set(value:(Real[_,_], Real[_])?) -> (Real[_,_], Real[_])? {
+    //
+  }
 }

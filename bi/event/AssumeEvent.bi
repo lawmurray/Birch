@@ -61,7 +61,6 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     auto w <- 0.0;
     auto evt <- coerce<Value>(trace);
     if v.hasValue() {
-      assert v.value() == evt.value();
       w <- p.observe(evt.value());
     } else {
       v <- evt.value();
@@ -77,7 +76,6 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     auto w <- 0.0;
     auto evt <- coerce<Value>(trace);
     if v.hasValue() {
-      assert v.value() == evt.value();
       w <- p.observe(evt.value());
       if w > -inf {
         p.update(evt.value());
@@ -97,7 +95,6 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     auto w <- 0.0;
     auto evt <- coerce<Value>(trace);
     if v.hasValue() {
-      assert v.value() == evt.value();
       w <- p.observe(v.value());
       if w > -inf {
         p.update(v.value());
@@ -134,7 +131,6 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     auto w <- 0.0;
     auto evt <- coerce<Value>(trace);
     if v.hasValue() {
-      assert v.value() == evt.value();
       w <- p.observe(evt.value());
     } else {
       v <- evt.value();
@@ -150,7 +146,6 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     auto w <- 0.0;
     auto evt <- coerce<Value>(trace);
     if v.hasValue() {
-      assert v.value() == evt.value();
       w <- p.observe(evt.value());
       if w > -inf {
         p.downdate(evt.value());

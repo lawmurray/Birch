@@ -127,19 +127,19 @@ auto hadamard(const Eigen::MatrixBase<Type1>& o1,
 template<class Type1, class Type2, class Frame2>
 auto hadamard(const Eigen::MatrixBase<Type1>& o1,
     const libbirch::Array<Type2,Frame2>& o2) {
-  return kronecker(o1, o2.toEigen());
+  return hadamard(o1, o2.toEigen());
 }
 
 template<class Type1, class Frame1, class Type2>
 auto hadamard(const libbirch::Array<Type1,Frame1>& o1,
     const Eigen::MatrixBase<Type2>& o2) {
-  return kronecker(o1.toEigen(), o2);
+  return hadamard(o1.toEigen(), o2);
 }
 
 template<class Type1, class Frame1, class Type2, class Frame2>
 auto hadamard(const libbirch::Array<Type1,Frame1>& o1,
     const libbirch::Array<Type2,Frame2>& o2) {
-  return kronecker(o1.toEigen(), o2.toEigen());
+  return hadamard(o1.toEigen(), o2.toEigen());
 }
 
 template<class Type1, class Type2>

@@ -18,7 +18,6 @@ final class Regression(θ:Expression<(Real[_,_],Real[_])>,
       delay!.prune();
     } else {
       m:DelayRidge?;
-
       if (m <- θ.graftRidge())? {
         delay <- DelayRidgeRegression(future, futureUpdate, m!, x);
       } else {
