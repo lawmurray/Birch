@@ -4,7 +4,7 @@
 final class DelayMultivariateLinearGaussianGaussian(future:Real[_]?,
     futureUpdate:Boolean, A:Real[_,_], m:DelayMultivariateGaussian, c:Real[_],
     S:Real[_,_]) < DelayMultivariateGaussian(future, futureUpdate, A*m.μ + c,
-    A*m.Σ*trans(A) + S) {
+    A*m.Σ*transpose(A) + S) {
   /**
    * Scale.
    */

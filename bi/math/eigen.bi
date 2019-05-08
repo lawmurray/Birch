@@ -90,32 +90,32 @@ function dot(x:Integer[_], y:Integer[_]) -> Integer;
 /**
  * Transpose of a matrix.
  */
-function trans(X:Real[_,_]) -> Real[_,_];
+function transpose(X:Real[_,_]) -> Real[_,_];
 
 /**
  * Transpose of a matrix.
  */
-function trans(X:Integer[_,_]) -> Integer[_,_];
+function transpose(X:Integer[_,_]) -> Integer[_,_];
 
 /**
  * Transpose of a matrix.
  */
-function trans(X:Boolean[_,_]) -> Boolean[_,_];
+function transpose(X:Boolean[_,_]) -> Boolean[_,_];
 
 /**
  * Transpose of a column vector into a row vector.
  */
-function trans(x:Real[_]) -> Real[_,_];
+function transpose(x:Real[_]) -> Real[_,_];
 
 /**
  * Transpose of a column vector into a row vector.
  */
-function trans(x:Integer[_]) -> Integer[_,_];
+function transpose(x:Integer[_]) -> Integer[_,_];
 
 /**
  * Transpose of a column vector into a row vector.
  */
-function trans(x:Boolean[_]) -> Boolean[_,_];
+function transpose(x:Boolean[_]) -> Boolean[_,_];
 
 /**
  * Diagonal of a matrix, as a vector.
@@ -146,6 +146,96 @@ function det(X:Real[_,_]) -> Real;
  * Inverse of a matrix.
  */
 function inv(X:Real[_,_]) -> Real[_,_];
+
+/**
+ * Kronecker vector-vector product.
+ */
+function kronecker(x:Real[_], y:Real[_]) -> Real[_];
+
+/**
+ * Kronecker vector-vector product.
+ */
+function kronecker(X:Integer[_], y:Integer[_]) -> Integer[_];
+
+/**
+ * Kronecker vector-vector product.
+ */
+function kronecker(X:Boolean[_], y:Boolean[_]) -> Boolean[_];
+
+/**
+ * Kronecker matrix-vector product.
+ */
+function kronecker(X:Real[_,_], y:Real[_]) -> Real[_,_];
+
+/**
+ * Kronecker matrix-vector product.
+ */
+function kronecker(X:Integer[_,_], y:Integer[_]) -> Integer[_,_];
+
+/**
+ * Kronecker matrix-vector product.
+ */
+function kronecker(X:Boolean[_,_], y:Boolean[_]) -> Boolean[_,_];
+
+/**
+ * Kronecker vector-matrix product.
+ */
+function kronecker(x:Real[_], Y:Real[_,_]) -> Real[_,_];
+
+/**
+ * Kronecker vector-matrix product.
+ */
+function kronecker(x:Integer[_], Y:Integer[_,_]) -> Integer[_,_];
+
+/**
+ * Kronecker vector-matrix product.
+ */
+function kronecker(x:Boolean[_], Y:Boolean[_,_]) -> Boolean[_,_];
+
+/**
+ * Kronecker matrix-matrix product.
+ */
+function kronecker(X:Real[_,_], Y:Real[_,_]) -> Real[_,_];
+
+/**
+ * Kronecker matrix-matrix product.
+ */
+function kronecker(X:Integer[_,_], Y:Integer[_,_]) -> Integer[_,_];
+
+/**
+ * Kronecker matrix-matrix product.
+ */
+function kronecker(X:Boolean[_,_], Y:Boolean[_,_]) -> Boolean[_,_];
+
+/**
+ * Hadamard (element-wise) vector product.
+ */
+function hadamard(x:Real[_], y:Real[_]) -> Real[_];
+
+/**
+ * Hadamard (element-wise) vector product.
+ */
+function hadamard(x:Integer[_], y:Integer[_]) -> Integer[_];
+
+/**
+ * Hadamard (element-wise) vector product.
+ */
+function hadamard(x:Boolean[_], y:Boolean[_]) -> Boolean[_];
+
+/**
+ * Hadamard (element-wise) matrix product.
+ */
+function hadamard(X:Real[_,_], Y:Real[_,_]) -> Real[_,_];
+
+/**
+ * Hadamard (element-wise) matrix product.
+ */
+function hadamard(X:Integer[_,_], Y:Integer[_,_]) -> Integer[_,_];
+
+/**
+ * Hadamard (element-wise) matrix product.
+ */
+function hadamard(X:Boolean[_,_], Y:Boolean[_,_]) -> Boolean[_,_];
 
 /**
  * Solve a system of equations.

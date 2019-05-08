@@ -19,7 +19,7 @@ program test_multivariate_dot_normal_inverse_gamma_log_gaussian(N:Integer <- 100
       Σ[i,j] <- simulate_uniform(-2.0, 2.0);
     }
   }
-  Σ <- Σ*trans(Σ);
+  Σ <- Σ*transpose(Σ);
  
   /* simulate forward */
   for i:Integer in 1..N {

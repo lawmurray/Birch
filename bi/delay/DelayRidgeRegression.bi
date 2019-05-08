@@ -14,19 +14,19 @@ final class DelayRidgeRegression(future:Real[_]?, futureUpdate:Boolean,
   u:Real[_] <- u;
 
   function simulate() -> Real[_] {
-    //return simulate_ridge_regression(θ.N, θ.Λ, θ.α, θ.γ, u);
+    return simulate_ridge_regression(θ!.N, θ!.Λ, θ!.α, θ!.γ, u);
   }
   
   function observe(x:Real[_]) -> Real {
-    //return observe_ridge_regression(x, θ.N, θ.Λ, θ.α, θ.γ, u);
+    return observe_ridge_regression(x, θ!.N, θ!.Λ, θ!.α, θ!.γ, u);
   }
 
   function update(x:Real[_]) {
-    //(θ.N, θ.Λ, θ.α, θ.γ) <- update_ridge_regression(x, θ.N, θ.Λ, θ.α, θ.γ, u);
+    (θ!.N, θ!.Λ, θ!.α, θ!.γ) <- update_ridge_regression(x, θ!.N, θ!.Λ, θ!.α, θ!.γ, u);
   }
 
   function downdate(x:Real[_]) {
-    //(θ.N, θ.Λ, θ.α, θ.γ) <- downdate_ridge_regression(x, θ.N, θ.Λ, θ.α, θ.γ, u);
+    (θ!.N, θ!.Λ, θ!.α, θ!.γ) <- downdate_ridge_regression(x, θ!.N, θ!.Λ, θ!.α, θ!.γ, u);
   }
 
   function pdf(x:Real[_]) -> Real {

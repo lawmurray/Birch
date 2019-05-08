@@ -757,7 +757,7 @@ function observe_multivariate_normal_inverse_gamma_gaussian(x:Real[_],
 function observe_multivariate_linear_normal_inverse_gamma_gaussian(x:Real[_],
     A:Real[_,_], μ:Real[_], c:Real[_], Λ:LLT, α:Real, β:Real) -> Real {
   return observe_multivariate_student_t(x, 2.0*α, A*μ + c,
-      (α/β)*inv(identity(rows(A)) + A*solve(Λ, trans(A))));
+      (α/β)*inv(identity(rows(A)) + A*solve(Λ, transpose(A))));
 }
 
 /**
@@ -783,6 +783,7 @@ function observe_multivariate_dot_normal_inverse_gamma_gaussian(x:Real,
 /**
  * Observe a multivariate uniform distribution.
  *
+ * - x: The variate.
  * - l: Lower bound of hyperrectangle.
  * - u: Upper bound of hyperrectangle.
  *
@@ -804,6 +805,7 @@ function observe_multivariate_uniform(x:Real[_], l:Real[_], u:Real[_]) -> Real {
 /**
  * Observe a multivariate uniform distribution over integers.
  *
+ * - x: The variate.
  * - l: Lower bound of hyperrectangle.
  * - u: Upper bound of hyperrectangle.
  *
@@ -818,6 +820,86 @@ function observe_multivariate_uniform_int(x:Integer[_], l:Integer[_], u:Integer[
   w:Real <- 0.0;
   for (d:Integer in 1..D) {
     w <- w + observe_uniform_int(x[d], l[d], u[d]);
+  }
+  return w;
+}
+
+/**
+ * Observe ridge regression parameters.
+ *
+ * - W: Weight matrix.
+ * - σ2: Variance vector.
+ * - N: Prior precision times mean for weights, where each column represents
+ *      the mean of the weight for a separate output. 
+ * - Λ: Common prior precision.
+ * - α: Common prior weight and likelihood covariance shape.
+ * - β: Prior covariance scale accumulators.
+ *
+ * Returns: Matrix of weights and vector of variances, where each column in
+ * the matrix and element in the vector corresponds to a different output
+ * in the regression.
+ */
+function observe_ridge(W:Real[_,_], σ2:Real[_], N:Real[_,_], Λ:LLT, α:Real,
+    γ:Real[_]) -> Real {
+  auto R <- rows(N);
+  auto C <- columns(N);
+  auto M <- solve(Λ, N);
+  auto Σ <- inv(Λ);
+  auto β <- γ - 0.5*diagonal(transpose(N)*M);
+  
+  w:Real <- 0.0;
+  for auto j in 1..C {
+    w <- w + observe_inverse_gamma(σ2[j], α, β[j]);
+    w <- w + observe_multivariate_gaussian(W[1..R,j], M[1..R,j], Σ*σ2[j]);
+  }    
+  return w;
+}
+
+/**
+ * Observe regression.
+ *
+ * - x: Outputs of the regression.
+ * - W: Weight matrix, where each column represents the weights for a
+ *      different output. 
+ * - σ2: Variance vector, where each element represents the variance for a
+ *      different output.
+ * - u: Input.
+ *
+ * Returns: the log probability density.
+ */
+function observe_regression(x:Real[_], W:Real[_,_], σ2:Real[_], u:Real[_]) ->
+    Real {
+  auto μ <- transpose(W)*u;
+  auto D <- length(μ);
+  auto w <- 0.0;
+  for auto d in 1..D {
+    w <- w + observe_gaussian(x[d], μ[d], σ2[d]);
+  }
+  return w;
+}
+
+/**
+ * Observe a ridge regression.
+ *
+ * - x: The variate.
+ * - N: Prior precision times mean for weights, where each column represents
+ *      the mean of the weight for a separate output. 
+ * - Λ: Common prior precision.
+ * - α: Common prior weight and likelihood covariance shape.
+ * - β: Prior covariance scale accumulators.
+ * - u: Input.
+ *
+ * Returns: the log probability density.
+ */
+function observe_ridge_regression(x:Real[_], N:Real[_,_], Λ:LLT, α:Real,
+    γ:Real[_], u:Real[_]) -> Real {
+  D:Integer <- columns(N);
+  M:Real[_,_] <- solve(Λ, N);
+  μ:Real[_] <- transpose(M)*u;
+  σ2:Real[_] <- (γ - 0.5*diagonal(transpose(N)*M))*(1.0 + dot(u, solve(Λ, u)))/α;  
+  w:Real <- 0.0;
+  for d:Integer in 1..D {
+    w <- w + observe_student_t(x[d], 2.0*α, μ[d], σ2[d]);
   }
   return w;
 }

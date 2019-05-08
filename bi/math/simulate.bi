@@ -644,7 +644,7 @@ function simulate_multivariate_student_t(ν:Real, μ:Real[_], Λ:Real[_,_]) ->
   for (d:Integer in 1..D) {
     z[d] <- simulate_student_t(ν);
   }
-  return μ + solve(trans(chol(Λ)), z);
+  return μ + solve(transpose(chol(Λ)), z);
 }
 
 /**
@@ -727,7 +727,7 @@ function simulate_multivariate_normal_inverse_gamma_gaussian(μ:Real[_],
 function simulate_multivariate_linear_normal_inverse_gamma_gaussian(
     A:Real[_,_], μ:Real[_], c:Real[_], Λ:LLT, α:Real, β:Real) -> Real[_] {
   return simulate_multivariate_student_t(2.0*α, A*μ + c,
-      (α/β)*cholinv(identity(rows(A)) + A*solve(Λ, trans(A))));
+      (α/β)*cholinv(identity(rows(A)) + A*solve(Λ, transpose(A))));
 }
 
 /**
@@ -773,8 +773,82 @@ function simulate_multivariate_uniform_int(l:Integer[_], u:Integer[_]) -> Intege
   assert length(l) == length(u);
   D:Integer <- length(l);
   z:Integer[D];
-  for (d:Integer in 1..D) {
+  for d:Integer in 1..D {
     z[d] <- simulate_uniform_int(l[d], u[d]);
   }
   return z;
+}
+
+/**
+ * Simulate ridge regression parameters.
+ *
+ * - N: Prior precision times mean for weights, where each column represents
+ *      the mean of the weight for a separate output. 
+ * - Λ: Common prior precision.
+ * - α: Common prior weight and likelihood covariance shape.
+ * - β: Prior covariance scale accumulators.
+ *
+ * Returns: Matrix of weights and vector of variances, where each column in
+ * the matrix and element in the vector corresponds to a different output
+ * in the regression.
+ */
+function simulate_ridge(N:Real[_,_], Λ:LLT, α:Real, γ:Real[_]) ->
+    (Real[_,_], Real[_]) {
+  auto R <- rows(N);
+  auto C <- columns(N);
+  auto M <- solve(Λ, N);
+  auto Σ <- inv(Λ);
+  auto β <- γ - 0.5*diagonal(transpose(N)*M);
+    
+  W:Real[R,C];
+  σ2:Real[C];
+  for auto j in 1..C {
+    σ2[j] <- simulate_inverse_gamma(α, β[j]);
+    W[1..R,j] <- simulate_multivariate_gaussian(M[1..R,j], Σ*σ2[j]);
+  }    
+  return (W, σ2);
+}
+
+/**
+ * Simulate regression.
+ *
+ * - W: Weight matrix, where each column represents the weights for a
+ *      different output. 
+ * - σ2: Variance vector, where each element represents the variance for a
+ *      different output.
+ * - u: Input.
+ *
+ * Returns: Outputs of the regression.
+ */
+function simulate_regression(W:Real[_,_], σ2:Real[_], u:Real[_]) -> Real[_] {
+  auto μ <- transpose(W)*u;
+  auto D <- length(μ);
+  x:Real[D];
+  for auto d in 1..D {
+    x[d] <- simulate_gaussian(μ[d], σ2[d]);
+  }
+  return x;
+}
+
+/**
+ * Simulate ridge regression.
+ *
+ * - N: Prior precision times mean for weights, where each column represents
+ *      the mean of the weight for a separate output. 
+ * - Λ: Common prior precision.
+ * - α: Common prior weight and likelihood covariance shape.
+ * - β: Prior covariance scale accumulators.
+ * - u: Input.
+ */
+function simulate_ridge_regression(N:Real[_,_], Λ:LLT, α:Real, γ:Real[_],
+    u:Real[_]) -> Real[_] {
+  D:Integer <- columns(N);
+  M:Real[_,_] <- solve(Λ, N);
+  μ:Real[_] <- transpose(M)*u;
+  σ2:Real[_] <- (γ - 0.5*diagonal(transpose(N)*M))*(1.0 + dot(u, solve(Λ, u)))/α;  
+  x:Real[D];
+  for d:Integer in 1..D {
+    x[d] <- simulate_student_t(2.0*α, μ[d], σ2[d]);
+  }
+  return x;
 }

@@ -20,11 +20,11 @@ final class DelayRegression(future:Real[_]?, futureUpdate:Boolean,
   u:Real[_] <- u;
 
   function simulate() -> Real[_] {
-    //return simulate_regression(θ.W, θ.σ2, u);
+    return simulate_regression(W, σ2, u);
   }
   
   function observe(x:Real[_]) -> Real {
-    //return observe_regression(x, θ.W, θ.σ2, u);
+    return observe_regression(x, W, σ2, u);
   }
 
   function update(x:Real[_]) {

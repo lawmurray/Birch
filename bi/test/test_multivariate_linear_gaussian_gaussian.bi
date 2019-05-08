@@ -20,8 +20,8 @@ program test_multivariate_linear_gaussian_gaussian(N:Integer <- 10000) {
       A[i,j] <- simulate_uniform(-2.0, 2.0);
     }
   }
-  Σ_0 <- Σ_0*trans(Σ_0);
-  Σ_1 <- Σ_1*trans(Σ_1);
+  Σ_0 <- Σ_0*transpose(Σ_0);
+  Σ_1 <- Σ_1*transpose(Σ_1);
  
   /* simulate forward */
   for i:Integer in 1..N {

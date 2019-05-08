@@ -337,7 +337,7 @@ function update_multivariate_gaussian_gaussian(x:Real[_], μ:Real[_],
  */
 function update_multivariate_linear_gaussian_gaussian(x:Real[_], A:Real[_,_],
     μ:Real[_], Σ:Real[_,_], c:Real[_], S:Real[_,_]) -> (Real[_], Real[_,_]) {
-  auto K' <- Σ*trans(A)*cholinv(A*Σ*trans(A) + S);
+  auto K' <- Σ*transpose(A)*cholinv(A*Σ*transpose(A) + S);
   auto μ' <- μ + K'*(x - A*μ - c);
   auto Σ' <- Σ - K'*A*Σ;
   return (μ', Σ');
@@ -360,7 +360,7 @@ function update_multivariate_dot_gaussian_gaussian(x:Real, a:Real[_],
     μ:Real[_], Σ:Real[_,_], c:Real, s2:Real) -> (Real[_], Real[_,_]) {
   auto K' <- Σ*a/(dot(a, Σ*a) + s2);
   auto μ' <- μ + K'*(x - dot(a, μ) - c);
-  auto Σ' <- Σ - K'*trans(a)*Σ;
+  auto Σ' <- Σ - K'*transpose(a)*Σ;
   return (μ', Σ');
 }
 
@@ -444,8 +444,8 @@ function update_multivariate_linear_normal_inverse_gamma_gaussian(
     x:Real[_], A:Real[_,_], ν:Real[_], c:Real[_], Λ:LLT, γ:Real, α:Real,
     β:Real) -> (Real[_], LLT, Real, Real, Real) {
   D:Integer <- length(x);
-  Λ':LLT <- rank_update(Λ, trans(A), 1.0);
-  ν':Real[_] <- ν + trans(A)*(x - c);
+  Λ':LLT <- rank_update(Λ, transpose(A), 1.0);
+  ν':Real[_] <- ν + transpose(A)*(x - c);
   α':Real <- α + 0.5*D;
   γ':Real <- γ + 0.5*dot(x - c);
   β':Real <- γ' - 0.5*dot(solve(Λ', ν'), ν');
@@ -476,4 +476,26 @@ function update_multivariate_dot_normal_inverse_gamma_gaussian(x:Real,
   γ':Real <- γ + 0.5*pow(x - c, 2.0);
   β':Real <- γ' - 0.5*dot(solve(Λ', ν'), ν');
   return (ν', Λ', γ', α', β');
+}
+
+/**
+ * Update parameters for a linear-Gaussian ridge regression.
+ *
+ * - x: The variate.
+ * - N: Prior precision times mean for weights, where each column represents
+ *      the mean of the weight for a separate output. 
+ * - Λ: Common prior precision.
+ * - α: Common prior weight and likelihood covariance shape.
+ * - β: Prior covariance scale accumulators.
+ * - u: Input.
+ *
+ * Returns: the posterior hyperparameters `N'`, `Λ'`, `γ'`, and `β'`.
+ */
+function update_ridge_regression(x:Real[_], N:Real[_,_], Λ:LLT, α:Real,
+    γ:Real[_], u:Real[_]) -> (Real[_,_], LLT, Real, Real[_]) {
+  Λ':LLT <- rank_update(Λ, u, 1.0);
+  N':Real[_,_] <- N + kronecker(u, transpose(x));
+  α':Real <- α + 0.5;
+  γ':Real[_] <- γ + 0.5*hadamard(x, x);
+  return (N', Λ', α', γ');
 }

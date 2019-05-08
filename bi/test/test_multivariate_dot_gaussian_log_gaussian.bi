@@ -18,7 +18,7 @@ program test_multivariate_dot_gaussian_log_gaussian(N:Integer <- 10000) {
       Σ_0[i,j] <- simulate_uniform(-2.0, 2.0);
     }
   }
-  Σ_0 <- Σ_0*trans(Σ_0);
+  Σ_0 <- Σ_0*transpose(Σ_0);
   σ2_1 <- σ2_1*σ2_1;
  
   /* simulate forward */

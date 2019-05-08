@@ -24,7 +24,7 @@ program test_multivariate_linear_normal_inverse_gamma_gaussian(N:Integer <- 1000
       A[i,j] <- simulate_uniform(-2.0, 2.0);
     }
   }
-  Σ <- Σ*trans(Σ);
+  Σ <- Σ*transpose(Σ);
  
   /* simulate forward */
   for i:Integer in 1..N {
