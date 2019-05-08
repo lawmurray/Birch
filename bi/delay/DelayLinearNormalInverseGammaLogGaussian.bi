@@ -52,6 +52,10 @@ final class DelayLinearNormalInverseGammaLogGaussian(future:Real?,
   function lower() -> Real? {
     return 0.0;
   }
+
+  function write(buffer:Buffer) {
+    buffer.set(value());
+  }
 }
 
 function DelayLinearNormalInverseGammaLogGaussian(future:Real?,

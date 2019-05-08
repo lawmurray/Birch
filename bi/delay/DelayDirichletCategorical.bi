@@ -31,6 +31,10 @@ final class DelayDirichletCategorical(future:Integer?, futureUpdate:Boolean,
   function cdf(x:Integer) -> Real {
     return cdf_dirichlet_categorical(x, ρ!.α);
   }
+
+  function write(buffer:Buffer) {
+    buffer.set(value());
+  }
 }
 
 function DelayDirichletCategorical(future:Integer?, futureUpdate:Boolean,

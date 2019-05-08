@@ -17,4 +17,8 @@ class DelayDiscrete(future:Integer?, futureUpdate:Boolean) <
     assert !value? || value! == x;
     value <- x;
   }
+
+  function write(buffer:Buffer) {
+    buffer.set(super.value());
+  }
 }

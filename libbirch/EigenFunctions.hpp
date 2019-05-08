@@ -65,6 +65,16 @@ auto det(const libbirch::Array<Type,Frame>& o) {
 }
 
 template<class Type>
+auto diagonal(const Eigen::MatrixBase<Type>& o) {
+  return o.diagonal();
+}
+
+template<class Type, class Frame>
+auto diagonal(const libbirch::Array<Type,Frame>& o) {
+  return diagonal(o.toEigen());
+}
+
+template<class Type>
 auto trans(const Eigen::MatrixBase<Type>& o) {
   return o.transpose();
 }

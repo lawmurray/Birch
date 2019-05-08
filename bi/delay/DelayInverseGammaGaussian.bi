@@ -36,6 +36,10 @@ final class DelayInverseGammaGaussian(future:Real?, futureUpdate:Boolean,
   function cdf(x:Real) -> Real {
     return cdf_inverse_gamma_gaussian(x, μ, σ2!.α, σ2!.β);
   }
+
+  function write(buffer:Buffer) {
+    buffer.set(value());
+  }
 }
 
 function DelayInverseGammaGaussian(future:Real?, futureUpdate:Boolean, μ:Real,

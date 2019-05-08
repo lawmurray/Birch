@@ -15,6 +15,12 @@ final class DelayMultivariateNormalInverseGamma(future:Real[_]?,
   ν:Real[_] <- Λ*μ;
 
   /**
+   * Covariance scale accumulator,
+   * $\gamma = \beta + \frac{1}{2} \nu \Lambda^{-1} \nu$.
+   */
+  γ:Real <- σ2.β + 0.5*dot(μ, ν);
+
+  /**
    * Scale.
    */
   σ2:DelayInverseGamma& <- σ2;

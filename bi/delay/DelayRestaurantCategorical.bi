@@ -34,7 +34,12 @@ final class DelayRestaurantCategorical(future:Integer?, futureUpdate:Boolean,
   function pmf(x:Integer) -> Real {
     return pmf_restaurant_categorical(x, ρ!.α, ρ!.θ, ρ!.n, ρ!.N);
   }
+  
+  function write(buffer:Buffer) {
+    buffer.set(value());
+  }
 }
+
 
 function DelayRestaurantCategorical(future:Integer?, futureUpdate:Boolean,
     ρ:DelayRestaurant) -> DelayRestaurantCategorical {

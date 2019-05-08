@@ -31,6 +31,10 @@ final class DelayLinearGaussianLogGaussian(future:Real?, futureUpdate:Boolean,
   function downdate(x:Real) {
     (m!.μ, m!.λ) <- downdate_linear_gaussian_gaussian(log(x), a, m!.μ, m!.λ, c, l);
   }
+
+  function write(buffer:Buffer) {
+    buffer.set(value());
+  }
 }
 
 function DelayLinearGaussianLogGaussian(future:Real?, futureUpdate:Boolean,

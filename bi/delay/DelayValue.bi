@@ -152,12 +152,4 @@ class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
   function upper() -> Value? {
     return nil;
   }
-
-  function write(buffer:Buffer) {
-    /* by default, in order to output, we must realize the random variate
-     * and output it as a value; nodes that can exist at the root of the
-     * $M$-path (e.g. DelayBeta, DelayGamma, DelayGaussian) override this
-     * to output as a distribution instead */
-    buffer.set(value());
-  }
 }

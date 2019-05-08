@@ -35,6 +35,10 @@ final class DelayMultivariateInverseGammaGaussian(future:Real[_]?,
   function pdf(x:Real[_]) -> Real {
     return pdf_multivariate_inverse_gamma_gaussian(x, μ, σ2!.α, σ2!.β);
   }
+
+  function write(buffer:Buffer) {
+    buffer.set(value());
+  }
 }
 
 function DelayMultivariateInverseGammaGaussian(future:Real[_]?,

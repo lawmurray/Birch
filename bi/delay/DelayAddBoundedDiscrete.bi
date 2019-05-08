@@ -99,7 +99,7 @@ final class DelayAddBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
     parent <- nil;
     x1!.child <- nil;
     x2!.child <- nil;
-  }  
+  }
 }
 
 function DelayAddBoundedDiscrete(future:Integer?, futureUpdate:Boolean,

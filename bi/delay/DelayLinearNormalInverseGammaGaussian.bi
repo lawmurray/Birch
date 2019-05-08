@@ -48,6 +48,10 @@ final class DelayLinearNormalInverseGammaGaussian(future:Real?,
     return cdf_linear_normal_inverse_gamma_gaussian(x, a, μ!.μ, c,
         1.0/μ!.λ, μ!.σ2!.α, μ!.σ2!.β);
   }
+
+  function write(buffer:Buffer) {
+    buffer.set(value());
+  }
 }
 
 function DelayLinearNormalInverseGammaGaussian(future:Real?,

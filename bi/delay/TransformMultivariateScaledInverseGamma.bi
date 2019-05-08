@@ -18,7 +18,7 @@ final class TransformMultivariateScaledInverseGamma(A:Real[_,_],
   }
 
   function leftDot(x:Real[_]) {
-    A <- dot(x, A);
+    A <- trans(x)*A;
   }
 }
 

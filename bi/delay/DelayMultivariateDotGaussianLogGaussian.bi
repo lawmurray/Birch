@@ -40,6 +40,10 @@ final class DelayMultivariateDotGaussianLogGaussian(future:Real?,
   function lower() -> Real? {
     return 0.0;
   }
+
+  function write(buffer:Buffer) {
+    buffer.set(value());
+  }
 }
 
 function DelayMultivariateDotGaussianLogGaussian(future:Real?,

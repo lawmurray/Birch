@@ -88,30 +88,6 @@ function dot(x:Real[_], y:Real[_]) -> Real;
 function dot(x:Integer[_], y:Integer[_]) -> Integer;
 
 /**
- * Dot product of a vector with each of the columns of a matrix, to produce
- * matrix with a single row.
- */
-function dot(x:Real[_], Y:Real[_,_]) -> Real[_,_] {
-  Z:Real[1,columns(Y)];
-  for j:Integer in 1..columns(Y) {
-    Z[1,j] <- dot(x, Y[1..rows(Y),j]);
-  }
-  return Z;
-}
-
-/**
- * Dot product of a vector with each of the columns of a matrix, to produce
- * matrix with a single row.
- */
-function dot(x:Integer[_], Y:Integer[_,_]) -> Integer[_,_] {
-  Z:Integer[1,columns(Y)];
-  for j:Integer in 1..columns(Y) {
-    Z[1,j] <- dot(x, Y[1..rows(Y),j]);
-  }
-  return Z;
-}
-
-/**
  * Transpose of a matrix.
  */
 function trans(X:Real[_,_]) -> Real[_,_];
@@ -140,6 +116,21 @@ function trans(x:Integer[_]) -> Integer[_,_];
  * Transpose of a column vector into a row vector.
  */
 function trans(x:Boolean[_]) -> Boolean[_,_];
+
+/**
+ * Diagonal of a matrix, as a vector.
+ */
+function diagonal(X:Real[_,_]) -> Real[_];
+
+/**
+ * Diagonal of a matrix, as a vector.
+ */
+function diagonal(X:Integer[_,_]) -> Integer[_];
+
+/**
+ * Diagonal of a matrix, as a vector.
+ */
+function diagonal(X:Boolean[_,_]) -> Boolean[_];
 
 /**
  * Norm of a vector.

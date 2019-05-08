@@ -25,8 +25,9 @@
  * be multiplication on the left (as above) or the right, or division on the
  * right.
  */
-final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>, A:Expression<Real[_,_]>,
-    α:Expression<Real>, β:Expression<Real>) < Distribution<Real[_]> {
+final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
+    A:Expression<Real[_,_]>, α:Expression<Real>, β:Expression<Real>) <
+    Distribution<Real[_]> {
   /**
    * Mean.
    */

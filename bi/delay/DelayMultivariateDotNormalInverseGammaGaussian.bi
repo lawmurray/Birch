@@ -21,12 +21,6 @@ final class DelayMultivariateDotNormalInverseGammaGaussian(future:Real?,
    */
   c:Real <- c;
 
-  /**
-   * Covariance scale accumulator,
-   * $\gamma = \beta + \frac{1}{2} \nu \Lambda^{-1} \nu$.
-   */
-  γ:Real <- μ.σ2!.β + 0.5*dot(solve(μ.Λ, μ.ν), μ.ν);
-
   function simulate() -> Real {
     return simulate_multivariate_dot_normal_inverse_gamma_gaussian(a, solve(μ!.Λ, μ!.ν),
         c, μ!.Λ, μ!.σ2!.α, μ!.σ2!.β);
@@ -38,13 +32,13 @@ final class DelayMultivariateDotNormalInverseGammaGaussian(future:Real?,
   }
 
   function update(x:Real) {
-    (μ!.ν, μ!.Λ, γ, μ!.σ2!.α, μ!.σ2!.β) <- update_multivariate_dot_normal_inverse_gamma_gaussian(
-        x, a, μ!.ν, c, μ!.Λ, γ, μ!.σ2!.α, μ!.σ2!.β);
+    (μ!.ν, μ!.Λ, μ!.γ, μ!.σ2!.α, μ!.σ2!.β) <- update_multivariate_dot_normal_inverse_gamma_gaussian(
+        x, a, μ!.ν, c, μ!.Λ, μ!.γ, μ!.σ2!.α, μ!.σ2!.β);
   }
 
   function downdate(x:Real) {
-    (μ!.ν, μ!.Λ, γ, μ!.σ2!.α, μ!.σ2!.β) <- downdate_multivariate_dot_normal_inverse_gamma_gaussian(
-        x, a, μ!.ν, c, μ!.Λ, γ, μ!.σ2!.α, μ!.σ2!.β);
+    (μ!.ν, μ!.Λ, μ!.γ, μ!.σ2!.α, μ!.σ2!.β) <- downdate_multivariate_dot_normal_inverse_gamma_gaussian(
+        x, a, μ!.ν, c, μ!.Λ, μ!.γ, μ!.σ2!.α, μ!.σ2!.β);
   }
 
   function pdf(x:Real) -> Real {
@@ -55,6 +49,10 @@ final class DelayMultivariateDotNormalInverseGammaGaussian(future:Real?,
   function cdf(x:Real) -> Real {
     return cdf_multivariate_dot_normal_inverse_gamma_gaussian(x, a, solve(μ!.Λ, μ!.ν), c,
         μ!.Λ, μ!.σ2!.α, μ!.σ2!.β);
+  }
+
+  function write(buffer:Buffer) {
+    buffer.set(value());
   }
 }
 
