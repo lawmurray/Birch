@@ -218,7 +218,11 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
 
 void bi::CppFiberGenerator::visit(const Return* o) {
   genTraceLine(o->loc->firstLine);
-  line("goto END_;");
+  if (inLambda) {
+    line("return " << o->single << ';');
+  } else {
+    line("goto END_;");
+  }
 }
 
 void bi::CppFiberGenerator::visit(const Yield* o) {
@@ -231,7 +235,10 @@ void bi::CppFiberGenerator::visit(const Yield* o) {
 }
 
 void bi::CppFiberGenerator::visit(const Identifier<Parameter>* o) {
-  middle("local->" << o->name);
+  if (!inLambda) {
+    middle("local->");
+  }
+  middle(o->name);
 }
 
 void bi::CppFiberGenerator::visit(const Identifier<LocalVariable>* o) {

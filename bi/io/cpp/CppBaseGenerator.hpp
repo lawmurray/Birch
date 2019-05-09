@@ -160,6 +160,11 @@ protected:
    * Are we inside a constructor?
    */
   int inConstructor;
+
+  /**
+   * Are we inside the body of a lambda function?
+   */
+  int inLambda;
 };
 }
 

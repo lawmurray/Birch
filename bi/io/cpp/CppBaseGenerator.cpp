@@ -15,7 +15,8 @@ bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
     header(header),
     inAssign(0),
     inPointer(0),
-    inConstructor(0) {
+    inConstructor(0),
+    inLambda(0) {
   //
 }
 
@@ -146,7 +147,9 @@ void bi::CppBaseGenerator::visit(const Get* o) {
 void bi::CppBaseGenerator::visit(const LambdaFunction* o) {
   finish("[=](" << o->params << ") {");
   in();
+  ++inLambda;
   *this << o->braces->strip();
+  --inLambda;
   out();
   start("}");
 }
