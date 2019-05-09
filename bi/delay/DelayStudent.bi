@@ -1,19 +1,28 @@
 /*
  * Delayed Student's $t$ random variate.
  */
-final class DelayStudent(future:Real?, futureUpdate:Boolean, ν:Real) <
-    DelayValue<Real>(future, futureUpdate) {
+final class DelayStudent(future:Real?, futureUpdate:Boolean, ν:Real, μ:Real, σ2:Real) < DelayValue<Real>(future, futureUpdate) {
   /**
    * Degrees of freedom.
    */
   ν:Real <- ν;
+
+  /**
+   * Location parameter.
+   */
+  μ:Real <- μ;
+
+  /**
+   * Squared scale parameter.
+   */
+  σ2:Real <- σ2;
   
   function simulate() -> Real {
-    return simulate_student_t(ν);
+    return simulate_student_t(ν, μ, σ2);
   }
   
   function observe(x:Real) -> Real {
-    return observe_student_t(x, ν);
+    return observe_student_t(x, ν, μ, σ2);
   }
 
   function update(x:Real) {
@@ -25,22 +34,23 @@ final class DelayStudent(future:Real?, futureUpdate:Boolean, ν:Real) <
   }
 
   function pdf(x:Real) -> Real {
-    return pdf_student_t(x, ν);
+    return pdf_student_t(x, ν, μ, σ2);
   }
 
   function cdf(x:Real) -> Real {
-    return cdf_student_t(x, ν);
+    return cdf_student_t(x, ν, μ, σ2);
   }
 
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "Student");
     buffer.set("ν", ν);
+    buffer.set("μ", μ);
+    buffer.set("σ2", σ2);
   }
 }
 
-function DelayStudent(future:Real?, futureUpdate:Boolean, ν:Real) ->
-    DelayStudent {
-  m:DelayStudent(future, futureUpdate, ν);
+function DelayStudent(future:Real?, futureUpdate:Boolean, ν:Real, μ:Real, σ2:Real) -> DelayStudent {
+  m:DelayStudent(future, futureUpdate, ν, μ, σ2);
   return m;
 }
