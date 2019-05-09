@@ -218,7 +218,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
 
 void bi::CppFiberGenerator::visit(const Return* o) {
   genTraceLine(o->loc->firstLine);
-  line("goto END;");
+  line("goto END_;");
 }
 
 void bi::CppFiberGenerator::visit(const Yield* o) {
