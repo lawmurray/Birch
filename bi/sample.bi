@@ -1,15 +1,20 @@
 /**
  * Sample from a model.
  *
- * - `--input`: Name of the input file, if any.
+ * - `--input`: Name of the input file, if any. Alternatively (preferably),
+ *   provide this as `input` in the configuration file.
  *
- * - `--output`: Name of the output file, if any.
+ * - `--output`: Name of the output file, if any. Alternatively (preferably),
+ *   provide this as `output` in the configuration file.
  *
- * - `--config`: Name of the configuration file, if any.
+ * - `--config`: Name of the configuration file, if any. Alternatively
+ *   (preferably), provide this as `config` in the configuration file.
  *
- * - `--diagnostic`: Name of the diagnostic file, if any.
+ * - `--diagnostic`: Name of the diagnostic file, if any. Alternatively
+ *   (preferably), provide this as a `diagnostic` in the configuration file.
  *
- * - `--seed`: Random number seed. If not provided, random entropy is used.
+ * - `--seed`: Random number seed. Alternatively (preferably), provide this as
+ *   `seed` in the configuration file. If not provided, random entropy is used.
  *
  * - `--model`: Name of the model class. Alternatively (preferably), provide
  *   this as `model.class` in the configuration file.
@@ -27,17 +32,25 @@ program sample(
     seed:Integer?,
     model:String?,
     sampler:String?) {
-  /* random number generator */
-  if seed? {
-    global.seed(seed!);
-  }
-  
+
   /* config */
   configBuffer:MemoryBuffer;
   if config? {
     configBuffer.load(config!);
   }
-    
+
+  /* random number generator */
+  if seed? {
+    global.seed(seed!);
+  } else if config? {
+    auto buffer <- configBuffer.getInteger("seed");
+    if buffer? {
+      global.seed(buffer!);
+    }
+  } else {
+    global.seed();
+  }
+
   /* model */
   m:Model?;
   modelClass:String?;
@@ -63,9 +76,18 @@ program sample(
   assert m?;
 
   /* input */
+  inputFile:String?;
   inputBuffer:MemoryBuffer;
   if input? {
-    inputBuffer.load(input!);
+    inputFile <- input!;
+  } else if config? {
+    auto buffer <- configBuffer.getString("input");
+    if buffer? {
+      inputFile <- buffer!;
+    }
+  }
+  if inputFile? {
+    inputBuffer.load(inputFile!);
     inputBuffer.get(m!);
   }
 
@@ -99,33 +121,54 @@ program sample(
     configBuffer.get("sampler", s!);
   }
   assert s?;
-  
+
   /* output */
   outputBuffer:MemoryBuffer;
-  diagnosticBuffer:MemoryBuffer;
   outputBuffer.setArray();
+  outputFile:String?;
+  if output? {
+    outputFile <- output!;
+  } else if config? {
+    auto buffer <- configBuffer.getString("output");
+    if buffer? {
+      outputFile <- buffer!;
+    }
+  }
+
+  /* diagnostic */
+  diagnosticBuffer:MemoryBuffer;
   diagnosticBuffer.setArray();
-  
+  diagnosticFile:String?;
+  if diagnostic? {
+    diagnosticFile <- diagnostic!;
+  } else if config? {
+    auto buffer <- configBuffer.getString("diagnostic");
+    if buffer? {
+      diagnosticFile <- buffer!;
+    }
+  }
+
+
   /* sample */
   m1:Model?;
   w1:Real;
   auto f <- s!.sample();
   while f? {
     (m1, w1) <- f!;
-    if output? {
+    if outputFile? {
       auto buffer <- outputBuffer.push();
       buffer.set(m1!);
       buffer.set("lweight", w1);
     }
-    if diagnostic? {
+    if diagnosticFile? {
       auto buffer <- diagnosticBuffer.push();
       buffer.set(s!);
     }
   }
-  if output? {
-    outputBuffer.save(output!);
+  if outputFile? {
+    outputBuffer.save(outputFile!);
   }
-  if diagnostic? {
-    diagnosticBuffer.save(diagnostic!);
+  if diagnosticFile? {
+    diagnosticBuffer.save(diagnosticFile!);
   }
 }
