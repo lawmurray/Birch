@@ -44,6 +44,8 @@
 #include <tuple>
 #include <memory>
 #include <string>
+#include <sstream>
+#include <iomanip>
 #include <cstdio>
 #include <cstdlib>
 #include <cstdint>

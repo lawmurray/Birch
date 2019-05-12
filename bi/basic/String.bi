@@ -19,7 +19,9 @@ function String(x:Boolean) -> String {
  */
 function String(x:Real64) -> String {
   cpp{{
-  return std::to_string(x);
+  std::stringstream buf;
+  buf << std::setprecision(16) << x;
+  return buf.str();
   }}
 }
 
@@ -28,7 +30,9 @@ function String(x:Real64) -> String {
  */
 function String(x:Real32) -> String {
   cpp{{
-  return std::to_string(x);
+  std::stringstream buf;
+  buf << std::setprecision(8) << x;
+  return buf.str();
   }}
 }
 
