@@ -14,8 +14,9 @@ class ParticleGibbs < ConditionalParticleFilter {
        * trajectory, first replay it with the start (parameters) marginalized
        * out, so as to compute the distribution over them conditioned on the
        * steps (states) */
-      auto x <- clone<ForwardModel>(archetype!);
       auto h <- clone<EventHandler>(x'!.getHandler());
+      auto x <- clone<ForwardModel>(archetype!);
+      x.setHandler(h);
       h.rewind();
       h.setMode(SKIP_DELAY);
       x.start();
