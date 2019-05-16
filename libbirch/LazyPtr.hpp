@@ -317,9 +317,10 @@ public:
    * Finish.
    */
   void finish() {
-    if (object) {
+    if (object && to) {
       object = static_cast<T*>(to->get(object.get()));
       object->finish();
+      to = nullptr;
     }
   }
 
