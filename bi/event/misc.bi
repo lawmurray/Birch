@@ -6,7 +6,9 @@ function coerce<Value>(trace:Queue<Event>) -> ValueEvent<Value> {
   if !trace.empty() {
     auto r <- ValueEvent<Value>?(trace.popFront());
     if r? {
-      return r!;
+      cpp{{
+      return std::move(r.get());
+      }}
     }
   }
   error("incompatible trace");
