@@ -5,5 +5,5 @@ class BidirectionalModel < ForwardModel {
   /**
    * Move back one step.
    */
-  function back();
+  function previous();
 }

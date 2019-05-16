@@ -23,12 +23,7 @@ class HiddenMarkovModel<Parameter,State,Observation> <
   /**
    * Observations.
    */
-  y:List<Observation>;
-
-  /**
-   * Current observation during simulation.
-   */
-  g:ListNode<Observation>?;
+  y:Iterator<Observation>;
 
   /**
    * Observation model.
@@ -47,22 +42,20 @@ class HiddenMarkovModel<Parameter,State,Observation> <
    */
   function step() -> Real {
     auto w <- super.step();
-        
-    if g? {
-      g <- g!.getNext();
+    before:State?;
+    here:Observation?;
+    
+    before <- x.popBefore();
+    if y.hasHere() {
+      here <- y.popHere();
     } else {
-      g <- y.begin();
-    }    
-    if !g? {
-      /* no next observation, insert one */
-      y':Observation;
-      y.pushBack(y');
-      g <- y.end();
+      here':Observation;
+      here <- here';
     }
-
-    auto x <- f!.getValue();
-    auto y <- g!.getValue();
-    return w + h.handle(observation(y, x, θ));
+    w <- w + h.handle(observation(here!, before!, θ));
+    x.pushBefore(before!);
+    y.pushBefore(here!);
+    return w;
   }
 
   function size() -> Integer {
@@ -71,7 +64,7 @@ class HiddenMarkovModel<Parameter,State,Observation> <
 
   function rewind() {
     super.rewind();
-    g <- nil;
+    y.rewind();
   }
 
   function read(buffer:Buffer) {

@@ -24,12 +24,7 @@ class MarkovModel<Parameter,State> < ForwardModel {
   /**
    * States.
    */
-  x:List<State>;
-  
-  /**
-   * Current state during simulation.
-   */
-  f:ListNode<State>?;
+  x:Iterator<State>;
 
   /**
    * Parameter model.
@@ -72,28 +67,28 @@ class MarkovModel<Parameter,State> < ForwardModel {
    * Step. Simulates the initial state, or the transition to the next state.
    */
   function step() -> Real {
-    x:State?;
-    if f? {
-      x <- f!.getValue();
-      f <- f!.getNext();  
+    before:State?;
+    here:State?;
+    if x.hasBefore() {
+      before <- x.popBefore();
+    }
+    if x.hasHere() {
+      here <- x.popHere();
     } else {
-      f <- this.x.begin();
+      here':State;
+      here <- here';
     }
-    if !f? {
-      /* no next state, insert one */
-      x':State;
-      this.x.pushBack(x');
-      f <- this.x.end();
-    }
-
-    auto x' <- f!.getValue();
-    auto w' <- 0.0;
-    if !x? {
-      w' <- w' + h.handle(initial(x', θ));
+    
+    auto w <- 0.0;
+    if before? {
+      w <- w + h.handle(transition(here!, before!, θ));
+      x.pushBefore(before!);
+      x.pushBefore(here!);
     } else {
-      w' <- w' + h.handle(transition(x', x!, θ));
+      w <- w + h.handle(initial(here!, θ));
+      x.pushBefore(here!);
     }
-    return w';
+    return w;
   }
 
   function size() -> Integer {
@@ -101,7 +96,7 @@ class MarkovModel<Parameter,State> < ForwardModel {
   }
   
   function rewind() {
-    f <- nil;
+    x.rewind();
   }
 
   fiber simulate() -> Event {

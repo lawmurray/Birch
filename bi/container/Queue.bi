@@ -1,60 +1,25 @@
 /**
- * First in, first-out (FIFO) queue. Beyond its typical uses, because Queue is
- * a recursive data structure, it provides particularly good sharing under
- * Birch's lazy deep clone mechanism.
- *
- * !!! caution
- *     See note under List for possible segfault issues on the destruction
- *     of large queues.
+ * Double-ended queue.
  */
-final class Queue<Type> {
-  forward:QueueNode<Type>?;
-  backward:QueueNode<Type>?;
-  count:Integer <- 0;
-
-  /**
-   * Number of elements.
-   */
-  function size() -> Integer {
-    return count;
-  }
-
-  /**
-   * Is this empty?
-   */
-  function empty() -> Boolean {
-    return count == 0;
-  }
-
-  /**
-   * Clear all elements.
-   */
-  function clear() {
-    forward <- nil;
-    backward <- nil;
-    count <- 0;
-  }
-
+final class Queue<Type> < DoubleStack<Type> {
   /**
    * Get the first element.
    */
   function front() -> Type {
-    assert !empty();
     if !forward? {
       allForward();
     }
-    return forward!.x;
+    return topForward();
   }
 
   /**
    * Get the last element.
    */
   function back() -> Type {
-    assert !empty();
     if !backward? {
       allBackward();
     }
-    return backward!.x;
+    return topBackward();
   }
 
   /**
@@ -63,15 +28,7 @@ final class Queue<Type> {
    * - x: Value.
    */
   function pushFront(x:Type) {
-    node:QueueNode<Type>(x);
-    //node.next <- forward;
-    if forward? {
-      cpp{{
-      node->next = std::move(forward.get());
-      }}
-    }
-    forward <- node;
-    count <- count + 1;
+    pushForward(x);
   }
 
   /**
@@ -80,49 +37,21 @@ final class Queue<Type> {
    * - x: Value.
    */
   function pushBack(x:Type) {
-    node:QueueNode<Type>(x);
-    //node.next <- backward;
-    if backward? {
-      cpp{{
-      node->next = std::move(backward.get());
-      }}
-    }
-    backward <- node;
-    count <- count + 1;
+    pushBackward(x);
   }
 
   /**
    * Remove the first element and return it.
    */
   function popFront() -> Type {
-    assert !empty();
-    if !forward? {
-      allForward();
-    }
-    assert forward?;
-    count <- count - 1;
-    cpp{{
-    auto x = std::move(forward.get()->x);
-    forward = std::move(forward.get()->next);
-    return x;
-    }}
+    return popForward();
   }
 
   /**
    * Remove the last element and return it.
    */
   function popBack() -> Type {
-    assert !empty();
-    if !backward? {
-      allBackward();
-    }
-    assert backward?;
-    count <- count - 1;
-    cpp{{
-    auto x = std::move(backward.get()->x);
-    backward = std::move(backward.get()->next);
-    return x;
-    }}
+    return popBackward();
   }
 
   /**
@@ -132,59 +61,17 @@ final class Queue<Type> {
    */
   fiber walk() -> Type {
     allForward();
-    auto node <- forward;
-    while node? {
-      yield node!.x;
-      node <- node!.next;
-    }
-  }
-
-  /**
-   * First node, if any. This can be used to maintain a forward
-   * iterator over the container.
-   */
-  function begin() -> QueueNode<Type>? {
-    allForward();
-    return forward;
-  }
-  
-  /**
-   * Last node, if any. This can be used to maintain a backward
-   * iterator over the container.
-   */
-  function end() -> QueueNode<Type>? {
-    allBackward();
-    return backward;
-  }
-  
-  /**
-   * Move all elements to the forward list.
-   */
-  function allForward() {
-    while backward? {
-      cpp{{
-      auto node = std::move(backward.get());
-      backward = std::move(node->next);
-      node->next = std::move(forward);
-      forward = std::move(node);
-      }}
-    }
-  }
-  
-  /**
-   * Move all elements to the backward list.
-   */
-  function allBackward() {
     while forward? {
+      yield forward!.x;
       cpp{{
-      auto node = std::move(forward.get());
-      forward = std::move(node->next);
-      node->next = std::move(backward);
-      backward = std::move(node);
+      auto node = std::move(self->forward.get());
+      self->forward = std::move(node->next);
+      node->next = std::move(self->backward);
+      self->backward = std::move(node);
       }}
     }
   }
-
+  
   function read(buffer:Buffer) {
     auto f <- buffer.walk();
     while f? {

@@ -42,18 +42,6 @@ final class List<Type> {
   }
 
   /**
-   * Copy the list.
-   */
-  function copy() -> Queue<Type> {
-    o:Queue<Type>;
-    auto f <- walk();
-    while (f?) {
-      o.pushBack(f!);
-    }
-    return o;
-  }
-
-  /**
    * Get the first element.
    */
   function front() -> Type {
