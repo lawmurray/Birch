@@ -15,14 +15,19 @@ class ParticleGibbsWithAncestorSampling < ParticleGibbs {
       v:Real[N];
       parallel for auto n in 1..N {
         auto x <- clone<ForwardModel>(this.x[n]);
+        auto f <- clone<StackNode<Event>>(forward!);
         x.h.setMode(PROPOSE_IMMEDIATE);
-        x.h.trace.forward <- clone<StackNode<Event>>(forward!);
+        x.h.trace.putForward(f, forwardCount);
         v[n] <- w[n] + x.step();
       }
       b <- ancestor(v);
       h <- x[b].h;
       h.setMode(REPLAY_DELAY);
-      h.trace.putForward(forward, forwardCount);
+      auto f <- clone<StackNode<Event>>(forward!);
+      cpp{{
+      f.finish();
+      }}
+      h.trace.putForward(f, forwardCount);
     }
     super.resample();
   }
