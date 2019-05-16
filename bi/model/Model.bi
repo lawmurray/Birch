@@ -13,20 +13,6 @@ class Model {
   h:EventHandler;
 
   /**
-   * Get the event handler.
-   */
-  function getHandler() -> EventHandler {
-    return h;
-  }
- 
-  /**
-   * Set the event handler.
-   */
-  function setHandler(h:EventHandler) {
-    this.h <- h;
-  }
-
-  /**
    * Play the complete model with an event handler, returning a log-weight.
    */
   function play() -> Real {

@@ -5,20 +5,21 @@
 class DoubleStack<Type> {
   forward:StackNode<Type>?;
   backward:StackNode<Type>?;
-  count:Integer <- 0;
+  forwardCount:Integer <- 0;
+  backwardCount:Integer <- 0;
 
   /**
    * Number of elements.
    */
   function size() -> Integer {
-    return count;
+    return forwardCount + backwardCount;
   }
 
   /**
    * Is this empty?
    */
   function empty() -> Boolean {
-    return count == 0;
+    return forwardCount + backwardCount == 0;
   }
 
   /**
@@ -27,13 +28,12 @@ class DoubleStack<Type> {
   function clear() {
     forward <- nil;
     backward <- nil;
-    count <- 0;
+    forwardCount <- 0;
+    backwardCount <- 0;
   }
 
   /**
    * Get the top element on the forward stack.
-   *
-   * - x: Value.
    */
   function topForward() -> Type {
     assert forward?;
@@ -42,12 +42,50 @@ class DoubleStack<Type> {
 
   /**
    * Get the top element on the backward stack.
-   *
-   * - x: Value.
    */
   function topBackward() -> Type {
     assert backward?;
     return backward!.x;
+  }
+
+  /**
+   * Get and remove the whole forward stack.
+   */
+  function takeForward() -> StackNode<Type>? {
+    forwardCount <- 0;
+    cpp{{
+    return std::move(self->forward);
+    }}
+  }
+
+  /**
+   * Get the top element on the backward stack.
+   */
+  function takeBackward() -> StackNode<Type>? {
+    backwardCount <- 0;
+    cpp{{
+    return std::move(self->backward);
+    }}
+  }
+
+  /**
+   * Put the whole forward stack.
+   */
+  function putForward(forward:StackNode<Type>?, forwardCount:Integer) {
+    this.forwardCount <- forwardCount;
+    cpp{{
+    self->forward = std::move(forward);
+    }}
+  }
+
+  /**
+   * Put the whole backward stack.
+   */
+  function putBackward(backward:StackNode<Type>?, backwardCount:Integer) {
+    this.backwardCount <- backwardCount;
+    cpp{{
+    self->backward = std::move(backward);
+    }}
   }
 
   /**
@@ -64,7 +102,7 @@ class DoubleStack<Type> {
       }}
     }
     forward <- node;
-    count <- count + 1;
+    forwardCount <- forwardCount + 1;
   }
 
   /**
@@ -81,7 +119,7 @@ class DoubleStack<Type> {
       }}
     }
     backward <- node;
-    count <- count + 1;
+    backwardCount <- backwardCount + 1;
   }
 
   /**
@@ -89,7 +127,7 @@ class DoubleStack<Type> {
    */
   function popForward() -> Type {
     assert !empty();
-    count <- count - 1;
+    forwardCount <- forwardCount - 1;
     cpp{{
     auto x = std::move(self->forward.get()->x);
     self->forward = std::move(self->forward.get()->next);
@@ -102,7 +140,7 @@ class DoubleStack<Type> {
    */
   function popBackward() -> Type {
     assert !empty();
-    count <- count - 1;
+    backwardCount <- backwardCount - 1;
     cpp{{
     auto x = std::move(self->backward.get()->x);
     self->backward = std::move(self->backward.get()->next);
@@ -114,14 +152,28 @@ class DoubleStack<Type> {
    * Move one element from the backward list to the forward list.
    */
   function oneForward() {
-    pushForward(popBackward());
+    cpp{{
+    auto node = std::move(self->backward.get());
+    self->backward = std::move(node->next);
+    node->next = std::move(self->forward);
+    self->forward = std::move(node);
+    }}
+    forwardCount <- forwardCount + 1;
+    backwardCount <- backwardCount - 1;
   }
   
   /**
    * Move one element from the forward list to the backward list.
    */
   function oneBackward() {
-    pushBackward(popForward());
+    cpp{{
+    auto node = std::move(self->forward.get());
+    self->forward = std::move(node->next);
+    node->next = std::move(self->backward);
+    self->backward = std::move(node);
+    }}
+    forwardCount <- forwardCount - 1;
+    backwardCount <- backwardCount + 1;
   }
   
   /**

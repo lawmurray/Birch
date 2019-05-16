@@ -16,7 +16,7 @@ class ParticleGibbs < ConditionalParticleFilter {
        * steps (states) */
       auto h <- h'!;
       auto x <- clone<ForwardModel>(archetype!);
-      x.setHandler(h);
+      x.h <- h;
       h.rewind();
       h.setMode(SKIP_DELAY);
       x.start();
@@ -29,21 +29,21 @@ class ParticleGibbs < ConditionalParticleFilter {
        * immediate sampling mode, so sample new parameters from that
        * conditional distribution */
       x <- clone<ForwardModel>(archetype!);
-      x.setHandler(h);
+      x.h <- h;
       h.rewind();
       h.setMode(REPLAY_IMMEDIATE);
       x.start();
 
       /* clone to all particles */
-      auto forward <- h.trace.forward;
-      h.trace.forward <- nil;
-      h.setMode(PLAY_DELAY);
-      
+      auto forwardCount <- h.trace.forwardCount;
+      auto forward <- h.trace.takeForward();
+      h.setMode(PLAY_DELAY);      
       for auto n in 1..N {
         this.x[n] <- clone<ForwardModel>(x);
       }
-      this.x[b].getHandler().setMode(REPLAY_DELAY);
-      this.x[b].getHandler().trace.forward <- forward;
+      h <- this.x[b].h;
+      h.setMode(REPLAY_DELAY);
+      h.trace.putForward(forward, forwardCount);
     }
   }
 }
