@@ -3,7 +3,7 @@
  */
 class ParticleGibbsWithAncestorSampling < ParticleGibbs {
   function resample() {
-    if x'? {
+    if h'? {
       /* get the reference trace */
       auto forward <- x[b].getHandler().trace.forward;
       x[b].getHandler().trace.forward <- nil;
@@ -15,7 +15,7 @@ class ParticleGibbsWithAncestorSampling < ParticleGibbs {
       parallel for auto n in 1..N {
         auto x <- clone<ForwardModel>(this.x[n]);
         x.getHandler().setMode(PROPOSE_IMMEDIATE);
-        x.getHandler().trace.forward <- clone<QueueNode<Event>>(forward!);
+        x.getHandler().trace.forward <- clone<StackNode<Event>>(forward!);
         v[n] <- w[n] + x.step();
       }
       b <- ancestor(v);

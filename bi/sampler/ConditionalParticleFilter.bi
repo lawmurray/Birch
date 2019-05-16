@@ -5,9 +5,9 @@
  */
 class ConditionalParticleFilter < ParticleFilter {
   /**
-   * Current index of the reference trajectory.
+   * Event handler of the reference trajectory.
    */
-  b:Integer <- 1;
+  h':EventHandler?;
   
   function initialize() {
     super.initialize();
@@ -17,12 +17,11 @@ class ConditionalParticleFilter < ParticleFilter {
       x[n].getHandler().setRecord(true);
     }
   
-    if x'? {
+    if h'? {
       /* there is a reference particle, switch on replay for it */
-      auto h <- clone<EventHandler>(x'!.getHandler());
-      h.rewind();
-      h.setMode(REPLAY_DELAY);
-      x[1].setHandler(h);
+      h'!.rewind();
+      h'!.setMode(REPLAY_DELAY);
+      x[1].setHandler(h'!);
       b <- 1;
     }
   }
@@ -36,7 +35,7 @@ class ConditionalParticleFilter < ParticleFilter {
       x[b].getHandler().setMode(PLAY_DELAY);
       
       /* resample */
-      if x'? {
+      if h'? {
         (a, o, b) <- multinomial_conditional_resample(w, b);
       } else {
         (a, o) <- multinomial_resample(w);
@@ -54,7 +53,7 @@ class ConditionalParticleFilter < ParticleFilter {
       }
       
       /* restore replay trace to new reference particle */
-      if x'? {
+      if h'? {
         x[b].getHandler().setMode(REPLAY_DELAY);
         x[b].getHandler().trace.forward <- forward;
       }
@@ -62,5 +61,10 @@ class ConditionalParticleFilter < ParticleFilter {
       a <- iota(1, N);
       o <- vector(1, N);
     }
+  }
+
+  function finish() {
+    super.finish();
+    h' <- x[b].getHandler();
   }
 }

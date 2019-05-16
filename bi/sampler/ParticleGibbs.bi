@@ -6,7 +6,7 @@
  */
 class ParticleGibbs < ConditionalParticleFilter {
   function start() {
-    if !x'? {
+    if !h'? {
       /* no reference particle, so on the first iteration, do as normal */
       super.start();
     } else {
@@ -14,7 +14,7 @@ class ParticleGibbs < ConditionalParticleFilter {
        * trajectory, first replay it with the start (parameters) marginalized
        * out, so as to compute the distribution over them conditioned on the
        * steps (states) */
-      auto h <- clone<EventHandler>(x'!.getHandler());
+      auto h <- h'!;
       auto x <- clone<ForwardModel>(archetype!);
       x.setHandler(h);
       h.rewind();

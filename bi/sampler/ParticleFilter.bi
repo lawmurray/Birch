@@ -23,9 +23,9 @@ class ParticleFilter < ForwardSampler {
   o:Integer[_];
   
   /**
-   * Chosen path at the end of the filter.
+   * Index of the chosen sample.
    */
-  x':ForwardModel?;
+  b:Integer <- 1;
   
   /**
    * Number of particles.
@@ -84,7 +84,7 @@ class ParticleFilter < ForwardSampler {
         stderr.print("log weight: " + sum(Z.walk()) + "\n");
       }
       finalize();
-      yield (clone<ForwardModel>(x'!), sum(Z.walk()));
+      yield (clone<ForwardModel>(x[b]), sum(Z.walk()));
     }
   }
 
@@ -183,10 +183,8 @@ class ParticleFilter < ForwardSampler {
    * Finish.
    */
   function finish() {
-    auto b <- ancestor(w);
-    if b > 0 {
-      x' <- x[b];
-    } else {
+    b <- ancestor(w);
+    if b <= 0 {
       error("particle filter degenerated.");
     }
   }
