@@ -147,7 +147,7 @@ public:
    */
   template<class U>
   Optional(Shared<U>&& value) :
-      value(value) {
+      value(std::move(value)) {
     //
   }
 
@@ -156,7 +156,7 @@ public:
    */
   template<class U>
   Optional(Weak<U>&& value) :
-      value(value) {
+      value(std::move(value)) {
     //
   }
 
