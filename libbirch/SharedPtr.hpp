@@ -61,11 +61,8 @@ public:
    */
   template<class U>
   SharedPtr(const InitPtr<U>& o) :
-      ptr(o.ptr) {
-    if (ptr) {
-      assert(ptr->numShared() > 0);
-      ptr->incShared();
-    }
+      ptr(o.ptr ? static_cast<T*>(o.ptr->lock()) : nullptr) {
+    //
   }
 
   /**
