@@ -220,6 +220,7 @@
       "bi/sampler/ParticleFilter.bi",
       "bi/sampler/ParticleGibbs.bi",
       "bi/sampler/ParticleGibbsWithAncestorSampling.bi",
+      "bi/sampler/ParticleConditionalMetropolisHastings.bi",
       "bi/sampler/ParticleMarginalMetropolisHastings.bi",
       "bi/sampler/RandomAccessSampler.bi",
       "bi/sampler/RaoBlackwellizedParticleFilter.bi",
