@@ -1,4 +1,21 @@
 class ParticleConditionalMetropolisHastings < ConditionalParticleFilter {
+  /* This sampler is a first attempt at implementing the sampler we would like
+   * to have. In the ideal case, the MH step will not be a PMMH but will also use
+   * the drawn trajectory: the acceptance probability should be given by
+    * 
+    *  p(y,x'|θ')p(θ')q(θ|θ')
+    *  -------------------
+    *   p(y,x|θ)p(θ)q(θ'|θ)
+    *
+    * Where `x` is the trace of the previous particle and `x'` is the trace of the
+    * proposed particle.
+    *
+    * I was not able to solve the problem of replaying the trace in delayed mode to collect `p(y,x'|θ)`
+    * because I have not clearly understood how we can replay a trace where some of the variables are
+    * to be fixed. So, I tried to wrap my head around the problem by trying to hack around the
+    * ConditionalParticleFilter code, at least to use cSMC in PMMH. However, I get `incompatible
+    * trace` errors
+    */
 
   m:ForwardModel?; // previous model
   py:Real; // evidence of the previous model
