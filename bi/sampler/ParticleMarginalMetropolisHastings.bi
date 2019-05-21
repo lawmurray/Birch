@@ -34,11 +34,7 @@ class ParticleMarginalMetropolisHastings < ParticleFilter {
        * The idea is to use PMMH to sample the parameters that cannot be integrated out.
        * To simplify the matter, we can assume that these parameters are all in the `parameters` fiber
        * and that any parameters that can be marginalized are in the state.
-       *
-       * Before running the filter, we save the evidence from the previous run in the variable py;
-       * This should correspond to `log p(y | θ) p(θ)`.
-      */
-      py <- sum(Z.walk()); // Save previous evidence
+       */
       
       /* We clone a fresh empty model (no random variables set), from the archetype to create our proposal. */
       m' <- clone<ForwardModel>(archetype!); // Create a proposal model from the archetype
@@ -72,14 +68,13 @@ class ParticleMarginalMetropolisHastings < ParticleFilter {
   }
   
   function finalize() {
+    /* After the `sample()` function, the filter has drawn x[b] and has collected the associated log evidence `Z`
+     * Because we have assigned the prior parameters, `Z` should contain `log p(y | θ') + log p(θ')` -- that is, the 
+     * evidence of the proposed model
+     */
+    m' <- x[b];
+    py' <- sum(Z.walk());
     if m? {
-      /* After the `sample()` function, the filter has drawn x[b] and has collected the associated log evidence `Z`
-      * Because we have assigned the prior parameters, `Z` should contain `log p(y | θ') + log p(θ')` -- that is, the 
-      * evidence of the proposed model
-      */
-      m' <- x[b];
-      py' <- sum(Z.walk());
-
       /* The actual marginal Metropolis-Hastings step, where we accept with probability
        * 
        *  p(y|θ')p(θ')q(θ|θ')
@@ -99,8 +94,9 @@ class ParticleMarginalMetropolisHastings < ParticleFilter {
         R <- R + 1;
       }
     } else {
-    /* we do not have a previous model, just accept it */
-      m <- clone<ForwardModel>(x[b]);
+      /* we do not have a previous model, just accept it */
+      m <- clone<ForwardModel>(m');
+      py <- py';
     }
     if verbose {
       stderr.print("acceptance rate: " + A/(A+R) + "\n");
