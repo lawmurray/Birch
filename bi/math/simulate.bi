@@ -373,8 +373,11 @@ function simulate_student_t(ν:Real) -> Real {
  */
 function simulate_student_t(ν:Real, μ:Real, σ2:Real) -> Real {
   assert 0.0 < ν;
-  assert 0.0 < σ2;
-  return μ + sqrt(σ2)*simulate_student_t(ν);
+  if (σ2 == 0.0) {
+    return μ;
+  } else {
+    return μ + sqrt(σ2)*simulate_student_t(ν);
+  }
 }
 
 /**
