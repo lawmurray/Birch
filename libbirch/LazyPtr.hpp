@@ -57,7 +57,7 @@ public:
    */
   LazyPtr(T* object, LazyMemo* to) :
       object(object),
-      to(to) {
+      to(object ? to : nullptr) {
     //
   }
 
@@ -66,7 +66,7 @@ public:
    */
   LazyPtr(const P& object, LazyMemo* to) :
       object(object),
-      to(to) {
+      to(object ? to : nullptr) {
     //
   }
 
@@ -79,11 +79,13 @@ public:
         o.finish();
       }
       object = o.object;
-      to = currentContext;
+      if (object) {
+        to = currentContext;
+      }
     } else {
       object = o.object;
-      to = o.to;
       if (object) {
+        to = o.to;
         object->notUniquelyReachable();
       }
     }
@@ -161,7 +163,7 @@ public:
    */
   LazyPtr<P>& operator=(T* o) {
     object = o;
-    to = currentContext;
+    to = o ? currentContext : nullptr;
     return *this;
   }
 
@@ -237,20 +239,12 @@ public:
    * Get the raw pointer, with lazy cloning.
    */
   T* get() {
-    if (object && object->isFrozen()) {
-      LazyAny* raw = object.get();
-      if (to) {
-        raw = to->get(raw);
-        if (raw->isFrozen()) {
-          raw = raw->getForward();
-        }
-      } else {
-        raw = raw->getForward();
-      }
-      assert(!raw->isFrozen());
-      object = static_cast<T*>(raw);
+    auto raw = object.get();
+    if (raw && raw->isFrozen()) {
+      raw = static_cast<T*>(to->get(raw));
+      object = raw;
     }
-    return object.get();
+    return raw;
   }
 
   /**
@@ -264,19 +258,12 @@ public:
    * Get the raw pointer for read-only use, without cloning.
    */
   const T* pull() {
-    if (object && object->isFrozen()) {
-      LazyAny* raw = object.get();
-      if (to) {
-        raw = to->pull(raw);
-        if (raw->getContext() == to.get() && raw->isFrozen()) {
-          raw = raw->pullForward();
-        }
-      } else {
-        raw = raw->pullForward();
-      }
-      object = static_cast<T*>(raw);
+    auto raw = object.get();
+    if (raw && raw->isFrozen()) {
+      raw = static_cast<T*>(to->pull(raw));
+      object = raw;
     }
-    return object.get();
+    return raw;
   }
 
   /**
@@ -290,12 +277,10 @@ public:
    * Deep clone.
    */
   LazyPtr<P> clone() const {
-    freeze();
-    LazyMemo* memo;
-    if (to) {
+    LazyMemo* memo = nullptr;
+    if (object) {
+      freeze();
       memo = to->fork();
-    } else {
-      memo = LazyMemo::create_();
     }
     return LazyPtr<P>(object, memo);
   }
@@ -307,9 +292,7 @@ public:
     if (object) {
       pull();
       object->freeze();
-      if (to) {
-        to->freeze();
-      }
+      to->freeze();
     }
   }
 
@@ -317,10 +300,13 @@ public:
    * Finish.
    */
   void finish() {
-    if (object && to) {
-      object = static_cast<T*>(to->get(object.get()));
-      object->finish();
-      to = nullptr;
+    auto raw = object.get();
+    if (raw) {
+      if (raw->isFrozen()) {
+        raw = static_cast<T*>(to->finish(raw));
+        object = raw;
+      }
+      raw->finish();
     }
   }
 

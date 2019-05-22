@@ -37,7 +37,7 @@ libbirch::LazyAny* libbirch::LazyAny::pullForward() {
   auto forward1 = forward.load(std::memory_order_relaxed);
   if (forward1) {
     if (forward1->isFrozen()) {
-      return forward1->getForward();
+      return forward1->pullForward();
     } else {
       return forward1;
     }

@@ -25,14 +25,7 @@ std::atomic<size_t> libbirch::memoryUse(0);
 /**
  * Allocate a large buffer for the heap.
  */
-static char* heap();
-
-std::atomic<char*> libbirch::buffer(heap());
-char* libbirch::bufferStart;
-size_t libbirch::bufferSize;
-libbirch::Pool* libbirch::pool = new libbirch::Pool[64*nthreads];
-
-char* heap() {
+static char* heap() {
   /* determine a preferred size of the heap based on total physical memory */
   size_t size = sysconf(_SC_PAGE_SIZE);
   size_t npages = sysconf(_SC_PHYS_PAGES);
@@ -53,11 +46,29 @@ char* heap() {
 
   return (char*)ptr;
 }
+
+libbirch::Pool& libbirch::pool(const unsigned i) {
+  static libbirch::Pool* pools = new libbirch::Pool[64*nthreads];
+  return pools[i];
+}
+
+
+std::atomic<char*> libbirch::buffer(heap());
+char* libbirch::bufferStart;
+size_t libbirch::bufferSize;
 #endif
+
+/**
+ * Create and/or return the root memo
+ */
+static libbirch::Memo* root() {
+  static libbirch::SharedPtr<libbirch::Memo> memo = libbirch::Memo::create_();
+  return memo.get();
+}
 
 /* declared in clone.hpp, here to ensure order of initialization for global
  * variables */
-thread_local libbirch::Memo* libbirch::currentContext = nullptr;
+thread_local libbirch::Memo* libbirch::currentContext(root());
 thread_local bool libbirch::cloneUnderway = false;
 
 void* libbirch::allocate(const size_t n) {
@@ -68,7 +79,7 @@ void* libbirch::allocate(const size_t n) {
   return std::malloc(n);
 #else
   int i = bin(n);       // determine which pool
-  auto ptr = pool[64*tid + i].pop();  // attempt to reuse from this pool
+  auto ptr = pool(64*tid + i).pop();  // attempt to reuse from this pool
   if (!ptr) {           // otherwise allocate new
     size_t m = unbin(i);
     size_t r = (m < 64u) ? 64u : m;
@@ -78,7 +89,7 @@ void* libbirch::allocate(const size_t n) {
     if (m < 64u) {
       /* add extra bytes as a separate allocation to the pool for
        * reuse another time */
-      pool[64*tid + bin(64u - m)].push((char*)ptr + m);
+      pool(64*tid + bin(64u - m)).push((char*)ptr + m);
     }
   }
   assert(ptr);
@@ -96,7 +107,7 @@ void libbirch::deallocate(void* ptr, const size_t n, const unsigned tid) {
   std::free(ptr);
 #else
   int i = bin(n);
-  pool[64*tid + i].push(ptr);
+  pool(64*tid + i).push(ptr);
 #endif
 }
 
@@ -110,7 +121,7 @@ void libbirch::deallocate(void* ptr, const unsigned n, const unsigned tid) {
   std::free(ptr);
 #else
   int i = bin(n);
-  pool[64*tid + i].push(ptr);
+  pool(64*tid + i).push(ptr);
 #endif
 }
 

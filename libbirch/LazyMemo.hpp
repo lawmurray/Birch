@@ -8,7 +8,7 @@
 #include "libbirch/LazyAny.hpp"
 #include "libbirch/SharedPtr.hpp"
 #include "libbirch/Map.hpp"
-#include "libbirch/Set.hpp"
+#include "libbirch/Lock.hpp"
 
 namespace libbirch {
 /**
@@ -58,6 +58,11 @@ public:
   LazyAny* get(LazyAny* o);
 
   /**
+   * Finish the cloning of an object.
+   */
+  LazyAny* finish(LazyAny* o);
+
+  /**
    * Map an object that may not yet have been cloned, without cloning it.
    * This is used as an optimization for read-only access.
    */
@@ -73,9 +78,14 @@ protected:
 
 private:
   /**
-   * Map.
+   * Map of object clones.
    */
   Map m;
+
+  /**
+   * Lock.
+   */
+  Lock l;
 };
 }
 
@@ -84,7 +94,9 @@ inline libbirch::LazyMemo* libbirch::LazyMemo::fork() {
 }
 
 inline void libbirch::LazyMemo::doFreeze_() {
+  l.share();
   m.freeze();
+  l.unshare();
 }
 
 #endif

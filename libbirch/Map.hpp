@@ -4,17 +4,12 @@
 #pragma once
 
 #include "libbirch/Any.hpp"
-#include "libbirch/Lock.hpp"
-
-#include <atomic>
 
 namespace libbirch {
 /**
- * Thread-safe hash table of memory mappings.
+ * Hash table of memory mappings.
  *
  * @ingroup libbirch
- *
- * The implementation is lock-free except when resizing is required.
  */
 class Map {
 public:
@@ -88,15 +83,6 @@ public:
 
 private:
   /**
-   * Get a value.
-   *
-   * @param i Index.
-   *
-   * @return The value.
-   */
-  value_type get(const unsigned i);
-
-  /**
    * Compute the hash code for a key.
    */
   unsigned hash(const key_type key) const;
@@ -125,12 +111,12 @@ private:
   /**
    * The keys.
    */
-  std::atomic<key_type>* keys;
+  key_type* keys;
 
   /**
    * The values.
    */
-  std::atomic<value_type>* values;
+  value_type* values;
 
   /**
    * Number of entries in the table.
@@ -145,12 +131,7 @@ private:
   /**
    * Number of occupied entries in the table.
    */
-  std::atomic<unsigned> noccupied;
-
-  /**
-   * Resize lock.
-   */
-  Lock lock;
+  unsigned noccupied;
 };
 }
 
@@ -171,5 +152,5 @@ inline unsigned libbirch::Map::crowd() const {
 }
 
 inline void libbirch::Map::unreserve() {
-  noccupied.fetch_sub(1u, std::memory_order_relaxed);
+  --noccupied;
 }

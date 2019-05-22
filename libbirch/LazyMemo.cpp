@@ -21,25 +21,52 @@ libbirch::LazyMemo::~LazyMemo() {
 }
 
 libbirch::LazyAny* libbirch::LazyMemo::get(LazyAny* o) {
+  assert(o->isFrozen());
   LazyAny* prev = nullptr;
   LazyAny* next = o;
-  while (this != next->getContext() && next != prev) {
+  l.keep();
+  do {
+    prev = next;
+    next = m.get(prev, prev);
+  } while (next != prev && this != next->getContext());
+  if (this != next->getContext()) {
+    next = copy(next);
+  } else if (next->isFrozen()) {
+    next = next->getForward();
+  }
+  l.unkeep();
+  return next;
+}
+
+libbirch::LazyAny* libbirch::LazyMemo::pull(LazyAny* o) {
+  assert(o->isFrozen());
+  LazyAny* prev = nullptr;
+  LazyAny* next = o;
+  l.share();
+  do {
+    prev = next;
+    next = m.get(prev, prev);
+  } while (next != prev && this != next->getContext());
+  if (this == next->getContext() && next->isFrozen()) {
+    next = next->pullForward();
+  }
+  l.unshare();
+  return next;
+}
+
+libbirch::LazyAny* libbirch::LazyMemo::finish(LazyAny* o) {
+  assert(o->isFrozen());
+  LazyAny* prev = nullptr;
+  LazyAny* next = o;
+  //l.keep();
+  while (next != prev && this != next->getContext()) {
     prev = next;
     next = m.get(prev, prev);
   }
   if (this != next->getContext()) {
     next = copy(next);
   }
-  return next;
-}
-
-libbirch::LazyAny* libbirch::LazyMemo::pull(LazyAny* o) {
-  LazyAny* prev = nullptr;
-  LazyAny* next = o;
-  while (this != next->getContext() && next != prev) {
-    prev = next;
-    next = m.get(prev, prev);
-  }
+  //l.unkeep();
   return next;
 }
 

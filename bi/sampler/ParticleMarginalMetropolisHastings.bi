@@ -59,7 +59,7 @@ class ParticleMarginalMetropolisHastings < ParticleFilter {
       x1.enlarge(N, clone<ForwardModel>(m'));
       x <- x1.toArray();
 
-      parallel for auto n in 1..N {
+      for auto n in 1..N {
         x[n] <- clone<ForwardModel>(x[n]);
       }
 

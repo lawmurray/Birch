@@ -21,7 +21,7 @@ class ConditionalParticleFilter < ParticleFilter {
     }
     
     /* switch on recording for all particles */
-    parallel for auto n in 1..N {
+    for auto n in 1..N {
       x[n].h.setRecord(true);
     }
   }
@@ -45,7 +45,7 @@ class ConditionalParticleFilter < ParticleFilter {
 
       /* copy particles */
       auto x0 <- x;
-      parallel for auto n in 1..N {
+      for auto n in 1..N {
         if o[a[n]] == 1 {
           x[n] <- x0[a[n]];  // avoid the clone overhead
         } else {

@@ -56,7 +56,7 @@ inline void libbirch::ExclusiveLock::keep() {
   bool expected;
   do {
     expected = false;
-  } while (!lock.compare_exchange_weak(expected, true, std::memory_order_seq_cst));
+  } while (!lock.compare_exchange_weak(expected, true));
 }
 
 inline void libbirch::ExclusiveLock::unkeep() {

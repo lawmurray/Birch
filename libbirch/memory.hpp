@@ -11,6 +11,11 @@
 namespace libbirch {
 #if ENABLE_MEMORY_POOL
 /**
+ * Get the @i th pool.
+ */
+extern libbirch::Pool& pool(const unsigned i);
+
+/**
  * Buffer for heap allocations.
  */
 extern std::atomic<char*> buffer;
@@ -24,11 +29,6 @@ extern char* bufferStart;
  * Size of heap (for debugging purposes).
  */
 extern size_t bufferSize;
-
-/**
- * Allocation pools.
- */
-extern Pool* pool;
 #endif
 
 /**
@@ -163,7 +163,7 @@ void* allocate() {
   return std::malloc(n);
 #else
   int i = bin<n>();     // determine which pool
-  auto ptr = pool[64 * tid + i].pop();  // attempt to reuse from this pool
+  auto ptr = pool(64 * tid + i).pop();  // attempt to reuse from this pool
   if (!ptr) {           // otherwise allocate new
     unsigned m = unbin(i);
     unsigned r = (m < 64u) ? 64u : m;
@@ -172,7 +172,7 @@ void* allocate() {
     if (m < 64u) {
       /* add extra bytes as a separate allocation to the pool for
        * reuse another time */
-      pool[64 * tid + bin(64u - m)].push((char*)ptr + m);
+      pool(64 * tid + bin(64u - m)).push((char*)ptr + m);
     }
   }
   assert(ptr);
