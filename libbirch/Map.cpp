@@ -36,7 +36,7 @@ libbirch::Map::value_type libbirch::Map::get(const key_type key,
 
   value_type value = failed;
   if (!empty()) {
-    auto i = hash(key);
+    auto i = hash(key, nentries);
     auto k = keys[i];
     while (k && k != key) {
       i = (i + 1u) & (nentries - 1u);
@@ -60,7 +60,7 @@ libbirch::Map::value_type libbirch::Map::put(const key_type key,
 
   reserve();
 
-  auto i = hash(key);
+  auto i = hash(key, nentries);
   auto k = keys[i];
   while (k && k != key) {
     i = (i + 1u) & (nentries - 1u);
@@ -90,7 +90,7 @@ libbirch::Map::value_type libbirch::Map::uninitialized_put(const key_type key,
 
   reserve();
 
-  auto i = hash(key);
+  auto i = hash(key, nentries);
   auto k = keys[i];
   while (k && k != key) {
     i = (i + 1u) & (nentries - 1u);
@@ -122,7 +122,7 @@ void libbirch::Map::freeze() {
 void libbirch::Map::copy(Map& o) {
   assert(empty());
 
-  /* resize */
+  /* allocate */
   nentries = o.nentries;
   if (nentries > 0) {
     keys = (key_type*)allocate(nentries * sizeof(key_type));
@@ -145,51 +145,61 @@ void libbirch::Map::copy(Map& o) {
       put(key, value);
     }
   }
+
+  /* shrink if possible */
+  auto nentries2 = nentries;
+  while (noccupied < (nentries2 >> 2u) && nentries2 > (unsigned)CLONE_MEMO_INITIAL_SIZE) {
+    nentries2 >>= 1u;
+  }
+  if (nentries2 != nentries) {
+    resize(nentries2);
+  }
 }
 
 void libbirch::Map::reserve() {
-  ++noccupied;
-  if (noccupied > crowd()) {
-    /* save previous table */
-    auto nentries1 = nentries;
-    auto keys1 = keys;
-    auto values1 = values;
-
-    /* initialize new table */
-    auto nentries2 = std::max(2u * nentries1,
-        (unsigned)CLONE_MEMO_INITIAL_SIZE);
-    auto keys2 = (key_type*)allocate(nentries2 * sizeof(key_type));
-    auto values2 = (value_type*)allocate(nentries2 * sizeof(value_type));
-    std::memset(keys2, 0, nentries2 * sizeof(key_type));
-    std::memset(values2, 0, nentries2 * sizeof(value_type));
-
-    /* copy contents from previous table */
-    nentries = nentries2;  // set this here as needed by hash()
-    for (auto i = 0u; i < nentries1; ++i) {
-      auto key = keys1[i];
-      if (key) {
-        /* adding a key->isReachable() check to remove obsolete entries while
-         * doing this is causing sporadic thread safety problems that are not
-         * fully understood */
-        auto value = values1[i];
-        auto j = hash(key);
-        while (keys2[j]) {
-          j = (j + 1u) & (nentries2 - 1u);
-        }
-        keys2[j] = key;
-        values2[j] = value;
-      }
-    }
-
-    /* update object */
-    keys = keys2;
-    values = values2;
-
-    /* deallocate previous table */
-    if (nentries1 > 0) {
-      deallocate(keys1, nentries1 * sizeof(key_type), tentries);
-      deallocate(values1, nentries1 * sizeof(value_type), tentries);
-    }
-    tentries = libbirch::tid;
+  if (++noccupied > crowd()) {
+    resize(std::max(2u * nentries, (unsigned)CLONE_MEMO_INITIAL_SIZE));
   }
+}
+
+void libbirch::Map::resize(const unsigned nentries2) {
+  /* save previous table */
+  auto nentries1 = nentries;
+  auto keys1 = keys;
+  auto values1 = values;
+
+  /* initialize new table */
+  auto keys2 = (key_type*)allocate(nentries2 * sizeof(key_type));
+  auto values2 = (value_type*)allocate(nentries2 * sizeof(value_type));
+  std::memset(keys2, 0, nentries2 * sizeof(key_type));
+  std::memset(values2, 0, nentries2 * sizeof(value_type));
+
+  /* copy contents from previous table */
+  for (auto i = 0u; i < nentries1; ++i) {
+    auto key = keys1[i];
+    if (key) {
+      /* adding a key->isReachable() check to remove obsolete entries while
+       * doing this is causing sporadic thread safety problems that are not
+       * fully understood */
+      auto value = values1[i];
+      auto j = hash(key, nentries2);
+      while (keys2[j]) {
+        j = (j + 1u) & (nentries2 - 1u);
+      }
+      keys2[j] = key;
+      values2[j] = value;
+    }
+  }
+
+  /* update object */
+  nentries = nentries2;
+  keys = keys2;
+  values = values2;
+
+  /* deallocate previous table */
+  if (nentries1 > 0) {
+    deallocate(keys1, nentries1 * sizeof(key_type), tentries);
+    deallocate(values1, nentries1 * sizeof(value_type), tentries);
+  }
+  tentries = libbirch::tid;
 }

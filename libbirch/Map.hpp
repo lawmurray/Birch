@@ -83,9 +83,10 @@ public:
 
 private:
   /**
-   * Compute the hash code for a key.
+   * Compute the hash code for a given key for a table with the given number
+   * of entries.
    */
-  unsigned hash(const key_type key) const;
+  static unsigned hash(const key_type key, const unsigned nentries);
 
   /**
    * Compute the lower bound on reserved entries to be considered crowded.
@@ -102,6 +103,13 @@ private:
    * not be needed.
    */
   void unreserve();
+  
+  /**
+   * Resize and rehash the table.
+   *
+   * @param nentries The new size.
+   */
+  void resize(const unsigned nentries);
 
   /**
    * The keys.
@@ -134,7 +142,7 @@ inline bool libbirch::Map::empty() const {
   return nentries == 0u;
 }
 
-inline unsigned libbirch::Map::hash(const key_type key) const {
+inline unsigned libbirch::Map::hash(const key_type key, const unsigned nentries) {
   assert(nentries > 0u);
   return static_cast<unsigned>(reinterpret_cast<size_t>(key) >> 6ull)
       & (nentries - 1u);
