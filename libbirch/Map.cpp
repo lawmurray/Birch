@@ -129,7 +129,6 @@ void libbirch::Map::copy(Map& o) {
     values = (value_type*)allocate(nentries * sizeof(value_type));
     std::memset(keys, 0, nentries * sizeof(key_type));
     std::memset(values, 0, nentries * sizeof(value_type));
-    this->nentries = nentries;
     tentries = libbirch::tid;
   }
 
@@ -138,7 +137,7 @@ void libbirch::Map::copy(Map& o) {
     auto key = o.keys[i];
     if (key && key->isReachable()) {
       auto value = o.values[i];
-      value = o.get(value, value);
+      //value = o.get(value, value);
       // ^ applies the existing map to itself once, taking one step toward
       //   its transitive closure, and eliminating long chains of mappings
       //   that keep obsolete objects in scope
