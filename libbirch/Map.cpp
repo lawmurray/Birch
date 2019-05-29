@@ -123,11 +123,15 @@ void libbirch::Map::copy(Map& o) {
   assert(empty());
 
   /* resize */
-  auto nentries1 = o.nentries;
-  while (nentries1 / 2u > o.crowd()) {
-    nentries1 /= 2u;
+  nentries = o.nentries;
+  if (nentries > 0) {
+    keys = (key_type*)allocate(nentries * sizeof(key_type));
+    values = (value_type*)allocate(nentries * sizeof(value_type));
+    std::memset(keys, 0, nentries * sizeof(key_type));
+    std::memset(values, 0, nentries * sizeof(value_type));
+    this->nentries = nentries;
+    tentries = libbirch::tid;
   }
-  resize(nentries1);
 
   /* copy */
   for (auto i = 0u; i < o.nentries; ++i) {
@@ -163,21 +167,17 @@ void libbirch::Map::reserve() {
     nentries = nentries2;  // set this here as needed by hash()
     for (auto i = 0u; i < nentries1; ++i) {
       auto key = keys1[i];
-      auto value = values1[i];
       if (key) {
-        if (key->isReachable()) {
-          /* rehash and insert */
-          auto j = hash(key);
-          while (keys2[j]) {
-            j = (j + 1u) & (nentries2 - 1u);
-          }
-          keys2[j] = key;
-          values2[j] = value;
-        } else {
-          key->decMemo();
-          value->decShared();
-          --noccupied;
+        /* adding a key->isReachable() check to remove obsolete entries while
+         * doing this is causing sporadic thread safety problems that are not
+         * fully understood */
+        auto value = values1[i];
+        auto j = hash(key);
+        while (keys2[j]) {
+          j = (j + 1u) & (nentries2 - 1u);
         }
+        keys2[j] = key;
+        values2[j] = value;
       }
     }
 
@@ -190,19 +190,6 @@ void libbirch::Map::reserve() {
       deallocate(keys1, nentries1 * sizeof(key_type), tentries);
       deallocate(values1, nentries1 * sizeof(value_type), tentries);
     }
-    tentries = libbirch::tid;
-  }
-}
-
-void libbirch::Map::resize(const unsigned nentries) {
-  assert(empty());
-
-  if (nentries > 0) {
-    keys = (key_type*)allocate(nentries * sizeof(key_type));
-    values = (value_type*)allocate(nentries * sizeof(value_type));
-    std::memset(keys, 0, nentries * sizeof(key_type));
-    std::memset(values, 0, nentries * sizeof(value_type));
-    this->nentries = nentries;
     tentries = libbirch::tid;
   }
 }

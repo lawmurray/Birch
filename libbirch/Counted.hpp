@@ -281,8 +281,7 @@ inline void libbirch::Counted::incShared() {
 
 inline void libbirch::Counted::decShared() {
   assert(sharedCount > 0u);
-  if (sharedCount.fetch_sub(1u) - 1u == 0u
-      && size > 0u) {
+  if (sharedCount.fetch_sub(1u) - 1u == 0u && size > 0u) {
     // ^ size == 0u during construction, never destroy in that case
     destroy_();
     decWeak();  // release weak self-reference

@@ -104,11 +104,6 @@ private:
   void unreserve();
 
   /**
-   * Resize an empty map.
-   */
-  void resize(const unsigned nentries);
-
-  /**
    * The keys.
    */
   key_type* keys;

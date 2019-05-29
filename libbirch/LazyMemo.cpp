@@ -80,16 +80,11 @@ libbirch::LazyAny* libbirch::LazyMemo::copy(LazyAny* o) {
   assert(o->isFrozen());
   SwapClone swapClone(true);
   SwapContext swapContext(this);
-  if (o->isUniquelyReachable()) {
-    /* don't need to record this in the memo, as it will not be encountered
-     * again */
-    return o->clone_();
-  } else {
-    /* clone and record in the memo, using a shared pointer to ensure that
-     * the clone is collected if another thread beats this one */
-    SharedPtr<LazyAny> cloned = o->clone_();
-    return m.put(o, cloned.get());
+  auto cloned = o->clone_();
+  if (!o->isUniquelyReachable()) {
+    return m.put(o, cloned);
   }
+  return cloned;
 }
 
 #endif
