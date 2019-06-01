@@ -169,11 +169,6 @@ public:
   bool isUniquelyReachable() const;
 
   /**
-   * If the object is uniquely reachable, mark that it is now not.
-   */
-  void notUniquelyReachable();
-
-  /**
    * Name of the class.
    */
   virtual const char* name_() const {

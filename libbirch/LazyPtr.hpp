@@ -86,7 +86,9 @@ public:
       object = o.object;
       if (object) {
         to = o.to;
-        object->notUniquelyReachable();
+        if (object->isUniquelyReachable()) {
+          get();
+        }
       }
     }
   }
@@ -98,9 +100,9 @@ public:
       typename Q::value_type>::value>>
   LazyPtr(const LazyPtr<Q>& o) :
       object(o.object),
-      to(o.to) {
-    if (object) {
-      object->notUniquelyReachable();
+      to(o.object ? o.to : nullptr) {
+    if (object && object->isUniquelyReachable()) {
+      get();
     }
   }
 
@@ -115,10 +117,10 @@ public:
   LazyPtr<P>& operator=(const LazyPtr<P>& o) {
     /* it's possible that object = o.object actually destroys the referent
      * of o, so do the to = o.to first */
-    to = o.to;
+    to = o.object ? o.to : nullptr;
     object = o.object;
-    if (object) {
-      object->notUniquelyReachable();
+    if (object && object->isUniquelyReachable()) {
+      get();
     }
     return *this;
   }
@@ -129,7 +131,7 @@ public:
   LazyPtr<P>& operator=(LazyPtr<P> && o) {
     /* it's possible that object = o.object actually destroys the referent
      * of o, so do the to = o.to first */
-    to = std::move(o.to);
+    to = o.object ? std::move(o.to) : nullptr;
     object = std::move(o.object);
     return *this;
   }
@@ -142,7 +144,7 @@ public:
   LazyPtr<P>& operator=(const LazyPtr<Q>& o) {
     /* it's possible that object = o.object actually destroys the referent
      * of o, so do the to = o.to first */
-    to = o.to;
+    to = o.object ? o.to : nullptr;
     object = o.object;
     return *this;
   }
@@ -153,8 +155,10 @@ public:
   template<class Q, typename = std::enable_if_t<std::is_base_of<T,
       typename Q::value_type>::value>>
   LazyPtr<P>& operator=(LazyPtr<Q> && o) {
+    /* it's possible that object = o.object actually destroys the referent
+     * of o, so do the to = o.to first */
+    to = o.object ? std::move(o.to) : nullptr;
     object = std::move(o.object);
-    to = std::move(o.to);
     return *this;
   }
 
@@ -162,8 +166,8 @@ public:
    * Raw pointer assignment.
    */
   LazyPtr<P>& operator=(T* o) {
-    object = o;
     to = o ? currentContext : nullptr;
+    object = o;
     return *this;
   }
 
@@ -171,8 +175,8 @@ public:
    * Nil assignment.
    */
   LazyPtr<P>& operator=(const Nil&) {
-    object = nullptr;
     to = nullptr;
+    object = nullptr;
     return *this;
   }
 
@@ -180,8 +184,8 @@ public:
    * Nullptr assignment.
    */
   LazyPtr<P>& operator=(const std::nullptr_t&) {
-    object = nullptr;
     to = nullptr;
+    object = nullptr;
     return *this;
   }
 
