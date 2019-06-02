@@ -234,11 +234,6 @@ private:
   bool lazyDeepClone;
 
   /**
-   * Is clone memoization enabled?
-   */
-  bool cloneMemo;
-
-  /**
    * Initial allocation size (number of entries) in maps used for clone
    * memoization.
    */

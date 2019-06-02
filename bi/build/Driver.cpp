@@ -34,7 +34,6 @@ bi::Driver::Driver(int argc, char** argv) :
     verbose(true),
     memoryPool(true),
     lazyDeepClone(true),
-    cloneMemo(true),
     cloneMemoInitialSize(16),
     newAutogen(false),
     newConfigure(false),
@@ -997,11 +996,6 @@ void bi::Driver::configure() {
     } else {
       cppflags << " -DENABLE_LAZY_DEEP_CLONE=0";
     }
-    if (cloneMemo) {
-      cppflags << " -DENABLE_CLONE_MEMO=1";
-    } else {
-      cppflags << " -DENABLE_CLONE_MEMO=0";
-    }
     cppflags << " -DCLONE_MEMO_INITIAL_SIZE=" << cloneMemoInitialSize;
 
     /* include path */
@@ -1042,16 +1036,16 @@ void bi::Driver::configure() {
     cmd << (fs::path("..") / ".." / "configure").string() << " " << options.str();
     // ^ build dir is work_dir/build/suffix, so configure script two dirs up
     if (!cppflags.str().empty()) {
-      cmd << " CPPFLAGS=\"" << cppflags.str() << "\"";
+      cmd << " CPPFLAGS=\"$CPPFLAGS " << cppflags.str() << "\"";
     }
     if (!cflags.str().empty()) {
-      cmd << " CFLAGS=\"" << cflags.str() << "\"";
+      cmd << " CFLAGS=\"$CFLAGS " << cflags.str() << "\"";
     }
     if (!cxxflags.str().empty()) {
-      cmd << " CXXFLAGS=\"" << cxxflags.str() << "\"";
+      cmd << " CXXFLAGS=\"$CXXFLAGS " << cxxflags.str() << "\"";
     }
     if (!ldflags.str().empty()) {
-      cmd << " LDFLAGS=\"" << ldflags.str() << "\"";
+      cmd << " LDFLAGS=\"$LDFLAGS " << ldflags.str() << "\"";
     }
     if (verbose) {
       std::cerr << cmd.str() << std::endl;
@@ -1154,7 +1148,6 @@ std::string bi::Driver::suffix() const {
   buf << debug << ' ';
   buf << memoryPool << ' ';
   buf << lazyDeepClone << ' ';
-  buf << cloneMemo << ' ';
   buf << cloneMemoInitialSize << ' ';
   return encode32(buf.str());
 }
