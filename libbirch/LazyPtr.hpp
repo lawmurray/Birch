@@ -82,14 +82,9 @@ public:
       if (object) {
         to = currentContext;
       }
-    } else {
-      object = o.object;
-      if (object) {
-        to = o.to;
-        if (object->isUniquelyReachable()) {
-          get();
-        }
-      }
+    } else if (o.object) {
+      object = o.object->isUniquelyReachable() ? o.get() : o.object;
+      to = o.to;
     }
   }
 
@@ -98,11 +93,10 @@ public:
    */
   template<class Q, typename = std::enable_if_t<std::is_base_of<T,
       typename Q::value_type>::value>>
-  LazyPtr(const LazyPtr<Q>& o) :
-      object(o.object),
-      to(o.object ? o.to : nullptr) {
-    if (object && object->isUniquelyReachable()) {
-      get();
+  LazyPtr(const LazyPtr<Q>& o) {
+    if (o.object) {
+      object = o.object->isUniquelyReachable() ? o.get() : o.object;
+      to = o.to;
     }
   }
 
@@ -117,10 +111,12 @@ public:
   LazyPtr<P>& operator=(const LazyPtr<P>& o) {
     /* it's possible that object = o.object actually destroys the referent
      * of o, so do the to = o.to first */
-    to = o.object ? o.to : nullptr;
-    object = o.object;
-    if (object && object->isUniquelyReachable()) {
-      get();
+    if (o.object) {
+      to = o.to;
+      object = o.object->isUniquelyReachable() ? o.get() : o.object;
+    } else {
+      to = nullptr;
+      object = nullptr;
     }
     return *this;
   }
@@ -131,8 +127,13 @@ public:
   LazyPtr<P>& operator=(LazyPtr<P> && o) {
     /* it's possible that object = o.object actually destroys the referent
      * of o, so do the to = o.to first */
-    to = o.object ? std::move(o.to) : nullptr;
-    object = std::move(o.object);
+    if (o.object) {
+      to = o.to;
+      object = std::move(o.object);
+    } else {
+      to = nullptr;
+      object = nullptr;
+    }
     return *this;
   }
 
@@ -144,8 +145,13 @@ public:
   LazyPtr<P>& operator=(const LazyPtr<Q>& o) {
     /* it's possible that object = o.object actually destroys the referent
      * of o, so do the to = o.to first */
-    to = o.object ? o.to : nullptr;
-    object = o.object;
+    if (o.object) {
+      to = o.to;
+      object = o.object->isUniquelyReachable() ? o.get() : o.object;
+    } else {
+      to = nullptr;
+      object = nullptr;
+    }
     return *this;
   }
 
@@ -157,8 +163,13 @@ public:
   LazyPtr<P>& operator=(LazyPtr<Q> && o) {
     /* it's possible that object = o.object actually destroys the referent
      * of o, so do the to = o.to first */
-    to = o.object ? std::move(o.to) : nullptr;
-    object = std::move(o.object);
+    if (o.object) {
+      to = o.to;
+      object = std::move(o.object);
+    } else {
+      to = nullptr;
+      object = nullptr;
+    }
     return *this;
   }
 
