@@ -3,6 +3,7 @@
  */
 #pragma once
 
+#include "libbirch/external.hpp"
 #include "libbirch/memory.hpp"
 #include "libbirch/Frame.hpp"
 #include "libbirch/Buffer.hpp"
@@ -11,8 +12,6 @@
 #include "libbirch/Sequence.hpp"
 #include "libbirch/Eigen.hpp"
 #include "libbirch/ExclusiveLock.hpp"
-
-#include <atomic>
 
 namespace libbirch {
 /**

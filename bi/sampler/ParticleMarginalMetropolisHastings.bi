@@ -47,7 +47,6 @@ class ParticleMarginalMetropolisHastings < ParticleFilter {
       /* We then proceed as the normal particle filter but we copy the propsed model to all particles */
       Z.clear();
       ess.clear();
-      memory.clear();
       elapsed.clear();
 
       w <- vector(0.0, N);

@@ -3,10 +3,9 @@
  */
 #pragma once
 
+#include "libbirch/external.hpp"
 #include "libbirch/memory.hpp"
 #include "libbirch/class.hpp"
-
-#include <atomic>
 
 namespace libbirch {
 /**

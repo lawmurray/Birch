@@ -287,7 +287,6 @@
       "bi/config.bi",
       "bi/error.bi",
       "bi/main.bi",
-      "bi/memory.bi",
       "bi/sample.bi",
       "bi/test.bi"
     ],
@@ -310,6 +309,7 @@
       "libbirch/EigenFunctions.hpp",
       "libbirch/EigenOperators.hpp",
       "libbirch/ExclusiveLock.hpp",
+      "libbirch/external.hpp",
       "libbirch/Fiber.hpp",
       "libbirch/FiberState.hpp",
       "libbirch/Frame.hpp",

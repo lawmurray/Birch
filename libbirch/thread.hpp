@@ -3,18 +3,24 @@
  */
 #pragma once
 
-#ifdef _OPENMP
-#include <omp.h>
-#endif
+#include "libbirch/external.hpp"
 
 namespace libbirch {
 /**
  * Number of threads.
  */
-thread_local extern unsigned nthreads;
+#ifdef _OPENMP
+static const unsigned nthreads = omp_get_max_threads();
+#else
+static const unsigned nthreads = 1u;
+#endif
 
 /**
  * Thread id.
  */
-thread_local extern unsigned tid;
+#ifdef _OPENMP
+static thread_local const unsigned tid = omp_get_thread_num();
+#else
+static const unsigned tid = 0u;
+#endif
 }

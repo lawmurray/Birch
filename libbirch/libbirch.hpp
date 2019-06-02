@@ -6,6 +6,7 @@
  */
 #pragma once
 
+#include "libbirch/external.hpp"
 #include "libbirch/assert.hpp"
 #include "libbirch/memory.hpp"
 #include "libbirch/stacktrace.hpp"
@@ -36,23 +37,6 @@
 #include "libbirch/Eigen.hpp"
 #include "libbirch/EigenFunctions.hpp"
 #include "libbirch/EigenOperators.hpp"
-
-#include <algorithm>
-#include <numeric>
-#include <utility>
-#include <functional>
-#include <tuple>
-#include <memory>
-#include <string>
-#include <sstream>
-#include <iomanip>
-#include <cstdio>
-#include <cstdlib>
-#include <cstdint>
-#include <cstddef>
-#include <cmath>
-#include <getopt.h>
-#include <dlfcn.h>
 
 namespace libbirch {
 /**

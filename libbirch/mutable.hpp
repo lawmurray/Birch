@@ -3,7 +3,7 @@
  */
 #pragma once
 
-#include <cstdint>
+#include "libbirch/external.hpp"
 
 namespace libbirch {
 /**

@@ -5,9 +5,7 @@
  */
 #pragma once
 
-#include <eigen3/Eigen/Dense>
-#include <eigen3/Eigen/Sparse>
-#include <eigen3/unsupported/Eigen/KroneckerProduct>
+#include "libbirch/external.hpp"
 
 namespace libbirch {
 

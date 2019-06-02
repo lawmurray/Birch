@@ -3,9 +3,8 @@
  */
 #pragma once
 
+#include "libbirch/external.hpp"
 #include "libbirch/Allocator.hpp"
-
-#include <vector>
 
 /**
  * @def libbirch_function_

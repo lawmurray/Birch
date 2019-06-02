@@ -4,10 +4,9 @@
 #if ENABLE_LAZY_DEEP_CLONE
 #pragma once
 
+#include "libbirch/external.hpp"
 #include "libbirch/Counted.hpp"
 #include "libbirch/WeakPtr.hpp"
-
-#include <atomic>
 
 namespace libbirch {
 /**

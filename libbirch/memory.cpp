@@ -6,21 +6,6 @@
 #include "libbirch/clone.hpp"
 #include "libbirch/thread.hpp"
 
-#include <unistd.h>
-
-/* declared in thread.hpp, here to ensure order of initialization for global
- * variables */
-#ifdef _OPENMP
-thread_local unsigned libbirch::nthreads = omp_get_max_threads();
-thread_local unsigned libbirch::tid = omp_get_thread_num();
-#else
-thread_local unsigned libbirch::nthreads = 1u;
-thread_local unsigned libbirch::tid = 0u;
-#endif
-
-/* declared in memory.hpp */
-std::atomic<size_t> libbirch::memoryUse(0);
-
 #if ENABLE_MEMORY_POOL
 /**
  * Allocate a large buffer for the heap.
@@ -74,7 +59,6 @@ thread_local bool libbirch::cloneUnderway = false;
 void* libbirch::allocate(const size_t n) {
   assert(n > 0u);
 
-  memoryUse.fetch_add(n, std::memory_order_relaxed);
 #if !ENABLE_MEMORY_POOL
   return std::malloc(n);
 #else
@@ -102,7 +86,6 @@ void libbirch::deallocate(void* ptr, const size_t n, const unsigned tid) {
   assert(n > 0u);
   assert(tid < nthreads);
 
-  memoryUse.fetch_sub(n, std::memory_order_relaxed);
 #if !ENABLE_MEMORY_POOL
   std::free(ptr);
 #else
@@ -116,7 +99,6 @@ void libbirch::deallocate(void* ptr, const unsigned n, const unsigned tid) {
   assert(n > 0u);
   assert(tid < nthreads);
 
-  memoryUse.fetch_sub(n, std::memory_order_relaxed);
 #if !ENABLE_MEMORY_POOL
   std::free(ptr);
 #else
@@ -131,7 +113,6 @@ void* libbirch::reallocate(void* ptr1, const size_t n1, const unsigned tid1, con
   assert(tid < nthreads);
   assert(n2 > 0u);
 
-  memoryUse.fetch_add(n2 > n1 ? n2 - n1 : n1 - n2, std::memory_order_relaxed);
 #if !ENABLE_MEMORY_POOL
   return std::realloc(ptr1, n2);
 #else

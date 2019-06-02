@@ -3,8 +3,7 @@
  */
 #pragma once
 
-#include <cassert>
-#include <sstream>
+#include "libbirch/external.hpp"
 
 /**
  * @def libbirch_assert_
