@@ -71,6 +71,15 @@ function fopen(path:String, mode:Integer) -> File {
 }
 
 /**
+ * Flush a file.
+ */
+function fflush(file:File) {
+  cpp{{
+  ::fflush(file);
+  }}
+}
+
+/**
  * Close a file.
  */
 function fclose(file:File) {

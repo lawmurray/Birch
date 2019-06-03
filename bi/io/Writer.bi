@@ -97,8 +97,7 @@ class Writer {
  * Returns: the writer.
  *
  * The file extension of `path` is used to determine the precise type of the
- * returned object. Currently, the only supported file extension is `.json`,
- * for a JSON file.
+ * returned object. Supported file extension are `.json` and `.yml`.
  */
 function Writer(path:String) -> Writer {
   auto ext <- extension(path);
@@ -106,8 +105,12 @@ function Writer(path:String) -> Writer {
     writer:JSONWriter;
     writer.open(path);
     return writer;
+  } else if ext == ".yml" {
+    writer:YAMLWriter;
+    writer.open(path);
+    return writer;
   } else {
     error("unrecognized file extension '" + ext + "' in path '" + path +
-        "'; supported extensions are '.json'.");
+        "'; supported extensions are '.json' and '.yml'.");
   }
 }

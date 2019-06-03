@@ -44,8 +44,7 @@ class Reader {
  * Returns: the reader.
  *
  * The file extension of `path` is used to determine the precise type of the
- * returned object. Currently, the only supported file extension is `.json`,
- * for a JSON file.
+ * returned object. Supported file extension are `.json` and `.yml`.
  */
 function Reader(path:String) -> Reader {
   auto ext <- extension(path);
@@ -53,8 +52,12 @@ function Reader(path:String) -> Reader {
     reader:JSONReader;
     reader.open(path);
     return reader;
+  } else if ext == ".yml" {
+    reader:YAMLReader;
+    reader.open(path);
+    return reader;
   } else {
     error("unrecognized file extension '" + ext + "' in path '" + path +
-        "'; supported extensions are '.json'.");
+        "'; supported extensions are '.json' and '.yml'.");
   }
 }

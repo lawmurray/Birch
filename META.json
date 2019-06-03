@@ -183,6 +183,8 @@
       "bi/io/OutputStream.bi",
       "bi/io/Reader.bi",
       "bi/io/Writer.bi",
+      "bi/io/YAMLWriter.bi",
+      "bi/io/YAMLReader.bi",
       "bi/math/cdf.bi",
       "bi/math/distance.bi",
       "bi/math/downdate.bi",
