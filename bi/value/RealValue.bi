@@ -11,8 +11,8 @@ class RealValue(value:Real) < Value {
     return value;
   }
 
-  function accept(gen:Generator) {
-    gen.visit(this);
+  function accept(writer:Writer) {
+    writer.visit(this);
   }
 
   function isScalar() -> Boolean {

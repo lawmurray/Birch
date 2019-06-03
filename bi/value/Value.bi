@@ -5,7 +5,7 @@ class Value {
   /**
    * Accept a generator.
    */
-  function accept(gen:Generator);
+  function accept(writer:Writer);
 
   /**
    * Is this an object?

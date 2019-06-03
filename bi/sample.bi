@@ -36,7 +36,9 @@ program sample(
   /* config */
   configBuffer:MemoryBuffer;
   if config? {
-    configBuffer.load(config!);
+    reader:Reader <- Reader(config!);
+    reader.read(configBuffer);    
+    reader.close();
   }
 
   /* random number generator */
@@ -76,18 +78,15 @@ program sample(
   assert m?;
 
   /* input */
-  inputFile:String?;
-  inputBuffer:MemoryBuffer;
-  if input? {
-    inputFile <- input!;
-  } else if config? {
-    auto buffer <- configBuffer.getString("input");
-    if buffer? {
-      inputFile <- buffer!;
-    }
+  auto inputPath <- input;
+  if !inputPath? {
+    inputPath <-? configBuffer.getString("input");
   }
-  if inputFile? {
-    inputBuffer.load(inputFile!);
+  if inputPath? {
+    reader:Reader <- Reader(inputPath!);
+    inputBuffer:MemoryBuffer;
+    reader.read(inputBuffer);
+    reader.close();
     inputBuffer.get(m!);
   }
 
@@ -123,31 +122,26 @@ program sample(
   assert s?;
 
   /* output */
-  outputBuffer:MemoryBuffer;
-  outputBuffer.setArray();
-  outputFile:String?;
-  if output? {
-    outputFile <- output!;
-  } else if config? {
-    auto buffer <- configBuffer.getString("output");
-    if buffer? {
-      outputFile <- buffer!;
-    }
+  outputWriter:Writer?;
+  outputPath:String? <- output;
+  if !outputPath? {
+    outputPath <-? configBuffer.getString("output");
+  }
+  if outputPath? {
+    outputWriter <- Writer(outputPath!);
+    outputWriter!.startSequence();
   }
 
   /* diagnostic */
-  diagnosticBuffer:MemoryBuffer;
-  diagnosticBuffer.setArray();
-  diagnosticFile:String?;
-  if diagnostic? {
-    diagnosticFile <- diagnostic!;
-  } else if config? {
-    auto buffer <- configBuffer.getString("diagnostic");
-    if buffer? {
-      diagnosticFile <- buffer!;
-    }
+  diagnosticWriter:Writer?;
+  diagnosticPath:String? <- diagnostic;
+  if !diagnosticPath? {
+    diagnosticPath <-? configBuffer.getString("diagnostic");
   }
-
+  if diagnosticPath? {
+    diagnosticWriter <- Writer(diagnosticPath!);
+    diagnosticWriter!.startSequence();
+  }
 
   /* sample */
   m1:Model?;
@@ -155,20 +149,26 @@ program sample(
   auto f <- s!.sample();
   while f? {
     (m1, w1) <- f!;
-    if outputFile? {
-      auto buffer <- outputBuffer.push();
+    if outputWriter? {
+      buffer:MemoryBuffer;
       buffer.set(m1!);
       buffer.set("lweight", w1);
+      outputWriter!.write(buffer);
+      outputWriter!.flush();
     }
-    if diagnosticFile? {
-      auto buffer <- diagnosticBuffer.push();
+    if diagnosticWriter? {
+      buffer:MemoryBuffer;
       buffer.set(s!);
+      diagnosticWriter!.write(buffer);
+      diagnosticWriter!.flush();
     }
   }
-  if outputFile? {
-    outputBuffer.save(outputFile!);
+  if outputWriter? {
+    outputWriter!.endSequence();
+    outputWriter!.close();
   }
-  if diagnosticFile? {
-    diagnosticBuffer.save(diagnosticFile!);
+  if diagnosticWriter? {
+    diagnosticWriter!.endSequence();
+    diagnosticWriter!.close();
   }
 }

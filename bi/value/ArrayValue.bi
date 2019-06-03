@@ -4,8 +4,8 @@
 class ArrayValue < Value {
   buffers:List<MemoryBuffer>;
 
-  function accept(gen:Generator) {
-    gen.visit(this);
+  function accept(writer:Writer) {
+    writer.visit(this);
   }
   
   function isArray() -> Boolean {

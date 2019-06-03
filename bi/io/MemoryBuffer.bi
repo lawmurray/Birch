@@ -13,19 +13,20 @@ class MemoryBuffer < Buffer {
    * - path: Path of the file.
    */
   function load(path:String) {
-    parser:JSONParser;
-    parser.parse(path, this);
+    auto reader <- Reader(path);
+    reader.read(this);
+    reader.close();
   }
 
   /**
-   * Save to a file.
+   * Save to a JSON file.
    *
    * - path: Path of the file.
    */
   function save(path:String) {
-    mkdir(path);
-    gen:JSONGenerator;
-    gen.generate(path, this);
+    auto writer <- Writer(path);
+    writer.write(this);
+    writer.close();
   }
 
   function getChild(name:String) -> Buffer? {

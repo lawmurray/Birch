@@ -78,3 +78,15 @@ function fclose(file:File) {
   ::fclose(file);
   }}
 }
+
+/**
+ * File extension of a path.
+ */
+function extension(path:String) -> String {
+  ext:String;
+  cpp{{
+  boost::filesystem::path f(path);
+  ext = f.extension().string();
+  }}
+  return ext;
+}

@@ -3,16 +3,24 @@ hpp{{
 }}
 
 /**
- * Parser for JSON files.
+ * Reader for JSON files.
  */
-class JSONParser < Parser {
+class JSONReader < Reader {
+  /**
+   * The file.
+   */
+  file:File;
+
   hpp{{
   yaml_parser_t parser;
   yaml_event_t event;
   }}
 
-  function parse(path:String, buffer:Buffer) {
-    auto file <- fopen(path, READ);
+  function open(path:String) {
+    file <- fopen(path, READ);
+  }
+
+  function read(buffer:MemoryBuffer) {
     cpp{{
     yaml_parser_initialize(&self->parser);
     yaml_parser_set_input_file(&self->parser, file);
@@ -32,6 +40,9 @@ class JSONParser < Parser {
     }
     yaml_parser_delete(&self->parser);
     }}
+  }
+  
+  function close() {
     fclose(file);
   }
   

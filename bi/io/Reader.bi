@@ -1,0 +1,60 @@
+/**
+ * Abstract reader.
+ *
+ * Typical use is to use the `Reader` factory function to instantiate an
+ * object of an appropriate derived class based on the file extension of the
+ * given path:
+ *
+ *     auto reader <- Reader(path);
+ *
+ * A reader of a single buffer can then be performed with:
+ *
+ *     reader.read(buffer);
+ *
+ * Finally, close the file:
+ *
+ *     reader.close();
+ */
+class Reader {  
+  /**
+   * Open a file.
+   *
+   * - path : Path of the file.
+   */
+  function open(path:String);
+  
+  /**
+   * Read the entire contents of the file.
+   *
+   * - buffer: Buffer into which to read.
+   */
+  function read(buffer:MemoryBuffer);
+  
+  /**
+   * Close the file.
+   */
+  function close();
+}
+
+/**
+ * Create a reader for a file.
+ *
+ * - path: Path of the file.
+ *
+ * Returns: the reader.
+ *
+ * The file extension of `path` is used to determine the precise type of the
+ * returned object. Currently, the only supported file extension is `.json`,
+ * for a JSON file.
+ */
+function Reader(path:String) -> Reader {
+  auto ext <- extension(path);
+  if ext == ".json" {
+    reader:JSONReader;
+    reader.open(path);
+    return reader;
+  } else {
+    error("unrecognized file extension '" + ext + "' in path '" + path +
+        "'; supported extensions are '.json'.");
+  }
+}

@@ -2,8 +2,8 @@
  * Nil value.
  */
 class NilValue < Value {
-  function accept(gen:Generator) {
-    gen.visit(this);
+  function accept(writer:Writer) {
+    writer.visit(this);
   }
 
   function isScalar() -> Boolean {

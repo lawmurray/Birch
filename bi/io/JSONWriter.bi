@@ -3,16 +3,21 @@ hpp{{
 }}
 
 /**
- * Generator for JSON files.
+ * Writer for JSON files.
  */
-class JSONGenerator < Generator {  
+class JSONWriter < Writer {
+  /**
+   * The file.
+   */
+  file:File;
+
   hpp{{
   yaml_emitter_t emitter;
   yaml_event_t event;
   }}
-
-  function generate(path:String, buffer:MemoryBuffer) {
-    auto file <- fopen(path, WRITE);
+  
+  function open(path:String) {
+    file <- fopen(path, WRITE);
     cpp{{
     yaml_emitter_initialize(&self->emitter);
     yaml_emitter_set_output_file(&self->emitter, file);
@@ -21,7 +26,19 @@ class JSONGenerator < Generator {
     yaml_document_start_event_initialize(&self->event, NULL, NULL, NULL, 1);
     yaml_emitter_emit(&self->emitter, &self->event);
     }}
+  }
+  
+  function write(buffer:MemoryBuffer) {
     buffer.value.accept(this);
+  }
+  
+  function flush() {
+    cpp{{
+    yaml_emitter_flush(&self->emitter);
+    }}
+  }
+
+  function close() {
     cpp{{
     yaml_document_end_event_initialize(&self->event, 1);
     yaml_emitter_emit(&self->emitter, &self->event);

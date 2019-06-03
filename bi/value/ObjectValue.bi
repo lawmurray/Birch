@@ -4,8 +4,8 @@
 class ObjectValue < Value {
   entries:List<Entry>;
 
-  function accept(gen:Generator) {
-    gen.visit(this);
+  function accept(writer:Writer) {
+    writer.visit(this);
   }
 
   function isObject() -> Boolean {
