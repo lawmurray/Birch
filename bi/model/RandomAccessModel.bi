@@ -18,7 +18,7 @@ class RandomAccessModel < BidirectionalModel {
     seek(t + 1);
   }
   
-  function back() {
+  function previous() {
     seek(t - 1);
   }
   
