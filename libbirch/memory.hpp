@@ -17,7 +17,7 @@ extern libbirch::Pool& pool(const unsigned i);
 /**
  * Buffer for heap allocations.
  */
-extern std::atomic<char*> buffer;
+extern libbirch::Atomic<char*> buffer;
 
 /**
  * Start of heap (for debugging purposes).

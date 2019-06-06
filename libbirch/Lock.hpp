@@ -58,19 +58,19 @@ private:
     /**
      * Count of threads with shared access.
      */
-    std::atomic<unsigned> shareCount;
+    Atomic<unsigned> shareCount;
 
     /**
      * Count of threads with exclusive access.
      */
-    std::atomic<unsigned> keepCount;
+    Atomic<unsigned> keepCount;
   };
 
   /**
    * Lock type.
    */
   union lock_type {
-    std::atomic<joint_lock_type> joint;
+    Atomic<joint_lock_type> joint;
     split_lock_type split;
 
     lock_type() :

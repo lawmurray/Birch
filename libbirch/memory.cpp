@@ -38,7 +38,7 @@ libbirch::Pool& libbirch::pool(const unsigned i) {
 }
 
 
-std::atomic<char*> libbirch::buffer(heap());
+libbirch::Atomic<char*> libbirch::buffer(heap());
 char* libbirch::bufferStart;
 size_t libbirch::bufferSize;
 #endif
