@@ -93,12 +93,12 @@ protected:
    * so an atomic raw pointer is used, with manual shared reference count
    * maintenance.
    */
-  Atomic<LazyAny*> forward;
+  std::atomic<LazyAny*> forward;
 
   /**
    * Have clones of all objects reachable from this object finished?
    */
-  Atomic<bool> finished;
+  std::atomic<bool> finished;
 };
 }
 

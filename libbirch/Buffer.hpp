@@ -5,7 +5,6 @@
 
 #include "libbirch/external.hpp"
 #include "libbirch/thread.hpp"
-#include "libbirch/Atomic.hpp"
 
 namespace libbirch {
 /**
@@ -77,7 +76,7 @@ private:
   /**
    * Use count (the number of arrays sharing this buffer).
    */
-  Atomic<unsigned> useCount;
+  std::atomic<unsigned> useCount;
 
   /**
    * First element in the buffer. Taking the address of this gives a pointer

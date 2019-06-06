@@ -7,7 +7,7 @@
 #include "libbirch/thread.hpp"
 
 /* declared in memory.hpp */
-libbirch::Atomic<size_t> libbirch::memoryUse(0);
+std::atomic<size_t> libbirch::memoryUse(0);
 
 #if ENABLE_MEMORY_POOL
 /**
@@ -41,7 +41,7 @@ libbirch::Pool& libbirch::pool(const unsigned i) {
 }
 
 
-libbirch::Atomic<char*> libbirch::buffer(heap());
+std::atomic<char*> libbirch::buffer(heap());
 char* libbirch::bufferStart;
 size_t libbirch::bufferSize;
 #endif

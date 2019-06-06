@@ -4,7 +4,6 @@
 #pragma once
 
 #include "libbirch/external.hpp"
-#include "libbirch/Atomic.hpp"
 
 namespace libbirch {
 /**
@@ -38,7 +37,7 @@ private:
   /**
    * Lock.
    */
-  Atomic<bool> lock;
+  std::atomic<bool> lock;
 };
 }
 

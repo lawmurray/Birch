@@ -11,7 +11,6 @@
 #include "libbirch/Shared.hpp"
 #include "libbirch/Sequence.hpp"
 #include "libbirch/Eigen.hpp"
-#include "libbirch/Atomic.hpp"
 #include "libbirch/ExclusiveLock.hpp"
 
 namespace libbirch {
@@ -763,7 +762,7 @@ private:
   /**
    * Buffer.
    */
-  Atomic<Buffer<T>*> buffer;
+  std::atomic<Buffer<T>*> buffer;
 
   /**
    * Offset into the buffer. This should be zero when isView is false.

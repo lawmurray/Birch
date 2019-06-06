@@ -3,7 +3,6 @@
  */
 #pragma once
 
-#include "libbirch/Atomic.hpp"
 #include "libbirch/external.hpp"
 #include "libbirch/memory.hpp"
 #include "libbirch/class.hpp"
@@ -186,19 +185,19 @@ protected:
   /**
    * Shared count.
    */
-  Atomic<unsigned> sharedCount;
+  std::atomic<unsigned> sharedCount;
 
   /**
    * Weak count.
    */
-  Atomic<unsigned> weakCount;
+  std::atomic<unsigned> weakCount;
 
   /**
    * Memo count. This is the number of times that the object occurs as a key
    * in a memo. It is always less than or equal to the weak count, as each
    * memo reference implies a weak reference also.
    */
-  Atomic<unsigned> memoCount;
+  std::atomic<unsigned> memoCount;
 
   /**
    * Size of the object. This is set immediately after construction. A value
@@ -221,7 +220,7 @@ protected:
    * progress, max threads for true, and greater than max threads for true
    * and accessible through a single pointer only.
    */
-  libbirch::Atomic<int> frozen;
+  std::atomic<int> frozen;
 };
 }
 

@@ -17,7 +17,7 @@ extern libbirch::Pool& pool(const unsigned i);
 /**
  * Buffer for heap allocations.
  */
-extern libbirch::Atomic<char*> buffer;
+extern std::atomic<char*> buffer;
 
 /**
  * Start of heap (for debugging purposes).
@@ -33,7 +33,7 @@ extern size_t bufferSize;
 /**
  * Number of bytes of memory currently in use (excluding that in pools).
  */
-extern libbirch::Atomic<size_t> memoryUse;
+extern std::atomic<size_t> memoryUse;
 
 /**
  * For an allocation size, determine the index of the pool to which it
