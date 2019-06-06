@@ -33,7 +33,7 @@ extern size_t bufferSize;
 /**
  * Number of bytes of memory currently in use (excluding that in pools).
  */
-extern std::atomic<size_t> memoryUse;
+extern libbirch::Atomic<size_t> memoryUse;
 
 /**
  * For an allocation size, determine the index of the pool to which it

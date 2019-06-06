@@ -22,5 +22,10 @@ public:
   Atomic(const Atomic<T>& o) : std::atomic<T>(o.load()) {
     //
   }
+
+  Atomic<T>& operator=(const T& value) {
+    std::atomic<T>::operator=(value);
+    return *this;
+  }
 };
 }

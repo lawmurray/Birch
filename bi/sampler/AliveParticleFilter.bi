@@ -25,7 +25,7 @@ class AliveParticleFilter < ParticleFilter {
      * the total number of propagations; nested C++ is required for this at
      * this stage */
     cpp {{
-    std::atomic<int> P;
+    libbirch::Atomic<int> P;
     P = 0;
     }}
     auto x0 <- x;

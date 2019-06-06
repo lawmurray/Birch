@@ -221,7 +221,7 @@ protected:
    * progress, max threads for true, and greater than max threads for true
    * and accessible through a single pointer only.
    */
-  std::atomic<int> frozen;
+  libbirch::Atomic<int> frozen;
 };
 }
 
