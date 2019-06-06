@@ -49,7 +49,12 @@ class ParticleFilter < ForwardSampler {
    * For each checkpoint, the effective sample size (ESS).
    */
   ess:Queue<Real>;
-    
+  
+  /**
+   * At each checkpoint, how much memory is in use?
+   */
+  memory:Queue<Integer>;
+  
   /**
    * At each checkpoint, what is the elapsed wallclock time?
    */
@@ -89,6 +94,7 @@ class ParticleFilter < ForwardSampler {
   function initialize() {
     Z.clear();
     ess.clear();
+    memory.clear();
     elapsed.clear();
 
     w <- vector(0.0, N);
@@ -97,7 +103,7 @@ class ParticleFilter < ForwardSampler {
     x1:Vector<ForwardModel>;
     x1.enlarge(N, clone<ForwardModel>(archetype!));
     x <- x1.toArray();
-    for auto n in 1..N {
+    parallel for auto n in 1..N {
       x[n] <- clone<ForwardModel>(x[n]);
     }
     tic();
@@ -145,6 +151,7 @@ class ParticleFilter < ForwardSampler {
   
     /* normalizing constant estimate */
     Z.pushBack(V);
+    memory.pushBack(memoryUse());
     elapsed.pushBack(toc());
   }
 
@@ -209,5 +216,6 @@ class ParticleFilter < ForwardSampler {
     buffer.set("levidence", Z);
     buffer.set("ess", ess);
     buffer.set("elapsed", elapsed);
+    buffer.set("memory", memory);
   }
 }

@@ -286,6 +286,7 @@
       "bi/config.bi",
       "bi/error.bi",
       "bi/main.bi",
+      "bi/memory.bi",
       "bi/sample.bi",
       "bi/test.bi"
     ],
