@@ -15,9 +15,10 @@ class ConditionalParticleFilter < ParticleFilter {
     if h'? {
       /* there is a reference particle, switch on replay for it */
       h'!.rewind();
-      h'!.setMode(REPLAY_DELAY);
       b <- 1;
-      x[b].h <- h'!;
+      x[b].h.setMode(REPLAY_DELAY);
+      x[b].h.trace.forwardCount <- h'!.trace.forwardCount;
+      x[b].h.trace.forward <- h'!.trace.takeForward();
     }
     
     /* switch on recording for all particles */
