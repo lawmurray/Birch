@@ -14,8 +14,6 @@ class ConditionalParticleFilter < ParticleFilter {
       
     if h'? {
       /* there is a reference particle, switch on replay for it */
-      h'!.rewind();
-      b <- 1;
       x[b].h.setMode(REPLAY_DELAY);
       x[b].h.trace.forwardCount <- h'!.trace.forwardCount;
       x[b].h.trace.forward <- h'!.trace.takeForward();
@@ -31,10 +29,9 @@ class ConditionalParticleFilter < ParticleFilter {
     if ess.back() <= trigger*N {
       /* temporarily remove the replay trace from the reference particle to
        * avoid copying it around */
-      auto h <- x[b].h;
-      h.setMode(PLAY_DELAY);
-      auto forwardCount <- h.trace.forwardCount;
-      auto forward <- h.trace.takeForward();
+      auto forwardCount <- x[b].h.trace.forwardCount;
+      auto forward <- x[b].h.trace.takeForward();
+      x[b].h.setMode(PLAY_DELAY);
       
       /* resample */
       if h'? {
@@ -56,9 +53,8 @@ class ConditionalParticleFilter < ParticleFilter {
       
       /* restore replay trace to new reference particle */
       if h'? {
-        h <- x[b].h;
-        h.setMode(REPLAY_DELAY);
-        h.trace.putForward(forward, forwardCount);
+        x[b].h.setMode(REPLAY_DELAY);
+        x[b].h.trace.putForward(forward, forwardCount);
       }
     } else {
       a <- iota(1, N);
@@ -69,5 +65,6 @@ class ConditionalParticleFilter < ParticleFilter {
   function finish() {
     super.finish();
     h' <- x[b].h;
+    h'!.rewind();
   }
 }
