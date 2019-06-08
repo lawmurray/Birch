@@ -3,7 +3,7 @@
  */
 function memoryUse() -> Integer {
   cpp{{
-  return libbirch::memoryUse;
+  return libbirch::memoryUse.load();
   }}
 }
 
@@ -17,9 +17,9 @@ function memoryUse() -> Integer {
 function memoryPool() -> Integer {
   cpp{{
   #if ENABLE_MEMORY_POOL
-  return libbirch::buffer.load(std::memory_order_relaxed) - libbirch::bufferStart;
+  return libbirch::buffer.load() - libbirch::bufferStart;
   #else
-  return libbirch::memoryUse;
+  return libbirch::memoryUse.load();
   #endif
   }}
 }

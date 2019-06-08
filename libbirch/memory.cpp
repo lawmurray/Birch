@@ -7,7 +7,7 @@
 #include "libbirch/thread.hpp"
 
 /* declared in memory.hpp */
-std::atomic<size_t> libbirch::memoryUse(0);
+libbirch::Atomic<size_t> libbirch::memoryUse(0);
 
 #if ENABLE_MEMORY_POOL
 /**
@@ -41,7 +41,7 @@ libbirch::Pool& libbirch::pool(const unsigned i) {
 }
 
 
-std::atomic<char*> libbirch::buffer(heap());
+libbirch::Atomic<char*> libbirch::buffer(heap());
 char* libbirch::bufferStart;
 size_t libbirch::bufferSize;
 #endif
@@ -62,7 +62,7 @@ thread_local bool libbirch::cloneUnderway = false;
 void* libbirch::allocate(const size_t n) {
   assert(n > 0u);
 
-  memoryUse.fetch_add(n, std::memory_order_relaxed);
+  memoryUse += n;
 #if !ENABLE_MEMORY_POOL
   return std::malloc(n);
 #else
@@ -72,7 +72,7 @@ void* libbirch::allocate(const size_t n) {
     size_t m = unbin(i);
     size_t r = (m < 64u) ? 64u : m;
     // ^ minimum allocation 64 bytes to maintain alignment
-    ptr = buffer.fetch_add(r, std::memory_order_relaxed);
+    ptr = (buffer += r) - r;
     assert((char*)ptr + r <= bufferStart + bufferSize); // otherwise out of memory
     if (m < 64u) {
       /* add extra bytes as a separate allocation to the pool for
@@ -90,7 +90,7 @@ void libbirch::deallocate(void* ptr, const size_t n, const unsigned tid) {
   assert(n > 0u);
   assert(tid < nthreads);
 
-  memoryUse.fetch_sub(n, std::memory_order_relaxed);
+  memoryUse -= n;
 #if !ENABLE_MEMORY_POOL
   std::free(ptr);
 #else
@@ -104,7 +104,7 @@ void libbirch::deallocate(void* ptr, const unsigned n, const unsigned tid) {
   assert(n > 0u);
   assert(tid < nthreads);
 
-  memoryUse.fetch_sub(n, std::memory_order_relaxed);
+  memoryUse -= n;
 #if !ENABLE_MEMORY_POOL
   std::free(ptr);
 #else
@@ -119,7 +119,7 @@ void* libbirch::reallocate(void* ptr1, const size_t n1, const unsigned tid1, con
   assert(tid < nthreads);
   assert(n2 > 0u);
 
-  memoryUse.fetch_add(n2 > n1 ? n2 - n1 : n1 - n2, std::memory_order_relaxed);
+  memoryUse += n2 > n1 ? n2 - n1 : n1 - n2;
 #if !ENABLE_MEMORY_POOL
   return std::realloc(ptr1, n2);
 #else

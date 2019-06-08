@@ -81,6 +81,24 @@ public:
     return old;
   }
 
+  template<class U>
+  T operator+=(const U& value) {
+    T result;
+    #pragma omp atomic capture
+    result = this->value += value;
+
+    return result;
+  }
+
+  template<class U>
+  T operator-=(const U& value) {
+    T result;
+    #pragma omp atomic capture
+    result = this->value -= value;
+
+    return result;
+  }
+
   T operator++() {
     T value;
     #pragma omp atomic capture
