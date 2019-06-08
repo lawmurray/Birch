@@ -11,6 +11,7 @@
 #include "libbirch/Shared.hpp"
 #include "libbirch/Sequence.hpp"
 #include "libbirch/Eigen.hpp"
+#include "libbirch/Atomic.hpp"
 #include "libbirch/ExclusiveLock.hpp"
 
 namespace libbirch {
@@ -99,10 +100,10 @@ public:
    */
   Array(Array<T,F> && o) :
       frame(o.frame),
-      buffer(o.buffer.load(std::memory_order_relaxed)),
+      buffer(o.buffer),
       offset(o.offset),
       isView(o.isView) {
-    o.buffer.store(nullptr, std::memory_order_relaxed);
+    o.buffer.store(nullptr);
   }
 
   /**
@@ -218,7 +219,7 @@ public:
   }
   template<class View1, typename = std::enable_if_t<View1::rangeCount() != 0>>
   auto operator()(const View1& view) const {
-    return Array<T,decltype(frame(view))>(buffer, offset + frame.serial(view),
+    return Array<T,decltype(frame(view))>(buffer.load(), offset + frame.serial(view),
         frame(view));
   }
   template<class View1, typename = std::enable_if_t<View1::rangeCount() == 0>>
@@ -303,14 +304,14 @@ public:
    * Raw pointer to underlying buffer.
    */
   T* buf() {
-    return buffer.load(std::memory_order_relaxed)->buf() + offset;
+    return buffer.load()->buf() + offset;
   }
 
   /**
    * Raw pointer to underlying buffer.
    */
   T* buf() const {
-    return buffer.load(std::memory_order_relaxed)->buf() + offset;
+    return buffer.load()->buf() + offset;
   }
 
   /**
@@ -325,7 +326,7 @@ public:
     static_assert(F::count() == 1, "can only shrink one-dimensional arrays");
     static_assert(G::count() == 1, "can only shrink one-dimensional arrays");
     assert(!isView);
-    assert(buffer);
+    assert(buffer.load());
     assert(frame.size() < size());
 
     lock();
@@ -341,12 +342,12 @@ public:
       if (frame.size() == 0) {
         release();
       } else {
-        auto oldBuffer = buffer.load(std::memory_order_relaxed);
+        auto oldBuffer = buffer.load();
         auto oldSize = Buffer<T>::size(volume());
         auto newSize = Buffer<T>::size(frame.volume());
         buffer.store(
             (Buffer<T>*)libbirch::reallocate(oldBuffer, oldSize, oldBuffer->tid,
-                newSize), std::memory_order_relaxed);
+                newSize));
       }
       this->frame.resize(frame);
     }
@@ -369,17 +370,17 @@ public:
     assert(frame.size() > size());
 
     lock();
-    if (isShared() || !buffer) {
+    if (isShared() || !buffer.load()) {
       rebase(Array<T,F>(*this, frame, x));
     } else {
       auto oldVolume = this->frame.volume();
       this->frame.resize(frame);
-      auto oldBuffer = buffer.load(std::memory_order_relaxed);
+      auto oldBuffer = buffer.load();
       auto oldSize = Buffer<T>::size(oldVolume);
       auto newSize = Buffer<T>::size(frame.volume());
       buffer.store(
           (Buffer<T>*)libbirch::reallocate(oldBuffer, oldSize, oldBuffer->tid,
-              newSize), std::memory_order_relaxed);
+              newSize));
       Iterator<T,F> iter(buf(), frame);
       // ^ don't use begin() as we have obtained the lock already
       std::uninitialized_fill(iter + oldVolume, iter + frame.size(), x);
@@ -564,12 +565,12 @@ private:
    * Allocate memory for array, leaving uninitialized.
    */
   void allocate() {
-    assert(!buffer);
+    assert(!buffer.load());
     auto size = Buffer<T>::size(frame.volume());
     if (size > 0) {
       auto tmp = new (libbirch::allocate(size)) Buffer<T>();
       tmp->incUsage();
-      buffer.store(tmp, std::memory_order_relaxed);
+      buffer.store(tmp);
     }
   }
 
@@ -584,11 +585,11 @@ private:
         rebase(std::move(o1));
       }
       assert(!isShared());
-      auto ptr = buffer.load(std::memory_order_relaxed);
+      auto ptr = buffer.load();
       unlock();
       return ptr;
     } else {
-      return buffer.load(std::memory_order_relaxed);
+      return buffer.load();
     }
   }
 
@@ -612,9 +613,7 @@ private:
     assert(!isView);
     assert(!o.isView);
     std::swap(frame, o.frame);
-    o.buffer.store(
-        buffer.exchange(o.buffer.load(std::memory_order_relaxed),
-            std::memory_order_relaxed), std::memory_order_relaxed);  // can't std::swap atomics
+    o.buffer.store(buffer.exchange(o.buffer.load()));
   }
 
   /**
@@ -735,7 +734,7 @@ private:
    * Is the buffer shared with one or more other arrays?
    */
   bool isShared() const {
-    auto tmp = buffer.load(std::memory_order_relaxed);
+    auto tmp = buffer.load();
     auto result = tmp && tmp->numUsage() > 1u;
     return result;
   }
@@ -762,7 +761,7 @@ private:
   /**
    * Buffer.
    */
-  std::atomic<Buffer<T>*> buffer;
+  Atomic<Buffer<T>*> buffer;
 
   /**
    * Offset into the buffer. This should be zero when isView is false.
@@ -798,13 +797,13 @@ libbirch::Array<T,F>::Array(const Array<T,F>& o, const bool canShare) :
     allocate();
     copy(o);
   } else {
-    auto tmp = o.buffer.load(std::memory_order_relaxed);
+    auto tmp = o.buffer.load();
     if (tmp && !o.isView) {
       /* views do not increment the buffer use count, as they are meant to be
        * temporary and should not outlive the buffer itself */
       tmp->incUsage();
     }
-    buffer.store(tmp, std::memory_order_relaxed);
+    buffer.store(tmp);
     offset = o.offset;
     isView = o.isView;
   }

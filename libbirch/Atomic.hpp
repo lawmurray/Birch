@@ -24,7 +24,7 @@ public:
    *
    * @param value Initial value.
    */
-  Atomic(const T& value) {
+  explicit Atomic(const T& value) {
     #pragma omp atomic write
     this->value = value;
   }
@@ -38,18 +38,10 @@ public:
   }
 
   /**
-   * Value assignment operator.
+   * Assignment operator.
    */
   Atomic<T>& operator=(const Atomic<T>& o) {
     store(o.load());
-    return *this;
-  }
-
-  /**
-   * Assignment operator.
-   */
-  Atomic<T>& operator=(const T& value) {
-    store(value);
     return *this;
   }
 

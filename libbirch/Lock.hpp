@@ -81,11 +81,11 @@ inline void libbirch::Lock::write() {
      * from the start, otherwise proceed */
     writer = (readers.load() == 0);
     if (!writer) {
-      this->writer = false;
+      this->writer.store(false);
     }
   }
 }
 
 inline void libbirch::Lock::unwrite() {
-  writer = false;
+  writer.store(false);
 }
