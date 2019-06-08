@@ -10,36 +10,30 @@
 libbirch::LazyAny* libbirch::LazyAny::getForward() {
   assert(isFrozen());
 
-  auto forward1 = forward.load(std::memory_order_relaxed);
-  if (!forward1) {
-    SwapClone swapClone(true);
-    SwapContext swapContext(this);
-    auto forward2 = this->clone_();
-    forward2->incShared();
-    if (this->forward.compare_exchange_strong(forward1, forward2,
-        std::memory_order_relaxed)) {
-      return forward2;
-    } else {
-      /* beaten by another thread */
-      forward2->decShared();
+  if (!forward) {
+    mutex.keep();
+    if (!forward) {
+      SwapClone swapClone(true);
+      SwapContext swapContext(this);
+      forward = this->clone_();
     }
+    mutex.unkeep();
   }
-  if (forward1->isFrozen()) {
-    return forward1->getForward();
+  if (forward->isFrozen()) {
+    return forward->getForward();
   } else {
-    return forward1;
+    return forward.get();
   }
 }
 
 libbirch::LazyAny* libbirch::LazyAny::pullForward() {
   assert(isFrozen());
 
-  auto forward1 = forward.load(std::memory_order_relaxed);
-  if (forward1) {
-    if (forward1->isFrozen()) {
-      return forward1->pullForward();
+  if (forward) {
+    if (forward->isFrozen()) {
+      return forward->pullForward();
     } else {
-      return forward1;
+      return forward.get();
     }
   } else {
     return this;
