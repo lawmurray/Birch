@@ -24,7 +24,7 @@ libbirch::LazyAny* libbirch::LazyMemo::get(LazyAny* o) {
   assert(o->isFrozen());
   LazyAny* prev = nullptr;
   LazyAny* next = o;
-  l.keep();
+  l.write();
   do {
     prev = next;
     next = m.get(prev, prev);
@@ -34,7 +34,7 @@ libbirch::LazyAny* libbirch::LazyMemo::get(LazyAny* o) {
   } else if (next->isFrozen()) {
     next = next->getForward();
   }
-  l.unkeep();
+  l.unwrite();
   return next;
 }
 
@@ -42,7 +42,7 @@ libbirch::LazyAny* libbirch::LazyMemo::pull(LazyAny* o) {
   assert(o->isFrozen());
   LazyAny* prev = nullptr;
   LazyAny* next = o;
-  l.share();
+  l.read();
   do {
     prev = next;
     next = m.get(prev, prev);
@@ -50,7 +50,7 @@ libbirch::LazyAny* libbirch::LazyMemo::pull(LazyAny* o) {
   if (this == next->getContext() && next->isFrozen()) {
     next = next->pullForward();
   }
-  l.unshare();
+  l.unread();
   return next;
 }
 

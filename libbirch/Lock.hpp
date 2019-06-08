@@ -7,89 +7,85 @@
 
 namespace libbirch {
 /**
- * Lock with shared and exclusive use semantics.
+ * Lock with shared read and exclusive write semantics.
  *
  * @ingroup libbirch
- *
- * @todo Could replace with std::shared_mutex in C++17.
  */
 class Lock {
 public:
   /**
-   * Obtain shared use.
+   * Default constructor.
    */
-  void share();
+  Lock();
 
   /**
-   * Release shared use.
+   * Obtain read use.
    */
-  void unshare();
+  void read();
+
+  /**
+   * Release read use.
+   */
+  void unread();
 
   /**
    * Obtain exclusive use.
    */
-  void keep();
+  void write();
 
   /**
    * Release exclusive use.
    */
-  void unkeep();
+  void unwrite();
 
 private:
   /**
-   * Joint lock type.
+   * Number of readers in critical region.
    */
-  struct joint_lock_type {
-    /**
-     * Count of threads with shared access.
-     */
-    unsigned shareCount;
-
-    /**
-     * Count of threads with exclusive access.
-     */
-    unsigned keepCount;
-  };
+  Atomic<unsigned> readers;
 
   /**
-   * Split lock type.
+   * Is there a writer in the critical region?
    */
-  struct split_lock_type {
-    /**
-     * Count of threads with shared access.
-     */
-    std::atomic<unsigned> shareCount;
-
-    /**
-     * Count of threads with exclusive access.
-     */
-    std::atomic<unsigned> keepCount;
-  };
-
-  /**
-   * Lock type.
-   */
-  union lock_type {
-    std::atomic<joint_lock_type> joint;
-    split_lock_type split;
-
-    lock_type() :
-        joint( { 0u, 0u }) {
-      //
-    }
-  };
-
-  /**
-   * Lock.
-   */
-  lock_type lock;
+  Atomic<bool> writer;
 };
 }
 
-inline void libbirch::Lock::unshare() {
-  lock.split.shareCount.fetch_sub(1u, std::memory_order_seq_cst);
+inline libbirch::Lock::Lock() :
+    readers(0),
+    writer(false) {
+  //
 }
 
-inline void libbirch::Lock::unkeep() {
-  lock.split.keepCount.store(0u, std::memory_order_seq_cst);
+inline void libbirch::Lock::read() {
+  ++readers;
+  while (writer.load()) {
+    //
+  }
+}
+
+inline void libbirch::Lock::unread() {
+  --readers;
+}
+
+inline void libbirch::Lock::write() {
+  bool writer = false;
+  while (!writer) {
+    /* obtain the write lock */
+    do {
+      writer = this->writer.exchange(true);
+    } while (writer);
+
+    /* check if there are any readers; if so release the write lock to
+     * let those readers proceed and avoid a deadlock situation, repeating
+     * from the start, otherwise proceed */
+    writer = (readers.load() == 0);
+    if (!writer) {
+      this->writer = false;
+    }
+  }
+}
+
+inline void libbirch::Lock::unwrite() {
+  writer = false;
 }

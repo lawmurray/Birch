@@ -94,9 +94,10 @@ inline libbirch::LazyMemo* libbirch::LazyMemo::fork() {
 }
 
 inline void libbirch::LazyMemo::doFreeze_() {
-  l.share();
+  ///@todo check if this can recursively visit the same memo several times
+  l.read();
   m.freeze();
-  l.unshare();
+  l.unread();
 }
 
 #endif
