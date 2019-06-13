@@ -16,10 +16,20 @@ namespace libbirch {
  * disabled. The disadvantage is that OpenMP atomics do not support
  * compare-and-swap/compare-and-exchange, only swap/exchange, which requires
  * some clunkier client code, especially for read-write locks.
+ *
+ * Atomic provides the default constructor, copy and move constructors, copy
+ * and move assignment operators, in order to be trivially copyable and so
+ * a mappable type for the purposes of OpenMP. These constructors and
+ * operators *do not* behave atomically, however.
  */
 template<class T>
 class Atomic {
 public:
+  /**
+   * Default constructor.
+   */
+  Atomic() = default;
+
   /**
    * Constructor.
    *
@@ -28,22 +38,6 @@ public:
   explicit Atomic(const T& value) {
     #pragma omp atomic write
     this->value = value;
-  }
-
-  /**
-   * Copy constructor.
-   */
-  Atomic(const Atomic<T>& o) {
-    #pragma omp atomic write
-    this->value = o.load();
-  }
-
-  /**
-   * Assignment operator.
-   */
-  Atomic<T>& operator=(const Atomic<T>& o) {
-    store(o.load());
-    return *this;
   }
 
   /**
