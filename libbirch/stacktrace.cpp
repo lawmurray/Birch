@@ -6,7 +6,7 @@
 /**
  * Stack trace.
  */
-thread_local static std::vector<libbirch::StackFrame,libbirch::Allocator<libbirch::StackFrame>> stacktrace;
+thread_local static std::vector<libbirch::StackFrame,libbirch::Allocator<libbirch::StackFrame>> stacktrace(1, libbirch::StackFrame{"<thread>", nullptr, 0});
 
 libbirch::StackFunction::StackFunction(const char* func, const char* file,
     const int line) {
@@ -32,7 +32,11 @@ void libbirch::abort(const std::string& msg, const unsigned skip) {
   unsigned i = 0;
   for (auto iter = stacktrace.rbegin() + skip; (i < 20u + skip) &&
       iter != stacktrace.rend(); ++iter) {
-    printf("    %-24s @ %s:%d\n", iter->func, iter->file, iter->line);
+    if (iter->file) {
+      printf("    %-24s @ %s:%d\n", iter->func, iter->file, iter->line);
+    } else {
+      printf("    %-24s\n", iter->func);
+    }
     ++i;
   }
   if (i < stacktrace.size() - skip) {
