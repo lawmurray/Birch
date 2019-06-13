@@ -6,6 +6,7 @@
 #include "libbirch/Frame.hpp"
 
 namespace libbirch {
+#pragma omp declare target
 /**
  * Iterator over an array.
  *
@@ -29,6 +30,8 @@ public:
       serial(serial) {
     //
   }
+
+  Iterator(const Iterator& o) = default;
 
   T* get() const {
     return ptr + frame.offset(serial);
@@ -138,6 +141,7 @@ protected:
    */
   int64_t serial;
 };
+#pragma omp end declare target
 
 /**
  * Is @p iter inside the range @p begin to @p end?

@@ -7,7 +7,9 @@
 #include "libbirch/thread.hpp"
 
 /* declared in memory.hpp */
+#pragma omp declare target
 libbirch::Atomic<size_t> libbirch::memoryUse(0);
+#pragma omp end declare target
 
 #if ENABLE_MEMORY_POOL
 /**
@@ -41,9 +43,11 @@ libbirch::Pool& libbirch::pool(const unsigned i) {
 }
 
 
+#pragma omp declare target
 libbirch::Atomic<char*> libbirch::buffer(heap());
 char* libbirch::bufferStart;
 size_t libbirch::bufferSize;
+#pragma omp end declare target
 #endif
 
 /**
@@ -56,8 +60,10 @@ static libbirch::Memo* root() {
 
 /* declared in clone.hpp, here to ensure order of initialization for global
  * variables */
-thread_local libbirch::Memo* libbirch::currentContext(root());
-thread_local bool libbirch::cloneUnderway = false;
+#pragma omp declare target
+/*thread_local*/ libbirch::Memo* libbirch::currentContext(root());
+/*thread_local*/ bool libbirch::cloneUnderway = false;
+#pragma omp end declare target
 
 void* libbirch::allocate(const size_t n) {
   assert(n > 0u);

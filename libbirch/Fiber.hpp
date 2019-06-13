@@ -6,6 +6,7 @@
 #include "libbirch/FiberState.hpp"
 
 namespace libbirch {
+#pragma omp declare target
 /**
  * Fiber.
  *
@@ -54,6 +55,7 @@ public:
    */
   Shared<FiberState<YieldType>> state;
 };
+#pragma omp end declare target
 }
 
 template<class YieldType>

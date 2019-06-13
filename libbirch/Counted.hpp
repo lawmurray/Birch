@@ -8,6 +8,7 @@
 #include "libbirch/class.hpp"
 
 namespace libbirch {
+#pragma omp declare target
 /**
  * Base class for reference counted objects.
  *
@@ -222,6 +223,7 @@ protected:
    */
   std::atomic<int> frozen;
 };
+#pragma omp end declare target
 }
 
 #include "libbirch/thread.hpp"

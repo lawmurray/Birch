@@ -6,7 +6,7 @@
 /**
  * Stack trace.
  */
-thread_local static std::vector<libbirch::StackFrame,libbirch::Allocator<libbirch::StackFrame>> stacktrace(1, libbirch::StackFrame{"<thread>", nullptr, 0});
+/*thread_local*/ static std::vector<libbirch::StackFrame,libbirch::Allocator<libbirch::StackFrame>> stacktrace(1, libbirch::StackFrame{"<thread>", nullptr, 0});
 
 libbirch::StackFunction::StackFunction(const char* func, const char* file,
     const int line) {

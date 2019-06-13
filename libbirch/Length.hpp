@@ -6,6 +6,7 @@
 #include "libbirch/mutable.hpp"
 
 namespace libbirch {
+#pragma omp declare target
 /**
  * Length. The number of active elements along a dimension.
  *
@@ -30,4 +31,5 @@ struct Length<mutable_value> {
     //
   }
 };
+#pragma omp end declare target
 }

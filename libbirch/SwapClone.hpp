@@ -6,6 +6,7 @@
 #include "libbirch/memory.hpp"
 
 namespace libbirch {
+#pragma omp declare target
 /**
  * Swap the clone flag on construction, swap it back on destruction.
  */
@@ -31,4 +32,5 @@ private:
    */
   bool prevCloneUnderway;
 };
+#pragma omp end declare target
 }

@@ -13,5 +13,7 @@ namespace libbirch {
  *
  * @ingroup libbirch
  */
+#pragma omp declare target
 static constexpr int64_t mutable_value = 0;
+#pragma omp end declare target
 }

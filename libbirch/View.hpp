@@ -7,6 +7,7 @@
 #include "libbirch/Range.hpp"
 
 namespace libbirch {
+#pragma omp declare target
 /**
  * Empty view.
  *
@@ -51,7 +52,9 @@ struct EmptyView {
     return !(*this == o);
   }
 };
+#pragma omp end declare target
 
+#pragma omp declare target
 /**
  * Nonempty view.
  *
@@ -93,6 +96,11 @@ struct NonemptyView {
       tail(tail) {
     //
   }
+
+  /**
+   * Copy constructor.
+   */
+  NonemptyView(const NonemptyView<Head,Tail>& o) = default;
 
   /**
    * Generic copy constructor.
@@ -198,4 +206,5 @@ struct NonemptyView {
    */
   Tail tail;
 };
+#pragma omp end declare target
 }

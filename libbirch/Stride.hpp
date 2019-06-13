@@ -6,6 +6,7 @@
 #include "libbirch/mutable.hpp"
 
 namespace libbirch {
+#pragma omp declare target
 /**
  * Stride. The number of elements, including both active and inactive elements,
  * along a dimension.
@@ -30,4 +31,5 @@ struct Stride<mutable_value> {
     //
   }
 };
+#pragma omp end declare target
 }

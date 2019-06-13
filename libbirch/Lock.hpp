@@ -6,6 +6,7 @@
 #include "libbirch/external.hpp"
 
 namespace libbirch {
+#pragma omp declare target
 /**
  * Lock with shared read and exclusive write semantics.
  *
@@ -49,6 +50,7 @@ private:
    */
   Atomic<bool> writer;
 };
+#pragma omp end declare target
 }
 
 inline libbirch::Lock::Lock() :

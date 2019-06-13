@@ -7,6 +7,7 @@
 #include "libbirch/Atomic.hpp"
 
 namespace libbirch {
+#pragma omp declare target
 /**
  * Lock with only exclusive use semantics.
  *
@@ -40,6 +41,7 @@ private:
    */
   Atomic<bool> lock;
 };
+#pragma omp end declare target
 }
 
 inline libbirch::ExclusiveLock::ExclusiveLock() :

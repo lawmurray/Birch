@@ -6,6 +6,7 @@
 #include "libbirch/mutable.hpp"
 
 namespace libbirch {
+#pragma omp declare target
 /**
  * Offset. Number of elements until the first active element along a
  * dimension.
@@ -31,4 +32,5 @@ struct Offset<mutable_value> {
     //
   }
 };
+#pragma omp end declare target
 }

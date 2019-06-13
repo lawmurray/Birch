@@ -14,6 +14,7 @@
 #include "libbirch/ExclusiveLock.hpp"
 
 namespace libbirch {
+#pragma omp declare target
 /**
  * A multidimensional array. Combines underlying data and a frame describing
  * the shape of that data. Allows the construction of views of the data,
@@ -774,6 +775,7 @@ private:
    */
   ExclusiveLock mutex;
 };
+#pragma omp end declare target
 }
 
 #include "libbirch/value.hpp"

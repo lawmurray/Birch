@@ -10,6 +10,7 @@
 #include "libbirch/Eigen.hpp"
 
 namespace libbirch {
+#pragma omp declare target
 /**
  * Empty frame.
  *
@@ -140,7 +141,9 @@ struct EmptyFrame {
     return result;
   }
 };
+#pragma omp end declare target
 
+#pragma omp declare target
 /**
  * Nonempty frame.
  *
@@ -192,6 +195,11 @@ struct NonemptyFrame {
       tail(tail) {
     //
   }
+
+  /**
+   * Copy constructor.
+   */
+  NonemptyFrame(const NonemptyFrame<Head,Tail>& o) = default;
 
   /**
    * Generic copy constructor.
@@ -434,7 +442,9 @@ struct NonemptyFrame {
    */
   Tail tail;
 };
+#pragma omp end declare target
 
+#pragma omp declare target
 /**
  * Default frame for `D` dimensions.
  */
@@ -446,4 +456,5 @@ template<>
 struct DefaultFrame<0> {
   typedef EmptyFrame type;
 };
+#pragma omp end declare target
 }

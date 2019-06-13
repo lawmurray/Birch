@@ -6,6 +6,7 @@
 #include "libbirch/thread.hpp"
 
 namespace libbirch {
+#pragma omp declare target
 /**
  * STL-compatible allocator that wraps procedural implementation of pooled
  * allocator.
@@ -42,6 +43,7 @@ public:
     return false;
   }
 };
+#pragma omp end declare target
 }
 
 #include "libbirch/memory.hpp"

@@ -8,6 +8,7 @@
 #include "libbirch/Memo.hpp"
 
 namespace libbirch {
+#pragma omp declare target
 /**
  * Shared or weak pointer to a Memo, according to context. This is used by
  * LazyPtr for its memo field. It records the context of the
@@ -180,4 +181,5 @@ private:
    */
   InitPtr<LazyMemo> context;
 };
+#pragma omp end declare target
 }

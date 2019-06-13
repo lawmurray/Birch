@@ -6,6 +6,7 @@
 #include "libbirch/Any.hpp"
 
 namespace libbirch {
+#pragma omp declare target
 /**
  * State of a fiber.
  *
@@ -68,4 +69,5 @@ protected:
    */
   YieldType value_;
 };
+#pragma omp end declare target
 }

@@ -4,6 +4,7 @@
 #pragma once
 
 namespace libbirch {
+#pragma omp declare target
 /**
  * Nil.
  *
@@ -26,9 +27,12 @@ public:
     return std::initializer_list<T>();
   }
 };
+#pragma omp end declare target
 
 /**
  * Nil singleton.
  */
-static Nil nil;
+#pragma omp declare target
+static constexpr Nil nil;
+#pragma omp end declare target
 }

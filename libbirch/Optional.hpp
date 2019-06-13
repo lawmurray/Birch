@@ -8,6 +8,7 @@
 #include "libbirch/Weak.hpp"
 
 namespace libbirch {
+#pragma omp declare target
 /**
  * Optional.
  *
@@ -234,4 +235,5 @@ private:
    */
   Shared<T> value;
 };
+#pragma omp end declare target
 }

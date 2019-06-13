@@ -7,6 +7,7 @@
 #include "libbirch/ExclusiveLock.hpp"
 
 namespace libbirch {
+#pragma omp declare target
 /**
  * Thread-safe stack of memory allocations.
  *
@@ -62,6 +63,7 @@ private:
    */
   ExclusiveLock lock;
 };
+#pragma omp end declare target
 }
 
 inline libbirch::Pool::Pool() :

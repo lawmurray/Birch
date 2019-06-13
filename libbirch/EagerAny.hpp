@@ -7,6 +7,7 @@
 #include "libbirch/Counted.hpp"
 
 namespace libbirch {
+#pragma omp declare target
 /**
  * Base for all class types when eager deep clone is used.
  *
@@ -44,6 +45,7 @@ public:
   libbirch_clone_function_
   libbirch_destroy_function_
 };
+#pragma omp end declare target
 }
 
 #endif

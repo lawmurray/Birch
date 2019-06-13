@@ -10,6 +10,7 @@
 #include "libbirch/Eigen.hpp"
 
 namespace libbirch {
+#pragma omp declare target
 /**
  * Span.
  *
@@ -42,6 +43,11 @@ struct Span: public Length<length_value>, public Stride<stride_value> {
     libbirch_assert_msg_(length >= 0,
         "dimension length is " << length << ", but must be non-negative");
   }
+
+  /**
+   * Copy constructor.
+   */
+  Span(const Span<length_value,stride_value>& o) = default;
 
   /**
    * Generic copy constructor.
@@ -130,4 +136,5 @@ struct Span: public Length<length_value>, public Stride<stride_value> {
     return result;
   }
 };
+#pragma omp end declare target
 }

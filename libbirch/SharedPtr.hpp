@@ -10,6 +10,7 @@ template<class T> class SharedPtr;
 template<class T> class WeakPtr;
 template<class T> class InitPtr;
 
+#pragma omp declare target
 /**
  * Shared pointer with intrusive implementation.
  *
@@ -212,4 +213,5 @@ private:
    */
   T* ptr;
 };
+#pragma omp end declare target
 }

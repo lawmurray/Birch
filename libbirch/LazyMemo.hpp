@@ -11,6 +11,7 @@
 #include "libbirch/Lock.hpp"
 
 namespace libbirch {
+#pragma omp declare target
 /**
  * Memo for lazy deep clones.
  *
@@ -87,6 +88,7 @@ private:
    */
   Lock l;
 };
+#pragma omp end declare target
 }
 
 inline libbirch::LazyMemo* libbirch::LazyMemo::fork() {

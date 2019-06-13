@@ -13,6 +13,7 @@
 namespace libbirch {
 template<class T> class Optional;
 
+#pragma omp declare target
 /**
  * Wraps another pointer type to apply lazy deep clone semantics.
  *
@@ -403,6 +404,7 @@ protected:
    */
   ContextPtr to;
 };
+#pragma omp end declare target
 }
 
 #endif

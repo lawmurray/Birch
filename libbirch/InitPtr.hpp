@@ -8,6 +8,7 @@ template<class T> class SharedPtr;
 template<class T> class WeakPtr;
 template<class T> class InitPtr;
 
+#pragma omp declare target
 /**
  * Smart pointer that does not update reference counts, but that does
  * initialize to nullptr.
@@ -115,4 +116,5 @@ private:
    */
   T* ptr;
 };
+#pragma omp end declare target
 }

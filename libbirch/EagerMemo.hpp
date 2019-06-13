@@ -9,6 +9,7 @@
 #include "libbirch/Map.hpp"
 
 namespace libbirch {
+#pragma omp declare target
 /**
  * Memo for lazy deep cloning of objects.
  *
@@ -39,6 +40,7 @@ private:
    */
   Map m;
 };
+#pragma omp end declare target
 }
 
 #endif

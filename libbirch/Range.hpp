@@ -7,6 +7,7 @@
 #include "libbirch/Length.hpp"
 
 namespace libbirch {
+#pragma omp declare target
 /**
  * Range.
  *
@@ -37,6 +38,11 @@ struct Range: public Offset<offset_value>, public Length<length_value> {
       length_type(length) {
     //
   }
+
+  /**
+   * Copy constructor.
+   */
+  Range(const Range<offset_value,length_value>& o) = default;
 
   /**
    * Generic copy constructor.
@@ -71,4 +77,5 @@ struct Range: public Offset<offset_value>, public Length<length_value> {
     return 1;
   }
 };
+#pragma omp end declare target
 }

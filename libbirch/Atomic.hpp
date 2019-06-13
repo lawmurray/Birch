@@ -4,6 +4,7 @@
 #pragma once
 
 namespace libbirch {
+#pragma omp declare target
 /**
  * Atomic value.
  *
@@ -137,4 +138,5 @@ private:
    */
   T value;
 };
+#pragma omp end declare target
 }

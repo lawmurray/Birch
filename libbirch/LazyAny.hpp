@@ -11,6 +11,7 @@
 #include "libbirch/ExclusiveLock.hpp"
 
 namespace libbirch {
+#pragma omp declare target
 /**
  * Base for all class types when lazy deep clone is used.
  *
@@ -107,6 +108,7 @@ protected:
    */
   ExclusiveLock mutex;
 };
+#pragma omp end declare target
 }
 
 inline libbirch::LazyAny::LazyAny() :

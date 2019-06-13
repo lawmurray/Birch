@@ -7,6 +7,7 @@
 #include "libbirch/Any.hpp"
 
 namespace libbirch {
+#pragma omp declare target
 /**
  * Swap the context on construction, swap it back on destruction.
  */
@@ -39,4 +40,5 @@ private:
    */
   Memo* prevContext;
 };
+#pragma omp end declare target
 }

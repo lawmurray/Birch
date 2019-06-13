@@ -13,28 +13,38 @@ namespace libbirch {
 /**
  * Get the @i th pool.
  */
+#pragma omp declare target
 extern libbirch::Pool& pool(const unsigned i);
+#pragma omp end declare target
 
 /**
  * Buffer for heap allocations.
  */
+#pragma omp declare target
 extern libbirch::Atomic<char*> buffer;
+#pragma omp end declare target
 
 /**
  * Start of heap (for debugging purposes).
  */
+#pragma omp declare target
 extern char* bufferStart;
+#pragma omp end declare target
 
 /**
  * Size of heap (for debugging purposes).
  */
+#pragma omp declare target
 extern size_t bufferSize;
+#pragma omp end declare target
 #endif
 
 /**
  * Number of bytes of memory currently in use (excluding that in pools).
  */
+#pragma omp declare target
 extern libbirch::Atomic<size_t> memoryUse;
+#pragma omp end declare target
 
 /**
  * For an allocation size, determine the index of the pool to which it

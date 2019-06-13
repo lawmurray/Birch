@@ -6,6 +6,7 @@
 #include "libbirch/Offset.hpp"
 
 namespace libbirch {
+#pragma omp declare target
 /**
  * Index.
  *
@@ -30,6 +31,11 @@ struct Index: public Offset<offset_value>, public Length<1> {
       offset_type(offset), length_type(1) {
     //
   }
+
+  /**
+   * Copy constructor.
+   */
+  Index(const Index<offset_value>& o) = default;
 
   /**
    * Generic copy constructor.
@@ -64,4 +70,5 @@ struct Index: public Offset<offset_value>, public Length<1> {
     return 0;
   }
 };
+#pragma omp end declare target
 }

@@ -1,7 +1,9 @@
 cpp{{
 #include <random>
 
-thread_local static std::mt19937_64 rng;
+#pragma omp declare target
+/*thread_local*/ static std::mt19937_64 rng;
+#pragma omp end declare target
 }}
 
 /**

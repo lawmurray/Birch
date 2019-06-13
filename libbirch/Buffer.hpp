@@ -8,6 +8,7 @@
 #include "libbirch/Atomic.hpp"
 
 namespace libbirch {
+#pragma omp declare target
 /**
  * Buffer for storing the contents of an array. Buffer objects are shared
  * between arrays with copy-on-write semantics, and overallocated to contain
@@ -85,6 +86,7 @@ private:
    */
   alignas(T) char first;
 };
+#pragma omp end declare target
 }
 
 template<class T>

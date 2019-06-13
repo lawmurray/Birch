@@ -6,6 +6,7 @@
 #include "libbirch/Any.hpp"
 
 namespace libbirch {
+#pragma omp declare target
 /**
  * Hash table of memory mappings.
  *
@@ -136,6 +137,7 @@ private:
    */
   unsigned noccupied;
 };
+#pragma omp end declare target
 }
 
 inline bool libbirch::Map::empty() const {
